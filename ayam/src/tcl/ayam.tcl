@@ -260,6 +260,7 @@ array set riopt {
 	    {useprmandspy i}}
 
     runtime { { verbosity s { "silent" "normal" "stats" "debug" } } }
+    shadow { { bias0 f {0.01 0.1 0.25 0.5} } { bias1 f {0.01 0.1 0.25 0.5} } }
     statistics { {endofframe i} {filename s} }
 }
 
