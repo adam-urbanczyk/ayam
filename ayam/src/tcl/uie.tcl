@@ -402,7 +402,7 @@ proc addString { w prop name  {def {}}} {
 
     pack $f.l -in $f -side left -fill x
     pack $f.e -in $f -side left -fill both -expand yes
-    if { $mb != "" } { pack $mb -side left -fill both -expand yes}
+    if { $mb != "" } { pack $mb -side left -fill both -expand no}
 
     pack $f -in $w -side top -fill x
 
@@ -412,8 +412,8 @@ return;
 #
 #
 #
-proc addFile { w prop name } {
-    global $prop ayprefs
+proc addFile { w prop name {def {}} } {
+    global $prop ayprefs tcl_platform
 
     set bw 1
 
@@ -426,7 +426,7 @@ proc addFile { w prop name } {
 	balloon_set $f.l ${name}
     }
 
-    entry $f.e -textvariable ${prop}(${name}) -width 15 -bd $bw
+    set e [entry $f.e -textvariable ${prop}(${name}) -width 15 -bd $bw]
     button $f.b -text "Set" -bd $bw -padx 0 -pady 0 -command "\
 	global $prop;
 	set filen \[$f.e get\];
@@ -437,9 +437,27 @@ proc addFile { w prop name } {
 	    set ${prop}($name) \$filen;
         }
 	" 
+
+	set mb ""
+	if { $def != {} } {
+	    set mb [menubutton $f.b3 -pady 1 -bd $bw -text "Def" -takefocus 0\
+		    -highlightthickness 0 -relief raised -menu $f.b3.m]
+	    if { $tcl_platform(platform) == "windows" } {
+		$mb configure -pady 0
+	    }
+	    set m [menu $mb.m -tearoff 0]
+	    foreach val $def {
+		$m add command -label $val\
+			-command "global $prop; $e delete 0 end; $e insert end $val;"
+	    }
+	}
+
+
 	pack $f.l -in $f -side left -fill x
-	pack $f.b -in $f -side right -fill x
 	pack $f.e -in $f -side left -fill both -expand yes
+	pack $f.b -in $f -side left -fill x
+	if { $mb != "" } { pack $mb -side right -fill x -expand no}
+
 	pack $f -in $w -side top -fill x
 
 return;
