@@ -204,7 +204,7 @@ int
 ay_objio_writetcurve(FILE *fileptr, ay_object *o, double *m)
 {
  ay_nurbcurve_object *nc;
- double v[3] = {0}, *p1, pw[3], ma[16] = {0}, mn[16] = {0};
+ double v[3] = {0}, *p1, pw[3] = {0}, ma[16] = {0}, mn[16] = {0};
  int stride = 4, i;
 
   if(!o)
@@ -657,8 +657,11 @@ ay_objio_writebox(FILE *fileptr, ay_object *o, double *m)
 int
 ay_objio_writepomesh(FILE *fileptr, ay_object *o, double *m)
 {
- char fname[] = "objio_writepomesh";
- ay_pomesh_object *po;
+ int ay_status = AY_OK;
+ /*char fname[] = "objio_writepomesh";*/
+ ay_object *to = NULL;
+ ay_list_object *li = NULL, **nextli = NULL, *lihead = NULL;
+ ay_pomesh_object *po, *npo;
  double v[3], *p1;
  int stride;
  unsigned int i, j, k, p = 0, q = 0, r = 0;
@@ -673,7 +676,7 @@ ay_objio_writepomesh(FILE *fileptr, ay_object *o, double *m)
   else
     stride = 3;
 
-  /* get all vertices, transform them to world space and write them*/
+  /* get all vertices, transform them to world space and write them */
   p1 = po->controlv;
   for(i = 0; i < po->ncontrols; i++)
     {
@@ -726,7 +729,34 @@ ay_objio_writepomesh(FILE *fileptr, ay_object *o, double *m)
 	}
       else
 	{
-	  ay_error(AY_EWARN, fname, "Skipping polygon with hole(s).");
+	  /*ay_error(AY_EWARN, fname, "Skipping polygon with hole(s).");*/
+
+	  /* create new object (the PolyMesh) */
+	  if(!(li = calloc(1, sizeof(ay_list_object))))
+	    return AY_EOMEM;
+	  
+	  if(!(to = calloc(1, sizeof(ay_object))))
+	    return AY_EOMEM;
+	  li->object = to;
+
+	  ay_object_defaults(to);
+
+	  to->type = AY_IDPOMESH;
+
+	  ay_status = ay_tess_pomeshf(po, i, AY_FALSE,
+				      (ay_pomesh_object **)&(to->refine));
+
+	  if(nextli)
+	    {
+	      *nextli = li;
+	    }
+	  else
+	    {
+	      lihead = li;
+	    }
+	  nextli = &(li->next);
+
+	  /* advance indices r and q */
 	  for(j = 0; j < po->nloops[p]; j++)
 	    {
 	      for(k = 0; k < po->nverts[q]; k++)
@@ -739,6 +769,33 @@ ay_objio_writepomesh(FILE *fileptr, ay_object *o, double *m)
       p++;
     } /* for */
 
+  if(lihead && lihead->next)
+    {
+      to = NULL;
+      ay_status = ay_pomesht_merge(lihead, &to);
+      if(to)
+	{
+	  ay_status = ay_pomesht_optimizecoords(to->refine, AY_FALSE);
+	  ay_object_defaults(to);
+	  to->type = AY_IDPOMESH;
+	  to->refine = npo;
+	  /*ay_trafo_copy(o, to);*/
+	  ay_objio_writepomesh(fileptr, to, m);
+	}
+    }
+  else
+    {
+      if(lihead)
+	ay_objio_writepomesh(fileptr, lihead->object, m);
+    }
+
+  while(lihead)
+    {
+      ay_object_delete(lihead->object);
+      li = lihead->next;
+      free(lihead);
+      lihead = li;
+    } /* while */
 
  return AY_OK;
 } /* ay_objio_writepomesh */
@@ -849,7 +906,6 @@ ay_objio_writeobject(FILE *fileptr, ay_object *o, int writeend)
 	    {
 	      ay_status = cb(fileptr, o, tm);
 	    }
-
 
 	  if(ay_status)
 	    {
