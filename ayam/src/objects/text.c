@@ -30,7 +30,7 @@ ay_text_createcb(int argc, char *argv[], ay_object *o)
     }
 
   text->height = 0.5;
-
+  text->bevel_radius = 0.1;
   o->refine = text;
 
  return AY_OK;
@@ -200,6 +200,10 @@ ay_text_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp,to, &(text->height));
 
+  Tcl_SetStringObj(ton,"Revert",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &(text->revert));
+
   Tcl_SetStringObj(ton,"UpperCap",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(text->has_upper_cap));
@@ -207,6 +211,22 @@ ay_text_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_SetStringObj(ton,"LowerCap",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(text->has_lower_cap));
+
+  Tcl_SetStringObj(ton,"UpperBevels",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &(text->has_upper_bevels));
+
+  Tcl_SetStringObj(ton,"LowerBevels",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &(text->has_lower_bevels));
+
+  Tcl_SetStringObj(ton,"BevelRadius",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp,to, &(text->bevel_radius));
+
+  Tcl_SetStringObj(ton,"BevelType",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &(text->bevel_type));
 
 
   Tcl_SetStringObj(ton,"DisplayMode",-1);
@@ -256,6 +276,11 @@ ay_text_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_NewDoubleObj(text->height);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton,"Revert",-1);
+  to = Tcl_NewIntObj(text->revert);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
   Tcl_SetStringObj(ton,"UpperCap",-1);
   to = Tcl_NewIntObj(text->has_upper_cap);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
@@ -263,6 +288,26 @@ ay_text_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   Tcl_SetStringObj(ton,"LowerCap",-1);
   to = Tcl_NewIntObj(text->has_lower_cap);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton,"UpperBevels",-1);
+  to = Tcl_NewIntObj(text->has_upper_bevels);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton,"LowerBevels",-1);
+  to = Tcl_NewIntObj(text->has_lower_bevels);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton,"BevelType",-1);
+  to = Tcl_NewIntObj(text->bevel_type);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton,"BevelRadius",-1);
+  to = Tcl_NewDoubleObj(text->bevel_radius);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
@@ -299,8 +344,13 @@ ay_text_readcb(FILE *fileptr, ay_object *o)
   ay_read_string(fileptr, &(text->string));
 
   fscanf(fileptr,"%lg\n",&text->height);
+  fscanf(fileptr,"%d\n",&text->revert);
   fscanf(fileptr,"%d\n",&text->has_upper_cap);
   fscanf(fileptr,"%d\n",&text->has_lower_cap);
+  fscanf(fileptr,"%d\n",&text->has_upper_bevels);
+  fscanf(fileptr,"%d\n",&text->has_lower_bevels);
+  fscanf(fileptr,"%d\n",&text->bevel_type);
+  fscanf(fileptr,"%lg\n",&text->bevel_radius);
   fscanf(fileptr,"%d\n",&text->glu_display_mode);
   fscanf(fileptr,"%lg\n",&text->glu_sampling_tolerance);
 
@@ -323,8 +373,13 @@ ay_text_writecb(FILE *fileptr, ay_object *o)
   fprintf(fileptr, "%s\n", text->fontname);
   fprintf(fileptr, "%s\n", text->string);
   fprintf(fileptr, "%g\n", text->height);
+  fprintf(fileptr, "%d\n", text->revert);
   fprintf(fileptr, "%d\n", text->has_upper_cap);
   fprintf(fileptr, "%d\n", text->has_lower_cap);
+  fprintf(fileptr, "%d\n", text->has_upper_bevels);
+  fprintf(fileptr, "%d\n", text->has_lower_bevels);
+  fprintf(fileptr, "%d\n", text->bevel_type);
+  fprintf(fileptr, "%g\n", text->bevel_radius);
   fprintf(fileptr, "%d\n", text->glu_display_mode);
   fprintf(fileptr, "%g\n", text->glu_sampling_tolerance);
 
@@ -421,6 +476,10 @@ ay_text_notifycb(ay_object *o)
   extrude.height = text->height;
   extrude.has_lower_cap = text->has_lower_cap;
   extrude.has_upper_cap = text->has_upper_cap;
+  extrude.has_lower_bevels = text->has_lower_bevels;
+  extrude.has_upper_bevels = text->has_upper_bevels;
+  extrude.bevel_type = text->bevel_type;
+  extrude.bevel_radius = text->bevel_radius;
   extrude.glu_display_mode = text->glu_display_mode;
   extrude.glu_sampling_tolerance = text->glu_sampling_tolerance;
 
@@ -439,6 +498,9 @@ ay_text_notifycb(ay_object *o)
 	      outline = &((letter.outlines)[i]);
 	      newcurve = NULL;
 	      ay_status = ay_tti_outlinetoncurve(outline, &newcurve);
+
+	      if(newcurve && text->revert)
+		ay_nct_revert((ay_nurbcurve_object*)(newcurve->refine));
 
 	      if(outline->filled)
 		{
@@ -591,12 +653,13 @@ ay_text_notifycb(ay_object *o)
  return AY_OK;
 } /* ay_text_notifycb */
 
+
 int
 ay_text_convertcb(ay_object *o, int in_place)
 {
  int ay_status = AY_OK;
  ay_text_object *t = NULL;
- ay_object *new = NULL;
+ ay_object *npatch, *new = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -605,14 +668,17 @@ ay_text_convertcb(ay_object *o, int in_place)
 
   t = (ay_text_object *) o->refine;
 
-  if(t->npatch)
+  npatch = t->npatch;
+  while(npatch)
     {
-      ay_status = ay_object_copy(t->npatch, &new);
+      ay_status = ay_object_copy(npatch, &new);
       ay_trafo_copy(o, new);
       new->hide_children = AY_TRUE;
       new->parent = AY_TRUE;
-      ay_object_crtendlevel(&(new->down));
+      if(!new->down)
+	ay_object_crtendlevel(&(new->down));
       ay_object_link(new);
+      npatch = npatch->next;
     }
 
  return AY_OK;
@@ -622,6 +688,40 @@ ay_text_convertcb(ay_object *o, int in_place)
 int
 ay_text_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
+ int ay_status = AY_OK;
+ ay_text_object *text = NULL;
+ ay_object *new = NULL, **t = NULL, *p = NULL, *tmp = NULL;
+
+  if(!o || !result)
+    return AY_ENULL;
+
+  text = (ay_text_object *) o->refine;
+
+  if(type == AY_IDNPATCH)
+    {
+      t = &(tmp);
+      p = text->npatch;
+      while(p)
+	{
+	  new = NULL;
+	  ay_status = ay_object_copy(p, &new);
+	  if(new)
+	    {
+	      ay_trafo_copy(o, new);
+	      /*ist das notwendig, oder sind die attribute schon ok?*/
+	      new->hide_children = AY_TRUE;
+	      new->parent = AY_TRUE;
+	      if(!new->down)
+		ay_object_crtendlevel(&(new->down));
+	      *t = new;
+	      t = &(new->next);
+	    } /* if */
+	  p = p->next;
+	} /* while */
+    } /* if */
+
+  *result = tmp;
+
  return AY_OK;
 } /* ay_text_providecb */
 
@@ -647,8 +747,6 @@ ay_text_init(Tcl_Interp *interp)
 				   ay_text_bbccb,
 				   AY_IDTEXT);
 
-  Tcl_SetVar(interp, "propertyList", "TextAttr", TCL_APPEND_VALUE |
-	     TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   ay_status = ay_notify_register(ay_text_notifycb, AY_IDTEXT);
 
