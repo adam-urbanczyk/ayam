@@ -25,7 +25,7 @@
 static char *metaobj_name = "MetaObj";
 static unsigned int metaobj_id;
 static char *metacomp_name = "MetaComp";
-static unsigned int metacomp_id;
+unsigned int metacomp_id;
 
 int Metacomp_Init (Tcl_Interp * interp);
 int metaobj_notifycb (ay_object * o);
