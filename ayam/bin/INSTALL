@@ -11,3 +11,7 @@ It will create some sub-directories there, namely:
 /usr/local/ayam/bin for the executable,
 /usr/local/ayam/lib for the plugins and accompanying Tcl files, and
 /usr/local/ayam/doc for the documentation.
+
+You may want to add "/usr/local/ayam/bin" to your PATH variable.
+Be sure to also add "." or "/usr/local/ayam/lib" to your LD_LIBRARY_PATH
+variable, otherwise Ayam might not be able to load the plugins.
