@@ -600,9 +600,12 @@ interp alias {} console_dialog {} ConsoleDialog
     foreach m [list [menu $w.$n.m -disabledfore $data(-promptcolor)] \
 	    [menu $w.pop.$n -disabledfore $data(-promptcolor)]] {
 	$m add command -label "Console $W" -state disabled
-	$m add command -label "Clear Console " -un 1 \
+
+	#XXXX -com [list Console_clear $W]
+	#XXXX Mac Tcl/Tk did not like -com, thus changed to -command
+	$m add command -label "Clear Console " -und 1 \
 		-acc [event info <<Console_Clear>>] \
-		-com [list Console_clear $W]
+		-command [list Console_clear $W]
 	$m add command -label "Load File" -und 0 \
 		-command [list Console_load $W]
 	$m add cascade -label "Save ..."  -und 0 -menu $m.save
