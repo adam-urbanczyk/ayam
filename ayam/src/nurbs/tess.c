@@ -1046,7 +1046,11 @@ ay_tess_setautonormal(double *v1, double *v2, double *v3)
 
 
 /* ay_tess_pomeshf:
- *
+ *  tesselate the face <f> of PolyMesh <pomesh> into triangles, removes doubly
+ *  used vertices if <optimize> is AY_TRUE,
+ *  <m> and <n> have to be set up correctly (pointing in the index arrays
+ *  for nloops and nverts of face <f>) outside!,
+ *  returns new PolyMesh in <trpomesh>
  */
 int
 ay_tess_pomeshf(ay_pomesh_object *pomesh,
@@ -1115,21 +1119,21 @@ ay_tess_pomeshf(ay_pomesh_object *pomesh,
 #endif
 
   gluTessBeginPolygon(tess, (GLvoid*)(&to));
-
-  for(j = 0; j < pomesh->nloops[f]; j++)
-    {
-      gluTessBeginContour(tess);
-      for(k = 0; k < pomesh->nverts[m]; k++)
-	{
-	  a = pomesh->verts[n++];
-	  gluTessVertex(tess,
-			(GLdouble*)(&(pomesh->controlv[a*stride])),
-			(GLdouble*)(&(pomesh->controlv[a*stride])));
-	} /* for */
-      gluTessEndContour(tess);
-      m++;
-    } /* for */
+   for(j = 0; j < pomesh->nloops[f]; j++)
+     {
+       gluTessBeginContour(tess);
+        for(k = 0; k < pomesh->nverts[m]; k++)
+	  {
+	    a = pomesh->verts[n++];
+	    gluTessVertex(tess,
+			  (GLdouble*)(&(pomesh->controlv[a*stride])),
+			  (GLdouble*)(&(pomesh->controlv[a*stride])));
+	  } /* for */
+       gluTessEndContour(tess);
+       m++;
+     } /* for */
   gluTessEndPolygon(tess);
+
   gluDeleteTess(tess);
 
   /* free combined vertices */
@@ -1177,25 +1181,138 @@ cleanup:
 
 
 /* ay_tess_pomesh:
- *  unfinished - do not use
+ *  tesselate the PolyMesh <pomesh> into triangles, removes doubly
+ *  used vertices if <optimize> is AY_TRUE,
+ *  returns new PolyMesh in <trpomesh>
  */
 int
-ay_tess_pomesh(ay_pomesh_object *pomesh, int optimize)
+ay_tess_pomesh(ay_pomesh_object *pomesh, int optimize,
+	       ay_pomesh_object **trpomesh)
 {
 #ifndef GLU_VERSION_1_2
  char fname[] = "ay_tess_pomeshf";
  ay_error(AY_ERROR, fname, "This function is just available on GLU V1.2+ !");
  return AY_ERROR;
 #else
- /*
  int ay_status = AY_OK;
  unsigned int i = 0, j = 0, k = 0, l = 0, m = 0, n = 0;
- ay_object *to = NULL;
- ay_list_object *li = NULL, **nextli = NULL, *lihead = NULL;
+ unsigned int a;
+ int stride = 0;
+ GLUtesselator *tess = NULL;
+ ay_tess_object to = {0};
+ double p1[3], p2[3], p3[3], p4[3], n1[3], n2[3], n3[3], n4[3];
+ ay_tess_tri *t1 = NULL, *t2;
+ ay_object *tmpo = NULL;
 
   if(!pomesh)
     return AY_ENULL;
- */
+
+  if(pomesh->has_normals)
+    stride = 6;
+  else
+    stride = 3;
+
+  if(!(tess = gluNewTess()))
+    return AY_EOMEM;
+
+  /* properly initialize tesselation object */
+  to.tesselate_polymesh = AY_TRUE;
+  to.has_vn = pomesh->has_normals;
+  to.p1 = p1;
+  to.p2 = p2;
+  to.p3 = p3;
+  to.p4 = p4;
+  to.n1 = n1;
+  to.n2 = n2;
+  to.n3 = n3;
+  to.n4 = n4;
+
+  to.nextpd = &(to.p1);
+  to.nextnd = &(to.n1);
+
+#if defined(WIN32) && !defined(AYUSESUPERGLU)
+  gluTessCallback(tess, GLU_TESS_ERROR,
+		  (GLUtessErrorProc)ay_error_glucb);
+  gluTessCallback(tess, GLU_TESS_BEGIN_DATA,
+		  (GLUtessBeginProc)ay_tess_begindata);
+  gluTessCallback(tess, GLU_TESS_VERTEX_DATA,
+		  (GLUtessVertexProc)ay_tess_vertexdata);
+  /*  gluTessCallback(tess, GLU_TESS_NORMAL_DATA,
+      (GLUtessVertexProc)ay_tess_normaldata);*/
+  gluTessCallback(tess, GLU_TESS_END_DATA,
+		  (GLUtessEndProc)ay_tess_enddata);
+  gluTessCallback(tess, GLU_TESS_COMBINE_DATA,
+		  (GLUtessCombineProc)ay_tess_combinedata);
+#else
+  gluTessCallback(tess, GLU_TESS_ERROR, ay_error_glucb);
+  gluTessCallback(tess, GLU_TESS_BEGIN_DATA, ay_tess_begindata);
+  gluTessCallback(tess, GLU_TESS_VERTEX_DATA, ay_tess_vertexdata);
+  /*  gluTessCallback(tess, GLU_TESS_NORMAL_DATA, ay_tess_normaldata);*/
+  gluTessCallback(tess, GLU_TESS_END_DATA, ay_tess_enddata);
+  gluTessCallback(tess, GLU_TESS_COMBINE_DATA, ay_tess_combinedata);
+#endif
+
+  for(i = 0; i < pomesh->npolys; i++)
+    {
+      gluTessBeginPolygon(tess, (GLvoid*)(&to));
+       for(j = 0; j < pomesh->nloops[l]; j++)
+	 {
+	   gluTessBeginContour(tess);
+	    for(k = 0; k < pomesh->nverts[m]; k++)
+	      {
+		a = pomesh->verts[n++];
+		gluTessVertex(tess,
+			      (GLdouble*)(&(pomesh->controlv[a*stride])),
+			      (GLdouble*)(&(pomesh->controlv[a*stride])));
+	      } /* for */
+	   gluTessEndContour(tess);
+	   m++;
+	 } /* for */
+      gluTessEndPolygon(tess);
+      l++;
+    } /* for */
+
+  gluDeleteTess(tess);
+
+  /* free combined vertices */
+  ay_tess_managecombined(NULL);
+
+  if(!to.tris)
+    {
+      ay_status = AY_ERROR; goto cleanup;
+    }
+
+  /* the tess_object should now contain lots of triangles;
+     copy them to the PolyMesh object */
+  ay_status = ay_tess_tristopomesh(to.tris, to.has_vn, &tmpo);
+
+  if(!tmpo)
+    {
+      ay_status = AY_ERROR; goto cleanup;
+    }
+
+  /* immediately optimize the polymesh (remove multiply used vertices) */
+  if(optimize)
+    ay_status = ay_pomesht_optimizecoords((ay_pomesh_object*)tmpo->refine,
+					  AY_FALSE);
+
+  /* return result */
+  *trpomesh = tmpo->refine;
+
+cleanup:
+  if(tmpo)
+    free(tmpo);
+
+  /* free triangles */
+  t1 = to.tris;
+  while(t1)
+    {
+      t2 = t1;
+      t1 = t1->next;
+      free(t2);
+    } /* while */
+  to.tris = NULL;
+
  return AY_OK;
 #endif
 } /* ay_tess_pomesh */
