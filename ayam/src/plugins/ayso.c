@@ -11,7 +11,7 @@
  */
 
 /* ayso.c - Plug-In to scan shaders compiled with shaderdc (RenderDotC)
-   using libsoargs  */
+   using libsoargs */
 
 /* force ayam.h to not include BMRT/slc.h as this would clash with RDC/so.h
    due to a double defined SO_H */
@@ -107,7 +107,7 @@ ayso_scansosarg(SO_VISSYMDEF *symbol, Tcl_DString *ds)
  */
 int
 ayso_scansotcmd(ClientData clientData, Tcl_Interp *interp,
-			int argc, char *argv[])
+		int argc, char *argv[])
 {
  char fname[] = "shaderScanSO";
  int i = 0, j = 0, numargs = 0;
@@ -183,54 +183,54 @@ ayso_scansotcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  ay_error(AY_ERROR, fname, "Cannot get symbol from shader:");
 	  ay_error(AY_ERROR, fname, argv[1]);
-	  
+
 	  So_EndShader();
 	  Tcl_DStringFree(&ds);
-	  return TCL_OK;	  
+	  return TCL_OK;
 	}
 
       /* XXXX temporarily discard array arguments   */
       if(symbol->svd_arraylen < 1)
 	{
 
-      Tcl_DStringAppend(&ds, "{ ", -1);
-      Tcl_DStringAppend(&ds, symbol->svd_name, -1);
-      Tcl_DStringAppend(&ds, " ", -1 );
+	  Tcl_DStringAppend(&ds, "{ ", -1);
+	  Tcl_DStringAppend(&ds, symbol->svd_name, -1);
+	  Tcl_DStringAppend(&ds, " ", -1 );
 
-      switch(symbol->svd_type)
-	{
-	case SO_TYPE_POINT:
-	  Tcl_DStringAppend(&ds, "point ", -1);
-	  break;
-	case SO_TYPE_COLOR:
-	  Tcl_DStringAppend(&ds, "color ", -1);
-	  break;
-	case SO_TYPE_VECTOR:
-	  Tcl_DStringAppend(&ds, "vector ", -1);
-	  break;
-	case SO_TYPE_NORMAL:
-	  Tcl_DStringAppend(&ds, "normal ", -1);
-	  break;
-	case SO_TYPE_MATRIX:
-	  Tcl_DStringAppend(&ds, "matrix ", -1);
-	  break;
-	case SO_TYPE_SCALAR:
-	  Tcl_DStringAppend(&ds, "float ", -1);
-	  break;
-	case SO_TYPE_STRING:
-	  Tcl_DStringAppend(&ds, "string ", -1);
-	  break;
-	default:
-	  Tcl_DStringAppend(&ds, "unknown ", -1);
-	  break;
-	}
+	  switch(symbol->svd_type)
+	    {
+	    case SO_TYPE_POINT:
+	      Tcl_DStringAppend(&ds, "point ", -1);
+	      break;
+	    case SO_TYPE_COLOR:
+	      Tcl_DStringAppend(&ds, "color ", -1);
+	      break;
+	    case SO_TYPE_VECTOR:
+	      Tcl_DStringAppend(&ds, "vector ", -1);
+	      break;
+	    case SO_TYPE_NORMAL:
+	      Tcl_DStringAppend(&ds, "normal ", -1);
+	      break;
+	    case SO_TYPE_MATRIX:
+	      Tcl_DStringAppend(&ds, "matrix ", -1);
+	      break;
+	    case SO_TYPE_SCALAR:
+	      Tcl_DStringAppend(&ds, "float ", -1);
+	      break;
+	    case SO_TYPE_STRING:
+	      Tcl_DStringAppend(&ds, "string ", -1);
+	      break;
+	    default:
+	      Tcl_DStringAppend(&ds, "unknown ", -1);
+	      break;
+	    }
 
-      arraylen = symbol->svd_arraylen;
-      sprintf(buffer, "%d ", arraylen);
-      Tcl_DStringAppend(&ds, buffer, -1);
+	  arraylen = symbol->svd_arraylen;
+	  sprintf(buffer, "%d ", arraylen);
+	  Tcl_DStringAppend(&ds, buffer, -1);
 
-      if(arraylen > 0)
-	{
+	  if(arraylen > 0)
+	  {
 	  Tcl_DStringAppend(&ds, "{ ", -1);
 	  for(j = 0; j < arraylen; j++)
 	    {
@@ -247,17 +247,17 @@ ayso_scansotcmd(ClientData clientData, Tcl_Interp *interp,
 	    } /* for */
 
 	  Tcl_DStringAppend(&ds, "} ", -1);
+	  }
+	  else
+	    {
+	      ayso_scansosarg(symbol, &ds);
+	    } /* if */
+	  Tcl_DStringAppend(&ds, "} ", -1);
+
 	}
       else
 	{
-	  ayso_scansosarg(symbol, &ds);
-	} /* if */
-      Tcl_DStringAppend(&ds, "} ", -1);
-
-	} 
-      else
-	{
-	  ay_error(AY_EWARN,fname,"Skipping array argument!");
+	  ay_error(AY_EWARN, fname, "Skipping array argument!");
 	  /*	  ay_error(AY_EWARN,fname,symbol->svd_name);*/
 	} /* if */
       /* XXXX temporarily discard array arguments */
@@ -287,7 +287,11 @@ Ayso_Init(Tcl_Interp *interp)
 #endif
 {
  char fname[] = "ayso_init";
+#ifdef WIN32
+ char vname[] = "ay(sext)", vval[] = ".dll";
+#else
  char vname[] = "ay(sext)", vval[] = ".so";
+#endif
 
 #ifdef WIN32
   ay_plugin_interp = interp;
@@ -320,8 +324,13 @@ Ayso_Init(Tcl_Interp *interp)
 
   ay_error(AY_EOUTPUT, fname,
 	   "Plug-In 'ayso' successfully loaded.");
+#ifdef WIN32
+  ay_error(AY_EOUTPUT, fname,
+	   "Ayam will now scan for .dll-shaders only!");
+#else
   ay_error(AY_EOUTPUT, fname,
 	   "Ayam will now scan for .so-shaders only!");
+#endif
 
  return TCL_OK;
 } /* Ayso_Init */
