@@ -49,12 +49,12 @@ Here is a short summary:
 <item>Support for NURBS curves, interpolating curves, (trimmed)
 NURBS surfaces, bilinear and bicubic patches and patch meshes,
 Boxes, Quadrics (Sphere, Disk,
-Cylinder, Cone, Hyperboloid, Paraboloid and Torus), polygonal meshes,
-and subdivision meshes.
+Cylinder, Cone, Hyperboloid, Paraboloid and Torus), MetaBalls,
+polygonal meshes, subdivision meshes and more.
 <item>All primitives may be combined with the common
 CSG-operations: Intersection, Difference, and Union.
 <item>NURBS modeling includes extrude, revolve, sweep and skin
-operations (with caps, holes, and bevels).
+operations (with caps, holes, and bevels) realized as Tool-Objects.
 <item>Custom objects that may freely implement their representations
 (using OpenGL and RIB) and even small GUIs to edit their type specific
 parameters may be written by the user and dynamically loaded at runtime.
@@ -424,7 +424,7 @@ will be created first.<p>
 currently selected instance object and selects it for editing,
 see section <ref id="instanceobj" name="Instance Object">.
 
-<item><tt/Preferences/, opens the preferences dialogue (see section
+<item><tt/Preferences/, opens the preferences dialog (see section
 <ref id="prefs" name="Preferences"> for more information).
 </itemize>
 
@@ -502,7 +502,8 @@ by removing all doubly used control points (if the option
 If the option <tt/IgnoreNormals/ is enabled, the optimize-tool will
 consider points with equal coordinates but differing normals
 to be equal (and optimize them).
-Removing doubly used control points may decrease the memory consumption
+Removing doubly used control points using the <tt/Optimize/-tool
+may decrease the memory consumption of the control points
 by a factor of about six.
 </itemize>
 <item><tt/Show/, <tt/Hide/ set and unset the <tt/Hide/
@@ -592,7 +593,7 @@ selected object(s)
 (see <ref id="riatag" name="RiAttribute Tag">).
 <item><tt>Tags/Edit TexCoords</tt>, opens the texture coordinates editor.
 (see also section <ref id="tctag" name="TC (TextureCoordinates) Tag">).
-<item><tt>Select Renderer</tt> opens a dialogue where the renderer
+<item><tt>Select Renderer</tt> opens a dialog where the renderer
 for direct rendering from a view may be choosen.
 The changes will have effect on all options that
 control direct rendering from a view, except whether RenderGUIs should
@@ -1288,8 +1289,14 @@ See the discussion of <tt/"ToolBoxTrans"/ above for more information
 about transient windows.
 <item><tt/"HideTmpTags"/ may be used to hide tags that are marked
 temporary (internal tag types do so) from the tag property GUI.
-<item><tt/"TclPrecision"/; this is the precision Tcl handles doubles
-with.
+<item><tt/"TclPrecision"/; this is the precision Tcl handles numbers
+with. You may want to decrease this number to about 5 if any numbers in
+the entry fields are represented in an exact, but also too lengthy
+and hard to read fashion, like 0.4999999 instead of 0.5. Note that you
+may loose information in doing so. The default value used by Tcl is 12
+and results in no loss of information. The default value used by Ayam is 6
+and should result in a good balance between precision and
+readability.
 </itemize>
 
 <sect>Interactive Actions (Modeling)<label id="iac">
@@ -1485,7 +1492,7 @@ the coordinate values displayed in the direct point editing window
 will not update when the point is modified by another modeling
 action. Simply click on the point again in a view where the
 direct point editing action is active, to update the coordinate
-values.
+values in the direct point editing dialog.
 </itemize>
 
 <sect1>Inserting or Deleting Points<label id="insdelac">
@@ -1522,15 +1529,15 @@ Remember to exactly pick a point on the curve or nearby, otherwise
 the calculation may fail and no value will be written to the console.<p>
 
 <item>The modeling action <tt/"Split Curve"/ (shortcut <tt/&lt;c&gt;/)
-may be applied to NURBS curves only.<p>
+may be applied to NURBS curves only.
 Using this action you may split a NURBS curve into two new curves
 at a point on the curve that may be specified by picking a point
-on the curve.<p>
+on the curve.
 Remember to exactly pick a point on the curve or nearby otherwise
-the calculation of the parametric value for the split will fail.<p>
+the calculation of the parametric value for the split will fail.
 The selected curve will be changed by this action, and
 a new curve will be created. It is currently not possible to undo
-the changes of a split!<p>
+the changes of a split!
 </itemize>
 
 <sect1>Editing in Local Space<label id="editlocal">
@@ -3600,7 +3607,7 @@ the shape again!).
 the child curves of the ConcatNC object. The fillet curves will be
 cubic Bezier curves. The direction of the tangents in the endpoints of
 the fillets and the gap enclosing curves will match, so that the
-transition should be C1 continuous.
+transition should be G1 continuous.
 <item><tt/"Revert"/ the orientation of the concatenated curve will be reversed.
 </itemize>
 
@@ -4954,14 +4961,16 @@ requester? (default: 1 - yes)
 <item><tt/"DailyTips"/: a list of strings that appear as tips
 on startup in the console
 <item><tt/"PickTolerance"/: the tolerance used to determine whether an object
-should be picked or not (default: 5)
+should be picked or not (default: 5); this setting determines the size
+of a rectangular area around the picked point in pixels, all objects that
+are inside or touch this area are considered picked
 <item><tt/"MaxTagLen"/: the maximum number of characters to be displayed
 in the buttons in the Tag Property GUI (default: 30)
 </itemize>
 
 <sect2>RiOption and RiAttributes Database<label id="rioptdb">
 <p>
-Using your ayamrc file, you may adapt the database of RiOptions and
+Using your ayamrc file, you may also adapt the database of RiOptions and
 RiAttributes to your rendering system.
 <p>
 You can then easily add those options and attributes
@@ -4972,7 +4981,7 @@ see also sections
 <ref id="riatag" name="RiAttribute Tag"> and
 <ref id="riotag" name="RiOption Tag">.
 <p>
-The syntax for a new RiOption is quite simple:
+The syntax for a new RiOption is quite simple as the following example shows:
 <code>
 set riopt(runtime) { { verbosity s { "silent" "normal" "stats" "debug" } } }
 </code>
@@ -5009,7 +5018,7 @@ values in curly braces, such as <tt>{{0.0 0.0 0.0}{1.0 1.0 1.0}}</tt>
 <p>
 Mops scenes may be imported using the main menu entry:
 <tt>"File/Import Mops"</tt>.
-
+<p>
 Ayam is able to import most elements of a Mops scene except for
 RiAttributes attached to arbitrary geometric objects,
 because attributes and shaders are managed by material objects in Ayam.
@@ -5024,7 +5033,7 @@ The material objects are named <tt/"mat0"/, <tt/"mat1"/ and so on.
 Make sure, that the current scene in Ayam does not contain material
 objects with those names, otherwise Mops import will not be able to
 create material objects for the scene to import.
-
+<p>
 The import options <tt>"ResetDM"</tt> and
 <tt>"ResetDM"</tt> control, whether GLU display mode
 and tolerance settings (see sections
@@ -5055,8 +5064,8 @@ primitives:
 <item>subdivision meshes (with all tags)
 </itemize>
 
-Furthermore, the plugin supports reading of CSG, Object-Instances,
-Archives, Light sources (including AreaLights), arbitrary linear
+Furthermore, the plugin supports reading of CSG, object-instances,
+archives, light sources (including area-lights), arbitrary linear
 transformations (except shear transformations!), arbitrary
 RiOptions and RiAttributes, and shaders (except transformation
 shaders and without array arguments!).
@@ -5105,9 +5114,12 @@ values are: <tt/"Silence"/ no output except for severe errors,
 <tt/"Warnings"/, all error and warning messages should be printed,
 and finally <tt/"All"/ all messages, even informative,
 should be printed.
+Note that in the case of serious syntactic errors of the RIB file
+more informative error messages are printed to the stderr channel
+of Ayam (which is not redirected to the Ayam console).
 </itemize>
 
-Note, that for NURBS patches and bicubic patch meshes, points of type
+Note that for NURBS patches and bicubic patch meshes, points of type
 "P" will be promoted to "Pw".
 Furthermore, objects of type (general) polygon and polygon mesh will
 be promoted to general polygon meshes.
@@ -5184,8 +5196,8 @@ preferences editor.
 <p>
 Additionally, those scripts may be further adapted by the user to
 set a different <tt/"Shaders"/ preference setting or to immediately
-scan for shaders after loading of the plugin. For that, just comment
-out the corresponding lines in the script.
+scan for shaders after loading of the plugin. For that, just remove
+the leading hash-marks (&num;) from the corresponding lines in the script.
 However, the standard behavior while loading of
 such a plugin requires you to scan manually for shaders and to adapt
 the shaders search path manually too. Both actions may be carried
@@ -5648,6 +5660,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <itemize>
 <item>ICurve: <ref id="icurveobj" name ="object">
 <item>IDR: <ref id="idr" name="IDR plugin">
+<item>IgnoreNormals: <ref id="mmtools" name="Optimize PolyMesh tool option">
 <item>Image: <ref id="prefrib" name="preference setting">
 <item>Imager: <ref id="imager" name="property">
 <item>import Mops scene: <ref id="impmops" name="Mops Import">
@@ -5760,6 +5773,9 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Objects: <ref id="obj" name="tree/listbox">,
 <ref id="objsel" name="selection within a view">
 <item>OI: <ref id="oitt" name="tag type">
+<item>OptimizeCoords: <ref id="mmtools" name="Optimize PolyMesh tool option">
+<item>OptimizeFaces: <ref id="mmtools" name="Optimize PolyMesh tool option">
+<item>OptimizeNew: <ref id="mmtools" name="Merge PolyMesh tool option">
 <item>Order: <ref id="ncattr" name="NURBCurve attribute">,
 <ref id="npattr" name="NURBPatch attribute">,
 <ref id="icp" name="ICurve attribute">
@@ -5820,6 +5836,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>References: <ref id="secref" name="references">
 <item>refineNC: <ref id="gncp" name="scripting interface command">,
 <ref id="refit" name="refine tool">
+<item>RemoveMerged: <ref id="mmtools" name="Merge PolyMesh tool option">
 <item>Render: <ref id="vm" name="view menu entry">,
 <ref id="prefrib" name="preference setting">
 <item>Renderer: <ref id="mmspecial" name="select a different renderer">
