@@ -1067,6 +1067,14 @@ proc io_readMainGeom { } {
 # io_readMainGeom
 
 
+uplevel #0 { array set objio_options {
+Selected 0
+TessPoMesh 0
+OmitCurves 0
+filename ""
+}   }
+
+
 # io_exportOBJ:
 #  export scene to Wavefront OBJ format
 #
@@ -1097,17 +1105,60 @@ proc io_exportOBJ { selected } {
     }
 
     if { $filename != "" } {
-	global ay_error
+	global ay_error objio_options
 	set ay_error ""
-	ay_objio_write $filename $selected
-	if { $ay_error < 2 } {
-	    ayError 4 "exportOBJ" "Done exporting to: $filename"
-	} else {
-	    ayError 2 "exportOBJ" "There were errors while exporting to:"
-	    ayError 2 "exportOBJ" "$filename"
+	set objio_options(filename) $filename
+
+	set w .objE
+	catch {destroy $w}
+	toplevel $w
+	wm title $w "Export Options"
+	wm iconname $w "Ayam"
+	wm transient $w .
+
+	set f [frame $w.f1]
+	pack $f -in $w -side top -fill x
+
+	addCheck $f objio_options Selected
+	# [ms objio_options_SelOnly]
+	addCheck $f objio_options TessPoMesh
+	# [ms objio_options_TessPoMesh]
+	addCheck $f objio_options OmitCurves
+	# [ms objio_options_OmitCurves]
+
+	set f [frame $w.f2]
+	button $f.bok -text "Ok" -width 5 -command {
+	    global objio_options ay_error
+
+	    set filename $objio_options(filename)
+
+	    ay_objio_write $filename $objio_options(Selected)\
+		    $objio_options(TessPoMesh) $objio_options(OmitCurves)
+
+	    if { $ay_error < 2 } {
+		ayError 4 "exportOBJ" "Done exporting to: $filename"
+	    } else {
+		ayError 2 "exportOBJ" "There were errors while exporting to:"
+		ayError 2 "exportOBJ" "$filename"
+	    }
+
+	    destroy .objE
 	}
+	# button
+
+	button $f.bca -text "Cancel" -width 5 -command "\
+		focus .;\
+		destroy .objE"
+
+	pack $f.bok $f.bca -in $f -side left -fill x -expand yes
+	pack $f -in $w -side bottom -fill x
+
+	winCenter $w
+	
+	focus $w.f2.bok
 
     }
+    # if
 
  return;
 }
