@@ -383,14 +383,20 @@ ay_read_object(FILE *fileptr)
     {
       if(ay_status == AY_EDONOTLINK)
 	{
-
-	  /* XXXX lieber del_object verwenden? */
-	  free(o);
+	  if(o->name)
+	    free(o->name);
+	  if(o->tags)
+	    ay_tags_delall(o);
+	  free(o); o = NULL;
 	  return AY_OK;
 	}
       else
 	{
 	  ay_error(ay_status, fname, "read callback failed");
+	  if(o->name)
+	    free(o->name);
+	  if(o->tags)
+	    ay_tags_delall(o);
 	  free(o); o = NULL;
 	  return ay_status;
 	}
@@ -398,9 +404,9 @@ ay_read_object(FILE *fileptr)
 
   if(o)
     {
-      if(o->parent)
+      if(o->parent && (!o->down))
 	{
-	  ay_status = ay_object_create(AY_IDLEVEL, &(o->down));
+	  ay_status = ay_object_crtendlevel(&(o->down));
 	  if(ay_status)
 	    {
 	      ay_error(AY_ERROR, fname,

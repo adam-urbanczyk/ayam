@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile.shared [1. Sep 2001]
+# Makefile.shared [4. Nov 2001]
 # Makefile for Ayam (shared version)
 
 # Where shall the executable be installed?
@@ -241,12 +241,13 @@ IDROBJS = plugins/idr.o
 
 METAOBJS = contrib/meta/metaobj.o \
 	contrib/meta/metautils.o \
+	contrib/meta/move.o \
 	contrib/meta/marching.o
 
 .c.o: 
 	$(CC) -c $(CFLAGS) $*.c -o $@ -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR)
 
-all: ayamsh csphere.so mfio.so
+all: ayamsh csphere.so mfio.so metaobj.so
 
 ayamsh: $(AYAMOBJS) $(TOGLOBJECT) $(AFFINEOBJS)
 	$(LD) $(AYAMOBJS) $(TOGLOBJECT) $(EXLDFLAGS) -o ayamsh $(TKLIB) $(TCLLIB) $(GLLIBS) $(X11LIBS) $(RIBOUTLIB) $(SLCARGSLIB) $(AFFINEOBJS) -lm $(DL)

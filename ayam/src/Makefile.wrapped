@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile.wrapped [1. Sep 2001]
+# Makefile.wrapped [4. Nov 2001]
 # Makefile for Ayam (wrapped version)
 
 # Where shall the executables be installed?
@@ -298,12 +298,13 @@ IDROBJS = plugins/idr.o
 
 METAOBJS = contrib/meta/metaobj.o \
 	contrib/meta/metautils.o \
+	contrib/meta/move.o \
 	contrib/meta/marching.o
 
 .c.o: 
 	$(CC) -c $(CFLAGS) $*.c -o $@ -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR)
 
-all: wrappedayam csphere.so mfio.so
+all: wrappedayam csphere.so mfio.so metaobj.so
 
 wrapMain.o: wrapMain.c
 	$(CC) -c $(CFLAGS) wrapMain.c -I$(WRAPDIR) -I$(WRAPDIR)/libz $(TCLINC) $(TKINC)

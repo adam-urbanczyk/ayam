@@ -81,7 +81,9 @@ proc material_createp { } {
     button $f.bok -text "Ok" -width 5 -command { 
 	global ay ayprefs ay_error
 	set ay_error 0
-	crtOb Material [.createMw.f1.e get]
+
+	regsub -all " " [.createMw.f1.e get] "_" temp
+	crtOb Material $temp
 
 	if { $ay_error == 0 } {
 	    focus .
