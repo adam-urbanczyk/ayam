@@ -398,7 +398,7 @@ ay_trafo_delegate(ay_object *o)
       child->rotx -= AY_R2D(euler[2]);
       child->roty -= AY_R2D(euler[1]);
       child->rotz -= AY_R2D(euler[0]);
-
+      /*
       ay_quat_axistoquat(xaxis, euler[2], quat);
       ay_quat_add(quat, child->quat, child->quat);
 
@@ -407,6 +407,9 @@ ay_trafo_delegate(ay_object *o)
 
       ay_quat_axistoquat(zaxis, euler[0], quat);
       ay_quat_add(quat, child->quat, child->quat);
+      */
+
+      ay_quat_add(o->quat, child->quat, child->quat);
 
       child = child->next;
     }
