@@ -322,7 +322,7 @@ please refer to the appropriate documentation by the original
 author Jeffrey Hobbs (see the console context menu, that you may
 open with your right mouse button).
 
-<sect2>The Menu<label id="mm">
+<sect1>The Main Menu<label id="mm">
 <p>
 Another important part of the main window has not been discussed so
 far. This is the main menu bar. Note, that many menu entries have keyboard
@@ -458,7 +458,12 @@ to disk.
 current views to the file pointed to by the preference
 setting <tt>"Main/EnvFile"</tt>. Note, that there will be no
 check whether loading of that environment on next start up is
-enabled in the preferences.
+enabled in the preferences. Note also, that using <tt/Save Environment/
+you can just save environment files that contain the root object
+and all views. If you want to include geometric objects in your
+environment or if you want to exclude the root object and just
+save views you have to use <tt>"File/Save"</tt> or
+<tt>"Special/Save Selected as"</tt> respectively.
 <item><tt/Paste (move)/, moves objects from the clipboard back
 to the scene (clearing the clipboard). This is the only way to
 get referenced objects out of the clipboard.
@@ -468,18 +473,19 @@ property of the currently selected object(s).
 <item><tt/Select All Points/, selects all points of the currently
 selected object(s).
 <item><tt/Apply To All/, applies the transformations encoded in the
-transformations property of the selected objects to all points
-(resetting the transformations property without moving the points).
+transformations property of the selected objects to all points.
+This will reset the transformations property without moving the points.
 <item><tt/Apply To Selected/, applies the transformations encoded in the
 transformations property of the selected objects to the selected points
-(resetting the transformations property without moving the
-selected points).
+This will reset the transformations property without moving the
+selected points. The points currently not selected will be transformed!
 <item><tt/Resolve all Instances/, converts all instances
 of the current level (and its child objects) to normal objects.
 <item><tt/Automatic Instancing/, pops up a small dialog box,
 where you may parameterize and start the automatic instantiation
 algorithm (that automatically creates instances from
-equal objects).
+equal objects). See section <ref id="ai" name="Automatic Instancing">
+for more information regarding automatic instancing.
 <item><tt/Add RiOption/, pops up a small dialog box, where you may
 select and parameterize a RiOption tag to add as tag to the Root object
 (see <ref id="riotag" name="RiOption Tag">).
@@ -522,7 +528,7 @@ OpenGL-widget, where interaction and drawing takes place.
 The title of the view window gives information about
 name, current type, and action of the view.
 
-<sect2>The View Menu<label id="vm">
+<sect1>The View Menu<label id="vm">
 <p>
 Here are all meny entries of the <tt/"View"/ menu:
 <itemize>
@@ -1171,7 +1177,7 @@ a new curve will be created. It is currently not possible to undo
 the changes of a split!<p>
 </itemize>
 
-<sect>Ayam Objects and Properties<label id="obandprp">
+<sect>Objects and Properties<label id="obandprp">
 <p>
 This section informs you about the property GUIs that
 appear in the properties section of the
