@@ -410,6 +410,8 @@ if { $tcl_platform(platform) == "windows" } {
     }
     set ayprefs(QRenderUI) 0
     set ayprefs(RenderUI) 0
+    set ayprefs(ToolBoxTrans) 1
+    set ayprefs(RGTrans) 1
 
     # we use this "emptyimg" for checkbuttons
     image create photo emptyimg
@@ -622,7 +624,6 @@ proc sL { } {
 	plb_update
 	$ay(tree) see [$ay(tree) nodes $ay(CurrentLevel) end]
     }
-
 
  return;
 }
