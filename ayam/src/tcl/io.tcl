@@ -1057,3 +1057,48 @@ proc io_readMainGeom { } {
 }
 # io_readMainGeom
 
+
+# io_exportOBJ:
+#  export scene to Wavefront OBJ format
+#
+proc io_exportOBJ { selected } {
+    global ay tcl_platform
+
+    set tmp $ay(filename)
+
+    if { $tmp == "" } {
+	set filename "unnamed.obj"
+	set dirname [pwd]
+    } else {
+	set dirname [file dirname $tmp]
+	if { $dirname == "." } { set dirname [pwd] }
+    }
+
+    set types {{"Wavefront OBJ" ".obj"} {"All files" *}}
+
+    if { $tcl_platform(os) != "Darwin" } {
+	set filename [tk_getSaveFile -filetypes $types -parent .\
+		-initialfile [file tail $filename]\
+		-initialdir $dirname -title "Export to:"]
+    } else {
+	set filename [tk_getSaveFile -filetypes $types -parent .\
+		-initialfile [file tail $filename]\
+		-title "Export to:"]
+    }
+
+    if { $filename != "" } {
+	global ay_error
+	set ay_error ""
+	ay_objio_write $filename $selected
+	if { $ay_error < 2 } {
+	    ayError 4 "exportOBJ" "Done exporting to: $filename"
+	} else {
+	    ayError 2 "exportOBJ" "There were errors while exporting to:"
+	    ayError 2 "exportOBJ" "$filename"
+	}
+
+    }
+
+ return;
+}
+# io_exportOBJ
