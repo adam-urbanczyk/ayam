@@ -51,6 +51,8 @@ LD = g++
 #   _else_
 #   add -DAYUSEBMRTRIBOUT if you link with libribout from BMRT
 # o add -DAYUSESLCARGS if you use libslcargs from BMRT
+#   _or_
+#   add -DAYUSESLXARGS if you use libslxargs from Aqsis
 # o add -DAYNOTEMPNAM if your system has no tempnam();
 #   (unlikely, but tempnam() is not ANSI)
 #   Note, that the preference setting TmpDir will always be ignored then!
@@ -154,6 +156,15 @@ AFFINEINCDIR = ./affine/include
 AFFINEOBJS = 
 # if you use affine (add -DAYUSEAFFINE to CFLAGS!):
 #AFFINEOBJS = ./affine/src/write.o ./affine/src/constant.o
+
+# Aqsis
+AQSISDIR = /usr/local/aqsis
+AQSISINCDIR = $(AQSISDIR)/include
+AQSISLIBDIR = $(AQSISDIR)/lib
+# if you do not use Aqsis libslxargs:
+AQSISOBJS = 
+# if you use Aqsis libslxargs (add -DAYUSESLXARGS to CFLAGS!):
+#AQSISOBJS = $(AQSISDIR)/libshadervm.so $(AQSISDIR)/libshaderexecenv.so $(AQSISDIR)/libslxargs.so $(AQSISDIR)/libaqsistypes.so
 
 # BMRT
 # If you use the libribout from BMRT2.x (x >= 5), do _not_ link with
@@ -335,7 +346,7 @@ ADDLIB =
 #############################################
 
 .c.o: 
-	$(CC) -c $(CFLAGS) $*.c -o $@ -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR) -I$(TIFFINCDIR)
+	$(CC) -c $(CFLAGS) $*.c -o $@ -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR) -I$(AQSISINCDIR) -I$(TIFFINCDIR)
 
 all: wrappedayam csphere.so mfio.so metaobj.so
 
@@ -343,7 +354,7 @@ wrapMain.o: wrapMain.c
 	$(CC) -c $(CFLAGS) wrapMain.c -I$(WRAPDIR) -I$(WRAPDIR)/libz $(TCLINC) $(TKINC)
 
 ayam:  $(AYAMOBJS) $(TOGLOBJECT) $(AFFINEOBJS) $(ADDOBJS) wrapMain.o
-	$(LD) $(ADDOBJS) $(AYAMOBJS) $(TOGLOBJECT) $(WRAPOBJS) wrapMain.o $(EXLDFLAGS) -o ayam $(ADDLIB) $(TKLIB) $(TCLLIB) $(LDSWDYNAMIC) $(GLLIBS) $(X11LIBS) $(RIBOUTLIB) $(SLCARGSLIB) $(AFFINEOBJS) $(TIFFLIB) $(ZLIB) $(LDSWSTATIC) $(STDCPPLIB) $(LDSWDYNAMIC) -lm $(DL)
+	$(LD) $(ADDOBJS) $(AYAMOBJS) $(TOGLOBJECT) $(WRAPOBJS) wrapMain.o $(EXLDFLAGS) -o ayam $(ADDLIB) $(TKLIB) $(TCLLIB) $(LDSWDYNAMIC) $(GLLIBS) $(X11LIBS) $(RIBOUTLIB) $(SLCARGSLIB) $(AFFINEOBJS) $(AQSISOBJS) $(TIFFLIB) $(ZLIB) $(LDSWSTATIC) $(STDCPPLIB) $(LDSWDYNAMIC) -lm $(DL)
 	$(STRIP) ayam
 	$(UPX) ayam
 	cat $(WRAPDIR)/null.zip >>ayam
