@@ -500,7 +500,15 @@ proc toolbox_layout { } {
     set rows [expr round([winfo height $w] / $size)]
     set columns [expr round([winfo width $w] / $size)]
 
+    if { [expr $rows*$columns] < [llength $ay(toolbuttons)] } {
+	ayError 2 toolbox_layout "Can not display all buttons! Resize window!"
+    }
+
+    foreach button $ay(toolbuttons) {
+	grid forget $w.f.$button
+    }
     pack forget $w.f
+    update
     set bi 0
     for { set i 0 } { $i < $rows } { incr i} {
 	for { set j 0 } { $j < $columns } { incr j} {
@@ -513,8 +521,17 @@ proc toolbox_layout { } {
     grid propagate $w.f yes
     pack $w.f
     update
+    winMoveOrResize $w [winfo reqwidth $w.f]x[winfo reqheight $w.f]
+    update
+    set ay(tbw) [winfo width $w]
+    set ay(tbh) [winfo height $w]
 
-    bind $w <Configure> toolbox_layout
+    bind $w <Configure> {
+	if { $ay(tbw) != %w ||\
+	     $ay(tbh) != %h } {
+	 toolbox_layout
+        }
+    }
 
  return;
 }
