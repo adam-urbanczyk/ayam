@@ -1,9 +1,10 @@
-[13. 06. 2003] CVS-Head:
+[20. 06. 2003] CVS-Head:
 o bug fixes:
   - fixed crash when exporting scenes with malformed RiAttribute/RiOption
     tags (type c or p, with a component missing) (SF 753550)
   - fixed rotate view action destroying light sources shader parameter
     settings (SF 753552)
+  - fixed RIB import of arbitrary attributes (SF 754934)
 o added preference setting "Misc/SavePrefsGeom" to control saving of the
   geometry of the preference editor window
 o added two new renderers, Angel and Pixie, to the Select_Renderer feature
@@ -16,6 +17,12 @@ o added a new drawing mode "ShadeAndDraw" that displays e.g. shaded
   representation
 o added a new icon based menu to switch the drawing mode to all view windows
 o light source objects now honour "NoExport" tags
+o added support for IntPair and FloatPair parameters to RiAttribute and
+  RiOption tags, as well as to all tags, that allow a parameter list in
+  the style of the RiAttribute tag; new type designating characters
+  are "j" for IntPair and "g" for FloatPair
+o added a new regexp based method of extracting the progress from the output
+  of the renderer (needed for Pixie-1.2.1 and up)
 
 
 [10. 05. 2003] Ayam1.5.1:
