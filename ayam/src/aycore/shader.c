@@ -236,8 +236,9 @@ ay_shader_scanslctcmd(ClientData clientData, Tcl_Interp *interp,
   Tcl_SetVar(interp, argv[2], Tcl_DStringValue(&ds), TCL_LEAVE_ERR_MSG);
 
   Tcl_DStringFree(&ds);
-#endif /* AYUSESLCARGS */
+#else
  ay_error(AY_ERROR, fname, "This Ayam has not been linked with libslcargs!");
+#endif /* AYUSESLCARGS */
  return TCL_OK;
 } /* ay_shader_scanslctcmd */
 
@@ -466,10 +467,11 @@ ay_shader_scanslxtcmd(ClientData clientData, Tcl_Interp *interp,
   Tcl_SetVar(interp, argv[2], Tcl_DStringValue(&ds), TCL_LEAVE_ERR_MSG);
 
   Tcl_DStringFree(&ds);
-#endif /* AYUSESLXARGS */
+#else
  ay_error(AY_ERROR, fname, "This Ayam has not been linked with libslxargs!");
  ay_error(AY_ERROR, fname,
 	  "Load the ayslx plugin and use shaderScan instead!");
+#endif /* AYUSESLXARGS */
  return TCL_OK;
 } /* ay_shader_scanslxtcmd */
 
