@@ -2741,8 +2741,8 @@ ay_nct_concatmultiple(ay_object *curves, ay_object **result)
 {
  int ay_status;
  char fname[] = "nct_concatmultiple";
- double *newcontrolv = NULL, *ncv = NULL;
- int order = 0, length = 0, ktype = -1;
+ double *newknotv = NULL, *newcontrolv = NULL, *ncv = NULL, u, pl;
+ int numcurves = 0, i, j, a, order = 0, length = 0, ktype = -1;
  int glu_display_mode = 0;
  double glu_sampling_tolerance = 0.0;
  ay_nurbcurve_object *nc;
@@ -2778,20 +2778,59 @@ ay_nct_concatmultiple(ay_object *curves, ay_object **result)
 	}
 
       length += nc->length;
+      numcurves++;
       o = o->next;
     } /* while */
 
-  if(ktype == AY_KTCUSTOM)
+  /* construct new knotvector */
+  ktype = AY_KTNURB;
+
+  /* XXXX the following does not work yet!
+   * it should take into account knot vectors without "inner" knots
+   * such as the very common knot vector: "0 0 0 0 1 1 1 1"
+   */
+  /*
+  ktype = AY_KTCUSTOM;
+  if(!(newknotv = calloc(length + order, sizeof(double))))
     {
-      ay_error(AY_ERROR, fname,
-	       "Dont know how to concat curves with custom knots, yet.");
+      ay_error(AY_EOMEM, fname, NULL);
+      free(newo);
       return AY_ERROR;
     }
+  
+  memset(newknotv, 0, order*sizeof(double));
+  a = order;
+  j = 0;
+  o = curves;
+  while(o)
+    {
+      nc = (ay_nurbcurve_object *)o->refine;
+
+      pl = nc->knotv[nc->length] - nc->knotv[0];
+      newknotv[a] = ((double)j)/numcurves;
+      a++;
+      for(i = nc->order; i < nc->length; i++)
+	{
+	  u = (nc->knotv[i]/pl - nc->knotv[i-1]/pl);
+	  newknotv[a] = newknotv[a-1] + u;
+	  a++;
+	}
+      j++;
+      o = o->next;
+    }
+
+  for(i = 0; i < order; i++)
+    {
+      newknotv[length+i] = (double)numcurves;
+    }
+  */
+
 
   if(!(newcontrolv = calloc(length * 4, sizeof(double))))
     {
       ay_error(AY_EOMEM, fname, NULL);
       free(newo);
+      /*free(newknotv);*/
       return AY_ERROR;
     }
 
@@ -2806,11 +2845,14 @@ ay_nct_concatmultiple(ay_object *curves, ay_object **result)
     } /* while */
 
   ay_status = ay_nct_create(order, length,
-			    ktype, newcontrolv, NULL,
+			    ktype, newcontrolv, NULL/*newknotv*/,
 			    (ay_nurbcurve_object **)&(newo->refine));
 
   if(ay_status)
     {
+      free(newo);
+      /*free(newknotv);*/
+      free(newcontrolv);
       ay_error(ay_status, fname, NULL);
       return AY_ERROR;
     }
@@ -2828,3 +2870,147 @@ ay_nct_concatmultiple(ay_object *curves, ay_object **result)
 
  return AY_OK;
 } /* ay_nct_concatmultiple */
+
+
+/* ay_nct_fillgap:
+ *  create a fillet curve between the last point of curve c1
+ *  and the first point of curve c2; the fillet will be a simple
+ *  4 point Bezier curve with tangents matching the tangents of
+ *  endpoints of the curves c1/c2
+ */
+int
+ay_nct_fillgap(ay_nurbcurve_object *c1, ay_nurbcurve_object *c2,
+	       ay_object **result)
+{
+ double p1[4], p2[4], p3[4], p4[4], n1[3], n2[3], l[3];
+ double *U, *Pw, u, d, w;
+ double *controlv = NULL;
+ int n, p;
+ ay_object *o = NULL;
+ ay_nurbcurve_object *c = NULL;
+ int ay_status = AY_OK;
+
+  n = c1->length;
+  p = c1->order-1;
+  U = c1->knotv;
+  Pw = c1->controlv;
+
+  /* get coordinates of the first and last point of the curve
+     as well as the first derivative in those points */
+  u = U[n];
+  ay_nb_CurvePoint4D(n-1, p, U, Pw, u, p1);
+  w = p1[3];
+  AY_V3SCAL(p1, 1.0/w)
+  p1[3] = 1.0;
+  ay_nb_ComputeFirstDer4D(n-1, p, U, Pw, u, n1);
+  AY_V3NORM(n1)
+  n = c2->length;
+  p = c2->order-1;
+  U = c2->knotv;
+  Pw = c2->controlv;
+  u = U[p];
+  ay_nb_CurvePoint4D(n-1, p, U, Pw, u, p2);
+  w = p2[3];
+  AY_V3SCAL(p2, 1.0/w)
+  p2[3] = 1.0;
+  ay_nb_ComputeFirstDer4D(n-1, p, U, Pw, u, n2);
+  AY_V3NORM(n2)
+
+  /* first, check whether p1 and p2 are sufficiently different */
+  if((fabs(p1[0] - p2[0]) < AY_EPSILON) &&
+     (fabs(p1[1] - p2[1]) < AY_EPSILON) &&
+     (fabs(p1[2] - p2[2]) < AY_EPSILON))
+    {
+      /* No, no fillet needs to be created, just bail out! */
+      return AY_OK;
+    }
+
+  AY_V3SCAL(n1, -1.0)
+
+  p3[3] = 1.0;
+  p4[3] = 1.0;
+
+  AY_V3SUB(l, p2, p1)
+  d = AY_V3LEN(l);
+  AY_V3SCAL(n1, d/3.0)
+  AY_V3SCAL(n2, d/3.0)
+  AY_V3SUB(p3, p1, n1)
+  AY_V3SUB(p4, p2, n2)
+
+  /* fill new controlv */
+  if(!(controlv = calloc(16, sizeof(double))))
+    return AY_EOMEM;
+
+  memcpy(&(controlv[0]), p1, 4*sizeof(double));
+  memcpy(&(controlv[4]), p3, 4*sizeof(double));
+  memcpy(&(controlv[8]), p4, 4*sizeof(double));
+  memcpy(&(controlv[12]), p2, 4*sizeof(double));
+
+  ay_status = ay_nct_create(4, 4, AY_KTBEZIER, controlv,
+			    NULL, &c);
+  if(ay_status)
+    { free(controlv); return AY_ERROR; }
+
+  if(!(o = calloc(1, sizeof(ay_object))))
+    { free(controlv); return AY_EOMEM; }
+
+  ay_object_defaults(o);
+
+  o->refine = c;
+  o->type = AY_IDNCURVE;
+
+  *result = o;
+
+ return AY_OK;
+} /* ay_nct_fillgap */
+
+
+/* ay_nct_fillgaps:
+ *  create fillet curves (using ay_nct_fillgap() above) for all
+ *  gaps in the list of curves pointed to by curves and insert
+ *  the fillets right in this list
+ */
+int
+ay_nct_fillgaps(int closed, ay_object *curves)
+{
+ ay_object *c = NULL, *fillet = NULL, *last = NULL;
+ int ay_status = AY_OK;
+
+  c = curves;
+  while(c)
+    {
+      if(c->next)
+	{
+	  fillet = NULL;
+	  ay_status = ay_nct_fillgap((ay_nurbcurve_object *)c->refine,
+				     (ay_nurbcurve_object *)c->next->refine,
+				     &fillet);
+	  if(ay_status)
+	    {return AY_ERROR;}
+	  if(fillet)
+	    {
+	      fillet->next = c->next;
+	      c->next = fillet;
+	      c = c->next;
+	    } /* if */
+	} /* if */
+      last = c;
+      c = c->next;
+    } /* while */
+
+  if(closed)
+    {
+      fillet = NULL;
+      ay_status = ay_nct_fillgap((ay_nurbcurve_object *)last->refine,
+				 (ay_nurbcurve_object *)curves->refine,
+				 &fillet);
+      if(ay_status)
+	{return AY_ERROR;}
+      if(fillet)
+	{
+	  last->next = fillet;
+	} /* if */
+    } /* if */
+
+ return AY_OK;
+} /* ay_nct_fillgaps */
