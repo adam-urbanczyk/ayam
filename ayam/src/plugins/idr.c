@@ -285,9 +285,8 @@ idr_propagate_parent(ay_object *from, double threshhold)
  ay_object *o = NULL;
 
   clevel = ay_currentlevel->next;
-  while((threshhold > 0.0) && (clevel->object != ay_root))
+  while((threshhold > 0.0) && clevel->object)
     {
-
       if(clevel->object != ay_root)
 	{
 	  o = clevel->object;
@@ -4236,7 +4235,7 @@ idr_drawroot_cb(struct Togl *togl, ay_object *o)
 	{
 	  sscanf(t->val,"%s %lg %lg %lg %lg %lg", vname,
 		 &X1, &Y1, &X2, &Y2, &imp);
-	  
+
 	  /* are we in the right window? */
 	  if(!strcmp(vname, rvname))
 	    { /* yes */
