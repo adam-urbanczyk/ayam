@@ -1,4 +1,4 @@
-[2. Jan 2005] CVS-Head:
+[8. Jan 2005] CVS-Head:
 o bug fixes:
   - fixed "setPnt/getPnt" scripting interface commands for NURBS patches
     with differing width and height (SF 1091407)
@@ -12,6 +12,8 @@ o added support for the extraction of curves at arbitrary parametric values
   to the ExtrNC object type
 o improved extraction of curves from transformed patches; the transformations
   are now copied to the curve and not applied to the control points
+o added information dialog to the preferences that informs the user when
+  a restart of Ayam is needed in order for his changes to take effect
 
 
 [29. Oct 2004] Ayam 1.8:
