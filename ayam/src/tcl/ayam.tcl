@@ -212,6 +212,8 @@ array set aymainshortcuts {
     SetSTP "F3"
     SetSTL "F2"
     RebuildTree "Ctrl-l"
+    SelAll "Ctrl-a"
+    SelNone "Ctrl-n"
 }
 # array aymainshortcuts
 

@@ -38,14 +38,16 @@ bind $f.li <Double-ButtonPress-1> {
     }
 }
 
+bind $f.li <<ListboxSelect>> { olb_select }
+
 bind $f.li <Return> { olb_select }
 
-bind $f.li <ButtonRelease-1> { after 150 olb_select
- global ay
- focus $ay(olb)
+bind $f.li <ButtonRelease-1> {
+    after 150 olb_select
+    global ay
+    focus $ay(olb)
 }
-    
-bind $f.li <KeyRelease-space> { olb_select }
+
 
 bind $f.li <ButtonPress-4> {
     global ay
@@ -71,6 +73,18 @@ if { $tcl_platform(platform) == "windows" } {
 	break
     }
 }
+
+bind $f.li <Down> "selNPFL 0;break"
+bind $f.li <Up> "selNPFL 1;break"
+bind $f.li <Home> "selNPFL 2;break"
+bind $f.li <End> "selNPFL 3;break"
+
+
+bind $f.li <Right> "$f.b;uS;break"
+
+
+
+#bind $f.li <KeyRelease-space> { olb_select }
 
 # olb context menu
 set m [menu $ay(olb).popup -tearoff 0]
@@ -155,6 +169,10 @@ button $f.bup -text "Up" -padx 0 -pady 0  -command {
 	rV
     }
 } -takefocus 0 -highlightthickness 0
+
+bind $ay(olb) <Left> "$f.bup invoke; break"
+set ay(olbbup) $f.bup
+
 pack $f.bnon $f.bup -in $f -side top -fill x -expand yes
 
 set f $w.fb
@@ -175,6 +193,7 @@ button $f.ball -text "All"   -padx 0 -pady 0 -command {
 	rV
     }
 } -takefocus 0 -highlightthickness 0
+set ay(olbball) $f.ball
 
 button $f.btop -text "Top" -padx 0 -pady 0  -command {
     cS
@@ -212,6 +231,9 @@ button $f.bdwn -text "Down" -padx 0 -pady 0  -command {
 	rV
     }
 } -takefocus 0 -highlightthickness 0
+
+bind $ay(olb) <Right> "$f.bdwn invoke; break"
+set ay(olbbdwn) $f.bdwn
 
 pack $f.binv $f.bdwn -in $f -side top -fill x -expand yes
 

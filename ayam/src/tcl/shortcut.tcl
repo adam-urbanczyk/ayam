@@ -160,7 +160,7 @@ proc shortcut_main { w } {
 	}
     }
 
-    bind $w <Control-a> {
+    bind $w <[repcont $aymainshortcuts(SelAll)]> {
 	global ay
 	if { $ay(lb) == 0 } {
 	    set tree $ay(tree)
@@ -175,13 +175,19 @@ proc shortcut_main { w } {
 	    }
 	    plb_update
 	    if { $ay(need_redraw) } {
-		puts redrawing
 		rV
-	    } else {
-		puts "not redrawing"
 	    }
 	} else {
-	    puts notyet
+	    $ay(olbball) invoke
+	    break
+	}
+    }
+    # bind
+
+    bind $w <[repcont $aymainshortcuts(SelNone)]> {
+	cS
+	if { $ay(need_redraw) == 1 } {
+	    rV
 	}
     }
 
@@ -207,9 +213,12 @@ proc shortcut_main { w } {
 	    rV
 
 	} else {
-	    puts notyet
+	    $ay(olbbup) invoke
+	    break
 	}
+	# if
     }
+    # bind
 
     bind $w <Right> {
 	global ay
@@ -244,9 +253,12 @@ proc shortcut_main { w } {
 	    rV
 
 	} else {
-	    puts notyet
+	    $ay(olbbdwn) invoke
+	    break
 	}
+	# if
     }
+    # bind
 
     bind $w <Down> "selNPFL 0"
     bind $w <Up> "selNPFL 1"
@@ -267,8 +279,6 @@ proc shortcut_main { w } {
 		}
 	    }
 	    # foreach
-	} else {
-	    puts notyet
 	}
 	# if
     }
@@ -363,7 +373,6 @@ proc shortcut_view { w } {
     bind $w <[repcont $ayviewshortcuts(Align)]> "$w.$m invoke 20"
     $w.$m entryconfigure 21 -accelerator $ayviewshortcuts(Local)
     bind $w <[repcont $ayviewshortcuts(Local)]> "$w.$m invoke 21"
-
 
     bind $w <[repcont $ayviewshortcuts(RotL)]>\
 	    "$w.f3D.togl setconf -drotx 5.0 -droty 0.0"
