@@ -521,6 +521,7 @@ proc toolbox_layout { } {
     set size [winfo reqwidth $w.f.[lindex $ay(toolbuttons) 0]]
     set rows [expr round([winfo height $w] / $size)]
     set columns [expr round([winfo width $w] / $size)]
+    if { $columns < 1 } { set columns 1 }
     set numb [llength $ay(toolbuttons)]
 
     if { [expr $rows*$columns] < $numb } {
