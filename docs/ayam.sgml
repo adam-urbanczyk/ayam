@@ -4,9 +4,9 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>12. Oct 2002
+<date>5. Dec 2002
 <abstract>
-This is the documentation of Ayam (1.3) - a free 3D modeling environment
+This is the documentation of Ayam (1.4) - a free 3D modeling environment
 for the RenderMan interface.
 
 Please note, that this document is intended to be a reference manual,
@@ -2729,6 +2729,45 @@ defined.
 else it is 0.
 </itemize>
 
+<sect1>SDMesh Object<label id="sdmeshobj">
+<p>
+The SDMesh object may be used to include objects that
+have been modeled using the subdivision modeling paradigm
+in Ayam scenes.
+<p>
+There are no special modeling actions for this type of object, but
+you may select and modify single points as you can do it with other
+object types, e.g. curves.
+<p>
+The SDMesh object is equivalent to the Subdivision Mesh
+primitive of the RenderMan interface. This means, each SDMesh
+object may contain multiple faces with arbitrary number
+of vertices that form a polygonal mesh. This mesh is then refined
+using the so called Catmull-Clark subdivision scheme and depending
+on the number of refinement (or subdivision) steps results in
+a smooth surface.
+<p>
+Tags may be specified for faces, edges, or vertices
+to control the subdivision process (e.g. to create sharp corners or edges
+in the resulting surface). All tags known from the RenderMan interface
+(hole, crease, corner, and interpolateboundary) are supported by Ayam,
+but they may currently not be changed by the user.
+<p>
+Furthermore, Ayam is currently not able to do the subdivision and
+show the resulting smooth surface. All that is shown in wireframe and
+shaded views is the original polygonal mesh.
+
+<sect2>SDMeshAttr<label id="sdmattr">
+<p>
+The SDMeshAttr GUI just displays some information about the
+SDMesh object:
+<itemize>
+<item><tt/"Scheme"/, subdivision scheme, currently only 0 (Catmull-Clark). 
+<item><tt/"NFaces"/, the number of faces.
+<item><tt/"NControls"/, the total number of control points
+defined.
+</itemize>
+
 <sect1>Instance Object<label id="instanceobj">
 <p>
 The term instance is unfortunately misleading (and can be very confusing
@@ -4393,21 +4432,22 @@ an object using Drag-and-Drop, undo will not help!
 Only changes to objects are undoable. This includes changes
 made by modeling actions, changes made using property GUIs, but also changes
 to views (type changes or changes to the camera settings associated
-with a view).<p>
-
+with a view).
+<p>
 The undo system works by storing copies of the different
 states of changed objects in an undo buffer. The storage space occupied by
 the undo buffer may be adjusted using the preferences
-(Prefs/Modeling/UndoLevels).
+(Prefs/Modeling/UndoLevels). Note, that a value of -1 for UndoLevels
+completely disables the undo system.
 You may step backward through the saved states using
 <tt/&lt;Ctrl+z&gt;/ (undo) but also forward using <tt/&lt;Ctrl+y&gt;/ (redo).
-
+<p>
 Several actions will completely clear the undo buffer (no undo is
-possible after this action).
-Those are Delete Object, New Scene, Replace Scene, and Close View.
-
+possible after those actions):
+Delete Object, New Scene, Replace Scene, and Close View.
+<p>
 Note, that undo/redo will also modify objects that currently reside in the
-clipboard if they have saved states in the undo buffer.
+object clipboard if they have saved states in the undo buffer.
 
 <sect1>Ayamrc File<label id="ayamrc">
 <p>
@@ -4482,6 +4522,8 @@ misc}</tt>)
 a process id as argument (used by the Direct Rendering GUI)
 (default: <tt>"kill"</tt>) (a setting of <tt>"kill"</tt> will be
 automatically replaced by <tt>"kill.exe"</tt> on Win32)
+On the Win32 platform you may also use an internal kill command
+<tt>"w32kill"</tt> that has been introduced in Ayam1.4.
 <item><tt/"Cat"/: name of a program that can read from and write to
 a pipe (used by the Direct Rendering GUI) (default: <tt>"cat"</tt>)
 (a setting of <tt>"cat"</tt> will be
@@ -4585,23 +4627,31 @@ Start importing a RIB using the menu entry
 <tt>"Custom/RRIB/Import RIB"</tt>
 (if this menu entry is not available, you have to load the
 <tt>"rrib"</tt> plugin using the menu entry
-<tt>"File/Load Custom"</tt>).
+<tt>"File/Load Custom"</tt> first).
 <p>
-The RRIB plugin supports the following geometric
+The RRIB plugin supports import of the following geometric
 primitives:
 <itemize>
 <item>Quadrics (Sphere, Disk, Cylinder, Cone, Paraboloid, Hyperboloid, Torus)
 <item>bilinear and bicubic patches and patch meshes
 <item>NURBS patches (with trim curves)
 <item>(general) polygons and (general) polygon meshes
+<item>subdivision meshes (with all tags)
 </itemize>
 
 Furthermore, the plugin supports reading of CSG, Object-Instances,
 Archives, Light sources (including AreaLights), arbitrary linear
 transformations (except shear transformations!), arbitrary
 RiOptions and RiAttributes, and shaders.
-
-The import may be controlled via different options:<label id="rribopt">
+<p>
+The plugin does not support reading of curves, implicit surfaces
+(blobby models), procedural objects, delayed read archives, and
+other calls to the RenderMan Interface not that useful for a RIB
+import like e.g. RiMakeTexture.
+Unsupported geometric primitives and other calls to the RenderMan Interface
+are silently ignored.
+<p>
+The RIB import may be controlled via different options:<label id="rribopt">
 <itemize>
 <item><tt/"ReadFrame"/, specifies the number of the frame in the RIB
 to read. A value of -1 means, all frames are to be read. If you specify
@@ -4610,7 +4660,8 @@ a frame number and this frame does not show up in the RIB as
 imported!
 <item><tt/"ReadCamera"/: if this is switched on, a Camera object will
 be created when the RIB plugin encounters a <tt/"WorldBegin"/. You may drag
-this camera object onto a View object in Ayam.
+this camera object onto a perspective View object in Ayam after import
+to see through the camera of the imported RIB.
 <item><tt/"ReadOptions"/, controls, whether RiOptions are
 to be imported from the RIB to the scene. Note, that those
 RiOptions will overwrite the current global settings in the Ayam scene.
@@ -4639,6 +4690,14 @@ and finally <tt/"All"/ all messages, even informative,
 should be printed.
 </itemize>
 
+Note, that for NURBS patches and bicubic patch meshes, points of type
+"P" will be promoted to "Pw".
+Furthermore, objects of type (general) polygon and polygon mesh will
+be promoted to general polygon meshes.
+Object-Instances are resolved to normal objects while importing.
+Instances may be easily created again using Automatic Instancing
+(see section <ref id="ai" name="Automatic Instancing">).
+
 <sect1>3DMF Import Export (MFIO) Plugin<label id="mfioplugin">
 <p>
 Using the MFIO plugin you may import and export scenes
@@ -4647,7 +4706,7 @@ Start importing a 3DMF file using the menu entry
 <tt>"Custom/3DMF/Import"</tt>
 (if this menu entry is not available, you have to load the
 <tt>"mfio"</tt> plugin using the menu entry
-<tt>"File/Load Custom"</tt>).
+<tt>"File/Load Custom"</tt> first).
 <p>
 Import supports the following primitives:
 <itemize>
@@ -4664,6 +4723,8 @@ The following transformations are supported:
 </itemize>
 Furthermore, the import plugin reads the structure of the scene from Container
 objects. Reference objects will be resolved to normal objects while importing.
+Instances may be easily created again using Automatic Instancing
+(see section <ref id="ai" name="Automatic Instancing">).
 <p>
 The MFIO export supports the following primitives:
 <itemize>
@@ -4727,12 +4788,12 @@ small dialog that pops up after selection of the menu entry
 The algorithm is able to create instances of grouping objects
 too (objects with child objects, e.g. levels or tool-objects
 like revolve).
-In order for two grouping objects to be instantiated
+However, in order for two grouping objects to be instantiated
 not only all child objects and the grouping objects
 have to be instantiable, but the child objects also
-have to be in the right order (It is not sufficient,
+have to be in the right order. It is not sufficient,
 that for every child of the potential master, a matching
-child of the potential instance exists.)
+child of the potential instance exists.
 Instantiation of grouping objects may drastically decrease
 the total number of objects in a scene.
 
@@ -4845,7 +4906,7 @@ that render very slowly.
 <item>Donate source to improve several critical parts of the modeler,
 some ideas are: better (more exact) lighting simulation (is this
 possible to do with OpenGL at all?), CSG-preview with OpenGL,
-support for subdivision surfaces. The project page of Ayam
+true support for subdivision surfaces. The project page of Ayam
 on SourceForge lists some more tasks.
 <item>Debug the MF3D code, which is currently not working
 well with binary files from different byte-order platforms.
@@ -4859,7 +4920,7 @@ You can help by implementing more different high
 level objects like Trees, Landscape, Sky, Text, whatever you can think of.
 Note, that the license of Ayam does not prevent you from implementing your
 object as Shareware or even Commercial software. However, Freeware is
-preferred.
+preferred for obvious reasons.
 
 But please do me a favour and do not implement objects like
 simple triangles or polygons. This would be something that really is
@@ -5393,6 +5454,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <ref id="scalac" name="scale object">
 <item>scalOb, scalSel: <ref id="movob" name="scripting interface command">
 <item>Scripts: <ref id="prefgui" name="preference setting">
+<item>SDMesh: <ref id="sdmeshobj" name="object">
 <item>Sections: <ref id="swp" name="sweep attribute">
 <item>Select: <ref id="obj" name="select objects with the tree/listbox">,
 <ref id="objsel" name="select objects within a view">,
@@ -5432,6 +5494,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <ref id="skp" name="skin attribute">
 <item>Step_U, Step_V: <ref id="pmattr" name="PatchMesh attribute">
 <item>Stretch: <ref id="scalac" name="stretch object">
+<item>Subdivision Mesh: <ref id="sdmeshobj" name="SDMesh object">
 <item>Surface: <ref id="matshader" name="shader">
 <item>Sweep: <ref id="sweepobj" name="object">,
 <ref id="swpt" name="Sweep tool">
