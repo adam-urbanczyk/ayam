@@ -149,6 +149,45 @@ ay_tags_register(Tcl_Interp *interp, char *name, char **result)
 } /* ay_tags_register */
 
 
+/* ay_tags_temp:
+ *  if set == 1: mark tag type "name" temporary, it will not be saved
+ *  if set == 0: set result to 1 if tag type "name" is temporary
+ *               else set result to 0
+ */
+int
+ay_tags_temp(Tcl_Interp *interp, char *name, int set, int *result)
+{
+ int new_item = 0;
+ Tcl_HashEntry *entry = NULL;
+ char fname[] = "tags_temp";
+
+  if(set == 1)
+    { /* set */
+      if((entry = Tcl_FindHashEntry(&ay_temptagtypesht, name)))
+	{
+	  ay_error(AY_ERROR, fname, "tag type already marked temporary");
+	  return TCL_OK;
+	}
+
+      entry = Tcl_CreateHashEntry(&ay_temptagtypesht, name, &new_item);
+      Tcl_SetHashValue(entry, 1);
+    }
+  else
+    { /* query */
+      if((entry = Tcl_FindHashEntry(&ay_temptagtypesht, name)))
+	{
+	  *result = AY_TRUE;
+	}
+      else
+	{
+	  *result = AY_FALSE;
+	}
+    } /* if */
+
+ return TCL_OK;
+} /* ay_tags_temp */
+
+
 /* ay_tags_settcmd:
  *  
  */

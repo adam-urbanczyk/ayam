@@ -753,6 +753,8 @@ extern ay_table ay_bbccbt;
 
 extern Tcl_HashTable ay_tagtypesht;
 
+extern Tcl_HashTable ay_temptagtypesht;
+
 extern ay_table ay_tagnamest;
 
 extern ay_table ay_oidptrt;
