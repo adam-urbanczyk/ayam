@@ -937,6 +937,20 @@ ay_extrude_notifycb(ay_object *o)
 	    }
 	} /* if */
 
+      bevel = ext->upper_bevels;
+      while(bevel)
+	{
+	  ay_status = ay_npt_revertu((ay_nurbpatch_object*)(bevel->refine));
+	  bevel = bevel->next;
+	}
+
+      bevel = ext->lower_bevels;
+      while(bevel)
+	{
+	  ay_status = ay_npt_revertu((ay_nurbpatch_object*)(bevel->refine));
+	  bevel = bevel->next;
+	}
+
     } /* if */
 
  return AY_OK;
