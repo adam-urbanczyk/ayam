@@ -51,6 +51,9 @@ typedef struct aycsg_taglistelem_s {
 // all TM tags created by aycsg are managed using this list
 aycsg_taglistelem *aycsg_tmtags;
 
+// DC tags are used to store the depth complexity of a primitive
+char *aycsg_dc_tagtype;
+
 char aycsg_version_ma[] = AY_VERSIONSTR;
 char aycsg_version_mi[] = AY_VERSIONSTRMI;
 
@@ -364,6 +367,8 @@ int
 aycsg_flatten(ay_object *t, struct Togl *togl, int parent_csgtype)
 {
  int ay_status = AY_OK;
+ ay_tag_object *tag = NULL;
+ int dc = 1;
 
   while(t)
     {
@@ -371,6 +376,24 @@ aycsg_flatten(ay_object *t, struct Togl *togl, int parent_csgtype)
       if((t->CSGTYPE == AY_LTPRIM) && (parent_csgtype != AY_LTUNION))
 	{
 	  // yes
+
+	  // get depth complexity
+	  if(t->tags)
+	    {
+	      tag = t->tags;
+	      while(tag)
+		{
+		  if(tag->type == aycsg_dc_tagtype)
+		    {
+		      if(tag->val)
+			{
+			  sscanf(tag->val, "%d", &dc);
+			} // if
+		    } // if
+		  tag = tag->next;
+		} // while
+	    } // if
+
 	  // is this the lowest and leftmost primitive in the tree?
 	  // the simple check (t->next) is possible, because the
 	  // tree is binary _and_ normalized
@@ -378,7 +401,7 @@ aycsg_flatten(ay_object *t, struct Togl *togl, int parent_csgtype)
 	    {
 	      // yes, this is always an intersecting primitive
 	      primitives.push_back(new OpenCSG::ayCSGPrimitive(t, togl,
-						OpenCSG::Intersection, 1));
+						OpenCSG::Intersection, dc));
 	    }
 	  else
 	    {
@@ -386,12 +409,12 @@ aycsg_flatten(ay_object *t, struct Togl *togl, int parent_csgtype)
 	      if(parent_csgtype == AY_LTDIFF)
 		{
 		  primitives.push_back(new OpenCSG::ayCSGPrimitive(t, togl,
-						    OpenCSG::Subtraction, 1));
+						    OpenCSG::Subtraction, dc));
 		}
 	      else
 		{
 		  primitives.push_back(new OpenCSG::ayCSGPrimitive(t, togl,
-						    OpenCSG::Intersection, 1));
+						    OpenCSG::Intersection, dc));
 		} // if
 	    } // if
 
@@ -1362,11 +1385,16 @@ Aycsg_Init(Tcl_Interp *interp)
 
   aycsg_tmtags = NULL;
 
+  // register DC tag type
+  ay_status = ay_tags_register(interp, "DC", &aycsg_dc_tagtype);
+  if(ay_status)
+    return TCL_OK;
+
 #ifdef AYCSGDBG
   ay_ppoh_init(interp);
 #endif
 
-  // source aycsg.tcl, it contains Tcl-code for new key bindings
+  // source aycsg.tcl, it contains Tcl-code for new key bindings etc.
   if((Tcl_EvalFile(interp, "aycsg.tcl")) != TCL_OK)
      {
        ay_error(AY_ERROR, fname,
