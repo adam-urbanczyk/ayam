@@ -165,7 +165,7 @@ onio_writenpatch(ay_object *o, ONX_Model *p_m, double *m)
     {
       ONX_Model_Object& mo = p_m->m_object_table.AppendNew();
       mo.m_object = p_n;
-      mo.m_bDeleteObject = false;
+      mo.m_bDeleteObject = true;
       /*
 	if(object_attributes)
 	mo.m_attributes = object_attributes[i];
@@ -258,6 +258,8 @@ onio_addtrim(ay_object *o, ON_BrepLoop::TYPE ltype, ON_BrepTrim::TYPE ttype,
 	  p_curve->GetNurbForm(c2, tolerance, NULL);
 	  p_c = new ON_NurbsCurve(c2);
 	  p_b->m_C3.Append(p_c);
+
+	  delete p_curve;
 
 	  ON_BrepVertex& v1 = p_b->NewVertex(p_c->PointAtStart());
 	  v1.m_tolerance = 0.0;
@@ -376,8 +378,13 @@ onio_writetrimmednpatch(ay_object *o, ONX_Model *p_m, double *m)
       // create new face from surface (creates a bounding trimloop as well!)
       p_f = p_b->NewFace(ps);
 
+      // cleanup
       delete p_s;
       p_s = NULL;
+      delete p_p;
+      p_p = NULL;
+      delete p_ps;
+      p_ps = NULL;
     }
   else
     {
@@ -414,7 +421,7 @@ onio_writetrimmednpatch(ay_object *o, ONX_Model *p_m, double *m)
 
   ONX_Model_Object& mo = p_m->m_object_table.AppendNew();
   mo.m_object = p_b;
-  mo.m_bDeleteObject = false;
+  mo.m_bDeleteObject = true;
   /*
     if(object_attributes)
     mo.m_attributes = object_attributes[i];
@@ -494,7 +501,7 @@ onio_writencurve(ay_object *o, ONX_Model *p_m, double *m)
 
   ONX_Model_Object& mo = p_m->m_object_table.AppendNew();
   mo.m_object = p_c;
-  mo.m_bDeleteObject = false;
+  mo.m_bDeleteObject = true;
 
   /*
     if(object_attributes)
