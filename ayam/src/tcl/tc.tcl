@@ -43,22 +43,41 @@ proc tc_updateCanvas { ca } {
     set mins Inf
     set maxs -Inf
     foreach i [list 1 3 5 7] {
-	if { $tc(v$i) < $mins } { set mins $tc(v$i)}
-	if { $tc(v$i) > $maxs } { set maxs $tc(v$i)}
+	if { $tc(v$i) < $mins } { set mins $tc(v$i) }
+	if { $tc(v$i) > $maxs } { set maxs $tc(v$i) }
     }
     set mint Inf
     set maxt -Inf
     foreach i [list 2 4 6 8] {
-	if { $tc(v$i) < $mint } { set mint $tc(v$i)}
-	if { $tc(v$i) > $maxt } { set maxt $tc(v$i)}
+	if { $tc(v$i) < $mint } { set mint $tc(v$i) }
+	if { $tc(v$i) > $maxt } { set maxt $tc(v$i) }
     }
 
     set width [expr $maxs-$mins]
     set height [expr $maxt-$mint]
+    set scalex [expr ([winfo width $ca]-20)]
+    set scaley [expr ([winfo height $ca]-20)]
+    if { $width > 1 } {
+	set scalex [expr ([winfo width $ca]-20)/double($width)]
+    }
+    if { $height > 1 } {
+	set scaley [expr ([winfo height $ca]-20)/double($height)]
+    }
 
-    $ca scale all 0 0 [expr ([winfo width $ca])-20]\
-	    [expr ([winfo height $ca])-20]
+    $ca scale all 0 0 $scalex $scaley
+
     $ca move all 10 10
+
+    set movx 0
+    set movy 0
+    if { [expr abs($mins)] > 0.00001 } {
+	set movx [expr -($scalex * $mins)]
+    }
+    if { [expr abs($mint) > 0.00001] } {
+	set movy [expr -($scaley * $mint)]
+    }
+
+    $ca move all $movx $movy
 
  return;
 }
