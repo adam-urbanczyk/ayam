@@ -683,16 +683,19 @@ $m add command -label "Expand" -command "tree_expand"
 $m add command -label "Collapse" -command "tree_collapse"
 
 set m $ay(tree).popup
+
 $m add separator
-$m add command -label "Deselect" -command "cS;uS;rV"
+$m add command -label "Switch to Listbox" -command\
+ "tree_close $w; olb_open $w; olb_update; rV"
 $m add separator
-$m add command -label "Cut" -command "cutOb;cS;uS;rV"
-$m add command -label "Copy" -command "copOb"
-$m add command -label "Paste" -command {
-    pasOb;cS; global ay; set ay(ul) $ay(CurrentLevel); uS;rV}
+$m add command -label "Deselect Object" -command "cS;uS;rV"
+$m add separator
+$m add command -label "Copy Object" -command ".fu.fMenu.ed.m invoke 0"
+$m add command -label "Cut Object" -command ".fu.fMenu.ed.m invoke 1"
+$m add command -label "Paste Object" -command ".fu.fMenu.ed.m invoke 2"
 #$m add command -label "Paste (Move)" -command "cmovOb;uS;rV"
 $m add separator
-$m add command -label "Delete" -command "delOb;cS;uS;rV"
+$m add command -label "Delete Object" -command ".fu.fMenu.ed.m invoke 3"
 
 bind $ay(tree) <ButtonPress-3> "tree_popup $ay(tree)"
 
