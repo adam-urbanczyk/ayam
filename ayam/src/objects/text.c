@@ -173,14 +173,15 @@ ay_text_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     return AY_ENULL;
 
   text = (ay_text_object *)o->refine;
-  
-  result = Tcl_GetVar2(interp, n1, "FontName",
-		       TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
   if(text->fontname)
     {
       free(text->fontname);
       text->fontname = NULL;
     }
+
+  result = Tcl_GetVar2(interp, n1, "FontName",
+		       TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   if(!(text->fontname = calloc(strlen(result)+1, sizeof(char))))
     {
@@ -367,23 +368,23 @@ ay_text_readcb(FILE *fileptr, ay_object *o)
   if(!(text = calloc(1, sizeof(ay_text_object))))
     { return AY_EOMEM; }
 
-  fscanf(fileptr,"%lg",&text->height);
+  fscanf(fileptr, "%lg", &text->height);
   read = fgetc(fileptr);
   if(read == '\r')
     fgetc(fileptr);
   ay_read_string(fileptr, &(text->fontname));
   ay_read_unistring(fileptr, &(text->unistring));
 
-  fscanf(fileptr,"%d\n",&text->revert);
-  fscanf(fileptr,"%d\n",&text->has_upper_cap);
-  fscanf(fileptr,"%d\n",&text->has_lower_cap);
-  fscanf(fileptr,"%d\n",&text->has_upper_bevels);
-  fscanf(fileptr,"%d\n",&text->has_lower_bevels);
-  fscanf(fileptr,"%d\n",&text->bevel_type);
-  fscanf(fileptr,"%lg\n",&text->bevel_radius);
-  fscanf(fileptr,"%d\n",&text->revert_bevels);
-  fscanf(fileptr,"%d\n",&text->glu_display_mode);
-  fscanf(fileptr,"%lg\n",&text->glu_sampling_tolerance);
+  fscanf(fileptr, "%d\n", &text->revert);
+  fscanf(fileptr, "%d\n", &text->has_upper_cap);
+  fscanf(fileptr, "%d\n", &text->has_lower_cap);
+  fscanf(fileptr, "%d\n", &text->has_upper_bevels);
+  fscanf(fileptr, "%d\n", &text->has_lower_bevels);
+  fscanf(fileptr, "%d\n", &text->bevel_type);
+  fscanf(fileptr, "%lg\n", &text->bevel_radius);
+  fscanf(fileptr, "%d\n", &text->revert_bevels);
+  fscanf(fileptr, "%d\n", &text->glu_display_mode);
+  fscanf(fileptr, "%lg\n", &text->glu_sampling_tolerance);
 
   o->refine = text;
 
@@ -404,12 +405,12 @@ ay_text_writecb(FILE *fileptr, ay_object *o)
 
   fprintf(fileptr, "%g\n", text->height);
 
-  if(!text->fontname || text->fontname[0] == '\0')
+  if(!text->fontname || (text->fontname[0] == '\0'))
     fprintf(fileptr, "\n");
   else
     fprintf(fileptr, "%s\n", text->fontname);
 
-  if(!text->unistring || text->unistring[0] == 0)
+  if(!text->unistring || (text->unistring[0] == 0))
     {
       fprintf(fileptr, "\n");
     }
@@ -904,7 +905,9 @@ ay_text_providecb(ay_object *o, unsigned int type, ay_object **result)
 	      new->hide_children = AY_TRUE;
 	      new->parent = AY_TRUE;
 	      if(!new->down)
-		ay_object_crtendlevel(&(new->down));
+		{
+		  ay_object_crtendlevel(&(new->down));
+		}
 	      *t = new;
 	      t = &(new->next);
 	    } /* if */
