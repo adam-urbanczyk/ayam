@@ -1314,6 +1314,103 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 	      view->zoom = argd;
 	      view->drawmarker = AY_FALSE;
 	    }
+	  if(!strcmp(argv[i], "-zrect"))
+	    {
+	      int rectw, recth, dispx, dispy;
+	      double dxw, dyw, t[3] = {0}, t2[2] = {0},mm[16] = {0};
+	      if(view->rect_xmin<view->rect_xmax)
+		{
+		  rectw = view->rect_xmax-view->rect_xmin;
+		  dispx = (width/2)-(view->rect_xmax-(rectw/2));
+		}
+	      else
+		{
+		  rectw = view->rect_xmin-view->rect_xmax;
+		  dispx = (width/2)-(view->rect_xmin-(rectw/2));
+		}
+	      if(view->rect_ymin<view->rect_ymax)
+		{
+		  recth = view->rect_ymax-view->rect_ymin;
+		  dispy = (height/2)-(view->rect_ymax-(recth/2));
+		}
+	      else
+		{
+		  recth = view->rect_ymin-view->rect_ymax;
+		  dispy = (height/2)-(view->rect_ymin-(recth/2));
+		}
+
+	      dxw = -(dispx*view->conv_x);
+	      dyw = (dispy*view->conv_y);
+	      t[0] = view->from[0] - view->to[0];
+	      t[1] = view->from[1] - view->to[1];
+	      t[2] = view->from[2] - view->to[2];
+	      glMatrixMode(GL_MODELVIEW);
+	      glPushMatrix();
+	       glLoadIdentity();
+	       /* check, whether we are able to derive camera
+		  orientation angles from t */
+	       if(!t[0] && !t[2])
+		 {
+		   /* no, this (hopefully just) happens with Top views, that
+		      are Y-Axis aligned and express a useful angle in
+		      view->up */
+		   
+		   /* XXXX this currently only works for real Y-aligned
+		      Top views */
+		   t[0] = -view->up[0];
+		   t[1] = -view->up[1];
+		   t[2] = -view->up[2];
+		   roty = AY_R2D(atan2(t[0], t[2]));
+
+		   if(fabs(view->roll) > AY_EPSILON)
+		     glRotated(-view->roll, 0.0, 1.0, 0.0);
+       
+		   glRotated(roty, 0.0, 1.0, 0.0);
+       
+		   glTranslated(dxw, 0.0, -dyw);
+       
+		   glRotated(-roty, 0.0, 1.0, 0.0);
+       
+		   if(fabs(view->roll) > AY_EPSILON)
+		     glRotated(view->roll, 0.0, 1.0, 0.0);
+		 }
+	       else
+		 {
+		   /* yes, derive angles from t */
+		   roty = AY_R2D(atan2(t[0], t[2]));
+
+		   t2[0]=t[0];
+		   t2[1]=t[2];
+		   if(t[0] && t[2])
+		     rotx = AY_R2D(atan2(t[1], AY_V2LEN(t2)));
+
+		   if(fabs(view->roll) > AY_EPSILON)
+		     glRotated(-view->roll, 0.0, 0.0, 1.0);
+
+		   glRotated(roty, 0.0, 1.0, 0.0);
+		   glRotated(-rotx, 1.0, 0.0, 0.0);
+
+		   if(view->up[1] > 0.0)
+		     glTranslated(dxw, dyw, 0.0);
+		   else
+		     glTranslated(-dxw, -dyw, 0.0);
+
+		   glRotated(rotx, 1.0, 0.0, 0.0);
+		   glRotated(-roty, 0.0, 1.0, 0.0);
+
+		   if(fabs(view->roll) > AY_EPSILON)
+		     glRotated(view->roll, 0.0, 0.0, 1.0);
+		 }
+	       glGetDoublev(GL_MODELVIEW_MATRIX, mm);
+	      glPopMatrix();
+
+	      ay_trafo_apply3(view->from, mm);
+	      ay_trafo_apply3(view->to, mm);
+
+	      view->zoom /= (width/rectw);
+
+	      view->drawmarker = AY_FALSE;
+	    }
 	  break;
 	} /* switch */
       i += 2;

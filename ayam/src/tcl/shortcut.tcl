@@ -451,6 +451,36 @@ proc shortcut_viewactions { w } {
 	[winfo toplevel %W].f3D.togl configure -cursor left_ptr
     }
 
+    # this binding allows to zoom into a region of any
+    # view regardless of any active action
+    bind $w.f3D.togl <$ayviewshortcuts(ZoomRMod)-ButtonPress-1> {
+	set oldx %x
+	set oldy %y
+	shortcut_zoomrbinding %W
+	break;
+    }
+    bind $w <KeyPress-$ayviewshortcuts(ZoomRModKey)> {
+	set w [winfo toplevel %W].f3D.togl
+	$w configure -cursor sizing
+	# save old bindings
+	set ay(oldbinding) [bind $w <B1-Motion>]
+	set ay(oldb1binding) [bind $w <ButtonPress-1>]
+	set ay(oldb1rbinding) [bind $w <ButtonRelease-1>]
+	set oldx -1
+	set oldy -1
+    }
+    bind $w <KeyRelease-$ayviewshortcuts(ZoomRModKey)> {
+	set w [winfo toplevel %W].f3D.togl
+	if { $oldx != -1 } {
+	    $w setconf -rect $oldx $oldy %x %y 0
+	}
+	# restore old bindings
+	bind $w <ButtonRelease-1> { #nothing }
+	bind $w <B1-Motion> $ay(oldbinding)
+	bind $w <ButtonPress-1> $ay(oldb1binding)
+	bind $w <ButtonRelease-1> $ay(oldb1rbinding)
+	$w configure -cursor left_ptr
+    }
 
     set i $ayviewshortcuts(ZoomVButton)
     
@@ -551,7 +581,6 @@ proc shortcut_viewactions { w } {
 #shortcut_altrotatebinding:
 # Setup key bindings for rotation of a 3D-View while
 # the Alt key is held down.
-#
 proc shortcut_altrotatebinding { w } {
     bind $w <B1-Motion> {
 	%W setconf -drotx [expr ($oldx - %x)] -droty [expr ($oldy - %y)]
@@ -563,6 +592,28 @@ proc shortcut_altrotatebinding { w } {
  return;
 }
 # shortcut_altrotatebinding
+
+#shortcut_zoomrbinding:
+# Setup key bindings for zooming of in a region of
+# a 3D-View with the Ctrl key held down.
+proc shortcut_zoomrbinding { w } {
+    global ayviewshortcuts
+    bind $w <ButtonRelease-1> {
+
+	undo save ZoomRView
+
+	%W setconf -zrect 1 -rect $oldx $oldy %x %y 0
+	%W redraw
+
+	update
+    }
+    bind $w <B1-Motion> {
+	%W setconf -rect $oldx $oldy %x %y 1
+    }
+
+ return;
+}
+# shortcut_zoomrbinding
 
 
 #shortcut_show:
