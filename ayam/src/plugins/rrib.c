@@ -53,6 +53,7 @@ typedef struct ay_rrib_attrstate_s {
   ay_object *trimcurves;
 
   int light_shadows;
+  int light_samples;
 
   int read_arealight_geom;
 
@@ -411,6 +412,8 @@ RtVoid ay_rrib_RiNuPatch(RtInt nu, RtInt uorder, RtFloat uknot[],
   ay_rrib_co.parent = AY_TRUE;
   ay_rrib_linkobject((void *)(&np), AY_IDNPATCH);
   ay_rrib_co.parent = AY_FALSE;
+  ay_object_delete(ay_rrib_co.down);
+  ay_rrib_co.down = NULL;
 
   free(np.uknotv);
   free(np.vknotv);
@@ -577,6 +580,8 @@ ay_rrib_RiLightSource(RtToken name,
  RtPoint *pnt = NULL;
  RtColor *col = NULL;
  char fname[] = "ay_rrib_RiLightSource";
+ double euler[3] = {0};
+
 
   /* load some defaults */
   l.type = AY_LITCUSTOM;
@@ -598,16 +603,22 @@ ay_rrib_RiLightSource(RtToken name,
   l.cone_delta_angle = 5.0;
   l.beam_distribution = 2.0;
 
-  l.samples = 1.0;
+  if(ay_rrib_cattributes->light_samples != -1)
+    l.samples = ay_rrib_cattributes->light_samples;
+  else
+    l.samples = 1;
 
-  printf("%s\n",name);
+  if(ay_rrib_cattributes->light_shadows != -1)
+    l.shadows = ay_rrib_cattributes->light_shadows;
+  else
+    l.shadows = 0;
 
 
+  /* check for default light source types first */
   if(!strcmp(name, "spotlight"))
     {
       l.type = AY_LITSPOT;
     }
-
 
   if(!strcmp(name, "distantlight"))
     {
@@ -655,6 +666,7 @@ ay_rrib_RiLightSource(RtToken name,
     {
       ay_rrib_readshader(name, AY_STLIGHT, n, tokens, parms, &(l.lshader));
     }
+
   ay_rrib_co.parent = AY_TRUE;
   ay_status = ay_object_crtendlevel(&(ay_rrib_co.down));
   if(ay_status)
@@ -662,8 +674,28 @@ ay_rrib_RiLightSource(RtToken name,
       ay_error(AY_ERROR, fname,
 	       "Could not create terminating level object, scene is corrupt now!");
     }
+
   ay_rrib_co.refine = (void *)(&l);
   ay_rrib_co.type = AY_IDLIGHT;
+
+  ay_rrib_co.movx = ay_rrib_ctrafos->movx;
+  ay_rrib_co.movy = ay_rrib_ctrafos->movy;
+  ay_rrib_co.movz = ay_rrib_ctrafos->movz;
+
+  ay_rrib_co.scalx = ay_rrib_ctrafos->scalx;
+  ay_rrib_co.scaly = ay_rrib_ctrafos->scaly;
+  ay_rrib_co.scalz = ay_rrib_ctrafos->scalz;
+
+  ay_rrib_co.quat[0] = ay_rrib_ctrafos->quat[0];
+  ay_rrib_co.quat[1] = ay_rrib_ctrafos->quat[1];
+  ay_rrib_co.quat[2] = ay_rrib_ctrafos->quat[2];
+  ay_rrib_co.quat[3] = ay_rrib_ctrafos->quat[3];
+
+  ay_quat_toeuler(ay_rrib_ctrafos->quat, euler);
+  ay_rrib_co.rotx = AY_R2D(euler[2]);
+  ay_rrib_co.roty = AY_R2D(euler[1]);
+  ay_rrib_co.rotz = AY_R2D(euler[0]);
+
   ay_status = ay_object_copy(&ay_rrib_co, &o);
   ay_status = ay_object_link(o);
   ay_rrib_lrobject = o;
@@ -703,7 +735,7 @@ RtVoid ay_rrib_RiAtmosphereV( RtToken name,
 RtVoid ay_rrib_RiAttribute(RtToken name,
 			   RtInt n, RtToken tokens[], RtPointer parms[])
 {
- int itemp;
+ int i, itemp;
  double dtemp;
  char *stemp = NULL;
  char fname[] = "ay_rrib_RiAttribute";
@@ -731,16 +763,98 @@ RtVoid ay_rrib_RiAttribute(RtToken name,
 
   if(!strcmp(name,"light"))
     {
-      if(n > 0)
+      for(i = 0; i < n; i++)
 	{
-	  if(!strcmp(tokens[0], "shadows"))
+	  if(!strcmp(tokens[i], "shadows"))
 	    {
-	      if(!strcmp((char *)(parms[0]), "on"))
+	      if(!strcmp((char *)(parms[i]), "on"))
 		ay_rrib_cattributes->light_shadows = AY_TRUE;
 	      else
 		ay_rrib_cattributes->light_shadows = AY_FALSE;
 	    }
-	}
+	  if(!strcmp(tokens[i], "nsamples"))
+	    {
+	      sscanf(((char *)(parms[i])), "%lg", &dtemp);
+	      ay_rrib_cattributes->light_shadows = (int)dtemp;
+	    }
+	} /* for */
+    }
+
+  if(!strcmp(name,"render"))
+    {
+      for(i = 0; i < n; i++)
+	{
+	  if(!strcmp(tokens[i], "truedisplacement"))
+	    {
+	      sscanf(((char *)(parms[i])), "%d", &itemp);
+	      ay_rrib_cattributes->true_displacement = itemp;
+	    }
+	  if(!strcmp(tokens[i], "cast_shadows"))
+	    {
+	      itemp = 0;
+	      if(!strcmp((char *)(parms[i]), "none"))
+		{
+		  itemp = 1;
+		}
+	      if(!strcmp((char *)(parms[i]), "opaque"))
+		{
+		  itemp = 2;
+		}
+	      if(!strcmp((char *)(parms[i]), "shader"))
+		{
+		  itemp = 3;
+		}
+	      ay_rrib_cattributes->cast_shadows = itemp;
+	    }
+	  if(!strcmp(tokens[i], "visibility"))
+	    {
+	      sscanf(((char *)(parms[i])), "%d", &itemp);
+	      if(itemp-4 >= 0)
+		{
+		  ay_rrib_cattributes->shadow = AY_TRUE;
+		  itemp -= 4;
+		}
+	      if(itemp-2 >= 0)
+		{
+		  ay_rrib_cattributes->reflection = AY_TRUE;
+		  itemp -= 2;
+		}
+	      if(itemp-1 >= 0)
+		{
+		  ay_rrib_cattributes->camera = AY_TRUE;
+		}
+	    }
+	} /* for */
+    }
+
+  if(!strcmp(name,"displacementbound"))
+    {
+      for(i = 0; i < n; i++)
+	{
+	  if(!strcmp(tokens[i], "coordinatesystem"))
+	    {
+	      itemp = 0;
+	      /* XXXX is this complete? */
+	      if(!strcmp((char *)(parms[i]), "camera"))
+		{
+		  itemp = 2;
+		}
+	      if(!strcmp((char *)(parms[i]), "shader"))
+		{
+		  itemp = 1;
+		}
+	      if(!strcmp((char *)(parms[i]), "object"))
+		{
+		  itemp = 0;
+		}
+	      ay_rrib_cattributes->dbound = itemp;
+	    }
+	  if(!strcmp(tokens[i], "sphere"))
+	    {
+	      sscanf(((char *)(parms[i])), "%lg", &dtemp);
+	      ay_rrib_cattributes->dbound_val = dtemp;
+	    }
+	} /* for */
     }
   
  return;
@@ -924,10 +1038,19 @@ RtVoid ay_rrib_RiDetailRange( RtFloat minvisible, RtFloat lowertransition,
 
 
 
-RtVoid ay_rrib_RiDisplacementV( RtToken name,
-		       RtInt n, RtToken tokens[], RtPointer parms[] )
+RtVoid ay_rrib_RiDisplacement(RtToken name,
+			      RtInt n, RtToken tokens[], RtPointer parms[])
 { 
-   (void)name; (void)n; (void)tokens; (void)parms;
+ int ay_status = AY_OK;
+
+  if(ay_rrib_cattributes->dshader)
+    ay_status = ay_shader_free(ay_rrib_cattributes->dshader);
+  ay_rrib_cattributes->dshader = NULL;
+
+  ay_rrib_readshader(name, AY_STDISPLACEMENT, n, tokens, parms,
+		     &(ay_rrib_cattributes->dshader));
+
+ return;
 }
 
 
@@ -950,10 +1073,19 @@ RtVoid ay_rrib_RiExposure( RtFloat gain, RtFloat gamma )
 }
 
 
-RtVoid ay_rrib_RiExteriorV( RtToken name, 
-		   RtInt n, RtToken tokens[], RtPointer parms[] )
+RtVoid ay_rrib_RiExterior(RtToken name, 
+			  RtInt n, RtToken tokens[], RtPointer parms[])
 { 
-   (void)name; (void)n; (void)tokens; (void)parms;
+ int ay_status = AY_OK;
+
+  if(ay_rrib_cattributes->eshader)
+    ay_status = ay_shader_free(ay_rrib_cattributes->eshader);
+  ay_rrib_cattributes->eshader = NULL;
+
+  ay_rrib_readshader(name, AY_STEXTERIOR, n, tokens, parms,
+		     &(ay_rrib_cattributes->eshader));
+
+ return;
 }
 
 
@@ -1082,10 +1214,19 @@ RtVoid ay_rrib_RiImplicitV( RtInt a, RtInt b[], RtInt c, RtFloat d[],
 }
 
 
-RtVoid ay_rrib_RiInteriorV( RtToken name, 
-		   RtInt n, RtToken tokens[], RtPointer parms[] )
+RtVoid ay_rrib_RiInterior(RtToken name, 
+			  RtInt n, RtToken tokens[], RtPointer parms[])
 { 
-   (void)name; (void)n; (void)tokens; (void)parms;
+ int ay_status = AY_OK;
+
+  if(ay_rrib_cattributes->ishader)
+    ay_status = ay_shader_free(ay_rrib_cattributes->ishader);
+  ay_rrib_cattributes->ishader = NULL;
+
+  ay_rrib_readshader(name, AY_STINTERIOR, n, tokens, parms,
+		     &(ay_rrib_cattributes->ishader));
+
+ return;
 }
 
 RtVoid ay_rrib_RiMakeBumpV( char *picturename, char *texturename, 
@@ -1383,13 +1524,22 @@ RtVoid ay_rrib_RiScreenWindow( RtFloat left, RtFloat right,
 
 RtVoid ay_rrib_RiShadingInterpolation( RtToken type )
 { 
-   (void)type;
+
+  if(!strcmp(type, "smooth"))
+    ay_rrib_cattributes->shading_interpolation = 1;
+  else
+    ay_rrib_cattributes->shading_interpolation = 0;
+
+  return;
 }
 
 
 RtVoid ay_rrib_RiShadingRate( RtFloat size )
 { 
-   (void)size;
+
+  ay_rrib_cattributes->shading_rate = (double)size;
+
+ return;
 }
 
 
@@ -1433,10 +1583,19 @@ RtVoid ay_rrib_RiSphereV( RtFloat radius, RtFloat zmin, RtFloat zmax,
 }
 
 
-RtVoid ay_rrib_RiSurfaceV( RtToken name, 
-                   RtInt n, RtToken tokens[], RtPointer parms[] )
+RtVoid ay_rrib_RiSurface(RtToken name, 
+			 RtInt n, RtToken tokens[], RtPointer parms[])
 { 
-   (void)name; (void)n; (void)tokens; (void)parms;
+ int ay_status = AY_OK;
+
+  if(ay_rrib_cattributes->sshader)
+    ay_status = ay_shader_free(ay_rrib_cattributes->sshader);
+  ay_rrib_cattributes->sshader = NULL;
+
+  ay_rrib_readshader(name, AY_STSURFACE, n, tokens, parms,
+		     &(ay_rrib_cattributes->sshader));
+
+ return;
 }
 
 
@@ -1838,7 +1997,15 @@ ay_rrib_initgeneral(void)
   gRibNopRITable[kRIB_DECLARE] = (PRIB_RIPROC)ay_rrib_RiDeclare;
   gRibNopRITable[kRIB_COLOR] = (PRIB_RIPROC)ay_rrib_RiColor;
   gRibNopRITable[kRIB_OPACITY] = (PRIB_RIPROC)ay_rrib_RiOpacity;
+  gRibNopRITable[kRIB_SHADINGRATE] = (PRIB_RIPROC)ay_rrib_RiShadingRate;
+  gRibNopRITable[kRIB_SHADINGINTERPOLATION] =
+    (PRIB_RIPROC)ay_rrib_RiShadingInterpolation;
   
+  gRibNopRITable[kRIB_SURFACE] = (PRIB_RIPROC)ay_rrib_RiSurface;
+  gRibNopRITable[kRIB_DISPLACEMENT] = (PRIB_RIPROC)ay_rrib_RiDisplacement;
+  gRibNopRITable[kRIB_INTERIOR] = (PRIB_RIPROC)ay_rrib_RiInterior;
+  gRibNopRITable[kRIB_EXTERIOR] = (PRIB_RIPROC)ay_rrib_RiExterior;
+
   gRibNopRITable[kRIB_LIGHTSOURCE] = (PRIB_RIPROC)ay_rrib_RiLightSource;
   gRibNopRITable[kRIB_AREALIGHTSOURCE] =
     (PRIB_RIPROC)ay_rrib_RiAreaLightSource;
@@ -1902,8 +2069,40 @@ ay_rrib_pushattribs(void)
   if(ay_rrib_cattributes)
     {
       memcpy(newstate, ay_rrib_cattributes, sizeof(ay_rrib_attrstate));
-
+      newstate->identifier_name = NULL;
       newstate->trimcurves = NULL;
+      newstate->sshader = NULL;
+      newstate->dshader = NULL;
+      newstate->ishader = NULL;
+      newstate->eshader = NULL;
+
+      if(ay_rrib_cattributes->sshader)
+	{
+	  ay_status = ay_shader_copy(ay_rrib_cattributes->sshader,
+				     &(newstate->sshader));
+	}
+
+      if(ay_rrib_cattributes->dshader)
+	{
+	  ay_status = ay_shader_copy(ay_rrib_cattributes->dshader,
+				     &(newstate->dshader));
+	}
+
+      if(ay_rrib_cattributes->ishader)
+	{
+	  ay_status = ay_shader_copy(ay_rrib_cattributes->ishader,
+				     &(newstate->ishader));
+	}
+
+      if(ay_rrib_cattributes->eshader)
+	{
+	  ay_status = ay_shader_copy(ay_rrib_cattributes->eshader,
+				     &(newstate->eshader));
+	}
+
+
+
+
 #if 0
       if(ay_rrib_cattributes->trimcurves)
 	{
@@ -1916,7 +2115,18 @@ ay_rrib_pushattribs(void)
 	}
 #endif
     }
+  else
+    {
+      /* there was no old attribute state, so we fill the very first
+	 with the default values */
+      newstate->light_samples = -1;
+      newstate->light_shadows = -1;
+      newstate->shading_rate = 1.0;
+      newstate->colr = -1;
+      newstate->opr = -1;
+      
 
+    }
   /* link new state to stack */
   newstate->next = ay_rrib_cattributes;
   ay_rrib_cattributes = newstate;
@@ -1960,6 +2170,11 @@ ay_rrib_popattribs(void)
     {
       ay_object_deletemulti(ay_rrib_cattributes->trimcurves);
       ay_rrib_cattributes->trimcurves = NULL;
+    }
+
+  if(ay_rrib_cattributes->identifier_name)
+    {
+      free(ay_rrib_cattributes->identifier_name);
     }
 
   free(ay_rrib_cattributes);
@@ -2012,6 +2227,8 @@ ay_rrib_pushtrafos(void)
     }
   else
     {
+      /* there was no old transformation state, so we fill the very first
+	 with the default values */
       newstate->scalx = 1.0;
       newstate->scaly = 1.0;
       newstate->scalz = 1.0;
@@ -2123,6 +2340,7 @@ ay_rrib_readrib(char *filename, int frame)
 
   ay_rrib_clighthandle = 1;
 
+  /* initialize trafo and attribute attribute stacks */
   ay_rrib_ctrafos = NULL;
   ay_rrib_pushtrafos();
   ay_rrib_cattributes = NULL;
