@@ -40,9 +40,24 @@ proc tc_updateCanvas { ca } {
 
     $ca create line $tc(v1) $tc(v2) $tc(v3) $tc(v4) -arrow last
     $ca create line $tc(v1) $tc(v2) $tc(v5) $tc(v6) -arrow last
+    set mins Inf
+    set maxs -Inf
+    foreach i [list 1 3 5 7] {
+	if { $tc(v$i) < $mins } { set mins $tc(v$i)}
+	if { $tc(v$i) > $maxs } { set maxs $tc(v$i)}
+    }
+    set mint Inf
+    set maxt -Inf
+    foreach i [list 2 4 6 8] {
+	if { $tc(v$i) < $mint } { set mint $tc(v$i)}
+	if { $tc(v$i) > $maxt } { set maxt $tc(v$i)}
+    }
 
-    $ca scale all 0 0 [expr [winfo width $ca]-20]\
-	    [expr [winfo height $ca]-20]
+    set width [expr $maxs-$mins]
+    set height [expr $maxt-$mint]
+
+    $ca scale all 0 0 [expr ([winfo width $ca])-20]\
+	    [expr ([winfo height $ca])-20]
     $ca move all 10 10
 
  return;
@@ -93,8 +108,19 @@ proc tc_updateMenu { } {
 	bind .tcEditw <Enter> {tc_updateMenu}
     }
 
-#    $m add separator
-#    $m add command -label "From BPatch" -command "puts hier"
+    $m add separator
+    $m add command -label "From BPatch" -command {
+	global tc
+	puts "tc_edit: Loading values from BPatch..."
+
+	getBP 0 tc(v1) tc(v2) dummy
+	getBP 1 tc(v3) tc(v4) dummy
+	getBP 3 tc(v5) tc(v6) dummy
+	getBP 2 tc(v7) tc(v8) dummy
+
+	tc_updateCanvas .tcEditw.fc.ca
+	bind .tcEditw <Enter> {tc_updateMenu}
+    }
 
     $m add separator
 
@@ -112,8 +138,19 @@ proc tc_updateMenu { } {
     # update save menu
     set m .tcEditw.fb1.mb2.m
     $m delete 0 end
-#    $m add command -label "To BPatch" -command "puts hier"
-#    $m add separator
+    $m add command -label "To BPatch" -command {
+	global tc
+
+	setBP 0 $tc(v1) $tc(v2) 0.0
+	setBP 1 $tc(v3) $tc(v4) 0.0
+	setBP 3 $tc(v5) $tc(v6) 0.0
+	setBP 2 $tc(v7) $tc(v8) 0.0
+
+	rV
+	tc_updateCanvas .tcEditw.fc.ca
+	bind .tcEditw <Enter> {tc_updateMenu}
+    }
+    $m add separator
 
     set i 1
 
