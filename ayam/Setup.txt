@@ -1,4 +1,4 @@
-[Setup.txt, 17. Jun 2002]
+[Setup.txt, 31. Jan 2003]
 
 Setup instructions for Ayam (Unix only)
 ---------------------------------------
@@ -25,8 +25,8 @@ appeared in the console on first startup.
 1. Determine where to save the preferences
 ------------------------------------------
 
-By default, the preference settings are automatically saved when you
-leave the application to the file: "~/.ayamrc".
+By default, the preference settings are automatically saved
+to the file: "~/.ayamrc" when you quit Ayam.
 
 You can change the filename of the preference settings
 using the environment variable "AYAMRC".
@@ -102,6 +102,7 @@ RRIB: RIB Import
 MFIO: 3DMF Import/Export
 IDR: Importance Driven Rendering
 MetaObj: the MetaBalls custom object
+ayslx, ayslb, ayso, ayslo, ayslo3d: shader parsing plugins
 
 You may load the plugins
 a) manually if you need them (using the main menu "File/Load Custom") or
