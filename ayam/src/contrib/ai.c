@@ -1,7 +1,7 @@
 /*
  * Ayam, a free 3D modeler for the RenderMan interface.
  *
- * Ayam is copyrighted 1998-2001 by Randolf Schultz
+ * Ayam is copyrighted 1998-2004 by Randolf Schultz
  * (rschultz@informatik.uni-rostock.de) and others.
  *
  * All rights reserved.
@@ -86,7 +86,7 @@ ay_ai_compchildren(ay_object *o1, ay_object *o2)
  */
 int ay_ai_instanceobject(ay_object *inst, ay_object *ref)
 {
- int ay_status = AY_OK; 
+ int ay_status = AY_OK;
  ay_object *sub = NULL, *sub2 = NULL;
  void **arr = NULL;
  ay_deletecb *cb = NULL;
@@ -116,7 +116,7 @@ int ay_ai_instanceobject(ay_object *inst, ay_object *ref)
       cb = (ay_deletecb *)(arr[inst->type]);
       if(cb)
 	ay_status = cb(inst->refine);
-      
+
       if(ay_status)
 	return ay_status;
 
@@ -235,15 +235,19 @@ int
 ay_ai_resolveinstances(ay_object *o)
 {
  int ret = 0;
-  while(o) {
-      if(o->type == AY_IDINSTANCE) {
-	  ay_instt_resolve(o); 
+
+  while(o)
+    {
+      if(o->type == AY_IDINSTANCE)
+	{
+	  ay_instt_resolve(o);
 	  ret++;
-      }
+	}
       if(o->down)
-	  ret += ay_ai_resolveinstances(o->down);
+	ret += ay_ai_resolveinstances(o->down);
       o = o->next;
-  }
+    } /* while */
+
  return ret;
 } /* ay_ai_resolveinstances */
 
@@ -255,12 +259,13 @@ int
 ay_ai_resolveinstancestcmd(ClientData clientData, Tcl_Interp *interp,
 			   int argc, char *argv[])
 {
- char done_cmd[64];
- 
+ char done_cmd[128];
+
   sprintf(done_cmd, "puts stdout \"ai: %d instances resolved.\"",
 	  ay_ai_resolveinstances(ay_currentlevel->object));
   Tcl_Eval(interp, done_cmd);
-  return TCL_OK;
+
+ return TCL_OK;
 } /* ay_ai_resolveinstancestcmd */
 
 
@@ -271,15 +276,17 @@ int
 ay_ai_countobjects(ay_object *o)
 {
  int ret = 0;
- 
+
   while(o->next)
     {
       if(o->down)
-          ret += ay_ai_countobjects(o->down);
+	ret += ay_ai_countobjects(o->down);
       ret++;
+
       o = o->next;
-    }
-  return ret;
+    } /* while */
+
+ return ret;
 } /* ay_ai_countobjects */
 
 
@@ -288,8 +295,9 @@ ay_ai_countobjects(ay_object *o)
  */
 int
 ay_ai_makeinstancestcmd(ClientData clientData, Tcl_Interp *interp,
-			  int argc, char *argv[])
+			int argc, char *argv[])
 {
+ int ay_status = AY_OK;
  char done_cmd[64];
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  int dummy = 0;
@@ -308,7 +316,7 @@ ay_ai_makeinstancestcmd(ClientData clientData, Tcl_Interp *interp,
   sprintf(done_cmd, "puts stdout \"ai: %d Objects\"",
   	  ay_ai_countobjects(ay_root));
   Tcl_Eval(interp, done_cmd);
-  
+
   dummy = ay_ai_resolveinstances(ay_currentlevel->object);
 
   comp_true = 0;
@@ -325,7 +333,10 @@ ay_ai_makeinstancestcmd(ClientData clientData, Tcl_Interp *interp,
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
-  return TCL_OK;
+  /* clear all cached pointers to scene hierarchy */
+  ay_status = ay_object_ccp(NULL);
+
+ return TCL_OK;
 } /* ay_ai_makeinstancestcmd */
 
 
@@ -334,7 +345,7 @@ ay_ai_makeinstancestcmd(ClientData clientData, Tcl_Interp *interp,
 #if 0
 /* the following 2 procedures provides visualisation of one reference object
    and its instances within the tree view widget */
-   
+
 int ay_ai_get_nodes(char *node, ay_object *o, ay_object *ref,
 		char *refvar, char *instvar, Tcl_Interp * interp) {
  int p, cnt;
@@ -360,7 +371,7 @@ int ay_ai_get_nodes(char *node, ay_object *o, ay_object *ref,
   }
   node[p] = 0;
 }
-   
+
 int ay_ai_get_instances_list_tcmd(ClientData clientData, Tcl_Interp *interp,
 			       int argc, char *argv[]) {
  ay_object *ref, *o;
@@ -368,7 +379,7 @@ int ay_ai_get_instances_list_tcmd(ClientData clientData, Tcl_Interp *interp,
  char fname[] = "ai_getInstancesList";
  char *string;
  int i, p, cnt;
- 
+
   if(argc != 4) {
       ay_error(interp, AY_ERROR, fname, "Wrong number of arguments (3)!");
       return TCL_OK;
@@ -379,7 +390,7 @@ int ay_ai_get_instances_list_tcmd(ClientData clientData, Tcl_Interp *interp,
       ay_error(interp, AY_ERROR, fname, "first arg should be node!");
       return TCL_OK;
   }
-  
+
   Tcl_SetVar(interp, argv[2], "", TCL_LEAVE_ERR_MSG);
   Tcl_SetVar(interp, argv[3], "", TCL_LEAVE_ERR_MSG);
   o = NULL;
@@ -400,7 +411,7 @@ int ay_ai_get_instances_list_tcmd(ClientData clientData, Tcl_Interp *interp,
 	  i = p+1;
       else
 	  i = p;
-	  
+
       while((o) && (cnt)) {
 	  o = o->next;
 	  cnt--;
@@ -410,26 +421,28 @@ int ay_ai_get_instances_list_tcmd(ClientData clientData, Tcl_Interp *interp,
 	  return TCL_OK;
       }
   }
-  
+
   /* o should point the selected object */
   if(o->type != AY_OTINSTANCE)
       ref = o;
   else
       ref = o->object;
 
-  
+
   strcpy(buf, "root");
   ay_ai_get_nodes(buf, ay_root, ref, argv[3], argv[2], interp);
-  
+
   return TCL_OK;
 }
 
 
 /* the following 2 procedures provides visualisation of all instanced objects
    within the tree view widget */
-   
-int ay_ai_get_refobjects(char *node, ay_object *o, char *objvar,
-		      Tcl_Interp * interp) {
+
+int
+ay_ai_get_refobjects(char *node, ay_object *o, char *objvar,
+		     Tcl_Interp *interp)
+{
  int p, cnt;
 
   cnt = 0;
@@ -448,23 +461,29 @@ int ay_ai_get_refobjects(char *node, ay_object *o, char *objvar,
       o = o->next;
   }
   node[p] = 0;
-}
-   
-int ay_ai_get_refobjects_list_tcmd(ClientData clientData, Tcl_Interp *interp,
-				int argc, char *argv[]) {
+
+ return AY_OK;
+} /* ay_ai_get_refobjects */
+
+
+int
+ay_ai_get_refobjects_list_tcmd(ClientData clientData, Tcl_Interp *interp,
+			       int argc, char *argv[])
+{
  ay_object *ref, *o;
  char buf[256], c;
  char fname[] = "ai_getRefObjectsList";
- 
-  if(argc != 2) {
+
+  if(argc != 2)
+    {
       ay_error(interp, AY_ERROR, fname, "Wrong number of arguments (1)!");
       return TCL_OK;
-  }
+    }
 
   strcpy(buf, "root");
   ay_ai_get_refobjects(buf, ay_root, argv[1], interp);
-  
-  return TCL_OK;
+
+ return TCL_OK;
 }
 
 #endif
@@ -491,6 +510,6 @@ ay_ai_init(Tcl_Interp *interp)
                     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
   */
 
-  return AY_OK;
+ return AY_OK;
 } /* ay_ai_init */
 
