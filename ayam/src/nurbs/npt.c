@@ -1407,7 +1407,7 @@ ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
  */
 int
 ay_npt_sweep(ay_object *o, ay_object *o2, int sections,
-	     int rotate, ay_nurbpatch_object **patch,
+	     int rotate, int closed, ay_nurbpatch_object **patch,
 	     int has_start_cap, ay_object **start_cap,
 	     int has_end_cap, ay_object **end_cap)
 {
@@ -1420,6 +1420,7 @@ ay_npt_sweep(ay_object *o, ay_object *o2, int sections,
  double u, p1[4], p2[4];
  double T0[3] = {0.0,0.0,-1.0};
  double T1[3] = {0.0,0.0,0.0};
+ double T2[3] = {0.0,0.0,0.0};
  double A[3] = {0.0,0.0,0.0};
  double len = 0.0, plen = 0.0;
  double m[16] = {0}, mi[16] = {0}, mcs[16], mtr[16];
@@ -1460,7 +1461,7 @@ ay_npt_sweep(ay_object *o, ay_object *o2, int sections,
   
   ay_trafo_creatematrix(o2, mtr);
   a = 0;
-  for(i = 0; i < cs->length; i++)
+  for(i = 0; i < tr->length; i++)
     {
       ay_trafo_apply4(&(trcv[a]), mtr);
       a += stride;
@@ -1506,6 +1507,18 @@ ay_npt_sweep(ay_object *o, ay_object *o2, int sections,
   ay_nb_CurvePoint4D(tr->length-1, tr->order-1, tr->knotv, trcv,
 		     tr->knotv[tr->order-1], p1);
 
+  if(closed)
+    {
+      ay_nb_CurvePoint4D(tr->length-1, tr->order-1, tr->knotv, trcv,
+			 tr->knotv[tr->length], p2);
+
+      p1[0] = p1[0] + ((p2[0]-p1[0])/2.0);
+      p1[1] = p1[1] + ((p2[1]-p1[1])/2.0);
+      p1[2] = p1[2] + ((p2[2]-p1[2])/2.0);
+
+    }
+
+
   plen = fabs(tr->knotv[tr->length] - tr->knotv[tr->order-1]);
 
   T0[0] = 1.0;
@@ -1537,6 +1550,20 @@ ay_npt_sweep(ay_object *o, ay_object *o2, int sections,
 	  ay_nb_ComputeFirstDer4D(tr->length-1, tr->order-1, tr->knotv,
 				  trcv, u, T1);
 
+	  if(closed && (i == 0 || i == sections))
+	    {
+	      ay_nb_ComputeFirstDer4D(tr->length-1, tr->order-1, tr->knotv,
+				      trcv, tr->knotv[tr->order-1], T1);
+	      ay_nb_ComputeFirstDer4D(tr->length-1, tr->order-1, tr->knotv,
+				      trcv, tr->knotv[tr->length], T2);
+
+	      T1[0] = T1[0] + ((T2[0]-T1[0])/2.0);
+	      T1[1] = T1[1] + ((T2[1]-T1[1])/2.0);
+	      T1[2] = T1[2] + ((T2[2]-T1[2])/2.0);
+
+	    }
+
+
 	  len = AY_V3LEN(T1);
 	  AY_V3SCAL(T1,(1.0/len))
 
@@ -1563,12 +1590,19 @@ ay_npt_sweep(ay_object *o, ay_object *o2, int sections,
 	  ay_trafo_multmatrix4(m, mr);
 	} /* if rotate */
 
-      ay_nb_CurvePoint4D(tr->length-1, tr->order-1, tr->knotv,
-			 trcv, u, p2);
+      if(closed && (i == 0 || i == sections))
+	{
+	  memcpy(p2, p1, 3*sizeof(double));
+	}
+      else
+	{
+	  ay_nb_CurvePoint4D(tr->length-1, tr->order-1, tr->knotv,
+			     trcv, u, p2);
 
-      AY_V3SUB(p2, p2, p1)
+	  AY_V3SUB(p2, p2, p1)
 
-      ay_trafo_translatematrix(-p1[0], -p1[1], -p1[2], m);
+	  ay_trafo_translatematrix(-p1[0], -p1[1], -p1[2], m);
+	}
 
       ay_trafo_translatematrix(-p2[0], -p2[1], -p2[2], m);
  
