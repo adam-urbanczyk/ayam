@@ -450,7 +450,7 @@ ay_tti_handle_simple_glyf(ay_tti_font *ttfont, ay_tti_glyf *glyf,
     } /* for */
 
 
-  scale_factor = 1000.0 / (double) ttfont->unitem;
+  scale_factor = 100.0 / (double) ttfont->unitem;
 
   if(matrix)
     {
