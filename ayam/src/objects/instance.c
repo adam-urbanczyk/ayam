@@ -359,7 +359,7 @@ ay_instance_bbccb(ay_object *o, double *bbox, int *flags)
  void **arr = NULL;
  ay_object *t = NULL, *d = NULL;
  ay_bbccb *cb = NULL;
- double m[16] = {0}, mr[16];
+ double m[16];
  double bbt[24] = {0};
  int i, a;
  double xmin = DBL_MAX, xmax = -DBL_MAX, ymin = DBL_MAX;
@@ -369,20 +369,9 @@ ay_instance_bbccb(ay_object *o, double *bbox, int *flags)
     return AY_ENULL;
 
   /* get transformations of o */
-  glMatrixMode (GL_MODELVIEW);
-  glPushMatrix();
-   glLoadIdentity();
+  ay_trafo_creatematrix(o, m);
 
-   glTranslated(o->movx, o->movy, o->movz);
-	
-   ay_quat_torotmatrix(o->quat, mr);
-   glMultMatrixd(mr);
-  
-   glScaled (o->scalx, o->scaly, o->scalz);
-   glGetDoublev(GL_MODELVIEW_MATRIX, (GLdouble *)m);
-  glPopMatrix();
-
-   t = (ay_object *)o->refine;
+  t = (ay_object *)o->refine;
 
   /* get bounding boxes of children of t (if any) */
   if(t->down)
