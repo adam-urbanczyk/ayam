@@ -307,8 +307,11 @@ proc toolbox_open { } {
 	    button $f.bnot -image ay_Notify_img -padx 0 -pady 0 -command {
 		forceNot; rV
 	    }
-	    balloon_set $f.bnot "force notification"
-
+	    bind $f.bnot <Shift-ButtonPress-1> {
+		forceNot all; rV
+	    }
+	    balloon_set $f.bnot\
+		    "force notification\nShift: complete notification"
 	    #####
 	    button $f.bund -image ay_Undo_img -padx 0 -pady 0 -command {
 		global ay
