@@ -53,7 +53,7 @@ if { $LightAttrData(Type) >= 2 } {
     addParam $w LightAttrData To_Z
 }
 $ay(pca) itemconfigure 1 -window $w
-
+update
 plb_resize
 # adapt scrollregion
 set width [expr [winfo reqwidth $w] + 10]
