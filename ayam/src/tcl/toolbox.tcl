@@ -497,19 +497,19 @@ proc toolbox_open { } {
 
 	    #####
 	    button $f.bswpuv -image ay_NPSwapUV_img -padx 0 -pady 0 -command {
-		swapUV; plb_update;
+		undo save SwapUV; swapUV; plb_update; rV
 	    }
 	    balloon_set $f.bswpuv "swap UV"
 
 	    #####
 	    button $f.brevu -image ay_NPRevU_img -padx 0 -pady 0 -command {
-		revertU; plb_update;
+		undo save RevertU; revertU; plb_update; rV
 	    }
 	    balloon_set $f.brevu "revert U"
 
 	    #####
 	    button $f.brevv -image ay_NPRevV_img -padx 0 -pady 0 -command {
-		revertV; plb_update;
+		undo save RevertV; revertV; plb_update; rV
 	    }
 	    balloon_set $f.brevv "revert V"
 
