@@ -81,6 +81,8 @@ int ay_comp_sdmesh(ay_object *o1, ay_object *o2);
 
 int ay_comp_gordon(ay_object *o1, ay_object *o2);
 
+int ay_comp_text(ay_object *o1, ay_object *o2);
+
 
 /* functions */
 
@@ -941,7 +943,7 @@ ay_comp_sdmesh(ay_object *o1, ay_object *o2)
 int
 ay_comp_gordon(ay_object *o1, ay_object *o2)
 {
-  ay_gordon_object *s1, *s2;
+ ay_gordon_object *s1, *s2;
 
   s1 = (ay_gordon_object *)o1->refine;
   s2 = (ay_gordon_object *)o2->refine;
@@ -952,6 +954,60 @@ ay_comp_gordon(ay_object *o1, ay_object *o2)
 
  return AY_TRUE;
 } /* ay_comp_gordon */
+
+
+/* ay_comp_text:
+ *
+ */
+int
+ay_comp_text(ay_object *o1, ay_object *o2)
+{
+ ay_text_object *s1, *s2;
+ unsigned long len = 0;
+
+  s1 = (ay_text_object *)o1->refine;
+  s2 = (ay_text_object *)o2->refine;
+
+  if((s1->height != s2->height) ||
+     (s1->revert != s2->revert) ||
+     (s1->has_upper_cap != s2->has_upper_cap) ||
+     (s1->has_lower_cap != s2->has_lower_cap) ||
+     (s1->has_upper_bevels != s2->has_upper_bevels) ||
+     (s1->has_lower_bevels != s2->has_lower_bevels) ||
+     (s1->bevel_type != s2->bevel_type) ||
+     (s1->bevel_radius != s2->bevel_radius) ||
+     (s1->revert_bevels != s2->revert_bevels))
+    return AY_FALSE;
+
+  if(s1->fontname && s2->fontname)
+    {
+      if(strcmp(s1->fontname, s2->fontname))
+	return AY_FALSE;
+    }
+  else
+    {
+      if(s1->fontname || s2->fontname)
+	return AY_FALSE;
+    }
+
+
+  if(s1->unistring && s2->unistring)
+    {
+      if((len = Tcl_UniCharLen(s1->unistring)) !=
+	 Tcl_UniCharLen(s2->unistring))
+	return AY_FALSE;
+
+      if(Tcl_UniCharNcmp(s1->unistring, s2->unistring, len))
+	return AY_FALSE;
+    }
+  else
+    {
+      if(s1->unistring || s2->unistring)
+	return AY_FALSE;
+    }
+
+ return AY_TRUE;
+} /* ay_comp_text */
 
 
 /* ay_comp_register:
@@ -1052,6 +1108,7 @@ ay_comp_init()
   ay_status = ay_comp_register(ay_comp_pomesh, AY_IDPOMESH);
   ay_status = ay_comp_register(ay_comp_sdmesh, AY_IDSDMESH);
   ay_status = ay_comp_register(ay_comp_gordon, AY_IDGORDON);
+  ay_status = ay_comp_register(ay_comp_text, AY_IDTEXT);
 
 
  return ay_status;
