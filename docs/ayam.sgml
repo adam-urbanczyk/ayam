@@ -3862,7 +3862,13 @@ of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 
 <sect1>Birail1 Object<label id="birail1obj">
 <p>
-The birail1 object forms a surface by sweeping a cross section
+<figure loc="ht">
+<eps file="pics/birail1.ps" height="5cm">
+<img src="pics/birail1.gif">
+<caption>Birail1 Object (left: Curves, right: Resulting Swept Surface)</caption>
+</figure>
+<p>
+The Birail1 object forms a surface by sweeping a cross section
 (or profile) curve along two so called rail curves.
 The object hierarchy of a Birail1 object, thus, looks like this:
 <code>
