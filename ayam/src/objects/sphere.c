@@ -1,3 +1,4 @@
+
 /*
  * Ayam, a free 3D modeler for the RenderMan interface.
  *
@@ -641,14 +642,20 @@ ay_sphere_wribcb(char *file, ay_object *o)
     if(radius == 0.0)
       return AY_OK;
 
-    RiSphere( radius, zmin, zmax, thetamax, NULL ); 
+    if((fabs(zmax) < radius) || (fabs(zmin) < radius) ||
+       (fabs(thetamax) != 360.0))
+    {
+      RiSolidBegin(RI_PRIMITIVE);
+    }
+
+    RiSphere(radius, zmin, zmax, thetamax, NULL); 
 
     /* Top if needed. */
-    if ( fabs(zmax) < radius )
+    if(fabs(zmax) < radius)
       {
 	/* Refer to [UPST90]. */
 	rmax = (RtFloat)(sqrt(radius*radius-zmax*zmax));
-	RiDisk( zmax, rmax, thetamax, NULL ); 
+	RiDisk(zmax, rmax, thetamax, NULL); 
 
 	phimax = (RtFloat)(asin(zmax/radius));
       }
@@ -659,13 +666,13 @@ ay_sphere_wribcb(char *file, ay_object *o)
       }
 
     /* Bottom if needed. */
-    if ( fabs(zmin) < radius )
+    if(fabs(zmin) < radius)
       {
 	RiAttributeBegin();
 	 RiReverseOrientation();
 	 /* Refer to [UPST90]. */
 	 rmin = (RtFloat)(sqrt(radius*radius-zmin*zmin));
-	 RiDisk( zmin, rmin, thetamax, NULL); 
+	 RiDisk(zmin, rmin, thetamax, NULL); 
 	RiAttributeEnd();
 
 	phimin = (RtFloat)(asin(zmin/radius));
@@ -677,15 +684,15 @@ ay_sphere_wribcb(char *file, ay_object *o)
       }
 
     /* Don't add patches for wedge shape if they are not needed. */
-    if (thetamax != 360.0)
+    if(fabs(thetamax) != 360.0)
       {
 	phidiff = phimax - phimin;
-	zmid = (RtFloat)(sin( phimin + phidiff/2.0 ));
+	zmid = (RtFloat)(sin(phimin + phidiff/2.0));
 	xmid = (RtFloat)(sqrt(radius*radius-zmid*zmid));
 
 	/* The Y coordinates need to be zero, so just clear everything. */
-	memset( P1, '\0', 16*sizeof(RtPoint) );
-	memset( P2, '\0', 16*sizeof(RtPoint) );
+	memset(P1, '\0', 16*sizeof(RtPoint));
+	memset(P2, '\0', 16*sizeof(RtPoint));
 
 	/* Calculate the patch from bottom to middle. */
 	P1[0][Z] = P1[1][Z] = P1[2][Z] = P1[3][Z] = zmin; /* height */
@@ -751,17 +758,24 @@ ay_sphere_wribcb(char *file, ay_object *o)
 	P2[9][X]  = (RtFloat)(P2[11][X]/3.0);
 	P2[10][X] = (RtFloat)(2.0*P2[9][X]);
 
-	RiPatch( RI_BICUBIC, RI_P, (RtPointer)P1, NULL ); 
-	RiPatch( RI_BICUBIC, RI_P, (RtPointer)P2, NULL );
+	RiPatch(RI_BICUBIC, RI_P, (RtPointer)P1, NULL); 
+	RiPatch(RI_BICUBIC, RI_P, (RtPointer)P2, NULL);
 
 	RiAttributeBegin();
-	 RiRotate( thetamax, (RtFloat)0.0, (RtFloat)0.0, (RtFloat)1.0 );
+	 RiRotate(thetamax, (RtFloat)0.0, (RtFloat)0.0, (RtFloat)1.0);
 	 RiReverseOrientation();
-	 RiPatch( RI_BICUBIC, RI_P, (RtPointer)P1, NULL );
-	 RiPatch( RI_BICUBIC, RI_P, (RtPointer)P2, NULL );
+	 RiPatch(RI_BICUBIC, RI_P, (RtPointer)P1, NULL);
+	 RiPatch(RI_BICUBIC, RI_P, (RtPointer)P2, NULL);
 	RiAttributeEnd();
+      } /* if */
+
+    if((fabs(zmax) < radius) || (fabs(zmin) < radius) ||
+       (fabs(thetamax) != 360.0))
+      {
+	RiSolidEnd();
       }
-  }
+
+  } /* if */
 
 #undef X
 #undef Y

@@ -521,7 +521,7 @@ ay_cylinder_wribcb(char *file, ay_object *o)
   }
   else
   {
-    if(cylinder->thetamax == 180.0)
+    if(fabs(cylinder->thetamax) == 180.0)
       {
 	RiSolidBegin(RI_PRIMITIVE);
 	RiCylinder((RtFloat)cylinder->radius,
@@ -559,7 +559,7 @@ ay_cylinder_wribcb(char *file, ay_object *o)
 
 	RiSolidEnd();
       }
-    else if(cylinder->thetamax == 360.0)
+    else if(fabs(cylinder->thetamax) == 360.0)
       {
 	RiSolidBegin(RI_PRIMITIVE);
 	RiCylinder((RtFloat)cylinder->radius,
