@@ -194,6 +194,10 @@ ay_sweep_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(sweep->interpolate));
 
+  Tcl_SetStringObj(ton,"Close",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &(sweep->close));
+
   Tcl_SetStringObj(ton,"Sections",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(sweep->sections));
@@ -253,6 +257,11 @@ ay_sweep_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton,"Close",-1);
+  to = Tcl_NewIntObj(sweep->close);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
   Tcl_SetStringObj(ton,"Sections",-1);
   to = Tcl_NewIntObj(sweep->sections);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
@@ -304,6 +313,11 @@ ay_sweep_readcb(FILE *fileptr, ay_object *o)
   fscanf(fileptr,"%d\n",&sweep->glu_display_mode);
   fscanf(fileptr,"%lg\n",&sweep->glu_sampling_tolerance);
 
+  if(ay_read_version > 3)
+    {
+      fscanf(fileptr,"%d\n",&sweep->close);
+    }
+
   o->refine = sweep;
 
  return AY_OK;
@@ -327,6 +341,7 @@ ay_sweep_writecb(FILE *fileptr, ay_object *o)
   fprintf(fileptr, "%d\n", sweep->has_end_cap);
   fprintf(fileptr, "%d\n", sweep->glu_display_mode);
   fprintf(fileptr, "%g\n", sweep->glu_sampling_tolerance);
+  fprintf(fileptr, "%d\n", sweep->close);
 
  return AY_OK;
 } /* ay_sweep_writecb */
@@ -460,6 +475,7 @@ ay_sweep_notifycb(ay_object *o)
 
 
   ay_status = ay_npt_sweep(curve1, curve2, sweep->sections, sweep->rotate,
+			   sweep->close,
 			   (ay_nurbpatch_object **)(&(npatch->refine)),
 			   sweep->has_start_cap, &(sweep->start_cap),
 			   sweep->has_end_cap, &(sweep->end_cap));
@@ -484,7 +500,6 @@ ay_sweep_notifycb(ay_object *o)
 	  np = (ay_nurbpatch_object *)sweep->npatch->refine;
 	  ay_status = ay_npt_interpolateu(np);
 	}
-
     }
 
   /* remove provided objects */
