@@ -436,9 +436,10 @@ ay_wrib_object(char *file, ay_object *o)
 	  if(o->tags)
 	    {
 	      ay_status = ay_riattr_wrib(o);
-	    }
+	      ay_status = ay_tc_wrib(o);
+	    } /* if */
 
-	}
+	}  /* if */
 
 
     } /* if */

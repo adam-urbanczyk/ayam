@@ -484,6 +484,7 @@ ay_matt_wrib(char *file, ay_mat_object *m)
   if(m->objptr)
     {
       ay_riattr_wrib(m->objptr);
+      ay_tc_wrib(m->objptr);
     }
 
  return AY_OK;
