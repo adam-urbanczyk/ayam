@@ -27,9 +27,9 @@ ay_viewt_setupprojection(struct Togl *togl)
  int width = Togl_Width(togl);
  int height = Togl_Height(togl);
  GLdouble aspect = ((GLdouble)width) / ((GLdouble)height);  
- GLfloat light_posf[4] = { 0.0f,  0.0f, 10.0f, 1.0f};
- GLfloat light_poss[4] = {10.0f,  0.0f,  0.0f, 1.0f};
- GLfloat light_post[4] = { 0.0f, 10.0f,  0.0f, 1.0f};
+ GLfloat light_posf[4] = { 0.0f,  0.0f, 1000.0f, 1.0f};
+ GLfloat light_poss[4] = {1000.0f,  0.0f,  0.0f, 1.0f};
+ GLfloat light_post[4] = { 0.0f, 1000.0f,  0.0f, 1.0f};
 
   glViewport(0, 0, width, height);
 
