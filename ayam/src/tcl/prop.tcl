@@ -136,13 +136,15 @@ pack $f.mb -in $f -side left -fill x -expand yes -pady 0
 pack $f -in $w -side top -fill x
 
 set i 0
+set j 0
 foreach tag $names {
     if { !$ayprefs(HideTmpTags) || ![tagIsTemp $tag] } {
 
-	$m add command -label "Tag#$i" -command "setTags -delete $i;plb_update"
+	$m add command -label "Tag#$j" -command "setTags -delete $i;plb_update"
 
-	incr i
+	incr j
     }
+    incr i
 }
 
 addCommand $w c2 "Add Tag!" {addTagp}
