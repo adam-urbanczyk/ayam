@@ -128,7 +128,7 @@ proc idr_open {} {
     # Global IDR Parameters?
     set f1 [frame $f.f1]
     addText $f1 e1 "IDR Params:"
-    addMenu $f1 idrprefs Mode {Manual Selection Changed 2DRegions}
+    addMenu $f1 idrprefs Mode {Manual Selection Changed 2DRegions 3DRegions}
     addCheck $f1 idrprefs CacheParts
     pack $f1 -side top
 
@@ -348,6 +348,10 @@ proc idr_actionDefReg { w {del ""} } {
 
 }
 # idr_actionDefReg
+
+# for making changed objects important
+rename treeSelect oldtreeSelect
+rename idr_treeSelect treeSelect
 
 global ay
 $ay(cm) add command -label "Open IDR" -command "idr_open"
