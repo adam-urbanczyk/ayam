@@ -392,6 +392,7 @@ array set ay {
  gl_ext ""
  glu_ver ""
  glu_ext ""
+ action 0
 }
 # array ay
 

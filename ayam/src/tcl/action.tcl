@@ -15,6 +15,7 @@
 # redraw all views; update property GUI
 proc stdReleaseBind { w } {
     bind $w <ButtonRelease-1> {
+	set ay(action) 0
 	if { $ayprefs(LazyNotify) == 1 } { forceNot }
 	rV
 	plb_update
@@ -29,6 +30,7 @@ proc actionRotView { w } {
     viewTitle $w "" "Rotate_View"
 
     bind $w <ButtonPress-1> {
+	set ay(action) 1
 	undo save
 	%W mc
 	set oldx %x
@@ -56,6 +58,7 @@ proc actionMoveView { w } {
     viewTitle $w "" "Move_View"
 
     bind $w <ButtonPress-1> {
+	set ay(action) 1
 	undo save
 	%W mc
 	%W movevac -start %x %y
@@ -80,6 +83,7 @@ proc actionZoomView { w } {
     viewTitle $w "" "Zoom_View"
 
     bind $w <ButtonPress-1> {
+	set ay(action) 1
 	undo save
 	%W mc
 	%W zoomvac -start %y
@@ -104,6 +108,7 @@ proc actionMoveZView { w } {
     viewTitle $w "" "MoveZ_View"
 
     bind $w <ButtonPress-1> {
+	set ay(action) 1
 	undo save
 	%W mc
 	%W movezvac -start %y
@@ -128,6 +133,7 @@ proc actionMoveOb { w } {
     viewTitle $w "" "Move"
 
     bind $w <ButtonPress-1> {
+	set ay(action) 1
 	undo save
 	%W mc
 	%W moveoac -start %x %y
@@ -152,6 +158,7 @@ proc actionRotOb { w } {
     viewTitle $w "" "Rotate"
 
     bind $w <ButtonPress-1> {
+	set ay(action) 1
 	undo save
 	%W mc
 	%W rotoac -start %x %y
@@ -173,7 +180,8 @@ proc actionRotObabindp { w x y } {
 
     viewTitle $w "" "Rotate_around_Point"
 
-    bind $w <ButtonPress-1> "%W mc;%W rotoaac -start %x %y $x $y"
+    bind $w <ButtonPress-1> "set ay(action) 1; %W mc;\
+	    %W rotoaac -start %x %y $x $y"
     bind $w <B1-Motion> "%W rotoaac -winxy %x %y $x $y"
 
     stdReleaseBind $w
@@ -208,6 +216,7 @@ proc actionSc1DXOb { w } {
     viewTitle $w "" "Scale1DX"
 
     bind $w <ButtonPress-1> {
+	set ay(action) 1
 	undo save
 	%W mc
 	%W sc1dxoac -start %x %y
@@ -231,6 +240,7 @@ proc actionSc1DYOb { w } {
     viewTitle $w "" "Scale1DY"
 
     bind $w <ButtonPress-1> {
+	set ay(action) 1
 	undo save
 	%W mc
 	%W sc1dyoac -start %x %y
@@ -254,6 +264,7 @@ proc actionSc1DZOb { w } {
     viewTitle $w "" "Scale1DZ"
 
     bind $w <ButtonPress-1> {
+	set ay(action) 1
 	undo save
 	%W mc
 	%W sc1dzoac -start %x %y
@@ -277,6 +288,7 @@ proc actionSc2DOb { w } {
     viewTitle $w "" "Scale2D"
 
     bind $w <ButtonPress-1> {
+	set ay(action) 1
 	undo save
 	%W mc
 	%W sc2doac -start %x %y
@@ -300,6 +312,7 @@ proc actionSc3DOb { w } {
     viewTitle $w "" "Scale3D"
 
     bind $w <ButtonPress-1> {
+	set ay(action) 1
 	undo save
 	%W mc
 	%W sc3doac -start %x %y
@@ -323,6 +336,7 @@ proc actionStr2DOb { w } {
     viewTitle $w "" "Stretch2D"
 
     bind $w <ButtonPress-1> {
+	set ay(action) 1
 	undo save
 	%W mc
 	%W str2doac -start %x %y
@@ -613,6 +627,7 @@ proc actionEditP { w } {
     viewTitle $w "" "Edit_Points"
 
     bind $w <ButtonPress-1> {
+	set ay(action) 1
 	undo save
 	%W mc
 	%W startpepac %x %y
@@ -635,6 +650,7 @@ proc actionEditWP { w } {
     viewTitle $w "" "Edit_Weights"
 
     bind $w <ButtonPress-1> {
+	set ay(action) 1
 	undo save
 	%W startpepac %x %y
 	%W wepac -start %x
