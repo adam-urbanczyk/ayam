@@ -361,6 +361,8 @@ proc viewOpen { width height {establish_bindings 1} } {
 	$w configure -cursor watch
     }
 
+    bind $w <Configure> "plb_update"
+
     update
     set ay(cviewsema) 0
     update
