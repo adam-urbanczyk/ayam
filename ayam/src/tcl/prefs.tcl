@@ -14,7 +14,7 @@
 # prefs_set:
 #  transfer preference settings to C-context
 proc prefs_set {} {
-    global ayprefs
+    global ayprefs tcl_precision
     set tcl_precision $ayprefs(TclPrecision)
     setPrefs
  return;
@@ -37,7 +37,7 @@ proc prefs_rsnb { nb page } {
 # prefs_open:
 #  open the preferences editor
 proc prefs_open {} {
-    global ay ayprefs ayprefse
+    global ay ayprefs ayprefse tcl_platform
 
     # copy array ayprefs to ayprefse (we operate on this second array)
     set avnames [array names ayprefs]
@@ -47,7 +47,12 @@ proc prefs_open {} {
 
     set w .prefsw
     catch {destroy $w}
-    toplevel $w -width 370 -height 400
+
+    set width 370
+    #if { $tcl_platform(platform) == "windows" } { 
+    #set width 400
+    #}
+    toplevel $w -width $width -height 400
     wm title $w "Ayam Preferences"
     wm iconname $w "Ayam"
     wm withdraw $w
@@ -184,7 +189,7 @@ proc prefs_open {} {
     addCheckB $fw ayprefse ToolBoxShrink [ms ayprefse_ToolBoxShrink]
     addCheckB $fw ayprefse RGTrans [ms ayprefse_RGTrans]
     addCheckB $fw ayprefse HideTmpTags [ms ayprefse_HideTmpTags]
-    addParamB $fw ayprefse TclPrecision [ms ayprefse_TclPrecision] { 4 5 6 }
+    addParamB $fw ayprefse TclPrecision [ms ayprefse_TclPrecision] { 4 5 6 12 }
 
     # select last selected preference section
     pack $nb -fill both -expand yes
@@ -213,12 +218,12 @@ proc prefs_open {} {
 	# copy array ayprefse to ayprefs
 	set avnames [array names ayprefs]
 	foreach j $avnames {
-
 	    set ayprefs($j) $ayprefse($j)
 	}
 	prefs_set
 	rV
     }
+
     button $f.bdef -text "Defaults" -width 8 -command {
 	global ay ayprefse ayprefsdefaults
 	set avnames [array names ayprefsdefaults]
@@ -233,6 +238,7 @@ proc prefs_open {} {
 	}
 
     }
+
     button $f.bca -text "Cancel" -width 8 -command {
 	global ay ayprefs ayprefse
 	set avnames [array names ayprefs]
@@ -246,6 +252,16 @@ proc prefs_open {} {
 
     pack $f.bok $f.bap $f.bdef $f.bca -in $f -side left -fill x -expand yes
     pack $f -in $w -side bottom -fill x -expand no
+
+    #
+    global ayprefs
+    if { $ayprefs(AutoFocus) == 1 } {
+	bind $w <Enter> {
+	    if { "%W" == "[winfo toplevel %W]" } {
+		focus %W
+	    }
+	}
+    }
 
     # show the window
     wm deiconify $w
