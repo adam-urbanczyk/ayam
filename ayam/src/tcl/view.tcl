@@ -547,6 +547,13 @@ proc viewClose { w } {
 
   set ay(draw) 0
   update
+
+  # remove bindings that could accidentally fire while closing
+  bind $w <Enter> ""
+  bind $w <Motion> ""
+  global ayviewshortcuts
+  bind $w <$ayviewshortcuts(RotMod)-Motion> ""
+
   # delete view from list
   set temp ""
   set ay(currentView) ""
