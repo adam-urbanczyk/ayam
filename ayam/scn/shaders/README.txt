@@ -17,3 +17,18 @@ slb/air: Air
 sdr/pixie: Pixie
 xml/k3d: Use sl2xml to create an XML representation of the shader parameters
 all: compile for all renderers
+
+To compile all shaders for BMRT you, consequently, just have to type:
+
+>gmake slc
+
+or
+
+>gmake bmrt
+
+To get rid of all compiled shaders, just type:
+
+>gmake clean
+
+To add new shaders that you possibly created on your own, you just need to
+add the name of the shader source file to the SOURCES variable.
