@@ -2230,6 +2230,7 @@ ay_npt_gettangentfromcontrol(int closed, int n, int p,
  int found = AY_FALSE, wrapped = AY_FALSE;
  int b, i1, i2;
  int before, after;
+ double l;
 
   if(closed)
     {
@@ -2301,6 +2302,13 @@ ay_npt_gettangentfromcontrol(int closed, int n, int p,
   t[0] = P[after*stride] - P[before*stride];
   t[1] = P[(after*stride)+1] - P[(before*stride)+1];
 
+  /* normalize tangent vector */
+  l = sqrt(t[0]*t[0]+t[1]*t[1]);
+  if(l > AY_EPSILON)
+    {
+      t[0] /= l;
+      t[1] /= l;
+    }
 
   return ay_status;
 } /* ay_npt_gettangentfromcontrol */
