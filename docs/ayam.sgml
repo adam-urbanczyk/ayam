@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>3. Oct 2002
+<date>6. Oct 2002
 <abstract>
 This is the documentation of Ayam (1.3) - a free 3D modeling environment
 for the RenderMan interface.
@@ -525,6 +525,7 @@ control direct rendering from a view, except whether RenderGUIs should
 be used.
 If the <tt>"ScanShaders"</tt> checkmark is activated, Ayam will
 additionally try to load the corresponding shader parsing plugin
+(see also section <ref id="spplugins" name="Shader Parsing Plugins">))
 and rescan for compiled shaders. Note, that in order for the
 <tt>"ScanShaders"</tt> feature to work
 properly you have to set the <tt>"Shaders"</tt> and <tt>"Plugins"</tt>
@@ -879,8 +880,8 @@ The <tt/"Main"/ section contains the most used preference settings:
 <itemize>
 <item><tt/"Shaders"/ contains a number of paths (separated by <tt/":"/
 on Unix and <tt/";"/ on Win32) where Ayam looks for compiled
-shaders (files with the extension <tt/".slc"/ that have been compiled
-with BMRTs slc). Using the <tt/"Add"/ button, you may add
+shaders (e.g. files with the extension <tt/".slc"/ that have been compiled
+with slc from BMRT). Using the <tt/"Add"/ button, you may add
 another path, simply press it and select a file inside the directory
 you want to add. Note, that currently the filenames may contain
 just two <tt/"."/ at maximum.
@@ -895,6 +896,7 @@ settings.<label id="prefgui">
 <itemize>
 <item><tt/"Locale"/, sets a language for the balloon help texts,
 the default value menu shows all currently available locales.
+The value will have no effect until Ayam is restarted!
 <item><tt/"AutoResize"/ toggles, whether the main window
 should be resized horizontally according to the property GUI whenever
 a new GUI is displayed.
@@ -1078,6 +1080,11 @@ as well, see section <ref id="shadowmaps" name="Using ShadowMaps">.
 
 <item><tt/"ExcludeHidden"/ causes hidden objects not to be
 exported to RIB files.
+
+<item><tt/"RenderMode"/ allows to switch between two different methods
+of forcing a renderer to render to the screen (via a RiDisplay statement
+in the exported RIB, necessary for e.g. PRMan and RDC;
+or via a command line argument).
 
 <item><tt/"QRender"/ determines the command that should be executed,
 upon quick rendering a view, <tt>%s</tt> denotes the name of the RIB file.
@@ -4574,6 +4581,47 @@ and finally <tt/"All"/ all messages, even informative,
 should be printed.
 </itemize>
 
+<sect1>3DMF Import Export (MFIO) Plugin<label id="mfioplugin">
+<p>
+Using the MFIO plugin you may import and export scenes
+from to the 3DMF format (version 1.0 only!) from Apple.
+Import supports the following primitives: Polylines,
+NURBS curves, NURBS surfaces (with trim curves), Triangles, TriGrids,
+Polygons, general Polygons, Boxes, Ellipsoids, Cylinders, Cones,
+Disks, and Tori.
+The following transformations are supported: Scale, Translate, Rotate,
+RotateQuaternion, RotateAxis (if axis is X, Y, or Z). Furthermore,
+the import plugin reads the structure of the scene from Container
+objects. Reference objects will be resolved to normal objects while importing.
+
+The MFIO export supports the following primitives: NURBS curves and surfaces
+(with trim curves) including all NURBS curve/surface providing objects,
+such as ICurve, Skin etc., Box, Sphere, Disk, Cone,
+Cylinder, Torus, and PolyMesh.
+Instance objects will be resolved for export.
+Level objects (regardless of type) will be written as Container objects.
+
+Support for import/export of lights, camera attributes as well as
+material attributes is currently not available.
+
+<sect1>Shader Parsing Plugins<label id="spplugins">
+<p>
+
+Since Ayam1.3, the following plugins are provided to allow
+parsing of shaders: <tt/"ayslb"/ for Air, <tt/"ayslx"/ for Aqsis,
+<tt/"ayso"/ for RDC, <tt/"ayslo"/ for PRMan, and <tt/"ayslo3d"/ for 3Delight
+<p>
+After loading of one of the aforementioned plugins, Ayam will
+be able to parse shaders compiled with the shader compiler
+of the respective renderer. A shader parsing plugin may be loaded
+automatically on startup of Ayam using one of the provided Tcl scripts:
+<tt/"loadayslb.tcl"/, <tt/"loadayslo.tcl"/, <tt/"loadayslo3d.tcl"/,
+<tt/"loadayslx.tcl"/, and <tt/"loadayso.tcl"/. Those scripts may be
+adapted by the user to set a different
+Shaders preference setting or to immediately scan for shaders
+after loading. However, the standard behavior while loading of
+such a plugin requires you to scan manually for shaders and to adapt
+the shaders search path manually too, using the preferences editor.
 
 <sect1>Automatic Instancing<label id="ai">
 <p>
@@ -5034,6 +5082,8 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Menu: <ref id="mm" name="main menu">,
 <ref id="vm" name="view menu">
 <item>MetaObj, MetaComp: <ref id="metaobjobj" name="object and properties">
+<item>MFIO Plugin:
+<ref id="mfioplugin" name="3DMF import export (MFIO) plugin">
 <item>MinorRad: <ref id="top" name="torus attribute">
 <item>MinSamples, MaxSamples: <ref id="rio" name="RenderMan interface option">
 <item>MIResetDM, MIResetST: <ref id="prefmisc" name="preference setting">
@@ -5133,6 +5183,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Render: <ref id="vm" name="view menu entry">,
 <ref id="prefrib" name="preference setting">
 <item>Renderer: <ref id="mmspecial" name="select a different renderer">
+<item>RenderMode: <ref id="prefrib" name="preference setting">
 <item>RenderPT, RenderUI: <ref id="prefrib" name="preference setting">
 <item>Replace: <ref id="mmfile" name="main menu entry">
 <item>replaceScene: <ref id="scio" name="scripting interface command">
@@ -5195,6 +5246,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Shade: <ref id="prefdraw" name="preference setting">,
 <ref id="vmconf" name="view menu entry">
 <item>Shader: <ref id="shd" name="property">
+<item>Shader Parsing: <ref id="spplugins" name="shader parsing plugins">
 <item>Shaders: <ref id="prefmain" name="preference setting">
 <item>ShadingRate: <ref id="attrs" name="RenderMan/BMRT attribute">
 <item>ShadowBias: <ref id="rio" name="RenderMan interface option">
