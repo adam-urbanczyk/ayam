@@ -3004,6 +3004,8 @@ Mfio_Init(Tcl_Interp *interp)
 				       ay_mfio_writencconvertible);
   ay_status = ay_mfio_registerwritecb((char *)(AY_IDCONCATNC),
 				       ay_mfio_writencconvertible);
+  ay_status = ay_mfio_registerwritecb((char *)(AY_IDEXTRNC),
+				       ay_mfio_writencconvertible);
 
   ay_status = ay_mfio_registerwritecb((char *)(AY_IDEXTRUDE),
 				       ay_mfio_writenpconvertible);
