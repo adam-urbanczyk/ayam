@@ -1604,24 +1604,20 @@ ay_pact_wrtcb(struct Togl *togl, int argc, char *argv[])
 	 ay_error(AY_ERROR, fname, NULL);
        }
 
-     if(ay_point_edit_coords)
+     if(ay_point_edit_coords && ay_point_edit_coords_homogenous)
        {
 	 for(i = 0; i < ay_point_edit_coords_number; i++)
 	   {
 	     coords = ay_point_edit_coords[i]; 
-	     if(ay_point_edit_coords_homogenous)
-	       {
-		 coords[3] = 1.0;
-	       }
-	     else
-	       {
-		 ay_error(AY_ERROR, fname, "Point is not homogenous!");
-	       }
+	     coords[3] = 1.0;
 	   } /* for */
 
 	 o->modified = AY_TRUE;
 	 ay_notify_force(o);
-
+       }
+     else
+       {
+	 ay_error(AY_ERROR, fname, "No points (with weights) found!");
        } /* if */
 
      sel = sel->next;
