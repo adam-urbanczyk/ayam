@@ -407,8 +407,12 @@ proc viewSetGridIcon { w gridsize } {
 		    if { $gridsize == 1.0 } {
 			$w.fMenu.g configure -image ay_Grid10_img
 		    } else {
-			$w.fMenu.g configure -image ay_Grid_img
-		    }
+			if { $gridsize == 0.0 } {
+			    $w.fMenu.g configure -image ay_Grid_img
+			} else {
+			    $w.fMenu.g configure -image ay_GridX_img
+			}
+		    } 
 		}
 	    }
 	}
