@@ -159,9 +159,13 @@ proc idr_open {} {
 
     addParam $f1 idrprefs PropRadius
 
-    addCommand $f1 c2 "Propagate" {
+    addCommand $f1 c2 "Propagate Distance" {
 	global idrprefs
 	idr_propDist $idrprefs(PropRadius)
+    }
+    addCommand $f1 c3 "Propagate Parent" {
+	global idrprefs
+	idr_propDist $idrprefs(PropRadius) 1
     }
 
     pack $f1 -side top -fill x -expand yes

@@ -106,11 +106,84 @@ idr_get_dist(double *p1, double *p2)
  return(AY_V3LEN(p3));
 }
 
+int
+idr_get_center(ay_object *o, double *center)
+{
+ double bb[24];
+ int flag = 0;
+
+  center[0] = o->movx;
+  center[1] = o->movy;
+  center[2] = o->movz;
+  flag = ay_bbc_get(o, bb);
+  
+  if(flag != AY_ERROR)
+    {
+      /* get center of bbox */
+
+      
+
+    }
+
+ return AY_OK;
+}
+
+
+/* idr_propagate_parent:
+ *
+ */
+int
+idr_propagate_parent(ay_object *from, double threshhold)
+{
+ ay_list_object *clevel = NULL;
+ ay_tag_object *next = NULL;
+ ay_object *o = NULL;
+
+  clevel = ay_currentlevel->next;
+  while((threshhold > 0.0) && (clevel->object != ay_root))
+    {
+      
+      if(clevel->object != ay_root)
+	{
+	  o = clevel->object;
+	  if(!o->tags)
+	    {
+	      ay_tags_copyall(from, o);
+	    }
+	  else
+	    {
+	      while(o->tags)
+		{
+		  next = o->tags->next;
+		  ay_tags_free(o->tags);
+		  o->tags = next;
+		} /* while */
+	      ay_tags_copyall(from, o);
+	    } /* if */
+	} /* if */
+
+      clevel = clevel->next;
+      if(clevel->next)
+	{
+	  clevel = clevel->next;
+	}
+      else
+	{
+	  break;
+	}
+      threshhold -= 1.0;
+    } /* while */
+
+ return AY_OK;
+} /* idr_propagate_parent */
+
+
 /* idr_propagate_dist:
  *
  */
 int
-idr_propagate_dist(double *p1, ay_object *from, ay_object *cur, double threshhold)
+idr_propagate_dist(double *p1, ay_object *from, ay_object *cur,
+		   double threshhold)
 {
  ay_object *o = NULL;
  int ay_status = AY_OK;
@@ -193,14 +266,17 @@ idr_propagate_disttcmd(ClientData clientData, Tcl_Interp *interp,
  double p[3], p2[3];
  GLdouble mm[16];
  double threshhold = 0.0;
+ int mode = 0;
  ay_tag_object *next = NULL;
 
- if(argc>0)
+ if(argc>1)
    {
      Tcl_GetDouble(interp, argv[1], &threshhold);
-     printf("threshhold: %g\n",threshhold);
    }
- 
+  if(argc>2)
+   {
+     Tcl_GetInt(interp, argv[2], &mode);
+   }
 
   if(!sel)
     {
@@ -209,6 +285,15 @@ idr_propagate_disttcmd(ClientData clientData, Tcl_Interp *interp,
     }
 
   from = sel->object;
+
+
+  /* propagate to parent(s)? */
+  if(mode == 1)
+    {
+      ay_status = idr_propagate_parent(from, threshhold);
+      return TCL_OK;
+    }
+
 
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
