@@ -38,6 +38,9 @@ ay_interpol_1DA4D(double p, int len, double *st, double *en, double *ta)
 	 (fabs(V1[2]) > AY_EPSILON))
 	{
 	  AY_V3SCAL(V1,p);
+	  V1[0] += st[i]; 
+	  V1[1] += st[i+1]; 
+	  V1[2] += st[i+2]; 
 	  memcpy(&(ta[i]),V1,3*sizeof(double));
 	}
       else
