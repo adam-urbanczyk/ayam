@@ -329,7 +329,7 @@ ay_concatnc_notifycb(ay_object *o)
  ay_concatnc_object *concatnc = NULL;
  ay_object *down = NULL, *ncurve = NULL, *curves = NULL, **next = NULL;
  ay_nurbcurve_object *nc = NULL;
- int numcurves = 0, order;
+ int numcurves = 0, order = 0, highest_order = 0;
 
   if(!o)
     return AY_ENULL;    
@@ -347,6 +347,9 @@ ay_concatnc_notifycb(ay_object *o)
       /* */
       if(down->type == AY_IDNCURVE)
 	{
+	  nc = (ay_nurbcurve_object *)(down->refine);
+	  if(nc->order > highest_order)
+	    highest_order = nc->order;
 	  ay_object_copy(down, next);
 	  next = &((*next)->next);
 	}
@@ -354,9 +357,13 @@ ay_concatnc_notifycb(ay_object *o)
 	{
 	  ay_provide_object(down, AY_IDNCURVE, next);
 	  if(*next)
-	    next = &((*next)->next);
+	    {
+	      nc = (ay_nurbcurve_object *)((*next)->refine);
+	      if(nc->order > highest_order)
+		highest_order = nc->order;
+	      next = &((*next)->next);
+	    }
 	}
-
 
       down = down->next;
     } /* while */
@@ -365,12 +372,15 @@ ay_concatnc_notifycb(ay_object *o)
   while(ncurve)
     {
       ay_nct_applytrafo(ncurve);
+      ay_status = ay_nct_elevate((ay_nurbcurve_object *)(ncurve->refine),
+				 highest_order);
       ay_nct_clamp((ay_nurbcurve_object *)ncurve->refine);
       ncurve = ncurve->next;
-    }
+    } /* while */
 
   if(concatnc->knot_type == 1)
     {
+      /* create a custom knot vector, preserving parameter curve shapes */
 
       ncurve = curves;
 
@@ -395,6 +405,8 @@ ay_concatnc_notifycb(ay_object *o)
     }
   else
     {
+      /* create a NURBS knot vector */
+
       if(concatnc->fillgaps)
 	{
 	  ay_status = ay_nct_fillgaps(concatnc->closed, 4, concatnc->ftlength,
