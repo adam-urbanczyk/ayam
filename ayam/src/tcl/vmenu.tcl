@@ -176,10 +176,12 @@ $m add separator
 
 $m add command -label "From Camera" -command "\
 	global ay;\
+	undo save FromCamera;\
 	$w.f3D.togl mc; $w.f3D.togl fromcam; \$ay(currentView) mc"
 
 $m add command -label "To Camera" -command "\
 	global ay;\
+	undo save ToCamera;\
 	$w.f3D.togl mc; $w.f3D.togl tocam; \$ay(currentView) mc"
 
 $m add command -label "Set FOV" -command "viewSetFOV $w.f3D.togl"
@@ -187,10 +189,12 @@ $m add command -label "Set FOV" -command "viewSetFOV $w.f3D.togl"
 $m add separator
 $m add command -label "Zoom to Object" -command "\
 	global ay;\
+	undo save ZoomToObj;\
 	$w.f3D.togl mc; $w.f3D.togl zoomob; \$ay(currentView) mc"
 
 $m add command -label "Align to Object" -command "\
 	global ay;\
+	undo save AlignToObj;\
 	$w.f3D.togl mc; $w.f3D.togl align; \$ay(currentView) mc"
 
 # XXXX This could be just a label or a menu displaying current action
