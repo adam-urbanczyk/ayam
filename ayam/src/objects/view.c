@@ -801,7 +801,9 @@ int
 ay_view_notifycb(ay_object *o)
 {
  ay_view_object *view = NULL;
- uint32 *image = NULL, w, h;
+ unsigned int bo = 1;  /* test byte order */
+ unsigned char *r, b;
+ uint32 *image = NULL, w, h, c;
  TIFF* tif;
  char fname[] = "view_notifycb";
  GLint result;
@@ -867,6 +869,25 @@ ay_view_notifycb(ay_object *o)
 	      TIFFClose(tif);
 	      return AY_FALSE;
 	    }
+	  else
+            {
+              /* check/correct byte order */
+              r = (unsigned char *)&bo;
+              if(r[0] == 0)
+                {
+                  /* byte order must be corrected: we need intel format */
+                  for(c = 0; c < w*h; c++)
+                    {
+                      r = (unsigned char *)&image[c];
+                      b = r[0];
+                      r[0] = r[3];
+                      r[3] = b;
+                      b = r[1];
+                      r[1] = r[2];
+                      r[2] = b;
+                    } /* for */
+                } /* if */
+            } /* if */
 	  TIFFClose(tif);
 	}
       else
@@ -875,7 +896,7 @@ ay_view_notifycb(ay_object *o)
 	  ay_error(AY_ERROR, fname, "TIFFOpen() failed for:");
 	  ay_error(AY_ERROR, fname, view->bgimage);
 	  return AY_FALSE;
-	}
+	} /* if */
 
       Togl_MakeCurrent(view->togl);
 
