@@ -186,7 +186,7 @@ if { $edit >= 0 } {
 }
 
 wm iconname $w "Ayam"
-
+wm transient $w .
 
 set f [frame $w.fu]
 label $f.lt -text "Type:"
