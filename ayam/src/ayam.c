@@ -105,6 +105,8 @@ char *ay_rihider_tagtype;
 
 char *ay_noexport_tagtype;
 
+char *ay_savegeom_tagtype;
+
 static char *ay_log = "/tmp/ay.log";
 
 int ay_wrib_framenum = 0;
@@ -322,6 +324,9 @@ ay_init(Tcl_Interp *interp)
   /* initialize mops import module */
     if((ay_status = ay_mopsi_init()))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
+
+  /* register SaveGeom tag type */
+  ay_tags_register(interp, "SaveMainGeom", &ay_savegeom_tagtype);
 
   /* create root object */
   if((ay_status = ay_object_create(AY_IDROOT, &ay_root)))
