@@ -45,13 +45,17 @@ $m add command -label "Save Prefs" -command "prefs_save"
 $m add separator
 global ayprefs
 set label "1. [lindex $ayprefs(mru) 0]"
-$m add command -label $label -command {io_mruLoad 0}
+$m add command -label $label -command { global ay
+if { ! [io_warnChanged] } {io_mruLoad 0}}
 set label "2. [lindex $ayprefs(mru) 1]"
-$m add command -label $label -command {io_mruLoad 1}
+$m add command -label $label -command { global ay
+if { ! [io_warnChanged] } {io_mruLoad 1}}
 set label "3. [lindex $ayprefs(mru) 2]"
-$m add command -label $label -command {io_mruLoad 2}
+$m add command -label $label -command { global ay
+if { ! [io_warnChanged] } {io_mruLoad 2}}
 set label "4. [lindex $ayprefs(mru) 3]"
-$m add command -label $label -command {io_mruLoad 3}
+$m add command -label $label -command { global ay
+if { ! [io_warnChanged] } {io_mruLoad 3}}
 $m add separator
 $m add command -label "Exit!" -command {
     global ayprefs
@@ -59,7 +63,7 @@ $m add command -label "Exit!" -command {
     if { ! [io_warnChanged] } { 
 
 	# remove all temporary files
-	tmp_clean 1
+	catch [ tmp_clean 1 ]
 
 	if { $ayprefs(AutoSavePrefs) == 1 } {
 	    catch [ prefs_save ]
