@@ -228,6 +228,15 @@ ay_write_object(FILE *fileptr, ay_object *o)
       fprintf(fileptr,"1\n%s\n", ay_object_gettypename(o->type));
     }
 
+  if(o->down)
+    {
+      fprintf(fileptr,"1\n");
+    }
+  else
+    {
+      fprintf(fileptr,"0\n");
+    }
+
   ay_status = ay_write_attributes(fileptr, o);
 
   if(ay_status)
@@ -258,7 +267,6 @@ ay_write_object(FILE *fileptr, ay_object *o)
   /* write children */
   if(o->down)
     {
-      fprintf(fileptr,"1\n");
       down = o->down;
       while(down)
 	{
@@ -269,10 +277,6 @@ ay_write_object(FILE *fileptr, ay_object *o)
 	    }
 	  down = down->next;
 	}
-    }
-  else
-    {
-      fprintf(fileptr,"0\n");
     }
 
  return ay_status;
