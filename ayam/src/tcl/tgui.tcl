@@ -208,13 +208,6 @@ proc tgui_open { } {
 
     undo save Tesselate
 
-    set ay_error ""
-    tguiCmd in
-    if { $ay_error > 1 } {
-	undo;
-	return;
-    }
-    
     set w .tguiw
     catch {destroy $w}
     toplevel $w -class ayam
@@ -238,6 +231,22 @@ proc tgui_open { } {
     label $f.lr -text "100"
     entry $f.e -width 5
 
+    # read preferences from eventually present TP tag
+    tgui_readtag
+
+    # remove potentially present TP tags, lest they get in our way while
+    # tesselating with our own method and parameter
+    tgui_remtag
+
+    # copy selected objects to internal buffer
+    set ay_error ""
+    tguiCmd in
+    if { $ay_error > 1 } {
+	# no objects copied => nothing to tesselate => bail out
+	undo; focus .; destroy .tguiw;
+	return;
+    }
+    
     pack $f.l -in $f -side left -fill x -expand no
     pack $f.ll -in $f -side left -expand no
     pack $f.s -in $f -side left -fill x -expand yes
@@ -245,13 +254,6 @@ proc tgui_open { } {
     pack $f.e -in $f -side right -fill x -expand yes -padx 2
 
     pack $f -in $w.f1 -side top -fill x -expand yes
-
-    # read preferences from eventually present TP tag
-    tgui_readtag
-
-    # remove potentially present TP tags, lest they get in our way while
-    # tesselating with our own method and parameter
-    tgui_remtag
 
     # create first tesselation
     tgui_update
