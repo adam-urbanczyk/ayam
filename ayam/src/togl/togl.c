@@ -1,4 +1,4 @@
-/* $Id: togl.c,v 1.4 2003/02/23 08:58:57 randolf Exp $ */
+/* $Id: togl.c,v 1.5 2003/02/26 20:11:54 randolf Exp $ */
 
 /*
  * Togl - a Tk OpenGL widget
@@ -13,6 +13,9 @@
 
 /*
  * $Log: togl.c,v $
+ * Revision 1.5  2003/02/26 20:11:54  randolf
+ * fixed free()ing of visinfo
+ *
  * Revision 1.4  2003/02/23 08:58:57  randolf
  * moved XFree(visinfo) to widget destruction, eps-output may need that structure
  *
@@ -1902,12 +1905,12 @@ static void Togl_EventProc(ClientData clientData, XEvent *eventPtr)
 
 	   /* XXXX free GLX context */
 #if defined(X11)
-	   dpy = Tk_Display(togl->TkWin);
-	   glXDestroyContext(dpy, togl->GlCtx);
-
 	   /* XXXX free visual that has been allocated by
 	      glXChooseVisual() above */
 	   XFree(togl->EpsVisual);
+
+	   dpy = Tk_Display(togl->TkWin);
+	   glXDestroyContext(dpy, togl->GlCtx);
 #endif /* X11 */
 
 	   /* XXXX was: togl->TkWin = NULL;
