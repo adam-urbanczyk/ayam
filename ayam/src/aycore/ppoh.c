@@ -321,11 +321,16 @@ int
 ay_ppoh_init(Tcl_Interp *interp)
 {
  char fname[] = "ppoh_init";
+ static int initialized = AY_FALSE;
  /* int ay_status = AY_OK;*/
 
-  /* register some C-functions as Tcl-Commands */
-  Tcl_CreateCommand(interp, "ppoh", ay_ppoh_printtcmd,
-		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+  if(!initialized)
+    {
+      /* register some C-functions as Tcl-Commands */
+      Tcl_CreateCommand(interp, "ppoh", ay_ppoh_printtcmd,
+			(ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+      initialized = AY_TRUE;
+    }
 
  return TCL_OK;
 } /* ay_ppoh_init */
