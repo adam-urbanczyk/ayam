@@ -1004,8 +1004,8 @@ ay_wrib_scene(char *file, char *image, double *from, double *to,
   swbot = (RtFloat)-1.0;
   swtop = (RtFloat)1.0;
 
-  RiScreenWindow((RtFloat)swleft*zoom, (RtFloat)swright*zoom,
-		 (RtFloat)swbot*zoom, (RtFloat)swtop*zoom);
+  RiScreenWindow((RtFloat)(swleft*zoom), (RtFloat)(swright*zoom),
+		 (RtFloat)(swbot*zoom), (RtFloat)(swtop*zoom));
 
   RiIdentity();
 
@@ -1338,8 +1338,8 @@ ay_wrib_pprevdraw(ay_view_object *view)
   swbot = (RtFloat)-1.0;
   swtop = (RtFloat)1.0;
 
-  RiScreenWindow((RtFloat)swleft*zoom, (RtFloat)swright*zoom,
-		 (RtFloat)swbot*zoom, (RtFloat)swtop*zoom);
+  RiScreenWindow((RtFloat)(swleft*zoom), (RtFloat)(swright*zoom),
+		 (RtFloat)(swbot*zoom), (RtFloat)(swtop*zoom));
 
   RiIdentity();
 
