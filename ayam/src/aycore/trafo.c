@@ -937,3 +937,37 @@ ay_trafo_rotseltcmd(ClientData clientData, Tcl_Interp * interp,
 
  return TCL_OK;
 } /* ay_trafo_rotseltcmd */
+
+
+/*
+ * ay_trafo_multmatrix4:
+ *
+ */
+int
+ay_trafo_multmatrix4(double *m1, double *m2)
+{
+ double mt[16] = {0}, t;
+ int i, j, k;
+
+  if(!m1 || !m2)
+    return AY_ENULL;
+
+  for (j = 0; j < 4; j++)
+    {
+      for (i = 0; i < 4; i++)
+	{
+	  t = 0.0;
+	  for (k = 0; k < 4; k++)
+	    {
+	      t += m1[k*4+i] * m2[j*4+k];
+	    }
+	  mt[j*4+i] = t;
+	}
+    }
+
+
+  memcpy(m1, mt, 16*sizeof(double));
+
+ return AY_OK;
+} /* ay_trafo_multmatrix4 */
+
