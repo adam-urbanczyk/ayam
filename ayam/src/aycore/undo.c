@@ -379,15 +379,20 @@ ay_undo_copyroot(ay_root_object *src, ay_root_object *dst)
 	  free(dstriopt->textures);
 	  dstriopt->textures = NULL;
 	}
-      if(dstriopt->includes)
-	{
-	  free(dstriopt->includes);
-	  dstriopt->includes = NULL;
-	}
       if(dstriopt->shaders)
 	{
 	  free(dstriopt->shaders);
 	  dstriopt->shaders = NULL;
+	}
+      if(dstriopt->archives)
+	{
+	  free(dstriopt->archives);
+	  dstriopt->archives = NULL;
+	}
+      if(dstriopt->procedurals)
+	{
+	  free(dstriopt->procedurals);
+	  dstriopt->procedurals = NULL;
 	}
       free(dst->riopt);
     }
@@ -407,15 +412,6 @@ ay_undo_copyroot(ay_root_object *src, ay_root_object *dst)
       strcpy(dstriopt->textures, srcriopt->textures);
     }
 
-  if(srcriopt->includes)
-    {
-      dstriopt->includes = NULL;
-      if(!(dstriopt->includes = calloc(strlen(srcriopt->includes)+1,
-				       sizeof(char))))
-	return AY_EOMEM;
-      strcpy(dstriopt->includes, srcriopt->includes);
-    }
-
   if(srcriopt->shaders)
     {
       dstriopt->shaders = NULL;
@@ -423,6 +419,24 @@ ay_undo_copyroot(ay_root_object *src, ay_root_object *dst)
 				       sizeof(char))))
 	return AY_EOMEM;
       strcpy(dstriopt->shaders, srcriopt->shaders);
+    }
+
+  if(srcriopt->archives)
+    {
+      dstriopt->archives = NULL;
+      if(!(dstriopt->archives = calloc(strlen(srcriopt->archives)+1,
+				       sizeof(char))))
+	return AY_EOMEM;
+      strcpy(dstriopt->archives, srcriopt->archives);
+    }
+
+  if(srcriopt->procedurals)
+    {
+      dstriopt->procedurals = NULL;
+      if(!(dstriopt->procedurals = calloc(strlen(srcriopt->procedurals)+1,
+				       sizeof(char))))
+	return AY_EOMEM;
+      strcpy(dstriopt->procedurals, srcriopt->procedurals);
     }
 
  return AY_OK;

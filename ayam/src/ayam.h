@@ -256,8 +256,9 @@ typedef struct ay_riopt_object_s
   int PatchSamples;
 
   char *textures;
-  char *includes;
   char *shaders;
+  char *archives;
+  char *procedurals;
 
   int texturemem;
   int geommem;

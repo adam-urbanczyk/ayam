@@ -60,10 +60,11 @@ addText $w e5 "Radiosity:"
 addParam $w RiOptData RadSteps
 addParam $w RiOptData PatchSamples
 
-addText $w e6 "Paths:"
+addText $w e6 "SearchPaths:"
 addString $w RiOptData Textures [list "textures:&" "textures"]
-addString $w RiOptData Includes [list "includes:&" "includes"]
 addString $w RiOptData Shaders [list "shaders:&" "shaders"]
+addString $w RiOptData Archives [list "archives:&" "archives"]
+addString $w RiOptData Procedurals [list "procedurals:&" "procedurals"]
 
 addText $w e7 "Limits:"
 addParam $w RiOptData TextureMem

@@ -295,12 +295,12 @@ ay_mopsi_rioptions(FILE *fileptr, int insert)
       riopt->textures = NULL;
     }
   ay_mopsi_string(fileptr, &(riopt->textures));
-  if(riopt->includes)
+  if(riopt->archives)
     {
-      free(riopt->includes);
-      riopt->includes = NULL;
+      free(riopt->archives);
+      riopt->archives = NULL;
     }
-  ay_mopsi_string(fileptr, &(riopt->includes));
+  ay_mopsi_string(fileptr, &(riopt->archives));
   if(riopt->shaders)
     {
       free(riopt->shaders);
