@@ -771,7 +771,7 @@ ay_objio_writeinstance(FILE *fileptr, ay_object *o, double *m)
   ay_trafo_copy(orig, &tmp);
   ay_trafo_copy(o, orig);
   ay_status = ay_objio_writeobject(fileptr, orig, AY_FALSE);
-  ay_trafo_copy(orig, &tmp);
+  ay_trafo_copy(&tmp, orig);
 
  return ay_status;
 } /* ay_objio_writeinstance */
