@@ -234,6 +234,17 @@ array set aymainshortcuts {
     SProp8 "Key-8"
     SProp9 "Key-9"
 
+    SProp00 "Key-KP_Insert"
+    SProp11 "Key-KP_End"
+    SProp22 "Key-KP_Down"
+    SProp33 "Key-KP_Next"
+    SProp44 "Key-KP_Left"
+    SProp55 "Key-KP_Begin"
+    SProp66 "Key-KP_Right"
+    SProp77 "Key-KP_Home"
+    SProp88 "Key-KP_Up"
+    SProp99 "Key-KP_Prior"
+
 }
 # array aymainshortcuts
 
