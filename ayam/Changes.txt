@@ -1,4 +1,4 @@
-[CVS, 28. 11. 2002]:
+[CVS, 5. 12. 2002]:
 o bug fixes:
   - fixed remembering of the state of the object selection listbox/tree
     when the context menu or a double click on the label is used to
@@ -16,6 +16,8 @@ o bug fixes:
   - fixed "align view" setting a wrong up-vector for views of type "Top"
   - fixed object picking by dragging the mouse in conjunction with
     "draw level only" rendering the view useless
+  - fixed "move view" action not working properly in local aligned views
+    of type "Top"
 o reduced number of redraws when selecting hidden or material objects
 o added a RiDisplay tag type, that allows to add more output files
   (e.g. containing depth buffer information) to the scene
@@ -55,8 +57,14 @@ o the configure menu of view windows has been rearranged to make it more
 o a new shortcut <Ctrl+l> has been added to the view menu entry
   "Configure/Edit Local"
 o the handles of editable points of objects are now only drawn, when
-  a modelling action is in effect, that could modify them
-o added support for "RiSides" to the RiAttribute property of material objects
+  a modelling action is in effect, that could modify editable points
+o added support for "RiSides" to the RiAttribute property of material
+  objects; RIB-Import now also handles RiSides
+o the RenderGUI windows look a little bit nicer now on the Win32 platform
+o added an internal kill command for the Win32 platform ("w32kill") that
+  may be used by the RenderGUIs to stop the rendering (set hidden preference
+  option "Kill" to "w32kill" to accomplish this)
+o added new object type "SDMesh"
 
 [15. 10. 2002] Ayam1.3:
 o bug fixes:
