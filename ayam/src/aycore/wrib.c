@@ -1177,6 +1177,12 @@ ay_wrib_pprevdraw(ay_view_object *view)
  struct Togl *togl = NULL;
  int width, height, i;
  double zoom, roll, *from, *to;
+ char *pprender = "rgl";
+
+  if(ay_prefs.pprender && (strlen(ay_prefs.pprender) > 0))
+    {
+      pprender = ay_prefs.pprender;
+    }
 
   from = view->from;
   to = view->to;
@@ -1262,7 +1268,7 @@ ay_wrib_pprevdraw(ay_view_object *view)
 
   /* Lights! */
   RiArchiveRecord(RI_COMMENT, "Lights!");
-  ay_status = ay_wrib_lights("rgl", ay_root->next);
+  ay_status = ay_wrib_lights(pprender, ay_root->next);
 
   RiIdentity();
 
@@ -1273,12 +1279,12 @@ ay_wrib_pprevdraw(ay_view_object *view)
   ay_wrib_rootsh(AY_FALSE);
 
   /* write default material */
-  ay_wrib_defmat("rgl");
+  ay_wrib_defmat(pprender);
 
    o = ay_root->next;
    while(o->next)
      {
-       ay_status = ay_wrib_object("rgl", o);
+       ay_status = ay_wrib_object(pprender, o);
        o = o->next;
      }
 
@@ -1304,6 +1310,12 @@ int
 ay_wrib_pprevopen(ay_view_object *view)
 {
  int ay_status = AY_OK;
+ char *pprender = "rgl";
+
+  if(ay_prefs.pprender && (strlen(ay_prefs.pprender) > 0))
+    {
+      pprender = ay_prefs.pprender;
+    }
 
   /* first, close eventually already open permanent preview window */
   ay_wrib_pprevclose();
@@ -1311,7 +1323,7 @@ ay_wrib_pprevopen(ay_view_object *view)
   view->ppreview = AY_TRUE;
 
   /* now, open the new permanent preview window */
-  RiBegin("rgl");
+  RiBegin(pprender);
 
   /* and draw it */
   ay_status = ay_wrib_pprevdraw(view);

@@ -667,6 +667,7 @@ typedef struct ay_prefs_object_s
   /* #ifdef AY_ENABLEPPREV */
   /* is a permanent preview window open? */
   int pprev_open;
+  char *pprender;
   /* #endif */
 } ay_prefs_object;
 

@@ -147,6 +147,7 @@ proc prefs_open {} {
     addString $fw ayprefse Render [list "rendrib -d 4 -Progress %s" "rendrib -d 4 %s" "aqsis -fb %s"]
     addCheck $fw ayprefse RenderUI
     addString $fw ayprefse RenderPT [list "R90000 %d" "Done computing %d" "%d"]
+    addString $fw ayprefse PPRender [list "rgl"]
 
     # Misc
     set fw [$nb insert end Misc -text Misc\

@@ -78,6 +78,7 @@ array set ayprefs {
  QRenderUI 0
  RenderPT "R90000 %d"
  QRenderPT ""
+ PPRender "rgl"
  TclPrecision 6
  Shaders ""
 
@@ -134,7 +135,7 @@ on its name, then press <Ctrl+Shift+i> (Copy Marked Prop).}
 {Hold down the Alt-key to rotate the view while in any mode.}
 {Start Ayam with -failsafe to reset prefs to factory defaults.}
 {Ayam may be completely iconified using <Ctrl+Shift+z> (zap).}
-{To quickly create a material for an object press <Ctrl+m>.}
+{To create a material for a selected object, press <Ctrl+m>.}
 {Extensive documentation is available as HTML and PDF.}
 }
 }
