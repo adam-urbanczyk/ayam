@@ -14,8 +14,10 @@ uplevel #0 { array set tgui_tessparam {
     SParam 20
     MB1Down 0
     SaveToTag 0
+    OldSMethod -1
 }
 }
+
 
 # tgui_update:
 #
@@ -25,7 +27,6 @@ proc tgui_update args {
 
     if { $ayprefs(LazyNotify) == 1 } {
 	if { $tgui_tessparam(MB1Down) == 0 } {
-	    puts "update $tgui_tessparam(SParam)"
 	    tguiCmd up $tgui_tessparam(SMethod) $tgui_tessparam(SParam)
 	}
     } else {
@@ -38,24 +39,69 @@ proc tgui_update args {
     if { $tgui_tessparam(SMethod) == 0 } {
 	.tguiw.f1.fSParam.ll conf -text "0"
 	.tguiw.f1.fSParam.lr conf -text "100"
-	.tguiw.f1.fSParam.s conf -from 0 -to 100 -resolution 1
+	.tguiw.f1.fSParam.s conf -from 0 -to 100
+	if { $tgui_tessparam(OldSMethod) != $tgui_tessparam(SMethod) } {
+	    .tguiw.f1.fSParam.s conf -resolution 1
+	}
     }
 
     if { $tgui_tessparam(SMethod) == 1 } {
 	.tguiw.f1.fSParam.ll conf -text "0"
 	.tguiw.f1.fSParam.lr conf -text "100"
-	.tguiw.f1.fSParam.s conf -from 0 -to 100 -resolution 1
+	.tguiw.f1.fSParam.s conf -from 0 -to 100
+	if { $tgui_tessparam(OldSMethod) != $tgui_tessparam(SMethod) } {
+	    .tguiw.f1.fSParam.s conf -resolution 1
+	}
     }
 
     if { $tgui_tessparam(SMethod) == 2 } {
 	.tguiw.f1.fSParam.ll conf -text "1"
 	.tguiw.f1.fSParam.lr conf -text "20"
-	.tguiw.f1.fSParam.s conf -from 0 -to 20 -resolution 0.1
+	.tguiw.f1.fSParam.s conf -from 0 -to 20
+	if { $tgui_tessparam(OldSMethod) != $tgui_tessparam(SMethod) } {
+	    .tguiw.f1.fSParam.s conf -resolution 0.1
+	}
     }
+
+    set tgui_tessparam(OldSMethod) $tgui_tessparam(SMethod)
 
  return;
 }
 # tgui_update
+
+
+# tgui_recalcslider:
+#  recalc resolution of slider according to val
+#
+proc tgui_recalcslider { val } {
+
+    set rmin [.tguiw.f1.fSParam.s cget -from]
+    set rmax [.tguiw.f1.fSParam.s cget -to]
+
+    if { [expr (abs(int($val) - $val)) != 0.0] } {
+	set ta [expr abs(int($val) - $val)]
+	set tb 1.0
+	set done 0
+	while { $done != 1 } {
+	    set tb [expr $tb/10.0]
+	    set ta [expr (abs(int($ta*10.0) - ($ta*10.0)))]
+	    if { $ta <= 0.0 } { set done 1 }
+	}
+	# while
+    } else {
+	if { [expr abs($rmin - $rmax)] <= 1.0 } {
+	    set tb 0.1
+	} else {
+	    set tb 1.0
+	}
+    }
+    # if
+
+    .tguiw.f1.fSParam.s configure -resolution $tb
+
+ return;
+}
+# tgui_recalcslider
 
 
 # tgui_addtag:
@@ -93,6 +139,36 @@ proc tgui_addtag { } {
 # tgui_addtag
 
 
+# tgui_readtag:
+#
+#
+proc tgui_readtag { } {
+    global tgui_tessparam
+
+    set tagnames ""
+    set tagvals ""
+    getTags tagnames tagvals
+    if { ($tagnames != "" ) } {
+	set index [lsearch $tagnames "TP"]
+	if { $index != -1 } {
+	    set val [lindex $tagvals $index]
+	    scan $val "%d,%g" smethod sparam
+
+	    tgui_recalcslider $sparam
+
+	    set tgui_tessparam(OldSMethod) $smethod
+	    set tgui_tessparam(SParam) $sparam
+	    set tgui_tessparam(SMethod) $smethod
+	}
+        # if
+    }
+    # if
+
+ return;
+}
+# tgui_readtag
+
+
 # tgui_open:
 #
 #
@@ -107,7 +183,7 @@ proc tgui_open { } {
 	undo;
 	return;
     }
-
+    
     set w .tguiw
     catch {destroy $w}
     toplevel $w -class ayam
@@ -140,10 +216,17 @@ proc tgui_open { } {
     pack $f.e -in $f -side right -fill x -expand yes -padx 2
 
     pack $f -in $w.f1 -side top -fill x -expand yes
+
+    # read preferences from eventually present TP tag
+    tgui_readtag
+
+    # create first tesselation
     tgui_update
+
     $f.s conf -command tgui_update
     event add <<CommitTG>> <KeyPress-Return> <FocusOut>
     bind $f.e <<CommitTG>> "$f.s conf -command \"\"; \
+                            tgui_recalcslider \[$f.e get\]; \
                             $f.s set \[$f.e get\]; \
                             $f.s conf -command tgui_update"
 
