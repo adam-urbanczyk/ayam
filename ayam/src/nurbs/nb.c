@@ -1316,7 +1316,7 @@ ay_nb_CurvePoint4D(int n, int p, double *U, double *Pw, double u, double *C)
 
   ay_nb_BasisFuns(span,u,p,U,N);
 
-  for(j=0; j<=p; j++)
+  for(j = 0; j <= p; j++)
     {
 
       k = (span-p+j)*4;
@@ -1326,7 +1326,7 @@ ay_nb_CurvePoint4D(int n, int p, double *U, double *Pw, double u, double *C)
       Cw[3] = Cw[3] + N[j]*Pw[k+3];
     }
 
-  for(j=0;j<4;j++)
+  for(j = 0; j < 4; j++)
     C[j] = Cw[j]/Cw[3];
 
   free(N);
@@ -1351,7 +1351,7 @@ ay_nb_CurvePoint3D(int n, int p, double *U, double *P, double u, double *C)
   C[0] = 0.0;
   C[1] = 0.0;
   C[2] = 0.0;
-  for(j=0; j<=p; j++)
+  for(j = 0; j <= p; j++)
     {
       k = (span-p+j)*3;
       C[0] = C[0] + N[j]*P[k];
@@ -1560,7 +1560,7 @@ ay_nb_DersBasisFuns(int i, double u, int p, int n, double *U, double *ders)
 
 void
 ay_nb_ComputeFirstDer3D(int n, int p, double *U, double *P, double u,
-			double *CK)
+			double *C1)
 {
  int span = 0,j,r;
  double *nders = NULL;
@@ -1572,17 +1572,17 @@ ay_nb_ComputeFirstDer3D(int n, int p, double *U, double *P, double u,
 
   ay_nb_DersBasisFuns(span,u,p,1,U,nders);
 
-  CK[0]=0.0;
-  CK[1]=0.0;
-  CK[2]=0.0;
+  C1[0]=0.0;
+  C1[1]=0.0;
+  C1[2]=0.0;
 
   for(j=0;j<=p;j++)
     {
       r = (span-p+j)*3;
 
-      CK[0] = CK[0] + nders[(p+1)+j] * P[r];
-      CK[1] = CK[1] + nders[(p+1)+j] * P[r+1];
-      CK[2] = CK[2] + nders[(p+1)+j] * P[r+2];
+      C1[0] = C1[0] + nders[(p+1)+j] * P[r];
+      C1[1] = C1[1] + nders[(p+1)+j] * P[r+1];
+      C1[2] = C1[2] + nders[(p+1)+j] * P[r+2];
     }
 
   if(nders)
@@ -1594,7 +1594,7 @@ ay_nb_ComputeFirstDer3D(int n, int p, double *U, double *P, double u,
 
 void
 ay_nb_ComputeSecDer3D(int n, int p, double *U, double *P, double u,
-			double *CK)
+		      double *C2)
 {
  int span = 0,j,r;
  double *nders = NULL;
@@ -1606,17 +1606,17 @@ ay_nb_ComputeSecDer3D(int n, int p, double *U, double *P, double u,
 
   ay_nb_DersBasisFuns(span,u,p,2,U,nders);
 
-  CK[0]=0.0;
-  CK[1]=0.0;
-  CK[2]=0.0;
+  C2[0]=0.0;
+  C2[1]=0.0;
+  C2[2]=0.0;
 
   for(j=0;j<=p;j++)
     {
       r = (span-p+j)*3;
 
-      CK[0] = CK[0] + nders[((p+1)*2)+j] * P[r];
-      CK[1] = CK[1] + nders[((p+1)*2)+j] * P[r+1];
-      CK[2] = CK[2] + nders[((p+1)*2)+j] * P[r+2];
+      C2[0] = C2[0] + nders[((p+1)*2)+j] * P[r];
+      C2[1] = C2[1] + nders[((p+1)*2)+j] * P[r+1];
+      C2[2] = C2[2] + nders[((p+1)*2)+j] * P[r+2];
     }
 
   if(nders)
@@ -1628,10 +1628,10 @@ ay_nb_ComputeSecDer3D(int n, int p, double *U, double *P, double u,
 
 void
 ay_nb_ComputeFirstDer4D(int n, int p, double *U, double *Pw, double u,
-			double *CK)
+			double *C1)
 {
- int span = 0,j,k;
- double *nders = NULL;
+ int span = 0, j, k;
+ double *nders = NULL, C0[3], wder0 = 0.0, wder1 = 0.0;
 
   if(!(nders = calloc((p+1)*(p+1), sizeof(double))))
     return;
@@ -1640,17 +1640,42 @@ ay_nb_ComputeFirstDer4D(int n, int p, double *U, double *Pw, double u,
 
   ay_nb_DersBasisFuns(span,u,p,1,U,nders);
 
-  CK[0]=0.0;
-  CK[1]=0.0;
-  CK[2]=0.0;
+  C0[0] = 0.0;
+  C0[1] = 0.0;
+  C0[2] = 0.0;
 
-  for(j=0;j<=p;j++)
+  C1[0] = 0.0;
+  C1[1] = 0.0;
+  C1[2] = 0.0;
+
+  for(j = 0; j <= p; j++)
     {
       k = (span-p+j)*4;
-      CK[0] = CK[0] + nders[(p+1)+j] * (Pw[k]/Pw[k+3]);
-      CK[1] = CK[1] + nders[(p+1)+j] * (Pw[k+1]/Pw[k+3]);
-      CK[2] = CK[2] + nders[(p+1)+j] * (Pw[k+2]/Pw[k+3]);
+      C0[0] = C0[0] + nders[j] * (Pw[k]);
+      C0[1] = C0[1] + nders[j] * (Pw[k+1]);
+      C0[2] = C0[2] + nders[j] * (Pw[k+2]);
+      wder0 = wder0 + nders[j] * (Pw[k+3]);
+
+      C1[0] = C1[0] + nders[(p+1)+j] * (Pw[k]);
+      C1[1] = C1[1] + nders[(p+1)+j] * (Pw[k+1]);
+      C1[2] = C1[2] + nders[(p+1)+j] * (Pw[k+2]);
+      wder1 = wder1 + nders[(p+1)+j] * (Pw[k+3]);
     }
+
+  C0[0] /= wder0;
+  C0[1] /= wder0;
+  C0[2] /= wder0;
+
+  /* C0/C1 == Aders[], wder0/wder1 == wders[] */
+
+  C1[0] = C1[0] - wder1 * C0[0];
+  C1[1] = C1[1] - wder1 * C0[1];
+  C1[2] = C1[2] - wder1 * C0[2];
+
+  C1[0] /= wder0;
+  C1[1] /= wder0;
+  C1[2] /= wder0;
+
 
   if(nders)
     free(nders);
@@ -1658,12 +1683,13 @@ ay_nb_ComputeFirstDer4D(int n, int p, double *U, double *Pw, double u,
  return;
 } /* ay_nb_ComputeFirstDer4D */
 
+
 void
 ay_nb_ComputeSecDer4D(int n, int p, double *U, double *Pw, double u,
-		      double *CK)
+		      double *C2)
 {
- int span = 0,j,k;
- double *nders = NULL;
+ int span = 0, j, k;
+ double *nders = NULL, wder0 = 0.0, wder1 = 0.0, wder2 = 0.0, C0[3], C1[3];
 
   if(!(nders = calloc((p+1)*(p+1), sizeof(double))))
     return;
@@ -1672,17 +1698,64 @@ ay_nb_ComputeSecDer4D(int n, int p, double *U, double *Pw, double u,
 
   ay_nb_DersBasisFuns(span,u,p,2,U,nders);
 
-  CK[0]=0.0;
-  CK[1]=0.0;
-  CK[2]=0.0;
+  C0[0] = 0.0;
+  C0[1] = 0.0;
+  C0[2] = 0.0;
 
-  for(j=0;j<=p;j++)
+  C1[0] = 0.0;
+  C1[1] = 0.0;
+  C1[2] = 0.0;
+
+  C2[0] = 0.0;
+  C2[1] = 0.0;
+  C2[2] = 0.0;
+
+  for(j = 0; j <= p; j++)
     {
       k = (span-p+j)*4;
-      CK[0] = CK[0] + nders[((p+1)*2)+j] * (Pw[k]/Pw[k+3]);
-      CK[1] = CK[1] + nders[((p+1)*2)+j] * (Pw[k+1]/Pw[k+3]);
-      CK[2] = CK[2] + nders[((p+1)*2)+j] * (Pw[k+2]/Pw[k+3]);
-    }
+      C0[0] = C0[0] + nders[j] * (Pw[k]);
+      C0[1] = C0[1] + nders[j] * (Pw[k+1]);
+      C0[2] = C0[2] + nders[j] * (Pw[k+2]);
+      wder0 = wder0 + nders[j] * (Pw[k+3]);
+
+      C1[0] = C1[0] + nders[(p+1)+j] * (Pw[k]);
+      C1[1] = C1[1] + nders[(p+1)+j] * (Pw[k+1]);
+      C1[2] = C1[2] + nders[(p+1)+j] * (Pw[k+2]);
+      wder1 = wder1 + nders[(p+1)+j] * (Pw[k+3]);
+
+      C2[0] = C2[0] + nders[(p+1)*2+j] * (Pw[k]);
+      C2[1] = C2[1] + nders[(p+1)*2+j] * (Pw[k+1]);
+      C2[2] = C2[2] + nders[(p+1)*2+j] * (Pw[k+2]);
+      wder2 = wder2 + nders[(p+1)*2+j] * (Pw[k+3]);
+    } /* for */
+
+  C0[0] /= wder0;
+  C0[1] /= wder0;
+  C0[2] /= wder0;
+
+  /* C0/C1/C2 == Aders[], wder0/wder1/wder2 == wders[] */
+
+  /* k == 1 */
+  C1[0] = C1[0] - wder1 * C0[0];
+  C1[1] = C1[1] - wder1 * C0[1];
+  C1[2] = C1[2] - wder1 * C0[2];
+
+  C1[0] /= wder0;
+  C1[1] /= wder0;
+  C1[2] /= wder0;
+
+  /* k == 2 */
+  C2[0] = C2[0] - 2.0 * wder1 * C1[0];
+  C2[1] = C2[1] - 2.0 * wder1 * C1[1];
+  C2[2] = C2[2] - 2.0 * wder1 * C1[2];
+
+  C2[0] = C2[0] - wder2 * C0[0];
+  C2[1] = C2[1] - wder2 * C0[1];
+  C2[2] = C2[2] - wder2 * C0[2];
+
+  C2[0] /= wder0;
+  C2[1] /= wder0;
+  C2[2] /= wder0;
 
   if(nders)
     free(nders);
