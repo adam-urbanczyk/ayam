@@ -63,6 +63,8 @@ static double tm[16] = {0}; /* current transformation matrix */
 
 static Tcl_HashTable ay_objio_write_ht; /* write callbacks */
 
+static int objio_tesspomesh = AY_FALSE;
+
 
 /* functions */
 
@@ -701,40 +703,88 @@ ay_objio_writepomesh(FILE *fileptr, ay_object *o, double *m)
     {
       if(po->nloops[i] == 1)
 	{
-	  fprintf(fileptr, "f");
+	  /* this face has just one loop (no hole) */
+
+	  /* XXXX this "for" unneeded? */
 	  for(j = 0; j < po->nloops[p]; j++)
 	    {
-	      if(po->has_normals)
+	      if(!objio_tesspomesh ||
+		 (objio_tesspomesh && (po->nverts[q] == 3)))
 		{
-		  for(k = 0; k < po->nverts[q]; k++)
+		  /* this is a triangle */
+		  fprintf(fileptr, "f");
+
+		  if(po->has_normals)
 		    {
-		      fprintf(fileptr, " -%d//-%d",
-			      po->ncontrols-po->verts[r],
-			      po->ncontrols-po->verts[r]);
-		      r++;
+		      for(k = 0; k < po->nverts[q]; k++)
+			{
+			  fprintf(fileptr, " -%d//-%d",
+				  po->ncontrols-po->verts[r],
+				  po->ncontrols-po->verts[r]);
+			  r++;
+			}
 		    }
+		  else
+		    {
+		      for(k = 0; k < po->nverts[q]; k++)
+			{
+			  fprintf(fileptr, " -%d",
+				  po->ncontrols-po->verts[r]);
+			  r++;
+			}
+		    } /* if */
+
+		  fprintf(fileptr, "\n");
 		}
 	      else
 		{
+		  /* this is not a triangle => tesselate it */
+
+		  /* create new object (for the tesselated face) */
+		  li = NULL;
+		  if(!(li = calloc(1, sizeof(ay_list_object))))
+		    return AY_EOMEM;
+		  to = NULL;
+		  if(!(to = calloc(1, sizeof(ay_object))))
+		    return AY_EOMEM;
+		  li->object = to;
+
+		  ay_object_defaults(to);
+		  
+		  to->type = AY_IDPOMESH;
+
+		  ay_status = ay_tess_pomeshf(po, i, q, r, AY_FALSE,
+					  (ay_pomesh_object **)&(to->refine));
+
+		  /* temporarily save the tesselated face */
+		  if(nextli)
+		    {
+		      *nextli = li;
+		    }
+		  else
+		    {
+		      lihead = li;
+		    }
+		  nextli = &(li->next);
+
+		  /* advance index r */
 		  for(k = 0; k < po->nverts[q]; k++)
 		    {
-		      fprintf(fileptr, " -%d",
-			      po->ncontrols-po->verts[r]);
 		      r++;
 		    }
-		}
+		} /* if */
 	      q++;
 	    } /* for */
-	  fprintf(fileptr, "\n");
 	}
       else
 	{
-	  /*ay_error(AY_EWARN, fname, "Skipping polygon with hole(s).");*/
+	  /* this face has more than one loop (hole(s)) => tesselate it */
 
-	  /* create new object (the PolyMesh) */
+	  /* create new object (for the tesselated face) */
+	  li = NULL;
 	  if(!(li = calloc(1, sizeof(ay_list_object))))
 	    return AY_EOMEM;
-	  
+	  to = NULL;
 	  if(!(to = calloc(1, sizeof(ay_object))))
 	    return AY_EOMEM;
 	  li->object = to;
@@ -746,6 +796,7 @@ ay_objio_writepomesh(FILE *fileptr, ay_object *o, double *m)
 	  ay_status = ay_tess_pomeshf(po, i, q, r, AY_FALSE,
 				      (ay_pomesh_object **)&(to->refine));
 
+	  /* temporarily save the tesselated face */
 	  if(nextli)
 	    {
 	      *nextli = li;
@@ -769,6 +820,7 @@ ay_objio_writepomesh(FILE *fileptr, ay_object *o, double *m)
       p++;
     } /* for */
 
+  /* write tesselated face(s) */
   if(lihead && lihead->next)
     {
       to = NULL;
@@ -1010,12 +1062,17 @@ ay_objio_writescenetcmd(ClientData clientData, Tcl_Interp *interp,
   /* check args */
   if(argc < 2)
     {
-      ay_error(AY_EARGS, fname, "filename [1|0]");
+      ay_error(AY_EARGS, fname, "filename [1|0] | [1|0] [1|0]");
       return TCL_OK;
     }
 
+  objio_tesspomesh = AY_FALSE;
+
   if(argc > 2)
     selected = atoi(argv[2]);
+
+  if(argc > 3)
+    objio_tesspomesh = atoi(argv[3]);
 
   ay_status = ay_objio_writescene(argv[1], selected);
 
