@@ -7,7 +7,10 @@ o added two new renderers, Angel and Pixie, to the Select_Renderer feature
 o added support for sl2xml in favour of sdpslparse
 o added a new shader parsing plugin ("aysdr.so") for Pixie
 o added a convert callback to NURBS patches
-
+o added a new drawing mode "ShadeAndDraw" that displays e.g. shaded
+  NURBS and their drawn representation simultaneously, the keyboard
+  shortcut <Ctrl+S> still toggles between drawing and the shaded
+  representation
 
 [10. 05. 2003] Ayam1.5.1:
 o bug fixes:
