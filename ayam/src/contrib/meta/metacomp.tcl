@@ -23,7 +23,7 @@ getProp
 
 
 # create new UI
-addMenu $w MetaCompAttrData Formula {MetaBalls Torus Cube Heart}
+addMenu $w MetaCompAttrData Formula {MetaBalls Torus Cube Heart Custom}
 addCheck $w MetaCompAttrData Negative
 
 if { $MetaCompAttrData(Formula) == 0 } {
@@ -55,6 +55,10 @@ if { $MetaCompAttrData(Formula) == 2 } {
 }
 if { $MetaCompAttrData(Formula) == 3 } {
 
+}
+
+if { $MetaCompAttrData(Formula) == 4 } {
+    addString $w MetaCompAttrData Expression { {set f [expr {pow($x,4)+pow($y,4)+pow($z,4)}] } }
 }
 
 $ay(pca) itemconfigure 1 -window $w

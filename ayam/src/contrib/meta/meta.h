@@ -48,6 +48,7 @@ extern unsigned int metacomp_id;
 #define META_TORUS	1
 #define META_CUBE	2
 #define META_HEART	3
+#define META_CUSTOM	4
 
 typedef struct meta_xy_s
 {
@@ -93,6 +94,8 @@ typedef struct meta_blob_s
   double scalex;
   double scaley;
   double scalez;
+
+  Tcl_Obj *expression; /* compiled expression for custom components */
 
   GLdouble rm[16];		/* rotation matrix */
   GLdouble tm[16];		/* translation matrix */

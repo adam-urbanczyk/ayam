@@ -807,6 +807,16 @@ metacomp_setpropcb (Tcl_Interp * interp, int argc, char *argv[],
   to = Tcl_ObjGetVar2 (interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj (interp, to, &b->ez);
 
+  Tcl_SetStringObj (ton, "Expression", -1);
+  to = Tcl_ObjGetVar2 (interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  if(b->expression)
+    { Tcl_DecrRefCount(b->expression); b->expression = NULL; }
+
+  b->expression = to;
+  if(to)
+    Tcl_IncrRefCount(b->expression); 
+
   Tcl_IncrRefCount (toa);
   Tcl_DecrRefCount (toa);
   Tcl_IncrRefCount (ton);
@@ -892,6 +902,13 @@ metacomp_getpropcb (Tcl_Interp * interp, int argc, char *argv[],
   to = Tcl_NewIntObj (b->formula);
   Tcl_ObjSetVar2 (interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
+  if(b->expression)
+    {
+      Tcl_SetStringObj (ton, "Expression", -1);
+      Tcl_ObjSetVar2 (interp, toa, ton,
+		      b->expression, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+    }
+
   Tcl_IncrRefCount (toa);
   Tcl_DecrRefCount (toa);
   Tcl_IncrRefCount (ton);
@@ -940,7 +957,9 @@ metacomp_getpntcb (ay_object * o, double *p)
 int
 metacomp_readcb (FILE * fileptr, ay_object * o)
 {
-  meta_blob *b;
+ meta_blob *b;
+ int read;
+ char *expr;
 
   if (!o)
     return AY_ENULL;
@@ -962,12 +981,22 @@ metacomp_readcb (FILE * fileptr, ay_object * o)
   fscanf (fileptr, "%d\n", &b->formula);
   fscanf (fileptr, "%d\n", &b->rot);
 
-  if(ay_read_version >=2)
+  if(ay_read_version >= 2)
   {
    fscanf (fileptr, "%d\n", &b->ex);
    fscanf (fileptr, "%d\n", &b->ey);
-   fscanf (fileptr, "%d\n", &b->ez);
+   fscanf (fileptr, "%d", &b->ez);
+   read = fgetc(fileptr);
+   ay_read_string(fileptr, &expr);
+   if(expr && strlen(expr))
+     {
+       b->expression = Tcl_NewStringObj(expr,-1);
+       Tcl_IncrRefCount(b->expression);
+       free(expr);
+     }
+
   }
+
   o->refine = b;
 
   return AY_OK;
@@ -999,6 +1028,11 @@ metacomp_writecb (FILE * fileptr, ay_object * o)
   fprintf (fileptr, "%d\n", b->ex);
   fprintf (fileptr, "%d\n", b->ey);
   fprintf (fileptr, "%d\n", b->ez);
+
+  if(b->expression)
+    fprintf (fileptr, "%s\n", Tcl_GetStringFromObj(b->expression, NULL));
+  else
+    fprintf (fileptr, "\n");
 
   return AY_OK;
 
