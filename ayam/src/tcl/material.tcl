@@ -155,7 +155,7 @@ proc material_edit { } {
     # get name of current material
     getMat
     global mat
-    set mat $matPropData(Name)
+    set mat $matPropData(Materialname)
 
     if { $mat == "" } {
 	# there is no material currently associated with this
@@ -170,7 +170,7 @@ proc material_edit { } {
 	getProp
 	set newmaterial $MaterialAttrData(Materialname)
 	selOb $sel
-	set matPropData(Name) $newmaterial
+	set matPropData(Materialname) $newmaterial
 	setMat
 	sL;rV
 
