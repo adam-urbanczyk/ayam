@@ -29,7 +29,8 @@ ay_shade_object(struct Togl *togl, ay_object *o, int push_name)
  GLfloat oldcolor[4] = {0.0f,0.0f,0.0f,0.0f}, color[4] = {0.0f,0.0f,0.0f,0.0f};
  ay_object *mo = NULL;
  int reset_color = AY_FALSE, toggled_normals = AY_FALSE;
- static int cw = AY_FALSE;
+ /* static*/ int cw = AY_TRUE;
+ GLint ff = GL_CCW;
 
   if(o->hide)
     {
@@ -41,7 +42,18 @@ ay_shade_object(struct Togl *togl, ay_object *o, int push_name)
      swap front and back faces */
   if((o->scalx*o->scaly*o->scalz)<0.0)
     {
+      glGetIntegerv(GL_FRONT_FACE, &ff);
+      if(ff == GL_CW)
+	{
+	  glFrontFace(GL_CCW);
+	  cw = AY_FALSE;
+	}
+      else
+	{
+	  glFrontFace(GL_CW);
+	}
       toggled_normals = AY_TRUE;
+      /*
       if(cw)
 	cw = AY_FALSE;
       else
@@ -50,6 +62,7 @@ ay_shade_object(struct Togl *togl, ay_object *o, int push_name)
 	glFrontFace(GL_CW);
       else
 	glFrontFace(GL_CCW);
+      */
     }
 
   glPushMatrix();
@@ -124,6 +137,15 @@ ay_shade_object(struct Togl *togl, ay_object *o, int push_name)
   if(toggled_normals)
     {
       if(cw)
+	{
+	  glFrontFace(GL_CCW);
+	}
+      else
+	{
+	  glFrontFace(GL_CW);
+	}
+      /*
+      if(cw)
 	glFrontFace(GL_CCW);
       else
 	glFrontFace(GL_CW);
@@ -132,6 +154,7 @@ ay_shade_object(struct Togl *togl, ay_object *o, int push_name)
 	cw = AY_FALSE;
       else
 	cw = AY_TRUE;
+      */
     }
 
   if(reset_color)

@@ -44,18 +44,52 @@ namespace OpenCSG {
     }
 
     void ayCSGPrimitive::render() {
-      int has_tm = AY_FALSE;
+      int has_tm = AY_FALSE, cw = AY_TRUE;
+      GLboolean ff;
+
       if(ayobject_->tags && (ayobject_->tags->type == aycsg_tm_tagtype))
 	{
 	  has_tm = AY_TRUE;
 	  glPushMatrix();
 	  glMultMatrixd((GLdouble*)(ayobject_->tags->val));
-	}
+	  if(ayobject_->tags->name)
+	    {
+	      glGetBooleanv(GL_FRONT_FACE, &ff);
+	      if(ff == GL_CW)
+		{
+		  glFrontFace(GL_CCW);
+		  cw = AY_FALSE;
+		}
+	      else
+		{
+		  glFrontFace(GL_CW);
+		} // if
+
+	    } // if
+
+	} // if
+
       ay_shade_object(togl_, ayobject_, AY_FALSE);
+
       if(has_tm)
 	{
+	  if(ayobject_->tags->name)
+	    {
+	      if(cw)
+		{
+		  glFrontFace(GL_CCW);
+		}
+	      else
+		{
+		  glFrontFace(GL_CW);
+		} // if
+
+	    } // if
+
 	  glPopMatrix();
-	}
-    }
+
+	} // if
+
+    } // render()
 
 } // namespace OpenCSG

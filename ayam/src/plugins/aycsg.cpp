@@ -36,7 +36,13 @@ OpenCSG::DepthComplexityAlgorithm depthalgo =
 ay_object *aycsg_root; // the root of the local copy of the object tree
 
 // TM tags are used to store transformation attributes delegated from
-// parents (CSG operation objects) to their children (e.g. primitives)
+// parents (CSG operation objects) to their children (e.g. primitives);
+// note that the TM tags are used here in a quite unusual way:
+// <tag->name> is used to denote coordinate system flips caused by an
+// odd number of scale factors (it is not a pointer!) and
+// <tag->val> points to an array of doubles (the transformation matrix
+// itself) instead to a string;
+// we can do this safely, because no TM tag will escape this module ever
 char *aycsg_tm_tagtype;
 typedef struct aycsg_taglistelem_s {
   struct aycsg_taglistelem_s *next;
@@ -279,10 +285,18 @@ aycsg_drawtoplevelprim(Togl *togl)
 	      has_tm = AY_TRUE;
 	      glPushMatrix();
 	      glMultMatrixd((GLdouble*)(t->tags->val));
+	      if(t->tags->name)
+		{
+		  glFrontFace(GL_CW);
+		}
 	    }
 	  ay_status = ay_shade_object(togl, t, AY_FALSE);
 	  if(has_tm)
 	    {
+	      if(t->tags->name)
+		{
+		  glFrontFace(GL_CCW);
+		}
 	      glPopMatrix();
 	    }
 	}
@@ -874,7 +888,7 @@ aycsg_delegatetrafo(ay_object *o)
 	  if(o->tags && (o->tags->type == aycsg_tm_tagtype))
 	    {
 	      // yes, copy it first (before the normal transformation
-	      //  attributes) to <down>
+	      // attributes) to <down>
 
 	      // has <down> already a TM tag?
 	      if(down->tags && (down->tags->type == aycsg_tm_tagtype))
@@ -887,6 +901,13 @@ aycsg_delegatetrafo(ay_object *o)
 		  */
 		  ay_trafo_multmatrix4((double*)down->tags->val,
 				       (double*)o->tags->val);
+		  if(o->tags->name)
+		    {
+		      if(down->tags->name)
+			down->tags->name = (char*)AY_FALSE;
+		      else
+			down->tags->name = (char*)AY_TRUE;
+		    }
 		}
 	      else
 		{
@@ -900,6 +921,7 @@ aycsg_delegatetrafo(ay_object *o)
 		      free(tag); return AY_EOMEM;
 		    }
 		  memcpy(tag->val, o->tags->val, 16*sizeof(double));
+		  tag->name = (char*)o->tags->name;
 		  tle = NULL;
 		  if(!(tle = (aycsg_taglistelem*)calloc(1,
 			       sizeof(aycsg_taglistelem))))
@@ -924,6 +946,13 @@ aycsg_delegatetrafo(ay_object *o)
 	      memcpy(down->tags->val, tm, 16*sizeof(double));
 	      */
 	      ay_trafo_creatematrix(o, tm);
+	      if((o->scalx*o->scaly*o->scalz)<0.0)
+		{
+		  if(down->tags->name)
+		    down->tags->name = (char*)AY_FALSE;
+		  else
+		    down->tags->name = (char*)AY_TRUE;
+		}
 	      ay_trafo_multmatrix4((double*)down->tags->val, tm);
 	    }
 	  else
@@ -938,6 +967,10 @@ aycsg_delegatetrafo(ay_object *o)
 		  free(tag); return AY_EOMEM;
 		}
 	      ay_trafo_creatematrix(o, (double*)tag->val);
+	      if((o->scalx*o->scaly*o->scalz)<0.0)
+		{
+		 tag->name = (char*)AY_TRUE;
+		}
 	      tle = NULL;
 	      if(!(tle = (aycsg_taglistelem*)calloc(1,
 			   sizeof(aycsg_taglistelem))))
