@@ -8,9 +8,10 @@ The Ayam distribution consists of the following files/directories:
 
 o README - this file
 o Setup - what to do first, read it!
+o SetupWin32 - how to set up Ayam on Win32, read it!
 o License - legal stuff, read it!
 o Changes - documents what changed between releases
-o bin/ - binaries
+o bin/ - executables
 o doc/ - documentation for users, read it!
   the documentation is available in PDF,
   HTML, and SGML source
