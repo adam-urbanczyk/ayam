@@ -438,6 +438,27 @@ proc viewSetGridIcon { w gridsize } {
 }
 # viewSetGridIcon
 
+# viewMouseToCurrent:
+#  set current view to the view that has the focus;
+#  used after startup and loading of scenes
+proc viewMouseToCurrent { } {
+    global ay 
+
+    set focused [focus -displayof .]
+
+    if { $focused != "" } {
+
+	foreach view $ay(views) {
+
+	    if { [string compare $view $focused] == 0 } {
+		${view}.f3D.togl mc
+	    }
+	}
+    }
+
+}
+# viewMouseToCurrent
+
 
 # create ViewAttr-UI
 set w [frame $ay(pca).$ViewAttrib(w)]

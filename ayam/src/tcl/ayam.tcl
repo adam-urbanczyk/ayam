@@ -951,4 +951,7 @@ proc bgerror { message } {
     }
 }
 
+# if there is a view window under the mouse pointer, make it current
+after idle viewMouseToCurrent
+
 # Reconstruct the World!
