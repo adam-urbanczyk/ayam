@@ -126,12 +126,12 @@ ay_sm_placecamera(double *position, double *direction, double roll)
 
   if((fabs(position[0]) > SMEPSILON) || (fabs(position[1]) > SMEPSILON) ||
      (fabs(position[2]) > SMEPSILON))
-    RiTranslate((fabs(position[0]) > SMEPSILON) ? -position[0] :
-		(RtFloat) 0.0,
-		(fabs(position[1]) > SMEPSILON) ? -position[1] :
-		(RtFloat) 0.0,
-		(fabs(position[2]) > SMEPSILON) ? -position[2] :
-		(RtFloat) 0.0);
+    RiTranslate((RtFloat) ((fabs(position[0]) > SMEPSILON) ? -position[0] :
+		 0.0),
+		(RtFloat) ((fabs(position[1]) > SMEPSILON) ? -position[1] :
+		 0.0),
+		(RtFloat) ((fabs(position[2]) > SMEPSILON) ? -position[2] :
+		0.0));
 
  return;
 } /* ay_sm_placecamera */
@@ -236,8 +236,8 @@ ay_sm_wribsm(char *file, ay_sm_trafostack *trafo, ay_object *light)
 
  /*  RiFrameBegin(1);*/
   RiIdentity();
-  RiScale(-1.0, 1.0, 1.0);
-  /*RiRotate(180, 0, 1, 0);*/
+  RiScale((RtFloat)-1.0, RtFloat)1.0, RtFloat)1.0);
+  /*RiRotate(RtFloat)180, RtFloat)0, RtFloat)1, RtFloat)0);*/
 
   /* move light according to its from-/to-settings */
   l = (ay_light_object *)light->refine;
@@ -250,7 +250,8 @@ ay_sm_wribsm(char *file, ay_sm_trafostack *trafo, ay_object *light)
   while (trafo) {
      if ((trafo->scalx != 1.0) || (trafo->scaly != 1.0) ||
 	 (trafo->scalz != 1.0))
-       RiScale(1/trafo->scalx, 1/trafo->scaly, 1/trafo->scalz);
+       RiScale((RtFloat)(1.0/trafo->scalx), (RtFloat)(1.0/trafo->scaly),
+	 (RtFloat)(1.0/trafo->scalz));
 
      if(trafo->quat[0] != 0.0 || trafo->quat[1] != 0.0 ||
 	trafo->quat[2] != 0.0 || trafo->quat[3] != 1.0)
@@ -268,7 +269,8 @@ ay_sm_wribsm(char *file, ay_sm_trafostack *trafo, ay_object *light)
        }
 
      if ((trafo->movx != 0) || (trafo->movy != 0) || (trafo->movz != 0))
-       RiTranslate(-trafo->movx, -trafo->movy, -trafo->movz);
+       RiTranslate((RtFloat)(-trafo->movx), (RtFloat)(-trafo->movy),
+	 (RtFloat)(-trafo->movz));
      trafo = trafo->next;
   }
 
@@ -433,9 +435,9 @@ ay_sm_wriballsm(char *file, ay_object *o, ay_sm_trafostack *trafo,
 	      switch (light->type) {
 	      case AY_LITPOINT:
 		  /* render six shadowmaps: z+, x+, z-, x-, y+, y- */
-		  fov = 95;  /* 95 degrees suggested in Pixar's
-				application notes */
-		  px = 0; py = 0; pz = 0;
+		  fov = (RtFloat)95.0;  /* 95 degrees suggested in Pixar's
+					   application notes */
+		  px = 0.0; py = 0.0; pz = 0.0;
 		  ay_sm_dotrafos(trafo, &px, &py, &pz);
 		  /*
 		  ay_sm_getresolution(light->sm_resolution,
@@ -444,14 +446,14 @@ ay_sm_wriballsm(char *file, ay_object *o, ay_sm_trafostack *trafo,
 		  sprintf(zname, "%s.point%d_z+.z", file, countsm);
 		  sprintf(shdname, "%s.point%d_z+.shd", file, countsm);
 		  RiDisplay(zname, "zfile", "z", RI_NULL);
-		  RiFormat(width, height, 1);
+		  RiFormat(width, height, (RtFloat)-1.0);
 		  RiProjection("perspective", "fov", &fov, RI_NULL);
 		  /* looking along positive z axis */
 		  /* transform lightsource to origin */
-		  RiFrameBegin(1);
+		  RiFrameBegin((RtFloat)1.0);
 		  RiIdentity();
-		  RiScale(-1.0, 1.0, 1.0);
-		  RiTranslate(-px, -py, -pz);
+		  RiScale((RtFloat)-1.0, (RtFloat)1.0, (RtFloat)1.0);
+		  RiTranslate((RtFloat)-px, (RtFloat)-py, (RtFloat)-pz);
 		  RiWorldBegin();
 		  RiIdentity();
 		  /* place the objects relative to the centered light */
@@ -467,14 +469,14 @@ ay_sm_wriballsm(char *file, ay_object *o, ay_sm_trafostack *trafo,
 		  sprintf(zname, "%s.point%d_x+.z", file, countsm);
 		  sprintf(shdname, "%s.point%d_x+.shd", file, countsm);
 		  RiDisplay(zname, "zfile", "z", RI_NULL);
-		  RiFormat(width, height, 1);
+		  RiFormat(width, height, (RtFloat)-1.0);
 		  RiProjection("perspective", "fov", &fov, RI_NULL);
 		  /* transform lightsource to origin */
-		  RiFrameBegin(1);
+		  RiFrameBegin((RtFloat)1.0);
 		  RiIdentity();
-		  RiScale(-1.0, 1.0, 1.0);
-		  RiRotate(-90, 0, 1, 0);
-		  RiTranslate(-px, -py, -pz);
+		  RiScale((RtFloat)-1.0, (RtFloat)1.0, (RtFloat)1.0);
+		  RiRotate((RtFloat)-90, (RtFloat)0, (RtFloat)1, (RtFloat)0);
+		  RiTranslate((RtFloat)-px, (RtFloat)-py, (RtFloat)-pz);
 		  RiWorldBegin();
 		  RiIdentity();
 		  /* place the objects relative to the centered light */
@@ -490,14 +492,14 @@ ay_sm_wriballsm(char *file, ay_object *o, ay_sm_trafostack *trafo,
 		  sprintf(zname, "%s.point%d_z-.z", file, countsm);
 		  sprintf(shdname, "%s.point%d_z-.shd", file, countsm);
 		  RiDisplay(zname, "zfile", "z", RI_NULL);
-		  RiFormat(width, height, 1);
+		  RiFormat(width, height, (RtFloat)-1.0);
 		  RiProjection("perspective", "fov", &fov, RI_NULL);
 		  /* transform lightsource to origin */
-		  RiFrameBegin(1);
+		  RiFrameBegin((RtFloat)1.0);
 		  RiIdentity();
-		  RiScale(-1.0, 1.0, 1.0);
-		  RiRotate(180, 0, 1, 0);
-		  RiTranslate(-px, -py, -pz);
+		  RiScale((RtFloat)-1.0, (RtFloat)1.0, (RtFloat)1.0);
+		  RiRotate((RtFloat)180, (RtFloat)0, (RtFloat)1, (RtFloat)0);
+		  RiTranslate((RtFloat)-px, (RtFloat)-py, (RtFloat)-pz);
 		  RiWorldBegin();
 		  RiIdentity();
 		  /* place the objects relative to the centered light */
@@ -513,14 +515,14 @@ ay_sm_wriballsm(char *file, ay_object *o, ay_sm_trafostack *trafo,
 		  sprintf(zname, "%s.point%d_x-.z", file, countsm);
 		  sprintf(shdname, "%s.point%d_x-.shd", file, countsm);
 		  RiDisplay(zname, "zfile", "z", RI_NULL);
-		  RiFormat(width, height, 1);
+		  RiFormat(width, height, (RtFloat)-1.0);
 		  RiProjection("perspective", "fov", &fov, RI_NULL);
 		  /* transform lightsource to origin */
-		  RiFrameBegin(1);
+		  RiFrameBegin((RtFloat)1);
 		  RiIdentity();
-		  RiScale(-1.0, 1.0, 1.0);
-		  RiRotate(90, 0, 1, 0);
-		  RiTranslate(-px, -py, -pz);
+		  RiScale((RtFloat)-1.0, (RtFloat)1.0, (RtFloat)1.0);
+		  RiRotate((RtFloat)90, (RtFloat)0, (RtFloat)1, (RtFloat)0);
+		  RiTranslate((RtFloat)-px, (RtFloat)-py, (RtFloat)-pz);
 		  RiWorldBegin();
 		  RiIdentity();
 		  /* place the objects relative to the centered light */
@@ -536,14 +538,14 @@ ay_sm_wriballsm(char *file, ay_object *o, ay_sm_trafostack *trafo,
 		  sprintf(zname, "%s.point%d_y+.z", file, countsm);
 		  sprintf(shdname, "%s.point%d_y+.shd", file, countsm);
 		  RiDisplay(zname, "zfile", "z", RI_NULL);
-		  RiFormat(width, height, 1);
+		  RiFormat(width, height, (RtFloat)-1.0);
 		  RiProjection("perspective", "fov", &fov, RI_NULL);
 		  /* transform lightsource to origin */
 		  RiFrameBegin(1);
 		  RiIdentity();
-		  RiScale(-1.0, 1.0, 1.0);
-		  RiRotate(90, 1, 0, 0);
-		  RiTranslate(-px, -py, -pz);
+		  RiScale((RtFloat)-1.0, (RtFloat)1.0, (RtFloat)1.0);
+		  RiRotate((RtFloat)90, (RtFloat)1, (RtFloat)0, (RtFloat)0);
+		  RiTranslate((RtFloat)-px, (RtFloat)-py, (RtFloat)-pz);
 		  RiWorldBegin();
 		  RiIdentity();
 		  /* place the objects relative to the centered light */
@@ -559,14 +561,14 @@ ay_sm_wriballsm(char *file, ay_object *o, ay_sm_trafostack *trafo,
 		  sprintf(zname, "%s.point%d_y-.z", file, countsm);
 		  sprintf(shdname, "%s.point%d_y-.shd", file, countsm);
 		  RiDisplay(zname, "zfile", "z", RI_NULL);
-		  RiFormat(width, height, 1);
+		  RiFormat(width, height, (RtFloat)-1.0);
 		  RiProjection("perspective", "fov", &fov, RI_NULL);
 		  /* transform lightsource to origin */
 		  RiFrameBegin(1);
 		  RiIdentity();
-		  RiScale(-1.0, 1.0, 1.0);
-		  RiRotate(-90, 1, 0, 0);
-		  RiTranslate(-px, -py, -pz);
+		  RiScale((RtFloat)-1.0, (RtFloat)1.0, (RtFloat)1.0);
+		  RiRotate((RtFloat)-90.0, (RtFloat)1, (RtFloat)0, (RtFloat)0);
+		  RiTranslate((RtFloat)-px, (RtFloat)-py, (RtFloat)-pz);
 		  RiWorldBegin();
 		  RiIdentity();
 		  /* place the objects relative to the centered light */
@@ -591,11 +593,12 @@ ay_sm_wriballsm(char *file, ay_object *o, ay_sm_trafostack *trafo,
 		  ay_sm_getresolution(light->sm_resolution,
 				      &width, &height, rwidth, rheight);
 		  */
-		  RiFormat(width, height, 1);
+		  RiFormat(width, height, (RtFloat)-1.0);
 		  fov = light->cone_angle*360/AY_PI;
 		  RiProjection("perspective", "fov", &fov, RI_NULL);
-		  RiFrameAspectRatio(1);
-		  RiScreenWindow(-1, 1, -1, 1);
+		  RiFrameAspectRatio((RtFloat)1.0);
+		  RiScreenWindow((RtFloat)-1, (RtFloat)1,
+				 (RtFloat)-1, (RtFloat)1);
 		  /* transform lightsource to origin */
 		  ay_sm_wribsm(file, trafo, o);
                   RiMakeShadow(zname, shdname, RI_NULL);
@@ -636,9 +639,9 @@ ay_sm_wriballsm(char *file, ay_object *o, ay_sm_trafostack *trafo,
 		      ay_sm_getresolution(light->sm_resolution,
 					  &width, &height, rwidth, rheight);
 		      */
-		      RiFormat(width, height, 1);
+		      RiFormat(width, height, (RtFloat)-1.0);
 		      RiProjection("orthographic", RI_NULL);
-		      RiFrameAspectRatio(1);
+		      RiFrameAspectRatio((RtFloat)1.0);
 		      /*RiScreenWindow(xmin, xmax, ymin, ymax);*/
 		      /*RiScreenWindow(-1,1,-1,1);*/
 		      /* transform lightsource to origin */
