@@ -783,6 +783,112 @@ metaobj_notifycb (ay_object * o)
 } /* metaobj_notifycb */
 
 
+int
+metaobj_providecb(ay_object *o, unsigned int type, ay_object *result)
+{
+ ay_pomesh_object *po = NULL;
+ meta_world *mw = NULL;
+ int i,p,ii,j;
+ int ay_status = AY_OK;
+ 
+  mw = (meta_world *) o->refine;
+ 
+  if (type == AY_IDPOMESH)
+     {
+       p = mw->currentnumpoly;
+
+       if(!(po = (ay_pomesh_object *) calloc(1, sizeof(ay_pomesh_object))))
+	  	return AY_EOMEM;
+ 
+       po->npolys = p;
+       po->nloops = (int *)calloc(1,sizeof(int)*p);
+       po->nverts = (int *)calloc(1,sizeof(int)*p);
+       po->verts = (int *)calloc(1,sizeof(int)*p*3);
+       po->ncontrols = p*3;
+       po->controlv = (double *)calloc(1,po->ncontrols*6*sizeof(double));
+       po->has_normals = AY_TRUE;
+
+	  if(!(po->nloops&&po->verts&&po->controlv))
+	  {
+	    if(po->nloops)
+	      free(po->nloops);
+		 
+         if(po->nverts)
+	      free(po->nverts);
+		 
+	    if(po->controlv)
+	      free(po->controlv);
+		 
+	    return AY_EOMEM;
+	  }
+	  
+	  for (i = 0; i<p; i++)
+	  {
+	    po->nloops[i] = 1;
+	    po->nverts[i] = 3;
+	    ii = i*3;
+	    po->verts[ii] = ii;
+	    po->verts[ii+1] = ii+1;
+	    po->verts[ii+2] = ii+2;
+	    j = ii*6;
+	    ii *=3;
+	    po->controlv[j] = mw->vertex[ii];
+	    po->controlv[j+1] = mw->vertex[ii+1];
+	    po->controlv[j+2] = mw->vertex[ii+2];
+	    
+	    po->controlv[j+3] = mw->nvertex[ii];
+	    po->controlv[j+4] = mw->nvertex[ii+1];
+	    po->controlv[j+5] = mw->nvertex[ii+2];
+	    
+	    po->controlv[j+6] = mw->vertex[ii+3];
+	    po->controlv[j+7] = mw->vertex[ii+4];
+	    po->controlv[j+8] = mw->vertex[ii+5];
+	    
+	    po->controlv[j+9] = mw->nvertex[ii+3];
+	    po->controlv[j+10] = mw->nvertex[ii+4];
+	    po->controlv[j+11] = mw->nvertex[ii+5];
+	    
+	    po->controlv[j+12] = mw->vertex[ii+6];
+	    po->controlv[j+13] = mw->vertex[ii+7];
+	    po->controlv[j+14] = mw->vertex[ii+8];
+	    
+	    po->controlv[j+15] = mw->nvertex[ii+6];
+	    po->controlv[j+16] = mw->nvertex[ii+7];
+	    po->controlv[j+17] = mw->nvertex[ii+8];
+
+	  }
+
+       result->refine = po;
+
+     }
+
+   return ay_status;
+
+} /* metaobj_providecb */
+
+
+int
+metaobj_convertcb(ay_object *o)
+{
+ int ay_status = AY_OK;
+ ay_object *new = NULL;
+
+  if(!o)
+    return AY_ENULL;
+  
+  new = (ay_object *)calloc(1,sizeof(ay_object));
+  
+  metaobj_providecb(o, AY_IDPOMESH, new);
+  new->type = AY_IDPOMESH;
+  ay_object_defaults(new);
+  ay_status = ay_object_link(new);
+
+  return ay_status;
+
+} /* metaobj_convertcb */
+
+
+
 /* note: this function _must_ be capitalized exactly this way
  * regardless of filename (see: man n load)!
  */
@@ -803,16 +909,13 @@ Metaobj_Init (Tcl_Interp * interp)
 
   ay_status = ay_notify_register (metaobj_notifycb, metaobj_id);
 
-/*
-  ay_status = ay_convert_register(ay_revolve_convertcb, AY_IDREVOLVE);
-*/
+  ay_status = ay_convert_register(metaobj_convertcb, metaobj_id);
 
   if (ay_status)
     {
       ay_error (AY_ERROR, fname, "Error registering custom object!");
       return TCL_OK;
     }
-
 
 
   /* source metaobj.tcl, it contains a Tcl-code to build
