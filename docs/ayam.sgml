@@ -592,7 +592,12 @@ registered for the type of the selected object(s). The exact
 behaviour depends on the type of the selected object(s):
 a Revolve object will e.g. be converted to a level containing NURBS
 patches that make up the surface of revolution and the caps.
-This operation is not undoable.
+This operation is not undoable, i.e. the newly created objects
+will not be removed by using the undo system.
+<item><tt/Convert (In Place)/, starts the convert action as
+outlined above, but replaces the original objects with the
+new converted ones. This operation, in contrast to the simple
+conversion, is undoable.
 <item><tt/Force Notification/, force the notification callbacks of
 all selected objects (or all objects in the scene if no objects are selected)
 to be called. The notification callbacks are used by objects
