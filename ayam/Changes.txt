@@ -1,4 +1,4 @@
-[CVS, 29. 08. 2002]:
+[CVS, 04. 09. 2002]:
 o bug fixes:
   - fixed memory leaks in the shadow map RIB export module
   - fixed ICurves crash for length 2
@@ -46,10 +46,11 @@ o added a new tool for the PolyMesh object; "mergePo", that merges a bunch
   into a single PolyMesh object
 o improved the object picking for shaded views
 o improved the MFIO (3DMF) Import Plugin: it now outputs more detailed
-  error messages and supports the following additional primitives:
-  PolyLine, Triangle, General Polygon, Polygon, and TriGrid.
-o added shader parsing plugins: "ayso" for RDC, "ayslo" for PRMan,
-  "ayslx" for Aqsis, and "ayslo3d" for 3Delight
+  error messages, supports import of the following additional primitives:
+  PolyLine, Triangle, General Polygon, Polygon, and TriGrid; and
+  supports now output of all NURBCurve/NURBPatch providing objects.
+o added shader parsing plugins: "ayslb" for Air, "ayslx" for Aqsis,
+  "ayso" for RDC, "ayslo" for PRMan, and "ayslo3d" for 3Delight
 
 
 [09. 07. 2002] Ayam1.2:
