@@ -2022,7 +2022,7 @@ ay_mopsi_tcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 int
-ay_mopsi_register(char *typename, ay_mopsicb *cb)
+ay_mopsi_register(char *tname, ay_mopsicb *cb)
 {
  int new_item = 0;
  Tcl_HashEntry *entry = NULL;
