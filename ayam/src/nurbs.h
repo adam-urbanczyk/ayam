@@ -289,6 +289,9 @@ int ay_npt_interpolateu(ay_nurbpatch_object *patch);
 int ay_npt_skin(ay_object *curves, int order, int knot_type,
 		int interpolate, ay_nurbpatch_object **skin);
 
+int ay_npt_skinv(ay_object *curves, int order, int knot_type,
+		 int interpolate, ay_nurbpatch_object **skin);
+
 int ay_npt_extrude(double height, ay_object *o,
 		   ay_nurbpatch_object **patch);
 
