@@ -1195,8 +1195,9 @@ contains modeling related settings:
 <item><tt/"PickEpsilon"/ is used by the single point editing actions
 to determine which point (vertice) of an object has been selected.
 A smaller <tt/"PickEpsilon"/ means more exact picking.
-If you set it to 0.0, however, the picking code will always return the nearest
-point (vertice) to the picking coordinates.
+The value of <tt/"PickEpsilon"/ should be positive. In older versions
+of Ayam (prior to 1.8), a value of 0.0 was allowed. This is no longer the
+case.
 <item><tt/"LazyNotify"/ determines whether notification shall
 occur on all mouse movements or just on release of the mouse button,
 for the interactive modeling actions.
@@ -4411,6 +4412,56 @@ curve should be extracted.
 See section <ref id="npattr" name="NPatchAttrib"> for a description
 of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 
+<sect1>Text Object<label id="textobj">
+<p>
+Text objects may be used to easily create objects that form letters or
+even whole words in very high quality. For that, they parse TrueType font
+description files, extract the Bezier curves from the font description,
+sort the curves, connect them properly and finally extrude them.
+As with the Extrude objects, caps and bevels may be created automatically.
+<p>
+Parsing of TrueType font descriptions is quite tricky. For the sake
+of brevity and ease of the implementation, Ayam does
+not support elaborate TrueType features like kerning tables, that control
+distances between certain letters (You are not going to typeset a book with
+Ayam, aren't you?). Therefore you might experience
+wrong letter distances from time to time. If this happens, just
+create a Text object for each letter, and arrange the objects
+as you like.
+<p>
+The following attributes control the creation of the text objects.
+<sect2>TextAttr Property<label id="textattr">
+<p>
+<itemize>
+<item>Using <tt/"FontName"/ you specify a TrueType font description file.
+Those files usually have the file name extension <tt/".ttf"/.
+Only real TrueType font files, containing Bezier curve font descriptions,
+are supported. There are also rastered, bitmap containing TrueType
+font description files, those will not work.
+<item>Using <tt/"String"/ you specify the letters to be created.
+This entry (and the corresponding data structures) are Unicode clean.
+This means you can put any Unicode letters into this entry. You should
+of course make sure, that the letters are included in the selected font
+file.
+<item><tt/"Height"/ controls the height of the extruded object.
+<item><tt/"Revert"/ reverts the sense of inside-outside detection
+mechanism for the cap generation. Depending on the actual font description
+file (or even letter) you may need to toggle this to get caps.
+<item><tt/"UpperCap"/, <tt/"LowerCap"/, <tt/"UpperBevel"/, <tt/"LowerBevel"/,
+<tt/"BevelType"/, and <tt/"BevelRadius"/ work like for the Extrude object
+(see section <ref id="extrattr" name="ExtrudeAttr Property"> for a more
+exhaustive description of those parameters).
+Just one note: for some fonts, the <tt/"BevelRadius"/ has to be set to really
+small values (about 0.0008) to get bevels and caps. This is because of
+sharp corners in some letters that lead to overlapping curves
+with high values for the <tt/"BevelRadius"/.
+<item><tt/"RevertBevels"/ can be turned on, if the extracted curves
+and therefore also the bevels are of wrong direction.
+</itemize>
+
+See section <ref id="npattr" name="NPatchAttrib"> for a description
+of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
+
 <sect1>RiInc Object<label id="riincobj">
 <p>
 RiInc objects may be used to include objects or whole scene parts into your
@@ -4932,6 +4983,28 @@ the second control point will be the first after this operation.
 The shifting process will be repeated according to the parameter value
 given. Eventually selected points will still be selected after this
 operation.
+</itemize>
+
+<sect1>The To XY Tool<label id="toxyt">
+<p>
+<itemize>
+<item>Arguments: The To XY tool takes a number of
+NURBS curves from the selection. The NURBS curves should be planar.
+<item>Operation: The control points of the curve(s) will be rotated,
+so that they are in the XY plane of the respective object space defined by
+the NURBS curve object(s). Additionally, the rotation attributes of
+the NURBS curve object(s) will be changed so that the curve does not
+change its orientation with regard to other objects or the world space.
+</itemize>
+
+<sect1>The Make Compatible Tool<label id="makecompt">
+<p>
+<itemize>
+<item>Arguments: The Make Compatible tool takes a number of
+NURBS curves from the selection.
+<item>Operation: The curves will be made compatible, so that they
+are of the same order and defined on the same knot vector
+afterwards.
 </itemize>
 
 <sect1>The Collapse Points Tool<label id="collt">
@@ -6526,8 +6599,9 @@ complexity of a primitive must be known.
 The depth complexity of a primitive determines the maximum number
 of forward oriented surfaces any ray through this primitive would pass.
 A regular sphere has a depth complexity of 1, a torus of 2, but do
-not confuse depth complexity with genus, they are different values.
+not confuse depth complexity with genus, they are different values!
 The depth complexity of a primitive should be stored in a DC tag.
+A torus would e.g. get a tag named <tt/"DC"/ with the value <tt/"2"/.
 <p>
 The aycsg plugin supports the following options available
 through the main menu entry <tt>"Custom/AyCSG Preferences"</tt>:
@@ -6539,7 +6613,6 @@ strategy.
 <item><tt/"CalcBBS"/ determines whether bounding boxes should be
 calculated and used for speed up (not working at the moment).
 </itemize>
-
 
 <sect1>Increasing drawing speed<label id="incds">
 <p>
@@ -6737,7 +6810,8 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Basis_U, Basis_V: <ref id="pmattr" name="PatchMesh attribute">
 <item>BeamDistrib: <ref id="lip" name="light attribute">
 <item>Bevel: <ref id="handb" name="using bevels">
-<item>BevelRadius, BevelType: <ref id="extrattr" name="extrude attribute">
+<item>BevelRadius, BevelType: <ref id="extrattr" name="extrude attribute">,
+<ref id="textattr" name="text attribute">
 <item>BGImage: <ref id="vat" name="view attribute">
 <item>bicubic/bilinear PatchMesh:
 <ref id="patchmeshobj" name="PatchMesh object">
@@ -6869,6 +6943,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>FilterWidth: <ref id="rio" name="RenderMan interface option">
 <item>FindU: <ref id="miscac" name="modeling action">
 <item>Flatness: <ref id="moattr" name="MetaObj attributes">
+<item>FontName: <ref id="textattr" name="Text attribute">
 <item>forAll, forAllT: <ref id="scifall" name="scripting interface command">
 <item>Force Notification: <ref id="mmtools" name="main menu entry">
 <item>forceNot: <ref id="scimisc" name="scripting interface command">
@@ -6900,12 +6975,13 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>HandleSize: <ref id="prefmodel" name="preference setting">
 <item>hasChild: <ref id="scimisc" name="scripting interface command">
 <item>Height: <ref id="rio" name="RenderMan interface option">,
-<ref id="bxp" name="box attribute">,
-<ref id="cnp" name="cone attribute">,
+<ref id="bxp" name="Box attribute">,
+<ref id="cnp" name="Cone attribute">,
 <ref id="npattr" name="NURBPatch attribute">,
 <ref id="pmattr" name="PatchMesh attribute">,
-<ref id="extrattr" name="extrude attribute">,
-<ref id="vat" name="view attribute">
+<ref id="extrattr" name="Extrude attribute">,
+<ref id="vat" name="View attribute">,
+<ref id="textattr" name="Text attribute">
 <item>Help: <ref id="mmhelp" name="main menu entry">
 <item>Help on object: <ref id="mmhelp" name="main menu entry">
 <item>Hidden Preferences: <ref id="hidprefs" name="Hidden Preference Settings">
@@ -6984,14 +7060,17 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Loft: <ref id="skinobj" name="skin object">
 <item>LogFile: <ref id="prefgui" name="preference setting">
 <item>Logging: <ref id="prefgui" name="preference setting">
-<item>LowerBevel: <ref id="extrattr" name="extrude attribute">
+<item>LowerBevel: <ref id="extrattr" name="extrude attribute">,
+<ref id="textattr" name="text attribute">
 <item>LowerCap: <ref id="rep" name="revolve attribute">,
-<ref id="extrattr" name="extrude attribute">
+<ref id="extrattr" name="extrude attribute">,
+<ref id="textattr" name="text attribute">
 </itemize>
 
 <label id="indexm">M
 <itemize>
 <item>MajorRad: <ref id="top" name="torus attribute">
+<item>Make Compatible: <ref id="makecompt" name="NURBCurve tool">
 <item>MarkHidden: <ref id="prefgui" name="preference setting">
 <item>Master: <ref id="mmedit" name="edit menu entry">
 <item>Material: <ref id="materialobj" name="object">,
@@ -7131,7 +7210,9 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>ResInstances: <ref id="prefrib" name="preference setting">
 <item>Resolve all Instances: <ref id="mmspecial" name="main menu entry">
 <item>Revert: <ref id="revertt" name="Revert tool">,
-<ref id="concatncp" name="ConcatNC attribute">
+<ref id="concatncp" name="ConcatNC attribute">,
+<ref id="textattr" name="Text attribute">
+<item>RevertBevels: <ref id="textattr" name="Text attribute">
 <item>revertNC: <ref id="scinurbs" name="scripting interface command">
 <item>RevertU, RevertV: <ref id="revertut" name="Revert U tool">,
 <ref id="revertvt" name="Revert V tool">
@@ -7240,6 +7321,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Step_U, Step_V: <ref id="pmattr" name="PatchMesh attribute">
 <item>StepSize: <ref id="moattr" name="MetaObj attributes">
 <item>Stretch: <ref id="scalac" name="stretch object">
+<item>String: <ref id="textattr" name="Text attribute">
 <item>Subdivision Mesh: <ref id="sdmeshobj" name="SDMesh object">
 <item>Surface: <ref id="matshader" name="shader">
 <item>Swap UV: <ref id="swapuvt" name="swap uv tool">
@@ -7256,6 +7338,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>TclPrecision: <ref id="prefmisc" name="preference setting">
 <item>Tesselate: <ref id="tesst" name="tesselation tool">
 <item>TessPoMesh <ref id="expwav" name="Wavefront OBJ export option">
+<item>Text: <ref id="textobj" name="object">
 <item>Textures: <ref id="rio" name="RenderMan interface option">
 <item>TextureCoordinates: <ref id="tctag" name="tag type">,
 <ref id="tce" name="texture coordinate editor">
@@ -7282,6 +7365,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>ToolBoxTrans: <ref id="prefmisc" name="preference setting">
 <item>Top: <ref id="vmtype" name="view menu entry">
 <item>Torus: <ref id="torusobj" name="object">
+<item>To XY: <ref id="toxyt" name="To XY tool">
 <item>TP: <ref id="tptag" name="tag type">
 <item>Transformations: <ref id="trap" name="transformations property">
 <item>Translation: <ref id="trap" name="transformations property">
@@ -7305,9 +7389,11 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <ref id="scimisc" name="scripting interface command">
 <item>UndoLevels: <ref id="prefmodel" name="preference setting">
 <item>Union: <ref id="levelobj" name="Level object">
-<item>UpperBevel: <ref id="extrattr" name="extrude attribute">
+<item>UpperBevel: <ref id="extrattr" name="extrude attribute">,
+<ref id="textattr" name="text attribute">
 <item>UpperCap: <ref id="rep" name="revolve attribute">,
-<ref id="extrattr" name="extrude attribute">
+<ref id="extrattr" name="extrude attribute">,
+<ref id="textattr" name="text attribute">
 <item>Up Vector: <ref id="camp" name="camera property">
 <item>uS: <ref id="sciupd" name="scripting interface command">
 <item>UseGrid: <ref id="vat" name="view attribute">,
