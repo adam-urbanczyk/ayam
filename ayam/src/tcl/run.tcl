@@ -132,7 +132,7 @@ proc runGetStdout { num cmd template channel } {
 	    set secs [expr int(round($togo-($hours*3600)-($mins*60)))]
 	    set string [format "~ %d:%02d:%02d to go"  $hours $mins $secs]
 	    .render${num}.f2.la configure -text $string
-	    if { $percent == 100 } {
+	    if { $percent >= 100 } {
 		set fulltime [expr ($cur-$start)]
 		set hours [expr int(floor($fulltime/3600))]
 		set mins [expr int(floor(($fulltime-($hours*3600))/60))]
