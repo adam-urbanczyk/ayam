@@ -1,7 +1,9 @@
 all: htm pdf3
 
 htm:
-	rm -f html/*.html
+	rm -rf html
+	mkdir html
+	cd html; ln -sf ../pics pics;cd ..
 	cp ayam.sgml html
 	cd html;sgml2html -s 1 ayam.sgml;rm ayam.sgml;cd ..
 	./fixhtml.tcsh
