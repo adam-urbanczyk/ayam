@@ -19,6 +19,12 @@
  * code marked NURBS++ derived from (or contains changes
  * to the original NURBS-Book code from) the NURBS++-Library
  * by Philippe Lavoie.
+ *
+ * in contrast to the rest of Ayam, the interfaces in this module
+ * follow the NURBS book more closely (to ease debugging of core
+ * NURBS algorithms) which means that:
+ * n is curve->length-1, w is patch->width-1, h is patch->height-1
+ * p is curve->order-1, or patch->uorder-1, q is patch->vorder-1
  */
 
 
@@ -2120,7 +2126,7 @@ ay_nb_FinduFromPoint(ay_nurbcurve_object *curve, double *point,
  * ay_nb_RefineKnotVectCurve:
  * original algorithm by Boehm and Prautzsch
  * refine the knot vector of the curve
- * (stride, n, p, U, Pw) with the new knots in X[r];
+ * (stride, n, p, U[], Pw[]) with the new knots in X[r];
  * results in new knots in Ubar[n+p+r] and new
  * control points in Qw[n+r] both allocated outside!
  */
@@ -2221,12 +2227,15 @@ ay_nb_RefineKnotVectCurve(int stride, int n, int p, double *U, double *Pw,
  return;
 } /* ay_nb_RefineKnotVectCurve */
 
+
 /*
  * ay_nb_DegreeElevateSurfU: (NURBS++)
  * Elevates the degree of surface: stride, w, h, p, U[], Pw[]
  * t times along parametric dimension u
+ * q, V[] do not have to be provided (no change in dimension v)
  * nw: new width, Uh: new knots, Qw: new controls
  * Uh[] and Qw[] should be sized appropriately before elevation
+ * (Uh[wi+wi*t+p+1+t] and Qw[(wi+wi*t*he*stride])
  * and probably _resized_ according to nw after elevation!
  */
 int
@@ -2395,7 +2404,7 @@ ay_nb_DegreeElevateSurfU(int stride, int w, int h, int p, double *U,
 		{
 		  /* for(colJ = 0; colJ < h; colJ++)
 		       {
-		         Nextbpts(save,colJ) = bpts(p,colJ);
+		         nextbpts(save,colJ) = bpts(p,colJ);
 		       } */
 		  memcpy(&(nextbpts[save*h*stride]), &(bpts[p*h*stride]),
 			 h*stride*sizeof(double));
@@ -2432,9 +2441,9 @@ ay_nb_DegreeElevateSurfU(int stride, int w, int h, int p, double *U,
     
     if(oldr > 1)
       {
-	/* must remove knot u=c.U[a] oldr times */
+	/* must remove knot u=U[a] oldr times */
 	/* if(oldr>2) // Alfas on the right do not change
-	   alfj = (ua-nc.U[kind-1])/(ub-nc.U[kind-1]); */
+	   alfj = (ua-U[kind-1])/(ub-U[kind-1]); */
 	first = kind-2; last = kind;
 	den = ub-ua;
 	bet = (ub-Uh[kind-1])/den;
@@ -2512,7 +2521,7 @@ ay_nb_DegreeElevateSurfU(int stride, int w, int h, int p, double *U,
   
     if(a != p)
       {
-	/* load the knot u=c.U[a] */
+	/* load the knot u=U[a] */
 	for(i = 0; i < ph-oldr; i++)
 	  {
 	    Uh[kind++] = ua; 
@@ -2536,7 +2545,7 @@ ay_nb_DegreeElevateSurfU(int stride, int w, int h, int p, double *U,
 	  {
 	    for(j = 0; j < r; j++)
 	      {
-		/* bpts(j,colJ) = Nextbpts(j,colJ); */
+		/* bpts(j,colJ) = nextbpts(j,colJ); */
 		ki = (j*h+colJ)*stride;
 		memcpy(&(bpts[ki]), &(nextbpts[ki]), stride*sizeof(double));
 	      }
