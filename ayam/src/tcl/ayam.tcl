@@ -870,12 +870,12 @@ if { $AYIDRWRAPPED == 1 } {
 }
 
 if { $AYMETAWRAPPED == 1 } {
-    ayam_loadscript metaobj.tcl
-    ayam_loadscript metacomp.tcl
+    ayam_loadscript metaobj
+    ayam_loadscript metacomp
 }
 
 if { $AYRRIBWRAPPED == 1 } {
-    ayam_loadscript rrib.tcl
+    ayam_loadscript rrib
 }
 
 # bind . <Configure> { if { "%W" == "." } { puts stderr "%w" } }

@@ -369,19 +369,22 @@ ay_init(Tcl_Interp *interp)
 #endif
 
 #ifdef AYMETAWRAPPED
+  if((ay_status = Metaobj_Init(interp)))
+    { ay_error(ay_status, fname, NULL); return AY_ERROR; }
+  if((ay_status = Metacomp_Init(interp)))
+    { ay_error(ay_status, fname, NULL); return AY_ERROR; }
   Tcl_SetVar(interp, "AYMETAWRAPPED", "1", TCL_LEAVE_ERR_MSG |
 	     TCL_GLOBAL_ONLY);
-  int Metaobj_Init(Tcl_Interp *interp);
-  int Metacomp_Init(Tcl_Interp *interp);
 #else
   Tcl_SetVar(interp, "AYMETAWRAPPED", "0", TCL_LEAVE_ERR_MSG |
 	     TCL_GLOBAL_ONLY);
 #endif
 
 #ifdef AYRRIBWRAPPED
+  if((ay_status = Rrib_Init(interp)))
+    { ay_error(ay_status, fname, NULL); return AY_ERROR; }
   Tcl_SetVar(interp, "AYRRIBWRAPPED", "1", TCL_LEAVE_ERR_MSG |
 	     TCL_GLOBAL_ONLY);
-  int Rrib_Init(Tcl_Interp *interp);
 #else
   Tcl_SetVar(interp, "AYRRIBWRAPPED", "0", TCL_LEAVE_ERR_MSG |
 	     TCL_GLOBAL_ONLY);
