@@ -90,7 +90,7 @@ onio_writenpatch(ay_object *o, ONX_Model *p_m)
   for(i = 0; i < np->uorder+np->width-2; i++)
     p_n->SetKnot(0, i, np->uknotv[i+1]);
   for(i = 0; i < np->vorder+np->height-2; i++)
-    p_n->SetKnot(1, i, np->uknotv[i+1]);
+    p_n->SetKnot(1, i, np->vknotv[i+1]);
 
   // copy control points
   a = 0;
