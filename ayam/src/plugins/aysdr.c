@@ -65,27 +65,41 @@ aysdr_scansdrsarg(TSdrParameter *param, Tcl_DString *ds)
     case TYPE_COLOR:
     case TYPE_VECTOR:
     case TYPE_NORMAL:
-      Tcl_DStringAppend(ds, "{ ", -1);
-      deffltval = (double)((param->defaultValue).vector[0]);
-      sprintf(buffer, "%g ", deffltval);
-      Tcl_DStringAppend(ds, buffer, -1);
-      deffltval = (double)((param->defaultValue).vector[1]);
-      sprintf(buffer, "%g ", deffltval);
-      Tcl_DStringAppend(ds, buffer, -1);
-      deffltval = (double)((param->defaultValue).vector[2]);
-      sprintf(buffer, "%g ", deffltval);
-      Tcl_DStringAppend(ds, buffer, -1);
-      Tcl_DStringAppend(ds, "} ", -1);
-      break;
-    case TYPE_MATRIX:
-      Tcl_DStringAppend(ds, "{ ", -1);
-      for(j = 0; j < 16; j++)
+      if((param->defaultValue).vector)
 	{
-	  deffltval = (double)((param->defaultValue).matrix[j]);
+	  Tcl_DStringAppend(ds, "{ ", -1);
+	  deffltval = (double)((param->defaultValue).vector[0]);
 	  sprintf(buffer, "%g ", deffltval);
 	  Tcl_DStringAppend(ds, buffer, -1);
-	} /* for */
-      Tcl_DStringAppend(ds, "} ", -1);
+	  deffltval = (double)((param->defaultValue).vector[1]);
+	  sprintf(buffer, "%g ", deffltval);
+	  Tcl_DStringAppend(ds, buffer, -1);
+	  deffltval = (double)((param->defaultValue).vector[2]);
+	  sprintf(buffer, "%g ", deffltval);
+	  Tcl_DStringAppend(ds, buffer, -1);
+	  Tcl_DStringAppend(ds, "} ", -1);
+	}
+      else
+	{
+	  Tcl_DStringAppend(ds, "{ 0 0 0 } ", -1);
+	}
+      break;
+    case TYPE_MATRIX:
+      if((param->defaultValue).matrix)
+	{
+	  Tcl_DStringAppend(ds, "{ ", -1);
+	  for(j = 0; j < 16; j++)
+	    {
+	      deffltval = (double)((param->defaultValue).matrix[j]);
+	      sprintf(buffer, "%g ", deffltval);
+	      Tcl_DStringAppend(ds, buffer, -1);
+	    } /* for */
+	  Tcl_DStringAppend(ds, "} ", -1);
+	}
+      else
+	{
+	  Tcl_DStringAppend(ds, "{ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 } ", -1);
+	}
       break;
     case TYPE_FLOAT:
       deffltval = (double)((param->defaultValue).scalar);
@@ -93,9 +107,16 @@ aysdr_scansdrsarg(TSdrParameter *param, Tcl_DString *ds)
       Tcl_DStringAppend(ds, buffer, -1);
       break;
     case TYPE_STRING:
-      defstrval = (param->defaultValue).string;
-      Tcl_DStringAppend(ds, defstrval, -1);
-      Tcl_DStringAppend(ds, " ", -1);
+      if((param->defaultValue).string)
+	{
+	  defstrval = (param->defaultValue).string;
+	  Tcl_DStringAppend(ds, defstrval, -1);
+	  Tcl_DStringAppend(ds, " ", -1);
+	}
+      else
+	{
+	  Tcl_DStringAppend(ds, " \"\"", -1);
+	}
       break;
     default:
       break;
