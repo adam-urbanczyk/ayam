@@ -327,7 +327,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *src = NULL, *po = NULL;
  int indexu = 0, indexv = 0, i = 1, j = 1, argc2 = argc;
  int homogenous = AY_FALSE, trafo = AY_FALSE, param = AY_FALSE;
- int handled = AY_FALSE;
+ int handled = AY_FALSE, freepo = AY_FALSE;
  double *p = NULL, *tp = NULL, tmp[4] = {0}, utmp[4] = {0};
  double m[16], u = 0.0;
  char fname[] = "getPnt";
@@ -370,6 +370,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
       src = sel->object;
       p = NULL;
       homogenous = AY_FALSE;
+      freepo = AY_FALSE;
       switch(src->type)
 	{
 	case AY_IDNCURVE:
@@ -483,20 +484,28 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 		    } /* if */
 		  j = i+1;
 		  handled = AY_TRUE;
-		  ay_object_deletemulti(po);
+		  freepo = AY_TRUE;
 		} /* if */
 	    } /* if */
 
-	  /*
+	  
 	  if(argc2 == 7)
 	    {
 	      po = NULL;
 	      ay_status = ay_provide_object(src, AY_IDNPATCH, &po);
 	      if(po)
 		{
-		}
-	    }
-	  */
+		  Tcl_GetInt(interp, argv[i], &indexu);
+		  Tcl_GetInt(interp, argv[i+1], &indexv);
+		  ay_npt_getpntfromindex((ay_nurbpatch_object*)(po->refine),
+					 indexu, indexv, &p);
+		  homogenous = AY_TRUE;
+		  j = i+2;
+		  handled = AY_TRUE;
+		  freepo = AY_TRUE;
+		} /* if */
+	    } /* if */
+	  
 
 	  if(!handled)
 	    ay_error(AY_EWARN, fname,
@@ -553,6 +562,13 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 	} /* if */
+
+      if(freepo)
+	{
+	  if(po)
+	    ay_object_deletemulti(po);
+	} /* if */
+
 
       sel = sel->next;
     } /* while */
