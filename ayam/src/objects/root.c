@@ -106,7 +106,10 @@ ay_root_copycb(void *src, void **dst)
 int
 ay_root_drawcb(struct Togl *togl, ay_object *o)
 {
+ GLdouble mvm[16], pm[16];
+ GLdouble win1x, win1y, win1z, win2x, win2y, win2z, win3x, win3y, win3z;
  GLfloat color[4] = {0.0f,0.0f,0.0f,0.0f};
+ GLint vp[4];
 
   if(!o)
     return AY_ENULL;
@@ -130,6 +133,65 @@ ay_root_drawcb(struct Togl *togl, ay_object *o)
   glEnd();
 
   glColor4fv(color);
+
+  glGetDoublev(GL_MODELVIEW_MATRIX, mvm);
+  glGetDoublev(GL_PROJECTION_MATRIX, pm);
+  glGetIntegerv(GL_VIEWPORT, vp);
+  gluProject((GLdouble)1.0, (GLdouble)0.0,
+	     (GLdouble)0.0, mvm, pm, vp,
+	     &win1x, &win1y, &win1z);
+  gluProject((GLdouble)0.0, (GLdouble)1.0,
+	     (GLdouble)0.0, mvm, pm, vp,
+	     &win2x, &win2y, &win2z);
+  gluProject((GLdouble)0.0, (GLdouble)0.0,
+	     (GLdouble)1.0, mvm, pm, vp,
+	     &win3x, &win3y, &win3z);
+
+  glMatrixMode(GL_PROJECTION);
+  glPushMatrix();
+   glLoadIdentity();
+   glOrtho(0, Togl_Width(togl), 0, Togl_Height(togl), -100.0, 100.0);
+
+   glMatrixMode(GL_MODELVIEW);
+   glPushMatrix();
+    glLoadIdentity();
+    glTranslated(win1x+6,win1y,0.0);
+    glBegin(GL_LINES);
+     glVertex3f((GLfloat)0, (GLfloat)0, (GLfloat)0.0);
+     glVertex3f((GLfloat)-4, (GLfloat)-4, (GLfloat)0.0);
+     glVertex3f((GLfloat)0, (GLfloat)0, (GLfloat)0.0);
+     glVertex3f((GLfloat)4, (GLfloat)4, (GLfloat)0.0);
+     glVertex3f((GLfloat)0, (GLfloat)0, (GLfloat)0.0);
+     glVertex3f((GLfloat)-4, (GLfloat)4, (GLfloat)0.0);
+     glVertex3f((GLfloat)0, (GLfloat)0, (GLfloat)0.0);
+     glVertex3f((GLfloat)4, (GLfloat)-4, (GLfloat)0.0);
+    glEnd();
+    glLoadIdentity();
+    glTranslated(win2x+6,win2y,0.0);
+    glBegin(GL_LINES);
+     glVertex3f((GLfloat)0, (GLfloat)0, (GLfloat)0.0);
+     glVertex3f((GLfloat)-4, (GLfloat)4, (GLfloat)0.0);
+     glVertex3f((GLfloat)0, (GLfloat)0, (GLfloat)0.0);
+     glVertex3f((GLfloat)4, (GLfloat)4, (GLfloat)0.0);
+     glVertex3f((GLfloat)0, (GLfloat)0, (GLfloat)0.0);
+     glVertex3f((GLfloat)-4, (GLfloat)-4, (GLfloat)0.0);
+    glEnd();
+    glLoadIdentity();
+    glTranslated(win3x+6,win3y,0.0);
+    glBegin(GL_LINE_STRIP);
+     glVertex3f((GLfloat)0, (GLfloat)0, (GLfloat)0.0);
+     glVertex3f((GLfloat)-3, (GLfloat)-3, (GLfloat)0.0);
+     glVertex3f((GLfloat)4, (GLfloat)-3, (GLfloat)0.0);
+    glEnd();
+    glBegin(GL_LINE_STRIP);
+     glVertex3f((GLfloat)0, (GLfloat)0, (GLfloat)0.0);
+     glVertex3f((GLfloat)3, (GLfloat)3, (GLfloat)0.0);
+     glVertex3f((GLfloat)-4, (GLfloat)3, (GLfloat)0.0);
+    glEnd();
+    glPopMatrix();
+   glMatrixMode(GL_PROJECTION);
+   glPopMatrix();
+  glMatrixMode(GL_MODELVIEW);
 
  return AY_OK;
 } /* ay_root_drawcb */
