@@ -267,14 +267,18 @@ $ay(currentView) zoomob }
 $m add command -label "Align" -command { global ay;
 $ay(currentView) align }
 
-menubutton $w.fMenu.a -image ay_Move_img -menu $w.fMenu.a.m -padx 3
-menu $w.fMenu.a.m -tearoff 0
-$w.fMenu.a.m add command\
--label "Quick Render"\
--command {exit}
+# XXXX This could be just a label or a menu displaying current action
+# or even allowing to start modeling actions, but which actions?
+#menubutton $w.fMenu.a -image ay_Move_img -menu $w.fMenu.a.m -padx 3
+#menu $w.fMenu.a.m -tearoff 0
+#$w.fMenu.a.m add command\
+#-label "Quick Render"\
+#-command {exit}
 
 pack $w.fMenu.v $w.fMenu.t $w.fMenu.c -in $w.fMenu -side left
-pack $w.fMenu.a -in $w.fMenu -side right
+
+#pack $w.fMenu.a -in $w.fMenu -side right
+
 # XXXX Win32 Menus are a bit to tall
 global tcl_platform
 if { $tcl_platform(platform) == "windows" } {
