@@ -1860,12 +1860,11 @@ RtVoid ay_rrib_RiPatchMesh(RtToken type, RtInt nu, RtToken uwrap,
  RtPointer tokensfound[PPWTBL_LAST];
  RtFloat *pp = NULL, *pw = NULL;
 
- /*
   pm.glu_sampling_tolerance = 0.0;
   pm.glu_display_mode = 0;
- */
+  pm.npatch = NULL;
 
- if(!strcmp(type, RI_BILINEAR))
+  if(!strcmp(type, RI_BILINEAR))
     pm.type = AY_PTBILINEAR;
   else
     pm.type = AY_PTBICUBIC;
