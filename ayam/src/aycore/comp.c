@@ -610,21 +610,12 @@ ay_comp_material(ay_object *o1, ay_object *o2)
      (m1->dbound != m2->dbound) ||
      (m1->sides != m2->sides) ||
      (m1->cast_shadows != m2->cast_shadows) ||
-     (((m1->avr != -1) || (m2->avr != -1)) ||
-      ((m1->avr != m2->avr) ||
-       (m1->avg != m2->avg) ||
-       (m1->avb != m2->avb) ||
-       (m1->ava != m2->ava))) ||
-     (((m1->emr != -1) || (m2->emr != -1)) ||
-      ((m1->emr != m2->emr) ||
-       (m1->emg != m2->emg) ||
-       (m1->emb != m2->emb) ||
-       (m1->ema != m2->ema))) ||
-     (((m1->spr != -1) || (m2->spr != -1)) ||
-      ((m1->spr != m2->spr) ||
-       (m1->spg != m2->spg) ||
-       (m1->spb != m2->spb) ||
-       (m1->spa != m2->spa))) ||
+     (m1->avr != m2->avr) || (m1->avg != m2->avg) ||
+     (m1->avb != m2->avb) || (m1->ava != m2->ava) ||
+     (m1->emr != m2->emr) || (m1->emg != m2->emg) ||
+     (m1->emb != m2->emb) || (m1->ema != m2->ema) ||
+     (m1->spr != m2->spr) || (m1->spg != m2->spg) ||
+     (m1->spb != m2->spb) || (m1->spa != m2->spa) ||
      (m1->patch_size != m2->patch_size) ||
      (m1->elem_size != m2->elem_size) ||
      (m1->min_size != m2->min_size) ||
@@ -633,9 +624,119 @@ ay_comp_material(ay_object *o1, ay_object *o2)
      (m1->has_caustics != m2->has_caustics))
     return AY_FALSE;
 
+  /* compare shaders */
+  if(m1->sshader && m2->sshader)
+    {
+      if(!(ay_comp_shader(m1->sshader, m2->sshader)))
+	return AY_FALSE;
+    }
+  else
+    {
+      if(m1->sshader != m2->sshader)
+	return AY_FALSE;
+    }
+
+  if(m1->dshader && m2->dshader)
+    {
+      if(!(ay_comp_shader(m1->dshader, m2->dshader)))
+	return AY_FALSE;
+    }
+  else
+    {
+      if(m1->dshader != m2->dshader)
+	return AY_FALSE;
+    }
+
+  if(m1->ishader && m2->ishader)
+    {
+      if(!(ay_comp_shader(m1->ishader, m2->ishader)))
+	return AY_FALSE;
+    }
+  else
+    {
+      if(m1->ishader != m2->ishader)
+	return AY_FALSE;
+    }
+
+  if(m1->eshader && m2->eshader)
+    {
+      if(!(ay_comp_shader(m1->eshader, m2->eshader)))
+	return AY_FALSE;
+    }
+  else
+    {
+      if(m1->eshader != m2->eshader)
+	return AY_FALSE;
+    }
 
  return AY_TRUE;
 } /* ay_comp_material */
+
+
+/* ay_comp_pamesh:
+ *
+ */
+int
+ay_comp_pamesh(ay_object *o1, ay_object *o2)
+{
+ ay_pamesh_object *p1, *p2;
+
+  p1 = (ay_pamesh_object *)o1->refine;
+  p2 = (ay_pamesh_object *)o2->refine;
+
+  if((p1->width != p2->width) || (p1->height != p2->height) ||
+     (p1->close_u != p2->close_u) || (p1->close_v != p2->close_v) ||
+     (p1->btype_u != p2->btype_u) || (p1->btype_v != p2->btype_v) ||
+     (p1->ustep != p2->ustep) || (p1->vstep != p2->vstep) ||
+     (p1->type != p2->type))
+    return AY_FALSE;
+
+  if(p1->ubasis && p2->ubasis)
+    {
+      if(memcmp(p1->ubasis, p2->ubasis, 16*sizeof(double)))
+	return AY_FALSE;
+    }
+  else
+    {
+      if(p1->ubasis != p2->ubasis)
+	return AY_FALSE;
+    }
+
+  if(p1->vbasis && p2->vbasis)
+    {
+      if(memcmp(p1->vbasis, p2->vbasis, 16*sizeof(double)))
+	return AY_FALSE;
+    }
+  else
+    {
+      if(p1->vbasis != p2->vbasis)
+	return AY_FALSE;
+    }
+
+  if(p1->controlv && p2->controlv)
+    {
+      if(memcmp(p1->controlv, p2->controlv,
+		p1->width*p1->height*4*sizeof(double)))
+	return AY_FALSE;
+    }
+
+ return AY_OK;
+} /* ay_comp_pamesh */
+
+
+/* ay_comp_cap:
+ *
+ */
+int
+ay_comp_cap(ay_object *o1, ay_object *o2)
+{
+ ay_cap_object *p1, *p2;
+
+  p1 = (ay_cap_object *)o1->refine;
+  p2 = (ay_cap_object *)o2->refine;
+
+ return AY_OK;
+} /* ay_comp_cap */
 
 
 /* ay_comp_register:
@@ -729,6 +830,8 @@ ay_comp_init()
   ay_status = ay_comp_register(ay_comp_extrude, AY_IDEXTRUDE);
   ay_status = ay_comp_register(ay_comp_sweep, AY_IDSWEEP);
   ay_status = ay_comp_register(ay_comp_skin, AY_IDSKIN);
+  ay_status = ay_comp_register(ay_comp_cap, AY_IDCAP);
+  ay_status = ay_comp_register(ay_comp_skin, AY_IDPAMESH);
 
 
  return ay_status;
