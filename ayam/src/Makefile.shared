@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile.shared [8. Feb 2001]
+# Makefile.shared [21. Feb 2001]
 # Makefile for Ayam (shared version)
 
 # Where shall the executable be installed?
@@ -143,7 +143,7 @@ DL = -ldl
 #DL =
 
 # RRIB Plugin Required Libraries
-RRIBLIBS = -L /home/randi/sdk/affine0008/lib -lribrdr -lribhash -lribnop -lm -lz
+RRIBLIBS = -L /home/randi/sdk/affine0008/lib -lribrdr -lribhash -lribnop -lm
 
 #############################################
 # nothing needs to be changed below this line
