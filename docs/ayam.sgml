@@ -1064,7 +1064,14 @@ to the selection using a click and drag operation. All points
 that are drawn in the rectangular region defined by the click and drag
 will be added to the selection. The click and drag selection
 may take some time, depending on the size of the region! Note, that
-currently only points that are visible will be added to the list.<p>
+currently only points that are visible will be added to the list.
+
+Tip:<p>
+You can select points that are not visible (because hidden behind
+other points) easily by holding down the <tt>Alt</tt> key and rotating
+the view a bit while the select
+point action is active. Do not forget to switch back
+to a Front/Side/Top view for the modeling action afterwards.<p>
 
 <sect1>Editing Points<label id="editac">
 <p>
