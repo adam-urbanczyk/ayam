@@ -45,7 +45,7 @@ namespace OpenCSG {
 
     void ayCSGPrimitive::render() {
       int has_tm = AY_FALSE, cw = AY_TRUE;
-      GLboolean ff;
+      GLint ff;
 
       if(ayobject_->tags && (ayobject_->tags->type == aycsg_tm_tagtype))
 	{
@@ -54,7 +54,7 @@ namespace OpenCSG {
 	  glMultMatrixd((GLdouble*)(ayobject_->tags->val));
 	  if(ayobject_->tags->name)
 	    {
-	      glGetBooleanv(GL_FRONT_FACE, &ff);
+	      glGetIntegerv(GL_FRONT_FACE, &ff);
 	      if(ff == GL_CW)
 		{
 		  glFrontFace(GL_CCW);
