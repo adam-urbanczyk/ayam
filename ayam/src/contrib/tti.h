@@ -1,3 +1,19 @@
+/*
+ * Ayam, a free 3D modeler for the RenderMan interface.
+ *
+ * Ayam is copyrighted 1998-2004 by Randolf Schultz
+ * (rschultz@informatik.uni-rostock.de) and others.
+ *
+ * All rights reserved.
+ *
+ * See the file License for details.
+ *
+ */
+
+/* tti.h - truetype font parsing helpers */
+
+/* original version of this file provided by Frank (copper) Pagels */
+
 #ifndef TTI_H_
 #define TTI_H_ 1
 
@@ -57,14 +73,14 @@ typedef struct ay_tti_letter_s
 typedef struct longhormetric_s
 {
   unsigned short advanceWidth;
-  signed short	lsb;
+  signed short lsb;
 } LONGHORMETRIC;
 
 typedef struct ttf_hhea_s
 {
   unsigned char	version[4];
   signed short ascender, descender, lineGap;
-  unsigned short advnaceWidthMax;
+  unsigned short advanceWidthMax;
   signed short minLSB, minRSB, xMaxExtent;
   signed short caretSlopeRise, caretSlopeRun;
   signed short reserved[5];
