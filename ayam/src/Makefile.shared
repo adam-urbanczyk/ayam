@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile.shared [14. Dec 2003]
+# Makefile.shared [31. Dec 2003]
 # Makefile for Ayam (shared version)
 
 # Choose an installation prefix.
@@ -164,9 +164,10 @@ X11LIBS = -L/usr/X11R6/lib -lXmu -lXext -lX11
 # Affine Toolkit
 # where is ributil.h?
 AFFINEINCDIR = ./affine/include
-# if you do not use Affine:
+# if you do not use Affine as BMRT libribout replacement:
 AFFINEOBJS = 
-# if you use Affine (add -DAYUSEAFFINE to CFLAGS!):
+# if you use Affine as BMRT libribout replacement
+# (also add -DAYUSEAFFINE to CFLAGS!):
 #AFFINEOBJS = ./affine/src/write.o ./affine/src/constant.o
 
 
@@ -174,16 +175,15 @@ AFFINEOBJS =
 AQSISDIR = /usr/local/aqsis
 AQSISINCDIR = $(AQSISDIR)/include
 AQSISLIBDIR = $(AQSISDIR)/lib
-# if you do not use Aqsis libslxargs:
+# if you do not use Aqsis libslxargs as libslcargs replacement:
 AQSISOBJS = 
 # if you use Aqsis libslxargs (add -DAYUSESLXARGS to CFLAGS!):
 #AQSISOBJS = $(AQSISLIBDIR)/rcdummy.o $(AQSISLIBDIR)/libshadervm.so $(AQSISLIBDIR)/libshaderexecenv.so $(AQSISLIBDIR)/libslxargs.so $(AQSISLIBDIR)/libaqsistypes.so -L /usr/local/lib -llog4cpp
 
-# if you do not use Aqsis libri2rib as libribout replacement:
+# if you do not use Aqsis libri2rib as BMRT libribout replacement:
 #AQSISRI2RIB =
 # if you use Aqsis libri2rib (add -DAYUSEAQSISRIB to CFLAGS above!):
 AQSISRI2RIB = $(AQSISLIBDIR)/libri2rib.so -L /usr/local/lib -llog4cpp
-
 
 
 # BMRT
@@ -195,11 +195,11 @@ BMRTINCDIR = $(BMRTDIR)/include
 BMRTLIBDIR = $(BMRTDIR)/lib
 # if you use BMRT libribout and not Affine:
 RIBOUTLIB = -L$(BMRTLIBDIR) -lribout
-# if you use Affine or Aqsis libri2rib as libribout replacement:
+# if you use Affine or Aqsis libri2rib as BMRT libribout replacement:
 #RIBOUTLIB =
 # if you do not use libslcargs from BMRT:
 SLCARGSLIB =
-# if you use Affine as libribout replacement and libslcargs from BMRT:
+# if you use Affine as BMRT libribout replacement and libslcargs from BMRT:
 #SLCARGSLIB = -L$(BMRTLIBDIR) -lslcargs
 
 
@@ -217,7 +217,7 @@ SHLFLAGS = -shared
 #SHLFLAGS = -bundle -flat_namespace -undefined suppress
 
 # RRIB Plugin Required Libraries
-# where is Affine?
+# where is the complete Affine distribution?
 AFFINEDIR = ../../affine0008
 RRIBLIBS = -L$(AFFINEDIR)/lib -lribrdr -lribhash -lribnop -lm
 
