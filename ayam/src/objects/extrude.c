@@ -655,7 +655,7 @@ ay_extrude_notifycb(ay_object *o)
 				(patch->width-1)*4*patch->height]),
 			     4*curve->length*sizeof(double));
 		      z += curve->controlv[2];
-		      ay_object_defaults(trim);
+		      ay_trafo_defaults(trim);
 		    }
 
 		  if(!(cap = calloc(1,sizeof(ay_object))))
@@ -664,6 +664,7 @@ ay_extrude_notifycb(ay_object *o)
 		  cap->type = AY_IDNPATCH;
 		  cap->hidechilds = AY_TRUE;
 		  cap->parent = AY_TRUE;
+		  cap->inherit_trafos = AY_FALSE;
 
 		  ay_npt_createcap(z,curve,&uminx,&umaxx,&uminy,&umaxy,&angle,
 				  (ay_nurbpatch_object **)&(cap->refine));
@@ -792,7 +793,7 @@ ay_extrude_notifycb(ay_object *o)
 					(patch->width-1)*4*patch->height]),
 			     4*curve->length*sizeof(double));
 		      z -= curve->controlv[2];
-		      ay_object_defaults(trim);
+		      ay_trafo_defaults(trim);
 		    }
 
 		  if(!(cap = calloc(1,sizeof(ay_object))))
@@ -801,6 +802,7 @@ ay_extrude_notifycb(ay_object *o)
 		  cap->type = AY_IDNPATCH;
 		  cap->hidechilds = AY_TRUE;
 		  cap->parent = AY_TRUE;
+		  cap->inherit_trafos = AY_FALSE;
 
 		  ay_npt_createcap(z,curve,&lminx,&lmaxx,&lminy,&lmaxy,&angle,
 				  (ay_nurbpatch_object **)&(cap->refine));
