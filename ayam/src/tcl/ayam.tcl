@@ -218,6 +218,18 @@ array set aymainshortcuts {
     RebuildTree "Ctrl-l"
     SelAll "Ctrl-a"
     SelNone "Ctrl-n"
+
+    SProp0 "Key-0"
+    SProp1 "Key-1"
+    SProp2 "Key-2"
+    SProp3 "Key-3"
+    SProp4 "Key-4"
+    SProp5 "Key-5"
+    SProp6 "Key-6"
+    SProp7 "Key-7"
+    SProp8 "Key-8"
+    SProp9 "Key-9"
+
 }
 # array aymainshortcuts
 
@@ -1059,6 +1071,7 @@ ayam_loadscript ai
 ayam_loadscript prog
 ayam_loadscript objsel
 ayam_loadscript tc
+ayam_loadscript tgui
 
 # load scripts of statically linked additional modules
 if { $AYIDRWRAPPED == 1 } {
