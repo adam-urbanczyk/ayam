@@ -354,9 +354,9 @@ proc shortcut_altrotatebinding { w } {
 #shortcut_show:
 # display all current shortcuts in a separate top level window
 proc shortcut_show { } {
-global aymainshortcuts ayviewshortcuts
+global ay aymainshortcuts ayviewshortcuts
 
-set w .ayshortcuts
+set w .ayscw
 
 catch {destroy $w}
 toplevel $w
