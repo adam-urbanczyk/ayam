@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile.wrapped [15. Oct 2002]
+# Makefile.wrapped [14. Dec 2002]
 # Makefile for Ayam (wrapped version)
 
 # Choose an installation prefix.
@@ -42,9 +42,9 @@ CC = cc
 # which forces us to use "CC" or "g++" to link the right libraries
 # automatically
 # IRIX:
-LD = CC
+#LD = CC
 # Linux:
-#LD = g++
+LD = g++
 
 # flags for the compiler
 # o add -DAYUSEAFFINE if you use the Affine Toolkit as libribout replacement
@@ -63,7 +63,7 @@ LD = CC
 #   as well, see below!
 # o add -DAYENABLEPPREV to enable the permanent preview feature
 
-CFLAGS = -O -DAYWRAPPED -DAYUSESLCARGS -DAYUSEBMRTRIBOUT
+CFLAGS = -O2 -DAYWRAPPED -DAYUSESLCARGS -DAYUSEBMRTRIBOUT
 # IRIX (-DAYIRIXBUG is needed by ncurve.c to work around a bug in libGLU):
 #CFLAGS = -O -fullwarn -woff 1048 -DAYWRAPPED -DAYIRIXBUG -DAYUSESLCARGS -DAYUSEBMRTRIBOUT
 # Linux:
@@ -256,6 +256,7 @@ AYAMOBJS = aycore/bbc.o\
 	aycore/read.o\
 	aycore/riattr.o\
 	aycore/riopt.o\
+	aycore/sdmesht.o\
 	aycore/sel.o\
 	aycore/selp.o\
 	aycore/shade.o\
@@ -303,6 +304,7 @@ AYAMOBJS = aycore/bbc.o\
 	objects/revolve.o\
 	objects/riinc.o\
 	objects/root.o\
+	objects/sdmesh.o\
 	objects/sphere.o\
 	objects/skin.o\
 	objects/sweep.o\
