@@ -1,4 +1,4 @@
-[21. 07. 2003] CVS-Head:
+[27. 07. 2003] CVS-Head:
 o bug fixes:
   - fixed crash when exporting scenes with malformed RiAttribute/RiOption
     tags (type c or p, with a component missing) (SF 753550)
@@ -43,7 +43,16 @@ o added a new option "IsLocal" to the light objects, that controls whether
 o added keyboard shortcut to reset the tree view (Ctrl+l)
 o moved material name and reference counter from "RiAttributes" property
   to new property "MaterialAttr" for Material objects
-
+o added a new command "Add/Edit Material!" to the "Material" property
+o added "Highlight Material" feature (Tools menu) that colours all objects
+  of the same material in red in the tree view
+o the shader selection dialog now binds to the keyboard and cycle-selects
+  shaders on key-press based on their first letter (e.g. pressing <m>
+  selects "matte" immediately)
+o added preference setting "Modeling/DefaultAction" to choose between "Pick"
+  and "None" to be invoked when the <Esc> key is pressed in a view window
+o added keyboard shortcut for object picking action (<P>)
+  
 
 [10. 05. 2003] Ayam1.5.1:
 o bug fixes:
