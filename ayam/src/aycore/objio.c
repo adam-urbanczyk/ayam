@@ -204,7 +204,7 @@ int
 ay_objio_writetcurve(FILE *fileptr, ay_object *o, double *m)
 {
  ay_nurbcurve_object *nc;
- double v[3] = {0}, *p1, pw[2], ma[16] = {0}, mn[16] = {0};
+ double v[3] = {0}, *p1, pw[3], ma[16] = {0}, mn[16] = {0};
  int stride = 4, i;
 
   if(!o)
