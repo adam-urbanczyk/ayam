@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>23. Dec 2002
+<date>29. Dec 2002
 <abstract>
 This is the documentation of Ayam (1.4) - a free 3D modeling environment
 for the RenderMan interface.
@@ -1616,46 +1616,113 @@ drop in the tree view.
 
 <sect1>Shaders<label id="shd">
 <p>
-Shader properties are used to attach a shader of a certain type to an object.
+Shader properties are used to attach shaders of a certain type to objects.
 The name of the property contains the type of the shader, e.g.
-light shaders may be attached to a property named <tt/"LightShader"/ only.
-
+light shaders may be attached using a property named <tt/"LightShader"/ only.
+Other types of shaders or shader properties are: <tt/"Surface"/,
+<tt/"Displacement"/, <tt/"Interior"/, <tt/"Exterior"/, <tt/"Atmosphere"/,
+and <tt/"Imager"/.
+<p>
 Each shader property GUI, even if no shader is attached to an object,
 starts with the <tt/"Set new shader."/-button. This button allows
 to select a new shader of the appropriate type.
-If you press the <tt/"Set new shader."/-button a dialog with a
-list of shaders pops up. If the listbox is empty, Ayam
-is probably not set up properly. Check the preference setting
+If you press the <tt/"Set new shader."/-button, a dialog with a
+list of shaders pops up. If this list is empty, Ayam
+is probably not set up properly (or you simply do not have
+shaders of the appropriate type). Check the preference setting
 <tt>"Main/Shaders"</tt>.
-
 After a new shader has been set, the arguments of the shader will be
 parsed and a GUI will be generated to allow the arguments of the shader
-to be filled with values. Note, that Ayam will simply
-skip all array arguments, currently.
-
+to be filled with values.
+<p>
 The <tt/"Delete shader."/-button may be used to
-delete the current shader from the selected object.<p>
+delete the current shader from the selected object.
+<p>
+The <tt/"Default Values."/-button resets all arguments
+of the shader to the default values.
+See also section <ref id="workshd" name="Working with Shaders"> below.
+<p>
+All other elements of the shader property GUI depend on the currently
+attached shader.
 
+<sect2>Shader Parsing<label id="parseshd">
+<p>
+If no plugin is loaded, the official Ayam binaries use libslcargs
+(from BMRT) to parse shaders that have been compiled with slc (the
+shader compiler from BMRT). Parsing incorporates detecting the
+type of the shader, and the names, types, and default values of
+all shader arguments.
+<p>
+Note, that currently, Ayam only works properly with shaders
+that have at most two dots in their file name and that Ayam will simply
+skip all array arguments (and emit a warning message) while parsing
+a shader. Those array arguments consequently never appear in the
+shader property GUIs and RIBs exported by Ayam. Also note, that
+default values for shader arguments of type color will be silently
+clamped to the range 0-255.
+<p>
+Many shaders use array arguments to define transformation matrices.
+If this is the case and you have access to the shader source code
+you may want to modify those shaders to enable working with the
+transformation matrix carrying shader arguments.
+To do this, just change all definitions of transformation matrix
+carrying floating
+point arrays to real matrices.
+If the shader contains a
+<p>
+<tt>"float a_matrix_parameter[16]"</tt>
+<p>
+change this to
+<p>
+<tt>"matrix a_matrix_parameter"</tt>.
+<p>
+Note, that these changes of the shader argument
+definitions probably also require changes of the code that uses those
+arguments.
+Ayam is able to deal with matrices because
+of their fixed size of 16 float values, and because libslcargs is able
+to deliver the default values for a matrix (but not for an array!).
+<p>
+If Ayam has been compiled without a shader parsing library
+(e.g. without libslcargs), Ayam will parse XML files created
+by <tt/"sdpslparse"/ from the K-3D project
+(see <tt>"http://www.k-3d.com/"</tt>)
+instead of compiled shaders.
+The <tt/"Set new shader."/-button will in this case always
+open a file requester, allowing you to select a XML file,
+that has been created by sdpslparse.
+Furthermore, the <tt/"Default Values."/-button will not be available;
+you have to use <tt/"Set new shader."/ instead.
+<p>
+From V1.3 on, Ayam also supports shader parsing plugins to allow parsing
+of shaders compiled with different shader compilers, see also section
+<ref id="spplugins" name="Shader Parsing Plugins">.
+
+<sect2>Working with Shaders<label id="workshd">
+<p>
 The <tt/"Default Values."/-button resets all arguments
 of the shader to the default values.
 For that, the compiled shader will be parsed again.
-Therefore, this button is handy if you work with changing shaders.
-If you want to keep the old shader argument values, simply
-copy the shader property using the property clipboard (main menu:
-<tt>"Edit/Copy Property"</tt>) before
-you load the new default values, then paste the property
-back using <tt>"Edit/Paste Property"</tt>.
+Therefore, this button is quite handy if you have to deal with
+changing shaders: just edit the shader, recompile it, then back
+in Ayam just hit the <tt/"Default Values."/-button. Note, that
+this destroys your possibly carefully adjusted shader argument values.
+<p>
+If you want to keep the old shader argument values when a shader
+changes, simply copy the shader property using the property clipboard
+(main menu: <tt>"Edit/Copy Property"</tt>) before
+you load the new default values and paste the property
+back using <tt>"Edit/Paste Property"</tt> after loading of the
+new default values.
 Note, that this works only properly, if you do not change
-the type of existing shader arguments!
-
-If Ayam has been compiled without a shader parsing library
-(e.g. without libslcargs), Ayam will parse XML files created
-by sdpslparse from the K-3D project instead of compiled shaders.
-The <tt/"Set new shader."/-button will then always open a file requester,
-allowing you to select a XML file, that has been
-created by sdpslparse.
-Furthermore, the <tt/"Default Values."/-button will not be available;
-use <tt/"Set new shader."/ instead.
+the type of existing shader arguments and if no shader arguments
+are removed in the new shader!
+<p>
+You can also just copy certain parameter values by selecting
+them using double-clicks on the parameter names in the shader
+property GUI and then use e.g. <tt>"Edit/Copy Marked Prop"</tt>
+(see also the description of the property clipboard in section
+<ref id="propgui" name="Properties">).
 
 <sect1>Tags<label id="tags">
 <p>
@@ -4868,9 +4935,10 @@ primitives:
 Furthermore, the plugin supports reading of CSG, Object-Instances,
 Archives, Light sources (including AreaLights), arbitrary linear
 transformations (except shear transformations!), arbitrary
-RiOptions and RiAttributes, and shaders.
+RiOptions and RiAttributes, and shaders (except transformation
+shaders and without array arguments!).
 <p>
-The plugin does not support reading of curves, implicit surfaces
+The RRIB plugin does not support reading of curves, implicit surfaces
 (blobby models), procedural objects, delayed read archives, and
 other calls to the RenderMan Interface not that useful for a RIB
 import like e.g. RiMakeTexture.
