@@ -4279,17 +4279,26 @@ ay_npt_gordon(ay_object *cu, ay_object *cv, ay_object *in,
       c = c->next;
     }
 
+  /* assume, we always get enough parameter curves (>=2 in each dimension) */
+
+  /* check and adapt desired orders */
   if(uorder < 2)
     uorder = 4;
 
   if(vorder < 2)
     vorder = 4;
 
+  uo = uorder;
+  if(numcv < uorder)
+    uorder = numcv;
+  
+  vo = vorder;
+  if(numcu < vorder)
+    vorder = numcu;
+
   /* make curves compatible (defined on the same knot vector) */
   ay_status = ay_nct_makecompatible(cu);
   ay_status = ay_nct_makecompatible(cv);
-
-  /* assume, we always get enough parameter curves (>=2 in each dimension) */
 
   if(!in)
     {
@@ -4401,14 +4410,6 @@ ay_npt_gordon(ay_object *cu, ay_object *cv, ay_object *in,
 	    } /* if */
 	} /* if */
 
-      uo = uorder;
-      if(numcv < uorder)
-	uorder = numcv;
-
-      vo = vorder;
-      if(numcu < vorder)
-	vorder = numcu;
-
       ay_status = ay_npt_create(uorder, vorder, numcv, numcu,
 				AY_KTNURB, AY_KTNURB,
 				intersections, NULL, NULL,
@@ -4416,6 +4417,7 @@ ay_npt_gordon(ay_object *cu, ay_object *cv, ay_object *in,
     }
   else 
     {
+      /* use intersection point patch delivered in argument <in> */
       interpatch = (ay_nurbpatch_object*)in->refine;
       if((numcu == 2) && (numcv == 2))
 	{
@@ -4434,7 +4436,12 @@ ay_npt_gordon(ay_object *cu, ay_object *cv, ay_object *in,
     }
 
   ay_status = ay_npt_skinv(cu, uorder, AY_KTCUSTOM, AY_TRUE, &skinu);
+  if(!skinu)
+    goto cleanup;
+
   ay_status = ay_npt_skinu(cv, vorder, AY_KTCUSTOM, AY_TRUE, &skinv);
+  if(!skinv)
+    goto cleanup;
 
   if(skinu->uorder > uo)
     uo = skinu->uorder;
@@ -4513,7 +4520,16 @@ ay_npt_gordon(ay_object *cu, ay_object *cv, ay_object *in,
     } /* for */
 
   *gordon = skinu;
+  skinu = NULL;
 
+ cleanup:
+  if(skinu)
+    {
+      free(skinu->uknotv);
+      free(skinu->vknotv);
+      free(skinu->controlv);
+      free(skinu);
+    }
   if(skinv)
     {
       free(skinv->uknotv);
@@ -4521,7 +4537,7 @@ ay_npt_gordon(ay_object *cu, ay_object *cv, ay_object *in,
       free(skinv->controlv);
       free(skinv);
     }
-  if(interpatch)
+  if(interpatch && !in)
     {
       free(interpatch->uknotv);
       free(interpatch->vknotv);
