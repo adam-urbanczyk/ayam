@@ -1,4 +1,4 @@
-[17. 10. 2003] CVS-Head:
+[23. 10. 2003] CVS-Head:
 o bug fixes:
   - fixed object picking in draw-level-only views (SF 817796)
   - fixed import of geometry after AreaLights (SF 825629)
@@ -7,6 +7,12 @@ o when the keyboard focus is moved from object tree/listbox to property GUI,
 o added "curvPlot" scripting interface command that creates a curvature
   plot in form of a NURBS curve object from a selected curve object
 o the "Set FOV" menu entry is now disabled for parallel views
+o improved keyboard handling of "Tags" property GUI
+o improved resizing of property GUI elements
+o added new tag type "PV" for primitive variables
+o RIB-Import: added support for primitive variables to all geometric primitives
+o RIB-Export: added support for primitive variables to objects of the
+  following types NPatch, BPatch, PatchMesh, PolyMesh, SDMesh
 
 
 [26. 09. 2003] Ayam1.6:
@@ -64,7 +70,7 @@ o added support for using Aqsis libri2rib as BMRT libribout replacement
 o added a new option "IsLocal" to the light objects, that controls whether
   all objects in the scene are lighted or just objects from the same level
   and below
-o added keyboard shortcut to reset the tree view (Ctrl+l)
+o added keyboard shortcut to reset the tree view (<Ctrl+l>)
 o moved material name and reference counter from "RiAttributes" property
   to new property "MaterialAttr" for Material objects
 o added a new command "Add/Edit Material!" to the "Material" property
