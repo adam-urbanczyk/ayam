@@ -249,7 +249,7 @@ ay_knots_check(int length, int order, int knot_count, double *knotv)
 int
 ay_knots_rescaleknotv(int n, double *knotv)
 {
- double *tmpknv, min, max, len;
+ double *tmpknv = NULL, min, max, len;
  int i;
 
   max = knotv[0];
