@@ -349,7 +349,8 @@ ay_text_notifycb(ay_object *o)
 
   ext.refine = &extrude;
   extrude.height = 1.0;
-
+  ext.type = AY_IDEXTRUDE;
+  
   c = text->string;
   while(*c != '\0')
     {
@@ -536,6 +537,7 @@ ay_text_convertcb(ay_object *o, int in_place)
       new->hide_children = AY_TRUE;
       new->parent = AY_TRUE;
       ay_object_crtendlevel(&(new->down));
+      ay_object_link(new);
     }
 
  return AY_OK;
