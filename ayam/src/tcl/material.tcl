@@ -151,7 +151,6 @@ proc material_edit { } {
 	return;
     }
 
-
     # get name of current material
     getMat
     global mat
@@ -189,7 +188,7 @@ proc material_edit { } {
 
 	forAllT material 1 {
 	    global ay mat RiAttrData matlevel matobject
-	    
+
 	    getProp
 
 	    if { $RiAttrData(Materialname) == $mat } {
@@ -227,9 +226,8 @@ proc material_edit { } {
 	    }
 	    # if
 
-	    
 	    if { $ay(lb) == 0 } {
-		selOb $matobject
+		selOb [expr $matobject + 1]
 		$ay(tree) selection set ${matlevel}:$matobject
 		$ay(tree) see ${matlevel}:$matobject
 		tree_paintLevel ${matlevel}
