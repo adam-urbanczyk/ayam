@@ -92,7 +92,7 @@ bind $f.li <ButtonRelease-1> {
     global tcl_platform AYWITHAQUA
     if { $ay(lb) == 1 } {
 	bind $ay(olb) <Key-Tab>\
-		"focus [tk_focusNext $ay(pca).$ww];break"
+		"focus [tk_focusNext $ay(pca).$ww];plb_focus;break"
 	bind [tk_focusNext $ay(pca).$ww] <Shift-Tab>\
 		"focus $ay(olb);break"
 	if { ( $tcl_platform(platform) != "windows" ) && ( ! $AYWITHAQUA ) } {
@@ -101,7 +101,7 @@ bind $f.li <ButtonRelease-1> {
 	}
     } else {
 	bind $ay(tree) <Key-Tab>\
-		"focus [tk_focusNext $ay(pca).$ww];break"
+		"focus [tk_focusNext $ay(pca).$ww];plb_focus;break"
 	bind [tk_focusNext $ay(pca).$ww] <Shift-Tab>\
 		"focus $ay(tree);break"
 	if { ( $tcl_platform(platform) != "windows" ) && ( ! $AYWITHAQUA ) } {
@@ -373,7 +373,7 @@ if { [llength $index] == 1 } {
 	    global tcl_platform AYWITHAQUA
 	    if { $ay(lb) == 1 } {
 		bind $ay(olb) <Key-Tab>\
-			"focus [tk_focusNext $ay(pca).$w];break"
+			"focus [tk_focusNext $ay(pca).$w];plb_focus;break"
 		bind [tk_focusNext $ay(pca).$w] <Shift-Tab>\
 			"focus $ay(olb);break"
 		if { ( $tcl_platform(platform) != "windows" ) &&\
@@ -383,7 +383,7 @@ if { [llength $index] == 1 } {
 		}
 	    } else {
 		bind $ay(tree) <Key-Tab>\
-			"focus [tk_focusNext $ay(pca).$w];break"
+			"focus [tk_focusNext $ay(pca).$w];plb_focus;break"
 		bind [tk_focusNext $ay(pca).$w] <Shift-Tab>\
 			"focus $ay(tree);break"
 		if { ( $tcl_platform(platform) != "windows" ) &&\
