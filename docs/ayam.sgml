@@ -479,10 +479,15 @@ selected object(s)
 
 The <tt/Help/ menu:
 <itemize>
-<item><tt/Help/, opens a web browser and displays the documentation
+<item><tt/Help/, opens a web browser and displays the documentation,
 the URL to display is taken from the <tt/Docs/ preference setting.
 <item><tt/Help on object/, opens a web browser and displays
-documentation about the currently selected type of object
+documentation about the currently selected type of object,
+the URL to display is derived from the <tt/Docs/ preference setting,
+this feature will not work with frame redirects e.g.
+<tt>http://www.ayam3d.org/</tt>; use
+<tt>http://ayam.sourceforge.net/docs/</tt> or a <tt>file:</tt>-URL
+as base URL in the <tt/Docs/ preference setting instead!
 <item><tt/About/, displays some version, copyright,
 and trademark information
 <item><tt/Show Tooltips/, enables tool tips (balloon help)
@@ -1332,10 +1337,12 @@ to be filled with values.
 
 <sect1>Root Object<label id="rootobj">
 <p>
+There is always exactly one root object in the scene.
 This object is something special in that it cannot be deleted
-or copied. It holds RiOptions,
-atmosphere and imager shaders. Furthermore, all current views are
-child objects of the scene object.
+or copied. 
+It holds options global to the scene like RiOptions, atmosphere and
+imager shaders. Furthermore, all views are
+child objects of the root object.
 
 If you hide the Root object the little red/green/blue coordinate system
 will not be drawn in any view.
@@ -1364,11 +1371,10 @@ time) might not easily be predicted anymore.
 pixel.
 <item><tt/"FilterFunc"/, function used to filter final pixel values.
 <item><tt/"FilterWidth"/, <tt/"FilterWidth"/ size of the filter.
-<item><tt/"ExpGain"/, 
-<item><tt/"ExpGamma"/,
-<item><tt/"RGBA_ONE"/,
-<item><tt/"RGBA_MIN"/, <tt/"RGBA_MAX"/,
-<item><tt/"RGBA_Dither"/,
+<item><tt/"ExpGain"/, Exposure
+<item><tt/"ExpGamma"/, Exposure Gamma
+<item><tt/"RGBA_ONE"/, <tt/"RGBA_MIN"/, <tt/"RGBA_MAX"/,
+<tt/"RGBA_Dither"/, specify Quantization and Dithering
 <item><tt/"MinSamples"/, <tt/"MaxSamples"/, minimum and maximum number
 of samples per pixels.
 <item><tt/"MaxRayLevel"/, maximum number of recursive rays.
@@ -1401,7 +1407,7 @@ optical effects like fog.
 
 <sect1>View Object<label id="viewobj">
 <p>
-Every view has a corresponding view object
+Every view window has a corresponding view object
 as a child object of the root object.
 You can change camera settings, the type of the view 
 and other things related to the view using it's properties.
