@@ -220,7 +220,7 @@ return
 #
 #
 proc shortcut_viewactions { w } {
-    global ayviewshortcuts
+ global ayviewshortcuts
 
     # this binding allows to rotate any view regardless
     # of any active action; the old active action will
@@ -250,91 +250,91 @@ proc shortcut_viewactions { w } {
     }
 
     bind $w <KeyPress-Alt_L> {
-	%W.f3D.togl configure -cursor exchange
+	[winfo toplevel %W].f3D.togl configure -cursor exchange
     }
 
     bind $w <KeyRelease-Alt_L> {
-	%W.f3D.togl configure -cursor left_ptr
+	[winfo toplevel %W].f3D.togl configure -cursor left_ptr
     }
 
 
-set i $ayviewshortcuts(ZoomVButton)
+    set i $ayviewshortcuts(ZoomVButton)
     
-bind $w.f3D.togl <ButtonPress-${i}> {
+    bind $w.f3D.togl <ButtonPress-${i}> {
 	undo save
 	%W mc
 	%W zoomvac -start %y
 	update
-}
-bind $w.f3D.togl <B${i}-Motion> {
+    }
+    bind $w.f3D.togl <B${i}-Motion> {
 	%W zoomvac -winy %y
 	update
-}
+    }
 
-set i  $ayviewshortcuts(MoveVButton)
+    set i  $ayviewshortcuts(MoveVButton)
 
-bind $w.f3D.togl <ButtonPress-${i}> {
+    bind $w.f3D.togl <ButtonPress-${i}> {
 	undo save
 	%W mc
 	%W movevac -start %x %y
 	update
-}
-bind $w.f3D.togl <B${i}-Motion> {
+    }
+    bind $w.f3D.togl <B${i}-Motion> {
 	%W movevac -winxy %x %y
 	update
-}
+    }
+
+    
+    bind $w.f3D.togl <ButtonPress-4> {
+	undo save
+	%W mc
+	%W setconf -dzoom 0.5
+	update
+	%W reshape
+	%W render
+    }
 
 
-bind $w.f3D.togl <ButtonPress-4> {
-    undo save
-    %W mc
-    %W setconf -dzoom 0.5
-    update
-    %W reshape
-    %W render
-}
+    bind $w.f3D.togl <ButtonPress-5> {
+	undo save
+	%W mc
+	%W setconf -dzoom 2
+	update
+	%W reshape
+	%W render
+    }
 
+    bind $w <$ayviewshortcuts(Break)> "actionClear $w.f3D.togl"
+    bind $w <$ayviewshortcuts(MoveV)> "actionMoveView $w.f3D.togl"
+    bind $w <$ayviewshortcuts(MoveZV)> "actionMoveZView $w.f3D.togl"
+    bind $w <$ayviewshortcuts(RotV)> "actionRotView $w.f3D.togl"
+    bind $w <$ayviewshortcuts(ZoomV)> "actionZoomView $w.f3D.togl"
+    
+    bind $w <$ayviewshortcuts(MoveO)> "actionMoveOb $w.f3D.togl"
+    bind $w <$ayviewshortcuts(RotO)> "actionRotOb $w.f3D.togl"
+    bind $w <$ayviewshortcuts(RotA)> "actionRotObA $w.f3D.togl"
+    bind $w <$ayviewshortcuts(ScalX)> "actionSc1DXOb $w.f3D.togl"
+    bind $w <$ayviewshortcuts(ScalY)> "actionSc1DYOb $w.f3D.togl"
+    bind $w <$ayviewshortcuts(ScalZ)> "actionSc1DZOb $w.f3D.togl"
+    bind $w <$ayviewshortcuts(Scal2)> "actionSc2DOb $w.f3D.togl"
+    bind $w <$ayviewshortcuts(Scal3)> "actionSc3DOb $w.f3D.togl"
+    bind $w <$ayviewshortcuts(Stretch)> "actionStr2DOb $w.f3D.togl"
+    bind $w <$ayviewshortcuts(Edit)> "actionEditP $w.f3D.togl"
+    bind $w <$ayviewshortcuts(EditD)> "actionDEditP $w.f3D.togl"
+    bind $w <$ayviewshortcuts(WeightE)> "actionEditWP $w.f3D.togl"
+    bind $w <$ayviewshortcuts(WeightR)> "actionResetWP $w.f3D.togl"
 
-bind $w.f3D.togl <ButtonPress-5> {
-    undo save
-    %W mc
-    %W setconf -dzoom 2
-    update
-    %W reshape
-    %W render
-}
+    bind $w <$ayviewshortcuts(Select)> "actionTagP $w.f3D.togl"
+    bind $w <$ayviewshortcuts(DeSelect)> "actionDelTagP $w.f3D.togl"
+    bind $w <$ayviewshortcuts(InsertP)> "actionInsertP $w.f3D.togl"
+    bind $w <$ayviewshortcuts(DeleteP)> "actionDeleteP $w.f3D.togl"
+    bind $w <$ayviewshortcuts(FindU)> "actionFindU $w.f3D.togl"
+    bind $w <$ayviewshortcuts(SplitNC)> "actionSplitNC $w.f3D.togl"
 
-bind $w <$ayviewshortcuts(Break)> "actionClear $w.f3D.togl"
-bind $w <$ayviewshortcuts(MoveV)> "actionMoveView $w.f3D.togl"
-bind $w <$ayviewshortcuts(MoveZV)> "actionMoveZView $w.f3D.togl"
-bind $w <$ayviewshortcuts(RotV)> "actionRotView $w.f3D.togl"
-bind $w <$ayviewshortcuts(ZoomV)> "actionZoomView $w.f3D.togl"
-
-bind $w <$ayviewshortcuts(MoveO)> "actionMoveOb $w.f3D.togl"
-bind $w <$ayviewshortcuts(RotO)> "actionRotOb $w.f3D.togl"
-bind $w <$ayviewshortcuts(RotA)> "actionRotObA $w.f3D.togl"
-bind $w <$ayviewshortcuts(ScalX)> "actionSc1DXOb $w.f3D.togl"
-bind $w <$ayviewshortcuts(ScalY)> "actionSc1DYOb $w.f3D.togl"
-bind $w <$ayviewshortcuts(ScalZ)> "actionSc1DZOb $w.f3D.togl"
-bind $w <$ayviewshortcuts(Scal2)> "actionSc2DOb $w.f3D.togl"
-bind $w <$ayviewshortcuts(Scal3)> "actionSc3DOb $w.f3D.togl"
-bind $w <$ayviewshortcuts(Stretch)> "actionStr2DOb $w.f3D.togl"
-bind $w <$ayviewshortcuts(Edit)> "actionEditP $w.f3D.togl"
-bind $w <$ayviewshortcuts(EditD)> "actionDEditP $w.f3D.togl"
-bind $w <$ayviewshortcuts(WeightE)> "actionEditWP $w.f3D.togl"
-bind $w <$ayviewshortcuts(WeightR)> "actionResetWP $w.f3D.togl"
-
-bind $w <$ayviewshortcuts(Select)> "actionTagP $w.f3D.togl"
-bind $w <$ayviewshortcuts(DeSelect)> "actionDelTagP $w.f3D.togl"
-bind $w <$ayviewshortcuts(InsertP)> "actionInsertP $w.f3D.togl"
-bind $w <$ayviewshortcuts(DeleteP)> "actionDeleteP $w.f3D.togl"
-bind $w <$ayviewshortcuts(FindU)> "actionFindU $w.f3D.togl"
-bind $w <$ayviewshortcuts(SplitNC)> "actionSplitNC $w.f3D.togl"
-
-
-return;
+ return;
 }
 # shortcut_viewactions
+
 
 #shortcut_altrotatebinding:
 # Setup key bindings for rotation of a 3D-View while
