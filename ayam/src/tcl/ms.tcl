@@ -10,7 +10,8 @@
 # ms.tcl - msgcat "equivalent"
 
 # ms_set:
-#  fill
+#  fill language specific text database for language <lang>;
+#  the entry for GUI element <name> will get the description <val>
 proc ms_set { lang name val } {
 
     set varname "${lang}(${name})"
@@ -23,7 +24,7 @@ proc ms_set { lang name val } {
 
 
 # ms_init:
-#  
+#  initialize ms module for language <lang> by creating a dummy entry
 proc ms_init { lang } {
 
     array set ms::$lang { Dummy 1 }
@@ -34,8 +35,7 @@ proc ms_init { lang } {
 
 
 # ms:
-#  return language specific string for name
-#
+#  return language specific string for GUI element <name>
 proc ms { name } {
     global ayprefs
     if { ![info exists ms::$ayprefs(Locale)($name)] } {
@@ -248,9 +248,9 @@ ms_set de ayprefse_Light "Farbe für nicht selektierte Lichtquellen."
 # RIB-Export
 ms_set de ayprefse_RIBFile "Name der RIB-Datei für den RIB-Export.\
 \nScene: RIB-Dateiname von Pfad und Namen der Szene ableiten,\
-\nScenefile: RIB-Dateiname vom Namen der Szene (ohne Pfad) ableiten,
-\nAsk: RIB-Dateinamen beim Export erfragen."
-ms_set de ayprefse_Image "Bilddatei, die beim Rendern der\
+\nScenefile: RIB-Dateiname vom Namen der Szene (ohne Pfad) ableiten,\
+\nAsk: RIB-Dateinamen beim RIB-Export erfragen."
+ms_set de ayprefse_Image "Name der Bilddatei, die beim Rendern der\
 exportierten\nRIB-Datei erzeugt wird.\
 RIB: Bilddatei vom Namen der RIB-Datei ableiten."
 ms_set de ayprefse_ResInstances "Sollen alle Instanzen-Objekte während des\
@@ -258,7 +258,9 @@ Exportierens\nin normale Objekte umgewandelt werden?"
 ms_set de ayprefse_CheckLights "Soll eine Standardlichtquelle hinzugefügt\
 werden,\nwenn keine andere (aktive) Lichtquelle existiert?"
 ms_set de ayprefse_DefaultMat "Standard-Material, das für alle Objekte\nohne\
-eigenes Material benutzt wird."
+eigenes Material benutzt wird.\nnone: kein Standard-Material verwenden\
+\nmatte: RiMatte verwenden\
+\ndefault: Material mit Namen \\\"default\\\" verwenden"
 ms_set de ayprefse_RIStandard "Sollen alle Attribute und Optionen,\ndie nicht\
 im RenderMan Standard vorkommen,\nbeim RIB-Export ausgelassen werden?"
 ms_set de ayprefse_WriteIdent "Sollen Identifikatoren, basierend auf den\
@@ -309,7 +311,7 @@ den\nzuletzt-benutzte-Dateien-Einträgen im\nHauptmenü hinzugefügt werden?"
 ms_set de ayprefse_ToolBoxTrans "Soll das Werkzeugfenster als transient\
 markiert werden?"
 ms_set de ayprefse_ToolBoxShrink "Soll das Werkzeugfenster sich dem\
-Inhalt anpassen, wenn es in der Größe verändert wird?"
+Inhalt anpassen,\nwenn es in der Größe verändert wird?"
 ms_set de ayprefse_RGTrans "Sollen alle Rendering Fenster als transient\
 markiert werden?"
 ms_set de ayprefse_HideTmpTags "Sollen temporäre Tags aus den Tag\
