@@ -60,6 +60,10 @@ LD = CC
 # o add -DAYENABLEPPREV to enable the permanent preview feature
 # o add -DAYENABLEWAIT to enable the waitPid command (Unix/Linux only)
 # o add -DAYWITHAQUA if you use a Tcl/Tk for Aqua (not X11)
+# o add -DAYNOUNISTDH if your system has no "unistd.h" (no "times()" system
+#   call); if you add this option, the detection of held down keys will be
+#   switched off and rotating views via keyboard will fill up the undo buffer
+# o add -DAYOLDSLX if you compile with an Aqsis libslxargs prior to 0.7.19
 
 CFLAGS = -O -DAYUSESLCARGS -DAYUSEBMRTRIBOUT
 # IRIX (-DAYIRIXBUG is needed by ncurve.c to work around a bug in libGLU)::
