@@ -1,4 +1,4 @@
-[CVS, 31. 07. 2002]:
+[CVS, 05. 08. 2002]:
 o bug fixes:
   - fixed memory leaks in the shadow map RIB export module
   - fixed ICurves crash for length 2
@@ -24,6 +24,7 @@ o the coordinate system (the root object) now also draws axis names (x, y, z)
 o scene loading now blocks all mouse events from view windows to avoid
   problems with user input while loading scenes which lead to wrongly
   drawn views
+o added a texture coordinates editor (main menu "Special/Edit TexCoords")
 
 
 [09. 07. 2002] Ayam1.2:
