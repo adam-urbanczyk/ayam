@@ -2062,6 +2062,8 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 		      (*start_cap)->scaly *= p3[1];
 		    }
 		} /* if */
+	      /* fix direction for aycsg */
+	      (*start_cap)->scalz *= -1.0;
 	      /* rotate it */
 	      if(rotate)
 		{
