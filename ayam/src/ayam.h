@@ -683,6 +683,7 @@ typedef struct ay_view_object_s
 typedef struct ay_prefs_object_s
 {
   int list_types;
+  int mark_hidden;
 
   /* modelling prefs */
   int edit_snaps_to_grid;

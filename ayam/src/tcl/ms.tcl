@@ -62,6 +62,7 @@ ms_set en ayprefse_AutoFocus "Move focus to window with mouse cursor?\
 \nChanges will take effect after restart of Ayam!"
 ms_set en ayprefse_TwmCompat "Is your window manager TWM compatible?"
 ms_set en ayprefse_ListTypes "Show object types in the tree/list view?"
+ms_set en ayprefse_MarkHidden "Mark hidden objects in the tree view?"
 ms_set en ayprefse_AutoSavePrefs "Save preferences on exit?"
 ms_set en ayprefse_BakOnReplace "Make backup copy of scene files on \"replace\"?"
 ms_set en ayprefse_LoadEnv "Load environment on startup?"
@@ -196,6 +197,8 @@ ms_set de ayprefse_TwmCompat "Ist der verwendete Fenster-Manager\
 zu TWM kompatibel?"
 ms_set de ayprefse_ListTypes "Sollen die Objekttypen in der Listen- bzw.\
 \nBaumansicht angezeigt werden?"
+ms_set de ayprefse_MarkHidden "Sollen versteckte Objekte in der\
+\nBaumansicht markiert werden?"
 ms_set de ayprefse_Locale "Sprache für Hilfetexte.\
 \nÄnderungen werden erst nach Neustart von Ayam wirksam!"
 ms_set de ayprefse_AutoSavePrefs "Sollen die Voreinstellungen beim Beenden\

@@ -250,7 +250,13 @@ ay_tree_crttreestring(Tcl_Interp *interp, ay_object *o,
       if(o->down)
 	{
 	  Tcl_DStringAppend(ds, "{ ", -1);
-	  
+	  if(ay_prefs.mark_hidden)
+	    {
+	      if(o->hide)
+		{
+		  Tcl_DStringAppend(ds, "!", -1);
+		}
+	    }
 	  Tcl_DStringAppend(ds, name, -1);
 	  if((o->name) || (o->type == AY_IDINSTANCE))
 	    {
@@ -270,6 +276,13 @@ ay_tree_crttreestring(Tcl_Interp *interp, ay_object *o,
 	}
       else
 	{
+	  if(ay_prefs.mark_hidden)
+	    {
+	      if(o->hide)
+		{
+		  Tcl_DStringAppend(ds, "!", -1);
+		}
+	    }
 	  Tcl_DStringAppend(ds, name, -1);
 	  if((o->name) || (o->type == AY_IDINSTANCE))
 	    {
