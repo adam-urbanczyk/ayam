@@ -548,10 +548,10 @@ ay_nb_Bin(int maxn, int maxk, double *bin)
  int n, k, bini, bini2, bini3;
 
   /* Setup the first line */
-  bin[0] = 1.0 ;
+  bin[0] = 1.0;
   for(k = (maxk-1); k > 0; --k)
     {
-      bin[k] = 0.0 ;
+      bin[k] = 0.0;
     }
 
   /* Setup the other lines */
@@ -2966,3 +2966,336 @@ ay_nb_DegreeElevateSurfV(int stride, int w, int h, int p, double *V,
  return ay_status;
 } /* ay_nb_DegreeElevateSurfV */
 
+
+/*
+ * ay_nb_RefineKnotVectSurfU: (NURBS++)
+ * Refine knot vector U of surface: stride, w, h, p, U[], Pw[]
+ * with new knots in X[r], results in new knots in Ubar[wi+p+r] and new
+ * control points in Qw[(wi+r)*(he)*stride], both allocated outside
+ */
+int
+ay_nb_RefineKnotVectSurfU(int stride, int w, int h, int p, double *U,
+			  double *Pw, double *X, int r,
+			  double *Ubar, double *Qw)
+{
+ int ay_status = AY_OK;
+ double m, n, a, b, alpha;
+ int i, j, k, l, ind, col;
+ int i1, i2;
+
+  m = w+p+1;
+  n = w;
+
+  h++;
+  /*r--;*/
+
+  a = ay_nb_FindSpan(n, p, X[0], U);
+  b = ay_nb_FindSpan(n, p, X[r], U);
+
+  b++;
+
+  for(col = 0; col < h; col++)
+    {
+      for(j = 0; j <= a-p; j++)
+	{
+	  /*nS.P(j,col) = P(j,col);*/
+	  i1 = (j*h+col)*stride;
+	  memcpy(&(Qw[i1]), &(Pw[i1]), stride*sizeof(double));
+	}
+      for(j = b-1; j <= n; j++)
+	{
+	  /*nS.P(j+r+1,col) = P(j,col);*/
+	  i1 = ((j+r+1)*h+col)*stride;
+	  i2 = (j*h+col)*stride;
+	  memcpy(&(Qw[i1]), &(Pw[i2]), stride*sizeof(double));
+	}
+    } /* for */
+
+  for(j = 0; j <= a; j++)
+    Ubar[j] = U[j];
+  for(j = b+p; j <= m; j++)
+    Ubar[j+r+1] = U[j];
+
+  i = b+p-1;
+  k = b+p+r;
+
+  for(j = r; j >= 0; j--)
+    {
+      while((X[j] <= U[i]) && (i > a))
+	{
+	  for(col = 0; col < h; col++)
+	    {
+	      /*nS.P(k-p-1,col) = P(i-p-1,col);*/
+	      i1 = ((k-p-1)*h+col)*stride;
+	      i2 = ((i-p-1)*h+col)*stride;
+	      memcpy(&(Qw[i1]), &(Pw[i2]), stride*sizeof(double));
+	    }
+	  Ubar[k] = U[i];
+	  k--;
+	  i--;
+	} /* while */
+
+      for(col = 0; col < h; col++)
+	{
+	  /*nS.P(k-p-1,col) = nS.P(k-p,col);*/
+	  i1 = ((k-p-1)*h+col)*stride;
+	  i2 = ((k-p)*h+col)*stride;
+	  memcpy(&(Qw[i1]), &(Qw[i2]), stride*sizeof(double));
+	}
+
+      for(l = 1; l <= p; l++)
+	{
+	  ind = k-p+l;
+	  alpha = Ubar[k+l] - X[j];
+	  if(alpha == 0.0)
+	    {
+	      for(col = 0; col < h; col++)
+		{
+		  /*nS.P(ind-1,col) = nS.P(ind,col);*/
+		  i1 = ((ind-1)*h+col)*stride;
+		  i2 = (ind*h+col)*stride;
+		  memcpy(&(Qw[i1]), &(Qw[i2]), stride*sizeof(double));
+		}
+	    }
+	  else
+	    {
+	      alpha /= Ubar[k+l]-U[i-p+l];
+	    } /* if */
+
+	  for(col = 0; col < h; col++)
+	    {
+	      /*nS.P(ind-1,col) = alpha*nS.P(ind-1,col) +
+		(1.0-alpha)*nS.P(ind,col);*/
+	      i1 = ((ind-1)*h+col)*stride;
+	      i2 = (ind*h+col)*stride;
+	      Qw[i1]   = alpha*Qw[i1]   + (1.0-alpha)*Qw[i2];
+	      Qw[i1+1] = alpha*Qw[i1+1] + (1.0-alpha)*Qw[i2+1];
+	      Qw[i1+2] = alpha*Qw[i1+2] + (1.0-alpha)*Qw[i2+2];
+	      if(stride>3)
+		Qw[i1+3] = alpha*Qw[i1+3] + (1.0-alpha)*Qw[i2+3];
+	    } /* for */
+	} /* for */
+
+      Ubar[k] = X[j];
+      k--;
+    } /* for */
+
+ return ay_status;
+} /* ay_nb_RefineKnotVectSurfU */
+
+
+/*
+ * ay_nb_RefineKnotVectSurfV: (NURBS++)
+ * Refine knot vector V of surface: stride, w, h, p, V[], Pw[]
+ * with new knots in X[r], results in new knots in Vbar[he+p+r] and new
+ * control points in Qw[(wi)*(he+r)*stride], both allocated outside
+ */
+int
+ay_nb_RefineKnotVectSurfV(int stride, int w, int h, int p, double *V,
+			  double *Pw, double *X, int r,
+			  double *Vbar, double *Qw)
+{
+ int ay_status = AY_OK;
+ double m, n, a, b, alpha;
+ int i, j, k, l, ind, row;
+ int i1, i2, he = h+r+2;
+
+  m = h+p+1;
+  n = h;
+
+  h++;
+  w++;
+  /*r--;*/
+
+  a = ay_nb_FindSpan(n, p, X[0], V);
+  b = ay_nb_FindSpan(n, p, X[r], V);
+
+  b++;
+
+  for(row = 0; row < w; row++)
+    {
+      for(j = 0; j <= a-p; j++)
+	{
+	  /*nS.P(row,j) = P(row,j);*/
+	  i1 = (row*he+j)*stride;
+	  i2 = (row*h+j)*stride;
+	  memcpy(&(Qw[i1]), &(Pw[i2]), stride*sizeof(double));
+	}
+      for(j = b-1; j <= n; j++)
+	{
+	  /*nS.P(row,j+r+1) = P(row,j);*/
+	  i1 = (row*he+(j+r+1))*stride;
+	  i2 = (row*h+j)*stride;
+	  memcpy(&(Qw[i1]), &(Pw[i2]), stride*sizeof(double));
+	}
+    } /* for */
+
+  for(j = 0; j <= a; j++)
+    Vbar[j] = V[j];
+  for(j = b+p; j <= m; j++)
+    Vbar[j+r+1] = V[j];
+
+  i = b+p-1;
+  k = b+p+r;
+
+  for(j = r; j >= 0; j--)
+    {
+      while((X[j] <= V[i]) && (i > a))
+	{
+	  for(row = 0; row < w; row++)
+	    {
+	      /*nS.P(row,k-p-1) = P(row,i-p-1);*/
+	      i1 = (row*he+(k-p-1))*stride;
+	      i2 = (row*h+(i-p-1))*stride;
+	      memcpy(&(Qw[i1]), &(Pw[i2]), stride*sizeof(double));
+	    }
+	  Vbar[k] = V[i];
+	  k--;
+	  i--;
+	} /* while */
+
+      for(row = 0; row < w; row++)
+	{
+	  /*nS.P(k-p-1,row) = nS.P(k-p,row);*/
+	  i1 = (row*he+(k-p-1))*stride;
+	  i2 = (row*he+(k-p))*stride;
+	  memcpy(&(Qw[i1]), &(Qw[i2]), stride*sizeof(double));
+	}
+
+      for(l = 1; l <= p; l++)
+	{
+	  ind = k-p+l;
+	  alpha = Vbar[k+l] - X[j];
+	  if(alpha == 0.0)
+	    {
+	      for(row = 0; row < w; row++)
+		{
+		  /*nS.P(row,ind-1) = nS.P(row,ind);*/
+		  i1 = (row*he+(ind-1))*stride;
+		  i2 = (row*he+ind)*stride;
+		  memcpy(&(Qw[i1]), &(Qw[i2]), stride*sizeof(double));
+		}
+	    }
+	  else
+	    {
+	      alpha /= Vbar[k+l]-V[i-p+l];
+	    } /* if */
+
+	  for(row = 0; row < w; row++)
+	    {
+	      /*nS.P(row,ind-1) = alpha*nS.P(row,ind-1) +
+		(1.0-alpha)*nS.P(row,ind);*/
+	      i1 = (row*he+(ind-1))*stride;
+	      i2 = (row*he+ind)*stride;
+	      Qw[i1]   = alpha*Qw[i1]   + (1.0-alpha)*Qw[i2];
+	      Qw[i1+1] = alpha*Qw[i1+1] + (1.0-alpha)*Qw[i2+1];
+	      Qw[i1+2] = alpha*Qw[i1+2] + (1.0-alpha)*Qw[i2+2];
+	      if(stride>3)
+		Qw[i1+3] = alpha*Qw[i1+3] + (1.0-alpha)*Qw[i2+3];
+	    } /* for */
+	} /* for */
+
+      Vbar[k] = X[j];
+      k--;
+    } /* for */
+
+ return ay_status;
+} /* ay_nb_RefineKnotVectSurfV */
+
+
+/*
+ * ay_nb_DecomposeCurve:
+ * decompose curve (stride, n, p, U, Pw) into Bezier segments
+ * result: nb number of Bezier segments, Qw the Bezier segments
+ */
+int
+ay_nb_DecomposeCurve(int stride, int n, int p, double *U, double *Pw,
+		     int *nb, double **Qw)
+{
+ int m = n+p+1;
+ int a = p, b = p+1, mult, r, save;
+ int i, j, k, s, i1, i2;
+ double numer, alpha, *alphas = NULL, *lQw = *Qw, *nQw = NULL;
+
+
+  if(!nb || !Pw || !Qw)
+    return AY_ENULL;
+
+  *nb = 0;
+  if(!(alphas = calloc(p+2, sizeof(double))))
+    return AY_EOMEM;
+
+  /* for(i = 0; i <= p; i++)
+    Qw[nb][i] = Pw[i]; */
+  memcpy(lQw, Pw, (p+1) * stride * sizeof(double));
+
+
+  while(b < m)
+    {
+      /* allocate next segment */
+      if(!(lQw = realloc(lQw, (p+1) * stride * sizeof(double))))
+	{
+	  *Qw = lQw;
+	  return AY_EOMEM;
+	}
+      *Qw = lQw;
+      nQw = lQw+((p+1) * stride);
+
+      i = b;
+      while((b < m) && (U[b+1] == U[b]))
+	b++;
+      mult = b-i+1;
+      if(mult < p)
+	{
+	  numer = U[b]-U[a]; /* numerator of alpha */
+	  /* compute and store alphas */
+	  for(j = p; j > mult; j--)
+	    {
+	      alphas[j-mult-1] = numer/(U[a+j]-U[a]);
+	    }
+	  r = p-mult; /* insert knot r times */
+	  for(j = 1; j <= r; j++)
+	    {
+	      save = r-j;
+	      s = mult+j; /* this many new points */
+	      for(k = p; k >= s; k--)
+		{
+		  alpha = alphas[k-s];
+		  /*Qw[nb][k] = alpha*Qw[nb][k] + (1.0-alpha)*Qw[nb][k-1];*/
+		  i1 = k*stride;
+		  i2 = (k-1)*stride;
+		  lQw[i1]   = alpha*lQw[i1]   + (1.0-alpha)*lQw[i2];
+		  lQw[i1+1] = alpha*lQw[i1+1] + (1.0-alpha)*lQw[i2+2];
+		  lQw[i1+2] = alpha*lQw[i1+2] + (1.0-alpha)*lQw[i2+2];
+		  if(stride > 3)
+		    lQw[i1+3] = alpha*lQw[i1+3] + (1.0-alpha)*lQw[i2+3];
+		}
+	      if(b < m) /* control point of next segment */
+		{
+		  /*Qw[nb+1][save] = Qw[nb][p];*/
+		  i1 = save*stride;
+		  i2 = p*stride;
+		  memcpy(&(nQw[i1]), &(lQw[i2]), stride*sizeof(double));
+		}
+	    } /* for */
+	}
+
+      *nb = *nb+1; /* Bezier segment completed */
+      /* initialize for next segment */
+      if(b < m)
+	{
+	  for(i = p-mult; i <= p; i++)
+	    {
+	      /*Qw[nb][i] = Pw[b-p+i];*/
+	      i1 = i*stride;
+	      i2 = (b-p+i)*stride;
+	      memcpy(&(nQw[i1]), &(Pw[i2]), stride*sizeof(double));
+	    }
+	  a = b;
+	  b = b+1;
+	}
+
+    } /* while */
+
+ return AY_OK;
+} /* ay_nb_DecomposeCurve */

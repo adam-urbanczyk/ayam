@@ -3596,3 +3596,378 @@ ay_nct_curvplottcmd(ClientData clientData, Tcl_Interp *interp,
 
  return TCL_OK;
 } /* ay_nct_curvplottcmd */
+
+
+/* ay_nct_intersect:
+ *
+ */
+int
+ay_nct_intersect(ay_nurbcurve_object *cu, ay_nurbcurve_object *cv,
+		 double *intersection)
+{
+ int ay_status = AY_OK;
+ double *bu = NULL, *bv = NULL; /* Bezier segment arrays */
+ double *su, *sv;
+ double cuminx, cumaxx, cvminx, cvmaxx;
+ double cuminy, cumaxy, cvminy, cvmaxy;
+ double cuminz, cumaxz, cvminz, cvmaxz;
+ int nbu = 0, nbv = 0, order_u, order_v;
+ int stride, i, j, k, l, overlap;
+
+  if(!cu || !cv)
+    return AY_ENULL;
+
+  /* decompose both curves into Bezier segments */
+  if(!(bu = calloc(cu->order*stride, sizeof(double))))
+    return AY_EOMEM;
+
+  ay_status = ay_nb_DecomposeCurve(4, cu->length, cu->order-1, cu->knotv,
+				   cu->controlv, &nbu, &bu);
+
+  if(!(bv = calloc(cv->order*stride, sizeof(double))))
+    return AY_EOMEM;
+
+  ay_status = ay_nb_DecomposeCurve(4, cv->length, cv->order-1, cv->knotv,
+				   cv->controlv, &nbv, &bv);
+
+  /* find intersecting Bezier segments (use convex hull property to
+     exclude all pairs that cannot intersect) */
+  for(i = 0; i < nbu; i++)
+    {
+      /* get min/max of segment i in bu (X) */
+      su = &bu[i*stride];
+      cuminx = DBL_MAX;
+      cumaxx = DBL_MIN;
+      for(k = 0; k < cu->order; k++)
+	{
+	  if(*su < cuminx)
+	    cuminx = *su;
+	  if(*su > cumaxx)
+	    cumaxx = *su;
+	  su += stride;
+	}
+      /* get min/max of segment i in bu (Y) */
+      su = &bu[i*stride+1];
+      cuminy = DBL_MAX;
+      cumaxy = DBL_MIN;
+      for(k = 0; k < cu->order; k++)
+	{
+	  if(*su < cuminy)
+	    cuminy = *su;
+	  if(*su > cumaxy)
+	    cumaxy = *su;
+	  su += stride;
+	}
+      /* get min/max of segment i in bu (Z) */
+      su = &bu[i*stride+2];
+      cuminz = DBL_MAX;
+      cumaxz = DBL_MIN;
+      for(k = 0; k < cu->order; k++)
+	{
+	  if(*su < cuminz)
+	    cuminz = *su;
+	  if(*su > cumaxz)
+	    cumaxz = *su;
+	  su += stride;
+	}
+
+      /* now check against all segments in nbv */
+      for(j = 0; j < nbv; j++)
+	{
+	  overlap = AY_TRUE;
+	  /* get min/max of segment j in bv (Z) */
+	  sv = &bv[j*stride];
+	  cvminx = DBL_MAX;
+	  cvmaxx = DBL_MIN;
+	  for(k = 0; k < cv->order; k++)
+	    {
+	      if(*sv < cvminx)
+		cvminx = *su;
+	      if(*sv > cvmaxx)
+		cvmaxx = *sv;
+	      sv += stride;
+	    }
+	  if(!((cumaxx < cvminx)||(cvmaxx < cuminx)))
+	    {
+	      /* overlap in X => need to check Y */
+	      sv = &bv[j*stride+1];
+	      cvminy = DBL_MAX;
+	      cvmaxy = DBL_MIN;
+	      for(k = 0; k < cv->order; k++)
+		{
+		  if(*sv < cvminy)
+		    cvminy = *su;
+		  if(*sv > cvmaxy)
+		    cvmaxy = *sv;
+		  sv += stride;
+		}
+	      if(!((cumaxy < cvminy)||(cvmaxy < cuminy)))
+		{
+		  /* overlap in Y => need to check Z */
+		  sv = &bv[j*stride+2];
+		  cvminz = DBL_MAX;
+		  cvmaxz = DBL_MIN;
+		  for(k = 0; k < cv->order; k++)
+		    {
+		      if(*sv < cvminz)
+			cvminz = *su;
+		      if(*sv > cvmaxz)
+			cvmaxz = *sv;
+		      sv += stride;
+		    }
+		  if((cumaxz < cvminz)||(cvmaxz < cuminz))
+		    {
+		      /* no overlap in Z */
+		      overlap = AY_FALSE;
+		    }
+		}
+	      else
+		{
+		  overlap = AY_FALSE;
+		}
+	    }
+	  else
+	    {
+	      overlap = AY_FALSE;
+	    }
+	  
+	  if(overlap)
+	    {
+	      /* segments bu[i] and bv[j] overlap atleast in one
+		 dimension => calculate smallest distance */
+
+
+	    }
+
+	} /* for */
+    } /* for */
+
+
+  /* first, calc middle point of control hull */
+  su = &(bu[i*stride]);
+  for(i = 0; i < nbu; i++)
+    {
+      k = 0;
+      for(j = 0; j < cu->order; j++)
+	{
+	  
+
+	}
+      k+=stride;
+    } /* for */
+
+
+
+
+  sv = &(bv[j*stride]);
+
+  /* compare x component */
+
+
+ return ay_status;
+} /* ay_nct_intersect */
+
+
+/* ay_nct_intersectca:
+ *
+ */
+int
+ay_nct_intersectca(ay_object *cu, ay_object *cv, double *intersections)
+{
+ int ay_status = AY_OK;
+
+ return ay_status;
+} /* ay_nct_intersectca */
+
+
+/* ay_nct_makecompatible:
+ *
+ */
+int
+ay_nct_makecompatible(ay_object *cu)
+{
+ int ay_status = AY_OK;
+ ay_object *o;
+ ay_nurbcurve_object *curve = NULL;
+ int max_order = 0;
+ int stride, nh = 0, numknots = 0, t = 0, i, j, a, b;
+ int Ualen = 0, Ublen = 0, Ubarlen = 0, clamp_me;
+ double *Uh = NULL, *Qw = NULL, *realUh = NULL, *realQw = NULL;
+ double *Ubar = NULL, *Ua = NULL, *Ub = NULL;
+ double u = 0.0;
+
+  /* clamp curves */
+  o = cu;
+  while(o)
+    {
+      curve = (ay_nurbcurve_object *) o->refine;
+      clamp_me = AY_FALSE;
+      if(curve->knot_type == AY_KTBSPLINE)
+	{
+	  clamp_me = AY_TRUE;
+	}
+      else
+	{
+	  if(curve->knot_type == AY_KTCUSTOM)
+	    {
+	      a = 1;
+	      u = curve->knotv[0];
+	      for(i = 1; i < curve->order; i++)
+		if(u == curve->knotv[i])
+		  a++;
+
+	      j = curve->length+curve->order-1;
+	      b = 1;
+	      u = curve->knotv[j];
+	      for(i = j-1; i >= curve->length; i--)
+		if(u == curve->knotv[i])
+		  b++;
+
+	      if((a < curve->order) || (b < curve->order))
+		{
+		  clamp_me = AY_TRUE;
+		}
+	    } /* if */
+	} /* if */
+
+      if(clamp_me)
+	ay_status = ay_nct_clamp(curve);
+
+      o = o->next;
+    } /* while */
+
+  /* rescale knots to range 0.0 - 1.0 */
+  o = cu;
+  while(o)
+    {
+      curve = (ay_nurbcurve_object *) o->refine;
+      if(curve->knotv[0] != 0.0 || curve->knotv[
+	  curve->length+curve->order-1] != 1.0)
+	{
+	  ay_status = ay_knots_rescaleknotv(curve->length+curve->order,
+					    curve->knotv);
+	}
+      o = o->next;
+    }
+
+  /* find max order */
+  o = cu;
+  while(o)
+    {
+      curve = (ay_nurbcurve_object *) o->refine;
+      if(curve->order > max_order)
+	max_order = curve->order;
+
+      o = o->next;
+    }
+
+  /* degree elevate */
+  o = cu;
+  while(o)
+    {
+      curve = (ay_nurbcurve_object *) o->refine;
+      if(curve->order < max_order)
+	{
+	  stride = 4;
+	  t = max_order - curve->order;
+
+	  /* alloc new knotv & new controlv */
+	  if(!(Uh = calloc((curve->length + curve->length*t +
+			    curve->order + t),
+			   sizeof(double))))
+	    {
+	      return AY_EOMEM;
+	    }
+	  if(!(Qw = calloc((curve->length + curve->length*t)*4,
+			   sizeof(double))))
+	    {
+	      free(Uh);
+	      return AY_EOMEM;
+	    }
+
+	  ay_status = ay_nb_DegreeElevateCurve(stride, curve->length-1,
+		       curve->order-1, curve->knotv, curve->controlv,
+		       t, &nh, Uh, Qw);
+
+	  if(ay_status)
+	    {
+	      free(Uh); free(Qw); return ay_status;
+	    }
+
+	  if(!(realQw = realloc(Qw, nh*4*sizeof(double))))
+	    {
+	      return AY_EOMEM;
+	    }
+
+	  if(!(realUh = realloc(Uh, (nh+curve->order+t)*sizeof(double))))
+	    {
+	      return AY_EOMEM;
+	    }
+
+	  free(curve->knotv);
+	  curve->knotv = realUh;
+
+	  free(curve->controlv);
+	  curve->controlv = realQw;
+
+	  curve->knot_type = AY_KTCUSTOM;
+
+	  curve->order += t;
+
+	  curve->length = nh;
+
+	  numknots += (curve->order + curve->length);
+
+	  Qw = NULL;
+	  Uh = NULL;
+	  realQw = NULL;
+	  realUh = NULL;
+	} /* if */
+      o = o->next;
+    } /* while */
+
+  /* unify knots */
+  o = cu;
+  curve = (ay_nurbcurve_object *) o->refine;
+  Ua = curve->knotv;
+  Ualen = curve->length+curve->order;
+
+  o = o->next;
+  while(o)
+    {
+      curve = (ay_nurbcurve_object *)o->refine;
+      Ub = curve->knotv;
+      Ublen = curve->length+curve->order;
+
+      ay_status = ay_knots_unify(Ua, Ualen, Ub, Ublen, &Ubar, &Ubarlen);
+
+      if(ay_status)
+	{
+	  fprintf(stderr,"Memory may have leaked!\n");
+	  return ay_status;
+	}
+
+      Ua = Ubar;
+      Ualen = Ubarlen;
+
+      o = o->next;
+    } /* while */
+
+  /* merge knots */
+  o = cu;
+  while(o)
+    {
+      curve = (ay_nurbcurve_object *) o->refine;
+
+      ay_status = ay_knots_merge(curve, Ubar, Ubarlen);
+      if(ay_status)
+	{
+	  free(Ubar); return ay_status;
+	}
+      o = o->next;
+    } /* while */
+
+ return ay_status;
+} /* ay_nct_makecompatible */
+
+

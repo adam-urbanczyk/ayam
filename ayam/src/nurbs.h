@@ -48,6 +48,9 @@ int ay_knots_unify(double *Ua, int Ualen, double *Ub, int Ublen,
 
 int ay_knots_merge(ay_nurbcurve_object *curve, double *Ubar, int Ubarlen);
 
+int ay_knots_mergesurf(ay_nurbpatch_object *patch,
+		       double *Ubar, int Ubarlen, double *Vbar, int Vbarlen);
+
 /* nb.c */
 int ay_nb_LUDecompose(int n, double *A, int *pivot);
 
@@ -133,6 +136,17 @@ int ay_nb_DegreeElevateSurfU(int stride, int w, int h, int p, double *U,
 int ay_nb_DegreeElevateSurfV(int stride, int w, int h, int p, double *V,
 			     double *Pw, int t,
 			     int *nh, double *Vh, double *Qw);
+
+int ay_nb_RefineKnotVectSurfU(int stride, int w, int h, int p, double *U,
+			      double *Pw, double *X, int r,
+			      double *Ubar, double *Qw);
+
+int ay_nb_RefineKnotVectSurfV(int stride, int w, int h, int p, double *V,
+			      double *Pw, double *X, int r,
+			      double *Vbar, double *Qw);
+
+int ay_nb_DecomposeCurve(int stride, int n, int p, double *U, double *Pw,
+			 int *nb, double **Qw);
 
 /* nct.c */
 int ay_nct_create(int order, int length, int knot_type,
@@ -241,6 +255,8 @@ double ay_nct_getcurvature(ay_nurbcurve_object *c, double t);
 int ay_nct_curvplottcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
 
+int ay_nct_makecompatible(ay_object *cu);
+
 /* npt.c */
 int ay_npt_create(int uorder, int vorder, int width, int height,
 		  int uknot_type, int vknot_type,
@@ -284,10 +300,10 @@ int ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 		 int has_start_cap, ay_object **start_cap,
 		 int has_end_cap, ay_object **end_cap);
 
-int ay_npt_interpolateu(ay_nurbpatch_object *patch);
+int ay_npt_interpolateu(ay_nurbpatch_object *patch, int order);
 
-int ay_npt_skin(ay_object *curves, int order, int knot_type,
-		int interpolate, ay_nurbpatch_object **skin);
+int ay_npt_skinu(ay_object *curves, int order, int knot_type,
+		 int interpolate, ay_nurbpatch_object **skin);
 
 int ay_npt_skinv(ay_object *curves, int order, int knot_type,
 		 int interpolate, ay_nurbpatch_object **skin);
@@ -327,6 +343,10 @@ int ay_npt_elevatevtcmd(ClientData clientData, Tcl_Interp *interp,
 
 int ay_npt_swapuvtcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
+
+int ay_npt_gordon(ay_object *cu, ay_object *cv, ay_object *in,
+		  int uorder, int vorder,
+		  ay_nurbpatch_object **gordon);
 
 /* pmt.c */
 

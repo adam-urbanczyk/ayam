@@ -376,6 +376,15 @@ typedef struct ay_sdmesh_object_s {
   double *controlv; /* [ncontrols * 3] */
 } ay_sdmesh_object;
 
+typedef struct ay_gordon_object_s {
+  /* cache NURBS patch representation */
+  ay_object *npatch;
+  int uorder;
+  int vorder;
+  double glu_sampling_tolerance;
+  int glu_display_mode;
+} ay_gordon_object;
+
 typedef struct ay_light_object_s
 {
   int type; /* custom, point, spot, distant */
@@ -944,8 +953,8 @@ extern unsigned int ay_current_primlevel;
 #define AY_IDCONCATNC      27
 #define AY_IDCLONE         28
 #define AY_IDSDMESH        29
-
-#define AY_IDLAST          30
+#define AY_IDGORDON        30
+#define AY_IDLAST          50
 
 /* Level Object SubType Ids */
 #define AY_LTEND    0
@@ -1067,7 +1076,7 @@ extern unsigned int ay_current_primlevel;
 #define AY_EPSILON 1.0e-06
 
 /* Version Strings */
-#define AY_VERSIONSTR "1.6"
+#define AY_VERSIONSTR "1.7pre"
 #define AY_VERSIONSTRMI "0"
 
 #include "aycore.h"
