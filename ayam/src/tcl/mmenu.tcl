@@ -275,19 +275,20 @@ $m.nc add command -label "NURBSphere" -command {
     crtNSphere; uCR; sL; rV}
 $m.nc add command -label "NURBSphere2" -command {
     crtNSphere2; uCR; sL; rV}
+$m.nc add separator
+$m.nc add command -label "Revolve" -command "revolve_crt;"
+$m.nc add command -label "Extrude" -command "extrude_crt;"
+$m.nc add command -label "Sweep" -command "sweep_crt;"
+$m.nc add command -label "Cap" -command "cap_crt;"
+$m.nc add command -label "Birail1" -command "birail1_crt;"
+$m.nc add command -label "Birail2" -command "birail2_crt;"
+$m.nc add command -label "Gordon" -command "gordon_crt;"
+$m.nc add command -label "Skin" -command "skin_crt;"
 
 $m add separator
 $m add cascade -menu $m.nct -label "NURBCurve"
 menu $m.nct -tearoff 0
-$m.nct add command -label "Revolve" -command "revolve_crt;"
-$m.nct add command -label "Extrude" -command "extrude_crt;"
-$m.nct add command -label "Sweep" -command "sweep_crt;"
-$m.nct add command -label "Skin" -command "skin_crt;"
-$m.nct add command -label "Gordon" -command "gordon_crt;"
-$m.nct add command -label "Cap" -command "cap_crt;"
-$m.nct add command -label "Birail1" -command "birail1_crt;"
-$m.nct add command -label "Birail2" -command "birail2_crt;"
-$m.nct add separator
+
 $m.nct add command -label "Revert" -command { undo save Revert; revertNC;
                                               plb_update; rV }
 $m.nct add command -label "Concat" -command { concatNC; uCR; rV}
