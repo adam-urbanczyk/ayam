@@ -25,4 +25,8 @@ Type 0
 # create PolyMeshAttr-UI
 set w [frame $ay(pca).$PolyMeshAttr(w)]
 
-addMenu $w PolyMeshAttrData Type [list Unused]
+addInfo $w PolyMeshAttrData NPolys
+addInfo $w PolyMeshAttrData NControls
+addInfo $w PolyMeshAttrData HasNormals
+
+
