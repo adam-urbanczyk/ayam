@@ -1036,6 +1036,7 @@ ay_nct_clamptcmd(ClientData clientData, Tcl_Interp *interp,
  return TCL_OK;
 } /* ay_nct_clamptcmd */
 
+
 /* ay_nct_elevate:
  *  elevate NURBS curve <curve> to the new order <new_order>
  */
@@ -3449,3 +3450,109 @@ ay_nct_rescaleknvnctcmd(ClientData clientData, Tcl_Interp *interp,
 
  return TCL_OK;
 } /* ay_nct_rescaleknvnctcmd */
+
+
+/* ay_nct_getcurvature:
+ *  return the curvature of curve <c> at parametric value <t>
+ */
+double
+ay_nct_getcurvature(ay_nurbcurve_object *c, double t)
+{
+ double vel[3], acc[3], cross[3];
+ double velsqrlen, numer, denom;
+
+  if(!c)
+    return 0.0;
+
+  if((t < c->knotv[0]) || (t > c->knotv[c->length+c->order-1]))
+    return 0.0;
+
+  ay_nb_ComputeFirstDer4D(c->length, c->order-1, c->knotv, c->controlv, t,
+			  vel);
+  velsqrlen = (vel[0]*vel[0])+(vel[1]*vel[1])+(vel[2]*vel[2]);
+
+  if(velsqrlen > AY_EPSILON)
+    {
+      ay_nb_ComputeSecDer4D(c->length, c->order-1, c->knotv, c->controlv, t,
+			    acc);
+      AY_V3CROSS(cross, vel, acc);
+      numer = AY_V3LEN(cross);
+      denom = pow(velsqrlen, 1.5);
+      return (numer/denom);
+    }
+  else
+    {
+      return 0.0;
+    }
+
+ return 0.0;
+} /* ay_nct_getcurvature */
+
+
+/* ay_nct_curvplottcmd:
+ *  create a curvature plot NURBS curve from the selected NURBS curve(s)
+ */
+int
+ay_nct_curvplottcmd(ClientData clientData, Tcl_Interp *interp,
+		    int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ ay_list_object *sel = ay_selection;
+ ay_object *o;
+ ay_nurbcurve_object *c = NULL, *c2 = NULL;
+ char fname[] = "curvPlot";
+ double t, dt, curv, *controlv;
+ int a = 0, samples = 100;
+
+  if(argc >= 2)
+    Tcl_GetInt(interp, argv[1], &samples);
+
+  while(sel)
+    {
+      if(sel->object->type == AY_IDNCURVE)
+	{
+	  controlv = NULL;
+	  if(!(controlv = calloc(samples*4, sizeof(double))))
+	    {
+	      ay_error(AY_EOMEM, fname, NULL);
+	      return TCL_OK;
+	    }
+	  o = NULL;
+	  if(!(o = calloc(1, sizeof(ay_object))))
+	    {
+	      free(controlv);
+	      ay_error(AY_EOMEM, fname, NULL);
+	      return TCL_OK;
+	    }
+	  ay_object_defaults(o);
+	  o->type = AY_IDNCURVE;
+
+	  c = (ay_nurbcurve_object *)sel->object->refine;
+	  dt = (c->knotv[c->length+c->order-1]-c->knotv[0])/((double)samples);
+	  a = 0;
+	  for(t = c->knotv[0]; t < c->knotv[c->length+c->order-1]; t += dt)
+	    {
+	      controlv[a] = (double)a/20.0;
+	      controlv[a+1] = ay_nct_getcurvature(c, t);
+	      controlv[a+3] = 1.0;
+	      a += 4;
+	    }
+	  
+	  ay_status = ay_nct_create(4, samples, AY_KTNURB, controlv, NULL,
+				    &c2);
+	  o->refine = c2;
+	  ay_object_link(o);
+	  
+	}
+      else
+	{
+	  ay_error(AY_ERROR, fname, "object is not a NURBCurve");
+	} /* if */
+
+      sel = sel->next;
+    } /* while */
+
+  ay_notify_parent();
+
+ return TCL_OK;
+} /* ay_nct_curvplottcmd */

@@ -228,6 +228,12 @@ int ay_nct_addinternalcps(ay_object *curve, int where);
 
 int ay_nct_rescaleknvnctcmd(ClientData clientData, Tcl_Interp *interp,
 			    int argc, char *argv[]);
+
+double ay_nct_getcurvature(ay_nurbcurve_object *c, double t);
+
+int ay_nct_curvplottcmd(ClientData clientData, Tcl_Interp *interp,
+			int argc, char *argv[]);
+
 /* npt.c */
 int ay_npt_create(int uorder, int vorder, int width, int height,
 		  int uknot_type, int vknot_type,
