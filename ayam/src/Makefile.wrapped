@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile.wrapped [8. May 2003]
+# Makefile.wrapped [6. Jul 2003]
 # Makefile for Ayam (wrapped version)
 
 # Choose an installation prefix.
@@ -50,6 +50,8 @@ LD = g++
 # o add -DAYUSEAFFINE if you use the Affine Toolkit as libribout replacement
 #   _else_
 #   add -DAYUSEBMRTRIBOUT if you link with libribout from BMRT
+#   _else_
+#   add -DAYUSEAQSISRIB if you link with libri2rib from Aqsis
 # o add -DAYUSESLCARGS if you use libslcargs from BMRT
 #   _or_
 #   add -DAYUSESLXARGS if you use libslxargs from Aqsis
@@ -163,29 +165,36 @@ AFFINEOBJS =
 # if you use affine (add -DAYUSEAFFINE to CFLAGS above!):
 #AFFINEOBJS = ./affine/src/write.o ./affine/src/constant.o
 
+
 # Aqsis
 AQSISDIR = /usr/local/aqsis
 AQSISINCDIR = $(AQSISDIR)/include
 AQSISLIBDIR = $(AQSISDIR)/lib
-# if you do not use Aqsis libslxargs:
-AQSISOBJS = 
+# if you do not use Aqsis libslxargs as libslcargs replacement:
+AQSISOBJS =
 # if you use Aqsis libslxargs (add -DAYUSESLXARGS to CFLAGS above!):
 #AQSISOBJS = $(AQSISLIBDIR)/rcdummy.o $(AQSISLIBDIR)/libshadervm.so $(AQSISLIBDIR)/libshaderexecenv.so $(AQSISLIBDIR)/libslxargs.so $(AQSISLIBDIR)/libaqsistypes.so -L /usr/local/lib -llog4cpp
 
+# if you do not use Aqsis libri2rib as libribout replacement:
+AQSISRI2RIB =
+# if you use Aqsis libri2rib (add -DAYUSEAQSISRIB to CFLAGS above!):
+#AQSISRI2RIB = $(AQSISLIBDIR)/libri2rib.so -L /usr/local/lib -llog4cpp
+
+
 # BMRT
 # If you use the libribout from BMRT2.x (x >= 5), do _not_ link with
-# libslcargs, as its functionality is already present in libribout
-# (in any case, keep -DAYUSESLCARGS set in CFLAGS above)!
+# libslcargs (leave SLCARGSLIB empty), as its functionality is already
+# present in libribout (in any case, keep -DAYUSESLCARGS set in CFLAGS above)!
 BMRTDIR = ../../BMRT2.6
 BMRTINCDIR = $(BMRTDIR)/include
 BMRTLIBDIR = $(BMRTDIR)/lib
-# if you use BMRT libribout and not Affine
+# if you use BMRT libribout and not Affine:
 RIBOUTLIB = -L$(BMRTLIBDIR) -lribout
-# if you use Affine as libribout replacement
+# if you use Affine or Aqsis libri2rib as libribout replacement:
 #RIBOUTLIB =
-# if you do not use libslcargs from BMRT
+# if you do not use libslcargs from BMRT:
 SLCARGSLIB =
-# if you use Affine as libribout replacement and libslcargs from BMRT
+# if you use Affine as libribout replacement and libslcargs from BMRT:
 #SLCARGSLIB =  -L$(BMRTLIBDIR) -lslcargs
 
 
@@ -398,7 +407,7 @@ wrapMain.o: wrapMain.c
 	$(CC) -c $(CFLAGS) wrapMain.c -I$(WRAPDIR) -I$(WRAPDIR)/libz $(TCLINC) $(TKINC)
 
 ayam:  $(AYAMOBJS) $(TOGLOBJECT) $(AFFINEOBJS) $(ADDOBJS) wrapMain.o
-	$(LD) $(ADDOBJS) $(AYAMOBJS) $(TOGLOBJECT) $(WRAPOBJS) wrapMain.o $(EXLDFLAGS) -o ayam $(ADDLIB) $(TKLIB) $(TCLLIB) $(LDSWDYNAMIC) $(GLLIBS) $(X11LIBS) $(RIBOUTLIB) $(SLCARGSLIB) $(AFFINEOBJS) $(AQSISOBJS) $(TIFFLIB) $(ZLIB) $(LDSWSTATIC) $(STDCPPLIB) $(LDSWDYNAMIC) -lm $(DL)
+	$(LD) $(ADDOBJS) $(AYAMOBJS) $(TOGLOBJECT) $(WRAPOBJS) wrapMain.o $(EXLDFLAGS) -o ayam $(ADDLIB) $(TKLIB) $(TCLLIB) $(LDSWDYNAMIC) $(GLLIBS) $(X11LIBS) $(RIBOUTLIB) $(AQSISRI2RIB) $(SLCARGSLIB) $(AFFINEOBJS) $(AQSISOBJS) $(TIFFLIB) $(ZLIB) $(LDSWSTATIC) $(STDCPPLIB) $(LDSWDYNAMIC) -lm $(DL)
 	$(STRIP) ayam
 	$(UPX) ayam
 	cat $(WRAPDIR)/null.zip >>ayam

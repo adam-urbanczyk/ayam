@@ -54,6 +54,10 @@ extern "C" {
 #include <ri.h>
 #endif
 
+#ifdef AYUSEAQSISRIB
+#include <ri.h>
+#endif
+
 #ifdef AYUSESLARGS
 #include <sl.h>
 #endif /* AYUSESLARGS */
