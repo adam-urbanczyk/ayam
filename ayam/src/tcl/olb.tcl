@@ -88,7 +88,7 @@ bind $ay(olb) <ButtonPress-3> {
     set y [lindex $xy 1]
 
     tk_popup $ay(olb).popup $x $y
-    return;
+    
 }
 
 
