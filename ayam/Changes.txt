@@ -1,4 +1,4 @@
-[CVS, 15. 09. 2002]:
+[CVS, 15. 10. 2002]:
 o bug fixes:
   - fixed memory leaks in the shadow map RIB export module
   - fixed ICurves crash for length 2
@@ -12,10 +12,29 @@ o bug fixes:
     when saved and then read again
   - fixed automatic cap generation for various tool objects
   - fixed picking of objects in instanced levels
+  - fixed problems with shader/plugin search path names with spaces
+  - fixed some dialogues not returning the focus to the main or the view
+    window when closed with the Ok/Cancel-button
+  - fixed property listbox context menu generating an empty Tcl error
+    message on the Win32 platform
+  - fixed setting of current filename for scenes loaded via command
+    line argument
+  - fixed broken detection of recursive instances for copy-and-paste and
+    drag-and-drop operations with instance objects
+  - fixed broken "zoom to object" action for instances with transformed
+    master objects
+  - fixed automatic instancing for cap objects
+  - fixed broken notification of several tool objects without open view
+    window (e.g. after loading a scene with no view windows)
+  - fixed drawing of misplaced markers for the "rotate_about" and "find_u"
+    modelling actions (when used with view actions such as "move_view")
+  - fixed dropping of light or camera objects onto view objects updating
+    the wrong view window sometimes
 o added a permanent preview feature; a constantly open RIB stream
   to a (fast) RenderMan renderer like rgl immediately displays all
   changes in the scene without the need to repeatedly hit "Ctrl-r" and
-  close the preview window again
+  close the preview window again (due to the complex handling, this is
+  a compile time feature, and not available in the distributed Ayam binaries)
 o added manual control for the creation of ShadowMaps; for that,
   the preference setting "RIB-Export/ShadowMaps" is now a menu
   for the values "Never", "Automatic", and "Manual"; in "Manual" mode
@@ -33,8 +52,8 @@ o the coordinate system (the root object) now also draws axis names (x, y, z)
 o scene loading now blocks all mouse events from view windows to avoid
   problems with user input while loading scenes which lead to wrongly
   drawn views
-o added a texture coordinates editor (main menu "Special/Edit TexCoords")
-o added a "Remove Tag!" menu button to the Tag property GUI
+o added a texture coordinates editor (main menu "Special/Tags/Edit TexCoords")
+o added a "Remove Tag!" menu to the standard Tag property GUI
 o added "Show All" and "Hide All" menu entries to the main menu
 o replaced "setNC"/"getNC"/"setNP"/"getNP" scripting interface commands
   with the new "setPnt"/"getPnt" commands
@@ -52,7 +71,7 @@ o improved the MFIO (3DMF) Import Plugin: it now outputs more detailed
 o added shader parsing plugins: "ayslb" for Air, "ayslx" for Aqsis,
   "ayso" for RDC, "ayslo" for PRMan, and "ayslo3d" for 3Delight
 o added a new object type "ConcatNC" that concatenates multiple NURBS
-  curves or NURBS curve providing objects
+  curves or NURBS curve providing objects to a single NURBS curve
 o added a new object type "Clone" that creates n instances of its child
   object and transforms each instance by a specified transformation
 o Ayam now remembers the state of the toolbox (open/closed) and the
@@ -64,6 +83,12 @@ o added a select renderer feature (main menu "Special/Select Renderer")
   that allows to switch between different renderers more easily; currently
   supported are BMRT2.5, BMRT2.6, Aqsis, Air, 3Delight, RDC, and PRMan
 o reorganized the "Main/Special" menu by introduction of cascaded sub-menus
+o changed calculation of bevels for the Extrude object; the bevels are
+  now more evenly sized; this may, however, lead to problems with caps,
+  because the bevels may overlap themselves in corners of the extrusion;
+  thus, if cap generation fails, reduce the radius of the bevels
+o all RenderGUI windows now automatically try to raise themself, should
+  they be obscured, e.g. by the renderer window (but just one time)
 
 [09. 07. 2002] Ayam1.2:
 o bug fixes:
