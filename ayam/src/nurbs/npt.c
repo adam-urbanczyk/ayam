@@ -644,6 +644,132 @@ ay_npt_swapuv(ay_nurbpatch_object *np)
 } /* ay_npt_swapuv */
 
 
+/* ay_npt_revertu:
+ *  
+ */
+int
+ay_npt_revertu(ay_nurbpatch_object *patch)
+{
+ int ay_status = AY_OK;
+ int i, j, ii, jj, stride = 4;
+ double t[4];
+
+  for(i = 0; i < patch->height; i++)
+    {
+      for(j = 0; j < patch->width/2; j++)
+	{
+	  ii = (j*patch->height+i)*stride;
+	  jj = ((patch->width-1-j)*patch->height+i)*stride;
+	  memcpy(t, &(patch->controlv[ii]), stride*sizeof(double));
+	  memcpy(&(patch->controlv[ii]), &(patch->controlv[jj]),
+		 stride*sizeof(double));
+	  memcpy(&(patch->controlv[jj]), t, stride*sizeof(double));
+	}
+    }
+
+ return ay_status;
+} /* ay_npt_revertu */
+
+
+/* ay_npt_revertutcmd:
+ *  
+ */
+int
+ay_npt_revertutcmd(ClientData clientData, Tcl_Interp *interp,
+		   int argc, char *argv[])
+{
+ int ay_status;
+ char fname[] = "revertU";
+ ay_list_object *sel = ay_selection;
+ ay_nurbpatch_object *patch = NULL;
+
+  while(sel)
+    {
+      if(sel->object->type == AY_IDNPATCH)
+	{
+	  if(sel->object->selp)
+	    ay_selp_clear(sel->object);
+
+	  patch = (ay_nurbpatch_object *)sel->object->refine;
+
+	  ay_status = ay_npt_revertu(patch);
+	}
+      else
+	{
+	  ay_error(AY_ERROR, fname, "object is not a NPatch");
+	} /* if */
+
+      sel = sel->next;
+    } /* while */
+
+ return TCL_OK;
+} /* ay_npt_revertutcmd */
+
+
+/* ay_npt_revertv:
+ *  
+ */
+int
+ay_npt_revertv(ay_nurbpatch_object *patch)
+{
+ int ay_status = AY_OK;
+ int i, j, ii, jj, stride = 4;
+ double t[4];
+
+  for(i = 0; i < patch->width; i++)
+    {
+      ii = i*patch->height*stride;
+      jj = ii + ((patch->height-1)*stride);
+      for(j = 0; j < patch->height/2; j++)
+	{
+	  memcpy(t, &(patch->controlv[ii]), stride*sizeof(double));
+	  memcpy(&(patch->controlv[ii]), &(patch->controlv[jj]),
+		 stride*sizeof(double));
+	  memcpy(&(patch->controlv[jj]), t, stride*sizeof(double));
+	  ii += stride;
+	  jj -= stride;
+	}
+    }
+
+ return ay_status;
+} /* ay_npt_revertv */
+
+
+/* ay_npt_revertvtcmd:
+ *  
+ */
+int
+ay_npt_revertvtcmd(ClientData clientData, Tcl_Interp *interp,
+		   int argc, char *argv[])
+{
+ int ay_status;
+ char fname[] = "revertV";
+ ay_list_object *sel = ay_selection;
+ ay_nurbpatch_object *patch = NULL;
+
+  while(sel)
+    {
+      if(sel->object->type == AY_IDNPATCH)
+	{
+	  if(sel->object->selp)
+	    ay_selp_clear(sel->object);
+
+	  patch = (ay_nurbpatch_object *)sel->object->refine;
+
+	  ay_status = ay_npt_revertv(patch);
+	}
+      else
+	{
+	  ay_error(AY_ERROR, fname, "object is not a NPatch");
+	} /* if */
+
+      sel = sel->next;
+    } /* while */
+
+ return TCL_OK;
+} /* ay_npt_revertvtcmd */
+
+
 /* ay_npt_wribtrimcurves
  *
  */

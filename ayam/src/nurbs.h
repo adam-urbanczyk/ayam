@@ -277,6 +277,16 @@ int ay_npt_resizearrayh(double **controlvptr, int stride,
 
 int ay_npt_resizeh(ay_nurbpatch_object *patch, int new_height);
 
+int ay_npt_revertu(ay_nurbpatch_object *patch);
+
+int ay_npt_revertutcmd(ClientData clientData, Tcl_Interp *interp,
+		       int argc, char *argv[]);
+
+int ay_npt_revertv(ay_nurbpatch_object *patch);
+
+int ay_npt_revertvtcmd(ClientData clientData, Tcl_Interp *interp,
+		       int argc, char *argv[]);
+
 int ay_npt_swapuv(ay_nurbpatch_object *np);
 
 int ay_npt_wribtrimcurves(ay_object *o);
