@@ -27,6 +27,7 @@ DisplayMode 1
 set w [frame $ay(pca).$RevolveAttr(w)]
 
 addParam $w RevolveAttrData ThetaMax
+addParam $w RevolveAttrData Sections
 addCheck $w RevolveAttrData UpperCap
 addCheck $w RevolveAttrData LowerCap
 addCheck $w RevolveAttrData StartCap
