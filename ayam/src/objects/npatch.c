@@ -271,6 +271,9 @@ ay_npatch_drawglucb(struct Togl *togl, ay_object *o)
 		  (GLint)npatch->uorder, (GLint)npatch->vorder,
 		  GL_MAP2_VERTEX_4);
 
+  /* propagate changes to trimcurve walking code also to:
+     nurbs/npt.c/ay_npt_topolymesh()! */
+
   /* draw trimcurves */
   if(o->down)
     {
@@ -1338,6 +1341,23 @@ ay_npatch_bbccb(ay_object *o, double *bbox, int *flags)
 
 
 int
+ay_npatch_providecb(ay_object *o, unsigned int type, ay_object **result)
+{
+ int ay_status = AY_OK;
+ char fname[] = "npatch_providecb";
+ 
+  if(!o || !result)
+    return AY_ENULL;
+
+  if(type == AY_IDPOMESH)
+    {
+      ay_status = ay_npt_topolymesh(o, ay_prefs.sm, ay_prefs.smparam, result);
+    } /* if */
+
+ return ay_status;
+} /* ay_npatch_providecb */
+
+int
 ay_npatch_init(Tcl_Interp *interp)
 {
  int ay_status = AY_OK;
@@ -1357,6 +1377,8 @@ ay_npatch_init(Tcl_Interp *interp)
 				    ay_npatch_wribcb,
 				    ay_npatch_bbccb,
 				    AY_IDNPATCH);
+
+  ay_status = ay_provide_register(ay_npatch_providecb, AY_IDNPATCH);
 
  return ay_status;
 } /* ay_npatch_init */
