@@ -267,6 +267,7 @@ AYAMOBJS = aycore/bbc.o\
 	aycore/notify.o\
 	aycore/oact.o\
 	aycore/object.o\
+	aycore/objio.o\
 	aycore/otype.o\
 	aycore/matt.o\
 	aycore/pact.o\
