@@ -1012,7 +1012,8 @@ if { ($ayprefs(LoadEnv) == 1) && ($ay(failsafe) == 0) } {
 
 if { $ayprefs(Scripts) != "" } {
 puts stdout "Running user defined scripts..."
-regsub -all $ay(separator) $ayprefs(Scripts) " " scripts
+
+set scripts [split "$ayprefs(Scripts)" $ay(separator)]
 
 foreach script $scripts {
     if { [file exists $script] } {
