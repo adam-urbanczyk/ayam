@@ -496,12 +496,20 @@ ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
   if(!(zname = calloc(filelen+64, sizeof(char))))
     return;
   if(!(shdname = calloc(filelen+64, sizeof(char))))
-    return;
-
+    {
+      free(zname);
+      return;
+    }
+    
   if(!trafo)
     countsm = 0;
 
-  newtrafo = calloc(1, sizeof(ay_sm_trafostack));
+  if(!(newtrafo = calloc(1, sizeof(ay_sm_trafostack))))
+    {
+      free(zname); free(shdname);
+      return;
+    }
+
   newtrafo->next = trafo;
   trafo = newtrafo;
   while (o) {
@@ -788,7 +796,10 @@ ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
 
   newtrafo = trafo;
   trafo = trafo->next;
+
   free(newtrafo);
+  free(shdname);
+  free(zname);
 
  return;
 } /* ay_sm_wriballsm */
