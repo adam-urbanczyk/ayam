@@ -550,16 +550,16 @@ if { $tcl_platform(platform) == "windows" } {
     emptyimg configure -width 6 -height 6
 
     # address more numeric keypad differences...
-    SProp00 "Key-0"
-    SProp11 "Key-1"
-    SProp22 "Key-2"
-    SProp33 "Key-3"
-    SProp44 "Key-4"
-    SProp55 "Key-5"
-    SProp66 "Key-6"
-    SProp77 "Key-7"
-    SProp88 "Key-8"
-    SProp99 "Key-9"
+    set aymainshortcuts(SProp00) "Key-0"
+    set aymainshortcuts(SProp11) "Key-1"
+    set aymainshortcuts(SProp22) "Key-2"
+    set aymainshortcuts(SProp33) "Key-3"
+    set aymainshortcuts(SProp44) "Key-4"
+    set aymainshortcuts(SProp55) "Key-5"
+    set aymainshortcuts(SProp66) "Key-6"
+    set aymainshortcuts(SProp77) "Key-7"
+    set aymainshortcuts(SProp88) "Key-8"
+    set aymainshortcuts(SProp99) "Key-9"
 
 } else {
     # UNIX specific settings:
