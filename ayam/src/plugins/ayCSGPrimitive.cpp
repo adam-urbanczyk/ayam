@@ -44,7 +44,18 @@ namespace OpenCSG {
     }
 
     void ayCSGPrimitive::render() {
+      int has_tm = AY_FALSE;
+      if(ayobject_->tags && (ayobject_->tags->type == aycsg_tm_tagtype))
+	{
+	  has_tm = AY_TRUE;
+	  glPushMatrix();
+	  glMultMatrixd((GLdouble*)(ayobject_->tags->val));
+	}
       ay_shade_object(togl_, ayobject_, AY_FALSE);
+      if(has_tm)
+	{
+	  glPopMatrix();
+	}
     }
 
 } // namespace OpenCSG
