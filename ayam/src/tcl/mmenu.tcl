@@ -223,26 +223,18 @@ $m.csg add separator
 $m.csg add command -label "Primitive"\
 -command "crtOb Level 5; uCR; sL; rV;"
 
-#$m.csg add command -label "TrimLoop"\
-#-command "crtOb level tloop; updateMopsSelect; selectLast; redrawAllViews"
 $m add command -label "Light" -command "crtOb Light; uCR; sL; rV;"
 $m add separator
 $m add cascade -menu $m.cus -label "Custom Object"
 menu $m.cus -tearoff 0
-#$m.cus add command -label "Revolve"\
-# -command "crtOb custom Revolve; updateMopsSelect; redrawAllViews"
-#$m.cus add command -label "Extrude"\
-# -command "crtOb custom Extrude; updateMopsSelect; redrawAllViews"
-#$m.cus add command -label "Sweep"\
-# -command "crtOb custom Sweep; updateMopsSelect; redrawAllViews"
+
 $m add separator
 $m add command -label "View" \
 	-command "viewOpen 400 300; global ay; set ay(ul) root:0; uS 0 1; rV;"
 $m add separator
 $m add command -label "Instance" \
 	-command "crtOb Instance; uCR; sL; rV;"
-$m add command -label "Clone" \
-	-command "crtOb Clone; uCR; sL;rV;"
+$m add command -label "Clone" -command "clone_crt;"
 $m add command -label "Material" \
 	-command "material_createp;"
 $m add command -label "Camera" \
