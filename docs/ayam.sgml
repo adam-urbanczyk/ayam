@@ -233,7 +233,7 @@ object, see the <tt/"Edit"/ menu. You can also
 paste properties to different types of properties
 (e.g. pasting parameters from a surface shader to the
 displacement shader) using <tt/"Paste to selected"/ in the
-<tt/"Special"/ menu.<p>
+<tt>"Special/Clipboard"</tt> submenu.<p>
 Pasting a property to multiple selected objects does work too.
 This is a great way to apply e.g. a surface shader
 to a big number of objects, without going the long way
@@ -376,7 +376,8 @@ of the scene.
 Note, that the content of the clipboard remains intact after this
 operation, this means that you can paste multiple times!
 You can move objects
-out of the clipboard using the menu entry <tt>"Special/Paste (Move)"</tt>.
+out of the clipboard using the menu entry
+<tt>"Special/Clipboard/Paste (Move)"</tt>.
 <item><tt/Delete/, removes the selected object(s) from the scene.<p>
 
 <item><tt/Copy Property/, copies the currently selected property of the
@@ -444,6 +445,12 @@ The <tt/Tools/ menu:
 <item><tt/NURBPatch/, are submenus with various NURBS based modeling
 tools that are explained in depth in section
 <ref id="nmtool" name="NURBS Modeling Tools">.
+<item><tt/PolyMesh/: submenu for polygonal mesh related tools:
+<itemize>
+<item><tt/Merge/: merges all currently selected PolyMesh objects into
+a single PolyMesh object, without checking for doubly used points,
+loops, or faces.
+</itemize>
 <item><tt/Show/, <tt/Hide/ set and unset the <tt/Hide/
 attribute of the selected object(s) thus making them invisible.
 Note, that hidden objects may be excluded from RIB-Export, when
@@ -1077,6 +1084,12 @@ be used, when writing light sources. It is not sufficient
 to switch this on to render using shadow maps, light sources
 that shall use shadow maps have to be parameterized
 as well, see section <ref id="shadowmaps" name="Using ShadowMaps">.
+If <tt/"ShadowMaps"/ is set to <tt/"Automatic"/, the
+exported RIBs will automatically render and use all shadow maps;
+if it is set to <tt/"Manual"/, the shadow maps will be rendered on
+user request only (using the view menu entry:
+<tt>"View/Create ShadowMaps"</tt>). <tt/"Manual"/ should be used,
+when rendering directly from view windows with shadow maps.
 
 <item><tt/"ExcludeHidden"/ causes hidden objects not to be
 exported to RIB files.
@@ -1567,6 +1580,8 @@ elements:
 <itemize>
 <item><tt/"Remove all Tags!"/ immediately removes all tags
 from the object.
+<item><tt/"Remove Tag!"/ is a menu, that allows you
+to remove a single tag from the object.
 <item><tt/"Add Tag!"/ opens a small dialog box, where you
 may enter a new tag type and value. Once you press the <tt/"Ok"/
 button, a new entry will be added to the tags property, displaying
@@ -1604,7 +1619,7 @@ Examples:<p>
 
 Note, that the RiAttribute tag handles just a single parameter at once.
 Also note, that RiAttribute tags may be created much more easily
-using the menu entry <tt>Special/Add RiAttribute</tt>.
+using the menu entry <tt>Special/Tags/Add RiAttribute</tt>.
 The database of RiAttributes for this GUI may be extended
 by the user using the ayamrc file, see section
 <ref id="ayamrc" name="Ayamrc File">.
@@ -1620,7 +1635,7 @@ if they are attached to the <tt/"Root"/ object!
 The syntax is similar to the <tt/"RiAttribute"/ tag
 type, see above.
 Note, that RiOption tags may be created easily
-using the menu entry <tt>Special/Add RiOption</tt>.
+using the menu entry <tt>Special/Tags/Add RiOption</tt>.
 Tags created with this GUI will always be added to
 the <tt/"Root"/ object. It does not
 have to be selected!
@@ -1661,7 +1676,7 @@ of the texture coordinates!
 <sect2>Texture Coordinate Editor<label id="tce">
 <p>
 The texture coordinate editor may be opened using the
-main menu entry <tt>"Special/Edit TexCoords"</tt> and
+main menu entry <tt>"Special/Tags/Edit TexCoords"</tt> and
 lets you edit texture coordinate
 tags in an intuitive way.<p>
 For that, the texture coordinates are displayed as a black
@@ -2741,14 +2756,14 @@ object clipboard.
 If you cannot delete an object, and the error message tells
 you something about a reference counter, then you were about
 to violate the second rule. Clean the clipboard using
-the menu <tt>"Special/Paste (Move)"</tt> and delete
+the menu <tt>"Special/Clipboard/Paste (Move)"</tt> and delete
 or resolve all references.<p>
 
 Currently, it is not possible to copy a master object and some instances
 of it, so that the new instances point to the newly created master.
 However, it is possible to move them using drag and drop in the tree
 view or using the menu <tt>"Edit/Cut"</tt> then
-<tt>"Special/Paste (Move)"</tt>.<p>
+<tt>"Special/Clipboard/Paste (Move)"</tt>.<p>
 
 You can resolve an instance object at any time using
 the converter registered for objects of type <tt>Instance</tt> (simply
@@ -2935,6 +2950,10 @@ If the bevels of the holes look wrong try to
 revert the generating curves of the holes.
 Note, that beveling does not work well with open curves.
 You should always use closed curves for beveling!
+Beveling may lead to self intersecting trimcurves in sharp
+corners of an extrusion. Decrease the bevel radius or round
+the corners of the extruded curve (using insertion of additional
+control points) if cap generation fails due to self intersecting bevels.
 
 <sect1>Sweep Object<label id="sweepobj">
 <p>
@@ -4442,7 +4461,7 @@ incarnations of the scene in RIB form (which actually may be split
 in more than one file due to e.g. instances) created by Direct
 Rendering should be kept on disk (default: 5)
 <item><tt/"Wpclip_pastetosel"/: should
-<tt>"Special/Paste Property to Selected"</tt> raise a warning
+<tt>"Special/Clipboard/Paste Property to Selected"</tt> raise a warning
 requester? (default: 1 - yes)
 <item><tt/"DailyTips"/: a list of strings that appear as tips
 on startup in the console
@@ -4458,7 +4477,7 @@ Finally, you may adapt the database of RiOptions and
 RiAttributes to your rendering system.
 You can then easily add those options and attributes
 to your scene using tags and the main menu entries
-<tt>"Special/Add RiOption"</tt> and <tt>"Special/Add RiAttribute"</tt>,
+<tt>"Special/Tags/Add RiOption"</tt> and <tt>"Special/Tags/Add RiAttribute"</tt>,
 see also sections
 <ref id="riatag" name="RiAttribute Tag"> and
 <ref id="riotag" name="RiOption Tag">.
@@ -4535,7 +4554,7 @@ primitives:
 <item>Quadrics (Sphere, Disk, Cylinder, Cone, Paraboloid, Hyperboloid, Torus)
 <item>bilinear and bicubic patches and patch meshes
 <item>NURBS patches (with trim curves)
-<item>polygons and polygon meshes
+<item>(general) polygons and (general) polygon meshes
 </itemize>
 
 Furthermore, the plugin supports reading of CSG, Object-Instances,
@@ -4627,13 +4646,13 @@ the shaders search path manually too, using the preferences editor.
 <p>
 
 Automatic Instancing is available via the main menu entry:
-<tt>"Special/Automatic Instancing"</tt>.
+<tt>"Special/Instances/Automatic Instancing"</tt>.
 Automatic Instancing creates instances from all instantiable
 objects from the current level and below,
 using a simple algorithm that recursively compares
 objects. The comparison of materials and tags may be turned off in the
 small dialog that pops up after selection of the menu entry
-<tt>"Special/Automatic Instancing"</tt>.
+<tt>"Special/Instances/Automatic Instancing"</tt>.
 
 The algorithm is able to create instances of grouping objects
 too (objects with child objects, e.g. levels or tool-objects
@@ -4656,6 +4675,74 @@ More information about this subject can be found in:<p>
 Hierarchically Organized Objects", in: Kunii T.L. (ed.): Spring
 Conference on Computer Graphics 2001 Conference Proceedings, Budmerice,
 Slovakia, 25-28 April 2001, ISBN 80-223-1606-7</it>
+
+<sect1>Importance Driven Rendering (IDR)<label id="idr">
+<p>
+The importance driven rendering plugin may be used to drastically
+reduce rendering times while developing a scene.
+It works in three main steps:
+<enum>
+<item>Importance values are assigned to elements of the scene.
+<item>Two rendering passes are started according to the
+assigned importance values. Elements of different importance
+values are mutually masked out using <tt>"RiMatte"</tt> statements.
+<item>The resulting partial images are composed to a single
+resulting image, which is then displayed.
+</enum>
+The parameterization of the two rendering passes ensures, that
+the total rendering time is lower than the rendering time of
+a single pass with high quality.
+<p>
+Many options exist to assign importance and parameterize the
+rendering passes:
+<p>
+Elements of the scenes may be geometric objects, regions in image space,
+or regions in object space.
+Importance values are currently just binary values.
+Assignment may take place manually (using IDR tags) or half-automatic
+by derivation of importance from currently selected or changed
+objects. To avoid inconsistency in the resulting images, importance
+values may be propagated between (geometrically or hierarchically) near
+objects, or between objects that are related (e.g. from a material to a
+geometric object).
+<p>
+Parameterization of the two rendering passes currently includes selection of
+a different renderer and the possibility to reduce rendering resolution and
+shading rate. To further reduce rendering times for Raytracing
+renderers, the size of the region to render may be automatically adapted to
+the elements of the current importance value (including an optimization
+run that balances renderer startup times and times needed to render
+regions not originally occupied by two regions to merge).
+<p>
+Furthermore, caching of partial images is possible. However, the implementation
+of this feature is not very sophisticated at the moment, as it
+uses the Unix text tool <tt>"diff"</tt> to decide whether two RIB streams are
+identical and hence need no re-rendering.
+
+To start using IDR:
+<enum>
+<item>load a scene (e.g. the cactus example scene),
+<item>load the IDR plugin (menu <tt>"File/Load Custom"</tt>),
+<item>open the IDR control window using the main menu
+<tt>"Custom/Open IDR"</tt>,
+<item>set the assign mode to <tt>"Selection"</tt>,
+<item>select an object in the scene (e.g. the object named <tt>"Pot"</tt>),
+<item>then press the <tt>"Render!"</tt> button.
+</enum>
+Compare the rendering time with a full render from the view window.
+
+IDR requires that atleast the renderer of the second rendering pass
+honours RiMatte! Since rgl does not honour RiMatte, it is sometimes
+necessary to simply exclude objects of different importance value.
+No wrong images are to be expected from this, as rgl does not calculate
+other than local lighting effects.
+
+More information about this subject can be found in:<p>
+<it>Schultz, R., and Schumann, H.: "Importance Driven
+Rendering - Using Importance Information in the Rendering Process",
+in: Hamza M., Sarfraz M. (ed.): Computer Graphics and Imaging (CGIM 2001)
+Conference Proceedings, Honolulu, Hawaii, 13-16 August 2001,
+ISBN 0-88986-303-2</it>
 
 <sect1>Increasing drawing speed<label id="incds">
 <p>
@@ -5011,10 +5098,12 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <label id="indexi">I
 <itemize>
 <item>ICurve: <ref id="icurveobj" name ="object">
+<item>IDR: <ref id="idr" name="IDR plugin">
 <item>Image: <ref id="prefrib" name="preference setting">
 <item>Imager: <ref id="imager" name="property">
-<item>import Mops Scene: <ref id="impmops" name="Mops Import">
+<item>import Mops scene: <ref id="impmops" name="Mops Import">
 <item>import RIB: <ref id="rrib" name="RIB Import">
+<item>Importance Driven Rendering: <ref id="idr" name="IDR plugin">
 <item>Insert: <ref id="mmfile" name="main menu entry">,
 <ref id="insdelac" name="insert points">
 <item>insKn: <ref id="gncp" name="scripting interface command">
