@@ -610,76 +610,57 @@ ay_sweep_convertcb(ay_object *o)
 {
  int ay_status = AY_OK;
  ay_sweep_object *s = NULL;
- ay_object *new = NULL, *last = NULL;
+ ay_object *new = NULL, **oldaynext = ay_next;
 
   if(!o)
     return AY_ENULL;
 
   s = (ay_sweep_object *) o->refine;
 
-  if((o->scalx != 0.0) || (o->scaly != 0.0) || (o->scalz != 0.0))
-    {
-      if(!(new = calloc(1, sizeof(ay_object))))
-	{ return AY_EOMEM; }
+  if(!(new = calloc(1, sizeof(ay_object))))
+    { return AY_EOMEM; }
 
-      ay_object_defaults(new);
-      new->type = AY_IDLEVEL;
-      new->parent = AY_TRUE;
+  ay_object_defaults(new);
+  new->type = AY_IDLEVEL;
+  new->parent = AY_TRUE;
+  new->inherit_trafos = AY_TRUE;
+  ay_trafo_copy(o, new);
+
+  if(!(new->refine = calloc(1, sizeof(ay_level_object))))
+    { free(new); return AY_EOMEM; }
+
+  ((ay_level_object *)(new->refine))->type = AY_LTLEVEL;
+
+  ay_status = ay_object_link(new);
+
+  ay_object_crtendlevel(&(new->down));
+
+  ay_next = &(new->down);
+
+  if(s->npatch)
+    {
+      ay_status = ay_object_copy(s->npatch, &new);
       ay_trafo_copy(o, new);
-
-      if(!(new->refine = calloc(1, sizeof(ay_level_object))))
-	{ free(new); return AY_EOMEM; }
-
-      ((ay_level_object *)(new->refine))->type = AY_LTLEVEL;
-
       ay_status = ay_object_link(new);
-
-      if(s->npatch)
-	{
-	  ay_status = ay_object_copy(s->npatch, &(new->down));
-	  last = new->down;
-	}
-
-      if(s->start_cap)
-	{
-	  ay_status = ay_object_copy(s->start_cap, &(last->next));
-	  last = last->next;
-	}
-
-      if(s->end_cap)
-	{
-	  ay_status = ay_object_copy(s->end_cap, &(last->next));
-	  last = last->next;
-	}
-
-      ay_object_crtendlevel(&(last->next));
     }
-  else
+
+  if(s->start_cap)
     {
-      if(s->npatch)
-	{
-	  ay_status = ay_object_copy(s->npatch, &new);
-	  ay_trafo_copy(o, new);
-	  ay_status = ay_object_link(new);
-	}
+      new = NULL;
+      ay_status = ay_object_copy(s->start_cap, &new);
+      ay_trafo_add(o, new);
+      ay_status = ay_object_link(new);
+    }
 
-      if(s->start_cap)
-	{
-	  new = NULL;
-	  ay_status = ay_object_copy(s->start_cap, &new);
-	  ay_trafo_add(o, new);
-	  ay_status = ay_object_link(new);
-	}
+  if(s->end_cap)
+    {
+      new = NULL;
+      ay_status = ay_object_copy(s->end_cap, &new);
+      ay_trafo_add(o, new);
+      ay_status = ay_object_link(new);
+    }
 
-      if(s->end_cap)
-	{
-	  new = NULL;
-	  ay_status = ay_object_copy(s->end_cap, &new);
-	  ay_trafo_add(o, new);
-	  ay_status = ay_object_link(new);
-	}
-    } /* if */
-
+  ay_next = oldaynext;
 
  return ay_status;
 } /* ay_sweep_convertcb */
