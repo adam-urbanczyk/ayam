@@ -303,7 +303,7 @@ Use it via menu entry "Custom/Open IDR".
 --------------------------
 
 Ayam supports the following shader parsing plugins:
-"ayso" for RDC, "ayslo" for PRMan, "ayslx" for Aqsis,
+"ayslb" for Air, "ayso" for RDC, "ayslo" for PRMan, "ayslx" for Aqsis,
 and "ayslo3d" for 3Delight.
 
 In order to compile those plugins adapt the following variables
@@ -312,8 +312,9 @@ AQSISDIR, AYSLXINCDIR, AYSLXLIBS, RDCDIR, AYSOINCDIR, AYSOLIBS,
 PRMANDIR, AYSLOINCDIR, AYSLOLIBS, 3DLDIR, AYSLO3INCDIR, AYSLO3DLIBS
 
 then type:
+>make ayslb.so
 >make ayslo.so
->make ayslo3e.so
+>make ayslo3d.so
 >make ayso.so
 >make ayslx.so
 
