@@ -323,10 +323,20 @@ $m.pm add command -label "Merge" -command {
 }
 $m.pm add command -label "Optimize" -command { pomesh_optimize }
 $m add separator
-$m add command -label "Hide" -command "undo save Hide;hide; rV"
-$m add command -label "Hide All" -command "hide -all; rV"
-$m add command -label "Show" -command "undo save Show;show; rV"
-$m add command -label "Show All" -command "show -all; rV"
+$m add command -label "Hide" -command {
+    global ay
+    undo save Hide
+    hide
+    set ay(ul) $ay(CurrentLevel); uS 1 1; rV
+}
+$m add command -label "Hide All" -command "hide -all; uS 1 1; rV"
+$m add command -label "Show" -command {
+    global ay
+    undo save Show
+    show
+    set ay(ul) $ay(CurrentLevel); uS 1 1; rV
+}
+$m add command -label "Show All" -command "show -all; uS 1 1; rV"
 $m add separator
 $m add command -label "Convert" -command {
     global ay

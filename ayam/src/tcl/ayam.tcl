@@ -21,6 +21,7 @@ array set ayprefs {
  toolBoxList {trafo trafo2 solids misco nurbs toolobjs points nctools1 nctools2 camera misc}
  AutoResize 1
  ListTypes 1
+ MarkHidden 1
  AutoSavePrefs 1
  PickEpsilon 0.2
  PickTolerance 5.0

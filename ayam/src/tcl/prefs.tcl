@@ -103,6 +103,7 @@ proc prefs_open {} {
     addCheckB $fw ayprefse AutoFocus [ms ayprefse_AutoFocus]
     addCheckB $fw ayprefse TwmCompat [ms ayprefse_TwmCompat]
     addCheckB $fw ayprefse ListTypes [ms ayprefse_ListTypes]
+    addCheckB $fw ayprefse MarkHidden [ms ayprefse_MarkHidden]
     addCheckB $fw ayprefse AutoSavePrefs [ms ayprefse_AutoSavePrefs]
     addCheckB $fw ayprefse BakOnReplace [ms ayprefse_BakOnReplace]
     addCheckB $fw ayprefse LoadEnv [ms ayprefse_LoadEnv]

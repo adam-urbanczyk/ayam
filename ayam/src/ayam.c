@@ -383,6 +383,7 @@ ay_init(Tcl_Interp *interp)
   ay_prefs.edit_snaps_to_grid = AY_TRUE;
 
   ay_prefs.list_types = AY_TRUE;
+  ay_prefs.mark_hidden = AY_TRUE;
 
   ay_prefs.smethod = 3;
   ay_prefs.sparam = 10;
