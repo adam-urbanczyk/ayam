@@ -192,7 +192,7 @@ ayslo3d_scanslo3dtcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  ay_error(AY_ERROR, fname, "Cannot get symbol from shader:");
 	  ay_error(AY_ERROR, fname, argv[1]);
-	  
+
 	  Slo_EndShader();
 	  Tcl_DStringFree(&ds);
 	  return TCL_OK;
@@ -265,7 +265,7 @@ ayslo3d_scanslo3dtcmd(ClientData clientData, Tcl_Interp *interp,
 	} /* if */
       Tcl_DStringAppend(&ds, "} ", -1);
 
-	} 
+	}
       else
 	{
 	  ay_error(AY_EWARN,fname,"Skipping array argument!");

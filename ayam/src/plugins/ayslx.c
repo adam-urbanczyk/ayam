@@ -17,11 +17,11 @@
 /* ayslx.c - Plug-In to scan shaders compiled with aqsl (Aqsis)
    using libslxargs  */
 
-/* global variables */
+/* global variables: */
 char ayslx_version_ma[] = AY_VERSIONSTR;
 char ayslx_version_mi[] = AY_VERSIONSTRMI;
 
-/* prototypes of functions local to this module */
+/* prototypes of functions local to this module: */
 int ayslx_scanslxsarg(SLX_VISSYMDEF *symbol, Tcl_DString *ds);
 
 int ayslx_scanslxtcmd(ClientData clientData, Tcl_Interp *interp,
@@ -34,6 +34,7 @@ __declspec( dllexport ) int Ayslx_Init(Tcl_Interp *interp);
 #else
 int Ayslx_Init(Tcl_Interp *interp);
 #endif
+
 /* functions: */
 
 /* ayslx_scanslxsarg:
@@ -260,7 +261,7 @@ ayslx_scanslxtcmd(ClientData clientData, Tcl_Interp *interp,
 	} /* if */
       Tcl_DStringAppend(&ds, "} ", -1);
 
-	} 
+	}
       else
 	{
 	  ay_error(AY_EWARN,fname,"Skipping array argument!");
