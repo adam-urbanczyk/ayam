@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile.shared [7. Jun 2002]
+# Makefile.shared [9. Jun 2002]
 # Makefile for Ayam (shared version)
 
 # Choose an installation prefix.
@@ -11,16 +11,23 @@ PREFIX = /usr/local/ayam
 #PREFIX = /usr/freeware
 #PREFIX = /usr
 
+# if PREFIX points to a generic directory (e.g. /usr) and not
+# to a directory specific to Ayam (e.g. /usr/local/ayam) you
+# probably want to switch LN to echo (this way the installation
+# will not create a softlink named "plugins" in PREFIX/bin)
+LN = ln -s
+#LN = echo
+
 # Where shall the executable be installed?
-BINDIR = ${PREFIX}/bin
+BINDIR = $(PREFIX)/bin
 
 # Where shall the main tcl scripts, plugins, and custom objects be installed?
-LIBDIR = ${PREFIX}/lib
-#LIBDIR = ${PREFIX}/lib/ayam
+LIBDIR = $(PREFIX)/lib
+#LIBDIR = $(PREFIX)/lib/ayam
 
 # Where shall the documentation be installed?
-DOCDIR = ${PREFIX}/doc
-#DOCDIR = ${PREFIX}/doc/ayam
+DOCDIR = $(PREFIX)/doc
+#DOCDIR = $(PREFIX)/doc/ayam
 
 INSTALL = install
 MKDIR = mkdir -p
@@ -311,12 +318,12 @@ install:
 	$(INSTALL) ayamsh $(BINDIR)
 	./crtayamsh.sh $(BINDIR) $(LIBDIR)/tcl
 	$(INSTALL) ayam $(BINDIR)
-	-ln -s $(LIBDIR) $(BINDIR)/plugins
+	$(MKDIR) $(LIBDIR)
 	$(MKDIR) $(LIBDIR)/tcl
+	-$(LN) $(LIBDIR) $(BINDIR)/plugins
 	cp -R tcl $(LIBDIR)
 	chmod -R 0755 $(LIBDIR)/tcl
 	cp ../lib/ayam-splash.gif $(LIBDIR)/tcl
-	$(MKDIR) $(LIBDIR)
 	-$(INSTALL) contrib/meta/metaobj.so $(LIBDIR)
 	-$(INSTALL) contrib/meta/metaobj.tcl $(LIBDIR)
 	-$(INSTALL) contrib/meta/metacomp.tcl $(LIBDIR)
@@ -334,6 +341,7 @@ install:
 	@echo "Installation completed."
 	@echo "Add $(BINDIR) to your PATH."
 	@echo "Add $(LIBDIR) to your LD_LIBRARY_PATH."
+	@echo "Use 'make -f $(LIBDIR)/Makefile uninstall' to uninstall."
 
 uninstall:
 	-rm -f $(BINDIR)/ayamsh
@@ -344,8 +352,10 @@ uninstall:
 	-rm -rf $(LIBDIR)/mfio.so $(LIBDIR)/mfio.tcl
 	-rm -rf $(LIBDIR)/idr.so $(LIBDIR)/idr.tcl
 	-rm -rf $(LIBDIR)/rrib.so $(LIBDIR)/rrib.tcl
+	-rm -rf $(LIBDIR)/loadrrib.tcl $(LIBDIR)/loadidr.tcl
 	-cd $(DOCDIR); rm -rf Setup.txt Changes.txt License.txt refcard.tcl\
 refcard.ps ayam.pdf html;
+	-rm -rf $(LIBDIR)/Makefile
 
 .SUFFIXES: .so .o
 
