@@ -129,6 +129,9 @@ ay_script_drawcb(struct Togl *togl, ay_object *o)
   if(!o)
     return AY_ENULL;
 
+  /* ignore own transformation attributes */
+  glLoadIdentity();
+
   sc = (ay_script_object *)o->refine;
 
   switch(sc->type)
@@ -161,6 +164,9 @@ ay_script_shadecb(struct Togl *togl, ay_object *o)
 
   if(!o)
     return AY_ENULL;
+
+  /* ignore own transformation attributes */
+  glLoadIdentity();
 
   sc = (ay_script_object *)o->refine;
 
@@ -363,6 +369,8 @@ ay_script_readcb(FILE *fileptr, ay_object *o)
 
   o->refine = sc;
 
+  ay_trafo_defaults(o);
+
  return AY_OK;
 } /* ay_script_readcb */
 
@@ -551,6 +559,8 @@ ay_script_notifycb(ay_object *o)
       sema = 0;
       return AY_ENULL;
     } /* if */
+
+  ay_trafo_defaults(o);
 
   sc = (ay_script_object *)(o->refine);
 
@@ -999,4 +1009,4 @@ Script_Init(Tcl_Interp *interp)
  return TCL_OK;
 } /* Script_Init */
 
-#endif
+#endif /* AYSCRIPTPL */
