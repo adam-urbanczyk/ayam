@@ -209,6 +209,7 @@ array set aymainshortcuts {
     SwWire "F4"
     SetSTP "F3"
     SetSTL "F2"
+    RebuildTree "Ctrl-l"
 }
 # array aymainshortcuts
 

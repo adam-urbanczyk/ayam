@@ -143,6 +143,11 @@ proc shortcut_main { w } {
 
     bind $w <Map> unzap
 
+    bind $w <[repcont $aymainshortcuts(RebuildTree)]> {
+	global ay
+	if { $ay(lb) == 0 } { tree_reset }
+    }
+
     # bind function keys
     shortcut_fkeys $w
 
