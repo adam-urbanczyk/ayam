@@ -846,6 +846,17 @@ metaobj_providecb(ay_object *o, unsigned int type, ay_object **result)
  int i,p,ii,j;
  int ay_status = AY_OK;
 
+  if(!o)
+    return AY_ENULL;
+
+  if(!result)
+    {
+      if(type == AY_IDPOMESH)
+	return AY_OK;
+      else
+	return AY_ERROR;
+    }
+
   mw = (meta_world *) o->refine;
 
   if (type == AY_IDPOMESH)
