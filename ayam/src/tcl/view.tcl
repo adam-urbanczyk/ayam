@@ -694,6 +694,10 @@ wm transient $w [winfo toplevel $view]
 set f [frame $w.f1]
 pack $f -in $w -side top -fill x
 
+$view mc
+set ay(ImageFile) $ay(cVBGImage)
+update
+
 addFile $f ay ImageFile
 
 set f [frame $w.f2]
@@ -719,7 +723,7 @@ pack $f -in $w -side bottom -fill x
 
 winCenter $w
 grab $w
-#focus $w.f1.fImageFile.e
+focus $w.f1.fImageFile.e
 tkwait window $w
 
 return;
