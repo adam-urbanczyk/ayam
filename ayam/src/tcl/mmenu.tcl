@@ -335,7 +335,7 @@ $m add command -label "Convert" -command {
 $m add command -label "Convert (In Place)" -command {
     global ay;
     #undo save Convert;
-    convOb -inplace; update; cS; set ay(ul) $ay(CurrentLevel); uS; rV
+    convOb -inplace; update; set ay(ul) $ay(CurrentLevel); uS 1 1; rV
 }
 $m add separator
 $m add command -label "Force Notification" -command "forceNot; rV"
