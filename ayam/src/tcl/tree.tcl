@@ -682,8 +682,9 @@ if { $tcl_platform(platform) == "windows" } {
 # occurs in the tree, if not (ay(ts) is 0) we
 # select the last element of the current level
 bind $tree <ButtonRelease-1> "+\
-after 10 { global ay; if { \$ay(ts) == 0 } { sL; rV }; set ay(ts) 0 };\
-focus \$ay(tree)"
+ after 10 { global ay;if { \$ay(ts) == 0 } { sL;\
+            if { \$ay(need_redraw) == 1 } { rV } }; set ay(ts) 0 };\
+ focus \$ay(tree)"
 
 # multiple selection
 $tree bindText  <Control-ButtonPress-1> "tree_toggleSelection $sw.tree"
