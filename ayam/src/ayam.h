@@ -638,6 +638,24 @@ typedef struct ay_sweep_object_s
  int glu_display_mode;
 } ay_sweep_object;
 
+typedef struct ay_birail1_object_s
+{
+ ay_object *npatch;
+
+ int rotate;
+ int interpolate;
+ int close;
+ int sections;
+
+ int has_start_cap;
+ ay_object *start_cap;
+ int has_end_cap;
+ ay_object *end_cap;
+
+ double glu_sampling_tolerance;
+ int glu_display_mode;
+} ay_birail1_object;
+
 typedef struct ay_skin_object_s
 {
  ay_object *npatch;
@@ -984,6 +1002,7 @@ extern unsigned int ay_current_primlevel;
 #define AY_IDSDMESH        29
 #define AY_IDGORDON        30
 #define AY_IDTEXT          31
+#define AY_IDBIRAIL1       32
 #define AY_IDLAST          50
 
 /* Level Object SubType Ids */

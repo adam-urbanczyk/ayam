@@ -288,6 +288,7 @@ $m.nct add command -label "Extrude" -command "extrude_crt;"
 $m.nct add command -label "Sweep" -command "sweep_crt;"
 $m.nct add command -label "Skin" -command "skin_crt;"
 $m.nct add command -label "Cap" -command "cap_crt;"
+$m.nct add command -label "Birail1" -command "birail1_crt;"
 $m.nct add separator
 $m.nct add command -label "Revert" -command { undo save Revert; revertNC;
                                               plb_update; rV }

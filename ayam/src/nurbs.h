@@ -320,6 +320,11 @@ int ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 		 int has_start_cap, ay_object **start_cap,
 		 int has_end_cap, ay_object **end_cap);
 
+int ay_npt_birail1(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
+		   int closed, ay_nurbpatch_object **patch,
+		   int has_start_cap, ay_object **start_cap,
+		   int has_end_cap, ay_object **end_cap);
+
 int ay_npt_interpolateu(ay_nurbpatch_object *patch, int order);
 
 int ay_npt_skinu(ay_object *curves, int order, int knot_type,
