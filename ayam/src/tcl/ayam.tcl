@@ -78,6 +78,9 @@ array set ayprefs {
  QRenderUI 0
  RenderPT "R90000 %d"
  QRenderPT ""
+ SMRender "rendrib -Progress %s"
+ SMRenderUI 1
+ SMRenderPT "R90000 %d"
  PPRender "rgl"
  TclPrecision 6
  Shaders ""

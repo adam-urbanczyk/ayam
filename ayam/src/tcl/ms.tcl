@@ -127,6 +127,13 @@ ms_set en ayprefse_RenderUI "Enable user interface for rendering."
 ms_set en ayprefse_RenderPT "A template that helps to pick the progress\
 from the output of the renderer.\n\\\"%d\\\" denotes the position of\
 the progress number in the output."
+ms_set en ayprefse_SMRender "Name and parameters of the renderer to use for\
+shadow maps.\n\\\"%s\\\" will be replaced by the filename\
+of the RIB."
+ms_set en ayprefse_SMRenderUI "Enable user interface for shadow map rendering."
+ms_set en ayprefse_SMRenderPT "A template that helps to pick the progress\
+from the output of the shadow map renderer.\n\\\"%d\\\" denotes the position\
+of the progress number in the output."
 ms_set en ayprefse_PPRender "Renderer to use for the permanent preview feature."
 
 # Misc

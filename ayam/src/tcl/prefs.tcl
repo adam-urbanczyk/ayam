@@ -144,7 +144,8 @@ proc prefs_open {} {
 	    [list none matte default]
     addCheckB $fw ayprefse RIStandard [ms ayprefse_RIStandard]
     addCheckB $fw ayprefse WriteIdent [ms ayprefse_WriteIdent]
-    addCheckB $fw ayprefse ShadowMaps [ms ayprefse_ShadowMaps]
+    addMenuB $fw ayprefse ShadowMaps [ms ayprefse_ShadowMaps]\
+	    [list Never Automatic Manual]
     addCheckB $fw ayprefse ExcludeHidden [ms ayprefse_ExcludeHidden]
     addStringB $fw ayprefse QRender [ms ayprefse_QRender]\
 	    [list "rgl %s" "rgl -rd 10 %s"]
@@ -155,6 +156,11 @@ proc prefs_open {} {
 	    [list "rendrib -d 4 -Progress %s" "rendrib -d 4 %s" "aqsis -fb %s"]
     addCheckB $fw ayprefse RenderUI [ms ayprefse_RenderUI]
     addStringB $fw ayprefse RenderPT [ms ayprefse_RenderPT]\
+	    [list "R90000 %d" "Done computing %d" "%d"]
+    addStringB $fw ayprefse SMRender [ms ayprefse_SMRender]\
+	    [list "rendrib -Progress %s" "rendrib %s" "aqsis %s"]
+    addCheckB $fw ayprefse SMRenderUI [ms ayprefse_SMRenderUI]
+    addStringB $fw ayprefse SMRenderPT [ms ayprefse_SMRenderPT]\
 	    [list "R90000 %d" "Done computing %d" "%d"]
     addStringB $fw ayprefse PPRender [ms ayprefse_PPRender] [list "rgl"]
 

@@ -18,6 +18,8 @@
 
 /* functions local to this module */
 
+int ay_wrib_sm(char *file, char *image, int width, int height);
+
 /* cot() used by currently unused FrameCamera() */
 /*
 double
@@ -276,7 +278,8 @@ ay_wrib_rioptions(void)
 
   
  return ay_status;
-}
+} /* ay_wrib_rioptions */
+
 
 /* ay_wrib_trafos:
  *
@@ -751,7 +754,7 @@ ay_wrib_lights(char *file, ay_object *o)
 	      RiDeclare("from","point");
 
 	      /* use shadowmap? */
-	      if(ay_prefs.use_sm && light->use_sm)
+	      if((ay_prefs.use_sm > 0) && light->use_sm)
 		{ /* yes */
 		  RiDeclare("sfpx", "uniform string");
 		  RiDeclare("sfnx", "uniform string");
@@ -802,7 +805,7 @@ ay_wrib_lights(char *file, ay_object *o)
 	      beamdistribution = (RtFloat)light->beam_distribution;
 
 	      /* use shadowmap? */
-	      if(ay_prefs.use_sm && light->use_sm)
+	      if((ay_prefs.use_sm > 0) && light->use_sm)
 		{ /* yes */
 		 RiDeclare("shadowname", "uniform string");
 		  sprintf(shadowptr, "%s.spot%d.shd", file, countsm);
@@ -837,7 +840,7 @@ ay_wrib_lights(char *file, ay_object *o)
 	      RiDeclare("from","point");
 	      RiDeclare("to","point");
 	      /* use shadowmap? */
-	      if(ay_prefs.use_sm && light->use_sm)
+	      if((ay_prefs.use_sm > 0) && light->use_sm)
 		{ /* yes */
 		  RiDeclare("shadowname", "uniform string");
 		  sprintf(shadowptr, "%s.dist%d.shd", file, countsm);
@@ -940,8 +943,8 @@ ay_wrib_scene(char *file, char *image, double *from, double *to,
   else
     RiBegin(file);
 
-  /* write shadow maps */
-  if(ay_prefs.use_sm)
+  /* create obj-file name (for use with ShadowMaps) */
+  if(ay_prefs.use_sm >= 1)
     {
       ay_prefs.wrib_sm = AY_TRUE;
 
@@ -964,9 +967,14 @@ ay_wrib_scene(char *file, char *image, double *from, double *to,
 	{
 	  sprintf(objfile, "%s.obj.rib", file);
 	}
+    }
 
+  /* write shadow maps */
+  if(ay_prefs.use_sm == 1)
+    {
+      ay_prefs.wrib_sm = AY_TRUE;
 
-        /* wrib root RiOption tags (possibly containing shadow bias) */
+      /* wrib root RiOption tags (possibly containing shadow bias) */
       ay_status = ay_riopt_wrib(ay_root);
 
       ay_sm_wriballsm(file, objfile, ay_root->next, NULL, width, height);
@@ -1059,27 +1067,105 @@ ay_wrib_scene(char *file, char *image, double *from, double *to,
   /* Cut! */
   RiEnd();
 
-  /* if shadowmaps are in use, write second RIB containing objects */
-  if(ay_prefs.use_sm)
+  /* if (automatic) shadowmaps are in use,
+     write second RIB containing objects */
+  if(ay_prefs.use_sm == 1)
     {
       RiBegin(objfile);
-      
-      o = ay_root->next;
-      while(o->next)
-	{
-	  ay_status = ay_wrib_object(objfile, o);
-	  o = o->next;
-	}
-
+       o = ay_root->next;
+       while(o->next)
+	 {
+	   ay_status = ay_wrib_object(objfile, o);
+	   o = o->next;
+	 }
       RiEnd();
-
-      if(objfile)
-	free(objfile);
-
     } /* if */
+
+  if(objfile)
+    free(objfile);
 
  return ay_status;
 } /* ay_wrib_scene */
+
+
+/* ay_wrib_sm:
+ *
+ */
+int
+ay_wrib_sm(char *file, char *image, int width, int height)
+{
+ int ay_status = AY_OK;
+ ay_object *o = ay_root;
+ char *objfile = NULL, *pos = NULL;
+ int filelen = 0;
+
+ if(!ay_prefs.resolveinstances)
+  {
+    /* reset oid counter */
+    ay_instt_createoid(NULL);
+    /* create OI tags for all original (referenced) objects */
+    ay_status = ay_instt_createorigids(o);
+    /* create OI tags for all instance (referencing) objects */
+    ay_status = ay_instt_createinstanceids(o);
+    /* write archive files for all original (referenced) objects */
+    ay_status = ay_instt_wribiarchives(file, o);
+  }
+
+
+  if(!file) /* dump .rib to stdout? */
+    RiBegin(RI_NULL);
+  else
+    RiBegin(file);
+
+  /* write shadow maps */
+  ay_prefs.wrib_sm = AY_TRUE;
+
+  filelen = strlen(file);
+
+  if(!(objfile = calloc(filelen+64, sizeof(char))))
+    return AY_EOMEM;
+
+  pos = strstr(file, ".rib");
+
+  if(pos)
+    {
+      sprintf(objfile, "%s", file);
+      pos = NULL;
+      pos = strstr(objfile, ".rib");
+      if(pos)
+	sprintf(pos, "%s", ".obj.rib");
+    }
+  else
+    {
+      sprintf(objfile, "%s.obj.rib", file);
+    }
+
+
+  /* wrib root RiOption tags (possibly containing shadow bias) */
+  ay_status = ay_riopt_wrib(ay_root);
+
+  ay_sm_wriballsm(file, objfile, ay_root->next, NULL, width, height);
+  ay_prefs.wrib_sm = AY_FALSE;
+
+  /* Cut! */
+  RiEnd();
+
+  /* if shadowmaps are in use, write second RIB containing objects */
+  RiBegin(objfile);
+      
+  o = ay_root->next;
+  while(o->next)
+    {
+      ay_status = ay_wrib_object(objfile, o);
+      o = o->next;
+    }
+
+  RiEnd();
+
+  free(objfile);
+
+ return ay_status;
+} /* ay_wrib_sm */
 
 
 /* ay_wrib_cb:
@@ -1094,7 +1180,7 @@ ay_wrib_cb(struct Togl *togl, int argc, char *argv[])
  ay_riopt_object *riopt = NULL;
  int width = Togl_Width (togl);
  int height = Togl_Height (togl);
- int i, temp = 0;
+ int i, temp = 0, smonly = 0;
  char *file = NULL, *image = NULL;
  char fname[] = "write_rib";
 
@@ -1119,6 +1205,9 @@ ay_wrib_cb(struct Togl *togl, int argc, char *argv[])
       else
 	if(!strcmp(argv[i],"-temp"))
 	  temp = 1;
+      else
+	if(!strcmp(argv[i],"-smonly"))
+	  smonly = 1;
 
       i+=2;
     }
@@ -1145,9 +1234,15 @@ ay_wrib_cb(struct Togl *togl, int argc, char *argv[])
     {
       view->roll += 180.0;
     }
-
-  ay_status = ay_wrib_scene(file, image, view->from, view->to, view->roll,
-			    view->zoom, width, height, view->type);
+  if(!smonly)
+    {
+      ay_status = ay_wrib_scene(file, image, view->from, view->to, view->roll,
+				view->zoom, width, height, view->type);
+    }
+  else
+    {
+      ay_status = ay_wrib_sm(file, image, width, height);
+    }
 
   if(view->up[1] < 0.0)
     {
