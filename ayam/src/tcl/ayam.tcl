@@ -103,6 +103,7 @@ array set ayprefs {
  EFlush 2000
  mru {}
  ToolBoxTrans 0
+ ToolBoxShrink 1
  RGTrans 0
  Kill "kill"
  Cat "cat"
@@ -308,6 +309,7 @@ array set ay {
  cm ""
  rnum 0
  sc 0
+ tblayoutsema 0
 }
 
 set ay_error 0

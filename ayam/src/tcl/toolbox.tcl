@@ -496,7 +496,13 @@ proc toolbox_open { } {
 #  arrange the buttons in rows/columns according
 #  to window size
 proc toolbox_layout { } {
-    global ay
+    global ay ayprefs
+
+    if { $ay(tblayoutsema) == 1 } {
+	return;
+    } else {
+	set ay(tblayoutsema) 1
+    }
 
     if { ! [winfo exists .tbw] } { return; }
 
@@ -532,18 +538,19 @@ proc toolbox_layout { } {
     }
     grid propagate $w.f yes
     pack $w.f
+    # shrink-wrap the toplevel around buttons
     update
-    winMoveOrResize $w [winfo reqwidth $w.f]x[winfo reqheight $w.f]
-    update
+    if { $ayprefs(ToolBoxShrink) } {
+	winMoveOrResize $w [winfo reqwidth $w.f]x[winfo reqheight $w.f]
+	update
+    }
     set ay(tbw) [winfo width $w]
     set ay(tbh) [winfo height $w]
 
-    bind $w <Configure> {
-	if { $ay(tbw) != %w ||\
-	     $ay(tbh) != %h } {
-	 toolbox_layout
-        }
-    }
+    bind $w <Configure> { if { $ay(tbw) != %w ||\
+	        $ay(tbh) != %h } { toolbox_layout } }
+
+    set ay(tblayoutsema) 0
 
  return;
 }

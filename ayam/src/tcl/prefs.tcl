@@ -162,6 +162,7 @@ proc prefs_open {} {
     addText $fw e2 "UI:"
     addCheck $fw ayprefse SaveAddsMRU
     addCheck $fw ayprefse ToolBoxTrans
+    addCheck $fw ayprefse ToolBoxShrink
     addCheck $fw ayprefse RGTrans
 
     # select last selected preference section
