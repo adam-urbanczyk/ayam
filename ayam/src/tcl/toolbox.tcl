@@ -299,7 +299,9 @@ proc toolbox_open { } {
 
 	    #####
 	    button $f.bund -image ay_Undo_img -padx 0 -pady 0 -command {
-		.fu.fMenu.ed.m invoke 9
+		global ay
+		set m $ay(editmenu)
+		$m invoke 9
 	    }
 	    balloon_set $f.bund "undo \[ $aymainshortcuts(Undo) \]"
 

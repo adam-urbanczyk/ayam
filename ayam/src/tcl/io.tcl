@@ -506,9 +506,9 @@ proc io_mruLoad { index } {
 # io_mruUMenu:
 #  update MRU menu entries
 proc io_mruUMenu {  } {
-    global ayprefs
+    global ay ayprefs
     set i 0
-    set m .fu.fMenu.fil.m
+    set m $ay(filemenu)
     foreach f $ayprefs(mru) {
 	set label "[expr $i+1]. [lindex $ayprefs(mru) $i]"
 	set len [string length $label]
