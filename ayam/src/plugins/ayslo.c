@@ -267,8 +267,9 @@ int
 Ayslo_Init(Tcl_Interp *interp)
 {
  char fname[] = "ayslo_init";
+ char vname[] = "ay(sext)", vval[] = ".slo";
 
-  Tcl_SetVar(interp, "ay(sext)", ".slo", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar(interp, vname, vval, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   Tcl_CreateCommand(interp, "shaderScan", ayslo_scanslotcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
