@@ -55,6 +55,10 @@ array set ayprefs {
  Shade_G 191
  Shade_B 165
 
+ Light_R 250
+ Light_G 250
+ Light_B 150
+
  RIBFile "Scene"
  Image "RIB"
  ResInstances 0
@@ -81,6 +85,9 @@ array set ayprefs {
  Plugins "."
 
  Wpclip_pastetosel 1
+ WarnChanged 1
+
+ NewLoadsEnv 1
 
  RedirectTcl 1
  Logging 0
@@ -291,6 +298,7 @@ array set ay {
  co ""
  cm ""
  rnum 0
+ sc 0
 }
 
 set ay_error 0
@@ -490,6 +498,7 @@ proc sL { } {
 
     if { $ay(lb) == 1 } {
 	# plain ListBox is active
+	undo savsel
 	set lb $ay(olb)
 	$lb selection clear 0 end
 	selOb
@@ -498,6 +507,7 @@ proc sL { } {
 	plb_update
     } else {
 	# TreeView is active
+	undo savsel
 	$ay(tree) selection clear
 	$ay(tree) selection set [$ay(tree) nodes $ay(CurrentLevel) end]
 	tree_handleSelection
@@ -701,9 +711,11 @@ pack .fl.con -in .fl -expand 1 -fill both
 # additional key/mouse bindings for the console
 bind .fl.con.console $aymainshortcuts(SwCon) { focus [tk_focusNext %W] }
 
-# XXXX Win32-Tk does not know "ISO_Left_Tab"!
+# fix Shift-Tab binding for Tk < 8.3
 if { $tcl_platform(platform) != "windows" } {
-    bind .fl.con.console <ISO_Left_Tab> { focus [tk_focusNext %W] }
+    if { $tcl_version < 8.3 } {
+	bind all <ISO_Left_Tab> {tkTabToWindow [tk_focusPrev %W]}
+    }
 }
 
 bind .fl.con.console <ButtonPress-4> {
@@ -908,6 +920,13 @@ foreach j $avnames {
 
 # build most recently used files menu entries
 io_mruUMenu
+
+# auto scroll canvas to item with focus
+bind all <Tab> +plb_focus
+bind all <Shift-Tab> +plb_focus
+if { $tcl_platform(platform) != "windows" } {
+    bind all <ISO_Left_Tab> +plb_focus
+}
 
 # redirect all tcl errors to the console?
 # this first catch works around a buglet in Tcl8.0.x where

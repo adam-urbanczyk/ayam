@@ -21,7 +21,7 @@ static int undo_current;
 static int undo_buffer_size;
 
 static int undo_last_op; /* last operation: -1: no op,
-			    1-2: see mode variable in ay_undo_undotcmd() */
+			    1-4: see mode variable in ay_undo_undotcmd() */
 
 /* functions local to this module */
 int ay_undo_deletemulti(ay_object *o);
@@ -45,6 +45,8 @@ int ay_undo_undo(void);
 int ay_undo_copysave(ay_object *src, ay_object **dst);
 
 int ay_undo_save(void);
+
+int ay_undo_savesel(void);
 
 
 /* ay_undo_init:
@@ -371,10 +373,12 @@ ay_undo_copy(ay_undo_object *uo)
  ay_list_object *r = NULL;
  void **arr = NULL;
  ay_copycb *cb = NULL;
+ char view_repairtitle_cmd[] = "viewRepairTitle ", buf[16];
+ Tcl_DString ds;
 
   if(!uo)
     return AY_OK;
- 
+
   r = uo->references;
   c = uo->objects;
   while(r)
@@ -413,7 +417,6 @@ ay_undo_copy(ay_undo_object *uo)
       switch(c->type)
 	{
 	case AY_IDVIEW:
-
 	  ay_status = ay_undo_copyview((ay_view_object *)(c->refine),
 				       (ay_view_object *)(o->refine));
 
@@ -421,6 +424,16 @@ ay_undo_copy(ay_undo_object *uo)
 	    {
 	      return ay_status;
 	    }
+
+	  /* repair title of view window */
+	  Tcl_DStringInit(&ds);
+	  Tcl_DStringAppend(&ds, view_repairtitle_cmd, -1);
+	  Tcl_DStringAppend(&ds, o->name, -1);
+	  sprintf(buf, " %d", ((ay_view_object *)(c->refine))->type);
+	  Tcl_DStringAppend(&ds, buf, -1);
+	  Tcl_Eval(ay_interp, Tcl_DStringValue(&ds));
+	  Tcl_DStringFree(&ds);
+
 	  break;
 	case AY_IDROOT:
 
@@ -511,6 +524,7 @@ ay_undo_redo(void)
     }
 
   undo_current++;
+
   ay_status = ay_undo_copy(&(undo_buffer[undo_current]));
 
   undo_last_op = 1;
@@ -534,9 +548,11 @@ ay_undo_undo(void)
       return AY_OK;
     }
 
-  if((undo_last_op == 2) && ay_selection)
+  if(((undo_last_op == 2)||(undo_last_op == 4)) && ay_selection)
     { /* if last op was a save, we need to save current state too,
          to allow the user to get back to current state with redo */
+      /* XXXX Bug: this way we cannot get back to the current state,
+	 if it is a view change */
       ay_status = ay_undo_save();
       undo_current--;
     }
@@ -670,11 +686,11 @@ ay_undo_save(void)
  int ay_status = AY_OK;
  ay_undo_object *uo = NULL, *uo2 = NULL;
  ay_list_object *sel = ay_selection, *r = NULL, *lastr = NULL;
- ay_object **nexto = NULL;
+ ay_object **nexto = NULL, *view = NULL;
  int i;
 
-  /* XXXX change me, for saving view states with view actions */
-  if(!sel)
+  /* we always save all views now */
+  if((!sel) && (!ay_root->down->next))
     return AY_OK;
 
   /* check, whether we operate on top of undo buffer */
@@ -770,7 +786,42 @@ ay_undo_save(void)
 	  nexto = &((*nexto)->next);
 	  /*}*/
       sel = sel->next;
-    }
+    } /* while */
+
+  /* save all views */
+  view = ay_root->down;
+  while(view->next)
+    {
+      /* copy reference */
+      r = NULL;
+      if(!(r = calloc(1,sizeof(ay_list_object))))
+	{
+	  return AY_EOMEM;
+	}
+
+      if(uo->references)
+	{
+	  lastr->next = r;
+	}
+      else
+	{
+	  uo->references = r;
+	}
+      
+      lastr = r;
+
+      r->object = view;
+
+      /* copy object */
+      ay_status = ay_undo_copysave(view, nexto);
+      if(ay_status)
+	return ay_status;
+
+      nexto = &((*nexto)->next);
+      view = view->next;
+    } /* while */
+
+  uo->from_select = AY_FALSE;
 
   undo_last_op = 2;
 
@@ -778,50 +829,37 @@ ay_undo_save(void)
 } /* ay_undo_save */
 
 
-/* ay_undo_saveview:
+/* ay_undo_savesel:
  *  
  */
 int
-ay_undo_saveview(char *vname)
+ay_undo_savesel(void)
 {
  int ay_status = AY_OK;
- ay_list_object *origsel = NULL;
- ay_object *o = NULL;
+ ay_undo_object *uo = NULL;
 
-  origsel = ay_selection;
-  ay_selection = NULL;
-  if(!(ay_selection = calloc(1, sizeof(ay_list_object))))
-   {
-     return AY_EOMEM;
-   }
+  /* we never need to save the very first state from selection */
+  if(undo_current == -1)
+    return AY_OK;
 
-  o = ay_root;
-
-  o = o->down;
-
-  while(o)
+  /* if last saved state is from select, we may clear it */
+  uo = &(undo_buffer[undo_current]);
+  if(uo->from_select)
     {
-      if(o->name)
-	{
-	  if(!strcmp(o->name, vname))
-	    {
-	      ay_selection->object = o;
-	    }
-	}
-      o = o->next;
+      ay_status = ay_undo_clearuo(uo);
+      undo_current--;
     }
 
-  if(ay_selection->object)
-    {
-      ay_status = ay_undo_save();
-    }
+  ay_undo_save();
 
-  free(ay_selection);
+  /* mark currently saved state as stemming from select operation */
+  uo = &(undo_buffer[undo_current]);
+  uo->from_select = AY_TRUE;
 
-  ay_selection = origsel;
+  undo_last_op = 4;
 
  return AY_OK;
-} /* ay_undo_saveview */
+} /* ay_undo_savesel */
 
 
 /* ay_undo_clear:
@@ -857,6 +895,7 @@ ay_undo_undotcmd(ClientData clientData, Tcl_Interp *interp,
  int ay_status = AY_OK;
  char fname[] = "undo";
  int mode = 0; /* default mode is "undo" */
+ char *a = "ay", *n = "sc", *v = "1";
 
   /* parse args */
   if(argc > 1)
@@ -867,10 +906,10 @@ ay_undo_undotcmd(ClientData clientData, Tcl_Interp *interp,
 	mode = 2; else
       if(!strcmp(argv[1], "clear"))
 	mode = 3; else
-      if(!strcmp(argv[1], "view"))
+      if(!strcmp(argv[1], "savsel"))
 	mode = 4; else
 	  {
-	    ay_error(AY_EARGS, fname, "redo|save|clear|(view viewname)");
+	    ay_error(AY_EARGS, fname, "redo|save|clear|savsel");
 	    return TCL_OK;
 	  }
     }
@@ -885,12 +924,16 @@ ay_undo_undotcmd(ClientData clientData, Tcl_Interp *interp,
       break;
     case 2:
       ay_status = ay_undo_save();
+      
+      /* set scene changed flag */
+      Tcl_SetVar2(interp, a, n, v, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
       break;
     case 3:
       ay_status = ay_undo_clear();
       break;
     case 4:
-      ay_status = ay_undo_saveview(argv[2]);
+      ay_status = ay_undo_savesel();
       break;
     default:
       break;

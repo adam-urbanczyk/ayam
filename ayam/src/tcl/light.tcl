@@ -9,7 +9,7 @@
 
 # light.tcl - light objects Tcl code
 
-set Light_props { Transformations Attributes LightShader LightAttr }
+set Light_props { Transformations Attributes Tags LightShader LightAttr }
 
 
 proc light_getAttr { } {

@@ -10,50 +10,6 @@
 # view.tcl - view window management
 
 ##############################
-# viewSetFOV:
-#  set the Field Of View of a view
-proc viewSetFOV { view } {
-global ay
-set w .setFov
-catch {destroy $w}
-toplevel $w
-wm title $w "Set FOV"
-wm iconname $w "Ayam"
-wm transient $w [winfo toplevel $view]
-
-set f [frame $w.f1]
-pack $f -in $w -side top -fill x
-addParam $w ay FOV
-
-set f [frame $w.f2]
-button $f.bok -text "Ok" -width 5 -command "global ay;\
-	$view mc;\
-	$view setconf -fovx \$ay(FOV);\
-	$view render;\
-	$ay(currentView) mc;\
-	update;\
-	grab release .setFov;\
-	destroy .setFov"
-
-button $f.bca -text "Cancel" -width 5 -command "\
-	set ay(FOV) $ay(FOV);\
-	grab release .setFov;\
-	destroy $w"
-
-pack $f.bok $f.bca -in $f -side left -fill x -expand yes
-pack $f -in $w -side bottom -fill x
-
-winCenter $w
-grab $w
-#focus entry
-tkwait window $w
-
-return;
-}
-# viewSetFOV
-
-
-##############################
 # viewUPos:
 # get the positions of all views
 # put them in the C context view_info
@@ -107,7 +63,53 @@ return;
 }
 # viewTitle
 
-# setGridp:
+##############################
+# viewSetFOV:
+#  set the Field Of View of a view
+proc viewSetFOV { view } {
+global ay
+set w .setFov
+catch {destroy $w}
+toplevel $w
+wm title $w "Set FOV"
+wm iconname $w "Ayam"
+wm transient $w [winfo toplevel $view]
+
+set f [frame $w.f1]
+pack $f -in $w -side top -fill x
+addParam $f ay FOV
+
+set f [frame $w.f2]
+button $f.bok -text "Ok" -width 5 -command "global ay;\
+	$view mc;\
+	$view setconf -fovx \$ay(FOV);\
+	$view render;\
+	$ay(currentView) mc;\
+	update;\
+	grab release .setFov;\
+	focus $view;\
+	destroy .setFov"
+
+button $f.bca -text "Cancel" -width 5 -command "\
+	set ay(FOV) $ay(FOV);\
+	grab release .setFov;\
+	focus $view;\
+	destroy $w"
+
+pack $f.bok $f.bca -in $f -side left -fill x -expand yes
+pack $f -in $w -side bottom -fill x
+
+winCenter $w
+grab $w
+focus $w.f1.fFOV.e
+tkwait window $w
+
+return;
+}
+# viewSetFOV
+
+
+# viewSetGrid:
 proc viewSetGrid { view } {
 global ay
 set w .setGrid
@@ -131,6 +133,7 @@ button $f.bok -text "Ok" -width 5 -command "\
 	$ay(currentView) mc;\
 	update;\
 	grab release .setGrid;\
+	focus $view;\
 	destroy .setGrid"
 
 
@@ -138,6 +141,7 @@ button $f.bca -text "Cancel" -width 5 -command "\
 	global ay;
 	set ay(GridSize) $ay(GridSize);\
 	grab release .setGrid;\
+	focus $view;\
 	destroy $w"
 
 pack $f.bok $f.bca -in $f -side left -fill x -expand yes
@@ -145,7 +149,7 @@ pack $f -in $w -side bottom -fill x
 
 winCenter $w
 grab $w
-#focus entry
+focus $w.f1.fGridSize.e
 tkwait window $w
 
 return;
@@ -370,6 +374,19 @@ proc setViewAttr { } {
  return;
 }
 # setViewAttr
+
+# viewRepairTitle:
+#  after undo/redo, set correct view title
+proc viewRepairTitle { w type } {
+    global ay ViewAttribData
+
+    set typename [lindex $ay(viewtypenames) $type]
+
+    viewTitle .${w} $typename ""
+   
+}
+# viewRepairTitle
+
 
 # create ViewAttr-UI
 set w [frame $ay(pca).$ViewAttrib(w)]

@@ -1575,8 +1575,10 @@ ay_npt_setnppointtcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_npt_sweep:
- *  
- *  
+ *  sweep cross section o along path o2 possibly rotating it,
+ *  so that it always is perpendicular to the path.
+ *  Rotation code derived from J. Bloomenthals "Reference Frames"
+ *  (Graphic Gems I).
  */
 int
 ay_npt_sweep(ay_object *o, ay_object *o2, int sections,
@@ -1590,21 +1592,26 @@ ay_npt_sweep(ay_object *o, ay_object *o2, int sections,
  ay_nurbcurve_object *tr, *cs;
  double *controlv = NULL;
  int i=0, j=0, stride;
- double u, p1[4], p2[4], v1[3];
- double xangle = 0.0, yangle = 0.0, zangle = 0.0, der[3] = {0};
- double plen = 0.0;
+ double u, p1[4], p2[4];
+ double T0[3] = {0.0,0.0,-1.0};
+ double T1[3] = {0.0,0.0,0.0};
+ double A[3] = {0.0,0.0,0.0};
+ double len = 0.0, plen = 0.0;
  GLdouble m[16] = {0}, mcs[16] = {0}, mtr[16] = {0};
  double mr[16];
- double xaxis[3] = {1.0,0.0,0.0};
- double yaxis[3] = {0.0,1.0,0.0};
- double zaxis[3] = {0.0,0.0,1.0};
  double quat[4] = {0};
+ double *rots = NULL;
 
   if(!o || !o2 || !patch)
     return AY_ENULL;
 
   if((o->type != AY_IDNCURVE) || (o2->type != AY_IDNCURVE))
     return AY_OK;
+
+  if(!(rots = calloc((sections+1)*4, sizeof(double))))
+    {
+      return AY_EOMEM;
+    }
 
   cs = (ay_nurbcurve_object *)(o->refine);
   tr = (ay_nurbcurve_object *)(o2->refine);
@@ -1673,6 +1680,11 @@ ay_npt_sweep(ay_object *o, ay_object *o2, int sections,
 
   plen = fabs(tr->knotv[tr->length] - tr->knotv[tr->order-1]);
 
+  T0[0] = 1.0;
+  T0[1] = 0.0;
+  T0[2] = 0.0;
+  T0[3] = 0.0;
+
   /* copy cross sections controlv section+1 times */
   for(i=0;i<=sections;i++)
     {
@@ -1685,46 +1697,30 @@ ay_npt_sweep(ay_object *o, ay_object *o2, int sections,
       ay_nb_CurvePoint4D(tr->length-1,tr->order-1,tr->knotv,tr->controlv,
 			 u, p2);
 
-
       if(rotate)
 	{
-	  xangle = 0.0;
-	  yangle = 0.0;
-	  zangle = 0.0;
-
 	  ay_nb_ComputeFirstDer4D(tr->length-1,tr->order-1,tr->knotv,
-				  tr->controlv, u, der);
+				  tr->controlv, u, T1);
 
+	  len = AY_V3LEN(T1);
+	  AY_V3SCAL(T1,(1.0/len))
 
-	  if(der[0]==0.0&&der[1]==0.0)
-	    zangle = 0.0;
-	  else
-	    zangle = AY_R2D(acos(der[0]/AY_V2LEN(der)));
-	  if(der[1] < 0.0)
-	    zangle = -zangle;
+	  if(((fabs(fabs(T1[0])-fabs(T0[0])) > AY_EPSILON) ||
+	      (fabs(fabs(T1[1])-fabs(T0[1])) > AY_EPSILON) ||
+	      (fabs(fabs(T1[2])-fabs(T0[2])) > AY_EPSILON)))
+	    {
+	      AY_V3CROSS(A,T0,T1)
+	      len = AY_V3LEN(A);
+	      AY_V3SCAL(A,(1.0/len))
+	      
+	      rots[i*4+0] = AY_R2D(acos(AY_V3DOT(T0,T1)));
+	      memcpy(&rots[i*4+1], A, 3*sizeof(double));
+	    }
 
-	  v1[0] = der[0]; v1[1] = der[2];
-	  if(v1[0]==0.0&&v1[1]==0.0)
-	    yangle = 0.0;
-	  else
-	    yangle = AY_R2D(acos(v1[0]/AY_V2LEN(v1)));
-	  if(v1[0] < 0.0)
-	    yangle = 180.0-yangle;
-	  if(v1[1] > 0.0)
-	    yangle = -yangle;
+	  memcpy(T0, T1, 3*sizeof(double));
 
-          v1[0] = der[1]; v1[1] = der[2];
-	  if(v1[0]==0.0&&v1[1]==0.0)
-	    xangle = 0.0;
-	  else
-	    xangle = AY_R2D(acos(v1[0]/AY_V2LEN(v1)));
-	  if(v1[0] < 0.0)
-	    xangle = 180.0-xangle;
-	  if(v1[1] > 0.0)
-	    xangle = -xangle;
-
-	}
-			     
+	} /* if rotate */
+     
       glPushMatrix();
        glLoadIdentity();
 
@@ -1733,13 +1729,16 @@ ay_npt_sweep(ay_object *o, ay_object *o2, int sections,
        AY_V3SUB(p2,p2,p1)
        glTranslated(p2[0], p2[1], p2[2]);
        glTranslated(p1[0], p1[1], p1[2]);
-      
+
        if(rotate)
 	 {
-	   glRotated(zangle,0.0,0.0,1.0);
-	   glRotated(yangle,0.0,1.0,0.0);
-	   glRotated(xangle,1.0,0.0,0.0);
-	 }
+	   for(j = i; j >= 0; j--)
+	     {
+	       if(fabs(rots[j*4]) > AY_EPSILON)
+		 glRotated(rots[j*4], rots[j*4+1], rots[j*4+2], rots[j*4+3]);
+
+	     } /* for */
+	 } /* if rotate */
 	
        glMultMatrixd(mcs);
        glGetDoublev(GL_MODELVIEW_MATRIX, m);
@@ -1767,21 +1766,17 @@ ay_npt_sweep(ay_object *o, ay_object *o2, int sections,
 	      (*start_cap)->movx = p2[0];
 	      (*start_cap)->movy = p2[1];
 	      (*start_cap)->movz = p2[2];
-	      if((xangle > AY_EPSILON) || (xangle < -AY_EPSILON))
+
+	      if(rotate)
 		{
-		  ay_quat_axistoquat(xaxis, AY_D2R(-xangle), quat);
-		  ay_quat_add(quat, (*start_cap)->quat, (*start_cap)->quat);
+		  if(fabs(rots[0]) > AY_EPSILON)
+		    {
+		      ay_quat_axistoquat(&(rots[1]), AY_D2R(-rots[0]), quat);
+		      ay_quat_add(quat, (*start_cap)->quat,
+				  (*start_cap)->quat);
+		    } /* if */
 		} /* if */
-	      if((yangle > AY_EPSILON) || (yangle < -AY_EPSILON))
-		{
-		  ay_quat_axistoquat(yaxis, AY_D2R(-yangle), quat);
-		  ay_quat_add(quat, (*start_cap)->quat, (*start_cap)->quat);
-		} /* if */
-	      if((zangle > AY_EPSILON) || (zangle < -AY_EPSILON))
-		{
-		  ay_quat_axistoquat(zaxis, AY_D2R(-zangle), quat);
-		  ay_quat_add(quat, (*start_cap)->quat, (*start_cap)->quat);
-		} /* if */
+	      
 	    } /* if */
 	} /* if */
       if(i == sections)
@@ -1800,20 +1795,19 @@ ay_npt_sweep(ay_object *o, ay_object *o2, int sections,
 	      (*end_cap)->movy = p2[1];
 	      (*end_cap)->movz = p2[2];
 
-	      if((xangle > AY_EPSILON) || (xangle < -AY_EPSILON))
+	      if(rotate)
 		{
-		  ay_quat_axistoquat(xaxis, AY_D2R(-xangle), quat);
-		  ay_quat_add(quat, (*end_cap)->quat, (*end_cap)->quat);
-		} /* if */
-	      if((yangle > AY_EPSILON) || (yangle < -AY_EPSILON))
-		{
-		  ay_quat_axistoquat(yaxis, AY_D2R(-yangle), quat);
-		  ay_quat_add(quat, (*end_cap)->quat, (*end_cap)->quat);
-		} /* if */
-	      if((zangle > AY_EPSILON) || (zangle < -AY_EPSILON))
-		{
-		  ay_quat_axistoquat(zaxis, AY_D2R(-zangle), quat);
-		  ay_quat_add(quat, (*end_cap)->quat, (*end_cap)->quat);
+		  for(j = 0; j<=sections; j++)
+		    {
+		      if(fabs(rots[j*4]) > AY_EPSILON)
+			{
+			  ay_quat_axistoquat(&(rots[j*4+1]),
+					     AY_D2R(-rots[j*4]),
+					     quat);
+			  ay_quat_add(quat, (*end_cap)->quat,
+				      (*end_cap)->quat);
+			} /* if */
+		    } /* for */
 		} /* if */
 	    } /* if */
 	} /* if */
@@ -1821,6 +1815,11 @@ ay_npt_sweep(ay_object *o, ay_object *o2, int sections,
     } /* for */
 
   *patch = new;
+
+  if(rots)
+    {
+      free(rots);
+    }
 
  return ay_status;
 } /* ay_npt_sweep */

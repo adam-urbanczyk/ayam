@@ -205,53 +205,69 @@ ay_wrib_rioptions(void)
   if(!ay_prefs.ristandard)
   {
     rtitemp = riopt->MinSamples;
+    RiDeclare((RtToken)"minsamples", "int");
     RiOption((RtToken)"render", (RtToken)"minsamples",
 	     (RtPointer)(&rtitemp), RI_NULL);
 
     rtitemp = riopt->MaxSamples;
+    RiDeclare((RtToken)"maxsamples", "int");
     RiOption((RtToken)"render", (RtToken)"maxsamples",
 	     (RtPointer)(&rtitemp), RI_NULL);
     
     rtitemp = riopt->MaxRayLevel;
+    RiDeclare((RtToken)"max_raylevel", "int");
     RiOption((RtToken)"render", (RtToken)"max_raylevel",
 	     (RtPointer)(&rtitemp), RI_NULL);
 
     rtftemp = riopt->ShadowBias;
+    RiDeclare((RtToken)"minshadowbias", "float");
     RiOption((RtToken)"render", (RtToken)"minshadowbias",
 	     (RtPointer)(&rtftemp), RI_NULL);
 
     rtitemp = riopt->PRManSpec;
+    RiDeclare((RtToken)"prmanspecular", "int");
     RiOption((RtToken)"render", (RtToken)"prmanspecular",
 	     (RtPointer)(&rtitemp), RI_NULL);
 
     rtitemp = riopt->RadSteps;
+    RiDeclare((RtToken)"steps", "int");
     RiOption((RtToken)"radiosity", (RtToken)"steps",
 	     (RtPointer)(&riopt->RadSteps), RI_NULL);
 
     rtitemp = riopt->PatchSamples;
+    RiDeclare((RtToken)"minpatchsamples", "int");
     RiOption((RtToken)"radiosity", (RtToken)"minpatchsamples",
 	     (RtPointer)(&riopt->PatchSamples), RI_NULL);
 
     if(riopt->textures)
       if((riopt->textures)[0] != '\0')
-	RiOption((RtToken)"searchpath", (RtToken)"texture",
-		 (RtPointer)(&riopt->textures), RI_NULL);
+	{
+	  RiDeclare((RtToken)"texture", "string");
+	  RiOption((RtToken)"searchpath", (RtToken)"texture",
+		   (RtPointer)(&riopt->textures), RI_NULL);
+	}
 
     if(riopt->includes)
       if((riopt->textures)[0] != '\0')
-	RiOption((RtToken)"searchpath", (RtToken)"include",
-		 (RtPointer)(&riopt->includes), RI_NULL);
-
+	{
+	  RiDeclare((RtToken)"include", "string");
+	  RiOption((RtToken)"searchpath", (RtToken)"include",
+		   (RtPointer)(&riopt->includes), RI_NULL);
+	}
     if(riopt->shaders)
       if((riopt->textures)[0] != '\0')
-	RiOption((RtToken)"searchpath", (RtToken)"shader",
-		 (RtPointer)(&riopt->shaders), RI_NULL);
-
+	{
+	  RiDeclare((RtToken)"shader", "string");
+	  RiOption((RtToken)"searchpath", (RtToken)"shader",
+		   (RtPointer)(&riopt->shaders), RI_NULL);
+	}
     rtitemp = riopt->texturemem;
+    RiDeclare((RtToken)"texturememory", "int");
     RiOption((RtToken)"limits", (RtToken)"texturememory",
 	     &rtitemp, RI_NULL);
 
     rtitemp = riopt->geommem;
+    RiDeclare((RtToken)"geommemory", "int");
     RiOption((RtToken)"limits", (RtToken)"geommemory",
 	     &rtitemp, RI_NULL);
   }
@@ -685,32 +701,32 @@ ay_wrib_lights(char *file, ay_object *o)
 	  color[1] = (RtFloat)light->colg/255.0;
 	  color[2] = (RtFloat)light->colb/255.0;
 
-	  if(light->shadows)
-	    RiAttribute("light","shadows",(RtPointer)&onstr, RI_NULL);
-	  else
-	    RiAttribute("light","shadows",(RtPointer)&offstr, RI_NULL);
+	  if(!ay_prefs.ristandard)
+	    {
+	      RiDeclare((RtToken)"shadows", "string");
+	      if(light->shadows)
+		RiAttribute("light","shadows",(RtPointer)&onstr, RI_NULL);
+	      else
+		RiAttribute("light","shadows",(RtPointer)&offstr, RI_NULL);
+	    }
 
 	  switch(light->type)
 	    {
 	    case AY_LITCUSTOM:
 	      if(light->lshader)
 		{
-		  if(o->down)
+		  
+		  if(o->down && o->down->next)
 		    { /* this is an AreaLight */
 		      RiAttributeBegin();
-		    }
+		    } /* if */
 
 		  if(light->samples > 1)
 		    RiAttribute("light","nsamples",
 				(RtPointer)(&light->samples), RI_NULL);
-		  if(!o->down)
-		    {
-		      ay_status = ay_shader_wrib(light->lshader, AY_STLIGHT,
-						 &light_handle);
-		    }
-		  else
-		    {
-		      /* this is an AreaLight */
+
+		  if(o->down && o->down->next)
+		    { /* this is an AreaLight */
 		      ay_status = ay_shader_wrib(light->lshader,
 						 AY_STAREALIGHT,
 						 &light_handle);
@@ -718,7 +734,13 @@ ay_wrib_lights(char *file, ay_object *o)
 		      ay_status = ay_wrib_object(file, o->down);
 		      RiAttributeEnd();
 		    }
-		}
+		  else
+		    {
+		      ay_status = ay_shader_wrib(light->lshader,
+						 AY_STLIGHT,
+						 &light_handle);
+		    } /* if */
+		} /* if */
 	      break;
 	    case AY_LITPOINT:
 	      RiDeclare("intensity","float");
