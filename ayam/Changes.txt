@@ -1,4 +1,4 @@
-[17. 09. 2003] CVS-Head:
+[24. 09. 2003] CVS-Head:
 o bug fixes:
   - fixed crash when exporting scenes with malformed RiAttribute/RiOption
     tags (type "c" or "p", with a component missing) (SF 753550)
@@ -110,6 +110,16 @@ o updated shader parsing code to follow the incompatible changes in Aqsis
   V0.7.19 libslxargs
 o added preferences option "MarkHidden", that controls whether hidden objects
   should be preceded by an exclamation mark in the tree view
+o wrapped executables now no longer need to run BWidgets from external files
+  (on Win32 they had to be present in the same place as ayam.exe; on Unix,
+   they were unpacked from the ayam executable on each startup to /tmp)
+o improved the focus handling of the splash screen, keyboard focus is now
+  always returned to the main window when the splash screen closes
+o improved handling of MRU list entries; the last scene loaded is now always
+  on MRU entry 1, even when it was already in the MRU list and also even if
+  an existing MRU menu entry was used to load it
+o checkbutton and menubutton property GUI elements may now also be controlled
+  via keyboard
 
 
 [10. 05. 2003] Ayam1.5.1:
