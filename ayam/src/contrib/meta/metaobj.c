@@ -691,6 +691,9 @@ metacomp_deletecb (void *c)
 
   b = (meta_blob *) (c);
 
+  if(b->expression)
+    Tcl_DecrRefCount(b->expression);
+
   if (b)
     free (b);
 
@@ -710,6 +713,9 @@ metacomp_copycb (void *src, void **dst)
     return AY_EOMEM;
 
   memcpy (b, src, sizeof (meta_blob));
+
+  if(b->expression)
+    Tcl_IncrRefCount(b->expression);
 
   *dst = (void *) b;
 
