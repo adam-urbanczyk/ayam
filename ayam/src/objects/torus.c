@@ -50,7 +50,7 @@ ay_torus_deletecb(void *c)
  ay_torus_object *torus = NULL;
 
   if(!c)
-    return AY_ENULL;    
+    return AY_ENULL;
 
   torus = (ay_torus_object *)(c);
 
@@ -69,9 +69,9 @@ ay_torus_copycb(void *src, void **dst)
     return AY_ENULL;
 
   if(!(torus = calloc(1, sizeof(ay_torus_object))))
-    return AY_EOMEM; 
+    return AY_EOMEM;
 
-  memcpy(torus, src, sizeof(ay_torus_object)); 
+  memcpy(torus, src, sizeof(ay_torus_object));
 
   *dst = (void *)torus;
 
@@ -103,7 +103,7 @@ ay_torus_drawcb(struct Togl *togl, ay_object *o)
 
   phi = torus->phimax - torus->phimin;
   phidiff = AY_D2R(phi/8);
-  
+
   radius = torus->minorrad;
   angle = AY_D2R(torus->phimin);
   for(i = 0; i <= 8; i++)
@@ -206,7 +206,7 @@ ay_torus_shadecb(struct Togl *togl, ay_object *o)
 
   phi = torus->phimax - torus->phimin;
   phidiff = AY_D2R(phi/8);
-  
+
   radius = torus->minorrad;
   angle = AY_D2R(torus->phimin);
   for(i = 0; i <= 8; i++)
@@ -216,7 +216,7 @@ ay_torus_shadecb(struct Togl *togl, ay_object *o)
       P2[i*2] = cos(angle+AY_HALFPI)*radius;
       P2[i*2+1] = sin(angle+AY_HALFPI)*radius;
       angle += phidiff;
-    }
+    } /* for */
 
   /* draw */
   angle = 0.0;
@@ -239,10 +239,10 @@ ay_torus_shadecb(struct Togl *togl, ay_object *o)
 		     (mar+P1[j*2])*sin(angle+AY_D2R(thetadiff)),
 		     P1[j*2+1]);
 
-	}
+	} /* for */
       glEnd();
       angle += AY_D2R(thetadiff);
-    }
+    } /* for */
 
   if(torus->closed)
     {
@@ -287,9 +287,9 @@ ay_torus_shadecb(struct Togl *togl, ay_object *o)
 	      angle += AY_D2R(thetadiff);
 	    }
 	  glEnd();
-	  
+
 	  /* caps */
-	  glNormal3d(0.0,-1.0,0.0);
+	  glNormal3d(0.0, -1.0, 0.0);
 	  glBegin(GL_TRIANGLE_FAN);
 	   glVertex3d(mar, 0.0, 0.0);
 	   for(i = 0; i <= 8; i++)
@@ -298,18 +298,19 @@ ay_torus_shadecb(struct Togl *togl, ay_object *o)
 	     }
 	  glEnd();
 
+	  glNormal3d(0.0, 1.0, 0.0);
 	  glRotated(thetamax,0.0,0.0,1.0);
 
 	  glBegin(GL_TRIANGLE_FAN);
 	   glVertex3d(mar, 0.0, 0.0);
-	   for(i = 0; i <= 8; i++)
+	   for(i = 8; i >= 0; i--)
 	     {
 	       glVertex3d(mar+P1[i*2], 0.0, P1[i*2+1]);
 	     }
 	  glEnd();
 
-	}
-    }
+	} /* if */
+    } /* if */
 
 
  return AY_OK;
@@ -329,7 +330,7 @@ ay_torus_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     return AY_ENULL;
 
   torus = (ay_torus_object *)o->refine;
-  
+
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
 
@@ -495,7 +496,7 @@ ay_torus_wribcb(char *file, ay_object *o)
       phidiff = torus->phimax - torus->phimin;
       if(fabs(phidiff) < 360.0)
 	{
-	  
+
 	  p1[0] = (RtFloat)torus->majorrad;
 	  p1[1] = (RtFloat)0.0;
 	  p1[2] = (RtFloat)0.0;
@@ -560,7 +561,7 @@ ay_torus_bbccb(ay_object *o, double *bbox, int *flags)
   if(!o || !bbox)
     return AY_ENULL;
 
-  t = (ay_torus_object *)o->refine; 
+  t = (ay_torus_object *)o->refine;
 
   r = t->majorrad+t->minorrad;
   zmi = -(t->minorrad);
