@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>13. Sep 2003
+<date>25. Sep 2003
 <abstract>
 This is the documentation of Ayam (1.6) - a free 3D modeling environment
 for the RenderMan interface.
@@ -580,10 +580,9 @@ not undoable.
 <item><tt/Convert/, starts the convert action that has been
 registered for the type of the selected object(s). The exact
 behaviour depends on the type of the selected object(s):
-Instances are e.g. resolved to normal objects in place but
-Revolve objects will be converted to simple NURBS patches without
-destroying the original objects. This operation is
-not undoable.
+a Revolve object will e.g. be converted to a level containing NURBS
+patches that make up the surface of revolution and the caps.
+This operation is not undoable.
 <item><tt/Force Notification/, force the notification callbacks of
 all selected objects (or all objects in the scene if no objects are selected)
 to be called. The notification callbacks are used by objects
@@ -1121,7 +1120,7 @@ windows.
 object should be displayed in brackets in the tree view or listbox.
 <item><tt/"MarkHidden"/ determines, whether hidden objects
 should be marked (using a preceding exclamation mark)
-in the tree view.
+in the tree view or object listbox.
 <item><tt/"AutoSavePrefs"/, if this is switched on, Ayam will write
 the preferences settings to the file ayamrc when the program quits.
 <item><tt/"BakOnReplace"/, if this is switched on, Ayam will make
@@ -1428,9 +1427,12 @@ and readability.
 <item><tt/"SavePrefsGeom"/ controls when the geometry of the preferences
 editor should be remembered by Ayam, <tt/"Never"/: the window is always
 opened in standard size, centered on the screen; <tt/"WhileRunning"/:
-the window size and position will be remembered as long as Ayam is
-running; <tt/"Always"/: the window size and position will be remembered
+the window width and position will be remembered as long as Ayam is
+running; <tt/"Always"/: the window width and position will be remembered
 in the saved preferences, thus, also surviving a restart of Ayam.
+Note that the height of the preferences window will always be adapted
+to the currently open preferences section, no matter how <tt/"SavePrefsGeom"/
+is set.
 <item><tt/"SMethod"/; is the sampling method used by the NURBS to PolyMesh
 (tesselation) facility (based on GLU V1.3+). Three methods are available:
 <tt/"DomainDistance"/ (the default) simply tesselates the NURBS into equally
@@ -1612,17 +1614,23 @@ To edit the points of an object three actions are available.
 All actions may be applied to a single NURBS curve, NURBS patch or objects
 that support single point editing only.
 Objects mark themselves
-editable by drawing the editable points using small rectangular handles.
+editable by drawing the editable points using small rectangular handles
+if one of the single point editing action is activated.
 <itemize>
 <item>The modeling action <tt/"Edit"/ (shortcut: <tt/&lt;e&gt;/)
 works much like the move action, but it moves
-single points instead of objects.<p>
+single points instead of objects. In contrast to the move action,
+you need to pick on the point you want to move. Furthermore, it is
+not possible to move points of multiple selected objects, only
+the first selected object is considered.<p>
 
 <item>The modeling action <tt/"Edit Weights"/ (shortcut: <tt/&lt;w&gt;/)
 changes the w coordinate of a
 single point by dragging the mouse left or right.
 The weights may be reset for all points
-using the shortcut: <tt/&lt;W&gt;/.<p>
+using the shortcut: <tt/&lt;W&gt;/. Furthermore, it is
+not possible to edit the weights of multiple selected objects, only
+the first selected object is considered.<p>
 
 <item>The modeling action <tt/"Direct Point Edit"/ (shortcut:
 <tt/&lt;p&gt;/)
@@ -1646,7 +1654,8 @@ the coordinate values displayed in the direct point editing window
 will not update when the point is modified by another modeling
 action. Simply click on the point again in a view where the
 direct point editing action is active, to update the coordinate
-values in the direct point editing dialog.
+values in the direct point editing dialog. This modelling action also
+may only be applied to a single selected object.
 </itemize>
 
 <sect1>Inserting or Deleting Points<label id="insdelac">
@@ -1656,16 +1665,17 @@ may be applied to NURBS and ICurves curves only.
 A new control point will be inserted in the curve right
 after the picked point. The new point will be inserted in the
 middle between the selected point and the next point, changing
-the shape of the curve. It is possible to insert control
-points into certain types of NURBS curves using knot insertion,
-see the insert knot tool <ref id="insknt" name="The Insert Knot Tool">.<p>
+the shape of the curve. (It is also possible to insert control
+points into certain types of NURBS curves without changing
+their shape using knot insertion;
+see the insert knot tool <ref id="insknt" name="The Insert Knot Tool">.)<p>
 
 The modeling action <tt/"Delete Point"/ (shortcut: <tt/&lt;d&gt;/)
 may be applied to NURBS and ICurves curves only.
 The selected control point will be deleted from the curve.
 Deleting points from a curve with knot type custom
 may currently lead to an incorrect knot sequence, please
-check the new sequence.<p>
+check and correct the new sequence manually.<p>
 
 <sect1>Miscellaneous Actions<label id="miscac">
 <p>
@@ -5055,9 +5065,10 @@ undo:
 
 convOb:
 <itemize>
- <item>Synopsis: <tt>"convOb"</tt>
+ <item>Synopsis: <tt>"convOb [-inplace]"</tt>
  <item>Description: This command calls the registered converter
-for the selected object.
+for the selected object(s). If the option <tt>"-inplace"</tt> is
+used the new object(s) will replace the old object(s).
 </itemize>
 
 forceNot:
@@ -5422,7 +5433,8 @@ files. Default values are <tt>"&tilde;"</tt> for Unix and
 <item><tt/"SelXOR_R"/, <tt/"SelXOR_G"/, <tt/"SelXOR_B"/: determine
 a color value that is used for drag selection rectangles.
 Note that the color is not used directly but combined with the
-color value of already drawn pixels by XOR.
+color value of already drawn pixels by XOR. The default values
+are 255 for the red, 128 for the green, and 0 for the blue component.
 </itemize>
 
 <sect2>RiOption and RiAttributes Database<label id="rioptdb">
