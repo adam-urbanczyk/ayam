@@ -416,6 +416,17 @@ proc shortcut_view { w } {
     bind $w <[repcont $ayviewshortcuts(ZoomO)]>\
 	    "$w.f3D.togl setconf -dzoom 1.1"
 
+    bind $w <[repcont $ayviewshortcuts(SelAllP)]>\
+	    "selPoints; rV;"
+    bind $w <[repcont $ayviewshortcuts(InvSelP)]>\
+	    "invSelPoints; rV;"
+
+    bind $w <[repcont $ayviewshortcuts(CollP)]>\
+	    "collNC; rV;"
+    bind $w <[repcont $ayviewshortcuts(ExplP)]>\
+	    "explNC; rV;"
+
+
     bind $w <[repcont $aymainshortcuts(Zap)]> zap
     bind $w <Map> unzap
 
@@ -727,6 +738,10 @@ $w.ftext.text insert end "Modelling Actions (View Windows):
  Insert Points        $ayviewshortcuts(InsertP)
  Delete Points        $ayviewshortcuts(DeleteP)
 
+ Select All Points    $ayviewshortcuts(SelAllP)
+ Invert PointSel      $ayviewshortcuts(InvSelP)
+ Collapse Selected    $ayviewshortcuts(CollP)
+ Explode Selected     $ayviewshortcuts(ExplP)
 
  FindU                $ayviewshortcuts(FindU)
  Split Curve          $ayviewshortcuts(SplitNC)
