@@ -86,7 +86,7 @@ global env ayprefs ay tcl_platform
      set command "exec "
 
      regsub -all {%s} $ayprefs(Render) $tmpfile command2
-     puts here
+
      append command $command2
      append command " &"
 
