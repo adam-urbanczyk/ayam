@@ -1,4 +1,4 @@
-[CVS, 08. 08. 2002]:
+[CVS, 12. 08. 2002]:
 o bug fixes:
   - fixed memory leaks in the shadow map RIB export module
   - fixed ICurves crash for length 2
@@ -27,6 +27,8 @@ o scene loading now blocks all mouse events from view windows to avoid
   drawn views
 o added a texture coordinates editor (main menu "Special/Edit TexCoords")
 o added a "Remove Tag!" menu button to the Tag property GUI
+o added "Show All" and "Hide All" menu entries to the main menu
+
 
 [09. 07. 2002] Ayam1.2:
 o bug fixes:
