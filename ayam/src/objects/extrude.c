@@ -1041,61 +1041,128 @@ ay_extrude_convertcb(ay_object *o, int in_place)
 {
  int ay_status = AY_OK;
  ay_extrude_object *r = NULL;
- ay_object *new = NULL;
- ay_object *p = NULL;
+ ay_object *new = NULL, *p = NULL, **next = NULL;
 
   if(!o)
     return AY_ENULL;
 
+  /* first, create new objects */
+
   r = (ay_extrude_object *) o->refine;
 
-  p = r->npatch;
-  while(p)
+  if(r->upper_cap || r->lower_cap || r->upper_bevels || r->lower_bevels ||
+     (r->npatch && r->npatch->next))
     {
-      ay_status = ay_object_copy(p, &new);
+      if(!(new = calloc(1, sizeof(ay_object))))
+	{ return AY_EOMEM; }
+
+      ay_object_defaults(new);
+      new->type = AY_IDLEVEL;
+      new->parent = AY_TRUE;
+      new->inherit_trafos = AY_TRUE;
       ay_trafo_copy(o, new);
-      ay_status = ay_object_link(new);
 
-      p = p->next;
+      if(!(new->refine = calloc(1, sizeof(ay_level_object))))
+	{ free(new); return AY_EOMEM; }
+
+      ((ay_level_object *)(new->refine))->type = AY_LTLEVEL;
+
+      next = &(new->down);
+
+      if(r->npatch)
+	{
+	  ay_status = ay_object_copy(r->npatch, next);
+
+	  if(*next)
+	    next = &((*next)->next);
+
+	  p = r->npatch->next;
+	  while(p)
+	    {
+	      ay_status = ay_object_copy(p, next);
+	      if(*next)
+		{
+		  ay_trafo_copy(o, *next);
+		  next = &((*next)->next);
+		}
+	      p = p->next;
+	    } /* while */
+	} /* if */
+
+      if(r->upper_cap)
+	{
+	  ay_status = ay_object_copy(r->upper_cap, next);
+	  if(*next)
+	    {
+	      ay_trafo_add(o, *next);
+	      next = &((*next)->next);
+	    }
+	} /* if */
+
+      if(r->lower_cap)
+	{
+	  ay_status = ay_object_copy(r->lower_cap, next);
+	  if(*next)
+	    {
+	      ay_trafo_add(o, *next);
+	      next = &((*next)->next);
+	    }
+	} /* if */
+
+      if(r->upper_bevels)
+	{
+	  p = r->upper_bevels;
+	  while(p)
+	    {
+	      ay_status = ay_object_copy(p, next);
+	      if(*next)
+		{
+		  ay_trafo_add(o, *next);
+		  next = &((*next)->next);
+		}
+	      p = p->next;
+	    } /* while */
+	} /* if */
+
+      if(r->lower_bevels)
+	{
+	  p = r->lower_bevels;
+	  while(p)
+	    {
+	      ay_status = ay_object_copy(p, next);
+	      if(*next)
+		{
+		  ay_trafo_add(o, *next);
+		  next = &((*next)->next);
+		}
+	      p = p->next;
+	    } /* while */
+	} /* if */
+
+      ay_object_crtendlevel(next);
     }
-
-  if(r->upper_cap)
+  else
     {
-      new = NULL;
-      ay_status = ay_object_copy(r->upper_cap, &new);
-      ay_trafo_add(o, new);
-      ay_status = ay_object_link(new);
-    }
+       if(r->npatch)
+	{
+	  ay_status = ay_object_copy(r->npatch, &new);
+	  ay_trafo_copy(o, new);
+	}
+    } /* if */
 
-  if(r->lower_cap)
+  /* second, link new objects, or replace old objects with them */
+
+  if(new)
     {
-      new = NULL;
-      ay_status = ay_object_copy(r->lower_cap, &new);
-      ay_trafo_add(o, new);
-      ay_status = ay_object_link(new);
-    }
-
-  p = r->upper_bevels;
-  while(p)
-    {
-      new = NULL;
-      ay_status = ay_object_copy(p, &new);
-      ay_trafo_add(o, new);
-      ay_status = ay_object_link(new);
-
-      p = p->next;
-    }
-
-  p = r->lower_bevels;
-  while(p)
-    {
-      new = NULL;
-      ay_status = ay_object_copy(p, &new);
-      ay_trafo_add(o, new);
-      ay_status = ay_object_link(new);
-
-      p = p->next;
-    }
+      if(!in_place)
+	{
+	  ay_status = ay_object_link(new);
+	}
+      else
+	{
+	  ay_object_replace(new, o);
+	} /* if */
+    } /* if */
 
  return ay_status;
 } /* ay_extrude_convertcb */
