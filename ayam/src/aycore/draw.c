@@ -736,10 +736,11 @@ ay_draw_needredraw(ay_list_object *oldsel, ay_list_object *newsel,
 {
  int oldseldrawn = AY_FALSE, newseldrawn = AY_FALSE;
  ay_object *o = NULL;
- ay_list_object *s = NULL;
+ ay_list_object *s = NULL, *os = NULL, *ns = NULL;
 
   *result = AY_TRUE;
 
+  /* check, whether any objects in old selection were actually drawn */
   s = oldsel;
   while(s)
     {
@@ -754,6 +755,7 @@ ay_draw_needredraw(ay_list_object *oldsel, ay_list_object *newsel,
       s = s->next;
     }
 
+  /* check, whether any objects in new selection will actually be drawn */
   s = newsel;
   while(s)
     {
@@ -768,21 +770,52 @@ ay_draw_needredraw(ay_list_object *oldsel, ay_list_object *newsel,
       s = s->next;
     }
 
+  /* if oldsel was invisible and newsel too => we need no redraw */
   if(!oldseldrawn && !newseldrawn)
     {
       *result = AY_FALSE;
       return;
     }
 
-  /* check for identical (one object) selections */
-  if(oldsel && newsel && (!oldsel->next) && (!newsel->next))
+  /* check for identical selections */
+  if(oldsel && newsel)
     {
-      if(oldsel->object == newsel->object)
+      if(oldsel->next || newsel->next)
 	{
+	  /* check multiple object selections */
+	  os = oldsel;
+	  ns = newsel;
+	  /* XXXX we would rather need to find matching objects
+	     for all objects of <os> in <ns> and check for objects
+	     without matches here, but this simple check should
+	     be sufficient this time */
+	  while(os && ns)
+	    {
+	      /* compare objects */
+	      if(os->object != ns->object)
+		{
+		  return;
+		}
+	      os = os->next;
+	      ns = ns->next;
+	      /* check for premature end of one of both lists */
+	      if(((!os) && ns) || (os && (!ns)))
+		{
+		  return;
+		}
+	    } /* while */
 	  *result = AY_FALSE;
-	  return;
 	}
-    }
+      else
+	{
+	  /* check single object selections */
+	  if(oldsel->object == newsel->object)
+	    {
+	      *result = AY_FALSE;
+	      return;
+	    }
+	} /* if */
+    } /* if */
 
  return;
 } /* ay_draw_needredraw */
