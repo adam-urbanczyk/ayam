@@ -476,6 +476,12 @@ ay_object_setnametcmd(ClientData clientData, Tcl_Interp *interp,
 	free(o->name);
       o->name = NULL;
 
+      /* clear the current name if argument is "" */
+      if(strlen(argv[1]) == 0)
+	{
+	  return TCL_OK;
+	}
+
       if(!(o->name = calloc(strlen(argv[1])+1, sizeof(char))))
 	{
 	  ay_error(AY_EOMEM, fname, NULL);
