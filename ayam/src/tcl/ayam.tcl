@@ -361,6 +361,7 @@ array set ay {
  tblayoutsema 0
  LastSelection ""
  slcext ""
+ sext ""
  locales { en de }
 }
 

@@ -45,6 +45,10 @@ proc shader_scanAll {} {
 	set sext ".slx"
     }
 
+    if { $ay(sext) != "" } {
+	set sext $ay(sext)
+    }
+
     if { $sext == ".xml" } {
 	ayError 2 scanAllShaders "No shader parsing library available."
 	ayError 2 scanAllShaders "Falling back to XML parsing."
@@ -95,12 +99,16 @@ proc shader_scanAll {} {
 	set shaderarguments ""
 	
 	set ay_error 0
-	if { $AYUSESLCARGS == 1 } {
-	    shaderScanSLC $dummy shaderarguments
-	}
-
-	if { $AYUSESLXARGS == 1 } {
-	    shaderScanSLX $dummy shaderarguments
+	if { $ay(sext) != "" } {
+	    shaderScan $dummy shaderarguments
+	} else {
+	    if { $AYUSESLCARGS == 1 } {
+		shaderScanSLC $dummy shaderarguments
+	    }
+	
+	    if { $AYUSESLXARGS == 1 } {
+		shaderScanSLX $dummy shaderarguments
+	    }
 	}
 
 	if { $ay_error < 2 } {
@@ -246,16 +254,17 @@ set shadername [lindex $shaders $newshaderindex]
 
 set shaderarguments ""
 set ay_error 0
-
-if { $AYUSESLCARGS == 1 } {
-    shaderScanSLC $shadername shaderarguments
+if { $ay(sext) != "" } {
+    shaderScan $shadername shaderarguments
+} else {
+    if { $AYUSESLCARGS == 1 } {
+	shaderScanSLC $shadername shaderarguments
+    }
+    
+    if { $AYUSESLXARGS == 1 } {
+	shaderScanSLX $shadername shaderarguments
+    }
 }
-
-if { $AYUSESLXARGS == 1 } {
-    shaderScanSLX $shadername shaderarguments
-}
-
-#shaderScanSLC $shadername shaderarguments
 
 if { $ay_error > 1 } {
     ayError 2 shader_setNew "Oops, could not scan shader!"
