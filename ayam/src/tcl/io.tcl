@@ -388,8 +388,17 @@ proc io_loadCustom { } {
     
     set filetypes [list [list "Custom Object" $pftype] {"All files" *}]
 
-    if { ( $ayprefs(Plugins) != "plugins" ) || ( [file exists "plugins"] ) } {
-	set idir $ayprefs(Plugins)
+    set idir ""
+
+    if { ( $ayprefs(Plugins) != "" ) && ( $ayprefs(Plugins) != "plugins" ) } {
+	if { [file exists "$ayprefs(Plugins)"] } {
+	    set idir "$ayprefs(Plugins)"
+	}
+    } else {
+	set pl [file join [file dirname [info nameofexecutable]] plugins]
+	if { [file exists "$pl"] } {
+	    set idir $pl
+	}
     }
 
     set oldcdir [pwd]
