@@ -218,7 +218,7 @@ lappend ay(views) $w
 
 $w.f3D.togl setconf -name $name
 
-viewTitle $w Front None
+viewTitle $w Front Pick
 
 set ay(currentView) $w.f3D.togl
 
@@ -404,7 +404,7 @@ proc setViewAttr { } {
 	#    setupActionKeys $w clear
 
 	set typename [lindex $ay(viewtypenames) $ViewAttribData(Type)]
-	viewTitle .${o} $typename None
+	viewTitle .${o} $typename Pick
     }
 
     viewSetGridIcon .${o} $ViewAttribData(Grid)
