@@ -116,6 +116,8 @@ typedef struct ay_rrib_attrstate_s {
   RtInt ustep;
   RtInt vstep;
 
+  RtFloat s1, s2, s3, s4, t1, t2, t3, t4;
+
 } ay_rrib_attrstate;
 
 ay_rrib_attrstate *ay_rrib_cattributes;
@@ -2497,11 +2499,19 @@ ay_rrib_RiTextureCoordinates(RtFloat s1, RtFloat t1,
                              RtFloat s3, RtFloat t3, 
                              RtFloat s4, RtFloat t4)
 {
-   (void)s1; (void)t1; 
-   (void)s2; (void)t2; 
-   (void)s3; (void)t3; 
-   (void)s4; (void)t4;
-} /* ay_rrib_RiSubdivisionMesh */
+
+  ay_rrib_cattributes->s1 = s1;
+  ay_rrib_cattributes->s2 = s2;
+  ay_rrib_cattributes->s3 = s3;
+  ay_rrib_cattributes->s4 = s4;
+  
+  ay_rrib_cattributes->t1 = t1;
+  ay_rrib_cattributes->t2 = t2;
+  ay_rrib_cattributes->t3 = t3;
+  ay_rrib_cattributes->t4 = t4;
+
+ return;
+} /* ay_rrib_RiTextureCoordinates */
 
 
 RtVoid
@@ -3146,7 +3156,9 @@ ay_rrib_initgeneral(void)
   gRibNopRITable[kRIB_SHADINGRATE] = (PRIB_RIPROC)ay_rrib_RiShadingRate;
   gRibNopRITable[kRIB_SHADINGINTERPOLATION] =
     (PRIB_RIPROC)ay_rrib_RiShadingInterpolation;
-  
+  gRibNopRITable[kRIB_TEXTURECOORDINATES] =
+    (PRIB_RIPROC)ay_rrib_RiTextureCoordinates;
+
   gRibNopRITable[kRIB_SURFACE] = (PRIB_RIPROC)ay_rrib_RiSurface;
   gRibNopRITable[kRIB_DISPLACEMENT] = (PRIB_RIPROC)ay_rrib_RiDisplacement;
   gRibNopRITable[kRIB_INTERIOR] = (PRIB_RIPROC)ay_rrib_RiInterior;
@@ -3190,7 +3202,9 @@ ay_rrib_cleargeneral(void)
   gRibNopRITable[kRIB_SHADINGRATE] = (PRIB_RIPROC)RiNopShadingRate;
   gRibNopRITable[kRIB_SHADINGINTERPOLATION] =
     (PRIB_RIPROC)RiNopShadingInterpolation;
-  
+  gRibNopRITable[kRIB_TEXTURECOORDINATES] =
+    (PRIB_RIPROC)RiNopTextureCoordinates;
+
   gRibNopRITable[kRIB_SURFACE] = (PRIB_RIPROC)RiNopSurfaceV;
   gRibNopRITable[kRIB_DISPLACEMENT] = (PRIB_RIPROC)RiNopDisplacementV;
   gRibNopRITable[kRIB_INTERIOR] = (PRIB_RIPROC)RiNopInteriorV;
@@ -3336,11 +3350,8 @@ ay_rrib_pushattribs(void)
 	  ay_status = ay_shader_copy(ay_rrib_cattributes->eshader,
 				     &(newstate->eshader));
 	}
-
-
-
-
 #if 0
+      /* copy trimcurves */
       if(ay_rrib_cattributes->trimcurves)
 	{
 	  /* XXXX Bug: this simple copy means, only the first trimcurve
@@ -3364,6 +3375,14 @@ ay_rrib_pushattribs(void)
       newstate->camera = 1;
       newstate->reflection = 1;
       newstate->shadow = 1;
+      newstate->s1 = 0.0f;
+      newstate->t1 = 0.0f;
+      newstate->s2 = 1.0f;
+      newstate->t2 = 0.0f;
+      newstate->s3 = 0.0f;
+      newstate->t3 = 1.0f;
+      newstate->s4 = 1.0f;
+      newstate->t4 = 1.0f;
     }
 
   /* link new state to stack */
@@ -3954,6 +3973,57 @@ ay_rrib_linkmaterial(ay_object *o)
 
 
 void
+ay_rrib_linktexcoord(ay_object *o)
+{
+ ay_tag_object *nt = NULL;
+ char buf[255], tagname[] = "TC";
+
+  if((AY_EPSILON > fabs(ay_rrib_cattributes->s1)) &&
+     (AY_EPSILON > fabs(ay_rrib_cattributes->t1)) &&
+     (AY_EPSILON > fabs(ay_rrib_cattributes->s2-1.0f)) &&
+     (AY_EPSILON > fabs(ay_rrib_cattributes->t2)) &&
+     (AY_EPSILON > fabs(ay_rrib_cattributes->s3)) &&
+     (AY_EPSILON > fabs(ay_rrib_cattributes->t3-1.0f)) &&
+     (AY_EPSILON > fabs(ay_rrib_cattributes->s4-1.0f)) &&
+     (AY_EPSILON > fabs(ay_rrib_cattributes->t4-1.0f)))
+    return;
+
+  if(!(nt = calloc(1, sizeof(ay_tag_object))))
+    return;
+
+  nt->type = ay_tc_tagtype;
+
+  if(!(nt->name = calloc(strlen(tagname)+1, sizeof(char))))
+    {
+      free(nt);
+      return;
+    }
+
+  strcpy(nt->name, tagname);
+
+  sprintf(buf,"%g,%g,%g,%g,%g,%g,%g,%g",
+	  ay_rrib_cattributes->s1, ay_rrib_cattributes->t1,
+	  ay_rrib_cattributes->s2, ay_rrib_cattributes->t2,
+	  ay_rrib_cattributes->s3, ay_rrib_cattributes->t3,
+	  ay_rrib_cattributes->s4, ay_rrib_cattributes->t4);
+
+  if(!(nt->val = calloc(strlen(buf)+1, sizeof(char))))
+    {
+      free(nt->name); free(nt);
+      return;
+    }
+
+  strcpy(nt->val, buf);
+
+  /* link tag to object */
+  nt->next = o->tags;
+  o->tags = nt;
+
+ return;
+} /* ay_rrib_linktexcoord */
+
+
+void
 ay_rrib_linkobject(void *object, int type)
 {
  ay_object *o = NULL, *t = NULL;
@@ -3998,6 +4068,7 @@ ay_rrib_linkobject(void *object, int type)
   if(ay_rrib_readmateriali)
     {
       ay_rrib_linkmaterial(o);
+      ay_rrib_linktexcoord(o);
     }
 
  return;
