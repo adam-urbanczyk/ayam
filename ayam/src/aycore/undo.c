@@ -61,6 +61,10 @@ ay_undo_init(int buffer_size)
       return AY_OK;
     }
 
+  if(undo_buffer)
+    free(undo_buffer);
+  undo_buffer = NULL;
+
   if(!(undo_buffer = calloc(buffer_size, sizeof(ay_undo_object))))
     return AY_EOMEM;
   
