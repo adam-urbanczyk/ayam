@@ -16,7 +16,7 @@ array set idrprefs {
     IDRBase "/tmp/idr"
     Mode 0
     QLevels 2
-    Weight_R 5000
+    Weight_R 24000
     ShowResult 0
     UseCurrentBG 0
     CacheParts 1
@@ -113,7 +113,7 @@ proc idr_open {} {
     addCheck $f1 idrprefs ExcludeOther0
     addCheck $f1 idrprefs HalfRes0
     addMenu $f1 idrprefs OptimizeBB0 $bboptimize_entries
-    addString $f1 idrprefs Renderer0
+    addString $f1 idrprefs Renderer0 [list "rgl -dumprgba" "rendrib"]
     pack $f1 -side top
 
     # High Quality Rendering Parameters
@@ -122,7 +122,7 @@ proc idr_open {} {
     addCheck $f1 idrprefs ExcludeOther1
     addCheck $f1 idrprefs HalfRes1
     addMenu $f1 idrprefs OptimizeBB1 $bboptimize_entries
-    addString $f1 idrprefs Renderer1
+    addString $f1 idrprefs Renderer1 [list "rendrib" "rgl -dumprgba"]
     pack $f1 -side top
 
     set f $w.fu.fl
