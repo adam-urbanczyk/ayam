@@ -5923,13 +5923,21 @@ as normal Level objects, transformations will be delegated
 to the child objects
 </itemize>
 
-Since Wavefront OBJ does not support separate transformation attributes,
-all transformation attributes will be used to transform the coordinate
-values (the control points) of the exported objects.
+Since the Wavefront OBJ format does not support separate transformation
+attributes, all transformation attributes will be used to transform the
+coordinate values (the control points) of the exported objects.
 
 The Wavefront OBJ export, currently, ignores all material information
 and possibly present primitive variable tags. Only the pure geometry
 information is written to the OBJ file.
+
+The following parameters, additionally, control the Wavefront OBJ export:
+<tt>"Selected"</tt> - exports only the currently selected object(s);
+<tt>"TessPoMesh"</tt> - automatically tesselates all PolyMesh objects
+to triangles for export;
+<tt>"OmitCurves"</tt> - omits all NURBS curves and NURBS curve providing
+objects from the exported file.
+
 
 <sect1>3DMF Import Export (MFIO) Plugin<label id="mfioplugin">
 <p>
@@ -6610,6 +6618,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Objects: <ref id="obj" name="tree/listbox">,
 <ref id="objsel" name="selection within a view">
 <item>OI: <ref id="oitt" name="tag type">
+<item>OmitCurves <ref id="expwav" name="Wavefront OBJ export option">
 <item>Open: <ref id="treecontm" name="tree context menu entry">
 <item>Optimize: <ref id="mmtools" name="Optimize PolyMesh tool">
 <item>OptimizeCoords: <ref id="mmtools" name="Optimize PolyMesh tool option">
@@ -6751,6 +6760,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Select: <ref id="obj" name="select objects with the tree/listbox">,
 <ref id="objsel" name="select objects within a view">,
 <ref id="selac" name="select points">
+<item>Selected <ref id="expwav" name="Wavefront OBJ export option">
 <item>Selected Objects: <ref id="mmspecial" name="main menu entry">
 <item>Select Renderer: <ref id="mmspecial" name="main menu entry">
 <item>Selection: <ref id="prefdraw" name="preference setting">
@@ -6812,6 +6822,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <ref id="scitags" name="scripting interface commands">
 <item>TC: <ref id="tctag" name="tag type">
 <item>TclPrecision: <ref id="prefmisc" name="preference setting">
+<item>TessPoMesh <ref id="expwav" name="Wavefront OBJ export option">
 <item>Textures: <ref id="rio" name="RenderMan interface option">
 <item>TextureCoordinates: <ref id="tctag" name="tag type">,
 <ref id="tce" name="texture coordinate editor">
