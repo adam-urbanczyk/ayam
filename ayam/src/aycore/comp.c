@@ -66,6 +66,16 @@ int ay_comp_skin(ay_object *o1, ay_object *o2);
 
 int ay_comp_material(ay_object *o1, ay_object *o2);
 
+int ay_comp_pamesh(ay_object *o1, ay_object *o2);
+
+int ay_comp_cap(ay_object *o1, ay_object *o2);
+
+int ay_comp_concatnc(ay_object *o1, ay_object *o2);
+
+int ay_comp_clone(ay_object *o1, ay_object *o2);
+
+int ay_comp_pomesh(ay_object *o1, ay_object *o2);
+
 /* functions */
 
 /* ay_comp_trafos:
@@ -735,8 +745,120 @@ ay_comp_cap(ay_object *o1, ay_object *o2)
   p1 = (ay_cap_object *)o1->refine;
   p2 = (ay_cap_object *)o2->refine;
 
- return AY_OK;
+ return AY_TRUE;
 } /* ay_comp_cap */
+
+
+/* ay_comp_concatnc:
+ *
+ */
+int
+ay_comp_concatnc(ay_object *o1, ay_object *o2)
+{
+ ay_concatnc_object *p1, *p2;
+
+  p1 = (ay_concatnc_object *)o1->refine;
+  p2 = (ay_concatnc_object *)o2->refine;
+
+  if(p1->closed != p2->closed)
+    return AY_FALSE;
+
+  if(p1->fillgaps != p2->fillgaps)
+    return AY_FALSE;
+
+  if(p1->revert != p2->revert)
+    return AY_FALSE;
+
+ return AY_TRUE;
+} /* ay_comp_concatnc */
+
+
+/* ay_comp_clone:
+ *
+ */
+int
+ay_comp_clone(ay_object *o1, ay_object *o2)
+{
+ ay_clone_object *p1, *p2;
+
+  p1 = (ay_clone_object *)o1->refine;
+  p2 = (ay_clone_object *)o2->refine;
+
+  if(p1->clones != p2->clones)
+    return AY_FALSE;
+
+  if((p1->movx == p2->movx) && (p1->movy == p2->movy) &&
+     (p1->movz == p2->movz) && (p1->scalx == p2->scalx) &&
+     (p1->scaly == p2->scaly) && (p1->scalz == p2->scalz) &&
+     (!memcmp(p1->quat, p2->quat, sizeof(4*sizeof(double)))))
+    {
+      return AY_TRUE;
+    }
+  else
+    {
+      return AY_FALSE;
+    }
+
+ return AY_TRUE;
+} /* ay_comp_clone */
+
+
+/* ay_comp_pomesh:
+ *
+ */
+int
+ay_comp_pomesh(ay_object *o1, ay_object *o2)
+{
+ ay_pomesh_object *p1, *p2;
+ unsigned int total_loops = 0, total_verts = 0;
+ unsigned int i = 0;
+
+  p1 = (ay_pomesh_object *)o1->refine;
+  p2 = (ay_pomesh_object *)o2->refine;
+
+  if(p1->npolys != p2->npolys)
+    return AY_FALSE;
+
+  if(p1->has_normals != p2->has_normals)
+    return AY_FALSE;
+
+  if(p1->ncontrols != p2->ncontrols)
+    return AY_FALSE;
+
+  if(p1->has_normals)
+    {
+      if(!memcmp(p1->controlv, p2->controlv,
+		 sizeof(p1->ncontrols*6*sizeof(double))))
+	return AY_FALSE;
+    }
+  else
+    {
+      if(!memcmp(p1->controlv, p2->controlv,
+		 sizeof(p1->ncontrols*3*sizeof(double))))
+	return AY_FALSE;
+    }
+
+  if(!memcmp(p1->nloops, p2->nloops, sizeof(p1->npolys*sizeof(unsigned int))))
+    return AY_FALSE;
+
+  for(i = 0; i < p1->npolys; i++)
+    {
+      total_loops += p1->nloops[i];
+    } /* for */
+
+  if(!memcmp(p1->nverts, p2->nverts, sizeof(total_loops*sizeof(unsigned int))))
+    return AY_FALSE;
+
+  for(i = 0; i < total_loops; i++)
+    {
+      total_verts += p1->nverts[i];
+    } /* for */
+  
+  if(!memcmp(p1->verts, p2->verts, sizeof(total_verts*sizeof(unsigned int))))
+    return AY_FALSE;
+
+ return AY_TRUE;
+} /* ay_comp_pomesh */
 
 
 /* ay_comp_register:
@@ -830,8 +952,11 @@ ay_comp_init()
   ay_status = ay_comp_register(ay_comp_extrude, AY_IDEXTRUDE);
   ay_status = ay_comp_register(ay_comp_sweep, AY_IDSWEEP);
   ay_status = ay_comp_register(ay_comp_skin, AY_IDSKIN);
+  ay_status = ay_comp_register(ay_comp_pamesh, AY_IDPAMESH);
   ay_status = ay_comp_register(ay_comp_cap, AY_IDCAP);
-  ay_status = ay_comp_register(ay_comp_skin, AY_IDPAMESH);
+  ay_status = ay_comp_register(ay_comp_concatnc, AY_IDCONCATNC);
+  ay_status = ay_comp_register(ay_comp_clone, AY_IDCLONE);
+  ay_status = ay_comp_register(ay_comp_pomesh, AY_IDPOMESH);
 
 
  return ay_status;
