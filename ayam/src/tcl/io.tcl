@@ -48,7 +48,9 @@ proc io_replaceScene { } {
 
 	# make backup copy
 	if { $ayprefs(BakOnReplace) == 1 } {
-	    file copy -force -- $filename ${filename}${ayprefs(BackupExt)} 
+	    set err [ catch {
+		file copy -force -- $filename ${filename}${ayprefs(BackupExt)}
+	    } ]
 	}
 
 	replaceScene $filename
@@ -544,7 +546,9 @@ proc io_mruLoad { index } {
 
 	# make backup copy
 	if { $ayprefs(BakOnReplace) == 1 } {
-	    file copy -force -- $filename ${filename}${ayprefs(BackupExt)} 
+	    set err [ catch {
+		file copy -force -- $filename ${filename}${ayprefs(BackupExt)}
+	    } ]
 	}
 
 	replaceScene $filename
