@@ -482,7 +482,10 @@ ay_torus_wribcb(char *file, ay_object *o)
     }
   else
     {
-      RiSolidBegin(RI_PRIMITIVE);
+      if(!ay_current_primlevel)
+	{
+	  RiSolidBegin(RI_PRIMITIVE);
+	}
 
       RiTorus((RtFloat)torus->majorrad, (RtFloat)torus->minorrad,
 	      (RtFloat)torus->phimin, (RtFloat)torus->phimax,
@@ -538,9 +541,11 @@ ay_torus_wribcb(char *file, ay_object *o)
 	  RiAttributeEnd();
 
 	}
-
-      RiSolidEnd();
-    }
+      if(!ay_current_primlevel)
+	{
+	  RiSolidEnd();
+	}
+    } /* if */
 
  return AY_OK;
 } /* ay_torus_wribcb */

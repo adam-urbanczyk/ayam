@@ -303,10 +303,10 @@ ay_instance_wribcb(char *file, ay_object *o)
 	}
     } /* if(cb) */
   
-  if(orig->down)
+  if(orig->down && orig->down->next)
     {
       down = orig->down;
-
+      l = NULL;
       if(orig->type == AY_IDLEVEL)
 	{
 	  l = (ay_level_object*)orig->refine;
@@ -322,7 +322,11 @@ ay_instance_wribcb(char *file, ay_object *o)
 	      RiSolidBegin(RI_INTERSECTION);
 	      break;
 	    case AY_LTPRIM:
-	      RiSolidBegin(RI_PRIMITIVE);
+	      if(!ay_current_primlevel)
+		{
+		  RiSolidBegin(RI_PRIMITIVE);
+		}
+	      ay_current_primlevel++;
 	      break;
 	    default:
 	      break;
@@ -331,7 +335,30 @@ ay_instance_wribcb(char *file, ay_object *o)
 
       while(down->next)
 	{
+	  if(l && ((l->type == AY_LTUNION) ||
+		   (l->type == AY_LTDIFF) ||
+		   (l->type == AY_LTINT)))
+	    {
+	      if(!ay_current_primlevel)
+		{
+		  RiSolidBegin(RI_PRIMITIVE);
+		}
+	      ay_current_primlevel++;
+	    } /* if */
+
 	  ay_status = ay_wrib_object(file, down);
+
+	  if(l && ((l->type == AY_LTUNION) ||
+		   (l->type == AY_LTDIFF) ||
+		   (l->type == AY_LTINT)))
+	    {
+	      ay_current_primlevel--;
+	      if(!ay_current_primlevel)
+		{
+		  RiSolidEnd();
+		}
+	    } /* if */
+
 	  down = down->next;
 	} /* while */
 
@@ -339,7 +366,18 @@ ay_instance_wribcb(char *file, ay_object *o)
 	{
 	  if(l->type > 1)
 	    {
-	      RiSolidEnd();
+	      if(l->type == AY_LTPRIM)
+		{
+		  ay_current_primlevel--;
+		  if(!ay_current_primlevel)
+		    {
+		      RiSolidEnd();
+		    }
+		}
+	      else
+		{
+		  RiSolidEnd();
+		} /* if */
 	    } /* if */
 	} /* if */
     } /* if */

@@ -453,13 +453,13 @@ ay_wrib_object(char *file, ay_object *o)
 
     } /* if */
 
-  /* write child objects, but do not descent into light sources as
+  /* write child objects, but do not descend into light sources as
      the arealight geometry has been written long ago in the lights
      section of the RIB */
-  if(o->down && (o->type != AY_IDLIGHT))
+  if(o->down && o->down->next && (o->type != AY_IDLIGHT))
     {
       down = o->down;
-
+      l = NULL;
       if(o->type == AY_IDLEVEL)
 	{
 	  l = (ay_level_object*)o->refine;
@@ -475,19 +475,43 @@ ay_wrib_object(char *file, ay_object *o)
 	      RiSolidBegin(RI_INTERSECTION);
 	      break;
 	    case AY_LTPRIM:
-	      RiSolidBegin(RI_PRIMITIVE);
+	      if(!ay_current_primlevel)
+		{
+		  RiSolidBegin(RI_PRIMITIVE);
+		}
+	      ay_current_primlevel++;
 	      break;
 	    default:
 	      break;
-	    }
-	}
+	    } /* switch */
+	} /* if */
 
       while(down->next)
 	{
+	  if(l && ((l->type == AY_LTUNION) || (l->type == AY_LTDIFF) ||
+		   (l->type == AY_LTINT)))
+	    {
+	      if(!ay_current_primlevel)
+		{
+		  RiSolidBegin(RI_PRIMITIVE);
+		}
+	      ay_current_primlevel++;
+	    }
+
 	  ay_status = ay_wrib_object(file, down);
 	  if(ay_status)
 	    return ay_status;
-	      
+
+	  if(l && ((l->type == AY_LTUNION) || (l->type == AY_LTDIFF) ||
+		   (l->type == AY_LTINT)))
+	    {
+	      ay_current_primlevel--;
+	      if(!ay_current_primlevel)
+		{
+		  RiSolidEnd();
+		}
+	    }
+
 	  down = down->next;
 	} /* while */
 
@@ -495,10 +519,20 @@ ay_wrib_object(char *file, ay_object *o)
 	{
 	  if(l->type > 1)
 	    {
-	      RiSolidEnd();
-	    }
-	}
-
+	      if(l->type == AY_LTPRIM)
+		{
+		  ay_current_primlevel--;
+		  if(!ay_current_primlevel)
+		    {
+		      RiSolidEnd();
+		    }
+		}
+	      else
+		{
+		  RiSolidEnd();
+		} /* if */
+	    } /* if */
+	} /* if */
     } /* if */
 
   if(cb)
@@ -1202,6 +1236,8 @@ ay_wrib_scene(char *file, char *image, double *from, double *to,
  char *objfile = NULL, *pos = NULL;
  int filenlen = 0;
 
+  ay_current_primlevel = 0;
+ 
   /* create obj-file name (for use with ShadowMaps) */
   if(ay_prefs.use_sm >= 1)
     {
@@ -1617,6 +1653,8 @@ ay_wrib_pprevdraw(ay_view_object *view)
  int width, height, i;
  double zoom, roll, *from, *to;
  char *pprender = "rgl";
+
+  ay_current_primlevel = 0;
 
   if(ay_prefs.pprender && (strlen(ay_prefs.pprender) > 0))
     {
