@@ -25,7 +25,9 @@ label $f.la -text "Objects:" -padx 0 -pady 0
 # listbox
 set ay(olb) $f.li
 listbox $f.li -width 14 -height 10 -selectmode extended\
-	-yscrollcommand {global ay; $ay(olbs) set} -exportselection 0
+	-highlightthickness 0\
+	-yscrollcommand {global ay; $ay(olbs) set}\
+	-exportselection 0
 
 bind $f.li <Double-ButtonPress-1> {
     global ay
