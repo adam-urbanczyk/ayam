@@ -284,6 +284,10 @@ array set riattr {
               { refractioncolor c {{0 0 0}} }
               { refractionindex f {1.0} }
             }
+
+    dice { { minsubdivision i {2} }
+	   { maxsubdivision i {10} } }
+
     indirect { { maxerror f {0.25 0.2 0.175 0.15 0.125 0.1} }
                { maxpixeldist f {20} }
                { nsamples i {256} }
@@ -311,29 +315,51 @@ array set riattr {
 
 # standard RiOptions DB
 array set riopt {
-    indirect { {savefile s {"indirect.dat"} }
-               {seedfile s {"indirect.dat"} }
+    hider { { jitter f {0.5} }
+            { falsecolor i {0 1} }
+            { emit i {0 1} }
+	  }
+
+    indirect { { savefile s {"indirect.dat"} }
+               { seedfile s {"indirect.dat"} }
              }
 
-    limits { {derivmemory i {2} }
-             {eyesplits i {5 10 15} }
+    io { { maskresolution i {0 1} }
+         { maskprintf i {0 1} }
+         { maskstats i {0 1} }
+         { maskprogress i {0 1} }
+       }
+
+    limits { { derivmemory i {2} }
+             { eyesplits i {5 10 15} }
+	     { gridsize i { 256 512 1024 } }
+	     { texturememory i { 2000 } }
+	     { shadercache i { 1000 } }
+	     { hierarchydepth i { 40 } }
+	     { hierarchyobjects i { 10 } }
            }
 
     radiosity { { steps i {0 32 64 128} }
                 { minpatchsamples i {1 2 3 4} }
               }
 
-    render { {minsamples i {8}}
-             {maxsamples i {64}}
-	     {minshadowbias f {0.01 0.005 0.0025 0.001} }
-	     {max_raylevel i {4 2 8 16} }
-	     {prmanspecular i {0 1} }
-	     {useprmandspy i {0 1} }
+    render { { minsamples i {8}}
+             { maxsamples i {64}}
+	     { minshadowbias f {0.01 0.005 0.0025 0.001} }
+	     { max_raylevel i {4 2 8 16} }
+	     { prmanspecular i {0 1} }
+	     { useprmandspy i {0 1} }
            }
 
     runtime { { verbosity s { "silent" "normal" "stats" "debug" } } }
+
+    searchpath { { archive s } { procedural s } }
+
     shadow { { bias0 f {0.01 0.1 0.25 0.5} } { bias1 f {0.01 0.1 0.25 0.5} } }
+
     statistics { {endofframe i {0 1 2 3} } {filename s} }
+
+    trace { { maxdepth i {1 2 5 10} } }
 }
 # array riopt
 
