@@ -152,31 +152,31 @@ for { set i 0 } { $i < 4 } { incr i } {
     entry $f1.e$i -width 6 -textvariable ${prop}(${name}_${i}) -bd $bw
     eval [subst "bindtags $f1.e$i \{$f1.e$i Entry all\}"]
     bind $f1.e$i <Key-Escape> {resetFocus}
-    pack $f1.e$i -in $f1 -side left -fill both
+    pack $f1.e$i -in $f1 -side left -fill both -expand yes
 }
 set f2 [frame $w.f${name}2 -relief sunken -bd $bw]
 for { set i 4 } { $i < 8 } { incr i } {
     entry $f2.e$i -width 6 -textvariable ${prop}(${name}_${i}) -bd $bw
     eval [subst "bindtags $f2.e$i \{$f2.e$i Entry all\}"]
-    bind $f1.e$i <Key-Escape> {resetFocus}
-    pack $f2.e$i -in $f2 -side left -fill both
+    bind $f2.e$i <Key-Escape> {resetFocus}
+    pack $f2.e$i -in $f2 -side left -fill both -expand yes
 }
 set f3 [frame $w.f${name}3 -relief sunken -bd $bw]
 for { set i 8 } { $i < 12 } { incr i } {
     entry $f3.e$i -width 6 -textvariable ${prop}(${name}_${i}) -bd $bw
     eval [subst "bindtags $f3.e$i \{$f3.e$i Entry all\}"]
     bind $f3.e$i <Key-Escape> {resetFocus}
-    pack $f3.e$i -in $f3 -side left -fill both
+    pack $f3.e$i -in $f3 -side left -fill both -expand yes
 }
 set f4 [frame $w.f${name}4 -relief sunken -bd $bw]
 for { set i 12 } { $i < 16 } { incr i } {
     entry $f4.e$i -width 6 -textvariable ${prop}(${name}_${i}) -bd $bw
     eval [subst "bindtags $f4.e$i \{$f4.e$i Entry all\}"]
     bind $f4.e$i <Key-Escape> {resetFocus}
-    pack $f4.e$i -in $f4 -side left -fill both
+    pack $f4.e$i -in $f4 -side left -fill both -expand yes
 }
 
-pack $f $f1 $f2 $f3 $f4 -in $w -side top -fill x
+pack $f $f1 $f2 $f3 $f4 -in $w -side top -fill x -expand yes
 return;
 }
 # addMatrix
