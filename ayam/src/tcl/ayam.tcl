@@ -109,6 +109,7 @@ array set ayprefs {
  HideTmpTags 0
  Kill "kill"
  Cat "cat"
+ MaxTagLen 30
 
  Scripts ""
  Docs "http://ayam.sourceforge.net/docs/"
