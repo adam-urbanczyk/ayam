@@ -1014,6 +1014,7 @@ ay_view_notifycb(ay_object *o)
 int
 ay_view_dropcb(ay_object *o)
 {
+ int ay_status = AY_OK;
  char fname[] = "view_drop";
  ay_list_object *sel = ay_selection;
  ay_object *s = NULL;
@@ -1024,6 +1025,8 @@ ay_view_dropcb(ay_object *o)
  double aspect;
  double from[3], to[3], mr[16];
  GLdouble m[16];
+ char arg[] = "save";
+ char *argv[2] = {NULL, arg};
 
   if(!sel)
     {
@@ -1045,6 +1048,10 @@ ay_view_dropcb(ay_object *o)
 	  light = (ay_light_object *)s->refine;
 	  if(light->type == AY_LITSPOT)
 	    {
+	      /* no need to fake a selection here, because all view
+		 objects are saved by each undo operation anyway */
+	      ay_status = ay_undo_undotcmd(NULL, ay_interp, 2, argv);
+
 	      /* ay_viewt_changetype(view, AY_VTPERSP); */
 
 	      memcpy(from, light->tfrom, 3*sizeof(double));
@@ -1096,6 +1103,10 @@ ay_view_dropcb(ay_object *o)
 	  break;
 	case AY_IDCAMERA:
 	  camera = (ay_camera_object *)s->refine;
+
+	  /* no need to fake a selection here, because all view
+	     objects are saved by each undo operation anyway */
+	  ay_status = ay_undo_undotcmd(NULL, ay_interp, 2, argv);
 	  
 	  memcpy(view->from, camera->from, 3*sizeof(double));
 	  memcpy(view->to, camera->to, 3*sizeof(double));

@@ -588,11 +588,15 @@ ay_camera_bbccb(ay_object *o, double *bbox, int *flags)
 int
 ay_camera_dropcb(ay_object *o)
 {
+ int ay_status = AY_OK;
  char fname[] = "camera_drop";
  ay_list_object *sel = ay_selection;
  ay_object *s = NULL;
  ay_camera_object *camera;
  ay_view_object *view;
+ char argsave[] = "save", argsel[] = "savsel";
+ char *argvsave[2] = {NULL, argsave}, *argvsel[2] = {NULL, argsel};
+ ay_list_object *oldsel = NULL, newsel = {0};
 
   if(!sel)
     {
@@ -609,12 +613,26 @@ ay_camera_dropcb(ay_object *o)
       if(s->type == AY_IDVIEW)
 	{
 	  view = (ay_view_object *)s->refine;
-	  
+
+	  /* fake selection containing the camera, so that it
+	     may be saved by the undo facility */
+	  oldsel = ay_selection;
+	  newsel.object = o;
+	  ay_selection = &newsel;
+	  ay_status = ay_undo_undotcmd(NULL, ay_interp, 2, argvsave);
+
 	  memcpy(camera->from, view->from, 3*sizeof(double));
 	  memcpy(camera->to, view->to, 3*sizeof(double));
 	  memcpy(camera->up, view->up, 3*sizeof(double));
 	  camera->roll = view->roll;
 	  camera->zoom = view->zoom;
+
+	  /* save new state (because selection will not be changed
+	     to drop target) */
+	  ay_status = ay_undo_undotcmd(NULL, ay_interp, 2, argvsel);
+
+	  /* now restore original selection */
+	  ay_selection = oldsel;
 
 	}
       sel = sel->next;
