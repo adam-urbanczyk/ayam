@@ -93,7 +93,7 @@ proc tree_update { node } {
     if { $ay(TreeUpdateSema) == 1 } {
 	return 
     } else {
-	set $ay(TreeUpdateSema) 1
+	set ay(TreeUpdateSema) 1
     }
 
     # update may take some time, take measures:
@@ -132,7 +132,7 @@ proc tree_update { node } {
     after cancel tree_blockUI
     . configure -cursor {}
 
-    set $ay(TreeUpdateSema) 0
+    set ay(TreeUpdateSema) 0
 
  return;
 }
@@ -490,7 +490,7 @@ proc tree_move { } {
     treeDnd $parent $position newclevel
     if { $ay_error == 0 } {
 	
-	set $ay(SelectedLevel) "root"
+	set ay(SelectedLevel) "root"
 
 	if { $newclevel != "no-drop" } {
 	    tree_update $ay(CurrentLevel)
@@ -708,17 +708,7 @@ set m [menu $ay(tree).popup -tearoff 0]
 
 $m add cascade -label "Tree" -menu $ay(tree).popup.tree
 set m [menu $ay(tree).popup.tree -tearoff 0]
-$m add command -label "Rebuild" -command {
-    tree_update root;
-    set ay(CurrentLevel) "root"
-    set ay(SelectedLevel) "root"
-    update
-    $ay(tree) selection clear
-    tree_handleSelection
-    tree_selectItem 0 $ay(tree) "root:0"
-    tree_paintLevel "root"
-    plb_update
-}
+$m add command -label "Rebuild" -command "tree_reset"
 $m add command -label "Expand" -command "tree_expand"
 $m add command -label "Collapse" -command "tree_collapse"
 
@@ -808,3 +798,16 @@ proc tree_toggle { } {
 
 }
 #tree_toggle
+
+#tree_reset:
+#
+proc tree_reset { } {
+    global ay
+    tree_update root
+    set ay(CurrentLevel) "root"
+    set ay(SelectedLevel) "root"
+    tree_selectItem 1 $ay(tree) "root:0"
+    tree_paintLevel "root"
+    plb_update
+}
+#tree_reset
