@@ -89,7 +89,7 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
   glLoadIdentity();
 
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-  
+
   /* fill depth buffer (resolve CSG operations) */
   glDisable(GL_LIGHTING);
   OpenCSG::render(primitives, algo, depthalgo);
@@ -100,13 +100,13 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
   glEnable(GL_LIGHTING);
   glLightModelf(GL_LIGHT_MODEL_TWO_SIDE, (GLfloat)1.0);
   glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);
-  
+
   color[0] = (GLfloat)ay_prefs.shr;
   color[1] = (GLfloat)ay_prefs.shg;
   color[2] = (GLfloat)ay_prefs.shb;
   color[3] = (GLfloat)1.0;
-    
-  glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, color);  
+
+  glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, color);
   glMatrixMode(GL_MODELVIEW);
 
   ay_prefs.use_materialcolor = orig_use_materialcolor;
@@ -133,14 +133,14 @@ int
 aycsg_flatten(ay_object *t)
 {
  int ay_status = AY_OK;
- 
+
   while(t)
     {
       // is t a primitive?
-      if(t->modified)
+      if(t->CSGTYPE != AY_LTPRIM)
 	{
 	  // No.
-	  if(t->modified == 1)
+	  if(t->CSGTYPE == AY_LTINT)
 	    {
 	      primitives.push_back(new OpenCSG::ayCSGPrimitive(t,
 						 OpenCSG::Intersection, 1));
@@ -164,6 +164,9 @@ aycsg_flatten(ay_object *t)
 } // aycsg_flatten
 
 
+// The following eight functions implement rules that transform
+// a binary tree to disjunctive normal form (sum of products).
+
 // Rule1: X - ( Y U Z ) => ( X - Y ) - Z
 int
 aycsg_applyrule1(ay_object *t)
@@ -173,7 +176,7 @@ aycsg_applyrule1(ay_object *t)
   // 1. check applicability of rule
   if(!t || !t->down || !t->down->next)
     return AY_ERROR;
-  
+
   if(t->CSGTYPE != AY_LTDIFF)
     return AY_ERROR;
 
@@ -212,7 +215,7 @@ aycsg_applyrule2(ay_object *t)
   // 1. check applicability of rule
   if(!t || !t->down || !t->down->next)
     return AY_ERROR;
-  
+
   if(t->CSGTYPE != AY_LTINT)
     return AY_ERROR;
 
@@ -393,7 +396,7 @@ aycsg_applyrule6(ay_object *t)
   // 1. check applicability of rule
   if(!t || !t->down || !t->down->next)
     return AY_ERROR;
-  
+
   if(t->CSGTYPE != AY_LTINT)
     return AY_ERROR;
 
@@ -565,7 +568,7 @@ aycsg_normalize(ay_object *t)
 		t->down->CSGTYPE != AY_LTUNION)));
 
 	  ay_status = aycsg_normalize(t->down->next);
-	   
+
 	} // if
       t = t->next;
     } // while
@@ -595,9 +598,9 @@ aycsg_binarify(ay_object *parent, ay_object *left, ay_object **target)
 
   if(!(tmp = (ay_object*)calloc(1, sizeof(ay_object))))
     return AY_EOMEM;
-  
+
   memcpy(tmp, parent, sizeof(ay_object));
-  
+
   tmp->next = NULL;
   tmp->down = left;
 
@@ -630,12 +633,12 @@ aycsg_copytree(ay_object *t, int *is_csg, ay_object **target)
 
   if(!t)
     return AY_ENULL;
-  
+
   while(t->next)
     {
       if(!(*target = (ay_object*)calloc(1, sizeof(ay_object))))
 	return AY_EOMEM;
-      
+
       memcpy(*target, t, sizeof(ay_object));
 
       ay_status = AY_OK;
@@ -665,11 +668,10 @@ aycsg_copytree(ay_object *t, int *is_csg, ay_object **target)
 	      continue;
 	    }
 	}
-      
+
       // we use the "modified" flag to remember whether an object is
-      // a primitive (flag == 0) or a CSG op and if it is a CSG op,
-      // of which type: intersection (flag == 1) or subtraction (flag == 2)
-      // or union (flag == 3)
+      // a primitive or a CSG op and if it is a CSG op, of which type
+      // (see ayam.h Level Object SubType Ids)
 
       if((*target)->type != AY_IDLEVEL)
 	{
@@ -717,7 +719,7 @@ aycsg_copytree(ay_object *t, int *is_csg, ay_object **target)
 		  ay_status = aycsg_binarify(*target, (*target)->down->next,
 					     &((*target)->down->next));
 
-		  
+
 		} // if
 	    } // if
 	} // if
@@ -726,7 +728,7 @@ aycsg_copytree(ay_object *t, int *is_csg, ay_object **target)
       t = t->next;
       target = &((*target)->next);
     } // while
- 
+
   *is_csg = lis_csg;
 
  return ay_status;
@@ -759,15 +761,16 @@ aycsg_clearprimitives()
   for (std::vector<OpenCSG::Primitive*>::const_iterator i =
 	 primitives.begin(); i != primitives.end(); ++i)
     {
-      OpenCSG::ayCSGPrimitive* p = 
+      OpenCSG::ayCSGPrimitive* p =
 	static_cast<OpenCSG::ayCSGPrimitive*>(*i);
       delete p;
     }
-  
+
   primitives.clear();
 
  return;
 } // aycsg_clearprimitives
+
 
 extern "C" {
 
@@ -819,4 +822,4 @@ Aycsg_Init(Tcl_Interp *interp)
 } // extern "C"
 
 // remove local preprocessor definitions
-#undef CSGTYPE 
+#undef CSGTYPE
