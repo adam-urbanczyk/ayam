@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>25. Sep 2003
+<date>10. Oct 2003
 <abstract>
 This is the documentation of Ayam (1.6) - a free 3D modeling environment
 for the RenderMan interface.
@@ -89,9 +89,8 @@ The main window is split into three large areas:
 <p>
 The relative sizes of the three areas are managed by a so called paned
 window management. To change the relative size of the console,
-move your mouse pointer to the upper
-border of the console until the pointer changes and drag
-the border.
+you may move your mouse pointer to the upper border of the console until
+the pointer changes and then drag the border.
 The same goes for the right border of the objects section.<p>
 
 <sect2>Objects<label id="obj">
@@ -111,6 +110,12 @@ This level is the level that is displayed in the object listbox.
 In the tree view the current level is drawn in black while all
 other levels are grayed out. Selection of objects
 may only take place in the current level!
+
+You will notice, that there is a first object called "Root" in the
+top level, even though the scene seems to be empty.
+See section <ref id="rootobj" name="Root Object"> for more
+information regarding this special object, and what it is good for.
+Note, that you cannot delete or copy this object.
 
 <bf/Tree View:/<label id="treeview">
 <p>
@@ -202,12 +207,6 @@ A double click on the <tt/".."/ takes you to the parent level.
 The buttons below the listbox
 may be used to change the selection or to quickly
 jump through the hierarchy. They should be self explanatory.
-
-You will notice, that there is a first object called "Root" in the
-top level, even though the scene seems to be empty.
-See section <ref id="rootobj" name="Root Object"> for more
-information regarding this special object, and what it is good for.
-Note, that you cannot delete or copy this object.
 
 <label id="lbcontm">
 The rightmost mouse button opens a small context menu:
@@ -1290,7 +1289,7 @@ attributes on RIB export.
 
 <item><tt/"WriteIdent"/ determines, whether Ayam should
 write special RiAttributes
-(<tt>"RiAttribute "identifier" &lsqb"name"&rsqb</tt>)
+(<tt>RiAttribute "identifier" &lsqb"name"&rsqb</tt>)
 with the names of the objects to the RIB to aid in RIB file debugging.
 
 <item><tt/"ShadowMaps"/ determines, whether shadow maps should
@@ -1361,7 +1360,7 @@ regexp -- {^.* - (\[0-9\]+)} string dummy percent
 </code>
 
 <item><tt/"SMRender"/, renderer to use for the rendering of shadow maps
-using the view menu entry <tt>"View/Create ShadowMaps</tt>,
+using the view menu entry <tt>"View/Create ShadowMaps"</tt>,
 <tt>%s</tt> denotes the name of the RIB file.
 <item><tt/"SMRenderUI"/, enables the Rendering GUI for the rendering
 of shadow maps, see discussion of <tt/"RenderUI"/ above.
@@ -1610,28 +1609,34 @@ will be added to the selection.
 
 <sect1>Editing Points<label id="editac">
 <p>
-To edit the points of an object three actions are available.
-All actions may be applied to a single NURBS curve, NURBS patch or objects
-that support single point editing only.
-Objects mark themselves
-editable by drawing the editable points using small rectangular handles
-if one of the single point editing action is activated.
+To edit the points of an object three actions (<tt/"Edit"/,
+ <tt/"Edit Weights"/, and <tt/"Direct Point Edit"/) are available.
+All those actions may be applied to objects that support single point
+editing only.
+Objects mark themselves editable by drawing the editable points using
+small rectangular handles if one of the single point editing action is
+activated and the object is selected.
 <itemize>
 <item>The modeling action <tt/"Edit"/ (shortcut: <tt/&lt;e&gt;/)
 works much like the move action, but it moves
 single points instead of objects. In contrast to the move action,
-you need to pick on the point you want to move. Furthermore, it is
-not possible to move points of multiple selected objects, only
-the first selected object is considered.<p>
-
+you need to pick on the handle of the point you want to move.
+Furthermore, it is not possible to move points of multiple selected
+objects, only the first selected object is considered.
+<p>
+If a NURBS curve has multiple points, this action modifies all
+points that make up the multiple point.
+<p>
 <item>The modeling action <tt/"Edit Weights"/ (shortcut: <tt/&lt;w&gt;/)
-changes the w coordinate of a
-single point by dragging the mouse left or right.
-The weights may be reset for all points
+changes the w coordinate of a single point by dragging the mouse left
+or right. The weights may be reset for all points
 using the shortcut: <tt/&lt;W&gt;/. Furthermore, it is
 not possible to edit the weights of multiple selected objects, only
-the first selected object is considered.<p>
-
+the first selected object is considered.
+<p>
+If a NURBS curve has multiple points, this action modifies all
+points that make up the multiple point.
+<p>
 <item>The modeling action <tt/"Direct Point Edit"/ (shortcut:
 <tt/&lt;p&gt;/)
 opens a small window where you may change the coordinates of the
@@ -1641,6 +1646,9 @@ picked point does not have weight information (is not homogenous).
 Using the small menu on top of the coordinate window you may
 determine whether editing takes place in local object or global
 world space.
+<p>
+If a NURBS curve has multiple points, this action modifies all
+points that make up the multiple point.
 <p>
 Notice that since Ayam 1.4 the direct point editing dialog may stay
 open all the time. Furthermore, it is not necessary that the original
@@ -1661,7 +1669,8 @@ may only be applied to a single selected object.
 <sect1>Inserting or Deleting Points<label id="insdelac">
 <p>
 The modeling action <tt/"Insert Point"/ (shortcut: <tt/&lt;i&gt;/)
-may be applied to NURBS and ICurves curves only.
+may be applied to NURBS and interpolating curves (objects of type
+NCurve and ICurve) only.
 A new control point will be inserted in the curve right
 after the picked point. The new point will be inserted in the
 middle between the selected point and the next point, changing
@@ -1671,18 +1680,19 @@ their shape using knot insertion;
 see the insert knot tool <ref id="insknt" name="The Insert Knot Tool">.)<p>
 
 The modeling action <tt/"Delete Point"/ (shortcut: <tt/&lt;d&gt;/)
-may be applied to NURBS and ICurves curves only.
+may be applied to NURBS and interpolating curves (objects of type
+NCurve and ICurve) only.
 The selected control point will be deleted from the curve.
 Deleting points from a curve with knot type custom
 may currently lead to an incorrect knot sequence, please
-check and correct the new sequence manually.<p>
+check and correct the new sequence manually.
 
 <sect1>Miscellaneous Actions<label id="miscac">
 <p>
 This section documents some special modeling actions.
 <itemize>
 <item>The modeling action <tt/"FindU"/ (shortcut: <tt/&lt;u&gt;/)
-may be applied to NURBS curves only.
+may be applied to NURBS curves (objects of type NCurve) only.
 This action may be used to get the corresponding parametric
 value u from a point on a curve. Pick a point on the curve
 (not a control point!). If this
@@ -1693,7 +1703,7 @@ Remember to exactly pick a point on the curve or nearby, otherwise
 the calculation may fail and no value will be written to the console.<p>
 
 <item>The modeling action <tt/"Split Curve"/ (shortcut <tt/&lt;c&gt;/)
-may be applied to NURBS curves only.
+may be applied to NURBS curves (objects of type NCurve) only.
 Using this action you may split a NURBS curve into two new curves
 at a point on the curve that may be specified by picking a point
 on the curve.
@@ -1712,7 +1722,7 @@ XY-, ZY-, or XZ-plane (depending on the type of view used).
 <p>
 However, if a view is aligned and switched to local, you can also
 edit in local object space. This means you can e.g. edit a
-two-dimensional parameter curve of a Skin object where both objects
+two-dimensional parameter curve of a skin object where both objects
 (curve and skin) are rotated and scaled arbitrarily
 and make sure that the curve remains two-dimensional all the time.
 <p>
@@ -1723,27 +1733,27 @@ will match the XY-, ZY-, or XZ-plane of the local object space,
 depending on the type of the view (<tt/"Front"/, <tt/"Side"/, or <tt/"Top"/).
 <p>
 Furthermore, grids will also act as if defined in local object space.
-In contrast to their normal behaviour, they can also be scaled
+Note that in contrast to their normal behaviour, grids can also be scaled
 differently in X-window and Y-window coordinates in aligned local views
 (if the local object space is deformed this way).
 
 <sect>Objects and Properties<label id="obandprp">
 <p>
-This section informs you about the property GUIs that
-appear in the properties section of the
-main window if a single object and a property
-have been selected.
+This section informs you about the different object types of Ayam and
+about the property GUIs that appear in the properties section of the
+main window if a single object and a property have been selected.
 
 <sect1>Standard Properties<label id="stdprop">
 <p>
-Most Ayam objects have standard properties, they are used
-to control transformations and attributes of objects.
+Most Ayam objects have standard properties. They are used
+to control transformations and common attributes of objects.
 The following sections describe the standard properties
-Transformations, Attributes, Material, Shaders, and Tags.
+<tt/"Transformations"/, <tt/"Attributes"/, <tt/"Material"/, <tt/"Shaders"/,
+ and <tt/"Tags"/.
 
 <sect1>Transformations Property<label id="trap">
 <p>
-Use this property to edit the location, orientation and
+Use this property to edit the location, orientation, and
 size of an object.
 <itemize>
 <item><tt/"Reset All!"/ immediately resets all transformation
@@ -1765,19 +1775,21 @@ to be edited directly! The sole purpose of its appearance here
 is to allow copying and pasting of rotations.
 </itemize>
 
+The transformations are applied to the object in the following order:
+Scale, Rotation, Translation.
+
 <sect2>Using the Rotation Attributes<label id="gimb">
 <p>
 The orientation of an object in space may be expressed using
 so called Euler angles. This notation (simply three angles
 determining a rotation about the axes of the coordinate system)
 suffers from a phenomenon called gimbal lock.
-
+<p>
 To avoid gimbal locks, Ayam internally holds the orientation
 of an object in a quaternion.
-
 This quaternion not only holds information about the angles
 but also about the order in which partial rotations occured.
-
+<p>
 It is important to know, that the values of the angles of
 the rotation property must not be read in a way that
 the object will first be rotated around X by x-angle degrees
@@ -1787,11 +1799,11 @@ rotations occured may be derived from that three values.
 This implies, that e.g. the values 0 0 45 may denote
 a different orientation than the very same values
 0 0 45 (no joke)!
-
+<p>
 But how do you get the three entries to do what you want?
 You either want to rotate the object around an axis by a given
 amount or you want to undo a rotation or undo all rotations.
-
+<p>
 Rotating an object is easy, simply add the amount about
 which you want to rotate the object to the value currently
 displayed in the appropriate entry. If you want to rotate
@@ -1802,16 +1814,16 @@ If you change multiple entries the rotations made will be
 in the order X (if changed) then Y (if changed) then Z (if changed).
 Do not change more than one entry at once until you exactly
 know what you are doing.
-
+<p>
 Undoing a single rotation works in the same way, just use a subtraction
 instead of an addition.
-
+<p>
 Undoing all rotations (resetting the object to its original state)
 is simple too: enter 0 for all three entries at once,
 then press apply.
-
+<p>
 If you want to copy the orientation of an object to other objects
-using the property clipboard, make sure that you select all Rot and
+using the property clipboard, make sure that you select all Rotation and
 Quat property elements.
 
 <sect1>Attributes Property<label id="attrs">
@@ -1832,6 +1844,7 @@ from zero may not be deleted.
 The material property allows you to connect geometric objects
 to material objects (see also section
 <ref id="materialobj" name="Material Object">).
+The material property GUI consist of the following elements:
 <itemize>
 <item><tt/"Clear Material!"/ immediately clears any connection
 of the current object to its material.
@@ -1841,7 +1854,7 @@ the new material object for editing. If the current object
 already has a material, this material object is searched for
 and selected for editing.
 <item><tt/"Materialname"/ is the name of the material of this object.
-If you change the name the object will be disconnected from the
+If you change the name, the object will be disconnected from the
 old material and connected to the new material.
 An easier way to connect geometric objects to material objects is to simply
 drop the geometric objects onto the material object using Drag-and-Drop
@@ -1924,11 +1937,11 @@ by <tt/"sl2xml"/ from the K-3D project
 instead of compiled shaders.
 The <tt/"Set new shader."/-button will in this case always
 open a file requester, allowing you to select a XML file,
-that has been created by sdpslparse.
+that has been created by sl2xml.
 Furthermore, the <tt/"Default Values."/-button will not be available;
 you have to use <tt/"Set new shader."/ instead.
 <p>
-From V1.3 on, Ayam also supports shader parsing plugins to allow parsing
+From version 1.3 on, Ayam also supports shader parsing plugins to allow parsing
 of shaders compiled with different shader compilers, see also section
 <ref id="spplugins" name="Shader Parsing Plugins">.
 
@@ -1950,7 +1963,7 @@ back using <tt>"Edit/Paste Property"</tt> after loading of the
 new default values.
 Note, that this works only properly, if you do not change
 the type of existing shader arguments and if no shader arguments
-are removed in the new shader!
+are removed in the new version of the shader!
 <p>
 You can also just copy certain parameter values by selecting
 them using double-clicks on the parameter names in the shader
@@ -1997,13 +2010,14 @@ In order to create a tag of type RiAttribute, the type string must be
 where attrname is the name of the attribute (e.g. "render") paramname
 is the name of the parameter (e.g. "displacementbound") paramtype is a
 single character defining the type of the parameter (it may be one of
-<tt/f/ - float,<tt/i/ - integer, <tt/s/ - string,
-<tt/c/ - color, <tt/p/ - point) and finally
-param is the value of the parameter itself (a float: "1", a string: "on",
+<tt/f/ - float, <tt/g/ - float pair, <tt/i/ - integer, <tt/j/ - integer
+pair, <tt/s/ - string, <tt/c/ - color, <tt/p/ - point) and finally
+param is the value of the parameter itself (e.g. a float: "1", a string: "on",
 a color: "1,1,1" or a point: "0.4,0.5,1.0").<p>
 
 Examples:<p>
 <tt>RiAttribute render,truedisplacement,i,1</tt><p>
+<tt>RiAttribute dice,numprobes,j,3,3</tt><p>
 <tt>RiAttribute radiosity,specularcolor,c,0.5,0.5,0.5</tt>
 
 Note, that the RiAttribute tag handles just a single parameter at once.
@@ -2206,27 +2220,29 @@ will not be drawn in any view.
 <sect2>RiOptions Property<label id="rio">
 <p>
 RenderMan Interface options.
-Both, standard and BMRT specific options may be set.
+Both, standard and BMRT specific options may be set using this
+property.
 Please refer to the documentation of the RenderMan Interface
 and the documentation of BMRT for more detailed information about the
 options.
-
+The RiOptions property consists of the following elements:
 <itemize>
 <item><tt/"Width"/, <tt/"Height"/, if greater than zero this value
-will be used for the image-size instead of the corresponding
+will be used for the image size instead of the corresponding
 dimension of the view window, but only for real RIB exports
 and not for the QuickRender and Render actions in view windows.
-These will always use the dimensions of the view window.
+QuickRender and Render will always use the dimensions of the view window
+instead.
 <item><tt/"StdDisplay"/, if this is enabled, a standard display
 statement will be written to the RIB, which looks like this:
 
-<code>Display "unnamed.tif" "file "rgba"</code>
+<code>Display "unnamed.tif" "file" "rgba"</code>
 
 If you disable this option, be sure to add atleast one
 RiDisplay tag to the root object (see also section
 <ref id="ridtag" name="RiDisplay Tag">), otherwise your RIB will
 not contain a Display statement. This option has no effect on
-RIBs that render directly to the screen.
+RIBs created by the QuickRender and Render actions in view windows.
 <item><tt/"Variance"/, maximum allowed variance of two pixel values.
 The default 0.0 causes no setting in the RIB. If the variance is > 0.0
 no pixel samples setting will be written to the RIB. Various
@@ -5473,7 +5489,9 @@ But be careful with the brackets!
 Available types of parameters are:
 <itemize>
 <item>i: a scalar integer value
+<item>i: a pair of integer values
 <item>f: a scalar float value
+<item>g: a pair of float values
 <item>s: a string value
 <item>p: a point in space (simply three float values), the default
 values (if provided) are three float values in curly braces, such as
