@@ -12,7 +12,7 @@
 
 
 # prefs_set:
-#  
+#  transfer preference settings to C-context
 proc prefs_set {} {
     global ayprefs
     set tcl_precision $ayprefs(TclPrecision)
@@ -21,6 +21,7 @@ proc prefs_set {} {
 }
 # prefs_set
 
+
 # prefs_rsnb:
 #  resize notebook nb so that the page page is displayed in full size
 proc prefs_rsnb { nb page } {
@@ -28,13 +29,13 @@ proc prefs_rsnb { nb page } {
     update
     $nb configure -height [winfo reqheight [$nb getframe $page] ]
     set ay(prefssection) $page
-return;
+ return;
 }
 # prefs_rsnb
 
 
 # prefs_open:
-#  
+#  open the preferences editor
 proc prefs_open {} {
     global ay ayprefs ayprefse
 
@@ -266,7 +267,7 @@ proc prefs_open {} {
 
 
 # prefs_save:
-#
+#  save preference settings to ayamrc file
 proc prefs_save { } {
     global ay
     set ayrc $ay(ayamrc)
@@ -384,6 +385,110 @@ proc prefs_save { } {
     ayError 4 "prefs_save" "Done saving preferences to $ayrc."
 
     update
-    return;
+
+ return;
 }
 # prefs_save
+
+
+# prefs_toggleLazyNotification:
+#
+proc prefs_toggleLazyNotification { } {
+    global ayprefs ayprefse aymainshortcuts
+
+    if { $ayprefs(LazyNotify) == 1 } {
+	set ayprefse(LazyNotify) 0
+	set ayprefs(LazyNotify) 0
+	ayError 4 $aymainshortcuts(SwLazyNotify) "LazyNotification turned off."
+    } else {
+	set ayprefse(LazyNotify) 1
+	set ayprefs(LazyNotify) 1
+	ayError 4 $aymainshortcuts(SwLazyNotify) "LazyNotification turned on."
+    }
+
+    setPrefs
+
+ return;
+}
+# prefs_toggleLazyNotification
+
+
+# prefs_toggleSurfaceWire:
+#  toggle drawing of Curves/Surfaces vs. Wireframes (bound to F-Key)
+proc prefs_toggleSurfaceWire { draw_surface } {
+    global ayprefs ayprefse aymainshortcuts
+
+    if { $draw_surface == 1 } {
+	if { $ayprefs(DisplayMode) != 2 || $ayprefs(NCDisplayMode) != 0 } {
+	    set ayprefse(DisplayMode) 2
+	    set ayprefs(DisplayMode) 2
+	    set ayprefse(NCDisplayMode) 0
+	    set ayprefs(NCDisplayMode) 0
+	    ayError 4  $aymainshortcuts(SwNURBS)\
+		    "Drawing of Curves/Surfaces turned on."
+	    setPrefs
+	    update
+	    rV
+	}
+    } else {
+	if { $ayprefs(DisplayMode) != 0 || $ayprefs(NCDisplayMode) != 2 } {
+	    set ayprefse(DisplayMode) 0
+	    set ayprefs(DisplayMode) 0
+	    set ayprefse(NCDisplayMode) 2
+	    set ayprefs(NCDisplayMode) 2
+	    ayError 4 $aymainshortcuts(SwWire)\
+		    "Drawing of Wireframes turned on."
+	    setPrefs
+	    update
+	    rV
+	}
+    }
+    # if
+
+ return;
+}
+# prefs_toggleSurfaceWire
+
+
+# prefs_setSamplingTolerance:
+#  set new sampling tolerance (bound to F-Key)
+proc prefs_setSamplingTolerance { plus } {
+    global ay ayprefs ayprefse aymainshortcuts
+
+    if { $ay(sstsema) == 0 } {
+	set ay(sstsema) 1
+	update
+	if { $plus == 1 } {
+	    if { $ayprefs(Tolerance) < 90 } {
+		set newval [ expr $ayprefs(Tolerance) + 10]
+		set ayprefs(Tolerance) $newval
+		set ayprefse(Tolerance) $newval
+		ayError 4 $aymainshortcuts(SetSTP)\
+			"SamplingTolerance set to ${newval}."
+		setPrefs
+		update
+		rV
+	    }
+	} else {
+	    if { $ayprefs(Tolerance) > 10 } {
+		set newval [ expr $ayprefs(Tolerance) - 10]
+		set ayprefs(Tolerance) $newval
+		set ayprefse(Tolerance) $newval
+		ayError 4 $aymainshortcuts(SetSTL)\
+			"SamplingTolerance set to ${newval}."
+
+		setPrefs
+		update
+		rV
+	    }
+	    
+	}
+	# if
+
+	set ay(sstsema) 0
+    }
+    # if
+
+ return;
+}
+# prefs_setSamplingTolerance

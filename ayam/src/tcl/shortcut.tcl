@@ -10,17 +10,42 @@
 # shortcut.tcl - procedures to establish key bindings
 
 
-# replace control
+# repcont - replace control
 proc repcont { string } {
     regsub -all "Ctrl" $string "Control" dummy
     return $dummy
 }
+# repcont
 
-#replace "KeyPress-"
+
+# repkp - replace "KeyPress-"
 proc repkp { string } {
     regsub -all "KeyPress-" $string "" dummy
     return $dummy
 }
+# repkp
+
+
+# shortcut_fkeys:
+#  Setup Function-Key-Bindings for window w
+proc shortcut_fkeys { w } {
+ global aymainshortcuts
+
+    bind $w <[repcont $aymainshortcuts(SwLazyNotify)]>\
+	    prefs_toggleLazyNotification
+    bind $w <[repcont $aymainshortcuts(SwNURBS)]>\
+	    {prefs_toggleSurfaceWire 1}
+    bind $w <[repcont $aymainshortcuts(SwWire)]>\
+	    {prefs_toggleSurfaceWire 0}
+    bind $w <[repcont $aymainshortcuts(SetSTP)]>\
+	    {prefs_setSamplingTolerance 1}
+    bind $w <[repcont $aymainshortcuts(SetSTL)]>\
+	    {prefs_setSamplingTolerance 0}
+
+ return;
+}
+# shortcut_fkeys
+
 
 # shortcut_main:
 #  Setup Keybindings for the Main Window
@@ -113,6 +138,11 @@ proc shortcut_main { w } {
     $m entryconfigure 20 -accelerator $aymainshortcuts(Zap)
 
     bind $w <Map> unzap
+
+    # bind function keys
+    shortcut_fkeys $w
+
+ return;
 }
 # shortcut_main
 
@@ -215,10 +245,14 @@ proc shortcut_view { w } {
 
     bind $w <[repcont $aymainshortcuts(Zap)]> zap
     bind $w <Map> unzap
-return
 
+    # bind function keys
+    shortcut_fkeys $w
+
+ return;
 }
 # shortcut_view
+
 
 # shortcut_viewactions:
 # Setup Keybindings for a 3D-View
@@ -353,8 +387,10 @@ proc shortcut_altrotatebinding { w } {
 	update
 	break;
     }
+ return;
 }
 # shortcut_altrotatebinding
+
 
 #shortcut_show:
 # display all current shortcuts in a separate top level window
@@ -463,6 +499,6 @@ bind $w.ftext.text <ButtonPress-4>\
 bind $w.ftext.text <ButtonPress-5>\
 "$w.ftext.text yview scroll 1 pages; break"
 
-
+ return;
 }
-#shortcut_show
+# shortcut_show
