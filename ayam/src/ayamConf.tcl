@@ -21,7 +21,7 @@ set rib { \
 
 # Our Shader-Parser
 set shader { \
-		 {"XML (internal)"} \
+		 {"XML (internal, supplied)"} \
 		 {"libslxargs (Aqsis)"} \
 		 {"libslcargs (BMRT)"} \
 	     }
@@ -30,7 +30,7 @@ set shader { \
 set o { \
 	    {IRIX} \
 	    {Linux} \
-	    {"MacOS X"} \
+	    {"Mac OS X"} \
 	    {Solaris} \
 	    {NetBSD} \
 	 }
@@ -60,7 +60,7 @@ proc create_makefile {} {
     } 
 
     if {$shaderval == $def_shaderval} {
-	set err_str "$err_str - No Shade-Parser selected.\n"
+	set err_str "$err_str - No Shader-Parser selected.\n"
 	set err 1
     } 
 
