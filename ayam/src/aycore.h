@@ -579,6 +579,9 @@ int ay_tcmd_waitpidtcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
 #endif /* AYENABLEWAIT */
 
+/* tgui.c */
+int ay_tgui_init(Tcl_Interp *interp);
+
 /* tmp.c */
 int ay_tmp_gettcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[]);
