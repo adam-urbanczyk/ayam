@@ -644,6 +644,35 @@ proc viewSetGridIcon { w gridsize } {
 
 
 ##############################
+# viewSetModeIcon:
+#  set correct drawing mode icon according to mode
+proc viewSetModeIcon { w mode } {
+    global ay AYWITHAQUA
+
+    if { ! $AYWITHAQUA } {
+	set m fMenu.dm
+	set conf "$w.$m configure"
+    } else {
+	set m menubar.dm
+	set conf "$w.menubar entryconfigure 3"
+    }
+
+    if { $mode == 0 } {
+	eval "$conf -image ay_DMDraw_img"
+    } else {
+	if { $mode == 1 } {
+	    eval "$conf -image ay_DMShade_img"
+	} else {
+	    eval "$conf -image ay_DMShadeDraw_img"
+	}
+    }
+
+ return;
+}
+# viewSetModeIcon
+
+
+##############################
 # viewMouseToCurrent:
 #  set current view to the view that has the focus;
 #  used after startup and loading of scenes

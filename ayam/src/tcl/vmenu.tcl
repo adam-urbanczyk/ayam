@@ -205,6 +205,37 @@ $m add check -label "Edit Local" -variable ay(cVLocal) -command "\
 #-label "Quick Render"\
 #-command {exit}
 
+# Drawing Mode Menu
+if { ! $AYWITHAQUA } {
+    menubutton $w.fMenu.dm -image ay_DMDraw_img -menu $w.fMenu.dm.m\
+	    -padx 0 -pady 0 -borderwidth 0
+    set m [menu $w.fMenu.dm.m -tearoff 0]
+    set ay(dmodem) fMenu.dm.m
+} else {
+    set m [menu $mb.dm -tearoff 0]
+    $mb add cascade -image ay_DMDraw_img -menu $m
+    set ay(dmodem) menubar.dm
+}
+
+
+$m add command -image ay_DMDraw_img -hidemargin 1 -command "\
+        global ay; set ay(cVMode) 0;\
+	$w.f3D.togl setconf -shade \$ay(cVMode);\
+	viewSetModeIcon $w 0;\
+	\$ay(currentView) mc"
+
+$m add command -image ay_DMShade_img -hidemargin 1 -command "\
+        global ay; set ay(cVMode) 1;\
+	$w.f3D.togl setconf -shade \$ay(cVMode);\
+	viewSetModeIcon $w 1;\
+	\$ay(currentView) mc"
+$m add command -image ay_DMShadeDraw_img -hidemargin 1 -command "\
+        global ay; set ay(cVMode) 2;\
+	$w.f3D.togl setconf -shade \$ay(cVMode);\
+	viewSetModeIcon $w 2;\
+	\$ay(currentView) mc"
+
+
 # Grid
 if { ! $AYWITHAQUA } {
     menubutton $w.fMenu.g -image ay_Grid_img -menu $w.fMenu.g.m\
@@ -243,6 +274,8 @@ if { ! $AYWITHAQUA } {
     pack $w.fMenu.v $w.fMenu.t $w.fMenu.c -in $w.fMenu -side left
 
     pack $w.fMenu.g -in $w.fMenu -side right
+
+    pack $w.fMenu.dm -in $w.fMenu -side right
 
     #pack $w.fMenu.a -in $w.fMenu -side right
 

@@ -476,6 +476,7 @@ ay_undo_copy(ay_undo_object *uo)
  ay_copycb *ccb = NULL;
  char view_repairtitle_cmd[] = "viewRepairTitle ", buf[64];
  char view_setgridicon_cmd[] = "viewSetGridIcon .";
+ char view_setmodeicon_cmd[] = "viewSetModeIcon .";
  Tcl_DString ds;
  int notify = AY_TRUE;
 
@@ -547,6 +548,15 @@ ay_undo_copy(ay_undo_object *uo)
 	  Tcl_DStringAppend(&ds, o->name, -1);
 	  memset(buf, 0, sizeof(buf));
 	  sprintf(buf, " %g", ((ay_view_object *)(c->refine))->grid);
+	  Tcl_DStringAppend(&ds, buf, -1);
+	  Tcl_Eval(ay_interp, Tcl_DStringValue(&ds));
+	  Tcl_DStringFree(&ds);
+	  /* set mode icon of view window */
+	  Tcl_DStringInit(&ds);
+	  Tcl_DStringAppend(&ds, view_setmodeicon_cmd, -1);
+	  Tcl_DStringAppend(&ds, o->name, -1);
+	  memset(buf, 0, sizeof(buf));
+	  sprintf(buf, " %d", ((ay_view_object *)(c->refine))->shade);
 	  Tcl_DStringAppend(&ds, buf, -1);
 	  Tcl_Eval(ay_interp, Tcl_DStringValue(&ds));
 	  Tcl_DStringFree(&ds);
