@@ -217,6 +217,10 @@ button $f.bca -text "Cancel" -width 5 -command "\
 pack $f.bok $f.bca -in $f -side left -fill x -expand yes
 pack $f -in $w -side bottom -fill x
 
+wm protocol $w WM_DELETE_WINDOW {
+    .setShaderw.f2.bca invoke
+}
+
 winCenter $w
 grab $w
 focus $f.bok
