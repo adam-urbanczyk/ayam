@@ -375,7 +375,8 @@ int ay_npt_gordoncc(ay_object *o1, ay_object *o2, int stride,
 
 int ay_npt_gordonwc(ay_object *g);
 
-
+int ay_npt_extractnc(ay_object *npatch, int side, double param,
+		     ay_nurbcurve_object **result);
 
 
 /* pmt.c */
