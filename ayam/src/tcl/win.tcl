@@ -130,3 +130,22 @@ global ayprefs tcl_platform
  return;
 }
 # winMoveOrResize
+
+# winIconWindow:
+#  set icon window for window w
+proc winIconWindow { w img } {
+
+#image create photo icon_img -format GIF -file /home/randi/ayamsf/ayam/src/ayam-icon-t.gif
+
+if { ! [winfo exists .icon] } {
+    toplevel .icon
+    pack [label .icon.l -image $img ]
+}
+
+wm iconwindow $w .icon 
+wm withdraw $w
+wm deiconify $w
+
+
+}
+# winIconWindow
