@@ -1,4 +1,4 @@
-[Setup.txt, 09. Jun 2002]
+[Setup.txt, 17. Jun 2002]
 
 Setup instructions for Ayam (Unix only)
 ---------------------------------------
@@ -9,24 +9,24 @@ into your system. If you want to install, just follow the instructions
 in the file "bin/INSTALL" first.
 
 Before you start modelling with Ayam, you should set it up
-properly. The following things have to be done for that:
+properly. The following things have to be done:
 
-  1. Saving preferences
-  2. Determining type of window manager
-  3. Setting up shaders	
-  4. Creating and saving a working environment
-
-Do not worry about any error messages in red color, that appeared
-in the console on first startup. We are going to fix them now.
+  1. Determine where to save the preferences
+  2. Determine the type of the window manager
+  3. Set up the shaders
+  4. Set up the plugins
+  5. Create and save a working environment
 
 
-1. Saving preferences
----------------------
+Do not worry about any error messages in red color, that possibly
+appeared in the console on first startup.
 
-The preference settings are automatically saved when you
-leave the application.
 
-The preferences are saved to the file: "~/.ayamrc"
+1. Determine where to save the preferences
+------------------------------------------
+
+By default, the preference settings are automatically saved when you
+leave the application to the file: "~/.ayamrc".
 
 You can change the filename of the preference settings
 using the environment variable "AYAMRC".
@@ -39,33 +39,33 @@ add to your profile:
 You have to restart the shell and Ayam in order for these changes to
 take effect.
 
-You can switch off automatic saving of preferences on exit in the
+You can switch off automatic saving of the preferences in the
 preference settings (Pref: "Main/AutoSavePrefs").
 If you switched off AutoSavePrefs, you can force saving of the
-preferences using the menu entry "File/Save Prefs".
+preferences using the main menu entry "File/Save Prefs".
 
 
-2. Determining type of window manager
--------------------------------------
+2. Determine the type of the window manager
+-------------------------------------------
 
 If you fail to correctly determine the type of your window
 manager, the geometry of the main window and the toolbox
 will be wrong after restart of Ayam. Furthermore, the main
 window may jump, each time a new property is selected.
-This is because, unfortunately, different X window managers report
-different values for the geometries of top level windows, some include
-the decoration, some do not.
+This is because, unfortunately, different X window managers
+report different values for the geometries of top level windows,
+some include the decoration, some other do not.
 
-If the main window jumps when you select the first property
-of the "Root" object your WM is "twm-compatible".
-To check this, just start Ayam, click on "Root" in the tree view,
+If the main window jumps, when you select the first property
+of the "Root" object, your WM is "twm-compatible".
+To check this, just start Ayam, click on "Root" in the tree view
 then on "RiOptions" in the listbox to the right and watch
 your main window.
 If it jumps downward, you should set "TwmCompat" to "on" in the
 preferences!
 
 
-3. Setting up shaders
+3. Set up the shaders
 ---------------------
 
 What are shaders? For the moment, we can safely assume that
@@ -74,19 +74,54 @@ Some example shaders come with your RenderMan compatible renderer
 (e.g. BMRT), but you may also create your own of course.
 Currently, Ayam can only work with shaders that have been
 compiled with "slc" from BMRT, so you should get and
-install BMRT http://www.exluna.com/.
+install BMRT from http://www.exluna.com/.
 Now you need to point Ayam to the directories where your slc-compiled
-shaders reside in order to use them with the material
-objects in Ayam.
+shaders reside in order to use them with the material objects in Ayam.
 This is done using the preference setting "Main/Shaders".
 Just open the preferences, enter the appropriate paths (separated by ":")
 into the string entry labeled "Shaders".
-Now press the "Scan Shaders" button below and watch the console for
-error messages.
+If you installed BMRT before your first start of Ayam, the preference
+setting "Main/Shaders" probably already contains the right path setting
+(fetched from the SHADERS environment variable, that has been set while
+installing BMRT).
+
+Example:
+If you installed BMRT2.6 into "/usr/local/BMRT2.6" you will want
+to add "/usr/local/BMRT2.6/shaders/" to your "Shaders" preference
+setting.
+
+If you are done, press the "Scan Shaders" button below and watch
+the console for error messages.
 
 
-4. Creating and saving a working environment
---------------------------------------------
+4. Set up the plugins
+---------------------
+
+The distribution of Ayam contains some plugins:
+RRIB: RIB Import
+MFIO: 3DMF Import/Export
+IDR: Importance Driven Rendering
+MetaObj: the MetaBalls custom object
+
+You may load the plugins
+a) manually if you need them (using the main menu "File/Load Custom") or
+b) automatically on startup of Ayam.
+
+Add "<path>/load<pluginname>.tcl" to the preference setting
+"Main/Scripts" if you want the plugin to load automatically on
+startup. Use ":" to separate different entries.
+
+Add the path to "metaobj.so" to the preference setting "Main/Plugins"
+if you want the MetaBalls custom object to be automatically loaded
+when a scene containing this type of object is being read.
+
+Be sure to add the path to the respective shared object (file with
+the file name extension ".so") _or_ "." to your LD_LIBRARY_PATH
+environment variable, otherwise loading of the plugin will fail.
+
+
+5. Create and save a working environment
+----------------------------------------
 
 The working environment is simply an almost empty Ayam scene file.
 This file just contains the specification of some view windows.
@@ -112,7 +147,7 @@ o Save the environment using the main menu entry
   as this would inhibit automatic loading of the working
   environment on startup.
   If the preference setting "Main/NewLoadsEnv" is enabled, the
-  working environment will also be read, if you clear the scene
+  working environment will also be read if you clear the scene
   using the main menu entry "File/New".
 
 Quit the application and start it again; then
