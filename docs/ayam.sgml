@@ -4,9 +4,9 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>10. Oct 2003
+<date>29. Dec 2003
 <abstract>
-This is the documentation of Ayam (1.6) - a free 3D modeling environment
+This is the documentation of Ayam (1.7) - a free 3D modeling environment
 for the RenderMan interface.
 
 Please note, that this document is intended to be a reference manual,
@@ -115,7 +115,7 @@ You will notice, that there is a first object called "Root" in the
 top level, even though the scene seems to be empty.
 See section <ref id="rootobj" name="Root Object"> for more
 information regarding this special object, and what it is good for.
-Note, that you cannot delete or copy this object.
+Note that you cannot delete or copy this object.
 
 <bf/Tree View:/<label id="treeview">
 <p>
@@ -169,7 +169,9 @@ Since Ayam 1.6 the scene may be navigated and objects may be selected
 using the keyboard alone:
 <itemize>
 <item><tt/&lt;Up&gt;/ and <tt/&lt;Down&gt;/ move the selection to the previous
-or next object,
+or next object, since Ayam 1.7 holding down the <tt/&lt;Shift&gt;/ key
+while pressing <tt/&lt;Up&gt;/ or <tt/&lt;Down&gt;/ will not move the
+selection, but rather extend it in the respective direction,
 <item><tt/&lt;Home&gt;/ and <tt/&lt;End&gt;/ select the first
 or last object in the current level,
 <item><tt/&lt;Right&gt;/ enters the (first) selected object,
@@ -222,7 +224,9 @@ Since Ayam 1.6 the scene may be navigated and objects may be selected
 using the keyboard alone:
 <itemize>
 <item><tt/&lt;Up&gt;/ and <tt/&lt;Down&gt;/ move the selection to the previous
-or next object,
+or next object, since Ayam 1.7 holding down the <tt/&lt;Shift&gt;/ key
+while pressing <tt/&lt;Up&gt;/ or <tt/&lt;Down&gt;/ will not move the
+selection, but rather extend it in the respective direction,
 <item><tt/&lt;Home&gt;/ and <tt/&lt;End&gt;/ select the first
 or last object in the current level,
 <item><tt/&lt;Right&gt;/ enters the (first) selected object,
@@ -247,7 +251,7 @@ If there are multiple selected objects,
 the properties listbox will display no properties at all.<p>
 Unlike the objects tree/listbox, where you can select multiple entries,
 only one property may be selected.
-If a property is selected, the associated GUI will be shown in the 
+If a property is selected, the associated GUI will be shown in the
 appropriate area (on the right hand side).
 All property GUIs use more or less standardized GUI elements
 that are organized in list form. The lists may be scrolled if they get
@@ -281,7 +285,7 @@ is pressed!<p>
 You can undo all changes to the arguments of a property that
 have been made after the last click on "Apply" with the "Reset" button.
 This does, however, not use the undo mechanism of Ayam!<p>
-Note, that property GUIs of custom objects may also offer interactive
+Note that property GUIs of custom objects may also offer interactive
 elements that do an instant "Apply". Most GUIs of the
 core objects of Ayam and the Scene object do not change anything
 until the "Apply" button is used, however.<p>
@@ -360,7 +364,7 @@ into an entry in a property GUI to move
 the focus away from the console and enable the main
 menu shortcuts again.
 <p>
-Note, that the <tt/&lt;TAB&gt;/ key alone does not move the
+Note that the <tt/&lt;TAB&gt;/ key alone does not move the
 focus away from the console.
 <tt/&lt;TAB&gt;/ instead completes names of files, commands
 (procedures), variables and widgets.
@@ -389,7 +393,7 @@ current level if no objects are selected.
 
 See section <ref id="script" name="The Tcl Scripting Interface"> for a
 listing of all the available commands.<p>
-Note, that the example uses a side effect (the variable <tt/i/ that
+Note that the example uses a side effect (the variable <tt/i/ that
 holds the index of the currently processed object) to calculate
 the amount of the movement and rotation.<p>
 For more information regarding the console,
@@ -400,7 +404,7 @@ open with your right mouse button).
 <sect1>The Main Menu<label id="mm">
 <p>
 Another important part of the main window has not been discussed so
-far. This is the main menu bar. Note, that many menu entries have keyboard
+far. This is the main menu bar. Note that many menu entries have keyboard
 shortcuts that are displayed in each entry. You can adapt the shortcuts
 using the file <tt>"ayamrc"</tt>
 (See section <ref id="ayamrc" name="Ayamrc File">).
@@ -451,7 +455,7 @@ operations, undo actions, and lets you open the preferences editor:
 <item><tt/Cut/, moves the currently selected object(s) into the clipboard.
 <item><tt/Paste/, copies the object(s) from the clipboard to the current level
 of the scene.
-Note, that the content of the clipboard remains intact after this
+Note that the content of the clipboard remains intact after this
 operation, this means that you can paste multiple times!
 You can move objects
 out of the clipboard using the menu entry
@@ -509,7 +513,7 @@ also section <ref id="patchmeshobj" name="PatchMesh Object">.
 <item><tt/Solid/, create a new solid primitive object, for use in CSG.
 <tt/Box,/ <tt/Sphere/, <tt/Disk/, <tt/Cone/, <tt/Cylinder/, <tt/Torus/,
 <tt/Hyperboloid/ or <tt/Paraboloid/ may be selected.
-See also section <ref id="csgprim" name="CSG Primitives">.
+See also section <ref id="qprim" name="Quadric Primitives">.
 <item><tt/Level/, creates a new hierarchy object. <tt/Level/
 just groups objects, <tt/Union/, <tt/Intersection/,
 <tt/Difference/, and <tt/Primitive/ are CSG operations. See
@@ -568,7 +572,7 @@ mesh.
 </itemize>
 <item><tt/Show/, <tt/Hide/ set and unset the <tt/Hide/
 attribute of the selected object(s) thus making them invisible.
-Note, that hidden objects may be excluded from RIB-Export, when
+Note that hidden objects may be excluded from RIB-Export, when
 the preference setting <tt>"RIB-Export/ExcludeHidden"</tt> is
 activated.
 <item><tt/Show All/ and <tt/Hide All/ set and unset the <tt/Hide/
@@ -607,7 +611,7 @@ may create entries here.
 The <tt/Special/ menu:
 <itemize>
 <item><tt/Save Selected as/, saves just the currently selected objects
-to disk. Note, that Ayam will not check, whether the objects are
+to disk. Note that Ayam will not check, whether the objects are
 saved with their materials. It is also possible to save
 instance objects without their master objects. This will lead
 to errors while loading such a scene later on.
@@ -616,7 +620,7 @@ views to a so called environment scene file, which is read
 on program startup and <tt>"File/New"</tt>.
 Initially, the file requester that asks for the name
 of the new environment uses the value of the preference
-setting <tt>"Main/EnvFile"</tt>. Note, that there will be no
+setting <tt>"Main/EnvFile"</tt>. Note that there will be no
 check whether loading of that environment on next start up is
 enabled in the preferences. Note also, that using <tt/Save Environment/
 you can just save environment files that contain the root object
@@ -675,7 +679,7 @@ be used.
 If the <tt>"ScanShaders"</tt> checkmark is activated, Ayam will
 additionally try to load the corresponding shader parsing plugin
 (see also section <ref id="spplugins" name="Shader Parsing Plugins">))
-and rescan for compiled shaders. Note, that in order for the
+and rescan for compiled shaders. Note that in order for the
 <tt>"ScanShaders"</tt> feature to work
 properly you also have to set the <tt>"Main/Shaders"</tt> and
 <tt>"Main/Plugins"</tt> preference setting correctly
@@ -691,8 +695,10 @@ Otherwise the RIB looks exactly the same as if exported via
 main menu <tt>File/Export RIB</tt>.
 
 <item><tt>RIB-Export/Selected Objects</tt>, exports only the
-selected objects to a RIB. Note that instances will always be resolved
-and light objects are simply ignored. Note also that this RIB,
+selected objects to a RIB. Note that instances will always be resolved,
+hidden objects and objects with <tt>"NoExport"</tt> tags are treated
+as on normal export operations, and light objects are simply ignored.
+Note also that this RIB,
 since it e.g. lacks camera transformation and WorldBegin/End directives,
 may not be rendered directly by a RenderMan compliant renderer
 (unless the renderer is really forgiving about mis-structured RIBs).
@@ -758,12 +764,12 @@ Here are all meny entries of the <tt/"View"/ menu:
 <itemize>
 <item><tt/Quick Render/: the scene is exported to a RIB using the
 camera settings of the current view; then the <tt/"QRender"/ command
-(see the preferences) will be called. Note, that the RIB export
+(see the preferences) will be called. Note that the RIB export
 will override the RiOption settings for image size and use the current
 window size instead.
 <item><tt/Render/: the scene is exported to a RIB using the
 camera settings of the current view; then the <tt/"Render"/ command
-(see the preferences) will be called. Note, that the RIB export
+(see the preferences) will be called. Note that the RIB export
 will override the RiOption settings for image size and use the current
 window size instead.
 <item><tt/Redraw/: forces the OpenGL-widget to be drawn, this is
@@ -805,7 +811,7 @@ See sections <ref id="viewobj" name="View Object"> and
 for more information.
 
 <label id="vmconf">
-The <tt/"Configure"/ menu may be used to change preferences of the view. 
+The <tt/"Configure"/ menu may be used to change preferences of the view.
 Some preferences are outlined in greater detail in
 section <ref id="vat" name="ViewAttrib">.
 <itemize>
@@ -881,7 +887,7 @@ Interactive actions modifying a view:
 <itemize>
 <item>Using <tt/&lt;v&gt;/ you may move the view with your mouse.
 <item>Using <tt/&lt;V&gt;/ you move the camera in the direction it is
-looking. Note, that this affects both, from and to setting of the
+looking. Note that this affects both, from and to setting of the
 virtual camera. Furthermore, this movement will have no visible effect in
 parallel views.
 <item><tt/&lt;R&gt;/ (note the case!) starts rotating the virtual
@@ -953,7 +959,7 @@ around those objects. However only objects that belong to the current level
 can be picked within a drag-selection. If you want to select multiple objects
 that belong to another level you must change the current level by either
 selecting it in the tree/listbox or by picking one object from that level
-on a view. 
+on a view.
 
 <p>
 The procedure for drag-selecting multiple objects also uses a standard method:
@@ -968,7 +974,7 @@ automatically.
 </enum>
 
 <p>
-Note, that if you press <tt/&lt;Shift&gt;/ during the drag-selection, objects
+Note that if you press <tt/&lt;Shift&gt;/ during the drag-selection, objects
 that are enclosed by the rectangle will be added to the current selection
 instead of replacing it.
 
@@ -1013,7 +1019,7 @@ objects within the views.
 <tt/&lt;Ctrl+o&gt;/) while the ambiguous select listbox is open to get
 a better view of the temporarily selected object.
 <item> The tolerance used to determine whether an object should be picked
-or not can be adjusted (see <tt/"PickTolerance"/ in <ref id="hidprefs" 
+or not can be adjusted (see <tt/"PickTolerance"/ in <ref id="hidprefs"
 name="Hidden Preference Settings">).
 </itemize>
 
@@ -1027,7 +1033,7 @@ name="Hidden Preference Settings">).
 <p>
 The tool window displays some buttons that start interactive
 modeling actions or other modeling tools, or create objects.<p>
-Note, that in contrast to the keyboard shortcuts of the
+Note that in contrast to the keyboard shortcuts of the
 view windows the buttons switch to the modeling actions for
 all available views. For more information about the actions
 see section <ref id="iac" name="Interactive Actions">.<p>
@@ -1087,7 +1093,7 @@ on Unix and <tt/";"/ on Win32) where Ayam looks for compiled
 shaders (e.g. files with the extension <tt/".slc"/ that have been compiled
 with slc from BMRT). Using the <tt/"Add"/ button, you may add
 another path, simply press it and select a file inside the directory
-you want to add. Note, that currently the filename of a compiled shader
+you want to add. Note that currently the filename of a compiled shader
 may contain just two <tt/"."/ at maximum.
 <item><tt/"Scan for Shaders!"/ initiates a rebuild of the internal
 shaders database. All shaders in the directories specified by
@@ -1108,7 +1114,7 @@ should be resized horizontally according to the property GUI whenever
 a new GUI is displayed.
 <item><tt/"AutoFocus"/ controls whether Ayam should automatically
 move the focus to a view or the main window, when the mouse pointer
-enters it. Note, that this may only work correctly, when a window
+enters it. Note that this may only work correctly, when a window
 of Ayam already has the focus. Notice also, that moving the focus
 to a window might also raise it (depending on your operating system
 or window manager).
@@ -1126,7 +1132,7 @@ the preferences settings to the file ayamrc when the program quits.
 a backup copy of each scene file it loads via main menu
 <tt>"File/Replace"</tt> or via the most recently used list.
 <item><tt/"LoadEnv"/, if this is switched on, Ayam will load
-the scene file specified by <tt/"EnvFile"/ on startup. 
+the scene file specified by <tt/"EnvFile"/ on startup.
 <item><tt/"NewLoadsEnv"/, if this is switched on, Ayam will load
 the scene file specified by <tt/"EnvFile"/ also when the scene is
 cleared using the main menu entry <tt>"File/New"</tt>.
@@ -1152,7 +1158,7 @@ The next section of the preferences, <tt/"Modeling"/,
 contains modeling related settings:
 <itemize>
 <item><tt/"PickEpsilon"/ is used by the single point editing actions
-to determine which point (vertice) of an object has been selected. 
+to determine which point (vertice) of an object has been selected.
 A smaller <tt/"PickEpsilon"/ means more exact picking.
 If you set it to 0.0, however, the picking code will always return the nearest
 point (vertice) to the picking coordinates.
@@ -1190,24 +1196,24 @@ range from 1 to 100.
 This setting has no effect for objects that override it
 using a local tolerance setting different from 0.
 <item><tt/"DisplayMode"/ sets the display mode for NURBS patches.
-Either the control hull (or control polygon) is drawn (ControlHull), or 
+Either the control hull (or control polygon) is drawn (ControlHull), or
 just the outlines of the polygons created by the tesselation
 (OutlinePoly), or just the outlines of the patch (OutlinePatch).
-Note, that this setting just affects the drawing of patches if
+Note that this setting just affects the drawing of patches if
 the view is not in shaded mode.
 Note also, that this setting has no effect for objects that override it
 using a local DisplayMode setting different from "Global".
 <item><tt/"NCDisplayMode"/ sets the display mode for NURBS curves,
 The control hull (control polygon) or the curve or a
 combination of both may be displayed.
-Note, that this setting has no effect for objects that override it
+Note that this setting has no effect for objects that override it
 using a local DisplayMode setting different from "Global".
 <item><tt/"UseMatColor"/ determines, whether the shaded representation
 uses the color defined by the material of an object for
 rendering.
 <item><tt/"Background"/, <tt/"Object"/, <tt/"Selection"/, <tt/"Grid"/,
 <tt/"Tag"/, <tt/"Shade"/, and <tt/"Light"/ let you set colors that
-will be used when drawing or shading. 
+will be used when drawing or shading.
 </itemize>
 
 <sect2>The RIB-Export Preferences<label id="prefrib">
@@ -1216,7 +1222,7 @@ The <tt/"RIB-Export"/ section of the preferences contains settings that
 affect how RIBs are created.
 <itemize>
 <item><tt/"RIBFile"/ allows to set the file Ayam is exporting
-RenderMan Interface Bytestreams (RIBs) to. Note, that some
+RenderMan Interface Bytestreams (RIBs) to. Note that some
 filenames have special meaning:<p>
 
 If you set <tt/"RIBFile"/ to <tt/"Scene"/ (this is the default)
@@ -1259,7 +1265,7 @@ files that are named as the exported RIB file (with the last
 file extension replaced by <tt/".tif"/). Again, setting
 it to <tt/"Ask"/ will cause a dialog box to appear,
 each time you export to a RIB file.
-Note, that in contrast to the <tt/"RIBFile"/ option leaving the field
+Note that in contrast to the <tt/"RIBFile"/ option leaving the field
 totally empty is not equal to entering <tt/"Ask"/ but generates
 RIB files that will be set up to render to the display.
 
@@ -1407,7 +1413,7 @@ get a different or no decoration, no icon (or no entry in the
 task bar on Windows), and will always be iconified
 when the main window gets iconified.
 <item><tt/"ToolBoxShrink"/; controls whether the tool box window
-should automatically shrink-wrap around the calculated layout 
+should automatically shrink-wrap around the calculated layout
 of the buttons after a resize operation.
 <item><tt/"RGTrans"/; controls whether the RenderUI-windows
 should be declared as a transient window of the main window.
@@ -1460,7 +1466,7 @@ one or more objects using the main window or using the pick action!<p>
 
 Every action can be started with a key press (a shortcut) when
 the focus is in a view window or by pressing the
-associated button in the tool window. 
+associated button in the tool window.
 Using a shortcut starts that action in the current view only,
 the other views are not affected. Starting an action from the
 tool window will cause the action to be started in all
@@ -1475,7 +1481,7 @@ See section
 <ref id="objsel" name="Selecting Objects within a View">
 for more information about picking objects.
 
-Note, that the modeling actions
+Note that the modeling actions
 are not available in perspective views.<p>
 
 If an action is in effect for a view, the views title will be changed
@@ -1492,7 +1498,7 @@ and <tt/&lt;Ctrl+y&gt;/ (see section
 Grids are available to restrict the modeling actions to certain
 points and help in exact modeling.
 
-Also note, that you may use the middle and rightmost mouse button
+Also note that you may use the middle and rightmost mouse button
 to zoom and move the view while modeling actions are active.
 
 For actions that modify the camera of a view
@@ -1504,7 +1510,7 @@ Using the modeling action <tt/"Move"/ (shortcut: <tt/&lt;m&gt;/)
 you may move selected objects or the selected (tagged) points
 of the selected objects.<p>
 
-Note, that the objects/points will be moved in the XY-plane for
+Note that the objects/points will be moved in the XY-plane for
 Front-views, the ZY-plane for Side-views, and the XZ-plane
 for Top-views only, no matter how the view is rotated.
 
@@ -1514,7 +1520,7 @@ Using the modeling action <tt/"Rotate"/ (shortcut: <tt/&lt;r&gt;/)
 you may rotate objects or the selected (tagged) points
 of the selected objects.<p>
 
-Note, that if multiple objects are selected, each object is rotated
+Note that if multiple objects are selected, each object is rotated
 around the center of its own local coordinate system.
 The axis of rotation is always parallel to the Z-axis in Front-views, the
 Y-axis in Top-views, and the X-axis in Side-views.<p>
@@ -1533,7 +1539,7 @@ action (press <tt/&lt;a&gt;/ again).
 After the first click, the action works the same way as
 the Rotate action, except that it rotates around the specified point.
 This also works with multiple selected objects.
-Note, that this action does not only change the Rotate_X(_Y,_Z)
+Note that this action does not only change the Rotate_X(_Y,_Z)
 properties of the selected objects, but also the Translate_X(_Y,_Z)
 properties.
 <p>
@@ -1591,7 +1597,7 @@ it will be removed from the list instead. Note that the list
 of selected points will not be deleted from the object
 until a de-select is performed using the shortcut <tt/&lt;D&gt;/.<p>
 
-Note, that the list of selected points is not copied, if the object is copied
+Note that the list of selected points is not copied, if the object is copied
 using the clipboard.
 Undo and redo will destroy the list of selected points too!<p>
 
@@ -1641,7 +1647,7 @@ points that make up the multiple point.
 <tt/&lt;p&gt;/)
 opens a small window where you may change the coordinates of the
 selected point directly by entering numbers.
-Note, that the w coordinate setting will be ignored if the
+Note that the w coordinate setting will be ignored if the
 picked point does not have weight information (is not homogenous).
 Using the small menu on top of the coordinate window you may
 determine whether editing takes place in local object or global
@@ -1900,11 +1906,11 @@ shader compiler from BMRT). Parsing incorporates detecting the
 type of the shader and detecting the names, types, and default values of
 all shader arguments.
 <p>
-Note, that currently, Ayam only works properly with shaders
+Note that currently, Ayam only works properly with shaders
 that have at most two dots in their file name and that Ayam will simply
 skip all array arguments (and emit a warning message) while parsing
 a shader. Those array arguments consequently never appear in the
-shader property GUIs and RIBs exported by Ayam. Also note, that
+shader property GUIs and RIBs exported by Ayam. Also note that
 default values for shader arguments of type color will be silently
 clamped to the range 0-255.
 <p>
@@ -1923,7 +1929,7 @@ change this to
 <p>
 <tt>"matrix a_matrix_parameter"</tt>.
 <p>
-Note, that these changes of the shader argument
+Note that these changes of the shader argument
 definitions probably also require changes of the code that uses those
 arguments.
 Ayam is able to deal with matrices because
@@ -1952,7 +1958,7 @@ of the shader to the default values.
 For that, the compiled shader will be parsed again.
 Therefore, this button is quite handy if you have to deal with
 changing shaders: just edit the shader, recompile it, then back
-in Ayam just hit the <tt/"Default Values."/-button. Note, that
+in Ayam just hit the <tt/"Default Values."/-button. Note that
 this destroys your possibly carefully adjusted shader argument values.
 <p>
 If you want to keep the old shader argument values when a shader
@@ -1961,7 +1967,7 @@ changes, simply copy the shader property using the property clipboard
 you load the new default values and paste the property
 back using <tt>"Edit/Paste Property"</tt> after loading of the
 new default values.
-Note, that this works only properly, if you do not change
+Note that this works only properly, if you do not change
 the type of existing shader arguments and if no shader arguments
 are removed in the new version of the shader!
 <p>
@@ -1993,7 +1999,7 @@ the type or value of the tag.
 </itemize>
 
 The next sub-sections describe the currently available tag types.
-Note, that extensions and plugins may define their own types.
+Note that extensions and plugins may define their own types.
 
 <sect2>RiAttribute Tag<label id="riatag">
 <p>
@@ -2020,8 +2026,8 @@ Examples:<p>
 <tt>RiAttribute dice,numprobes,j,3,3</tt><p>
 <tt>RiAttribute radiosity,specularcolor,c,0.5,0.5,0.5</tt>
 
-Note, that the RiAttribute tag handles just a single parameter at once.
-Also note, that RiAttribute tags may be created much more easily
+Note that the RiAttribute tag handles just a single parameter at once.
+Also note that RiAttribute tags may be created much more easily
 using the menu entry <tt>Special/Tags/Add RiAttribute</tt>.
 The database of RiAttributes for this GUI may be extended
 by the user using the ayamrc file, see section
@@ -2037,7 +2043,7 @@ However, they will be only used by the RIB exporter
 if they are attached to the <tt/"Root"/ object!
 The syntax is similar to the <tt/"RiAttribute"/ tag
 type, see above.
-Note, that RiOption tags may be created easily
+Note that RiOption tags may be created easily
 using the menu entry <tt>Special/Tags/Add RiOption</tt>.
 Tags created with this GUI will always be added to
 the <tt/"Root"/ object. It does not
@@ -2073,7 +2079,7 @@ Turns the texture coordinate space by 90 degrees.
 A shader normally generating vertical stripes will create
 horizontal stripes now.<p>
 
-Note, that the exact behaviour depends heavily on the shader and its use
+Note that the exact behaviour depends heavily on the shader and its use
 of the texture coordinates!
 
 <sect3>Texture Coordinate Editor<label id="tce">
@@ -2117,16 +2123,65 @@ This allows for more complex transformations of the texture coordinates
 e.g. rotations about an angle of 45 degrees.
 <item>load TC tags from the selected object
 <item>save the texture coordinates to a BPatch object
-<item>save TC tags to a selected object; Note, that it is not
+<item>save TC tags to a selected object; Note that it is not
 possible to save the TC tag to multiple selected objects.
 Use the property clipboard to achieve this.
 </itemize>
-Note, that the tag numbers in the
+Note that the tag numbers in the
 menu entries count TC tags only.
 
 The texture coordinate dialog is modeless, it may stay open
 while you model.
 The <tt/"Dismiss"/ button closes the dialog.
+
+<sect2>PV (Primitive Variable) Tag<label id="pvtag">
+<p>
+The tag type <tt/"PV"/ can be used to attach arbitrary data
+to geometric primitives and even sub-primitives.
+When rendering all data is handed over to the surface shader
+attached to the respective geometric primitive. Note that Ayam does
+not check, whether your shader actually uses this data.
+With the help of primitive variables you can e.g. attach your
+own texture coordinates to a NURBS patch primitive or attach distinct
+colors to the faces or even to single vertices of a polygonal mesh.
+In the latter case, the data is properly interpolated by the renderer
+before it is handed over to the shader.
+<p>
+The syntax of the value string of a PV tag is as following:<p>
+<tt/&lt;name&gt;,&lt;detail&gt;,&lt;type&gt;,&lt;ndata&gt;,&lt;data&gt;/<p>
+where <tt/"&lt;name&gt;"/ is the name of the primitive variable;
+<tt/"&lt;detail&gt;"/ or storage class should be
+<tt/"uniform"/, <tt/"varying"/, <tt/"vertex"/, or <tt/"constant"/;
+<tt/"&lt;type&gt;"/ is a single character describing the type of the
+data (see also
+the documentation of the <tt/"RiAttribute"/ tag above);
+<tt/"&lt;ndata&gt;"/ is an integer number describing how many data
+elements will follow; and
+<tt/"&lt;data&gt;"/ is a comma separated list
+consisting of a certain number of elements of type <tt/"&lt;type&gt;"/.
+
+Examples:<p>
+<tt>PV mycolor,constant,c,1,0,1,0</tt>
+<p>
+adds a single color value (0,1,0), which is the same all over the primitive;
+<p>
+<tt>PV mys,varying,f,4,0.1,0.2,0.3,0.4</tt>
+<p>
+could be used to add a distinct float value to each corner point of a
+standard NURBS patch (order, width, and height 4).
+<p>
+Note that not all geometric objects currently honour PV tags
+on RIB export. The geometric objects currently supporting PV tags
+are: SDMesh, PolyMesh, PatchMesh, NURBPatch, and BPatch.
+
+Furthermore, the number of data elements, which depends on the
+detail or storage class, the type of geometric primitive, and the
+configuration of the geometric primitive is not checked by Ayam.
+Some RIB writing libraries, however, check the number and silently
+omit the primitive variable if there are mismatches. Check your
+RIB for the presence of the primitive variable after export,
+especially, if you are adding or editing PV tags manually!
+
 
 <sect2>RiHider Tag<label id="rihtag">
 <p>
@@ -2209,7 +2264,7 @@ tags are rebuilt before every export/save operation.
 <p>
 There is always exactly one root object in the scene.
 This object is something special in that it cannot be deleted
-or copied. 
+or copied.
 It holds options global to the scene like RiOptions, atmosphere and
 imager shaders. Furthermore, all views are
 child objects of the root object.
@@ -2256,7 +2311,7 @@ pixel.
 <item><tt/"ExpGain"/, Exposure
 <item><tt/"ExpGamma"/, Exposure Gamma
 <item><tt/"RGBA_ONE"/, <tt/"RGBA_MIN"/, <tt/"RGBA_MAX"/,
-<tt/"RGBA_Dither"/, specify Quantization and Dithering
+<tt/"RGBA_Dither"/, specify quantisation and dithering
 <item><tt/"MinSamples"/, <tt/"MaxSamples"/, minimum and maximum number
 of samples per pixels.
 <item><tt/"MaxRayLevel"/, maximum number of recursive rays.
@@ -2294,7 +2349,7 @@ Every view window (see also section
 has a corresponding view object as a child object of the root object.
 You can change camera settings, the type of the view,
 and other things related to the view using the properties of the view object.
-Note, that deleting the object that represents a view, will not
+Note that deleting the object that represents a view, will not
 close the view window. You will just lose a way to configure it.
 Please, do not mess with the objects in other ways (e.g. copy them),
 you are asking for trouble otherwise!
@@ -2357,7 +2412,7 @@ around the axis that is defined by the points from and to.
 <item><tt/"Zoom"/ is a zoom factor.
 </itemize>
 
-Note, that the up vector is not checked for erroneous values
+Note that the up vector is not checked for erroneous values
 (e.g. pointing in the direction of from-to) when applying the changes
 of the <tt/"Camera"/ property.
 
@@ -2415,22 +2470,13 @@ When a view object is dropped onto a camera object using Drag-and-Drop
 in the tree view, the camera settings from the view will be copied
 to the camera object.
 
-<sect1>CSG Primitives<label id="csgprim">
-<p>
-<figure loc="ht">
-<eps file="pics/primitives.ps" height="7cm">
-<img src="pics/primitives.gif">
-<caption>CSG Primitives</caption>
-</figure>
-<p>
-
-<sect2>Box Object<label id="boxobj">
+<sect1>Box Object<label id="boxobj">
 <p>
 A solid box, centered at the origin of the object coordinate system.
 This object will always be exported as solid primitive in RIBs;
 consisting of six bilinear patches.
 
-<sect3>BoxAttrib Property<label id="bxp">
+<sect2>BoxAttrib Property<label id="bxp">
 <p>
 <itemize>
 <item><tt/"Width"/ is the width of the box (size of the box in
@@ -2440,6 +2486,15 @@ direction of the Z axis of the objects coordinate system).
 <item><tt/"Height"/ is the height of the box (size of the box in
 direction of the Y axis of the objects coordinate system).
 </itemize>
+
+<sect1>Quadric Primitives<label id="qprim">
+<p>
+<figure loc="ht">
+<eps file="pics/primitives.ps" height="7cm">
+<img src="pics/primitives.gif">
+<caption>Box, and Quadric Primitives</caption>
+</figure>
+<p>
 
 <sect2>Sphere Object<label id="sphereobj">
 <p>
@@ -2453,7 +2508,7 @@ of the SphereAttrib property) in RIBs.
 <itemize>
 <item><tt/"Closed"/ toggles whether the object should
 be automatically sealed (closed) when exported to RIB.
-Note, that if this option is in use and <tt/"ZMin"/, <tt/"ZMax"/ or
+Note that if this option is in use and <tt/"ZMin"/, <tt/"ZMax"/ or
 <tt/"ThetaMax"/ have other than the default values,
 a single sphere will be written (in the worst case) as a
 CSG hierarchy of two spheres, two cylinders and eight disks!
@@ -2492,7 +2547,7 @@ of the ConeAttrib property) in RIBs.
 <itemize>
 <item><tt/"Closed"/ toggles whether the object should
 be automatically sealed (closed) when exported to RIB.
-Note, that if this option is in use and
+Note that if this option is in use and
 <tt/"ThetaMax"/ has a different than the default value,
 a single cone will be written (in the worst case) as a
 CSG hierarchy of a cone, a disk and two polygons!
@@ -2508,7 +2563,7 @@ A cylinder, centered at the origin of the object coordinate system.
 This object will be exported as solid primitive or as
 simple cylinder (depending on the <tt/"Closed"/ parameter
 of the RiCylinderAttr property) in RIBs.
-Note, that the OpenGL representation of this object
+Note that the OpenGL representation of this object
 does not reflect the settings of the following parameters
 of the CylinderAttrib property: <tt/"Closed"/ and
 <tt/"ThetaMax"/.
@@ -2518,7 +2573,7 @@ of the CylinderAttrib property: <tt/"Closed"/ and
 <itemize>
 <item><tt/"Closed"/ toggles whether the object should
 be automatically sealed (closed) when exported to RIB.
-Note, that if this option is in use and
+Note that if this option is in use and
 <tt/"ThetaMax"/ has a different than the default value,
 a single cylinder will be written (in the worst case) as a
 CSG hierarchy of a cylinder, two disks and two polygons!
@@ -2544,7 +2599,7 @@ of the RiTorusAttr property) in RIBs.
 <itemize>
 <item><tt/"Closed"/ toggles whether the object should
 be automatically sealed (closed) when exported to RIB.
-Note, that if this option is in use and
+Note that if this option is in use and
 <tt/"PhiMin"/, <tt/"PhiMax"/ or <tt/"ThetaMax"/ have different than the
 default values,
 a single torus will be written (in the worst case) as a
@@ -2572,7 +2627,7 @@ of the RiParaboloidAttr property) in RIBs.
 <itemize>
 <item><tt/"Closed"/ toggles whether the object should
 be automatically sealed (closed) when exported to RIB.
-Note, that if this option is in use and
+Note that if this option is in use and
 <tt/"ZMin"/, <tt/"ZMax"/ or <tt/"ThetaMax"/ have different
 than the default values,
 a single paraboloid will be written (in the worst case) as a
@@ -2599,13 +2654,13 @@ of the RiHyperbAttr property) in RIBs.
 <itemize>
 <item><tt/"Closed"/ toggles whether the object should
 be automatically sealed (closed) when exported to RIB.
-Note, that due to a bug in BMRT that is still present in V2.3.6
+Note that due to a bug in BMRT that is still present in V2.3.6
 this option does not work properly when
 <tt/"ThetaMax"/ has a different than the default value and the
 hyperboloid has no displacement shader. In fact, using a displacement
 shader with a km (amount of displacement) of 0.0 is a work-around
 for this bug (found by T. E. Burge).
-Also note, that if this option is in use and
+Also note that if this option is in use and
 <tt/"ThetaMax"/ has a different than the default value,
 a single hyperboloid will be written (in the worst case) as a
 CSG hierarchy of a hyperboloid, two disks and two bilinear patches!
@@ -2621,7 +2676,7 @@ default is (1, 0, 0.5).
 Level objects may be
 used to build object hierarchies and perform CSG
 operations.
-Note, that child objects of a level inherit the levels transformations
+Note that child objects of a level inherit the levels transformations
 attributes and shaders. Inheritance of e.g. transformations means:
 If you have a NURBS patch in a level that is translated to 10,0,0,
 the origin of the local coordinate system of the NURBS patch
@@ -2711,7 +2766,7 @@ light is affected while passing through an object.
 The MaterialAttr property contains attributes related to the
 management of material objects:
 <itemize>
-<item><tt/"Materialname"/ denotes the name of the material. Note,
+<item><tt/"Materialname"/ denotes the name of the material. Note
 that material names have to be unique in a scene. If two
 materials with the same name exist, only the first material
 created with this name is "registered" and thus
@@ -2741,7 +2796,7 @@ Custom Lights:<label id="cul">
 <p>
 Light sources of type custom use the attached light shader.
 
-Note, that Ayam is trying to guess from the names of the light shader
+Note that Ayam is trying to guess from the names of the light shader
 arguments to draw the light.
 The names <tt/"from"/ and <tt/"to"/ denote location and
 destination of the lightsource. You should not use these names for other
@@ -2812,7 +2867,7 @@ point editing actions (see also section
 <ref id="iac" name="interactive actions">).
 <item><tt/"Color"/ is the color of the light, emitted by the light source.
 <item><tt/"Intensity"/ is the intensity of the light, emitted by the
-light source. Note, that the standard point and spot lights have
+light source. Note that the standard point and spot lights have
 a quadratic falloff (with distance), that requires the intensity
 to be set to quite high values in order to achieve some
 illumination effect (e.g. around 30 for the standard distance of
@@ -2825,7 +2880,7 @@ off in the beam of the spot light. Larger values result in narrower
 light sources.
 </itemize>
 
-In order to ease the parameterization of spot lights,
+In order to ease the parameterisation of spot lights,
 you may drop the light source object on to a view object
 (preferably one with a perspective viewing transformation and with
 equal width and height)
@@ -2957,7 +3012,7 @@ shadow maps, e.g. Photorealistic RenderMan (prman) or Aqsis.
 This scene is distributed with Ayam as an example scene named
 <tt>"shadowmaps.ay"</tt>.
 
-Note, that for Aqsis you should add a RiHider hidden,depthfilter,s,midpoint
+Note that for Aqsis you should add a RiHider hidden,depthfilter,s,midpoint
 tag to your root object if shadow maps are in use. Other renderers might
 require additional tweaking using shadow bias RiOption tags.
 
@@ -2972,7 +3027,7 @@ image will look wrong.
 <p>
 A common idealized light source has no own geometry. This means
 shadows resulting from it have sharp borders. Soft shadows may
-be generated using AreaLights.<p> 
+be generated using AreaLights.<p>
 How do you create AreaLights?<p>
 You simply have to create a single object as child object of a
 custom light object that has the <tt>"arealight"</tt>
@@ -2995,7 +3050,7 @@ There is an example scene named <tt>"arealight.ay"</tt> distributed with Ayam.
 
 <sect1>NURBCurve Object<label id="ncurveobj">
 <p>
-NURBS curves are used to build more complex smoothly shaped 
+NURBS curves are used to build more complex smoothly shaped
 objects using operations like extrude, revolve, sweep or skin.
 They can be closed and used to emulate Bezier and
 B-Spline curves easily.<p>
@@ -3016,7 +3071,7 @@ make up a multiple point.
 Multiple points will be drawn with a bigger
 handle than normal points (see image above).
 They may e.g. be used to create closed curves.
-Note, that the control points that make up a multiple point
+Note that the control points that make up a multiple point
 do not have to be consecutive (in the control point vector of the
 NURBS curve).
 Multiple points may be created using the collapse tool,
@@ -3024,7 +3079,7 @@ and split up again using the explode tool (see sections
 <ref id="collt" name="The Collapse Tool"> and
 <ref id="explt" name="The Explode Tool"> for more information regarding
 those tools).
-Note, that even though you might have exploded some multiple points
+Note that even though you might have exploded some multiple points
 Ayam will re-create them on several occasions like reading
 of a scene, inserting/deleting points, and applying the NURBCurveAttrib
 property if they still have identical coordinate values.
@@ -3052,7 +3107,7 @@ the multiplicity of the knots at the ends will be of order of the curve.
 This guarantees that the curve will touch the control points at the ends
 of the curve.
 
-The knot type Bezier will generate just 0.0 and 1.0 values. Note, that
+The knot type Bezier will generate just 0.0 and 1.0 values. Note that
 the order of the curve has to be equal to the length of the curve, if
 Bezier knots are generated. Otherwise, the generated knot sequence is
 illegal. The resulting curve looks and behaves exactly like a real
@@ -3062,19 +3117,19 @@ The knot type B-Spline will generate values
 without any multiple knots. The resulting curve looks
 and behaves like a B-Spline curve.
 <item><tt/"Knots"/ lets you enter your own custom knot sequences.
-Note, that <tt/"Knots"/ are not in use if <tt/"Knot-Type"/ is of type
+Note that <tt/"Knots"/ are not in use if <tt/"Knot-Type"/ is of type
 NURB, B-Spline or Bezier!
 <item><tt/"Closed"/ toggles the closeness of the curve.
 If this is enabled, the last p control points of the curve will be
 made identical to the first p (where p is the degree of the curve,
-read order-1). All those points will be multiple points and 
+read order-1). All those points will be multiple points and
 single point editing actions will edit both points from now on.<p>
-Note, that for a cubic spline (order 4) you will
+Note that for a cubic spline (order 4) you will
 need atleast 6 control points to close it. It is important to know,
 that the multiple points alone can not guarantee that the curve
 is closed if the knot type of the curve is Custom, if you really
 want a closed curve switch to type B-Spline.<p>
-Also note, that a NURBS circle as created by the NURBCircle tool
+Also note that a NURBS circle as created by the NURBCircle tool
 is not a closed curve following this definition, it is nevertheless
 a closed curve.
 <item><tt/"CreateMP"/ toggles, whether multiple points should be
@@ -3149,7 +3204,7 @@ of type <tt>Trim</tt>, that draw the boundaries of the parametric
 space of the corresponding NURBS patch as rectangle, but otherwise
 act as normal <tt>Front</tt> views.
 
-Note, that the direction of the trim curve determines which part of
+Note that the direction of the trim curve determines which part of
 the NURBS patch should be cut out. You can use the <tt/Revert/ tool
 (<tt>Tools/NURBCurve</tt> menu) to easily change the direction
 of a trim curve.
@@ -3158,14 +3213,14 @@ Some special restrictions apply to trim curves:
 <itemize>
 <item>All trim curves should entirely lie in the (u,v) parameter
 space of the NURBS patch (remember the rectangle in the <tt>Trim</tt> view).
-Note, that this restriction does not apply to the control points,
+Note that this restriction does not apply to the control points,
 but the curves! It is ok to have control points outside the
 rectangle if the defined curve is inside the rectangle.
 <item>The last control point of a trim curve must be identical
 to the first control point.
 <item>Trim loops (multiple trim curves that form loops) are possible too;
 the last control point of each curve in the loop must be identical
-to the first control point of the next curve in the loop and 
+to the first control point of the next curve in the loop and
 the first control point of the first curve of a loop must be identical
 to the last control point of the last curve of that loop.
 <item>To mark a set of curves to be a loop, they must be
@@ -3182,7 +3237,7 @@ to render the patch with BMRT but it should not hurt if it is present.
 <item>If there are nested trim curves, their direction must alternate.
 <item>Trim curves may not intersect each other or themself.
 </itemize>
-Note, that Ayam is not checking whether your trim curves
+Note that Ayam is not checking whether your trim curves
 follow these rules!
 
 Warning: Certain OpenGL implementations may be easily crashed
@@ -3288,7 +3343,7 @@ of the outer loop of a polygon.
 Furthermore, Ayam supports vertex normals (normals stored for every
 control point).
 <p>
-Note, that storing a bunch of triangles each in its own PolyMesh
+Note that storing a bunch of triangles each in its own PolyMesh
 object will lead to a real waste of memory. You may use the
 merge tool (main menu <tt>"Tools/PolyMesh/Merge"</tt>) to merge
 many PolyMesh objects into a single PolyMesh object.
@@ -3340,7 +3395,7 @@ shaded views is the original polygonal mesh.
 The SDMeshAttr GUI just displays some information about the
 SDMesh object:
 <itemize>
-<item><tt/"Scheme"/, subdivision scheme, currently only 0 (Catmull-Clark). 
+<item><tt/"Scheme"/, subdivision scheme, currently only 0 (Catmull-Clark).
 <item><tt/"NFaces"/, the number of faces.
 <item><tt/"NControls"/, the total number of control points
 defined.
@@ -3386,7 +3441,7 @@ to violate the second rule. Clean the clipboard using
 the menu <tt>"Special/Clipboard/Paste (Move)"</tt> and delete
 or resolve all references.
 <p>
-Note, that it is not possible to copy a master object and some instances
+Note that it is not possible to copy a master object and some instances
 of it, so that the new instances point to the newly created master.
 All copies of instance objects always point to the same master object.
 However, it is possible to move instances using Drag-and-Drop in the tree
@@ -3435,8 +3490,9 @@ If you use a trajectory curve to place the clones, you may want
 to hide the parameter object and add a <tt/"NoExport"/ tag to it.
 <p>
 It is not possible to create clones from objects that may not
-be master objects of instance objects (e.g. instances, light objects, or
-material objects).
+be master objects of instance objects (e.g. light objects, or
+material objects). Since Ayam 1.7 it is possible to use instances
+as parameter objects.
 <p>
 The following attributes further control the
 clone process:
@@ -3447,6 +3503,10 @@ clone process:
 <item><tt/"Rotate"/ is only used, if a trajectory curve is present.
 If it is enabled all clones will be aligned according to the normal of
 the trajectory curve.
+<item><tt/"Mirror"/ allows to choose between three different mirror
+modes. If mirroring is enabled, for each child of the Clone object,
+a mirrored counterpart will be created and all other parameters of
+the Clone object will be ignored.
 <item><tt/"Translate_X"/, <tt/"Translate_Y"/, <tt/"Translate_Z"/,
 <tt/"Rotate_X"/, <tt/"Rotate_Y"/, <tt/"Rotate_Z"/,
 <tt/"Scale_X"/, <tt/"Scale_Y"/, <tt/"Scale_Z"/,
@@ -3486,15 +3546,15 @@ of the revolution:<p>
 of the revolution changes. The generating NURBS curve, as child object,
 will also be rotated.)
 <item>Now enter the Revolve object, select the child curve and
-edit the control points (Note, how the Revolution changes).
-<item>Rotate the curve around Z (Note, how the Revolution changes).
+edit the control points (Note how the Revolution changes).
+<item>Rotate the curve around Z (Note how the Revolution changes).
 <item>Switch to a Side view, edit the generating curve here in Z
 direction only (Revolution does not change!).
 </itemize>
 
 You may convert the current surface of revolution and the caps,
 if there are any, to ordinary NURBS patches using the main menu entry
-<tt>"Tools/Convert"</tt>. 
+<tt>"Tools/Convert"</tt>.
 
 <sect2>RevolveAttr Property<label id="rep">
 <p>
@@ -3551,12 +3611,12 @@ to this plane!<p>
 
 You may convert the current surface of extrusion and the caps and bevels,
 if there are any, to ordinary NURBS patches using the main menu entry
-<tt>"Tools/Convert"</tt>. 
+<tt>"Tools/Convert"</tt>.
 
 <sect2>ExtrudeAttr Property<label id="extrattr">
 <p>
 Using the parameter <tt/"Height"/ you determine how
-big in Z direction the extrusion should be. Note, that
+big in Z direction the extrusion should be. Note that
 the height of the bevels will not be taken into account here,
 if you have an extrusion with height 1.0 and you switch on
 beveling (upper and lower) with radius 0.1 you end up
@@ -3565,7 +3625,7 @@ with an object that is 1.2 whatever big in Z direction.
 The extrude object can automatically generate caps,
 that are trimmed NURBS patches. Using <tt/"UpperCap"/ and
 <tt/"LowerCap"/ you determine whether such caps should be
-generated, default is off (no caps). Note, that this feature
+generated, default is off (no caps). Note that this feature
 does only work properly, if the generating NURBS curves are closed
 and not self intersecting, this is because the generating curves themselves
 are used as trim curves for the caps. Warning, Ayam will not check whether
@@ -3581,7 +3641,7 @@ controlled using <tt/"BevelType"/ and <tt/"BevelRadius"/.
 built using a quarter circle), <tt/"Linear"/ (not round at all,
 but just a connecting linear patch) and <tt/"Ridge"/
 which forms a more complex beveling similar to some frames for
-(real world) images. 
+(real world) images.
 The <tt/"BevelRadius"/ determines the size of the bevels. It is
 expressed in untransformed object coordinates of the generating curve,
 but the resulting radius of the bevel may differ a bit (depending
@@ -3603,7 +3663,7 @@ With the direction of the curve you decide the direction of the
 bevel as well (should it round outwards or inwards?).
 If the bevels of the holes look wrong try to
 revert the generating curves of the holes.
-Note, that beveling does not work well with open curves.
+Note that beveling does not work well with open curves.
 You should always use closed curves for beveling!
 Beveling may lead to self intersecting trimcurves in sharp
 corners of an extrusion. Decrease the bevel radius or round
@@ -3629,7 +3689,7 @@ The first curve is the cross section,
 the second is the trajectory, and the third curve represents
 the scaling function.
 <p>
-Note, that the <tt/"Translate"/ attributes of the cross section curve
+Note that the <tt/"Translate"/ attributes of the cross section curve
 will be fully ignored. All other transformation attributes
 (of cross section and trajectory!) will be used to determine
 place, orientation and size of the sweep object!
@@ -3669,7 +3729,7 @@ the view has the input focus.)
 </itemize>
 
 Section <ref id="scexsweep" name="Easy Sweep"> has an example
-script that automates creation and parameterization of
+script that automates creation and parameterisation of
 a suitable cross section curve.
 <p>
 You may convert the current sweep and the caps, if there are any,
@@ -3679,21 +3739,23 @@ to ordinary NURBS patches using the main menu entry
 <sect2>SweepAttr Property<label id="swp">
 <p>
 If <tt/"Interpolation"/ is enabled, all section curves
-will be interpolated by the swept surface.<p>
+will be interpolated by the swept surface.
+<p>
 The second parameter <tt/"Sections"/ determines how many
 sections (in u direction) should be used, when generating the
 sweep NURBS patch. The NURBS patch always has sections+1 control
-points in u direction.<p>
+points in u direction.
+<p>
 If <tt/"Rotate"/ is enabled, the cross sections will be
 rotated so that they are always perpendicular to the trajectory,
 this is the default.
-
+<p>
 The attributes <tt/"StartCap"/ and <tt/"EndCap"/ may be
 used to automatically create cap surfaces, that close the
 Sweep on both ends.
-Note, that this works properly only if the cross section
+Note that this works properly only if the cross section
 curve is closed and planar (defined in the XY plane).
-
+<p>
 See section <ref id="npattr" name="NPatchAttrib"> for a description
 of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 
@@ -3705,29 +3767,37 @@ of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 <caption>Skin Object (Curves, Resulting Skinned Surface)</caption>
 </figure>
 <p>
-The skin object forms a surface that results from
-lying a surface through a set of curves, where the first and
-last curve will be interpolated by the surface.<p>
-Note, that the curves may be of arbitrary length and order.
+The skin object forms a surface defined by a set of curves, where
+the first and last curve will always be interpolated by the surface.<p>
+Note that in contrast to the build from curves tool,
+the curves may be of arbitrary length and order. You may e.g.
+easily skin a curve of order 2 and length 6 with a second curve
+of order 4 and length 4 and a third curve with order 3 and 5
+control points.
 If the curves are of different length or order, they will all be
-converted internally until they match. Be warned, that this process
-may consume a considerable amount of time (for the ones of you
-who know NURBS better: all unclamped curves have to be converted to
+converted internally until they are compatible. Be warned, that
+this process may consume a considerable amount of time
+because all unclamped curves have to be converted to
 clamped ones; then, for every curve with low order degree elevation
 has to be done; then a uniform knot vector has to be found; then all
 curves have to be refined using this new knot vector; interpolation
-adds another dimension of complexity...). If you experience
-lags when editing the child curves of a Skin try to switch
-to lazy notification.<p>
-Also note, that the resulting patch may be quite big, even though
-the curves are not, if the orders of the curves do not match.
+adds another dimension of complexity... If you experience
+lags when editing the child curves of a skin object try to switch
+to lazy notification.
+<p>
+The direction of the parameter curves will be parallel to the v
+dimension (height) of the skinned surface. The number of the parameter
+curves will define the u dimension (width) of the skinned surface.
+<p>
+Also note that the resulting patch may be quite complex, even though
+the curves are not, if the orders or knot vectors of the curves do not match.
 A skinned patch from two curves of length 4 but one with
 order 4 and the other with order 2 will result in a patch with
 a width of 2 and a height of 10!
-
+<p>
 The skin object has the generating NURBS curves as child objects
 and watches their changes and adapts to them automagically.
-
+<p>
 You may convert the current skin and the caps, if there are any,
 to ordinary NURBS patches using the main menu entry
 <tt>"Tools/Convert"</tt>.
@@ -3735,34 +3805,88 @@ to ordinary NURBS patches using the main menu entry
 <sect2>SkinAttr Property<label id="skp">
 <p>
 The first parameter <tt/"Interpolation"/ controls,
-whether the inner curves should be interpolated by the
+whether the inner curves should also be interpolated by the
 skinning surface.<p>
 The second parameter <tt/"Order_U"/ determines the order
 of the resulting surface in u direction (the order in v direction is
 determined by the curves). The order may not be lower than the
 number of curves used. If the specified value is lower than the number
-of curves the order of the generated surface will be silently
-set to the number of curves.<p>
+of curves, the order of the generated surface will be silently
+set to the number of curves.
+If <tt/"Order_U"/ is 0, a default value
+of 4 will be used.<p>
 Using the next parameter <tt/"Knot-Type_U"/, you can adapt the
 type of the knot vector that should be used in the u direction of the
-skin. Note, that this setting will have no effect if interpolation
+skin. Note that this setting will have no effect if interpolation
 is switched on because then a chord length parameterisation
 will be used. If the knot type is Bezier and the specified
-order does not match the number of skinned curves, then the order
-will be silently adapted to the number of skinned curves.
-
+order (see above) does not match the number of skinned curves,
+then the order will be silently adapted to the number of skinned curves.
+New in Ayam 1.7 is support for the knot type Custom, which creates
+a chord length parameterisation.
+<p>
 The attributes <tt/"StartCap"/ and <tt/"EndCap"/ may be used
 to automatically create cap surfaces to close the skin
 on both ends.
-Note, that this works only if the first (last) curve is
+Note that this works only if the first (last) curve is
 closed and planar (defined in XY plane).
-Furthermore, if the Skin is not interpolating the
+Furthermore, if the skin is not interpolating the
 first (last) parameter curve (this may be the case
 if the <tt/"Knot-Type_U"/ parameter is set
-to <tt/"B-Spline"/) the cap will not be created on the right
-place. It will always be on the same position as the
+to <tt/"B-Spline"/) the cap(s) will not be created on the right
+place. The cap(s) will always be on the position of the
 first (last) parameter curve.
+<p>
+See section <ref id="npattr" name="NPatchAttrib"> for a description
+of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 
+<sect1>Gordon Object<label id="gordonobj">
+<p>
+The Gordon object forms a surface defined by two sets of intersecting
+curves (a network of curves), where all curves will always be interpolated
+by the surface. The creation of a Gordon surface is computationally
+expensive. It involves (interpolated) skinning of the two sets of
+parameter curves, finding the intersection points of the two sets
+of parameter curves, interpolating the matrix of intersection points,
+making the three resulting surfaces compatible, and finally combining
+the three surfaces into the resulting Gordon surface. If you experience lags
+while editing the parameter curves of a Gordon surface, consider
+switching to lazy notification.
+<p>
+The curves may be of arbitrary length and order. You may e.g.
+use a curve of order 2 and length 6 with a second curve
+of order 4 and length 4 and a third curve with order 3 and 5
+control points.
+<p>
+The gordon object has the generating NURBS curves as child objects
+and watches their changes and adapts to them automagically.
+Separation of the two sets of curves has to be done using an
+empty level object. The first set of curves determines the u
+direction and the second set of curves the v direction of the
+gordon surface.
+<p>
+In order to ease the computationally intensive intersection
+detection for Ayam you may specify a third argument (separated
+from the two sets of curves by a second empty level object).
+This third argument should be a NURBS patch object that describes
+all intersection points (by its control points).
+If present, this intersection patch always takes precedence.
+You may want to add a <tt>"NoExport"</tt> tag to this patch.
+<p>
+You may convert the current gordon surface to an ordinary NURBS
+patch using the main menu entry
+<tt>"Tools/Convert"</tt>.
+
+<sect2>GordonAttr Property<label id="gop">
+<p>
+The parameters <tt/"Order_U"/ and <tt/"Order_V"/ determine the
+desired order of the resulting surface in u and v direction.
+However, depending on the number and configuration of curves used
+in the u or v direction, it may not be possible to create a gordon
+surface of the desired order.
+If <tt/"Order_U"/ or <tt/"Order_V"/ are 0, a default value
+of 4 will be used.
+<p>
 See section <ref id="npattr" name="NPatchAttrib"> for a description
 of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 
@@ -3781,7 +3905,7 @@ following the first curve define holes in
 the cap surface (see also section
 <ref id="handb" name="Using Holes and Bevels">).
 <p>
-Note, that the curves have to be planar
+Note that the curves have to be planar
 and defined in the XY plane. Furthermore,
 cap generation may fail, if the control points of the
 first curve have weights and the curve leaves the convex
@@ -3816,7 +3940,7 @@ are C2 cubic, the right ones Global4D, the upper open, and the lower
 closed ones. The interpolation fidelity for the closed curves
 could be increased considerably adjusting <tt/"IParam"/, see below.
 
-In both interpolation modes chord length parameterization will be used
+In both interpolation modes chord length parameterisation will be used
 to determine the knot vector of the interpolating curve.
 
 This object makes use of the provide mechanism. It marks itself
@@ -4078,7 +4202,7 @@ Here is an example for a custom expression:
 <code>
 set f [expr {pow($x,4)+pow($y,4)+pow($z,4)}]
 </code>
-Note, that those expressions are called many times
+Note that those expressions are called many times
 and since they are programmed in Tcl, this can be quite slow.
 You should use any tricks (like the curly braces
 in the expr-statement above) to speed up the expression.
@@ -4171,7 +4295,7 @@ and revolves it about the Y axis thus forming a sphere of radius 1.
 <itemize>
 <item>Arguments: None.
 <item>Operation: The NURBSphere tool creates a Cobb-NURBSphere,
-consisting of 6 NURBPatches. 
+consisting of 6 NURBPatches.
 <item>Note: The NURBPatches are of high order (5).
 </itemize>
 
@@ -4306,7 +4430,7 @@ without changing the shape of the curve.
 <item>Note: Because a new knot is inserted in the middle of
 each interval, knot vectors of type NURB and B-Spline will
 not change in type. See the image above for an example of a
-successive refinement of a simple NURBS curve. Note, that the shape
+successive refinement of a simple NURBS curve. Note that the shape
 of the curve does not change, but the position of
 certain control points does.
 If you want to refine a curve with new control points and not
@@ -4350,6 +4474,24 @@ shape of the curve(s).
 The knot type of the curve will be changed to custom.
 </itemize>
 
+<sect1>The Plot Curvature Tool<label id="plotcurt">
+<p>
+<figure loc="ht">
+<eps file="pics/plotcur.ps" height="4cm">
+<img src="pics/plotcur.gif">
+<caption>Curvature Plot (top) of simple NURBS curve (bottom)</caption>
+</figure>
+<itemize>
+<item>Arguments: The plot curvature tool takes a number of NURBS curves from
+the selection and requests three additional values, a number of data
+points, a width value and a height value.
+<item>Operation: A new NURBS curve, depicting the curvature of the selected
+NURBS curve, will be created for each of the selected
+NURBS curves. The curvature plots will have a length defined by the
+number of data points and will be scaled to the specified width
+and by the specified height value. See also the image above.
+</itemize>
+
 <sect1>The Collapse Points Tool<label id="collt">
 <p>
 <itemize>
@@ -4371,11 +4513,32 @@ and a number of selected (tagged) multiple points (see section
 to select (tag) control points).
 <item>Operation: The points forming the selected multiple points will
 be made to simple points again and may be edited separately.
-<item>Note, that even though you might have exploded some multiple points
+<item>Note that even though you might have exploded some multiple points
 Ayam will re-create them on several occasions like reading
 of a scene, inserting/deleting points, and applying the NURBCurveAttrib
 property if they still have identical coordinate values. In other
 words, you should immediately edit the control points after exploding!
+</itemize>
+
+<sect1>The Swap UV Tool<label id="swapuvt">
+<p>
+<itemize>
+<item>Arguments: The swap uv tool takes a number of NURBS patches from
+the selection.
+<item>Operation: The u and v dimension of the selected NURBS patches will
+be swapped without changing the shape of the patches.
+</itemize>
+
+<sect1>The Elevate UV Tool<label id="elevuvt">
+<p>
+<itemize>
+<item>Arguments: The elevate uv tool takes a number of NURBS patches from
+the selection and additionally requests two integer values.
+<item>Operation: The order of the selected NURBS patches will be raised
+by the specified integer values without changing the shape of the patches.
+<item>Note: If the knot vector of the patch is not clamped, it
+will be clamped automatically. The knot type of the patch will
+be changed to custom.
 </itemize>
 
 <sect1>The Split to Curves Tool<label id="sptct">
@@ -4422,7 +4585,7 @@ the console and the Tcl command <tt/"source"/.<p>
 You can also arrange for a script to be executed automatically
 on startup using the preference setting <tt>"Main/Scripts"</tt>.
 
-Note, that most of the listed commands work in background,
+Note that most of the listed commands work in background,
 without changing anything to the Ayam GUI and Ayam view windows,
 for execution speed. If you want your changes to become visible
 you have to update the various parts of the GUI explicitly
@@ -4600,7 +4763,7 @@ pclip_paste - paste a property
  <item>Synopsis: <tt/"pclip_paste"/
  <item>Description: Copy the property from the property clipboard
 to the currently selected object.
-Note, that you may call this procedure also using the shortcut
+Note that you may call this procedure also using the shortcut
 <tt/"pasteProp"/.
 </itemize>
 
@@ -4613,13 +4776,13 @@ goDown:
  <item>Synopsis: <tt/"goDown index"/
  <item>Description: Enter the object determined by index. If index is 0
 and the current level is inside some other object (not the root)
-the parent level will be entered instead. 
+the parent level will be entered instead.
 </itemize>
 
 goUp:
 <itemize>
  <item>Synopsis: <tt/"goUp"/
- <item>Description: Go one level up in the object hierarchy. 
+ <item>Description: Go one level up in the object hierarchy.
 </itemize>
 
 goTop:
@@ -4843,7 +5006,7 @@ buildNP:
 
 Use these two commands to read or manipulate single
 points of arbitrary objects.
-Note, that the exact arguments needed, depend on the
+Note that the exact arguments needed, depend on the
 type of the object, e.g. a NURBS curve requires just one
 index parameter (indexu), whereas a NURBS patch requires two
 (indexu and indexv).
@@ -4948,7 +5111,7 @@ forAll:
 objects that have been selected currently, or for every object
 of the current level if nothing has been selected. If recursive
 is 1 then forAll will recurse into every object (if it has child objects)
-before the execution of command. Note, that forAll will run
+before the execution of command. Note that forAll will run
 slowly if a property GUI is displayed. You can make it run faster
 by de-selecting the property using e.g. the property context menu first.
  <item> Deficiencies:
@@ -4973,11 +5136,11 @@ forAllT:
  <item>Synopsis: <tt>"forAllT type recursive command"</tt>
  <item>Description: forAllT works the same way as forAll, with an
 additional type check. The command will not be executed if the type of the
-current object does not match the argument type. Note, that forAllT will run
+current object does not match the argument type. Note that forAllT will run
 slowly if a property GUI is displayed. You can make it run faster
 by de-selecting the property using e.g. the property context menu first.<p>
 
-Note, that the type strings will be converted to lowercase before
+Note that the type strings will be converted to lowercase before
 comparison, so that it is legal to use forAllT e.g. this way:
 <p><tt>"forAllT ncurve 0 &lcub;puts $i&rcub;"</tt><p>
  <item>Deficiencies:
@@ -5070,11 +5233,11 @@ undo:
  <item>Description:
  <itemize>
   <item>If called without arguments, this command performs the undo
-  operation. 
+  operation.
   <item>If the argument is <tt/"redo"/, this command performs the redo
   operation.
   <item>If the argument is <tt/"save"/, the currently selected objects
-  are saved to the undo buffer for future undo operations. 
+  are saved to the undo buffer for future undo operations.
   <item>If the argument is <tt/"clear"/, the undo buffer is cleared.
  </itemize>
 </itemize>
@@ -5180,7 +5343,7 @@ For instance, using the next small script.
 <p>
 The following example script shows how to easily create a
 sweep from a selected path curve (avoiding the manual and lengthy creation
-and parameterization of a suitable cross section).
+and parameterisation of a suitable cross section).
 <code>
 proc easySweep { } {
  # first, we create a sweep object
@@ -5315,7 +5478,7 @@ with a view).
 The undo system works by storing copies of the different
 states of changed objects in an undo buffer. The storage space occupied by
 the undo buffer may be adjusted using the preferences
-(Prefs/Modeling/UndoLevels). Note, that a value of -1 for UndoLevels
+(Prefs/Modeling/UndoLevels). Note that a value of -1 for UndoLevels
 completely disables the undo system.
 You may step backward through the saved states using
 <tt/&lt;Ctrl+z&gt;/ (undo) but also forward using <tt/&lt;Ctrl+y&gt;/ (redo).
@@ -5324,7 +5487,7 @@ Several actions will completely clear the undo buffer (no undo is
 possible after those actions):
 Delete Object, New Scene, Replace Scene, and Close View.
 <p>
-Note, that undo/redo will also modify objects that currently reside in the
+Note that undo/redo will also modify objects that currently reside in the
 object clipboard if they have saved states in the undo buffer.
 
 <sect1>Ayamrc File<label id="ayamrc">
@@ -5365,8 +5528,8 @@ will be reset to factory defaults, however!<p>
 <sect2>Changing Keyboard Shortcuts
 <p>
 You may adapt the shortcuts used in the GUI to
-your special needs using the ayamrc file. 
-Note, that if you do that the GUI (the menu entries)
+your special needs using the ayamrc file.
+Note that if you do that the GUI (the menu entries)
 will adapt to your changes but certainly neither this documentation nor
 the tutorials!
 Ayam does not check for clashes! This means, the last set binding
@@ -5489,7 +5652,7 @@ But be careful with the brackets!
 Available types of parameters are:
 <itemize>
 <item>i: a scalar integer value
-<item>i: a pair of integer values
+<item>j: a pair of integer values
 <item>f: a scalar float value
 <item>g: a pair of float values
 <item>s: a string value
@@ -5522,7 +5685,7 @@ objects with those names, otherwise Mops import will not be able to
 create material objects for the scene to import.
 <p>
 The import options <tt>"ResetDM"</tt> and
-<tt>"ResetDM"</tt> control, whether GLU display mode
+<tt>"ResetST"</tt> control, whether GLU display mode
 and tolerance settings (see sections
 <ref id="ncattr" name="NCurveAttrib">, and
 <ref id="npattr" name="NPatchAttrib"> for more information about
@@ -5576,7 +5739,7 @@ be created when the RIB plugin encounters a <tt/"WorldBegin"/. You may drag
 this camera object onto a perspective View object in Ayam after import
 to see through the camera of the imported RIB.
 <item><tt/"ReadOptions"/, controls, whether RiOptions are
-to be imported from the RIB to the scene. Note, that those
+to be imported from the RIB to the scene. Note that those
 RiOptions will overwrite the current global settings in the Ayam scene.
 <item><tt/"ReadLights"/, if this is enabled the lights from the
 RIB will be imported.
@@ -5667,7 +5830,7 @@ not available.
 Since Ayam 1.3, the following plugins are provided to allow
 parsing of shaders: <tt/"ayslb"/ for Air, <tt/"ayslx"/ for Aqsis,
 <tt/"ayso"/ for RDC, <tt/"ayslo"/ for PRMan, <tt/"ayslo3d"/ for 3Delight,
-and <tt/"aysdr"/ for Pixie.
+and (since Ayam 1.6) <tt/"aysdr"/ for Pixie.
 <p>
 After loading of one of the aforementioned plugins, Ayam will
 be able to parse shaders compiled with the shader compiler
@@ -5682,14 +5845,19 @@ script to the preference setting
 <tt>"Main/Scripts"</tt> using the <tt>"Add"</tt> button in the
 preferences editor.
 <p>
-Additionally, those scripts may be further adapted by the user to
+Additionally, those scripts may be further adapted to
 set a different <tt/"Shaders"/ preference setting or to immediately
 scan for shaders after loading of the plugin. For that, just remove
 the leading hash-marks (&num;) from the corresponding lines in the script.
 However, the standard behavior while loading of
-such a plugin requires you to scan manually for shaders and to adapt
-the shaders search path manually too. Both actions may be carried
-out using the preferences editor.
+such a plugin requires you to adapt
+the shaders search path manually and to scan manually for shaders too.
+Both actions may be carried out using the preferences editor.
+<p>
+This is, however, not necessary if you load the shader parsing plugin
+automatically on startup of Ayam, as the loading of the scripts will
+happen before the startup sequence executes the initial shader scanning
+pass.
 
 <sect1>Automatic Instancing<label id="ai">
 <p>
@@ -5714,7 +5882,7 @@ child of the potential instance exists.
 Instantiation of grouping objects may drastically decrease
 the total number of objects in a scene.
 
-Note, that before the automatic instantiation starts, all currently
+Note that before the automatic instantiation starts, all currently
 existing instances will be resolved!
 After instantiation some statistics will be displayed in the console.
 
@@ -5737,7 +5905,7 @@ values are mutually masked out using <tt>"RiMatte"</tt> statements.
 <item>The resulting partial images are composed to a single
 resulting image, which is then displayed.
 </enum>
-The parameterization of the two rendering passes ensures, that
+The parameterisation of the two rendering passes ensures, that
 the total rendering time is lower than the rendering time of
 a single pass with high quality.
 <p>
@@ -5754,11 +5922,11 @@ values may be propagated between (geometrically or hierarchically) near
 objects, or between objects that are related (e.g. from a material to a
 geometric object).
 <p>
-Parameterization of the two rendering passes currently includes selection of
+Parameterisation of the two rendering passes currently includes selection of
 a different renderer and the possibility to reduce rendering resolution and
 shading rate. To further reduce rendering times for Raytracing
 renderers, the size of the region to render may be automatically adapted to
-the elements of the current importance value (including an optimization
+the elements of the current importance value (including an optimisation
 run that balances renderer startup times and times needed to render
 regions not originally occupied by two regions to merge).
 <p>
@@ -5835,7 +6003,7 @@ however, will be Shareware!
 
 You can help by implementing more different high
 level objects like Trees, Landscape, Sky, Text, whatever you can think of.
-Note, that the license of Ayam does not prevent you from implementing your
+Note that the license of Ayam does not prevent you from implementing your
 object as Shareware or even Commercial software. However, Freeware is
 preferred for obvious reasons.
 
@@ -5974,6 +6142,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Automatic Redraw: <ref id="vmconf" name="view menu entry">
 <item>AutoResize: <ref id="prefgui" name="preference setting">
 <item>AutoSavePrefs: <ref id="prefgui" name="preference setting">
+<item>Attribute: <ref id="riatag" name="RiAttribute tag type">,
 <item>ayamrc: <ref id="ayamrc" name="Ayamrc File">
 <item>ayError: <ref id="scierr" name="scripting interface command">
 </itemize>
@@ -5993,8 +6162,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <ref id="patchmeshobj" name="PatchMesh object">
 <item>Bound: <ref id="riattrs" name="RenderMan/BMRT attribute">
 <item>BoundCoord: <ref id="riattrs" name="RenderMan/BMRT attribute">
-<item>Box: <ref id="mmcreate" name="main menu entry">,
-<ref id="boxobj" name="object">
+<item>Box: <ref id="boxobj" name="object">
 <item>BPatch: <ref id="bpatchobj" name="object">
 <item>BType_U, BType_V: <ref id="pmattr" name="PatchMesh attribute">
 <item>Build: <ref id="bfct" name="build from curves tool">
@@ -6003,7 +6171,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 
 <label id="indexc">C
 <itemize>
-<item>Camera: <ref id="cameraobj" name="camera object">,
+<item>Camera: <ref id="cameraobj" name="object">,
 <ref id="camp" name="view property">
 <item>Cap: <ref id="capobj" name="object">,
 <item>CastShadows: <ref id="riattrs" name="RenderMan/BMRT attribute">
@@ -6044,12 +6212,13 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Create ShadowMaps: <ref id="mmspecial" name="main menu entry">,
 <ref id="vmview" name="view menu entry">
 <item>crtOb: <ref id="crtob" name="scripting interface command">
+<item>CSG: <ref id="levelobj" name="Level object">
+<item>Curvature: <ref id="plotcurt" name="plot curvature tool">
 <item>Custom: <ref id="cul" name="light type">
 <item>Custom Object: <ref id="customobj" name="what is">
 <item>Cut: <ref id="mmedit" name="main menu entry">
 <item>cutOb: <ref id="sciclip" name="scripting interface command">
-<item>Cylinder: <ref id="mmcreate" name="main menu entry">,
-<ref id="cylinderobj" name="object">
+<item>Cylinder: <ref id="cylinderobj" name="object">
 </itemize>
 
 <label id="indexd">D
@@ -6060,12 +6229,11 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Delete: <ref id="mmedit" name="main menu entry">,
 <ref id="insdelac" name="delete points">
 <item>delOb: <ref id="sciclip" name="scripting interface command">
-<item>Difference: <ref id="mmcreate" name="main menu entry">,
-<ref id="levelobj" name="object and properties">
+<item>Difference: <ref id="levelobj" name="Level object">
 <item>Direct Editing: <ref id="editac" name="edit points">
-<item>Disk: <ref id="mmcreate" name="main menu entry">,
-<ref id="diskobj" name="object">
+<item>Disk: <ref id="diskobj" name="object">
 <item>Displacement: <ref id="matshader" name="shader">
+<item>Display: <ref id="ridtag" name="RiDisplay tag type">
 <item>DisplayMode: <ref id="prefdraw" name="preference setting">,
 <ref id="npattr" name="NURBPatch attribute">,
 <ref id="pmattr" name="PatchMesh attribute">
@@ -6088,6 +6256,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>EditSnaps: <ref id="prefmodel" name="preference setting">
 <item>elevateNC: <ref id="scinurbs" name="scripting interface command">,
 <ref id="elevt" name="elevate tool">
+<item>Elevate UV: <ref id="elevuvt" name="elevate uv tool">
 <item>EndCap: <ref id="rep" name="revolve attribute">,
 <ref id="swp" name="sweep attribute">,
 <ref id="skp" name="skin attribute">
@@ -6131,6 +6300,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Gimbal Lock: <ref id="gimb" name="avoiding Gimbal Locks">
 <item>goDown: <ref id="scihier" name="scripting interface command">
 <item>goTop: <ref id="scihier" name="scripting interface command">
+<item>Gordon: <ref id="gordonobj" name="object">
 <item>goUp: <ref id="scihier" name="scripting interface command">
 <item>Grid: <ref id="vat" name="view attribute">
 <ref id="prefdraw" name="drawing preference setting">
@@ -6154,11 +6324,11 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Hide: <ref id="mmtools" name="main menu entry">,
 <ref id="attrs" name="attribute">
 <item>Hide All: <ref id="mmtools" name="main menu entry">
+<item>Hider: <ref id="rihtag" name="RiHider tag type">
 <item>HideTmpTags: <ref id="prefmisc" name="preference setting">
 <item>Highlight Material: <ref id="mmtools" name="main menu entry">
 <item>Hole: <ref id="handb" name="using holes">
-<item>Hyperboloid: <ref id="mmcreate" name="main menu entry">,
-<ref id="hyperboloidobj" name="object">
+<item>Hyperboloid: <ref id="hyperboloidobj" name="object">
 </itemize>
 
 <label id="indexi">I
@@ -6183,8 +6353,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <ref id="icurveobj" name="interpolating curve">,
 <ref id="swp" name="sweep attribute">,
 <ref id="skp" name="skin attribute">
-<item>Intersection: <ref id="mmcreate" name="main menu entry">,
-<ref id="levelobj" name="object">
+<item>Intersection: <ref id="levelobj" name="Level object">
 <item>Invert Selection: <ref id="mmspecial" name="main menu entry">
 <item>IParam: <ref id="icp" name="ICurve attribute">
 <item>IsLocal: <ref id="lip" name="light attribute">
@@ -6195,7 +6364,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 
 <label id="indexj">J
 <itemize>
-<item>
+<item>.
 </itemize>
 
 <label id="indexk">K
@@ -6212,10 +6381,8 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Length: <ref id="bxp" name="box attribute">,
 <ref id="ncattr" name="NURBCurve attribute">,
 <ref id="icp" name="ICurve attribute">
-<item>Level: <ref id="mmcreate" name="main menu entry">,
-<ref id="levelobj" name="object and properties">
-<item>Light: <ref id="mmcreate" name="main menu entry">,
-<ref id="lightobj" name="object">
+<item>Level: <ref id="levelobj" name="object">
+<item>Light: <ref id="lightobj" name="object">,
 <ref id="prefdraw" name="preference setting">
 <item>LightAttr: <ref id="lip" name="property">,
 <item>LightShader: <ref id="lightobj" name="light">
@@ -6245,11 +6412,12 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>MaxTagLen: <ref id="hidprefs" name="Hidden Preference Settings">
 <item>Menu: <ref id="mm" name="main menu">,
 <ref id="vm" name="view menu">
-<item>MetaObj, MetaComp: <ref id="metaobjobj" name="object and properties">
+<item>MetaObj, MetaComp: <ref id="metaobjobj" name="object">
 <item>MFIO Plugin:
 <ref id="mfioplugin" name="3DMF import export (MFIO) plugin">
 <item>MinorRad: <ref id="top" name="torus attribute">
 <item>MinSamples, MaxSamples: <ref id="rio" name="RenderMan interface option">
+<item>Mirror:<ref id="cloneattr" name="Clone attribute">
 <item>Mode: <ref id="icp" name="ICurve attribute">
 <item>Mops Import: <ref id="impmops" name="Import of Mops Scenes">
 <item>Move: <ref id="vwsc" name="view action">,
@@ -6271,10 +6439,8 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>NumClones: <ref id="cloneattr" name="Clone attribute">
 <item>NumSamples: <ref id="moattr" name="MetaObj attribute">
 <item>NURBCircle: <ref id="ncirct" name="NURBS circle tool">
-<item>NURBCurve: <ref id="mmcreate" name="main menu entry">,
-<ref id="ncurveobj" name="object">
-<item>NURBPatch: <ref id="mmcreate" name="main menu entry">,
-<ref id="npatchobj" name="object">
+<item>NURBCurve: <ref id="ncurveobj" name="object">
+<item>NURBPatch: <ref id="npatchobj" name="object">
 <item>NURBS: <ref id="scinurbs" name="scripting interface commands">
 <item>NURBSphere: <ref id="nspt" name="NURBS sphere tool">
 </itemize>
@@ -6290,6 +6456,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>OptimizeCoords: <ref id="mmtools" name="Optimize PolyMesh tool option">
 <item>OptimizeFaces: <ref id="mmtools" name="Optimize PolyMesh tool option">
 <item>OptimizeNew: <ref id="mmtools" name="Merge PolyMesh tool option">
+<item>Option: <ref id="riotag" name="RiOption tag type">
 <item>Order: <ref id="ncattr" name="NURBCurve attribute">,
 <ref id="npattr" name="NURBPatch attribute">,
 <ref id="icp" name="ICurve attribute">
@@ -6299,8 +6466,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <label id="indexp">P
 <itemize>
 <item>P1, P2: <ref id="hyp" name="hyperboloid attribute">
-<item>Paraboloid: <ref id="mmcreate" name="main menu entry">,
-<ref id="paraboloidobj" name="object">
+<item>Paraboloid: <ref id="paraboloidobj" name="object">
 <item>pasOb: <ref id="sciclip" name="scripting interface command">
 <item>Paste: <ref id="mmedit" name="main menu entry">
 <item>Paste Property: <ref id="mmedit" name="main menu entry">
@@ -6310,6 +6476,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>PhiMin, PhiMax: <ref id="top" name="torus attribute">
 <item>Pick:<ref id="objsel" name="pick objects within a view">
 <item>PickEpsilon: <ref id="prefmodel" name="preference setting">
+<item>Plot Curvature: <ref id="plotcurt" name="plot curvature tool">
 <item>Point: <ref id="pdsl" name="light type">
 <item>PolyMesh: <ref id="polymeshobj" name="object">
 <item>PPRender: <ref id="prefrib" name="preference setting">
@@ -6318,8 +6485,8 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Procedurals: <ref id="rio" name="RenderMan interface option">
 <item>Prompt: <ref id="hidprefs" name="hidden preference setting">
 <item>Properties: <ref id="propgui" name="property GUI">
-<item>Primitive: <ref id="mmcreate" name="main menu entry">,
-<ref id="levelobj" name="object and properties">
+<item>Primitive: <ref id="levelobj" name="Level object">
+<item>Primitive Variable (PV): <ref id="pvtag" name="tag type">
 <item>PRManSpec: <ref id="rio" name="RenderMan interface option">
 </itemize>
 
@@ -6392,7 +6559,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Root: <ref id="rootobj" name="object">
 <item>Rotate: <ref id="vwsc" name="view action">,
 <ref id="rotac" name="rotate object">,
-<ref id="swp" name="sweep attribute">
+<ref id="swp" name="sweep attribute">,
+<ref id="cloneattr" name="Clone attribute">
 <item>Rotation: <ref id="trap" name="transformations property">,
 <ref id="gimb" name="using the transformations property">
 <item>rotOb, rotSel: <ref id="scitrafo" name="scripting interface command">
@@ -6451,8 +6619,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>SMethod: <ref id="prefmisc" name="preference setting">
 <item>SMRes: <ref id="lip" name="light attribute">
 <item>SParam: <ref id="prefmisc" name="preference setting">
-<item>Sphere: <ref id="mmcreate" name="main menu entry">,
-<ref id="sphereobj" name="object">,
+<item>Sphere: <ref id="sphereobj" name="object">,
 <ref id="nspt" name="NURBS sphere tool">
 <item>Split: <ref id="sptct" name="split to curves tool">,
 <item>Split Curve: <ref id="miscac" name="modeling action">
@@ -6467,6 +6634,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Stretch: <ref id="scalac" name="stretch object">
 <item>Subdivision Mesh: <ref id="sdmeshobj" name="SDMesh object">
 <item>Surface: <ref id="matshader" name="shader">
+<item>Swap UV: <ref id="swapuvt" name="swap uv tool">
 <item>Sweep: <ref id="sweepobj" name="object">,
 <ref id="swpt" name="Sweep tool">
 </itemize>
@@ -6503,8 +6671,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Tool: <ref id="toolb" name="tool box window">
 <item>ToolBoxTrans: <ref id="prefmisc" name="preference setting">
 <item>Top: <ref id="vmtype" name="view menu entry">
-<item>Torus: <ref id="mmcreate" name="main menu entry">,
-<ref id="torusobj" name="object">
+<item>Torus: <ref id="torusobj" name="object">
 <item>Transformations: <ref id="trap" name="transformations property">
 <item>Translation: <ref id="trap" name="transformations property">
 <item>Tree View: <ref id="treeview" name="Tree View">
@@ -6526,8 +6693,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <ref id="mmedit" name="main menu entry">,
 <ref id="scimisc" name="scripting interface command">
 <item>UndoLevels: <ref id="prefmodel" name="preference setting">
-<item>Union: <ref id="mmcreate" name="main menu entry">,
-<ref id="levelobj" name="object and properties">
+<item>Union: <ref id="levelobj" name="Level object">
 <item>UpperBevel: <ref id="extrattr" name="extrude attribute">
 <item>UpperCap: <ref id="rep" name="revolve attribute">,
 <ref id="extrattr" name="extrude attribute">
@@ -6542,8 +6708,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <label id="indexv">V
 <itemize>
 <item>Variance: <ref id="rio" name="RenderMan interface option">
-<item>View: <ref id="mmcreate" name="main menu entry">,
-<ref id="viewobj" name="object">,
+<item>View: <ref id="viewobj" name="object">,
 <ref id="viewwin" name="Anatomy of a View">
 <item>ViewAttrib: <ref id="vat" name="property">
 </itemize>
@@ -6561,16 +6726,17 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 
 <label id="indexx">X
 <itemize>
-<item> 
+<item>.
 </itemize>
 
 <label id="indexy">Y
 <itemize>
-<item> 
+<item>.
 </itemize>
 
 <label id="indexz">Z
 <itemize>
+<item>Zap Ayam: <ref id="mmspecial" name="main menu entry">
 <item>ZMin, ZMax: <ref id="spattr" name="sphere attribute">,
 <ref id="dkp" name="disk attribute">,
 <ref id="cyp" name="cylinder attribute">,
