@@ -3291,6 +3291,25 @@ saveScene:
  <item>Description: saves the current scene to filename.
 </itemize>
 
+<sect2>Reporting Errors<label id="sierr">
+<p>
+
+ayError:
+<itemize>
+ <item>Synopsis: <tt>"ayError code place detail"</tt>
+ <item>Description: This command reports errors or warnings.
+You should always use ayError instead of puts because the error
+reporting mechanism of Ayam features compression of repeated
+messages and logging to files. Code should be one of: 1: warning, 2:
+error, 3: flush messages, 4: unspecified output.
+There are more codes defined (see ayam.h, look for Return/Error Codes)
+but they are not needed in the Tcl script context.
+Place should describe the procedure where the error occured.
+Detail is the string to be output.
+</itemize>
+
+
+
 <sect2>Miscellaneous<label id="gtype">
 <p>
 
@@ -3823,6 +3842,7 @@ A
 <item>AutoResize: <ref id="prefgui" name="preference setting">
 <item>AutoSavePrefs: <ref id="prefgui" name="preference setting">
 <item>ayamrc: <ref id="ayamrc" name="Ayamrc File">
+<item>ayError: <ref id="sierr" name="scripting interface command">
 </itemize>
 
 B
