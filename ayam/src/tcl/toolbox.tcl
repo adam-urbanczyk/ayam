@@ -309,6 +309,7 @@ proc toolbox_open { } {
 	    }
 	    bind $f.bnot <Shift-ButtonPress-1> {
 		forceNot all; rV
+		break;
 	    }
 	    balloon_set $f.bnot\
 		    "force notification\nShift: complete notification"
@@ -330,8 +331,11 @@ proc toolbox_open { } {
 	    button $f.blevel -image ay_Level_img -padx 0 -pady 0 -command {
 		crtOb Level 1; uCR; sL; rV;
 	    }
-	    balloon_set $f.blevel "create Level"
-
+	    balloon_set $f.blevel "create Level\nShift: and move objects into"
+	    bind $f.blevel <Shift-ButtonPress-1> {
+		level_crt;
+		break;
+	    }
 	    #####
 	    button $f.blight -image ay_Light_img -padx 0 -pady 0 -command {
 		crtOb Light; uCR; sL; rV;
