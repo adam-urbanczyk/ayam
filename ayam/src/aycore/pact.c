@@ -1665,7 +1665,11 @@ ay_pact_wetcb(struct Togl *togl, int argc, char *argv[])
  double dx, winx = 0.0, new_weight, *coords;
  static double oldwinx = 0.0;
  static double olddx = 0.0;
- int i = 0;
+ int i = 0, j, k = 0, notifyparent = AY_FALSE;
+ ay_object *o = ay_point_edit_object;
+
+  if(!o)
+    return TCL_OK;
 
   /* parse args */
   if(argc == 4)
@@ -1685,19 +1689,21 @@ ay_pact_wetcb(struct Togl *togl, int argc, char *argv[])
       ay_error(AY_EARGS, fname, NULL);
       return TCL_OK;
     }
-
+  
   if(!ay_selection)
     return TCL_OK;
 
   dx = oldwinx - winx;
-  oldwinx = winx;
 
-  if(ay_point_edit_coords)
+  for(j = 0; j < ay_pe_objectslen; j++)
     {
-      for(i = 0; i < ay_point_edit_coords_number; i++)
+      o = ay_pe_objects[j];
+
+      for(i = 0; i < ay_pe_numcpo[j]; i++)
 	{
-	  coords = ay_point_edit_coords[i]; 
-	  if(ay_point_edit_coords_homogenous)
+	  coords = ay_point_edit_coords[k];
+	  k++;
+	  if(ay_pe_homcpo[j])
 	    {
 	      new_weight = coords[3];
 	      if(dx>0.0)
@@ -1716,15 +1722,18 @@ ay_pact_wetcb(struct Togl *togl, int argc, char *argv[])
 	    } /* if */
 	} /* for */
 
-      if(ay_point_edit_coords_homogenous)
+      if(ay_pe_homcpo[j])
 	{
 	  ay_point_edit_object->modified = AY_TRUE;
 	  ay_notify_force(ay_selection->object);
-
-	  if(!ay_prefs.lazynotify)
-	    ay_status = ay_notify_parent();
+	  notifyparent = AY_TRUE;
 	} /* if */
-    } /* if */
+    } /* for */
+
+  oldwinx = winx;
+
+  if(!ay_prefs.lazynotify && notifyparent)
+    ay_status = ay_notify_parent();
 
  return TCL_OK;
 } /* ay_pact_wetcb */

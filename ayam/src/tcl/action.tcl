@@ -680,13 +680,18 @@ proc actionEditP { w } {
 
 #
 proc actionEditWP { w } {
+    global ayprefs
 
     viewTitle $w "" "Edit_Weights"
 
     bind $w <ButtonPress-1> {
 	set ay(action) 1
 	undo save EditWPnt
-	%W startpepac %x %y
+	if { $ayprefs(FlashPoints) == 1 } {	
+	    %W startpepac %x %y -flash
+	} else {
+	    %W startpepac %x %y
+	}
 	%W wepac -start %x
     }
 
@@ -695,7 +700,16 @@ proc actionEditWP { w } {
 	%W render
     }
 
+    if { $ayprefs(FlashPoints) == 1 } {
+	bind $w <Motion> {
+	    %W startpepac %x %y -flash
+	}
+    }
     stdReleaseBind $w
+
+    if { $ayprefs(FlashPoints) == 1 } {
+	bind $w <ButtonRelease-1> "+%W startpepac %x %y -flash -ignoreold"
+    }
 
     $w setconf -drawh 1
 }
