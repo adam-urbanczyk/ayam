@@ -2182,17 +2182,18 @@ ay_npt_interpolatev(ay_nurbpatch_object *patch, int order)
   vk[0] = 0.0;
   for(k = 1; k < N; k++)
     {
-      ind = k*stride;
+      ind2 = k*stride;
+      ind = ind2-stride;
       vk[k] = 0.0;
       for(i = 0; i < K; i++)
 	{
-	  ind2 = ind+(N*stride);
 	  v[0] = Pw[ind2]   - Pw[ind];
 	  v[1] = Pw[ind2+1] - Pw[ind+1];
 	  v[2] = Pw[ind2+2] - Pw[ind+2];
 
 	  vk[k] += (AY_V3LEN(v)/d[i]);
 	  ind += N*stride;
+	  ind2 += N*stride;
 	}
 
       vk[k] /= K;
@@ -2556,7 +2557,7 @@ ay_npt_skinv(ay_object *curves, int order, int knot_type,
   V = NULL;
   skc = NULL;
 
-  if(interpolate && degV > 2)
+  if(interpolate && degV > 1)
     ay_status = ay_npt_interpolatev(*skin, order);
 
 cleanup:
@@ -4277,7 +4278,7 @@ ay_npt_gordon(ay_object *cu, ay_object *cv, ay_object *in,
       lcv = c;
       c = c->next;
     }
-  
+
   if(uorder < 2)
     uorder = 4;
 
@@ -4302,7 +4303,7 @@ ay_npt_gordon(ay_object *cu, ay_object *cv, ay_object *in,
       i = 0;
       ay_nb_CurvePoint4D(nc->length-1, nc->order-1, nc->knotv, nc->controlv,
 			 nc->knotv[nc->order-1], &(intersections[i]));
-      i = (numcu-1)*numcv*4;
+      i = (numcv-1)*numcu*4;
       ay_nb_CurvePoint4D(nc->length-1, nc->order-1, nc->knotv, nc->controlv,
 			 nc->knotv[nc->length], &(intersections[i]));
 
@@ -4310,7 +4311,7 @@ ay_npt_gordon(ay_object *cu, ay_object *cv, ay_object *in,
       i = (numcu-1)*4;
       ay_nb_CurvePoint4D(nc->length-1, nc->order-1, nc->knotv, nc->controlv,
 			 nc->knotv[nc->order-1], &(intersections[i]));
-      i = ((numcu-1)*numcv+(numcv-1))*4;
+      i = (numcu*numcv-1)*4;
       ay_nb_CurvePoint4D(nc->length-1, nc->order-1, nc->knotv, nc->controlv,
 			 nc->knotv[nc->length], &(intersections[i]));
 
@@ -4332,7 +4333,7 @@ ay_npt_gordon(ay_object *cu, ay_object *cv, ay_object *in,
 	      /* get missing intersection points */
 	      c = cv->next;
 	      i = 2*4;
-	      for(j = 1; j < numcv; j++)
+	      for(j = 2; j < numcv; j++)
 		{
 		  nc = (ay_nurbcurve_object *)c->refine;
 
@@ -4359,7 +4360,7 @@ ay_npt_gordon(ay_object *cu, ay_object *cv, ay_object *in,
 		  /* get missing intersection points */
 		  c = cu->next;
 		  i = 4;
-		  for(j = 1; j < numcu; j++)
+		  for(j = 2; j < numcu; j++)
 		    {
 		      nc = (ay_nurbcurve_object *)c->refine;
 		      ay_nb_CurvePoint4D(nc->length-1, nc->order-1, nc->knotv,
@@ -4370,8 +4371,8 @@ ay_npt_gordon(ay_object *cu, ay_object *cv, ay_object *in,
 		    } /* for */
 
 		  c = cu->next;
-		  i = ((numcu-1)*numcv)*4;
-		  for(j = 1; j < numcu; j++)
+		  i = ((numcv-1)*numcu+1)*4;
+		  for(j = 2; j < numcu; j++)
 		    {
 		      nc = (ay_nurbcurve_object *)c->refine;
 		      ay_nb_CurvePoint4D(nc->length-1, nc->order-1, nc->knotv,
@@ -4401,14 +4402,14 @@ ay_npt_gordon(ay_object *cu, ay_object *cv, ay_object *in,
 	} /* if */
 
       uo = uorder;
-      if(numcu < uorder)
-	uorder = numcu;
+      if(numcv < uorder)
+	uorder = numcv;
 
       vo = vorder;
-      if(numcv < vorder)
-	vorder = numcv;
+      if(numcu < vorder)
+	vorder = numcu;
 
-      ay_status = ay_npt_create(uorder, vorder, numcu, numcv,
+      ay_status = ay_npt_create(uorder, vorder, numcv, numcu,
 				AY_KTNURB, AY_KTNURB,
 				intersections, NULL, NULL,
 				&interpatch);
@@ -4435,17 +4436,19 @@ ay_npt_gordon(ay_object *cu, ay_object *cv, ay_object *in,
   ay_status = ay_npt_skinv(cu, uorder, AY_KTCUSTOM, AY_TRUE, &skinu);
   ay_status = ay_npt_skinu(cv, vorder, AY_KTCUSTOM, AY_TRUE, &skinv);
 
-
   if(skinu->uorder > uo)
     uo = skinu->uorder;
   if(skinv->uorder > uo)
     uo = skinv->uorder;
+  if(interpatch->uorder > uo)
+    uo = interpatch->uorder;
 
   if(skinu->vorder > vo)
     vo = skinu->vorder;
   if(skinv->vorder > vo)
     vo = skinv->vorder;
-
+  if(interpatch->vorder > vo)
+    vo = interpatch->vorder;
 
   if(skinu->uorder < uo)
     ay_status = ay_npt_elevateu(skinu, uo-skinu->uorder);
