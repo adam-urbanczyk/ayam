@@ -27,7 +27,7 @@ ay_view_createcb(int argc, char *argv[], ay_object *o)
 {
  char fname[] = "ay_view_createcb";
 
-  ay_error(AY_ERROR, fname, "Can not create a view this way, use newView!");
+  ay_error(AY_ERROR, fname, "Can not create a view this way, use viewOpen!");
 
  return AY_ERROR;
 } /* ay_view_createcb */
