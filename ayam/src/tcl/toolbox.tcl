@@ -11,13 +11,12 @@
 
 # toolbox_open:
 proc toolbox_open { } {
-    global ayprefs ayviewshortcuts aymainshortcuts tcl_platform
+    global ay ayprefs ayviewshortcuts aymainshortcuts tcl_platform
 
     set w .tbw
+
     catch {destroy $w}
-    
-    set visuals [winfo visualsavailable .]
-    if { [lsearch $visuals truecolor*] != -1 } {
+    if { $ay(truecolor) == 1 } {
 	toplevel $w -visual truecolor
     } else {
 	toplevel $w
