@@ -298,43 +298,43 @@ metaobj_drawcb (struct Togl *togl, ay_object * o)
 
   if (w->showworld)
   {
-  	float u;
+  	double u;
 	u = w->unisize/2;
 
      glBegin (GL_LINE_STRIP);
-     glVertex3f (-u, +u, +u);
-     glVertex3f (+u, +u, +u);
-     glVertex3f (+u, +u, -u);
-     glVertex3f (-u, +u, -u);
-     glVertex3f (-u, +u, +u);
+     glVertex3d (-u, +u, +u);
+     glVertex3d (+u, +u, +u);
+     glVertex3d (+u, +u, -u);
+     glVertex3d (-u, +u, -u);
+     glVertex3d (-u, +u, +u);
 
-     glVertex3f (-u, -u, +u);
-     glVertex3f (+u, -u, +u);
-     glVertex3f (+u, -u, -u);
-     glVertex3f (-u, -u, -u);
-     glVertex3f (-u, -u, +u);
+     glVertex3d (-u, -u, +u);
+     glVertex3d (+u, -u, +u);
+     glVertex3d (+u, -u, -u);
+     glVertex3d (-u, -u, -u);
+     glVertex3d (-u, -u, +u);
  
      glEnd();
 	
      glBegin (GL_LINES);
-     glVertex3f (+u, +u, +u);
-     glVertex3f (+u, -u, +u);
+     glVertex3d (+u, +u, +u);
+     glVertex3d (+u, -u, +u);
 
-     glVertex3f (+u, +u, -u);
-     glVertex3f (+u, -u, -u);
-     glVertex3f (-u, +u, -u);
-     glVertex3f (-u, -u, -u);
+     glVertex3d (+u, +u, -u);
+     glVertex3d (+u, -u, -u);
+     glVertex3d (-u, +u, -u);
+     glVertex3d (-u, -u, -u);
      glEnd();
     
      glBegin (GL_POINTS);
-     glVertex3f (+u, +u, +u);
-     glVertex3f (+u, +u, -u);
-     glVertex3f (+u, -u, +u);
-     glVertex3f (+u, -u, -u);
-     glVertex3f (-u, +u, +u);
-     glVertex3f (-u, +u, -u);
-     glVertex3f (-u, -u, +u);
-     glVertex3f (-u, -u, -u);
+     glVertex3d (+u, +u, +u);
+     glVertex3d (+u, +u, -u);
+     glVertex3d (+u, -u, +u);
+     glVertex3d (+u, -u, -u);
+     glVertex3d (-u, +u, +u);
+     glVertex3d (-u, +u, -u);
+     glVertex3d (-u, -u, +u);
+     glVertex3d (-u, -u, -u);
      glEnd();
 
   }
@@ -357,14 +357,14 @@ metaobj_drawcb (struct Togl *togl, ay_object * o)
       y2 = *vptr++;
       z2 = *vptr++;
 
-      glVertex3f (x, y, z);
-      glVertex3f (x1, y1, z1);
+      glVertex3d (x, y, z);
+      glVertex3d (x1, y1, z1);
 
-      glVertex3f (x1, y1, z1);
-      glVertex3f (x2, y2, z2);
+      glVertex3d (x1, y1, z1);
+      glVertex3d (x2, y2, z2);
 
-      glVertex3f (x, y, z);
-      glVertex3f (x2, y2, z2);
+      glVertex3d (x, y, z);
+      glVertex3d (x2, y2, z2);
     }
 
   glEnd ();
@@ -692,8 +692,9 @@ metaobj_notifycb (ay_object * o)
   ay_object *down;
   double p[3] = { 0 };
   meta_world *w;
-
-  glMatrixMode (GL_MODELVIEW);
+  char *adapt;
+  
+ glMatrixMode (GL_MODELVIEW);
 
   down = o->down;
 
@@ -743,8 +744,26 @@ metaobj_notifycb (ay_object * o)
 
   w->currentnumpoly = 0;
   w->o = o->down;
+  
+  adapt = Tcl_GetVar(ay_interp,"meta_mouseup",TCL_GLOBAL_ONLY);
+ 
+  w->adaptflag = 0;
+  
+  if(*adapt == '1')
+  {
+   w->adaptflag = 1;
+//   printf("up!!!!\n");
+  }
 
+  *adapt = '0';
+  Tcl_SetVar(ay_interp,"meta_mouseup",adapt,TCL_GLOBAL_ONLY);
+  
   meta_calceffect (w);
+
+  if(w->adaptflag ==1)
+  {
+     ay_notify_parent();
+  }
 
   return AY_OK;
 
@@ -808,6 +827,13 @@ Metaobj_Init (Tcl_Interp * interp)
 /*
  * Metacomp part 
  */
+
+int
+metacomp_notifycb (ay_object * o)
+{
+    ay_notify_parent ();
+	return 0;
+}
 
 int
 metacomp_createcb (int argc, char *argv[], ay_object * o)
@@ -1230,6 +1256,9 @@ Metacomp_Init (Tcl_Interp * interp)
 				 metacomp_setpropcb, metacomp_getpropcb, metacomp_getpntcb, metacomp_readcb, metacomp_writecb, NULL,	/*metacomp_wribcb, */
 				 NULL,	/* metacomp_bbccb, */
 				 &metacomp_id);
+
+  ay_status = ay_notify_register (metacomp_notifycb, metacomp_id);
+
 
   if (ay_status)
     {
