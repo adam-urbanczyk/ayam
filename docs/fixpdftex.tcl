@@ -5,8 +5,8 @@
 # leading epsfile command line to the .png-command line.
 # Why Debian-sgml-tools had to change in such an incompatible way (as opposed
 # to the original sgml-tools package) is completely beyond my understanding.
-set infile [ open ayam.tex r ]
-set outfile [ open ayaml.tex w ]
+set infile [ open [lindex $argv 0] r ]
+set outfile [ open [lindex $argv 1] w ]
 set height 0
 while { ![eof $infile] } {
     gets $infile buf

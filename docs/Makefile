@@ -55,7 +55,7 @@ pdf4:
 	/bin/sh -c "sed -f sedsrc ayam.sgml > ayaml.sgml"
 	sgml2latex -o tex ayaml.sgml
 	/bin/sh -c "sed -f sedsrc3 ayaml.tex > ayam.tex"
-	/usr/bin/tclsh fixpdftex.tcl
+	/usr/bin/tclsh fixpdftex.tcl ayam.tex ayaml.tex
 	mv ayaml.tex ayam.tex
 	pdflatex ayam.tex
 	rm -f ayaml.sgml ayaml.tex
