@@ -38,6 +38,9 @@ void ay_tree_getclevel(char *node);
 
 ay_object *ay_tree_getobject(char *node);
 
+int ay_tree_crtnodename(ay_object *parent, ay_list_object *list,
+			Tcl_DString *ds);
+
 int ay_tree_registerdrop(ay_treedropcb  *cb, unsigned int type_id);
 
 int ay_tree_inittcmd(ClientData clientData, Tcl_Interp *interp,

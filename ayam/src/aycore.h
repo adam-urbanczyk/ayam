@@ -138,6 +138,11 @@ int ay_instt_checkinstance(ay_object *o, ay_object *target,
 
 int ay_instt_check(ay_object *o, ay_object *target);
 
+int ay_instt_getmaster(ay_object *o, ay_object *i, ay_object **r);
+
+int ay_instt_getmastertcmd(ClientData clientData, Tcl_Interp *interp,
+			   int argc, char *argv[]);
+
 void ay_instt_init(Tcl_Interp *interp);
 
 

@@ -181,14 +181,14 @@ ay_tree_getobject(char *node)
     }
 
  return o;
-} /* ay_tree_getlevel */
+} /* ay_tree_getobject */
 
 
 /* ay_tree_crtnodename:
  *  creates a Tcl-node string from a list
  *  of level object objects, that lead to this
  *  object; list has to be in order
- * (not like the current level list)
+ *  (not like the current level list)
  */
 int
 ay_tree_crtnodename(ay_object *parent, ay_list_object *list, Tcl_DString *ds)

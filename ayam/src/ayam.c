@@ -497,6 +497,9 @@ int ay_status = AY_OK;
   Tcl_CreateCommand(interp, "resolveIn", ay_instt_resolvetcmd,
 		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  Tcl_CreateCommand(interp, "getMaster", ay_instt_getmastertcmd,
+		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
   /* mopsi.c */
   Tcl_CreateCommand(interp, "importMops", ay_mopsi_tcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);

@@ -135,6 +135,7 @@ $m add command -label "Undo" -command {undo; uCL cl "0 1"; plb_update; rV}
 $m add command -label "Redo" -command {undo redo; uCL cl "0 1"; plb_update; rV}
 $m add separator
 $m add command -label "Material" -command {material_edit;}
+$m add command -label "Master" -command {instance_edit;}
 $m add separator
 $m add command -label "Preferences" -command {prefs_open; rV}
 
