@@ -15,7 +15,7 @@
 
 
 ###################################
-# runToolp:
+# runTool:
 # execute a tool, asking for arguments
 # argvars:    list of global varnames
 # argstrings: labels for the argument entry fields
@@ -41,12 +41,16 @@ append okscript "set command \"$command\";"
 
 set index 0
 foreach i $argvars {
+    global $i ay
+    # check variable
+    if { ![info exists $i] } { set $i 0}
+
     # create GUI
     set f2 [frame $f.f$index]
 
     label $f2.l -text [lindex $argstrings $index ] -width 12
     entry $f2.e -width 12
-    global $i ay
+
     eval [subst "$f2.e insert @0 \$$i"]
 
     pack $f2.l $f2.e -in $f2 -padx 2 -pady 2 -side left -expand yes -fill x
@@ -75,7 +79,7 @@ tkwait window $w
 
 return;
 }
-
+# runTool
 
 ###################################
 # runGetStderr:
