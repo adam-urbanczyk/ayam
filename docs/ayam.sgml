@@ -6348,6 +6348,8 @@ This section documents the environment variables used by Ayam.
 display the documentation URL)
 <item><tt>"NETSCAPE"</tt>: (if <tt>"BROWSER"</tt> does not exist) filename
 of the Netscape WWW browser (used to display the documentation URL)
+<item><tt>"SHADERS"</tt>: initial value of <tt>"Shaders"</tt> preference
+setting (used if no ayamrc file exists).
 </itemize>
 
 <sect1>Import of Mops Scenes<label id="impmops">
