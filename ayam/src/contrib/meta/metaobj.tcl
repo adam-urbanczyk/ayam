@@ -31,7 +31,7 @@ Formula  0
 # create MetaObjAttr-UI
 set w [frame $ay(pca).$MetaObjAttr(w)]
 
-addParam $w MetaObjAttrData Gridwith 40
+addParam $w MetaObjAttrData Gridwith {20 40 60 80 120 140 160 180 200}
 addParam $w MetaObjAttrData Isolevel 0.6
 addCheck $w MetaObjAttrData "ShowWorld"
 

@@ -58,7 +58,7 @@ if { $MetaCompAttrData(Formula) == 3 } {
 }
 
 if { $MetaCompAttrData(Formula) == 4 } {
-    addString $w MetaCompAttrData Expression { {set f [expr {pow($x,4)+pow($y,4)+pow($z,4)}] } }
+    addString $w MetaCompAttrData Expression { { set f [expr {pow($x,4)+pow($y,4)+pow($z,4)}] } { set f [expr {pow($x,2)+pow($y,2)}] } }
 }
 
 $ay(pca) itemconfigure 1 -window $w
@@ -70,10 +70,6 @@ set height [expr [winfo reqheight $w] + 10]
 $ay(pca) configure -scrollregion [list 0 5 $width $height]
 
 }
-
-
-
-
 
 array set MetaCompAttr {
 arr   MetaCompAttrData
