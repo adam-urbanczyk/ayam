@@ -60,7 +60,7 @@ static char *undo_saved_op; /* name of saved modelling operation */
 /* functions */
 
 /* ay_undo_init:
- *  initialize the undo system by allocating the undo buffer 
+ *  initialize the undo system by allocating the undo buffer
  */
 int
 ay_undo_init(int buffer_size)
@@ -78,7 +78,7 @@ ay_undo_init(int buffer_size)
 
   if(!(undo_buffer = calloc(buffer_size, sizeof(ay_undo_object))))
     return AY_EOMEM;
-  
+
   undo_current = -1;
   undo_buffer_size = buffer_size;
 
@@ -107,7 +107,7 @@ ay_undo_deletemulti(ay_object *o)
 
   if(!o)
     return AY_ENULL;
-  
+
   d = o;
   while(d)
     {
@@ -184,7 +184,7 @@ ay_undo_deletemulti(ay_object *o)
 	  dcb = (ay_deletecb*)(arr[d->type]);
 	  if(dcb)
 	    ay_status = dcb(d->refine);
-	  
+
 	  if(ay_status)
 	    {
 	      return ay_status;
@@ -603,7 +603,7 @@ ay_undo_copy(ay_undo_object *uo)
 		return AY_EOMEM;
 	      strcpy(o->name, c->name);
 	    }
-	    
+
 	  ay_status = ay_undo_copymat((ay_mat_object *)(c->refine),
 				      (ay_mat_object *)(o->refine));
 
@@ -660,7 +660,7 @@ ay_undo_copy(ay_undo_object *uo)
       /* copy selected points? No! */
       /*ay_status = ay_undo_copyselp(c, o);*/
       ay_selp_clear(o);
-      
+
       /* copy all other attributes */
       o->type = c->type;
       /*o->selected = c->selected;*/
@@ -687,7 +687,7 @@ ay_undo_copy(ay_undo_object *uo)
 
 
 /* ay_undo_redo:
- *  
+ *
  */
 int
 ay_undo_redo(void)
@@ -723,7 +723,7 @@ ay_undo_redo(void)
 
 
 /* ay_undo_undo:
- *  
+ *
  */
 int
 ay_undo_undo(void)
@@ -802,7 +802,7 @@ ay_undo_copysave(ay_object *src, ay_object **dst)
     {
     case AY_IDVIEW:
       srcview = (ay_view_object *)(src->refine);
-      
+
       if(!(new->refine = calloc(1, sizeof(ay_view_object))))
 	return AY_EOMEM;
       dstview = (ay_view_object *)(new->refine);
@@ -876,7 +876,7 @@ ay_undo_copysave(ay_object *src, ay_object **dst)
 
 
 /* ay_undo_save:
- *  
+ *
  */
 int
 ay_undo_save(void)
@@ -886,7 +886,6 @@ ay_undo_save(void)
  ay_list_object *sel = ay_selection, *r = NULL, *lastr = NULL, *lsr = NULL;
  ay_object **nexto = NULL, *view = NULL, *lso = NULL;
  int i;
- char *saved_opname = NULL;
 
   /* we always save all views now */
   if((!sel) && (!ay_root->down->next))
@@ -910,10 +909,13 @@ ay_undo_save(void)
 
 	  uo->objects = uo2->objects;
 	  uo->references = uo2->references;
+	  uo->operation = uo2->operation;
 	}
       uo = &(undo_buffer[undo_buffer_size-1]);
       uo->objects = NULL;
       uo->references = NULL;
+      /* link name of saved modelling operation to this undo object */
+      uo->operation = undo_saved_op;
     }
   else
     {
@@ -927,18 +929,15 @@ ay_undo_save(void)
 	  if(undo_last_op == 0)
 	    undo_current++;
 	  uo = &(undo_buffer[undo_current]);
-	  /* first, save name of operation */
-	  saved_opname = uo->operation;
-	  uo->operation = NULL;
 	  /* clear tail of undo buffer */
 	  for(i = undo_current; i < undo_buffer_size; i++)
 	    {
 	      uo = &(undo_buffer[i]);
 	      ay_status = ay_undo_clearuo(uo);
 	    }
-	  /* reconstruct operation name */
 	  uo = &(undo_buffer[undo_current]);
-	  uo->operation = saved_opname;
+	  /* link name of saved modelling operation to this undo object */
+	  uo->operation = undo_saved_op;
 	}
       else
 	{
@@ -946,7 +945,6 @@ ay_undo_save(void)
 	  uo = &(undo_buffer[undo_current]);
 	  /* link name of saved modelling operation to this undo object */
 	  uo->operation = undo_saved_op;
-	  undo_saved_op = NULL;
 	} /* if */
     } /* if */
 
@@ -957,7 +955,7 @@ ay_undo_save(void)
       ay_status = ay_undo_clearuo(uo);
     }
 
-  /* finally, we may copy all currently selected objects 
+  /* finally, we may copy all currently selected objects
    * and references to the original objects to the undo buffer
    */
 
@@ -1021,7 +1019,7 @@ ay_undo_save(void)
 	{
 	  uo->references = r;
 	}
-      
+
       lastr = r;
 
       r->object = view;
@@ -1051,7 +1049,7 @@ ay_undo_save(void)
 	    {
 	      break;
 	    }
-	  
+
 	  /* copy reference */
 	  r = NULL;
 	  if(!(r = calloc(1, sizeof(ay_list_object))))
@@ -1067,7 +1065,7 @@ ay_undo_save(void)
 	    {
 	      uo->references = r;
 	    }
-      
+
 	  lastr = r;
 
 	  r->object = lsr->object;
@@ -1223,38 +1221,9 @@ ay_undo_undotcmd(ClientData clientData, Tcl_Interp *interp,
       if(!ay_status)
 	{
 	  uc--;
-	  if(undo_current+1 > 0)
-	    {
-	      if((undo_buffer[undo_current+1]).operation)
-		Tcl_SetVar2(interp, a, n3,
-			    (undo_buffer[undo_current+1]).operation,
-			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	      else
-		Tcl_SetVar2(interp, a, n3, vnull,
-			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	    }
-	  else
-	    {
-	      Tcl_SetVar2(interp, a, n3, vnone,
-			  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	    }
-	  if(undo_current+2 < undo_buffer_size)
-	    {
-	      if((undo_buffer[undo_current+2]).operation)
-		Tcl_SetVar2(interp, a, n4,
-			    (undo_buffer[undo_current+2]).operation,
-			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	      else
-		Tcl_SetVar2(interp, a, n4, vnull,
-			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	    }
-	}
-      break;
-    case 1:
-      ay_status = ay_undo_redo();
-      if(!ay_status)
-	{
-	  uc++;
+	  /*printf("undo_current:%d ; undo_buffer_size:%d\n",
+	    undo_current, undo_buffer_size);*/
+	  /* set undo prompt */
 	  if(undo_current > -1)
 	    {
 	      if((undo_buffer[undo_current]).operation)
@@ -1264,6 +1233,11 @@ ay_undo_undotcmd(ClientData clientData, Tcl_Interp *interp,
 	      else
 		Tcl_SetVar2(interp, a, n3, vnull,
 			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	    }
+	  else
+	    {
+	      Tcl_SetVar2(interp, a, n3, vnone,
+			  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 	    }
 	  if(undo_current+1 < undo_buffer_size)
 	    {
@@ -1275,24 +1249,52 @@ ay_undo_undotcmd(ClientData clientData, Tcl_Interp *interp,
 		Tcl_SetVar2(interp, a, n4, vnull,
 			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 	    }
+	  
+	}
+      break;
+    case 1:
+      ay_status = ay_undo_redo();
+      if(!ay_status)
+	{
+	  uc++;
+	  /* set undo prompt */
+	  if(undo_current > 0)
+	    {
+	      if((undo_buffer[undo_current-1]).operation)
+		Tcl_SetVar2(interp, a, n3,
+			    (undo_buffer[undo_current-1]).operation,
+			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	      else
+		Tcl_SetVar2(interp, a, n3, vnull,
+			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	    }
+	  if(undo_current+1 < undo_buffer_size)
+	    {
+	      if((undo_buffer[undo_current]).operation)
+		Tcl_SetVar2(interp, a, n4,
+			    (undo_buffer[undo_current]).operation,
+			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	      else
+		Tcl_SetVar2(interp, a, n4, vnull,
+			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	    }
 	  else
 	    {
 	      Tcl_SetVar2(interp, a, n4, vnone,
 			  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 	    }
+	  
 	}
       break;
     case 2:
-      ay_status = ay_undo_save();
-      uc++;
       /* save name of modelling operation in progress */
       if(argc > 2)
 	{
 	  if(undo_saved_op)
 	    free(undo_saved_op);
-	  
+
 	  undo_saved_op = NULL;
-	  
+
 	  if(!(undo_saved_op = calloc(strlen(argv[2]) + 1,
 				      sizeof(char))))
 	    {
@@ -1304,16 +1306,21 @@ ay_undo_undotcmd(ClientData clientData, Tcl_Interp *interp,
 	      strcpy(undo_saved_op, argv[2]);
 	    }
 	}
+      ay_status = ay_undo_save();
+      uc++;
       /* set scene changed flag */
       Tcl_SetVar2(interp, a, n, v, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      /* set undo prompt */
       if(undo_saved_op)
 	Tcl_SetVar2(interp, a, n3, undo_saved_op,
 		    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
       Tcl_SetVar2(interp, a, n4, vnone, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      undo_saved_op = NULL;
       break;
     case 3:
       ay_status = ay_undo_clear();
       uc = 0;
+      /* re-set undo prompt */
       Tcl_SetVar2(interp, a, n3, vnone, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
       Tcl_SetVar2(interp, a, n4, vnone, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
       break;
