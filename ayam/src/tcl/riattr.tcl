@@ -29,7 +29,7 @@ proc riattr_addp { } {
     pack $f.sc -in $f -side right -fill y -expand no
 
     # listbox
-    pack $f -in $w -side top -fill x -expand yes
+    pack $f -in $w -side top -fill both -expand yes
     listbox $f.li -width 24 -height 10 -selectmode single\
 	-yscrollcommand "$f.sc set" -exportselection 0
     pack $f.li -in $f -side left -fill both -expand yes
@@ -98,11 +98,25 @@ proc riattr_addp { } {
 		
 		switch $type {
 
-		    i { addParam .addRiAttrw.f2 riattrval Int $def}
-		    f { addParam .addRiAttrw.f2 riattrval Float $def}
+		    i { 
+			if { $def != {} } {
+			    set riattrval(Int) [lindex $def 0] } else {
+				set riattrval(Int) 0
+		      }
+			addParam .addRiAttrw.f2 riattrval Int $def}
+		    f {
+			if { $def != {} } {
+			    set riattrval(Float) [lindex $def 0] } else {
+				set riattrval(Float) 0.0
+		      }
+			addParam .addRiAttrw.f2 riattrval Float $def}
 		    s { 
+			if { $def != {} } {
+			    set riattrval(String) [lindex $def 0] } else {
+				set riattrval(String) ""
+			} 
 			addString .addRiAttrw.f2 riattrval String $def
-		    }
+		      }
 		    p { addParam .addRiAttrw.f2 riattrval Point_X
 		        addParam .addRiAttrw.f2 riattrval Point_Y
 		        addParam .addRiAttrw.f2 riattrval Point_Z
@@ -126,7 +140,18 @@ proc riattr_addp { } {
 			    
 			}
 		    }
-		    c { addColor .addRiAttrw.f2 riattrval Color $def}
+		    c {
+			if { $def != {} } {
+			    set riattrval(Color_R) [lindex [lindex $def 0] 0]
+			    set riattrval(Color_G) [lindex [lindex $def 0] 1]
+			    set riattrval(Color_B) [lindex [lindex $def 0] 2]
+			} else {
+			    set riattrval(Color_R) 0
+			    set riattrval(Color_G) 0
+			    set riattrval(Color_B) 0
+			}
+			addColor .addRiAttrw.f2 riattrval Color $def
+		      }
 		    
 		}
 	    }
