@@ -32,19 +32,20 @@ set height $NPatchAttrData(Height)
 set l 0.0
 
 set tcs mys,vertex,f,[expr $width*$height]
-for {set i 0} {$i < $width} {incr i} {
+for {set j 0} {$j < $height} {incr j} {
     # calculate total length of row
-    set rl 0.0; withOb 0 do {getPnt $i 0 ox oy oz w}
-    for {set j 1} {$j < $height} {incr j} {
+    set rl 0.0; withOb 0 do {getPnt 0 $j ox oy oz w}
+    for {set i 1} {$i < $width} {incr i} {
 	withOb 0 do {getPnt $i $j x y z w}
 	set d [v3len $x $y $z $ox $oy $oz]
 	set rl [expr $rl + $d]
 	set ox $x; set oy $y; set oz $z
     }
+
     # calculate texcoords for row
-    set il 0.0; withOb 0 do {getPnt $i 0 ox oy oz w}
+    set il 0.0; withOb 0 do {getPnt 0 $j ox oy oz w}
     append tcs ,0.0
-    for {set j 1} {$j < $height} {incr j} {
+    for {set i 1} {$i < $width} {incr i} {
 	withOb 0 do {getPnt $i $j x y z w}
 	set d [v3len $x $y $z $ox $oy $oz]
 	set il [expr $il + $d]
@@ -55,29 +56,30 @@ for {set i 0} {$i < $width} {incr i} {
 
 set tct myt,vertex,f,[expr $width*$height]
 set t ""
-for {set i 0} {$i < $height} {incr i} {
+for {set i 0} {$i < $width} {incr i} {
     # calculate total length of column
-    set rl 0.0; withOb 0 do {getPnt 0 $i ox oy oz w}
-    for {set j 1} {$j < $width} {incr j} {
-	withOb 0 do {getPnt $j $i x y z w}
+    set rl 0.0; withOb 0 do {getPnt $i 0 ox oy oz w}
+    for {set j 1} {$j < $height} {incr j} {
+	withOb 0 do {getPnt $i $j x y z w}
 	set d [v3len $x $y $z $ox $oy $oz]
 	set rl [expr $rl + $d]
 	set ox $x; set oy $y; set oz $z
     }
     # calculate texcoords for column
-    set il 0.0; withOb 0 do {getPnt 0 $i ox oy oz w}
+    set il 0.0; withOb 0 do {getPnt $i 0 ox oy oz w}
     lappend t 0.0
-    for {set j 1} {$j < $width} {incr j} {
-	withOb 0 do {getPnt $j $i x y z w}
+    for {set j 1} {$j < $height} {incr j} {
+	withOb 0 do {getPnt $i $j x y z w}
 	set d [v3len $x $y $z $ox $oy $oz]
 	set il [expr $il + $d]
 	lappend t [expr $il/$rl]
 	set ox $x; set oy $y; set oz $z
     }
 }
-for {set i 0} {$i < $width} {incr i} {
-    for {set j 0} {$j < $height} {incr j} {
-	set ind [expr ($j * $width) + $i]
+
+for {set j 0} {$j < $height} {incr j} {
+    for {set i 0} {$i < $width} {incr i} {
+	set ind [expr ($i * $height) + $j]
 	set elem [lindex $t $ind]
 	append tct ,$elem
     }
@@ -105,5 +107,7 @@ if { $foundt == 0 } { withOb 0 do { addTag "PV" $tct } }
 # addMyST
 
 addMyST
+
+delTags NoExport
 
 # addmyst.tcl
