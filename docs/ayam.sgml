@@ -1815,7 +1815,7 @@ property GUI and then use e.g. <tt>"Edit/Copy Marked Prop"</tt>
 <sect1>Tags<label id="tags">
 <p>
 Use this property to edit the tags of an object.<p>
-Tags are an easy way to attach arbitrary information to
+Tags provide an easy way to attach arbitrary information to
 objects. A tag consists of two strings, one defining the type
 and one defining the value of the tag.<p>
 The Tags property GUI consists of the following standard
@@ -1833,7 +1833,7 @@ to remove the tag using <tt/"Clear"/ then <tt/"Ok"/, or to change
 the type or value of the tag.
 </itemize>
 
-The next sub-sections describe the available tag types.
+The next sub-sections describe the currently available tag types.
 Note, that extensions and plugins may define their own types.
 
 <sect2>RiAttribute Tag<label id="riatag">
@@ -1995,11 +1995,18 @@ specifies which information should be stored or displayed
 (e.g. color values: rgb, or depth values: z),
 and <tt/"&lt;parameterlist&gt;"/ is a comma separated list
 of triplets consisting of name, type, and value of a parameter.
-The name will be automatically changed to "+name" on RIB export
+The name will be automatically changed to <tt/"+name"/ on RIB export
 if it does not already start with a plus.
 
 An example for a RiDisplay tag could look like this:
 <code>RiDisplay imagez.tif,file,z</code>
+
+<sect2>NoExport Tag<label id="noexporttag">
+<p>
+The tag type <tt/"NoExport"/ can be used to exclude certain objects
+from exported RIBs. The value string of this tag is ignored. All
+that counts is the presence of the tag. Child objects of objects
+with the <tt/"NoExport"/ tag will also be excluded from the RIB.
 
 <sect2>Internal Tags
 <p>
@@ -3193,6 +3200,8 @@ The original object is the first child object of the Clone object.
 If a second object is present as child of the Clone object
 it is treated as trajectory curve, similar to the Sweep object
 (see section <ref id="sweepobj" name="Sweep Object">).
+If you use a trajectory curve to place the clones, you may want
+to hide the parameter object and add a <tt/"NoExport"/ tag to it.
 <p>
 It is not possible to create clones from objects that may not
 be master objects of instance objects (e.g. instances, light objects, or
@@ -5027,6 +5036,9 @@ of a rectangular area around the picked point in pixels, all objects that
 are inside or touch this area are considered picked
 <item><tt/"MaxTagLen"/: the maximum number of characters to be displayed
 in the buttons in the Tag Property GUI (default: 30)
+<item><tt/"Wait"/: set this to <tt/"waitPid"/ if you want to enable
+the work around for zombie processes created by the Rendering GUI.
+This is necessary for the Linux platform.
 </itemize>
 
 <sect2>RiOption and RiAttributes Database<label id="rioptdb">
@@ -5814,13 +5826,14 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <label id="indexn">N
 <itemize>
 <item>Name: <ref id="attrs" name="attribute">
+<item>NCDisplayMode: <ref id="prefdraw" name="preference setting">,
+<ref id="ncattr" name="NURBCurve attribute">
 <item>Near: <ref id="camp" name="camera property">
 <item>Negative: <ref id="mcattr" name="MetaComp attribute">
 <item>New: <ref id="mmfile" name="main menu entry">
 <item>NewLoadsEnv: <ref id="prefgui" name="preference setting">
 <item>newScene: <ref id="scio" name="scripting interface command">
-<item>NCDisplayMode: <ref id="prefdraw" name="preference setting">,
-<ref id="ncattr" name="NURBCurve attribute">
+<item>NoExport: <ref id="noexporttag" name="tag type">
 <item>NumClones: <ref id="cloneattr" name="Clone attribute">
 <item>NumSamples: <ref id="moattr" name="MetaObj attribute">
 <item>NURBCircle: <ref id="ncirct" name="NURBS circle tool">
@@ -6008,7 +6021,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <label id="indext">T
 <itemize>
 <item>Tag: <ref id="prefdraw" name="preference setting">
-<item>Tags: <ref id="tags" name="property">
+<item>Tags: <ref id="tags" name="tags property">
 <item>TC: <ref id="tctag" name="tag type">
 <item>TclPrecision: <ref id="prefmisc" name="preference setting">
 <item>TextureCoordinates: <ref id="tctag" name="tag type">,
