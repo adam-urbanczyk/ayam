@@ -74,14 +74,20 @@ proc create_makefile {} {
     }
 
     # Retrieve Tcl/Tk-Versions
-    if {![regexp {tcl([0-9]+)\.([0-9]+)\.[0-9]+/*$} $tclpath dummy tclver tclsub]} {
-	set err_str "$err_str - Cannot determine Tcl-Version from path."
-	set err 1
+    if { !$localtcl } {
+	if {![regexp {tcl([0-9]+)\.([0-9]+)\.[0-9]+/*$} $tclpath\
+		dummy tclver tclsub]} {
+	    set err_str "$err_str - Cannot determine Tcl-Version from path."
+	    set err 1
+	}
     }
 
-    if {![regexp {tk([0-9]+)\.([0-9]+)\.[0-9]+/*$} $tkpath dummy tkver tksub]} {
-	set err_str "$err_str - Cannot determine Tk-Version from path."
-	set err 1
+    if { !$localtk } {
+	if {![regexp {tk([0-9]+)\.([0-9]+)\.[0-9]+/*$} $tkpath\
+		dummy tkver tksub]} {
+	    set err_str "$err_str - Cannot determine Tk-Version from path."
+	    set err 1
+	}
     }
 
     # Validate paths
@@ -90,7 +96,8 @@ proc create_makefile {} {
 	set err 1
     }
 
-    if {![file exists $tkpath] || ![file exist "$tkpath/generic/tkInt.h"]} {
+    if { ![file exists $tkpath] || !([file exist "$tkpath/generic/tkInt.h"] ||\
+	    [file exist "$tkpath/include/tkInt.h"]) } {
 	set err_str "$err_str - Tk-Path doesn't exist or invalid!\n"
 	set err 1
     }
@@ -112,28 +119,30 @@ proc create_makefile {} {
     }   
 
     #
-    # Assemble CFLAGS, LD, PREFIX, LDSWDYNAMIC, EXLDFLAGS, TCLDIR, TCLINC, TCLLIB, TKDIR, TKINC, TKLIB, DL
-    #          AQSISDIR, AQSISINCDIR, AQSISLIBDIR, AQSISOBJS, AQSISRI2RIB, BMRTDIR, BMRTINCDIR, BMRTLIBDIR,
-    #          RIBOUTLIB, SLCARGSLIB
+    # Assemble CFLAGS, LD, PREFIX, LDSWDYNAMIC, EXLDFLAGS, TCLDIR, TCLINC,
+    # TCLLIB, TKDIR, TKINC, TKLIB, DL
+    # AQSISDIR, AQSISINCDIR, AQSISLIBDIR, AQSISOBJS, AQSISRI2RIB, BMRTDIR,
+    # BMRTINCDIR, BMRTLIBDIR, RIBOUTLIB, SLCARGSLIB
     #
 
     # CFLAGS & LD
     if {[regexp "IRIX" $osval]} {
-	set CFLAGS "-O -fullwarn -DAYIRIXBUG"
+	set CFLAGS "-DAYIRIXBUG"
 	set LD "CC"
     } elseif {[regexp "Linux" $osval]} {
-	set CFLAGS "-g -Wall -DAYENABLEWAIT"
+	set CFLAGS "-DAYENABLEWAIT"
 	set LD "g++"
     } elseif {[regexp "Solaris" $osval]} {
-	set CFLAGS "-O -DSOLARIS_BUG"
+	set CFLAGS "-DSOLARIS_BUG"
 	set LD "CC"
     } elseif {[regexp "MacOS" $osval]} {
-	set CFLAGS "-O"
+	set CFLAGS "-DAYENABLEFEXIT"
 	if {$useaqua} {
 	    set CFLAGS "$CFLAGS -DAYWITHAQUA"
 	}
 	set LD "g++"
     } elseif {[regexp "NetBSD" $osval]} {
+	set CFLAGS ""
     }
 
     if {[regexp "Affine" $ribval]} {
@@ -161,6 +170,17 @@ proc create_makefile {} {
 	set CFLAGS "$CFLAGS -DAYOLDSLX"
     }
 
+    if { $localtcl } {
+	if { $tcl_version > 8.3 } {
+	    set CFLAGS "$CFLAGS -DUSE_NON_CONST"
+	}
+    } else {
+	set ver ${tclver}.${tclsub}
+	if { $ver > 8.3 } {
+	    set CFLAGS "$CFLAGS -DUSE_NON_CONST"
+	}
+    }
+
     set CFLAGS "$CFLAGS $cflags"
 
     # SHLFLAGS
@@ -182,6 +202,8 @@ proc create_makefile {} {
     # EXLDFLAGS
     switch {$osval} {
 	"IRIX" { set EXLDFLAGS "" }
+	"Solaris" { set EXLDFLAGS "" }
+	"MacOS" { set EXLDFLAGS "" }
 	"default" { set EXLDFLAGS "-rdynamic"}
     }
 
@@ -192,9 +214,9 @@ proc create_makefile {} {
     set TCLINC "-I$tclpath/generic"
 
     # TCLLIB
-    if {$localtcl} {
+    if { $localtcl } {
 	set TCLLIB "-ltcl$tcl_version"
-    } else {	
+    } else {
 	set TCLLIB "-L$TCLDIR/unix -ltcl$tclver.$tclsub"
     }
 
@@ -205,7 +227,7 @@ proc create_makefile {} {
     set TKINC "-I$tkpath/generic -I$tkpath/unix"
 
     # TKLIB
-    if {$localtcl} {
+    if { $localtcl } {
 	set TKLIB "-ltk$tk_version"
     } else {	
 	set TKLIB "-L$TKDIR/unix -ltk$tkver.$tksub"
@@ -356,7 +378,7 @@ wm title . "ayamConf"
 frame .s
 frame .s.str
 
-lappend strs [list cflags -O3 CFLAGS: 0 normal]
+lappend strs [list cflags -O2 CFLAGS: 0 normal]
 lappend strs [list prefix /usr/local Prefix: 1 normal]
 lappend strs [list tclpath ../../tcl$tcl_patchLevel Tcl-Path:  1 normal]
 lappend strs [list tkpath ../../tk$tk_patchLevel Tk-Path:  1 normal]
@@ -395,7 +417,7 @@ frame .s.opts
 pack .s.opts .s.str -side left
 
 proc update_states {} {
-    global ribval shaderval osval .
+    global ribval shaderval osval localtcl localtk .
 
     if {[regexp "BMRT" $ribval] || [regexp "BMRT" $shaderval]} {
 	.s.opts.bmrt25 config -state normal
@@ -428,6 +450,7 @@ proc update_states {} {
     } else {
 	.s.opts.useaqua config -state disabled
     }
+
 }
 
 set ribval $def_ribval
