@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>16. May 2002
+<date>22. Jun 2002
 <abstract>
 This is the documentation of Ayam (1.2) - a free 3D modeling environment
 for the RenderMan interface.
@@ -900,7 +900,11 @@ should be snapped to the grid when a grid is defined and
 in use for the single point modeling actions.
 <item><tt/"UndoLevels"/ determines the number of modeling steps
 that should be saved in the undo buffer. Useful values range
-from 1 to 50 (depending on how much memory you like to spend).
+from 2 to 50 (depending on how much memory you like to spend).
+If you set <tt/"UndoLevels"/ to -1, the undo system will be disabled
+completely.
+For more information, see also the section
+<ref id="undos" name="The Undo System">.
 </itemize>
 
 <sect2>Drawing Preferences<label id="prefdraw">
@@ -943,43 +947,61 @@ affect how RIBs are created.
 <itemize>
 <item><tt/"RIBFile"/ allows to set the file Ayam is exporting
 RenderMan Interface Bytestreams (RIBs) to. Note, that some
-filenames have special meaning. If you set it to <tt/"rendrib"/ as filename
-libribout.a does not create a file at all, but immediately pipes the
-resulting ByteStream into rendrib (the BMRT renderer) for rendering.
-When you use these options of direct rendering, be warned, that
-for the time of the rendering Ayam will be frozen (it will neither
-respond to mouseclicks nor will it update any windows), until rendribs
-window is closed.
-<tt/"Ask"/ is another special filename, that allows
+filenames have special meaning:<p>
+
+If you set <tt/"RIBFile"/ to <tt/"Scene"/ (this is the default)
+the RIB file name will be derived from the name of
+the currently loaded scene with the last extension replaced by
+<tt/".rib"/. If you set <tt/"RIBFile"/ to <tt/"Scenefile"/, the leading
+path will be stripped from the scene name additionally.
+Use <tt/"Scenefile"/, if you render with shadow maps.
+This way the scene will use relative paths to
+load the shadow maps and you may move
+the RIBs around more easily.<p>
+
+<tt/"Ask"/ is another special setting, that allows
 to select a different filename each time you export a RIB file.
 A file selection dialog will pop up, after the selection of the
-export view, if the initial filename is <tt/"Ask"/.
-The same effect may be achieved by leaving the entry totally
-empty!
-Filenames that start with a pipe symbol <tt/"|"/ will
+view to export.
+The same effect may be achieved by leaving <tt/"RIBFile"/ totally
+empty!<p>
+
+If you set <tt/"RIBFile"/ to <tt/"rendrib"/,
+libribout.a does not create a RIB file at all, but immediately pipes the
+resulting byte stream into rendrib (the BMRT renderer) for rendering.
+The same goes for <tt/"rgl"/.
+Moreover, filenames that start with a pipe symbol <tt/"|"/ will
 cause the program behind the symbol to be started by libribout
 and the written RIB to be piped into. This works e.g.
 with Photorealistic RenderMan, try it out with <tt/"|render"/.
-Last but not least, <tt/"Scene"/ (the default file name) will
-cause the RIB file to be named as the currently loaded scene
-with the last extension replaced by <tt/".rib"/.
+In the latter cases of direct rendering, you will probably want to set
+up the RIB to render to the display (read leave the <tt/"Image"/
+preference setting empty.
+However, when you use these options of direct rendering, be warned, that
+for the time of the rendering Ayam will be frozen (it will neither
+respond to mouseclicks nor will it update any windows), until the
+rendering is finished and the display window of the renderer is closed.
+
 <item><tt/"Image"/ specifies the image file that will be created,
 when you render the exported RIB file.
 You may set it to <tt/"RIB"/, this will create image
 files that are named as the exported RIB file (with the last
-file extension replaced by <tt/".tiff"/). Again, setting
+file extension replaced by <tt/".tif"/). Again, setting
 it to <tt/"Ask"/ will cause a dialog box to appear,
 each time you export to a RIB file.
 Note, that in contrast to the <tt/"RIBFile"/ option leaving the field
 totally empty is not equal to entering <tt/"Ask"/ but generates
 RIB files that will be set up to render to the display.
+
 <item><tt/"ResInstances"/, if this is enabled all instance
-objects are resolved before being written to the RIB file.
+objects are resolved (temporarily) before being written to the RIB file.
+
 <item><tt/"CheckLights"/, if this is enabled Ayam will
 check the current scene for lights before RIB export. If no lights or
 no lights that are actually switched on are to be found in
 the scene, a distant headlight will be added to the scene
 automatically for RIB export.
+
 <item><tt/"DefaultMat"/ determines a default material setting
 that should be written in the top level of the RIB, so that it
 is in effect for all objects, that are not connected to a material
@@ -994,23 +1016,31 @@ The setting <tt/"none"/ does not write any default material setting.
 <item><tt/"RIStandard"/ determines whether Ayam
 should omit all non standard RenderMan interface options and
 attributes on RIB export.
+
 <item><tt/"WriteIdent"/ determines, whether Ayam should
 write special RiAttributes
 (<tt>"RiAttribute "identifier" &lsqb"name"&rsqb</tt>)
-with the names of the objects to the RIB to aid in RIBFile debugging.
+with the names of the objects to the RIB to aid in RIB file debugging.
+
 <item><tt/"ShadowMaps"/ determines, whether shadow maps should
 be used, when writing light sources. It is not sufficient
 to switch this on to render using shadow maps, light sources
 that shall use shadow maps have to be parameterized
 as well, see section <ref id="shadowmaps" name="Using ShadowMaps">.
+
 <item><tt/"ExcludeHidden"/ causes hidden objects not to be
 exported to RIB files.
+
 <item><tt/"QRender"/ determines the command that should be executed,
 upon quick rendering a view, <tt>%s</tt> denotes the name of the RIB file.
+
 <item><tt/"QRenderUI"/, see discussion of <tt/"RenderUI"/ below.
+
 <item><tt/"QRenderPT"/, see discussion of <tt/"RenderPT"/ below.
+
 <item><tt/"Render"/ determines the command that should be executed,
 upon normal rendering of a view, <tt>%s</tt> denotes the name of the RIB file.
+
 <item><tt/"RenderUI"/ enables the renderer user interface, which
 consists of a simple progress bar, a label that displays the
 estimated or elapsed rendering time, a checkbutton to control
@@ -1019,8 +1049,9 @@ and a cancel button. This UI is displayed
 when a renderer is invoked directly from the <tt/"Render"/ view
 menu entry (or the equivalent keyboard shortcut).
 Proper work of this UI depends on the existence of
-two programs: <tt/"cat"/ and <tt/"kill"/. If you do not have
+two external programs: <tt/"cat"/ and <tt/"kill"/. If you do not have
 those programs in your path, do not enable the RenderUI.
+
 <item><tt/"RenderPT"/ is a string that contains a progress output
 template used by Ayam to determine the current percentage of
 rendering for display in the RenderUI. The special symbol <tt/"%d"/
@@ -1043,7 +1074,7 @@ The first sub-section deals with error message handling:
 stemming from Tcl/Tk should be redirected to the console,
 rather than be handled by Tcls sometimes annoying error
 handling dialog box. However, this dialog box with the built in
-stack trace can become very handy, if you write and debug
+stack trace can also become very handy, if you write and debug
 Tcl scripts.
 <item><tt/"Logging"/ determines, whether error messages should
 be written to the file specified by <tt/"LogFile"/.
