@@ -69,7 +69,7 @@ ay_toglcb_create(struct Togl *togl)
   /* fill view object */
   view->togl = togl;
 
-  view->drawhandles = AY_TRUE;
+  view->drawhandles = AY_FALSE;
   view->redraw = AY_TRUE;
 
   view->from[2] = 10.0;

@@ -1055,6 +1055,12 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
       Tcl_GetInt(interp, argv[i+3], &view->drawmarker);
     } /* if */
   else
+  if(!strcmp(argv[i],"-drawh"))
+    {
+      Tcl_GetInt(interp, argv[i+1], &argi);
+      view->drawhandles = argi;
+    }
+  else
   if(!strcmp(argv[i],"-name"))
     {
       o = ay_root->down;
