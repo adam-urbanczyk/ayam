@@ -291,7 +291,14 @@ proc toolbox_open { } {
 		set m $ay(toolsmenu)
 		$m invoke 13
 	    }
-	    balloon_set $f.bconv "convert object"
+	    bind $f.bconv <Shift-ButtonPress-1> {
+		global  ay
+		set m $ay(toolsmenu)
+		$m invoke 14
+		break;
+	    }
+	    balloon_set $f.bconv\
+		    "convert object\nShift: convert object in place"
 
 	    #####
 	    button $f.bnot -image ay_Notify_img -padx 0 -pady 0 -command {
