@@ -1067,9 +1067,8 @@ ay_wrib_scene(char *file, char *image, double *from, double *to,
   /* Cut! */
   RiEnd();
 
-  /* if (automatic) shadowmaps are in use,
-     write second RIB containing objects */
-  if(ay_prefs.use_sm == 1)
+  /* if shadowmaps are in use, write second RIB containing objects */
+  if(ay_prefs.use_sm >= 1)
     {
       RiBegin(objfile);
        o = ay_root->next;
@@ -1082,7 +1081,9 @@ ay_wrib_scene(char *file, char *image, double *from, double *to,
     } /* if */
 
   if(objfile)
-    free(objfile);
+    {
+      free(objfile);
+    }
 
  return ay_status;
 } /* ay_wrib_scene */
@@ -1227,13 +1228,16 @@ ay_wrib_cb(struct Togl *togl, int argc, char *argv[])
 
   /* default */
   if(!file)
-    file = "rendrib";
+    {
+      file = "rendrib";
+    }
 
   /* adjust roll, if up vector points down */
   if(view->up[1] < 0.0)
     {
       view->roll += 180.0;
     }
+
   if(!smonly)
     {
       ay_status = ay_wrib_scene(file, image, view->from, view->to, view->roll,
@@ -1250,7 +1254,9 @@ ay_wrib_cb(struct Togl *togl, int argc, char *argv[])
     }
 
   if(ay_status)
-    ay_error(ay_status, fname, NULL);
+    {
+      ay_error(ay_status, fname, NULL);
+    }
 
  return TCL_OK;
 } /* ay_wrib_cb */
