@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>20. Jun 2003
+<date>21. Jun 2003
 <abstract>
 This is the documentation of Ayam (1.6) - a free 3D modeling environment
 for the RenderMan interface.
@@ -1796,7 +1796,7 @@ to deliver the default values for a matrix (but not for an array!).
 <p>
 If Ayam has been compiled without a shader parsing library
 (e.g. without libslcargs), Ayam will parse XML files created
-by <tt/"sdpslparse"/ from the K-3D project
+by <tt/"sl2xml"/ from the K-3D project
 (see <tt>"http://www.k-3d.com/"</tt>)
 instead of compiled shaders.
 The <tt/"Set new shader."/-button will in this case always
@@ -4226,9 +4226,10 @@ you have to update the various parts of the GUI explicitly.<p>
 From scripts it may be necessary to check wether an error occured
 during the execution of a command. All commands return
 TCL_OK in any case so checking their return value avails to nothing,
-but they set the global Tcl variable <tt>ay_error</tt> to 1 if an
-error occured. You need to set it to zero before and check it after the
-operation in question to see whether the operation performed successfully.
+but they set the global Tcl variable <tt>ay_error</tt> to a value
+higher than 1 if an error occured. You need to set it to zero before
+and check it after the operation in question to see whether the
+operation performed successfully.
 
 
 <sect1>Index of Procedures and Commands
@@ -4266,8 +4267,9 @@ argument giving the name of the new material. Example:
 <sect2>Manipulating the Selection<label id="selob">
 <p>
 This command is probably the most important one, because
-a lot of the other commands operate on selected objects only.<p>
-selOb:
+a lot of the other commands operate on selected objects only.
+<p>
+selOb - select object(s):
 <itemize>
  <item>Synopsis: <tt/"selOb [index]"/
  <item>Description: Use this command to set or clear the current
@@ -4277,7 +4279,8 @@ If no index is given, the current selection will be cleared.
 
 <sect2>Clipboard Operations<label id="sciclip">
 <p>
-
+These commands operate the object clipboard:
+<p>
 copOb - copy object:
 <itemize>
  <item>Synopsis: <tt/"copOb"/
@@ -4310,6 +4313,11 @@ cmovOb - paste (move) object:
 clipboard to the current level.
 </itemize>
 
+<p>
+The following commands operate the object property clipboard,
+which is totally independent from the object clipboard.
+<p>
+
 pclip_copy - copy a property to the clipboard
 <itemize>
  <item>Synopsis: <tt/"pclip_copy mode"/
@@ -4331,7 +4339,8 @@ Note, that you may call this procedure also using the shortcut
 
 <sect2>Hierarchy Operations<label id="scihier">
 <p>
-
+These commands manipulate the current level of Ayam.
+<p>
 goDown:
 <itemize>
  <item>Synopsis: <tt/"goDown index"/
@@ -4367,7 +4376,7 @@ rotOb - rotate objects:
 <itemize>
  <item>Synopsis: <tt/"rotOb dx dy dz"/
  <item>Description: Rotate the selected object(s) by dx degrees around the
-objects X axis then by dy degrees around objects Y axis and then by dz degrees
+objects X axis, then by dy degrees around objects Y axis and then by dz degrees
 around the objects Z axis. Note the order of the rotations!
 </itemize>
 
@@ -4593,18 +4602,6 @@ rV - redraw all views:
 iconified views and views where automatic redraw has been turned off.
 </itemize>
 
-uCL - update current level:
-<itemize>
- <item>Synopsis: <tt/"uCL mode [args]"/
- <item>Description: see discussion of <tt/"uS"/ below.
-</itemize>
-
-uCR - update current level:
-<itemize>
- <item>Synopsis: <tt/"uCR"/
- <item>Description: see discussion of <tt/"uS"/ below.
-</itemize>
-
 uS - update select:
 <itemize>
  <item>Synopsis: <tt/"uS [update_prop maintain_selection]"/
@@ -4633,16 +4630,29 @@ the command <tt/"uCL cl"/ may be used instead of <tt/"uS"/.
  </itemize>
 </itemize>
 
+uCL - update current level:
+<itemize>
+ <item>Synopsis: <tt/"uCL mode [args]"/
+ <item>Description: see discussion of <tt/"uS"/ above.
+</itemize>
 
-plb_update:
+uCR - update current level after create:
+<itemize>
+ <item>Synopsis: <tt/"uCR"/
+ <item>Description: see discussion of <tt/"uS"/ above.
+</itemize>
+
+plb_update - property listbox update:
 <itemize>
  <item>Synopsis: <tt/"plb_update"/
  <item>Description: Clear the current property GUI, ask the
 selected object for a list of properties and insert them in the
-property listbox, then rebuild the property GUI.
+property listbox, then rebuild the property GUI (with the same index
+as the property seleted before; this is not necessarily a property
+of the same type).
 </itemize>
 
-<sect2>Custom Objects<label id="lc">
+<sect2>Custom Objects<label id="scicust">
 <p>
 
 io_lc - load custom:
@@ -4651,7 +4661,7 @@ io_lc - load custom:
  <item>Description: Load the custom object from file filename.
 </itemize>
 
-<sect2>Applying Commands to a Number of Objects<label id="fall">
+<sect2>Applying Commands to a Number of Objects<label id="scifall">
 <p>
 There are two commands that help to apply arbitrary commands
 to a number of objects, forAll and forAllT.
@@ -4752,7 +4762,7 @@ Detail is the string to be output.
 </itemize>
 
 
-<sect2>Miscellaneous<label id="gtype">
+<sect2>Miscellaneous<label id="scimisc">
 <p>
 
 getType:
@@ -5313,7 +5323,7 @@ Note that for NURBS patches and bicubic patch meshes, points of type
 "P" will be promoted to "Pw".
 Furthermore, objects of type (general) polygon and polygon mesh will
 be promoted to general polygon meshes.
-Object-Instances are resolved to normal objects while importing.
+Object-instances are resolved to normal objects while importing.
 Instances may be easily created again using Automatic Instancing
 (see section <ref id="ai" name="Automatic Instancing">).
 
@@ -5369,7 +5379,8 @@ not available.
 <p>
 Since Ayam1.3, the following plugins are provided to allow
 parsing of shaders: <tt/"ayslb"/ for Air, <tt/"ayslx"/ for Aqsis,
-<tt/"ayso"/ for RDC, <tt/"ayslo"/ for PRMan, and <tt/"ayslo3d"/ for 3Delight.
+<tt/"ayso"/ for RDC, <tt/"ayslo"/ for PRMan, <tt/"ayslo3d"/ for 3Delight,
+and <tt/"aysdr"/ for Pixie.
 <p>
 After loading of one of the aforementioned plugins, Ayam will
 be able to parse shaders compiled with the shader compiler
@@ -5378,7 +5389,7 @@ of the respective renderer.
 A shader parsing plugin may be loaded
 automatically on startup of Ayam using one of the provided Tcl scripts:
 <tt/"loadayslb.tcl"/, <tt/"loadayslo.tcl"/, <tt/"loadayslo3d.tcl"/,
-<tt/"loadayslx.tcl"/, and <tt/"loadayso.tcl"/.
+<tt/"loadayslx.tcl"/, <tt/"loadayso.tcl"/, and <tt/"loadaysdr.tcl"/.
 To automatically load a plugin simply add the appropriate
 script to the preference setting
 <tt>"Main/Scripts"</tt> using the <tt>"Add"</tt> button in the
@@ -5654,7 +5665,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <ref id="indexw" name=" W ">
 <ref id="indexx" name=" X ">
 <ref id="indexy" name=" Y ">
-<ref id="indexz" name=" Z ">
+<ref id="indexz" name=" Z">
 <p>
 
 <label id="indexa">A
@@ -5737,7 +5748,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>ConeAngle, ConeDAngle: <ref id="lip" name="light attribute">
 <item>Console: <ref id="cons" name="what is">
 <item>Convert: <ref id="mmtools" name="main menu entry">
-<item>convOb: <ref id="gtype" name="scripting interface command">
+<item>convOb: <ref id="scimisc" name="scripting interface command">
 <item>CreateMP: <ref id="ncattr" name="NURBCurve attribute">
 <item>Create ShadowMaps: <ref id="mmspecial" name="main menu entry">,
 <ref id="vmview" name="view menu entry">
@@ -5809,8 +5820,8 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>FilterWidth: <ref id="rio" name="RenderMan interface option">
 <item>FindU: <ref id="miscac" name="modeling action">
 <item>Flatness: <ref id="moattr" name="MetaObj attributes">
-<item>forAll, forAllT: <ref id="fall" name="scripting interface command">
-<item>forceNot: <ref id="gtype" name="scripting interface command">
+<item>forAll, forAllT: <ref id="scifall" name="scripting interface command">
+<item>forceNot: <ref id="scimisc" name="scripting interface command">
 <item>Formula: <ref id="mcattr" name="MetaComp attribute">
 <item>From: <ref id="camp" name="camera property">,
 <ref id="lip" name="light attribute">
@@ -5822,7 +5833,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <label id="indexg">G
 <itemize>
 <item>getPnt: <ref id="scipoints" name="scripting interface command">
-<item>getType: <ref id="gtype" name="scripting interface command">
+<item>getType: <ref id="scimisc" name="scripting interface command">
 <item>Gimbal Lock: <ref id="gimb" name="avoiding">
 <item>goDown: <ref id="scihier" name="scripting interface command">
 <item>goTop: <ref id="scihier" name="scripting interface command">
@@ -5835,7 +5846,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <itemize>
 <item>Half Size: <ref id="vmconf" name="view menu entry">
 <item>HandleSize: <ref id="prefmodel" name="preference setting">
-<item>hasChild: <ref id="gtype" name="scripting interface command">
+<item>hasChild: <ref id="scimisc" name="scripting interface command">
 <item>Height: <ref id="rio" name="RenderMan interface option">,
 <ref id="bxp" name="box attribute">,
 <ref id="cnp" name="cone attribute">,
@@ -6197,7 +6208,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <itemize>
 <item>uCL, uCR: <ref id="sciupd" name="scripting interface command">
 <item>Undo: <ref id="undos" name="The Undo System">,
-<ref id="mmedit" name="main menu entry">
+<ref id="mmedit" name="main menu entry">,
+<ref id="scimisc" name="scripting interface command">
 <item>UndoLevels: <ref id="prefmodel" name="preference setting">
 <item>Union: <ref id="mmcreate" name="main menu entry">,
 <ref id="levelobj" name="object and properties">
