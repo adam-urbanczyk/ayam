@@ -820,12 +820,10 @@ pack .fl.con -in .fl -expand 1 -fill both
 # additional key/mouse bindings for the console
 bind .fl.con.console $aymainshortcuts(SwCon) { focus [tk_focusNext %W] }
 
-# fix Shift-Tab binding for Tk < 8.3
+# fix Shift-Tab binding
 if { ( $tcl_platform(platform) != "windows" ) &&
      ( $tcl_platform(os) != "Darwin" ) } {
-    if { $tcl_version < 8.3 } {
 	bind all <ISO_Left_Tab> {tkTabToWindow [tk_focusPrev %W]}
-    }
 }
 
 bind .fl.con.console <ButtonPress-4> {
