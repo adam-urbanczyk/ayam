@@ -1,4 +1,4 @@
-[INSTALL, 28. Apr 2003]
+[INSTALL, 26. Sep 2003]
 
 Installation Instructions for Ayam (Unix only).
 
@@ -37,6 +37,8 @@ that may be used to uninstall Ayam again, e.g. using:
 
 o On IRIX there is currently no ayslx plug-in. You may safely ignore the
   warnings about a missing ayslx.so file, that occur during the installation.
+o On IRIX there is currently no aysdr plug-in. You may safely ignore the
+  warnings about a missing aysdr.so file, that occur during the installation.
 o On IRIX you have to adapt the variable LD_LIBRARYN32_PATH instead of
   LD_LIBRARY_PATH.
 
