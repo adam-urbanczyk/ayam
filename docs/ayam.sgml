@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>17. Dec 2001
+<date>18. Dec 2001
 <abstract>
 This is the documentation of Ayam - a free 3D modeling environment
 for the RenderMan interface.
@@ -3204,13 +3204,14 @@ to 1 and maintain_selection to 0.
  <item>Deficiencies: uS completely removes the object tree from
 the tree widget and rebuilds
 it, which can be a very time consuming operation (depending on the complexity
-of the scene). There are two options to speed this process up:
+of the scene). There are some options to speed this process up:
  <itemize>
  <item> If there were just changes to the current level (and below)
 the global array entry <tt/"ay(ul)"/ (UpdateLevel) may be set
 to the current level before calling <tt/"uS"/. This will not remove
-the complete scene but just the part below <tt/"ay(ul)"/.
- <item> If objects have been created and thus need to be
+and update the complete scene but just the part below <tt/"ay(ul)"/.
+Example: <tt>set ay(ul) $ay(CurrentLevel); uS;</tt>.
+ <item> If objects have been created and thus just need to be
 added to the current level, the command <tt/"uCR"/ may be used instead
 of <tt/"uS"/.
  <item> If just names or types of objects of the current level changed,
@@ -3538,13 +3539,13 @@ $ay(cm) add command -label "Easy Sweep" -command {
 <p>
 Here is another example that shows how you may add buttons
 to the tool box.
-myImage should be an image created e.g. from a gif file of
+myImage should be an image created e.g. from a GIF file of
 the size 25 by 25 pixels.
 <code>
 global ay
 
 # create an image from a GIF file:
-image create photo myImage -file /home/user/a.gif
+image create photo myImage -format gif -file /home/user/a.gif
 
 set b .tbw.f.mybutton
 
@@ -3554,17 +3555,24 @@ if { ![winfo exists $b] } {
   # create it:
   button $b -padx 0 -pady 0 -image myImage -command myCommand
 
-  # instruct Ayam about the new button:
-  # you could also use linsert, to insert the button in
-  # a specific place rather than append to the end
+  # tell Ayam about the new button:
+  # you can use linsert, to insert the button in a specific
+  # place or just append to the end of the list
   lappend ay(toolbuttons) mybutton
 
   # display the button:
-  # from now on it will be under the
+  # from now on, it will be under the
   # automatic tool box layout management
   toolbox_layout
 }
 </code>
+
+This example shows that a) buttons have to be created in the
+frame <tt/".tbw.f"/
+b) Ayam manages a list of all buttons in the global array ay
+in <tt/"ay(toolbuttons)"/, the order in that list is the order
+in which buttons appear in the tool box c) automatic layout
+management is carried out by the procedure <tt/"toolbox_layout"/.
 
 Adding buttons with just text is a little bit more involved,
 as the sizes of the new buttons often do not fit well in the
