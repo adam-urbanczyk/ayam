@@ -14,6 +14,82 @@
 
 /* pmt.c PatchMesh tools */
 
+/* functions local to this module */
+int ay_pmt_bilinearcltonpatch(ay_pamesh_object *pamesh, ay_object **result);
+
+/* ay_pmt_bilinearcltonpatch:
+ *   create a NURBS patch from a closed bilinear PatchMesh
+ */
+int
+ay_pmt_bilinearcltonpatch(ay_pamesh_object *pamesh, ay_object **result)
+{
+ double *cv = NULL;
+ ay_object *o = NULL;
+ int w, h, i, a, b;
+ int ay_status = AY_OK;
+
+  if(!(o = calloc(1, sizeof(ay_object))))
+    return AY_EOMEM;
+  ay_object_defaults(o);
+  o->type = AY_IDNPATCH;
+
+  if(pamesh->close_u)
+    w = pamesh->width+1;
+  else
+    w = pamesh->width;
+
+  if(pamesh->close_v)
+    h = pamesh->height+1;
+  else
+    h = pamesh->height;
+
+  if(!(cv = calloc(w*h*4, sizeof(double))))
+    {
+      free(o);
+      return AY_EOMEM;
+    }
+
+
+  a = 0; b = 0;
+  for(i = 0; i < pamesh->width; i++)
+    {
+      memcpy(&(cv[a]), &(pamesh->controlv[b]),
+	     pamesh->height*4*sizeof(double));
+      
+
+      a += pamesh->height*4;
+      if(pamesh->close_v)
+	{
+	  memcpy(&(cv[a]), &(pamesh->controlv[b]), 4*sizeof(double));
+	  a += 4;
+	}
+      b += pamesh->height*4;
+
+    } /* for */
+
+  if(pamesh->close_u)
+    {
+      b = 0;
+      if(pamesh->close_v)
+	{
+	  memcpy(&(cv[a]), &(pamesh->controlv[b]),
+		 pamesh->height*4*sizeof(double));
+	}
+      else
+	{
+	  memcpy(&(cv[a]), &(pamesh->controlv[b]),
+		 h*4*sizeof(double));
+	}
+    }
+
+  ay_status = ay_npt_create(2, 2, w, h, AY_KTNURB, AY_KTNURB, cv, NULL, NULL,
+			    (ay_nurbpatch_object **)&(o->refine));
+  *result = o;
+
+ return AY_OK;
+} /* ay_pmt_bilinearcltonpatch */
+
+
 /* ay_pmt_tonpatch:
  *   create a number of NURBS patches from a PatchMesh
  */
@@ -35,6 +111,13 @@ ay_pmt_tonpatch(ay_pamesh_object *pamesh, ay_object **result)
       ktv = AY_KTNURB;
       vorder = 2;
       evwinheight = pamesh->height;
+
+      if((pamesh->close_u) || (pamesh->close_v))
+	{
+	  ay_status = ay_pmt_bilinearcltonpatch(pamesh, result);
+	  return ay_status;
+	}
+
     }
   else
     {
