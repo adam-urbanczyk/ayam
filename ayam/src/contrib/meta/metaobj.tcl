@@ -12,7 +12,7 @@
 
 global ay MetaObj_props MetaObjAttr MetaObjAttrData
 
-set MetaObj_props { Transformations Attributes MetaObjAttr }
+set MetaObj_props { Transformations Attributes Material Tags MetaObjAttr }
 
 
 proc stdReleaseBind { w } {
