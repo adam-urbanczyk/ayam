@@ -376,6 +376,7 @@ ay_undo_copy(ay_undo_object *uo)
  char view_repairtitle_cmd[] = "viewRepairTitle ", buf[64];
  char view_setgridicon_cmd[] = "viewSetGridIcon .";
  Tcl_DString ds;
+ int notify = AY_TRUE;
 
   if(!uo)
     return AY_OK;
@@ -480,7 +481,6 @@ ay_undo_copy(ay_undo_object *uo)
 	  break;
 	} /* switch */
 
-
       /* copy trafos */
       ay_trafo_copy(c, o);
 
@@ -497,6 +497,13 @@ ay_undo_copy(ay_undo_object *uo)
       o->inherit_trafos = c->inherit_trafos;
       o->hide = c->hide;
       o->hidechilds = c->hidechilds;
+
+      if((c->type != AY_IDVIEW) &&
+	 (c->type != AY_IDROOT) && notify)
+	{
+	  ay_notify_forceparent(o);
+	  notify = AY_FALSE;
+	}
 
       c = c->next;
       r = r->next;

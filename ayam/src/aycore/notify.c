@@ -112,6 +112,46 @@ ay_notify_force(ay_object *o)
 } /* ay_notify_force */
 
 
+/* ay_notify_forceparent:
+ *  call notification callback of parents of object o
+ */
+int
+ay_notify_forceparent(ay_object *o)
+{
+ int ay_status = AY_OK;
+ char fname[] = "notify_forceparent";
+ ay_list_object *oldclevel = ay_currentlevel;
+ int found = AY_FALSE;
+
+  if(!ay_root->next)
+    {
+      return AY_OK;
+    }
+
+  oldclevel = ay_currentlevel;
+
+  ay_currentlevel = NULL;
+  ay_clevel_add(ay_root);
+
+  ay_status = ay_clevel_find(ay_root->next, o, &found);
+
+  if(!found)
+    {
+      ay_error(AY_ERROR, fname, "object not found in scene");
+      return AY_OK;
+    }
+
+  ay_status = ay_notify_parent();
+
+  ay_clevel_delall();
+  free(ay_currentlevel);
+
+  ay_currentlevel = oldclevel;
+
+ return AY_OK;
+} /* ay_notify_forceparent */
+
+
 /* ay_notify_forcetcmd:
  *  force notification of selected objects or all objects
  *  in the scene (if selection is empty)
@@ -154,4 +194,3 @@ ay_notify_forcetcmd(ClientData clientData, Tcl_Interp * interp,
 
  return TCL_OK;
 } /* ay_notify_forcetcmd */
-

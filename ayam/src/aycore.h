@@ -24,6 +24,8 @@ int ay_clear_scenetcmd(ClientData clientData, Tcl_Interp * interp,
 		       int argc, char *argv[]);
 
 /* clevel.c */
+int ay_clevel_find(ay_object *c, ay_object *o, int *found);
+
 int ay_clevel_add(ay_object *o);
 
 int ay_clevel_del(void);
@@ -148,6 +150,8 @@ int ay_notify_register(ay_notifycb *notcb, unsigned int type_id);
 int ay_notify_parent(void);
 
 int ay_notify_force(ay_object *o);
+
+int ay_notify_forceparent(ay_object *o);
 
 int ay_notify_forcetcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
