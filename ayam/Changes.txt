@@ -1,4 +1,4 @@
-[6. Aug 2004] CVS-Head:
+[16. Aug 2004] CVS-Head:
 o bug fixes:
   - fixed "loadayslo3d.tcl" loading the wrong plugin (SF 928054)
   - fixed "Select Renderer" setting a wrong shader extension for "3Delight"
@@ -17,9 +17,11 @@ o bug fixes:
   - fixed broken caps of skins (SF 995711)
   - fixed broken curvature plots of rational curves (SF 997184)
   - fixed broken shader parsing with newer Pixie versions (>1.2.9) (SF 998535)
+  - fixed create NURBS tools not setting the scene changed state (SF 1008840)
+  - fixed RIB import of archives with relative path names (SF 1009841)
 o added a new object type "Text", that uses Bezier curves extracted from
   TTF (TrueType) font description files together with the extrusion mechanism
-  to form three dimensional letters
+  to form three dimensional letters (TTF parsing provided by Frank Pagels)
 o added a CSG preview plugin (aycsg) based on OpenCSG
 o added preference options to adjust the mouse button of the ZoomR and Rotate
   view actions
@@ -35,8 +37,10 @@ o improved KDE integration (wrt icons in toplevel windows)
 o improved TrimRect tool; it can now infer the parameter space dimensions
   from selected NURBS patches
 o added Tesselation GUI that helps to determine the best matching tesselation
-  parameters in an interactive way (new menu entry "Tools/NPatch/Tesselate")
+  parameters in an interactive way (new menu entry "Tools/NURBPatch/Tesselate")
 o added keyboard shortcuts to display property GUIs, using keys <0> to <9>
+o added new object type "Birail1" that sweeps a cross section curve along
+  two so called rail curves
 
 
 [27. Mar 2004] Ayam1.7:
