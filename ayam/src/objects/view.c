@@ -885,7 +885,7 @@ ay_view_notifycb(ay_object *o)
  unsigned int bo = 1;  /* test byte order */
  unsigned char *r, b;
  uint32 *image = NULL, w, h, c;
- TIFF* tif;
+ TIFF *tif;
  char fname[] = "view_notifycb";
  GLint result;
 
@@ -1126,12 +1126,12 @@ ay_view_dropcb(ay_object *o)
 	  view->drawmarker = AY_FALSE;
 	  break;
 	default:
+	  ay_error(AY_ERROR,fname,
+		   "Drop Light or Camera objects onto Views only!");
 	  break;
 	} /* switch */
       sel = sel->next;
     } /* while */
-
-  ay_notify_force(o);
 
  return AY_EDONOTLINK;
 } /* ay_view_dropcb */
