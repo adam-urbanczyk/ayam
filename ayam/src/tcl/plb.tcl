@@ -304,7 +304,7 @@ destroy $w.fArg
 set ay(PlbUpdateSema) 0
 #
 proc plb_update { } {
-global ay curtypes pclip_omit pclip_omit_label
+global ay ay_error curtypes pclip_omit pclip_omit_label
 
 # protect against double updates
 if { $ay(PlbUpdateSema) == 1 } {
@@ -340,8 +340,16 @@ if { [llength $index] == 1 } {
     if { $ay(lb) == 1 } {
 	set type [lindex $curtypes $index]
     } else {
+	set oldayerror $ay_error
 	getType type
+	set ay_error $oldayerror
     }
+
+    if { $type == "" } {
+	set ay(PlbUpdateSema) 0
+	return;
+    }
+
     if { $type != ".." } {
 	global ${type}_props
 	eval [subst "set props {\$${type}_props}"]
