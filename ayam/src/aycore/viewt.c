@@ -1731,3 +1731,53 @@ ay_viewt_griddify(struct Togl *togl, double *winx, double *winy)
 
  return AY_OK;
 } /* ay_viewt_griddify */
+
+
+/* ay_viewt_droptcb:
+ *  an object has been dropped onto a view window
+ */
+int
+ay_viewt_droptcb(struct Togl *togl, int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
+ ay_list_object *sel = ay_selection;
+ ay_object *o, *v;
+ void **arr = NULL;
+ ay_treedropcb *cb = NULL;
+
+  if(!sel)
+    return TCL_OK; /* Oops? Should not there be atleast one selected object? */
+
+  o = sel->object;
+
+  switch(o->type)
+    {
+    case AY_IDLIGHT:
+    case AY_IDCAMERA:
+      arr = ay_treedropcbt.arr;
+      cb = (ay_treedropcb *)(arr[AY_IDVIEW]);
+      v = ay_root->down;
+      while(v)
+	{
+	  if(v->type == AY_IDVIEW)
+	    if(v->refine == view)
+	      break;
+	  v = v->next;
+	}
+      if(v)
+	{
+	  /* call callback */
+	  if(cb)
+	    {
+	      ay_status = cb(v);
+	    }
+	}
+      break;
+    default:
+      ay_viewt_zoomtoobj(togl, argc, argv);
+      break;
+    }
+
+ return TCL_OK;
+} /* ay_viewt_droptcb */

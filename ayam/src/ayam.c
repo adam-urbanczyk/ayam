@@ -800,6 +800,8 @@ int ay_status = AY_OK;
 
   Togl_CreateCommand("fromcam", ay_viewt_fromcamtcb);
 
+  Togl_CreateCommand("drop", ay_viewt_droptcb);
+
   /* w32t.c */
 #ifdef WIN32
   Tcl_CreateCommand(interp, "w32kill", ay_w32t_w32killtcmd,
