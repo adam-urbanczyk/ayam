@@ -35,7 +35,11 @@ static Tcl_HashTable onio_write_ht;
 
 int onio_writenpatch(ay_object *o, ONX_Model *p_m);
 
+int onio_writenpconvertible(ay_object *o, ONX_Model *p_m);
+
 int onio_writencurve(ay_object *o, ONX_Model *p_m);
+
+int onio_writencconvertible(ay_object *o, ONX_Model *p_m);
 
 int onio_writeobject(ay_object *o, ONX_Model *p_m);
 
@@ -111,19 +115,111 @@ onio_writenpatch(ay_object *o, ONX_Model *p_m)
 } // onio_writenpatch
 
 
+// onio_writenpconvertible:
+//
+int
+onio_writenpconvertible(ay_object *o, ONX_Model *p_m)
+{
+ int ay_status = AY_OK;
+ ay_object *p = NULL, *t = NULL;
+
+  if(!o || !p_m)
+    return AY_ENULL;
+
+  ay_status = ay_provide_object(o, AY_IDNPATCH, &p);
+  if(p)
+    {
+      t = p;
+      while(t)
+	{
+	  if(t->type == AY_IDNPATCH)
+	    {
+	      ay_status = onio_writenpatch(t, p_m);
+	    } /* if */
+	  t = t->next;
+	} /* while */
+
+      ay_status = ay_object_deletemulti(p);
+
+      return AY_OK;
+    } /* if */
+
+ return ay_status;
+} // onio_writenpconvertible
+
+
 // onio_writencurve:
 //
 int
 onio_writencurve(ay_object *o, ONX_Model *p_m)
 {
  int ay_status = AY_OK;
+ int i, a, stride = 4;
+ ay_nurbcurve_object *nc = NULL;
+ ON_NurbsCurve *p_c = NULL;
 
   if(!o || !p_m)
     return AY_ENULL;
 
+  nc = (ay_nurbcurve_object *)o->refine;
+  p_c = new ON_NurbsCurve(3, true, nc->order, nc->length);
+
+  // copy knots, ignoring "superfluous"/"phantom" end knots
+  for(i = 0; i < nc->order+nc->length-2; i++)
+    p_c->SetKnot(i, nc->knotv[i+1]);
+ 
+  // copy control points
+  a = 0;
+  for(i = 0; i < nc->length; i++)
+    {
+      p_c->SetCV(i, ON::homogeneous_rational, &(nc->controlv[a]));
+      a += stride;
+    }
+
+  ONX_Model_Object& mo = p_m->m_object_table.AppendNew();
+  mo.m_object = p_c;
+  mo.m_bDeleteObject = false;
+
+  /*
+    if(object_attributes)
+    mo.m_attributes = object_attributes[i];
+  */
 
  return ay_status;
 } // onio_writencurve
+
+
+// onio_writencconvertible:
+//
+int
+onio_writencconvertible(ay_object *o, ONX_Model *p_m)
+{
+ int ay_status = AY_OK;
+ ay_object *p = NULL, *t = NULL;
+
+  if(!o || !p_m)
+    return AY_ENULL;
+
+  ay_status = ay_provide_object(o, AY_IDNCURVE, &p);
+  if(p)
+    {
+      t = p;
+      while(t)
+	{
+	  if(t->type == AY_IDNCURVE)
+	    {
+	      ay_status = onio_writencurve(t, p_m);
+	    } /* if */
+	  t = t->next;
+	} /* while */
+
+      ay_status = ay_object_deletemulti(p);
+
+      return AY_OK;
+    } /* if */
+
+ return ay_status;
+} // onio_writencconvertible
 
 
 // onio_writeobject:
@@ -754,6 +850,16 @@ Onio_Init(Tcl_Interp *interp)
   // fill hash table
   ay_status = onio_registerwritecb((char *)(AY_IDNPATCH),
 				   onio_writenpatch);
+
+  ay_status = onio_registerwritecb((char *)(AY_IDEXTRUDE),
+				   onio_writenpconvertible);
+
+
+  ay_status = onio_registerwritecb((char *)(AY_IDNCURVE),
+				   onio_writencurve);
+
+  ay_status = onio_registerwritecb((char *)(AY_IDICURVE),
+				   onio_writencconvertible);
 
 
 #ifndef ONIOWRAPPED
