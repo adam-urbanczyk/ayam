@@ -2003,6 +2003,8 @@ ay_nct_crtncircle(ay_nurbcurve_object **curve)
   memcpy(knotv,knots,12*sizeof(double)); 
   new->knotv = knotv;
 
+  new->createmp = AY_TRUE;
+
   *curve = new;
 
  return ay_status;
@@ -2335,7 +2337,8 @@ ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
   ay_nct_close(curve);
   o->refine = curve;
   o->type = AY_IDNCURVE;
-  
+
+  curve->createmp = AY_TRUE;
   ay_nct_recreatemp(curve);
 
   ay_object_link(o);
