@@ -393,10 +393,19 @@ ay_cap_convertcb(ay_object *o, int in_place)
     {
       ay_status = ay_object_copy(cap->npatch, &new);
 
-      /* ay_trafo_copy(o, new); */
-      ay_status = ay_object_link(new);
+      if(new)
+	{
+	  if(!in_place)
+	    {
+	      /* ay_trafo_copy(o, new); */
+	      ay_status = ay_object_link(new);
+	    }
+	  else
+	    {
+	      ay_status = ay_object_replace(new, o);
+	    }
+	}
     }
-
  return ay_status;
 } /* ay_cap_convertcb */
 

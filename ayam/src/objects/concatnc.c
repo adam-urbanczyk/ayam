@@ -472,13 +472,22 @@ ay_concatnc_convertcb(ay_object *o, int in_place)
   if(cc->ncurve)
     {
       ay_status = ay_object_copy(cc->ncurve, &new);
+      if(new)
+	{
+	  /* reset display mode of new curve to "global" */
+	  nc = (ay_nurbcurve_object *)(new->refine);
+	  nc->display_mode = 0;
+	  ay_trafo_copy(o, new);
 
-      /* reset display mode of new curve to "global" */
-      nc = (ay_nurbcurve_object *)(new->refine);
-      nc->display_mode = 0;
-
-      ay_trafo_copy(o, new);
-      ay_status = ay_object_link(new);
+	  if(!in_place)
+	    {
+	      ay_status = ay_object_link(new);
+	    }
+	  else
+	    {
+	      ay_status = ay_object_replace(new, o);
+	    }
+	}
     }
 
  return ay_status;
