@@ -798,7 +798,7 @@ if { $AYWRAPPED == 1 } {
 
 	if {$ay(failsafe) == 1 } { catch {file delete -force BWidgets} }
 	if { [auto_execok unzip] != "" } {
-	    exec unzip -u -qq [info nameofexecutable] BWidgets/\*
+	    exec unzip -o -u -qq [info nameofexecutable] BWidgets/\*
 	} else {
 	    puts "Could not execute unzip, please install it!"
 	    exit
