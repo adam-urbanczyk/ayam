@@ -33,6 +33,10 @@ void ay_sm_wriballsm(char *file, ay_object *o, ay_sm_trafostack *trafo,
 		     int rwidth, int rheight);
 
 /* tree.c */
+void ay_tree_getclevel(char *node);
+
+ay_object *ay_tree_getobject(char *node);
+
 int ay_tree_registerdrop(ay_treedropcb  *cb, unsigned int type_id);
 
 int ay_tree_inittcmd(ClientData clientData, Tcl_Interp *interp,
