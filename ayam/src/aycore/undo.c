@@ -857,6 +857,7 @@ ay_undo_undotcmd(ClientData clientData, Tcl_Interp *interp,
  int ay_status = AY_OK;
  char fname[] = "undo";
  int mode = 0; /* default mode is "undo" */
+ char *a = "ay", *n = "sc", *v = "1";
 
   /* parse args */
   if(argc > 1)
@@ -890,6 +891,8 @@ ay_undo_undotcmd(ClientData clientData, Tcl_Interp *interp,
     default:
       break;
     }
+
+  Tcl_SetVar2(interp, a, n, v, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
  return TCL_OK;
 } /* ay_undo_undotcmd */
