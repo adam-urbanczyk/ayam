@@ -3195,7 +3195,7 @@ ay_npt_tpmenddata(void *userData)
 /* ay_npt_topolymesh:
  *  tesselate the NURBS patch object o into a PolyMesh object
  *  using the GLU (V1.3+) tesselation facility
- *  sm - sampling method:
+ *  smethod - sampling method:
  *   1: GLU_OBJECT_PARAMETRIC_ERROR
  *   2: GLU_OBJECT_PATH_LENGTH
  *   3: GLU_DOMAIN_DISTANCE
