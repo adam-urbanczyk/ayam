@@ -320,8 +320,9 @@ proc prefs_save { } {
 	    ayError 1 "prefs_save" "\$ayrc is not writable! No preferences saved!"
 	    return;
 	}
- 
-	file copy -force -- $ayrc ${ayrc}${ayprefs(BackupExt)}
+	set err [ catch {
+	    file copy -force -- $ayrc ${ayrc}${ayprefs(BackupExt)}
+	} ]
 	update
 	set newfile [open $ayrc w]
 
