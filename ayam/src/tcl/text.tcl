@@ -14,7 +14,7 @@ set Text_props { Transformations Attributes Material Tags TextAttr }
 
 array set TextAttr {
 arr   TextAttrData
-sproc "textSetProp"
+sproc ""
 gproc ""
 w     fTextAttr
 
@@ -29,10 +29,11 @@ set w [frame $ay(pca).$TextAttr(w)]
 
 addFile $w TextAttrData FontName
 addString $w TextAttrData String
-
-proc textSetProp { } {
-    setProp
-    update
-    forceNot
-    rV
-}
+addParam $w TextAttrData Height
+addCheck $w TextAttrData UpperCap
+addCheck $w TextAttrData LowerCap
+global ay
+set l $ay(npdisplaymodes)
+set l [linsert $l 0 Global]
+addMenu $w TextAttrData DisplayMode $l
+addParam $w TextAttrData Tolerance

@@ -29,6 +29,8 @@ ay_text_createcb(int argc, char *argv[], ay_object *o)
       return AY_ERROR;
     }
 
+  text->height = 1.0;
+
   o->refine = text;
 
  return AY_OK;
@@ -145,14 +147,15 @@ ay_text_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_text_shadecb */
 
 
-
 /* Tcl -> C! */
 int
 ay_text_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
+ int ay_status = AY_OK;
  char fname[] = "setProp";
  char *n1 = "TextAttrData";
  char *result;
+ Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_text_object *text = NULL;
 
   if(!o)
@@ -190,6 +193,37 @@ ay_text_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     }
   strcpy(text->string, result);
 
+  toa = Tcl_NewStringObj(n1,-1);
+  ton = Tcl_NewStringObj(n1,-1);
+
+  Tcl_SetStringObj(ton,"Height",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp,to, &(text->height));
+
+  Tcl_SetStringObj(ton,"UpperCap",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &(text->has_upper_cap));
+
+  Tcl_SetStringObj(ton,"LowerCap",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &(text->has_lower_cap));
+
+
+  Tcl_SetStringObj(ton,"DisplayMode",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &(text->glu_display_mode));
+
+  Tcl_SetStringObj(ton,"Tolerance",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp,to, &(text->glu_sampling_tolerance));
+
+  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
+  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+
+  ay_status = ay_notify_force(o);
+
+  ay_status = ay_notify_parent();
+
  return AY_OK;
 } /* ay_text_setpropcb */
 
@@ -198,6 +232,7 @@ ay_text_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_text_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
+ int ay_status = AY_OK;
  char *n1="TextAttrData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_text_object *text = NULL;
@@ -216,6 +251,30 @@ ay_text_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_SetStringObj(ton,"String",-1);
   to = Tcl_NewStringObj(text->string, -1);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton,"Height",-1);
+  to = Tcl_NewDoubleObj(text->height);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton,"UpperCap",-1);
+  to = Tcl_NewIntObj(text->has_upper_cap);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton,"LowerCap",-1);
+  to = Tcl_NewIntObj(text->has_lower_cap);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton,"DisplayMode",-1);
+  to = Tcl_NewIntObj(text->glu_display_mode);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton,"Tolerance",-1);
+  to = Tcl_NewDoubleObj(text->glu_sampling_tolerance);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
@@ -239,6 +298,12 @@ ay_text_readcb(FILE *fileptr, ay_object *o)
 
   ay_read_string(fileptr, &(bp->string));
 
+  fscanf(fileptr,"%lg\n",&text->height);
+  fscanf(fileptr,"%d\n",&text->has_upper_cap);
+  fscanf(fileptr,"%d\n",&text->has_lower_cap);
+  fscanf(fileptr,"%d\n",&text->glu_display_mode);
+  fscanf(fileptr,"%lg\n",&text->glu_sampling_tolerance);
+
   o->refine = bp;
 
  return AY_OK;
@@ -257,6 +322,11 @@ ay_text_writecb(FILE *fileptr, ay_object *o)
 
   fprintf(fileptr, "%s\n", text->fontname);
   fprintf(fileptr, "%s\n", text->string);
+  fprintf(fileptr, "%d\n", text->height);
+  fprintf(fileptr, "%d\n", text->has_upper_cap);
+  fprintf(fileptr, "%d\n", text->has_lower_cap);
+  fprintf(fileptr, "%d\n", text->glu_display_mode);
+  fprintf(fileptr, "%g\n", text->glu_sampling_tolerance);
 
  return AY_OK;
 } /* ay_text_writecb */
@@ -349,6 +419,11 @@ ay_text_notifycb(ay_object *o)
 
   ext.refine = &extrude;
   extrude.height = 1.0;
+  extrude.has_lower_cap = text->has_lower_cap;
+  extrude.has_upper_cap = text->has_upper_cap;
+  extrude.glu_display_mode = text->glu_display_mode;
+  extrude.glu_sampling_tolerance = text->glu_sampling_tolerance;
+
   ext.type = AY_IDEXTRUDE;
   
   c = text->string;
@@ -457,8 +532,6 @@ ay_text_notifycb(ay_object *o)
 
 		  if(extrude.npatch)
 		    {
-		      printf("hier\n");
-
 		      *nextnpatch = extrude.npatch;
 		      patch = extrude.npatch;
 		      while(patch)
