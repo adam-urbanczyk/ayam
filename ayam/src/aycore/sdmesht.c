@@ -1,7 +1,7 @@
 /*
  * Ayam, a free 3D modeler for the RenderMan interface.
  *
- * Ayam is copyrighted 1998-2001 by Randolf Schultz
+ * Ayam is copyrighted 1998-2002 by Randolf Schultz
  * (rschultz@informatik.uni-rostock.de) and others.
  *
  * All rights reserved.
@@ -59,6 +59,7 @@ ay_sdmesht_tcbEnd(void)
 {
   glEnd();
 } /* ay_sdmesht_tcbEnd */
+
 
 void
 ay_sdmesht_tcbCombine(GLdouble c[3], void *d[4], GLfloat w[4], void **out)
@@ -161,7 +162,6 @@ ay_sdmesht_tesselate(ay_sdmesh_object *sdmesh)
 				   &sdmesh->controlv[sdmesh->verts[n+1] * 3],
 				   &sdmesh->controlv[sdmesh->verts[n+2] * 3]);
 
-
 	  glBegin(GL_TRIANGLES);
 	   a = sdmesh->verts[n++];
 	   glVertex3dv((GLdouble*)(&(sdmesh->controlv[a*3])));
@@ -170,7 +170,6 @@ ay_sdmesht_tesselate(ay_sdmesh_object *sdmesh)
 	   a = sdmesh->verts[n++];
 	   glVertex3dv((GLdouble*)(&(sdmesh->controlv[a*3])));
 	  glEnd();
-	  m++;
 	}
       else
 	{
