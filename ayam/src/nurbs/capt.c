@@ -141,11 +141,40 @@ ay_capt_createfromcurve(ay_object *c, ay_object **ca)
 	      /*      np->controlv[i] = z;*/
 	      np->controlv[i+1] = 1.0;
 	    } /* for */
-
+	  /*
 	  maxx *= c->scalx;
 	  minx *= c->scalx;
 	  maxy *= c->scaly;
 	  miny *= c->scaly;
+	  */
+	}
+      else
+	{
+	  stride = 4;
+	  i = 0;
+	  while(i < nc->length*stride)
+	    {
+	      ay_trafo_apply4(&(nc->controlv[i]), m);
+
+	      i += stride;
+	    } /* while */
+
+	  c->movx = 0.0;
+	  c->movy = 0.0;
+	  c->movz = 0.0;
+
+	  c->rotx = 0.0;
+	  c->roty = 0.0;
+	  c->rotz = 0.0;
+
+	  c->scalx = 1.0;
+	  c->scaly = 1.0;
+	  c->scalz = 1.0;
+
+	  c->quat[0] = 0.0;
+	  c->quat[1] = 0.0;
+	  c->quat[2] = 0.0;
+	  c->quat[3] = 1.0;
 
 	} /* if */
 
@@ -182,7 +211,7 @@ ay_capt_createfromcurve(ay_object *c, ay_object **ca)
 	  c->movy = -(miny + (fabs(maxy-miny)/2.0))*c->scaly;
 	    
 	  c->movx += 0.5+(trimmx/fabs(maxx-minx));
-	  c->movy += 0.5+(trimmy/fabs(maxy-miny));;
+	  c->movy += 0.5+(trimmy/fabs(maxy-miny));
 
 	} /* if */
 

@@ -2798,3 +2798,61 @@ ay_nct_createfrompatch(ay_object *p, int where, ay_object **cu)
 
  return ay_status;
 } /* ay_nct_createfrompatch */
+
+
+/* ay_nct_applytrafo:
+ *  
+ *  
+ */
+int
+ay_nct_applytrafo(ay_object *c)
+{
+ int i, stride;
+ double m[16];
+ ay_nurbcurve_object *nc = NULL;
+
+  if(!c)
+    return AY_ENULL;
+
+  if(!c->type == AY_IDNCURVE)
+    return AY_ERROR;
+
+  nc = (ay_nurbcurve_object *)(c->refine);
+
+  glPushMatrix();
+   glTranslated((GLdouble)c->movx, (GLdouble)c->movy, (GLdouble)c->movz);
+   ay_quat_torotmatrix(c->quat, m);
+   glMultMatrixd((GLdouble*)m);
+   glScaled((GLdouble)c->scalx, (GLdouble)c->scaly, (GLdouble)c->scalz);
+   glGetDoublev(GL_MODELVIEW_MATRIX, (GLdouble*)m);
+  glPopMatrix();
+
+  stride = 4;
+  i = 0;
+  while(i < nc->length*stride)
+    {
+      ay_trafo_apply4(&(nc->controlv[i]), m);
+      
+      i += stride;
+    } /* while */
+
+  c->movx = 0.0;
+  c->movy = 0.0;
+  c->movz = 0.0;
+
+  c->rotx = 0.0;
+  c->roty = 0.0;
+  c->rotz = 0.0;
+
+  c->scalx = 1.0;
+  c->scaly = 1.0;
+  c->scalz = 1.0;
+
+  c->quat[0] = 0.0;
+  c->quat[1] = 0.0;
+  c->quat[2] = 0.0;
+  c->quat[3] = 1.0;
+
+
+ return AY_OK;
+} /* ay_nct_applytrafo */
