@@ -88,7 +88,8 @@ TCLLIB = -L$(TCLDIR)/unix -ltcl8.0
 # if you have an installed Tcl/Tk, you probably just want:
 #TCLLIB = -ltcl
 
-# Tk directory
+# Tk sources directory
+# Note, you need the Tk sources in order to compile Ayam!
 #TKDIR = ../../tk8.2.2
 TKDIR = ../../tk8.0
 
