@@ -292,6 +292,8 @@ array set ay {
  npwidth 4
  npheight 4
  iclen 4
+ pmwidth 4
+ pmheight 4
  elevd 1
  insknu 0.5
  insknr 1

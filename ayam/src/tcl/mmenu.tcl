@@ -168,6 +168,10 @@ $m add command -label "NURBPatch" -command {
 $m add command -label "BPatch" -command {
 crtOb BPatch; uCR; sL; rV;
 }
+$m add command -label "PatchMesh" -command {
+    runTool {ay(pmwidth) ay(pmheight)} {"Width:" "Height:"}\
+	    "crtOb PatchMesh -width %0 -height %1; uCR; sL; rV;"
+}
 $m add separator
 $m add cascade -menu $m.sl -label "Solid"
 menu $m.sl -tearoff 0
