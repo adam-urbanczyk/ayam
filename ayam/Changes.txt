@@ -1,4 +1,4 @@
-[CVS 15. 12. 2001] Ayam1.1:
+[CVS 16. 12. 2001] Ayam1.1:
 o bug fixes:
   - fixed custom lights always exporting as AreaLight to RIB
   - fixed tags not loading from scene files to root object
@@ -20,6 +20,8 @@ o bug fixes:
   - fixed forAllT scripting interface command
   - fixed rotation of view windows with Alt key held down
   - fixed new views blocking when created "under" the mouse pointer
+  - fixed windows not saving their size to the preferences if TwmCompat
+    is not enabled
 o added auto-scrolling to property with focus (<Tab> scrolls the property GUI)
 o added "Scene changed!" warning requester to various scene destroying
   operations, like "File/New"
@@ -36,8 +38,9 @@ o added a context menu to the property listbox and the object listbox
 o improved checkbutton property gui element on Win32
 o the toolbox looks much nicer now on Win32
 o added preferences setting "Misc/ToolBoxTrans" that may be used to make
-  the tool box window transient on Unix (the toolbox is now always transient
-  on Win32 to save space in the task bar)
+  the tool box window transient
+o the tool box window may now be changed in size, with the row/column
+  layout of the buttons adapting to these changes
 o added "CreateMP" option to NURBS curves that inhibits creation of
   multiple points
 o added "Help/Help on object" that directly displays the documentation
