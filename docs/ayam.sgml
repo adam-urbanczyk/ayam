@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>16. Aug 2002
+<date>16. Sep 2002
 <abstract>
 This is the documentation of Ayam (1.3) - a free 3D modeling environment
 for the RenderMan interface.
@@ -423,8 +423,10 @@ just groups objects, <tt/Union/, <tt/Intersection/,
 <item><tt/Light/, create a new light source.
 <item><tt/Custom Object/, create a new custom object.
 <item><tt/Instance/, create an instance of the currently selected
-object, see section <ref id="instobj" name="Instance Object">
+object, see section <ref id="instanceobj" name="Instance Object">
 for more information regarding instances.
+<item><tt/Clone/, create a clone object, see
+section <ref id="cloneobj" name="Clone Object">
 <item><tt/View/, a new View window will be opened.
 <item><tt/Material/, create a new material. A small dialog box will
 pop up, where you have to specify the name of the new material.
@@ -469,7 +471,7 @@ The <tt/Special/ menu:
 <item><tt/Save Selected as/, saves just the currently selected objects
 to disk.
 <item><tt/Save Environment/, saves the root object and all
-current views to the file pointed to by the preference
+views to the file pointed to by the preference
 setting <tt>"Main/EnvFile"</tt>. Note, that there will be no
 check whether loading of that environment on next start up is
 enabled in the preferences. Note also, that using <tt/Save Environment/
@@ -478,46 +480,67 @@ and all views. If you want to include geometric objects in your
 environment or if you want to exclude the root object and just
 save views you have to use <tt>"File/Save"</tt> or
 <tt>"Special/Save Selected as"</tt> respectively.
-<item><tt/Paste (move)/, moves objects from the clipboard back
+<item><tt>Clipboard/Paste (move)</tt>, moves objects from the clipboard back
 to the scene (clearing the clipboard). This is the only way to
 get referenced objects out of the clipboard.
-<item><tt/Paste Property to selected/ paste the property
+<item><tt>Clipboard/Paste Property to selected</tt> paste the property
 from the property clipboard to the currently selected
-property of the currently selected object(s).
-<item><tt/Select All Points/, selects all points of the currently
+property of the currently selected object. No type check of the
+properties will take place! You may e.g. copy the settings from a
+displacement shader to a surface shader (as long as the copied arguments
+of both shaders have the same names and types).
+<item><tt>Points/Select All Points</tt>, selects all points of the currently
 selected object(s).
-<item><tt/Apply To All/, applies the transformations encoded in the
-transformations property of the selected objects to all points.
-This will reset the transformations property without moving the points.
-<item><tt/Apply To Selected/, applies the transformations encoded in the
-transformations property of the selected objects to the selected points
+<item><tt>Points/Apply To All</tt>, applies the transformations encoded in the
+transformations property of the selected objects to all points of those
+objects.
+This will have the effect of resetting the transformations property
+to the default values without moving the points.
+<item><tt>Points/Apply To Selected</tt>, applies the transformations
+encoded in the
+transformations property of the selected objects to the selected points.
 This will reset the transformations property without moving the
-selected points. The points currently not selected will be transformed!
-<item><tt/Resolve all Instances/, converts all instances
+selected points. The points currently not selected will be moved,
+however!
+<item><tt>Instances/Resolve all Instances</tt>, converts all instances
 of the current level (and its child objects) to normal objects.
-<item><tt/Automatic Instancing/, pops up a small dialog box,
+<item><tt>Instances/Automatic Instancing</tt>, pops up a small dialog box,
 where you may parameterize and start the automatic instantiation
 algorithm (that automatically creates instances from
 equal objects). See section <ref id="ai" name="Automatic Instancing">
 for more information regarding automatic instancing.
-<item><tt/Add RiOption/, pops up a small dialog box, where you may
+<item><tt>Tags/Add RiOption</tt>, pops up a small dialog box, where you may
 select and parameterize a RiOption tag to add as tag to the Root object
 (see <ref id="riotag" name="RiOption Tag">).
-<item><tt/Add RiAttribute/, pops up a small dialog box, where you may
+<item><tt>Tags/Add RiAttribute</tt>, pops up a small dialog box, where you may
 select and parameterize a RiAttribute tag to add as tag to the currently
 selected object(s)
 (see <ref id="riatag" name="RiAttribute Tag">).
-<item><tt/Edit TexCoords/, opens the texture coordinates editor.
+<item><tt>Tags/Edit TexCoords</tt>, opens the texture coordinates editor.
 (see also section <ref id="tctag" name="TC (TextureCoordinates) Tag">).
-<item><tt/Toggle ToolBox/ closes or opens the ToolBox window again
-(see <ref id="toolb" name="The Tool Box Window">). From V1.3 on
-Ayam will remember whether the tool box is open for the next
-start.
+<item><tt>Select Renderer</tt> opens a dialogue where the renderer
+for direct rendering from a view may be choosen.
+The changes will have effect on all options that
+control direct rendering from a view, except whether RenderGUIs should
+be used.
+If the <tt>"ScanShaders"</tt> checkmark is activated, Ayam will
+additionally try to load the corresponding shader parsing plugin
+and rescan for compiled shaders. Note, that in order for the
+<tt>"ScanShaders"</tt> feature to work
+properly you have to set the <tt>"Shaders"</tt> and <tt>"Plugins"</tt>
+preference setting correctly
+(see also section <ref id="prefmain" name="The Main Preferences">).
+<item><tt/Toggle ToolBox/ closes or opens the toolbox window
+(see <ref id="toolb" name="The Tool Box Window">). From version 1.3 on,
+Ayam remembers the status of the toolbox in the preferences.
 <item><tt/Toggle TreeView/ toggles object tree view and object listbox.
-From V1.3 on Ayam will remember whether the tree view or the
-object listbox is open for the next start
+From version 1.3 on, Ayam remembers whether the tree view or the
+object listbox is open in the preferences
 (see also section <ref id="obj" name="Objects"> for more information
 about both GUI elements).
+<item><tt>Zap Ayam</tt> iconifies all currently open windows of Ayam.
+If one of the iconified windows is de-iconified all other windows will
+be de-iconified as well.
 </itemize>
 
 <label id="mmhelp">
@@ -892,14 +915,15 @@ objects to create a standard 2-, 3-, or 4-view working environment.
 <item><tt/"Scripts"/ is a list of filenames of Tcl scripts that should
 be executed on startup.
 <item><tt/"Plugins"/ is a list of directories that contain custom
-objects. Those directories will be searched for custom objects
-when unknown object types are encountered while reading Ayam scene
-files. If a matching custom object is found, it will be automatically
-loaded into Ayam, so that the scene may be loaded without an error.
+objects or plugins. Those directories will e.g. be searched for
+custom objects when unknown object types are encountered while reading
+Ayam scene files. If a matching custom object is found, it will be
+automatically loaded into Ayam, so that scene loading may proceed without
+an error.
 <item><tt/"Docs"/ is an URL that points to the documentation in
 HTML format.
 <item><tt/"TmpDir"/ is the directory, where temporary RIBs are
-created, e.g. when rendering views.
+created, e.g. when rendering directly from view windows.
 </itemize>
 
 <sect2>Modeling Preferences<label id="prefmodel">
@@ -2676,7 +2700,7 @@ defined.
 else it is 0.
 </itemize>
 
-<sect1>Instance Object<label id="instobj">
+<sect1>Instance Object<label id="instanceobj">
 <p>
 The term instance is unfortunately misleading (and can be very confusing
 if you are accustomed to the terminology of object oriented programming),
@@ -2732,6 +2756,28 @@ cause that archive file to be read. You can change that behaviour
 using the preference setting <tt/"ResInstances"/.
 If <tt/"ResInstances"/ is enabled, all instances will be resolved
 before being exported to RIB.
+
+<sect1>Clone Object<label id="cloneobj">
+<p>
+The Clone object allows you to easily control a number
+of instances of a single object.
+The instances will be created internally and transformed,
+each by a certain amount.
+
+It is currently not possible to create clones from an instance object.
+However, there are no other restrictions on the type of object to
+be cloned.
+
+<sect2>CloneAttr<label id="cloneattr">
+<p>
+<itemize>
+<item><tt/"NumClones"/ the number of clones to create.
+<item><tt/"Translate_X"/, <tt/"Translate_Y"/, <tt/"Translate_Z"/,
+<tt/"Rotate_X"/, <tt/"Rotate_Y"/, <tt/"Rotate_Z"/,
+<tt/"Scale_X"/, <tt/"Scale_Y"/, <tt/"Scale_Z"/,
+those attributes control the transformation of the
+instances.
+</itemize>
 
 <sect1>Revolve Object<label id="revolveobj">
 <p>
@@ -2844,7 +2890,7 @@ that are trimmed NURBS patches. Using <tt/"UpperCap"/ and
 <tt/"LowerCap"/ you determine whether such caps should be
 generated, default is off (no caps). Note, that this feature
 does only work properly, if the generating NURBS curves are closed
-and not self intersecting, this is because the generating curves themself
+and not self intersecting, this is because the generating curves themselves
 are used as trim curves for the caps. Warning, Ayam will not check whether
 your curves conform to this criteria. Ayam, however,
 detects the correct orientation of the curves
@@ -3105,6 +3151,23 @@ This parameter has no effect on open curves when the mode is Global4D.
 <item>See section <ref id="ncattr" name="NCurveAttrib"> for a description
 of the last attribute: <tt/"Tolerance"/ .
 </itemize>
+
+<sect1>ConcatNC Object<label id="concatncobj">
+<p>
+The ConcatNC object concatenates all child objects
+(which should be NURBS curves or provide NURBS curves)
+to a single NURBS curve. Since the ConcatNC object also
+provides a NURBS curve, it is possible to use it as
+child object for another ConcatNC object (with possibly
+different parameters).<p>
+How does the concatenation work?
+The control points of all child curves are simply copied
+into a new big vector, without checking for double
+points.
+Furthermore, attributes like order, knot type, display mode, tolerance
+etc. are taken from the first child object.
+It is currently not possible to concatenate NURBS curves
+with custom knot vectors.
 
 <sect1>RiInc Object<label id="riincobj">
 <p>
@@ -4641,6 +4704,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Circle: <ref id="ncirct" name="NURBS circle tool">
 <item>clampNC: <ref id="gncp" name="scripting interface command">,
 <ref id="clat" name="clamp tool">
+<item>Clone:<ref id="cloneobj" name="object">
 <item>Closed: <ref id="spattr" name="sphere attribute">,
 <ref id="cnp" name="cone attribute">,
 <ref id="cyp" name="cylinder attribute">,
@@ -4653,12 +4717,13 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Close_U, Close_V: <ref id="pmattr" name="PatchMesh attribute">
 <item>Collapse: <ref id="collt" name="Collapse tool">
 <item>Color: <ref id="riattrs" name="RenderMan/BMRT attribute">,
-<ref id="lip" name="light attribute">,
+<ref id="lip" name="light attribute">
 <item>copOb: <ref id="copob" name="scripting interface command">
 <item>Copy: <ref id="mmedit" name="main menu entry">
 <item>Copy Property: <ref id="mmedit" name="main menu entry">,
 <ref id="propgui" name="copying properties">
 <item>Concat: <ref id="conct" name="Concat tool">
+<item>ConcatNC:<ref id="concatncobj" name="ConcatNC object">
 <item>Cone: <ref id="mmcreate" name="main menu entry">,
 <ref id="coneobj" name="object">
 <item>ConeAngle, ConeDAngle: <ref id="lip" name="light attribute">
@@ -4782,7 +4847,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>insKn: <ref id="gncp" name="scripting interface command">
 <item>Insert Knot: <ref id="insknt" name="insert knot tool">
 <item>insertScene: <ref id="scio" name="scripting interface command">
-<item>Instance: <ref id="instobj" name ="object">
+<item>Instance: <ref id="instanceobj" name ="object">
 <item>Intensity: <ref id="lip" name="light attribute">
 <item>Interior: <ref id="matshader" name="shader">
 <item>Interpolation: <ref id="attrs" name="RenderMan/BMRT attribute">,
@@ -4861,6 +4926,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>newScene: <ref id="scio" name="scripting interface command">
 <item>NCDisplayMode: <ref id="prefdraw" name="preference setting">,
 <ref id="ncattr" name="NURBCurve attribute">
+<item>NumClones: <ref id="cloneattr" name="Clone attributes">
 <item>NURBCircle: <ref id="ncirct" name="NURBS circle tool">
 <item>NURBCurve: <ref id="mmcreate" name="main menu entry">,
 <ref id="ncurveobj" name="object">
@@ -4929,13 +4995,14 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Redraw: <ref id="vm" name="view menu entry">,
 <ref id="incds" name="speeding up">,
 <ref id="vat" name="view attribute">
-<item>Reference Counter: <ref id="instobj" name="Instance Object">,
+<item>Reference Counter: <ref id="instanceobj" name="Instance Object">,
 <ref id="materialobj" name="Material Object">
 <item>References: <ref id="secref" name="references">
 <item>refineNC: <ref id="gncp" name="scripting interface command">,
 <ref id="refit" name="refine tool">
 <item>Render: <ref id="vm" name="view menu entry">,
 <ref id="prefrib" name="preference setting">
+<item>Renderer: <ref id="mmspecial" name="select a different renderer">
 <item>RenderPT, RenderUI: <ref id="prefrib" name="preference setting">
 <item>Replace: <ref id="mmfile" name="main menu entry">
 <item>replaceScene: <ref id="scio" name="scripting interface command">
@@ -4989,6 +5056,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Select: <ref id="obj" name="select objects with the tree/listbox">,
 <ref id="objsel" name="select objects within a view">,
 <ref id="selac" name="select points">
+<item>Select Renderer: <ref id="mmspecial" name="main menu entry">
 <item>Selection: <ref id="prefdraw" name="preference setting">
 <item>Set Gridsize: <ref id="vmconf" name="view menu entry">
 <item>Set FOV: <ref id="vmconf" name="view menu entry">
@@ -5047,8 +5115,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>To: <ref id="camp" name="camera property">,
 <ref id="lip" name="light attribute">
 <item>To Camera: <ref id="vmconf" name="view menu entry">
-<item>Toggle ToolBox: <ref id="mmspecial" name="main menu entry">,
-<item>Toggle TreeView: <ref id="mmspecial" name="main menu entry">,
+<item>Toggle ToolBox: <ref id="mmspecial" name="main menu entry">
+<item>Toggle TreeView: <ref id="mmspecial" name="main menu entry">
 <item>Tolerance: <ref id="prefdraw" name="preference setting">,
 <ref id="pmattr" name="PatchMesh attribute">,
 <ref id="ncattr" name="NURBCurve attribute">,
