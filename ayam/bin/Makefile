@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile [02. Sep 2002]
+# Makefile [30. Dec 2002]
 # Makefile for the installation of Ayam (precompiled wrapped version)
 
 # Choose an installation prefix.
@@ -32,6 +32,8 @@ DOCDIR = $(PREFIX)/doc
 INSTALL = ./ninstall
 #INSTALL = install
 MKDIR = mkdir -p
+
+# Nothing needs to be changed below this line.
 
 DOCFILES = ../Setup.txt ../Changes.txt ../License.txt ../doc/refcard.tcl\
 ../doc/refcard.ps ../doc/ayam.pdf
