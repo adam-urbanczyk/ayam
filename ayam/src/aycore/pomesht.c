@@ -56,6 +56,8 @@ void ay_pomesht_tcbEnd(void);
 void ay_pomesht_tcbCombine(GLdouble c[3], void *d[4], GLfloat w[4],
 			   void **out);
 
+void ay_pomesht_tcbCombineN(GLdouble c[3], void *d[4], GLfloat w[4],
+			    void **out);
 
 void ay_pomesht_ManageCombined(void *data);
 
@@ -119,6 +121,34 @@ ay_pomesht_tcbCombine(GLdouble c[3], void *d[4], GLfloat w[4], void **out)
 
   *out = nv;
 } /* ay_pomesht_tcbCombine */
+
+
+void
+ay_pomesht_tcbCombineN(GLdouble c[3], void *d[4], GLfloat w[4], void **out)
+{
+ GLdouble *nv = NULL;
+
+ if(!(nv = (GLdouble *) malloc(sizeof(GLdouble)*6)))
+   return;
+
+  nv[0] = c[0];
+  nv[1] = c[1];
+  nv[2] = c[2];
+
+  nv[3] = w[0]*((double*)d[0])[3] + w[1]*((double*)d[1])[3] +
+    w[2]*((double*)d[2])[3] + w[3]*((double*)d[3])[3];
+
+  nv[4] = w[0]*((double*)d[0])[4] + w[1]*((double*)d[1])[4] +
+    w[2]*((double*)d[2])[4] + w[3]*((double*)d[3])[4];
+
+  nv[5] = w[0]*((double*)d[0])[5] + w[1]*((double*)d[1])[5] +
+    w[2]*((double*)d[2])[5] + w[3]*((double*)d[3])[5];
+
+  /* remember pointer to free it later */
+  ay_pomesht_ManageCombined((void*)nv);
+
+  *out = nv;
+} /* ay_pomesht_tcbCombineN */
 
 
 void
@@ -255,8 +285,11 @@ ay_pomesht_tesselate(ay_pomesh_object *pomesh)
 #if defined(WIN32) && !defined(AYUSESUPERGLU)
 	      gluTessCallback(tess, GLU_TESS_VERTEX,
 			      (GLUtessVertexProc)ay_pomesht_tcbVertex);
+	      gluTessCallback(tess, GLU_TESS_COMBINE,
+			      (GLUtessCombineProc)ay_pomesht_tcbCombine);
 #else
 	      gluTessCallback(tess, GLU_TESS_VERTEX, ay_pomesht_tcbVertex);
+	      gluTessCallback(tess, GLU_TESS_COMBINE, ay_pomesht_tcbCombine);
 #endif
 	    }
 	  else
@@ -264,19 +297,20 @@ ay_pomesht_tesselate(ay_pomesh_object *pomesh)
 #if defined(WIN32) && !defined(AYUSESUPERGLU)
 	      gluTessCallback(tess, GLU_TESS_VERTEX,
 			      (GLUtessVertexProc)ay_pomesht_tcbVertexN);
+	      gluTessCallback(tess, GLU_TESS_COMBINE,
+			      (GLUtessCombineProc)ay_pomesht_tcbCombineN);
 #else
 	      gluTessCallback(tess, GLU_TESS_VERTEX, ay_pomesht_tcbVertexN);
+	      gluTessCallback(tess, GLU_TESS_COMBINE, ay_pomesht_tcbCombineN);
 #endif
 	    } /* if */
 
 #if defined(WIN32) && !defined(AYUSESUPERGLU)
 	  gluTessCallback(tess, GLU_TESS_END,
 			  (GLUtessEndProc)ay_pomesht_tcbEnd);
-	  gluTessCallback(tess, GLU_TESS_COMBINE,
-			  (GLUtessCombineProc)ay_pomesht_tcbCombine);
+
 #else
 	  gluTessCallback(tess, GLU_TESS_END, ay_pomesht_tcbEnd);
-	  gluTessCallback(tess, GLU_TESS_COMBINE, ay_pomesht_tcbCombine);
 #endif
 
 	  /* GLU 1.2 only: */
