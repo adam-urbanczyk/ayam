@@ -262,7 +262,9 @@ proc shortcut_main { w } {
     # bind
 
     bind $w <Down> "selNPFL 0"
+    bind $w <Shift-Down> "selAdd 1"
     bind $w <Up> "selNPFL 1"
+    bind $w <Shift-Up> "selAdd 0"
     bind $w <Home> "selNPFL 2"
     bind $w <End> "selNPFL 3"
 
