@@ -24,6 +24,9 @@ int ay_camera_init(Tcl_Interp *interp);
 /* camera.c */
 int ay_cap_init(Tcl_Interp *interp);
 
+/* clone.c */
+int ay_clone_init(Tcl_Interp *interp);
+
 /* cone.c */
 int ay_cone_init(Tcl_Interp *interp);
 

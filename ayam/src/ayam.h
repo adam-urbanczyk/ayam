@@ -489,6 +489,17 @@ typedef struct ay_custom_object_s
   void *object;
 } ay_custom_object;
 
+typedef struct ay_clone_object_s
+{
+  int numclones;
+  /* Transformations */
+  double movx, movy, movz;
+  double rotx, roty, rotz;
+  double scalx, scaly, scalz;
+  double quat[4]; /* quaternion */
+  ay_object *clones;
+} ay_clone_object;
+
 typedef struct ay_camera_object_s
 {
   double from[3];
@@ -903,6 +914,7 @@ extern unsigned int ay_current_glname;
 #define AY_IDPAMESH        25
 #define AY_IDPOMESH        26
 #define AY_IDCONCATNC      27
+#define AY_IDCLONE         28
 
 #define AY_IDLAST          30
 

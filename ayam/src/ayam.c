@@ -230,6 +230,9 @@ ay_init(Tcl_Interp *interp)
   if((ay_status = ay_cap_init(interp)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 
+  if((ay_status = ay_clone_init(interp)))
+    { ay_error(ay_status, fname, NULL); return AY_ERROR; }
+
   if((ay_status = ay_cone_init(interp)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 

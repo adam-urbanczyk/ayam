@@ -879,6 +879,7 @@ ayam_loadscript box
 ayam_loadscript bpatch
 ayam_loadscript camera
 ayam_loadscript cap
+ayam_loadscript clone
 ayam_loadscript cone
 ayam_loadscript concatnc
 ayam_loadscript cylinder
