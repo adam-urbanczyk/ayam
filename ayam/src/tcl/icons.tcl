@@ -551,11 +551,14 @@ image create photo ay_GridX_img -format GIF -data $imgdata
 
 # DMDraw
 set imgdata {\
-R0lGODdhGQAZAPAAALy8vOnp6SwAAAAAGQAZAAACV4SPqavhHxhzJkZA5bl4e5lVX8UlZSciZzqy
-LqqaTSzTdgnlEG2FJ/dAhVqwzWVVTKaGr1WmB6xhKEeVTneb2VpOKfHnVSajW2vWqCHDkI3qkT3B
-aub0AgA7
+R0lGODdhGQAZAIAAAOnp6by8vCwAAAAAGQAZAAACYISPqRntvd4zMlCLLajXbeiF06dNIkR2JMie
+15qdLAXHbUhzUr0d44L49VQ7Dy1YNO2QSZnR17yhfFBbjFrVALNUndKUi1oxLzHsQ/yejWzXqO1u
+nXnoTAe+ZFS02z6iAAA7
 }
 image create photo ay_DMDraw_img -format GIF -data $imgdata
+#R0lGODdhGQAZAPAAALy8vOnp6SwAAAAAGQAZAAACV4SPqavhHxhzJkZA5bl4e5lVX8UlZSciZzqy
+#LqqaTSzTdgnlEG2FJ/dAhVqwzWVVTKaGr1WmB6xhKEeVTneb2VpOKfHnVSajW2vWqCHDkI3qkT3B
+#aub0AgA7
 
 # DMShade
 set imgdata {\
