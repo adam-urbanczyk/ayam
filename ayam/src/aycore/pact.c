@@ -273,21 +273,33 @@ ay_pact_pedtcb(struct Togl *togl, int argc, char *argv[])
  int i, justupdated = 0, changed = AY_FALSE;
  double *coords;
  char cmd[] = "editPointDp", cmd2[] = "rV;plb_update";
+ ay_list_object *sel = NULL;
+ ay_object *o = NULL;
 
-  if(ay_selection)
+
+  toa = Tcl_NewStringObj(n1, -1);
+  ton = Tcl_NewStringObj(n1, -1);
+
+  sel = ay_selection;
+  if(!sel)
     {
-      toa = Tcl_NewStringObj(n1, -1);
-      ton = Tcl_NewStringObj(n1, -1);
+      ay_error(AY_ENOSEL, "pointEditD", NULL);
+      return TCL_OK;
+    }
+
+  while(sel)
+    {
+      o = sel->object;
 
       Tcl_GetDouble(interp, argv[2], &winX);
       Tcl_GetDouble(interp, argv[3], &winY);
 
-      ay_status = ay_viewt_wintoobj(togl, ay_selection->object, winX, winY,
+      ay_status = ay_viewt_wintoobj(togl, o, winX, winY,
 				    &(obj[0]), &(obj[1]), &(obj[2]));
 
-      ay_status = ay_pact_getpoint(ay_selection->object, obj);
+      ay_status = ay_pact_getpoint(o, obj);
 
-      ay_point_edit_object = ay_selection->object;
+      ay_point_edit_object = o;
 
       if(ay_point_edit_coords)
 	{
@@ -319,9 +331,9 @@ ay_pact_pedtcb(struct Togl *togl, int argc, char *argv[])
 	  Tcl_Eval(interp,cmd);
 
 	  Tcl_SetStringObj(ton,"justupdated",-1);
-	  to = Tcl_ObjGetVar2(interp,toa,ton,
+	  to = Tcl_ObjGetVar2(interp, toa, ton,
 			      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	  Tcl_GetIntFromObj(interp,to, &justupdated);
+	  Tcl_GetIntFromObj(interp, to, &justupdated);
 	  if(!justupdated)
 	    {
 	      Tcl_SetStringObj(ton,"changed",-1);
@@ -363,18 +375,18 @@ ay_pact_pedtcb(struct Togl *togl, int argc, char *argv[])
 	    } /* if */
 	} /* if */
 
-      Tcl_IncrRefCount(toa); Tcl_DecrRefCount(toa);
-      Tcl_IncrRefCount(ton); Tcl_DecrRefCount(ton);
 
       if(!justupdated && changed)
 	{
 	  ay_point_edit_object->modified = AY_TRUE;
 	  ay_notify_force(ay_selection->object);
-	  Tcl_Eval(interp,cmd2);
+	  Tcl_Eval(interp, cmd2);
 	}
+      sel = sel->next;
     }
-  else
-    ay_error(AY_ENOSEL, "pointEditD", NULL);
+
+  Tcl_IncrRefCount(toa); Tcl_DecrRefCount(toa);
+  Tcl_IncrRefCount(ton); Tcl_DecrRefCount(ton);
 
   if(!justupdated && changed)
     {
