@@ -266,6 +266,9 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
       ay_trafo_getall(ay_currentlevel->next);
     }
 
+  glClearDepth((GLfloat)1.0);
+  glClearColor((GLfloat)ay_prefs.bgr, (GLfloat)ay_prefs.bgg,
+	       (GLfloat)ay_prefs.bgb, (GLfloat)0.0);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
   // fill depth buffer (resolve CSG operations)
@@ -1144,7 +1147,7 @@ aycsg_binarify(ay_object *parent, ay_object *left, ay_object **target)
  int ay_status = AY_OK;
  ay_object *tmp = NULL;
 
-  if((!parent) || (!left))
+  if((!parent) || (!left) || (!target))
     return AY_ENULL;
 
   if(!left->next)
@@ -1152,24 +1155,37 @@ aycsg_binarify(ay_object *parent, ay_object *left, ay_object **target)
       return AY_OK;
     }
 
+  // create a new intermediate level object
   if(!(tmp = (ay_object*)calloc(1, sizeof(ay_object))))
     return AY_EOMEM;
 
   memcpy(tmp, parent, sizeof(ay_object));
 
+  // make sure, that the transformation attributes remain at the
+  // original top level object
+  ay_trafo_defaults(tmp);
+
+  if(tmp->tags && (tmp->tags->type == aycsg_tm_tagtype))
+    {
+      tmp->tags = tmp->tags->next;
+    }
+
+  // differences translate to a difference of unions!
   if(parent->CSGTYPE == AY_LTDIFF)
     tmp->CSGTYPE = AY_LTUNION;
 
+  // connect children to new level object
   tmp->next = NULL;
   tmp->down = left;
 
+  // finished?
   if(left->next->next)
-    { // there are (still) more than two children
+    { // no, there are (still) more than two children
       // => wee need another intermediate level object
       ay_status = aycsg_binarify(parent, left->next, &(left->next));
     }
 
-  // link the new level to the hierarchy
+  // link the new level object to the hierarchy
   *target = tmp;
 
  return AY_OK;
@@ -1187,7 +1203,7 @@ int
 aycsg_copytree(int sel_only, ay_object *t, int *is_csg, ay_object **target)
 {
  int ay_status = AY_OK;
- int lis_csg = 0;
+ int lis_csg = AY_FALSE;
  ay_level_object *l = NULL;
  ay_object *tmp = NULL;
 
@@ -1289,9 +1305,9 @@ aycsg_copytree(int sel_only, ay_object *t, int *is_csg, ay_object **target)
 	      break;
 	    } // switch
 
-	  if(lis_csg || (l->type > 1) && (l->type < 5))
+	  if(lis_csg || ((l->type > 1) && (l->type < 5)))
 	    {
-	      lis_csg = 1;
+	      lis_csg = AY_TRUE;
 
 	      if((*target)->down && (*target)->down->next &&
 		    (*target)->down->next->next)
@@ -1306,12 +1322,12 @@ aycsg_copytree(int sel_only, ay_object *t, int *is_csg, ay_object **target)
 	    } // if
 	} // if
 
+      if(lis_csg)
+	*is_csg = AY_TRUE;
 
       t = t->next;
       target = &((*target)->next);
     } // while
-
-  *is_csg = lis_csg;
 
  return ay_status;
 } // aycsg_copytree
