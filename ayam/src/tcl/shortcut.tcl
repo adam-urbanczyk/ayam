@@ -140,51 +140,55 @@ proc shortcut_view { w } {
     bind $w <[repcont $aymainshortcuts(Redo)]> "$m invoke 10"
 
     # view window shortcuts
-    bind $w <[repcont $ayviewshortcuts(QRender)]> "$w.fMenu.v.m invoke 0"
-    $w.fMenu.v.m entryconfigure 0 -accelerator $ayviewshortcuts(QRender)
-    bind $w <[repcont $ayviewshortcuts(Render)]> "$w.fMenu.v.m invoke 1"
-    $w.fMenu.v.m entryconfigure 1 -accelerator $ayviewshortcuts(Render)
-    bind $w <[repcont $ayviewshortcuts(Redraw)]> "$w.fMenu.v.m invoke 2"
-    $w.fMenu.v.m entryconfigure 2 -accelerator $ayviewshortcuts(Redraw)
+    set m $ay(viewm)
+    bind $w <[repcont $ayviewshortcuts(QRender)]> "$w.$m invoke 0"
+    $w.$m entryconfigure 0 -accelerator $ayviewshortcuts(QRender)
+    bind $w <[repcont $ayviewshortcuts(Render)]> "$w.$m invoke 1"
+    $w.$m entryconfigure 1 -accelerator $ayviewshortcuts(Render)
+    bind $w <[repcont $ayviewshortcuts(Redraw)]> "$w.$m invoke 2"
+    $w.$m entryconfigure 2 -accelerator $ayviewshortcuts(Redraw)
 
-    bind $w <[repcont $aymainshortcuts(ExportRIB)]> "$w.fMenu.v.m invoke 3"
-    $w.fMenu.v.m entryconfigure 3 -accelerator $aymainshortcuts(ExportRIB)
+    bind $w <[repcont $aymainshortcuts(ExportRIB)]> "$w.$m invoke 3"
+    $w.$m entryconfigure 3 -accelerator $aymainshortcuts(ExportRIB)
 
-    bind $w <[repcont $ayviewshortcuts(Close)]> "$w.fMenu.v.m invoke 5"
-    $w.fMenu.v.m entryconfigure 5 -accelerator $ayviewshortcuts(Close)
+    bind $w <[repcont $ayviewshortcuts(Close)]> "$w.$m invoke 5"
+    $w.$m entryconfigure 5 -accelerator $ayviewshortcuts(Close)
 
-    bind $w <[repcont $ayviewshortcuts(Front)]> "$w.fMenu.t.m invoke 0"
-    $w.fMenu.t.m entryconfigure 0 -accelerator $ayviewshortcuts(Front)
-    bind $w <[repcont $ayviewshortcuts(Side)]> "$w.fMenu.t.m invoke 1"
-    $w.fMenu.t.m entryconfigure 1 -accelerator $ayviewshortcuts(Side)
-    bind $w <[repcont $ayviewshortcuts(Top)]> "$w.fMenu.t.m invoke 2"
-    $w.fMenu.t.m entryconfigure 2 -accelerator $ayviewshortcuts(Top)
-    bind $w <[repcont $ayviewshortcuts(Persp)]> "$w.fMenu.t.m invoke 4"
-    $w.fMenu.t.m entryconfigure 4 -accelerator $ayviewshortcuts(Persp)
-    bind $w <[repcont $ayviewshortcuts(Trim)]> "$w.fMenu.t.m invoke 6"
-    $w.fMenu.t.m entryconfigure 6 -accelerator $ayviewshortcuts(Trim)
 
-    bind $w <[repcont $ayviewshortcuts(Auto)]> "$w.fMenu.c.m invoke 0"
-    $w.fMenu.c.m entryconfigure 0 -accelerator $ayviewshortcuts(Auto)
-    bind $w <[repcont $ayviewshortcuts(Shade)]> "$w.fMenu.c.m invoke 1"
-    $w.fMenu.c.m entryconfigure 1 -accelerator $ayviewshortcuts(Shade)
+    set m $ay(typem)
+    bind $w <[repcont $ayviewshortcuts(Front)]> "$w.$m invoke 0"
+    $w.$m entryconfigure 0 -accelerator $ayviewshortcuts(Front)
+    bind $w <[repcont $ayviewshortcuts(Side)]> "$w.$m invoke 1"
+    $w.$m entryconfigure 1 -accelerator $ayviewshortcuts(Side)
+    bind $w <[repcont $ayviewshortcuts(Top)]> "$w.$m invoke 2"
+    $w.$m entryconfigure 2 -accelerator $ayviewshortcuts(Top)
+    bind $w <[repcont $ayviewshortcuts(Persp)]> "$w.$m invoke 4"
+    $w.$m entryconfigure 4 -accelerator $ayviewshortcuts(Persp)
+    bind $w <[repcont $ayviewshortcuts(Trim)]> "$w.$m invoke 6"
+    $w.$m entryconfigure 6 -accelerator $ayviewshortcuts(Trim)
 
-    bind $w <[repcont $ayviewshortcuts(DGrid)]> "$w.fMenu.c.m invoke 5"
-    $w.fMenu.c.m entryconfigure 5 -accelerator $ayviewshortcuts(DGrid)
-    bind $w <[repcont $ayviewshortcuts(UGrid)]> "$w.fMenu.c.m invoke 6"
-    $w.fMenu.c.m entryconfigure 6 -accelerator $ayviewshortcuts(UGrid)
-    bind $w <[repcont $ayviewshortcuts(SGrid)]> "$w.fMenu.c.m invoke 7"
-    $w.fMenu.c.m entryconfigure 7 -accelerator $ayviewshortcuts(SGrid)
+    set m $ay(confm)
+    bind $w <[repcont $ayviewshortcuts(Auto)]> "$w.$m invoke 0"
+    $w.$m entryconfigure 0 -accelerator $ayviewshortcuts(Auto)
+    bind $w <[repcont $ayviewshortcuts(Shade)]> "$w.$m invoke 1"
+    $w.$m entryconfigure 1 -accelerator $ayviewshortcuts(Shade)
 
-    bind $w <[repcont $ayviewshortcuts(Halve)]> "$w.fMenu.c.m invoke 11"
-    $w.fMenu.c.m entryconfigure 11 -accelerator $ayviewshortcuts(Halve)
-    bind $w <[repcont $ayviewshortcuts(Double)]> "$w.fMenu.c.m invoke 12"
-    $w.fMenu.c.m entryconfigure 12 -accelerator $ayviewshortcuts(Double)
+    bind $w <[repcont $ayviewshortcuts(DGrid)]> "$w.$m invoke 5"
+    $w.$m entryconfigure 5 -accelerator $ayviewshortcuts(DGrid)
+    bind $w <[repcont $ayviewshortcuts(UGrid)]> "$w.$m invoke 6"
+    $w.$m entryconfigure 6 -accelerator $ayviewshortcuts(UGrid)
+    bind $w <[repcont $ayviewshortcuts(SGrid)]> "$w.$m invoke 7"
+    $w.$m entryconfigure 7 -accelerator $ayviewshortcuts(SGrid)
 
-    $w.fMenu.c.m entryconfigure 18 -accelerator $ayviewshortcuts(ZoomTO)
-    bind $w <[repcont $ayviewshortcuts(ZoomTO)]> "$w.fMenu.c.m invoke 18"
-    $w.fMenu.c.m entryconfigure 19 -accelerator $ayviewshortcuts(Align)
-    bind $w <[repcont $ayviewshortcuts(Align)]> "$w.fMenu.c.m invoke 19"
+    bind $w <[repcont $ayviewshortcuts(Halve)]> "$w.$m invoke 11"
+    $w.$m entryconfigure 11 -accelerator $ayviewshortcuts(Halve)
+    bind $w <[repcont $ayviewshortcuts(Double)]> "$w.$m invoke 12"
+    $w.$m entryconfigure 12 -accelerator $ayviewshortcuts(Double)
+
+    $w.$m entryconfigure 18 -accelerator $ayviewshortcuts(ZoomTO)
+    bind $w <[repcont $ayviewshortcuts(ZoomTO)]> "$w.$m invoke 18"
+    $w.$m entryconfigure 19 -accelerator $ayviewshortcuts(Align)
+    bind $w <[repcont $ayviewshortcuts(Align)]> "$w.$m invoke 19"
 
 
     bind $w <[repcont $ayviewshortcuts(RotL)]>\
