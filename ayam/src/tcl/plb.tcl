@@ -33,8 +33,10 @@ balloon_set $w.la "Double click here\nto deselect property"
 # the properties listbox
 set f $w
 listbox $f.li -width 14 -height 12 -yscrollcommand {global ay; $ay(pss) set}\
-	-selectmode single -exportselection 0
+	-selectmode single -exportselection 0 -takefocus 0
+
 set ay(plb) $f.li
+
 bind $f.li <ButtonRelease-1> {
     global ay pclip_omit pclip_omit_label
 
@@ -80,7 +82,13 @@ bind $f.li <ButtonRelease-1> {
 	array set pclip_omit { }
 	array set pclip_omit_label { }
     }
+    if { $ay(lb) == 0 } {
+	focus $ay(tree)
+    } else {
+	focus $ay(olb)
+    }
 }
+#bind
 
 bind $f.li <ButtonPress-4> {
     global ay
