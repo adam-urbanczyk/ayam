@@ -28,6 +28,7 @@ proc actionRotView { w } {
 
     bind $w <ButtonPress-1> {
 	undo save
+	%W mc
 	set oldx %x
 	set oldy %y
 	update
@@ -50,6 +51,7 @@ proc actionMoveView { w } {
 
     bind $w <ButtonPress-1> {
 	undo save
+	%W mc
 	%W movevac -start %x %y
 	update
     }
@@ -69,6 +71,7 @@ proc actionZoomView { w } {
 
     bind $w <ButtonPress-1> {
 	undo save
+	%W mc
 	%W zoomvac -start %y
 	update
     }
@@ -88,6 +91,7 @@ proc actionMoveZView { w } {
 
     bind $w <ButtonPress-1> {
 	undo save
+	%W mc
 	%W movezvac -start %y
 	update
     }
@@ -107,6 +111,7 @@ proc actionMoveOb { w } {
 
     bind $w <ButtonPress-1> {
 	undo save
+	%W mc
 	%W moveoac -start %x %y
 	update
     }
@@ -126,6 +131,7 @@ proc actionRotOb { w } {
 
     bind $w <ButtonPress-1> {
 	undo save
+	%W mc
 	%W rotoac -start %x %y
 	update
     }
@@ -143,7 +149,7 @@ proc actionRotObabindp { w x y } {
 
     viewTitle $w "" "Rotate_around_Point"
 
-    bind $w <ButtonPress-1> "%W rotoaac -start %x %y $x $y"
+    bind $w <ButtonPress-1> "%W mc;%W rotoaac -start %x %y $x $y"
     bind $w <B1-Motion> "%W rotoaac -winxy %x %y $x $y"
 }
 
@@ -153,6 +159,7 @@ proc actionRotObA { w } {
 
     bind $w <ButtonPress-1> {
 	undo save
+	%W mc
 	update
 	%W setconf -mark %x %y 1
 	actionRotObabindp %W %x %y
@@ -172,6 +179,7 @@ proc actionSc1DXOb { w } {
 
     bind $w <ButtonPress-1> {
 	undo save
+	%W mc
 	%W sc1dxoac -start %x %y
 	update
     }
@@ -193,6 +201,7 @@ proc actionSc1DYOb { w } {
 
     bind $w <ButtonPress-1> {
 	undo save
+	%W mc
 	%W sc1dyoac -start %x %y
 	update
     }
@@ -214,6 +223,7 @@ proc actionSc1DZOb { w } {
 
     bind $w <ButtonPress-1> {
 	undo save
+	%W mc
 	%W sc1dzoac -start %x %y
 	update
     }
@@ -235,6 +245,7 @@ proc actionSc2DOb { w } {
 
     bind $w <ButtonPress-1> {
 	undo save
+	%W mc
 	%W sc2doac -start %x %y
 	update
     }
@@ -255,6 +266,7 @@ proc actionSc3DOb { w } {
 
     bind $w <ButtonPress-1> {
 	undo save
+	%W mc
 	%W sc3doac -start %x %y
 	update
     }
@@ -275,6 +287,7 @@ proc actionStr2DOb { w } {
 
     bind $w <ButtonPress-1> {
 	undo save
+	%W mc
 	%W str2doac -start %x %y
 	update
     }
@@ -296,6 +309,7 @@ proc actionTagP { w } {
 
     bind $w <ButtonPress-1> {
 #	undo save
+	%W mc
 	set oldx %x
 	set oldy %y
 	%W selpac %x %y
@@ -478,6 +492,7 @@ proc actionDEditP { w } {
 
     bind $w <ButtonPress-1> {
 	undo save
+	%W mc
 	%W setconf -mark %x %y 1
 	%W dpepac %x %y
 	update
@@ -494,6 +509,7 @@ proc actionEditP { w } {
 
     bind $w <ButtonPress-1> {
 	undo save
+	%W mc
 	%W startpepac %x %y
 	%W pepac -start %x %y
     }
@@ -545,6 +561,7 @@ proc actionInsertP { w } {
 
     bind $w <ButtonPress-1> {
 	undo save
+	%W mc
 	%W insertpac %x %y
     }
 
@@ -560,6 +577,7 @@ proc actionDeleteP { w } {
 
     bind $w <ButtonPress-1> {
 	undo save
+	%W mc
 	%W deletepac %x %y
     }
 
@@ -574,6 +592,7 @@ proc actionFindU { w } {
     viewTitle $w "" "Find_U"
 
     bind $w <ButtonPress-1> {
+	%W mc
 	%W finduac %x %y
     }
 
@@ -591,6 +610,7 @@ proc actionSplitNC { w } {
 
     bind $w <ButtonPress-1> {
 	set ay_error 0
+	%W mc
 	%W finduac %x %y
     }
 

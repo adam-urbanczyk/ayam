@@ -241,6 +241,7 @@ set i $ayviewshortcuts(ZoomVButton)
     
 bind $w.f3D.togl <ButtonPress-${i}> {
 	undo save
+	%W mc
 	%W zoomvac -start %y
 	update
 }
@@ -253,6 +254,7 @@ set i  $ayviewshortcuts(MoveVButton)
 
 bind $w.f3D.togl <ButtonPress-${i}> {
 	undo save
+	%W mc
 	%W movevac -start %x %y
 	update
 }
@@ -264,19 +266,21 @@ bind $w.f3D.togl <B${i}-Motion> {
 
 bind $w.f3D.togl <ButtonPress-4> {
     undo save
-    $ay(currentView) setconf -dzoom 0.5
+    %W mc
+    %W setconf -dzoom 0.5
     update
-    $ay(currentView) reshape
-    $ay(currentView) render
+    %W reshape
+    %W render
 }
 
 
 bind $w.f3D.togl <ButtonPress-5> {
     undo save
-    $ay(currentView) setconf -dzoom 2
+    %W mc
+    %W setconf -dzoom 2
     update
-    $ay(currentView) reshape
-    $ay(currentView) render
+    %W reshape
+    %W render
 }
 
 bind $w <$ayviewshortcuts(Break)> "actionClear $w.f3D.togl"
