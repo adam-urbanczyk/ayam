@@ -1,7 +1,7 @@
 /*
  * Ayam, a free 3D modeler for the RenderMan interface.
  *
- * Ayam is copyrighted 1998-2001 by Randolf Schultz
+ * Ayam is copyrighted 1998-2004 by Randolf Schultz
  * (rschultz@informatik.uni-rostock.de) and others.
  *
  * All rights reserved.
@@ -445,6 +445,23 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
 } /* ay_pact_startpetcb */
 
 
+/* ay_pact_pedclear:
+ *  clear the cache of pointers to selected points
+ *  of the single point direct edit callback
+ */
+void
+ay_pact_pedclear(ay_object *o)
+{
+ int argc = 3;
+ char *argv[3], a2[] = "-clear";
+
+  argv[2] = a2;
+  ay_pact_pedtcb(NULL, argc, argv);
+
+ return;
+} /* ay_pact_pedclear */
+
+
 /* ay_pact_pedtcb:
  *  single point direct edit callback
  *
@@ -453,33 +470,60 @@ int
 ay_pact_pedtcb(struct Togl *togl, int argc, char *argv[])
 {
  int ay_status = AY_OK;
- Tcl_Interp *interp = Togl_Interp (togl);
- ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
+ Tcl_Interp *interp = NULL;
+ ay_view_object *view = NULL;
  double winX = 0.0, winY = 0.0;
  double obj[3] = {0};
  char *n1 = "editPointDarray", fname[] = "editPointDirect";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
- int i, changed = AY_FALSE, local = 0;
+ int i, changed = AY_FALSE, local = 0/*, need_parentnotify = AY_TRUE*/;
  double *coords, wcoords[4];
  ay_list_object *sel = NULL;
  ay_object *o = NULL;
+ static double **pe_coords = NULL;
+ static int pe_coordslen = 0, pe_coordshom = AY_FALSE;
+ static ay_object *pe_object = NULL;
 
-
-  sel = ay_selection;
-  if(!sel)
-    {
-      ay_error(AY_ENOSEL, "pointEditD", NULL);
-      return TCL_OK;
-    }
 
   if(argc < 1)
     {
       return TCL_OK;
     }
 
+  if(!strcmp(argv[2], "-clear"))
+    {
+      /* clear cached pointers to points */
+      if(pe_coords)
+	free(pe_coords);
+      pe_coords = NULL;
+
+      pe_coordslen = 0;
+
+      pe_object = NULL;
+
+      return TCL_OK;
+    } /* if */
+
+  interp = Togl_Interp(togl);
+  view = (ay_view_object *)Togl_GetClientData(togl);
+
   if(!strcmp(argv[2], "-start"))
     {
+
+      sel = ay_selection;
+      if(!sel)
+	{
+	  ay_error(AY_ENOSEL, fname, NULL);
+	  return TCL_OK;
+	}
+
       o = sel->object;
+
+      if(sel->next)
+	{
+	  ay_error(AY_EWARN, fname,
+		   "Will only operate on the first selected object!");
+	}
 
       Tcl_GetDouble(interp, argv[3], &winX);
       Tcl_GetDouble(interp, argv[4], &winY);
@@ -493,6 +537,23 @@ ay_pact_pedtcb(struct Togl *togl, int argc, char *argv[])
 
       if(ay_point_edit_coords)
 	{
+	  /* first, save the pointers to the picked point(s)*/
+	  if(!(pe_coords =
+	       calloc(ay_point_edit_coords_number, sizeof(double*))))
+	    {
+	      ay_error(AY_EOMEM, fname, NULL);
+	      return TCL_OK;
+	    }
+
+	  memcpy(pe_coords, ay_point_edit_coords,
+		 ay_point_edit_coords_number * sizeof(double*));
+	  pe_coordslen = ay_point_edit_coords_number;
+	  pe_coordshom = ay_point_edit_coords_homogenous;
+	  pe_object = o;
+
+	  /* now, transport the coordinate values of the picked point(s)
+	     to the Tcl context for display and editing in the direct
+	     point edit dialog */
 	  toa = Tcl_NewStringObj(n1, -1);
 	  ton = Tcl_NewStringObj(n1, -1);
 
@@ -569,7 +630,6 @@ ay_pact_pedtcb(struct Togl *togl, int argc, char *argv[])
 
   if(!strcmp(argv[2], "-apply"))
     {
-      o = sel->object;
 
       toa = Tcl_NewStringObj(n1, -1);
       ton = Tcl_NewStringObj(n1, -1);
@@ -580,17 +640,21 @@ ay_pact_pedtcb(struct Togl *togl, int argc, char *argv[])
 
       if(changed)
 	{
-	  if(!ay_point_edit_coords)
+	  if(!pe_coords)
 	    {
-	      ay_error(AY_ERROR, fname, "Lost pointer to selected points!");
+	      ay_error(AY_ERROR, fname, "Lost pointer to selected point(s)!");
+	      ay_error(AY_ERROR, fname, "Please re-select the point(s)!");
+
 	      Tcl_IncrRefCount(toa); Tcl_DecrRefCount(toa);
 	      Tcl_IncrRefCount(ton); Tcl_DecrRefCount(ton);
 	      return TCL_OK;
 	    } /* if */
 
-	  for(i = 0; i < ay_point_edit_coords_number; i++)
+	  o = pe_object;
+
+	  for(i = 0; i < pe_coordslen; i++)
 	    {
-	      coords = ay_point_edit_coords[i];
+	      coords = pe_coords[i];
 
 	      Tcl_SetStringObj(ton,"x",-1);
 	      to = Tcl_ObjGetVar2(interp, toa, ton,
@@ -607,7 +671,7 @@ ay_pact_pedtcb(struct Togl *togl, int argc, char *argv[])
 				  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 	      Tcl_GetDoubleFromObj(interp, to, &coords[2]);
 
-	      if(ay_point_edit_coords_homogenous)
+	      if(pe_coordshom)
 		{
 		  Tcl_SetStringObj(ton,"w",-1);
 		  to = Tcl_ObjGetVar2(interp, toa, ton,
@@ -622,14 +686,16 @@ ay_pact_pedtcb(struct Togl *togl, int argc, char *argv[])
 
 	      if(!local)
 		{
+		  /* XXXX what if the user changes the current level
+		     after opening of the dpe dialog? */
 		  ay_trafo_applyalli(ay_currentlevel->next, o, coords);
 		}
 
 	    } /* for */
 
-	  ay_point_edit_object->modified = AY_TRUE;
-	  ay_notify_force(ay_point_edit_object);
-	  ay_status = ay_notify_parent();
+	  o->modified = AY_TRUE;
+	  ay_notify_force(o);
+	  ay_status = ay_notify_forceparent(o, AY_FALSE);
 	  view->drawmarker = AY_FALSE;
 	} /* if */
 

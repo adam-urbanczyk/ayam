@@ -1,7 +1,7 @@
 /*
  * Ayam, a free 3D modeler for the RenderMan interface.
  *
- * Ayam is copyrighted 1998-2001 by Randolf Schultz
+ * Ayam is copyrighted 1998-2004 by Randolf Schultz
  * (rschultz@informatik.uni-rostock.de) and others.
  *
  * All rights reserved.
@@ -46,7 +46,7 @@ ay_object_create(unsigned int index, ay_object **o)
 
 
   arr = ay_createcbt.arr;
-  
+
   if(!(new = calloc(1, sizeof(ay_object))))
     {
       ay_error(AY_EOMEM, fname, NULL);
@@ -85,7 +85,7 @@ ay_object_createargs(unsigned int index, int argc, char **argv, ay_object **o)
 
 
   arr = ay_createcbt.arr;
-  
+
   if(!(new = calloc(1, sizeof(ay_object))))
     {
       ay_error(AY_EOMEM, fname, NULL);
@@ -131,7 +131,7 @@ ay_object_createtcmd(ClientData clientData, Tcl_Interp *interp,
       ay_error(AY_EARGS, fname, "typename \\[args\\]!");
       return TCL_OK;
     }
-  
+
   entry = Tcl_FindHashEntry(&ay_otypesht, argv[1]);
   if(!entry)
     {
@@ -263,7 +263,7 @@ ay_object_deletemulti(ay_object *o)
 
   if(!o)
     return AY_ENULL;
-  
+
   d = o;
   while(d)
     {
@@ -320,6 +320,9 @@ ay_object_deletetcmd(ClientData clientData, Tcl_Interp *interp,
       sel = sel->next;
     } /* while */
 
+  /* clear all cached pointers to scene hierarchy */
+  ay_status = ay_object_ccp(NULL);
+
   ay_sel_free(AY_FALSE);
 
   ay_notify_parent();
@@ -340,7 +343,7 @@ ay_object_link(ay_object *o)
   if(ay_next)
     {
       o->next = *ay_next;
-     
+
       *ay_next = o;
 
       ay_next = &(o->next);
@@ -446,13 +449,13 @@ ay_object_getname(ay_object *o)
     name = o->name;
   else
     name = ay_object_gettypename(o->type);
-  
+
  return(name);
 } /* ay_object_getname */
 
 
 /* ay_object_setnametcmd:
- *  
+ *
  */
 int
 ay_object_setnametcmd(ClientData clientData, Tcl_Interp *interp,
@@ -577,19 +580,19 @@ ay_object_copy(ay_object *src, ay_object **dst)
   if(src->down)
     {
       sub = src->down;
-     
+
       if((ay_status = ay_object_copy(sub, &new->down)))
 	return ay_status;
       temp = new->down;
       sub = sub->next;
-     
+
       while(sub)
 	{
 	  sub2 = sub->next;
 	  if((ay_status = ay_object_copy(sub, &temp->next)))
 	    return ay_status;
 	  temp = temp->next;
-	 
+
 	  sub = sub2;
 	} /* while */
 
@@ -899,3 +902,21 @@ ay_object_replace(ay_object *src, ay_object *dst)
 
  return AY_OK;
 } /* ay_object_replace */
+
+
+/* ay_object_ccp:
+ *  this function calls all functions that cleanup the caches of
+ *  pointers to the scene hierarchy held by other parts of the core
+ */
+int
+ay_object_ccp(ay_object *o)
+{
+ int ay_status = AY_OK;
+
+  /* in case direct point editing is active:
+   *  clear the point cache of the direct point edit action
+   */
+  ay_pact_pedclear(o);
+
+ return ay_status;
+} /* ay_object_ccp */

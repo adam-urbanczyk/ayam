@@ -1,7 +1,7 @@
 /*
  * Ayam, a free 3D modeler for the RenderMan interface.
  *
- * Ayam is copyrighted 1998-2001 by Randolf Schultz
+ * Ayam is copyrighted 1998-2004 by Randolf Schultz
  * (rschultz@informatik.uni-rostock.de) and others.
  *
  * All rights reserved.
@@ -118,6 +118,9 @@ ay_clipb_cuttcmd(ClientData clientData, Tcl_Interp *interp,
       ay_error(AY_EWARN, fname, "Can not cut root object!");
       sel = sel->next;
     }
+
+  /* clear all cached pointers to scene hierarchy */
+  ay_object_ccp(NULL);
 
   /* clear old clipboard */
 

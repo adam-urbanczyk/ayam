@@ -1,7 +1,7 @@
 /*
  * Ayam, a free 3D modeler for the RenderMan interface.
  *
- * Ayam is copyrighted 1998-2001 by Randolf Schultz
+ * Ayam is copyrighted 1998-2004 by Randolf Schultz
  * (rschultz@informatik.uni-rostock.de) and others.
  *
  * All rights reserved.
@@ -46,6 +46,8 @@ ay_clear_scene(void)
   ucargs[1] = ucarg1;
   ay_undo_undotcmd(NULL, ay_interp, 2, ucargs);
 
+  /* clear all cached pointers to scene hierarchy */
+  ay_status = ay_object_ccp(NULL);
 
   /* remove all instance objects from the scene */
   ay_status = ay_object_deleteinstances(&(ay_root->next));
@@ -72,7 +74,9 @@ ay_clear_scene(void)
       ay_status = ay_object_delete(o);
 
       if(ay_status != AY_OK)
-	printf("%s: Memory leaked!\n", fname);
+	{
+	  ay_error(AY_ERROR, fname, "Error removing object! Continuing...\n");
+	}
 
       /* XXXX ignore errors about reference counts */
       o = o2;

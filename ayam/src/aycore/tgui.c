@@ -59,7 +59,7 @@ ay_tgui_open(void)
   lastl = &(ay_tgui_origrefs);
   while(sel)
     {
-      
+
       if(sel->object && sel->object->type == AY_IDNPATCH)
 	{
 	  new = NULL;
@@ -92,7 +92,12 @@ ay_tgui_open(void)
   if(!ay_tgui_origs)
     {
       ay_error(AY_ERROR, fname,
-		   "Nothing to tesselate; select some NPatch objects!");
+	       "Nothing to tesselate; select some NPatch objects!");
+    }
+  else
+    {
+      /* clear all cached pointers to scene hierarchy */
+      ay_status = ay_object_ccp(NULL);
     }
 
  return ay_status;
@@ -208,7 +213,7 @@ ay_tgui_ok(void)
  char fname[] = "tgui_ok";
  ay_list_object *oref = ay_tgui_origrefs;
  ay_object *o = ay_tgui_origs, *l = NULL;
- 
+
   while(ay_tgui_origrefs)
     {
       o = ay_tgui_origs;
@@ -301,7 +306,7 @@ ay_tgui_cancel(void)
 
 
 /* ay_tgui_tcmd:
- *  
+ *
  */
 int
 ay_tgui_tcmd(ClientData clientData, Tcl_Interp *interp,
