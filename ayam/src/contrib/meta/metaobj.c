@@ -139,6 +139,8 @@ metaobj_createcb (int argc, char *argv[], ay_object * o)
   w->currentnumpoly = 0;
   w->o = o->down;
 
+  w->version = 2;
+  
   meta_calceffect (w);
 
   return AY_OK;
@@ -447,11 +449,11 @@ metaobj_setpropcb (Tcl_Interp * interp, int argc, char *argv[], ay_object * o)
   ton = Tcl_NewStringObj (n1, -1);
 
 
-  Tcl_SetStringObj (ton, "Gridwith", -1);
+  Tcl_SetStringObj (ton, "GridWith", -1);
   to = Tcl_ObjGetVar2 (interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj (interp, to, &w->aktcubes);
 
-  Tcl_SetStringObj (ton, "Isolevel", -1);
+  Tcl_SetStringObj (ton, "IsoLevel", -1);
   to = Tcl_ObjGetVar2 (interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj (interp, to, &w->isolevel);
 
@@ -506,11 +508,11 @@ metaobj_getpropcb (Tcl_Interp * interp, int argc, char *argv[], ay_object * o)
   ton = Tcl_NewStringObj (n1, -1);
 
 
-  Tcl_SetStringObj (ton, "Gridwith", -1);
+  Tcl_SetStringObj (ton, "GridWith", -1);
   to = Tcl_NewIntObj (w->aktcubes);
   Tcl_ObjSetVar2 (interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj (ton, "Isolevel", -1);
+  Tcl_SetStringObj (ton, "IsoLevel", -1);
   to = Tcl_NewDoubleObj (w->isolevel);
   Tcl_ObjSetVar2 (interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
@@ -539,10 +541,17 @@ metaobj_readcb (FILE * fileptr, ay_object * o)
   if (!(w = calloc (1, sizeof (meta_world))))
     return AY_ERROR;
 
+  w->version = 1;
+
   fscanf (fileptr, "%d\n", &w->aktcubes);
   fscanf (fileptr, "%lg\n", &w->isolevel);
+ 
+  if(ay_read_version >= 3)
+  {  fscanf (fileptr, "%d\n", &w->version);
+  }
 
   w->maxpoly = 10000;
+
 
   if (!
       (w->vertex =
@@ -625,6 +634,8 @@ metaobj_writecb (FILE * fileptr, ay_object * o)
 
   fprintf (fileptr, "%d\n", w->aktcubes);
   fprintf (fileptr, "%g\n", w->isolevel);
+  fprintf (fileptr, "%d\n", w->version);
+
 
   return AY_OK;
 } /* metaobj_writecb */
@@ -1198,6 +1209,7 @@ metacomp_readcb (FILE * fileptr, ay_object * o)
      }
 
   }
+
 
   o->refine = b;
 
