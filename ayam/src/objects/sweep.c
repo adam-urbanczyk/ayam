@@ -666,7 +666,6 @@ ay_sweep_convertcb(ay_object *o, int in_place)
 	      (*next)->parent = AY_TRUE;
 	      ay_object_crtendlevel(&(*next)->down);
 	      next = &((*next)->next);
-	      next = &((*next)->next);
 	    }
 	}
 
