@@ -272,7 +272,7 @@ proc forAllT_lb { type recursive command } {
 		uS
 		$lb selection clear 0 end
 		selOb
-		catch {forAllT_lb $type $recursive $command}
+		catch {forAllT_lb $type $recursive $command} retCode
 		if { $retCode == -1 } {
 		    return -1;
 		}
