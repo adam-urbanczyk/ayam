@@ -332,6 +332,7 @@ shortcuts that are displayed in each entry. You can adapt the shortcuts
 using the file <tt>"ayamrc"</tt>
 (See section <ref id="ayamrc" name="Ayamrc File">).
 
+<label id="mmfile">
 The <tt/File/ menu deals with standard file operations:<label id="filem">
 <itemize>
 <item><tt/New/, clears the current scene (deletes all objects).
@@ -364,6 +365,7 @@ are updated and rotated upon successful loading and saving of a scene.
 AutoSavePrefs is turned on) and quit the application.
 </itemize>
 
+<label id="mmedit">
 The <tt/Edit/ menu contains object and property clipboard
 operations, undo actions and lets you open the preferences editor:<label id="editm">
 <itemize>
@@ -402,6 +404,7 @@ will be created first.<p>
 <ref id="prefs" name="Preferences"> for more information).
 </itemize>
 
+<label id="mmcreate">
 The <tt/Create/ menu entries let you create objects:
 <itemize>
 <item><tt/NURBCurve/, create a new NURBS curve. A small dialog box will
@@ -431,6 +434,7 @@ to temporarily save view camera settings.
 may be used to include RIBs that just exist on disk into your scene.
 </itemize>
 
+<label id="mmtools">
 The <tt/Tools/ menu:
 <itemize>
 <item><tt/Create/,
@@ -440,6 +444,12 @@ tools that are explained in depth in section
 <ref id="nmtool" name="NURBS Modeling Tools">.
 <item><tt/Show/, <tt/Hide/ set and unset the <tt/Hide/
 attribute of the selected object(s) thus making them invisible.
+Note, that hidden objects may be excluded from RIB-Export, when
+the preference setting <tt>"RIB-Export/ExcludeHidden"</tt> is
+activated.
+<item><tt/Show All/ and <tt/Hide All/ set and unset the <tt/Hide/
+attribute of all objects in the scene (including the root object
+and all views!) regardles of the currently selected objects.
 <item><tt/Convert/, starts the convert action that has been
 registered for the type of the selected object. Instances
 are e.g. resolved. Sweep, Revolve or Extrude objects will
@@ -449,9 +459,11 @@ all selected objects (or all objects in the scene if no objects are selected)
 to be called.
 </itemize>
 
+<label id="mmcustom">
 The <tt/Custom/ menu is initially empty. Custom objects and PlugIns,
 may create entries here.
 
+<label id="mmspecial">
 The <tt/Special/ menu:
 <itemize>
 <item><tt/Save Selected as/, saves just the currently selected objects
@@ -495,10 +507,20 @@ select and parameterize a RiOption tag to add as tag to the Root object
 select and parameterize a RiAttribute tag to add as tag to the currently
 selected object(s)
 (see <ref id="riatag" name="RiAttribute Tag">).
+<item><tt/Edit TexCoords/, opens the texture coordinates editor.
+(see also section <ref id="tctag" name="TC (TextureCoordinates) Tag">).
 <item><tt/Toggle ToolBox/ closes or opens the ToolBox window again
-(see <ref id="toolb" name="The Tool Box Window">).
+(see <ref id="toolb" name="The Tool Box Window">). From V1.3 on
+Ayam will remember whether the tool box is open for the next
+start.
+<item><tt/Toggle TreeView/ toggles object tree view and object listbox.
+From V1.3 on Ayam will remember whether the tree view or the
+object listbox is open for the next start
+(see also section <ref id="obj" name="Objects"> for more information
+about both GUI elements).
 </itemize>
 
+<label id="mmhelp">
 The <tt/Help/ menu:
 <itemize>
 <item><tt/Help/, opens a web browser and displays the documentation,
@@ -554,6 +576,7 @@ already selected in the dialog box.
 <item><tt/Close/: the View window will be removed.
 </itemize>
 
+<label id="vmtype">
 The <tt/"Type"/ menu entries:
 <itemize>
 <item><tt/Front/
@@ -563,11 +586,12 @@ The <tt/"Type"/ menu entries:
 <item><tt/Trim/
 </itemize>
 may be used to change the type of the view, which
-constraints the scope of certain modeling actions.
+restrains the scope of certain modeling actions.
 See sections <ref id="viewobj" name="View Object"> and
 <ref id="vwsc" name="View Window Shortcuts and Actions">
 for more information.
 
+<label id="vmconf">
 The <tt/"Configure"/ menu may be used to change preferences of the view. 
 Some preferences are outlined in greater detail in
 section <ref id="vat" name="ViewAttrib">.
@@ -660,7 +684,7 @@ will be displayed centered in the view window.
 This is handy, if you are e.g. searching for objects or simply
 lost in space.
 
-Using the menu entry <tt/"Align"/ or
+Using the menu entry <tt/"Align to Parent"/ or
 the shortcut <tt/&lt;Ctrl+a&gt;/ you can change the
 views camera settings so that it is aligned to the
 coordinate system of the parent object of the current
@@ -4529,15 +4553,17 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 
 <label id="indexa">A
 <itemize>
+<item>About: <ref id="mmhelp" name="main menu entry">
 <item>Action: <ref id="iac" name="interactive actions">
-<item>Align to Parent: <ref id="vwsc" name="view action">
+<item>Align to Parent: <ref id="vmconf" name="view menu entry">,
+<ref id="vwsc" name="view action">
 <item>Apply: <ref id="propgui" name="apply property GUI">
 <item>Area Light: <ref id="alob" name="creation of">
 <item>Atmosphere: <ref id="imager" name="property">
 <item>Attributes: <ref id="attrs" name="attributes property">,
 <ref id="riattrs" name="RenderMan/BMRT attributes property">
-<item>Automatic Instancing: <ref id="mm" name="main menu entry">
-<item>Automatic Redraw: <ref id="vm" name="view menu entry">
+<item>Automatic Instancing: <ref id="mmspecial" name="main menu entry">
+<item>Automatic Redraw: <ref id="vmconf" name="view menu entry">
 <item>AutoResize: <ref id="prefgui" name="preference setting">
 <item>AutoSavePrefs: <ref id="prefgui" name="preference setting">
 <item>ayamrc: <ref id="ayamrc" name="Ayamrc File">
@@ -4557,7 +4583,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <ref id="patchmeshobj" name="PatchMesh object">
 <item>Bound: <ref id="riattrs" name="RenderMan/BMRT attribute">
 <item>BoundCoord: <ref id="riattrs" name="RenderMan/BMRT attribute">
-<item>Box: <ref id="mm" name="main menu entry">,
+<item>Box: <ref id="mmcreate" name="main menu entry">,
 <ref id="boxobj" name="object">
 <item>BPatch: <ref id="bpatchobj" name="object">
 <item>BType_U, BType_V: <ref id="pmattr" name="PatchMesh attribute">
@@ -4589,23 +4615,23 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Color: <ref id="riattrs" name="RenderMan/BMRT attribute">,
 <ref id="lip" name="light attribute">,
 <item>copOb: <ref id="copob" name="scripting interface command">
-<item>Copy: <ref id="mm" name="main menu entry">
-<item>Copy Property: <ref id="mm" name="main menu entry">,
+<item>Copy: <ref id="mmedit" name="main menu entry">
+<item>Copy Property: <ref id="mmedit" name="main menu entry">,
 <ref id="propgui" name="copying properties">
 <item>Concat: <ref id="conct" name="Concat tool">
-<item>Cone: <ref id="mm" name="main menu entry">,
+<item>Cone: <ref id="mmcreate" name="main menu entry">,
 <ref id="coneobj" name="object">
 <item>ConeAngle, ConeDAngle: <ref id="lip" name="light attribute">
 <item>Console: <ref id="cons" name="what is">
-<item>Convert: <ref id="mm" name="main menu entry">
+<item>Convert: <ref id="mmtools" name="main menu entry">
 <item>convOb: <ref id="gtype" name="scripting interface command">
 <item>CreateMP: <ref id="ncattr" name="NURBCurve attribute">
 <item>crtOb: <ref id="crtob" name="scripting interface command">
 <item>Custom: <ref id="cul" name="light type">
 <item>Custom Object: <ref id="customobj" name="what is">
-<item>Cut: <ref id="mm" name="main menu entry">
+<item>Cut: <ref id="mmedit" name="main menu entry">
 <item>cutOb: <ref id="copob" name="scripting interface command">
-<item>Cylinder: <ref id="mm" name="main menu entry">,
+<item>Cylinder: <ref id="mmcreate" name="main menu entry">,
 <ref id="cylinderobj" name="object">
 </itemize>
 
@@ -4613,13 +4639,13 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <itemize>
 <item>DefaultMat: <ref id="prefrib" name="preference setting">
 <item>delegTrafo: <ref id="movob" name="scripting interface command">
-<item>Delete: <ref id="mm" name="main menu entry">,
+<item>Delete: <ref id="mmedit" name="main menu entry">,
 <ref id="insdelac" name="delete points">
 <item>delOb: <ref id="copob" name="scripting interface command">
-<item>Difference: <ref id="mm" name="main menu entry">,
+<item>Difference: <ref id="mmcreate" name="main menu entry">,
 <ref id="levelobj" name="object and properties">
 <item>Direct Editing: <ref id="editac" name="edit points">
-<item>Disk: <ref id="mm" name="main menu entry">,
+<item>Disk: <ref id="mmcreate" name="main menu entry">,
 <ref id="diskobj" name="object">
 <item>Displacement: <ref id="matshader" name="shader">
 <item>DisplayMode: <ref id="prefdraw" name="preference setting">,
@@ -4627,8 +4653,13 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <ref id="pmattr" name="PatchMesh attribute">
 <item>Distant: <ref id="pdsl" name="light type">
 <item>Docs: <ref id="prefgui" name="preference setting">
+<item>Double Size: <ref id="vmconf" name="view menu entry">
 <item>DrawGrid, DrawLevel, DrawSel, DrawBG:
 <ref id="vat" name="view attribute">
+<item>Draw Selection only: <ref id="vmconf" name="view menu entry">
+<item>Draw Level only: <ref id="vmconf" name="view menu entry">
+<item>Draw BGImage: <ref id="vmconf" name="view menu entry">
+<item>Draw Grid: <ref id="vmconf" name="view menu entry">
 </itemize>
 
 <label id="indexe">E
@@ -4645,7 +4676,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>ExcludeHidden: <ref id="prefrib" name="preference setting">
 <item>ExpGain, ExpGamma: <ref id="rio" name="RenderMan interface option">
 <item>Explode: <ref id="explt" name="Explode tool">
-<item>Export RIB: <ref id="mm" name="main menu entry">
+<item>Export RIB: <ref id="mmfile" name="main menu entry">
 <item>Exterior: <ref id="matshader" name="shader">
 <item>Extrude: <ref id="extrudeobj" name="object">,
 <ref id="extt" name="Extrude tool">
@@ -4660,6 +4691,8 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>forceNot: <ref id="gtype" name="scripting interface command">
 <item>From: <ref id="camp" name="camera property">,
 <ref id="lip" name="light attribute">
+<item>From Camera: <ref id="vmconf" name="view menu entry">
+<item>Front: <ref id="vmtype" name="view menu entry">
 </itemize>
 
 <label id="indexg">G
@@ -4677,6 +4710,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 
 <label id="indexh">H
 <itemize>
+<item>Half Size: <ref id="vmconf" name="view menu entry">
 <item>HandleSize: <ref id="prefmodel" name="preference setting">
 <item>hasChild: <ref id="gtype" name="scripting interface command">
 <item>Height: <ref id="rio" name="RenderMan interface option">,
@@ -4686,11 +4720,14 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <ref id="pmattr" name="PatchMesh attribute">,
 <ref id="extrattr" name="extrude attribute">,
 <ref id="vat" name="view attribute">
+<item>Help: <ref id="mmhelp" name="main menu entry">
+<item>Help on object: <ref id="mmhelp" name="main menu entry">
 <item>Hidden Preferences: <ref id="hidprefs" name="Hidden Preference Settings">
-<item>Hide: <ref id="mm" name="main menu entry">
+<item>Hide: <ref id="mmtools" name="main menu entry">
+<item>Hide All: <ref id="mmtools" name="main menu entry">
 <item>HideTmpTags: <ref id="prefmisc" name="preference setting">
 <item>Hole: <ref id="handb" name="using holes">
-<item>Hyperboloid: <ref id="mm" name="main menu entry">,
+<item>Hyperboloid: <ref id="mmcreate" name="main menu entry">,
 <ref id="hyperboloidobj" name="object">
 </itemize>
 
@@ -4701,7 +4738,8 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Imager: <ref id="imager" name="property">
 <item>import Mops Scene: <ref id="impmops" name="Mops Import">
 <item>import RIB: <ref id="rrib" name="RIB Import">
-<item>Insert: <ref id="insdelac" name="insert points">
+<item>Insert: <ref id="mmfile" name="main menu entry">,
+<ref id="insdelac" name="insert points">
 <item>insKn: <ref id="gncp" name="scripting interface command">
 <item>Insert Knot: <ref id="insknt" name="insert knot tool">
 <item>insertScene: <ref id="scio" name="scripting interface command">
@@ -4712,7 +4750,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <ref id="icurveobj" name="interpolating curve">,
 <ref id="swp" name="sweep attribute">,
 <ref id="skp" name="skin attribute">
-<item>Intersection: <ref id="mm" name="main menu entry">,
+<item>Intersection: <ref id="mmcreate" name="main menu entry">,
 <ref id="levelobj" name="object">
 <item>IParam: <ref id="icp" name="ICurve attribute">
 <item>IsOn: <ref id="lip" name="light attribute">
@@ -4736,17 +4774,18 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Length: <ref id="bxp" name="box attribute">,
 <ref id="ncattr" name="NURBCurve attribute">,
 <ref id="icp" name="ICurve attribute">
-<item>Level: <ref id="mm" name="main menu entry">,
+<item>Level: <ref id="mmcreate" name="main menu entry">,
 <ref id="levelobj" name="object and properties">
-<item>Light: <ref id="mm" name="main menu entry">,
+<item>Light: <ref id="mmcreate" name="main menu entry">,
 <ref id="lightobj" name="object">
 <ref id="prefdraw" name="preference setting">
 <item>LightAttr: <ref id="lip" name="property">,
 <item>LightShader: <ref id="lightobj" name="light">
 <item>ListTypes: <ref id="prefgui" name="preference setting">
-<item>Load Custom: <ref id="mm" name="main menu entry">
+<item>Load Custom: <ref id="mmfile" name="main menu entry">
 <item>LoadEnv: <ref id="prefgui" name="preference setting">
 <item>Local: <ref id="vat" name="view attribute">
+<item>Local Grid: <ref id="vmconf" name="view menu entry">
 <item>Locale: <ref id="prefgui" name="preference setting">
 <item>LogFile: <ref id="prefgui" name="preference setting">
 <item>Logging: <ref id="prefgui" name="preference setting">
@@ -4778,15 +4817,15 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <label id="indexn">N
 <itemize>
 <item>Name: <ref id="attrs" name="attribute">
-<item>New: <ref id="mm" name="main menu entry">
+<item>New: <ref id="mmfile" name="main menu entry">
 <item>NewLoadsEnv: <ref id="prefgui" name="preference setting">
 <item>newScene: <ref id="scio" name="scripting interface command">
 <item>NCDisplayMode: <ref id="prefdraw" name="preference setting">,
 <ref id="ncattr" name="NURBCurve attribute">
 <item>NURBCircle: <ref id="ncirct" name="NURBS circle tool">
-<item>NURBCurve: <ref id="mm" name="main menu entry">,
+<item>NURBCurve: <ref id="mmcreate" name="main menu entry">,
 <ref id="ncurveobj" name="object">
-<item>NURBPatch: <ref id="mm" name="main menu entry">,
+<item>NURBPatch: <ref id="mmcreate" name="main menu entry">,
 <ref id="npatchobj" name="object">
 <item>NURBSphere: <ref id="nspt" name="NURBS sphere tool">
 </itemize>
@@ -4806,13 +4845,14 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <label id="indexp">P
 <itemize>
 <item>P1, P2: <ref id="hyp" name="hyperboloid attribute">
-<item>Paraboloid: <ref id="mm" name="main menu entry">,
+<item>Paraboloid: <ref id="mmcreate" name="main menu entry">,
 <ref id="paraboloidobj" name="object">
 <item>pasOb: <ref id="copob" name="scripting interface command">
-<item>Paste: <ref id="mm" name="main menu entry">
-<item>Paste Property: <ref id="mm" name="main menu entry">
+<item>Paste: <ref id="mmedit" name="main menu entry">
+<item>Paste Property: <ref id="mmedit" name="main menu entry">
 <item>PatchMesh: <ref id="patchmeshobj" name="object">
 <item>PatchSamples: <ref id="rio" name="RenderMan interface option">
+<item>Perspective: <ref id="vmtype" name="view menu entry">
 <item>PhiMin, PhiMax: <ref id="top" name="torus attribute">
 <item>Pick:<ref id="objsel" name="pick objects within a view">
 <item>PickEpsilon: <ref id="prefmodel" name="preference setting">
@@ -4821,7 +4861,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Preferences: <ref id="prefs" name="Preferences">,
 <ref id="hidprefs" name="Hidden Preference Settings">
 <item>Properties: <ref id="propgui" name="property GUI">
-<item>Primitive: <ref id="mm" name="main menu entry">,
+<item>Primitive: <ref id="mmcreate" name="main menu entry">,
 <ref id="levelobj" name="object and properties">
 <item>PRManSpec: <ref id="rio" name="RenderMan interface option">
 </itemize>
@@ -4844,7 +4884,8 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>ReadFrame, ReadCamera, ReadOptions, ReadLights, ReadMaterial,
 ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>RedirectTcl: <ref id="prefmisc" name="preference setting">
-<item>Redo: <ref id="undos" name="The Undo System">
+<item>Redo: <ref id="undos" name="The Undo System">,
+<ref id="mmedit" name="main menu entry">
 <item>Redraw: <ref id="vm" name="view menu entry">,
 <ref id="incds" name="speeding up">,
 <ref id="vat" name="view attribute">
@@ -4856,11 +4897,11 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Render: <ref id="vm" name="view menu entry">,
 <ref id="prefrib" name="preference setting">
 <item>RenderPT, RenderUI: <ref id="prefrib" name="preference setting">
-<item>Replace: <ref id="mm" name="main menu entry">
+<item>Replace: <ref id="mmfile" name="main menu entry">
 <item>replaceScene: <ref id="scio" name="scripting interface command">
 <item>Reset: <ref id="propgui" name="reset property GUI">
 <item>ResInstances: <ref id="prefrib" name="preference setting">
-<item>Resolve all Instances: <ref id="mm" name="main menu entry">
+<item>Resolve all Instances: <ref id="mmspecial" name="main menu entry">
 <item>Revert: <ref id="revertt" name="Revert tool">
 <item>revertNC: <ref id="gncp" name="scripting interface command">
 <item>Revolve: <ref id="revolveobj" name="object">,
@@ -4895,9 +4936,9 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Samples: <ref id="lip" name="light attribute">
 <item>Samples_X: <ref id="rio" name="RenderMan interface option">
 <item>Samples_Y: <ref id="rio" name="RenderMan interface option">
-<item>Save: <ref id="mm" name="main menu entry">
-<item>Save as: <ref id="mm" name="main menu entry">
-<item>Save Prefs: <ref id="mm" name="main menu entry">
+<item>Save: <ref id="mmfile" name="main menu entry">
+<item>Save as: <ref id="mmfile" name="main menu entry">
+<item>Save Prefs: <ref id="mmfile" name="main menu entry">
 <item>SaveAddsMRU: <ref id="prefmisc" name="preference setting">
 <item>saveScene: <ref id="scio" name="scripting interface command">
 <item>Scale: <ref id="trap" name="transformation property">,
@@ -4909,9 +4950,12 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <ref id="objsel" name="select objects within a view">,
 <ref id="selac" name="select points">
 <item>Selection: <ref id="prefdraw" name="preference setting">
+<item>Set Gridsize: <ref id="vmconf" name="view menu entry">
+<item>Set FOV: <ref id="vmconf" name="view menu entry">
 <item>setNC: <ref id="gncp" name="scripting interface command">
 <item>setNP: <ref id="gncp" name="scripting interface command">
-<item>Shade: <ref id="prefdraw" name="preference setting">
+<item>Shade: <ref id="prefdraw" name="preference setting">,
+<ref id="vmconf" name="view menu entry">
 <item>Shader: <ref id="shd" name="property">
 <item>Shaders: <ref id="prefmain" name="preference setting">
 <item>ShadingRate: <ref id="attrs" name="RenderMan/BMRT attribute">
@@ -4919,11 +4963,15 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>ShadowMaps: <ref id="prefrib" name="preference setting">,
 <ref id="shadowmaps" name="using shadowmaps">
 <item>Shadows: <ref id="lip" name="light attribute">
-<item>Show: <ref id="mm" name="main menu entry">
+<item>Show: <ref id="mmtools" name="main menu entry">
+<item>Show All: <ref id="mmtools" name="main menu entry">
+<item>Show Shortcuts: <ref id="mmhelp" name="main menu entry">
+<item>Show Tooltips: <ref id="mmhelp" name="main menu entry">
+<item>Side: <ref id="vmtype" name="view menu entry">
 <item>Skin: <ref id="skinobj" name="object">,
 <ref id="skit" name="Skin tool">
 <item>SMRes: <ref id="lip" name="light attribute">
-<item>Sphere: <ref id="mm" name="main menu entry">,
+<item>Sphere: <ref id="mmcreate" name="main menu entry">,
 <ref id="sphereobj" name="object">,
 <ref id="nspt" name="NURBS sphere tool">
 <item>Split: <ref id="sptct" name="split to curves tool">,
@@ -4959,18 +5007,22 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>TmpDir: <ref id="prefgui" name="preference setting">
 <item>To: <ref id="camp" name="camera property">,
 <ref id="lip" name="light attribute">
-<item>Toggle ToolBox: <ref id="mm" name="main menu entry">,
+<item>To Camera: <ref id="vmconf" name="view menu entry">
+<item>Toggle ToolBox: <ref id="mmspecial" name="main menu entry">,
+<item>Toggle TreeView: <ref id="mmspecial" name="main menu entry">,
 <item>Tolerance: <ref id="prefdraw" name="preference setting">,
 <ref id="pmattr" name="PatchMesh attribute">,
 <ref id="ncattr" name="NURBCurve attribute">,
 <ref id="npattr" name="NURBPatch attribute">
 <item>Tool: <ref id="toolb" name="tool box window">
 <item>ToolBoxTrans: <ref id="prefmisc" name="preference setting">
-<item>Torus: <ref id="mm" name="main menu entry">,
+<item>Top: <ref id="vmtype" name="view menu entry">
+<item>Torus: <ref id="mmcreate" name="main menu entry">,
 <ref id="torusobj" name="object">
 <item>Transformations: <ref id="trap" name="transformations property">
 <item>Translation: <ref id="trap" name="transformation property">
 <item>Tree View: <ref id="treeview" name="Tree View">
+<item>Trim: <ref id="vmtype" name="view menu entry">
 <item>Trim Curve: <ref id="trim" name="using trim curves">
 <item>TrimRect: <ref id="trrt" name="TrimRect tool">
 <item>TrueDisp: <ref id="attrs" name="RenderMan/BMRT attribute">
@@ -4985,16 +5037,17 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <itemize>
 <item>uCL, uCR: <ref id="upd" name="scripting interface command">
 <item>Undo: <ref id="undos" name="The Undo System">,
-<ref id="mm" name="main menu entry">
+<ref id="mmedit" name="main menu entry">
 <item>UndoLevels: <ref id="prefmodel" name="preference setting">
-<item>Union: <ref id="mm" name="main menu entry">,
+<item>Union: <ref id="mmcreate" name="main menu entry">,
 <ref id="levelobj" name="object and properties">
 <item>UpperBevel: <ref id="extrattr" name="extrude attribute">
 <item>UpperCap: <ref id="rep" name="revolve attribute">,
 <ref id="extrattr" name="extrude attribute">
 <item>Up Vector: <ref id="camp" name="camera property">
 <item>uS: <ref id="upd" name="scripting interface command">
-<item>UseGrid: <ref id="vat" name="view attribute">
+<item>UseGrid: <ref id="vat" name="view attribute">,
+<ref id="vmconf" name="view menu entry">
 <item>UseMatColor: <ref id="prefdraw" name="preference setting">
 <item>UseSM: <ref id="lip" name="light attribute">
 </itemize>
@@ -5002,7 +5055,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <label id="indexv">V
 <itemize>
 <item>Variance: <ref id="rio" name="RenderMan interface option">
-<item>View: <ref id="mm" name="main menu entry">,
+<item>View: <ref id="mmcreate" name="main menu entry">,
 <ref id="viewobj" name="object">
 <item>ViewAttrib: <ref id="vat" name="property">
 </itemize>
@@ -5036,7 +5089,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <ref id="pap" name="paraboloid attribute">
 <item>Zoom: <ref id="camp" name="camera property">,
 <ref id="vwsc" name="view action">
-<item>Zoom to Object: <ref id="vwsc" name="view action">
+<item>Zoom to Object: <ref id="vmconf" name="view menu entry">,
+<ref id="vwsc" name="view action">
 </itemize>
 
 
