@@ -735,7 +735,8 @@ pack .fl.con -in .fl -expand 1 -fill both
 bind .fl.con.console $aymainshortcuts(SwCon) { focus [tk_focusNext %W] }
 
 # fix Shift-Tab binding for Tk < 8.3
-if { $tcl_platform(platform) != "windows" } {
+if { ( $tcl_platform(platform) != "windows" ) &&
+     ( $tcl_platform(os) != "Darwin" ) } {
     if { $tcl_version < 8.3 } {
 	bind all <ISO_Left_Tab> {tkTabToWindow [tk_focusPrev %W]}
     }
@@ -951,7 +952,8 @@ io_mruUMenu
 # auto scroll canvas to item with focus
 bind all <Tab> +plb_focus
 bind all <Shift-Tab> +plb_focus
-if { $tcl_platform(platform) != "windows" } {
+if { ( $tcl_platform(platform) != "windows" ) &&
+     ( $tcl_platform(os) != "Darwin" ) } {
     bind all <ISO_Left_Tab> +plb_focus
 }
 
