@@ -1,4 +1,4 @@
-[INSTALL, 10. Mar 2003]
+[INSTALL, 28. Oct 2004]
 
 Installation Instructions for Ayam (Unix only).
 
@@ -54,6 +54,8 @@ o The shader parsing plugins in this release were compiled with the
 
 o On IRIX there is currently no aysdr plug-in. You may safely ignore the
   warnings about a missing aysdr.so file, that occur during the installation.
+o On IRIX there is currently no aycsg plug-in. You may safely ignore the
+  warnings about a missing aycsg.so file, that occur during the installation.
 o On IRIX you have to adapt the variable LD_LIBRARYN32_PATH instead of
   LD_LIBRARY_PATH.
 o The shader parsing plugins in this release were compiled with the
@@ -75,8 +77,8 @@ o At the moment, the only shader parsing plugins available on Mac OS X are
   ayslo3d and aysdr. The ayslo3d plugin was compiled with 3Delight 2.0.0.
   The aysdr plugin was compiled with Pixie 1.3.3, with object files kindly
   provided by George Harker.
-o I am not able to test this binary on my own! The main tester (Daniel Amor)
-  reported that it will only run, when started from an xterm.
+o On Mac OS X there is currently no aycsg plug-in. You may safely ignore the
+  warnings about a missing aycsg.so file, that occur during the installation.
 
 End of Installation Instructions,
 -- 
