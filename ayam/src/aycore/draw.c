@@ -112,7 +112,7 @@ ay_draw_object(struct Togl *togl, ay_object *o, int selected)
    if(!o->inherit_trafos)
      glLoadIdentity();
 
-   if(!o->hidechilds && o->down)
+   if(!o->hide_children && o->down)
      {
        down = o->down;
        while(down->next)

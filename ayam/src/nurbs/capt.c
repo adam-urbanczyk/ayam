@@ -59,7 +59,7 @@ ay_capt_createfromcurve(ay_object *c, ay_object **ca)
 	  npatch->type = AY_IDNPATCH;
 	  npatch->parent = AY_TRUE;
 	  npatch->inherit_trafos = AY_FALSE;
-	  npatch->hidechilds = AY_TRUE;
+	  npatch->hide_children = AY_TRUE;
 	  npatch->down = c;
 
 	  /* calloc the new patch */

@@ -117,7 +117,7 @@ ay_instance_drawcb(struct Togl *togl, ay_object *o)
    if(!t->inherit_trafos)
      glLoadIdentity();
 
-   if(!t->hidechilds)
+   if(!t->hide_children)
      {
        down = t->down;
        while(down)
@@ -176,7 +176,7 @@ ay_instance_shadecb(struct Togl *togl, ay_object *o)
    if(!t->inherit_trafos)
      glLoadIdentity();
 
-   if(!t->hidechilds)
+   if(!t->hide_children)
      {
        down = t->down;
        while(down)

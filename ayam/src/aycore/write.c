@@ -72,7 +72,7 @@ ay_write_attributes(FILE *fileptr, ay_object *o)
   fprintf(fileptr,"%d\n", o->parent);
   fprintf(fileptr,"%d\n", o->inherit_trafos);
   fprintf(fileptr,"%d\n", o->hide);
-  fprintf(fileptr,"%d\n", o->hidechilds);
+  fprintf(fileptr,"%d\n", o->hide_children);
 
   if(o->name)
     {
