@@ -245,6 +245,10 @@ ay_ppoh_print(ay_object *o, FILE *fileptr, int indent, ay_printcb **cbv)
 	{
 	  fprintf(fileptr, "%s----\n", prefix);
 	}
+      else
+	{
+	  fprintf(fileptr, "----\n");
+	}
 
       i = 0;
       while(cbv[i])
