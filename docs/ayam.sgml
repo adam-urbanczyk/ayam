@@ -6334,6 +6334,22 @@ values (if provided) are three float values in curly braces, such as
 values in curly braces, such as <tt>{{0.0 0.0 0.0}{1.0 1.0 1.0}}</tt>
 </itemize>
 
+<sect1>Environment Variables
+<p>
+This section documents the environment variables used by Ayam.
+<itemize>
+<item><tt>"AYAMRC"</tt>: designates the full filename of the ayamrc file.
+<item><tt>"HOME"</tt>: path to the ayamrc file (used on Win32 if
+<tt>"AYAMRC"</tt> is not set).
+<item><tt>"TEMP"</tt>: path to the ayamrc file (used on Win32 if
+<tt>"AYAMRC"</tt> and <tt>"HOME"</tt> are not set); initial value of the
+<tt>"TmpDir"</tt> preference setting (used on Win32 if no ayamrc file exists).
+<item><tt>"BROWSER"</tt>: filename of the preferred WWW browser (used to
+display the documentation URL)
+<item><tt>"NETSCAPE"</tt>: (if <tt>"BROWSER"</tt> does not exist) filename
+of the Netscape WWW browser (used to display the documentation URL)
+</itemize>
+
 <sect1>Import of Mops Scenes<label id="impmops">
 <p>
 Mops scenes may be imported using the main menu entry:
@@ -6728,7 +6744,8 @@ Also note that CSG rendering requires fast graphics hardware
 (the more fillrate, the better). Furthermore, your OpenGL subsystem
 has to support the PBuffers extension and, depending on the
 rendering options choosen, a stencil buffer. Speedups may be
-achieved using the GL_ARB_occlusion_query or GL_NV_occlusion_query
+achieved using the <tt>"GL_ARB_occlusion_query"</tt> or
+<tt>"GL_NV_occlusion_query"</tt>
 extensions (if available to you).
 <p>
 Once the aycsg plugin is loaded successfully you can render the CSG
@@ -6755,7 +6772,8 @@ depth complexity without calculating it. This is especially useful for the
 SCS algorithm where this strategy is applied at shape level, resulting in
 a O(n*k') algorithm (where k' <= k), without significant constant overhead.
 This strategy requires hardware occlusion queries, i.E., the OpenGL
-extension GL_ARB_occlusion_query or GL_NV_occlusion_query.
+extension <tt>"GL_ARB_occlusion_query"</tt> or
+<tt>"GL_NV_occlusion_query"</tt>.
 <p>
 <tt/"DCSampling"/: Calculates the depth complexity k using the stencil
 buffer. This makes the algorithm O(n*k), but with high constant costs.
