@@ -10,8 +10,8 @@ cd $oldcd
 # preference setting when loading the ayso-plugin:
 #set ayprefs(Shaders) "your shader searchpath here"
 
-# uncomment the following line, if you want to scan for shader immediately
-# after loading the ayso-plugin:
+# uncomment the following line, if you want to scan for shaders
+# immediately after loading the ayso-plugin:
 #shader_scanAll
 
 return;
