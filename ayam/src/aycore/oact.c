@@ -57,6 +57,13 @@ ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
       else
 	if(!strcmp(argv[2],"-start"))
 	  {
+
+	    if(!ay_selection)
+	      {
+		ay_error(AY_ENOSEL, fname, NULL);
+		return TCL_OK;
+	      }
+
 	    Tcl_GetDouble(interp, argv[3], &winx);
 	    Tcl_GetDouble(interp, argv[4], &winy);
 
@@ -99,6 +106,16 @@ ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
       return TCL_OK;
     }
 
+
+  if(!ay_selection)
+    {
+      return TCL_OK;
+    }
+
+
+  /* bail out, if we stay in the same grid */
+  if((oldwinx == winx) && (oldwiny == winy))
+    return TCL_OK;
 
   /* calc dx, dy, dz */
   dx = -(oldwinx - winx) * view->conv_x;
@@ -148,7 +165,10 @@ ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
     {
       o = sel->object;
       if(!o)
-	return TCL_OK;
+	{
+	  ay_error(AY_ENULL, fname, NULL);
+	  return TCL_OK;
+	}
 
       if(sel->object->selp)
 	{
@@ -187,23 +207,33 @@ ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
 
 	}
       else
-      {
-	o = sel->object;
-	if(o)
-	  {
-	    o->movx += dx; 
-	    o->movy += dy; 
-	    o->movz += dz; 
-	  }
-      }
+	{
+	  o = sel->object;
+	  if(o)
+	    {
+	      o->movx += dx; 
+	      o->movy += dy; 
+	      o->movz += dz; 
+	    } /* if */
+	} /* if */
+
       sel = sel->next;
-    }
+    } /* while */
 
-  if(!ay_prefs.lazynotify)
-    ay_status = ay_notify_parent();
 
-  if((dx != 0.0) || (dy != 0.0) || (dz != 0.0))
-    ay_toglcb_display(togl);
+
+  if((fabs(dx) > AY_EPSILON) ||
+     (fabs(dy) > AY_EPSILON) ||
+     (fabs(dz) > AY_EPSILON))
+    {
+      if(!ay_prefs.lazynotify)
+	{
+	  ay_status = ay_notify_parent();
+	}
+
+      ay_toglcb_display(togl);
+    } /* if */
+
 
  return TCL_OK;
 } /* ay_oact_movetcb */
@@ -257,6 +287,13 @@ ay_oact_rottcb(struct Togl *togl, int argc, char *argv[])
       else
 	if(!strcmp(argv[2],"-start"))
 	  {
+
+	    if(!ay_selection)
+	      {
+		ay_error(AY_ENOSEL, fname, NULL);
+		return TCL_OK;
+	      }
+
 	    Tcl_GetDouble(interp, argv[3], &winx);
 	    Tcl_GetDouble(interp, argv[4], &winy);
 
@@ -273,6 +310,11 @@ ay_oact_rottcb(struct Togl *togl, int argc, char *argv[])
     {
       ay_error(AY_EARGS, fname,
 		 "\\[-start winx winy|-winxy winx winy\\]");
+      return TCL_OK;
+    }
+
+  if(!ay_selection)
+    {
       return TCL_OK;
     }
 
@@ -462,6 +504,13 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
       else
 	if(!strcmp(argv[2],"-start"))
 	  {
+	    
+	    if(!ay_selection)
+	      {
+		ay_error(AY_ENOSEL, fname, NULL);
+		return TCL_OK;
+	      }
+
 	    Tcl_GetDouble(interp, argv[3], &winx);
 	    Tcl_GetDouble(interp, argv[4], &winy);
 	    Tcl_GetDouble(interp, argv[5], &ax);
@@ -485,6 +534,11 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
   else
     {
       ay_error(AY_EARGS, fname, "-start winx winy|-winxy winx winy");
+      return TCL_OK;
+    }
+
+  if(!ay_selection)
+    {
       return TCL_OK;
     }
 
@@ -869,6 +923,13 @@ ay_oact_sc1DXcb(struct Togl *togl, int argc, char *argv[])
       else
 	if(!strcmp(argv[2],"-start"))
 	  {
+	    
+	    if(!ay_selection)
+	      {
+		ay_error(AY_ENOSEL, fname, NULL);
+		return TCL_OK;
+	      }
+
 	    Tcl_GetDouble(interp, argv[3], &winx);
 	    Tcl_GetDouble(interp, argv[4], &winy);
 	    
@@ -887,6 +948,11 @@ ay_oact_sc1DXcb(struct Togl *togl, int argc, char *argv[])
     {
       ay_error(AY_EARGS, fname,
 		 "\\[-start $winx $winy|-winxy $winx $winy\\]");
+      return TCL_OK;
+    }
+
+  if(!ay_selection)
+    {
       return TCL_OK;
     }
 
@@ -1053,6 +1119,13 @@ ay_oact_sc1DYcb(struct Togl *togl, int argc, char *argv[])
       else
 	if(!strcmp(argv[2],"-start"))
 	  {
+	    
+	    if(!ay_selection)
+	      {
+		ay_error(AY_ENOSEL, fname, NULL);
+		return TCL_OK;
+	      }
+
 	    Tcl_GetDouble(interp, argv[3], &winx);
 	    Tcl_GetDouble(interp, argv[4], &winy);
 	    if(view->usegrid)
@@ -1069,6 +1142,11 @@ ay_oact_sc1DYcb(struct Togl *togl, int argc, char *argv[])
     {
       ay_error(AY_EARGS, fname,
 		 "\\[-start $winx $winy|-winxy $winx $winy\\]");
+      return TCL_OK;
+    }
+
+  if(!ay_selection)
+    {
       return TCL_OK;
     }
 
@@ -1228,6 +1306,13 @@ ay_oact_sc1DZcb(struct Togl *togl, int argc, char *argv[])
       else
 	if(!strcmp(argv[2],"-start"))
 	  {
+	    
+	    if(!ay_selection)
+	      {
+		ay_error(AY_ENOSEL, fname, NULL);
+		return TCL_OK;
+	      }
+
 	    Tcl_GetDouble(interp, argv[3], &winx);
 	    Tcl_GetDouble(interp, argv[4], &winy);
 
@@ -1245,6 +1330,11 @@ ay_oact_sc1DZcb(struct Togl *togl, int argc, char *argv[])
     {
       ay_error(AY_EARGS, fname,
 		 "\\[-start $winx $winy|-winxy $winx $winy\\]");
+      return TCL_OK;
+    }
+
+  if(!ay_selection)
+    {
       return TCL_OK;
     }
 
@@ -1400,6 +1490,13 @@ ay_oact_sc1DXWcb(struct Togl *togl, int argc, char *argv[])
       else
 	if(!strcmp(argv[2],"-start"))
 	  {
+	    
+	    if(!ay_selection)
+	      {
+		ay_error(AY_ENOSEL, fname, NULL);
+		return TCL_OK;
+	      }
+
 	    Tcl_GetDouble(interp, argv[3], &winx);
 	    Tcl_GetDouble(interp, argv[4], &winy);
 	    if(view->grid != 0.0)
@@ -1416,6 +1513,11 @@ ay_oact_sc1DXWcb(struct Togl *togl, int argc, char *argv[])
     {
       ay_error(AY_EARGS, fname,
 		 "\\[-start $winx $winy|-winxy $winx $winy\\]");
+      return TCL_OK;
+    }
+
+  if(!ay_selection)
+    {
       return TCL_OK;
     }
 
@@ -1546,6 +1648,13 @@ ay_oact_sc1DYWcb(struct Togl *togl, int argc, char *argv[])
       else
 	if(!strcmp(argv[2],"-start"))
 	  {
+	    
+	    if(!ay_selection)
+	      {
+		ay_error(AY_ENOSEL, fname, NULL);
+		return TCL_OK;
+	      }
+
 	    Tcl_GetDouble(interp, argv[3], &winx);
 	    Tcl_GetDouble(interp, argv[4], &winy);
 	    if(view->grid != 0.0)
@@ -1562,6 +1671,11 @@ ay_oact_sc1DYWcb(struct Togl *togl, int argc, char *argv[])
     {
       ay_error(AY_EARGS, fname,
 		 "\\[-start $winx $winy|-winxy $winx $winy\\]");
+      return TCL_OK;
+    }
+
+  if(!ay_selection)
+    {
       return TCL_OK;
     }
 
@@ -1694,6 +1808,13 @@ ay_oact_sc1DZWcb(struct Togl *togl, int argc, char *argv[])
       else
 	if(!strcmp(argv[2],"-start"))
 	  {
+	    
+	    if(!ay_selection)
+	      {
+		ay_error(AY_ENOSEL, fname, NULL);
+		return TCL_OK;
+	      }
+
 	    Tcl_GetDouble(interp, argv[3], &winx);
 	    Tcl_GetDouble(interp, argv[4], &winy);
 	    if(view->grid != 0.0)
@@ -1710,6 +1831,11 @@ ay_oact_sc1DZWcb(struct Togl *togl, int argc, char *argv[])
     {
       ay_error(AY_EARGS, fname,
 		 "\\[-start $winx $winy|-winxy $winx $winy\\]");
+      return TCL_OK;
+    }
+
+  if(!ay_selection)
+    {
       return TCL_OK;
     }
 
@@ -1856,6 +1982,13 @@ ay_oact_sc2Dcb(struct Togl *togl, int argc, char *argv[])
       else
 	if(!strcmp(argv[2],"-start"))
 	  {
+
+	    if(!ay_selection)
+	      {
+		ay_error(AY_ENOSEL, fname, NULL);
+		return TCL_OK;
+	      }
+
 	    Tcl_GetDouble(interp, argv[3], &winx);
 	    Tcl_GetDouble(interp, argv[4], &winy);
 	    if(view->usegrid)
@@ -1872,6 +2005,11 @@ ay_oact_sc2Dcb(struct Togl *togl, int argc, char *argv[])
     {
       ay_error(AY_EARGS, fname,
 		 "\\[-start $winx $winy|-winxy $winx $winy\\]");
+      return TCL_OK;
+    }
+
+  if(!ay_selection)
+    {
       return TCL_OK;
     }
 
@@ -2039,6 +2177,13 @@ ay_oact_sc3Dcb(struct Togl *togl, int argc, char *argv[])
       else
 	if(!strcmp(argv[2],"-start"))
 	  {
+
+	    if(!ay_selection)
+	      {
+		ay_error(AY_ENOSEL, fname, NULL);
+		return TCL_OK;
+	      }
+
 	    Tcl_GetDouble(interp, argv[3], &winx);
 	    Tcl_GetDouble(interp, argv[4], &winy);
 	    if(view->usegrid)
@@ -2055,6 +2200,11 @@ ay_oact_sc3Dcb(struct Togl *togl, int argc, char *argv[])
     {
       ay_error(AY_EARGS, fname,
 		 "\\[-start $winx $winy|-winxy $winx $winy\\]");
+      return TCL_OK;
+    }
+
+  if(!ay_selection)
+    {
       return TCL_OK;
     }
 
