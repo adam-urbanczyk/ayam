@@ -125,7 +125,13 @@ ayslo_scanslotcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  Slo_SetPath(Tcl_GetVar(ay_interp, vname, TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG));
+#ifdef WIN32
+  Slo_SetPath(Tcl_GetVar(ay_plugin_interp, vname,
+			 TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG));
+#else
+  Slo_SetPath(Tcl_GetVar(ay_interp, vname,
+			 TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG));
+#endif
 
   if((Slo_SetShader(argv[1])) == -1)
     {
