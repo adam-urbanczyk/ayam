@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>12. Jan 2003
+<date>17. Jan 2003
 <abstract>
 This is the documentation of Ayam (1.4) - a free 3D modeling environment
 for the RenderMan interface.
@@ -2043,6 +2043,13 @@ This section describes all elements of the <tt/"Camera"/ property:
 to the view) is situated.
 <item><tt/"To"/ is the point the camera is looking to.
 <item><tt/"Up"/ is the up vector of the camera.
+<item><tt/"Near"/ defines the near clipping plane. A value of 0.0
+means a default value (that depends on the type of the view) should
+be used. Near should always be positive for perspective views, and
+smaller than far.
+<item><tt/"Far"/ defines the far clipping plane. A value of 0.0
+means a default value (that depends on the type of the view) should
+be used. Far should always be bigger than near.
 <item><tt/"Roll"/ defines an angle by which the camera is rotated
 around the axis that is defined by the points from and to.
 <item><tt/"Zoom"/ is a zoom factor.
@@ -2101,6 +2108,10 @@ of views.
 Therefore, they has just have two properties
 explained above, see sections <ref id="camp" name="Camera"> and
 <ref id="attrs" name="Attributes">.
+<p>
+When a view object is dropped onto a camera object using Drag-and-Drop
+in the tree view, the camera settings from the view will be copied
+to the camera object.
 
 <sect1>CSG Primitives <label id="csgprim">
 <p>
@@ -5496,6 +5507,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 
 <label id="indexf">F
 <itemize>
+<item>Far: <ref id="camp" name="camera property">
 <item>FillGaps: <ref id="concatncp" name="ConcatNC attribute">
 <item>FilterFunc: <ref id="rio" name="RenderMan interface option">
 <item>FilterWidth: <ref id="rio" name="RenderMan interface option">
@@ -5637,6 +5649,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <label id="indexn">N
 <itemize>
 <item>Name: <ref id="attrs" name="attribute">
+<item>Near: <ref id="camp" name="camera property">
 <item>Negative: <ref id="mcattr" name="MetaComp attribute">
 <item>New: <ref id="mmfile" name="main menu entry">
 <item>NewLoadsEnv: <ref id="prefgui" name="preference setting">
