@@ -1426,6 +1426,9 @@ The tag type <tt/"RiAttribute"/ can be used to attach
 arbitrary RenderMan interface attributes to objects.
 This is handy if you use a renderer with lots of RiAttributes
 that differ from the standard RiAttributes.<p>
+<tt/"RiAttribute"/ tags attached to a geometric object override
+<tt/"RiAttribute"/ tags possibly attached to the material object of this
+geometric object.<p>
 In order to create a tag of type RiAttribute the type string must be
 <tt/"RiAttribute"/. The syntax of the value string is as following:<p>
 <tt/attrname,paramname,paramtype,param/<p>
@@ -1435,7 +1438,7 @@ single character defining the type of the parameter (it may be one of
 <tt/f/ - float,<tt/i/ - integer, <tt/s/ - string,
 <tt/c/ - color, <tt/p/ - point) and finally
 param is the value of the parameter itself (a float: "1", a string: "on",
-a color: "1,1,1" or a point: "0.4,0.5,1.0").
+a color: "1,1,1" or a point: "0.4,0.5,1.0").<p>
 
 Examples:<p>
 <tt>RiAttribute render,truedisplacement,i,1</tt><p>
@@ -1460,9 +1463,28 @@ The syntax is similar to the <tt/"RiAttribute"/ tag
 type, see above.
 Note, that RiOption tags may be created easily
 using the menu entry <tt>Special/Add RiOption</tt>.
-The database of RiOptions for this GUI may be extended
+Tags created with this GUI will always be added to
+the <tt/"Root"/ object. It does not
+have to be selected!
+Furthermore, the database of RiOptions for this GUI may be extended
 by the user using the ayamrc file, see section
 <ref id="ayamrc" name="Ayamrc File">.
+
+<sect3>TC (TextureCoordinates) Tag<label id="tctag">
+<p>
+The tag type <tt/"TC"/ can be used to attach
+texture coordinates to objects or materials.
+<tt/"TC"/ tags attached to a geometric object override
+<tt/"TC"/ tags possibly attached to the material object of this
+geometric object.
+The <tt/"TC"/ tag always contains a list of eight comma separated
+float values, that specify a mapping for four points (a quadrilateral) in
+texture space from the default values (0,0), (1,0), (0,1), and (1,1)
+to the new specified values.<p>
+
+Example:<p>
+<tt>TC 0,0,10,0,0,10,10,10</tt><p>
+
 
 <sect3>OI - Object ID Tag<label id="oitt">
 <p>
@@ -1993,8 +2015,10 @@ This attribute is available for custom lights only!<p>
 and used for this light source. The resolution of the
 shadow map may be determined by <tt/"SMRes"/. If
 <tt/"SMRes"/ is 0, a default of 256 by 256 pixels will be used.
-Both parameters are just available for the standard light source types:
-<tt/"Point"/, <tt/"Distant"/, and <tt/"Spot"/.
+These options are for renderers that do not support raytraced
+shadows like PRMan or Aqsis only.
+Do not use rendrib from BMRT for rendering with
+shadow maps, it will always use raytraced shadows anyway!
 
 For lights of type <tt/"Distant"/ the <tt/"Scale"/ attributes
 of the <tt/"Transformations"/ property of the light
@@ -2018,10 +2042,61 @@ the light object.
 <sect2>Using ShadowMaps<label id="shadowmaps">
 <p>
 Using shadow maps requires the global preference setting
-<tt/"ShadowMaps"/ to be switched on.
-Furthermore, for each light source that casts a shadow the
+<tt>"RIB-Export/ShadowMaps"</tt> to be switched on.
+Furthermore, for each light source that should cast a shadow, the
 attributes <tt/"IsOn"/, <tt/"Shadows"/, and <tt/"UseSM"/ have
 to be switched on.
+If <tt>"RIB-Export/ShadowMaps"</tt> is switched on, Ayam will create
+a special version of the RIB on export, that creates all shadow maps
+automatically. This is done, by rendering depth images from the
+position of every light source that casts shadows.
+Special light source shaders later pick up these depth images
+and calculate shadows.
+This approach implies, that the scene is rendered multiple times.
+To reduce the size of the RIB, the objects to be rendered
+are written to a second RIB file named <tt>"&lt;scene>.obj.rib"</tt>.
+This file is read from the main RIB several times via
+<tt>"ReadArchive"</tt>.
+
+Ayam supports three different methods for the creation
+of shadow maps of different types: point, distant, and spot.
+The point method is used with
+lights of type <tt>"Point"</tt> and custom lights that have a light
+shader argument named "from".
+Six shadow maps pointing in all possible
+directions and named <tt>"&lt;rib&gt;.point&lt;num&gt;_&lt;dir&gt;.shd"</tt>
+(where <tt>"&lt;rib&gt;"</tt> is the base-name of the RIB,
+<tt>"&lt;num&gt;"</tt> is the number of the light source that makes
+use of shadow maps and <tt>"&lt;dir&gt;"</tt> is one of
+<tt/"+x, -x, +y, -y, +z, or -z"/)
+will be created.<p>
+
+The distant method is used with lights of type <tt>"Distant"</tt>
+and custom lights that have a light
+shader argument named "from" and a light
+shader argument named "to".
+One shadow map is created and named <tt>"&lt;rib&gt;.dist&lt;num&gt;.shd"</tt>.
+By default, the size of the shadow map is 1 by 1 units in world space,
+but this may be adapted using the scale transformation attributes of
+the light object.<p>
+
+The spot method is used with lights of type <tt>"Spot"</tt>
+and custom lights that have a light
+shader argument named "from" and a light
+shader argument named "to" and a light shader argument named "coneangle".
+One shadow map is created and named <tt>"&lt;rib&gt;.spot&lt;num&gt;.shd"</tt>.
+The spot method uses the cone angle (and additionally the delta cone
+angle, if present) argument to determine the size of the shadow map
+in world space.<p>
+
+If a light object of type <tt>"Spot"</tt>, <tt>"Distant"</tt> or
+<tt>"Point"</tt> is used, Ayam changes the name of the exported
+light shader to <tt>"shadowspot"</tt>, <tt>"shadowdistant"</tt>,
+and <tt>"shadowpoint"</tt> respectively.
+If the light source is of type <tt>"Custom"</tt>, no automatic renaming of
+the shader name takes place. This means, you have to make sure that
+the shader really uses the shadow map.<p>
+
 A short example for a scene using a shadow map:
 <enum>
 <item>Go to the preferences and enable <tt/"ShadowMaps"/ in the
@@ -2041,12 +2116,6 @@ leave the other parameters at their defaults.
 <item>Render with a RenderMan compliant renderer, that uses
 shadow maps (e.g. Photorealistic RenderMan, prman).
 </enum>
-Do not use rendrib from BMRT for rendering with
-shadow maps, it will always use raytraced shadows anyway!
-Do not try to render views directly from Ayam.
-Ayam uses currently a not so elegant "one RIB"-approach,
-saving the scene data base multiple times to the
-RIB, but creating all required images automatically. 
 
 <sect2>Using AreaLights<label id="alob">
 <p>
@@ -4525,6 +4594,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>RIB import: <ref id="rrib" name="RIB Import">
 <item>RIBFile: <ref id="prefrib" name="preference setting">
 <item>RiInc: <ref id="riincobj" name="object">
+<item>RiOption: <ref id="riotag" name="tag type">
 <item>RiOptions: <ref id="rio" name="RenderMan interface options property">,
 <ref id="rioptdb" name="RiOption and RiAttributes Database">
 <item>RIStandard: <ref id="prefrib" name="preference setting">
@@ -4594,7 +4664,9 @@ T
 <itemize>
 <item>Tag: <ref id="prefdraw" name="preference setting">
 <item>Tags: <ref id="tags" name="property">
+<item>TC: <ref id="tctag" name="tag type">
 <item>TclPrecision: <ref id="prefgui" name="preference setting">
+<item>TextureCoordinates: <ref id="tctag" name="tag type">
 <item>ThetaMax: <ref id="spattr" name="sphere attribute">,
 <ref id="dkp" name="disk attribute">,
 <ref id="cnp" name="cone attribute">,
