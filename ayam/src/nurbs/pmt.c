@@ -476,7 +476,7 @@ ay_pmt_tonpatch(ay_pamesh_object *pamesh, ay_object **result)
 int
 ay_pmt_valid(ay_pamesh_object *pamesh, int *detail)
 {
- int stepu, stepv;
+ int stepu = 0, stepv = 0;
 
   if(pamesh->type == AY_PTBILINEAR)
     { /* bilinear patch mesh */
