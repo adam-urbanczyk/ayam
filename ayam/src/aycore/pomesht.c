@@ -209,15 +209,15 @@ ay_pomesht_tesselate(ay_pomesh_object *pomesh)
 	  glBegin(GL_TRIANGLES);
 	   a = pomesh->verts[n++];
 	   if(pomesh->has_normals)
-	     glNormal3dv((GLdouble*)(&(pomesh->controlv[a*stride+stride])));
+	     glNormal3dv((GLdouble*)(&(pomesh->controlv[a*stride+3])));
 	   glVertex3dv((GLdouble*)(&(pomesh->controlv[a*stride])));
 	   a = pomesh->verts[n++];
 	   if(pomesh->has_normals)
-	     glNormal3dv((GLdouble*)(&(pomesh->controlv[a*stride+stride])));
+	     glNormal3dv((GLdouble*)(&(pomesh->controlv[a*stride+3])));
 	   glVertex3dv((GLdouble*)(&(pomesh->controlv[a*stride])));
 	   a = pomesh->verts[n++];
 	   if(pomesh->has_normals)
-	     glNormal3dv((GLdouble*)(&(pomesh->controlv[a*stride+stride])));
+	     glNormal3dv((GLdouble*)(&(pomesh->controlv[a*stride+3])));
 	   glVertex3dv((GLdouble*)(&(pomesh->controlv[a*stride])));
 	  glEnd();
 
