@@ -251,6 +251,7 @@ AYAMOBJS = aycore/bbc.o\
 	nurbs/nb.o\
 	nurbs/nct.o\
 	nurbs/npt.o\
+	nurbs/pmt.o\
 	objects/box.o\
 	objects/bpatch.o\
 	objects/camera.o\
