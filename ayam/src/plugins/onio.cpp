@@ -66,6 +66,8 @@ int onio_readbrep(ON_Brep *p_b, double accuracy);
 
 int onio_readobject(ONX_Model *p_m, const ON_Object *p_o, double accuracy);
 
+int onio_readlayer(ONX_Model &model, int li, double accuracy);
+
 int onio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 		  int argc, char *argv[]);
 
@@ -1339,6 +1341,54 @@ onio_readobject(ONX_Model *p_m, const ON_Object *p_o, double accuracy)
 } // onio_readobject
 
 
+// onio_readlayer:
+//
+int
+onio_readlayer(ONX_Model &model, int li, double accuracy)
+{
+ int ay_status = AY_OK;
+ int i;
+ char fname[] = "onio_readlayer";
+ //ON_Layer *layer;
+ ON_3dmObjectAttributes *attr;
+
+  if(li < 0 || li > model.m_layer_table.Capacity())
+    {
+      ay_error(AY_ERROR, fname, "layer index invalid");
+      // XXXX inform user about model.m_layer_table.Capacity()
+      return AY_ERROR;
+    }
+
+  //layer = model.m_layer_table[li];
+
+  // XXXX create level object, named as the layer
+
+
+  // read objects from layer
+  for(i = 0; i < model.m_object_table.Capacity(); ++i)
+    {
+      if((model.m_object_table[i]).m_object)
+	{
+	  attr = &((model.m_object_table[i]).m_attributes);
+	  if(attr->m_layer_index == li)
+	    {
+	      ay_status = onio_readobject(&model,
+					  (model.m_object_table[i]).m_object,
+					  accuracy);
+	      if(ay_status)
+		{
+		  ay_error(ay_status, fname, NULL);
+		  ay_error(AY_ERROR, fname,
+		       "Failed to read/convert object; continuing with next!");
+		} // if
+	    } // if
+	} // if
+    } // for
+
+ return ay_status;
+} // onio_readlayer
+
+
 // onio_readtcmd:
 //
 int
@@ -1348,7 +1398,8 @@ onio_readtcmd(ClientData clientData, Tcl_Interp *interp,
  int ay_status = AY_OK;
  char fname[] = "onio_read";
  ONX_Model model;
- int i = 2;
+ char *minus;
+ int i = 2, sframe = -1, eframe = -1;
  double accuracy = 0.1;
 
   onio_importcurves = AY_TRUE;
@@ -1360,6 +1411,7 @@ onio_readtcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
+  // parse args
   const char *filename = argv[1];
 
   while(i+1 < argc)
@@ -1373,7 +1425,34 @@ onio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  sscanf(argv[i+1], "%d", &onio_importcurves);
 	}
-      i+=2;
+      else
+      if(!strcmp(argv[i], "-l"))
+	{
+	  if(argv[i+1])
+	    {
+	      if(*argv[i+1] != '-')
+		{
+		  sscanf(argv[i+1], "%d", &sframe);
+		  eframe = sframe;
+		  if((strlen(argv[i+1]) > 3) &&
+		     (minus = strchr((const char*)(&(argv[i+1][1])), '-')))
+		    {
+		      minus++;
+		      if(*minus != '\0')
+			{
+			  sscanf(minus, "%d", &eframe);
+			}
+		      else
+			{
+			  ay_error(AY_ERROR, fname,
+	    "could not parse layer range, specify it as: startindex-endindex");
+			  return TCL_OK;
+			} // if
+		    } // if
+		} // if
+	    } // if
+	} // if
+      i += 2;
     } // while
 
 
@@ -1407,22 +1486,39 @@ onio_readtcmd(ClientData clientData, Tcl_Interp *interp,
     }
 
   onio_lrobject = NULL;
-
-  for(int i = 0; i < model.m_object_table.Capacity(); ++i)
+  if(sframe == -1)
     {
-      if((model.m_object_table[i]).m_object)
+      for(i = 0; i < model.m_object_table.Capacity(); ++i)
 	{
-	  ay_status = onio_readobject(&model,
-				      (model.m_object_table[i]).m_object,
-				      accuracy);
-	  if(ay_status)
+	  if((model.m_object_table[i]).m_object)
 	    {
-	      ay_error(ay_status, fname, NULL);
-	      ay_error(AY_ERROR, fname,
-		 "Failed to read/convert object; continuing with next!");
-	    }
+	      ay_status = onio_readobject(&model,
+					  (model.m_object_table[i]).m_object,
+					  accuracy);
+	      if(ay_status)
+		{
+		  ay_error(ay_status, fname, NULL);
+		  ay_error(AY_ERROR, fname,
+		      "Failed to read/convert object; continuing with next!");
+		} // if
+	    } // if
+	} // for
+    }
+  else
+    {
+      if(eframe != -1)
+	{
+	  for(i = sframe; i <= eframe; i++)
+	    {
+	      ay_status = onio_readlayer(model, i, accuracy);
+	    } // for
+	}
+      else
+	{
+	  ay_status = onio_readlayer(model, sframe, accuracy);
 	} // if
-    } // for
+    } // if
+
 
   // destroy this model
   model.Destroy();
