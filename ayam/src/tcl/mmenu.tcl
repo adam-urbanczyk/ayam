@@ -281,8 +281,10 @@ set ay(sc) 1}
 $m add command -label "Paste Property to Selected" -command "pclip_pastetosel;rV"
 $m add separator
 $m add command -label "Select All Points" -command "selPoints;rV"
-$m add command -label "Apply Trafo To All" -command "applyTrafo all;rV"
-$m add command -label "Apply Trafo To Selected" -command "applyTrafo sel;rV"
+$m add command -label "Apply Trafo To All" -command "applyTrafo all;\
+	plb_update;rV"
+$m add command -label "Apply Trafo To Selected" -command "applyTrafo sel;\
+	plb_update;rV"
 $m add separator
 $m add command -label "Resolve all Instances" -command "ai_resolveInstances;uS"
 $m add command -label "Automatic Instancing" -command "ai_open"
