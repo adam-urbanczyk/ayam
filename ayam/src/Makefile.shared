@@ -169,6 +169,27 @@ DL = -ldl
 # RRIB Plugin Required Libraries
 RRIBLIBS = -L /home/randi/sdk/affine0008/lib -lribrdr -lribhash -lribnop -lm
 
+# Ayslx Plugin
+AQSISDIR = /usr/local/aqsis
+AYSLXINCDIR = $(AQSISDIR)/include
+AYSLXLIBS = rcdummy.o $(AQSISDIR)/lib/libshadervm.so $(AQSISDIR)/lib/libshaderexecenv.so $(AQSISDIR)/lib/libslxargs.so $(AQSISDIR)/lib/libaqsistypes.so
+
+# Ayso Plugin
+RDCDIR = /usr/local/rdc
+AYSOINCDIR = $(RDCDIR)/include
+AYSOLIBS = -L $(RDCDIR)/lib -lsoargs
+
+# Ayslo Plugin
+PRMANDIR = /usr/local/prman
+AYSLOINCDIR = $(PRMANDIR)/include
+AYSLOLIBS = -L $(PRMANDIR)/lib -lsloargs
+
+# Ayslo3d Plugin
+3DLDIR = /usr/local/3delight
+#3DLDIR = /usr/local/3delight-0.9.6/Linux-i686-libstdc++-3
+AYSLO3INCDIR = $(3DLDIR)/include
+AYSLO3DLIBS = -L $(3DLDIR)/lib -l3delight
+
 #############################################
 # nothing needs to be changed below this line
 #############################################
@@ -306,6 +327,22 @@ metaobj.so: $(METAOBJS)
 
 rrib.so: $(RRIBOBJS)
 	$(CC) -shared $(RRIBOBJS) -o plugins/rrib.so $(RRIBLIBS)
+
+ayslx.so:
+	$(CC) -c $(CFLAGS) plugins/ayslx.c -o plugins/ayslx.o -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR) -I$(AQSISINCDIR) -I$(TIFFINCDIR) -I$(AYSLXINCDIR)
+	$(CC) -shared plugins/ayslx.o -o plugins/ayslx.so $(AYSLXLIBS)
+
+ayso.so:
+	$(CC) -c $(CFLAGS) plugins/ayso.c -o plugins/ayso.o -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR) -I$(AQSISINCDIR) -I$(TIFFINCDIR) -I$(AYSOINCDIR)
+	$(CC) -shared plugins/ayso.o -o plugins/ayso.so $(AYSOLIBS))
+
+ayslo.so:
+	$(CC) -c $(CFLAGS) plugins/ayslo.c -o plugins/ayslo.o -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR) -I$(AQSISINCDIR) -I$(TIFFINCDIR) -I$(AYSLOINCDIR)
+	$(CC) -shared plugins/ayslo.o -o plugins/ayslo.so $(AYSLOLIBS))
+
+ayslo3d.so:
+	$(CC) -c $(CFLAGS) plugins/ayslo3d.c -o plugins/ayslo3d.o -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR) -I$(AQSISINCDIR) -I$(TIFFINCDIR) -I$(AYSLO3DINCDIR)
+	$(CC) -shared plugins/ayslo3d.o -o plugins/ayslo3d.so $(AYSLO3DLIBS))
 
 mostlyclean:
 	-rm -f core
