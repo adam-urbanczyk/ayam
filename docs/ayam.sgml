@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>22. Jun 2002
+<date>7. Jul 2002
 <abstract>
 This is the documentation of Ayam (1.2) - a free 3D modeling environment
 for the RenderMan interface.
@@ -2087,9 +2087,10 @@ light is affected while passing through an object.
 
 <sect1>Light Object<label id="lightobj">
 <p>
-The behaviour of a light source object depends heavily on it's type.
+The behaviour of a light source object depends heavily on the type
+of the light source.
 There are four different types available:
-custom, point, distant and spot.
+<tt/"custom"/, <tt/"point"/, <tt/"distant"/ and <tt/"spot"/.
 
 Custom Lights:<label id="cul">
 <p>
@@ -2107,7 +2108,8 @@ Point-, Distant-, and Spotlights:<label id="pdsl">
 These (standard) light sources have well defined parameters that
 will be displayed in the <tt/"LightAttr"/ property.
 Please refer to the RenderMan documentation for more information
-about the standard light sources.
+about the standard light sources
+(see section <ref id="secref" name="references">).
 
 <sect2>LightAttr<label id="lip">
 <p>
@@ -4369,6 +4371,27 @@ polygonal representation.
 If you want to go a complete polygonal way instead, voila, there
 are good modelers out there.
 
+<sect1>References<label id="secref">
+<p>
+Suggested reading:
+<itemize>
+<item>Advanced RenderMan: Creating CGI for Motion Pictures by
+Tony Apodaca and Larry Gritz (Morgan-Kaufmann, 1999)
+<item>The RenderMan Companion: A Programmer's Guide
+to Realistic Computer Graphics by Steve Upstill (Addison-Wesley,
+1989)
+<item>Textures and Modeling: A Procedural Approach by Ebert,
+Musgrave, Peachey, Perlin, and Worley (Academic Press, 1994)
+</itemize>
+
+WWW resources:
+<itemize>
+<item><url url="http://www.renderman.org/" name="The RenderMan Repository">
+<item><url
+url="http://www.pixar.com/renderman/developers_corner/rispec/index.html" 
+name="RenderMan Interface Specifications">
+</itemize>
+
 <sect1>Acknowledgements
 <p>
 First of all, I would like to express a big "Thank you!"
@@ -4770,6 +4793,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <ref id="vat" name="view attribute">
 <item>Reference Counter: <ref id="instobj" name="Instance Object">,
 <ref id="materialobj" name="Material Object">
+<item>References: <ref id="secref" name="references">
 <item>refineNC: <ref id="gncp" name="scripting interface command">,
 <ref id="refit" name="refine tool">
 <item>Render: <ref id="vm" name="view menu entry">,
