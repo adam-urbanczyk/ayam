@@ -874,8 +874,12 @@ if { $ayprefs(mainGeom) != "" } {
 
 if { ($ayprefs(LoadEnv) == 1) && ($ay(failsafe) == 0) } {
     viewCloseAll
-    puts stdout "Loading $ayprefs(EnvFile)..."
-    replaceScene [file nativename $ayprefs(EnvFile)]
+    puts stdout "Loading environment from $ayprefs(EnvFile)..."
+    set filename [file nativename $ayprefs(EnvFile)]
+    if { $tcl_platform(platform) == "windows" } {
+     regsub -all {\\} $filename {/} filename
+    }
+    replaceScene $filename
     uS
     rV
 }

@@ -533,9 +533,13 @@ set answer [tk_messageBox -title $t -type okcancel -icon warning -message $m]
 # io_saveEnv:
 #  
 proc io_saveEnv {  } {
- global ay ayprefs ay_error
+ global ay ayprefs ay_error tcl_platform
 
  set filename [file nativename $ayprefs(EnvFile)]
+ if { $tcl_platform(platform) == "windows" } {
+    # Windows sucks big time!
+     regsub -all {\\} $filename {/} filename
+ }
 
  set m "Select \"Ok\" to save working environment to:\n$filename\nSelect \"Cancel\" to stop operation."
 
@@ -545,7 +549,7 @@ proc io_saveEnv {  } {
  if { $answer == "cancel" } {
      return;
  } else {
-     if {[file writable $ayprefs(EnvFile)]} {
+     if {[file writable $filename]} {
 	 viewUPos
 	 selOb
 	 uCL cs
