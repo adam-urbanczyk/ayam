@@ -56,7 +56,7 @@ ay_pact_getpoint(int mode, ay_object *o, double *obj)
 
 
 /* ay_pact_seltcb:
- *  select/tag single points of an object
+ *  select (tag) single points of an object
  */
 int
 ay_pact_seltcb(struct Togl *togl, int argc, char *argv[])
@@ -124,15 +124,15 @@ ay_pact_seltcb(struct Togl *togl, int argc, char *argv[])
 		       GL_RGB, GL_FLOAT, &pixel);
 	  ay_status = ay_viewt_wintoobj(togl, o, winX, winY,
 					&(obj[0]), &(obj[1]), &(obj[2]));
-	  
+
 	  ay_status = ay_pact_getpoint(1, o, obj);
 	}
       else
 	{
-	
+
 	  ay_status = ay_viewt_winrecttoobj(togl, o, winX, winY, winX2, winY2,
 					    obj);
-	  
+
 	  /* create plane equation coefficients */
 	  ay_trafo_pointstoplane(obj[0], obj[1], obj[2],
 				 obj[3], obj[4], obj[5],
@@ -219,7 +219,7 @@ ay_pact_seltcb(struct Togl *togl, int argc, char *argv[])
 
 
 /* ay_pact_deseltcb
- *
+ *  deselect all currently selected (tagged) points of an object
  */
 int
 ay_pact_deseltcb(struct Togl *togl, int argc, char *argv[])
@@ -228,7 +228,7 @@ ay_pact_deseltcb(struct Togl *togl, int argc, char *argv[])
 
   while(sel)
     {
-      
+
       ay_selp_clear(sel->object);
 
       sel = sel->next;
@@ -239,7 +239,9 @@ ay_pact_deseltcb(struct Togl *togl, int argc, char *argv[])
 
 
 /* ay_pact_flashpoint:
- *
+ *  flash single points if the mouse pointer hovers over them
+ *  by drawing with XOR directly into the front buffer
+ *  Note: This function needs atleast OpenGL V1.1 to work.
  */
 int
 ay_pact_flashpoint(int ignore_old)
@@ -298,7 +300,7 @@ ay_pact_flashpoint(int ignore_old)
 	   glVertex3d(ay_point_edit_coords[penumber-1][0],
 		      ay_point_edit_coords[penumber-1][1],
 		      ay_point_edit_coords[penumber-1][2]);
-	   
+
 	   old_obj[0] = ay_point_edit_coords[penumber-1][0];
 	   old_obj[1] = ay_point_edit_coords[penumber-1][1];
 	   old_obj[2] = ay_point_edit_coords[penumber-1][2];
@@ -320,8 +322,7 @@ ay_pact_flashpoint(int ignore_old)
 
 
 /* ay_pact_startpetcb:
- *  prepares everything for the point editing
- *  modes
+ *  prepares everything for the single point editing modes
  */
 int
 ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
@@ -421,7 +422,7 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
 	    }
 
 	  ay_pe_objectslen++;
-	  
+
 	}
 
       sel = sel->next;
@@ -586,7 +587,7 @@ ay_pact_pedtcb(struct Togl *togl, int argc, char *argv[])
 	      Tcl_IncrRefCount(ton); Tcl_DecrRefCount(ton);
 	      return TCL_OK;
 	    } /* if */
-	  
+
 	  for(i = 0; i < ay_point_edit_coords_number; i++)
 	    {
 	      coords = ay_point_edit_coords[i];
@@ -634,7 +635,7 @@ ay_pact_pedtcb(struct Togl *togl, int argc, char *argv[])
 
       Tcl_IncrRefCount(toa); Tcl_DecrRefCount(toa);
       Tcl_IncrRefCount(ton); Tcl_DecrRefCount(ton);
-      
+
       return TCL_OK;
     } /* if */
 
@@ -643,8 +644,7 @@ ay_pact_pedtcb(struct Togl *togl, int argc, char *argv[])
 
 
 /* ay_pact_insertnc:
- *
- *
+ *  insert a point into a NURBS curve (NCurve)
  */
 int
 ay_pact_insertnc(ay_nurbcurve_object *curve,
@@ -715,7 +715,7 @@ ay_pact_insertnc(ay_nurbcurve_object *curve,
 	    {
 	      memcpy(&(newcontrolv[j*4]), &(oldcontrolv[i*4]),
 		     4*sizeof(double));
-		  
+
 	      if(oldcontrolv[i*4] != oldcontrolv[(i+1)*4] ||
 		 oldcontrolv[i*4+1] != oldcontrolv[(i+1)*4+1] ||
 		 oldcontrolv[i*4+2] != oldcontrolv[(i+1)*4+2])
@@ -778,7 +778,7 @@ ay_pact_insertnc(ay_nurbcurve_object *curve,
 	  k = 0; i = 0;
 	  for(j = 0; j < curve->length+curve->order-1; j++)
 	    {
-	      
+
 	      if((j >= curve->order-1) &&
 		 (curve->knotv[j] != curve->knotv[j+1]))
 		{
@@ -797,7 +797,7 @@ ay_pact_insertnc(ay_nurbcurve_object *curve,
 		  newknotv[k] = curve->knotv[j];
 		  k++;
 		}
-	      
+
 	    } /* for */
 
 	  free(curve->knotv);
@@ -861,7 +861,7 @@ ay_pact_insertnc(ay_nurbcurve_object *curve,
 	    {
 	      memcpy(&newcontrolv[k],&curve->controlv[j],4*sizeof(double));
 	    } /* if */
-		  
+
 	  k += 4;
 	  j += 4;
 	} /* for */
@@ -892,7 +892,7 @@ ay_pact_insertnc(ay_nurbcurve_object *curve,
 	  k = 0; i = 0;
 	  for(j = 0; j < curve->length+curve->order-2; j++)
 	    {
-	      
+
 	      if((j >= curve->order-1) &&
 		 (curve->knotv[j] != curve->knotv[j+1]))
 		{
@@ -911,7 +911,7 @@ ay_pact_insertnc(ay_nurbcurve_object *curve,
 		  newknotv[k] = curve->knotv[j];
 		  k++;
 		}
-	      
+
 	    } /* for */
 
 	  newknotv[curve->length+curve->order-1] =
@@ -920,7 +920,7 @@ ay_pact_insertnc(ay_nurbcurve_object *curve,
 	  free(curve->knotv);
 	  curve->knotv = newknotv;
 
-	  /*	  
+	  /*
 	    ay_error(AY_EWARN,fname, "Changed knot type to NURB!");
 	    curve->knot_type = AY_KTNURB;
 	  */
@@ -933,7 +933,7 @@ ay_pact_insertnc(ay_nurbcurve_object *curve,
     } /* if */
 
   ay_status = ay_nct_recreatemp(curve);
-       
+
   ay_status = ay_notify_parent();
 
  return ay_status;
@@ -941,8 +941,7 @@ ay_pact_insertnc(ay_nurbcurve_object *curve,
 
 
 /* ay_pact_insertic:
- *
- *
+ *  insert a point into an interpolating curve (ICurve)
  */
 int
 ay_pact_insertic(ay_icurve_object *curve,
@@ -1043,7 +1042,7 @@ ay_pact_insertic(ay_icurve_object *curve,
 	{
 	  memcpy(&(newcontrolv[j*3]), &(oldcontrolv[i*3]),
 		 3*sizeof(double));
-		  
+
 	  if(oldcontrolv[i*3] != oldcontrolv[(i+1)*3] ||
 	     oldcontrolv[i*3+1] != oldcontrolv[(i+1)*3+1] ||
 	     oldcontrolv[i*3+2] != oldcontrolv[(i+1)*3+2])
@@ -1096,8 +1095,7 @@ ay_pact_insertic(ay_icurve_object *curve,
 
 
 /* ay_pact_insertptcb:
- *  insert point callback
- *
+ *  insert point action callback
  */
 int
 ay_pact_insertptcb(struct Togl *togl, int argc, char *argv[])
@@ -1152,7 +1150,7 @@ ay_pact_insertptcb(struct Togl *togl, int argc, char *argv[])
 
 
 /* ay_pact_deletenc:
- *
+ *  delete a point from a NURBS curve (NCurve)
  */
 int
 ay_pact_deletenc(ay_nurbcurve_object *curve,
@@ -1221,7 +1219,7 @@ ay_pact_deletenc(ay_nurbcurve_object *curve,
 	      newcontrolv[k+3] = curve->controlv[j+3];
 	      k += 4;
 	    }
-		
+
 	  j += 4;
 	} /* for */
 
@@ -1264,13 +1262,13 @@ ay_pact_deletenc(ay_nurbcurve_object *curve,
   if(curve->closed)
     {
       ay_status = ay_nct_close(curve);
-      if(ay_status) 
+      if(ay_status)
 	{
 	  ay_error(ay_status, fname, "cannot close this curve");
 	  curve->closed = AY_FALSE;
 	}
     }
-      
+
   ay_status = ay_nct_recreatemp(curve);
 
   ay_status = ay_notify_parent();
@@ -1280,7 +1278,7 @@ ay_pact_deletenc(ay_nurbcurve_object *curve,
 
 
 /* ay_pact_deleteic:
- *
+ *  delete a point from an interpolating curve (ICurve)
  */
 int
 ay_pact_deleteic(ay_icurve_object *icurve,
@@ -1343,7 +1341,7 @@ ay_pact_deleteic(ay_icurve_object *icurve,
 
 	      k += 3;
 	    }
-		
+
 	  j += 3;
 	} /* for */
 
@@ -1357,7 +1355,7 @@ ay_pact_deleteic(ay_icurve_object *icurve,
 
 
 /* ay_pact_deleteptcb:
- *  delete point callback
+ *  delete point action callback
  *
  */
 int
@@ -1421,7 +1419,7 @@ ay_pact_griddify(double *n, double grid)
 {
  double m;
 
-  m = fmod(*n, grid); 
+  m = fmod(*n, grid);
 
   if(fabs(m) > 1.0e-05)
     {
@@ -1511,7 +1509,7 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
 	    {
 	      Tcl_GetDouble(interp, argv[3], &winx);
 	      Tcl_GetDouble(interp, argv[4], &winy);
-	      
+
 	      if(view->usegrid)
 		{
 		  ay_viewt_griddify(togl, &winx, &winy);
@@ -1540,7 +1538,7 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
 			{
 			  for(i = 0; i < ay_pe_numcpo[j]; i++)
 			    {
-			      coords = ay_point_edit_coords[k]; 
+			      coords = ay_point_edit_coords[k];
 			      k++;
 			      if(!view->local)
 				{
@@ -1626,7 +1624,7 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
 	{
 	  for(i = 0; i < ay_pe_numcpo[j]; i++)
 	    {
-	      coords = ay_point_edit_coords[k]; 
+	      coords = ay_point_edit_coords[k];
 	      k++;
 	      coords[0] += movX;
 	      coords[1] += movY;
@@ -1661,7 +1659,7 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
 } /* ay_pact_petcb */
 
 
-/* ay_pact_wetcb: 
+/* ay_pact_wetcb:
  *  action callback for single point weight editing
  */
 int
@@ -1698,7 +1696,7 @@ ay_pact_wetcb(struct Togl *togl, int argc, char *argv[])
       ay_error(AY_EARGS, fname, NULL);
       return TCL_OK;
     }
-  
+
   if(!ay_selection)
     return TCL_OK;
 
@@ -1748,7 +1746,7 @@ ay_pact_wetcb(struct Togl *togl, int argc, char *argv[])
 } /* ay_pact_wetcb */
 
 
-/* ay_pact_wrtcb: 
+/* ay_pact_wrtcb:
  *  this action callback resets all weights
  */
 int
@@ -1761,43 +1759,41 @@ ay_pact_wrtcb(struct Togl *togl, int argc, char *argv[])
  ay_object *o = NULL;
  ay_list_object *sel = ay_selection;
 
+  while(sel)
+    {
+      o = sel->object;
 
- while(sel)
-   {
-     o = sel->object;
+      if(ay_point_edit_coords)
+	{
+	  free(ay_point_edit_coords);
+	  ay_point_edit_coords = NULL;
+	}
 
-     if(ay_point_edit_coords)
-       {
-	 free(ay_point_edit_coords);
-	 ay_point_edit_coords = NULL;
-       }
+      ay_status = ay_pact_getpoint(0, o, p);
 
-     ay_status = ay_pact_getpoint(0, o, p);
+      if(ay_status)
+	{
+	  ay_error(AY_ERROR, fname, NULL);
+	}
 
-     if(ay_status)
-       {
-	 ay_error(AY_ERROR, fname, NULL);
-       }
+      if(ay_point_edit_coords && ay_point_edit_coords_homogenous)
+	{
+	  for(i = 0; i < ay_point_edit_coords_number; i++)
+	    {
+	      coords = ay_point_edit_coords[i];
+	      coords[3] = 1.0;
+	    } /* for */
 
-     if(ay_point_edit_coords && ay_point_edit_coords_homogenous)
-       {
-	 for(i = 0; i < ay_point_edit_coords_number; i++)
-	   {
-	     coords = ay_point_edit_coords[i]; 
-	     coords[3] = 1.0;
-	   } /* for */
+	  o->modified = AY_TRUE;
+	  ay_notify_force(o);
+	}
+      else
+	{
+	  ay_error(AY_ERROR, fname, "No points (with weights) found!");
+	} /* if */
 
-	 o->modified = AY_TRUE;
-	 ay_notify_force(o);
-       }
-     else
-       {
-	 ay_error(AY_ERROR, fname, "No points (with weights) found!");
-       } /* if */
-
-     sel = sel->next;
+      sel = sel->next;
    } /* while */
- 
 
   ay_status = ay_notify_parent();
 
