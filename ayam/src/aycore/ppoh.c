@@ -240,6 +240,12 @@ ay_ppoh_print(ay_object *o, FILE *fileptr, int indent, ay_printcb **cbv)
 
   while(o)
     {
+
+      if(prefix)
+	{
+	  fprintf(fileptr, "%s----\n", prefix);
+	}
+
       i = 0;
       while(cbv[i])
 	{
