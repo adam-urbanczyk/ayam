@@ -120,8 +120,9 @@ proc runGetStdout { num cmd template channel } {
 	}
 
 	update
-	catch {SetProgress .render${num}.f1.p $percent}
 	if { $percent != 0 } {
+	    catch {SetProgress .render${num}.f1.p $percent}
+
 	    set cur [clock seconds]
 	    set start $ay(rstarttime$ay(rnum))
 	    set fulltime [expr ($cur-$start)*100.0/$percent]
