@@ -146,10 +146,6 @@ ms_set en ayprefse_RedirectTcl "Redirect all Tcl error messages to the\
 console?"
 ms_set en ayprefse_Logging "Log all messages to a file?"
 ms_set en ayprefse_LogFile "Path and name of the file to log all messages to."
-ms_set en ayprefse_MIResetDM "Reset all DisplayMode attributes of\
-all objects on import\nfrom a Mops scene to Global?"
-ms_set en ayprefse_MIResetST "Reset all Tolerance attributes of\
-all objects on import\nfrom a Mops scene to 0.0?"
 ms_set en ayprefse_SaveAddsMRU "Add the name of saved scenes to the\
 \nMost-Recently-Used file menu entries?"
 ms_set en ayprefse_ToolBoxTrans "Make the toolbox window transient?"
@@ -160,6 +156,13 @@ ms_set en ayprefse_HideTmpTags "Hide all tags marked temporary from\
 the tag property GUIs?"
 ms_set en ayprefse_TclPrecision "Precision of Tcl mathematics."
 
+# Mops-Import
+ms_set en mopsi_options_ResetDM "Reset all DisplayMode attributes of\
+imported objects to \\\"Global\\\"?"
+ms_set en mopsi_options_ResetST "Reset all Tolerance attributes of\
+imported objects to \\\"0.0\\\"?"
+
+#
 # fill "de"-locale
 ms_init de
 
@@ -276,10 +279,6 @@ die Konsole umgelenkt werden?"
 ms_set de ayprefse_Logging "Sollen alle Mitteilungen in einer Logdatei\
 mitgeschrieben werden?"
 ms_set de ayprefse_LogFile "Pfad und Name der Logdatei."
-ms_set de ayprefse_MIResetDM "Sollen alle DisplayMode-Werte beim Import von\
-\nMops Szenen auf \\\"Global\\\" zurückgesetzt werden?"
-ms_set de ayprefse_MIResetST "Sollen alle Tolerance-Werte beim Import von\
-\nMops Szenen auf \\\"0.0\\\" zurückgesetzt werden?"
 ms_set de ayprefse_SaveAddsMRU "Sollen die Namen abgespeicherter Szenen\
 den\nzuletzt-benutzte-Dateien-Einträgen im\nHauptmenü hinzugefügt werden?"
 ms_set de ayprefse_ToolBoxTrans "Soll das Werkzeugfenster als transient\
@@ -292,6 +291,14 @@ ms_set de ayprefse_HideTmpTags "Sollen temporäre Tags aus den Tag\
 Eigenschaften ausgeblendet werden?"
 ms_set de ayprefse_TclPrecision "Genauigkeit der Wandlung von Gleitkommazahlen von Tcl."
 
+# Mops-Import
+ms_set de mopsi_options_ResetDM "Sollen alle DisplayMode-Attribute von\
+importierten Objekten auf \\\"Global\\\" zurückgesetzt werden?"
+ms_set de mopsi_options_ResetST "Sollen alle Tolerance-Attribute von\
+importierten Objekten auf \\\"0.0\\\" zurückgesetzt werden?"
+
+
+#
 # fill "fr"-locale...
 ms_init fr
 ms_set fr ayprefse_Shaders " Liste de chemins où résident vos shaders\
@@ -402,10 +409,6 @@ TCL vers la console?"
 ms_set fr ayprefse_Logging "Sauvegarder tous les message dans un fichier?"
 ms_set fr ayprefse_LogFile "Chemin et nom du fichier de sauvegarde des\
 messages?"
-ms_set fr ayprefse_MIResetDM "Réinitialiser à Global tous les attributs\
-DisplayMode de tous les objets lors de l'importation\ndepuis une scène Mops?"
-ms_set fr ayprefse_MIResetST "Réinitialiser à 0.0 tous les attributs\
-Tolerance de tous les objets lors de l'importation\ndepuis une scène Mops?"
 ms_set fr ayprefse_SaveAddsMRU "Ajouter le nom des scène sauvegardées à\
 l'entrée de menu\nMost-Recently-Used files?"
 ms_set fr ayprefse_ToolBoxTrans "Rendre la fenêtre Boîte-à-Outils transient?"
@@ -416,3 +419,7 @@ ms_set fr ayprefse_HideTmpTags "Cacher tous les étiquette marquées\
 temporaires dans les propriétés de l'interface graphique?"
 ms_set fr ayprefse_TclPrecision "Precision des mathématiques Tcl."
 
+ms_set fr mopsi_options_ResetDM "Réinitialiser à Global tous les attributs\
+DisplayMode de tous les objets lors de l'importation\ndepuis une scène Mops?"
+ms_set fr mopsi_options_ResetST "Réinitialiser à 0.0 tous les attributs\
+Tolerance de tous les objets lors de l'importation\ndepuis une scène Mops?"

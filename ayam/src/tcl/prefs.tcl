@@ -177,9 +177,6 @@ proc prefs_open {} {
     addCheckB $fw ayprefse RedirectTcl [ms ayprefse_RedirectTcl]
     addCheckB $fw ayprefse Logging [ms ayprefse_Logging]
     addStringB $fw ayprefse LogFile [ms ayprefse_LogFile]
-    addText $fw e1 "Mops Import:"
-    addCheckB $fw ayprefse MIResetDM [ms ayprefse_MIResetDM]
-    addCheckB $fw ayprefse MIResetST [ms ayprefse_MIResetST]
     addText $fw e2 "UI:"
     addCheckB $fw ayprefse SaveAddsMRU [ms ayprefse_SaveAddsMRU]
     addCheckB $fw ayprefse ToolBoxTrans [ms ayprefse_ToolBoxTrans]
