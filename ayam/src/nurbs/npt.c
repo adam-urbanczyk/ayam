@@ -2529,6 +2529,7 @@ cleanup:
  */
 int
 ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
+	       ay_object *o5,
 	       int sections, int closed, ay_nurbpatch_object **patch,
 	       int has_start_cap, ay_object **start_cap,
 	       int has_end_cap, ay_object **end_cap)
@@ -2536,28 +2537,32 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
  int ay_status = AY_OK;
  ay_object *curve = NULL;
  ay_nurbpatch_object *new = NULL;
- ay_nurbcurve_object *cs1, *cs2, *r1, *r2, *tc;
+ ay_nurbcurve_object *cs1, *cs2, *r1, *r2, *tc, *ic;
  double *controlv = NULL;
  int i = 0, j = 0, a = 0, stride, incompatible = AY_FALSE;
- double u, p1[4], p2[4], p5[4], p6[4], p7[4], p8[4], p9[4];
+ double u, p1[4], p2[4], p5[4], p6[4], p7[4], p8[4], p9[4], p10[4];
  double T0[3] = {0.0,0.0,-1.0};
  double T1[3] = {0.0,0.0,0.0};
  double A[3] = {0.0,0.0,0.0};
  double lent0 = 0.0, lent1 = 0.0, lentn = 0.0, plenr1 = 0.0, plenr2 = 0.0;
+ double plenic = 0.0;
  double m[16] = {0}, mi[16] = {0}, mcs[16], mr1[16], mr2[16];
  double mr[16], mrs[16];
  /*double quat[4] = {0};*/
  double *cs1cv = NULL, *cs2cv = NULL, *r1cv = NULL, *r2cv = NULL, *rots = NULL;
- double *cs2cvi = NULL;
+ double *cs2cvi = NULL, *iccv = NULL;
  double scalx, scaly, scalz;
- double rotv[4];
+ double rotv[4] = {0};
+
+  stride = 4;
 
   if(!o1 || !o2 || !o3 || !o4 || !patch ||
      (has_start_cap && !start_cap) || (has_end_cap && !end_cap))
     return AY_ENULL;
 
   if((o1->type != AY_IDNCURVE) || (o2->type != AY_IDNCURVE) ||
-     (o3->type != AY_IDNCURVE) || (o4->type != AY_IDNCURVE))
+     (o3->type != AY_IDNCURVE) || (o4->type != AY_IDNCURVE) ||
+     (o5 && o5->type != AY_IDNCURVE))
     return AY_OK;
 
   cs1 = (ay_nurbcurve_object *)(o1->refine);
@@ -2608,7 +2613,25 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
       curve = NULL;
     } /* if */
 
-  stride = 4;
+  /* do we have an interpolation control curve? */
+  if(o5)
+    {
+      /* yes */
+      ic = (ay_nurbcurve_object *)(o5->refine);
+      /* apply all transformations to interpolation control curves controlv */
+      if(!(iccv = calloc(ic->length * stride, sizeof(double))))
+	{ ay_status = AY_EOMEM; goto cleanup; }
+      memcpy(iccv, ic->controlv, ic->length * stride * sizeof(double));
+
+      ay_trafo_creatematrix(o5, mr1);
+      a = 0;
+      for(i = 0; i < ic->length; i++)
+	{
+	  ay_trafo_apply4(&(iccv[a]), mr1);
+	  a += stride;
+	}
+      plenic = fabs(ic->knotv[ic->length] - ic->knotv[ic->order-1]);
+    }  /* if */
 
   /* apply all transformations to first cross-section curves controlv */
   if(!(cs1cv = calloc(cs1->length * stride, sizeof(double))))
@@ -2850,8 +2873,20 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
   /* copy cross sections controlv section times and sweep it along the rails */
   for(i = 1; i < sections; i++)
     {
-      ay_status = ay_interpol_1DA4D((double)i/sections, cs1->length,
-				    cs1cv, cs2cv, cs2cvi);
+      if(o5)
+	{
+	  u = ic->knotv[ic->order-1]+(((double)i/sections)*plenic);
+	  ay_nb_CurvePoint4D(ic->length-1, ic->order-1, ic->knotv, iccv,
+			     u, p10);
+	  ay_status = ay_interpol_1DA4D(p10[1], cs1->length,
+					cs1cv, cs2cv, cs2cvi);
+
+	}
+      else
+	{
+	  ay_status = ay_interpol_1DA4D((double)i/sections, cs1->length,
+					cs1cv, cs2cv, cs2cvi);
+	}
       if(ay_status)
 	{ goto cleanup; }
 
@@ -3085,6 +3120,8 @@ cleanup:
     free(cs2cv);
   if(cs2cvi)
     free(cs2cvi);
+  if(iccv)
+    free(iccv);
   if(new)
     {
       if(new->uknotv)

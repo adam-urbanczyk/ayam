@@ -372,10 +372,12 @@ ay_birail2_notifycb(ay_object *o)
  ay_birail2_object *birail2 = NULL;
  ay_object *curve1 = NULL, *curve2 = NULL, *pobject1 = NULL, *pobject2 = NULL;
  ay_object *curve3 = NULL, *curve4 = NULL, *pobject3 = NULL, *pobject4 = NULL;
+ ay_object *curve5 = NULL, *pobject5 = NULL;
  ay_object *npatch = NULL;
  int ay_status = AY_OK;
  int got_c1 = AY_FALSE, got_c2 = AY_FALSE;
  int got_c3 = AY_FALSE, got_c4 = AY_FALSE;
+ int got_c5 = AY_FALSE;
  int mode = 0;
  double tolerance;
 
@@ -472,6 +474,24 @@ ay_birail2_notifycb(ay_object *o)
 	} /* if */
     } /* if */
 
+  if(o->down->next->next->next->next)
+    {
+      curve5 = o->down->next->next->next->next;
+      if(curve5->type != AY_IDNCURVE)
+	{
+	  ay_status = ay_provide_object(curve5, AY_IDNCURVE, &pobject5);
+	  if(pobject5)
+	    {
+	      curve5 = pobject5;
+	      got_c5 = AY_TRUE;
+	    }
+	  else
+	    {
+	      curve5 = NULL;
+	    } /* if */
+	} /* if */
+    } /* if */
+
   /* birail2 */
   if(!(npatch = calloc(1, sizeof(ay_object))))
     {
@@ -481,7 +501,7 @@ ay_birail2_notifycb(ay_object *o)
   ay_object_defaults(npatch);
   npatch->type = AY_IDNPATCH;
 
-  ay_status = ay_npt_birail2(curve1, curve2, curve3, curve4,
+  ay_status = ay_npt_birail2(curve1, curve2, curve3, curve4, curve5,
 			   birail2->sections, AY_FALSE/*birail2->close*/,
 			   (ay_nurbpatch_object **)(&(npatch->refine)),
 			   birail2->has_start_cap, &(birail2->start_cap),
@@ -536,6 +556,11 @@ cleanup:
   if(got_c4)
     {
       ay_object_delete(pobject4);
+    }
+
+  if(got_c5)
+    {
+      ay_object_delete(pobject5);
     }
 
   if(npatch)
