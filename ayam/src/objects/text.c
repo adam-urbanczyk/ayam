@@ -885,8 +885,16 @@ ay_text_providecb(ay_object *o, unsigned int type, ay_object **result)
  ay_text_object *text = NULL;
  ay_object *new = NULL, **t = NULL, *p = NULL, *tmp = NULL;
 
-  if(!o || !result)
+  if(!o)
     return AY_ENULL;
+
+  if(!result)
+    {
+      if(type == AY_IDNPATCH)
+	return AY_OK;
+      else
+	return AY_ERROR;
+    }
 
   text = (ay_text_object *) o->refine;
 

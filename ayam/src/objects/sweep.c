@@ -563,8 +563,16 @@ ay_sweep_providecb(ay_object *o, unsigned int type, ay_object **result)
  ay_sweep_object *s = NULL;
  ay_object *new = NULL, **t = NULL, *p = NULL;
 
-  if(!o || !result)
+  if(!o)
     return AY_ENULL;
+
+  if(!result)
+    {
+      if(type == AY_IDNPATCH)
+	return AY_OK;
+      else
+	return AY_ERROR;
+    }
 
   s = (ay_sweep_object *) o->refine;
 
