@@ -117,6 +117,7 @@ proc reconsider { Selection } {
 	# Restore the current level so that the tree knows that the
 	# level has eventually changed
 	set ay(CurrentLevel) $rArray(oldLevel)
+	focus $ay(currentView)
 	destroy .reconsider
 	undo savsel
     }
@@ -146,7 +147,7 @@ proc reconsider { Selection } {
 	} else {
 	    tree_handleSelection
 	}
-	
+	focus $ay(currentView)
 	destroy .reconsider
     }
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
