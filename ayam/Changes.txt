@@ -1,8 +1,12 @@
-[CVS, 20. 02. 2003]:
+[CVS, 26. 02. 2003]:
 o bug fixes:
   - fixed RIB import creating object names with malicious characters (spaces)
   - fixed RenderGUI creating zombie processes on Linux, enable bug fix
     with -DAYENABLEWAIT in CFLAGS and set ayprefs(Wait) "waitPid" in .ayamrc
+  - fixed memory leaks while reading scenes
+  - fixed memory leak while exporting to RIB
+  - fixed memory leaks in undo mechanism
+  - fixed memory leak in edit master feature
 o added support for inline declarations of e.g. shader parameters to the
   RIB import plugin
 o added an example scene for subdivision meshes
