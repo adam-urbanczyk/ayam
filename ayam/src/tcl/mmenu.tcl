@@ -283,6 +283,8 @@ $m add command -label "Automatic Instancing" -command "ai_open"
 $m add separator
 $m add command -label "Add RiOption" -command "riopt_addp"
 $m add command -label "Add RiAttribute" -command "riattr_addp"
+$m add separator
+$m add command -label "Toggle Toolbox" -command "toolbox_toggle"
 
 # Help
 menubutton .fu.fMenu.hlp -text "Help" -menu .fu.fMenu.hlp.m -padx 3

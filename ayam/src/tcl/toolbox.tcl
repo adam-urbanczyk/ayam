@@ -547,3 +547,16 @@ proc toolbox_open { } {
     return;
 }
 # toolbox_open
+
+# toolbox_toggle:
+#  open or close toolbox window
+proc toolbox_toggle { } {
+
+    if { [winfo exists .tbw] } {
+	catch {destroy .tbw}
+    } else {
+	toolbox_open
+    }
+
+}
+# toolbox_toggle
