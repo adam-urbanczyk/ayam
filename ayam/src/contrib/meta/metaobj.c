@@ -27,7 +27,7 @@ static char versionstring[] = "$VER: " PROGNAME VERSION "";
 static char *metaobj_name = "MetaObj";
 static unsigned int metaobj_id;
 static char *metacomp_name = "MetaComp";
-static unsigned int metacomp_id;
+unsigned int metacomp_id;
 
 int Metacomp_Init (Tcl_Interp * interp);
 int metaobj_notifycb (ay_object * o);
@@ -113,7 +113,7 @@ metaobj_createcb (int argc, char *argv[], ay_object * o)
 
   w->currentnumpoly = 0;
   w->o = o->down;
-  w->cid = &metacomp_id;
+ // w->cid = &metacomp_id;
 
   mt_calceffect (w, SHADE);
 
@@ -963,10 +963,13 @@ metacomp_readcb (FILE * fileptr, ay_object * o)
   fscanf (fileptr, "%lg\n", &b->s);
   fscanf (fileptr, "%d\n", &b->formula);
   fscanf (fileptr, "%d\n", &b->rot);
-  fscanf (fileptr, "%d\n", &b->ex);
-  fscanf (fileptr, "%d\n", &b->ey);
-  fscanf (fileptr, "%d\n", &b->ez);
 
+  if(ay_read_version >=2)
+  {
+   fscanf (fileptr, "%d\n", &b->ex);
+   fscanf (fileptr, "%d\n", &b->ey);
+   fscanf (fileptr, "%d\n", &b->ez);
+  }
   o->refine = b;
 
   return AY_OK;

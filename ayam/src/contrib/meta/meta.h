@@ -22,9 +22,10 @@
 #include <time.h>
 #include "ayam.h"
 
+extern unsigned int metacomp_id;
+
 #define PROGNAME "Meta Object Modul"
 #define VERSION	 "1.0"
-
 
 #define ABS(a) (((a) < 0 ) ? -(a) : (a))
 
