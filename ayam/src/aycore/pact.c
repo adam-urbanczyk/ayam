@@ -1396,30 +1396,37 @@ ay_pact_wetcb(struct Togl *togl, int argc, char *argv[])
 
   if(ay_point_edit_coords)
     {
-      for(i=0;i<ay_point_edit_coords_number;i++)
+      for(i = 0; i < ay_point_edit_coords_number; i++)
 	{
 	  coords = ay_point_edit_coords[i]; 
 	  if(ay_point_edit_coords_homogenous)
 	    {
 	      new_weight = coords[3];
 	      if(dx>0.0)
-		new_weight *= 1.1;
+		{
+		  new_weight *= 1.1;
+		}
 	      else
-		new_weight *= 0.9;
+		{
+		  new_weight *= 0.9;
+		}
 	      coords[3] = new_weight;
 	    }
 	  else
 	    {
 	      ay_error(AY_ERROR, fname, "Point is not homogenous!");
-	    }
-	}
-    }
+	    } /* if */
+	} /* for */
 
-  ay_point_edit_object->modified = AY_TRUE;
-  ay_notify_force(ay_selection->object);
+      if(ay_point_edit_coords_homogenous)
+	{
+	  ay_point_edit_object->modified = AY_TRUE;
+	  ay_notify_force(ay_selection->object);
 
-  if(!ay_prefs.lazynotify)
-    ay_status = ay_notify_parent();
+	  if(!ay_prefs.lazynotify)
+	    ay_status = ay_notify_parent();
+	} /* if */
+    } /* if */
 
  return TCL_OK;
 } /* ay_pact_wetcb */
