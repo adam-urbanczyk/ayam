@@ -283,6 +283,7 @@ AYAMOBJS = aycore/bbc.o\
 	objects/camera.o\
 	objects/cap.o\
 	objects/cone.o\
+	objects/concatnc.o\
 	objects/cylinder.o\
 	objects/disk.o\
 	objects/extrude.o\
