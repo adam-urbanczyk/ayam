@@ -76,7 +76,7 @@ ay_clear_scene(void)
   ay_root->next = o;
 
   /* clear selection */
-  ay_status = ay_sel_free();
+  ay_status = ay_sel_free(AY_FALSE);
   if(ay_status)
     {
       return ay_status;

@@ -18,17 +18,18 @@
 /* ay_sel_free:
  *  frees entire list of selected objects;
  *  additionally clears the selected flag from
- *  previously selected objects
+ *  previously selected objects, if clear_selflag is AY_TRUE
  */
 int
-ay_sel_free(void)
+ay_sel_free(int clear_selflag)
 {
  ay_list_object *sel = ay_selection, *seln = NULL;
 
   while(sel)
     {
       seln = sel->next;
-      sel->object->selected = AY_FALSE;
+      if(clear_selflag)
+	sel->object->selected = AY_FALSE;
       free(sel);
       sel = seln;
     }

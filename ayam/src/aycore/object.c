@@ -319,7 +319,7 @@ ay_object_deletetcmd(ClientData clientData, Tcl_Interp *interp,
       sel = sel->next;
     } /* while */
 
-  ay_sel_free();
+  ay_sel_free(AY_FALSE);
 
   ay_notify_parent();
 
