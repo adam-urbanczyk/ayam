@@ -743,7 +743,7 @@ ay_objio_writepomesh(FILE *fileptr, ay_object *o, double *m)
 
 	  to->type = AY_IDPOMESH;
 
-	  ay_status = ay_tess_pomeshf(po, i, AY_FALSE,
+	  ay_status = ay_tess_pomeshf(po, i, q, r, AY_FALSE,
 				      (ay_pomesh_object **)&(to->refine));
 
 	  if(nextli)
@@ -780,6 +780,7 @@ ay_objio_writepomesh(FILE *fileptr, ay_object *o, double *m)
 	  to->type = AY_IDPOMESH;
 	  /*ay_trafo_copy(o, to);*/
 	  ay_objio_writepomesh(fileptr, to, m);
+	  ay_object_delete(to);
 	}
     }
   else
