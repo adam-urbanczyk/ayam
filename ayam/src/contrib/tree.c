@@ -687,7 +687,7 @@ ay_tree_dndtcmd(ClientData clientData, Tcl_Interp *interp,
  int ay_status = AY_OK;
  char fname[] = "treeDnd";
  ay_object *p = NULL, *o = NULL, **t = NULL, *open = NULL, *target = NULL;
- ay_list_object *sel = ay_selection, *newlevel = NULL;
+ ay_list_object *sel = ay_selection, *newlevel = NULL, *st = ay_selection;
  int i = 0, j = 0, instanceerr = AY_FALSE, has_callback = AY_FALSE;
  Tcl_DString ds;
  void **arr = NULL;
@@ -703,6 +703,17 @@ ay_tree_dndtcmd(ClientData clientData, Tcl_Interp *interp,
     {
       ay_error(AY_ENOSEL, fname, NULL);
       return TCL_OK;
+    }
+
+  /* check, whether ay_root "hides" in the selection somewhere */
+  while(st)
+    {
+      if(st->object == ay_root)
+	{
+	  ay_error(AY_ERROR, fname, "Can not move root!");
+	  return TCL_OK;
+	}
+      st = st->next;
     }
 
   p = ay_tree_getobject(argv[1]);
