@@ -12,11 +12,12 @@ This document describes how to set up Ayam on the Win32 platform.
 The executable of Ayam is located in the directory named <code>"bin"</code>
 .<br>
 You do not need to install Ayam in the system, you can start it
-directly with a double click from where you unpacked the archive.<br>
+directly with a double click from where you unpacked the archive.
+<p>
 If you get error messages about input or output file handles
 when trying to render directly from Ayam, please use the
-accompanying batch file <code>"ayam.bat"</code> to start Ayam.<p>
-
+accompanying batch file <code>"ayam.bat"</code> to start Ayam.
+<p>
 Before you start modelling with Ayam, the following three things have
 to be done:
 <OL>
@@ -24,9 +25,6 @@ to be done:
  <LI> Setting up Shaders
  <LI> Creating and Saving a Working Environment
 </OL>
-
-Do not worry about any error messages in red color, that appear
-in the console on first startup. We are going to fix them now.
 
 
 <H2>1. Saving Preferences</H2>
@@ -40,7 +38,7 @@ The preferences are saved to the file:<br>
 <code>"$(TEMP)/ayamrc"</code> else.
 <p>
 The following steps need to be done if you (for some reason)
-do not like it that way, or the preferences end up in silly
+do not like it that way, or the preferences end up in silly<br>
 places (e.g. Win95 is setting your $(HOME) to <code>"C:/"</code>, so that
 the preferences end up in <code>"C:/ayamrc"</code>...).<br>
 However, if anything is fine with you, just skip to Step 2 now.<p>
@@ -120,15 +118,18 @@ What are shaders? For the moment, we can safely assume that
 shaders are small files that carry material descriptions.
 Some example shaders come with your RenderMan compatible renderer
 (e.g. BMRT), but you may also create your own.<br>
-Currently, Ayam can only work with shaders that have been
-compiled with <code>"slc"</code> from BMRT (if no shader parsing
-plugin is loaded), so you should get and install BMRT first.<br>
-Now you need to point Ayam to the directories where your slc-compiled
-shaders reside in order to use them with the material
+Unless you load a shader parsing plugin (see below),
+Ayam can only work with shaders that have been compiled with <code>"slc"</code>
+from BMRT, so you may want to get and install BMRT first.
+Unfortunately, NVIDIA/Exluna stopped the official distribution of BMRT,
+but it can be found using the obvious search terms with your favourite
+search engine.<br>
+After the installation of BMRT you need to point Ayam to the directories
+where your slc-compiled shaders reside in order to use them with the material
 objects in Ayam.
 This is done using the preference setting <code>"Main/Shaders"</code>.
 Just open the preferences using the main menu entry
-<code>"Edit/Preferences"</code>,
+<code>"Edit/Preferences"</code> and
 enter the appropriate paths (separated by semicolons <code>";"</code>)
 into the string entry labeled <code>"Shaders"</code>.<br>
 An example string could look like this:<br>
@@ -176,8 +177,8 @@ you will get "invalid argument" Tcl error messages upon loading, or the
 plugin will fail to scan shaders later on.
 <p>
 Furthermore, all plugins have been compiled and tested against a
-specific version of the renderer (as outlined below); parsing shaders
-of other versions of those renderers possibly will not work.
+specific version of the corresponding renderer (as outlined below);
+parsing shaders of other versions of those renderers possibly will not work.
 <p>
 aysdr.dll: Pixie 1.3.3, depends on "ri.dll"<br>
 This plugin only works, if the preference setting "Shaders"
@@ -187,7 +188,7 @@ there).
 <p>
 ayslb.dll: Air 2.6, does not depend on other DLL files
 <p>
-ayslo3d.dll: 3Delight 2.0, depends on "3delight.dll"
+ayslo3d.dll: 3Delight 2.0.2, depends on "3delight.dll"
 <p>
 ayso.dll: RenderDotC 3.3.5, depends on "soargs.dll"<br>
 Since RenderDotC compiles all shaders as shared native code (into DLL files),
@@ -242,7 +243,7 @@ Quit Ayam and start it again, check the console for errors; then
 download <code>"Tutorial #1"</code> and do it.
 
 <HR>
-<i>Randolf Schultz, 16. Mar 2004<BR>
+<i>Randolf Schultz, 20. Mar 2004<BR>
 <A HREF="http://www.ayam3d.org/">
 http://www.ayam3d.org/</A>&nbsp;&nbsp;&nbsp;&nbsp;Reconstruct the World!
 </i>
