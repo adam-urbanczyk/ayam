@@ -364,7 +364,7 @@ array set ay {
  LastSelection ""
  slcext ""
  sext ""
- locales { en de }
+ locales { en de fr }
  ScanShaders 0
  need_redraw 1
 }
