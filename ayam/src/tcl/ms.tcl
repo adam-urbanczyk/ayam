@@ -165,6 +165,8 @@ ms_set en ayprefse_HideTmpTags "Hide all tags marked temporary from\nthe\
 tag property GUIs?"
 ms_set en ayprefse_TclPrecision "Precision of Tcl mathematics.\nHigh values\
 lead to exact but hard\nto edit numbers in entry fields."
+ms_set en ayprefse_SavePrefsGeom "Save geometry of preferences window for\
+next invocation?"
 ms_set en ayprefse_SMethod "Sampling method to be used for NURBS\nto PolyMesh\
 conversions."
 ms_set en ayprefse_SParam "Sampling method parameter."
@@ -312,6 +314,8 @@ Eigenschaften ausgeblendet werden?"
 ms_set de ayprefse_TclPrecision "Genauigkeit der Wandlung von\
 Gleitkommazahlen von Tcl.\nHohe Werte führen zu exakten aber schwer\
 editierbaren\nWerten in Eingabefeldern."
+ms_set de ayprefse_SavePrefsGeom "Geometrie der Voreinstellungen\
+für den nächsten Aufruf sichern?"
 ms_set de ayprefse_SMethod "Sampling-Methode, die für NURBS zu\nPolyMesh\
 Umwandlungen benutzt wird."
 ms_set de ayprefse_SParam "Parameter der Sampling-Methode."
