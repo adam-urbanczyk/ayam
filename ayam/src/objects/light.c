@@ -657,6 +657,10 @@ ay_light_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &(light->on));
 
+  Tcl_SetStringObj(ton,"IsLocal",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(light->local));
+
   Tcl_SetStringObj(ton,"Shadows",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &(light->shadows));
@@ -751,6 +755,10 @@ ay_light_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   Tcl_SetStringObj(ton,"IsOn",-1);
   to = Tcl_NewIntObj(light->on);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton,"IsLocal",-1);
+  to = Tcl_NewIntObj(light->local);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   Tcl_SetStringObj(ton,"Shadows",-1);
@@ -867,6 +875,11 @@ ay_light_readcb(FILE *fileptr, ay_object *o)
 
     }
 
+  if(ay_read_version >= 5)
+    {
+      fscanf(fileptr,"%d\n",&light->local);
+    }
+
  return AY_OK;
 } /* ay_light_readcb */
 
@@ -912,6 +925,8 @@ ay_light_writecb(FILE *fileptr, ay_object *o)
     {
       fprintf(fileptr, "0\n");
     }
+
+  fprintf(fileptr, "%d\n", light->local);
 
  return AY_OK;
 } /* ay_light_writecb */
