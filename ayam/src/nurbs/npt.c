@@ -3496,6 +3496,9 @@ ay_npt_topolymesh(ay_object *o, int sm, double smparam,
   /* return result */
   *pm = new;
 
+  /* immediately optimize the polymesh (remove multiply used vertices) */
+  ay_status = ay_pomesht_optimizecoords(po, AY_FALSE);
+
   /* clean up */
   free(uknots);
   free(vknots);
