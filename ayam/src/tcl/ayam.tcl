@@ -103,6 +103,7 @@ array set ayprefs {
  EFlush 2000
  mru {}
  ToolBoxTrans 0
+ RGTrans 0
  Kill "kill"
  Cat "cat"
 
