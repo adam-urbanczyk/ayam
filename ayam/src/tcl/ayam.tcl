@@ -918,6 +918,7 @@ ayam_loadscript browser
 ayam_loadscript ai
 ayam_loadscript prog
 ayam_loadscript objsel
+ayam_loadscript tc
 
 # load scripts of statically linked additional modules
 if { $AYIDRWRAPPED == 1 } {
