@@ -33,6 +33,7 @@ set w [frame $ay(pca).$ScriptAttr(w)]
 addMenu $w ScriptAttrData Type [list Inactive Run Create Modify]
 pack [text $w.tScript -width 60 -height 60]
 eval [subst "bindtags $w.tScript \{$w.tScript Text all\}"]
+bind $w.tScript <Key-Escape> {resetFocus}
 
 # Tcl -> C
 proc setScriptp { } {
