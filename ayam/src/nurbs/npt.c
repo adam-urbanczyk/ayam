@@ -2374,7 +2374,7 @@ ay_npt_extrude(double height, ay_object *o,
 
       /*      memcpy(point, &(curve->controlv[a]), 4*sizeof(GLdouble));*/
 
-     /* transform point */
+      /* transform point */
       x = curve->controlv[a];
       y = curve->controlv[a+1];
       z = curve->controlv[a+2];
@@ -2402,7 +2402,7 @@ ay_npt_extrude(double height, ay_object *o,
 
       a += 4;
 
-    }
+    } /* for */
 
   new->controlv = controlv;
 
@@ -3413,7 +3413,7 @@ ay_npt_topolymesh(ay_object *o, int smethod, double sparam,
       a++;
     }
   a=0;
-  for(i = 0; i < width*height*4; i++)
+  for(i = 0; i < (unsigned int)width*height*4; i++)
     {
       controls[a] = (GLfloat)npatch->controlv[a]; 
       a++;
