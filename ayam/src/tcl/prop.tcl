@@ -113,7 +113,7 @@ addString $w matPropData Name
 # getTagsp:
 #
 proc getTagsp { } {
-global ay ayprefs tagsPropData Tags
+global ay ayprefs tagsPropData Tags tcl_platform
 
 getTags names values
 set tagsPropData(names) $names
@@ -122,7 +122,29 @@ set tagsPropData(values) $values
 # create Tags-UI
 catch {destroy $ay(pca).$Tags(w)}
 set w [frame $ay(pca).$Tags(w)]
-addCommand $w c1 "Remove all Tags!" {delTags all;plb_update}
+addCommand $w c0 "Remove all Tags!" {delTags all;plb_update}
+
+set bw 1
+set f [frame $w.fDelete -relief sunken -bd $bw]
+menubutton $f.mb -text "Remove Tag!" -menu $f.mb.m -relief raised -bd $bw\
+	-padx 0 -pady 1
+if { $tcl_platform(platform) == "windows" } {
+    $f.mb configure -pady 1
+}
+set m [menu $f.mb.m -tearoff 0]
+pack $f.mb -in $f -side left -fill x -expand yes -pady 0
+pack $f -in $w -side top -fill x
+
+set i 0
+foreach tag $names {
+    if { !$ayprefs(HideTmpTags) || ![tagIsTemp $tag] } {
+
+	$m add command -label "Tag#$i" -command "setTags -delete $i;plb_update"
+
+	incr i
+    }
+}
+
 addCommand $w c2 "Add Tag!" {addTagp}
 set i 0
 foreach tag $names {

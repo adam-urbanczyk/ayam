@@ -235,7 +235,8 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp * interp,
 
   if(argc < 3)
     {
-      ay_error(AY_EARGS, fname, "\\[type value\\]|-index index type value");
+      ay_error(AY_EARGS, fname,
+	       "\\[type value\\]|-index index type value|-delete index");
       return TCL_OK;
     }
 
@@ -253,7 +254,7 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp * interp,
       if(argc < 5)
 	{
 	  ay_error(AY_EARGS, fname,
-		   "\\[type value\\]|-index index type value");
+		   "\\[type value\\]|-index index type value|-delete index");
 	  return TCL_OK;
 	}
 
@@ -310,6 +311,32 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp * interp,
 	  strcpy(new->val, argv[4]);
 	  
 	} /* if */
+
+      return TCL_OK; /* early exit! */
+    } /* if */
+
+  if(!strcmp(argv[1], "-delete"))
+    {
+
+      Tcl_GetInt(ay_interp, argv[2], &index);
+
+      /* find tag */
+      o = sel->object;
+      new = o->tags;
+      next = &(o->tags);
+      for(i = 0; i < index; i++)
+	{
+	  if(!new)
+	    {
+	      ay_error(AY_ERROR, fname, "Tag not found!");
+	      return TCL_OK;
+	    }
+
+	  next = &(new->next);
+	  new = new->next;
+	} /* for */
+      *next = new->next;
+      ay_tags_free(new);
 
       return TCL_OK; /* early exit! */
     } /* if */
