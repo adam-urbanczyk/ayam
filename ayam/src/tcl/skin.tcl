@@ -21,6 +21,7 @@ w     fSkinAttr
 }
 
 array set SkinAttrData {
+Interpolate 0
 DisplayMode 1
 Knot-Type_U 1
 }
@@ -29,7 +30,7 @@ set w [frame $ay(pca).$SkinAttr(w)]
 
 
 
-addCheck $w SkinAttrData Interpolate
+addMenu $w SkinAttrData Interpolate [list No Curves Surface]
 addParam $w SkinAttrData Order_U
 addMenu $w SkinAttrData Knot-Type_U [list Bezier B-Spline NURB Custom]
 addCheck $w SkinAttrData StartCap
