@@ -298,6 +298,17 @@ proc shortcut_main { w } {
     bind $w <[repcont $aymainshortcuts(SProp8)]> "plb_showprop 8"
     bind $w <[repcont $aymainshortcuts(SProp9)]> "plb_showprop 9"
 
+    bind $w <[repcont $aymainshortcuts(SProp00)]> "plb_showprop 0"
+    bind $w <[repcont $aymainshortcuts(SProp11)]> "plb_showprop 1"
+    bind $w <[repcont $aymainshortcuts(SProp22)]> "plb_showprop 2"
+    bind $w <[repcont $aymainshortcuts(SProp33)]> "plb_showprop 3"
+    bind $w <[repcont $aymainshortcuts(SProp44)]> "plb_showprop 4"
+    bind $w <[repcont $aymainshortcuts(SProp55)]> "plb_showprop 5"
+    bind $w <[repcont $aymainshortcuts(SProp66)]> "plb_showprop 6"
+    bind $w <[repcont $aymainshortcuts(SProp77)]> "plb_showprop 7"
+    bind $w <[repcont $aymainshortcuts(SProp88)]> "plb_showprop 8"
+    bind $w <[repcont $aymainshortcuts(SProp99)]> "plb_showprop 9"
+
  return;
 }
 # shortcut_main
