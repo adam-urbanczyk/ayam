@@ -212,7 +212,7 @@ proc forAllT_tree { type recursive command } {
 		treeSelect ""
 		set oldclevel $ay(CurrentLevel)
 		set ay(CurrentLevel) $sel
-		set old i $i
+		set oldi $i
 		update
 		catch { forAllT_tree $type $recursive $command } retCode
 		if { $retCode == -1 } {
