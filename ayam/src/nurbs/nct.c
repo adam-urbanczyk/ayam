@@ -186,6 +186,7 @@ ay_nct_collapseselp(ay_object *o)
  ay_point_object *selp = NULL;
  double *first = NULL;
  int count = 0, i, found = AY_FALSE;
+ char fname[] = "collapseselp";
 
   if(!o)
     return AY_OK;
@@ -197,14 +198,17 @@ ay_nct_collapseselp(ay_object *o)
 
   selp = o->selp;
 
-  if(!selp)
-    return AY_OK;
-
   /* count points to collapse */
   while(selp)
     {
       count++;
       selp = selp->next;
+    }
+
+  if((!selp) || (count < 2))
+    {
+      ay_error(AY_ERROR, fname, "Select (<t>ag) atleast two points first!");
+      return AY_ERROR;
     }
 
   if(!(new = calloc(1,sizeof(ay_mpoint_object))))
@@ -257,11 +261,10 @@ ay_nct_collapseselp(ay_object *o)
 	    {
 	      last = &(p->next);
 	      p = p->next;
-	    }
-	}
-
+	    } /* if */
+	} /* while */
       selp = selp->next;
-    }
+    } /* while */
 
   /* link new mpoint */
   new->next = c->mpoints;
@@ -281,7 +284,8 @@ ay_nct_explodemp(ay_object *o)
  ay_nurbcurve_object *c = NULL;
  ay_mpoint_object *p = NULL, *t = NULL, **last = NULL;
  ay_point_object *selp = NULL;
- int found = AY_FALSE, i;
+ int found = AY_FALSE, i, err = AY_TRUE;
+ char fname[] = "explodemp";
 
   if(!o)
     return AY_OK;
@@ -294,7 +298,10 @@ ay_nct_explodemp(ay_object *o)
   selp = o->selp;
 
   if(!selp)
-    return AY_OK;
+    {
+      ay_error(AY_ERROR, fname, "Select (<t>ag) some multiple points first!");
+      return AY_ERROR;
+    }
 
   /* we simply delete all mpoints, that contain a selected point */
   while(selp)
@@ -317,15 +324,21 @@ ay_nct_explodemp(ay_object *o)
 	      free(p->points);
 	      free(p);
 	      p = t;
+	      err = AY_FALSE;
 	    }
 	  else
 	    {
 	      last = &(p->next);
 	      p = p->next;
-	    }
-	}
-
+	    } /* if */
+	} /* while */
       selp = selp->next;
+    } /* while */
+
+  if(err)
+    {
+      ay_error(AY_ERROR, fname, "Select (<t>ag) some multiple points first!");
+      ay_status = AY_ERROR;
     }
 
  return ay_status;
@@ -2701,23 +2714,25 @@ ay_nct_getpntfromindex(ay_nurbcurve_object *curve, int index, double **p)
  *  at their ends
  */
 int
-ay_nct_concatmultiple(ay_object *curves, ay_object **result)
+ay_nct_concatmultiple(int knot_type, ay_object *curves, ay_object **result)
 {
  int ay_status;
  char fname[] = "nct_concatmultiple";
- double *newknotv = NULL, *newcontrolv = NULL, *ncv = NULL, u, pl;
- int numcurves = 0, i, j, a, order = 0, length = 0, ktype = -1;
+ double *newknotv = NULL, *newcontrolv = NULL, *ncv = NULL;
+ int numcurves = 0, i, j, a, order = -1, length = 0, ktype;
  int glu_display_mode = 0;
  double glu_sampling_tolerance = 0.0;
  ay_nurbcurve_object *nc;
  ay_object *o = NULL, *newo = NULL;
 
+  /* check arguments */
   if(!curves)
     {
       ay_error(AY_ENULL, fname, NULL);
       return AY_ERROR;
     }
 
+  /* create new object */
   if(!(newo = calloc(1, sizeof(ay_object))))
     {
       ay_error(AY_EOMEM, fname, NULL);
@@ -2727,74 +2742,69 @@ ay_nct_concatmultiple(ay_object *curves, ay_object **result)
   newo->type = AY_IDNCURVE;
   ay_status = ay_object_defaults(newo);
 
+  /* count curves; calculate length of concatenated curve */
   o = curves;
   while(o)
     {
       nc = (ay_nurbcurve_object *)o->refine;
-
-      /* take order and ktype from first curve */
-      if(ktype == -1)
-	{
-	  order = nc->order;
-	  ktype = nc->knot_type;
-	  glu_sampling_tolerance = nc->glu_sampling_tolerance;
-	  glu_display_mode = nc->display_mode;
-	}
 
       length += nc->length;
       numcurves++;
       o = o->next;
     } /* while */
 
-  /* construct new knotvector */
-  ktype = AY_KTNURB;
-
-  /* XXXX the following does not work yet!
-   * it should take into account knot vectors without "inner" knots
-   * such as the very common knot vector: "0 0 0 0 1 1 1 1"
-   */
-  /*
-  ktype = AY_KTCUSTOM;
-  if(!(newknotv = calloc(length + order, sizeof(double))))
-    {
-      ay_error(AY_EOMEM, fname, NULL);
-      free(newo);
-      return AY_ERROR;
-    }
-  
-  memset(newknotv, 0, order*sizeof(double));
-  a = order;
-  j = 0;
+  /* take order, tolerance, and display_mode from first curve */
   o = curves;
-  while(o)
-    {
-      nc = (ay_nurbcurve_object *)o->refine;
+  nc = (ay_nurbcurve_object *)o->refine;
+  order = nc->order;
+  glu_sampling_tolerance = nc->glu_sampling_tolerance;
+  glu_display_mode = nc->display_mode;
 
-      pl = nc->knotv[nc->length] - nc->knotv[0];
-      newknotv[a] = ((double)j)/numcurves;
-      a++;
-      for(i = nc->order; i < nc->length; i++)
+  /* construct new knotvector */
+  if(knot_type == 0)
+    {
+      ktype = AY_KTNURB;
+    }
+  else
+    {
+      ktype = AY_KTCUSTOM;
+
+      if(!(newknotv = calloc(length + order, sizeof(double))))
 	{
-	  u = (nc->knotv[i]/pl - nc->knotv[i-1]/pl);
-	  newknotv[a] = newknotv[a-1] + u;
-	  a++;
+	  ay_error(AY_EOMEM, fname, NULL);
+	  free(newo);
+	  return AY_ERROR;
 	}
-      j++;
-      o = o->next;
-    }
 
-  for(i = 0; i < order; i++)
-    {
-      newknotv[length+i] = (double)numcurves;
-    }
-  */
+      a = 0;
+      j = 0;
+      o = curves;
+      while(o)
+	{
+	  nc = (ay_nurbcurve_object *)o->refine;
 
+	  for(i = 0; i < nc->length+nc->order; i++)
+	    {
+	      newknotv[a] = nc->knotv[i]+j;
+	      a++;
+	    }
 
+	  j+=2;
+
+	  o = o->next;
+	  if(o)
+	    o = o->next;
+	} /* while */
+
+    } /* if */
+
+  /* construct new control point vector */
   if(!(newcontrolv = calloc(length * 4, sizeof(double))))
     {
       ay_error(AY_EOMEM, fname, NULL);
       free(newo);
-      /*free(newknotv);*/
+      if(knot_type == 0)
+	free(newknotv);
       return AY_ERROR;
     }
 
@@ -2809,13 +2819,14 @@ ay_nct_concatmultiple(ay_object *curves, ay_object **result)
     } /* while */
 
   ay_status = ay_nct_create(order, length,
-			    ktype, newcontrolv, NULL/*newknotv*/,
+			    ktype, newcontrolv, newknotv,
 			    (ay_nurbcurve_object **)&(newo->refine));
 
   if(ay_status)
     {
       free(newo);
-      /*free(newknotv);*/
+      if(knot_type == 0)
+	free(newknotv);
       free(newcontrolv);
       ay_error(ay_status, fname, NULL);
       return AY_ERROR;
@@ -2840,16 +2851,18 @@ ay_nct_concatmultiple(ay_object *curves, ay_object **result)
  *  create a fillet curve between the last point of curve c1
  *  and the first point of curve c2; the fillet will be a simple
  *  4 point Bezier curve with tangents matching the tangents of
- *  endpoints of the curves c1/c2
+ *  endpoints of the curves c1/c2, tangent length will be scaled
+ *  by <tanlen>
  */
 int
-ay_nct_fillgap(ay_nurbcurve_object *c1, ay_nurbcurve_object *c2,
+ay_nct_fillgap(int order, double tanlen,
+	       ay_nurbcurve_object *c1, ay_nurbcurve_object *c2,
 	       ay_object **result)
 {
  double p1[4], p2[4], p3[4], p4[4], n1[3], n2[3], l[3];
  double *U, *Pw, u, d, w;
  double *controlv = NULL;
- int n, p;
+ int n, p, numcontrol, i;
  ay_object *o = NULL;
  ay_nurbcurve_object *c = NULL;
  int ay_status = AY_OK;
@@ -2896,29 +2909,45 @@ ay_nct_fillgap(ay_nurbcurve_object *c1, ay_nurbcurve_object *c2,
 
   AY_V3SUB(l, p2, p1)
   d = AY_V3LEN(l);
-  AY_V3SCAL(n1, d/3.0)
-  AY_V3SCAL(n2, d/3.0)
+  AY_V3SCAL(n1, d*tanlen)
+  AY_V3SCAL(n2, d*tanlen)
   AY_V3SUB(p3, p1, n1)
   AY_V3SUB(p4, p2, n2)
 
+  /*numcontrol = (order>4?order:4)*4;*/
+  numcontrol = order;
+
   /* fill new controlv */
-  if(!(controlv = calloc(16, sizeof(double))))
+  if(!(controlv = calloc(numcontrol*4, sizeof(double))))
     return AY_EOMEM;
 
+  /* XXXX what happens for order==3? the right thing? */
   memcpy(&(controlv[0]), p1, 4*sizeof(double));
   memcpy(&(controlv[4]), p3, 4*sizeof(double));
-  memcpy(&(controlv[8]), p4, 4*sizeof(double));
-  memcpy(&(controlv[12]), p2, 4*sizeof(double));
+  memcpy(&(controlv[(numcontrol-2)*4]), p4, 4*sizeof(double));
+  memcpy(&(controlv[(numcontrol-1)*4]), p2, 4*sizeof(double));
 
-  ay_status = ay_nct_create(4, 4, AY_KTBEZIER, controlv,
-			    NULL, &c);
-  if(ay_status)
-    { free(controlv); return AY_ERROR; }
+  if(numcontrol > 4)
+    {
+      AY_V3SUB(p1, p4, p2)
+      d = AY_V3LEN(p1);
+      for(i = 1; i < (numcontrol - 4); i++)
+	{
+	  memcpy(p3, p1, 4*sizeof(double));
+	  AY_V3SCAL(p3, i*(d/(numcontrol-3)))
+	  memcpy(&(controlv[(1 + i) * 4]), p3, 4*sizeof(double));
+	}
+    }
 
   if(!(o = calloc(1, sizeof(ay_object))))
     { free(controlv); return AY_EOMEM; }
 
   ay_object_defaults(o);
+
+  ay_status = ay_nct_create(numcontrol, order, AY_KTBEZIER, controlv,
+			    NULL, &c);
+  if(ay_status)
+    { free(o); free(controlv); return AY_ERROR; }
 
   o->refine = c;
   o->type = AY_IDNCURVE;
@@ -2935,7 +2964,7 @@ ay_nct_fillgap(ay_nurbcurve_object *c1, ay_nurbcurve_object *c2,
  *  the fillets right in this list
  */
 int
-ay_nct_fillgaps(int closed, ay_object *curves)
+ay_nct_fillgaps(int closed, int order, double tanlen, ay_object *curves)
 {
  ay_object *c = NULL, *fillet = NULL, *last = NULL;
  int ay_status = AY_OK;
@@ -2946,7 +2975,8 @@ ay_nct_fillgaps(int closed, ay_object *curves)
       if(c->next)
 	{
 	  fillet = NULL;
-	  ay_status = ay_nct_fillgap((ay_nurbcurve_object *)c->refine,
+	  ay_status = ay_nct_fillgap(order, tanlen,
+				     (ay_nurbcurve_object *)c->refine,
 				     (ay_nurbcurve_object *)c->next->refine,
 				     &fillet);
 	  if(ay_status)
@@ -2965,7 +2995,8 @@ ay_nct_fillgaps(int closed, ay_object *curves)
   if(closed)
     {
       fillet = NULL;
-      ay_status = ay_nct_fillgap((ay_nurbcurve_object *)last->refine,
+      ay_status = ay_nct_fillgap(order, tanlen,
+				 (ay_nurbcurve_object *)last->refine,
 				 (ay_nurbcurve_object *)curves->refine,
 				 &fillet);
       if(ay_status)
@@ -3123,7 +3154,7 @@ ay_nct_addinternalcps(ay_object *curve, int where)
 {
  int ay_status = AY_OK;
  int num, i, a, b;
- double *ncv = NULL, v[4] = {0.0,0.0,0.0,0.0}, len = 0.0, sf = 0.0;
+ double *ncv = NULL, v[4] = {0.0,0.0,0.0,0.0}, sf = 0.0;
  ay_nurbcurve_object *nc =  NULL;
 
  if(curve && curve->refine)
