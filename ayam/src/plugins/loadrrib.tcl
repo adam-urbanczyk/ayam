@@ -1,6 +1,8 @@
 set oldcd [pwd]
-cd [file dirname [info nameofexecutable]]/plugins
-catch {io_lc rrib.so} result
+cd [file dirname [info script]]
+global ay
+set pluginname rrib.$ay(soext)
+catch {io_lc $pluginname} result
 if { $result != "" } {
     puts $result
 }
