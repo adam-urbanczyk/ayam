@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>11. Dec 2001
+<date>17. Dec 2001
 <abstract>
 This is the documentation of Ayam - a free 3D modeling environment
 for the RenderMan interface.
@@ -642,7 +642,20 @@ see section <ref id="iac" name="Interactive Actions">.<p>
 The tool window may be configured by the user using the
 preference setting toolBoxList in the ayamrc file.
 You may select from the groups and change the order in which
-they appear in the tool window.
+they appear in the tool window. See section
+<ref id="hidprefs" name="Hidden Preference Settings"> for more information.<p>
+
+You may also resize the window to change from the vertical
+standard layout to a horizontal one, optimizing the
+use of precious screen space. After resizing, the tool box will
+re-layout the buttons, warning you if the space is to small for all
+buttons to display, and if the window is too big for the desired layout
+shrink wrap the window to match the size occupied by the buttons.
+Furthermore, using the preference setting <tt>Misc/ToolBoxTrans</tt>
+the tool box can be made transient.
+It will then (depending on the window manager or its configuration)
+get a different or no decoration, no icon, and will always be iconified
+when the main window gets iconified.
 
 <sect1>Preferences<label id="prefs">
 <p>
@@ -911,10 +924,9 @@ will add that file to the most recently used list in the main menu
 for quick access.
 <item><tt/"ToolBoxTrans"/; controls whether the tool box window
 should be declared as a transient window of the main window.
-It will then (depending on the window manager) get a different
-or no decoration, no icon, and will always be iconified when the main window
-gets iconified. This setting has no effect on Win32. On this platform
-the tool box will always be a transient window to save space on the task bar.
+It will then (depending on the window manager or its configuration)
+get a different or no decoration, no icon, and will always be iconified
+when the main window gets iconified.
 </itemize>
 
 <sect>Interactive Actions (Modeling)<label id="iac">
@@ -3521,6 +3533,60 @@ global ay
 $ay(cm) add command -label "Easy Sweep" -command {
  easySweep
 }
+</code>
+<sect2>Tool Box Buttons<label id="scextoolbox">
+<p>
+Here is another example that shows how you may add buttons
+to the tool box.
+myImage should be an image created e.g. from a gif file of
+the size 25 by 25 pixels.
+<code>
+global ay
+
+# create an image from a GIF file:
+image create photo myImage -file /home/user/a.gif
+
+set b .tbw.f.mybutton
+
+# if the button not already exists:
+if { ![winfo exists $b] } {
+
+  # create it:
+  button $b -padx 0 -pady 0 -image myImage -command myCommand
+
+  # instruct Ayam about the new button:
+  # you could also use linsert, to insert the button in
+  # a specific place rather than append to the end
+  lappend ay(toolbuttons) mybutton
+
+  # display the button:
+  # from now on it will be under the
+  # automatic tool box layout management
+  toolbox_layout
+}
+</code>
+
+Adding buttons with just text is a little bit more involved,
+as the sizes of the new buttons often do not fit well in the
+icon button scheme with its constant button size.<p>
+
+Here is an example that adds two buttons to the bottom of the
+tool box spanning the whole window (this works best with the
+standard tool box layout of 4 by 12 buttons):
+<code>
+# create a frame:
+set f [frame .tbw.f.fcollex]
+
+# create two buttons inside the frame:
+button $f.b1 -width 5 -text "Coll." -command { collNC; rV; }
+button $f.b2 -width 5 -text "Expl." -command { explNC; rV; }
+pack $f.b1 $f.b2 -side left -fill x -expand yes
+
+# calculate the row number below the last row:
+set row [expr [lindex [grid size .tbw.f] 1] + 1]
+
+# now display the frame at calculated row, spanning the whole window:
+grid $f -row $row -column 0 -columnspan [lindex [grid size .tbw.f] 0]
 </code>
 
 <sect>Miscellaneous
