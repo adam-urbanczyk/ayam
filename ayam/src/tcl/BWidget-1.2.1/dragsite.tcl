@@ -1,7 +1,7 @@
 # ------------------------------------------------------------------------------
 #  dragsite.tcl
 #  This file is part of Unifix BWidget Toolkit
-#  $Id: dragsite.tcl,v 1.1 2001/10/10 16:15:30 randolf Exp $
+#  $Id: dragsite.tcl,v 1.2 2002/06/05 11:22:41 randolf Exp $
 # ------------------------------------------------------------------------------
 #  Index of commands:
 #     - DragSite::include
@@ -120,6 +120,12 @@ proc DragSite::_begin_drag { event source state X Y } {
             set _state "press"
         }
         motion {
+	    # XXXX Bugfix from CVS for Bug #4324 which hits us too
+	    if { ![info exists _state] } {
+		# This is just extra protection. There seem to be
+		# rare cases where the motion comes before the press.
+		return
+	    }
             if { ![string compare $_state "press"] } {
                 if { abs($_x0-$X) > 3 || abs($_y0-$Y) > 3 } {
                     set _state "done"
