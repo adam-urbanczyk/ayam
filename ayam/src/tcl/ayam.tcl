@@ -1,6 +1,6 @@
 # Ayam, a free 3D modeler for the RenderMan interface.
 #
-# Ayam is copyrighted 1998-2001 by Randolf Schultz
+# Ayam is copyrighted 1998-2003 by Randolf Schultz
 # (rschultz@informatik.uni-rostock.de) and others.
 #
 # All rights reserved.
@@ -381,6 +381,7 @@ array set ay {
  ScanShaders 0
  need_redraw 1
  sstsema 0
+ mouseup 0
 }
 # array ay
 
@@ -389,27 +390,24 @@ set ay_error 0
 
 # Platform Specific Initialization:
 if { $tcl_platform(platform) == "windows" } {
+    # Windows specific settings:
     set ay(separator) ";"
     set ay(pady) 0
     set ayprefs(TmpDir) "$env(TEMP)"
     regsub -all {\\} $ayprefs(TmpDir) {/} ayprefs(TmpDir)
     set ayprefs(EnvFile) "~/2view.ay"
     set ayprefs(PickEpsilon) 0.0
+
     set sc ""
     set scdir ""
     set sc [ info nameofexecutable ]
-    if { $sc != "" } { set scdir [ file dirname $scdir ] }
-	
-    if { $ayprefs(Cat) == "cat" } {
-	if { $scdir != "" } {
-	    set ayprefs(Cat) [file join $scdir "cat.exe"]
-	}
+    if { $sc != "" } { set scdir [ file dirname $scdir ] }	
+    if { $scdir != "" } {
+	set ayprefs(Cat) [file join $scdir "cat.exe"]
     }
-    if  { $ayprefs(Cat) == "kill" } {
-	if { $scdir != "" } {
-	    set ayprefs(Kill) [file join $scdir "kill.exe"]
-	}
-    }
+
+    set ayprefs(Kill) "w32kill"
+
     set ayprefs(QRenderUI) 0
     set ayprefs(RenderUI) 0
     set ayprefs(ToolBoxTrans) 1
@@ -420,8 +418,9 @@ if { $tcl_platform(platform) == "windows" } {
     emptyimg blank
     emptyimg configure -width 6 -height 6
 } else {
+    # UNIX specific settings:
     set ayprefs(Plugins) "[file dirname [info nameofexecutable]]/plugins"
-    set ayprefs(Scripts) "plugins/loadrrib.tcl;plugins/loadidr.tcl"
+    set ayprefs(Scripts) "plugins/loadrrib.tcl:plugins/loadmfio.tcl"
 }
 
 # are true color visuals available?
@@ -841,6 +840,7 @@ pack .fl -in . -side bottom -fill both
 frame .fl.dummy
 console .fl.con -showmenu 0 -height 5 -width 60
 pack .fl.con -in .fl -expand 1 -fill both
+
 # additional key/mouse bindings for the console
 bind .fl.con.console $aymainshortcuts(SwCon) { focus [tk_focusNext %W] }
 
@@ -850,6 +850,7 @@ if { ( $tcl_platform(platform) != "windows" ) &&
 	bind all <ISO_Left_Tab> {tkTabToWindow [tk_focusPrev %W]}
 }
 
+# bind to mouse wheel on UNIX
 bind .fl.con.console <ButtonPress-4> {
     .fl.con.console yview scroll -1 pages; break
 }
@@ -873,7 +874,7 @@ pane_motion $vheight . .__h1 height y 1
 # clear console
 if { [winfo exists .fl.con] == 1 } { .fl.con clear }
 
-# console prompt == current dir
+# console prompt == tail of current dir
 if { [winfo exists .fl.con] == 1 } {
     set .fl.con(-prompt) {[file tail [pwd]]>}
     Console:prompt .fl.con
@@ -980,6 +981,7 @@ proc ayam_flush { } {
     after $ayprefs(EFlush) { ayam_flush }
 }
 # ayam_flush
+
 after $ayprefs(EFlush) { ayam_flush }
 
 # Ignition:
@@ -1004,25 +1006,31 @@ prefs_set
 
 # immediately switch to ListBox?
 if { $ayprefs(showtr) == 0 } {
+    # Yes:
     tree_close .fu.fMain.fHier
     olb_open .fu.fMain.fHier
     olb_update
 }
 update
 
+# scan for shaders
 shader_scanAll
 
+# bind keyboard shortcuts to main menu
 puts stdout "Establishing key bindings..."
 shortcut_main .
 
+# open the toolbox window
 if { $ayprefs(showtb) == 1 } {
     toolbox_open
 }
 
+# re-establish old main window position and size
 if { $ayprefs(mainGeom) != "" } {
     winMoveOrResize . $ayprefs(mainGeom)
 }
 
+# load the working environment scene file
 if { ($ayprefs(LoadEnv) == 1) && ($ay(failsafe) == 0) } {
     viewCloseAll
     puts stdout "Loading environment from $ayprefs(EnvFile)..."
@@ -1037,21 +1045,21 @@ if { ($ayprefs(LoadEnv) == 1) && ($ay(failsafe) == 0) } {
     uS
 }
 
-
+# run user defined startup Tcl scripts
 if { $ayprefs(Scripts) != "" } {
-puts stdout "Running user defined scripts..."
+    puts stdout "Running user defined scripts..."
 
-set scripts [split "$ayprefs(Scripts)" $ay(separator)]
+    set scripts [split "$ayprefs(Scripts)" $ay(separator)]
 
-foreach script $scripts {
-    if { [file exists $script] } {
-	puts ${script}...
-	catch {source $script}
+    foreach script $scripts {
+	if { [file exists $script] } {
+	    puts ${script}...
+	    catch {source $script}
+	}
     }
 }
-}
 
-# now, process remaining arguments
+# process remaining arguments (load further scene(s))
 puts stdout "Processing remaining arguments..."
 set i 0
 set j 0
@@ -1111,7 +1119,8 @@ foreach j $avnames {
 # build most recently used files menu entries
 io_mruUMenu
 
-# auto scroll property canvas to item with focus
+# establish auto scrolling of the property canvas to the item with
+# the input focus, when the Tab key is used to move the focus
 bind all <Tab> +plb_focus
 bind all <Shift-Tab> +plb_focus
 if { ( $tcl_platform(platform) != "windows" ) &&
@@ -1138,7 +1147,7 @@ proc bgerror { message } {
 }
 # bgerror
 
-# now activate all views
+# now "activate" all views: establish mouse and key bindings
 foreach view $ay(views) { viewBind $view }
 # if there is a view window under the mouse pointer, make it current
 after idle viewMouseToCurrent
