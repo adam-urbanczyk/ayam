@@ -273,7 +273,7 @@ $m.nc add command -label "NURBCircleArc" -command {
     runTool ay(ncircarc) "Arc:" "crtNCircle %0; uCR; sL; rV;"
 }
 $m.nc add command -label "TrimRect" -command {
-    crtNRect; uCR; sL; rV}
+    crtNRect; set ay(ul) $ay(CurrentLevel); uS 0 1; rV}
 $m.nc add separator
 $m.nc add command -label "NURBSphere" -command {
     crtNSphere; uCR; sL; rV}

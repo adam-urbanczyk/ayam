@@ -2278,7 +2278,7 @@ ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int ay_status;
  ay_list_object *lev = ay_currentlevel;
- ay_object *parent = NULL;
+ ay_object *parent = NULL, **last = NULL;
  ay_nurbpatch_object *patch = NULL;
  ay_nurbcurve_object *curve = NULL;
  char fname[] = "create_trimrect";
@@ -2290,7 +2290,7 @@ ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
  double knots[7] = {0.0, 0.0, 0.25, 0.5, 0.75, 1.0, 1.0};
  int i = 0, create_trim = AY_FALSE;
  ay_object *o = NULL;
-
+ ay_list_object *sel = ay_selection;
 
   if(!(o = calloc(1, sizeof(ay_object))))
     {
@@ -2301,19 +2301,26 @@ ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
   o->type = AY_IDNCURVE;
   ay_status = ay_object_defaults(o);
 
-  if(lev->next)
+  if(sel && sel->object && (sel->object->type == AY_IDNPATCH))
     {
-      parent = lev->next->object;
-      if(parent)
-	{
-	  if(parent->type == AY_IDNPATCH)
-	    {
-	      create_trim = AY_TRUE;
-	      patch = (ay_nurbpatch_object *)parent->refine;
-	    }
-	}
+      create_trim = AY_TRUE;
+      patch = (ay_nurbpatch_object *)sel->object->refine;
     }
-
+  else
+    {
+      if(lev->next)
+	{
+	  parent = lev->next->object;
+	  if(parent)
+	    {
+	      if(parent->type == AY_IDNPATCH)
+		{
+		  create_trim = AY_TRUE;
+		  patch = (ay_nurbpatch_object *)parent->refine;
+		} /* if */
+	    } /* if */
+	} /* if */
+    } /* if */
 
   if(!(curve = calloc(1,sizeof(ay_nurbcurve_object))))
     {
@@ -2369,7 +2376,37 @@ ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
   o->type = AY_IDNCURVE;
   o->refine = curve;
 
-  ay_object_link(o);
+  if(!patch)
+    {
+      ay_object_link(o);
+    }
+  else
+    {
+      if(!(sel && sel->object && (sel->object->type == AY_IDNPATCH)))
+	{
+	  ay_object_link(o);
+	}
+      else
+	{
+	  parent = sel->object->down;
+	  if(!parent)
+	    {
+	      sel->object->down = o;
+	      ay_object_crtendlevel(&(o->next));
+	    }
+	  else
+	    {
+	      last = &(sel->object->down);
+	      while(parent->next)
+		{
+		  last = &(parent->next);
+		  parent = parent->next;
+		} /* while */
+	      o->next = *last;
+	      *last = o;
+	    } /* if */
+	} /* if */
+    } /* if */
 
   ay_nct_recreatemp(curve);
 
