@@ -234,6 +234,21 @@ bind $w <Enter> {
 	set ay(cviewsema) 0
 	update
     }
+
+    bind [winfo toplevel %W] <Alt-Motion> {
+	set w [winfo toplevel %W]
+	$w.f3D.togl configure -cursor exchange
+	bind $w <Alt-Motion> {}
+	bind $w <Motion> {}
+    }
+    bind [winfo toplevel %W] <Motion> {
+	set w [winfo toplevel %W]
+	$w.f3D.togl configure -cursor left_ptr
+	bind $w <Motion> {}
+	bind $w <Alt-Motion> {}
+    }
+
+
 }
 
 
