@@ -586,6 +586,11 @@ ay_material_readcb(FILE *fileptr, ay_object *o)
       ay_status = ay_read_shader(fileptr, &material->eshader);
     }
 
+  if(ay_read_version >= 4)
+    {
+      fscanf(fileptr,"%d\n",&material->sides);
+    }
+
   material->nameptr = &(o->name);
   material->refcountptr = &(o->refcount);
   material->objptr = o;
@@ -642,7 +647,6 @@ ay_material_writecb(FILE *fileptr, ay_object *o)
   fprintf(fileptr, "%d\n", material->reflection);
   fprintf(fileptr, "%d\n", material->shadow);
 
-
   if(material->sshader)
     {
       fprintf(fileptr, "1\n");
@@ -683,6 +687,7 @@ ay_material_writecb(FILE *fileptr, ay_object *o)
       fprintf(fileptr, "0\n");
     }
 
+  fprintf(fileptr, "%d\n", material->sides);
 
  return AY_OK;
 } /* ay_material_writecb */
