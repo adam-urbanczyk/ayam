@@ -381,12 +381,13 @@ proc actionTagP { w } {
 	%W mc
 	set oldx %x
 	set oldy %y
-	%W selpac %x %y
     }
 
     bind $w <ButtonRelease-1> {
 	if { ($oldx != %x) || ($oldy != %y)} {
 	    %W selpac %x %y $oldx $oldy
+	} else {
+	    %W selpac %x %y
 	}
 	%W setconf -rect $oldx $oldy %x %y 0
 	rV
