@@ -35,6 +35,8 @@ o the toolbox looks much nicer now on Win32
 o added preferences setting "Misc/ToolBoxTrans" that may be used to make
   the tool box window transient on Unix (the toolbox is now always transient
   on Win32 to save space in the task bar)
+o added "CreateMP" option to NURBS curves that inhibits creation of
+  multiple points
 
 [02. 10. 2001] Ayam1.0 beta4:
 o bug fixes:
