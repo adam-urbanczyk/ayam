@@ -171,6 +171,10 @@ on its name, then press <Ctrl+Shift+i> (Copy Marked Prop).}
 {Do not underestimate the power of the Skin!}
 {To find the master of an instance, press <Ctrl+Shift+m>.}
 {Your object tree needs updating? Press <Ctrl+l>.}
+{Press <0> to quickly select the last property.}
+{Press <1> - <9> to quickly select properties.}
+{Hold down <Shift> and drag the mouse to zoom into regions.}
+{Menu keyboard shortcuts do not work? Press <Esc> first!}
 }
 }
 # array ayprefs
@@ -630,6 +634,9 @@ proc uCR { } {
 
     } else { uS }
 
+    # set scene changed state to changed
+    set ay(sc) 1
+
  return;
 }
 # uCR
@@ -1019,6 +1026,7 @@ ayam_loadscript run
 ayam_loadscript uie
 ayam_loadscript shortcut
 ayam_loadscript ms
+ayam_loadscript birail1
 ayam_loadscript box
 ayam_loadscript bpatch
 ayam_loadscript camera

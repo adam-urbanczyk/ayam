@@ -245,6 +245,9 @@ ay_init(Tcl_Interp *interp)
   if((ay_status = ay_view_init(interp)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 
+  if((ay_status = ay_birail1_init(interp)))
+    { ay_error(ay_status, fname, NULL); return AY_ERROR; }
+
   if((ay_status = ay_box_init(interp)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 
