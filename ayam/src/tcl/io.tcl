@@ -1119,12 +1119,9 @@ proc io_exportOBJ { selected } {
 	set f [frame $w.f1]
 	pack $f -in $w -side top -fill x
 
-	addCheck $f objio_options Selected
-	# [ms objio_options_SelOnly]
-	addCheck $f objio_options TessPoMesh
-	# [ms objio_options_TessPoMesh]
-	addCheck $f objio_options OmitCurves
-	# [ms objio_options_OmitCurves]
+	addCheckB $f objio_options Selected [ms objio_options_Selected]
+	addCheckB $f objio_options TessPoMesh [ms objio_options_TessPoMesh]
+	addCheckB $f objio_options OmitCurves [ms objio_options_OmitCurves]
 
 	set f [frame $w.f2]
 	button $f.bok -text "Ok" -width 5 -command {
