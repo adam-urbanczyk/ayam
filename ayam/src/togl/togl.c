@@ -1,4 +1,4 @@
-/* $Id: togl.c,v 1.2 2002/05/28 15:29:28 randolf Exp $ */
+/* $Id: togl.c,v 1.3 2002/05/28 20:58:20 randolf Exp $ */
 
 /*
  * Togl - a Tk OpenGL widget
@@ -13,6 +13,9 @@
 
 /*
  * $Log: togl.c,v $
+ * Revision 1.3  2002/05/28 20:58:20  randolf
+ * fixed another memory leak
+ *
  * Revision 1.2  2002/05/28 15:29:28  randolf
  * fixed some memory leaks
  *
@@ -1785,6 +1788,13 @@ static void ToglCmdDeletedProc( ClientData clientData )
    struct Togl *togl = (struct Togl *)clientData;
    Tk_Window tkwin = togl->TkWin;
 
+   if (togl && tkwin) {
+      Tk_DeleteEventHandler(tkwin,
+                         ExposureMask | StructureNotifyMask,
+                         Togl_EventProc,
+                         (ClientData)togl);
+   }
+
    /*
     * This procedure could be invoked either because the window was
     * destroyed and the command was then deleted (in which case tkwin
@@ -1795,6 +1805,7 @@ static void ToglCmdDeletedProc( ClientData clientData )
       togl->TkWin = NULL;
       Tk_DestroyWindow(tkwin);
    }
+
 }
 
 
