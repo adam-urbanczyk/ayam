@@ -18,6 +18,8 @@
 #include "ayam.h"
 #include "tiffio.h"
 
+/* global variables and types local to this module */
+
 char idr_ay_version_ma[] = AY_VERSIONSTR;
 char idr_ay_version_mi[] = AY_VERSIONSTRMI;
 
@@ -37,7 +39,6 @@ static char *idr_ridrtagname = "RIDR";
 static char *idr_r3idrtagtype;
 static char *idr_r3idrtagname = "R3IDR";
 
-
 /* internal IDR tag type used to mark changed objects */
 static char *idr_cidrtagtype;
 static char *idr_cidrtagname = "CIDR";
@@ -45,10 +46,6 @@ static char *idr_cidrtagname = "CIDR";
 /* internal IDR tag type used to mark objects in "check change" buffer */
 static char *idr_ccidrtagtype;
 static char *idr_ccidrtagname = "CCIDR";
-
-/* functions local to this module */
-int idr_clear_importance(ay_object *o);
-int idr_copy_importance(ay_object *o, char *from_type);
 
 /* list structure for picture parts */
 typedef struct idr_picpart_s {
@@ -61,8 +58,6 @@ typedef struct idr_picpart_s {
 } idr_picpart;
 
 idr_picpart *idr_partlist = NULL, **idr_partlist_next;
-
-/* global variables */
 
 uint32 *idr_picture_buf = NULL;  /* the result picture is stored here */
 
@@ -91,9 +86,111 @@ typedef struct idr_param_s {
 static ay_object *idr_selected = NULL;
 
 
-/* prototypes */
+/* prototypes of functions local to this module */
+int idr_propagate_material(ay_object *from, ay_object *to);
+
+double idr_get_dist(double *p1, double *p2);
+
+int idr_get_center(ay_object *o, double *center);
+
+int idr_propagate_parent(ay_object *from, double threshhold);
+
+int idr_propagate_dist(double *p1, ay_object *from, ay_object *cur,
+		       double threshhold);
+
+int idr_propagate_disttcmd(ClientData clientData, Tcl_Interp *interp,
+			   int argc, char *argv[]);
+
+int idr_save_selected(void);
+
+int idr_assign_impsel(void);
+
+int idr_clear_changed(ay_object *o);
+
+int idr_assign_impchanged(void);
+
+int idr_3dreg_topart(ay_object *o, ay_view_object *view,
+		     idr_picpart **partlist);
+
+int idr_assign_importance(int mode, ay_view_object *view);
+
+int idr_clear_importance(ay_object *o);
+
+int idr_copy_importance(ay_object *o, char *from_type);
+
+int idr_show_parts(struct Togl *togl, idr_picpart *partlist);
+
+int idr_wrib_object(ay_object *o, char *file, double importance, int exclude,
+		    double pimportance);
+
+int idr_wrib_scene(char *file, char *image, double importance, int exclude,
+		   /*int halfsr,*/
+		   double *from,
+		   double *to,
+		   double roll, double zoom,
+		   double nearp, double farp,
+		   int width, int height, int type,
+		   int left, int bottom, int right, int top);
+
+int idr_translate_points(RtPoint position, RtPoint direction, double roll,
+			 double *src, double *dst, int num);
+
 int idr_get2dbbc(ay_object *o, int *left, int *right,
 		 int *bottom, int *top);
+
+void idr_optbbcombine(idr_picpart **part);
+
+int idr_checkboxes(idr_picpart *part1, idr_picpart *part2,
+		   idr_picpart *opartlist, idr_picpart *tpartlist,
+		   int wasted);
+
+void idr_combineboxes(idr_picpart *part1, idr_picpart *part2,
+		      idr_picpart **tpartlist);
+
+void idr_removeoverlappingboxes(idr_picpart **part);
+
+int idr_get2dbbclist(idr_picpart **partlist, double importance,
+		     int width, int height, ay_object *o);
+
+int idr_getpartsfromimpreg(idr_picpart **partlist, struct Togl *togl,
+			   double importance, int width, int height);
+
+int idr_getpartsfrom3dimpreg(idr_picpart **partlist, struct Togl *togl,
+			     double importance, int width, int height);
+
+int idr_getpartlist(idr_picpart **partlist, struct Togl *togl,
+		    int idrmode, double importance,
+		    int width, int height, ay_object *o);
+
+int idr_wrib_tcb(struct Togl *togl, int argc, char *argv[]);
+
+void idr_char2hex(unsigned char c, char *h);
+
+int idr_read_tiff(char *name, uint32 *buf, int *width, int *height,
+		  Tcl_Interp *interp);
+
+void idr_combine_pics(uint32 *db, int dw, int dh, uint32 *sb, int sw, int sh,
+		      int l, int b, int part_alpha);
+
+int idr_combineresultstcmd(ClientData clientData, Tcl_Interp *interp,
+			   int argc, char *argv[]);
+
+int idr_writetifftcmd(ClientData clientData, Tcl_Interp *interp,
+		      int argc, char *argv[]);
+
+int idr_draw_cb(struct Togl *togl, ay_object *o);
+
+int idr_delregion(char *vname);
+
+int idr_defregion_tcb(struct Togl *togl, int argc, char *argv[]);
+
+int idr_drawroot_cb(struct Togl *togl, ay_object *o);
+
+int idr_tree_selecttcmd(ClientData clientData, Tcl_Interp *interp,
+			int argc, char *argv[]);
+
+int Idr_Init(Tcl_Interp *interp);
+
 
 /* functions */
 
@@ -112,7 +209,7 @@ idr_propagate_material(ay_object *from, ay_object *to)
   while(to)
     {
 
-      if(to->mat == mat) 
+      if(to->mat == mat)
       {
 	  if(!to->tags)
 	    {
@@ -151,7 +248,8 @@ idr_get_dist(double *p1, double *p2)
   AY_V3SUB(p3, p2, p1)
 
  return(AY_V3LEN(p3));
-}
+} /* idr_get_dist */
+
 
 int
 idr_get_center(ay_object *o, double *center)
@@ -163,17 +261,17 @@ idr_get_center(ay_object *o, double *center)
   center[1] = o->movy;
   center[2] = o->movz;
   flag = ay_bbc_get(o, bb);
-  
+
   if(flag != AY_ERROR)
     {
       /* get center of bbox */
 
-      
+
 
     }
 
  return AY_OK;
-}
+} /* idr_get_center */
 
 
 /* idr_propagate_parent:
@@ -189,7 +287,7 @@ idr_propagate_parent(ay_object *from, double threshhold)
   clevel = ay_currentlevel->next;
   while((threshhold > 0.0) && (clevel->object != ay_root))
     {
-      
+
       if(clevel->object != ay_root)
 	{
 	  o = clevel->object;
@@ -239,12 +337,12 @@ idr_propagate_dist(double *p1, ay_object *from, ay_object *cur,
  ay_tag_object *next = NULL;
 
  o = cur;
- 
+
  while(o->next)
    {
      if(o != from)
        {
-	 
+
 	 if(o->down && o->down->next)
 	   {
 	     ay_clevel_add(o);
@@ -269,7 +367,7 @@ idr_propagate_dist(double *p1, ay_object *from, ay_object *cur,
 	      glPopMatrix();
 
 	      ay_trafo_apply3(p2, mm);
- 
+
 	      if(idr_get_dist(p1, p2) < threshhold)
 		{
 		  /* make o important! */
@@ -492,7 +590,7 @@ idr_save_selected()
 		    return AY_EOMEM;
 
 		  sprintf(t->val, "%d", i);
-	  
+
 		  /* link new tag */
 		  t->next = o->tags;
 		  o->tags = t;
@@ -515,7 +613,7 @@ idr_save_selected()
  *
  */
 int
-idr_assign_impsel()
+idr_assign_impsel(void)
 {
  ay_list_object *sel = ay_selection;
  ay_tag_object *t = NULL, *told = NULL, *tnew = NULL;
@@ -552,7 +650,7 @@ idr_assign_impsel()
 	    return AY_EOMEM;
 
 	  sprintf(told->val, "%g", 1.0);
-	  
+
 	}
       else
 	{
@@ -570,7 +668,7 @@ idr_assign_impsel()
 	    return AY_EOMEM;
 
 	  sprintf(tnew->val, "%g", 1.0);
-	  
+
 	  /* link new tag */
 	  tnew->next = o->tags;
 	  o->tags = tnew;
@@ -604,7 +702,7 @@ idr_clear_changed(ay_object *o)
 	     down = down->next;
 	   }
        }
-     
+
      /* find tag */
      t = o->tags;
      tprev = &(o->tags);
@@ -642,7 +740,7 @@ idr_clear_changed(ay_object *o)
  *  assign importance to changed objects
  */
 int
-idr_assign_impchanged()
+idr_assign_impchanged(void)
 {
  ay_tag_object *t = NULL, *told = NULL, *tnew = NULL;
  ay_list_object *sel = ay_selection;
@@ -744,7 +842,7 @@ idr_assign_impchanged()
 		return AY_EOMEM;
 
 	      sprintf(told->val, "%g", 1.0);
-	 
+
 	    }
 	  else
 	    {
@@ -760,9 +858,9 @@ idr_assign_impchanged()
 
 	      if(!(tnew->val = calloc(64, sizeof(char))))
 		return AY_EOMEM;
-	      
+
 	      sprintf(tnew->val, "%g", 1.0);
-	  
+
 	      /* link new tag */
 	      tnew->next = o->tags;
 	      o->tags = tnew;
@@ -785,7 +883,7 @@ idr_assign_impchanged()
 
 
 /* idr_3dreg_topart:
- *  
+ *
  */
 int
 idr_3dreg_topart(ay_object *o, ay_view_object *view, idr_picpart **partlist)
@@ -853,7 +951,7 @@ idr_3dreg_topart(ay_object *o, ay_view_object *view, idr_picpart **partlist)
       {
 	return AY_EOMEM;
       }
-      
+
       part->next = *partlist;
       *partlist = part;
       part->left = left;
@@ -1002,7 +1100,7 @@ idr_clear_importance(ay_object *o)
 	     down = down->next;
 	   }
        }
-     
+
      /* find tag */
      t = o->tags;
      tprev = &(o->tags);
@@ -1059,7 +1157,7 @@ idr_copy_importance(ay_object *o, char *from_type)
 	     down = down->next;
 	   }
        }
-     
+
      /* find IDR tag */
      t = o->tags;
      while(t)
@@ -1109,7 +1207,7 @@ idr_copy_importance(ay_object *o, char *from_type)
 
 	     sscanf(tidr->val, "%lg", &dtemp);
 	     sprintf(tiidr->val, "%g", dtemp);
-	  
+
 	     /* link new tag */
 	     tiidr->next = o->tags;
 	     o->tags = tiidr;
@@ -1123,13 +1221,13 @@ idr_copy_importance(ay_object *o, char *from_type)
 		 free(tiidr->val);
 		 tiidr->val = NULL;
 	       }
-	     	     
+
 	     if(!(tiidr->val = calloc(64, sizeof(char))))
 	       return AY_EOMEM;
 
 	     sscanf(tidr->val, "%lg", &dtemp);
 	     sprintf(tiidr->val, "%g", dtemp);
-	  
+
 
 	   }
 
@@ -1171,7 +1269,7 @@ idr_show_parts(struct Togl *togl, idr_picpart *partlist)
       v = v->next;
     }
 
- 
+
  part = partlist;
  while(part)
    {
@@ -1220,7 +1318,7 @@ idr_show_parts(struct Togl *togl, idr_picpart *partlist)
  *               and o does not define an importance, we assume the
  *               parent importance as current importance of o
  */
-int 
+int
 idr_wrib_object(ay_object *o, char *file, double importance, int exclude,
 		double pimportance)
 {
@@ -1327,7 +1425,7 @@ idr_wrib_object(ay_object *o, char *file, double importance, int exclude,
 					      oimportance);
 		  if(ay_status)
 		    return ay_status;
-	      
+
 		  down = down->next;
 		} /* while */
 
@@ -1380,7 +1478,7 @@ idr_wrib_object(ay_object *o, char *file, double importance, int exclude,
 		  RiDeclare(parname, "string");
 		  RiAttribute("identifier", parname,
 			      (RtPointer)&o->name, RI_NULL);
-		  
+
 		}
 	      else
 		{
@@ -1395,7 +1493,7 @@ idr_wrib_object(ay_object *o, char *file, double importance, int exclude,
 	      RiArchiveRecord(RI_COMMENT, o->name);
 	    }
 	}
-	
+
       RiAttributeBegin();
       RiTransformBegin();
 
@@ -1453,7 +1551,7 @@ idr_wrib_object(ay_object *o, char *file, double importance, int exclude,
 				      oimportance);
 	  if(ay_status)
 	    return ay_status;
-	      
+
 	  down = down->next;
 	} /* while */
 
@@ -1501,7 +1599,7 @@ idr_wrib_object(ay_object *o, char *file, double importance, int exclude,
  *        01 - rendrib mode (unmask unselected objects by RiMatte)
  *        02 - child mode (don't check selection)
  */
-int 
+int
 idr_wrib_object(ay_object *o, char *file, int mode)
 {
  int ay_status = AY_OK;
@@ -1539,7 +1637,7 @@ idr_wrib_object(ay_object *o, char *file, int mode)
       if(mode != 2)
 	{
 	  if((sel == NULL) && (mode == 1))
-	      RiMatte(0);     
+	      RiMatte(0);
 	}
       return ay_status; /* XXXX early exit! */
     }
@@ -1560,7 +1658,7 @@ idr_wrib_object(ay_object *o, char *file, int mode)
 		  RiDeclare(parname, "string");
 		  RiAttribute("identifier", parname,
 			      (RtPointer)&o->name, RI_NULL);
-		  
+
 		}
 	      else
 		{
@@ -1575,7 +1673,7 @@ idr_wrib_object(ay_object *o, char *file, int mode)
 	      RiArchiveRecord(RI_COMMENT, o->name);
 	    }
 	}
-	
+
       RiAttributeBegin();
       RiTransformBegin();
 
@@ -1632,7 +1730,7 @@ idr_wrib_object(ay_object *o, char *file, int mode)
 	  ay_status = ay_wrib_object(file, down);
 	  if(ay_status)
 	    return ay_status;
-	      
+
 	  down = down->next;
 	} /* while */
 
@@ -1658,7 +1756,7 @@ idr_wrib_object(ay_object *o, char *file, int mode)
     {
       /* end RiMatte(1) */
       if((sel == NULL) && (mode == 1))
-	  RiMatte(0);     
+	  RiMatte(0);
     }
  return ay_status;
 } /* idr_wrib_object */
@@ -1904,9 +2002,9 @@ idr_translate_points(RtPoint position, RtPoint direction, double roll,
 
   /* aim along z axis */
   /* calculate the two left angles */
-  roty = atan2(direction[0], direction[2]);  
+  roty = atan2(direction[0], direction[2]);
   rotx = atan2(direction[1],
-	       sqrt(direction[2]*direction[2]+direction[0]*direction[0]));  
+	       sqrt(direction[2]*direction[2]+direction[0]*direction[0]));
   for (n = 0; n < num; n++)
     {
       x = -(src[n*3+0]-position[0]);
@@ -1917,7 +2015,7 @@ idr_translate_points(RtPoint position, RtPoint direction, double roll,
       s = sin(-roty); c = cos(-roty);
       dst[n*3+0] = x*c - z*s;
       dst[n*3+2] = x*s + z*c;
-  
+
       s = sin(-rotx); c = cos(-rotx);
       dst[n*3+1] = y*c + dst[n*3+2]*s;
       z = -y*s + dst[n*3+2]*c;
@@ -2077,7 +2175,7 @@ idr_checkboxes(idr_picpart *part1, idr_picpart *part2,
  int lc, bc, rc, tc;
  int f, flag;
  idr_picpart *part;
- 
+
   if(part1->left < part2->left)
     l = part1->left;
   else
@@ -2216,7 +2314,7 @@ idr_combineboxes(idr_picpart *part1, idr_picpart *part2,
 {
  idr_picpart *part, *lastpart, *nextpart;
  int l, b, r, t, flag;
- 
+
   /* find box before part2 in bounding box list */
   part = part1;
   while(part->next != part2)
@@ -2400,7 +2498,7 @@ idr_removeoverlappingboxes(idr_picpart **part)
  idr_picpart *add, *new_src;
  int l, b, r, t;
  int l1, b1, r1, t1;
- int del_src, del_dst; 
+ int del_src, del_dst;
  int flag, flag2, bp;
  unsigned char div_flags[] = { 0xDB, 0x00, 0x5A, 0x00, 0x00, 0x00, 0x7E };
 
@@ -2478,7 +2576,7 @@ idr_removeoverlappingboxes(idr_picpart **part)
 			  if((flag2 != 0) && (flag2 != 1) && (flag2 != 2) &&
 			     (flag2 != 4) && (flag2 != 8))
 			    {
-			      if(src->left < dst->left)	
+			      if(src->left < dst->left)
 				  l1 = src->left;
 			      else
 				  l1 = dst->left;
@@ -2701,8 +2799,7 @@ idr_get2dbbclist(idr_picpart **partlist, double importance,
  */
 int
 idr_getpartsfromimpreg(idr_picpart **partlist, struct Togl *togl,
-		       double importance,
-		       int width, int height)
+		       double importance, int width, int height)
 {
  int ay_status = AY_OK;
  ay_tag_object *t = NULL, *told = NULL, *tnew = NULL;
@@ -2776,7 +2873,7 @@ idr_getpartsfromimpreg(idr_picpart **partlist, struct Togl *togl,
 		      found = AY_TRUE;
 		    } /* if */
 		} /* if */
-	     
+
 	    } /* if */
 
 	} /* if */
@@ -2830,9 +2927,9 @@ idr_getpartsfromimpreg(idr_picpart **partlist, struct Togl *togl,
 
 	      if(!(told->val = calloc(64, sizeof(char))))
 		return AY_EOMEM;
-	      
+
 	      sprintf(told->val, "%g", importance);
-	  
+
 	    }
 	  else
 	    {
@@ -2850,7 +2947,7 @@ idr_getpartsfromimpreg(idr_picpart **partlist, struct Togl *togl,
 		return AY_EOMEM;
 
 	      sprintf(tnew->val, "%g", importance);
-	  
+
 	      /* link new tag */
 	      tnew->next = o->tags;
 	      o->tags = tnew;
@@ -2863,14 +2960,14 @@ idr_getpartsfromimpreg(idr_picpart **partlist, struct Togl *togl,
  return ay_status;
 } /* idr_getpartsfromimpreg */
 
+
 /*
  * idr_getpartsfrom3dimpreg:
  *
  */
 int
 idr_getpartsfrom3dimpreg(idr_picpart **partlist, struct Togl *togl,
-		       double importance,
-		       int width, int height)
+		       double importance, int width, int height)
 {
  int ay_status = AY_OK;
  ay_tag_object *t = NULL, *told = NULL, *tnew = NULL;
@@ -2883,7 +2980,7 @@ idr_getpartsfrom3dimpreg(idr_picpart **partlist, struct Togl *togl,
   if(ay_root->down)
     {
       o = ay_root->down;
-	 
+
       while(o->next)
 	{
 	  if(o->type != AY_IDVIEW)
@@ -2939,9 +3036,9 @@ idr_getpartsfrom3dimpreg(idr_picpart **partlist, struct Togl *togl,
 
 	      if(!(told->val = calloc(64, sizeof(char))))
 		return AY_EOMEM;
-	      
+
 	      sprintf(told->val, "%g", importance);
-	  
+
 	    }
 	  else
 	    {
@@ -2959,7 +3056,7 @@ idr_getpartsfrom3dimpreg(idr_picpart **partlist, struct Togl *togl,
 		return AY_EOMEM;
 
 	      sprintf(tnew->val, "%g", importance);
-	  
+
 	      /* link new tag */
 	      tnew->next = o->tags;
 	      o->tags = tnew;
@@ -3003,11 +3100,8 @@ idr_getpartlist(idr_picpart **partlist, struct Togl *togl,
      break;
    }
 
-
  return ay_status;
 } /* idr_getpartlist */
-
-
 
 
 /*
@@ -3126,7 +3220,7 @@ idr_wrib_tcb(struct Togl *togl, int argc, char *argv[])
       Tcl_SetStringObj(ton, buf, -1);
       to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
 			  TCL_GLOBAL_ONLY);
-      Tcl_GetDoubleFromObj(interp, to, &((params[i]).importance));      
+      Tcl_GetDoubleFromObj(interp, to, &((params[i]).importance));
     } /* for */
 
   /* adjust roll, if up vector points down */
@@ -3175,7 +3269,7 @@ idr_wrib_tcb(struct Togl *togl, int argc, char *argv[])
       bottom = -height/2;
       right = -width/2+width;
       top = -height/2+height;
-        
+
 
       switch((params[i]).optimizebb)
 	{
@@ -3222,7 +3316,7 @@ idr_wrib_tcb(struct Togl *togl, int argc, char *argv[])
 		idr_partlist = part;
 	      }
 	    idr_partlist_next = &part->next;
-  
+
 	    /* write RIB */
 	    idr_wrib_scene(part->RIBFile, part->ImageFile,
 			   (params[i]).importance, (params[i]).exclude,
@@ -3242,10 +3336,10 @@ idr_wrib_tcb(struct Togl *togl, int argc, char *argv[])
 	  break;
 	case 1:
 	  { /* just combine all parts to one */
-	    
+
 	    idr_getpartlist(&tpartlist, togl, idrmode, params[i].importance,
 			    width, height, ay_root);
-	    
+
 	    idr_optbbcombine(&tpartlist);
 	    /* link tpartlist to global picture part list */
 	    if(idr_partlist_next)
@@ -3268,7 +3362,7 @@ idr_wrib_tcb(struct Togl *togl, int argc, char *argv[])
 		return TCL_OK;
 	      }
 	    strcpy(part->RIBFile, buf);
-	    
+
 	    sprintf(buf, "%s_%d_0.tif", idrbase, i);
 	    if(!(part->ImageFile = calloc(strlen(buf)+1, sizeof(char))))
 	      {
@@ -3277,7 +3371,7 @@ idr_wrib_tcb(struct Togl *togl, int argc, char *argv[])
 	      }
 	    strcpy(part->ImageFile, buf);
 
-	    idr_wrib_scene(part->RIBFile, part->ImageFile, 
+	    idr_wrib_scene(part->RIBFile, part->ImageFile,
 			   (params[i]).importance, (params[i]).exclude,
 			   view->from, view->to, view->roll, view->zoom,
 			   view->nearp, view->farp, width, height,
@@ -3415,7 +3509,7 @@ idr_wrib_tcb(struct Togl *togl, int argc, char *argv[])
 		  }
 		strcpy(part->ImageFile, buf);
 
-		idr_wrib_scene(part->RIBFile, part->ImageFile, 
+		idr_wrib_scene(part->RIBFile, part->ImageFile,
 			       (params[i]).importance, (params[i]).exclude,
 			       view->from, view->to, view->roll, view->zoom,
 			       view->nearp, view->farp, width, height,
@@ -3594,7 +3688,7 @@ idr_combine_pics(uint32 *db, int dw, int dh, uint32 *sb, int sw, int sh,
  unsigned char ra;
  unsigned char *pixel_src, *pixel_dst;
   l+= dw/2;
-  b+= dh/2; 
+  b+= dh/2;
   for(y = 0; y < sh; y++)
     {
       for (x = 0; x < sw; x++)
@@ -3677,7 +3771,7 @@ idr_combineresultstcmd(ClientData clientData, Tcl_Interp *interp,
 
   part = idr_partlist;
   num = 0;
-  
+
   while(part)
     {
       part->rgba_result = (uint32*)_TIFFmalloc(idr_picture_width*
@@ -3747,7 +3841,7 @@ idr_combineresultstcmd(ClientData clientData, Tcl_Interp *interp,
       /* Out of memory */
       ay_error(AY_EOMEM, fname, NULL);
     }
- 
+
   /* free Tcl objects */
   /*
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
@@ -3768,7 +3862,7 @@ idr_combineresultstcmd(ClientData clientData, Tcl_Interp *interp,
  */
 int
 idr_writetifftcmd(ClientData clientData, Tcl_Interp *interp,
-		    int argc, char *argv[])
+		  int argc, char *argv[])
 {
  TIFF *tif;
  int i;
@@ -3799,7 +3893,7 @@ idr_writetifftcmd(ClientData clientData, Tcl_Interp *interp,
 		   "Created by Ayam-IDR Plugin.");
       for(i = idr_picture_height - 1; i >= 0; i--)
         {
-	  if (TIFFWriteScanline(tif, 
+	  if (TIFFWriteScanline(tif,
 	  	&idr_picture_buf[idr_picture_width*(idr_picture_height-i-1)],
 		i, 0) < 0)
 	    {
@@ -3833,7 +3927,7 @@ idr_draw_cb(struct Togl *togl, ay_object *o)
  char *name;
  int showresult;
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
- 
+
   /* Do are we in the right window ? */
   name = Tk_PathName(Togl_TkWin(togl));
   if(strcmp(name, idr_window_path) == 0)
@@ -3848,7 +3942,8 @@ idr_draw_cb(struct Togl *togl, ay_object *o)
       /* draw in camera coordinate system */
       toa = Tcl_NewStringObj("idr",-1);
       ton = Tcl_NewStringObj("ShowResult",-1);
-      to = Tcl_ObjGetVar2(Togl_Interp(togl), toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      to = Tcl_ObjGetVar2(Togl_Interp(togl), toa, ton, TCL_LEAVE_ERR_MSG |
+			  TCL_GLOBAL_ONLY);
       Tcl_GetIntFromObj(Togl_Interp(togl), to, &showresult);
       if(showresult)
         {
@@ -3978,6 +4073,7 @@ idr_delregion(char *vname)
  return TCL_OK;
 } /* idr_delregion */
 
+
 /* idr_defregion_tcb:
  *  Togl callback that allows to define important regions
  *  In:
@@ -4044,7 +4140,7 @@ idr_defregion_tcb(struct Togl *togl, int argc, char *argv[])
     {
       if(view == (ay_view_object *)(v->refine))
 	{
-	  vname = v->name;	  
+	  vname = v->name;
 	}
 
       v = v->next;
@@ -4117,56 +4213,56 @@ idr_drawroot_cb(struct Togl *togl, ay_object *o)
  int width = Togl_Width(togl);
  int height = Togl_Height(togl);
 
- t = ay_root->tags;
+  t = ay_root->tags;
 
- v1 = Togl_GetClientData(togl);
+  v1 = Togl_GetClientData(togl);
 
- v = ay_root->down;
- while(v->next)
-   {
-     if(v1 == (ay_view_object*)(v->refine))
+  v = ay_root->down;
+  while(v->next)
+    {
+      if(v1 == (ay_view_object*)(v->refine))
 	{
 	  rvname = v->name;
 	}
-     v = v->next;
-   }
+      v = v->next;
+    }
 
- if(!rvname)
-   return AY_OK;
+  if(!rvname)
+    return AY_OK;
 
- while(t)
-   {
-     if(t->type == idr_ridrtagtype)
-       {
-	 sscanf(t->val,"%s %lg %lg %lg %lg %lg", vname,
-		&X1, &Y1, &X2, &Y2, &imp);
-
-	 /* are we in the right window? */
-	 if(!strcmp(vname, rvname))
-	   { /* yes */
-	     glDisable(GL_DEPTH_TEST);
-	     glMatrixMode(GL_PROJECTION);
-	     glPushMatrix();
-	      glLoadIdentity();
-	      glOrtho(0, width, 0, height, -100.0, 100.0);
-	      glMatrixMode(GL_MODELVIEW);
+  while(t)
+    {
+      if(t->type == idr_ridrtagtype)
+	{
+	  sscanf(t->val,"%s %lg %lg %lg %lg %lg", vname,
+		 &X1, &Y1, &X2, &Y2, &imp);
+	  
+	  /* are we in the right window? */
+	  if(!strcmp(vname, rvname))
+	    { /* yes */
+	      glDisable(GL_DEPTH_TEST);
+	      glMatrixMode(GL_PROJECTION);
 	      glPushMatrix();
 	       glLoadIdentity();
-	       glBegin(GL_LINE_LOOP);
-	        glVertex3d(X1, Y1, 0.0);
-		glVertex3d(X1, Y2, 0.0);
-		glVertex3d(X2, Y2, 0.0);
-		glVertex3d(X2, Y1, 0.0);
-	       glEnd();
+	       glOrtho(0, width, 0, height, -100.0, 100.0);
+	       glMatrixMode(GL_MODELVIEW);
+	       glPushMatrix();
+	        glLoadIdentity();
+		glBegin(GL_LINE_LOOP);
+	         glVertex3d(X1, Y1, 0.0);
+		 glVertex3d(X1, Y2, 0.0);
+		 glVertex3d(X2, Y2, 0.0);
+		 glVertex3d(X2, Y1, 0.0);
+		glEnd();
+	       glPopMatrix();
+	       glMatrixMode(GL_PROJECTION);
 	      glPopMatrix();
-	     glMatrixMode(GL_PROJECTION);
-	    glPopMatrix();
-	    glEnable(GL_DEPTH_TEST);
-	    glMatrixMode(GL_MODELVIEW);
-	   } /* if */
-       } /* if */
+	      glEnable(GL_DEPTH_TEST);
+	      glMatrixMode(GL_MODELVIEW);
+	    } /* if */
+	} /* if */
       t = t->next;
-   } /* while */
+    } /* while */
 
   /* call old draw_root callback */
   if(idr_root_drawcb)
@@ -4184,39 +4280,19 @@ idr_drawroot_cb(struct Togl *togl, ay_object *o)
  */
 int
 idr_tree_selecttcmd(ClientData clientData, Tcl_Interp *interp,
-		   int argc, char *argv[])
+		    int argc, char *argv[])
 {
  int ay_status = AY_OK;
  /* char fname[] = "idr_treeSelect";*/
- ay_object *o;
- int i;
+ int status;
 
   /* assign importance to changed objects */
   ay_status = idr_assign_impchanged();
 
-  /* free old selection */
-  ay_status = ay_sel_free(AY_TRUE);
+  /* select new objects */
+  status = ay_tree_selecttcmd(clientData, interp, argc, argv);
 
-  /* update current level */
-  if (argc > 1)
-    {
-      ay_tree_getclevel(argv[1]);
-    }
-  else
-    {
-      return TCL_OK;
-    }
-
-  /* now, add selected objects */
-  i = 1;
-  while (i != argc) {
-      o = ay_tree_getobject(argv[i]);
-      if(o)
-	ay_sel_add(o);
-      i++;
-  }
-
- /* save newly selected objects for later comparison */
+  /* save newly selected objects for later comparison */
   ay_status = idr_save_selected();
 
  return TCL_OK;
@@ -4265,7 +4341,7 @@ Idr_Init(Tcl_Interp *interp)
 
   Tcl_CreateCommand(interp, "idrsaveResult", idr_writetifftcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
-  
+
   Tcl_CreateCommand(interp, "idr_treeSelect", idr_tree_selecttcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
   Tcl_CreateCommand(interp, "idr_propDist", idr_propagate_disttcmd,
@@ -4328,7 +4404,7 @@ Idr_Init(Tcl_Interp *interp)
   ay_register_custom_objecttype(
 			     "idr_GL",
 			     NULL,
-			     idr_draw_cb, 
+			     idr_draw_cb,
 			     NULL,
 			     idr_draw_cb,
 			     NULL,
