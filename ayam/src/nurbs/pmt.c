@@ -100,9 +100,9 @@ ay_pmt_bilinearcltonpatch(ay_pamesh_object *pamesh, ay_object **result)
 int
 ay_pmt_bicubiccltonpatch(ay_pamesh_object *pamesh, ay_object **result)
 {
- double *cv = NULL;
- int evwinwidth, evwinheight, ktu, ktv, uorder, vorder;
- int i = 0, j = 0, winu, winv, k, a, b;
+ double *cv = NULL, *ncv = NULL;
+ int evwinwidth, evwinheight, ktu, ktv, uorder, vorder, wrapu = 0, wrapv = 0;
+ int i = 0, j = 0, winu, winv, k, a, b, nw, nh;
  ay_object *o = NULL, **nexto = NULL;
  char fname[] = "ay_pmt_bicubiccltonpatch";
  int ay_status = AY_OK;
@@ -114,15 +114,18 @@ ay_pmt_bicubiccltonpatch(ay_pamesh_object *pamesh, ay_object **result)
     case AY_BTBEZIER:
       ktu = AY_KTBEZIER;
       evwinwidth = 4;
+      wrapu = 1;
       break;
 
     case AY_BTBSPLINE:
       ktu = AY_KTBSPLINE;
       evwinwidth = pamesh->width;
+      wrapu = 3;
       break;
     default:
       ktu = AY_KTBSPLINE;
       evwinwidth = 4;
+      wrapu = 3;
       break;
     }
 
@@ -131,167 +134,156 @@ ay_pmt_bicubiccltonpatch(ay_pamesh_object *pamesh, ay_object **result)
     case AY_BTBEZIER:
       ktv = AY_KTBEZIER;
       evwinheight = 4;
+      wrapv = 1;
       break;
     case AY_BTBSPLINE:
       ktv = AY_KTBSPLINE;
       evwinheight = pamesh->height;
+      wrapv = 3;
       break;
     default:
       ktv = AY_KTBSPLINE;
       evwinheight = 4;
+      wrapv = 3;
       break;
     }
 
+  /* create new control vector with coordinates unwrapped */
+  nw = pamesh->width + (pamesh->close_u?wrapu:0);
+  nh = pamesh->height + (pamesh->close_v?wrapv:0);
 
-  if((evwinwidth == pamesh->width) && (evwinheight == pamesh->height) &&
-     (ktu != AY_KTBEZIER) && (ktv != AY_KTBEZIER))
+  if(!(ncv = calloc(nw*nh*4, sizeof(double))))
+    return AY_EOMEM;
+  cv = pamesh->controlv;
+
+  a = 0;
+  b = 0;
+  /* fill ncv */
+  for(i = 0; i < pamesh->width; i++)
     {
-      if(!(o = calloc(1, sizeof(ay_object))))
-	return AY_EOMEM;
-      ay_object_defaults(o);
-      o->type = AY_IDNPATCH;
-
-      if(pamesh->close_u)
-	evwinwidth += 3;
+      memcpy(&(ncv[a]), &(cv[b]), 4*pamesh->height*sizeof(double));
+      a += pamesh->height*4;
+      /* copy last, wrapped points in line */
       if(pamesh->close_v)
-	evwinheight += 3;
-
-      if(!(cv = calloc(evwinwidth*evwinheight*4, sizeof(double))))
-      {
-	free(o);
-	return AY_EOMEM;
-      } /* if */
-
-      a = 0; b = 0;
-      for(k = 0; k < pamesh->width; k++)
 	{
-	  memcpy(&(cv[a]), &(pamesh->controlv[b]),
-		 4*pamesh->height*sizeof(double));
-	  a += (pamesh->height*4);
-	  /* copy first three cv's to end of this line */
-	  if(pamesh->close_v)
-	    {
-	      memcpy(&(cv[a]), &(pamesh->controlv[b]), 3*4*sizeof(double));
-	      a += 3*4;
-	    } /* if */
-	  
-	  b += (pamesh->height*4);
-	} /* for */
-
-      /* copy the first three lines to the last three */
-      if(pamesh->close_u)
-	{
-	  if(pamesh->close_v)
-	    {
-	      b = 0;
-	      for(k = 0; k < 3; k++)
-		{
-		  memcpy(&(cv[a]), &(cv[b]),
-			 4*evwinheight*sizeof(double));
-		  a += evwinheight*4;
-		  b += evwinheight*4;
-		} /* for */
-	    }
-	  else
-	    {
-	      b = 0;
-	      for(k = 0; k < 3; k++)
-		{
-		  memcpy(&(cv[a]), &(cv[b]),
-			 4*pamesh->height*sizeof(double));
-		  a += pamesh->height*4;
-		  b += pamesh->height*4;
-		} /* for */
-	    } /* if */
+	  memcpy(&(ncv[a]), &(cv[b]),
+		 4*wrapv*sizeof(double));
+	  a += 4*wrapv;
 	} /* if */
+      b += pamesh->height*4;
 
+    } /* for */
+  b = 0;
+  /* copy last (wrapped) lines */
+  if(pamesh->close_u)
+    {
+      for(i = 0; i<wrapu; i++)
+	{
+	  memcpy(&(ncv[a]), &(cv[b]), 4*pamesh->height*sizeof(double));
+	  a += pamesh->height*4;
+	  /* copy last, wrapped points in line */
+	  if(pamesh->close_v)
+	    {
+	      memcpy(&(ncv[a]), &(cv[b]),
+		     4*wrapv*sizeof(double));
+	      a += 4*wrapv;
+	    }
 
+	  b += pamesh->height*4;
+	} /* for */
+    } /* if */
 
-      ay_status = ay_npt_create(uorder, vorder, evwinwidth, evwinheight,
-				ktu, ktv, cv, NULL, NULL,
-				(ay_nurbpatch_object **)&(o->refine));
-      *result = o;
+  /* now continue with ncv, as if the patch were not closed */
+  if(evwinwidth != pamesh->width)
+    {
+      winu = (nw/(evwinwidth-1));
     }
   else
     {
-      return AY_OK;
-#if 0
-      winu = (pamesh->width/(evwinwidth-1));
-      winv = (pamesh->height/(evwinheight-1));
+      winu = 1;
+      if(pamesh->close_u)
+	evwinwidth = nw;
+    }
+  if(evwinheight != pamesh->height)
+    {
+      winv = (nh/(evwinheight-1));
+    }
+  else
+    {
+      winv = 1;
+      if(pamesh->close_v)
+	evwinheight = nh;
+    }
 
-      if(winu == 0)
-	{
-	  ay_error(AY_ERROR, fname,
-		   "Not enough control points in u direction.");
-	  return AY_ERROR;
-	}
-      if(winv == 0)
-	{
-	  ay_error(AY_ERROR, fname,
-		   "Not enough control points in v direction.");
-	  return AY_ERROR;
-	}
+  if(winu == 0)
+    {
+      ay_error(AY_ERROR, fname,
+	       "Not enough control points in u direction.");
+      return AY_ERROR;
+    }
+  if(winv == 0)
+    {
+      ay_error(AY_ERROR, fname,
+	       "Not enough control points in v direction.");
+      return AY_ERROR;
+    }
 
-      for(i = 0; i < winu; i++)
+  for(i = 0; i < winu; i++)
+    {
+      for(j = 0; j < winv; j++)
 	{
-	  for(j = 0; j < winv; j++)
+	  /* create new object */
+	  o = NULL;
+	  if(!(o = calloc(1, sizeof(ay_object))))
+	    return AY_EOMEM;
+	  ay_object_defaults(o);
+	  o->type = AY_IDNPATCH;
+
+	  cv = NULL;
+	  if(!(cv = calloc(evwinwidth*evwinheight*4, sizeof(double))))
 	    {
-	      /* create new object */
-	      o = NULL;
-	      if(!(o = calloc(1, sizeof(ay_object))))
-		return AY_EOMEM;
-	      ay_object_defaults(o);
-	      o->type = AY_IDNPATCH;
+	      free(o);
+	      return AY_EOMEM;
+	    }
 
-	      cv = NULL;
-	      if(!(cv = calloc(evwinwidth*evwinheight*4, sizeof(double))))
-		{
-		  free(o);
-		  return AY_EOMEM;
-		}
+	  /* place evaluation window and copy control points */
+	  a = 0;
+	  for(k = 0; k < evwinwidth; k++)
+	    {
+	      b = ((3*i*nh)+(j*3)+(k*nh))*4;
 
-	      /* place evaluation window and copy control points */
-	      a = 0;
-	      for(k = 0; k < evwinwidth; k++)
-		{
-		  b = ((3*i*pamesh->height)+(j*3)+(k*pamesh->height));
+	      /* because row/column order is identical for
+		 PatchMeshes and NURBS Patches,
+		 we may copy a whole line of control points
+		 at once */
+	      memcpy(&(cv[a]), &(ncv[b]),
+		     4*evwinheight*sizeof(double));
 
-		  b *= 4;
-		  /* because row/column order is identical for
-		     PatchMeshes and NURBS Patches,
-		     we may copy a whole line of control points
-		     at once */
-		  memcpy(&(cv[a]), &(pamesh->controlv[b]),
-			     4*evwinheight*sizeof(double));
+	      a += (evwinheight*4);
+	    } /* for */
 
-		  a += (evwinheight*4);
-		} /* for */
+	  ay_status = ay_npt_create(uorder, vorder,
+				    evwinwidth, evwinheight,
+				    ktu, ktv, cv, NULL, NULL,
+				    (ay_nurbpatch_object **)&(o->refine));
 
-	      ay_status = ay_npt_create(uorder, vorder,
-					evwinwidth, evwinheight,
-					ktu, ktv, cv, NULL, NULL,
-					(ay_nurbpatch_object **)&(o->refine));
-
-	      /* link new object */
-	      if(nexto)
-		{
-		  *nexto = o;
-		}
-	      else
-		{
-		  *result = o;
-		}
-	      nexto = &(o->next);
-
-
-	    }/* for */
-
-
+	  /* link new object */
+	  if(nexto)
+	    {
+	      *nexto = o;
+	    }
+	  else
+	    {
+	      *result = o;
+	    }
+	  nexto = &(o->next);
 
 	}/* for */
-#endif
-    } /* if */
 
+    }/* for */
+
+  if(ncv)
+    free(ncv);
 
  return AY_OK;
 } /* ay_pmt_bicubiccltonpatch */
@@ -329,6 +321,7 @@ ay_pmt_tonpatch(ay_pamesh_object *pamesh, ay_object **result)
     }
   else
     {
+
       if((pamesh->close_u) || (pamesh->close_v))
 	{
 	  ay_status = ay_pmt_bicubiccltonpatch(pamesh, result);
@@ -369,6 +362,7 @@ ay_pmt_tonpatch(ay_pamesh_object *pamesh, ay_object **result)
 	  evwinheight = 4;
 	  break;
 	}
+
     } /* if */
 
 
@@ -482,7 +476,7 @@ ay_pmt_tonpatch(ay_pamesh_object *pamesh, ay_object **result)
 int
 ay_pmt_valid(ay_pamesh_object *pamesh, int *detail)
 {
- int w, h, stepu, stepv;
+ int stepu, stepv;
 
   if(pamesh->type == AY_PTBILINEAR)
     { /* bilinear patch mesh */
