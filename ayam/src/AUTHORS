@@ -7,7 +7,7 @@ Stephen Echavia:
 Bertrand Coconnier:
  object picking code
 Frank (copper) Pagels:
- MetaBalls custom object, PolyMesh optimization
+ MetaBalls custom object, PolyMesh optimization, TTF parsing
 Hermann Birkholz:
  initial tree widget, shadow maps, automatic instancing, and IDR implementation
 Randolf Schultz (rschultz@informatik.uni-rostock.de):
