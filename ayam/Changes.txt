@@ -1,4 +1,4 @@
-[CVS, 16. 04. 2003]:
+[CVS, 23. 04. 2003]:
 o bug fixes:
   - fixed RIB import creating object names with malicious characters (spaces)
     (SF 686419)
@@ -63,6 +63,15 @@ o bug fixes:
     (SF 721631)
   - fixed optimize PolyMesh not being undoable
     (SF 721632)
+  - fixed result of last view action (without selection) not being redoable
+    (SF 724085)
+  - fixed "Special/Tags/Add RiAttribute" and "Add RiOption" not being undoable
+    (SF 724947)
+  - fixed "Hide" attribute of "Root" object getting lost during save/replace
+    (SF 725094)
+  - fixed conversion of MetaObjects to PolyMeshes ignoring the transformation
+    attributes of the MetaObject
+    (SF 717579)
 o added support for inline declarations of e.g. shader parameters to the
   RIB import plugin
 o added an example scene for subdivision meshes
@@ -100,6 +109,8 @@ o added a hidden preference setting "Prompt" that may be used to adapt the
 o added support for NURBS curve providing objects (e.g. "ICurve" and
   "Instance") to be used as trim curves
 o added a keyboard shortcut for the "Edit Master"-Feature (Ctrl+M)
+o the console prompt now displays the name of the operations that can be
+  undone and redone respectively
 
 
 [07. 02. 2003] Ayam1.4:
