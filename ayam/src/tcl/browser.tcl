@@ -17,6 +17,8 @@ proc browser_findExecutable {progname varname} {
     }
  return [llength $progs]
 }
+# browser_findExecutable
+
 
 proc browser_urlOpen {url} {
     global env tcl_platform
@@ -25,14 +27,18 @@ proc browser_urlOpen {url} {
 
     switch $tcl_platform(platform) {
         "unix" {
-
+	    if { $tcl_platform(os) == "Darwin" } {
+		exec open ${url}
+		return;
+	    }
 	    if { ! [info exists env(NETSCAPE)] } {
 		set mozilla netscape
 	    } else {
 		set mozilla $env(NETSCAPE)
 	    }
 
-	    if { ! [info exists env(BROWSER)] } {
+	    if { (! [info exists env(BROWSER)]) || \
+		 ([auto_execok $env(BROWSER)] == "") } {
 		set browser ""
 		expr {
 		    [browser_findExecutable $mozilla browser] ||
@@ -94,3 +100,4 @@ proc browser_urlOpen {url} {
 
  return;
 }
+# browser_urlOpen
