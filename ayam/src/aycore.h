@@ -709,6 +709,8 @@ int ay_w32t_w32killtcmd(ClientData clientData, Tcl_Interp *interp,
 #endif
 
 /* wrib.c */
+int ay_wrib_noexport(ay_object *o);
+
 void ay_wrib_aimz(RtPoint direction);
 
 void ay_wrib_placecamera(RtPoint position, RtPoint direction, double roll);
