@@ -113,6 +113,7 @@ proc prefs_open {} {
     addColor $fw ayprefse Grid
     addColor $fw ayprefse Tag
     addColor $fw ayprefse Shade
+    addColor $fw ayprefse Light
 
     # RIB Export
     set fw [$nb insert end RIB-Export -text RIB-Export\

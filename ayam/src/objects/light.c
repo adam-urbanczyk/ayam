@@ -114,6 +114,7 @@ ay_light_drawcb(struct Togl *togl, ay_object *o)
  double quat[4] = {0}, rm[16];
  int has_from = 0, has_to = 0, i, a;
  double c1[24] = {0};
+ GLfloat oldcolor[4] = {0};
 
   w = (GLdouble)(sqrt(2.0)*0.5);
 
@@ -124,6 +125,16 @@ ay_light_drawcb(struct Togl *togl, ay_object *o)
 
   if(!light)
     return AY_ENULL;
+
+
+  if(!o->selected)
+    {
+      /* save current color */
+      glGetFloatv(GL_CURRENT_COLOR, oldcolor);
+      /* set color for lights */
+      glColor3d((GLdouble)ay_prefs.lir, (GLdouble)ay_prefs.lig,
+		(GLdouble)ay_prefs.lib);
+    }
   
     switch(light->type)
     {
@@ -313,6 +324,12 @@ ay_light_drawcb(struct Togl *togl, ay_object *o)
 	  glEnd();
 	} /* if */
     } /* if */
+
+  if(!o->selected)
+    {
+      /* restore old color */
+      glColor3f(oldcolor[0], oldcolor[1], oldcolor[2]);
+    }
 
  return AY_OK;
 } /* ay_light_drawcb */
