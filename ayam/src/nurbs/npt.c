@@ -602,7 +602,7 @@ ay_npt_wribtrimcurves(ay_object *o)
  int curvecount = 0, k, a, b, c, totalcurves, totalcontrol, totalknots;
  RtInt nloops = 0, *ncurves, *order, *n;
  RtFloat *knot, *min, *max, *u, *v, *w;
- ay_object *trim = NULL, *loop = NULL;
+ ay_object *trim = NULL, *loop = NULL, *nc = NULL;
  ay_nurbcurve_object *curve = NULL;
  double m[16];
  double x, y, z, w2;
@@ -617,16 +617,28 @@ ay_npt_wribtrimcurves(ay_object *o)
   /* count loops */
   trim = o->down;
 
-  while(trim)
+  while(trim->next)
     {
-      if(trim->type == AY_IDNCURVE)
-	nloops++;
-
-      /* XXXX this check should be more restrictive! */
-      if(trim->type == AY_IDLEVEL)
-	if(trim->down)
+      switch(trim->type)
+	{
+	case AY_IDNCURVE:
 	  nloops++;
-
+	  break;
+	case AY_IDLEVEL:
+	  /* XXXX this check should be more restrictive! */
+	  if(trim->down && trim->down->next)
+	    nloops++;
+	  break;
+	default:
+	  nc = NULL;
+	  ay_status = ay_provide_object(trim, AY_IDNCURVE, &nc);
+	  if(nc)
+	    {
+	      nloops++;
+	      ay_object_delete(nc);
+	    }
+	  break;
+	} /* switch */
       trim = trim->next;
     } /* while */
 
@@ -644,10 +656,11 @@ ay_npt_wribtrimcurves(ay_object *o)
   totalcontrol = 0;
   totalknots = 0;
   nloops = 0;
-  while(trim)
+  while(trim->next)
     {
-      if(trim->type == AY_IDNCURVE)
+      switch(trim->type)
 	{
+	case AY_IDNCURVE:
 	  totalcurves++;
 	  curvecount++;
 	  curve = (ay_nurbcurve_object *)(trim->refine);
@@ -659,13 +672,10 @@ ay_npt_wribtrimcurves(ay_object *o)
 	  ncurves[nloops] = 1;
 	  curvecount = 0;
 	  nloops++;
-	} /* if */
-
-      if(trim->type == AY_IDLEVEL)
-	{
+	  break;
+	case AY_IDLEVEL:
 	  loop = trim->down;
-
-	  while(loop)
+	  while(loop->next)
 	    {
 	      if(loop->type == AY_IDNCURVE)
 		{
@@ -673,23 +683,41 @@ ay_npt_wribtrimcurves(ay_object *o)
 		  curvecount++;
 		  curve = (ay_nurbcurve_object *)(loop->refine);
 		  totalcontrol += curve->length;
-	  
+		  
 		  totalknots += curve->length;
 		  totalknots += curve->order;
-
+		  
 		  ncurves[nloops] += 1;
 		  curvecount = 0;
 		} /* if */
-
+	      
 	      loop = loop->next;
 	    } /* while */
 
 	  /* XXXX this check should be more restrictive! */
 	  if(trim->down)
 	    nloops++;
+	  break;
+	default:
+	  nc = NULL;
+	  ay_status = ay_provide_object(trim, AY_IDNCURVE, &nc);
+	  if(nc)
+	    {
+	      totalcurves++;
+	      curvecount++;
+	      curve = (ay_nurbcurve_object *)(nc->refine);
+	      totalcontrol += curve->length;
+	      
+	      totalknots += curve->length;
+	      totalknots += curve->order;
 
-	} /* if */
-      
+	      ncurves[nloops] = 1;
+	      curvecount = 0;
+	      nloops++;
+	      ay_object_delete(nc);
+	    }
+	  break;
+	} /* switch */
       trim = trim->next;
     } /* while */
 
@@ -719,10 +747,11 @@ ay_npt_wribtrimcurves(ay_object *o)
   b = 0;
   c = 0;
   /* compile arguments */
-  while(trim)
+  while(trim->next)
     {
-      if(trim->type == AY_IDNCURVE)
+      switch(trim->type)
 	{
+	case AY_IDNCURVE:
 	  curve = (ay_nurbcurve_object *)(trim->refine);
 
 	  /* fill order[], n[], min[], max[] */
@@ -749,7 +778,7 @@ ay_npt_wribtrimcurves(ay_object *o)
 	      w[b] = (RtFloat)w2;
 
 	      b++;
-	    }
+	    } /* for */
 
 	  /* copy knots */
 	  for(k = 0; k < curve->length + curve->order; k++)
@@ -757,60 +786,104 @@ ay_npt_wribtrimcurves(ay_object *o)
 	      knot[c] = (RtFloat)curve->knotv[k];
 	      c++;
 	    }
-	} /* if */
-
-      if(trim->type == AY_IDLEVEL)
-	if(trim->down)
-	  {
-	    loop = trim->down;
+	  break;
+	case AY_IDLEVEL:
+	  if(trim->down && trim->down->next)
+	    {
+	      loop = trim->down;
 	      
-	    while(loop)
-	      {
-		if(loop->type == AY_IDNCURVE)
-		  {
-		    curve = (ay_nurbcurve_object *)(loop->refine);
+	      while(loop->next)
+		{
+		  if(loop->type == AY_IDNCURVE)
+		    {
+		      curve = (ay_nurbcurve_object *)(loop->refine);
 
-		    /* fill order[], n[], min[], max[] */
-		    order[a] = (RtInt)curve->order;
-		    n[a] = (RtInt)curve->length;
-		    min[a] = (RtFloat)((curve->knotv)[curve->order - 1]);
-		    max[a] = (RtFloat)((curve->knotv)[curve->length]);
-		    a++;
+		      /* fill order[], n[], min[], max[] */
+		      order[a] = (RtInt)curve->order;
+		      n[a] = (RtInt)curve->length;
+		      min[a] = (RtFloat)((curve->knotv)[curve->order - 1]);
+		      max[a] = (RtFloat)((curve->knotv)[curve->length]);
+		      a++;
 			
-		    /* get curves transformation-matrix */
-		    ay_trafo_creatematrix(loop, m);
+		      /* get curves transformation-matrix */
+		      ay_trafo_creatematrix(loop, m);
 
-		    /* copy & revert control (fill u[] v[] w[]) */
-		    for(k = 0; k < curve->length; k++)
-		      {
-			x = (RtFloat)((curve->controlv)[k*4]);
-			y = (RtFloat)((curve->controlv)[(k*4)+1]);
-			z = (RtFloat)((curve->controlv)[(k*4)+2]);
-			w2 = (RtFloat)((curve->controlv)[(k*4)+3]);
+		      /* copy & revert control (fill u[] v[] w[]) */
+		      for(k = 0; k < curve->length; k++)
+			{
+			  x = (RtFloat)((curve->controlv)[k*4]);
+			  y = (RtFloat)((curve->controlv)[(k*4)+1]);
+			  z = (RtFloat)((curve->controlv)[(k*4)+2]);
+			  w2 = (RtFloat)((curve->controlv)[(k*4)+3]);
 
-			/* apply transformation */
-			u[b] = (RtFloat)(m[0]*x + m[4]*y + m[8]*z + m[12]*w2);
-			v[b] = (RtFloat)(m[1]*x + m[5]*y + m[9]*z + m[13]*w2);
-			w[b] = (RtFloat)w2;
-
+			  /* apply transformation */
+			  u[b] = (RtFloat)
+			    (m[0]*x + m[4]*y + m[8]*z + m[12]*w2);
+			  v[b] = (RtFloat)
+			    (m[1]*x + m[5]*y + m[9]*z + m[13]*w2);
+			  w[b] = (RtFloat)w2;
+			  
 			b++;
-		      }
+			}
 
-		    /* copy knots */
-		    for(k = 0; k < curve->length + curve->order; k++)
-		      {
-			knot[c] = (RtFloat)curve->knotv[k];
-			c++;
-		      }
-		  } /* if */
+		      /* copy knots */
+		      for(k = 0; k < curve->length + curve->order; k++)
+			{
+			  knot[c] = (RtFloat)curve->knotv[k];
+			  c++;
+			}
+		    } /* if */
 
-		loop = loop->next;
-	      } /* while */
+		  loop = loop->next;
+		} /* while */
+	    } /* if */
+	  break;
+	default:
+	  nc = NULL;
+	  ay_status = ay_provide_object(trim, AY_IDNCURVE, &nc);
+	  if(nc)
+	    {
+	      curve = (ay_nurbcurve_object *)(nc->refine);
 
-	  }
+	      /* fill order[], n[], min[], max[] */
+	      order[a] = (RtInt)curve->order;
+	      n[a] = (RtInt)curve->length;
+	      min[a] = (RtFloat)((curve->knotv)[curve->order - 1]);
+	      max[a] = (RtFloat)((curve->knotv)[curve->length]);
+	      a++;
+
+	      /* get curves transformation-matrix */
+	      ay_trafo_creatematrix(nc, m);
+
+	      /* copy & revert control (fill u[] v[] w[]) */
+	      for(k = 0; k < curve->length ; k++)
+		{
+		  x = (RtFloat)((curve->controlv)[k*4]);
+		  y = (RtFloat)((curve->controlv)[(k*4)+1]);
+		  z = (RtFloat)((curve->controlv)[(k*4)+2]);
+		  w2 = (RtFloat)((curve->controlv)[(k*4)+3]);
+
+		  /* apply transformation */
+		  u[b] = (RtFloat)(m[0]*x + m[4]*y + m[8]*z + m[12]*w2);
+		  v[b] = (RtFloat)(m[1]*x + m[5]*y + m[9]*z + m[13]*w2);
+		  w[b] = (RtFloat)w2;
+
+		  b++;
+		} /* for */
+
+	      /* copy knots */
+	      for(k = 0; k < curve->length + curve->order; k++)
+		{
+		  knot[c] = (RtFloat)curve->knotv[k];
+		  c++;
+		}
+	      ay_object_delete(nc);
+	    } /* if */
+	  break;
+	} /* switch */
 
       trim = trim->next;
-    }
+    } /* while */
 
   if(nloops)
     {
@@ -3522,7 +3595,7 @@ ay_npt_topolytcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL, *new = NULL;
  double sparam = ay_prefs.sparam;
- int smethod = ay_prefs.smethod;
+ int smethod = ay_prefs.smethod+1;
 
  if(argc > 1)
    {
