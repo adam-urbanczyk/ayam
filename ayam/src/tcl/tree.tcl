@@ -597,12 +597,8 @@ set sw [ScrolledWindow $f.sw -bd 2 -relief sunken]
 image create bitmap emptybm
 
 # the tree widget
-global tcl_platform
-if { $tcl_platform(platform) == "windows" } {
-    set width 12
-} else {
-    set width 15
-}
+set width 12
+
 set tree [Tree $sw.tree -width $width -height 15\
 	-relief flat -borderwidth 0\
 	-highlightthickness 0\
