@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile.shared [6. Jul 2003]
+# Makefile.shared [4. Oct 2003]
 # Makefile for Ayam (shared version)
 
 # Choose an installation prefix.
@@ -64,6 +64,7 @@ LD = CC
 #   call); if you add this option, the detection of held down keys will be
 #   switched off and rotating views via keyboard will fill up the undo buffer
 # o add -DAYOLDSLX if you compile with an Aqsis libslxargs prior to 0.7.19
+# o add -DUSE_NON_CONST if you compile with Tcl/Tk 8.4.x
 
 CFLAGS = -O -DAYUSESLCARGS -DAYUSEBMRTRIBOUT
 # IRIX (-DAYIRIXBUG is needed by ncurve.c to work around a bug in libGLU)::
