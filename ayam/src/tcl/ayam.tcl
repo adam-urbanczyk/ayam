@@ -138,6 +138,7 @@ array set ayprefs {
  BackupExt "~"
 
  DefaultAction 1
+ IconGamma ""
 
  Scripts ""
  Docs "http://ayam.sourceforge.net/docs/"
@@ -1152,6 +1153,16 @@ shader_scanAll
 # bind keyboard shortcuts to main menu
 puts stdout "Establishing key bindings..."
 shortcut_main .
+
+# apply gamma
+if { $ayprefs(IconGamma) != "" } {
+    set iconnames [image names]
+    foreach icon $iconnames {
+	if { [image type $icon] == "photo" } {
+	    $icon configure -gamma $ayprefs(IconGamma)
+	}
+    }
+}
 
 # open the toolbox window
 if { $ayprefs(showtb) == 1 } {
