@@ -81,6 +81,8 @@ mouse up?"
 ms_set en ayprefse_EditSnaps "Snap coordinates of edited points to grid\
 coordinates?"
 ms_set en ayprefse_Snap3D "Snap coordinate values in all three dimensions?"
+ms_set en ayprefse_FlashPoints "Flash editable points in single point\
+editing modes?"
 ms_set en ayprefse_DefaultAction "Modelling action invoked, when <Esc> key\
 is pressed."
 ms_set en ayprefse_UndoLevels "Number of undoable modelling steps;\

@@ -641,6 +641,7 @@ proc actionDEditP { w } {
 
 #
 proc actionEditP { w } {
+    global ayprefs
 
     viewTitle $w "" "Edit_Points"
 
@@ -648,7 +649,12 @@ proc actionEditP { w } {
 	set ay(action) 1
 	undo save EditPnt
 	%W mc
-	%W startpepac %x %y
+	if { $ayprefs(FlashPoints) == 1 } {	
+	    %W startpepac %x %y -flash
+	} else {
+	    %W startpepac %x %y
+	}
+
 	%W pepac -start %x %y
     }
 
@@ -656,7 +662,17 @@ proc actionEditP { w } {
 	%W pepac -winxy %x %y
     }
 
+    if { $ayprefs(FlashPoints) == 1 } {
+	bind $w <Motion> {
+	    %W startpepac %x %y -flash
+	}
+    }
+
     stdReleaseBind $w
+
+    if { $ayprefs(FlashPoints) == 1 } {
+	bind $w <ButtonRelease-1> "+%W startpepac %x %y -flash -ignoreold"
+    }
 
     $w setconf -drawh 1
 }
@@ -850,6 +866,7 @@ proc actionClear { w } {
     bind $w <ButtonPress-1> ""
     bind $w <B1-Motion> ""
     bind $w <ButtonRelease-1> ""
+    bind $w <Motion> ""
 
     if { $ayprefs(DefaultAction) == 0 } {
 	viewTitle $w "" "None"

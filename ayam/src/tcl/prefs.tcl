@@ -157,6 +157,7 @@ proc prefs_open {} {
     addCheckB $fw ayprefse LazyNotify [ms ayprefse_LazyNotify]
     addCheckB $fw ayprefse EditSnaps [ms ayprefse_EditSnaps]
     addCheckB $fw ayprefse Snap3D [ms ayprefse_Snap3D]
+    addCheckB $fw ayprefse FlashPoints [ms ayprefse_FlashPoints]
     set l $ay(defactions)
     addMenuB $fw ayprefse DefaultAction [ms ayprefse_DefaultAction] $l
     addParamB $fw ayprefse UndoLevels [ms ayprefse_UndoLevels] { -1 2 5 10 20 }

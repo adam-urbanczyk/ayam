@@ -238,6 +238,78 @@ ay_pact_deseltcb(struct Togl *togl, int argc, char *argv[])
 } /* ay_pact_deseltcb */
 
 
+/* ay_pact_flashpoint:
+ *
+ */
+int
+ay_pact_flashpoint(int ignore_old)
+{
+ int cont, penumber = ay_point_edit_coords_number;
+ static int have_old_flashed_point = AY_FALSE;
+ static double old_obj[3] = {0};
+
+#ifdef GL_VERSION_1_1
+  cont = AY_FALSE;
+  if(have_old_flashed_point && ay_point_edit_coords)
+    {
+      if((ay_point_edit_coords[penumber-1][0] == old_obj[0]) &&
+	 (ay_point_edit_coords[penumber-1][1] == old_obj[1]) &&
+	 (ay_point_edit_coords[penumber-1][2] == old_obj[2]))
+	{
+	  cont = AY_TRUE;
+	}
+    }
+  if(!cont || ignore_old)
+    {
+      glDrawBuffer(GL_FRONT);
+      glEnable(GL_COLOR_LOGIC_OP);
+      glLogicOp(GL_XOR);
+      glColor3d((GLdouble)ay_prefs.sxr, (GLdouble)ay_prefs.sxg,
+		(GLdouble)ay_prefs.sxb);
+      glDisable(GL_DEPTH_TEST);
+      glMatrixMode(GL_MODELVIEW);
+      glPushMatrix();
+       glLoadIdentity();
+       ay_trafo_getall(ay_currentlevel->next);
+       glBegin(GL_POINTS);
+       /* clear old point? */
+       if(have_old_flashed_point && !ignore_old)
+	 {
+	   glVertex3d(old_obj[0], old_obj[1], old_obj[2]);
+	   have_old_flashed_point = AY_FALSE;
+	 }
+       /*
+	 glEnd();
+	 glFlush();
+	 glBegin(GL_POINTS);
+       */
+       /* draw new point? */
+       if(ay_point_edit_coords)
+	 {
+	   glVertex3d(ay_point_edit_coords[penumber-1][0],
+		      ay_point_edit_coords[penumber-1][1],
+		      ay_point_edit_coords[penumber-1][2]);
+	   
+	   old_obj[0] = ay_point_edit_coords[penumber-1][0];
+	   old_obj[1] = ay_point_edit_coords[penumber-1][1];
+	   old_obj[2] = ay_point_edit_coords[penumber-1][2];
+	   have_old_flashed_point = AY_TRUE;
+	 }
+       else
+	 {
+	   have_old_flashed_point = AY_FALSE;
+	 }
+       glEnd();
+      glPopMatrix();
+      glEnable(GL_DEPTH_TEST);
+      glDisable(GL_COLOR_LOGIC_OP);
+      glDrawBuffer(GL_BACK);
+    } /* if */
+#endif
+ return AY_OK;
+} /* ay_pact_flashpoint */
+
+
 /* ay_pact_startpetcb:
  *  prepares everything for the point editing
  *  modes
@@ -253,8 +325,24 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
  /*  double pickepsilon = ay_prefs.pick_epsilon;*/
  double obj[3] = {0};
  ay_list_object *sel = ay_selection;
- int penumber = 0;
+ int penumber = 0, *tmpi;
  double **pecoords = NULL, **tmp = NULL;
+ ay_object **tmpo = NULL;
+
+
+  if(ay_pe_numcpo)
+    free(ay_pe_numcpo);
+  ay_pe_numcpo = NULL;
+
+  if(ay_pe_homcpo)
+    free(ay_pe_homcpo);
+  ay_pe_homcpo = NULL;
+
+  if(ay_pe_objects)
+    free(ay_pe_objects);
+  ay_pe_objects = NULL;
+
+  ay_pe_objectslen = 0;
 
   Tcl_GetDouble(interp, argv[2], &winX);
   Tcl_GetDouble(interp, argv[3], &winY);
@@ -283,6 +371,48 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
 	    }
 
 	  ay_point_edit_object = sel->object;
+
+	  /* remember number of picked points of current object */
+	  if(!(tmpi = realloc(ay_pe_numcpo, (ay_pe_objectslen+1)*
+			      sizeof(int))))
+	    {
+	      ay_error(AY_EOMEM, fname, NULL);
+	      return TCL_OK;
+	    }
+	  else
+	    {
+	      ay_pe_numcpo = tmpi;
+	      ay_pe_numcpo[ay_pe_objectslen] = ay_point_edit_coords_number;
+	    }
+
+	  /* remember homogenous state of current object */
+	  if(!(tmpi = realloc(ay_pe_homcpo, (ay_pe_objectslen+1)*
+			      sizeof(int))))
+	    {
+	      ay_error(AY_EOMEM, fname, NULL);
+	      return TCL_OK;
+	    }
+	  else
+	    {
+	      ay_pe_homcpo = tmpi;
+	      ay_pe_homcpo[ay_pe_objectslen] = ay_point_edit_coords_hom;
+	    }
+
+	  /* remember pointer to current object */
+	  if(!(tmpo = realloc(ay_pe_objects, (ay_pe_objectslen+1)*
+			      sizeof(ay_object*))))
+	    {
+	      ay_error(AY_EOMEM, fname, NULL);
+	      return TCL_OK;
+	    }
+	  else
+	    {
+	      ay_pe_objects = tmpo;
+	      ay_pe_objects[ay_pe_objectslen] = sel->object;
+	    }
+
+	  ay_pe_objectslen++;
+	  
 	}
 
       sel = sel->next;
@@ -292,6 +422,14 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
   if(ay_point_edit_coords)
     free(ay_point_edit_coords);
   ay_point_edit_coords = pecoords;
+
+  if(argc > 4)
+    {
+      if(argc > 5)
+	ay_status = ay_pact_flashpoint(AY_TRUE);
+      else
+	ay_status = ay_pact_flashpoint(AY_FALSE);
+    } /* if */
 
  return TCL_OK;
 } /* ay_pact_startpetcb */
@@ -1321,8 +1459,7 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
  double winx = 0.0, winy = 0.0;
  double movX, movY, movZ, dx=0.0, dy=0.0, dz=0.0, *coords;
  double euler[3] = {0};
- int i = 0;
- static int multiple = AY_FALSE;
+ int i = 0, j, k = 0, redraw = AY_FALSE;
  static GLdouble m[16] = {0};
  /*GLdouble mo[16] = {0};*/
  ay_object *o = ay_point_edit_object;
@@ -1330,209 +1467,186 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
   if(!o)
     return TCL_OK;
 
-  if(argc >= 4)
+  for(j = 0; j < ay_pe_objectslen; j++)
     {
-      if(!strcmp(argv[2],"-winxy"))
-	{
-	  Tcl_GetDouble(interp, argv[3], &winx);
-	  Tcl_GetDouble(interp, argv[4], &winy);
+      o = ay_pe_objects[j];
 
-	  if(view->usegrid)
-	    {
-	      ay_viewt_griddify(togl, &winx, &winy);
-	    }
+      glMatrixMode(GL_MODELVIEW);
+      glPushMatrix();
+
+      glScaled (1.0/o->scalx, 1.0/o->scaly, 1.0/o->scalz);
+      if(!view->aligned)
+	{
+	  ay_quat_toeuler(o->quat, euler);
+	  glRotated(AY_R2D(euler[0]), 0.0, 0.0, 1.0);
+	  glRotated(AY_R2D(euler[1]), 0.0, 1.0, 0.0);
+	  glRotated(AY_R2D(euler[2]), 1.0, 0.0, 0.0);
+	}
+      glTranslated(-o->movx, -o->movy, -o->movz);
+
+      if(!view->local)
+	{
+	  ay_trafo_getalli(ay_currentlevel->next);
 	}
       else
 	{
-	  if(!strcmp(argv[2],"-start"))
+	  ay_trafo_getallis(ay_currentlevel->next);
+	}
+
+      glGetDoublev(GL_MODELVIEW_MATRIX, m);
+      glPopMatrix();
+
+      if(argc >= 4)
+	{
+	  if(!strcmp(argv[2],"-winxy"))
 	    {
 	      Tcl_GetDouble(interp, argv[3], &winx);
 	      Tcl_GetDouble(interp, argv[4], &winy);
-
+	      
 	      if(view->usegrid)
 		{
 		  ay_viewt_griddify(togl, &winx, &winy);
 		}
-
-	      oldwinx = winx;
-	      oldwiny = winy;
-
-	      if(ay_selection && ay_selection->next)
-		multiple = AY_TRUE;
-	      else
-		multiple = AY_FALSE;
-
-	      glMatrixMode(GL_MODELVIEW);
-	      glPushMatrix();
-	      /* XXXX uncomment when startpedit deals with multiple objects */
-	      /*
-	      if(!multiple)
+	    }
+	  else
+	    {
+	      if(!strcmp(argv[2],"-start"))
 		{
-	      */
-		  glScaled (1.0/o->scalx, 1.0/o->scaly, 1.0/o->scalz);
-		  if(!view->aligned)
+		  Tcl_GetDouble(interp, argv[3], &winx);
+		  Tcl_GetDouble(interp, argv[4], &winy);
+
+		  if(view->usegrid)
 		    {
-		      ay_quat_toeuler(o->quat, euler);
-		      glRotated(AY_R2D(euler[0]), 0.0, 0.0, 1.0);
-		      glRotated(AY_R2D(euler[1]), 0.0, 1.0, 0.0);
-		      glRotated(AY_R2D(euler[2]), 1.0, 0.0, 0.0);
+		      ay_viewt_griddify(togl, &winx, &winy);
 		    }
-		  glTranslated(-o->movx, -o->movy, -o->movz);
-		/*
-		}
-		*/
-	      if(!view->local)
-		{
-		  ay_trafo_getalli(ay_currentlevel->next);
-		}
-	      else
-		{
-		  ay_trafo_getallis(ay_currentlevel->next);
-		}
 
-	      glGetDoublev(GL_MODELVIEW_MATRIX, m);
-	      glPopMatrix();
+		  oldwinx = winx;
+		  oldwiny = winy;
 
-	      /* snap selected points to grid coordinates */
-	      if(ay_point_edit_coords)
-		{
-		  if(view->usegrid && ay_prefs.edit_snaps_to_grid &&
-		     (view->grid != 0.0))
+		  /* snap selected points to grid coordinates */
+		  if(ay_point_edit_coords)
 		    {
-		      for(i = 0; i < ay_point_edit_coords_number; i++)
+		      if(view->usegrid && ay_prefs.edit_snaps_to_grid &&
+			 (view->grid != 0.0))
 			{
-			  coords = ay_point_edit_coords[i]; 
-			  
-			  if(!view->local)
+			  for(i = 0; i < ay_pe_numcpo[j]; i++)
 			    {
-			      ay_trafo_applyall(ay_currentlevel->next, o,
-						coords);
-			    } /* if */
-			  if(ay_prefs.snap3d)
-			    {
-			      ay_pact_griddify(&(coords[0]), view->grid);
-			      ay_pact_griddify(&(coords[1]), view->grid);
-			      ay_pact_griddify(&(coords[2]), view->grid);
-			    }
-			  else
-			    {
-			      switch(view->type)
+			      coords = ay_point_edit_coords[k]; 
+			      k++;
+			      if(!view->local)
 				{
-				case AY_VTFRONT:
-				case AY_VTTRIM:
+				  ay_trafo_applyall(ay_currentlevel->next, o,
+						    coords);
+				} /* if */
+			      if(ay_prefs.snap3d)
+				{
 				  ay_pact_griddify(&(coords[0]), view->grid);
 				  ay_pact_griddify(&(coords[1]), view->grid);
-				  break;
-				case AY_VTSIDE:
-				  ay_pact_griddify(&(coords[1]), view->grid);
 				  ay_pact_griddify(&(coords[2]), view->grid);
-				  break;
-				case AY_VTTOP:
-				  ay_pact_griddify(&(coords[0]), view->grid);
-				  ay_pact_griddify(&(coords[2]), view->grid);
-				  break;
-				default:
-				  break;
-				} /* switch */
-			    } /* if */
-			  if(!view->local)
-			    {
-			      ay_trafo_applyalli(ay_currentlevel->next, o,
-						 coords);
-			    } /* if */
-			} /* for */
-		      /* XXXX this redraw is only necessary if coords are
-			 really changed by the snap to grid operation */
-		      ay_toglcb_display(togl);
+				}
+			      else
+				{
+				  switch(view->type)
+				    {
+				    case AY_VTFRONT:
+				    case AY_VTTRIM:
+				      ay_pact_griddify(&(coords[0]),
+						       view->grid);
+				      ay_pact_griddify(&(coords[1]),
+						       view->grid);
+				      break;
+				    case AY_VTSIDE:
+				      ay_pact_griddify(&(coords[1]),
+						       view->grid);
+				      ay_pact_griddify(&(coords[2]),
+						       view->grid);
+				      break;
+				    case AY_VTTOP:
+				      ay_pact_griddify(&(coords[0]),
+						       view->grid);
+				      ay_pact_griddify(&(coords[2]),
+						       view->grid);
+				      break;
+				    default:
+				      break;
+				    } /* switch */
+				} /* if */
+			      if(!view->local)
+				{
+				  ay_trafo_applyalli(ay_currentlevel->next, o,
+						     coords);
+				} /* if */
+			    } /* for */
+			  /* XXXX this redraw is only necessary if coords are
+			     really changed by the snap to grid operation */
+			  ay_toglcb_display(togl);
+			} /* if */
 		    } /* if */
+		  return TCL_OK;
 		} /* if */
-	      return TCL_OK;
+	    } /* if */
+	}
+      else
+	{
+	  ay_error(AY_EARGS, fname, NULL);
+	  return TCL_OK;
+	} /* if */
+
+      dx = -(oldwinx - winx) * view->conv_x;
+      dy = (oldwiny - winy) * view->conv_y;
+
+      /* Side or Top view? */
+      if(view->type == AY_VTSIDE)
+	{
+	  dz = -dx;
+	  dx = 0.0;
+	}
+
+      if(view->type == AY_VTTOP)
+	{
+	  dx = dx;
+	  dz = -dy;
+	  dy = 0.0;
+	}
+
+      movX = m[0]*dx+m[4]*dy+m[8]*dz;
+      movY = m[1]*dx+m[5]*dy+m[9]*dz;
+      movZ = m[2]*dx+m[6]*dy+m[10]*dz;
+
+      if(ay_point_edit_coords)
+	{
+	  for(i = 0; i < ay_pe_numcpo[j]; i++)
+	    {
+	      coords = ay_point_edit_coords[k]; 
+	      k++;
+	      coords[0] += movX;
+	      coords[1] += movY;
+	      coords[2] += movZ;
+	    } /* for */
+
+	  if((fabs(movX) > AY_EPSILON)||
+	     (fabs(movY) > AY_EPSILON)||
+	     (fabs(movZ) > AY_EPSILON))
+	    {
+	      o->modified = AY_TRUE;
+	      ay_notify_force(o);
+	      redraw = AY_TRUE;
 	    } /* if */
 	} /* if */
-    }
-  else
-    {
-      ay_error(AY_EARGS, fname, NULL);
-      return TCL_OK;
-    } /* if */
+    } /* for */
 
-  dx = -(oldwinx - winx) * view->conv_x;
-  dy = (oldwiny - winy) * view->conv_y;
+  if(redraw)
+    {
+      if(!ay_prefs.lazynotify)
+	{
+	  ay_status = ay_notify_parent();
+	} /* if */
+      ay_toglcb_display(togl);
+      ay_status = ay_pact_flashpoint(AY_TRUE);
+    } /* if */
 
   oldwinx = winx;
   oldwiny = winy;
-
-  /* XXXX uncomment when startpedit deals with multiple objects */
-  /*
-  if(multiple)
-    {
-      glMatrixMode(GL_MODELVIEW);
-      glPushMatrix();
-      
-       glScaled (1.0/o->scalx, 1.0/o->scaly, 1.0/o->scalz);
-       if(!view->aligned)
-	 {
-	   ay_quat_toeuler(o->quat, euler);
-	   glRotated(AY_R2D(euler[0]), 0.0, 0.0, 1.0);
-	   glRotated(AY_R2D(euler[1]), 0.0, 1.0, 0.0);
-	   glRotated(AY_R2D(euler[2]), 1.0, 0.0, 0.0);
-	 }
-       glTranslated(-o->movx, -o->movy, -o->movz);
-
-       glGetDoublev(GL_MODELVIEW_MATRIX, mo);
-      glPopMatrix();
-
-      ay_trafo_multmatrix4(mo,m);
-      memcpy(m, mo, 16*sizeof(GLdouble));
-    }
-  */
-
-  /* Side or Top view? */
-  if(view->type == AY_VTSIDE)
-    {
-      dz = -dx;
-      dx = 0.0;
-    }
-
-  if(view->type == AY_VTTOP)
-    {
-      dx = dx;
-      dz = -dy;
-      dy = 0.0;
-    }
-
-  movX = m[0]*dx+m[4]*dy+m[8]*dz;
-  movY = m[1]*dx+m[5]*dy+m[9]*dz;
-  movZ = m[2]*dx+m[6]*dy+m[10]*dz;
-
-  if(ay_point_edit_coords)
-    {
-      for(i = 0; i < ay_point_edit_coords_number; i++)
-	{
-	  coords = ay_point_edit_coords[i]; 
-
-	  coords[0] += movX;
-	  coords[1] += movY;
-	  coords[2] += movZ;
-
-	} /* for */
-
-      if((fabs(movX) > AY_EPSILON)||
-	 (fabs(movY) > AY_EPSILON)||
-	 (fabs(movZ) > AY_EPSILON))
-	{
-
-	  o->modified = AY_TRUE;
-	  ay_notify_force(ay_selection->object);
-
-	  if(!ay_prefs.lazynotify)
-	    {
-	      ay_status = ay_notify_parent();
-	    } /* if */
-	  ay_toglcb_display(togl);
-	} /* if */
-
-    } /* if */
 
  return TCL_OK;
 } /* ay_pact_petcb */

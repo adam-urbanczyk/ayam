@@ -142,6 +142,7 @@ array set ayprefs {
  Version 0
  Scripts ""
  AddViewParams ""
+ FlashPoints 1
  Docs "http://ayam.sourceforge.net/docs/"
     DailyTips {
 {Always click on drawn pixels, when picking vertices.}
