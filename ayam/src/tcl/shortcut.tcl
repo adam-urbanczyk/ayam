@@ -525,8 +525,13 @@ folder for a printable and more
 complete version.
 "
 
+# disabling the widget on Win32 prohibits selection/focus
+# and thus the mouse wheel does not work, the downside is
+# that now, the user is able to edit the text (on Win32)
+if { $tcl_platform(platform) != "windows" } {
+    $w.ftext.text configure -state disabled
+}
 
-$w.ftext.text configure -state disabled
 bind $w <Next> "$w.ftext.text yview scroll 1 pages"
 bind $w <Prior> "$w.ftext.text yview scroll -1 pages"
 
