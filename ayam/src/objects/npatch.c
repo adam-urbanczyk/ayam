@@ -160,7 +160,7 @@ ay_npatch_drawglucb(struct Togl *togl, ay_object *o)
  int uknot_count = 0, vknot_count = 0, i = 0, a = 0;
  GLdouble sampling_tolerance = ay_prefs.glu_sampling_tolerance;
  static GLfloat *uknots = NULL, *vknots = NULL, *controls = NULL;
- ay_object *trim = NULL, *loop = NULL;
+ ay_object *trim = NULL, *loop = NULL, *nc = NULL;
  int display_mode = ay_prefs.glu_display_mode;
  /* int cache = ay_prefs.glu_cache_float;*/
 
@@ -272,30 +272,29 @@ ay_npatch_drawglucb(struct Togl *togl, ay_object *o)
 		  GL_MAP2_VERTEX_4);
 
   /* propagate changes to trimcurve walking code also to:
-     nurbs/npt.c/ay_npt_topolymesh()! */
+     shadecb(), wribcb(), nurbs/npt.c/ay_npt_topolymesh()! */
 
   /* draw trimcurves */
-  if(o->down)
+  if(o->down && o->down->next)
     {
       trim = o->down;
       ay_errno = AY_OK;
-      while(trim)
+      while(trim->next)
 	{
-	  if(trim->type == AY_IDNCURVE)
+	  switch(trim->type)
 	    {
+	    case AY_IDNCURVE:
 	      gluBeginTrim(npatch->no);
-	      ay_status = ay_npt_drawtrimcurve(togl, trim, npatch->no);
+	       ay_status = ay_npt_drawtrimcurve(togl, trim, npatch->no);
 	      gluEndTrim(npatch->no);
-	    }
-
-	  if(trim->type == AY_IDLEVEL)
-	    { /* XXXX check, whether level is of type trimloop? */
-
+	      break;
+	    case AY_IDLEVEL:
+	      /* XXXX check, whether level is of type trimloop? */
 	      loop = trim->down;
-	      if(loop)
+	      if(loop && loop->next)
 		{
 		  gluBeginTrim(npatch->no);
-		  while(loop)
+		  while(loop->next)
 		    {
 
 		      if(loop->type == AY_IDNCURVE)
@@ -303,15 +302,40 @@ ay_npatch_drawglucb(struct Togl *togl, ay_object *o)
 			  ay_status = ay_npt_drawtrimcurve(togl, loop,
 							   npatch->no);
 			}
+		      else
+			{
+			  nc = NULL;
+			  ay_status = ay_provide_object(loop, AY_IDNCURVE,
+							&nc);
+			  if(nc)
+			    {
+			      gluBeginTrim(npatch->no);
+			      ay_status = ay_npt_drawtrimcurve(togl, nc,
+							       npatch->no);
+			      gluEndTrim(npatch->no);
+			      ay_object_delete(nc);
+			    } /* if */
+			} /* if */
 		      loop = loop->next;
-		    }
+		    } /* while */
 		  gluEndTrim(npatch->no);
 		} /* if */
-	    } /* if */
+	      break;
+	    default:
+	      nc = NULL;
+	      ay_status = ay_provide_object(trim, AY_IDNCURVE, &nc);
+	      if(nc)
+		{
+		  gluBeginTrim(npatch->no);
+		   ay_status = ay_npt_drawtrimcurve(togl, nc, npatch->no);
+		  gluEndTrim(npatch->no);
+		  ay_object_delete(nc);
+		}
+	      break;
+	    } /* switch */
 	  trim = trim->next;
 	} /* while */
-
-    }
+    } /* if */
 
   gluEndSurface(npatch->no);
 
@@ -411,7 +435,7 @@ ay_npatch_shadecb(struct Togl *togl, ay_object *o)
  int uknot_count = 0, vknot_count = 0, i = 0, a = 0;
  GLdouble sampling_tolerance = ay_prefs.glu_sampling_tolerance;
  static GLfloat *uknots = NULL, *vknots = NULL, *controls = NULL;
- ay_object *trim = NULL, *loop = NULL;
+ ay_object *trim = NULL, *loop = NULL, *nc = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -511,41 +535,69 @@ ay_npatch_shadecb(struct Togl *togl, ay_object *o)
 		  GL_MAP2_VERTEX_4);
 
   /* draw trimcurves */
-  if(o->down)
+   /* draw trimcurves */
+  if(o->down && o->down->next)
     {
       trim = o->down;
-
-      while(trim)
+      ay_errno = AY_OK;
+      while(trim->next)
 	{
-	  if(trim->type == AY_IDNCURVE)
+	  switch(trim->type)
 	    {
+	    case AY_IDNCURVE:
 	      gluBeginTrim(npatch->no);
-	      ay_status = ay_npt_drawtrimcurve(togl, trim, npatch->no);
+	       ay_status = ay_npt_drawtrimcurve(togl, trim, npatch->no);
 	      gluEndTrim(npatch->no);
-	    }
-
-	  if(trim->type == AY_IDLEVEL)
-	    { /* XXXX check, whether level is of type trimloop? */
+	      break;
+	    case AY_IDLEVEL:
+	      /* XXXX check, whether level is of type trimloop? */
 	      loop = trim->down;
-	      if(loop)
+	      if(loop && loop->next)
 		{
 		  gluBeginTrim(npatch->no);
-		  while(loop)
+		  while(loop->next)
 		    {
+
 		      if(loop->type == AY_IDNCURVE)
 			{
 			  ay_status = ay_npt_drawtrimcurve(togl, loop,
 							   npatch->no);
 			}
+		      else
+			{
+			  nc = NULL;
+			  ay_status = ay_provide_object(loop, AY_IDNCURVE,
+							&nc);
+			  if(nc)
+			    {
+			      gluBeginTrim(npatch->no);
+			      ay_status = ay_npt_drawtrimcurve(togl, nc,
+							       npatch->no);
+			      gluEndTrim(npatch->no);
+			      ay_object_delete(nc);
+			    } /* if */
+			} /* if */
 		      loop = loop->next;
-		    }
+		    } /* while */
 		  gluEndTrim(npatch->no);
 		} /* if */
-	    } /* if */
+	      break;
+	    default:
+	      nc = NULL;
+	      ay_status = ay_provide_object(trim, AY_IDNCURVE, &nc);
+	      if(nc)
+		{
+		  gluBeginTrim(npatch->no);
+		   ay_status = ay_npt_drawtrimcurve(togl, nc, npatch->no);
+		  gluEndTrim(npatch->no);
+		  ay_object_delete(nc);
+		}
+	      break;
+	    } /* switch */
 	  trim = trim->next;
 	} /* while */
     } /* if */
-      
+
   gluEndSurface(npatch->no);
 
  return AY_OK;
