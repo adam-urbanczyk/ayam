@@ -228,7 +228,15 @@ ay_read_tags(FILE *fileptr, ay_object *o)
      if(entry)
        tag->type = (char *)Tcl_GetHashValue(entry);
 
-     ay_read_string(fileptr,&(tag->val));
+     ay_read_string(fileptr, &(tag->val));
+
+     /* do not create tags with NULL pointers */
+     if(!tag->val)
+       {
+	 if(!(tag->val = calloc(1, sizeof(char))))
+	   return AY_EOMEM;
+	 *(tag->val) = '\0';
+       }
 
      if(!o->tags)
        {
