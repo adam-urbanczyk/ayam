@@ -229,11 +229,11 @@ ay_objio_writetcurve(FILE *fileptr, ay_object *o, double *m)
 
   /* write knot vector */
   fprintf(fileptr, "parm u");
-  for(i = 0; i < (nc->length+nc->order-1); i++)
+  for(i = 0; i < (nc->length + nc->order); i++)
     {
       fprintf(fileptr, " %lg", nc->knotv[i]);
     }
-  fprintf(fileptr, "\n");
+  fprintf(fileptr, "\nend\n");
 
  return AY_OK;
 } /* ay_objio_writetcurve */
@@ -396,20 +396,21 @@ ay_objio_writenpatch(FILE *fileptr, ay_object *o, double *m)
 
   np = (ay_nurbpatch_object *)o->refine;
 
-  /* get all vertices and transform them to world space */
+  /* get all vertices and transform them to world space,
+     also adapting row/column major order in the process */
   if(!(v = calloc(np->width * np->height * stride, sizeof(double))))
     return AY_EOMEM;
 
   p1 = v;
-  p2 = np->controlv;
-  for(i = 0; i < np->width; i++)
+  for(i = 0; i < np->height; i++)
     {
-      for(j = 0; j < np->height; j++)
+      p2 = &(np->controlv[i*stride]);
+      for(j = 0; j < np->width; j++)
 	{
 	  AY_APTRAN3(p1,p2,m)
 	  p1[3] = p2[3];
 	  p1 += stride;
-	  p2 += stride;
+	  p2 += np->height*stride;
 	}
     }
 
