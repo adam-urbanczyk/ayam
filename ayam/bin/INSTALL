@@ -1,12 +1,13 @@
-[INSTALL, 30. Dec 2003]
+[INSTALL, 10. Mar 2003]
 
 Installation Instructions for Ayam (Unix only).
 
 Contents:
 
 1. General Installation Instructions
-2. IRIX Specific Information
-3. Mac OS X Specific Information
+2. Linux Specific Information
+3. IRIX Specific Information
+4. Mac OS X Specific Information
 
 
 1. General Installation Instructions
@@ -39,29 +40,43 @@ or
 first.
 
 
-2. IRIX Specific Information
+2. Linux Specific Information
+-----------------------------
+
+o The shader parsing plugins in this release were compiled with the
+  following versions of the renderers: ayslo3d: 3Delight 2.0.2,
+  ayslx: Aqsis 0.9.0, aysdr: Pixie 1.3.3, ayso: RDC 3.3.5,
+  ayslo: PRMan 11.5
+
+
+3. IRIX Specific Information
 ----------------------------
 
-o On IRIX there is currently no ayslx plug-in. You may safely ignore the
-  warnings about a missing ayslx.so file, that occur during the installation.
 o On IRIX there is currently no aysdr plug-in. You may safely ignore the
   warnings about a missing aysdr.so file, that occur during the installation.
 o On IRIX you have to adapt the variable LD_LIBRARYN32_PATH instead of
   LD_LIBRARY_PATH.
+o The shader parsing plugins in this release were compiled with the
+  following versions of the renderers: ayslx: Aqsis 0.9.0,
+  ayslo3d: 3Delight 1.0.6 MIPS4, ayso: RDC 3.3.5 MIPS3,
+  ayslo: PRMan 3.8.0.6 MIPS3
 
 
-3. Mac OS X Specific Information
+4. Mac OS X Specific Information
 --------------------------------
 
-The Mac OS X binary of Ayam was compiled on the SourceForge compile farm
-on Mac OS X 10.1 using X11. Support for plugins has been switched off.
-There are no plugins distributed with this release.
-The MetaObj custom object is statically compiled into the binary.
-Because BMRT is not available on Mac OS X, this binary has been compiled
-without libslcargs and will scan .xml shader description files created
-by sl2xml from the K-3D project only.
-I am not able to test this binary on my own! The main tester (Daniel Amor)
-reported that it will only run, when started from an xterm.
+o The Mac OS X binary of Ayam was compiled on the SourceForge compile farm
+  on Mac OS X 10.1 using X11. Therefore, you need X11 to run this binary.
+o Because BMRT is not available on Mac OS X, this binary has been compiled
+  without libslcargs and will scan .xml shader description files created
+  by sl2xml from the K-3D project only (if no shader parsing plugin is
+  loaded).
+o At the moment, the only shader parsing plugins available on Mac OS X are
+  ayslo3d and aysdr. The ayslo3d plugin was compiled with 3Delight 2.0.0.
+  The aysdr plugin was compiled with Pixie 1.3.3, with object files kindly
+  provided by George Harker.
+o I am not able to test this binary on my own! The main tester (Daniel Amor)
+  reported that it will only run, when started from an xterm.
 
 End of Installation Instructions,
 -- 
