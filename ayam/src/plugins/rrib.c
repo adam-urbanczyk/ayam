@@ -549,6 +549,9 @@ void ay_rrib_readshader(char *sname, int stype,
 			RtInt n, RtToken tokens[], RtPointer parms[],
 			ay_shader **result);
 
+void ay_rrib_readparams(int n, RtToken tokens[], RtPointer parms[],
+			Tcl_DString *ds);
+
 void ay_rrib_readtag(char *tagtype, char *tagname, char *name,
 		     int i, RtToken tokens[], RtPointer parms[],
 		     ay_tag_object **destination);
@@ -1535,7 +1538,54 @@ RtVoid
 ay_rrib_RiDisplay(char *name, RtToken type, RtToken mode,
 		  RtInt n, RtToken tokens[], RtPointer parms[])
 {
-   (void)name; (void)type; (void)mode; (void)n; (void)tokens; (void)parms;
+ int ay_status = AY_OK;
+ ay_tag_object *nt = NULL;
+ char tname[] = "RiDisplay";
+ Tcl_DString ds;
+
+  if(!(nt = calloc(1, sizeof(ay_tag_object))))
+    {
+      return;
+    }
+
+  if(!(nt->name = calloc(strlen(tname)+1, sizeof(char))))
+    {
+      free(nt); return;
+    }
+
+  strcpy(nt->name, tname);
+  nt->type = ay_ridisp_tagtype;
+  Tcl_DStringInit(&ds);
+  Tcl_DStringAppend(&ds, name, -1);
+  Tcl_DStringAppend(&ds, ",", -1);
+  Tcl_DStringAppend(&ds, type, -1);
+  Tcl_DStringAppend(&ds, ",", -1);
+  Tcl_DStringAppend(&ds, mode, -1);
+
+  /* parse parameters, if there are any */
+  if(n > 0)
+    {
+      ay_rrib_readparams(n, tokens, parms, &ds);
+
+    } /* if */
+  
+  if(!(nt->val = calloc(strlen(Tcl_DStringValue(&ds))+1, sizeof(char))))
+    {
+      free(nt->name);
+      free(nt);
+      Tcl_DStringFree(&ds);
+      return;
+    }
+
+  strcpy(nt->val, Tcl_DStringValue(&ds));
+
+  /* append tag to root object */
+  ay_status = ay_tags_append(ay_root, nt);
+
+  /* clean up */
+  Tcl_DStringFree(&ds);
+
+ return;
 } /* ay_rrib_RiDisplay */
 
 
@@ -1668,9 +1718,49 @@ RtVoid
 ay_rrib_RiHider(RtToken type,
 		RtInt n, RtToken tokens[], RtPointer parms[])
 {
-   (void)type; (void)n; (void)tokens; (void)parms;
-} /* ay_rrib_RiHider */
+ int ay_status = AY_OK;
+ ay_tag_object *nt = NULL;
+ char tname[] = "RiHider";
+ Tcl_DString ds;
 
+  if(!(nt = calloc(1, sizeof(ay_tag_object))))
+    {
+      return;
+    }
+
+  if(!(nt->name = calloc(strlen(tname)+1, sizeof(char))))
+    {
+      free(nt); return;
+    }
+
+  strcpy(nt->name, tname);
+  nt->type = ay_rihider_tagtype;
+  Tcl_DStringInit(&ds);
+  Tcl_DStringAppend(&ds, type, -1);
+
+  /* parse parameters, if there are any */
+  if(n > 0)
+    {
+      ay_rrib_readparams(n, tokens, parms, &ds);
+
+      if(!(nt->val = calloc(strlen(Tcl_DStringValue(&ds))+1, sizeof(char))))
+	{
+	  free(nt->name);
+	  free(nt);
+	  Tcl_DStringFree(&ds);
+	  return;
+	}
+      strcpy(nt->val, Tcl_DStringValue(&ds));
+    } /* if */
+
+  /* append tag to root object */
+  ay_status = ay_tags_append(ay_root, nt);
+
+  /* clean up */
+  Tcl_DStringFree(&ds);
+
+ return;
+} /* ay_rrib_RiHider */
 
 
 RtVoid
@@ -3474,20 +3564,104 @@ ay_rrib_readshader(char *sname, int stype,
 
 
 void
-ay_rrib_readtag(char *tagtype, char *tagname, char *name,
-		int i, RtToken tokens[], RtPointer parms[],
-		ay_tag_object **destination)
+ay_rrib_readparams(int n, RtToken tokens[], RtPointer parms[],
+		   Tcl_DString *ds)
 {
- int type, found = AY_FALSE;
- ay_tag_object *n = NULL, *ot;
- Tcl_DString ds;
+ int i, type;
  RIB_HASHHND ht = NULL;
  PRIB_HASHATOM  p = NULL;
- char fname[] = "ay_rrib_readtag";
+ char fname[] = "ay_rrib_readparams";
  RtColor *col;
  RtPoint *pnt;
  char *valstr = NULL, valbuf[255], typechar;
  
+  ht = RibGetHashHandle(grib);
+
+  for(i = 0; i < n; i++)
+    {
+      p = NULL;
+      p = RibFindMatch(ht, kRIB_HASH_VARIABLE,
+		       kRIB_UNKNOWNCLASS | kRIB_UNKNOWNTYPE,
+		       (void*)(tokens[i]));
+
+      if(p)
+	{
+	  type = kRIB_TYPE_MASK & p->code;
+
+	  switch(type)
+	    {
+	    case kRIB_INTTYPE:
+	      typechar = 'i';
+	      sprintf(valbuf,"%d", (int)(*((RtInt *)(parms[i]))));
+	      valstr = valbuf;
+	      break;
+	    case kRIB_FLOATTYPE:
+	      typechar = 'f';
+	      sprintf(valbuf,"%f", (float)(*((RtFloat *)(parms[i]))));
+	      valstr = valbuf;
+	      break;
+	    case kRIB_STRINGTYPE:
+	      typechar = 's';
+	      break;
+	    case kRIB_COLORTYPE:
+	      typechar = 'c';
+	      col = (RtColor *)(parms[i]);
+	      sprintf(valbuf,"%f,%f,%f", (float)((*col)[0]),(float)((*col)[1]),
+		      (float)((*col)[2]));
+	      valstr = valbuf;
+	      break;		  
+	    case kRIB_POINTTYPE:
+	      typechar = 'p';
+	      pnt = (RtPoint *)(parms[i]);
+	      sprintf(valbuf,"%f,%f,%f", (float)((*pnt)[0]),(float)((*pnt)[1]),
+		      (float)((*pnt)[2]));
+	      break;
+	    default:
+	      typechar = 'u';
+	      ay_error(AY_ERROR, fname,
+		       "Skipping parameter of unknown type:");
+	      ay_error(AY_ERROR, fname, tokens[i]);
+	      break;
+	    } /* switch */
+
+	  if(typechar != 'u')
+	    {
+	      Tcl_DStringAppend(ds, ",", -1);
+	      Tcl_DStringAppend(ds, (char *)(tokens[i]), -1);
+	      Tcl_DStringAppend(ds, ",", -1);
+	      Tcl_DStringAppend(ds, &typechar, 1);
+	      Tcl_DStringAppend(ds, ",", -1);
+	      if(typechar == 's')
+		{
+		  Tcl_DStringAppend(ds, *((char **)(parms[i])), -1);
+		}
+	      else
+		{
+		  Tcl_DStringAppend(ds, valstr, -1);
+		} /* if */
+	    } /* if */
+	}
+      else
+	{
+	  ay_error(AY_ERROR, fname, "Skipping undeclared token:");
+	  ay_error(AY_ERROR, fname, tokens[i]);
+	} /* if */
+    } /* for */
+
+ return;
+} /* ay_rrib_readparams */
+
+
+void
+ay_rrib_readtag(char *tagtype, char *tagname, char *name,
+		int i, RtToken tokens[], RtPointer parms[],
+		ay_tag_object **destination)
+{
+ int found = AY_FALSE;
+ ay_tag_object *n = NULL, *ot;
+ Tcl_DString ds;
+ /*char fname[] = "ay_rrib_readtag";*/
+
  if(!destination)
    return;
 
@@ -3505,80 +3679,25 @@ ay_rrib_readtag(char *tagtype, char *tagname, char *name,
 
   n->type = tagtype;
 
-  ht = RibGetHashHandle(grib);
-
-  p = NULL;
-  p = RibFindMatch(ht, kRIB_HASH_VARIABLE,
-		   kRIB_UNKNOWNCLASS | kRIB_UNKNOWNTYPE,
-		   (void*)(tokens[i]));
-
-  if(p)
-    {
-      type = kRIB_TYPE_MASK & p->code;
-
-      switch(type)
-	{
-	case kRIB_INTTYPE:
-	  typechar = 'i';
-	  sprintf(valbuf,"%d", (int)(*((RtInt *)(parms[i]))));
-	  valstr = valbuf;
-	  break;
-	case kRIB_FLOATTYPE:
-	  typechar = 'f';
-	  sprintf(valbuf,"%f", (float)(*((RtFloat *)(parms[i]))));
-	  valstr = valbuf;
-	  break;
-	case kRIB_STRINGTYPE:
-	  typechar = 's';
-	  break;
-	case kRIB_COLORTYPE:
-	  typechar = 'c';
-	  col = (RtColor *)(parms[i]);
-	  sprintf(valbuf,"%f,%f,%f", (float)((*col)[0]),(float)((*col)[1]),
-		  (float)((*col)[2]));
-	  valstr = valbuf;
-	  break;		  
-	case kRIB_POINTTYPE:
-	  typechar = 'p';
-	  pnt = (RtPoint *)(parms[i]);
-	  sprintf(valbuf,"%f,%f,%f", (float)((*pnt)[0]),(float)((*pnt)[1]),
-		  (float)((*pnt)[2]));
-	  break;
-	default:
-	  ay_error(AY_ERROR, fname,
-		   "Skipping parameter of unknown type:");
-	  ay_error(AY_ERROR, fname, tokens[i]);
-	  free(n->name);
-	  free(n);
-	  return;
-	  break;
-	} /* switch */
-    }
-  else
-    {
-      ay_error(AY_ERROR, fname, "Skipping undeclared token:");
-      ay_error(AY_ERROR, fname, tokens[i]);
-      free(n->name);
-      free(n);
-      return;
-    }
-
   Tcl_DStringInit(&ds);
 
   Tcl_DStringAppend(&ds, name, -1);
-  Tcl_DStringAppend(&ds, ",", -1);
-  Tcl_DStringAppend(&ds, (char *)(tokens[i]), -1);
-  Tcl_DStringAppend(&ds, ",", -1);
-  Tcl_DStringAppend(&ds, &typechar, 1);
-  Tcl_DStringAppend(&ds, ",", -1);
-  if(typechar == 's')
+
+  /* XXXX enforce to read just a single parameter */
+  if(i > 0)
     {
-      Tcl_DStringAppend(&ds, *((char **)(parms[i])), -1);
+      ay_rrib_readparams(1, tokens, parms, &ds);
     }
-  else
-    {
-      Tcl_DStringAppend(&ds, valstr, -1);
-    }
+    /*
+    else
+      {
+        ay_error(AY_ERROR, fname, "skipping tag without parameters");
+        free(n->name);
+        free(n);
+        Tcl_DStringFree(&ds);
+        return;
+      }
+    */
 
   if(!(n->val = calloc(strlen(Tcl_DStringValue(&ds))+1, sizeof(char))))
     {
@@ -3733,6 +3852,8 @@ ay_rrib_initoptions(void)
   gRibNopRITable[kRIB_PIXELSAMPLES] = (PRIB_RIPROC)ay_rrib_RiPixelSamples;
   gRibNopRITable[kRIB_PIXELVARIANCE] = (PRIB_RIPROC)ay_rrib_RiPixelVariance;
   gRibNopRITable[kRIB_QUANTIZE] = (PRIB_RIPROC)ay_rrib_RiQuantize;
+  gRibNopRITable[kRIB_DISPLAY] = (PRIB_RIPROC)ay_rrib_RiDisplay;
+  gRibNopRITable[kRIB_HIDER] = (PRIB_RIPROC)ay_rrib_RiHider;
 
   gRibNopRITable[kRIB_BOXFILTER] =
     (PRIB_RIPROC)ay_rrib_RiBoxFilter;
@@ -4671,6 +4792,7 @@ ay_rrib_readrib(char *filename, int frame, int read_camera, int read_options,
 
   /* initialize global variables */
   ay_object_defaults(&ay_rrib_co);
+  ay_tags_append(ay_root, NULL);
 
   ay_rrib_clighthandle = 1;
   ay_rrib_flobject = NULL;
