@@ -3217,22 +3217,49 @@ following into the console:
 forAll 0 {placeOb 1 1 1}
 </code>
 But perhaps you would rather like a small GUI for that?
-No problem:
+No problem, the following snippet adds an entry to the custom
+menu that opens a small requester for the x-, y-, and z-values and
+calls the <tt/"placeOb"/ procedure (defined above) with them:
 <code>
 global ay
 $ay(cm) add command -label "Place Object" -command {
- runTool {x y z} {"X:" "Y:" "Z:"} "placeOb %0 %1 %2"
+ runTool {x y z} {"X:" "Y:" "Z:"} "forAll 0 {placeOb %0 %1 %2}"
+ uS
 }
 </code>
 
 <sect2>Moving NURBS points<label id="scexnurb">
 <p>
 The following example script shows how to move control points
-of a selected NURBS curve.
+of a NURBS curve.
 <code>
-Later.
-</code>
+# first, we create a new NURBS curve with 30 control points
+set len 30
+crtOb NCurve -length $len
+# update selection
+uS
+# select last object (the newly created curve)
+sL
+# prepare moving
+set i 0
+set w 1.0
+set angle 0
+while { $i < $len } {
 
+ set x [expr 3*cos($angle)]
+ set y [expr 3*sin($angle)]
+ set z [expr $i/3.0]
+
+ # move control point to new position
+ setNC $i $x $y $z $w
+
+ incr angle 90
+ incr i
+}
+# redraw all views
+rV
+</code>
+Now use this as path for a Sweep.
 
 <sect>Miscellaneous
 <p>
