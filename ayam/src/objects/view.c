@@ -705,7 +705,7 @@ ay_view_readcb(FILE *fileptr, ay_object *o)
 	    "global ay;viewTitle [lindex $ay(views) end] Persp Pick");
   if(vtemp.type == AY_VTTRIM)
     sprintf(command,
-	    "global ay;viewTitle [lindex $ay(views)_views end] Trim Pick");
+	    "global ay;viewTitle [lindex $ay(views) end] Trim Pick");
 
   Tcl_Eval(ay_interp, command);
 
