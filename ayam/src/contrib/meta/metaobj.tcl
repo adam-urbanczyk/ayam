@@ -46,7 +46,7 @@ addCheck $w MetaObjAttrData Adaptive
 if {$MetaObjAttrData(Adaptive) != 0} {
 addParam $w MetaObjAttrData Flatness 0.9
 addParam $w MetaObjAttrData Epsilon 0.0001
-addParam $w MetaObjAttrData stepSize 0.0001
+addParam $w MetaObjAttrData StepSize 0.0001
 }
 
 $ay(pca) itemconfigure 1 -window $w
