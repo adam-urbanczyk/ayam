@@ -1072,11 +1072,14 @@ ay_light_notifycb(ay_object *o)
 
   /*
    * no action needed for objects of internal types;
-   * but for custom lights, we need to transfer
-   * the point coords from "tto" and "tfrom" to the attached shader
+   * but for custom lights, that were modified by single point
+   * editing actions (hence the test for o->modified), we need
+   * to transfer the point coords from "tto" and "tfrom" to the
+   * attached light shader
    */
-  if(light->type == AY_LITCUSTOM)
+  if((light->type == AY_LITCUSTOM) && (o->modified))
     {
+      o->modified = AY_FALSE;
       if(light->lshader)
 	{
 	  shader = light->lshader;
@@ -1084,13 +1087,13 @@ ay_light_notifycb(ay_object *o)
 	  sarg = shader->arg;
 	  while(sarg)
 	    {
-	      if(!ay_comp_strcase(sarg->name,"from"))
+	      if(!ay_comp_strcase(sarg->name, "from"))
 		{
 		  sarg->val.point[0] = (float)light->tfrom[0];
 		  sarg->val.point[1] = (float)light->tfrom[1];
 		  sarg->val.point[2] = (float)light->tfrom[2];
 		}
-	      if(!ay_comp_strcase(sarg->name,"to"))
+	      if(!ay_comp_strcase(sarg->name, "to"))
 		{
 		  sarg->val.point[0] = (float)light->tto[0];
 		  sarg->val.point[1] = (float)light->tto[1];
