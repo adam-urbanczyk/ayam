@@ -167,8 +167,13 @@ ay_shade_view(struct Togl *togl)
 
   if(view->shade > 1)
     {
+#ifdef GL_VERSION_1_1
       glEnable(GL_POLYGON_OFFSET_FILL);
       glPolygonOffset(1.0, 1.0);
+#else
+      glEnable(GL_POLYGON_OFFSET_EXT);
+      glPolygonOffsetExt(1.0, 0.000002);
+#endif
     }
 
   glEnable(GL_DITHER);
@@ -312,8 +317,13 @@ ay_shade_view(struct Togl *togl)
 
   if(view->shade > 1)
     {
+#ifdef GL_VERSION_1_1
       glDisable(GL_POLYGON_OFFSET_FILL);
       glPolygonOffset(0.0, 0.0);
+#else
+      glDisable(GL_POLYGON_OFFSET_EXT);
+      glPolygonOffsetExt(0.0, 0.0);
+#endif
       ay_draw_view(togl, AY_TRUE);
     }
 
