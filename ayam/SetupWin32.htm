@@ -121,8 +121,8 @@ shaders are small files that carry material descriptions.
 Some example shaders come with your RenderMan compatible renderer
 (e.g. BMRT), but you may also create your own.<br>
 Currently, Ayam can only work with shaders that have been
-compiled with <code>"slc"</code> from BMRT, so you should get and
-install BMRT first.<br>
+compiled with <code>"slc"</code> from BMRT (if no shader parsing
+plugin is loaded), so you should get and install BMRT first.<br>
 Now you need to point Ayam to the directories where your slc-compiled
 shaders reside in order to use them with the material
 objects in Ayam.
@@ -137,8 +137,68 @@ D:/BMRT2.6/shaders/;D:/Ayam/scn/shaders/
 </samp>
 <br>
 Now press the <code>"Scan Shaders"</code> button below and watch the
-console for error messages.<p>
-
+console for error messages.
+<p>
+Remember: NEVER use backslashes (\) in any path or filename you enter to Ayam.
+<p>
+If you do not want to use BMRT, you need to load a shader parsing plugin.
+In the directory <code>ayam/bin/plugins</code> there are the following
+shader parsing plugins:
+aysdr.dll for Pixie, ayslb.dll for Air, ayslo3d.dll for 3Delight,
+ayslo.dll for PRMan, ayso.dll for RenderDotC, and ayslx.dll for Aqsis.
+<p>
+The plugins may be loaded manually (using the main menu entry:
+"File/Load Custom") or automatically on startup.
+In order to load a plugin automatically on startup of Ayam, just add the
+corresponding Tcl script to the "Scripts" preference setting and restart
+Ayam. The plugins have to be present in a directory called "plugins"
+which in turn has to be present in the directory where "ayam.exe" is located,
+in order to make this work; your directory structure should look like this:
+<p>
+<code>
+ayam/bin/<br>
+ayam/bin/ayam.exe<br>
+ayam/bin/plugins/ayslb.dll<br>
+ayam/bin/plugins/loadayslb.tcl
+</code>
+<p>
+Note that the plugins are not able to check the Ayam version they
+get loaded into. Please, do not try to load them into any other version
+of Ayam as 1.7; otherwise you may experience an immediate crash.
+<p>
+Also note that some plugins require additional DLL files to be present in the
+DLL search path. Depending on the flavour of your Win32 you may need to
+adapt the PATH environment variable to include the directories with those
+DLL files. You can also just copy them to the directory where "ayam.exe"
+is located. If a plugin does not find the corresponding DLL files it needs,
+you will get "invalid argument" Tcl error messages upon loading, or the
+plugin will fail to scan shaders later on.
+<p>
+Furthermore, all plugins have been compiled and tested against a
+specific version of the renderer (as outlined below); parsing shaders
+of other versions possibly will not work.
+<p>
+aysdr.dll: Pixie 1.3.3, depends on "ri.dll"<br>
+This plugin only works, if the preference setting "Shaders"
+contains just a single element (this means, you need to copy
+all your private shaders to e.g. c:/pixie/shaders and compile them
+there).
+<p>
+ayslb.dll: Air 2.6, does not depend on other DLL files
+<p>
+ayslo3d.dll: 3Delight 2.0, depends on "3delight.dll"
+<p>
+ayso.dll: RenderDotC 3.3.5, depends on "soargs.dll"<br>
+Since RenderDotC compiles all shaders as shared native code (into DLL files),
+all paths of the "Shaders" preference setting should also be present in the
+DLL search path.
+<p>
+ayslx.dll: Aqsis 0.9.0, depends on "libaqsis.dll"<br>
+This plugin is just available in a debug-version (and therefore?) works
+very very slowly.
+<p>
+ayslo.dll: Photorealistic RenderMan 11.5, does not depend on other DLL files
+<p>
 Remember: NEVER use backslashes (\) in any path or filename you enter to Ayam.
 
 <H2>3. Creating and Saving a Working Environment</H2>
@@ -183,7 +243,7 @@ Quit Ayam and start it again, check the console for errors; then
 download <code>"Tutorial #1"</code> and do it.
 
 <HR>
-<i>Randolf Schultz, 3. Jul 2003<BR>
+<i>Randolf Schultz, 11. Mar 2003<BR>
 <A HREF="http://www.ayam3d.org/">
 http://www.ayam3d.org/</A>&nbsp;&nbsp;&nbsp;&nbsp;Reconstruct the World!
 </i>
