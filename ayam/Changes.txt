@@ -1,4 +1,4 @@
-[22. 2. 2004] CVS-Head:
+[6. Mar 2004] CVS-Head:
 o bug fixes:
   - fixed object picking in draw-level-only views (SF 817796)
   - fixed (RIB) import of geometry after AreaLights (SF 825629)
@@ -34,6 +34,7 @@ o bug fixes:
   - fixed resetting the undo prompt after "File/New" and after the "UndoLevels"
     preference setting is modified (SF 898786)
   - fixed wrong undo prompt after the undo buffer is filled (SF 899870)
+  - fixed double/half size of view windows using the view menu (SF 903555)
 o when the keyboard focus is moved from object tree/listbox to property GUI,
   the GUI is now scrolling to the entry with the focus immediately
 o added "curvPlot" scripting interface command that creates a curvature
@@ -104,9 +105,14 @@ o added "shiftClosedBS" scripting interface command that shifts the control
   "Tools/NCurve/Shift BSpline"
 o added Makefile configuration GUI ("ayamConf.tcl") for easier compilation
   (Hynek Schlawack)
+o added support for Aqsis0.9.0 to the "Select Renderer" feature to follow
+  the incompatible changes in the Aqsis0.9.0 default rendering progress
+  output
+o improved layout of resized UI-elements on Win32
+o improved detection of finished renderings
 
 
-[26. 09. 2003] Ayam1.6:
+[26. Sep 2003] Ayam1.6:
 o bug fixes:
   - fixed crash when exporting scenes with malformed RiAttribute/RiOption
     tags (type "c" or "p", with a component missing) (SF 753550)
@@ -232,14 +238,14 @@ o checkbutton and menubutton property GUI elements may now also be controlled
   via keyboard
 
 
-[10. 05. 2003] Ayam1.5.1:
+[10. May 2003] Ayam1.5.1:
 o bug fixes:
  - fixed erroneus drawing of NURBS patches with certain OpenGL/GLU
    implementations
    (SF 735600)
 
 
-[05. 05. 2003] Ayam1.5:
+[05. May 2003] Ayam1.5:
 o bug fixes:
   - fixed RIB import creating object names with malicious characters (spaces)
     (SF 686419)
@@ -354,7 +360,7 @@ o the console prompt now displays the name of the operations that can be
   undone and redone respectively
 
 
-[07. 02. 2003] Ayam1.4:
+[07. Feb 2003] Ayam1.4:
 o bug fixes:
   - fixed remembering of the state of the object selection listbox/tree
     when the context menu or a double click on the label is used to
@@ -469,7 +475,7 @@ o RIB-export now writes different frame numbers for shadow maps and the
   when the "ShadowMaps" preference setting is "Automatic"
 
 
-[15. 10. 2002] Ayam1.3:
+[15. Oct 2002] Ayam1.3:
 o bug fixes:
   - fixed memory leaks in the shadow map RIB export module
   - fixed ICurves crash for length 2
@@ -562,7 +568,7 @@ o all RenderGUI windows now automatically try to raise themself, should
   they be obscured, e.g. by the renderer window (but just one time)
 
 
-[09. 07. 2002] Ayam1.2:
+[09. Jul 2002] Ayam1.2:
 o bug fixes:
   - fixed color select buttons in preferences not updating on "load defaults"
   - fixed missing RiSolidBegin/End for spheres with thetamax != 360
@@ -636,7 +642,7 @@ o the "UndoLevels" preference setting allows the undo system to be
   switched off completely using the special value "-1" now
 
 
-[17. 01. 2002] Ayam1.1:
+[17. Jan 2002] Ayam1.1:
 o bug fixes:
   - fixed custom lights always exporting as AreaLight to RIB
   - fixed tags not loading from scene files to root object
@@ -705,7 +711,7 @@ o Due to a flaw in the design of the file format, Ayam1.0b4 and below
   from 1.0b4 and below just fine.
 
 
-[02. 10. 2001] Ayam1.0 beta4:
+[02. Oct 2001] Ayam1.0 beta4:
 o bug fixes:
   - Skin does not crash in interpolation mode, if two identical curves
     are present.
@@ -750,7 +756,7 @@ o SDK reworked.
 o Plugins moved to "plugins" directory.
 
 
-[26. 07. 2001] Ayam1.0 beta3:
+[26. Jul 2001] Ayam1.0 beta3:
 o a whole lot of bug fixes
 o Mops Import much improved
   - imports now ICurves and Materials
@@ -764,9 +770,9 @@ o added some example scenes
 o added Setup.txt, Changes
 
 
-[12. 06. 2001] Ayam1.0 beta2:
+[12. Jun 2001] Ayam1.0 beta2:
 o some bug fixes including a fix for a serious memory leak in the
   notification callbacks of the extrude/revolve tool objects
 
 
-[31. 05. 2001] First Public Release (Ayam1.0 beta1)
+[31. May 2001] First Public Release (Ayam1.0 beta1)
