@@ -72,7 +72,7 @@ ay_pact_seltcb(struct Togl *togl, int argc, char *argv[])
  ay_point_object *newp = NULL, *point = NULL, *last = NULL;
  int multiple = AY_FALSE;
  /* XXXX let's hope nobody changes AY_CLSEL */
- GLfloat pixel1[3] = {0}, pixel[3] = {0};
+ GLfloat pixel1[3] = {0.0f,0.0f,0.0f}, pixel[3] = {0.0f,0.0f,0.0f};
  ay_list_object *sel = ay_selection;
 
   if(ay_selection)

@@ -320,15 +320,15 @@ ay_box_wribcb(char *file, ay_object *o)
     rect[3][2] = (RtFloat)(-0.5);
 
     RiPatch(RI_BILINEAR, RI_P, (RtPointer)rect, RI_NULL);
-    RiRotate(90.0, 0.0, 0.0, 1.0);
+    RiRotate((RtFloat)90.0, (RtFloat)0.0, (RtFloat)0.0, (RtFloat)1.0);
     RiPatch(RI_BILINEAR, RI_P, (RtPointer)rect, RI_NULL);
-    RiRotate(90.0, 0.0, 0.0, 1.0);
+    RiRotate((RtFloat)90.0, (RtFloat)0.0, (RtFloat)0.0, (RtFloat)1.0);
     RiPatch(RI_BILINEAR, RI_P, (RtPointer)rect, RI_NULL);
-    RiRotate(90.0, 0.0, 0.0, 1.0);
+    RiRotate((RtFloat)90.0, (RtFloat)0.0, (RtFloat)0.0, (RtFloat)1.0);
     RiPatch(RI_BILINEAR, RI_P, (RtPointer)rect, RI_NULL);
-    RiRotate(90.0, 0.0, 1.0, 0.0);
+    RiRotate((RtFloat)90.0, (RtFloat)0.0, (RtFloat)1.0, (RtFloat)0.0);
     RiPatch(RI_BILINEAR, RI_P, (RtPointer)rect, RI_NULL);
-    RiRotate(180.0, 0.0, 1.0, 0.0);
+    RiRotate((RtFloat)180.0, (RtFloat)0.0, (RtFloat)1.0, (RtFloat)0.0);
     RiPatch(RI_BILINEAR, RI_P, (RtPointer)rect, RI_NULL);
 
    RiTransformEnd();

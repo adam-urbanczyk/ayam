@@ -198,8 +198,8 @@ ay_wrib_rioptions(void)
 
   RiExposure((RtFloat)riopt->ExpGain, (RtFloat)riopt->ExpGamma);
 
-  RiQuantize(RI_RGBA, riopt->RGBA_ONE, riopt->RGBA_MIN,
-	     riopt->RGBA_MAX, riopt->RGBA_Dither);
+  RiQuantize(RI_RGBA, (RtInt)riopt->RGBA_ONE, (RtInt)riopt->RGBA_MIN,
+	     (RtInt)riopt->RGBA_MAX, (RtFloat)riopt->RGBA_Dither);
 
   /* BMRT-Specific */
   if(!ay_prefs.ristandard)
@@ -219,7 +219,7 @@ ay_wrib_rioptions(void)
     RiOption((RtToken)"render", (RtToken)"max_raylevel",
 	     (RtPointer)(&rtitemp), RI_NULL);
 
-    rtftemp = riopt->ShadowBias;
+    rtftemp = (RtFloat)riopt->ShadowBias;
     RiDeclare((RtToken)"minshadowbias", "float");
     RiOption((RtToken)"render", (RtToken)"minshadowbias",
 	     (RtPointer)(&rtftemp), RI_NULL);
@@ -619,7 +619,7 @@ ay_wrib_lights(char *file, ay_object *o)
  int ay_status = AY_OK;
  ay_light_object *light = NULL;
  char *onstr = "on", *offstr = "off";
- RtColor color = {0};
+ RtColor color = {0.0f,0.0f,0.0f};
  RtPoint from, to;
  RtFloat intensity, coneangle, conedeltaangle, beamdistribution;
  RtFloat rim[4][4];
@@ -697,9 +697,9 @@ ay_wrib_lights(char *file, ay_object *o)
 	  to[2] = (RtFloat)light->tto[2];
 
 	  intensity = (RtFloat)light->intensity;
-	  color[0] = (RtFloat)light->colr/255.0;
-	  color[1] = (RtFloat)light->colg/255.0;
-	  color[2] = (RtFloat)light->colb/255.0;
+	  color[0] = (RtFloat)(light->colr/255.0);
+	  color[1] = (RtFloat)(light->colg/255.0);
+	  color[2] = (RtFloat)(light->colb/255.0);
 
 	  if(!ay_prefs.ristandard)
 	    {
@@ -900,8 +900,8 @@ ay_wrib_scene(char *file, char *image, double *from, double *to,
  int ay_status = AY_OK;
  ay_object *o = ay_root;
  RtPoint f, t, d;
- RtFloat aspect = 1.0, swleft, swright, swtop, swbot;
- /* RtFloat bias0 = 0.5, bias1 = 0.5;*/
+ RtFloat aspect = (RtFloat)1.0, swleft, swright, swtop, swbot;
+ /* RtFloat bias0 = (RtFloat)0.5, bias1 = (RtFloat)0.5;*/
  RtFloat fov = (RtFloat)90.0;
 
 
@@ -964,7 +964,7 @@ ay_wrib_scene(char *file, char *image, double *from, double *to,
   ay_wrib_rootsh(AY_TRUE);
 
   /* Camera! */
-  RiFormat(width, height, -1.0);
+  RiFormat(width, height, (RtFloat)-1.0);
   if(type != AY_VTPERSP)
     RiProjection("orthographic", RI_NULL);
   else
@@ -972,10 +972,10 @@ ay_wrib_scene(char *file, char *image, double *from, double *to,
 
   RiFrameAspectRatio((RtFloat)aspect);
 
-  swleft = -aspect;
-  swright =  aspect;
-  swbot = -1.0;
-  swtop = 1.0;
+  swleft = (RtFloat)-aspect;
+  swright =  (RtFloat)aspect;
+  swbot = (RtFloat)-1.0;
+  swtop = (RtFloat)1.0;
 
   RiScreenWindow((RtFloat)swleft*zoom, (RtFloat)swright*zoom,
 		 (RtFloat)swbot*zoom, (RtFloat)swtop*zoom);
@@ -994,7 +994,7 @@ ay_wrib_scene(char *file, char *image, double *from, double *to,
 
   /* convert rh to lh */
   RiArchiveRecord(RI_COMMENT, "rh->lh");
-  RiScale(-1.0, 1.0, 1.0);
+  RiScale((RtFloat)-1.0, (RtFloat)1.0, (RtFloat)1.0);
   RiArchiveRecord(RI_COMMENT, "Camera!");
   ay_wrib_placecamera(f, d, roll);
 
@@ -1043,7 +1043,7 @@ int
 ay_wrib_cb(struct Togl *togl, int argc, char *argv[])
 {
  int ay_status = AY_OK;
- ay_view_object *view = Togl_GetClientData(togl);
+ ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  ay_root_object *root = NULL;
  ay_riopt_object *riopt = NULL;
  int width = Togl_Width (togl);

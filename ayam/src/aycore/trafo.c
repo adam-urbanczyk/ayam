@@ -677,7 +677,7 @@ ay_trafo_movseltcmd(ClientData clientData, Tcl_Interp * interp,
 
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
-   glTranslatef(dx,dy,dz);
+   glTranslated(dx,dy,dz);
    glGetDoublev(GL_MODELVIEW_MATRIX, mm);
   glPopMatrix();
 
@@ -788,7 +788,7 @@ ay_trafo_scalseltcmd(ClientData clientData, Tcl_Interp * interp,
 
   glMatrixMode (GL_MODELVIEW);
   glPushMatrix();
-   glScalef(dx,dy,dz);
+   glScaled(dx,dy,dz);
    glGetDoublev(GL_MODELVIEW_MATRIX, mm);
   glPopMatrix();
 

@@ -494,20 +494,20 @@ ay_torus_wribcb(char *file, ay_object *o)
 	{
 	  
 	  p1[0] = (RtFloat)torus->majorrad;
-	  p1[1] = 0.0;
-	  p1[2] = 0.0;
+	  p1[1] = (RtFloat)0.0;
+	  p1[2] = (RtFloat)0.0;
 
 	  p2[0] = (RtFloat)(cos(AY_D2R(torus->phimin))*torus->minorrad);
-	  p2[1] = 0.0;
+	  p2[1] = (RtFloat)0.0;
 	  p2[2] = (RtFloat)(sin(AY_D2R(torus->phimin))*torus->minorrad);
-	  p2[0] += torus->majorrad;
+	  p2[0] += (RtFloat)torus->majorrad;
 
 	  RiHyperboloid(p1, p2, (RtFloat)torus->thetamax, RI_NULL);
 
 	  p2[0] = (RtFloat)(cos(AY_D2R(torus->phimax))*torus->minorrad);
-	  p2[1] = 0.0;
+	  p2[1] = (RtFloat)0.0;
 	  p2[2] = (RtFloat)(sin(AY_D2R(torus->phimax))*torus->minorrad);
-	  p2[0] += torus->majorrad;
+	  p2[0] += (RtFloat)torus->majorrad;
 	  
 	  RiHyperboloid(p1, p2, (RtFloat)torus->thetamax, RI_NULL);
 	  
@@ -517,25 +517,27 @@ ay_torus_wribcb(char *file, ay_object *o)
       if(fabs(torus->thetamax) != 360.0)
 	{
 	  RiTransformBegin();
-	   RiTranslate((RtFloat)torus->majorrad, 0.0, 0.0);
-	   RiRotate(90.0, 1.0, 0.0, 0.0);
-	   RiRotate((RtFloat)torus->phimin, 0.0, 0.0, 1.0);
+	   RiTranslate((RtFloat)torus->majorrad, (RtFloat)0.0, (RtFloat)0.0);
+	   RiRotate((RtFloat)90.0, (RtFloat)1.0, (RtFloat)0.0, (RtFloat)0.0);
+	   RiRotate((RtFloat)torus->phimin, (RtFloat)0.0, (RtFloat)0.0,
+		    (RtFloat)1.0);
 
-	   RiDisk(0.0, (RtFloat)torus->minorrad,
+	   RiDisk((RtFloat)0.0, (RtFloat)torus->minorrad,
 		  (RtFloat)(torus->phimax - torus->phimin), RI_NULL);
 	  RiTransformEnd();
 	  RiAttributeBegin();
-	   RiRotate((RtFloat)torus->thetamax, 0.0, 0.0, 1.0);
-	   RiTranslate((RtFloat)torus->majorrad, 0.0, 0.0);
-	   RiRotate(90.0, 1.0, 0.0, 0.0);
-	   RiRotate((RtFloat)torus->phimin, 0.0, 0.0, 1.0);
+	   RiRotate((RtFloat)torus->thetamax, (RtFloat)0.0, (RtFloat)0.0,
+		    (RtFloat)1.0);
+	   RiTranslate((RtFloat)torus->majorrad, (RtFloat)0.0, (RtFloat)0.0);
+	   RiRotate((RtFloat)90.0, (RtFloat)1.0, (RtFloat)0.0, (RtFloat)0.0);
+	   RiRotate((RtFloat)torus->phimin, (RtFloat)0.0, (RtFloat)0.0,
+		    (RtFloat)1.0);
 	   RiReverseOrientation();
-	   RiDisk(0.0, (RtFloat)torus->minorrad,
+	   RiDisk((RtFloat)0.0, (RtFloat)torus->minorrad,
 		  (RtFloat)(torus->phimax - torus->phimin), RI_NULL);
 	  RiAttributeEnd();
 
 	}
-
 
       RiSolidEnd();
     }

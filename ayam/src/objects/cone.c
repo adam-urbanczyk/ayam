@@ -528,7 +528,8 @@ ay_cone_wribcb(char *file, ay_object *o)
 	RiPatch(RI_BILINEAR, RI_P, (RtPointer)rect, RI_NULL);
 
 	RiTransformBegin();
-	 RiRotate(cone->thetamax, (RtFloat)0.0, (RtFloat)0.0, (RtFloat)1.0);
+	 RiRotate((RtFloat)cone->thetamax, (RtFloat)0.0, (RtFloat)0.0,
+		  (RtFloat)1.0);
 	 RiAttributeBegin();
 	  RiReverseOrientation();
 	  RiPatch(RI_BILINEAR, RI_P, (RtPointer)rect, RI_NULL);

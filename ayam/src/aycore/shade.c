@@ -26,7 +26,7 @@ ay_shade_object(struct Togl *togl, ay_object *o)
  ay_drawcb *cb = NULL;
  ay_object *down;
  double m[16];
- GLfloat oldcolor[4] = {0}, color[4] = {0};
+ GLfloat oldcolor[4] = {0.0f,0.0f,0.0f,0.0f}, color[4] = {0.0f,0.0f,0.0f,0.0f};
  ay_object *mo = NULL;
  int cw = AY_FALSE, reset_color = AY_FALSE;
 
@@ -124,7 +124,7 @@ ay_shade_view(struct Togl *togl)
  ay_object *o = ay_root;
  void **arr = NULL;
  ay_drawcb *cb = NULL;
- GLfloat color[4] = {0};
+ GLfloat color[4] = {0.0f,0.0f,0.0f,0.0f};
  double m[16];
 
   if(view->dirty)

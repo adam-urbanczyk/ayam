@@ -21,13 +21,13 @@ int
 ay_riattr_wrib(ay_object *o)
 {
  ay_tag_object *tag = NULL;
- RtColor color = {0};
+ RtColor color = {0.0f,0.0f,0.0f};
  char *tagvaltmp = NULL, *attrname = NULL, *parname = NULL,
    *partype = NULL, *parval = NULL;
  char tok[] = ",";
  RtInt itemp;
  RtFloat ftemp;
- RtPoint ptemp = {0};
+ RtPoint ptemp = {0.0f,0.0f,0.0f};
 
   if(!o)
     return AY_ENULL;

@@ -106,7 +106,7 @@ ay_root_copycb(void *src, void **dst)
 int
 ay_root_drawcb(struct Togl *togl, ay_object *o)
 {
- GLfloat color[4] = {0};
+ GLfloat color[4] = {0.0f,0.0f,0.0f,0.0f};
 
   if(!o)
     return AY_ENULL;
@@ -722,8 +722,8 @@ ay_root_wribcb(char *file, ay_object *o)
 
   RiExposure((RtFloat)riopt->ExpGain, (RtFloat)riopt->ExpGamma);
 
-  RiQuantize(RI_RGBA, riopt->RGBA_ONE, riopt->RGBA_MIN,
-	     riopt->RGBA_MAX, riopt->RGBA_Dither);
+  RiQuantize(RI_RGBA, (RtInt)riopt->RGBA_ONE, (RtInt)riopt->RGBA_MIN,
+	     (RtInt)riopt->RGBA_MAX, (RtFloat)riopt->RGBA_Dither);
 
   /* BMRT-Specific */
   if(!ay_prefs.ristandard)
