@@ -4893,7 +4893,8 @@ ay_rrib_linkmaterial(ay_object *o)
 
   /* copy arbitrary attributes from attribute state to
      tags of material object */
-  ay_tags_copy(attr->tags, &(m->tags));
+  if(attr->tags)
+    ay_tags_copy(attr->tags, &(m->tags));
 
   /* compare this object with all existing materials
      in the first level ("Materials") before registering
