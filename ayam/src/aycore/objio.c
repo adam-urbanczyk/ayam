@@ -324,9 +324,9 @@ ay_objio_writetrimids(FILE *fileptr, ay_object *o)
 	  nc = (ay_nurbcurve_object *)o->refine;
 	  ay_nct_getorientation(nc, &orient);
 	  if(orient < 0.0)
-	    hole = AY_FALSE;
-	  else
 	    hole = AY_TRUE;
+	  else
+	    hole = AY_FALSE;
 	  umin = nc->knotv[0];
 	  umax = nc->knotv[nc->length+nc->order-1];
 	  if(hole)
@@ -344,9 +344,9 @@ ay_objio_writetrimids(FILE *fileptr, ay_object *o)
 	      nc = (ay_nurbcurve_object *)down->refine;
 	      ay_nct_getorientation(nc, &orient);
 	      if(orient < 0.0)
-		fprintf(fileptr, "trim ");
-	      else
 		fprintf(fileptr, "hole ");
+	      else
+		fprintf(fileptr, "trim ");
 	    }
 
 	  while(down->next)
