@@ -468,6 +468,7 @@ array set ay {
  soext "so"
  oldbinding ""
  oldb1binding ""
+ oldb1rbinding ""
 }
 # array ay
 
