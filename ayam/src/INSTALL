@@ -1,4 +1,4 @@
-INSTALL [03. Mar 2002]
+INSTALL [23. May 2002]
 
 Compilation Instructions for Ayam
 ---------------------------------
@@ -64,6 +64,8 @@ version of Ayam:
   If BMRT is not available on your platform, you can still
   compile Ayam with the Affine Toolkit with reduced functionality,
   read: no parsing of slc-compiled shaders.
+- TIFF (tiffio.h and libtiff)
+  http://www.libtiff.org/
 - The Affine Toolkit
   http://www.affine.com/
   Source code of Affines Simple RIB writer is distributed with Ayam.
@@ -153,6 +155,8 @@ version of Ayam:
   If BMRT is not available on your platform, you can still
   compile Ayam with the Affine Toolkit with reduced functionality,
   read: no parsing of slc-compiled shaders.
+- TIFF (tiffio.h and libtiff)
+  http://www.libtiff.org/
 - The Affine Toolkit
   http://www.affine.com/
   Source code of Affines Simple RIB writer is distributed with Ayam.
