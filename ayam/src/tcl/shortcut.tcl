@@ -307,9 +307,7 @@ proc shortcut_toolbox { w } {
 
 
 # shortcut_view:
-# Setup Keybindings for a 3D-View
-#
-#
+# Setup menu- and main-keybindings for a 3D-View.
 proc shortcut_view { w } {
     global ay ayviewshortcuts aymainshortcuts
 
@@ -410,9 +408,7 @@ proc shortcut_view { w } {
 
 
 # shortcut_viewactions:
-# Setup Keybindings for a 3D-View
-#
-#
+# Setup action-keybindings for a 3D-View.
 proc shortcut_viewactions { w } {
  global ayviewshortcuts
 
@@ -431,7 +427,7 @@ proc shortcut_viewactions { w } {
 	set ay(oldb1rbinding) [bind %W <ButtonRelease-1>]
 	bind %W <ButtonPress-1> { #nothing }
 	bind %W <ButtonRelease-1> { #nothing }
-	shortcut_altrotatebinding %W
+	shortcut_modrotatebinding %W
 
 	bind %W <ButtonRelease-1> {
 	    # restore old bindings
@@ -456,7 +452,7 @@ proc shortcut_viewactions { w } {
     bind $w.f3D.togl <$ayviewshortcuts(ZoomRMod)-ButtonPress-1> {
 	set oldx %x
 	set oldy %y
-	shortcut_zoomrbinding %W
+	shortcut_modzoomrbinding %W
 	break;
     }
     bind $w <KeyPress-$ayviewshortcuts(ZoomRModKey)> {
@@ -593,10 +589,10 @@ proc shortcut_viewactions { w } {
 # shortcut_viewactions
 
 
-#shortcut_altrotatebinding:
+#shortcut_modrotatebinding:
 # Setup key bindings for rotation of a 3D-View while
-# the Alt key is held down.
-proc shortcut_altrotatebinding { w } {
+# a modifier key (e.g. Alt) is held down.
+proc shortcut_modrotatebinding { w } {
     bind $w <B1-Motion> {
 	%W setconf -drotx [expr ($oldx - %x)] -droty [expr ($oldy - %y)]
 	set oldx %x
@@ -606,12 +602,13 @@ proc shortcut_altrotatebinding { w } {
     }
  return;
 }
-# shortcut_altrotatebinding
+# shortcut_modrotatebinding
 
-#shortcut_zoomrbinding:
-# Setup key bindings for zooming of in a region of
-# a 3D-View with the Ctrl key held down.
-proc shortcut_zoomrbinding { w } {
+
+#shortcut_modzoomrbinding:
+# Setup key bindings for zooming into a region of
+# a 3D-View with a modifier key (e.g. Ctrl) held down.
+proc shortcut_modzoomrbinding { w } {
     global ayviewshortcuts
     bind $w <ButtonRelease-1> {
 
@@ -628,7 +625,7 @@ proc shortcut_zoomrbinding { w } {
 
  return;
 }
-# shortcut_zoomrbinding
+# shortcut_modzoomrbinding
 
 
 #shortcut_show:
