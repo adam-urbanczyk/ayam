@@ -106,6 +106,8 @@ $m add separator
 $m add command -label "Undo" -command {undo; uCL cl "0 1"; plb_update; rV}
 $m add command -label "Redo" -command {undo redo; uCL cl "0 1"; plb_update; rV}
 $m add separator
+$m add command -label "Material" -command {material_edit;}
+$m add separator
 $m add command -label "Preferences" -command {prefs_open; rV}
 
 pack .fu.fMenu.ed -in .fu.fMenu -side left
@@ -272,6 +274,7 @@ menubutton .fu.fMenu.spec -text "Special" -menu .fu.fMenu.spec.m -padx 3
 pack .fu.fMenu.spec -in .fu.fMenu -side left
 set m [menu .fu.fMenu.spec.m -tearoff 0]
 $m add command -label "Save Selected as" -command "io_saveScene ask 1"
+$m add command -label "Save Environment" -command "io_saveEnv"
 $m add separator
 $m add command -label "Paste (Move)" -command {cmovOb; uCR; rV; global ay;
 set ay(sc) 1}
