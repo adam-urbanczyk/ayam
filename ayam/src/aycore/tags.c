@@ -16,12 +16,12 @@
 
 
 /* ay_tags_free:
- *  free a tag
+ *  free tag <tag>
  */
 int
 ay_tags_free(ay_tag_object *tag)
 {
-  int ay_status = AY_OK;
+ int ay_status = AY_OK;
 
   if(!tag)
     return AY_OK;
@@ -39,7 +39,7 @@ ay_tags_free(ay_tag_object *tag)
 
 
 /* ay_tags_delall:
- *  remove all tags from object *o
+ *  remove all tags from object <o>
  */
 int
 ay_tags_delall(ay_object *o)
@@ -64,7 +64,7 @@ ay_tags_delall(ay_object *o)
 
 
 /* ay_tags_copy:
- *  copy a tag
+ *  copy a tag from <source> to <dest>
  */
 int
 ay_tags_copy(ay_tag_object *source,
@@ -98,7 +98,7 @@ ay_tags_copy(ay_tag_object *source,
 
 
 /* ay_tags_copyall:
- *  copy all tags from object src to object dst
+ *  copy all tags from object <src> to object <dst>
  */
 int
 ay_tags_copyall(ay_object *src, ay_object *dst)
@@ -174,7 +174,7 @@ ay_tags_register(Tcl_Interp *interp, char *name, char **result)
   if((entry = Tcl_FindHashEntry(&ay_tagtypesht, name)))
     {
       ay_error(AY_ERROR, fname, "tag type already registered");
-      return TCL_OK;
+      return AY_ERROR;
     }
 
   tagcounter++;
@@ -184,7 +184,7 @@ ay_tags_register(Tcl_Interp *interp, char *name, char **result)
 
   *result = tagcounter;
 
- return TCL_OK;
+ return AY_OK;
 } /* ay_tags_register */
 
 
@@ -207,7 +207,7 @@ ay_tags_temp(Tcl_Interp *interp, char *name, int set, int *result)
       if((entry = Tcl_FindHashEntry(&ay_temptagtypesht, name)))
 	{
 	  ay_error(AY_ERROR, fname, "tag type already marked temporary");
-	  return TCL_OK;
+	  return AY_ERROR;
 	}
 
       entry = Tcl_CreateHashEntry(&ay_temptagtypesht, name, &new_item);
@@ -225,7 +225,7 @@ ay_tags_temp(Tcl_Interp *interp, char *name, int set, int *result)
 	}
     } /* if */
 
- return TCL_OK;
+ return AY_OK;
 } /* ay_tags_temp */
 
 
