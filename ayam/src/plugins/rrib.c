@@ -1668,20 +1668,22 @@ RtVoid
 ay_rrib_RiFrameBegin(RtInt frame)
 {
 
-   if((!ay_rrib_readpartial) && (ay_rrib_readframe != -1))
-     {
-       if(frame == ay_rrib_readframe)
-	 {
-	   ay_rrib_cframe = frame;
-	   ay_rrib_initgprims();
-	   ay_rrib_initgeneral();
-	 }
-       else
-	 {
-	   ay_rrib_cleargprims();
-	   ay_rrib_cleargeneral();
-	 } /* if */
-     } /* if */
+  ay_rrib_pushattribs();
+
+  if((!ay_rrib_readpartial) && (ay_rrib_readframe != -1))
+    {
+      if(frame == ay_rrib_readframe)
+	{
+	  ay_rrib_cframe = frame;
+	  ay_rrib_initgprims();
+	  ay_rrib_initgeneral();
+	}
+      else
+	{
+	  ay_rrib_cleargprims();
+	  ay_rrib_cleargeneral();
+	} /* if */
+    } /* if */
 
  return;
 } /* ay_rrib_RiFrameBegin */
@@ -1690,6 +1692,8 @@ ay_rrib_RiFrameBegin(RtInt frame)
 RtVoid
 ay_rrib_RiFrameEnd( void )
 {
+
+  ay_rrib_popattribs();
 
   if(ay_rrib_readframe != -1 || !ay_rrib_readpartial)
     {
