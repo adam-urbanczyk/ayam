@@ -104,7 +104,7 @@ $m add check -label "Automatic Redraw" -variable ay(cVRedraw) -command "\
 	$w.f3D.togl setconf -draw \$ay(cVRedraw);\
 	\$ay(currentView) mc"
 set cm [menu $m.mmode -tearoff 0]
-$m add cascade -label "Mode" -menu $cm
+$m add cascade -label "Drawing Mode" -menu $cm
 
 $cm add radio -label "Draw" -variable ay(cVMode) -value 0 -command "\
 	global ay;\
@@ -209,7 +209,9 @@ $m add check -label "Edit Local" -variable ay(cVLocal) -command "\
 if { ! $AYWITHAQUA } {
     menubutton $w.fMenu.dm -image ay_DMDraw_img -menu $w.fMenu.dm.m\
 	    -padx 0 -pady 0 -borderwidth 0
+    balloon_set $w.fMenu.dm "change drawing mode"
     set m [menu $w.fMenu.dm.m -tearoff 0]
+
     set ay(dmodem) fMenu.dm.m
 } else {
     set m [menu $mb.dm -tearoff 0]
@@ -240,6 +242,7 @@ $m add command -image ay_DMShadeDraw_img -hidemargin 1 -command "\
 if { ! $AYWITHAQUA } {
     menubutton $w.fMenu.g -image ay_Grid_img -menu $w.fMenu.g.m\
 	    -padx 0 -pady 0 -borderwidth 0
+    balloon_set $w.fMenu.g "change gridsize"
     set m [menu $w.fMenu.g.m -tearoff 0]
     set ay(gridm) fMenu.g.m
 } else {
