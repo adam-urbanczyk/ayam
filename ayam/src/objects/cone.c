@@ -456,7 +456,10 @@ ay_cone_wribcb(char *file, ay_object *o)
     {
     if(fabs(cone->thetamax) == 180.0)
       {
-	RiSolidBegin(RI_PRIMITIVE);
+	if(!ay_current_primlevel)
+	  {
+	    RiSolidBegin(RI_PRIMITIVE);
+	  }
 
 	RiCone((RtFloat)cone->height,
 	       (RtFloat)cone->radius,
@@ -487,22 +490,34 @@ ay_cone_wribcb(char *file, ay_object *o)
 		(RtFloat)cone->thetamax, RI_NULL);
 	RiAttributeEnd();
 
-	RiSolidEnd();
+	if(!ay_current_primlevel)
+	  {
+	    RiSolidEnd();
+	  }
       }
     else if(fabs(cone->thetamax) == 360.0)
       {
-	RiSolidBegin(RI_PRIMITIVE);
+	if(!ay_current_primlevel)
+	  {
+	    RiSolidBegin(RI_PRIMITIVE);
+	  }
 	 RiCone((RtFloat)cone->height, (RtFloat)cone->radius,
 		(RtFloat)360.0, RI_NULL);
 	 RiAttributeBegin();
 	  RiReverseOrientation();
 	  RiDisk((RtFloat)0.0, (RtFloat)cone->radius, (RtFloat)360.0, RI_NULL);
 	 RiAttributeEnd();
-	RiSolidEnd();
+	if(!ay_current_primlevel)
+	  {
+	    RiSolidEnd();
+	  }
       }
     else
       {
-	RiSolidBegin(RI_PRIMITIVE);
+	if(!ay_current_primlevel)
+	  {
+	    RiSolidBegin(RI_PRIMITIVE);
+	  }
 
 	RiCone((RtFloat)cone->height,
 	       (RtFloat)cone->radius,
@@ -542,7 +557,10 @@ ay_cone_wribcb(char *file, ay_object *o)
 		 (RtFloat)cone->thetamax, RI_NULL);
 	 RiAttributeEnd();
 
-	RiSolidEnd();
+	if(!ay_current_primlevel)
+	  {
+	    RiSolidEnd();
+	  }
       }
     }
 

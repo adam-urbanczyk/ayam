@@ -107,6 +107,8 @@ static char *ay_log = "/tmp/ay.log";
 
 int ay_wrib_framenum = 0;
 
+unsigned int ay_current_primlevel = 0;
+
 /* prototypes for initialization callbacks of additional included modules */
 #ifdef AYIDRWRAPPED
   int Idr_Init(Tcl_Interp *interp);

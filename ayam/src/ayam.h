@@ -872,6 +872,7 @@ extern char *ay_rihider_tagtype;
 
 extern unsigned int ay_current_glname;
 extern int ay_wrib_framenum;
+extern unsigned int ay_current_primlevel;
 
 /* Definitions */
 
