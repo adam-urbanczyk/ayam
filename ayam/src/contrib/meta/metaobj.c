@@ -466,7 +466,7 @@ metaobj_setpropcb (Tcl_Interp * interp, int argc, char *argv[], ay_object * o)
   to = Tcl_ObjGetVar2 (interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj (interp, to, &w->showworld);
 
-  Tcl_SetStringObj (ton, "Adaptiv", -1);
+  Tcl_SetStringObj (ton, "Adaptive", -1);
   to = Tcl_ObjGetVar2 (interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj (interp, to, &w->adapt);
 
@@ -478,7 +478,7 @@ metaobj_setpropcb (Tcl_Interp * interp, int argc, char *argv[], ay_object * o)
   to = Tcl_ObjGetVar2 (interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj (interp, to, &w->epsilon);
 
-  Tcl_SetStringObj (ton, "Step", -1);
+  Tcl_SetStringObj (ton, "stepSize", -1);
   to = Tcl_ObjGetVar2 (interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj (interp, to, &w->step);
 
@@ -541,7 +541,7 @@ metaobj_getpropcb (Tcl_Interp * interp, int argc, char *argv[], ay_object * o)
   to = Tcl_NewIntObj (w->showworld);
   Tcl_ObjSetVar2 (interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj (ton, "Adaptiv", -1);
+  Tcl_SetStringObj (ton, "Adaptive", -1);
   to = Tcl_NewIntObj (w->adapt);
   Tcl_ObjSetVar2 (interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
@@ -556,7 +556,7 @@ metaobj_getpropcb (Tcl_Interp * interp, int argc, char *argv[], ay_object * o)
   to = Tcl_NewDoubleObj (w->epsilon);
   Tcl_ObjSetVar2 (interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj (ton, "Step", -1);
+  Tcl_SetStringObj (ton, "stepSize", -1);
   to = Tcl_NewDoubleObj (w->step);
   Tcl_ObjSetVar2 (interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 

@@ -41,12 +41,12 @@ getProp
 addParam $w MetaObjAttrData NumSamples {20 40 60 80 120 140 160 180 200}
 addParam $w MetaObjAttrData IsoLevel 0.6
 addCheck $w MetaObjAttrData "ShowWorld"
-addCheck $w MetaObjAttrData Adaptiv
+addCheck $w MetaObjAttrData Adaptive
 
-if {$MetaObjAttrData(Adaptiv) != 0} {
+if {$MetaObjAttrData(Adaptive) != 0} {
 addParam $w MetaObjAttrData Flatness 0.9
 addParam $w MetaObjAttrData Epsilon 0.0001
-addParam $w MetaObjAttrData Step 0.0001
+addParam $w MetaObjAttrData stepSize 0.0001
 }
 
 $ay(pca) itemconfigure 1 -window $w
