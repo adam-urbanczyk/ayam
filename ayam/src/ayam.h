@@ -731,6 +731,11 @@ typedef struct ay_prefs_object_s
   int glu_display_mode;
   int nc_display_mode;
   int glu_cache_float;
+
+  /* sampling mode/quality for NURBS -> PolyMesh conversion */
+  int sm;
+  double smparam;
+
   /* is a permanent preview window open? */
   int pprev_open;
   char *pprender;
@@ -1057,7 +1062,7 @@ extern unsigned int ay_current_primlevel;
 #define AY_EPSILON 1.0e-06
 
 /* Version Strings */
-#define AY_VERSIONSTR "1.4"
+#define AY_VERSIONSTR "1.5pre"
 #define AY_VERSIONSTRMI "0"
 
 #include "aycore.h"
