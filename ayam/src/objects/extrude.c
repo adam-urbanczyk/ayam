@@ -947,8 +947,16 @@ ay_extrude_providecb(ay_object *o, unsigned int type, ay_object **result)
  ay_extrude_object *e = NULL;
  ay_object *new = NULL, **t = NULL, *p = NULL;
 
-  if(!o || !result)
+  if(!o)
     return AY_ENULL;
+
+  if(!result)
+    {
+      if(type == AY_IDNPATCH)
+	return AY_OK;
+      else
+	return AY_ERROR;
+    }
 
   e = (ay_extrude_object *) o->refine;
 

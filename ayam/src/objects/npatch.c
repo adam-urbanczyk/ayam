@@ -1441,8 +1441,16 @@ ay_npatch_providecb(ay_object *o, unsigned int type, ay_object **result)
  int ay_status = AY_OK;
  /*char fname[] = "npatch_providecb";*/
 
-  if(!o || !result)
+  if(!o)
     return AY_ENULL;
+
+  if(!result)
+    {
+      if(type == AY_IDPOMESH)
+	return AY_OK;
+      else
+	return AY_ERROR;
+    }
 
   if(type == AY_IDPOMESH)
     {

@@ -735,8 +735,16 @@ ay_bpatch_providecb(ay_object *o, unsigned int type, ay_object **result)
  ay_object *new = NULL;
  double *cv = NULL;
 
-  if(!o || !result)
+  if(!o)
     return AY_ENULL;
+
+  if(!result)
+    {
+      if(type == AY_IDNPATCH)
+	return AY_OK;
+      else
+	return AY_ERROR;
+    }
 
   bp = (ay_bpatch_object *) o->refine;
 
