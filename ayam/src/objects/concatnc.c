@@ -416,8 +416,8 @@ ay_concatnc_notifycb(ay_object *o)
   if(numcurves > 1)
     {
       
-      ay_status = ay_nct_concatmultiple(concatnc->knot_type, curves,
-					&concatnc->ncurve);
+      ay_status = ay_nct_concatmultiple(concatnc->closed, concatnc->knot_type,
+					curves, &concatnc->ncurve);
 
       if(ay_status)
 	{
@@ -436,7 +436,8 @@ ay_concatnc_notifycb(ay_object *o)
 		} /* if */
 	    } /* if */
 
-	  if(!concatnc->fillgaps && concatnc->closed)
+	  if((!concatnc->fillgaps) && (!concatnc->knot_type == 1) &&
+	     concatnc->closed)
 	    {
 	      ay_status = ay_nct_close(nc);
 	      if(ay_status)

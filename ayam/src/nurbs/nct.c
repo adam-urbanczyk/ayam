@@ -2714,7 +2714,8 @@ ay_nct_getpntfromindex(ay_nurbcurve_object *curve, int index, double **p)
  *  at their ends
  */
 int
-ay_nct_concatmultiple(int knot_type, ay_object *curves, ay_object **result)
+ay_nct_concatmultiple(int closed, int knot_type, ay_object *curves,
+		      ay_object **result)
 {
  int ay_status;
  char fname[] = "nct_concatmultiple";
@@ -2795,6 +2796,14 @@ ay_nct_concatmultiple(int knot_type, ay_object *curves, ay_object **result)
 	  if(o)
 	    o = o->next;
 	} /* while */
+
+      if(closed)
+	{
+	  for(i = a; i < length+order; i++)
+	    {
+	      newknotv[i] = newknotv[a-1]+1;
+	    }
+	}
 
     } /* if */
 
