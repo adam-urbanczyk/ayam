@@ -460,23 +460,30 @@ proc shortcut_viewactions { w } {
 	break;
     }
     bind $w <KeyPress-$ayviewshortcuts(ZoomRModKey)> {
-	set w [winfo toplevel %W].f3D.togl
-	$w configure -cursor sizing
-	# save old bindings
-	set ay(oldbinding) [bind $w <B1-Motion>]
-	set ay(oldb1binding) [bind $w <ButtonPress-1>]
-	set ay(oldb1rbinding) [bind $w <ButtonRelease-1>]
-	set oldx -1
-	set oldy -1
-	bind [winfo toplevel %W] <KeyRelease> {
+	global ay
+	if { $ay(zoomr) == 0 } {
+	    set ay(zoomr) 1
+	    update
 	    set w [winfo toplevel %W].f3D.togl
+	    $w configure -cursor sizing
 	    # save old bindings
 	    set ay(oldbinding) [bind $w <B1-Motion>]
 	    set ay(oldb1binding) [bind $w <ButtonPress-1>]
 	    set ay(oldb1rbinding) [bind $w <ButtonRelease-1>]
+	    set oldx -1
+	    set oldy -1
+	    bind [winfo toplevel %W] <KeyRelease> {
+		set w [winfo toplevel %W].f3D.togl
+		# save old bindings
+		set ay(oldbinding) [bind $w <B1-Motion>]
+		set ay(oldb1binding) [bind $w <ButtonPress-1>]
+		set ay(oldb1rbinding) [bind $w <ButtonRelease-1>]
+	    }
 	}
     }
     bind $w <KeyRelease-$ayviewshortcuts(ZoomRModKey)> {
+	global ay
+	set ay(zoomr) 0
 	set w [winfo toplevel %W].f3D.togl
 	if { $oldx != -1 } {
 	    $w setconf -rect $oldx $oldy %x %y 0
@@ -714,6 +721,8 @@ View Actions (View Windows):
  Zoom in View        $ayviewshortcuts(ZoomI)
  Zoom out View       $ayviewshortcuts(ZoomO)
  Zoom View           Mouse-$ayviewshortcuts(ZoomVButton)
+
+ ZoomRegion View     $ayviewshortcuts(ZoomRModKey)+Mouse-1
 
 Function Keys (View Windows):
 
