@@ -16,10 +16,13 @@
 # objects may adapt their notification (do low quality but fast work, when
 # a modelling action is going on)
 proc upAc { n1 n2 op } {
- global ay
+    global ay
+
     if { $ay(action) == 0 } {
 	forceNot
      }
+
+ return;
 }
 # upAc
 
@@ -38,6 +41,8 @@ proc stdReleaseBind { w } {
 	plb_update
 	focus %W
     }
+
+ return;
 }
 # stdReleaseBind
 
@@ -62,9 +67,13 @@ proc actionRotView { w } {
 	update
     }
 
+    bind $w <Motion> ""
+
     stdReleaseBind $w
 
     $w setconf -drawh 0
+
+ return;
 }
 # actionRotView
 
@@ -87,9 +96,13 @@ proc actionMoveView { w } {
 	update
     }
 
+    bind $w <Motion> ""
+
     stdReleaseBind $w
 
     $w setconf -drawh 0
+
+ return;
 }
 # actionMoveView
 
@@ -111,6 +124,8 @@ proc actionZoomView { w } {
 	%W zoomvac -winy %y
 	update
     }
+
+    bind $w <Motion> ""
 
     stdReleaseBind $w
 
@@ -137,9 +152,13 @@ proc actionMoveZView { w } {
 	update
     }
 
+    bind $w <Motion> ""
+
     stdReleaseBind $w
 
     $w setconf -drawh 0
+
+ return;
 }
 # actionMoveZView
 
@@ -162,9 +181,13 @@ proc actionMoveOb { w } {
 	update
     }
 
+    bind $w <Motion> ""
+
     stdReleaseBind $w
 
     $w setconf -drawh 1
+
+ return;
 }
 # actionMoveOb
 
@@ -187,9 +210,13 @@ proc actionRotOb { w } {
 	update
     }
 
+    bind $w <Motion> ""
+
     stdReleaseBind $w
 
     $w setconf -drawh 1
+
+ return;
 }
 # actionRotOb
 
@@ -204,6 +231,8 @@ proc actionRotObabindp { w x y } {
     stdReleaseBind $w
 
     $w setconf -drawh 1
+
+ return;
 }
 # actionRotObabindp
 
@@ -219,10 +248,12 @@ proc actionRotObA { w } {
 	%W rotoaac
 	actionRotObabindp %W %x %y
     }
-    bind $w <ButtonRelease-1> { }
-    bind $w <B1-Motion> { }
-
+    bind $w <ButtonRelease-1> ""
+    bind $w <B1-Motion> ""
+    bind $w <Motion> ""
     $w setconf -drawh 1
+
+ return;
 }
 # actionRotObA
 
@@ -245,9 +276,13 @@ proc actionSc1DXOb { w } {
 	update
     }
 
+    bind $w <Motion> ""
+
     stdReleaseBind $w
 
     $w setconf -drawh 1
+
+ return;
 }
 # actionSc1DXOb
 
@@ -269,9 +304,13 @@ proc actionSc1DYOb { w } {
 	update
     }
 
+    bind $w <Motion> ""
+
     stdReleaseBind $w
 
     $w setconf -drawh 1
+
+ return;
 }
 # actionSc1DYOb
 
@@ -293,9 +332,13 @@ proc actionSc1DZOb { w } {
 	update
     }
 
+    bind $w <Motion> ""
+
     stdReleaseBind $w
 
     $w setconf -drawh 1
+
+ return;
 }
 # actionSc1DZOb
 
@@ -317,9 +360,13 @@ proc actionSc2DOb { w } {
 	update
     }
 
+    bind $w <Motion> ""
+
     stdReleaseBind $w
 
     $w setconf -drawh 1
+
+ return;
 }
 # actionSc2DOb
 
@@ -341,9 +388,13 @@ proc actionSc3DOb { w } {
 	update
     }
 
+    bind $w <Motion> ""
+
     stdReleaseBind $w
 
     $w setconf -drawh 1
+
+ return;
 }
 # actionSc3DOb
 
@@ -365,9 +416,13 @@ proc actionStr2DOb { w } {
 	update
     }
 
+    bind $w <Motion> ""
+
     stdReleaseBind $w
 
     $w setconf -drawh 1
+
+ return;
 }
 # actionStr2DOb
 
@@ -398,7 +453,11 @@ proc actionTagP { w } {
 	%W setconf -rect $oldx $oldy %x %y 1
     }
 
+    bind $w <Motion> ""
+
     $w setconf -drawh 1
+
+ return;
 }
 # actionTagP
 
@@ -407,6 +466,8 @@ proc actionDelTagP { w } {
 #    undo save
     $w deselpac
     rV
+
+ return;
 }
 # actionDelTagP
 
@@ -631,11 +692,16 @@ proc actionDEditP { w } {
 	}
 	update
     }
-    bind $w <B1-Motion> { }
+
+    bind $w <B1-Motion> ""
+
+    bind $w <Motion> ""
 
     stdReleaseBind $w
 
     $w setconf -drawh 1
+
+ return;
 }
 # actionDEditP
 
@@ -675,6 +741,8 @@ proc actionEditP { w } {
     }
 
     $w setconf -drawh 1
+
+ return;
 }
 # actionEditP
 
@@ -705,6 +773,7 @@ proc actionEditWP { w } {
 	    %W startpepac %x %y -flash
 	}
     }
+
     stdReleaseBind $w
 
     if { $ayprefs(FlashPoints) == 1 } {
@@ -712,6 +781,8 @@ proc actionEditWP { w } {
     }
 
     $w setconf -drawh 1
+
+ return;
 }
 # actionEditWP
 
@@ -720,6 +791,7 @@ proc actionResetWP { w } {
     undo save ResetWeight
     $w wrpac
     rV
+ return;
 }
 # actionResetWP
 
@@ -735,12 +807,15 @@ proc actionInsertP { w } {
 	%W insertpac %x %y
     }
 
-    bind $w <B1-Motion> { }
+    bind $w <B1-Motion> ""
+
+    bind $w <Motion> ""
 
     stdReleaseBind $w
 
     $w setconf -drawh 1
 
+ return;
 }
 # actionInsertP
 
@@ -755,12 +830,15 @@ proc actionDeleteP { w } {
 	%W deletepac %x %y
     }
 
-    bind $w <B1-Motion> { }
+    bind $w <B1-Motion> ""
+
+    bind $w <Motion> ""
 
     stdReleaseBind $w
 
     $w setconf -drawh 1
 
+ return;
 }
 # actionDeleteP
 
@@ -774,12 +852,15 @@ proc actionFindU { w } {
 	%W finduac %x %y
     }
 
-    bind $w <B1-Motion> { }
+    bind $w <B1-Motion> ""
+
+    bind $w <Motion> ""
 
     bind $w <ButtonRelease-1> { %W finduac -end %x %y; %W redraw }
 
     $w setconf -drawh 0
 
+ return;
 }
 # actionFindU
 
@@ -794,7 +875,9 @@ proc actionSplitNC { w } {
 	%W finduac %x %y
     }
 
-    bind $w <B1-Motion> { }
+    bind $w <B1-Motion> ""
+
+    bind $w <Motion> ""
 
     bind $w <ButtonRelease-1> {
 	%W finduac -end %x %y
@@ -808,6 +891,8 @@ proc actionSplitNC { w } {
     }
 
     $w setconf -drawh 0
+
+ return;
 }
 # actionSplitNC
 
@@ -862,6 +947,8 @@ proc actionPick { w } {
     bind $w <B1-Motion> {
 	%W setconf -rect $oldx $oldy %x %y 1
     }
+
+    bind $w <Motion> ""
 
     set t [winfo toplevel $w]
     $t.f3D.togl setconf -drawh 0
