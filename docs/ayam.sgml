@@ -6437,10 +6437,10 @@ The Wavefront export currently supports the following
 primitives:
 <itemize>
 <item> NCurve and objects that may be converted to NCurve
-objects (ICurve, ConcatNC)
+objects (ICurve, ConcatNC, ExtrNC)
 <item> NPatch (with trim curves) and objects that may be converted
 to NPatch objects (BPatch, PatchMesh, Revolve, Sweep, Extrude, Skin,
-Cap, Gordon)
+Cap, Gordon, Birail1, Birail2, Text)
 <item> PolyMesh and objects that may be converted to PolyMesh objects
 (MetaObj), faces with holes are not supported by the Wavefront OBJ
 format and will be tesselated to triangles for export automatically
@@ -6665,12 +6665,16 @@ The depth complexity of a primitive determines the maximum number
 of forward oriented surfaces any ray through this primitive would pass.
 A regular sphere has a depth complexity of 1, a torus of 2, but do
 not confuse depth complexity with genus, they are different values!
+A 3D representation of the letter A e.g. has a genus of
+1 but a depth complexity of 3.
 The depth complexity of a primitive should be stored in a DC tag.
 A torus would e.g. get a tag named <tt/"DC"/ with the value <tt/"2"/.
 <p>
 Once the aycsg plugin is loaded successfully you can render the CSG
 preview in any view window using the keyboard shortcut
-<tt>&lt;Ctrl+Shift+c&gt;</tt>
+<tt>&lt;Ctrl+Shift+c&gt;</tt> or using the new button in the menu
+bar of every view window. If you hold down <tt>&lt;Shift&gt;</tt>
+while pressing the button, the view will continually render CSG.
 <p>
 The aycsg plugin supports the following options, that are available
 through the main menu entry <tt>"Custom/AyCSG Preferences"</tt>:
