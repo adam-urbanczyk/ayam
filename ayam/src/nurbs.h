@@ -148,6 +148,16 @@ int ay_nb_RefineKnotVectSurfV(int stride, int w, int h, int p, double *V,
 int ay_nb_DecomposeCurve(int stride, int n, int p, double *U, double *Pw,
 			 int *nb, double **Qw);
 
+int ay_nb_InsertKnotSurfU(int stride, int w, int h, int p, double *UP,
+			  double *Pw,
+			  double u, int k, int s, int r,
+			  double *UQ, double *Qw);
+
+int ay_nb_InsertKnotSurfV(int stride, int w, int h, int q, double *VP,
+			  double *Pw,
+			  double v, int k, int s, int r,
+			  double *VQ, double *Qw);
+
 /* nct.c */
 int ay_nct_create(int order, int length, int knot_type,
 		  double *controlv, double *knotv,
