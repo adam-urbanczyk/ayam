@@ -42,9 +42,14 @@ proc io_replaceScene { } {
 	#    .fu.fMain.fHier.fsel.bnon invoke
 	update
 	set filename $newfilename
-	global ay_error
+	global ay_error ayprefs
 	set ay_error ""
 	update
+
+	# make backup copy
+	if { $ayprefs(BakOnReplace) == 1 } {
+	    file copy -force -- $filename ${filename}${ayprefs(BackupExt)} 
+	}
 
 	replaceScene $filename
 
@@ -536,6 +541,11 @@ proc io_mruLoad { index } {
 	set ay_error ""
 	set filename [lindex $ayprefs(mru) $index]
 	update
+
+	# make backup copy
+	if { $ayprefs(BakOnReplace) == 1 } {
+	    file copy -force -- $filename ${filename}${ayprefs(BackupExt)} 
+	}
 
 	replaceScene $filename
 

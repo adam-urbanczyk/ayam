@@ -53,7 +53,7 @@ namespace eval ms {}
 
 # fill "en"-locale...
 ms_init en
-ms_set en ayprefse_Shaders "A list of paths where your compiled shaders reside"
+ms_set en ayprefse_Shaders "A list of paths where your compiled shaders reside."
 ms_set en ayprefse_ScanShaders "Initiates rebuild of internal shader database."
 ms_set en ayprefse_Locale "Language to use for balloon help texts.\
 \nChanges will take effect after restart of Ayam!"
@@ -63,6 +63,7 @@ ms_set en ayprefse_AutoFocus "Move focus to window with mouse cursor?\
 ms_set en ayprefse_TwmCompat "Is your window manager TWM compatible?"
 ms_set en ayprefse_ListTypes "Show object types in the tree/list view?"
 ms_set en ayprefse_AutoSavePrefs "Save preferences on exit?"
+ms_set en ayprefse_BakOnReplace "Make backup copy of scene files on \"replace\"?"
 ms_set en ayprefse_LoadEnv "Load environment on startup?"
 ms_set en ayprefse_NewLoadsEnv "Load environment on File/New?"
 ms_set en ayprefse_EnvFile "Path and name of the environment."
@@ -197,6 +198,8 @@ ms_set de ayprefse_Locale "Sprache für Hilfetexte.\
 \nÄnderungen werden erst nach Neustart von Ayam wirksam!"
 ms_set de ayprefse_AutoSavePrefs "Sollen die Voreinstellungen beim Beenden\
 gespeichert werden?"
+ms_set de ayprefse_BakOnReplace "Sollen Sicherheitskopien von mit \"replace\"\
+\ngeladenen Szenen angefertigt werden?"
 ms_set de ayprefse_LoadEnv "Soll die Arbeitsumgebung beim Start geladen\
 werden?"
 ms_set de ayprefse_NewLoadsEnv "Soll die Arbeitsumgebung beim Erstellen\

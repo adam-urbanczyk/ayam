@@ -104,6 +104,7 @@ proc prefs_open {} {
     addCheckB $fw ayprefse TwmCompat [ms ayprefse_TwmCompat]
     addCheckB $fw ayprefse ListTypes [ms ayprefse_ListTypes]
     addCheckB $fw ayprefse AutoSavePrefs [ms ayprefse_AutoSavePrefs]
+    addCheckB $fw ayprefse BakOnReplace [ms ayprefse_BakOnReplace]
     addCheckB $fw ayprefse LoadEnv [ms ayprefse_LoadEnv]
     addCheckB $fw ayprefse NewLoadsEnv [ms ayprefse_NewLoadsEnv]
     addFileB $fw ayprefse EnvFile [ms ayprefse_EnvFile]
@@ -311,7 +312,7 @@ proc prefs_open {} {
 # prefs_save:
 #  save preference settings to ayamrc file
 proc prefs_save { } {
-    global ay
+    global ay ayprefs
     set ayrc $ay(ayamrc)
 
     if { [file exists $ayrc ] } {
@@ -320,9 +321,8 @@ proc prefs_save { } {
 	    return;
 	}
  
-	file copy -force -- $ayrc ${ayrc}.bak
-
-	set oldfile [open ${ayrc}.bak]
+	file copy -force -- $ayrc ${ayrc}${ayprefs(BackupExt)}
+	update
 	set newfile [open $ayrc w]
 
 
@@ -331,7 +331,7 @@ proc prefs_save { } {
 	set newfile [open $ayrc w]
     }
 
-    global ayprefs aymainshortcuts ayviewshortcuts riattr riopt
+    global aymainshortcuts ayviewshortcuts riattr riopt
 
     # get main geometry
     set ayprefs(mainGeom) [winGetGeom .]
@@ -400,7 +400,6 @@ proc prefs_save { } {
     puts $newfile "return;"
 
     close $newfile
-    catch {close $oldfile}
     update
     ayError 4 "prefs_save" "Done saving preferences to $ayrc."
 

@@ -128,6 +128,10 @@ array set ayprefs {
  PrefsGeom ""
  PrefsSection "Main"
 
+ BakOnReplace 0
+ BackupExt "~"
+
+
  Scripts ""
  Docs "http://ayam.sourceforge.net/docs/"
     DailyTips {
@@ -471,6 +475,8 @@ if { $tcl_platform(platform) == "windows" } {
     set ayprefs(ToolBoxTrans) 1
     set ayprefs(RGTrans) 1
     set ayprefs(AutoFocus) 1
+
+    set ayprefs(BackupExt) ".bak"
 
     # we use this "emptyimg" for checkbuttons
     image create photo emptyimg
