@@ -217,6 +217,8 @@ int ay_nct_fillgap(ay_nurbcurve_object *c1, ay_nurbcurve_object *c2,
 
 int ay_nct_fillgaps(int closed, ay_object *curves);
 
+int ay_nct_arrange(ay_object *o, ay_object *t, int rotate);
+
 /* npt.c */
 int ay_npt_create(int uorder, int vorder, int width, int height,
 		  int uknot_type, int vknot_type,
@@ -254,7 +256,7 @@ int ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
 			       int argc, char *argv[]);
 
 int ay_npt_sweep(ay_object *o, ay_object *o2, int sections,
-		 int rotate, ay_nurbpatch_object **patch,
+		 int rotate, int closed, ay_nurbpatch_object **patch,
 		 int has_start_cap, ay_object **start_cap,
 		 int has_end_cap, ay_object **end_cap);
 

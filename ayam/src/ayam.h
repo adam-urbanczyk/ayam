@@ -493,6 +493,7 @@ typedef struct ay_custom_object_s
 typedef struct ay_clone_object_s
 {
   int numclones;
+  int rotate;
   /* Transformations */
   double movx, movy, movz;
   double rotx, roty, rotz;
@@ -562,6 +563,7 @@ typedef struct ay_sweep_object_s
 
  int rotate;
  int interpolate;
+ int close;
  int sections;
 
  int has_start_cap;
