@@ -60,7 +60,7 @@ proc render_select { } {
 
     pack $f -in $w -side top -fill x
 
-    set names [list BMRT2.5 BMRT2.6 Aqsis Air 3Delight RDC PRMan]
+    set names [list BMRT2.5 BMRT2.6 Aqsis Air Angel 3Delight Pixie RDC PRMan]
     foreach name $names {
 	$f.li insert end "$name"
     }
@@ -145,7 +145,22 @@ proc render_select { } {
 		set newr "Air"
 	    }
 
-	    4 {
+	    4 { 
+		# Angel
+		set ayprefs(QRender) "angel %s"
+		set ayprefs(QRenderPT) "%d"
+		set ayprefs(Render) "angel %s"
+		set ayprefs(RenderPT) "%d"
+		set ayprefs(SMRender) "angel %s"
+		set ayprefs(SMRenderPT) "%d"
+		set ayprefs(RenderMode) 1
+		if { $ay(ScanShaders) == 1 } {
+		    set ay(sext) ""
+		}
+		set newr "Angel"
+	    }
+
+	    5 {
 		# 3Delight
 		set ayprefs(QRender) "renderdl -d %s"
 		set ayprefs(QRenderPT) ""
@@ -161,7 +176,23 @@ proc render_select { } {
 		set newr "3Delight"
 	    }
 
-	    5 {
+	    6 {
+		# Pixie
+		set ayprefs(QRender) "rndr %s"
+		set ayprefs(QRenderPT) ""
+		set ayprefs(Render) "rndr %s"
+		set ayprefs(RenderPT) ""
+		set ayprefs(SMRender) "rndr %s"
+		set ayprefs(SMRenderPT) ""
+		set ayprefs(RenderMode) 1
+		set splugin "aysdr"
+		if { $ay(ScanShaders) == 1 } {
+		    set ay(sext) ".sdr"
+		}
+		set newr "Pixie"
+	    }
+
+	    7 {
 		# RDC
 		set ayprefs(QRender) "renderdc %s"
 		set ayprefs(QRenderPT) ""
@@ -177,7 +208,7 @@ proc render_select { } {
 		set newr "RDC"
 	    }
 
-	    6 {
+	    8 {
 		# PRMan
 		set ayprefs(QRender) "render -vector %s"
 		set ayprefs(QRenderPT) ""
