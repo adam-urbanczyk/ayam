@@ -21,8 +21,8 @@ int
 ay_pmt_tonpatch(ay_pamesh_object *pamesh, ay_object **result)
 {
  double **evw = NULL, *cv = NULL;
- int i = 0, j = 0, evwinwidth, evwinheight, ktu, ktv, uorder, vorder;
- int done = AY_FALSE;
+ int evwinwidth, evwinheight, ktu, ktv, uorder, vorder;
+ int i = 0, j = 0, winu, winv, k, l, a, b;
  ay_object *o = NULL, **nexto = NULL;
  char fname[] = "ay_pmt_tonpatch";
  int ay_status = AY_OK;
@@ -95,47 +95,77 @@ ay_pmt_tonpatch(ay_pamesh_object *pamesh, ay_object **result)
     }
   else
     {
-      ay_error(AY_ERROR, fname, NULL);
 
-#if 0
       if(!(evw = calloc(evwinwidth*evwinheight, sizeof(double*))))
 	return AY_EOMEM;
 
-      while(!done)
+      winu = (pamesh->width/(evwinwidth-1));
+      winv = (pamesh->height/(evwinheight-1));
+      printf("winu %d, winv %d\n",winu,winv);
+      if(winu == 0)
 	{
-	  cv = NULL;
-	  if(!(cv = calloc(evwinwidth*evwinheight*4, sizeof(double))))
-	    return AY_EOMEM;
+	  ay_error(AY_ERROR, fname,
+		   "Not enough control points in u direction.");
+	  return AY_ERROR;
+	}
+      if(winv == 0)
+	{
+	  ay_error(AY_ERROR, fname,
+		   "Not enough control points in v direction.");
+	  return AY_ERROR;
+	}
 
-	  a = 0;
-	  for(i = 0; i < evwinwidth; i++)
+      for(i = 0; i < winu; i++)
+	{
+	  for(j = 0; j < winv; j++)
 	    {
-	      for(j = 0; j < evwinheight; j++)
+	      /* create new object */
+	      o = NULL;
+	      if(!(o = calloc(1, sizeof(ay_object))))
+		return AY_EOMEM;
+	      ay_object_defaults(o);
+	      o->type = AY_IDNPATCH;
+
+	      cv = NULL;
+	      if(!(cv = calloc(evwinwidth*evwinheight*4, sizeof(double))))
+		return AY_EOMEM;
+
+	      /* place evaluation window and copy control points */
+	      a = 0;
+	      for(k = 0; k < evwinwidth; k++)
 		{
-		  memcpy(cv[a], 4*evwinheight*sizeof(double));
-		  a += 4;
+		  b = ((3*i*pamesh->height)+(j*3)+(k*pamesh->height))*4;
+
+		  /* because row/column order is identical for
+		     PatchMeshes and NURBS Patches,
+		     we may copy a whole line of control points
+		     at once */
+		  memcpy(&(cv[a]), &(pamesh->controlv[b]),
+			     4*evwinheight*sizeof(double));
+
+		  a += (evwinheight*4);
 		} /* for */
-	    } /* for */
 
-	  /* create new object */
+	      ay_status = ay_npt_create(uorder, vorder,
+					evwinwidth, evwinheight,
+					ktu, ktv, cv, NULL, NULL,
+					(ay_nurbpatch_object **)&(o->refine));
 
-	  /* link new object */
-	  if(!nexto)
-	    {
-	      *nexto = o;
-	    }
-	  else
-	    {
-	      *result = o;
-	    }
-	  nexto = &(o->next);
+	      /* link new object */
+	      if(nexto)
+		{
+		  *nexto = o;
+		}
+	      else
+		{
+		  *result = o;
+		}
+	      nexto = &(o->next);
 
-	  /* done? */
-	  if(i)
-	    done = AY_TRUE;
 
-	} /* while */
-#endif
+	    }/* for */
+	}/* for */
+
     } /* if */
 
  return AY_OK;
