@@ -170,11 +170,12 @@ metaobj_deletecb (void *c)
   if (w)
     free (w);
 
+#if !META_USEVERTEXARRAY
   if( w->vindex)
   	free(w->vindex);
-	
   if(w->vhash)
      free(w->vhash);
+#endif	
 
   return AY_OK;
 } /* metaobj_deletecb */
@@ -573,6 +574,8 @@ metaobj_readcb (FILE * fileptr, ay_object * o)
       return AY_EOMEM;
     }
 
+#if !META_USEVERTEXARRAY
+
   w->tablesize = 40000;
 
   if (!
@@ -594,6 +597,8 @@ metaobj_readcb (FILE * fileptr, ay_object * o)
 
    (w->vhash =
        (int *) calloc (1, sizeof (int) * ((w->tablesize-1) + (w->tablesize/10 -1) + (w->tablesize/100 -1))));
+
+#endif
 
   w->unisize = 4L;
   w->edgelength = w->unisize / (double) w->aktcubes;
