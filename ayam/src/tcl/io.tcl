@@ -146,6 +146,7 @@ proc io_saveScene { ask selected } {
 	    set ay(filename) $filename
 	    ayError 4 "saveScene" "Done saving scene to:"
 	    ayError 4 "saveScene" "$filename"
+	    io_mruAdd $filename
 	    set ay(sc) 0
 	}
 
