@@ -4792,7 +4792,6 @@ ay_rrib_readrib(char *filename, int frame, int read_camera, int read_options,
 
   /* initialize global variables */
   ay_object_defaults(&ay_rrib_co);
-  ay_tags_append(ay_root, NULL);
 
   ay_rrib_clighthandle = 1;
   ay_rrib_flobject = NULL;
