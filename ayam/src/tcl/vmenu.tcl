@@ -16,19 +16,20 @@ menu $w.fMenu.v.m -tearoff 0
 $w.fMenu.v.m add command\
 -label "Quick Render"\
 -command {
- global env ayprefs ay
+ global env ayprefs ay tcl_platform
 
  tmpGet $ayprefs(TmpDir) tmpfile
 
- $ay(currentView) wrib -file $tmpfile -image ${tmpfile}.tiff -temp
-
- global tcl_platform
  if { $tcl_platform(platform) == "windows" } {
     # Windows sucks big time!
      
     regsub -all {\\} $tmpfile {/} tmpfile
     #was: regsub -all {\\} $tmpfile {\\\\\\\\\\\\\\\\} tmpfile
  }
+
+ $ay(currentView) wrib -file $tmpfile -image ${tmpfile}.tif -temp
+
+
  if { $ayprefs(QRenderUI) != 1} {
      set command "exec "
 
@@ -54,17 +55,16 @@ $w.fMenu.v.m add command\
 $w.fMenu.v.m add command\
 -label "Render"\
 -command {\
-global env ayprefs ay
+global env ayprefs ay tcl_platform
 
-tmpGet $ayprefs(TmpDir) tmpfile
+ tmpGet $ayprefs(TmpDir) tmpfile
 
- $ay(currentView) wrib -file $tmpfile -image ${tmpfile}.tiff -temp
-
- global tcl_platform ayprefs
  if { $tcl_platform(platform) == "windows" } {
     # Windows sucks big time!
     regsub -all {\\} $tmpfile {/} tmpfile
  }
+
+ $ay(currentView) wrib -file $tmpfile -image ${tmpfile}.tif -temp
 
  lappend ay(tmpfiles) [list $tmpfile]
 # $tcl_platform(platform) == "windows" || 
@@ -194,6 +194,12 @@ $m add check -label "Automatic Redraw" -variable ay(cVRedraw)\
 $m add check -label "Shade" -variable ay(cVShade) -command {
     global ay
     $ay(currentView) setconf -shade $ay(cVShade)
+    set w [winfo toplevel $ay(currentView)]
+#    if { $ay(cVShade) == 1 } {
+#	$w.fMenu.g configure -state disabled
+#    } else {
+#	$w.fMenu.g configure -state enabled
+#    }
 }
 $m add check -label "Draw Selection only" -variable ay(cVDrawSel)\
 	-command {
