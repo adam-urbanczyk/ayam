@@ -171,6 +171,7 @@ int ay_rrib_readlights; /* read lights */
 int ay_rrib_readmaterial; /* read material and attributes */
 int ay_rrib_readmateriali; /* read material and attributes (internal) */
 int ay_rrib_readpartial; /* read partial RIB (e.g. without WorldBegin/End) */
+int ay_rrib_errorlevel; /* 0: silence, 1: errors, 2: warnings, 3: all */
 
 /* grib is used by Affine to specify the current RIB */
 /* ay_rrib_RiReadArchive() keeps a copy of this on the stack
@@ -2646,7 +2647,7 @@ RtVoid
 ay_rrib_RiErrorIgnore(RtInt code, RtInt severity, char *msg)
 {
    (void)code; (void)severity; (void)msg;
-
+   printf("RiErrorIgnore\n");
    return;
 } /* ay_rrib_RiErrorIgnore */
 
@@ -2655,7 +2656,7 @@ RtVoid
 ay_rrib_RiErrorPrint(RtInt code, RtInt severity, char *msg)
 {
    (void)code; (void)severity; (void)msg;
-
+   printf("RiErrorPrint\n");
    return;
 } /* ay_rrib_RiErrorPrint */
 
@@ -2663,7 +2664,7 @@ RtVoid
 ay_rrib_RiErrorAbort(RtInt code, RtInt severity, char *msg)
 {
    (void)code; (void)severity; (void)msg;
-
+   printf("RiErrorAbort\n");
    return;
 } /* ay_rrib_RiErrorAbort */
 
@@ -3961,8 +3962,62 @@ ay_rrib_linkobject(void *object, int type)
 
 
 int
+ay_rrib_printerror(RIB_HANDLE rib, int code, int severity, PRIB_ERROR error)
+{
+ char buf[255];
+ char fname[] = "RRIB";
+ char  *s = NULL;
+
+  s = RibGetErrorMsg(code);
+  if(s && strlen(s) < 200)
+    {
+      sprintf(buf,"code: %d (%s)", code, s);
+    }
+  else
+    {
+      sprintf(buf,"code: %d (no description available)", code);
+    }
+
+  switch(severity)
+    {
+    case 0:
+      /* info */
+      if(ay_rrib_errorlevel > 2)
+	ay_error(AY_EOUTPUT, fname, buf);
+      break;
+    case 1:
+      /* warning */
+      if(ay_rrib_errorlevel > 1)
+	ay_error(AY_EWARN, fname, buf);
+      break;
+    case 2:
+      /* error */
+      if(ay_rrib_errorlevel > 0)
+	ay_error(AY_ERROR, fname, buf);
+      break;
+    case 3:
+      /* severe */
+      ay_error(AY_ERROR, fname, buf);
+      break;
+    }
+
+  /* print some more detailed error to stderr */
+  RibDefaultErrorHandler(grib, code, severity, error);
+
+  if(severity == 3)
+    {
+      ay_error(AY_ERROR, fname, "Severe error encountered, bailing out.");
+      RibEnd(grib);
+    }
+
+ return kRIB_OK;
+} /* ay_rrib_printerror */
+
+
+int
 ay_rrib_readrib(char *filename, int frame, int read_camera, int read_options,
-		int read_lights, int read_material, int read_partial)
+		int read_lights, int read_material, int read_partial,
+		int error_level)
 {
  int ay_status = AY_OK;
  RIB_HANDLE rib = NULL;
@@ -3978,6 +4033,7 @@ ay_rrib_readrib(char *filename, int frame, int read_camera, int read_options,
   ay_rrib_lastobject = NULL;
   ay_rrib_lastmaterialnum = 0;
   ay_rrib_readmateriali = 0;
+  ay_rrib_errorlevel = 1;
 
   /* default fov */
   ay_rrib_fov = 45.0;
@@ -3995,6 +4051,7 @@ ay_rrib_readrib(char *filename, int frame, int read_camera, int read_options,
   ay_rrib_readlights = read_lights;
   ay_rrib_readmaterial = read_material;
   ay_rrib_readpartial = read_partial;
+  ay_rrib_errorlevel = error_level;
 
   if(read_partial)
     {
@@ -4012,6 +4069,8 @@ ay_rrib_readrib(char *filename, int frame, int read_camera, int read_options,
   if(rib)
     {
       grib = (PRIB_INSTANCE)rib;      
+
+      RibSetErrorHandler(rib, ay_rrib_printerror);
 
       RibRead(rib);
 
@@ -4038,7 +4097,7 @@ ay_rrib_readribtcmd(ClientData clientData, Tcl_Interp *interp,
  int ay_status = AY_OK;
  char fname[] = "rrib";
  int frame = 0, read_camera = 1, read_options = 1, read_lights = 1;
- int read_material = 1, read_partial = 0;
+ int read_material = 1, read_partial = 0, error_level = 1;
  int i = 2;
  ay_object *o, *n = NULL, **old_aynext;
  ay_level_object *l = NULL;
@@ -4081,6 +4140,11 @@ ay_rrib_readribtcmd(ClientData clientData, Tcl_Interp *interp,
       if(!strcmp(argv[i],"-p"))
 	{
 	  sscanf(argv[i+1], "%d", &read_partial);
+	}
+      else
+      if(!strcmp(argv[i],"-e"))
+	{
+	  sscanf(argv[i+1], "%d", &error_level);
 	}
 
 	i+=2;
@@ -4136,7 +4200,8 @@ ay_rrib_readribtcmd(ClientData clientData, Tcl_Interp *interp,
     } /* if */
 
   ay_status = ay_rrib_readrib(argv[1], frame, read_camera, read_options,
-			      read_lights, read_material, read_partial);
+			      read_lights, read_material, read_partial,
+			      error_level);
   if(ay_status)
     {
       ay_error(AY_ERROR, fname, NULL);

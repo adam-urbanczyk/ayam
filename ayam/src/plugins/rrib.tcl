@@ -16,7 +16,7 @@ ReadOptions 1
 ReadLights 1
 ReadMaterial 1
 ReadPartial 0
-
+ErrorLevel 1
 }   }
 
 # rrib_import:
@@ -45,7 +45,7 @@ proc rrib_import { } {
 	update
 	global ay ay_error rrib_options
 	set ay_error ""
-
+	set rrib_options(FileName) $ifilename
 	set w .ribI
 	catch {destroy $w}
 	toplevel $w
@@ -62,17 +62,19 @@ proc rrib_import { } {
 	addCheck $f rrib_options ReadLights
 	addCheck $f rrib_options ReadMaterial
 	addCheck $f rrib_options ReadPartial
+	addMenu $f rrib_options ErrorLevel [list Silence Errors Warnings All]
 
 
 	set f [frame $w.f2]
 	button $f.bok -text "Ok" -width 5 -command {
 	    global rrib_options;
-	    rrib $ifilename -f $rrib_options(ReadFrame)\
+	    rrib $rrib_options(FileName) -f $rrib_options(ReadFrame)\
 		    -c $rrib_options(ReadCamera)\
 		    -o $rrib_options(ReadOptions)\
 		    -l $rrib_options(ReadLights)\
 		    -m $rrib_options(ReadMaterial)\
-		    -p $rrib_options(ReadPartial);
+		    -p $rrib_options(ReadPartial)\
+		    -e $rrib_options(ErrorLevel);
 	    goTop
 	    selOb
 	    set ay(CurrentLevel) "root"
@@ -86,10 +88,10 @@ proc rrib_import { } {
 
 	    if { $ay_error < 2 } {
 		ayError 4 "rrib_import" "Done importing:"
-		ayError 4 "rrib_import" "$ifilename"
+		ayError 4 "rrib_import" "$rrib_options(FileName)"
 	    } else {
 		ayError 2 "Ayam" "There were errors while importing:"
-		ayError 2 "Ayam" "$ifilename"
+		ayError 2 "Ayam" "$rrib_options(FileName)"
 	    }
 
 
