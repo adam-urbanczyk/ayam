@@ -660,6 +660,7 @@ proc selNPFL { npfl } {
 }
 # selNPFL
 
+
 # 
 proc resetFocus { } {
     global ay
@@ -668,6 +669,29 @@ proc resetFocus { } {
     } else {
 	focus $ay(olb)
     }
-return;
+ return;
 }
 # resetFocus
+
+
+#
+proc mouseWatch { onoff ws } {
+    if { $onoff } {
+	foreach w $ws {
+	    if { [winfo exists $w] } {
+		$w configure -cursor "watch"
+	    }
+	}
+	# foreach
+    } else {
+	foreach w $ws {
+	    if { [winfo exists $w] } {
+		$w configure -cursor {}
+	    }
+	}
+	# foreach
+    }
+    # if
+ return;
+}
+# mouseWatch
