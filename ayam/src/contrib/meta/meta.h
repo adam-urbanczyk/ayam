@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <time.h>
 #include "ayam.h"
+#include <GL/glut.h>
 
 extern unsigned int metacomp_id;
 
@@ -141,7 +142,12 @@ typedef struct meta_world_s
 
   double *vertex;
   double *nvertex;
-
+  GLuint *vindex;
+  int	tablesize;
+  int	*vhash;
+  int	h1,h2;
+  int	actindex;
+    
   int currentnumpoly;
   int maxpoly;
   meta_gridcell *stack;
@@ -150,6 +156,8 @@ typedef struct meta_world_s
   int edgecode;
   double unisize;
   unsigned int *cid;
+
+  int showworld;
 
 }
 meta_world;

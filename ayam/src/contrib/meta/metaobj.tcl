@@ -33,7 +33,7 @@ set w [frame $ay(pca).$MetaObjAttr(w)]
 
 addParam $w MetaObjAttrData Gridwith 40
 addParam $w MetaObjAttrData Isolevel 0.6
-addCheck $w MetaObjAttrData "use Tetraheder"
+addCheck $w MetaObjAttrData "ShowWorld"
 
 # add menu entry to Create/Custom sub-menu
 mmenu_addcustom MetaObj "crtOb MetaObj;uS;sL;rV"

@@ -89,6 +89,30 @@ metaobj_createcb (int argc, char *argv[], ay_object * o)
     }
 
 
+  w->tablesize = 20000;
+
+  if (!
+      (w->vindex =
+       (GLuint *) calloc (1, sizeof (GLuint) * ((w->tablesize-1) + (w->tablesize/10 -1) + (w->tablesize/100 -1)))))
+    {
+      if (w->Vertex3d)
+      free (w->Vertex3d);
+
+      if (w)
+      free (w);
+
+      if (w->mgrid)
+	 free(w->mgrid);
+	 
+      ay_error (AY_EOMEM, fname, NULL);
+      return AY_ERROR;
+    }
+
+   (w->vhash =
+       (int *) calloc (1, sizeof (int) * ((w->tablesize-1) + (w->tablesize/10 -1) + (w->tablesize/100 -1))));
+
+
+
   meta_initcubestack (w);
 
   w->lastmark = 0;
@@ -136,7 +160,7 @@ metaobj_deletecb (void *c)
     free (w->nvertex);
 
 
-  if (w->mgrid);
+  if (w->mgrid)
   free (w->mgrid);
 
   meta_freecubestack (w);
@@ -144,7 +168,9 @@ metaobj_deletecb (void *c)
   if (w)
     free (w);
 
-
+  if( w->vindex)
+  	free(w->vindex);
+	
   return AY_OK;
 } /* metaobj_deletecb */
 
@@ -205,6 +231,26 @@ metaobj_copycb (void *src, void **dst)
     }
 
 
+  if (!
+      (w->vindex =
+       (GLuint *) calloc (1, sizeof (GLuint) * ((w->tablesize-1) + (w->tablesize/10 -1) + (w->tablesize/100 -1)))))
+    {
+      if (w->Vertex3d)
+      free (w->Vertex3d);
+
+      if (w)
+      free (w);
+
+      if (w->mgrid)
+	 free(w->mgrid);
+	 
+      ay_error (AY_EOMEM, NULL, NULL);
+      return AY_ERROR;
+    }
+
+   (w->vhash =
+       (int *) calloc (1, sizeof (int) * ((w->tablesize-1) + (w->tablesize/10 -1) + (w->tablesize/100 -1))));
+
   meta_initcubestack (w);
 
   *dst = (void *) w;
@@ -223,6 +269,57 @@ metaobj_drawcb (struct Togl *togl, ay_object * o)
   w = (meta_world *) o->refine;
 
   vptr = w->vertex;
+
+  glEnableClientState(GL_VERTEX_ARRAY);
+  glVertexPointer(3, GL_DOUBLE, 0, w->vertex);
+
+  glDrawElements(GL_LINES, w->currentnumpoly*3, GL_UNSIGNED_INT, w->vindex);
+
+  if (w->showworld)
+  {
+  	double u;
+	u = w->unisize/2;
+
+     glBegin (GL_LINE_STRIP);
+     glVertex3f (-u, +u, +u);
+     glVertex3f (+u, +u, +u);
+     glVertex3f (+u, +u, -u);
+     glVertex3f (-u, +u, -u);
+     glVertex3f (-u, +u, +u);
+
+     glVertex3f (-u, -u, +u);
+     glVertex3f (+u, -u, +u);
+     glVertex3f (+u, -u, -u);
+     glVertex3f (-u, -u, -u);
+     glVertex3f (-u, -u, +u);
+ 
+     glEnd();
+	
+     glBegin (GL_LINES);
+     glVertex3f (+u, +u, +u);
+     glVertex3f (+u, -u, +u);
+
+     glVertex3f (+u, +u, -u);
+     glVertex3f (+u, -u, -u);
+     glVertex3f (-u, +u, -u);
+     glVertex3f (-u, -u, -u);
+     glEnd();
+    
+     glBegin (GL_POINTS);
+     glVertex3f (+u, +u, +u);
+     glVertex3f (+u, +u, -u);
+     glVertex3f (+u, -u, +u);
+     glVertex3f (+u, -u, -u);
+     glVertex3f (-u, +u, +u);
+     glVertex3f (-u, +u, -u);
+     glVertex3f (-u, -u, +u);
+     glVertex3f (-u, -u, -u);
+     glEnd();
+
+  }
+
+
+#if 0 
 
   glBegin (GL_LINES);
 
@@ -251,6 +348,8 @@ metaobj_drawcb (struct Togl *togl, ay_object * o)
 
   glEnd ();
 
+#endif
+
 
   return AY_OK;
 
@@ -268,6 +367,16 @@ metaobj_shadecb (struct Togl *togl, ay_object * o)
 
   vptr = w->vertex;
   nptr = w->nvertex;
+
+  glEnableClientState(GL_VERTEX_ARRAY);
+  glEnableClientState(GL_NORMAL_ARRAY);
+  glVertexPointer(3, GL_DOUBLE, 0, w->vertex);
+  glNormalPointer(GL_DOUBLE, 0, w->nvertex);
+
+  glDrawElements(GL_TRIANGLES, w->currentnumpoly*3, GL_UNSIGNED_INT, w->vindex);
+
+
+#if 0
 
   glBegin (GL_TRIANGLES);
 
@@ -290,6 +399,7 @@ metaobj_shadecb (struct Togl *togl, ay_object * o)
     }
 
   glEnd ();
+#endif
 
   return AY_OK;
 } /* metaobj_shadecb */
@@ -321,6 +431,9 @@ metaobj_setpropcb (Tcl_Interp * interp, int argc, char *argv[], ay_object * o)
   to = Tcl_ObjGetVar2 (interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj (interp, to, &w->isolevel);
 
+  Tcl_SetStringObj (ton, "ShowWorld", -1);
+  to = Tcl_ObjGetVar2 (interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj (interp, to, &w->showworld);
 
   Tcl_IncrRefCount (toa);
   Tcl_DecrRefCount (toa);
@@ -377,6 +490,11 @@ metaobj_getpropcb (Tcl_Interp * interp, int argc, char *argv[], ay_object * o)
   to = Tcl_NewDoubleObj (w->isolevel);
   Tcl_ObjSetVar2 (interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj (ton, "ShowWorld", -1);
+  to = Tcl_NewIntObj (w->showworld);
+  Tcl_ObjSetVar2 (interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+
   Tcl_IncrRefCount (toa);
   Tcl_DecrRefCount (toa);
   Tcl_IncrRefCount (ton);
@@ -431,6 +549,28 @@ metaobj_readcb (FILE * fileptr, ay_object * o)
       free (w);
       return AY_EOMEM;
     }
+
+  w->tablesize = 20000;
+
+  if (!
+      (w->vindex =
+       (GLuint *) calloc (1, sizeof (GLuint) * ((w->tablesize-1) + (w->tablesize/10 -1) + (w->tablesize/100 -1)))))
+    {
+      if (w->Vertex3d)
+      free (w->Vertex3d);
+
+      if (w)
+      free (w);
+
+      if (w->mgrid)
+	 free(w->mgrid);
+	 
+      ay_error (AY_EOMEM, NULL, NULL);
+      return AY_ERROR;
+    }
+
+   (w->vhash =
+       (int *) calloc (1, sizeof (int) * ((w->tablesize-1) + (w->tablesize/10 -1) + (w->tablesize/100 -1))));
 
   w->unisize = 4L;
   w->edgelength = w->unisize / (double) w->aktcubes;
