@@ -206,6 +206,13 @@ ay_view_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp, to, &view->up[2]);
 
+  Tcl_SetStringObj(ton, "Near", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &view->near);
+  Tcl_SetStringObj(ton, "Far", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &view->far);
+
   Tcl_SetStringObj(ton, "Zoom", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp, to, &view->zoom);
@@ -359,6 +366,12 @@ ay_view_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_NewDoubleObj(view->up[2]);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton, "Near", -1);
+  to = Tcl_NewDoubleObj(view->near);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetStringObj(ton, "Far", -1);
+  to = Tcl_NewDoubleObj(view->far);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   Tcl_SetStringObj(ton, "Roll", -1);
   to = Tcl_NewDoubleObj(view->roll);
@@ -620,10 +633,16 @@ ay_view_readcb(FILE *fileptr, ay_object *o)
 
   read = fgetc(fileptr);
 
-  if(ay_read_version == 2)
+  if(ay_read_version >= 2)
     {
       ay_read_string(fileptr, &(vtemp.bgimage));
       fscanf(fileptr,"%d\n", &vtemp.drawbg);
+    }
+
+  if(ay_read_version >= 4)
+    {
+      fscanf(fileptr,"%lg\n", &vtemp.near);
+      fscanf(fileptr,"%lg\n", &vtemp.far);
     }
 
   vtemp.drawhandles = AY_FALSE;
@@ -750,6 +769,9 @@ ay_view_writecb(FILE *fileptr, ay_object *o)
       fprintf(fileptr,"\n");
     }
   fprintf(fileptr,"%d\n",view->drawbg);
+
+  fprintf(fileptr,"%g\n",view->near);
+  fprintf(fileptr,"%g\n",view->far);
 
  return AY_OK;
 } /* ay_view_writecb */
@@ -1002,7 +1024,6 @@ ay_view_dropcb(ay_object *o)
   width = Togl_Width(view->togl);
   height = Togl_Height(view->togl);
 
-
   while(sel)
     {
       s = sel->object; 
@@ -1019,7 +1040,7 @@ ay_view_dropcb(ay_object *o)
 
 	      glMatrixMode (GL_MODELVIEW);
 	      glPushMatrix();
-	       glLoadIdentity ();
+	       glLoadIdentity();
 
 	       ay_trafo_getall(ay_currentlevel->next);
 
@@ -1028,7 +1049,7 @@ ay_view_dropcb(ay_object *o)
 	       ay_quat_torotmatrix(s->quat, mr);
 	       glMultMatrixd(mr);
 
-	       glScaled (s->scalx, s->scaly, s->scalz);
+	       glScaled(s->scalx, s->scaly, s->scalz);
 	       
 	       glGetDoublev(GL_MODELVIEW_MATRIX, m);
 	      glPopMatrix();
@@ -1038,8 +1059,11 @@ ay_view_dropcb(ay_object *o)
 
 	      memcpy(view->from, from, 3*sizeof(double));
 	      memcpy(view->to, to, 3*sizeof(double));
-	      
-	      if(width<height)
+	      view->up[0] = 0.0;
+	      view->up[1] = 1.0;
+	      view->up[2] = 0.0;
+
+	      if(width < height)
 		{
 		  aspect = ((double)width) / ((double)height);
 		  view->zoom = fabs(tan(light->cone_angle)/aspect);
@@ -1048,6 +1072,7 @@ ay_view_dropcb(ay_object *o)
 		{
 		  view->zoom = fabs(tan(light->cone_angle));
 		}
+
 	      /* XXXX multiply zoom to accomodate parallel view types? */
 
 	      ay_toglcb_reshape(view->togl);
@@ -1073,9 +1098,9 @@ ay_view_dropcb(ay_object *o)
 	  break;
 	default:
 	  break;
-	}
+	} /* switch */
       sel = sel->next;
-    }
+    } /* while */
 
   ay_notify_force(o);
 

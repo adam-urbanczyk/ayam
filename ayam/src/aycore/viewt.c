@@ -29,20 +29,46 @@ ay_viewt_setupprojection(struct Togl *togl)
  GLfloat light_posf[4] = { 0.0f,  0.0f, 1000.0f, 1.0f};
  GLfloat light_poss[4] = {1000.0f,  0.0f,  0.0f, 1.0f};
  GLfloat light_post[4] = { 0.0f, 1000.0f,  0.0f, 1.0f};
+ GLdouble near = view->near, far = view->far;
 
   glViewport(0, 0, width, height);
 
   glMatrixMode(GL_PROJECTION);
 
   glLoadIdentity();
+
   if(view->type == AY_VTPERSP)
-    glFrustum(-aspect*view->zoom, aspect*view->zoom,
-	       -1.0*view->zoom, 1.0*view->zoom,
-	       1, 1000.0);
+    {
+      if(view->near == 0.0)
+	{
+	  near = 1.0;
+	}
+
+      if(view->far == 0.0)
+	{
+	  far = 1000.0;
+	}
+
+      glFrustum(-aspect*view->zoom, aspect*view->zoom,
+		-1.0*view->zoom, 1.0*view->zoom,
+		near, far);
+    }
   else
-    glOrtho(-aspect*view->zoom, aspect*view->zoom,
-	    -1.0*view->zoom, 1.0*view->zoom,
-	    -100.0, 100.0);
+    {
+      if(view->near == 0.0)
+	{
+	  near = -100.0;
+	}
+
+      if(view->far == 0.0)
+	{
+	  far = 100.0;
+	}
+
+      glOrtho(-aspect*view->zoom, aspect*view->zoom,
+	      -1.0*view->zoom, 1.0*view->zoom,
+	      near, far);
+    } /* if */
 
   if(view->roll != 0.0)
     glRotated(view->roll, 0.0, 0.0, 1.0);

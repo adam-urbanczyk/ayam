@@ -199,6 +199,12 @@ ay_camera_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp, to, &camera->up[2]);
 
+  Tcl_SetStringObj(ton, "Near", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &camera->near);
+  Tcl_SetStringObj(ton, "Far", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &camera->far);
 
   Tcl_SetStringObj(ton, "Zoom", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -264,6 +270,12 @@ ay_camera_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_NewDoubleObj(camera->up[2]);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton, "Near", -1);
+  to = Tcl_NewDoubleObj(camera->near);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetStringObj(ton, "Far", -1);
+  to = Tcl_NewDoubleObj(camera->far);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   Tcl_SetStringObj(ton, "Roll", -1);
   to = Tcl_NewDoubleObj(camera->roll);
@@ -423,6 +435,12 @@ ay_camera_readcb(FILE *fileptr, ay_object *o)
   fscanf(fileptr,"%lg\n", &camera->roll);
   fscanf(fileptr,"%lg\n", &camera->zoom);
 
+  if(ay_read_version >= 4)
+    {
+      fscanf(fileptr,"%lg\n", &camera->near);
+      fscanf(fileptr,"%lg\n", &camera->far);
+    }
+
   o->refine = camera;
 
  return AY_OK;
@@ -451,6 +469,9 @@ ay_camera_writecb(FILE *fileptr, ay_object *o)
 
   fprintf(fileptr,"%g\n",camera->roll);
   fprintf(fileptr,"%g\n",camera->zoom);
+
+  fprintf(fileptr,"%g\n",camera->near);
+  fprintf(fileptr,"%g\n",camera->far);
 
  return AY_OK;
 } /* ay_camera_writecb */
