@@ -1,4 +1,4 @@
-[Setup.txt, 31. Jan 2003]
+[Setup.txt, 10. Nov 2003]
 
 Setup instructions for Ayam (Unix only)
 ---------------------------------------
@@ -25,16 +25,17 @@ appeared in the console on first startup.
 1. Determine where to save the preferences
 ------------------------------------------
 
-By default, the preference settings are automatically saved
-to the file: "~/.ayamrc" when you quit Ayam.
+By default, the preference settings are automatically saved to the file:
+"~/.ayamrc" when you quit Ayam.
 
-You can change the filename of the preference settings
-using the environment variable "AYAMRC".
+You can change location and name of the preference file using the
+environment variable "AYAMRC".
 How do you set an environment variable?
 
-add to your profile:
+To set the AYAMRC environment variable, add to your profile:
  csh/tcsh: setenv AYAMRC /home/user/.myayamrc
  bash/ksh/zsh: export AYAMRC=/home/user/.myayamrc
+replacing "/home/user/" with a more sensible setting.
 
 You have to restart the shell and Ayam in order for these changes to
 take effect.
@@ -72,26 +73,30 @@ What are shaders? For the moment, we can safely assume that
 shaders are small files that carry material descriptions.
 Some example shaders come with your RenderMan compatible renderer
 (e.g. BMRT), but you may also create your own of course.
-Currently, Ayam can only work with shaders that have been
-compiled with "slc" from BMRT, so you should get and
-install BMRT from http://www.exluna.com/.
-Now you need to point Ayam to the directories where your slc-compiled
-shaders reside in order to use them with the material objects in Ayam.
+Unless you load a shader parsing plugin (see section 4 below),
+Ayam can only work with shaders that have been compiled with "slc"
+from BMRT, so you may want to get and install BMRT first.
+Unfortunately, NVIDIA/Exluna stopped the official distribution of BMRT,
+but it can be found using the obvious search terms with your favourite
+search engine.
+After the installation of BMRT you need to point Ayam to the directories
+where your slc-compiled shaders reside in order to use them with the
+material objects in Ayam.
 This is done using the preference setting "Main/Shaders".
-Just open the preferences, enter the appropriate paths (separated by ":")
-into the string entry labeled "Shaders".
+Just open the preferences (main menu: "Edit/Preferences") and enter the
+appropriate paths (separated by ":") into the string entry labeled "Shaders".
 If you installed BMRT before your first start of Ayam, the preference
 setting "Main/Shaders" probably already contains the right path setting
-(fetched from the SHADERS environment variable, that has been set while
-installing BMRT).
+(it will be fetched from the SHADERS environment variable, that has been set
+while installing BMRT, if the Shaders preference setting is unconfigured).
 
 Example:
 If you installed BMRT2.6 into "/usr/local/BMRT2.6" you will want
 to add "/usr/local/BMRT2.6/shaders/" to your "Shaders" preference
 setting.
 
-If you are done, press the "Scan Shaders" button below and watch
-the console for error messages.
+If you are ready, press the "Scan Shaders" button right below the "Shaders"
+entry field and watch the console for error messages.
 
 
 4. Set up the plugins
@@ -144,9 +149,9 @@ o Open and arrange as many views as you like using the
 o Save the environment using the main menu entry
   "Special/Save Environment". This will save the environment
   to the file given in the preference setting "Main/EnvFile".
-  The default setting is "~/.ayam2view.ay". You may of course
-  change the setting in "Main/EnvFile" to your liking before
-  saving the environment.
+  The default setting is "~/.ayam2view.ay".
+  The next dialog will ask you, whether you want to make the new
+  environment the default, answer with "Ok".
   Do not switch off the preference setting "Main/LoadEnv",
   as this would inhibit automatic loading of the working
   environment on startup.
