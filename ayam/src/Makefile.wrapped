@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile.wrapped [31. Dec 2003]
+# Makefile.wrapped [20. Jan 2004]
 # Makefile for Ayam (wrapped version)
 
 # Choose an installation prefix.
@@ -405,6 +405,8 @@ AYSLOINCDIR = $(PRMANDIR)/include
 AYSLOLIBS = -L$(PRMANDIR)/lib -lsloargs -ltarget -lzip
 
 # Ayslo3d Plugin (3Delight)
+# (add AYOLDSLO3D to CFLAGS above, if you compile with a 3Delight
+#  older than 1.0.6)
 3DLDIR = /usr/local/3delight
 #3DLDIR = /usr/local/3delight-0.9.6/Linux-i686-libstdc++-3
 AYSLO3DINCDIR = $(3DLDIR)/include
