@@ -344,6 +344,9 @@ ay_init(Tcl_Interp *interp)
   /* initialize Wavefront OBJ IO module */
   ay_objio_init(interp);
 
+  /* initialize Tesselation GUI module */
+  ay_tgui_init(interp);
+
   /* register SaveGeom tag type */
   ay_tags_register(interp, "SaveMainGeom", &ay_savegeom_tagtype);
 
