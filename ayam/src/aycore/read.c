@@ -103,6 +103,8 @@ ay_read_header(FILE *fileptr)
 {
  int ay_status = AY_OK;
  char *version = NULL, *nbuffer = NULL;
+ int version_unknown = AY_TRUE;
+ char fname[] = "ay_read_header";
 
   ay_status = ay_read_string(fileptr, &nbuffer);
   if(ay_status)
@@ -121,31 +123,42 @@ ay_read_header(FILE *fileptr)
   if(!strcmp(version,"1.0"))
     {
       ay_read_version = 0;
+      version_unknown = AY_FALSE;
     }
 
   if(!strcmp(version,"1.1"))
     {
       ay_read_version = 1;
+      version_unknown = AY_FALSE;
     }
 
   if(!strcmp(version,"1.2"))
     {
       ay_read_version = 2;
+      version_unknown = AY_FALSE;
     }
 
   if(!strcmp(version,"1.3"))
     {
       ay_read_version = 3;
+      version_unknown = AY_FALSE;
     }
 
   if(!strcmp(version,"1.4"))
     {
       ay_read_version = 4;
+      version_unknown = AY_FALSE;
     }
 
   if(!strcmp(version,"1.5"))
     {
       ay_read_version = 4;
+      version_unknown = AY_FALSE;
+    }
+
+  if(version_unknown)
+    {
+      ay_error(AY_EWARN, fname, "Unknown file version, reading as V1.0!");
     }
 
   free(version);
