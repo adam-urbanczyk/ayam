@@ -3199,6 +3199,101 @@ Since a custom object has total control over properties and representations,
 you should refer to the documentation of the custom object for more
 information regarding it's properties.
 
+<sect1>Metaball Object<label id="metaobjobj"><label id="metacompobj">
+<p>
+A metaball object is a <ref id="customobj" name="Custom Object">. It allows you
+modelling with implicit surfaces in realtime.
+
+To start modelling you should first create a MetaObj object using the menu
+<tt>"Create/Custom Object/MetaObj"</tt>.
+This creates a meta-world with a single meta-component (a sphere) in it.
+Meta-components live only in a meta-world. Type, parameters, and
+transformation attributes of the meta-components define the function
+of an implicit surface. The MetaObj object, that represents the
+meta-world, evaluates this function on a regular grid and creates a polygonal
+representation for a specific function value (the so called threshold value).
+This process may be parameterized using the <tt/"MetaObjAttr"/
+
+<sect2>MetaObjAttr<label id="moattr">
+<p>
+<itemize>
+<item>With the parameter <tt/"NumSamples"/ you specify the resolution of the
+three dimensional regular grid, on which the implicit function is
+evaluated, in each dimension.
+A higher number of samples results in better quality but more polygons
+are created and more CPU power and memory are needed. For modelling
+you should set this to a lower value of about 40. For final rendering
+you may increase this to about 160.
+<item><tt/"IsoLevel"/, defines the threshold value for that a polygonal
+representation of the implicit function should be created. Normally, you
+should not need to change this value.
+<item>To show the actual bounds of the meta-world, you may enable
+the <tt>"ShowWorld"</tt> parameter.
+</itemize>
+
+While modelling with meta balls you may add other <tt/"MetaComp"/ objects
+to the <tt/"MetaObj"/ object and parameterize them.
+A <tt/"MetaComp"/ object has the following properties.
+
+<sect2>MetaCompAttr<label id="mcattr">
+<p>
+<itemize>
+<item><tt/"Formula"/ specifies the type of the meta-component.
+The following types are available: Metaball, Torus, Cube, Heart and
+Custom which gives you the possibility to use your own formulas.
+<item>With the parameter <tt/"Negative"/ you define a component with a
+negative effect on the implicit function value.
+Negative components are not visible on their own but they are useful
+for modelling holes. Just try it.
+</itemize>
+
+The other parameter are specific to the type of the component:
+
+<sect2>Metaball<label id="mbcp">
+<p>
+<itemize>
+<item><tt/"Radius"/ sets the radius of the metaball
+<item><tt/"EnergyCoeffA"/, <tt/"EnergyCoeffB"/, and <tt/"EnergyCoeffC"/
+are some parameters for the metaball formula.
+Usually you can leave those parameters at their default values.
+If you change them, be careful.
+</itemize>
+
+<sect2>Torus<label id="mtcp">
+<p>
+<itemize>
+<item><tt/"Ri"/ the inner radius of the torus
+<item><tt/"Ro"/ the outer radius if the torus
+<item><tt/"Rotate"/ rotates the torus about 90 degree
+</itemize>
+
+<sect2>Cube<label id="mucp">
+<p>
+<itemize>
+<item><tt/"EdgeX"/, <tt/"EdgeY"/, and <tt/"EdgeZ"/,  let you define the
+sharpness of the edges of the cube
+</itemize>
+
+<sect2>Custom<label id="cucp">
+<p>
+<itemize>
+<item><tt/"Expression"/ is a piece of Tcl script, that represents your
+own custom formula for a meta component. The expression may call any
+Tcl commands to calculate a field value from the current grid position,
+which is given in the global variables <tt>"x"</tt>, <tt>"y"</tt>, and
+<tt>"z"</tt>.
+The expression has to return the field value in the global variable
+<tt>"f"</tt>.
+Here is an example for a custom expression:
+<code>
+set f [expr {pow($x,4)+pow($y,4)+pow($z,4)}]
+</code>
+Note, that those expressions are called many times
+and since they are programmed in Tcl, this can be quite slow.
+You should use any tricks (like the curly braces
+in the expr-statement above) to speed up the expression.
+</itemize>
+
 <sect>NURBS Modeling Tools<label id="nmtool">
 <p>
 You can find all NURBS modeling tools in the <tt/"Tools"/ menu.
@@ -4782,6 +4877,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>ExpGain, ExpGamma: <ref id="rio" name="RenderMan interface option">
 <item>Explode: <ref id="explt" name="Explode tool">
 <item>Export RIB: <ref id="mmfile" name="main menu entry">
+<item>Expression: <ref id="mcattr" name="MetaComp attribute">
 <item>Exterior: <ref id="matshader" name="shader">
 <item>Extrude: <ref id="extrudeobj" name="object">,
 <ref id="extt" name="Extrude tool">
@@ -4794,6 +4890,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>FindU: <ref id="miscac" name="modeling action">
 <item>forAll, forAllT: <ref id="fall" name="scripting interface command">
 <item>forceNot: <ref id="gtype" name="scripting interface command">
+<item>Formula: <ref id="mcattr" name="MetaComp attribute">
 <item>From: <ref id="camp" name="camera property">,
 <ref id="lip" name="light attribute">
 <item>From Camera: <ref id="vmconf" name="view menu entry">
@@ -4857,6 +4954,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Intersection: <ref id="mmcreate" name="main menu entry">,
 <ref id="levelobj" name="object">
 <item>IParam: <ref id="icp" name="ICurve attribute">
+<item>IsoLevel: <ref id="moattr" name="MetaObj attribute">
 <item>IsOn: <ref id="lip" name="light attribute">
 </itemize>
 
@@ -4907,6 +5005,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>MaxTagLen: <ref id="hidprefs" name="Hidden Preference Settings">
 <item>Menu: <ref id="mm" name="main menu">,
 <ref id="vm" name="view menu">
+<item>MetaObj, MetaComp: <ref id="metaobjobj" name="object and properties">
 <item>MinorRad: <ref id="top" name="torus attribute">
 <item>MinSamples, MaxSamples: <ref id="rio" name="RenderMan interface option">
 <item>MIResetDM, MIResetST: <ref id="prefmisc" name="preference setting">
@@ -4921,12 +5020,14 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <label id="indexn">N
 <itemize>
 <item>Name: <ref id="attrs" name="attribute">
+<item>Negative: <ref id="mcattr" name="MetaComp attribute">
 <item>New: <ref id="mmfile" name="main menu entry">
 <item>NewLoadsEnv: <ref id="prefgui" name="preference setting">
 <item>newScene: <ref id="scio" name="scripting interface command">
 <item>NCDisplayMode: <ref id="prefdraw" name="preference setting">,
 <ref id="ncattr" name="NURBCurve attribute">
-<item>NumClones: <ref id="cloneattr" name="Clone attributes">
+<item>NumClones: <ref id="cloneattr" name="Clone attribute">
+<item>NumSamples: <ref id="moattr" name="MetaObj attribute">
 <item>NURBCircle: <ref id="ncirct" name="NURBS circle tool">
 <item>NURBCurve: <ref id="mmcreate" name="main menu entry">,
 <ref id="ncurveobj" name="object">
@@ -4985,7 +5086,8 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Radius: <ref id="spattr" name="sphere attribute">,
 <ref id="dkp" name="disk attribute">,
 <ref id="cnp" name="cone attribute">,
-<ref id="cyp" name="cylinder attribute">
+<ref id="cyp" name="cylinder attribute">,
+<ref id="mcattr" name="MetaComp attribute">
 <item>RadSteps: <ref id="rio" name="RenderMan interface option">
 <item>ReadFrame, ReadCamera, ReadOptions, ReadLights, ReadMaterial,
 ReadPartial: <ref id="rribopt" name="RIB import option">
@@ -5111,6 +5213,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <ref id="pap" name="paraboloid attribute">,
 <ref id="hyp" name="hyperboloid attribute">,
 <ref id="rep" name="revolve attribute">
+<item>Threshold: <ref id="moattr" name="MetaObj attributes">
 <item>TmpDir: <ref id="prefgui" name="preference setting">
 <item>To: <ref id="camp" name="camera property">,
 <ref id="lip" name="light attribute">
