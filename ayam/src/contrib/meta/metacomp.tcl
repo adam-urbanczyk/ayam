@@ -23,7 +23,7 @@ getProp
 
 
 # create new UI
-addMenu $w MetaCompAttrData Formula {MetaBalls_1 MetaBalls_2 MetaBalls_3 Torus Test}
+addMenu $w MetaCompAttrData Formula {MetaBalls_1 MetaBalls_2 MetaBalls_3 Torus}
 addCheck $w MetaCompAttrData Negative
 
 if { $MetaCompAttrData(Formula) == 0 } {
