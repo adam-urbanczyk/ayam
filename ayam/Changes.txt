@@ -1,4 +1,4 @@
-[12. 07. 2003] CVS-Head:
+[21. 07. 2003] CVS-Head:
 o bug fixes:
   - fixed crash when exporting scenes with malformed RiAttribute/RiOption
     tags (type c or p, with a component missing) (SF 753550)
@@ -9,6 +9,8 @@ o bug fixes:
   - fixed manually resizing view windows not updating the "ViewAttrib"
     property (SF 766347)
   - fixed picking in shaded views making grids draw in black color (SF 770221)
+  - fixed forAll scripting interface command not tracking index (variable i)
+    correctly for recursive invocations (SF 774626)
 o added preference setting "Misc/SavePrefsGeom" to control saving of the
   geometry of the preference editor window
 o added two new renderers, Angel and Pixie, to the Select_Renderer feature
@@ -38,6 +40,9 @@ o added support for using Aqsis libri2rib as BMRT libribout replacement
 o added a new option "IsLocal" to the light objects, that controls whether
   all objects in the scene are lighted or just objects from the same level
   and below
+o added keyboard shortcut to reset the tree view (Ctrl+l)
+o moved material name and reference counter from "RiAttributes" property
+  to new property "MaterialAttr" for Material objects
 
 
 [10. 05. 2003] Ayam1.5.1:
