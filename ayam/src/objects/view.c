@@ -994,6 +994,7 @@ ay_view_notifycb(ay_object *o)
 	} /* if */
 
       Togl_MakeCurrent(view->togl);
+      ay_currentview = view;
 
       glEnable(GL_TEXTURE_2D);
 
@@ -1050,6 +1051,7 @@ ay_view_dropcb(ay_object *o)
 
   view = (ay_view_object *)o->refine;
   Togl_MakeCurrent(view->togl);
+  ay_currentview = view;
   width = Togl_Width(view->togl);
   height = Togl_Height(view->togl);
 

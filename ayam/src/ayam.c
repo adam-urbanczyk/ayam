@@ -21,6 +21,8 @@ Tcl_Interp *ay_interp;
 ay_object *ay_root;
 ay_object **ay_next;
 
+ay_view_object *ay_currentview;
+
 ay_list_object *ay_selection;
 
 ay_list_object *ay_currentlevel;
@@ -395,6 +397,7 @@ ay_init(Tcl_Interp *interp)
   ay_status = ay_clevel_add(NULL);
   ay_status = ay_clevel_add(ay_root);
 
+  ay_currentview = NULL;
   ay_selection = NULL;
   ay_clipboard = NULL;
 

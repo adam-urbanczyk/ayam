@@ -36,6 +36,8 @@ static unsigned int ay_script_id;
 
 #endif
 
+Tk_RestrictAction ay_script_restrictall(ClientData clientData,
+					XEvent *eventPtr);
 
 int
 ay_script_createcb(int argc, char *argv[], ay_object *o)
@@ -530,6 +532,8 @@ ay_script_notifycb(ay_object *o)
  ay_list_object *l = NULL, *old_sel = NULL;
  ay_script_object *sc = NULL;
  static int sema = 0;
+ int old_rdmode;
+ ClientData old_restrictcd;
 
   /* this semaphor protects ourselves from running in an endless
      recursive loop should the script modify our child objects */
@@ -642,7 +646,20 @@ ay_script_notifycb(ay_object *o)
 	    } /* while */
 
 	  /* evaluate (execute) script string */
+	  if(ay_currentview)
+	    {
+	      old_rdmode = ay_currentview->redraw;
+	      ay_currentview->redraw = AY_FALSE;
+	    }
+
+	  Tk_RestrictEvents(ay_script_restrictall, NULL, &old_restrictcd);
 	  result = Tcl_GlobalEval(ay_interp, sc->script);
+	  Tk_RestrictEvents(NULL, NULL, &old_restrictcd);
+
+	  if(ay_currentview)
+	    {
+	      ay_currentview->redraw = old_rdmode;
+	    }
 
 	  /* restore old selection */
 	  while(ay_selection)
@@ -664,6 +681,14 @@ ay_script_notifycb(ay_object *o)
 
  return AY_OK;
 } /* ay_script_notifycb */
+
+
+Tk_RestrictAction
+ay_script_restrictall(ClientData clientData,
+		      XEvent *eventPtr)
+{
+  return TK_DEFER_EVENT;
+} /* ay_script_restrictall */
 
 
 int

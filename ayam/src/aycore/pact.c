@@ -1750,6 +1750,9 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
 	} /* if */
     } /* for */
 
+  oldwinx = winx;
+  oldwiny = winy;
+
   if(redraw)
     {
       if(!ay_prefs.lazynotify)
@@ -1761,9 +1764,6 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
       if(argc > 5)
 	ay_status = ay_pact_flashpoint(AY_TRUE);
     } /* if */
-
-  oldwinx = winx;
-  oldwiny = winy;
 
  return TCL_OK;
 } /* ay_pact_petcb */

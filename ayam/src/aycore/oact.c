@@ -113,16 +113,13 @@ ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
     }
 
 
-  /* bail out, if we stay in the same grid */
+  /* bail out, if we stay in the same grid cell */
   if((oldwinx == winx) && (oldwiny == winy))
     return TCL_OK;
 
   /* calc dx, dy, dz */
   dx = -(oldwinx - winx) * view->conv_x;
   dy = (oldwiny - winy) * view->conv_y;
-
-  oldwinx = winx;
-  oldwiny = winy;
 
    if((view->type == AY_VTFRONT) || (view->type == AY_VTTRIM))
     {
@@ -221,6 +218,9 @@ ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
       sel = sel->next;
     } /* while */
 
+
+  oldwinx = winx;
+  oldwiny = winy;
 
 
   if((fabs(dx) > AY_EPSILON) ||
