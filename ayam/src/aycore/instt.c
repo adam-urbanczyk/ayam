@@ -375,7 +375,7 @@ ay_instt_wribiarchives(char *file, ay_object *o)
 		      RiBegin(iafilename);
 
 		      free(iafilename);
-		    }
+		    } /* if */
 
 		  RiAttributeBegin();
 		  /* write material information */
@@ -402,24 +402,26 @@ ay_instt_wribiarchives(char *file, ay_object *o)
 				  RiAttribute("identifier", parname,
 					      (RtPointer)&o->name, RI_NULL);
 
-				}
-			    }
+				} /* if */
+			    } /* if */
 			}
 		      else
 			{
 			  if(o->name)
 			    {
 			      RiArchiveRecord(RI_COMMENT, o->name);
-			    }
-			}
+			    } /* if */
+			} /* if */
 	
 		      ay_status = cb(file, o);
-		    }
-		  
-		  if(o->down)
+		    } /* if */
+
+		  l = NULL;
+
+		  if(o->down && o->down->next)
 		    {
 		      down = o->down;
-
+		      
 		      if(o->type == AY_IDLEVEL)
 			{
 			  l = (ay_level_object*)o->refine;
@@ -435,49 +437,111 @@ ay_instt_wribiarchives(char *file, ay_object *o)
 			      RiSolidBegin(RI_INTERSECTION);
 			      break;
 			    case AY_LTPRIM:
-			      RiSolidBegin(RI_PRIMITIVE);
+			      if(!ay_current_primlevel)
+				{
+				  RiSolidBegin(RI_PRIMITIVE);
+				}
+			      ay_current_primlevel++;
 			      break;
 			    default:
 			      break;
-			    }
-			}
+			    } /* switch */
+			} /* if */
 
 		      while(down->next)
 			{
+			  if(l && ((l->type == AY_LTUNION) ||
+				   (l->type == AY_LTDIFF) ||
+				   (l->type == AY_LTINT)))
+			    {
+			      if(!ay_current_primlevel)
+				{
+				  RiSolidBegin(RI_PRIMITIVE);
+				}
+			      ay_current_primlevel++;
+			    } /* if */
+
+
 			  ay_status = ay_wrib_object(file, down);
+
+			  if(l && ((l->type == AY_LTUNION) ||
+				   (l->type == AY_LTDIFF) ||
+				   (l->type == AY_LTINT)))
+			    {
+			      ay_current_primlevel--;
+			      if(!ay_current_primlevel)
+				{
+				  RiSolidEnd();
+				}
+			    } /* if */
+
 			  down = down->next;
-			}
-		    }
+			} /* while */
+		    } /* if */
 
 		  if(l)
 		    {
 		      if(l->type > 1)
 			{
-			  RiSolidEnd();
-			}
-		    }
+			  if(l->type == AY_LTPRIM)
+			    {
+			      ay_current_primlevel--;
+			      if(!ay_current_primlevel)
+				{
+				  RiSolidEnd();
+				}
+			    }
+			  else
+			    {
+			      RiSolidEnd();
+			    } /* if */
+			} /* if */
+		    } /* if */
 
 		  RiAttributeEnd();
 		  RiEnd();
 
 		  found = AY_TRUE;
-		}
+		} /* if */
 	      tag = tag->next;
-	    }
+	    } /* while */
 
 	  if(!found)
 	    return AY_ERROR; /* This should never happen! */
 
-	}
+	} /* if */
 
-      if(o->down)
-	ay_status = ay_instt_wribiarchives(file, o->down);
+      if(o->down && o->down->next)
+	{
+	  if(o->type == AY_IDLEVEL)
+	    {
+	      l = (ay_level_object*)o->refine;
+	      if(l->type != AY_LTLEVEL)
+		{
+		  ay_current_primlevel++;
+		}
+
+	    } /* if */
+
+	  ay_status = ay_instt_wribiarchives(file, o->down);
+
+	  if(o->type == AY_IDLEVEL)
+	    {
+	      l = (ay_level_object*)o->refine;
+	      if(l->type != AY_LTLEVEL)
+		{
+		  ay_current_primlevel--;
+		} /* if */
+
+	    } /* if */
+
+	} /* if */
 
       if(ay_status)
 	return ay_status;
 
       o = o->next;
-    }
+    } /* while */
 
  return ay_status;
 } /* ay_instt_wribiarchives */
