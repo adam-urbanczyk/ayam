@@ -1,4 +1,10 @@
-[15. Feb 2005] CVS-Head:
+[17. Mar 2005] CVS-Head:
+o bug fixes:
+o added a helper script "repairAyam.tcl" that resets the state of Ayam
+  should it be stuck in an endless recursion of Tcl errors
+
+
+[14. Mar 2005] Ayam1.8.1:
 o bug fixes:
   - fixed "setPnt/getPnt" scripting interface commands for NURBS patches
     with differing width and height (SF 1091407)
@@ -26,8 +32,10 @@ o added information dialog to the preferences that informs the user when
 o views may now be rotated and zoomed while the tesselation gui is active
 o added warning message for light objects with light shader but type != custom
 o added support for NPatch providing objects to tesselation GUI
-o improved delegation of transformations using the delegTrafo scripting
+o improved delegation of transformations using the "delegTrafo" scripting
   interface command
+o added support for bounding box speedups to the AyCSG plugin ("CalcBBS"
+  option now works)
 
 
 [29. Oct 2004] Ayam 1.8:
