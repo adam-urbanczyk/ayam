@@ -258,7 +258,24 @@ if { $tcl_platform(platform) == "windows" } {
 	    $ay(pca) yview scroll -1 pages 
 	}
     }
+    #bind
+
+    bind all <MouseWheel> {
+	if { [focus] != ".fl.con.console" &&\
+		[winfo toplevel [focus]] == "." } {
+	    global ay
+	    if { %D < 0.0 } {
+		$ay(pca) yview scroll 1 pages
+	    } else {
+		$ay(pca) yview scroll -1 pages 
+	    }
+	    break;
+	}
+	#if
+    }
+    #bind
 }
+#if
 
 pack $f.ca -in $f -side left -fill both -expand yes
 
