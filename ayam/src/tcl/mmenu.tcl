@@ -312,6 +312,9 @@ $m.nct add command -label "Explode Points" -command { explNC; rV; }
 $m add separator
 $m add cascade -menu $m.npt -label "NURBPatch"
 menu $m.npt -tearoff 0
+$m.npt add command -label "Swap UV" -command {
+    undo save SwapUV; swapUV; plb_update; rV}
+$m.npt add separator
 $m.npt add command -label "Split to Curves (u)" -command {
     splitNP u; uS; sL; rV}
 $m.npt add command -label "Split to Curves (v)" -command {
