@@ -223,22 +223,32 @@ ay_toglcb_display(struct Togl *togl)
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
 
   if(!view->redraw)
-    return;
+    {
+      return;
+    }
 
-  glClearColor((GLfloat)ay_prefs.bgr, (GLfloat)ay_prefs.bgg,
-	       (GLfloat)ay_prefs.bgb, (GLfloat)0.0);
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-  /* draw */
-  if(view->shade)
-    ay_shade_view(togl);
+  if(view->altdispcb)
+    {
+      (view->altdispcb)(togl);
+    }
   else
-    ay_draw_view(togl, AY_FALSE);
+    {
+      glClearColor((GLfloat)ay_prefs.bgr, (GLfloat)ay_prefs.bgg,
+		   (GLfloat)ay_prefs.bgb, (GLfloat)0.0);
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  /* XXXX is this really necessary? */ 
-  /*  glFlush();*/
+      /* draw */
+      if(view->shade)
+	ay_shade_view(togl);
+      else
+	ay_draw_view(togl, AY_FALSE);
+ 
 
-  Togl_SwapBuffers(togl);
+      /* XXXX is this really necessary? */ 
+      /*  glFlush();*/
+
+      Togl_SwapBuffers(togl);
+   }
 
 #ifdef AYENABLEPPREV
   /* redraw permanent preview window? */
