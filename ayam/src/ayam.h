@@ -1090,6 +1090,9 @@ extern unsigned int ay_current_primlevel;
 /* size of arrows */
 #define AY_POINTER 8
 
+/* avoid direct comparison of doubles with 0.0 */
+#define AY_EPSILON 1.0e-06
+
 /* Basic Vector Arithmetic */
 #define AY_VLEN(x, y, z) sqrt((x*x)+(y*y)+(z*z))
 
@@ -1132,8 +1135,14 @@ extern unsigned int ay_current_primlevel;
 /* Warning: v1 and v2 must be different locations in memory! */
 #define AY_APTRAN4(v1,v2,m) {v1[0]=v2[0]*m[0]+v2[1]*m[4]+v2[2]*m[8]+v2[3]*m[12];v1[1]=v2[0]*m[1]+v2[1]*m[5]+v2[2]*m[9]+v2[3]*m[13];v1[2]=v2[0]*m[2]+v2[1]*m[6]+v2[2]*m[10]+v2[3]*m[14];v1[3]=v2[0]*m[3]+v2[1]*m[7]+v2[2]*m[11]+v2[3]*m[15];}
 
-/* avoid direct comparison of doubles with 0.0 */
-#define AY_EPSILON 1.0e-06
+#define AY_COMP3DP(P1, P2) ((fabs(P1[0]-P2[0]) < AY_EPSILON) &&\
+                            (fabs(P1[1]-P2[1]) < AY_EPSILON) &&\
+                            (fabs(P1[2]-P2[2]) < AY_EPSILON))
+
+#define AY_COMP4DP(P1, P2) ((fabs(P1[0]-P2[0]) < AY_EPSILON) &&\
+                            (fabs(P1[1]-P2[1]) < AY_EPSILON) &&\
+                            (fabs(P1[2]-P2[2]) < AY_EPSILON) &&\
+                            (fabs(P1[3]-P2[3]) < AY_EPSILON))
 
 /* Version Strings */
 #define AY_VERSIONSTR "1.8pre"
