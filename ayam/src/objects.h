@@ -63,6 +63,9 @@ int ay_npatch_init(Tcl_Interp *interp);
 /* pamesh.c */
 int ay_pamesh_init(Tcl_Interp *interp);
 
+/* pomesh.c */
+int ay_pomesh_init(Tcl_Interp *interp);
+
 /* parab.c */
 int ay_parab_init(Tcl_Interp *interp);
 

@@ -237,6 +237,7 @@ AYAMOBJS = aycore/bbc.o\
 	objects/ncurve.o\
 	objects/npatch.o\
 	objects/pamesh.o\
+	objects/pomesh.o\
 	objects/parab.o\
 	objects/revolve.o\
 	objects/riinc.o\

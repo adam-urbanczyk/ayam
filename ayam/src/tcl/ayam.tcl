@@ -13,7 +13,6 @@
 
 # preference settings
 array set ayprefs {
- autosaveprefs 0
  showtt 1
  showtb 1
  showtr 1
@@ -892,6 +891,7 @@ ayam_loadscript material
 ayam_loadscript ncurve
 ayam_loadscript npatch
 ayam_loadscript pamesh
+ayam_loadscript pomesh
 ayam_loadscript parab
 ayam_loadscript riinc
 ayam_loadscript revolve
