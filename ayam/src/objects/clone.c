@@ -49,13 +49,19 @@ int
 ay_clone_deletecb(void *c)
 {
  ay_clone_object *clone = NULL;
+ ay_object *t = NULL;
 
   if(!c)
     return AY_ENULL;    
 
   clone = (ay_clone_object *)(c);
 
-  ay_object_deletemulti(clone->clones);
+  while(clone->clones)
+    {
+      t = clone->clones;
+      clone->clones = t->next;
+      free(t);
+    }
 
   free(clone);
 
@@ -557,7 +563,7 @@ ay_clone_notifycb(ay_object *o)
  char fname[] = "clone_notifycb";
  ay_clone_object *clone = NULL;
  ay_object *down = NULL, *newo = NULL, **next = NULL, trafo = {0};
- ay_object *tr = NULL;
+ ay_object *tr;
  int i = 0, tr_iscopy = AY_FALSE;
  double euler[3];
 
@@ -565,9 +571,13 @@ ay_clone_notifycb(ay_object *o)
     return AY_ENULL;    
 
   clone = (ay_clone_object *)(o->refine);
-  if(clone->clones)
-    ay_object_deletemulti(clone->clones);
-  clone->clones = NULL;
+  while(clone->clones)
+    {
+      tr = clone->clones;
+      clone->clones = tr->next;
+      free(tr);
+    }
+  tr = NULL;
 
   /* get (first) child object */
   down = o->down;
