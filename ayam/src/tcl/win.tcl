@@ -149,3 +149,30 @@ wm deiconify $w
 
 }
 # winIconWindow
+
+# winGetGeom:
+#  get geometry of window w ready to be fed into a call to wm geom
+#  to re-restablish this geometry; TwmCompat controls, whether the
+#  window manager (Unix/X11) adds the decoration to wm geom information
+#  forcing us to use winfo instead.
+proc winGetGeom { w } {
+    global tcl_platform ayprefs
+
+    if { ($tcl_platform(platform) != "windows") &&\
+	    ($ayprefs(TwmCompat) != 1) } {
+	set x [winfo rootx $w]
+	set y [winfo rooty $w]
+	set wi [winfo width $w]
+	set he [winfo height $w]
+
+	set ng ""
+	append ng "${wi}x${he}"
+	if { $x >= 0 } { append ng "+$x" } else { append ng "-$x" }
+	if { $y >= 0 } { append ng "+$y" } else { append ng "-$y" }
+	return $ng
+    } else {
+	return [wm geom $w]
+    }
+
+}
+# winGetGeom

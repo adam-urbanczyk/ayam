@@ -14,7 +14,7 @@
 # prefs_set:
 #  transfer preference settings to C-context
 proc prefs_set {} {
-    global ayprefs tcl_precision
+    global ay ayprefs tcl_precision
     set tcl_precision $ayprefs(TclPrecision)
     setPrefs
  return;
@@ -57,15 +57,16 @@ proc prefs_open {} {
     wm iconname $w "Prefs"
     wm withdraw $w
 
-    # center window
+    # center window (if no saved )
     update idletasks
+    if { ($ayprefs(SavePrefsGeom) == 0) || ($ay(prefsgeom) == "") } {
+	set x [expr [winfo screenwidth $w]/2 - [winfo reqwidth $w]/2 \
+		- [winfo vrootx [winfo parent $w]]]
+	set y [expr [winfo screenheight $w]/2 - [winfo reqheight $w]/2 \
+		- [winfo vrooty [winfo parent $w]]]
 
-    set x [expr [winfo screenwidth $w]/2 - [winfo reqwidth $w]/2 \
-            - [winfo vrootx [winfo parent $w]]]
-    set y [expr [winfo screenheight $w]/2 - [winfo reqheight $w]/2 \
-            - [winfo vrooty [winfo parent $w]]]
-
-    winMoveOrResize $w "+${x}+${y}"
+	winMoveOrResize $w "+${x}+${y}"
+    }
 
     # bind to close button of window decoration
     wm protocol $w WM_DELETE_WINDOW {
@@ -114,8 +115,8 @@ proc prefs_open {} {
     # Modeling
     set fw [$nb insert end Modeling -text Modeling\
 	    -raisecmd "prefs_rsnb $nb Modeling"]
-    addParamB $fw ayprefse PickEpsilon [ms ayprefse_PickEpsilon]
-    addParamB $fw ayprefse HandleSize [ms ayprefse_HandleSize]
+    addParamB $fw ayprefse PickEpsilon [ms ayprefse_PickEpsilon] {0.0 0.1 0.2}
+    addParamB $fw ayprefse HandleSize [ms ayprefse_HandleSize] { 4 5 6 8 }
     addCheckB $fw ayprefse LazyNotify [ms ayprefse_LazyNotify]
     addCheckB $fw ayprefse EditSnaps [ms ayprefse_EditSnaps]
     addParamB $fw ayprefse UndoLevels [ms ayprefse_UndoLevels] { -1 2 5 10 20 }
@@ -191,6 +192,8 @@ proc prefs_open {} {
     addCheckB $fw ayprefse HideTmpTags [ms ayprefse_HideTmpTags]
     addParamB $fw ayprefse TclPrecision [ms ayprefse_TclPrecision]\
 	    { 4 5 6 12 17 }
+    addMenuB $fw ayprefse SavePrefsGeom [ms ayprefse_SavePrefsGeom]\
+	    {Never WhileRunning Always}
     addText $fw e3 "Tesselation:"
     addMenuB $fw ayprefse SMethod [ms ayprefse_SMethod]\
 	    $ay(smethods)
@@ -289,8 +292,16 @@ proc prefs_open {} {
     # bind function keys
     shortcut_fkeys $w
 
+    if { $ay(prefsgeom) != "" } {
+	winMoveOrResize $w $ay(prefsgeom)
+    }
+    if { $ayprefs(SavePrefsGeom) > 0 } {
+	bind $w <Configure> "\
+	 if { \"%W\" == \"$w\" } { set ay(prefsgeom) \[winGetGeom $w\] } "
+    }
     focus $f.bok
     tkwait window $w
+
 
  return;
 }
@@ -323,40 +334,18 @@ proc prefs_save { } {
     global ayprefs aymainshortcuts ayviewshortcuts riattr riopt
 
     # get main geometry
-    global tcl_platform
-    if { ($tcl_platform(platform) != "windows") &&\
-	    ($ayprefs(TwmCompat) != 1) } {
-	set x [winfo rootx .]
-	set y [winfo rooty .]
-	set w [winfo width .]
-	set h [winfo height .]
+    set ayprefs(mainGeom) [winGetGeom .]
+    set ayprefs(toolBoxGeom) [winGetGeom .tbw]
 
-	set ng ""
-	append ng "${w}x${h}"
-	if { $x >= 0 } { append ng "+$x" } else { append ng "-$x" }
-	if { $y >= 0 } { append ng "+$y" } else { append ng "-$y" }
-	set ayprefs(mainGeom) $ng
-    } else {
-	set ayprefs(mainGeom) [wm geom .]
-    }
-
-    # get toolbox geometry
-    if { [winfo exists .tbw] } {
-	if { ($tcl_platform(platform) != "windows") &&\
-		($ayprefs(TwmCompat) != 1) } {
-	    set x [winfo rootx .tbw]
-	    set y [winfo rooty .tbw]
-	    set w [winfo width .tbw]
-	    set h [winfo height .tbw]
-
-	    set ng ""
-	    append ng "${w}x${h}"
-	    if { $x >= 0 } { append ng "+$x" } else { append ng "-$x" }
-	    if { $y >= 0 } { append ng "+$y" } else { append ng "-$y" }
-	    set ayprefs(toolBoxGeom) $ng
-	} else {
-	    set ayprefs(toolBoxGeom) [wm geom .tbw]
+    if { $ayprefs(SavePrefsGeom) > 1 } {
+	puts hier
+	if { $ay(prefsgeom) != "" } {
+	    set ayprefs(PrefsGeom) $ay(prefsgeom)
 	}
+	set ayprefs(PrefsSection) $ay(prefssection)
+    } else {
+	set ayprefs(PrefsGeom) ""
+	set ayprefs(PrefsSection) "Main"
     }
 
     # write header

@@ -124,6 +124,9 @@ array set ayprefs {
 
  SMethod 3
  SParam 10
+ SavePrefsGeom 1
+ PrefsGeom ""
+ PrefsSection "Main"
 
  Scripts ""
  Docs "http://ayam.sourceforge.net/docs/"
@@ -404,6 +407,7 @@ array set ay {
  undoo none
  redoo none
  smethods { PathLength ParametricError DomainDistance }
+ prefsgeom ""
 }
 # array ay
 
@@ -1025,6 +1029,12 @@ if { $ay(failsafe) == 0 } {
 
 # make (new) preference settings known to C-context
 prefs_set
+
+# apply preferences
+if { $ayprefs(SavePrefsGeom) > 1 } {
+    set ay(prefsgeom) $ayprefs(PrefsGeom)
+    set ay(prefssection) $ayprefs(PrefsSection)
+}
 
 # update_prompt - print a first prompt after configuration change
 proc update_prompt {n1 n2 op} {
