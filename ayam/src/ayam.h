@@ -331,7 +331,9 @@ typedef struct ay_pamesh_object_s {
 		  AY_BTCUSTOM */
   int btype_v; /* AY_BTBEZIER, AY_BTBSPLINE, AY_BTCATMULLROM, AY_BTHERMITE,
 		  AY_BTCUSTOM */
+  int ustep;
   double *ubasis; /* [16], only in use for btype_u == AY_BTCUSTOM */
+  int vstep;
   double *vbasis; /* [16], only in use for btype_v == AY_BTCUSTOM */
   double glu_sampling_tolerance;
   int glu_display_mode;
