@@ -2979,9 +2979,9 @@ ay_nct_concatmultiple(int closed, int knot_type, ay_object *curves,
 /* ay_nct_fillgap:
  *  create a fillet curve between the last point of curve c1
  *  and the first point of curve c2; the fillet will be a simple
- *  4 point Bezier curve with tangents matching the tangents of
- *  endpoints of the curves c1/c2, tangent length will be scaled
- *  by <tanlen>
+ *  <order> point Bezier curve with tangents matching the tangents
+ *  of endpoints of the curves c1/c2, tangent length will be scaled
+ *  additionally by <tanlen>
  */
 int
 ay_nct_fillgap(int order, double tanlen,
@@ -3050,11 +3050,27 @@ ay_nct_fillgap(int order, double tanlen,
   if(!(controlv = calloc(numcontrol*4, sizeof(double))))
     return AY_EOMEM;
 
-  /* XXXX what happens for order==3? the right thing? */
   memcpy(&(controlv[0]), p1, 4*sizeof(double));
-  memcpy(&(controlv[4]), p3, 4*sizeof(double));
-  memcpy(&(controlv[(numcontrol-2)*4]), p4, 4*sizeof(double));
+
+  if(numcontrol > 2)
+    {
+      memcpy(&(controlv[(numcontrol-2)*4]), p4, 4*sizeof(double));
+    }
+
   memcpy(&(controlv[(numcontrol-1)*4]), p2, 4*sizeof(double));
+
+  if(numcontrol > 3)
+    {
+      memcpy(&(controlv[4]), p3, 4*sizeof(double));
+    }
+
+  if(numcontrol == 3)
+    {
+      AY_V3SUB(p4, p4, p3)
+      AY_V3SCAL(p4, 0.5)
+      AY_V3ADD(p1, p3, p4)
+      memcpy(&(controlv[4]), p1, 4*sizeof(double));
+    }
 
   if(numcontrol > 4)
     {
