@@ -224,6 +224,7 @@ ay_cone_shadecb(struct Togl *togl, ay_object *o)
 	{
 	  if(!(qobj = gluNewQuadric()))
 	    return AY_EOMEM;
+	  gluQuadricOrientation(qobj, GLU_INSIDE);
 	  gluDisk(qobj, 0.0, radius, 8, 1);
 	  gluDeleteQuadric(qobj);
 	}
@@ -256,14 +257,16 @@ ay_cone_shadecb(struct Togl *togl, ay_object *o)
     {
       glPushMatrix();
 
-       glNormal3d(0.0, -1.0, 0.0);
+       glNormal3d(0.0, 1.0, 0.0);
        glBegin(GL_TRIANGLES);
         glVertex3d(0.0,    0.0, 0.0);
-	glVertex3d(radius, 0.0, 0.0);
 	glVertex3d(0.0,    0.0, height);
+	glVertex3d(radius, 0.0, 0.0);
        glEnd();
 
+       glNormal3d(0.0, -1.0, 0.0);
        glRotated(thetamax, 0.0, 0.0, 1.0);
+
        glBegin(GL_TRIANGLES);
         glVertex3d(0.0,    0.0, 0.0);
 	glVertex3d(radius, 0.0, 0.0);
@@ -278,6 +281,7 @@ ay_cone_shadecb(struct Togl *togl, ay_object *o)
        qobj = NULL;
        if(!(qobj = gluNewQuadric()))
 	 return AY_EOMEM;
+       gluQuadricOrientation(qobj, GLU_INSIDE);
 
        glRotated(thetamax-90.0, 0.0, 0.0, 1.0);
        gluPartialDisk(qobj, 0.0, radius, 8, 1, 0.0, thetamax);
