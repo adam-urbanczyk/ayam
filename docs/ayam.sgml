@@ -1216,6 +1216,12 @@ in use for the single point modeling actions.
 grid coordinates (in single point editing actions, when grids are active)
 should be influenced in all three dimensions, or just the two dimensions
 determined by the type of the view
+<item><tt/"FlashPoints"/ controls flashing of editable points in
+the single point modeling actions when they would be modified by
+a click and drag action.
+Note that a change of this preference option takes effect after the
+current modeling action has been switched off and the single point
+editing has been activated (again).
 <item><tt/"DefaultAction"/ determines the modelling action
 that should be active after a press of the <tt/&lt;Esc&gt;/ key.
 <item><tt/"UndoLevels"/ determines the number of modeling steps
@@ -6780,7 +6786,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 
 <sect>Index
 <p>
-<ref id="indexa" name="A ">
+<ref id="indexa" name=" A ">
 <ref id="indexb" name=" B ">
 <ref id="indexc" name=" C ">
 <ref id="indexd" name=" D ">
@@ -6805,7 +6811,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <ref id="indexw" name=" W ">
 <ref id="indexx" name=" X ">
 <ref id="indexy" name=" Y ">
-<ref id="indexz" name=" Z">
+<ref id="indexz" name=" Z ">
 <p>
 
 <label id="indexa">A
@@ -6976,6 +6982,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>FilterFunc: <ref id="rio" name="RenderMan interface option">
 <item>FilterWidth: <ref id="rio" name="RenderMan interface option">
 <item>FindU: <ref id="miscac" name="modeling action">
+<item>FlashPoints: <ref id="prefmodel" name="preference setting">
 <item>Flatness: <ref id="moattr" name="MetaObj attributes">
 <item>FontName: <ref id="textattr" name="Text attribute">
 <item>forAll, forAllT: <ref id="scifall" name="scripting interface command">
