@@ -1,4 +1,4 @@
-[22. 08. 2003] CVS-Head:
+[26. 08. 2003] CVS-Head:
 o bug fixes:
   - fixed crash when exporting scenes with malformed RiAttribute/RiOption
     tags (type c or p, with a component missing) (SF 753550)
@@ -14,6 +14,12 @@ o bug fixes:
   - fixed memory leak for RIB export of RiHider and RiDisplay tags with
     additional arguments (SF 787525)
   - fixed memory leak for RIB export of RiAttribute/RiOption tags (SF 788535)
+  - fixed broken "maintain selection" option of "uS" scripting interface
+    command (SF 794052)
+  - fixed conversion of cap objects ignoring the transformation attributes
+    of the cap object (SF 795293)
+  - fixed crash when clipboard operations were used directly after view
+    close (when the corresponding view object was selected) (SF 797213)
 o added preference setting "Misc/SavePrefsGeom" to control saving of the
   geometry of the preference editor window
 o added two new renderers, Angel and Pixie, to the Select_Renderer feature
@@ -75,6 +81,10 @@ o added new RiOption "StdDisplay" that may be used to inhibit writing of the
   standard Display option to exported RIB files
 o added new option to convert mechanism that replaces the original objects
   with the new converted object
+o the default conversion option for objects of type "Instance" now creates
+  new objects (and does not replace the instance with a normal object)
+o conversion of Revolve, Extrude, Sweep, and Skin objects now always
+  creates a Level object, if the original object has caps or bevels
 o the "remove tags"-menu in the tags property now also displays tag type
   names (and not just tag numbers)
 
