@@ -113,6 +113,7 @@ array set ayprefs {
  HideTmpTags 0
  Kill "kill"
  Cat "cat"
+ Wait "waitPid"
  MaxTagLen 30
 
  Locale "en"
@@ -415,6 +416,7 @@ if { $tcl_platform(platform) == "windows" } {
     }
 
     set ayprefs(Kill) "w32kill"
+    set ayprefs(Wait) ""
 
     set ayprefs(QRenderUI) 0
     set ayprefs(RenderUI) 0

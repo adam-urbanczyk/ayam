@@ -628,3 +628,43 @@ ay_tcmd_getglerrortcmd(ClientData clientData, Tcl_Interp *interp,
 
  return TCL_OK;
 } /* ay_tcmd_getglerrortcmd */
+
+
+#ifdef AYENABLEWAIT
+#include <sys/types.h>
+#include <sys/wait.h>
+/* ay_tcmd_waitpidtcmd:
+ *  this command waits for a spawned process in order to avoid zombies
+ *  (code taken from tclUnixPipe.c/Tcl_WaitPid())
+ */
+int
+ay_tcmd_waitpidtcmd(ClientData clientData, Tcl_Interp *interp,
+		    int argc, char *argv[])
+{
+ char fname[] = "waitPid";
+ int pid;
+ pid_t real_pid;
+ int result;
+
+  if(argc <= 1)
+    {
+      ay_error(AY_EARGS, fname, "pid");
+      return TCL_OK;
+    }
+
+  Tcl_GetInt(interp, argv[1], &pid);
+
+  real_pid = (pid_t) pid;
+  while(1)
+    {
+      result = (int) waitpid(real_pid, NULL, WUNTRACED);
+      if((result != -1) || (errno != EINTR))
+	{
+	  return TCL_OK;
+	}
+    } /* while */
+  
+ return TCL_OK;
+} /* ay_tcmd_waitpidtcmd */
+
+#endif /* AYENABLEWAIT */

@@ -56,12 +56,13 @@ LD = CC
 #   (unlikely, but tempnam() is not ANSI)
 #   Note, that the preference setting TmpDir will always be ignored then!
 # o add -DAYENABLEPPREV to enable the permanent preview feature
+# o add -DAYENABLEWAIT to enable the waitPid command (Unix/Linux only)
 
 CFLAGS = -O -DAYUSESLCARGS -DAYUSEBMRTRIBOUT
 # IRIX (-DAYIRIXBUG is needed by ncurve.c to work around a bug in libGLU)::
 #CFLAGS = -O -fullwarn -DAYIRIXBUG -DAYUSESLCARGS -DAYUSEBMRTRIBOUT
 # Linux:
-#CFLAGS = -g -Wall -DAYUSESLCARGS -DAYUSEBMRTRIBOUT
+#CFLAGS = -g -Wall -DAYUSESLCARGS -DAYUSEBMRTRIBOUT -DAYENABLEWAIT
 # Solaris (-DSOLARIS_BUG is needed by togl.c to work around a bug in libXmu):
 #CFLAGS = -O -DSOLARIS_BUG -DAYUSESLCARGS -DAYUSEBMRTRIBOUT
 
@@ -388,6 +389,7 @@ install:
 	-$(INSTALL) contrib/meta/metacomp.tcl $(LIBDIR)
 	-$(INSTALL) plugins/mfio.so $(LIBDIR)
 	-$(INSTALL) plugins/mfio.tcl $(LIBDIR)
+	-$(INSTALL) plugins/loadmfio.tcl $(LIBDIR)
 	-$(INSTALL) plugins/idr.so $(LIBDIR)
 	-$(INSTALL) plugins/idr.tcl $(LIBDIR)
 	-$(INSTALL) plugins/loadidr.tcl $(LIBDIR)
@@ -422,7 +424,7 @@ uninstall:
 	-rm -rf $(LIBDIR)/tcl $(LIBDIR)/ayam-splash.gif
 	-rm -rf $(LIBDIR)/metaobj.so
 	-rm -rf $(LIBDIR)/metaobj.tcl $(LIBDIR)/metacomp.tcl
-	-rm -rf $(LIBDIR)/mfio.so $(LIBDIR)/mfio.tcl
+	-rm -rf $(LIBDIR)/mfio.so $(LIBDIR)/mfio.tcl $(LIBDIR)/loadmfio.tcl
 	-rm -rf $(LIBDIR)/idr.so $(LIBDIR)/idr.tcl
 	-rm -rf $(LIBDIR)/rrib.so $(LIBDIR)/rrib.tcl
 	-rm -rf $(LIBDIR)/loadrrib.tcl $(LIBDIR)/loadidr.tcl
