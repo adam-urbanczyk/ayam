@@ -37,7 +37,7 @@ proc prefs_rsnb { nb page } {
 # prefs_open:
 #  open the preferences editor
 proc prefs_open {} {
-    global ay ayprefs ayprefse tcl_platform
+    global ay ayprefs ayprefse tcl_platform aymainshortcuts
 
     # copy array ayprefs to ayprefse (we operate on this second array)
     set avnames [array names ayprefs]
@@ -54,7 +54,7 @@ proc prefs_open {} {
     #}
     toplevel $w -width $width -height 400
     wm title $w "Ayam Preferences"
-    wm iconname $w "Ayam"
+    wm iconname $w "Prefs"
     wm withdraw $w
 
     # center window
@@ -272,6 +272,17 @@ proc prefs_open {} {
     $nb see $ay(prefssection)
     # resize notebook so that section is visible
     prefs_rsnb $nb $ay(prefssection)
+
+    # establish "Help"-binding
+    set m $ay(helpmenu)
+    bind $w <[repcont $aymainshortcuts(Help)]> "$m invoke 0"
+
+    # establish "Zap"-binding
+    bind $w <[repcont $aymainshortcuts(Zap)]> zap
+    bind $w <Map> unzap
+
+    # bind function keys
+    shortcut_fkeys $w
 
     focus $f.bok
     tkwait window $w
