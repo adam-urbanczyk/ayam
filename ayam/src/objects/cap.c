@@ -117,7 +117,7 @@ ay_cap_shadecb(struct Togl *togl, ay_object *o)
     return AY_ENULL;
 
   if(cap->npatch)
-    ay_shade_object(togl, cap->npatch);
+    ay_shade_object(togl, cap->npatch, AY_FALSE);
 
  return AY_OK;
 } /* ay_cap_shadecb */

@@ -418,7 +418,7 @@ int ay_selp_applytrafotcmd(ClientData clientData, Tcl_Interp *interp,
 			   int argc, char *argv[]);
 
 /* shade.c */
-int ay_shade_object(struct Togl *togl, ay_object *o);
+int ay_shade_object(struct Togl *togl, ay_object *o, int push_name);
 
 int ay_shade_view(struct Togl *togl);
 

@@ -181,7 +181,7 @@ ay_instance_shadecb(struct Togl *togl, ay_object *o)
        down = t->down;
        while(down)
 	 {
-	   ay_status = ay_shade_object(togl, down);
+	   ay_status = ay_shade_object(togl, down, AY_FALSE);
 	   down = down->next;
 	 } /* while */
      }

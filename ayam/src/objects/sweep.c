@@ -138,13 +138,13 @@ ay_sweep_shadecb(struct Togl *togl, ay_object *o)
     return AY_ENULL;
 
   if(sweep->npatch)
-    ay_shade_object(togl, sweep->npatch);
+    ay_shade_object(togl, sweep->npatch, AY_FALSE);
 
   if(sweep->start_cap)
-    ay_shade_object(togl, sweep->start_cap);
+    ay_shade_object(togl, sweep->start_cap, AY_FALSE);
 
   if(sweep->end_cap)
-    ay_shade_object(togl, sweep->end_cap);
+    ay_shade_object(togl, sweep->end_cap, AY_FALSE);
 
  return AY_OK;
 } /* ay_sweep_shadecb */

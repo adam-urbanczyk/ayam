@@ -135,13 +135,13 @@ ay_skin_shadecb(struct Togl *togl, ay_object *o)
     return AY_ENULL;
 
   if(skin->npatch)
-    ay_shade_object(togl, skin->npatch);
+    ay_shade_object(togl, skin->npatch, AY_FALSE);
 
   if(skin->start_cap)
-    ay_shade_object(togl, skin->start_cap);
+    ay_shade_object(togl, skin->start_cap, AY_FALSE);
 
   if(skin->end_cap)
-    ay_shade_object(togl, skin->end_cap);
+    ay_shade_object(togl, skin->end_cap, AY_FALSE);
 
  return AY_OK;
 } /* ay_skin_shadecb */
