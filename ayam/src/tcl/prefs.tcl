@@ -31,6 +31,7 @@ return;
 }
 # prefs_rsnb
 
+
 # prefs_open:
 #  
 proc prefs_open {} {
@@ -44,10 +45,22 @@ proc prefs_open {} {
 
     set w .prefsw
     catch {destroy $w}
-    toplevel $w
+    toplevel $w -width 350 -height 400
     wm title $w "Ayam Preferences"
     wm iconname $w "Ayam"
+    wm iconify $w
 
+    # center window
+    update idletasks
+
+    set x [expr [winfo screenwidth $w]/2 - [winfo reqwidth $w]/2 \
+            - [winfo vrootx [winfo parent $w]]]
+    set y [expr [winfo screenheight $w]/2 - [winfo reqheight $w]/2 \
+            - [winfo vrooty [winfo parent $w]]]
+
+    winMoveOrResize $w "+${x}+${y}"
+
+    # bind to close button of window decoration
     wm protocol $w WM_DELETE_WINDOW {
 	global ay ayprefs ayprefse
 	set avnames [array names ayprefs]
@@ -58,10 +71,6 @@ proc prefs_open {} {
 	focus .
 	destroy .prefsw
     }
-
-    # section select
-#    set f [frame $w.f1 -bd 1]
-
 
     # Tabbed-Notebook
     set f [frame $w.f2 -relief sunken -bd 2]
@@ -155,12 +164,6 @@ proc prefs_open {} {
     addCheck $fw ayprefse ToolBoxTrans
     # select last selected preference section
     pack $nb -fill both -expand yes
-    $nb raise $ay(prefssection)
-#    update
-    $nb see $ay(prefssection)
-
-    # resize notebook so that section is visible
-    prefs_rsnb $nb $ay(prefssection)
 
     # controlling buttons
     set f [frame $w.f3]
@@ -212,9 +215,15 @@ proc prefs_open {} {
     pack $f.bok $f.bap $f.bdef $f.bca -in $f -side left -fill x -expand yes
     pack $f -in $w -side bottom -fill x -expand no
 
-    # center window
+    # show the window
+    wm deiconify $w
     update
-    winCenter $w
+    # show last selected section
+    $nb raise $ay(prefssection)
+    update
+    $nb see $ay(prefssection)
+    # resize notebook so that section is visible
+    prefs_rsnb $nb $ay(prefssection)
 
     focus $f.bok
     tkwait window $w
