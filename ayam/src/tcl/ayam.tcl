@@ -107,7 +107,7 @@ array set ayprefs {
  Cat "cat"
 
  Scripts ""
- Docs "http://www.ayam3d.org/docs/"
+ Docs "http://ayam.sourceforge.net/docs/"
     DailyTips {
 {Always click on drawn pixels, when picking vertices.}
 {There is a console-menu on the right mouse button.}        
