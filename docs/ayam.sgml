@@ -1343,6 +1343,12 @@ Note that you may loose information in doing so. The default value used
 by Tcl is 12 and results in no loss of information. The default value
 used by Ayam is 6 and should result in a good balance between precision
 and readability.
+<item><tt/"SavePrefsGeom"/ controls when the geometry of the preferences
+editor should be remembered by Ayam, <tt/"Never"/: the window is always
+opened in standard size, centered on the screen; <tt/"WhileRunning"/:
+the window size and position will be remembered as long as Ayam is
+running; <tt/"Always"/: the window size and position will be remembered
+in the saved preferences, thus, also surviving a restart of Ayam.
 <item><tt/"SMethod"/; is the sampling method used by the NURBS to PolyMesh
 (tesselation) facility (based on GLU V1.3+). Three methods are available:
 <tt/"DomainDistance"/ (the default) simply tesselates the NURBS into equally
@@ -6123,6 +6129,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Save as: <ref id="mmfile" name="main menu entry">
 <item>Save Prefs: <ref id="mmfile" name="main menu entry">
 <item>SaveAddsMRU: <ref id="prefmisc" name="preference setting">
+<item>SavePrefsGeom: <ref id="prefmisc" name="preference setting">
 <item>saveScene: <ref id="scio" name="scripting interface command">
 <item>Scale: <ref id="trap" name="transformation property">,
 <ref id="scalac" name="scale object">
