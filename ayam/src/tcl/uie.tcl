@@ -33,11 +33,22 @@ return;
 }
 # updateParam
 
+#
+#
+#
+proc addParamB { w prop name help {def {}} } {
+
+    addParam $w $prop $name $def
+
+    balloon_set $w.f${name}.l "${name}:\n${help}"
+
+}
+# addParamB
 
 #
 #
 #
-proc addParam { w prop name {def {}}} {
+proc addParam { w prop name {def {}} } {
 global $prop ayprefs
 
 set bw 1
@@ -84,6 +95,17 @@ return;
 }
 # addParam
 
+#
+#
+#
+proc addMatrixB { w prop name help } {
+
+    addMatrix $w $prop $name
+
+    balloon_set $w.f${name}.l "${name}:\n${help}"
+
+}
+# addMatrixB
 
 #
 #
@@ -189,11 +211,22 @@ return;
 }
 # proc updateColorFromE
 
+#
+#
+#
+proc addColorB { w prop name help {def {}}} {
+
+    addColor $w $prop $name $def
+
+    balloon_set $w.fl${name}.l "${name}:\n${help}"
+
+}
+# addColorB
 
 #
 #
 #
-proc addColor { w prop name  {def {}}} {
+proc addColor { w prop name {def {}}} {
     global $prop ayprefs
 
     set bw 1
@@ -277,6 +310,17 @@ proc addColor { w prop name  {def {}}} {
 }
 # addColor
 
+#
+#
+#
+proc addCheckB { w prop name help } {
+
+    addCheck $w $prop $name
+
+    balloon_set $w.f${name}.l "${name}:\n${help}"
+
+}
+# addCheckB
 
 #
 #
@@ -335,6 +379,18 @@ proc updateMenu { m name1 name2 op } {
 #
 #
 #
+proc addMenuB { w prop name help elist } {
+
+    addMenu $w $prop $name $elist
+
+    balloon_set $w.f${name}.l "${name}:\n${help}"
+
+}
+# addMenuB
+
+#
+#
+#
 proc addMenu { w prop name elist } {
     global $prop ayprefs tcl_platform
 
@@ -378,6 +434,17 @@ return;
 }
 # addMenu
 
+#
+#
+#
+proc addStringB { w prop name help {def {}} } {
+
+    addString $w $prop $name $def
+
+    balloon_set $w.f${name}.l "${name}:\n${help}"
+
+}
+# addStringB
 
 #
 #
@@ -422,6 +489,17 @@ return;
 }
 # addString
 
+#
+#
+#
+proc addFileB { w prop name help {def {}} } {
+
+    addFile $w $prop $name $def
+
+    balloon_set $w.f${name}.l "${name}:\n${help}"
+
+}
+# addFileB
 
 #
 #
@@ -485,6 +563,17 @@ return;
 }
 # addFile
 
+#
+#
+#
+proc addMDirB { w prop name help } {
+
+    addMDir $w $prop $name
+
+    balloon_set $w.f${name}.l "${name}:\n${help}"
+
+}
+# addMDirB
 
 #
 #
@@ -532,6 +621,17 @@ return;
 }
 # addMDir
 
+#
+#
+#
+proc addMFileB { w prop name help } {
+
+    addMFile $w $prop $name
+
+    balloon_set $w.f${name}.l "${name}:\n${help}"
+
+}
+# addMFileB
 
 #
 #
@@ -580,6 +680,17 @@ proc addMFile { w prop name } {
 }
 # addMFile
 
+#
+#
+#
+proc addCommandB { w name text command help } {
+
+    addCommand $w $name $text $command
+
+    balloon_set $w.f${name}.b "${text}:\n${help}"
+
+}
+# addCommandB
 
 #
 #
@@ -617,6 +728,17 @@ proc addText { w name text} {
 }
 # addText
 
+#
+#
+#
+proc addInfoB { w prop name help } {
+
+    addInfo $w $prop $name
+
+    balloon_set $w.f${name}.l "${name}:\n${help}"
+
+}
+# addInfoB
 
 #
 #

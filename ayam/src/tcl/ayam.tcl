@@ -113,6 +113,8 @@ array set ayprefs {
  Cat "cat"
  MaxTagLen 30
 
+ Locale "en"
+
  Scripts ""
  Docs "http://ayam.sourceforge.net/docs/"
     DailyTips {
@@ -356,6 +358,7 @@ array set ay {
  tblayoutsema 0
  LastSelection ""
  slcext ""
+ locales { en de }
 }
 
 set ay_error 0
@@ -866,6 +869,7 @@ if { $tcl_platform(platform) == "windows" } {
 ayam_loadscript run
 ayam_loadscript uie
 ayam_loadscript shortcut
+ayam_loadscript ms
 ayam_loadscript box
 ayam_loadscript bpatch
 ayam_loadscript camera
