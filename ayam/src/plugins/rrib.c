@@ -167,17 +167,27 @@ RtVoid ay_rrib_RiSphere(RtFloat radius, RtFloat zmin, RtFloat zmax,
 			RtInt n, RtToken tokens[], RtPointer parms[]);
 
 void ay_rrib_pushattribs(void);
+
 void ay_rrib_popattribs(void);
+
 void ay_rrib_pushtrafos(void);
+
 void ay_rrib_poptrafos(void);
+
 void ay_rrib_readshader(char *sname, int stype,
 			RtInt n, RtToken tokens[], RtPointer parms[],
 			ay_shader **result);
+
 void ay_rrib_readtag(char *tagtype, char *tagname, char *name,
 		     int i, RtToken tokens[], RtPointer parms[],
 		     ay_tag_object **destination);
+
 void ay_rrib_initgeneral(void);
+
+void ay_rrib_initoptions(void);
+
 int ay_rrib_initgprims(void);
+
 int ay_rrib_cleargprims(void);
 
 void ay_rrib_linkobject(void *object, int type);
@@ -725,19 +735,29 @@ ay_rrib_RiAreaLightSource(RtToken name,
 } /* ay_rrib_RiAreaLightSource */
 
 
-RtVoid ay_rrib_RiAtmosphereV( RtToken name, 
-                      RtInt n, RtToken tokens[], RtPointer parms[] )
+RtVoid ay_rrib_RiAtmosphere(RtToken name, 
+			    RtInt n, RtToken tokens[], RtPointer parms[])
 {
-   (void)name; (void)n; (void)tokens; (void)parms;
+ int ay_status = AY_OK;
+ ay_root_object *root = NULL;
 
-}
+  root = (ay_root_object *)ay_root->refine;
+
+  if(root->atmosphere)
+    ay_status = ay_shader_free(root->atmosphere);
+  root->atmosphere = NULL;
+
+  ay_rrib_readshader(name, AY_STATMOSPHERE, n, tokens, parms,
+		     &(root->atmosphere));
+
+ return;
+} /* ay_rrib_RiAtmosphere */
 
 
 RtVoid ay_rrib_RiAttribute(RtToken name,
 			   RtInt n, RtToken tokens[], RtPointer parms[])
 {
  int i, itemp, attribute_handled = AY_FALSE;
- double dtemp;
  char *stemp = NULL;
  char fname[] = "ay_rrib_RiAttribute";
 
@@ -747,17 +767,16 @@ RtVoid ay_rrib_RiAttribute(RtToken name,
 	{
 	  if(!strcmp(tokens[0], "name"))
 	    {
-	      if(!(stemp = calloc(strlen((char *)(parms[0]))+1, sizeof(char))))
+	      stemp = *((char **)(parms[i]));
+	      if(ay_rrib_cattributes->identifier_name)
+		free(ay_rrib_cattributes->identifier_name);
+	      if(!(ay_rrib_cattributes->identifier_name =
+		   calloc(strlen(stemp)+1, sizeof(char))))
 		{
 		  ay_error(AY_EOMEM, fname, NULL);
 		  return;
 		}
-	      else
-		{
-		  if(ay_rrib_cattributes->identifier_name)
-		    free(ay_rrib_cattributes->identifier_name);
-		  ay_rrib_cattributes->identifier_name = stemp;
-		}
+	      strcpy(ay_rrib_cattributes->identifier_name, stemp);
 	      attribute_handled = AY_TRUE;
 	    }
 	  if(!attribute_handled)
@@ -775,7 +794,7 @@ RtVoid ay_rrib_RiAttribute(RtToken name,
 	{
 	  if(!strcmp(tokens[i], "shadows"))
 	    {
-	      if(!strcmp((char *)(parms[i]), "on"))
+	      if(!strcmp(*((char **)(parms[i])), "on"))
 		ay_rrib_cattributes->light_shadows = AY_TRUE;
 	      else
 		ay_rrib_cattributes->light_shadows = AY_FALSE;
@@ -783,8 +802,9 @@ RtVoid ay_rrib_RiAttribute(RtToken name,
 	    }
 	  if(!strcmp(tokens[i], "nsamples"))
 	    {
-	      sscanf(((char *)(parms[i])), "%lg", &dtemp);
-	      ay_rrib_cattributes->light_shadows = (int)dtemp;
+
+	      ay_rrib_cattributes->light_samples =
+		(int)(*((RtInt *)(parms[i])));
 	      attribute_handled = AY_TRUE;
 	    }
 	  if(!attribute_handled)
@@ -802,22 +822,22 @@ RtVoid ay_rrib_RiAttribute(RtToken name,
 	{
 	  if(!strcmp(tokens[i], "truedisplacement"))
 	    {
-	      sscanf(((char *)(parms[i])), "%d", &itemp);
-	      ay_rrib_cattributes->true_displacement = itemp;
+	      ay_rrib_cattributes->true_displacement =
+		(int)(*((RtInt *)(parms[i])));
 	      attribute_handled = AY_TRUE;
 	    }
 	  if(!strcmp(tokens[i], "cast_shadows"))
 	    {
 	      itemp = 0;
-	      if(!strcmp((char *)(parms[i]), "none"))
+	      if(!strcmp(*((char **)(parms[i])), "none"))
 		{
 		  itemp = 1;
 		}
-	      if(!strcmp((char *)(parms[i]), "opaque"))
+	      if(!strcmp(*((char **)(parms[i])), "opaque"))
 		{
 		  itemp = 2;
 		}
-	      if(!strcmp((char *)(parms[i]), "shader"))
+	      if(!strcmp(*((char **)(parms[i])), "shader"))
 		{
 		  itemp = 3;
 		}
@@ -826,7 +846,7 @@ RtVoid ay_rrib_RiAttribute(RtToken name,
 	    }
 	  if(!strcmp(tokens[i], "visibility"))
 	    {
-	      sscanf(((char *)(parms[i])), "%d", &itemp);
+	      itemp = (int)(*((RtInt *)(parms[i])));
 	      if(itemp-4 >= 0)
 		{
 		  ay_rrib_cattributes->shadow = AY_TRUE;
@@ -860,15 +880,15 @@ RtVoid ay_rrib_RiAttribute(RtToken name,
 	    {
 	      itemp = 0;
 	      /* XXXX is this complete? */
-	      if(!strcmp((char *)(parms[i]), "camera"))
+	      if(!strcmp(*((char **)(parms[i])), "camera"))
 		{
 		  itemp = 2;
 		}
-	      if(!strcmp((char *)(parms[i]), "shader"))
+	      if(!strcmp(*((char **)(parms[i])), "shader"))
 		{
 		  itemp = 1;
 		}
-	      if(!strcmp((char *)(parms[i]), "object"))
+	      if(!strcmp(*((char **)(parms[i])), "object"))
 		{
 		  itemp = 0;
 		}
@@ -877,8 +897,8 @@ RtVoid ay_rrib_RiAttribute(RtToken name,
 	    }
 	  if(!strcmp(tokens[i], "sphere"))
 	    {
-	      sscanf(((char *)(parms[i])), "%lg", &dtemp);
-	      ay_rrib_cattributes->dbound_val = dtemp;
+	      ay_rrib_cattributes->dbound_val =
+		(double)(*((RtFloat *)(parms[i])));
 	      attribute_handled = AY_TRUE;
 	    }
 	  if(!attribute_handled)
@@ -1108,7 +1128,16 @@ RtVoid ay_rrib_RiErrorHandler( RtErrorHandler handler )
 
 RtVoid ay_rrib_RiExposure( RtFloat gain, RtFloat gamma )
 {
-   (void)gain; (void)gamma;
+ ay_riopt_object *riopt = NULL;
+ ay_root_object *root = NULL;
+
+  root = (ay_root_object *)ay_root->refine;
+  riopt = root->riopt;
+
+  riopt->ExpGain = (double)gain;
+  riopt->ExpGamma = (double)gamma;
+
+ return;
 }
 
 
@@ -1130,7 +1159,16 @@ RtVoid ay_rrib_RiExterior(RtToken name,
 
 RtVoid ay_rrib_RiFormat( RtInt xres, RtInt yres, RtFloat aspect )
 { 
-   (void)xres; (void)yres; (void)aspect;
+ ay_riopt_object *riopt = NULL;
+ ay_root_object *root = NULL;
+
+  root = (ay_root_object *)ay_root->refine;
+  riopt = root->riopt;
+
+  riopt->width = (int)xres;
+  riopt->height = (int)yres;
+
+ return;
 }
 
 
@@ -1260,10 +1298,22 @@ RtVoid ay_rrib_RiIlluminate(RtLightHandle light, RtBoolean onoff)
 }
 
 
-RtVoid ay_rrib_RiImagerV( RtToken name,
-                 RtInt n, RtToken tokens[], RtPointer parms[] )
+RtVoid ay_rrib_RiImager(RtToken name,
+			RtInt n, RtToken tokens[], RtPointer parms[])
 { 
-   (void)name; (void)n; (void)tokens; (void)parms;
+ int ay_status = AY_OK;
+ ay_root_object *root = NULL;
+
+  root = (ay_root_object *)ay_root->refine;
+
+  if(root->imager)
+    ay_status = ay_shader_free(root->imager);
+  root->imager = NULL;
+
+  ay_rrib_readshader(name, AY_STIMAGER, n, tokens, parms,
+		     &(root->imager));
+
+ return;
 }
 
 
@@ -1424,11 +1474,166 @@ RtVoid ay_rrib_RiOpacity( RtColor color)
 }
 
 
-RtVoid ay_rrib_RiOptionV( RtToken name, 
-		 RtInt n, RtToken tokens[], RtPointer parms[] )
+RtVoid ay_rrib_RiOption(RtToken name, 
+			RtInt n, RtToken tokens[], RtPointer parms[])
 { 
-   (void)name; (void)n; (void)tokens; (void)parms;
-}
+ int i, option_handled = AY_FALSE;
+ char fname[] = "ay_rrib_RiOption";
+ ay_riopt_object *riopt = NULL;
+ ay_root_object *root = NULL;
+ char *stemp;
+
+  root = (ay_root_object *)ay_root->refine;
+  riopt = root->riopt;
+
+  if(!strcmp(name,"limits"))
+    {
+      for(i = 0; i < n; i++)
+	{
+
+	  if(!strcmp(tokens[i], "texturememory"))
+	    {
+	      riopt->texturemem = (int)(*((RtInt *)(parms[i])));
+	      option_handled = AY_TRUE;
+	    }
+	  if(!strcmp(tokens[i], "geommemory"))
+	    {
+	      riopt->geommem = (int)(*((RtInt *)(parms[i])));
+	      option_handled = AY_TRUE;
+	    }
+	  if(!option_handled)
+	    {
+	      ay_rrib_readtag(ay_riopt_tagtype, "RiOption", name,
+			      i, tokens, parms, &(ay_root->tags));
+	    }
+	} /* for */
+      return;
+    }
+
+  if(!strcmp(name,"radiosity"))
+    {
+      for(i = 0; i < n; i++)
+	{
+
+	  if(!strcmp(tokens[i], "steps"))
+	    {
+	      riopt->RadSteps = (int)(*((RtInt *)(parms[i])));
+	      option_handled = AY_TRUE;
+	    }
+	  if(!strcmp(tokens[i], "minpatchsamples"))
+	    {
+	      riopt->PatchSamples = (int)(*((RtInt *)(parms[i])));
+	      option_handled = AY_TRUE;
+	    }
+	  if(!option_handled)
+	    {
+	      ay_rrib_readtag(ay_riopt_tagtype, "RiOption", name,
+			      i, tokens, parms, &(ay_root->tags));
+	    }
+	} /* for */
+      return;
+    }
+
+  if(!strcmp(name,"render"))
+    {
+      for(i = 0; i < n; i++)
+	{
+	  if(!strcmp(tokens[i], "prmanspecular"))
+	    {
+	      riopt->PRManSpec = (char)(*((RtInt *)(parms[i])));
+	      option_handled = AY_TRUE;
+	    }
+	  if(!strcmp(tokens[i], "minshadowbias"))
+	    {
+	      riopt->ShadowBias = (double)(*((RtFloat *)(parms[i])));
+	      option_handled = AY_TRUE;
+	    }
+	  if(!strcmp(tokens[i], "max_raylevel"))
+	    {
+	      riopt->MaxRayLevel = (int)(*((RtInt *)(parms[i])));
+	      option_handled = AY_TRUE;
+	    }
+	  if(!strcmp(tokens[i], "minsamples"))
+	    {
+	      riopt->MinSamples = (int)(*((RtInt *)(parms[i])));
+	      option_handled = AY_TRUE;
+	    }
+	  if(!strcmp(tokens[i], "maxsamples"))
+	    {
+	      riopt->MaxSamples = (int)(*((RtInt *)(parms[i])));
+	      option_handled = AY_TRUE;
+	    }
+	  if(!option_handled)
+	    {
+	      ay_rrib_readtag(ay_riopt_tagtype, "RiOption", name,
+			      i, tokens, parms, &(ay_root->tags));
+	    }
+	} /* for */
+      return;
+    } /* if */
+
+  if(!strcmp(name,"searchpath"))
+    {
+      for(i = 0; i < n; i++)
+	{
+
+	  if(!strcmp(tokens[i], "shader"))
+	    {
+	      stemp = *((char **)(parms[i]));
+	      if(riopt->shaders)
+		free(riopt->shaders);
+	      riopt->shaders = NULL;
+	      if(!(riopt->shaders = calloc(strlen(stemp)+1,
+					   sizeof(char))))
+		{
+		  ay_error(AY_EOMEM, fname, NULL);
+		  return;
+		}
+	      strcpy(riopt->shaders, stemp);
+	      option_handled = AY_TRUE;
+	    }
+	  if(!strcmp(tokens[i], "include"))
+	    {
+	      stemp = *((char **)(parms[i]));
+	      if(riopt->includes)
+		free(riopt->includes);
+	      riopt->includes = NULL;
+	      if(!(riopt->includes = calloc(strlen(stemp)+1,
+					   sizeof(char))))
+		{
+		  ay_error(AY_EOMEM, fname, NULL);
+		  return;
+		}
+	      strcpy(riopt->includes, stemp);
+	      option_handled = AY_TRUE;
+	    }
+	  if(!strcmp(tokens[i], "texture"))
+	    {
+	      stemp = *((char **)(parms[i]));
+	      if(riopt->textures)
+		free(riopt->textures);
+	      riopt->textures = NULL;
+	      if(!(riopt->textures = calloc(strlen(stemp)+1,
+					   sizeof(char))))
+		{
+		  ay_error(AY_EOMEM, fname, NULL);
+		  return;
+		}
+	      strcpy(riopt->textures, stemp);
+	      option_handled = AY_TRUE;
+	    }
+	} /* for */
+      return;
+    }  /* if */
+
+  for(i = 0; i < n; i++)
+    {
+      ay_rrib_readtag(ay_riopt_tagtype, "RiOption", name,
+		      i, tokens, parms, &(ay_root->tags));
+    }
+
+ return;
+} /* ay_rrib_RiOption */
 
 
 RtVoid ay_rrib_RiOrientation( RtToken orientation )
@@ -1458,22 +1663,48 @@ RtVoid ay_rrib_RiPerspective( RtFloat fov )
 }
 
 
-RtVoid ay_rrib_RiPixelFilter( RtFilterFunc filterfunc, 
-		     RtFloat xwidth, RtFloat ywidth )
-{ 
-   (void)filterfunc; (void)xwidth; (void)ywidth;
+RtVoid ay_rrib_RiPixelFilter(RtFilterFunc filterfunc, 
+			     RtFloat xwidth, RtFloat ywidth)
+{
+ ay_riopt_object *riopt = NULL;
+ ay_root_object *root = NULL;
+
+  root = (ay_root_object *)ay_root->refine;
+  riopt = root->riopt;
+
+  riopt->FilterWidth = (double)xwidth;
+  riopt->FilterHeight = (double)ywidth;
+
+ return;
 }
 
 
 RtVoid ay_rrib_RiPixelSamples( RtFloat xsamples, RtFloat ysamples )
 { 
-   (void)xsamples; (void)ysamples;
+ ay_riopt_object *riopt = NULL;
+ ay_root_object *root = NULL;
+
+  root = (ay_root_object *)ay_root->refine;
+  riopt = root->riopt;
+
+  riopt->Samples_X = (double)xsamples;
+  riopt->Samples_Y = (double)ysamples;
+
+ return;
 }
 
 
 RtVoid ay_rrib_RiPixelVariance( RtFloat variation )
 { 
-   (void)variation;
+ ay_riopt_object *riopt = NULL;
+ ay_root_object *root = NULL;
+
+  root = (ay_root_object *)ay_root->refine;
+  riopt = root->riopt;
+
+  riopt->Variance = (double)variation;
+
+ return;
 }
 
 
@@ -1516,10 +1747,23 @@ RtVoid ay_rrib_RiProjectionV( RtToken name,
 }
 
 
-RtVoid ay_rrib_RiQuantize( RtToken type, RtInt one, 
-		  RtInt min, RtInt max, RtFloat ampl )
+RtVoid ay_rrib_RiQuantize(RtToken type, RtInt one, 
+			  RtInt min, RtInt max, RtFloat ampl)
 { 
-   (void)type; (void)one; (void)min; (void)max; (void)ampl;
+ ay_riopt_object *riopt = NULL;
+ ay_root_object *root = NULL;
+
+  root = (ay_root_object *)ay_root->refine;
+  riopt = root->riopt;
+
+  /* XXXX type? */
+
+  riopt->RGBA_ONE = (double)one;
+  riopt->RGBA_MIN = (double)min;
+  riopt->RGBA_MAX = (double)max;
+  riopt->RGBA_Dither = (double)ampl;
+
+ return;
 }
 
 
@@ -1671,15 +1915,6 @@ RtVoid ay_rrib_RiSolidEnd( void )
   ay_rrib_poptrafos();
 
  return;
-}
-
-
-RtVoid ay_rrib_RiSphereV( RtFloat radius, RtFloat zmin, RtFloat zmax, 
-		 RtFloat thetamax,
-		 RtInt n, RtToken tokens[], RtPointer parms[] )
-{ 
-   (void)radius; (void)zmin; (void)zmax; (void)thetamax;
-   (void)n; (void)tokens; (void)parms;
 }
 
 
@@ -1839,46 +2074,88 @@ RtVoid ay_rrib_RiErrorAbort( RtInt code, RtInt severity, char *msg )
 }
 
 
-RtFloat ay_rrib_RiBoxFilter( RtFloat x, RtFloat y, RtFloat xwidth, RtFloat ywidth )
+RtFloat ay_rrib_RiBoxFilter(RtFloat x, RtFloat y,
+			    RtFloat xwidth, RtFloat ywidth)
 {
-   (void)x; (void)y; (void)xwidth; (void)ywidth;
+ ay_riopt_object *riopt = NULL;
+ ay_root_object *root = NULL;
 
-   return 0.0;
+  root = (ay_root_object *)ay_root->refine;
+  riopt = root->riopt;
+
+  riopt->FilterFunc = 3;
+  riopt->FilterWidth = (double)xwidth;
+  riopt->FilterHeight = (double)ywidth;
+
+ return 0.0;
 }
 
 
-RtFloat ay_rrib_RiTriangleFilter( RtFloat x, RtFloat y, 
-			 RtFloat xwidth, RtFloat ywidth )
+RtFloat ay_rrib_RiTriangleFilter(RtFloat x, RtFloat y, 
+				 RtFloat xwidth, RtFloat ywidth)
 {
-   (void)x; (void)y; (void)xwidth; (void)ywidth;
+ ay_riopt_object *riopt = NULL;
+ ay_root_object *root = NULL;
 
-   return 0.0;
+  root = (ay_root_object *)ay_root->refine;
+  riopt = root->riopt;
+
+  riopt->FilterFunc = 1;
+  riopt->FilterWidth = (double)xwidth;
+  riopt->FilterHeight = (double)ywidth;
+
+ return 0.0;
 }
 
 
-RtFloat ay_rrib_RiCatmullRomFilter( RtFloat x, RtFloat y, 
-			   RtFloat xwidth, RtFloat ywidth )
+RtFloat ay_rrib_RiCatmullRomFilter(RtFloat x, RtFloat y, 
+				   RtFloat xwidth, RtFloat ywidth)
 {
-   (void)x; (void)y; (void)xwidth; (void)ywidth;
+ ay_riopt_object *riopt = NULL;
+ ay_root_object *root = NULL;
 
-   return 0.0;
+  root = (ay_root_object *)ay_root->refine;
+  riopt = root->riopt;
+
+  riopt->FilterFunc = 2;
+  riopt->FilterWidth = (double)xwidth;
+  riopt->FilterHeight = (double)ywidth;
+
+ return 0.0;
 }
 
 
-RtFloat ay_rrib_RiGaussianFilter( RtFloat x, RtFloat y, 
-			 RtFloat xwidth, RtFloat ywidth )
+RtFloat ay_rrib_RiGaussianFilter(RtFloat x, RtFloat y, 
+				 RtFloat xwidth, RtFloat ywidth)
 {
-   (void)x; (void)y; (void)xwidth; (void)ywidth;
+ ay_riopt_object *riopt = NULL;
+ ay_root_object *root = NULL;
 
-   return 0.0;
+  root = (ay_root_object *)ay_root->refine;
+  riopt = root->riopt;
+
+  riopt->FilterFunc = 0;
+  riopt->FilterWidth = (double)xwidth;
+  riopt->FilterHeight = (double)ywidth;
+
+ return 0.0;
 }
 
 
-RtFloat ay_rrib_RiSincFilter( RtFloat x, RtFloat y, RtFloat xwidth, RtFloat ywidth )
+RtFloat ay_rrib_RiSincFilter(RtFloat x, RtFloat y,
+			     RtFloat xwidth, RtFloat ywidth)
 {
-   (void)x; (void)y; (void)xwidth; (void)ywidth;
+ ay_riopt_object *riopt = NULL;
+ ay_root_object *root = NULL;
 
-   return 0.0;
+  root = (ay_root_object *)ay_root->refine;
+  riopt = root->riopt;
+
+  riopt->FilterFunc = 4;
+  riopt->FilterWidth = (double)xwidth;
+  riopt->FilterHeight = (double)ywidth;
+
+ return 0.0;
 }
 
 
@@ -2084,7 +2361,6 @@ ay_rrib_readtag(char *tagtype, char *tagname, char *name,
 		int i, RtToken tokens[], RtPointer parms[],
 		ay_tag_object **destination)
 {
- int ay_status = AY_OK;
  int type;
  ay_tag_object *n = NULL;
  Tcl_DString ds;
@@ -2107,6 +2383,10 @@ ay_rrib_readtag(char *tagtype, char *tagname, char *name,
     {
       return;
     }
+
+  strcpy(n->name, tagname);
+
+  n->type = tagtype;
 
   ht = RibGetHashHandle(grib);
 
@@ -2166,8 +2446,6 @@ ay_rrib_readtag(char *tagtype, char *tagname, char *name,
       return;
     }
 
-  n->type = tagtype;
-
   Tcl_DStringInit(&ds);
 
   Tcl_DStringAppend(&ds, name, -1);
@@ -2178,7 +2456,7 @@ ay_rrib_readtag(char *tagtype, char *tagname, char *name,
   Tcl_DStringAppend(&ds, ",", -1);
   if(typechar == 's')
     {
-      Tcl_DStringAppend(&ds, (char *)(parms[i]), -1);
+      Tcl_DStringAppend(&ds, *((char **)(parms[i])), -1);
     }
   else
     {
@@ -2207,7 +2485,6 @@ ay_rrib_readtag(char *tagtype, char *tagname, char *name,
 void
 ay_rrib_initgeneral(void)
 {
- int ay_status = AY_OK;
 
   gRibNopRITable[kRIB_WORLDBEGIN] = (PRIB_RIPROC)ay_rrib_RiWorldBegin;
   gRibNopRITable[kRIB_TRANSFORMBEGIN] = (PRIB_RIPROC)ay_rrib_RiTransformBegin;
@@ -2243,6 +2520,33 @@ ay_rrib_initgeneral(void)
 
  return;
 } /* ay_rrib_initgeneral */
+
+void
+ay_rrib_initoptions(void)
+{
+
+  gRibNopRITable[kRIB_OPTION] = (PRIB_RIPROC)ay_rrib_RiOption;
+  gRibNopRITable[kRIB_ATMOSPHERE] = (PRIB_RIPROC)ay_rrib_RiAtmosphere;
+  gRibNopRITable[kRIB_IMAGER] = (PRIB_RIPROC)ay_rrib_RiImager;
+  gRibNopRITable[kRIB_EXPOSURE] = (PRIB_RIPROC)ay_rrib_RiExposure;
+  gRibNopRITable[kRIB_FORMAT] = (PRIB_RIPROC)ay_rrib_RiFormat;
+  gRibNopRITable[kRIB_PIXELSAMPLES] = (PRIB_RIPROC)ay_rrib_RiPixelSamples;
+  gRibNopRITable[kRIB_PIXELVARIANCE] = (PRIB_RIPROC)ay_rrib_RiPixelVariance;
+  gRibNopRITable[kRIB_QUANTIZE] = (PRIB_RIPROC)ay_rrib_RiQuantize;
+
+  gRibNopRITable[kRIB_BOXFILTER] =
+    (PRIB_RIPROC)ay_rrib_RiBoxFilter;
+  gRibNopRITable[kRIB_TRIANGLEFILTER] =
+    (PRIB_RIPROC)ay_rrib_RiTriangleFilter;
+  gRibNopRITable[kRIB_GAUSSIANFILTER] =
+    (PRIB_RIPROC)ay_rrib_RiGaussianFilter;
+  gRibNopRITable[kRIB_SINCFILTER] =
+    (PRIB_RIPROC)ay_rrib_RiSincFilter;
+  gRibNopRITable[kRIB_CATMULLROMFILTER] =
+    (PRIB_RIPROC)ay_rrib_RiCatmullRomFilter;
+
+ return;
+} /* ay_rrib_initoptions */
 
 int
 ay_rrib_initgprims(void)
@@ -2625,6 +2929,7 @@ ay_rrib_readrib(char *filename, int frame)
     }
 
   ay_rrib_initgeneral();
+  ay_rrib_initoptions();
   
   rib = RibOpen(filename, kRIB_LAST_RI, gRibNopRITable);
 
