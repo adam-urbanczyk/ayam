@@ -3864,9 +3864,45 @@ of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 
 <sect1>Gordon Object<label id="gordonobj">
 <p>
+<figure loc="ht">
+<eps file="pics/sgordon.ps" height="6cm">
+<img src="pics/sgordon.gif">
+<caption>Gordon Surface with Parameter Curves (white)</caption>
+</figure>
+<p>
 The Gordon object forms a surface defined by two sets of intersecting
 curves (a network of curves), where all curves will always be interpolated
-by the surface. The creation of a Gordon surface is computationally
+by the surface. The image above shows the simplest configuration
+of such a network consisting of four parameter curves.
+Note the order and the direction of the curves.
+<p>
+The curves may be of arbitrary length and order. You may e.g.
+use a curve of order 2 and length 6 with a second curve
+of order 4 and length 4 and a third curve with order 3 and 5
+control points for the u parametric dimension. Note, however,
+that only non-rational curves can be used as parameter curves
+for a Gordon surface.
+If the parameter curves have weights, the weight information
+of the curves will simply be ignored.
+<p>
+The Gordon object has the generating NURBS curves as child objects
+and watches their changes and adapts to them automagically.
+Separation of the two sets of curves has to be done using an
+empty level object. The first set of curves determines the u
+direction and the second set of curves the v direction of the
+Gordon surface. For the example surface in the image above, the
+child objects of the Gordon object would have to look like this
+in the Ayam object tree view:
+<code>
++ Gordon
+  - U1(NCurve)
+  - U2(NCurve)
+  - Level
+  - V1(NCurve)
+  - V2(NCurve)
+</code>
+<p>
+The creation of a Gordon surface is computationally
 expensive. It involves (interpolated) skinning of the two sets of
 parameter curves, finding the intersection points of the two sets
 of parameter curves, interpolating the matrix of intersection points,
@@ -3875,38 +3911,38 @@ the three surfaces into the resulting Gordon surface. If you experience lags
 while editing the parameter curves of a Gordon surface, consider
 switching to lazy notification.
 <p>
-The curves may be of arbitrary length and order. You may e.g.
-use a curve of order 2 and length 6 with a second curve
-of order 4 and length 4 and a third curve with order 3 and 5
-control points. Note, however, that only non-rational curves
-can be used as parameter curves for a gordon surface.
-If the parameter curves have weights, the weight information
-of the curves will simply be ignored.
-<p>
-The gordon object has the generating NURBS curves as child objects
-and watches their changes and adapts to them automagically.
-Separation of the two sets of curves has to be done using an
-empty level object. The first set of curves determines the u
-direction and the second set of curves the v direction of the
-gordon surface.
-<p>
 In order to ease the computationally intensive intersection
 detection for Ayam you may specify a third argument (separated
-from the two sets of curves by a second empty level object).
+from the two sets of parameter curves by a second empty level object).
 This third argument should be a NURBS patch object that describes
 all intersection points (by its control points).
-If present, this intersection patch always takes precedence.
+If present, this intersection patch always takes precedence over the
+intersection points calculated internally.
 You may want to add a <tt>"NoExport"</tt> tag to this patch.
 <p>
-You may convert the current gordon surface to an ordinary NURBS
+You may convert the current Gordon surface to an ordinary NURBS
 patch using the main menu entry <tt>"Tools/Convert"</tt>.
+<p>
+The following parameters of the Gordon object further control
+the creation of the Gordon surface:
 
 <sect2>GordonAttr Property<label id="gop">
+<p>
+If the parameter <tt/"WatchCurves"/ is switched on, Ayam will
+check for all four outer parameter curves, whether they touch in their
+endpoints. If not, the endpoints will be corrected. Note that this
+works only properly with clamped curves and objects that directly
+contain editable control points (i.e. it works with NCurve and ICurve
+objects, but not with Instance or ConcatNC objects). If Ayam can
+determine which curve was modified last, the other curve that should
+meet at the endpoint in question will be modified by <tt/"WatchCurves"/.
+If Ayam finds no information on modifications, the U curves take
+precedence (i.e. the V curves will be modified).
 <p>
 The parameters <tt/"Order_U"/ and <tt/"Order_V"/ determine the
 desired order of the resulting surface in u and v direction.
 However, depending on the number and configuration of curves used
-in the u or v direction, it may not be possible to create a gordon
+in the u or v direction, it may not be possible to create a Gordon
 surface of the desired order.
 If <tt/"Order_U"/ or <tt/"Order_V"/ are 0, a default value
 of 4 will be used.
