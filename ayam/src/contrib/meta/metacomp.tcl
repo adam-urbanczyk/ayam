@@ -12,7 +12,7 @@
 
 global ay MetaComp_props MetaCompAttr MetaCompAttrData
 
-set MetaComp_props { Transformations Attributes Material Tags MetaCompAttr }
+set MetaComp_props { Transformations Attributes Tags MetaCompAttr }
 
 proc formula_getAttr { } {
 global ay MetaCompAttr MetaCompAttrData
