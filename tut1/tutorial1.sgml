@@ -4,9 +4,12 @@
 
 <title>Ayam Tutorial #1
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>11. Oct 2001
+<date>16. Jul 2002
 <abstract>
-This is the first tutorial for Ayam, a free 3D modeling environment.
+This is the first tutorial for Ayam, a free 3D
+modeling environment for the RenderMan interface.
+This version of the tutorial is
+tailored to version 1.2 (and up) of Ayam.
 We will do nothing fancy in this first tutorial just a wooden
 sphere on a gray ground.
 But even if you feel like you know how to do such a simple thing 
@@ -70,13 +73,17 @@ the shortcuts to the menu entries again.
 This figure shows a view window, which displays currently
 nothing but a small coordinate system that marks the origin of
 the world. The axes are color coded (red x, green y, blue z).
+<p>
 Now take a look at the title bar of the window.
-It reads <tt/View1 - Front - None/.
+It reads <tt/View1 - Front - Pick/.
 <tt/View1/ means it is your first view (you can have more views
 but we will not make use of multiple views in this first tutorial),
 <tt/Front/ is the type of the view.
-Finally, <tt/None/ means that there is currently no action activated
-in this view.<p>
+Finally, <tt/Pick/ means that there is currently no special
+modeling action activated
+in this view; in this mode you may pick (select) objects with your
+mouse.
+<p>
 But back to the type. The type of a view is an important property
 of a view, because it limits the scope of all modeling actions in
 this view. In a view of type <tt/Front/ you can move objects in the
@@ -109,15 +116,18 @@ the other sections are for more advanced modeling tasks (with e.g. NURBS).
 
 <sect>Setting up Ayam<label id="setup">
 <p>
-If you followed all steps in the file <tt/"Setup.txt"/
+If you followed all steps in the file <tt/"Setup.txt"/ or
+<tt/"SetupWin32.htm"/
 already and feel like you set up Ayam the right way you might as well
 skip to section <ref id="ground" name="Creating the Ground"> now.
-
+Otherwise follow these instructions:
+<p>
 Please get install and setup BMRT V2.6 from
 <url url="http://www.exluna.com/" name="the Exluna home page">
 before going on. Note, that if you have a very old BMRT
 (versions prior to 2.5) Ayam might not be able to work
-correctly.<p>
+correctly.
+<p>
 Before you start modeling you should make sure that Ayam
 is set up correctly. Please take a look at the messages
 that appear on startup in the console, red messages denote
@@ -150,6 +160,9 @@ the <tt/"Apply"/ button. After that,
 press the <tt/"Scan Shaders!"/ button right below the
 <tt/"Shaders"/ entry and watch the console for error messages.
 It will tell you how many shaders have been found.
+Note: on the Win32 platform you probably will have to delete
+all files with the extension <tt/"intelnt.slc"/ to make
+parsing of shaders work.
 Now close the preferences window by clicking on the <tt/"Ok"/-button.<p>
 
 When Ayam has been started the very first time there is
@@ -158,7 +171,7 @@ more than one in this tutorial) by clicking
 on the camera button in the tool box window.
 If you are unsure simply wait for the tool tip to appear,
 then browse through the buttons until the tool tip reads <tt/"new View"/.
-If Ayam crashes now something is terribly wrong with your
+If Ayam crashes or blocks now, something is terribly wrong with your
 OpenGL setup and you should fix it.<p>
 
 Now we are set, and may start modeling.
@@ -180,7 +193,8 @@ Your view should display a box like in figure 5:<p>
 This box (shaped like a cube) is surely not suitable as ground.
 We change its shape to a large flat slab using the
 <tt/Transformations/ property of this object:<p>
-<bf/Step 2:/ Click on <tt/Transformations/ in the <bf/properties listbox/.<p>
+<bf/Step 2:/ Go to the <bf/main window/ and click on
+<tt/Transformations/ in the <bf/properties listbox/.<p>
 <bf/Step 3:/ Change the entries for <tt/Scale_X/, <tt/Scale_Y/ and
 <tt/Scale_Z/ to 100, 0.1 and 100 respectively. You may have to scroll
 the <bf/property GUI/ down to see the scale entries. You may
@@ -229,19 +243,23 @@ the view displays a similar image as that of figure 9:<p>
 
 <sect>Adding Material
 <p>
-Now we will add a material to the sphere to make it "wooden".<p>
-<bf/Step 1:/ Go back to the <bf/tool window/ and
-create a material object by clicking on the checkered sphere.
+Now we will add a material to the sphere to make it "wooden".
+<p>
+<bf/Step 1:/ Go back to the <bf/main window/ and
+create a material object using the menu entry
+<tt>"Edit/Material"</tt>
+(you can also use the keyboard shortcut
+<tt>&lt;Ctrl+m&gt;</tt>). Make sure, that the sphere is still selected,
+so that the new material will be associated with the sphere.
 A dialog box (see figure 10) will pop up asking you for a name for this
 new material object, enter "wood" and press the <tt/"Ok"/-button:<p>
 <figure loc="!ht">
 <eps file="pics/crtmat.ps" height="1.5cm">
 <img src="pics/crtmat.gif">
 <caption>creating a material object</caption>
-</figure><p>
-
-<bf/Step 2:/ Go to the <bf/main window/ and
-select the
+</figure>
+<p>
+<bf/Step 2:/ Select the
 <tt/"Surface"/ entry in the <bf/properties listbox/.
 A new <bf/property GUI/ appears, as displayed in figure 11:<p>
 <figure loc="!ht">
@@ -271,14 +289,6 @@ a lot of entries now, that are the parameters of the shader
 </figure><p>
 But we do not need to change anything here.<p>
 <bf/Step 5:/ Press the <tt/"Apply"/ button.<p>
-<bf/Step 6:/ Now we need to connect the material
-to the sphere, select the sphere in the tree view.<p>
-<bf/Step 7:/ Drag the sphere onto the material object: click
-on the sphere label but do not let go of your mouse button, drag
-the mouse pointer a little bit downward over the
-wood label (the mouse pointer changes) and now let go of the
-mouse button. The console should tell you something of
-some objects changed material to wood.<p>
 
 We do not need to set a material for the box, as the
 default material in Ayam is matte. This default may
@@ -286,7 +296,8 @@ be changed in the preferences, however.
 
 <sect>Lighting the Scene
 <p>
-Now we will create and place a light source.<p>
+Now we will create and place a light source.
+<p>
 <bf/Step 1:/ Create a light source object by clicking
 on the light bulb in the <bf/tool window/.
 We will light the scene with
@@ -295,31 +306,38 @@ For that, we have to change the type of the newly created light source.<p>
 <bf/Step 2:/ Go to the <bf/main window/ and click on the
 <tt/"LightAttr"/ entry in the
 <bf/properties listbox/. A new <bf/property GUI/ appears,
-as displayed in figure 14:<p>
+as displayed in figure 14:
+<p>
 <figure loc="!ht">
 <eps file="pics/light1.ps" height="6cm">
 <img src="pics/light1.gif">
 <caption>setting light parameters</caption>
-</figure><p>
+</figure>
+<p>
 <bf/Step 3:/ Change the type of the light source using the
 first entry (the <tt/"Type"/ menubutton) in the <bf/property GUI/.
-Change the type to <tt/"Distant"/.<p>
+Change the type to <tt/"Distant"/.
+<p>
 <bf/Step 4:/ Press the <tt/Apply/ button.
 In the next step we enable shadow generation for our light source
-(it is switched off by default!).<p>
-<bf/Step 5:/ Click on the <tt/Shadows/ checkbutton to turn it on.<p>
+(it is switched off by default!).
+<p>
+<bf/Step 5:/ Click on the <tt/Shadows/ checkbutton to turn it on.
+<p>
 <bf/Step 6:/ Press the <tt/Apply/ button. The light source is
 now parameterized appropriately but it is lighting into the
 wrong direction. We use the <tt/Transformations/
 property again to make the lightsource light by a -45 degree angle
-down.<p>
+down.
+<p>
 <bf/Step 7:/ Click on the <tt/"Transformations"/ entry in the
 <bf/properties listbox/. Change the <tt/"Rotate_X"/ entry to -45
 and press the <tt/Apply/ button. We will check what we have done
 by looking at the scene from the side in the next step.<p>
 <bf/Step 8:/ Go back to the <bf/view window/ and switch its type to
 <tt/Side/ using the shortcut <tt/&lt;Ctrl-s&gt;/. It should show the
-scene from the side as in figure 15:<p>
+scene from the side as in figure 15:
+<p>
 <figure loc="!ht">
 <eps file="pics/light2.ps" height="6cm">
 <img src="pics/light2.gif">
@@ -380,6 +398,8 @@ teached you how to do the following tasks):<p>
 <item>Change its <tt/Intensity/ to 150 and its <tt/ConeAngle/ to 15.
 <item>Switch to a side view and move the light using an
 interactive modeling action so that it lights the sphere.
+If you do not move the light, it will probably be situated inside
+the box and not light anything!
 <item>Switch to a perspective view and adjust it properly using
 the zoom to object feature.
 <item>Render again.
