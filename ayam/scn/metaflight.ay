@@ -1,5 +1,5 @@
 Ayam
-1.0
+1.1
 0
 0
 1
@@ -196,10 +196,6 @@ MetaObj
 0
 0
 
-2
-CIDR
-1
-CCIDR
 0
 120
 0.6
@@ -225,11 +221,7 @@ MetaComp
 0
 0
 
-2
-CCIDR
 0
-CIDR
-1
 0.4
 0
 0
@@ -265,10 +257,6 @@ MetaComp
 0
 0
 
-2
-CIDR
-1
-CCIDR
 0
 0.4
 0
@@ -305,11 +293,7 @@ MetaComp
 0
 0
 
-2
-CCIDR
 0
-CIDR
-1
 0.4
 0
 0
@@ -345,11 +329,7 @@ MetaComp
 0
 0
 
-2
-CCIDR
 0
-CIDR
-1
 0.4
 0
 0
@@ -385,10 +365,6 @@ MetaComp
 0
 0
 
-2
-CIDR
-1
-CCIDR
 0
 0.4
 0
@@ -425,10 +401,6 @@ MetaComp
 0
 0
 
-2
-CIDR
-1
-CCIDR
 0
 0.4
 0
