@@ -84,6 +84,7 @@ typedef struct idr_param_s {
   int halfres;
   int exclude;
   int optimizebb;
+  int halfsr;
 } idr_param;
 
 /* changed objects buffer */
@@ -1671,6 +1672,7 @@ idr_wrib_object(ay_object *o, char *file, int mode)
  *  image: TIFF filename for result picture
  *  importance: write just object with this importance
  *  exclude: exclude objects with other importance value?
+ *  halfsr: half shading rate
  *  from: source point of the camera
  *  to: target point of the camera
  *  roll, zoom: roll angle and zoom factor of the camera
@@ -1680,6 +1682,7 @@ idr_wrib_object(ay_object *o, char *file, int mode)
  */
 int
 idr_wrib_scene(char *file, char *image, double importance, int exclude,
+	       /*int halfsr,*/
 	       double *from,
 	       double *to,
 	       double roll, double zoom,
@@ -3085,7 +3088,13 @@ idr_wrib_tcb(struct Togl *togl, int argc, char *argv[])
       to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
 			  TCL_GLOBAL_ONLY);
       Tcl_GetIntFromObj(interp, to, &((params[i]).optimizebb));
-
+      /*
+      sprintf(buf, "HalfSR%d", i);
+      Tcl_SetStringObj(ton, buf, -1);
+      to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
+			  TCL_GLOBAL_ONLY);
+      Tcl_GetIntFromObj(interp, to, &((params[i]).halfsr));
+      */
       sprintf(buf, "Importance%d", i);
       Tcl_SetStringObj(ton, buf, -1);
       to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
