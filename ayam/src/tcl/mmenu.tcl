@@ -292,7 +292,7 @@ $m.nct add command -label "Revert" -command { undo save Revert; revertNC;
                                               plb_update; rV }
 $m.nct add command -label "Concat" -command { concatNC; uCR; rV}
 $m.nct add command -label "Split" -command { 
-runTool ay(splitu) {"Split at:"} "undo save; splitNC %0; uCR; sL; rV" }
+runTool ay(splitu) {"Split at:"} "undo save Split; splitNC %0; uCR; sL; rV" }
 $m.nct add command -label "Refine" -command { undo save Refine; refineNC;
                                               plb_update; rV }
 #$m.nct add command -label "Refine with" -command { runTool ay(refinekn) {"New Knots:"} "refineNC \{%0\}; plb_update; rV" }
