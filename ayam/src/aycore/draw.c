@@ -580,6 +580,7 @@ ay_draw_bgimage(struct Togl *togl)
 {
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  GLint w = Togl_Width(togl),h = Togl_Height(togl);
+ GLfloat color[4] = {0.0f,0.0f,0.0f,0.0f};
 
   if(view->bgimage)
     {
@@ -587,6 +588,7 @@ ay_draw_bgimage(struct Togl *togl)
       glEnable(GL_TEXTURE_2D);
       glEnable(GL_BLEND);
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
       glMatrixMode(GL_PROJECTION);
       glPushMatrix();
        glLoadIdentity();
@@ -595,8 +597,15 @@ ay_draw_bgimage(struct Togl *togl)
        glMatrixMode(GL_MODELVIEW);
        glPushMatrix();
        glLoadIdentity();
-       glColor3d((GLdouble)ay_prefs.ser, (GLdouble)ay_prefs.seg,
-		 (GLdouble)ay_prefs.seb);
+       
+       glColor3d((GLdouble)ay_prefs.bgr, (GLdouble)ay_prefs.bgg,
+		 (GLdouble)ay_prefs.bgb);
+       
+       color[0] = (GLfloat)ay_prefs.bgr;
+       color[1] = (GLfloat)ay_prefs.bgg;
+       color[2] = (GLfloat)ay_prefs.bgb;
+       glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, color);
+       
        glBegin(GL_QUADS);
         glTexCoord2i(0, 0);
 	glVertex3i(0, 0, 0);
