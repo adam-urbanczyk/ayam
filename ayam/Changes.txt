@@ -1,4 +1,4 @@
-[CVS 24. 11. 2001] Ayam1.0x:
+[CVS 27. 11. 2001] Ayam1.0x:
 o bug fixes:
   - fixed custom lights always exporting as AreaLight to RIB
   - fixed tags not loading from scene files to root object
@@ -10,6 +10,8 @@ o bug fixes:
   - fixed broken sweep (does not twist wildly for complex paths anymore)
   - fixed unnecessary notification for various modeling actions in
     conjunction with grids
+  - fixed undo/redo not calling notification callbacks
+  - fixed weight edit crashing when applied to objects without editable points
 o added auto-scrolling to property with focus (<Tab> scrolls the property GUI)
 o added "Scene changed!" warning requester to various scene destroying
   operations, like "File/New"
@@ -20,6 +22,8 @@ o added grid selection icon and menu to view window menu bar
 o "File/Save(As)" now adds filenames to the most recently used list too
 o added "Special/Toggle Toolbox" menu entry to open/close the toolbox window
 o added some example scripts to the documentation
+o the current fov is now displayed in the set fov dialogue initially
+o added a context menu to the property listbox
 
 [02. 10. 2001] Ayam1.0 beta4:
 o bug fixes:
