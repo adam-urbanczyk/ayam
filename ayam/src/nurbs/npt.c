@@ -56,6 +56,7 @@ ay_npt_create(int uorder, int vorder, int width, int height,
       if(newcontrolv)
 	{
 	  free(newcontrolv);
+	  patch->controlv = NULL;
 	}
       free(patch);
       return ay_status;
@@ -63,13 +64,15 @@ ay_npt_create(int uorder, int vorder, int width, int height,
 
   if((uknot_type == AY_KTCUSTOM) && uknotv)
     {
-      free(patch->uknotv);
+      if(patch->uknotv)
+	free(patch->uknotv);
       patch->uknotv = uknotv;
     }
 
   if((vknot_type == AY_KTCUSTOM) && vknotv)
     {
-      free(patch->vknotv);
+      if(patch->vknotv)
+	free(patch->vknotv);
       patch->vknotv = vknotv;
     }
 
@@ -2129,7 +2132,7 @@ ay_npt_skin(ay_object *curves, int order, int knot_type,
 
       if(ay_status)
 	{
-	  fprintf(stderr,"Ay: Memory may have leaked!");
+	  fprintf(stderr,"Memory may have leaked!\n");
 	  return ay_status;
 	}
 
@@ -2215,7 +2218,7 @@ ay_npt_skin(ay_object *curves, int order, int knot_type,
 
   if(ay_status)
     {
-      free(Ubar); return ay_status;
+      free(Ubar); free(skc); return ay_status;
     }
 
   if(interpolate)

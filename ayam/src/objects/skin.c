@@ -498,8 +498,7 @@ ay_skin_notifycb(ay_object *o)
   while(all_curves)
     {
       c = all_curves->next;
-      if(c)
-	ay_object_delete(all_curves);
+      ay_object_delete(all_curves);
       all_curves = c;
     }
 
