@@ -3924,6 +3924,17 @@ parallel to the u parametric dimension (width) of the resulting surface.
 Height and width of the surface will be derived from the length of the
 cross section curve and the number of sections, respectively.
 <p>
+<figure loc="ht">
+<eps file="pics/birail1vc.ps" height="5cm">
+<img src="pics/birail1vc.gif">
+<caption>Valid Configuration of Parameter Curves (white) for Birail1 (blue)</caption>
+</figure>
+<p>
+The image above shows a valid configuration of parameter curves for
+the Birail1 object. Mind the direction of the rail curves (R1 and R1)
+with regard to the cross section curve (CS) and the fact that the
+cross section curve touches the starting points of the rail curves.
+<p>
 Note that the cross section curve does not have to be two dimensional, and,
 in contrast to the normal Sweep object, it also does not have to be
 defined in a special plane. Also note that the precision with which the
@@ -3977,6 +3988,17 @@ parametric dimension (height) and the direction of the rail curves will be
 parallel to the u parametric dimension (width) of the resulting surface.
 Height and width of the surface will be derived from the length of the
 cross section curves and the number of sections, respectively.
+<p>
+<figure loc="ht">
+<eps file="pics/birail2vc.ps" height="5cm">
+<img src="pics/birail2vc.gif">
+<caption>Valid Configuration of Parameter Curves (white) for Birail2 (blue)</caption>
+</figure>
+<p>
+The image above shows a valid configuration of parameter curves for
+the Birail2 object. Mind the direction of the rail curves (R1 and R1)
+with regard to the two cross section curves (CS1 and CS2) and the
+fact, that all curves touch at their respective end points.
 <p>
 Note that the cross section curves do not have to be two dimensional, and,
 in contrast to the normal Sweep object, they also do not have to be
