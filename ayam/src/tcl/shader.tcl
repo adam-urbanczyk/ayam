@@ -70,13 +70,12 @@ proc shader_scanAll {} {
 	}
     } else { set env(SHADERS) $ayprefs(Shaders) }
 
-    set spathstr $ayprefs(Shaders)
-
-    regsub -all $ay(separator) $spathstr " " spathstr
+    set spathstr [split "$ayprefs(Shaders)" $ay(separator)]
 
     foreach p $spathstr {
-	    append temp "[glob -nocomplain $p/*$sext] "
-	}
+	set files [glob -nocomplain "${p}/*${sext}"]
+	append temp "$files "
+    }
 
     set allshaders ""
     foreach s $temp {
@@ -89,26 +88,26 @@ proc shader_scanAll {} {
     foreach s $allshaders {
 
 	# strip path from shader-file-name
-	set dummy [file tail $s]
+	set dummy [file tail "$s"]
 	# strip extension (.slc/.slx) from shader-file-name
-	set dummy [file rootname $dummy]
+	set dummy [file rootname "$dummy"]
 	# strip an eventually present .linux (DSO-shaders)
 	# from the shader-file-name
-	set dummy [file rootname $dummy]
+	set dummy [file rootname "$dummy"]
 
 	set shaderarguments ""
 	
 	set ay_error 0
 	if { $ay(sext) != "" } {
-	    shaderScan $dummy shaderarguments
+	    shaderScan "$dummy" shaderarguments
 	    update
 	} else {
 	    if { $AYUSESLCARGS == 1 } {
-		shaderScanSLC $dummy shaderarguments
+		shaderScanSLC "$dummy" shaderarguments
 	    }
 	
 	    if { $AYUSESLXARGS == 1 } {
-		shaderScanSLX $dummy shaderarguments
+		shaderScanSLX "$dummy" shaderarguments
 	    }
 	}
 
@@ -132,6 +131,7 @@ proc shader_scanAll {} {
 	eval set list \$$shadernamelistname
 	set $shadernamelistname [lsort $list]
     }
+
     # luniq (remove multiple entries)
     foreach i [list surface displacement imager light volume transformation] {
 	set shadernamelistname ay(${i}shaders)
@@ -147,15 +147,16 @@ proc shader_scanAll {} {
 	    incr k
 	}
     }
+
     set n 0
     foreach i [list surface displacement imager light volume transformation] {
 	set shadernamelistname ay(${i}shaders)
 	eval set list \$$shadernamelistname
 	set n [expr ($n + [llength $list])]
     }
+
     if { $n > 0} {
 	set out [format "%d unique shaders found." $n]
-#	puts stdout $out
 	ayError 4 scanAllShaders $out
     } else {
 	ayError 1 scanAllShaders "No shaders found."
@@ -170,112 +171,113 @@ proc shader_scanAll {} {
 # shader_setNew:
 #
 proc shader_setNew { win type stype } {
-upvar #0 ${type}ShaderData sArgArray
+    upvar #0 ${type}ShaderData sArgArray
 
-global env prefs ay ay_error
+    global env prefs ay ay_error
 
-eval "set shaders \$ay(${stype}shaders)"
-if { $ay(slcext) == ".xml" } {
-    set types {{"Parsed Shader" ".xml"} {"All files" *}}
+    eval "set shaders \$ay(${stype}shaders)"
+    if { $ay(slcext) == ".xml" } {
+	set types {{"Parsed Shader" ".xml"} {"All files" *}}
   
-    set newfilename [tk_getOpenFile -filetypes $types -parent .\
-	    -title "Select parsed shader:"]
-    if { $newfilename != "" } {
-	set ay_error 0
-	shader_scanXML $newfilename shaderarguments 
+	set newfilename [tk_getOpenFile -filetypes $types -parent .\
+		-title "Select parsed shader:"]
+	if { $newfilename != "" } {
+	    set ay_error 0
+	    shader_scanXML $newfilename shaderarguments 
 
-	if { $ay_error > 1 } {
-	    ayError 2 shader_setNew "Oops, could not scan shader!"
-	    return;
+	    if { $ay_error > 1 } {
+		ayError 2 shader_setNew "Oops, could not scan shader!"
+		return;
+	    }
+
+	    if { [lindex $shaderarguments 1] != $stype } {
+		ayError 2 shader_setNew\
+			"Shader is of wrong type, need a $stype shader!"
+		return;
+	    }
+
+	    shader_DbToArray $shaderarguments
+	    shaderSet $type ay_shader
+	    plb_update
+
 	}
-
-	if { [lindex $shaderarguments 1] != $stype } {
-	    ayError 2 shader_setNew "Shader is of wrong type, need a $stype shader!"
-	    return;
-	}
-
-	shader_DbToArray $shaderarguments
-	shaderSet $type ay_shader
-	plb_update
-
+	return;
     }
-return;
-}
-# request a new shader
-set w .setShaderw
-catch {destroy $w}
-toplevel $w
-wm title $w "Ayam - Set Shader"
-wm iconname $w "Ayam"
-wm transient $w .
+    # request a new shader
+    set w .setShaderw
+    catch {destroy $w}
+    toplevel $w
+    wm title $w "Ayam - Set Shader"
+    wm iconname $w "Ayam"
+    wm transient $w .
 
-set f [frame $w.f1]
-listbox $f.lb -width 20 -height 10 -selectmode single\
-	-exportselection 0 -yscrollcommand {.setShaderw.f1.fsc.sc set}
-eval [subst "$f.lb insert 0 $shaders"]
-pack $f.lb -in $f -side left -fill both -expand yes
-set f [frame $f.fsc]
-scrollbar $f.sc -command {.setShaderw.f1.lb yview} -takefocus 0
-pack $f.sc -in $f -side right -fill y -expand yes
-set f $w.f1
-pack $f.fsc -in $f -side right -fill y
-pack $f -in $w -side top -fill both -expand yes
-
-set f [frame $w.f2]
-button $f.bok -text "Ok" -width 5 -command {
-    global newshaderindex
-    set newshaderindex [.setShaderw.f1.lb curselection]
-    grab release .setShaderw
-    focus .
-    destroy .setShaderw
-}
-
-button $f.bca -text "Cancel" -width 5 -command "\
-    global newshaderindex;\
-    set newshaderindex \"\";\
-    destroy $w"
-
-pack $f.bok $f.bca -in $f -side left -fill x -expand yes
-pack $f -in $w -side bottom -fill x
-
-wm protocol $w WM_DELETE_WINDOW {
-    .setShaderw.f2.bca invoke
-}
-
-winCenter $w
-grab $w
-focus $f.bok
-tkwait window $w
-
-# now we have the new shader
-global newshaderindex AYUSESLCARGS AYUSESLXARGS
-if {$newshaderindex == ""} {return;}
-
-set shadername [lindex $shaders $newshaderindex]
-
-set shaderarguments ""
-set ay_error 0
-if { $ay(sext) != "" } {
-    shaderScan $shadername shaderarguments
-} else {
-    if { $AYUSESLCARGS == 1 } {
-	shaderScanSLC $shadername shaderarguments
-    }
+    set f [frame $w.f1]
+    listbox $f.lb -width 20 -height 10 -selectmode single\
+	    -exportselection 0 -yscrollcommand {.setShaderw.f1.fsc.sc set}
+    eval [subst "$f.lb insert 0 $shaders"]
+    pack $f.lb -in $f -side left -fill both -expand yes
+    set f [frame $f.fsc]
+    scrollbar $f.sc -command {.setShaderw.f1.lb yview} -takefocus 0
+    pack $f.sc -in $f -side right -fill y -expand yes
+    set f $w.f1
+    pack $f.fsc -in $f -side right -fill y
+    pack $f -in $w -side top -fill both -expand yes
     
-    if { $AYUSESLXARGS == 1 } {
-	shaderScanSLX $shadername shaderarguments
+    set f [frame $w.f2]
+    button $f.bok -text "Ok" -width 5 -command {
+	global newshaderindex
+	set newshaderindex [.setShaderw.f1.lb curselection]
+	grab release .setShaderw
+	focus .
+	destroy .setShaderw
     }
-}
 
-if { $ay_error > 1 } {
-    ayError 2 shader_setNew "Oops, could not scan shader!"
-    break;
-}
+    button $f.bca -text "Cancel" -width 5 -command "\
+	    global newshaderindex;\
+	    set newshaderindex \"\";\
+	    destroy $w"
 
-shader_DbToArray $shaderarguments
-undo save
-shaderSet $type ay_shader
-plb_update
+    pack $f.bok $f.bca -in $f -side left -fill x -expand yes
+    pack $f -in $w -side bottom -fill x
+
+    wm protocol $w WM_DELETE_WINDOW {
+	.setShaderw.f2.bca invoke
+    }
+
+    winCenter $w
+    grab $w
+    focus $f.bok
+    tkwait window $w
+
+    # now we have the new shader
+    global newshaderindex AYUSESLCARGS AYUSESLXARGS
+    if {$newshaderindex == ""} {return;}
+
+    set shadername [lindex $shaders $newshaderindex]
+
+    set shaderarguments ""
+    set ay_error 0
+    if { $ay(sext) != "" } {
+	shaderScan $shadername shaderarguments
+    } else {
+	if { $AYUSESLCARGS == 1 } {
+	    shaderScanSLC $shadername shaderarguments
+	}
+    
+	if { $AYUSESLXARGS == 1 } {
+	    shaderScanSLX $shadername shaderarguments
+	}
+    }
+
+    if { $ay_error > 1 } {
+	ayError 2 shader_setNew "Oops, could not scan shader!"
+	break;
+    }
+
+    shader_DbToArray $shaderarguments
+    undo save
+    shaderSet $type ay_shader
+    plb_update
 
  return;
 }
@@ -347,13 +349,13 @@ proc shader_setDefaultsXML { type } {
     set ay_error 0
 
     # search for shader
-    set spathstr $ayprefs(Shaders)
 
-    regsub -all $ay(separator) $spathstr " " spathstr
+    set spathstr [split "$ayprefs(Shaders)" $ay(separator)]
 
     foreach p $spathstr {
-	    append temp "[glob -nocomplain $p/*.xml] "
-	}
+	set files [glob -nocomplain "${p}/*.xml"]
+	append temp "$files "
+    }
 
     set allshaders ""
     set filename ""
@@ -398,17 +400,19 @@ proc shader_setDefaultsXML { type } {
 # shader_setDefaults:
 #  reset all parameters to shader default values
 proc shader_setDefaults { type } {
-    global ay_shader AYUSESLCARGS
+    global ay_shader AYUSESLCARGS AYUSESLXARGS
 
     if { $ay_shader(Name) == "" } { return; }
 
     set shaderarguments ""
     set ay_error 0
 
-    if { $AYUSESLCARGS == 0 } {
-	return;
-    } else {
+    if { $AYUSESLCARGS == 1 } {
 	shaderScanSLC $ay_shader(Name) shaderarguments
+    }
+
+    if { $AYUSESLXARGS == 1 } {
+	shaderScanSLX $ay_shader(Name) shaderarguments
     }
 
     if { $ay_error > 1 } {
@@ -430,7 +434,7 @@ proc shader_setDefaults { type } {
 #  create new shader GUI in w
 #  lets user select new shaders of type type
 proc shader_buildGUI { w type } {
-global ay ay_shader AYUSESLCARGS
+global ay ay_shader
 
 set stype $type
 if { $type == "atmosphere" } { set stype "volume" }
