@@ -2277,6 +2277,35 @@ for the presence of a <tt/"SaveMainGeom"/ tag for the root object
 after replacing a scene and re-establishes the geometries of
 main and toolbox window.
 
+
+<sect2>TP Tag<label id="tptag">
+<p>
+The tag type <tt/"TP"/ can be used to save tesselation parameters
+to objects of type <tt/"NPatch"/. Those tesselation parameters
+will be used when the NPatch object is tesselated
+for e.g. a conversion to a PolyMesh object.
+The syntax of the TP tag is:
+<tt>"&lt;tmethod&gt;,&lt;tparam&gt;"</tt>
+where <tt/"&lt;tmethod&gt;"/ is an integer value between 1 and 3, describing
+which tesselation method to use (1 - ParametricError,
+2 - PathLength, and 3 - DomainDistance) and <tt/"&lt;tparam&gt;"/ is a float
+value describing the respective parameter value for the chosen
+tesselation method.<p>
+TP tags may be easily created using the tesselation GUI, that can
+be started with the main menu entry <tt>"Tools/NPatch/Tesselate"</tt>
+(see also section <ref id="tesst" name="The Tesselation Tool">).
+
+<sect2>DC Tag<label id="dctag">
+<p>
+The tag type <tt/"DC"/ is only used by the aycsg CSG preview plugin
+to store the depth complexity of CSG primitives.
+The syntax of the DC tag is:
+<tt>"&lt;dcval&gt;"</tt>
+where <tt/"&lt;dcval&gt;"/ is a positive integer value describing the
+depth complexity of the CSG primitive. See also section XXXX
+for more information regarding the depth complexity.
+
+
 <sect2>Internal Tags
 <p>
 The following tags are of no general use. They are used
@@ -4719,6 +4748,30 @@ etc.) are taken from the first curve.
 <item>Note: The NURBS curves are not deleted afterwards.
 </itemize>
 
+<sect1>The Tesselation Tool<label id="tesst">
+<p>
+<itemize>
+<item>Arguments: The tesselation tool takes all NURBS patches from
+the selection.
+<item>Operation: A modal dialog box (see image above) will pop up,
+that allows to select a tesselation method via a drop-down menu
+and tune the corresponding tesselation parameter using a slider and
+an entry widget.
+The selected NURBS patches will be tesselated with the chosen parameters.
+The PolyMesh objects created by the tesselation will immediately be
+displayed in all view windows instead of the original NURBS patches.
+If the <tt/"Ok"/ button is pressed to close the tesselation tool, all
+selected NURBS patch objects will be replaced by their tesselated
+counterparts;
+if <tt/"Cancel"/ is used, all NURBS patch objects remain unchanged.
+If the check box <tt/"SaveToTag"/ is activated, closing the tesselation
+tool using <tt/"Cancel"/ will also add a <tt/"TP"/ tag containing
+the currently selected method and parameter value to all selected
+NURBS patch objects.
+<item>Note: The tesselation tool will block all other parts of Ayam
+while it is running.
+</itemize>
+
 
 <sect>The Tcl Scripting Interface<label id="script">
 <p>
@@ -6428,6 +6481,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 
 <label id="indexd">D
 <itemize>
+<item>DC: <ref id="dctag" name="tag type">
 <item>DefaultAction: <ref id="prefmodel" name="preference setting">
 <item>DefaultMat: <ref id="prefrib" name="preference setting">
 <item>delegTrafo: <ref id="scitrafo" name="scripting interface command">
@@ -6865,6 +6919,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <ref id="scitags" name="scripting interface commands">
 <item>TC: <ref id="tctag" name="tag type">
 <item>TclPrecision: <ref id="prefmisc" name="preference setting">
+<item>Tesselate: <ref id="tesst" name="tesselation tool">
 <item>TessPoMesh <ref id="expwav" name="Wavefront OBJ export option">
 <item>Textures: <ref id="rio" name="RenderMan interface option">
 <item>TextureCoordinates: <ref id="tctag" name="tag type">,
@@ -6892,6 +6947,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>ToolBoxTrans: <ref id="prefmisc" name="preference setting">
 <item>Top: <ref id="vmtype" name="view menu entry">
 <item>Torus: <ref id="torusobj" name="object">
+<item>TP: <ref id="tptag" name="tag type">
 <item>Transformations: <ref id="trap" name="transformations property">
 <item>Translation: <ref id="trap" name="transformations property">
 <item>Tree View: <ref id="treeview" name="Tree View">
