@@ -185,6 +185,9 @@ int ay_notify_forcetcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ns.c */
+Tk_RestrictAction ay_ns_restrictall(ClientData clientData,
+				    XEvent *eventPtr);
+
 int ay_ns_execute(ay_object *o, char *script);
 
 void ay_ns_init(Tcl_Interp *interp);
