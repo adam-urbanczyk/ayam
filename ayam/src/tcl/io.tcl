@@ -1079,11 +1079,11 @@ proc io_exportOBJ { selected } {
 
     if { $tcl_platform(os) != "Darwin" } {
 	set filename [tk_getSaveFile -filetypes $types -parent .\
-		-initialfile [file tail $filename]\
+		-initialfile [file rootname [file tail $filename]].obj\
 		-initialdir $dirname -title "Export to:"]
     } else {
 	set filename [tk_getSaveFile -filetypes $types -parent .\
-		-initialfile [file tail $filename]\
+		-initialfile [file rootname [file tail $filename]].obj\
 		-title "Export to:"]
     }
 
