@@ -108,21 +108,21 @@ ay_objio_writevertices(FILE *fileptr, unsigned int n, int stride, double *v)
     case 2:
       for(i = 0; i < n; i++)
 	{
-	  fprintf(fileptr, "v %lg %lg\n", v[j], v[j+1]);
+	  fprintf(fileptr, "v %g %g\n", v[j], v[j+1]);
 	  j += stride;
 	}
       break;
     case 3:
       for(i = 0; i < n; i++)
 	{
-	  fprintf(fileptr, "v %lg %lg %lg\n", v[j], v[j+1], v[j+2]);
+	  fprintf(fileptr, "v %g %g %g\n", v[j], v[j+1], v[j+2]);
 	  j += stride;
 	}
       break;
     case 4:
       for(i = 0; i < n; i++)
 	{
-	  fprintf(fileptr, "v %lg %lg %lg %lg\n", v[j], v[j+1], v[j+2],
+	  fprintf(fileptr, "v %g %g %g %g\n", v[j], v[j+1], v[j+2],
 		  v[j+3]);
 	  j += stride;
 	}
@@ -174,7 +174,7 @@ ay_objio_writencurve(FILE *fileptr, ay_object *o, double *m)
   /* write rational bspline curve */
   fprintf(fileptr, "cstype rat bspline\n");
   fprintf(fileptr, "deg %d\n", nc->order-1);
-  fprintf(fileptr, "curv %lg %lg", nc->knotv[0],
+  fprintf(fileptr, "curv %g %g", nc->knotv[0],
 	  nc->knotv[nc->length+nc->order-1]);
 
   for(i = nc->length; i > 0; i--)
@@ -187,7 +187,7 @@ ay_objio_writencurve(FILE *fileptr, ay_object *o, double *m)
   fprintf(fileptr, "parm u");
   for(i = 0; i < (nc->length + nc->order); i++)
     {
-      fprintf(fileptr, " %lg", nc->knotv[i]);
+      fprintf(fileptr, " %g", nc->knotv[i]);
     }
   fprintf(fileptr, "\n");
 
@@ -226,7 +226,7 @@ ay_objio_writetcurve(FILE *fileptr, ay_object *o, double *m)
       pw[1] = p1[1]/p1[3];
       AY_APTRAN3(v,pw,ma)
       v[2] = p1[3];
-      fprintf(fileptr, "vp %lg %lg %lg\n", v[0], v[1], v[2]);
+      fprintf(fileptr, "vp %g %g %g\n", v[0], v[1], v[2]);
       p1 += stride;
     }
 
@@ -245,7 +245,7 @@ ay_objio_writetcurve(FILE *fileptr, ay_object *o, double *m)
   fprintf(fileptr, "parm u");
   for(i = 0; i < (nc->length + nc->order); i++)
     {
-      fprintf(fileptr, " %lg", nc->knotv[i]);
+      fprintf(fileptr, " %g", nc->knotv[i]);
     }
   fprintf(fileptr, "\nend\n");
 
@@ -344,9 +344,9 @@ ay_objio_writetrimids(FILE *fileptr, ay_object *o)
 	  umin = nc->knotv[0];
 	  umax = nc->knotv[nc->length+nc->order-1];
 	  if(hole)
-	    fprintf(fileptr, "hole %lg %lg -%d\n", umin, umax, tc);
+	    fprintf(fileptr, "hole %g %g -%d\n", umin, umax, tc);
 	  else
-	    fprintf(fileptr, "trim %lg %lg -%d\n", umin, umax, tc);
+	    fprintf(fileptr, "trim %g %g -%d\n", umin, umax, tc);
 	  tc--;
 	}
 
@@ -371,7 +371,7 @@ ay_objio_writetrimids(FILE *fileptr, ay_object *o)
 		  umin = nc->knotv[0];
 		  umax = nc->knotv[nc->length+nc->order-1];
 
-		  fprintf(fileptr, " %lg %lg -%d", umin, umax, tc);
+		  fprintf(fileptr, " %g %g -%d", umin, umax, tc);
 
 		  tc--;
 		}
@@ -438,7 +438,7 @@ ay_objio_writenpatch(FILE *fileptr, ay_object *o, double *m)
   /* write bspline surface */
   fprintf(fileptr, "cstype rat bspline\n");
   fprintf(fileptr, "deg %d %d\n", np->uorder-1, np->vorder-1);
-  fprintf(fileptr, "surf %lg %lg %lg %lg", np->uknotv[0],
+  fprintf(fileptr, "surf %g %g %g %g", np->uknotv[0],
 	  np->uknotv[np->width + np->uorder-1], np->vknotv[0],
 	  np->vknotv[np->height + np->vorder-1]);
 
@@ -452,7 +452,7 @@ ay_objio_writenpatch(FILE *fileptr, ay_object *o, double *m)
   fprintf(fileptr, "parm u");
   for(i = 0; i < (np->width + np->uorder); i++)
     {
-      fprintf(fileptr, " %lg", np->uknotv[i]);
+      fprintf(fileptr, " %g", np->uknotv[i]);
     }
   fprintf(fileptr, "\n");
 
@@ -460,7 +460,7 @@ ay_objio_writenpatch(FILE *fileptr, ay_object *o, double *m)
   fprintf(fileptr, "parm v");
   for(i = 0; i < (np->height + np->vorder); i++)
     {
-      fprintf(fileptr, " %lg", np->vknotv[i]);
+      fprintf(fileptr, " %g", np->vknotv[i]);
     }
   fprintf(fileptr, "\n");
 
@@ -476,7 +476,7 @@ ay_objio_writenpatch(FILE *fileptr, ay_object *o, double *m)
 } /* ay_objio_writenpatch */
 
 
-/* ay_objio_writencurve:
+/* ay_objio_writelevel:
  *
  */
 int
@@ -678,7 +678,7 @@ ay_objio_writepomesh(FILE *fileptr, ay_object *o, double *m)
   for(i = 0; i < po->ncontrols; i++)
     {
       AY_APTRAN3(v,p1,m)
-      fprintf(fileptr, "v %lg %lg %lg\n", v[0], v[1], v[2]);
+      fprintf(fileptr, "v %g %g %g\n", v[0], v[1], v[2]);
       p1 += stride;
     }
 
@@ -688,7 +688,7 @@ ay_objio_writepomesh(FILE *fileptr, ay_object *o, double *m)
       p1 = po->controlv;
       for(i = 0; i < po->ncontrols; i++)
 	{
-	  fprintf(fileptr, "vn %lg %lg %lg\n", p1[0], p1[1], p1[2]);
+	  fprintf(fileptr, "vn %g %g %g\n", p1[0], p1[1], p1[2]);
 	  p1 += 6;
 	}
     }
