@@ -3842,7 +3842,7 @@ ay_npt_elevateutcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_nurbpatch_object *patch = NULL;
  int t = 1;
- char fname[] = "elevNPU";
+ char fname[] = "elevateNPU";
 
   if(argc >= 2)
     Tcl_GetInt(interp, argv[1], &t);
@@ -3870,6 +3870,126 @@ ay_npt_elevateutcmd(ClientData clientData, Tcl_Interp *interp,
 
  return TCL_OK;
 } /* ay_npt_elevateutcmd */
+
+
+/* ay_npt_elevatev:
+ *
+ */
+int
+ay_npt_elevatev(ay_nurbpatch_object *patch, int t)
+{
+ int ay_status = AY_OK;
+ double *Vh = NULL, *Qw = NULL, *realQw = NULL, *realVh = NULL;
+ int nh = 0, i, ind1, ind2;
+ char fname[] = "elevateNPV";
+
+  /* alloc new knotv & new controlv */
+  if(!(Vh = calloc((patch->height + patch->height*t +
+		    patch->vorder + t), 
+		   sizeof(double))))
+    {
+      ay_error(AY_EOMEM, fname, NULL);
+      return AY_EOMEM;
+    }
+  if(!(Qw = calloc((patch->height + patch->height*t) * patch->width * 4,
+		   sizeof(double))))
+    {
+      free(Vh);
+      ay_error(AY_EOMEM, fname, NULL);
+      return AY_EOMEM;
+    }
+
+  /* fill Vh & Qw */
+  ay_status = ay_nb_DegreeElevateSurfV(4, patch->width-1,
+				       patch->height-1,
+				       patch->vorder-1, patch->vknotv,
+				       patch->controlv, t, &nh, Vh, Qw);
+
+  if(ay_status)
+    {
+      ay_error(ay_status,fname,"degree elevation failed");
+      free(Vh); free(Qw); return AY_ERROR;
+    }
+  
+  if(!(realQw = calloc(nh*patch->width*4, sizeof(double))))
+    {
+      ay_error(AY_ERROR, fname, "Memory may have leaked!");
+      ay_error(AY_EOMEM, fname, NULL);
+      return AY_EOMEM;
+    }
+
+  for(i = 0; i < patch->width; i++)
+    {
+      ind1 = (i*nh)*4;
+      ind2 = (i*(patch->height+patch->height*t))*4;
+      memcpy(&(realQw[ind1]), &(Qw[ind2]), nh*4*sizeof(double));
+    }
+
+  free(Qw);
+  
+  if(!(realVh = realloc(Vh, (nh+patch->vorder+t)*sizeof(double))))
+    {
+      ay_error(AY_ERROR, fname, "Memory may have leaked!");
+      ay_error(AY_EOMEM, fname, NULL);
+      return AY_EOMEM;
+    }
+
+
+  free(patch->vknotv);
+  patch->vknotv = realVh;
+
+  free(patch->controlv);
+  patch->controlv = realQw;
+
+  patch->vknot_type = AY_KTCUSTOM;
+	  
+  patch->vorder += t;
+	  
+  patch->height = nh;
+
+ return ay_status;
+} /* ay_npt_elevatev */
+
+
+/* ay_npt_elevatevtcmd:
+ *
+ */
+int
+ay_npt_elevatevtcmd(ClientData clientData, Tcl_Interp *interp,
+		    int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ ay_list_object *sel = ay_selection;
+ ay_nurbpatch_object *patch = NULL;
+ int t = 1;
+ char fname[] = "elevNPV";
+
+  if(argc >= 2)
+    Tcl_GetInt(interp, argv[1], &t);
+
+  while(sel)
+    {
+      if(sel->object->type == AY_IDNPATCH)
+	{
+	  if(sel->object->selp)
+	    ay_selp_clear(sel->object);
+
+	  patch = (ay_nurbpatch_object *)sel->object->refine;
+	  ay_status = ay_npt_elevatev(patch, t);
+	}
+      else
+	{
+	  ay_error(AY_ERROR, fname, "object is not a NURBPatch");
+
+	} /* if */
+
+      sel = sel->next;
+    } /* while */
+
+  ay_notify_parent();
+
+ return TCL_OK;
+} /* ay_npt_elevatevtcmd */
 
 
 /* ay_npt_swapuvtcmd:

@@ -854,10 +854,13 @@ int ay_status = AY_OK;
   Tcl_CreateCommand(interp, "topoly", ay_npt_topolytcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "swapUV", ay_npt_swapuvtcmd,
+  Tcl_CreateCommand(interp, "elevateNPU", ay_npt_elevateutcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "elevateNPU", ay_npt_elevateutcmd,
+  Tcl_CreateCommand(interp, "elevateNPV", ay_npt_elevatevtcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "swapUV", ay_npt_swapuvtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
 /* inform Tcl-context about compile time configuration: */
