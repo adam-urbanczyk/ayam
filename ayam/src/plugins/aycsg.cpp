@@ -58,6 +58,8 @@ int aycsg_applyrule8(ay_object *t);
 
 int aycsg_normalize(ay_object *t);
 
+int aycsg_removetlu(ay_object *o, ay_object **t);
+
 int aycsg_binarify(ay_object *parent, ay_object *left, ay_object **target);
 
 int aycsg_copytree(int sel_only, ay_object *t, int *is_csg,
@@ -150,14 +152,18 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
 
   ay_status = aycsg_copytree(view->drawsel,
 		       view->drawlevel?ay_currentlevel->object:ay_root->next,
-			     &is_csg, &aycsg_root);
+		       &is_csg, &aycsg_root);
 
-  ay_status = aycsg_normalize(aycsg_root);
+  ay_status = aycsg_removetlu(aycsg_root, &aycsg_root);
 
 #ifdef AYCSGDBG
   ay_ppoh_print(aycsg_root, stdout, 0, cbv);
-  return AY_OK;
+  aycsg_cleartree(aycsg_root);
+  aycsg_root = NULL;
+  return TCL_OK;
 #endif
+
+  ay_status = aycsg_normalize(aycsg_root);
 
   ay_status = aycsg_flatten(aycsg_root, togl, AY_LTUNION);
 
@@ -727,6 +733,59 @@ aycsg_normalize(ay_object *t)
 } // aycsg_normalize
 
 
+// aycsg_removetlu:
+//  remove normal level and union objects in the toplevel of the
+//  hierarchy (above all other CSG operations)
+int
+aycsg_removetlu(ay_object *o, ay_object **t)
+{
+ int ay_status = AY_OK;
+ //ay_level_object *l = NULL;
+
+  // eliminate unions and levels above CSG trees
+  while(o)
+    {
+      if(o->type == AY_IDLEVEL)
+	{
+	  //l = (ay_level_object *)(o->refine);
+	  //if((l->type == AY_LTLEVEL) || (l->type == AY_LTLUNION))
+	  if((o->CSGTYPE == AY_LTUNION) || (o->CSGTYPE == AY_LTPRIM))
+	    {
+	      // delegate transformation attributes
+	      ay_trafo_delegate(o);
+
+	      // replace o with its children
+	      if(o->down && o->down->next)
+		{
+		  // we can do this, because we deal with a binary tree...
+		  o->down->next->next = o->next;
+		}
+	      else
+		{
+		  return AY_ENULL;
+		}
+	      *t = o->down;
+
+	      free(o);
+	      o = *t;
+	    }
+	  else
+	    {
+	      t = &(o->next);
+	      o = o->next;
+	    } // if
+	}
+      else
+	{
+	  t = &(o->next);
+	  o = o->next;
+	} // if
+    } // while
+
+ return ay_status;
+} // aycsg_removetlu
+
+
 // aycsg_binarify:
 //  _recursively_ convert n-ary subtree below <parent> to binary form,
 //  creating copies of <parent> that are inserted in the existing list
@@ -906,18 +965,13 @@ aycsg_cleartree(ay_object *t)
 
   while(t)
     {
-      if((t->type == AY_IDLEVEL) && t->down && (t->CSGTYPE != AY_LTPRIM))
+      if(t->type == AY_IDLEVEL && t->down)
 	{
 	  aycsg_cleartree(t->down);
-
-	  temp = t->next;
-	  free(t);
-	  t = temp;
-	}
-      else
-	{
-	  t = t->next;
 	} // if
+      temp = t->next;
+      free(t);
+      t = temp;
     } // while
 
  return;
