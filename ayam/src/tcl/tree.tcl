@@ -232,14 +232,20 @@ proc tree_toggleSelection { tree node } {
 	if { [llength $nlist] != "0" } {
 	    set parent [$tree parent $node]
 	    if { $parent == $SelectedLevel } {
-		$tree selection add $node
+
+		lappend nlist $node
+		set newsel [lsort $nlist]
+		eval [subst "$tree selection set $newsel"]
 	    } else {
 	ayError 1 "toggleSelection" "Can not select from different levels!"
 	    }
+	    # if parent
 	} else {
 	    $tree selection add $node
 	}
+	# if llength nlist
     }
+    # if lsearch
     $tree bindText  <ButtonPress-1> ""
     $tree bindText  <ButtonRelease-1> "tree_selectItem 1 $tree"
 
@@ -284,12 +290,12 @@ proc tree_multipleSelection { tree node } {
     set index2 [$tree index $node]
 
     if { $index1 < $index2 } {
-	set selnodes [$tree nodes $parent $index1 $index2]
+	set selnodes [lsort [$tree nodes $parent $index1 $index2]]
     } else {
-	set selnodes [$tree nodes $parent $index2 $index1]
+	set selnodes [lsort [$tree nodes $parent $index2 $index1]]
     }
 
-    eval [subst "$tree selection add $selnodes"]
+    eval [subst "$tree selection set $selnodes"]
     tree_handleSelection
     plb_update
 
