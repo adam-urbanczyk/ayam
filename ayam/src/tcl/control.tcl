@@ -432,3 +432,66 @@ proc unrenameWhileFor { } {
  return;
 }
 # unrenameWhileFor
+
+
+# select Next or Previous or First or Last
+proc selNPFL { npfl } {
+    global ay
+    if { $ay(lb) == 0 } {
+	set tree $ay(tree)
+	set cl $ay(CurrentLevel)
+
+	set sel ""
+	set sel [$tree selection get]
+	set lastn [lindex [$tree nodes $cl] end]
+	set i [string last ":" $lastn]
+	set last [string range $lastn [expr $i+1] end]
+
+	if { $sel == "" } {
+	    set sel ${ay(CurrentLevel)}:0
+	} else {
+	    set sel [lindex $sel 0]
+	    set i [string last ":" $sel]
+	    set cur [string range $sel [expr $i+1] end]
+	    set sel [string range $sel 0 $i]
+	    if { $npfl == 0 } {
+		# select next
+		set nxt [expr $cur+1]
+		if { $nxt <= $last } {
+		    append sel $nxt
+		} else {
+		    set sel ""
+		}
+	    }
+	    if { $npfl == 1 } {
+		# select previous
+		set prev [expr $cur-1]
+		if { $prev >= 0 } {
+		    append sel $prev
+		} else {
+		    set sel ""
+		}
+	    }
+	    if { $npfl == 2 } {
+		# select first
+		append sel 0
+	    }
+	    if { $npfl == 3 } {
+		# select last
+		append sel $last
+	    }
+	}
+
+	if { $sel != "" } {
+	    $tree selection set $sel
+	    $tree see $sel
+	    treeSelect $sel
+	    plb_update
+	    rV
+	}
+
+    } else {
+	puts notyet
+    }
+}
+# selNPFL

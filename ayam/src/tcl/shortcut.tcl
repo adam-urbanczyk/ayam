@@ -160,6 +160,120 @@ proc shortcut_main { w } {
 	}
     }
 
+    bind $w <Control-a> {
+	global ay
+	if { $ay(lb) == 0 } {
+	    set tree $ay(tree)
+	    set nodes [$tree nodes $ay(CurrentLevel)]
+
+	    if { $ay(CurrentLevel) == "root" } {
+		set nodes [lrange $nodes 1 end]
+	    }
+	    if { [llength $nodes] > 0 } {
+		eval [subst "$tree selection set $nodes"]
+		eval [subst "treeSelect $nodes"]
+	    }
+	    plb_update
+	    if { $ay(need_redraw) } {
+		puts redrawing
+		rV
+	    } else {
+		puts "not redrawing"
+	    }
+	} else {
+	    puts notyet
+	}
+    }
+
+    bind $w <Left> {
+	global ay
+	if { $ay(lb) == 0 } {
+	    set tree $ay(tree)
+	    set cl $ay(CurrentLevel)
+
+	    if { $cl == "root" } {
+		break
+	    }
+	    set i [string last ":" $cl]
+	    set newcl [string range $cl 0 [expr ${i}-1]]
+	    tree_paintLevel $newcl
+	    goUp
+	    set ay(CurrentLevel) $newcl
+	    set ay(SelectedLevel) $newcl
+	    $tree selection set $cl
+	    treeSelect $cl
+	    tree_paintLevel $newcl
+	    plb_update
+	    rV
+
+	} else {
+	    puts notyet
+	}
+    }
+
+    bind $w <Right> {
+	global ay
+	if { $ay(lb) == 0 } {
+	    set tree $ay(tree)
+	    set cl $ay(CurrentLevel)
+
+	    set sel ""
+	    set sel [$tree selection get]
+
+	    if { $sel == "" } {
+		break
+	    }
+
+	    set sel [lindex $sel 0]
+
+	    $tree selection set $sel
+	    treeSelect $sel
+
+	    if { ! [hasChild] } {
+		break
+	    }
+	    $tree itemconfigure $sel -open 1
+	    goDown
+	    set ay(CurrentLevel) $sel
+	    set ay(SelectedLevel) $sel
+	    tree_paintLevel $cl
+	    $tree selection set ${sel}:0
+	    treeSelect ${sel}:0
+	    tree_paintLevel $sel
+	    plb_update
+	    rV
+
+	} else {
+	    puts notyet
+	}
+    }
+
+    bind $w <Down> "selNPFL 0"
+    bind $w <Up> "selNPFL 1"
+    bind $w <Home> "selNPFL 2"
+    bind $w <End> "selNPFL 3"
+
+    bind $w <space> {
+	global ay
+	if { $ay(lb) == 0 } {
+	    set tree $ay(tree)
+	    set sel ""
+	    set sel [$tree selection get]
+	    foreach node $sel {
+		if { ! [$tree itemcget $node -open] } {
+		    $tree itemconfigure $node -open 1
+		} else {
+		    $tree itemconfigure $node -open 0
+		}
+	    }
+	    # foreach
+	} else {
+	    puts notyet
+	}
+	# if
+    }
+    # bind
+
  return;
 }
 # shortcut_main
