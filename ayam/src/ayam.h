@@ -854,6 +854,7 @@ extern char *ay_riattr_tagtype;
 extern char *ay_riopt_tagtype;
 extern char *ay_tc_tagtype;
 extern char *ay_ridisp_tagtype;
+extern char *ay_rihider_tagtype;
 
 extern unsigned int ay_current_glname;
 
@@ -1031,7 +1032,7 @@ extern unsigned int ay_current_glname;
 #define AYDEFAULTPICKEPSILON 0.2;
 
 /* Version Strings */
-#define AYVERSIONSTR "1.3"
+#define AYVERSIONSTR "1.4pre"
 #define AYVERSIONSTRMI "0"
 
 #include "aycore.h"
