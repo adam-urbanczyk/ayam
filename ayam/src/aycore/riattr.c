@@ -28,7 +28,7 @@ ay_riattr_wrib(ay_object *o)
  RtInt itemp, i2temp[2] = {0};
  RtFloat ftemp, f2temp[2] = {0.0f,0.0f};
  RtPoint ptemp = {0.0f,0.0f,0.0f};
- char fname[] = "ay_riattr_wrib";
+ char fname[] = "ay_riattr_wrib", e1[] = "Missing value in RiAttribute tag!";
 
   if(!o)
     return AY_ENULL;
@@ -93,7 +93,7 @@ ay_riattr_wrib(ay_object *o)
 			    }
 			  else
 			    {
-			      ay_error(AY_ERROR, fname, "missing value");
+			      ay_error(AY_ERROR, fname, e1);
 			    }
 			  RiAttribute(attrname, parname,
 				      (RtPointer)&i2temp,
@@ -116,7 +116,7 @@ ay_riattr_wrib(ay_object *o)
 			    }
 			  else
 			    {
-			      ay_error(AY_ERROR, fname, "missing value");
+			      ay_error(AY_ERROR, fname, e1);
 			    }
 			  RiAttribute(attrname, parname,
 				      (RtPointer)&f2temp,
@@ -131,9 +131,23 @@ ay_riattr_wrib(ay_object *o)
 			  RiDeclare(parname, "point");
 			  sscanf(parval, "%f", &ptemp[0]);
 			  parval = strtok(NULL, tok);
-			  sscanf(parval, "%f", &ptemp[1]);
+			  if(parval)
+			    {
+			      sscanf(parval, "%f", &ptemp[1]);
+			    }
+			  else
+			    {
+			      ay_error(AY_ERROR, fname, e1);
+			    }
 			  parval = strtok(NULL, tok);
-			  sscanf(parval, "%f", &ptemp[2]);
+			  if(parval)
+			    {
+			      sscanf(parval, "%f", &ptemp[2]);
+			    }
+			  else
+			    {
+			      ay_error(AY_ERROR, fname, e1);
+			    }
 			  RiAttribute(attrname, parname,
 				      (RtPointer)&ptemp, RI_NULL);
 			  break;
@@ -141,9 +155,23 @@ ay_riattr_wrib(ay_object *o)
 			  RiDeclare(parname, "color");
 			  sscanf(parval, "%f", &color[0]);
 			  parval = strtok(NULL, tok);
-			  sscanf(parval, "%f", &color[1]);
+			  if(parval)
+			    {
+			      sscanf(parval, "%f", &color[1]);
+			    }
+			  else
+			    {
+			      ay_error(AY_ERROR, fname, e1);
+			    }
 			  parval = strtok(NULL, tok);
-			  sscanf(parval, "%f", &color[2]);
+			  if(parval)
+			    {
+			      sscanf(parval, "%f", &color[2]);
+			    }
+			  else
+			    {
+			      ay_error(AY_ERROR, fname, e1);
+			    }
 			  RiAttribute(attrname, parname,
 				      (RtPointer)&color, RI_NULL);
 			  break;
