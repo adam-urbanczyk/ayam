@@ -29,8 +29,8 @@ static Tcl_HashTable ay_mfio_read_ht;
 static Tcl_HashTable ay_mfio_write_ht;
 
 
-char ay_mfio_version_ma[] = AYVERSIONSTR;
-char ay_mfio_version_mi[] = AYVERSIONSTRMI;
+char ay_mfio_version_ma[] = AY_VERSIONSTR;
+char ay_mfio_version_mi[] = AY_VERSIONSTRMI;
 
 typedef int (ay_mfio_readcb) (MF3DVoidObjPtr object);
 
@@ -225,7 +225,7 @@ ay_mfio_readnurbpatch(MF3DVoidObjPtr object)
   ay_status = ay_object_defaults(newo);
 
   newo->parent = AY_TRUE;
-  newo->hidechilds = AY_TRUE;
+  newo->hide_children = AY_TRUE;
   newo->inherit_trafos = AY_FALSE;
 
  return ay_status;

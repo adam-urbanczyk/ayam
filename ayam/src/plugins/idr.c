@@ -18,8 +18,8 @@
 #include "ayam.h"
 #include "tiffio.h"
 
-char idr_ay_version_ma[] = AYVERSIONSTR;
-char idr_ay_version_mi[] = AYVERSIONSTRMI;
+char idr_ay_version_ma[] = AY_VERSIONSTR;
+char idr_ay_version_mi[] = AY_VERSIONSTRMI;
 
 /* IDR tag type (visible to the user) */
 static char *idr_idrtagtype;

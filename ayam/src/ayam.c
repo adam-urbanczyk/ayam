@@ -87,8 +87,8 @@ ay_object *ay_last_read_object;
 
 int ay_read_version;
 
-char ay_version_ma[] = AYVERSIONSTR;
-char ay_version_mi[] = AYVERSIONSTRMI;
+char ay_version_ma[] = AY_VERSIONSTR;
+char ay_version_mi[] = AY_VERSIONSTRMI;
 
 
 char *ay_instt_oitagtype;
@@ -865,7 +865,7 @@ Tcl_SetVar(interp, "AYENABLEPPREV", "1", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
       return TCL_ERROR;
     }
 
- Tcl_SetVar2(interp, "ay", "ay_version", AYVERSIONSTR, TCL_GLOBAL_ONLY |
+ Tcl_SetVar2(interp, "ay", "ay_version", AY_VERSIONSTR, TCL_GLOBAL_ONLY |
 	     TCL_LEAVE_ERR_MSG);
 
  return TCL_OK;

@@ -37,8 +37,8 @@ cc -o rrib rrib.c -I/home/randi/sdk/affine0008/include/
 
 /* global variables for this module: */
 
-char ay_rrib_version_ma[] = AYVERSIONSTR;
-char ay_rrib_version_mi[] = AYVERSIONSTRMI;
+char ay_rrib_version_ma[] = AY_VERSIONSTR;
+char ay_rrib_version_mi[] = AY_VERSIONSTRMI;
 
 /* current object:
  * all object reading functions enter data to this object,
