@@ -1,4 +1,4 @@
-[CVS, 04. 09. 2002]:
+[CVS, 10. 09. 2002]:
 o bug fixes:
   - fixed memory leaks in the shadow map RIB export module
   - fixed ICurves crash for length 2
@@ -51,7 +51,10 @@ o improved the MFIO (3DMF) Import Plugin: it now outputs more detailed
   supports now output of all NURBCurve/NURBPatch providing objects.
 o added shader parsing plugins: "ayslb" for Air, "ayslx" for Aqsis,
   "ayso" for RDC, "ayslo" for PRMan, and "ayslo3d" for 3Delight
-
+o added a new object type "ConcatNC" that concatenates multiple NURBS
+  curves or NURBS curve providing objects
+o added a new object type "Clone" that creates n instances of its child
+  object and transforms each instance by a specified transformation
 
 [09. 07. 2002] Ayam1.2:
 o bug fixes:
