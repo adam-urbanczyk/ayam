@@ -816,6 +816,9 @@ int ay_status = AY_OK;
   Tcl_CreateCommand(interp, "crtClosedBS", ay_nct_crtclosedbsptcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  Tcl_CreateCommand(interp, "rescaleKnNC", ay_nct_rescaleknvnctcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
   /* nurbs/npt.c */
 
   Tcl_CreateCommand(interp, "crtNSphere", ay_npt_crtnspheretcmd,
