@@ -353,7 +353,7 @@ if { [string length [array names env AYAMRC]] != 0 } {
 
 # important procedures
 
-# uCL: an updated update Selection, that just updates
+# uCL: an optimized "update Selection", that just updates
 # the current Level
 # addargs - additional args, passed through to uS
 proc uCL { mode {addargs ""} } {
