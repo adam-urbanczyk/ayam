@@ -129,6 +129,7 @@ on its name, then press <Ctrl+Shift+i> (Copy Marked Prop).}
 {Hold down the Alt-key to rotate the view while in any mode.}
 {Start Ayam with -failsafe to reset prefs to factory defaults.}
 {Ayam may be completely iconified using <Ctrl+Shift+z> (zap).}
+{To quickly create a material for an object press <Ctrl+m>.}
 }
 }
 
@@ -416,7 +417,10 @@ proc uCR { } {
 	foreach node $l {
 	    if { $node != ".." } {
 		if { $count >= $oldcount } {
-		    tree_createSub $ay(tree) $ay(CurrentLevel) $node $count
+		    $ay(tree) insert end $ay(CurrentLevel)\
+		    $ay(CurrentLevel):$count -text $node -drawcross auto\
+		    -open 0 -fill black
+		    #tree_createSub $ay(tree) $ay(CurrentLevel) $node
 		}
 		incr count
 	    }

@@ -48,23 +48,25 @@ proc tree_openTree { tree node } {
 
 #tree_createSub:
 # set up tree content
-proc tree_createSub { tree node l count } {
- global ay
-    set cs [lindex $l 0]
-    set ll [expr [llength $l]-1]
-    if { $node == $ay(CurrentLevel) } {
-	set color "black"
-    } else {
-	set color "darkgrey"
-    }
-    $tree insert end $node $node:$count -text $cs -drawcross auto -open 0 -fill $color -image emptybm
-    if { $ll != 0 } {
-        for {set x 0} {$x<$ll} {set x [expr $x+1]} {
-            tree_createSub $tree $node:$count [lindex $l [expr $x+1]] $x
-        }
-    }
+proc tree_createSub { tree node l } {
 
- return;
+    set x 0
+    set y -1
+    foreach n $l {
+	set ll [llength $n]
+	set inode [lindex $n 0]
+	if { $x > 0 } {
+	    $tree insert end $node $node:$y -text $inode -drawcross auto\
+	    -image emptybm
+
+	}
+	if { $ll > 1 } {
+	    tree_createSub $tree $node:$y $n
+	}
+        incr x
+	incr y
+    }
+    # foreach
 }
 # tree_createSub
 
@@ -99,17 +101,30 @@ proc tree_update { node } {
     after 100 tree_blockUI
 
     treeGetString curtree $node
-    set count 0
+    
     # redraw AFTER recreation, not while (can see building process)
     $ay(tree) configure -redraw 0
     $ay(tree) delete [$ay(tree) nodes $node]
+
     # insert tree items
+    if { $node == $ay(CurrentLevel) } {
+	set color "black"
+    } else {
+	set color "darkgrey"
+    }
+    set count 0
     foreach n $curtree {
-        tree_createSub $ay(tree) $node $n $count
+	set ll [llength $n]
+	set inode [lindex $n 0]
+	$ay(tree) insert end $node $node:$count -text $inode -drawcross auto\
+		-image emptybm -fill $color  
+	if { $ll > 1 } {
+	    tree_createSub $ay(tree) $node:$count $n
+	}
         incr count
     }
-    $ay(tree) configure -redraw 1
 
+    $ay(tree) configure -redraw 1
 
     # unblock UI
     grab release .fl
