@@ -620,6 +620,8 @@ ay_sdmesh_wribcb(char *file, ay_object *o)
  RtInt *nverts = NULL, *verts = NULL;
  RtPoint *controls = NULL;
  RtToken *tags = NULL;
+ RtToken holetoken = "hole", creasetoken = "crease", cornertoken = "corner",
+   ibtoken = "interpolateboundary";
  RtInt *nargs = NULL, *intargs = NULL;
  RtFloat *floatargs = NULL; 
  unsigned int i = 0, a = 0;
@@ -684,16 +686,16 @@ ay_sdmesh_wribcb(char *file, ay_object *o)
 	  switch(sdmesh->tags[i])
 	    {
 	    case AY_SDTHOLE:
-	      tags[i] = RI_HOLE;
+	      tags[i] = holetoken /*RI_HOLE*/;
 	      break;
 	    case AY_SDTCREASE:
-	      tags[i] = RI_CREASE;
+	      tags[i] = creasetoken /*RI_CREASE*/;
 	      break;
 	    case AY_SDTCORNER:
-	      tags[i] = RI_CORNER;
+	      tags[i] = cornertoken /*RI_CORNER*/;
 	      break;
 	    case AY_SDTIB:
-	      tags[i] = RI_INTERPOLATEBOUNDARY;
+	      tags[i] = ibtoken /*RI_INTERPOLATEBOUNDARY*/;
 	      break;
 	    default:
 	      break;
