@@ -83,7 +83,7 @@ ay_trafo_getall(ay_list_object *lo)
       glTranslated((GLdouble)o->movx, (GLdouble)o->movy, (GLdouble)o->movz);
       ay_quat_torotmatrix(o->quat, m);
       glMultMatrixd((GLdouble *)m);
-      glScaled ((GLdouble)o->scalx, (GLdouble)o->scaly, (GLdouble)o->scalz);
+      glScaled((GLdouble)o->scalx, (GLdouble)o->scaly, (GLdouble)o->scalz);
     }
 
  return;
@@ -163,7 +163,7 @@ ay_trafo_getalls(ay_list_object *lo)
 
   if((o != ay_root) && o->down)
     {
-      glScaled ((GLdouble)o->scalx, (GLdouble)o->scaly, (GLdouble)o->scalz);
+      glScaled((GLdouble)o->scalx, (GLdouble)o->scaly, (GLdouble)o->scalz);
     }
 
  return;
@@ -233,7 +233,7 @@ ay_trafo_getallsr(ay_list_object *lo)
 
   if((o != ay_root) && o->down)
     {
-      glScaled (o->scalx, o->scaly, o->scalz);
+      glScaled(o->scalx, o->scaly, o->scalz);
       ay_quat_torotmatrix(o->quat, m);
       glMultMatrixd((GLdouble *)m);
     }
@@ -486,7 +486,7 @@ ay_trafo_applyall(ay_list_object *lo, ay_object *o, double *p)
    glTranslated(o->movx, o->movy, o->movz);
    ay_quat_torotmatrix(o->quat, rm);
    glMultMatrixd((GLdouble *)rm);
-   glScaled (o->scalx, o->scaly, o->scalz);
+   glScaled(o->scalx, o->scaly, o->scalz);
    glGetDoublev(GL_MODELVIEW_MATRIX, m);
   glPopMatrix();
 
@@ -510,7 +510,7 @@ ay_trafo_applyalli(ay_list_object *lo, ay_object *o, double *p)
 
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
-   glScaled (1.0/o->scalx, 1.0/o->scaly, 1.0/o->scalz);
+   glScaled(1.0/o->scalx, 1.0/o->scaly, 1.0/o->scalz);
    ay_quat_toeuler(o->quat, euler);
    glRotated((GLdouble)AY_R2D(euler[0]), (GLdouble)0.0, (GLdouble)0.0,
 	     (GLdouble)1.0);
@@ -1042,3 +1042,44 @@ ay_trafo_invmatrix4(double *m, double *mi)
 } /* ay_trafo_invmatrix4 */
 
 #undef MAT
+
+/* ay_trafo_apply:
+ *  
+ */
+int
+ay_trafo_apply(ay_object *o, double *p, int stride, int reusem)
+{
+ static double m[16];
+ double rm[16];
+ char fname[] = "ay_trafo_apply";
+
+  if (!o || !p)
+    return AY_ENULL;
+
+  if (!reusem)
+    {
+      glMatrixMode(GL_MODELVIEW);
+      glPushMatrix();
+       glTranslated(o->movx, o->movy, o->movz);
+       ay_quat_torotmatrix(o->quat, rm);
+       glMultMatrixd((GLdouble *)rm);
+       glScaled(o->scalx, o->scaly, o->scalz);
+       glGetDoublev(GL_MODELVIEW_MATRIX, m);
+      glPopMatrix();
+    }
+
+  switch (stride)
+    {
+    case 3:
+      ay_trafo_apply3(p, m);
+      break;
+    case 4:
+      ay_trafo_apply3(p, m);
+      break;
+    default:
+      ay_error(AY_ERROR, fname, "cannot handle this stride");
+      break;
+    }
+
+ return AY_OK;
+} /* ay_trafo_apply */
