@@ -211,6 +211,7 @@ proc riopt_addp { } {
 		    set sel [$lb curselection]
 		    selOb
 		    selOb 0
+		    undo save AddRiOpt
 		    addTag RiOption "$optname,$optpara,$type,$val"
 		    selOb $sel
 
@@ -219,6 +220,7 @@ proc riopt_addp { } {
 		    set sel ""
 		    set sel [$t selection get]
 		    treeSelect "root:0"
+		    undo save AddRiOpt
 		    addTag RiOption "$optname,$optpara,$type,$val"
 		    if { $sel != "" } {
 			$t selection set $sel
