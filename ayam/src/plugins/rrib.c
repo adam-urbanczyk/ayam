@@ -83,6 +83,8 @@ int ay_rrib_readlights;
 int ay_rrib_readobjects;
 
 
+PRIB_INSTANCE grib;
+
 /* how to sort through the data */
 enum {
    PPWTBL_P,
@@ -111,7 +113,9 @@ void ay_rrib_pushattribs(void);
 void ay_rrib_popattribs(void);
 void ay_rrib_pushtrafos(void);
 void ay_rrib_poptrafos(void);
-
+void ay_rrib_readshader(char *sname, int stype,
+			RtInt n, RtToken tokens[], RtPointer parms[],
+			ay_shader **result);
 void ay_rrib_initgeneral(void);
 int ay_rrib_initgprims(void);
 int ay_rrib_cleargprims(void);
@@ -508,6 +512,7 @@ ay_rrib_RiLightSource(RtToken name,
  RtPoint *pnt = NULL;
  RtColor *col = NULL;
 
+  /* load some defaults */
   l.type = AY_LITCUSTOM;
   l.lshader = NULL;
   l.intensity = 1.0;
@@ -526,6 +531,8 @@ ay_rrib_RiLightSource(RtToken name,
   l.cone_angle = 30.0;
   l.cone_delta_angle = 5.0;
   l.beam_distribution = 2.0;
+
+  l.samples = 1.0;
 
   printf("%s\n",name);
 
@@ -546,36 +553,42 @@ ay_rrib_RiLightSource(RtToken name,
       l.type = AY_LITPOINT;
     }
 
-
-  for(i = 0; i < n; i++)
+  if(l.type != AY_LITCUSTOM)
     {
-      if(!strcmp(tokens[i],"intensity"))
+      for(i = 0; i < n; i++)
 	{
-	  l.intensity = (double)(*((float*)(parms[i])));
-	}
-      if(!strcmp(tokens[i],"from"))
-	{
-	  pnt = (RtPoint*)(parms[i]);
-	  l.tfrom[0] = (double)((*pnt)[0]);
-	  l.tfrom[1] = (double)((*pnt)[1]);
-	  l.tfrom[2] = (double)((*pnt)[2]);
-	}
-      if(!strcmp(tokens[i],"to"))
-	{
-	  pnt = (RtPoint*)(parms[i]);
-	  l.tto[0] = (double)((*pnt)[0]);
-	  l.tto[1] = (double)((*pnt)[1]);
-	  l.tto[2] = (double)((*pnt)[2]);
-	}
-      if(!strcmp(tokens[i],"lightcolor"))
-	{
-	  col = (RtColor*)(parms[i]);
-	  l.colr = (int)((*col)[0])*255.0;
-	  l.colg = (int)((*col)[1])*255.0;
-	  l.colb = (int)((*col)[2])*255.0;
-	}
+	  if(!strcmp(tokens[i],"intensity"))
+	    {
+	      l.intensity = (double)(*((float*)(parms[i])));
+	    }
+	  if(!strcmp(tokens[i],"from"))
+	    {
+	      pnt = (RtPoint*)(parms[i]);
+	      l.tfrom[0] = (double)((*pnt)[0]);
+	      l.tfrom[1] = (double)((*pnt)[1]);
+	      l.tfrom[2] = (double)((*pnt)[2]);
+	    }
+	  if(!strcmp(tokens[i],"to"))
+	    {
+	      pnt = (RtPoint*)(parms[i]);
+	      l.tto[0] = (double)((*pnt)[0]);
+	      l.tto[1] = (double)((*pnt)[1]);
+	      l.tto[2] = (double)((*pnt)[2]);
+	    }
+	  if(!strcmp(tokens[i],"lightcolor"))
+	    {
+	      col = (RtColor*)(parms[i]);
+	      l.colr = (int)((*col)[0])*255.0;
+	      l.colg = (int)((*col)[1])*255.0;
+	      l.colb = (int)((*col)[2])*255.0;
+	    }
 
-    } /* for */
+	} /* for */
+    }
+  else
+    {
+      ay_rrib_readshader(name, AY_STLIGHT, n, tokens, parms, &(l.lshader));
+    }
 
   ay_rrib_co.refine = (void *)(&l);
   ay_rrib_co.type = AY_IDLIGHT;
@@ -702,9 +715,19 @@ RtVoid ay_rrib_RiCurvesV( RtToken type, RtInt ncurves, RtInt nvertices[],
 
 RtToken ay_rrib_RiDeclare( char *name, char *declaration )
 {
-   (void)declaration;
+ char *newname = NULL;
+ char fname[] = "ay_rrib_RiDeclare";
 
-   return name;
+  if(!(newname = calloc(strlen(name)+1, sizeof(char))))
+    return NULL;
+  strcpy(newname, name);
+ 
+  if(!RibDeclare(grib, newname, declaration))
+    {
+      ay_error(AY_ERROR, fname, "Declaration failed!");
+    }
+
+ return name;
 }
 
 
@@ -1443,6 +1466,178 @@ RtVoid ay_rrib_RiProcDynamicLoad( RtPointer data, RtFloat detail )
 
 
 void
+ay_rrib_readshader(char *sname, int stype,
+		   RtInt n, RtToken tokens[], RtPointer parms[],
+		   ay_shader **result)
+{
+ int ay_status = AY_OK;
+ int i = 0, j = 0, k = 0, argtype;
+ ay_shader *s = NULL;
+ ay_shader_arg *sarg = NULL, **nextsarg = NULL;
+ RIB_HASHHND ht = NULL;
+ PRIB_HASHATOM  p = NULL;
+ int type, link;
+ char fname[] = "ay_rrib_readshader";
+ double dtemp = 0.0, mtemp[16];
+ int itemp = 0;
+ char *stemp = NULL;
+ RtColor *col;
+ RtPoint *pnt;
+ RtMatrix *mat;
+
+  if(!(s = calloc(1, sizeof(ay_shader))))
+    return;
+
+  s->type = stype;
+
+  if(!(s->name = calloc(strlen(sname)+1,sizeof(char))))
+    {
+      free(s);
+      return;
+    }
+
+  strcpy(s->name, sname);
+
+  nextsarg = &(s->arg);
+
+
+  ht = RibGetHashHandle(grib);
+
+  for(i = 0; i < n; i++)
+    {
+
+      p = NULL;
+      p = RibFindMatch(ht, kRIB_HASH_VARIABLE,
+		       kRIB_UNKNOWNCLASS | kRIB_UNKNOWNTYPE,
+		       (void*)(tokens[i]));
+
+      if(p)
+	{
+	  type = kRIB_TYPE_MASK & p->code;
+	  link = AY_FALSE;
+	  if(p->with.n == 1)
+	    {
+	      link = AY_TRUE;
+
+	      if(!(sarg = calloc(1, sizeof(ay_shader_arg))))
+		return;
+
+	      switch(type)
+		{
+		case kRIB_INTTYPE:
+		case kRIB_FLOATTYPE:
+		  sarg->type = AY_SASCALAR;
+		  dtemp = (double)(*((RtFloat *)(parms[i])));
+		  sarg->val.scalar = dtemp;
+		  break;
+		case kRIB_STRINGTYPE:
+		  sarg->type = AY_SASTRING;
+		  stemp = NULL;
+		  if(!(stemp = calloc(strlen(((char *)(parms[i])))+1,
+				      sizeof(char))))
+		    {
+		      link = AY_FALSE;
+		      break;
+		    }
+		  strcpy(stemp,parms[i]);
+		  sarg->val.string = stemp;
+		  break;
+		case kRIB_COLORTYPE:
+		  sarg->type = AY_SACOLOR;
+		  col = (RtColor *)(parms[i]);
+		  sarg->val.color[0] = (float)((*col)[0]);
+		  sarg->val.color[1] = (float)((*col)[1]);
+		  sarg->val.color[2] = (float)((*col)[2]);
+		  break;
+		  
+		case kRIB_POINTTYPE:
+		  sarg->type = AY_SAPOINT;
+		  pnt = (RtPoint *)(parms[i]);
+		  sarg->val.point[0] = (float)((*pnt)[0]);
+		  sarg->val.point[1] = (float)((*pnt)[1]);
+		  sarg->val.point[2] = (float)((*pnt)[2]);
+		  sarg->val.point[3] = (float)1.0;
+		  break;
+		case kRIB_NORMALTYPE:
+		  sarg->type = AY_SANORMAL;
+		  pnt = (RtPoint *)(parms[i]);
+		  sarg->val.point[0] = (float)((*pnt)[0]);
+		  sarg->val.point[1] = (float)((*pnt)[1]);
+		  sarg->val.point[2] = (float)((*pnt)[2]);
+		  sarg->val.point[3] = (float)1.0;
+		  break;
+		case kRIB_VECTORTYPE:
+		  sarg->type = AY_SAVECTOR;
+		  pnt = (RtPoint *)(parms[i]);
+		  sarg->val.point[0] = (float)((*pnt)[0]);
+		  sarg->val.point[1] = (float)((*pnt)[1]);
+		  sarg->val.point[2] = (float)((*pnt)[2]);
+		  sarg->val.point[3] = (float)1.0;
+		  break;
+		case kRIB_MATRIXTYPE:
+		  sarg->type = AY_SAMATRIX;
+		  mat = (RtMatrix *)(parms[i]);
+		  for(j = 0; j < 4; j++)
+		    {
+		      for(k = 0; k < 4; k++)
+			{
+			  sarg->val.matrix[j*4+k] = (float)((*mat)[j][k]);
+			} /* for */
+		    } /* for */
+		  break;
+		default:
+		  ay_error(AY_ERROR, fname,
+			   "Skipping parameter of unknown type:");
+		  ay_error(AY_ERROR, fname, tokens[i]);
+		  link = AY_FALSE;
+		  break;
+		} /* switch */
+	    
+
+	      /* link argument to shader */
+	      if(link)
+		{
+		  stemp = NULL;
+		  if(!(stemp = calloc(strlen(tokens[i])+1,sizeof(char))))
+		    {
+		      if(sarg->type == AY_SASTRING && sarg->val.string)
+			free(sarg->val.string);
+		      free(sarg);
+		    }
+		  else
+		    {
+		      strcpy(stemp, tokens[i]);
+		      sarg->name = stemp;
+		      *nextsarg = sarg;
+		      nextsarg = &(sarg->next);
+		    }
+		}
+	      else
+		{
+		  free(sarg);
+		}
+	    }
+	  else
+	    {
+	      ay_error(AY_ERROR, fname, "Skipping array parameter:");
+	      ay_error(AY_ERROR, fname, tokens[i]);
+	    }
+	}
+      else
+	{
+	  ay_error(AY_ERROR, fname, "Skipping undeclared token:");
+	  ay_error(AY_ERROR, fname, tokens[i]);
+	}
+
+      
+    } /* for */
+
+  *result = s;
+
+ return;
+}
+
+void
 ay_rrib_initgeneral(void)
 {
  int ay_status = AY_OK;
@@ -1457,7 +1652,8 @@ ay_rrib_initgeneral(void)
 
   gRibNopRITable[kRIB_ATTRIBUTEBEGIN] = (PRIB_RIPROC)ay_rrib_RiAttributeBegin;
   gRibNopRITable[kRIB_ATTRIBUTEEND] = (PRIB_RIPROC)ay_rrib_RiAttributeEnd;
-
+  gRibNopRITable[kRIB_DECLARE] = (PRIB_RIPROC)ay_rrib_RiDeclare;
+  
  return;
 }
 
@@ -1695,8 +1891,9 @@ int
 ay_rrib_readrib(char *filename, int frame)
 {
  int ay_status = AY_OK;
- RIB_HANDLE rib;
-       
+ RIB_HANDLE rib = NULL;
+
+
   ay_object_defaults(&ay_rrib_co);
 
   ay_rrib_clighthandle = 1;
@@ -1709,17 +1906,24 @@ ay_rrib_readrib(char *filename, int frame)
     }
 
   ay_rrib_initgeneral();
-
+  
   ay_rrib_ctrafos = NULL;
   ay_rrib_pushtrafos();
   ay_rrib_cattributes = NULL;
   ay_rrib_pushattribs();
 
-  /* Table included in libraries. */ 
-  rib = RibOpen( filename, kRIB_LAST_RI, gRibNopRITable);
-  RibRead(rib);
-  RibClose(rib);
 
+  rib = RibOpen(filename, kRIB_LAST_RI, gRibNopRITable);
+
+  if(rib)
+    {
+      grib = (PRIB_INSTANCE)rib;      
+
+      RibRead(rib);
+
+      RibClose(rib);
+    }
+  
  return AY_OK;
 } /* ay_rrib_readrib */
 
