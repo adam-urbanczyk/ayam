@@ -29,7 +29,8 @@ LIBDIR = $(PREFIX)/lib
 DOCDIR = $(PREFIX)/doc
 #DOCDIR = $(PREFIX)/doc/ayam
 
-INSTALL = install
+INSTALL = ./ninstall
+#INSTALL = install
 MKDIR = mkdir -p
 
 DOCFILES = ../Setup.txt ../Changes.txt ../License.txt ../doc/refcard.tcl\
@@ -43,10 +44,13 @@ install:
 	-$(INSTALL) plugins/metaobj.so $(LIBDIR)
 	-$(INSTALL) plugins/metaobj.tcl $(LIBDIR)
 	-$(INSTALL) plugins/metacomp.tcl $(LIBDIR)
-	-$(INSTALL) plugins/mfio.so plugins/mfio.tcl $(LIBDIR)
-	-$(INSTALL) plugins/idr.so plugins/idr.tcl $(LIBDIR)
+	-$(INSTALL) plugins/mfio.so $(LIBDIR)
+	-$(INSTALL) plugins/mfio.tcl $(LIBDIR)
+	-$(INSTALL) plugins/idr.so $(LIBDIR)
+	-$(INSTALL) plugins/idr.tcl $(LIBDIR)
 	-$(INSTALL) plugins/loadidr.tcl $(LIBDIR)
-	-$(INSTALL) plugins/rrib.so plugins/rrib.tcl $(LIBDIR)
+	-$(INSTALL) plugins/rrib.so $(LIBDIR)
+	-$(INSTALL) plugins/rrib.tcl $(LIBDIR)
 	-$(INSTALL) plugins/loadrrib.tcl $(LIBDIR)
 	-$(INSTALL) Makefile $(LIBDIR)
 	$(MKDIR) $(DOCDIR)
