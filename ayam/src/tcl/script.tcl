@@ -45,7 +45,7 @@ $m add command -label "Paste (Replace)" -command {
     global ay ScriptAttr
     set t $ay(pca).${ScriptAttr(w)}.tScript
     set nt ""
-    set nt [selection get]
+    set nt [selection get -selection CLIPBOARD]
     if { $nt != "" } {
 	$t delete 1.0 end
 	$t insert end $nt
