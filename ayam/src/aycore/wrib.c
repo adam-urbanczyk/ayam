@@ -379,6 +379,7 @@ ay_wrib_object(char *file, ay_object *o)
  void **arr = NULL;
  ay_wribcb *cb = NULL;
  ay_level_object *l = NULL;
+ ay_tag_object *tag = NULL;
  char *parname = "name";
 
   if(!o)
@@ -386,6 +387,18 @@ ay_wrib_object(char *file, ay_object *o)
 
   if(ay_prefs.excludehidden && o->hide)
     return AY_OK;
+
+  if(o->tags)
+    {
+      tag = o->tags;
+      while(tag)
+	{
+	  if(tag->type == ay_noexport_tagtype)
+	    return AY_OK;
+	  tag = tag->next;
+	}
+    }
+
 
   arr = ay_wribcbt.arr;
   cb = (ay_wribcb *)(arr[o->type]);
@@ -2026,6 +2039,9 @@ ay_wrib_init(Tcl_Interp *interp)
 
   /* register RiHider tag type */
   ay_tags_register(interp, "RiHider", &ay_rihider_tagtype);
+
+  /* register NoExport tag type */
+  ay_tags_register(interp, "NoExport", &ay_noexport_tagtype);
 
  return;
 } /* ay_wrib_init */
