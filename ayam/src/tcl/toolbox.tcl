@@ -363,13 +363,13 @@ proc toolbox_open { } {
 
 	    #####
 	    button $f.brev -image ay_Revert_img -padx 0 -pady 0 -command {
-		revert; plb_update;rV
+		undo save; revert; plb_update; rV
 	    }
 	    balloon_set $f.brev "revert curve"
 
 	    #####
 	    button $f.bref -image ay_Refine_img -padx 0 -pady 0 -command {
-		refineNC; plb_update;rV
+		undo save; refineNC; plb_update; rV
 	    }
 	    balloon_set $f.bref "refine curve"
 
@@ -407,7 +407,7 @@ proc toolbox_open { } {
 
 	    #####
 	    button $f.bclamp -image ay_Clamp_img -padx 0 -pady 0 -command {
-		clampNC; plb_update;rV
+		undo save; clampNC; plb_update; rV
 	    }
 	    balloon_set $f.bclamp "clamp curve"
 
