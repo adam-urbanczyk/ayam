@@ -18,6 +18,7 @@ proc stdReleaseBind { w } {
 	if { $ayprefs(LazyNotify) == 1 } { forceNot }
 	rV
 	plb_update
+	focus %W
     }
 }
 # stdReleaseBind
@@ -776,6 +777,8 @@ proc actionClear { w } {
 	    rV
 	    update
 	}
+
+	focus %W
     }
 
     bind $w <Shift-ButtonRelease-1> {

@@ -117,6 +117,8 @@ array set ayprefs {
 
  Locale "en"
 
+ AutoFocus 0
+
  Scripts ""
  Docs "http://ayam.sourceforge.net/docs/"
     DailyTips {
@@ -418,6 +420,7 @@ if { $tcl_platform(platform) == "windows" } {
     set ayprefs(RenderUI) 0
     set ayprefs(ToolBoxTrans) 1
     set ayprefs(RGTrans) 1
+    set ayprefs(AutoFocus) 1
 
     # we use this "emptyimg" for checkbuttons
     image create photo emptyimg

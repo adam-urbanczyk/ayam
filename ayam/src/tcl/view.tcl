@@ -422,7 +422,7 @@ proc viewOpen { width height {establish_bindings 1} } {
 
 	# bind internal bindings
 	bind $w <Enter> {
-	    global ay
+	    global ay ayprefs
 	    if { $ay(cviewsema) != 1 } {
 		update
 		set ay(cviewsema) 1
@@ -447,8 +447,12 @@ proc viewOpen { width height {establish_bindings 1} } {
 		bind $w <$ayviewshortcuts(RotMod)-Motion> {}
 	    }
 
+	    if { $ayprefs(AutoFocus) == 1 } {
+		focus [winfo toplevel %W].f3D.togl
+	    }
 
 	}
+	#bind
 
 	# bind menu shortcuts
 	shortcut_view $w
@@ -474,7 +478,7 @@ proc viewBind { w } {
 
     # internal bindings
     bind $w <Enter> {
-	global ay
+	global ay ayprefs
 	if { $ay(cviewsema) != 1 } {
 	    update
 	    set ay(cviewsema) 1
@@ -492,13 +496,19 @@ proc viewBind { w } {
 	    bind $w <$ayviewshortcuts(RotMod)-Motion> {}
 	    bind $w <Motion> {}
 	}
+
 	bind [winfo toplevel %W] <Motion> {
 	    set w [winfo toplevel %W]
 	    $w.f3D.togl configure -cursor left_ptr
 	    bind $w <Motion> {}
 	    bind $w <$ayviewshortcuts(RotMod)-Motion> {}
 	}
+
+	if { $ayprefs(AutoFocus) == 1 } {
+	    focus [winfo toplevel %W].f3D.togl
+	}
     }
+    #bind
 
     # bind menu shortcuts
     shortcut_view $w

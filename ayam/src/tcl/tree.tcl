@@ -649,11 +649,27 @@ set ay(tree) $tree
 # scroll tree with wheel
 bind $tree <ButtonPress-4> "$tree yview scroll -1 pages; break"
 bind $tree <ButtonPress-5> "$tree yview scroll 1 pages; break"
+
+global tcl_platform
+if { $tcl_platform(platform) == "windows" } {
+    bind $tree <MouseWheel> {
+	global ay
+	if { %D < 0.0 } {
+	    $ay(tree) yview scroll 1 pages
+	} else {
+	    $ay(tree) yview scroll -1 pages 
+	}
+	break
+    }
+    #bind
+}
+
 # ay(ts) is triggered, whenever a true selection
 # occurs in the tree, if not (ay(ts) is 0) we
 # select the last element of the current level
 bind $tree <ButtonRelease-1> "+\
-after 10 { global ay; if { \$ay(ts) == 0 } { sL; rV }; set ay(ts) 0 }"
+after 10 { global ay; if { \$ay(ts) == 0 } { sL; rV }; set ay(ts) 0 };\
+focus \$ay(tree)"
 
 # multiple selection
 $tree bindText  <Control-ButtonPress-1> "tree_toggleSelection $sw.tree"
