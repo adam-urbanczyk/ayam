@@ -70,8 +70,6 @@ array set ayprefs {
  WriteIdent 1
  ShadowMaps 0
  ExcludeHidden 1
- MIResetDM 1
- MIResetST 1
  QRender "rgl -rd 4 %s"
  Render "rendrib -d 4 -Progress %s"
  RenderUI 1

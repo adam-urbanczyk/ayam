@@ -385,6 +385,11 @@ proc io_loadCustom { } {
 }
 # io_loadCustom
 
+uplevel #0 { array set mopsi_options {
+ResetDM 1
+ResetST 1
+ifilename ""
+}   }
 
 # io_importMops:
 #
@@ -415,32 +420,70 @@ proc io_importMops { } {
     }
 
     if { $ifilename != "" } {
-	cS; plb_update
-	update
-	global ay_error
+	global ay_error mopsi_options
 	set ay_error ""
-	grab .fu
-	update
+	set mopsi_options(ifilename) $ifilename
 
-	importMops $ifilename
+	set w .mopI
+	catch {destroy $w}
+	toplevel $w
+	wm title $w "Import Options"
+	wm iconname $w "Ayam"
+	wm transient $w .
 
-	if { $ay_error < 2 } {
-	    ayError 4 "importMops" "Done importing objects from:"
-	    ayError 4 "importMops" "$ifilename"
+	set f [frame $w.f1]
+	pack $f -in $w -side top -fill x
+
+	addCheckB $f mopsi_options ResetDM [ms mopsi_options_ResetDM]
+	addCheckB $f mopsi_options ResetST [ms mopsi_options_ResetST]
+	
+	set f [frame $w.f2]
+	button $f.bok -text "Ok" -width 5 -command {
+	    global mopsi_options
+	    cS; plb_update
+	    update
+	    set filename $mopsi_options(ifilename)
+	    importMops $filename
+
+	    if { $ay_error < 2 } {
+		ayError 4 "importMops" "Done importing Mops scene from:"
+		ayError 4 "importMops" "$filename"
+	    } else {
+		ayError 2 "importMops"\
+		 "There were errors while importing the Mops scene from:"
+		ayError 2 "importMops" "$filename"
+	    }
+
+	    goTop
+	    selOb
+	    set ay(CurrentLevel) "root"
+	    set ay(SelectedLevel) "root"
+	    update
+
+	    uS
+	    rV
+	    set ay(sc) 1
+	    
+	    grab release .mopI
+	    focus .
+	    destroy .mopI
+
+	    after idle viewMouseToCurrent
 	}
 
-	goTop
-	selOb
-	set ay(CurrentLevel) "root"
-	set ay(SelectedLevel) "root"
-	update
+	button $f.bca -text "Cancel" -width 5 -command "\
+		grab release .mopI;\
+		focus .;\
+		destroy .mopI"
 
-	uS
-	rV
-	set ay(sc) 1
-	grab release .fu
-	update
-	after idle viewMouseToCurrent
+	pack $f.bok $f.bca -in $f -side left -fill x -expand yes
+	pack $f -in $w -side bottom -fill x
+
+	winCenter $w
+	grab $w
+	focus $w.f2.bok
+	tkwait window $w
+
     }
 
  return;
