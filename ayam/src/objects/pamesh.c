@@ -410,8 +410,9 @@ ay_pamesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  ay_pamesh_object *pamesh = NULL;
  int new_uclose, new_width, new_btype_u;
  int new_vclose, new_height, new_btype_v;
- int new_type;
-
+ int new_type, j;
+ double dtemp;
+ char *man[] = {"_0","_1","_2","_3","_4","_5","_6","_7","_8","_9","_10","_11","_12","_13","_14","_15"};
 
   if(!o)
     return AY_ENULL;
@@ -452,6 +453,67 @@ ay_pamesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   pamesh->btype_u = new_btype_u;
   pamesh->btype_v = new_btype_v;
 
+  if(pamesh->btype_u == AY_BTCUSTOM)
+    {
+      if(!pamesh->ubasis)
+	{
+	  if(!(pamesh->ubasis = calloc(16, sizeof(double))))
+	    {
+	      return AY_OK;
+	    } /* if */
+	} /* if */
+      for(j = 0; j < 16; j++)
+	{
+	  Tcl_SetStringObj(ton,"Basis_U",-1);
+	  Tcl_AppendStringsToObj(ton,man[j],NULL);
+	  to  = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
+			       TCL_GLOBAL_ONLY);
+	  Tcl_GetDoubleFromObj(interp, to, &dtemp);
+	  pamesh->ubasis[j] = (float)dtemp;
+	} /* for */
+
+      Tcl_SetStringObj(ton,"Step_U",-1);
+      to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      Tcl_GetIntFromObj(interp,to, &(pamesh->ustep));
+
+    }
+  else
+    {
+      if(pamesh->ubasis)
+	free(pamesh->ubasis);
+      pamesh->ubasis = NULL;
+    } /* if */
+
+  if(pamesh->btype_v == AY_BTCUSTOM)
+    {
+      if(!pamesh->vbasis)
+	{
+	  if(!(pamesh->vbasis = calloc(16, sizeof(double))))
+	    {
+	      return AY_OK;
+	    } /* if */
+	} /* if */
+      for(j = 0; j < 16; j++)
+	{
+	  Tcl_SetStringObj(ton,"Basis_V",-1);
+	  Tcl_AppendStringsToObj(ton,man[j],NULL);
+	  to  = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
+			       TCL_GLOBAL_ONLY);
+	  Tcl_GetDoubleFromObj(interp, to, &dtemp);
+	  pamesh->vbasis[j] = (float)dtemp;
+	} /* for */
+
+      Tcl_SetStringObj(ton,"Step_V",-1);
+      to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      Tcl_GetIntFromObj(interp,to, &(pamesh->vstep));
+
+    }
+  else
+    {
+      if(pamesh->vbasis)
+	free(pamesh->vbasis);
+      pamesh->vbasis = NULL;
+    } /* if */
 
   Tcl_SetStringObj(ton,"Tolerance",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -511,7 +573,8 @@ ay_pamesh_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  char *n1="PatchMeshAttrData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_pamesh_object *pamesh = NULL;
- int i;
+ int j;
+ char *man[] = {"_0","_1","_2","_3","_4","_5","_6","_7","_8","_9","_10","_11","_12","_13","_14","_15"};
 
   if(!o)
     return AY_ENULL;
@@ -555,6 +618,45 @@ ay_pamesh_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_NewIntObj(pamesh->btype_v);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
+
+
+  if(pamesh->btype_u == AY_BTCUSTOM)
+    {
+      if(pamesh->ubasis)
+	{
+	  for(j = 0; j < 16; j++)
+	    {
+	      Tcl_SetStringObj(ton, "Basis_U", -1);
+	      Tcl_AppendStringsToObj(ton, man[j], NULL);
+	      to = Tcl_NewDoubleObj(pamesh->ubasis[j]);
+	      Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
+			     TCL_GLOBAL_ONLY);
+	    } /* for */
+	} /* if */
+      Tcl_SetStringObj(ton,"Step_U",-1);
+      to = Tcl_NewIntObj(pamesh->ustep);
+      Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		     TCL_GLOBAL_ONLY);
+    } /* if */
+
+  if(pamesh->btype_v == AY_BTCUSTOM)
+    {
+      if(pamesh->vbasis)
+	{
+	  for(j = 0; j < 16; j++)
+	    {
+	      Tcl_SetStringObj(ton, "Basis_V", -1);
+	      Tcl_AppendStringsToObj(ton, man[j], NULL);
+	      to = Tcl_NewDoubleObj(pamesh->vbasis[j]);
+	      Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
+			     TCL_GLOBAL_ONLY);
+	    } /* for */
+	} /* if */
+      Tcl_SetStringObj(ton,"Step_V",-1);
+      to = Tcl_NewIntObj(pamesh->vstep);
+      Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		     TCL_GLOBAL_ONLY);
+    } /* if */
 
   Tcl_SetStringObj(ton,"Tolerance",-1);
   to = Tcl_NewDoubleObj(pamesh->glu_sampling_tolerance);
@@ -713,6 +815,7 @@ ay_pamesh_wribcb(char *file, ay_object *o)
  RtToken uwrap = RI_NONPERIODIC, vwrap = RI_NONPERIODIC, type;
  RtInt ustep, vstep;
  RtBasis *ubasisptr, *vbasisptr;
+ RtBasis ubasis, vbasis;
  RtFloat *controls = NULL;
  int i = 0, j = 0, a = 0, b = 0;
 
@@ -758,47 +861,78 @@ ay_pamesh_wribcb(char *file, ay_object *o)
 	  b+=(nv*4);
 	}
     }
+
   switch(patch->btype_u)
     {
-      case AY_BTBEZIER:
-	ubasisptr = &(RiBezierBasis);
-	ustep = RI_BEZIERSTEP;
-	break;
-      case AY_BTBSPLINE:
-	ubasisptr = &(RiBSplineBasis);
-	ustep = RI_BSPLINESTEP;
-	break;
-      case AY_BTCATMULLROM:
-	ubasisptr = &(RiCatmullRomBasis);
-	ustep = RI_CATMULLROMSTEP;
-	break;
-      case AY_BTHERMITE:
-	ubasisptr = &(RiHermiteBasis);
-	ustep = RI_HERMITESTEP;
-	break;
+    case AY_BTBEZIER:
+      ubasisptr = &(RiBezierBasis);
+      ustep = RI_BEZIERSTEP;
+      break;
+    case AY_BTBSPLINE:
+      ubasisptr = &(RiBSplineBasis);
+      ustep = RI_BSPLINESTEP;
+      break;
+    case AY_BTCATMULLROM:
+      ubasisptr = &(RiCatmullRomBasis);
+      ustep = RI_CATMULLROMSTEP;
+      break;
+    case AY_BTHERMITE:
+      ubasisptr = &(RiHermiteBasis);
+      ustep = RI_HERMITESTEP;
+      break;
+    case AY_BTCUSTOM:
+      ubasisptr = &(ubasis);
+      ustep = (RtInt)patch->ustep;
+      for(i = 0; i < 4; i++)
+	{
+	  for(j = 0; j < 4; j++)
+	    {
+	      ubasis[i][j] = (RtFloat)patch->ubasis[i*4+j];
+	    } /* for */
+	} /* for */
+      break;
+    default:
+      ubasisptr = &(RiBezierBasis);
+      ustep = RI_BEZIERSTEP;
+      break;
     } /* switch */
 
   switch(patch->btype_v)
     {
-      case AY_BTBEZIER:
-	vbasisptr = &(RiBezierBasis);
-	vstep = RI_BEZIERSTEP;
-	break;
-      case AY_BTBSPLINE:
-	vbasisptr = &(RiBSplineBasis);
-	vstep = RI_BSPLINESTEP;
-	break;
-      case AY_BTCATMULLROM:
-	vbasisptr = &(RiCatmullRomBasis);
-	vstep = RI_CATMULLROMSTEP;
-	break;
-      case AY_BTHERMITE:
-	vbasisptr = &(RiHermiteBasis);
-	vstep = RI_HERMITESTEP;
-	break;
+    case AY_BTBEZIER:
+      vbasisptr = &(RiBezierBasis);
+      vstep = RI_BEZIERSTEP;
+      break;
+    case AY_BTBSPLINE:
+      vbasisptr = &(RiBSplineBasis);
+      vstep = RI_BSPLINESTEP;
+      break;
+    case AY_BTCATMULLROM:
+      vbasisptr = &(RiCatmullRomBasis);
+      vstep = RI_CATMULLROMSTEP;
+      break;
+    case AY_BTHERMITE:
+      vbasisptr = &(RiHermiteBasis);
+      vstep = RI_HERMITESTEP;
+      break;
+    case AY_BTCUSTOM:
+      vbasisptr = &(vbasis);
+      vstep = (RtInt)patch->vstep;
+      for(i = 0; i < 4; i++)
+	{
+	  for(j = 0; j < 4; j++)
+	    {
+	      vbasis[i][j] = (RtFloat)patch->vbasis[i*4+j];
+	    } /* for */
+	} /* for */
+      break;
+    default:
+      vbasisptr = &(RiBezierBasis);
+      vstep = RI_BEZIERSTEP;
+      break;
     } /* switch */
 
-  if((ubasisptr != &RiBezierBasis) &&
+  if((ubasisptr != &RiBezierBasis) ||
      (vbasisptr != &RiBezierBasis))
     {
       RiBasis(*ubasisptr, ustep, *vbasisptr, vstep);
