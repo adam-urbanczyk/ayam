@@ -15,7 +15,7 @@
 /* trafo.c - functions for handling of linear transformations */
 
 /* ay_trafo_apply3:
- *  
+ *
  */
 void
 ay_trafo_apply3(double *c, double *m)
@@ -33,7 +33,7 @@ ay_trafo_apply3(double *c, double *m)
 
 
 /* ay_trafo_apply4:
- *  
+ *
  */
 void
 ay_trafo_apply4(double *c, double *m)
@@ -52,7 +52,7 @@ ay_trafo_apply4(double *c, double *m)
 
 
 /* ay_trafo_getall:
- *  
+ *
  */
 void
 ay_trafo_getall(ay_list_object *lo)
@@ -91,7 +91,7 @@ ay_trafo_getall(ay_list_object *lo)
 
 
 /* ay_trafo_getalli:
- *  
+ *
  */
 void
 ay_trafo_getalli(ay_list_object *lo)
@@ -135,8 +135,9 @@ ay_trafo_getalli(ay_list_object *lo)
  return;
 } /* ay_trafo_getalli */
 
+
 /* ay_trafo_getalls:
- *  
+ *
  */
 void
 ay_trafo_getalls(ay_list_object *lo)
@@ -171,7 +172,7 @@ ay_trafo_getalls(ay_list_object *lo)
 
 
 /* ay_trafo_getallis:
- *  
+ *
  */
 void
 ay_trafo_getallis(ay_list_object *lo)
@@ -207,7 +208,7 @@ ay_trafo_getallis(ay_list_object *lo)
 
 
 /* ay_trafo_getallsr:
- *  
+ *
  */
 void
 ay_trafo_getallsr(ay_list_object *lo)
@@ -243,7 +244,7 @@ ay_trafo_getallsr(ay_list_object *lo)
 
 
 /* ay_trafo_getallisr:
- *  
+ *
  */
 void
 ay_trafo_getallisr(ay_list_object *lo)
@@ -287,7 +288,7 @@ ay_trafo_getallisr(ay_list_object *lo)
 
 
 /* ay_trafo_getallr:
- *  
+ *
  */
 void
 ay_trafo_getallr(ay_list_object *lo)
@@ -322,7 +323,7 @@ ay_trafo_getallr(ay_list_object *lo)
 
 
 /* ay_trafo_getallir:
- *  
+ *
  */
 void
 ay_trafo_getallir(ay_list_object *lo)
@@ -377,7 +378,7 @@ ay_trafo_delegate(ay_object *o)
 
   if(!o)
     return AY_ENULL;
-  
+
   if(!o->down)
     return AY_ERROR;
 
@@ -432,7 +433,7 @@ ay_trafo_delegate(ay_object *o)
 
 
 /* ay_trafo_delegatetcmd:
- *  
+ *
  */
 int
 ay_trafo_delegatetcmd(ClientData clientData, Tcl_Interp * interp,
@@ -468,7 +469,7 @@ ay_trafo_delegatetcmd(ClientData clientData, Tcl_Interp * interp,
 
 
 /* ay_trafo_applyall:
- *  
+ *
  */
 void
 ay_trafo_applyall(ay_list_object *lo, ay_object *o, double *p)
@@ -497,7 +498,7 @@ ay_trafo_applyall(ay_list_object *lo, ay_object *o, double *p)
 
 
 /* ay_trafo_applyalli:
- *  
+ *
  */
 void
 ay_trafo_applyalli(ay_list_object *lo, ay_object *o, double *p)
@@ -530,7 +531,7 @@ ay_trafo_applyalli(ay_list_object *lo, ay_object *o, double *p)
 
 
 /* ay_trafo_copy:
- *  
+ *
  */
 void
 ay_trafo_copy(ay_object *src, ay_object *dst)
@@ -553,8 +554,9 @@ ay_trafo_copy(ay_object *src, ay_object *dst)
  return;
 } /* ay_trafo_copy */
 
+
 /* ay_trafo_add:
- *  
+ *
  */
 void
 ay_trafo_add(ay_object *src, ay_object *dst)
@@ -581,7 +583,7 @@ ay_trafo_add(ay_object *src, ay_object *dst)
 
 
 /* ay_trafo_defaults:
- *  
+ *
  */
 void
 ay_trafo_defaults(ay_object *o)
@@ -609,13 +611,13 @@ ay_trafo_defaults(ay_object *o)
 
 
 /* ay_trafo_movobtcmd:
- *  
+ *
  */
 int
 ay_trafo_movobtcmd(ClientData clientData, Tcl_Interp * interp,
 		   int argc, char *argv[])
 {
- double dx = 0, dy = 0, dz = 0; 
+ double dx = 0, dy = 0, dz = 0;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  char fname[] = "movOb";
@@ -635,11 +637,11 @@ ay_trafo_movobtcmd(ClientData clientData, Tcl_Interp * interp,
       o = sel->object;
       if(o)
 	{
-	  o->movx += dx; 
-	  o->movy += dy; 
-	  o->movz += dz; 
+	  o->movx += dx;
+	  o->movy += dy;
+	  o->movz += dz;
 	}
-      
+
       sel = sel->next;
     }
 
@@ -649,15 +651,14 @@ ay_trafo_movobtcmd(ClientData clientData, Tcl_Interp * interp,
 } /* ay_trafo_movobtcmd */
 
 
-
 /* ay_trafo_movseltcmd:
- *  
+ *
  */
 int
 ay_trafo_movseltcmd(ClientData clientData, Tcl_Interp * interp,
 		    int argc, char *argv[])
 {
- double dx = 0, dy = 0, dz = 0; 
+ double dx = 0, dy = 0, dz = 0;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  ay_point_object *point = NULL;
@@ -696,7 +697,7 @@ ay_trafo_movseltcmd(ClientData clientData, Tcl_Interp * interp,
 	    }
 
 	}
-      
+
       sel = sel->next;
     }
 
@@ -707,13 +708,13 @@ ay_trafo_movseltcmd(ClientData clientData, Tcl_Interp * interp,
 
 
 /* ay_trafo_scalobtcmd:
- *  
+ *
  */
 int
 ay_trafo_scalobtcmd(ClientData clientData, Tcl_Interp * interp,
 		    int argc, char *argv[])
 {
- double dx = 0, dy = 0, dz = 0; 
+ double dx = 0, dy = 0, dz = 0;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  char fname[] = "scalOb";
@@ -740,11 +741,11 @@ ay_trafo_scalobtcmd(ClientData clientData, Tcl_Interp * interp,
       o = sel->object;
       if(o)
 	{
-	  o->scalx *= dx; 
-	  o->scaly *= dy; 
-	  o->scalz *= dz; 
+	  o->scalx *= dx;
+	  o->scaly *= dy;
+	  o->scalz *= dz;
 	}
-      
+
       sel = sel->next;
     }
 
@@ -755,13 +756,13 @@ ay_trafo_scalobtcmd(ClientData clientData, Tcl_Interp * interp,
 
 
 /* ay_trafo_scalseltcmd:
- *  
+ *
  */
 int
 ay_trafo_scalseltcmd(ClientData clientData, Tcl_Interp * interp,
 		     int argc, char *argv[])
 {
- double dx = 0, dy = 0, dz = 0; 
+ double dx = 0, dy = 0, dz = 0;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  ay_point_object *point = NULL;
@@ -807,7 +808,7 @@ ay_trafo_scalseltcmd(ClientData clientData, Tcl_Interp * interp,
 	    }
 
 	}
-      
+
       sel = sel->next;
     }
 
@@ -818,13 +819,13 @@ ay_trafo_scalseltcmd(ClientData clientData, Tcl_Interp * interp,
 
 
 /* ay_trafo_rotobtcmd:
- *  
+ *
  */
 int
 ay_trafo_rotobtcmd(ClientData clientData, Tcl_Interp * interp,
 		   int argc, char *argv[])
 {
- double dx = 0, dy = 0, dz = 0; 
+ double dx = 0, dy = 0, dz = 0;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  double xaxis[3]={1.0,0.0,0.0};
@@ -855,20 +856,20 @@ ay_trafo_rotobtcmd(ClientData clientData, Tcl_Interp * interp,
 	      ay_quat_axistoquat(xaxis, dx*AY_PI/180.0, quat);
 	      ay_quat_add(quat, o->quat, o->quat);
 	    }
-	  o->roty += dy; 
+	  o->roty += dy;
 	  if(dy != 0.0)
 	    {
 	      ay_quat_axistoquat(yaxis, dy*AY_PI/180.0, quat);
 	      ay_quat_add(quat, o->quat, o->quat);
 	    }
-	  o->rotz += dz; 
+	  o->rotz += dz;
 	  if(dz != 0.0)
 	    {
 	      ay_quat_axistoquat(zaxis, dz*AY_PI/180.0, quat);
 	      ay_quat_add(quat, o->quat, o->quat);
 	    }
 	}
-      
+
       sel = sel->next;
     }
 
@@ -879,13 +880,13 @@ ay_trafo_rotobtcmd(ClientData clientData, Tcl_Interp * interp,
 
 
 /* ay_trafo_rotseltcmd:
- *  
+ *
  */
 int
 ay_trafo_rotseltcmd(ClientData clientData, Tcl_Interp * interp,
 		    int argc, char *argv[])
 {
- double dx = 0, dy = 0, dz = 0; 
+ double dx = 0, dy = 0, dz = 0;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  ay_point_object *point = NULL;
@@ -929,7 +930,7 @@ ay_trafo_rotseltcmd(ClientData clientData, Tcl_Interp * interp,
 	  o->modified = AY_TRUE;
 
 	}
-      
+
       sel = sel->next;
     }
 
@@ -989,7 +990,7 @@ ay_trafo_invmatrix4(double *m, double *mi)
 
 
    /* Calculate the determinant of upper left 3x3 submatrix and
-    * determine if the matrix is singular. 
+    * determine if the matrix is singular.
     */
    pos = neg = 0.0;
    t =  MAT(m,0,0) * MAT(m,1,1) * MAT(m,2,2);
@@ -1012,9 +1013,9 @@ ay_trafo_invmatrix4(double *m, double *mi)
 
    det = pos + neg;
 
-   if (det*det < 1e-25) 
+   if (det*det < 1e-25)
       return AY_ERROR;
-   
+
    det = 1.0 / det;
    MAT(mi,0,0) = (  (MAT(m,1,1)*MAT(m,2,2) - MAT(m,2,1)*MAT(m,1,2) )*det);
    MAT(mi,0,1) = (- (MAT(m,0,1)*MAT(m,2,2) - MAT(m,2,1)*MAT(m,0,2) )*det);
@@ -1036,7 +1037,7 @@ ay_trafo_invmatrix4(double *m, double *mi)
    MAT(mi,2,3) = - (MAT(m,0,3) * MAT(mi,2,0) +
 		     MAT(m,1,3) * MAT(mi,2,1) +
 		     MAT(m,2,3) * MAT(mi,2,2) );
-    
+
 
  return AY_OK;
 } /* ay_trafo_invmatrix4 */
@@ -1044,7 +1045,7 @@ ay_trafo_invmatrix4(double *m, double *mi)
 #undef MAT
 
 /* ay_trafo_apply:
- *  
+ *
  */
 int
 ay_trafo_apply(ay_object *o, double *p, int stride, int reusem)
@@ -1088,7 +1089,7 @@ ay_trafo_apply(ay_object *o, double *p, int stride, int reusem)
 
 
 /* ay_trafo_creatematrix:
- *  
+ *
  */
 int
 ay_trafo_creatematrix(ay_object *o, double *m)
@@ -1107,7 +1108,7 @@ ay_trafo_creatematrix(ay_object *o, double *m)
   m[14] = o->movz;
   m[15] = 1.0;
 
-  q = o->quat;  
+  q = o->quat;
   memset(mr, 0, 16*sizeof(double));
   mr[0] = (1.0 - 2.0 * (q[1] * q[1] + q[2] * q[2]));
   mr[1] = 2.0 * (q[0] * q[1] - q[2] * q[3]);
@@ -1141,7 +1142,7 @@ ay_trafo_creatematrix(ay_object *o, double *m)
 
 
 /* ay_trafo_identitymatrix:
- *  
+ *
  */
 void
 ay_trafo_identitymatrix(double *m)
@@ -1158,7 +1159,7 @@ ay_trafo_identitymatrix(double *m)
 
 
 /* ay_trafo_translatematrix:
- *  
+ *
  */
 void
 ay_trafo_translatematrix(double x, double y, double z, double *m)
@@ -1174,7 +1175,7 @@ ay_trafo_translatematrix(double x, double y, double z, double *m)
 
 
 /* ay_trafo_scalematrix:
- *  
+ *
  */
 void
 ay_trafo_scalematrix(double x, double y, double z, double *m)
@@ -1309,7 +1310,7 @@ ay_trafo_rotatematrix(double angle, double x, double y, double z, double *m)
 
 
 /* ay_trafo_pointstoplane:
- *  
+ *
  */
 void
 ay_trafo_pointstoplane(double x1, double y1, double z1,
@@ -1329,7 +1330,7 @@ ay_trafo_pointstoplane(double x1, double y1, double z1,
 
 #if 0
 /* ay_trafo_pointstoplane:
- *  
+ *
  */
 double
 ay_trafo_pointstoplane(double *p, double *e)
