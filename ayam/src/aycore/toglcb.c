@@ -210,6 +210,12 @@ ay_toglcb_display(struct Togl *togl)
 
   Togl_SwapBuffers(togl);
 
+  /* #ifdef AY_ENABLEPPREV */
+  /* redraw permanent preview window? */
+  if(view->ppreview)
+    ay_wrib_pprevdraw(view);
+  /* #endif */
+
  return;
 } /* ay_toglcb_display */
 
