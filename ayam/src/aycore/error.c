@@ -255,14 +255,17 @@ ay_error(int code, char *where, char *what)
  */
 int
 ay_error_tcmd(ClientData clientData, Tcl_Interp *interp,
-		     int argc, char *argv[])
+	      int argc, char *argv[])
 {
  char fname[] = "ayError";
  char *place = NULL, *detail = NULL;
  int ecode = AY_OK;
 
   if(argc < 2)
-    ay_error(AY_EARGS, fname, "ecode [fname detail]");
+    {
+      ay_error(AY_EARGS, fname, "ecode \\[fname detail\\]");
+      return TCL_OK;
+    }
 
   if(argc == 4)
     {
