@@ -2093,8 +2093,8 @@ custom, point, distant and spot.
 
 Custom Lights:<label id="cul">
 <p>
-Light sources of type custom are the only types of light object
-a light shader may be attached to.
+Light sources of type custom use
+the attached light shader.
 
 Note, that Ayam is trying to guess from the names of the light shader
 arguments to draw the light.
@@ -2114,6 +2114,10 @@ about the standard light sources.
 Depending on the type of the light source, the light attribute
 property contains different parameters. Parameters that
 are not displayed will not be used on RIB export, consequently.<p>
+
+Using <tt/"Type"/ you can change the type of the light source.
+When you change the type of a light source,
+the property GUI will be changed when you use the <tt/"Apply"/-button.
 
 <tt/"IsOn"/ allows you to switch the light off or on. The default
 value is on.<p>
@@ -2145,8 +2149,25 @@ a shadow map that is sized 1 by 1 units in world space.
 All other parameters that may appear in the <tt/"LightAttr"/
 property are the standard parameters
 for the standard RenderMan light sources: distant, point, and
-spot. Please refer to the RenderMan documentation if you are
-not sure what they mean.<p>
+spot:
+<itemize>
+<item><tt/"From"/ and <tt/"To"/ denote position and target of the light
+source as point in space. You may edit both points using standard
+point editing actions (see also section <ref id="iac" name="interactive actions">).
+<item><tt/"Color"/ is the color of the light, emitted by the light source.
+<item><tt/"Intensity"/ is the intensity of the light, emitted by the
+light source. Note, that the standard point and spot lights have
+a quadratic (with distance) falloff, that requires the intensity
+to be set to quite high values in order to achieve some
+illumination effect (e.g. around 30 for the standard distance of
+<tt/"From"/ and <tt/"To"/ of a spot light).
+<item><tt/"ConeAngle"/ is the angle of the beam of a spot light.
+<item><tt/"ConeDAngle"/ (cone delta angle) is the angle that determines a
+falloff area at the edge of the beam of a spot light.
+<item><tt/"BeamDistrib"/ (beam distribution) determines, how the light falls
+off in the beam of the spot light. Larger values result in narrower
+light sources.
+</itemize>
 
 In order to ease the parameterization of spot or distant lights,
 you may drop the light source object on to a view object
@@ -4450,6 +4471,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Background: <ref id="prefdraw" name="preference setting">
 <item>Background Image: <ref id="vat" name="view attribute">
 <item>Basis_U, Basis_V: <ref id="pmattr" name="PatchMesh attribute">
+<item>BeamDistrib: <ref id="lip" name="light attribute">
 <item>Bevel: <ref id="handb" name="using bevels">
 <item>BevelRadius, BevelType: <ref id="extrattr" name="extrude attribute">
 <item>BGImage: <ref id="vat" name="view attribute">
@@ -4486,7 +4508,8 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Closed BSpline: <ref id="cbspt" name="closed BSpline tool">
 <item>Close_U, Close_V: <ref id="pmattr" name="PatchMesh attribute">
 <item>Collapse: <ref id="collt" name="Collapse tool">
-<item>Color: <ref id="riattrs" name="RenderMan/BMRT attribute">
+<item>Color: <ref id="riattrs" name="RenderMan/BMRT attribute">,
+<ref id="lip" name="light attribute">,
 <item>copOb: <ref id="copob" name="scripting interface command">
 <item>Copy: <ref id="mm" name="main menu entry">
 <item>Copy Property: <ref id="mm" name="main menu entry">,
@@ -4494,6 +4517,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Concat: <ref id="conct" name="Concat tool">
 <item>Cone: <ref id="mm" name="main menu entry">,
 <ref id="coneobj" name="object">
+<item>ConeAngle, ConeDAngle: <ref id="lip" name="light attribute">
 <item>Console: <ref id="cons" name="what is">
 <item>Convert: <ref id="mm" name="main menu entry">
 <item>convOb: <ref id="gtype" name="scripting interface command">
