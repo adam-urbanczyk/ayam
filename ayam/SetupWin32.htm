@@ -15,11 +15,16 @@ You do not need to install Ayam in the system, you can start it
 directly with a double click from where you unpacked the archive.
 <p>
 To start Ayam easily, you can add an icon to your desktop by double
-clicking on the <code>"make_shortcut.vbs"</code> script.
+clicking on the <code>"make_shortcut.vbs"</code> script.<br>
+Since Ayam1.8 there are also two more scripts named
+<code>"make_ftassoc.vbs"</code> and <code>"remove_ftassoc.vbs"</code>
+that add and remove a file type association with Ayam scene files
+(extension .ay) to/from your desktop.
 <p>
 If you get error messages about input or output file handles
 when trying to render directly from Ayam, please use the
-accompanying batch file <code>"ayam.bat"</code> to start Ayam.
+accompanying batch file <code>"ayam.bat"</code> to start Ayam
+instead of directly using <code>"ayam.exe"</code>.
 <p>
 Before you start modelling with Ayam, the following three things have
 to be done:
@@ -164,12 +169,13 @@ in order to make this work. Your directory structure should look like this:
 ayam/bin/<br>
 ayam/bin/ayam.exe<br>
 ayam/bin/plugins/ayslb.dll<br>
-ayam/bin/plugins/loadayslb.tcl
+ayam/bin/plugins/loadayslb.tcl<br>
+ayam/bin/plugins/...
 </code>
 <p>
 Note that the plugins are not able to check the Ayam version they
 get loaded into. Please, do not try to load them into any other version
-of Ayam as 1.7; otherwise you may experience an immediate crash of Ayam.
+of Ayam as 1.8; otherwise you may experience an immediate crash of Ayam.
 <p>
 Also note that some plugins require additional DLL files to be present in the
 DLL search path. Depending on the flavour of your Win32 you may need to
@@ -191,7 +197,7 @@ there).
 <p>
 ayslb.dll: Air 2.6, does not depend on other DLL files
 <p>
-ayslo3d.dll: 3Delight 2.0.2, depends on "3delight.dll"
+ayslo3d.dll: 3Delight 2.1.0, depends on "3delight.dll"
 <p>
 ayso.dll: RenderDotC 3.3.5, depends on "soargs.dll"<br>
 Since RenderDotC compiles all shaders as shared native code (into DLL files),
@@ -248,13 +254,13 @@ download <code>"Tutorial #1"</code> from
 and read it.
 <p>
 For further information, see also the
-<A HREF="docs/html/ayam.html">documentation of Ayam</A>
+<A HREF="doc/html/ayam.html">documentation of Ayam</A>
 and the
 <A HREF="http://www.ayam3d.org/faq.html">list of frequently
 asked questions (FAQ)</A>.
 
 <HR>
-<i>Randolf Schultz, 17. Jun 2004<BR>
+<i>Randolf Schultz, 29. Oct 2004<BR>
 <A HREF="http://www.ayam3d.org/">
 http://www.ayam3d.org/</A>&nbsp;&nbsp;&nbsp;&nbsp;Reconstruct the World!
 </i>
