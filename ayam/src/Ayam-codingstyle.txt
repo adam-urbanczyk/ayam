@@ -20,6 +20,10 @@ o function naming convention: ay_<modulename>_getblurb<type>
                    "tcmd": Tcl command
 o all functions end with "} /* <function_name> */"
 o long if/while/for/switch-statements end with "} /* if */", "} /* while */"...
+o do not use C++ comments
+o try to follow the GNU coding standards:
+  http://www.gnu.org/prep/standards_toc.html
+  if they do not contradict the rules stated in this document
 
 example:
 
