@@ -38,12 +38,11 @@ bind $f.li <Double-ButtonPress-1> {
     }
 }
 
-bind $f.li <<ListboxSelect>> { olb_select }
+bind $f.li <<ListboxSelect>> { after 150 olb_select }
 
 bind $f.li <Return> { olb_select }
 
 bind $f.li <ButtonRelease-1> {
-    after 150 olb_select
     global ay
     focus $ay(olb)
 }

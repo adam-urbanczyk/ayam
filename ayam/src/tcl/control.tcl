@@ -565,3 +565,15 @@ proc selNPFL { npfl } {
  return;
 }
 # selNPFL
+
+# 
+proc resetFocus { } {
+    global ay
+    if { $ay(lb) == 0 } {
+	focus $ay(tree)
+    } else {
+	focus $ay(olb)
+    }
+return;
+}
+# resetFocus
