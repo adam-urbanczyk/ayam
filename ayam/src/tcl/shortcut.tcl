@@ -468,6 +468,13 @@ proc shortcut_viewactions { w } {
 	set ay(oldb1rbinding) [bind $w <ButtonRelease-1>]
 	set oldx -1
 	set oldy -1
+	bind [winfo toplevel %W] <KeyRelease> {
+	    set w [winfo toplevel %W].f3D.togl
+	    # save old bindings
+	    set ay(oldbinding) [bind $w <B1-Motion>]
+	    set ay(oldb1binding) [bind $w <ButtonPress-1>]
+	    set ay(oldb1rbinding) [bind $w <ButtonRelease-1>]
+	}
     }
     bind $w <KeyRelease-$ayviewshortcuts(ZoomRModKey)> {
 	set w [winfo toplevel %W].f3D.togl
@@ -480,6 +487,7 @@ proc shortcut_viewactions { w } {
 	bind $w <ButtonPress-1> $ay(oldb1binding)
 	bind $w <ButtonRelease-1> $ay(oldb1rbinding)
 	$w configure -cursor left_ptr
+	bind [winfo toplevel %W] <KeyRelease> ""
     }
 
     set i $ayviewshortcuts(ZoomVButton)
