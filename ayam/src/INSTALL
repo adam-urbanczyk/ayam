@@ -329,15 +329,18 @@ Use it via menu entry "Custom/Open IDR".
 
 Ayam supports the following shader parsing plugins:
 "ayslb" for Air, "ayso" for RDC, "ayslo" for PRMan, "ayslx" for Aqsis,
-and "ayslo3d" for 3Delight.
+"ayslo3d" for 3Delight, and "aysdr" for Pixie.
 Additional prerequisites:
 The respective renderer has to be installed to compile a shader parsing
 plugin.
 
 In order to compile those plugins, adapt the following variables
 in the Makefile:
-AQSISDIR, AYSLXINCDIR, AYSLXLIBS, RDCDIR, AYSOINCDIR, AYSOLIBS,
-PRMANDIR, AYSLOINCDIR, AYSLOLIBS, 3DLDIR, AYSLO3INCDIR, AYSLO3DLIBS
+for Aqsis: AQSISDIR, AYSLXINCDIR, AYSLXLIBS,
+for RenderDotC: RDCDIR, AYSOINCDIR, AYSOLIBS,
+for PRMan: PRMANDIR, AYSLOINCDIR, AYSLOLIBS,
+for 3Delight: 3DLDIR, AYSLO3INCDIR, AYSLO3DLIBS,
+for Pixie: SDRDIR, AYSDRINCDIR, PIXIESRC, AYSDRLIBS
 
 then type:
 >make ayslb.so
@@ -345,6 +348,7 @@ then type:
 >make ayslo3d.so
 >make ayso.so
 >make ayslx.so
+>make aysdr.so
 
 After loading of one of these plugins the internal shader scanning code
 of Ayam will be disabled, and Ayam will from that moment on just scan
