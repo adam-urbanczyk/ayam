@@ -1,4 +1,13 @@
-[CVS, 15. 10. 2002]:
+[CVS, 25. 10. 2002]:
+o bug fixes:
+  - fixed remembering of the state of the object selection listbox/tree
+    when the context menu or a double click on the label is used to
+    switch between both representations
+o reduced number of redraws when selecting hidden or material objects
+o added a RiDisplay tag type, that allows to add more output files
+  (e.g. containing depth buffer information) to the scene
+
+[15. 10. 2002] Ayam1.3:
 o bug fixes:
   - fixed memory leaks in the shadow map RIB export module
   - fixed ICurves crash for length 2
