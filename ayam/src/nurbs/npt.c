@@ -292,6 +292,120 @@ ay_npt_drawtrimcurve(struct Togl *togl, ay_object *o, GLUnurbsObj *no)
 } /* ay_npt_drawtrim */
 
 
+/* ay_npt_resizearrayw:
+ *  change width of a 2D control point array
+ */
+int
+ay_npt_resizearrayw(double **controlvptr, int stride,
+		    int width, int height, int new_width)
+{
+ int ay_status = AY_OK;
+ int i, j, k, a, b;
+ int *newpersec = NULL, new = 0;
+ double *ncontrolv = NULL, *controlv = NULL, v[3] = {0}, t = 0.0;
+
+  if(new_width == width)
+    return ay_status;
+
+  if(!controlvptr)
+    return AY_ENULL;
+
+  controlv = *controlvptr;
+
+  if(!controlv)
+    return AY_ENULL;
+
+  if(!(ncontrolv = calloc(height*new_width*stride,sizeof(double))))
+    return AY_EOMEM;
+
+  if(new_width < width)
+    {
+      a = 0; b = 0;
+      for(i = 0; i < new_width; i++)
+	{
+	  memcpy(&(ncontrolv[b]),&(controlv[a]),
+		 height*stride*sizeof(double));
+
+	  a += (height*stride);
+	  b += (height*stride);
+	}
+
+    }
+  else
+    {
+      /* distribute new points */
+      new = new_width-width;
+
+      if(!(newpersec = calloc((width-1), sizeof(int))))
+	return AY_EOMEM;
+
+      while(new)
+	for(i = 0; i < (width-1); i++)
+	  {
+	    if(new)
+	      {
+		(newpersec[i])++;
+		new--;
+	      }
+	  }
+
+      a = 0;
+      b = 0;
+      for(k = 0; k < (width-1); k++)
+	{
+
+	  memcpy(&(ncontrolv[b]),&(controlv[a]),
+		 height*stride*sizeof(double));
+
+	  b += (height*stride);
+
+	  for(j = 1; j <= newpersec[k]; j++)
+	    {
+	      t = j/(newpersec[k]+1.0);
+	      a = k*height*stride;
+	      for(i = 0; i < height; i++)
+		{
+		  v[0] = controlv[a+(stride*height)] -
+		    controlv[a];
+		  v[1] = controlv[a+(stride*height)+1] -
+		    controlv[a+1];
+		  v[2] = controlv[a+(stride*height)+2] -
+		    controlv[a+2];
+
+		  AY_V3SCAL(v,t);
+
+		  ncontrolv[b] = controlv[a]+v[0];
+		  ncontrolv[b+1] = controlv[a+1]+v[1];
+		  ncontrolv[b+2] = controlv[a+2]+v[2];
+		  ncontrolv[b+3] = 1.0;
+
+		  a += stride;
+		  b += stride;
+
+		} /* for i */
+
+	    } /* for j */
+
+	  if(newpersec[k] == 0)
+	    a += (height*stride);
+
+	} /* for k */
+
+      memcpy(&ncontrolv[(new_width-1)*height*stride],
+	     &(controlv[(width-1)*height*stride]),
+	     height*stride*sizeof(double));
+
+      free(newpersec);
+
+    } /* if */
+
+  free(controlv);
+  *controlvptr = ncontrolv;
+
+ return ay_status;
+} /* ay_npt_resizearrayw */
+
+
 /* ay_npt_resizew:
  *  change width of a NURBPatch
  */
@@ -299,135 +413,55 @@ int
 ay_npt_resizew(ay_nurbpatch_object *patch, int new_width)
 {
  int ay_status = AY_OK;
- int i, j, k, a, b, stride;
- int *newpersec = NULL, new = 0;
- double *ncontrolv = NULL, v[3] = {0}, t = 0.0;
 
   if(new_width == patch->width)
     return ay_status;
 
-  stride = 4;
+  ay_status = ay_npt_resizearrayw(&(patch->controlv), 4,
+				  patch->width, patch->height,
+				  new_width);
 
-  if(!(ncontrolv = calloc(patch->height*new_width*stride,sizeof(double))))
-    return AY_EOMEM;
-
-  if(new_width < patch->width)
-    {
-      a = 0; b = 0;
-      for(i = 0; i < new_width; i++)
-	{
-	  memcpy(&(ncontrolv[b]),&(patch->controlv[a]),
-		 patch->height*stride*sizeof(double));
-
-	  a += (patch->height*stride);
-	  b += (patch->height*stride);
-	}
-
-    }
-  else
-    {
-      /* distribute new points */
-      new = new_width-patch->width;
-
-      if(!(newpersec = calloc((patch->width-1), sizeof(int))))
-	return AY_EOMEM;
-
-      while(new)
-	for(i = 0; i < (patch->width-1); i++)
-	  {
-	    if(new)
-	      {
-		(newpersec[i])++;
-		new--;
-	      }
-	  }
-
-      a = 0;
-      b = 0;
-      for(k = 0; k < (patch->width-1); k++)
-	{
-
-	  memcpy(&(ncontrolv[b]),&(patch->controlv[a]),
-		 patch->height*stride*sizeof(double));
-
-	  b += (patch->height*stride);
-
-	  for(j = 1; j <= newpersec[k]; j++)
-	    {
-	      t = j/(newpersec[k]+1.0);
-	      a = k*patch->height*stride;
-	      for(i = 0; i < patch->height; i++)
-		{
-		  v[0] = patch->controlv[a+(stride*patch->height)] -
-		    patch->controlv[a];
-		  v[1] = patch->controlv[a+(stride*patch->height)+1] -
-		    patch->controlv[a+1];
-		  v[2] = patch->controlv[a+(stride*patch->height)+2] -
-		    patch->controlv[a+2];
-
-		  AY_V3SCAL(v,t);
-
-		  ncontrolv[b] = patch->controlv[a]+v[0];
-		  ncontrolv[b+1] = patch->controlv[a+1]+v[1];
-		  ncontrolv[b+2] = patch->controlv[a+2]+v[2];
-		  ncontrolv[b+3] = 1.0;
-
-		  a+=stride;
-		  b+=stride;
-
-		} /* for i */
-
-	    } /* for j */
-
-	  if(newpersec[k] == 0)
-	    a += (patch->height*stride);
-
-	} /* for k */
-
-      memcpy(&ncontrolv[(new_width-1)*patch->height*stride],
-	     &(patch->controlv[(patch->width-1)*patch->height*stride]),
-	     patch->height*stride*sizeof(double));
-
-      free(newpersec);
-
-    } /* if */
-
-  free(patch->controlv);
-  patch->controlv = ncontrolv;
   patch->width = new_width;
 
  return ay_status;
 } /* ay_npt_resizew */
 
 
-/* ay_npt_resizeh:
- *  change height of a NURBPatch
+/* ay_npt_resizearrayh:
+ *  change height of a 2D control point array
  */
 int
-ay_npt_resizeh(ay_nurbpatch_object *patch, int new_height)
+ay_npt_resizearrayh(double **controlvptr, int stride,
+		    int width, int height, int new_height)
 {
  int ay_status = AY_OK;
- int i, j, k, a, b, stride;
+ int i, j, k, a, b;
  int *newpersec = NULL, new = 0;
- double *ncontrolv = NULL, v[3] = {0}, t = 0.0;
+ double *ncontrolv = NULL, *controlv = NULL, v[3] = {0}, t = 0.0;
 
-  if(new_height == patch->height)
+  if(new_height == height)
     return ay_status;
 
-  stride = 4;
+  if(!controlvptr)
+    return AY_ENULL;
 
-  if(!(ncontrolv = calloc(patch->width*new_height*stride,sizeof(double))))
+  controlv = *controlvptr;
+
+  if(!controlv)
+    return AY_ENULL;
+
+  if(!(ncontrolv = calloc(width*new_height*stride,sizeof(double))))
     return AY_EOMEM;
 
-  if(new_height < patch->height)
+  if(new_height < height)
     {
       a = 0; b = 0;
-      for(i = 0; i < patch->width; i++)
+      for(i = 0; i < width; i++)
 	{
-	  memcpy(&(ncontrolv[b]),&(patch->controlv[a]),
+	  memcpy(&(ncontrolv[b]),&(controlv[a]),
 		 new_height*stride*sizeof(double));
 
-	  a += (patch->height*stride);
+	  a += (height*stride);
 	  b += (new_height*stride);
 	}
 
@@ -435,13 +469,13 @@ ay_npt_resizeh(ay_nurbpatch_object *patch, int new_height)
   else
     {
       /* distribute new points */
-      new = new_height-patch->height;
+      new = new_height-height;
 
-      if(!(newpersec = calloc((patch->height-1), sizeof(int))))
+      if(!(newpersec = calloc((height-1), sizeof(int))))
 	return AY_EOMEM;
 
       while(new)
-	for(i = 0; i < (patch->height-1); i++)
+	for(i = 0; i < (height-1); i++)
 	  {
 	    if(new)
 	      {
@@ -452,28 +486,28 @@ ay_npt_resizeh(ay_nurbpatch_object *patch, int new_height)
 
       a = 0;
       b = 0;
-      for(k = 0; k < patch->width; k++)
+      for(k = 0; k < width; k++)
 	{
-	  for(i = 0; i < (patch->height-1); i++)
+	  for(i = 0; i < (height-1); i++)
 	    {
-	      memcpy(&ncontrolv[b], &(patch->controlv[a]),
+	      memcpy(&ncontrolv[b], &(controlv[a]),
 		     stride*sizeof(double));
 	      b+=stride;
 
 	      for(j = 1; j <= newpersec[i]; j++)
 		{
-		  v[0] = patch->controlv[a+stride] - patch->controlv[a];
-		  v[1] = patch->controlv[a+stride+1] - patch->controlv[a+1];
-		  v[2] = patch->controlv[a+stride+2] - patch->controlv[a+2];
+		  v[0] = controlv[a+stride] - controlv[a];
+		  v[1] = controlv[a+stride+1] - controlv[a+1];
+		  v[2] = controlv[a+stride+2] - controlv[a+2];
 
 
 		  t = j/(newpersec[i]+1.0);
 	      
 		  AY_V3SCAL(v,t);
 
-		  ncontrolv[b] = patch->controlv[a]+v[0];
-		  ncontrolv[b+1] = patch->controlv[a+1]+v[1];
-		  ncontrolv[b+2] = patch->controlv[a+2]+v[2];
+		  ncontrolv[b] = controlv[a]+v[0];
+		  ncontrolv[b+1] = controlv[a+1]+v[1];
+		  ncontrolv[b+2] = controlv[a+2]+v[2];
 		  ncontrolv[b+3] = 1.0;
 
 		  b+=stride;
@@ -484,7 +518,7 @@ ay_npt_resizeh(ay_nurbpatch_object *patch, int new_height)
 	    } /* for */
 
 	  memcpy(&ncontrolv[b/*+(new_height-1)*stride*/],
-		 &(patch->controlv[a/*+(patch->height-1)*stride*/]),
+		 &(controlv[a/*+(height-1)*stride*/]),
 		 stride*sizeof(double));
 
 	  a += stride;
@@ -496,8 +530,28 @@ ay_npt_resizeh(ay_nurbpatch_object *patch, int new_height)
     } /* if */
 
   
-  free(patch->controlv);
-  patch->controlv = ncontrolv;
+  free(controlv);
+  *controlvptr = ncontrolv;
+
+ return ay_status;
+} /* ay_npt_resizearrayh */
+
+
+/* ay_npt_resizeh:
+ *  change height of a NURBPatch
+ */
+int
+ay_npt_resizeh(ay_nurbpatch_object *patch, int new_height)
+{
+ int ay_status = AY_OK;
+
+  if(new_height == patch->height)
+    return ay_status;
+
+  ay_status = ay_npt_resizearrayh(&(patch->controlv), 4,
+				  patch->width, patch->height,
+				  new_height);
+
   patch->height = new_height;
 
  return ay_status;

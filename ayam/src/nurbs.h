@@ -222,7 +222,13 @@ int ay_npt_revolve(ay_object *o, double arc, ay_nurbpatch_object **patch);
 
 int ay_npt_drawtrimcurve(struct Togl *togl, ay_object *o, GLUnurbsObj *no);
 
+int ay_npt_resizearrayw(double **controlvptr, int stride,
+			int width, int height, int new_width);
+
 int ay_npt_resizew(ay_nurbpatch_object *patch, int new_width);
+
+int ay_npt_resizearrayh(double **controlvptr, int stride,
+			int width, int height, int new_height);
 
 int ay_npt_resizeh(ay_nurbpatch_object *patch, int new_height);
 
