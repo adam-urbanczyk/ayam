@@ -12,6 +12,8 @@
 
 #include "ayam.h"
 
+#include <Xutil.h>
+
 /* script.c - script object */
 
 /*
@@ -697,6 +699,37 @@ Tk_RestrictAction
 ay_script_restrictall(ClientData clientData,
 		      XEvent *eventPtr)
 {
+ XKeyEvent *key_event = (XKeyEvent *) eventPtr;
+ KeySym ks;
+ XComposeStatus status;
+ char tmpstr[128];
+ Tcl_Obj *to = NULL, *ton = NULL;
+
+  if(eventPtr->type == KeyPress)
+    {
+      if(key_event->state & (ControlMask|ShiftMask))
+	{
+
+	  XLookupString(key_event, tmpstr, 128, &ks, &status);
+	  if(ks == 0x43)
+	    {
+	      ton = Tcl_NewStringObj("cancelled", -1);
+	      to = Tcl_NewIntObj(1);
+	      Tcl_ObjSetVar2(ay_interp, ton, NULL, to, TCL_LEAVE_ERR_MSG |
+			     TCL_GLOBAL_ONLY);
+	      return TK_DISCARD_EVENT;
+	    }
+	  else
+	    {
+	      return TK_DISCARD_EVENT;
+	    } /* if */
+	}
+      else
+	{
+	  return TK_DISCARD_EVENT;
+	} /* if */
+    } /* if */
+
   return TK_DEFER_EVENT;
 } /* ay_script_restrictall */
 
