@@ -3706,8 +3706,8 @@ ay_nct_intersect(ay_nurbcurve_object *cu, ay_nurbcurve_object *cv,
  double cuminx, cumaxx, cvminx, cvmaxx;
  double cuminy, cumaxy, cvminy, cvmaxy;
  double cuminz, cumaxz, cvminz, cvmaxz;
- int nbu = 0, nbv = 0, order_u, order_v;
- int stride = 4, i, j, k, l, overlap;
+ int nbu = 0, nbv = 0;
+ int stride = 4, i, j, k, overlap;
 
   if(!cu || !cv)
     return AY_ENULL;
@@ -4370,3 +4370,87 @@ ay_nct_toxytcmd(ClientData clientData, Tcl_Interp *interp,
 
  return TCL_OK;
 } /* ay_nct_toxytcmd */
+
+
+/* ay_nct_makecomptcmd:
+ *  
+ */
+int
+ay_nct_makecomptcmd(ClientData clientData, Tcl_Interp *interp,
+		    int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ char fname[] = "makeCompNC";
+ ay_list_object *sel = ay_selection;
+ ay_nurbcurve_object *nc = NULL;
+ ay_object *o = NULL, *p = NULL, *src = NULL, **nxt = NULL;
+
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, fname, NULL);
+      return TCL_OK;
+    }
+
+  nxt = &(src);
+
+  while(sel)
+    {
+      o = sel->object;
+      if(o->type != AY_IDNCURVE)
+	{
+	  ay_error(AY_ERROR, fname, "Object is not a NURBCurve!");
+	}
+      else
+	{
+	  ay_status = ay_object_copy(o, nxt);
+	  if(ay_status)
+	    {
+	      ay_error(AY_ERROR, fname, "Could not copy object!");
+	      goto cleanup;
+	    }
+	  nxt = &((*nxt)->next);
+	} /* if */
+
+      sel = sel->next;
+    } /* while */
+
+  if(src && src->next)
+    {
+      ay_status = ay_nct_makecompatible(src);
+      if(ay_status)
+	{
+	  ay_error(AY_ERROR, fname,
+		   "Failed to make selected curves compatible!");
+	  goto cleanup;
+	}
+      /* now exchange the nurbcurve objects */
+      p = src;
+      sel = ay_selection;
+      while(sel)
+	{
+	  o = sel->object;
+	  if(o->type == AY_IDNCURVE)
+	    {
+	      nc = (ay_nurbcurve_object*)o->refine;
+	      o->refine = p->refine;
+	      p->refine = nc;
+	      ay_selp_clear(o);
+	      ay_object_ccp(o);
+	      p = p->next;
+	    } /* if */
+	  sel = sel->next;
+	} /* while */
+    }
+  else
+    {
+      ay_error(AY_ERROR, fname, "Please select atleast two NURBS curves!");
+    } /* if */
+
+  ay_notify_parent();
+
+ cleanup:
+  if(src)
+    ay_status = ay_object_deletemulti(src);
+
+ return TCL_OK;
+} /* ay_nct_makecomptcmd */
