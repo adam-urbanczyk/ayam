@@ -340,6 +340,8 @@ proc material_highlight { } {
 	    "Searching for objects of material \\\"$mat\\\" ..."
     update
 
+    set aid [after 500 {mouseWatch 1 {. .tbw}}]
+
     # save old selection state
     set oldclevel $ay(CurrentLevel)
     set oldslevel $ay(SelectedLevel)
@@ -385,6 +387,9 @@ proc material_highlight { } {
     $ay(tree) selection set $oldselection
     tree_handleSelection
     plb_update
+
+    mouseWatch 0 {. .tbw}
+    catch [after cancel $aid]
 
  return;
 }
