@@ -441,7 +441,7 @@ ay_undo_copy(ay_undo_object *uo)
 	{
 	  ay_status = ay_tags_delall(o);
 	}
-      ay_status = ay_tags_copyall(o, c);
+      ay_status = ay_tags_copyall(c, o);
 
       /* copy type specific part */
       switch(c->type)
