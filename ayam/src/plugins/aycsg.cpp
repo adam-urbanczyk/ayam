@@ -83,7 +83,10 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
   // it is needed by OpenCSG...
   ay_prefs.use_materialcolor = AY_FALSE;
 
+  view = (ay_view_object *)Togl_GetClientData(togl);
+
   aycsg_clearprimitives();
+  aycsg_root = NULL;
 
   ay_status = aycsg_copytree(view->drawsel,
 		       view->drawlevel?ay_currentlevel->object:ay_root->next,
