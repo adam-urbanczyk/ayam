@@ -1,9 +1,16 @@
-[CVS, 15. 08. 2002]:
+[CVS, 21. 08. 2002]:
 o bug fixes:
   - fixed memory leaks in the shadow map RIB export module
   - fixed ICurves crash for length 2
   - fixed insert and delete point action errors for drag mouse events
   - fixed errors with transformed MetaBall components (e.g. of type custom)
+  - fixed broken scene change detection (that occured when the undo
+    system was switched off using an "UndoLevels" preference setting of -1)
+  - fixed wrong reference counter setting of material objects created
+    by the RIB import plugin
+  - fixed converted caps of Extrude objects losing their trimcurves
+    when saved and then read again
+  - fixed automatic cap generation for various tool objects
 o added a permanent preview feature; a constantly open RIB stream
   to a (fast) RenderMan renderer like rgl immediately displays all
   changes in the scene without the need to repeatedly hit "Ctrl-r" and
@@ -31,6 +38,12 @@ o added "Show All" and "Hide All" menu entries to the main menu
 o replaced "setNC"/"getNC"/"setNP"/"getNP" scripting interface commands
   with the new "setPnt"/"getPnt" commands
 o added a new object type PolyMesh (polygonal mesh)
+o the RIB import plugin now also imports "Polygons", "GeneralPolygons",
+  "PointsPolygons", and "PointsGeneralPolygons"
+o added a new tool for the PolyMesh object; "mergePo", that merges a bunch
+  of PolyMesh objects (e.g. created by importing a poorly structured RIB)
+  into a single PolyMesh object
+
 
 [09. 07. 2002] Ayam1.2:
 o bug fixes:
