@@ -62,7 +62,7 @@ int onio_getncurvefromcurve(const ON_Curve *p_o, double accuracy,
 
 int onio_readbrep(ON_Brep *p_b, double accuracy);
 
-int onio_readobject(const ON_Object *p_o, double accuracy);
+int onio_readobject(ONX_Model *p_m, const ON_Object *p_o, double accuracy);
 
 int onio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 		  int argc, char *argv[]);
@@ -866,6 +866,11 @@ onio_getncurvefromcurve(const ON_Curve *p_o, double accuracy,
       (ON_PolylineCurve::Cast(p_o))->GetNurbForm(c, accuracy, NULL);
       handled = AY_TRUE;
     }
+  if(ON_PolyCurve::Cast(p_o))
+    {
+      (ON_PolyCurve::Cast(p_o))->GetNurbForm(c, accuracy, NULL);
+      handled = AY_TRUE;
+    }
   if(ON_LineCurve::Cast(p_o))
     {
       (ON_LineCurve::Cast(p_o))->GetNurbForm(c, accuracy, NULL);
@@ -905,8 +910,11 @@ onio_readbrep(ON_Brep *p_b, double accuracy)
  ay_object **oldnext = ay_next, *lo = NULL, *o;
  ay_level_object *level = NULL;
 
+
   for(i = 0; i < p_b->m_F.Count(); ++i)
     {
+      // XXXX should put multiple faces in one level to apply transformations
+      // more easily!
       const ON_BrepFace& face = p_b->m_F[i];
 
       if(face.m_si < 0 || face.m_si >= p_b->m_S.Count())
@@ -1102,16 +1110,41 @@ onio_readbrep(ON_Brep *p_b, double accuracy)
 } // onio_readbrep
 
 
+// onio_readreference:
+//
+int
+onio_readreference(ONX_Model *p_m, ON_InstanceRef *p_r, double accuracy)
+{
+ int ay_status = AY_OK;
+
+  if(!p_m || !p_r)
+    return AY_ENULL;
+
+  ON_UUID uuid = p_r->m_instance_definition_uuid;
+  if(p_m->m_object_table[p_m->ObjectIndex(uuid)].m_object)
+    {
+      ay_status = onio_readobject(p_m,
+			p_m->m_object_table[p_m->ObjectIndex(uuid)].m_object,
+				  accuracy);
+
+      // XXXX apply transform of p_r
+
+    } // if
+
+ return ay_status;
+} // onio_readreference
+
+
 // onio_readobject:
 //
 int
-onio_readobject(const ON_Object *p_o, double accuracy)
+onio_readobject(ONX_Model *p_m, const ON_Object *p_o, double accuracy)
 {
  int ay_status = AY_OK;
  ON_NurbsSurface s;
  ON_NurbsCurve c;
 
-  if(!p_o)
+  if(!p_m || !p_o)
     return AY_ENULL;
 
   switch(p_o->ObjectType())
@@ -1122,6 +1155,11 @@ onio_readobject(const ON_Object *p_o, double accuracy)
       if(ON_PolylineCurve::Cast(p_o))
 	{
 	  (ON_PolylineCurve::Cast(p_o))->GetNurbForm(c, accuracy, NULL);
+	  ay_status = onio_readnurbscurve(&c);
+	}
+      if(ON_PolyCurve::Cast(p_o))
+	{
+	  (ON_PolyCurve::Cast(p_o))->GetNurbForm(c, accuracy, NULL);
 	  ay_status = onio_readnurbscurve(&c);
 	}
       if(ON_LineCurve::Cast(p_o))
@@ -1169,6 +1207,8 @@ onio_readobject(const ON_Object *p_o, double accuracy)
     case ON::brep_object:
       ay_status = onio_readbrep((ON_Brep *)p_o, accuracy);
       break;
+    case ON::instance_reference:
+      ay_status = onio_readreference(p_m, (ON_InstanceRef *)p_o, accuracy);
     default:
       break;
     } // switch
@@ -1243,7 +1283,8 @@ onio_readtcmd(ClientData clientData, Tcl_Interp *interp,
     {
       if((model.m_object_table[i]).m_object)
 	{
-	  ay_status = onio_readobject((model.m_object_table[i]).m_object,
+	  ay_status = onio_readobject(&model,
+				      (model.m_object_table[i]).m_object,
 				      accuracy);
 	  if(ay_status)
 	    {
