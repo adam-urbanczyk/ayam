@@ -32,6 +32,8 @@ int ay_ict_revert(ay_icurve_object *curve);
 int ay_ict_reverttcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
 
+int ay_ict_getpntfromindex(ay_icurve_object *curve, int index, double **p);
+
 /* knots.c */
 int ay_knots_createnp(ay_nurbpatch_object *patch);
 
@@ -198,12 +200,6 @@ int ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
 int ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
 			    int argc, char *argv[]);
 
-int ay_nct_getncpointtcmd(ClientData clientData, Tcl_Interp *interp,
-			  int argc, char *argv[]);
-
-int ay_nct_setncpointtcmd(ClientData clientData, Tcl_Interp *interp,
-			  int argc, char *argv[]);
-
 void ay_nct_getorientation(ay_nurbcurve_object *curve, double *oangle);
 
 int ay_nct_isclosed(ay_nurbcurve_object *nc);
@@ -211,6 +207,8 @@ int ay_nct_isclosed(ay_nurbcurve_object *nc);
 int ay_nct_createfrompatch(ay_object *p, int where, ay_object **cu);
 
 int ay_nct_applytrafo(ay_object *c);
+
+int ay_nct_getpntfromindex(ay_nurbcurve_object *curve, int index, double **p);
 
 /* npt.c */
 int ay_npt_create(int uorder, int vorder, int width, int height,
@@ -248,12 +246,6 @@ int ay_npt_splittocurvestcmd(ClientData clientData, Tcl_Interp *interp,
 int ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
 			       int argc, char *argv[]);
 
-int ay_npt_getnppointtcmd(ClientData clientData, Tcl_Interp *interp,
-			  int argc, char *argv[]);
-
-int ay_npt_setnppointtcmd(ClientData clientData, Tcl_Interp *interp,
-			  int argc, char *argv[]);
-
 int ay_npt_sweep(ay_object *o, ay_object *o2, int sections,
 		 int rotate, ay_nurbpatch_object **patch,
 		 int has_start_cap, ay_object **start_cap,
@@ -278,8 +270,14 @@ int ay_npt_createcap(double z, ay_nurbcurve_object *curve,
 		     double *ominy, double *omaxy, double *oangle,
 		     ay_nurbpatch_object **cap);
 
+int ay_npt_getpntfromindex(ay_nurbpatch_object *patch, int indexu, int indexv,
+			   double **p);
+
 /* pmt.c */
 
 int ay_pmt_tonpatch(ay_pamesh_object *pamesh, ay_object **result);
 
 int ay_pmt_valid(ay_pamesh_object *pamesh, int *detail);
+
+int ay_pmt_getpntfromindex(ay_pamesh_object *patch, int indexu, int indexv,
+			   double **p);

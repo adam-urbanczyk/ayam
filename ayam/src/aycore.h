@@ -503,11 +503,14 @@ int ay_tcmd_hidetcmd(ClientData clientData, Tcl_Interp *interp,
 int ay_tcmd_getvertcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
 
-int ay_tcmd_getbppointtcmd(ClientData clientData, Tcl_Interp *interp,
-			   int argc, char *argv[]);
+int ay_tcmd_getbppntfromindex(ay_bpatch_object *patch, int index,
+			  double **p);
 
-int ay_tcmd_setbppointtcmd(ClientData clientData, Tcl_Interp *interp,
-			   int argc, char *argv[]);
+int ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
+			 int argc, char *argv[]);
+
+int ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
+			 int argc, char *argv[]);
 
 /* tmp.c */
 int ay_tmp_gettcmd(ClientData clientData, Tcl_Interp *interp,

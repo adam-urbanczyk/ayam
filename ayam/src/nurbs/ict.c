@@ -850,3 +850,25 @@ ay_ict_reverttcmd(ClientData clientData, Tcl_Interp *interp,
 
  return TCL_OK;
 } /* ay_ict_reverttcmd */
+
+
+/* ay_ict_getpntfromindex:
+ *  
+ *  
+ */
+int
+ay_ict_getpntfromindex(ay_icurve_object *curve, int index, double **p)
+{
+ int stride = 3;
+ char fname[] = "ay_ict_getpntfromindex";
+
+  if(index >= curve->length || index < 0)
+    {
+      ay_error(AY_ERROR, fname, "index out of range");
+      return TCL_OK;
+    }
+
+  *p = &(curve->controlv[index*stride]);
+
+ return TCL_OK;
+} /* ay_ict_getpntfromindex */

@@ -3,7 +3,7 @@
 /*
  * Ayam, a free 3D modeler for the RenderMan interface.
  *
- * Ayam is copyrighted 1998-2001 by Randolf Schultz
+ * Ayam is copyrighted 1998-2002 by Randolf Schultz
  * (rschultz@informatik.uni-rostock.de) and others.
  *
  * All rights reserved.
@@ -992,7 +992,7 @@ extern unsigned int ay_current_glname;
 #define AYDEFAULTPICKEPSILON 0.2;
 
 /* Version Strings */
-#define AYVERSIONSTR "1.2"
+#define AYVERSIONSTR "1.3pre"
 #define AYVERSIONSTRMI "0"
 
 #include "aycore.h"
