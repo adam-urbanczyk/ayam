@@ -28,10 +28,12 @@ proc balloon_set {w help} {
     # "<coto>Naja, tcl/tk ist eben geil :->"
     # (realizing, that I implemented the browse-balloons-feature in < 5 min) 
 
+    regsub -all "%" $help "%%" help2
+
     bind $w <Enter> "
     update;
      if { \$balloonwin == \"\" } {
-      after \$balloontime {set balloonwin %W ; balloon_show %W [list $help] };
+      after \$balloontime {set balloonwin %W ; balloon_show %W [list $help2] };
      }"
 
     bind $w <Leave> "
@@ -40,7 +42,7 @@ proc balloon_set {w help} {
 	    set balloonwin \"\";
 	}
 	destroy %W.balloon;
-	after cancel {set balloonwin %W ; balloon_show %W [list $help] };
+	after cancel {set balloonwin %W ; balloon_show %W [list $help2] };
 	after 500 [list set balloontime \$ayprefs(Balloon)]"
 
  return;
@@ -63,7 +65,7 @@ proc balloon_show {w arg} {
     catch {destroy $top}
     toplevel $top -bd 1 -bg black
     wm overrideredirect $top 1
-    pack [message $top.txt -aspect 10000 -fg black -bg lightyellow -text $arg] 
+    pack [message $top.txt -width 100c -fg black -bg lightyellow -text $arg] 
 
     # do not move off-screen
     set wmx [winfo rootx $w]

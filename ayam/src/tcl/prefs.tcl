@@ -1,3 +1,4 @@
+
 # Ayam, a free 3D modeler for the RenderMan interface.
 #
 # Ayam is copyrighted 1998-2001 by Randolf Schultz
@@ -82,90 +83,99 @@ proc prefs_open {} {
     set fw [$nb insert end Main -text Main\
 	    -raisecmd "prefs_rsnb $nb Main"]
     addText $fw e0 "Shaders:"
-    addMDir $fw ayprefse Shaders
-    addCommand $fw c1 "Scan Shaders" {
+    addMDirB $fw ayprefse Shaders [ms ayprefse_Shaders]
+    addCommandB $fw c1 "Scan Shaders" {
 	set ayprefs(Shaders) $ayprefse(Shaders)
 	update
 	shader_scanAll
-    }
+    } [ms ayprefse_ScanShaders]
     addText $fw e1 "GUI:"
-    addCheck $fw ayprefse AutoResize
-    addCheck $fw ayprefse TwmCompat
-    addCheck $fw ayprefse ListTypes
-    addParam $fw ayprefse TclPrecision { 4 5 6 }
-    addCheck $fw ayprefse AutoSavePrefs
-    addCheck $fw ayprefse LoadEnv
-    addCheck $fw ayprefse NewLoadsEnv
-    addFile $fw ayprefse EnvFile
-    addMFile $fw ayprefse Scripts
-    addMDir $fw ayprefse Plugins
-    addString $fw ayprefse Docs
-    addString $fw ayprefse TmpDir
+    set l $ay(locales)
+    addStringB $fw ayprefse Locale [ms ayprefse_Locale] $l
+    addCheckB $fw ayprefse AutoResize [ms ayprefse_AutoResize]
+    addCheckB $fw ayprefse TwmCompat [ms ayprefse_TwmCompat]
+    addCheckB $fw ayprefse ListTypes [ms ayprefse_ListTypes]
+    addCheckB $fw ayprefse AutoSavePrefs [ms ayprefse_AutoSavePrefs]
+    addCheckB $fw ayprefse LoadEnv [ms ayprefse_LoadEnv]
+    addCheckB $fw ayprefse NewLoadsEnv [ms ayprefse_NewLoadsEnv]
+    addFileB $fw ayprefse EnvFile [ms ayprefse_EnvFile]
+    addMFileB $fw ayprefse Scripts [ms ayprefse_Scripts]
+    addMDirB $fw ayprefse Plugins [ms ayprefse_Plugins]
+    addStringB $fw ayprefse Docs [ms ayprefse_Docs]
+    addStringB $fw ayprefse TmpDir [ms ayprefse_TmpDir]
 
     # Modeling
     set fw [$nb insert end Modeling -text Modeling\
 	    -raisecmd "prefs_rsnb $nb Modeling"]
-    addParam $fw ayprefse PickEpsilon
-    addParam $fw ayprefse HandleSize
-    addCheck $fw ayprefse LazyNotify
-    addCheck $fw ayprefse EditSnaps
-    addParam $fw ayprefse UndoLevels { -1 2 5 10 20 }
+    addParamB $fw ayprefse PickEpsilon [ms ayprefse_PickEpsilon]
+    addParamB $fw ayprefse HandleSize [ms ayprefse_HandleSize]
+    addCheckB $fw ayprefse LazyNotify [ms ayprefse_LazyNotify]
+    addCheckB $fw ayprefse EditSnaps [ms ayprefse_EditSnaps]
+    addParamB $fw ayprefse UndoLevels [ms ayprefse_UndoLevels] { -1 2 5 10 20 }
 
     # Drawing
     set fw [$nb insert end Drawing -text Drawing\
 	    -raisecmd "prefs_rsnb $nb Drawing"]
 
-    addParam $fw ayprefse Tolerance { 5 10 25 50 75 90 }
+    addParamB $fw ayprefse Tolerance [ms ayprefse_Tolerance]\
+	    { 5 10 25 50 75 90 }
     set l $ay(npdisplaymodes)
-    addMenu $fw ayprefse DisplayMode $l
+    addMenuB $fw ayprefse DisplayMode [ms ayprefse_DisplayMode] $l
     set l $ay(ncdisplaymodes)
-    addMenu $fw ayprefse NCDisplayMode $l
-    addCheck $fw ayprefse UseMatColor
-    addColor $fw ayprefse Background
-    addColor $fw ayprefse Object
-    addColor $fw ayprefse Selection
-    addColor $fw ayprefse Grid
-    addColor $fw ayprefse Tag
-    addColor $fw ayprefse Shade
-    addColor $fw ayprefse Light
+    addMenuB $fw ayprefse NCDisplayMode [ms ayprefse_NCDisplayMode] $l
+    addCheckB $fw ayprefse UseMatColor [ms ayprefse_UseMatColor]
+    addColorB $fw ayprefse Background [ms ayprefse_Background]
+    addColorB $fw ayprefse Object [ms ayprefse_Object]
+    addColorB $fw ayprefse Selection [ms ayprefse_Selection]
+    addColorB $fw ayprefse Grid [ms ayprefse_Grid]
+    addColorB $fw ayprefse Tag [ms ayprefse_Tag]
+    addColorB $fw ayprefse Shade [ms ayprefse_Shade]
+    addColorB $fw ayprefse Light [ms ayprefse_Light]
 
     # RIB Export
     set fw [$nb insert end RIB-Export -text RIB-Export\
 	    -raisecmd "prefs_rsnb $nb RIB-Export"]
-    addFile $fw ayprefse RIBFile [list Scenefile Scene Ask]
-    addFile $fw ayprefse Image [list RIB Ask]
-    addCheck $fw ayprefse ResInstances
-    addCheck $fw ayprefse CheckLights
-    addMenu $fw ayprefse DefaultMat [list none matte default]
-    addCheck $fw ayprefse RIStandard
-    addCheck $fw ayprefse WriteIdent
-    addCheck $fw ayprefse ShadowMaps
-    addCheck $fw ayprefse ExcludeHidden
-    addString $fw ayprefse QRender [list "rgl %s" "rgl -rd 10 %s"]
-    addCheck $fw ayprefse QRenderUI
-    addString $fw ayprefse QRenderPT
-    addString $fw ayprefse Render [list "rendrib -d 4 -Progress %s" "rendrib -d 4 %s" "aqsis -fb %s"]
-    addCheck $fw ayprefse RenderUI
-    addString $fw ayprefse RenderPT [list "R90000 %d" "Done computing %d" "%d"]
-    addString $fw ayprefse PPRender [list "rgl"]
+    addFileB $fw ayprefse RIBFile [ms ayprefse_RIBFile]\
+	    [list Scenefile Scene Ask]
+    addFileB $fw ayprefse Image [ms ayprefse_Image] [list RIB Ask]
+    addCheckB $fw ayprefse ResInstances [ms ayprefse_ResInstances]
+    addCheckB $fw ayprefse CheckLights [ms ayprefse_CheckLights]
+    addMenuB $fw ayprefse DefaultMat [ms ayprefse_DefaultMat]\
+	    [list none matte default]
+    addCheckB $fw ayprefse RIStandard [ms ayprefse_RIStandard]
+    addCheckB $fw ayprefse WriteIdent [ms ayprefse_WriteIdent]
+    addCheckB $fw ayprefse ShadowMaps [ms ayprefse_ShadowMaps]
+    addCheckB $fw ayprefse ExcludeHidden [ms ayprefse_ExcludeHidden]
+    addStringB $fw ayprefse QRender [ms ayprefse_QRender]\
+	    [list "rgl %s" "rgl -rd 10 %s"]
+    addCheckB $fw ayprefse QRenderUI [ms ayprefse_QRenderUI]
+    addStringB $fw ayprefse QRenderPT [ms ayprefse_QRenderPT]\
+	    [list "R90000 %d" "Done computing %d" "%d"]
+    addStringB $fw ayprefse Render [ms ayprefse_Render]\
+	    [list "rendrib -d 4 -Progress %s" "rendrib -d 4 %s" "aqsis -fb %s"]
+    addCheckB $fw ayprefse RenderUI [ms ayprefse_RenderUI]
+    addStringB $fw ayprefse RenderPT [ms ayprefse_RenderPT]\
+	    [list "R90000 %d" "Done computing %d" "%d"]
+    addStringB $fw ayprefse PPRender [ms ayprefse_PPRender] [list "rgl"]
 
     # Misc
     set fw [$nb insert end Misc -text Misc\
 	    -raisecmd "prefs_rsnb $nb Misc"]
     
     addText $fw e0 "Errors:"
-    addCheck $fw ayprefse RedirectTcl
-    addCheck $fw ayprefse Logging
-    addString $fw ayprefse LogFile
+    addCheckB $fw ayprefse RedirectTcl [ms ayprefse_RedirectTcl]
+    addCheckB $fw ayprefse Logging [ms ayprefse_Logging]
+    addStringB $fw ayprefse LogFile [ms ayprefse_LogFile]
     addText $fw e1 "Mops Import:"
-    addCheck $fw ayprefse MIResetDM
-    addCheck $fw ayprefse MIResetST
+    addCheckB $fw ayprefse MIResetDM [ms ayprefse_MIResetDM]
+    addCheckB $fw ayprefse MIResetST [ms ayprefse_MIResetST]
     addText $fw e2 "UI:"
-    addCheck $fw ayprefse SaveAddsMRU
-    addCheck $fw ayprefse ToolBoxTrans
-    addCheck $fw ayprefse ToolBoxShrink
-    addCheck $fw ayprefse RGTrans
-    addCheck $fw ayprefse HideTmpTags
+    addCheckB $fw ayprefse SaveAddsMRU [ms ayprefse_SaveAddsMRU]
+    addCheckB $fw ayprefse ToolBoxTrans [ms ayprefse_ToolBoxTrans]
+    addCheckB $fw ayprefse ToolBoxShrink [ms ayprefse_ToolBoxShrink]
+    addCheckB $fw ayprefse RGTrans [ms ayprefse_RGTrans]
+    addCheckB $fw ayprefse HideTmpTags [ms ayprefse_HideTmpTags]
+    addParamB $fw ayprefse TclPrecision [ms ayprefse_TclPrecision] { 4 5 6 }
 
     # select last selected preference section
     pack $nb -fill both -expand yes
