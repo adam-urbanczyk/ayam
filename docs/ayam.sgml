@@ -742,8 +742,11 @@ section <ref id="vat" name="ViewAttrib">.
 <item><tt/Automatic Redraw/, toggles whether the view should
 be redrawn, whenever the scene changes. If this is disabled,
 you can force a redraw using <tt>View/Redraw</tt>.
-<item><tt/Shade/ toggles whether the view should draw a shaded
-representation rather than a wireframe.
+<item><tt/Drawing Mode/ determines whether the view should draw a wireframe
+representation (<tt>Drawing Mode/Draw</tt>) or a shaded one
+(<tt>Drawing Mode/Shade</tt>) or, new in Ayam 1.6, a representation
+where the curves of the draw mode are drawn over the shaded
+representation (<tt>Drawing Mode/ShadeAndDraw</tt>).
 <item><tt/Draw Selection only/, if this is enabled, just the
 currently selected objects (and their children) will be drawn.
 <item><tt/Draw Level only/, if this is enabled, just the
