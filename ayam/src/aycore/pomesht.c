@@ -154,8 +154,9 @@ ay_pomesht_setautonormal(double *v1, double *v2, double *v3)
 int
 ay_pomesht_tesselate(ay_pomesh_object *pomesh)
 {
- int i = 0, j = 0, k = 0, l = 0, m = 0, n = 0, stride = 0;
+ unsigned int i = 0, j = 0, k = 0, l = 0, m = 0, n = 0;
  unsigned int a;
+ int stride = 0;
  GLUtesselator *tess = NULL;
 
   if(pomesh->has_normals)
@@ -250,13 +251,13 @@ ay_pomesht_merge(ay_list_object *list, ay_object **result)
  ay_list_object *lo = list;
  ay_object *o = NULL, *no = NULL;
  ay_pomesh_object *pm = NULL, *npm = NULL;
- int i = 0, j = 0, k = 0, stride = 0;
+ unsigned int i = 0, j = 0, k = 0;
  unsigned int total_polys = 0, total_loops = 0, total_verts = 0,
    total_controls = 0;
  unsigned int pmloops = 0, pmverts = 0;
  unsigned int nextloops = 0, nextnverts = 0, nextverts = 0,
    nextcontrols = 0, oldpmncontrols = 0;
- int has_normals = -1;
+ int has_normals = -1, stride = 0;
  double dummy[3] = {0};
 
   while(lo)

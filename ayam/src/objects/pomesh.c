@@ -68,8 +68,8 @@ int
 ay_pomesh_copycb(void *src, void **dst)
 {
  ay_pomesh_object *pomesh = NULL, *pomeshsrc = NULL;
- unsigned int total_loops = 0, total_verts = 0;
- int i, stride = 0;
+ unsigned int i, total_loops = 0, total_verts = 0;
+ int stride = 0;
 
   if(!src || !dst)
     return AY_ENULL;
@@ -148,7 +148,8 @@ int
 ay_pomesh_drawcb(struct Togl *togl, ay_object *o)
 {
  ay_pomesh_object *pomesh = NULL;
- int i = 0, j = 0, k = 0, l = 0, m = 0, n = 0, stride = 0;
+ int stride = 0;
+ unsigned int i = 0, j = 0, k = 0, l = 0, m = 0, n = 0;
  unsigned int a;
 
   if(!o)
@@ -210,7 +211,8 @@ ay_pomesh_drawhcb(struct Togl *togl, ay_object *o)
  ay_pomesh_object *pomesh = NULL;
  GLdouble *ver = NULL;
  double point_size = ay_prefs.handle_size;
- int i = 0, stride = 0;
+ unsigned int i = 0;
+ int stride = 0;
 
   if(!o)
     return AY_ENULL;
@@ -244,7 +246,8 @@ ay_pomesh_getpntcb(ay_object *o, double *p)
  ay_pomesh_object *pomesh = NULL;
  double min_dist = ay_prefs.pick_epsilon, dist = 0.0;
  double *pecoords = NULL, *control = NULL;
- int i = 0, j = 0, k = 0, a = 0, numfound = 0, stride = 0;
+ unsigned int i = 0, j = 0, k = 0, a = 0, numfound = 0;
+ int stride = 0;
 
   if(!o || !p)
     return AY_ENULL;
@@ -418,7 +421,7 @@ ay_pomesh_readcb(FILE *fileptr, ay_object *o)
 {
  ay_pomesh_object *pomesh = NULL;
  unsigned int total_loops = 0, total_verts = 0;
- int i, a;
+ unsigned int i, a;
 
  if(!o)
    return AY_ENULL;
@@ -497,7 +500,7 @@ ay_pomesh_writecb(FILE *fileptr, ay_object *o)
 {
  ay_pomesh_object *pomesh = NULL;
  unsigned int total_loops = 0, total_verts = 0;
- int i = 0, a = 0;
+ unsigned int i = 0, a = 0;
 
   if(!o)
     return AY_ENULL;
@@ -567,8 +570,9 @@ ay_pomesh_wribcb(char *file, ay_object *o)
  ay_pomesh_object *pomesh = NULL;
  RtInt *nloops = NULL, *nverts = NULL, *verts = NULL;
  RtPoint *controls = NULL, *normals = NULL;
- int i = 0, a = 0, stride = 0;
+ unsigned int i = 0, a = 0;
  unsigned int total_loops = 0, total_verts = 0;
+ int stride = 0;
 
   if(!o)
     return AY_OK;
@@ -677,7 +681,8 @@ ay_pomesh_bbccb(ay_object *o, double *bbox, int *flags)
 {
  double xmin, xmax, ymin, ymax, zmin, zmax;
  double *controlv = NULL;
- int i, a, stride = 0;
+ unsigned int i, a;
+ int stride = 0;
  ay_pomesh_object *pomesh = NULL;
 
   if(!o || !bbox)
