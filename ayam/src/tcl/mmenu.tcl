@@ -238,11 +238,13 @@ $m add command -label "Clone" -command "clone_crt;"
 $m add command -label "Material" \
 	-command "material_createp;"
 $m add command -label "Camera" \
-	-command "crtOb Camera; uCR; sL;rV;"
+	-command "crtOb Camera; uCR; sL; rV;"
 $m add command -label "RiInc" \
-	-command "crtOb RiInc; uCR; sL;rV;"
+	-command "crtOb RiInc; uCR; sL; rV;"
+$m add command -label "Script" \
+	-command "crtOb Script; uCR; sL; rV;"
 $m add command -label "Text" \
-	-command "crtOb Text; uCR; sL;rV;"
+	-command "crtOb Text; uCR; sL; rV;"
 
 if { ! $AYWITHAQUA } {
     pack .fu.fMenu.cr -in .fu.fMenu -side left
