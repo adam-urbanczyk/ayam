@@ -1,4 +1,4 @@
-[CVS, 26. 12. 2002]:
+[CVS, 2. 1. 2003]:
 o bug fixes:
   - fixed remembering of the state of the object selection listbox/tree
     when the context menu or a double click on the label is used to
@@ -23,6 +23,10 @@ o bug fixes:
     using programs (by patching the Tcl-source to not use vfork() but fork())
   - fixed problems building the documentation on Debian 3.0 (Woody)
   - fixed object picking when the root object is hidden
+  - fixed omitting shaders with array arguments from the lists of
+    available shaders
+  - fixed rotate about modelling action not rotating around a grid point
+    in views of type "Side", when the view is additionally moved sideways
 o reduced number of redraws when selecting hidden or material objects
 o added a RiDisplay tag type, that allows to add more output files
   (e.g. containing depth buffer information) to the scene
