@@ -1077,9 +1077,9 @@ ay_pact_deleteic(ay_icurve_object *icurve,
       j += 3;
     } /* for */
 
-  if((index != -1) && (icurve->length-1 < 2))
+  if((index != -1) && (icurve->length-1 < 3))
     {
-      ay_error(AY_ERROR, fname, "need atleast two points");
+      ay_error(AY_ERROR, fname, "need atleast three points");
       return TCL_OK;
     }
 
