@@ -37,13 +37,19 @@ ay_knots_createnp(ay_nurbpatch_object *patch)
   /* calloc new knot-arrays */
   if(!(newuknotv = calloc(uknot_count, sizeof(double))))
     return AY_EOMEM;
+
   if(!(newvknotv = calloc(vknot_count, sizeof(double))))
     { free(newuknotv); return AY_EOMEM; }
 
   /* free old knot-arrays */
-  if(patch->uknotv != NULL) free(patch->uknotv);
+  if(patch->uknotv != NULL)
+    free(patch->uknotv);
+
   patch->uknotv = newuknotv;
-  if(patch->vknotv != NULL) free(patch->vknotv);
+
+  if(patch->vknotv != NULL)
+    free(patch->vknotv);
+
   patch->vknotv = newvknotv;
 
   /* fill knot-arrays */
@@ -323,23 +329,22 @@ ay_knots_unify(double *Ua, int Ualen, double *Ub, int Ublen,
 	done = AY_TRUE;
     }
 
-
-  if(!(*Ubar = realloc(U, i*sizeof(double))))
+  if(*Ubar)
     {
-      return AY_EOMEM;
+      free(*Ubar);
+      *Ubar = NULL;
     }
 
-  /*
   if(!(*Ubar = calloc(i, sizeof(double))))
     {
+      free(U);
       return AY_EOMEM;
     }
 
   memcpy(*Ubar, U, i*sizeof(double));
 
   free(U);
-  */
-
+  
   *Ubarlen = i;
 
  return AY_OK;
