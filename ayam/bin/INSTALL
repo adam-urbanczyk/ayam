@@ -1,0 +1,13 @@
+[INSTALL, 5. Jun 2002]
+
+To install Ayam into your system edit the Makefile to your liking
+switch to root and do a:
+>make install
+you can uninstall Ayam as well using:
+>make uninstall
+
+By default, Ayam will install to /usr/local/ayam.
+It will create some sub-directories there, namely:
+/usr/local/ayam/bin for the executable,
+/usr/local/ayam/lib for the plugins and accompanying Tcl files, and
+/usr/local/ayam/doc for the documentation.
