@@ -56,8 +56,10 @@ ay_draw_selp(ay_object *o)
 
 /* ay_draw_object:
  *  draw a single object o (and children) in view togl
- *  if selected is false, selected objects
- *  will not be drawn!
+ *  o if selected is AY_FALSE, selected objects
+ *    will not be drawn!
+ *  o if selected is 2, a name will be pushed onto OpenGLs
+ *    name stack additionally.
  */
 int
 ay_draw_object(struct Togl *togl, ay_object *o, int selected)
@@ -91,8 +93,10 @@ ay_draw_object(struct Togl *togl, ay_object *o, int selected)
    arr = ay_drawcbt.arr;
    cb = (ay_drawcb *)(arr[o->type]);
 
-   if (selected != AY_TRUE)
-     glPushName(o->glname);
+   if(selected != AY_TRUE)
+     {
+       glPushName(o->glname);
+     }
 
    if(cb)
      ay_status = cb(togl, o);
@@ -117,10 +121,12 @@ ay_draw_object(struct Togl *togl, ay_object *o, int selected)
 	   down = down->next;
 	 } /* while */
      }
-
-  if (selected != AY_TRUE)
-    glPopName();
-
+ 
+  if(selected != AY_TRUE)
+    {
+      glPopName();
+    }
+ 
   glPopMatrix();
 
  return AY_OK;
