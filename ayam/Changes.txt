@@ -35,6 +35,9 @@ o improved the "Special/Save Environment" feature, it now always
 o improved drawing speed of selection rectangles (now using GL_COLOR_LOGIC_OP
   and XOR, if OpenGL 1.1 is available)
 o added support for using Aqsis libri2rib as BMRT libribout replacement
+o added a new option "IsLocal" to the light objects, that controls whether
+  all objects in the scene are lighted or just objects from the same level
+  and below
 
 
 [10. 05. 2003] Ayam1.5.1:
