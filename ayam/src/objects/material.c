@@ -245,7 +245,7 @@ int
 ay_material_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  int ay_status = AY_OK;
- char *n1 = "RiAttrData";
+ char *n1 = "RiAttrData", *n2 = "MaterialAttrData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_mat_object *material = NULL, *oldmat = NULL;
  int newname_status = AY_OK, oldname_status = AY_OK;
@@ -325,6 +325,7 @@ ay_material_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_GetIntFromObj(interp, to, &(material->shadow)); 
 
   /* get new name */
+  Tcl_SetStringObj(toa, n2, -1);
   Tcl_SetStringObj(ton,"Materialname",-1);
   oldname = o->name;
 
