@@ -540,9 +540,12 @@ ay_wrib_displaytags()
 	{
 	  name = NULL;
 	  val = tag->val;
-	  len = strlen(val);
+	  len = strlen(val)+1;
 	  if(len > 1)
 	    {
+	      name = NULL;
+	      type = NULL;
+	      mode = NULL;
 	      if(!(name = calloc(len, sizeof(char))))
 		return;
 	      if(!(type = calloc(len, sizeof(char))))
@@ -629,16 +632,24 @@ ay_wrib_displaytags()
 		{
 		  dmode = RI_RGBAZ;
 		}
+	      argc = 0;
 	      if(val[j] == ',')
 		{
 		  ay_tags_parseplist(&(val[j]), AY_TRUE,
 				     &argc, &tokens, &values);
+		}
+	      if(argc != 0)
+		{
 		  RiDisplayV(name, dtype, dmode, argc, tokens, values);
 		}
 	      else
 		{
 		  RiDisplay(name, dtype, dmode, RI_NULL);
 		}
+
+	      free(name); free(type); free(mode);
+	      /* free plist */
+
 	    }
 	  else
 	    {
@@ -652,6 +663,105 @@ ay_wrib_displaytags()
 
  return;
 } /* ay_wrib_displaytags */
+
+
+/* ay_wrib_hidertags:
+ *  write hider tags that are attached to the root object
+ */
+void
+ay_wrib_hidertags()
+{
+ char fname[] = "wrib_hidertags";
+ ay_object *root = NULL;
+ ay_tag_object *tag = NULL;
+ int i = 0;
+ char *val = NULL, *type = NULL;
+ size_t len;
+ RtToken htype = RI_HIDDEN;
+ RtToken *tokens;
+ RtPointer *values;
+ RtInt argc;
+
+  root = ay_root;
+  if(!root)
+    return;
+
+  tag = root->tags;
+  if(!tag)
+    return;
+
+  while(tag)
+    {
+      if(tag->type == ay_rihider_tagtype)
+	{
+	  val = tag->val;
+	  len = strlen(val)+1;
+	  if(len > 1)
+	    {
+	      if(!(type = calloc(len, sizeof(char))))
+		{ return; }
+
+	      i = 0;
+
+	      while(val[i] && val[i] != ',')
+		{
+		  type[i] = val[i];
+		  i++;
+		}
+	      type[i] = '\0';
+
+	      if(!type[0])
+		{
+		  ay_error(AY_ERROR, fname,
+			   "malformed RiHider tag encountered");
+		  free(type);
+		  return;
+		}
+	  
+	      /* get proper type */
+	      if( ! ay_comp_strcase(type, "hidden"))
+		{
+		  htype = RI_HIDDEN;
+		}
+	      else
+	      if( ! ay_comp_strcase(type, "paint"))
+		{
+		  htype = RI_PAINT;
+		}
+	      else
+		{
+		  htype = type;
+		}
+
+	      argc = 0;
+	      if(val[i] == ',')
+		{
+		  ay_tags_parseplist(&(val[i]), AY_TRUE,
+				     &argc, &tokens, &values);
+		}
+
+	      if(argc != 0)
+		{
+		  RiHiderV(htype, argc, tokens, values);
+		}
+	      else
+		{
+		  RiHider(htype, RI_NULL);
+		}
+
+	      free(type);
+	    }
+	  else
+	    {
+	      ay_error(AY_ERROR, fname, "malformed RiHider tag encountered");
+	    }
+	} /* if */
+
+      tag = tag->next;
+    } /* while */
+
+ return;
+} /* ay_wrib_hidertags */
 
 
 /* ay_wrib_rootsh:
@@ -1136,7 +1246,8 @@ ay_wrib_scene(char *file, char *image, double *from, double *to,
 
   /* write additional RiDisplay statements from tags */
   ay_wrib_displaytags();
-
+  /* write RiHider statements from tags */
+  ay_wrib_hidertags();
   /* write imager shader */
   ay_wrib_rootsh(AY_TRUE);
 
@@ -1291,8 +1402,9 @@ ay_wrib_sm(char *file, char *image, int width, int height)
       sprintf(objfile, "%s.obj.rib", file);
     }
 
-
-  /* wrib root RiOption tags (possibly containing shadow bias) */
+  /* write RiHider statements from tags */
+  ay_wrib_hidertags();
+  /* wrib root RiOption tags (possibly containing shadow bias settings) */
   ay_status = ay_riopt_wrib(ay_root);
 
   ay_sm_wriballsm(file, objfile, ay_root->next, NULL, width, height);
@@ -1471,6 +1583,8 @@ ay_wrib_pprevdraw(ay_view_object *view)
   RiFrameBegin((RtInt)1);
   RiDisplay("PPrev", RI_FRAMEBUFFER, RI_RGBA, RI_NULL);
 
+  /* write RiHider statements from tags */
+  ay_wrib_hidertags();
   /* write imager shader */
   ay_wrib_rootsh(AY_TRUE);
 
@@ -1632,6 +1746,9 @@ ay_wrib_init(Tcl_Interp *interp)
 
   /* register RiDisplay tag type */
   ay_tags_register(interp, "RiDisplay", &ay_ridisp_tagtype);
+
+  /* register RiHider tag type */
+  ay_tags_register(interp, "RiHider", &ay_rihider_tagtype);
 
  return;
 } /* ay_wrib_init */

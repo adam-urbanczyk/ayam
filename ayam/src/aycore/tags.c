@@ -582,7 +582,11 @@ ay_tags_deletetcmd(ClientData clientData, Tcl_Interp * interp,
 
 
 /* ay_tags_parseplist:
- *  
+ *  parse the string str into a parameterlist suitable for calls
+ *  into the RenderMan Interface (e.g. RiDisplayV());
+ *  the parameterlist is returned in: argc, tokensr, and valuesr;
+ *  if declare is AY_TRUE this routine also makes the necessary
+ *  calls to RiDeclare()!
  */
 int
 ay_tags_parseplist(char *str, int declare, RtInt *argc, RtToken **tokensr,

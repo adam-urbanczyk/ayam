@@ -101,6 +101,8 @@ char *ay_tc_tagtype;
 
 char *ay_ridisp_tagtype;
 
+char *ay_rihider_tagtype;
+
 static char *ay_log = "/tmp/ay.log";
 
 /* prototypes for initialization callbacks of additional included modules */
