@@ -30,6 +30,7 @@ set w [frame $ay(pca).$RiOptions(w)]
 addText $w e0 "Image:"
 addParam $w RiOptData Width
 addParam $w RiOptData Height
+addCheck $w RiOptData StdDisplay
 
 addText $w e1 "Antialias:"
 addParam $w RiOptData Variance

@@ -1384,6 +1384,8 @@ ay_wrib_scene(char *file, char *image, double *from, double *to,
 {
  int ay_status = AY_OK;
  ay_object *o = ay_root;
+ ay_root_object *root = NULL;
+ ay_riopt_object *riopt = NULL;
  RtPoint f, t, d;
  RtFloat aspect = (RtFloat)1.0, swleft, swright, swtop, swbot;
  RtFloat fov = (RtFloat)90.0, rinearp, rifarp;
@@ -1454,10 +1456,15 @@ ay_wrib_scene(char *file, char *image, double *from, double *to,
   d[1] = (RtFloat)(to[1] - from[1]);
   d[2] = (RtFloat)(to[2] - from[2]);
 
-  if(!file) /* dump .rib to stdout? */
-    RiBegin(RI_NULL);
+  /* dump RIB to stdout? */
+  if(!file)
+    { /* Yes */
+      RiBegin(RI_NULL);
+    }
   else
-    RiBegin(file);
+    { /* No */
+      RiBegin(file);
+    }
 
   /* write shadow maps */
   if(ay_prefs.use_sm == 1)
@@ -1474,10 +1481,21 @@ ay_wrib_scene(char *file, char *image, double *from, double *to,
 
   RiFrameBegin((RtInt)ay_wrib_framenum++);
 
-   if(!image) /* render to image file or to frame buffer? */
-     RiDisplay(/*RI_NULL*/"dummy", RI_FRAMEBUFFER, RI_RGBA, RI_NULL);
+   /* render to frame buffer or to image file? */
+   if(!image)
+     { /* frame buffer */
+       /* XXXX use "dummy" to work around a bug in Aqsis libri2rib */
+       RiDisplay(/*RI_NULL*/"dummy", RI_FRAMEBUFFER, RI_RGBA, RI_NULL);
+     }
    else
-     RiDisplay(image, RI_FILE, RI_RGBA, RI_NULL);
+     { /* image file */
+       root = (ay_root_object*)(ay_root->refine);
+       riopt = root->riopt;
+       if(riopt->use_std_display)
+	 {
+	   RiDisplay(image, RI_FILE, RI_RGBA, RI_NULL);
+	 }
+     } /* if */
 
    /* write additional RiDisplay statements from tags */
    ay_wrib_displaytags();
@@ -1770,8 +1788,8 @@ ay_wrib_cb(struct Togl *togl, int argc, char *argv[])
     }
 
   ay_status = ay_wrib_scene(file, image, view->from, view->to, view->roll,
-				view->zoom, view->nearp, view->farp,
-				width, height, view->type);
+			    view->zoom, view->nearp, view->farp,
+			    width, height, view->type);
 
   if(view->up[1] < 0.0)
     {

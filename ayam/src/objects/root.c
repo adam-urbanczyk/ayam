@@ -67,6 +67,7 @@ ay_root_createcb(int argc, char *argv[], ay_object *o)
   riopt->texturemem = 10000;
   riopt->geommem = 40000;
 
+  riopt->use_std_display = AY_TRUE;
 
   o->parent = AY_TRUE;
   o->refine = root;
@@ -412,6 +413,11 @@ ay_root_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_GetIntFromObj(interp, to, &itemp);
   riopt->geommem = itemp;
 
+  Tcl_SetStringObj(ton, "StdDisplay", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &itemp);
+  riopt->use_std_display = itemp;
+
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
@@ -544,6 +550,11 @@ ay_root_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton, "StdDisplay", -1);
+  to = Tcl_NewIntObj(riopt->use_std_display);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
@@ -659,6 +670,15 @@ ay_root_readcb(FILE *fileptr, ay_object *o)
       ay_status = ay_read_shader(fileptr, &(root->imager));
     }
 
+  if(ay_read_version >= 5)
+    {
+      fscanf(fileptr,"%d\n", &riopt->use_std_display);
+    }
+  else
+    {
+      riopt->use_std_display = AY_TRUE;
+    }
+
   /* link newly read tags to old root object */
   ay_tags_delall(ay_root);
   if(o->tags)
@@ -756,6 +776,7 @@ ay_root_writecb(FILE *fileptr, ay_object *o)
       fprintf(fileptr,"0\n");
     }
 
+  fprintf(fileptr,"%d\n",riopt->use_std_display);
 
  return AY_OK;
 } /* ay_root_writecb */

@@ -265,6 +265,7 @@ typedef struct ay_riopt_object_s
   int width;
   int height;
 
+  int use_std_display;
 } ay_riopt_object;
 
 
