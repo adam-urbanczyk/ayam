@@ -1,4 +1,4 @@
-[CVS, 06. 02. 2003]:
+[07. 02. 2003] Ayam1.4:
 o bug fixes:
   - fixed remembering of the state of the object selection listbox/tree
     when the context menu or a double click on the label is used to
