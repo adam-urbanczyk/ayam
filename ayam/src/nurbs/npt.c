@@ -2538,7 +2538,7 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
  ay_nurbpatch_object *new = NULL;
  ay_nurbcurve_object *cs1, *cs2, *r1, *r2, *tc;
  double *controlv = NULL;
- int i = 0, j = 0, a = 0, stride;
+ int i = 0, j = 0, a = 0, stride, incompatible = AY_FALSE;
  double u, p1[4], p2[4], p5[4], p6[4], p7[4], p8[4], p9[4];
  double T0[3] = {0.0,0.0,-1.0};
  double T1[3] = {0.0,0.0,0.0};
@@ -2564,7 +2564,50 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
   r1 = (ay_nurbcurve_object *)(o2->refine);
   r2 = (ay_nurbcurve_object *)(o3->refine);
   cs2 = (ay_nurbcurve_object *)(o4->refine);
-  
+
+  /* check, whether cross section curves are compatible */
+  if((cs1->length != cs2->length) || (cs1->order != cs2->order))
+    {
+      incompatible = AY_TRUE;
+    }
+  else
+    {
+      /* check knot vectors */
+      for(i = 0; i < (cs1->length+cs1->order); i++)
+	{
+	  if(fabs(cs1->knotv[i]-cs2->knotv[i]) > AY_EPSILON)
+	    {
+	      incompatible = AY_TRUE;
+	      break;
+	    }
+	} /* for */
+    } /* if */
+
+  if(incompatible)
+    {
+      /* make curves compatible */
+      ay_status = ay_object_copy(o1, &curve);
+      if(ay_status)
+	return ay_status;
+      ay_status = ay_object_copy(o4, &(curve->next));
+      if(ay_status)
+	{
+	  ay_object_delete(curve);
+	  return ay_status;
+	}
+      ay_status = ay_nct_makecompatible(curve);
+      if(ay_status)
+	{
+	  ay_object_deletemulti(curve);
+	  return ay_status;
+	}
+      o1 = curve;
+      cs1 = (ay_nurbcurve_object *)(o1->refine);
+      o4 = curve->next;
+      cs2 = (ay_nurbcurve_object *)(o4->refine);
+      curve = NULL;
+    } /* if */
+
   stride = 4;
 
   /* apply all transformations to first cross-section curves controlv */
@@ -3052,6 +3095,11 @@ cleanup:
     }
   if(controlv)
     free(controlv);
+  if(incompatible)
+    {
+      ay_status = ay_object_delete(o1);
+      ay_status = ay_object_delete(o4);
+    }
 
  return ay_status;
 } /* ay_npt_birail2 */
