@@ -424,7 +424,7 @@ ayamwrap: ayam
 	rm -f lib
 	rm -f BWidgets
 	ln -s $(BWIDGETS) BWidgets
-	zip -A -r -u -9 ayam BWidgets/*.tcl BWidgets/lang BWidgets/images
+	zip -A -r -u -9 ayam BWidgets/*.tcl
 	rm -f BWidgets
 	cp tcl/ayam.tcl ayam.tcl
 	cp ../lib/ayam-splash.gif.uue ./ayam-splash.gif
