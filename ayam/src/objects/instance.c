@@ -267,7 +267,7 @@ ay_instance_wribcb(char *file, ay_object *o)
     {
       if(!ay_prefs.resolveinstances)
 	{
-	  tag = o->tags;
+	  tag = orig->tags;
 	  while(tag && !found)
 	    {
 	      if(tag->type == ay_instt_oitagtype)
