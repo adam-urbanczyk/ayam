@@ -245,7 +245,7 @@ ay_npatch_drawglucb(struct Togl *togl, ay_object *o)
 	}
     }
 
-#ifdef WIN32
+#if defined(WIN32) && !defined(AYUSESUPERGLU)
   gluNurbsCallback(npatch->no, GLU_ERROR, (GLUnurbsErrorProc)ay_error_glucb);
 #else
   gluNurbsCallback(npatch->no, GLU_ERROR, ay_error_glucb);
@@ -273,7 +273,7 @@ ay_npatch_drawglucb(struct Togl *togl, ay_object *o)
   if(o->down)
     {
       trim = o->down;
-
+      ay_errno = AY_OK;
       while(trim)
 	{
 	  if(trim->type == AY_IDNCURVE)
@@ -305,8 +305,9 @@ ay_npatch_drawglucb(struct Togl *togl, ay_object *o)
 	    } /* if */
 	  trim = trim->next;
 	} /* while */
-    } /* if */
-      
+
+    }
+
   gluEndSurface(npatch->no);
 
  return AY_OK;
@@ -483,7 +484,7 @@ ay_npatch_shadecb(struct Togl *togl, ay_object *o)
 	}
     }
 
-#ifdef WIN32
+#if defined(WIN32) && !defined(AYUSESUPERGLU)
   gluNurbsCallback(npatch->no, GLU_ERROR, (GLUnurbsErrorProc)ay_error_glucb);
 #else
   gluNurbsCallback(npatch->no, GLU_ERROR, ay_error_glucb);

@@ -212,7 +212,7 @@ ay_ncurve_drawglucb(struct Togl *togl, ay_object *o)
 	    }
 	}
 
-#ifdef WIN32
+#if defined(WIN32) && !defined(AYUSESUPERGLU)
       gluNurbsCallback(ncurve->no, GLU_ERROR, (GLUnurbsErrorProc)ay_error_glucb);
 #else
       gluNurbsCallback(ncurve->no, GLU_ERROR, ay_error_glucb);
