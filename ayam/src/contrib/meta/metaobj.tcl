@@ -15,6 +15,22 @@ global ay MetaObj_props MetaObjAttr MetaObjAttrData
 set MetaObj_props { Transformations Attributes Material Tags MetaObjAttr }
 
 
+proc stdReleaseBind { w } {
+     bind $w <ButtonRelease-1> {
+
+	if { $ayprefs(LazyNotify) == 1 } { forceNot }
+	rV
+	plb_update
+     
+      set meta_mouseup 1
+	 forceNot
+      update
+	 rV	 
+     }
+}
+# stdReleaseBind
+
+
 array set MetaObjAttr {
 arr   MetaObjAttrData
 sproc ""
@@ -31,9 +47,11 @@ Formula  0
 # create MetaObjAttr-UI
 set w [frame $ay(pca).$MetaObjAttr(w)]
 
-addParam $w MetaObjAttrData Gridwith {20 40 60 80 120 140 160 180 200}
-addParam $w MetaObjAttrData Isolevel 0.6
+addParam $w MetaObjAttrData GridWith {20 40 60 80 120 140 160 180 200}
+addParam $w MetaObjAttrData IsoLevel 0.6
 addCheck $w MetaObjAttrData "ShowWorld"
+
+global meta_mouseup; set meta_mouseup 1
 
 # add menu entry to Create/Custom sub-menu
 mmenu_addcustom MetaObj "crtOb MetaObj;uS;sL;rV"
