@@ -11,6 +11,8 @@
  */
 
 #include "ayam.h"
+#include <sys/times.h>
+#include <unistd.h>
 
 /* viewt.c - view tools */
 
@@ -778,6 +780,7 @@ ay_viewt_redrawtcb(struct Togl *togl, int argc, char *argv[])
 int
 ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 {
+ int ay_status = AY_OK;
  char fname[] = "view_setconf";
  Tcl_Interp *interp = ay_interp;
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
@@ -789,13 +792,42 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
  double old_rect_xmin, old_rect_ymin, old_rect_xmax, old_rect_ymax;
  double temp[3] = {0};
  int i = 2;
+ static int kbdrot_in_progress = AY_FALSE;
+ char arg1[] = "save", arg2[] = "RotViewX", arg3[] = "RotViewY";
+ char *tclargv[3] = {0};
+ static clock_t t_lastcalled = 0, t_current = 0;
+
+#ifndef AYNOUNISTDH
+  t_current = times(NULL);
+
+  if(t_lastcalled != 0)
+    {
+    /*printf("%g\n",(double)(t_current-t_lastcalled)/(sysconf(_SC_CLK_TCK)));*/
+      if((double)(t_current-t_lastcalled)/sysconf(_SC_CLK_TCK) < 0.1)
+	{
+	  kbdrot_in_progress = AY_TRUE;
+	}
+      else
+	{
+	  kbdrot_in_progress = AY_FALSE;
+	}
+    }
+  else
+    {
+      kbdrot_in_progress = AY_FALSE;
+    }
+#endif
 
   Togl_MakeCurrent(togl);
 
+  /* XXXX the i += 2 at the end of this while enforces arguments to contain
+     two words, if other arguments follow; you may add dummy words:
+     "-undrotx dummy -drotx 5" instead of "-undrotx -drotx 5" */
   while(i+1 < argc)
     {
       rotx = 0.0; roty = 0.0; rotz = 0.0;
       Tcl_GetDouble(interp, argv[i+1], &argd);
+
       /* XXXX this code assumes, every argument is atleast 2 chars long! */
       switch(argv[i][1])
 	{
@@ -1178,6 +1210,30 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 	    }
 	  break;
 	case 'u':
+	  if(!strcmp(argv[i], "-undrotx"))
+	    {
+	      /* save current state of view, but only once per
+		 keypress-keyrelease-sequence */
+	      if(!kbdrot_in_progress)
+		{
+		  /* undo save */
+		  tclargv[1] = arg1;
+		  tclargv[2] = arg2;
+		  ay_status = ay_undo_undotcmd(NULL, ay_interp, 3, tclargv);
+		}
+	    }
+	  if(!strcmp(argv[i], "-undroty"))
+	    {
+	      /* save current state of view, but only once per
+		 keypress-keyrelease-sequence */
+	      if(!kbdrot_in_progress)
+		{
+		  /* undo save */
+		  tclargv[1] = arg1;
+		  tclargv[2] = arg3;
+		  ay_status = ay_undo_undotcmd(NULL, ay_interp, 3, tclargv);
+		}
+	    }
 	  if(!strcmp(argv[i], "-upx"))
 	    {
 	      view->up[0] = argd;
@@ -1234,6 +1290,13 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
     }
 
   ay_viewt_uprop(view);
+
+#ifndef AYNOUNISTDH
+  /* save point in time where we return control to Tcl; we use this
+     to detect whether the user holds down a key if we are called
+     in the future again */
+  t_lastcalled = times(NULL);
+#endif
 
  return TCL_OK;
 } /* ay_viewt_setconftcb */
