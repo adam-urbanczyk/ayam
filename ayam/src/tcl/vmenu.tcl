@@ -10,10 +10,23 @@
 # vmenu.tcl - the view menu
 
 proc vmenu_open { w } {
+global ay tcl_platform
+
 # View
-menubutton $w.fMenu.v -text "View" -menu $w.fMenu.v.m -padx 3
-menu $w.fMenu.v.m -tearoff 0
-$w.fMenu.v.m add command\
+if { $tcl_platform(os) != "Darwin" } {
+    menubutton $w.fMenu.v -text "View" -menu $w.fMenu.v.m -padx 3
+
+    set m [menu $w.fMenu.v.m -tearoff 0]
+    set ay(viewm) fMenu.v.m
+} else {
+    set mb [menu $w.menubar -tearoff 0 -type menubar]
+    $w configure -menu $mb
+    set m [menu $mb.mview -tearoff 0]
+    $mb add cascade -label "View" -menu $m
+    set ay(viewm) menubar.mview
+}
+
+$m add command\
 -label "Quick Render"\
 -command {
  global env ayprefs ay tcl_platform
@@ -52,7 +65,7 @@ $w.fMenu.v.m add command\
  tmp_clean 0
 }
 
-$w.fMenu.v.m add command\
+$m add command\
 -label "Render"\
 -command {\
 global env ayprefs ay tcl_platform
@@ -91,27 +104,34 @@ global env ayprefs ay tcl_platform
 
 }
 
-$w.fMenu.v.m add command -label "Redraw" -command {
+$m add command -label "Redraw" -command {
     global ay
     $ay(currentView) redraw
 }
 
-$w.fMenu.v.m add command -label "Export RIB" -command {
+$m add command -label "Export RIB" -command {
     global ay
     io_exportRIB [winfo toplevel $w]
 }
 
-$w.fMenu.v.m add separator
+$m add separator
 
 # "after 100" because on Win32 the <Enter>-binding fires when the menu
 # is closed and runs parallel to "viewClose" resulting in an error
-$w.fMenu.v.m add command -label "Close" -command "after 100 \{viewClose $w;\
+$m add command -label "Close" -command "after 100 \{viewClose $w;\
 	global ay; set ay(ul) root:0; uS\}"
 
 # Type
+if { $tcl_platform(os) != "Darwin" } {
+    menubutton $w.fMenu.t -text "Type" -menu $w.fMenu.t.m -padx 3
+    set m [menu $w.fMenu.t.m -tearoff 0]
+    set ay(typem) fMenu.t.m
+} else {
+    set m [menu $mb.mtype -tearoff 0]
+    $mb add cascade -label "Type" -menu $m
+    set ay(typem) menubar.mtype
+}
 
-menubutton $w.fMenu.t -text "Type" -menu $w.fMenu.t.m -padx 3
-set m [menu $w.fMenu.t.m -tearoff 0]
 $m add command -label "Front" -command {
     global ay
     undo save
@@ -183,9 +203,15 @@ $m add command -label "Trim" -command {
 }
 
 # Configure
-
-menubutton $w.fMenu.c -text "Configure" -menu $w.fMenu.c.m -padx 3
-set m [menu $w.fMenu.c.m -tearoff 0]
+if { $tcl_platform(os) != "Darwin" } {
+    menubutton $w.fMenu.c -text "Configure" -menu $w.fMenu.c.m -padx 3
+    set m [menu $w.fMenu.c.m -tearoff 0]
+    set ay(confm) fMenu.c.m
+} else {
+    set m [menu $mb.mconf -tearoff 0]
+    $mb add cascade -label "Configure" -menu $m
+    set ay(confm) menubar.mconf
+}
 
 $m add check -label "Automatic Redraw" -variable ay(cVRedraw)\
 	-command {
@@ -221,7 +247,7 @@ $m add check -label "Use Grid" -variable ay(cVUseGrid) -command {
     global ay
     $ay(currentView) setconf -ugrid $ay(cVUseGrid)
 }
-set m $w.fMenu.c.m
+
 $m add command -label "Set GridSize" -command {
     global ay;
     viewSetGrid $ay(currentView)
@@ -284,43 +310,54 @@ $ay(currentView) align }
 #-label "Quick Render"\
 #-command {exit}
 
-menubutton $w.fMenu.g -image ay_Grid_img -menu $w.fMenu.g.m -padx 0 -pady 0\
--borderwidth 0
-menu $w.fMenu.g.m -tearoff 0
-$w.fMenu.g.m add command -image ay_Grid01_img -hidemargin 1 -command "\
+# Grid
+if { $tcl_platform(os) != "Darwin" } {
+    menubutton $w.fMenu.g -image ay_Grid_img -menu $w.fMenu.g.m\
+	    -padx 0 -pady 0 -borderwidth 0
+    set m [menu $w.fMenu.g.m -tearoff 0]
+    set ay(gridm) fMenu.g.m
+} else {
+    set m [menu $mb.mgrid -tearoff 0]
+    $mb add cascade -image ay_Grid_img -menu $m
+    set ay(gridm) menubar.gridm
+}
+
+
+$m add command -image ay_Grid01_img -hidemargin 1 -command "\
     $w.f3D.togl setconf -grid 0.1 -drawg 1 -ugrid 1;\
     $w.f3D.togl render;\
     viewSetGridIcon $w 0.1"
-$w.fMenu.g.m add command -image ay_Grid025_img -hidemargin 1 -command "\
+$m add command -image ay_Grid025_img -hidemargin 1 -command "\
     $w.f3D.togl setconf -grid 0.25 -drawg 1 -ugrid 1;\
     $w.f3D.togl render;\
     viewSetGridIcon $w 0.25"
-$w.fMenu.g.m add command -image ay_Grid05_img -hidemargin 1 -command "\
+$m add command -image ay_Grid05_img -hidemargin 1 -command "\
     $w.f3D.togl setconf -grid 0.5 -drawg 1 -ugrid 1;\
     $w.f3D.togl render;\
     viewSetGridIcon $w 0.5"
-$w.fMenu.g.m add command -image ay_Grid10_img -hidemargin 1 -command "\
+$m add command -image ay_Grid10_img -hidemargin 1 -command "\
     $w.f3D.togl setconf -grid 1.0 -drawg 1 -ugrid 1;\
     $w.f3D.togl render;\
     viewSetGridIcon $w 1.0"
-$w.fMenu.g.m add command -image ay_Grid_img -hidemargin 1 -command "\
+$m add command -image ay_Grid_img -hidemargin 1 -command "\
     $w.f3D.togl setconf -grid 0.0 -drawg 0 -ugrid 0;\
     $w.f3D.togl render;\
     viewSetGridIcon $w 0.0"
 
+if { $tcl_platform(os) != "Darwin" } {
+    pack $w.fMenu.v $w.fMenu.t $w.fMenu.c -in $w.fMenu -side left
 
-pack $w.fMenu.v $w.fMenu.t $w.fMenu.c -in $w.fMenu -side left
+    pack $w.fMenu.g -in $w.fMenu -side right
 
-pack $w.fMenu.g -in $w.fMenu -side right
+    #pack $w.fMenu.a -in $w.fMenu -side right
 
-#pack $w.fMenu.a -in $w.fMenu -side right
-
-# XXXX Win32 Menus are a bit to tall
-global tcl_platform
-if { $tcl_platform(platform) == "windows" } {
-    set children [winfo children $w.fMenu]
-    foreach child $children {
-	$child configure -pady 1
+    # XXXX Win32 Menus are a bit to tall
+    global tcl_platform
+    if { $tcl_platform(platform) == "windows" } {
+	set children [winfo children $w.fMenu]
+	foreach child $children {
+	    $child configure -pady 1
+	}
     }
 }
 

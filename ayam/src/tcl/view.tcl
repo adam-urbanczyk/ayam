@@ -42,6 +42,7 @@ proc viewUPos { } {
 # set title bar of window w (for views only)
 # type = "" -> no change, action = "" -> no change
 proc viewTitle { w type action } {
+    global ay
 
     set w [winfo toplevel $w]
 
@@ -55,11 +56,11 @@ proc viewTitle { w type action } {
 
     if { $type != "" } {
 	set oldtype $type
-
+	set m $ay(confm)
 	if { $type == "Persp" } {
-	    $w.fMenu.c.m entryconfigure 16 -state normal
+	    $w.$m entryconfigure 16 -state normal
 	} else {
-	    $w.fMenu.c.m entryconfigure 16 -state disabled
+	    $w.$m entryconfigure 16 -state disabled
 	}
 
     }
@@ -425,24 +426,32 @@ proc viewRepairTitle { w type } {
 # viewSetGridIcon:
 #  set correct grid icon according to gridsize
 proc viewSetGridIcon { w gridsize } {
-    global ay 
+    global ay tcl_platform
+
+    if { $tcl_platform(os) != "Darwin" } {
+	set m fMenu.g
+	set conf "$w.$m configure"
+    } else {
+	set m menubar.mgrid
+	set conf "$w.menubar entryconfigure 4"
+    }
 
     if { $gridsize == 0.1 } {
-	    $w.fMenu.g configure -image ay_Grid01_img
+	eval "$conf -image ay_Grid01_img"
 	} else {
 	    if { $gridsize == 0.25 } {
-		$w.fMenu.g configure -image ay_Grid025_img
+		eval "$conf -image ay_Grid025_img"
 	    } else {
 		if { $gridsize == 0.5 } {
-		    $w.fMenu.g configure -image ay_Grid05_img
+		    eval "$conf -image ay_Grid05_img"
 		} else {
 		    if { $gridsize == 1.0 } {
-			$w.fMenu.g configure -image ay_Grid10_img
+			eval "$conf -image ay_Grid10_img"
 		    } else {
 			if { $gridsize == 0.0 } {
-			    $w.fMenu.g configure -image ay_Grid_img
+			    eval "$conf -image ay_Grid_img"
 			} else {
-			    $w.fMenu.g configure -image ay_GridX_img
+			    eval "$conf -image ay_GridX_img"
 			}
 		    } 
 		}
