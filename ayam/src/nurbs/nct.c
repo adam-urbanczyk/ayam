@@ -3612,7 +3612,7 @@ ay_nct_intersect(ay_nurbcurve_object *cu, ay_nurbcurve_object *cv,
  double cuminy, cumaxy, cvminy, cvmaxy;
  double cuminz, cumaxz, cvminz, cvmaxz;
  int nbu = 0, nbv = 0, order_u, order_v;
- int stride, i, j, k, l, overlap;
+ int stride = 4, i, j, k, l, overlap;
 
   if(!cu || !cv)
     return AY_ENULL;
