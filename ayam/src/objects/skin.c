@@ -382,11 +382,7 @@ ay_skin_notifycb(ay_object *o)
 {
  ay_skin_object *skin = NULL;
  ay_object *down = NULL, *c = NULL, *last = NULL, *all_curves = NULL;
- ay_object *npatch = NULL;
- /*
- ay_nurbcurve_object *nc = NULL;
- ay_nurbpatch_object *np = NULL;
- */
+ ay_object *newo = NULL;
  int ay_status = AY_OK;
  int mode = 0, count = 0;
  double tolerance;
@@ -430,12 +426,7 @@ ay_skin_notifycb(ay_object *o)
 	  ay_status = ay_provide_object(down, AY_IDNCURVE, &c);
 	} /* if */
 
-      if(c == NULL)
-	{
-	  /*	  ay_error(AY_EWARN, fname,
-		     "object is not a NURBCurve");*/
-	}
-      else
+      if(c)
 	{
 	  if(last)
 	    last->next = c;
@@ -452,16 +443,18 @@ ay_skin_notifycb(ay_object *o)
 
   /* No curves to skin? */
   if(count <= 1)
-    return AY_OK;
+    {
+      goto cleanup;
+    }
 
   /* skin */
-  if(!(npatch = calloc(1, sizeof(ay_object))))
+  if(!(newo = calloc(1, sizeof(ay_object))))
     {
       return AY_ERROR;
     }
 
-  ay_object_defaults(npatch);
-  npatch->type = AY_IDNPATCH;
+  ay_object_defaults(newo);
+  newo->type = AY_IDNPATCH;
 
   /* create caps */
   if(skin->has_start_cap)
@@ -484,17 +477,19 @@ ay_skin_notifycb(ay_object *o)
 
   ay_status = ay_npt_skin(all_curves, skin->uorder, skin->uknot_type,
 			  skin->interpolate,
-			  (ay_nurbpatch_object **)(&(npatch->refine)));
+			  (ay_nurbpatch_object **)(&(newo->refine)));
 
   if(ay_status)
-    return ay_status;
+    {
+      goto cleanup;
+    }
 
   /* copy sampling tolerance/mode over to new objects */
-  skin->npatch = npatch;
+  skin->npatch = newo;
 
-  ((ay_nurbpatch_object *)npatch->refine)->glu_sampling_tolerance =
+  ((ay_nurbpatch_object *)newo->refine)->glu_sampling_tolerance =
     tolerance;
-  ((ay_nurbpatch_object *)npatch->refine)->glu_display_mode =
+  ((ay_nurbpatch_object *)newo->refine)->glu_display_mode =
     mode;
 
   if(skin->start_cap)
@@ -514,6 +509,7 @@ ay_skin_notifycb(ay_object *o)
     }
 
   /* remove temporary curves */
+ cleanup:
   while(all_curves)
     {
       c = all_curves->next;
@@ -521,7 +517,7 @@ ay_skin_notifycb(ay_object *o)
       all_curves = c;
     }
 
- return AY_OK;
+ return ay_status;
 } /* ay_skin_notifycb */
 
 
