@@ -378,6 +378,10 @@ ay_clevel_gettcmd(ClientData clientData, Tcl_Interp *interp,
 		{
 		  typename = ay_object_gettypename(o->type);
 		  Tcl_DStringInit(&ds);
+		  if(ay_prefs.mark_hidden && o->hide)
+		    {
+		      Tcl_DStringAppend(&ds, "!", -1);
+		    }
 		  Tcl_DStringAppend(&ds, name, -1);
 		  Tcl_DStringAppend(&ds, "(", -1);
 		  Tcl_DStringAppend(&ds, typename, -1);
@@ -392,14 +396,42 @@ ay_clevel_gettcmd(ClientData clientData, Tcl_Interp *interp,
 		}
 	      else
 		{
-		  Tcl_SetVar(interp, argv[1], name, TCL_APPEND_VALUE |
-			     TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG);
+		  if(ay_prefs.mark_hidden && o->hide)
+		    {
+		      Tcl_DStringInit(&ds);
+		      Tcl_DStringAppend(&ds, "!", -1);
+		      Tcl_DStringAppend(&ds, name, -1);
+		      Tcl_SetVar(interp, argv[1], Tcl_DStringValue(&ds),
+				 TCL_APPEND_VALUE | TCL_LIST_ELEMENT |
+				 TCL_LEAVE_ERR_MSG);
+		      
+		      Tcl_DStringFree(&ds);
+		    }
+		  else
+		    {
+		      Tcl_SetVar(interp, argv[1], name, TCL_APPEND_VALUE |
+				 TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG);
+		    }
 		}
 	    }
 	  else
 	    {
-	      Tcl_SetVar(interp, argv[1], name, TCL_APPEND_VALUE |
-			 TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG);
+	      if(ay_prefs.mark_hidden && o->hide)
+		{
+		  Tcl_DStringInit(&ds);
+		  Tcl_DStringAppend(&ds, "!", -1);
+		  Tcl_DStringAppend(&ds, name, -1);
+		  Tcl_SetVar(interp, argv[1], Tcl_DStringValue(&ds),
+			     TCL_APPEND_VALUE | TCL_LIST_ELEMENT |
+			     TCL_LEAVE_ERR_MSG);
+		      
+		  Tcl_DStringFree(&ds);
+		}
+	      else
+		{
+		  Tcl_SetVar(interp, argv[1], name, TCL_APPEND_VALUE |
+			     TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG);
+		}
 	    }
 	}
       else
