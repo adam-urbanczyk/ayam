@@ -1,17 +1,19 @@
 [CVS, 28. 07. 2002]:
 o bug fixes:
   - fixed memory leaks in the shadow map RIB export module
+  - fixed ICurves crash for length 2
+  - fixed insert and delete point action errors for drag mouse events
 o added a permanent preview feature; a constantly open RIB stream
   to a (fast) RenderMan renderer like rgl immediately displays all
-  changes in the scene without the need to repeatedly hit Ctrl-r and
-  close the preview window again.
-o The "TclPrecision" preference setting has been moved to the "Misc"
-  preferences section.
-o Added balloon help for all preference settings.
-o Added a "Locale" preference setting and a locale system, that allows to
+  changes in the scene without the need to repeatedly hit "Ctrl-r" and
+  close the preview window again
+o the "TclPrecision" preference setting has been moved to the "Misc"
+  preferences section
+o added balloon help for all preference settings
+o added a "Locale" preference setting and a locale system, that allows to
   display language specific balloon help texts (german translations of
-  various balloon help texts provided initially).
-
+  various balloon help texts provided initially)
+o the coordinate system (the root object) now also draws axis names (x, y, z)
 
 [09. 07. 2002] Ayam1.2:
 o bug fixes:
