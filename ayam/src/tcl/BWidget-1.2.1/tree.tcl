@@ -1,7 +1,7 @@
 # ------------------------------------------------------------------------------
 #  tree.tcl
 #  This file is part of Unifix BWidget Toolkit
-#  $Id: tree.tcl,v 1.1 2001/10/10 16:15:32 randolf Exp $
+#  $Id: tree.tcl,v 1.2 2002/01/08 07:04:28 randolf Exp $
 # ------------------------------------------------------------------------------
 #  Index of commands:
 #     - Tree::create
@@ -46,7 +46,7 @@
 #     - Tree::_auto_scroll
 #     - Tree::_scroll
 # ------------------------------------------------------------------------------
-
+#XXXX changed "-fill       TkResource black" to "darkgrey"
 namespace eval Tree {
     namespace eval Node {
         Widget::declare Tree::Node {
@@ -54,7 +54,7 @@ namespace eval Tree {
             {-font       TkResource ""      0 listbox}
             {-image      TkResource ""      0 label}
             {-window     String     ""      0}
-            {-fill       TkResource black   0 {listbox -foreground}}
+            {-fill       TkResource darkgrey   0 {listbox -foreground}}
             {-data       String     ""      0}
             {-open       Boolean    0       0}
             {-drawcross  Enum       auto    0 {auto allways never}}
