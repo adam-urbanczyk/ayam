@@ -80,13 +80,11 @@ proc io_replaceScene { } {
 	set ay(CurrentLevel) "root"
 	set ay(SelectedLevel) "root"
 	update
-
 	uS
 	rV
 	io_mruAdd $filename
 	set ay(sc) 0
 	update
-
 	foreach view $ay(views) { viewBind $view }
 	update
 
@@ -150,16 +148,13 @@ proc io_insertScene { } {
 	set ay(CurrentLevel) "root"
 	set ay(SelectedLevel) "root"
 	update
-
 	uS
 	rV
 	io_mruAdd $filename
 	set ay(sc) 1
 	update
-
 	foreach view $ay(views) { viewBind $view }
 	update
-
 	after idle viewMouseToCurrent
     }
 
