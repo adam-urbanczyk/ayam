@@ -239,6 +239,10 @@ proc viewTitle { w type action } {
 
     set oldname [wm title $w] 
 
+    set vname ""
+    set oldtype ""
+    set oldaction ""
+
     catch {scan $oldname "%s - %s - %s" vname oldtype oldaction}
 
     scan $w ".view%d" number
@@ -249,9 +253,9 @@ proc viewTitle { w type action } {
 	set oldtype $type
 	set m $ay(confm)
 	if { $type == "Persp" } {
-	    $w.$m entryconfigure 17 -state normal
+	    $w.$m entryconfigure 16 -state normal
 	} else {
-	    $w.$m entryconfigure 17 -state disabled
+	    $w.$m entryconfigure 16 -state disabled
 	}
 
     }

@@ -217,15 +217,17 @@ proc shortcut_view { w } {
     bind $w <[repcont $ayviewshortcuts(SGrid)]> "$w.$m invoke 9"
     $w.$m entryconfigure 9 -accelerator $ayviewshortcuts(SGrid)
 
-    bind $w <[repcont $ayviewshortcuts(Halve)]> "$w.$m invoke 12"
-    $w.$m entryconfigure 12 -accelerator $ayviewshortcuts(Halve)
-    bind $w <[repcont $ayviewshortcuts(Double)]> "$w.$m invoke 13"
-    $w.$m entryconfigure 13 -accelerator $ayviewshortcuts(Double)
+    bind $w <[repcont $ayviewshortcuts(Halve)]> "$w.$m invoke 11"
+    $w.$m entryconfigure 11 -accelerator $ayviewshortcuts(Halve)
+    bind $w <[repcont $ayviewshortcuts(Double)]> "$w.$m invoke 12"
+    $w.$m entryconfigure 12 -accelerator $ayviewshortcuts(Double)
 
-    $w.$m entryconfigure 19 -accelerator $ayviewshortcuts(ZoomTO)
-    bind $w <[repcont $ayviewshortcuts(ZoomTO)]> "$w.$m invoke 19"
-    $w.$m entryconfigure 20 -accelerator $ayviewshortcuts(Align)
-    bind $w <[repcont $ayviewshortcuts(Align)]> "$w.$m invoke 20"
+    $w.$m entryconfigure 18 -accelerator $ayviewshortcuts(ZoomTO)
+    bind $w <[repcont $ayviewshortcuts(ZoomTO)]> "$w.$m invoke 18"
+    $w.$m entryconfigure 19 -accelerator $ayviewshortcuts(Align)
+    bind $w <[repcont $ayviewshortcuts(Align)]> "$w.$m invoke 19"
+    $w.$m entryconfigure 20 -accelerator $ayviewshortcuts(Local)
+    bind $w <[repcont $ayviewshortcuts(Local)]> "$w.$m invoke 20"
 
 
     bind $w <[repcont $ayviewshortcuts(RotL)]>\

@@ -203,6 +203,8 @@ array set ayviewshortcuts {
 
     Halve "Ctrl-H"
     Double "Ctrl-D"
+
+    Local "Ctrl-l"
     
     RotL "Left"
     RotR "Right"
