@@ -1339,6 +1339,9 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 		  dispy = (height/2)-(view->rect_ymin-(recth/2));
 		}
 
+	      if(!(rectw && recth))
+		break;
+
 	      dxw = -(dispx*view->conv_x);
 	      dyw = (dispy*view->conv_y);
 	      t[0] = view->from[0] - view->to[0];
