@@ -91,9 +91,17 @@ ayslo3d_scanslo3dsarg(SLO_VISSYMDEF *symbol, Tcl_DString *ds)
       Tcl_DStringAppend(ds, buffer, -1);
       break;
     case SLO_TYPE_STRING:
-      defstrval = *(symbol->svd_default).stringval;
-      Tcl_DStringAppend(ds, defstrval, -1);
-      Tcl_DStringAppend(ds, " ", -1);
+      defstrval = (symbol->svd_default).stringval;
+      if(defstrval)
+	{
+	  Tcl_DStringAppend(ds, defstrval, -1);
+	  Tcl_DStringAppend(ds, " ", -1);
+	}
+      else
+	{
+	  Tcl_DStringAppend(ds, " \"\"", -1);
+	}
+
       break;
     default:
       break;
