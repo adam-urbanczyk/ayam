@@ -65,7 +65,7 @@ typedef struct ay_rrib_attrstate_s {
 
   /* RiStandard (3.1) Attributes */
 
-    /* Color */
+  /* Color */
   int colr, colg, colb;
 
   /* Opacity */
@@ -160,12 +160,17 @@ ay_object **ay_rrib_aynext;
 double ay_rrib_fov;
 int width, height;
 
+/* material */
+int ay_rrib_lastmaterialnum;
+
 /* import options */
 int ay_rrib_readframe; /* number of frame to read */
 int ay_rrib_readoptions; /* read RiOptions */
 int ay_rrib_readcamera; /* read (create) the Camera */
 int ay_rrib_readlights; /* read lights */
 int ay_rrib_readmaterial; /* read material and attributes */
+int ay_rrib_readmateriali; /* read material and attributes (internal) */
+int ay_rrib_readpartial; /* read partial RIB (e.g. without WorldBegin/End) */
 
 /* grib is used by Affine to specify the current RIB */
 /* ay_rrib_RiReadArchive() keeps a copy of this on the stack
@@ -226,6 +231,8 @@ int ay_rrib_initgprims(void);
 int ay_rrib_cleargprims(void);
 
 void ay_rrib_trafotoobject(ay_object *o, double *transform);
+
+void ay_rrib_linkmaterial(ay_object *o);
 
 void ay_rrib_linkobject(void *object, int type);
 
@@ -630,6 +637,9 @@ ay_rrib_RiLightSource(RtToken name,
  RtColor *col = NULL;
  char fname[] = "ay_rrib_RiLightSource";
 
+  if(!ay_rrib_readlights)
+    return((RtLightHandle)(ay_rrib_clighthandle++));
+
   /* load some defaults */
   l.type = AY_LITCUSTOM;
   l.lshader = NULL;
@@ -750,6 +760,8 @@ ay_rrib_RiAreaLightSource(RtToken name,
 {
  RtLightHandle lh;
 
+  if(!ay_rrib_readlights)
+    return((RtLightHandle)(ay_rrib_clighthandle++));
 
   /* first, read area light as normal light source */
   lh = ay_rrib_RiLightSource(name, n, tokens, parms);
@@ -1252,7 +1264,7 @@ ay_rrib_RiFrameBegin(RtInt frame)
 {
  int ay_status = AY_OK;
 
-   if(ay_rrib_readframe != -1)
+   if(ay_rrib_readframe != -1 || !ay_rrib_readpartial)
      {
        if(frame == ay_rrib_readframe)
 	 {
@@ -1274,7 +1286,7 @@ ay_rrib_RiFrameEnd( void )
 {
  int ay_status = AY_OK;
 
-  if(ay_rrib_readframe != -1)
+  if(ay_rrib_readframe != -1 || !ay_rrib_readpartial)
     {
       if(ay_rrib_cframe == ay_rrib_readframe)
 	{
@@ -2515,52 +2527,65 @@ ay_rrib_RiWorldBegin(void)
  char fname[] = "ay_rrib_RiWorldBegin";
  /* ay_level_object l;*/
 
-  c.from[0] = 0.0;
-  c.from[1] = 0.0;
-  c.from[2] = -10.0;
-  c.to[0] = 0.0;
-  c.to[1] = 0.0;
-  c.to[2] = 0.0;
-  c.up[0] = 0.0;
-  c.up[1] = 1.0;
-  c.up[2] = 0.0;
-  c.roll = 0.0;
+  if(ay_rrib_readcamera)
+    {
+      c.from[0] = 0.0;
+      c.from[1] = 0.0;
+      c.from[2] = -10.0;
+      c.to[0] = 0.0;
+      c.to[1] = 0.0;
+      c.to[2] = 0.0;
+      c.up[0] = 0.0;
+      c.up[1] = 1.0;
+      c.up[2] = 0.0;
+      c.roll = 0.0;
 
-  if(fabs(ay_rrib_fov) > AY_EPSILON)
-    {
-      c.zoom = fabs(tan(AY_D2R(ay_rrib_fov/2.0)));
-    }
-  else
-    {
-      c.zoom = 1.0;
-    }
+      if(fabs(ay_rrib_fov) > AY_EPSILON)
+	{
+	  c.zoom = fabs(tan(AY_D2R(ay_rrib_fov/2.0)));
+	}
+      else
+	{
+	  c.zoom = 1.0;
+	}
 
-  ay_status = ay_trafo_invmatrix4(ay_rrib_ctrafos->m, mi);
-  if(ay_status)
-    {
-      ay_error(AY_ERROR, fname, "Could not invert camera transformation.");
+      ay_status = ay_trafo_invmatrix4(ay_rrib_ctrafos->m, mi);
+      if(ay_status)
+	{
+	  ay_error(AY_ERROR, fname, "Could not invert camera transformation.");
+	  ay_rrib_RiIdentity();
+	  return;
+	}
+
+
+      ay_trafo_apply3(c.from, mi);
+      ay_trafo_apply3(c.to, mi);
+      ay_trafo_apply3(c.up, mi);
+
       ay_rrib_RiIdentity();
-      return;
+
+      ay_rrib_linkobject((void *)(&c), AY_IDCAMERA);
+
+      /*
+	l.type = AY_LTLEVEL;
+	ay_rrib_co.parent = AY_TRUE;
+	ay_rrib_linkobject((void *)(&l), AY_IDLEVEL);
+	ay_rrib_co.parent = AY_FALSE;
+	ay_object_delete(ay_rrib_co.down);
+	ay_rrib_co.down = NULL;
+	ay_rrib_RiIdentity();
+      */
+    } /* if */
+
+  /* start reading materials */
+  if(ay_rrib_readmaterial)
+    {
+      ay_rrib_readmateriali = 1;
     }
 
-
-  ay_trafo_apply3(c.from, mi);
-  ay_trafo_apply3(c.to, mi);
-  ay_trafo_apply3(c.up, mi);
-
-  ay_rrib_RiIdentity();
-
-  ay_rrib_linkobject((void *)(&c), AY_IDCAMERA);
-
-  /*
-  l.type = AY_LTLEVEL;
-  ay_rrib_co.parent = AY_TRUE;
-  ay_rrib_linkobject((void *)(&l), AY_IDLEVEL);
-  ay_rrib_co.parent = AY_FALSE;
-  ay_object_delete(ay_rrib_co.down);
-  ay_rrib_co.down = NULL;
-  ay_rrib_RiIdentity();
-  */
+  /* start reading gprims if all frames are to be read */
+  if(ay_rrib_readframe == -1)
+    ay_status = ay_rrib_initgprims();
 
  return;
 } /* ay_rrib_RiWorldBegin */
@@ -2569,9 +2594,7 @@ ay_rrib_RiWorldBegin(void)
 RtVoid
 ay_rrib_RiWorldEnd(void)
 {
-
-  /* XXXX should we de-hook all functions from the Function-Tables here? */
-
+  ay_rrib_cleargprims();
 } /* ay_rrib_RiWorldEnd */
 
 
@@ -3361,8 +3384,8 @@ ay_rrib_popattribs(void)
 	  if(ay_rrib_cattributes->read_arealight_geom == 1)
 	    {
 	      /* found matching AttributeEnd, stop reading geometry
-		 if not reading anything anyway (ay_rrib_readframe == -1) */
-	      if(ay_rrib_readframe != -1)
+		 if not reading anything anyway (ay_rrib_readpartial == 1) */
+	      if(!ay_rrib_readpartial)
 		{
 		  ay_status = ay_rrib_cleargprims();
 		}
@@ -3608,6 +3631,183 @@ ay_rrib_trafotoobject(ay_object *o, double *transform)
 
 
 void
+ay_rrib_linkmaterial(ay_object *o)
+{
+ int ay_status = AY_OK;
+ char *fname = "ay_rrib_linkmaterial";
+ ay_object *m = NULL, *oldm = NULL, **old_aynext;
+ ay_mat_object *mat, *linkwith = NULL;
+ ay_rrib_attrstate *attr = ay_rrib_cattributes;
+ char materialname[255] = "";
+ int found = AY_FALSE;
+ 
+  /* create a material object from current attribute state */
+  if(!(mat = calloc(1, sizeof(ay_mat_object))))
+    {
+      return;
+    }
+  mat->colr = attr->colr;
+  mat->colg = attr->colg;
+  mat->colb = attr->colb;
+  mat->opr = attr->opr;
+  mat->opg = attr->opg;
+  mat->opb = attr->opb;
+
+  mat->shading_rate = attr->shading_rate;
+  mat->shading_interpolation = attr->shading_interpolation;
+  mat->dbound_val = attr->dbound_val;
+  mat->dbound = attr->dbound;
+
+  if(attr->sshader)
+    ay_shader_copy(attr->sshader, &(mat->sshader));
+
+  if(attr->dshader)
+    ay_shader_copy(attr->dshader, &(mat->dshader));
+
+  if(attr->ishader)
+    ay_shader_copy(attr->ishader, &(mat->ishader));
+
+  if(attr->eshader)
+    ay_shader_copy(attr->eshader, &(mat->eshader));
+  /*
+  mat->avr = attr->avr;
+  mat->avg = attr->avg;
+  mat->avb = attr->avb;
+  mat->ava = attr->ava;
+
+  mat->emr = attr->emr;
+  mat->emg = attr->emg;
+  mat->emb = attr->emb;
+  mat->ema = attr->ema;
+
+  mat->spr = attr->spr;
+  mat->spg = attr->spg;
+  mat->spb = attr->spb;
+  mat->spa = attr->spa;
+
+  mat->patch_size = attr->patch_size;
+  mat->elem_size = attr->elem_size;
+  mat->min_size = attr->min_size;
+  mat->zonal = attr->zonal;
+  mat->has_caustics = attr->has_caustics;
+  */
+  mat->cast_shadows = attr->cast_shadows;
+
+  mat->true_displacement = attr->true_displacement;
+
+  mat->camera = attr->camera;
+  mat->reflection = attr->reflection;
+  mat->shadow = attr->shadow;
+
+  if(!(m = calloc(1, sizeof(ay_object))))
+    {
+      if(mat->sshader)
+	free(mat->sshader);
+      if(mat->dshader)
+	free(mat->dshader);
+      if(mat->ishader)
+	free(mat->ishader);
+      if(mat->eshader)
+	free(mat->eshader);
+      free(mat);
+      return;
+    }
+
+  m->refine = mat;
+  m->type = AY_IDMATERIAL;
+  mat->nameptr = &(m->name);
+  mat->refcountptr = &(m->refcount);
+  mat->objptr = m;
+
+  /* compare this object with all existing materials
+     in the first level ("Materials") before registering
+     a new material */
+  if(ay_root->next && ay_root->next->down)
+    {
+      oldm = ay_root->next->down;
+      while(oldm && !found)
+	{
+	  if(oldm->type == AY_IDMATERIAL)
+	    {
+	      /* do not let accidentally set transformations
+		  make the comparison fail */
+	      ay_trafo_copy(oldm, m);
+	      /* compare objects */
+	      if(ay_comp_objects(oldm, m))
+		{
+		  found = AY_TRUE;
+		  linkwith = (ay_mat_object *)(oldm->refine);
+		} /* if */
+	    } /* if */
+
+	  oldm = oldm->next;
+	} /* while */
+    } /* if */
+
+  if(linkwith == NULL)
+    {
+      /* no matching material found in scene, create new */
+      ay_status = AY_ERROR;
+      while((ay_status == AY_ERROR) && (ay_rrib_lastmaterialnum < INT_MAX))
+	{
+	  ay_rrib_lastmaterialnum++;
+
+	  sprintf(materialname, "mat%d", ay_rrib_lastmaterialnum);
+
+	  ay_status = ay_matt_registermaterial(materialname, mat);
+	} /* while */
+
+      if(ay_status)
+	{
+	  ay_error(AY_ERROR, fname, "Could not register material name.");
+	  ay_object_delete(m);
+	  return;
+	}
+
+      if(!(m->name = calloc(strlen(materialname)+1, sizeof(char))))
+	{
+	  ay_error(AY_EOMEM, fname, NULL);
+	  ay_object_delete(m);
+	  return;
+	}
+      
+      strcpy(m->name, materialname);
+
+      /* link new material object to scene */
+      if(ay_root->next && ay_root->next->down)
+	{
+	  old_aynext = ay_next;
+	  ay_next = &(ay_root->next->down);
+	  ay_status = ay_object_link(m);
+	  ay_next = old_aynext;
+	}
+      else
+	{
+	  ay_error(AY_ERROR, fname, "Material level does not exist?");
+	  ay_object_delete(m);
+	  return;
+	}
+      
+      linkwith = mat;
+    } /* if */
+
+  if(linkwith->objptr == m)
+    {
+      m->refcount++;
+    }
+  else
+    {
+      oldm->refcount++;
+      ay_object_delete(m);
+    }
+
+  o->mat = linkwith;
+
+ return;
+} /* ay_rrib_linkmaterial */
+
+
+void
 ay_rrib_linkobject(void *object, int type)
 {
  ay_object *o = NULL, *t = NULL;
@@ -3649,17 +3849,24 @@ ay_rrib_linkobject(void *object, int type)
 
   ay_rrib_lrobject = o;
 
+  if(ay_rrib_readmateriali)
+    {
+      ay_rrib_linkmaterial(o);
+    }
+
  return;
 } /* ay_rrib_linkobject */
 
 
 int
-ay_rrib_readrib(char *filename, int frame)
+ay_rrib_readrib(char *filename, int frame, int read_camera, int read_options,
+		int read_lights, int read_material, int read_partial)
 {
  int ay_status = AY_OK;
  RIB_HANDLE rib = NULL;
  ay_list_object *tl = NULL;
 
+  /* initialize global variables */
   ay_object_defaults(&ay_rrib_co);
 
   ay_rrib_clighthandle = 1;
@@ -3667,6 +3874,8 @@ ay_rrib_readrib(char *filename, int frame)
   ay_rrib_cobjecthandle = 1;
   ay_rrib_objects = NULL;
   ay_rrib_lastobject = NULL;
+  ay_rrib_lastmaterialnum = 0;
+  ay_rrib_readmateriali = 0;
 
   /* default fov */
   ay_rrib_fov = 45.0;
@@ -3677,15 +3886,24 @@ ay_rrib_readrib(char *filename, int frame)
   ay_rrib_cattributes = NULL;
   ay_rrib_pushattribs();
 
+  /* get import options */
   ay_rrib_readframe = frame;
+  ay_rrib_readcamera = read_camera;
+  ay_rrib_readoptions = read_options;
+  ay_rrib_readlights = read_lights;
+  ay_rrib_readmaterial = read_material;
+  ay_rrib_readpartial = read_partial;
 
-  if(frame == -1)
+  if(read_partial)
     {
       ay_status = ay_rrib_initgprims();
+      ay_rrib_readmateriali = ay_rrib_readmaterial; 
     }
 
   ay_rrib_initgeneral();
-  ay_rrib_initoptions();
+
+  if(ay_rrib_readoptions)
+    ay_rrib_initoptions();
   
   rib = RibOpen(filename, kRIB_LAST_RI, gRibNopRITable);
 
@@ -3717,24 +3935,106 @@ ay_rrib_readribtcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int ay_status = AY_OK;
  char fname[] = "rrib";
- int frame = 0;
+ int frame = 0, read_camera = 1, read_options = 1, read_lights = 1;
+ int read_material = 1, read_partial = 0;
+ int i = 2;
+ ay_object *o, *n = NULL, **old_aynext;
+ ay_level_object *l = NULL;
 
   if(argc < 2)
     {
-      ay_error(AY_EARGS, fname, "filename \\[framenumber\\] \\[rh|lh\\]!");
+      ay_error(AY_EARGS, fname, "filename \\[-f framenumber\\]!");
       return TCL_OK;
     }
 
-  if(argc > 2)
-    {
-      sscanf(argv[2], "%d", &frame);
-    }
-  else
-    {
-      frame = -1;
-    }
+  frame = -1;
 
-  ay_status = ay_rrib_readrib(argv[1], frame);
+  while(i+1 < argc)
+    {
+      if(!strcmp(argv[i],"-f"))
+	{
+	  sscanf(argv[i+1], "%d", &frame);
+	}
+      else
+      if(!strcmp(argv[i],"-c"))
+	{
+	  sscanf(argv[i+1], "%d", &read_camera);
+	}
+      else
+      if(!strcmp(argv[i],"-o"))
+	{
+	  sscanf(argv[i+1], "%d", &read_options);
+	}
+      else
+      if(!strcmp(argv[i],"-l"))
+	{
+	  sscanf(argv[i+1], "%d", &read_lights);
+	}
+      else
+      if(!strcmp(argv[i],"-m"))
+	{
+	  sscanf(argv[i+1], "%d", &read_material);
+	}
+      else
+      if(!strcmp(argv[i],"-p"))
+	{
+	  sscanf(argv[i+1], "%d", &read_partial);
+	}
+
+	i+=2;
+  } /* while */
+
+  /* create Materials level, if it does not exist */
+  if(read_material)
+    {
+      o = ay_root->next;
+
+      if(o->type != AY_IDLEVEL || !o->name || strcmp(o->name,"Materials"))
+	{
+      
+	  if(!(n = calloc(1, sizeof(ay_object))))
+	    {
+	      ay_error(AY_EOMEM, fname, NULL);
+	      return TCL_OK;
+	    } /* if */
+
+	  if(!(n->name = calloc(10, sizeof(ay_object))))
+	    {
+	      free(n);
+	      ay_error(AY_EOMEM, fname, NULL);
+	      return TCL_OK;
+	    } /* if */
+
+	  strcpy(n->name, "Materials");
+
+	  if(!(l = calloc(1, sizeof(ay_level_object))))
+	    {
+	      free(n->name); free(n);
+	      ay_error(AY_EOMEM, fname, NULL);
+	      return TCL_OK;
+	    } /* if */
+	  ay_status = ay_object_crtendlevel(&(n->down));
+	  l->type = AY_LTLEVEL;
+
+	  n->type = AY_IDLEVEL;
+	  ay_object_defaults(n);
+	  n->refine = l;
+      
+	  old_aynext = ay_next;
+	  ay_next = &(ay_root->next);
+	  ay_object_link(n);
+	  if(old_aynext)
+	    {
+	      if(*old_aynext != n)
+		ay_next = old_aynext;
+	      else
+		ay_next = &(n->next);
+	    }
+	} /* if */
+    } /* if */
+
+  ay_status = ay_rrib_readrib(argv[1], frame, read_camera, read_options,
+			      read_lights, read_material, read_partial);
   if(ay_status)
     {
       ay_error(AY_ERROR, fname, NULL);
@@ -3771,6 +4071,7 @@ Rrib_Init(Tcl_Interp *interp)
 		     ay_rrib_readribtcmd,
 		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+#ifndef AYRRIBWRAPPED
   /* source rrib.tcl, it contains Tcl-code for menu entries */
   if((Tcl_EvalFile(interp, "rrib.tcl")) != TCL_OK)
      {
@@ -3778,7 +4079,7 @@ Rrib_Init(Tcl_Interp *interp)
 		  "Error while sourcing \\\"rrib.tcl\\\"!");
        return TCL_OK;
      }
-
+#endif
 
   ay_error(AY_EOUTPUT, fname,
 	   "RIB import plugin successfully loaded.");
