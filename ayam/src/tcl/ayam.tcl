@@ -105,6 +105,7 @@ array set ayprefs {
  ToolBoxTrans 0
  ToolBoxShrink 1
  RGTrans 0
+ HideTmpTags 0
  Kill "kill"
  Cat "cat"
 

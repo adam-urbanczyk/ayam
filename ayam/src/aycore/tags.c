@@ -188,6 +188,37 @@ ay_tags_temp(Tcl_Interp *interp, char *name, int set, int *result)
 } /* ay_tags_temp */
 
 
+/* ay_tags_istemptcmd:
+ *  
+ */
+int
+ay_tags_istemptcmd(ClientData clientData, Tcl_Interp * interp,
+		   int argc, char *argv[])
+{
+ char fname[] = "tagIsTemp";
+ int temp;
+ char yes[] = "1", no[] = "0";
+
+  if(argc < 2)
+    {
+      ay_error(AY_EARGS, fname, "tagname");
+    }
+
+  ay_tags_temp(interp, argv[1], 0, &temp);
+
+  if(temp)
+    {
+      Tcl_SetResult(interp, yes, TCL_VOLATILE);     
+    }
+  else
+    {
+      Tcl_SetResult(interp, no, TCL_VOLATILE);
+    }
+
+ return TCL_OK;
+} /* ay_tags_istemptcmd */
+
+
 /* ay_tags_settcmd:
  *  
  */

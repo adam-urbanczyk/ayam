@@ -347,6 +347,7 @@ ay_init(Tcl_Interp *interp)
 
   /* initialize additional included modules */
 #ifdef AYIDRWRAPPED
+  int Idr_Init(Tcl_Interp *interp);
   if((ay_status = Idr_Init(interp)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
   Tcl_SetVar(interp,"AYIDRWRAPPED", "1", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -519,6 +520,8 @@ int ay_status = AY_OK;
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   /* tags.c */
+  Tcl_CreateCommand(interp, "tagIsTemp", ay_tags_istemptcmd,
+		      (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
   Tcl_CreateCommand(interp, "setTags", ay_tags_settcmd,
 		      (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
   Tcl_CreateCommand(interp, "addTag", ay_tags_addtcmd,

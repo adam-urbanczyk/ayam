@@ -164,6 +164,7 @@ proc prefs_open {} {
     addCheck $fw ayprefse ToolBoxTrans
     addCheck $fw ayprefse ToolBoxShrink
     addCheck $fw ayprefse RGTrans
+    addCheck $fw ayprefse HideTmpTags
 
     # select last selected preference section
     pack $nb -fill both -expand yes

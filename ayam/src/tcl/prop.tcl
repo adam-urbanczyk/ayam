@@ -113,7 +113,7 @@ addString $w matPropData Name
 # getTagsp:
 #
 proc getTagsp { } {
-global ay tagsPropData Tags
+global ay ayprefs tagsPropData Tags
 
 getTags names values
 set tagsPropData(names) $names
@@ -126,9 +126,11 @@ addCommand $w c1 "Remove all Tags!" {delTags all;plb_update}
 addCommand $w c2 "Add Tag!" {addTagp}
 set i 0
 foreach tag $names {
-    set val [lindex $values $i]
-    button $w.b$i -text "$tag: $val" -command "addTagp $i" -bd 1 -pady 0
-    pack $w.b$i -fill x -expand yes
+    if { !$ayprefs(HideTmpTags) || ![tagIsTemp $tag] } {
+	set val [lindex $values $i]
+	button $w.b$i -text "$tag: $val" -command "addTagp $i" -bd 1 -pady 0
+	pack $w.b$i -fill x -expand yes
+    }
     incr i
 }
 $ay(pca) itemconfigure 1 -window $w
