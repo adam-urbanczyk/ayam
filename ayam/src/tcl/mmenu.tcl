@@ -319,7 +319,8 @@ $m add command -label "Hide All" -command "hide -all; rV"
 $m add command -label "Show" -command "show; rV"
 $m add command -label "Show All" -command "show -all; rV"
 $m add separator
-$m add command -label "Convert" -command "convOb; update; cS; uCR; rV"
+$m add command -label "Convert" -command "global ay; convOb; update; cS;\
+set ay(ul) \$ay(CurrentLevel); uS; sL; rV"
 $m add separator
 $m add command -label "Force Notification" -command "forceNot; rV"
 
