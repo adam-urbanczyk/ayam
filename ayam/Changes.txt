@@ -1,8 +1,9 @@
-[CVS, 05. 08. 2002]:
+[CVS, 08. 08. 2002]:
 o bug fixes:
   - fixed memory leaks in the shadow map RIB export module
   - fixed ICurves crash for length 2
   - fixed insert and delete point action errors for drag mouse events
+  - fixed errors with transformed MetaBall components (e.g. of type custom)
 o added a permanent preview feature; a constantly open RIB stream
   to a (fast) RenderMan renderer like rgl immediately displays all
   changes in the scene without the need to repeatedly hit "Ctrl-r" and
@@ -25,7 +26,7 @@ o scene loading now blocks all mouse events from view windows to avoid
   problems with user input while loading scenes which lead to wrongly
   drawn views
 o added a texture coordinates editor (main menu "Special/Edit TexCoords")
-
+o added a "Remove Tag!" menu button to the Tag property GUI
 
 [09. 07. 2002] Ayam1.2:
 o bug fixes:
