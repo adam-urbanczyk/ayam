@@ -371,6 +371,7 @@ array set editPointDarray {
 # helper for actionDEditP
 # directly edit coordinates of points
 proc editPointDp { } {
+global ay
 upvar #0 editPointDarray array
 
 set w .editPointDw
@@ -463,7 +464,8 @@ set array(z2) [.editPointDw.f1.fz.e get]
 set array(w2) [.editPointDw.f1.fw.e get]
 
 set f [frame $w.f2]
-button $f.bok -text "Ok" -width 5 -command { 
+button $f.bok -text "Ok" -width 5 -pady $ay(pady) -command { 
+    global ay
     upvar #0 editPointDarray array
 
     set array(x) [.editPointDw.f1.fx.e get]
@@ -478,13 +480,21 @@ button $f.bok -text "Ok" -width 5 -command {
 	     set array(changed) 1
     }
 
+    if { [winfo exists $ay(currentView) } {
+	focus $ay(currentView)
+    } else {
+	focus .
+    }
 
 #    grab release .editPointDw
     destroy .editPointDw
 
 }
 
-button $f.bca -text "Cancel" -width 5 -command "destroy $w"
+button $f.bca -text "Cancel" -width 5 -pady $ay(pady) -command "\
+	if { [winfo exists $ay(currentView) } {\
+	 focus $ay(currentView) } else { focus .};\
+	destroy $w"
 
 pack $f.bok $f.bca -in $f -side left -fill x -expand yes
 pack $f -in $w -side bottom -fill x
