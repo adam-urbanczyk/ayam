@@ -347,6 +347,7 @@ array set ay {
  sc 0
  tblayoutsema 0
  LastSelection ""
+ slcext ""
 }
 
 set ay_error 0

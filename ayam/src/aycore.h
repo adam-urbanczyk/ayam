@@ -415,6 +415,12 @@ int ay_shader_scanslcsarg(SLC_VISSYMDEF *symbol, Tcl_DString *ds);
 
 int ay_shader_scanslctcmd(ClientData clientData, Tcl_Interp *interp,
 			  int argc, char *argv[]);
+#ifdef AYUSESLXARGS
+int ay_shader_scanslxsarg(SLX_VISSYMDEF *symbol, Tcl_DString *ds);
+#endif
+
+int ay_shader_scanslxtcmd(ClientData clientData, Tcl_Interp *interp,
+			  int argc, char *argv[]);
 
 int ay_shader_free(ay_shader *shader);
 
