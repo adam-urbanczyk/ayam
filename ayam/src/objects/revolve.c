@@ -431,7 +431,8 @@ ay_revolve_bbccb(ay_object *o, double *bbox, int *flags)
 
 
 int
-ay_revolve_crtcap(ay_revolve_object *revolve, ay_object *curve, double u,
+ay_revolve_crtcap(ay_revolve_object *revolve, ay_object *curve,
+		  double u, int upper,
 		  ay_object **o)
 {
  int ay_status = AY_OK;
@@ -484,8 +485,17 @@ ay_revolve_crtcap(ay_revolve_object *revolve, ay_object *curve, double u,
   controlv[14] = P2[0];
   controlv[15] = 1.0;
 
-  for(i=1;i<=15;i+=4)
-    controlv[i] = P2[1];
+  if(upper)
+    {
+      for(i=1;i<=15;i+=4)
+	controlv[i] = -P2[1];
+      cap->scaly *= -1.0;
+    }
+  else
+    {
+      for(i=1;i<=15;i+=4)
+	controlv[i] = P2[1];
+    }
 
   ay_status = ay_npt_create(2, 2, 2, 2,
 			    AY_KTBEZIER, AY_KTBEZIER,
@@ -968,7 +978,7 @@ ay_revolve_notifycb(ay_object *o)
   if(revolve->has_upper_cap)
     {
       ay_status = ay_revolve_crtcap(revolve, curve,
-				    nc->knotv[nc->length],
+				    nc->knotv[nc->length], AY_TRUE,
 				    &(revolve->upper_cap));
   
     } /* if */
@@ -976,7 +986,7 @@ ay_revolve_notifycb(ay_object *o)
   if(revolve->has_lower_cap)
     {
       ay_status = ay_revolve_crtcap(revolve, curve,
-				    nc->knotv[nc->order - 1],
+				    nc->knotv[nc->order - 1], AY_FALSE,
 				    &(revolve->lower_cap));
     } /* if */
 
@@ -984,6 +994,8 @@ ay_revolve_notifycb(ay_object *o)
     {
       ay_status = ay_revolve_crtside(revolve, curve, 0.0,
 				     &(revolve->start_cap));
+      if(revolve->start_cap)
+	revolve->start_cap->scalz *= -1.0;
   
     } /* if */
 
