@@ -574,14 +574,16 @@ ay_skin_convertcb(ay_object *o, int in_place)
 {
  int ay_status = AY_OK;
  ay_skin_object *r = NULL;
- ay_object *new = NULL, *last = NULL;
+ ay_object *new = NULL, **next = NULL;
 
   if(!o)
     return AY_ENULL;
 
+  /* first, create new objects */
+
   r = (ay_skin_object *) o->refine;
 
-  if((o->scalx != 0.0) || (o->scaly != 0.0) || (o->scalz != 0.0))
+  if((r->start_cap) || (r->end_cap))
     {
       if(!(new = calloc(1, sizeof(ay_object))))
 	{ return AY_EOMEM; }
@@ -589,6 +591,7 @@ ay_skin_convertcb(ay_object *o, int in_place)
       ay_object_defaults(new);
       new->type = AY_IDLEVEL;
       new->parent = AY_TRUE;
+      new->inherit_trafos = AY_TRUE;
       ay_trafo_copy(o, new);
 
       if(!(new->refine = calloc(1, sizeof(ay_level_object))))
@@ -596,52 +599,52 @@ ay_skin_convertcb(ay_object *o, int in_place)
 
       ((ay_level_object *)(new->refine))->type = AY_LTLEVEL;
 
-      ay_status = ay_object_link(new);
+      next = &(new->down);
 
       if(r->npatch)
 	{
-	  ay_status = ay_object_copy(r->npatch, &(new->down));
-	  last = new->down;
+	  ay_status = ay_object_copy(r->npatch, next);
+	  if(*next)
+	    next = &((*next)->next);
 	}
 
       if(r->start_cap)
 	{
-	  ay_status = ay_object_copy(r->start_cap, &(last->next));
-	  last = last->next;
+	  ay_status = ay_object_copy(r->start_cap, next);
+	  if(*next)
+	    next = &((*next)->next);
 	}
 
       if(r->end_cap)
 	{
-	  ay_status = ay_object_copy(r->end_cap, &(last->next));
-	  last = last->next;
+	  ay_status = ay_object_copy(r->end_cap, next);
+	  if(*next)
+	    next = &((*next)->next);
 	}
 
-      ay_object_crtendlevel(&(last->next));
+      ay_object_crtendlevel(next);
     }
   else
     {
-      if(r->npatch)
+       if(r->npatch)
 	{
 	  ay_status = ay_object_copy(r->npatch, &new);
 	  ay_trafo_copy(o, new);
-	  ay_status = ay_object_link(new);
 	}
+    } /* if */
 
-      if(r->start_cap)
-	{
-	  new = NULL;
-	  ay_status = ay_object_copy(r->start_cap, &new);
-	  ay_trafo_add(o, new);
-	  ay_status = ay_object_link(new);
-	}
+  /* second, link new objects, or replace old objects with them */
 
-      if(r->end_cap)
+  if(new)
+    {
+      if(!in_place)
 	{
-	  new = NULL;
-	  ay_status = ay_object_copy(r->end_cap, &new);
-	  ay_trafo_add(o, new);
 	  ay_status = ay_object_link(new);
 	}
+      else
+	{
+	  ay_object_replace(new, o);
+	} /* if */
     } /* if */
 
  return ay_status;
