@@ -622,17 +622,21 @@ ay_text_notifycb(ay_object *o)
 		{
 		  /* this outline is a true outline */
 
-		  /* if there are already outlines (and possibly holes)
-		     in <curve> we need to create patches from them now */
+		  /* if there is already an outline in <curve>
+		     and possibly holes in <holes>
+		     we need to create patches from them now */
 		  if(curve)
 		    {
 		      if(holes)
 			{
+			  /* link the holes to the curve */
 			  curve->next = holes;
+			  /* terminate hierarchy */
 			  *nexthole = &endlevel;
 			}
 		      else
 			{
+			  /* terminate hierarchy */
 			  curve->next = &endlevel;
 			}
 		      ext.down = curve;
@@ -688,38 +692,43 @@ ay_text_notifycb(ay_object *o)
 			    } /* while */
 			} /* if */
 
+		      /* free curve objects */
 		      if(holes)
 			{
+			  curve->next = NULL;
 			  *nexthole = NULL;
 			  ay_object_deletemulti(holes);
 			  holes = NULL;
 			  nexthole = &(holes);
 			}
 		      ay_object_delete(curve);
-		    } /* if */
+		    } /* if(curve */
 		  
 		  curve = newcurve;
-
 
 		}
 	      else
 		{
-		  /* this "outline" is a hole which we just append */
+		  /* this "outline" is a hole, which we just append to the
+		     list of holes in <holes> */
 		  *nexthole = newcurve;
 		  nexthole = &(newcurve->next);
 		} /* if */
 
 	      if((i == letter.numoutlines-1) && (curve))
 		{
-		  /* end of loop reached, but there are still unconverted
-		     outlines in <curve> => convert them to patches now */
+		  /* end of loop reached, but there is still an unconverted
+		     outline in <curve> => convert it to patches now */
 		  if(holes)
 		    {
+		      /* link the holes to the curve */
 		      curve->next = holes;
+		      /* terminate hierarchy */
 		      *nexthole = &endlevel;
 		    }
 		  else
 		    {
+		      /* terminate hierarchy */
 		      curve->next = &endlevel;
 		    }
 		  ext.down = curve;
@@ -774,8 +783,11 @@ ay_text_notifycb(ay_object *o)
 			  patch = patch->next;
 			} /* while */
 		    } /* if */
+
+		  /* free curve objects */
 		  if(holes)
 		    {
+		      curve->next = NULL;
 		      *nexthole = NULL;
 		      ay_object_deletemulti(holes);
 		      holes = NULL;
@@ -785,11 +797,36 @@ ay_text_notifycb(ay_object *o)
 		  ay_object_delete(curve);
 		  curve = NULL;
 		} /* if */
+
+	      if((i == letter.numoutlines-1) && (holes))
+		{
+		  /* end of loop reached, but there are unconverted holes;
+		     this is probably caused by broken orientation detection;
+		     we need to free all the curves in <holes> (and inform the
+		     user?) */
+		  ay_error(AY_EWARN, fname,
+		     "Could not convert all outlines, please try Revert.");
+		  ay_object_deletemulti(holes);
+		  holes = NULL;
+		  nexthole = &(holes);
+		}
+
 	    } /* for */
 	} /* if */
 
       xoffset = letter.xoffset;
       /*yoffset = letter.yoffset;*/
+
+      for(i = 0; i < letter.numoutlines; i++)
+	{
+	  outline = &((letter.outlines)[i]);
+	  if(outline->points)
+	    free(outline->points);
+	}
+      if(letter.outlines)
+	free(letter.outlines);
+      letter.outlines = NULL;
+
       uc++;
     } /* while */
 
