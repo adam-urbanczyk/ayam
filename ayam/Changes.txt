@@ -1,4 +1,4 @@
-[CVS, 16. 12. 2002]:
+[CVS, 26. 12. 2002]:
 o bug fixes:
   - fixed remembering of the state of the object selection listbox/tree
     when the context menu or a double click on the label is used to
@@ -22,6 +22,7 @@ o bug fixes:
   - fixed official Linux executable not be able to execute other NVidia-OpenGL
     using programs (by patching the Tcl-source to not use vfork() but fork())
   - fixed problems building the documentation on Debian 3.0 (Woody)
+  - fixed object picking when the root object is hidden
 o reduced number of redraws when selecting hidden or material objects
 o added a RiDisplay tag type, that allows to add more output files
   (e.g. containing depth buffer information) to the scene
@@ -77,6 +78,10 @@ o added a Local/Global menu to the direct point editing dialogue
 o the splash screen now grabs the focus to avoid problems with stray
   mouse events delivered other windows when the splash screen is closed
   manually by the user
+o added some example scenes to demonstrate new features of concatnc, clone,
+  and sweep objects
+o added invert point selection feature (see new main menu entry:
+  "Special/Points/Invert Selection")
 
 
 [15. 10. 2002] Ayam1.3:
