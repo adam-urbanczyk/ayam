@@ -191,30 +191,31 @@ DL = -ldl
 # RRIB Plugin Required Libraries
 RRIBLIBS = -L /home/randi/sdk/affine0008/lib -lribrdr -lribhash -lribnop -lm
 
-# Ayslx Plugin
+# Ayslx Plugin (Aqsis)
 AYSLXINCDIR = $(AQSISDIR)/include
 AYSLXLIBS = $(AQSISDIR)/lib/rcdummy.o $(AQSISDIR)/lib/libshadervm.so $(AQSISDIR)/lib/libshaderexecenv.so $(AQSISDIR)/lib/libslxargs.so $(AQSISDIR)/lib/libaqsistypes.so -L /usr/local/lib -llog4cpp
 
-# Ayso Plugin
+# Ayso Plugin (RenderDotC, RDC)
 RDCDIR = /usr/local/rdc
 AYSOINCDIR = $(RDCDIR)/include
 AYSOLIBS = -L $(RDCDIR)/lib -lsoargs
 
-# Ayslo Plugin
+# Ayslo Plugin (PRman)
 PRMANDIR = /usr/local/prman
 AYSLOINCDIR = $(PRMANDIR)/include
 AYSLOLIBS = -L $(PRMANDIR)/lib -lsloargs -ltarget -lzip
 
-# Ayslo3d Plugin
+# Ayslo3d Plugin (3Delight)
 3DLDIR = /usr/local/3delight
 #3DLDIR = /usr/local/3delight-0.9.6/Linux-i686-libstdc++-3
 AYSLO3DINCDIR = $(3DLDIR)/include
 AYSLO3DLIBS = -L $(3DLDIR)/lib -l3delight
 
-# Aysdr Plugin
+# Aysdr Plugin (Pixie)
 SDRDIR = /usr/local
 AYSDRINCDIR = $(SDRDIR)/include
-AYSDRLIBS = -L $(SDRDIR)/lib -lsdr
+PIXIESRC = /home/user/Pixie/src
+AYSDRLIBS = $(PIXIESRC)/common/os.o -L $(SDRDIR)/lib -lsdr
 
 #############################################
 # nothing needs to be changed below this line
