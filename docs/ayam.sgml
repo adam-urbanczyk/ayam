@@ -1332,8 +1332,10 @@ have been selected.
 <p>
 Most Ayam objects have standard properties, they are used
 to control transformations and attributes of objects.
+The following sections describe the standard properties
+Transformations, Attributes, Material, Shaders, and Tags.
 
-<sect2>Transformations<label id="trap">
+<sect1>Transformations<label id="trap">
 <p>
 Use this property to edit the location, orientation and
 size of an object.
@@ -1399,7 +1401,7 @@ Undoing all rotations (resetting the object to its original state)
 is simple too: enter 0 for all three entries at once,
 then press apply.
 
-<sect2>Attributes<label id="attrs">
+<sect1>Attributes<label id="attrs">
 <p>
 <itemize>
 <item><tt/"Name"/, the name of the object.
@@ -1408,10 +1410,11 @@ then press apply.
 point to this object. 
 </itemize>
 
-<sect2>Material<label id="matprop">
+<sect1>Material<label id="matprop">
 <p>
 The material property allows you to connect geometric objects
-to material objects.
+to material objects (see also section
+<ref id="materialobj" name="Material Object">).
 <itemize>
 <item><tt/"Clear Material"/ immediately clears any connection
 of the current object to its material.
@@ -1421,7 +1424,50 @@ drop the geometric objects onto the material object using drag and
 drop in the tree view.
 </itemize>
 
-<sect2>Tags<label id="tags">
+<sect1>Shaders<label id="shd">
+<p>
+Shader properties are used to attach a shader of a certain type to an object.
+The name of the property contains the type of the shader, e.g.
+light shaders may be attached to a property named <tt/"LightShader"/ only.
+
+Each shader property GUI, even if no shader is attached to an object,
+starts with the <tt/"Set new shader."/-button. This button allows
+to select a new shader of the appropriate type.
+If you press the <tt/"Set new shader."/-button a dialog with a
+list of shaders pops up. If the listbox is empty, Ayam
+is probably not set up properly. Check the preference setting
+<tt>"Main/Shaders"</tt>.
+
+After a new shader has been set, the arguments of the shader will be
+parsed and a GUI will be generated to allow the arguments of the shader
+to be filled with values. Note, that Ayam will simply
+skip all array arguments, currently.
+
+The <tt/"Delete shader."/-button may be used to
+delete the current shader from the selected object.<p>
+
+The <tt/"Default Values."/-button resets all arguments
+of the shader to the default values.
+For that, the compiled shader will be parsed again.
+Therefore, this button is handy if you work with changing shaders.
+If you want to keep the old shader argument values, simply
+copy the shader property using the property clipboard (main menu:
+<tt>"Edit/Copy Property"</tt>) before
+you load the new default values, then paste the property
+back using <tt>"Edit/Paste Property"</tt>.
+Note, that this works only properly, if you do not change
+the type of existing shader arguments!
+
+If Ayam has been compiled without a shader parsing library
+(e.g. without libslcargs), Ayam will parse XML files created
+by sdpslparse from the K-3D project instead of compiled shaders.
+The <tt/"Set new shader."/-button will then always open a file requester,
+allowing you to select a XML file, that has been
+created by sdpslparse.
+Furthermore, the <tt/"Default Values."/-button will not be available;
+use <tt/"Set new shader."/ instead.
+
+<sect1>Tags<label id="tags">
 <p>
 Use this property to edit the tags of an object.<p>
 Tags are an easy way to attach arbitrary information to
@@ -1432,16 +1478,18 @@ elements:
 <itemize>
 <item><tt/"Remove all Tags!"/ immediately removes all tags
 from the object.
-<item><tt/"Add Tag!"/ opens up a small dialog box, where you
-may enter a new tag type and value. Once you press the <tt/""Ok"/
+<item><tt/"Add Tag!"/ opens a small dialog box, where you
+may enter a new tag type and value. Once you press the <tt/"Ok"/
 button, a new entry will be added to the tags property, displaying
-the new tag. Just click on the entry to get to the dialog again,
+the new tag. Just click on the entry to get back to the dialog,
 to remove the tag using <tt/"Clear"/ then <tt/"Ok"/, or to change
-some things.
+the type or value of the tag.
 </itemize>
 
 The next sub-sections describe the available tag types.
-<sect3>RiAttribute Tag<label id="riatag">
+Note, that extensions and plug ins may define their own types.
+
+<sect2>RiAttribute Tag<label id="riatag">
 <p>
 The tag type <tt/"RiAttribute"/ can be used to attach
 arbitrary RenderMan interface attributes to objects.
@@ -1450,7 +1498,7 @@ that differ from the standard RiAttributes.<p>
 <tt/"RiAttribute"/ tags attached to a geometric object override
 <tt/"RiAttribute"/ tags possibly attached to the material object of this
 geometric object.<p>
-In order to create a tag of type RiAttribute the type string must be
+In order to create a tag of type RiAttribute, the type string must be
 <tt/"RiAttribute"/. The syntax of the value string is as following:<p>
 <tt/attrname,paramname,paramtype,param/<p>
 where attrname is the name of the attribute (e.g. "render") paramname
@@ -1472,7 +1520,7 @@ The database of RiAttributes for this GUI may be extended
 by the user using the ayamrc file, see section
 <ref id="ayamrc" name="Ayamrc File">.
 
-<sect3>RiOption Tag<label id="riotag">
+<sect2>RiOption Tag<label id="riotag">
 <p>
 The tag type <tt/"RiOption"/ can be used to attach
 arbitrary RenderMan interface options to objects.
@@ -1491,7 +1539,7 @@ Furthermore, the database of RiOptions for this GUI may be extended
 by the user using the ayamrc file, see section
 <ref id="ayamrc" name="Ayamrc File">.
 
-<sect3>TC (TextureCoordinates) Tag<label id="tctag">
+<sect2>TC (TextureCoordinates) Tag<label id="tctag">
 <p>
 The tag type <tt/"TC"/ can be used to attach
 texture coordinates to objects or materials.
@@ -1503,10 +1551,28 @@ float values, that specify a mapping for four points (a quadrilateral) in
 texture space from the default values (0,0), (1,0), (0,1), and (1,1)
 to the new specified values.<p>
 
-Example:<p>
+Examples:<p>
 <tt>TC 0,0,10,0,0,10,10,10</tt><p>
+Changes the texture coordinate space so that more and smaller tiles
+of a texture would be displayed on a primitive.<p>
 
+<tt>TC 0,0,0,1,1,0,1,1</tt><p>
+Flips the texture coordinate space over two corners.
+A shader normally generating vertical stripes will create
+horizontal stripes now.<p>
 
+<tt>TC 0,1,0,0,1,1,1,0</tt><p>
+Turns the texture coordinate space by 90 degrees.
+A shader normally generating vertical stripes will create
+horizontal stripes now.<p>
+
+Note, that the exact behaviour depends heavily on the shader and its use
+of the texture coordinates!
+
+<sect2>Internal Tags
+<p>
+The following tags are of no general use. They are used
+by Ayam internally only.
 <sect3>OI - Object ID Tag<label id="oitt">
 <p>
 This tag is used by the RIB exporter and the scene storage
@@ -1524,21 +1590,6 @@ the objects they are assigned to.<p>
 The tag type <tt/MI/ is not meant to be used by the end user.
 Furthermore, changing the IDs avails to nothing as the
 tags are rebuilt before every export/save operation.
-
-<sect2>Shaders<label id="shd">
-<p>
-Shader properties are used to attach a shader of a certain type to an object.
-Each shader property, even if no shader is attached to an object,
-starts with the <tt/"Set new shader."/ button. This button allows
-to select a new shader of the appropriate type.
-Below this button is the <tt/"Delete shader."/ button which,
-consequently, deletes the current shader from the selected object.
-The <tt/"Default Values."/ button resets all arguments
-of the shader to the default values, as found in the shader source code.
-
-After a new shader has been set, the arguments of the shader will be
-parsed and a GUI will be generated to allow the arguments of the shader
-to be filled with values.
 
 <sect1>Root Object<label id="rootobj">
 <p>
@@ -1968,7 +2019,7 @@ connected to geometric objects, see discussion about material names above.
 entries to a negative value (e.g. -1), the color will not be set at all
 for this object.
 <item><tt/"Opacity"/, the opacity of the object, the default
-255 255 255 means totally opaque. If you set one of the
+255 255 255 means the object is totally opaque. If you set one of the
 entries to a negative value (e.g. -1), the opacity will not be set at all
 for this object.
 <item><tt/"ShadingRate"/, determines how often shaders are evaluated for
