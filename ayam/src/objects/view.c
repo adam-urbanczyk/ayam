@@ -801,7 +801,6 @@ int
 ay_view_notifycb(ay_object *o)
 {
  ay_view_object *view = NULL;
- double temp[3] = {0};
  unsigned int bo = 1;  /* test byte order */
  unsigned char *r, b;
  uint32 *image = NULL, w, h, c;
