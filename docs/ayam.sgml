@@ -538,7 +538,8 @@ have no normal objects that refer to them. It will also not work
 for objects that have no material assigned. If the reference counter
 of a material object is not zero, but <tt/"Highlight Material"/
 reports 0 objects found, the referring objects probably reside
-in the object clipboard.
+in the object clipboard. You can clear the tree view again by pressing
+<tt/&lt;Ctrl+l&gt;/.
 </itemize>
 
 <label id="mmcustom">
