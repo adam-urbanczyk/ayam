@@ -1423,6 +1423,9 @@ ay_npatch_bbccb(ay_object *o, double *bbox, int *flags)
   /* P8 */
   bbox[21] = xmax; bbox[22] = ymin; bbox[23] = zmax;
 
+  /* exclusive bounding box, discard children/trim curves bbox */
+  *flags = 1;
+
  return AY_OK;
 } /* ay_npatch_bbccb */
 

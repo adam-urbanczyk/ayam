@@ -282,10 +282,17 @@ ay_cap_bbccb(ay_object *o, double *bbox, int *flags)
     return AY_ENULL;
 
   cap = (ay_cap_object *)o->refine; 
-
-  ay_status = ay_bbc_get(cap->npatch, bbox);
-
-  flags = 0;
+  if(cap)
+    {
+      ay_status = ay_bbc_get(cap->npatch, bbox);
+      /* exclusive bounding box (discard children bbox) */
+      *flags = 1;
+    }
+  else
+    {
+      /* invalid/nonexisting bbox */
+      *flags = 2;
+    }
 
  return ay_status;
 } /* ay_cap_bbccb */
