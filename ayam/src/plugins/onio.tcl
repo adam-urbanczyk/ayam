@@ -10,7 +10,7 @@
 # rrib.tcl - onio (OpenNURBS 3DM Rhino) plugin GUI code
 
 uplevel #0 { array set onio_options {
-    Accuracy 0.1
+    Accuracy 1.0e-12
 }   }
 
 proc onio_import { } {
@@ -47,7 +47,7 @@ proc onio_import { } {
 	set f [frame $w.f1]
 	pack $f -in $w -side top -fill x
 
-	addParam $f onio_options Accuracy
+	addParam $f onio_options Accuracy [list 0.0 1.0e-12 0.1 1]
 
 	set f [frame $w.f2]
 	button $f.bok -text "Ok" -width 5 -command {
@@ -55,7 +55,8 @@ proc onio_import { } {
 	    set oldcd [pwd]
 	    cd [file dirname $onio_options(FileName)]
 
-	    onioRead [file tail $onio_options(FileName)]
+	    onioRead [file tail $onio_options(FileName)]\
+		    -a $onio_options(Accuracy)
 
 	    cd $oldcd
 	    goTop
