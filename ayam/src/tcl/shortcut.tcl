@@ -354,7 +354,7 @@ proc shortcut_altrotatebinding { w } {
 #shortcut_show:
 # display all current shortcuts in a separate top level window
 proc shortcut_show { } {
-global ay aymainshortcuts ayviewshortcuts
+global ay aymainshortcuts ayviewshortcuts tcl_platform
 
 set w .ayscw
 
@@ -374,8 +374,17 @@ pack $w.fbutton.b -in $w.fbutton
 
 pack $w.ftext -in $w -side top -expand yes -fill both
 
+set font fixed
+
+if { $tcl_platform(platform) == "windows" } {
+    set font fixedsys
+}
+if { $tcl_platform(os) == "IRIX" } {
+    set font 9x15
+}
+
 text $w.ftext.text -yscrollcommand "$w.ftext.sbar set" \
-	-setgrid 1 -font fixed -height 20 -width 40
+	-setgrid 1 -font $font -height 20 -width 40
 # -tabs {32c left}
 scrollbar $w.ftext.sbar -takefocus 0 -command "$w.ftext.text yview"
 
