@@ -679,6 +679,54 @@ proc viewToggleMode { w } {
 # viewToggleMode
 
 
+
+##############################
+# viewSetBGImage:
+proc viewSetBGImage { view } {
+global ay
+set w .setBGI
+catch {destroy $w}
+toplevel $w
+wm title $w "Set BGImage"
+wm iconname $w "Ayam"
+wm transient $w [winfo toplevel $view]
+
+set f [frame $w.f1]
+pack $f -in $w -side top -fill x
+
+addFile $f ay ImageFile
+
+set f [frame $w.f2]
+button $f.bok -text "Ok" -pady $ay(pady) -width 5 -command "\
+	global ay;\
+	$view mc;\
+	$view setconf -bgimage \$ay(ImageFile);\
+	$view render;\
+	update;\
+	grab release .setBGI;\
+	focus $view;\
+	destroy $w"
+
+
+button $f.bca -text "Cancel" -pady $ay(pady) -width 5 -command "\
+	global ay;
+	grab release .setBGI;\
+	focus $view;\
+	destroy $w"
+
+pack $f.bok $f.bca -in $f -side left -fill x -expand yes
+pack $f -in $w -side bottom -fill x
+
+winCenter $w
+grab $w
+#focus $w.f1.fImageFile.e
+tkwait window $w
+
+return;
+}
+# viewSetBGImage
+
+
 # some code, that has to be executed in global context when this
 # module is sourced the first time (on application startup):
 
