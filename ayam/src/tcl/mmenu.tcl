@@ -303,7 +303,9 @@ $m.npt add command -label "Build from Curves" -command {
     buildNP; uCR; sL; rV}
 $m add separator
 $m add command -label "Hide" -command "hide; rV"
+$m add command -label "Hide All" -command "hide -all; rV"
 $m add command -label "Show" -command "show; rV"
+$m add command -label "Show All" -command "show -all; rV"
 $m add separator
 $m add command -label "Convert" -command "convOb; cS; uS; sL; rV"
 $m add separator
