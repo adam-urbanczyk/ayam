@@ -644,6 +644,8 @@ ay_view_readcb(FILE *fileptr, ay_object *o)
   fscanf(fileptr,"%lg", &vtemp.rotz);
 
   read = fgetc(fileptr);
+  if(read == '\r')
+    fgetc(fileptr);
 
   if(ay_read_version >= 2)
     {

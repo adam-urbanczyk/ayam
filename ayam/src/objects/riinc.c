@@ -265,6 +265,8 @@ ay_riinc_readcb(FILE *fileptr, ay_object *o)
   fscanf(fileptr,"%lg\n",&riinc->length);
   fscanf(fileptr,"%lg",&riinc->height);
   read = fgetc(fileptr);
+  if(read == '\r')
+    fgetc(fileptr);
   ay_read_string(fileptr, &(riinc->file));
 
   o->refine = riinc;
