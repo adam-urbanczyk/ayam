@@ -43,12 +43,17 @@ $m add command -label "New"\
 		regsub -all {\\} $filename {/} filename
 	    }
 	    catch [replaceScene $filename]
+	    update
+
 	}
 	set ay(filename) ""
 	wm title . "Ayam - Main"
 	uS;
 	rV;
 	set ay(sc) 0
+	update
+	foreach view $ay(views) { viewBind $view }
+	update
 	after idle viewMouseToCurrent
     }
 }
