@@ -1,3 +1,11 @@
+[CVS, 15. 02. 2003]:
+o bug fixes:
+  - fixed RIB import creating object names with malicious characters (spaces)
+o added support for inline declarations of e.g. shader parameters to the
+  RIB import plugin
+o added an example scene for subdivision meshes
+
+
 [07. 02. 2003] Ayam1.4:
 o bug fixes:
   - fixed remembering of the state of the object selection listbox/tree
