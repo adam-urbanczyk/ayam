@@ -1,4 +1,4 @@
-[24. Oct 2004] CVS-Head:
+[29. Oct 2004] Ayam1.8:
 o bug fixes:
   - fixed "loadayslo3d.tcl" loading the wrong plugin (SF 928054)
   - fixed "Select Renderer" setting a wrong shader extension for "3Delight"
