@@ -1559,8 +1559,10 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 	     cs->length * stride * sizeof(double));
 
       /* create transformation matrix */
+      /* first, set it to identity */
       ay_trafo_identitymatrix(m);
 
+      /* now, apply scaling function (if present) */
       if(o3)
 	{
 	  u = sf->knotv[sf->order-1]+(((double)i/sections) * plensf);
@@ -1572,8 +1574,8 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 	    ay_trafo_scalematrix(1.0/p3[1], 1.0/p3[1], 1.0/p3[1], m);
 	}
 
+      /* now, apply rotation (if requested) */
       u = tr->knotv[tr->order-1]+(((double)i/sections)*plen);
-
       if(rotate)
 	{
 	  ay_nb_ComputeFirstDer4D(tr->length-1, tr->order-1, tr->knotv,
@@ -1618,6 +1620,7 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 	  ay_trafo_multmatrix4(m, mr);
 	} /* if rotate */
 
+      /* now, add translation to current point on trajectory */
       if(closed && (i == 0 || i == sections))
 	{
 	  memcpy(p2, p1, 3*sizeof(double));
@@ -1626,15 +1629,9 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 	{
 	  ay_nb_CurvePoint4D(tr->length-1, tr->order-1, tr->knotv,
 			     trcv, u, p2);
-	  /*
-	  AY_V3SUB(p2, p2, p1)
-
-	  ay_trafo_translatematrix(-p1[0], -p1[1], -p1[2], m);
-	  */
 	}
-
       ay_trafo_translatematrix(-p2[0], -p2[1], -p2[2], m);
- 
+
       ay_trafo_invmatrix4(m, mi);
       mi[15] = 1.0;
 
@@ -1644,23 +1641,37 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 	  ay_trafo_apply4(&controlv[i*cs->length*stride+j*stride], mi);
 	} /* for */
 
-      /* create caps */
+      /* create caps (if sweep is not closed) */
       if(i == 0)
 	{
-	  if(has_start_cap)
+	  if(has_start_cap && !closed)
 	    {
 	      curve = NULL;
 	      ay_status = ay_object_copy(o1, &curve);
 	      ay_trafo_defaults(curve);
 	      ay_status = ay_capt_createfromcurve(curve, start_cap);
 	      /* transform cap */
+	      /* move it */
 	      ay_nb_CurvePoint4D(tr->length-1,tr->order-1,tr->knotv,
 				 trcv, tr->knotv[tr->order-1], p2);
 	      ay_trafo_copy(o1, *start_cap);
 	      (*start_cap)->movx = p2[0];
 	      (*start_cap)->movy = p2[1];
 	      (*start_cap)->movz = p2[2];
-
+	      /* apply scaling function (if present) */
+	      if(o3)
+		{
+		  u = sf->knotv[sf->order-1];
+		  ay_nb_CurvePoint4D(sf->length-1, sf->order-1, sf->knotv,
+				     sfcv, u, p3);
+		  p3[1] = fabs(p3[1]);
+		  if(p3[1] > AY_EPSILON)
+		    {
+		      (*start_cap)->scalx *= p3[1];
+		      (*start_cap)->scaly *= p3[1];
+		    }
+		} /* if */
+	      /* rotate it */
 	      if(rotate)
 		{
 		  if(fabs(rots[0]) > AY_EPSILON)
@@ -1674,20 +1685,34 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 	} /* if */
       if(i == sections)
 	{
-	  if(has_end_cap)
+	  if(has_end_cap && !closed)
 	    {
 	      curve = NULL;
 	      ay_status = ay_object_copy(o1, &curve);
 	      ay_trafo_defaults(curve);
 	      ay_status = ay_capt_createfromcurve(curve, end_cap);
 	      /* transform cap */
+	      /* move it */
 	      ay_nb_CurvePoint4D(tr->length-1, tr->order-1, tr->knotv,
 				 trcv, tr->knotv[tr->length], p2);
 	      ay_trafo_copy(o1, *end_cap);
 	      (*end_cap)->movx = p2[0];
 	      (*end_cap)->movy = p2[1];
 	      (*end_cap)->movz = p2[2];
-
+	      /* apply scaling function (if present) */
+	      if(o3)
+		{
+		  u = sf->knotv[sf->length];
+		  ay_nb_CurvePoint4D(sf->length-1, sf->order-1, sf->knotv,
+				     sfcv, u, p3);
+		  p3[1] = fabs(p3[1]);
+		  if(p3[1] > AY_EPSILON)
+		    {
+		      (*end_cap)->scalx *= p3[1];
+		      (*end_cap)->scaly *= p3[1];
+		    }
+		} /* if */
+	      /* rotate it */
 	      if(rotate)
 		{
 		  for(j = 0; j <= sections; j++)
@@ -1695,8 +1720,7 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 		      if(fabs(rots[j*4]) > AY_EPSILON)
 			{
 			  ay_quat_axistoquat(&(rots[j*4+1]),
-					     AY_D2R(-rots[j*4]),
-					     quat);
+					     AY_D2R(-rots[j*4]), quat);
 			  ay_quat_add(quat, (*end_cap)->quat,
 				      (*end_cap)->quat);
 			} /* if */
