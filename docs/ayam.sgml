@@ -5155,7 +5155,7 @@ getPnt:
  <item>Synopsis: <tt/"getPnt [-trafo] indexu [indexv] varx vary varz [varw]"/
  <item>Description: Get a control point of the currently
 selected object and write it's coordinates into the variables
-varx, vary, varz and varw.
+varx, vary, varz, and varw.
 If the special argument <tt/"-trafo"/ is given, the coordinates
 will be transformed by the values given in the objects
 Transformation property.
@@ -5165,7 +5165,7 @@ setPnt:
 <itemize>
  <item>Synopsis: <tt/"setNP indexu [indexv] x y z [w]"/
  <item>Description: Set a control point of the
-currently selected object to the coordinates x, y, z and w.
+currently selected object to the coordinates x, y, z, and w.
 </itemize>
 
 
@@ -5198,10 +5198,11 @@ of the scene). There are some options to speed this process up:
 the global array entry <tt/"ay(ul)"/ (UpdateLevel) may be set
 to the current level before calling <tt/"uS"/. This will not remove
 and update the complete scene but just the part below <tt/"ay(ul)"/.
-Example: <tt>set ay(ul) $ay(CurrentLevel); uS;</tt>.
+Example:
+<code>global ay; set ay(ul) $ay(CurrentLevel); uS;</code>.
  <item> If objects have been created and thus just need to be
-added to the current level, the command <tt/"uCR"/ may be used instead
-of <tt/"uS"/.
+added to the current level of the object tree view, the command
+<tt/"uCR"/ may be used instead of <tt/"uS"/.
  <item> If just names or types of objects of the current level changed,
 the command <tt/"uCL cl"/ may be used instead of <tt/"uS"/.
  </itemize>
@@ -5210,23 +5211,29 @@ the command <tt/"uCL cl"/ may be used instead of <tt/"uS"/.
 uCL - update current level:
 <itemize>
  <item>Synopsis: <tt/"uCL mode [args]"/
- <item>Description: see discussion of <tt/"uS"/ above.
+ <item>Description: Update only the current level of the object listbox
+or tree view after changes. See also the discussion of <tt/"uS"/ above.
+The parameter <tt/"mode"/ may be "cl" or "cs", where "cl" is the normal
+operation mode, and "cs" just clears the selection.
 </itemize>
 
 uCR - update current level after create:
 <itemize>
  <item>Synopsis: <tt/"uCR"/
- <item>Description: see discussion of <tt/"uS"/ above.
+ <item>Description: Update only the current level of the object listbox
+or tree view after objects have been created and need to be added to
+the current level. See also the discussion of <tt/"uS"/ above.
 </itemize>
 
 plb_update - property listbox update:
 <itemize>
  <item>Synopsis: <tt/"plb_update"/
- <item>Description: Clear the current property GUI, ask the
+ <item>Description: Clear the current property GUI, ask the currently
 selected object for a list of properties and insert them in the
-property listbox, then rebuild the property GUI (with the same index
-as the property seleted before; this is not necessarily a property
-of the same type).
+property listbox, then rebuild the property GUI of the property
+with the same index in the property listbox
+as the property selected before plb_update was started (this is not
+necessarily a property of the same type).
 </itemize>
 
 <sect2>Custom Objects<label id="scicust">
