@@ -26,23 +26,27 @@ In addition, you can use the provided SGML-source to generate other formats.
 
 <sect>Introduction
 <p>
-What is Ayam?<p>
+What is Ayam?
+<p>
 Ayam is a free 3D modeling environment for the RenderMan Interface
-(formerly known as <tt>"The Mops"</tt>).<p>
-On which platforms is Ayam available?<p>
+(formerly known as <tt>"The Mops"</tt>).
+<p>
+On which platforms is Ayam available?
+<p>
 Ayam is primarily aimed at the platforms BMRT (Blue Moon Rendering
 Tools, a RenderMan compliant renderer by Larry Gritz (Exluna))
 runs on (those are Linux, IRIX, and Win32). Despite of this, Ayam may be used
 on many more platforms with any RenderMan compliant renderer.
-Due to limitations in the Win32 operating system(s)
-(no backlinking) and the current implementation of Ayam,
-dynamic loading of custom objects is currently not available on the
-Win32 platform!<p>
+<p>
 For platforms where BMRT is not available (e.g. FreeBSD or NetBSD), Ayam
 may be compiled with code from the Affine Toolkit with limited
 functionality (see also the file INSTALL).
-In this case, no parsing of slc compiled shaders will be possible.<p>
-What are the features of Ayam?<p>
+In this case, no parsing of slc compiled shaders will be possible.
+Since Ayam 1.6 it is also possible to completely replace BMRT shader parsing
+and RIB writing by Aqsis, thus completely eliminating the need for BMRT.
+<p>
+What are the features of Ayam?
+<p>
 Here is a short summary:
 <itemize>
 <item>RIB (RenderMan Interface Bytestream) export and import.
@@ -53,8 +57,9 @@ Cylinder, Cone, Hyperboloid, Paraboloid and Torus), MetaBalls,
 polygonal meshes, subdivision meshes and more.
 <item>All primitives may be combined with the common
 CSG-operations: Intersection, Difference, and Union.
-<item>NURBS modeling includes extrude, revolve, sweep, skin and gordon
-operations (with caps, holes, and bevels) realized as Tool-Objects.
+<item>NURBS modeling includes extrude, revolve, sweep, birail, skin,
+and gordon operations (with caps, holes, and bevels) realized as
+Tool-Objects.
 <item>Custom objects that may freely implement their representations
 (using OpenGL and RIB) and even small GUIs to edit their type specific
 parameters may be written by the user and dynamically loaded at runtime.
@@ -62,6 +67,31 @@ parameters may be written by the user and dynamically loaded at runtime.
 <item>Misc: instancing, arbitrary number of modeling views,
 object clipboard, independent property clipboard, console,
 n level undo.
+</itemize>
+
+Due to limitations in the Win32 operating system(s)
+(no backlinking) and the current implementation of Ayam,
+dynamic loading of custom objects is currently not available on the
+Win32 platform!
+<p>
+How do I read this manual?
+<p>
+Since this manual is intended to be a reference manual only, it is
+probably pointless to read it from the beginning to the end
+(except maybe for the next section, explaining the basics).
+Instead, just look up the documentation of things you are interested
+in, cross references will then guide you to other important parts.
+This manual has a large index, use it! 
+<p>
+In this manual, the following typographic conventions are used:
+<itemize>
+<item>keyboard shortcuts: <tt/&lt;Ctrl+c&gt;/
+<item>names (of object types, menu entries, properties, or property elements):
+<tt/"A Name"/
+<item>Tcl code examples:
+<code>
+set riopt(runtime) { a b }
+</code>
 </itemize>
 
 <sect>The Ayam GUI
@@ -6621,7 +6651,7 @@ A torus would e.g. get a tag named <tt/"DC"/ with the value <tt/"2"/.
 <p>
 Once the aycsg plugin is loaded successfully you can render the CSG
 preview in any view window using the keyboard shortcut
-<tt>"&lt;Ctrl+Shift+c&gt;"</tt>
+<tt>&lt;Ctrl+Shift+c&gt;</tt>
 <p>
 The aycsg plugin supports the following options, that are available
 through the main menu entry <tt>"Custom/AyCSG Preferences"</tt>:
