@@ -467,7 +467,8 @@ typedef struct ay_icurve_object_s
 typedef struct ay_concatnc_object_s
 {
   int closed;
-  int mode;
+  int fillgaps;
+  int revert;
 
   double glu_sampling_tolerance;
   int display_mode;
