@@ -12,7 +12,7 @@
 
 #include "ayam.h"
 
-/* pamesh.c - pamesh object */
+/* pamesh.c -  PatchMesh object */
 
 static char *ay_pamesh_name = "PatchMesh";
 
@@ -107,6 +107,10 @@ ay_pamesh_deletecb(void *c)
   if(pamesh->vbasis)
     free(pamesh->vbasis);
 
+  /* free NURBS patch(es) */
+  if(pamesh->npatch)
+    ay_object_deletemulti(pamesh->npatch);
+
   free(pamesh);
 
  return AY_OK;
@@ -154,7 +158,11 @@ ay_pamesh_copycb(void *src, void **dst)
 	return AY_EOMEM;
       memcpy(pamesh->vbasis, pameshsrc->vbasis, 16 * sizeof(double));
     }
-
+  /* copy NURBS patch(es) */
+  if(pameshsrc->npatch)
+    {
+      ay_object_copymulti(pameshsrc->npatch, &(pamesh->npatch));
+    }
 
   *dst = (void *)pamesh;
 
@@ -283,10 +291,12 @@ ay_pamesh_shadecb(struct Togl *togl, ay_object *o)
   else
     {
       /* shade bilinear patch mesh */
-
+      if(pm->npatch)
+	{
+	  ay_shade_object(togl, pm->npatch);
+	}
 
     }
-
 
  return AY_OK;
 } /* ay_pamesh_shadecb */
@@ -448,6 +458,7 @@ ay_pamesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &new_btype_v);
 
+  pamesh->type = new_type;
   pamesh->btype_u = new_btype_u;
   pamesh->btype_v = new_btype_v;
 
@@ -568,6 +579,9 @@ ay_pamesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       else
 	pamesh->height = new_height;
     } /* if */
+
+  if(AY_OK)
+    ay_notify_force(o);
 
   ay_status = ay_notify_parent();
 
@@ -1024,6 +1038,44 @@ ay_pamesh_bbccb(ay_object *o, double *bbox, int *flags)
 
 
 int
+ay_pamesh_notifycb(ay_object *o)
+{
+ int ay_status = AY_OK;
+ ay_object *p = NULL;
+ ay_pamesh_object *pamesh = NULL;
+ ay_nurbpatch_object *np = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  pamesh = (ay_pamesh_object *)o->refine; 
+
+  if(pamesh->npatch)
+    {
+      ay_object_deletemulti(pamesh->npatch);
+      pamesh->npatch = NULL;
+    }
+
+  ay_status = ay_pmt_tonpatch(pamesh, &(pamesh->npatch));
+
+  p = pamesh->npatch;
+  while(p)
+    {
+      if(p->type == AY_IDNPATCH)
+	{
+	  np = (ay_nurbpatch_object *)p->refine;
+	  np->glu_display_mode = pamesh->glu_display_mode;
+	  np->glu_sampling_tolerance = pamesh->glu_sampling_tolerance;
+	}
+
+      p = p->next;
+    } /* while */
+
+ return AY_OK;
+} /* ay_pamesh_notifycb */
+
+
+int
 ay_pamesh_init(Tcl_Interp *interp)
 {
  int ay_status = AY_OK;
@@ -1043,6 +1095,8 @@ ay_pamesh_init(Tcl_Interp *interp)
 				    ay_pamesh_wribcb,
 				    ay_pamesh_bbccb,
 				    AY_IDPAMESH);
+
+  ay_status = ay_notify_register(ay_pamesh_notifycb, AY_IDPAMESH);
 
  return ay_status;
 } /* ay_pamesh_init */

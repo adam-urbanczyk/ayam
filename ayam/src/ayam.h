@@ -313,15 +313,6 @@ typedef struct ay_nurbpatch_object_s
   struct ay_mpoint_object_s *mpoints;
 } ay_nurbpatch_object;
 
-
-#define AY_PTBILINEAR  0
-#define AY_PTBICUBIC   1
-#define AY_BTBEZIER     0
-#define AY_BTBSPLINE    1
-#define AY_BTCATMULLROM 2
-#define AY_BTHERMITE    3
-#define AY_BTCUSTOM     4
-
 typedef struct ay_pamesh_object_s {
   int width, height;
   int close_u, close_v;
@@ -337,8 +328,11 @@ typedef struct ay_pamesh_object_s {
   double *vbasis; /* [16], only in use for btype_v == AY_BTCUSTOM */
   double glu_sampling_tolerance;
   int glu_display_mode;
-} ay_pamesh_object;
 
+  /* cache NURBS patch representation */
+  ay_object *npatch;
+
+} ay_pamesh_object;
 
 typedef struct ay_light_object_s
 {
@@ -407,7 +401,7 @@ typedef struct ay_cylinder_object_s
   char closed;
   char is_simple;
   double radius;
-  double zmin,zmax;
+  double zmin, zmax;
   double thetamax;
 } ay_cylinder_object;
 
@@ -423,7 +417,7 @@ typedef struct ay_paraboloid_object_s
 {
   char closed;
   double rmax;
-  double zmin,zmax;
+  double zmin, zmax;
   double thetamax;
 } ay_paraboloid_object;
 
@@ -437,25 +431,26 @@ typedef struct ay_torus_object_s
 
 typedef struct ay_icurve_object_s
 {
- int length;
- int closed;
- int imode;
- int iorder;
- double iparam;
- double glu_sampling_tolerance;
- int display_mode;
- double *controlv;
- ay_object *ncurve;
-} ay_icurve_object;
+  int length;
+  int closed;
+  int imode;
+  int iorder;
+  double iparam;
+  double *controlv;
 
+  double glu_sampling_tolerance;
+  int display_mode;
+
+  /* cache NURBS curve representation */
+  ay_object *ncurve;
+} ay_icurve_object;
 
 typedef struct ay_cap_object_s
 {
- double glu_sampling_tolerance;
- int glu_display_mode;
- ay_object *npatch;
+  double glu_sampling_tolerance;
+  int glu_display_mode;
+  ay_object *npatch;
 } ay_cap_object;
-
 
 typedef struct ay_custom_object_s
 {
@@ -469,7 +464,6 @@ typedef struct ay_camera_object_s
   double to[3];
   double up[3];
   double roll, zoom;
-
 } ay_camera_object;
 
 typedef struct ay_riinc_object_s
@@ -915,6 +909,15 @@ extern char *ay_riopt_tagtype;
 #define AY_KTNURB      2
 #define AY_KTCUSTOM    3
 
+/* Basis Matrix Types */
+#define AY_PTBILINEAR  0
+#define AY_PTBICUBIC   1
+#define AY_BTBEZIER     0
+#define AY_BTBSPLINE    1
+#define AY_BTCATMULLROM 2
+#define AY_BTHERMITE    3
+#define AY_BTCUSTOM     4
+
 /* size of arrows */
 #define AY_POINTER 8
 
@@ -960,7 +963,7 @@ extern char *ay_riopt_tagtype;
 /* Warning: v1 and v2 must be different locations in memory! */
 #define AY_APTRAN4(v1,v2,m) {v1[0]=v2[0]*m[0]+v2[1]*m[4]+v2[2]*m[8]+v2[3]*m[12];v1[1]=v2[0]*m[1]+v2[1]*m[5]+v2[2]*m[9]+v2[3]*m[13];v1[2]=v2[0]*m[2]+v2[1]*m[6]+v2[2]*m[10]+v2[3]*m[14];v1[3]=v2[0]*m[3]+v2[1]*m[7]+v2[2]*m[11]+v2[3]*m[15];}
 
-/* avoid comparing of doubles with 0.0 */
+/* avoid direct comparison of doubles with 0.0 */
 #define AY_EPSILON 1.0e-06
 
 /* Picking */
