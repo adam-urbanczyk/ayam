@@ -22,8 +22,10 @@ int ay_wrib_sm(char *file, char *image, int width, int height);
 
 /* functions: */
 
+
 /* ay_wrib_noexport:
- *  check for NoExport tag
+ *  check for presence of NoExport tag
+ *  returns AY_TRUE if found, else returns AY_FALSE
  */
 int
 ay_wrib_noexport(ay_object *o)
@@ -40,10 +42,6 @@ ay_wrib_noexport(ay_object *o)
 	      if(tag->type == ay_noexport_tagtype)
 		{
 		  return AY_TRUE;
-		}
-	      else
-		{
-		  return AY_FALSE;
 		}
 	      tag = tag->next;
 	    } /* while */
