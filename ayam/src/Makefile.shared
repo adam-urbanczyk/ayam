@@ -1,12 +1,12 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile.shared [17. Mar 2003]
+# Makefile.shared [8. May 2003]
 # Makefile for Ayam (shared version)
 
 # Choose an installation prefix.
 PREFIX = /usr/local/ayam
 #PREFIX = /opt/ayam
-# if you use one of the following, be sure to change LIBDIR, PLUGINDIR,
+# if you use one of the following, be sure to change LIBDIR
 # and DOCDIR to a more suitable (Ayam specific) path
 #PREFIX = /usr/freeware
 #PREFIX = /usr
@@ -112,7 +112,7 @@ TCLLIB = -L$(TCLDIR)/unix -ltcl8.0
 #TCLLIB = -ltcl
 
 # Tk sources directory
-# Note: You really need the Tk sources in order to compile Ayam!
+# Note: You really need the Tk _sources_ in order to compile Ayam!
 #TKDIR = ../../tk8.2.2
 TKDIR = ../../tk8.0
 
@@ -148,7 +148,7 @@ AQSISLIBDIR = $(AQSISDIR)/lib
 # if you do not use Aqsis libslxargs:
 AQSISOBJS = 
 # if you use Aqsis libslxargs (add -DAYUSESLXARGS to CFLAGS!):
-#AQSISOBJS = $(AQSISLIBDIR)/rcdummy.o $(AQSISLIBDIR)/libshadervm.so $(AQSISLIBDIR)/libshaderexecenv.so $(AQSISLIBDIR)/libslxargs.so $(AQSISLIBDIR)/libaqsistypes.so
+#AQSISOBJS = $(AQSISLIBDIR)/rcdummy.o $(AQSISLIBDIR)/libshadervm.so $(AQSISLIBDIR)/libshaderexecenv.so $(AQSISLIBDIR)/libslxargs.so $(AQSISLIBDIR)/libaqsistypes.so -L /usr/local/lib -llog4cpp
 
 # BMRT
 # If you use the libribout from BMRT2.x (x >= 5), do _not_ link with
@@ -179,7 +179,7 @@ RRIBLIBS = -L /home/randi/sdk/affine0008/lib -lribrdr -lribhash -lribnop -lm
 
 # Ayslx Plugin
 AYSLXINCDIR = $(AQSISDIR)/include
-AYSLXLIBS = $(AQSISDIR)/lib/rcdummy.o $(AQSISDIR)/lib/libshadervm.so $(AQSISDIR)/lib/libshaderexecenv.so $(AQSISDIR)/lib/libslxargs.so $(AQSISDIR)/lib/libaqsistypes.so
+AYSLXLIBS = $(AQSISDIR)/lib/rcdummy.o $(AQSISDIR)/lib/libshadervm.so $(AQSISDIR)/lib/libshaderexecenv.so $(AQSISDIR)/lib/libslxargs.so $(AQSISDIR)/lib/libaqsistypes.so -L /usr/local/lib -llog4cpp
 
 # Ayso Plugin
 RDCDIR = /usr/local/rdc

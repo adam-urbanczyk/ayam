@@ -1,12 +1,12 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile.wrapped [17. Mar 2003]
+# Makefile.wrapped [8. May 2003]
 # Makefile for Ayam (wrapped version)
 
 # Choose an installation prefix.
 PREFIX = /usr/local/ayam
 #PREFIX = /opt/ayam
-# if you use one of the following, be sure to change LIBDIR,
+# if you use one of the following, be sure to change LIBDIR
 # and DOCDIR to a more suitable (Ayam specific) path
 #PREFIX = /usr/freeware
 #PREFIX = /usr
@@ -65,7 +65,7 @@ LD = g++
 # o add -DAYENABLEWAIT to enable the waitPid command (Unix/Linux only)
 # o add -DAYWITHAQUA if you use a Tcl/Tk for Aqua (not X11)
 
-CFLAGS = -O2 -DAYWRAPPED -DAYUSESLCARGS -DAYUSEBMRTRIBOUT
+CFLAGS = -O2 -DAYWRAPPED -DAYUSESLCARGS -DAYUSEBMRTRIBOUT -DAYENABLEWAIT
 # IRIX (-DAYIRIXBUG is needed by ncurve.c to work around a bug in libGLU):
 #CFLAGS = -O -fullwarn -woff 1048 -DAYWRAPPED -DAYIRIXBUG -DAYUSESLCARGS -DAYUSEBMRTRIBOUT
 # Linux:
@@ -160,7 +160,7 @@ X11LIBS = -L/usr/X11R6/lib -lXmu -lXext -lX11
 AFFINEINCDIR = ./affine/include
 # if you do not use Affine:
 AFFINEOBJS = 
-# if you use affine (add -DAYUSEAFFINE to CFLAGS!):
+# if you use affine (add -DAYUSEAFFINE to CFLAGS above!):
 #AFFINEOBJS = ./affine/src/write.o ./affine/src/constant.o
 
 # Aqsis
@@ -169,13 +169,13 @@ AQSISINCDIR = $(AQSISDIR)/include
 AQSISLIBDIR = $(AQSISDIR)/lib
 # if you do not use Aqsis libslxargs:
 AQSISOBJS = 
-# if you use Aqsis libslxargs (add -DAYUSESLXARGS to CFLAGS!):
-#AQSISOBJS = $(AQSISLIBDIR)/rcdummy.o $(AQSISLIBDIR)/libshadervm.so $(AQSISLIBDIR)/libshaderexecenv.so $(AQSISLIBDIR)/libslxargs.so $(AQSISLIBDIR)/libaqsistypes.so
+# if you use Aqsis libslxargs (add -DAYUSESLXARGS to CFLAGS above!):
+#AQSISOBJS = $(AQSISLIBDIR)/rcdummy.o $(AQSISLIBDIR)/libshadervm.so $(AQSISLIBDIR)/libshaderexecenv.so $(AQSISLIBDIR)/libslxargs.so $(AQSISLIBDIR)/libaqsistypes.so -L /usr/local/lib -llog4cpp
 
 # BMRT
 # If you use the libribout from BMRT2.x (x >= 5), do _not_ link with
 # libslcargs, as its functionality is already present in libribout
-# (in any case, keep -DAYUSESLCARGS set in CFLAGS)!
+# (in any case, keep -DAYUSESLCARGS set in CFLAGS above)!
 BMRTDIR = ../../BMRT2.6
 BMRTINCDIR = $(BMRTDIR)/include
 BMRTLIBDIR = $(BMRTDIR)/lib
@@ -199,8 +199,9 @@ WRAPOBJS = $(WRAPDIR)/wrapChan.o $(WRAPDIR)/wrapInit.o $(WRAPDIR)/wrapRsrc.o $(W
 ZLIB = -L$(WRAPDIR) -lz
 
 # libstdc++
-# To make the Linux exe more portable between Linux
-# distributions, we link libstdc++ statically.
+# To make the Linux exe more portable between different Linux
+# distributions, we link libstdc++ statically. Note that for
+# this to work g++ also needs -nodefaultlibs in EXLDFLAGS above.
 # Linux
 # using gcc, to link stdc++ statically, use:
 STDCPPLIB = -L/usr/lib -lstdc++ -lgcc
@@ -222,9 +223,9 @@ UPX = touch
 # strip
 # do you want to strip the executable?
 # yes:
-#STRIP = strip
+STRIP = strip
 # no:
-STRIP = touch
+#STRIP = touch
 
 # Dynamic Loading
 # Library for dynamic loading (contains dlopen())
@@ -359,7 +360,7 @@ ADDLIB =
 
 # Ayslx Plugin
 AYSLXINCDIR = $(AQSISDIR)/include
-AYSLXLIBS = $(AQSISDIR)/lib/rcdummy.o $(AQSISDIR)/lib/libshadervm.so $(AQSISDIR)/lib/libshaderexecenv.so $(AQSISDIR)/lib/libslxargs.so $(AQSISDIR)/lib/libaqsistypes.so
+AYSLXLIBS = $(AQSISDIR)/lib/rcdummy.o $(AQSISDIR)/lib/libshadervm.so $(AQSISDIR)/lib/libshaderexecenv.so $(AQSISDIR)/lib/libslxargs.so $(AQSISDIR)/lib/libaqsistypes.so -L /usr/local/lib -llog4cpp
 
 # Ayso Plugin
 RDCDIR = /usr/local/rdc
@@ -473,9 +474,6 @@ mostlyclean:
 clean: mostlyclean
 	-rm -f $(AFFINEOBJS)
 	cd MF3D; make -f Makefile.mf3d clean
-
-cl:
-	cat *.c *.h contrib/tree.c contrib/sm.c aycore/*.c nurbs/*.c objects/*.c plugins/*.c | wc -l
 
 DOCFILES = ../Setup.txt ../Changes.txt ../License.txt ../doc/refcard.tcl\
 ../doc/refcard.ps ../doc/ayam.pdf
