@@ -2383,10 +2383,13 @@ ay_nct_getorientation(ay_nurbcurve_object *curve, double *orient)
 	  minx = cv[j];
 	  miny = cv[j+1];
 	  m = i+1;
-	}
+	} /* if */
 
       j += stride;
-    }
+    } /* for */
+
+  if(m >= curve->length)
+    m = 0;
 
   found = AY_FALSE;
   wrap = 0;
@@ -2521,7 +2524,7 @@ ay_nct_createfrompatch(ay_object *p, int where, ay_object **cu)
  ay_nurbpatch_object *pa = NULL;
  ay_object *c = NULL;
 
-   if(!p || !cu)
+  if(!p || !cu)
     return AY_ENULL;
 
   if(p->type != AY_IDNPATCH)
