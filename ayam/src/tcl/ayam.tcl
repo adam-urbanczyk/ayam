@@ -460,6 +460,7 @@ array set ay {
  curvats 1.0
  elevnpu 1
  elevnpv 1
+ soext "so"
 }
 # array ay
 
@@ -470,6 +471,7 @@ set ay_error 0
 if { $tcl_platform(platform) == "windows" } {
     # Windows specific settings:
     set ay(separator) ";"
+    set ay(soext) "dll"
     set ay(pady) 0
     set ayprefs(TmpDir) "$env(TEMP)"
     regsub -all {\\} $ayprefs(TmpDir) {/} ayprefs(TmpDir)

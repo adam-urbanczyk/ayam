@@ -348,7 +348,7 @@ proc io_lc { filename } {
 proc io_lcAuto {  } {
     global ay ayprefs
 
-    set name [string tolower $ay(autoload)].so
+    set name [string tolower $ay(autoload)].$ay(soext)
 
     set paths [split "$ayprefs(Plugins)" $ay(separator)]
 
