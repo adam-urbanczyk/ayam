@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>20. Jul 2003
+<date>23. Jul 2003
 <abstract>
 This is the documentation of Ayam (1.6) - a free 3D modeling environment
 for the RenderMan interface.
@@ -530,6 +530,15 @@ all selected objects (or all objects in the scene if no objects are selected)
 to be called. The notification callbacks are used by objects
 like e.g. Revolve to be informed about changes of their child
 objects to properly adapt to those changes.
+<item><tt/Highlight Material/, colours all objects of the same
+material in red color in the tree view. This tool expects a selected
+material object or a normal object that has a material attached.
+It will not work for material objects that are not registered or
+have no normal objects that refer to them. It will also not work
+for objects that have no material assigned. If the reference counter
+of a material object is not zero, but <tt/"Highlight Material"/
+reports 0 objects found, the referring objects probably reside
+in the object clipboard.
 </itemize>
 
 <label id="mmcustom">
@@ -5940,6 +5949,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>FindU: <ref id="miscac" name="modeling action">
 <item>Flatness: <ref id="moattr" name="MetaObj attributes">
 <item>forAll, forAllT: <ref id="scifall" name="scripting interface command">
+<item>Force Notification: <ref id="mmtools" name="main menu entry">
 <item>forceNot: <ref id="scimisc" name="scripting interface command">
 <item>Formula: <ref id="mcattr" name="MetaComp attribute">
 <item>From: <ref id="camp" name="camera property">,
@@ -5979,6 +5989,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Hide: <ref id="mmtools" name="main menu entry">
 <item>Hide All: <ref id="mmtools" name="main menu entry">
 <item>HideTmpTags: <ref id="prefmisc" name="preference setting">
+<item>Highlight Material: <ref id="mmtools" name="main menu entry">
 <item>Hole: <ref id="handb" name="using holes">
 <item>Hyperboloid: <ref id="mmcreate" name="main menu entry">,
 <ref id="hyperboloidobj" name="object">
