@@ -66,7 +66,7 @@ proc prefs_open {} {
     #if { $tcl_platform(platform) == "windows" } { 
     #set width 400
     #}
-    toplevel $w -width $width -height 400
+    toplevel $w -class ayam -width $width -height 400
     wm title $w "Ayam Preferences"
     wm iconname $w "Prefs"
     wm withdraw $w

@@ -15,7 +15,7 @@ proc riopt_addp { } {
 
     set w .addRiOptw
     catch {destroy $w}
-    toplevel $w
+    toplevel $w -class ayam
     wm title $w "Add RiOption"
     wm iconname $w "Ayam"
     wm transient $w .

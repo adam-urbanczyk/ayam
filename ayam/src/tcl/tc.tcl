@@ -213,7 +213,7 @@ proc tc_edit { } {
 
     set w .tcEditw
     catch {destroy $w}
-    toplevel $w
+    toplevel $w -class ayam
     wm title $w "Edit Texture Coordinates"
     wm iconname $w "Ayam"
     wm transient $w .

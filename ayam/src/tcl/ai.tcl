@@ -19,7 +19,7 @@ proc ai_open { } {
 
     set w .aiw
     catch {destroy $w}
-    toplevel $w
+    toplevel $w -class ayam
     wm title $w "Ayam AI"
     wm iconname $w "Ayam"
     

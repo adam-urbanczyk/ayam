@@ -227,7 +227,7 @@ global ay tagsPropData Tags
 
 set w .addTag
 catch {destroy $w}
-toplevel $w
+toplevel $w -class ayam
 
 if { $edit >= 0 } {
     wm title $w "Edit Tag"

@@ -44,7 +44,7 @@ proc reconsider { Selection } {
     getSel rArray(oldSelection)
     
     # Create the window
-    toplevel $w
+    toplevel $w -class ayam
     wm title $w "Ambiguous Pick"
     wm iconname $w "Ayam"
     wm transient $w .

@@ -650,7 +650,7 @@ global ay aymainshortcuts ayviewshortcuts tcl_platform
 set w .ayscw
 
 catch {destroy $w}
-toplevel $w
+toplevel $w -class ayam
 wm title $w "Ayam Shortcuts"
 wm iconname $w "Ayam"
 

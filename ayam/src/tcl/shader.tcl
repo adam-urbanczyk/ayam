@@ -237,7 +237,7 @@ proc shader_setNew { win type stype } {
     # request a new shader
     set w .setShaderw
     catch {destroy $w}
-    toplevel $w
+    toplevel $w -class ayam
     wm title $w "Set Shader"
     wm iconname $w "Ayam"
     wm transient $w .

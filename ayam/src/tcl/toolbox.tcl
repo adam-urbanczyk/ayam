@@ -17,9 +17,9 @@ proc toolbox_open { } {
 
     catch {destroy $w}
     if { $ay(truecolor) == 1 } {
-	toplevel $w -visual truecolor
+	toplevel $w -class ayam -visual truecolor
     } else {
-	toplevel $w
+	toplevel $w -class ayam
     }
 
     wm title $w "Tools"
