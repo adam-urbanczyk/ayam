@@ -632,7 +632,11 @@ ay_rrib_RiSphere(RtFloat radius, RtFloat zmin, RtFloat zmax,
   s.zmax = (double)zmax;
   s.thetamax = (double)thetamax;
 
+  ay_rrib_readpvs(n, tokens, parms, 0, NULL, &(ay_rrib_co.tags));
+
   ay_rrib_linkobject((void *)(&s), AY_IDSPHERE);
+
+  ay_tags_delall(&ay_rrib_co);
 
  return;
 } /* ay_rrib_RiSphere */
@@ -652,7 +656,11 @@ ay_rrib_RiCylinder(RtFloat radius, RtFloat zmin, RtFloat zmax,
   c.zmax = (double)zmax;
   c.thetamax = (double)thetamax;
 
+  ay_rrib_readpvs(n, tokens, parms, 0, NULL, &(ay_rrib_co.tags));
+
   ay_rrib_linkobject((void *)(&c), AY_IDCYLINDER);
+
+  ay_tags_delall(&ay_rrib_co);
 
  return;
 } /* ay_rrib_RiCylinder */
@@ -669,7 +677,11 @@ ay_rrib_RiDisk(RtFloat height, RtFloat radius, RtFloat thetamax,
   d.radius = (double)radius;
   d.thetamax = (double)thetamax;
 
+  ay_rrib_readpvs(n, tokens, parms, 0, NULL, &(ay_rrib_co.tags));
+
   ay_rrib_linkobject((void *)(&d), AY_IDDISK);
+
+  ay_tags_delall(&ay_rrib_co);
 
  return;
 } /* ay_rrib_RiDisk */
@@ -687,7 +699,11 @@ ay_rrib_RiCone(RtFloat height, RtFloat radius, RtFloat thetamax,
   c.radius = (double)radius;
   c.thetamax = (double)thetamax;
 
+  ay_rrib_readpvs(n, tokens, parms, 0, NULL, &(ay_rrib_co.tags));
+
   ay_rrib_linkobject((void *)(&c), AY_IDCONE);
+
+  ay_tags_delall(&ay_rrib_co);
 
  return;
 } /* ay_rrib_RiCone */
@@ -707,7 +723,11 @@ ay_rrib_RiParaboloid(RtFloat rmax,
   p.zmax = (double)zmax;
   p.thetamax = (double)thetamax;
 
+  ay_rrib_readpvs(n, tokens, parms, 0, NULL, &(ay_rrib_co.tags));
+
   ay_rrib_linkobject((void *)(&p), AY_IDPARABOBOLOID);
+
+  ay_tags_delall(&ay_rrib_co);
 
  return;
 } /* ay_rrib_RiParaboloid */
@@ -730,7 +750,11 @@ ay_rrib_RiHyperboloid(RtPoint point1, RtPoint point2, RtFloat thetamax,
 
   h.thetamax = (double)thetamax;
 
+  ay_rrib_readpvs(n, tokens, parms, 0, NULL, &(ay_rrib_co.tags));
+
   ay_rrib_linkobject((void *)(&h), AY_IDHYPERBOLOID);
+
+  ay_tags_delall(&ay_rrib_co);
 
  return;
 } /* ay_rrib_RiHyperboloid */
@@ -750,7 +774,11 @@ ay_rrib_RiTorus(RtFloat majorradius, RtFloat minorradius,
   t.phimax = (double)phimax;
   t.thetamax = (double)thetamax;
 
+  ay_rrib_readpvs(n, tokens, parms, 0, NULL, &(ay_rrib_co.tags));
+
   ay_rrib_linkobject((void *)(&t), AY_IDTORUS);
+
+  ay_tags_delall(&ay_rrib_co);
 
  return;
 } /* ay_rrib_RiTorus */
@@ -1129,6 +1157,9 @@ ay_rrib_RiLightSource(RtToken name,
   ay_rrib_trafotoobject(&ay_rrib_co, ay_rrib_ctrafos->m);
 
   ay_status = ay_object_copy(&ay_rrib_co, &o);
+
+  ay_rrib_readpvs(n, tokens, parms, 0, NULL, &(o->tags));
+
   ay_status = ay_object_link(o);
   ay_rrib_lrobject = o;
   ay_rrib_co.parent = AY_FALSE;
@@ -2375,6 +2406,7 @@ ay_rrib_RiPatch(RtToken type,
  int i = 0, stride = 4;
  RtPointer tokensfound[PPWTBL_LAST];
  RtFloat *pw = NULL;
+ char *hvars[2] = {"P","Pw"};
 
  if(!strcmp(type, RI_BICUBIC))
    {
@@ -2424,8 +2456,11 @@ ay_rrib_RiPatch(RtToken type,
   bp.p3[1] = pw[i+1];
   bp.p3[2] = pw[i+2];
 
+  ay_rrib_readpvs(n, tokens, parms, 2, hvars, &(ay_rrib_co.tags));
 
   ay_rrib_linkobject((void *)(&bp), AY_IDBPATCH);
+
+  ay_tags_delall(&ay_rrib_co);
 
  return;
 } /* ay_rrib_RiPatch */
@@ -2442,6 +2477,7 @@ ay_rrib_RiPatchMesh(RtToken type, RtInt nu, RtToken uwrap,
  double *p = NULL;
  RtPointer tokensfound[PPWTBL_LAST];
  RtFloat *pp = NULL, *pw = NULL;
+ char *hvars[2] = {"P","Pw"};
 
   memset(&pm, '\0', sizeof(ay_pamesh_object));
   pm.glu_sampling_tolerance = 0.0;
@@ -2535,7 +2571,11 @@ ay_rrib_RiPatchMesh(RtToken type, RtInt nu, RtToken uwrap,
 	ay_status = ay_pmt_tonpatch(&pm, &(pm.npatch));
       }
 
+  ay_rrib_readpvs(n, tokens, parms, 2, hvars, &(ay_rrib_co.tags));
+
   ay_rrib_linkobject((void *)(&pm), AY_IDPAMESH);
+
+  ay_tags_delall(&ay_rrib_co);
 
   ay_object_deletemulti(pm.npatch);
   pm.npatch = NULL;
@@ -2625,6 +2665,7 @@ ay_rrib_RiPointsGeneralPolygons(RtInt npolys, RtInt nloops[],
  RtPointer ntokensfound[NTBL_LAST];
  RtFloat *pp = NULL, *pw = NULL;
  double *normalv = NULL;
+ char *hvars[3] = {"P","Pw","N"};
 
   memset(&pm, '\0', sizeof(ay_pomesh_object));
   pm.npolys = npolys;
@@ -2722,8 +2763,12 @@ ay_rrib_RiPointsGeneralPolygons(RtInt npolys, RtInt nloops[],
 
     } /* if */
 
+  ay_rrib_readpvs(n, tokens, parms, 3, hvars, &(ay_rrib_co.tags));
+
   /* now link the object to the scene */
   ay_rrib_linkobject((void *)(&pm), AY_IDPOMESH);
+
+  ay_tags_delall(&ay_rrib_co);
 
   free(pm.nloops);
   free(pm.nverts);
@@ -3155,6 +3200,7 @@ ay_rrib_RiSubdivisionMesh(RtToken scheme, RtInt nfaces,
  RtPointer tokensfound[PPWTBL_LAST];
  RtFloat *pp = NULL, *pw = NULL;
  RtToken ccscheme = "catmullclark";
+ char *hvars[2] = {"P","Pw"};
 
   memset(&sm, '\0', sizeof(ay_sdmesh_object));
   if(!(strcmp(scheme, ccscheme)))
@@ -3289,8 +3335,12 @@ ay_rrib_RiSubdivisionMesh(RtToken scheme, RtInt nfaces,
 	}
     } /* if */
 
+  ay_rrib_readpvs(n, tokens, parms, 2, hvars, &(ay_rrib_co.tags));
+
   /* now link the object to the scene */
   ay_rrib_linkobject((void *)(&sm), AY_IDSDMESH);
+
+  ay_tags_delall(&ay_rrib_co);
 
   /* clean up */
   free(sm.nverts);
