@@ -195,13 +195,17 @@ proc runRenderer { cmd template } {
 	set ay(runrenderwinraises) 0
 	bind $w <Visibility> {
 	    global ay
-	    # avoid deadlock fighting with a wm dock window
-	    # that eventually wants to be "on top" too,
-	    # the smarter one gives up...
-	    if { $ay(runrenderwinraises) < 30 } {
-		incr ay(runrenderwinraises)
-		raise [winfo toplevel %W]
-	    }
+	    # are we obscured?
+	    if { "%s" == "VisibilityPartiallyObscured" ||\
+		 "%s" == "VisibilityFullyObscured" } {
+		     # avoid deadlock fighting with a wm dock window
+		     # that eventually wants to be "on top" too,
+		     # the smarter one gives up...
+		     if { $ay(runrenderwinraises) < 30 } {
+			 incr ay(runrenderwinraises)
+			 raise [winfo toplevel %W]
+		     }
+		 }
 	}
     }
 
