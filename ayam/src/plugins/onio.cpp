@@ -1393,8 +1393,10 @@ onio_readlayer(ONX_Model &model, int li, double accuracy)
  int ay_status = AY_OK;
  int i;
  char fname[] = "onio_readlayer";
- //ON_Layer *layer;
+ ON_Layer *layer;
  ON_3dmObjectAttributes *attr;
+ ay_object *newo = NULL;
+ ay_level_object *newlevel = NULL;
 
   if(li < 0 || li > model.m_layer_table.Capacity())
     {
@@ -1403,10 +1405,46 @@ onio_readlayer(ONX_Model &model, int li, double accuracy)
       return AY_ERROR;
     }
 
-  //layer = model.m_layer_table[li];
+  layer = &(model.m_layer_table[li]);
+  if(!layer)
+    return AY_ENULL;
 
   // XXXX create level object, named as the layer
+  if(!(newo = (ay_object*)calloc(1, sizeof(ay_object))))
+    return AY_EOMEM;
+  if(!(newlevel = (ay_level_object*)calloc(1, sizeof(ay_level_object))))
+    return AY_EOMEM;
+  
+  ay_object_defaults(newo);
+  newo->type = AY_IDLEVEL;
+  newo->inherit_trafos = AY_TRUE;
+  newo->parent = AY_TRUE;
+  newo->refine = newlevel;
+  ay_status = ay_object_crtendlevel(&(newo->down));
 
+  ay_status = ay_object_link(newo);
+
+  ay_next = &(newo->down);
+
+  // read layer name
+  if(layer->LayerName() && layer->LayerName().Length() > 0)
+    {
+      int length = layer->LayerName().Length();
+      int clength = onio_w2c_size(length, layer->LayerName());
+      if((newo->name = (char*)calloc(clength+1, sizeof(char))))
+	{
+	  onio_w2c(length, layer->LayerName(), clength, newo->name);
+	} // if
+
+      // repair name (convert " " to "_")
+      char *c = newo->name;
+      while(c && *c != '\0')
+	{
+	  if(*c == ' ')
+	    *c = '_';
+	  c++;
+	} // while
+    } // if
 
   // read objects from layer
   for(i = 0; i < model.m_object_table.Capacity(); ++i)
@@ -1432,6 +1470,8 @@ onio_readlayer(ONX_Model &model, int li, double accuracy)
 	    } // if
 	} // if
     } // for
+
+  ay_next = &(newo->next);
 
  return ay_status;
 } // onio_readlayer
@@ -1461,16 +1501,16 @@ onio_readname(ay_object *o, ON_3dmObjectAttributes *attr)
 	} // if
       //else
       // XXXX should return AY_EOMEM
-    } // if
 
-  // repair name (convert " " to "_")
-  char *c = o->name;
-  while(*c != '\0')
-    {
-      if(*c == ' ')
-	*c = '_';
-      c++;
-    } // while
+      // repair name (convert " " to "_")
+      char *c = o->name;
+      while(c && *c != '\0')
+	{
+	  if(*c == ' ')
+	    *c = '_';
+	  c++;
+	} // while
+    } // if
 
  return ay_status;
 } // onio_readname
