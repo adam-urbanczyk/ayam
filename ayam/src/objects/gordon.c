@@ -31,6 +31,7 @@ ay_gordon_createcb(int argc, char *argv[], ay_object *o)
       return AY_ERROR;
     }
 
+  new->wcc = AY_TRUE;
   new->uorder = 4;
   new->vorder = 4;
 
@@ -251,6 +252,7 @@ ay_gordon_readcb(FILE *fileptr, ay_object *o)
   if(!(gordon = calloc(1, sizeof(ay_gordon_object))))
     { return AY_EOMEM; }
 
+  fscanf(fileptr,"%d\n",&gordon->wcc);
   fscanf(fileptr,"%d\n",&gordon->uorder);
   fscanf(fileptr,"%d\n",&gordon->vorder);
   fscanf(fileptr,"%d\n",&gordon->glu_display_mode);
@@ -272,6 +274,7 @@ ay_gordon_writecb(FILE *fileptr, ay_object *o)
 
   gordon = (ay_gordon_object *)(o->refine);
 
+  fprintf(fileptr, "%d\n", gordon->wcc);
   fprintf(fileptr, "%d\n", gordon->uorder);
   fprintf(fileptr, "%d\n", gordon->vorder);
   fprintf(fileptr, "%d\n", gordon->glu_display_mode);
