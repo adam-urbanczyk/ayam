@@ -844,8 +844,9 @@ metaobj_notifycb (ay_object * o)
 
 
 int
-metaobj_providecb(ay_object *o, unsigned int type, ay_object *result)
+metaobj_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
+ ay_object *new = NULL;
  ay_pomesh_object *po = NULL;
  meta_world *mw = NULL;
  int i,p,ii,j;
@@ -855,10 +856,17 @@ metaobj_providecb(ay_object *o, unsigned int type, ay_object *result)
  
   if (type == AY_IDPOMESH)
      {
+
+       if(!(new = calloc(1, sizeof(ay_object))))
+	 return AY_EOMEM;
+  
+       new->type = AY_IDPOMESH;
+       ay_object_defaults(new);
+
        p = mw->currentnumpoly;
 
        if(!(po = (ay_pomesh_object *) calloc(1, sizeof(ay_pomesh_object))))
-	  	return AY_EOMEM;
+	 return AY_EOMEM;
  
        po->npolys = p;
        po->nloops = (unsigned int *)calloc(1,sizeof(unsigned int)*p);
@@ -918,8 +926,10 @@ metaobj_providecb(ay_object *o, unsigned int type, ay_object *result)
 
 	  }
 
-       result->refine = po;
+       new->refine = po;
+       ay_trafo_copy(o, new);
 
+       *result = new;
      }
 
    return ay_status;
@@ -928,7 +938,7 @@ metaobj_providecb(ay_object *o, unsigned int type, ay_object *result)
 
 
 int
-metaobj_convertcb(ay_object *o)
+metaobj_convertcb(ay_object *o, int in_place)
 {
  int ay_status = AY_OK;
  ay_object *new = NULL;
@@ -936,17 +946,21 @@ metaobj_convertcb(ay_object *o)
   if(!o)
     return AY_ENULL;
   
-  new = (ay_object *)calloc(1,sizeof(ay_object));
-  
-  metaobj_providecb(o, AY_IDPOMESH, new);
-  new->type = AY_IDPOMESH;
-  ay_object_defaults(new);
-  ay_trafo_copy(o, new);
-  
-  ay_status = ay_object_link(new);
+  ay_status = metaobj_providecb(o, AY_IDPOMESH, &new);
 
-  return ay_status;
+  if(new)
+    {
+      if(!in_place)
+	{
+	  ay_status = ay_object_link(new);
+	}
+      else
+	{
+	  ay_status = ay_object_replace(new, o);
+	}
+    }
 
+ return ay_status;
 } /* metaobj_convertcb */
 
 
