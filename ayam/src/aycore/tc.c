@@ -83,6 +83,32 @@ ay_tc_wribindex(ay_object *o, int index)
 } /* ay_tc_wribindex */
 
 
+/* ay_tc_count:
+ *  count TC tags
+ */
+int
+ay_tc_count(ay_object *o)
+{
+ ay_tag_object *tag = NULL;
+ int count = 0;
+
+  if(!o)
+    return 0;
+
+  tag = o->tags;
+  while(tag)
+    {
+      if(tag->type == ay_tc_tagtype)
+	{
+	  count++;
+	}
+      tag = tag->next;
+    }
+
+ return count;
+} /* ay_tc_count */
+
+
 /* ay_tc_init:
  *  initialize tc module by registering the TC tag type
  */
