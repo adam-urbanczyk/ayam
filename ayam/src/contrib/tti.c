@@ -512,9 +512,15 @@ ay_tti_handle_simple_glyf(ay_tti_font *ttfont, ay_tti_glyf *glyf,
 		  vert->outlines[co].points[i].y = y1;
 		  vert->outlines[co].numpoints++;
 
-		  /* notwendig? */
-		  vert->outlines[co].points[i+1].x = vert->outlines[co].points[0].x;
-		  vert->outlines[co].points[i+1].y = vert->outlines[co].points[0].y;
+		  x2 = vert->outlines[co].points[0].x;
+		  y2 = vert->outlines[co].points[0].y;
+		  
+		  vert->outlines[co].points[i+1].x = (x1+x2)/2;
+		  vert->outlines[co].points[i+1].y = (y1+y2)/2;
+		  vert->outlines[co].numpoints++;
+ 		  
+		  vert->outlines[co].points[i+2].x = vert->outlines[co].points[0].x;
+		  vert->outlines[co].points[i+2].y = vert->outlines[co].points[0].y;
 		  vert->outlines[co].numpoints++;
 		}
 
@@ -525,6 +531,20 @@ ay_tti_handle_simple_glyf(ay_tti_font *ttfont, ay_tti_glyf *glyf,
 		  vert->outlines[co].points[i].x = x1;
 		  vert->outlines[co].points[i].y = y1;
 		  vert->outlines[co].numpoints++;
+		
+		  /* create a bezier curve for a line */
+		  x2 = (xabs[k+1] - lsb + startx) * scale_factor;
+	      y2 = (yabs[k+1] - ttfont->descent + yoffset) * scale_factor;
+
+		  vert->outlines[co].points[i+1].x = (x1+x2)/2;
+		  vert->outlines[co].points[i+1].y = (y1+y2)/2;
+		  vert->outlines[co].numpoints++;
+
+		  vert->outlines[co].points[i+2].x = x2;
+		  vert->outlines[co].points[i+2].y = y2;
+		  vert->outlines[co].numpoints++;
+		  
+		  k++;	
 		}
 
 	      k++;
