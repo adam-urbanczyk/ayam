@@ -31,6 +31,7 @@ $m add command -label "New"\
 	uS;
 	rV;
 	set ay(sc) 0
+	after idle viewMouseToCurrent
     }
 }
 $m add separator

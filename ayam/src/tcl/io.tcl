@@ -56,6 +56,7 @@ proc io_replaceScene { } {
 	}
 	io_mruAdd $filename
 	set ay(sc) 0
+	after idle viewMouseToCurrent
     }
 
  return;
@@ -104,6 +105,7 @@ proc io_insertScene { } {
 	uS
 	rV
 	set ay(sc) 1
+	after idle viewMouseToCurrent
     }
 
  return;
@@ -388,6 +390,7 @@ proc io_importMops { } {
 	uS
 	rV
 	set ay(sc) 1
+	after idle viewMouseToCurrent
     }
 
  return;
@@ -448,7 +451,7 @@ proc io_mruLoad { index } {
 	    uS
 	    rV
 	}
-
+	after idle viewMouseToCurrent
     }
 
  return;
