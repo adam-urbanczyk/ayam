@@ -363,7 +363,7 @@ toplevel $w
 wm title $w "Ayam Shortcuts"
 wm iconname $w "Ayam"
 
-#XXXX make transient?
+#XXXX make this window transient?
 
 frame $w.ftext
 
@@ -379,7 +379,9 @@ set font fixed
 if { $tcl_platform(platform) == "windows" } {
     set font fixedsys
 }
-if { $tcl_platform(os) == "IRIX" } {
+
+# IRIXens "fixed" is too wide...
+if { [string first "IRIX" $tcl_platform(os)] != -1 } {
     set font 9x15
 }
 
