@@ -56,3 +56,63 @@ addParam $w CloneAttrData Quat3
 array set CloneAttrData {
     NumClones 1
 }
+
+
+#clone_crt:
+#
+#
+proc clone_crt { } {
+    global ay ay_error selected
+    set selected ""
+    getSel selected
+    if { $selected == "" } { return; }
+    set ay_error 0
+    crtOb Clone
+    if { $ay_error } {  return; }
+
+    cutOb
+    set ay(ul) $ay(CurrentLevel)
+    uS
+    sL
+    getLevel a b
+    goDown [expr [llength $a]-1]
+    cmovOb
+    goUp
+    set ay(ul) $ay(CurrentLevel)
+    uS
+    sL
+    rV
+
+ return;
+}
+# clone_crt
+
+
+#mirror_crt:
+#
+#
+proc mirror_crt { } {
+    global ay ay_error selected
+    set selected ""
+    getSel selected
+    if { $selected == "" } { return; }
+    set ay_error 0
+    crtOb Clone -mirror 1
+    if { $ay_error } {  return; }
+
+    cutOb
+    set ay(ul) $ay(CurrentLevel)
+    uS
+    sL
+    getLevel a b
+    goDown [expr [llength $a]-1]
+    cmovOb
+    goUp
+    set ay(ul) $ay(CurrentLevel)
+    uS
+    sL
+    rV
+
+ return;
+}
+# mirror_crt
