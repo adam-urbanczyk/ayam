@@ -1,10 +1,14 @@
-[11. Dec 2004] CVS-Head:
-o bug fixes: none
+[28. Dec 2004] CVS-Head:
+o bug fixes:
+  - fixed "setPnt/getPnt" scripting interface commands for NURBS patches
+    with differing width and height (SF 1091407)
 o added a new object type "Script", that executes small Tcl scripts to
-  create complex objects, modify other objects or do other things
+  create complex objects, modify objects or do other things
+o added tag type "NS" that may contain small Tcl scripts to be exectuted
+  when the notification callback fires
 
 
-[29. Oct 2004] Ayam1.8:
+[29. Oct 2004] Ayam 1.8:
 o bug fixes:
   - fixed "loadayslo3d.tcl" loading the wrong plugin (SF 928054)
   - fixed "Select Renderer" setting a wrong shader extension for "3Delight"
@@ -92,7 +96,8 @@ o added shortcuts to select all points (<A>), invert the point selection (<I>)
   collapse selected points (<C>) and explode the selected points (<E>) to
   view windows
 
-[27. Mar 2004] Ayam1.7:
+
+[27. Mar 2004] Ayam 1.7:
 o bug fixes:
   - fixed object picking in draw-level-only views (SF 817796)
   - fixed (RIB) import of geometry after AreaLights (SF 825629)
@@ -214,7 +219,7 @@ o to add objects to the selection using the object picking action the
   versions)
 
 
-[26. Sep 2003] Ayam1.6:
+[26. Sep 2003] Ayam 1.6:
 o bug fixes:
   - fixed crash when exporting scenes with malformed RiAttribute/RiOption
     tags (type "c" or "p", with a component missing) (SF 753550)
@@ -340,14 +345,14 @@ o checkbutton and menubutton property GUI elements may now also be controlled
   via keyboard
 
 
-[10. May 2003] Ayam1.5.1:
+[10. May 2003] Ayam 1.5.1:
 o bug fixes:
  - fixed erroneus drawing of NURBS patches with certain OpenGL/GLU
    implementations
    (SF 735600)
 
 
-[05. May 2003] Ayam1.5:
+[05. May 2003] Ayam 1.5:
 o bug fixes:
   - fixed RIB import creating object names with malicious characters (spaces)
     (SF 686419)
@@ -462,7 +467,7 @@ o the console prompt now displays the name of the operations that can be
   undone and redone respectively
 
 
-[07. Feb 2003] Ayam1.4:
+[07. Feb 2003] Ayam 1.4:
 o bug fixes:
   - fixed remembering of the state of the object selection listbox/tree
     when the context menu or a double click on the label is used to
@@ -492,7 +497,7 @@ o bug fixes:
   - fixed rotate about modelling action not rotating around a grid point
     in views of type "Side", when the view is additionally moved sideways
   - fixed view objects not reading "BGImage" and "DrawBG" parameters from
-    scenes written by Ayam1.3
+    scenes written by Ayam 1.3
   - fixed RIB-import not resetting the object name when done importing,
     leading to wrongly named objects for the next invocation of RIB-import
   - fixed creation of NURBS curves with desired length 2 or 3 creating
@@ -577,7 +582,7 @@ o RIB-export now writes different frame numbers for shadow maps and the
   when the "ShadowMaps" preference setting is "Automatic"
 
 
-[15. Oct 2002] Ayam1.3:
+[15. Oct 2002] Ayam 1.3:
 o bug fixes:
   - fixed memory leaks in the shadow map RIB export module
   - fixed ICurves crash for length 2
@@ -670,7 +675,7 @@ o all RenderGUI windows now automatically try to raise themself, should
   they be obscured, e.g. by the renderer window (but just one time)
 
 
-[09. Jul 2002] Ayam1.2:
+[09. Jul 2002] Ayam 1.2:
 o bug fixes:
   - fixed color select buttons in preferences not updating on "load defaults"
   - fixed missing RiSolidBegin/End for spheres with thetamax != 360
@@ -744,7 +749,7 @@ o the "UndoLevels" preference setting allows the undo system to be
   switched off completely using the special value "-1" now
 
 
-[17. Jan 2002] Ayam1.1:
+[17. Jan 2002] Ayam 1.1:
 o bug fixes:
   - fixed custom lights always exporting as AreaLight to RIB
   - fixed tags not loading from scene files to root object
@@ -808,12 +813,12 @@ o added shaders not found in the BMRT distribution to "scn/shaders" to
 o RIB-Export: no archives are created for instances of objects that
   would not be exported anyway
 o added a little label to the rendering GUI that displays the rendering time
-o Due to a flaw in the design of the file format, Ayam1.0b4 and below
-  will not read Ayam1.1 files. On the other hand, Ayam1.1 reads files
+o Due to a flaw in the design of the file format, Ayam 1.0b4 and below
+  will not read Ayam 1.1 files. On the other hand, Ayam 1.1 reads files
   from 1.0b4 and below just fine.
 
 
-[02. Oct 2001] Ayam1.0 beta4:
+[02. Oct 2001] Ayam 1.0 beta4:
 o bug fixes:
   - Skin does not crash in interpolation mode, if two identical curves
     are present.
@@ -858,7 +863,7 @@ o SDK reworked.
 o Plugins moved to "plugins" directory.
 
 
-[26. Jul 2001] Ayam1.0 beta3:
+[26. Jul 2001] Ayam 1.0 beta3:
 o a whole lot of bug fixes
 o Mops Import much improved
   - imports now ICurves and Materials
@@ -872,9 +877,9 @@ o added some example scenes
 o added Setup.txt, Changes
 
 
-[12. Jun 2001] Ayam1.0 beta2:
+[12. Jun 2001] Ayam 1.0 beta2:
 o some bug fixes including a fix for a serious memory leak in the
   notification callbacks of the extrude/revolve tool objects
 
 
-[31. May 2001] First Public Release (Ayam1.0 beta1)
+[31. May 2001] First Public Release (Ayam 1.0 beta1)
