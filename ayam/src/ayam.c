@@ -627,6 +627,9 @@ int ay_status = AY_OK;
   Tcl_CreateCommand(interp, "setPnt", ay_tcmd_setpointtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  Tcl_CreateCommand(interp, "getGLErr", ay_tcmd_getglerrortcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
   /* tmp.c */
   Tcl_CreateCommand(interp, "tmpGet", ay_tmp_gettcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);

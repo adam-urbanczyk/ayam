@@ -237,32 +237,39 @@ int
 ay_tcmd_getvertcmd(ClientData clientData, Tcl_Interp * interp,
 		   int argc, char *argv[])
 {
-  char *glver, *glven, *glren, *gluver, *gluext, *glext;
+  char *glver = NULL, *glven = NULL, *glren = NULL, *gluver = NULL,
+    *gluext = NULL, *glext = NULL;
   char arr[] = "ay";
 
   glver = (char *)glGetString(GL_VERSION);
-  Tcl_SetVar2(interp, arr, "gl_ver", glver, TCL_GLOBAL_ONLY |
-	      TCL_LEAVE_ERR_MSG);
+  if(glver)
+    Tcl_SetVar2(interp, arr, "gl_ver", glver, TCL_GLOBAL_ONLY |
+		TCL_LEAVE_ERR_MSG);
 
   glven = (char *)glGetString(GL_VENDOR);
-  Tcl_SetVar2(interp, arr, "gl_ven", glven, TCL_GLOBAL_ONLY |
-	     TCL_LEAVE_ERR_MSG);
+  if(glven)
+    Tcl_SetVar2(interp, arr, "gl_ven", glven, TCL_GLOBAL_ONLY |
+		TCL_LEAVE_ERR_MSG);
 
   glren = (char *)glGetString(GL_RENDERER);
-  Tcl_SetVar2(interp, arr, "gl_ren", glren, TCL_GLOBAL_ONLY |
-	     TCL_LEAVE_ERR_MSG);
+  if(glren)
+    Tcl_SetVar2(interp, arr, "gl_ren", glren, TCL_GLOBAL_ONLY |
+		TCL_LEAVE_ERR_MSG);
 
   glext = (char *)glGetString(GL_EXTENSIONS);
-  Tcl_SetVar2(interp, arr, "gl_ext", glext, TCL_GLOBAL_ONLY |
-	     TCL_LEAVE_ERR_MSG);
+  if(glext)
+    Tcl_SetVar2(interp, arr, "gl_ext", glext, TCL_GLOBAL_ONLY |
+		TCL_LEAVE_ERR_MSG);
 
   gluver = (char *)gluGetString(GLU_VERSION);
-  Tcl_SetVar2(interp, arr, "glu_ver", gluver, TCL_GLOBAL_ONLY |
-	     TCL_LEAVE_ERR_MSG);
+  if(gluver)
+    Tcl_SetVar2(interp, arr, "glu_ver", gluver, TCL_GLOBAL_ONLY |
+		TCL_LEAVE_ERR_MSG);
 
   gluext = (char *)gluGetString(GLU_EXTENSIONS);
-  Tcl_SetVar2(interp, arr, "glu_ext", gluext, TCL_GLOBAL_ONLY |
-	     TCL_LEAVE_ERR_MSG);
+  if(gluext)
+    Tcl_SetVar2(interp, arr, "glu_ext", gluext, TCL_GLOBAL_ONLY |
+		TCL_LEAVE_ERR_MSG);
 
  return TCL_OK;
 } /* ay_tcmd_getvertcmd */
@@ -605,3 +612,19 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 
  return TCL_OK;
 } /* ay_tcmd_setpointtcmd */
+
+
+/* ay_tcmd_getglerrortcmd:
+ *  
+ *  
+ */
+int
+ay_tcmd_getglerrortcmd(ClientData clientData, Tcl_Interp *interp,
+		       int argc, char *argv[])
+{
+ char fname[] = "getGLErr";
+
+  ay_error(AY_EOUTPUT, fname, (char *)gluErrorString(glGetError()));
+
+ return TCL_OK;
+} /* ay_tcmd_getglerrortcmd */
