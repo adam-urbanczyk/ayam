@@ -1060,10 +1060,11 @@ ay_trafo_apply(ay_object *o, double *p, int stride, int reusem)
     {
       glMatrixMode(GL_MODELVIEW);
       glPushMatrix();
-       glTranslated(o->movx, o->movy, o->movz);
+       glLoadIdentity();
+       glTranslated((GLdouble)o->movx, (GLdouble)o->movy, (GLdouble)o->movz);
        ay_quat_torotmatrix(o->quat, rm);
        glMultMatrixd((GLdouble *)rm);
-       glScaled(o->scalx, o->scaly, o->scalz);
+       glScaled((GLdouble)o->scalx, (GLdouble)o->scaly, (GLdouble)o->scalz);
        glGetDoublev(GL_MODELVIEW_MATRIX, m);
       glPopMatrix();
     }
@@ -1074,7 +1075,7 @@ ay_trafo_apply(ay_object *o, double *p, int stride, int reusem)
       ay_trafo_apply3(p, m);
       break;
     case 4:
-      ay_trafo_apply3(p, m);
+      ay_trafo_apply4(p, m);
       break;
     default:
       ay_error(AY_ERROR, fname, "cannot handle this stride");
