@@ -539,7 +539,7 @@ ay_comp_revolve(ay_object *o1, ay_object *o2)
      (r1->thetamax != r2->thetamax))
     return AY_FALSE;
 
-  return AY_FALSE;
+  return AY_TRUE;
 } /* ay_comp_revolve */
 
 
