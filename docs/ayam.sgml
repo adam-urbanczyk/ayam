@@ -583,7 +583,7 @@ for the view, and adapts the zoom accordingly. This is just
 working for perspective views of course.
 <item><tt/Zoom to Object/, adapt the camera settings, so that
 the currently selected objects are centered in the view.
-<item><tt/Align/, align the view to the coordinate
+<item><tt/Align to Parent/, align the view to the coordinate
 system of the parent object of the current level.
 </itemize>
 
@@ -1671,8 +1671,17 @@ level will be drawn.
 <item><tt/"DrawGrid"/ toggles drawing of the current grid.
 <item><tt/"UseGrid"/ toggles, whether the current grid should be
 used by the interactive modeling actions.
-<item><tt/"Local"/ makes the view local, so that editing
+<item><tt/"Local"/ makes the grid display in local coordinate units,
+so that exact editing
 in local coordinate systems is possible.
+
+<item><tt/"DrawBG"/ controls whether the background image should
+be drawn.
+<item><tt/"BGImage"/ is the name of a 32 bit RGBA-TIFF file, that will
+be used as texture for the background image. Ayam will reread
+the image file if the notification callback of the view object
+is invoked (e.g. using the main menu entry
+<tt>"Tools/Force Notification"</tt>).
 </itemize>
 
 <sect1>Camera Object<label id="camobj">
@@ -2092,10 +2101,14 @@ in world space.<p>
 If a light object of type <tt>"Spot"</tt>, <tt>"Distant"</tt> or
 <tt>"Point"</tt> is used, Ayam changes the name of the exported
 light shader to <tt>"shadowspot"</tt>, <tt>"shadowdistant"</tt>,
-and <tt>"shadowpoint"</tt> respectively.
-If the light source is of type <tt>"Custom"</tt>, no automatic renaming of
-the shader name takes place. This means, you have to make sure that
-the shader really uses the shadow map.<p>
+and <tt>"shadowpoint"</tt> respectively. Additionally, the shader
+will be parameterized to use the created shadow maps.
+If the light source is of type <tt>"Custom"</tt>, no automatic renaming
+and adjusting of the shader takes place. This means, you have
+to make sure that the shader really uses the shadow maps.
+See the discussion above for the names of the shadow map files.
+Those file names, probably, will have to be entered as parameter
+to the light shader.<p>
 
 A short example for a scene using a shadow map:
 <enum>
@@ -2108,24 +2121,39 @@ section <tt/"RIB-Export"/.
 <item>Create a light source.
 <item>Open the <tt/"LightAttr"/ property.
 <item>Change the type to <tt/"Spot"/. Press <tt/"Apply"/.
-<item>Now change the new parameters to <tt/"IsOn"/: Yes,
-<tt/"Shadows"/: Yes, <tt/"Intensity"/: 15.0,
-<tt/"UseSM"/: Yes, <tt/"From"/: -2, 2, 2, <tt/"To"/: 0,0,0;
-leave the other parameters at their defaults.
-<item>Export the RIB.
-<item>Render with a RenderMan compliant renderer, that uses
-shadow maps (e.g. Photorealistic RenderMan, prman).
+<item>Now change the parameters of the spot light to <tt/"IsOn"/: Yes,
+<tt/"Shadows"/: Yes, <tt/"Intensity"/: 18.0,
+<tt/"UseSM"/: Yes, <tt/"ConeAngle"/: 45.0, <tt/"BeamDistrib"/: 3.0,
+<tt/"From"/: -2, 2, 2, <tt/"To"/: 1, 0, -1;
+leave all other parameters at their default values.
+<item>Create a new view and make it perspective (Menu:
+<tt>"Type/Perspective"</tt>).
+<item>Export a RIB from that perspective view (Menu:
+<tt>"View/Export RIB"</tt>).
+<item>Render the RIB with a RenderMan compliant renderer, that uses
+shadow maps, e.g. Photorealistic RenderMan (prman) or Aqsis.
 </enum>
+
+This scene is distributed with Ayam as an example scene named
+<tt>"shadowmaps.ay"</tt>.
+
+Do not render directly from a view window if your renderer
+does not write image files when the command line option
+to render directly to the display (-d for rendrib, or -fb for Aqsis)
+is in use. This command line
+option may inhibit writing of the shadow maps, so that the resulting
+image will look wrong.
+
 
 <sect2>Using AreaLights<label id="alob">
 <p>
-The common light sources itself have no geometry, this means
+A common idealized light source has no own geometry. This means
 shadows resulting from it have sharp borders. Soft shadows may
 be generated using AreaLights.<p> 
 How do you create AreaLights?<p>
 You simply have to create a single object as child object of a
 custom light object that has the <tt>"arealight"</tt>
-shader attached, this child object determines the geometry of
+shader attached. This child object determines the geometry of
 the lightsource. According to L. Gritz, Spheres and Cylinders
 work best as arealight geometry for BMRT,
 because of special sampling code.<p>
@@ -2134,11 +2162,13 @@ An example:
 <item>Create a custom light object.
 <item>Assign the arealight light shader to it.
 <item>Create a Sphere.
-<item>Drag and Drop the Sphere onto the Light so that it becomes a child
-of the light object.
+<item>Drag and Drop the Sphere onto the Light object so that it becomes
+a child of the light object.
 <item>Transform the object to your hearts content; the position
 and size of the object determines the position and size of the lightsource!
 </itemize>
+
+There is an example scene named <tt>"arealight.ay"</tt> distributed with Ayam.
 
 <sect1>NURBCurve Object<label id="ncurveobj">
 <p>
@@ -3980,6 +4010,8 @@ requester? (default: 1 - yes)
 on startup in the console
 <item><tt/"PickTolerance"/: the tolerance used to determine whether an object
 should be picked or not (default: 5)
+<item><tt/"MaxTagLen"/: the maximum number of characters to be displayed
+in the buttons in the Tag Property GUI (default: 30)
 </itemize>
 
 <sect2>RiOption and RiAttributes Database<label id="rioptdb">
@@ -4261,7 +4293,7 @@ Affine (R) is a registered trademark of Thomas E. Burge.
 A
 <itemize>
 <item>Action: <ref id="iac" name="interactive actions">
-<item>Align: <ref id="vwsc" name="view action">
+<item>Align to Parent: <ref id="vwsc" name="view action">
 <item>Apply: <ref id="propgui" name="apply property GUI">
 <item>Area Light: <ref id="alob" name="creation of">
 <item>Atmosphere: <ref id="imager" name="property">
@@ -4278,9 +4310,11 @@ A
 B
 <itemize>
 <item>Background: <ref id="prefdraw" name="preference setting">
+<item>Background Image: <ref id="vat" name="view attribute">
 <item>Basis_U, Basis_V: <ref id="pmattr" name="PatchMesh attribute">
 <item>Bevel: <ref id="handb" name="using bevels">
 <item>BevelRadius, BevelType: <ref id="extrattr" name="extrude attribute">
+<item>BGImage: <ref id="vat" name="view attribute">
 <item>bicubic/bilinear PatchMesh:
 <ref id="patchmeshobj" name="PatchMesh object">
 <item>Bound: <ref id="riattrs" name="RenderMan/BMRT attribute">
@@ -4353,7 +4387,7 @@ D
 <ref id="pmattr" name="PatchMesh attribute">
 <item>Distant: <ref id="pdsl" name="light type">
 <item>Docs: <ref id="prefgui" name="preference setting">
-<item>DrawGrid, DrawLevel, DrawSel:
+<item>DrawGrid, DrawLevel, DrawSel, DrawBG:
 <ref id="vat" name="view attribute">
 </itemize>
 
@@ -4412,6 +4446,7 @@ H
 <ref id="pmattr" name="PatchMesh attribute">,
 <ref id="extrattr" name="extrude attribute">,
 <ref id="vat" name="view attribute">
+<item>Hidden Preferences: <ref id="hidprefs" name="Hidden Preference Settings">
 <item>Hide: <ref id="mm" name="main menu entry">
 <item>Hole: <ref id="handb" name="using holes">
 <item>Hyperboloid: <ref id="mm" name="main menu entry">,
@@ -4484,6 +4519,7 @@ M
 <item>Material: <ref id="materialobj" name="object">,
 <ref id="editm" name="edit menu entry">
 <item>MaxRayLevel: <ref id="rio" name="RenderMan interface option">
+<item>MaxTagLen: <ref id="hidprefs" name="Hidden Preference Settings">
 <item>Menu: <ref id="mm" name="main menu">,
 <ref id="vm" name="view menu">
 <item>MinorRad: <ref id="top" name="torus attribute">
