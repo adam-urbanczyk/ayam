@@ -43,9 +43,9 @@ preferences using the menu entry "File/Save Prefs".
 2. Determining type of window manager
 -------------------------------------
 
-Unfortunately, different window managers report different
-geometries of top level windows, some include the decoration,
-some do not..
+Unfortunately, different X window managers report different
+values for the geometries of top level windows, some include
+the decoration, some do not.
 If the main window jumps when you select the first property
 of the "Root" object your WM is "twm-compatible".
 To check this, just click on "Root" in the tree view,
@@ -80,6 +80,12 @@ error messages.
 
 4. Creating and saving a working environment
 --------------------------------------------
+
+The working environment is simply an almost empty Ayam scene file,
+that contains the specification of some view windows.
+This file is loaded automatically on every start of Ayam and
+presents you with a standard working environment, consisting
+of e.g. a traditional 3-view layout (Front, Side, Perspective).
 
 o Open and arrange as many views as you like using the
   menu entry "Create/View".
