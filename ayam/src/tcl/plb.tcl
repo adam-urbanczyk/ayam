@@ -88,12 +88,25 @@ bind $f.li <ButtonRelease-1> {
 	array set pclip_omit_label { }
     }
     # improve focus traversal (speed-wise)
+    global tcl_platform AYWITHAQUA
     if { $ay(lb) == 1 } {
 	bind $ay(olb) <Key-Tab>\
 		"focus [tk_focusNext $ay(pca).$w];break"
+	bind [tk_focusNext $ay(pca).$w] <Shift-Tab>\
+		"focus $ay(olb);break"
+	if { ( $tcl_platform(platform) != "windows" ) && ( ! $AYWITHAQUA ) } {
+	    bind [tk_focusNext $ay(pca).$w] <ISO_Left_Tab>\
+		    "focus $ay(olb);break"
+	}
     } else {
 	bind $ay(tree) <Key-Tab>\
 		"focus [tk_focusNext $ay(pca).$w];break"
+	bind [tk_focusNext $ay(pca).$w] <Shift-Tab>\
+		"focus $ay(tree);break"
+	if { ( $tcl_platform(platform) != "windows" ) && ( ! $AYWITHAQUA ) } {
+	    bind [tk_focusNext $ay(pca).$w] <ISO_Left_Tab>\
+		    "focus $ay(tree);break"
+	}
     }
 
 }
@@ -348,12 +361,27 @@ if { [llength $index] == 1 } {
 		array set pclip_omit_label { }
 	    }
 	    # improve focus traversal (speed-wise)
+	    global tcl_platform AYWITHAQUA
 	    if { $ay(lb) == 1 } {
 		bind $ay(olb) <Key-Tab>\
 			"focus [tk_focusNext $ay(pca).$w];break"
+		bind [tk_focusNext $ay(pca).$w] <Shift-Tab>\
+			"focus $ay(olb);break"
+		if { ( $tcl_platform(platform) != "windows" ) &&\
+			( ! $AYWITHAQUA ) } {
+		    bind [tk_focusNext $ay(pca).$w] <ISO_Left_Tab>\
+			    "focus $ay(olb);break"
+		}
 	    } else {
 		bind $ay(tree) <Key-Tab>\
 			"focus [tk_focusNext $ay(pca).$w];break"
+		bind [tk_focusNext $ay(pca).$w] <Shift-Tab>\
+			"focus $ay(tree);break"
+		if { ( $tcl_platform(platform) != "windows" ) &&\
+			( ! $AYWITHAQUA ) } {
+		    bind [tk_focusNext $ay(pca).$w] <ISO_Left_Tab>\
+			    "focus $ay(tree);break"
+		}
 	    }
 	}
 	#if
