@@ -2458,11 +2458,12 @@ ay_rrib_RiPointsGeneralPolygons(RtInt npolys, RtInt nloops[],
 				RtInt n, RtToken tokens[], RtPointer parms[])
 {
  ay_pomesh_object pm = {0};
- int i = 0, a = 0, stride = 0;
+ int i = 0, a = 0, b = 0, stride = 0;
  unsigned int total_loops = 0, total_verts = 0, nc_needed = 0;
  RtPointer tokensfound[PPWTBL_LAST];
  RtPointer ntokensfound[NTBL_LAST];
  RtFloat *pp = NULL, *pw = NULL;
+ double *normalv = NULL;
 
   pm.npolys = npolys;
 
@@ -2532,23 +2533,31 @@ ay_rrib_RiPointsGeneralPolygons(RtInt npolys, RtInt nloops[],
   if(ntokensfound[NTBL_N])
     {
       pm.has_normals = AY_TRUE;
-      if(!(pm.normalv = calloc(nc_needed*3, sizeof(double))))
+      if(!(normalv = calloc(nc_needed*6, sizeof(double))))
 	{
 	  free(pm.nloops); free(pm.nverts); free(pm.verts); free(pm.controlv);
 	  return;
 	} /* if */
       pw = (RtFloat*)ntokensfound[NTBL_N];
       pp = pw;
-      a = 0;
+      a = 0; b = 0;
       for(i = 0; i < nc_needed; i++)
 	{
-	  pm.normalv[a]   = (double)(pp[0]);
-	  pm.normalv[a+1] = (double)(pp[1]);
-	  pm.normalv[a+2] = (double)(pp[2]);
+	  normalv[a]   = pm.controlv[b];
+	  normalv[a+1] = pm.controlv[b+1];
+	  normalv[a+2] = pm.controlv[b+2];
+	  normalv[a+3] = (double)(pp[0]);
+	  normalv[a+4] = (double)(pp[1]);
+	  normalv[a+5] = (double)(pp[2]);
 
-	  a += 3;
+	  a += 6;
+	  b += 3;
 	  pp += 3;
 	} /* for */
+
+      free(pm.controlv);
+      pm.controlv = normalv;
+
     } /* if */
 
   /* now link the object to the scene */
@@ -2558,8 +2567,6 @@ ay_rrib_RiPointsGeneralPolygons(RtInt npolys, RtInt nloops[],
   free(pm.nverts);
   free(pm.verts);
   free(pm.controlv);
-  if(pm.normalv)
-    free(pm.normalv);
 
  return;
 } /* ay_rrib_RiPointsGeneralPolygons */

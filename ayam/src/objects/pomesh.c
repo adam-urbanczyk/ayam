@@ -58,10 +58,6 @@ ay_pomesh_deletecb(void *c)
   if(pomesh->controlv)
     free(pomesh->controlv);
 
-  /* free normalv */
-  if(pomesh->normalv)
-    free(pomesh->normalv);
-
   free(pomesh);
 
  return AY_OK;
@@ -73,12 +69,17 @@ ay_pomesh_copycb(void *src, void **dst)
 {
  ay_pomesh_object *pomesh = NULL, *pomeshsrc = NULL;
  unsigned int total_loops = 0, total_verts = 0;
- int i;
+ int i, stride = 0;
 
   if(!src || !dst)
     return AY_ENULL;
 
   pomeshsrc = (ay_pomesh_object *)src;
+
+  if(pomeshsrc->has_normals)
+    stride = 6;
+  else
+    stride = 3;
 
   if(!(pomesh = calloc(1, sizeof(ay_pomesh_object))))
     return AY_EOMEM; 
@@ -89,7 +90,6 @@ ay_pomesh_copycb(void *src, void **dst)
   pomesh->nverts = NULL;
   pomesh->verts = NULL;
   pomesh->controlv = NULL;
-  pomesh->normalv = NULL;
 
   /* copy nloops */
   if(pomeshsrc->nloops)
@@ -131,21 +131,11 @@ ay_pomesh_copycb(void *src, void **dst)
   /* copy controlv */
   if(pomeshsrc->controlv)
     {
-      if(!(pomesh->controlv = calloc(3 * pomeshsrc->ncontrols,
+      if(!(pomesh->controlv = calloc(stride * pomeshsrc->ncontrols,
 				     sizeof(double))))
 	return AY_EOMEM;
       memcpy(pomesh->controlv, pomeshsrc->controlv,
-	     3 * pomesh->ncontrols * sizeof(double));
-    }
-
-  /* copy normalv */
-  if(pomeshsrc->normalv)
-    {
-      if(!(pomesh->normalv = calloc(3 * pomeshsrc->ncontrols,
-				    sizeof(double))))
-	return AY_EOMEM;
-      memcpy(pomesh->normalv, pomeshsrc->normalv,
-	     3 * pomesh->ncontrols * sizeof(double));
+	     stride * pomesh->ncontrols * sizeof(double));
     }
 
   *dst = (void *)pomesh;
@@ -158,13 +148,18 @@ int
 ay_pomesh_drawcb(struct Togl *togl, ay_object *o)
 {
  ay_pomesh_object *pomesh = NULL;
- int i = 0, j = 0, k = 0, l = 0;
+ int i = 0, j = 0, k = 0, l = 0, stride = 0;
  unsigned int a;
 
   if(!o)
     return AY_ENULL;
 
   pomesh = (ay_pomesh_object *)(o->refine);
+
+  if(pomesh->has_normals)
+    stride = 6;
+  else
+    stride = 3;
 
   for(i = 0; i < pomesh->npolys; i++)
     {
@@ -174,7 +169,7 @@ ay_pomesh_drawcb(struct Togl *togl, ay_object *o)
 	   for(k = 0; k < pomesh->nverts[j]; k++)
 	    {
 	      a = pomesh->verts[l++];
-	      glVertex3dv((GLdouble*)(&(pomesh->controlv[a * 3])));
+	      glVertex3dv((GLdouble*)(&(pomesh->controlv[a * stride])));
 	    }
 	  glEnd();
 	} /* for */
@@ -213,12 +208,17 @@ ay_pomesh_drawhcb(struct Togl *togl, ay_object *o)
  ay_pomesh_object *pomesh = NULL;
  GLdouble *ver = NULL;
  double point_size = ay_prefs.handle_size;
- int i = 0;
+ int i = 0, stride = 0;
 
   if(!o)
     return AY_ENULL;
 
   pomesh = (ay_pomesh_object *)(o->refine);
+
+  if(pomesh->has_normals)
+    stride = 6;
+  else
+    stride = 3;
 
   ver = pomesh->controlv;
 
@@ -228,7 +228,7 @@ ay_pomesh_drawhcb(struct Togl *togl, ay_object *o)
   for(i = 0; i < pomesh->ncontrols; i++)
     {
       glVertex3dv(ver);
-      ver += 3;
+      ver += stride;
     }
   glEnd();
 
@@ -242,12 +242,17 @@ ay_pomesh_getpntcb(ay_object *o, double *p)
  ay_pomesh_object *pomesh = NULL;
  double min_dist = ay_prefs.pick_epsilon, dist = 0.0;
  double *pecoords = NULL, *control = NULL;
- int i = 0, j = 0, k = 0, a = 0, numfound = 0;
+ int i = 0, j = 0, k = 0, a = 0, numfound = 0, stride = 0;
 
   if(!o || !p)
     return AY_ENULL;
 
   pomesh = (ay_pomesh_object *)(o->refine);
+
+  if(pomesh->has_normals)
+    stride = 6;
+  else
+    stride = 3;
 
   if(min_dist == 0.0)
     min_dist = DBL_MAX;
@@ -266,7 +271,7 @@ ay_pomesh_getpntcb(ay_object *o, double *p)
       for(i = 0; i < pomesh->ncontrols; i++)
 	{
 	  ay_point_edit_coords[i] = &(pomesh->controlv[a]);
-	  a += 3;
+	  a += stride;
 	} /* for */
 
       ay_point_edit_coords_homogenous = AY_FALSE;
@@ -295,7 +300,7 @@ ay_pomesh_getpntcb(ay_object *o, double *p)
 		}
 	    } /* if */
 
-	  j += 3;
+	  j += stride;
 	} /* for */
 
       if(!pecoords)
@@ -318,7 +323,7 @@ ay_pomesh_getpntcb(ay_object *o, double *p)
 	      ay_point_edit_coords[k] = &(control[j]);
 	      k++;
 	    } /* if */
-	  j += 3;
+	  j += stride;
 	} /* for */
 
     } /* if */
@@ -432,30 +437,34 @@ ay_pomesh_readcb(FILE *fileptr, ay_object *o)
 
   /* read controlv */
   fscanf(fileptr,"%u\n",&pomesh->ncontrols);
-  if(!(pomesh->controlv = calloc(pomesh->ncontrols * 3, sizeof(double))))
-    {return AY_EOMEM;}
-
-  a = 0;
-  for(i = 0; i < pomesh->ncontrols; i++)
-    {
-      fscanf(fileptr, "%lg %lg %lg\n", &(pomesh->controlv[a]),
-	     &(pomesh->controlv[a+1]),
-	     &(pomesh->controlv[a+2]));
-      a += 3;
-    } /* for */
-
-  /* read normalv */
   fscanf(fileptr, "%d\n", &pomesh->has_normals);
+
+  if(!(pomesh->controlv = calloc(pomesh->ncontrols * 3 + (pomesh->has_normals*
+				 pomesh->ncontrols * 3), sizeof(double))))
+    {return AY_EOMEM;}
   if(pomesh->has_normals)
     {
-      if(!(pomesh->normalv = calloc(pomesh->ncontrols * 3, sizeof(double))))
-	{ return AY_EOMEM; } 
       a = 0;
       for(i = 0; i < pomesh->ncontrols; i++)
 	{
-	  fscanf(fileptr, "%lg %lg %lg\n", &(pomesh->normalv[a]),
-		 &(pomesh->normalv[a+1]),
-		 &(pomesh->normalv[a+2]));
+	  fscanf(fileptr, "%lg %lg %lg\n", &(pomesh->controlv[a]),
+		 &(pomesh->controlv[a+1]),
+		 &(pomesh->controlv[a+2]));
+	  a += 3;
+	  fscanf(fileptr, "%lg %lg %lg\n", &(pomesh->controlv[a]),
+		 &(pomesh->controlv[a+1]),
+		 &(pomesh->controlv[a+2]));
+	  a += 3;
+	} /* for */
+    }
+  else
+    {
+      a = 0;
+      for(i = 0; i < pomesh->ncontrols; i++)
+	{
+	  fscanf(fileptr, "%lg %lg %lg\n", &(pomesh->controlv[a]),
+		 &(pomesh->controlv[a+1]),
+		 &(pomesh->controlv[a+2]));
 	  a += 3;
 	} /* for */
     } /* if */
@@ -505,26 +514,30 @@ ay_pomesh_writecb(FILE *fileptr, ay_object *o)
 
   /* write controlv */
   fprintf(fileptr, "%u\n", pomesh->ncontrols);
-  a = 0;
-  for(i = 0; i < pomesh->ncontrols; i++)
-    {
-      fprintf(fileptr,"%g %g %g\n", pomesh->controlv[a],
-	      pomesh->controlv[a+1], pomesh->controlv[a+2]);
-      a += 3;
-    }
-
-  /* write normalv */
   fprintf(fileptr, "%d\n", pomesh->has_normals);
-  if(pomesh->has_normals && pomesh->normalv)
+  if(pomesh->has_normals)
     {
       a = 0;
       for(i = 0; i < pomesh->ncontrols; i++)
 	{
-	  fprintf(fileptr,"%g %g %g\n", pomesh->normalv[a],
-		  pomesh->normalv[a+1], pomesh->normalv[a+2]);
+	  fprintf(fileptr,"%g %g %g\n", pomesh->controlv[a],
+		  pomesh->controlv[a+1], pomesh->controlv[a+2]);
 	  a += 3;
-	} /* for */
-    } /* if */
+	  fprintf(fileptr,"%g %g %g\n", pomesh->controlv[a],
+		  pomesh->controlv[a+1], pomesh->controlv[a+2]);
+	  a += 3;
+	}
+    }
+  else
+    {
+      a = 0;
+      for(i = 0; i < pomesh->ncontrols; i++)
+	{
+	  fprintf(fileptr,"%g %g %g\n", pomesh->controlv[a],
+		  pomesh->controlv[a+1], pomesh->controlv[a+2]);
+	  a += 3;
+	}
+    }
 
  return AY_OK;
 } /* ay_pomesh_writecb */
@@ -537,13 +550,18 @@ ay_pomesh_wribcb(char *file, ay_object *o)
  ay_pomesh_object *pomesh = NULL;
  RtInt *nloops = NULL, *nverts = NULL, *verts = NULL;
  RtPoint *controls = NULL;
- int i = 0, a = 0;
+ int i = 0, a = 0, stride = 0;
  unsigned int total_loops = 0, total_verts = 0;
 
   if(!o)
     return AY_OK;
 
   pomesh = (ay_pomesh_object*)(o->refine);
+
+  if(pomesh->has_normals)
+    stride = 6;
+  else
+    stride = 3;
 
   if(!(controls = calloc(pomesh->ncontrols, sizeof(RtPoint))))
     return AY_EOMEM;
@@ -552,11 +570,9 @@ ay_pomesh_wribcb(char *file, ay_object *o)
   for(i = 0; i < pomesh->ncontrols; i++)
     {
       controls[i][0] = (RtFloat)pomesh->controlv[a];
-      a++;
-      controls[i][1] = (RtFloat)pomesh->controlv[a];
-      a++;
-      controls[i][2] = (RtFloat)pomesh->controlv[a];
-      a++;
+      controls[i][1] = (RtFloat)pomesh->controlv[a+1];
+      controls[i][2] = (RtFloat)pomesh->controlv[a+2];
+      a += stride;
     }
 
   if(!(nloops = calloc(pomesh->npolys, sizeof(RtInt))))
@@ -603,13 +619,18 @@ ay_pomesh_bbccb(ay_object *o, double *bbox, int *flags)
 {
  double xmin, xmax, ymin, ymax, zmin, zmax;
  double *controlv = NULL;
- int i, a;
+ int i, a, stride = 0;
  ay_pomesh_object *pomesh = NULL;
 
   if(!o || !bbox)
     return AY_ENULL;
 
   pomesh = (ay_pomesh_object *)o->refine; 
+
+  if(pomesh->has_normals)
+    stride = 6;
+  else
+    stride = 3;
 
   controlv = pomesh->controlv;
 
@@ -638,7 +659,7 @@ ay_pomesh_bbccb(ay_object *o, double *bbox, int *flags)
       if(controlv[a+2] > zmax)
 	zmax = controlv[a+2];
 
-      a += 3;
+      a += stride;
     }
 
   /* P1 */
