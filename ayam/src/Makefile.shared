@@ -33,9 +33,13 @@ INSTALL = ./ninstall
 #INSTALL = install
 MKDIR = mkdir -p
 
-# the compiler
+# the C compiler
 CC = cc
 #CC = gcc
+
+# the C++ compiler (just in use for the Aycsg plugin)
+CXX = CC
+#CXX = g++-3.0
 
 # the linker
 # Starting with BMRT2.5, libribout and libslcargs are in C++,
@@ -249,6 +253,31 @@ AYSDRINCDIR = $(SDRDIR)/include
 PIXIESRC = /home/user/Pixie/src
 AYSDRLIBS = $(PIXIESRC)/common/os.o -L$(SDRDIR)/lib -lsdr
 
+# Aycsg Plugin
+# OpenCSG
+OPENCSGDIR = ../../OpenCSG-0.9.2
+OPENCSGINCDIR = $(OPENCSGDIR)/include
+OPENCSGOBJS = $(OPENCSGDIR)/src/batch.o\
+	$(OPENCSGDIR)/src/openglHelper.o\
+	$(OPENCSGDIR)/src/renderGoldfeather.o\
+	$(OPENCSGDIR)/src/channelManager.o\
+	$(OPENCSGDIR)/src/primitive.o\
+	$(OPENCSGDIR)/src/renderSCS.o\
+	$(OPENCSGDIR)/src/opencsgRender.o\
+	$(OPENCSGDIR)/src/primitiveHelper.o\
+	$(OPENCSGDIR)/src/scissorMemo.o\
+	$(OPENCSGDIR)/RenderTexture/RenderTexture.o
+
+
+GLEWDIR = ../../OpenCSG-0.9.2/glew
+GLEWINCDIR = $(GLEWDIR)/include
+GLEWLIB = -L$(GLEWDIR)/lib -lGLEW
+
+AYCSGOBJS = plugins/aycsg.o\
+	plugins/ayCSGPrimitive.o
+AYCSGLIBS = $(OPENCSGOBJS) $(GLEWLIB)
+
+
 #############################################
 # nothing needs to be changed below this line
 #############################################
@@ -375,10 +404,16 @@ RRIBOBJS = plugins/rrib.o
 .c.o: 
 	$(CC) -c $(CFLAGS) $*.c -o $@ -I. -IMF3D -Icontrib -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR) -I$(AQSISINCDIR) -I$(TIFFINCDIR)
 
+.cpp.o:
+	$(CXX) -c $(CFLAGS) $*.cpp -o $@ -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR) -I$(AQSISINCDIR) -I$(OPENCSGINCDIR) -I$(GLEWINCDIR) -Iplugins
+
 all: ayamsh csphere.so mfio.so metaobj.so
 
 ayamsh: $(AYAMOBJS) $(TOGLOBJECT) $(AFFINEOBJS)
 	$(LD) $(AYAMOBJS) $(TOGLOBJECT) $(EXLDFLAGS) -o ayamsh $(TKLIB) $(TCLLIB) $(GLLIBS) $(X11LIBS) $(RIBOUTLIB) $(AQSISRI2RIB) $(SLCARGSLIB) $(AFFINEOBJS) $(AQSISOBJS) $(TIFFLIB) -lm $(DL)
+
+aycsg.so: $(AYCSGOBJS) $(OPENCSGOBJS)
+	$(LD) -shared $(AYCSGOBJS) -o plugins/aycsg.so $(AYCSGLIBS)
 
 csphere.so: $(CSPHEREOBJS)
 	$(CC) $(SHLFLAGS) $(CSPHEREOBJS) -o plugins/csphere.so
