@@ -412,7 +412,7 @@ catch {destroy $w}
 toplevel $w
 wm title $w "Edit_Point"
 wm iconname $w "Ayam"
-#wm transient $w .
+wm transient $w .
 
 set f [frame $w.f1]
 pack $f -in $w -side top -fill x
@@ -423,7 +423,8 @@ label $f.l -text "X" -width 4
 entry $f.e -width 8
 $f.e insert @0 $array(x)
 
-pack $f.l $f.e -in $f -padx 2 -pady 2 -side left -fill x -expand yes
+pack $f.l -in $f -padx 2 -pady 2 -side left -fill x -expand no
+pack $f.e -in $f -padx 2 -pady 2 -side left -fill x -expand yes
 pack $f -in $w.f1 -side top  -fill x
 
 
@@ -434,7 +435,8 @@ label $f.l -text "Y" -width 4
 entry $f.e -width 8
 $f.e insert @0 $array(y)
 
-pack $f.l $f.e -in $f -padx 2 -pady 2 -side left -fill x -expand yes
+pack $f.l -in $f -padx 2 -pady 2 -side left -fill x -expand no
+pack $f.e -in $f -padx 2 -pady 2 -side left -fill x -expand yes
 pack $f -in $w.f1 -side top  -fill x
 
 
@@ -445,7 +447,8 @@ label $f.l -text "Z" -width 4
 entry $f.e -width 8
 $f.e insert @0 $array(z)
 
-pack $f.l $f.e -in $f -padx 2 -pady 2 -side left -fill x -expand yes
+pack $f.l -in $f -padx 2 -pady 2 -side left -fill x -expand no
+pack $f.e -in $f -padx 2 -pady 2 -side left -fill x -expand yes
 pack $f -in $w.f1 -side top  -fill x
 
 set f $w.f1
@@ -455,7 +458,8 @@ label $f.l -text "W" -width 4
 entry $f.e -width 8
 $f.e insert @0 $array(w)
 
-pack $f.l $f.e -in $f -padx 2 -pady 2 -side left -fill x -expand yes
+pack $f.l -in $f -padx 2 -pady 2 -side left -fill x -expand no
+pack $f.e -in $f -padx 2 -pady 2 -side left -fill x -expand yes
 pack $f -in $w.f1 -side top  -fill x
 
 update
