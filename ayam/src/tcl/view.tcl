@@ -92,7 +92,7 @@ set ay(FOV) $ay(cVFOV)
 addParam $f ay FOV
 
 set f [frame $w.f2]
-button $f.bok -text "Ok" -width 5 -command "global ay;\
+button $f.bok -text "Ok" -pady $ay(pady) -width 5 -command "global ay;\
 	$view mc;\
 	$view setconf -fovx \$ay(FOV);\
 	$view render;\
@@ -102,7 +102,7 @@ button $f.bok -text "Ok" -width 5 -command "global ay;\
 	focus $view;\
 	destroy .setFov"
 
-button $f.bca -text "Cancel" -width 5 -command "\
+button $f.bca -text "Cancel" -pady $ay(pady) -width 5 -command "\
 	set ay(FOV) $ay(FOV);\
 	grab release .setFov;\
 	focus $view;\
@@ -137,7 +137,7 @@ pack $f -in $w -side top -fill x
 addParam $f ay GridSize
 
 set f [frame $w.f2]
-button $f.bok -text "Ok" -width 5 -command "\
+button $f.bok -text "Ok" -pady $ay(pady) -width 5 -command "\
 	global ay;\
 	$view mc;\
 	$view setconf -grid \$ay(GridSize);\
@@ -150,7 +150,7 @@ button $f.bok -text "Ok" -width 5 -command "\
 	destroy .setGrid"
 
 
-button $f.bca -text "Cancel" -width 5 -command "\
+button $f.bca -text "Cancel" -pady $ay(pady) -width 5 -command "\
 	global ay;
 	set ay(GridSize) $ay(GridSize);\
 	grab release .setGrid;\

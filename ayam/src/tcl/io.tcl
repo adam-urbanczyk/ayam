@@ -262,7 +262,7 @@ proc io_exportRIB { {expview "" } } {
     pack $f -in $w.f1 -side top -fill x -fill y
 
     set f [frame $w.f2]
-    button $f.bok -text "Ok" -width 5 -command { 
+    button $f.bok -text "Ok" -pady $ay(pady) -width 5 -command { 
 	global ay ayprefs
 
 	set selection [.exportRIBw.f1.fview.lb curselection]
@@ -292,7 +292,8 @@ proc io_exportRIB { {expview "" } } {
 	destroy .exportRIBw
     }
 
-    button $f.bca -text "Cancel" -width 5 -command "destroy $w"
+    button $f.bca -text "Cancel" -pady $ay(pady) -width 5 -command "\
+	    focus . ; destroy $w"
 
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
     pack $f -in $w -side bottom -fill x

@@ -24,7 +24,7 @@
 # example:
 # runTool splitCurveu {"Split at u:"} "splitCurve %0"
 proc runTool { argvars argstrings command } {
-
+global ay
 set w .rtw
 catch {destroy $w}
 toplevel $w
@@ -41,7 +41,7 @@ append okscript "set command \"$command\";"
 
 set index 0
 foreach i $argvars {
-    global $i ay
+    global $i
     # check variable
     if { ![info exists $i] } { set $i 0}
 
@@ -65,9 +65,10 @@ append okscript "eval \"\$command\";"
 append okscript "grab release .rtw; focus .; destroy .rtw"
 
 set f [frame $w.f2]
-button $f.bok -text "Ok" -width 5 -command $okscript
+button $f.bok -text "Ok" -pady $ay(pady) -width 5 -command $okscript
 
-button $f.bca -text "Cancel" -width 5 -command "destroy $w"
+button $f.bca -text "Cancel" -pady $ay(pady) -width 5 -command "\
+	focus . ; destroy $w"
 
 pack $f.bok $f.bca -in $f -side left -fill x -expand yes
 pack $f -in $w -side top -anchor n -fill x -expand yes
