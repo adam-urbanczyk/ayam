@@ -354,7 +354,8 @@ proc prefs_save { } {
 
     # get main geometry
     set ayprefs(mainGeom) [winGetGeom .]
-    set ayprefs(toolBoxGeom) [winGetGeom .tbw]
+    set ayprefs(toolBoxGeom) ""
+    catch { set ayprefs(toolBoxGeom) [winGetGeom .tbw] }
 
     if { $ayprefs(SavePrefsGeom) > 1 } {
 	if { $ay(prefsgeom) != "" } {
