@@ -904,6 +904,7 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
       Tcl_GetInt(interp, argv[i+1], &view->pos_x);
       Tcl_GetInt(interp, argv[i+2], &view->pos_y);
     }
+#ifdef AYENABLEPPREV
   else
   if(!strcmp(argv[i],"-pprev"))
     {
@@ -913,7 +914,7 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
       else
 	ay_wrib_pprevclose();
     }
-
+#endif
   i+=2;
   } /* while */
 

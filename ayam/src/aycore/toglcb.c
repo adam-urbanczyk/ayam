@@ -106,7 +106,7 @@ ay_toglcb_destroy(struct Togl *togl)
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  int recreate_clevel = AY_FALSE;
 
-  /*#ifdef AY_ENABLEPPREV*/
+#ifdef AYENABLEPPREV
   if(view)
     {
     if(view->ppreview)
@@ -114,7 +114,7 @@ ay_toglcb_destroy(struct Togl *togl)
 	ay_wrib_pprevclose();
       }
     }
-  /*#endif*/
+#endif
 
   /* unlink and delete view object */
   l = clevel->object;
@@ -221,11 +221,11 @@ ay_toglcb_display(struct Togl *togl)
 
   Togl_SwapBuffers(togl);
 
-  /* #ifdef AY_ENABLEPPREV */
+#ifdef AYENABLEPPREV
   /* redraw permanent preview window? */
   if(view->ppreview)
     ay_wrib_pprevdraw(view);
-  /* #endif */
+#endif
 
  return;
 } /* ay_toglcb_display */

@@ -1185,14 +1185,14 @@ ay_wrib_cb(struct Togl *togl, int argc, char *argv[])
  char *file = NULL, *image = NULL;
  char fname[] = "write_rib";
 
-  /* #ifdef AY_ENABLEPPREV */
+#ifdef AYENABLEPPREV
   /* is a permanent preview window open? */
   if(ay_prefs.pprev_open)
     {
       ay_error(AY_ERROR, fname, "Please close the permanent preview first!");
       return AY_ERROR;
     }
-  /* #endif */
+#endif
 
   /* assemble args */
   i = 2;
@@ -1261,7 +1261,7 @@ ay_wrib_cb(struct Togl *togl, int argc, char *argv[])
  return TCL_OK;
 } /* ay_wrib_cb */
 
-/* #ifdef AY_ENABLEPPREV */
+#ifdef AYENABLEPPREV
 
 /* ay_wrib_pprevdraw:
  *
@@ -1471,4 +1471,17 @@ ay_wrib_pprevclose()
  return;
 } /* ay_wrib_pprevclose */
 
-/* #endif */
+#endif
+
+/* ay_wrib_init:
+ *  initialize wrib module by registering the RiDisplay tag type
+ */
+void
+ay_wrib_init(Tcl_Interp *interp)
+{
+
+  /* register RiDisplay tag type */
+  ay_tags_register(interp, "RiDisplay", &ay_ridisp_tagtype);
+
+ return;
+} /* ay_wrib_init */
