@@ -1054,7 +1054,7 @@ ay_wrib_scene(char *file, char *image, double *from, double *to,
     /* create OI tags for all original (referenced) objects */
     ay_status = ay_instt_createorigids(o);
     /* create OI tags for all instance (referencing) objects */
-    ay_status = ay_instt_createinstanceids(o);
+    /*ay_status = ay_instt_createinstanceids(o);*/
     /* write archive files for all original (referenced) objects */
     ay_status = ay_instt_wribiarchives(file, o);
   }
@@ -1246,7 +1246,7 @@ ay_wrib_sm(char *file, char *image, int width, int height)
     /* create OI tags for all original (referenced) objects */
     ay_status = ay_instt_createorigids(o);
     /* create OI tags for all instance (referencing) objects */
-    ay_status = ay_instt_createinstanceids(o);
+    /*ay_status = ay_instt_createinstanceids(o);*/
     /* write archive files for all original (referenced) objects */
     ay_status = ay_instt_wribiarchives(file, o);
   }
