@@ -31,7 +31,7 @@ ay_gordon_createcb(int argc, char *argv[], ay_object *o)
       return AY_ERROR;
     }
 
-  new->wcc = AY_TRUE;
+  new->wcc = AY_FALSE;
   new->uorder = 4;
   new->vorder = 4;
 
