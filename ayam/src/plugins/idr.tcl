@@ -21,8 +21,9 @@ array set idrprefs {
     UseCurrentBG 0
     CacheParts 1
 
-    View ""
+    PropRadius 1.0
 
+    View ""
 
     Importance0 0.0
     HalfRes0 0
@@ -130,7 +131,7 @@ proc idr_open {} {
     addText $f1 e1 "IDR Params:"
     addMenu $f1 idrprefs Mode {Manual Selection Changed 2DRegions 3DRegions}
     addCheck $f1 idrprefs CacheParts
-    pack $f1 -side top
+    pack $f1 -side top -fill x -expand yes
 
     # Actions!
     set f1 [frame $f.f2]
@@ -155,9 +156,14 @@ proc idr_open {} {
 
 	}
     }
+
+    addParam $f1 idrprefs PropRadius
+
     addCommand $f1 c2 "Propagate" {
-	    idr_propDist 1.0
+	global idrprefs
+	idr_propDist $idrprefs(PropRadius)
     }
+
     pack $f1 -side top -fill x -expand yes
 
 
