@@ -12,7 +12,7 @@
 
 #include "ayam.h"
 
-/* pomesh.c -  PolyMesh object */
+/* pomesh.c - PolyMesh object */
 
 static char *ay_pomesh_name = "PolyMesh";
 
@@ -99,7 +99,6 @@ ay_pomesh_copycb(void *src, void **dst)
       memcpy(pomesh->nloops, pomeshsrc->nloops,
 	     pomesh->npolys * sizeof(unsigned int));
     }
-
 
   for(i = 0; i < pomeshsrc->npolys; i++)
     {
@@ -243,7 +242,7 @@ ay_pomesh_getpntcb(ay_object *o, double *p)
  ay_pomesh_object *pomesh = NULL;
  double min_dist = ay_prefs.pick_epsilon, dist = 0.0;
  double *pecoords = NULL, *control = NULL;
- int i = 0, j = 0, a = 0, found = AY_FALSE;
+ int i = 0, j = 0, k = 0, a = 0, numfound = 0;
 
   if(!o || !p)
     return AY_ENULL;
@@ -268,7 +267,7 @@ ay_pomesh_getpntcb(ay_object *o, double *p)
 	{
 	  ay_point_edit_coords[i] = &(pomesh->controlv[a]);
 	  a += 3;
-	}
+	} /* for */
 
       ay_point_edit_coords_homogenous = AY_FALSE;
       ay_point_edit_coords_number = pomesh->ncontrols;
@@ -286,26 +285,43 @@ ay_pomesh_getpntcb(ay_object *o, double *p)
 	    {
 	      pecoords = &(control[j]);
 	      min_dist = dist;
+	      numfound = 1;
 	    }
+	  else
+	    {
+	      if(dist == min_dist)
+		{
+		  numfound++;
+		}
+	    } /* if */
 
 	  j += 3;
-	}
+	} /* for */
 
       if(!pecoords)
 	return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
 
       ay_point_edit_coords_homogenous = AY_FALSE;
+      ay_point_edit_coords_number = numfound;
+      if(!(ay_point_edit_coords = calloc(numfound, sizeof(double*))))
+	return AY_EOMEM;
 
-      if(!found)
+      j = 0;
+      for(i = 0; i < pomesh->ncontrols; i++)
 	{
+	  dist = AY_VLEN((p[0] - control[j]),
+			 (p[1] - control[j+1]),
+			 (p[2] - control[j+2]));
 
-	  if(!(ay_point_edit_coords = calloc(1, sizeof(double*))))
-	    return AY_EOMEM;
+	  if(dist == min_dist)
+	    {
+	      ay_point_edit_coords[k] = &(control[j]);
+	      k++;
+	    } /* if */
+	  j += 3;
+	} /* for */
 
-	  ay_point_edit_coords[0] = pecoords;
-	  ay_point_edit_coords_number = 1;
-	}
-    }
+    } /* if */
 
  return AY_OK;
 } /* ay_pomesh_getpntcb */
@@ -327,12 +343,12 @@ ay_pomesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   pomesh = (ay_pomesh_object *)o->refine;
   
-  toa = Tcl_NewStringObj(n1,-1);
-  ton = Tcl_NewStringObj(n1,-1);
+  toa = Tcl_NewStringObj(n1, -1);
+  ton = Tcl_NewStringObj(n1, -1);
 
-  Tcl_SetStringObj(ton,"Type",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &new_type);
+  Tcl_SetStringObj(ton, "Type", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &new_type);
 
   pomesh->type = new_type;
 
@@ -358,14 +374,14 @@ ay_pomesh_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   pomesh = (ay_pomesh_object *)(o->refine);
 
-  toa = Tcl_NewStringObj(n1,-1);
+  toa = Tcl_NewStringObj(n1, -1);
 
-  ton = Tcl_NewStringObj(n1,-1);
+  ton = Tcl_NewStringObj(n1, -1);
 
 
-  Tcl_SetStringObj(ton,"Type",-1);
+  Tcl_SetStringObj(ton, "Type", -1);
   to = Tcl_NewIntObj(pomesh->type);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
@@ -568,7 +584,6 @@ ay_pomesh_wribcb(char *file, ay_object *o)
     {
       verts[i] = (RtInt)(pomesh->verts[i]);
     } /* for */
-
 
   RiPointsGeneralPolygons((RtInt)pomesh->npolys, nloops, nverts, verts,
 			  "P", controls, NULL);
