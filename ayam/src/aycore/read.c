@@ -72,7 +72,7 @@ int
 ay_read_unistring(FILE *fileptr, Tcl_UniChar **result)
 {
  int ay_status = AY_OK;
- char readchar, *str;
+ char readchar;
  int read, uc = 0, i = 0;
  Tcl_DString ds;
  Tcl_UniChar *unistring = NULL, *tmp;
@@ -96,7 +96,7 @@ ay_read_unistring(FILE *fileptr, Tcl_UniChar **result)
 	{
 	  sscanf(Tcl_DStringValue(&ds), "%d", &uc);
 	  tmp = unistring;
-	  if(!(unistring = realloc(unistring, sizeof(Tcl_UniChar))))
+	  if(!(unistring = realloc(unistring, (i+1)*sizeof(Tcl_UniChar))))
 	    {free(tmp); Tcl_DStringFree(&ds); return AY_EOMEM;}
 	  unistring[i] = (Tcl_UniChar)uc;
 	  i++;
@@ -113,7 +113,7 @@ ay_read_unistring(FILE *fileptr, Tcl_UniChar **result)
 
   /* terminate unistring */
   tmp = unistring;
-  if(!(unistring = realloc(unistring, sizeof(Tcl_UniChar))))
+  if(!(unistring = realloc(unistring, (i+1)*sizeof(Tcl_UniChar))))
     {free(tmp); Tcl_DStringFree(&ds); return AY_EOMEM;}
   unistring[i] = (Tcl_UniChar)0;
   *result = unistring;
