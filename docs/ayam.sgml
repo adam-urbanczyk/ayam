@@ -3552,14 +3552,23 @@ The instances will be created internally and transformed,
 each by a certain amount.
 The original object is the first child object of the Clone object.
 If a second object is present as child of the Clone object
-it is treated as trajectory curve, similar to the Sweep object
+it is treated as trajectory (or path) curve, similar to the Sweep object
 (see section <ref id="sweepobj" name="Sweep Object">).
+<p>
+Thus, the object hierarchy of a Clone object may look like this:
+<code>
++-Clone
+ | Cloned-Object
+ \ [Trajectory(NCurve)]
+</code>
 If you use a trajectory curve to place the clones, you may want
 to hide the parameter object and add a <tt/"NoExport"/ tag to it.
+Otherwise the original object will appear twice, on the trajectory and
+on its normal position.
 <p>
 It is not possible to create clones from objects that may not
 be master objects of instance objects (e.g. light objects, or
-material objects). However, since Ayam 1.7 it is possible to use
+material objects). However, (since Ayam 1.7) it is possible to use
 instances as parameter objects.
 <p>
 The following attributes further control the
@@ -4101,6 +4110,16 @@ are present as child objects, the curves
 following the first curve define holes in
 the cap surface (see also section
 <ref id="handb" name="Using Holes and Bevels">).
+<p>
+Consequently, the object hierarchy of a Cap object may look like this:
+<code>
++-Cap
+ | Outline(NCurve)
+ | [Hole1(NCurve)]
+ +-[Hole2(Level)
+  | Part1(NCurve)
+  \ Part2(NCurve)]
+</code>
 <p>
 Note that the curves have to be planar
 and defined in the XY plane. Furthermore,
@@ -6589,7 +6608,8 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Elevate UV: <ref id="elevuvt" name="elevate uv tool">
 <item>EndCap: <ref id="rep" name="revolve attribute">,
 <ref id="swp" name="sweep attribute">,
-<ref id="skp" name="skin attribute">
+<ref id="skp" name="skin attribute">,
+<ref id="birail1p" name="birail1 attribute">
 <item>EnvFile: <ref id="prefgui" name="preference setting">
 <item>Epsilon: <ref id="moattr" name="MetaObj attributes">
 <item>ErrorLevel: <ref id="rribopt" name="RIB import option">
@@ -6972,7 +6992,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Spot: <ref id="pdsl" name="light type">
 <item>StartCap: <ref id="rep" name="revolve attribute">,
 <ref id="swp" name="sweep attribute">,
-<ref id="skp" name="skin attribute">
+<ref id="skp" name="skin attribute">,
+<ref id="birail1p" name="birail1 attribute">
 <item>StdDisplay: <ref id="rio" name="RenderMan interface option">,
 <item>Step_U, Step_V: <ref id="pmattr" name="PatchMesh attribute">
 <item>StepSize: <ref id="moattr" name="MetaObj attributes">
