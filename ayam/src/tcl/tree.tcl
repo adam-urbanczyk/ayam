@@ -53,6 +53,7 @@ proc tree_createSub { tree node l } {
     set x 0
     set y -1
     foreach n $l {
+	update
 	set ll [llength $n]
 	set inode [lindex $n 0]
 	if { $x > 0 } {
