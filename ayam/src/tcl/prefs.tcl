@@ -48,7 +48,7 @@ proc prefs_open {} {
     toplevel $w -width 350 -height 400
     wm title $w "Ayam Preferences"
     wm iconname $w "Ayam"
-    wm iconify $w
+    wm withdraw $w
 
     # center window
     update idletasks
