@@ -54,8 +54,6 @@ proc splash_open { } {
     pack $w.image  -side left
     bind $w <1> "destroy $w"
 
-    # exit program when window is closed
-    wm protocol . WM_DELETE_WINDOW "exit 1"
     wm overrideredirect $w 1
     # center the window
     winCenter $w

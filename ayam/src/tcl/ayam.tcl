@@ -631,7 +631,6 @@ set i 0
 set j 0
 while { $i < $argc } {
     set arg [lindex $argv $i]
-    puts $arg
     if { ! [ string compare "-h" $arg ] } {
 	puts " -h:        Display this help"
 	puts " -nosplash: Do not display splash-image"
@@ -676,6 +675,13 @@ ayam_loadscript io
 
 # create the main menu
 ayam_loadscript mmenu
+
+# exit program when window is closed
+wm protocol . WM_DELETE_WINDOW {
+    global ay
+    set m $ay(filemenu)
+    $m invoke 21
+}
 
 frame .fu.fMain.fHier
 # The Tree-Widget
