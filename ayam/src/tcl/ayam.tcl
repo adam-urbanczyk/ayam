@@ -1185,7 +1185,7 @@ if { $ayprefs(Version) == 0 } {
     # overwrite old toolbox content, so that users see all the new
     # icons in any case
     set ayprefs(toolBoxList) {trafo trafo2 solids misco nurbs toolobjs\
-	    nptools1 points nctools1 nctools2 camera misc}
+	    toolobjs2 nptools1 points nctools1 nctools2 camera misc}
 }
 
 if { ([string first pre $ayprefs(Version)] == -1) } {
