@@ -449,7 +449,7 @@ metaobj_setpropcb (Tcl_Interp * interp, int argc, char *argv[], ay_object * o)
   ton = Tcl_NewStringObj (n1, -1);
 
 
-  Tcl_SetStringObj (ton, "GridWith", -1);
+  Tcl_SetStringObj (ton, "NumSamples", -1);
   to = Tcl_ObjGetVar2 (interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj (interp, to, &w->aktcubes);
 
@@ -508,7 +508,7 @@ metaobj_getpropcb (Tcl_Interp * interp, int argc, char *argv[], ay_object * o)
   ton = Tcl_NewStringObj (n1, -1);
 
 
-  Tcl_SetStringObj (ton, "GridWith", -1);
+  Tcl_SetStringObj (ton, "NumSamples", -1);
   to = Tcl_NewIntObj (w->aktcubes);
   Tcl_ObjSetVar2 (interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
