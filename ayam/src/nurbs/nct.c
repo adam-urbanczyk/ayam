@@ -604,7 +604,9 @@ ay_nct_reverttcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_nct_refine:
- *
+ *  refine a NURBS curve by inserting knots at the right places,
+ *  thus not changing the shape of the curve, but changing the
+ *  knot type to "custom" all the time
  */
 int
 ay_nct_refine(ay_nurbcurve_object *curve, double *newknotv, int newknotvlen)
@@ -625,7 +627,7 @@ ay_nct_refine(ay_nurbcurve_object *curve, double *newknotv, int newknotvlen)
       /* special case: curves marked closed;
        * we keep the p multiple points at the ends
        * and add new points into the other sections
-       * taking care for other multiple points...
+       * taking care of other multiple points...
        */
       /* first, count new points */
       count = 0;
@@ -821,7 +823,7 @@ ay_nct_refinetcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_status = ay_nct_refine(curve, X, aknotc);
 	  if(ay_status)
 	    {
-	      ay_error(AY_ERROR,fname,"refine failed");
+	      ay_error(AY_ERROR,fname, "refine operation failed");
 	    }
 	}
       else
@@ -998,7 +1000,7 @@ ay_nct_clamptcmd(ClientData clientData, Tcl_Interp *interp,
 
 	    if(ay_status)
 	      {
-		ay_error(ay_status, fname, "clamping failed");
+		ay_error(ay_status, fname, "clamp operation failed");
 		return TCL_OK;
 	      }
 
@@ -1085,7 +1087,7 @@ ay_nct_elevatetcmd(ClientData clientData, Tcl_Interp *interp,
 	      ay_status = ay_nct_clamp(curve);
 	      if(ay_status)
 		{
-		  ay_error(AY_ERROR, fname, "clamping failed");
+		  ay_error(AY_ERROR, fname, "clamp operation failed");
 		}
 	    }
 
@@ -1154,10 +1156,10 @@ ay_nct_elevatetcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  ay_error(AY_ERROR, fname, "object is not a NURBCurve");
 
-	}
+	} /* if */
 
       sel = sel->next;
-    }
+    } /* while */
 
   ay_notify_parent();
 
@@ -1180,7 +1182,7 @@ ay_nct_insertkntcmd(ClientData clientData, Tcl_Interp *interp,
  int stride = 4, i, k = 0, s = 0, r = 0, nq = 0;
  char fname[] = "insertkn";
 
-  if(argc<3)
+  if(argc < 3)
     {
       ay_error(AY_EARGS, fname, "u r");
       return TCL_OK;
@@ -1287,7 +1289,7 @@ ay_nct_collapsetcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_status = ay_nct_collapseselp(sel->object);
 	  if(ay_status)
 	    {
-	      ay_error(ay_status,fname,"Collapse failed!");
+	      ay_error(ay_status, fname, "Collapse operation failed!");
 	    }
 
 	  if(sel->object->selp)
@@ -1333,7 +1335,7 @@ ay_nct_explodetcmd(ClientData clientData, Tcl_Interp *interp,
 	    ay_status = ay_nct_explodemp(sel->object);
 	    if(ay_status)
 	      {
-		ay_error(ay_status,fname,"Explode failed!");
+		ay_error(ay_status,fname,"Explode operation failed!");
 	      }
 
  	    if(sel->object->selp)
@@ -1360,6 +1362,7 @@ ay_nct_explodetcmd(ClientData clientData, Tcl_Interp *interp,
  *  transforms the window coordinates (winX, winY)
  *  to the corresponding parametric value u
  *  on the NURB curve o
+ *  This function needs a valid OpenGL rendering context!
  */
 int
 ay_nct_findu(struct Togl *togl, ay_object *o,
@@ -1597,7 +1600,7 @@ int height = Togl_Height(togl);
 
       if(ay_status)
 	{
-	  ay_error(AY_ERROR,fname,"Could not find point on curve!");
+	  ay_error(AY_ERROR, fname, "Could not find point on curve!");
 	  return TCL_OK;
 	}
       ton = Tcl_NewStringObj("u",-1);
@@ -2162,6 +2165,7 @@ ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
  int i = 0, create_trim = AY_FALSE;
  ay_object *o = NULL;
 
+
   if(!(o = calloc(1, sizeof(ay_object))))
     {
       ay_error(AY_EOMEM, fname, NULL);
@@ -2668,8 +2672,8 @@ ay_nct_applytrafo(ay_object *c)
 
 
 /* ay_nct_getpntfromindex:
- *  
- *  
+ *  return the adress of the control point designated by <index>
+ *  of the NURBS curve <curve> in <p>
  */
 int
 ay_nct_getpntfromindex(ay_nurbcurve_object *curve, int index, double **p)
@@ -2690,8 +2694,11 @@ ay_nct_getpntfromindex(ay_nurbcurve_object *curve, int index, double **p)
 
 
 /* ay_nct_concatmultiple:
- *  
- *  
+ *  concat multiple NURBS curves in curves to a new single
+ *  curve, which is returned via result; order and knot type
+ *  are taken from the first curve as well as glu_sampling_tolerance
+ *  and display_mode settings; the curves are expected to overlap
+ *  at their ends
  */
 int
 ay_nct_concatmultiple(ay_object *curves, ay_object **result)
