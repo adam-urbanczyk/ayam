@@ -172,6 +172,8 @@ proc shortcut_view { w } {
     set m $ay(editmenu)
     bind $w <[repcont $aymainshortcuts(Undo)]> "$m invoke 9"
     bind $w <[repcont $aymainshortcuts(Redo)]> "$m invoke 10"
+    bind $w <[repcont $aymainshortcuts(Material)]> "$m invoke 12"
+    $m entryconfigure 12 -accelerator $aymainshortcuts(Material)
 
     # view window shortcuts
     set m $ay(viewm)
