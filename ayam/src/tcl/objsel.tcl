@@ -11,7 +11,8 @@
 
 array set rArray {
 	lb ""
-	scroll ""
+	yscroll ""
+	xscroll ""
 	selection ""
 	oldLevel ""
 	oldSelection ""
@@ -43,39 +44,66 @@ proc reconsider { Selection } {
     getSel rArray(oldSelection)
     
     # Create the window
-    toplevel $w -height 120 -width 170
-    wm title $w "Ayam - Ambiguous Picking"
+    toplevel $w
+    wm title $w "Ambiguous Pick"
     wm iconname $w "Ayam"
+    wm transient $w .
     winCenter $w
     
     # Create a frame where to place the listbox and the scrollbar
     set f [frame $w.f1]
-    pack $f -in $w -side top -fill x
+    pack $f -in $w -side top -fill both -expand yes
     
-    #Create the listbox
+    # Create the listbox
     listbox $f.lo -height 5 -selectmode single -exportselection 0 \
-	-yscrollcommand {global rArray; $rArray(scroll) set}
-    pack $f.lo -in $f -side left -fill x
+	-yscrollcommand {global rArray; $rArray(yscroll) set} \
+	-xscrollcommand {global rArray; $rArray(xscroll) set}
     
     set entry ""
+    set maxlen 0
     foreach i $Selection {
-	getNameFromNode name $i
-	lappend entry $name
+
+	# Computes the path of each object of the selection
+	set object [split $i :]
+	set level ""
+	set path ""
+	foreach i $object {
+	    lappend level $i
+	    if { $i != "root" } {
+		getNameFromNode name [join $level ":"]
+		lappend path $name
+	    }
+	}
+
+	lappend entry [join $path "/"]
+	set len [string length $path]
+	if { $len > $maxlen } { set maxlen $len }
     }
     
+    $f.lo configure -width ${maxlen}
     $f.lo delete 0 end
     eval [ subst "$f.lo insert end $entry"]
     $f.lo selection set 0
     
-    #Create the scrollbar
-    scrollbar $f.s -command {global rArray; $rArray(lb) yview} -takefocus 0
-    pack $f.s -in $f -side left -fill y -expand no
+    # Create the vertical scrollbar
+    scrollbar $f.sv -command {global rArray; $rArray(lb) yview} -takefocus 0
     
+    # Create the horizontal scrollbar
+    scrollbar $f.sh -command {global rArray; $rArray(lb) xview} \
+    	-takefocus 0 -orient h
+    
+    # Uses a grid to manage widgets (listbox, horizontal & vertical scrollbars)
+    grid $f.lo $f.sv -sticky news
+    grid $f.sh -sticky ew
+    grid columnconfig $f 0 -weight 1
+    grid rowconfig $f 0 -weight 1
+
     # Save the listbox and scrollbar ids
-    set rArray(scroll) $f.s
+    set rArray(yscroll) $f.sv
+    set rArray(xscroll) $f.sh
     set rArray(lb) $f.lo
 
-    #Create a frame where to place buttons "Ok" and "Cancel"
+    # Create a frame where to place buttons "Ok" and "Cancel"
     set f [frame $w.f2]
 
     # Button Ok
@@ -92,7 +120,7 @@ proc reconsider { Selection } {
 	destroy .reconsider
     }
     
-    #Button Cancel
+    # Button Cancel
     button $f.bca -text "Cancel" -width 5 -command {
 	global rArray ay
 	
