@@ -37,6 +37,10 @@ int ay_objio_writencconvertible(FILE *fileptr, ay_object *o, double *m);
 
 int ay_objio_writenpconvertible(FILE *fileptr, ay_object *o, double *m);
 
+int ay_objio_writebox(FILE *fileptr, ay_object *o, double *m);
+
+int ay_objio_writepomesh(FILE *fileptr, ay_object *o, double *m);
+
 int ay_objio_writeobject(FILE *fileptr, ay_object *o);
 
 int ay_objio_writescenetcmd(ClientData clientData, Tcl_Interp *interp,
@@ -146,6 +150,7 @@ ay_objio_writencurve(FILE *fileptr, ay_object *o, double *m)
   for(i = 0; i < nc->length; i++)
     {
       AY_APTRAN3(p1,p2,m)
+      p1[3] = p2[3];
       p1 += stride;
       p2 += stride;
     }
@@ -153,10 +158,67 @@ ay_objio_writencurve(FILE *fileptr, ay_object *o, double *m)
   /* write all vertices */
   ay_objio_writevertices(fileptr, (unsigned int)nc->length, stride, v);
 
-  /* write bspline curve */
+  /* write rational bspline curve */
   fprintf(fileptr, "cstype rat bspline\n");
   fprintf(fileptr, "deg %d\n", nc->order-1);
   fprintf(fileptr, "curv %lg %lg", nc->knotv[0],
+	  nc->knotv[nc->length+nc->order-1]);
+
+  for(i = nc->length; i > 0; i--)
+    {
+      fprintf(fileptr, " -%d", i);
+    }
+  fprintf(fileptr, "\n");
+
+  /* write knot vector */
+  fprintf(fileptr, "parm u");
+  for(i = 0; i < (nc->length + nc->order); i++)
+    {
+      fprintf(fileptr, " %lg", nc->knotv[i]);
+    }
+  fprintf(fileptr, "\n");
+
+  free(v);
+
+ return AY_OK;
+} /* ay_objio_writencurve */
+
+
+/* ay_objio_writetcurve:
+ *  write a single trim curve
+ */
+int
+ay_objio_writetcurve(FILE *fileptr, ay_object *o, double *m)
+{
+ ay_nurbcurve_object *nc;
+ double v[3] = {0}, *p1, ma[16] = {0}, mn[16] = {0};
+ int stride = 4, i;
+
+  if(!o)
+    return AY_ENULL;
+
+  nc = (ay_nurbcurve_object *)o->refine;
+
+  /* create proper transformation matrix */
+  ay_trafo_creatematrix(o, mn);
+  memcpy(ma, m, 16*sizeof(double));
+  ay_trafo_multmatrix4(ma, mn);
+
+  /* get all vertices, transform them and write them out */
+
+  p1 = nc->controlv;
+  for(i = 0; i < nc->length; i++)
+    {
+      AY_APTRAN3(v,p1,ma)
+      v[2] = p1[3];
+      fprintf(fileptr, "vp %lg %lg %lg\n", v[0], v[1], v[2]);
+      p1 += stride;
+    }
+
+  /* write 2D rational bspline curve */
+  fprintf(fileptr, "cstype rat bspline\n");
+  fprintf(fileptr, "deg %d\n", nc->order-1);
+  fprintf(fileptr, "curv2 %lg %lg", nc->knotv[0],
 	  nc->knotv[nc->length+nc->order-1]);
 
   for(i = nc->length; i > 0; i--)
@@ -173,10 +235,143 @@ ay_objio_writencurve(FILE *fileptr, ay_object *o, double *m)
     }
   fprintf(fileptr, "\n");
 
-  free(v);
+ return AY_OK;
+} /* ay_objio_writetcurve */
+
+
+/* ay_objio_writetrim:
+ *  write all trim curves pointed to by <o>
+ */
+int
+ay_objio_writetrim(FILE *fileptr, ay_object *o)
+{
+ double mi[16] = {0};
+ ay_object *down = NULL;
+
+  ay_trafo_identitymatrix(mi);
+
+  while(o->next)
+    {
+      if(o->type == AY_IDNCURVE)
+	{
+	  ay_objio_writetcurve(fileptr, o, mi);
+	}
+
+      if((o->type == AY_IDLEVEL) && (o->down) && (o->down->next))
+	{
+	  ay_trafo_creatematrix(o, mi);
+	  down = o->down;
+	  while(down->next)
+	    {
+	      if(down->type == AY_IDNCURVE)
+		{
+		  ay_objio_writetcurve(fileptr, down, mi);
+		}
+	      down = down->next;
+	    }
+	  ay_trafo_identitymatrix(mi);
+	}
+
+      o = o->next;
+    } /* while */
 
  return AY_OK;
-} /* ay_objio_writencurve */
+} /* ay_objio_writetrim */
+
+
+/* ay_objio_writetrimids:
+ *  write ids of all trim curves pointed to by <o>
+ */
+int
+ay_objio_writetrimids(FILE *fileptr, ay_object *o)
+{
+ ay_object *o2 = o, *down = NULL;
+ ay_nurbcurve_object *nc = NULL;
+ double umin, umax, orient;
+ int tc = 0, hole;
+
+  /* first, count trim curves */
+  while(o->next)
+    {
+      if(o->type == AY_IDNCURVE)
+	{
+	  tc++;
+	}
+
+      if((o->type == AY_IDLEVEL) && (o->down) && (o->down->next))
+	{
+	  down = o->down;
+	  while(down->next)
+	    {
+	      if(down->type == AY_IDNCURVE)
+		{
+		  tc++;
+		}
+	      down = down->next;
+	    }
+	}
+
+      o = o->next;
+    } /* while */
+
+  /* now write the ids */
+  o = o2;
+  while(o->next)
+    {
+      if(o->type == AY_IDNCURVE)
+	{
+
+	  nc = (ay_nurbcurve_object *)o->refine;
+	  ay_nct_getorientation(nc, &orient);
+	  if(orient < 0.0)
+	    hole = AY_FALSE;
+	  else
+	    hole = AY_TRUE;
+	  umin = nc->knotv[0];
+	  umax = nc->knotv[nc->length+nc->order-1];
+	  if(hole)
+	    fprintf(fileptr, "hole %lg %lg -%d\n", umin, umax, tc);
+	  else
+	    fprintf(fileptr, "trim %lg %lg -%d\n", umin, umax, tc);
+	  tc--;
+	}
+
+      if((o->type == AY_IDLEVEL) && (o->down) && (o->down->next))
+	{
+	  down = o->down;
+	  if(down->type == AY_IDNCURVE)
+	    {
+	      nc = (ay_nurbcurve_object *)down->refine;
+	      ay_nct_getorientation(nc, &orient);
+	      if(orient < 0.0)
+		fprintf(fileptr, "trim ");
+	      else
+		fprintf(fileptr, "hole ");
+	    }
+
+	  while(down->next)
+	    {
+	      if(down->type == AY_IDNCURVE)
+		{
+		  nc = (ay_nurbcurve_object *)down->refine;
+		  umin = nc->knotv[0];
+		  umax = nc->knotv[nc->length+nc->order-1];
+
+		  fprintf(fileptr, " %lg %lg -%d", umin, umax, tc);
+
+		  tc--;
+		}
+	      down = down->next;
+	    }
+	  fprintf(fileptr, "\n");
+	  
+	} /* if */
+
+      o = o->next;
+    } /* while */
+
+ return AY_OK;
+} /* ay_objio_writetrimids */
 
 
 /* ay_objio_writenpatch:
@@ -185,12 +380,19 @@ ay_objio_writencurve(FILE *fileptr, ay_object *o, double *m)
 int
 ay_objio_writenpatch(FILE *fileptr, ay_object *o, double *m)
 {
+ int ay_status = AY_OK;
  ay_nurbpatch_object *np;
  double *v = NULL, *p1, *p2;
  int stride = 4, i, j;
 
   if(!o)
     return AY_ENULL;
+
+  /* first, check for and write the trim curves */
+  if(o->down && o->down->next)
+    {
+      ay_status = ay_objio_writetrim(fileptr, o->down);
+    }
 
   np = (ay_nurbpatch_object *)o->refine;
 
@@ -205,6 +407,7 @@ ay_objio_writenpatch(FILE *fileptr, ay_object *o, double *m)
       for(j = 0; j < np->height; j++)
 	{
 	  AY_APTRAN3(p1,p2,m)
+	  p1[3] = p2[3];
 	  p1 += stride;
 	  p2 += stride;
 	}
@@ -229,7 +432,7 @@ ay_objio_writenpatch(FILE *fileptr, ay_object *o, double *m)
 
   /* write knot vector (u) */
   fprintf(fileptr, "parm u");
-  for(i = 0; i < (np->width + np->uorder - 1); i++)
+  for(i = 0; i < (np->width + np->uorder); i++)
     {
       fprintf(fileptr, " %lg", np->uknotv[i]);
     }
@@ -237,13 +440,17 @@ ay_objio_writenpatch(FILE *fileptr, ay_object *o, double *m)
 
   /* write knot vector (v) */
   fprintf(fileptr, "parm v");
-  for(i = 0; i < (np->height + np->vorder - 1); i++)
+  for(i = 0; i < (np->height + np->vorder); i++)
     {
       fprintf(fileptr, " %lg", np->vknotv[i]);
     }
   fprintf(fileptr, "\n");
 
-  /* write trim curves (if any) */
+  /* write pointers to trim curves (if any) */
+  if(o->down && o->down->next)
+    {
+      ay_objio_writetrimids(fileptr, o->down);
+    } /* if */
 
   free(v);
 
@@ -577,7 +784,7 @@ ay_objio_writeobject(FILE *fileptr, ay_object *o)
       sprintf(err, "No callback registered for this type: %d.", o->type);
       ay_error(AY_EWARN, fname, err);
     } /* if */
- 
+
  return AY_OK;
 } /* ay_objio_writeobject */
 
@@ -721,6 +928,9 @@ ay_objio_init(Tcl_Interp *interp)
 
   ay_status = ay_objio_registerwritecb((char *)(AY_IDPOMESH),
 				       ay_objio_writepomesh);
+
+  ay_status = ay_objio_registerwritecb((char *)(AY_IDBOX),
+				       ay_objio_writebox);
 
   Tcl_CreateCommand(interp, "ay_objio_write", ay_objio_writescenetcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
