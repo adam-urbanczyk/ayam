@@ -48,6 +48,7 @@
  *          03-28-98  Added RibFreeBasisMatrix(). 
  *          06-07-99  Added RibGetTokenName().
  *          10-05-99  Added gRibSearchArchiveTable.
+ *          02-26-00  Added RibDumpHashTable().
  *
  *
  *    References:
@@ -487,7 +488,16 @@ int RibMemoryTestMalloc( char *file, unsigned int line,
 extern 
 #endif
 int RibMemoryTestFree( char *file, unsigned int line, void *p );
+
+
+#ifndef __FILE_HASH
+extern 
 #endif
+void RibDumpHashTable( RIB_HASHHND hash );
+
+
+#endif
+/* endif for defined(RIB_MEMORY_TESTS). */
 
 #ifndef __RIB_FILE_NAMES
 extern char *gRibNames[];

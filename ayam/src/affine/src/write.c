@@ -88,7 +88,10 @@
  *                worldly and support RenderDotC extensions.
  *      06-09-99  Inline declaration support added.
  *      10-10-99  Added "archive" for "searchpath" option.
- *
+ *      10-17-99  Added server searchpath token names to hash table.
+ *      11-28-99  Fixed RiBasis() output for nonstandard basis. [EPPS99]
+ *      02-15-00  Fixed gridsize and merge declarations.  Added declaration
+ *                type "int" [EVES00].
  *
  *
  *    References:
@@ -111,6 +114,12 @@
  *        [PIXA97e] Pixar, prman3.7c/html/Toolkit/rnotes-3.7.html, section
  *                  "4.3. RIB Client Library Known Problems and Bugs", 
  *                  Richmond, CA, March, 1997.
+ *        [PIXA98a] Pixar Animation Studios, cineon.4.html,
+ *                  Reserved RenderMan Parameters Names, Richmond, CA,
+ *                  1998.
+ *        [PIXA98b] Pixar Animation Studios, user.html,
+ *                  Reserved RenderMan Parameters Names, Richmond, CA,
+ *                  1998.
  *        [UPST90]  Upstill, Steve, The RenderMan Companion: A Programmer's
  *                  Guide to Realistic Computer Graphics, Addison Wesley, 
  *                  1990, 1992, pp. 249-250.
@@ -273,7 +282,7 @@ static void SetUpHashTable( void )
 
    /* The "limits" options of Pixar's prman: */
    AddToHashTable( "bucketsize", UNIFORM | INTPAIR, 1 );
-   AddToHashTable( "gridsize", UNIFORM | INTPAIR, 1 );
+   AddToHashTable( "gridsize", UNIFORM | INT, 1 );
    AddToHashTable( "texturememory", UNIFORM | INT, 1 );
    AddToHashTable( "zthreshold", UNIFORM | POINT, 1 );
    AddToHashTable( "extremedisplacement", UNIFORM | INT, 1 );
@@ -286,6 +295,7 @@ static void SetUpHashTable( void )
    /* The "shadow" options of Pixar's prman: */
    AddToHashTable( "bias0", UNIFORM | FLOAT, 1 );
    AddToHashTable( "bias1", UNIFORM | FLOAT, 1 );  
+   AddToHashTable( "bias", UNIFORM | FLOAT, 1 );  
 
    /* The "searchpath" options of Pixar's prman: */
    AddToHashTable( "shader", UNIFORM | STRING, 1 );
@@ -293,6 +303,15 @@ static void SetUpHashTable( void )
    AddToHashTable( "vfxmaster", UNIFORM | STRING, 1 );
    AddToHashTable( "vfxinstance", UNIFORM | STRING, 1 );
    AddToHashTable( "archive", UNIFORM | STRING, 1 );
+   AddToHashTable( "resource", UNIFORM | STRING, 1 );
+   AddToHashTable( "display", UNIFORM | STRING, 1 );
+   AddToHashTable( "servershader", UNIFORM | STRING, 1 );
+   AddToHashTable( "servertexture", UNIFORM | STRING, 1 );
+   AddToHashTable( "servervfxmaster", UNIFORM | STRING, 1 );
+   AddToHashTable( "servervfxinstance", UNIFORM | STRING, 1 );
+   AddToHashTable( "serverarchive", UNIFORM | STRING, 1 );
+   AddToHashTable( "serverresource", UNIFORM | STRING, 1 );
+   AddToHashTable( "serverdisplay", UNIFORM | STRING, 1 );
 
    /* The "render" options of BMRT's rendrib: */ 
    AddToHashTable( "minsamples", UNIFORM | INT, 1 );
@@ -311,6 +330,10 @@ static void SetUpHashTable( void )
 
    /* The "searchpath" options of BMRT's rendrib: */ 
    AddToHashTable( "include", UNIFORM | STRING, 1 );
+
+   /* The "texture" options of PRMan: */
+   AddToHashTable( "enable gaussian", UNIFORM | FLOAT, 1 );
+   AddToHashTable( "enable lerp", UNIFORM | FLOAT, 1 );
 
    /* 
     *  The following was added for the RiAttribute call.               
@@ -366,8 +389,13 @@ static void SetUpHashTable( void )
    AddToHashTable( "origin", UNIFORM | INTPAIR, 1 );
 
    /* More Display options of Pixar's prman: */
-   AddToHashTable( "merge", UNIFORM | FLOAT, 1 );
+   AddToHashTable( "merge", UNIFORM | INT, 1 );
    AddToHashTable( "compression", UNIFORM | STRING, 1 );
+   AddToHashTable( "resolution", UNIFORM | INTPAIR, 1 );
+   AddToHashTable( "resolutionunit", UNIFORM | STRING, 1 );
+
+   /* MTOR and possible new PRMan 3.9 feature. */
+   AddToHashTable( "dspyParams", UNIFORM | STRING, 1 );
 
    /* 
     *   The following was added for the RiHider call. 
@@ -388,6 +416,7 @@ static void SetUpHashTable( void )
     *
     */
    AddToHashTable( "flatness", UNIFORM | FLOAT, 1 );
+   AddToHashTable( "motionfactor", UNIFORM | FLOAT, 1 );
 
    /* 
     *   The following were added for the RiCurves and RiPoints calls that
@@ -587,6 +616,11 @@ char *GetClassNType( char *name, char *declaration,
    {
       classNtype |= INT;
       p += 7;
+   }
+   else if ( !strncmp( "int", p, 3 ) )
+   {
+      classNtype |= INT;
+      p += 3;
    }
    else if ( !strncmp( "matrix", p, 6 ) )
    {
@@ -2671,11 +2705,12 @@ RtVoid RiBasis( RtBasis ubasis, RtInt ustep, RtBasis vbasis, RtInt vstep )
       }
       else 
       {
+	 fputc( '[', fp );
 	 for ( i=0; i < 3; i++)
 	   fprintf( fp, "%g %g %g %g ", basis[i*4], basis[i*4+1], 
 		   basis[i*4+2], basis[i*4+3] );
-	 fprintf( fp, "%g %g %g %g]", basis[i*4], basis[i*4+1], 
-	         basis[i*4+2], basis[i*4+3] );
+	 fprintf( fp, "%g %g %g %g] %d ", basis[i*4], basis[i*4+1], 
+	         basis[i*4+2], basis[i*4+3], step );
       }
       if (!uv)
 	fputc( '\n', fp );
