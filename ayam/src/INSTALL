@@ -26,7 +26,7 @@ The following requirements _must_ be met to compile a shared
 version of Ayam:
 
 - ANSI-C-compiler
-- Tcl/Tk ( atleast V8.0 )
+- Tcl/Tk sources ( atleast V8.0 )
   ftp://ftp.scriptics.com/pub/tcl/
   ( May move to SourceForge in the future, see:
     http://tcl.sourceforge.net/ ) 
@@ -113,7 +113,7 @@ The following requirements _must_ be met to compile a wrapped standalone
 version of Ayam:
 
 - ANSI-C-compiler
-- Tcl/Tk ( atleast V8.2.1 )
+- Tcl/Tk sources ( V8.2.x )
   ftp://ftp.scriptics.com/pub/tcl/
   ( May move to SourceForge in the future, see:
     http://tcl.sourceforge.net/ )
@@ -121,6 +121,8 @@ version of Ayam:
   the wrapped standalone version of Ayam. But compiling this Tcl/Tk
   is still necessary. Compile static versions of Tcl/TK using:
   >./configure --disable-shared; make
+  Also note, that Wrap0.3 currently only works with Tcl/Tk 8.2.x, not
+  8.3.x, and not 8.4!
 - A zip utility that understands the -A option ( zip2.2 does ).
 - Wrap0.3
   http://purl.oclc.org/net/nijtmans/wrap.html
