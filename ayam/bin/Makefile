@@ -38,8 +38,8 @@ DOCFILES = ../Setup.txt ../Changes.txt ../License.txt ../doc/refcard.tcl\
 install:
 	$(MKDIR) $(BINDIR)
 	$(INSTALL) ayam $(BINDIR)
-	-$(LN) $(LIBDIR) $(BINDIR)/plugins
 	$(MKDIR) $(LIBDIR)
+	-$(LN) $(LIBDIR) $(BINDIR)/plugins
 	-$(INSTALL) plugins/metaobj.so $(LIBDIR)
 	-$(INSTALL) plugins/metaobj.tcl $(LIBDIR)
 	-$(INSTALL) plugins/metacomp.tcl $(LIBDIR)
@@ -48,6 +48,7 @@ install:
 	-$(INSTALL) plugins/loadidr.tcl $(LIBDIR)
 	-$(INSTALL) plugins/rrib.so plugins/rrib.tcl $(LIBDIR)
 	-$(INSTALL) plugins/loadrrib.tcl $(LIBDIR)
+	-$(INSTALL) Makefile $(LIBDIR)
 	$(MKDIR) $(DOCDIR)
 	$(INSTALL) $(DOCFILES) $(DOCDIR)
 	$(MKDIR) $(DOCDIR)/html
@@ -57,6 +58,7 @@ install:
 	@echo "Installation completed."
 	@echo "Add $(BINDIR) to your PATH."
 	@echo "Add $(LIBDIR) to your LD_LIBRARY_PATH."
+	@echo "Use 'make -f $(LIBDIR)/Makefile uninstall' to uninstall."
 
 uninstall:
 	-rm -f $(BINDIR)/ayam
@@ -65,6 +67,7 @@ uninstall:
 	-rm -rf $(LIBDIR)/mfio.so $(LIBDIR)/mfio.tcl
 	-rm -rf $(LIBDIR)/idr.so $(LIBDIR)/idr.tcl
 	-rm -rf $(LIBDIR)/rrib.so $(LIBDIR)/rrib.tcl
+	-rm -rf $(LIBDIR)/loadrrib.tcl $(LIBDIR)/loadidr.tcl
 	-cd $(DOCDIR); rm -rf Setup.txt Changes.txt License.txt refcard.tcl\
 refcard.ps ayam.pdf html;
-
+	-rm -rf $(LIBDIR)/Makefile
