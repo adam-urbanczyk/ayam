@@ -203,6 +203,13 @@ proc prefs_open {} {
 	foreach j $avnames {
 	    set ayprefse($j) $ayprefsdefaults($j)
 	}
+	# update color entries
+	update
+	set w .prefsw.f2.nb.fDrawing
+	foreach c {Background Object Selection Grid Tag Shade Light} {
+	    updateColorFromE $w ayprefse $c $w.f${c}.b1
+	}
+
     }
     button $f.bca -text "Cancel" -width 8 -command {
 	global ay ayprefs ayprefse
