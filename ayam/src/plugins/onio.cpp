@@ -17,7 +17,6 @@
 #include "opennurbs.h"
 #include "opennurbs_extensions.h"
 
-
 // local types
 
 typedef int (onio_writecb) (ay_object *o, ONX_Model *p_m);
@@ -55,6 +54,14 @@ int onio_registerwritecb(char *type, onio_writecb *cb);
 
 /////////////////////////////////////////////////////////////////////////
 
+static int onio_w2c_size(int, const wchar_t*);
+
+static int onio_w2c(int,        // w_count = number of wide chars to convert
+                const wchar_t*, // source wide char string
+                int,            // c_count,
+                char*           // array of at least c_count+1 characters
+                );
+
 int onio_readnurbssurface(ON_NurbsSurface *p_s);
 
 int onio_readnurbscurve(ON_NurbsCurve *p_c);
@@ -67,6 +74,8 @@ int onio_readbrep(ON_Brep *p_b, double accuracy);
 int onio_readobject(ONX_Model *p_m, const ON_Object *p_o, double accuracy);
 
 int onio_readlayer(ONX_Model &model, int li, double accuracy);
+
+int onio_readname(ay_object *o, ON_3dmObjectAttributes *attr);
 
 int onio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 		  int argc, char *argv[]);
@@ -139,7 +148,7 @@ onio_writenpatch(ay_object *o, ONX_Model *p_m)
       ay_status = onio_writetrimmednpatch(o, p_m);
       return ay_status;
     }
-  
+
   ay_status = onio_getsurfobj(o, &p_n);
   if(p_n)
     {
@@ -178,7 +187,7 @@ onio_get2dcurveobj(ay_object *o, ON_NurbsCurve **pp_c)
     {
       p_c->SetKnot(i, nc->knotv[i+1]);
     }
- 
+
   // copy control points
   a = 0;
   for(i = 0; i < nc->length; i++)
@@ -238,7 +247,7 @@ onio_addtrim(ay_object *o, ON_Brep *p_b, ON_BrepFace& face,
 	  //ON_BrepEdge& e1 = p_b->NewEdge(v1, v2, c3i);
 	  //e1.m_tolerance = 0.0;
 
-	  ON_BrepLoop& l1 = p_b->NewLoop(ON_BrepLoop::inner, face);	  
+	  ON_BrepLoop& l1 = p_b->NewLoop(ON_BrepLoop::inner, face);
 	  //p_b->NewTrim(e1, false, l1, c2i);
 
 	} // if
@@ -311,7 +320,7 @@ onio_writetrimmednpatch(ay_object *o, ONX_Model *p_m)
     if(object_attributes)
     mo.m_attributes = object_attributes[i];
   */
- 
+
  return ay_status;
 } // onio_writetrimmednpatch
 
@@ -368,7 +377,7 @@ onio_writencurve(ay_object *o, ONX_Model *p_m)
   // copy knots, ignoring "superfluous"/"phantom" end knots
   for(i = 0; i < nc->order+nc->length-2; i++)
     p_c->SetKnot(i, nc->knotv[i+1]);
- 
+
   // copy control points
   a = 0;
   for(i = 0; i < nc->length; i++)
@@ -610,6 +619,49 @@ onio_registerwritecb(char *name, onio_writecb *cb)
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
+// onio_w2c_size:
+// gets minimum "c_count" arg for onio_w2c() below
+// taken from opennurbs_wstring.cpp
+static int onio_w2c_size( int w_count, const wchar_t* w )
+{
+  // returns number of bytes used in wide conversion.  Does not
+  // include NULL terminator.
+  int rc = 0;
+  if ( w ) {
+	  rc = on_WideCharToMultiByte(w, w_count, NULL, 0);
+    if ( rc < 0 )
+      rc = 0;
+  }
+  return rc;
+} // onio_w2c_size
+
+// onio_w2c:
+// convert wide chars to ASCII chars
+// taken from opennurbs_wstring.cpp
+static int onio_w2c( int w_count,
+                const wchar_t* w,
+                int c_count,
+                char* c // array of at least c_count+1 characters
+                )
+{
+  int rc = 0;
+  if ( c )
+    c[0] = 0;
+  // returns length of converted c[]
+  if ( c_count > 0 && c ) {
+    c[0] = 0;
+    if ( w ) {
+	    rc = on_WideCharToMultiByte(w, w_count, c, c_count);
+      if ( rc > 0 && rc <= c_count )
+        c[rc] = 0;
+      else {
+        c[c_count] = 0;
+        rc = 0;
+      }
+    }
+  }
+  return rc;
+} // onio_w2c
 
 // onio_readnurbssurface:
 //
@@ -880,14 +932,6 @@ onio_getncurvefromcurve(const ON_Curve *p_o, double accuracy,
     {
       if((ON_PolyCurve::Cast(p_o))->GetNurbForm(c, accuracy, NULL))
 	{
-	  /*
-	  int i;
-	  for (i = 0; i < c.m_order+c.m_cv_count-2; i++)
-	    {
-	      printf(" %g",c.m_knot[i]);
-	    }
-	  printf("\n");
-	  */
 	  handled = AY_TRUE;
 	}
       else
@@ -990,7 +1034,7 @@ onio_readbrep(ON_Brep *p_b, double accuracy)
 	return ay_status;
 
       // loop_count = number of trimming loops on this face (>=1)
-      const int loop_count = face.m_li.Count(); 
+      const int loop_count = face.m_li.Count();
 
       int fli; // face's loop index
       for(fli = 0; fli < loop_count; fli++)
@@ -1381,12 +1425,55 @@ onio_readlayer(ONX_Model &model, int li, double accuracy)
 		  ay_error(AY_ERROR, fname,
 		       "Failed to read/convert object; continuing with next!");
 		} // if
+
+	      // read object name
+	      ay_status = onio_readname(onio_lrobject,
+			           &((model.m_object_table[i]).m_attributes));
 	    } // if
 	} // if
     } // for
 
  return ay_status;
 } // onio_readlayer
+
+
+// onio_readname:
+//
+int
+onio_readname(ay_object *o, ON_3dmObjectAttributes *attr)
+{
+ int ay_status = AY_OK;
+
+  if(!o || !attr)
+    return AY_OK;
+  
+  if(o->name)
+    free(o->name);
+  o->name = NULL;
+
+  if(attr->m_name && (attr->m_name.Length() > 0))
+    {
+      int length = attr->m_name.Length();
+      int clength = onio_w2c_size(length, attr->m_name);
+      if((o->name = (char*)calloc(clength+1, sizeof(char))))
+	{
+	  onio_w2c(length, attr->m_name, clength, o->name);
+	} // if
+      //else
+      // XXXX should return AY_EOMEM
+    } // if
+
+  // repair name (convert " " to "_")
+  char *c = o->name;
+  while(*c != '\0')
+    {
+      if(*c == ' ')
+	*c = '_';
+      c++;
+    } // while
+
+ return ay_status;
+} // onio_readname
 
 
 // onio_readtcmd:
@@ -1501,6 +1588,11 @@ onio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 		  ay_error(AY_ERROR, fname,
 		      "Failed to read/convert object; continuing with next!");
 		} // if
+
+	      // read object name
+	      ay_status = onio_readname(onio_lrobject,
+			           &((model.m_object_table[i]).m_attributes));
+
 	    } // if
 	} // for
     }
