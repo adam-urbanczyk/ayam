@@ -384,10 +384,11 @@ metaobj_drawcb (struct Togl *togl, ay_object * o)
 
 
 int
-metaobj_shadecb (struct Togl *togl, ay_object * o)
+metaobj_shadecb (struct Togl *togl, ay_object *o)
 {
+ ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  meta_world *w;
- double *vptr, *nptr;
+ double *vptr, *nptr, n[3];
  int i;
 
   w = (meta_world *) o->refine;
@@ -409,27 +410,62 @@ metaobj_shadecb (struct Togl *togl, ay_object * o)
 
 #if !META_USEVERTEXARRAY
 
-  glBegin (GL_TRIANGLES);
-
-  for (i = 0; i < w->currentnumpoly; i++)
+  glBegin(GL_TRIANGLES);
+  if(view->altdispcb)
     {
+      for(i = 0; i < w->currentnumpoly; i++)
+	{
+	  memcpy(n, nptr, 3*sizeof(double));
+	  n[0] *= -1.0;
+	  n[1] *= -1.0;
+	  n[2] *= -1.0;
+	  glNormal3dv ((GLdouble *) &n);
+	  nptr += 6;
+	  glVertex3dv ((GLdouble *) vptr);
+	  vptr += 6;
+	  
+	  memcpy(n, nptr, 3*sizeof(double));
+	  n[0] *= -1.0;
+	  n[1] *= -1.0;
+	  n[2] *= -1.0;
+	  glNormal3dv ((GLdouble *) &n);
+	  nptr -= 3;
+	  glVertex3dv ((GLdouble *) vptr);
+	  vptr -= 3;
 
-      glNormal3dv ((GLdouble *) nptr);
-      nptr += 3;
-      glVertex3dv ((GLdouble *) vptr);
-      vptr += 3;
-      glNormal3dv ((GLdouble *) nptr);
-      nptr += 3;
-      glVertex3dv ((GLdouble *) vptr);
-      vptr += 3;
-      glNormal3dv ((GLdouble *) nptr);
-      nptr += 3;
-      glVertex3dv ((GLdouble *) vptr);
-      vptr += 3;
+	  memcpy(n, nptr, 3*sizeof(double));
+	  n[0] *= -1.0;
+	  n[1] *= -1.0;
+	  n[2] *= -1.0;
+	  glNormal3dv ((GLdouble *) &n);
+	  nptr += 6;
+	  glVertex3dv ((GLdouble *) vptr);
+	  vptr += 6;
 
-    } /* for */
+	} /* for */
+    }
+  else
+    {
+      for (i = 0; i < w->currentnumpoly; i++)
+	{
 
-  glEnd ();
+	  glNormal3dv ((GLdouble *) nptr);
+	  nptr += 3;
+	  glVertex3dv ((GLdouble *) vptr);
+	  vptr += 3;
+	  glNormal3dv ((GLdouble *) nptr);
+	  nptr += 3;
+	  glVertex3dv ((GLdouble *) vptr);
+	  vptr += 3;
+	  glNormal3dv ((GLdouble *) nptr);
+	  nptr += 3;
+	  glVertex3dv ((GLdouble *) vptr);
+	  vptr += 3;
+
+	} /* for */
+    } /* if */
+
+  glEnd();
 #endif
 
  return AY_OK;
