@@ -800,7 +800,7 @@ typedef int (ay_treedropcb) (ay_object *o);
 
 typedef int (ay_comparecb) (ay_object *o1, ay_object *o2);
 
-typedef int (ay_convertcb) (ay_object *o);
+typedef int (ay_convertcb) (ay_object *o, int in_place);
 
 typedef int (ay_providecb) (ay_object *o, unsigned int type,
 			    ay_object **result);

@@ -1409,7 +1409,7 @@ ay_npatch_providecb(ay_object *o, unsigned int type, ay_object **result)
 } /* ay_npatch_providecb */
 
 int
-ay_npatch_convertcb(ay_object *o)
+ay_npatch_convertcb(ay_object *o, int in_place)
 {
  int ay_status = AY_OK;
  /*char fname[] = "npatch_convertcb";*/
@@ -1422,8 +1422,15 @@ ay_npatch_convertcb(ay_object *o)
 
   if(new)
     {
-      ay_trafo_copy(o, new);
-      ay_status = ay_object_link(new);
+      if(!in_place)
+	{
+	  ay_trafo_copy(o, new);
+	  ay_status = ay_object_link(new);
+	}
+      else
+	{
+	  ay_status = ay_object_replace(new, o);
+	}
     }
 
  return ay_status;
