@@ -475,6 +475,8 @@ proc addMenu { w prop name elist } {
 
     trace variable ${prop}($name) w "updateMenu $m"
 
+    bind $f.mb <Destroy> "trace vdelete ${prop}($name) w \"updateMenu $m\""
+
     pack $f.l -in $f -side left -fill x
     pack $f.mb -in $f -side left -fill x -expand yes -pady 0
     pack $f -in $w -side top -fill x
