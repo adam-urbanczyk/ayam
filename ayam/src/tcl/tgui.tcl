@@ -94,6 +94,9 @@ proc tgui_block { } {
     bind Console <Control-KeyPress> $sc
     bind Listbox <Control-KeyPress> $sc
 
+    # modify mouse cursor to a watch
+    mouseWatch 1 {. .tbw}
+
  return;
 }
 # tgui_block
@@ -137,6 +140,9 @@ proc tgui_unblock { } {
     bind Canvas <Control-KeyPress> ""
     bind Console <Control-KeyPress> ""
     bind Listbox <Control-KeyPress> ""
+
+    # reset mouse cursor
+    mouseWatch 0 {. .tbw}
 
  return;
 }
