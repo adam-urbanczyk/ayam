@@ -485,8 +485,37 @@ proc toolbox_open { } {
 
 
 	}
-    }
+	##################
 
+	if { $i == "nptools1" } {
+	    lappend ay(toolbuttons) bgord bswpuv brevu brevv
+
+	    button $f.bgord -image ay_Gordon_img -padx 0 -pady 0 -command {
+		gordon_crt;
+	    }
+	    balloon_set $f.bgord "create Gordon"
+
+	    #####
+	    button $f.bswpuv -image ay_NPSwapUV_img -padx 0 -pady 0 -command {
+		swapUV; plb_update;
+	    }
+	    balloon_set $f.bswpuv "swap UV"
+
+	    #####
+	    button $f.brevu -image ay_NPRevU_img -padx 0 -pady 0 -command {
+		revertU; plb_update;
+	    }
+	    balloon_set $f.brevu "revert U"
+
+	    #####
+	    button $f.brevv -image ay_NPRevV_img -padx 0 -pady 0 -command {
+		revertV; plb_update;
+	    }
+	    balloon_set $f.brevv "revert V"
+
+	}
+    }
+    # foreach
     update
     if { $ayprefs(toolBoxGeom) != "" } {
 	winMoveOrResize .tbw $ayprefs(toolBoxGeom)

@@ -18,7 +18,7 @@ array set ayprefs {
  showtr 1
  Balloon 1500
  TwmCompat 0
- toolBoxList {trafo trafo2 solids misco nurbs toolobjs points nctools1 nctools2 camera misc}
+ toolBoxList {trafo trafo2 solids misco nurbs toolobjs nptools1 points nctools1 nctools2 camera misc}
  AutoResize 1
  ListTypes 1
  MarkHidden 1
