@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile [30. Dec 2002]
+# Makefile [24. Mar 2004]
 # Makefile for the installation of Ayam (precompiled wrapped version)
 
 # Choose an installation prefix.
@@ -48,6 +48,7 @@ install:
 	-$(INSTALL) plugins/metacomp.tcl $(LIBDIR)
 	-$(INSTALL) plugins/mfio.so $(LIBDIR)
 	-$(INSTALL) plugins/mfio.tcl $(LIBDIR)
+	-$(INSTALL) plugins/loadmfio.tcl $(LIBDIR)
 	-$(INSTALL) plugins/idr.so $(LIBDIR)
 	-$(INSTALL) plugins/idr.tcl $(LIBDIR)
 	-$(INSTALL) plugins/loadidr.tcl $(LIBDIR)
@@ -82,7 +83,7 @@ uninstall:
 	-rm -f $(BINDIR)/ayam
 	-rm -rf $(LIBDIR)/metaobj.so
 	-rm -rf $(LIBDIR)/metaobj.tcl $(LIBDIR)/metacomp.tcl
-	-rm -rf $(LIBDIR)/mfio.so $(LIBDIR)/mfio.tcl
+	-rm -rf $(LIBDIR)/mfio.so $(LIBDIR)/mfio.tcl $(LIBDIR)/loadmfio.tcl
 	-rm -rf $(LIBDIR)/idr.so $(LIBDIR)/idr.tcl
 	-rm -rf $(LIBDIR)/rrib.so $(LIBDIR)/rrib.tcl
 	-rm -rf $(LIBDIR)/loadrrib.tcl $(LIBDIR)/loadidr.tcl
