@@ -25,14 +25,14 @@ ay_nct_create(int order, int length, int knot_type,
  int ay_status = AY_OK;
  double *newcontrolv = NULL;
  ay_nurbcurve_object *curve = NULL;
-  
+
   if(!(curve = calloc(1, sizeof(ay_nurbcurve_object))))
     return AY_EOMEM;
-  
+
   curve->order = order;
   curve->length = length;
   curve->knot_type = knot_type;
-  
+
   curve->controlv = controlv;
   if(!controlv)
     {
@@ -305,7 +305,7 @@ ay_nct_explodemp(ay_object *o)
 
   /* we simply delete all mpoints, that contain a selected point */
   while(selp)
-    {      
+    {
       p = c->mpoints;
       last = &(c->mpoints);
       while(p)
@@ -421,7 +421,7 @@ ay_nct_resize(ay_nurbcurve_object *curve, int new_length)
 		  v[2] = curve->controlv[a+4+2] - curve->controlv[a+2];
 
 		  t = j/(newpersec[i]+1.0);
-	      
+
 		  AY_V3SCAL(v,t);
 
 		  ncontrolv[b] = curve->controlv[a]+v[0];
@@ -433,7 +433,7 @@ ay_nct_resize(ay_nurbcurve_object *curve, int new_length)
 		}
 	    }
 
-	  a+=4;	       
+	  a+=4;
 	}
       memcpy(&ncontrolv[(new_length-1)*4],
 	     &(curve->controlv[(curve->length-1)*4]),
@@ -523,12 +523,12 @@ ay_nct_revert(ay_nurbcurve_object *curve)
       dtemp = curve->controlv[j+2];
       curve->controlv[j+2] = curve->controlv[i+2];
       curve->controlv[i+2] = dtemp;
-      
+
 
       dtemp = curve->controlv[j+3];
       curve->controlv[j+3] = curve->controlv[i+3];
       curve->controlv[i+3] = dtemp;
-      
+
       i+=4;
       j-=4;
     } /* while */
@@ -654,7 +654,7 @@ ay_nct_refine(ay_nurbcurve_object *curve, double *newknotv, int newknotvlen)
 	      count++;
 	    }
 	}
-	      
+
       if(count)
 	{
 	  /* alloc new control vector */
@@ -727,7 +727,7 @@ ay_nct_refine(ay_nurbcurve_object *curve, double *newknotv, int newknotvlen)
 	    }
 	}
 
-      if(!(Ubar = calloc((curve->length + curve->order + count), 
+      if(!(Ubar = calloc((curve->length + curve->order + count),
 			 sizeof(double))))
 	{
 	  free(X);
@@ -844,7 +844,7 @@ ay_nct_refinetcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_error(AY_ERROR, fname, "object is not a NURBCurve");
 	}
 
-      sel = sel->next; 
+      sel = sel->next;
     } /* while */
 
   if(X)
@@ -867,7 +867,7 @@ ay_nct_clamp(ay_nurbcurve_object *curve)
  double u;
  int stride, r, k, s, nq = 0;
 
-  stride = 4;  
+  stride = 4;
 
   /* clamp start */
   k = curve->order-1;
@@ -880,7 +880,7 @@ ay_nct_clamp(ay_nurbcurve_object *curve)
   if(!(newcontrolv = calloc(curve->length*stride, sizeof(double))))
     return AY_EOMEM;
 
-  newknotv = NULL;	  
+  newknotv = NULL;
   if(!(newknotv = calloc(curve->length+curve->order, sizeof(double))))
     return AY_EOMEM;
 
@@ -907,7 +907,7 @@ ay_nct_clamp(ay_nurbcurve_object *curve)
   if(!(newcontrolv = calloc(curve->length*stride, sizeof(double))))
     return AY_EOMEM;
 
-  newknotv = NULL;	  
+  newknotv = NULL;
   if(!(newknotv = calloc(curve->length+curve->order, sizeof(double))))
     return AY_EOMEM;
 
@@ -927,7 +927,7 @@ ay_nct_clamp(ay_nurbcurve_object *curve)
   newcontrolv = NULL;
   if(!(newcontrolv = calloc(curve->length*stride, sizeof(double))))
     return AY_EOMEM;
-  
+
   newknotv = NULL;
   if(!(newknotv = calloc(curve->length+curve->order, sizeof(double))))
     return AY_EOMEM;
@@ -982,7 +982,7 @@ ay_nct_clamptcmd(ClientData clientData, Tcl_Interp *interp,
 	    if((curve->knot_type == AY_KTNURB) ||
 	       (curve->knot_type == AY_KTBEZIER))
 	      return TCL_OK;
-	    
+
 	    if(curve->knot_type == AY_KTCUSTOM)
 	      {
 		count_start = 0;
@@ -1084,7 +1084,7 @@ ay_nct_elevate(ay_nurbcurve_object *curve, int new_order)
 	    } /* if */
 	} /* if */
     } /* if */
-	  
+
   if(clamp_me)
     {
       ay_status = ay_nct_clamp(curve);
@@ -1096,7 +1096,7 @@ ay_nct_elevate(ay_nurbcurve_object *curve, int new_order)
 
   /* alloc new knotv & new controlv */
   if(!(Uh = calloc((curve->length + curve->length*t +
-		    curve->order + t), 
+		    curve->order + t),
 		   sizeof(double))))
     {
       ay_error(AY_EOMEM, fname, NULL);
@@ -1142,9 +1142,9 @@ ay_nct_elevate(ay_nurbcurve_object *curve, int new_order)
   curve->controlv = realQw;
 
   curve->knot_type = AY_KTCUSTOM;
-	  
+
   curve->order += t;
-	  
+
   curve->length = nh;
 
   Qw = NULL;
@@ -1215,7 +1215,7 @@ ay_nct_elevatetcmd(ClientData clientData, Tcl_Interp *interp,
 		    }
 		}
 	    }
-	  
+
 	  if(clamp_me)
 	    {
 	      ay_status = ay_nct_clamp(curve);
@@ -1227,7 +1227,7 @@ ay_nct_elevatetcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  /* alloc new knotv & new controlv */
 	  if(!(Uh = calloc((curve->length + curve->length*t +
-			    curve->order + t), 
+			    curve->order + t),
 			     sizeof(double))))
 	    {
 	      ay_error(AY_EOMEM, fname, NULL);
@@ -1273,9 +1273,9 @@ ay_nct_elevatetcmd(ClientData clientData, Tcl_Interp *interp,
 	  curve->controlv = realQw;
 
 	  curve->knot_type = AY_KTCUSTOM;
-	  
+
 	  curve->order += t;
-	  
+
 	  curve->length = nh;
 
 	  Qw = NULL;
@@ -1438,7 +1438,7 @@ ay_nct_collapsetcmd(ClientData clientData, Tcl_Interp *interp,
 
       sel = sel->next;
     } /* while */
-  
+
   ay_notify_parent();
 
  return TCL_OK;
@@ -1530,7 +1530,7 @@ ay_nct_findu(struct Togl *togl, ay_object *o,
   pixel1[0] = (float)ay_prefs.ser;
   pixel1[1] = (float)ay_prefs.seg;
   pixel1[2] = (float)ay_prefs.seb;
-  
+
   /*
   winx = winX;
   winy = height - winY;
@@ -1682,7 +1682,7 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
 int height = Togl_Height(togl);
  double winX = 0.0, winY = 0.0;
  static int fvalid = AY_FALSE;
- static double fX = 0.0, fY = 0.0; 
+ static double fX = 0.0, fY = 0.0;
  char fname[] = "findU_cb";
  double u = 0.0;
  Tcl_Obj *to = NULL, *ton = NULL;
@@ -1759,8 +1759,7 @@ int height = Togl_Height(togl);
 
 
 /* ay_nct_split:
- *  
- *  
+ *
  */
 int
 ay_nct_split(ay_object *src, double u)
@@ -1800,7 +1799,7 @@ ay_nct_split(ay_object *src, double u)
 			      knots, &s);
 
      r = curve->order-1-s;
-	  
+
 
      curve->length += r;
 
@@ -1809,7 +1808,7 @@ ay_nct_split(ay_object *src, double u)
 	 newcontrolv = NULL;
 	 if(!(newcontrolv = calloc(curve->length*stride, sizeof(double))))
 	   return AY_EOMEM;
-	 newknotv = NULL;	  
+	 newknotv = NULL;
 	 if(!(newknotv = calloc(curve->length+curve->order,
 				sizeof(double))))
 	   return AY_EOMEM;
@@ -1831,7 +1830,7 @@ ay_nct_split(ay_object *src, double u)
      nc1->closed = AY_FALSE;
      ay_status = ay_object_copy(src, &new);
 
-     ay_status = ay_object_link(new);  
+     ay_status = ay_object_link(new);
 
 
        if(r != 0)
@@ -1846,7 +1845,7 @@ ay_nct_split(ay_object *src, double u)
      newcontrolv = NULL;
      if(!(newcontrolv = calloc(nc1->length*stride, sizeof(double))))
        return AY_EOMEM;
-     newknotv = NULL;	  
+     newknotv = NULL;
      if(!(newknotv = calloc(nc1->length+nc1->order, sizeof(double))))
        return AY_EOMEM;
 
@@ -1890,8 +1889,7 @@ ay_nct_split(ay_object *src, double u)
 
 
 /* ay_nct_splittcmd:
- *  
- *  
+ *
  */
 int
 ay_nct_splittcmd(ClientData clientData, Tcl_Interp *interp,
@@ -1952,8 +1950,7 @@ ay_nct_splittcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_nct_concattcmd:
- *  
- *  
+ *
  */
 int
 ay_nct_concattcmd(ClientData clientData, Tcl_Interp *interp,
@@ -2062,8 +2059,7 @@ ay_nct_concattcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_nct_crtncircle:
- *  
- *  
+ *
  */
 int
 ay_nct_crtncircle(ay_nurbcurve_object **curve)
@@ -2077,9 +2073,9 @@ ay_nct_crtncircle(ay_nurbcurve_object **curve)
    1.0,1.0,0.0,1.0,
    1.0,0.0,0.0,1.0,
    1.0,-1.0,0.0,1.0,
-   0.0,-1.0,0.0,1.0, 
-   -1.0,-1.0,0.0,1.0, 
-   -1.0,0.0,0.0,1.0, 
+   0.0,-1.0,0.0,1.0,
+   -1.0,-1.0,0.0,1.0,
+   -1.0,0.0,0.0,1.0,
    -1.0,1.0,0.0,1.0,
    0.0,1.0,0.0,1.0
  };
@@ -2110,15 +2106,15 @@ ay_nct_crtncircle(ay_nurbcurve_object **curve)
     { free(new); return AY_EOMEM; }
   if(!(knotv = calloc(12, sizeof(double))))
     { free(new); free(controlv); return AY_EOMEM; }
-  
+
   new->order = 3;
   new->length = 9;
   new->knot_type = AY_KTCUSTOM;
 
-  memcpy(controlv,controls,9*4*sizeof(double)); 
+  memcpy(controlv,controls,9*4*sizeof(double));
   new->controlv = controlv;
-  
-  memcpy(knotv,knots,12*sizeof(double)); 
+
+  memcpy(knotv,knots,12*sizeof(double));
   new->knotv = knotv;
 
   new->createmp = AY_TRUE;
@@ -2130,8 +2126,7 @@ ay_nct_crtncircle(ay_nurbcurve_object **curve)
 
 
 /* ay_nct_crtncirclearc:
- *  
- *  
+ *
  */
 int
 ay_nct_crtncirclearc(double arc, ay_nurbcurve_object **curve)
@@ -2166,8 +2161,7 @@ ay_nct_crtncirclearc(double arc, ay_nurbcurve_object **curve)
 
 
 /* ay_nct_crtnhcircle:
- *  
- *  
+ *
  */
 int
 ay_nct_crtnhcircle(ay_nurbcurve_object **curve)
@@ -2181,7 +2175,7 @@ ay_nct_crtnhcircle(ay_nurbcurve_object **curve)
    1.0,1.0,0.0,1.0,
    1.0,0.0,0.0,1.0,
    1.0,-1.0,0.0,1.0,
-   0.0,-1.0,0.0,1.0, 
+   0.0,-1.0,0.0,1.0,
  };
  double knots[8] = {
    0.0, 0.0, 0.0, 0.5, 0.5, 1.0, 1.0, 1.0
@@ -2203,15 +2197,15 @@ ay_nct_crtnhcircle(ay_nurbcurve_object **curve)
     { free(new); return AY_EOMEM; }
   if(!(knotv = calloc(12, sizeof(double))))
     { free(new); free(controlv); return AY_EOMEM; }
-  
+
   new->order = 3;
   new->length = 5;
   new->knot_type = AY_KTCUSTOM;
 
-  memcpy(controlv,controls,5*4*sizeof(double)); 
+  memcpy(controlv,controls,5*4*sizeof(double));
   new->controlv = controlv;
 
-  memcpy(knotv,knots,8*sizeof(double)); 
+  memcpy(knotv,knots,8*sizeof(double));
   new->knotv = knotv;
 
   *curve = new;
@@ -2221,8 +2215,7 @@ ay_nct_crtnhcircle(ay_nurbcurve_object **curve)
 
 
 /* ay_nct_crtncircletcmd:
- *  
- *  
+ *
  */
 int
 ay_nct_crtncircletcmd(ClientData clientData, Tcl_Interp *interp,
@@ -2277,8 +2270,7 @@ ay_nct_crtncircletcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_nct_crtrecttcmd:
- *  
- *  
+ *
  */
 int
 ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
@@ -2289,7 +2281,7 @@ ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *parent = NULL;
  ay_nurbpatch_object *patch = NULL;
  ay_nurbcurve_object *curve = NULL;
- char fname[] = "create_trimrect"; 
+ char fname[] = "create_trimrect";
  double def_controls[20] = { 1.0, 1.0, 0.0, 1.0,
 			     1.0,-1.0, 0.0, 1.0,
 			     -1.0,-1.0, 0.0, 1.0,
@@ -2362,7 +2354,7 @@ ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
       curve->controlv[7] = 1.0;
       curve->controlv[8] = patch->uknotv[patch->width+patch->uorder-1];
       curve->controlv[9] = patch->vknotv[patch->height+patch->vorder-1];
-      curve->controlv[11] = 1.0; 
+      curve->controlv[11] = 1.0;
       curve->controlv[12] = patch->uknotv[0];
       curve->controlv[13] = patch->vknotv[patch->height+patch->vorder-1];
       curve->controlv[15] = 1.0;
@@ -2386,8 +2378,7 @@ ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_nct_crtclosedbsptcmd:
- *  
- *  
+ *
  */
 int
 ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
@@ -2395,7 +2386,7 @@ ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int ay_status;
  ay_nurbcurve_object *curve = NULL;
- char fname[] = "create_closedbsp"; 
+ char fname[] = "create_closedbsp";
  double *controlv;
  int i = 0, num = 0, a = 0;
  double angle = 0.0;
@@ -2416,9 +2407,9 @@ ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
       ay_error(AY_EARGS,fname,"numpoints");
       return TCL_OK;
     }
-  
+
   Tcl_GetInt(interp,argv[1],&num);
- 
+
   if(num<=2)
     {
       ay_error(AY_ERROR, fname, "numpoints must be >= 3");
@@ -2433,7 +2424,7 @@ ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
     }
 
   angle = 360.0/num;
-  
+
   ay_trafo_identitymatrix(m);
   for(i=0;i<num+3;i++)
     {
@@ -2594,8 +2585,7 @@ ay_nct_getorientation(ay_nurbcurve_object *curve, double *orient)
 
 
 /* ay_nct_isclosed:
- *  
- *  
+ *
  */
 int
 ay_nct_isclosed(ay_nurbcurve_object *nc)
@@ -2658,7 +2648,7 @@ ay_nct_createfrompatch(ay_object *p, int where, ay_object **cu)
     {
     case 0:
       n = pa->width;
-      
+
       if(!(cv = calloc(n*4, sizeof(double))))
 	{ free(c); return AY_EOMEM; }
       a = 0;
@@ -2683,7 +2673,7 @@ ay_nct_createfrompatch(ay_object *p, int where, ay_object **cu)
       break;
     case 1:
       n = pa->width;
-      
+
       if(!(cv = calloc(n*4, sizeof(double))))
 	{ free(c); return AY_EOMEM; }
       a = 0;
@@ -2708,7 +2698,7 @@ ay_nct_createfrompatch(ay_object *p, int where, ay_object **cu)
       break;
     case 2:
       n = pa->height;
-      
+
       if(!(cv = calloc(n*4, sizeof(double))))
 	{ free(c); return AY_EOMEM; }
       a = 0;
@@ -2733,7 +2723,7 @@ ay_nct_createfrompatch(ay_object *p, int where, ay_object **cu)
       break;
     case 3:
       n = pa->height;
-      
+
       if(!(cv = calloc(n*4, sizeof(double))))
 	{ free(c); return AY_EOMEM; }
       a = 0;
@@ -2768,8 +2758,7 @@ ay_nct_createfrompatch(ay_object *p, int where, ay_object **cu)
 
 
 /* ay_nct_applytrafo:
- *  
- *  
+ *
  */
 int
 ay_nct_applytrafo(ay_object *c)
@@ -2794,7 +2783,7 @@ ay_nct_applytrafo(ay_object *c)
   while(i < nc->length*stride)
     {
       ay_trafo_apply4(&(nc->controlv[i]), m);
-      
+
       i += stride;
     } /* while */
 
@@ -2885,7 +2874,7 @@ ay_nct_concatmultiple(int closed, int knot_type, int fillgaps,
 
   if((order == 2) && closed && (knot_type == 0) && (!fillgaps))
     {
-      length++; 
+      length++;
     }
 
   /* construct new knotvector */
@@ -3206,7 +3195,7 @@ ay_nct_arrange(ay_object *o, ay_object *t, int rotate)
   if(!(trcv = calloc(tr->length*stride, sizeof(double))))
     { return AY_EOMEM; }
   memcpy(trcv, tr->controlv, tr->length*stride*sizeof(double));
-  
+
   ay_trafo_creatematrix(t, mtr);
   a = 0;
   for(i = 0; i < tr->length; i++)
@@ -3251,7 +3240,7 @@ ay_nct_arrange(ay_object *o, ay_object *t, int rotate)
 
       if(rotate)
 	{
-	  
+
 	  ay_nb_ComputeFirstDer4D(tr->length-1, tr->order-1, tr->knotv,
 				  trcv, u, T1);
 
@@ -3265,7 +3254,7 @@ ay_nct_arrange(ay_object *o, ay_object *t, int rotate)
 	      AY_V3CROSS(A,T0,T1)
 	      len = AY_V3LEN(A);
 	      AY_V3SCAL(A,(1.0/len))
-	      
+
 	      angle = acos(AY_V3DOT(T0,T1));
 
 	      if(fabs(angle) > AY_EPSILON)
@@ -3565,7 +3554,7 @@ ay_nct_curvplottcmd(ClientData clientData, Tcl_Interp *interp,
 	      a += 4;
 	      b++;
 	    }
-	  
+
 	  ay_status = ay_nct_create(4, samples, AY_KTNURB, controlv, NULL,
 				    &c2);
 	  Tcl_DStringInit(&ds);
@@ -3582,7 +3571,7 @@ ay_nct_curvplottcmd(ClientData clientData, Tcl_Interp *interp,
 	  o->refine = c2;
 	  ay_object_link(o);
 	  Tcl_DStringFree(&ds);
-	} /* if */	  
+	} /* if */
 
       if(freepo)
 	{
@@ -3730,7 +3719,7 @@ ay_nct_intersect(ay_nurbcurve_object *cu, ay_nurbcurve_object *cv,
 	    {
 	      overlap = AY_FALSE;
 	    }
-	  
+
 	  if(overlap)
 	    {
 	      /* segments bu[i] and bv[j] overlap atleast in one
@@ -3750,7 +3739,7 @@ ay_nct_intersect(ay_nurbcurve_object *cu, ay_nurbcurve_object *cv,
       k = 0;
       for(j = 0; j < cu->order; j++)
 	{
-	  
+
 
 	}
       k+=stride;
@@ -3975,3 +3964,80 @@ ay_nct_makecompatible(ay_object *cu)
 } /* ay_nct_makecompatible */
 
 
+/* ay_nct_shiftcbs:
+ *  shift the control points of a closed B-Spline
+ */
+int
+ay_nct_shiftcbs(ay_nurbcurve_object *curve)
+{
+ int ay_status = AY_OK;
+ int a, i, stride = 4;
+ double t[4] = {0};
+
+  if(!curve)
+    return AY_ENULL;
+
+  memcpy(t, curve->controlv, stride * sizeof(double));
+
+  a = 0;
+  for(i = 0; i < (curve->length-(curve->order-1)-1); i++)
+    {
+      memcpy(&(curve->controlv[a]), &(curve->controlv[a+stride]),
+	     stride * sizeof(double));
+      a += stride;
+    }
+
+  memcpy(&(curve->controlv[(curve->length-curve->order)*stride]), t,
+	 stride * sizeof(double));
+
+  ay_status = ay_nct_close(curve);
+
+ return ay_status;
+} /* ay_nct_shiftcbs */
+
+
+/* ay_nct_shiftcbstcmd:
+ *  shift the control points of a closed B-Spline
+ */
+int
+ay_nct_shiftcbstcmd(ClientData clientData, Tcl_Interp *interp,
+		    int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ ay_list_object *sel = ay_selection;
+ ay_nurbcurve_object *curve = NULL;
+ ay_object *src = NULL;
+ char fname[] = "shiftCBNC";
+
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, fname, NULL);
+      return TCL_OK;
+    }
+
+  while(sel)
+    {
+      src = sel->object;
+      if(src->type != AY_IDNCURVE)
+	{
+	  ay_error(AY_ERROR, fname, "Object is not a NURBCurve!");
+	}
+      else
+	{
+	  curve = (ay_nurbcurve_object*)src->refine;
+
+	  ay_status = ay_nct_shiftcbs(curve);
+	  if(ay_status)
+	    {
+	      ay_error(ay_status, fname, "Could not shift NCurve!");
+	    }
+
+	} /* if */
+
+      sel = sel->next;
+    } /* while */
+
+  ay_notify_parent();
+
+ return TCL_OK;
+} /* ay_nct_shiftcbstcmd */
