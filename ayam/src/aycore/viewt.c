@@ -19,6 +19,8 @@
 
 /* viewt.c - view tools */
 
+/* functions: */
+
 /* ay_viewt_setupprojection:
  *  setup the current projection matrix
  *  to reflect "from" and "to" camera settings
@@ -485,7 +487,8 @@ ay_viewt_zoomtoobj(struct Togl *togl, int argc, char *argv[])
 	view->zoom = 3.0;
 
       ay_toglcb_reshape(togl);
-      ay_toglcb_display(togl);
+      if(argc)
+	ay_toglcb_display(togl);
       
       ay_viewt_uprop(view);
       view->drawmarker = AY_FALSE;
@@ -569,6 +572,41 @@ ay_viewt_align(struct Togl *togl, int argc, char *argv[])
 
  return TCL_OK;
 } /* ay_viewt_align */
+
+
+/* ay_viewt_alignlocal:
+ *  
+ */
+void
+ay_viewt_alignlocal()
+{
+ ay_object *o = ay_root;
+ ay_view_object *view = NULL;
+ int status;
+
+  o = o->down;
+  
+  if(!o)
+    return;
+
+  while(o->next)
+    {
+      if(o->type == AY_IDVIEW)
+	{
+	  view = (ay_view_object *)o->refine;
+	  if(view->local)
+	    {
+	      status = ay_viewt_makecurtcb(view->togl, 0, NULL);
+	      status = ay_viewt_align(view->togl, 0, NULL);
+	      status = ay_viewt_zoomtoobj(view->togl, 0, NULL);
+	    }
+	}
+
+      o = o->next;
+    } /* while */
+
+ return;
+} /* ay_viewt_alignlocal */
 
 
 /* ay_viewt_makecurtcb:

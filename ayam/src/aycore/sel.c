@@ -184,6 +184,11 @@ ay_sel_setfromlbtcmd(ClientData clientData, Tcl_Interp *interp,
     }
   ay_selection = newsel;
 
+  if(need_redraw)
+    {
+      ay_viewt_alignlocal();
+    }
+
  return TCL_OK;
 } /* ay_sel_setfromlbtcmd */
 
