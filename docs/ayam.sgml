@@ -4,9 +4,9 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>17. Jun 2004
+<date>1. Nov 2004
 <abstract>
-This is the documentation of Ayam (1.7) - a free 3D modeling environment
+This is the documentation of Ayam (1.8) - a free 3D modeling environment
 for the RenderMan interface.
 
 Please note, that this document is intended to be a reference manual,
@@ -2827,6 +2827,9 @@ are used to build CSG hierarchies. Additionally, they
 inherit attributes. Note that Ayam is currently not able to correctly
 display the results of CSG operations, all objects are always drawn
 completely, even though a CSG operation cut parts away.
+Since Ayam 1.8 there is a plugin available, that is able to preview
+the CSG operations, see also section
+<ref id="aycsg" name="CSG preview using the aycsg plugin">.
 
 New solid primitives may be created with levels of type <tt/"Primitive"/.
 Note that Ayam is not able to check, whether your new primitive obeys
@@ -6653,6 +6656,12 @@ ISBN 0-88986-303-2</it>
 
 <sect1>CSG preview using the aycsg plugin<label id="aycsg">
 <p>
+<figure loc="ht">
+<eps file="pics/csgex.ps" height="5cm">
+<img src="pics/csgex.gif">
+<caption>CSG preview example (left without, right with CSG)</caption>
+</figure>
+<p>
 The aycsg plugin may be used to resolve and preview CSG operations.
 For this, the plugin uses image based CSG rendering algorithms provided
 by the OpenCSG library. The OpenCSG library, currently, supports
@@ -6660,7 +6669,7 @@ the Goldfeather and the SCS algorithm. The latter only works
 properly with convex primitives.
 <p>
 In order for the CSG rendering algorithms to work properly, the depth
-complexity of a primitive must be known.
+complexity (convexity) of a primitive must be known.
 The depth complexity of a primitive determines the maximum number
 of forward oriented surfaces any ray through this primitive would pass.
 A regular sphere has a depth complexity of 1, a torus of 2, but do
@@ -6669,6 +6678,8 @@ A 3D representation of the letter A e.g. has a genus of
 1 but a depth complexity of 3.
 The depth complexity of a primitive should be stored in a DC tag.
 A torus would e.g. get a tag named <tt/"DC"/ with the value <tt/"2"/.
+If you fail to correctly specify the depth complexity, rendering
+errors, like missing parts of surfaces will occur.
 <p>
 Note that the correct operation of aycsg not only depends on the
 depth complexity but also the winding order of the OpenGL primitives
@@ -6680,6 +6691,16 @@ the winding order is always consistent. However, for NURBS patches
 this depends on the orientation of the patch dimensions. If NURBS
 patches are used in CSG operations you, consequently, may need to
 revert the patches.
+If the winding order of some of the primitives in a CSG hierarchy
+is not right, the respective primitives will not be effective
+in the CSG operations to the extent that the rendered image becomes
+completely empty.
+<p>
+The aycsg rendering obeys the <tt>"Draw Selection only"</tt> and
+<tt>"Draw Level only"</tt> view options as well as the hide attribute
+of objects. If the CSG rendering fails, you might still get a
+preview of the important CSG using objects by selecting them
+and enabling the <tt>"Draw Selection only"</tt> view option.
 <p>
 Also note that CSG rendering requires fast graphics hardware
 (the more fillrate, the better). Furthermore, your OpenGL subsystem
@@ -6821,11 +6842,12 @@ Bernd, without your help I surely would not be that far, thanks!
 
 Furthermore, I would like to thank the following people:
 <itemize>
+<item>Florian Kirsch: OpenCSG
 <item>Bertrand Coconnier: implementation of object picking
 <item>Hermann Birkholz: initial implementation of the tree widget, shadow map
 support, AI, and IDR
-<item>Frank (Copper) Pagels: MetaBalls custom object, providing a lot of
-good music
+<item>Frank (Copper) Pagels: MetaBalls custom object, TTF parser,
+providing a lot of good music
 <item>Stephen Echavia: Icons
 <item>Larry Gritz: BMRT
 <item>Benjamin Bederson, Brian Paul et. al.: The Togl Widget
@@ -6983,7 +7005,8 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Create ShadowMaps: <ref id="mmspecial" name="main menu entry">,
 <ref id="vmview" name="view menu entry">
 <item>crtOb: <ref id="crtob" name="scripting interface command">
-<item>CSG: <ref id="levelobj" name="Level object">
+<item>CSG: <ref id="levelobj" name="Level object">,
+<ref id="aycsg" name="AyCSG CSG preview plugin">
 <item>Curvature: <ref id="plotcurt" name="plot curvature tool">
 <item>Custom: <ref id="cul" name="light type">
 <item>Custom Object: <ref id="customobj" name="what is">
