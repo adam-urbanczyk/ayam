@@ -120,6 +120,40 @@ ay_tags_copyall(ay_object *src, ay_object *dst)
 } /* ay_tags_copyall */
 
 
+/* ay_tags_append:
+ *  append the tag <tag> to object <o>
+ *  this routine keeps a pointer to the last tag
+ *  of object o and is fast for subsequent calls;
+ *  however, it must be guaranteed, that the tags
+ *  are not modified during such a sequence;
+ *  thus, the first call in a sequence should be
+ *  ay_tags_append(o, NULL); to properly initialize
+ *  the last pointer
+ */
+int
+ay_tags_append(ay_object *o, ay_tag_object *tag)
+{
+ int ay_status = AY_OK;
+ static ay_object *last_object = NULL;
+ static ay_tag_object **next_tag = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  if((o != last_object) || (!tag))
+    {
+      next_tag = &(o->tags);
+      while(*next_tag)
+	next_tag = &((*next_tag)->next);
+    }
+
+  *next_tag = tag;
+  next_tag = &(tag->next);
+
+ return ay_status;
+} /* ay_tags_append */
+
+
 /* ay_tags_register:
  *  register a new tag type
  */
