@@ -2204,8 +2204,8 @@ between PRMan compatible (default) and RiStandard compatible.
 to no radiosity calculations to be performed.
 <item><tt/"PatchSamples"/, minimum number of samples per patch to
 calculate the radiosity form factors for this patch.
-<item><tt/"Textures"/, <tt/"Includes"/ and <tt/"Shaders"/ are
-search paths for the renderer.
+<item><tt/"Textures"/, <tt/"Shaders"/, <tt/"Archives"/ and <tt/"Procedurals"/
+are search paths for the renderer.
 <item><tt/"TextureMem"/ and <tt/"GeomMem"/ determine how much
 memory rendrib (from BMRT) should use at maximum to cache textures and
 tesselated geometry.
@@ -5896,6 +5896,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <ref id="vwsc" name="view action">
 <item>Apply: <ref id="propgui" name="apply property GUI">
 <item>applyTrafo: <ref id="scitrafo" name="scripting interface command">
+<item>Archives: <ref id="rio" name="RenderMan interface option">
 <item>Area Light: <ref id="alob" name="creation of">
 <item>Atmosphere: <ref id="imager" name="property">
 <item>Attributes: <ref id="attrs" name="attributes property">,
@@ -6245,6 +6246,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>PPRender: <ref id="prefrib" name="preference setting">
 <item>Preferences: <ref id="prefs" name="Preferences">,
 <ref id="hidprefs" name="Hidden Preference Settings">
+<item>Procedurals: <ref id="rio" name="RenderMan interface option">
 <item>Prompt: <ref id="hidprefs" name="hidden preference setting">
 <item>Properties: <ref id="propgui" name="property GUI">
 <item>Primitive: <ref id="mmcreate" name="main menu entry">,
@@ -6363,6 +6365,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Shader: <ref id="shd" name="properties">
 <item>Shader Parsing: <ref id="spplugins" name="shader parsing plugins">
 <item>Shaders: <ref id="prefmain" name="preference setting">,
+<ref id="rio" name="RenderMan interface option">,
 <ref id="scishaders" name="scripting interface commands">
 <item>ShadingRate: <ref id="attrs" name="RenderMan/BMRT attribute">
 <item>ShadowBias: <ref id="rio" name="RenderMan interface option">
@@ -6406,6 +6409,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <ref id="scitags" name="scripting interface commands">
 <item>TC: <ref id="tctag" name="tag type">
 <item>TclPrecision: <ref id="prefmisc" name="preference setting">
+<item>Textures: <ref id="rio" name="RenderMan interface option">
 <item>TextureCoordinates: <ref id="tctag" name="tag type">,
 <ref id="tce" name="texture coordinate editor">
 <item>ThetaMax: <ref id="spattr" name="sphere attribute">,
