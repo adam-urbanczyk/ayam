@@ -52,7 +52,7 @@ proc splash_open { } {
 
     label $w.image -image ayam-splash
     pack $w.image  -side left
-    bind $w <ButtonRelease-1> "grab release $w; after 50 destroy $w"
+    bind $w <ButtonRelease-1> "grab release $w; after 50 destroy $w; focus ."
 
     wm overrideredirect $w 1
     # center the window
@@ -69,5 +69,6 @@ proc splash_open { } {
 proc splash_close { } {
     grab release .aysplash
     destroy .aysplash
+    focus .
  return;
 }
