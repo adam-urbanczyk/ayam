@@ -30,6 +30,7 @@ unsigned int metacomp_id;
 int Metacomp_Init (Tcl_Interp * interp);
 int metaobj_notifycb (ay_object * o);
 
+#define META_VERSION 3
 
 int
 metaobj_createcb (int argc, char *argv[], ay_object * o)
@@ -139,7 +140,7 @@ metaobj_createcb (int argc, char *argv[], ay_object * o)
   w->currentnumpoly = 0;
   w->o = o->down;
 
-  w->version = 3;
+  w->version = META_VERSION;
   
   w->adapt = 0;
   w->flatness = 0.9;
@@ -478,7 +479,7 @@ metaobj_setpropcb (Tcl_Interp * interp, int argc, char *argv[], ay_object * o)
   to = Tcl_ObjGetVar2 (interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj (interp, to, &w->epsilon);
 
-  Tcl_SetStringObj (ton, "stepSize", -1);
+  Tcl_SetStringObj (ton, "StepSize", -1);
   to = Tcl_ObjGetVar2 (interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj (interp, to, &w->step);
 
@@ -556,7 +557,7 @@ metaobj_getpropcb (Tcl_Interp * interp, int argc, char *argv[], ay_object * o)
   to = Tcl_NewDoubleObj (w->epsilon);
   Tcl_ObjSetVar2 (interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj (ton, "stepSize", -1);
+  Tcl_SetStringObj (ton, "StepSize", -1);
   to = Tcl_NewDoubleObj (w->step);
   Tcl_ObjSetVar2 (interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
