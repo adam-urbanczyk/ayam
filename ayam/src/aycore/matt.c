@@ -403,7 +403,7 @@ ay_matt_wrib(char *file, ay_mat_object *m)
     {
       if(m->true_displacement)
 	{
-	  RiDeclare((RtToken)"truedisplacement", "string");
+	  RiDeclare((RtToken)"truedisplacement", "int");
 	  RiAttribute("render", "truedisplacement", &on, RI_NULL);
 	}
 
