@@ -1,19 +1,17 @@
-INSTALL [2. Jan 2003]
+INSTALL [8. May 2003]
 
 Compilation Instructions for Ayam
 ---------------------------------
 
 There are two major ways to compile Ayam, "shared" and
 "wrapped standalone" ( using Wrap0.3 ).
-The binaries you get with the binary distribution of Ayam are
-wrapped standalone. This means Tcl/Tk and the main Tcl-scripts
-of Ayam are all statically combined in the binary.
-This means no hassle with Tcl/Tk versions. You do not need an
-installed Tcl/Tk at all!
-However, the creation of wrapped standalone executables
-of Ayam is a bit tricky.
+The binaries you get with the binary distribution of Ayam are "wrapped
+standalone". This means Tcl/Tk and the main Tcl-scripts of Ayam are all
+statically combined in the binary. This means no hassle with Tcl/Tk
+versions. You do not need an installed Tcl/Tk at all! However, the
+creation of "wrapped standalone" executables of Ayam is a bit tricky.
 Therefore, if you really want to or have to compile Ayam:
-_Please compile a shared version of Ayam!_
+_Please compile a "shared" version of Ayam!_
 
 
 Contents:
@@ -36,7 +34,7 @@ version of Ayam:
   ftp://ftp.scriptics.com/pub/tcl/
   ( May move to SourceForge in the future, see:
     http://tcl.sourceforge.net/ ) 
-  Note, that a complete installation of Tcl/Tk is required.
+  Note that a complete installation of Tcl/Tk is required.
   However:
    On most systems, there should be an installed Tcl/Tk 8.x nowadays.
    If this is the case
@@ -45,7 +43,7 @@ version of Ayam:
    version ( see output of the puts command! ), unpack them,
    and run configure.
    No compiling of this Tcl/Tk is necessary!
-  Note also, that Ayam uses Togl, a Tk-Widget that needs internal
+  Note also that Ayam uses Togl, a Tk-Widget that needs internal
   Tk-headers to be compiled. It is _not sufficient_ to just have
   an installed Tcl/Tk on your system, please
   _get the source distribution_ of Tcl/Tk and get the right
@@ -62,7 +60,7 @@ version of Ayam:
   http://www.mesa3d.org/
 - BMRT ( ri.h, slc.h, libribout.a, libslcargs.a )
   http://www.exluna.com/
-  Note, that BMRT's libribout.a and libslcargs.a come as binary only,
+  Note that BMRT's libribout.a and libslcargs.a come as binary only,
   they might not be available on your platform!
   If BMRT is not available on your platform, you can still
   compile Ayam with the Affine Toolkit with reduced functionality,
@@ -73,12 +71,14 @@ version of Ayam:
   http://www.libtiff.org/
 - The Affine Toolkit
   http://www.affine.com/
-  Source code of Affines Simple RIB writer is distributed with Ayam.
-  No download necessary!
+  Source code of Affines Simple RIB writer is distributed with Ayam
+  ( see subdir "affine/" ).
+  No download necessary, unless you want to compile the RRIB (RIB import)
+  plugin!
 - BWidgets
   http://tcllib.sourceforge.net/
   Ayam has just been tested with BWidgetsV1.2.1 so far.
-  BWidgetsV1.2.1 are distributed with Ayam ( see subdir tcl/BWidget-1.2.1/ ).
+  BWidgetsV1.2.1 are distributed with Ayam ( see subdir "tcl/BWidget-1.2.1/" ).
   No download necessary!
 
 Tip:
@@ -105,6 +105,10 @@ You have all required software and installed/compiled it successfully?
 Now ayamsh should be compiled and ready for a test run.
 - try it:
 >./ayamsh tcl/ayam.tcl
+
+
+1.3 Step 3 - Installation
+-------------------------
 
 If all went fine, you can now install Ayam:
 >make install
@@ -144,15 +148,15 @@ version of Ayam:
   ftp://ftp.scriptics.com/pub/tcl/
   ( May move to SourceForge in the future, see:
     http://tcl.sourceforge.net/ )
-  Note, that you do not need to _install_ Tcl/Tk to compile and use
+  Note that you do not need to _install_ Tcl/Tk to compile and use
   the wrapped standalone version of Ayam. But compiling this Tcl/Tk
   is still necessary. Compile static versions of Tcl/TK using:
   >cd tcl8.2.x/unix
   >./configure --disable-shared; make
   >cd tk8.2.x/unix
   >./configure --disable-shared; make
-  Also note, that Wrap0.3 currently only works with Tcl/Tk 8.2.x, not
-  8.3.x, and not 8.4!
+  Also note that Wrap0.3 currently only works with Tcl/Tk 8.2.x, not
+  8.3.x, and not 8.4.x!
 - A zip utility that understands the -A option ( zip2.2 does ).
 - Wrap0.3
   http://purl.oclc.org/net/nijtmans/wrap.html
@@ -160,7 +164,7 @@ version of Ayam:
   >make z
   and a wrapped "wish" using wrap:
   >make
-  and do not "make clean" afterwards. Note, that Makefile.wrapped
+  and do not "make clean" afterwards. Note that Makefile.wrapped
   is tuned to be used with Wrap0.3. If you use newer versions you
   will likely have to adapt the ayam: and ayamwrap: targets.
 - OpenGL ( gl.h, glu.h, libGL.so, libGLU.so )
@@ -175,7 +179,7 @@ version of Ayam:
   http://www.mesa3d.org/
 - BMRT ( ri.h, slc.h, libribout.a, libslcargs.a )
   http://www.exluna.com/
-  Note, that BMRT's libribout.a and libslcargs.a come as binary only,
+  Note that BMRT's libribout.a and libslcargs.a come as binary only,
   they might not be available on your platform!
   If BMRT is not available on your platform, you can still
   compile Ayam with the Affine Toolkit with reduced functionality,
@@ -186,12 +190,14 @@ version of Ayam:
   http://www.libtiff.org/
 - The Affine Toolkit
   http://www.affine.com/
-  Source code of Affines Simple RIB writer is distributed with Ayam.
-  No download necessary!
+  Source code of Affines Simple RIB writer is distributed with Ayam
+  ( see subdir "affine/" ).
+  No download necessary, unless you want to compile the RRIB (RIB import)
+  plugin!
 - BWidgets
   http://tcllib.sourceforge.net/
   Ayam has just been tested with BWidgetsV1.2.1 so far.
-  BWidgetsV1.2.1 are distributed with Ayam ( see subdir tcl/BWidget-1.2.1/ ).
+  BWidgetsV1.2.1 are distributed with Ayam ( see subdir "tcl/BWidget-1.2.1/" ).
   No download necessary!
 
 
@@ -218,6 +224,10 @@ You have all required software and installed/compiled it successfully?
 Now Ayam should be compiled and ready for a test run.
 -try it:
 >./ayam
+
+
+2.3 Step 3 - Installation
+-------------------------
 
 If all went fine, you can now install Ayam:
 >make install
@@ -248,18 +258,18 @@ additional targets to build plugins and manage the installation.
 
 To compile the MF3D Import/Export plugin two steps are required:
 >make mf3d
-(to compile the MF3D code from Apple (Duet)
+( to compile the MF3D code from Apple (Duet) )
 and
 >make mfio.so
-(to compile the plugin)
+( to compile the plugin )
 
-Load it via menu entry "File/Load Custom".
+Load the plugin via menu entry "File/Load Custom".
 Use it via menu entry "Custom/3DMF/Import" and "Custom/3DMF/Export"
 respectively.
 
 
-3.2 RIB Import Plugin
----------------------
+3.2 RIB Import Plugin (RRIB)
+----------------------------
 
 Additional prerequisites for the RIB import plugin:
 You need the full Affine distribution
@@ -270,17 +280,17 @@ This is done using
 >cd affine
 
 >make setup<your platform>
-(use sun as platform on Linux)
+( use "sun" as platform on Linux )
 
 If you are using Affine0008 you need to tune Affine to _not_
 use libz by editing "config.mak":
 remove "-DRIB_ZLIB" from COPTS and do not link with libz.
 
 If you are using Affine0008 and gcc you, additionally, need to change
-readrib/declare.c:
+"readrib/declare.c":
 o change all occurences of the variable "inline" to "myinline"
-(gcc does not like variables named "inline" without -ansi, but fails
-to compile other parts of Affine if -ansi is enabled too)
+( gcc does not like variables named "inline" without -ansi, but fails
+to compile other parts of Affine if -ansi is enabled )
 
 now compile Affine:
 >make World
@@ -290,7 +300,7 @@ go back to Ayam:
 Point your Ayam Makefile to the Affine libraries,
 see the variable RRIBLIBS.
 Watch out for possible version clashes of header files
-(ayam/src/affine/include vs. affine/include).
+( ayam/src/affine/include vs. affine/include ).
 The version of the Affine headers currently distributed with Ayam
 is 0008. If needed, just copy the headers from the Affine distribution
 to the Ayam distribution.
@@ -302,8 +312,8 @@ Load it via menu entry "File/Load Custom".
 Use it via menu entry "Custom/RRIB/Import RIB"
 
 
-3.3 Importance Driven Rendering
--------------------------------
+3.3 Importance Driven Rendering Plugin (IDR)
+--------------------------------------------
 
 Additional prerequisites to compile IDR are:
 libtiff library and libtiff headers have to be installed.
@@ -320,6 +330,9 @@ Use it via menu entry "Custom/Open IDR".
 Ayam supports the following shader parsing plugins:
 "ayslb" for Air, "ayso" for RDC, "ayslo" for PRMan, "ayslx" for Aqsis,
 and "ayslo3d" for 3Delight.
+Additional prerequisites:
+The respective renderer has to be installed to compile a shader parsing
+plugin.
 
 In order to compile those plugins, adapt the following variables
 in the Makefile:
@@ -333,10 +346,9 @@ then type:
 >make ayso.so
 >make ayslx.so
 
-After loading of one of these plugins the internal shader
-scanning code of Ayam will be disabled, and Ayam will from
-that moment on just scan shaders of the type supported by
-the plugin loaded.
+After loading of one of these plugins the internal shader scanning code
+of Ayam will be disabled, and Ayam will from that moment on just scan
+shaders of the type supported by the plugin loaded.
 
 
 3.5 Installing/Uninstalling Ayam
