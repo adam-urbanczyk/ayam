@@ -432,7 +432,7 @@ ay_prop_getmattcmd(ClientData clientData, Tcl_Interp *interp,
     }
 
   toa = Tcl_NewStringObj(n1, -1);
-  ton = Tcl_NewStringObj("Name", -1);
+  ton = Tcl_NewStringObj("Materialname", -1);
   /* clear variable */
   to = Tcl_NewStringObj("", -1);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
@@ -488,7 +488,7 @@ ay_prop_setmattcmd(ClientData clientData, Tcl_Interp *interp,
     }
 
   toa = Tcl_NewStringObj(n1, -1);
-  ton = Tcl_NewStringObj("Name", -1);
+  ton = Tcl_NewStringObj("Materialname", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   string = Tcl_GetStringFromObj(to, &stringlen);
   if(!string)
