@@ -667,6 +667,12 @@ ay_root_readcb(FILE *fileptr, ay_object *o)
       o->tags = NULL;
     }
 
+  /* copy important attributes from o to real ay_root,
+     (we leave with EDONOTLINK, which would make them
+     disappear else) */
+  ay_root->hide = o->hide;
+  /* copy name? No, it is not visible to the user anyway, currently... */
+
  return AY_EDONOTLINK;
 } /* ay_root_readcb */
 
