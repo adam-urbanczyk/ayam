@@ -1,4 +1,4 @@
-[CVS, 9. 11. 2002]:
+[CVS, 20. 11. 2002]:
 o bug fixes:
   - fixed remembering of the state of the object selection listbox/tree
     when the context menu or a double click on the label is used to
@@ -11,6 +11,9 @@ o bug fixes:
   - fixed Materials level created by RIB import losing the child
     objects when the imported scene is saved and then read again
   - fixed broken delete operation of Clone objects
+  - fixed edit_material not scrolling the tree widget properly when the
+    material object is in the root level of the scene
+  - fixed "align view" setting a wrong up-vector for views of type "Top"
 o reduced number of redraws when selecting hidden or material objects
 o added a RiDisplay tag type, that allows to add more output files
   (e.g. containing depth buffer information) to the scene
@@ -38,6 +41,10 @@ o the Clone object can now also place the created clones along a curve
 o multiple point selection via mouse drag has been improved greatly,
   it is now much faster and selects also points that are hidden behind
   other points
+o added edit master feature (main menu "Edit/Master") that finds and
+  selects the master object of an instance object (similar to the edit
+  material feature)
+o "align view" now aligns to the object space of the selected object
 
 [15. 10. 2002] Ayam1.3:
 o bug fixes:
