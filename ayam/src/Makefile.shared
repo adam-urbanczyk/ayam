@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile.shared [2. Nov 2001]
+# Makefile.shared [4. Nov 2001]
 # Makefile for Ayam (shared version)
 
 # Where shall the executable be installed?
@@ -247,7 +247,7 @@ METAOBJS = contrib/meta/metaobj.o \
 .c.o: 
 	$(CC) -c $(CFLAGS) $*.c -o $@ -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR)
 
-all: ayamsh csphere.so mfio.so
+all: ayamsh csphere.so mfio.so metaobj.so
 
 ayamsh: $(AYAMOBJS) $(TOGLOBJECT) $(AFFINEOBJS)
 	$(LD) $(AYAMOBJS) $(TOGLOBJECT) $(EXLDFLAGS) -o ayamsh $(TKLIB) $(TCLLIB) $(GLLIBS) $(X11LIBS) $(RIBOUTLIB) $(SLCARGSLIB) $(AFFINEOBJS) -lm $(DL)
