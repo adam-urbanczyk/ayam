@@ -350,3 +350,103 @@ proc shortcut_altrotatebinding { w } {
     }
 }
 # shortcut_altrotatebinding
+
+#shortcut_show:
+# display all current shortcuts in a separate top level window
+proc shortcut_show { } {
+global aymainshortcuts ayviewshortcuts
+
+set w .ayshortcuts
+
+catch {destroy $w}
+toplevel $w
+wm title $w "Ayam Shortcuts"
+wm iconname $w "Ayam"
+
+#XXXX make transient?
+
+frame $w.ftext
+
+frame $w.fbutton
+pack $w.fbutton -in $w -side bottom
+button $w.fbutton.b -text "Dismiss" -command "destroy $w"
+pack $w.fbutton.b -in $w.fbutton
+
+pack $w.ftext -in $w -side top -expand yes -fill both
+
+text $w.ftext.text -yscrollcommand "$w.ftext.sbar set" \
+	-setgrid 1 -font fixed -height 20 -width 40
+# -tabs {32c left}
+scrollbar $w.ftext.sbar -takefocus 0 -command "$w.ftext.text yview"
+
+pack $w.ftext.sbar -in $w.ftext -side right -fill y
+pack $w.ftext.text -in $w.ftext -side left -fill both -expand yes
+
+$w.ftext.text insert end "Modelling Actions (View Windows):
+
+ Move Objects:        $ayviewshortcuts(MoveO)
+ Rotate Objects:      $ayviewshortcuts(RotO)
+ Rotate Objects   
+ around Point:        $ayviewshortcuts(RotA)
+ Scale Objects (3D)   $ayviewshortcuts(Scal3)
+ Scale Objects (2D)   $ayviewshortcuts(Scal2)
+ Stretch Objects (2D) $ayviewshortcuts(Stretch)
+ Scale Objects (1D,X) $ayviewshortcuts(ScalX)
+ Scale Objects (1D,Y) $ayviewshortcuts(ScalY)
+ Scale Objects (1D,Z) $ayviewshortcuts(ScalZ)
+
+ Edit Points          $ayviewshortcuts(Edit)
+ Edit Points (direct) $ayviewshortcuts(EditD)
+ Edit Weight          $ayviewshortcuts(WeightE)
+ Reset Weights        $ayviewshortcuts(WeightR)
+
+ Select Points        $ayviewshortcuts(Select)
+ De-Select Points     $ayviewshortcuts(DeSelect)
+ Insert Points        $ayviewshortcuts(InsertP)
+ Delete Points        $ayviewshortcuts(DeleteP)
+
+
+ FindU                $ayviewshortcuts(FindU)
+ Split Curve          $ayviewshortcuts(SplitNC)
+
+View Actions (View Windows):
+
+ Break Action        $ayviewshortcuts(Break)
+
+ Move View           $ayviewshortcuts(MoveV)
+ Move View
+ (along Z)           $ayviewshortcuts(MoveZV)
+ Move View           Mouse-$ayviewshortcuts(MoveVButton)
+
+ Rotate View         $ayviewshortcuts(RotV)
+ Rotate View         $ayviewshortcuts(RotModKey)+Mouse-1
+
+ Rotate View (left)  $ayviewshortcuts(RotL)
+ Rotate View (right) $ayviewshortcuts(RotR)
+ Rotate View (up)    $ayviewshortcuts(RotU)
+ Rotate View (down)  $ayviewshortcuts(RotD)
+
+ Zoom View           $ayviewshortcuts(ZoomV)
+ Zoom in View        $ayviewshortcuts(ZoomI)
+ Zoom out View       $ayviewshortcuts(ZoomO)
+ Zoom View           Mouse-$ayviewshortcuts(ZoomVButton)
+
+See the reference card in the docs
+folder for a printable and more
+complete version.
+"
+
+
+$w.ftext.text configure -state disabled
+bind $w <Next> "$w.ftext.text yview scroll 1 pages"
+bind $w <Prior> "$w.ftext.text yview scroll -1 pages"
+
+bind $w.ftext.text <ButtonPress-4>\
+"$w.ftext.text yview scroll -1 pages; break"
+
+bind $w.ftext.text <ButtonPress-5>\
+"$w.ftext.text yview scroll 1 pages; break"
+
+
+}
+#shortcut_show

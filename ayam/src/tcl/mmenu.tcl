@@ -384,6 +384,7 @@ $m add command -label "Help on object" -command {
     browser_urlOpen $ayprefs(Docs)ayam-4.html\#${type}obj
 }
 
+$m add command -label "Show Shortcuts" -command "shortcut_show"
 $m add command -label "About" -command "aboutAyam"
 $m add checkbutton -label "Show Tooltips" -variable ayprefs(showtt)
 
