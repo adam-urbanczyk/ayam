@@ -1,4 +1,4 @@
-[CVS 27. 04. 2002]
+[CVS 23. 05. 2002]
 o bug fixes:
   - fixed color select buttons in preferences not updating on "load defaults"
   - fixed missing RiSolidBegin/End for spheres with thetamax != 360
@@ -11,6 +11,14 @@ o bug fixes:
   - fixed grid menu button not updating when switching a view to perspective
   - fixed writing of preferences and deleting of temporary files when the
     main window is closed to quit Ayam
+  - fixed rotate about modeling action not redrawing all views
+  - fixed direct point editing action crashing when the selection is
+    changed or some points are selected (tagged), while the coordinate
+    requester is open.
+  - fixed incorrect side caps for revolve objects from certain open
+    parameter curves (e.g. with B-Spline knot vectors)
+  - fixed edit material feature selecting wrong objects under certain
+    circumstances
 o improved RIB export of quadric primitives with negative thetamax
 o the mouse cursor now changes when the "alt rotate" action is in effect
 o the modifier key for the "alt rotate" action is now configurable using
@@ -26,7 +34,33 @@ o added a checkbutton to the rendering GUI that controls ringing the
 o added an object picking facility, you can now click in view windows
   to select objects (Bertrand Coconnier)
 o the default action for view windows is now "Pick" (and not "None")
-o added a reference card to the documentation
+o added a reference card (a brief listing of all keyboard shortcuts)
+  to the documentation
+o improved shadow map creation: the RIB exporter now writes an
+  additional file "<scene>.obj.rib", that contains the geometric
+  primitives of the scene; furthermore, it is now possible to create
+  shadow maps from custom lights (as long as the light shader contains
+  arguments named "from", "to", or "coneangle")
+o added shadow bias options to standard RiOption tag database
+o the preference setting "RIB-Export/RIBFile" now allows a new special
+  value "Scenefile" that works like "Scene" but strips the leading path
+  from the scene file name (required by new shadow map RIB creation scheme)
+o added a new tag type "TC" that holds texture coordinates
+o the tag property GUI now displays just a certain number of characters
+  from a tag value (this is adjustable via the new hidden preference
+  setting "MaxTagLen")
+o the edit tag dialogue is now resizable
+o added some default RiOptions and RiAttributes to the default database
+o improved the RiOptions and RiAttributes GUIs: they are now resizable
+  and load the first value from the list of default values immediately
+o added support for libslxargs; libslxargs may be used as replacement
+  for libslcargs on platforms like MacOS X
+o added drawing of a background image to view windows
+o added two new component types to the MetaBalls custom object:
+  cube and custom
+o prepared some plugins to be combined statically into the binary
+o added a show shortcuts feature to the main help menu
+
 
 [17. 01. 2002] Ayam1.1:
 o bug fixes:
