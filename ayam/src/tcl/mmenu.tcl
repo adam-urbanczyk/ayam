@@ -291,6 +291,7 @@ $m.nct add command -label "Revolve" -command "revolve_crt;"
 $m.nct add command -label "Extrude" -command "extrude_crt;"
 $m.nct add command -label "Sweep" -command "sweep_crt;"
 $m.nct add command -label "Skin" -command "skin_crt;"
+$m.nct add command -label "Gordon" -command "gordon_crt;"
 $m.nct add command -label "Cap" -command "cap_crt;"
 $m.nct add command -label "Birail1" -command "birail1_crt;"
 $m.nct add separator
