@@ -23,4 +23,6 @@
 *.gif -k 'b'
 *.png -k 'b'
 *.ps  -k 'b'
+*.tiff -k 'b'
+*.tif -k 'b'
 
