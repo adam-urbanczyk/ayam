@@ -14,6 +14,43 @@
 
 /* clevel.c - functions for current level management */
 
+
+int
+ay_clevel_find(ay_object *c, ay_object *o, int *found)
+{
+ int ay_status = AY_OK;
+
+ /**found = AY_FALSE;*/
+  while(c->next)
+    {
+      if(c != o)
+	{
+	  if(c->down)
+	    {
+	      ay_clevel_add(c);
+	      ay_clevel_add(c->down);
+	      ay_status = ay_clevel_find(c->down, o, found);
+	      if(!(*found))
+		{
+		  ay_clevel_del();
+		  ay_clevel_del();
+		}
+	    }
+
+	}
+      else
+	{
+	  *found = AY_TRUE;
+	  return AY_OK;
+	}
+      c = c->next;
+    }
+
+
+ return AY_OK;
+} /* ay_clevel_find */
+
+
 int
 ay_clevel_add(ay_object *o)
 {
