@@ -726,7 +726,7 @@ ay_instt_resolvetcmd(ClientData clientData, Tcl_Interp *interp,
  */
 int
 ay_instt_checkinstance(ay_object *o, ay_object *target,
-		      ay_object *instance, int *check_this_tree)
+		       ay_object *instance, int *check_this_tree)
 {
  int res = AY_FALSE;
  int check = AY_FALSE;
@@ -739,7 +739,9 @@ ay_instt_checkinstance(ay_object *o, ay_object *target,
 	  *check_this_tree = check;
 
 	  if(res)
-	    return res;
+	    {
+	      return res;
+	    } /* if */
 
 	  if(check)
 	    {
@@ -754,15 +756,15 @@ ay_instt_checkinstance(ay_object *o, ay_object *target,
 	{
 	  *check_this_tree = AY_TRUE;
 
-	  if(o == ((ay_object *)instance->refine))
+	  if((o == ((ay_object *)instance->refine)) && o->down)
 	    {
 	      return AY_TRUE;
-	    } /* if */
+	    }
 	  else
 	    {
 	      return AY_FALSE;
-	    }
-	}
+	    } /* if */
+	} /* if */
 
       o = o->next;
     } /* while */
@@ -780,7 +782,7 @@ int
 ay_instt_check(ay_object *o, ay_object *target)
 {
  int res = AY_FALSE;
- int check;
+ int check = AY_FALSE;
  ay_object *down = NULL;
 
   if(o->down)
@@ -804,7 +806,7 @@ ay_instt_check(ay_object *o, ay_object *target)
 	      if(((ay_object*)down->refine) == target)
 		{
 		  return AY_TRUE;
-		}
+		} /* if */
 
 	      /* recursive check */
 	      res = ay_instt_checkinstance(ay_root, target, down, &check);
