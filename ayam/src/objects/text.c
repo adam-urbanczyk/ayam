@@ -591,7 +591,8 @@ ay_text_notifycb(ay_object *o)
 	    default:
 	      break;
 	    } /* switch */
-	  return AY_ERROR;
+	  ay_status = AY_ERROR;
+	  goto cleanup;
 	} /* if */
 
       if(letter.numoutlines > 0)
@@ -830,10 +831,12 @@ ay_text_notifycb(ay_object *o)
       uc++;
     } /* while */
 
+cleanup:
+
   /* free (temporary) font structure */
   tti_status = ay_tti_getcurves(NULL, 0, NULL);
 
- return AY_OK;
+ return ay_status;
 } /* ay_text_notifycb */
 
 
