@@ -350,7 +350,7 @@ ADDLIB =
 # Ayslx Plugin
 AQSISDIR = /usr/local/aqsis
 AYSLXINCDIR = $(AQSISDIR)/include
-AYSLXLIBS = rcdummy.o $(AQSISDIR)/lib/libshadervm.so $(AQSISDIR)/lib/libshaderexecenv.so $(AQSISDIR)/lib/libslxargs.so $(AQSISDIR)/lib/libaqsistypes.so
+AYSLXLIBS = $(AQSISDIR)/lib/rcdummy.o $(AQSISDIR)/lib/libshadervm.so $(AQSISDIR)/lib/libshaderexecenv.so $(AQSISDIR)/lib/libslxargs.so $(AQSISDIR)/lib/libaqsistypes.so
 
 # Ayso Plugin
 RDCDIR = /usr/local/rdc
