@@ -1,4 +1,4 @@
-[24. Aug 2004] CVS-Head:
+[30. Aug 2004] CVS-Head:
 o bug fixes:
   - fixed "loadayslo3d.tcl" loading the wrong plugin (SF 928054)
   - fixed "Select Renderer" setting a wrong shader extension for "3Delight"
@@ -44,6 +44,10 @@ o added new object type "Birail1" that sweeps a cross section curve along
 o added provide mechanism capabilites to the Level object, thus it is now
   possible to use a Level object to add tags to an Instance object, that is
   used as parameter object of a tool object
+o improved behaviour of single point editing actions for multiple selected
+  objects
+o fixed problems exiting Ayam on Mac OS X introducing a fast exit compile
+  time option
 
 
 [27. Mar 2004] Ayam1.7:
