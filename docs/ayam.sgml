@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>6. Jan 2004
+<date>3. Feb 2004
 <abstract>
 This is the documentation of Ayam (1.7) - a free 3D modeling environment
 for the RenderMan interface.
@@ -3777,7 +3777,8 @@ of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 </figure>
 <p>
 The skin object forms a surface defined by a set of curves, where
-the first and last curve will always be interpolated by the surface.<p>
+the first and last curve will always be interpolated by the surface
+(this process is sometimes also called lofting).<p>
 Note that in contrast to the build from curves tool,
 the curves may be of arbitrary length and order. You may e.g.
 easily skin a curve of order 2 and length 6 with a second curve
@@ -5807,6 +5808,36 @@ Object-instances are resolved to normal objects while importing.
 Instances may be easily created again using Automatic Instancing
 (see section <ref id="ai" name="Automatic Instancing">).
 
+<sect1>Wavefront OBJ Export<label id="expwav">
+<p>
+Since Ayam1.7, it is possible to export scenes or objects to
+the Wavefront OBJ format (version 3.0).
+The corresponding main menu entry is
+<tt>"File/Export/Wavefront OBJ"</tt>.
+The Wavefront export currently supports the following
+primitives:
+<itemize>
+<item> NCurve and objects that may be converted to NCurve
+objects (ICurve, ConcatNC)
+<item> NPatch (with trim curves) and objects that may be converted
+to NPatch objects (BPatch, PatchMesh, Revolve, Sweep, Extrude, Skin,
+Cap, Gordon)
+<item> PolyMesh and objects that may be converted to PolyMesh objects
+(MetaObj), faces with holes are not supported by the Wavefront
+format and will be discarded
+<item> Box
+<item> Instance, Clone; both will be resolved to normal objects for export
+as Wavefront OBJ does not support referenced geometry
+<item> Level, CSG operations are not supported and will be written
+as normal Level objects, transformations will be delegated
+to the child objects
+</itemize>
+
+Since Wavefront OBJ does not support separate transformation attributes,
+all transformation attributes will be used to transform the coordinate
+values (the control points) of the exported objects.
+
+
 <sect1>3DMF Import Export (MFIO) Plugin<label id="mfioplugin">
 <p>
 Using the MFIO plugin you may import and export scenes
@@ -6422,6 +6453,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Local: <ref id="vat" name="view attribute">,
 <ref id="editlocal" name ="Editing in Local Space">
 <item>Locale: <ref id="prefgui" name="preference setting">
+<item>Loft: <ref id="skinobj" name="skin object">,
 <item>LogFile: <ref id="prefgui" name="preference setting">
 <item>Logging: <ref id="prefgui" name="preference setting">
 <item>LowerBevel: <ref id="extrattr" name="extrude attribute">
@@ -6478,6 +6510,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 
 <label id="indexo">O
 <itemize>
+<item>OBJ: <ref id="expwav" name="Wavefront OBJ export">
 <item>Object: <ref id="prefdraw" name="preference setting">
 <item>Objectname: <ref id="attrs" name="attribute">
 <item>Objects: <ref id="obj" name="tree/listbox">,
@@ -6750,6 +6783,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 
 <label id="indexw">W
 <itemize>
+<item>Wavefront OBJ export: <ref id="expwav" name="Wavefront OBJ export">
 <item>Weight: <ref id="iac" name="single point weight editing">
 <item>Width: <ref id="rio" name="RenderMan interface option">,
 <ref id="bxp" name="box attribute">,
