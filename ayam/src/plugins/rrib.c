@@ -199,6 +199,19 @@ char Ppw[] = {
     0,  3 ,'w','\0',  PPWTBL_PW
 };
 
+enum {
+   NTBL_N,
+   NTBL_Nn,
+   NTBL_LAST
+};
+
+char N[] = {
+    0,  1 , 'N',
+    2,  2 ,'\0',  0,
+    0,  3 ,'n','\0',  1,
+};
+
+
 /* prototypes of functions local to this module: */
 
 RtVoid ay_rrib_RiSphere(RtFloat radius, RtFloat zmin, RtFloat zmax,
@@ -309,9 +322,6 @@ RtVoid ay_rrib_RiFrameBegin(RtInt frame);
 
 RtVoid ay_rrib_RiFrameEnd(void);
 
-RtVoid ay_rrib_RiGeneralPolygon(RtInt nloops, RtInt nvertices[],
-				RtInt n, RtToken tokens[], RtPointer parms[]);
-
 RtVoid ay_rrib_RiGeometricApproximation(RtToken type, RtFloat value);
 
 RtVoid ay_rrib_RiGeometricRepresentation(RtToken type);
@@ -412,6 +422,9 @@ RtVoid ay_rrib_RiPoints(RtInt npoints,
 
 RtVoid ay_rrib_RiPointsGeneralPolygons(RtInt npolys, RtInt nloops[],
 				RtInt nvertices[], RtInt vertices[],
+				RtInt n, RtToken tokens[], RtPointer parms[]);
+
+RtVoid ay_rrib_RiGeneralPolygon(RtInt nloops, RtInt nvertices[],
 				RtInt n, RtToken tokens[], RtPointer parms[]);
 
 RtVoid
@@ -1630,36 +1643,6 @@ ay_rrib_RiFrameEnd( void )
 
 
 RtVoid
-ay_rrib_RiGeneralPolygon(RtInt nloops, RtInt nvertices[],
-			 RtInt n, RtToken tokens[], RtPointer parms[])
-{
- RtInt *vertices = NULL, total_verts = 0;
- int i;
-
-  for(i = 0; i < nloops; i++)
-    {
-      total_verts += nvertices[i];
-    }
-
-  if(!(vertices = calloc(total_verts, sizeof(RtInt))))
-    return;
-
-  for(i = 0; i < total_verts; i++)
-    {
-      vertices[i] = i;
-    }
-
-  ay_rrib_RiPointsGeneralPolygons(1, &nloops, nvertices, vertices,
-				  n, tokens, parms);
-
-  /* clean up */
-  free(vertices);
-
- return;
-} /* ay_rrib_RiGeneralPolygon */
-
-
-RtVoid
 ay_rrib_RiGeometricApproximation(RtToken type, RtFloat value)
 {
    (void)type; (void)value;
@@ -2478,6 +2461,7 @@ ay_rrib_RiPointsGeneralPolygons(RtInt npolys, RtInt nloops[],
  int i = 0, a = 0, stride = 0;
  unsigned int total_loops = 0, total_verts = 0, nc_needed = 0;
  RtPointer tokensfound[PPWTBL_LAST];
+ RtPointer ntokensfound[NTBL_LAST];
  RtFloat *pp = NULL, *pw = NULL;
 
   pm.npolys = npolys;
@@ -2522,6 +2506,7 @@ ay_rrib_RiPointsGeneralPolygons(RtInt npolys, RtInt nloops[],
   for(i = 0; i < total_verts; i++)
     {
       pm.verts[i] = (unsigned int) vertices[i];
+      /* get biggest vertice index, this is the number of controlvs we need */
       if(nc_needed < (unsigned int)(vertices[i]))
 	{
 	  nc_needed = (unsigned int)(vertices[i]);
@@ -2543,6 +2528,29 @@ ay_rrib_RiPointsGeneralPolygons(RtInt npolys, RtInt nloops[],
     } /* for */
   pm.ncontrols = nc_needed;
 
+  RibGetUserParameters(N, NTBL_LAST, n, tokens, parms, ntokensfound);
+  if(ntokensfound[NTBL_N])
+    {
+      pm.has_normals = AY_TRUE;
+      if(!(pm.normalv = calloc(nc_needed*3, sizeof(double))))
+	{
+	  free(pm.nloops); free(pm.nverts); free(pm.verts); free(pm.controlv);
+	  return;
+	} /* if */
+      pw = (RtFloat*)ntokensfound[NTBL_N];
+      pp = pw;
+      a = 0;
+      for(i = 0; i < nc_needed; i++)
+	{
+	  pm.normalv[a]   = (double)(pp[0]);
+	  pm.normalv[a+1] = (double)(pp[1]);
+	  pm.normalv[a+2] = (double)(pp[2]);
+
+	  a += 3;
+	  pp += 3;
+	} /* for */
+    } /* if */
+
   /* now link the object to the scene */
   ay_rrib_linkobject((void *)(&pm), AY_IDPOMESH);
 
@@ -2550,9 +2558,41 @@ ay_rrib_RiPointsGeneralPolygons(RtInt npolys, RtInt nloops[],
   free(pm.nverts);
   free(pm.verts);
   free(pm.controlv);
+  if(pm.normalv)
+    free(pm.normalv);
 
  return;
 } /* ay_rrib_RiPointsGeneralPolygons */
+
+
+RtVoid
+ay_rrib_RiGeneralPolygon(RtInt nloops, RtInt nvertices[],
+			 RtInt n, RtToken tokens[], RtPointer parms[])
+{
+ RtInt *vertices = NULL, total_verts = 0;
+ int i;
+
+  for(i = 0; i < nloops; i++)
+    {
+      total_verts += nvertices[i];
+    }
+
+  if(!(vertices = calloc(total_verts, sizeof(RtInt))))
+    return;
+
+  for(i = 0; i < total_verts; i++)
+    {
+      vertices[i] = i;
+    }
+
+  ay_rrib_RiPointsGeneralPolygons(1, &nloops, nvertices, vertices,
+				  n, tokens, parms);
+
+  /* clean up */
+  free(vertices);
+
+ return;
+} /* ay_rrib_RiGeneralPolygon */
 
 
 RtVoid
@@ -4669,11 +4709,13 @@ ay_rrib_readrib(char *filename, int frame, int read_camera, int read_options,
 	{
 	  ay_rrib_initgeneral();
 	}
-    }
+    } /* if */
 
   if(ay_rrib_readoptions)
-    ay_rrib_initoptions();
-  
+    {
+      ay_rrib_initoptions();
+    }
+
   rib = RibOpen(filename, kRIB_LAST_RI, gRibNopRITable);
 
   if(rib)
@@ -4694,7 +4736,7 @@ ay_rrib_readrib(char *filename, int frame, int read_camera, int read_options,
       ay_object_deletemulti(ay_rrib_objects->object);
       free(ay_rrib_objects);
       ay_rrib_objects = tl;
-    }
+    } /* while */
 
  return AY_OK;
 } /* ay_rrib_readrib */
@@ -4722,37 +4764,37 @@ ay_rrib_readribtcmd(ClientData clientData, Tcl_Interp *interp,
 
   while(i+1 < argc)
     {
-      if(!strcmp(argv[i],"-f"))
+      if(!strcmp(argv[i], "-f"))
 	{
 	  sscanf(argv[i+1], "%d", &frame);
 	}
       else
-      if(!strcmp(argv[i],"-c"))
+      if(!strcmp(argv[i], "-c"))
 	{
 	  sscanf(argv[i+1], "%d", &read_camera);
 	}
       else
-      if(!strcmp(argv[i],"-o"))
+      if(!strcmp(argv[i], "-o"))
 	{
 	  sscanf(argv[i+1], "%d", &read_options);
 	}
       else
-      if(!strcmp(argv[i],"-l"))
+      if(!strcmp(argv[i], "-l"))
 	{
 	  sscanf(argv[i+1], "%d", &read_lights);
 	}
       else
-      if(!strcmp(argv[i],"-m"))
+      if(!strcmp(argv[i], "-m"))
 	{
 	  sscanf(argv[i+1], "%d", &read_material);
 	}
       else
-      if(!strcmp(argv[i],"-p"))
+      if(!strcmp(argv[i], "-p"))
 	{
 	  sscanf(argv[i+1], "%d", &read_partial);
 	}
       else
-      if(!strcmp(argv[i],"-e"))
+      if(!strcmp(argv[i], "-e"))
 	{
 	  sscanf(argv[i+1], "%d", &error_level);
 	}
@@ -4858,9 +4900,7 @@ Rrib_Init(Tcl_Interp *interp)
      }
 #endif
 
-  ay_error(AY_EOUTPUT, fname,
-	   "RIB import plugin successfully loaded.");
-
+  ay_error(AY_EOUTPUT, fname, "RIB import plugin successfully loaded.");
 
  return TCL_OK;
 } /* Rrib_Init */
