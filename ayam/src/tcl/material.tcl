@@ -227,7 +227,11 @@ proc material_edit { } {
 	    # if
 
 	    if { $ay(lb) == 0 } {
-		selOb [expr $matobject + 1]
+		if { $matlevel != "root" } {
+		    selOb [expr $matobject + 1]
+		} else {
+		    selOb [expr $matobject]
+		}
 		$ay(tree) selection set ${matlevel}:$matobject
 		$ay(tree) see ${matlevel}:$matobject
 		tree_paintLevel ${matlevel}
