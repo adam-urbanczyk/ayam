@@ -163,6 +163,12 @@ ay_shade_view(struct Togl *togl)
       ay_draw_grid(togl);
     }
 
+  if(view->shade > 1)
+    {
+      glEnable(GL_POLYGON_OFFSET_FILL);
+      glPolygonOffset(1.0, 1.0);
+    }
+
   glEnable(GL_DITHER);
   glEnable(GL_LIGHTING);
   glLightModelf(GL_LIGHT_MODEL_TWO_SIDE, (GLfloat)1.0);
@@ -211,12 +217,13 @@ ay_shade_view(struct Togl *togl)
 	} /* if */
 
       /* draw handles of selected objects */
-      if(view->drawhandles)
+      if(view->drawhandles && view->shade < 2)
 	{
 	  /* let all handles appear "on top" of current drawing         */
 	  /* Do we really want this? In a shaded view, the user expects */
 	  /* probably removal of hidden bits. On the other hand, he     */
-	  /* might not be able to reach all handles he wants to then.   */
+	  /* might not be able to reach all handles he wants to then,   */
+	  /* when modelling in a shaded view.                           */
 	  glClear(GL_DEPTH_BUFFER_BIT);
 
 	  glDisable(GL_LIGHTING);
@@ -325,6 +332,13 @@ ay_shade_view(struct Togl *togl)
     }
 
   glDisable(GL_DITHER);
+
+  if(view->shade > 1)
+    {
+      glDisable(GL_POLYGON_OFFSET_FILL);
+      glPolygonOffset(0.0, 0.0);
+      ay_draw_view(togl, AY_TRUE);
+    }
 
  return AY_OK;
 } /* ay_shade_view */

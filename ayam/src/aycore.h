@@ -84,7 +84,7 @@ void ay_draw_selp(ay_object *o);
 
 int ay_draw_object(struct Togl *togl, ay_object *o, int selected);
 
-int ay_draw_view(struct Togl *togl);
+int ay_draw_view(struct Togl *togl, int draw_offset);
 
 void ay_draw_grid(struct Togl *togl);
 

@@ -215,7 +215,7 @@ ay_toglcb_display(struct Togl *togl)
   if(view->shade)
     ay_shade_view(togl);
   else
-    ay_draw_view(togl);
+    ay_draw_view(togl, AY_FALSE);
 
   /* XXXX is this really necessary? */ 
   /*  glFlush();*/
