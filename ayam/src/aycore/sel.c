@@ -59,7 +59,7 @@ ay_sel_add(ay_object *o)
   if(ay_selection)
     last_sel->next = new_sel;
   else
-    ay_selection = new_sel; 
+    ay_selection = new_sel;
 
   last_sel = new_sel;
 
@@ -71,7 +71,6 @@ ay_sel_add(ay_object *o)
  *  set the selection from listbox
  *  I: argv[] contains the sorted and split list of selected elements
  *     of the hierarchy listbox
- *
  */
 int
 ay_sel_setfromlbtcmd(ClientData clientData, Tcl_Interp *interp,
@@ -132,7 +131,7 @@ ay_sel_setfromlbtcmd(ClientData clientData, Tcl_Interp *interp,
 	      j++;
 
 	      if(o)
-		o = o->next;	
+		o = o->next;
 
 	      if(!o)
 		break;
@@ -161,7 +160,7 @@ ay_sel_setfromlbtcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(need_redraw)
     {
-      Tcl_SetVar(interp, vname, yes, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY); 
+      Tcl_SetVar(interp, vname, yes, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
     }
   else
     {
@@ -191,7 +190,6 @@ ay_sel_setfromlbtcmd(ClientData clientData, Tcl_Interp *interp,
  *  get the current selection
  *  I: argv[] contains the sorted and split list of selected elements
  *     of the hierarchy listbox
- *
  */
 int
 ay_sel_getseltcmd(ClientData clientData, Tcl_Interp *interp,
@@ -206,7 +204,7 @@ ay_sel_getseltcmd(ClientData clientData, Tcl_Interp *interp,
   if(argc < 1)
     {
       ay_error(AY_EARGS, fname, "varname");
-      return TCL_OK; 
+      return TCL_OK;
     }
 
   toa = Tcl_NewStringObj(argv[1],-1);
@@ -216,7 +214,7 @@ ay_sel_getseltcmd(ClientData clientData, Tcl_Interp *interp,
       if(o->selected)
 	{
 	  to = Tcl_NewIntObj(i);
-	  Tcl_ObjSetVar2(interp,toa,NULL,to,TCL_APPEND_VALUE | 
+	  Tcl_ObjSetVar2(interp,toa,NULL,to,TCL_APPEND_VALUE |
 			 TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG |
 			 TCL_GLOBAL_ONLY);
 	}
@@ -229,15 +227,16 @@ ay_sel_getseltcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_sel_hsltcmd:
- *  hidden select last (allow selection of the last object in the current
- *  level without any feedback in the GUI)
+ *  hidden select last; allow selection of the last object(s) in the current
+ *  level without any feedback in the GUI and without redraw
+ *  I: argv[1] may contain the number of objects to select, defaults to 1
  */
 int
 ay_sel_hsltcmd(ClientData clientData, Tcl_Interp *interp,
 	       int argc, char *argv[])
 {
- /*int ay_status = AY_OK;
-   char fname[] = "hSL";*/
+ /*int ay_status = AY_OK;*/
+ char fname[] = "hSL";
  ay_list_object *cl = ay_currentlevel;
  ay_object *l, *o;
  int num = 1, tnum;
@@ -245,7 +244,14 @@ ay_sel_hsltcmd(ClientData clientData, Tcl_Interp *interp,
   if(argc > 1)
     {
       if(argv[1])
-	Tcl_GetInt(interp, argv[1], &num);
+	{
+	  Tcl_GetInt(interp, argv[1], &num);
+	}
+      if(num < 1)
+	{
+	  ay_error(AY_ERROR, fname, "argument should be >= 1");
+	  num = 1;
+	} /* if */
     } /* if */
 
   if(cl)
