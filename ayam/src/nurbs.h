@@ -221,6 +221,8 @@ int ay_nct_arrange(ay_object *o, ay_object *t, int rotate);
 
 int ay_nct_addinternalcps(ay_object *curve, int where);
 
+int ay_nct_rescaleknvnctcmd(ClientData clientData, Tcl_Interp *interp,
+			    int argc, char *argv[]);
 /* npt.c */
 int ay_npt_create(int uorder, int vorder, int width, int height,
 		  int uknot_type, int vknot_type,

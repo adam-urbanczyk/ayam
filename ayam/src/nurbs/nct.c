@@ -3210,3 +3210,60 @@ ay_nct_addinternalcps(ay_object *curve, int where)
 
  return ay_status;
 } /* ay_nct_addinternalcps */
+
+
+/* ay_nct_rescaleknvnctcmd:
+ *  rescale the knot vector of a NURBS curve to the range 0.0 - 1.0
+ */
+int
+ay_nct_rescaleknvnctcmd(ClientData clientData, Tcl_Interp *interp,
+			int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ ay_list_object *sel = ay_selection;
+ ay_object *src = NULL;
+ ay_nurbcurve_object *curve = NULL;
+ char fname[] = "rescaleKnNC";
+
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, fname, NULL);
+      return TCL_OK;
+    }
+
+  while(sel)
+    {
+      src = sel->object;
+      if(src->type != AY_IDNCURVE)
+	{
+	  ay_error(AY_ERROR, fname, "Object is not a NURBCurve!");
+	}
+      else
+	{
+
+	  curve = (ay_nurbcurve_object*)src->refine;
+
+	  if(curve->knot_type == AY_KTCUSTOM)
+	    {
+
+	      ay_status = ay_knots_rescaleknotv(curve->length+curve->order,
+						curve->knotv);
+	      if(ay_status)
+		{
+		  ay_error(ay_status, fname, "Could not rescale knots!");
+		}
+	    }
+	  else
+	    {
+	      ay_error(ay_status, fname, "Need a custom knot vector!");
+	    } /* if */
+
+	} /* if */
+
+      sel = sel->next;
+    } /* while */
+
+  ay_notify_parent();
+
+ return TCL_OK;
+} /* ay_nct_rescaleknvnctcmd */
