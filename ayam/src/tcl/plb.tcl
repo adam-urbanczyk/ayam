@@ -94,6 +94,34 @@ bind $f.li <ButtonPress-5> {
     break
 }
 
+# plb context menu
+set m [menu $ay(plb).popup -tearoff 0]
+$m add command -label "Deselect Property" -command {
+    global ay;
+    $ay(plb) selection clear 0 end;
+    plb_update
+}
+$m add command -label "Copy Property" -command {
+    pclip_copy 0
+}
+$m add command -label "Copy Marked Property" -command {
+    pclip_copy 1
+}
+$m add command -label "Paste Property" -command {global ay;
+pclip_paste; set ay(sc) 1
+}
+
+bind $f.li <ButtonPress-3> {
+    global ay
+
+    set xy [winfo pointerxy .]
+    set x [lindex $xy 0]
+    set y [lindex $xy 1]
+
+    tk_popup $ay(plb).popup $x $y
+    return;
+}
+
 # plb scrollbar
 set ay(pss) $f.s
 scrollbar $f.s -command {global ay; $ay(plb) yview} -takefocus 0
