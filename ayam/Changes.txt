@@ -1,4 +1,4 @@
-[20. 06. 2003] CVS-Head:
+[25. 06. 2003] CVS-Head:
 o bug fixes:
   - fixed crash when exporting scenes with malformed RiAttribute/RiOption
     tags (type c or p, with a component missing) (SF 753550)
@@ -23,6 +23,11 @@ o added support for IntPair and FloatPair parameters to RiAttribute and
   are "j" for IntPair and "g" for FloatPair
 o added a new regexp based method of extracting the progress from the output
   of the renderer (needed for Pixie-1.2.1 and up)
+o added backup on replace feature controlled by new preference setting
+  "BakOnReplace" and new hidden preference setting "BackupExt"
+o improved the "Special/Save Environment" feature, it now always
+  pops up a file requester, and asks to adapt the preferences
+  to use the new environment file
 
 
 [10. 05. 2003] Ayam1.5.1:
