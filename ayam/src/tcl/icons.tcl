@@ -539,3 +539,11 @@ FliKkUmpaCMIWjPEw2XGcgf3DyqLzYQB4mhilBCNK0Us8QREEchdpLhjvrDDrHVVdWR9mpwOK6sJ
 bj8W5Hty/1zymWh7obv0d37ovhAoCFAAADs=
 }
 image create photo ay_Grid10_img -format GIF -data $imgdata
+
+# GridX
+set imgdata {\
+R0lGODdhGQAZAKEAANnZ2by8vAAAAHp6eiwAAAAAGQAZAAACU4SPqRkB/RycshoaM8ar+2ttoaWN
+5fmljCmiojBIg9B6AgzMwtfOAF5rBW60EyQ1G6iERJbD6PABTTacjjeCyWhUoTOjCkPHHC/5KU6Z
+zed2+lMAADs=
+}
+image create photo ay_GridX_img -format GIF -data $imgdata
