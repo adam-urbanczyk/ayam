@@ -118,6 +118,7 @@ proc reconsider { Selection } {
 	# level has eventually changed
 	set ay(CurrentLevel) $rArray(oldLevel)
 	destroy .reconsider
+	undo savsel
     }
     
     # Button Cancel
