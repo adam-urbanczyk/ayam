@@ -146,6 +146,8 @@ proc prefs_open {} {
     addText $fw e1 "Mops Import:"
     addCheck $fw ayprefse MIResetDM
     addCheck $fw ayprefse MIResetST
+    addText $fw e2 "UI:"
+    addCheck $fw ayprefse SaveAddsMRU
 
     # select last selected preference section
     pack $nb -fill both -expand yes

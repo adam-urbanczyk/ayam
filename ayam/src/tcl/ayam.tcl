@@ -88,6 +88,7 @@ array set ayprefs {
  WarnChanged 1
 
  NewLoadsEnv 1
+ SaveAddsMRU 1
 
  RedirectTcl 1
  Logging 0
