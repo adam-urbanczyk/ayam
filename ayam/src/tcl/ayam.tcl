@@ -1132,6 +1132,20 @@ if { $ayprefs(showtr) == 0 } {
 }
 update
 
+# run user defined startup Tcl scripts
+if { $ayprefs(Scripts) != "" } {
+    puts stdout "Running user defined scripts..."
+
+    set scripts [split "$ayprefs(Scripts)" $ay(separator)]
+
+    foreach script $scripts {
+	if { [file exists $script] } {
+	    puts ${script}...
+	    catch {source $script}
+	}
+    }
+}
+
 # scan for shaders
 shader_scanAll
 
@@ -1162,20 +1176,6 @@ if { ($ayprefs(LoadEnv) == 1) && ($ay(failsafe) == 0) } {
     rV
 } else {
     uS
-}
-
-# run user defined startup Tcl scripts
-if { $ayprefs(Scripts) != "" } {
-    puts stdout "Running user defined scripts..."
-
-    set scripts [split "$ayprefs(Scripts)" $ay(separator)]
-
-    foreach script $scripts {
-	if { [file exists $script] } {
-	    puts ${script}...
-	    catch {source $script}
-	}
-    }
 }
 
 # process remaining arguments (load further scene(s))
