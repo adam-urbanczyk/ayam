@@ -2159,16 +2159,16 @@ ay_npt_birail1(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
  ay_nurbcurve_object *cs, *r1, *r2;
  double *controlv = NULL;
  int i = 0, j = 0, a = 0, stride;
- double u, p1[4], p2[4], p3[4], p4[4];
+ double u, p1[4], p2[4], p5[4], p6[4], p7[4], p8[4];
  double T0[3] = {0.0,0.0,-1.0};
  double T1[3] = {0.0,0.0,0.0};
- double T2[3] = {0.0,0.0,0.0};
  double A[3] = {0.0,0.0,0.0};
- double len0 = 0.0, lent0 = 0.0, lent1 = 0.0, plenr1 = 0.0, plenr2 = 0.0;
+ double lent0 = 0.0, lent1 = 0.0, plenr1 = 0.0, plenr2 = 0.0;
  double m[16] = {0}, mi[16] = {0}, mcs[16], mr1[16], mr2[16];
- double mr[16];
+ double mr[16], mrs[16];
  double quat[4] = {0};
  double *cscv = NULL, *r1cv = NULL, *r2cv = NULL, *rots = NULL;
+ double scalx, scaly, scalz;
 
   if(!o1 || !o2 || !o3 || !patch ||
      (has_start_cap && !start_cap) || (has_end_cap && !end_cap))
@@ -2267,14 +2267,16 @@ ay_npt_birail1(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 		     r2->knotv[r2->order-1], p2);
 
   AY_V3SUB(T0, p2, p1)
-  len0 = AY_V3LEN(T0);
-
-  memcpy(p3, p1, 3*sizeof(double));
+  lent0 = AY_V3LEN(T0);
+  AY_V3SCAL(T0,(1.0/lent0))
+  memcpy(p5, p1, 3*sizeof(double));
+  memcpy(p6, p2, 3*sizeof(double));
 
   plenr1 = fabs(r1->knotv[r1->length] - r1->knotv[r1->order-1]);
   plenr2 = fabs(r2->knotv[r2->length] - r2->knotv[r2->order-1]);
 
   ay_trafo_identitymatrix(mr);
+  ay_trafo_identitymatrix(mrs);
 
   if(!(rots = calloc((sections+1)*4, sizeof(double))))
     {
@@ -2285,7 +2287,7 @@ ay_npt_birail1(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
   /* copy first section */
   memcpy(&(controlv[0]), &(cscv[0]), cs->length * stride * sizeof(double));
 
-  /* copy cross sections controlv section times and sweep it */
+  /* copy cross sections controlv section times and sweep it along the rails */
   for(i = 1; i <= sections; i++)
     {
       memcpy(&(controlv[i * stride * cs->length]), &(cscv[0]),
@@ -2299,27 +2301,18 @@ ay_npt_birail1(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 			 u, p2);
 
       AY_V3SUB(T1, p2, p1)
-
-      /* create transformation matrix */
-      /* first, set it to identity */
-      ay_trafo_identitymatrix(m);
-
-      /* apply scaling */
-      lent0 = AY_V3LEN(T0);
       lent1 = AY_V3LEN(T1);
-
-      ay_trafo_scalematrix(1.0/(lent1/len0), 1.0/(lent1/len0),
-			   1.0/(lent1/len0), m);
-
-
-      /* apply rotation */
       AY_V3SCAL(T1,(1.0/lent1))
-      AY_V3SCAL(T0,(1.0/lent0))
 
+      /* create rotation matrix */
       if(((fabs(fabs(T1[0])-fabs(T0[0])) > AY_EPSILON) ||
 	  (fabs(fabs(T1[1])-fabs(T0[1])) > AY_EPSILON) ||
 	  (fabs(fabs(T1[2])-fabs(T0[2])) > AY_EPSILON)))
 	{
+	  ay_trafo_translatematrix(((p5[0])),
+				   ((p5[1])),
+				   ((p5[2])),
+				   mr);
 	  AY_V3CROSS(A,T0,T1)
 	  lent0 = AY_V3LEN(A);
 	  AY_V3SCAL(A,(1.0/lent0))
@@ -2331,15 +2324,92 @@ ay_npt_birail1(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 	    {
 	      ay_trafo_rotatematrix(-rots[i*4], rots[i*4+1],
 				    rots[i*4+2], rots[i*4+3], mr);
+	      /*
+		the mrs matrix is used to properly rotate the cross
+		section curve for the calculation of the scale factors
+	      */
+	      ay_trafo_rotatematrix(-rots[i*4], rots[i*4+1],
+				    rots[i*4+2], rots[i*4+3], mrs);
+	      /*
+	      printf("i: %d, angle %g, axis %g %g %g\n",i,
+		     rots[i*4], rots[i*4+1],
+		     rots[i*4+2], rots[i*4+3]);
+	      */
 	    }
+	  ay_trafo_translatematrix(-(p5[0]),
+				   -(p5[1]),
+				   -(p5[2]),
+				   mr);
 	} /* if */
       
-      ay_trafo_multmatrix4(m, mr);
+      /* create transformation matrix */
+
+      /* first, set it to identity */
+      ay_trafo_identitymatrix(m);
+
+      /* apply scaling */
+      memcpy(p7, p1, 3*sizeof(double));
+      memcpy(p8, p2, 3*sizeof(double));
+      ay_trafo_apply3(p7, mrs);
+      ay_trafo_apply3(p8, mrs);
       
+      if(fabs(p6[0]-p5[0]) > AY_EPSILON)
+        {
+	  if(fabs(p8[0]-p7[0])/fabs(p6[0]-p5[0]) > AY_EPSILON)
+	    scalx = fabs(p8[0]-p7[0])/fabs(p6[0]-p5[0]);
+	  else
+	    scalx = 1.0;
+        }
+      else
+        {
+	  scalx = 1.0;
+	}
+
+      if(fabs(p6[1]-p5[1]) > AY_EPSILON)
+        {
+	  if(fabs(p8[1]-p7[1])/fabs(p6[1]-p5[1]) > AY_EPSILON)
+	    scaly = fabs(p8[1]-p7[1])/fabs(p6[1]-p5[1]);
+	  else
+	    scaly = 1.0;
+        }
+      else
+        {
+	  scaly = 1.0;
+	}
+
+      if(fabs(p6[2]-p5[2]) > AY_EPSILON)
+        {
+	  if(fabs(p8[2]-p7[2])/fabs(p6[2]-p5[2]) > AY_EPSILON)
+	    scalz = fabs(p8[2]-p7[2])/fabs(p6[2]-p5[2]);
+	  else
+	    scalz = 1.0;
+        }
+      else
+        {
+	  scalz = 1.0;
+	}
+
+      ay_trafo_translatematrix(((p5[0])),
+			       ((p5[1])),
+			       ((p5[2])),
+			       m);
+      ay_trafo_scalematrix(1.0/scalx,
+			   1.0/scaly,
+			   1.0/scalz,
+			   m);
+      ay_trafo_translatematrix(-(p5[0]),
+			       -(p5[1]),
+			       -(p5[2]),
+			       m);
+
+
+      /* apply rotation */
+      ay_trafo_multmatrix4(m, mr);
+
       /* add translation */
-      ay_trafo_translatematrix(-(p1[0]+((p2[0]-p1[0])/2.0)),
-			       -(p1[1]+((p2[1]-p1[1])/2.0)),
-			       -(p1[2]+((p2[2]-p1[2])/2.0)),
+      ay_trafo_translatematrix((p5[0]-p1[0]),
+			       (p5[1]-p1[1]),
+			       (p5[2]-p1[2]),
 			       m);
 
       /* invert matrix */
@@ -2366,8 +2436,8 @@ ay_npt_birail1(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 	      /* apply scaling */
 	      if(lent0 > AY_EPSILON)
 		{
-		  (*end_cap)->scalx *= lent0/len0;
-		  (*end_cap)->scaly *= lent0/len0;
+		  (*end_cap)->scalx *= scalx;
+		  (*end_cap)->scaly *= scaly;
 		}
 
 	      (*end_cap)->movx = p1[0]+((p2[0]-p1[0])/2.0);
@@ -2388,11 +2458,9 @@ ay_npt_birail1(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 	    } /* if */
 	} /* if */
 
-      /* save rail vector and points for next iteration */
+      /* save rail vector for next iteration */
       memcpy(T0, T1, 3*sizeof(double));
-      memcpy(p3, p1, 3*sizeof(double));
-      memcpy(p4, p2, 3*sizeof(double));
-
+      lent0 = lent1;
     } /* for */
 
   /* create start cap (if birail is not closed) */
