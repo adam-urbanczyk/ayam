@@ -497,7 +497,7 @@ ay_material_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!material->refcountptr)
     {
       material->refcountptr = &(o->refcount);
-      o->refcount = 0;
+      /*      o->refcount = 0;*/
     }
 
   /* repair objptr if it has not been set, after e.g.

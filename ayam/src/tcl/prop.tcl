@@ -102,7 +102,7 @@ w     fMatAttr
 # create Material-UI
 set w [frame $ay(pca).$Material(w)]
 addCommand $w c1 "Clear Material" \
-"global matPropData; set matPropData(Name) \"\"; setMat"
+"undo save; global matPropData; set matPropData(Name) \"\"; setMat"
 addString $w matPropData Name
 
 

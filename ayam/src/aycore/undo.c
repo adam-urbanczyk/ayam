@@ -87,6 +87,9 @@ ay_undo_deletemulti(ay_object *o)
  int ay_status = AY_OK;
  ay_object *next = NULL, *d = NULL;
  ay_view_object *view = NULL;
+ ay_mat_object *material = NULL;
+ ay_deletecb *dcb = NULL;
+ void **arr = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -125,12 +128,64 @@ ay_undo_deletemulti(ay_object *o)
 	  /* now, free generic object */
 	  free(d);
 	  break;
+	case AY_IDMATERIAL:
+	  material = (ay_mat_object *)(d->refine);
+
+	  if(material->sshader)
+	    {
+	      ay_shader_free(material->sshader);
+	      material->sshader = NULL;
+	    }
+	  if(material->dshader)
+	    {
+	      ay_shader_free(material->dshader);
+	      material->dshader = NULL;
+	    }
+	  if(material->ishader)
+	    {
+	      ay_shader_free(material->ishader);
+	      material->ishader = NULL;
+	    }
+	  if(material->eshader)
+	    {
+	      ay_shader_free(material->eshader);
+	      material->eshader = NULL;
+	    }
+
+	  free(material);
+
+	  /* delete selected points */
+	  if(d->selp)
+	    ay_selp_clear(d);
+	  /* delete tags */
+	  ay_tags_delall(d);
+	  /* free name */
+	  if(d->name)
+	    free(d->name);
+	  /* now, free generic object */
+	  free(d);
+	  break;
 	default:
-	  ay_status = ay_object_delete(d);
+	  arr = ay_deletecbt.arr;
+	  dcb = (ay_deletecb*)(arr[d->type]);
+	  if(dcb)
+	    ay_status = dcb(d->refine);
+	  
 	  if(ay_status)
 	    {
 	      return ay_status;
 	    }
+	  /* delete selected points */
+	  if(d->selp)
+	    ay_selp_clear(d);
+	  /* delete tags */
+	  ay_tags_delall(d);
+	  /* free name */
+	  if(d->name)
+	    free(d->name);
+	  /* now, free generic object */
+	  free(d);
+
 	  break;
 	}
       d = next;
@@ -153,7 +208,7 @@ ay_undo_clearuo(ay_undo_object *uo)
       lo = uo->references->next;
       free(uo->references);
       uo->references = lo;
-    } 
+    }
 
   if(uo->objects)
     {
@@ -396,7 +451,7 @@ int
 ay_undo_copy(ay_undo_object *uo)
 {
  int ay_status = AY_OK;
- ay_object *o = NULL, *c = NULL;
+ ay_object *o = NULL, *c = NULL, *m = NULL;
  ay_list_object *r = NULL;
  void **arr = NULL;
  ay_deletecb *dcb = NULL;
@@ -475,7 +530,6 @@ ay_undo_copy(ay_undo_object *uo)
 
 	  break;
 	case AY_IDROOT:
-
 	  ay_status = ay_undo_copyroot((ay_root_object *)(c->refine),
 				       (ay_root_object *)(o->refine));
 
@@ -517,7 +571,29 @@ ay_undo_copy(ay_undo_object *uo)
       /* copy trafos */
       ay_trafo_copy(c, o);
 
-      /* copy material? */
+      if(o->type != AY_IDMATERIAL)
+	{
+	  /* copy material */
+	  if(!o->mat && c->mat)
+	    {
+	      m = c->mat->objptr;
+	      m->refcount++;
+	    }
+	  if(o->mat && !c->mat)
+	    {
+	      m = o->mat->objptr;
+	      m->refcount--;
+	    }
+	  if(o->mat && c->mat)
+	    {
+	      m = o->mat->objptr;
+	      m->refcount--;
+	      m = c->mat->objptr;
+	      m->refcount++;
+	    }
+
+	  o->mat = c->mat;
+	}
 
       /* copy selected points? No! */
       /*ay_status = ay_undo_copyselp(c, o);*/
@@ -656,15 +732,15 @@ ay_undo_copysave(ay_object *src, ay_object **dst)
   new->down = NULL;
   new->selp = NULL;
   new->tags = NULL;
-  new->mat = NULL;
+  /*  new->mat = NULL;*/
 
+  /*if(src->type != AY_IDMATERIAL)*/
   new->refcount = 0;
 
   /* copy type specific part */
   switch(src->type)
     {
     case AY_IDVIEW:
-
       srcview = (ay_view_object *)(src->refine);
       
       if(!(new->refine = calloc(1, sizeof(ay_view_object))))
@@ -687,7 +763,6 @@ ay_undo_copysave(ay_object *src, ay_object **dst)
 	}
       break;
     case AY_IDROOT:
-
       root = (ay_root_object *)(src->refine);
 
       if(!(new->refine = calloc(1, sizeof(ay_root_object))))
@@ -700,7 +775,6 @@ ay_undo_copysave(ay_object *src, ay_object **dst)
 	{
 	  return ay_status;
 	}
-
       break;
     case AY_IDINSTANCE:
       new->refine = src->refine;
