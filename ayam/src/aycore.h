@@ -723,10 +723,14 @@ int ay_wrib_object(char *file, ay_object *o);
 int ay_wrib_refobject(char *file, ay_object *o);
 
 int ay_wrib_scene(char *file, char *image, double *from, double *to,
-		  double roll, double zoom, double near, double far,
+		  double roll, double zoom, double nearp, double farp,
 		  int width, int height, int type);
 
 int ay_wrib_cb(struct Togl *togl, int argc, char *argv[]);
+
+void ay_wrib_displaytags(void);
+
+void ay_wrib_hidertags(void);
 
 #ifdef AYENABLEPPREV
 int ay_wrib_pprevdraw(ay_view_object *view);
