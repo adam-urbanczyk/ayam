@@ -337,7 +337,10 @@ ay_write_scene(char *fname, int selected)
       ay_error(AY_ERROR, fname, strerror(errno));
     }
 
-  fclose(fileptr);
+  if(fclose(fileptr))
+    {
+      ay_error(AY_ERROR, fname, strerror(errno));
+    }
 
  return ay_status;
 } /* ay_write_scene */
