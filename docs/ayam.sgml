@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>9. Aug 2003
+<date>13. Sep 2003
 <abstract>
 This is the documentation of Ayam (1.6) - a free 3D modeling environment
 for the RenderMan interface.
@@ -160,6 +160,21 @@ are standard clipboard operations as documented in
 section <ref id="mmedit" name="main menu">.
 </itemize>
 
+Since Ayam 1.6 the scene may be navigated and objects may be selected
+using the keyboard alone:
+<itemize>
+<item><tt/&lt;Up&gt;/ and <tt/&lt;Down&gt;/ move the selection to the previous
+or next object,
+<item><tt/&lt;Home&gt;/ and <tt/&lt;End&gt;/ select the first
+or last object in the current level,
+<item><tt/&lt;Right&gt;/ enters the (first) selected object,
+<item><tt/&lt;Left&gt;/ enters the parent level,
+<item><tt/&lt;Ctrl+a&gt;/ and <tt/&lt;Ctrl+n&gt;/ select or de-select
+all object in the current level. If the current level is the root level,
+the Root object will not be selected by <tt/&lt;Ctrl+a&gt;/.
+<item><tt/&lt;Space&gt;/ toggles display of the child objects of the
+selected object(s).
+</itemize>
 
 <bf/Listbox:/<label id="listbox">
 <p>
@@ -202,6 +217,20 @@ with the tree view (see above).
 <item><tt>"Copy Object", "Cut Object", "Paste Object", "Delete Object"</tt>
 are standard clipboard operations as documented in
 section <ref id="mmedit" name="main menu">.
+</itemize>
+
+Since Ayam 1.6 the scene may be navigated and objects may be selected
+using the keyboard alone:
+<itemize>
+<item><tt/&lt;Up&gt;/ and <tt/&lt;Down&gt;/ move the selection to the previous
+or next object,
+<item><tt/&lt;Home&gt;/ and <tt/&lt;End&gt;/ select the first
+or last object in the current level,
+<item><tt/&lt;Right&gt;/ enters the (first) selected object,
+<item><tt/&lt;Left&gt;/ enters the parent level,
+<item><tt/&lt;Ctrl+a&gt;/ and <tt/&lt;Ctrl+n&gt;/ select or de-select
+all object in the current level. If the current level is the root level,
+the Root object will not be selected by <tt/&lt;Ctrl+a&gt;/.
 </itemize>
 
 <sect2>Properties<label id="propgui">
@@ -257,6 +286,12 @@ Note, that property GUIs of custom objects may also offer interactive
 elements that do an instant "Apply". Most GUIs of the
 core objects of Ayam and the Scene object do not change anything
 until the "Apply" button is used, however.<p>
+
+If a property GUI element has the keyboard input focus (it is then usually
+displayed with a black rim around it), all the keyboard shortcuts for
+the main menu and scene navigation will have no effect until the
+keyboard input focus is moved away from the property GUI. You may accomplish
+this easily using the <tt/&lt;Esc&gt;/ key.<p>
 
 A property may be copied and pasted to another
 object, see the <tt/"Edit"/ menu. You can also
@@ -1300,7 +1335,7 @@ two external programs: <tt/"cat"/ and <tt/"kill"/ (those programs
 should be available on every Unix platform). If you do not have
 those programs in your path, do not enable the RenderUI option.
 On the Win32 platform you may also use an internal kill command
-<tt>"w32kill"</tt> that has been introduced in Ayam1.4.
+<tt>"w32kill"</tt> that has been introduced in Ayam 1.4.
 See also section <ref id="hidprefs" name="Hidden Preference Settings">.
 
 <item><tt/"RenderPT"/ is a string that contains a progress output
@@ -2105,7 +2140,7 @@ The tag type <tt/"NoExport"/ can be used to exclude certain objects
 from exported RIBs. The value string of this tag is ignored. All
 that counts is the presence of the tag. Child objects of objects
 with the <tt/"NoExport"/ tag will also be excluded from the RIB.
-Since Ayam1.6, light objects also honour the <tt/"NoExport"/ tag.
+Since Ayam 1.6, light objects also honour the <tt/"NoExport"/ tag.
 Note that regardless of potentially present <tt/"NoExport"/ tags,
 RIB archives will be created for all referenced objects all the
 time (even if <tt/"NoExport"/ tags are added to all instances).
@@ -2242,7 +2277,7 @@ Z-axis, else the world Y-axis.
 The type of the view, additionally, determines the so called input plane
 of the view. Interactive modeling actions in a view are limited to that
 input plane (unless the view is switched to local modeling; available since
-Ayam1.4; see also section <ref id="editlocal" name="Editing in Local Space">).
+Ayam 1.4; see also section <ref id="editlocal" name="Editing in Local Space">).
 The standard input planes are as following: Front - XY-plane,
 Side - ZY-plane, Top - XZ-plane, Trim - XY-plane.
 <p>
@@ -3127,7 +3162,7 @@ aforementioned rules! When in doubt or while heavy modeling,
 switch to wireframe drawing and switch off shading temporarily
 and you will be on the safe side.
 
-Since Ayam V1.5 also NURBS curve providing objects are supported
+Since Ayam 1.5 also NURBS curve providing objects are supported
 as trim curves.
 
 <sect1>BPatch Object<label id="bpatchobj">
@@ -3941,7 +3976,7 @@ should not need to change this value.
 the <tt>"ShowWorld"</tt> parameter.
 </itemize>
 
-New in Ayam1.5 is an adaptive calculation mode of the implicit
+New in Ayam 1.5 is an adaptive calculation mode of the implicit
 surface. It may be switched on using the new attribute
 <tt>"Adaptive"</tt>. In the adaptive calculation mode, Ayam tries
 to vary the resolution of the resulting polygonal mesh according to
@@ -5339,7 +5374,7 @@ a process id as argument (used by the Rendering GUI)
 (default: <tt>"kill"</tt>) (a setting of <tt>"kill"</tt> will be
 automatically replaced by <tt>"kill.exe"</tt> on Win32)
 On the Win32 platform you may also use an internal kill command
-<tt>"w32kill"</tt> that has been introduced in Ayam1.4.
+<tt>"w32kill"</tt> that has been introduced in Ayam 1.4.
 <item><tt/"Cat"/: name of a program that can read from and write to
 a pipe (used by the Rendering GUI) (default: <tt>"cat"</tt>)
 (a setting of <tt>"cat"</tt> will be
@@ -5596,7 +5631,7 @@ not available.
 
 <sect1>Shader Parsing Plugins<label id="spplugins">
 <p>
-Since Ayam1.3, the following plugins are provided to allow
+Since Ayam 1.3, the following plugins are provided to allow
 parsing of shaders: <tt/"ayslb"/ for Air, <tt/"ayslx"/ for Aqsis,
 <tt/"ayso"/ for RDC, <tt/"ayslo"/ for PRMan, <tt/"ayslo3d"/ for 3Delight,
 and <tt/"aysdr"/ for Pixie.
