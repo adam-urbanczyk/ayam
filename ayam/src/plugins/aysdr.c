@@ -131,7 +131,12 @@ aysdr_scansdrtcmd(ClientData clientData, Tcl_Interp *interp,
   Sdr_SetPath(Tcl_GetVar(ay_interp, vname, TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG));
   */
   if(!(shader = sdrGet(argv[1],
-		       Tcl_GetVar(ay_interp, vname,
+#ifdef WIN32
+		       Tcl_GetVar(ay_plugin_interp,
+#else
+		       Tcl_GetVar(ay_interp,
+#endif
+				  vname,
 				  TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG))))
     {
       ay_error(AY_ERROR, fname, "sdrGet failed for:");
