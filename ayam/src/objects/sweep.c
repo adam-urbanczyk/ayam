@@ -400,11 +400,12 @@ ay_sweep_notifycb(ay_object *o)
 {
  ay_sweep_object *sweep = NULL;
  ay_object *curve1 = NULL, *curve2 = NULL, *pobject1 = NULL, *pobject2 = NULL;
+ ay_object *curve3 = NULL, *pobject3 = NULL;
  ay_object *npatch = NULL;
  ay_nurbcurve_object *nc = NULL;
  ay_nurbpatch_object *np = NULL;
  int ay_status = AY_OK;
- int got_c1 = AY_FALSE, got_c2 = AY_FALSE, mode = 0;
+ int got_c1 = AY_FALSE, got_c2 = AY_FALSE, got_c3 = AY_FALSE, mode = 0;
  double tolerance;
 
   if(!o)
@@ -444,7 +445,7 @@ ay_sweep_notifycb(ay_object *o)
 	  got_c1 = AY_TRUE;
 	}
 
-    }
+    } /* if */
 
   if(!o->down->next)
     return AY_OK;
@@ -462,7 +463,26 @@ ay_sweep_notifycb(ay_object *o)
 	  got_c2 = AY_TRUE;
 	}
 
-    }
+    } /* if */
+
+  if(o->down->next->next)
+    {
+      curve3 = o->down->next->next;
+      if(curve3->type != AY_IDNCURVE)
+	{
+	  ay_status = ay_provide_object(curve3, AY_IDNCURVE, &pobject3);
+	  if(pobject3)
+	    {
+	      curve3 = pobject3;
+	      got_c3 = AY_TRUE;
+	    }
+	  else
+	    {
+	      curve3 = NULL;
+	    }
+
+	} /* if */
+    } /* if */
 
   /* sweep */
   if(!(npatch = calloc(1, sizeof(ay_object))))
@@ -474,8 +494,8 @@ ay_sweep_notifycb(ay_object *o)
   npatch->type = AY_IDNPATCH;
 
 
-  ay_status = ay_npt_sweep(curve1, curve2, sweep->sections, sweep->rotate,
-			   sweep->close,
+  ay_status = ay_npt_sweep(curve1, curve2, curve3,
+			   sweep->sections, sweep->rotate, sweep->close,
 			   (ay_nurbpatch_object **)(&(npatch->refine)),
 			   sweep->has_start_cap, &(sweep->start_cap),
 			   sweep->has_end_cap, &(sweep->end_cap));
@@ -511,6 +531,11 @@ ay_sweep_notifycb(ay_object *o)
   if(got_c2)
     {
       ay_object_delete(pobject2);
+    }
+
+  if(got_c3)
+    {
+      ay_object_delete(pobject3);
     }
 
  return AY_OK;

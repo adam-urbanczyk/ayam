@@ -255,7 +255,7 @@ int ay_npt_splittocurvestcmd(ClientData clientData, Tcl_Interp *interp,
 int ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
 			       int argc, char *argv[]);
 
-int ay_npt_sweep(ay_object *o, ay_object *o2, int sections,
+int ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 		 int rotate, int closed, ay_nurbpatch_object **patch,
 		 int has_start_cap, ay_object **start_cap,
 		 int has_end_cap, ay_object **end_cap);
