@@ -401,6 +401,8 @@ array set ay {
  glu_ext ""
  action 0
  uc 0
+ undoo none
+ redoo none
  smethods { PathLength ParametricError DomainDistance }
 }
 # array ay
@@ -630,7 +632,6 @@ proc sL { } {
 
     if { $ay(lb) == 1 } {
 	# plain ListBox is active
-	undo savsel
 	set lb $ay(olb)
 	$lb selection clear 0 end
 	selOb
@@ -640,7 +641,6 @@ proc sL { } {
 	$lb see end
     } else {
 	# TreeView is active
-	undo savsel
 	$ay(tree) selection clear
 	$ay(tree) selection set [$ay(tree) nodes $ay(CurrentLevel) end]
 	tree_handleSelection
@@ -897,7 +897,8 @@ if { [winfo exists .fl.con] == 1 } { .fl.con clear }
 
 # console prompt == tail of current dir
 if { [winfo exists .fl.con] == 1 } {
-    set .fl.con(-prompt) {[file tail [pwd]]>}
+    set .fl.con(-prompt)\
+	    {\[Undo:$ay(undoo)/Redo:$ay(redoo)\].../[file tail [pwd]]>}
     Console:prompt .fl.con
 }
 
@@ -1035,8 +1036,11 @@ proc update_prompt {n1 n2 op} {
 # set new prompt?
 if { $ayprefs(Prompt) != "" } {
     set .fl.con(-prompt) $ayprefs(Prompt)
-    update_prompt
+    update_prompt dummy1 dummy2 dummy3
 }
+# establish some standard-traces that update the prompt
+# ay(uc) is set by the undo system
+trace var ay(uc) w update_prompt
 
 # immediately switch to ListBox?
 if { $ayprefs(showtr) == 0 } {

@@ -156,7 +156,7 @@ set f $f.fb
 
 button $f.b1 -text "Apply" -padx 10 -pady 0 -command {
     global ay
-    undo save
+    undo save Apply
     set lb $ay(plb)
     set sel [$lb curselection]
     if { $sel == "" } { return }

@@ -119,7 +119,6 @@ proc reconsider { Selection } {
 	set ay(CurrentLevel) $rArray(oldLevel)
 	focus $ay(currentView)
 	destroy .reconsider
-	undo savsel
     }
     
     # Button Cancel

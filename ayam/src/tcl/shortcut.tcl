@@ -284,7 +284,7 @@ proc shortcut_viewactions { w } {
     # be re established again once the mouse button is released
     bind $w.f3D.togl <$ayviewshortcuts(RotMod)-ButtonPress-1> {
 
-	undo save
+	undo save RotView
 
 	set oldx %x
 	set oldy %y
@@ -318,7 +318,7 @@ proc shortcut_viewactions { w } {
     set i $ayviewshortcuts(ZoomVButton)
     
     bind $w.f3D.togl <ButtonPress-${i}> {
-	undo save
+	undo save ZoomView
 	%W mc
 	%W zoomvac -start %y
 	update
@@ -331,7 +331,7 @@ proc shortcut_viewactions { w } {
     set i  $ayviewshortcuts(MoveVButton)
 
     bind $w.f3D.togl <ButtonPress-${i}> {
-	undo save
+	undo save MoveView
 	%W mc
 	%W movevac -start %x %y
 	update
@@ -343,7 +343,7 @@ proc shortcut_viewactions { w } {
 
     
     bind $w.f3D.togl <ButtonPress-4> {
-	undo save
+	undo save ZoomView
 	%W mc
 	%W setconf -dzoom 0.5
 	update
@@ -353,7 +353,7 @@ proc shortcut_viewactions { w } {
 
 
     bind $w.f3D.togl <ButtonPress-5> {
-	undo save
+	undo save ZoomView
 	%W mc
 	%W setconf -dzoom 2
 	update
@@ -364,7 +364,7 @@ proc shortcut_viewactions { w } {
     global tcl_platform
     if { $tcl_platform(platform) == "windows" } {
 	bind $w.f3D.togl <MouseWheel> {
-	    undo save
+	    undo save ZoomView
 	    %W mc
 	    if { %D < 0.0 } {
 		%W setconf -dzoom 2

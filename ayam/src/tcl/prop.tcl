@@ -20,7 +20,7 @@ w     fTrafoAttr
 set w [frame $ay(pca).$Transformations(w)]
 addCommand $w c1 "Reset All!" {
 global transfPropData
-undo save
+undo save ResTrafo
 set transfPropData(Translate_X) 0.0
 set transfPropData(Translate_Y) 0.0
 set transfPropData(Translate_Z) 0.0
@@ -102,7 +102,7 @@ w     fMatAttr
 # create Material-UI
 set w [frame $ay(pca).$Material(w)]
 addCommand $w c1 "Clear Material" \
-"undo save; global matPropData; set matPropData(Name) \"\"; setMat"
+"undo save ClrMat; global matPropData; set matPropData(Name) \"\"; setMat"
 addString $w matPropData Name
 
 
@@ -122,7 +122,7 @@ set tagsPropData(values) $values
 # create Tags-UI
 catch {destroy $ay(pca).$Tags(w)}
 set w [frame $ay(pca).$Tags(w)]
-addCommand $w c0 "Remove all Tags!" {undo save;delTags all;plb_update}
+addCommand $w c0 "Remove all Tags!" {undo save RemTags;delTags all;plb_update}
 
 set bw 1
 set f [frame $w.fDelete -relief sunken -bd $bw]
@@ -141,7 +141,7 @@ foreach tag $names {
     if { !$ayprefs(HideTmpTags) || ![tagIsTemp $tag] } {
 
 	$m add command -label "Tag#$j" -command\
-		"undo save;setTags -delete $i;plb_update"
+		"undo save RemTag;setTags -delete $i;plb_update"
 
 	incr j
     }
@@ -196,7 +196,7 @@ if { [llength $alltags] > 0 } {
 #  used to edit tags
 proc editTagshelper { index } {
  global tagsPropData
- undo save
+ undo save EditTag
  set tagsPropData(names) [lreplace $tagsPropData(names) $index $index [.addTag.fu.e get]]
  set tagsPropData(values) [lreplace $tagsPropData(values) $index $index [.addTag.fm.e get]]
  grab release .addTag
@@ -250,7 +250,7 @@ if { $edit >= 0 } {
 set f [frame $w.fd]
 button $f.bok -text "Ok" -pady $ay(pady) -width 5 -command {
     global ay
-    undo save
+    undo save AddTag
     if { [.addTag.fu.e get] != "" } {
 	addTag [.addTag.fu.e get] [.addTag.fm.e get]
     }

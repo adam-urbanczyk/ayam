@@ -281,7 +281,7 @@ proc toolbox_open { } {
 	if { $i == "misc" } {
 	    lappend ay(toolbuttons) bhide bconv bnot bund
 	    button $f.bhide -image ay_Show_img -padx 0 -pady 0 -command {
-		undo save; hide -toggle; rV
+		undo save HidSho; hide -toggle; rV
 	    }
 	    balloon_set $f.bhide "hide/show object"
 
@@ -363,13 +363,13 @@ proc toolbox_open { } {
 
 	    #####
 	    button $f.brev -image ay_Revert_img -padx 0 -pady 0 -command {
-		undo save; revert; plb_update; rV
+		undo save Revert; revert; plb_update; rV
 	    }
 	    balloon_set $f.brev "revert curve"
 
 	    #####
 	    button $f.bref -image ay_Refine_img -padx 0 -pady 0 -command {
-		undo save; refineNC; plb_update; rV
+		undo save Refine; refineNC; plb_update; rV
 	    }
 	    balloon_set $f.bref "refine curve"
 
@@ -407,7 +407,7 @@ proc toolbox_open { } {
 
 	    #####
 	    button $f.bclamp -image ay_Clamp_img -padx 0 -pady 0 -command {
-		undo save; clampNC; plb_update; rV
+		undo save Clamp; clampNC; plb_update; rV
 	    }
 	    balloon_set $f.bclamp "clamp curve"
 

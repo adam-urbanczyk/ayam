@@ -15,7 +15,7 @@
 proc viewSetType { w type } {
  global ay ayprefs tcl_platform
 
-    undo save
+    undo save ViewType
     set togl $w.f3D.togl
     
     set w [winfo toplevel $togl]

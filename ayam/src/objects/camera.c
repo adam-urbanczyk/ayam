@@ -594,8 +594,8 @@ ay_camera_dropcb(ay_object *o)
  ay_object *s = NULL;
  ay_camera_object *camera;
  ay_view_object *view;
- char argsave[] = "save", argsel[] = "savsel";
- char *argvsave[2] = {0}, *argvsel[2] = {0};
+ char arg1[] = "save", arg2[] = "CamDrop";
+ char *argv[3] = {0};
  ay_list_object *oldsel = NULL, newsel = {0};
 
   if(!sel)
@@ -619,8 +619,10 @@ ay_camera_dropcb(ay_object *o)
 	  oldsel = ay_selection;
 	  newsel.object = o;
 	  ay_selection = &newsel;
-	  argvsave[1] = argsave;
-	  ay_status = ay_undo_undotcmd(NULL, ay_interp, 2, argvsave);
+	  /* undo save */
+	  argv[1] = arg1;
+	  argv[2] = arg2;
+	  ay_status = ay_undo_undotcmd(NULL, ay_interp, 3, argv);
 
 	  memcpy(camera->from, view->from, 3*sizeof(double));
 	  memcpy(camera->to, view->to, 3*sizeof(double));
@@ -628,17 +630,12 @@ ay_camera_dropcb(ay_object *o)
 	  camera->roll = view->roll;
 	  camera->zoom = view->zoom;
 
-	  /* save new state (because selection will not be changed
-	     to drop target) */
-	  argvsel[1] = argsel;
-	  ay_status = ay_undo_undotcmd(NULL, ay_interp, 2, argvsel);
-
 	  /* now restore original selection */
 	  ay_selection = oldsel;
 
-	}
+	} /* if */
       sel = sel->next;
-    }
+    } /* while */
 
  return AY_EDONOTLINK;
 } /* ay_camera_dropcb */
