@@ -1827,8 +1827,7 @@ ay_nct_concattcmd(ClientData clientData, Tcl_Interp *interp,
  double *controlv1, *controlv2;
  int ktype = AY_KTNURB;
  int i = 0, a = 0, b = 0;
- GLdouble m1[16] = {0}, m2[16] = {0};
- double m[16] = {0};
+ double m1[16], m2[16];
  ay_list_object *sel = ay_selection;
  ay_nurbcurve_object *nc1 = NULL, *nc2 = NULL;
  char fname[] = "concat";
@@ -1860,27 +1859,9 @@ ay_nct_concattcmd(ClientData clientData, Tcl_Interp *interp,
   o->type = AY_IDNCURVE;
   ay_status = ay_object_defaults(o);
 
-
-  glMatrixMode (GL_MODELVIEW);
-  glPushMatrix();
-  glLoadIdentity();
-  glTranslated(sel->object->movx, sel->object->movy, sel->object->movz);
-  ay_quat_torotmatrix(sel->object->quat, m);
-  glMultMatrixd((GLdouble*)m);
-  glScaled (sel->object->scalx, sel->object->scaly, sel->object->scalz);
-  glGetDoublev(GL_MODELVIEW_MATRIX, m1);
-  glPopMatrix();
-
-  glPushMatrix();
-  glLoadIdentity();
-  glTranslated(sel->next->object->movx, sel->next->object->movy,
-	       sel->next->object->movz);
-  ay_quat_torotmatrix(sel->next->object->quat, m);
-  glMultMatrixd((GLdouble*)m);
-  glScaled (sel->next->object->scalx, sel->next->object->scaly,
-	    sel->next->object->scalz);
-  glGetDoublev(GL_MODELVIEW_MATRIX, m2);
-  glPopMatrix();
+  /* get curves transformation-matrix */
+  ay_trafo_creatematrix(sel->object, m1);
+  ay_trafo_creatematrix(sel->next->object, m2);
 
   nc1 = (ay_nurbcurve_object *)sel->object->refine;
   nc2 = (ay_nurbcurve_object *)sel->next->object->refine;
@@ -1893,7 +1874,7 @@ ay_nct_concattcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(!(newcontrolv = calloc(nc1->length*4+nc2->length*4, sizeof(double))))
     {
-      ay_error(AY_EOMEM,fname,NULL);
+      ay_error(AY_EOMEM, fname, NULL);
       free(o);
       return TCL_OK;
     }
@@ -2278,9 +2259,9 @@ ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
  ay_nurbcurve_object *curve = NULL;
  char fname[] = "create_closedbsp"; 
  double *controlv;
- int i=0,num=0,a = 0;
+ int i = 0, num = 0, a = 0;
  double angle = 0.0;
- GLdouble m[16] = {0};
+ double m[16];
  ay_object *o = NULL;
 
   if(!(o = calloc(1, sizeof(ay_object))))
@@ -2315,9 +2296,7 @@ ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
 
   angle = 360.0/num;
   
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix();
-  glLoadIdentity ();
+  ay_trafo_identitymatrix(m);
   for(i=0;i<num+3;i++)
     {
       a = i*4;
@@ -2325,11 +2304,9 @@ ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
       controlv[a+1] = 0.0;
       controlv[a+2] = 0.0;
       controlv[a+3] = 1.0;
-      glRotated(angle,0.0,0.0,1.0);
-      glGetDoublev(GL_MODELVIEW_MATRIX, m);
-      ay_trafo_apply3(&(controlv[a]),m);
+      ay_trafo_rotatematrix(angle, 0.0, 0.0, 1.0, m);
+      ay_trafo_apply3(&(controlv[a]), m);
     }
-  glPopMatrix();
 
   ay_status = ay_nct_create(4, num+3, AY_KTBSPLINE, controlv, NULL, &curve);
 
@@ -2671,13 +2648,8 @@ ay_nct_applytrafo(ay_object *c)
 
   nc = (ay_nurbcurve_object *)(c->refine);
 
-  glPushMatrix();
-   glTranslated((GLdouble)c->movx, (GLdouble)c->movy, (GLdouble)c->movz);
-   ay_quat_torotmatrix(c->quat, m);
-   glMultMatrixd((GLdouble*)m);
-   glScaled((GLdouble)c->scalx, (GLdouble)c->scaly, (GLdouble)c->scalz);
-   glGetDoublev(GL_MODELVIEW_MATRIX, (GLdouble*)m);
-  glPopMatrix();
+  /* get curves transformation-matrix */
+  ay_trafo_creatematrix(c, m);
 
   stride = 4;
   i = 0;
@@ -2688,23 +2660,8 @@ ay_nct_applytrafo(ay_object *c)
       i += stride;
     } /* while */
 
-  c->movx = 0.0;
-  c->movy = 0.0;
-  c->movz = 0.0;
-
-  c->rotx = 0.0;
-  c->roty = 0.0;
-  c->rotz = 0.0;
-
-  c->scalx = 1.0;
-  c->scaly = 1.0;
-  c->scalz = 1.0;
-
-  c->quat[0] = 0.0;
-  c->quat[1] = 0.0;
-  c->quat[2] = 0.0;
-  c->quat[3] = 1.0;
-
+  /* reset curves transformation attributes */
+  ay_trafo_defaults(c);
 
  return AY_OK;
 } /* ay_nct_applytrafo */
