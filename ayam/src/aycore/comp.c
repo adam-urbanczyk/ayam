@@ -83,6 +83,10 @@ int ay_comp_gordon(ay_object *o1, ay_object *o2);
 
 int ay_comp_text(ay_object *o1, ay_object *o2);
 
+int ay_comp_birail1(ay_object *o1, ay_object *o2);
+
+int ay_comp_extrnc(ay_object *o1, ay_object *o2);
+
 
 /* functions */
 
@@ -1026,6 +1030,46 @@ ay_comp_text(ay_object *o1, ay_object *o2)
 } /* ay_comp_text */
 
 
+/* ay_comp_birail1:
+ *
+ */
+int
+ay_comp_birail1(ay_object *o1, ay_object *o2)
+{
+ ay_birail1_object *s1, *s2;
+
+  s1 = (ay_birail1_object *)o1->refine;
+  s2 = (ay_birail1_object *)o2->refine;
+
+  if((s1->close != s2->close) ||
+     (s1->sections != s2->sections) ||
+     (s1->has_start_cap != s2->has_start_cap) ||
+     (s1->has_end_cap != s2->has_end_cap))
+    return AY_FALSE;
+
+ return AY_TRUE;
+} /* ay_comp_birail1 */
+
+
+/* ay_comp_extrnc:
+ *
+ */
+int
+ay_comp_extrnc(ay_object *o1, ay_object *o2)
+{
+ ay_extrnc_object *s1, *s2;
+
+  s1 = (ay_extrnc_object *)o1->refine;
+  s2 = (ay_extrnc_object *)o2->refine;
+
+  if((s1->side != s2->side) ||
+     (s1->parameter != s2->parameter))
+    return AY_FALSE;
+
+ return AY_TRUE;
+} /* ay_comp_extrnc */
+
+
 /* ay_comp_register:
  *  register the compare callback compcb for
  *  objects of type type_id
@@ -1125,6 +1169,8 @@ ay_comp_init()
   ay_status = ay_comp_register(ay_comp_sdmesh, AY_IDSDMESH);
   ay_status = ay_comp_register(ay_comp_gordon, AY_IDGORDON);
   ay_status = ay_comp_register(ay_comp_text, AY_IDTEXT);
+  ay_status = ay_comp_register(ay_comp_birail1, AY_IDBIRAIL1);
+  ay_status = ay_comp_register(ay_comp_extrnc, AY_IDEXTRNC);
 
 
  return ay_status;
