@@ -125,8 +125,8 @@ proc shortcut_main { w } {
     bind $w <[repcont $aymainshortcuts(Material)]> "$m invoke 12"
     $m entryconfigure 12 -accelerator $aymainshortcuts(Material)
 
-    bind $w <[repcont $aymainshortcuts(Prefs)]> "$m invoke 14"
-    $m entryconfigure 14 -accelerator $aymainshortcuts(Prefs)
+    bind $w <[repcont $aymainshortcuts(Prefs)]> "$m invoke 15"
+    $m entryconfigure 15 -accelerator $aymainshortcuts(Prefs)
 
 
     set m $ay(helpmenu)

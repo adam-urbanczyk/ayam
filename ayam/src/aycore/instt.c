@@ -834,6 +834,103 @@ ay_instt_check(ay_object *o, ay_object *target)
 } /* ay_instt_check */
 
 
+/* ay_instt_getmaster:
+ *  Recursively browse through the scene and find the master
+ *  object of the instance object o.
+ */
+int
+ay_instt_getmaster(ay_object *o, ay_object *i, ay_object **r)
+{
+ int result = AY_FALSE;
+
+  while(o->next)
+    {
+      if(o->down)
+	{
+	  result = ay_instt_getmaster(o->down, i, r);
+	  
+	  if(result == AY_TRUE)
+	    {
+	      ay_clevel_add(o);
+	      return AY_TRUE;
+	    }
+	}
+
+      if(i->refine == o)
+	{
+	  *r = o;
+	  ay_clevel_add(o);
+	  return AY_TRUE;
+	}
+
+      o = o->next;
+    } /* while */
+
+ return AY_FALSE;
+} /* ay_instt_getmaster */
+
+
+/* ay_instt_getmastertcmd:
+ *  find the master object of the (currently selected) instance object
+ */
+int
+ay_instt_getmastertcmd(ClientData clientData, Tcl_Interp *interp,
+		       int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ ay_list_object *sel = ay_selection;
+ ay_list_object *clevel = ay_currentlevel;
+ ay_object *o = NULL, *master = NULL;
+ char fname[] = "getMaster";
+ int result = AY_FALSE;
+ Tcl_DString ds;
+
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, fname, NULL);
+      return TCL_OK;
+    }
+
+  if(!(o = sel->object))
+    {
+      ay_error(AY_ERROR, fname, NULL);
+      return TCL_OK;
+    }
+
+  if(o->type != AY_IDINSTANCE)
+    {
+      ay_error(AY_ERROR, fname, "Object is not of type Instance!");
+      return TCL_OK;
+    }
+
+  ay_currentlevel = NULL;
+
+  result = ay_instt_getmaster(ay_root, o, &master);
+
+  if(result == AY_FALSE)
+    {
+      ay_error(ay_status, fname, "Could not find Master object in scene!");
+      return TCL_OK;
+    }
+
+  Tcl_DStringInit(&ds);
+
+  if(ay_currentlevel->object == ay_root)
+    ay_clevel_del();
+
+  ay_tree_crtnodename(ay_root, ay_currentlevel, &ds);
+  
+  Tcl_SetVar(interp, argv[1], Tcl_DStringValue(&ds), TCL_LEAVE_ERR_MSG);
+
+  Tcl_DStringFree(&ds);
+  
+  ay_clevel_delall();
+  free(ay_currentlevel);
+  ay_currentlevel = clevel;
+
+ return TCL_OK;
+} /* ay_instt_getmastertcmd */
+
 
 /* ay_instt_init:
  *  initialize instt module
@@ -846,5 +943,6 @@ ay_instt_init(Tcl_Interp *interp)
 
   /* hash table for id -> original object pointers */
   Tcl_InitHashTable(&ay_instt_oidptr_ht, TCL_STRING_KEYS);
+
   return;
 } /* ay_instt_init */
