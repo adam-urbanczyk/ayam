@@ -1,3 +1,10 @@
+[2. Apr 2004] CVS-Head:
+o bug fixes:
+  - fixed "loadayslo3d.tcl" loading the wrong plugin (SF 928054)
+  - fixed "Select Renderer" setting a wrong shader extension for "3Delight"
+    (SF 928055)
+
+
 [27. Mar 2004] Ayam1.7:
 o bug fixes:
   - fixed object picking in draw-level-only views (SF 817796)
