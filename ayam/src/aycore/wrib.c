@@ -378,7 +378,7 @@ ay_wrib_object(char *file, ay_object *o)
  ay_object *down = NULL;
  void **arr = NULL;
  ay_wribcb *cb = NULL;
- ay_level_object *l = NULL;
+ ay_level_object *l = NULL, *ld = NULL;
  ay_tag_object *tag = NULL;
  char *parname = "name";
 
@@ -501,29 +501,43 @@ ay_wrib_object(char *file, ay_object *o)
 
       while(down->next)
 	{
-	  if(l && ((l->type == AY_LTUNION) || (l->type == AY_LTDIFF) ||
-		   (l->type == AY_LTINT)))
+	  ld = NULL;
+	  if(down->type == AY_IDLEVEL)
+	    ld = (ay_level_object*)down->refine;
+
+	  if(!ld || (ld && (ld->type != AY_LTUNION) &&
+		     (ld->type != AY_LTDIFF) &&
+		     (ld->type != AY_LTINT)))
 	    {
-	      if(!ay_current_primlevel)
+	      if(l && ((l->type == AY_LTUNION) || (l->type == AY_LTDIFF) ||
+		       (l->type == AY_LTINT)))
 		{
-		  RiSolidBegin(RI_PRIMITIVE);
-		}
-	      ay_current_primlevel++;
-	    }
+		  if(!ay_current_primlevel)
+		    {
+		      RiSolidBegin(RI_PRIMITIVE);
+		    }
+		  ay_current_primlevel++;
+		} /* if */
+	    } /* if */
 
 	  ay_status = ay_wrib_object(file, down);
 	  if(ay_status)
 	    return ay_status;
 
-	  if(l && ((l->type == AY_LTUNION) || (l->type == AY_LTDIFF) ||
-		   (l->type == AY_LTINT)))
+	  if(!ld || (ld && (ld->type != AY_LTUNION) &&
+		     (ld->type != AY_LTDIFF) &&
+		     (ld->type != AY_LTINT)))
 	    {
-	      ay_current_primlevel--;
-	      if(!ay_current_primlevel)
+	      if(l && ((l->type == AY_LTUNION) || (l->type == AY_LTDIFF) ||
+		       (l->type == AY_LTINT)))
 		{
-		  RiSolidEnd();
-		}
-	    }
+		  ay_current_primlevel--;
+		  if(!ay_current_primlevel)
+		    {
+		      RiSolidEnd();
+		    }
+		} /* if */
+	    } /* if */
 
 	  down = down->next;
 	} /* while */
