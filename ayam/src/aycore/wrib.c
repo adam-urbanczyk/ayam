@@ -19,6 +19,7 @@
 
 int ay_wrib_sm(char *file, char *image, int width, int height);
 
+void ay_wrib_getup(double *dir, double *up, double *roll);
 
 /* functions: */
 
@@ -155,6 +156,85 @@ ay_wrib_placecamera(RtPoint position, RtPoint direction, double roll)
 
  return;
 } /* ay_wrib_placecamera */
+
+
+/* ay_wrib_getup:
+ *  calculate new roll angle around <dir> vector that is needed to
+ *  align the up vector of the rotated camera to the <up> vector
+ *  This routine only works properly, if <up> is perpendicular to <dir>!
+ */
+void
+ay_wrib_getup(double *dir, double *up, double *roll)
+{
+ double oup[3] = {0,1,0}, odir[3] = {0,0,-1}, V1[3], V2[3];
+ double len, angle;
+ double m[16];
+
+  if(!dir || !up || !roll)
+    return;
+
+  V2[0] = dir[0];
+  V2[1] = dir[2];
+  len = AY_V2LEN(V2);
+  AY_V2SCAL(V2, (1.0/len));
+  odir[1] = -1;
+
+  angle = -AY_R2D(acos(AY_V2DOT(odir, V2)));
+  if(dir[0]>0.0)
+    angle *= -1.0;
+
+  /*printf("angle dir-odir: %g\n",angle);*/
+
+  /* angle is now the angle between world and camera z when rotated
+     around the y-axis, we apply the inverse of this transformation
+     to the up-vector */
+  if(fabs(angle) > AY_EPSILON)
+    {
+      ay_trafo_identitymatrix(m);
+
+      ay_trafo_rotatematrix(angle, 0.0, 1.0, 0.0, m);
+      AY_APTRAN3(V1, up, m);
+    }
+  else
+    {
+      memcpy(V1, up, 3*sizeof(double));
+    }
+
+  /* V1 now contains the new rotated up vector. If we calculate the
+     angle between V1 and original up (0,1,0) we have the wanted roll angle. */
+
+  /*printf("rotated up: %g %g %g\n",V1[0],V1[1],V1[2]);*/
+
+  len = AY_V2LEN(V1);
+  AY_V2SCAL(V1, (1.0/len));
+
+  memcpy(V2, oup, 3*sizeof(double));
+
+  len = AY_V2LEN(V2);
+  AY_V2SCAL(V2, (1.0/len));
+
+  *roll = -AY_R2D(acos(AY_V2DOT(V1, V2)));
+
+  if((V1[0] > 0.0) && (V1[1] > 0.0))
+    {
+      *roll *= -1.0;
+    }
+  else
+    {
+      if((V1[0] > 0.0) && (V1[1] < 0.0))
+	{
+	  *roll *= -1.0;
+	}
+    }
+
+ /*
+  if(*roll == FP_NAN)
+    *roll = 0.0;
+  */
+
+  /*printf("addroll:%g\n",*roll);*/
+ return;
+} /* ay_wrib_getup */
 
 
 /* unused ruin */
@@ -1744,6 +1824,7 @@ ay_wrib_cb(struct Togl *togl, int argc, char *argv[])
  int i, temp = 0;
  char *file = NULL, *image = NULL;
  char fname[] = "write_rib";
+ double addroll = 0.0, dir[3];
 
 #ifdef AYENABLEPPREV
   /* is a permanent preview window open? */
@@ -1789,20 +1870,16 @@ ay_wrib_cb(struct Togl *togl, int argc, char *argv[])
       file = "rendrib";
     }
 
-  /* adjust roll, if up vector points down */
-  if(view->up[1] < 0.0)
-    {
-      view->roll += 180.0;
-    }
+  dir[0] = (view->to[0] - view->from[0]);
+  dir[1] = (view->to[1] - view->from[1]);
+  dir[2] = (view->to[2] - view->from[2]);
+
+  ay_wrib_getup(dir, view->up, &addroll);
 
   ay_status = ay_wrib_scene(file, image, temp, view->from, view->to,
-			    view->roll, view->zoom, view->nearp, view->farp,
+			    view->roll+addroll, view->zoom, view->nearp,
+			    view->farp,
 			    width, height, view->type);
-
-  if(view->up[1] < 0.0)
-    {
-      view->roll -= 180.0;
-    }
 
   if(ay_status)
     {
@@ -1831,6 +1908,7 @@ ay_wrib_tcmd(ClientData clientData, Tcl_Interp * interp,
  int i, selonly = 0, smonly = 0;
  char *file = NULL, *image = NULL;
  char fname[] = "wrib";
+ double addroll = 0.0, dir[3];
 
  /*
   if(argc <= 1)
@@ -1905,16 +1983,17 @@ ay_wrib_tcmd(ClientData clientData, Tcl_Interp * interp,
       image = "unnamed.tif";
     }
 
-  /* adjust roll, if up vector points down */
-  if(!(smonly || selonly) && (cam->up[1] < 0.0))
-    {
-      cam->roll += 180.0;
-    }
-
   if(!(smonly || selonly))
     {
+
+      dir[0] = (cam->to[0] - cam->from[0]);
+      dir[1] = (cam->to[1] - cam->from[1]);
+      dir[2] = (cam->to[2] - cam->from[2]);
+
+      ay_wrib_getup(dir, cam->up, &addroll);
+
       ay_status = ay_wrib_scene(file, image, AY_FALSE,
-				cam->from, cam->to, cam->roll,
+				cam->from, cam->to, cam->roll+addroll,
 				cam->zoom, cam->nearp, cam->farp,
 				width, height, AY_VTPERSP);
     }
@@ -1944,11 +2023,6 @@ ay_wrib_tcmd(ClientData clientData, Tcl_Interp * interp,
 	} /* if */
     } /* if */
 
-  if(!(smonly || selonly) && (cam->up[1] < 0.0))
-    {
-      cam->roll -= 180.0;
-    }
-
   if(ay_status)
     {
       ay_error(ay_status, fname, NULL);
@@ -1975,6 +2049,7 @@ ay_wrib_pprevdraw(ay_view_object *view)
  int width, height, i;
  double zoom, roll, *from, *to;
  char *pprender = "rgl";
+ double addroll = 0.0, dir[3];
 
   ay_current_primlevel = 0;
 
@@ -1990,11 +2065,6 @@ ay_wrib_pprevdraw(ay_view_object *view)
   height = Togl_Height(togl);
   zoom = view->zoom;
   roll = view->roll;
-  /* adjust roll, if up vector points down */
-  if(view->up[1] < 0.0)
-    {
-      roll += 180.0;
-    }
 
   aspect = (RtFloat)(width/((double)height));
 
@@ -2010,6 +2080,12 @@ ay_wrib_pprevdraw(ay_view_object *view)
   d[0] = (RtFloat)(to[0] - from[0]);
   d[1] = (RtFloat)(to[1] - from[1]);
   d[2] = (RtFloat)(to[2] - from[2]);
+
+  dir[0] = (view->to[0] - view->from[0]);
+  dir[1] = (view->to[1] - view->from[1]);
+  dir[2] = (view->to[2] - view->from[2]);
+
+  ay_wrib_getup(dir, view->up, &addroll);
 
   /* when rendering to a pipe, do not create extra files
      for instances but rather resolve them */
@@ -2079,7 +2155,7 @@ ay_wrib_pprevdraw(ay_view_object *view)
   RiArchiveRecord(RI_COMMENT, "rh->lh");
   RiScale((RtFloat)-1.0, (RtFloat)1.0, (RtFloat)1.0);
   RiArchiveRecord(RI_COMMENT, "Camera!");
-  ay_wrib_placecamera(f, d, roll);
+  ay_wrib_placecamera(f, d, roll+addroll);
 
   /* write RiOptions */
   ay_status = ay_wrib_rioptions();
