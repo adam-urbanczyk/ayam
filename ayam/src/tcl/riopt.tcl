@@ -29,7 +29,7 @@ proc riopt_addp { } {
     pack $f.sc -in $f -side right -fill y -expand no
 
     # listbox
-    pack $f -in $w -side top -fill x -expand yes
+    pack $f -in $w -side top -fill both -expand yes
     listbox $f.li -width 24 -height 10 -selectmode single\
 	-yscrollcommand "$f.sc set" -exportselection 0
     pack $f.li -in $f -side left -fill both -expand yes
@@ -96,12 +96,29 @@ proc riopt_addp { } {
 
 		switch $type {
 
-		    i { addParam .addRiOptw.f2 rioptval Int $def}
-		    f { addParam .addRiOptw.f2 rioptval Float $def}
+		    i { 
+			if { $def != {} } {
+			    set rioptval(Int) [lindex $def 0] } else {
+				set rioptval(Int) 0
+			}
+			addParam .addRiOptw.f2 rioptval Int $def 
+		      }
+		    f {
+			if { $def != {} } {
+			    set rioptval(Float) [lindex $def 0] } else {
+				set rioptval(Float) 0.0
+			}
+			addParam .addRiOptw.f2 rioptval Float $def
+		      }
 		    s { 
+			if { $def != {} } {
+			    set rioptval(String) [lindex $def 0] } else {
+				set rioptval(String) ""
+			}
 			addString .addRiOptw.f2 rioptval String $def
-		    }
+		      }
 		    p {
+
 			addParam .addRiOptw.f2 rioptval Point_X
 		        addParam .addRiOptw.f2 rioptval Point_Y
 		        addParam .addRiOptw.f2 rioptval Point_Z
@@ -126,7 +143,18 @@ proc riopt_addp { } {
 			}
 		    }
 
-		    c { addColor .addRiOptw.f2 rioptval Color $def}
+		    c {
+			if { $def != {} } {
+			    set rioptval(Color_R) [lindex [lindex $def 0] 0]
+			    set rioptval(Color_G) [lindex [lindex $def 0] 1]
+			    set rioptval(Color_B) [lindex [lindex $def 0] 2]
+			} else {
+			    set rioptval(Color_R) 0
+			    set rioptval(Color_G) 0
+			    set rioptval(Color_B) 0
+			}
+			addColor .addRiOptw.f2 rioptval Color $def
+		      }
 		    
 		}
 	    }
@@ -215,7 +243,7 @@ proc riopt_addp { } {
     button $f.bca -text "Cancel" -width 5 -command "destroy $w"
 
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
-    pack $f -in $w -side bottom -fill x
+    pack $f -in $w -side bottom -fill x -expand no
 
     grab $w
     focus $f.bok
@@ -223,3 +251,4 @@ proc riopt_addp { } {
 
  return;
 }
+# riopt_addp
