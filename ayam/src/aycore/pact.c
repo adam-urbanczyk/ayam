@@ -247,6 +247,11 @@ ay_pact_flashpoint(int ignore_old)
  int cont, penumber = ay_point_edit_coords_number;
  static int have_old_flashed_point = AY_FALSE;
  static double old_obj[3] = {0};
+ ay_object *o = ay_point_edit_object;
+ double m[16];
+
+ if(!o)
+   return AY_OK;
 
 #ifdef GL_VERSION_1_1
   cont = AY_FALSE;
@@ -271,6 +276,10 @@ ay_pact_flashpoint(int ignore_old)
       glPushMatrix();
        glLoadIdentity();
        ay_trafo_getall(ay_currentlevel->next);
+       glTranslated(o->movx, o->movy, o->movz);
+       ay_quat_torotmatrix(o->quat, m);
+       glMultMatrixd((GLdouble*)m);
+       glScaled (o->scalx, o->scaly, o->scalz);
        glBegin(GL_POINTS);
        /* clear old point? */
        if(have_old_flashed_point && !ignore_old)
