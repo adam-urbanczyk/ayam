@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>6. Jul 2003
+<date>20. Jul 2003
 <abstract>
 This is the documentation of Ayam (1.6) - a free 3D modeling environment
 for the RenderMan interface.
@@ -1651,7 +1651,7 @@ to control transformations and attributes of objects.
 The following sections describe the standard properties
 Transformations, Attributes, Material, Shaders, and Tags.
 
-<sect1>Transformations<label id="trap">
+<sect1>Transformations Property<label id="trap">
 <p>
 Use this property to edit the location, orientation and
 size of an object.
@@ -1675,7 +1675,7 @@ to be edited directly! The sole purpose of its appearance here
 is to allow copying and pasting of rotations.
 </itemize>
 
-<sect2>Using the Rotation Property<label id="gimb">
+<sect2>Using the Rotation Attributes<label id="gimb">
 <p>
 The orientation of an object in space may be expressed using
 so called Euler angles. This notation (simply three angles
@@ -1724,7 +1724,7 @@ If you want to copy the orientation of an object to other objects
 using the property clipboard, make sure that you select all Rot and
 Quat property elements.
 
-<sect1>Attributes<label id="attrs">
+<sect1>Attributes Property<label id="attrs">
 <p>
 The attributes of an object contain currently:
 <itemize>
@@ -1737,7 +1737,7 @@ point to this object. Objects with a reference count different
 from zero may not be deleted.
 </itemize>
 
-<sect1>Material<label id="matprop">
+<sect1>Material Property<label id="matprop">
 <p>
 The material property allows you to connect geometric objects
 to material objects (see also section
@@ -1751,7 +1751,7 @@ drop the geometric objects onto the material object using Drag-and-Drop
 in the tree view.
 </itemize>
 
-<sect1>Shaders<label id="shd">
+<sect1>Shaders Properties<label id="shd">
 <p>
 Shader properties are used to attach shaders of a certain type to objects.
 The name of the property contains the type of the shader, e.g.
@@ -1861,7 +1861,7 @@ property GUI and then use e.g. <tt>"Edit/Copy Marked Prop"</tt>
 (see also the description of the property clipboard in section
 <ref id="propgui" name="Properties">).
 
-<sect1>Tags<label id="tags">
+<sect1>Tags Property<label id="tags">
 <p>
 Use this property to edit the tags of an object.<p>
 Tags provide an easy way to attach arbitrary information to
@@ -2095,7 +2095,7 @@ child objects of the root object.
 If you hide the Root object the little red/green/blue coordinate system
 will not be drawn in any view.
 
-<sect2>RiOptions<label id="rio">
+<sect2>RiOptions Property<label id="rio">
 <p>
 RenderMan Interface options.
 Both, standard and BMRT specific options may be set.
@@ -2141,11 +2141,11 @@ memory rendrib (from BMRT) should use at maximum to cache textures and
 tesselated geometry.
 </itemize>
 
-<sect2>Imager, Atmosphere<label id="imager">
+<sect2>Imager, Atmosphere Property<label id="imager">
 <p>
 These properties let you define shaders for the
 root object, please refer to section
-<ref id="shd" name="Shaders">
+<ref id="shd" name="Shaders Properties">
 for information on how to deal with shader property GUIs.
 Imager shaders are executed once for every rendered pixel,
 they may e.g. be used to set a specific background color.
@@ -2203,7 +2203,7 @@ are lighted by the light object (this works best
 with perspective views that have equal width and height).
 <p>
 
-<sect2>Camera<label id="camp">
+<sect2>Camera Property<label id="camp">
 <p>
 This section describes all elements of the <tt/"Camera"/ property:
 <itemize>
@@ -2227,7 +2227,7 @@ Note, that the up vector is not checked for erroneous values
 (e.g. pointing in the direction of from-to) when applying the changes
 of the <tt/"Camera"/ property.
 
-<sect2>ViewAttrib<label id="vat">
+<sect2>ViewAttrib Property<label id="vat">
 <p>
 This section describes the elements of the <tt/"ViewAttrib"/ property:
 <itemize>
@@ -2275,7 +2275,7 @@ Camera objects are used to temporarily save camera settings
 of views.
 Therefore, they has just have two properties
 explained above, see sections <ref id="camp" name="Camera"> and
-<ref id="attrs" name="Attributes">.
+<ref id="attrs" name="Attributes Property">.
 <p>
 When a view object is dropped onto a camera object using Drag-and-Drop
 in the tree view, the camera settings from the view will be copied
@@ -2295,7 +2295,8 @@ to the camera object.
 A solid box, centered at the origin of the object coordinate system.
 This object will always be exported as solid primitive in RIBs;
 consisting of six bilinear patches.
-<sect2>BoxAttrib<label id="bxp">
+
+<sect3>BoxAttrib Property<label id="bxp">
 <p>
 <itemize>
 <item><tt/"Width"/ is the width of the box (size of the box in
@@ -2313,7 +2314,7 @@ This object will be exported as solid primitive or as
 simple sphere (depending on the <tt/"Closed"/ parameter
 of the SphereAttrib property) in RIBs.
 
-<sect3>RiSphereAttr<label id="spattr">
+<sect3>RiSphereAttr Property<label id="spattr">
 <p>
 <itemize>
 <item><tt/"Closed"/ toggles whether the object should
@@ -2336,7 +2337,7 @@ place at Z.
 A disk, centered at the origin of the object coordinate system.
 This object will always be exported as simple disk in RIBs.
 
-<sect3>RiDiskAttr<label id="dkp">
+<sect3>RiDiskAttr Property<label id="dkp">
 <p>
 <itemize>
 <item><tt/"Radius"/ is the radius of the disk, default is 1.
@@ -2352,7 +2353,7 @@ This object will be exported as solid primitive or as
 simple cone (depending on the <tt/"Closed"/ parameter
 of the ConeAttrib property) in RIBs.
 
-<sect3>RiConeAttr<label id="cnp">
+<sect3>RiConeAttr Property<label id="cnp">
 <p>
 <itemize>
 <item><tt/"Closed"/ toggles whether the object should
@@ -2378,7 +2379,7 @@ does not reflect the settings of the following parameters
 of the CylinderAttrib property: <tt/"Closed"/ and
 <tt/"ThetaMax"/.
 
-<sect3>RiCylinderAttr<label id="cyp">
+<sect3>RiCylinderAttr Property<label id="cyp">
 <p>
 <itemize>
 <item><tt/"Closed"/ toggles whether the object should
@@ -2404,7 +2405,7 @@ This object will be exported as solid primitive or as
 simple torus (depending on the <tt/"Closed"/ parameter
 of the RiTorusAttr property) in RIBs.
 
-<sect3>RiTorusAttr<label id="top">
+<sect3>RiTorusAttr Property<label id="top">
 <p>
 <itemize>
 <item><tt/"Closed"/ toggles whether the object should
@@ -2432,7 +2433,7 @@ This object will be exported as solid primitive or as
 simple paraboloid (depending on the <tt/"Closed"/ parameter
 of the RiParaboloidAttr property) in RIBs.
 
-<sect3>RiParabAttr<label id="pap">
+<sect3>RiParabAttr Property<label id="pap">
 <p>
 <itemize>
 <item><tt/"Closed"/ toggles whether the object should
@@ -2459,7 +2460,7 @@ This object will be exported as solid primitive or as
 simple hyperboloid (depending on the <tt/"Closed"/ parameter
 of the RiHyperbAttr property) in RIBs.
 
-<sect3>RiHyperbAttr<label id="hyp">
+<sect3>RiHyperbAttr Property<label id="hyp">
 <p>
 <itemize>
 <item><tt/"Closed"/ toggles whether the object should
@@ -2481,23 +2482,33 @@ default is (1, 0, 0.5).
 <item><tt/"ThetaMax"/ is the sweeping angle of the hyperboloid, default is 360.
 </itemize>
 
-<sect1>Level, Union, Intersection, Difference, Primitive<label id="levelobj">
+<sect1>Level Object<label id="levelobj">
 <p>
-Objects of type <tt/Level/, <tt/Union/, <tt/Intersection/, <tt/Difference/,
-<tt/Primitive/ are
+Level objects may be
 used to build object hierarchies and perform CSG
 operations.
 Note, that child objects of a level inherit the levels transformations
-attributes and shaders.
+attributes and shaders. Inheritance of e.g. transformations means:
 If you have a NURBS patch in a level that is translated to 10,0,0,
 the origin of the local coordinate system of the NURBS patch
 will be situated at 10,0,0. If you decide to move the patch by a value
 of 5 in X direction, you will finally arrive at 15,0,0.<p>
-Levels do not have object type specific properties, just standard
-properties (see section <ref id="stdprop" name="Standard Properties">).
 
-New solid primitives may be created with levels of type <tt/Primitive/.
-Note, that Ayam is not able to check whether your new primitive obeys
+<sect2>LevelAttr Property<label id="lep">
+<p>
+Levels do not have many object type specific properties, you may just
+modify the type of the level using the attribute <tt/"Type"/.
+
+Levels of type <tt/"Level"/ just group objects and inherit attributes.
+
+Levels of type <tt/"Union"/, <tt/"Intersection"/, and <tt/"Difference"/
+are used to build CSG hierarchies. Additionally, they
+inherit attributes. Note that Ayam is currently not able to correctly
+display the results of CSG operations, all objects are always drawn
+completely, even though a CSG operation cut parts away.
+
+New solid primitives may be created with levels of type <tt/"Primitive"/.
+Note that Ayam is not able to check, whether your new primitive obeys
 the rule of total closeness.
 
 <sect1>Material Object<label id="materialobj">
@@ -2512,7 +2523,7 @@ they will be connected to this object.
 When geometric objects are connected to a material
 object this material object may not be deleted.
 
-<sect2>RiAttributes<label id="riattrs">
+<sect2>RiAttributes Property<label id="riattrs">
 <p>
 Using this property standard and BMRT specific attributes may be set.
 Please refer to the documentation of the RenderMan interface
@@ -2556,11 +2567,11 @@ shader, that is used in shadow calculations.
 visibility attributes.
 </itemize>
 
-<sect2>Surface, Displacement, Interior, Exterior<label id="matshader">
+<sect2>Surface, Displacement, Interior, Exterior Property<label id="matshader">
 <p>
 These properties let you define shaders for the
 material object, please refer to section
-<ref id="shd" name="Shaders">
+<ref id="shd" name="Shaders Properties">
 for information on how to deal with shader property GUIs.<p>
 Surface shaders may be used to procedurally encode
 lighting models and textures. Displacement shaders
@@ -2600,7 +2611,7 @@ Please refer to the RenderMan documentation for more information
 about the standard light sources
 (see section <ref id="secref" name="references">).
 
-<sect2>LightAttr<label id="lip">
+<sect2>LightAttr Property<label id="lip">
 <p>
 Depending on the type of the light source, the light attribute
 property contains different parameters. Parameters that
@@ -2620,7 +2631,9 @@ in the scene hierarchy as the
 light source object or below) or all objects in the scene.
 The default is off, all objects in the scene are lighted!
 The <tt/"IsLocal"/ attribute is ignored for lights that are
-defined in the root level of the scene.<p>
+defined in the root level of the scene. Note that shadow maps
+will always contain shadows from all objects in the scene,
+regardless of local lights.<p>
 
 Using the light attribute <tt/"Shadows"/ you may determine
 whether the lightsource should cast shadows.
@@ -2876,7 +2889,7 @@ points after exploding!
 You may also totally inhibit creation of multiple points for a
 NURBS curve using the attribute <tt/"CreateMP"/.
 
-<sect2>NCurveAttrib<label id="ncattr">
+<sect2>NCurveAttrib Property<label id="ncattr">
 <p>
 The first section of the NCurveAttrib property contains curve specific
 settings:<p>
@@ -2953,7 +2966,7 @@ Check the console for any messages!
 
 <sect1>NURBPatch Object<label id="npatchobj">
 <p>
-<sect2>NPatchAttrib<label id="npattr">
+<sect2>NPatchAttrib Property<label id="npattr">
 <p>
 The first section of the NPatchAttrib property contains patch specific
 settings:<p>
@@ -3042,7 +3055,7 @@ as trim curves.
 A BPatch is a bilinear patch (as it is used to build
 box objects, see <ref id="boxobj" name="Box Object">).
 
-<sect2>BPatchAttrib<label id=bpattr>
+<sect2>BPatchAttrib Property<label id=bpattr>
 <p>
 The BPatchAttrib property allows you to set the
 four points defining the geometry of the patch:<p>
@@ -3055,7 +3068,6 @@ four points defining the geometry of the patch:<p>
 
 <sect1>PatchMesh Object<label id="patchmeshobj">
 <p>
-
 The PatchMesh object may be used to model with bilinear and
 bicubic patch meshes.
 The PatchMesh object may be converted to a NURBS patch
@@ -3068,7 +3080,7 @@ and when shading the patch mesh.
 Consequently, there is currently no shaded representation of
 patch meshes of basis type Catmull-Rom, Hermite or Custom.
 
-<sect2>PatchMeshAttr<label id="pmattr">
+<sect2>PatchMeshAttr Property<label id="pmattr">
 <p>
 The first section of the PatchMeshAttr property contains patch specific
 settings:<p>
@@ -3107,7 +3119,6 @@ outlines of the patch (OutlinePatch). The default setting
 
 <sect1>PolyMesh Object<label id="polymeshobj">
 <p>
-
 The PolyMesh object may be used to include objects that
 have been modeled using the polygonal modeling paradigm
 in Ayam scenes.
@@ -3138,7 +3149,7 @@ object will lead to a real waste of memory. You may use the
 merge tool (main menu <tt>"Tools/PolyMesh/Merge"</tt>) to merge
 many PolyMesh objects into a single PolyMesh object.
 
-<sect2>PolyMeshAttr<label id="pomattr">
+<sect2>PolyMeshAttr Property<label id="pomattr">
 <p>
 The PolyMeshAttr GUI just displays some information about the
 PolyMesh object:
@@ -3180,7 +3191,7 @@ Furthermore, Ayam is currently not able to do the subdivision and
 show the resulting smooth surface. All that is shown in wireframe and
 shaded views is the original polygonal mesh.
 
-<sect2>SDMeshAttr<label id="sdmattr">
+<sect2>SDMeshAttr Property<label id="sdmattr">
 <p>
 The SDMeshAttr GUI just displays some information about the
 SDMesh object:
@@ -3285,7 +3296,7 @@ material objects).
 <p>
 The following attributes further control the
 clone process:
-<sect2>CloneAttr<label id="cloneattr">
+<sect2>CloneAttr Property<label id="cloneattr">
 <p>
 <itemize>
 <item><tt/"NumClones"/ the number of clones to create.
@@ -3341,7 +3352,7 @@ You may convert the current surface of revolution and the caps,
 if there are any, to ordinary NURBS patches using the main menu entry
 <tt>"Tools/Convert"</tt>. 
 
-<sect2>RevolveAttr<label id="rep">
+<sect2>RevolveAttr Property<label id="rep">
 <p>
 Using the parameter <tt/"ThetaMax"/ you can specify the
 sweeping angle of the revolution just like with an ordinary
@@ -3398,7 +3409,7 @@ You may convert the current surface of extrusion and the caps and bevels,
 if there are any, to ordinary NURBS patches using the main menu entry
 <tt>"Tools/Convert"</tt>. 
 
-<sect2>ExtrudeAttr<label id="extrattr">
+<sect2>ExtrudeAttr Property<label id="extrattr">
 <p>
 Using the parameter <tt/"Height"/ you determine how
 big in Z direction the extrusion should be. Note, that
@@ -3521,7 +3532,7 @@ You may convert the current sweep and the caps, if there are any,
 to ordinary NURBS patches using the main menu entry
 <tt>"Tools/Convert"</tt>.
 
-<sect2>SweepAttr<label id="swp">
+<sect2>SweepAttr Property<label id="swp">
 <p>
 If <tt/"Interpolation"/ is enabled, all section curves
 will be interpolated by the swept surface.<p>
@@ -3577,7 +3588,7 @@ You may convert the current skin and the caps, if there are any,
 to ordinary NURBS patches using the main menu entry
 <tt>"Tools/Convert"</tt>.
 
-<sect2>SkinAttr<label id="skp">
+<sect2>SkinAttr Property<label id="skp">
 <p>
 The first parameter <tt/"Interpolation"/ controls,
 whether the inner curves should be interpolated by the
@@ -3636,7 +3647,7 @@ You may convert the current cap
 to an ordinary NURBS patch object using the main menu entry
 <tt>"Tools/Convert"</tt>.
 
-<sect2>CapAttr<label id="capp">
+<sect2>CapAttr Property<label id="capp">
 <p>
 See section <ref id="npattr" name="NPatchAttrib"> for a description
 of the two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/
@@ -3674,7 +3685,7 @@ of type NURBCurve.
 You may convert the current ICurve to an ordinary NURBS curve
 using the main menu entry <tt>"Tools/Convert"</tt>.
 
-<sect2>ICurveAttr<label id="icp">
+<sect2>ICurveAttr Property<label id="icp">
 <p>
 <itemize>
 <item>Using <tt/"Length"/ you determine the number of points to interpolate.
@@ -3739,7 +3750,7 @@ object using the main menu entry <tt>"Tools/Convert"</tt>.
 <p>
 The following attributes further control the
 concatenation process:
-<sect2>ConcatNCAttr<label id="concatncp">
+<sect2>ConcatNCAttr Property<label id="concatncp">
 <p>
 <itemize>
 <item>Using <tt/"Closed"/ you may create a closed concatenated curve.
@@ -3762,7 +3773,7 @@ transition should be G1 continuous.
 RiInc objects may be used to include objects or whole scene parts into your
 scenes that, for some reason, are just available as
 a piece of RIB.
-<sect2>RiIncAttr<label id="riincp">
+<sect2>RiIncAttr Property<label id="riincp">
 <p>
 <itemize>
 <item>Using <tt/"File"/ you specify the file of the
@@ -3819,7 +3830,7 @@ representation for a specific function value (the so called threshold value).
 <p>
 This process may be further parameterized using the <tt/"MetaObjAttr"/
 property:
-<sect2>MetaObjAttr<label id="moattr">
+<sect2>MetaObjAttr Property<label id="moattr">
 <p>
 <itemize>
 <item>With the parameter <tt/"NumSamples"/ you specify the resolution of the
@@ -3856,7 +3867,7 @@ While modelling with meta balls you may add other <tt/"MetaComp"/ objects
 to the <tt/"MetaObj"/ object and parameterize them.
 A <tt/"MetaComp"/ object has the following properties.
 
-<sect2>MetaCompAttr<label id="mcattr">
+<sect2>MetaCompAttr Property<label id="mcattr">
 <p>
 <itemize>
 <item><tt/"Formula"/ specifies the type of the meta component.
@@ -5878,7 +5889,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <itemize>
 <item>getPnt: <ref id="scipoints" name="scripting interface command">
 <item>getType: <ref id="scimisc" name="scripting interface command">
-<item>Gimbal Lock: <ref id="gimb" name="avoiding">
+<item>Gimbal Lock: <ref id="gimb" name="avoiding Gimbal Locks">
 <item>goDown: <ref id="scihier" name="scripting interface command">
 <item>goTop: <ref id="scihier" name="scripting interface command">
 <item>goUp: <ref id="scihier" name="scripting interface command">
@@ -6069,7 +6080,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <itemize>
 <item>QRender: <ref id="prefrib" name="preference setting">
 <item>QRenderPT, QRenderUI: <ref id="prefrib" name="preference setting">
-<item>Quat: <ref id="trap" name="transformation property">
+<item>Quat: <ref id="trap" name="transformations property">
 <item>Quick Render: <ref id="vm" name="view menu entry">
 </itemize>
 
@@ -6132,7 +6143,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Rotate: <ref id="vwsc" name="view action">,
 <ref id="rotac" name="rotate object">,
 <ref id="swp" name="sweep attribute">
-<item>Rotation: <ref id="trap" name="transformation property">,
+<item>Rotation: <ref id="trap" name="transformations property">,
 <ref id="gimb" name="using the transformations property">
 <item>rotOb, rotSel: <ref id="scitrafo" name="scripting interface command">
 <item>rV: <ref id="sciupd" name="scripting interface command">
@@ -6149,7 +6160,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>SaveAddsMRU: <ref id="prefmisc" name="preference setting">
 <item>SavePrefsGeom: <ref id="prefmisc" name="preference setting">
 <item>saveScene: <ref id="scio" name="scripting interface command">
-<item>Scale: <ref id="trap" name="transformation property">,
+<item>Scale: <ref id="trap" name="transformations property">,
 <ref id="scalac" name="scale object">
 <item>scalOb, scalSel: <ref id="scitrafo" name="scripting interface command">
 <item>Scripts: <ref id="prefgui" name="preference setting">
@@ -6168,7 +6179,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>setPnt: <ref id="scipoints" name="scripting interface command">
 <item>Shade: <ref id="prefdraw" name="preference setting">,
 <ref id="vmconf" name="view menu entry">
-<item>Shader: <ref id="shd" name="property">
+<item>Shader: <ref id="shd" name="properties">
 <item>Shader Parsing: <ref id="spplugins" name="shader parsing plugins">
 <item>Shaders: <ref id="prefmain" name="preference setting">,
 <ref id="scishaders" name="scripting interface commands">
@@ -6240,7 +6251,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Torus: <ref id="mmcreate" name="main menu entry">,
 <ref id="torusobj" name="object">
 <item>Transformations: <ref id="trap" name="transformations property">
-<item>Translation: <ref id="trap" name="transformation property">
+<item>Translation: <ref id="trap" name="transformations property">
 <item>Tree View: <ref id="treeview" name="Tree View">
 <item>Trim: <ref id="vmtype" name="view menu entry">
 <item>Trim Curve: <ref id="trim" name="using trim curves">
