@@ -41,7 +41,11 @@ $m add command\
 	 #was: regsub -all {\\} $tmpfile {\\\\\\\\\\\\\\\\} tmpfile
      }
 
-     $ay(currentView) wrib -file $tmpfile -image ${tmpfile}.tif -temp
+     if { $ayprefs(RenderMode) == 0 } {
+	 $ay(currentView) wrib -file $tmpfile -image ${tmpfile}.tif -temp
+     } else {
+	 $ay(currentView) wrib -file $tmpfile -temp
+     }
 
      lappend ay(tmpfiles) $tmpfile
  } else {
@@ -49,8 +53,12 @@ $m add command\
      set ribname [io_getRIBName]
      set tmpfile [lindex $ribname 0]
      set imagename [lindex $ribname 1]
+     if { $ayprefs(RenderMode) == 0 } {
+	 $ay(currentView) wrib -file $tmpfile -image $imagename -temp
+     } else {
+	 $ay(currentView) wrib -file $tmpfile -temp
+     }
 
-     $ay(currentView) wrib -file $tmpfile -image $imagename -temp
  }
 
  if { $ayprefs(QRenderUI) != 1} {
@@ -76,7 +84,7 @@ $m add command\
 
 $m add command\
 -label "Render"\
--command {\
+-command {
 global env ayprefs ay tcl_platform
 
 if { $ayprefs(ShadowMaps) < 1 } {
@@ -87,17 +95,23 @@ if { $ayprefs(ShadowMaps) < 1 } {
 	regsub -all {\\} $tmpfile {/} tmpfile
     }
 
- $ay(currentView) wrib -file $tmpfile -image ${tmpfile}.tif -temp
+    if { $ayprefs(RenderMode) == 0 } {
+	$ay(currentView) wrib -file $tmpfile -image ${tmpfile}.tif -temp
+    } else {
+	$ay(currentView) wrib -file $tmpfile -temp
+    }
 
- lappend ay(tmpfiles) [list $tmpfile]
+    lappend ay(tmpfiles) [list $tmpfile]
 } else {
 
     set ribname [io_getRIBName]
     set tmpfile [lindex $ribname 0]
     set imagename [lindex $ribname 1]
-
-    $ay(currentView) wrib -file $tmpfile -image $imagename -temp
-
+    if { $ayprefs(RenderMode) == 0 } {
+	$ay(currentView) wrib -file $tmpfile -image $imagename -temp
+    } else {
+	$ay(currentView) wrib -file $tmpfile -temp
+    }
 }
 
 # $tcl_platform(platform) == "windows" || 
@@ -133,7 +147,7 @@ $m add command -label "Export RIB" -command {
     io_exportRIB [winfo toplevel $w]
 }
 global AYENABLEPPREV
-if {$AYENABLEPPREV == 1} {
+if { $AYENABLEPPREV == 1 } {
     $m add separator
 
     $m add command -label "Open PPrev" -command {

@@ -147,6 +147,8 @@ proc prefs_open {} {
     addMenuB $fw ayprefse ShadowMaps [ms ayprefse_ShadowMaps]\
 	    [list Never Automatic Manual]
     addCheckB $fw ayprefse ExcludeHidden [ms ayprefse_ExcludeHidden]
+    addMenuB $fw ayprefse RenderMode [ms ayprefse_RenderMode]\
+	    [list CommandLineArg RiDisplay]
     addStringB $fw ayprefse QRender [ms ayprefse_QRender]\
 	    [list "rgl %s" "rgl -rd 10 %s"]
     addCheckB $fw ayprefse QRenderUI [ms ayprefse_QRenderUI]

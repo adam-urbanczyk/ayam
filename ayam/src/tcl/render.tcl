@@ -84,7 +84,7 @@ proc render_select { } {
 		set ayprefs(RenderPT) "Done computing %d"
 		set ayprefs(SMRender) "rendrib -d 4 %s"
 		set ayprefs(SMRenderPT) "Done computing %d"
-
+		set ayprefs(RenderMode) 0
 	    }
 
 	    1 {
@@ -95,6 +95,7 @@ proc render_select { } {
 		set ayprefs(RenderPT) "R90000 %d"
 		set ayprefs(SMRender) "rendrib -d 4 -Progress %s"
 		set ayprefs(SMRenderPT) "R90000 %d"
+		set ayprefs(RenderMode) 0
 	    }
 
 	    2 {
@@ -105,6 +106,7 @@ proc render_select { } {
 		set ayprefs(RenderPT) "Done computing %d"
 		set ayprefs(SMRender) "aqsis %s"
 		set ayprefs(SMRenderPT) "Done computing %d"
+		set ayprefs(RenderMode) 0
 	    }
 
 	    3 { 
@@ -115,6 +117,7 @@ proc render_select { } {
 		set ayprefs(RenderPT) "R90000 %d"
 		set ayprefs(SMRender) "air -Progress %s"
 		set ayprefs(SMRenderPT) "R90000 %d"
+		set ayprefs(RenderMode) 0
 	    }
 
 	    4 {
@@ -125,6 +128,7 @@ proc render_select { } {
 		set ayprefs(RenderPT) ""
 		set ayprefs(SMRender) "renderdl %s"
 		set ayprefs(SMRenderPT) ""
+		set ayprefs(RenderMode) 0
 	    }
 
 	    5 {
@@ -135,6 +139,7 @@ proc render_select { } {
 		set ayprefs(RenderPT) ""
 		set ayprefs(SMRender) "renderdc %s"
 		set ayprefs(SMRenderPT) ""
+		set ayprefs(RenderMode) 1
 	    }
 
 	    6 {
@@ -145,6 +150,7 @@ proc render_select { } {
 		set ayprefs(RenderPT) " %d"
 		set ayprefs(SMRender) "render -progress %s"
 		set ayprefs(SMRenderPT) " %d"
+		set ayprefs(RenderMode) 1
 	    }
 
 	    default { puts Whoops? }
