@@ -62,6 +62,12 @@ int onio_writencconvertible(ay_object *o, ONX_Model *p_m, double *m);
 
 int onio_writelevel(ay_object *o, ONX_Model *p_m, double *m);
 
+int onio_writeclone(ay_object *o, ONX_Model *p_m, double *m);
+
+int onio_writeinstance(ay_object *o, ONX_Model *p_m, double *m);
+
+int onio_writescript(ay_object *o, ONX_Model *p_m, double *m);
+
 int onio_writeobject(ay_object *o, ONX_Model *p_m);
 
 int onio_writetcmd(ClientData clientData, Tcl_Interp *interp,
@@ -603,6 +609,84 @@ onio_writelevel(ay_object *o, ONX_Model *p_m, double *m)
 
  return ay_status;
 } // onio_writelevel
+
+
+// onio_writeclone:
+//
+int
+onio_writeclone(ay_object *o, ONX_Model *p_m, double *m)
+{
+ int ay_status = AY_OK;
+ ay_clone_object *cl = NULL;
+ ay_object *clone;
+
+  if(!o || !p_m || !m)
+    return AY_ENULL;
+
+  cl = (ay_clone_object *)o->refine;
+
+  clone = cl->clones;
+
+  while(clone)
+    {
+      ay_status = onio_writeobject(clone, p_m);
+
+      clone = clone->next;
+    } // while
+
+ return ay_status;
+} // onio_writeclone
+
+
+// onio_writeinstance:
+//
+int
+onio_writeinstance(ay_object *o, ONX_Model *p_m, double *m)
+{
+ int ay_status = AY_OK;
+ ay_object *orig, tmp = {0};
+
+  if(!o || !p_m || !m)
+    return AY_ENULL;
+
+  orig = (ay_object *)o->refine;
+
+  ay_trafo_copy(orig, &tmp);
+  ay_trafo_copy(o, orig);
+  ay_status = onio_writeobject(orig, p_m);
+  ay_trafo_copy(&tmp, orig);
+
+ return ay_status;
+} // onio_writeinstance
+
+
+// onio_writescript:
+//
+int
+onio_writescript(ay_object *o, ONX_Model *p_m, double *m)
+{
+ int ay_status = AY_OK;
+ ay_script_object *sc = NULL;
+ ay_object *cm;
+
+  if(!o || !p_m || !m)
+    return AY_ENULL;
+
+  sc = (ay_script_object *)o->refine;
+
+  if(((sc->type == 1) || (sc->type == 2)) && (sc->cm_objects))
+    {
+      cm = sc->cm_objects;
+      while(cm)
+	{
+	  ay_status = onio_writeobject(cm, p_m);
+
+	  cm = cm->next;
+	} // while
+    } // if
+
+ return ay_status;
+} // onio_writescript
 
 
 // onio_writeobject:
@@ -1992,6 +2076,15 @@ Onio_Init(Tcl_Interp *interp)
 
   ay_status = onio_registerwritecb((char *)(AY_IDLEVEL),
 				   onio_writelevel);
+
+  ay_status = onio_registerwritecb((char *)(AY_IDCLONE),
+				   onio_writeclone);
+
+  ay_status = onio_registerwritecb((char *)(AY_IDINSTANCE),
+				   onio_writeinstance);
+
+  ay_status = onio_registerwritecb((char *)(AY_IDSCRIPT),
+				   onio_writescript);
 
 
 #ifndef ONIOWRAPPED
