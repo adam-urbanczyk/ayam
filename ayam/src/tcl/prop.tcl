@@ -145,7 +145,7 @@ set j 0
 foreach tag $names {
     if { !$ayprefs(HideTmpTags) || ![tagIsTemp $tag] } {
 
-	$m add command -label "Tag#$j" -command\
+	$m add command -label "Tag#$j ($tag)" -command\
 		"undo save RemTag;setTags -delete $i;plb_update"
 
 	incr j
