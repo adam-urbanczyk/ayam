@@ -490,8 +490,12 @@ void ay_tc_init(Tcl_Interp *interp);
 int ay_tcmd_reverttcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[]);
 
+void ay_tcmd_showall(ay_object *o);
+
 int ay_tcmd_showtcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[]);
+
+void ay_tcmd_hideall(ay_object *o);
 
 int ay_tcmd_hidetcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[]);

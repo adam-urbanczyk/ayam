@@ -78,6 +78,29 @@ ay_tcmd_reverttcmd(ClientData clientData, Tcl_Interp * interp,
 } /* ay_tcmd_reverttcmd */
 
 
+/* ay_tcmd_showall:
+ *  
+ */
+void
+ay_tcmd_showall(ay_object *o)
+{
+ ay_object *down;
+
+  if(o->down)
+    {
+      down = o->down;
+      while(down)
+	{
+	  ay_tcmd_showall(down);
+	  down = down->next;
+	}
+    }
+
+  o->hide = AY_FALSE;
+
+  return;
+} /* ay_tcmd_showall */
+
 /* ay_tcmd_showtcmd:
  *  
  */
@@ -91,6 +114,20 @@ ay_tcmd_showtcmd(ClientData clientData, Tcl_Interp * interp,
   */
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
+
+ if(argc > 1)
+   {
+     if(!strcmp(argv[1], "-all"))
+       {
+	 o = ay_root;
+	 while(o)
+	   {
+	     ay_tcmd_showall(o);
+	     o = o->next;
+	   }
+	 return TCL_OK;
+       }
+   }
 
   while(sel)
     {
@@ -106,6 +143,30 @@ ay_tcmd_showtcmd(ClientData clientData, Tcl_Interp * interp,
 } /* ay_tcmd_showtcmd */
 
 
+/* ay_tcmd_hideall:
+ *  
+ */
+void
+ay_tcmd_hideall(ay_object *o)
+{
+ ay_object *down;
+
+  if(o->down)
+    {
+      down = o->down;
+      while(down)
+	{
+	  ay_tcmd_hideall(down);
+	  down = down->next;
+	}
+    }
+
+  o->hide = AY_TRUE;
+
+  return;
+} /* ay_tcmd_hideall */
+
+
 /* ay_tcmd_hidetcmd:
  *  
  */
@@ -118,7 +179,6 @@ ay_tcmd_hidetcmd(ClientData clientData, Tcl_Interp * interp,
  char fname[] = "hide";
   */
  int toggle = AY_FALSE;
-
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
 
@@ -128,7 +188,18 @@ ay_tcmd_hidetcmd(ClientData clientData, Tcl_Interp * interp,
        {
 	 toggle = AY_TRUE;
        }
-   }
+
+     if(!strcmp(argv[1], "-all"))
+       {
+	 o = ay_root;
+	 while(o)
+	   {
+	     ay_tcmd_hideall(o);
+	     o = o->next;
+	   }
+	 return TCL_OK;
+       }
+   } /* if */
 
   while(sel)
     {
