@@ -1555,7 +1555,7 @@ ay_wrib_cb(struct Togl *togl, int argc, char *argv[])
  ay_riopt_object *riopt = NULL;
  int width = Togl_Width (togl);
  int height = Togl_Height (togl);
- int i, temp = 0, smonly = 0;
+ int i, temp = 0;
  char *file = NULL, *image = NULL;
  char fname[] = "write_rib";
 
@@ -1568,7 +1568,7 @@ ay_wrib_cb(struct Togl *togl, int argc, char *argv[])
     }
 #endif
 
-  /* assemble args */
+  /* parse args */
   i = 2;
   while(i+1 <= argc)
     {
@@ -1580,9 +1580,6 @@ ay_wrib_cb(struct Togl *togl, int argc, char *argv[])
       else
 	if(!strcmp(argv[i],"-temp"))
 	  temp = 1;
-      else
-	if(!strcmp(argv[i],"-smonly"))
-	  smonly = 1;
 
       i += 2;
     }
@@ -1612,16 +1609,9 @@ ay_wrib_cb(struct Togl *togl, int argc, char *argv[])
       view->roll += 180.0;
     }
 
-  if(!smonly)
-    {
-      ay_status = ay_wrib_scene(file, image, view->from, view->to, view->roll,
+  ay_status = ay_wrib_scene(file, image, view->from, view->to, view->roll,
 				view->zoom, view->nearp, view->farp,
 				width, height, view->type);
-    }
-  else
-    {
-      ay_status = ay_wrib_sm(file, image, width, height);
-    }
 
   if(view->up[1] < 0.0)
     {
@@ -1664,7 +1654,7 @@ ay_wrib_tcmd(ClientData clientData, Tcl_Interp * interp,
     }
  */
 
-  /* assemble args */
+  /* parse args */
   i = 1;
   while(i+1 <= argc)
     {

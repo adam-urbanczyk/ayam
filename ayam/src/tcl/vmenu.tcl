@@ -59,9 +59,7 @@ if { $AYENABLEPPREV == 1 } {
     }
 }
 $m add separator
-$m add command -label "Create ShadowMaps" -command "\
-	viewRenderSM $w;\
-	\$ay(currentView) mc"
+$m add command -label "Create ShadowMaps" -command "io_RenderSM"
 
 $m add separator
 
