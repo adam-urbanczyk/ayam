@@ -14,7 +14,7 @@ If you get error messages about input or output file handles
 when trying to render directly from Ayam, please use the
 accompanying batch file "ayam.bat" to start Ayam.<p>
 
-On the first start of Ayam, the following things have to be done:
+Before you start modelling with Ayam, the following things have to be done:
 <UL>
  <LI> Saving Preferences
  <LI> Setting up Shaders
@@ -44,11 +44,14 @@ You can change the path and filename of the preference settings
 using the environment variable "AYAMRC".<br>
 How do you set an environment variable?<p>
 
-Edit the batch file "ayam.bat" (This does not work on WindowsNT!):
+An easy way to do this is to edit the batch file "ayam.bat",
+and use it to start Ayam (This route does not work on WindowsNT!):
 <UL>
  <LI> quit Ayam
- <LI> remove the leading ";" from the line ";SET AYAMRC=C:/ayam/myayamrc"
- <LI> change the path to a more appropriate setting
+ <LI> edit the file "ayam.bat"
+ <LI> remove the leading "rem" from the line "rem AYAMRC=D:/Ayam/ayamrc"
+ <LI> you may change the path "D:/Ayam/ayamrc" to a more appropriate setting
+ <LI> save the file "ayam.bat"
  <LI> use the batch file "ayam.bat" to start Ayam
 </UL>
 
@@ -59,7 +62,7 @@ Alternatively:
 Add a new variable named "AYAMRC" and set it e.g. to C:/ayam/myayamrc
  <LI> WinNT/2000: open Start/Settings/Control Panel/System/Environment<br>
 Add a new variable named "AYAMRC" and set it e.g. to C:/ayam/myayamrc
-(You need to be administrator on Win2000 to be able to
+(You need to be administrator on Win2000 to be able to do this.)
  <LI> Win95/98/98SE: From the start menu, choose "Run" and enter
 "sysedit", then click "Ok".
 Select the window that is displaying "AUTOEXEC.BAT".
@@ -141,7 +144,7 @@ Quit the application and start it again; then
 download "Tutorial #1" and do it.
 
 <HR>
-<i>Randolf Schultz, 7. May 2002<BR>
+<i>Randolf Schultz, 15. Jul 2002<BR>
 <A HREF="http://www.ayam3d.org/">
 http://www.ayam3d.org/</A>&nbsp;&nbsp;&nbsp;&nbsp;Reconstruct the World!
 </i>
