@@ -339,11 +339,13 @@ if { $tcl_platform(platform) == "windows" } {
 }
 
 # are true color visuals available?
-set visuals [winfo visualsavailable .]
-if { [lsearch $visuals truecolor*] != -1 } {
-    set ay(truecolor) 1
-} else {
-    set ay(truecolor) 0
+if { [llength [info commands winfo]] != 0 } {
+    set visuals [winfo visualsavailable .]
+    if { [lsearch $visuals truecolor*] != -1 } {
+	set ay(truecolor) 1
+    } else {
+	set ay(truecolor) 0
+    }
 }
 
 # if envvar AYAMRC is set, use it
@@ -629,19 +631,20 @@ set i 0
 set j 0
 while { $i < $argc } {
     set arg [lindex $argv $i]
-    if { ! [ string compare "-h" $arg] } {
-	puts "Ayam-specific options:"
+    puts $arg
+    if { ! [ string compare "-h" $arg ] } {
 	puts " -h:        Display this help"
 	puts " -nosplash: Do not display splash-image"
 	puts " -failsafe: Do not load preferences and do not open a view"
 	puts " 1.ay 2.ay: Load 1.ay, insert 2.ay"
 	puts "\n Ayam - Reconstruct the World!"
+	update
 	exit
     } else {
-	if { ! [ string compare "-failsafe" $arg] } {
+	if { ! [ string compare "-failsafe" $arg ] } {
 	    set ay(failsafe) 1
 	}
-	if { ! [ string compare "-nosplash" $arg] } {
+	if { ! [ string compare "-nosplash" $arg ] } {
 	    set ay(showsplash) 0
 	}
     }
