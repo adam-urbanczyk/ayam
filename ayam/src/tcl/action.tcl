@@ -371,8 +371,8 @@ array set editPointDarray {
 # helper for actionDEditP
 # directly edit coordinates of points
 proc editPointDp { } {
-global ay
 upvar #0 editPointDarray array
+global ay
 
 set w .editPointDw
 
@@ -409,7 +409,7 @@ if { [winfo exists $w] } {
 
 catch {destroy $w}
 toplevel $w
-wm title $w "Ayam - Edit_Points"
+wm title $w "Edit_Point"
 wm iconname $w "Ayam"
 #wm transient $w .
 
@@ -492,8 +492,8 @@ button $f.bok -text "Ok" -width 5 -pady $ay(pady) -command {
 }
 
 button $f.bca -text "Cancel" -width 5 -pady $ay(pady) -command "\
-	if { [winfo exists $ay(currentView) } {\
-	 focus $ay(currentView) } else { focus .};\
+	if { [winfo exists $ay(currentView)] } {\
+	 focus $ay(currentView) } else { focus . };\
 	destroy $w"
 
 pack $f.bok $f.bca -in $f -side left -fill x -expand yes
