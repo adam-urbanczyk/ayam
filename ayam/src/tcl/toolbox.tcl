@@ -473,6 +473,11 @@ proc toolbox_open { } {
     update
     if { $ayprefs(toolBoxGeom) != "" } {
 	winMoveOrResize .tbw $ayprefs(toolBoxGeom)
+    } else {
+	set size [winfo reqwidth $w.f.[lindex $ay(toolbuttons) 0]]
+	set width [expr 4*$size]
+	set height [expr [llength $ay(toolbuttons)]/4*$size]
+	winMoveOrResize .tbw ${width}x${height}
     }
     update
     # establish main shortcuts also for toolbox
@@ -499,9 +504,14 @@ proc toolbox_layout { } {
     set size [winfo reqwidth $w.f.[lindex $ay(toolbuttons) 0]]
     set rows [expr round([winfo height $w] / $size)]
     set columns [expr round([winfo width $w] / $size)]
+    set numb [llength $ay(toolbuttons)]
 
-    if { [expr $rows*$columns] < [llength $ay(toolbuttons)] } {
-	ayError 2 toolbox_layout "Can not display all buttons! Resize window!"
+    if { [expr $rows*$columns] < $numb } {
+	ayError 2 toolbox_layout "Can not display all buttons! Resizing..."
+	set height [expr ceil(double($numb)/$columns)*$size]
+	winMoveOrResize .tbw [winfo reqwidth $w]x${height}
+	update
+	set rows [expr round([winfo height $w] / $size)]
     }
 
     foreach button $ay(toolbuttons) {
