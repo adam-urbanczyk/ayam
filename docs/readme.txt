@@ -1,4 +1,4 @@
-[readme.txt; 16. Dec 2002]
+[readme.txt; 2. Nov 2004]
 
 This directory contains the sources (SGML and pictures) for the main
 Ayam documentation (the Ayam reference manual) and a Tcl-script to
@@ -9,11 +9,11 @@ following prerequisites:
 o make
 o tcsh in /bin (otherwise edit "fixhtml.tcsh")
 o sed
-o sgml-tools1.0.9
-if you want to build a PostScript you, additionally ,need
+o sgml-tools 1.0.9
+if you want to build a PostScript version you, additionally, need
 o LaTeX
 o dvips
-if you want to build a PDF you, additionally, need
+if you want to build a PDF version you, additionally, need
 o dvipdf (not recommended) or pdflatex (recommended)
 
 If you are on Debian 3.0 (Woody) you, additionally, need:
