@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile.shared [1. Sep 2001]
+# Makefile.shared [2. Nov 2001]
 # Makefile for Ayam (shared version)
 
 # Where shall the executable be installed?
@@ -241,6 +241,7 @@ IDROBJS = plugins/idr.o
 
 METAOBJS = contrib/meta/metaobj.o \
 	contrib/meta/metautils.o \
+	contrib/meta/move.o \
 	contrib/meta/marching.o
 
 .c.o: 
