@@ -1,4 +1,4 @@
-[31. 12. 2003] CVS-Head:
+[6. 1. 2004] CVS-Head:
 o bug fixes:
   - fixed object picking in draw-level-only views (SF 817796)
   - fixed (RIB) import of geometry after AreaLights (SF 825629)
@@ -21,6 +21,8 @@ o bug fixes:
     not being reachable by redo (SF 866321)
   - fixed undo system creating "null" states in the undo buffer, when
     modelling is resumed after redo (SF 868328)
+  - fixed undo/redo crashing if objects that are in the undo buffer are
+    deleted by consecutive object clipboard operations (SF 871521)
 o when the keyboard focus is moved from object tree/listbox to property GUI,
   the GUI is now scrolling to the entry with the focus immediately
 o added "curvPlot" scripting interface command that creates a curvature
@@ -52,7 +54,13 @@ o pasting a Tag property now adds the new tags to the old ones, rather
 o added new option to the "Clone" object that may be used to create
   clones mirrored at the YZ-, XZ,- or XY-plane
 o the "Clone" object can now also create clones of "Instance" objects
-  
+o cutting/copying objects to the object clipboard and deleting objects
+  no longer completely clears the undo buffer, instead, just the deleted
+  objects will be removed from the undo buffer
+o added preference option "Modeling/Snap3D" that controls whether grids
+  always influence all three coordinate values
+o added zoom to rectangle feature (zooming into a rectangular region of a
+  view marked with the mouse while holding down the "Shift" key)
 
 
 [26. 09. 2003] Ayam1.6:
