@@ -23,7 +23,7 @@ getProp
 
 
 # create new UI
-addMenu $w MetaCompAttrData Formula {MetaBalls_1 MetaBalls_2 MetaBalls_3 Torus}
+addMenu $w MetaCompAttrData Formula {MetaBalls Torus Cube Heart}
 addCheck $w MetaCompAttrData Negative
 
 if { $MetaCompAttrData(Formula) == 0 } {
@@ -32,21 +32,31 @@ if { $MetaCompAttrData(Formula) == 0 } {
 	addParam $w MetaCompAttrData EnergyCoeffB
 	addParam $w MetaCompAttrData EnergyCoeffC
 }
+#if { $MetaCompAttrData(Formula) == 1 } {
+#
+#	addParam $w MetaCompAttrData Radius
+#	addParam $w MetaCompAttrData Strenght
+#}
+#if { $MetaCompAttrData(Formula) == 2 } {
+#
+#	addParam $w MetaCompAttrData Radius
+#}
 if { $MetaCompAttrData(Formula) == 1 } {
-
-	addParam $w MetaCompAttrData Radius
-	addParam $w MetaCompAttrData Strenght
-}
-if { $MetaCompAttrData(Formula) == 2 } {
-
-	addParam $w MetaCompAttrData Radius
-}
-if { $MetaCompAttrData(Formula) == 3 } {
 
 	addParam $w MetaCompAttrData Ri
 	addParam $w MetaCompAttrData Ro
 	addCheck $w MetaCompAttrData Rotate
 }
+if { $MetaCompAttrData(Formula) == 2 } {
+
+	addParam $w MetaCompAttrData EdgeX
+	addParam $w MetaCompAttrData EdgeY
+	addParam $w MetaCompAttrData EdgeZ
+}
+if { $MetaCompAttrData(Formula) == 3 } {
+
+}
+
 $ay(pca) itemconfigure 1 -window $w
 
 plb_resize
