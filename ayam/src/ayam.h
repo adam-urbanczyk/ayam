@@ -391,8 +391,12 @@ typedef struct ay_text_object_s
 {
   char *fontname;
   char *string;
-
+  double height;
+  int has_upper_cap;
+  int has_lower_cap;
   ay_object *npatch;
+  double glu_sampling_tolerance;
+  int glu_display_mode;
 } ay_text_object;
 
 
