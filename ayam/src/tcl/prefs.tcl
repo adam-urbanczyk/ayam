@@ -14,8 +14,9 @@
 # prefs_set:
 #  transfer preference settings to C-context
 proc prefs_set {} {
-    global ay ayprefs tcl_precision
+    global env ay ayprefs tcl_precision
     set tcl_precision $ayprefs(TclPrecision)
+    set env(SHADERS) $ayprefs(Shaders)
     setPrefs
  return;
 }
@@ -250,7 +251,7 @@ proc prefs_open {} {
 	rV
     }
 
-    button $f.bdef -text "Defaults" -width 8 -command {
+    button $f.bdef -text "Revert" -width 8 -command {
 	global ay ayprefse ayprefsdefaults
 	set avnames [array names ayprefsdefaults]
 	foreach j $avnames {
