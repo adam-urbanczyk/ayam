@@ -2965,8 +2965,8 @@ ay_rrib_readtag(char *tagtype, char *tagname, char *name,
 		int i, RtToken tokens[], RtPointer parms[],
 		ay_tag_object **destination)
 {
- int type;
- ay_tag_object *n = NULL;
+ int type, found = AY_FALSE;
+ ay_tag_object *n = NULL, *ot;
  Tcl_DString ds;
  RIB_HASHHND ht = NULL;
  PRIB_HASHATOM  p = NULL;
@@ -2974,7 +2974,7 @@ ay_rrib_readtag(char *tagtype, char *tagname, char *name,
  RtColor *col;
  RtPoint *pnt;
  char *valstr = NULL, valbuf[255], typechar;
-
+ 
  if(!destination)
    return;
 
@@ -3079,8 +3079,38 @@ ay_rrib_readtag(char *tagtype, char *tagname, char *name,
 
   Tcl_DStringFree(&ds);
 
-  n->next = *destination;
-  *destination = n;
+  /* find eventually existing tag with the same name and replace it */
+  if(*destination)
+    {
+      found = AY_FALSE;
+      ot = *destination;
+      while(ot && !found)
+	{
+	  if(ot->type == tagtype)
+	    {
+	      if(!strncmp(ot->val, n->val, strlen(name)))
+		{
+		  found = AY_TRUE;
+		  free(ot->val);
+		  ot->val = n->val;
+		  free(n->name);
+		  free(n);
+		}
+	    }
+	}
+
+      if(!found)
+	{
+	  n->next = *destination;
+	  *destination = n;
+	}
+
+    }
+  else
+    {
+      n->next = *destination;
+      *destination = n;
+    }
 
  return;
 } /* ay_rrib_readtag */
@@ -3286,6 +3316,9 @@ ay_rrib_pushattribs(void)
       newstate->shading_rate = 1.0;
       newstate->colr = -1;
       newstate->opr = -1;
+      newstate->camera = 1;
+      newstate->reflection = 1;
+      newstate->shadow = 1;
     }
 
   /* link new state to stack */
@@ -3630,6 +3663,71 @@ ay_rrib_trafotoobject(ay_object *o, double *transform)
 } /* ay_rrib_trafotoobject */
 
 
+int
+ay_rrib_comptags(ay_object *o1, ay_object *o2)
+{
+ ay_tag_object *t1, *t2, *t, *tc;
+ int i = 0, j = 0, found = AY_FALSE;
+
+  t1 = o1->tags;
+  t2 = o2->tags;
+
+  if(!t1 && !t2)
+    return AY_TRUE;
+
+  /* count RiAttribute tags of o1 and o2 */
+  t = t1;
+  while(t)
+    {
+      if(t->type == ay_riattr_tagtype)
+	i++;
+
+      t = t->next;
+    } /* while */
+  t = t2;
+  while(t)
+    {
+      if(t->type == ay_riattr_tagtype)
+	j++;
+
+      t = t->next;
+    } /* while */
+
+  if(i != j)
+    return AY_FALSE;
+
+  /* find matching tags for all RiAttribute tags of o1 */
+  t = t1;
+  while(t)
+    {
+      if(t->type == ay_riattr_tagtype)
+	{
+	  found = AY_FALSE;
+	  tc = t2;
+	  while(tc && !found)
+	    {
+	      if(tc->type == ay_riattr_tagtype)
+		{
+		  /* XXXX this simple string comparison should be changed
+		     to a scanf(), compare int/float operation, but there
+		     are so many RiAttribute sub types... */
+		  if(!strcmp(t->val, tc->val))
+		    found = AY_TRUE;
+		} /* if */
+	      tc = tc->next;
+	    } /* while */
+
+	  if(!found)
+	    return AY_FALSE;
+
+	} /* if */
+
+      t = t->next;
+    } /* while */
+
+ return AY_TRUE;
+} /* ay_rrib_comptags */
+
 void
 ay_rrib_linkmaterial(ay_object *o)
 {
@@ -3735,8 +3833,12 @@ ay_rrib_linkmaterial(ay_object *o)
 	      /* compare objects */
 	      if(ay_comp_objects(oldm, m))
 		{
-		  found = AY_TRUE;
-		  linkwith = (ay_mat_object *)(oldm->refine);
+		  /* now compare the tags of the materials */
+		  if(ay_rrib_comptags(oldm, m))
+		    {
+		      found = AY_TRUE;
+		      linkwith = (ay_mat_object *)(oldm->refine);
+		    }
 		} /* if */
 	    } /* if */
 
