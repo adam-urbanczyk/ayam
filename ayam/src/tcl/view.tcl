@@ -263,6 +263,9 @@ shortcut_view $w
 # bind actions
 shortcut_viewactions $w
 
+# bind default action
+actionClear $w.f3D.togl
+
  update
  set ay(cviewsema) 0
  update

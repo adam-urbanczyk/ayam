@@ -22,6 +22,7 @@ array set ayprefs {
  ListTypes 1
  AutoSavePrefs 1
  PickEpsilon 0.2
+ PickTolerance 5.
  UseMatColor 0
  HandleSize 6
  LazyNotify 0
@@ -311,6 +312,7 @@ array set ay {
  rnum 0
  sc 0
  tblayoutsema 0
+ LastSelection ""
 }
 
 set ay_error 0
@@ -860,6 +862,7 @@ ayam_loadscript about
 ayam_loadscript browser
 ayam_loadscript ai
 ayam_loadscript prog
+ayam_loadscript objsel
 
 # load scripts of statically linked additional modules
 if { $AYIDRWRAPPED == 1 } {

@@ -12,6 +12,8 @@
 
 #include "ayam.h"
 
+unsigned int ay_current_glname = 0;
+
 /* draw.c - functions for drawing a scene using OpenGL */
 
 /* ay_draw_selp:
@@ -67,13 +69,18 @@ ay_draw_object(struct Togl *togl, ay_object *o, int selected)
  ay_object *down;
  double m[16];
 
-  if(!selected)
+  if(selected == AY_FALSE)
     if(o->selected)
       return AY_OK;
 
   if(o->hide)
-   return AY_OK;
+    {
+      o->glname = 0;
+      return AY_OK;
+    }
    
+  o->glname = ++ay_current_glname;
+ 
   glPushMatrix();
 
    glTranslated((GLdouble)o->movx, (GLdouble)o->movy, (GLdouble)o->movz);
@@ -83,6 +90,10 @@ ay_draw_object(struct Togl *togl, ay_object *o, int selected)
   
    arr = ay_drawcbt.arr;
    cb = (ay_drawcb *)(arr[o->type]);
+
+   if (selected != AY_TRUE)
+     glPushName(o->glname);
+
    if(cb)
      ay_status = cb(togl, o);
 
@@ -106,6 +117,9 @@ ay_draw_object(struct Togl *togl, ay_object *o, int selected)
 	   down = down->next;
 	 } /* while */
      }
+
+  if (selected != AY_TRUE)
+    glPopName();
 
   glPopMatrix();
 

@@ -9,6 +9,8 @@
 
 # action.tcl - interactive actions
 
+set ay(LastSelection) ""
+
 #stdReleaseBind:
 # standard release binding: force notification (if neccesary);
 # redraw all views; update property GUI
@@ -638,9 +640,50 @@ proc actionClear { w } {
     bind $w <B1-Motion> ""
     bind $w <ButtonRelease-1> ""
     set t [winfo toplevel $w]
-    bind $t.f3D.togl <ButtonPress-1> ""
-    bind $t.f3D.togl <B1-Motion> ""
-    bind $t.f3D.togl <ButtonRelease-1> ""
+
+    bind $w <ButtonPress-1> {
+	set oldx %x
+	set oldy %y
+    }
+
+    bind $w <ButtonRelease-1> {
+	$w.f3D.togl setconf -rect $oldx $oldy %x %y 0
+
+	if { [winfo exists .reconsider] == 0} {
+	    if { ($oldx == %x) || ($oldy == %y)} {
+		%W processObjSel node %x %y
+		singleObjSel $node
+	    } else {
+		%W processObjSel node $oldx $oldy %x %y
+		multipleObjSel $node
+	    }
+	    plb_update
+	    rV
+	    update
+	}
+    }
+
+    bind $w <Shift-ButtonRelease-1> {
+	$w.f3D.togl setconf -rect $oldx $oldy %x %y 0
+
+	if { [winfo exists .reconsider] == 0} {
+	    if { ($oldx == %x) || ($oldy == %y)} {
+		%W processObjSel node %x %y
+		addObjSel $node
+	    } else {
+		%W processObjSel node $oldx $oldy %x %y
+		addMultipleObjSel $node
+	    }
+	    plb_update
+	    rV
+	    update
+	}
+    }
+    
+    bind $w <B1-Motion> {
+	$w.f3D.togl setconf -rect $oldx $oldy %x %y 1
+    }
+
     $t.f3D.togl setconf -mark 0 0 0
 }
 # actionClear

@@ -281,6 +281,7 @@ AYAMOBJS = aycore/bbc.o\
 	contrib/ai.o\
 	contrib/sm.o\
 	contrib/tree.o\
+	contrib/objsel.o\
 	ayam.o
 
 MF3DOBJS = MF3D/mf3d.o\
