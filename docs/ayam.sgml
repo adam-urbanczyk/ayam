@@ -3846,6 +3846,20 @@ cubic Bezier curves. The direction of the tangents in the endpoints of
 the fillets and the gap enclosing curves will match, so that the
 transition should be G1 continuous.
 <item><tt/"Revert"/ the orientation of the concatenated curve will be reversed.
+<item><tt/"FTLength"/ determines a scale factor for the tangent vectors
+of the fillets. A value of 1.0 leads to vectors that are as long as
+the matching vectors in the control point arrays of the original curves.
+A value of 0.3 is the default value. You may need to tweak this, if
+you experience discontinuities in the transitions between original
+curves and fillets, especially, if <tt/"Knot-Type"/ (see below) is set to
+<tt/"Custom"/.
+<item><tt/"Knot-Type"/ in fact toggles between two different modes
+of concatenation. If <tt/"Knot-Type"/ is <tt/"NURB"/ a simple knot vector
+with equidistant knots is generated, which leads to a concatenated curve,
+that does not exactly preserve the shape of the original curves.
+If <tt/"Knot-Type"/ is <tt/"Custom"/, the knot vector is composed from
+the knot vectors of the original curves, and thus, their
+shape may be preserved completely.
 </itemize>
 
 <sect1>RiInc Object<label id="riincobj">
@@ -6038,6 +6052,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>From Camera: <ref id="mmspecial" name="main menu entry">,
 <ref id="vmconf" name="view menu entry">
 <item>Front: <ref id="vmtype" name="view menu entry">
+<item>FTLength: <ref id="concatncp" name="ConcatNC attribute">
 </itemize>
 
 <label id="indexg">G
@@ -6117,7 +6132,8 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <label id="indexk">K
 <itemize>
 <item>Knots: <ref id="ncattr" name="NURBCurve attribute">
-<item>Knot-Type: <ref id="ncattr" name="NURBCurve attribute">
+<item>Knot-Type: <ref id="ncattr" name="NURBCurve attribute">,
+<ref id="concatncp" name="ConcatNC attribute">
 <item>Knot-Type_U: <ref id="skp" name="skin attribute">
 </itemize>
 
