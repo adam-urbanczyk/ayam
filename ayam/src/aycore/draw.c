@@ -456,16 +456,13 @@ ay_draw_grid(struct Togl *togl)
       minwiny = -(25.0 * view->grid);
       maxwinx = (25.0 * view->grid);
       maxwiny = (25.0 * view->grid);
-      /* vertical lines */
-      for(j = minwinx; j < maxwinx; j += view->grid)
+      /* draw lines */
+      for(j = -25.0 * view->grid; j < maxwinx; j += view->grid)
 	{
+	  /* vertical */
 	  glVertex3d((GLdouble)j, (GLdouble)0.0, (GLdouble)minwiny);
 	  glVertex3d((GLdouble)j, (GLdouble)0.0, (GLdouble)maxwiny);
-	}
-
-      /* horizontal lines */
-      for(j = minwiny; j < maxwiny; j += view->grid)
-	{
+	  /* horizontal */
 	  glVertex3d((GLdouble)minwinx, (GLdouble)0.0, (GLdouble)j);
 	  glVertex3d((GLdouble)maxwinx, (GLdouble)0.0, (GLdouble)j);
 	}
