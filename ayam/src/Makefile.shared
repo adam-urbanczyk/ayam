@@ -37,7 +37,7 @@ MKDIR = mkdir -p
 CC = cc
 #CC = gcc
 
-# the C++ compiler (just in use for the Aycsg plugin)
+# the C++ compiler (just in use for the AyCSG and onio plugin)
 CXX = CC
 #CXX = g++-3.0
 
@@ -280,6 +280,11 @@ AYCSGOBJS = plugins/aycsg.o\
 	plugins/ayCSGPrimitive.o
 AYCSGLIBS = $(OPENCSGOBJS) $(GLEWLIB)
 
+# onio Plugin
+OPENNURBSDIR = ../../opennurbs
+ONIOINCDIR = $(OPENNURBSDIR)
+ONIOLIBS = $(OPENNURBSDIR)/opennurbs_extensions.o -L$(OPENNURBSDIR) -lopenNURBS -lzlib
+
 
 #############################################
 # nothing needs to be changed below this line
@@ -466,6 +471,10 @@ ayslb.so:
 aysdr.so:
 	$(CC) -c $(CFLAGS) plugins/aysdr.c -o plugins/aysdr.o -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR) -I$(AQSISINCDIR) -I$(TIFFINCDIR) -I$(AYSDRINCDIR)
 	$(CC) $(SHLFLAGS) plugins/aysdr.o -o plugins/aysdr.so $(LDSWSTATIC) $(AYSDRLIBS) $(LDSWDYNAMIC)
+
+onio.so:
+	$(CXX) -c $(CFLAGS) plugins/onio.cpp -o plugins/onio.o -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR) -I$(AQSISINCDIR) -I$(TIFFINCDIR) -I$(ONIOINCDIR)
+	$(CXX) $(SHLFLAGS) plugins/onio.o -o plugins/onio.so -Wl,-Bstatic $(ONIOLIBS) -Wl,-Bdynamic
 
 mostlyclean:
 	-rm -f core
