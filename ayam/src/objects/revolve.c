@@ -182,7 +182,7 @@ ay_revolve_drawhcb(struct Togl *togl, ay_object *o)
 
 
 int
-ay_revolve_getpntcb(ay_object *o, double *p)
+ay_revolve_getpntcb(int mode, ay_object *o, double *p)
 {
 
  return AY_OK;

@@ -36,7 +36,7 @@ int ay_pact_deleteic(ay_icurve_object *icurve,
  *   the weight should be changed
 */
 int
-ay_pact_getpoint(ay_object *o, double *obj)
+ay_pact_getpoint(int mode, ay_object *o, double *obj)
 {
  int ay_status = AY_OK;
  void **arr = NULL;
@@ -48,7 +48,7 @@ ay_pact_getpoint(ay_object *o, double *obj)
   arr = ay_getpntcbt.arr;
   cb = (ay_getpntcb *)(arr[o->type]);
   if(cb)
-    ay_status = cb(o, obj);
+    ay_status = cb(mode, o, obj);
 
  return ay_status;
 } /* ay_pact_getpoint */
@@ -65,134 +65,153 @@ ay_pact_seltcb(struct Togl *togl, int argc, char *argv[])
  Tcl_Interp *interp = Togl_Interp (togl);
  /*  ay_view_object *view = Togl_GetClientData(togl);*/
  double height = Togl_Height(togl);
- int i, have_it, j,k;
+ int i, have_it;
  double winX = 0.0, winY = 0.0, winX2 = 0.0, winY2 = 0.0, dtemp = 0.0;
- double obj[3] = {0};
+ double obj[24] = {0}, pe[16] = {0};
  /*  double pickepsilon = ay_prefs.pick_epsilon;*/
  ay_point_object *newp = NULL, *point = NULL, *last = NULL;
  int multiple = AY_FALSE;
- /* XXXX let's hope nobody changes AY_CLSEL */
- GLfloat pixel1[3] = {0.0f,0.0f,0.0f}, pixel[3] = {0.0f,0.0f,0.0f};
  ay_list_object *sel = ay_selection;
+ ay_object *o = NULL;
+ GLfloat pixel[3] = {0.0f,0.0f,0.0f};
 
-  if(ay_selection)
+  if(!ay_selection)
     {
-      pixel1[0] = (GLfloat)(ay_prefs.bgr+AY_EPSILON);
-      pixel1[1] = (GLfloat)(ay_prefs.bgg+AY_EPSILON);
-      pixel1[2] = (GLfloat)(ay_prefs.bgb+AY_EPSILON);
+      ay_error(AY_ENOSEL, fname, NULL);
+      return TCL_OK;
+    }
 
-      Tcl_GetDouble(interp, argv[2], &winX);
-      Tcl_GetDouble(interp, argv[3], &winY);
+  Tcl_GetDouble(interp, argv[2], &winX);
+  Tcl_GetDouble(interp, argv[3], &winY);
 
-      if(argc > 4)
+  if(argc > 4)
+    {
+      multiple = AY_TRUE;
+      Tcl_GetDouble(interp, argv[4], &winX2);
+      Tcl_GetDouble(interp, argv[5], &winY2);
+
+    }
+  else
+    {
+      winX2 = winX;
+      winY2 = winY;
+    }
+
+  if(winX2 < winX)
+    {
+      dtemp = winX2;
+      winX2 = winX;
+      winX = dtemp;
+    }
+
+  if(winY2 < winY)
+    {
+      dtemp = winY2;
+      winY2 = winY;
+      winY = dtemp;
+    }
+
+  while(sel)
+    {
+      o = sel->object;
+      if(!o)
+	return TCL_OK;
+
+      if(!multiple)
 	{
-	  multiple = AY_TRUE;
-	  Tcl_GetDouble(interp, argv[4], &winX2);
-	  Tcl_GetDouble(interp, argv[5], &winY2);
-
+	  glReadPixels((GLint)(winX),(GLint)(height-winY), 1, 1,
+		       GL_RGB, GL_FLOAT, &pixel);
+	  ay_status = ay_viewt_wintoobj(togl, o, winX, winY,
+					&(obj[0]), &(obj[1]), &(obj[2]));
+	  
+	  ay_status = ay_pact_getpoint(1, o, obj);
 	}
       else
 	{
-	  winX2 = winX;
-	  winY2 = winY;
-	}
+	
+	  ay_status = ay_viewt_winrecttoobj(togl, o, winX, winY, winX2, winY2,
+					    obj);
+	  
+	  /* create plane equation coefficients */
+	  ay_trafo_pointstoplane(obj[0], obj[1], obj[2],
+				 obj[3], obj[4], obj[5],
+				 obj[12], obj[13], obj[14],
+				 &(pe[0]), &(pe[1]), &(pe[2]), &(pe[3]));
 
-      if(winX2 < winX)
-	{
-	  dtemp = winX2;
-	  winX2 = winX;
-	  winX = dtemp;
-	}
+	  ay_trafo_pointstoplane(obj[3], obj[4], obj[5],
+				 obj[9], obj[10], obj[11],
+				 obj[15], obj[16], obj[17],
+				 &(pe[4]), &(pe[5]), &(pe[6]), &(pe[7]));
 
-      if(winY2 < winY)
-	{
-	  dtemp = winY2;
-	  winY2 = winY;
-	  winY = dtemp;
-	}
+	  ay_trafo_pointstoplane(obj[6], obj[7], obj[8],
+				 obj[18], obj[19], obj[20],
+				 obj[9], obj[10], obj[11],
+				 &(pe[8]), &(pe[9]), &(pe[10]), &(pe[11]));
 
-      while(sel)
-      {
-	/*      ay_point_edit_object = sel->object;*/
+	  ay_trafo_pointstoplane(obj[0], obj[1], obj[2],
+				 obj[12], obj[13], obj[14],
+				 obj[6], obj[7], obj[8],
+				 &(pe[12]), &(pe[13]), &(pe[14]), &(pe[15]));
 
-      for(j=0;j<=(winX2-winX);j++)
-      for(k=0;k<=(winY2-winY);k++)
-      {
-	glReadPixels((GLint)(winX+j),(GLint)(height-(winY+k)),1,1,
-		     GL_RGB,GL_FLOAT,&pixel);
- 
-	/* omit background pixels, to speed things up a bit */
-	if(!multiple || (multiple && ((pixel[0] > pixel1[0]) &&
-				      (pixel[1] > pixel1[1]) &&
-				      (pixel[2] > pixel1[2]))))
-	{
+	  ay_status = ay_pact_getpoint(2, o, pe);
 
-	  ay_status = ay_viewt_wintoobj(togl, sel->object, winX+j, winY+k,
-					&(obj[0]), &(obj[1]), &(obj[2]));
-
-	  ay_point_edit_coords = NULL;
-	  ay_status = ay_pact_getpoint(sel->object, obj);
-
-	  if(ay_point_edit_coords)
-	    {
-	      have_it = 0;
-	      for(i = 0; i < ay_point_edit_coords_number; i++)
-		{
-		  /* do we have that point selected already? */
-		  point = sel->object->selp;
-		  last = NULL;
-		  have_it = 0;
-		  while(point)
-		    {
-		      if(point->point == ay_point_edit_coords[i])
-			{ /* we have that point already, so we delete
-			     it from the selection if we are not in
-			     multiple selection mode */
-			  if(!multiple)
-			    {
-
-			      if(last)
-				last->next = point->next;
-			      else
-				sel->object->selp = point->next;
-
-			      free(point);
-			    }
-			  have_it = 1;
-			  point = NULL; /* break loop */
-			}
-
-		      last = point;
-		      if(point)
-			point = point->next;
-		    }
-
-		  if(!have_it)
-		    {
-		      /* create new point object */
-		      newp = NULL;
-		      if(!(newp = calloc(1,sizeof(ay_point_object))))
-			{
-			  ay_error(AY_EOMEM, fname, NULL);
-			  return TCL_OK;
-			}
-
-		      newp->next = sel->object->selp;
-		      sel->object->selp = newp;
-		      newp->point = ay_point_edit_coords[i];
-		      newp->homogenous = ay_point_edit_coords_homogenous;
-		    }
-
-		} /* for */
-	    } /* if */
 	} /* if */
-      } /* for */
+
+      if(ay_point_edit_coords)
+	{
+	  have_it = 0;
+	  for(i = 0; i < ay_point_edit_coords_number; i++)
+	    {
+	      /* do we have that point selected already? */
+	      point = o->selp;
+	      last = NULL;
+	      have_it = 0;
+	      while(point)
+		{
+		  if(point->point == ay_point_edit_coords[i])
+		    {
+		      /* we have that point already, so we delete
+			 it from the selection if we are not in
+			 multiple selection mode */
+		      if(!multiple)
+			{
+			  if(last)
+			    last->next = point->next;
+			  else
+			    o->selp = point->next;
+
+			  free(point);
+			} /* if */
+		      have_it = 1;
+		      point = NULL; /* break loop */
+		    } /* if */
+
+		  last = point;
+		  if(point)
+		    point = point->next;
+		} /* while */
+
+	      if(!have_it)
+		{
+		  /* create new point object */
+		  newp = NULL;
+		  if(!(newp = calloc(1, sizeof(ay_point_object))))
+		    {
+		      ay_error(AY_EOMEM, fname, NULL);
+		      return TCL_OK;
+		    }
+
+		  newp->next = o->selp;
+		  o->selp = newp;
+		  newp->point = ay_point_edit_coords[i];
+		  newp->homogenous = ay_point_edit_coords_homogenous;
+		}
+
+	    } /* for */
+	} /* if */
 
       sel = sel->next;
-      } /* while */
-    }
-  else
-    ay_error(AY_ENOSEL, fname, NULL);
+    } /* while */
 
  return TCL_OK;
 } /* ay_pact_seltcb */
@@ -242,7 +261,7 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
       ay_status = ay_viewt_wintoobj(togl, sel->object, winX, winY,
 				    &(obj[0]), &(obj[1]), &(obj[2]));
 
-      ay_status = ay_pact_getpoint(sel->object, obj);
+      ay_status = ay_pact_getpoint(1, sel->object, obj);
       if(ay_point_edit_coords)
 	{
 	  stop = AY_TRUE;
@@ -297,7 +316,7 @@ ay_pact_pedtcb(struct Togl *togl, int argc, char *argv[])
       ay_status = ay_viewt_wintoobj(togl, o, winX, winY,
 				    &(obj[0]), &(obj[1]), &(obj[2]));
 
-      ay_status = ay_pact_getpoint(o, obj);
+      ay_status = ay_pact_getpoint(1, o, obj);
 
       ay_point_edit_object = o;
 
@@ -1476,7 +1495,7 @@ ay_pact_wrtcb(struct Togl *togl, int argc, char *argv[])
 	 ay_point_edit_coords = NULL;
        }
 
-     ay_status = ay_pact_getpoint(o, p);
+     ay_status = ay_pact_getpoint(0, o, p);
 
      if(ay_status)
        {

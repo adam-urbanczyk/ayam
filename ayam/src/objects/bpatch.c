@@ -244,11 +244,12 @@ ay_bpatch_shadecb(struct Togl *togl, ay_object *o)
 
 
 int
-ay_bpatch_getpntcb(ay_object *o, double *p)
+ay_bpatch_getpntcb(int mode, ay_object *o, double *p)
 {
  ay_bpatch_object *bpatch = NULL;
  double min_dist = ay_prefs.pick_epsilon, dist = 0.0;
- double *pecoords = NULL;
+ double *pecoord = NULL, **pecoords = NULL, *c = NULL;
+ int i, j, a;
 
   if(!o || !p)
     return AY_ENULL;
@@ -264,7 +265,7 @@ ay_bpatch_getpntcb(ay_object *o, double *p)
   ay_point_edit_coords = NULL;
 
   /* select all points? */
-  if((p[0] == DBL_MIN) && (p[1] == DBL_MIN) && (p[2] == DBL_MIN))
+  if(mode == 0)
     { /* yes */
       if(!(ay_point_edit_coords = calloc(4, sizeof(double*))))
 	return AY_EOMEM;
@@ -279,56 +280,103 @@ ay_bpatch_getpntcb(ay_object *o, double *p)
     }
   else
     { /* no */
-      dist = AY_VLEN((p[0] - bpatch->p1[0]),
-		     (p[1] - bpatch->p1[1]),
-		     (p[2] - bpatch->p1[2]));
 
-      if(dist < min_dist)
-	{
-	  pecoords = bpatch->p1;
-	  min_dist = dist;
+      /* selection based on a single point? */
+      if(mode == 1)
+	{ /* yes */
+    
+	  dist = AY_VLEN((p[0] - bpatch->p1[0]),
+			 (p[1] - bpatch->p1[1]),
+			 (p[2] - bpatch->p1[2]));
+
+	  if(dist < min_dist)
+	    {
+	      pecoord = bpatch->p1;
+	      min_dist = dist;
+	    }
+
+	  dist = AY_VLEN((p[0] - bpatch->p2[0]),
+			 (p[1] - bpatch->p2[1]),
+			 (p[2] - bpatch->p2[2]));
+
+	  if(dist < min_dist)
+	    {
+	      pecoord = bpatch->p2;
+	      min_dist = dist;
+	    }
+
+	  dist = AY_VLEN((p[0] - bpatch->p3[0]),
+			 (p[1] - bpatch->p3[1]),
+			 (p[2] - bpatch->p3[2]));
+
+	  if(dist < min_dist)
+	    {
+	      pecoord = bpatch->p3;
+	      min_dist = dist;
+	    }
+
+	  dist = AY_VLEN((p[0] - bpatch->p4[0]),
+			 (p[1] - bpatch->p4[1]),
+			 (p[2] - bpatch->p4[2]));
+
+	  if(dist < min_dist)
+	    {
+	      pecoord = bpatch->p4;
+	      min_dist = dist;
+	    }
+
+	  if(!pecoord)
+	    return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
+
+	  if(!(ay_point_edit_coords = calloc(1, sizeof(double*))))
+	    return AY_EOMEM;
+
+	  ay_point_edit_coords[0] = pecoord;
+	  ay_point_edit_coords_homogenous = AY_FALSE;
+	  ay_point_edit_coords_number = 1;
 	}
+      else
+	{ /* no */
 
-      dist = AY_VLEN((p[0] - bpatch->p2[0]),
-		     (p[1] - bpatch->p2[1]),
-		     (p[2] - bpatch->p2[2]));
+	  /* selection based on planes */
+	  j = 0;
+	  a = 0;
+	  for(i = 0; i < 4; i++)
+	    {
+	      if(i == 0)
+		c = bpatch->p1;
+	      if(i == 1)
+		c = bpatch->p2;
+	      if(i == 2)
+		c = bpatch->p3;
+	      if(i == 3)
+		c = bpatch->p4;
 
-      if(dist < min_dist)
-	{
-	  pecoords = bpatch->p2;
-	  min_dist = dist;
-	}
+	      /* test point c against the four planes in p */
+	      if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) && 
+		 ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) && 
+		 ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) && 
+		 ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
+		{
 
-      dist = AY_VLEN((p[0] - bpatch->p3[0]),
-		     (p[1] - bpatch->p3[1]),
-		     (p[2] - bpatch->p3[2]));
+		  if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
+		    return AY_EOMEM;
+		  pecoords[a] = &(c[0]);
+		  a++;		  
+		} /* if */
 
-      if(dist < min_dist)
-	{
-	  pecoords = bpatch->p3;
-	  min_dist = dist;
-	}
+	      j += 4;
+	    } /* for */
 
-      dist = AY_VLEN((p[0] - bpatch->p4[0]),
-		     (p[1] - bpatch->p4[1]),
-		     (p[2] - bpatch->p4[2]));
+	  if(!pecoords)
+	    return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
 
-      if(dist < min_dist)
-	{
-	  pecoords = bpatch->p4;
-	  min_dist = dist;
-	}
+	  ay_point_edit_coords_homogenous = AY_FALSE;
+	  ay_point_edit_coords = pecoords;
+	  ay_point_edit_coords_number = a;
 
-      if(!pecoords)
-	return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
-
-      if(!(ay_point_edit_coords = calloc(1, sizeof(double*))))
-	return AY_EOMEM;
-
-      ay_point_edit_coords[0] = pecoords;
-      ay_point_edit_coords_homogenous = AY_FALSE;
-      ay_point_edit_coords_number = 1;
-    }
+	} /* if */
+    } /* if */
 
  return AY_OK;
 } /* ay_bpatch_getpntcb */

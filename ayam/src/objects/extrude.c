@@ -198,7 +198,7 @@ ay_extrude_drawhcb(struct Togl *togl, ay_object *o)
 
 
 int
-ay_extrude_getpntcb(ay_object *o, double *p)
+ay_extrude_getpntcb(int mode, ay_object *o, double *p)
 {
 
  return AY_OK;

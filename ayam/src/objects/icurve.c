@@ -229,12 +229,12 @@ ay_icurve_drawhcb(struct Togl *togl, ay_object *o)
 
 
 int
-ay_icurve_getpntcb(ay_object *o, double *p)
+ay_icurve_getpntcb(int mode, ay_object *o, double *p)
 {
  ay_icurve_object *icurve = NULL;
  double min_dist = ay_prefs.pick_epsilon, dist = 0.0;
- double *pecoords = NULL, *control = NULL;
- int i = 0, j = 0, a = 0, found = AY_FALSE;
+ double *pecoord = NULL, **pecoords = NULL, *control = NULL, *c = NULL;
+ int i = 0, j = 0, a = 0;
 
   if(!o || !p)
     return AY_ENULL;
@@ -250,8 +250,9 @@ ay_icurve_getpntcb(ay_object *o, double *p)
   ay_point_edit_coords = NULL;
 
   /* select all points? */
-  if((p[0] == DBL_MIN) && (p[1] == DBL_MIN) && (p[2] == DBL_MIN))
+  if(mode == 0)
     { /* yes */
+
       if(!(ay_point_edit_coords = calloc(icurve->length, sizeof(double*))))
 	return AY_EOMEM;
 
@@ -266,37 +267,75 @@ ay_icurve_getpntcb(ay_object *o, double *p)
     }
   else
     { /* no */
-      control = icurve->controlv;
-      for(i = 0; i < icurve->length; i++)
-	{
-	  dist = AY_VLEN((p[0] - control[j]),
-			 (p[1] - control[j+1]),
-			 (p[2] - control[j+2]));
 
-	  if(dist < min_dist)
+      /* selection based on a single point? */
+      if(mode == 1)
+	{ /* yes */
+
+	  control = icurve->controlv;
+	  for(i = 0; i < icurve->length; i++)
 	    {
-	      pecoords = &(control[j]);
-	      min_dist = dist;
-	    }
+	      dist = AY_VLEN((p[0] - control[j]),
+			     (p[1] - control[j+1]),
+			     (p[2] - control[j+2]));
 
-	  j += 3;
-	}
+	      if(dist < min_dist)
+		{
+		  pecoord = &(control[j]);
+		  min_dist = dist;
+		}
 
-      if(!pecoords)
-	return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
+	      j += 3;
+	    } /* for */
 
-      ay_point_edit_coords_homogenous = AY_FALSE;
+	  if(!pecoord)
+	    return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
 
-      if(!found)
-	{
+	  ay_point_edit_coords_homogenous = AY_FALSE;
 
 	  if(!(ay_point_edit_coords = calloc(1, sizeof(double*))))
 	    return AY_EOMEM;
 
-	  ay_point_edit_coords[0] = pecoords;
+	  ay_point_edit_coords[0] = pecoord;
 	  ay_point_edit_coords_number = 1;
+	    
 	}
-    }
+      else
+	{ /* no */
+
+	  /* selection based on planes */
+	  control = icurve->controlv;
+	  j = 0;
+	  a = 0;
+	  for(i = 0; i < icurve->length; i++)
+	    {
+	      c = &(control[j]);
+
+	      /* test point c against the four planes in p */
+	      if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) && 
+		 ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) && 
+		 ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) && 
+		 ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
+		{
+
+		  if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
+		    return AY_EOMEM;
+		  pecoords[a] = &(control[j]);
+		  a++;		  
+		} /* if */
+
+	      j += 3;
+	    } /* for */
+
+	  if(!pecoords)
+	    return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
+
+	  ay_point_edit_coords_homogenous = AY_FALSE;
+	  ay_point_edit_coords = pecoords;
+	  ay_point_edit_coords_number = a;
+
+	} /* if */
+    } /* if */
 
  return AY_OK;
 } /* ay_icurve_getpntcb */

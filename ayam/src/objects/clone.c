@@ -145,7 +145,7 @@ ay_clone_drawhcb(struct Togl *togl, ay_object *o)
 
 
 int
-ay_clone_getpntcb(ay_object *o, double *p)
+ay_clone_getpntcb(int mode, ay_object *o, double *p)
 {
 
  return AY_OK;

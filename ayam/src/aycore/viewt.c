@@ -188,6 +188,91 @@ ay_viewt_wintoobj(struct Togl *togl, ay_object *o,
 } /* ay_viewt_wintoobj */
 
 
+/* ay_viewt_winrecttoobj:
+ * transforms the rectangle formed by the window coordinates
+ * winX, winY, winX2, winY2, 
+ * to object coordinates (obj[24]!) for the given object *o
+ * Assumes the standard transformations are
+ * in use!
+ */
+int
+ay_viewt_winrecttoobj(struct Togl *togl, ay_object *o,
+		      double winX, double winY, double winX2, double winY2,
+		      double *obj)
+{
+ int ay_status = AY_OK;
+ int height = Togl_Height(togl), i, j;
+ GLint viewport[4];
+ GLdouble modelMatrix[16], projMatrix[16], m[16], win[24];
+
+  if(!togl || !o || !obj)
+    return AY_ENULL;
+
+  j = AY_TRUE;
+
+  for(i = 0; i < 8; i++)
+    {
+      if(j)
+	{
+	  win[i*3] = winX;
+	  j = AY_FALSE;
+	}
+      else
+	{
+	  win[i*3] = winX2;
+	  j = AY_TRUE;
+	}
+
+      win[i*3+1] = (height - winY);
+
+      if(i < 4)
+	{
+	  win[i*3+2] = 0.0;
+	}
+      else
+	{
+	  win[i*3+2] = 1.0;
+	}
+    } /* for */
+
+  win[7] = (height - winY2);
+  win[10] = (height - winY2);
+  win[19] = (height - winY2);
+  win[22] = (height - winY2);
+
+  glGetIntegerv(GL_VIEWPORT, viewport);
+
+  ay_viewt_setupprojection(togl);
+
+  glGetDoublev(GL_PROJECTION_MATRIX, projMatrix);
+
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+
+   ay_trafo_getall(ay_currentlevel->next);
+
+   glTranslated(o->movx, o->movy, o->movz);
+
+   ay_quat_torotmatrix(o->quat, m);
+   glMultMatrixd(m);
+
+   glScaled(o->scalx, o->scaly, o->scalz);
+
+   glGetDoublev(GL_MODELVIEW_MATRIX, modelMatrix);
+
+   for(i = 0; i < 8; i++)
+     {
+       gluUnProject(win[i*3], win[i*3+1], win[i*3+2],
+		    modelMatrix, projMatrix, viewport,
+		    &(obj[i*3]), &(obj[i*3+1]), &(obj[i*3+2]));
+     }
+
+  glPopMatrix();
+
+ return ay_status;
+} /* ay_viewt_winrecttoobj */
+
+
 /* ay_viewt_wintoworld:
  *  transforms the window coordinates winX winY
  *  to world coordinates

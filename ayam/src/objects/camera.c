@@ -281,11 +281,12 @@ ay_camera_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
 
 int
-ay_camera_getpntcb(ay_object *o, double *p)
+ay_camera_getpntcb(int mode, ay_object *o, double *p)
 {
  ay_camera_object *camera = NULL;
  double min_dist = ay_prefs.pick_epsilon, dist = 0.0;
- double *pecoords = NULL;
+ double *pecoord = NULL, **pecoords = NULL, *c;
+ int a;
 
   if(!o || !p)
     return AY_ENULL;
@@ -302,7 +303,7 @@ ay_camera_getpntcb(ay_object *o, double *p)
 
 
   /* select all points? */
-  if((p[0] == DBL_MIN) && (p[1] == DBL_MIN) && (p[2] == DBL_MIN))
+  if(mode == 0)
     { /* yes */
 
       if(!(ay_point_edit_coords = calloc(2, sizeof(double*))))
@@ -317,36 +318,83 @@ ay_camera_getpntcb(ay_object *o, double *p)
   else
     { /* no */
 
-      dist = AY_VLEN((p[0] - camera->from[0]),
-		     (p[1] - camera->from[1]),
-		     (p[2] - camera->from[2]));
+      /* selection based on a single point? */
+      if(mode == 1)
+	{ /* yes */
 
-      if(dist < min_dist)
-	{
-	  pecoords = camera->from;
-	  min_dist = dist;
-	}
+	  dist = AY_VLEN((p[0] - camera->from[0]),
+			 (p[1] - camera->from[1]),
+			 (p[2] - camera->from[2]));
 
-      dist = AY_VLEN((p[0] - camera->to[0]),
-		     (p[1] - camera->to[1]),
-		     (p[2] - camera->to[2]));
+	  if(dist < min_dist)
+	    {
+	      pecoord = camera->from;
+	      min_dist = dist;
+	    }
 
-      if(dist < min_dist)
-	{
-	  pecoords = camera->to;
-	  min_dist = dist;
+	  dist = AY_VLEN((p[0] - camera->to[0]),
+			 (p[1] - camera->to[1]),
+			 (p[2] - camera->to[2]));
+
+	  if(dist < min_dist)
+	    {
+	      pecoord = camera->to;
+	      min_dist = dist;
 	    
+	    }
+
+	  if(!pecoord)
+	    return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
+
+	  if(!(ay_point_edit_coords = calloc(1, sizeof(double*))))
+	    return AY_EOMEM;
+
+	  ay_point_edit_coords[0] = pecoord;
+	  ay_point_edit_coords_homogenous = AY_FALSE;
+	  ay_point_edit_coords_number = 1;
+
 	}
+      else
+	{ /* no */
 
-      if(!pecoords)
-	return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
+	  /* selection based on planes */
+	  c = camera->from;
+	  a = 0;
+	  /* test point c against the four planes in p */
+	  if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) && 
+	     ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) && 
+	     ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) && 
+	     ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
+	    {
 
-      if(!(ay_point_edit_coords = calloc(1, sizeof(double*))))
-	return AY_EOMEM;
+	      if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
+		return AY_EOMEM;
+	      pecoords[a] = c;
+	      a++;		  
+	    } /* if */
 
-      ay_point_edit_coords[0] = pecoords;
-      ay_point_edit_coords_homogenous = AY_FALSE;
-      ay_point_edit_coords_number = 1;
+	  c = camera->to;
+	  /* test point c against the four planes in p */
+	  if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) && 
+	     ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) && 
+	     ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) && 
+	     ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
+	    {
+
+	      if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
+		return AY_EOMEM;
+	      pecoords[a] = c;
+	      a++;		  
+	    } /* if */
+
+	  if(!pecoords)
+	    return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
+
+	  ay_point_edit_coords_homogenous = AY_FALSE;
+	  ay_point_edit_coords = pecoords;
+	  ay_point_edit_coords_number = a;
+
+	} /* if */
     } /* if */
 
  return AY_OK;

@@ -1306,3 +1306,36 @@ ay_trafo_rotatematrix(double angle, double x, double y, double z, double *m)
 
  return;
 } /* ay_trafo_rotatematrix */
+
+
+/* ay_trafo_pointstoplane:
+ *  
+ */
+void
+ay_trafo_pointstoplane(double x1, double y1, double z1,
+		       double x2, double y2, double z2,
+		       double x3, double y3, double z3,
+		       double *A, double *B, double *C, double *D)
+{
+
+  *A = y1 * (z2 - z3) + y2 * (z3 - z1) + y3 * (z1 - z2);
+  *B = z1 * (x2 - x3) + z2 * (x3 - x1) + z3 * (x1 - x2);
+  *C = x1 * (y2 - y3) + x2 * (y3 - y1) + x3 * (y1 - y2);
+  *D = -(x1 * (y2 * z3 - y3 * z2) + x2 * (y3 * z1 - y1 * z3) +
+	 x3 * (y1 * z2 - y2 * z1));
+
+ return;
+} /* ay_trafo_pointstoplane */
+
+#if 0
+/* ay_trafo_pointstoplane:
+ *  
+ */
+double
+ay_trafo_pointstoplane(double *p, double *e)
+{
+
+ return (e[0]*p[0]+e[1]*p[1]+e[2]*p[2]+e[3]);
+
+} /* ay_trafo_pointstoplane */
+#endif

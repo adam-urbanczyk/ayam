@@ -156,7 +156,7 @@ ay_skin_drawhcb(struct Togl *togl, ay_object *o)
 
 
 int
-ay_skin_getpntcb(ay_object *o, double *p)
+ay_skin_getpntcb(int mode, ay_object *o, double *p)
 {
 
  return AY_OK;
