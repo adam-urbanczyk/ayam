@@ -1450,6 +1450,12 @@ ay_pact_wrtcb(struct Togl *togl, int argc, char *argv[])
    {
      o = sel->object;
 
+     if(ay_point_edit_coords)
+       {
+	 free(ay_point_edit_coords);
+	 ay_point_edit_coords = NULL;
+       }
+
      ay_status = ay_pact_getpoint(o, p);
 
      if(ay_status)
@@ -1459,7 +1465,7 @@ ay_pact_wrtcb(struct Togl *togl, int argc, char *argv[])
 
      if(ay_point_edit_coords)
        {
-	 for(i=0;i<ay_point_edit_coords_number;i++)
+	 for(i = 0; i < ay_point_edit_coords_number; i++)
 	   {
 	     coords = ay_point_edit_coords[i]; 
 	     if(ay_point_edit_coords_homogenous)
@@ -1470,12 +1476,13 @@ ay_pact_wrtcb(struct Togl *togl, int argc, char *argv[])
 	       {
 		 ay_error(AY_ERROR, fname, "Point is not homogenous!");
 	       }
-	   }
-       }
+	   } /* for */
 
-     ay_point_edit_object->modified = AY_TRUE;
-     ay_notify_force(o);
- 
+	 o->modified = AY_TRUE;
+	 ay_notify_force(o);
+
+       } /* if */
+
      sel = sel->next;
    } /* while */
  
