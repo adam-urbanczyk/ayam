@@ -383,6 +383,7 @@ proc addCheck { w prop name } {
 	bind $f <Enter> { %W configure -background #ececec }
 	bind $f <Leave> { %W configure -background SystemButtonFace }
 	bind $f <1> { %W.cb invoke }
+	bind $f.cb <FocusIn> { %W flash }
 
 	pack $f.l -in $f -side left
 	pack $f.cb -in $f -side left -padx 10 -pady 2 -expand yes\
