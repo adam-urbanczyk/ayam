@@ -337,6 +337,7 @@ $lb delete 0 end
 # show new property GUI
 $ay(pca) itemconfigure 1 -window $ay(pw)
 if { [llength $index] == 1 } {
+    set type ""
     if { $ay(lb) == 1 } {
 	set type [lindex $curtypes $index]
     } else {
