@@ -333,15 +333,17 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
  int ay_status = AY_OK;
  char fname[] = "pointEdit";
  Tcl_Interp *interp = Togl_Interp (togl);
- /*  ay_view_info *view = Togl_GetClientData(togl);*/
+ ay_view_object *view = Togl_GetClientData(togl);
  double winX = 0.0, winY = 0.0;
  /*  double pickepsilon = ay_prefs.pick_epsilon;*/
  double obj[3] = {0};
  ay_list_object *sel = ay_selection;
  int penumber = 0, *tmpi;
- double **pecoords = NULL, **tmp = NULL;
+ double **pecoords = NULL, **tmp = NULL, oldpickepsilon, mins;
  ay_object **tmpo = NULL;
-
+ static ay_list_object *lastlevel = NULL;
+ static double lscal = 0.0;
+ GLdouble m[16];
 
   if(ay_pe_numcpo)
     free(ay_pe_numcpo);
@@ -360,8 +362,41 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
   Tcl_GetDouble(interp, argv[2], &winX);
   Tcl_GetDouble(interp, argv[3], &winY);
 
+  if(lastlevel != ay_currentlevel)
+    {
+
+      glMatrixMode(GL_MODELVIEW);
+      glPushMatrix();
+
+       ay_trafo_getalls(ay_currentlevel->next);
+       glGetDoublev(GL_MODELVIEW_MATRIX, m);
+       lscal = fabs(m[0]);
+       if(fabs(m[5]) < lscal)
+	 lscal = fabs(m[5]);
+       if(fabs(m[10]) < lscal)
+	 lscal = fabs(m[10]);
+      glPopMatrix();
+
+      lastlevel = ay_currentlevel;
+    } /* if */
+
+  oldpickepsilon = ay_prefs.pick_epsilon;
+
   while(sel)
     {
+      mins = fabs(sel->object->scalx);
+
+      if(fabs(sel->object->scaly) < mins)
+	mins = sel->object->scaly;
+
+      if(fabs(sel->object->scalz) < mins)
+	mins = sel->object->scalz;
+
+      ay_prefs.pick_epsilon = oldpickepsilon / lscal *
+	(view->conv_x/0.006) / mins;
+
+      /*printf("using pickepsilon %g\n", ay_prefs.pick_epsilon);*/
+
       ay_status = ay_viewt_wintoobj(togl, sel->object, winX, winY,
 				    &(obj[0]), &(obj[1]), &(obj[2]));
 
@@ -430,6 +465,8 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
 
       sel = sel->next;
     } /* while */
+
+  ay_prefs.pick_epsilon = oldpickepsilon;
 
   ay_point_edit_coords_number = penumber;
   if(ay_point_edit_coords)
