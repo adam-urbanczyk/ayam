@@ -118,7 +118,7 @@ ay_pomesh_copycb(void *src, void **dst)
 	  total_verts += pomeshsrc->nverts[i];
 	} /* for */
     } /* if */
-  
+
   /* copy verts */
   if(pomeshsrc->verts)
     {
@@ -148,7 +148,7 @@ int
 ay_pomesh_drawcb(struct Togl *togl, ay_object *o)
 {
  ay_pomesh_object *pomesh = NULL;
- int i = 0, j = 0, k = 0, l = 0, stride = 0;
+ int i = 0, j = 0, k = 0, l = 0, m = 0, n = 0, stride = 0;
  unsigned int a;
 
   if(!o)
@@ -163,16 +163,18 @@ ay_pomesh_drawcb(struct Togl *togl, ay_object *o)
 
   for(i = 0; i < pomesh->npolys; i++)
     {
-      for(j = 0; j < pomesh->nloops[i]; j++)
+      for(j = 0; j < pomesh->nloops[l]; j++)
 	{
 	  glBegin(GL_LINE_LOOP);
-	   for(k = 0; k < pomesh->nverts[j]; k++)
+	   for(k = 0; k < pomesh->nverts[m]; k++)
 	    {
-	      a = pomesh->verts[l++];
+	      a = pomesh->verts[n++];
 	      glVertex3dv((GLdouble*)(&(pomesh->controlv[a * stride])));
 	    }
 	  glEnd();
+	  m++;
 	} /* for */
+      l++;
     } /* for */
 
  return AY_OK;

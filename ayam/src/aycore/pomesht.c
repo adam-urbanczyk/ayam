@@ -154,7 +154,7 @@ ay_pomesht_setautonormal(double *v1, double *v2, double *v3)
 int
 ay_pomesht_tesselate(ay_pomesh_object *pomesh)
 {
- int i = 0, j = 0, k = 0, l = 0, stride = 0;
+ int i = 0, j = 0, k = 0, l = 0, m = 0, n = 0, stride = 0;
  unsigned int a;
  GLUtesselator *tess = NULL;
 
@@ -195,24 +195,25 @@ ay_pomesht_tesselate(ay_pomesh_object *pomesh)
 				 &pomesh->controlv[pomesh->verts[l+2]*stride]);
 	}
 
-       for(j = 0; j < pomesh->nloops[i]; j++)
+       for(j = 0; j < pomesh->nloops[l]; j++)
 	 {
 	   /*gluTessBeginContour(tess);*/
-	    for(k = 0; k < pomesh->nverts[j]; k++)
+	    for(k = 0; k < pomesh->nverts[m]; k++)
 	      {
-		a = pomesh->verts[l++];
+		a = pomesh->verts[n++];
 		gluTessVertex(tess, (GLdouble*)(&(pomesh->controlv[a*stride])),
 			      (GLdouble*)(&(pomesh->controlv[a*stride])));
 	      } /* for */
 	    /*gluTessEndContour(tess);*/
 	    gluNextContour(tess, GLU_INTERIOR);
+	    m++;
 	 } /* for */
-
        /*      gluTessEndPolygon(tess);*/
       gluEndPolygon(tess);
       gluDeleteTess(tess);
       /* free combined vertices */
       ay_pomesht_ManageCombined(NULL);
+      l++;
     } /* for */
 
  return AY_OK;
