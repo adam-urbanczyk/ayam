@@ -285,7 +285,7 @@ proc shader_setNew { win type stype } {
 
 
 # shader_scanXML:
-#  scan a shader that has been parsed with sdpslparse
+#  scan a shader that has been parsed with sdpslparse/sl2xml
 proc shader_scanXML { file varname } {
     global ay ayprefs
     upvar 1 $varname shader
