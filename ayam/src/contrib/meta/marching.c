@@ -26,8 +26,8 @@
    an edge between two vertices, each with their own scalar value
 */
 void
-VertexInterp (double isolevel, XYZ * p1, XYZ * p2, double valp1, double valp2,
-	      XYZ * d)
+VertexInterp (double isolevel, meta_xyz * p1, meta_xyz * p2, double valp1, double valp2,
+	      meta_xyz * d)
 {
   double mu;
   /* XYZ p; */
@@ -47,12 +47,12 @@ VertexInterp (double isolevel, XYZ * p1, XYZ * p2, double valp1, double valp2,
 
 /* int Polygonise(GRIDCELL grid,double isolevel,TRIANGLE *triangles) */
 int
-Polygonise (world * w, GRIDCELL * grid, double isolevel, int mode)
+meta_polygonise (meta_world * w, meta_gridcell * grid, double isolevel)
 {
   int i, j, ti;
   int cubeindex, edgeindex;
-  XYZ vertlist[12];
-  XYZ normlist[12];
+  meta_xyz vertlist[12];
+  meta_xyz normlist[12];
   double *vptr, *nptr;
 
 
@@ -92,73 +92,73 @@ Polygonise (world * w, GRIDCELL * grid, double isolevel, int mode)
     {
       VertexInterp (isolevel, &grid->p[0], &grid->p[1], grid->val[0],
 		    grid->val[1], &vertlist[0]);
-      mt_getnormal (w, &vertlist[0], &normlist[0]);
+      meta_getnormal (w, &vertlist[0], &normlist[0]);
     }
   if (edgeindex & 2)
     {
       VertexInterp (isolevel, &grid->p[1], &grid->p[2], grid->val[1],
 		    grid->val[2], &vertlist[1]);
-      mt_getnormal (w, &vertlist[1], &normlist[1]);
+      meta_getnormal (w, &vertlist[1], &normlist[1]);
     }
   if (edgeindex & 4)
     {
       VertexInterp (isolevel, &grid->p[2], &grid->p[3], grid->val[2],
 		    grid->val[3], &vertlist[2]);
-      mt_getnormal (w, &vertlist[2], &normlist[2]);
+      meta_getnormal (w, &vertlist[2], &normlist[2]);
     }
   if (edgeindex & 8)
     {
       VertexInterp (isolevel, &grid->p[3], &grid->p[0], grid->val[3],
 		    grid->val[0], &vertlist[3]);
-      mt_getnormal (w, &vertlist[3], &normlist[3]);
+      meta_getnormal (w, &vertlist[3], &normlist[3]);
     }
   if (edgeindex & 16)
     {
       VertexInterp (isolevel, &grid->p[4], &grid->p[5], grid->val[4],
 		    grid->val[5], &vertlist[4]);
-      mt_getnormal (w, &vertlist[4], &normlist[4]);
+      meta_getnormal (w, &vertlist[4], &normlist[4]);
     }
   if (edgeindex & 32)
     {
       VertexInterp (isolevel, &grid->p[5], &grid->p[6], grid->val[5],
 		    grid->val[6], &vertlist[5]);
-      mt_getnormal (w, &vertlist[5], &normlist[5]);
+      meta_getnormal (w, &vertlist[5], &normlist[5]);
     }
   if (edgeindex & 64)
     {
       VertexInterp (isolevel, &grid->p[6], &grid->p[7], grid->val[6],
 		    grid->val[7], &vertlist[6]);
-      mt_getnormal (w, &vertlist[6], &normlist[6]);
+      meta_getnormal (w, &vertlist[6], &normlist[6]);
     }
   if (edgeindex & 128)
     {
       VertexInterp (isolevel, &grid->p[7], &grid->p[4], grid->val[7],
 		    grid->val[4], &vertlist[7]);
-      mt_getnormal (w, &vertlist[7], &normlist[7]);
+      meta_getnormal (w, &vertlist[7], &normlist[7]);
     }
   if (edgeindex & 256)
     {
       VertexInterp (isolevel, &grid->p[0], &grid->p[4], grid->val[0],
 		    grid->val[4], &vertlist[8]);
-      mt_getnormal (w, &vertlist[8], &normlist[8]);
+      meta_getnormal (w, &vertlist[8], &normlist[8]);
     }
   if (edgeindex & 512)
     {
       VertexInterp (isolevel, &grid->p[1], &grid->p[5], grid->val[1],
 		    grid->val[5], &vertlist[9]);
-      mt_getnormal (w, &vertlist[9], &normlist[9]);
+      meta_getnormal (w, &vertlist[9], &normlist[9]);
     }
   if (edgeindex & 1024)
     {
       VertexInterp (isolevel, &grid->p[2], &grid->p[6], grid->val[2],
 		    grid->val[6], &vertlist[10]);
-      mt_getnormal (w, &vertlist[10], &normlist[10]);
+      meta_getnormal (w, &vertlist[10], &normlist[10]);
     }
   if (edgeindex & 2048)
     {
       VertexInterp (isolevel, &grid->p[3], &grid->p[7], grid->val[3],
 		    grid->val[7], &vertlist[11]);
-      mt_getnormal (w, &vertlist[11], &normlist[11]);
+      meta_getnormal (w, &vertlist[11], &normlist[11]);
     }
   /* Create the triangle */
 

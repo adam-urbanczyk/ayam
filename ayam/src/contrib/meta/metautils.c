@@ -28,10 +28,10 @@
 
 /* calculate the effect for all metaballs in list */
 double
-mt_calcall (double x1, double y1, double z1, world * w)
+meta_calcall (double x1, double y1, double z1, meta_world * w)
 {
   double effect, dist, radius, tmpeffect, falloff;
-  blob *tmp;
+  meta_blob *tmp;
   ay_object *o;
   double x, y, z;
 
@@ -46,11 +46,11 @@ mt_calcall (double x1, double y1, double z1, world * w)
 	if(o->type == metacomp_id)
 	{
 
-      	tmp = (blob *) o->refine;
+      	tmp = (meta_blob *) o->refine;
       	radius = tmp->r * tmp->r;
 
       	/* rotate the Object */
-	 	if (!(tmp->formula == mt_TORUS))
+	 	if (!(tmp->formula == META_TORUS))
 		{
 
 	  	x =
@@ -63,17 +63,17 @@ mt_calcall (double x1, double y1, double z1, world * w)
 	  	  tmp->rm[2] * x1 + tmp->rm[6] * y1 + tmp->rm[10] * z1 +
 	  	  tmp->rm[14] * 1.0;
 
-	  	dist = DIST (x, y, z, tmp->cp.x, tmp->cp.y, tmp->cp.z);
+	  	dist = META_DIST (x, y, z, tmp->cp.x, tmp->cp.y, tmp->cp.z);
 		}
 
 
      	 /* the normal metaball */
-	 if (tmp->formula == mt_META)
+	 if (tmp->formula == META_BALL)
 	 {
 	   if (dist <= radius)
 	   {
-		 tmpeffect = tmp->a * CUB (dist) / CUB (radius) +
-		   tmp->b * SQ (dist) / SQ (radius) + tmp->c * dist / radius +
+		 tmpeffect = tmp->a * META_CUB (dist) / META_CUB (radius) +
+		   tmp->b * META_SQ (dist) / META_SQ (radius) + tmp->c * dist / radius +
 		    1.0;
 	
 		      if (tmp->negativ)
@@ -120,12 +120,12 @@ mt_calcall (double x1, double y1, double z1, world * w)
 	}
 */
 
-		 if (tmp->formula == mt_CUBE)
+		 if (tmp->formula == META_CUBE)
 		 {
 
 		  {	 
-		   tmpeffect = (tmp->scalex*pow(ABS(x-tmp->cp.x),tmp->ex) +  tmp->scaley*pow(ABS(y -tmp->cp.y),tmp->ey) \
-		   +  tmp->scalez*pow(ABS(z - tmp->cp.z),tmp->ez))*9000;
+		   tmpeffect = (tmp->scalex*pow(META_ABS(x-tmp->cp.x),tmp->ex) +  tmp->scaley*pow(META_ABS(y -tmp->cp.y),tmp->ey) \
+		   +  tmp->scalez*pow(META_ABS(z - tmp->cp.z),tmp->ez))*9000;
 		 
 		   tmpeffect = 1/(tmpeffect < 0.00001 ? 0.00001 : tmpeffect);
 	
@@ -140,7 +140,7 @@ mt_calcall (double x1, double y1, double z1, world * w)
 		}
 	 
 
-		 if (tmp->formula == mt_TORUS)
+		 if (tmp->formula == META_TORUS)
 		{
 
 		  x1 = (x1 - tmp->cp.x);
@@ -159,12 +159,12 @@ mt_calcall (double x1, double y1, double z1, world * w)
 
 		  if (tmp->rot)
 		    tmpeffect =
-		      SQ (x * x + SQ (y) + z * z + tmp->Ro * tmp->Ro -
-			  tmp->Ri * tmp->Ri) - 4.0 * SQ (tmp->Ro) * (SQ (z) + SQ (y));
+		      META_SQ (x * x + META_SQ (y) + z * z + tmp->Ro * tmp->Ro -
+			  tmp->Ri * tmp->Ri) - 4.0 * META_SQ (tmp->Ro) * (META_SQ (z) + META_SQ (y));
 		  else
 		    tmpeffect =
-		      SQ (x * x + SQ (y) + z * z + tmp->Ro * tmp->Ro -
-			  tmp->Ri * tmp->Ri) - 4.0 * SQ (tmp->Ro) * (SQ (x) + SQ (y));
+		      META_SQ (x * x + META_SQ (y) + z * z + tmp->Ro * tmp->Ro -
+			  tmp->Ri * tmp->Ri) - 4.0 * META_SQ (tmp->Ro) * (META_SQ (x) + META_SQ (y));
 
 
 		  if (tmp->negativ)
@@ -176,7 +176,7 @@ mt_calcall (double x1, double y1, double z1, world * w)
 		    effect += 1 / (tmpeffect < 0.00001 ? 0.00001 : tmpeffect) * 0.006;
 		}
 
-    	if (tmp->formula == mt_HEART)
+    	if (tmp->formula == META_HEART)
 	{
 	  x = x1 - tmp->cp.x;
 	  y = y1 - tmp->cp.y;
@@ -184,8 +184,8 @@ mt_calcall (double x1, double y1, double z1, world * w)
 
 
 	  tmpeffect =
-	    CUB (2 * SQ (x) + SQ (y) + SQ (z) - 1) - (0.1 * SQ (x) +
-	      SQ (y)) * CUB (z);
+	    META_CUB (2 * META_SQ (x) + META_SQ (y) + META_SQ (z) - 1) - (0.1 * META_SQ (x) +
+	      META_SQ (y)) * META_CUB (z);
 
 
 	  if (tmp->negativ)
@@ -208,12 +208,12 @@ mt_calcall (double x1, double y1, double z1, world * w)
 
 
 void
-mt_getstart (blob * b, INTXYZ * p, world * w)
+meta_getstart (meta_blob * b, meta_intxyz * p, meta_world * w)
 {
 
   p->x = (int) (b->cp.x / w->edgelength) + w->aktcubes / 2;
 
-  if (b->formula == mt_TORUS)
+  if (b->formula == META_TORUS)
     p->y = (int) ((b->cp.y + b->Ro) / w->edgelength) + w->aktcubes / 2;
   else
     p->y = (int) (b->cp.y / w->edgelength) + w->aktcubes / 2;
@@ -240,10 +240,10 @@ mt_getstart (blob * b, INTXYZ * p, world * w)
 }
 
 int
-mt_initcubestack (world * w)
+meta_initcubestack (meta_world * w)
 {
 
-  if ((w->stack = (GRIDCELL *) calloc (1, sizeof (GRIDCELL) * 2000)))
+  if ((w->stack = (meta_gridcell *) calloc (1, sizeof (meta_gridcell) * 2000)))
     {
       w->stackpos = 0;
       w->maxstack = 2000;
@@ -255,7 +255,7 @@ mt_initcubestack (world * w)
 }
 
 int
-mt_freecubestack (world * w)
+meta_freecubestack (meta_world * w)
 {
   if (w->stack)
     free (w->stack);
@@ -264,11 +264,11 @@ mt_freecubestack (world * w)
 }
 
 void
-mt_pushcube (GRIDCELL * cube, world * w)
+meta_pushcube (meta_gridcell * cube, meta_world * w)
 {
   if (w->stackpos == w->maxstack)
     {
-      w->stack = realloc (w->stack, sizeof (GRIDCELL) * (w->maxstack + 1000));
+      w->stack = realloc (w->stack, sizeof (meta_gridcell) * (w->maxstack + 1000));
       w->maxstack += 1000;
     }
 
@@ -277,8 +277,8 @@ mt_pushcube (GRIDCELL * cube, world * w)
 
 }
 
-GRIDCELL
-mt_popcube (world * w)
+meta_gridcell
+meta_popcube (meta_world * w)
 {
 
   w->stackpos--;
@@ -287,7 +287,7 @@ mt_popcube (world * w)
 }
 
 void
-mt_initstartcube (world * w, GRIDCELL * cube, INTXYZ * p)
+meta_initstartcube (meta_world * w, meta_gridcell * cube, meta_intxyz * p)
 {
 
 #define length w->edgelength
@@ -295,54 +295,54 @@ mt_initstartcube (world * w, GRIDCELL * cube, INTXYZ * p)
   cube->p[0].x = p->x * length - w->unisize / 2;
   cube->p[0].y = p->y * length - w->unisize / 2;
   cube->p[0].z = p->z * length - w->unisize / 2;
-  cube->val[0] = mt_calcall (cube->p[0].x, cube->p[0].y, cube->p[0].z, w);
+  cube->val[0] = meta_calcall (cube->p[0].x, cube->p[0].y, cube->p[0].z, w);
 
   cube->p[1].x = cube->p[0].x + length;
   cube->p[1].y = cube->p[0].y;
   cube->p[1].z = cube->p[0].z;
-  cube->val[1] = mt_calcall (cube->p[1].x, cube->p[1].y, cube->p[1].z, w);
+  cube->val[1] = meta_calcall (cube->p[1].x, cube->p[1].y, cube->p[1].z, w);
 
   cube->p[2].x = cube->p[1].x;
   cube->p[2].y = cube->p[0].y;
   cube->p[2].z = cube->p[0].z + length;
-  cube->val[2] = mt_calcall (cube->p[2].x, cube->p[2].y, cube->p[2].z, w);
+  cube->val[2] = meta_calcall (cube->p[2].x, cube->p[2].y, cube->p[2].z, w);
 
   cube->p[3].x = cube->p[0].x;
   cube->p[3].y = cube->p[0].y;
   cube->p[3].z = cube->p[2].z;
-  cube->val[3] = mt_calcall (cube->p[3].x, cube->p[3].y, cube->p[3].z, w);
+  cube->val[3] = meta_calcall (cube->p[3].x, cube->p[3].y, cube->p[3].z, w);
 
   cube->p[4].x = cube->p[0].x;
   cube->p[4].y = cube->p[0].y + length;
   cube->p[4].z = cube->p[0].z;
-  cube->val[4] = mt_calcall (cube->p[4].x, cube->p[4].y, cube->p[4].z, w);
+  cube->val[4] = meta_calcall (cube->p[4].x, cube->p[4].y, cube->p[4].z, w);
 
   cube->p[5].x = cube->p[1].x;
   cube->p[5].y = cube->p[4].y;
   cube->p[5].z = cube->p[0].z;
-  cube->val[5] = mt_calcall (cube->p[5].x, cube->p[5].y, cube->p[5].z, w);
+  cube->val[5] = meta_calcall (cube->p[5].x, cube->p[5].y, cube->p[5].z, w);
 
   cube->p[6].x = cube->p[1].x;
   cube->p[6].y = cube->p[4].y;
   cube->p[6].z = cube->p[2].z;
-  cube->val[6] = mt_calcall (cube->p[6].x, cube->p[6].y, cube->p[6].z, w);
+  cube->val[6] = meta_calcall (cube->p[6].x, cube->p[6].y, cube->p[6].z, w);
 
   cube->p[7].x = cube->p[0].x;
   cube->p[7].y = cube->p[4].y;
   cube->p[7].z = cube->p[2].z;
-  cube->val[7] = mt_calcall (cube->p[7].x, cube->p[7].y, cube->p[7].z, w);
+  cube->val[7] = meta_calcall (cube->p[7].x, cube->p[7].y, cube->p[7].z, w);
 
 #undef length
 }
 
 
 void
-mt_addneighbors (GRIDCELL * cube, world * w)
+meta_addneighbors (meta_gridcell * cube, meta_world * w)
 {
   int edgecode;
   int square;
   int pos;
-  GRIDCELL tmpcube;
+  meta_gridcell tmpcube;
 
 #define act w->aktcubes
 
@@ -361,8 +361,8 @@ mt_addneighbors (GRIDCELL * cube, world * w)
 	  if (w->mgrid[pos] != w->lastmark)
 	    {
 	      tmpcube = *cube;
-	      mt_moveback (&tmpcube, w);
-	      mt_pushcube (&tmpcube, w);
+	      meta_moveback (&tmpcube, w);
+	      meta_pushcube (&tmpcube, w);
 	      w->mgrid[pos] = w->lastmark;
 	    }
 	}
@@ -381,8 +381,8 @@ mt_addneighbors (GRIDCELL * cube, world * w)
 	  if (w->mgrid[pos] != w->lastmark)
 	    {
 	      tmpcube = *cube;
-	      mt_moveright (&tmpcube, w);
-	      mt_pushcube (&tmpcube, w);
+	      meta_moveright (&tmpcube, w);
+	      meta_pushcube (&tmpcube, w);
 	      w->mgrid[pos] = w->lastmark;
 
 	    }
@@ -402,8 +402,8 @@ mt_addneighbors (GRIDCELL * cube, world * w)
 	  if (w->mgrid[pos] != w->lastmark)
 	    {
 	      tmpcube = *cube;
-	      mt_movefront (&tmpcube, w);
-	      mt_pushcube (&tmpcube, w);
+	      meta_movefront (&tmpcube, w);
+	      meta_pushcube (&tmpcube, w);
 	      w->mgrid[pos] = w->lastmark;
 
 	    }
@@ -425,8 +425,8 @@ mt_addneighbors (GRIDCELL * cube, world * w)
 	  if (w->mgrid[pos] != w->lastmark)
 	    {
 	      tmpcube = *cube;
-	      mt_moveleft (&tmpcube, w);
-	      mt_pushcube (&tmpcube, w);
+	      meta_moveleft (&tmpcube, w);
+	      meta_pushcube (&tmpcube, w);
 	      w->mgrid[pos] = w->lastmark;
 
 	    }
@@ -447,8 +447,8 @@ mt_addneighbors (GRIDCELL * cube, world * w)
 	  if (w->mgrid[pos] != w->lastmark)
 	    {
 	      tmpcube = *cube;
-	      mt_moveup (&tmpcube, w);
-	      mt_pushcube (&tmpcube, w);
+	      meta_moveup (&tmpcube, w);
+	      meta_pushcube (&tmpcube, w);
 	      w->mgrid[pos] = w->lastmark;
 
 	    }
@@ -467,8 +467,8 @@ mt_addneighbors (GRIDCELL * cube, world * w)
 	  if (w->mgrid[pos] != w->lastmark)
 	    {
 	      tmpcube = *cube;
-	      mt_movedown (&tmpcube, w);
-	      mt_pushcube (&tmpcube, w);
+	      meta_movedown (&tmpcube, w);
+	      meta_pushcube (&tmpcube, w);
 	      w->mgrid[pos] = w->lastmark;
 
 	    }
@@ -483,10 +483,10 @@ mt_addneighbors (GRIDCELL * cube, world * w)
 
 
 int
-mt_searchcube (GRIDCELL * cube, INTXYZ * p, world * w)
+meta_searchcube (meta_gridcell * cube, meta_intxyz * p, meta_world * w)
 {
   int code;
-  INTXYZ pb;
+  meta_intxyz pb;
 
 
   pb = *p;
@@ -499,9 +499,9 @@ mt_searchcube (GRIDCELL * cube, INTXYZ * p, world * w)
       if (p->y < w->aktcubes - 1)
 	{
 	  p->y++;
-	  mt_moveup (cube, w);	/* move one position up */
+	  meta_moveup (cube, w);	/* move one position up */
 
-	  code = Polygonise (w, cube, w->isolevel, SHADE);
+	  code = meta_polygonise (w, cube, w->isolevel);
 	}
       else
 	break;
@@ -518,9 +518,9 @@ mt_searchcube (GRIDCELL * cube, INTXYZ * p, world * w)
 	  if (p->y > 0)
 	    {
 	      p->y--;
-	      mt_movedown (cube, w);	/* move one position up */
+	      meta_movedown (cube, w);	/* move one position up */
 
-	      code = Polygonise (w, cube, w->isolevel, SHADE);
+	      code = meta_polygonise (w, cube, w->isolevel);
 	    }
 	  else
 	    break;
@@ -537,9 +537,9 @@ mt_searchcube (GRIDCELL * cube, INTXYZ * p, world * w)
 	  if (p->x > 0)
 	    {
 	      p->x--;
-	      mt_moveleft (cube, w);	/* move one position up */
+	      meta_moveleft (cube, w);	/* move one position up */
 
-	      code = Polygonise (w, cube, w->isolevel, SHADE);
+	      code = meta_polygonise (w, cube, w->isolevel);
 	    }
 	  else
 	    break;
@@ -556,9 +556,9 @@ mt_searchcube (GRIDCELL * cube, INTXYZ * p, world * w)
 	  if (p->x < w->aktcubes - 1)
 	    {
 	      p->x++;
-	      mt_moveright (cube, w);	/* move one position up */
+	      meta_moveright (cube, w);	/* move one position up */
 
-	      code = Polygonise (w, cube, w->isolevel, SHADE);
+	      code = meta_polygonise (w, cube, w->isolevel);
 	    }
 	  else
 	    break;
@@ -576,9 +576,9 @@ mt_searchcube (GRIDCELL * cube, INTXYZ * p, world * w)
 	  if (p->z < w->aktcubes - 1)
 	    {
 	      p->z++;
-	      mt_movefront (cube, w);	/* move one position to the front */
+	      meta_movefront (cube, w);	/* move one position to the front */
 
-	      code = Polygonise (w, cube, w->isolevel, SHADE);
+	      code = meta_polygonise (w, cube, w->isolevel);
 	    }
 	  else
 	    break;
@@ -595,9 +595,9 @@ mt_searchcube (GRIDCELL * cube, INTXYZ * p, world * w)
 	  if (p->z > 0)
 	    {
 	      p->z--;
-	      mt_moveback (cube, w);	/* move one position to the front */
+	      meta_moveback (cube, w);	/* move one position to the front */
 
-	      code = Polygonise (w, cube, w->isolevel, SHADE);
+	      code = meta_polygonise (w, cube, w->isolevel);
 	    }
 	  else
 	    break;
@@ -612,13 +612,13 @@ mt_searchcube (GRIDCELL * cube, INTXYZ * p, world * w)
 
 
 int
-mt_calceffect (world * w, int mode)
+meta_calceffect (meta_world * w)
 {
-  blob *b;
-  INTXYZ p;
+  meta_blob *b;
+  meta_intxyz p;
   int code, n;
   ay_object *o;
-  GRIDCELL cube;
+  meta_gridcell cube;
 
   n = 0;
 
@@ -633,18 +633,18 @@ mt_calceffect (world * w, int mode)
 
 	if(o->type == metacomp_id)
 	{
-     	 b = (blob *) o->refine;
+     	 b = (meta_blob *) o->refine;
 
-     	 mt_getstart (b, &p, w);	/* get startcube for ball */
+     	 meta_getstart (b, &p, w);	/* get startcube for ball */
 
     	  /* fill first cube with values */
-	      mt_initstartcube (w, &cube, &p);
+	      meta_initstartcube (w, &cube, &p);
 
 	      pos (p) = w->lastmark;	/* mark that cube is visited */
 
 	      /* search for the first cube */
 
-	      code = mt_searchcube (&cube, &p, w);
+	      code = meta_searchcube (&cube, &p, w);
 
 
 	      if (pos (p) == w->lastmark)	/* ball already calculated ? */
@@ -655,7 +655,7 @@ mt_calceffect (world * w, int mode)
 
      	 cube.pos = p;		/* mark position of the cube */
 
-	      mt_addneighbors (&cube, w);	/* addneighbors cubes to stack */
+	      meta_addneighbors (&cube, w);	/* addneighbors cubes to stack */
 
 		 while (w->stackpos > 0)
 		{
@@ -685,12 +685,12 @@ mt_calceffect (world * w, int mode)
 	     	 w->maxpoly += 10000;
 
 		}
-		  code = Polygonise (w, &cube, w->isolevel, SHADE);
+		  code = meta_polygonise (w, &cube, w->isolevel);
 
 		  pos (cube.pos) = w->lastmark;	/* mark that cube is visited */
 
 		  if ((code != 0) || (code == 300))
-		    mt_addneighbors (&cube, w);	/* add neighbors cubes to stack */
+		    meta_addneighbors (&cube, w);	/* add neighbors cubes to stack */
 
 		}
 	
@@ -707,14 +707,14 @@ mt_calceffect (world * w, int mode)
 }
 
 void
-mt_getnormal (world * w, XYZ * p, XYZ * normal)
+meta_getnormal (meta_world * w, meta_xyz * p, meta_xyz * normal)
 {
   double xn, yn, zn, old, scale;
   double f, d;
 
   d = w->edgelength / 100;
 
-  f = mt_calcall (p->x, p->y, p->z, w);
+  f = meta_calcall (p->x, p->y, p->z, w);
 
   /*
      xn = ncalcall(p->x-0.01, p->y, p->z,w) - ncalcall(p->x+0.01, p->y, p->z,w);
@@ -722,11 +722,11 @@ mt_getnormal (world * w, XYZ * p, XYZ * normal)
      zn = ncalcall(p->x, p->y, p->z-0.01,w) - ncalcall(p->x, p->y, p->z+0.01,w);
    */
 
-  xn = (mt_calcall (p->x + d, p->y, p->z, w) - f) / d;
-  yn = (mt_calcall (p->x, p->y + d, p->z, w) - f) / d;
-  zn = (mt_calcall (p->x, p->y, p->z + d, w) - f) / d;
+  xn = (meta_calcall (p->x + d, p->y, p->z, w) - f) / d;
+  yn = (meta_calcall (p->x, p->y + d, p->z, w) - f) / d;
+  zn = (meta_calcall (p->x, p->y, p->z + d, w) - f) / d;
 
-  old = sqrt (SQ (xn) + SQ (yn) + SQ (zn));
+  old = sqrt (META_SQ (xn) + META_SQ (yn) + META_SQ (zn));
 
   if (old != 0.0)
     {

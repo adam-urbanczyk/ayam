@@ -20,8 +20,6 @@
 #include "ayam.h"
 #include "meta.h"
 
-static char versionstring[] = "$VER: " PROGNAME VERSION "";
-
 /* metaobj.c - metaobj custom object */
 
 static char *metaobj_name = "MetaObj";
@@ -37,18 +35,18 @@ int
 metaobj_createcb (int argc, char *argv[], ay_object * o)
 {
   int ay_status = AY_OK;
-  world *w = NULL;
+  meta_world *w = NULL;
   char fname[] = "crtball";
   ay_object *first_child = NULL;
 
 
-  if (!(w = calloc (1, sizeof (world))))
+  if (!(w = calloc (1, sizeof (meta_world))))
     {
       ay_error (AY_EOMEM, fname, NULL);
       return AY_ERROR;
     }
 
-  w->maxpoly = mt_MAXPOLY;
+  w->maxpoly = META_MAXPOLY;
 
 
   if (!
@@ -74,11 +72,11 @@ metaobj_createcb (int argc, char *argv[], ay_object * o)
     }
 
 
-  w->aktcubes = mt_MAXCUBE;	/* erstmal maximale anzahl */
+  w->aktcubes = META_MAXCUBE;	/* erstmal maximale anzahl */
 
   if (!
       (w->mgrid =
-       (char *) calloc (1, sizeof (char) * mt_MAXCUBE * mt_MAXCUBE * mt_MAXCUBE)))
+       (char *) calloc (1, sizeof (char) * META_MAXCUBE * META_MAXCUBE * META_MAXCUBE)))
     {
       if (w->Vertex3d);
       free (w->Vertex3d);
@@ -91,7 +89,7 @@ metaobj_createcb (int argc, char *argv[], ay_object * o)
     }
 
 
-  mt_initcubestack (w);
+  meta_initcubestack (w);
 
   w->lastmark = 0;
 
@@ -115,7 +113,7 @@ metaobj_createcb (int argc, char *argv[], ay_object * o)
   w->o = o->down;
  // w->cid = &metacomp_id;
 
-  mt_calceffect (w, SHADE);
+  meta_calceffect (w);
 
   return AY_OK;
 } /* metaobj_createcb */
@@ -124,12 +122,12 @@ metaobj_createcb (int argc, char *argv[], ay_object * o)
 int
 metaobj_deletecb (void *c)
 {
-  world *w;
+  meta_world *w;
 
   if (!c)
     return AY_ENULL;
 
-  w = (world *) (c);
+  w = (meta_world *) (c);
 
   if (w->vertex)
     free (w->vertex);
@@ -141,7 +139,7 @@ metaobj_deletecb (void *c)
   if (w->mgrid);
   free (w->mgrid);
 
-  mt_freecubestack (w);
+  meta_freecubestack (w);
 
   if (w)
     free (w);
@@ -154,18 +152,18 @@ metaobj_deletecb (void *c)
 int
 metaobj_copycb (void *src, void **dst)
 {
-  world *w = NULL;
-  world *wsrc = NULL;
+  meta_world *w = NULL;
+  meta_world *wsrc = NULL;
 
   if (!src || !dst)
     return AY_ENULL;
 
-  wsrc = (world *) src;
+  wsrc = (meta_world *) src;
 
-  if (!(w = calloc (1, sizeof (world))))
+  if (!(w = calloc (1, sizeof (meta_world))))
     return AY_EOMEM;
 
-  memcpy (w, src, sizeof (world));
+  memcpy (w, src, sizeof (meta_world));
 
   if (!
       (w->vertex =
@@ -207,7 +205,7 @@ metaobj_copycb (void *src, void **dst)
     }
 
 
-  mt_initcubestack (w);
+  meta_initcubestack (w);
 
   *dst = (void *) w;
 
@@ -218,11 +216,11 @@ metaobj_copycb (void *src, void **dst)
 int
 metaobj_drawcb (struct Togl *togl, ay_object * o)
 {
-  world *w;
+  meta_world *w;
   double *vptr, x, y, z, x1, y1, z1, x2, y2, z2;
   int i;
 
-  w = (world *) o->refine;
+  w = (meta_world *) o->refine;
 
   vptr = w->vertex;
 
@@ -262,11 +260,11 @@ metaobj_drawcb (struct Togl *togl, ay_object * o)
 int
 metaobj_shadecb (struct Togl *togl, ay_object * o)
 {
-  world *w;
+  meta_world *w;
   double *vptr, *nptr;
   int i;
 
-  w = (world *) o->refine;
+  w = (meta_world *) o->refine;
 
   vptr = w->vertex;
   nptr = w->nvertex;
@@ -303,13 +301,13 @@ metaobj_setpropcb (Tcl_Interp * interp, int argc, char *argv[], ay_object * o)
 {
   char *n1 = "MetaObjAttrData";
   Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
-  world *w = NULL;
+  meta_world *w = NULL;
 
 
   if (!o)
     return AY_ENULL;
 
-  w = (world *) o->refine;
+  w = (meta_world *) o->refine;
 
   toa = Tcl_NewStringObj (n1, -1);
   ton = Tcl_NewStringObj (n1, -1);
@@ -359,12 +357,12 @@ metaobj_getpropcb (Tcl_Interp * interp, int argc, char *argv[], ay_object * o)
 {
   char *n1 = "MetaObjAttrData";
   Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
-  world *w = NULL;
+  meta_world *w = NULL;
 
   if (!o)
     return AY_ENULL;
 
-  w = (world *) (o->refine);
+  w = (meta_world *) (o->refine);
 
   toa = Tcl_NewStringObj (n1, -1);
 
@@ -391,12 +389,12 @@ metaobj_getpropcb (Tcl_Interp * interp, int argc, char *argv[], ay_object * o)
 int
 metaobj_readcb (FILE * fileptr, ay_object * o)
 {
-  world *w;
+  meta_world *w;
 
   if (!o)
     return AY_ENULL;
 
-  if (!(w = calloc (1, sizeof (world))))
+  if (!(w = calloc (1, sizeof (meta_world))))
     return AY_ERROR;
 
   fscanf (fileptr, "%d\n", &w->aktcubes);
@@ -437,7 +435,7 @@ metaobj_readcb (FILE * fileptr, ay_object * o)
   w->unisize = 4L;
   w->edgelength = w->unisize / (double) w->aktcubes;
 
-  mt_initcubestack (w);
+  meta_initcubestack (w);
 
   o->parent = AY_TRUE;
   o->refine = w;
@@ -450,12 +448,12 @@ metaobj_readcb (FILE * fileptr, ay_object * o)
 int
 metaobj_writecb (FILE * fileptr, ay_object * o)
 {
-  world *w;
+  meta_world *w;
 
   if (!o)
     return AY_ENULL;
 
-  w = (world *) (o->refine);
+  w = (meta_world *) (o->refine);
 
   fprintf (fileptr, "%d\n", w->aktcubes);
   fprintf (fileptr, "%g\n", w->isolevel);
@@ -468,7 +466,7 @@ metaobj_writecb (FILE * fileptr, ay_object * o)
 int
 metaobj_wribcb (char *file, ay_object * o)
 {
-  world *w;
+  meta_world *w;
   RtPoint points[3];
   RtPoint normals[3];
   double *vptr, *nptr;
@@ -477,7 +475,7 @@ metaobj_wribcb (char *file, ay_object * o)
   if (!o)
     return AY_ENULL;
 
-  w = (world *) o->refine;
+  w = (meta_world *) o->refine;
 
   vptr = w->vertex;
   nptr = w->nvertex;
@@ -522,10 +520,10 @@ metaobj_notifycb (ay_object * o)
 {
   GLdouble m[16];
   double eu[3];
-  blob *b;
+  meta_blob *b;
   ay_object *down;
   double p[3] = { 0 };
-  world *w;
+  meta_world *w;
 
   glMatrixMode (GL_MODELVIEW);
 
@@ -535,7 +533,7 @@ metaobj_notifycb (ay_object * o)
     {
 	 if(down->type == metacomp_id)
 	 {
-	      b = (blob *) down->refine;
+	      b = (meta_blob *) down->refine;
 
 	      glPushMatrix ();
 
@@ -573,12 +571,12 @@ metaobj_notifycb (ay_object * o)
 	 down = down->next;
     }
 
-  w = (world *) o->refine;
+  w = (meta_world *) o->refine;
 
   w->currentnumpoly = 0;
   w->o = o->down;
 
-  mt_calceffect (w, SHADE);
+  meta_calceffect (w);
 
   return AY_OK;
 
@@ -646,10 +644,10 @@ Metaobj_Init (Tcl_Interp * interp)
 int
 metacomp_createcb (int argc, char *argv[], ay_object * o)
 {
-  blob *b = NULL;
+  meta_blob *b = NULL;
   char fname[] = "crtccomp";
 
-  if (!(b = calloc (1, sizeof (blob))))
+  if (!(b = calloc (1, sizeof (meta_blob))))
     {
       ay_error (AY_EOMEM, fname, NULL);
       return AY_ERROR;
@@ -686,12 +684,12 @@ metacomp_createcb (int argc, char *argv[], ay_object * o)
 int
 metacomp_deletecb (void *c)
 {
-  blob *b;
+  meta_blob *b;
 
   if (!c)
     return AY_ENULL;
 
-  b = (blob *) (c);
+  b = (meta_blob *) (c);
 
   if (b)
     free (b);
@@ -703,15 +701,15 @@ metacomp_deletecb (void *c)
 int
 metacomp_copycb (void *src, void **dst)
 {
-  blob *b = NULL;
+  meta_blob *b = NULL;
 
   if (!src || !dst)
     return AY_ENULL;
 
-  if (!(b = calloc (1, sizeof (blob))))
+  if (!(b = calloc (1, sizeof (meta_blob))))
     return AY_EOMEM;
 
-  memcpy (b, src, sizeof (blob));
+  memcpy (b, src, sizeof (meta_blob));
 
   *dst = (void *) b;
 
@@ -722,9 +720,9 @@ metacomp_copycb (void *src, void **dst)
 int
 metacomp_drawcb (struct Togl *togl, ay_object * o)
 {
-  blob *b;
+  meta_blob *b;
 
-  b = (blob *) o->refine;
+  b = (meta_blob *) o->refine;
 
   glBegin (GL_POINTS);
 
@@ -744,12 +742,12 @@ metacomp_setpropcb (Tcl_Interp * interp, int argc, char *argv[],
 {
   char *n1 = "MetaCompAttrData";
   Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
-  blob *b = NULL;
+  meta_blob *b = NULL;
 
   if (!o)
     return AY_ENULL;
 
-  b = (blob *) o->refine;
+  b = (meta_blob *) o->refine;
 
   toa = Tcl_NewStringObj (n1, -1);
   ton = Tcl_NewStringObj (n1, -1);
@@ -828,12 +826,12 @@ metacomp_getpropcb (Tcl_Interp * interp, int argc, char *argv[],
 {
   char *n1 = "MetaCompAttrData";
   Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
-  blob *b = NULL;
+  meta_blob *b = NULL;
 
   if (!o)
     return AY_ENULL;
 
-  b = (blob *) (o->refine);
+  b = (meta_blob *) (o->refine);
 
   toa = Tcl_NewStringObj (n1, -1);
 
@@ -907,11 +905,11 @@ metacomp_getpntcb (ay_object * o, double *p)
 {
   /*
      double min_distance = ay_prefs.pick_epsilon, distance = 0.0, point[3];
-     blob *b;
+     meta_blob *b;
 
 
 
-     b = (blob *)o->refine;
+     b = (meta_blob *)o->refine;
 
      if(ay_point_edit_coords) free(ay_point_edit_coords);
      ay_point_edit_coords = NULL;
@@ -942,12 +940,12 @@ metacomp_getpntcb (ay_object * o, double *p)
 int
 metacomp_readcb (FILE * fileptr, ay_object * o)
 {
-  blob *b;
+  meta_blob *b;
 
   if (!o)
     return AY_ENULL;
 
-  if (!(b = calloc (1, sizeof (blob))))
+  if (!(b = calloc (1, sizeof (meta_blob))))
     return AY_ERROR;
 
   fscanf (fileptr, "%lg\n", &b->r);
@@ -978,12 +976,12 @@ metacomp_readcb (FILE * fileptr, ay_object * o)
 int
 metacomp_writecb (FILE * fileptr, ay_object * o)
 {
-  blob *b;
+  meta_blob *b;
 
   if (!o)
     return AY_ENULL;
 
-  b = (blob *) (o->refine);
+  b = (meta_blob *) (o->refine);
 
   fprintf (fileptr, "%g\n", b->r);
   fprintf (fileptr, "%g\n", b->p.x);

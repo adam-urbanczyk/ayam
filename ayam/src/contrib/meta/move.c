@@ -25,7 +25,7 @@
 
 /* move the Cube one unit up */
 void
-mt_moveup (GRIDCELL * cube, world * w)
+meta_moveup (meta_gridcell * cube, meta_world * w)
 {
 #define length w->edgelength
 
@@ -44,10 +44,10 @@ mt_moveup (GRIDCELL * cube, world * w)
   cube->p[6].y = cube->p[4].y;
   cube->p[7].y = cube->p[4].y;
 
-  cube->val[4] = mt_calcall (cube->p[4].x, cube->p[4].y, cube->p[4].z, w);
-  cube->val[5] = mt_calcall (cube->p[5].x, cube->p[5].y, cube->p[5].z, w);
-  cube->val[6] = mt_calcall (cube->p[6].x, cube->p[6].y, cube->p[6].z, w);
-  cube->val[7] = mt_calcall (cube->p[7].x, cube->p[7].y, cube->p[7].z, w);
+  cube->val[4] = meta_calcall (cube->p[4].x, cube->p[4].y, cube->p[4].z, w);
+  cube->val[5] = meta_calcall (cube->p[5].x, cube->p[5].y, cube->p[5].z, w);
+  cube->val[6] = meta_calcall (cube->p[6].x, cube->p[6].y, cube->p[6].z, w);
+  cube->val[7] = meta_calcall (cube->p[7].x, cube->p[7].y, cube->p[7].z, w);
 
   cube->pos.y++;
 
@@ -56,7 +56,7 @@ mt_moveup (GRIDCELL * cube, world * w)
 
 /* move the Cube one unit down */
 void
-mt_movedown (GRIDCELL * cube, world * w)
+meta_movedown (meta_gridcell * cube, meta_world * w)
 {
 #define length w->edgelength
 
@@ -75,10 +75,10 @@ mt_movedown (GRIDCELL * cube, world * w)
   cube->p[2].y = cube->p[0].y;
   cube->p[3].y = cube->p[0].y;
 
-  cube->val[0] = mt_calcall (cube->p[0].x, cube->p[0].y, cube->p[0].z, w);
-  cube->val[1] = mt_calcall (cube->p[1].x, cube->p[1].y, cube->p[1].z, w);
-  cube->val[2] = mt_calcall (cube->p[2].x, cube->p[2].y, cube->p[2].z, w);
-  cube->val[3] = mt_calcall (cube->p[3].x, cube->p[3].y, cube->p[3].z, w);
+  cube->val[0] = meta_calcall (cube->p[0].x, cube->p[0].y, cube->p[0].z, w);
+  cube->val[1] = meta_calcall (cube->p[1].x, cube->p[1].y, cube->p[1].z, w);
+  cube->val[2] = meta_calcall (cube->p[2].x, cube->p[2].y, cube->p[2].z, w);
+  cube->val[3] = meta_calcall (cube->p[3].x, cube->p[3].y, cube->p[3].z, w);
 
   cube->pos.y--;
 
@@ -87,7 +87,7 @@ mt_movedown (GRIDCELL * cube, world * w)
 
 /* move the Cube one unit left */
 void
-mt_moveleft (GRIDCELL * cube, world * w)
+meta_moveleft (meta_gridcell * cube, meta_world * w)
 {
 #define length w->edgelength
 
@@ -106,10 +106,10 @@ mt_moveleft (GRIDCELL * cube, world * w)
   cube->p[4].x = cube->p[0].x;
   cube->p[7].x = cube->p[0].x;
 
-  cube->val[0] = mt_calcall (cube->p[0].x, cube->p[0].y, cube->p[0].z, w);
-  cube->val[3] = mt_calcall (cube->p[3].x, cube->p[3].y, cube->p[3].z, w);
-  cube->val[4] = mt_calcall (cube->p[4].x, cube->p[4].y, cube->p[4].z, w);
-  cube->val[7] = mt_calcall (cube->p[7].x, cube->p[7].y, cube->p[7].z, w);
+  cube->val[0] = meta_calcall (cube->p[0].x, cube->p[0].y, cube->p[0].z, w);
+  cube->val[3] = meta_calcall (cube->p[3].x, cube->p[3].y, cube->p[3].z, w);
+  cube->val[4] = meta_calcall (cube->p[4].x, cube->p[4].y, cube->p[4].z, w);
+  cube->val[7] = meta_calcall (cube->p[7].x, cube->p[7].y, cube->p[7].z, w);
 
   cube->pos.x--;
 
@@ -119,7 +119,7 @@ mt_moveleft (GRIDCELL * cube, world * w)
 
 /* move the Cube one unit right */
 void
-mt_moveright (GRIDCELL * cube, world * w)
+meta_moveright (meta_gridcell * cube, meta_world * w)
 {
 #define length w->edgelength
 
@@ -138,10 +138,10 @@ mt_moveright (GRIDCELL * cube, world * w)
   cube->p[5].x = cube->p[1].x;
   cube->p[6].x = cube->p[1].x;
 
-  cube->val[1] = mt_calcall (cube->p[1].x, cube->p[1].y, cube->p[1].z, w);
-  cube->val[2] = mt_calcall (cube->p[2].x, cube->p[2].y, cube->p[2].z, w);
-  cube->val[5] = mt_calcall (cube->p[5].x, cube->p[5].y, cube->p[5].z, w);
-  cube->val[6] = mt_calcall (cube->p[6].x, cube->p[6].y, cube->p[6].z, w);
+  cube->val[1] = meta_calcall (cube->p[1].x, cube->p[1].y, cube->p[1].z, w);
+  cube->val[2] = meta_calcall (cube->p[2].x, cube->p[2].y, cube->p[2].z, w);
+  cube->val[5] = meta_calcall (cube->p[5].x, cube->p[5].y, cube->p[5].z, w);
+  cube->val[6] = meta_calcall (cube->p[6].x, cube->p[6].y, cube->p[6].z, w);
 
   cube->pos.x++;
 
@@ -152,7 +152,7 @@ mt_moveright (GRIDCELL * cube, world * w)
 
 /* move the Cube one unit to front */
 void
-mt_movefront (GRIDCELL * cube, world * w)
+meta_movefront (meta_gridcell * cube, meta_world * w)
 {
 #define length w->edgelength
 
@@ -171,10 +171,10 @@ mt_movefront (GRIDCELL * cube, world * w)
   cube->p[7].z = cube->p[3].z;
   cube->p[6].z = cube->p[3].z;
 
-  cube->val[3] = mt_calcall (cube->p[3].x, cube->p[3].y, cube->p[3].z, w);
-  cube->val[2] = mt_calcall (cube->p[2].x, cube->p[2].y, cube->p[2].z, w);
-  cube->val[7] = mt_calcall (cube->p[7].x, cube->p[7].y, cube->p[7].z, w);
-  cube->val[6] = mt_calcall (cube->p[6].x, cube->p[6].y, cube->p[6].z, w);
+  cube->val[3] = meta_calcall (cube->p[3].x, cube->p[3].y, cube->p[3].z, w);
+  cube->val[2] = meta_calcall (cube->p[2].x, cube->p[2].y, cube->p[2].z, w);
+  cube->val[7] = meta_calcall (cube->p[7].x, cube->p[7].y, cube->p[7].z, w);
+  cube->val[6] = meta_calcall (cube->p[6].x, cube->p[6].y, cube->p[6].z, w);
 
   cube->pos.z++;
 
@@ -184,7 +184,7 @@ mt_movefront (GRIDCELL * cube, world * w)
 
 /* move the Cube one unit back */
 void
-mt_moveback (GRIDCELL * cube, world * w)
+meta_moveback (meta_gridcell * cube, meta_world * w)
 {
 #define length w->edgelength
 
@@ -203,10 +203,10 @@ mt_moveback (GRIDCELL * cube, world * w)
   cube->p[4].z = cube->p[0].z;
   cube->p[5].z = cube->p[0].z;
 
-  cube->val[0] = mt_calcall (cube->p[0].x, cube->p[0].y, cube->p[0].z, w);
-  cube->val[1] = mt_calcall (cube->p[1].x, cube->p[1].y, cube->p[1].z, w);
-  cube->val[4] = mt_calcall (cube->p[4].x, cube->p[4].y, cube->p[4].z, w);
-  cube->val[5] = mt_calcall (cube->p[5].x, cube->p[5].y, cube->p[5].z, w);
+  cube->val[0] = meta_calcall (cube->p[0].x, cube->p[0].y, cube->p[0].z, w);
+  cube->val[1] = meta_calcall (cube->p[1].x, cube->p[1].y, cube->p[1].z, w);
+  cube->val[4] = meta_calcall (cube->p[4].x, cube->p[4].y, cube->p[4].z, w);
+  cube->val[5] = meta_calcall (cube->p[5].x, cube->p[5].y, cube->p[5].z, w);
 
   cube->pos.z--;
 
