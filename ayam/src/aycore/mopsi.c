@@ -2028,7 +2028,7 @@ ay_mopsi_register(char *tname, ay_mopsicb *cb)
  Tcl_HashEntry *entry = NULL;
 
 
-  entry = Tcl_CreateHashEntry(&ay_mopsiht, typename, &new_item);
+  entry = Tcl_CreateHashEntry(&ay_mopsiht, tname, &new_item);
   Tcl_SetHashValue(entry, &(ay_mopsi_revolve));
 
 
