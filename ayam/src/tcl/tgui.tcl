@@ -159,7 +159,7 @@ proc tgui_open { } {
 
     button $f.bca -text "Cancel" -width 5 -command {
 	tguiCmd ca; grab release .tguiw; focus .; destroy .tguiw; undo;
-	tgui_addtag
+	undo save AddTPTag; tgui_addtag
     }
     # button
 
