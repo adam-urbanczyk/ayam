@@ -668,7 +668,7 @@ ay_pomesht_optimizecoords(ay_pomesh_object *pomesh, int ignore_normals)
   
   dp = 0;
 
-  /* if user requested to honour normals but we have no normals
+  /* if the user requested to honour normals but we have no normals
      we have to set ignore_normals to true */
   if(!ignore_normals && !pomesh->has_normals)
     ignore_normals = AY_TRUE;
@@ -693,16 +693,8 @@ ay_pomesht_optimizecoords(ay_pomesh_object *pomesh, int ignore_normals)
 	  t = dp * stride;
 	  dp++;
 	  new->ncontrols++;
-	  new->controlv[t]   = pomesh->controlv[p];	
-	  new->controlv[t+1] = pomesh->controlv[p+1];	
-	  new->controlv[t+2] = pomesh->controlv[p+2];
-
-	  if(stride == 6)
-	    {
-	      new->controlv[t+3] = pomesh->controlv[p+3];	
-	      new->controlv[t+4] = pomesh->controlv[p+4];	
-	      new->controlv[t+5] = pomesh->controlv[p+5];
-	    } /* if */
+	  memcpy(&(new->controlv[t]), &(pomesh->controlv[p]),
+		 stride * sizeof(double));
 	} /* if */
     } /* for */
 	
