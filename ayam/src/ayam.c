@@ -552,6 +552,9 @@ int ay_status = AY_OK;
   Tcl_CreateCommand(interp, "shaderScanSLC", ay_shader_scanslctcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  Tcl_CreateCommand(interp, "shaderScanSLX", ay_shader_scanslxtcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
   Tcl_CreateCommand(interp, "shaderSet", ay_shader_settcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
@@ -797,6 +800,12 @@ Tcl_SetVar(interp,"AYUSESLCARGS", "0", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 #else
 Tcl_SetVar(interp, "AYUSESLCARGS", "1", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 #endif /* AYUSESLCARGS */
+
+#ifndef AYUSESLXARGS
+Tcl_SetVar(interp,"AYUSESLXARGS", "0", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+#else
+Tcl_SetVar(interp, "AYUSESLXARGS", "1", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+#endif /* AYUSESLXARGS */
 
 #ifndef AYUSESLOARGS
 Tcl_SetVar(interp,"AYUSESLOARGS", "0", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);

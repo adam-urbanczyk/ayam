@@ -27,7 +27,7 @@
 # shader_scanAll:
 #
 proc shader_scanAll {} {
-    global ay env ayprefs AYUSESLCARGS ay_error
+    global ay env ayprefs AYUSESLCARGS AYUSESLXARGS ay_error
 
     ayError 4 scanAllShaders "Scanning for shaders..."
 
@@ -35,13 +35,23 @@ proc shader_scanAll {} {
 	eval "set ay(${i}shaders) \"\" "
     }
 
-    if { $AYUSESLCARGS == 0 } {
-	set sext ".xml"
-	ayError 2 scanAllShaders "libslcargs is not available..."
-	return;
-    } else {
+    set sext ".xml"
+
+    if { $AYUSESLCARGS == 1 } {
 	set sext ".slc"
     }
+
+    if { $AYUSESLXARGS == 1 } {
+	set sext ".slx"
+    }
+
+    if { $sext == ".xml" } {
+	ayError 2 scanAllShaders "No shader parsing library available."
+	ayError 2 scanAllShaders "Falling back to XML parsing."
+	set ay(slcext) ".xml"
+	return;
+    }
+
 
     set temp ""
     if { $ayprefs(Shaders) == "" } {
@@ -76,7 +86,7 @@ proc shader_scanAll {} {
 
 	# strip path from shader-file-name
 	set dummy [file tail $s]
-	# strip extension (.slc) from shader-file-name
+	# strip extension (.slc/.slx) from shader-file-name
 	set dummy [file rootname $dummy]
 	# strip an eventually present .linux (DSO-shaders)
 	# from the shader-file-name
@@ -85,12 +95,14 @@ proc shader_scanAll {} {
 	set shaderarguments ""
 	
 	set ay_error 0
-	if { $AYUSESLCARGS == 0 } {
-	    ayError 2 scanAllShaders "libslcargs is not available..."
-	    return;
-	} else {
+	if { $AYUSESLCARGS == 1 } {
 	    shaderScanSLC $dummy shaderarguments
 	}
+
+	if { $AYUSESLXARGS == 1 } {
+	    shaderScanSLX $dummy shaderarguments
+	}
+
 	if { $ay_error < 2 } {
 
 	    set shadertype [lindex $shaderarguments 1]
@@ -151,10 +163,10 @@ proc shader_scanAll {} {
 proc shader_setNew { win type stype } {
 upvar #0 ${type}ShaderData sArgArray
 
-global env prefs ay AYUSESLCARGS ay_error
+global env prefs ay ay_error
 
 eval "set shaders \$ay(${stype}shaders)"
-if { $AYUSESLCARGS == 0 } {
+if { $ay(slcext) == ".xml" } {
     set types {{"Parsed Shader" ".xml"} {"All files" *}}
   
     set newfilename [tk_getOpenFile -filetypes $types -parent .\
@@ -306,6 +318,65 @@ proc shader_scanXML { file varname } {
 # shader_scanXML
 
 
+# shader_setDefaultsXML:
+#  reset all parameters to shader default values
+proc shader_setDefaultsXML { type } {
+    global ay ayprefs ay_shader
+
+    if { $ay_shader(Name) == "" } { return; }
+
+    set shaderarguments ""
+    set ay_error 0
+
+    # search for shader
+    set spathstr $ayprefs(Shaders)
+
+    regsub -all $ay(separator) $spathstr " " spathstr
+
+    foreach p $spathstr {
+	    append temp "[glob -nocomplain $p/*.xml] "
+	}
+
+    set allshaders ""
+    set filename ""
+    foreach s $temp {
+	# silently omit unreadable shaders
+	if {[file readable $s]} {
+	    # strip path from shader-file-name
+	    set dummy [file tail $s]
+	    if { $ay_shader(Name) == [ file rootname $dummy ] } {
+		set filename $s
+		break;
+	    }
+	}
+    }
+    #foreach
+
+    if { $filename != "" } {
+	shaderScanXML $filename shaderarguments
+    } else {
+	ayError 2 shader_setDefXML "Could not find $ay_shader(Name).xml!"
+	ayError 2 shader_setDefXML\
+		"Maybe a path is missing from Prefs/Main/Shaders?"
+	return;
+    }
+
+    if { $ay_error > 1 } {
+	ayError 2 shader_setDefXML "Oops, could not scan shader!"
+
+	break;
+    }
+
+    shader_DbToArray $shaderarguments
+    undo save
+    shaderSet $type ay_shader
+    plb_update
+
+ return;
+}
+# shader_setDefaultsXML
+
+
 # shader_setDefaults:
 #  reset all parameters to shader default values
 proc shader_setDefaults { type } {
@@ -341,7 +412,7 @@ proc shader_setDefaults { type } {
 #  create new shader GUI in w
 #  lets user select new shaders of type type
 proc shader_buildGUI { w type } {
-global ay_shader AYUSESLCARGS
+global ay ay_shader AYUSESLCARGS
 
 set stype $type
 if { $type == "atmosphere" } { set stype "volume" }
@@ -352,8 +423,10 @@ addCommand $w c1 "Set new shader." "shader_setNew $w $type $stype"
 
 addCommand $w c2 "Delete shader." "undo save; shaderSet $type; plb_update"
 
-if { $AYUSESLCARGS != 0 } {
+if { $ay(slcext) != ".xml" } {
     addCommand $w c3 "Default Values." "shader_setDefaults $type;"
+} else {
+    addCommand $w c3 "Default Values." "shader_setDefaultsXML $type;"
 }
 if { $ay_shader(Name) == "" } { return; }
 
