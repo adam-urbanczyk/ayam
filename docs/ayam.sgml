@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>25. Mar 2003
+<date>14. Apr 2003
 <abstract>
 This is the documentation of Ayam (1.5) - a free 3D modeling environment
 for the RenderMan interface.
@@ -495,16 +495,18 @@ loops, or faces. Normally, the currently selected PolyMesh objects will not
 be changed by this tool. But you may let the merge-tool delete them
 immediately, if you enable the <tt/RemoveMerged/-option.
 If the <tt/OptimizeNew/-option is enabled, the <tt/Optimize/-tool
-(see below) will be started with the newly created merged object.
+(see below) will be started after the merge operation with the
+newly created merged object as argument.
 <item><tt/Optimize/: optimizes the selected PolyMesh object(s)
-by removing all doubly used control points (if the option
-<tt/OptimizeCoords/ is enabled) or doubly used faces (not implemented yet).
+by removing all multiply used control points (if the option
+<tt/OptimizeCoords/ is enabled) or multiply used faces (not implemented yet).
 If the option <tt/IgnoreNormals/ is enabled, the optimize-tool will
 consider points with equal coordinates but differing normals
 to be equal (and optimize them).
-Removing doubly used control points using the <tt/Optimize/-tool
+Removing multiply used control points using the <tt/Optimize/-tool
 may decrease the memory consumption of the control points
-by a factor of about six.
+by a factor of about six, depending on the connectivity of the original
+mesh.
 </itemize>
 <item><tt/Show/, <tt/Hide/ set and unset the <tt/Hide/
 attribute of the selected object(s) thus making them invisible.
@@ -514,18 +516,20 @@ activated.
 <item><tt/Show All/ and <tt/Hide All/ set and unset the <tt/Hide/
 attribute of all objects in the scene (including the root object
 and all views!) regardles of the currently selected objects (and
-without changing the current selection).
+without changing the current selection). These operations are
+not undoable.
 <item><tt/Convert/, starts the convert action that has been
 registered for the type of the selected object(s). The exact
 behaviour depends on the type of the selected object(s):
 Instances are e.g. resolved to normal objects in place but
 Revolve objects will be converted to simple NURBS patches without
-destroying the original objects.
+destroying the original objects. This operation is
+not undoable.
 <item><tt/Force Notification/, force the notification callbacks of
 all selected objects (or all objects in the scene if no objects are selected)
 to be called. The notification callbacks are used by objects
 like e.g. Revolve to be informed about changes of their child
-objects and properly adapt to those changes.
+objects to properly adapt to those changes.
 </itemize>
 
 <label id="mmcustom">
@@ -2935,17 +2939,24 @@ outlines of the patch (OutlinePatch). The default setting
 <sect1>Trim Curves<label id="trim">
 <p>
 Trim curves may be used to cut out certain parts of a NURBS patch.
-They are simple NURBS curves, but some special restrictions apply.
+They are simple 2D NURBS curves defined in the parametric space
+of the associated NURBS patch. Trim curves have to be defined as child
+objects of the NURBS patch object they belong to. In contrast to other
+child objects, however, they do not inherit the transformation attributes
+of the parent object. Trim curve editing should take place in views
+of type <tt>Trim</tt>, that draw the boundaries of the parametric
+space of the corresponding NURBS patch as rectangle, but otherwise
+act as normal <tt>Front</tt> views.
 
 Note, that the direction of the trim curve determines which part of
 the NURBS patch should be cut out. You can use the <tt/Revert/ tool
 (<tt>Tools/NURBCurve</tt> menu) to easily change the direction
 of a trim curve.
 
-What are the restrictions, that have been mentioned earlier?
+Some special restrictions apply to trim curves:
 <itemize>
 <item>All trim curves should entirely lie in the (u,v) parameter
-space of the NURBS patch (remember the rectangle in the Trim view).
+space of the NURBS patch (remember the rectangle in the <tt>Trim</tt> view).
 Note, that this restriction does not apply to the control points,
 but the curves! It is ok to have control points outside the
 rectangle if the defined curve is inside the rectangle.
@@ -2973,15 +2984,14 @@ to render the patch with BMRT but it should not hurt if it is present.
 Note, that Ayam is not checking whether your trim curves
 follow these rules!
 
-Warning, certain OpenGL implementations may be easily crashed
+Warning: Certain OpenGL implementations may be easily crashed
 with trimmed NURBS patches with curves that do not follow the
 aforementioned rules! When in doubt or while heavy modeling,
-switch off shading temporarily
+switch to wireframe drawing and switch off shading temporarily
 and you will be on the safe side.
 
-Also note, that MesaGLU is currently not able to draw trimmed
-NURBS patches.
-If you need this, you should use a better or real OpenGL.
+Since Ayam V1.5 also NURBS curve providing objects are supported
+as trim curves.
 
 <sect1>BPatch Object<label id="bpatchobj">
 <p>
@@ -3169,7 +3179,6 @@ be recursive instancing, which is not supported by Ayam).
 <item>The original object may not be deleted from the scene
 as long as there are instances of that object in the scene or in the
 object clipboard.
-<item>Instancing cannot be used with trim curves/loops currently.
 </itemize>
 
 If you cannot delete an object, and the error message tells
@@ -3201,7 +3210,7 @@ using the preference setting <tt/"ResInstances"/.
 If <tt/"ResInstances"/ is enabled, all instances will be resolved
 (temporarily) before being exported to RIB.
 <p>
-Ayam may create instances automatically (see section
+Ayam can also create instances automatically (see section
 <ref id="ai" name="Automatic Instancing">).
 <p>
 To easily find the master object of an instance, just select the
