@@ -153,7 +153,8 @@ proc onio_export { } {
 	    set oldcd [pwd]
 	    cd [file dirname $onio_options(FileName)]
 
-	    onioWrite [file tail $onio_options(FileName)]
+	    onioWrite [file tail $onio_options(FileName)]\
+		    -c $onio_options(WriteCurves)
 
 	    cd $oldcd
 	    goTop
