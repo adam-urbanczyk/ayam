@@ -93,6 +93,8 @@ int ay_comp_birail2(ay_object *o1, ay_object *o2);
 
 int ay_comp_extrnc(ay_object *o1, ay_object *o2);
 
+int ay_comp_script(ay_object *o1, ay_object *o2);
+
 
 /* functions */
 
@@ -1078,6 +1080,33 @@ ay_comp_birail2(ay_object *o1, ay_object *o2)
 } /* ay_comp_birail2 */
 
 
+/* ay_comp_script:
+ *
+ */
+int
+ay_comp_script(ay_object *o1, ay_object *o2)
+{
+ ay_script_object *s1, *s2;
+
+  s1 = (ay_script_object *)o1->refine;
+  s2 = (ay_script_object *)o2->refine;
+
+  if((s1->type != s2->type))
+    return AY_FALSE;
+
+  if(s1->script == NULL && s2->script != NULL)
+    return AY_FALSE;
+
+  if(s1->script != NULL && s2->script == NULL)
+    return AY_FALSE;
+
+  if(s1->script && s2->script && strcmp(s1->script, s2->script))
+    return AY_FALSE;
+
+ return AY_TRUE;
+} /* ay_comp_script */
+
+
 /* ay_comp_extrnc:
  *
  */
@@ -1199,7 +1228,7 @@ ay_comp_init()
   ay_status = ay_comp_register(ay_comp_birail1, AY_IDBIRAIL1);
   ay_status = ay_comp_register(ay_comp_birail2, AY_IDBIRAIL2);
   ay_status = ay_comp_register(ay_comp_extrnc, AY_IDEXTRNC);
-
+  ay_status = ay_comp_register(ay_comp_script, AY_IDSCRIPT);
 
  return ay_status;
 } /* ay_comp_init */
