@@ -505,6 +505,7 @@ ay_read_scene(Tcl_Interp *interp, char *filename, int insert)
   if(ay_status == AY_EEOF)
     ay_status = AY_OK;
 
+  fclose(fileptr);
 
   /* link instance objects to their originals */
   /* clear hashtable of oid ptrs */
