@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile.wrapped [14. Dec 2002]
+# Makefile.wrapped [17. Dec 2002]
 # Makefile for Ayam (wrapped version)
 
 # Choose an installation prefix.
@@ -350,7 +350,6 @@ ADDLIB =
 
 
 # Ayslx Plugin
-AQSISDIR = /usr/local/aqsis
 AYSLXINCDIR = $(AQSISDIR)/include
 AYSLXLIBS = $(AQSISDIR)/lib/rcdummy.o $(AQSISDIR)/lib/libshadervm.so $(AQSISDIR)/lib/libshaderexecenv.so $(AQSISDIR)/lib/libslxargs.so $(AQSISDIR)/lib/libaqsistypes.so
 
