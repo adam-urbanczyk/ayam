@@ -642,8 +642,6 @@ typedef struct ay_birail1_object_s
 {
  ay_object *npatch;
 
- int rotate;
- int interpolate;
  int close;
  int sections;
 
