@@ -1,11 +1,17 @@
-[28. Dec 2004] CVS-Head:
+[2. Jan 2005] CVS-Head:
 o bug fixes:
   - fixed "setPnt/getPnt" scripting interface commands for NURBS patches
     with differing width and height (SF 1091407)
 o added a new object type "Script", that executes small Tcl scripts to
   create complex objects, modify objects or do other things
-o added tag type "NS" that may contain small Tcl scripts to be exectuted
+o added example scripts for the new Script object type to the "scripts"
+  sub-directory
+o added tag type "NS" that may contain small Tcl scripts to be executed
   when the notification callback fires
+o added support for the extraction of curves at arbitrary parametric values
+  to the ExtrNC object type
+o improved extraction of curves from transformed patches; the transformations
+  are now copied to the curve and not applied to the control points
 
 
 [29. Oct 2004] Ayam 1.8:
