@@ -48,8 +48,13 @@ $m add command -label "New"\
 	}
 	set ay(filename) ""
 	wm title . "Ayam - Main"
-	uS;
-	rV;
+	goTop
+	selOb
+	set ay(CurrentLevel) "root"
+	set ay(SelectedLevel) "root"
+	update
+	uS
+	rV
 	set ay(sc) 0
 	update
 	foreach view $ay(views) { viewBind $view }
