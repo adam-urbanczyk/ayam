@@ -151,9 +151,16 @@ ay_shade_view(struct Togl *togl)
       view->dirty = AY_FALSE;
     }
 
+  /* draw background image */
   if(view->drawbg)
     {
       ay_draw_bgimage(togl);
+    }
+
+  /* draw grid */
+  if(view->drawgrid)
+    {
+      ay_draw_grid(togl);
     }
 
   glEnable(GL_DITHER);
