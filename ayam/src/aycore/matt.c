@@ -403,6 +403,7 @@ ay_matt_wrib(char *file, ay_mat_object *m)
     {
       if(m->true_displacement)
 	{
+	  RiDeclare((RtToken)"truedisplacement", "string");
 	  RiAttribute("render", "truedisplacement", &on, RI_NULL);
 	}
 
@@ -423,12 +424,15 @@ ay_matt_wrib(char *file, ay_mat_object *m)
       dbound = (RtFloat)m->dbound_val;
       if(dbound != 0.0)
 	{
+	  RiDeclare((RtToken)"coordinatesystem", "string");
+	  RiDeclare((RtToken)"sphere", "float");
 	  RiAttribute("displacementbound", "coordinatesystem",
 		      (RtPointer)&str, "sphere", &dbound, RI_NULL);
 	}
 
       if(m->cast_shadows)
 	{
+	  RiDeclare((RtToken)"casts_shadows", "string");
 	  if(m->cast_shadows == 1)
 	    RiAttribute("render", "casts_shadows",
 			(RtPointer)&nonstr, RI_NULL);
@@ -454,7 +458,7 @@ ay_matt_wrib(char *file, ay_mat_object *m)
 	  if(m->shadow)
 	    itemp += 4;
 
-
+	  RiDeclare((RtToken)"visibility", "int");
 	  RiAttribute("render", "visibility", (RtPointer)&itemp, RI_NULL);
 
 	} /* if */
