@@ -257,6 +257,7 @@ AYAMOBJS = aycore/bbc.o\
 	aycore/prop.o\
 	aycore/provide.o\
 	aycore/prefs.o\
+	aycore/pv.o\
 	aycore/quat.o\
 	aycore/read.o\
 	aycore/riattr.o\

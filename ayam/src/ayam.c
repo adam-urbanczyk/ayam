@@ -99,6 +99,8 @@ char *ay_riopt_tagtype;
 
 char *ay_tc_tagtype;
 
+char *ay_pv_tagtype;
+
 char *ay_ridisp_tagtype;
 
 char *ay_rihider_tagtype;
@@ -216,6 +218,9 @@ ay_init(Tcl_Interp *interp)
 
   /* initialize tc tag helper module */
   ay_tc_init(interp);
+
+  /* initialize pv tag helper module */
+  ay_pv_init(interp);
 
   /* initialize rioption tag helper module */
   ay_riopt_init(interp);
