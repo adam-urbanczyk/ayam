@@ -115,12 +115,12 @@ proc render_select { } {
 
 	    2 {
 		# Aqsis
-		set ayprefs(QRender) "aqsis -fb %s"
-		set ayprefs(QRenderPT) "Done computing %d"
-		set ayprefs(Render) "aqsis -fb %s"
-		set ayprefs(RenderPT) "Done computing %d"
-		set ayprefs(SMRender) "aqsis %s"
-		set ayprefs(SMRenderPT) "Done computing %d"
+		set ayprefs(QRender) "aqsis -progress -fb %s"
+		set ayprefs(QRenderPT) "Done Computing %d"
+		set ayprefs(Render) "aqsis -progress -fb %s"
+		set ayprefs(RenderPT) "Done Computing %d"
+		set ayprefs(SMRender) "aqsis -progress %s"
+		set ayprefs(SMRenderPT) "Done Computing %d"
 		set ayprefs(RenderMode) 0
 		set splugin "ayslx"
 		if { $ay(ScanShaders) == 1 } {
