@@ -289,9 +289,11 @@ array set ayviewshortcuts {
 
     RotMod "Alt"
     RotModKey "Alt_L"
+    RotButton "1"
 
     ZoomRMod "Shift"
     ZoomRModKey "Shift_L"
+    ZoomRButton "1"
 
     Pick "P"
 }
