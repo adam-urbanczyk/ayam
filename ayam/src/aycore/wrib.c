@@ -1090,6 +1090,13 @@ ay_wrib_lights(char *file, ay_object *o)
 	{
 	  light = (ay_light_object *)o->refine;
 
+	  /* write tags */
+	  if(o->tags)
+	    {
+	      RiAttributeBegin();
+	      ay_status = ay_riattr_wrib(o);
+	    }
+
 	  RiTransformBegin();
 
 	  /* write transformation */
@@ -1303,6 +1310,11 @@ ay_wrib_lights(char *file, ay_object *o)
 	    } /* switch */
 
 	  RiTransformEnd();
+
+	  if(o->tags)
+	    {
+	      RiAttributeEnd();
+	    }
 	} /* if */
       o = o->next;
     } /* while */
@@ -1442,7 +1454,7 @@ ay_wrib_scene(char *file, char *image, double *from, double *to,
   RiFrameBegin((RtInt)ay_wrib_framenum++);
 
    if(!image) /* render to image file or to frame buffer? */
-     RiDisplay(RI_NULL, RI_FRAMEBUFFER, RI_RGBA, RI_NULL);
+     RiDisplay(/*RI_NULL*/"dummy", RI_FRAMEBUFFER, RI_RGBA, RI_NULL);
    else
      RiDisplay(image, RI_FILE, RI_RGBA, RI_NULL);
 
