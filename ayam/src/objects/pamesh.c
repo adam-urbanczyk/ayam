@@ -915,7 +915,9 @@ ay_pamesh_wribcb(char *file, ay_object *o)
  RtBasis *ubasisptr, *vbasisptr;
  RtBasis ubasis, vbasis;
  RtFloat *controls = NULL;
- int i = 0, j = 0, a = 0, b = 0;
+ RtToken *tokens = NULL;
+ RtPointer *parms = NULL;
+ int i = 0, j = 0, a = 0, b = 0, n = 0, pvc = 0;
 
   if(!o)
     return AY_OK;
@@ -1036,8 +1038,38 @@ ay_pamesh_wribcb(char *file, ay_object *o)
       RiBasis(*ubasisptr, ustep, *vbasisptr, vstep);
     }
 
-  RiPatchMesh(type, nu, uwrap, nv, vwrap, "Pw", controls, NULL);
+  /* Do we have any primitive variables? */
+  if(!(pvc = ay_pv_count(o)))
+    {
+      /* No */
+      RiPatchMesh(type, nu, uwrap, nv, vwrap, "Pw", controls, NULL);
+    }
+  else
+    {
+      /* Yes, we have primitive variables. */
+      if(!(tokens = calloc(pvc+1, sizeof(RtToken))))
+	return AY_EOMEM;
 
+      if(!(parms = calloc(pvc+1, sizeof(RtPointer))))
+	return AY_EOMEM;
+
+      tokens[0] = "Pw";
+      parms[0] = (RtPointer)controls;
+
+      n = 1;
+      ay_pv_filltokpar(o, AY_TRUE, 1, &n, tokens, parms);
+
+      RiPatchMeshV(type, nu, uwrap, nv, vwrap, (RtInt)n, tokens, parms);
+
+      for(i = 1; i < n; i++)
+	{
+	  free(tokens[i]);
+	  free(parms[i]);
+	}
+
+      free(tokens);
+      free(parms);
+    } /* if */
   free(controls);
 
  return ay_status;

@@ -623,9 +623,12 @@ ay_sdmesh_wribcb(char *file, ay_object *o)
  RtToken holetoken = "hole", creasetoken = "crease", cornertoken = "corner",
    ibtoken = "interpolateboundary";
  RtInt *nargs = NULL, *intargs = NULL;
- RtFloat *floatargs = NULL; 
+ RtFloat *floatargs = NULL;
+ RtToken *tokens = NULL;
+ RtPointer *parms = NULL;
  unsigned int i = 0, a = 0;
  unsigned int total_verts = 0, total_intargs = 0, total_floatargs = 0;
+ int n = 0, pvc = 0;
 
   if(!o)
     return AY_OK;
@@ -676,7 +679,6 @@ ay_sdmesh_wribcb(char *file, ay_object *o)
 
   if(sdmesh->ntags > 0)
     {
-      /* export mesh with tags */
       if(!(tags = calloc(sdmesh->ntags, sizeof(RtToken))))
 	{
 	  free(controls); free(nverts); free(verts); return AY_EOMEM;
@@ -737,18 +739,68 @@ ay_sdmesh_wribcb(char *file, ay_object *o)
 	{
 	  floatargs[i] = (RtFloat)(sdmesh->floatargs[i]);
 	}
+    }
+  
+  /* Do we have any primitive variables? */
+  if(!(pvc = ay_pv_count(o)))
+    {
+      /* No */
 
-      RiSubdivisionMesh(scheme, (RtInt)sdmesh->nfaces, nverts, verts,
+      if(sdmesh->ntags > 0)
+	{
+	  /* export mesh with tags */
+	  RiSubdivisionMesh(scheme, (RtInt)sdmesh->nfaces, nverts, verts,
 			(RtInt)sdmesh->ntags, tags, nargs, intargs, floatargs,
-			"P", controls, NULL);
+			    "P", controls, NULL);
+	}
+      else
+	{
+	  /* export mesh without tags */
+	  RiSubdivisionMesh(scheme, (RtInt)sdmesh->nfaces, nverts, verts,
+			    (RtInt)0, NULL, NULL, NULL, NULL,
+			    "P", controls, NULL);
+	}
     }
   else
     {
-      /* export mesh without tags */
-      RiSubdivisionMesh(scheme, (RtInt)sdmesh->nfaces, nverts, verts,
-			(RtInt)0, NULL, NULL, NULL, NULL,
-			"P", controls, NULL);
-    }
+      /* Yes, we have primitive variables. */
+      if(!(tokens = calloc(pvc+1, sizeof(RtToken))))
+	return AY_EOMEM;
+
+      if(!(parms = calloc(pvc+1, sizeof(RtPointer))))
+	return AY_EOMEM;
+      
+      tokens[0] = "Pw";
+      parms[0] = (RtPointer)controls;
+
+      n = 1;
+      ay_pv_filltokpar(o, AY_TRUE, 1, &n, tokens, parms);
+
+      if(sdmesh->ntags > 0)
+	{
+	  /* export mesh with tags */
+	  RiSubdivisionMeshV(scheme, (RtInt)sdmesh->nfaces, nverts, verts,
+			(RtInt)sdmesh->ntags, tags, nargs, intargs, floatargs,
+			    (RtInt)n, tokens, parms);
+	}
+      else
+	{
+	  /* export mesh without tags */
+	  RiSubdivisionMeshV(scheme, (RtInt)sdmesh->nfaces, nverts, verts,
+			    (RtInt)0, NULL, NULL, NULL, NULL,
+			    (RtInt)n, tokens, parms);
+	} /* if */
+
+      for(i = 1; i < n; i++)
+	{
+	  free(tokens[i]);
+	  free(parms[i]);
+	}
+
+      free(tokens);
+      free(parms);
+
+    } /* if */
 
   /* clean up */
   free(controls);

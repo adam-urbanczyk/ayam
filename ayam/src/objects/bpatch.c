@@ -575,6 +575,9 @@ ay_bpatch_wribcb(char *file, ay_object *o)
 {
  ay_bpatch_object *bpatch = NULL;
  RtPoint rect[4];
+ RtToken *tokens = NULL;
+ RtPointer *parms = NULL;
+ int i, n = 0, pvc = 0;
 
   if(!o)
    return AY_ENULL;
@@ -598,7 +601,38 @@ ay_bpatch_wribcb(char *file, ay_object *o)
   rect[3][1] = (RtFloat)(bpatch->p3[1]);
   rect[3][2] = (RtFloat)(bpatch->p3[2]);
 
-  RiPatch(RI_BILINEAR, RI_P, (RtPointer)rect, RI_NULL);
+  /* Do we have any primitive variables? */
+  if(!(pvc = ay_pv_count(o)))
+    {
+      /* No */
+      RiPatch(RI_BILINEAR, RI_P, (RtPointer)rect, RI_NULL);
+    }
+  else
+    {
+      /* Yes, we have primitive variables. */
+      if(!(tokens = calloc(pvc+1, sizeof(RtToken))))
+	return AY_EOMEM;
+
+      if(!(parms = calloc(pvc+1, sizeof(RtPointer))))
+	return AY_EOMEM;
+
+      tokens[0] = "P";
+      parms[0] = (RtPointer)rect;
+
+      n = 1;
+      ay_pv_filltokpar(o, AY_TRUE, 1, &n, tokens, parms);
+
+      RiPatchV(RI_BILINEAR, (RtInt)n, tokens, parms);
+
+      for(i = 1; i < n; i++)
+	{
+	  free(tokens[i]);
+	  free(parms[i]);
+	}
+
+      free(tokens);
+      free(parms);
+    } /* if */
 
  return AY_OK;
 } /* ay_bpatch_wribcb */
