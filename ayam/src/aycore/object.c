@@ -323,6 +323,13 @@ ay_object_deletetcmd(ClientData clientData, Tcl_Interp *interp,
   /* clear all cached pointers to scene hierarchy */
   ay_status = ay_object_ccp(NULL);
 
+  /* free point selection */
+  if(ay_point_edit_coords)
+    free(ay_point_edit_coords);
+
+  ay_point_edit_coords = NULL;
+
+  /* free selection */
   ay_sel_free(AY_FALSE);
 
   ay_notify_parent();
