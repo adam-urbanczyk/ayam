@@ -1,4 +1,4 @@
-INSTALL [1. Sep 2001]
+INSTALL [21. Feb 2002]
 
 Compilation Instructions for Ayam
 ---------------------------------
@@ -184,6 +184,98 @@ Now Ayam should be compiled and ready for a test run.
 
 If all went fine, you can now install Ayam:
 >make install
+
+
+3. Additional Targets
+---------------------
+
+Independent from the build type of Ayam, the Makefiles contain
+additional targets to build plugins and manage installation.
+
+3.1 MF3D Import/Export plugin
+-----------------------------
+
+To compile the MF3D Import/Export plugin two steps are required:
+>make mf3d
+(to compile the MF3D code from Apple (Duet)
+and
+>make mfio.so
+(to compile the plugin)
+
+Load it via menu entry "File/Load Custom".
+Use it via menu entry "Custom/3DMF/Import" and "Custom/3DMF/Export"
+respectively.
+
+
+3.3 RIB import plugin
+---------------------
+
+Additional prerequisites for the RIB import plugin:
+You need the full Affine distribution
+(download it from http://www.affine.com/)!
+
+Compile libribrdr.a, libribhash.a and libribnop.a.
+This is done using 
+>cd affine
+
+
+>make setup<your platform>
+(use sun as platform on Linux)
+
+If you are using Affine0008 you need to tune the Makefile now to not
+use libz:
+remove -DRIB_ZLIB from COPTS and do not link with libz.
+
+If you are using Affine0008 and gcc you, additionally, need to change
+readrib/declare.c:
+change all occurences of the variable "inline" to "myinline"
+
+now compile Affine:
+>make World
+
+go back to Ayam:
+>cd ayam/src
+Point your Ayam Makefile to the Affine libraries,
+see the variable RRIBLIBS.
+Watch out for possible version clashes of header files
+(ayam/src/affine/include vs. affine/include).
+The version of the Affine headers currently distributed with Ayam
+is 0008. If needed, just copy the headers from the Affine distribution
+to the Ayam distribution.
+
+Now compile the plugin:
+>make rrib.so
+
+Load it via menu entry "File/Load Custom".
+Use it via menu entry "Custom/RRIB/Import RIB"
+
+3.3 Importance Driven Rendering
+-------------------------------
+
+Additional prerequisites to compile IDR are:
+libtiff library and libtiff headers have to be installed.
+
+>make idr.so
+
+Load it via menu entry "File/Load Custom".
+Use it via menu entry "Custom/Open IDR".
+
+3.4 Installing/Uninstalling
+---------------------------
+
+Use
+>make clean
+to remove objects; this step is necessary if you switch build types
+(shared->wrapped)!
+
+>make mostlyclean
+to additionally remove even the objects that never change (Apples mf3d code).
+
+>make install
+to install Ayam into the system.
+
+>make uninstall
+to remove all previously installed files from the system.
 
 End of Compilation Instructions
 
