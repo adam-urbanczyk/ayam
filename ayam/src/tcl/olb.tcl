@@ -54,6 +54,39 @@ bind $f.li <ButtonPress-5> {
     break
 }
 
+# olb context menu
+set m [menu $ay(olb).popup -tearoff 0]
+$m add command -label "Switch to Tree" -command\
+ "  cS; uS;\
+    olb_close $w;\
+    tree_open $w;\
+    tree_update root;\
+    plb_update;\
+    set ay(CurrentLevel) \"root\";\
+    set ay(SelectedLevel) \"root\";\
+    tree_paintLevel \"root\";\
+    set ay(DropActive) 0;\
+    rV"
+$m add separator
+$m add command -label "Copy Object" -command ".fu.fMenu.ed.m invoke 0"
+$m add command -label "Cut Object" -command ".fu.fMenu.ed.m invoke 1"
+$m add command -label "Paste Object" -command ".fu.fMenu.ed.m invoke 2"
+#$m add command -label "Paste (Move)" -command "cmovOb;uS;rV"
+$m add separator
+$m add command -label "Delete Object" -command ".fu.fMenu.ed.m invoke 3"
+
+bind $ay(olb) <ButtonPress-3> {
+    global ay
+
+    set xy [winfo pointerxy .]
+    set x [lindex $xy 0]
+    set y [lindex $xy 1]
+
+    tk_popup $ay(olb).popup $x $y
+    return;
+}
+
+
 # scrollbar
 set ay(olbs) $f.s
 scrollbar $f.s -command {global ay; $ay(olb) yview} -takefocus 0
