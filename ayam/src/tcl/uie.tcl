@@ -7,7 +7,7 @@
 #
 # See the file License for details.
 
-# Property User Interface Elements
+# User Interface Elements for Property GUIs and Preferences
 
 
 # 
@@ -55,9 +55,9 @@ set bw 1
 
 set f [frame $w.f${name} -relief sunken -bd $bw]
 
-label $f.l -width 12 -text ${name}:
+label $f.l -width 14 -text ${name}:
 
-if {[string length ${name}] > 11} {
+if {[string length ${name}] > 12} {
     balloon_set $f.l ${name}
 }
 
@@ -72,7 +72,7 @@ bind $f.e <Key-Escape> {resetFocus}
 button $f.b2 -pady 1 -bd $bw -text "*2"  -command "updateParam $w $prop $name *2" -takefocus 0 -highlightthickness 0
 set mb ""
 if { $def != {} } {
-    set mb [menubutton $f.b3 -pady 1 -bd $bw -text "Def" -takefocus 0\
+    set mb [menubutton $f.b3 -pady 2 -bd $bw -text "Def" -takefocus 0\
 	    -highlightthickness 0 -relief raised -menu $f.b3.m]
     set m [menu $mb.m -tearoff 0]
     foreach val $def {
@@ -89,8 +89,13 @@ if { $tcl_platform(platform) == "windows" } {
     pack $f.b2 -in $f -side left -pady 0 -fill x -expand yes
     if { $mb != "" } { pack $mb -side left -pady 0 -fill both -expand yes}
 } else {
-    pack $f.l $f.b1 $f.e $f.b2 -in $f -side left -fill both -expand yes
-    if { $mb != "" } { pack $mb -side left -fill both -expand yes}
+    $f.b1 configure -highlightthickness 1
+    $f.b2 configure -highlightthickness 1
+    if { $def != {} } { $mb configure -highlightthickness 1 }
+    pack $f.l $f.b1 -in $f -side left -fill x -expand no
+    pack $f.e -in $f -side left -fill x -expand yes
+    pack $f.b2 -in $f -side left -fill x -expand no
+    if { $mb != "" } { pack $mb -side left -fill x -expand no}
 }
 pack $f -in $w -side top -fill x
 return;
@@ -134,7 +139,7 @@ set bw 1
 
 set f [frame $w.f${name} -relief sunken -bd $bw]
 
-label $f.l -width 12 -text ${name}:
+label $f.l -text ${name}:
 
 for { set i 0 } { $i < 16 } { incr i } {
     lappend omitl ${name}_$i
@@ -366,10 +371,10 @@ proc addCheck { w prop name } {
 
     set f [frame $w.f${name} -relief sunken -bd $bw]
 
-    label $f.l -width 12 -text ${name}:
+    label $f.l -width 14 -text ${name}:
     bind $f.l <Double-ButtonPress-1> "pclip_toggleomit $f.l $name"
 
-    if {[string length ${name}] > 11} {
+    if {[string length ${name}] > 12} {
 	balloon_set $f.l ${name}
     }
 
@@ -392,7 +397,7 @@ proc addCheck { w prop name } {
 	eval [subst "bindtags $ff.cb \{$ff.cb Checkbutton all\}"]
 	bind $ff.cb <Key-Escape> {resetFocus}
     } else {
-	checkbutton $f.cb -variable ${prop}(${name}) -bd $bw -pady 1
+	checkbutton $f.cb -variable ${prop}(${name}) -bd $bw -pady 1 -padx 30
 	pack $f.l -in $f -side left
 	pack $f.cb -in $f -side left -fill x -expand yes
 
@@ -439,10 +444,10 @@ proc addMenu { w prop name elist } {
 
     set f [frame $w.f${name} -relief sunken -bd $bw]
 
-    label $f.l -width 12 -text ${name}:
+    label $f.l -width 14 -text ${name}:
     bind $f.l <Double-ButtonPress-1> "pclip_toggleomit $f.l $name"
 
-    if {[string length ${name}] > 11} {
+    if {[string length ${name}] > 12} {
 	balloon_set $f.l ${name}
     }
 
@@ -500,10 +505,10 @@ proc addString { w prop name  {def {}}} {
 
     set f [frame $w.f${name} -relief sunken -bd $bw]
     
-    label $f.l -width 12 -text ${name}:
+    label $f.l -width 14 -text ${name}:
     bind $f.l <Double-ButtonPress-1> "pclip_toggleomit $f.l $name"
 
-    if {[string length ${name}] > 11} {
+    if {[string length ${name}] > 12} {
 	balloon_set $f.l ${name}
     }
 
@@ -579,10 +584,10 @@ proc addFile { w prop name {def {}} } {
 
     set f [frame $w.f${name} -relief sunken -bd $bw]
 
-    label $f.l -width 10 -text ${name}:
+    label $f.l -width 14 -text ${name}:
     bind $f.l <Double-ButtonPress-1> "pclip_toggleomit $f.l $name"
 
-    if {[string length ${name}] > 10} {
+    if {[string length ${name}] > 12} {
 	balloon_set $f.l ${name}
     }
 
@@ -618,9 +623,9 @@ proc addFile { w prop name {def {}} } {
     }
     # if
 
-    pack $f.l -in $f -side left -fill x
+    pack $f.l -in $f -side left -fill x -expand no
     pack $f.e -in $f -side left -fill both -expand yes
-    pack $f.b -in $f -side left -fill x
+    pack $f.b -in $f -side left -fill x -expand no
 
     if { $mb != "" } { 
 	if { $tcl_platform(platform) == "windows" } {
@@ -658,10 +663,10 @@ proc addMDir { w prop name } {
 
     set f [frame $w.f${name} -relief sunken -bd $bw]
 
-    label $f.l -width 10 -text ${name}:
+    label $f.l -width 14 -text ${name}:
     bind $f.l <Double-ButtonPress-1> "pclip_toggleomit $f.l $name"
 
-    if {[string length ${name}] > 10} {
+    if {[string length ${name}] > 12} {
 	balloon_set $f.l ${name}
     }
 
@@ -688,9 +693,9 @@ proc addMDir { w prop name } {
 	  eval balloon_setsplit $f.e \[list \$${prop}($name)\] 15;
 	};
 	" 
-    pack $f.l -in $f -side left -fill x
-    pack $f.b -in $f -side right -fill x
+    pack $f.l -in $f -side left -fill x -expand no
     pack $f.e -in $f -side left -fill both -expand yes
+    pack $f.b -in $f -side left -fill x -expand no
     pack $f -in $w -side top -fill x
 
  return;
@@ -719,10 +724,10 @@ proc addMFile { w prop name } {
 
     set f [frame $w.f${name} -relief sunken -bd $bw]
 
-    label $f.l -width 10 -text ${name}:
+    label $f.l -width 14 -text ${name}:
     bind $f.l <Double-ButtonPress-1> "pclip_toggleomit $f.l $name"
 
-    if {[string length ${name}] > 10} {
+    if {[string length ${name}] > 12} {
 	balloon_set $f.l ${name}
     }
 
@@ -752,8 +757,8 @@ proc addMFile { w prop name } {
 	" 
 
     pack $f.l -in $f -side left -fill x
-    pack $f.b -in $f -side right -fill x
     pack $f.e -in $f -side left -fill both -expand yes
+    pack $f.b -in $f -side left -fill x
     pack $f -in $w -side top -fill x
 
  return;
@@ -803,7 +808,7 @@ proc addText { w name text} {
 
     label $f.l -text $text
 
-    pack $f.l -in $f
+    pack $f.l -in $f -side left -fill x -expand yes
     pack $f -in $w -side top
 
  return;
@@ -829,10 +834,14 @@ proc addInfo { w prop name } {
     set bw 1
     set f [frame $w.f${name} -relief sunken -bd $bw]
 
-    label $f.l1 -width 10 -text ${name}:
+    label $f.l1 -width 14 -text ${name}:
+    if {[string length ${name}] > 12} {
+	balloon_set $f.l1 ${name}
+    }
     label $f.l2 -textvariable ${prop}(${name})
 
-    pack $f.l1 $f.l2 -in $f -side left
+    pack $f.l1 -in $f -side left -fill x -expand no
+    pack $f.l2 -in $f -side left -fill x -expand yes
     pack $f -in $w -side top -fill x
 
  return;

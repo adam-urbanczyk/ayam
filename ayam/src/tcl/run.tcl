@@ -48,8 +48,8 @@ foreach i $argvars {
     # create GUI
     set f2 [frame $f.f$index]
 
-    label $f2.l -text [lindex $argstrings $index ] -width 12
-    entry $f2.e -width 12
+    label $f2.l -text [lindex $argstrings $index ] -width 14
+    entry $f2.e -width 14
 
     eval [subst "$f2.e insert @0 \$$i"]
 
