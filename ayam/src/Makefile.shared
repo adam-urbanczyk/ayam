@@ -318,6 +318,7 @@ AYAMOBJS = aycore/bbc.o\
 	aycore/tags.o\
 	aycore/tc.o\
 	aycore/tcmd.o\
+	aycore/tgui.o\
 	aycore/toglcb.o\
 	aycore/tmp.o\
 	aycore/trafo.o\
