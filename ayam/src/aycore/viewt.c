@@ -11,8 +11,11 @@
  */
 
 #include "ayam.h"
+
+#ifndef AYNOUNISTDH
 #include <sys/times.h>
 #include <unistd.h>
+#endif
 
 /* viewt.c - view tools */
 
@@ -792,10 +795,15 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
  double old_rect_xmin, old_rect_ymin, old_rect_xmax, old_rect_ymax;
  double temp[3] = {0};
  int i = 2;
- static int kbdrot_in_progress = AY_FALSE;
+ int kbdrot_in_progress = AY_FALSE;
  char arg1[] = "save", arg2[] = "RotViewX", arg3[] = "RotViewY";
  char *tclargv[3] = {0};
+#ifndef AYNOUNISTDH
  static clock_t t_lastcalled = 0, t_current = 0;
+#endif
+#ifdef WIN32
+ static DWORD t_lastcalled = 0, t_current = 0;
+#endif
 
 #ifndef AYNOUNISTDH
   t_current = times(NULL);
@@ -804,6 +812,25 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
     {
     /*printf("%g\n",(double)(t_current-t_lastcalled)/(sysconf(_SC_CLK_TCK)));*/
       if((double)(t_current-t_lastcalled)/sysconf(_SC_CLK_TCK) < 0.1)
+	{
+	  kbdrot_in_progress = AY_TRUE;
+	}
+      else
+	{
+	  kbdrot_in_progress = AY_FALSE;
+	}
+    }
+  else
+    {
+      kbdrot_in_progress = AY_FALSE;
+    }
+#endif
+#ifdef WIN32
+  t_current = GetTickCount(void);
+
+  if(t_lastcalled != 0)
+    {
+      if((t_current-t_lastcalled) < 100)
 	{
 	  kbdrot_in_progress = AY_TRUE;
 	}
@@ -1291,11 +1318,14 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 
   ay_viewt_uprop(view);
 
-#ifndef AYNOUNISTDH
   /* save point in time where we return control to Tcl; we use this
      to detect whether the user holds down a key if we are called
      in the future again */
+#ifndef AYNOUNISTDH
   t_lastcalled = times(NULL);
+#endif
+#ifdef WIN32
+  t_lastcalled = GetTickCount(void);
 #endif
 
  return TCL_OK;
