@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>2. Feb 2005
+<date>12. Mar 2005
 <abstract>
 This is the documentation of Ayam (1.8) - a free 3D modeling environment
 for the RenderMan interface.
@@ -4599,6 +4599,100 @@ the size of a box, that will be drawn as a geometric
 representation of the RIB.
 </itemize>
 
+
+<sect1>Script Object<label id="scriptobj">
+<p>
+Script objects are the most flexible object type of Ayam.
+They may be used to create new objects, modify existing objects,
+or realise mechanisms like constraints.
+<p>
+Theoretically, the scripts can use any functionality from Tcl and
+the Tcl scripting interface of Ayam (see also section
+<ref id="script" name="The Tcl Scripting Interface">). However,
+certain script object types may impose special constraints.
+<p>
+For security reasons, if scene files containing script objects are
+loaded, Ayam will raise a warning offering to disable all script
+objects that will be read.
+<p>
+The script will be run each time it is modified
+and each time the notification callback of the object is called
+(e.g. because one of the children of the script object changed).
+As long as the script of a script object is executed, Ayam will
+not process any events except for checking whether the script emergency
+hotkey <tt/&lt;Ctrl+Shift+c&gt;/, that may also be used to
+escape from infinite loops in the Ayam console, is pressed.
+Calling commands and procedures that lead to the processing of
+events or that are slow because they manipulate or update the
+GUI of Ayam should be avoided. In particular, the following
+procedures and commands should not be used: uS, uCR, uCL, sL, selOb,
+plb_update, cutOb, copOb, delOb, undo.
+<p>
+The binary and source distributions of Ayam contain several example
+scripts for script objects in the <tt>"ayam/bin/scripts"</tt> and
+<tt>"ayam/src/scripts"</tt> directories, respectively.
+<p>
+The next section discusses the available script object types and
+additional controlling parameters.
+
+<sect2>ScriptAttr Property<label id="scriptattr">
+<p>
+<itemize>
+<item>If <tt/"Active"/ is disabled, the script will not be run.
+<item><tt/"Type"/ is the type of the script object.
+Three types of script objects are currently available:
+<itemize>
+<item><tt/"Run"/, the script will be run and no special action will
+take place.
+
+<item><tt/"Create"/, the script will be run and will create and
+parameterise a single new object. After running the script, the new
+created object will automatically be copied into the internal data
+structure of the script object. The script object will look like
+and act as an object of the type that the script created.
+If the script creates e.g. a NURBCurve object, the script object may
+be used as parameter object of a tool object that needs a NURBCurve,
+e.g. a Sweep:
+<code>
++-Sweep
+ | Cross_Section(Script)
+ \ Path(NCurve)
+</code>
+The newly created object has to be selected for parameterisation
+and copying. The selection should be done using the new scripting
+interface command <tt/"hSL"/.
+
+<item><tt/"Modify"/, if the script object has child objects,
+these child objects will be copied into the internal data
+structure of the script object. A selection of the copied objects
+will be established, then the script will be run. Usually, the
+script modifies one of the selected objects (moves control points,
+adds tags, or does something similar). Note that the original
+child objects will not be modified.
+If certain actions in the script shall be restricted to
+one of the child objects of the script object, the
+<tt/"withOb"/ command may be used to accomplish this easily.
+The script object will look like and act as an object of the type
+of the first child object of the script object.
+If the script object has e.g. a NURBCurve object as first child, the
+script object may be used as parameter object of a tool object that
+needs a NURBCurve, e.g. a Sweep:
+<code>
++-Sweep
+ +-Cross_Section(Script)
+ | \ NCurve
+ \ Path(NCurve)
+</code>
+</itemize>
+<item><tt/"Script"/ is the script code. The widget is a standard
+Tcl text widget that allows to directly edit the code. It is
+also possible to edit the code in an external editor and
+copy it to the script object using the clipboard and the
+context menu entry <tt/"Paste (Replace)"/.
+</itemize>
+
+
+
 <sect1>Custom Objects<label id="customobj">
 <p>
 What is a custom object?
@@ -7018,6 +7112,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <itemize>
 <item>About: <ref id="mmhelp" name="main menu entry">
 <item>Action: <ref id="iac" name="interactive actions">
+<item>Active: <ref id="scriptattr" name="script attribute">
 <item>Adaptive: <ref id="moattr" name="MetaObj attributes">
 <item>Algorithm: <ref id="aycsg" name="AyCSG plugin option">
 <item>Align to Parent: <ref id="vmconf" name="view menu entry">,
@@ -7505,6 +7600,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Scale: <ref id="trap" name="transformations property">,
 <ref id="scalac" name="scale object">
 <item>scalOb, scalSel: <ref id="scitrafo" name="scripting interface command">
+<item>Script: <ref id="scriptobj" name="object">
 <item>Scripts: <ref id="prefgui" name="preference setting">
 <item>SDMesh: <ref id="sdmeshobj" name="object">
 <item>Sections: <ref id="swp" name="sweep attribute">,
@@ -7622,7 +7718,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Type: <ref id="levelobj" name="level attribute">,
 <ref id="lip" name="light attribute">,
 <ref id="pmattr" name="patchmesh attribute">,
-<ref id="vat" name="view attribute">
+<ref id="vat" name="view attribute">,
+<ref id="scriptattr" name="script attribute">
 </itemize>
 
 <label id="indexu">U
