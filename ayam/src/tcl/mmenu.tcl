@@ -222,16 +222,14 @@ menu $m.cus -tearoff 0
 $m add separator
 $m add command -label "Instance" \
 	-command "crtOb Instance; uCR; sL; rV;"
-$m add separator
+$m add command -label "Clone" \
+	-command "crtOb Clone; uCR; sL;rV;"
 $m add command -label "View" \
 	-command "viewOpen 400 300; global ay; set ay(ul) root:0; uS 0 1; rV;"
-$m add separator
 $m add command -label "Material" \
 	-command "material_createp;"
-$m add separator
 $m add command -label "Camera" \
 	-command "crtOb Camera; uCR; sL;rV;"
-$m add separator
 $m add command -label "RiInc" \
 	-command "crtOb RiInc; uCR; sL;rV;"
 
