@@ -1,3 +1,10 @@
+[03. 10. 2003] CVS-Head:
+o bug fixes:
+  none
+o when the keyboard focus is moved from object tree/listbox to property GUI,
+  the GUI is now scrolling to the entry with the focus immediately
+
+
 [26. 09. 2003] Ayam1.6:
 o bug fixes:
   - fixed crash when exporting scenes with malformed RiAttribute/RiOption
