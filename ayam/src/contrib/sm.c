@@ -567,7 +567,7 @@ ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
 		  RiProjection("perspective", "fov", &fov, RI_NULL);
 		  /* looking along positive z axis */
 		  /* transform lightsource to origin */
-		  RiFrameBegin((RtFloat)1.0);
+		  RiFrameBegin((RtInt)1.0);
 		  RiIdentity();
 		  RiScale((RtFloat)-1.0, (RtFloat)1.0, (RtFloat)1.0);
 		  RiTranslate((RtFloat)-px, (RtFloat)-py, (RtFloat)-pz);
@@ -592,7 +592,7 @@ ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
 		  RiFormat(width, height, (RtFloat)-1.0);
 		  RiProjection("perspective", "fov", &fov, RI_NULL);
 		  /* transform lightsource to origin */
-		  RiFrameBegin((RtFloat)1.0);
+		  RiFrameBegin((RtInt)1.0);
 		  RiIdentity();
 		  RiScale((RtFloat)-1.0, (RtFloat)1.0, (RtFloat)1.0);
 		  RiRotate((RtFloat)-90, (RtFloat)0, (RtFloat)1, (RtFloat)0);
@@ -618,7 +618,7 @@ ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
 		  RiFormat(width, height, (RtFloat)-1.0);
 		  RiProjection("perspective", "fov", &fov, RI_NULL);
 		  /* transform lightsource to origin */
-		  RiFrameBegin((RtFloat)1.0);
+		  RiFrameBegin((RtInt)1.0);
 		  RiIdentity();
 		  RiScale((RtFloat)-1.0, (RtFloat)1.0, (RtFloat)1.0);
 		  RiRotate((RtFloat)180, (RtFloat)0, (RtFloat)1, (RtFloat)0);
@@ -644,7 +644,7 @@ ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
 		  RiFormat(width, height, (RtFloat)-1.0);
 		  RiProjection("perspective", "fov", &fov, RI_NULL);
 		  /* transform lightsource to origin */
-		  RiFrameBegin((RtFloat)1);
+		  RiFrameBegin((RtInt)1);
 		  RiIdentity();
 		  RiScale((RtFloat)-1.0, (RtFloat)1.0, (RtFloat)1.0);
 		  RiRotate((RtFloat)90, (RtFloat)0, (RtFloat)1, (RtFloat)0);
@@ -670,7 +670,7 @@ ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
 		  RiFormat(width, height, (RtFloat)-1.0);
 		  RiProjection("perspective", "fov", &fov, RI_NULL);
 		  /* transform lightsource to origin */
-		  RiFrameBegin(1);
+		  RiFrameBegin((RtInt)1);
 		  RiIdentity();
 		  RiScale((RtFloat)-1.0, (RtFloat)1.0, (RtFloat)1.0);
 		  RiRotate((RtFloat)90, (RtFloat)1, (RtFloat)0, (RtFloat)0);
@@ -696,7 +696,7 @@ ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
 		  RiFormat(width, height, (RtFloat)-1.0);
 		  RiProjection("perspective", "fov", &fov, RI_NULL);
 		  /* transform lightsource to origin */
-		  RiFrameBegin(1);
+		  RiFrameBegin((RtInt)1);
 		  RiIdentity();
 		  RiScale((RtFloat)-1.0, (RtFloat)1.0, (RtFloat)1.0);
 		  RiRotate((RtFloat)-90.0, (RtFloat)1, (RtFloat)0, (RtFloat)0);
@@ -729,7 +729,7 @@ ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
 				      &width, &height, rwidth, rheight);
 		  */
 		  RiFormat(width, height, (RtFloat)-1.0);
-		  fov = light->cone_angle*360/AY_PI;
+		  fov = (RtFloat)(light->cone_angle*360.0/AY_PI);
 		  RiProjection("perspective", "fov", &fov, RI_NULL);
 		  RiFrameAspectRatio((RtFloat)1.0);
 		  RiScreenWindow((RtFloat)-1, (RtFloat)1,

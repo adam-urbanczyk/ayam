@@ -51,9 +51,10 @@ ay_objsel_process_hits (GLint hits, GLuint buffer[], char *var)
     {
       ay_object *o = NULL;
       GLuint object_name = 0;
-      int n = 0, j = 0;
+      int n = 0;
+      unsigned int j = 0;
       GLuint name;
-      float z1 = 0.0, z2 = 0.;
+      float z1 = 0.0f, z2 = 0.0f;
 
       name = *(ptr++);
       z1 = (float) *(ptr++) / 0x7fffffff;
@@ -189,8 +190,8 @@ ay_objsel_processcb (struct Togl *togl, int argc, char *argv[])
       Tcl_GetDouble (interp, argv[5], &x2);
       Tcl_GetDouble (interp, argv[6], &y2);
       
-      x = (x1 + x2) / 2.;
-      y = (y1 + y2) / 2.;
+      x = (x1 + x2) / 2.0;
+      y = (y1 + y2) / 2.0;
       boxh = abs(y2 - y1);
       boxw = abs(x2 - x1);
     }

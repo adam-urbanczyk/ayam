@@ -114,7 +114,7 @@ ay_light_drawcb(struct Togl *togl, ay_object *o)
  double quat[4] = {0}, rm[16];
  int has_from = 0, has_to = 0, i, a;
  double c1[24] = {0};
- GLfloat oldcolor[4] = {0};
+ GLfloat oldcolor[4] = {0.0f,0.0f,0.0f,0.0f};
 
   w = (GLdouble)(sqrt(2.0)*0.5);
 
