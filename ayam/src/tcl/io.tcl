@@ -503,23 +503,32 @@ proc io_importMops { } {
 
 
 # io_mruAdd
-#  add <file> to MRU menu entries
-#  possibly rotating existing entries
-proc io_mruAdd { file } {
+#  add <filename> to MRU list menu entries
+#  possibly rotating/swapping existing entries
+proc io_mruAdd { filename } {
 
     global ayprefs
 
     set found 0
-
+    set i 0
     foreach f $ayprefs(mru) {
-	if { $f == $file } { set found 1 }
+	if { $f == $filename } { set found 1; break } else { incr i }
     }
+
     if { $found == 0 } {
-	set ayprefs(mru) [concat [list $file] $ayprefs(mru)]
+	set ayprefs(mru) [concat [list $filename] $ayprefs(mru)]
+	if { [llength $ayprefs(mru)] > 4 } {
+	    set ayprefs(mru) [lreplace $ayprefs(mru) 4 end]
+	}
+    } else {
+	# swap MRU list menu entries?
+	if { $i > 0 } {
+	    set tmp [lindex $ayprefs(mru) 0]
+	    set ayprefs(mru) [lreplace $ayprefs(mru) 0 0 $filename]
+	    set ayprefs(mru) [lreplace $ayprefs(mru) $i $i $tmp]
+	}
     }
-    if { [llength $ayprefs(mru)] > 4 } {
-	set ayprefs(mru) [lreplace $ayprefs(mru) 4 end]
-    }
+    # if
 
     io_mruUMenu
 
@@ -538,6 +547,15 @@ proc io_mruLoad { index } {
 	cS; plb_update
 	set ay_error ""
 	set filename [lindex $ayprefs(mru) $index]
+
+	# swap MRU list menu entries?
+	if { $index > 0 } {
+	    set tmp [lindex $ayprefs(mru) 0]
+	    set ayprefs(mru) [lreplace $ayprefs(mru) 0 0 $filename]
+	    set ayprefs(mru) [lreplace $ayprefs(mru) $index $index $tmp]
+	    io_mruUMenu
+	}
+
 	update
 
 	# make backup copy
