@@ -68,7 +68,7 @@ ay_clear_scene(void)
       ay_status = ay_object_delete(o);
 
       if(ay_status != AY_OK)
-	printf("Memory leaked!\n");
+	printf("%s: Memory leaked!\n", fname);
 
       /* XXXX ignore errors about reference counts */
       o = o2;
