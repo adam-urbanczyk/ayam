@@ -143,6 +143,11 @@ ay_read_header(FILE *fileptr)
       ay_read_version = 4;
     }
 
+  if(!strcmp(version,"1.5"))
+    {
+      ay_read_version = 4;
+    }
+
   free(version);
   free(nbuffer);
 
