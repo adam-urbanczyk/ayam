@@ -293,7 +293,7 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
 	  // it is needed by OpenCSG...
 	  ay_prefs.use_materialcolor = AY_FALSE;
 
-	  ay_status = aycsg_flatten(o/*aycsg_root*/, togl, AY_LTUNION);
+	  ay_status = aycsg_flatten(o, togl, AY_LTUNION);
 
 	  glClearDepth((GLfloat)1.0);
 	  glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -325,9 +325,9 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
 	  }
 	  glDepthFunc(GL_LESS);
 	  aycsg_clearprimitives();
-	} /* if */
+	} // if
       o = o->next;
-    } /* while */
+    } // while
 
   // now draw non-CSG top level primitives
  
@@ -381,7 +381,7 @@ aycsg_drawtoplevelprim(Togl *togl)
 		{
 		  glFrontFace(GL_CW);
 		}
-	    }
+	    } // if
 	  ay_status = ay_shade_object(togl, t, AY_FALSE);
 	  if(has_tm)
 	    {
@@ -390,8 +390,8 @@ aycsg_drawtoplevelprim(Togl *togl)
 		  glFrontFace(GL_CCW);
 		}
 	      glPopMatrix();
-	    }
-	}
+	    } // if
+	} // if
       t = t->next;
     } // while
 
@@ -476,6 +476,7 @@ aycsg_flatten(ay_object *t, struct Togl *togl, int parent_csgtype)
 void
 aycsg_clearprimitives()
 {
+
   for(std::vector<OpenCSG::Primitive*>::const_iterator i =
 	primitives.begin(); i != primitives.end(); ++i)
     {
@@ -991,9 +992,7 @@ aycsg_normalize(ay_object *t)
 	    } // if
 
 	}
-      while(!stop/*(t->CSGTYPE != AY_LTUNION) && (!(
-		   (t->down->next->CSGTYPE == AY_LTPRIM) &&
-		   t->down->CSGTYPE != AY_LTUNION))*/);
+      while(!stop);
 
       if(t->down && t->down->next)
 	{
@@ -1238,7 +1237,7 @@ aycsg_delegatetrafo(ay_object *o)
 
 
 // aycsg_delegateall:
-//  _recursively_ delegate transformation attributes from all CSG-Operation
+//  _recursively_ delegate transformation attributes from all CSG-operation
 //  level objects to their children for subtree <t>
 int
 aycsg_delegateall(ay_object *t)
@@ -1398,8 +1397,8 @@ aycsg_copytree(int sel_only, ay_object *t, int *is_csg, ay_object **target)
 	      t = t->next;
 	      target = &((*target)->next);
 	      continue;
-	    }
-	}
+	    } // if
+	} // if
 
       // we use the "modified" (CSGTYPE) flag to remember whether an object is
       // a primitive or a CSG operation and if it is a CSG op. of which type
