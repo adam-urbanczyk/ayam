@@ -17,8 +17,11 @@
 #include "opennurbs.h"
 #include "opennurbs_extensions.h"
 
+
 // local types
+
 typedef int (onio_writecb) (ay_object *o, ONX_Model *p_m);
+
 
 // global variables
 
@@ -26,6 +29,7 @@ char onio_version_ma[] = AY_VERSIONSTR;
 char onio_version_mi[] = AY_VERSIONSTRMI;
 
 static Tcl_HashTable onio_write_ht;
+
 
 // prototypes of functions local to this module
 
@@ -35,10 +39,10 @@ int onio_writencurve(ay_object *o, ONX_Model *p_m);
 
 int onio_writeobject(ay_object *o, ONX_Model *p_m);
 
-int onio_registerwritecb(char *type, onio_writecb *cb);
-
 int onio_writetcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[]);
+
+int onio_registerwritecb(char *type, onio_writecb *cb);
 
 /////////////////////////////////////////////////////////////////////////
 
@@ -83,12 +87,13 @@ onio_writenpatch(ay_object *o, ONX_Model *p_m)
     p_n->SetKnot(0, i, np->uknotv[i+1]);
   for(i = 0; i < np->vorder+np->height-2; i++)
     p_n->SetKnot(1, i, np->uknotv[i+1]);
+
   // copy control points
   a = 0;
   for(i = 0; i < np->width; i++)
     {
       for(j = 0; j < np->height; j++)
-	{	
+	{
 	  p_n->SetCV(i, j, ON::homogeneous_rational, &(np->controlv[a]));
 	  a += stride;
 	}
@@ -200,7 +205,7 @@ onio_writetcmd(ClientData clientData, Tcl_Interp *interp,
 
   // set revision history information
   model.m_properties.m_RevisionHistory.NewRevision();
-  
+
   // set application information
   model.m_properties.m_Application.m_application_name = "Ayam";
   model.m_properties.m_Application.m_application_URL = "http://www.ayam3d.org/";
@@ -235,7 +240,7 @@ onio_writetcmd(ClientData clientData, Tcl_Interp *interp,
   /*
   if (0 != light && light_count > 0)
   {
-    for (i = 0; i < light_count; i++) 
+    for (i = 0; i < light_count; i++)
     {
       ONX_Model_RenderLight& mrl = model.m_light_table.AppendNew();
       mrl.m_light = light[i];
@@ -262,8 +267,8 @@ onio_writetcmd(ClientData clientData, Tcl_Interp *interp,
 
   // write model to archive
   bool ok = model.Write(archive,
-                        version, 
-                        __FILE__ " onio_writetcmd() " __DATE__, 
+                        version,
+                        __FILE__ " onio_writetcmd() " __DATE__,
                         NULL/*&error_log*/);
   if(!ok)
     {
@@ -275,6 +280,7 @@ onio_writetcmd(ClientData clientData, Tcl_Interp *interp,
 
  return TCL_OK;
 } // onio_writetcmd
+
 
 // onio_registerwritecb:
 //
@@ -302,6 +308,7 @@ onio_registerwritecb(char *name, onio_writecb *cb)
 
  return ay_status;
 } // onio_registerwritecb
+
 
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
@@ -741,13 +748,13 @@ Onio_Init(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "onioWrite", onio_writetcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  /* init hash table for write callbacks */
+  // init hash table for write callbacks
   Tcl_InitHashTable(&onio_write_ht, TCL_ONE_WORD_KEYS);
 
-  /* fill hash table */
+  // fill hash table
   ay_status = onio_registerwritecb((char *)(AY_IDNPATCH),
 				   onio_writenpatch);
-		
+
 
 #ifndef ONIOWRAPPED
   ay_error(AY_EOUTPUT, fname, "Plugin 'onio' successfully loaded.");
