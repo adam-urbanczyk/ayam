@@ -402,7 +402,6 @@ ay_sweep_notifycb(ay_object *o)
  ay_object *curve1 = NULL, *curve2 = NULL, *pobject1 = NULL, *pobject2 = NULL;
  ay_object *curve3 = NULL, *pobject3 = NULL;
  ay_object *npatch = NULL;
- ay_nurbcurve_object *nc = NULL;
  ay_nurbpatch_object *np = NULL;
  int ay_status = AY_OK;
  int got_c1 = AY_FALSE, got_c2 = AY_FALSE, got_c3 = AY_FALSE, mode = 0;
@@ -416,6 +415,7 @@ ay_sweep_notifycb(ay_object *o)
   mode = sweep->glu_display_mode;
   tolerance = sweep->glu_sampling_tolerance;
 
+  /* remove old objects */
   if(sweep->npatch)
     ay_object_delete(sweep->npatch);
   sweep->npatch = NULL;
@@ -479,8 +479,7 @@ ay_sweep_notifycb(ay_object *o)
 	  else
 	    {
 	      curve3 = NULL;
-	    }
-
+	    } /* if */
 	} /* if */
     } /* if */
 
@@ -493,7 +492,6 @@ ay_sweep_notifycb(ay_object *o)
   ay_object_defaults(npatch);
   npatch->type = AY_IDNPATCH;
 
-
   ay_status = ay_npt_sweep(curve1, curve2, curve3,
 			   sweep->sections, sweep->rotate, sweep->close,
 			   (ay_nurbpatch_object **)(&(npatch->refine)),
@@ -502,7 +500,8 @@ ay_sweep_notifycb(ay_object *o)
 
   if(ay_status)
     return ay_status;
-  
+
+  /* copy sampling tolerance/mode over to new objects */
   sweep->npatch = npatch;
 
   ((ay_nurbpatch_object *)npatch->refine)->glu_sampling_tolerance =
@@ -510,9 +509,23 @@ ay_sweep_notifycb(ay_object *o)
   ((ay_nurbpatch_object *)npatch->refine)->glu_display_mode =
     mode;
 
-  nc = (ay_nurbcurve_object *)curve1->refine;
+  if(sweep->start_cap)
+    {
+      ((ay_nurbpatch_object *)
+       (sweep->start_cap->refine))->glu_sampling_tolerance = tolerance;
+      ((ay_nurbpatch_object *)
+       (sweep->start_cap->refine))->glu_display_mode = mode;
+    }
 
+  if(sweep->end_cap)
+    {
+      ((ay_nurbpatch_object *)
+       (sweep->end_cap->refine))->glu_sampling_tolerance = tolerance;
+      ((ay_nurbpatch_object *)
+       (sweep->end_cap->refine))->glu_display_mode = mode;
+    }
 
+  /* interpolate the swept surface */
   if(sweep->npatch)
     {
       if(sweep->interpolate)

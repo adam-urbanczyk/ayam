@@ -399,6 +399,7 @@ ay_skin_notifycb(ay_object *o)
   mode = skin->glu_display_mode;
   tolerance = skin->glu_sampling_tolerance;
 
+  /* remove old objects */
   if(skin->npatch)
     ay_object_delete(skin->npatch);
   skin->npatch = NULL;
@@ -412,7 +413,6 @@ ay_skin_notifycb(ay_object *o)
   skin->end_cap = NULL;
 
   /* get curves to skin */
-
   if(!o->down)
     return AY_OK;
   down = o->down;
@@ -428,7 +428,7 @@ ay_skin_notifycb(ay_object *o)
       else
 	{
 	  ay_status = ay_provide_object(down, AY_IDNCURVE, &c);
-	}
+	} /* if */
 
       if(c == NULL)
 	{
@@ -445,7 +445,7 @@ ay_skin_notifycb(ay_object *o)
 	  last = c;
 
 	  count++;
-	}
+	} /* if */
 
       down = down->next;
     } /* while */
@@ -472,6 +472,7 @@ ay_skin_notifycb(ay_object *o)
       ay_status = ay_capt_createfromcurve(c, &(skin->start_cap));
       ay_trafo_copy(all_curves, skin->start_cap);
     } /* if */
+
   if(skin->has_end_cap)
     {
       c = NULL;
@@ -487,7 +488,8 @@ ay_skin_notifycb(ay_object *o)
 
   if(ay_status)
     return ay_status;
-  
+
+  /* copy sampling tolerance/mode over to new objects */
   skin->npatch = npatch;
 
   ((ay_nurbpatch_object *)npatch->refine)->glu_sampling_tolerance =
@@ -495,6 +497,23 @@ ay_skin_notifycb(ay_object *o)
   ((ay_nurbpatch_object *)npatch->refine)->glu_display_mode =
     mode;
 
+  if(skin->start_cap)
+    {
+      ((ay_nurbpatch_object *)
+       (skin->start_cap->refine))->glu_sampling_tolerance = tolerance;
+      ((ay_nurbpatch_object *)
+       (skin->start_cap->refine))->glu_display_mode = mode;
+    }
+
+  if(skin->end_cap)
+    {
+      ((ay_nurbpatch_object *)
+       (skin->end_cap->refine))->glu_sampling_tolerance = tolerance;
+      ((ay_nurbpatch_object *)
+       (skin->end_cap->refine))->glu_display_mode = mode;
+    }
+
+  /* remove temporary curves */
   while(all_curves)
     {
       c = all_curves->next;
