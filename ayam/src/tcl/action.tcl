@@ -497,7 +497,7 @@ proc editPointDp { } {
     }
 
     catch {destroy $w}
-    toplevel $w
+    toplevel $w -class ayam
     wm title $w "Edit_Point"
     wm iconname $w "Ayam"
     wm transient $w .

@@ -69,7 +69,7 @@ proc material_createp { } {
 
     set w .createMw
     catch {destroy $w}
-    toplevel $w
+    toplevel $w -class ayam
     wm title $w "Create Material"
     wm iconname $w "Ayam"
     wm transient $w .

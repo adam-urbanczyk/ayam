@@ -37,7 +37,7 @@ proc render_select { } {
 
     set w .selRenw
     catch {destroy $w}
-    toplevel $w
+    toplevel $w -class ayam
     wm title $w "Select Renderer"
     wm iconname $w "Ayam"
     wm transient $w .

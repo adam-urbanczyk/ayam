@@ -17,7 +17,7 @@ global ay tcl_version tk_version tcl_patchLevel tk_patchLevel tcl_platform
 set w .aboutw
 # there can only be one
 catch {destroy $w}
-toplevel $w
+toplevel $w -class ayam
 wm title $w "About Ayam"
 wm iconname $w "Ayam"
 wm transient .

@@ -230,7 +230,7 @@ proc io_exportRIB { {expview "" } } {
 
     set w .exportRIBw
     catch {destroy $w}
-    toplevel $w
+    toplevel $w -class ayam
     wm title $w "RIB Export"
     wm iconname $w "Ayam"
     wm transient $w .
@@ -461,7 +461,7 @@ proc io_importMops { } {
 
 	set w .mopI
 	catch {destroy $w}
-	toplevel $w
+	toplevel $w -class ayam
 	wm title $w "Import Options"
 	wm iconname $w "Ayam"
 	wm transient $w .
@@ -1111,7 +1111,7 @@ proc io_exportOBJ { selected } {
 
 	set w .objE
 	catch {destroy $w}
-	toplevel $w
+	toplevel $w -class ayam
 	wm title $w "Export Options"
 	wm iconname $w "Ayam"
 	wm transient $w .

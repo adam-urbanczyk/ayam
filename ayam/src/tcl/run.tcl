@@ -27,7 +27,7 @@ proc runTool { argvars argstrings command } {
 global ay
 set w .rtw
 catch {destroy $w}
-toplevel $w
+toplevel $w -class ayam
 wm title $w "Ayam"
 wm iconname $w "Ayam"
 wm transient $w .
@@ -206,7 +206,7 @@ proc runRenderer { cmd template } {
     set w .render$ay(rnum)
     catch {destroy $w}
 
-    toplevel $w
+    toplevel $w -class ayam
     wm title $w "Render_$ay(rnum)"
     wm iconname $w "Ayam"
     if { $ayprefs(RGTrans) == 1 } {

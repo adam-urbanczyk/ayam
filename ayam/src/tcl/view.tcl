@@ -214,7 +214,7 @@ proc viewSetFOV { view } {
 global ay
 set w .setFov
 catch {destroy $w}
-toplevel $w
+toplevel $w -class ayam
 wm title $w "Set FOV"
 wm iconname $w "Ayam"
 wm transient $w [winfo toplevel $view]
@@ -261,7 +261,7 @@ proc viewSetGrid { view } {
 global ay
 set w .setGrid
 catch {destroy $w}
-toplevel $w
+toplevel $w -class ayam
 wm title $w "Set GridSize"
 wm iconname $w "Ayam"
 wm transient $w [winfo toplevel $view]
@@ -324,9 +324,9 @@ proc viewOpen { width height {establish_bindings 1} } {
 
     catch {destroy $w}
     if { $ay(truecolor) == 1 } {
-	toplevel $w  -visual truecolor
+	toplevel $w -class ayam -visual truecolor
     } else {
-	toplevel $w
+	toplevel $w -class ayam
     }
 
     scan $w ".%s" name
@@ -788,7 +788,7 @@ proc viewSetBGImage { view } {
 global ay
 set w .setBGI
 catch {destroy $w}
-toplevel $w
+toplevel $w -class ayam
 wm title $w "Set BGImage"
 wm iconname $w "Ayam"
 wm transient $w [winfo toplevel $view]
