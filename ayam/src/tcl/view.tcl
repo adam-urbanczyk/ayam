@@ -369,8 +369,10 @@ proc setCameraAttr { } {
     global ay
     set cw $ay(currentView)
     getName o
-    .${o}.f3D.togl mc
-
+    getType t
+    if { $t == "View" } {
+	.${o}.f3D.togl mc
+    }
     setProp
 
     $ay(currentView) mc
