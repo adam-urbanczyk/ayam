@@ -172,7 +172,7 @@ ay_shade_view(struct Togl *togl)
       glPolygonOffset(1.0, 1.0);
 #else
       glEnable(GL_POLYGON_OFFSET_EXT);
-      glPolygonOffsetExt(1.0, 0.000002);
+      glPolygonOffsetEXT(1.0, 0.000002);
 #endif
     }
 
@@ -322,7 +322,7 @@ ay_shade_view(struct Togl *togl)
       glPolygonOffset(0.0, 0.0);
 #else
       glDisable(GL_POLYGON_OFFSET_EXT);
-      glPolygonOffsetExt(0.0, 0.0);
+      glPolygonOffsetEXT(0.0, 0.0);
 #endif
       ay_draw_view(togl, AY_TRUE);
     }
