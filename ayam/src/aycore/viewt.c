@@ -751,7 +751,7 @@ ay_viewt_redrawtcb(struct Togl *togl, int argc, char *argv[])
   if(view->shade)
     ay_shade_view(togl);
   else
-    ay_draw_view(togl);
+    ay_draw_view(togl, AY_FALSE);
 
   /* XXXX is this really necessary? */ 
   /*glFlush();*/

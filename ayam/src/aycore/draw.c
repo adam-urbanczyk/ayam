@@ -137,7 +137,7 @@ ay_draw_object(struct Togl *togl, ay_object *o, int selected)
  *  draw a view
  */
 int
-ay_draw_view(struct Togl *togl)
+ay_draw_view(struct Togl *togl, int draw_offset)
 {
  int ay_status = AY_OK;
  /* char fname[] = "draw_view";*/
@@ -152,21 +152,24 @@ ay_draw_view(struct Togl *togl)
   glDisable(GL_LIGHTING);
   glMatrixMode(GL_MODELVIEW);
 
-  if(view->dirty)
+  if(!draw_offset)
     {
-      ay_toglcb_reshape(togl);
-      view->dirty = AY_FALSE;
-    }
+      if(view->dirty)
+	{
+	  ay_toglcb_reshape(togl);
+	  view->dirty = AY_FALSE;
+	}
 
-  if(view->drawbg)
-    {
-      ay_draw_bgimage(togl);
-    }
+      if(view->drawbg)
+	{
+	  ay_draw_bgimage(togl);
+	}
 
-  /* draw grid */
-  if(view->drawgrid)
-    {
-      ay_draw_grid(togl);
+      /* draw grid */
+      if(view->drawgrid)
+	{
+	  ay_draw_grid(togl);
+	}
     }
 
   /* draw bounds of parametric space of current NURBS patch */
@@ -187,13 +190,13 @@ ay_draw_view(struct Togl *togl)
 	    (GLdouble)ay_prefs.obb);
 
   if(!view->drawsel)
-  {
-    while(o->next)
-      {
-	ay_status = ay_draw_object(togl, o, AY_FALSE);
-	o = o->next;
-      } /* while */
-  } /* if */
+    {
+      while(o->next)
+	{
+	  ay_status = ay_draw_object(togl, o, AY_FALSE);
+	  o = o->next;
+	} /* while */
+    } /* if */
 
   /* draw selected objects */
   if(sel)
@@ -207,13 +210,19 @@ ay_draw_view(struct Togl *togl)
 	ay_trafo_getall(ay_currentlevel->next);
 
       /* let selected objects appear "on top" of current drawing */
-      glDisable(GL_DEPTH_TEST);
+      if(!draw_offset)
+	{
+	  glDisable(GL_DEPTH_TEST);
+	} /* if */
        while(sel)
 	 {
 	   ay_status = ay_draw_object(togl, sel->object, AY_TRUE);
 	   sel = sel->next;
 	 } /* while */
-      glEnable(GL_DEPTH_TEST);
+      if(!draw_offset)
+	{
+	  glEnable(GL_DEPTH_TEST);
+	} /* if */
 
       /* draw handles of selected objects */
       if(view->drawhandles)
@@ -221,7 +230,10 @@ ay_draw_view(struct Togl *togl)
 	  /* let all handles appear "on top" of current drawing,    */
 	  /* we can't use the glDisable(GL_DEPTH_TEST);-method here */
 	  /* because we need the Z-values for vertice picking...    */
-	  glClear(GL_DEPTH_BUFFER_BIT);
+	  if(!draw_offset)
+	    {
+	      glClear(GL_DEPTH_BUFFER_BIT);
+	    }
 
 	  /* set size of points */
 	  glPointSize((GLfloat)ay_prefs.handle_size);
@@ -263,57 +275,58 @@ ay_draw_view(struct Togl *togl)
       glPopMatrix();
     } /* if */
 
-
-  /* draw rectangle */
-  if(view->drawrect)
+  if(!draw_offset)
     {
-      glColor3d((GLdouble)ay_prefs.tpr, (GLdouble)ay_prefs.tpg,
-		(GLdouble)ay_prefs.tpb);
-      glDisable(GL_DEPTH_TEST);
-      glMatrixMode(GL_PROJECTION);
-      glPushMatrix();
-       glLoadIdentity();
-       glOrtho(0, width, 0, height, -100.0, 100.0);
-       glMatrixMode(GL_MODELVIEW);
-       glPushMatrix();
-        glLoadIdentity();
-        glBegin(GL_LINE_LOOP);
-	 glVertex3d(view->rect_xmin, height-view->rect_ymin, 0.0);
-	 glVertex3d(view->rect_xmax, height-view->rect_ymin, 0.0);
-	 glVertex3d(view->rect_xmax, height-view->rect_ymax, 0.0);
-	 glVertex3d(view->rect_xmin, height-view->rect_ymax, 0.0);
-	glEnd();
-       glPopMatrix();
-       glMatrixMode(GL_PROJECTION);
-      glPopMatrix();
-      glEnable(GL_DEPTH_TEST);
-    } /* if */
+      /* draw rectangle */
+      if(view->drawrect)
+	{
+	  glColor3d((GLdouble)ay_prefs.tpr, (GLdouble)ay_prefs.tpg,
+		    (GLdouble)ay_prefs.tpb);
+	  glDisable(GL_DEPTH_TEST);
+	  glMatrixMode(GL_PROJECTION);
+	  glPushMatrix();
+	   glLoadIdentity();
+	   glOrtho(0, width, 0, height, -100.0, 100.0);
+	   glMatrixMode(GL_MODELVIEW);
+	   glPushMatrix();
+	    glLoadIdentity();
+	    glBegin(GL_LINE_LOOP);
+	     glVertex3d(view->rect_xmin, height-view->rect_ymin, 0.0);
+	     glVertex3d(view->rect_xmax, height-view->rect_ymin, 0.0);
+	     glVertex3d(view->rect_xmax, height-view->rect_ymax, 0.0);
+	     glVertex3d(view->rect_xmin, height-view->rect_ymax, 0.0);
+	    glEnd();
+	   glPopMatrix();
+	   glMatrixMode(GL_PROJECTION);
+	  glPopMatrix();
+	  glEnable(GL_DEPTH_TEST);
+	} /* if */
 
-  /* draw marker */
-  if(view->drawmarker)
-    {
-      glColor3d((GLdouble)ay_prefs.tpr, (GLdouble)ay_prefs.tpg,
-		(GLdouble)ay_prefs.tpb);
-      glDisable(GL_DEPTH_TEST);
-      glMatrixMode(GL_PROJECTION);
-      glPushMatrix();
-       glLoadIdentity();
-       glOrtho(0, width, 0, height, -100.0, 100.0);
-       glMatrixMode(GL_MODELVIEW);
-       glPushMatrix();
-        glLoadIdentity();
-        glBegin(GL_LINES);
-	 glVertex3d(view->markx-3.0, height-view->marky, 0.0);
-	 glVertex3d(view->markx+4.0, height-view->marky, 0.0);
-	 glVertex3d(view->markx, height-view->marky+3.0, 0.0);
-	 glVertex3d(view->markx, height-view->marky-4.0, 0.0);
-	glEnd();
-       glPopMatrix();
-       glMatrixMode(GL_PROJECTION);
-      glPopMatrix();
-      glEnable(GL_DEPTH_TEST);
+      /* draw marker */
+      if(view->drawmarker)
+	{
+	  glColor3d((GLdouble)ay_prefs.tpr, (GLdouble)ay_prefs.tpg,
+		    (GLdouble)ay_prefs.tpb);
+	  glDisable(GL_DEPTH_TEST);
+	  glMatrixMode(GL_PROJECTION);
+	  glPushMatrix();
+	   glLoadIdentity();
+	   glOrtho(0, width, 0, height, -100.0, 100.0);
+	   glMatrixMode(GL_MODELVIEW);
+	   glPushMatrix();
+	    glLoadIdentity();
+	    glBegin(GL_LINES);
+	     glVertex3d(view->markx-3.0, height-view->marky, 0.0);
+	     glVertex3d(view->markx+4.0, height-view->marky, 0.0);
+	     glVertex3d(view->markx, height-view->marky+3.0, 0.0);
+	     glVertex3d(view->markx, height-view->marky-4.0, 0.0);
+	    glEnd();
+	   glPopMatrix();
+	   glMatrixMode(GL_PROJECTION);
+	  glPopMatrix();
+	  glEnable(GL_DEPTH_TEST);
+	} /* if */
     } /* if */
-
 
   if(view->drawlevel || view->type == AY_VTTRIM)
     {
