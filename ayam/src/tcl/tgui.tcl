@@ -1,6 +1,6 @@
 # Ayam, a free 3D modeler for the RenderMan interface.
 #
-# Ayam is copyrighted 1998-2004 by Randolf Schultz
+# Ayam is copyrighted 1998-2005 by Randolf Schultz
 # (rschultz@informatik.uni-rostock.de) and others.
 #
 # All rights reserved.
@@ -17,6 +17,130 @@ uplevel #0 { array set tgui_tessparam {
     OldSMethod -1
 }
 }
+
+# tgui_block:
+#  block user interactions in main and toolbox windows that could
+#  destroy objects
+proc tgui_block { } {
+    global ay
+
+    set blockMsg "User interaction is restricted by tesselation dialog!"
+
+    set ay(ButtonBinding) [bind Button <1>]
+    set sc "if { (\[winfo toplevel %W\] == \".\") || \
+	    (\[winfo toplevel %W\] == \".tbw\") } {\
+	    ayError 2 Ayam \"$blockMsg\";\
+	    break } else { eval {$ay(ButtonBinding)} }"
+    bind Button <1> $sc
+
+    set ay(MenubuttonBinding) [bind Menubutton <1>]
+    set sc "if { \[winfo toplevel %W\] == \".\" } {\
+	    ayError 2 Ayam \"$blockMsg\";\
+	    break } else { eval {$ay(MenubuttonBinding)} }"
+    bind Menubutton <1> $sc
+
+    set ay(ListboxBinding) [bind Listbox <1>]
+    set sc "if { \[winfo toplevel %W\] == \".\" } {\
+	    ayError 2 Ayam \"$blockMsg\";\
+	    break } else { eval {$ay(ListboxBinding)} }"
+    bind Listbox <1> $sc
+
+    set ay(ListboxRBinding) [bind Listbox <ButtonRelease-1>]
+    set sc "if { \[winfo toplevel %W\] == \".\" } {\
+	    ayError 2 Ayam \"$blockMsg\";\
+	    break } else { eval {$ay(ListboxRBinding)} }"
+    bind Listbox <ButtonRelease-1> $sc
+
+    set sc "ayError 2 Ayam \"$blockMsg\"; break"
+
+    # unbind Objects label and object tree or object listbox
+    if { $ay(lb) == 0 } {
+	set ay(oldlabelbinding) [bind .fu.fMain.fHier.ftr.la <Double-1>]
+	bind .fu.fMain.fHier.ftr.la <Double-1> $sc
+	set t $ay(tree)
+	set ay(oldtreeb1binding) [bind $t <1>]
+	bind $t <1> $sc
+	set ay(oldtreeb1rbinding) [bind $t <ButtonRelease-1>]
+	bind $t <ButtonRelease-1> $sc
+	set ay(oldtreeb3binding) [bind $t <3>]
+	bind $t <3> $sc
+	$t bindText <ButtonRelease-1> ""
+	$t bindText <ButtonPress-1> ""
+    } else {
+	set ay(oldlabelbinding) [bind .fu.fMain.fHier.flb.la <Double-1>]
+	bind .fu.fMain.fHier.flb.la <Double-1> $sc
+    }
+
+    # unbind property listbox
+    set ay(oldplbb1rbinding) [bind $ay(plb) <ButtonRelease-1>]
+    bind $ay(plb) <ButtonRelease-1> $sc
+
+    # unbind toolbox and main window via a new bindtag "tguinone"
+    bind tguinone <Control-KeyPress> $sc
+    bind tguinone <KeyPress> $sc
+
+    if { [winfo exists .tbw] } {
+	bindtags .tbw {tguinone .tbw ayam all}
+    }
+    bindtags .fl.con {tguinone .fl.con . all}
+    bindtags . {tguinone . Ayam all}
+
+    set sc "if { \[winfo toplevel %W\] == \".\" } {\
+	    ayError 2 Ayam \"$blockMsg\";\
+	    break } else { continue }"
+
+    bind Frame <Control-KeyPress> $sc
+    bind Canvas <Control-KeyPress> $sc
+    bind Console <Control-KeyPress> $sc
+    bind Listbox <Control-KeyPress> $sc
+
+ return;
+}
+# tgui_block
+
+
+# tgui_unblock:
+#  unblock user interactions in main and toolbox windows that could
+#  destroy objects
+proc tgui_unblock { } {
+    global ay
+
+    bind Button <1> $ay(ButtonBinding)
+    bind Menubutton <1> $ay(MenubuttonBinding)
+    bind Listbox <1> $ay(ListboxBinding)
+    bind Listbox <ButtonRelease-1> $ay(ListboxRBinding)
+
+    # bind Objects label
+    if { $ay(lb) == 0 } {
+	bind .fu.fMain.fHier.ftr.la <Double-1> $ay(oldlabelbinding)
+	set t $ay(tree)
+	bind $t <1> $ay(oldtreeb1binding)
+	bind $t <ButtonRelease-1> $ay(oldtreeb1rbinding)
+	bind $t <3> $ay(oldtreeb3binding)
+	$t bindText <ButtonRelease-1> ""
+	$t bindText <ButtonPress-1> "tree_selectItem 1 $t"
+    } else {
+	bind .fu.fMain.fHier.flb.la <Double-1> $ay(oldlabelbinding)
+    }
+
+    bind $ay(plb) <ButtonRelease-1> $ay(oldplbb1rbinding)
+
+    if { [winfo exists .tbw] } {
+	bindtags .tbw {.tbw ayam all}
+	bind tguinone <Control-KeyPress> ""
+    }
+
+    bindtags .fl.con {.fl.con . all}
+    bindtags . {. Ayam all}
+
+    bind Frame <Control-KeyPress> ""
+    bind Canvas <Control-KeyPress> ""
+    bind Console <Control-KeyPress> ""
+    bind Listbox <Control-KeyPress> ""
+
+ return;
+}
+# tgui_unblock
 
 
 # tgui_update:
@@ -71,7 +195,7 @@ proc tgui_update args {
 
 
 # tgui_recalcslider:
-#  recalc resolution of slider according to val
+#  re-calculate resolution of slider according to val
 #
 proc tgui_recalcslider { val } {
 
@@ -109,7 +233,7 @@ proc tgui_recalcslider { val } {
 #
 proc tgui_addtag { } {
     global tgui_tessparam
-    
+
     if { $tgui_tessparam(SaveToTag) == 1 } {
 
 	undo save AddTPTag
@@ -142,11 +266,11 @@ proc tgui_addtag { } {
 
 
 # tgui_remtag:
-#
+#  remove TP tags from all selected NURBS patch objects
 #
 proc tgui_remtag { } {
     global tgui_tessparam
-    
+
     forAllT NPatch 0 {
 
 	set tagnames ""
@@ -171,8 +295,8 @@ proc tgui_remtag { } {
 
 
 # tgui_readtag:
-#
-#
+#  read TP tag from first selected object and set tesselation gui
+#  parameters appropriately
 proc tgui_readtag { } {
     global tgui_tessparam
 
@@ -201,7 +325,7 @@ proc tgui_readtag { } {
 
 
 # tgui_open:
-#
+#  create tesselation gui
 #
 proc tgui_open { } {
     global ay ayprefs ay_error tgui_tessparam
@@ -246,7 +370,7 @@ proc tgui_open { } {
 	undo; focus .; destroy .tguiw;
 	return;
     }
-    
+
     pack $f.l -in $f -side left -fill x -expand no
     pack $f.ll -in $f -side left -expand no
     pack $f.s -in $f -side left -fill x -expand yes
@@ -256,21 +380,23 @@ proc tgui_open { } {
     pack $f -in $w.f1 -side top -fill x -expand yes
 
     # create first tesselation
-    tgui_update
+    #tgui_update
 
     set f $w.f1
     addCheck $f tgui_tessparam SaveToTag
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {
-	tguiCmd op; grab release .tguiw; focus .; destroy .tguiw;
+	tguiCmd op; focus .; destroy .tguiw;
 	uCL cl; plb_update
     }
     # button
 
     button $f.bca -text "Cancel" -width 5 -command {
-	tguiCmd ca; grab release .tguiw; focus .; destroy .tguiw; undo;
-	tgui_addtag; rV
+	tguiCmd ca; focus .; destroy .tguiw; undo;
+	tgui_addtag;
+	uCL cl {1 1};
+	rV
     }
     # button
 
@@ -278,8 +404,10 @@ proc tgui_open { } {
     pack $f -in $w -side bottom -fill x
 
     winCenter $w
-    grab $w
     focus $w.f2.bok
+
+    # create first tesselation
+    tgui_update
 
     # initiate update machinery
     set f $w.f1.fSParam
@@ -296,7 +424,11 @@ proc tgui_open { } {
 				 $f.s conf -command tgui_update; \
 			     }"
 
+    tgui_block
+
     tkwait window $w
+
+    tgui_unblock
 
     after idle viewMouseToCurrent
 
