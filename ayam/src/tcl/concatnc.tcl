@@ -20,23 +20,27 @@ w     fConcatNCAttr
 
 }
 
-# create ConcatNCAttr-UI
-set w [frame $ay(pca).$ConcatNCAttr(w)]
-
-addCheck $w ConcatNCAttrData Closed
-addCheck $w ConcatNCAttrData FillGaps
-addCheck $w ConcatNCAttrData Revert
-addText $w  e0 "Resulting Curve:"
-addInfo $w ConcatNCAttrData Length
-addInfo $w ConcatNCAttrData Order
-
 array set ConcatNCAttrData {
 Closed 0
 FillGaps 0
 Revert 0
 Length 0
 Order 0
+Knot-Type 1
+TanLength 3.0
 }
+
+# create ConcatNCAttr-UI
+set w [frame $ay(pca).$ConcatNCAttr(w)]
+
+addCheck $w ConcatNCAttrData Closed
+addCheck $w ConcatNCAttrData FillGaps
+addCheck $w ConcatNCAttrData Revert
+addParam $w ConcatNCAttrData FTLength
+addMenu $w ConcatNCAttrData Knot-Type [list NURB Custom]
+addText $w  e0 "Resulting Curve:"
+addInfo $w ConcatNCAttrData Length
+addInfo $w ConcatNCAttrData Order
 
 #concatnc_crt:
 #

@@ -31,6 +31,8 @@ ay_concatnc_createcb(int argc, char *argv[], ay_object *o)
       return AY_ERROR;
     }
  
+  new->ftlength = 0.3;
+
   o->parent = AY_TRUE;
 
   o->refine = new;
@@ -154,6 +156,14 @@ ay_concatnc_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(concatnc->revert));
 
+  Tcl_SetStringObj(ton,"Knot-Type",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &(concatnc->knot_type));
+
+  Tcl_SetStringObj(ton,"FTLength",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp,to, &(concatnc->ftlength));
+
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
@@ -200,6 +210,16 @@ ay_concatnc_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton,"Knot-Type",-1);
+  to = Tcl_NewIntObj(concatnc->knot_type);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton,"FTLength",-1);
+  to = Tcl_NewDoubleObj(concatnc->ftlength);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
   if(concatnc->ncurve && concatnc->ncurve->refine)
     {
       nc = (ay_nurbcurve_object *)(concatnc->ncurve->refine);
@@ -235,9 +255,17 @@ ay_concatnc_readcb(FILE *fileptr, ay_object *o)
   if(!(concatnc = calloc(1, sizeof(ay_concatnc_object))))
     { return AY_EOMEM; }
 
+  concatnc->ftlength = 0.3;
+
   fscanf(fileptr, "%d\n", &concatnc->closed);
   fscanf(fileptr, "%d\n", &concatnc->fillgaps);
   fscanf(fileptr, "%d\n", &concatnc->revert);
+
+  if(ay_read_version >= 5)
+    {
+      fscanf(fileptr, "%d\n", &concatnc->knot_type);
+      fscanf(fileptr, "%lg\n", &concatnc->ftlength);
+    }
 
   o->refine = concatnc;
 
@@ -258,6 +286,8 @@ ay_concatnc_writecb(FILE *fileptr, ay_object *o)
   fprintf(fileptr, "%d\n", concatnc->closed);
   fprintf(fileptr, "%d\n", concatnc->fillgaps);
   fprintf(fileptr, "%d\n", concatnc->revert);
+  fprintf(fileptr, "%d\n", concatnc->knot_type);
+  fprintf(fileptr, "%g\n", concatnc->ftlength);
 
  return AY_OK;
 } /* ay_concatnc_writecb */
@@ -299,7 +329,7 @@ ay_concatnc_notifycb(ay_object *o)
  ay_concatnc_object *concatnc = NULL;
  ay_object *down = NULL, *ncurve = NULL, *curves = NULL, **next = NULL;
  ay_nurbcurve_object *nc = NULL;
- int numcurves = 0;
+ int numcurves = 0, order;
 
   if(!o)
     return AY_ENULL;    
@@ -339,14 +369,42 @@ ay_concatnc_notifycb(ay_object *o)
       ncurve = ncurve->next;
     }
 
-  if(concatnc->fillgaps)
+  if(concatnc->knot_type == 1)
     {
-      ay_status = ay_nct_fillgaps(concatnc->closed, curves);
+
+      ncurve = curves;
+
+      if(ncurve)
+	{
+	  nc = (ay_nurbcurve_object*)ncurve->refine;
+	  order = nc->order;
+	}
+
+      while(ncurve)
+	{
+	  ay_knots_rescaleknotv(nc->length+nc->order, nc->knotv);
+	  ncurve = ncurve->next;
+	} /* while */
+
+      ay_status = ay_nct_fillgaps(concatnc->closed, order, concatnc->ftlength,
+				  curves);
       if(ay_status)
 	{
 	  ay_error(AY_ERROR, fname, "Failed to create fillets!");
 	}
     }
+  else
+    {
+      if(concatnc->fillgaps)
+	{
+	  ay_status = ay_nct_fillgaps(concatnc->closed, 4, concatnc->ftlength,
+				      curves);
+	  if(ay_status)
+	    {
+	      ay_error(AY_ERROR, fname, "Failed to create fillets!");
+	    }
+	}
+    } /* if */
 
   ncurve = curves;
   while(ncurve)
@@ -358,7 +416,8 @@ ay_concatnc_notifycb(ay_object *o)
   if(numcurves > 1)
     {
       
-      ay_status = ay_nct_concatmultiple(curves, &concatnc->ncurve);
+      ay_status = ay_nct_concatmultiple(concatnc->knot_type, curves,
+					&concatnc->ncurve);
 
       if(ay_status)
 	{
