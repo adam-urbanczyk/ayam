@@ -12,7 +12,7 @@
 
 #include "ayam.h"
 
-/* convert.c - functions for object notification */
+/* convert.c - functions for object conversion */
 
 /* ay_convert_register:
  *  register the conversion callback notcb for
@@ -36,7 +36,7 @@ ay_convert_register(ay_convertcb *convcb, unsigned int type_id)
  *  call conversion callback of object o
  */
 int
-ay_convert_force(ay_object *o)
+ay_convert_force(ay_object *o, int in_place)
 {
  int ay_status = AY_OK;
  char fname[] = "convert";
@@ -49,7 +49,7 @@ ay_convert_force(ay_object *o)
   cb = (ay_convertcb *)(arr[o->type]);
   if(cb)
     {
-      ay_status = cb(o);
+      ay_status = cb(o, in_place);
 
       if(ay_status)
 	{
@@ -76,10 +76,19 @@ ay_convert_forcetcmd(ClientData clientData, Tcl_Interp * interp,
  int ay_status = AY_OK;
  char fname[] = "convOb";
  ay_list_object *sel = ay_selection;
+ int in_place = AY_FALSE;
+
+  if(argc > 1)
+    {
+      if(!strcmp(argv[1], "-inplace"))
+	{
+	  in_place = AY_TRUE;
+	}
+    }
 
   while(sel)
     {
-      ay_status = ay_convert_force(sel->object);
+      ay_status = ay_convert_force(sel->object, in_place);
       if(ay_status)
 	{
 	  ay_error(AY_ERROR, fname, NULL);

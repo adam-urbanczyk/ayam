@@ -839,3 +839,62 @@ ay_object_deleteinstances(ay_object **o)
  return ay_status;
 } /* ay_object_deleteinstances */
 
+
+/* ay_object_replace:
+ *  replace object dst with the one pointed to by src;
+ *  type specific contents of dst are lost afterwards;
+ *  object src should not be accessed via src afterwards
+ *  because it is free()d here!
+ */
+int
+ay_object_replace(ay_object *src, ay_object *dst)
+{
+ int ay_status = AY_OK;
+ void **arr = NULL;
+ ay_deletecb *dcb = NULL;
+ ay_mat_object *oldmat = NULL;
+ ay_object *oldnext = NULL;
+ int oldrefcount = 0;
+
+  if(!src || !dst)
+    return AY_ENULL;
+
+  oldmat = dst->mat;
+  oldrefcount = dst->refcount;
+  oldnext = dst->next;
+
+  if(dst->down)
+    {
+      ay_object_deletemulti(dst->down);
+    }
+
+  if(dst->tags)
+    {
+      ay_status = ay_tags_delall(dst);
+    }
+
+  if(dst->name)
+    {
+      free(dst->name);
+    }
+
+  if(dst->selp)
+    {
+      ay_selp_clear(dst);
+    }
+
+  arr = ay_deletecbt.arr;
+  dcb = (ay_deletecb*)(arr[dst->type]);
+  if(dcb)
+    ay_status = dcb(dst->refine);
+
+  memcpy(dst, src, sizeof(ay_object));
+
+  dst->mat = oldmat;
+  dst->refcount = oldrefcount;
+  dst->next = oldnext;
+
+  free(src);
+
+ return AY_OK;
+} /* ay_object_replace */
