@@ -962,8 +962,11 @@ ay_extrude_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
  int ay_status = AY_OK;
  char fname[] = "extrude_providecb";
+ int stride = 4, i, j;
+ double m[16], *cv;
  ay_extrude_object *e = NULL;
  ay_object *new = NULL, **t = NULL, *p = NULL;
+ ay_nurbpatch_object *np = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -1007,7 +1010,7 @@ ay_extrude_providecb(ay_object *o, unsigned int type, ay_object **result)
 	      ay_error(ay_status, fname, NULL);
 	      return AY_ERROR;
 	    }
-	  /*ay_trafo_add(o, *t);*/
+	  ay_trafo_add(o, *t);
 	  t = &((*t)->next);
 	  p = p->next;
 	} /* while */
@@ -1021,7 +1024,7 @@ ay_extrude_providecb(ay_object *o, unsigned int type, ay_object **result)
 	      ay_error(ay_status, fname, NULL);
 	      return AY_ERROR;
 	    }
-	  /*ay_trafo_add(o, *t);*/
+	  ay_trafo_add(o, *t);
 	  t = &((*t)->next);
 	  p = p->next;
 	} /* while */
@@ -1036,7 +1039,19 @@ ay_extrude_providecb(ay_object *o, unsigned int type, ay_object **result)
 	      ay_error(ay_status, fname, NULL);
 	      return AY_ERROR;
 	    }
-	  /*ay_trafo_add(o, *t);*/
+	  ay_trafo_creatematrix(*t, m);
+	  np = (ay_nurbpatch_object *)(*t)->refine;
+	  cv = np->controlv;
+	  for(i = 0; i < np->width; i++)
+	    {
+	      for(j = 0; j < np->height; j++)
+		{
+		  ay_trafo_apply4(cv, m);
+		  cv += stride;
+		}
+	    }
+	  ay_trafo_defaults(*t);
+	  ay_trafo_copy(o, *t);
 	  t = &((*t)->next);
 	  p = p->next;
 	} /* while */
@@ -1050,7 +1065,7 @@ ay_extrude_providecb(ay_object *o, unsigned int type, ay_object **result)
 	      ay_error(ay_status, fname, NULL);
 	      return AY_ERROR;
 	    }
-	  /*ay_trafo_add(o, *t);*/
+	  ay_trafo_add(o, *t);
 	  t = &((*t)->next);
 	  p = p->next;
 	} /* while */
