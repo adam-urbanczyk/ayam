@@ -948,6 +948,9 @@ RtVoid ay_rrib_RiBasis(RtBasis ubasis, RtInt ustep,
  int ubasis_custom = AY_TRUE;
  int vbasis_custom = AY_TRUE;
 
+  ay_rrib_cattributes->ustep = ustep;
+  ay_rrib_cattributes->vstep = vstep;
+
   if(ubasis == RiBezierBasis)
     {
       ay_rrib_cattributes->btype_u = AY_BTBEZIER;
@@ -1881,6 +1884,9 @@ RtVoid ay_rrib_RiPatchMesh(RtToken type, RtInt nu, RtToken uwrap,
 
   pm.btype_u = ay_rrib_cattributes->btype_u;
   pm.btype_v = ay_rrib_cattributes->btype_v;
+
+  pm.ustep = ay_rrib_cattributes->ustep;
+  pm.vstep = ay_rrib_cattributes->vstep;
 
   pm.ubasis = NULL;
   pm.vbasis = NULL;
