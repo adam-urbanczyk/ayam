@@ -56,7 +56,8 @@ int aycsg_normalize(ay_object *t);
 
 int aycsg_binarify(ay_object *parent, ay_object *left, ay_object **target);
 
-int aycsg_copytree(ay_object *t, int *is_csg, ay_object **target);
+int aycsg_copytree(int sel_only, ay_object *t, int *is_csg,
+		   ay_object **target);
 
 void aycsg_cleartree(ay_object *t);
 
@@ -73,7 +74,7 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
 {
  int ay_status = AY_OK;
  // Tcl_Interp *interp = ay_interp;
- // ay_view_object *view = NULL;
+ ay_view_object *view = NULL;
  int orig_use_materialcolor = ay_prefs.use_materialcolor;
  GLfloat color[4] = {0.0f,0.0f,0.0f,0.0f};
  int is_csg;
@@ -84,7 +85,9 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
 
   aycsg_clearprimitives();
 
-  ay_status = aycsg_copytree(ay_root->next, &is_csg, &aycsg_root);
+  ay_status = aycsg_copytree(view->drawsel,
+		       view->drawlevel?ay_currentlevel->object:ay_root->next,
+			     &is_csg, &aycsg_root);
 
   ay_status = aycsg_normalize(aycsg_root);
 
@@ -92,6 +95,12 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
 
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
+
+  if(view->drawlevel)
+    {
+      glPushMatrix();
+      ay_trafo_getall(ay_currentlevel->next);
+    }
 
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
@@ -124,6 +133,11 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
 
   // now draw non-CSG top level primitives
   ay_status = aycsg_drawtoplevelprim(togl);
+
+  if(view->drawlevel)
+    {
+      glPopMatrix();
+    }
 
   // swap buffers
   Togl_SwapBuffers(togl);
@@ -692,7 +706,7 @@ aycsg_binarify(ay_object *parent, ay_object *left, ay_object **target)
 //  converts to binary form, informs caller via <is_csg> whether subtree
 //  <t> contains CSG operations
 int
-aycsg_copytree(ay_object *t, int *is_csg, ay_object **target)
+aycsg_copytree(int sel_only, ay_object *t, int *is_csg, ay_object **target)
 {
  int ay_status = AY_OK;
  int lis_csg = 0;
@@ -704,6 +718,12 @@ aycsg_copytree(ay_object *t, int *is_csg, ay_object **target)
 
   while(t->next)
     {
+      if(sel_only && !t->selected)
+	{
+	  t = t->next;
+	  continue;
+	}
+
       if(!(*target = (ay_object*)calloc(1, sizeof(ay_object))))
 	return AY_EOMEM;
 
@@ -715,7 +735,8 @@ aycsg_copytree(ay_object *t, int *is_csg, ay_object **target)
       if((t->type == AY_IDLEVEL) && (t->down))
 	{
 	  // descend
-	  ay_status = aycsg_copytree(t->down, &lis_csg, &((*target)->down));
+	  ay_status = aycsg_copytree(AY_FALSE,
+				     t->down, &lis_csg, &((*target)->down));
 	}
 
       if(ay_status)
@@ -738,7 +759,7 @@ aycsg_copytree(ay_object *t, int *is_csg, ay_object **target)
 	}
 
       // we use the "modified" (CSGTYPE) flag to remember whether an object is
-      // a primitive or a CSG operation and if it is a CSG op., of which type
+      // a primitive or a CSG operation and if it is a CSG op. of which type
       // (see ayam.h Level Object SubType Ids)
 
       if((*target)->type != AY_IDLEVEL)
