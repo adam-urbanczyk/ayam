@@ -268,7 +268,7 @@ ay_pact_pedtcb(struct Togl *togl, int argc, char *argv[])
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  double winX = 0.0, winY = 0.0;
  double obj[3] = {0};
- char *n1 = "editPointDarray";
+ char *n1 = "editPointDarray", fname[] = "editPointDirect";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  int i, justupdated = 0, changed = AY_FALSE;
  double *coords;
@@ -329,6 +329,14 @@ ay_pact_pedtcb(struct Togl *togl, int argc, char *argv[])
 	    }
 
 	  Tcl_Eval(interp,cmd);
+
+	  if (!ay_point_edit_coords)
+	    {
+	      ay_error(AY_ERROR,fname,"Lost pointer to selected points!");
+	      Tcl_IncrRefCount(toa); Tcl_DecrRefCount(toa);
+	      Tcl_IncrRefCount(ton); Tcl_DecrRefCount(ton);
+	      return TCL_OK;
+	    }
 
 	  Tcl_SetStringObj(ton,"justupdated",-1);
 	  to = Tcl_ObjGetVar2(interp, toa, ton,
