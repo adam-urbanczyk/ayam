@@ -319,8 +319,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
  int indexu = 0, indexv = 0, i = 1, j = 0, argc2 = argc;
  int homogenous = AY_FALSE, trafo = AY_FALSE;
  double *p = NULL, *tp = NULL, tmp[4] = {0};
- GLdouble m[16];
- double rm[16];
+ double m[16];
  char fname[] = "getPnt";
  Tcl_Obj *to = NULL, *ton = NULL;
 
@@ -427,13 +426,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	  /* apply trafos? */
 	  if(trafo)
 	    { /* Yes! */
-	      glPushMatrix();
-	       glTranslated(src->movx, src->movy, src->movz);
-	       ay_quat_torotmatrix(src->quat, rm);
-	       glMultMatrixd((GLdouble *)rm);
-	       glScaled(src->scalx, src->scaly, src->scalz);
-	       glGetDoublev(GL_MODELVIEW_MATRIX, m);
-	      glPopMatrix();
+	      ay_trafo_creatematrix(src, m);
 
 	      if(homogenous)
 		{

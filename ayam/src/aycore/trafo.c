@@ -1084,3 +1084,225 @@ ay_trafo_apply(ay_object *o, double *p, int stride, int reusem)
 
  return AY_OK;
 } /* ay_trafo_apply */
+
+
+
+/* ay_trafo_creatematrix:
+ *  
+ */
+int
+ay_trafo_creatematrix(ay_object *o, double *m)
+{
+ double *q, mr[16];
+
+  if(!o || !m)
+    return AY_ENULL;
+
+  memset(m, 0, 16*sizeof(double));
+  m[0] = 1.0;
+  m[5] = 1.0;
+  m[10] = 1.0;
+  m[12] = o->movx;
+  m[13] = o->movy;
+  m[14] = o->movz;
+  m[15] = 1.0;
+
+  q = o->quat;  
+  memset(mr, 0, 16*sizeof(double));
+  mr[0] = (1.0 - 2.0 * (q[1] * q[1] + q[2] * q[2]));
+  mr[1] = 2.0 * (q[0] * q[1] - q[2] * q[3]);
+  mr[2] = 2.0 * (q[2] * q[0] + q[1] * q[3]);
+
+  mr[4] = 2.0 * (q[0] * q[1] + q[2] * q[3]);
+  mr[5] = (1.0 - 2.0 * (q[2] * q[2] + q[0] * q[0]));
+  mr[6] = 2.0 * (q[1] * q[2] - q[0] * q[3]);
+
+  mr[8] = 2.0 * (q[2] * q[0] - q[1] * q[3]);
+  mr[9] = 2.0 * (q[1] * q[2] + q[0] * q[3]);
+  mr[10] = (1.0 - 2.0 * (q[1] * q[1] + q[0] * q[0]));
+  mr[15] = 1.0;
+  ay_trafo_multmatrix4(m, mr);
+
+  m[0] *= o->scalx;
+  m[1] *= o->scalx;
+  m[2] *= o->scalx;
+  m[3] *= o->scalx;
+  m[4] *= o->scaly;
+  m[5] *= o->scaly;
+  m[6] *= o->scaly;
+  m[7] *= o->scaly;
+  m[8]  *= o->scalz;
+  m[9]  *= o->scalz;
+  m[10] *= o->scalz;
+  m[11] *= o->scalz;
+
+ return AY_OK;
+} /* ay_trafo_creatematrix */
+
+
+/* ay_trafo_identitymatrix:
+ *  
+ */
+void
+ay_trafo_identitymatrix(double *m)
+{
+
+  memset(m, 0, 16*sizeof(double));
+  m[0] = 1.0;
+  m[5] = 1.0;
+  m[10] = 1.0;
+  m[15] = 1.0;
+
+ return;
+} /* ay_trafo_identitymatrix */
+
+
+/* ay_trafo_translatematrix:
+ *  
+ */
+void
+ay_trafo_translatematrix(double x, double y, double z, double *m)
+{
+
+  m[12] = m[0] * x + m[4] * y + m[8]  * z + m[12];
+  m[13] = m[1] * x + m[5] * y + m[9]  * z + m[13];
+  m[14] = m[2] * x + m[6] * y + m[10] * z + m[14];
+  m[15] = m[3] * x + m[7] * y + m[11] * z + m[15];
+
+ return;
+} /* ay_trafo_translatematrix */
+
+
+/* ay_trafo_scalematrix:
+ *  
+ */
+void
+ay_trafo_scalematrix(double x, double y, double z, double *m)
+{
+
+  m[0] *= x;   m[4] *= y;   m[8]  *= z;
+  m[1] *= x;   m[5] *= y;   m[9]  *= z;
+  m[2] *= x;   m[6] *= y;   m[10] *= z;
+  m[3] *= x;   m[7] *= y;   m[11] *= z;
+
+ return;
+} /* ay_trafo_scalematrix */
+
+
+/* ay_trafo_rotatematrix:
+ *  code taken from Mesa (Erich Boleyn (erich@uruk.org))
+ */
+void
+ay_trafo_rotatematrix(double angle, double x, double y, double z, double *m)
+{
+ double t[16], mag, s, c;
+ double xx, yy, zz, xy, yz, zx, xs, ys, zs, one_c;
+
+   s = sin(AY_D2R(angle));
+   c = cos(AY_D2R(angle));
+
+   mag = sqrt( x*x + y*y + z*z );
+
+   if (mag == 0.0) {
+      /* do nothing */
+     return;
+   }
+
+   x /= mag;
+   y /= mag;
+   z /= mag;
+
+#define M(row,col)  t[col*4+row]
+
+   /*
+    *  Arbitrary axis rotation matrix.
+    *
+    *  This is composed of 5 matrices, Rz, Ry, T, Ry', Rz', multiplied
+    *  like so:  Rz * Ry * T * Ry' * Rz'.  T is the final rotation
+    *  (which is about the X-axis), and the two composite transforms
+    *  Ry' * Rz' and Rz * Ry are (respectively) the rotations necessary
+    *  from the arbitrary axis to the X-axis then back.  They are
+    *  all elementary rotations.
+    *
+    *  Rz' is a rotation about the Z-axis, to bring the axis vector
+    *  into the x-z plane.  Then Ry' is applied, rotating about the
+    *  Y-axis to bring the axis vector parallel with the X-axis.  The
+    *  rotation about the X-axis is then performed.  Ry and Rz are
+    *  simply the respective inverse transforms to bring the arbitrary
+    *  axis back to it's original orientation.  The first transforms
+    *  Rz' and Ry' are considered inverses, since the data from the
+    *  arbitrary axis gives you info on how to get to it, not how
+    *  to get away from it, and an inverse must be applied.
+    *
+    *
+    *  The basic calculation used is to recognize that the arbitrary
+    *  axis vector (x, y, z), since it is of unit length, actually
+    *  represents the sines and cosines of the angles to rotate the
+    *  X-axis to the same orientation, with theta being the angle about
+    *  Z and phi the angle about Y (in the order described above)
+    *  as follows:
+    *
+    *  cos ( theta ) = x / sqrt ( 1 - z^2 )
+    *  sin ( theta ) = y / sqrt ( 1 - z^2 )
+    *
+    *  cos ( phi ) = sqrt ( 1 - z^2 )
+    *  sin ( phi ) = z
+    *
+    *  Note that cos ( phi ) can further be inserted to the above
+    *  formulas:
+    *
+    *  cos ( theta ) = x / cos ( phi )
+    *  sin ( theta ) = y / sin ( phi )
+    *
+    *
+    *  ...etc.  Because of those relations and the standard trigonometric
+    *  relations, it is possible to reduce the transforms down to what
+    *  is used below.  It may be that any primary axis chosen will give the
+    *  same results (modulo a sign convention) using this method.
+    *
+    *  Particularly nice is to notice that all divisions that might
+    *  have caused trouble when parallel to certain planes or
+    *  axis go away with care paid to reducing the expressions.
+    *  After checking, it does perform correctly under all cases, since
+    *  in all the cases of division where the denominator would have
+    *  been zero, the numerator would have been zero as well, giving
+    *  the expected result.
+    */
+
+   xx = x * x;
+   yy = y * y;
+   zz = z * z;
+   xy = x * y;
+   yz = y * z;
+   zx = z * x;
+   xs = x * s;
+   ys = y * s;
+   zs = z * s;
+   one_c = 1.0 - c;
+
+   M(0,0) = (one_c * xx) + c;
+   M(0,1) = (one_c * xy) - zs;
+   M(0,2) = (one_c * zx) + ys;
+   M(0,3) = 0.0;
+
+   M(1,0) = (one_c * xy) + zs;
+   M(1,1) = (one_c * yy) + c;
+   M(1,2) = (one_c * yz) - xs;
+   M(1,3) = 0.0;
+
+   M(2,0) = (one_c * zx) - ys;
+   M(2,1) = (one_c * yz) + xs;
+   M(2,2) = (one_c * zz) + c;
+   M(2,3) = 0.0;
+
+   M(3,0) = 0.0;
+   M(3,1) = 0.0;
+   M(3,2) = 0.0;
+   M(3,3) = 1.0;
+
+#undef M
+
+   ay_trafo_multmatrix4(m, t);
+
+ return;
+} /* ay_trafo_rotatematrix */

@@ -594,6 +594,17 @@ int ay_trafo_invmatrix4(double *m, double *mi);
 
 int ay_trafo_apply(ay_object *o, double *p, int stride, int reusem);
 
+int ay_trafo_creatematrix(ay_object *o, double *m);
+
+void ay_trafo_identitymatrix(double *m);
+
+void ay_trafo_translatematrix(double x, double y, double z, double *m);
+
+void ay_trafo_scalematrix(double x, double y, double z, double *m);
+
+void ay_trafo_rotatematrix(double angle, double x, double y, double z,
+			   double *m);
+
 /* undo.c */
 int ay_undo_init(int buffer_size);
 

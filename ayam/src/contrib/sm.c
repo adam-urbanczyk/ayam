@@ -174,8 +174,7 @@ void
 ay_sm_dotrafos(ay_sm_trafostack *trafo, double *px, double *py, double *pz)
 {
  double v1[3] = {0};
- double mr[16];
- GLdouble m[16];
+ double mr[16], m[16];
 
  v1[0] = *px;
  v1[1] = *py;
@@ -183,18 +182,11 @@ ay_sm_dotrafos(ay_sm_trafostack *trafo, double *px, double *py, double *pz)
 
  while(trafo)
    {
-
-     glMatrixMode (GL_MODELVIEW);
-     glPushMatrix();
-      glLoadIdentity();
-      glTranslated(trafo->movx, trafo->movy, trafo->movz);
-
-      ay_quat_torotmatrix(trafo->quat, mr);
-      glMultMatrixd(mr);
-
-      glScaled (trafo->scalx, trafo->scaly, trafo->scalz);
-      glGetDoublev(GL_MODELVIEW_MATRIX, m);
-     glPopMatrix();
+     ay_trafo_identitymatrix(m);
+     ay_trafo_translatematrix(trafo->movx, trafo->movy, trafo->movz, m);
+     ay_quat_torotmatrix(trafo->quat, mr);
+     ay_trafo_multmatrix4(m, mr);
+     ay_trafo_scalematrix(trafo->scalx, trafo->scaly, trafo->scalz, m);
 
      ay_trafo_apply3(v1, m);
 
@@ -217,7 +209,7 @@ ay_sm_dotrafosinv(ay_sm_trafostack *trafo, double *px, double *py, double *pz)
 {
  double v1[3] = {0};
  double euler[3];
- GLdouble m[16];
+ double m[16];
 
   v1[0] = *px;
   v1[1] = *py;
@@ -226,22 +218,14 @@ ay_sm_dotrafosinv(ay_sm_trafostack *trafo, double *px, double *py, double *pz)
   if(trafo->next)
    ay_sm_dotrafosinv(trafo->next, px, py, pz);
 
-  glMatrixMode (GL_MODELVIEW);
-  glPushMatrix();
-   glLoadIdentity();
-   glScaled (1.0/trafo->scalx, 1.0/trafo->scaly, 1.0/trafo->scalz);
-
-   ay_quat_toeuler(trafo->quat, euler);
-   glRotated((GLdouble)AY_R2D(euler[0]), (GLdouble)0.0, (GLdouble)0.0,
-	     (GLdouble)1.0);
-   glRotated((GLdouble)AY_R2D(euler[1]), (GLdouble)0.0, (GLdouble)1.0,
-	     (GLdouble)0.0);
-   glRotated((GLdouble)AY_R2D(euler[2]), (GLdouble)1.0, (GLdouble)0.0,
-	     (GLdouble)0.0);
-   
-   glTranslated(-trafo->movx, -trafo->movy, -trafo->movz);
-   glGetDoublev(GL_MODELVIEW_MATRIX, m);
-  glPopMatrix();
+  ay_trafo_identitymatrix(m);
+  ay_trafo_scalematrix(1.0/trafo->scalx, 1.0/trafo->scaly,
+		       1.0/trafo->scalz, m);
+  ay_quat_toeuler(trafo->quat, euler);
+  ay_trafo_rotatematrix(AY_R2D(euler[0]), 0.0, 0.0, 1.0, m);
+  ay_trafo_rotatematrix(AY_R2D(euler[1]), 0.0, 1.0, 0.0, m);
+  ay_trafo_rotatematrix(AY_R2D(euler[2]), 1.0, 0.0, 0.0, m);
+  ay_trafo_translatematrix(-trafo->movx, -trafo->movy, -trafo->movz, m);
 
   ay_trafo_apply3(v1, m);
 

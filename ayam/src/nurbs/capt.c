@@ -45,13 +45,8 @@ ay_capt_createfromcurve(ay_object *c, ay_object **ca)
 
       nc = (ay_nurbcurve_object *)(c->refine);
 
-      glPushMatrix();
-       glTranslated((GLdouble)c->movx, (GLdouble)c->movy, (GLdouble)c->movz);
-       ay_quat_torotmatrix(c->quat, m);
-       glMultMatrixd((GLdouble*)m);
-       glScaled((GLdouble)c->scalx, (GLdouble)c->scaly, (GLdouble)c->scalz);
-       glGetDoublev(GL_MODELVIEW_MATRIX, (GLdouble*)m);
-      glPopMatrix();
+      /* get curves transformation-matrix */
+      ay_trafo_creatematrix(c, m);
 
       if(first)
 	{
@@ -107,22 +102,7 @@ ay_capt_createfromcurve(ay_object *c, ay_object **ca)
 	    } /* while */
 
 	  /* clear trafo */
-	  c->movx = 0.0;
-	  c->movy = 0.0;
-	  c->movz = 0.0;
-
-	  c->rotx = 0.0;
-	  c->roty = 0.0;
-	  c->rotz = 0.0;
-
-	  c->scalx = 1.0;
-	  c->scaly = 1.0;
-	  c->scalz = 1.0;
-
-	  c->quat[0] = 0.0;
-	  c->quat[1] = 0.0;
-	  c->quat[2] = 0.0;
-	  c->quat[3] = 1.0;
+	  ay_trafo_defaults(c);
 
 	  np->controlv[0] = minx;
 	  np->controlv[1] = miny;
@@ -159,22 +139,8 @@ ay_capt_createfromcurve(ay_object *c, ay_object **ca)
 	      i += stride;
 	    } /* while */
 
-	  c->movx = 0.0;
-	  c->movy = 0.0;
-	  c->movz = 0.0;
-
-	  c->rotx = 0.0;
-	  c->roty = 0.0;
-	  c->rotz = 0.0;
-
-	  c->scalx = 1.0;
-	  c->scaly = 1.0;
-	  c->scalz = 1.0;
-
-	  c->quat[0] = 0.0;
-	  c->quat[1] = 0.0;
-	  c->quat[2] = 0.0;
-	  c->quat[3] = 1.0;
+	  /* clear trafo */
+	  ay_trafo_defaults(c);
 
 	} /* if */
 
