@@ -866,6 +866,12 @@ int ay_status = AY_OK;
   Tcl_CreateCommand(interp, "swapUV", ay_npt_swapuvtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  Tcl_CreateCommand(interp, "revertU", ay_npt_revertutcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "revertV", ay_npt_revertvtcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
 /* inform Tcl-context about compile time configuration: */
 
 #ifndef AYWRAPPED
