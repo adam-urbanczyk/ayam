@@ -446,10 +446,11 @@ ay_revolve_crtcap(ay_revolve_object *revolve, ay_object *curve, double u,
 
   if(!(cap = calloc(1, sizeof(ay_object))))
     {return AY_EOMEM;}
+  ay_object_defaults(cap);
   cap->type = AY_IDNPATCH;
   cap->hidechilds = AY_TRUE;
   cap->parent = AY_TRUE;
-  ay_object_defaults(cap);
+  cap->inherit_trafos = AY_FALSE;
 
   if(!(controlv = calloc(4*4, sizeof(double))))
     {free(cap); return AY_EOMEM;}
@@ -640,10 +641,11 @@ ay_revolve_crtside(ay_revolve_object *revolve, ay_object *curve, double th,
   /* create NURBS patch */
   if(!(cap = calloc(1, sizeof(ay_object))))
     {return AY_EOMEM;}
+  ay_object_defaults(cap);
   cap->type = AY_IDNPATCH;
   cap->hidechilds = AY_TRUE;
   cap->parent = AY_TRUE;
-  ay_object_defaults(cap);
+  cap->inherit_trafos = AY_FALSE;
 
   if(!(controlv = calloc(4*4, sizeof(double))))
     {free(cap); return AY_EOMEM;}
