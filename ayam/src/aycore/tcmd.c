@@ -668,3 +668,18 @@ ay_tcmd_waitpidtcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_tcmd_waitpidtcmd */
 
 #endif /* AYENABLEWAIT */
+
+
+#ifdef AYENABLEFEXIT
+/* ay_tcmd_fastexittcmd:
+ *  this command exits the application (without trying to clean up properly);
+ *  it seems that this is the only way to quit Ayam on Mac OS X (atleast
+ *  using Tcl/Tk8.2.2...)
+ */
+int
+ay_tcmd_fastexittcmd(ClientData clientData, Tcl_Interp *interp,
+		     int argc, char *argv[])
+{
+  exit(0);
+} /* ay_tcmd_fastexittcmd */
+#endif /* AYENABLEFEXIT */

@@ -99,7 +99,7 @@ $m add command -label $label -command { global ay
 if { ! [io_warnChanged] } {io_mruLoad 3}}
 $m add separator
 $m add command -label "Exit!" -command {
-    global ayprefs
+    global ayprefs AYENABLEFEXIT
 
     if { ! [io_warnChanged] } { 
 
@@ -112,7 +112,11 @@ $m add command -label "Exit!" -command {
     
 	puts "Good Bye!"
 	update
-	exit
+	if { $AYENABLEFEXIT == 1 } {
+	    fastExit
+	} else {
+	    exit
+	}
     }
 }
 

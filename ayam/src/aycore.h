@@ -579,6 +579,11 @@ int ay_tcmd_waitpidtcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
 #endif /* AYENABLEWAIT */
 
+#ifdef AYENABLEFEXIT
+int ay_tcmd_fastexittcmd(ClientData clientData, Tcl_Interp *interp,
+			 int argc, char *argv[]);
+#endif /* AYENABLEFEXIT */
+
 /* tgui.c */
 int ay_tgui_init(Tcl_Interp *interp);
 
