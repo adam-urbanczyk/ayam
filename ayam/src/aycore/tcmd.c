@@ -191,8 +191,5 @@ ay_tcmd_getvertcmd(ClientData clientData, Tcl_Interp * interp,
   Tcl_SetVar2(interp, arr, "glu_ext", gluext, TCL_GLOBAL_ONLY |
 	     TCL_LEAVE_ERR_MSG);
 
-  Tcl_SetVar2(interp, arr, "ay_version", AYVERSIONSTR, TCL_GLOBAL_ONLY |
-	     TCL_LEAVE_ERR_MSG);
-
  return TCL_OK;
 } /* ay_tcmd_getvertcmd */

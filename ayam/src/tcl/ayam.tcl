@@ -932,6 +932,8 @@ if { ($ayprefs(LoadEnv) == 1) && ($ay(failsafe) == 0) } {
     replaceScene $filename
     uS
     rV
+} else {
+    uS
 }
 
 
