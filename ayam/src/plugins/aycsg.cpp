@@ -39,7 +39,7 @@ ay_object *aycsg_root; // the root of the local copy of the object tree
 // parents (CSG operation objects) to their children (e.g. primitives);
 // note that the TM tags are used here in a quite unusual way:
 // <tag->name> is used to denote coordinate system flips caused by an
-// odd number of scale factors (it is not a pointer!) and
+// odd number of negative scale factors (it is not a pointer!) and
 // <tag->val> points to an array of doubles (the transformation matrix
 // itself) instead to a string;
 // we can do this safely, because no TM tag will escape this module ever
@@ -48,6 +48,7 @@ typedef struct aycsg_taglistelem_s {
   struct aycsg_taglistelem_s *next;
   ay_tag_object *tag;
 } aycsg_taglistelem;
+
 // all TM tags created by aycsg are managed using this list
 aycsg_taglistelem *aycsg_tmtags;
 
@@ -74,6 +75,7 @@ int aycsg_applyrule5(ay_object *t);
 int aycsg_applyrule6(ay_object *t);
 int aycsg_applyrule7(ay_object *t);
 int aycsg_applyrule8(ay_object *t);
+int aycsg_applyrule9(ay_object *t);
 
 int aycsg_normalize(ay_object *t);
 
@@ -167,6 +169,7 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
 {
  int ay_status = AY_OK;
  // Tcl_Interp *interp = ay_interp;
+ ay_object *o = NULL;
  ay_view_object *view = NULL;
  int orig_use_materialcolor = ay_prefs.use_materialcolor;
  GLfloat color[4] = {0.0f,0.0f,0.0f,0.0f};
@@ -230,10 +233,7 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &calc_bbs);
 
-  // do not use glColor()/glMaterial() while resolving CSG,
-  // it is needed by OpenCSG...
-  ay_prefs.use_materialcolor = AY_FALSE;
-
+ 
   view = (ay_view_object *)Togl_GetClientData(togl);
 
   // tell shade callbacks we are rendering CSG
@@ -252,6 +252,13 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
   
   ay_status = aycsg_removetlu(aycsg_root, &aycsg_root);
   
+  o = aycsg_root;
+  while(o)
+    {
+      ay_status = aycsg_normalize(o);
+      o = o->next;
+    }
+
 #ifdef AYCSGDBG
   ay_ppoh_print(aycsg_root, stdout, 0, cbv);
   /*  aycsg_cleartree(aycsg_root);
@@ -261,52 +268,67 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
   return TCL_OK;*/
 #endif
 
-  ay_status = aycsg_normalize(aycsg_root);
-
-  ay_status = aycsg_flatten(aycsg_root, togl, AY_LTUNION);
+  // draw CSG
+  glClearColor((GLfloat)ay_prefs.bgr, (GLfloat)ay_prefs.bgg,
+	       (GLfloat)ay_prefs.bgb, (GLfloat)0.0);
+  glClear(GL_COLOR_BUFFER_BIT);
 
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
-
+  
   if(view->drawsel || view->drawlevel)
     {
       glPushMatrix();
       ay_trafo_getall(ay_currentlevel->next);
     }
 
-  glClearDepth((GLfloat)1.0);
-  glClearColor((GLfloat)ay_prefs.bgr, (GLfloat)ay_prefs.bgg,
-	       (GLfloat)ay_prefs.bgb, (GLfloat)0.0);
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+  o = aycsg_root;
+  while(o)
+    {
+      if(o->CSGTYPE != AY_LTPRIM)
+	{
+	  // do not use glColor()/glMaterial() while resolving CSG,
+	  // it is needed by OpenCSG...
+	  ay_prefs.use_materialcolor = AY_FALSE;
 
-  // fill depth buffer (resolve CSG operations)
-  glDisable(GL_LIGHTING);
-  OpenCSG::render(primitives, algo, depthalgo);
+	  ay_status = aycsg_flatten(o/*aycsg_root*/, togl, AY_LTUNION);
 
-  // now draw again using existing depth buffer bits and
-  // possibly with colors
-  glEnable(GL_DITHER);
-  glEnable(GL_LIGHTING);
-  glLightModelf(GL_LIGHT_MODEL_TWO_SIDE, (GLfloat)1.0);
-  glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);
+	  glClearDepth((GLfloat)1.0);
+	  glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-  color[0] = (GLfloat)ay_prefs.shr;
-  color[1] = (GLfloat)ay_prefs.shg;
-  color[2] = (GLfloat)ay_prefs.shb;
-  color[3] = (GLfloat)1.0;
+	  // fill depth buffer (resolve CSG operations)
+	  glDisable(GL_LIGHTING);
+	  OpenCSG::render(primitives, algo, depthalgo);
 
-  glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, color);
-  glMatrixMode(GL_MODELVIEW);
+	  // now draw again using existing depth buffer bits and
+	  // possibly with colors
+	  glEnable(GL_DITHER);
+	  glEnable(GL_LIGHTING);
+	  glLightModelf(GL_LIGHT_MODEL_TWO_SIDE, (GLfloat)1.0);
+	  glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);
 
-  ay_prefs.use_materialcolor = orig_use_materialcolor;
-  glDepthFunc(GL_EQUAL);
-   for(std::vector<OpenCSG::Primitive*>::const_iterator i =
-	 primitives.begin(); i != primitives.end(); ++i) {
-     (*i)->render();
-   }
-  glDepthFunc(GL_LESS);
+	  color[0] = (GLfloat)ay_prefs.shr;
+	  color[1] = (GLfloat)ay_prefs.shg;
+	  color[2] = (GLfloat)ay_prefs.shb;
+	  color[3] = (GLfloat)1.0;
+
+	  glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, color);
+	  glMatrixMode(GL_MODELVIEW);
+
+	  ay_prefs.use_materialcolor = orig_use_materialcolor;
+	  glDepthFunc(GL_EQUAL);
+	  for(std::vector<OpenCSG::Primitive*>::const_iterator i =
+		primitives.begin(); i != primitives.end(); ++i) {
+	    (*i)->render();
+	  }
+	  glDepthFunc(GL_LESS);
+	  aycsg_clearprimitives();
+	} /* if */
+      o = o->next;
+    } /* while */
 
   // now draw non-CSG top level primitives
+ 
   ay_status = aycsg_drawtoplevelprim(togl);
 
   if(view->drawsel || view->drawlevel)
@@ -385,67 +407,63 @@ aycsg_flatten(ay_object *t, struct Togl *togl, int parent_csgtype)
  ay_tag_object *tag = NULL;
  int dc = 1;
 
-  while(t)
+  // is t a primitive?
+  if((t->CSGTYPE == AY_LTPRIM) && (parent_csgtype != AY_LTUNION))
     {
-      // is t a primitive?
-      if((t->CSGTYPE == AY_LTPRIM) && (parent_csgtype != AY_LTUNION))
+      // yes
+     
+      // get depth complexity
+      dc = 1;
+      if(t->tags)
 	{
-	  // yes
-
-	  // get depth complexity
-	  dc = 1;
-	  if(t->tags)
+	  tag = t->tags;
+	  while(tag)
 	    {
-	      tag = t->tags;
-	      while(tag)
+	      if(tag->type == aycsg_dc_tagtype)
 		{
-		  if(tag->type == aycsg_dc_tagtype)
+		  if(tag->val)
 		    {
-		      if(tag->val)
-			{
-			  sscanf(tag->val, "%d", &dc);
-			} // if
+		      sscanf(tag->val, "%d", &dc);
 		    } // if
-		  tag = tag->next;
-		} // while
-	    } // if
-
-	  // is this the lowest and leftmost primitive in the tree?
-	  // the simple check (t->next) is possible, because the
-	  // tree is binary _and_ normalized
-	  if(t->next)
-	    {
-	      // yes, this is always an intersecting primitive
-	      primitives.push_back(new OpenCSG::ayCSGPrimitive(t, togl,
-						OpenCSG::Intersection, dc));
-	    }
-	  else
-	    {
-	      // no, use parent_csgtype to determine CSG operation
-	      if(parent_csgtype == AY_LTDIFF)
-		{
-		  primitives.push_back(new OpenCSG::ayCSGPrimitive(t, togl,
-						    OpenCSG::Subtraction, dc));
-		}
-	      else
-		{
-		  primitives.push_back(new OpenCSG::ayCSGPrimitive(t, togl,
-						    OpenCSG::Intersection, dc));
 		} // if
-	    } // if
+	      tag = tag->next;
+	    } // while
+	} // if
 
+      // is this the lowest and leftmost primitive in the tree?
+      // the simple check (t->next) is possible, because the
+      // tree is binary _and_ normalized
+      if(t->next)
+	{
+	  // yes, this is always an intersecting primitive
+	  primitives.push_back(new OpenCSG::ayCSGPrimitive(t, togl,
+						 OpenCSG::Intersection, dc));
 	}
       else
 	{
-	  // no
-	  if((t->type == AY_IDLEVEL) && (t->down))
+	  // no, use parent_csgtype to determine CSG operation
+	  if(parent_csgtype == AY_LTDIFF)
 	    {
-	      ay_status = aycsg_flatten(t->down, togl, t->CSGTYPE);
+	      primitives.push_back(new OpenCSG::ayCSGPrimitive(t, togl,
+						  OpenCSG::Subtraction, dc));
 	    }
+	  else
+	    {
+	      primitives.push_back(new OpenCSG::ayCSGPrimitive(t, togl,
+						  OpenCSG::Intersection, dc));
+	    } // if
 	} // if
 
-     t = t->next;
-    } // while
+    }
+  else
+    {
+      // no
+      if((t->type == AY_IDLEVEL) && (t->down) && (t->down->next))
+	{
+	  ay_status = aycsg_flatten(t->down, togl, t->CSGTYPE);
+	  ay_status = aycsg_flatten(t->down->next, togl, t->CSGTYPE);
+	}
+    } // if
 
  return ay_status;
 } // aycsg_flatten
@@ -474,6 +492,7 @@ aycsg_clearprimitives()
 // a binary tree to disjunctive normal form (sum of products).
 
 // Rule1: X - ( Y U Z ) => ( X - Y ) - Z
+//          t     s            s     t
 int
 aycsg_applyrule1(ay_object *t)
 {
@@ -506,7 +525,9 @@ aycsg_applyrule1(ay_object *t)
   X->next = Y;
   Y->next = NULL;
   s->next = Z;
-
+#ifdef AYCSGDBG
+  printf("applied rule1\n");
+#endif
  return AY_OK;
 } // aycsg_applyrule1
 
@@ -555,7 +576,9 @@ aycsg_applyrule2(ay_object *t)
   Y->next = NULL;
   s->down = Xnew;
   Xnew->next = Z;
-
+#ifdef AYCSGDBG
+  printf("applied rule2\n");
+#endif
  return AY_OK;
 } // aycsg_applyrule2
 
@@ -604,12 +627,15 @@ aycsg_applyrule3(ay_object *t)
   Y->next = NULL;
   s->down = Xnew;
   Xnew->next = Z;
-
+#ifdef AYCSGDBG
+  printf("applied rule3\n");
+#endif
  return AY_OK;
 } // aycsg_applyrule3
 
 
 // Rule4: X O ( Y O Z ) => ( X O Y ) O Z
+//          t     s            s     t
 int
 aycsg_applyrule4(ay_object *t)
 {
@@ -639,7 +665,9 @@ aycsg_applyrule4(ay_object *t)
   s->down = X;
   X->next = Y;
   Y->next = NULL;
-
+#ifdef AYCSGDBG
+  printf("applied rule4\n");
+#endif
  return AY_OK;
 } // aycsg_applyrule4
 
@@ -688,12 +716,15 @@ aycsg_applyrule5(ay_object *t)
   Y->next = NULL;
   s->down = Xnew;
   Xnew->next = Z;
-
+#ifdef AYCSGDBG
+  printf("applied rule5\n");
+#endif
  return AY_OK;
 } // aycsg_applyrule5
 
 
 // Rule6: X O ( Y - Z ) => ( X O Y ) - Z
+//          t     s            s     t
 int
 aycsg_applyrule6(ay_object *t)
 {
@@ -720,35 +751,37 @@ aycsg_applyrule6(ay_object *t)
   Z = Y->next;
 
   // 2. transform hierarchy
-  t->CSGTYPE = AY_LTINT;
+  t->CSGTYPE = AY_LTDIFF;
   t->down = s;
   s->down = X;
   X->next = Y;
   s->next = Z;
   Y->next = NULL;
-
+#ifdef AYCSGDBG
+  printf("applied rule6\n");
+#endif
  return AY_OK;
 } // aycsg_applyrule6
 
 
-// Rule7: ( X U Y ) - Z => ( X - Z ) U ( Y - Z )
-//            r     t          r     t     s
+// Rule7: ( X - Y ) O Z => ( X O Z ) - Y
+//            r     t          r     t
 int
 aycsg_applyrule7(ay_object *t)
 {
- ay_object *X, *Y, *Z, *Znew, *r, *s;
+ ay_object *X, *Y, *Z, *r;
 
   // 1. check applicability of rule
   if(!t || !t->down || !t->down->next)
     return AY_ERROR;
 
-  if(t->CSGTYPE != AY_LTDIFF)
+  if(t->CSGTYPE != AY_LTINT)
     return AY_ERROR;
 
   r = t->down;
   Z = t->down->next;
 
-  if(r->CSGTYPE != AY_LTUNION)
+  if(r->CSGTYPE != AY_LTDIFF)
     return AY_ERROR;
 
   if(!r->down)
@@ -758,23 +791,16 @@ aycsg_applyrule7(ay_object *t)
   Y = r->down->next;
 
   // 2. transform hierarchy
-  if(!(Znew = (ay_object*)calloc(1, sizeof(ay_object))))
-    return AY_EOMEM;
-  memcpy(Znew, Z, sizeof(ay_object));
-  if(!(s = (ay_object*)calloc(1, sizeof(ay_object))))
-    {free(Znew); return AY_EOMEM;}
-  memcpy(s, t, sizeof(ay_object));
-
-  t->CSGTYPE = AY_LTUNION;
-  r->CSGTYPE = AY_LTDIFF;
-  s->CSGTYPE = AY_LTDIFF;
+  t->CSGTYPE = AY_LTDIFF;
+  r->CSGTYPE = AY_LTINT;
   t->down = r;
-  r->next = s;
+  r->next = Y;
   r->down = X;
   X->next = Z;
-  s->down = Y;
-  Y->next = Znew;
 
+#ifdef AYCSGDBG
+  printf("applied rule7\n");
+#endif
  return AY_OK;
 } // aycsg_applyrule7
 
@@ -822,9 +848,61 @@ aycsg_applyrule8(ay_object *t)
   X->next = Z;
   s->down = Y;
   Y->next = Znew;
-
+#ifdef AYCSGDBG
+  printf("applied rule8\n");
+#endif
  return AY_OK;
 } // aycsg_applyrule8
+
+
+// Rule9: ( X U Y ) - Z => ( X - Z ) U ( Y - Z )
+//            r     t          r     t     s
+int
+aycsg_applyrule9(ay_object *t)
+{
+ ay_object *X, *Y, *Z, *Znew, *r, *s;
+
+  // 1. check applicability of rule
+  if(!t || !t->down || !t->down->next)
+    return AY_ERROR;
+
+  if(t->CSGTYPE != AY_LTDIFF)
+    return AY_ERROR;
+
+  r = t->down;
+  Z = t->down->next;
+
+  if(r->CSGTYPE != AY_LTUNION)
+    return AY_ERROR;
+
+  if(!r->down)
+    return AY_ERROR;
+
+  X = r->down;
+  Y = r->down->next;
+
+  // 2. transform hierarchy
+  if(!(Znew = (ay_object*)calloc(1, sizeof(ay_object))))
+    return AY_EOMEM;
+  memcpy(Znew, Z, sizeof(ay_object));
+  if(!(s = (ay_object*)calloc(1, sizeof(ay_object))))
+    {free(Znew); return AY_EOMEM;}
+  memcpy(s, t, sizeof(ay_object));
+
+  t->CSGTYPE = AY_LTUNION;
+  r->CSGTYPE = AY_LTDIFF;
+  s->CSGTYPE = AY_LTDIFF;
+  t->down = r;
+  r->next = s;
+  r->down = X;
+  X->next = Z;
+  s->down = Y;
+  Y->next = Znew;
+#ifdef AYCSGDBG
+  printf("applied rule9\n");
+#endif
+ return AY_OK;
+} // aycsg_applyrule9
 
 
 // aycsg_normalize:
@@ -834,50 +912,92 @@ int
 aycsg_normalize(ay_object *t)
 {
  int ay_status = AY_OK;
- int done;
+ int done, stop;
 
-  while(t)
+  if(!t)
+    return AY_ENULL;
+
+  if((t->CSGTYPE != AY_LTPRIM) && t->down && t->down->next)
     {
-      if((t->CSGTYPE != AY_LTPRIM) && t->down && t->down->next)
+      do
 	{
-	  do
+	  done = AY_FALSE;
+	  while(!done)
 	    {
-	      done = AY_FALSE;
-	      while(!done)
+	      done = AY_TRUE;
+	      if(!aycsg_applyrule1(t))
 		{
-		  done = AY_TRUE;
-		  if(!aycsg_applyrule1(t))
-		    done = AY_FALSE;
-		  if(!aycsg_applyrule2(t))
-		    done = AY_FALSE;
-		  if(!aycsg_applyrule3(t))
-		    done = AY_FALSE;
-		  if(!aycsg_applyrule4(t))
-		    done = AY_FALSE;
-		  if(!aycsg_applyrule5(t))
-		    done = AY_FALSE;
-		  if(!aycsg_applyrule6(t))
-		    done = AY_FALSE;
-		  if(!aycsg_applyrule7(t))
-		    done = AY_FALSE;
-		  if(!aycsg_applyrule8(t))
-		    done = AY_FALSE;
-		} // while
-
-	      if(t->down)
-		{
-		  ay_status = aycsg_normalize(t->down);
+		  done = AY_FALSE;
+		  continue;
 		}
+	      if(!aycsg_applyrule2(t))
+		{
+		  done = AY_FALSE;
+		  continue;
+		}
+	      if(!aycsg_applyrule3(t))
+		{
+		  done = AY_FALSE;
+		  continue;
+		}
+	      if(!aycsg_applyrule4(t))
+		{
+		  done = AY_FALSE;
+		  continue;
+		}
+	      if(!aycsg_applyrule5(t))
+		{
+		  done = AY_FALSE;
+		  continue;
+		}
+	      if(!aycsg_applyrule6(t))
+		{
+		  done = AY_FALSE;
+		  continue;
+		}
+	      if(!aycsg_applyrule7(t))
+		{
+		  done = AY_FALSE;
+		  continue;
+		}
+	      if(!aycsg_applyrule8(t))
+		{
+		  done = AY_FALSE;
+		  continue;
+		}
+	      if(!aycsg_applyrule9(t))
+		{
+		  done = AY_FALSE;
+		  continue;
+		}
+	    } // while
+
+	  if(t->down)
+	    {
+	      ay_status = aycsg_normalize(t->down);
 	    }
-	  while((t->CSGTYPE != AY_LTUNION) && (!(
-		(t->down->next->CSGTYPE == AY_LTPRIM) ||
-		t->down->CSGTYPE != AY_LTUNION)));
 
+	  if((t->CSGTYPE == AY_LTUNION) || ((t->down->next->CSGTYPE ==
+		AY_LTPRIM) && (t->down->CSGTYPE != AY_LTUNION)))
+	    {
+	      stop = AY_TRUE;
+	    }
+	  else
+	    {
+	      stop = AY_FALSE;
+	    } // if
+
+	}
+      while(!stop/*(t->CSGTYPE != AY_LTUNION) && (!(
+		   (t->down->next->CSGTYPE == AY_LTPRIM) &&
+		   t->down->CSGTYPE != AY_LTUNION))*/);
+
+      if(t->down && t->down->next)
+	{
 	  ay_status = aycsg_normalize(t->down->next);
-
 	} // if
-      t = t->next;
-    } // while
+
+    } // if
 
  return ay_status;
 } // aycsg_normalize
