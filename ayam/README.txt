@@ -1,4 +1,4 @@
-[README.txt, 09. Jun 2002]
+[README.txt, 24. Jun 2003]
 
 This is the readme file for Ayam.
 
@@ -19,12 +19,16 @@ o lib/           - the splash screen image
 o scn/           - some example scenes
 o src/           - source code (may be omitted in binary release archives)
 
+For installation instructions, please read the file bin/INSTALL.
 
-For more up to date information, new versions etc. see the Ayam home page:
+For compilation instructions, please read the file src/INSTALL.
+
+For more up to date information, new versions etc. please see the
+Ayam home page:
 http://www.ayam3d.org/
 
-or the mirror on:
+or the mirror at:
 http://wwwicg.informatik.uni-rostock.de/~rschultz/ayam/ayam.html
 
---
+-- 
 http://www.ayam3d.org/    Reconstruct the World!
