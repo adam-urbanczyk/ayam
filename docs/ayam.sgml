@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>25. Nov 2001
+<date>2. Dec 2001
 <abstract>
 This is the documentation of Ayam - a free 3D modeling environment
 for the RenderMan interface.
@@ -383,8 +383,10 @@ currently selected object to the property clipboard (the property
 clipboard is completely independent from the normal object clipboard!).
 <item><tt/Paste Property/, copies a property from the property clipboard
 to the currently selected object(s). 
-<item><tt/Undo/, perform undo operation
-<item><tt/Redo/, perform redo operation
+<item><tt/Undo/, perform undo operation (see section
+<ref id="undos" name="The Undo System"> for more information)
+<item><tt/Redo/, perform redo operation (see section
+<ref id="undos" name="The Undo System"> for more information)
 <item><tt/Preferences/, open preferences dialog (see section
 <ref id="prefs" name="Preferences"> for more information).
 </itemize>
@@ -921,81 +923,112 @@ are not available in perspective views.<p>
 If an action is in effect for a view, the views title will be changed
 appropriately.<p>
 
-Generally, an action is performed by clicking into the
+A modelling action is performed by clicking into the
 view to mark a point in space or to pick a vertex, then dragging
-the mouse.
+the mouse.<p>
 
-You may undo the effects of an action using <tt/&lt;Ctrl+z&gt;/.<p>
+You may undo/redo the effects of an action using <tt/&lt;Ctrl+z&gt;/
+and <tt/&lt;Ctrl+y&gt;/ (see section
+<ref id="undos" name="The Undo System"> for more information).<p>
 
-<itemize>
-<item>Move objects (shortcut: <tt/&lt;m&gt;/):
-moves selected object(s) in the current input plane.<p>
+Grids are available to restrict the modeling actions to certain
+points and help in exact modeling.
 
-<item>Rotate objects (shortcut: <tt/&lt;r&gt;/):
-rotates the selected object(s) around an axis of the local
-coordinate system. The axis is Z in front/trim views, Y in top views
-and X in side views.<p>
+Also note, that you may use the middle and rightmost mouse button
+to zoom and move the view while modeling actions are active.
 
-<item>Rotate About (shortcut: <tt/&lt;a&gt;/):
-rotates the selected object(s) around an axis that has to be specified
-by a first single click into the view. The picked
-point will then be marked by a little red cross.
+For actions that modify the camera of a view
+please see section <ref id="vwsc" name="View Window Shortcuts and Actions">.
+
+<sect1>Moving Objects or Selected Points
+<p>
+Using the modeling action <tt/"Move"/ (shortcut: <tt/&lt;m&gt;/)
+you may move selected objects or the selected (tagged) points
+of the selected objects.<p>
+
+Note, that the objects/points will be moved in the XY-plane for
+Front-views, the ZY-plane for Side-views, and the XZ-plane
+for Top-views only, no matter how the view is rotated.
+
+<sect1>Rotating Objects or Selected Points<label id="rotac">
+<p>
+Using the modeling action <tt/"Rotate"/ (shortcut: <tt/&lt;r&gt;/)
+you may rotate objects or the selected (tagged) points
+of the selected objects.<p>
+
+Note, that if multiple objects are selected, each object is rotated
+around the center of its own local coordinate system.
+The axis of rotation is always parallel to the Z-axis in Front-views, the
+Y-axis in Top-views, and the X-axis in Side-views.<p>
+
+<sect1>Rotating Objects or Selected Points around a Point
+<p>
+Using the modeling action <tt/"Rotate about"/ (shortcut: <tt/&lt;a&gt;/)
+you may rotate objects or the selected (tagged) points
+of the selected objects around a specified point in space.
+The action requires a point to be specified using a single
+click after the action has been started.
+The point will then be marked by a little red cross.
 You need to restart the action (press <tt/&lt;a&gt;/ another
-time) to rotate about a different axis.
-The axis is always parallel to the Z axis in front/trim views, the
-Y axis in top views and the X axis in side views.<p>
+time) to rotate about a different point.
+After the first click, the action works the same way as
+the Rotate action, except that it rotates around the specified point.
+This also works with multiple selected objects.
+Note, that this action does not only change the Rotate_X(_Y,_Z)
+properties of the selected objects, but also the Translate_X(_Y,_Z)
+properties.<p>
 
-<item>Scale objects 3D (shortcut: <tt/&lt;S&gt;/, note the case!):
-Scale all three axes of the selected object(s) by the same factor.<p>
+To avoid degenerated coordinates due to roundoff errors
+it is highly suggested to use grids with this action.
 
-<item>Scale objects 2D (shortcut: <tt/&lt;s&gt;/):
-Scale just two axes of the selected object(s).<p>
 
-<item>Stretch objects 2D (shortcut: <tt/&lt;Alt+s&gt;/):
-This action works much like Scale2D but the scalefactor for each
+<sect1>Scaling Objects or Selected Points<label id="scalac">
+<p>
+There are several different actions available to scale
+objects or the selected (tagged) points
+of the selected objects.<p>
+
+The modeling action <tt/"Scale 3D"/ (shortcut: <tt/&lt;S&gt;/, note the
+big S!) scales all three axes of the selected objects or
+the selected (tagged) points of the selected objects
+by the same factor.<p>
+
+The modeling action <tt/"Scale 2D"/ (shortcut: <tt/&lt;s&gt;/)
+scales just two axes of the selected objects or
+the selected (tagged) points of the selected objects. Those axes are
+XY in a Front-view, ZY in a Side-view, and XZ in a Top-view.<p>
+
+The modeling actions <tt/"Scale X"/ (shortcut: <tt/&lt;x&gt;/),
+<tt/"Scale Y"/ (shortcut: <tt/&lt;y&gt;/), and
+<tt/"Scale Z"/ (shortcut: <tt/&lt;z&gt;/) scale only one axis
+of the selected objects or
+the selected (tagged) points of the selected objects.
+
+The modeling action <tt/"Stretch 2D"/ (shortcut: <tt/&lt;Alt+s&gt;/)
+works much like <tt/"Scale 2D"/ but the scale factor for each
 axis may be different. Never start this action by a click
 near one of the axes to be changed, as this will cause
 very big scale factors for the other axis. Try it first with
 a centered box by starting from one of the vertices,
-then try it once starting on the X axis.<p>
+then try it once starting on the X-axis.<p>
 
-<item>Scale objects 1D (shortcuts: <tt/&lt;x&gt;/,<tt/&lt;y&gt;/
-and <tt/&lt;z&gt;/):
-Scale just one axis of the selected object(s).<p>
 
-<item>Single point editing (moving vertices) (shortcut: <tt/&lt;e&gt;/):
-May be applied to a single NURBS curve, NURBS patch or objects
-that supports single point editing only.
-This action works much like the move action, but it moves
-single control points instead of objects.<p>
-
-<item>Single point weight editing (shortcut: <tt/&lt;w&gt;/):
-May be applied to a NURBS curve, NURBS patch or objects
-that supports single point editing.
-Using this action you may change the w coordinate of a
-single control point by dragging the mouse left or right.
-The weights may be reset for all points
-using the shortcut: <tt/&lt;W&gt;/.<p>
-
-<item>Single point direct editing (shortcut: <tt/&lt;p&gt;/):
-May be applied to a NURBS curve, NURBS patch or objects
-that supports single point editing only.
-After the pick (the selection of a control point), a window will
-pop up, where you may change the coordinates of the selected point
-directly by entering numbers.
-Note, that the w coordinate setting will be ignored if the
-picked point does not have weight information.<p>
-
-<item>Select Points (shortcut: <tt/&lt;t&gt;/; tag points):
-May be applied to a NURBS curve, NURBS patch or objects
-that supports single point editing only.
+<sect1>Selecting Points<label id="selac">
+<p>
+The modeling action <tt/"Select Points"/
+(shortcut: <tt/&lt;t&gt;/; tag points)
+may be applied to a NURBS curve, NURBS patch or objects
+that support single point editing only. Objects draw the
+selectable points using small rectangular handles.
+The selected points
+may be modified using the modeling actions discussed above.
 After the pick (the selection of a point), the
 selected point will be added to the list of selected points for the
 selected object (selected points will be drawn in dark red).
 If the selected point is already in that list
 it will be removed from the list instead. Note that the list
 of selected points will not be deleted from the object
-until a deselect is performed, e.g. using the shortcut <tt/&lt;D&gt;/.
+until a deselect is performed using the shortcut <tt/&lt;D&gt;/.
 The list is not
 copied, if the object is copied using the clipboard, however.
 The list is not reconstructed upon undo too!<p>
@@ -1004,14 +1037,45 @@ the move action, then switch to single point editing, edit
 some other or even one of the selected points, switch back
 to the selection action, add other points to the selection or delete some
 points from the selection, switch to rotate, rotate the selected
-points and so on. You may also add a bigger number of points
+points and so on.<p>
+
+You may also add a bigger number of points
 to the selection using a click and drag operation. All points
-that lie in the rectangular region defined by the click and drag
+that are drawn in the rectangular region defined by the click and drag
 will be added to the selection. The click and drag selection
 may take some time, depending on the size of the region!<p>
 
-<item>Insert point (shortcut: <tt/&lt;i&gt;/):
-May be applied to NURBS and ICurves curves only.
+<sect1>Editing Points<label id="editac">
+<p>
+To edit the points of an object three actions are available.
+All actions may be applied to a single NURBS curve, NURBS patch or objects
+that support single point editing only.
+Objects mark themselves
+editable by drawing the editable points using small rectangular handles.
+<itemize>
+<item>The modeling action <tt/"Edit"/ (shortcut: <tt/&lt;e&gt;/)
+works much like the move action, but it moves
+single points instead of objects.<p>
+
+<item>The modeling action <tt/"Edit Weights"/ (shortcut: <tt/&lt;w&gt;/)
+changes the w coordinate of a
+single point by dragging the mouse left or right.
+The weights may be reset for all points
+using the shortcut: <tt/&lt;W&gt;/.<p>
+
+<item>The modeling action <tt/"Direct Point Edit"/ (shortcut:
+<tt/&lt;p&gt;/)
+opens a small window where you may change the coordinates of the
+selected point directly by entering numbers.
+Note, that the w coordinate setting will be ignored if the
+picked point does not have weight information (is not homogenous).
+</itemize>
+
+
+<sect1>Inserting or Deleting Points<label id="insdelac">
+<p>
+The modeling action <tt/"Insert Point"/ (shortcut: <tt/&lt;i&gt;/)
+may be applied to NURBS and ICurves curves only.
 A new control point will be inserted in the curve right
 after the picked point. The new point will be inserted in the
 middle between the selected point and the next point, changing
@@ -1019,15 +1083,19 @@ the shape of the curve. It is possible to insert control
 points into certain types of NURBS curves using knot insertion,
 see the insert knot tool <ref id="insknt" name="The Insert Knot Tool">.<p>
 
-<item>Delete point (shortcut: <tt/&lt;d&gt;/):
-May be applied to NURBS and ICurves curves only.
+The modeling action <tt/"Delete Point"/ (shortcut: <tt/&lt;d&gt;/)
+may be applied to NURBS and ICurves curves only.
 The selected control point will be deleted from the curve.
 Deleting points from a curve with knot type custom
-may lead to an incorrect knot sequence, currently, please
+may currently lead to an incorrect knot sequence, please
 check the new sequence.<p>
 
-<item>FindU (shortcut: <tt/&lt;u&gt;/):
-May be applied to NURBS curves only.
+<sect1>Miscellaneous Actions<label id="miscac">
+<p>
+This section documents some special modeling actions.
+<itemize>
+<item>The modeling action <tt/"FindU"/ (shortcut: <tt/&lt;u&gt;/)
+may be applied to NURBS curves only.
 This action may be used to get the corresponding parametric
 value u from a point on a curve. Pick a point on the curve
 (not a control point!). If this
@@ -1037,8 +1105,8 @@ A small cross is drawn at the position of the picked point.
 Remember to exactly pick a point on the curve or nearby, otherwise
 the calculation may fail and no value will be written to the console.<p>
 
-<item>SplitCurve (shortcut <tt/&lt;c&gt;/):
-May be applied to NURBS curves only.
+<item>The modeling action <tt/"Split Curve"/ (shortcut <tt/&lt;c&gt;/)
+may be applied to NURBS curves only.<p>
 Using this action you may split a NURBS curve into two new curves
 at a point on the curve that may be specified by picking a point
 on the curve.<p>
@@ -1046,11 +1114,8 @@ Remember to exactly pick a point on the curve or nearby otherwise
 the calculation of the parametric value for the split will fail.<p>
 The selected curve will be changed by this action, and
 a new curve will be created. It is currently not possible to undo
-the changes of a split.<p>
-
+the changes of a split!<p>
 </itemize>
-
-To break an action, the <tt/&lt;Esc&gt;/ key may be used.
 
 <sect>Ayam Objects and Properties<label id="obandprp">
 <p>
@@ -3380,6 +3445,33 @@ $ay(cm) add command -label "Easy Sweep" -command {
 
 <sect>Miscellaneous
 <p>
+<sect1>The Undo System<label id="undos">
+<p>
+Using the undo system you may correct mistakes you made
+while modeling.
+However, it is currently not possible to undo any changes to the object
+hierarchy, including clipboard and Drag-and-Drop operations.
+If you delete an object, it is gone! If you, accidentally, move
+an object using Drag-and-Drop, undo will not help!
+Only changes to objects are undoable. This includes changes
+made by modeling actions, changes made using property GUIs, but also changes
+to views (type changes or changes to the camera settings associated
+with a view).<p>
+
+The undo system works by storing copies of the different
+states of changed objects in an undo buffer. The storage space occupied by
+the undo buffer may be adjusted using the preferences
+(Prefs/Modeling/UndoLevels).
+You may step backward through the saved states using
+<tt/&lt;Ctrl+z&gt;/ (undo) but also forward using <tt/&lt;Ctrl+y&gt;/ (redo).
+
+Several actions will completely clear the undo buffer (no undo is
+possible after this action).
+Those are Delete Object, New Scene, Replace Scene, and Close View.
+
+Note, that undo/redo will also modify objects that currently reside in the
+clipboard if they have saved states in the undo buffer.
+
 <sect1>Ayamrc File<label id="ayamrc">
 <p>
 To customize Ayam the ayamrc file may be used.
@@ -3747,11 +3839,11 @@ D
 <item>DefaultMat: <ref id="prefrib" name="preference setting">
 <item>delegTrafo: <ref id="movob" name="scripting interface command">
 <item>Delete: <ref id="mm" name="main menu entry">,
-<ref id="iac" name="delete points">
+<ref id="insdelac" name="delete points">
 <item>delOb: <ref id="copob" name="scripting interface command">
 <item>Difference: <ref id="mm" name="main menu entry">,
 <ref id="levelobj" name="object and properties">
-<item>Direct Editing: <ref id="iac" name="direct editing of points">
+<item>Direct Editing: <ref id="editac" name="edit points">
 <item>Disk: <ref id="mm" name="main menu entry">,
 <ref id="diskobj" name="object">
 <item>Displacement: <ref id="matshader" name="shader">
@@ -3765,7 +3857,7 @@ D
 
 E
 <itemize>
-<item>Edit: <ref id="iac" name="single point editing">
+<item>Edit: <ref id="editac" name="edit points">
 <item>EditSnaps: <ref id="prefmodel" name="preference setting">
 <item>elevateNC: <ref id="gncp" name="scripting interface command">,
 <ref id="elevt" name="elevate tool">
@@ -3786,7 +3878,7 @@ F
 <itemize>
 <item>FilterFunc: <ref id="rio" name="RenderMan interface option">
 <item>FilterWidth: <ref id="rio" name="RenderMan interface option">
-<item>FindU: <ref id="vwsc" name="view action">
+<item>FindU: <ref id="miscac" name="modeling action">
 <item>forAll, forAllT: <ref id="fall" name="scripting interface command">
 <item>forceNot: <ref id="gtype" name="scripting interface command">
 <item>From: <ref id="camp" name="camera property">,
@@ -3827,7 +3919,7 @@ I
 <item>ICurve: <ref id="icurveobj" name ="object">
 <item>Image: <ref id="prefrib" name="preference setting">
 <item>Imager: <ref id="imager" name="property">
-<item>Insert: <ref id="iac" name="insert points">
+<item>Insert: <ref id="insdelac" name="insert points">
 <item>insKn: <ref id="gncp" name="scripting interface command">
 <item>Insert Knot: <ref id="insknt" name="insert knot tool">
 <item>insertScene: <ref id="scio" name="scripting interface command">
@@ -3960,6 +4052,7 @@ R
 <ref id="cyp" name="cylinder attribute">
 <item>RadSteps: <ref id="rio" name="RenderMan interface option">
 <item>RedirectTcl: <ref id="prefmisc" name="preference setting">
+<item>Redo: <ref id="undos" name="The Undo System">
 <item>Redraw: <ref id="vm" name="view menu entry">,
 <ref id="incds" name="speeding up">,
 <ref id="vat" name="view attribute">
@@ -3993,8 +4086,8 @@ R
 <item>Roll: <ref id="camp" name="camera property">
 <item>Root: <ref id="rootobj" name="object">
 <item>Rotate: <ref id="vwsc" name="view action">,
-<ref id="swp" name="sweep attribute">,
-<ref id="iac" name="rotate object">
+<ref id="rotac" name="rotate object">,
+<ref id="swp" name="sweep attribute">
 <item>Rotation: <ref id="trap" name="transformation property">,
 <ref id="gimb" name="using the transformations property">
 <item>rotOb, rotSel: <ref id="movob" name="scripting interface command">
@@ -4012,12 +4105,12 @@ S
 <item>SaveAddsMRU: <ref id="prefmisc" name="preference setting">
 <item>saveScene: <ref id="scio" name="scripting interface command">
 <item>Scale: <ref id="trap" name="transformation property">,
-<ref id="iac" name="scale object">
+<ref id="scalac" name="scale object">
 <item>scalOb, scalSel: <ref id="movob" name="scripting interface command">
 <item>Scripts: <ref id="prefgui" name="preference setting">
 <item>Sections: <ref id="swp" name="sweep attribute">
 <item>Select: <ref id="obj" name="select objects">,
-<ref id="iac" name="select points">
+<ref id="selac" name="select points">
 <item>Selection: <ref id="prefdraw" name="preference setting">
 <item>setNC: <ref id="gncp" name="scripting interface command">
 <item>setNP: <ref id="gncp" name="scripting interface command">
@@ -4037,13 +4130,13 @@ S
 <ref id="sphereobj" name="object">,
 <ref id="nspt" name="NURBS sphere tool">
 <item>Split: <ref id="sptct" name="split to curves tool">,
-<item>SplitCurve: <ref id="vwsc" name="view action">
+<item>Split Curve: <ref id="miscac" name="modeling action">
 <item>splitNPatch: <ref id="gncp" name="scripting interface command">
 <item>Spot: <ref id="pdsl" name="light type">
 <item>StartCap: <ref id="rep" name="revolve attribute">,
 <ref id="swp" name="sweep attribute">,
 <ref id="skp" name="skin attribute">
-<item>Stretch: <ref id="iac" name="stretch object">
+<item>Stretch: <ref id="scalac" name="stretch object">
 <item>Surface: <ref id="matshader" name="shader">
 <item>Sweep: <ref id="sweepobj" name="object">,
 <ref id="swpt" name="Sweep tool">
@@ -4087,7 +4180,8 @@ T
 U
 <itemize>
 <item>uCL, uCR: <ref id="upd" name="scripting interface command">
-<item>Undo: <ref id="mm" name="main menu entry">
+<item>Undo: <ref id="undos" name="The Undo System">,
+<ref id="mm" name="main menu entry">
 <item>UndoLevels: <ref id="prefmodel" name="preference setting">
 <item>Union: <ref id="mm" name="main menu entry">,
 <ref id="levelobj" name="object and properties">
