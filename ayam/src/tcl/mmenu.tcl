@@ -278,17 +278,23 @@ $m.nct add command -label "Sweep" -command "sweep_crt;"
 $m.nct add command -label "Skin" -command "skin_crt;"
 $m.nct add command -label "Cap" -command "cap_crt;"
 $m.nct add separator
-$m.nct add command -label "Revert" -command { revertNC; plb_update; rV }
+$m.nct add command -label "Revert" -command { undo save; revertNC;
+                                              plb_update; rV }
 $m.nct add command -label "Concat" -command { concatNC; uCR; rV}
 $m.nct add command -label "Split" -command { 
-runTool ay(splitu) {"Split at:"} "splitNC %0; uCR; sL; rV" }
-$m.nct add command -label "Refine" -command { refineNC; plb_update; rV }
+runTool ay(splitu) {"Split at:"} "undo save; splitNC %0; uCR; sL; rV" }
+$m.nct add command -label "Refine" -command { undo save; refineNC;
+                                              plb_update; rV }
 #$m.nct add command -label "Refine with" -command { runTool ay(refinekn) {"New Knots:"} "refineNC \{%0\}; plb_update; rV" }
-$m.nct add command -label "Clamp" -command { clampNC; plb_update; rV }
+$m.nct add command -label "Clamp" -command { undo save; clampNC;
+                                             plb_update; rV }
 $m.nct add command -label "Elevate" -command {
-    runTool ay(elevd) {"Elevate by:"} "elevateNC %0; plb_update; rV" }
+    runTool ay(elevd) {"Elevate by:"}\
+	    "undo save; elevateNC %0; plb_update; rV" }
 $m.nct add command -label "Insert Knot" -command {
-    runTool [list ay(insknu) ay(insknr)] [list "Insert knot at:" "Insert times:"] "insknNC %0 %1; plb_update; rV" }
+    runTool [list ay(insknu) ay(insknr)]\
+	    [list "Insert knot at:" "Insert times:"]\
+	    "undo save; insknNC %0 %1; plb_update; rV" }
 
 $m.nct add separator
 $m.nct add command -label "Collapse Points" -command { collNC; rV; }
