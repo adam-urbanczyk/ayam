@@ -160,6 +160,11 @@ ay_object **ay_rrib_aynext;
 
 /* fov */
 double ay_rrib_fov;
+
+/* cliping planes */
+double ay_rrib_near, ay_rrib_far;
+
+/* image size */
 int width, height;
 
 /* material */
@@ -1412,7 +1417,10 @@ ay_rrib_RiBound(RtBound bound)
 RtVoid
 ay_rrib_RiClipping(RtFloat hither, RtFloat yon)
 {
-   (void)hither; (void)yon; 
+  ay_rrib_near = (double)hither;
+  ay_rrib_far = (double)yon;
+
+ return;
 } /* ay_rrib_RiClipping */
 
 
@@ -3302,9 +3310,17 @@ ay_rrib_RiWorldBegin(void)
       c.to[1] = 0.0;
       c.to[2] = 0.0;
       c.up[0] = 0.0;
-      c.up[1] = 1.0;
+      c.up[1] = 10.0;
       c.up[2] = 0.0;
       c.roll = 0.0;
+
+      c.near = 0.0;
+      if(ay_rrib_near != 0.0)
+	c.near = ay_rrib_near;
+
+      c.far = 0.0;
+      if(ay_rrib_far != 0.0)
+	c.far = ay_rrib_far;
 
       if(fabs(ay_rrib_fov) > AY_EPSILON)
 	{
@@ -3992,7 +4008,6 @@ ay_rrib_initgeneral(void)
   gRibNopRITable[kRIB_ROTATE] = (PRIB_RIPROC)ay_rrib_RiRotate;
   gRibNopRITable[kRIB_SCALE] = (PRIB_RIPROC)ay_rrib_RiScale;
 
-
   gRibNopRITable[kRIB_ATTRIBUTEBEGIN] = (PRIB_RIPROC)ay_rrib_RiAttributeBegin;
   gRibNopRITable[kRIB_ATTRIBUTEEND] = (PRIB_RIPROC)ay_rrib_RiAttributeEnd;
   gRibNopRITable[kRIB_ATTRIBUTE] = (PRIB_RIPROC)ay_rrib_RiAttribute;
@@ -4018,6 +4033,8 @@ ay_rrib_initgeneral(void)
   gRibNopRITable[kRIB_OBJECTBEGIN] = (PRIB_RIPROC)ay_rrib_RiObjectBegin;
   gRibNopRITable[kRIB_OBJECTEND] = (PRIB_RIPROC)ay_rrib_RiObjectEnd;
   gRibNopRITable[kRIB_READARCHIVE] = (PRIB_RIPROC)ay_rrib_RiReadArchive;
+
+  gRibNopRITable[kRIB_CLIPPING] = (PRIB_RIPROC)ay_rrib_RiClipping;
 
  return;
 } /* ay_rrib_initgeneral */
@@ -4066,6 +4083,8 @@ ay_rrib_cleargeneral(void)
   gRibNopRITable[kRIB_OBJECTEND] = (PRIB_RIPROC)RiNopObjectEnd;
   gRibNopRITable[kRIB_READARCHIVE] = (PRIB_RIPROC)RiNopReadArchiveV;
 
+  gRibNopRITable[kRIB_CLIPPING] = (PRIB_RIPROC)RiNopClipping;
+
  return;
 } /* ay_rrib_cleargeneral */
 
@@ -4083,6 +4102,7 @@ ay_rrib_initoptions(void)
   gRibNopRITable[kRIB_QUANTIZE] = (PRIB_RIPROC)ay_rrib_RiQuantize;
   gRibNopRITable[kRIB_DISPLAY] = (PRIB_RIPROC)ay_rrib_RiDisplay;
   gRibNopRITable[kRIB_HIDER] = (PRIB_RIPROC)ay_rrib_RiHider;
+
 
   gRibNopRITable[kRIB_BOXFILTER] =
     (PRIB_RIPROC)ay_rrib_RiBoxFilter;
@@ -5036,7 +5056,11 @@ ay_rrib_readrib(char *filename, int frame, int read_camera, int read_options,
   /* default fov */
   ay_rrib_fov = 45.0;
 
-  /* initialize trafo and attribute attribute stacks */
+  /* default clipping planes */
+  ay_rrib_near = 0.0;
+  ay_rrib_far = 0.0;
+
+  /* initialize trafo and attribute state stacks */
   ay_rrib_ctrafos = NULL;
   ay_rrib_pushtrafos();
   ay_rrib_cattributes = NULL;
@@ -5096,6 +5120,15 @@ ay_rrib_readrib(char *filename, int frame, int read_camera, int read_options,
       free(ay_rrib_objects);
       ay_rrib_objects = tl;
     } /* while */
+
+  /* free data from temporary object */
+  if(ay_rrib_co.name)
+    free(ay_rrib_co.name);
+  ay_rrib_co.name = NULL;
+
+  if(ay_rrib_co.tags)
+    ay_tags_delall(&ay_rrib_co);
+  ay_rrib_co.tags = NULL;
 
  return AY_OK;
 } /* ay_rrib_readrib */
