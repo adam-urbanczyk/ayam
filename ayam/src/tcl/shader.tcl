@@ -111,7 +111,7 @@ proc shader_scanAll {} {
 	    }
 	}
 
-	if { $ay_error < 1 } {
+	if { $ay_error < 2 } {
 
 	    set shadertype [lindex $shaderarguments 1]
 
