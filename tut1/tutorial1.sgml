@@ -4,12 +4,12 @@
 
 <title>Ayam Tutorial #1
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>16. Jul 2002
+<date>04. Jan 2003
 <abstract>
 This is the first tutorial for Ayam, a free 3D
 modeling environment for the RenderMan interface.
 This version of the tutorial is
-tailored to version 1.2 (and up) of Ayam.
+tailored to version 1.4 (and up) of Ayam.
 We will do nothing fancy in this first tutorial just a wooden
 sphere on a gray ground.
 But even if you feel like you know how to do such a simple thing 
@@ -27,12 +27,13 @@ before the key press. Otherwise you risk the shortcut being sent
 to the wrong window and possibly cause wrong things.<p>
 Because of its multiple window user interface Ayam is most
 comfortably used with a window system where a window gets automatically
-activated when the mouse pointer enters it (focus follows mouse).
-But this behaviour is not easy to achieve on
+activated when the mouse pointer enters it (this policy is often
+called "focus follows mouse").
+Unfortunately, this behaviour is not easy to achieve on
 Windows (you may either use the PowerToys to enable this or
 try to change the registry key
 <tt>HKEY_CURRENT_USER/Control_Panel/Mouse/ActivateWindowTracking</tt> to
-1 using regedit).
+1 using "regedit").
 
 <sect1>The Main Window
 <p>
@@ -60,7 +61,7 @@ Ayam user. We will not use it in this first tutorial.
 In case you accidentally activated the console by clicking into it
 (it will then display a blinking cursor and a black rim),
 remember that you have to press <tt/&lt;Shift-Tab&gt;/ in order to enable
-the shortcuts to the menu entries again.
+the shortcuts to the main menu entries again.
 </enum>
 
 <sect1>The View Window
@@ -75,13 +76,13 @@ nothing but a small coordinate system that marks the origin of
 the world. The axes are color coded (red x, green y, blue z).
 <p>
 Now take a look at the title bar of the window.
-It reads <tt/View1 - Front - Pick/.
-<tt/View1/ means it is your first view (you can have more views
+It reads <tt/"View1 - Front - Pick"/.
+<tt/"View1"/ means it is your first view (you can have more views
 but we will not make use of multiple views in this first tutorial),
-<tt/Front/ is the type of the view.
-Finally, <tt/Pick/ means that there is currently no special
+<tt/"Front"/ is the type of the view.
+Finally, <tt/"Pick"/ means that there is currently no special
 modeling action activated
-in this view; in this mode you may pick (select) objects with your
+in this view; in the current mode you may pick (select) objects with your
 mouse.
 <p>
 But back to the type. The type of a view is an important property
@@ -106,7 +107,7 @@ rows of buttons are Transformation actions; the buttons in this section start
 interactive modeling actions that transform objects. Note, that
 there is a tool tip for each button, that is activated when the
 mouse pointer is left standing for a while over a button. This
-tool tip also teaches the current shortcut for the action
+tool tip also teaches the current keyboard shortcut for the action
 that is associated with the button.
 The second two rows of buttons allow the creation of solid
 primitives.<p>
@@ -122,20 +123,19 @@ already and feel like you set up Ayam the right way you might as well
 skip to section <ref id="ground" name="Creating the Ground"> now.
 Otherwise follow these instructions:
 <p>
-Please get install and setup BMRT V2.6 from
-<url url="http://www.exluna.com/" name="the Exluna home page">
-before going on. Note, that if you have a very old BMRT
+Please get, install, and setup BMRT V2.6 before going on.
+Note, that if you have a very old BMRT
 (versions prior to 2.5) Ayam might not be able to work
 correctly.
 <p>
 Before you start modeling you should make sure that Ayam
 is set up correctly. Please take a look at the messages
 that appear on startup in the console, red messages denote
-serious errors that should be eliminated before going on.<p>
-
+serious errors that should be eliminated before going on.
+<p>
 However, you may ignore messages about a missing <tt/"ayamrc"/
-file if you start Ayam the very first time.<p>
-
+file if you start Ayam the very first time.
+<p>
 In order to successfully complete this tutorial,
 the preference setting <tt/Shaders/ should point to the
 shaders directory of BMRT (shaders are files with the
@@ -150,30 +150,39 @@ menu. A new window pops up as shown in this figure:<p>
 <eps file="pics/prefs.ps" height="6cm">
 <img src="pics/prefs.gif">
 <caption>preferences dialog</caption>
-</figure><p>
-
+</figure>
+<p>
 You need to adjust the first setting <tt/"Shaders"/ in the
 <tt/"Main"/ section
 to point to the directory, where the BMRT2.6 shaders are stored.
-If it already does, fine. If not, set it, then press
-the <tt/"Apply"/ button. After that,
+If it already does, fine. If not, set it.
+You can enter the list of path names to your shaders manually,
+separated by a <tt/":"/ on Unix and by a <tt/";"/ on Windows, or you
+can use the <tt/"Add"/ button. If you use the <tt/"Add"/ button
+simply select a file in the directory of shaders
+you would like to add.
+Now press the <tt/"Apply"/ button below. After that,
 press the <tt/"Scan Shaders!"/ button right below the
 <tt/"Shaders"/ entry and watch the console for error messages.
 It will tell you how many shaders have been found.
 Note: on the Win32 platform you probably will have to delete
 all files with the extension <tt/"intelnt.slc"/ to make
 parsing of shaders work.
-Now close the preferences window by clicking on the <tt/"Ok"/-button.<p>
-
-When Ayam has been started the very first time there is
+Now close the preferences window by clicking on the <tt/"Ok"/-button.
+<p>
+When Ayam has been started for the very first time there is
 no view opened. You may open a first view (we do not need
 more than one in this tutorial) by clicking
 on the camera button in the tool box window.
 If you are unsure simply wait for the tool tip to appear,
-then browse through the buttons until the tool tip reads <tt/"new View"/.
+then browse through the buttons until the tool tip reads <tt/"new view"/.
 If Ayam crashes or blocks now, something is terribly wrong with your
-OpenGL setup and you should fix it.<p>
-
+OpenGL setup and you should fix it. If you use a self compiled binary
+and Ayam crashes while opening a view this is a sure sign, that
+the Tcl/Tk version you used while compiling and the version Ayam uses
+at runtime mismatch, please re-read and follow the compilation
+instructions more carefully.
+<p>
 Now we are set, and may start modeling.
 
 <sect>Creating the Ground<label id="ground">
@@ -245,12 +254,12 @@ the view displays a similar image as that of figure 9:<p>
 <p>
 Now we will add a material to the sphere to make it "wooden".
 <p>
-<bf/Step 1:/ Go back to the <bf/main window/ and
-create a material object using the menu entry
-<tt>"Edit/Material"</tt>
-(you can also use the keyboard shortcut
-<tt>&lt;Ctrl+m&gt;</tt>). Make sure, that the sphere is still selected,
+<bf/Step 1:/ Go back to the <bf/main window/.
+Make sure, that the sphere is still selected,
 so that the new material will be associated with the sphere.
+Now create a material object using the menu entry
+<tt>"Edit/Material"</tt> (you can also use the keyboard shortcut
+<tt>&lt;Ctrl+m&gt;</tt>). 
 A dialog box (see figure 10) will pop up asking you for a name for this
 new material object, enter "wood" and press the <tt/"Ok"/-button:<p>
 <figure loc="!ht">
@@ -343,7 +352,7 @@ scene from the side as in figure 15:
 <img src="pics/light2.gif">
 <caption>side view</caption>
 </figure><p>
-Dont worry about the fact that the light source seems to be situated
+Dont worry about the fact that the light source seems to be located
 in the origin of the scene, <tt/"Distant"/ light sources do not have a
 distinctive point from which they are lighting. All that counts is
 the direction.
@@ -398,7 +407,7 @@ teached you how to do the following tasks):<p>
 <item>Change its <tt/Intensity/ to 150 and its <tt/ConeAngle/ to 15.
 <item>Switch to a side view and move the light using an
 interactive modeling action so that it lights the sphere.
-If you do not move the light, it will probably be situated inside
+If you do not move the light, it will probably be located inside
 the box and not light anything!
 <item>Switch to a perspective view and adjust it properly using
 the zoom to object feature.
