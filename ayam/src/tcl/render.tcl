@@ -80,6 +80,7 @@ proc render_select { } {
 	global ay ayprefs
 
 	set sel [.selRenw.flb.li curselection]
+	set splugin ""
 
 	switch $sel {
 
@@ -122,7 +123,10 @@ proc render_select { } {
 		set ayprefs(SMRender) "aqsis -progress %s"
 		set ayprefs(SMRenderPT) "Done Computing %d"
 		set ayprefs(RenderMode) 0
-		set splugin "ayslx"
+		global AYUSESLXARGS
+		if { $AYUSESLXARGS != 1 } {
+		    set splugin "ayslx"
+		}
 		if { $ay(ScanShaders) == 1 } {
 		    set ay(sext) ".slx"
 		}
@@ -229,7 +233,7 @@ proc render_select { } {
 	# switch
 
 	if { $ay(ScanShaders) == 1 } {
-	    if { $sel > 1 } {
+	    if { $splugin != "" } {
 		set ay(autoload) $splugin
 		io_lcAuto
 	    }
