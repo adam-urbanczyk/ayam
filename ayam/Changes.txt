@@ -1,4 +1,4 @@
-[CVS, 28. 03. 2003]:
+[CVS, 04. 04. 2003]:
 o bug fixes:
   - fixed RIB import creating object names with malicious characters (spaces)
     (SF 686419)
@@ -48,6 +48,11 @@ o bug fixes:
   - fixed NURBS curve tools not being undoable when called via main menu
     (Tools/NURBCurve), and not via tool box button
     (SF 711212)
+  - fixed "Clear Material!" not being undoable
+    (SF 715103)
+  - fixed changing the material of an object using the property GUI leading
+    to wrong reference counters
+    (SF 715106)
 o added support for inline declarations of e.g. shader parameters to the
   RIB import plugin
 o added an example scene for subdivision meshes
@@ -72,6 +77,7 @@ o added a new sub menu to the "Special" main menu: "RIB-Export", it allows
 o added RIB export from selected objects feature (menu
   "Special/RIB-Export/Selected Objects")
 o added tag type "NoExport" that prevents objects from being exported to RIBs
+o shaded views now also draw grids
 
 
 [07. 02. 2003] Ayam1.4:
