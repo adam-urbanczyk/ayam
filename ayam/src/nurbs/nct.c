@@ -2834,7 +2834,8 @@ ay_nct_getpntfromindex(ay_nurbcurve_object *curve, int index, double **p)
  *  at their ends
  */
 int
-ay_nct_concatmultiple(int closed, int knot_type, ay_object *curves,
+ay_nct_concatmultiple(int closed, int knot_type, int fillgaps,
+		      ay_object *curves,
 		      ay_object **result)
 {
  int ay_status;
@@ -2880,6 +2881,11 @@ ay_nct_concatmultiple(int closed, int knot_type, ay_object *curves,
   order = nc->order;
   glu_sampling_tolerance = nc->glu_sampling_tolerance;
   glu_display_mode = nc->display_mode;
+
+  if((order == 2) && closed && (knot_type == 0) && (!fillgaps))
+    {
+      length++; 
+    }
 
   /* construct new knotvector */
   if(knot_type == 0)
