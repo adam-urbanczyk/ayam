@@ -220,7 +220,8 @@ ay_pomesht_tesselate(ay_pomesh_object *pomesh)
 
 
 /* ay_pomesht_merge:
- *
+ *  merge all PolyMesh objects to be found in list into a single
+ *  new PolyMesh and return this new object in result
  */
 int
 ay_pomesht_merge(ay_list_object *list, ay_object **result)
@@ -231,11 +232,13 @@ ay_pomesht_merge(ay_list_object *list, ay_object **result)
  ay_object *o = NULL, *no = NULL;
  ay_pomesh_object *pm = NULL, *npm = NULL;
  int i = 0, j = 0, k = 0, stride = 0;
- unsigned int total_polys = 0, total_loops = 0, total_verts = 0;
+ unsigned int total_polys = 0, total_loops = 0, total_verts = 0,
+   total_controls = 0;
  unsigned int pmloops = 0, pmverts = 0;
  unsigned int nextloops = 0, nextnverts = 0, nextverts = 0,
-   nextcontrols = 0;
+   nextcontrols = 0, oldpmncontrols = 0;
  int has_normals = -1;
+ double dummy[3] = {0};
 
   while(lo)
     {
@@ -251,7 +254,7 @@ ay_pomesht_merge(ay_list_object *list, ay_object **result)
 		{
 		  ay_error(AY_ERROR, fname,
 			   "found meshes with and without vertex normals");
-		  return TCL_OK;
+		  return AY_ERROR;
 		} /* if */
 	    } /* if */
 
@@ -271,7 +274,8 @@ ay_pomesht_merge(ay_list_object *list, ay_object **result)
 	      total_verts += pm->nverts[j];
 	    }
 
-
+	  total_controls += pm->ncontrols;
+	  
 	  has_normals = pm->has_normals;
 	} /* if */
       lo = lo->next;
@@ -307,7 +311,7 @@ ay_pomesht_merge(ay_list_object *list, ay_object **result)
 
   npm->npolys = total_polys;
   npm->has_normals = has_normals;
-  npm->ncontrols = total_verts;
+  npm->ncontrols = total_controls;
 
   no->refine = (void*)npm;
 
@@ -325,7 +329,7 @@ ay_pomesht_merge(ay_list_object *list, ay_object **result)
       free(no); free(npm); free(npm->nloops); free(npm->nverts);
       return AY_EOMEM;
     }
-  if(!(npm->controlv = calloc(stride * total_verts, sizeof(double))))
+  if(!(npm->controlv = calloc(stride * total_controls, sizeof(double))))
     {
       free(no); free(npm);  free(npm->nloops); free(npm->nverts);
       free(npm->verts); return AY_EOMEM;
@@ -359,20 +363,49 @@ ay_pomesht_merge(ay_list_object *list, ay_object **result)
 	      pmverts += pm->nverts[j];
 	    } /* for */
 
+	  /* the vertex indices need to be adapted to the new
+	     (bigger) control point database */
 	  k = 0;
 	  for(j = nextverts; j < nextverts+pmverts; j++)
 	    {
-	      npm->verts[j] = pm->verts[k]+nextverts;
+	      npm->verts[j] = pm->verts[k]+oldpmncontrols;
 	      k++;
 	    } /* for */
 
-	  memcpy(&(npm->controlv[nextcontrols]), pm->controlv,
-		 stride * pmverts * sizeof(double));
+	  /* if the object has non-default transformation attributes,
+	     we also need to transform the control points */
+	  if((fabs(o->movx) > AY_EPSILON) ||
+	     (fabs(o->movy) > AY_EPSILON) ||
+	     (fabs(o->movz) > AY_EPSILON) ||
+	     (fabs(1.0 - o->scalx) > AY_EPSILON) ||
+	     (fabs(1.0 - o->scaly) > AY_EPSILON) ||
+	     (fabs(1.0 - o->scalz) > AY_EPSILON) ||
+	     (fabs(o->quat[0]) > AY_EPSILON) ||
+	     (fabs(o->quat[1]) > AY_EPSILON) ||
+	     (fabs(o->quat[2]) > AY_EPSILON) ||
+	     (fabs(1.0 - o->quat[3]) > AY_EPSILON))
+	    {
+	      k = 0;
+	      ay_trafo_apply(o, dummy, 3, AY_FALSE);
+	      for(j = 0; j < pmverts; j++)
+		{
+		  memcpy(&(npm->controlv[nextcontrols + k]),
+			 &(pm->controlv[k]),
+			 stride * sizeof(double));
+		  ay_trafo_apply(o, &(npm->controlv[nextcontrols + k]), 3,
+				 AY_TRUE);
+		  k += stride;
+		} /* for */
+	    } else {	  
+	      memcpy(&(npm->controlv[nextcontrols]), pm->controlv,
+		     stride * pmverts * sizeof(double));
+	    }
 
 	  nextloops    += pm->npolys;
 	  nextnverts   += pmloops;
 	  nextverts    += pmverts;
-	  nextcontrols += (stride * pmverts);
+	  nextcontrols += (stride * pm->ncontrols);
+	  oldpmncontrols += pm->ncontrols;
 	} /* if */
       lo = lo->next;
     } /* while */
@@ -382,8 +415,10 @@ ay_pomesht_merge(ay_list_object *list, ay_object **result)
  return AY_OK;
 } /* ay_pomesht_merge */
 
-/*
- *
+
+/* ay_pomesht_mergetcmd:
+ *  merge all selected PolyMesh objects into a new one
+ *  and link this new PolyMesh to the scene
  */
 int
 ay_pomesht_mergetcmd(ClientData clientData, Tcl_Interp * interp,
