@@ -1195,21 +1195,56 @@ ay_pamesh_convertcb(ay_object *o, int in_place)
 {
  int ay_status = AY_OK;
  ay_pamesh_object *pamesh = NULL;
- ay_object *p = NULL, *new = NULL;
-
+ ay_level_object *level = NULL;
+ ay_object *l = NULL, *p = NULL, *new = NULL, **next = NULL;
+ 
   if(!o)
     return AY_ENULL;
 
   pamesh = (ay_pamesh_object *) o->refine;
   p = pamesh->npatch;
-  while(p)
+  if(!in_place)
     {
-      ay_status = ay_object_copy(p, &new);
-      ay_trafo_copy(o, new);
-      ay_status = ay_object_link(new);
+      while(p)
+	{
+	  ay_status = ay_object_copy(p, &new);
+	  if(new)
+	    {
+	      ay_trafo_copy(o, new);
+	      ay_status = ay_object_link(new);
+	    } /* if */
+	  p = p->next;
+	} /* while */
+    }
+  else
+    {
+      ay_object_crtendlevel(&l);
+      level = (ay_level_object *)(l->refine);
+      level->type = AY_LTLEVEL;
+      next = &(l->down);
 
-      p = p->next;
-    } /* while */
+      while(p)
+	{
+	  ay_status = ay_object_copy(p, &new);
+	  if(new)
+	    {
+	      ay_trafo_copy(o, new);
+	      *next = new;
+	      next = &(new->next);
+	    } /* if */
+	  p = p->next;
+	} /* while */
+
+      if(new)
+	{
+	  ay_object_crtendlevel(next);
+	  ay_object_replace(l, o);
+	}
+      else
+	{
+	  ay_object_delete(l);
+	} /* if */
+    } /* if */
 
  return ay_status;
 } /* ay_pamesh_convertcb */
