@@ -48,12 +48,22 @@ proc io_replaceScene { } {
 	    set ay(filename) $filename
 	    ayError 4 "replaceScene" "Done reading scene from:"
 	    ayError 4 "replaceScene" "$filename"
+
+	    if { [file exists $filename] } {
+		set dirname [file dirname $filename]
+		cd $dirname
+		set .fl.con(-prompt) {[file tail [pwd]]>}
+		.fl.con delete end-1lines end
+		Console:prompt .fl.con "\n"
+	    }
+
 	} else {
 	    ayError 2 "Ayam" "There were errors while loading:"
 	    ayError 2 "Ayam" "$filename"
 	    uS
 	    rV
 	}
+	
 	io_mruAdd $filename
 	set ay(sc) 0
 	after idle viewMouseToCurrent
@@ -445,12 +455,22 @@ proc io_mruLoad { index } {
 	    ayError 4 "replaceScene" "Done reading scene from:"
 	    ayError 4 "replaceScene" "$filename"
 	    set ay(sc) 0
+
+	    if { [file exists $filename] } {
+		set dirname [file dirname $filename]
+		cd $dirname
+		
+		set .fl.con(-prompt) {[file tail [pwd]]>}
+		.fl.con delete end-1lines end
+		Console:prompt .fl.con "\n"
+	    }
 	} else {
 	    ayError 2 "Ayam" "There were errors while loading:"
 	    ayError 2 "Ayam" "$filename"
 	    uS
 	    rV
 	}
+
 	after idle viewMouseToCurrent
     }
 
