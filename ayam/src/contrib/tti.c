@@ -357,7 +357,8 @@ ay_tti_handle_simple_glyf(ay_tti_font *ttfont, ay_tti_glyf *glyf,
 				       sizeof(ay_tti_glyf));
 
   vert->numoutlines = ncontours;
-  vert->outlines = (ay_tti_outline *)calloc(1, sizeof(ay_tti_outline) * ncontours);
+  vert->outlines = (ay_tti_outline *)calloc(1, sizeof(ay_tti_outline) *
+					    ncontours);
 
   last_point = ntohs(contour_end_pt[ncontours - 1]);
   n_inst = ntohs(contour_end_pt[ncontours]);
@@ -458,7 +459,7 @@ ay_tti_handle_simple_glyf(ay_tti_font *ttfont, ay_tti_glyf *glyf,
     } /* for */
 
 
-  scale_factor = 100.0 / (double) ttfont->unitem;
+  scale_factor = 1.0; /*2000.0 / (double) ttfont->unitem;*/
 
   if(matrix)
     {
@@ -985,8 +986,8 @@ ay_tti_getchar(ay_tti_font *ttfont, int c, ay_tti_letter *vert)
  ay_tti_glyf *glyf = 0;
  double  matrix[6];
 
-  ttfont->soffset = 0;
-  ttfont->yoffset = 0;
+ /*  ttfont->soffset = 0;*/
+     ttfont->yoffset = 0;
 
   ay_tti_getglyf(ttfont, c, &glyf);
 
@@ -1019,6 +1020,8 @@ ay_tti_getchar(ay_tti_font *ttfont, int c, ay_tti_letter *vert)
       ay_tti_handle_simple_glyf(ttfont, glyf, vert, matrix);
     }
 
+  ttfont->soffset += (ntohs(ttfont->hmtx[(ttfont->numberOfHMetrics>1)?ttfont->nglyf:0].advanceWidth));
+
  return 0;
 } /* ay_tti_getchar */
 
@@ -1029,14 +1032,14 @@ ay_tti_open(ay_tti_font *ttfont, char *font)
 {
  unsigned char *dummy;
  int idummy;
+ int error = 0;
+ TTF_DIRECTORY *tdir;
+ TTF_HHEA *hhea;
 
   ttfont->fontptr = fopen(font, "rb");
 
   if(ttfont->fontptr)
     {
-      TTF_DIRECTORY *tdir;
-      TTF_HHEA *hhea;
-
       /* check if we have a truetype font */
       ttfont->buffer = calloc(1, 16);
       dummy = ttfont->buffer;
@@ -1053,13 +1056,13 @@ ay_tti_open(ay_tti_font *ttfont, char *font)
 
 	  /* search head table */
 	  if(!(ay_tti_searchtable(ttfont, "head")))
-	    return AY_TTI_BADFONT;
+	    {error = AY_TTI_BADFONT; goto cleanup;}
 
 	  ay_tti_read_head(ttfont);
 
 	  /* search cmap table */
 	  if(!(ay_tti_searchtable(ttfont, "cmap")))
-	    return AY_TTI_BADFONT;
+	    {error = AY_TTI_BADFONT; goto cleanup;}
 
 	  ttfont->cmap = (TTF_CMAP *)calloc(1, ttfont->size);
 	  fread( (unsigned char *) ttfont->cmap, 1, ttfont->size,
@@ -1067,14 +1070,14 @@ ay_tti_open(ay_tti_font *ttfont, char *font)
 
 	  /* search loca table */
 	  if(!(ay_tti_searchtable(ttfont, "loca")))
-	    return AY_TTI_BADFONT;
+	    {error = AY_TTI_BADFONT; goto cleanup;}
 
 	  ttfont->loca = calloc(1, ttfont->size);
 	  fread(ttfont->loca, 1, ttfont->size, ttfont->fontptr);
 
 	  /* search glyf table */
 	  if(!(ay_tti_searchtable(ttfont, "glyf")))
-	    return AY_TTI_BADFONT;
+	    {error = AY_TTI_BADFONT; goto cleanup;}
 
 	  ttfont->glyf = calloc(1, ttfont->size);
 	  fread(ttfont->glyf, 1, ttfont->size, ttfont->fontptr);
@@ -1082,7 +1085,7 @@ ay_tti_open(ay_tti_font *ttfont, char *font)
 
 	  /* search hhea table */
 	  if(!(ay_tti_searchtable(ttfont, "hhea")))
-	    return AY_TTI_BADFONT;
+	    {error = AY_TTI_BADFONT; goto cleanup;}
 
 	  hhea = calloc(1, ttfont->size);
 	  if(hhea)
@@ -1091,33 +1094,39 @@ ay_tti_open(ay_tti_font *ttfont, char *font)
 
 	      ttfont->ascent = ntohs(hhea->ascender);
 	      ttfont->descent = ntohs(hhea->descender);
-
+	      ttfont->numberOfHMetrics = ntohs(hhea->numberOfHMetrics);
 	      free(hhea);
 	    }
 
 
 	  /* search hmtx table */
 	  if(!(ay_tti_searchtable(ttfont, "hmtx")))
-	    return AY_TTI_BADFONT;
+	    {error = AY_TTI_BADFONT; goto cleanup;}
 
 	  ttfont->hmtx = calloc(1, ttfont->size);
 	  fread( (unsigned char *) ttfont->hmtx, 1, ttfont->size,
 		 ttfont->fontptr);
 
+	  fclose(ttfont->fontptr);
 	  return AY_TTI_OK;
-
 	}
       else
 	{		/* not a font */
+	  fclose(ttfont->fontptr);
 	  free(ttfont->buffer);
 	  return AY_TTI_NOFOUND;
 	} /* if */
     }
   else
     {
+      fclose(ttfont->fontptr);
       return AY_TTI_NOFOUND;
     } /* if */
 
+cleanup:
+  fclose(ttfont->fontptr);
+
+ return error;
 } /* ay_tti_open */
 
 
@@ -1127,7 +1136,6 @@ ay_tti_close(ay_tti_font *ttfont)
 
   if(ttfont)
     {
-      fclose(ttfont->fontptr);
       free(ttfont->buffer);
       free(ttfont->cmap);
       free(ttfont->loca);
@@ -1172,15 +1180,34 @@ ay_tti_freeletter(ay_tti_letter *vert)
 int
 ay_tti_getcurves(char *ttfname, int letter, ay_tti_letter *cur)
 {
- ay_tti_font font;
+ static ay_tti_font *font = NULL;
  int error = 0;
 
-  error = ay_tti_open(&font, ttfname); /* open font */
-  if(error == AY_TTI_OK)
+  if(!ttfname)
     {
-      error = ay_tti_getchar(&font, letter, cur); /* get curves for letter */
-      ay_tti_close(&font);
+      if(font)
+	{
+	  ay_tti_close(font);
+	  free(font);
+	}
+      font = NULL;
+      return error;
     }
+
+  if(!font)
+    {
+      if(!(font = calloc(1, sizeof(ay_tti_font))))
+	return error;
+
+      error = ay_tti_open(font, ttfname); /* open font */
+      if(error != AY_TTI_OK)
+	{
+	  return error;
+	}
+    }
+
+  error = ay_tti_getchar(font, letter, cur); /* get curves for letter */
+
 
  return error;
 } /* ay_tti_getcurves */
@@ -1206,8 +1233,8 @@ ay_tti_outlinetoncurve(ay_tti_outline *outline, ay_object **result)
   a = 0;
   for(i = 0; i < length; i++)
     {
-      controlv[a]     = (outline->points[i]).x;
-      controlv[a + 1] = (outline->points[i]).y;
+      controlv[a]     = (outline->points[i]).x/2048.0;
+      controlv[a + 1] = (outline->points[i]).y/2048.0;
       controlv[a + 3] = 1.0;
       /*      printf("%g, %g\n",controlv[a],controlv[a + 1]);*/
       a += stride;

@@ -156,10 +156,11 @@ typedef struct ay_tti_font_s
   int flags;
   int unitem;
   int locformat;
-  short	ascent,descent;
+  short	ascent, descent;
   int nglyf;
   int soffset; /* start offset for outline in string */
   int yoffset;
+  unsigned short numberOfHMetrics;
   double scale;
 } ay_tti_font;
 
