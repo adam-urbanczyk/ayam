@@ -29,6 +29,82 @@ addInfo $w PolyMeshAttrData NPolys
 addInfo $w PolyMeshAttrData NControls
 addInfo $w PolyMeshAttrData HasNormals
 
+uplevel #0 { array set pomeshmerge_options {
+    RemoveMerged 0
+    OptimizeNew 0
+}   }
+
+# pomesh_merge:
+#
+#
+proc pomesh_merge { } {
+    global ay ay_error pomeshmerge_options
+
+    set w .pomeshmerge
+    catch {destroy $w}
+    toplevel $w
+    wm title $w "Merge PolyMeshes"
+    wm iconname $w "Ayam"
+    wm transient $w .
+
+    set f [frame $w.f1]
+    pack $f -in $w -side top -fill x
+
+    addCheck $f pomeshmerge_options RemoveMerged
+    addCheck $f pomeshmerge_options OptimizeNew
+
+    set f [frame $w.f2]
+    button $f.bok -text "Ok" -width 5 -command {
+	global ay_error pomeshmerge_options
+
+	set ay_error ""
+
+	mergePo
+
+	if { $ay_error > 1 } {
+	    ayError 2 "Merge" "There were errors while merging!"
+	    if { $pomeshmerge_options(RemoveMerged) == 1 } {
+		ayError 2 "Merge" "Original PolyMesh objects not deleted!"
+	    }
+	    uS; rV
+	    grab release .pomeshmerge
+	    focus .
+	    destroy .pomeshmerge
+	} else {
+	   if { $pomeshmerge_options(RemoveMerged) == 1 } {
+	       catch {delOb}; uS; sL; rV
+	    }
+
+	    grab release .pomeshmerge
+	    focus .
+	    destroy .pomeshmerge
+
+	    if { $pomeshmerge_options(OptimizeNew) == 1 } {
+		pomesh_optimize
+	    }
+	}
+	
+    }
+
+    button $f.bca -text "Cancel" -width 5 -command "\
+	    grab release .pomeshmerge;\
+	    focus .;\
+	    destroy .pomeshmerge"
+
+    pack $f.bok $f.bca -in $f -side left -fill x -expand yes
+    pack $f -in $w -side bottom -fill x
+
+    winCenter $w
+    grab $w
+    focus $w.f2.bok
+    tkwait window $w
+
+    after idle viewMouseToCurrent
+
+ return;
+}
+# pomesh_merge
+
 
 uplevel #0 { array set pomeshopt_options {
     OptimizeCoords 1
@@ -58,15 +134,18 @@ proc pomesh_optimize { } {
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {
-	global pomeshopt_options;
+	global ay_error pomeshopt_options
+
+	set ay_error ""
+
 	optiPo -c $pomeshopt_options(OptimizeCoords)\
 		-n $pomeshopt_options(IgnoreNormals)\
 		-f $pomeshopt_options(OptimizeFaces);
 
 	rV
 
-	if { $ay_error > 2 } {
-	    ayError 2 "Ayam" "There were errors while optimizing!"
+	if { $ay_error > 1 } {
+	    ayError 2 "Optimize" "There were errors while optimizing!"
 	}
 
 	grab release .pomeshopt
