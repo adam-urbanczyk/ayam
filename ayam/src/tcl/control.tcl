@@ -48,7 +48,10 @@ proc forAll_tree { recursive command } {
 		set oldclevel $ay(CurrentLevel)
 		set ay(CurrentLevel) $sel
 		update
-		catch {forAll_tree 1 $command}
+		catch {forAll_tree 1 $command} retCode
+		if { $retCode == -1 } {
+		    return -1;
+		}
 		goUp
 		set ay(CurrentLevel) $oldclevel
 		$tree selection clear
@@ -58,7 +61,10 @@ proc forAll_tree { recursive command } {
 	    }
 	}
 
-	catch {eval $command}
+	catch {eval $command} retCode
+	if { $retCode == -1 } {
+	    return -1;
+	}
     }
 
  return;
@@ -89,27 +95,37 @@ proc forAll_lb { recursive command } {
 	$lb selection set $sel
 	selOb $sel
 	plb_update
-
+	
 	# go down?
 	if { $recursive } {
 	    if { [hasChild] == 1} {
+		set templevel $ay(CurrentLevel)
+		append ay(CurrentLevel) ":$sel"
 		goDown $sel
 		uS
 		$lb selection clear 0 end
 		selOb
-		catch {forAll_lb 1 $command}
+		catch {forAll_lb 1 $command} retCode
+		if { $retCode == -1 } {
+		    return -1;
+		}
 		goUp
 		uS
 		$lb selection set $sel
 		selOb $sel
 		plb_update
+		set ay(CurrentLevel) $templevel
 	    }
 	}
+
 	$lb selection clear 0 end
 	$lb selection set $sel
 	selOb $sel
 	plb_update
-	catch {eval $command}
+	catch {eval $command} retCode
+	if { $retCode == -1 } {
+	    return -1;
+	}
     }
 
     uS
@@ -192,7 +208,10 @@ proc forAllT_tree { type recursive command } {
 		set oldclevel $ay(CurrentLevel)
 		set ay(CurrentLevel) $sel
 		update
-		catch {forAllT_tree $type $recursive $command}
+		catch { forAllT_tree $type $recursive $command } retCode
+		if { $retCode == -1 } {
+		    return -1;
+		}
 		goUp
 		set ay(CurrentLevel) $oldclevel
 		$tree selection clear
@@ -205,7 +224,10 @@ proc forAllT_tree { type recursive command } {
         set otype ""
         getType otype
         if { [string tolower $type] == [string tolower $otype] } {
-            catch {eval $command}
+	    catch { eval $command } retCode
+	    if { $retCode == -1 } {
+		    return -1;
+	    }
         }
 
     }
@@ -239,22 +261,30 @@ proc forAllT_lb { type recursive command } {
 	$lb selection set $sel
 	selOb $sel
 	plb_update
-
+	
 	# go down?
 	if { $recursive } {
 	    if { [hasChild] == 1} {
+		set templevel $ay(CurrentLevel)
+		append ay(CurrentLevel) ":$sel"
+
 		goDown $sel
 		uS
 		$lb selection clear 0 end
 		selOb
 		catch {forAllT_lb $type $recursive $command}
+		if { $retCode == -1 } {
+		    return -1;
+		}
 		goUp
 		uS
 		$lb selection set $sel
 		selOb $sel
 		plb_update
+		set ay(CurrentLevel) $templevel
 	    }
 	}
+
 	$lb selection clear 0 end
 	$lb selection set $sel
 	selOb $sel
@@ -264,7 +294,10 @@ proc forAllT_lb { type recursive command } {
         set otype ""
         getType otype
         if { [string tolower $type] == [string tolower $otype] } {
-            catch {eval $command}
+            catch {eval $command} retCode
+	    if { $retCode == -1 } {
+		return -1;
+	    }
         }
     }
 
