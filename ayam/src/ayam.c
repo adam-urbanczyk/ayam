@@ -620,6 +620,12 @@ int ay_status = AY_OK;
 
   Togl_CreateCommand("str2doac", ay_oact_str2Dcb);
 
+  /* objsel.c */
+  Togl_CreateCommand("processObjSel", ay_objsel_processcb);
+
+  Tcl_CreateCommand(interp, "getNameFromNode", ay_objsel_getnmfrmndtcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+  
   /* pact.c */
   Togl_CreateCommand("selpac", ay_pact_seltcb);
 

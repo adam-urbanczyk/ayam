@@ -112,6 +112,7 @@ ay_clevel_gotoptcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int ay_status = AY_OK;
  ay_object *o = ay_root;
+ char varName[20], newValue[10];
 
   ay_status = ay_clevel_delall();
 
@@ -124,6 +125,12 @@ ay_clevel_gotoptcmd(ClientData clientData, Tcl_Interp *interp,
 	}
     }
 
+  /* Synchronize the value of ay(CurrentLevel) */
+  sprintf(varName, "ay(CurrentLevel)");
+  sprintf(newValue, "root");
+  Tcl_SetVar(interp, varName, newValue,
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+    
   return TCL_OK;
 } /* ay_clevel_gotoptcmd */
 
@@ -134,6 +141,11 @@ ay_clevel_gouptcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int ay_status = AY_OK;
  ay_object *o = NULL;
+ char fname[] = "clevel_goup";
+ char *part1 = "ay", *part2 = "CurrentLevel";
+ char *tmp = NULL, *string = NULL;
+ Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ int length = 0;
 
  if(ay_currentlevel->object != ay_root)
    {
@@ -151,6 +163,45 @@ ay_clevel_gouptcmd(ClientData clientData, Tcl_Interp *interp,
        }
    }
 
+  /* Synchronize the value of ay(CurrentLevel) */
+  toa = Tcl_NewStringObj(part1, -1);
+  ton = Tcl_NewStringObj(part2, -1);
+
+  to = Tcl_ObjGetVar2(interp, toa, ton,
+		TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  /* Get ay(CurrentLevel) value */
+  string = Tcl_GetStringFromObj(to, &length);
+  
+  /* Duplicate the value ay(CurrentLevel) since the original string
+     must not be modified */
+  tmp = malloc(length * sizeof(char));
+  if (!tmp)
+    {
+      ay_error(AY_EOMEM, fname, NULL);
+      Tcl_IncrRefCount(toa); Tcl_DecrRefCount(toa);
+      Tcl_IncrRefCount(ton); Tcl_DecrRefCount(ton);
+      return TCL_OK;
+    }
+  sprintf(tmp, "%s", string);
+
+  /* Remove the last component */
+  while ((length > 0) && (tmp[length] != ':'))
+    {
+      length--;
+    }
+  if (length > 0)
+    {
+      tmp[length] = 0;
+    }
+  
+  /* Replace the old value */
+  Tcl_SetStringObj(to, tmp, -1);
+  
+  free(tmp);
+  Tcl_IncrRefCount(toa); Tcl_DecrRefCount(toa);
+  Tcl_IncrRefCount(ton); Tcl_DecrRefCount(ton);
+
  return TCL_OK;
 } /* ay_clevel_gouptcmd */
 
@@ -163,6 +214,9 @@ ay_clevel_godowntcmd(ClientData clientData, Tcl_Interp *interp,
  int j = 0, argvi = 0;
  ay_object *o = ay_currentlevel->object;
  char fname[] = "clevel_godown";
+ char *part1 = "ay", *part2 = "CurrentLevel";
+ char tmp[256];
+ Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
 
   /* check args */
   if(argc != 2)
@@ -228,13 +282,34 @@ ay_clevel_godowntcmd(ClientData clientData, Tcl_Interp *interp,
 		    }
 		}
 	    }
+
+	  /* Synchronize the value of ay(CurrentLevel) */
+	  toa = Tcl_NewStringObj(part1, -1);
+	  ton = Tcl_NewStringObj(part2, -1);
+
+	  /* Get ay(CurrentLevel) value */
+	  to = Tcl_ObjGetVar2(interp, toa, ton,
+			TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	  
+	  /* Append the new component of the level */
+	  if (strcmp(Tcl_GetStringFromObj(to, NULL), "root"))
+	    {
+	      sprintf(tmp, ":%d", argvi-1);
+	    } else {
+	      sprintf(tmp, ":%d", argvi);
+	    }
+	  Tcl_AppendStringsToObj(to, tmp, NULL);
+
+	  Tcl_IncrRefCount(toa); Tcl_DecrRefCount(toa);
+	  Tcl_IncrRefCount(ton); Tcl_DecrRefCount(ton);
+
 	  return TCL_OK;
 	}
 
       j++;
       o = o->next;
     }
-
+    
  return TCL_OK;
 } /* ay_clevel_godowntcmd */
 

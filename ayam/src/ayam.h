@@ -80,6 +80,9 @@ typedef struct ay_object_s {
   unsigned int type;
   char *name;
   int selected;
+  
+  /* Stores a "name" for OpenGL selection */
+  unsigned int glname;
 
   /* modified by single point editing actions? */
   int modified;
@@ -800,6 +803,9 @@ extern char ay_version_mi[];
 extern char *ay_instt_oitagtype;
 extern char *ay_riattr_tagtype;
 extern char *ay_riopt_tagtype;
+
+
+extern unsigned int ay_current_glname;
 
 /* Defines */
 
