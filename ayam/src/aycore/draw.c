@@ -831,6 +831,7 @@ ay_draw_trimview(void)
        {
 	 if(ay_currentlevel->next && ay_currentlevel->next->next &&
 	    ay_currentlevel->next->next->next &&
+	    ay_currentlevel->next->next->next->object &&
 	    (ay_currentlevel->next->next->next->object->type == AY_IDNPATCH))
 	   {
 
