@@ -1234,7 +1234,7 @@ metacomp_getpropcb (Tcl_Interp * interp, int argc, char *argv[],
 } /* metacomp_getpropcb */
 
 int
-metacomp_getpntcb (ay_object * o, double *p)
+metacomp_getpntcb (int mode, ay_object * o, double *p)
 {
   /*
      double min_distance = ay_prefs.pick_epsilon, distance = 0.0, point[3];
