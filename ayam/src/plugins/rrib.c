@@ -205,17 +205,332 @@ RtVoid ay_rrib_RiSphere(RtFloat radius, RtFloat zmin, RtFloat zmax,
 			RtFloat thetamax,
 			RtInt n, RtToken tokens[], RtPointer parms[]);
 
+RtVoid ay_rrib_RiCylinder(RtFloat radius, RtFloat zmin, RtFloat zmax,
+			  RtFloat thetamax,
+			  RtInt n, RtToken tokens[], RtPointer parms[]);
+
+RtVoid ay_rrib_RiDisk(RtFloat height, RtFloat radius, RtFloat thetamax,
+		      RtInt n, RtToken tokens[], RtPointer parms[]);
+
+RtVoid ay_rrib_RiCone(RtFloat height, RtFloat radius, RtFloat thetamax,
+		      RtInt n, RtToken tokens[], RtPointer parms[]);
+
+RtVoid ay_rrib_RiParaboloid(RtFloat rmax, 
+			    RtFloat zmin, RtFloat zmax, RtFloat thetamax,
+			    RtInt n, RtToken tokens[], RtPointer parms[]);
+
+RtVoid ay_rrib_RiHyperboloid(RtPoint point1, RtPoint point2, RtFloat thetamax,
+			     RtInt n, RtToken tokens[], RtPointer parms[]);
+
+RtVoid ay_rrib_RiTorus(RtFloat majorradius, RtFloat minorradius, 
+		       RtFloat phimin, RtFloat phimax, RtFloat thetamax, 
+		       RtInt n, RtToken tokens[], RtPointer parms[]);
+
+RtVoid ay_rrib_RiNuPatch(RtInt nu, RtInt uorder, RtFloat uknot[],
+			 RtFloat umin, RtFloat umax,
+			 RtInt nv, RtInt vorder, RtFloat vknot[],
+			 RtFloat vmin, RtFloat vmax,
+			 RtInt n, RtToken tokens[], RtPointer parms[]);
+
+RtVoid ay_rrib_RiTrimCurve(RtInt nloops, RtInt ncurves[], RtInt order[],
+			   RtFloat knot[], RtFloat min[], RtFloat max[],
+			   RtInt n[], RtFloat u[], RtFloat v[], RtFloat w[]);
+
+RtLightHandle ay_rrib_RiLightSource(RtToken name,
+				RtInt n, RtToken tokens[], RtPointer parms[]);
+
+RtLightHandle ay_rrib_RiAreaLightSource(RtToken name,
+				RtInt n, RtToken tokens[], RtPointer parms[]);
+
+RtVoid ay_rrib_RiAtmosphere(RtToken name,
+			    RtInt n, RtToken tokens[], RtPointer parms[]);
+
+RtVoid ay_rrib_RiAttribute(RtToken name,
+			   RtInt n, RtToken tokens[], RtPointer parms[]);
+
+RtVoid ay_rrib_RiAttributeBegin(void);
+
+RtVoid ay_rrib_RiAttributeEnd(void);
+
+
+RtVoid ay_rrib_RiBasis(RtBasis ubasis, RtInt ustep,
+		       RtBasis vbasis, RtInt vstep);
+
+RtVoid ay_rrib_RiBound(RtBound bound);
+
+RtVoid ay_rrib_RiClipping(RtFloat hither, RtFloat yon);
+
+RtVoid ay_rrib_RiColor(RtColor color);
+
+RtVoid ay_rrib_RiColorSamples(RtInt n, RtFloat nRGB[], RtFloat RGBn[]);
+
+RtVoid ay_rrib_RiCoordinateSystem(RtToken space);
+
+RtVoid ay_rrib_RiCoordSysTransform(RtToken space);
+
+RtVoid ay_rrib_RiCropWindow(RtFloat xmin, RtFloat xmax, 
+			    RtFloat ymin, RtFloat ymax);
+
+RtVoid ay_rrib_RiCurves(RtToken type, RtInt ncurves, RtInt nvertices[], 
+		  RtToken wrap, 
+		  RtInt n, RtToken tokens[], RtPointer parms[]);
+
+RtToken ay_rrib_RiDeclare(char *name, char *declaration);
+
+RtVoid ay_rrib_RiDeformation(RtToken name,
+			     RtInt n, RtToken tokens[], RtPointer parms[]);
+
+RtVoid ay_rrib_RiDepthOfField(RtFloat fstop, RtFloat focallength, 
+			      RtFloat focaldistance);
+
+RtVoid ay_rrib_RiDetail(RtBound bound);
+
+RtVoid ay_rrib_RiDetailRange(RtFloat minvisible, RtFloat lowertransition, 
+			     RtFloat uppertransition, RtFloat maxvisible);
+
+RtVoid ay_rrib_RiDisplacement(RtToken name,
+			      RtInt n, RtToken tokens[], RtPointer parms[]);
+
+RtVoid ay_rrib_RiDisplay(char *name, RtToken type, RtToken mode,
+			 RtInt n, RtToken tokens[], RtPointer parms[]);
+
+RtVoid ay_rrib_RiErrorHandler(RtErrorHandler handler);
+
+RtVoid ay_rrib_RiExposure(RtFloat gain, RtFloat gamma);
+
+RtVoid ay_rrib_RiExterior(RtToken name,
+			  RtInt n, RtToken tokens[], RtPointer parms[]);
+
+RtVoid ay_rrib_RiFormat(RtInt xres, RtInt yres, RtFloat aspect);
+
+RtVoid ay_rrib_RiFrameAspectRatio(RtFloat aspect);
+
+RtVoid ay_rrib_RiFrameBegin(RtInt frame);
+
+RtVoid ay_rrib_RiFrameEnd(void);
+
+RtVoid ay_rrib_RiGeneralPolygon(RtInt nloops, RtInt nvertices[],
+				RtInt n, RtToken tokens[], RtPointer parms[]);
+
+RtVoid ay_rrib_RiGeometricApproximation(RtToken type, RtFloat value);
+
+RtVoid ay_rrib_RiGeometricRepresentation(RtToken type);
+
+RtVoid ay_rrib_RiGeometry(RtToken type,
+			  RtInt n, RtToken tokens[], RtPointer parms[]);
+
+RtVoid ay_rrib_RiHider(RtToken type,
+		       RtInt n, RtToken tokens[], RtPointer parms[]);
+
+RtVoid ay_rrib_RiIdentity(void);
+
+RtVoid ay_rrib_RiIlluminate(RtLightHandle light, RtBoolean onoff);
+
+RtVoid ay_rrib_RiImager(RtToken name,
+			RtInt n, RtToken tokens[], RtPointer parms[]);
+
+RtVoid ay_rrib_RiImplicit(RtInt a, RtInt b[], RtInt c, RtFloat d[],
+			 RtInt e, RtFloat f[], RtInt g, RtFloat h[],
+			 RtInt n, RtToken tokens[], RtPointer parms[]);
+
+RtVoid ay_rrib_RiInterior(RtToken name, 
+			  RtInt n, RtToken tokens[], RtPointer parms[]);
+
+RtVoid ay_rrib_RiMakeBump(char *picturename, char *texturename, 
+		RtToken swrap, RtToken twrap,
+		RtFilterFunc filterfunc, RtFloat swidth, RtFloat twidth,
+		RtInt n, RtToken tokens[], RtPointer parms[]);
+
+
+RtVoid ay_rrib_RiMakeCubeFaceEnvironment(char *px, char *nx, char *py,
+					 char *ny, char *pz, char *nz,
+					 char *texturename,
+					 RtFloat fov,
+					 RtFilterFunc filterfunc,
+					 RtFloat swidth, RtFloat twidth,
+					 RtInt n,
+					 RtToken tokens[], RtPointer parms[]);
+
+RtVoid ay_rrib_RiMakeLatLongEnvironment(char *picturename, char *texturename, 
+					RtFilterFunc filterfunc,
+					RtFloat swidth, RtFloat twidth,
+					RtInt n,
+					RtToken tokens[], RtPointer parms[]);
+
+RtVoid ay_rrib_RiMakeShadow(char *picturename, char *texturename,
+			    RtInt n, RtToken tokens[], RtPointer parms[]);
+
+RtVoid ay_rrib_RiMakeTexture(char *picturename, char *texturename,
+			     RtToken swrap, RtToken twrap,
+			     RtFilterFunc filterfunc,
+			     RtFloat swidth, RtFloat twidth,
+			     RtInt n, RtToken tokens[], RtPointer parms[]);
+
+RtVoid ay_rrib_RiMatte(RtBoolean onoff);
+
+RtVoid ay_rrib_RiMotionBegin(RtInt n, RtFloat times[]);
+
+RtVoid ay_rrib_RiMotionEnd(void);
+
+RtVoid ay_rrib_RiNuCurves(RtInt ncurves, RtInt nvertices[], RtInt order[],
+			  RtFloat knot[], RtFloat min[], RtFloat max[],
+			  RtInt n, RtToken tokens[], RtPointer parms[]);
+
+RtObjectHandle ay_rrib_RiObjectBegin(void);
+
+RtVoid ay_rrib_RiObjectEnd(void);
+
+RtVoid ay_rrib_RiObjectInstance(RtObjectHandle handle);
+
+RtVoid ay_rrib_RiOpacity(RtColor color);
+
+
+RtVoid ay_rrib_RiOption(RtToken name,
+			RtInt n, RtToken tokens[], RtPointer parms[]);
+
+RtVoid ay_rrib_RiOrientation(RtToken orientation);
+
+
+RtVoid ay_rrib_RiPatch(RtToken type,
+		       RtInt n, RtToken tokens[], RtPointer parms[]);
+
 RtVoid ay_rrib_RiPatchMesh(RtToken type, RtInt nu, RtToken uwrap, 
 			   RtInt nv, RtToken vwrap, 
 			   RtInt n, RtToken tokens[], RtPointer parms[]);
 
-void ay_rrib_pushattribs(void);
+RtVoid ay_rrib_RiPerspective(RtFloat fov);
 
-void ay_rrib_popattribs(void);
+RtVoid ay_rrib_RiPixelFilter(RtFilterFunc filterfunc, 
+			     RtFloat xwidth, RtFloat ywidth);
 
-void ay_rrib_pushtrafos(void);
+RtVoid ay_rrib_RiPixelSamples(RtFloat xsamples, RtFloat ysamples);
 
-void ay_rrib_poptrafos(void);
+RtVoid ay_rrib_RiPixelVariance(RtFloat variation);
+
+RtVoid ay_rrib_RiPoints(RtInt npoints,
+			RtInt n, RtToken tokens[], RtPointer parms[]);
+
+RtVoid ay_rrib_RiPointsGeneralPolygons(RtInt npolys, RtInt nloops[],
+				RtInt nvertices[], RtInt vertices[],
+				RtInt n, RtToken tokens[], RtPointer parms[]);
+
+RtVoid
+ay_rrib_RiPointsPolygons(RtInt npolys, RtInt nvertices[], RtInt vertices[],
+			 RtInt n, RtToken tokens[], RtPointer parms[]);
+
+RtVoid ay_rrib_RiPolygon(RtInt nvertices,
+			 RtInt n, RtToken tokens[], RtPointer parms[]);
+
+RtVoid ay_rrib_RiProjection(RtToken name, 
+			    RtInt n, RtToken tokens[], RtPointer parms[]);
+
+RtVoid ay_rrib_RiQuantize(RtToken type, RtInt one, 
+			  RtInt min, RtInt max, RtFloat ampl);
+
+RtVoid ay_rrib_RiReadArchive(RtToken name,
+			     RtVoid (*callback)( RtToken, char*, char* ),
+			     RtInt n, RtToken tokens[], RtPointer parms[]);
+
+RtVoid ay_rrib_RiRelativeDetail(RtFloat relativedetail);
+
+RtVoid ay_rrib_RiResource(RtToken handle, RtToken type,
+			  RtInt n, RtToken tokens[], RtPointer parms[]);
+
+RtVoid ay_rrib_RiReverseOrientation(void);
+
+RtVoid ay_rrib_RiConcatTransform(RtMatrix transform);
+
+RtVoid ay_rrib_RiRotate(RtFloat angle, RtFloat dx, RtFloat dy, RtFloat dz);
+
+RtVoid ay_rrib_RiScale(RtFloat dx, RtFloat dy, RtFloat dz);
+
+RtVoid ay_rrib_RiTransform(RtMatrix transform);
+
+RtVoid ay_rrib_RiTranslate(RtFloat dx, RtFloat dy, RtFloat dz);
+
+RtVoid ay_rrib_RiScreenWindow(RtFloat left, RtFloat right,
+			      RtFloat bottom, RtFloat top);
+
+RtVoid ay_rrib_RiShadingInterpolation(RtToken type);
+
+RtVoid ay_rrib_RiShadingRate(RtFloat size);
+
+RtVoid ay_rrib_RiShutter(RtFloat min, RtFloat max);
+
+RtVoid ay_rrib_RiSides(RtInt sides);
+
+RtVoid ay_rrib_RiSkew(RtFloat angle, RtFloat dx1, RtFloat dy1, RtFloat dz1,
+		      RtFloat dx2, RtFloat dy2, RtFloat dz2);
+
+RtVoid ay_rrib_RiSolidBegin(RtToken operation);
+
+RtVoid ay_rrib_RiSolidEnd(void);
+
+RtVoid ay_rrib_RiSurface(RtToken name,
+			 RtInt n, RtToken tokens[], RtPointer parms[]);
+
+RtVoid ay_rrib_RiSubdivisionMesh(RtToken scheme, RtInt nfaces,
+				 RtInt nvertices[], RtInt vertices[],
+				 RtInt ntags, RtToken tags[],
+				 RtInt nargs[],
+				 RtInt intargs[], RtFloat floatargs[],
+				 RtInt n, RtToken tokens[], RtPointer parms[]);
+
+RtVoid ay_rrib_RiTextureCoordinates(RtFloat s1, RtFloat t1,
+				    RtFloat s2, RtFloat t2,
+				    RtFloat s3, RtFloat t3,
+				    RtFloat s4, RtFloat t4);
+RtVoid ay_rrib_RiTransformBegin(void);
+
+RtVoid ay_rrib_RiTransformEnd(void);
+
+RtVoid ay_rrib_RiWorldBegin(void);
+
+RtVoid ay_rrib_RiWorldEnd(void);
+
+RtVoid ay_rrib_RiBegin(RtToken name);
+
+RtVoid ay_rrib_RiEnd(void);
+
+RtVoid ay_rrib_RiArchiveRecord(RtToken type, char *format, char *s);
+
+RtVoid ay_rrib_RiProcedural(RtPointer data, RtBound bound,
+			    RtVoid (*subdivfunc)(RtPointer, RtFloat),
+			    RtVoid (*freefunc)(RtPointer));
+
+RtPoint* ay_rrib_RiTransformPoints(RtToken fromspace, RtToken tospace,
+				   RtInt n, RtPoint points[]);
+
+RtVoid ay_rrib_RiErrorIgnore(RtInt code, RtInt severity, char *msg);
+
+RtVoid ay_rrib_RiErrorPrint(RtInt code, RtInt severity, char *msg);
+
+RtVoid ay_rrib_RiErrorAbort(RtInt code, RtInt severity, char *msg);
+
+RtFloat ay_rrib_RiBoxFilter(RtFloat x, RtFloat y,
+			    RtFloat xwidth, RtFloat ywidth);
+
+RtFloat ay_rrib_RiTriangleFilter(RtFloat x, RtFloat y, 
+				 RtFloat xwidth, RtFloat ywidth);
+
+RtFloat ay_rrib_RiCatmullRomFilter(RtFloat x, RtFloat y, 
+				   RtFloat xwidth, RtFloat ywidth);
+
+RtFloat ay_rrib_RiGaussianFilter(RtFloat x, RtFloat y, 
+				 RtFloat xwidth, RtFloat ywidth);
+
+RtFloat ay_rrib_RiSincFilter(RtFloat x, RtFloat y,
+			     RtFloat xwidth, RtFloat ywidth);
+
+RtVoid ay_rrib_Ri_version(RtFloat version);
+
+RtVoid ay_rrib_RiProcDelayedReadArchive(RtPointer data, RtFloat detail);
+
+RtVoid ay_rrib_RiProcRunProgram(RtPointer data, RtFloat detail);
+
+RtVoid ay_rrib_RiProcDynamicLoad(RtPointer data, RtFloat detail);
+
+/**/
 
 void ay_rrib_readshader(char *sname, int stype,
 			RtInt n, RtToken tokens[], RtPointer parms[],
@@ -235,12 +550,31 @@ void ay_rrib_initgprims(void);
 
 void ay_rrib_cleargprims(void);
 
+void ay_rrib_pushattribs(void);
+
+void ay_rrib_popattribs(void);
+
+void ay_rrib_pushtrafos(void);
+
+void ay_rrib_poptrafos(void);
+
 void ay_rrib_trafotoobject(ay_object *o, double *transform);
+
+int ay_rrib_comptags(ay_object *o1, ay_object *o2);
 
 void ay_rrib_linkmaterial(ay_object *o);
 
+void ay_rrib_linktexcoord(ay_object *o);
+
 void ay_rrib_linkobject(void *object, int type);
 
+int ay_rrib_printerror(RIB_HANDLE rib, int code, int severity,
+		       PRIB_ERROR error);
+
+int ay_rrib_readrib(char *filename, int frame, int read_camera,
+		    int read_options,
+		    int read_lights, int read_material, int read_partial,
+		    int error_level);
 
 /* functions: */
 
@@ -379,8 +713,8 @@ ay_rrib_RiTorus(RtFloat majorradius, RtFloat minorradius,
 
 
 RtVoid
-ay_rrib_RiNuPatch(RtInt nu, RtInt uorder, RtFloat uknot[], 
-		  RtFloat umin, RtFloat umax, 
+ay_rrib_RiNuPatch(RtInt nu, RtInt uorder, RtFloat uknot[],
+		  RtFloat umin, RtFloat umax,
 		  RtInt nv, RtInt vorder, RtFloat vknot[],
 		  RtFloat vmin, RtFloat vmax,
 		  RtInt n, RtToken tokens[], RtPointer parms[])
@@ -486,8 +820,8 @@ ay_rrib_RiNuPatch(RtInt nu, RtInt uorder, RtFloat uknot[],
 
 
 RtVoid
-ay_rrib_RiTrimCurve(RtInt nloops, RtInt ncurves[], RtInt order[], 
-		    RtFloat knot[], RtFloat min[], RtFloat max[], 
+ay_rrib_RiTrimCurve(RtInt nloops, RtInt ncurves[], RtInt order[],
+		    RtFloat knot[], RtFloat min[], RtFloat max[],
 		    RtInt n[], RtFloat u[], RtFloat v[], RtFloat w[])
 {
  int i = 0, j = 0, k = 0, l = 0;
@@ -631,7 +965,7 @@ ay_rrib_RiTrimCurve(RtInt nloops, RtInt ncurves[], RtInt order[],
 
 
 RtLightHandle
-ay_rrib_RiLightSource(RtToken name, 
+ay_rrib_RiLightSource(RtToken name,
 		      RtInt n, RtToken tokens[], RtPointer parms[])
 {
  ay_light_object l;
@@ -760,7 +1094,7 @@ ay_rrib_RiLightSource(RtToken name,
 
 
 RtLightHandle
-ay_rrib_RiAreaLightSource(RtToken name, 
+ay_rrib_RiAreaLightSource(RtToken name,
 			  RtInt n, RtToken tokens[], RtPointer parms[])
 {
  RtLightHandle lh;
@@ -779,7 +1113,7 @@ ay_rrib_RiAreaLightSource(RtToken name,
 
 
 RtVoid
-ay_rrib_RiAtmosphere(RtToken name, 
+ay_rrib_RiAtmosphere(RtToken name,
 		     RtInt n, RtToken tokens[], RtPointer parms[])
 {
  int ay_status = AY_OK;
@@ -1081,8 +1415,6 @@ ay_rrib_RiColorSamples(RtInt n, RtFloat nRGB[], RtFloat RGBn[])
 } /* ay_rrib_RiColorSamples */
 
 
-
-
 RtVoid
 ay_rrib_RiCoordinateSystem(RtToken space)
 {
@@ -1107,26 +1439,18 @@ ay_rrib_RiCropWindow(RtFloat xmin, RtFloat xmax,
 
 RtVoid
 ay_rrib_RiCurves(RtToken type, RtInt ncurves, RtInt nvertices[], 
-		 RtToken wrap, ... )
-{
-   (void)type; (void)ncurves; (void)nvertices; (void)wrap;
-} /* ay_rrib_RiCurves */
-
-
-RtVoid
-ay_rrib_RiCurvesV(RtToken type, RtInt ncurves, RtInt nvertices[], 
-		  RtToken wrap, 
-		  RtInt n, RtToken tokens[], RtPointer parms[])
+		 RtToken wrap, 
+		 RtInt n, RtToken tokens[], RtPointer parms[])
 {
    (void)type; (void)ncurves; (void)nvertices; (void)wrap;
    (void)n; (void)tokens; (void)parms; 
-} /* ay_rrib_RiCurvesV */
-
+} /* ay_rrib_RiCurves */
 
 
 RtToken
 ay_rrib_RiDeclare(char *name, char *declaration)
 {
+/*
  char *newname = NULL;
  char fname[] = "ay_rrib_RiDeclare";
 
@@ -1138,7 +1462,7 @@ ay_rrib_RiDeclare(char *name, char *declaration)
     {
       ay_error(AY_ERROR, fname, "Declaration failed!");
     }
-
+*/
  return name;
 } /* ay_rrib_RiDeclare */
 
@@ -1195,7 +1519,7 @@ ay_rrib_RiDisplacement(RtToken name,
 
 
 RtVoid
-ay_rrib_RiDisplay(char *name, RtToken type, RtToken mode, 
+ay_rrib_RiDisplay(char *name, RtToken type, RtToken mode,
 		  RtInt n, RtToken tokens[], RtPointer parms[])
 {
    (void)name; (void)type; (void)mode; (void)n; (void)tokens; (void)parms;
@@ -1226,7 +1550,7 @@ ay_rrib_RiExposure(RtFloat gain, RtFloat gamma)
 
 
 RtVoid
-ay_rrib_RiExterior(RtToken name, 
+ay_rrib_RiExterior(RtToken name,
 		   RtInt n, RtToken tokens[], RtPointer parms[])
 {
  int ay_status = AY_OK;
@@ -1256,6 +1580,7 @@ ay_rrib_RiFormat(RtInt xres, RtInt yres, RtFloat aspect)
 
  return;
 } /* ay_rrib_RiFormat */
+
 
 RtVoid
 ay_rrib_RiFrameAspectRatio(RtFloat aspect)
@@ -1327,7 +1652,7 @@ ay_rrib_RiGeometricRepresentation(RtToken type)
 
 
 RtVoid
-ay_rrib_RiGeometry(RtToken type, 
+ay_rrib_RiGeometry(RtToken type,
 		   RtInt n, RtToken tokens[], RtPointer parms[])
 {
    (void)type; (void)n; (void)tokens; (void)parms;
@@ -1438,8 +1763,9 @@ ay_rrib_RiInterior(RtToken name,
  return;
 } /* ay_rrib_RiInterior */
 
+
 RtVoid
-ay_rrib_RiMakeBump(char *picturename, char *texturename, 
+ay_rrib_RiMakeBump(char *picturename, char *texturename,
 		   RtToken swrap, RtToken twrap,
 		   RtFilterFunc filterfunc, RtFloat swidth, RtFloat twidth,
 		   RtInt n, RtToken tokens[], RtPointer parms[])
@@ -1453,11 +1779,11 @@ ay_rrib_RiMakeBump(char *picturename, char *texturename,
 
 RtVoid
 ay_rrib_RiMakeCubeFaceEnvironment(char *px, char *nx, char *py, char *ny,
-				  char *pz, char *nz, char *texturename, 
+				  char *pz, char *nz, char *texturename,
 				  RtFloat fov,
-				  RtFilterFunc filterfunc, 
+				  RtFilterFunc filterfunc,
 				  RtFloat swidth, RtFloat twidth,
-				  RtInt n, 
+				  RtInt n,
 				  RtToken tokens[], RtPointer parms[])
 {
    (void)px; (void)nx; (void)py; (void)ny; 
@@ -1470,10 +1796,10 @@ ay_rrib_RiMakeCubeFaceEnvironment(char *px, char *nx, char *py, char *ny,
 
 
 RtVoid
-ay_rrib_RiMakeLatLongEnvironment(char *picturename, char *texturename, 
+ay_rrib_RiMakeLatLongEnvironment(char *picturename, char *texturename,
 				 RtFilterFunc filterfunc,
 				 RtFloat swidth, RtFloat twidth,
-				 RtInt n, 
+				 RtInt n,
 				 RtToken tokens[], RtPointer parms[])
 {
    (void)picturename; (void)texturename; 
@@ -1493,9 +1819,9 @@ ay_rrib_RiMakeShadow(char *picturename, char *texturename,
 
 
 RtVoid
-ay_rrib_RiMakeTexture(char *picturename, char *texturename, 
+ay_rrib_RiMakeTexture(char *picturename, char *texturename,
 		      RtToken swrap, RtToken twrap,
-		      RtFilterFunc filterfunc, 
+		      RtFilterFunc filterfunc,
 		      RtFloat swidth, RtFloat twidth,
 		      RtInt n, RtToken tokens[], RtPointer parms[])
 {
@@ -1531,7 +1857,7 @@ ay_rrib_RiMotionBegin(RtInt n, RtFloat times[])
 } /* ay_rrib_RiMotionBegin */
 
 
-RtVoid ay_rrib_RiMotionEnd( void )
+RtVoid ay_rrib_RiMotionEnd(void)
 {
 
 } /* ay_rrib_RiMotionEnd */
@@ -1700,8 +2026,6 @@ ay_rrib_RiObjectInstance(RtObjectHandle handle)
 RtVoid
 ay_rrib_RiOpacity(RtColor color)
 {
-   (void)color;
-
 
   ay_rrib_cattributes->opr = (int)(color[0]*255);
   ay_rrib_cattributes->opg = (int)(color[1]*255);
@@ -1712,7 +2036,7 @@ ay_rrib_RiOpacity(RtColor color)
 
 
 RtVoid
-ay_rrib_RiOption(RtToken name, 
+ay_rrib_RiOption(RtToken name,
 		 RtInt n, RtToken tokens[], RtPointer parms[])
 {
  int i, option_handled = AY_FALSE;
@@ -1946,8 +2270,8 @@ ay_rrib_RiPatch(RtToken type,
 
 
 RtVoid
-ay_rrib_RiPatchMesh(RtToken type, RtInt nu, RtToken uwrap, 
-		    RtInt nv, RtToken vwrap, 
+ay_rrib_RiPatchMesh(RtToken type, RtInt nu, RtToken uwrap,
+		    RtInt nv, RtToken vwrap,
 		    RtInt n, RtToken tokens[], RtPointer parms[])
 {
  int ay_status = AY_OK;
@@ -2124,8 +2448,8 @@ ay_rrib_RiPoints(RtInt npoints,
 
 
 RtVoid
-ay_rrib_RiPointsGeneralPolygons(RtInt npolys, RtInt nloops[], 
-				RtInt nvertices[], RtInt vertices[], 
+ay_rrib_RiPointsGeneralPolygons(RtInt npolys, RtInt nloops[],
+				RtInt nvertices[], RtInt vertices[],
 				RtInt n, RtToken tokens[], RtPointer parms[])
 {
    (void)npolys; (void)nloops; (void)nvertices; (void)vertices; 
@@ -2171,8 +2495,6 @@ ay_rrib_RiProjection(RtToken name,
       /* assume parallel projection */
     }
 
-
-
   /* start reading camera transformations, thus set current trafos to
      default values */
   ay_rrib_RiIdentity();
@@ -2203,7 +2525,7 @@ ay_rrib_RiQuantize(RtToken type, RtInt one,
 
 
 RtVoid
-ay_rrib_RiReadArchive(RtToken name, 
+ay_rrib_RiReadArchive(RtToken name,
 		      RtVoid (*callback)( RtToken, char*, char* ),
 		      RtInt n, RtToken tokens[], RtPointer parms[])
 {
@@ -2355,7 +2677,7 @@ ay_rrib_RiTranslate(RtFloat dx, RtFloat dy, RtFloat dz)
 
 
 RtVoid
-ay_rrib_RiScreenWindow(RtFloat left, RtFloat right, 
+ay_rrib_RiScreenWindow(RtFloat left, RtFloat right,
 		       RtFloat bottom, RtFloat top)
 {
    (void)left; (void)right; (void)bottom; (void)top;
@@ -2478,10 +2800,10 @@ ay_rrib_RiSurface(RtToken name,
 
 
 RtVoid
-ay_rrib_RiSubdivisionMesh(RtToken scheme, RtInt nfaces, 
+ay_rrib_RiSubdivisionMesh(RtToken scheme, RtInt nfaces,
 			  RtInt nvertices[], RtInt vertices[],
 			  RtInt ntags, RtToken tags[],
-			  RtInt nargs[], 
+			  RtInt nargs[],
 			  RtInt intargs[], RtFloat floatargs[],
 			  RtInt n, RtToken tokens[], RtPointer parms[])
 {
@@ -2494,9 +2816,9 @@ ay_rrib_RiSubdivisionMesh(RtToken scheme, RtInt nfaces,
 
 
 RtVoid
-ay_rrib_RiTextureCoordinates(RtFloat s1, RtFloat t1, 
+ay_rrib_RiTextureCoordinates(RtFloat s1, RtFloat t1,
                              RtFloat s2, RtFloat t2,
-                             RtFloat s3, RtFloat t3, 
+                             RtFloat s3, RtFloat t3,
                              RtFloat s4, RtFloat t4)
 {
 
@@ -2623,7 +2945,7 @@ ay_rrib_RiBegin(RtToken name)
 } /* ay_rrib_RiBegin */
 
 
-RtVoid ay_rrib_RiEnd( void )
+RtVoid ay_rrib_RiEnd(void)
 {
 } /* ay_rrib_RiEnd */
 
@@ -3790,6 +4112,7 @@ ay_rrib_comptags(ay_object *o1, ay_object *o2)
 
  return AY_TRUE;
 } /* ay_rrib_comptags */
+
 
 void
 ay_rrib_linkmaterial(ay_object *o)
