@@ -15,7 +15,7 @@
 /* clear.c - clear scenes */
 
 /* ay_clear_scene:
- *  
+ *
  */
 int
 ay_clear_scene(void)
@@ -25,6 +25,7 @@ ay_clear_scene(void)
  int result;
  ay_object *o = ay_root, *o2 = NULL;
  ay_root_object *root = NULL;
+ char *ucargs[3] = {0}, ucarg1[] = "clear";
 
   /* for all referenced objects in scene:
    *  - check if there are references to them in the clipboard,
@@ -41,7 +42,10 @@ ay_clear_scene(void)
     }
 
   /* clear undo buffer */
-  ay_status = ay_undo_clear();
+  /*ay_status = ay_undo_clear();*/
+  ucargs[1] = ucarg1;
+  ay_undo_undotcmd(NULL, ay_interp, 2, ucargs);
+
 
   /* remove all instance objects from the scene */
   ay_status = ay_object_deleteinstances(&(ay_root->next));
@@ -104,7 +108,7 @@ ay_clear_scene(void)
 
 
 /* ay_clear_scenetcmd:
- *  
+ *
  */
 int
 ay_clear_scenetcmd(ClientData clientData, Tcl_Interp * interp,
@@ -112,7 +116,7 @@ ay_clear_scenetcmd(ClientData clientData, Tcl_Interp * interp,
 {
  int ay_status = AY_OK;
  char fname[] = "newScene";
- 
+
   ay_status = ay_clear_scene();
   if(ay_status)
     {
