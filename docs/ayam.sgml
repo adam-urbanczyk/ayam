@@ -3679,6 +3679,14 @@ used by objects that form e.g. letters.<p>
 The object has the generating NURBS curves as child objects
 and watches them and adapts to them automagically.<p>
 
+Consequently, the object hierarchy of an Extrude object may look like this:
+<code>
++-Extrude
+ | Outline(NCurve)
+ | [Hole1(NCurve)]
+ \ [Hole2(NCurve)]
+</code>
+<p>
 The extrude object can generate caps, if the generating
 curves are closed. Cap generation may fail, if the outer
 curve has weights and the curve itself leaves the convex
@@ -3764,8 +3772,8 @@ control points) if cap generation fails due to self intersecting bevels.
 </figure>
 <p>
 The sweep object forms a surface that results from
-moving a NURBS curve (cross section) along a second NURBS curve
-(trajectory). The cross section may be scaled while sweeping
+moving a NURBS curve (cross section or profile) along a second NURBS curve
+(trajectory or path). The cross section may be scaled while sweeping
 using a third curve, the scaling function.
 <p>
 The sweep object has the generating NURBS curves as child objects
@@ -3788,6 +3796,14 @@ of the coordinates of the current curve point will be used as
 scale factor, that is applied to the cross section in Y- and Z-direction.
 This implies, that a scaling function that does nothing should e.g. be
 linear from (0,1,0) to (1,1,0).
+<p>
+The object hierarchy of a Sweep object may look like this:
+<code>
++-Sweep
+ | Cross_Section(NCurve)
+ | Path(NCurve)
+ \ [Scaling_Function(NCurve)]
+</code>
 <p>
 <figure loc="ht">
 <eps file="pics/ssweep.ps" height="5cm">
@@ -3834,6 +3850,50 @@ points in u direction.
 If <tt/"Rotate"/ is enabled, the cross sections will be
 rotated so that they are always perpendicular to the trajectory,
 this is the default.
+<p>
+The attributes <tt/"StartCap"/ and <tt/"EndCap"/ may be
+used to automatically create cap surfaces, that close the
+Sweep on both ends.
+Note that this works properly only if the cross section
+curve is closed and planar (defined in the XY plane).
+<p>
+See section <ref id="npattr" name="NPatchAttrib"> for a description
+of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
+
+<sect1>Birail1 Object<label id="birail1obj">
+<p>
+The birail1 object forms a surface by sweeping a cross section
+(or profile) curve along two so called rail curves.
+The object hierarchy of a Birail1 object, thus, looks like this:
+<code>
++-Birail1
+ | Cross_Section(NCurve)
+ | Rail1(NCurve)
+ \ Rail2(NCurve)
+</code>
+<p>
+The cross section has to touch the rail curves in their respective starting
+points.
+The direction of the cross section curve will be parallel to the u
+parametric dimension (width) and the direction of the rail curves will be
+parallel to the v parametric dimension of the resulting surface. Width
+and height of the surface will be derived from the length of the
+cross section curve and the number of sections, respectively.
+<p>
+Note that the cross section curve does not have to be two dimensional, and,
+in contrast to the normal Sweep object, it also does not have to be
+defined in a special plane. Also note that the precision with which the
+resulting surface will interpolate the rail curves depends on the
+number of sections choosen.
+<p>
+The following parameters further control the birailing process:
+
+<sect2>Birail1Attr Property<label id="birail1p">
+<p>
+The parameter <tt/"Sections"/ determines how many
+sections (in u direction) should be used, when generating the
+sweep NURBS patch. The NURBS patch always has sections+1 control
+points in u direction.
 <p>
 The attributes <tt/"StartCap"/ and <tt/"EndCap"/ may be
 used to automatically create cap surfaces, that close the
@@ -3965,12 +4025,12 @@ Gordon surface. For the example surface in the image above, the
 child objects of the Gordon object would have to look like this
 in the Ayam object tree view:
 <code>
-+ Gordon
-  - U1(NCurve)
-  - U2(NCurve)
-  - Level
-  - V1(NCurve)
-  - V2(NCurve)
++-Gordon
+ | U1(NCurve)
+ | U2(NCurve)
+ | Level
+ | V1(NCurve)
+ \ V2(NCurve)
 </code>
 <p>
 The creation of a Gordon surface is computationally
