@@ -152,6 +152,15 @@ int ay_instt_getmastertcmd(ClientData clientData, Tcl_Interp *interp,
 
 void ay_instt_init(Tcl_Interp *interp);
 
+/* interpol.c */
+int ay_interpol_1DA4D(double p, int len, double *st, double *en, double *ta);
+
+int ay_interpol_1DA1D(double p, int len, double *st, double *en, double *ta);
+
+int ay_interpol_trafos(double p, ay_object *o1, ay_object *o2, ay_object *ta);
+
+int ay_interpol_ncurves(double p, ay_object *c1, ay_object *c2,
+			ay_object **ta);
 
 /* mopsi.c */
 int ay_mopsi_tcmd(ClientData clientData, Tcl_Interp * interp,
@@ -403,6 +412,10 @@ void ay_quat_add(double q1[4], double q2[4], double dest[4]);
 void ay_quat_torotmatrix(double q[4], double m[16]);
 
 void ay_quat_toeuler(double q[4], double euler[3]);
+
+int ay_quat_slerp(double time, double q1[4], double q2[4], double *r);
+
+double ay_quat_dot(double q1[4], double q2[4]);
 
 /* read.c */
 int ay_read_string(FILE *fileptr, char **result);

@@ -15,6 +15,9 @@
 /* birail1.c */
 int ay_birail1_init(Tcl_Interp *interp);
 
+/* birail2.c */
+int ay_birail2_init(Tcl_Interp *interp);
+
 /* box.c */
 int ay_box_init(Tcl_Interp *interp);
 
