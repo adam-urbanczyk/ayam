@@ -561,6 +561,8 @@ void ay_rrib_readtag(char *tagtype, char *tagname, char *name,
 		     int i, RtToken tokens[], RtPointer parms[],
 		     ay_tag_object **destination);
 
+void ay_rrib_fixname(char *name);
+
 void ay_rrib_initgeneral(void);
 
 void ay_rrib_cleargeneral(void);
@@ -1181,6 +1183,7 @@ ay_rrib_RiAttribute(RtToken name,
 		  return;
 		}
 	      strcpy(ay_rrib_cattributes->identifier_name, stemp);
+	      ay_rrib_fixname(ay_rrib_cattributes->identifier_name);
 	      attribute_handled = AY_TRUE;
 	    } /* if */
 	  if(!attribute_handled)
@@ -2312,7 +2315,7 @@ ay_rrib_RiOption(RtToken name,
 RtVoid
 ay_rrib_RiOrientation(RtToken orientation)
 {
-   (void)orientation;
+ return;
 } /* ay_rrib_RiOrientation */
 
 
@@ -2757,7 +2760,7 @@ ay_rrib_RiPolygon(RtInt nvertices,
   free(vertices);
 
  return;
-} /* ay_rrib_RiPointsPolygon */
+} /* ay_rrib_RiPolygon */
 
 
 RtVoid
@@ -2844,7 +2847,7 @@ ay_rrib_RiReadArchive(RtToken name,
 RtVoid
 ay_rrib_RiRelativeDetail(RtFloat relativedetail)
 {
-   (void)relativedetail;
+ return;
 } /* ay_rrib_RiRelativeDetail */
 
 
@@ -2852,14 +2855,14 @@ RtVoid
 ay_rrib_RiResource(RtToken handle, RtToken type,
 		   RtInt n, RtToken tokens[], RtPointer parms[])
 {
-   (void)handle; (void)type;
-   (void)n; (void)tokens; (void)parms;
+ return;
 } /* ay_rrib_RiResource */
 
 
 RtVoid
 ay_rrib_RiReverseOrientation(void)
 {
+ return;
 } /* ay_rrib_RiReverseOrientation */
 
 
@@ -2966,8 +2969,7 @@ RtVoid
 ay_rrib_RiScreenWindow(RtFloat left, RtFloat right,
 		       RtFloat bottom, RtFloat top)
 {
-   (void)left; (void)right; (void)bottom; (void)top;
-
+ return;
 } /* ay_rrib_RiScreenWindow */
 
 
@@ -2980,7 +2982,7 @@ ay_rrib_RiShadingInterpolation(RtToken type)
   else
     ay_rrib_cattributes->shading_interpolation = 0;
 
-  return;
+ return;
 } /* ay_rrib_RiShadingInterpolation */
 
 
@@ -2997,7 +2999,7 @@ ay_rrib_RiShadingRate(RtFloat size)
 RtVoid
 ay_rrib_RiShutter(RtFloat min, RtFloat max)
 {
-   (void)min; (void)max;
+ return;
 } /* ay_rrib_RiShutter */
 
 
@@ -3284,6 +3286,7 @@ ay_rrib_RiTransformBegin(void)
 
   ay_rrib_pushtrafos();
 
+ return;
 } /* ay_rrib_RiTransformBegin */
 
 
@@ -3293,6 +3296,7 @@ ay_rrib_RiTransformEnd(void)
 
   ay_rrib_poptrafos();
 
+ return;
 } /* ay_rrib_RiTransformEnd */
 
 
@@ -3380,31 +3384,36 @@ ay_rrib_RiWorldBegin(void)
 RtVoid
 ay_rrib_RiWorldEnd(void)
 {
+
   ay_rrib_cleargprims();
+
+ return;
 } /* ay_rrib_RiWorldEnd */
 
 
 RtVoid
 ay_rrib_RiBegin(RtToken name)
 {
-   (void)name;
    /*
    LastObjectHandle = 1;
    LastLightHandle = 1;
    */
+ return;
 } /* ay_rrib_RiBegin */
 
 
-RtVoid ay_rrib_RiEnd(void)
+RtVoid
+ay_rrib_RiEnd(void)
 {
+ return;
 } /* ay_rrib_RiEnd */
 
 
 RtVoid
 ay_rrib_RiArchiveRecord(RtToken type, char *format, char *s)
 {
-   (void)type; (void)format; (void)s;
-} /* ay_rrib_RiEnd */
+ return;
+} /* ay_rrib_RiArchiveRecord */
 
 
 RtVoid
@@ -3412,9 +3421,7 @@ ay_rrib_RiProcedural(RtPointer data, RtBound bound,
 		     RtVoid (*subdivfunc)(RtPointer, RtFloat),
 		     RtVoid (*freefunc)(RtPointer))
 {
-   (void)data; (void)bound; (void)subdivfunc; (void)freefunc;
-
-   return;
+ return;
 } /* ay_rrib_RiProcedural */
 
 
@@ -3422,10 +3429,8 @@ RtPoint*
 ay_rrib_RiTransformPoints(RtToken fromspace, RtToken tospace,
 			  RtInt n, RtPoint points[])
 {
-   (void)fromspace; (void)tospace; (void)n; (void)points;
-
-   return NULL;
-} /* ay_rrib_RiProcedural */
+ return NULL;
+} /* ay_rrib_RiTransformPoints */
 
 
 RtVoid
@@ -3447,11 +3452,12 @@ ay_rrib_RiErrorPrint(RtInt code, RtInt severity, char *msg)
  return;
 } /* ay_rrib_RiErrorPrint */
 
+
 RtVoid
 ay_rrib_RiErrorAbort(RtInt code, RtInt severity, char *msg)
 {
 
-   printf("RiErrorAbort\n");
+  printf("RiErrorAbort\n");
 
  return;
 } /* ay_rrib_RiErrorAbort */
@@ -3550,31 +3556,28 @@ ay_rrib_RiSincFilter(RtFloat x, RtFloat y,
 RtVoid
 ay_rrib_Ri_version(RtFloat version)
 {
-   (void)version;
+ return;
 } /* ay_rrib_Ri_version */
 
 
 RtVoid
 ay_rrib_RiProcDelayedReadArchive(RtPointer data, RtFloat detail)
 {
-   (void)data;
-   (void)detail;
+ return;
 } /* ay_rrib_RiProcDelayedReadArchive */
 
 
 RtVoid
 ay_rrib_RiProcRunProgram(RtPointer data, RtFloat detail)
 {
-   (void)data;
-   (void)detail;
+ return;
 } /* ay_rrib_RiProcRunProgram */
 
 
 RtVoid
 ay_rrib_RiProcDynamicLoad(RtPointer data, RtFloat detail)
 {
-   (void)data;
-   (void)detail;
+ return;
 } /* ay_rrib_RiProcDynamicLoad */
 
 
@@ -3595,14 +3598,19 @@ ay_rrib_readshader(char *sname, int stype,
  RtColor *col;
  RtPoint *pnt;
  RtMatrix *mat;
+ char *token = NULL;
 
   if(!(s = calloc(1, sizeof(ay_shader))))
-    return;
+    {
+      ay_error(AY_EOMEM, fname, NULL);
+      return;
+    }
 
   s->type = stype;
 
   if(!(s->name = calloc(strlen(sname) + 1, sizeof(char))))
     {
+      ay_error(AY_EOMEM, fname, NULL);
       free(s);
       return;
     }
@@ -3611,16 +3619,24 @@ ay_rrib_readshader(char *sname, int stype,
 
   nextsarg = &(s->arg);
 
-
   ht = RibGetHashHandle(grib);
 
   for(i = 0; i < n; i++)
     {
 
+      if(strchr(tokens[i], ' '))
+	{
+	  token = strchr(tokens[i], ' ')+1;
+	}
+      else
+	{
+	  token = tokens[i];
+	}
+
       p = NULL;
       p = RibFindMatch(ht, kRIB_HASH_VARIABLE,
 		       kRIB_UNKNOWNCLASS | kRIB_UNKNOWNTYPE,
-		       (void*)(tokens[i]));
+		       (void*)token);
 
       if(p)
 	{
@@ -3650,7 +3666,7 @@ ay_rrib_readshader(char *sname, int stype,
 		      link = AY_FALSE;
 		      break;
 		    }
-		  strcpy(stemp,parms[i]);
+		  strcpy(stemp, parms[i]);
 		  sarg->val.string = stemp;
 		  break;
 		case kRIB_COLORTYPE:
@@ -3709,7 +3725,7 @@ ay_rrib_readshader(char *sname, int stype,
 	      if(link)
 		{
 		  stemp = NULL;
-		  if(!(stemp = calloc(strlen(tokens[i])+1,sizeof(char))))
+		  if(!(stemp = calloc(strlen(token)+1, sizeof(char))))
 		    {
 		      if(sarg->type == AY_SASTRING && sarg->val.string)
 			free(sarg->val.string);
@@ -3717,7 +3733,7 @@ ay_rrib_readshader(char *sname, int stype,
 		    }
 		  else
 		    {
-		      strcpy(stemp, tokens[i]);
+		      strcpy(stemp, token);
 		      sarg->name = stemp;
 		      *nextsarg = sarg;
 		      nextsarg = &(sarg->next);
@@ -3760,15 +3776,26 @@ ay_rrib_readparams(int n, RtToken tokens[], RtPointer parms[],
  RtColor *col;
  RtPoint *pnt;
  char *valstr = NULL, valbuf[255], typechar;
- 
+ char *token = NULL;
+
   ht = RibGetHashHandle(grib);
 
   for(i = 0; i < n; i++)
     {
+
+      if(strchr(tokens[i], ' '))
+	{
+	  token = strchr(tokens[i], ' ')+1;
+	}
+      else
+	{
+	  token = tokens[i];
+	}
+
       p = NULL;
       p = RibFindMatch(ht, kRIB_HASH_VARIABLE,
 		       kRIB_UNKNOWNCLASS | kRIB_UNKNOWNTYPE,
-		       (void*)(tokens[i]));
+		       (void*)token);
 
       if(p)
 	{
@@ -3813,7 +3840,7 @@ ay_rrib_readparams(int n, RtToken tokens[], RtPointer parms[],
 	  if(typechar != 'u')
 	    {
 	      Tcl_DStringAppend(ds, ",", -1);
-	      Tcl_DStringAppend(ds, (char *)(tokens[i]), -1);
+	      Tcl_DStringAppend(ds, token, -1);
 	      Tcl_DStringAppend(ds, ",", -1);
 	      Tcl_DStringAppend(ds, &typechar, 1);
 	      Tcl_DStringAppend(ds, ",", -1);
@@ -3852,7 +3879,8 @@ ay_rrib_readtag(char *tagtype, char *tagname, char *name,
  RtColor *col;
  RtPoint *pnt;
  char *valstr = NULL, valbuf[255], typechar;
- 
+ char *token = NULL;
+
   if(!destination)
    return;
 
@@ -3872,10 +3900,19 @@ ay_rrib_readtag(char *tagtype, char *tagname, char *name,
 
   ht = RibGetHashHandle(grib);
 
+  if(strchr(tokens[i], ' '))
+    {
+      token = strchr(tokens[i], ' ')+1;
+    }
+  else
+    {
+      token = tokens[i];
+    }
+
   p = NULL;
   p = RibFindMatch(ht, kRIB_HASH_VARIABLE,
 		   kRIB_UNKNOWNCLASS | kRIB_UNKNOWNTYPE,
-		   (void*)(tokens[i]));
+		   (void*)token);
 
   if(p)
     {
@@ -3932,10 +3969,11 @@ ay_rrib_readtag(char *tagtype, char *tagname, char *name,
 
   Tcl_DStringAppend(&ds, name, -1);
   Tcl_DStringAppend(&ds, ",", -1);
-  Tcl_DStringAppend(&ds, (char *)(tokens[i]), -1);
+  Tcl_DStringAppend(&ds, token, -1);
   Tcl_DStringAppend(&ds, ",", -1);
   Tcl_DStringAppend(&ds, &typechar, 1);
   Tcl_DStringAppend(&ds, ",", -1);
+
   if(typechar == 's')
     {
       Tcl_DStringAppend(&ds, *((char **)(parms[i])), -1);
@@ -3995,6 +4033,33 @@ ay_rrib_readtag(char *tagtype, char *tagname, char *name,
 } /* ay_rrib_readtag */
 
 
+/* avoid names with spaces or other characters that may be
+   (mis)interpreted by Tcl */
+void
+ay_rrib_fixname(char *name)
+{
+
+  if(name)
+    {
+      while(*name != '\0')
+	{
+	  if(*name == ' ')
+	    *name = '_';
+
+	  if((*name == '[') || (*name == '{'))
+	    *name = '(';
+
+	  if((*name == ']') || (*name == '}'))
+	    *name = ')';
+
+	  name++;
+	} /* while */
+    } /* if */
+
+ return;
+} /* ay_rrib_fixname */
+
+
 void
 ay_rrib_initgeneral(void)
 {
@@ -4042,6 +4107,7 @@ ay_rrib_initgeneral(void)
 
  return;
 } /* ay_rrib_initgeneral */
+
 
 void
 ay_rrib_cleargeneral(void)
@@ -4092,6 +4158,7 @@ ay_rrib_cleargeneral(void)
  return;
 } /* ay_rrib_cleargeneral */
 
+
 void
 ay_rrib_initoptions(void)
 {
@@ -4121,6 +4188,7 @@ ay_rrib_initoptions(void)
 
  return;
 } /* ay_rrib_initoptions */
+
 
 void
 ay_rrib_initgprims(void)
@@ -4158,6 +4226,7 @@ ay_rrib_initgprims(void)
 
  return;
 } /* ay_rrib_initgprims */
+
 
 void
 ay_rrib_cleargprims(void)
@@ -4699,6 +4768,7 @@ ay_rrib_linkmaterial(ay_object *o)
   /* create a material object from current attribute state */
   if(!(mat = calloc(1, sizeof(ay_mat_object))))
     {
+      ay_error(AY_EOMEM, fname, NULL);
       return;
     }
 
@@ -4989,7 +5059,7 @@ ay_rrib_printerror(RIB_HANDLE rib, int code, int severity, PRIB_ERROR error)
 {
  char buf[255];
  char fname[] = "RRIB";
- char  *s = NULL;
+ char *s = NULL;
 
   s = RibGetErrorMsg(code);
   if(s && strlen(s) < 200)
