@@ -556,7 +556,7 @@ proc rV { } {
 	foreach view $ay(views) {
 	  	if { [winfo ismapped $view] } {
 	    set view ${view}.f3D.togl
-#	    $view makecurrent
+#	    $view mc
 	    $view render
 	}  
 	}

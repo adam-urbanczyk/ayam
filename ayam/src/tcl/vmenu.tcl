@@ -102,8 +102,10 @@ $w.fMenu.v.m add command -label "Export RIB" -command {
 
 $w.fMenu.v.m add separator
 
-$w.fMenu.v.m add command -label "Close" -command "viewClose $w;\
-global ay; set ay(ul) root:0; uS"
+# "after 100" because on Win32 the <Enter>-binding fires when the menu
+# is closed and runs parallel to "viewClose" resulting in an error
+$w.fMenu.v.m add command -label "Close" -command "after 100 \{viewClose $w;\
+	global ay; set ay(ul) root:0; uS\}"
 
 # Type
 

@@ -270,6 +270,7 @@ proc viewCloseAll { } {
 #
 proc viewClose { w } {
   global ay
+
   set ay(draw) 0
   update
   # delete view from list
@@ -284,7 +285,7 @@ proc viewClose { w } {
 
   set ay(views) $temp
 
-  catch {$ay(currentView) makecurrent}
+  catch {$ay(currentView) mc}
 
   # now delete the window
   destroy $w.f3D.togl
@@ -294,6 +295,7 @@ proc viewClose { w } {
   undo clear
 
   set ay(draw) 1
+
  return;
 }
 # viewClose
