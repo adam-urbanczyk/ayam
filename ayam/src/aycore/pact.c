@@ -275,7 +275,7 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
  return TCL_OK;
 } /* ay_pact_startpetcb */
 
-
+#if 0
 /* ay_pact_pedtcb:
  *  single point direct edit callback
  *
@@ -383,6 +383,7 @@ ay_pact_pedtcb(struct Togl *togl, int argc, char *argv[])
 		      to = Tcl_ObjGetVar2(interp,toa,ton,
 					  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 		      Tcl_GetDoubleFromObj(interp,to, &coords[1]);
+
 		      Tcl_SetStringObj(ton,"z",-1);
 		      to = Tcl_ObjGetVar2(interp,toa,ton,
 					  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -420,6 +421,154 @@ ay_pact_pedtcb(struct Togl *togl, int argc, char *argv[])
     {
       ay_status = ay_notify_parent();
     }
+
+ return TCL_OK;
+} /* ay_pact_pedtcb */
+#endif
+
+/* ay_pact_pedtcb:
+ *  single point direct edit callback
+ *
+ */
+int
+ay_pact_pedtcb(struct Togl *togl, int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ Tcl_Interp *interp = Togl_Interp (togl);
+ ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
+ double winX = 0.0, winY = 0.0;
+ double obj[3] = {0};
+ char *n1 = "editPointDarray", fname[] = "editPointDirect";
+ Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ int i, changed = AY_FALSE;
+ double *coords;
+ ay_list_object *sel = NULL;
+ ay_object *o = NULL;
+
+
+  sel = ay_selection;
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, "pointEditD", NULL);
+      return TCL_OK;
+    }
+
+  if(argc < 1)
+    {
+      return TCL_OK;
+    }
+
+  if(!strcmp(argv[2], "-start"))
+    {
+      o = sel->object;
+
+      Tcl_GetDouble(interp, argv[3], &winX);
+      Tcl_GetDouble(interp, argv[4], &winY);
+
+      ay_status = ay_viewt_wintoobj(togl, o, winX, winY,
+				    &(obj[0]), &(obj[1]), &(obj[2]));
+
+      ay_status = ay_pact_getpoint(1, o, obj);
+
+      ay_point_edit_object = o;
+
+      if(ay_point_edit_coords)
+	{
+	  toa = Tcl_NewStringObj(n1, -1);
+	  ton = Tcl_NewStringObj(n1, -1);
+
+	  coords = ay_point_edit_coords[0];
+
+	  Tcl_SetStringObj(ton,"x",-1);
+	  to = Tcl_NewDoubleObj(coords[0]);
+	  Tcl_ObjSetVar2(interp, toa, ton, to,
+			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+	  Tcl_SetStringObj(ton,"y",-1);
+	  to = Tcl_NewDoubleObj(coords[1]);
+	  Tcl_ObjSetVar2(interp, toa, ton, to,
+			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+	  Tcl_SetStringObj(ton,"z",-1);
+	  to = Tcl_NewDoubleObj(coords[2]);
+	  Tcl_ObjSetVar2(interp, toa, ton, to,
+			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+	  if(ay_point_edit_coords_homogenous)
+	    {
+	      Tcl_SetStringObj(ton,"w",-1);
+	      to = Tcl_NewDoubleObj(coords[3]);
+	      Tcl_ObjSetVar2(interp, toa, ton, to,
+			     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	    } /* if */
+	  Tcl_SetStringObj(ton,"valid",-1);
+	  to = Tcl_NewIntObj(1);
+	  Tcl_ObjSetVar2(interp, toa, ton, to,
+			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	  Tcl_IncrRefCount(toa); Tcl_DecrRefCount(toa);
+	  Tcl_IncrRefCount(ton); Tcl_DecrRefCount(ton);
+	} /* if */
+      return TCL_OK;
+    } /* if */
+
+  if(!strcmp(argv[2], "-apply"))
+    { 
+      toa = Tcl_NewStringObj(n1, -1);
+      ton = Tcl_NewStringObj(n1, -1);
+      Tcl_SetStringObj(ton,"changed",-1);
+      to = Tcl_ObjGetVar2(interp, toa, ton,
+			  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      Tcl_GetIntFromObj(interp, to, &changed);
+
+      if(changed)
+	{
+	  if(!ay_point_edit_coords)
+	    {
+	      ay_error(AY_ERROR, fname, "Lost pointer to selected points!");
+	      Tcl_IncrRefCount(toa); Tcl_DecrRefCount(toa);
+	      Tcl_IncrRefCount(ton); Tcl_DecrRefCount(ton);
+	      return TCL_OK;
+	    } /* if */
+	  
+	  for(i = 0; i < ay_point_edit_coords_number; i++)
+	    {
+	      coords = ay_point_edit_coords[i];
+
+	      Tcl_SetStringObj(ton,"x",-1);
+	      to = Tcl_ObjGetVar2(interp, toa, ton,
+				  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	      Tcl_GetDoubleFromObj(interp, to, &coords[0]);
+
+	      Tcl_SetStringObj(ton,"y",-1);
+	      to = Tcl_ObjGetVar2(interp, toa, ton,
+				  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	      Tcl_GetDoubleFromObj(interp, to, &coords[1]);
+
+	      Tcl_SetStringObj(ton,"z",-1);
+	      to = Tcl_ObjGetVar2(interp, toa, ton,
+				  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	      Tcl_GetDoubleFromObj(interp, to, &coords[2]);
+
+	      if(ay_point_edit_coords_homogenous)
+		{
+		  Tcl_SetStringObj(ton,"w",-1);
+		  to = Tcl_ObjGetVar2(interp, toa, ton,
+				      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+		  Tcl_GetDoubleFromObj(interp, to, &coords[3]);
+		} /* if */
+	    } /* for */
+
+	  ay_point_edit_object->modified = AY_TRUE;
+	  ay_notify_force(ay_point_edit_object);
+	  ay_status = ay_notify_parent();
+	  view->drawmarker = AY_FALSE;
+	} /* if */
+
+      Tcl_IncrRefCount(toa); Tcl_DecrRefCount(toa);
+      Tcl_IncrRefCount(ton); Tcl_DecrRefCount(ton);
+      
+      return TCL_OK;
+    } /* if */
 
  return TCL_OK;
 } /* ay_pact_pedtcb */

@@ -387,152 +387,144 @@ array set editPointDarray {
     w 0.0
     w2 0.0
     changed 0
-    justupdated 0
+    window ""
+    valid 0
 }
 
 #editPointDp:
 # helper for actionDEditP
 # directly edit coordinates of points
 proc editPointDp { } {
-upvar #0 editPointDarray array
-global ay
+    upvar #0 editPointDarray array
+    global ay
 
-set w .editPointDw
+    set w .editPointDw
 
-set array(changed) 0
-set array(x2) $array(x)
-set array(y2) $array(y)
-set array(z2) $array(z)
-set array(w2) $array(w)
+    set array(changed) 0
+    set array(x2) $array(x)
+    set array(y2) $array(y)
+    set array(z2) $array(z)
+    set array(w2) $array(w)
 
-if { [winfo exists $w] } {
-    update
-    set f1 $w.f1
-    set f $f1.fx
-    $f.e delete @0 end
+    if { [winfo exists $w] } {
+	update
+	set f1 $w.f1
+	set f $f1.fx
+	$f.e delete @0 end
+	$f.e insert @0 $array(x)
+	set f $f1.fy
+	$f.e delete @0 end
+	$f.e insert @0 $array(y)
+	set f $f1.fz
+	$f.e delete @0 end
+	$f.e insert @0 $array(z)
+	set f $f1.fw
+	$f.e delete @0 end
+	$f.e insert @0 $array(w)
+
+	update
+	set array(x2) [.editPointDw.f1.fx.e get]
+	set array(y2) [.editPointDw.f1.fy.e get]
+	set array(z2) [.editPointDw.f1.fz.e get]
+	set array(w2) [.editPointDw.f1.fw.e get]
+
+	return;
+    }
+
+    catch {destroy $w}
+    toplevel $w
+    wm title $w "Edit_Point"
+    wm iconname $w "Ayam"
+    wm transient $w .
+
+    set f [frame $w.f1]
+    pack $f -in $w -side top -fill x
+
+    set f [frame $f.fx]
+
+    label $f.l -text "X" -width 4
+    entry $f.e -width 8
     $f.e insert @0 $array(x)
-    set f $f1.fy
-    $f.e delete @0 end
+
+    pack $f.l -in $f -padx 2 -pady 2 -side left -fill x -expand no
+    pack $f.e -in $f -padx 2 -pady 2 -side left -fill x -expand yes
+    pack $f -in $w.f1 -side top  -fill x
+
+
+    set f $w.f1
+    set f [frame $f.fy]
+
+    label $f.l -text "Y" -width 4
+    entry $f.e -width 8
     $f.e insert @0 $array(y)
-    set f $f1.fz
-    $f.e delete @0 end
+
+    pack $f.l -in $f -padx 2 -pady 2 -side left -fill x -expand no
+    pack $f.e -in $f -padx 2 -pady 2 -side left -fill x -expand yes
+    pack $f -in $w.f1 -side top  -fill x
+
+
+    set f $w.f1
+    set f [frame $f.fz]
+
+    label $f.l -text "Z" -width 4
+    entry $f.e -width 8
     $f.e insert @0 $array(z)
-    set f $f1.fw
-    $f.e delete @0 end
+
+    pack $f.l -in $f -padx 2 -pady 2 -side left -fill x -expand no
+    pack $f.e -in $f -padx 2 -pady 2 -side left -fill x -expand yes
+    pack $f -in $w.f1 -side top  -fill x
+
+    set f $w.f1
+    set f [frame $f.fw]
+
+    label $f.l -text "W" -width 4
+    entry $f.e -width 8
     $f.e insert @0 $array(w)
-    set array(justupdated) 1
+
+    pack $f.l -in $f -padx 2 -pady 2 -side left -fill x -expand no
+    pack $f.e -in $f -padx 2 -pady 2 -side left -fill x -expand yes
+    pack $f -in $w.f1 -side top  -fill x
+
     update
     set array(x2) [.editPointDw.f1.fx.e get]
     set array(y2) [.editPointDw.f1.fy.e get]
     set array(z2) [.editPointDw.f1.fz.e get]
     set array(w2) [.editPointDw.f1.fw.e get]
 
-    return;
-}
+    set f [frame $w.f2]
+    button $f.bok -text "Apply" -width 5 -pady $ay(pady) -command { 
+	global ay
+	upvar #0 editPointDarray array
 
-catch {destroy $w}
-toplevel $w
-wm title $w "Edit_Point"
-wm iconname $w "Ayam"
-wm transient $w .
+	set array(x) [.editPointDw.f1.fx.e get]
+	set array(y) [.editPointDw.f1.fy.e get]
+	set array(z) [.editPointDw.f1.fz.e get]
+	set array(w) [.editPointDw.f1.fw.e get]
 
-set f [frame $w.f1]
-pack $f -in $w -side top -fill x
+	if { ($array(x) != $array(x2)) ||
+	($array(y) != $array(y2)) ||
+	($array(z) != $array(z2)) ||
+	($array(w) != $array(w2))} {
+	    set array(changed) 1
+	    $array(window) dpepac -apply
+	    rV;plb_update
+	}
 
-set f [frame $f.fx]
-
-label $f.l -text "X" -width 4
-entry $f.e -width 8
-$f.e insert @0 $array(x)
-
-pack $f.l -in $f -padx 2 -pady 2 -side left -fill x -expand no
-pack $f.e -in $f -padx 2 -pady 2 -side left -fill x -expand yes
-pack $f -in $w.f1 -side top  -fill x
-
-
-set f $w.f1
-set f [frame $f.fy]
-
-label $f.l -text "Y" -width 4
-entry $f.e -width 8
-$f.e insert @0 $array(y)
-
-pack $f.l -in $f -padx 2 -pady 2 -side left -fill x -expand no
-pack $f.e -in $f -padx 2 -pady 2 -side left -fill x -expand yes
-pack $f -in $w.f1 -side top  -fill x
-
-
-set f $w.f1
-set f [frame $f.fz]
-
-label $f.l -text "Z" -width 4
-entry $f.e -width 8
-$f.e insert @0 $array(z)
-
-pack $f.l -in $f -padx 2 -pady 2 -side left -fill x -expand no
-pack $f.e -in $f -padx 2 -pady 2 -side left -fill x -expand yes
-pack $f -in $w.f1 -side top  -fill x
-
-set f $w.f1
-set f [frame $f.fw]
-
-label $f.l -text "W" -width 4
-entry $f.e -width 8
-$f.e insert @0 $array(w)
-
-pack $f.l -in $f -padx 2 -pady 2 -side left -fill x -expand no
-pack $f.e -in $f -padx 2 -pady 2 -side left -fill x -expand yes
-pack $f -in $w.f1 -side top  -fill x
-
-update
-set array(x2) [.editPointDw.f1.fx.e get]
-set array(y2) [.editPointDw.f1.fy.e get]
-set array(z2) [.editPointDw.f1.fz.e get]
-set array(w2) [.editPointDw.f1.fw.e get]
-
-set f [frame $w.f2]
-button $f.bok -text "Ok" -width 5 -pady $ay(pady) -command { 
-    global ay
-    upvar #0 editPointDarray array
-
-    set array(x) [.editPointDw.f1.fx.e get]
-    set array(y) [.editPointDw.f1.fy.e get]
-    set array(z) [.editPointDw.f1.fz.e get]
-    set array(w) [.editPointDw.f1.fw.e get]
-
-    if { ($array(x) != $array(x2)) ||
-         ($array(y) != $array(y2)) ||
-         ($array(z) != $array(z2)) ||
-         ($array(w) != $array(w2))} {
-	     set array(changed) 1
     }
 
-    if { [winfo exists $ay(currentView)] } {
-	focus $ay(currentView)
-    } else {
-	focus .
-    }
+    button $f.bca -text "Cancel" -width 5 -pady $ay(pady) -command "\
+	    if { [winfo exists $ay(currentView)] } {\
+	    focus $ay(currentView) } else { focus . };\
+	    destroy $w"
 
-#    grab release .editPointDw
-    destroy .editPointDw
+    pack $f.bok $f.bca -in $f -side left -fill x -expand yes
+    pack $f -in $w -side bottom -fill x
 
-}
+    winCenter $w
+    #grab $w
+    focus $f.bok
 
-button $f.bca -text "Cancel" -width 5 -pady $ay(pady) -command "\
-	if { [winfo exists $ay(currentView)] } {\
-	 focus $ay(currentView) } else { focus . };\
-	destroy $w"
-
-pack $f.bok $f.bca -in $f -side left -fill x -expand yes
-pack $f -in $w -side bottom -fill x
-
-winCenter $w
-#grab $w
-focus $f.bok
-tkwait window $w
-update
-set array(justupdated) 0
-return;
+ return;
 }
 # editPointDp
 
@@ -544,8 +536,13 @@ proc actionDEditP { w } {
     bind $w <ButtonPress-1> {
 	undo save
 	%W mc
-	%W setconf -mark %x %y 1
-	%W dpepac %x %y
+	set editPointDarray(valid) 0
+	%W dpepac -start %x %y
+	set editPointDarray(window) %W
+	if { $editPointDarray(valid) == 1 } {
+	    editPointDp
+	    %W setconf -mark %x %y 1
+	}
 	update
     }
     bind $w <B1-Motion> { }
