@@ -41,6 +41,14 @@ ay_clone_createcb(int argc, char *argv[], ay_object *o)
 
   o->refine = new;
 
+  if(argc > 2)
+    {
+      if(!strcmp(argv[2], "-mirror"))
+	{
+	  new->mirror = atoi(argv[3]);
+	}
+    }
+
  return AY_OK;
 } /* ay_clone_createcb */
 
