@@ -29,7 +29,7 @@
 proc shader_scanAll {} {
     global ay env ayprefs AYUSESLCARGS ay_error
 
-    puts stdout "Scanning for shaders..."
+    ayError 4 scanAllShaders "Scanning for shaders..."
 
     foreach i [list surface displacement imager light volume transformation] {
 	eval "set ay(${i}shaders) \"\" "
@@ -37,7 +37,7 @@ proc shader_scanAll {} {
 
     if { $AYUSESLCARGS == 0 } {
 	set sext ".xml"
-	puts stderr "libslcargs is not available..."
+	ayError 2 scanAllShaders "libslcargs is not available..."
 	return;
     } else {
 	set sext ".slc"
@@ -45,11 +45,11 @@ proc shader_scanAll {} {
 
     set temp ""
     if { $ayprefs(Shaders) == "" } {
-	puts stderr "Shaders are not configured."
-	puts stderr "Trying to load initial configuration from env(SHADERS)."
+	ayError 2 scanAllShaders "Shaders are not configured."
+	ayError 4 scanAllShaders "Trying to load initial configuration from env(SHADERS)."
 	if {[string length [array names env SHADERS]] == 0} then {
-	    puts stderr "Environment variable SHADERS not set."
-	    puts stderr "Please configure Shaders in Scene/Prefs."
+	    ayError 2 scanAllShaders "Environment variable SHADERS not set."
+	    ayError 2 scanAllShaders "Please configure Shaders in the Preferences."
 	    return;
 	} else {
 	    set ayprefs(Shaders) $env(SHADERS)
@@ -86,7 +86,7 @@ proc shader_scanAll {} {
 	
 	set ay_error 0
 	if { $AYUSESLCARGS == 0 } {
-	    puts stderr "libslcargs is not available..."
+	    ayError 2 scanAllShaders "libslcargs is not available..."
 	    return;
 	} else {
 	    shaderScanSLC $dummy shaderarguments
@@ -164,12 +164,12 @@ if { $AYUSESLCARGS == 0 } {
 	shader_scanXML $newfilename shaderarguments 
 
 	if { $ay_error > 1 } {
-	    puts stderr "Oops, could not scan shader!"
+	    ayError 2 shader_setNew "Oops, could not scan shader!"
 	    return;
 	}
 
 	if { [lindex $shaderarguments 1] != $stype } {
-	    puts stderr "Shader is of wrong type, need a $stype shader!"
+	    ayError 2 shader_setNew "Shader is of wrong type, need a $stype shader!"
 	    return;
 	}
 
@@ -238,7 +238,7 @@ set ay_error 0
 shaderScanSLC $shadername shaderarguments
 
 if { $ay_error > 1 } {
-    puts stderr "Oops, could not scan shader!"
+    ayError 2 shader_setNew "Oops, could not scan shader!"
     break;
 }
 
@@ -323,7 +323,7 @@ proc shader_setDefaults { type } {
     }
 
     if { $ay_error > 1 } {
-	puts stderr "Oops, could not scan shader!"
+	ayError 2 shader_setDefaults "Oops, could not scan shader!"
 	break;
     }
 
@@ -388,7 +388,9 @@ for {set i 0} {$i < $numargs} {incr i} {
 	matrix {
 	    addMatrix $w ay_shader ${argname}
 	}
-	default {puts stderr "shader_buildGUI: Ignoring unknown argument type: $type!";}
+	default {
+	  ayError 2 shader_buildGUI "Ignoring unknown argument type: $type!"
+	}
     }
     # switch
 
@@ -431,7 +433,9 @@ proc shader_DbToArrayParam { name type val } {
 		set ay_shader(${name}_$i) [lindex $val $i]
 	    }
 	}
-	default {puts stderr "shader_addParam: Ignoring unknown argument type: $type!";}
+	default {
+       ayError 2 shader_DbToArrayParam "Ignoring unknown argument type: $type!"
+	}
     }
     # switch
 
