@@ -234,6 +234,8 @@ ay_ncurve_drawglucb(struct Togl *togl, ay_object *o)
 
       gluNurbsProperty(ncurve->no, GLU_SAMPLING_TOLERANCE, sampling_tolerance);
 
+      gluNurbsProperty(ncurve->no, GLU_CULLING, GL_TRUE);
+
       gluNurbsCurve(ncurve->no, (GLint)knot_count, knots, (GLint)4, controls,
 		    (GLint)ncurve->order, GL_MAP1_VERTEX_4);
 
