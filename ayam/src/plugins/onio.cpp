@@ -19,7 +19,7 @@
 
 // local types
 
-typedef int (onio_writecb) (ay_object *o, ONX_Model *p_m);
+typedef int (onio_writecb) (ay_object *o, ONX_Model *p_m, double *m);
 
 
 // global variables
@@ -31,20 +31,26 @@ static Tcl_HashTable onio_write_ht;
 
 ay_object *onio_lrobject = NULL;
 
+static double tm[16] = {0}; // current transformation matrix
+
 int onio_importcurves;
 
+
 // prototypes of functions local to this module
-int onio_getnurbsurfobj(ay_object *o, ON_NurbsSurface **pp_n);
 
-int onio_writenpatch(ay_object *o, ONX_Model *p_m);
+int onio_getnurbsurfobj(ay_object *o, ON_NurbsSurface **pp_n, double *m);
 
-int onio_writetrimmednpatch(ay_object *o, ONX_Model *p_m);
+int onio_writenpatch(ay_object *o, ONX_Model *p_m, double *m);
 
-int onio_writenpconvertible(ay_object *o, ONX_Model *p_m);
+int onio_writetrimmednpatch(ay_object *o, ONX_Model *p_m, double *m);
 
-int onio_writencurve(ay_object *o, ONX_Model *p_m);
+int onio_writenpconvertible(ay_object *o, ONX_Model *p_m, double *m);
 
-int onio_writencconvertible(ay_object *o, ONX_Model *p_m);
+int onio_writencurve(ay_object *o, ONX_Model *p_m, double *m);
+
+int onio_writencconvertible(ay_object *o, ONX_Model *p_m, double *m);
+
+int onio_writelevel(ay_object *o, ONX_Model *p_m, double *m);
 
 int onio_writeobject(ay_object *o, ONX_Model *p_m);
 
@@ -93,15 +99,15 @@ int Onio_Init(Tcl_Interp *interp);
 // onio_getnurbsurfobj:
 //
 int
-onio_getnurbsurfobj(ay_object *o, ON_NurbsSurface **pp_n)
+onio_getnurbsurfobj(ay_object *o, ON_NurbsSurface **pp_n, double *m)
 {
  int ay_status = AY_OK;
  int i, j, a, stride = 4;
- double *cv, m[16];
+ double *cv;
  ay_nurbpatch_object *np = NULL;
  ON_NurbsSurface *p_n = NULL;
 
-  if(!o || !pp_n)
+  if(!o || !pp_n || !m)
     return AY_ENULL;
 
   np = (ay_nurbpatch_object *)o->refine;
@@ -113,8 +119,6 @@ onio_getnurbsurfobj(ay_object *o, ON_NurbsSurface **pp_n)
     p_n->SetKnot(0, i, np->uknotv[i+1]);
   for(i = 0; i < np->vorder+np->height-2; i++)
     p_n->SetKnot(1, i, np->vknotv[i+1]);
-
-  ay_trafo_creatematrix(o, m);
 
   // copy control points
   a = 0;
@@ -140,23 +144,23 @@ onio_getnurbsurfobj(ay_object *o, ON_NurbsSurface **pp_n)
 // onio_writenpatch:
 //
 int
-onio_writenpatch(ay_object *o, ONX_Model *p_m)
+onio_writenpatch(ay_object *o, ONX_Model *p_m, double *m)
 {
  int ay_status = AY_OK;
  ON_NurbsSurface *p_n = NULL;
 
-  if(!o || !p_m)
+  if(!o || !p_m || !m)
     return AY_ENULL;
 
   // is this patch trimmed?
-  if(o->down)
+  if(o->down && o->down->next)
     {
       // yes
-      ay_status = onio_writetrimmednpatch(o, p_m);
+      ay_status = onio_writetrimmednpatch(o, p_m, m);
       return ay_status;
     }
 
-  ay_status = onio_getnurbsurfobj(o, &p_n);
+  ay_status = onio_getnurbsurfobj(o, &p_n, m);
   if(p_n)
     {
       ONX_Model_Object& mo = p_m->m_object_table.AppendNew();
@@ -223,6 +227,7 @@ onio_addtrim(ay_object *o, ON_BrepLoop::TYPE ltype, ON_BrepTrim::TYPE ttype,
 	     ON_BrepFace *p_f)
 {
  int ay_status = AY_OK;
+ char fname[] = "onio_addtrim";
  ON_NurbsCurve c, c2, *p_c = NULL;
  ON_Curve *p_curve = NULL;
  unsigned int c2i, c3i;
@@ -243,8 +248,12 @@ onio_addtrim(ay_object *o, ON_BrepLoop::TYPE ltype, ON_BrepTrim::TYPE ttype,
 
 	  const ON_Surface *pSurface = p_f->SurfaceOf();
 	  p_curve = pSurface->Pushup(c, tolerance);
-	  //if(p_curve == NULL)
-	  //  printf("pushup failed!\n");
+	  if(p_curve == NULL)
+	    {
+	      //  printf("pushup failed!\n");
+	      ay_error(AY_ERROR, fname, "pushup failed");
+	      return AY_ERROR;
+	    }
 
 	  p_curve->GetNurbForm(c2, tolerance, NULL);
 	  p_c = new ON_NurbsCurve(c2);
@@ -311,7 +320,7 @@ onio_isboundingloop(ay_object *o)
 // onio_writetrimmednpatch:
 //
 int
-onio_writetrimmednpatch(ay_object *o, ONX_Model *p_m)
+onio_writetrimmednpatch(ay_object *o, ONX_Model *p_m, double *m)
 {
  int ay_status = AY_OK;
  ay_object *down;
@@ -324,12 +333,12 @@ onio_writetrimmednpatch(ay_object *o, ONX_Model *p_m)
  double tolerance = 1.0e-12;
  ON_BrepLoop::TYPE ltype = ON_BrepLoop::inner;
 
-  if(!o || !p_m)
+  if(!o || !p_m || !m)
     return AY_ENULL;
 
   np = (ay_nurbpatch_object*)(o->refine);
 
-  ay_status = onio_getnurbsurfobj(o, &p_s);
+  ay_status = onio_getnurbsurfobj(o, &p_s, m);
   if(p_s == NULL)
     return ay_status;
 
@@ -418,12 +427,12 @@ onio_writetrimmednpatch(ay_object *o, ONX_Model *p_m)
 // onio_writenpconvertible:
 //
 int
-onio_writenpconvertible(ay_object *o, ONX_Model *p_m)
+onio_writenpconvertible(ay_object *o, ONX_Model *p_m, double *m)
 {
  int ay_status = AY_OK;
  ay_object *p = NULL, *t = NULL;
 
-  if(!o || !p_m)
+  if(!o || !p_m || !m)
     return AY_ENULL;
 
   ay_status = ay_provide_object(o, AY_IDNPATCH, &p);
@@ -434,7 +443,10 @@ onio_writenpconvertible(ay_object *o, ONX_Model *p_m)
 	{
 	  if(t->type == AY_IDNPATCH)
 	    {
-	      ay_status = onio_writenpatch(t, p_m);
+	      // do not use m but tm because m already contains the
+	      // transformations of o and the provided objects (p)
+	      // do so as well
+	      ay_status = onio_writenpatch(t, p_m, tm);
 	    } /* if */
 	  t = t->next;
 	} /* while */
@@ -451,14 +463,15 @@ onio_writenpconvertible(ay_object *o, ONX_Model *p_m)
 // onio_writencurve:
 //
 int
-onio_writencurve(ay_object *o, ONX_Model *p_m)
+onio_writencurve(ay_object *o, ONX_Model *p_m, double *m)
 {
  int ay_status = AY_OK;
  int i, a, stride = 4;
+ double *cv;
  ay_nurbcurve_object *nc = NULL;
  ON_NurbsCurve *p_c = NULL;
 
-  if(!o || !p_m)
+  if(!o || !p_m || !m)
     return AY_ENULL;
 
   nc = (ay_nurbcurve_object *)o->refine;
@@ -470,9 +483,12 @@ onio_writencurve(ay_object *o, ONX_Model *p_m)
 
   // copy control points
   a = 0;
+  cv = p_c->m_cv;
   for(i = 0; i < nc->length; i++)
     {
       p_c->SetCV(i, ON::homogeneous_rational, &(nc->controlv[a]));
+      ay_trafo_apply4(cv, m);
+      cv += 4;
       a += stride;
     }
 
@@ -492,12 +508,12 @@ onio_writencurve(ay_object *o, ONX_Model *p_m)
 // onio_writencconvertible:
 //
 int
-onio_writencconvertible(ay_object *o, ONX_Model *p_m)
+onio_writencconvertible(ay_object *o, ONX_Model *p_m, double *m)
 {
  int ay_status = AY_OK;
  ay_object *p = NULL, *t = NULL;
 
-  if(!o || !p_m)
+  if(!o || !p_m || !m)
     return AY_ENULL;
 
   ay_status = ay_provide_object(o, AY_IDNCURVE, &p);
@@ -508,7 +524,10 @@ onio_writencconvertible(ay_object *o, ONX_Model *p_m)
 	{
 	  if(t->type == AY_IDNCURVE)
 	    {
-	      ay_status = onio_writencurve(t, p_m);
+	      // do not use m but tm because m already contains the
+	      // transformations of o and the provided objects (p)
+	      // do so as well
+	      ay_status = onio_writencurve(t, p_m, tm);
 	    } /* if */
 	  t = t->next;
 	} /* while */
@@ -522,6 +541,46 @@ onio_writencconvertible(ay_object *o, ONX_Model *p_m)
 } // onio_writencconvertible
 
 
+// onio_writelevel:
+//
+int
+onio_writelevel(ay_object *o, ONX_Model *p_m, double *m)
+{
+ int ay_status = AY_OK;
+ ay_object *down = NULL;
+ ay_level_object *l = NULL;
+ double m1[16] = {0};
+
+  if(!o || !p_m || !m)
+    return AY_ENULL;
+
+  l = (ay_level_object *)o->refine;
+
+  if(l->type == AY_LTEND)
+    return AY_OK;
+
+  if(o->down && o->down->next)
+    {
+      memcpy(m1, tm, 16*sizeof(double));
+      memcpy(tm, m, 16*sizeof(double));
+      down = o->down;
+      while(down->next)
+	{
+	  ay_status = onio_writeobject(down, p_m);
+	  down = down->next;
+	}
+      memcpy(tm, m1, 16*sizeof(double));
+    } // if
+
+  /*
+    if(object_attributes)
+    mo.m_attributes = object_attributes[i];
+  */
+
+ return ay_status;
+} // onio_writelevel
+
+
 // onio_writeobject:
 //
 int
@@ -533,6 +592,7 @@ onio_writeobject(ay_object *o, ONX_Model *p_m)
  Tcl_HashEntry *entry = NULL;
  char err[255];
  onio_writecb *cb = NULL;
+ double m1[16] = {0}, m2[16];
 
   if(!o || !p_m)
     return AY_ENULL;
@@ -542,13 +602,28 @@ onio_writeobject(ay_object *o, ONX_Model *p_m)
       cb = (onio_writecb*)Tcl_GetHashValue(entry);
       if(cb)
 	{
-	  ay_status = cb(o, p_m);
+	  if((o->movx != 0.0) || (o->movy != 0.0) || (o->movz != 0.0) ||
+	     (o->rotx != 0.0) || (o->roty != 0.0) || (o->rotz != 0.0) ||
+	     (o->scalx != 1.0) || (o->scaly != 1.0) || (o->scalz != 1.0) ||
+	     (o->quat[0] != 0.0) || (o->quat[1] != 0.0) ||
+	     (o->quat[2] != 0.0) || (o->quat[3] != 1.0))
+	    {
+	      ay_trafo_creatematrix(o, m1);
+	      memcpy(m2, tm, 16*sizeof(double));
+	      ay_trafo_multmatrix4(m2, m1);
+	      ay_status = cb(o, p_m, m2);
+	    }
+	  else
+	    {
+	      ay_status = cb(o, p_m, tm);
+	    }
+
 	  if(ay_status)
 	    {
 	      ay_error(AY_ERROR, fname, "Error exporting object.");
 	      ay_status = AY_OK;
 	    }
-	}
+	} // if
     }
   else
     {
@@ -645,10 +720,11 @@ onio_writetcmd(ClientData clientData, Tcl_Interp *interp,
   }
   */
 
-  // object table
-  // get object attributes and make sure layer and material indices are legit
+  // fill object table
   while(o)
     {
+      ay_trafo_identitymatrix(tm);
+
       ay_status = onio_writeobject(o, &model);
 
       o = o->next;
@@ -708,6 +784,7 @@ onio_registerwritecb(char *name, onio_writecb *cb)
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
+
 // onio_w2c_size:
 // gets minimum "c_count" arg for onio_w2c() below
 // taken from opennurbs_wstring.cpp
@@ -723,6 +800,7 @@ static int onio_w2c_size( int w_count, const wchar_t* w )
   }
   return rc;
 } // onio_w2c_size
+
 
 // onio_w2c:
 // convert wide chars to ASCII chars
@@ -751,6 +829,7 @@ static int onio_w2c( int w_count,
   }
   return rc;
 } // onio_w2c
+
 
 // onio_readnurbssurface:
 //
@@ -950,8 +1029,6 @@ onio_readnurbscurve(ON_NurbsCurve *p_c)
 	    } // for
 	} // if
     } // if
-
-  
 
 
   // if weights are in the file but the dimension of the curve is
@@ -1876,6 +1953,9 @@ Onio_Init(Tcl_Interp *interp)
 
   ay_status = onio_registerwritecb((char *)(AY_IDEXTRNC),
 				   onio_writencconvertible);
+
+  ay_status = onio_registerwritecb((char *)(AY_IDLEVEL),
+				   onio_writelevel);
 
 
 #ifndef ONIOWRAPPED
