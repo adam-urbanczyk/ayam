@@ -1737,7 +1737,7 @@ Quat property elements.
 <p>
 The attributes of an object contain currently:
 <itemize>
-<item><tt/"Name"/, the name of the object. It is also displayed
+<item><tt/"Objectname"/, the name of the object. It is also displayed
 in the object listbox or tree and may be written to RIB streams.
 <item><tt/"Hide"/, if this attribute is set this object is not drawn.
 It may also be excluded from RIB export.
@@ -1752,10 +1752,17 @@ The material property allows you to connect geometric objects
 to material objects (see also section
 <ref id="materialobj" name="Material Object">).
 <itemize>
-<item><tt/"Clear Material"/ immediately clears any connection
+<item><tt/"Clear Material!"/ immediately clears any connection
 of the current object to its material.
-<item><tt/"Name"/ is the name of the material of this object.
-An easy way to connect materials to objects is to simply
+<item><tt>"Add/Edit Material!"</tt> adds a material to the
+current object (if it has none) and immediately selects
+the new material object for editing. If the current object
+already has a material, this material object is searched for
+and selected for editing.
+<item><tt/"Materialname"/ is the name of the material of this object.
+If you change the name the object will be disconnected from the
+old material and connected to the new material.
+An easier way to connect geometric objects to material objects is to simply
 drop the geometric objects onto the material object using Drag-and-Drop
 in the tree view.
 </itemize>
@@ -2540,15 +2547,6 @@ and the documentation of BMRT for more detailed information about the
 RenderMan specific attributes.
 
 <itemize>
-<item><tt/"Materialname"/ denotes the name of the material. Note,
-that material names have to be unique in a scene. If two
-materials with the same name exist, only the first material
-created with this name is "registered" and thus
-may be connected to geometric objects.
-<item><tt/"Refcount"/ shows how many geometric objects
-are connected to (are of) this material.
-<item><tt/"Registered"/ displays, if this material may be
-connected to geometric objects, see discussion about material names above.
 <item><tt/"Color"/, the color of the object. If you set one of the
 entries to a negative value (e.g. -1), the color will not be set at all
 for this object.
@@ -2589,6 +2587,25 @@ Interior and Exterior shaders are so called volume
 shaders that may be used to capture
 special optical effects, encoding how
 light is affected while passing through an object.
+
+<sect2>MaterialAttr Property<label id="matattr">
+<p>
+The MaterialAttr property contains attributes related to the
+management of material objects:
+<itemize>
+<item><tt/"Materialname"/ denotes the name of the material. Note,
+that material names have to be unique in a scene. If two
+materials with the same name exist, only the first material
+created with this name is "registered" and thus
+may be connected to geometric objects.
+<item><tt/"Refcount"/ shows how many geometric objects
+are connected to (are of) this material.
+Note that connected or referring geometric objects not necessarily
+have to live in the scene, they may as well temporarily reside in
+the object clipboard.
+<item><tt/"Registered"/ displays whether this material may be
+connected to geometric objects, see the discussion about material names above.
+</itemize>
 
 <sect1>Light Object<label id="lightobj">
 <p>
@@ -5986,7 +6003,8 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Help: <ref id="mmhelp" name="main menu entry">
 <item>Help on object: <ref id="mmhelp" name="main menu entry">
 <item>Hidden Preferences: <ref id="hidprefs" name="Hidden Preference Settings">
-<item>Hide: <ref id="mmtools" name="main menu entry">
+<item>Hide: <ref id="mmtools" name="main menu entry">,
+<ref id="attrs" name="attribute">
 <item>Hide All: <ref id="mmtools" name="main menu entry">
 <item>HideTmpTags: <ref id="prefmisc" name="preference setting">
 <item>Highlight Material: <ref id="mmtools" name="main menu entry">
@@ -6071,6 +6089,8 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Master: <ref id="mmedit" name="edit menu entry">
 <item>Material: <ref id="materialobj" name="object">,
 <ref id="mmedit" name="edit menu entry">
+<item>Materialname: <ref id="matattr" name="material object attribute">,
+<ref id="matprop" name="material property attribute">
 <item>MaxRayLevel: <ref id="rio" name="RenderMan interface option">
 <item>MaxTagLen: <ref id="hidprefs" name="Hidden Preference Settings">
 <item>Menu: <ref id="mm" name="main menu">,
@@ -6090,7 +6110,6 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 
 <label id="indexn">N
 <itemize>
-<item>Name: <ref id="attrs" name="attribute">
 <item>NCDisplayMode: <ref id="prefdraw" name="preference setting">,
 <ref id="ncattr" name="NURBCurve attribute">
 <item>Near: <ref id="camp" name="camera property">
@@ -6113,6 +6132,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <label id="indexo">O
 <itemize>
 <item>Object: <ref id="prefdraw" name="preference setting">
+<item>Objectname: <ref id="attrs" name="attribute">
 <item>Objects: <ref id="obj" name="tree/listbox">,
 <ref id="objsel" name="selection within a view">
 <item>OI: <ref id="oitt" name="tag type">
@@ -6175,6 +6195,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Redraw: <ref id="vm" name="view menu entry">,
 <ref id="incds" name="speeding up">,
 <ref id="vat" name="view attribute">
+<item>Refcount: <ref id="attrs" name="attribute">
 <item>Reference Counter: <ref id="instanceobj" name="Instance Object">,
 <ref id="materialobj" name="Material Object">
 <item>References: <ref id="secref" name="references">
