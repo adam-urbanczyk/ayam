@@ -371,6 +371,19 @@ proc setViewAttr { } {
 }
 # setViewAttr
 
+# viewRepairTitle:
+#  after undo/redo, set correct view title
+proc viewRepairTitle { w type } {
+    global ay ViewAttribData
+
+    set typename [lindex $ay(viewtypenames) $type]
+
+    viewTitle .${w} $typename ""
+   
+}
+# viewRepairTitle
+
+
 # create ViewAttr-UI
 set w [frame $ay(pca).$ViewAttrib(w)]
 

@@ -111,7 +111,7 @@ menubutton $w.fMenu.t -text "Type" -menu $w.fMenu.t.m -padx 3
 set m [menu $w.fMenu.t.m -tearoff 0]
 $m add command -label "Front" -command {
     global ay
-    undo view [winfo name [winfo toplevel $w]]
+    undo save
     set togl $ay(currentView)
     set w [winfo toplevel $togl]
 
@@ -125,7 +125,7 @@ $m add command -label "Front" -command {
 }
 $m add command -label "Side" -command {
     global ay
-    undo view [winfo name [winfo toplevel $w]]
+    undo save
     set togl $ay(currentView)
     set w [winfo toplevel $togl]
 
@@ -138,7 +138,7 @@ $m add command -label "Side" -command {
 }
 $m add command -label "Top" -command {
     global ay
-    undo view [winfo name [winfo toplevel $w]]
+    undo save
     set togl $ay(currentView)
     set w [winfo toplevel $togl]
 
@@ -152,7 +152,7 @@ $m add command -label "Top" -command {
 $m add separator
 $m add command -label "Perspective" -command {
     global ay
-    undo view [winfo name [winfo toplevel $w]]
+    undo save
     set togl $ay(currentView)
     set w [winfo toplevel $togl]
     $togl setconf -type 3 -fromx 0.0 -fromy 0 -fromz 15.0\
@@ -166,7 +166,7 @@ $m add command -label "Perspective" -command {
 $m add separator
 $m add command -label "Trim" -command {
     global ay
-    undo view [winfo name [winfo toplevel $w]]
+    undo save
     set togl $ay(currentView)
     set w [winfo toplevel $togl]
     $togl setconf -type 4 -fromx 0.0 -fromy 0.0 -fromz 10.0\
@@ -267,8 +267,14 @@ $ay(currentView) zoomob }
 $m add command -label "Align" -command { global ay;
 $ay(currentView) align }
 
-pack $w.fMenu.v $w.fMenu.t $w.fMenu.c -in $w.fMenu -side left
+menubutton $w.fMenu.a -image ay_Move_img -menu $w.fMenu.a.m -padx 3
+menu $w.fMenu.a.m -tearoff 0
+$w.fMenu.a.m add command\
+-label "Quick Render"\
+-command {exit}
 
+pack $w.fMenu.v $w.fMenu.t $w.fMenu.c -in $w.fMenu -side left
+pack $w.fMenu.a -in $w.fMenu -side right
 # XXXX Win32 Menus are a bit to tall
 global tcl_platform
 if { $tcl_platform(platform) == "windows" } {

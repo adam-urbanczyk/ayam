@@ -27,7 +27,7 @@ proc actionRotView { w } {
     viewTitle $w "" "Rotate_View"
 
     bind $w <ButtonPress-1> {
-	undo view [winfo name [winfo toplevel %W]]
+	undo save
 	set oldx %x
 	set oldy %y
 	update
@@ -49,7 +49,7 @@ proc actionMoveView { w } {
     viewTitle $w "" "Move_View"
 
     bind $w <ButtonPress-1> {
-	undo view [winfo name [winfo toplevel %W]]
+	undo save
 	%W movevac -start %x %y
 	update
     }
@@ -68,7 +68,7 @@ proc actionZoomView { w } {
     viewTitle $w "" "Zoom_View"
 
     bind $w <ButtonPress-1> {
-	undo view [winfo name [winfo toplevel %W]]
+	undo save
 	%W zoomvac -start %y
 	update
     }
@@ -87,7 +87,7 @@ proc actionMoveZView { w } {
     viewTitle $w "" "MoveZ_View"
 
     bind $w <ButtonPress-1> {
-	undo view [winfo name [winfo toplevel %W]]
+	undo save
 	%W movezvac -start %y
 	update
     }
