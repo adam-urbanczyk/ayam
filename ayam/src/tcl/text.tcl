@@ -30,8 +30,13 @@ set w [frame $ay(pca).$TextAttr(w)]
 addFile $w TextAttrData FontName
 addString $w TextAttrData String
 addParam $w TextAttrData Height
+addCheck $w TextAttrData Revert
 addCheck $w TextAttrData UpperCap
 addCheck $w TextAttrData LowerCap
+addCheck $w TextAttrData UpperBevels
+addCheck $w TextAttrData LowerBevels
+addMenu $w TextAttrData BevelType [list Round Linear Ridge]
+addParam $w TextAttrData BevelRadius
 global ay
 set l $ay(npdisplaymodes)
 set l [linsert $l 0 Global]
