@@ -235,7 +235,7 @@ ay_prefs_gettcmd(ClientData clientData, Tcl_Interp *interp,
 /* Tcl -> C! */
 int
 ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
-		    int argc, char *argv[])
+		 int argc, char *argv[])
 {
   /* char fname[] = "setPrefs";*/
  char *n1="ayprefs", *n2 = "ayprefse";
@@ -243,6 +243,7 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
  int itemp = 0, ay_status = AY_OK;
  char fname[] = "set_prefs";
  char *str = NULL;
+ char *ucargs[3] = {0}, ucarg1[] = "clear";
 
   /* Modeling */
   toa = Tcl_NewStringObj(n1, -1);
@@ -286,14 +287,17 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
 	}
 
 
-      ay_status = ay_undo_clear();
+      /*      ay_status = ay_undo_clear();*/
+      ucargs[1] = ucarg1;
+      ay_undo_undotcmd(clientData, interp, 2, ucargs);
+
       ay_status = ay_undo_init(itemp);
       if(ay_status)
 	{
 	  ay_error(ay_status, fname, NULL);
 	  return TCL_OK;
 	}
-	  
+
       ay_prefs.undo_levels = itemp;
 
     }
@@ -426,7 +430,7 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
   if(itemp > 255) itemp = 255;
   ay_prefs.tpb = (double)(itemp/255.0);
 
-  
+
   Tcl_SetStringObj(ton, "Shade_R", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &itemp);
@@ -542,7 +546,7 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
       if(ay_prefs.logfile)
 	free(ay_prefs.logfile);
       ay_prefs.logfile = NULL;
-	  
+
       if(!(ay_prefs.logfile = calloc(strlen(str)+1, sizeof(char))))
 	return AY_EOMEM;
 
@@ -558,7 +562,7 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
       if(ay_prefs.pprender)
 	free(ay_prefs.pprender);
       ay_prefs.pprender = NULL;
-	  
+
       if(!(ay_prefs.pprender = calloc(strlen(str)+1, sizeof(char))))
 	return AY_EOMEM;
 
