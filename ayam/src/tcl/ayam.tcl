@@ -469,6 +469,7 @@ array set ay {
  oldbinding ""
  oldb1binding ""
  oldb1rbinding ""
+ shiftcbsp 1
 }
 # array ay
 

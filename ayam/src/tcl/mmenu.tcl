@@ -307,7 +307,9 @@ $m.nct add command -label "Plot Curvature" -command {
     runTool [list ay(curvatp) ay(curvatw) ay(curvats)]\
 	    [list "Data points:" "Width:" "Scale Height:"]\
 	    "curvPlot %0 %1 %2; uCR; rV" }
-
+$m.nct add command -label "Shift BSpline" -command {
+runTool ay(shiftcbsp) {"Times:"}\
+	    "undo save ShiftClosedBS; shiftClosedBS %0; rV" }
 $m.nct add separator
 $m.nct add command -label "Collapse Points" -command { collNC; rV; }
 $m.nct add command -label "Explode Points" -command { explNC; rV; }
