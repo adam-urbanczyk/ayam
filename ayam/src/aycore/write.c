@@ -96,6 +96,7 @@ ay_write_tags(FILE *fileptr, ay_object *o)
  int ay_status = AY_OK;
  ay_tag_object *tag = NULL;
  int tcount = 0;
+ int temp = 0;
 
   if(!o)
     return AY_ENULL;
@@ -104,7 +105,9 @@ ay_write_tags(FILE *fileptr, ay_object *o)
   tag = o->tags;
   while(tag)
     {
-      tcount++;
+      ay_status = ay_tags_temp(ay_interp, tag->name, 0, &temp);
+      if(temp == AY_FALSE)
+	tcount++;
       tag = tag->next;
     }
 
@@ -114,8 +117,12 @@ ay_write_tags(FILE *fileptr, ay_object *o)
   tag = o->tags;
   while(tag)
     {
-      fprintf(fileptr,"%s\n",tag->name);
-      fprintf(fileptr,"%s\n",tag->val);
+      ay_status = ay_tags_temp(ay_interp, tag->name, 0, &temp);
+      if(temp == AY_FALSE)
+	{
+	  fprintf(fileptr,"%s\n",tag->name);
+	  fprintf(fileptr,"%s\n",tag->val);
+	}
       tag = tag->next;
     }
 

@@ -74,6 +74,8 @@ ay_table ay_bbccbt;
 
 Tcl_HashTable ay_tagtypesht;
 
+Tcl_HashTable ay_temptagtypesht;
+
 ay_table ay_tagnamest;
 
 ay_table ay_oidptrt;
@@ -167,6 +169,8 @@ ay_init(Tcl_Interp *interp)
 
   /* Tags */
   Tcl_InitHashTable(&ay_tagtypesht, TCL_STRING_KEYS);
+
+  Tcl_InitHashTable(&ay_temptagtypesht, TCL_STRING_KEYS);
 
   /* initialize instancing helper module */
   ay_instt_init(interp);
