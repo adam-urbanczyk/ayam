@@ -60,7 +60,7 @@ proc render_select { } {
 
     pack $f -in $w -side top -fill x
 
-    set names [list BMRT2.5 BMRT2.6 Aqsis Air Angel 3Delight Pixie RDC PRMan]
+    set names [list BMRT2.5 BMRT2.6 Aqsis0.8.0 Aqsis0.9.0 Air Angel 3Delight Pixie RDC PRMan]
     foreach name $names {
 	$f.li insert end "$name"
     }
@@ -115,7 +115,7 @@ proc render_select { } {
 	    }
 
 	    2 {
-		# Aqsis
+		# Aqsis 0.8.0
 		set ayprefs(QRender) "aqsis -progress -fb %s"
 		set ayprefs(QRenderPT) "Done Computing %d"
 		set ayprefs(Render) "aqsis -progress -fb %s"
@@ -130,10 +130,30 @@ proc render_select { } {
 		if { $ay(ScanShaders) == 1 } {
 		    set ay(sext) ".slx"
 		}
-		set newr "Aqsis"
+		set newr "Aqsis0.8.0"
 	    }
 
-	    3 { 
+	    3 {
+		# Aqsis 0.9.0
+		set ayprefs(QRender)\
+			"aqsis -progress -fb -progressformat %p %s"
+		set ayprefs(QRenderPT) "%d"
+		set ayprefs(Render) "aqsis -progress -fb -progressformat %p %s"
+		set ayprefs(RenderPT) "%d"
+		set ayprefs(SMRender) "aqsis -progress -progressformat %p %s"
+		set ayprefs(SMRenderPT) "%d"
+		set ayprefs(RenderMode) 0
+		global AYUSESLXARGS
+		if { $AYUSESLXARGS != 1 } {
+		    set splugin "ayslx"
+		}
+		if { $ay(ScanShaders) == 1 } {
+		    set ay(sext) ".slx"
+		}
+		set newr "Aqsis0.9.0"
+	    }
+
+	    4 { 
 		# Air
 		set ayprefs(QRender) "air -samples 1 1 -d 4 -Progress %s"
 		set ayprefs(QRenderPT) "R90000 %d"
@@ -149,7 +169,7 @@ proc render_select { } {
 		set newr "Air"
 	    }
 
-	    4 { 
+	    5 { 
 		# Angel
 		set ayprefs(QRender) "angel %s"
 		set ayprefs(QRenderPT) "%d"
@@ -164,7 +184,7 @@ proc render_select { } {
 		set newr "Angel"
 	    }
 
-	    5 {
+	    6 {
 		# 3Delight
 		set ayprefs(QRender) "renderdl -d %s"
 		set ayprefs(QRenderPT) ""
@@ -180,7 +200,7 @@ proc render_select { } {
 		set newr "3Delight"
 	    }
 
-	    6 {
+	    7 {
 		# Pixie
 		set ayprefs(QRender) "rndr %s"
 		set ayprefs(QRenderPT) "regexp -- {^.* - (\\\[0-9\\\]+)} string dummy percent"
@@ -196,7 +216,7 @@ proc render_select { } {
 		set newr "Pixie"
 	    }
 
-	    7 {
+	    8 {
 		# RDC
 		set ayprefs(QRender) "renderdc %s"
 		set ayprefs(QRenderPT) ""
@@ -212,7 +232,7 @@ proc render_select { } {
 		set newr "RDC"
 	    }
 
-	    8 {
+	    9 {
 		# PRMan
 		set ayprefs(QRender) "render -vector %s"
 		set ayprefs(QRenderPT) ""
