@@ -876,6 +876,9 @@ int ay_status = AY_OK;
   Tcl_CreateCommand(interp, "toXYNC", ay_nct_toxytcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  Tcl_CreateCommand(interp, "makeCompNC", ay_nct_makecomptcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
   /* nurbs/npt.c */
   Tcl_CreateCommand(interp, "crtNSphere", ay_npt_crtnspheretcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);

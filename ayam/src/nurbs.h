@@ -270,6 +270,9 @@ int ay_nct_toxy(ay_object *c);
 int ay_nct_toxytcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[]);
 
+int ay_nct_makecomptcmd(ClientData clientData, Tcl_Interp *interp,
+			int argc, char *argv[]);
+
 
 /* npt.c */
 int ay_npt_create(int uorder, int vorder, int width, int height,

@@ -314,6 +314,8 @@ runTool ay(shiftcbsp) {"Times:"}\
 	    "undo save ShiftClosedBS; shiftClosedBS %0; rV" }
 $m.nct add command -label "To XY" -command {
     undo save ToXYNC; toXYNC;}
+$m.nct add command -label "Make Compatible" -command {
+    undo save MakeCompNC; makeCompNC;}
 $m.nct add separator
 $m.nct add command -label "Collapse Points" -command { collNC; rV; }
 $m.nct add command -label "Explode Points" -command { explNC; rV; }
