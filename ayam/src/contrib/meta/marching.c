@@ -98,7 +98,7 @@ meta_polygonise (meta_world * w, meta_gridcell * grid, double isolevel)
 
   w->scale = 1.0;
   
-  if(w->adaptflag)   //(w->adapt)
+  if(w->adaptflag)   
   {
      meta_boxscan(w,grid);
      return (cubeindex);
