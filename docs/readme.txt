@@ -1,4 +1,4 @@
-[readme.txt 16. Nov 2001]
+[readme.txt 17. Nov 2001]
 
 This directory contains the sources (SGML and pictures) for the main
 Ayam documentation, the Ayam reference manual.
@@ -15,7 +15,11 @@ o dvips
 if you want to build a PDF you additionally need
 o dvipdf (not recommended) or pdflatex (recommended)
 
-To actually build the documentation (HTML and PDF) simply enter:
+Note: In order for HTML, PostScript, and PDF versions of the
+documentation to be created the sub directory "pics" must
+contain the pictures in GIF, EPS, and PNG format respectively.
+
+To actually build the documentation (HTML and nice PDF) simply enter:
 >make
 
 To build just the HTML version:
