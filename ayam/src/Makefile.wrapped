@@ -357,7 +357,7 @@ AYSOLIBS = -L $(RDCDIR)/lib -lsoargs
 # Ayslo Plugin
 PRMANDIR = /usr/local/prman
 AYSLOINCDIR = $(PRMANDIR)/include
-AYSLOLIBS = -L $(PRMANDIR)/lib -lsloargs
+AYSLOLIBS = -L $(PRMANDIR)/lib -lsloargs -ltarget -lzip
 
 # Ayslo3d Plugin
 3DLDIR = /usr/local/3delight
@@ -432,15 +432,15 @@ ayslx.so:
 
 ayso.so:
 	$(CC) -c $(CFLAGS) plugins/ayso.c -o plugins/ayso.o -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR) -I$(AQSISINCDIR) -I$(TIFFINCDIR) -I$(AYSOINCDIR)
-	$(CC) -shared plugins/ayso.o -o plugins/ayso.so $(AYSOLIBS))
+	$(CC) -shared plugins/ayso.o -o plugins/ayso.so $(AYSOLIBS)
 
 ayslo.so:
 	$(CC) -c $(CFLAGS) plugins/ayslo.c -o plugins/ayslo.o -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR) -I$(AQSISINCDIR) -I$(TIFFINCDIR) -I$(AYSLOINCDIR)
-	$(CC) -shared plugins/ayslo.o -o plugins/ayslo.so $(AYSLOLIBS))
+	$(CC) -shared plugins/ayslo.o -o plugins/ayslo.so $(AYSLOLIBS)
 
 ayslo3d.so:
 	$(CC) -c $(CFLAGS) plugins/ayslo3d.c -o plugins/ayslo3d.o -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR) -I$(AQSISINCDIR) -I$(TIFFINCDIR) -I$(AYSLO3DINCDIR)
-	$(CC) -shared plugins/ayslo3d.o -o plugins/ayslo3d.so $(AYSLO3DLIBS))
+	$(CC) -shared plugins/ayslo3d.o -o plugins/ayslo3d.so $(AYSLO3DLIBS)
 
 mostlyclean:
 	-rm -f core
