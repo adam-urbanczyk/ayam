@@ -419,7 +419,7 @@ proc uCR { } {
 		if { $count >= $oldcount } {
 		    $ay(tree) insert end $ay(CurrentLevel)\
 		    $ay(CurrentLevel):$count -text $node -drawcross auto\
-		    -open 0 -fill black
+		    -open 0 -fill black -image emptybm
 		    #tree_createSub $ay(tree) $ay(CurrentLevel) $node
 		}
 		incr count
