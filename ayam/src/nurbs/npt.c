@@ -2956,6 +2956,7 @@ ay_npt_bevel(int type, double radius, ay_object *o,
       memcpy(uknotv,uknots_round,6*sizeof(double));
       new->uorder = 3;
       new->width = 3;
+      new->uknot_type = AY_KTNURB;
     }
   if(type == 1)
     {
@@ -2966,6 +2967,7 @@ ay_npt_bevel(int type, double radius, ay_object *o,
       memcpy(uknotv,uknots_linear,4*sizeof(double));
       new->uorder = 2;
       new->width = 2;
+      new->uknot_type = AY_KTNURB;
     }
   if(type == 2)
     {
@@ -2976,6 +2978,7 @@ ay_npt_bevel(int type, double radius, ay_object *o,
       memcpy(uknotv,uknots_ridge,8*sizeof(double));
       new->uorder = 3;
       new->width = 5;
+      new->uknot_type = AY_KTCUSTOM;
     }
 
   if(!(vknotv = calloc(curve->length+curve->order,sizeof(double))))
@@ -2984,8 +2987,7 @@ ay_npt_bevel(int type, double radius, ay_object *o,
   new->vknotv = vknotv;
   new->uknotv = uknotv;
   new->vorder = curve->order;
-  new->uknot_type = curve->knot_type;
-  new->vknot_type = AY_KTCUSTOM;
+  new->vknot_type = curve->knot_type;
   new->height = curve->length;
   new->glu_sampling_tolerance = curve->glu_sampling_tolerance;
 
