@@ -580,8 +580,6 @@ RtVoid ay_rrib_RiTrimCurve(RtInt nloops, RtInt ncurves[], RtInt order[],
 } /* ay_rrib_RiTrimCurve */
 
 
-
-
 RtLightHandle
 ay_rrib_RiLightSource(RtToken name, 
 		      RtInt n, RtToken tokens[], RtPointer parms[])
@@ -624,7 +622,6 @@ ay_rrib_RiLightSource(RtToken name,
     l.shadows = ay_rrib_cattributes->light_shadows;
   else
     l.shadows = 0;
-
 
 
   /* check for default light source types first */
@@ -3003,6 +3000,9 @@ ay_rrib_trafotoobject(ay_object *o, double *transform)
   o->quat[1] = 0.0;
   o->quat[2] = 0.0;
   o->quat[3] = 1.0;
+  o->rotx = 0.0;
+  o->roty = 0.0;
+  o->rotz = 0.0;
 
   if(fabs(transform[15]) <= AY_EPSILON )
     return;
