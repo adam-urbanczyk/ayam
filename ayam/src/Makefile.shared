@@ -29,7 +29,8 @@ LIBDIR = $(PREFIX)/lib
 DOCDIR = $(PREFIX)/doc
 #DOCDIR = $(PREFIX)/doc/ayam
 
-INSTALL = install
+INSTALL = ./ninstall
+#INSTALL = install
 MKDIR = mkdir -p
 
 # the compiler
@@ -327,10 +328,13 @@ install:
 	-$(INSTALL) contrib/meta/metaobj.so $(LIBDIR)
 	-$(INSTALL) contrib/meta/metaobj.tcl $(LIBDIR)
 	-$(INSTALL) contrib/meta/metacomp.tcl $(LIBDIR)
-	-$(INSTALL) plugins/mfio.so plugins/mfio.tcl $(LIBDIR)
-	-$(INSTALL) plugins/idr.so plugins/idr.tcl $(LIBDIR)
+	-$(INSTALL) plugins/mfio.so $(LIBDIR)
+	-$(INSTALL) plugins/mfio.tcl $(LIBDIR)
+	-$(INSTALL) plugins/idr.so $(LIBDIR)
+	-$(INSTALL) plugins/idr.tcl $(LIBDIR)
 	-$(INSTALL) plugins/loadidr.tcl $(LIBDIR)
-	-$(INSTALL) plugins/rrib.so plugins/rrib.tcl $(LIBDIR)
+	-$(INSTALL) plugins/rrib.so $(LIBDIR)
+	-$(INSTALL) plugins/rrib.tcl $(LIBDIR)
 	-$(INSTALL) plugins/loadrrib.tcl $(LIBDIR)
 	-$(INSTALL) Makefile $(LIBDIR)
 	$(MKDIR) $(DOCDIR)
