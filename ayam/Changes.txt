@@ -1,6 +1,9 @@
-[05. 06. 2003] CVS-Head:
+[13. 06. 2003] CVS-Head:
 o bug fixes:
-  none
+  - fixed crash when exporting scenes with malformed RiAttribute/RiOption
+    tags (type c or p, with a component missing) (SF 753550)
+  - fixed rotate view action destroying light sources shader parameter
+    settings (SF 753552)
 o added preference setting "Misc/SavePrefsGeom" to control saving of the
   geometry of the preference editor window
 o added two new renderers, Angel and Pixie, to the Select_Renderer feature
@@ -12,6 +15,7 @@ o added a new drawing mode "ShadeAndDraw" that displays e.g. shaded
   shortcut <Ctrl+S> still toggles between drawing and the shaded
   representation
 o added a new icon based menu to switch the drawing mode to all view windows
+o light source objects now honour "NoExport" tags
 
 
 [10. 05. 2003] Ayam1.5.1:
