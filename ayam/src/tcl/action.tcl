@@ -374,7 +374,6 @@ proc actionDelTagP { w } {
 #    undo save
     $w deselpac
     rV
-
 }
 # actionDelTagP
 
@@ -750,6 +749,7 @@ proc actionClear { w } {
 	$w.f3D.togl setconf -rect $oldx $oldy %x %y 1
     }
 
-    $t.f3D.togl setconf -drawh 0 -mark 0 0 0
+    $t.f3D.togl setconf -drawh 0
+    $t.f3D.togl setconf -mark 0 0 0
 }
 # actionClear
