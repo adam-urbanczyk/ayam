@@ -81,6 +81,7 @@ array set ayprefs {
  Plugins "."
 
  Wpclip_pastetosel 1
+ WarnChanged 1
 
  RedirectTcl 1
  Logging 0
@@ -291,6 +292,7 @@ array set ay {
  co ""
  cm ""
  rnum 0
+ sc 0
 }
 
 set ay_error 0

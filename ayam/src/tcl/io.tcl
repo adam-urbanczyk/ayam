@@ -55,6 +55,7 @@ proc io_replaceScene { } {
 	    rV
 	}
 	io_mruAdd $filename
+	set ay(sc) 0
     }
 
  return;
@@ -102,6 +103,7 @@ proc io_insertScene { } {
 	set ay(ul) $ay(CurrentLevel)
 	uS
 	rV
+	set ay(sc) 1
     }
 
  return;
@@ -144,6 +146,7 @@ proc io_saveScene { ask selected } {
 	    set ay(filename) $filename
 	    ayError 4 "saveScene" "Done saving scene to:"
 	    ayError 4 "saveScene" "$filename"
+	    set ay(sc) 0
 	}
 
     }
@@ -290,6 +293,8 @@ proc io_lc { filename } {
 	load $filename
     }
 
+    set ay(sc) 1
+
  return;
 }
 # io_lc
@@ -383,6 +388,7 @@ proc io_importMops { } {
 	}
 	uS
 	rV
+	set ay(sc) 1
     }
 
  return;
@@ -436,6 +442,7 @@ proc io_mruLoad { index } {
 	    set ay(filename) $filename
 	    ayError 4 "replaceScene" "Done reading scene from:"
 	    ayError 4 "replaceScene" "$filename"
+	    set ay(sc) 0
 	} else {
 	    ayError 2 "Ayam" "There were errors while loading:"
 	    ayError 2 "Ayam" "$filename"
@@ -471,3 +478,31 @@ proc io_mruUMenu {  } {
  return;
 }
 # io_mruUMenu
+
+
+# io_warnChanged:
+#  
+proc io_warnChanged {  } {
+    global ay ayprefs
+
+    if { $ayprefs(WarnChanged) == 1 } {
+
+	if { $ay(sc) == 1 } {
+	    set t "Scene has changed!"
+	    set m "Select \"Ok\" to lose all changes.\nSelect \"Cancel\" to stop operation."
+set answer [tk_messageBox -title $t -type okcancel -icon warning -message $m]
+	    if { $answer == "cancel" } {
+		return 1;
+	    } else {
+		return 0;
+	    }
+
+	} else {
+	    return 0;
+	}
+    } else {
+	return 0;
+    }
+
+}
+# io_warnChanged

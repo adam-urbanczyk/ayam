@@ -18,9 +18,18 @@ menubutton .fu.fMenu.fil -text "File" -menu .fu.fMenu.fil.m -padx 3
 menu .fu.fMenu.fil.m -tearoff 0
 set m .fu.fMenu.fil.m
 $m add command -label "New"\
-	-command "update; newScene; uS; rV;"
+	-command {
+    global ay
+    if { ! [io_warnChanged] } { 
+	update; newScene; uS; rV; set ay(sc) 0
+    }
+}
 $m add separator
-$m add command -label "Replace" -command "io_replaceScene"
+$m add command -label "Replace" -command {
+    if { ! [io_warnChanged] } {
+	io_replaceScene
+    }
+}
 $m add command -label "Insert" -command "io_insertScene"
 $m add separator
 $m add command -label "Save as" -command "io_saveScene ask 0"
@@ -46,16 +55,20 @@ $m add command -label $label -command {io_mruLoad 3}
 $m add separator
 $m add command -label "Exit!" -command {
     global ayprefs
-    # remove all temporary files
-    tmp_clean 1  
 
-    if { $ayprefs(AutoSavePrefs) == 1 } {
-	catch [ prefs_save ]
-    }
+    if { ! [io_warnChanged] } { 
+
+	# remove all temporary files
+	tmp_clean 1
+
+	if { $ayprefs(AutoSavePrefs) == 1 } {
+	    catch [ prefs_save ]
+	}
     
-    puts "Good Bye!"
-    update
-    exit
+	puts "Good Bye!"
+	update
+	exit
+    }
 }
 pack .fu.fMenu.fil -in .fu.fMenu -side left
 
@@ -65,15 +78,16 @@ menu .fu.fMenu.ed.m  -tearoff 0
 set m .fu.fMenu.ed.m
 $m add command -label "Copy" -command {copOb}
 $m add command -label "Cut" -command {cutOb; cS;
-global ay; set ay(ul) $ay(CurrentLevel); uS; rV}
+global ay; set ay(ul) $ay(CurrentLevel); uS; rV; set ay(sc) 1}
 $m add command -label "Paste" -command {pasOb; cS;
-global ay; set ay(ul) $ay(CurrentLevel); uS; rV;}
+global ay; set ay(ul) $ay(CurrentLevel); uS; rV; set ay(sc) 1}
 $m add command -label "Delete" -command {delOb; cS;
-global ay; set ay(ul) $ay(CurrentLevel); uS; rV;}
+global ay; set ay(ul) $ay(CurrentLevel); uS; rV; set ay(sc) 1}
 $m add separator
 $m add command -label "Copy Property" -command {pclip_copy 0}
 $m add command -label "Copy Marked Prop" -command {pclip_copy 1}
-$m add command -label "Paste Property" -command {pclip_paste}
+$m add command -label "Paste Property" -command {global ay;
+pclip_paste; set ay(sc) 1}
 $m add separator
 $m add command -label "Undo" -command {undo; uCL cl "0 1"; plb_update; rV}
 $m add command -label "Redo" -command {undo redo; uCL cl "0 1"; plb_update; rV}
@@ -245,7 +259,8 @@ pack .fu.fMenu.spec -in .fu.fMenu -side left
 set m [menu .fu.fMenu.spec.m -tearoff 0]
 $m add command -label "Save Selected as" -command "io_saveScene ask 1"
 $m add separator
-$m add command -label "Paste (Move)" -command {cmovOb; uCR; rV;}
+$m add command -label "Paste (Move)" -command {cmovOb; uCR; rV; global ay;
+set ay(sc) 1}
 $m add command -label "Paste Property to Selected" -command "pclip_pastetosel;rV"
 $m add separator
 $m add command -label "Select All Points" -command "selPoints;rV"
