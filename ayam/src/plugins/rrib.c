@@ -210,6 +210,10 @@ enum {
    NTBL_LAST
 };
 
+/*
+ * The following table was created originally by starting emacs and
+ * typing some text.
+ */
 char N[] = {
     0,  1 , 'N',
     2,  2 ,'\0',  0,
@@ -3888,6 +3892,8 @@ ay_rrib_readtag(char *tagtype, char *tagname, char *name,
  RIB_HASHHND ht = NULL;
  PRIB_HASHATOM  p = NULL;
  char fname[] = "ay_rrib_readtag";
+ RtInt *intpair;
+ RtFloat *fltpair;
  RtColor *col;
  RtPoint *pnt;
  char *valstr = NULL, valbuf[255], typechar;
@@ -3937,9 +3943,21 @@ ay_rrib_readtag(char *tagtype, char *tagname, char *name,
 	  sprintf(valbuf,"%d", (int)(*((RtInt *)(parms[i]))));
 	  valstr = valbuf;
 	  break;
+	case kRIB_INTPAIRTYPE:
+	  typechar = 'j';
+	  intpair = (RtInt *)(parms[i]);
+	  sprintf(valbuf,"%d,%d", (int)(intpair[0]),(int)(intpair[1]));
+	  valstr = valbuf;
+	  break;
 	case kRIB_FLOATTYPE:
 	  typechar = 'f';
 	  sprintf(valbuf,"%f", (float)(*((RtFloat *)(parms[i]))));
+	  valstr = valbuf;
+	  break;
+	case kRIB_FLOATPAIRTYPE:
+	  typechar = 'g';
+	  fltpair = (RtFloat *)(parms[i]);
+	  sprintf(valbuf,"%f,%f", (float)(fltpair[0]), (float)(fltpair[1]));
 	  valstr = valbuf;
 	  break;
 	case kRIB_STRINGTYPE:
@@ -4857,6 +4875,10 @@ ay_rrib_linkmaterial(ay_object *o)
   mat->nameptr = &(m->name);
   mat->refcountptr = &(m->refcount);
   mat->objptr = m;
+
+  /* copy arbitrary attributes from attribute state to
+     tags of material object */
+  ay_tags_copy(attr->tags, &(m->tags));
 
   /* compare this object with all existing materials
      in the first level ("Materials") before registering
