@@ -200,6 +200,7 @@ proc riattr_addp { } {
 	    }
 
 	    if { $val != "" } {
+		undo save AddRiAttr
 		addTag RiAttribute "$attrname,$attrpara,$type,$val"
 		plb_update
 	    } else {
