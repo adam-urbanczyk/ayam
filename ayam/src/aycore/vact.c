@@ -35,6 +35,11 @@ ay_vact_movetcb(struct Togl *togl, int argc, char *argv[])
       {
 	Tcl_GetDouble(interp, argv[3], &winx);
 	Tcl_GetDouble(interp, argv[4], &winy);
+
+	if(view->type == AY_VTPERSP)
+	  {
+	    view->drawmarker = AY_FALSE;
+	  }
       }
       else
 	if(!strcmp(argv[2],"-start"))
@@ -53,6 +58,13 @@ ay_vact_movetcb(struct Togl *togl, int argc, char *argv[])
       return TCL_OK;
     }
 
+  /* adjust marker */
+  if(view->drawmarker)
+    {
+      view->markx -= (oldwinx - winx);
+      view->marky -= (oldwiny - winy);
+    }
+  
   dxw = (oldwinx - winx) * view->conv_x;
   dyw = -(oldwiny - winy) * view->conv_y;
   oldwinx = winx;
@@ -123,6 +135,9 @@ ay_vact_zoomtcb(struct Togl *togl, int argc, char *argv[])
       if(!strcmp(argv[2],"-winy"))
       {
 	Tcl_GetDouble(interp, argv[3], &winy);
+
+	view->drawmarker = AY_FALSE;
+
       }
       else
 	if(!strcmp(argv[2],"-start"))
@@ -179,6 +194,11 @@ ay_vact_moveztcb(struct Togl *togl, int argc, char *argv[])
       if(!strcmp(argv[2],"-winy"))
       {
 	Tcl_GetDouble(interp, argv[3], &winy);
+
+	if(view->type == AY_VTPERSP)
+	  {
+	    view->drawmarker = AY_FALSE;
+	  }
       }
       else
 	if(!strcmp(argv[2],"-start"))
