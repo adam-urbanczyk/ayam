@@ -96,6 +96,52 @@ int idr_get2dbbc(ay_object *o, int *left, int *right,
 
 /* functions */
 
+
+/* idr_propagate_material:
+ *
+ */
+int
+idr_propagate_material(ay_object *from, ay_object *to)
+{
+ ay_tag_object *next = NULL;
+ ay_mat_object *mat;
+
+  mat = (ay_mat_object *)(from->refine);
+
+  while(to)
+    {
+
+      if(to->mat == mat) 
+      {
+	  if(!to->tags)
+	    {
+	      ay_tags_copyall(from, to);
+	    }
+	  else
+	    {
+	      while(to->tags)
+		{
+		  next = to->tags->next;
+		  ay_tags_free(to->tags);
+		  to->tags = next;
+		} /* while */
+	      ay_tags_copyall(from, to);
+	    } /* if */
+
+      }
+
+      if(to->down && to->down->next)
+	{
+	  idr_propagate_material(from, to->down);
+	}
+
+
+      to = to->next;
+    } /* while */
+
+ return AY_OK;
+} /* idr_propagate_material */
+
 double
 idr_get_dist(double *p1, double *p2)
 {
@@ -720,7 +766,15 @@ idr_assign_impchanged()
 	      tnew->next = o->tags;
 	      o->tags = tnew;
 	    } /* if */
+
+	  /* propagate importance from changed material
+	     to all geometric objects that are of this material */
+	  if(o->type == AY_IDMATERIAL)
+	    {
+	      idr_propagate_material(o, ay_root->next);
+	    }
 	} /* if */
+
 
       sel = sel->next;
     } /* while */
