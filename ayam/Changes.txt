@@ -1,4 +1,4 @@
-[CVS, 5. 12. 2002]:
+[CVS, 12. 12. 2002]:
 o bug fixes:
   - fixed remembering of the state of the object selection listbox/tree
     when the context menu or a double click on the label is used to
@@ -40,6 +40,7 @@ o the Sweep is now much faster for highly curved trajectories
 o added a close option to the Sweep object, that closes the resulting
   swept surface, even though the trajectory curve is not and arranges
   for the first and last section to be parallel
+o the Sweep now interprets a third child curve as scaling function 
 o the Clone object can now also place the created clones along a curve
   and rotate them accordingly (similar to the section curves of a Sweep)
 o multiple point selection via mouse drag has been improved greatly,
