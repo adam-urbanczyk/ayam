@@ -19,7 +19,7 @@
 
 static ay_object *ay_tgui_origs = NULL;
 static ay_list_object *ay_tgui_origrefs = NULL;
-
+static char *ay_tgui_tptagtype;
 
 /* prototypes of functions local to this module: */
 
@@ -80,10 +80,21 @@ ay_tgui_open(void)
 	  *lastl = newl;
 	  lastl = &(newl->next);
 	  newl->object = sel->object;
+	}
+      else
+	{
+	  ay_error(AY_EWARN, fname,
+		   "Omitting object of wrong type, need NPatch!");
 	} /* if */
 
       sel = sel->next;
     } /* while */
+
+  if(!ay_tgui_origs)
+    {
+      ay_error(AY_ERROR, fname,
+		   "Nothing to tesselate; select some NPatch objects!");
+    }
 
  return ay_status;
 } /* ay_tgui_open */
@@ -98,6 +109,7 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
 {
  int ay_status = AY_OK;
  char fname[] = "tgui_update";
+ ay_tag_object *tag = NULL;
  ay_list_object *oref = NULL;
  ay_object *o = NULL, *tmp = NULL;
  ay_deletecb *cb = NULL;
@@ -139,6 +151,18 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
   oref = ay_tgui_origrefs;
   while(o)
     {
+      /* infer parameters from (eventually present) SM tag */
+      tag = o->tags;
+      while(tag)
+	{
+	  if(tag->type == ay_tgui_tptagtype)
+	    {
+	      if(tag->val)
+		sscanf(tag->val,"%d,%lg",&smethod, &sparam);
+	    }
+	  tag = tag->next;
+	} /* while */
+
       tmp = NULL;
       ay_status = ay_tess_npatch(o, smethod+1, sparam, &tmp);
 
@@ -181,26 +205,44 @@ int
 ay_tgui_ok(void)
 {
  int ay_status = AY_OK;
+ char fname[] = "tgui_ok";
  ay_list_object *oref = ay_tgui_origrefs;
- ay_object *o = ay_tgui_origs;
+ ay_object *o = ay_tgui_origs, *l = NULL;
  
- while(ay_tgui_origrefs)
-   {
-     o = ay_tgui_origs;
-     ay_tgui_origs = o->next;
+  while(ay_tgui_origrefs)
+    {
+      o = ay_tgui_origs;
+      ay_tgui_origs = o->next;
 
-     /* remove trim curves */
-     if(o->down)
-       {
-	 ay_status = ay_object_deletemulti(o->down);
-       }
-     free(o);
+      /* remove trim curves */
+      if(o->down)
+	{
+	  ay_status = ay_object_deletemulti(o->down);
+	  if(ay_status)
+	    {
+	      ay_error(AY_ERROR, fname,
+		"Could not remove trimcurves, maybe referenced objects?");
 
-     /* remove reference to original object (in scene) */
-     oref = ay_tgui_origrefs;
-     ay_tgui_origrefs = oref->next;
-     free(oref);
-   } /* while */
+	      l = o->down;
+	      while(l->next)
+		{
+		  l = l->next;
+		}
+	      free(l->next);
+	      l->next = ay_clipboard;
+	      ay_clipboard = o->down;
+	      o->down = NULL;
+	      ay_error(AY_ERROR, fname, "Moved trimcurves to clipboard!");
+
+	    } /* if */
+	} /* if */
+      free(o);
+
+      /* remove reference to original object (in scene) */
+      oref = ay_tgui_origrefs;
+      ay_tgui_origrefs = oref->next;
+      free(oref);
+    } /* while */
 
  return ay_status;
 } /* ay_tgui_ok */
@@ -308,6 +350,9 @@ ay_tgui_init(Tcl_Interp *interp)
   Tcl_CreateCommand (interp, "tguiCmd",
 		     ay_tgui_tcmd,
 		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  /* register TP tag type*/
+  ay_tags_register(interp, "TP", &ay_tgui_tptagtype);
 
  return ay_status;
 } /* ay_tgui_init */
