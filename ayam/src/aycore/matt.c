@@ -481,6 +481,11 @@ ay_matt_wrib(char *file, ay_mat_object *m)
       ay_status = ay_shader_wrib(m->eshader, AY_STEXTERIOR, NULL);
     }
 
+  if(m->objptr)
+    {
+      ay_riattr_wrib(m->objptr);
+    }
+
  return AY_OK;
 } /* ay_matt_wrib */
 

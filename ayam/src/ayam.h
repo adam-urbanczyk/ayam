@@ -159,6 +159,7 @@ typedef struct ay_mat_object_s {
 
   char **nameptr;
   unsigned int *refcountptr;
+  ay_object *objptr;
 
   /* RiStandard (3.1) Attributes */
 
