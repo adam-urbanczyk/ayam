@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile.wrapped [2. Jan 2003]
+# Makefile.wrapped [17. Mar 2003]
 # Makefile for Ayam (wrapped version)
 
 # Choose an installation prefix.
@@ -63,6 +63,7 @@ LD = g++
 #   as well, see below!
 # o add -DAYENABLEPPREV to enable the permanent preview feature
 # o add -DAYENABLEWAIT to enable the waitPid command (Unix/Linux only)
+# o add -DAYWITHAQUA if you use a Tcl/Tk for Aqua (not X11)
 
 CFLAGS = -O2 -DAYWRAPPED -DAYUSESLCARGS -DAYUSEBMRTRIBOUT
 # IRIX (-DAYIRIXBUG is needed by ncurve.c to work around a bug in libGLU):
@@ -71,7 +72,10 @@ CFLAGS = -O2 -DAYWRAPPED -DAYUSESLCARGS -DAYUSEBMRTRIBOUT
 #CFLAGS = -O2 -Wall -DAYWRAPPED -DAYUSESLCARGS -DAYUSEBMRTRIBOUT -DAYENABLEWAIT
 # Solaris (-DSOLARIS_BUG is needed by togl.c to work around a bug in libXmu):
 #CFLAGS = -O -DSOLARIS_BUG -DAYWRAPPED -DAYUSESLCARGS -DAYUSEBMRTRIBOUT
-
+# MacOSX with Aqua:
+#CFLAGS = -O -DAYWITHAQUA -DAYWRAPPED -DAYUSEAFFINE
+# MacOSX with X11:
+#CFLAGS = -O -DAYWRAPPED -DAYUSEAFFINE
 
 # ld flag to switch to static linking
 # IRIX:
@@ -345,9 +349,11 @@ METAOBJS = contrib/meta/metaobj.o \
 RRIBOBJS = plugins/rrib.o
 
 # additional objects:
-# add e.g. $(IDROBJS) if idr is to be linked statically, also add -ltiff
-# to ADDLIB in this case
+# add e.g. $(IDROBJS) to ADDOBJS if the idr plugin is to be linked statically
 ADDOBJS =
+# additional libs:
+# add -L and -l directives for libraries needed by statically linked plugins
+# to ADDLIB
 ADDLIB =
 
 

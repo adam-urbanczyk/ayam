@@ -880,6 +880,11 @@ Tcl_SetVar(interp,"AYENABLEPPREV", "0", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 Tcl_SetVar(interp, "AYENABLEPPREV", "1", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 #endif /* AY_ENABLEPPREV */
 
+#ifndef AYWITHAQUA
+Tcl_SetVar(interp,"AYWITHAQUA", "0", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+#else
+Tcl_SetVar(interp, "AYWITHAQUA", "1", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+#endif /* AYWITHAQUA */
 
   if((ay_status = ay_init(interp)) != AY_OK)
     {

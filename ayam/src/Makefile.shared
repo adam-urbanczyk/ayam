@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile.shared [2. Jan 2003]
+# Makefile.shared [17. Mar 2003]
 # Makefile for Ayam (shared version)
 
 # Choose an installation prefix.
@@ -57,6 +57,7 @@ LD = CC
 #   Note, that the preference setting TmpDir will always be ignored then!
 # o add -DAYENABLEPPREV to enable the permanent preview feature
 # o add -DAYENABLEWAIT to enable the waitPid command (Unix/Linux only)
+# o add -DAYWITHAQUA if you use a Tcl/Tk for Aqua (not X11)
 
 CFLAGS = -O -DAYUSESLCARGS -DAYUSEBMRTRIBOUT
 # IRIX (-DAYIRIXBUG is needed by ncurve.c to work around a bug in libGLU)::
@@ -65,6 +66,10 @@ CFLAGS = -O -DAYUSESLCARGS -DAYUSEBMRTRIBOUT
 #CFLAGS = -g -Wall -DAYUSESLCARGS -DAYUSEBMRTRIBOUT -DAYENABLEWAIT
 # Solaris (-DSOLARIS_BUG is needed by togl.c to work around a bug in libXmu):
 #CFLAGS = -O -DSOLARIS_BUG -DAYUSESLCARGS -DAYUSEBMRTRIBOUT
+# MacOSX with Aqua:
+#CFLAGS = -O -DAYWITHAQUA -DAYUSEAFFINE
+# MacOSX with X11:
+#CFLAGS = -O -DAYUSEAFFINE
 
 # extra ld flags needed to compile Ayam
 # (gcc needs -rdynamic to allow shared objects access to global symbols)

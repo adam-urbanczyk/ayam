@@ -10,10 +10,10 @@
 # vmenu.tcl - the view menu
 
 proc vmenu_open { w } {
-global ay tcl_platform
+global ay AYWITHAQUA
 
 # View Menu
-if { $tcl_platform(os) != "Darwin" } {
+if { ! $AYWITHAQUA } {
     menubutton $w.fMenu.v -text "View" -menu $w.fMenu.v.m -padx 3
 
     set m [menu $w.fMenu.v.m -tearoff 0]
@@ -71,7 +71,7 @@ $m add command -label "Close" -command "after 100 \{viewClose $w;\
 	global ay; set ay(ul) root:0; uS\}"
 
 # Type Menu
-if { $tcl_platform(os) != "Darwin" } {
+if { ! $AYWITHAQUA } {
     menubutton $w.fMenu.t -text "Type" -menu $w.fMenu.t.m -padx 3
     set m [menu $w.fMenu.t.m -tearoff 0]
     set ay(typem) fMenu.t.m
@@ -91,7 +91,7 @@ $m add separator
 $m add command -label "Trim" -command  "viewSetType $w 4"
 
 # Configure Menu
-if { $tcl_platform(os) != "Darwin" } {
+if { ! $AYWITHAQUA } {
     menubutton $w.fMenu.c -text "Configure" -menu $w.fMenu.c.m -padx 3
     set m [menu $w.fMenu.c.m -tearoff 0]
     set ay(confm) fMenu.c.m
@@ -196,7 +196,7 @@ $m add check -label "Edit Local" -variable ay(cVLocal) -command "\
 #-command {exit}
 
 # Grid
-if { $tcl_platform(os) != "Darwin" } {
+if { ! $AYWITHAQUA } {
     menubutton $w.fMenu.g -image ay_Grid_img -menu $w.fMenu.g.m\
 	    -padx 0 -pady 0 -borderwidth 0
     set m [menu $w.fMenu.g.m -tearoff 0]
@@ -229,7 +229,7 @@ $m add command -image ay_Grid_img -hidemargin 1 -command "\
     $w.f3D.togl render;\
     viewSetGridIcon $w 0.0"
 
-if { $tcl_platform(os) != "Darwin" } {
+if { ! $AYWITHAQUA } {
     pack $w.fMenu.v $w.fMenu.t $w.fMenu.c -in $w.fMenu -side left
 
     pack $w.fMenu.g -in $w.fMenu -side right
