@@ -178,7 +178,6 @@ proc actionMoveOb { w } {
 
     bind $w <B1-Motion> {
 	%W moveoac -winxy %x %y
-	update
     }
 
     bind $w <Motion> ""

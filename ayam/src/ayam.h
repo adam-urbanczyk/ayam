@@ -908,7 +908,7 @@ extern ay_prefs_object ay_prefs;
 extern ay_object *ay_root;
 extern ay_object **ay_next;
 
-extern ay_view_object *ay_view_current;
+extern ay_view_object *ay_currentview;
 
 extern ay_list_object *ay_selection;
 

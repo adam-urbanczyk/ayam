@@ -624,6 +624,8 @@ ay_viewt_makecurtcb(struct Togl *togl, int argc, char *argv[])
 
   Togl_MakeCurrent(togl);
 
+  ay_currentview = view;
+
   toa = Tcl_NewStringObj(n1, -1);
   ton = Tcl_NewStringObj("cVRedraw", -1);
   to = Tcl_NewIntObj(view->redraw);
@@ -901,6 +903,7 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 #endif
 
   Togl_MakeCurrent(togl);
+  ay_currentview = view;
 
   /* XXXX the i += 2 at the end of this while enforces arguments to contain
      two words, if other arguments follow; you may add dummy words:

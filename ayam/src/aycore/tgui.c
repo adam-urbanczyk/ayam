@@ -194,6 +194,7 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
       if(o->type == AY_IDVIEW)
 	{
 	  Togl_MakeCurrent(((ay_view_object *)(o->refine))->togl);
+	  ay_currentview = (ay_view_object *)(o->refine);
 	  ay_toglcb_display(((ay_view_object *)(o->refine))->togl);
 	}
       o = o->next;
