@@ -1233,7 +1233,7 @@ ay_wrib_scene(char *file, char *image, double *from, double *to,
  RtPoint f, t, d;
  RtFloat aspect = (RtFloat)1.0, swleft, swright, swtop, swbot;
  RtFloat fov = (RtFloat)90.0, rinearp, rifarp;
- char *objfile = NULL, *pos = NULL;
+ char *objfile = NULL, *pos = NULL, fnum[30];
  int filenlen = 0;
 
   ay_current_primlevel = 0;
@@ -1430,6 +1430,12 @@ ay_wrib_scene(char *file, char *image, double *from, double *to,
 
   RiFrameEnd();
 
+  if(ay_prefs.use_sm == 1)
+    {
+      sprintf(fnum, "%d", (ay_wrib_framenum-1));
+      RiArchiveRecord(RI_COMMENT, fnum);
+    }
+
   /* Cut! */
   RiEnd();
 
@@ -1570,15 +1576,15 @@ ay_wrib_cb(struct Togl *togl, int argc, char *argv[])
 
   /* parse args */
   i = 2;
-  while(i+1 <= argc)
+  while((i+1) <= argc)
     {
-      if(!strcmp(argv[i],"-file"))
+      if(!strcmp(argv[i], "-file"))
 	file = argv[i+1];
       else
-	if(!strcmp(argv[i],"-image"))
+	if(!strcmp(argv[i], "-image"))
 	  image = argv[i+1];
       else
-	if(!strcmp(argv[i],"-temp"))
+	if(!strcmp(argv[i], "-temp"))
 	  temp = 1;
 
       i += 2;
@@ -1657,18 +1663,18 @@ ay_wrib_tcmd(ClientData clientData, Tcl_Interp * interp,
 
   /* parse args */
   i = 1;
-  while(i+1 <= argc)
+  while((i+1) <= argc)
     {
-      if(!strcmp(argv[i],"-file"))
+      if(!strcmp(argv[i], "-file"))
 	file = argv[i+1];
       else
-	if(!strcmp(argv[i],"-image"))
+	if(!strcmp(argv[i], "-image"))
 	  image = argv[i+1];
 	else
-	  if(!strcmp(argv[i],"-smonly"))
+	  if(!strcmp(argv[i], "-smonly"))
 	    smonly = 1;
 	  else
-	    if(!strcmp(argv[i],"-selonly"))
+	    if(!strcmp(argv[i], "-selonly"))
 	      selonly = 1;
 
       i += 2;
