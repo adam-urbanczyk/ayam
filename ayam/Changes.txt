@@ -1,4 +1,4 @@
-[CVS 23. 05. 2002]
+[CVS 06. 06. 2002]
 o bug fixes:
   - fixed color select buttons in preferences not updating on "load defaults"
   - fixed missing RiSolidBegin/End for spheres with thetamax != 360
@@ -6,7 +6,8 @@ o bug fixes:
   - fixed broken integer RiOption and RiAttribute declarations
   - fixed broken Camera property GUI of the Camera object
   - fixed broken "-h" command line option
-  - fixed memory leak in the Skin notification callback
+  - fixed memory leaks in the Skin notification callback, while reading
+    scenes, while clearing scenes, and while opening/closing view windows
   - fixed error connecting instances while loading certain scenes
   - fixed grid menu button not updating when switching a view to perspective
   - fixed writing of preferences and deleting of temporary files when the
@@ -19,6 +20,9 @@ o bug fixes:
     parameter curves (e.g. with B-Spline knot vectors)
   - fixed edit material feature selecting wrong objects under certain
     circumstances
+  - fixed the TreeWidget generating sporadic error messages about
+    a missing "_state" variable (using a backport of the bugfix for
+    BWidgets bug #4324)
 o improved RIB export of quadric primitives with negative thetamax
 o the mouse cursor now changes when the "alt rotate" action is in effect
 o the modifier key for the "alt rotate" action is now configurable using
@@ -60,6 +64,7 @@ o added two new component types to the MetaBalls custom object:
   cube and custom
 o prepared some plugins to be combined statically into the binary
 o added a show shortcuts feature to the main help menu
+o improved the installation procedure
 
 
 [17. 01. 2002] Ayam1.1:
