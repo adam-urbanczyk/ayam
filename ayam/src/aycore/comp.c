@@ -77,6 +77,8 @@ int ay_comp_clone(ay_object *o1, ay_object *o2);
 
 int ay_comp_pomesh(ay_object *o1, ay_object *o2);
 
+int ay_comp_sdmesh(ay_object *o1, ay_object *o2);
+
 /* functions */
 
 /* ay_comp_strcase:
@@ -890,6 +892,46 @@ ay_comp_pomesh(ay_object *o1, ay_object *o2)
 } /* ay_comp_pomesh */
 
 
+/* ay_comp_sdmesh:
+ *
+ */
+int
+ay_comp_sdmesh(ay_object *o1, ay_object *o2)
+{
+ ay_sdmesh_object *p1, *p2;
+ unsigned int total_verts = 0;
+ unsigned int i = 0;
+
+  p1 = (ay_sdmesh_object *)o1->refine;
+  p2 = (ay_sdmesh_object *)o2->refine;
+
+  if(p1->nfaces != p2->nfaces)
+    return AY_FALSE;
+
+  if(p1->ncontrols != p2->ncontrols)
+    return AY_FALSE;
+
+  if(!memcmp(p1->controlv, p2->controlv,
+	     sizeof(p1->ncontrols * 3 * sizeof(double))))
+    return AY_FALSE;
+
+  if(!memcmp(p1->nverts, p2->nverts,
+	     sizeof(p1->nfaces * sizeof(unsigned int))))
+    return AY_FALSE;
+
+  for(i = 0; i < p1->nfaces; i++)
+    {
+      total_verts += p1->nverts[i];
+    } /* for */
+  
+  if(!memcmp(p1->verts, p2->verts,
+	     sizeof(total_verts * sizeof(unsigned int))))
+    return AY_FALSE;
+
+ return AY_TRUE;
+} /* ay_comp_sdmesh */
+
+
 /* ay_comp_register:
  *  register the compare callback compcb for
  *  objects of type type_id
@@ -986,6 +1028,7 @@ ay_comp_init()
   ay_status = ay_comp_register(ay_comp_concatnc, AY_IDCONCATNC);
   ay_status = ay_comp_register(ay_comp_clone, AY_IDCLONE);
   ay_status = ay_comp_register(ay_comp_pomesh, AY_IDPOMESH);
+  ay_status = ay_comp_register(ay_comp_sdmesh, AY_IDSDMESH);
 
 
  return ay_status;
