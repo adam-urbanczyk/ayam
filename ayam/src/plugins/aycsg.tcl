@@ -71,6 +71,7 @@ uplevel #0 {
 proc aycsgPreferences { } {
     global aycsg_options aycsg_options_save
 
+    array unset aycsg_options_save
     array set aycsg_options_save [array get aycsg_options]
 
     set w .aycsgprefs
