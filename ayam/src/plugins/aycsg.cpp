@@ -740,6 +740,7 @@ int
 aycsg_removetlu(ay_object *o, ay_object **t)
 {
  int ay_status = AY_OK;
+ ay_object *last = NULL;
  //ay_level_object *l = NULL;
 
   // eliminate unions and levels above CSG trees
@@ -754,16 +755,20 @@ aycsg_removetlu(ay_object *o, ay_object **t)
 	      // delegate transformation attributes
 	      ay_trafo_delegate(o);
 
-	      // replace o with its children
-	      if(o->down && o->down->next)
+	      // replace o with its child(ren)
+	      if(o->down)
 		{
-		  // we can do this, because we deal with a binary tree...
-		  o->down->next->next = o->next;
+		  last = o->down;
+		  while(last->next)
+		    {
+		      last = last->next;
+		    }
+		  last->next = o->next;
 		}
 	      else
 		{
 		  return AY_ENULL;
-		}
+		} // if
 	      *t = o->down;
 
 	      free(o);
