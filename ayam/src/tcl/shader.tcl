@@ -306,23 +306,22 @@ proc shader_scanXML { file varname } {
 	    if { [eof $f] } {
 		set done 1
 	    } else {
-		if { [string first "<shader" $rl] > -1 } {
+		if { [string first "<shader " $rl] > -1 } {
 
 		    regexp -- {^.*<shader type="([^"]*)" name="([^"]*)"} $rl a b c
 
 		    lappend shader $c
 		    lappend shader $b
 
-
 		}
 
 		if { [string first "<argument" $rl] > -1 } {
-		    regexp -- {^.*<argument.*type="([^"]*)" name="([^"]*)" default="([^"]*)"} $rl a b c d
-
+		    regexp -- {^.*<argument name="([^"]*)".*type="([^"]*)".*value="([^"]*)"} $rl a b c d
+#the following comment just helps emacsens font lock mode
 #"
 
 		    set parameter ""
-		    lappend parameter $c $b 0 $d
+		    lappend parameter $b $c 0 $d
 		    lappend parameters $parameter
 
 		}
@@ -373,7 +372,7 @@ proc shader_setDefaultsXML { type } {
     #foreach
 
     if { $filename != "" } {
-	shaderScanXML $filename shaderarguments
+	shader_scanXML $filename shaderarguments
     } else {
 	ayError 2 shader_setDefXML "Could not find $ay_shader(Name).xml!"
 	ayError 2 shader_setDefXML\
