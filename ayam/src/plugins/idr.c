@@ -1918,7 +1918,6 @@ idr_get2dbbc(ay_object *o, int *left, int *right,
  ay_list_object *oldclevel = ay_currentlevel;
  char fname[] = "idr_get2dbbc";
 
-
   glGetDoublev(GL_PROJECTION_MATRIX, pm);
   glGetIntegerv(GL_VIEWPORT, vp);
 
@@ -1926,16 +1925,25 @@ idr_get2dbbc(ay_object *o, int *left, int *right,
   ay_clevel_find(ay_root->next, o, &found);
 
   if(!found)
-    ay_error(AY_ERROR,fname,"Object not found!");
+    {
+      ay_error(AY_ERROR, fname, "Object not found!");
+    }
 
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
    glLoadIdentity();
-   ay_trafo_getall(ay_currentlevel->next);
+   if(ay_currentlevel)
+     {
+       ay_trafo_getall(ay_currentlevel->next);
+     }
    glGetDoublev(GL_MODELVIEW_MATRIX, mvm);
   glPopMatrix();
 
-  ay_clevel_delall(); free(ay_currentlevel);
+  if(ay_currentlevel)
+    {
+      ay_clevel_delall(); free(ay_currentlevel);
+    }
+
   ay_currentlevel = oldclevel;
 
   ay_bbc_get(o, bb);
