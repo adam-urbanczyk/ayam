@@ -456,6 +456,9 @@ array set ay {
  smethods { PathLength ParametricError DomainDistance }
  prefsgeom ""
  defactions { None Pick }
+ curvatp 100
+ curvatw 5.0
+ curvats 1.0
 }
 # array ay
 

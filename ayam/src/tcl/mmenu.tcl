@@ -300,6 +300,10 @@ $m.nct add command -label "Insert Knot" -command {
     runTool [list ay(insknu) ay(insknr)]\
 	    [list "Insert knot at:" "Insert times:"]\
 	    "undo save InsKn; insknNC %0 %1; plb_update; rV" }
+$m.nct add command -label "Plot Curvature" -command {
+    runTool [list ay(curvatp) ay(curvatw) ay(curvats)]\
+	    [list "Data points:" "Width:" "Scale Height:"]\
+	    "curvPlot %0 %1 %2; uCR; rV" }
 
 $m.nct add separator
 $m.nct add command -label "Collapse Points" -command { collNC; rV; }
