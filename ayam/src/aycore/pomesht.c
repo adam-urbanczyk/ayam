@@ -171,6 +171,7 @@ ay_pomesht_setautonormal(double *v1, double *v2, double *v3)
   /*
   glPopMatrix();
   */
+
  return;
 } /* ay_pomesht_setautonormal */
 
@@ -231,7 +232,7 @@ ay_pomesht_tesselate(ay_pomesh_object *pomesh)
 	  if(!(tess = gluNewTess()))
 	    return AY_EOMEM;
 
-#ifdef WIN32
+#if defined(WIN32) && !defined(AYUSESUPERGLU)
 	  gluTessCallback(tess, GLU_TESS_ERROR,
 			  (GLUtessErrorProc)ay_error_glucb);
 	  gluTessCallback(tess, GLU_TESS_BEGIN,
@@ -240,9 +241,10 @@ ay_pomesht_tesselate(ay_pomesh_object *pomesh)
 	  gluTessCallback(tess, GLU_TESS_ERROR, ay_error_glucb);
 	  gluTessCallback(tess, GLU_TESS_BEGIN, ay_pomesht_tcbBegin);
 #endif
+
 	  if(!pomesh->has_normals)
 	    {
-#ifdef WIN32
+#if defined(WIN32) && !defined(AYUSESUPERGLU)
 	      gluTessCallback(tess, GLU_TESS_VERTEX,
 			      (GLUtessVertexProc)ay_pomesht_tcbVertex);
 #else
@@ -251,14 +253,15 @@ ay_pomesht_tesselate(ay_pomesh_object *pomesh)
 	    }
 	  else
 	    {
-#ifdef WIN32
+#if defined(WIN32) && !defined(AYUSESUPERGLU)
 	      gluTessCallback(tess, GLU_TESS_VERTEX,
 			      (GLUtessVertexProc)ay_pomesht_tcbVertexN);
 #else
 	      gluTessCallback(tess, GLU_TESS_VERTEX, ay_pomesht_tcbVertexN);
 #endif
-	    }
-#ifdef WIN32
+	    } /* if */
+
+#if defined(WIN32) && !defined(AYUSESUPERGLU)
 	  gluTessCallback(tess, GLU_TESS_END,
 			  (GLUtessEndProc)ay_pomesht_tcbEnd);
 	  gluTessCallback(tess, GLU_TESS_COMBINE,
@@ -267,6 +270,7 @@ ay_pomesht_tesselate(ay_pomesh_object *pomesh)
 	  gluTessCallback(tess, GLU_TESS_END, ay_pomesht_tcbEnd);
 	  gluTessCallback(tess, GLU_TESS_COMBINE, ay_pomesht_tcbCombine);
 #endif
+
 	  /* GLU 1.2 only: */
 	  /*gluTessBeginPolygon(tess, NULL);*/
 	  gluBeginPolygon(tess);
@@ -546,6 +550,7 @@ ay_pomesht_inithash(ay_pomesht_hash *hash)
     return AY_EOMEM;
 } /* ay_pomesht_inithash */
 
+
 void
 ay_pomesht_destroyhash(ay_pomesht_hash *hash)
 {
@@ -658,6 +663,7 @@ ay_pomesht_addvertexhash(ay_pomesht_hash *phash, int ign, double *point)
    
  return ay_status;
 } /* ay_pomesht_addvertexhash */
+
 
 int
 ay_pomesht_optimizecoords(ay_pomesh_object *pomesh, int ignore_normals)
