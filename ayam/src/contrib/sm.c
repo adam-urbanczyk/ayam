@@ -236,7 +236,7 @@ ay_sm_wribsm(char *file, ay_sm_trafostack *trafo, ay_object *light)
 
  /*  RiFrameBegin(1);*/
   RiIdentity();
-  RiScale((RtFloat)-1.0, RtFloat)1.0, RtFloat)1.0);
+  RiScale((RtFloat)-1.0, (RtFloat)1.0, (RtFloat)1.0);
   /*RiRotate(RtFloat)180, RtFloat)0, RtFloat)1, RtFloat)0);*/
 
   /* move light according to its from-/to-settings */
