@@ -19,7 +19,6 @@
 
 static ay_object *ay_tgui_origs = NULL;
 static ay_list_object *ay_tgui_origrefs = NULL;
-static char *ay_tgui_tptagtype;
 
 /* prototypes of functions local to this module: */
 
@@ -151,14 +150,14 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
   oref = ay_tgui_origrefs;
   while(o)
     {
-      /* infer parameters from (eventually present) SM tag */
+      /* infer parameters from (eventually present) TP tag */
       tag = o->tags;
       while(tag)
 	{
-	  if(tag->type == ay_tgui_tptagtype)
+	  if(tag->type == ay_tp_tagtype)
 	    {
 	      if(tag->val)
-		sscanf(tag->val,"%d,%lg",&smethod, &sparam);
+		sscanf(tag->val, "%d,%lg", &smethod, &sparam);
 	    }
 	  tag = tag->next;
 	} /* while */
@@ -352,8 +351,8 @@ ay_tgui_init(Tcl_Interp *interp)
 		     ay_tgui_tcmd,
 		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  /* register TP tag type*/
-  ay_tags_register(interp, "TP", &ay_tgui_tptagtype);
+  /* register TP tag type */
+  ay_tags_register(interp, "TP", &ay_tp_tagtype);
 
  return ay_status;
 } /* ay_tgui_init */
