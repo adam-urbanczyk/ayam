@@ -1440,6 +1440,9 @@ ay_npatch_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
  int ay_status = AY_OK;
  /*char fname[] = "npatch_providecb";*/
+ ay_tag_object *tag = NULL;
+ int smethod = ay_prefs.smethod;
+ double sparam = ay_prefs.sparam;
 
   if(!o)
     return AY_ENULL;
@@ -1454,8 +1457,20 @@ ay_npatch_providecb(ay_object *o, unsigned int type, ay_object **result)
 
   if(type == AY_IDPOMESH)
     {
-      ay_status = ay_tess_npatch(o, ay_prefs.smethod, ay_prefs.sparam,
-				 result);
+
+      /* infer parameters from (eventually present) TP tag */
+      tag = o->tags;
+      while(tag)
+	{
+	  if(tag->type == ay_tp_tagtype)
+	    {
+	      if(tag->val)
+		sscanf(tag->val,"%d,%lg",&smethod, &sparam);
+	    }
+	  tag = tag->next;
+	} /* while */
+
+      ay_status = ay_tess_npatch(o, smethod, sparam, result);
     } /* if */
 
  return ay_status;

@@ -109,6 +109,8 @@ char *ay_noexport_tagtype;
 
 char *ay_savegeom_tagtype;
 
+char *ay_tp_tagtype;
+
 static char *ay_log = "/tmp/ay.log";
 
 int ay_wrib_framenum = 0;
