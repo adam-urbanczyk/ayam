@@ -116,7 +116,7 @@ idr_propagate_dist(double *p1, ay_object *from, ay_object *cur, double threshhol
  int ay_status = AY_OK;
  GLdouble mm[16];
  double p2[3];
-
+ ay_tag_object *next = NULL;
 
  o = cur;
  
@@ -157,6 +157,16 @@ idr_propagate_dist(double *p1, ay_object *from, ay_object *cur, double threshhol
 		    {
 		      ay_tags_copyall(from, o);
 		    }
+		  else
+		    {
+		      while(o->tags)
+			{
+			  next = o->tags->next;
+			  ay_tags_free(o->tags);
+			  o->tags = next;
+			}
+		      ay_tags_copyall(from, o);
+		    }
 		}
 	    }
        }
@@ -177,12 +187,13 @@ idr_propagate_disttcmd(ClientData clientData, Tcl_Interp *interp,
 {
  ay_object *o = NULL, *from = NULL;
  int ay_status = AY_OK;
- ay_list_object *oldclevel = ay_currentlevel, *l = NULL;
+ ay_list_object *oldclevel = ay_currentlevel;
  ay_list_object *sel = ay_selection;
  char fname[] = "idr_propagate_disttcmd";
  double p[3], p2[3];
  GLdouble mm[16];
  double threshhold = 0.0;
+ ay_tag_object *next = NULL;
 
  if(argc>0)
    {
@@ -246,6 +257,16 @@ idr_propagate_disttcmd(ClientData clientData, Tcl_Interp *interp,
 		    {
 		      ay_tags_copyall(from, o);
 		    }
+		  else
+		    {
+		      while(o->tags)
+			{
+			  next = o->tags->next;
+			  ay_tags_free(o->tags);
+			  o->tags = next;
+			}
+		      ay_tags_copyall(from, o);
+		    }
 		}
 	    }
 
@@ -292,7 +313,9 @@ idr_save_selected()
       o = sel->object;
 
       if(o->type != AY_IDROOT &&
-	 o->type != AY_IDVIEW)
+	 o->type != AY_IDVIEW &&
+	 o->type != AY_IDCAMERA
+	 )
 	{
 	  ay_status = AY_OK;
 	  ay_status = ay_object_copy(o, p);
@@ -501,7 +524,15 @@ idr_assign_impchanged()
   while(sel)
     {
       o = sel->object;
-
+      /*
+      if(o->type == AY_IDROOT ||
+	 o->type == AY_IDVIEW ||
+	 o->type == AY_IDCAMERA)
+	{
+	  sel = sel->next;
+	  break;
+	}
+      */
      /* find CCIDR tag, to get the right index of copied object
 	in save selected buffer */
       t = o->tags;
