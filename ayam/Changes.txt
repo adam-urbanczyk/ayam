@@ -1,10 +1,16 @@
-[27. Jan 2005] CVS-Head:
+[15. Feb 2005] CVS-Head:
 o bug fixes:
   - fixed "setPnt/getPnt" scripting interface commands for NURBS patches
     with differing width and height (SF 1091407)
   - fixed Tcl errors for property listbox scrollbar on Win32 (SF 1104662)
   - fixed views sometimes getting wrong camera values (SF 1106832)
   - fixed tesselation gui not working with already present TP tags (SF 1110857)
+  - fixed memory leak in tesselation gui (SF )
+  - fixed OBJ export of Birail1, Birail2, and Text objects (SF )
+  - fixed 3DMF export of Birail1, Birail2, and Text objects (SF )
+  - fixed rendering of multiple CSG objects using the AyCSG plugin (SF )
+  - fixed rendering of CSG hierarchies with multiple unions using the
+    AyCSG plugin (SF )
 o added a new object type "Script", that executes small Tcl scripts to
   create complex objects, modify objects or do other things
 o added example scripts for the new Script object type to the new "scripts"
@@ -17,6 +23,11 @@ o improved extraction of curves from transformed patches; the transformations
   are now copied to the curve and not applied to the control points
 o added information dialog to the preferences that informs the user when
   a restart of Ayam is needed in order for his changes to take effect
+o views may now be rotated and zoomed while the tesselation gui is active
+o added warning message for light objects with light shader but type != custom
+o added support for NPatch providing objects to tesselation GUI
+o improved delegation of transformations using the delegTrafo scripting
+  interface command
 
 
 [29. Oct 2004] Ayam 1.8:
