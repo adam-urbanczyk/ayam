@@ -482,6 +482,8 @@ int ay_tc_wrib(ay_object *o);
 
 int ay_tc_wribindex(ay_object *o, int index);
 
+int ay_tc_count(ay_object *o);
+
 void ay_tc_init(Tcl_Interp *interp);
 
 /* tcmd.c */
