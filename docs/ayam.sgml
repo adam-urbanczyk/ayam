@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>17. Nov 2001
+<date>25. Nov 2001
 <abstract>
 This is the documentation of Ayam - a free 3D modeling environment
 for the RenderMan interface.
@@ -300,7 +300,7 @@ Another simple demonstration of the consoles capabilities:
 <item>Select all ten boxes.
 <item>Go to the console by clicking into it.
 <item>Enter the following:
-<tt>forAll 0 {movOb &dollar;i 0 0; rotOb [expr &dollar;i*10] 0 0}</tt>
+<tt>forAll 0 &lcub;movOb &dollar;i 0 0; rotOb &lsqb;expr &dollar;i*10&rsqb; 0 0&rcub;</tt>
 </itemize>
 
 This example uses three procedures:
@@ -2251,6 +2251,10 @@ view of type <tt/"Side"/. (Use the <tt/"Ctrl+s"/ shortcut while
 the view has the input focus.)
 </itemize>
 
+Section <ref id="scexsweep" name="Easy Sweep"> has an example
+script that automates creation and parameterization of
+a suitable cross section curve.
+
 You may convert the current sweep to an ordinary NURBS patch.
 
 <sect2>SweepAttr<label id="swp">
@@ -3077,27 +3081,42 @@ forAll:
 objects that have been selected currently, or for every object
 of the current level if nothing has been selected. If recursive
 is 1 then forAll will recurse into every object (if it has child objects)
-prior to the execution of command. Note, that a recursive forAll will
-e.g. also descent into NURBS patches (if they have trim curves) and apply
+before the execution of command. 
+ <item> Deficiencies:
+ <itemize>
+  <item>A recursive forAll will
+e.g. also descend into NURBS patches (if they have trim curves) and apply
 the command to the trim curves, which might not exactly be what you
-want. Use forAllT in this case. The command will not have
-access to global arrays unless e.g. the following construct is in use:
-<tt>"uplevel &num;0 command"</tt><p>
-Do not use commands that change the object hierarchy by e.g.
-deleting or inserting objects, just change existing objects.
+want. Use <tt>"forAllT"</tt> in this case.
+  <item>The command will not have access to global arrays unless
+e.g. the following construct is in use:<p>
+
+<tt>"forAll 0 &lcub;uplevel &num;0 &lcub;command&rcub;&rcub;"</tt><p>
+  <item>It is not possible to use commands that change the object
+hierarchy (e.g. deleting or inserting objects). Command
+may just modify existing objects.
+ </itemize>
 </itemize>
 
 forAllT:
 <itemize>
  <item>Synopsis: <tt>"forAllT type recursive command"</tt>
- <item>Description: The forAllT works the same way as forAll, with an
+ <item>Description: forAllT works the same way as forAll, with an
 additional type check. The command will not be executed if the type of the
 current object does not match the argument type.<p>
+
 Note, that the type strings will be converted to lowercase before
-comparison, so that it is legal to type e.g.
-<tt>"forAllT ncurve 0 {puts $i}"</tt><p>
-As with forAll, special precautions are needed if command shall
-be able to access global arrays.
+comparison, so that it is legal to use it e.g. this way:
+<p><tt>"forAllT ncurve 0 &lcub;puts $i$&rcub;"</tt><p>
+ <item>Deficiencies:
+ <itemize>
+  <item>The command will not have access to global arrays unless
+e.g. the following construct is in use:
+<p><tt>"forAllT ncurve &lcub;uplevel &num;0 &lcub;command&rcub;&rcub;"</tt><p>
+  <item>It is not possible to use commands that change the object
+hierarchy (e.g. deleting or inserting objects). Command
+may just modify existing objects.
+ </itemize>
 </itemize>
 
 <sect2>Scene IO<label id="scio">
@@ -3156,18 +3175,17 @@ has no child objects, otherwise it returns 1.
 
 undo:
 <itemize>
- <item>Synopsis: <tt>"undo [save|view viewname]"</tt>
- <item>Description: If called without arguments,
-this command performs the undo operation. If the argument is
-save the currently selected objects are saved to the undo
-buffer for future undo operations. If the argument
-is view, the view viewname is saved to the undo buffer.
-</itemize>
-
-redo:
-<itemize>
- <item>Synopsis: <tt>"redo"</tt>
- <item>Description: This command performs the redo operation.
+ <item>Synopsis: <tt>"undo [redo|save|clear]"</tt>
+ <item>Description:
+ <itemize>
+  <item>If called without arguments, this command performs the undo
+  operation. 
+  <item>If the argument is <tt/"redo"/, this command performs the redo
+  operation.
+  <item>If the argument is <tt/"save"/, the currently selected objects
+  are saved to the undo buffer for future undo operations. 
+  <item>If the argument is <tt/"clear"/, the undo buffer is cleared.
+ </itemize>
 </itemize>
 
 convOb:
@@ -3318,7 +3336,7 @@ proc easySweep { } {
 # easySweep
 </code>
 
-You may add this command as well to the main menu:
+You may add this command to the main menu as well:
 <code>
 global ay
 $ay(cm) add command -label "Easy Sweep" -command {
