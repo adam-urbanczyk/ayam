@@ -602,6 +602,7 @@ typedef struct ay_view_object_s
   double grid; /* gridsize, 0.0 == no grid */
 
   int local; /* editing takes place in local space, not world space */
+  int aligned; /* view is aligned to object-space of selected object */
 
   int drawsel; /* draw selected objects (and childs) only */
   int drawlevel; /* draw current level (and below) only */

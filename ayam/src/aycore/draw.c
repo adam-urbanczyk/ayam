@@ -321,12 +321,14 @@ void
 ay_draw_grid(struct Togl *togl)
 {
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
+ ay_object *o;
  int width = Togl_Width(togl);
  int height = Togl_Height(togl);
  double aspect = (double)width / (double)height;
  double grid = view->grid;
  double j;
  double minwinx = 0.0, minwiny = 0.0, maxwinx = 0.0, maxwiny = 0.0;
+ double m[16];
 
   if(grid < 1E-6)
     return;
@@ -384,10 +386,6 @@ ay_draw_grid(struct Togl *togl)
       break;
     }
 
-  maxwinx = -minwinx;
-  maxwiny = -minwiny;
-
-  
   if(view->local)
     {
       glPushMatrix();
@@ -395,7 +393,37 @@ ay_draw_grid(struct Togl *togl)
 	{
 	  ay_trafo_getall(ay_currentlevel->next);
 	}
-    }
+      if(view->aligned && ay_selection)
+	{
+	  o = ay_selection->object;
+	  glTranslated((GLdouble)o->movx, (GLdouble)o->movy,
+		       (GLdouble)o->movz);
+	  ay_quat_torotmatrix(o->quat, m);
+	  glMultMatrixd((GLdouble*)m);
+	  glScaled((GLdouble)o->scalx, (GLdouble)o->scaly,
+		   (GLdouble)o->scalz);
+	} /* if */
+      glGetDoublev(GL_MODELVIEW_MATRIX, m);
+      switch(view->type)
+	{
+	case AY_VTFRONT:
+	case AY_VTTRIM:
+	  minwinx *= m[0];
+	  minwiny *= m[5];
+	  break;
+	case AY_VTSIDE:
+	  minwinx *= m[10];
+	  minwiny *= m[5];
+	  break;
+	case AY_VTTOP:
+	  minwinx *= m[0];
+	  minwiny *= m[10];
+	  break;
+	}
+    } /* if */
+
+  maxwinx = -minwinx;
+  maxwiny = -minwiny;
 
   glColor3d((GLdouble)ay_prefs.grr, (GLdouble)ay_prefs.grg,
 	    (GLdouble)ay_prefs.grb);
