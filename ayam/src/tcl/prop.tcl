@@ -101,13 +101,19 @@ w     fMatAttr
 }
 # create Material-UI
 set w [frame $ay(pca).$Material(w)]
-addCommand $w c1 "Clear Material!" \
-"undo save ClrMat; global matPropData; set matPropData(Name) \"\"; setMat"
+addCommand $w c1 "Clear Material!" {
+    undo save ClrMat
+    global matPropData; set matPropData(Materialname) ""
+    setMat
+    plb_update
+}
+
 addCommand $w c2 "Add/Edit Material!" {
     global ay
     set m $ay(editmenu)
     $m invoke 12
 }
+
 addString $w matPropData Materialname
 
 
