@@ -22,13 +22,22 @@ proc browser_urlOpen {url} {
     global env tcl_platform
     switch $tcl_platform(platform) {
         "unix" {
+
+	    if { ! [info exists env(NETSCAPE)] } {
+		set mozilla netscape
+	    } else {
+		set mozilla $env(NETSCAPE)
+	    }
+
 	    if { ! [info exists env(BROWSER)] } {
 		set browser ""
 		expr {
-		    [browser_findExecutable netscape browser] ||
-		    [browser_findExecutable iexplorer browser] ||
-		    [browser_findExecutable $env(NETSCAPE) browser] ||
-		    [browser_findExecutable lynx browser]
+		    [browser_findExecutable $mozilla browser] ||
+		    [browser_findExecutable galeon browser] ||
+		    [browser_findExecutable konqueror browser] ||
+		    [browser_findExecutable links browser] ||
+		    [browser_findExecutable lynx browser] ||
+		    [browser_findExecutable iexplorer browser]
 		}
 	    } else {
 		set browser $env(BROWSER)
