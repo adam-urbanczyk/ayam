@@ -259,6 +259,8 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
       o = o->next;
     }
 
+  ay_status = aycsg_removetlu(aycsg_root, &aycsg_root);
+
 #ifdef AYCSGDBG
   ay_ppoh_print(aycsg_root, stdout, 0, cbv);
   /*  aycsg_cleartree(aycsg_root);
@@ -488,7 +490,7 @@ aycsg_clearprimitives()
 } // aycsg_clearprimitives
 
 
-// The following eight functions implement rules that transform
+// The following nine functions implement rules that transform
 // a binary tree to disjunctive normal form (sum of products).
 
 // Rule1: X - ( Y U Z ) => ( X - Y ) - Z
@@ -753,6 +755,7 @@ aycsg_applyrule6(ay_object *t)
   // 2. transform hierarchy
   t->CSGTYPE = AY_LTDIFF;
   t->down = s;
+  s->CSGTYPE = AY_LTINT;
   s->down = X;
   X->next = Y;
   s->next = Z;
