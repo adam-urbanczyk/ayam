@@ -163,7 +163,7 @@ on its name, then press <Ctrl+Shift+i> (Copy Marked Prop).}
 {Drop geometric objects on to materials to connect them.}
 {Drop lights on to views to check where they are lighting to.}
 {Tired of the splash screen? Start Ayam with -nosplash.}
-{Hold down the Alt-key to rotate the view while in any mode.}
+{Hold down <Alt> and drag the mouse to rotate a view.}
 {Start Ayam with -failsafe to reset prefs to factory defaults.}
 {Ayam may be completely iconified using <Ctrl+Shift+z> (zap).}
 {To create a material for a selected object, press <Ctrl+m>.}
@@ -171,15 +171,17 @@ on its name, then press <Ctrl+Shift+i> (Copy Marked Prop).}
 {Use F2/F3 to adjust the sampling rate for NURBS display.}
 {Use F4/F5 to toggle wireframe/NURBS display.}
 {Use F6 to toggle "lazy notification" on/off.}
-{Do not underestimate the power of the Skin!}
 {To find the master of an instance, press <Ctrl+Shift+m>.}
 {Your object tree needs updating? Press <Ctrl+l>.}
 {Press <0> to quickly select the last property.}
 {Press <1> - <9> to quickly select properties.}
+{Have I mentioned the documentation lately?}
 {Hold down <Shift> and drag the mouse to zoom into regions.}
 {Menu keyboard shortcuts do not work? Press <Esc> first!}
 {Drag geometric objects into a view to zoom the view to them.}
 {Drag light objects into a view to look through the light.}
+{Menu keyboard shortcuts do not work? Press <Esc> first!}
+{Check http://www.ayam3d.org/ for the latest hotfix!}
 }
 }
 # array ayprefs
