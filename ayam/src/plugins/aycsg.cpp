@@ -37,7 +37,11 @@ char ayslb_version_mi[] = AY_VERSIONSTRMI;
 // prototypes of functions local to this module
 int aycsg_rendertcb(struct Togl *togl, int argc, char *argv[]);
 
+int aycsg_drawtoplevelprim(Togl *togl);
+
 int aycsg_flatten(ay_object *t, int parent_csgtype);
+
+void aycsg_clearprimitives();
 
 int aycsg_applyrule1(ay_object *t);
 int aycsg_applyrule2(ay_object *t);
@@ -56,14 +60,14 @@ int aycsg_copytree(ay_object *t, int *is_csg, ay_object **target);
 
 void aycsg_cleartree(ay_object *t);
 
-void aycsg_clearprimitives();
-
 extern "C" {
 int Aycsg_Init(Tcl_Interp *interp);
 }
 
 // functions
 
+// aycsg_rendertcb:
+//  Togl callback that renders CSG in the view pointed to by <togl>
 int
 aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
 {
@@ -74,7 +78,8 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
  GLfloat color[4] = {0.0f,0.0f,0.0f,0.0f};
  int is_csg;
 
-  /* do not use glColor/glMaterial while drawing, it is needed by OpenCSG... */
+  // do not use glColor()/glMaterial() while resolving CSG,
+  // it is needed by OpenCSG...
   ay_prefs.use_materialcolor = AY_FALSE;
 
   aycsg_clearprimitives();
@@ -90,12 +95,12 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
 
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-  /* fill depth buffer (resolve CSG operations) */
+  // fill depth buffer (resolve CSG operations)
   glDisable(GL_LIGHTING);
   OpenCSG::render(primitives, algo, depthalgo);
 
-  /* now draw again using existing depth buffer bits and
-     possibly with colors */
+  // now draw again using existing depth buffer bits and
+  // possibly with colors
   glEnable(GL_DITHER);
   glEnable(GL_LIGHTING);
   glLightModelf(GL_LIGHT_MODEL_TWO_SIDE, (GLfloat)1.0);
@@ -117,7 +122,10 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
    }
   glDepthFunc(GL_LESS);
 
-  /* swap buffers */
+  // now draw non-CSG top level primitives
+  ay_status = aycsg_drawtoplevelprim(togl);
+
+  // swap buffers
   Togl_SwapBuffers(togl);
 
   aycsg_cleartree(aycsg_root);
@@ -127,8 +135,31 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
 } // aycsg_rendertcb
 
 
+// aycsg_drawtoplevelprim:
+//  draw non-CSG primitives in the top level of the scene
+int
+aycsg_drawtoplevelprim(Togl *togl)
+{
+ int ay_status = AY_OK;
+ ay_object *t = aycsg_root;
+
+  while(t)
+    {
+      // is t a primitive?
+      if(t->CSGTYPE == AY_LTPRIM)
+	{
+	  ay_status = ay_shade_object(togl, t, AY_FALSE);
+	}
+      t = t->next;
+    } // while
+
+ return ay_status;
+} // aycsg_drawtoplevelprim
+
+
 // aycsg_flatten:
-//  convert tree to primitive array for rendering
+//  _recursively_ convert tree <t> to primitive array for resolving CSG
+//  and rendering
 int
 aycsg_flatten(ay_object *t, int parent_csgtype)
 {
@@ -137,7 +168,7 @@ aycsg_flatten(ay_object *t, int parent_csgtype)
   while(t)
     {
       // is t a primitive?
-      if(t->CSGTYPE == AY_LTPRIM)
+      if((t->CSGTYPE == AY_LTPRIM) && (parent_csgtype != AY_LTUNION))
 	{
 	  // yes
 	  // is this the lowest and leftmost primitive in the tree?
@@ -179,6 +210,25 @@ aycsg_flatten(ay_object *t, int parent_csgtype)
 
  return ay_status;
 } // aycsg_flatten
+
+
+// aycsg_clearprimitives:
+//  clear the array of CSG primitives created by aycsg_flatten()
+void
+aycsg_clearprimitives()
+{
+  for (std::vector<OpenCSG::Primitive*>::const_iterator i =
+	 primitives.begin(); i != primitives.end(); ++i)
+    {
+      OpenCSG::ayCSGPrimitive* p =
+	static_cast<OpenCSG::ayCSGPrimitive*>(*i);
+      delete p;
+    }
+
+  primitives.clear();
+
+ return;
+} // aycsg_clearprimitives
 
 
 // The following eight functions implement rules that transform
@@ -540,7 +590,7 @@ aycsg_applyrule8(ay_object *t)
 
 // aycsg_normalize:
 //  convert CSG tree <t> to disjunctive normal (sum of products) form
-//  by recursively applying the transformation rules above
+//  by _recursively_ applying the transformation rules above
 int
 aycsg_normalize(ay_object *t)
 {
@@ -595,8 +645,9 @@ aycsg_normalize(ay_object *t)
 
 
 // aycsg_binarify:
-//  convert n-ary subtree below <parent> to binary form, creating copies
-//  of <parent> that are inserted in the existing list of children
+//  _recursively_ convert n-ary subtree below <parent> to binary form,
+//  creating copies of <parent> that are inserted in the existing list
+//  of children
 //  <left>: first new child of the new level
 //  <target>: pointer to which new level should be chained
 int
@@ -635,7 +686,7 @@ aycsg_binarify(ay_object *parent, ay_object *left, ay_object **target)
 
 
 // aycsg_copytree:
-//  recursively copies the tree pointed to by <t> into <target>;
+//  _recursively_ copies the tree pointed to by <t> into <target>;
 //  omits terminating end-level objects!,
 //  descends just into level objects, does not copy type specific objects,
 //  converts to binary form, informs caller via <is_csg> whether subtree
@@ -686,8 +737,8 @@ aycsg_copytree(ay_object *t, int *is_csg, ay_object **target)
 	    }
 	}
 
-      // we use the "modified" flag to remember whether an object is
-      // a primitive or a CSG op and if it is a CSG op, of which type
+      // we use the "modified" (CSGTYPE) flag to remember whether an object is
+      // a primitive or a CSG operation and if it is a CSG op., of which type
       // (see ayam.h Level Object SubType Ids)
 
       if((*target)->type != AY_IDLEVEL)
@@ -752,6 +803,8 @@ aycsg_copytree(ay_object *t, int *is_csg, ay_object **target)
 } // aycsg_copytree
 
 
+// aycsg_cleartree:
+//  clear the copy of the scene tree created by aycsg_copytree()
 void
 aycsg_cleartree(ay_object *t)
 {
@@ -775,23 +828,6 @@ aycsg_cleartree(ay_object *t)
 
  return;
 } // aycsg_cleartree
-
-
-void
-aycsg_clearprimitives()
-{
-  for (std::vector<OpenCSG::Primitive*>::const_iterator i =
-	 primitives.begin(); i != primitives.end(); ++i)
-    {
-      OpenCSG::ayCSGPrimitive* p =
-	static_cast<OpenCSG::ayCSGPrimitive*>(*i);
-      delete p;
-    }
-
-  primitives.clear();
-
- return;
-} // aycsg_clearprimitives
 
 
 extern "C" {
