@@ -4267,7 +4267,8 @@ on startup using the preference setting <tt>"Main/Scripts"</tt>.
 Note, that most of the listed commands work in background,
 without changing anything to the Ayam GUI and Ayam view windows,
 for execution speed. If you want your changes to become visible
-you have to update the various parts of the GUI explicitly.<p>
+you have to update the various parts of the GUI explicitly
+(see also section <ref id="sciupd" name="Updating the GUI">).<p>
 
 From scripts it may be necessary to check wether an error occured
 during the execution of a command. All commands return
@@ -4277,6 +4278,68 @@ higher than 1 if an error occured. You need to set it to zero before
 and check it after the operation in question to see whether the
 operation performed successfully.
 
+<sect1>Global Variables
+<p>
+Several global variables exist in the Ayam Tcl context, that may be useful
+for scripts.
+
+<sect2>The global array ay<label id="ayarray">
+<p>
+The global array <tt/"ay"/ holds application state variables.
+Furthermore, you can find the paths to important widgets
+(e.g. the tree widget for the object hierarchy or the currently
+active view) in this array.
+Use <tt/"parray ay"/ in the console to see what is there.
+More documentation to come.
+
+<sect2>The global array ayprefs<label id="ayprefs">
+<p>
+The global array <tt/"ayprefs"/ holds preferences data.
+The complete array is saved in the <tt/"ayamrc"/ file upon exit,
+so be careful when adding new entries.
+You can reset your <tt/"ayamrc"/ file anytime using the command line
+option <tt/"-failsafe"/.
+Use <tt/"parray ayprefs"/ in the console to see what is there.
+More documentation to come.
+
+<sect2>Miscellaneous global arrays and variables<label id="globvar">
+<p>
+Every property has a corresponding global array, where the data
+of the property is saved.
+This global array only holds useful data when the respective
+property GUI is active, or when it has been filled explicitly by
+the so called get-property callback.
+The data may be transferred back to the selected object using
+the so called set-property callback.
+The names of the array and the callbacks may be inferred from another global
+array that is named like the property itself, e.g. for the tags
+property the following global array is defined:
+<code>
+array set Tags {
+arr   tagsPropData
+sproc setTagsp
+gproc getTagsp
+w     fTagsAttr
+}
+</code>
+
+If sproc or gproc are empty (<tt/""/), a standard callback
+named <tt/"setProp"/ or <tt/"getProp"/ should be used.
+
+The following global arrays and callbacks to get or set the data
+exist:
+<itemize>
+ <item>property, array, get-property callback, set-property callback
+ <item>Transformations, transfPropData, getTrafo, setTrafo
+ <item>Attributes, attrPropData, getAttr, setAttrp
+ <item>Material, matPropData, getMat, setMat
+ <item>Tags, tagsPropData, getTagsp, setTagsp
+ <item>list incomplete, more to come...
+</itemize>
+
+
+
+More documentation to come.
 
 <sect1>Index of Procedures and Commands
 <p>
@@ -4721,7 +4784,7 @@ of the current level if nothing has been selected. If recursive
 is 1 then forAll will recurse into every object (if it has child objects)
 before the execution of command. Note, that forAll will run
 slowly if a property GUI is displayed. You can make it run faster
-by de-selecting the property using e.g. the property context menu.
+by de-selecting the property using e.g. the property context menu first.
  <item> Deficiencies:
  <itemize>
   <item>A recursive forAll will
@@ -4731,10 +4794,10 @@ want. Use <tt>"forAllT"</tt> in this case.
   <item>The command will not have access to global arrays unless
 e.g. one of the following construct is in use:<p>
 
-<tt>"forAll 0 &lcub; uplevel &num;0 &lcub; command &rcub; &rcub;"</tt><p>
+<tt>"forAll 0 &lcub; uplevel &num;0 &lcub; commands &rcub; &rcub;"</tt><p>
 <tt>"forAll 0 &lcub; global arrayname; commands &rcub;"</tt><p>
   <item>It is not possible to use commands that change the object
-hierarchy (e.g. deleting or inserting objects). Command
+hierarchy (e.g. deleting or inserting objects). The commands
 may just modify existing objects.
  </itemize>
 </itemize>
@@ -4744,20 +4807,21 @@ forAllT:
  <item>Synopsis: <tt>"forAllT type recursive command"</tt>
  <item>Description: forAllT works the same way as forAll, with an
 additional type check. The command will not be executed if the type of the
-current object does not match the argument type. Note, that forAll will run
+current object does not match the argument type. Note, that forAllT will run
 slowly if a property GUI is displayed. You can make it run faster
-by de-selecting the property using e.g. the property context menu.<p>
+by de-selecting the property using e.g. the property context menu first.<p>
 
 Note, that the type strings will be converted to lowercase before
-comparison, so that it is legal to use it e.g. this way:
+comparison, so that it is legal to use forAllT e.g. this way:
 <p><tt>"forAllT ncurve 0 &lcub;puts $i&rcub;"</tt><p>
  <item>Deficiencies:
  <itemize>
   <item>The command will not have access to global arrays unless
-e.g. the following construct is in use:
-<p><tt>"forAllT ncurve &lcub;uplevel &num;0 &lcub;command&rcub;&rcub;"</tt><p>
+e.g. one of the following constructs is in use:<p>
+<tt>"forAllT ncurve 0 &lcub;uplevel &num;0 &lcub;commands&rcub; &rcub;"</tt><p>
+<tt>"forAllT ncurve 0 &lcub; global arrayname; commands &rcub;"</tt><p>
   <item>It is not possible to use commands that change the object
-hierarchy (e.g. deleting or inserting objects). Command
+hierarchy (e.g. deleting or inserting objects). The commands
 may just modify existing objects.
  </itemize>
 </itemize>
