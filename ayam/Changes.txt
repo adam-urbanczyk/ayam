@@ -1,4 +1,4 @@
-[17. Sep 2004] CVS-Head:
+[4. Oct 2004] CVS-Head:
 o bug fixes:
   - fixed "loadayslo3d.tcl" loading the wrong plugin (SF 928054)
   - fixed "Select Renderer" setting a wrong shader extension for "3Delight"
@@ -21,6 +21,8 @@ o bug fixes:
   - fixed RIB import of archives with relative path names (SF 1009841)
   - fixed broken matrix property GUI elements (SF 1021320)
   - fixed session management of shared executables (SF 1029709)
+  - fixed direct point editing failing to initiate notification (SF 1033192)
+  - fixed "ZoomRectangle" destroying actions in other view windows (SF 1039858)
 o added a new object type "Text", that uses Bezier curves extracted from
   TTF (TrueType) font description files together with the extrusion mechanism
   to form three dimensional letters (TTF parsing provided by Frank Pagels)
@@ -43,6 +45,9 @@ o added Tesselation GUI that helps to determine the best matching tesselation
 o added keyboard shortcuts to display property GUIs, using keys <0> to <9>
 o added new object type "Birail1" that sweeps a cross section curve along
   two so called rail curves
+o added new object type "Birail2" that sweeps a cross section curve along
+  two so called rail curves while morphing it into a second cross section
+  curve at the end of the rail curves
 o added provide mechanism capabilites to the Level object, thus it is now
   possible to use a Level object to add tags to an Instance object, that is
   used as parameter object of a tool object
@@ -58,6 +63,7 @@ o added new object type "ExtrNC" that extracts a NURBS curve from a
   NURBS patch object delivered as child object, as usual
 o added flashing of control points to the single point editing action
   controlled via the new preferences option "Modeling/FlashPoints"
+
 
 [27. Mar 2004] Ayam1.7:
 o bug fixes:
