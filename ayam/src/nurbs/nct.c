@@ -3111,3 +3111,102 @@ ay_nct_arrange(ay_object *o, ay_object *t, int rotate)
 
  return ay_status;
 } /* ay_nct_arrange */
+
+
+/* ay_nct_addinternalcps:
+ * add <order>-1 internal colinear control points to the curve <curve>;
+ * if <where> is AY_TRUE: add at beginning of the curve,
+ * else add them at the end of the curve
+ */
+int
+ay_nct_addinternalcps(ay_object *curve, int where)
+{
+ int ay_status = AY_OK;
+ int num, i, a, b;
+ double *ncv = NULL, v[4] = {0.0,0.0,0.0,0.0}, len = 0.0, sf = 0.0;
+ ay_nurbcurve_object *nc =  NULL;
+
+ if(curve && curve->refine)
+   {
+     nc = (ay_nurbcurve_object *)(curve->refine);
+     if(nc->knot_type == AY_KTCUSTOM)
+       return AY_OK;
+
+     num = nc->order - 1;
+     if(num > 0)
+       {
+	 if(!(ncv = calloc((nc->length+num)*4, sizeof(double))))
+	   return AY_EOMEM;
+
+	 if(where)
+	   {
+	     /* insert at start */
+
+	     /* copy first point */
+	     memcpy(ncv, nc->controlv, 4 * sizeof(double));
+	     /* copy trailing points */
+	     memcpy(&(ncv[4*(num+1)]), &((nc->controlv)[4]), (nc->length - 1) *
+		    4 * sizeof(double));
+	     /* fill new points using interpolated values */
+	     v[0] = (nc->controlv)[4] - (nc->controlv)[0];
+	     v[1] = (nc->controlv)[5] - (nc->controlv)[1];
+	     v[2] = (nc->controlv)[6] - (nc->controlv)[2];
+	     v[3] = (nc->controlv)[7] - (nc->controlv)[3];
+
+	     sf = (1.0/(num + 1));
+	     AY_V3SCAL(v, sf);
+	     for(i = 1; i <= num; i++)
+	       {
+		 a = i*4;
+		 ncv[a]   = (nc->controlv)[0] + i*v[0];
+		 ncv[a+1] = (nc->controlv)[1] + i*v[1];
+		 ncv[a+2] = (nc->controlv)[2] + i*v[2];
+		 ncv[a+3] = 1.0/*(nc->controlv)[3] + i*v[3]*/;
+	       }
+	   }
+	 else
+	   {
+	     /* insert at end */
+
+	     /* copy first points */
+	     memcpy(ncv, nc->controlv, (nc->length - 1) * 4 * sizeof(double));
+	     /* copy trailing point */
+	     memcpy(&(ncv[(nc->length+num-1)*4]),
+		    &((nc->controlv)[(nc->length-1) * 4]), 4 * sizeof(double));
+	     a = (nc->length - 2) * 4;
+	     /* fill new points using interpolated values */
+	     v[0] = (nc->controlv)[a+4] - (nc->controlv)[a];
+	     v[1] = (nc->controlv)[a+5] - (nc->controlv)[a+1];
+	     v[2] = (nc->controlv)[a+6] - (nc->controlv)[a+2];
+	     v[3] = (nc->controlv)[a+7] - (nc->controlv)[a+3];
+
+	     sf = (1.0/(num + 1));
+	     AY_V3SCAL(v, sf);
+	     b = (nc->length-2) * 4;
+	     for(i = 1; i <= num; i++)
+	       {
+		 a = (nc->length-2+i)*4;
+		 ncv[a]   = (nc->controlv)[b] + i*v[0];
+		 ncv[a+1] = (nc->controlv)[b+1] + i*v[1];
+		 ncv[a+2] = (nc->controlv)[b+2] + i*v[2];
+		 ncv[a+3] = 1.0/*(nc->controlv)[3] + i*v[3]*/;
+	       } /* for */
+	   } /* if */
+
+
+	 nc->length += num;
+	 free(nc->controlv);
+	 nc->controlv = ncv;
+	 free(nc->knotv);
+	 nc->knotv = NULL;
+	 ay_knots_createnc(nc);
+
+       } /* if */
+   }
+ else
+   {
+     ay_status = AY_ENULL;
+   } /* if */
+
+ return ay_status;
+} /* ay_nct_addinternalcps */
