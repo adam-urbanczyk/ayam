@@ -1,4 +1,4 @@
-INSTALL [22. Feb 2002]
+INSTALL [03. Mar 2002]
 
 Compilation Instructions for Ayam
 ---------------------------------
@@ -227,13 +227,15 @@ This is done using
 >make setup<your platform>
 (use sun as platform on Linux)
 
-If you are using Affine0008 you need to tune the Makefile to not
-use libz:
+If you are using Affine0008 you need to tune Affine to _not_
+use libz by editing "config.mak":
 remove "-DRIB_ZLIB" from COPTS and do not link with libz.
 
 If you are using Affine0008 and gcc you, additionally, need to change
 readrib/declare.c:
 o change all occurences of the variable "inline" to "myinline"
+(gcc does not like variables named "inline" without -ansi, but fails
+to compile other parts of Affine if -ansi is enabled too)
 
 now compile Affine:
 >make World
