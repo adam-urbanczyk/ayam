@@ -1,11 +1,22 @@
-[CVS, 25. 10. 2002]:
+[CVS, 31. 10. 2002]:
 o bug fixes:
   - fixed remembering of the state of the object selection listbox/tree
     when the context menu or a double click on the label is used to
-    switch between both representations
+    switch between both representations or the toolbox window is closed
+    using the window decoration close button
+  - fixed broken RIB-export of Clone objects
 o reduced number of redraws when selecting hidden or material objects
 o added a RiDisplay tag type, that allows to add more output files
   (e.g. containing depth buffer information) to the scene
+o added french translations for the preferences balloon help texts
+  (Michel Armand)
+o added PolyMesh optimization tool, that reduces the number of control
+  points (Frank Pagels)
+o added global keyboard shortcuts to easily switch display-mode,
+  sampling-tolerance, and lazy-notification via function keys
+o the Mops import options have been moved from the preferences to
+  a small option requester
+o the direct point editing dialogue is now always transient
 
 [15. 10. 2002] Ayam1.3:
 o bug fixes:
