@@ -3123,7 +3123,7 @@ idr_wrib_tcb(struct Togl *togl, int argc, char *argv[])
 	      }
 	    strcpy(part->RIBFile, buf);
 
-	    sprintf(buf, "%s_%d_0.tiff", idrbase, i);
+	    sprintf(buf, "%s_%d_0.tif", idrbase, i);
 	    if(!(part->ImageFile = calloc(strlen(buf)+1, sizeof(char))))
 	      {
 		ay_error(AY_EOMEM, fname, NULL);
@@ -3188,7 +3188,7 @@ idr_wrib_tcb(struct Togl *togl, int argc, char *argv[])
 	      }
 	    strcpy(part->RIBFile, buf);
 	    
-	    sprintf(buf, "%s_%d_0.tiff", idrbase, i);
+	    sprintf(buf, "%s_%d_0.tif", idrbase, i);
 	    if(!(part->ImageFile = calloc(strlen(buf)+1, sizeof(char))))
 	      {
 		ay_error(AY_EOMEM, fname, NULL);
@@ -3326,7 +3326,7 @@ idr_wrib_tcb(struct Togl *togl, int argc, char *argv[])
 		  }
 		strcpy(part->RIBFile, buf);
 
-		sprintf(buf, "%s_%d_%d.tiff", idrbase, i, num);
+		sprintf(buf, "%s_%d_%d.tif", idrbase, i, num);
 		if(!(part->ImageFile = calloc(strlen(buf)+1, sizeof(char))))
 		  {
 		    ay_error(AY_EOMEM, fname, NULL);
