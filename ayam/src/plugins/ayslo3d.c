@@ -265,9 +265,10 @@ int
 Ayslo_Init(Tcl_Interp *interp)
 {
  char fname[] = "ayslo3d_init";
+ char vname[] = "ay(sext)", vval[] = ".sdl";
 
-  Tcl_SetVar(interp, "ay(sext)", ".sdl", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  
+  Tcl_SetVar(interp, vname, vval, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
   Tcl_CreateCommand(interp, "shaderScan", ayslo3d_scanslo3dtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 

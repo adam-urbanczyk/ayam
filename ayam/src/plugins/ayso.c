@@ -266,8 +266,9 @@ int
 Ayso_Init(Tcl_Interp *interp)
 {
  char fname[] = "ayso_init";
+ char vname[] = "ay(sext)", vval[] = ".so";
 
-  Tcl_SetVar(interp, "ay(sext)", ".so", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar(interp, vname, vval, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   Tcl_CreateCommand(interp, "shaderScan", ayso_scansotcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);

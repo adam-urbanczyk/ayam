@@ -368,8 +368,9 @@ int
 Ayslb_Init(Tcl_Interp *interp)
 {
  char fname[] = "ayslb_init";
+ char vname[] = "ay(sext)", vval[] = ".slb";
 
-  Tcl_SetVar(interp, "ay(sext)", ".slb", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar(interp, vname, vval, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   Tcl_CreateCommand(interp, "shaderScan", ayslb_scanslbtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);

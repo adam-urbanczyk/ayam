@@ -261,8 +261,9 @@ int
 Ayslx_Init(Tcl_Interp *interp)
 {
  char fname[] = "ayslx_init";
-  
-  Tcl_SetVar(interp, "ay(sext)", ".slx", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+ char vname[] = "ay(sext)", vval[] = ".slx";
+
+  Tcl_SetVar(interp, vname, vval, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   Tcl_CreateCommand(interp, "shaderScan", ayslx_scanslxtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
