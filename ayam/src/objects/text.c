@@ -286,17 +286,17 @@ ay_text_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_text_readcb(FILE *fileptr, ay_object *o)
 {
- ay_text_object *bp = NULL;
+ ay_text_object *text = NULL;
 
   if(!o)
    return AY_ENULL;
 
-  if(!(bp = calloc(1, sizeof(ay_text_object))))
+  if(!(text = calloc(1, sizeof(ay_text_object))))
     { return AY_EOMEM; }
 
-  ay_read_string(fileptr, &(bp->fontname));
+  ay_read_string(fileptr, &(text->fontname));
 
-  ay_read_string(fileptr, &(bp->string));
+  ay_read_string(fileptr, &(text->string));
 
   fscanf(fileptr,"%lg\n",&text->height);
   fscanf(fileptr,"%d\n",&text->has_upper_cap);
@@ -304,7 +304,7 @@ ay_text_readcb(FILE *fileptr, ay_object *o)
   fscanf(fileptr,"%d\n",&text->glu_display_mode);
   fscanf(fileptr,"%lg\n",&text->glu_sampling_tolerance);
 
-  o->refine = bp;
+  o->refine = text;
 
  return AY_OK;
 } /* ay_text_readcb */
@@ -322,7 +322,7 @@ ay_text_writecb(FILE *fileptr, ay_object *o)
 
   fprintf(fileptr, "%s\n", text->fontname);
   fprintf(fileptr, "%s\n", text->string);
-  fprintf(fileptr, "%d\n", text->height);
+  fprintf(fileptr, "%g\n", text->height);
   fprintf(fileptr, "%d\n", text->has_upper_cap);
   fprintf(fileptr, "%d\n", text->has_lower_cap);
   fprintf(fileptr, "%d\n", text->glu_display_mode);
