@@ -212,6 +212,11 @@ int ay_nct_getpntfromindex(ay_nurbcurve_object *curve, int index, double **p);
 
 int ay_nct_concatmultiple(ay_object *curves, ay_object **result);
 
+int ay_nct_fillgap(ay_nurbcurve_object *c1, ay_nurbcurve_object *c2,
+		   ay_object **result);
+
+int ay_nct_fillgaps(int closed, ay_object *curves);
+
 /* npt.c */
 int ay_npt_create(int uorder, int vorder, int width, int height,
 		  int uknot_type, int vknot_type,
