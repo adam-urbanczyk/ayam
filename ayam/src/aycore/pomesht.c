@@ -170,21 +170,39 @@ ay_pomesht_tesselate(ay_pomesh_object *pomesh)
 
 #ifdef WIN32
       gluTessCallback(tess, GLU_TESS_ERROR, (GLUtessErrorProc)ay_error_glucb);
+      gluTessCallback(tess, GLU_TESS_BEGIN,
+		      (GLUtessBeginProc)ay_pomesht_tcbBegin);
 #else
       gluTessCallback(tess, GLU_TESS_ERROR, ay_error_glucb);
-#endif
       gluTessCallback(tess, GLU_TESS_BEGIN, ay_pomesht_tcbBegin);
+#endif
       if(!pomesh->has_normals)
 	{
+#ifdef WIN32
+	  gluTessCallback(tess, GLU_TESS_VERTEX,
+			  (GLUtessVertexProc)ay_pomesht_tcbVertex);
+#else
 	  gluTessCallback(tess, GLU_TESS_VERTEX, ay_pomesht_tcbVertex);
+#endif
 	}
       else
 	{
+#ifdef WIN32
+	  gluTessCallback(tess, GLU_TESS_VERTEX,
+			  (GLUtessVertexProc)ay_pomesht_tcbVertexN);
+#else
 	  gluTessCallback(tess, GLU_TESS_VERTEX, ay_pomesht_tcbVertexN);
+#endif
 	}
+#ifdef WIN32
+      gluTessCallback(tess, GLU_TESS_END,
+		      (GLUtessEndProc)ay_pomesht_tcbEnd);
+      gluTessCallback(tess, GLU_TESS_COMBINE,
+		      (GLUtessCombineProc)ay_pomesht_tcbCombine);
+#else
       gluTessCallback(tess, GLU_TESS_END, ay_pomesht_tcbEnd);
       gluTessCallback(tess, GLU_TESS_COMBINE, ay_pomesht_tcbCombine);
-
+#endif
       /* GLU 1.2 only: */
       /*gluTessBeginPolygon(tess, NULL);*/
       gluBeginPolygon(tess);
