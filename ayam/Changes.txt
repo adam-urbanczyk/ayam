@@ -1,12 +1,21 @@
-[27. Apr 2004] CVS-Head:
+[16. Jun 2004] CVS-Head:
 o bug fixes:
   - fixed "loadayslo3d.tcl" loading the wrong plugin (SF 928054)
   - fixed "Select Renderer" setting a wrong shader extension for "3Delight"
     (SF 928055)
+  - fixed memory leak reading NURBS patches with custom knot vectors from
+    scene files (SF 959714)
+  - fixed detection of negative scale factors (SF 962427)
 o added a new object type "Text", that uses Bezier curves extracted from
   TTF (TrueType) font description files together with the extrusion mechanism
   to form three dimensional letters
 o added a CSG preview plugin (aycsg) based on OpenCSG
+o added preference options to adjust the mouse button of the ZoomR and Rotate
+  view actions
+o improved behaviour of Ayam if double clicks are used in file requesters
+  on the Win32 platform
+o added "Sections" parameter to Revolve objects that controls whether a
+  circular B-Spline should be used instead of the standard NURBS circle
 
 
 [27. Mar 2004] Ayam1.7:
