@@ -29,7 +29,7 @@ ay_viewt_setupprojection(struct Togl *togl)
  GLfloat light_posf[4] = { 0.0f,  0.0f, 1000.0f, 1.0f};
  GLfloat light_poss[4] = {1000.0f,  0.0f,  0.0f, 1.0f};
  GLfloat light_post[4] = { 0.0f, 1000.0f,  0.0f, 1.0f};
- GLdouble near = view->near, far = view->far;
+ GLdouble nearp = view->nearp, farp = view->farp;
 
   glViewport(0, 0, width, height);
 
@@ -39,35 +39,35 @@ ay_viewt_setupprojection(struct Togl *togl)
 
   if(view->type == AY_VTPERSP)
     {
-      if(view->near <= 0.0)
+      if(view->nearp <= 0.0)
 	{
-	  near = 1.0;
+	  nearp = 1.0;
 	}
 
-      if((view->far == 0.0) || (view->far <= near))
+      if((view->farp == 0.0) || (view->farp <= nearp))
 	{
-	  far = 1000.0;
+	  farp = 1000.0;
 	}
 
       glFrustum(-aspect*view->zoom, aspect*view->zoom,
 		-1.0*view->zoom, 1.0*view->zoom,
-		near, far);
+		nearp, farp);
     }
   else
     {
-      if(view->near == 0.0)
+      if(view->nearp == 0.0)
 	{
-	  near = -100.0;
+	  nearp = -100.0;
 	}
 
-      if(view->far == 0.0)
+      if(view->farp == 0.0)
 	{
-	  far = 100.0;
+	  farp = 100.0;
 	}
 
       glOrtho(-aspect*view->zoom, aspect*view->zoom,
 	      -1.0*view->zoom, 1.0*view->zoom,
-	      near, far);
+	      nearp, farp);
     } /* if */
 
   if(view->roll != 0.0)

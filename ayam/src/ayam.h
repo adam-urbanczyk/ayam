@@ -533,7 +533,7 @@ typedef struct ay_camera_object_s
   double to[3];
   double up[3];
   double roll, zoom;
-  double near, far; /* clipping planes */
+  double nearp, farp; /* clipping planes */
 } ay_camera_object;
 
 typedef struct ay_riinc_object_s
@@ -645,7 +645,7 @@ typedef struct ay_view_object_s
   double to[3];
   double up[3];
   double roll, zoom;
-  double near, far; /* clipping planes */
+  double nearp, farp; /* clipping planes */
 
   /* temporarily in use for rotation with cursor keys */
   double rotx, roty, rotz;

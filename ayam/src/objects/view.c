@@ -208,10 +208,10 @@ ay_view_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   Tcl_SetStringObj(ton, "Near", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &view->near);
+  Tcl_GetDoubleFromObj(interp, to, &view->nearp);
   Tcl_SetStringObj(ton, "Far", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &view->far);
+  Tcl_GetDoubleFromObj(interp, to, &view->farp);
 
   Tcl_SetStringObj(ton, "Zoom", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -301,13 +301,13 @@ ay_view_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     } /* if */
 
   /* check clipping planes */
-  if(view->type == AY_VTPERSP && view->near < 0.0)
+  if((view->type == AY_VTPERSP) && (view->nearp < 0.0))
     {
       ay_error(AY_EWARN, fname,
 	       "Near has to be positive for perspective views!");
     }
 
-  if(view->near >= view->far)
+  if(view->nearp >= view->farp)
     {
       ay_error(AY_EWARN, fname, "Near should be smaller than far!");
     }
@@ -379,10 +379,10 @@ ay_view_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   Tcl_SetStringObj(ton, "Near", -1);
-  to = Tcl_NewDoubleObj(view->near);
+  to = Tcl_NewDoubleObj(view->nearp);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_SetStringObj(ton, "Far", -1);
-  to = Tcl_NewDoubleObj(view->far);
+  to = Tcl_NewDoubleObj(view->farp);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   Tcl_SetStringObj(ton, "Roll", -1);
@@ -653,8 +653,8 @@ ay_view_readcb(FILE *fileptr, ay_object *o)
 
   if(ay_read_version >= 4)
     {
-      fscanf(fileptr,"%lg\n", &vtemp.near);
-      fscanf(fileptr,"%lg\n", &vtemp.far);
+      fscanf(fileptr,"%lg\n", &vtemp.nearp);
+      fscanf(fileptr,"%lg\n", &vtemp.farp);
     }
 
   vtemp.drawhandles = AY_FALSE;
@@ -782,8 +782,8 @@ ay_view_writecb(FILE *fileptr, ay_object *o)
     }
   fprintf(fileptr,"%d\n",view->drawbg);
 
-  fprintf(fileptr,"%g\n",view->near);
-  fprintf(fileptr,"%g\n",view->far);
+  fprintf(fileptr,"%g\n",view->nearp);
+  fprintf(fileptr,"%g\n",view->farp);
 
  return AY_OK;
 } /* ay_view_writecb */

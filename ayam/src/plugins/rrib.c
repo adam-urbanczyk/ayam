@@ -3314,13 +3314,13 @@ ay_rrib_RiWorldBegin(void)
       c.up[2] = 0.0;
       c.roll = 0.0;
 
-      c.near = 0.0;
+      c.nearp = 0.0;
       if(ay_rrib_near != 0.0)
-	c.near = ay_rrib_near;
+	c.nearp = ay_rrib_near;
 
-      c.far = 0.0;
+      c.farp = 0.0;
       if(ay_rrib_far != 0.0)
-	c.far = ay_rrib_far;
+	c.farp = ay_rrib_far;
 
       if(fabs(ay_rrib_fov) > AY_EPSILON)
 	{

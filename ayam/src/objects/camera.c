@@ -202,10 +202,10 @@ ay_camera_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   Tcl_SetStringObj(ton, "Near", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &camera->near);
+  Tcl_GetDoubleFromObj(interp, to, &camera->nearp);
   Tcl_SetStringObj(ton, "Far", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &camera->far);
+  Tcl_GetDoubleFromObj(interp, to, &camera->farp);
 
   Tcl_SetStringObj(ton, "Zoom", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -216,13 +216,13 @@ ay_camera_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_GetDoubleFromObj(interp, to, &camera->roll);
 
   /* check clipping planes */
-  if(camera->near < 0.0)
+  if(camera->nearp < 0.0)
     {
       ay_error(AY_EWARN, fname,
 	       "Near has to be positive for perspective views!");
     }
 
-  if(camera->near >= camera->far)
+  if(camera->nearp >= camera->farp)
     {
       ay_error(AY_EWARN, fname, "Near should be smaller than far!");
     }
@@ -284,10 +284,10 @@ ay_camera_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   Tcl_SetStringObj(ton, "Near", -1);
-  to = Tcl_NewDoubleObj(camera->near);
+  to = Tcl_NewDoubleObj(camera->nearp);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_SetStringObj(ton, "Far", -1);
-  to = Tcl_NewDoubleObj(camera->far);
+  to = Tcl_NewDoubleObj(camera->farp);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   Tcl_SetStringObj(ton, "Roll", -1);
@@ -450,8 +450,8 @@ ay_camera_readcb(FILE *fileptr, ay_object *o)
 
   if(ay_read_version >= 4)
     {
-      fscanf(fileptr,"%lg\n", &camera->near);
-      fscanf(fileptr,"%lg\n", &camera->far);
+      fscanf(fileptr,"%lg\n", &camera->nearp);
+      fscanf(fileptr,"%lg\n", &camera->farp);
     }
 
   o->refine = camera;
@@ -483,8 +483,8 @@ ay_camera_writecb(FILE *fileptr, ay_object *o)
   fprintf(fileptr,"%g\n",camera->roll);
   fprintf(fileptr,"%g\n",camera->zoom);
 
-  fprintf(fileptr,"%g\n",camera->near);
-  fprintf(fileptr,"%g\n",camera->far);
+  fprintf(fileptr,"%g\n",camera->nearp);
+  fprintf(fileptr,"%g\n",camera->farp);
 
  return AY_OK;
 } /* ay_camera_writecb */

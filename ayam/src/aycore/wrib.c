@@ -20,10 +20,6 @@
 
 int ay_wrib_sm(char *file, char *image, int width, int height);
 
-void ay_wrib_displaytags(void);
-
-void ay_wrib_hidertags(void);
-
 /* cot() used by currently unused FrameCamera() */
 /*
 double
@@ -1159,14 +1155,14 @@ ay_wrib_lights(char *file, ay_object *o)
  */
 int
 ay_wrib_scene(char *file, char *image, double *from, double *to,
-	      double roll, double zoom, double near, double far,
+	      double roll, double zoom, double nearp, double farp,
 	      int width, int height, int type)
 {
  int ay_status = AY_OK;
  ay_object *o = ay_root;
  RtPoint f, t, d;
  RtFloat aspect = (RtFloat)1.0, swleft, swright, swtop, swbot;
- RtFloat fov = (RtFloat)90.0, nearp, farp;
+ RtFloat fov = (RtFloat)90.0, rinearp, rifarp;
  char *objfile = NULL, *pos = NULL;
  int filenlen = 0;
 
@@ -1269,23 +1265,23 @@ ay_wrib_scene(char *file, char *image, double *from, double *to,
   swtop = (RtFloat)1.0;
 
   /* clipping planes */
-  if(near != 0.0 || far != 0.0)
+  if(nearp != 0.0 || farp != 0.0)
     {
-      if(near != 0.0)
+      if(nearp != 0.0)
 	{
-	  nearp = (RtFloat)near;
+	  rinearp = (RtFloat)nearp;
 	  if(type == AY_VTPERSP)
-	    zoom /= near;
+	    zoom /= nearp;
 	}
       else
-	nearp = RI_EPSILON;
+	rinearp = RI_EPSILON;
 
-      if(far != 0.0)
-	farp = (RtFloat)far;
+      if(farp != 0.0)
+	rifarp = (RtFloat)farp;
       else
-	farp = RI_INFINITY;
+	rifarp = RI_INFINITY;
 
-      RiClipping(nearp, farp);
+      RiClipping(rinearp, rifarp);
     }
 
   RiScreenWindow((RtFloat)(swleft*zoom), (RtFloat)(swright*zoom),
@@ -1528,7 +1524,7 @@ ay_wrib_cb(struct Togl *togl, int argc, char *argv[])
   if(!smonly)
     {
       ay_status = ay_wrib_scene(file, image, view->from, view->to, view->roll,
-				view->zoom, view->near, view->far,
+				view->zoom, view->nearp, view->farp,
 				width, height, view->type);
     }
   else
@@ -1562,7 +1558,7 @@ ay_wrib_pprevdraw(ay_view_object *view)
  int old_resinstances = ay_prefs.resolveinstances;
  RtPoint f, t, d;
  RtFloat aspect = (RtFloat)1.0, swleft, swright, swtop, swbot;
- RtFloat fov = (RtFloat)90.0, nearp, farp;
+ RtFloat fov = (RtFloat)90.0, rinearp, rifarp;
  struct Togl *togl = NULL;
  int width, height, i;
  double zoom, roll, *from, *to;
@@ -1631,23 +1627,23 @@ ay_wrib_pprevdraw(ay_view_object *view)
   swtop = (RtFloat)1.0;
 
   /* clipping planes */
-  if(view->near != 0.0 || view->far != 0.0)
+  if(view->nearp != 0.0 || view->farp != 0.0)
     {
-      if(view->near != 0.0)
+      if(view->nearp != 0.0)
 	{
-	  nearp = (RtFloat)view->near;
+	  rinearp = (RtFloat)view->nearp;
 	  if(view->type == AY_VTPERSP)
-	    zoom /= view->near;
+	    zoom /= view->nearp;
 	}
       else
-	nearp = RI_EPSILON;
+	rinearp = RI_EPSILON;
 
-      if(view->far != 0.0)
-	farp = (RtFloat)view->far;
+      if(view->farp != 0.0)
+	rifarp = (RtFloat)view->farp;
       else
-	farp = RI_INFINITY;
+	rifarp = RI_INFINITY;
 
-      RiClipping(nearp, farp);
+      RiClipping(rinearp, rifarp);
     }
 
   RiScreenWindow((RtFloat)(swleft*zoom), (RtFloat)(swright*zoom),
