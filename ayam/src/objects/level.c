@@ -269,8 +269,5 @@ ay_level_init(Tcl_Interp *interp)
 				    ay_level_bbccb,
 				    AY_IDLEVEL);
 
-  Tcl_SetVar(interp,"propertyList","LevelAttr", TCL_APPEND_VALUE |
-	     TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
  return ay_status;
 } /* ay_level_init */
