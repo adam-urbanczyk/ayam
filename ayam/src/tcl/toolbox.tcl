@@ -125,8 +125,10 @@ proc toolbox_open { } {
 	    }
 	    bind $f.sel <Shift-ButtonPress-1> {
 		global  ay
+		%W configure -relief sunken
 		actionDelTagP $ay(currentView)
 		rV
+		after 100 "%W configure -relief raised"
 		break;
 	    }
 	    balloon_set $f.sel "select (tag) points\n\[ $ayviewshortcuts(Select) \]\nShift: deselect points\n\[ $ayviewshortcuts(DeSelect) \]"
@@ -296,8 +298,10 @@ proc toolbox_open { } {
 	    }
 	    bind $f.bconv <Shift-ButtonPress-1> {
 		global  ay
+		%W configure -relief sunken
 		set m $ay(toolsmenu)
 		$m invoke 14
+		after 100 "%W configure -relief raised"
 		break;
 	    }
 	    balloon_set $f.bconv\
@@ -308,7 +312,10 @@ proc toolbox_open { } {
 		forceNot; rV
 	    }
 	    bind $f.bnot <Shift-ButtonPress-1> {
-		forceNot all; rV
+		%W configure -relief sunken
+		forceNot all
+		rV
+		after 100 "%W configure -relief raised"
 		break;
 	    }
 	    balloon_set $f.bnot\
@@ -333,7 +340,9 @@ proc toolbox_open { } {
 	    }
 	    balloon_set $f.blevel "create Level\nShift: and move objects into"
 	    bind $f.blevel <Shift-ButtonPress-1> {
-		level_crt;
+		%W configure -relief sunken
+		level_crt
+		after 100 "%W configure -relief raised"
 		break;
 	    }
 	    #####
