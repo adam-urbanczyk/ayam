@@ -672,7 +672,7 @@ ay_npt_revertu(ay_nurbpatch_object *patch)
 
 
 /* ay_npt_revertutcmd:
- *  
+ *
  */
 int
 ay_npt_revertutcmd(ClientData clientData, Tcl_Interp *interp,
@@ -681,23 +681,48 @@ ay_npt_revertutcmd(ClientData clientData, Tcl_Interp *interp,
  int ay_status;
  char fname[] = "revertU";
  ay_list_object *sel = ay_selection;
- ay_nurbpatch_object *patch = NULL;
+ ay_nurbpatch_object *np = NULL;
+ ay_pamesh_object *pm = NULL;
+ ay_bpatch_object *bp = NULL;
+ double pt[3];
 
   while(sel)
     {
-      if(sel->object->type == AY_IDNPATCH)
+      switch(sel->object->type)
 	{
+	case AY_IDNPATCH:
 	  if(sel->object->selp)
 	    ay_selp_clear(sel->object);
 
-	  patch = (ay_nurbpatch_object *)sel->object->refine;
+	  np = (ay_nurbpatch_object *)sel->object->refine;
 
-	  ay_status = ay_npt_revertu(patch);
-	}
-      else
-	{
-	  ay_error(AY_ERROR, fname, "object is not a NPatch");
-	} /* if */
+	  ay_status = ay_npt_revertu(np);
+	  break;
+	case AY_IDPAMESH:
+	  if(sel->object->selp)
+	    ay_selp_clear(sel->object);
+
+	  pm = (ay_pamesh_object *)sel->object->refine;
+
+	  ay_status = ay_pmt_revertu(pm);
+	  break;
+	case AY_IDBPATCH:
+	  if(sel->object->selp)
+	    ay_selp_clear(sel->object);
+
+	  bp = (ay_bpatch_object *)sel->object->refine;
+
+	  memcpy(pt, bp->p1, 3*sizeof(double));
+	  memcpy(bp->p1, bp->p2, 3*sizeof(double));
+	  memcpy(bp->p2, pt, 3*sizeof(double));
+	  memcpy(pt, bp->p3, 3*sizeof(double));
+	  memcpy(bp->p3, bp->p4, 3*sizeof(double));
+	  memcpy(bp->p4, pt, 3*sizeof(double));
+	  break;
+	default:
+	  ay_error(AY_ERROR, fname, "Do not know how to revert this object!");
+	  break;
+	} /* switch */
 
       sel = sel->next;
     } /* while */
@@ -745,23 +770,48 @@ ay_npt_revertvtcmd(ClientData clientData, Tcl_Interp *interp,
  int ay_status;
  char fname[] = "revertV";
  ay_list_object *sel = ay_selection;
- ay_nurbpatch_object *patch = NULL;
+ ay_nurbpatch_object *np = NULL;
+ ay_pamesh_object *pm = NULL;
+ ay_bpatch_object *bp = NULL;
+ double pt[3];
 
   while(sel)
     {
-      if(sel->object->type == AY_IDNPATCH)
+      switch(sel->object->type)
 	{
+	case AY_IDNPATCH:
 	  if(sel->object->selp)
 	    ay_selp_clear(sel->object);
 
-	  patch = (ay_nurbpatch_object *)sel->object->refine;
+	  np = (ay_nurbpatch_object *)sel->object->refine;
 
-	  ay_status = ay_npt_revertv(patch);
-	}
-      else
-	{
-	  ay_error(AY_ERROR, fname, "object is not a NPatch");
-	} /* if */
+	  ay_status = ay_npt_revertv(np);
+	  break;
+	case AY_IDPAMESH:
+	  if(sel->object->selp)
+	    ay_selp_clear(sel->object);
+
+	  pm = (ay_pamesh_object *)sel->object->refine;
+
+	  ay_status = ay_pmt_revertv(pm);
+	  break;
+	case AY_IDBPATCH:
+	  if(sel->object->selp)
+	    ay_selp_clear(sel->object);
+
+	  bp = (ay_bpatch_object *)sel->object->refine;
+
+	  memcpy(pt, bp->p1, 3*sizeof(double));
+	  memcpy(bp->p1, bp->p4, 3*sizeof(double));
+	  memcpy(bp->p4, pt, 3*sizeof(double));
+	  memcpy(pt, bp->p2, 3*sizeof(double));
+	  memcpy(bp->p2, bp->p3, 3*sizeof(double));
+	  memcpy(bp->p3, pt, 3*sizeof(double));
+	  break;
+	default:
+	  ay_error(AY_ERROR, fname, "Do not know how to revert this object!");
+	  break;
+	} /* switch */
 
       sel = sel->next;
     } /* while */
@@ -4339,23 +4389,48 @@ ay_npt_swapuvtcmd(ClientData clientData, Tcl_Interp *interp,
  int ay_status;
  char fname[] = "swapUV";
  ay_list_object *sel = ay_selection;
- ay_nurbpatch_object *patch = NULL;
+ ay_nurbpatch_object *np = NULL;
+ ay_pamesh_object *pm = NULL;
+ ay_bpatch_object *bp = NULL;
+ double pt[3];
 
   while(sel)
     {
-      if(sel->object->type == AY_IDNPATCH)
+      switch(sel->object->type)
 	{
+	case AY_IDNPATCH:
 	  if(sel->object->selp)
 	    ay_selp_clear(sel->object);
 
-	  patch = (ay_nurbpatch_object *)sel->object->refine;
+	  np = (ay_nurbpatch_object *)sel->object->refine;
 
-	  ay_status = ay_npt_swapuv(patch);
-	}
-      else
-	{
-	  ay_error(AY_ERROR, fname, "object is not a NPatch");
-	} /* if */
+	  ay_status = ay_npt_swapuv(np);
+	  break;
+	case AY_IDPAMESH:
+	  if(sel->object->selp)
+	    ay_selp_clear(sel->object);
+
+	  pm = (ay_pamesh_object *)sel->object->refine;
+
+	  ay_status = ay_pmt_revertu(pm);
+	  break;
+	case AY_IDBPATCH:
+	  if(sel->object->selp)
+	    ay_selp_clear(sel->object);
+
+	  bp = (ay_bpatch_object *)sel->object->refine;
+
+	  memcpy(pt, bp->p1, 3*sizeof(double));
+	  memcpy(bp->p1, bp->p4, 3*sizeof(double));
+	  memcpy(bp->p4, pt, 3*sizeof(double));
+	  memcpy(pt, bp->p2, 3*sizeof(double));
+	  memcpy(bp->p2, bp->p3, 3*sizeof(double));
+	  memcpy(bp->p3, pt, 3*sizeof(double));
+	  break;
+	default:
+	  ay_error(AY_ERROR, fname, "Do not know how to revert this object!");
+	  break;
+	} /* switch */
       sel = sel->next;
     } /* while */
 
