@@ -858,9 +858,9 @@ metaobj_providecb(ay_object *o, unsigned int type, ay_object *result)
 	  	return AY_EOMEM;
  
        po->npolys = p;
-       po->nloops = (int *)calloc(1,sizeof(int)*p);
-       po->nverts = (int *)calloc(1,sizeof(int)*p);
-       po->verts = (int *)calloc(1,sizeof(int)*p*3);
+       po->nloops = (unsigned int *)calloc(1,sizeof(unsigned int)*p);
+       po->nverts = (unsigned int *)calloc(1,sizeof(unsigned int)*p);
+       po->verts = (unsigned int *)calloc(1,sizeof(unsigned int)*p*3);
        po->ncontrols = p*3;
        po->controlv = (double *)calloc(1,po->ncontrols*6*sizeof(double));
        po->has_normals = AY_TRUE;
