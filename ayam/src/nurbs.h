@@ -160,6 +160,8 @@ int ay_nct_clamp(ay_nurbcurve_object *curve);
 int ay_nct_clamptcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[]);
 
+int ay_nct_elevate(ay_nurbcurve_object *curve, int new_order);
+
 int ay_nct_elevatetcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
 

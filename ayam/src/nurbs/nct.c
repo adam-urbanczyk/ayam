@@ -1036,6 +1036,126 @@ ay_nct_clamptcmd(ClientData clientData, Tcl_Interp *interp,
  return TCL_OK;
 } /* ay_nct_clamptcmd */
 
+/* ay_nct_elevate:
+ *  elevate NURBS curve <curve> to the new order <new_order>
+ */
+int
+ay_nct_elevate(ay_nurbcurve_object *curve, int new_order)
+{
+ int ay_status = AY_OK;
+ int i, j, a, b, clamp_me;
+ double u, *Uh = NULL, *Qw = NULL, *realQw = NULL, *realUh = NULL;
+ int t = 1, nh = 0;
+ char fname[] = "elevate";
+
+  if(curve->order >= new_order)
+    return AY_OK;
+  else
+    t = new_order - curve->order;
+
+ /* clamp the curve? */
+  clamp_me = AY_FALSE;
+
+  if(curve->knot_type == AY_KTBSPLINE)
+    {
+      clamp_me = AY_TRUE;
+    }
+  else
+    {
+      if(curve->knot_type == AY_KTCUSTOM)
+	{
+	  a = 1;
+	  u = curve->knotv[0];
+	  for(i = 1; i < curve->order; i++)
+	    if(u == curve->knotv[i])
+	      a++;
+
+	  j = curve->length+curve->order-1;
+	  b = 1;
+	  u = curve->knotv[j];
+	  for(i = j; i >= curve->length; i--)
+	    if(u == curve->knotv[i])
+	      b++;
+
+	  if((a < curve->order) || (b < curve->order))
+	    {
+	      clamp_me = AY_TRUE;
+	    } /* if */
+	} /* if */
+    } /* if */
+	  
+  if(clamp_me)
+    {
+      ay_status = ay_nct_clamp(curve);
+      if(ay_status)
+	{
+	  ay_error(AY_ERROR, fname, "clamp operation failed");
+	} /* if */
+    } /* if */
+
+  /* alloc new knotv & new controlv */
+  if(!(Uh = calloc((curve->length + curve->length*t +
+		    curve->order + t), 
+		   sizeof(double))))
+    {
+      ay_error(AY_EOMEM, fname, NULL);
+      return AY_ERROR;
+    }
+  if(!(Qw = calloc((curve->length + curve->length*t)*4,
+		   sizeof(double))))
+    {
+      free(Uh);
+      ay_error(AY_EOMEM, fname, NULL);
+      return AY_ERROR;
+    }
+
+  /* fill Uh & Qw */
+  ay_status = ay_nb_DegreeElevateCurve(4, curve->length-1,
+				       curve->order-1, curve->knotv,
+				       curve->controlv, t, &nh, Uh, Qw);
+
+  if(ay_status)
+    {
+      ay_error(ay_status,fname,"degree elevation failed");
+      free(Uh); free(Qw); return AY_ERROR;
+    }
+
+  if(!(realQw = realloc(Qw, nh*4* sizeof(double))))
+    {
+      ay_error(AY_ERROR, fname, "Memory may have leaked!");
+      ay_error(AY_EOMEM, fname, NULL);
+      return AY_ERROR;
+    }
+
+  if(!(realUh = realloc(Uh, (nh+curve->order+t)*sizeof(double))))
+    {
+      ay_error(AY_ERROR, fname, "Memory may have leaked!");
+      ay_error(AY_EOMEM, fname, NULL);
+      return AY_ERROR;
+    }
+
+  free(curve->knotv);
+  curve->knotv = realUh;
+
+  free(curve->controlv);
+  curve->controlv = realQw;
+
+  curve->knot_type = AY_KTCUSTOM;
+	  
+  curve->order += t;
+	  
+  curve->length = nh;
+
+  Qw = NULL;
+  Uh = NULL;
+  realQw = NULL;
+  realUh = NULL;
+
+  ay_nct_recreatemp(curve);
+
+ return AY_OK;
+} /* ay_nct_elevate */
+
 
 /* ay_nct_elevatetcmd:
  *
