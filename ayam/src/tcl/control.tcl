@@ -433,6 +433,94 @@ proc unrenameWhileFor { } {
 }
 # unrenameWhileFor
 
+#selAdd:
+# extend selection in tree or listbox
+proc selAdd { ud } {
+    global ay
+    if { $ay(lb) == 0 } {
+	set tree $ay(tree)
+	set cl $ay(CurrentLevel)
+	set sel [$tree selection get]
+	if { [llength $sel] == 0 } { return; }
+	if { $ud == 0 } {
+	    # Up -> extend to previous
+	    set node [lindex $sel 0]
+	    set i [string last ":" $node]
+	    set j [string range $node [expr $i+1] end]
+	    if { $j > 0 } {
+		incr j -1
+		set newnode [string range $node 0 $i]
+		append newnode $j
+		set sel [linsert $sel 0 $newnode]
+		set newsel 1
+	    } else {
+		set newsel 0
+	    }
+	} else {
+	    # Down -> extend to next
+	    set node [lindex $sel end]
+	    set i [string last ":" $node]
+	    set j [string range $node [expr $i+1] end]
+	    set lastn [lindex [$tree nodes $cl] end]
+	    set i [string last ":" $lastn]
+	    set last [string range $lastn [expr $i+1] end]
+
+	    if { $j < $last } {
+		incr j
+		set newnode [string range $node 0 $i]
+		append newnode $j
+		set sel [lappend sel $newnode]
+		set newsel 1
+	    } else {
+		set newsel 0
+	    }
+	}
+	if { $newsel == 1 } {
+	    eval [subst "$tree selection set $sel"]
+	    $tree see $sel
+	    eval [subst "treeSelect $sel"]
+	    plb_update
+	    if { $ay(need_redraw) == 1 } {
+		rV
+	    }
+	}
+    } else {
+	#if { [focus -displayof .] == $ay(olb) } { return; }
+	set lb $ay(olb)
+	set sel ""
+	set sel [$lb curselection]
+	if { [llength $sel] == 0 } { return; }
+	if { $ud == 0 } {
+	    # Up -> extend to previous
+	    set first [lindex $sel 0]
+	    if { $first > 0 } {
+		set sel [linsert $sel 0 [expr $first-1]]
+		$lb selection set  [lindex $sel 0] [lindex $sel end]
+		$lb see [lindex $sel 0]
+		eval [subst "selOb $sel"]
+		plb_update
+		if { $ay(need_redraw) == 1 } {
+		    rV
+		}
+		# if
+	    }
+	} else {
+	    # Down -> extend to next
+	    set last [lindex $sel end]
+	    if { $last < [$lb index end] } {
+		lappend sel [expr $last+1]
+		$lb selection set  [lindex $sel 0] [lindex $sel end]
+		$lb see [lindex $sel end]
+		eval [subst "selOb $sel"]
+		plb_update
+		if { $ay(need_redraw) == 1 } {
+		    rV
+		}
+	    }
+	}
+    }
+}
+# selAdd
 
 # select Next or Previous or First or Last object in tree or listbox
 proc selNPFL { npfl } {
@@ -448,7 +536,13 @@ proc selNPFL { npfl } {
 	set last [string range $lastn [expr $i+1] end]
 
 	if { $sel == "" } {
-	    set sel ${ay(CurrentLevel)}:0
+	    if { $npfl != 3 } {
+		# select first
+		set sel ${ay(CurrentLevel)}:0
+	    } else {
+		# select last
+		set sel [lindex [$tree nodes $cl] end]
+	    }
 	} else {
 	    set sel [lindex $sel 0]
 	    set i [string last ":" $sel]

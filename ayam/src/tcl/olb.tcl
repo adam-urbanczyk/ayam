@@ -76,7 +76,9 @@ if { $tcl_platform(platform) == "windows" } {
 }
 
 bind $f.li <Down> "selNPFL 0;break"
+bind $f.li <Shift-Down> "selAdd 1;break"
 bind $f.li <Up> "selNPFL 1;break"
+bind $f.li <Shift-Up> "selAdd 0;break"
 bind $f.li <Home> "selNPFL 2;break"
 bind $f.li <End> "selNPFL 3;break"
 
