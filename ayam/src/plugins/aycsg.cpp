@@ -1117,7 +1117,7 @@ aycsg_copytree(int sel_only, ay_object *t, int *is_csg, ay_object **target)
 
   while(t->next)
     {
-      if(sel_only && !t->selected)
+      if(t->hide || (sel_only && !t->selected))
 	{
 	  t = t->next;
 	  continue;
