@@ -530,6 +530,7 @@ typedef struct ay_clone_object_s
 {
   int numclones;
   int rotate;
+  int mirror;
   /* Transformations */
   double movx, movy, movz;
   double rotx, roty, rotz;

@@ -187,6 +187,10 @@ ay_clone_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(clone->rotate));
 
+  Tcl_SetStringObj(ton,"Mirror",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &(clone->mirror));
+
   Tcl_SetStringObj(toa, n1, -1);
   Tcl_SetStringObj(ton, "Translate_X", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -319,6 +323,11 @@ ay_clone_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton,"Mirror",-1);
+  to = Tcl_NewIntObj(clone->mirror);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
   Tcl_SetStringObj(ton,"Translate_X", -1);
   to = Tcl_NewDoubleObj(clone->movx);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -405,6 +414,11 @@ ay_clone_readcb(FILE *fileptr, ay_object *o)
       fscanf(fileptr,"%d\n",&clone->rotate);
     }
 
+  if(ay_read_version > 5)
+    {
+      fscanf(fileptr,"%d\n",&clone->mirror);
+    }
+
   o->refine = clone;
 
  return AY_OK;
@@ -441,6 +455,8 @@ ay_clone_writecb(FILE *fileptr, ay_object *o)
   fprintf(fileptr,"%g\n",clone->scalz);
 
   fprintf(fileptr, "%d\n", clone->rotate);
+
+  fprintf(fileptr, "%d\n", clone->mirror);
 
  return AY_OK;
 } /* ay_clone_writecb */
@@ -586,7 +602,6 @@ ay_clone_notifycb(ay_object *o)
     return AY_OK;
 
   if(
-     (down->type != AY_IDINSTANCE) &&
      (down->type != AY_IDMATERIAL) &&
      (down->type != AY_IDLIGHT) &&
      (down->type != AY_IDCAMERA) &&
@@ -594,7 +609,8 @@ ay_clone_notifycb(ay_object *o)
     )
     {
       /* arrange clones along curve? */
-      if(down->next && down->next->next && (down->next->type != AY_IDLEVEL))
+      if((!clone->mirror) && down->next && down->next->next &&
+	 (down->next->type != AY_IDLEVEL))
 	{
 	  use_trajectory = AY_TRUE;
 	}
@@ -632,7 +648,14 @@ ay_clone_notifycb(ay_object *o)
 
 	      ay_object_defaults(newo);
 	      newo->type = AY_IDINSTANCE;
-	      newo->refine = down;
+	      if(down->type != AY_IDINSTANCE)
+		{
+		  newo->refine = down;
+		}
+	      else
+		{
+		  newo->refine = down->refine;
+		}
 
 	      /* link new instance object */
 	      *next = newo;
@@ -648,41 +671,100 @@ ay_clone_notifycb(ay_object *o)
 	}
       else
 	{ /* No, do not use trajectory curve! */
-	  ay_trafo_defaults(&trafo);
-	  next = &(clone->clones);
-	  for(i = 0; i < clone->numclones; i++)
-	    {
-	      /* prepare transformation attributes */
-	      trafo.movx += clone->movx;
-	      trafo.movy += clone->movy;
-	      trafo.movz += clone->movz;
+	  /* Mirror objects to clone? */
+	  if(!clone->mirror)
+	    { /* No! */
+	      ay_trafo_defaults(&trafo);
+	      next = &(clone->clones);
+	      for(i = 0; i < clone->numclones; i++)
+		{
+		  /* prepare transformation attributes */
+		  trafo.movx += clone->movx;
+		  trafo.movy += clone->movy;
+		  trafo.movz += clone->movz;
 
-	      trafo.scalx *= clone->scalx;
-	      trafo.scaly *= clone->scaly;
-	      trafo.scalz *= clone->scalz;
+		  trafo.scalx *= clone->scalx;
+		  trafo.scaly *= clone->scaly;
+		  trafo.scalz *= clone->scalz;
 
-	      ay_quat_add(trafo.quat, clone->quat, trafo.quat);
-	      ay_quat_toeuler(trafo.quat, euler);
+		  ay_quat_add(trafo.quat, clone->quat, trafo.quat);
+		  ay_quat_toeuler(trafo.quat, euler);
 
-	      trafo.rotx = AY_R2D(euler[0]);
-	      trafo.roty = AY_R2D(euler[1]);
-	      trafo.rotz = AY_R2D(euler[2]);
+		  trafo.rotx = AY_R2D(euler[0]);
+		  trafo.roty = AY_R2D(euler[1]);
+		  trafo.rotz = AY_R2D(euler[2]);
 
-	      /* create a new instance object */
-	      newo = NULL;
-	      if(!(newo = calloc(1, sizeof(ay_object))))
-		return AY_EOMEM; /* XXXX memory leak! */
+		  /* create a new instance object */
+		  newo = NULL;
+		  if(!(newo = calloc(1, sizeof(ay_object))))
+		    return AY_EOMEM; /* XXXX memory leak! */
 
-	      ay_object_defaults(newo);
-	      newo->type = AY_IDINSTANCE;
-	      newo->refine = down;
-	      ay_trafo_copy(down, newo);
-	      ay_trafo_add(&trafo, newo);
+		  ay_object_defaults(newo);
+		  newo->type = AY_IDINSTANCE;
+		  if(down->type != AY_IDINSTANCE)
+		    {
+		      newo->refine = down;
+		    }
+		  else
+		    {
+		      newo->refine = down->refine;
+		    }
+		  ay_trafo_copy(down, newo);
+		  ay_trafo_add(&trafo, newo);
 
-	      /* link new instance */
-	      *next = newo;
-	      next = &(newo->next);
-	    } /* for */
+		  /* link new instance */
+		  *next = newo;
+		  next = &(newo->next);
+		} /* for */
+	    }
+	  else
+	    { /* Yes! Mirror objects. */
+	      next = &(clone->clones);
+	      while(down->next)
+		{
+		  /* create a new instance object */
+		  newo = NULL;
+		  if(!(newo = calloc(1, sizeof(ay_object))))
+		    return AY_EOMEM; /* XXXX memory leak! */
+
+		  ay_object_defaults(newo);
+		  newo->type = AY_IDINSTANCE;
+		  if(down->type != AY_IDINSTANCE)
+		    {
+		      newo->refine = down;
+		    }
+		  else
+		    {
+		      newo->refine = down->refine;
+		    }
+		  ay_trafo_copy(down, newo);
+		  switch(clone->mirror)
+		    {
+		    case 1:
+		      /* mirror at YZ plane */
+		      newo->movx *= -1.0;
+		      newo->scalx *= -1.0;
+		      break;
+		    case 2:
+		      /* mirror at XZ plane */
+		      newo->movy *= -1.0;
+		      newo->scaly *= -1.0;
+		      break;
+		    case 3:
+		      /* mirror at XY plane */
+		      newo->movz *= -1.0;
+		      newo->scalz *= -1.0;
+		      break;
+		    default:
+		      break;
+		    } /* switch */
+
+		  /* link new instance */
+		  *next = newo;
+		  next = &(newo->next);
+		  down = down->next;
+		} /* while */
+	    } /* if */
 	} /* if */
 
     }
