@@ -1069,7 +1069,7 @@ ay_shader_gettcmd(ClientData clientData, Tcl_Interp * interp,
  */
 int
 ay_shader_settcmd(ClientData clientData, Tcl_Interp * interp,
-			 int argc, char *argv[])
+		  int argc, char *argv[])
 {
  ay_object *o = NULL;
  ay_list_object *sel = ay_selection;
@@ -1089,7 +1089,7 @@ ay_shader_settcmd(ClientData clientData, Tcl_Interp * interp,
   if(!sel) /* oops? */
     o = ay_root;
   else
-    o = sel->object; 
+    o = sel->object;
 
   /* parse args */
   if(argc < 2)
@@ -1420,7 +1420,7 @@ ay_shader_settcmd(ClientData clientData, Tcl_Interp * interp,
 	  break;
 
 	} /* switch */
-      
+
     } /* for */
 
   /* add shader to object */
@@ -1432,6 +1432,8 @@ ay_shader_settcmd(ClientData clientData, Tcl_Interp * interp,
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+
+  ay_notify_force(o);
 
  return TCL_OK;
 } /* ay_shader_settcmd */
