@@ -397,8 +397,16 @@ ay_comp_light(ay_object *o1, ay_object *o2)
   if(memcmp(&(l1->tto), &(l2->tto), 3*sizeof(double)))
     return AY_FALSE;
 
-  if(!(ay_comp_shader(l1->lshader, l2->lshader)))
-    return AY_FALSE;
+  if(l1->lshader && l2->lshader)
+    {
+      if(!(ay_comp_shader(l1->lshader, l2->lshader)))
+	return AY_FALSE;
+    }
+  else
+    {
+      if(l1->lshader != l2->lshader)
+	return AY_FALSE;
+    }
 
   return AY_TRUE;
 } /* ay_comp_light */
