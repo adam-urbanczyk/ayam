@@ -10,8 +10,8 @@
 # shader.tcl - managing shaders
 
 # a shader in the database:
-# { sname stype { {float argname 1 0.0} {float arrayargname 2 {0.0 1.0}} }
-# { plastic surface { { float Ka 1 0.8 } {point From 1 { 0.0 1.0 0.0 } } } }
+# { sname stype { {argname argtype 1 defval} {arrargname arrargtype arrlen {defval_1 defval_2 }} }
+# { plastic surface { {Ka float 1 0.8} {From point 1 { 0.0 1.0 0.0 }} } }
 # a shader in an array:
 # {
 # Name(plastic)
@@ -101,6 +101,7 @@ proc shader_scanAll {} {
 	set ay_error 0
 	if { $ay(sext) != "" } {
 	    shaderScan $dummy shaderarguments
+	    update
 	} else {
 	    if { $AYUSESLCARGS == 1 } {
 		shaderScanSLC $dummy shaderarguments
@@ -111,7 +112,7 @@ proc shader_scanAll {} {
 	    }
 	}
 
-	if { $ay_error < 2 } {
+	if { $ay_error < 1 } {
 
 	    set shadertype [lindex $shaderarguments 1]
 
@@ -575,7 +576,23 @@ proc shader_DbToArray { shader } {
 }
 # shader_DbToArray
 
+#
+proc shader_findShader { sname } {
+ global ay ayprefs
 
+    set tmp ""
+    regsub -all $ay(separator) $ayprefs(Shaders) " " tmp;
+
+    foreach p $tmp {
+	set fname $p/${sname}$ay(sext)
+	if { [file readable $fname] } {
+	    return $fname;
+	}
+    }
+
+ return "";
+}
+# shader_findShader
 
 proc shader_getAtm { } {
 global ay ay_shader Atmosphere
