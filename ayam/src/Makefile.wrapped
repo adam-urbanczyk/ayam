@@ -1,27 +1,28 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile.wrapped [22. Apr 2002]
+# Makefile.wrapped [5. Jun 2002]
 # Makefile for Ayam (wrapped version)
 
-# Where shall the executables be installed?
-# Note: The specified directory _must_ exist and be writable!
-BINDIR=/usr/local/bin
-#BINDIR=/usr/local/bin
+# Choose an installation prefix.
+PREFIX = /usr/local/ayam
+#PREFIX = /opt/ayam
+# if you use one of the following, be sure to change LIBDIR,
+# and DOCDIR to a more suitable (Ayam specific) path
+#PREFIX = /usr/freeware
+#PREFIX = /usr
+
+# Where shall the executable be installed?
+BINDIR = ${PREFIX}/bin
+
+# Where shall the plugins and custom objects be installed?
+LIBDIR = ${PREFIX}/lib
+#LIBDIR = ${PREFIX}/lib/ayam
 
 # Where shall the documentation be installed?
-# Note: The specified directory _must_ exist and be writable!
-# Note^2: A subdir "ayam" will be created in this dir
-DOCDIR=/usr/doc/
-#DOCDIR=/usr/doc/
-
-# Where shall the button images & custom objects be installed?
-# Note: The specified directory _must_ exist and be writable!
-# Note^2: A subdir "ayam" will be created in this dir
-LIBDIR=/usr/local/lib/
-#LIBDIR=/usr/local/lib/
+DOCDIR = ${PREFIX}/doc
+#DOCDIR = ${PREFIX}/doc/ayam
 
 INSTALL = install
-INSTALLD = install -m 0644
 MKDIR = mkdir -p
 
 # the compiler
@@ -393,26 +394,37 @@ mostlyclean: clean
 	rm -f $(AFFINEOBJS)
 	cd MF3D; make -f Makefile.mf3d clean
 
-DOCFILES = ../Setup.txt ../Changes ../License ./ayam-icon.xpm ./ayamrc\
- ./crtshdscn.tcl ../doc/ayam.sgml ../doc/ayam.ps ../doc/ayam.txt
-
-install:
-	$(INSTALL) ayam $(BINDIR)
-
-#	$(MKDIR) $(DOCDIR)/ayam/html $(DOCDIR)/ayam/sdk/html
-#	$(INSTALLD) $(DOCFILES) $(DOCDIR)/ayam
-#	$(INSTALLD) ../doc/html/* $(DOCDIR)/ayam/html
-#	$(INSTALLD) ../sdk/co.sgml ../sdk/co.ps ../sdk/co.txt $(DOCDIR)/ayam/sdk
-#	$(INSTALLD) ../sdk/html/* $(DOCDIR)/ayam/sdk/html
-
-uninstall:
-	rm -f $(BINDIR)/ayam
-	rm -rf $(LIBDIR)/ayam	
-	rm -rf $(DOCDIR)/ayam
-
 cl:
 	cat *.c *.h contrib/tree.c contrib/sm.c aycore/*.c nurbs/*.c objects/*.c plugins/*.c | wc -l
 
+DOCFILES = ../Setup.txt ../Changes ../License ../doc/refcard.tcl\
+../doc/refcard.ps ../doc/ayam.pdf
+
+install: ayamsh
+	$(MKDIR) $(BINDIR)
+	$(INSTALL) ayam $(BINDIR)
+	$(MKDIR) $(LIBDIR)
+	-$(INSTALL) contrib/meta/metaobj.so $(LIBDIR)
+	-$(INSTALL) contrib/meta/metaobj/metaobj.tcl $(LIBDIR)
+	-$(INSTALL) contrib/meta/metaobj/metacomp.tcl $(LIBDIR)
+	-$(INSTALL) plugins/mfio.so plugins/mfio.tcl $(LIBDIR)
+	-$(INSTALL) plugins/idr.so plugins/idr.tcl $(LIBDIR)
+	-$(INSTALL) plugins/rrib.so plugins/rrib.tcl $(LIBDIR)
+	$(INSTALL) $(DOCFILES) $(DOCDIR)
+	$(MKDIR) $(DOCDIR)/html
+	$(MKDIR) $(DOCDIR)/html/pics
+	$(INSTALL) ../doc/html/*.html $(DOCDIR)/html
+	$(INSTALL) ../doc/html/pics/* $(DOCDIR)/html/pics
+
+uninstall:
+	-rm -f $(BINDIR)/ayam
+	-rm -rf $(LIBDIR)/metaobj.so
+	-rm -rf $(LIBDIR)/metaobj.tcl $(LIBDIR)/metacomp.tcl
+	-rm -rf $(LIBDIR)/mfio.so $(LIBDIR)/mfio.tcl
+	-rm -rf $(LIBDIR)/idr.so $(LIBDIR)/idr.tcl
+	-rm -rf $(LIBDIR)/rrib.so $(LIBDIR)/rrib.tcl
+	-cd $(DOCDIR); rm -rf Setup.txt Changes License refcard.tcl\
+refcard.ps ayam.pdf html;
 
 .SUFFIXES: .so .o
 
