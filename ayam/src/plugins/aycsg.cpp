@@ -1205,13 +1205,23 @@ aycsg_copytree(int sel_only, ay_object *t, int *is_csg, ay_object **target)
 
       ay_status = AY_OK;
 
-      // we just descend into non-empty level objects
-      if((t->type == AY_IDLEVEL) && (t->down))
+      // we just descend into non-empty level objects (and NURBS patches)
+      if(((t->type == AY_IDLEVEL) || (t->type == AY_IDNPATCH)) && (t->down))
 	{
 	  // descend
 	  ay_status = aycsg_copytree(AY_FALSE,
 				     t->down, &lis_csg, &((*target)->down));
-	}
+
+	  // repair hierarchy for NURBS patches with trim curves
+	  // (re-create terminating end level objects)
+	  if(t->type == AY_IDNPATCH)
+	    {
+	      tmp = (*target)->down;
+	      while(tmp->next)
+		tmp = tmp->next;
+	      ay_object_crtendlevel(&(tmp->next));
+	    } // if
+	} // if
 
       if(ay_status)
 	return ay_status;
