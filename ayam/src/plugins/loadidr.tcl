@@ -1,2 +1,2 @@
-io_lc /home/randi/ays/plugins/idr.so;
+io_lc /home/randi/aysf/plugins/idr.so;
 return;

@@ -13,7 +13,7 @@ SOURCES = RCClouds.sl\
 # BMRT
 SLCSHADERS := $(SOURCES:%.sl=%.slc)
 SLC = slc
-SLCFLAGS =
+SLCFLAGS = 
 
 # AQSIS
 AQSHADERS := $(SOURCES:%.sl=%.slx)
