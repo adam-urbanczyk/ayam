@@ -1,4 +1,4 @@
-[CVS, 28. 07. 2002]:
+[CVS, 31. 07. 2002]:
 o bug fixes:
   - fixed memory leaks in the shadow map RIB export module
   - fixed ICurves crash for length 2
@@ -7,6 +7,13 @@ o added a permanent preview feature; a constantly open RIB stream
   to a (fast) RenderMan renderer like rgl immediately displays all
   changes in the scene without the need to repeatedly hit "Ctrl-r" and
   close the preview window again
+o added manual control for the creation of ShadowMaps; for that,
+  the preference setting "RIB-Export/ShadowMaps" is now a menu
+  for the values "Never" "Automatic" "Manual"; in "Manual" mode
+  ShadowMaps may be rendered explicitly using the new view menu
+  entry "View/Create ShadowMaps", afterwards it is possible to render
+  images without recreating the ShadowMaps all the time (e.g. for camera
+  or material changes)
 o the "TclPrecision" preference setting has been moved to the "Misc"
   preferences section
 o added balloon help for all preference settings
@@ -14,6 +21,10 @@ o added a "Locale" preference setting and a locale system, that allows to
   display language specific balloon help texts (german translations of
   various balloon help texts provided initially)
 o the coordinate system (the root object) now also draws axis names (x, y, z)
+o scene loading now blocks all mouse events from view windows to avoid
+  problems with user input while loading scenes which lead to wrongly
+  drawn views
+
 
 [09. 07. 2002] Ayam1.2:
 o bug fixes:
