@@ -1,4 +1,4 @@
-[01. 06. 2003] CVS-Head:
+[05. 06. 2003] CVS-Head:
 o bug fixes:
   none
 o added preference setting "Misc/SavePrefsGeom" to control saving of the
@@ -11,6 +11,8 @@ o added a new drawing mode "ShadeAndDraw" that displays e.g. shaded
   NURBS and their drawn representation simultaneously, the keyboard
   shortcut <Ctrl+S> still toggles between drawing and the shaded
   representation
+o added a new icon based menu to switch the drawing mode to all view windows
+
 
 [10. 05. 2003] Ayam1.5.1:
 o bug fixes:
