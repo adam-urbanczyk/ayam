@@ -132,7 +132,7 @@ proc prefs_open {} {
     # RIB Export
     set fw [$nb insert end RIB-Export -text RIB-Export\
 	    -raisecmd "prefs_rsnb $nb RIB-Export"]
-    addFile $fw ayprefse RIBFile [list Scene Ask]
+    addFile $fw ayprefse RIBFile [list Scenefile Scene Ask]
     addFile $fw ayprefse Image [list RIB Ask]
     addCheck $fw ayprefse ResInstances
     addCheck $fw ayprefse CheckLights

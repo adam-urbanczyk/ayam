@@ -265,11 +265,15 @@ proc io_exportRIB { {expview "" } } {
 		set efilename [tk_getSaveFile -filetypes $filetypes -parent .\
 			-title "Export to file:"]
 	    } else {
-		if { $ayprefs(RIBFile) == "Scene" } {
+		if { $ayprefs(RIBFile) == "Scenefile" } {
 		    if { $filename != "" } {
-			set efilename [file rootname $filename].rib
+			set efilename [file rootname [file tail $filename]].rib
 		    } else {
-			set efilename unnamed.rib
+			if { $ayprefs(RIBFile) == "Scene" } {
+			    set efilename [file rootname $filename].rib
+			} else {
+			    set efilename unnamed.rib
+			}
 		    }
 		} else {
 		    set efilename $ayprefs(RIBFile)
