@@ -434,7 +434,7 @@ proc unrenameWhileFor { } {
 # unrenameWhileFor
 
 
-# select Next or Previous or First or Last
+# select Next or Previous or First or Last object in tree or listbox
 proc selNPFL { npfl } {
     global ay
     if { $ay(lb) == 0 } {
@@ -487,11 +487,81 @@ proc selNPFL { npfl } {
 	    $tree see $sel
 	    treeSelect $sel
 	    plb_update
-	    rV
+	    if { $ay(need_redraw) == 1 } {
+		rV
+	    }
 	}
 
     } else {
-	puts notyet
+	#if { [focus -displayof .] == $ay(olb) } { return; }
+	set lb $ay(olb)
+	set sel ""
+	set sel [$lb curselection]
+	set last [$lb index end]
+	incr last -1
+
+	if { $sel == "" } {
+	    if { $npfl == 2 } {
+		# select first
+		set sel 0
+	    } else {
+		if { $npfl == 3 } {
+		    # select last
+		    set sel $last
+		} else {
+		    # select first
+		    set sel 0
+		}
+	    }
+	} else {
+
+	    set sel [lindex $sel 0]
+
+	    if { $npfl == 0 } {
+		# select next
+		set nxt [expr $sel+1]
+		if { $nxt <= $last } {
+		    set sel $nxt
+		} else {
+		    set sel ""
+		}
+	    }
+	    if { $npfl == 1 } {
+		# select previous
+		set prev [expr $sel-1]
+		if { $prev >= 0 } {
+		    set sel $prev
+		} else {
+		    set sel ""
+		}
+	    }
+	    if { $npfl == 2 } {
+		# select first
+		set sel 0
+	    }
+	    if { $npfl == 3 } {
+		# select last
+		set sel $last
+	    }
+
+	}
+	# if
+
+	if { $sel != "" } {
+	    $lb selection clear 0 end
+	    $lb selection set $sel
+	    $lb see [lindex $sel 0]
+	    eval [subst "selOb $sel"]
+	    plb_update
+	    if { $ay(need_redraw) == 1 } {
+		rV
+	    }
+	    # if
+	}
+	# if
     }
+    # if
+
+ return;
 }
 # selNPFL
