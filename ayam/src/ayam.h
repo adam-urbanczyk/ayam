@@ -70,6 +70,9 @@ extern "C" {
 #include <so.h>
 #endif /* AYUSESOARGS */
 
+#ifdef AYUSESLXARGS
+#include <slx.h>
+#endif /* AYUSESLXARGS */
 
 /* Ayam Object Structure */ 
 
