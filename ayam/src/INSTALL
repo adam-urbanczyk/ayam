@@ -1,4 +1,4 @@
-INSTALL [17. Mar 2004]
+INSTALL [27. Apr 2004]
 
 Compilation Instructions for Ayam
 ---------------------------------
@@ -368,7 +368,32 @@ of Ayam will be disabled, and Ayam will from that moment on just scan
 shaders of the type supported by the plugin loaded.
 
 
-3.5 Installing/Uninstalling Ayam
+3.5 Aycsg (CSG Preview) Plugin
+------------------------------
+
+Additional prerequisites to compile the Aycsg plugin are:
+OpenCSG ( get it from http://www.opencsg.org/ )
+GLEW ( GLEW is included in OpenCSG, otherwise get it from
+ http://glew.sourceforge.net/ )
+RenderTexture (RenderTexture is included in OpenCSG, otherwise get it from
+ http://www.markmark.net/misc/rendertexture.html )
+Your OpenGL subsystem has to support the PBuffers extension.
+
+Download and compile all prerequisites. Compile the example application
+of OpenCSG and try it to check whether your OpenGL subsystem is compatible.
+
+In order to compile the plugin, adapt the following variables
+in the Ayam Makefile:
+OPENCSGDIR, GLEWDIR
+
+then type:
+>make aycsg.so
+
+Load it via menu entry "File/Load Custom".
+Use it via ".view1.f3D.togl rendercsg" in the console (experimental!).
+
+
+3.6 Installing/Uninstalling Ayam
 --------------------------------
 
 Use
