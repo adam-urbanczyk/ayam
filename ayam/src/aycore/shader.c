@@ -255,7 +255,7 @@ ay_shader_scanslxsarg(SLX_VISSYMDEF *symbol, Tcl_DString *ds)
  char buffer[255];
  double deffltval;
  char *defstrval;
- int j;
+ int i, j;
 
   switch(symbol->svd_type)
     {
@@ -277,12 +277,24 @@ ay_shader_scanslxsarg(SLX_VISSYMDEF *symbol, Tcl_DString *ds)
       break;
     case SLX_TYPE_MATRIX:
       Tcl_DStringAppend(ds, "{ ", -1);
+#ifndef AYOLDSLX
+      for(i = 0; i < 4; i++)
+	{
+	  for(j = 0; j < 4; j++)
+	    {
+	      deffltval = (double)((symbol->svd_default).matrixval->val[i][j]);
+	      sprintf(buffer, "%g ", deffltval);
+	      Tcl_DStringAppend(ds, buffer, -1);
+	    } /* for */
+	} /* for */
+#else
       for(j = 0; j < 16; j++)
 	{
 	  deffltval = (double)((symbol->svd_default).matrixval[j]);
 	  sprintf(buffer, "%g ", deffltval);
 	  Tcl_DStringAppend(ds, buffer, -1);
 	} /* for */
+#endif
       Tcl_DStringAppend(ds, "} ", -1);
       break;
     case SLX_TYPE_SCALAR:
