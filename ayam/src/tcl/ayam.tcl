@@ -139,7 +139,7 @@ array set ayprefs {
 
  DefaultAction 1
  IconGamma ""
-
+ Version 0
  Scripts ""
  Docs "http://ayam.sourceforge.net/docs/"
     DailyTips {
@@ -391,7 +391,7 @@ array set riattrval {}
 set oldx 0
 set oldy 0
 
-# miscellaneous global values
+# application state; miscellaneous global values
 array set ay {
  pady 3
  failsafe 0
@@ -1112,6 +1112,16 @@ if { $ayprefs(SavePrefsGeom) > 1 } {
     set ay(prefssection) $ayprefs(PrefsSection)
 }
 
+# convert ayamrc from older Ayam versions
+if { $ayprefs(Version) == 0 } {
+    # ayamrc contains no version information => pre Ayam1.7 ayamrc
+    # (or no ayamrc read) => add proper version information
+    set ayprefs(Version) $ay(ay_version)
+    # overwrite old toolbox content, so that users see all the new
+    # icons in any case
+    set ayprefs(toolBoxList) {trafo trafo2 solids misco nurbs toolobjs nptools1 points nctools1 nctools2 camera misc}
+}
+
 # update_prompt - print a first prompt after configuration change
 proc update_prompt {n1 n2 op} {
     .fl.con delete end-1lines end
@@ -1198,7 +1208,6 @@ puts stdout "Processing remaining arguments..."
 set i 0
 set j 0
 grab .fu
-
 while { $i < $argc } {
     set arg [lindex $argv $i]
     # .AY is delivered by Win98 file associations...
@@ -1233,12 +1242,24 @@ while { $i < $argc } {
 	    set j 1
 	} else {
 	    set ifilename $newfilename
+	    set ay_error ""
 	    insertScene $ifilename
+	    if { $ay_error < 2 } {
+		ayError 4 "insertScene" "Done inserting scene from:"
+		ayError 4 "insertScene" "$ifilename"
+	    } else {
+		ayError 2 "Ayam" "There were errors while loading:"
+		ayError 2 "Ayam" "$ifilename"
+	    }
+
 	}
+        #if
 	uS; rV
     }
+    #if
  incr i
 }
+#while
 grab release .fu
 
 puts stdout "The tip of the day is:"
