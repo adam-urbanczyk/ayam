@@ -648,9 +648,8 @@ view attribute <tt/BGImage/.
 <item><tt/Use Grid/, if this is enabled the grid will be used to
 constrain modeling actions to grid coordinates.
 <item><tt/Set Gridsize/, may be used to change the size of the grid
-associated with this view.
-<item><tt/Local Grid/, if this is enabled the grid will be
-interpreted as if defined in the local coordinate space.
+associated with this view. Another way to change the grid size is
+to use the grid menu on the rightmost side, see below.
 <item><tt/Half Size/, change width and height to the half of the
 current values.
 <item><tt/Double Size/, change width and height to the double of the
@@ -664,8 +663,13 @@ for the view, and adapts the zoom accordingly. This is just
 working for perspective views, of course.
 <item><tt/Zoom to Object/, adapt the camera settings, so that
 the currently selected objects are centered in the view.
-<item><tt/Align to Parent/, align the view to the coordinate
-system of the parent object of the current level.
+<item><tt/Align to Object/, align the view to the coordinate
+system of the currently selected object or to the parent
+object of the current level if no object is currently selected.
+<item><tt/Edit Local/, if this is enabled modelling will take place
+in local object space and not in world space. The grid will be
+changed accordingly (interpreted as if defined in the local coordinate space).
+See also section <ref id="editlocal" name="Editing in Local Space">.
 </itemize>
 
 The <tt/"Grid"/ menu may be used to change the current grid size:<p>
@@ -1159,18 +1163,6 @@ to time, as Ayam will always append to <tt/"LogFile"/.
 <item><tt/"LogFile"/; see above.
 </itemize>
 
-The next sub-section contains Mops Import related preferences:
-<itemize>
-<item><tt/"MIResetDM"/; if this is enabled display mode
-settings of all NURBS patches (and NURBS patch creating
-tool objects as e.g. Revolve) read from Mops scenes
-will be reset to "Global" so
-that the gobal preference setting is in use.
-<item><tt/"MIResetST"/; arranges for all sampling
-tolerance settings of NURBS curves and NURBS patches read from Mops scenes
-to be set to "0.0", so that the global preference setting
-is used.
-</itemize>
 The last sub-section contains miscellaneous user interface
 related preferences:
 <itemize>
@@ -1346,17 +1338,8 @@ points and so on.<p>
 
 You may also add a bigger number of points
 to the selection using a click and drag operation. All points
-that are drawn in the rectangular region defined by the click and drag
-will be added to the selection. The click and drag selection
-may take some time, depending on the size of the region! Note, that
-currently only points that are visible will be added to the list.
-
-Tip:<p>
-You can select points that are not visible (because hidden behind
-other points) easily by holding down the <tt>Alt</tt> key and rotating
-the view a bit while the select
-point action is active. Do not forget to switch back
-to a Front/Side/Top view for the modeling action afterwards.<p>
+that are inside the rectangular region defined by the click and drag
+will be added to the selection.
 
 <sect1>Editing Points<label id="editac">
 <p>
@@ -1383,7 +1366,6 @@ selected point directly by entering numbers.
 Note, that the w coordinate setting will be ignored if the
 picked point does not have weight information (is not homogenous).
 </itemize>
-
 
 <sect1>Inserting or Deleting Points<label id="insdelac">
 <p>
@@ -1429,6 +1411,27 @@ The selected curve will be changed by this action, and
 a new curve will be created. It is currently not possible to undo
 the changes of a split!<p>
 </itemize>
+
+<sect1>Editing in Local Space<label id="editlocal">
+<p>
+Normally, all editing takes place in world space and the input
+plane of all modelling actions is constrained to the world
+XY-, ZY-, or XZ-plane (depending on the type of view used).
+<p>
+However, if a view is aligned and switched to local, you can also
+edit in local object space. This means you can e.g. edit a
+generating curve of a Skin object where both objects
+are rotated and scaled arbitrarily
+and make sure that the curve remains two-dimensional, all the time.
+All you need to do is to select the curve and then press
+<tt/"Ctrl+a"/ to first align the view and then <tt/"Ctrl+l"/ to make it local.
+In practice, this means that the input plane of a local aligned view
+will match the XY-, ZY-, or XZ-plane of the local object space,
+depending on the type of the view (Front, Side, or Top).
+<p>
+Furthermore, grids will also act as if defined in local object space.
+In this case, they can also be scaled different in X-window and
+Y-window coordinates (if the local object space is deformed this way).
 
 <sect>Objects and Properties<label id="obandprp">
 <p>
@@ -1906,9 +1909,8 @@ level will be drawn.
 <item><tt/"DrawGrid"/ toggles drawing of the current grid.
 <item><tt/"UseGrid"/ toggles, whether the current grid should be
 used by the interactive modeling actions.
-<item><tt/"Local"/ makes the grid display in local coordinate units,
-so that exact editing
-in local coordinate systems is possible.
+<item><tt/"Local"/ enables editing in local object space.
+See also section <ref id="editlocal" name ="Editing in Local Space">.
 
 <item><tt/"DrawBG"/ controls whether the background image should
 be drawn.
@@ -2825,28 +2827,37 @@ in a separate archive (RIB file) on disk, and every instance will
 cause that archive file to be read. You can change that behaviour
 using the preference setting <tt/"ResInstances"/.
 If <tt/"ResInstances"/ is enabled, all instances will be resolved
-before being exported to RIB.
+(temporarily) before being exported to RIB.
 
 <sect1>Clone Object<label id="cloneobj">
 <p>
-The Clone object allows you to easily control a number
+The Clone object allows you to easily create and control a number
 of instances of a single object.
 The instances will be created internally and transformed,
 each by a certain amount.
-
-It is currently not possible to create clones from an instance object.
-However, there are no other restrictions on the type of object to
-be cloned.
-
+The original object is the first child object of the Clone object.
+If a second object is present as child of the Clone object
+it is treated as trajectory curve, similar to the Sweep object
+(see section <ref id="sweepobj" name="Sweep Object">).
+<p>
+It is not possible to create clones from objects that may not
+be master objects of instance objects (e.g. instances, light objects, or
+material objects).
+<p>
+The following attributes further control the
+clone process:
 <sect2>CloneAttr<label id="cloneattr">
 <p>
 <itemize>
 <item><tt/"NumClones"/ the number of clones to create.
+<item><tt/"Rotate"/ is only used, if a trajectory curve is present.
+If it is enabled all clones will be aligned according to the normal of
+the trajectory curve.
 <item><tt/"Translate_X"/, <tt/"Translate_Y"/, <tt/"Translate_Z"/,
 <tt/"Rotate_X"/, <tt/"Rotate_Y"/, <tt/"Rotate_Z"/,
 <tt/"Scale_X"/, <tt/"Scale_Y"/, <tt/"Scale_Z"/,
 those attributes control the transformation of the
-instances.
+instances. They are not used, if a trajectory curve is present.
 </itemize>
 
 <sect1>Revolve Object<label id="revolveobj">
@@ -2857,19 +2868,19 @@ instances.
 <caption>Revolve Object (Curve, Surface of Revolution)</caption>
 </figure>
 <p>
-The revolve object forms a surface of revolution from
-a NURBS curve.<p>
-
-The object has the generating NURBS curve as child object
-and watches its changes and adapts to it automagically.<p>
-
+The Revolve object forms a surface of revolution from
+a NURBS curve.
+<p>
+The Revolve object has the generating NURBS curve as child object
+and watches its changes and adapts to it automagically.
+<p>
 The axis of revolution is always the Y axis of the coordinate
 system that is defined by the next higher
 level in the object hierarchy (the Y axis of the revolve
 object itself). The generating curve should lie in the XY plane of this
 coordinate system. If not, it will be squashed down
-to this plane!<p>
-
+to this plane!
+<p>
 The following simple experiment should make the last
 statements more clear, during all steps watch the movements
 of the revolution:<p>
@@ -3015,21 +3026,31 @@ control points) if cap generation fails due to self intersecting bevels.
 <p>
 The sweep object forms a surface that results from
 moving a NURBS curve (cross section) along a second NURBS curve
-(trajectory).<p>
-
-The object has the generating NURBS curves as child objects
+(trajectory). The cross section may be scaled while sweeping
+using a third curve, the scaling function.
+<p>
+The sweep object has the generating NURBS curves as child objects
 and watches their movements and adapts to them automagically.
-The first curve is the cross section and
-the second is the trajectory.<p>
-
+The first curve is the cross section,
+the second is the trajectory, and the third curve represents
+the scaling function.
+<p>
 Note, that the <tt/"Translate"/ attributes of the cross section curve
 will be fully ignored. All other transformation attributes
 (of cross section and trajectory!) will be used to determine
-place, orientation and size of the sweep object!<p>
-
-The cross section should be defined in the YZ-plane.
-A short example for the creation of a sweep:
-
+place, orientation and size of the sweep object!
+<p>
+The cross section curve has to be defined in the YZ-plane. This means,
+that a simple circular curve as e.g. created with the toolbox has to
+be rotated 90 degrees around the Y-axis.
+<p>
+The scaling function is sampled for each section and the Y-component
+of the coordinates of the current curve point will be used as
+scale factor, that is applied to the cross section in Y- and Z-direction.
+This implies, that a scaling function that does nothing should e.g. be
+linear from (0,1,0) to (1,1,0).
+<p>
+Here is a short example for the creation of a sweep:
 <itemize>
 <item>Create a circular BSpline using the toolbox. (This will be our
 cross section.)
@@ -3050,7 +3071,7 @@ the view has the input focus.)
 Section <ref id="scexsweep" name="Easy Sweep"> has an example
 script that automates creation and parameterization of
 a suitable cross section curve.
-
+<p>
 You may convert the current sweep and the caps, if there are any,
 to ordinary NURBS patches using the main menu entry
 <tt>"Tools/Convert"</tt>.
@@ -3104,7 +3125,7 @@ A skinned patch from two curves of length 4 but one with
 order 4 and the other with order 2 will result in a patch with
 a width of 2 and a height of 10!
 
-The skin custom object has the generating NURBS curves as child objects
+The skin object has the generating NURBS curves as child objects
 and watches their changes and adapts to them automagically.
 
 You may convert the current skin and the caps, if there are any,
@@ -3158,17 +3179,17 @@ a planar NURBS curve. If multiple curves
 are present as child objects, the curves
 following the first curve define holes in
 the cap surface (see also section
-<ref id="handb" name="Using Holes and Bevels">).<p>
+<ref id="handb" name="Using Holes and Bevels">).
+<p>
 Note, that the curves have to be planar
 and defined in the XY plane. Furthermore,
 cap generation may fail, if the control points of the
 first curve have weights and the curve leaves the convex
-hull of the control polygon. Be careful when using weights!<p>
-
+hull of the control polygon. Be careful when using weights!
+<p>
 You may convert the current cap
-to an ordinary NURBS patch using the main menu entry
+to an ordinary NURBS patch object using the main menu entry
 <tt>"Tools/Convert"</tt>.
-
 
 <sect2>CapAttr<label id="capp">
 <p>
@@ -3201,7 +3222,7 @@ to determine the knot vector of the interpolating curve.
 This object makes use of the provide mechanism. It marks itself
 as providing a NURBCurve (it creates and uses NURBS curves
 internally anyway) and all other objects that work with
-the provide mechanism (revolve, sweep, extrude, skin) are
+the provide mechanism (e.g. revolve, sweep, extrude, and skin) are
 able to work with an ICurve object instead of an object
 of type NURBCurve.
 
@@ -3246,7 +3267,8 @@ to a single NURBS curve. Since the ConcatNC object also
 provides a NURBS curve, it is possible to use it as
 child object for another ConcatNC object (with possibly
 different parameters) or as a parameter object for a tool object
-that works with NURBS curves such as Revolve or Extrude.<p>
+that works with NURBS curves such as Revolve or Extrude.
+<p>
 How does the concatenation work?
 First, all curves will be clamped (see section
 <ref id="clat" name="clamp tool"> for more information on clamping).
@@ -3260,10 +3282,10 @@ This means, the shape of the concatenated curve will differ from the
 child curves if
 any of the child curves has a custom knot vector with non
 equidistant knots.
-
+<p>
 You may convert the current ConcatNC object to an ordinary NURBS curve
-using the main menu entry <tt>"Tools/Convert"</tt>.
-
+object using the main menu entry <tt>"Tools/Convert"</tt>.
+<p>
 The following attributes further control the
 concatenation process:
 <sect2>ConcatNCAttr<label id="concatncp">
@@ -4609,8 +4631,8 @@ Make sure, that the current scene in Ayam does not contain material
 objects with those names, otherwise Mops import will not be able to
 create material objects for the scene to import.
 
-The preferences entries <tt>"Misc/MIResetDM"</tt> and
-<tt>"Misc/MIResetDM"</tt> control, whether GLU display mode
+The import options <tt>"ResetDM"</tt> and
+<tt>"ResetDM"</tt> control, whether GLU display mode
 and tolerance settings (see sections
 <ref id="ncattr" name="NCurveAttrib">, and
 <ref id="npattr" name="NPatchAttrib"> for more information about
@@ -5158,6 +5180,8 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <label id="indexe">E
 <itemize>
 <item>Edit: <ref id="editac" name="edit points">
+<item>Edit Local: <ref id="vmconf" name="view menu entry">,
+<ref id="editlocal" name ="Editing in Local Space">
 <item>EditSnaps: <ref id="prefmodel" name="preference setting">
 <item>elevateNC: <ref id="gncp" name="scripting interface command">,
 <ref id="elevt" name="elevate tool">
@@ -5282,8 +5306,8 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>ListTypes: <ref id="prefgui" name="preference setting">
 <item>Load Custom: <ref id="mmfile" name="main menu entry">
 <item>LoadEnv: <ref id="prefgui" name="preference setting">
-<item>Local: <ref id="vat" name="view attribute">
-<item>Local Grid: <ref id="vmconf" name="view menu entry">
+<item>Local: <ref id="vat" name="view attribute">,
+<ref id="editlocal" name ="Editing in Local Space">
 <item>Locale: <ref id="prefgui" name="preference setting">
 <item>LogFile: <ref id="prefgui" name="preference setting">
 <item>Logging: <ref id="prefgui" name="preference setting">
@@ -5306,7 +5330,6 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <ref id="mfioplugin" name="3DMF import export (MFIO) plugin">
 <item>MinorRad: <ref id="top" name="torus attribute">
 <item>MinSamples, MaxSamples: <ref id="rio" name="RenderMan interface option">
-<item>MIResetDM, MIResetST: <ref id="prefmisc" name="preference setting">
 <item>Mode: <ref id="icp" name="ICurve attribute">
 <item>Mops Import: <ref id="impmops" name="Import of Mops Scenes">
 <item>Move: <ref id="vwsc" name="view action">,
@@ -5408,6 +5431,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Replace: <ref id="mmfile" name="main menu entry">
 <item>replaceScene: <ref id="scio" name="scripting interface command">
 <item>Reset: <ref id="propgui" name="reset property GUI">
+<item>ResetDM, ResetST: <ref id="impmops" name="Mops import option">
 <item>ResInstances: <ref id="prefrib" name="preference setting">
 <item>Resolve all Instances: <ref id="mmspecial" name="main menu entry">
 <item>Revert: <ref id="revertt" name="Revert tool">,
