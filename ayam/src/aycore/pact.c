@@ -14,6 +14,9 @@
 
 /* pact.c - single point related interactive actions */
 
+/* global variables for this module: */
+static ay_object *ay_pact_pedclearobject = NULL;
+
 /* prototypes of functions local to this module: */
 int ay_pact_insertnc(ay_nurbcurve_object *curve,
 		     double objX, double objY, double objZ);
@@ -455,6 +458,7 @@ ay_pact_pedclear(ay_object *o)
  int argc = 3;
  char *argv[3], a2[] = "-clear";
 
+  ay_pact_pedclearobject = o;
   argv[2] = a2;
   ay_pact_pedtcb(NULL, argc, argv);
 
@@ -484,7 +488,6 @@ ay_pact_pedtcb(struct Togl *togl, int argc, char *argv[])
  static int pe_coordslen = 0, pe_coordshom = AY_FALSE;
  static ay_object *pe_object = NULL;
 
-
   if(argc < 1)
     {
       return TCL_OK;
@@ -493,14 +496,16 @@ ay_pact_pedtcb(struct Togl *togl, int argc, char *argv[])
   if(!strcmp(argv[2], "-clear"))
     {
       /* clear cached pointers to points */
-      if(pe_coords)
-	free(pe_coords);
-      pe_coords = NULL;
+      if(pe_object == ay_pact_pedclearobject)
+	{
+	  if(pe_coords)
+	    free(pe_coords);
+	  pe_coords = NULL;
 
-      pe_coordslen = 0;
+	  pe_coordslen = 0;
 
-      pe_object = NULL;
-
+	  pe_object = NULL;
+	} /* if */
       return TCL_OK;
     } /* if */
 
