@@ -3820,6 +3820,14 @@ The first curve is the cross section,
 the second is the trajectory, and the third curve represents
 the scaling function.
 <p>
+The object hierarchy of a Sweep object, thus, may look like this:
+<code>
++-Sweep
+ | Cross_Section(NCurve)
+ | Path(NCurve)
+ \ [Scaling_Function(NCurve)]
+</code>
+<p>
 Note that the <tt/"Translate"/ attributes of the cross section curve
 will be fully ignored. All other transformation attributes
 (of cross section and trajectory!) will be used to determine
@@ -3834,14 +3842,6 @@ of the coordinates of the current curve point will be used as
 scale factor, that is applied to the cross section in Y- and Z-direction.
 This implies, that a scaling function that does nothing should e.g. be
 linear from (0,1,0) to (1,1,0).
-<p>
-The object hierarchy of a Sweep object may look like this:
-<code>
-+-Sweep
- | Cross_Section(NCurve)
- | Path(NCurve)
- \ [Scaling_Function(NCurve)]
-</code>
 <p>
 <figure loc="ht">
 <eps file="pics/ssweep.ps" height="5cm">
@@ -4225,7 +4225,7 @@ with the shape of the curve near the first or last interpolated point.
 This parameter has no effect on open curves when the mode is Global4D.
 
 <item>See section <ref id="ncattr" name="NCurveAttrib"> for a description
-of the last attribute: <tt/"Tolerance"/ .
+of the last attribute: <tt/"Tolerance"/.
 </itemize>
 
 <sect1>ConcatNC Object<label id="concatncobj">
@@ -4294,6 +4294,29 @@ If <tt/"Knot-Type"/ is <tt/"Custom"/, the knot vector is composed from
 the knot vectors of the original curves, and thus, their
 shape may be preserved completely.
 </itemize>
+
+<sect1>ExtrNC Object<label id="extrncobj">
+<p>
+The ExtrNC object extracts a NURBS curve from a NURB patch object,
+for use as parameter object for other tool objects, like e.g.
+Revolve.
+
+The extraction process is controlled by the following attributes:
+<sect2>ExtrNCAttr Property<label id="extrncp">
+<p>
+<itemize>
+<item><tt/"Side"/ controls, which curve should be extracted.
+Available values are <tt/"U0"/, <tt/"Un"/: extract boundary curve along
+width; <tt/"V0"/, <tt/"Vn"/: extract boundary curve along
+height;  <tt/"U"/, <tt/"V"/ extract curve along width and height
+respectively at specified parametric value (see below).
+<item><tt/"Parameter"/ controls the parametric value in u or v
+direction in the parameter space of the NURBS patch object where the
+curve should be extracted.
+</itemize>
+<p>
+See section <ref id="npattr" name="NPatchAttrib"> for a description
+of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 
 <sect1>RiInc Object<label id="riincobj">
 <p>
@@ -6648,6 +6671,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Export RIB: <ref id="mmfile" name="main menu entry">
 <item>Expression: <ref id="mcattr" name="MetaComp attribute">
 <item>Exterior: <ref id="matshader" name="shader">
+<item>ExtrNC:<ref id="extrncobj" name="ExtrNC object">
 <item>Extrude: <ref id="extrudeobj" name="object">,
 <ref id="extt" name="Extrude tool">
 </itemize>
@@ -6853,6 +6877,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <itemize>
 <item>P1, P2: <ref id="hyp" name="hyperboloid attribute">
 <item>Paraboloid: <ref id="paraboloidobj" name="object">
+<item>Parameter: <ref id="extrncp" name="ExtrNC attribute">
 <item>pasOb: <ref id="sciclip" name="scripting interface command">
 <item>Paste: <ref id="mmedit" name="main menu entry">
 <item>Paste Property: <ref id="mmedit" name="main menu entry">
@@ -7006,7 +7031,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Show All: <ref id="mmtools" name="main menu entry">
 <item>Show Shortcuts: <ref id="mmhelp" name="main menu entry">
 <item>Show Tooltips: <ref id="mmhelp" name="main menu entry">
-<item>Side: <ref id="vmtype" name="view menu entry">
+<item>Side: <ref id="vmtype" name="view menu entry">,
+<ref id="extrncp" name="ExtrNC attribute">
 <item>Skin: <ref id="skinobj" name="object">,
 <ref id="skit" name="Skin tool">
 <item>SMethod: <ref id="prefmisc" name="preference setting">
