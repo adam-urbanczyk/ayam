@@ -386,14 +386,16 @@ proc prefs_save { } {
 
     # hotkeys for main window
     puts $newfile "# main window:"
-    foreach key [array names aymainshortcuts ] {
+    set keys [lsort [array names aymainshortcuts ]]
+    foreach key $keys {
 	eval [subst "set val {{\$aymainshortcuts($key)}}"]
 	puts $newfile "set aymainshortcuts($key) $val"
     }
 
     # hotkeys for view windows
     puts $newfile "# view windows:"
-    foreach key [array names ayviewshortcuts ] {
+    set keys [lsort [array names ayviewshortcuts ]]
+    foreach key $keys {
 	eval [subst "set val {{\$ayviewshortcuts($key)}}"]
 	puts $newfile "set ayviewshortcuts($key) $val"
     }
