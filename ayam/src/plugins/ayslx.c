@@ -129,7 +129,13 @@ ayslx_scanslxtcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  SLX_SetPath(Tcl_GetVar(ay_interp, vname, TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG));
+#ifdef WIN32
+  SLX_SetPath(Tcl_GetVar(ay_plugin_interp, vname,
+			 TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG));
+#else
+  SLX_SetPath(Tcl_GetVar(ay_interp, vname,
+			 TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG));
+#endif
 
   if((SLX_SetShader(argv[1])) == -1)
     {

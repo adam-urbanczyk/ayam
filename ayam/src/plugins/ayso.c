@@ -124,7 +124,13 @@ ayso_scansotcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  So_SetPath(Tcl_GetVar(ay_interp, vname, TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG));
+#ifdef WIN32
+  So_SetPath(Tcl_GetVar(ay_plugin_interp, vname,
+			TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG));
+#else
+  So_SetPath(Tcl_GetVar(ay_interp, vname,
+			TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG));
+#endif
 
   if((So_SetShader(argv[1])) == -1)
     {
