@@ -239,7 +239,7 @@ focus $f.bok
 tkwait window $w
 
 # now we have the new shader
-global newshaderindex
+global newshaderindex AYUSESLCARGS AYUSESLXARGS
 if {$newshaderindex == ""} {return;}
 
 set shadername [lindex $shaders $newshaderindex]
@@ -247,7 +247,15 @@ set shadername [lindex $shaders $newshaderindex]
 set shaderarguments ""
 set ay_error 0
 
-shaderScanSLC $shadername shaderarguments
+if { $AYUSESLCARGS == 1 } {
+    shaderScanSLC $shadername shaderarguments
+}
+
+if { $AYUSESLXARGS == 1 } {
+    shaderScanSLX $shadername shaderarguments
+}
+
+#shaderScanSLC $shadername shaderarguments
 
 if { $ay_error > 1 } {
     ayError 2 shader_setNew "Oops, could not scan shader!"
