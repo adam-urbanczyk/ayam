@@ -386,48 +386,80 @@ array set editPointDarray {
     z2 0.0
     w 0.0
     w2 0.0
+
+    lx 0.0
+    ly 0.0
+    lz 0.0
+    lw 0.0
+
+    wx 0.0
+    wy 0.0
+    wz 0.0
+    ww 0.0
+
     changed 0
     window ""
     valid 0
+    local 1
 }
+
+# updEditPointDarray:
+# helper for editPointDp
+proc updEditPointDarray { w } {
+    upvar #0 editPointDarray array
+
+    if { $array(local) == 1 } {
+	set array(x) $array(lx)
+	set array(y) $array(ly)
+	set array(z) $array(lz)
+	set array(w) $array(lw)
+    } else {
+	set array(x) $array(wx)
+	set array(y) $array(wy)
+	set array(z) $array(wz)
+	set array(w) $array(ww)
+    }
+
+    set array(changed) 0
+    update
+    set f1 $w.f1
+    set f $f1.fx
+    $f.e delete @0 end
+    $f.e insert @0 $array(x)
+    set f $f1.fy
+    $f.e delete @0 end
+    $f.e insert @0 $array(y)
+    set f $f1.fz
+    $f.e delete @0 end
+    $f.e insert @0 $array(z)
+    set f $f1.fw
+    $f.e delete @0 end
+    $f.e insert @0 $array(w)
+
+    update
+    set array(x2) [$w.f1.fx.e get]
+    set array(y2) [$w.f1.fy.e get]
+    set array(z2) [$w.f1.fz.e get]
+    set array(w2) [$w.f1.fw.e get]
+
+ return;
+}
+# updEditPointDarray
+
 
 #editPointDp:
 # helper for actionDEditP
 # directly edit coordinates of points
 proc editPointDp { } {
     upvar #0 editPointDarray array
-    global ay
+    global ay tcl_platform
 
     set w .editPointDw
 
     set array(changed) 0
-    set array(x2) $array(x)
-    set array(y2) $array(y)
-    set array(z2) $array(z)
-    set array(w2) $array(w)
 
     if { [winfo exists $w] } {
-	update
-	set f1 $w.f1
-	set f $f1.fx
-	$f.e delete @0 end
-	$f.e insert @0 $array(x)
-	set f $f1.fy
-	$f.e delete @0 end
-	$f.e insert @0 $array(y)
-	set f $f1.fz
-	$f.e delete @0 end
-	$f.e insert @0 $array(z)
-	set f $f1.fw
-	$f.e delete @0 end
-	$f.e insert @0 $array(w)
-
-	update
-	set array(x2) [.editPointDw.f1.fx.e get]
-	set array(y2) [.editPointDw.f1.fy.e get]
-	set array(z2) [.editPointDw.f1.fz.e get]
-	set array(w2) [.editPointDw.f1.fw.e get]
-
+	updEditPointDarray $w
 	return;
     }
 
@@ -440,12 +472,33 @@ proc editPointDp { } {
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
 
+    set f [frame $f.fm]
+    menubutton $f.mb -text "Local" -menu $f.mb.m -relief raised\
+	    -padx 0 -pady 1
+    if { $tcl_platform(platform) == "windows" } {
+	$f.mb configure -pady 1
+    }
+    set m [menu $f.mb.m -tearoff 0]
+    $m add command -label "Local" -command {
+	global editPointDarray
+	set editPointDarray(local) 1
+	.editPointDw.f1.fm.mb configure -text "Local"
+	updEditPointDarray .editPointDw
+    }
+    $m add command -label "World" -command {
+	global editPointDarray
+	set editPointDarray(local) 0
+	.editPointDw.f1.fm.mb configure -text "World"
+	updEditPointDarray .editPointDw
+    }
+    pack $f.mb -in $f -side left -fill x -expand yes -pady 0
+    pack $f -in $w.f1 -side top -fill x
+
+    set f $w.f1
     set f [frame $f.fx]
 
     label $f.l -text "X" -width 4
     entry $f.e -width 8
-    $f.e insert @0 $array(x)
-
     pack $f.l -in $f -padx 2 -pady 2 -side left -fill x -expand no
     pack $f.e -in $f -padx 2 -pady 2 -side left -fill x -expand yes
     pack $f -in $w.f1 -side top  -fill x
@@ -456,8 +509,6 @@ proc editPointDp { } {
 
     label $f.l -text "Y" -width 4
     entry $f.e -width 8
-    $f.e insert @0 $array(y)
-
     pack $f.l -in $f -padx 2 -pady 2 -side left -fill x -expand no
     pack $f.e -in $f -padx 2 -pady 2 -side left -fill x -expand yes
     pack $f -in $w.f1 -side top  -fill x
@@ -468,8 +519,6 @@ proc editPointDp { } {
 
     label $f.l -text "Z" -width 4
     entry $f.e -width 8
-    $f.e insert @0 $array(z)
-
     pack $f.l -in $f -padx 2 -pady 2 -side left -fill x -expand no
     pack $f.e -in $f -padx 2 -pady 2 -side left -fill x -expand yes
     pack $f -in $w.f1 -side top  -fill x
@@ -479,17 +528,12 @@ proc editPointDp { } {
 
     label $f.l -text "W" -width 4
     entry $f.e -width 8
-    $f.e insert @0 $array(w)
-
     pack $f.l -in $f -padx 2 -pady 2 -side left -fill x -expand no
     pack $f.e -in $f -padx 2 -pady 2 -side left -fill x -expand yes
     pack $f -in $w.f1 -side top  -fill x
 
     update
-    set array(x2) [.editPointDw.f1.fx.e get]
-    set array(y2) [.editPointDw.f1.fy.e get]
-    set array(z2) [.editPointDw.f1.fz.e get]
-    set array(w2) [.editPointDw.f1.fw.e get]
+    updEditPointDarray $w
 
     set f [frame $w.f2]
     button $f.bok -text "Apply" -width 5 -pady $ay(pady) -command { 
@@ -521,8 +565,11 @@ proc editPointDp { } {
     pack $f -in $w -side bottom -fill x
 
     winCenter $w
-    #grab $w
+
     focus $f.bok
+
+    # Esc-Key == Cancel button
+    bind $w <Escape> "$w.f2.bca invoke"
 
  return;
 }
