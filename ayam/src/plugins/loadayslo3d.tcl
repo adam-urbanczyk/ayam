@@ -1,7 +1,7 @@
 set oldcd [pwd]
 cd [file dirname [info script]]
 global ay
-set pluginname aysdr.$ay(soext)
+set pluginname ayslo3d.$ay(soext)
 catch {io_lc $pluginname} result
 if { $result != "" } {
     puts $result
