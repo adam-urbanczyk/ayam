@@ -573,7 +573,7 @@ ay_text_notifycb(ay_object *o)
     {
       /*0x3071*/
       tti_status = ay_tti_getcurves(text->fontname, *uc, &letter);
-      printf("%d\n",*uc);
+
       if(tti_status)
 	{
 	  ay_error(AY_ERROR, fname, "could not get curves from font:");
@@ -593,7 +593,7 @@ ay_text_notifycb(ay_object *o)
 	    } /* switch */
 	  return AY_ERROR;
 	} /* if */
-      printf("no:%d\n",letter.numoutlines);
+
       if(letter.numoutlines > 0)
 	{
 	  nexthole = &holes;
