@@ -258,6 +258,11 @@ double ay_nct_getcurvature(ay_nurbcurve_object *c, double t);
 int ay_nct_curvplottcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
 
+int ay_nct_intersect(ay_nurbcurve_object *cu, ay_nurbcurve_object *cv,
+		     double *intersection);
+
+int ay_nct_intersectca(ay_object *cu, ay_object *cv, double *intersections);
+
 int ay_nct_makecompatible(ay_object *cu);
 
 int ay_nct_shiftcbs(ay_nurbcurve_object *curve);
@@ -340,6 +345,8 @@ int ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
 		   int has_end_cap, ay_object **end_cap);
 
 int ay_npt_interpolateu(ay_nurbpatch_object *patch, int order);
+
+int ay_npt_interpolatev(ay_nurbpatch_object *patch, int order);
 
 int ay_npt_skinu(ay_object *curves, int order, int knot_type,
 		 int interpolate, ay_nurbpatch_object **skin);

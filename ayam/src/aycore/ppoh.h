@@ -28,6 +28,8 @@ int ay_ppoh_prtrafos(ay_object *o, FILE *fileptr, char *prefix);
 
 int ay_ppoh_prflags(ay_object *o, FILE *fileptr, char *prefix);
 
+int ay_ppoh_prtags(ay_object *o, FILE *fileptr, char *prefix);
+
 int ay_ppoh_print(ay_object *o, FILE *fileptr, int indent, ay_printcb **cbv);
 
 int ay_ppoh_printtcmd(ClientData clientData, Tcl_Interp *interp,

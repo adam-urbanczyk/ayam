@@ -61,6 +61,18 @@ int ay_mopsi_instance(FILE *fileptr, ay_object *o);
 
 int ay_mopsi_light(FILE *fileptr, ay_object *o);
 
+int ay_mopsi_custom(FILE *fileptr, ay_object *o);
+
+int ay_mopsi_revolve(FILE *fileptr, ay_object *o);
+
+int ay_mopsi_extrude(FILE *fileptr, ay_object *o);
+
+int ay_mopsi_sweep(FILE *fileptr, ay_object *o);
+
+int ay_mopsi_skin(FILE *fileptr, ay_object *o);
+
+int ay_mopsi_icurve(FILE *fileptr, ay_object *o);
+
 int ay_mopsi_object(FILE *fileptr);
 
 int ay_mopsi_scene(Tcl_Interp *interp, char *filename, int insert);
@@ -1723,6 +1735,7 @@ ay_mopsi_skin(FILE *fileptr, ay_object *o)
 
  return ay_status;
 }
+
 
 int
 ay_mopsi_icurve(FILE *fileptr, ay_object *o)

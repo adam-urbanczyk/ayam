@@ -19,10 +19,36 @@
 
 #include "ayam.h"
 
+/* variables local to this module */
+
 int comp_true, comp_false;
 
 int ay_ai_ignoretags;
 int ay_ai_ignoremat;
+
+/* prototypes of functions local to this module */
+
+int ay_ai_instanceabletype(unsigned int type);
+
+int ay_ai_compchildren(ay_object *o1, ay_object *o2);
+
+int ay_ai_instanceobject(ay_object *inst, ay_object *ref);
+
+int ay_ai_createinstances(ay_object *ref, ay_object *o);
+
+int ay_ai_makeinstances(ay_object *o, ay_object *instance_root);
+
+int ay_ai_resolveinstances(ay_object *o);
+
+int ay_ai_resolveinstancestcmd(ClientData clientData, Tcl_Interp *interp,
+			       int argc, char *argv[]);
+
+int ay_ai_countobjects(ay_object *o);
+
+int ay_ai_makeinstancestcmd(ClientData clientData, Tcl_Interp *interp,
+			    int argc, char *argv[]);
+
+/* functions: */
 
 /* ay_ai_instanceabletype:
  *  check for type if it is instanceable, return AY_TRUE if yes
@@ -84,7 +110,8 @@ ay_ai_compchildren(ay_object *o1, ay_object *o2)
 /* ay_ai_instanceobject:
  *  free all object specific memory and create instance
  */
-int ay_ai_instanceobject(ay_object *inst, ay_object *ref)
+int
+ay_ai_instanceobject(ay_object *inst, ay_object *ref)
 {
  int ay_status = AY_OK;
  ay_object *sub = NULL, *sub2 = NULL;
@@ -203,7 +230,8 @@ ay_ai_createinstances(ay_object *ref, ay_object *o)
 /* ay_ai_makeinstances:
  * find identical objects and create instances
  */
-int ay_ai_makeinstances(ay_object *o, ay_object *instance_root)
+int
+ay_ai_makeinstances(ay_object *o, ay_object *instance_root)
 {
  int ret = 0;
 

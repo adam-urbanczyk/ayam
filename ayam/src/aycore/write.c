@@ -90,7 +90,7 @@ ay_write_attributes(FILE *fileptr, ay_object *o)
 /* ay_write_tags:
  *
  */
-int 
+int
 ay_write_tags(FILE *fileptr, ay_object *o)
 {
  int ay_status = AY_OK;
