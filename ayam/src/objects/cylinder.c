@@ -523,7 +523,11 @@ ay_cylinder_wribcb(char *file, ay_object *o)
   {
     if(fabs(cylinder->thetamax) == 180.0)
       {
-	RiSolidBegin(RI_PRIMITIVE);
+	if(!ay_current_primlevel)
+	  {
+	    RiSolidBegin(RI_PRIMITIVE);
+	  }
+
 	RiCylinder((RtFloat)cylinder->radius,
 		   (RtFloat)cylinder->zmin,
 		   (RtFloat)cylinder->zmax,
@@ -557,11 +561,18 @@ ay_cylinder_wribcb(char *file, ay_object *o)
 	RiDisk((RtFloat)cylinder->zmax, (RtFloat)cylinder->radius,
 	       (RtFloat)cylinder->thetamax, RI_NULL);
 
-	RiSolidEnd();
+	if(!ay_current_primlevel)
+	  {
+	    RiSolidEnd();
+	  }
       }
     else if(fabs(cylinder->thetamax) == 360.0)
       {
-	RiSolidBegin(RI_PRIMITIVE);
+	if(!ay_current_primlevel)
+	  {
+	    RiSolidBegin(RI_PRIMITIVE);
+	  }
+
 	RiCylinder((RtFloat)cylinder->radius,
 		   (RtFloat)cylinder->zmin,
 		   (RtFloat)cylinder->zmax,
@@ -577,11 +588,18 @@ ay_cylinder_wribcb(char *file, ay_object *o)
 	RiDisk((RtFloat)cylinder->zmax, (RtFloat)cylinder->radius,
 	       (RtFloat)cylinder->thetamax, RI_NULL);
 
-	RiSolidEnd();
+	if(!ay_current_primlevel)
+	  {
+	    RiSolidEnd();
+	  }
       }
     else
       {
-	RiSolidBegin(RI_PRIMITIVE);
+	if(!ay_current_primlevel)
+	  {
+	    RiSolidBegin(RI_PRIMITIVE);
+	  }
+
 	RiCylinder((RtFloat)cylinder->radius,
 		   (RtFloat)cylinder->zmin,
 		   (RtFloat)cylinder->zmax,
@@ -625,9 +643,12 @@ ay_cylinder_wribcb(char *file, ay_object *o)
 	RiDisk((RtFloat)cylinder->zmax, (RtFloat)cylinder->radius,
 	       (RtFloat)cylinder->thetamax, RI_NULL);
 
-	RiSolidEnd();
-      }
-  }
+	if(!ay_current_primlevel)
+	  {
+	    RiSolidEnd();
+	  }
+      } /* if */
+  } /* if */
 
  return AY_OK;
 } /* ay_cylinder_wribcb */
