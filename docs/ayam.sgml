@@ -49,7 +49,8 @@ Here is a short summary:
 <item>Support for NURBS curves, interpolating curves, (trimmed)
 NURBS surfaces, bilinear and bicubic patches and patch meshes,
 Boxes, Quadrics (Sphere, Disk,
-Cylinder, Cone, Hyperboloid, Paraboloid and Torus), and polygonal meshes.
+Cylinder, Cone, Hyperboloid, Paraboloid and Torus), polygonal meshes,
+and subdivision meshes.
 <item>All primitives may be combined with the common
 CSG-operations: Intersection, Difference, and Union.
 <item>NURBS modeling includes extrude, revolve, sweep and skin
@@ -97,13 +98,16 @@ The same goes for the right border of the objects section.<p>
 <p>
 The label <tt/"Objects"/ may be used to switch between two
 representations of the object hierarchy (using a double click).
+It is also possible to switch between both representations
+using the context menu.
 The default representation is a tree view. The second
 available representation is a simple listbox (as known from The Mops).
 The two representations have very different properties regarding
-speed and versatility. The tree is much more versatile but also slower.
+speed, use of resources, and versatility. The tree is, due to the
+drag-and-drop operations, much more versatile but also slower.
 
 Both representations manage a so called <tt/"current level"/.
-This level is the level displayed in the listbox.
+This level is the level that is displayed in the object listbox.
 In the tree view the current level is drawn in black while all
 other levels are grayed out. Selection of objects
 may only take place in the current level!
@@ -166,7 +170,8 @@ input focus.<p>
 A ".." is displayed as the first element of the current level
 if you are "inside" a level or another object.
 A double click on the ".." takes you to the parent level.
-The buttons below may be used to change the selection or to quickly
+The buttons below the listbox
+may be used to change the selection or to quickly
 jump through the hierarchy. They should be self explanatory.
 
 You will notice, that there is a first object called "Root" in the
@@ -183,7 +188,7 @@ Note, that you cannot delete or copy this object.
 <caption>Properties</caption>
 </figure>
 <p>
-The listbox on the left hand side
+The listbox right next to the object hierarchy
 displays the properties of the currently selected
 object.<p>
 If there are multiple selected objects,
@@ -194,7 +199,7 @@ If a property is selected, the associated GUI will be shown in the
 appropriate area (on the right hand side).
 All property GUIs use more or less standardized GUI elements
 that are organized in list form. The lists may be scrolled if they get
-too long.<p>
+too long to fit into the window.<p>
 If the elements of the property GUI do not fit into the screen
 space defined by the current window size, Ayam will automatically
 resize the window when you select a property. You can toggle
@@ -207,9 +212,9 @@ selected property in the properties listbox will be
 selected and shown. This is not necessarily a property
 of the same type.
 To avoid that or to clear the property
-GUI for fast browsing through the scene you may double
-click on the "Properties" label to de-select the current
-property.
+GUI for fast browsing through the scene you may either double
+click on the "Properties" label or use the context menu of the
+properties listbox to de-select the current property.
 
 What properties exactly
 will be shown, and how the GUIs look alike depends on the
@@ -219,7 +224,8 @@ This is documented in section
 
 Here are some general remarks:<p>
 The various things that may be changed using a property GUI
-will normally not be applied until the "Apply"-button is pressed!<p>
+will normally not be applied to the object until the "Apply"-button
+is pressed!<p>
 You can undo all changes to the arguments of a property that
 have been made after the last click on "Apply" with the "Reset" button.
 This does, however, not use the undo mechanism of Ayam!<p>
@@ -233,10 +239,10 @@ object, see the <tt/"Edit"/ menu. You can also
 paste properties to different types of properties
 (e.g. pasting parameters from a surface shader to the
 displacement shader) using <tt/"Paste to selected"/ in the
-<tt>"Special/Clipboard"</tt> submenu.<p>
+<tt>"Special/Clipboard"</tt> sub-menu.<p>
 Pasting a property to multiple selected objects does work too.
 This is a great way to apply e.g. a surface shader
-to a big number of objects, without going the long way
+to a big number of material objects, without going the long way
 of setting a new shader and entering parameters for it
 for every object.<p>
 Since you may not want to copy and paste whole properties all the time,
@@ -249,7 +255,8 @@ It is also possible to copy just the parameters you marked
 using <tt/"Copy Marked Prop"/.<p>
 A simple example:<p>
 Our task is to give a big number of material objects the same color,
-but they already have different opacity settings. We can accomplish
+but they already have different opacity settings. Copying the complete
+attribute property would destroy the opacity values. We can accomplish
 this by copying just the color attribute, but leave all other
 attributes as they are:<p>
 <enum>
@@ -275,19 +282,27 @@ which does not already have the same shader!
 The third part of the main window is the console.
 The console is mainly for text output (informative, warning and
 error messages). For this, the console captures the
-stderr and stdout channels of the Tcl-Interpreter Ayam is
-running in.<p>
-You can also enter commands, new Tcl procedures and so on in the
+stderr and stdout channels of the Tcl-interpreter Ayam is
+running in. You can also redirect all Tcl error messages that would
+normally cause a Tcl error requester to appear to the console using the
+preference setting <tt>"Misc/RedirectTcl"</tt>
+(see section <ref id="prefmisc" name="Miscellaneous Preferences">).<p>
+But you can also enter commands, new Tcl procedures and so on in the
 console. However, this is a feature for the advanced user that
-studied section <ref id="script" name="The Tcl Scripting Interface">.<p>
-Another important thing is that the
+studied section <ref id="script" name="The Tcl Scripting Interface">.
+You need to explicitly click into the console to give it the
+input focus and thus enable input.
+<p>
+An important thing to know is that the
 keyboard shortcuts for the various main menu entries do not
 work if the console has the input focus! Instead, other
-keyboard shortcuts are in effect!<p>
-Simply press <tt/&lt;Shift+TAB&gt;/ to move
-the focus away if you intend to use main
-menu shortcuts.<p>
-Note, that the <tt/&lt;TAB&gt;/ key does not move the
+keyboard shortcuts (related to the console) are in effect!
+How do you get out of this? Simply press <tt/&lt;Shift+TAB&gt;/ or click
+into an entry in a property GUI to move
+the focus away from the console and enable the main
+menu shortcuts again.
+<p>
+Note, that the <tt/&lt;TAB&gt;/ key alone does not move the
 focus away from the console.
 <tt/&lt;TAB&gt;/ instead completes names of files, commands
 (procedures), variables and widgets.
@@ -335,7 +350,9 @@ using the file <tt>"ayamrc"</tt>
 <label id="mmfile">
 The <tt/File/ menu deals with standard file operations:<label id="filem">
 <itemize>
-<item><tt/New/, clears the current scene (deletes all objects).
+<item><tt/New/, clears the current scene (deletes all objects) and reloads
+the working environment (if the preference setting
+<tt>"Main/NewLoadsEnv"</tt> is enabled).
 <item><tt/Replace/, clears the current scene and closes all views,
 then loads a new scene from disk. All objects from the file
 will be read.
@@ -351,12 +368,12 @@ see section <ref id="impmops" name="Import of Mops Scenes">
 for more information.
 <item><tt/Export RIB/, exports the current scene to a RIB,
 asking which camera (which view) to use.
-<item><tt/Load Custom/, loads a file containing a custom object.
+<item><tt/Load Custom/, loads a file containing a custom object or a plugin.
 Depending on the OS Ayam is running on, these are files with the
 extension so or dll.
 See section <ref id="customobj" name="Custom Objects">
 for more information about custom objects.
-<item><tt/Save Prefs/, safe the current Preference settings
+<item><tt/Save Prefs/, save the current preference settings
 to the ayamrc file after making a backup copy of this file (see section
 <ref id="ayamrc" name="Ayamrc File"> for more
 information about this file).
@@ -364,12 +381,13 @@ information about this file).
 current scene with the one in the menu entry. The menu entries
 are updated and rotated upon successful loading and saving of a scene.
 <item><tt/Exit!/, remove all temporary files, save preferences (if
-AutoSavePrefs is turned on) and quit the application.
+the preference setting <tt>"Main/AutoSavePrefs"</tt> is turned on)
+and quit the application.
 </itemize>
 
 <label id="mmedit">
 The <tt/Edit/ menu contains object and property clipboard
-operations, undo actions and lets you open the preferences editor:<label id="editm">
+operations, undo actions, and lets you open the preferences editor:
 <itemize>
 <item><tt/Copy/, copies the currently selected object(s) into the clipboard.
 <item><tt/Cut/, moves the currently selected object(s) into the clipboard.
@@ -402,7 +420,9 @@ to the currently selected object(s).<p>
 associated with the selected object and selects it for editing.
 If the selected object has no material yet, a new material
 will be created first.<p>
-
+<item><tt/Master/, searches for the master object of the
+currently selected instance object and selects it for editing,
+see section <ref id="instanceobj" name="Instance Object">.
 <item><tt/Preferences/, opens the preferences dialogue (see section
 <ref id="prefs" name="Preferences"> for more information).
 </itemize>
@@ -424,7 +444,8 @@ pop up, where you may specify the width and height of the new patch.
 just groups objects, <tt/Union/, <tt/Intersection/,
 <tt/Difference/ and <tt/Primitive/ are CSG operations.
 <item><tt/Light/, create a new light source.
-<item><tt/Custom Object/, create a new custom object.
+<item><tt/Custom Object/, create a new custom object. If this sub-menu
+is empty no custom object has been loaded yet.
 <item><tt/Instance/, create an instance of the currently selected
 object, see section <ref id="instanceobj" name="Instance Object">
 for more information regarding instances.
@@ -444,10 +465,10 @@ The <tt/Tools/ menu:
 <itemize>
 <item><tt/Create/,
 <item><tt/NURBCurve/,
-<item><tt/NURBPatch/, are submenus with various NURBS based modeling
+<item><tt/NURBPatch/, are sub-menus with various NURBS based modeling
 tools that are explained in depth in section
 <ref id="nmtool" name="NURBS Modeling Tools">.
-<item><tt/PolyMesh/: submenu for polygonal mesh related tools:
+<item><tt/PolyMesh/: sub-menu for polygonal mesh related tools:
 <itemize>
 <item><tt/Merge/: merges all currently selected PolyMesh objects into
 a single PolyMesh object, without checking for doubly used points,
@@ -460,18 +481,22 @@ the preference setting <tt>"RIB-Export/ExcludeHidden"</tt> is
 activated.
 <item><tt/Show All/ and <tt/Hide All/ set and unset the <tt/Hide/
 attribute of all objects in the scene (including the root object
-and all views!) regardles of the currently selected objects.
+and all views!) regardles of the currently selected objects (and
+without changing the current selection).
 <item><tt/Convert/, starts the convert action that has been
-registered for the type of the selected object. Instances
-are e.g. resolved. Sweep, Revolve or Extrude objects will
-be converted to simple NURBS patches.
+registered for the type of the selected object(s). The exact
+behaviour depends on the type of the selected object(s).
+Instances are e.g. resolved to normal objects in place.
+Revolve objects will
+be converted to simple NURBS patches without destroying the original
+objects.
 <item><tt/Force Notification/, force the notification callbacks of
 all selected objects (or all objects in the scene if no objects are selected)
 to be called.
 </itemize>
 
 <label id="mmcustom">
-The <tt/Custom/ menu is initially empty. Custom objects and PlugIns,
+The <tt/Custom/ menu is initially empty. Custom objects and plugins,
 may create entries here.
 
 <label id="mmspecial">
@@ -523,7 +548,9 @@ equal objects). See section <ref id="ai" name="Automatic Instancing">
 for more information regarding automatic instancing.
 <item><tt>Tags/Add RiOption</tt>, pops up a small dialog box, where you may
 select and parameterize a RiOption tag to add as tag to the Root object
-(see <ref id="riotag" name="RiOption Tag">).
+(see <ref id="riotag" name="RiOption Tag">). The root object does
+not have to be selected, and the current selection will not be changed
+by this action.
 <item><tt>Tags/Add RiAttribute</tt>, pops up a small dialog box, where you may
 select and parameterize a RiAttribute tag to add as tag to the currently
 selected object(s)
@@ -540,20 +567,20 @@ additionally try to load the corresponding shader parsing plugin
 (see also section <ref id="spplugins" name="Shader Parsing Plugins">))
 and rescan for compiled shaders. Note, that in order for the
 <tt>"ScanShaders"</tt> feature to work
-properly you have to set the <tt>"Shaders"</tt> and <tt>"Plugins"</tt>
-preference setting correctly
+properly you also have to set the <tt>"Main/Shaders"</tt> and
+<tt>"Main/Plugins"</tt> preference setting correctly
 (see also section <ref id="prefmain" name="The Main Preferences">).
 <item><tt/Toggle ToolBox/ closes or opens the toolbox window
 (see <ref id="toolb" name="The Tool Box Window">). From version 1.3 on,
-Ayam remembers the status of the toolbox in the preferences.
+Ayam remembers the state of the toolbox in the saved preferences.
 <item><tt/Toggle TreeView/ toggles object tree view and object listbox.
 From version 1.3 on, Ayam remembers whether the tree view or the
-object listbox is open in the preferences
+object listbox is open in the saved preferences
 (see also section <ref id="obj" name="Objects"> for more information
-about both GUI elements).
+about both representations).
 <item><tt>Zap Ayam</tt> iconifies all currently open windows of Ayam.
-If one of the iconified windows is de-iconified all other windows will
-be de-iconified as well.
+If one of the iconified windows is de-iconified later, all other zapped
+windows will be de-iconified as well.
 </itemize>
 
 <label id="mmhelp">
@@ -609,6 +636,20 @@ particularly useful if automatic redrawing of the view has been disabled.
 <item><tt/Export RIB/ exports the scene to a RIB. This does exactly the
 same as the main menu entry <tt/Export RIB/, except that the current view is
 already selected in the dialog box.
+<item><tt/Open PPrev/, <tt/Close PPrev/: those menu entries are just
+available, if the compile time option <tt/AYENABLEPPREV/ has been set.
+This option is not set for the official Ayam binaries.
+Permanent preview (PPrev) continuously writes a RIB stream to
+a (fast) RenderMan renderer, a frame for each redraw operation
+of the view window that was used to open the the preview. This way, the
+RenderMan renderer immediately displays all changes in the scene.
+This is a great way to test many different camera or light settings without
+the need to manually start a rendering process and close the preview window
+for each different setting.
+As the RIB client library usually is not able to handle more
+than one open RIB stream, RIB-Export and direct rendering from
+view windows is not available until the permanent view window is closed.
+
 <item><tt/Close/: the View window will be removed.
 </itemize>
 
@@ -1365,6 +1406,9 @@ opens a small window where you may change the coordinates of the
 selected point directly by entering numbers.
 Note, that the w coordinate setting will be ignored if the
 picked point does not have weight information (is not homogenous).
+Using the small menu on top of the coordinate window you may
+determine whether editing takes place in local object or global
+world space.
 </itemize>
 
 <sect1>Inserting or Deleting Points<label id="insdelac">
@@ -1422,16 +1466,18 @@ However, if a view is aligned and switched to local, you can also
 edit in local object space. This means you can e.g. edit a
 generating curve of a Skin object where both objects
 are rotated and scaled arbitrarily
-and make sure that the curve remains two-dimensional, all the time.
+and make sure that the curve remains two-dimensional all the time.
+<p>
 All you need to do is to select the curve and then press
 <tt/"Ctrl+a"/ to first align the view and then <tt/"Ctrl+l"/ to make it local.
-In practice, this means that the input plane of a local aligned view
+In practice, this means that the input plane of an aligned local view
 will match the XY-, ZY-, or XZ-plane of the local object space,
 depending on the type of the view (Front, Side, or Top).
 <p>
 Furthermore, grids will also act as if defined in local object space.
-In this case, they can also be scaled different in X-window and
-Y-window coordinates (if the local object space is deformed this way).
+In contrast to their normal behaviour, they can also be scaled
+differently in X-window and Y-window coordinates in aligned local views
+(if the local object space is deformed this way).
 
 <sect>Objects and Properties<label id="obandprp">
 <p>
@@ -1489,7 +1535,7 @@ the rotation property must not be read in a way that
 the object will first be rotated around X by x-angle degrees
 then around Y y-angle degrees then around Z z-angle degrees.
 In fact, no information about the order in which partial
-rotations occured may be determined from that three values.
+rotations occured may be derived from that three values.
 This implies, that e.g. the values 0 0 45 may denote
 a different orientation than the very same values
 0 0 45 (no joke)!
@@ -1509,17 +1555,28 @@ in the order X (if changed) then Y (if changed) then Z (if changed).
 I urge you to not change more than one entry at once until you exactly
 know what you are doing.
 
+Undoing a single rotation works in the same way, just use a subtraction
+instead of an addition.
+
 Undoing all rotations (resetting the object to its original state)
 is simple too: enter 0 for all three entries at once,
 then press apply.
 
+If you want to copy the orientation of an object to other objects
+using the property clipboard, make sure that you select all Rot and
+Quat property elements.
+
 <sect1>Attributes<label id="attrs">
 <p>
+The attributes of an object contain currently:
 <itemize>
-<item><tt/"Name"/, the name of the object.
-<item><tt/"Hide"/, do not draw this object.
+<item><tt/"Name"/, the name of the object. It is also displayed
+in the object listbox or tree and may be written to RIB streams.
+<item><tt/"Hide"/, if this attribute is set this object is not drawn.
+It may also be excluded from RIB export.
 <item><tt/"Refcount"/, just displays how many objects
-point to this object. 
+point to this object. Objects with a reference count different
+from zero may not be deleted.
 </itemize>
 
 <sect1>Material<label id="matprop">
@@ -1531,7 +1588,7 @@ to material objects (see also section
 <item><tt/"Clear Material"/ immediately clears any connection
 of the current object to its material.
 <item><tt/"Name"/ is the name of the material of this object.
-An easier way to connect materials to objects is to simply
+An easy way to connect materials to objects is to simply
 drop the geometric objects onto the material object using drag and
 drop in the tree view.
 </itemize>
@@ -1601,7 +1658,7 @@ the type or value of the tag.
 </itemize>
 
 The next sub-sections describe the available tag types.
-Note, that extensions and plug ins may define their own types.
+Note, that extensions and plugins may define their own types.
 
 <sect2>RiAttribute Tag<label id="riatag">
 <p>
@@ -1683,7 +1740,7 @@ horizontal stripes now.<p>
 Note, that the exact behaviour depends heavily on the shader and its use
 of the texture coordinates!
 
-<sect2>Texture Coordinate Editor<label id="tce">
+<sect3>Texture Coordinate Editor<label id="tce">
 <p>
 The texture coordinate editor may be opened using the
 main menu entry <tt>"Special/Tags/Edit TexCoords"</tt> and
@@ -2191,6 +2248,8 @@ for this object.
 a sample.
 <item><tt/"Interpolation"/, determines how return values computed
 by the shaders are interpolated across a geometric primitive.
+<item><tt/"Sides"/, determines how many sides of the surface of a
+geometric primitive should be shaded.
 <item><tt/"BoundCoord"/, sets the coordinate system in which the
 displacement bound is expressed.
 <item><tt/"BoundVal"/, displacement bound value.
@@ -2272,8 +2331,6 @@ shadow map may be determined by <tt/"SMRes"/. If
 <tt/"SMRes"/ is 0, a default of 256 by 256 pixels will be used.
 These options are for renderers that do not support raytraced
 shadows like PRMan or Aqsis only.
-Do not use rendrib from BMRT for rendering with
-shadow maps, it will always use raytraced shadows anyway!
 
 For lights of type <tt/"Distant"/ the <tt/"Scale"/ attributes
 of the <tt/"Transformations"/ property of the light
@@ -4484,6 +4541,9 @@ denotes the home directory of the current user.
 <tt>HOME</tt> exists, else <tt>"&dollar;(TEMP)/ayamrc"</tt>.<p>
 </itemize>
 
+The ayamrc file is read on each start of Ayam and saved again
+on exit (if the preference setting <tt>"Main/AutoSavePrefs"</tt> is enabled).
+<p>
 The ayamrc file contains:
 <enum>
 <item>preference settings (including some hidden settings that require
@@ -4977,10 +5037,9 @@ Musgrave, Peachey, Perlin, and Worley (Academic Press, 1994)
 
 WWW resources:
 <itemize>
-<item><url url="http://www.renderman.org/" name="The RenderMan Repository">
-<item><url
-url="http://www.pixar.com/renderman/developers_corner/rispec/index.html" 
-name="RenderMan Interface Specifications">
+<item>The RenderMan Repository: <tt>http://www.renderman.org/</tt>
+<item>RenderMan Interface Specifications:
+<tt>http://www.pixar.com/renderman/developers_corner/rispec/index.html</tt>
 </itemize>
 
 <sect1>Acknowledgements
@@ -5319,8 +5378,9 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <label id="indexm">M
 <itemize>
 <item>MajorRad: <ref id="top" name="torus attribute">
+<item>Master: <ref id="mmedit" name="edit menu entry">
 <item>Material: <ref id="materialobj" name="object">,
-<ref id="editm" name="edit menu entry">
+<ref id="mmedit" name="edit menu entry">
 <item>MaxRayLevel: <ref id="rio" name="RenderMan interface option">
 <item>MaxTagLen: <ref id="hidprefs" name="Hidden Preference Settings">
 <item>Menu: <ref id="mm" name="main menu">,
