@@ -681,6 +681,12 @@ void ay_viewt_uprop(ay_view_object *view);
 
 int ay_viewt_griddify(struct Togl *togl, double *winx, double *winy);
 
+/* w32t.c */
+#ifdef WIN32
+int ay_w32t_w32killtcmd(ClientData clientData, Tcl_Interp *interp,
+					  int argc, char *argv[]);
+#endif
+
 /* wrib.c */
 void ay_wrib_aimz(RtPoint direction);
 

@@ -729,6 +729,12 @@ int ay_status = AY_OK;
 
   Togl_CreateCommand("fromcam", ay_viewt_fromcamtcb);
 
+  /* w32t.c */
+#ifdef WIN32
+  Tcl_CreateCommand(interp, "w32kill", ay_w32t_w32killtcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+#endif
+
   /* wrib.c */
   Togl_CreateCommand("wrib", ay_wrib_cb);
 

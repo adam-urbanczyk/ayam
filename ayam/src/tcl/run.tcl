@@ -224,7 +224,15 @@ proc runRenderer { cmd template } {
     pack $f -in $w -side top -fill x
 
     button $w.bca -text "Cancel!" -width 16 -command "\
-	    foreach i {$pids} { exec $kill \$i &}; destroy $w"
+	    foreach i {$pids} {\
+	     global ayprefs;\
+	     if { \$ayprefs(Kill) == \"w32kill\" } {\
+	     w32kill \$i; } else {\
+	     exec $kill \$i &}; };\
+	    fileevent $ioPipe readable \"\";\
+	    fileevent $ioFid readable \"\";\
+	    focus .;\
+	    destroy $w"
     pack $w.bca -in $w -side bottom -anchor s -fill x -expand yes
 
     winCenter $w
@@ -237,7 +245,7 @@ proc runRenderer { cmd template } {
 		"%s" == "VisibilityFullyObscured" } {
 
 	    raise [winfo toplevel %W]
-	    # try to raise the window just exactly one time
+	    # try to raise the window just one time
 	    bind %W <Visibility> ""
 	     
 	}
@@ -247,6 +255,7 @@ proc runRenderer { cmd template } {
     wm protocol $w WM_DELETE_WINDOW "\
 	fileevent $ioPipe readable \"\";\
 	fileevent $ioFid readable \"\";\
+	focus .;\
 	destroy $w;"
 
  return;   
