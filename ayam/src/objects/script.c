@@ -727,12 +727,26 @@ Tk_RestrictAction
 ay_script_restrictall(ClientData clientData,
 		      XEvent *eventPtr)
 {
+#ifndef WIN32
  XKeyEvent *key_event = (XKeyEvent *) eventPtr;
  KeySym ks;
  XComposeStatus status;
  char tmpstr[128];
+#endif /* !WIN32 */
  Tcl_Obj *to = NULL, *ton = NULL;
 
+#ifdef WIN32
+ if((GetKeyState(VK_SHIFT) < 0) &&
+    (GetKeyState(VK_CONTROL) < 0) &&
+    (GetKeyState('C') < 0))
+   {
+     ton = Tcl_NewStringObj("cancelled", -1);
+     to = Tcl_NewIntObj(1);
+     Tcl_ObjSetVar2(ay_interp, ton, NULL, to, TCL_LEAVE_ERR_MSG |
+		    TCL_GLOBAL_ONLY);
+     return TK_DISCARD_EVENT;
+   }
+#else
   if(eventPtr->type == KeyPress)
     {
       if(key_event->state & (ControlMask|ShiftMask))
@@ -757,6 +771,7 @@ ay_script_restrictall(ClientData clientData,
 	  return TK_DISCARD_EVENT;
 	} /* if */
     } /* if */
+#endif /* WIN32 */
 
   return TK_DEFER_EVENT;
 } /* ay_script_restrictall */
