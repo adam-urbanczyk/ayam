@@ -11,6 +11,7 @@
 
 # Global Variables
 
+# preference settings
 array set ayprefs {
  autosaveprefs 0
  showtt 1
@@ -119,7 +120,7 @@ array set ayprefs {
 {Use <Shift+TAB> to move the focus away from the console.}
 {Documentation is available in the doc subdirectory.}
 {Drag the borderline above the console to adjust it's height.}
-{Picking does not work right? Adjust PickEpsilon in Prefs!}
+{Point editing does not work right? Adjust PickEpsilon in Prefs!}
 {The NURB circles and spheres are not to be tampered with!}
 {New! Documentation is available in the doc subdirectory!}
 {Tired of that "ever-auto-resizing" main window? See Prefs!}
@@ -134,6 +135,7 @@ on its name, then press <Ctrl+Shift+i> (Copy Marked Prop).}
 {Start Ayam with -failsafe to reset prefs to factory defaults.}
 {Ayam may be completely iconified using <Ctrl+Shift+z> (zap).}
 {To quickly create a material for an object press <Ctrl+m>.}
+{Extensive documentation is available as HTML and PDF.}
 }
 }
 
@@ -240,7 +242,7 @@ array set ayviewshortcuts {
     RotModKey "Alt_L"
 }
 
-
+# standard RiAttributes DB
 array set riattr {
     caustic { { maxpixeldist f {16} }
               { ngather i {75} }
@@ -271,7 +273,7 @@ array set riattr {
 
 }
 
-
+# standard RiOptions DB
 array set riopt {
     indirect { {savefile s {"indirect.dat"} }
                {seedfile s {"indirect.dat"} }
@@ -300,6 +302,11 @@ array set riopt {
 array set rioptval {}
 array set riattrval {}
 
+# just in case some binding fires...
+set oldx 0
+set oldy 0
+
+# miscellaneous global values
 array set ay {
  failsafe 0
  showsplash 1
@@ -314,14 +321,14 @@ array set ay {
  zapped ""
  currentView ""
  cviewsema 0
- viewtypenames { Front Side Top Persp Trim}
+ viewtypenames { Front Side Top Persp Trim }
  surfaceshaders ""
  displacementshaders ""
  imagershaders ""
  volumeshaders ""
  transformationshaders ""
- npdisplaymodes {ControlHull OutlinePolygon OutlinePatch}
- ncdisplaymodes {Curve CurveAndHull ControlHull}
+ npdisplaymodes { ControlHull OutlinePolygon OutlinePatch }
+ ncdisplaymodes { Curve CurveAndHull ControlHull }
  prefssection Main
  GridSize 1.0
  FOV 45.0
@@ -707,7 +714,7 @@ set w .
 wm title $w "Ayam - Main"
 wm iconname $w "Ayam"
 wm withdraw .
-# XXXX Meet ICCCM requirements?
+# XXXX Does this meet ICCCM requirements?
 wm command . "[info nameofexecutable] $argv"
 wm client . [info hostname]
 
@@ -814,7 +821,6 @@ bind .fl.con.console <ButtonPress-5> {
 }
 
 # paned window management for console
-
 update
 if { $tcl_platform(platform) == "windows" } {
     wm deiconify .
@@ -842,6 +848,7 @@ frame .fu.fMain.fProp
 pack .fu.fMain.fProp -in .fu.fMain -side left -expand yes -fill both
 plb_open .fu.fMain.fProp
 update
+
 # paned window management for hierarchy
 set vwidth [expr [winfo rootx .fu.fMain.fProp]+5]
 pane .fu.fMain.fHier .fu.fMain.fProp
