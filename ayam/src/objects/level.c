@@ -249,6 +249,60 @@ ay_level_bbccb(ay_object *o, double *bbox, int *flags)
 
 
 int
+ay_level_providecb(ay_object *o, unsigned int type, ay_object **result)
+{
+ int ay_status = AY_OK;
+ ay_object *t = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  /* check for presence of any child objects */
+  if(!o->down || (o->down && !o->down->next))
+    return AY_ERROR;
+
+  if(!result)
+    {
+      /* can we deliver atleast one object of right type? */
+      /* XXXX test broken; should walk through all child objects! */
+      if(type == o->down->type)
+	{
+	  return AY_OK;
+	}
+      else
+	{
+	  return(ay_provide_object(o->down, type, NULL));
+	}
+    } /* if */
+
+  /* XXXX this is broken too; should process all child objects! */
+  if(type == o->down->type)
+    {
+      ay_status = ay_object_copy(o->down, result);
+      if(*result)
+	ay_trafo_add(o, *result);
+    }
+  else
+    {
+      ay_status = ay_provide_object(o->down, type, result);
+
+      if(*result)
+	{
+	  t = *result;
+	  while(t)
+	    {
+	      ay_trafo_add(o, t);
+
+	      t = t->next;
+	    } /* while */
+	} /* if */
+    } /* if */
+
+ return ay_status;
+} /* ay_level_providecb */
+
+
+int
 ay_level_init(Tcl_Interp *interp)
 {
  int ay_status = AY_OK;
@@ -268,6 +322,8 @@ ay_level_init(Tcl_Interp *interp)
 				    ay_level_wribcb,
 				    ay_level_bbccb,
 				    AY_IDLEVEL);
+
+  ay_status = ay_provide_register(ay_level_providecb, AY_IDLEVEL);
 
  return ay_status;
 } /* ay_level_init */
