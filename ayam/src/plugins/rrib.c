@@ -1854,6 +1854,7 @@ RtVoid ay_rrib_RiPatchMesh(RtToken type, RtInt nu, RtToken uwrap,
 			   RtInt nv, RtToken vwrap, 
 			   RtInt n, RtToken tokens[], RtPointer parms[])
 {
+ int ay_status = AY_OK;
  ay_pamesh_object pm;
  int i = 0, j = 0, stride = 4;
  double *p = NULL;
@@ -1945,6 +1946,8 @@ RtVoid ay_rrib_RiPatchMesh(RtToken type, RtInt nu, RtToken uwrap,
 	  pp += stride;
 	} /* for */
     } /* for */
+
+  ay_status = ay_pmt_tonpatch(&pm, &(pm.npatch));
 
   ay_rrib_linkobject((void *)(&pm), AY_IDPAMESH);
 
