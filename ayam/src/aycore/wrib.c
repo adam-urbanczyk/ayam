@@ -507,6 +507,36 @@ ay_wrib_object(char *file, ay_object *o)
 } /* ay_wrib_object */
 
 
+/* ay_wrib_displaytags:
+ *  write display tags that are attached to the root object
+ */
+void
+ay_wrib_displaytags()
+{
+ ay_object *root = NULL;
+ ay_tag_object *tag = NULL;
+ int n = 0;
+
+  root = ay_root;
+  if(!root)
+    return;
+
+  tag = root->tags;
+  if(!tag)
+    return;
+
+
+  while(tag)
+    {
+      if(tag->type == ay_ridisp_tagtype)
+	n++;
+      tag = tag->next;
+    }
+
+ return;
+} /* ay_wrib_displaytags */
+
+
 /* ay_wrib_rootsh:
  *  write shaders that are attached to root object
  *  if imager is 1, write imager shader
