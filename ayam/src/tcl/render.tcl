@@ -195,7 +195,7 @@ proc render_select { } {
 		set ayprefs(RenderMode) 0
 		set splugin "ayslo3d"
 		if { $ay(ScanShaders) == 1 } {
-		    set ay(sext) ".slo"
+		    set ay(sext) ".sdl"
 		}
 		set newr "3Delight"
 	    }
