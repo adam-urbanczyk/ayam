@@ -174,6 +174,9 @@ proc runRenderer { cmd template } {
     toplevel $w
     wm title $w "Render_$ay(rnum)"
     wm iconname $w "Ayam"
+    if { $ayprefs(RGTrans) == 1 } {
+	wm transient $w .
+    }
 
     set f [frame $w.f1 -border 10]
 
