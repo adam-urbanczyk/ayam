@@ -677,11 +677,29 @@ ay_npt_wribtrimcurves(ay_object *o)
 	  loop = trim->down;
 	  while(loop->next)
 	    {
+	      nc = NULL;
 	      if(loop->type == AY_IDNCURVE)
+		{
+		  curve = (ay_nurbcurve_object *)(loop->refine);
+		}
+	      else
+		{
+		  ay_status = ay_provide_object(loop, AY_IDNCURVE, &nc);
+		  if(nc)
+		    {
+		      curve = (ay_nurbcurve_object *)(nc->refine);
+		    }
+		  else
+		    {
+		      curve = NULL;
+		    }
+		} /* if */
+
+	      if(curve)
 		{
 		  totalcurves++;
 		  curvecount++;
-		  curve = (ay_nurbcurve_object *)(loop->refine);
+		  
 		  totalcontrol += curve->length;
 		  
 		  totalknots += curve->length;
@@ -691,6 +709,11 @@ ay_npt_wribtrimcurves(ay_object *o)
 		  curvecount = 0;
 		} /* if */
 	      
+	      if(nc)
+		{
+		  ay_object_delete(nc);
+		}
+
 	      loop = loop->next;
 	    } /* while */
 
@@ -794,10 +817,27 @@ ay_npt_wribtrimcurves(ay_object *o)
 	      
 	      while(loop->next)
 		{
+		  nc = NULL;
+
 		  if(loop->type == AY_IDNCURVE)
 		    {
 		      curve = (ay_nurbcurve_object *)(loop->refine);
+		    }
+		  else
+		    {
+		      ay_status = ay_provide_object(loop, AY_IDNCURVE, &nc);
+		      if(nc)
+			{
+			  curve = (ay_nurbcurve_object *)(nc->refine);
+			}
+		      else
+			{
+			  curve = NULL;
+			}
+		    } /* if */
 
+		  if(curve)
+		    {
 		      /* fill order[], n[], min[], max[] */
 		      order[a] = (RtInt)curve->order;
 		      n[a] = (RtInt)curve->length;
@@ -806,7 +846,10 @@ ay_npt_wribtrimcurves(ay_object *o)
 		      a++;
 			
 		      /* get curves transformation-matrix */
-		      ay_trafo_creatematrix(loop, m);
+		      if(nc)
+			ay_trafo_creatematrix(nc, m);
+		      else
+			ay_trafo_creatematrix(loop, m);
 
 		      /* copy & revert control (fill u[] v[] w[]) */
 		      for(k = 0; k < curve->length; k++)
@@ -833,6 +876,11 @@ ay_npt_wribtrimcurves(ay_object *o)
 			  c++;
 			}
 		    } /* if */
+
+		  if(nc)
+		    {
+		      ay_object_delete(nc);
+		    }
 
 		  loop = loop->next;
 		} /* while */
@@ -3290,7 +3338,7 @@ ay_npt_topolymesh(ay_object *o, int smethod, double sparam,
  int uknot_count = 0, vknot_count = 0, i = 0, a = 0;
  GLdouble sampling_tolerance = ay_prefs.glu_sampling_tolerance;
  GLfloat *uknots = NULL, *vknots = NULL, *controls = NULL;
- ay_object *trim = NULL, *loop = NULL;
+ ay_object *trim = NULL, *loop = NULL, *nc = NULL;
  ay_npt_tessobject to = {0};
  double p1[3], p2[3], p3[3], p4[3], n1[3], n2[3], n3[3], n4[4];
  ay_npt_tesstri *tri = NULL, *tt;
@@ -3443,37 +3491,61 @@ ay_npt_topolymesh(ay_object *o, int smethod, double sparam,
 		  GL_MAP2_VERTEX_4);
 
   /* draw trimcurves */
-  if(o->down)
+  if(o->down && o->down->next)
     {
       trim = o->down;
 
-      while(trim)
+      while(trim->next)
 	{
-	  if(trim->type == AY_IDNCURVE)
+	  switch(trim->type)
 	    {
+	    case AY_IDNCURVE:
 	      gluBeginTrim(npatch->no);
-	      ay_status = ay_npt_drawtrimcurve(NULL, trim, npatch->no);
+	       ay_status = ay_npt_drawtrimcurve(NULL, trim, npatch->no);
 	      gluEndTrim(npatch->no);
-	    }
-
-	  if(trim->type == AY_IDLEVEL)
-	    { /* XXXX check, whether level is of type trimloop? */
+	      break;
+	    case AY_IDLEVEL:
+	      /* XXXX check, whether level is of type trimloop? */
 	      loop = trim->down;
-	      if(loop)
+	      if(loop && loop->next)
 		{
 		  gluBeginTrim(npatch->no);
-		  while(loop)
+		  while(loop->next)
 		    {
 		      if(loop->type == AY_IDNCURVE)
 			{
 			  ay_status = ay_npt_drawtrimcurve(NULL, loop,
 							   npatch->no);
 			}
+		      else
+			{
+			  nc = NULL;
+			  ay_status = ay_provide_object(loop, AY_IDNCURVE,
+							&nc);
+			  if(nc)
+			    {
+			      ay_status = ay_npt_drawtrimcurve(NULL, nc,
+							       npatch->no);
+			      ay_object_delete(nc);
+			    } /* if */
+			} /* if */
 		      loop = loop->next;
-		    }
+		    } /* while */
 		  gluEndTrim(npatch->no);
 		} /* if */
-	    } /* if */
+	      break;
+	    default:
+	      nc = NULL;
+	      ay_status = ay_provide_object(trim, AY_IDNCURVE, &nc);
+	      if(nc)
+		{
+		  gluBeginTrim(npatch->no);
+		   ay_status = ay_npt_drawtrimcurve(NULL, nc, npatch->no);
+		  gluEndTrim(npatch->no);
+		  ay_object_delete(nc);
+		}
+	      break;
+	    } /* switch */
 	  trim = trim->next;
 	} /* while */
     } /* if */
