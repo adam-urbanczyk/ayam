@@ -14,13 +14,32 @@
 
 /* pomesht.c -  PolyMesh object tools */
 
-typedef struct list_object_s
+typedef struct ay_pomesht_listobject_s
 {
-  struct list_object_s *next;
+  struct ay_pomesht_listobject_s *next;
   void *data;
-} list_object;
+} ay_pomesht_listobject;
 
-/* functions local to this module */
+typedef struct ay_pomesht_htentry_s
+{
+  struct ay_pomesht_htentry_s *next;
+  unsigned int index;
+  double x, y, z, nx, ny, nz;
+} ay_pomesht_htentry;
+
+typedef struct ay_pomesh_hash_s
+{
+  int found;
+  unsigned int index;
+  int c;
+  int T; /* tablesize */
+  ay_pomesht_htentry **table;    
+} ay_pomesht_hash;
+
+#define AYVCOMP(x1,y1,z1,x2,y2,z2) ((fabs(x1-x2)<=AY_EPSILON) && \
+           (fabs(y1-y2)<=AY_EPSILON)&&(fabs(z1-z2)<= AY_EPSILON)) 
+
+/* prototypes of functions local to this module */
 void ay_pomesht_tcbBegin(GLenum prim);
 
 void ay_pomesht_tcbVertex(void *data);
@@ -37,6 +56,14 @@ void ay_pomesht_ManageCombined(void *data);
 
 void ay_pomesht_setautonormal(double *v1, double *v2, double *v3);
 
+int ay_pomesht_inithash(ay_pomesht_hash *hash);
+
+void ay_pomesht_destroyhash(ay_pomesht_hash *hash);
+
+int ay_pomesht_addvertexhash(ay_pomesht_hash *phash, int ign, double *point);
+
+
+/* functions */
 
 /* tesselation callbacks needed by GLU */
 void
@@ -90,12 +117,12 @@ ay_pomesht_tcbCombine(GLdouble c[3], void *d[4], GLfloat w[4], void **out)
 void
 ay_pomesht_ManageCombined(void *data)
 {
-  static list_object *list = NULL;
-  list_object *new = NULL;
+ static ay_pomesht_listobject *list = NULL;
+ ay_pomesht_listobject *new = NULL;
 
   if(data)
     { /* add new pointer to the list */
-      if(!(new = calloc(1, sizeof(list_object))))
+      if(!(new = calloc(1, sizeof(ay_pomesht_listobject))))
 	return;
 
       new->data = data;
@@ -113,7 +140,7 @@ ay_pomesht_ManageCombined(void *data)
 	} /* while */
     } /* if */
 
-  return;
+ return;
 } /* ay_pomesht_ManageCombined */
 
 
@@ -468,3 +495,270 @@ ay_pomesht_mergetcmd(ClientData clientData, Tcl_Interp * interp,
  return TCL_OK;
 } /* ay_pomesht_mergetcmd */
 
+
+int
+ay_pomesht_inithash(ay_pomesht_hash *hash)
+{
+
+  hash->table = (ay_pomesht_htentry **)calloc(1, sizeof(ay_pomesht_htentry *) *
+					    hash->T);
+  if(hash->table)
+    return AY_OK;
+  else
+    return AY_EOMEM;
+} /* ay_pomesht_inithash */
+
+void
+ay_pomesht_destroyhash(ay_pomesht_hash *hash)
+{
+ int i;
+ ay_pomesht_htentry *entry;
+ ay_pomesht_htentry *tmp;
+	
+  if(hash)
+    {
+      for(i = 0; i < hash->T; i++)
+	{
+	  entry = hash->table[i];
+	  tmp = entry;
+
+	  while(tmp)
+	    {
+	      tmp = entry->next;
+	      free(entry);
+	      entry = tmp;
+	    } /* while */
+	} /* for */
+   
+      if(hash->table)
+	free(hash->table);
+
+      free(hash);
+    } /* if */
+
+ return;
+} /* ay_pomesht_destroyhash */
+
+
+int
+ay_pomesht_addvertexhash(ay_pomesht_hash *phash, int ign, double *point) 
+{
+ int ay_status = AY_OK;
+ unsigned int index;
+ ay_pomesht_htentry *entry;
+ ay_pomesht_htentry *chain;
+ double x, y, z;
+  
+  x = point[0];
+  y = point[1];
+  z = point[2];
+  
+  index = (unsigned int)((3 * fabs(x) + 5 * fabs(y) + 7 * fabs(z)) *
+			 phash->c + 0.5f) % phash->T;
+
+  entry = phash->table[index];
+
+  phash->found = AY_FALSE;
+
+  if(entry)
+    {
+      chain = entry;
+
+      while(chain)
+	{
+	  /* ignore normals? */
+          if(ign)
+	    {
+	      if(AYVCOMP(chain->x, chain->y, chain->z, x, y, z))
+		{
+		  phash->index = chain->index;
+		  phash->found = AY_TRUE;
+		  break;
+		}/* if */
+	    } /* if */
+	  else
+	    {
+	      if(AYVCOMP(chain->x, chain->y, chain->z, x, y, z) &&
+     AYVCOMP(chain->nx, chain->ny, chain->nz, point[3], point[4], point[5]))
+	        {
+		  phash->index = chain->index;
+		  phash->found = AY_TRUE;
+		  break;
+		} /* if */
+	    } /* if */
+
+	  chain = chain->next;
+	} /* while */
+    } /* if */
+
+  /* add new entry? */
+  if(!phash->found)
+    {
+      ay_pomesht_htentry *new;
+	
+      new = (ay_pomesht_htentry *)calloc(1, sizeof(ay_pomesht_htentry));
+	
+      new->index = phash->index;
+      new->x = x;
+      new->y = y;
+      new->z = z;
+
+      /* use normals? */
+      if(!ign)
+	{
+	  new->nx = point[3];
+	  new->ny = point[4];
+	  new->nz = point[5];
+	}
+
+      if(entry)
+	new->next = entry;
+	
+      phash->table[index] = new;
+	  
+    } /* if */
+   
+ return ay_status;
+} /* ay_pomesht_addvertexhash */
+
+int
+ay_pomesht_optimizecoords(ay_pomesh_object *pomesh, int ignore_normals)
+{
+ int ay_status = AY_OK;
+ ay_pomesh_object *new = NULL;
+ ay_pomesht_hash *phash;
+ unsigned int i, total_loops = 0, total_verts = 0;
+ unsigned int p, dp, t;
+ int stride;
+  
+  if(!(new = (ay_pomesh_object *) calloc(1, sizeof(ay_pomesh_object))))
+    return AY_EOMEM;
+  
+  /* calc total verts */
+  for(i = 0; i < pomesh->npolys; i++)
+    {
+      total_loops += pomesh->nloops[i];
+    } /* for */
+
+  for(i = 0; i < total_loops; i++)
+    {
+      total_verts += pomesh->nverts[i];
+    } /* for */
+    
+  if(!(new->verts = (unsigned int *)calloc(1, sizeof(unsigned int) *
+					   total_verts)))
+    { free(new); return AY_EOMEM; }
+  new->ncontrols = 0;
+
+  if(pomesh->has_normals)
+    stride = 6;
+  else
+    stride = 3;
+
+  if(!(new->controlv = (double *)calloc(1, pomesh->ncontrols * stride *
+					sizeof(double))))
+    { free(new); free(new->verts); return AY_EOMEM; }
+  
+  phash = (ay_pomesht_hash *)calloc(1, sizeof(ay_pomesht_hash));
+  phash->T = total_verts/5;		/* hashtablesize */   
+  phash->c = 1024;
+
+  if(ay_pomesht_inithash(phash) == AY_EOMEM)
+    { free(new); free(new->verts); free(new->controlv); return AY_EOMEM; }
+  
+  dp = 0;
+
+  /* if user requested to honour normals but we have no normals
+     we have to set ignore_normals to true */
+  if(!ignore_normals && !pomesh->has_normals)
+    ignore_normals = AY_TRUE;
+   
+  
+  for(i = 0; i < total_verts; i++)
+    {
+      p = pomesh->verts[i] * stride;
+	  
+      phash->found = AY_FALSE;
+      phash->index = dp;
+
+      ay_pomesht_addvertexhash(phash, ignore_normals, &pomesh->controlv[p]);
+	  
+      if(phash->found)
+	{
+	  new->verts[i] = phash->index;
+	}
+      else
+	{
+	  new->verts[i] = dp;
+	  t = dp * stride;
+	  dp++;
+	  new->ncontrols++;
+	  new->controlv[t]   = pomesh->controlv[p];	
+	  new->controlv[t+1] = pomesh->controlv[p+1];	
+	  new->controlv[t+2] = pomesh->controlv[p+2];
+
+	  if(stride == 6)
+	    {
+	      new->controlv[t+3] = pomesh->controlv[p+3];	
+	      new->controlv[t+4] = pomesh->controlv[p+4];	
+	      new->controlv[t+5] = pomesh->controlv[p+5];
+	    } /* if */
+	} /* if */
+    } /* for */
+	
+  ay_pomesht_destroyhash(phash);
+
+  if(pomesh->verts)
+    free(pomesh->verts);
+  
+  if(pomesh->controlv)
+    free(pomesh->controlv);
+   
+  pomesh->verts = new->verts;
+  pomesh->controlv = new->controlv;
+  pomesh->ncontrols = new->ncontrols; 
+  realloc(pomesh->controlv, new->ncontrols * stride * sizeof(double));
+  free(new);
+
+  return ay_status;
+} /* ay_pomesht_optimizecoords */
+
+
+/* ay_pomesht_optimizetcmd:
+ *  optimizes all selected PolyMesh objects
+ */
+int
+ay_pomesht_optimizetcmd(ClientData clientData, Tcl_Interp * interp,
+			int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ char fname[] = "optiPo";
+ ay_object *o = NULL;
+ ay_list_object *sel = ay_selection;
+
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, fname, NULL);
+      return TCL_OK;
+    }
+
+  while(sel)
+    {
+      o = ay_selection->object;
+
+      if(o && o->type == AY_IDPOMESH)
+	{
+	  ay_status = AY_OK;
+	  ay_status = ay_pomesht_optimizecoords(o->refine, AY_TRUE);
+
+	  if(ay_status)
+	    { /* emit error message */
+	      ay_error(AY_ERROR, fname, "could not optimize object");
+	    }
+	} /* if */
+
+      sel = sel->next;
+    } /* while */
+
+ return TCL_OK;
+} /* ay_pomesht_optimizetcmd */
