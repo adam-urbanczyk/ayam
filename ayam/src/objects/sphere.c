@@ -753,9 +753,9 @@ ay_sphere_wribcb(char *file, ay_object *o)
 	P2[5][X] = (RtFloat)(P2[7][X]/3.0);
 	P2[6][X] = (RtFloat)(2.0*P2[5][X]);
 
-	angle = phimin + phidiff - AY_HALFPI;                  
-	P2[8][Z]  = P2[9][Z] = P2[10][Z] = P2[11][Z] = zmax +
-	  circle*sin(angle);
+	angle = (RtFloat)(phimin + phidiff - AY_HALFPI);
+	P2[8][Z]  = P2[9][Z] = P2[10][Z] = P2[11][Z] = (RtFloat)(zmax +
+							   circle*sin(angle));
 	P2[8][X]  = (RtFloat)0.0;
 	P2[11][X] = (RtFloat)(rmax + circle*cos(angle));
 	P2[9][X]  = (RtFloat)(P2[11][X]/3.0);

@@ -3335,7 +3335,7 @@ ay_npt_topolymesh(ay_object *o, int smethod, double sparam,
  ay_object *new = NULL;
  ay_nurbpatch_object *npatch = NULL;
  int uorder = 0, vorder = 0, width = 0, height = 0;
- int uknot_count = 0, vknot_count = 0, i = 0, a = 0;
+ unsigned int uknot_count = 0, vknot_count = 0, i = 0, a = 0;
  GLdouble sampling_tolerance = ay_prefs.glu_sampling_tolerance;
  GLfloat *uknots = NULL, *vknots = NULL, *controls = NULL;
  ay_object *trim = NULL, *loop = NULL, *nc = NULL;
