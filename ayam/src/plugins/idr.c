@@ -3488,9 +3488,10 @@ idr_combine_pics(uint32 *db, int dw, int dh, uint32 *sb, int sw, int sh,
 		  a = pixel_src[3]; /* alpha value */
 		}
 	      pixel_dst = (char *)&db[(y+b)*dw+(x+l)];
-	      for(z = 0; z < 3; z++)
+	      for(z = 0; z < 4; z++)
 		{
-	          pixel_dst[z] = ((255-a)*pixel_dst[z]+a*pixel_src[z])/256;
+		  /*pixel_dst[z] = ((255-a)*pixel_dst[z]+a*pixel_src[z])/256;*/
+	          pixel_dst[z] = pixel_src[z]+(((255-a)*pixel_dst[z])/256);
 		}
 	    }
         }
