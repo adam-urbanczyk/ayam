@@ -104,7 +104,7 @@ proc runGetStderr { num cmd channel } {
 # runGetStdout:
 # 
 proc runGetStdout { num cmd template channel } {
-    global ayprefs
+    global ayprefs ay
     if { [eof $channel] } {
         # program completed
         close $channel
@@ -121,6 +121,27 @@ proc runGetStdout { num cmd template channel } {
 
 	update
 	catch {SetProgress .render${num}.f1.p $percent}
+	if { $percent != 0 } {
+	    set cur [clock seconds]
+	    set start $ay(rstarttime$ay(rnum))
+	    set fulltime [expr ($cur-$start)*100.0/$percent]
+	    set togo [expr (100.0-$percent)*$fulltime/100.0]
+	    set hours [expr int(floor($togo/3600))]
+	    set mins [expr int(floor(($togo-($hours*3600))/60))]
+	    set secs [expr int(round($togo-($hours*3600)-($mins*60)))]
+	    set string [format "~ %d:%02d:%02d to go"  $hours $mins $secs]
+	    .render${num}.f2.la configure -text $string
+	    if { $percent == 100 } {
+		set fulltime [expr ($cur-$start)]
+		set hours [expr int(floor($fulltime/3600))]
+		set mins [expr int(floor(($fulltime-($hours*3600))/60))]
+		set secs [expr int(round($fulltime-($hours*3600)-($mins*60)))]
+		set string [format "%d:%02d:%02d elapsed"  $hours $mins $secs]
+		.render${num}.f2.la configure -text $string
+	    }
+
+	}
+
 	update
     }
 }
@@ -145,6 +166,8 @@ proc runRenderer { cmd template } {
     }
 
     incr ay(rnum)
+
+    set ay(rstarttime$ay(rnum)) [clock seconds]
 
     set ioPipe [open "|$cat" r+]
     fconfigure $ioPipe -buffering none -blocking 0
@@ -185,10 +208,11 @@ proc runRenderer { cmd template } {
     pack $f -in $w -side top -fill x
 
     set f [frame $w.f2]
+    label $f.la -text "~ 0:00:00 to go"
     button $f.bca -text "Cancel!" -width 16 -command "\
 	    foreach i {$pids} { exec $kill \$i &}; destroy $w"
-
-    pack $f.bca -in $f -side left -fill x -expand yes
+    pack $f.la -in $f -side top -fill x -expand yes
+    pack $f.bca -in $f -side bottom -fill x -expand yes
     pack $f -in $w -side bottom -fill x
 
 
