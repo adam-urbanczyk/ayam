@@ -5223,8 +5223,8 @@ ay_npt_extractnc(ay_object *npatch, int side, double param,
  int ay_status = AY_OK;
  ay_nurbpatch_object *np  = NULL;
  ay_nurbcurve_object *nc = NULL;
- double *cv, m[16];
- int stride = 4, i, a;
+ double *cv, m[16], *Qw = NULL, *UVQ = NULL;
+ int stride = 4, i, a, k = 0, s = 0, r = 0;
 
   if(!npatch || !result)
     return AY_ENULL;
@@ -5247,6 +5247,16 @@ ay_npt_extractnc(ay_object *npatch, int side, double param,
       break;
     case 2:
     case 3:
+      nc->order = np->vorder;
+      nc->knot_type = np->vknot_type;
+      nc->length = np->height;
+      break;
+    case 4:
+      nc->order =  np->uorder;
+      nc->knot_type = np->uknot_type;
+      nc->length = np->width;
+      break;
+    case 5:
       nc->order = np->vorder;
       nc->knot_type = np->vknot_type;
       nc->length = np->height;
@@ -5300,6 +5310,92 @@ ay_npt_extractnc(ay_object *npatch, int side, double param,
 	nc->length*stride*sizeof(double));
       memcpy(nc->knotv, np->vknotv, (nc->length+nc->order)*sizeof(double));
       break;
+    case 4:
+      /* along u */
+
+      k = ay_nb_FindSpanMult(np->height-1, np->vorder-1, param,
+			     np->vknotv, &s);
+
+      r = np->vorder-s-1;
+      if(r > 0)
+	{
+	  if(!(Qw = calloc(((np->height+r)*np->width)*stride, sizeof(double))))
+	    { ay_status = AY_EOMEM; goto cleanup; }
+	  if(!(UVQ = calloc((np->height+np->vorder+r), sizeof(double))))
+	    { ay_status = AY_EOMEM; goto cleanup; }
+
+	  ay_status = ay_nb_InsertKnotSurfV(stride, np->width-1, np->height-1,
+				       np->vorder-1, np->vknotv, np->controlv,
+					    param, k, s, r,
+					    UVQ, Qw);
+	  if(ay_status)
+	    { goto cleanup; }
+	}
+      else
+	{
+	  Qw = np->controlv;
+	}
+
+      
+      if(r > 0)
+	 a = k - (np->vorder-1) + (np->vorder-1-s+r-1)/2 + 1;
+       else
+	 a = k - (np->vorder-1);
+
+      a *= stride;
+
+      for(i = 0; i < nc->length*stride; i += stride)
+	{
+	  memcpy(&(cv[i]), &(Qw[a]), stride*sizeof(double));
+	  a += (np->height+((r>0)?r:0))*stride;
+	}
+
+      if(r < 1)
+	Qw = NULL;
+
+      memcpy(nc->knotv, np->vknotv, (nc->length+nc->order)*sizeof(double));
+
+      break;
+    case 5:
+      /* along v */
+ 
+      k = ay_nb_FindSpanMult(np->width-1, np->uorder-1, param,
+			     np->uknotv, &s);
+
+      r = np->uorder-s-1;
+      if(r > 0)
+	{
+	  if(!(Qw = calloc(((np->width+r)*np->height)*stride, sizeof(double))))
+	    { ay_status = AY_EOMEM; goto cleanup; }
+	  if(!(UVQ = calloc((np->width+np->uorder+r), sizeof(double))))
+	    { ay_status = AY_EOMEM; goto cleanup; }
+
+	  ay_status = ay_nb_InsertKnotSurfU(stride, np->width-1, np->height-1,
+				       np->uorder-1, np->uknotv, np->controlv,
+					    param, k, s, r,
+					    UVQ, Qw);
+	  if(ay_status)
+	    { goto cleanup; }
+	}
+      else
+	{
+	  Qw = np->controlv;
+	}
+
+      if(r > 0)
+	 a = k - (np->uorder-1) + (np->uorder-1-s+r-1)/2 + 1;
+       else
+	 a = k - (np->uorder-1);
+
+      a *= np->height*stride;
+
+      memcpy(&(cv[0]), &(Qw[a]), np->height*stride*sizeof(double));
+
+      if(r < 1)
+	Qw = NULL;
+
+      memcpy(nc->knotv, np->uknotv, (nc->length+nc->order)*sizeof(double));
+      break;
     default:
       ay_status = AY_ERROR;
       goto cleanup;
@@ -5330,6 +5426,11 @@ cleanup:
 
       free(nc);
     } /* if */
+
+  if(Qw)
+    free(Qw);
+  if(UVQ)
+    free(UVQ);
 
  return ay_status;
 } /* ay_npt_extractnc */
