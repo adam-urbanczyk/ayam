@@ -502,7 +502,8 @@ ay_tti_handle_simple_glyf(ay_tti_font *ttfont, ay_tti_glyf *glyf,
   k = 0;
   lp = 0;
 
-  lsb = ntohs(ttfont->hmtx[ttfont->nglyf].lsb);
+  lsb = (ttfont->nglyf < ttfont->numberOfHMetrics) ?
+    ntohs(ttfont->hmtx[ttfont->nglyf].lsb):0;
   startx = ttfont->soffset;
   yoffset = ttfont->yoffset;
 
@@ -1046,7 +1047,12 @@ ay_tti_getchar(ay_tti_font *ttfont, int c, ay_tti_letter *vert)
   /*
   ttfont->soffset += (ntohs(ttfont->hmtx[(ttfont->numberOfHMetrics>1)?ttfont->nglyf:0].advanceWidth));
   */
-  vert->xoffset += (ntohs(ttfont->hmtx[(ttfont->numberOfHMetrics>1)?ttfont->nglyf:0].advanceWidth))/(double)ttfont->unitem;
+  if(ttfont->nglyf < ttfont->numberOfHMetrics)
+    vert->xoffset += (ntohs(ttfont->hmtx[ttfont->nglyf].advanceWidth))/
+      (double)ttfont->unitem;
+  else
+    vert->xoffset += (ntohs(ttfont->hmtx[0].advanceWidth))/
+      (double)ttfont->unitem;
 
  return 0;
 } /* ay_tti_getchar */
