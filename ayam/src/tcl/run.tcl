@@ -228,13 +228,23 @@ proc runRenderer { cmd template } {
     pack $f -in $w -side top -fill x
 
     button $w.bca -text "Cancel!" -width 16 -command "\
+	    set dontwait 0;\
 	    foreach i {$pids} {\
 	     if { \"$kill\" == \"w32kill\" } {\
-	      w32kill \$i; } else {\
-	      exec $kill \$i }; };\
-	    foreach i {$pids} {\
-	     if { \"$wait\" != \"\" } {\
-	      catch \{ $wait \$i \}; }; };\
+	      catch \{ w32kill \$i; \} result } else {\
+	      catch \{ exec $kill \$i \} result;\
+	     };\
+	     if { \$result != \"\" } {\
+	      puts stderr \"\$result\"; set dontwait 1\
+             };\
+            };\
+	    if { !\$dontwait } {
+	     foreach i {$pids} {\
+	      if { \"$wait\" != \"\" } {\
+	      catch \{ $wait \$i \};
+              };\
+             };\
+	    };\
 	    catch \{ fileevent $ioPipe readable \"\" \} ;\
 	    catch \{ fileevent $ioFid readable \"\" \} ;\
 	    focus .;\
@@ -249,11 +259,9 @@ proc runRenderer { cmd template } {
 	# are we obscured?
 	if { "%s" == "VisibilityPartiallyObscured" ||\
 		"%s" == "VisibilityFullyObscured" } {
-
+	    # yes: try to raise the window, but just one time
 	    raise [winfo toplevel %W]
-	    # try to raise the window just one time
 	    bind %W <Visibility> ""
-	     
 	}
     }
 
