@@ -403,9 +403,10 @@ ay_cap_convertcb(ay_object *o, int in_place)
 	  else
 	    {
 	      ay_status = ay_object_replace(new, o);
-	    }
-	}
-    }
+	    } /* if */
+	} /* if */
+    } /* if */
+
  return ay_status;
 } /* ay_cap_convertcb */
 
@@ -429,9 +430,9 @@ ay_cap_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  if(*result)
 	    {
 	      ay_trafo_add(o, *result);
-	    }
-	}
-    }
+	    } /* if */
+	} /* if */
+    } /* if */
 
  return ay_status;
 } /* ay_cap_providecb */
