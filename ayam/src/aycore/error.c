@@ -26,7 +26,7 @@ ay_error_wlog(char *message)
 
  if(!message)
    return;
- 
+
   if(ay_prefs.writelog)
     {
       if(ay_prefs.logfile)
@@ -39,10 +39,10 @@ ay_error_wlog(char *message)
 			  "Unable to open logfile: \"%s\" for writing!\n",
 			  ay_prefs.logfile);
 		  warned = AY_TRUE;
-		}
+		} /* if */
 	      return;
-	    }
-	}
+	    } /* if */
+	} /* if */
 
       m = strchr(message, '"');
       if(m)
@@ -52,10 +52,10 @@ ay_error_wlog(char *message)
       else
 	{
 	  fprintf(log, "%s\n", message);
-	}
+	} /* if */
 
       fclose(log);
-    }
+    } /* if */
 
   return;
 } /* ay_error_wlog */
@@ -123,16 +123,16 @@ ay_error(int code, char *where, char *what)
 	  Tcl_DStringFree(&dsl);
 	  free(countstr);
 	}
-	count = 0;
-	if(last_message)
-	  {
-	    free(last_message);
-	    last_message = NULL;
-	  }
+      count = 0;
+      if(last_message)
+	{
+	  free(last_message);
+	  last_message = NULL;
+	}
 
-	Tcl_DStringFree(&ds);
-	return;
-    }
+      Tcl_DStringFree(&ds);
+      return;
+    } /* if */
 
 
   if(where)
@@ -177,7 +177,7 @@ ay_error(int code, char *where, char *what)
       break;
     case AY_ENULL:
       Tcl_DStringAppend(&ds,
-		     "Internal error: Illegal NULL pointer encountered!", -1);
+		      "Internal error: Illegal NULL pointer encountered!", -1);
       break;
     case AY_EUEOF:
       Tcl_DStringAppend(&ds, "Unexpected EOF encountered: ", -1);
@@ -191,7 +191,7 @@ ay_error(int code, char *where, char *what)
     default:
       Tcl_DStringAppend(&ds, gentxterr, -1);
       break;
-    }
+    } /* switch */
 
   if(what)
     Tcl_DStringAppend(&ds, what, -1);
@@ -199,7 +199,7 @@ ay_error(int code, char *where, char *what)
   Tcl_DStringAppend(&ds, "\"", -1);
 
   if(last_message && !strcmp(last_message, Tcl_DStringValue(&ds)))
-    { 
+    {
       /* last messages were identical, just count and exit */
       count++;
       Tcl_DStringFree(&ds);
@@ -224,9 +224,9 @@ ay_error(int code, char *where, char *what)
 	  ay_error_wlog(Tcl_DStringValue(&dsl));
 	  Tcl_DStringFree(&dsl);
 	  free(countstr);
-	}
+	} /* if */
 	count = 0;
-    }
+    } /* if */
 
   Tcl_Eval(interp, Tcl_DStringValue(&ds));
   ay_error_wlog(Tcl_DStringValue(&ds));
@@ -234,17 +234,25 @@ ay_error(int code, char *where, char *what)
   if(last_message)
     {
       free(last_message);
+      last_message = NULL;
     }
-
-  last_message = calloc(strlen(Tcl_DStringValue(&ds))+1, sizeof(char));
+  if(!(last_message = calloc(strlen(Tcl_DStringValue(&ds))+1, sizeof(char))))
+    {
+      fprintf(stderr,"Ayam: Cannot handle error message; out of memory!\n");
+      return;
+    }
   strcpy(last_message, Tcl_DStringValue(&ds));
 
   Tcl_DStringFree(&ds);
 
-  ton = Tcl_NewStringObj("ay_error", -1);
-  to = Tcl_NewIntObj(code);
-  Tcl_ObjSetVar2(interp, ton, NULL, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+  if(code != AY_EOUTPUT)
+    {
+      ton = Tcl_NewStringObj("ay_error", -1);
+      to = Tcl_NewIntObj(code);
+      Tcl_ObjSetVar2(interp, ton, NULL, to, TCL_LEAVE_ERR_MSG |
+		     TCL_GLOBAL_ONLY);
+      Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+    }
 
  return;
 } /* ay_error */
