@@ -29,7 +29,6 @@
 proc shader_scanAll {} {
     global ay env ayprefs AYUSESLCARGS AYUSESLXARGS ay_error
 
-    ayError 4 scanAllShaders "Scanning for shaders..."
 
     foreach i [list surface displacement imager light volume transformation] {
 	eval "set ay(${i}shaders) \"\" "
@@ -55,6 +54,8 @@ proc shader_scanAll {} {
 	return;
     }
 
+    ayError 4 scanAllShaders "Scanning for $sext shaders..."
+
     set temp ""
     if { $ayprefs(Shaders) == "" } {
 	ayError 2 scanAllShaders "Shaders are not configured."
@@ -69,6 +70,8 @@ proc shader_scanAll {} {
     } else { set env(SHADERS) $ayprefs(Shaders) }
 
     set spathstr [split "$ayprefs(Shaders)" $ay(separator)]
+
+    ayError 4 scanAllShaders "In \\\"$ayprefs(Shaders)\\\"..."
 
     foreach p $spathstr {
 	set files [glob -nocomplain "${p}/*${sext}"]
@@ -158,7 +161,8 @@ proc shader_scanAll {} {
 	ayError 4 scanAllShaders $out
     } else {
 	ayError 1 scanAllShaders "No shaders found."
-	ayError 4 scanAllShaders "Please check the setting of Scene/Prefs/Shaders."
+	ayError 4 scanAllShaders\
+"Please check the setting of the Shaders preference setting."
     }
 
  return;
