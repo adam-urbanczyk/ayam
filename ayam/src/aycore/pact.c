@@ -1323,7 +1323,7 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
 
   if(ay_point_edit_coords)
     {
-      for(i=0;i<ay_point_edit_coords_number;i++)
+      for(i = 0; i < ay_point_edit_coords_number; i++)
 	{
 	  coords = ay_point_edit_coords[i]; 
 
@@ -1331,14 +1331,24 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
 	  coords[1] += movY;
 	  coords[2] += movZ;
 
-	}
-    }
+	} /* for */
 
-  o->modified = AY_TRUE;
-  ay_notify_force(ay_selection->object);
+      if((fabs(movX) > AY_EPSILON)||
+	 (fabs(movY) > AY_EPSILON)||
+	 (fabs(movZ) > AY_EPSILON))
+	{
 
-  if(!ay_prefs.lazynotify)
-    ay_status = ay_notify_parent();
+	  o->modified = AY_TRUE;
+	  ay_notify_force(ay_selection->object);
+
+	  if(!ay_prefs.lazynotify)
+	    {
+	      ay_status = ay_notify_parent();
+	    } /* if */
+
+	} /* if */
+
+    } /* if */
 
  return TCL_OK;
 } /* ay_pact_petcb */
