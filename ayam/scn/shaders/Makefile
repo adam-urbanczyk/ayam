@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile [16. Sep 2002]
+# Makefile [27. May 2003]
 # Makefile for Ayam example scene shaders
 
 SOURCES = RCClouds.sl\
@@ -40,6 +40,13 @@ AIRSHADERS := $(SOURCES:%.sl=%.slb)
 SHADERD = shaded
 SDFLAGS =
 
+# XML (sl2xml from K3D)
+XMLSHADERS := $(SOURCES:%.sl=%.xml)
+SL2XML = sl2xml
+SL2XMLFLAGS =
+CPP = gpp
+CPPFLAGS = -C
+
 #########
 
 slc: $(SLCSHADERS)
@@ -74,6 +81,10 @@ slb: $(AIRSHADERS)
 air: slb
 
 
+xml: $(XMLSHADERS)
+
+k3d: xml
+
 all: slc slx sld so slo slb
 
 clean:
@@ -83,10 +94,11 @@ clean:
 	-rm -rf *.so
 	-rm -rf *.slo
 	-rm -rf *.slb
+	-rm -rf *.xml
 
 
 
-.SUFFIXES: .slc .slx .sld .so .slo .slb .sl
+.SUFFIXES: .slc .slx .sld .so .slo .slb .xml .sl
 
 .sl.slc:
 	$(SLC) $(SLCFLAGS) $*.sl
@@ -105,3 +117,7 @@ clean:
 
 .sl.slb:
 	$(SHADERD) $(SDFLAGS) $*.sl
+
+.sl.xml:
+	$(CPP) $(CPPFLAGS) -o $*.slpp $*.sl
+	$(SL2XML) $(SL2XMLFLAGS) $*.slpp > $*.xml
