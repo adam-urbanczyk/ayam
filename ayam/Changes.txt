@@ -65,6 +65,9 @@ o added an internal kill command for the Win32 platform ("w32kill") that
   may be used by the RenderGUIs to stop the rendering (set hidden preference
   option "Kill" to "w32kill" to accomplish this)
 o added new object type "SDMesh"
+o edited points are now immediately snapped to grid coordinates
+o direct point editing dialogue now stays open all the time
+
 
 [15. 10. 2002] Ayam1.3:
 o bug fixes:
