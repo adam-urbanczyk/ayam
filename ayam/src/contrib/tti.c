@@ -1,17 +1,25 @@
 /*
-**
-**	truetype font modul
-*/
+ * Ayam, a free 3D modeler for the RenderMan interface.
+ *
+ * Ayam is copyrighted 1998-2004 by Randolf Schultz
+ * (rschultz@informatik.uni-rostock.de) and others.
+ *
+ * All rights reserved.
+ *
+ * See the file License for details.
+ *
+ */
+
+/* tti.c - truetype font parsing helpers */
+
+/* original version of this file provided by Frank (copper) Pagels */
 
 #include "ayam.h"
-#include <math.h>
 #include "tti.h"
 
-#ifndef WINDOWS
+#ifndef WIN32
  #include <unistd.h>
  #include <netinet/in.h>
-#else
- #include "windows.h"
 #endif
 
 #define step 0.15
