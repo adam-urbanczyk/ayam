@@ -29,9 +29,9 @@ ay_capt_createfromcurve(ay_object *c, ay_object **ca)
  ay_nurbcurve_object *nc = NULL;
  ay_nurbpatch_object *np = NULL;
  double knotv[4] = {0.0,0.0,1.0,1.0};
- double minx, miny, maxx, maxy, angle = 0.0;
- double firstmovx, firstmovy, trimmx, trimmy;
- int first = AY_TRUE, i, stride;
+ double minx = 0.0, miny = 0.0, maxx = 0.0, maxy = 0.0, angle = 0.0;
+ double firstmovx = 0.0, firstmovy = 0.0, trimmx = 0.0, trimmy = 0.0;
+ int first = AY_TRUE, i = 0, stride = 4;
  double m[16];
 
   if(!c || !ca)
