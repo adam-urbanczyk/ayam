@@ -813,17 +813,36 @@ ay_draw_trimview(void)
  ay_nurbpatch_object *patch = NULL;
  GLfloat minx, maxx, miny, maxy;
 
- /* check, whether the current level is inside a NURBPatch object */
+ /* check, whether we are not in the root level */
  if(ay_currentlevel && ay_currentlevel->object != ay_root)
    {
+     /* check, whether the current level is inside a NURBPatch object */
      if(ay_currentlevel->next &&
 	(ay_currentlevel->next->object->type == AY_IDNPATCH))
        {
 	 /* it is; get the patch */
 	 patch = (ay_nurbpatch_object *)
 	   (ay_currentlevel->next->object->refine);
+       }
 
-	 /* draw the bounds of its parametric space as rectangle */
+     /* if the first test failed, we can still be inside a level
+	inside a NURBPatch object (a trimloop level), are we? */
+     if(!patch)
+       {
+	 if(ay_currentlevel->next && ay_currentlevel->next->next &&
+	    ay_currentlevel->next->next->next &&
+	    (ay_currentlevel->next->next->next->object->type == AY_IDNPATCH))
+	   {
+
+	     /* we are; get the patch */
+	     patch = (ay_nurbpatch_object *)
+	       (ay_currentlevel->next->next->next->object->refine);
+	   }
+       }
+
+     /* draw the bounds of the parametric space of the patch as rectangle */
+     if(patch)
+       {
 	 minx = (GLfloat)((patch->uknotv)[0]);
 	 miny = (GLfloat)((patch->vknotv)[0]);
  
