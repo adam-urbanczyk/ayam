@@ -320,8 +320,9 @@ ay_gordon_notifycb(ay_object *o)
 {
  int ay_status = AY_OK;
  ay_nurbcurve_object *curve = NULL;
+ ay_nurbpatch_object *patch = NULL;
  ay_gordon_object *gordon = NULL;
- ay_object *down = NULL, *c = NULL, *last = NULL;
+ ay_object *down = NULL, *c = NULL, *p = NULL, *last = NULL;
  ay_object *hcurves = NULL, *vcurves = NULL, *inpatch = NULL;
  ay_object *npatch = NULL;
  int getvcurves = AY_FALSE, getinpatch = AY_FALSE, hcount = 0, vcount = 0;
@@ -424,6 +425,29 @@ ay_gordon_notifycb(ay_object *o)
 	      else
 		{
 		  ay_status = ay_provide_object(down, AY_IDNPATCH, &inpatch);
+		} /* if */
+
+	      if(inpatch)
+		{
+		  p = inpatch;
+		  if((p->movx != 0.0) || (p->movy != 0.0) ||
+		     (p->movz != 0.0) ||
+		     (p->rotx != 0.0) || (p->roty != 0.0) ||
+		     (p->rotz != 0.0) ||
+		     (p->scalx != 1.0) || (p->scaly != 1.0) ||
+		     (p->scalz != 1.0) ||
+		     (p->quat[0] != 0.0) || (p->quat[1] != 0.0) ||
+		     (p->quat[2] != 0.0) || (p->quat[3] != 1.0))
+		    {
+		      ay_trafo_creatematrix(c, m);
+		      patch = (ay_nurbpatch_object *)p->refine;
+		      a = 0;
+		      for(i = 0; i < patch->width*patch->height; i++)
+			{
+			  ay_trafo_apply4(&(patch->controlv[a]), m);
+			  a += 4;
+			}
+		    } /* if */
 		} /* if */
 	    } /* if */
 	} /* if */
