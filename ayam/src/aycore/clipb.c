@@ -169,6 +169,12 @@ ay_clipb_cuttcmd(ClientData clientData, Tcl_Interp *interp,
   if(o)
     o->next = NULL;
 
+  /* free point selection */
+  if(ay_point_edit_coords)
+    free(ay_point_edit_coords);
+
+  ay_point_edit_coords = NULL;
+
   /* free selection */
   ay_status = ay_sel_free(AY_TRUE);
 

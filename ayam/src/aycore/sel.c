@@ -36,12 +36,6 @@ ay_sel_free(int clear_selflag)
 
   ay_selection = NULL;
 
-  /* XXXX does this belong here? */
-  if(ay_point_edit_coords)
-    free(ay_point_edit_coords);
-
-  ay_point_edit_coords = NULL;
-
  return AY_OK;
 } /* ay_sel_free */
 

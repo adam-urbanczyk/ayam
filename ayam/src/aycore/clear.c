@@ -83,6 +83,12 @@ ay_clear_scene(void)
     }
   ay_root->next = o;
 
+  /* free point selection */
+  if(ay_point_edit_coords)
+    free(ay_point_edit_coords);
+
+  ay_point_edit_coords = NULL;
+
   /* clear selection */
   ay_status = ay_sel_free(AY_FALSE);
   if(ay_status)
