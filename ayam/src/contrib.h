@@ -43,6 +43,9 @@ int ay_tree_crtnodename(ay_object *parent, ay_list_object *list,
 
 int ay_tree_registerdrop(ay_treedropcb  *cb, unsigned int type_id);
 
+int ay_tree_selecttcmd(ClientData clientData, Tcl_Interp *interp,
+		     int argc, char *argv[]);
+
 int ay_tree_inittcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[]);
 
