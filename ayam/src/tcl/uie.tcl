@@ -377,25 +377,28 @@ proc addCheck { w prop name } {
 
     if { $tcl_platform(platform) == "windows" } {
 	# damn windows
-	checkbutton $f.cb -image emptyimg -variable ${prop}(${name})\
+	set ff [frame $f.fcb -highlightthickness 1]
+	checkbutton $ff.cb -image emptyimg -variable ${prop}(${name})\
 		-bd $bw -indicatoron 0 -selectcolor #b03060
 
-	bind $f <Enter> { %W configure -background #ececec }
-	bind $f <Leave> { %W configure -background SystemButtonFace }
-	bind $f <1> { %W.cb invoke }
-	bind $f.cb <FocusIn> { %W flash }
+	bind $ff <Enter> { %W configure -background #ececec }
+	bind $ff <Leave> { %W configure -background SystemButtonFace }
+	bind $ff <1> { %W.cb invoke }
 
 	pack $f.l -in $f -side left
-	pack $f.cb -in $f -side left -padx 10 -pady 2 -expand yes\
-		-anchor center
+	pack $f.fcb -in $f -side left -expand yes -fill both
+	pack $ff.cb -in $ff -side top -padx 30 -pady 3
+
+	eval [subst "bindtags $ff.cb \{$ff.cb Checkbutton all\}"]
+	bind $ff.cb <Key-Escape> {resetFocus}
     } else {
 	checkbutton $f.cb -variable ${prop}(${name}) -bd $bw -pady 1
 	pack $f.l -in $f -side left
 	pack $f.cb -in $f -side left -fill x -expand yes
-    }
 
-    eval [subst "bindtags $f.cb \{$f.cb Checkbutton all\}"]
-    bind $f.cb <Key-Escape> {resetFocus}
+	eval [subst "bindtags $f.cb \{$f.cb Checkbutton all\}"]
+	bind $f.cb <Key-Escape> {resetFocus}
+    }
 
     pack $f -in $w -side top -fill x
 
@@ -444,7 +447,10 @@ proc addMenu { w prop name elist } {
     }
 
     menubutton $f.mb -text Eimer -menu $f.mb.m -relief raised -bd $bw\
-	    -padx 0 -pady 1
+	    -padx 0 -pady 1 -takefocus 1 -highlightthickness 1
+
+    eval [subst "bindtags $f.mb \{$f.mb Menubutton all\}"]
+    bind $f.mb <Key-Escape> {resetFocus}
 
     if { $tcl_platform(platform) == "windows" } {
 	$f.mb configure -pady 1
