@@ -9,7 +9,7 @@
 
 # ayam.tcl - the main Ayam script
 
-# Global Variables
+# Global Variables and Arrays:
 
 # preference settings
 array set ayprefs {
@@ -145,6 +145,7 @@ on its name, then press <Ctrl+Shift+i> (Copy Marked Prop).}
 {Extensive documentation is available as HTML and PDF.}
 }
 }
+# array ayprefs
 
 
 # standard shortcuts for main window
@@ -180,7 +181,14 @@ array set aymainshortcuts {
     Help "F1"
     Zap "Ctrl-Z"
     SwCon "Shift-Tab"
+    SwLazyNotify "F6"
+    SwNURBS "F5"
+    SwWire "F4"
+    SetSTP "F3"
+    SetSTL "F2"
 }
+# array aymainshortcuts
+
 
 # standard shortcuts for a view window
 array set ayviewshortcuts {
@@ -248,6 +256,8 @@ array set ayviewshortcuts {
     RotMod "Alt"
     RotModKey "Alt_L"
 }
+# array ayviewshortcuts
+
 
 # standard RiAttributes DB
 array set riattr {
@@ -279,6 +289,8 @@ array set riattr {
     trimcurve { {sense s {"inside" "outside"}} }
 
 }
+# array riattr
+
 
 # standard RiOptions DB
 array set riopt {
@@ -305,6 +317,7 @@ array set riopt {
     shadow { { bias0 f {0.01 0.1 0.25 0.5} } { bias1 f {0.01 0.1 0.25 0.5} } }
     statistics { {endofframe i {0 1 2 3} } {filename s} }
 }
+# array riopt
 
 array set rioptval {}
 array set riattrval {}
@@ -367,11 +380,14 @@ array set ay {
  locales { en de fr }
  ScanShaders 0
  need_redraw 1
+ sstsema 0
 }
+# array ay
 
+# (re)set global variable that holds the error number
 set ay_error 0
 
-# platform specific initialization
+# Platform Specific Initialization:
 if { $tcl_platform(platform) == "windows" } {
     set ay(separator) ";"
     set ay(pady) 0
@@ -432,7 +448,7 @@ if { [string length [array names env AYAMRC]] != 0 } {
 }
 
 
-# important procedures
+# Some Important Procedures:
 
 # uCL: an optimized "update Selection", that just updates
 # the current Level
@@ -473,7 +489,8 @@ proc uCL { mode {addargs ""} } {
 }
 # uCL
 
-# uCR - an optimized "update Selection" just for the
+
+# uCR: an optimized "update Selection" just for the
 # case of newly created objects (CR); just adds new nodes
 # to the current level of the tree
 proc uCR { } {
@@ -584,6 +601,7 @@ proc uS { {update_prop "" } {maintain_selection "" } } {
 
 
 # sL - select Last
+# select the last object in the current level
 proc sL { } {
     global ay
 
@@ -663,7 +681,8 @@ proc rV { } {
 }
 # rV
 
-#
+
+# tipoftheDay - print a "random" entry from $ayprefs(DailyTips) to the console
 proc tipoftheDay { } {
     global ayprefs
 
@@ -675,9 +694,10 @@ proc tipoftheDay { } {
 
  return;
 }
-#
+# tipoftheDay
 
-# ayam_loadscript
+
+# ayam_loadscript - load a script
 proc ayam_loadscript { file } {
     global AYWRAPPED
     if { $AYWRAPPED == 1 } {
@@ -693,6 +713,8 @@ proc ayam_loadscript { file } {
  return;
 }
 # ayam_loadscript
+
+# Ayam Startup Sequence:
 
 # first, process some arguments
 set i 0
@@ -747,7 +769,7 @@ ayam_loadscript io
 # create the main menu
 ayam_loadscript mmenu
 
-# exit program when window is closed
+# properly exit the program when the main window is closed
 wm protocol . WM_DELETE_WINDOW {
     global ay
     set m $ay(filemenu)
@@ -755,7 +777,7 @@ wm protocol . WM_DELETE_WINDOW {
 }
 
 frame .fu.fMain.fHier
-# The Tree-Widget
+# create the tree widget
 treeInit
 #XXXX wie laedt man BWidgets in einem wrapped executable?
 if { $AYWRAPPED == 1 } {
@@ -835,7 +857,7 @@ bind .fl.con.console <ButtonPress-5> {
     .fl.con.console yview scroll 1 pages; break
 }
 
-# paned window management for console
+# establish paned window management for console
 update
 if { $tcl_platform(platform) == "windows" } {
     wm deiconify .
@@ -856,7 +878,7 @@ if { [winfo exists .fl.con] == 1 } {
     Console:prompt .fl.con
 }
 
-# Playground:
+# create property listbox (plb) and property GUI (property canvas)
 ayam_loadscript plb
 
 frame .fu.fMain.fProp
@@ -864,7 +886,7 @@ pack .fu.fMain.fProp -in .fu.fMain -side left -expand yes -fill both
 plb_open .fu.fMain.fProp
 update
 
-# paned window management for hierarchy
+# establish paned window management for hierarchy
 set vwidth [expr [winfo rootx .fu.fMain.fProp]+5]
 pane .fu.fMain.fHier .fu.fMain.fProp
 pane_constrain . .fu.fMain.__h1 .fu.fMain.fHier .fu.fMain.fProp width x 1
@@ -949,18 +971,19 @@ if { $tcl_platform(platform) != "windows" } {
     wm deiconify .
 }
 
-# ayam_flush:
-#  flush error messages each 2s
+# ayam_flush - flush error messages each 2s
 proc ayam_flush { } {
     global ayprefs
     ayError 3
     after $ayprefs(EFlush) { ayam_flush }
 }
+# ayam_flush
 after $ayprefs(EFlush) { ayam_flush }
 
-# Ignition
-#
+# Ignition:
 puts stdout "Ayam-Startup-Sequence initiated."
+
+# read ayamrc
 if { $ay(failsafe) == 0 } {
     puts stdout "Sourcing $ay(ayamrc)..."
     if { [file exists $ay(ayamrc)] } {
@@ -973,6 +996,8 @@ if { $ay(failsafe) == 0 } {
 	
     }
 }
+
+# make (new) preference settings known to C-context
 prefs_set
 
 # immediately switch to ListBox?
@@ -1084,7 +1109,7 @@ foreach j $avnames {
 # build most recently used files menu entries
 io_mruUMenu
 
-# auto scroll canvas to item with focus
+# auto scroll property canvas to item with focus
 bind all <Tab> +plb_focus
 bind all <Shift-Tab> +plb_focus
 if { ( $tcl_platform(platform) != "windows" ) &&
@@ -1097,8 +1122,11 @@ if { ( $tcl_platform(platform) != "windows" ) &&
 # bgerror is not renamable until called a first time
 catch {::bgerror}
 catch {rename ::bgerror orig_bgerror}
+
+# bgerror - handle all Tcl error messages
 proc bgerror { message } {
     global ayprefs
+
     if { $ayprefs(RedirectTcl) == 1 } {
 	regsub -all "\"" $message "\\\"" message
 	ayError 2 Tcl $message
@@ -1106,6 +1134,7 @@ proc bgerror { message } {
 	orig_bgerror $message
     }
 }
+# bgerror
 
 # if there is a view window under the mouse pointer, make it current
 after idle viewMouseToCurrent
