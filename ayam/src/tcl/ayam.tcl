@@ -120,6 +120,11 @@ array set ayprefs {
 
  AutoFocus 0
 
+ Prompt {}
+
+ SMethod 3
+ SParam 10
+
  Scripts ""
  Docs "http://ayam.sourceforge.net/docs/"
     DailyTips {
@@ -302,6 +307,7 @@ array set riopt {
              }
 
     limits { {derivmemory i {2} }
+             {eyesplits i {5 10 15} }
            }
 
     radiosity { { steps i {0 32 64 128} }
@@ -393,6 +399,8 @@ array set ay {
  glu_ver ""
  glu_ext ""
  action 0
+ uc 0
+ smethods { PathDistance ParametricError DomainDistance }
 }
 # array ay
 
@@ -800,7 +808,7 @@ if { $AYWRAPPED == 1 } {
 	set curdir [pwd]
 	cd $ayprefs(TmpDir)
 
-	if {$ay(failsafe) == 1 } { catch {file delete -force BWidgets} }
+	if { $ay(failsafe) == 1 } { catch {file delete -force BWidgets} }
 	if { [auto_execok unzip] != "" } {
 	    exec unzip -o -u -qq [info nameofexecutable] BWidgets/\*
 	} else {
@@ -1015,6 +1023,19 @@ if { $ay(failsafe) == 0 } {
 
 # make (new) preference settings known to C-context
 prefs_set
+
+# update_prompt - print a first prompt after configuration change
+proc update_prompt {n1 n2 op} {
+    .fl.con delete end-1lines end
+    Console:prompt .fl.con "\n"
+}
+# update_prompt
+
+# set new prompt?
+if { $ayprefs(Prompt) != "" } {
+    set .fl.con(-prompt) $ayprefs(Prompt)
+    update_prompt
+}
 
 # immediately switch to ListBox?
 if { $ayprefs(showtr) == 0 } {
