@@ -1033,6 +1033,7 @@ ayam_loadscript sdmesh
 ayam_loadscript sphere
 ayam_loadscript skin
 ayam_loadscript sweep
+ayam_loadscript text
 ayam_loadscript torus
 ayam_loadscript prop
 ayam_loadscript pclip
