@@ -219,7 +219,7 @@ SHLFLAGS = -shared
 # RRIB Plugin Required Libraries
 # where is Affine?
 AFFINEDIR = ../../affine0008
-RRIBLIBS = $(AFFINEDIR)/lib -lribrdr -lribhash -lribnop -lm
+RRIBLIBS = -L$(AFFINEDIR)/lib -lribrdr -lribhash -lribnop -lm
 
 # Ayslx Plugin (Aqsis)
 AYSLXINCDIR = $(AQSISDIR)/include
