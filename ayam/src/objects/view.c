@@ -729,6 +729,12 @@ ay_view_readcb(FILE *fileptr, ay_object *o)
 
   Tcl_Eval(ay_interp, command);
 
+  sprintf(command,
+	  "global ay;viewSetMModeIcon [lindex $ay(views) end] %d\n",
+	  vtemp.local);
+
+  Tcl_Eval(ay_interp, command);
+
   Tcl_Eval(ay_interp, update_cmd);
   
  return AY_EDONOTLINK;
