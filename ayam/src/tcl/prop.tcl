@@ -138,7 +138,9 @@ addCommand $w c0 "Remove all Tags!" {undo save RemTags;delTags all;plb_update}
 set bw 1
 set f [frame $w.fDelete -relief sunken -bd $bw]
 menubutton $f.mb -text "Remove Tag!" -menu $f.mb.m -relief raised -bd $bw\
-	-padx 0 -pady 1
+	-padx 0 -pady 1 -takefocus 1 -highlightthickness 1
+eval [subst "bindtags $f.mb \{$f.mb Menubutton all\}"]
+bind $f.mb <Key-Escape> {resetFocus}
 if { $tcl_platform(platform) == "windows" } {
     $f.mb configure -pady 1
 }
