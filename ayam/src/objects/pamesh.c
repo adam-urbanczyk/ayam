@@ -193,32 +193,66 @@ ay_pamesh_drawcpcb(struct Togl *togl, ay_object *o)
   height = pamesh->height;
 
   ver = pamesh->controlv;
-  a = 0;
-  for(i = 0; i < width; i++)
-    {
-      glBegin(GL_LINE_STRIP);
-	for(j = 0; j < height; j++)
-	  {
-	    glVertex3dv((GLdouble *)&ver[a]);
-	    a += 4;
-	  }
-      glEnd();
-    }
-  
-  a = 0;
-  for(j = 0; j < height; j++)
-    {
-      a = j * 4;
-      
-      glBegin(GL_LINE_STRIP);
-	for(i = 0; i < width; i++)
-	  {
-	    glVertex3dv((GLdouble *)&ver[a]);
 
-	    a += (4 * height);
-	  }
-      glEnd();
+  a = 0;
+  if(pamesh->close_v)
+    {
+      for(i = 0; i < width; i++)
+	{
+	  glBegin(GL_LINE_LOOP);
+	   for(j = 0; j < height; j++)
+	     {
+	       glVertex3dv((GLdouble *)&ver[a]);
+	       a += 4;
+	     }
+	  glEnd();
+	}
     }
+  else
+    {
+      for(i = 0; i < width; i++)
+	{
+	  glBegin(GL_LINE_STRIP);
+	   for(j = 0; j < height; j++)
+	     {
+	       glVertex3dv((GLdouble *)&ver[a]);
+	       a += 4;
+	     } /* for */
+	  glEnd();
+	} /* for */
+    } /* if */
+
+  a = 0;
+  if(pamesh->close_u)
+    {
+      for(j = 0; j < height; j++)
+	{
+	  a = j * 4;
+	  glBegin(GL_LINE_LOOP);
+	   for(i = 0; i < width; i++)
+	     {
+	       glVertex3dv((GLdouble *)&ver[a]);
+
+	       a += (4 * height);
+	     }
+	  glEnd();
+	}
+    }
+  else
+    {
+      for(j = 0; j < height; j++)
+	{
+	  a = j * 4;
+	  glBegin(GL_LINE_STRIP);
+	   for(i = 0; i < width; i++)
+	     {
+	       glVertex3dv((GLdouble *)&ver[a]);
+
+	       a += (4 * height);
+	     } /* for */
+	  glEnd();
+	} /* for */
+    } /* if */
 
  return AY_OK;
 } /* ay_pamesh_drawcpcb */
@@ -448,11 +482,10 @@ ay_pamesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   pamesh->type = new_type;
   pamesh->btype_u = new_btype_u;
   pamesh->btype_v = new_btype_v;
-  /* XXXX Or close it like NURBS Curves? */
-  /*
+  
   pamesh->close_u = new_close_u;
   pamesh->close_v = new_close_v;
-  */
+
   if(pamesh->btype_u == AY_BTCUSTOM)
     {
       if(!pamesh->ubasis)
