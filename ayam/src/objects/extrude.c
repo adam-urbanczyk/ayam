@@ -894,7 +894,7 @@ ay_extrude_notifycb(ay_object *o)
 	    } /* if */
 
 	  if(got_object)
-	    ay_object_delete(c);
+	    ay_object_deletemulti(c);
 
 	} /* if c */
 
