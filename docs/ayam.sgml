@@ -35,8 +35,8 @@ On which platforms is Ayam available?
 <p>
 Ayam is primarily aimed at the platforms BMRT (Blue Moon Rendering
 Tools, a RenderMan compliant renderer by Larry Gritz (Exluna))
-runs on (those are Linux, IRIX, and Win32). Despite of this, Ayam may be used
-on many more platforms with any RenderMan compliant renderer.
+runs on. Those are Linux, IRIX, and Win32. Despite of this, Ayam may
+be used on many more platforms with any RenderMan compliant renderer.
 <p>
 For platforms where BMRT is not available (e.g. FreeBSD or NetBSD), Ayam
 may be compiled with code from the Affine Toolkit with limited
@@ -145,12 +145,15 @@ The same goes for the right border of the objects section.<p>
 
 <sect2>Objects<label id="obj">
 <p>
-The label <tt/"Objects"/ may be used to switch between two
+
+The default representation of the object hierarchy is a tree view.
+The second available representation is a simple listbox (as known from
+<tt/"The Mops"/).
+The label <tt/"Objects"/ may be used to switch between the two
 representations of the object hierarchy (using a double click).
 It is also possible to switch between both representations
 using the context menu.
-The default representation is a tree view. The second
-available representation is a simple listbox (as known from The Mops).
+
 The two representations have very different properties regarding
 speed, use of resources, and versatility. The tree is, due to the
 Drag-and-Drop operations, much more versatile but also slower.
@@ -161,8 +164,9 @@ In the tree view the current level is drawn in black while all
 other levels are grayed out. Selection of objects
 may only take place in the current level!
 
-You will notice, that there is a first object called "Root" in the
-top level, even though the scene seems to be empty.
+After the start-up of Ayam you will notice, that there is a first
+object called <tt/"Root"/ in the top level of the scene, even though the
+scene seems to be empty.
 See section <ref id="rootobj" name="Root Object"> for more
 information regarding this special object, and what it is good for.
 Note that you cannot delete or copy this object.
@@ -177,24 +181,21 @@ Note that you cannot delete or copy this object.
 <p>
 
 The tree view is very complex and may be slow on slow machines
-(Pentium 90 class), especially when dealing with large (deep nested)
-scenes.
+(of the Pentium 90 class), especially when dealing with large (deep nested)
+scenes. This should not be a problem nowadays.
 
 Objects may be selected using the left mouse button.
-Multiple selection of objects is possible using Shift
-and Control keys while clicking on objects.
+Multiple selection of objects is possible by holding down the
+<tt/&lt;Shift&gt;/ or <tt/&lt;Ctrl&gt;/ key while clicking on objects.
 
-Double clicking on objects with child objects
-toggles display of the child level.
-The same may be accomplished using single
-clicks on the well known plus/minus symbols
-in front of the name of those
-objects.
+Double clicking on objects with child objects toggles display of the
+child level.
+The same may be accomplished using single clicks on the well known
+plus/minus symbols in front of the name of those objects.
 
-Drag-and-Drop operation is also possible to move
-objects in the hierarchy and to initiate special
-actions like connecting materials to objects.
-However, this last feature is documented in section
+Drag-and-Drop operation is also possible to move objects in the
+hierarchy and to initiate special actions like connecting materials
+to objects. However, this last feature is documented in section
 <ref id="obandprp" name="Ayam Objects and Properties">
 as it is object type specific.
 
@@ -204,8 +205,8 @@ basic tree and clipboard operations:
 <itemize>
 <item><tt>"Tree/Rebuild"</tt> completely removes the tree nodes, rebuilds the
 hierarchy, and selects the root object
-<item><tt>"Tree/Open"</tt> opens all nodes with child nodes
-<item><tt>"Tree/Close"</tt> closes all nodes with child nodes
+<item><tt>"Tree/Expand"</tt> opens all nodes with child nodes
+<item><tt>"Tree/Collapse"</tt> closes all nodes with child nodes
 <item><tt>"Switch to Listbox"</tt> removes the tree and replaces it
 with the object listbox (see below).
 <item><tt>"Deselect Object"</tt> deselects the currently selected
@@ -227,11 +228,15 @@ or last object in the current level,
 <item><tt/&lt;Right&gt;/ enters the (first) selected object,
 <item><tt/&lt;Left&gt;/ enters the parent level,
 <item><tt/&lt;Ctrl+a&gt;/ and <tt/&lt;Ctrl+n&gt;/ select or de-select
-all object in the current level. If the current level is the root level,
+all objects in the current level. If the current level is the root level,
 the Root object will not be selected by <tt/&lt;Ctrl+a&gt;/.
 <item><tt/&lt;Space&gt;/ toggles display of the child objects of the
 selected object(s).
 </itemize>
+
+If those shortcuts do not work you may need to press <tt/&lt;Esc&gt;/
+first (when a property GUI has the input focus) or <tt/&lt;Shift-Tab&gt;/
+(when the console has the input focus).
 
 <bf/Listbox:/<label id="listbox">
 <p>
@@ -242,23 +247,21 @@ selected object(s).
 </figure>
 <p>
 
-The hierarchy listbox, displays the object
-hierarchy of the current scene.
-Using this listbox you may browse through the
-hierarchy of the scene with your mouse and you may
-select one or more objects.<p>
+The hierarchy listbox, displays the object hierarchy of the current scene.
+Using this listbox you may browse through the hierarchy of the scene
+with your mouse and you may select one or more objects.<p>
 Browsing and selecting should be very intuitively:
 Use a double click to enter a level (or an object with child objects),
 and a single click to select objects, multiple objects may be selected using
-click and drag, or holding down the Shift or Control key while clicking.
+click and drag, or holding down the <tt/&lt;Shift&gt;/ or <tt/&lt;Ctrl&gt;/
+key while clicking.
 Keyboard operation is also possible if the listbox has the
 input focus.<p>
 A <tt/".."/ is displayed as the first element of the current level
 if you are "inside" a level or another object.
 A double click on the <tt/".."/ takes you to the parent level.
-The buttons below the listbox
-may be used to change the selection or to quickly
-jump through the hierarchy. They should be self explanatory.
+The buttons below the listbox may be used to change the selection or
+to quickly jump through the hierarchy. They should be self explanatory.
 
 <label id="lbcontm">
 The rightmost mouse button opens a small context menu:
@@ -286,6 +289,10 @@ all object in the current level. If the current level is the root level,
 the Root object will not be selected by <tt/&lt;Ctrl+a&gt;/.
 </itemize>
 
+If those shortcuts do not work you may need to press <tt/&lt;Esc&gt;/
+first (when a property GUI has the input focus) or <tt/&lt;Shift-Tab&gt;/
+(when the console has the input focus).
+
 <sect2>Properties<label id="propgui">
 <p>
 <figure loc="ht">
@@ -294,25 +301,26 @@ the Root object will not be selected by <tt/&lt;Ctrl+a&gt;/.
 <caption>Properties</caption>
 </figure>
 <p>
-The listbox right next to the object hierarchy
-displays the properties of the currently selected
-object.<p>
-If there are multiple selected objects,
-the properties listbox will display no properties at all.<p>
+The listbox right next to the object hierarchy displays the properties
+of the currently selected object.<p>
+If there are multiple selected objects, the properties listbox will
+display no properties at all.<p>
 Unlike the objects tree/listbox, where you can select multiple entries,
 only one property may be selected.
 If a property is selected, the associated GUI will be shown in the
 appropriate area (on the right hand side).<p>
 Since Ayam 1.8 the keyboard may be used to select properties,
-just use one of 0-9. 0 always selects the last and often object type
-specific property, whereas 1 selects the first property, which is
-often the standard transformations.<p>
+just press one of the <tt/&lt;0&gt;/-<tt/&lt;9&gt;/ keys (most comfortably
+using the numeric keypad). <tt/&lt;0&gt;/ always selects the last and
+often the only object type specific property, whereas <tt/&lt;1&gt;/
+selects the first property, which often contains the standard
+transformations.<p>
 All property GUIs use more or less standardized GUI elements
 that are organized in list form. The lists may be scrolled if they get
 too long to fit into the window.<p>
 If the elements of the property GUI do not fit into the screen
-space defined by the current window size, Ayam will automatically
-resize the window when you select a property. You can toggle
+space that is defined by the current window size, Ayam will automatically
+resize the main window when you select a property. You can toggle
 this behaviour using the preference setting
 <tt/"AutoResize"/ (see section <ref id="prefs" name="Preferences">).
 
@@ -326,23 +334,23 @@ GUI for fast browsing through the scene you may either double
 click on the "Properties" label or use the context menu of the
 properties listbox to de-select the current property.
 
-What properties exactly
-will be shown, and how the GUIs look alike depends on the
-selected object and the selected property.
+What properties exactly will be shown, and how the GUIs look alike
+depends on the selected object and the selected property.
 This is documented in section
 <ref id="obandprp" name="Ayam Objects and Properties">.
 
 Here are some general remarks:<p>
 The various things that may be changed using a property GUI
-will normally not be applied to the object until the "Apply"-button
-is pressed!<p>
+will normally not be applied to the selected object until the
+<tt/"Apply"/-button is pressed!<p>
 You can undo all changes to the arguments of a property that
-have been made after the last click on "Apply" with the "Reset" button.
+have been made after the last click on <tt/"Apply"/ with the
+<tt/"Reset"/-button.
 This does, however, not use the undo mechanism of Ayam!<p>
 Note that property GUIs of custom objects may also offer interactive
-elements that do an instant "Apply". Most GUIs of the
-core objects of Ayam and the Scene object do not change anything
-until the "Apply" button is used, however.<p>
+elements that do an instant "Apply" operation. Most GUIs of the
+core objects of Ayam do not change anything until the
+<tt/"Apply"/-button is used, however.<p>
 
 If a property GUI element has the keyboard input focus (it is then usually
 displayed with a black rim around it), all the keyboard shortcuts for
@@ -350,10 +358,9 @@ the main menu and scene navigation will have no effect until the
 keyboard input focus is moved away from the property GUI. You may accomplish
 this easily using the <tt/&lt;Esc&gt;/ key.<p>
 
-A property may be copied and pasted to another
-object, see the <tt/"Edit"/ menu. You can also
-paste properties to different types of properties
-(e.g. pasting parameters from a surface shader to the
+A property may be copied and pasted to another object, see the
+<tt/"Edit"/ menu. You can also paste properties to different types of
+properties (e.g. pasting parameters from a surface shader to the
 displacement shader) using <tt/"Paste to selected"/ in the
 <tt>"Special/Clipboard"</tt> sub-menu.<p>
 Pasting a property to multiple selected objects does work too.
@@ -364,9 +371,8 @@ for every object.<p>
 Since you may not want to copy and paste whole properties all the time,
 you may mark single parameters with a double click on the
 labels of the parameters. The marked parameters will then be preceded
-by an exclamation mark.<p>
-If you now copy this property all marked parameters
-will be omitted.<p>
+by an exclamation mark (!).<p>
+If you now copy this property all marked parameters will be omitted.<p>
 It is also possible to copy just the parameters you marked
 using <tt/"Copy Marked Prop"/.<p>
 A simple example:<p>
@@ -413,17 +419,15 @@ An important thing to know is that the
 keyboard shortcuts for the various main menu entries do not
 work if the console has the input focus! Instead, other
 keyboard shortcuts (related to the console) are in effect!
-How do you get out of this? Simply press <tt/&lt;Shift+TAB&gt;/ or click
-into an entry in a property GUI to move
-the focus away from the console and enable the main
-menu shortcuts again.
+How do you get out of this? Simply press <tt/&lt;Shift+Tab&gt;/ to move
+the focus away from the console and enable the main menu shortcuts again.
 <p>
-Note that the <tt/&lt;TAB&gt;/ key alone does not move the
+Note that the <tt/&lt;Tab&gt;/ key alone does not move the
 focus away from the console.
-<tt/&lt;TAB&gt;/ instead completes names of files, commands
+<tt/&lt;Tab&gt;/ instead completes names of files, commands
 (procedures), variables and widgets.
 You may try this out by typing <tt/tip/ in the console,
-then press <tt/&lt;TAB&gt;/.
+then press <tt/&lt;Tab&gt;/.
 The console automagically completes <tt/tip/ to <tt/tipoftheDay/
 (the procedure that prints out the tip of the day, just try it).<p>
 
@@ -482,11 +486,14 @@ a file name.
 <item><tt/Import Mops/, import a scene from The Mops,
 see section <ref id="impmops" name="Import of Mops Scenes">
 for more information.
-<item><tt/Export RIB/, exports the current scene to a RIB,
+<item><tt>Export/RenderMan RIB</tt>, exports the current scene to a RIB,
 asking which camera (which view) to use.
+<item><tt>Export/Wavefront OBJ</tt>, exports the current scene to a
+Wavefront OBJ file, see also section
+<ref id="expwav" name="Wavefront OBJ export">.
 <item><tt/Load Custom/, loads a file containing a custom object or a plugin.
-Depending on the OS Ayam is running on, these are files with the
-file name extension so or dll.
+Depending on the platform Ayam is running on, these are files with the
+file name extension <tt/".so"/ or <tt/".dll"/.
 See section <ref id="customobj" name="Custom Objects">
 for more information about custom objects.
 <item><tt/Save Prefs/, save the current preference settings
@@ -7078,7 +7085,8 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <ref id="concatncp" name="ConcatNC attribute">
 <item>Closed BSpline: <ref id="cbspt" name="closed BSpline tool">
 <item>Close_U, Close_V: <ref id="pmattr" name="PatchMesh attribute">
-<item>Collapse: <ref id="collt" name="Collapse tool">
+<item>Collapse: <ref id="collt" name="Collapse tool">,
+<ref id="treecontm" name="tree context menu entry">
 <item>Color: <ref id="riattrs" name="RenderMan/BMRT attribute">,
 <ref id="lip" name="light attribute">
 <item>copOb: <ref id="sciclip" name="scripting interface command">
@@ -7154,6 +7162,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Epsilon: <ref id="moattr" name="MetaObj attributes">
 <item>ErrorLevel: <ref id="rribopt" name="RIB import option">
 <item>ExcludeHidden: <ref id="prefrib" name="preference setting">
+<item>Expand: <ref id="treecontm" name="tree context menu entry">
 <item>ExpGain, ExpGamma: <ref id="rio" name="RenderMan interface option">
 <item>Explode: <ref id="explt" name="Explode tool">
 <item>Export RIB: <ref id="mmfile" name="main menu entry">
