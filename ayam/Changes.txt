@@ -1,4 +1,4 @@
-[CVS, 21. 08. 2002]:
+[CVS, 29. 08. 2002]:
 o bug fixes:
   - fixed memory leaks in the shadow map RIB export module
   - fixed ICurves crash for length 2
@@ -11,17 +11,18 @@ o bug fixes:
   - fixed converted caps of Extrude objects losing their trimcurves
     when saved and then read again
   - fixed automatic cap generation for various tool objects
+  - fixed picking of objects in instanced levels
 o added a permanent preview feature; a constantly open RIB stream
   to a (fast) RenderMan renderer like rgl immediately displays all
   changes in the scene without the need to repeatedly hit "Ctrl-r" and
   close the preview window again
 o added manual control for the creation of ShadowMaps; for that,
   the preference setting "RIB-Export/ShadowMaps" is now a menu
-  for the values "Never" "Automatic" "Manual"; in "Manual" mode
+  for the values "Never", "Automatic", and "Manual"; in "Manual" mode
   ShadowMaps may be rendered explicitly using the new view menu
   entry "View/Create ShadowMaps"; afterwards it is possible to render
   images without recreating the ShadowMaps all the time (e.g. for camera
-  or material changes)
+  or material changes) even directly from a view window
 o the "TclPrecision" preference setting has been moved to the "Misc"
   preferences section
 o added balloon help for all preference settings
@@ -43,6 +44,12 @@ o the RIB import plugin now also imports "Polygons", "GeneralPolygons",
 o added a new tool for the PolyMesh object; "mergePo", that merges a bunch
   of PolyMesh objects (e.g. created by importing a poorly structured RIB)
   into a single PolyMesh object
+o improved the object picking for shaded views
+o improved the MFIO (3DMF) Import Plugin: it now outputs more detailed
+  error messages and supports the following additional primitives:
+  PolyLine, Triangle, General Polygon, Polygon, and TriGrid.
+o added shader parsing plugins: "ayso" for RDC, "ayslo" for PRMan,
+  "ayslx" for Aqsis, and "ayslo3d" for 3Delight
 
 
 [09. 07. 2002] Ayam1.2:
