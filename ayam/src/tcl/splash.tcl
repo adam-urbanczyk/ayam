@@ -58,6 +58,8 @@ proc splash_open { } {
     # center the window
     winCenter $w
 
+    grab $w
+
     # arrange automatic closing after x seconds
     after 6000 {after idle splash_close}
 
@@ -65,6 +67,7 @@ proc splash_open { } {
 }
 
 proc splash_close { } {
+    grab release .aysplash
     destroy .aysplash
  return;
 }
