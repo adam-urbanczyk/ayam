@@ -2608,7 +2608,8 @@ are not displayed will not be used on RIB export, consequently.<p>
 
 Using <tt/"Type"/ you can change the type of the light source.
 When you change the type of a light source,
-the property GUI will be changed when you use the <tt/"Apply"/-button.
+the property GUI will be adapted but only after you use the
+<tt/"Apply"/-button.
 
 <tt/"IsOn"/ allows you to switch the light off or on. The default
 value is on.<p>
@@ -2621,7 +2622,7 @@ The default is off, all objects in the scene are lighted!
 The <tt/"IsLocal"/ attribute is ignored for lights that are
 defined in the root level of the scene.<p>
 
-With the light attribute <tt/"Shadows"/ you may determine
+Using the light attribute <tt/"Shadows"/ you may determine
 whether the lightsource should cast shadows.
 The default is off, no shadows!<p>
 
