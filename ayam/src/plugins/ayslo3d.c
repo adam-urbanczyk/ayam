@@ -17,6 +17,10 @@
 /* ayslo3d.c - Plug-In to scan shaders compiled with shaderdl (3Delight)
    using lib3delight  */
 
+/* global variables */
+char ayslo3d_version_ma[] = AY_VERSIONSTR;
+char ayslo3d_version_mi[] = AY_VERSIONSTRMI;
+
 /* prototypes of functions local to this module */
 int ayslo3d_scanslo3dsarg(SLO_VISSYMDEF *symbol, Tcl_DString *ds);
 
@@ -258,14 +262,30 @@ ayslo3d_scanslo3dtcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ayslo3d_scanslo3dtcmd */
 
 
-/* note: this function _must_ be capitalized exactly this way
- * regardless of filename (see: man n load)!
+/* note: this function _must_ be capitalized _and named_ exactly this way
+ * regardless of the filename of the shared object (see: man n load)!
  */
 int
 Ayslo_Init(Tcl_Interp *interp)
 {
  char fname[] = "ayslo3d_init";
  char vname[] = "ay(sext)", vval[] = ".sdl";
+
+  /* first, check versions */
+  if(strcmp(ay_version_ma, ayslo3d_version_ma))
+    {
+      ay_error(AY_ERROR, fname,
+	       "Plugin has been compiled for a different Ayam version!");
+      ay_error(AY_ERROR, fname, "It is unsafe to continue! Bailing out...");
+      return TCL_OK;
+    }
+
+  if(strcmp(ay_version_mi, ayslo3d_version_mi))
+    {
+      ay_error(AY_ERROR, fname,
+	       "Plugin has been compiled for a different Ayam version!");
+      ay_error(AY_ERROR, fname, "However, it is probably safe to continue...");
+    }
 
   Tcl_SetVar(interp, vname, vval, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
