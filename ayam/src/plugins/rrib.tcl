@@ -1,6 +1,6 @@
 # Ayam, a free 3D modeler for the RenderMan interface.
 #
-# Ayam is copyrighted 1998-2001 by Randolf Schultz
+# Ayam is copyrighted 1998-2004 by Randolf Schultz
 # (rschultz@informatik.uni-rostock.de) and others.
 #
 # All rights reserved.
@@ -64,17 +64,22 @@ proc rrib_import { } {
 	addCheck $f rrib_options ReadPartial
 	addMenu $f rrib_options ErrorLevel [list Silence Errors Warnings All]
 
-
 	set f [frame $w.f2]
 	button $f.bok -text "Ok" -width 5 -command {
 	    global rrib_options;
-	    rrib $rrib_options(FileName) -f $rrib_options(ReadFrame)\
+	    set oldcd [pwd]
+	    cd [file dirname $rrib_options(FileName)]
+
+	    rrib [file tail $rrib_options(FileName)]\
+		    -f $rrib_options(ReadFrame)\
 		    -c $rrib_options(ReadCamera)\
 		    -o $rrib_options(ReadOptions)\
 		    -l $rrib_options(ReadLights)\
 		    -m $rrib_options(ReadMaterial)\
 		    -p $rrib_options(ReadPartial)\
 		    -e $rrib_options(ErrorLevel);
+
+	    cd $oldcd
 	    goTop
 	    selOb
 	    set ay(CurrentLevel) "root"
