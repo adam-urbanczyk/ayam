@@ -23,6 +23,7 @@ w     fScriptAttr
 # array ScriptAttr
 
 array set ScriptAttrData {
+ Active 0
  Type 0
  Script ""
 }
@@ -30,7 +31,8 @@ array set ScriptAttrData {
 
 # create ScriptAttr-UI:
 set w [frame $ay(pca).$ScriptAttr(w)]
-addMenu $w ScriptAttrData Type [list Inactive Run Create Modify]
+addCheck $w ScriptAttrData Active
+addMenu $w ScriptAttrData Type [list Run Create Modify]
 pack [text $w.tScript -width 60 -height 60]
 set t $w.tScript
 eval [subst "bindtags $t \{$t Text all\}"]

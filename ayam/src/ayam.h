@@ -705,7 +705,8 @@ typedef struct ay_extrnc_object_s
 typedef struct ay_script_object_s
 {
   char *script;
-  int type; /* 0 - Inactive, 1 - Run, 2 - Create, 3 -  Modify */
+  int active; /* 0 - Inactive, 1 - Active */
+  int type; /* 0 - Run, 1 - Create, 2 -  Modify */
   ay_object *cm_objects; /* created or modified objects */
 } ay_script_object;
 
