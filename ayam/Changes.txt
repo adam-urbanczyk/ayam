@@ -1,4 +1,4 @@
-[16. Jun 2004] CVS-Head:
+[21. Jun 2004] CVS-Head:
 o bug fixes:
   - fixed "loadayslo3d.tcl" loading the wrong plugin (SF 928054)
   - fixed "Select Renderer" setting a wrong shader extension for "3Delight"
@@ -6,6 +6,7 @@ o bug fixes:
   - fixed memory leak reading NURBS patches with custom knot vectors from
     scene files (SF 959714)
   - fixed detection of negative scale factors (SF 962427)
+  - fixed splitting of NURBS curves not setting undo operation name (SF 974216)
 o added a new object type "Text", that uses Bezier curves extracted from
   TTF (TrueType) font description files together with the extrusion mechanism
   to form three dimensional letters
@@ -16,6 +17,10 @@ o improved behaviour of Ayam if double clicks are used in file requesters
   on the Win32 platform
 o added "Sections" parameter to Revolve objects that controls whether a
   circular B-Spline should be used instead of the standard NURBS circle
+o added "Order" parameter to Revolve objects that further controls the
+  surface of revolution in B-Spline mode
+o added the following options to the Wavefront OBJ export: Selected,
+  TessPoMesh, and OmitCurves
 
 
 [27. Mar 2004] Ayam1.7:
