@@ -866,6 +866,9 @@ int ay_status = AY_OK;
   Tcl_CreateCommand(interp, "shiftClosedBS", ay_nct_shiftcbstcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  Tcl_CreateCommand(interp, "toXYNC", ay_nct_toxytcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
   /* nurbs/npt.c */
   Tcl_CreateCommand(interp, "crtNSphere", ay_npt_crtnspheretcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
