@@ -105,6 +105,8 @@ char *ay_rihider_tagtype;
 
 static char *ay_log = "/tmp/ay.log";
 
+int ay_wrib_framenum = 0;
+
 /* prototypes for initialization callbacks of additional included modules */
 #ifdef AYIDRWRAPPED
   int Idr_Init(Tcl_Interp *interp);

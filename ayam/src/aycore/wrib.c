@@ -12,13 +12,15 @@
 
 #include "ayam.h"
 
-#define WRIBEPSILON 1.0e-05
-
 /* wrib.c - RIB export */
 
-/* functions local to this module */
+
+/* prototypes of functions local to this module: */
 
 int ay_wrib_sm(char *file, char *image, int width, int height);
+
+
+/* functions: */
 
 /* cot() used by currently unused FrameCamera() */
 /*
@@ -75,23 +77,23 @@ ay_wrib_aimz(RtPoint direction)
 
   if(direction[1] > 0.0)
     {
-      if(fabs(xrot) > WRIBEPSILON)
+      if(fabs(xrot) > AY_EPSILON)
 	RiRotate(xrot, (RtFloat)1.0,(RtFloat)0.0,(RtFloat)0.0);
     }
   else
     {
-      if(fabs(xrot) > WRIBEPSILON)
+      if(fabs(xrot) > AY_EPSILON)
 	RiRotate(-xrot, (RtFloat)1.0,(RtFloat)0.0,(RtFloat)0.0);
     }
 
   if(direction[0] < 0.0)
     {
-      if(fabs(yrot) > WRIBEPSILON)
+      if(fabs(yrot) > AY_EPSILON)
 	RiRotate(yrot, (RtFloat)0.0,(RtFloat)1.0,(RtFloat)0.0);
     }
   else
     {
-      if(fabs(yrot) > WRIBEPSILON)
+      if(fabs(yrot) > AY_EPSILON)
 	RiRotate(-yrot, (RtFloat)0.0,(RtFloat)1.0,(RtFloat)0.0);
     }
 
@@ -106,18 +108,18 @@ void
 ay_wrib_placecamera(RtPoint position, RtPoint direction, double roll)
 {
   /* XXXX RiIdentity(); */
-  if(fabs(roll) > WRIBEPSILON)
+  if(fabs(roll) > AY_EPSILON)
     RiRotate((RtFloat)-roll, (RtFloat)0.0, (RtFloat)0.0, (RtFloat)1.0);
 
   ay_wrib_aimz(direction);
 
-  if((fabs(position[0]) > WRIBEPSILON) || (fabs(position[1]) > WRIBEPSILON) ||
-     (fabs(position[2]) > WRIBEPSILON))
-    RiTranslate((fabs(position[0]) > WRIBEPSILON) ? -position[0] :
+  if((fabs(position[0]) > AY_EPSILON) || (fabs(position[1]) > AY_EPSILON) ||
+     (fabs(position[2]) > AY_EPSILON))
+    RiTranslate((fabs(position[0]) > AY_EPSILON) ? -position[0] :
 		(RtFloat) 0.0,
-		(fabs(position[1]) > WRIBEPSILON) ? -position[1] :
+		(fabs(position[1]) > AY_EPSILON) ? -position[1] :
 		(RtFloat) 0.0,
-		(fabs(position[2]) > WRIBEPSILON) ? -position[2] :
+		(fabs(position[2]) > AY_EPSILON) ? -position[2] :
 		(RtFloat) 0.0);
 
  return;
@@ -147,6 +149,7 @@ FrameCamera(double zoom, double framewidth, double frameheight)
 
  return;
 }*/
+
 
 /* ay_wrib_rioptions:
  *
@@ -290,27 +293,30 @@ ay_wrib_trafos(ay_object *o)
  int ay_status = AY_OK;
  double euler[3];
 
-  if(o->movx != 0.0 || o->movy != 0.0 || o->movz != 0.0)
+  if((fabs(o->movx) > AY_EPSILON) ||
+     (fabs(o->movy) > AY_EPSILON) ||
+     (fabs(o->movz) > AY_EPSILON))
     RiTranslate((RtFloat)o->movx, (RtFloat)o->movy, (RtFloat)o->movz);
 
   if(o->quat[0] != 0.0 || o->quat[1] != 0.0 || o->quat[2] != 0.0 ||
      o->quat[3] != 1.0)
      {
        ay_quat_toeuler(o->quat, euler);
-       if(fabs(euler[2]) > 1.0e-05)
+       if(fabs(euler[2]) > AY_EPSILON)
 	 RiRotate((RtFloat)AY_R2D(-euler[2]),
 		  (RtFloat)1.0, (RtFloat)0.0, (RtFloat)0.0);
-       if(fabs(euler[1]) > 1.0e-05)
+       if(fabs(euler[1]) > AY_EPSILON)
 	 RiRotate((RtFloat)AY_R2D(-euler[1]),
 		  (RtFloat)0.0, (RtFloat)1.0, (RtFloat)0.0);
-       if(fabs(euler[0]) > 1.0e-05)
+       if(fabs(euler[0]) > AY_EPSILON)
 	 RiRotate((RtFloat)AY_R2D(-euler[0]),
 		  (RtFloat)0.0, (RtFloat)0.0, (RtFloat)1.0);
      }
 
   if(o->scalx != 1.0 || o->scaly != 1.0 || o->scalz != 1.0)
-    RiScale((RtFloat)o->scalx, (RtFloat)o->scaly, (RtFloat)o->scalz);
-
+    {
+      RiScale((RtFloat)o->scalx, (RtFloat)o->scaly, (RtFloat)o->scalz);
+    }
 
  return ay_status;
 } /* ay_wrib_trafos */
@@ -1151,7 +1157,7 @@ ay_wrib_lights(char *file, ay_object *o)
 
 
 /* ay_wrib_scene:
- *
+ *  propagate changes to this function also to ay_wrib_pprevdraw()!
  */
 int
 ay_wrib_scene(char *file, char *image, double *from, double *to,
@@ -1178,6 +1184,7 @@ ay_wrib_scene(char *file, char *image, double *from, double *to,
     ay_status = ay_instt_wribiarchives(file, o);
   }
 
+  ay_wrib_framenum = 1;
 
   /* assemble args */
   aspect = (RtFloat)(width/((double)height));
@@ -1223,7 +1230,7 @@ ay_wrib_scene(char *file, char *image, double *from, double *to,
 	{
 	  sprintf(objfile, "%s.obj.rib", file);
 	}
-    }
+    } /* if */
 
   /* write shadow maps */
   if(ay_prefs.use_sm == 1)
@@ -1234,117 +1241,121 @@ ay_wrib_scene(char *file, char *image, double *from, double *to,
       ay_status = ay_riopt_wrib(ay_root);
 
       ay_sm_wriballsm(file, objfile, ay_root->next, NULL, width, height);
+
       ay_prefs.wrib_sm = AY_FALSE;
     }
 
+  RiFrameBegin((RtInt)ay_wrib_framenum++);
 
-  if(!image) /* render to image file or to frame buffer? */
-    RiDisplay(RI_NULL, RI_FRAMEBUFFER, RI_RGBA, RI_NULL);
-  else
-    RiDisplay(image, RI_FILE, RI_RGBA, RI_NULL);
+   if(!image) /* render to image file or to frame buffer? */
+     RiDisplay(RI_NULL, RI_FRAMEBUFFER, RI_RGBA, RI_NULL);
+   else
+     RiDisplay(image, RI_FILE, RI_RGBA, RI_NULL);
 
-  /* write additional RiDisplay statements from tags */
-  ay_wrib_displaytags();
-  /* write RiHider statements from tags */
-  ay_wrib_hidertags();
-  /* write imager shader */
-  ay_wrib_rootsh(AY_TRUE);
+   /* write additional RiDisplay statements from tags */
+   ay_wrib_displaytags();
+   /* write RiHider statements from tags */
+   ay_wrib_hidertags();
+   /* write imager shader */
+   ay_wrib_rootsh(AY_TRUE);
 
-  /* Camera! */
-  RiFormat(width, height, (RtFloat)-1.0);
-  if(type != AY_VTPERSP)
-    RiProjection("orthographic", RI_NULL);
-  else
-    RiProjection("perspective", "fov", (RtPointer)&fov, RI_NULL);
+   /* Camera! */
+   RiFormat(width, height, (RtFloat)-1.0);
+   if(type != AY_VTPERSP)
+     RiProjection("orthographic", RI_NULL);
+   else
+     RiProjection("perspective", "fov", (RtPointer)&fov, RI_NULL);
 
-  RiFrameAspectRatio((RtFloat)aspect);
+   RiFrameAspectRatio((RtFloat)aspect);
 
-  swleft = (RtFloat)-aspect;
-  swright =  (RtFloat)aspect;
-  swbot = (RtFloat)-1.0;
-  swtop = (RtFloat)1.0;
+   swleft = (RtFloat)-aspect;
+   swright =  (RtFloat)aspect;
+   swbot = (RtFloat)-1.0;
+   swtop = (RtFloat)1.0;
 
-  /* clipping planes */
-  if(nearp != 0.0 || farp != 0.0)
-    {
-      if(nearp != 0.0)
-	{
-	  rinearp = (RtFloat)nearp;
-	  if(type == AY_VTPERSP)
-	    zoom /= nearp;
-	}
-      else
-	rinearp = RI_EPSILON;
+   /* clipping planes */
+   if(nearp != 0.0 || farp != 0.0)
+     {
+       if(nearp != 0.0)
+	 {
+	   rinearp = (RtFloat)nearp;
+	   if(type == AY_VTPERSP)
+	     zoom /= nearp;
+	 }
+       else
+	 rinearp = RI_EPSILON;
 
-      if(farp != 0.0)
-	rifarp = (RtFloat)farp;
-      else
-	rifarp = RI_INFINITY;
+       if(farp != 0.0)
+	 rifarp = (RtFloat)farp;
+       else
+	 rifarp = RI_INFINITY;
 
-      RiClipping(rinearp, rifarp);
-    }
+       RiClipping(rinearp, rifarp);
+     }
 
-  RiScreenWindow((RtFloat)(swleft*zoom), (RtFloat)(swright*zoom),
-		 (RtFloat)(swbot*zoom), (RtFloat)(swtop*zoom));
+   RiScreenWindow((RtFloat)(swleft*zoom), (RtFloat)(swright*zoom),
+		  (RtFloat)(swbot*zoom), (RtFloat)(swtop*zoom));
 
-  RiIdentity();
+   RiIdentity();
 
-  /* check for lights */
-  if(ay_prefs.checklights)
-    {
-      if(!ay_wrib_checklights(ay_root))
-	{ /* no lights in scene -> add a distant headlight */
-	  RiArchiveRecord(RI_COMMENT, "Default Distant Headlight");
-	  RiLightSource("distantlight", RI_NULL);
-	}
-    }
+   /* check for lights */
+   if(ay_prefs.checklights)
+     {
+       if(!ay_wrib_checklights(ay_root))
+	 { /* no lights in scene -> add a distant headlight */
+	   RiArchiveRecord(RI_COMMENT, "Default Distant Headlight");
+	   RiLightSource("distantlight", RI_NULL);
+	 }
+     }
 
-  /* convert rh to lh */
-  RiArchiveRecord(RI_COMMENT, "rh->lh");
-  RiScale((RtFloat)-1.0, (RtFloat)1.0, (RtFloat)1.0);
+   /* convert rh to lh */
+   RiArchiveRecord(RI_COMMENT, "rh->lh");
+   RiScale((RtFloat)-1.0, (RtFloat)1.0, (RtFloat)1.0);
 
-  RiArchiveRecord(RI_COMMENT, "Camera!");
-  ay_wrib_placecamera(f, d, roll);
+   RiArchiveRecord(RI_COMMENT, "Camera!");
+   ay_wrib_placecamera(f, d, roll);
 
-  /* write RiOptions */
-  ay_status = ay_wrib_rioptions();
+   /* write RiOptions */
+   ay_status = ay_wrib_rioptions();
 
-  /* write root RiOption tags */
-  ay_status = ay_riopt_wrib(ay_root);
+   /* write root RiOption tags */
+   ay_status = ay_riopt_wrib(ay_root);
 
-  RiWorldBegin();
+   RiWorldBegin();
 
-  /* Lights! */
-  RiArchiveRecord(RI_COMMENT, "Lights!");
-  ay_status = ay_wrib_lights(file, ay_root->next);
+    /* Lights! */
+    RiArchiveRecord(RI_COMMENT, "Lights!");
+    ay_status = ay_wrib_lights(file, ay_root->next);
 
-  RiIdentity();
+    RiIdentity();
 
-  /* Action! */
-  RiArchiveRecord(RI_COMMENT, "Action!");
+    /* Action! */
+    RiArchiveRecord(RI_COMMENT, "Action!");
 
-  /* write atmosphere shader */
-  ay_wrib_rootsh(AY_FALSE);
+    /* write atmosphere shader */
+    ay_wrib_rootsh(AY_FALSE);
 
-  /* write default material */
-  ay_wrib_defmat(file);
+    /* write default material */
+    ay_wrib_defmat(file);
 
-  /* write objects */
-  if(!ay_prefs.use_sm)
-    {
-      o = ay_root->next;
-      while(o->next)
-	{
-	  ay_status = ay_wrib_object(file, o);
-	  o = o->next;
-	}
-    }
-  else
-    {
-      RiReadArchive(objfile, (RtVoid*)RI_NULL, RI_NULL);
-    }
+    /* write objects */
+    if(!ay_prefs.use_sm)
+      {
+	o = ay_root->next;
+	while(o->next)
+	  {
+	    ay_status = ay_wrib_object(file, o);
+	    o = o->next;
+	  }
+      }
+    else
+      {
+	RiReadArchive(objfile, (RtVoid*)RI_NULL, RI_NULL);
+      }
 
-  RiWorldEnd();
+   RiWorldEnd();
+
+  RiFrameEnd();
 
   /* Cut! */
   RiEnd();
@@ -1362,6 +1373,7 @@ ay_wrib_scene(char *file, char *image, double *from, double *to,
       RiEnd();
     } /* if */
 
+  /* clean up */
   if(objfile)
     {
       free(objfile);
@@ -1393,6 +1405,8 @@ ay_wrib_sm(char *file, char *image, int width, int height)
     /* write archive files for all original (referenced) objects */
     ay_status = ay_instt_wribiarchives(file, o);
   }
+
+  ay_wrib_framenum = 1;
 
   if(!file) /* dump .rib to stdout? */
     RiBegin(RI_NULL);
@@ -1428,7 +1442,10 @@ ay_wrib_sm(char *file, char *image, int width, int height)
   /* write RiOption tags (possibly containing shadow bias settings) */
   ay_status = ay_riopt_wrib(ay_root);
 
+  /* actually write the shadow maps */
   ay_sm_wriballsm(file, objfile, ay_root->next, NULL, width, height);
+
+  /* inform other code that we do not write shadow maps anymore */
   ay_prefs.wrib_sm = AY_FALSE;
 
   /* Cut! */
