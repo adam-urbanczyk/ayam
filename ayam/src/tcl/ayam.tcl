@@ -334,6 +334,13 @@ if { $tcl_platform(platform) == "windows" } {
     emptyimg configure -width 6 -height 6
 }
 
+# are true color visuals available?
+set visuals [winfo visualsavailable .]
+if { [lsearch $visuals truecolor*] != -1 } {
+    set ay(truecolor) 1
+} else {
+    set ay(truecolor) 0
+}
 
 # if envvar AYAMRC is set, use it
 if { [string length [array names env AYAMRC]] != 0 } {
