@@ -25,9 +25,22 @@ proc prefs_set {} {
 # prefs_rsnb:
 #  resize notebook nb so that the page page is displayed in full size
 proc prefs_rsnb { nb page } {
-    global ay
+    global ay ayprefs
     update
-    $nb configure -height [winfo reqheight [$nb getframe $page] ]
+    if { ($ayprefs(SavePrefsGeom) != 0) && ($ay(prefsgeom) != "") } {
+	set owidth [string range $ay(prefsgeom) 0\
+		[string first x $ay(prefsgeom)]]
+	set owidth [string trimright $owidth x]
+    }
+    wm geometry .prefsw {}
+    $nb configure -height [winfo reqheight [$nb getframe $page]]
+    if { ($ayprefs(SavePrefsGeom) != 0) && ($ay(prefsgeom) != "") && \
+	    [info exists owidth] } {
+	update idletasks
+	set ng [winGetGeom .prefsw]
+	set ng ${owidth}[string range $ng [string first x $ng] end]
+	winMoveOrResize .prefsw $ng
+    }
     set ay(prefssection) $page
  return;
 }
@@ -57,7 +70,7 @@ proc prefs_open {} {
     wm iconname $w "Prefs"
     wm withdraw $w
 
-    # center window (if no saved )
+    # center window (if no saved geometry is available)
     update idletasks
     if { ($ayprefs(SavePrefsGeom) == 0) || ($ay(prefsgeom) == "") } {
 	set x [expr [winfo screenwidth $w]/2 - [winfo reqwidth $w]/2 \
@@ -296,16 +309,16 @@ proc prefs_open {} {
     # bind function keys
     shortcut_fkeys $w
 
-    if { $ay(prefsgeom) != "" } {
+    if { ($ayprefs(SavePrefsGeom) > 0) && ($ay(prefsgeom) != "") } {
 	winMoveOrResize $w $ay(prefsgeom)
     }
     if { $ayprefs(SavePrefsGeom) > 0 } {
 	bind $w <Configure> "\
 	 if { \"%W\" == \"$w\" } { set ay(prefsgeom) \[winGetGeom $w\] } "
     }
+
     focus $f.bok
     tkwait window $w
-
 
  return;
 }
@@ -342,7 +355,6 @@ proc prefs_save { } {
     set ayprefs(toolBoxGeom) [winGetGeom .tbw]
 
     if { $ayprefs(SavePrefsGeom) > 1 } {
-	puts hier
 	if { $ay(prefsgeom) != "" } {
 	    set ayprefs(PrefsGeom) $ay(prefsgeom)
 	}
