@@ -265,6 +265,9 @@ ay_ppoh_print(ay_object *o, FILE *fileptr, int indent, ay_printcb **cbv)
       o = o->next;
     } /* while */
 
+  if(prefix)
+    free(prefix);
+
  return ay_status;
 } /* ay_ppoh_print */
 
