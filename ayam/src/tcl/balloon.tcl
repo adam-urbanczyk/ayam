@@ -65,7 +65,8 @@ proc balloon_show {w arg} {
     catch {destroy $top}
     toplevel $top -bd 1 -bg black
     wm overrideredirect $top 1
-    pack [message $top.txt -width 100c -fg black -bg lightyellow -text $arg] 
+    pack [message $top.txt -width 100c -fg black -bg lightyellow -text \
+	    [encoding convertfrom $arg]] 
 
     # do not move off-screen
     set wmx [winfo rootx $w]
