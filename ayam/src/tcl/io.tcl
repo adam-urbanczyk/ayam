@@ -352,7 +352,7 @@ proc io_lcAuto {  } {
 	set co $ay(co)
 
 	foreach o $ay(co) {
-	    if{ $o == $ay(autoload) } { return }
+	    if { $o == $ay(autoload) } { return }
 	}
 
     }
