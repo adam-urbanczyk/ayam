@@ -11,6 +11,10 @@
 
 # ayamConf.tcl - Ayam Makefile configuration GUI by Hynek Schlawack
 
+# Usage:
+# to start the configuration, install Tcl/Tk V8.3 or higher and type
+# > wish ayamConf.tcl
+
 # Our RIB-Writer
 
 set rib { \
