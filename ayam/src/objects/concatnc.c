@@ -129,7 +129,7 @@ int
 ay_concatnc_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  int ay_status = AY_OK;
- char *n1 = "ConcatncAttrData";
+ char *n1 = "ConcatNCAttrData";
  /*char fname[] = "concatnc_setpropcb";*/
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_concatnc_object *concatnc = NULL;
@@ -146,9 +146,13 @@ ay_concatnc_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(concatnc->closed));
 
-  Tcl_SetStringObj(ton,"Mode",-1);
+  Tcl_SetStringObj(ton,"FillGaps",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(concatnc->mode));
+  Tcl_GetIntFromObj(interp,to, &(concatnc->fillgaps));
+
+  Tcl_SetStringObj(ton,"Revert",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &(concatnc->revert));
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
@@ -165,7 +169,7 @@ ay_concatnc_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_concatnc_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- char *n1="ConcatncAttrData";
+ char *n1="ConcatNCAttrData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_concatnc_object *concatnc = NULL;
 
@@ -184,8 +188,13 @@ ay_concatnc_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Mode",-1);
-  to = Tcl_NewIntObj(concatnc->mode);
+  Tcl_SetStringObj(ton,"FillGaps",-1);
+  to = Tcl_NewIntObj(concatnc->fillgaps);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton,"Revert",-1);
+  to = Tcl_NewIntObj(concatnc->revert);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
@@ -208,7 +217,8 @@ ay_concatnc_readcb(FILE *fileptr, ay_object *o)
     { return AY_EOMEM; }
 
   fscanf(fileptr, "%d\n", &concatnc->closed);
-  fscanf(fileptr, "%d\n", &concatnc->mode);
+  fscanf(fileptr, "%d\n", &concatnc->fillgaps);
+  fscanf(fileptr, "%d\n", &concatnc->revert);
 
   o->refine = concatnc;
 
@@ -227,7 +237,8 @@ ay_concatnc_writecb(FILE *fileptr, ay_object *o)
   concatnc = (ay_concatnc_object *)(o->refine);
 
   fprintf(fileptr, "%d\n", concatnc->closed);
-  fprintf(fileptr, "%d\n", concatnc->mode);
+  fprintf(fileptr, "%d\n", concatnc->fillgaps);
+  fprintf(fileptr, "%d\n", concatnc->revert);
 
  return AY_OK;
 } /* ay_concatnc_writecb */
@@ -268,6 +279,7 @@ ay_concatnc_notifycb(ay_object *o)
  char fname[] = "concatnc_notifycb";
  ay_concatnc_object *concatnc = NULL;
  ay_object *down = NULL, *ncurve = NULL, *curves = NULL, **next = NULL;
+ ay_nurbcurve_object *nc = NULL;
  int numcurves = 0;
 
   if(!o)
@@ -304,12 +316,21 @@ ay_concatnc_notifycb(ay_object *o)
   while(ncurve)
     {
       ay_nct_applytrafo(ncurve);
+      ay_nct_clamp((ay_nurbcurve_object *)ncurve->refine);
       numcurves++;
       ncurve = ncurve->next;
     }
 
   if(numcurves > 1)
     {
+      if(concatnc->fillgaps)
+	{
+	  ay_status = ay_nct_fillgaps(concatnc->closed, curves);
+	  if(ay_status)
+	    {
+	      ay_error(AY_ERROR, fname, "failed to create fillets");
+	    }
+	}
 
       ay_status = ay_nct_concatmultiple(curves, &concatnc->ncurve);
 
@@ -317,6 +338,29 @@ ay_concatnc_notifycb(ay_object *o)
 	{
 	  ay_error(AY_ERROR, fname, "failed to concat curves");
 	}
+      else
+	{
+
+	  nc = (ay_nurbcurve_object*)concatnc->ncurve->refine;
+	  if(concatnc->revert)
+	    {
+	      ay_status = ay_nct_revert(nc);
+	      if(ay_status)
+		{
+		  ay_error(ay_status, fname, "Could not revert curve!");
+		} /* if */
+	    } /* if */
+
+	  if(!concatnc->fillgaps && concatnc->closed)
+	    {
+	      ay_status = ay_nct_close(nc);
+	      if(ay_status)
+		{
+		  ay_error(ay_status, fname, "Could not close curve!");
+		} /* if */
+	    } /* if */
+
+	} /* if */
     } /* if */
 
   /* free list of temporary curves */
