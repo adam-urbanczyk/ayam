@@ -136,36 +136,40 @@ set f $w.fArg
 # apply/reset buttons
 frame $f.fb
 set f $f.fb
+
 button $f.b1 -text "Apply" -padx 10 -pady 0 -command {
-global ay
-undo save
-set lb $ay(plb)
-if { [$lb size] < 1 } { return }
-set prop [$lb get [$lb curselection]]
-set setprocp ""
-eval [subst "set setprocp \$${prop}(sproc)"]
-if { $setprocp != "" } { $setprocp } else { setProp }
-set getprocp ""
-eval [subst "set getprocp \$${prop}(gproc)"]
-if { $getprocp != "" } { $getprocp } else { getProp }
+    global ay
+    undo save
+    set lb $ay(plb)
+    set sel [$lb curselection]
+    if { $sel == "" } { return }
+    set prop [$lb get $sel]
+    set setprocp ""
+    eval [subst "set setprocp \$${prop}(sproc)"]
+    if { $setprocp != "" } { $setprocp } else { setProp }
+    set getprocp ""
+    eval [subst "set getprocp \$${prop}(gproc)"]
+    if { $getprocp != "" } { $getprocp } else { getProp }
 
-eval [subst "set arrname \$${prop}(arr)"]
-global pclip_reset $arrname
-array set pclip_reset  [array get $arrname]
-rV
+    eval [subst "set arrname \$${prop}(arr)"]
+    global pclip_reset $arrname
+    array set pclip_reset  [array get $arrname]
+    rV
 } -takefocus 0\
 -highlightthickness 0
+
 button $f.b2 -text "Reset" -padx 10 -pady 0 -command {
-global ay
-set lb $ay(plb)
-if { [$lb size] < 1 } { return }
-set prop [$lb get [$lb curselection]]
-global $prop pclip_reset
-eval [subst "set arrname \$${prop}(arr)"]
-array set $arrname [array get pclip_reset]
-
+    global ay
+    set lb $ay(plb)
+    set sel [$lb curselection]
+    if { $sel == "" } { return }
+    set prop [$lb get $sel]
+    global $prop pclip_reset
+    eval [subst "set arrname \$${prop}(arr)"]
+    array set $arrname [array get pclip_reset]
 } -takefocus 0\
 -highlightthickness 0
+
 pack $f.b1 $f.b2 -in $f -side left -fill x -expand yes 
 pack $f -in $w.fArg -side bottom -fill x -expand no
 
