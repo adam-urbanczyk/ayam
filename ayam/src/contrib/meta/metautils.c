@@ -52,16 +52,22 @@ meta_calcall (double x1, double y1, double z1, meta_world * w)
 
       	/* rotate and scale the Object */
 
-	  	x =
-	  	  (tmp->rm[0] * x1 + tmp->rm[4] * y1 + tmp->rm[8] * z1 +
-	  	  tmp->rm[12] * 1.0)* tmp->scalex;
+		x =
+	  	    (tmp->rm[0] * x1 + tmp->rm[4] * y1 + tmp->rm[8] * z1 +
+	  	    tmp->rm[12] * 1.0);
 	  	y =
-	  	  (tmp->rm[1] * x1 + tmp->rm[5] * y1 + tmp->rm[9] * z1 +
-	  	  tmp->rm[13] * 1.0)* tmp->scaley;
+	  	    (tmp->rm[1] * x1 + tmp->rm[5] * y1 + tmp->rm[9] * z1 +
+	  	    tmp->rm[13] * 1.0);
 	  	z =
-	  	  (tmp->rm[2] * x1 + tmp->rm[6] * y1 + tmp->rm[10] * z1 +
-	  	  tmp->rm[14] * 1.0)* tmp->scalez;
+	  	    (tmp->rm[2] * x1 + tmp->rm[6] * y1 + tmp->rm[10] * z1 +
+	  	    tmp->rm[14] * 1.0);
 
+	  	if (!tmp->formula == META_BALL)
+	     {
+			x *= tmp->scalex;
+			y *= tmp->scaley;
+			z *= tmp->scalez;
+		}
 
 
     	       /* the normal metaball */
@@ -695,7 +701,6 @@ meta_calceffect (meta_world * w)
 		}
 		  code = meta_polygonise (w, &cube, w->isolevel);
 
-		 // printf("iso %f \n",w->isolevel);
 		  
 		  pos (cube.pos) = w->lastmark;	/* mark that cube is visited */
 
