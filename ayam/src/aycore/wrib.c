@@ -695,7 +695,7 @@ ay_wrib_lights(char *file, ay_object *o)
 	    case AY_LITCUSTOM:
 	      if(light->lshader)
 		{
-		  if(o->down)
+		  if(o->down->next)
 		    { /* this is an AreaLight */
 		      RiAttributeBegin();
 		    }
@@ -703,7 +703,7 @@ ay_wrib_lights(char *file, ay_object *o)
 		  if(light->samples > 1)
 		    RiAttribute("light","nsamples",
 				(RtPointer)(&light->samples), RI_NULL);
-		  if(!o->down)
+		  if(!o->down->next)
 		    {
 		      ay_status = ay_shader_wrib(light->lshader, AY_STLIGHT,
 						 &light_handle);
