@@ -33,11 +33,18 @@ static char *idr_iidrtagname = "IIDR";
 static char *idr_ridrtagtype;
 static char *idr_ridrtagname = "RIDR";
 
+/* internal IDR tag type used to specify important regions in object space */
+static char *idr_r3idrtagtype;
+static char *idr_r3idrtagname = "R3IDR";
+
 
 /* internal IDR tag type used to mark changed objects */
 static char *idr_cidrtagtype;
 static char *idr_cidrtagname = "CIDR";
 
+/* internal IDR tag type used to mark objects in "check change" buffer */
+static char *idr_ccidrtagtype;
+static char *idr_ccidrtagname = "CCIDR";
 
 /* functions local to this module */
 int idr_clear_importance(ay_object *o);
@@ -79,8 +86,107 @@ typedef struct idr_param_s {
   int optimizebb;
 } idr_param;
 
+/* changed objects buffer */
+static ay_object *idr_selected = NULL;
+
+
+/* prototypes */
+int idr_get2dbbc(ay_object *o, int *left, int *right,
+		 int *bottom, int *top);
 
 /* functions */
+
+
+/* idr_save_selected:
+ *
+ */
+int
+idr_save_selected()
+{
+ ay_list_object *sel = ay_selection;
+ ay_tag_object *t = NULL, *tccidr = NULL;
+ ay_object *o = NULL, *n = NULL, **p = NULL;
+ int i = 0;
+ int ay_status = AY_OK;
+
+  o = idr_selected;
+
+  while(o)
+    {
+      n = o->next;
+      ay_object_delete(o);
+      o = n;
+    }
+
+  idr_selected = NULL;
+  p = &(idr_selected);
+  while(sel)
+    {
+      o = sel->object;
+
+      if(o->type != AY_IDROOT &&
+	 o->type != AY_IDVIEW)
+	{
+	  ay_status = AY_OK;
+	  ay_status = ay_object_copy(o, p);
+	  if(!ay_status)
+	    {
+	      n = *p;
+	      p = &(n->next);
+
+	      tccidr = NULL;
+	      t = o->tags;
+	      while(t)
+		{
+		  if(t->type == idr_ccidrtagtype)
+		    {
+		      tccidr = t;
+		      t = NULL;
+		    }
+		  else
+		    {
+		      t = t->next;
+		    } /* if */
+		}
+
+	      if(tccidr)
+		{
+		  sprintf(tccidr->val, "%d", i);
+		}
+	      else
+		{
+		  t = NULL;
+		  /* create new tag */
+		  if(!(t = calloc(1, sizeof(ay_tag_object))))
+		    return AY_EOMEM;
+
+		  /* fill new tag */
+		  if(!(t->name = calloc(4, sizeof(char))))
+		    return AY_EOMEM;
+		  strcpy(t->name, idr_ccidrtagname);
+		  t->type = idr_ccidrtagtype;
+
+		  if(!(t->val = calloc(64, sizeof(char))))
+		    return AY_EOMEM;
+
+		  sprintf(t->val, "%d", i);
+	  
+		  /* link new tag */
+		  t->next = o->tags;
+		  o->tags = t;
+		} /* if */
+	    }
+	  else
+	    {
+	      *p = NULL;
+	    } /* if */
+	} /* if */
+      i++;
+      sel = sel->next;
+    }
+
+ return AY_OK;
+} /* idr_save_selected */
 
 
 /* idr_assign_impsel:
@@ -154,92 +260,280 @@ idr_assign_impsel()
  return AY_OK;
 } /* idr_assign_impsel */
 
-/* idr_assign_impchanged:
- *  assign importance to changed objects
+
+/* idr_clear_changed:
+ *  clear internal (changed) importance tags from scene below o
  */
 int
-idr_assign_impchanged(ay_object *o_cur, ay_object *o_old)
+idr_clear_changed(ay_object *o)
 {
- ay_tag_object *t = NULL, *told = NULL, *tnew = NULL;
- int changed = AY_FALSE;
+ int ay_status = AY_OK;
+ ay_object *down = NULL;
+ ay_tag_object *t = NULL, **tprev = NULL;
 
- if(o_cur->type == o_old->type)
+ if(o)
    {
-     if(!ay_comp_objects(o_cur, o_old))
+     if(o->down)
        {
-	 changed = AY_TRUE;
+	 down = o->down;
+	 while(down->next)
+	   {
+	     ay_status = idr_clear_changed(down);
+	     down = down->next;
+	   }
        }
-   }
- else
-   {
-     return AY_OK;
-   }
-
-
- if(changed)
-   {
-     t = o_cur->tags;
-     /* find old CIDR tag */
+     
+     /* find tag */
+     t = o->tags;
+     tprev = &(o->tags);
      while(t)
        {
 	 if(t->type == idr_cidrtagtype)
 	   {
-	     told = t;
+	     /* delete found tag */
+	     if(t->val)
+	       {
+		 free(t->val);
+	       }
+	     if(t->name)
+	       {
+		 free(t->name);
+	       }
+	     *tprev = t->next;
+	     free(t);
 	     t = NULL;
 	   }
 	 else
 	   {
+	     tprev = &(t->next);
 	     t = t->next;
-	   }
-       }
+	   } /* if */
+       } /* while */
 
-     if(told)
-       {
-	 /* set new tag value */
-	 if(told->val)
-	   {
-	     free(told->val);
-	     told->val = NULL;
-	   }
-
-	 if(!(told->val = calloc(64, sizeof(char))))
-	   return AY_EOMEM;
-
-	 sprintf(told->val, "%g", 1.0);
-	 
-       }
-     else
-       {
-	 /* create new tag */
-	 if(!(tnew = calloc(1, sizeof(ay_tag_object))))
-	   return AY_EOMEM;
-
-	 /* fill new tag */
-	 if(!(tnew->name = calloc(4, sizeof(char))))
-	   return AY_EOMEM;
-	 strcpy(tnew->name, idr_cidrtagname);
-	 tnew->type = idr_cidrtagtype;
-
-	 if(!(tnew->val = calloc(64, sizeof(char))))
-	   return AY_EOMEM;
-
-	 sprintf(tnew->val, "%g", 1.0);
-	  
-	 /* link new tag */
-	 tnew->next = o_cur->tags;
-	 o_cur->tags = tnew;
-       }
    } /* if */
 
  return AY_OK;
+} /* idr_clear_changed */
+
+
+/* idr_assign_impchanged:
+ *  assign importance to changed objects
+ */
+int
+idr_assign_impchanged()
+{
+ ay_tag_object *t = NULL, *told = NULL, *tnew = NULL;
+ ay_list_object *sel = ay_selection;
+ ay_object *o = NULL, *s = NULL;
+ int changed = AY_FALSE;
+ int i = 0, j = 0;
+
+  if(!idr_selected)
+    return AY_OK;
+
+  while(sel)
+    {
+      o = sel->object;
+
+     /* find CCIDR tag, to get the right index of copied object
+	in save selected buffer */
+      t = o->tags;
+      while(t)
+	{
+	  if(t->type == idr_ccidrtagtype)
+	    {
+	      sscanf(t->val, "%d", &i);
+	    }
+	  t = t->next;
+	} /* while */
+
+      /* get i'th object from save selected buffer */
+      s = idr_selected;
+      for(j = 0; j < i; j++)
+	{
+	  s = s->next;
+	  if(!s)
+	    {
+	      break;
+	    }
+	} /* for */
+
+      if(!s)
+	{
+	  return AY_OK;
+	}
+
+      /* sanity check */
+      if(o->type == s->type)
+	{
+	  if(!ay_comp_trafos(o, s))
+	    {
+	      changed = AY_TRUE;
+	    }
+	  else
+	    {
+	      if(!ay_comp_objects(o, s))
+		{
+		  changed = AY_TRUE;
+		}
+	    }
+	}
+      else
+	{
+	  /* oops? wrong index? */
+	  return AY_OK;
+	}
+
+      if(changed)
+	{
+	  t = o->tags;
+	  /* find old CIDR tag */
+	  while(t)
+	    {
+	      if(t->type == idr_cidrtagtype)
+		{
+		  told = t;
+		  t = NULL;
+		}
+	      else
+		{
+		  t = t->next;
+		}
+	    } /* while */
+
+	  if(told)
+	    {
+	      /* set new tag value */
+	      if(told->val)
+		{
+		  free(told->val);
+		  told->val = NULL;
+		}
+
+	      if(!(told->val = calloc(64, sizeof(char))))
+		return AY_EOMEM;
+
+	      sprintf(told->val, "%g", 1.0);
+	 
+	    }
+	  else
+	    {
+	      /* create new tag */
+	      if(!(tnew = calloc(1, sizeof(ay_tag_object))))
+		return AY_EOMEM;
+
+	      /* fill new tag */
+	      if(!(tnew->name = calloc(4, sizeof(char))))
+		return AY_EOMEM;
+	      strcpy(tnew->name, idr_cidrtagname);
+	      tnew->type = idr_cidrtagtype;
+
+	      if(!(tnew->val = calloc(64, sizeof(char))))
+		return AY_EOMEM;
+	      
+	      sprintf(tnew->val, "%g", 1.0);
+	  
+	      /* link new tag */
+	      tnew->next = o->tags;
+	      o->tags = tnew;
+	    } /* if */
+	} /* if */
+
+      sel = sel->next;
+    } /* while */
+
+ return AY_OK;
 } /* idr_assign_impchanged */
+
+
+/* idr_3dreg_topart:
+ *  
+ */
+int
+idr_3dreg_topart(ay_object *o, ay_view_object *view, idr_picpart **partlist)
+{
+ int ay_status = AY_OK;
+ double bb[24] = {0};
+ ay_tag_object *t = NULL;
+ int left, top, right, bottom;
+ idr_picpart *part = NULL;
+ double i = 0.0;
+ int width, height;
+ struct Togl *togl = NULL;
+
+  if(!o)
+    {
+      return AY_ENULL;
+    }
+
+  togl = view->togl;
+  width = Togl_Width (togl);
+  height = Togl_Height (togl);
+  /* find 3DREG tag of this object */
+  t = o->tags;
+  while(t)
+    {
+      if(t->type == idr_r3idrtagtype)
+	{
+	  sscanf(t->val, "%lg", &i);
+	  t = NULL;
+	}
+      else
+	{
+	  t = t->next;
+	}
+    }
+
+  ay_status = ay_bbc_get(o, bb);
+
+  if(ay_status)
+    {
+      return ay_status;
+    }
+  idr_get2dbbc(o, &left, &right, &bottom, &top);
+
+  left -= width/2;
+  if(left < -width/2)
+    left = -width/2;
+
+  right -= width/2;
+  if(right > width/2)
+    right = width/2;
+
+  bottom -= height/2;
+  if(bottom < -height/2)
+    bottom = -height/2;
+
+  top -= height/2;
+  if(top > height/2)
+    top = height/2;
+
+  if((left < right) && (bottom < top))
+    {
+      /* if resulting box has a size, add it to partlist */
+      if(!(part = calloc(1, sizeof(idr_picpart))))
+      {
+	return AY_EOMEM;
+      }
+      
+      part->next = *partlist;
+      *partlist = part;
+      part->left = left;
+      part->right = right;
+      part->bottom = bottom;
+      part->top = top;
+    } /* if */
+
+ return AY_OK;
+} /* idr_3dreg_topart */
+
 
 
 /* idr_assign_importance:
  *  mode 0: selection -> importance == 1.0
  */
 int
-idr_assign_importance(int mode)
+idr_assign_importance(int mode, ay_view_object *view)
 {
  int ay_status = AY_OK;
  ay_object *o = NULL;
@@ -277,6 +571,9 @@ idr_assign_importance(int mode)
      break;
    case 2:
      /* use importance from changed objects */
+
+     ay_status = idr_assign_impchanged();
+
      /* first clear importance tags from scene */
      o = ay_root;
      while(o->next)
@@ -291,7 +588,29 @@ idr_assign_importance(int mode)
 	 ay_status = idr_copy_importance(o, idr_cidrtagtype);
 	 o = o->next;
        }
-     /* save scene state */
+
+     /* clear information about changed objects, */
+     /* from scene: */
+      o = ay_root;
+      while(o->next)
+	{
+	  ay_status = idr_clear_changed(o);
+	  o = o->next;
+	}
+      /* and clipboard: */
+      o = ay_clipboard;
+      if(o)
+	{
+	  while(o->next)
+	    {
+	      ay_status = idr_clear_changed(o);
+	      o = o->next;
+	    }
+	}
+
+
+      /* save state of currently selected objects */
+      ay_status = idr_save_selected();
 
      break;
    case 3:
@@ -303,6 +622,17 @@ idr_assign_importance(int mode)
 	 ay_status = idr_clear_importance(o);
 	 o = o->next;
        }
+     break;
+   case 4:
+     /* use 3D regions */
+     /* clear importance tags from scene */
+     o = ay_root;
+     while(o->next)
+       {
+	 ay_status = idr_clear_importance(o);
+	 o = o->next;
+       }
+
      break;
    default:
      break;
@@ -368,7 +698,7 @@ idr_clear_importance(ay_object *o)
 
 
 /* idr_copy_importance:
- *  copy importance tags from IDR to IIDR tag types
+ *  copy importance tags from XIDR type (from_type) to IIDR tag types
  */
 int
 idr_copy_importance(ay_object *o, char *from_type)
@@ -395,7 +725,7 @@ idr_copy_importance(ay_object *o, char *from_type)
      t = o->tags;
      while(t)
        {
-	 if(t->type == idr_idrtagtype)
+	 if(t->type == from_type)
 	   {
 	     tidr = t;
 	     t = NULL;
@@ -480,7 +810,7 @@ idr_copy_importance(ay_object *o, char *from_type)
 int
 idr_show_parts(struct Togl *togl, idr_picpart *partlist)
 {
- int ay_status = AY_OK;
+  /* int ay_status = AY_OK;*/
  ay_tag_object *t = NULL;
  idr_picpart *part = NULL;
  char buf[255];
@@ -2121,6 +2451,115 @@ idr_getpartsfromimpreg(idr_picpart **partlist, struct Togl *togl,
  return ay_status;
 } /* idr_getpartsfromimpreg */
 
+/*
+ * idr_getpartsfrom3dimpreg:
+ *
+ */
+int
+idr_getpartsfrom3dimpreg(idr_picpart **partlist, struct Togl *togl,
+		       double importance,
+		       int width, int height)
+{
+ int ay_status = AY_OK;
+ ay_tag_object *t = NULL, *told = NULL, *tnew = NULL;
+ ay_view_object *view = NULL;
+ ay_object *o = NULL;
+
+  view = Togl_GetClientData(togl);
+
+
+  if(ay_root->down)
+    {
+      o = ay_root->down;
+	 
+      while(o->next)
+	{
+	  if(o->type != AY_IDVIEW)
+	    {
+	      idr_3dreg_topart(o, view, partlist);
+	    }
+	  o = o->next;
+	} /* while */
+    } /* if */
+
+  if(partlist)
+    {
+      /*
+	Yes, we actually have atleast one picture part to
+	render. We need to fake importance tags for all
+	toplevel objects in order to render them all.
+      */
+      /* first clear old IIDR tags */
+      o = ay_root;
+      while(o->next)
+	{
+	  ay_status = idr_clear_importance(o);
+	  o = o->next;
+	}
+      /* now create/fake importance tags */
+      o = ay_root;
+      while(o->next)
+	{
+	  t = o->tags;
+
+	  /* find old IIDR tag */
+	  while(t)
+	    {
+	      if(t->type == idr_iidrtagtype)
+		{
+		  told = t;
+		  t = NULL;
+		}
+	      else
+		{
+		  t = t->next;
+		}
+	    } /* while */
+
+	  if(told)
+	    {
+	      /* set new tag value */
+	      if(told->val)
+		{
+		  free(told->val);
+		  told->val = NULL;
+		}
+
+	      if(!(told->val = calloc(64, sizeof(char))))
+		return AY_EOMEM;
+	      
+	      sprintf(told->val, "%g", importance);
+	  
+	    }
+	  else
+	    {
+	      /* create new tag */
+	      if(!(tnew = calloc(1, sizeof(ay_tag_object))))
+		return AY_EOMEM;
+
+	      /* fill new tag */
+	      if(!(tnew->name = calloc(4, sizeof(char))))
+		return AY_EOMEM;
+	      strcpy(tnew->name, idr_iidrtagname);
+	      tnew->type = idr_iidrtagtype;
+
+	      if(!(tnew->val = calloc(64, sizeof(char))))
+		return AY_EOMEM;
+
+	      sprintf(tnew->val, "%g", importance);
+	  
+	      /* link new tag */
+	      tnew->next = o->tags;
+	      o->tags = tnew;
+	    }
+
+	  o = o->next;
+	} /* while */
+    } /* if */
+
+ return ay_status;
+} /* idr_getpartsfrom3dimpreg */
+
 
 /*
  * idr_getpartlist:
@@ -2144,6 +2583,10 @@ idr_getpartlist(idr_picpart **partlist, struct Togl *togl,
      ay_status = idr_getpartsfromimpreg(partlist, togl, importance,
 					width, height);
    break;
+   case 4:
+     ay_status = idr_getpartsfrom3dimpreg(partlist, togl, importance,
+					  width, height);
+     break;
    default:
      break;
    }
@@ -2234,7 +2677,7 @@ idr_wrib_tcb(struct Togl *togl, int argc, char *argv[])
 
 
   /* assign importance */
-  ay_status = idr_assign_importance(idrmode);
+  ay_status = idr_assign_importance(idrmode, view);
   if(ay_status)
     {
       ay_error(ay_status, fname, NULL);
@@ -3052,7 +3495,7 @@ idr_draw_cb(struct Togl *togl, ay_object *o)
 int
 idr_delregion(char *vname)
 {
- char fname[] = "idr_delregion";
+  /* char fname[] = "idr_delregion";*/
  ay_tag_object *t = NULL, **tlast = NULL;
  double X1, Y1, X2, Y2, imp;
  char tvname[255];
@@ -3290,7 +3733,7 @@ idr_drawroot_cb(struct Togl *togl, ay_object *o)
  return AY_OK;
 } /* idr_drawroot_cb */
 
-#if 0
+
 /* ay_tree_selecttcmd:
  *  select objects in the tree view
  *  replaces ay_tree_selecttcmd()
@@ -3304,7 +3747,10 @@ idr_tree_selecttcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *o;
  int i;
 
-  /* first, free old selection */
+  /* assign importance to changed objects */
+  ay_status = idr_assign_impchanged();
+
+  /* free old selection */
   ay_status = ay_sel_free();
 
   /* update current level */
@@ -3326,9 +3772,12 @@ idr_tree_selecttcmd(ClientData clientData, Tcl_Interp *interp,
       i++;
   }
 
+ /* save newly selected objects for later comparison */
+  ay_status = idr_save_selected();
+
  return TCL_OK;
 } /* idr_tree_selecttcmd */
-#endif
+
 
 /*
  * Idr_Init
@@ -3369,12 +3818,13 @@ Idr_Init(Tcl_Interp *interp)
   /* Create Tcl commands */
   Tcl_CreateCommand(interp, "idrCombineResults", idr_combineresultstcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
   Tcl_CreateCommand(interp, "idrsaveResult", idr_writetifftcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
-  /*
+  
   Tcl_CreateCommand(interp, "idr_treeSelect", idr_tree_selecttcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
-  */
+  
 
   /* register IDR tag type */
   ay_status = ay_tags_register(interp, idr_idrtagname, &idr_idrtagtype);
@@ -3396,6 +3846,26 @@ Idr_Init(Tcl_Interp *interp)
   if(ay_status)
     {
       ay_error(AY_ERROR, fname, "Error registering RIDR tag type!");
+      return TCL_OK;
+    }
+
+  ay_status = ay_tags_register(interp, idr_r3idrtagname, &idr_r3idrtagtype);
+  if(ay_status)
+    {
+      ay_error(AY_ERROR, fname, "Error registering R3IDR tag type!");
+      return TCL_OK;
+    }
+
+  ay_status = ay_tags_register(interp, idr_cidrtagname, &idr_cidrtagtype);
+  if(ay_status)
+    {
+      ay_error(AY_ERROR, fname, "Error registering CIDR tag type!");
+      return TCL_OK;
+    }
+  ay_status = ay_tags_register(interp, idr_ccidrtagname, &idr_ccidrtagtype);
+  if(ay_status)
+    {
+      ay_error(AY_ERROR, fname, "Error registering CCIDR tag type!");
       return TCL_OK;
     }
 
