@@ -157,8 +157,8 @@ proc runGetStdout { num cmd template channel } {
 # runRenderer:
 # 
 proc runRenderer { cmd template } {
-
     global ay ayprefs
+
     if { $ayprefs(Kill) != "" } {
 	set kill $ayprefs(Kill)
     } else {
@@ -191,13 +191,6 @@ proc runRenderer { cmd template } {
 
     set w .render$ay(rnum)
     catch {destroy $w}
-
-    set found 0
-    foreach win [winfo children .] {
-	if { "[set top [winfo toplevel $win]]" == "." } continue
-	if { [string first "render" $top] != -1  } { set found 1 }
-    }
-
 
     toplevel $w
     wm title $w "Render_$ay(rnum)"
@@ -232,25 +225,19 @@ proc runRenderer { cmd template } {
     pack $f -in $w -side top -fill x
     pack $w.bca -in $w -side bottom -anchor s -fill x -expand yes
 
-
-
     winCenter $w
-    if { $found == 0 } {
+
+    # auto raise window, when obscured
+    bind $w <Visibility> {
 	global ay
-	set ay(runrenderwinraises) 0
-	bind $w <Visibility> {
-	    global ay
-	    # are we obscured?
-	    if { "%s" == "VisibilityPartiallyObscured" ||\
-		 "%s" == "VisibilityFullyObscured" } {
-		     # avoid deadlock fighting with a wm dock window
-		     # that eventually wants to be "on top" too,
-		     # the smarter one gives up...
-		     if { $ay(runrenderwinraises) < 30 } {
-			 incr ay(runrenderwinraises)
-			 raise [winfo toplevel %W]
-		     }
-		 }
+	# are we obscured?
+	if { "%s" == "VisibilityPartiallyObscured" ||\
+		"%s" == "VisibilityFullyObscured" } {
+
+	    raise [winfo toplevel %W]
+	    # try to raise the window just exactly one time
+	    bind %W <Visibility> ""
+	     
 	}
     }
 
