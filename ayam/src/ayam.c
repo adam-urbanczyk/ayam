@@ -827,7 +827,8 @@ int ay_status = AY_OK;
   Tcl_CreateCommand(interp, "buildNP", ay_npt_buildfromcurvestcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-
+  Tcl_CreateCommand(interp, "topoly", ay_npt_topolytcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
 /* inform Tcl-context about compile time configuration: */
 
