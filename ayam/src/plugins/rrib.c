@@ -3789,6 +3789,8 @@ ay_rrib_readparams(int n, RtToken tokens[], RtPointer parms[],
  RIB_HASHHND ht = NULL;
  PRIB_HASHATOM  p = NULL;
  char fname[] = "ay_rrib_readparams";
+ RtInt *intpair;
+ RtFloat *fltpair;
  RtColor *col;
  RtPoint *pnt;
  char *valstr = NULL, valbuf[255], typechar;
@@ -3824,9 +3826,22 @@ ay_rrib_readparams(int n, RtToken tokens[], RtPointer parms[],
 	      sprintf(valbuf,"%d", (int)(*((RtInt *)(parms[i]))));
 	      valstr = valbuf;
 	      break;
+	    case kRIB_INTPAIRTYPE:
+	      typechar = 'j';
+	      intpair = (RtInt *)(parms[i]);
+	      sprintf(valbuf,"%d,%d", (int)(intpair[0]),(int)(intpair[1]));
+	      valstr = valbuf;
+	      break;
 	    case kRIB_FLOATTYPE:
 	      typechar = 'f';
 	      sprintf(valbuf,"%f", (float)(*((RtFloat *)(parms[i]))));
+	      valstr = valbuf;
+	      break;
+	    case kRIB_FLOATPAIRTYPE:
+	      typechar = 'g';
+	      fltpair = (RtFloat *)(parms[i]);
+	      sprintf(valbuf,"%f,%f", (float)(fltpair[0]),
+		      (float)(fltpair[1]));
 	      valstr = valbuf;
 	      break;
 	    case kRIB_STRINGTYPE:
