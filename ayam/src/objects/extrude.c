@@ -47,7 +47,7 @@ ay_extrude_deletecb(void *c)
  ay_extrude_object *extrude = NULL;
 
   if(!c)
-    return AY_ENULL;    
+    return AY_ENULL;
 
   extrude = (ay_extrude_object *)(c);
 
@@ -83,9 +83,9 @@ ay_extrude_copycb(void *src, void **dst)
   extrudesrc = (ay_extrude_object *)src;
 
   if(!(extrude = calloc(1, sizeof(ay_extrude_object))))
-    return AY_EOMEM; 
+    return AY_EOMEM;
 
-  memcpy(extrude, src, sizeof(ay_extrude_object)); 
+  memcpy(extrude, src, sizeof(ay_extrude_object));
 
   extrude->npatch = NULL;
   extrude->upper_cap = NULL;
@@ -220,7 +220,7 @@ ay_extrude_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     return AY_ENULL;
 
   extrude = (ay_extrude_object *)o->refine;
-  
+
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
 
@@ -442,7 +442,7 @@ ay_extrude_bbccb(ay_object *o, double *bbox, int *flags)
   if(!o || !bbox)
     return AY_ENULL;
 
-  extrude = (ay_extrude_object *)o->refine; 
+  extrude = (ay_extrude_object *)o->refine;
 
   if(extrude->npatch)
     {
@@ -492,7 +492,7 @@ ay_extrude_notifycb(ay_object *o)
   if(!ext)
     return AY_OK;
 
-  /* ok, something changed below, we have to rebuild the extrusions */
+  /* ok, something changed below, we have to rebuild the extrusion(s) */
 
   tolerance = ext->glu_sampling_tolerance;
   display_mode = ext->glu_display_mode;
@@ -579,28 +579,29 @@ ay_extrude_notifycb(ay_object *o)
 	      ay_object_defaults(bevel);
 
 	      ay_status = ay_npt_bevel(ext->bevel_type,
-					    ext->bevel_radius,
-					    c,
-				(ay_nurbpatch_object **)&(bevel->refine));
+				       ext->bevel_radius,
+				       c,
+				    (ay_nurbpatch_object **)&(bevel->refine));
 
 	      ((ay_nurbpatch_object *)bevel->refine)->
 		glu_display_mode = display_mode;
 	      ((ay_nurbpatch_object *)bevel->refine)->
 		glu_sampling_tolerance = tolerance;
-	    }
+	    } /* if */
+
 	  /* link bevel */
 	  if(ext->has_upper_bevels)
 	    {
 	      bevel->next = ext->upper_bevels;
 	      ext->upper_bevels = bevel;
 	      bevel->movz = ext->height;
-	      
+
 	      if(ext->has_lower_bevels)
 		{
 		  nb = ext->lower_bevels;
 		  ay_status = ay_object_copy(bevel, &(ext->lower_bevels));
 		  ext->lower_bevels->movz = 0.0;
-		  
+
 		  ext->lower_bevels->scalz = -1;
 		  ext->lower_bevels->next = nb;
 		}
@@ -613,9 +614,9 @@ ay_extrude_notifycb(ay_object *o)
 		  ext->lower_bevels = bevel;
 		  bevel->movz = 0.0;
 		  bevel->scalz = -1;
-		  
+
 		}
-	    }
+	    } /* if */
 
 	  /* create caps */
 	  if(ext->has_upper_cap)
@@ -636,7 +637,7 @@ ay_extrude_notifycb(ay_object *o)
 		  firstmovey = trim->movy;
 
 		  z = ext->height;
-		  /* 
+		  /*
 		     if we have bevels, we need a new control vector
 		     copied directly from the beveling patch,
 		     this is the same vector as the vector from the
@@ -648,7 +649,7 @@ ay_extrude_notifycb(ay_object *o)
 		      patch = (ay_nurbpatch_object*)bevel->refine;
 		      free(curve->controlv);
 		      curve->controlv = NULL;
-		      if(!(curve->controlv = 
+		      if(!(curve->controlv =
 			   calloc(4*curve->length, sizeof(double))))
 			return AY_EOMEM;
 		      memcpy(curve->controlv,&(patch->controlv[
@@ -696,10 +697,10 @@ ay_extrude_notifycb(ay_object *o)
 		  trim->scaly /= fabs(umaxy-uminy);
 		  trim->movx = -(uminx + (fabs(umaxx-uminx)/2.0))*trim->scalx;
 		  trim->movy = -(uminy + (fabs(umaxy-uminy)/2.0))*trim->scaly;
-	    
+
 		  trim->movx += 0.5;
 		  trim->movy += 0.5;
-		  
+
 		}
 	      else
 		{ /* not first curve  */
@@ -710,7 +711,7 @@ ay_extrude_notifycb(ay_object *o)
 		      patch = (ay_nurbpatch_object*)bevel->refine;
 		      free(curve->controlv);
 		      curve->controlv = NULL;
-		      if(!(curve->controlv = 
+		      if(!(curve->controlv =
 			   calloc(4*curve->length, sizeof(double))))
 			return AY_EOMEM;
 		      memcpy(curve->controlv,&(patch->controlv[
@@ -722,7 +723,7 @@ ay_extrude_notifycb(ay_object *o)
 		  ay_nct_getorientation((ay_nurbcurve_object *)
 					trim->refine, &angle);
 
-		  if(angle>0.0)
+		  if(angle > 0.0)
 		    ay_nct_revert(trim->refine);
 
 		  if(!ext->upper_bevels)
@@ -738,7 +739,7 @@ ay_extrude_notifycb(ay_object *o)
 
 		  trim->scalx /= fabs(umaxx-uminx);
 		  trim->scaly /= fabs(umaxy-uminy);
-		    
+
 		  trim->movx = -(uminx + (fabs(umaxx-uminx)/2.0))*trim->scalx;
 		  trim->movy = -(uminy + (fabs(umaxy-uminy)/2.0))*trim->scaly;
 
@@ -774,7 +775,7 @@ ay_extrude_notifycb(ay_object *o)
 		    }
 
 		  z = 0.0;
-		  /* 
+		  /*
 		     if we have bevels, we need a new control vector
 		     copied directly from the beveling patch,
 		     this is the same vector as the vector from the
@@ -786,13 +787,13 @@ ay_extrude_notifycb(ay_object *o)
 		      patch = (ay_nurbpatch_object*)bevel->refine;
 		      free(curve->controlv);
 		      curve->controlv = NULL;
-		      if(!(curve->controlv = 
+		      if(!(curve->controlv =
 			   calloc(4*curve->length, sizeof(double))))
 			return AY_EOMEM;
 		      memcpy(curve->controlv,&(patch->controlv[
 					(patch->width-1)*4*patch->height]),
 			     4*curve->length*sizeof(double));
-		      z -= curve->controlv[2];
+		      z += curve->controlv[2];
 		      ay_trafo_defaults(trim);
 		    }
 
@@ -822,6 +823,8 @@ ay_extrude_notifycb(ay_object *o)
 		      ay_trafo_copy(trim, cap);
 		    }
 
+		  cap->scalz = -1.0;
+
 		  ext->lower_cap = cap;
 
 		  ay_nct_getorientation((ay_nurbcurve_object *)
@@ -829,13 +832,13 @@ ay_extrude_notifycb(ay_object *o)
 
 		  if(angle<0.0)
 		    ay_nct_revert(trim->refine);
-		  
+
 		  trim->scalx /= fabs(lmaxx-lminx);
 		  trim->scaly /= fabs(lmaxy-lminy);
 
 		  trim->movx = -(lminx + (fabs(lmaxx-lminx)/2.0))*trim->scalx;
 		  trim->movy = -(lminy + (fabs(lmaxy-lminy)/2.0))*trim->scaly;
-	    
+
 		  trim->movx += 0.5;
 		  trim->movy += 0.5;
 		}
@@ -847,7 +850,7 @@ ay_extrude_notifycb(ay_object *o)
 		      patch = (ay_nurbpatch_object*)bevel->refine;
 		      free(curve->controlv);
 		      curve->controlv = NULL;
-		      if(!(curve->controlv = 
+		      if(!(curve->controlv =
 			   calloc(4*curve->length, sizeof(double))))
 			return AY_EOMEM;
 		      memcpy(curve->controlv,&(patch->controlv[
@@ -858,7 +861,7 @@ ay_extrude_notifycb(ay_object *o)
 
 		  ay_nct_getorientation((ay_nurbcurve_object *)
 					trim->refine, &angle);
-		    
+
 		  if(angle>0.0)
 		    ay_nct_revert(trim->refine);
 
@@ -878,17 +881,17 @@ ay_extrude_notifycb(ay_object *o)
 
 		  trim->movx = -(lminx + (fabs(lmaxx-lminx)/2.0))*trim->scalx;
 		  trim->movy = -(lminy + (fabs(lmaxy-lminy)/2.0))*trim->scaly;
-		    
+
 		  trim->movx += 0.5+(trimmx/fabs(lmaxx-lminx));
 		  trim->movy += 0.5+(trimmy/fabs(lmaxy-lminy));
 
-		}
+		} /* if */
 
 	      ot = ext->lower_cap->down;
 	      ext->lower_cap->down = trim;
 	      trim->next = ot;
-	      
-	    }
+
+	    } /* if */
 
 	  if(got_object)
 	    ay_object_delete(c);
@@ -897,7 +900,7 @@ ay_extrude_notifycb(ay_object *o)
 
     } /* while down */
 
-  /* properly terminate level */  
+  /* properly terminate level */
   if(ext)
     {
       if(ext->upper_cap)
@@ -915,7 +918,8 @@ ay_extrude_notifycb(ay_object *o)
 	    {
 	      ay_status = ay_object_crtendlevel(&(ext->upper_cap->down));
 	    }
-	}
+	}  /* if */
+
       if(ext->lower_cap)
 	{
 	  tloop = ext->lower_cap->down;
@@ -931,9 +935,9 @@ ay_extrude_notifycb(ay_object *o)
 	    {
 	      ay_status = ay_object_crtendlevel(&(ext->lower_cap->down));
 	    }
-	}
+	} /* if */
 
-    }
+    } /* if */
 
  return AY_OK;
 } /* ay_extrude_notifycb */
@@ -989,7 +993,7 @@ ay_extrude_providecb(ay_object *o, unsigned int type, ay_object **result)
 	      ay_error(ay_status, fname, NULL);
 	      return AY_ERROR;
 	    }
-	  ay_trafo_add(o, *t);
+	  /*ay_trafo_add(o, *t);*/
 	  t = &((*t)->next);
 	  p = p->next;
 	} /* while */
@@ -1003,7 +1007,7 @@ ay_extrude_providecb(ay_object *o, unsigned int type, ay_object **result)
 	      ay_error(ay_status, fname, NULL);
 	      return AY_ERROR;
 	    }
-	  ay_trafo_add(o, *t);
+	  /*ay_trafo_add(o, *t);*/
 	  t = &((*t)->next);
 	  p = p->next;
 	} /* while */
@@ -1018,7 +1022,7 @@ ay_extrude_providecb(ay_object *o, unsigned int type, ay_object **result)
 	      ay_error(ay_status, fname, NULL);
 	      return AY_ERROR;
 	    }
-	  ay_trafo_add(o, *t);
+	  /*ay_trafo_add(o, *t);*/
 	  t = &((*t)->next);
 	  p = p->next;
 	} /* while */
@@ -1032,7 +1036,7 @@ ay_extrude_providecb(ay_object *o, unsigned int type, ay_object **result)
 	      ay_error(ay_status, fname, NULL);
 	      return AY_ERROR;
 	    }
-	  ay_trafo_add(o, *t);
+	  /*ay_trafo_add(o, *t);*/
 	  t = &((*t)->next);
 	  p = p->next;
 	} /* while */
@@ -1104,7 +1108,7 @@ ay_extrude_convertcb(ay_object *o, int in_place)
 	  ay_status = ay_object_copy(r->upper_cap, next);
 	  if(*next)
 	    {
-	      ay_trafo_add(o, *next);
+	      /*ay_trafo_add(o, *next);*/
 	      next = &((*next)->next);
 	    }
 	} /* if */
@@ -1114,7 +1118,7 @@ ay_extrude_convertcb(ay_object *o, int in_place)
 	  ay_status = ay_object_copy(r->lower_cap, next);
 	  if(*next)
 	    {
-	      ay_trafo_add(o, *next);
+	      /*ay_trafo_add(o, *next);*/
 	      next = &((*next)->next);
 	    }
 	} /* if */
@@ -1127,7 +1131,7 @@ ay_extrude_convertcb(ay_object *o, int in_place)
 	      ay_status = ay_object_copy(p, next);
 	      if(*next)
 		{
-		  ay_trafo_add(o, *next);
+		  /*ay_trafo_add(o, *next);*/
 		  (*next)->hide_children = AY_TRUE;
 		  (*next)->parent = AY_TRUE;
 		  ay_object_crtendlevel(&(*next)->down);
@@ -1145,7 +1149,7 @@ ay_extrude_convertcb(ay_object *o, int in_place)
 	      ay_status = ay_object_copy(p, next);
 	      if(*next)
 		{
-		  ay_trafo_add(o, *next);
+		  /*ay_trafo_add(o, *next);*/
 		  (*next)->hide_children = AY_TRUE;
 		  (*next)->parent = AY_TRUE;
 		  ay_object_crtendlevel(&(*next)->down);
@@ -1208,7 +1212,7 @@ ay_extrude_init(Tcl_Interp *interp)
 				    ay_extrude_bbccb,
 				    AY_IDEXTRUDE);
 
-  
+
   ay_status = ay_notify_register(ay_extrude_notifycb, AY_IDEXTRUDE);
 
   ay_status = ay_convert_register(ay_extrude_convertcb, AY_IDEXTRUDE);
