@@ -677,6 +677,8 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       while(ncurve->mpoints)
 	{
 	  mp = ncurve->mpoints->next;
+	  if(ncurve->mpoints->points)
+	    free(ncurve->mpoints->points);
 	  free(ncurve->mpoints);
 	  ncurve->mpoints = mp;
 	}

@@ -519,7 +519,7 @@ ay_instance_bbccb(ay_object *o, double *bbox, int *flags)
 
 
 /* ay_instance_convertcb:
- *
+ * propagate changes to this function to ay_instt_resolve()!
  */
 int
 ay_instance_convertcb(ay_object *i)
@@ -532,6 +532,14 @@ ay_instance_convertcb(ay_object *i)
  double quat[4];
  ay_object *orig = NULL, *temp = NULL;
  ay_object *inext = NULL;
+
+  if(i->type != AY_IDINSTANCE)
+    return AY_ERROR;
+
+  orig = (ay_object *)i->refine;
+  if(!orig)
+    return AY_ERROR;
+
 
   movx = i->movx;
   movy = i->movy;
@@ -550,24 +558,34 @@ ay_instance_convertcb(ay_object *i)
   quat[2] = i->quat[2];
   quat[3] = i->quat[3];
 
-  if(i->type != AY_IDINSTANCE)
-    return AY_ERROR;
-
-  orig = (ay_object *)i->refine;
-  if(!orig)
-    return AY_ENULL;
-
   inext = i->next;
   iname = i->name;
 
+  /* free some data that may be accidentally attached to the
+     instance object (by errors in other parts of the core?) */
+  if(i->selp)
+    ay_selp_clear(i);
+
+  ay_tags_delall(i);
+
+  /* copy data from original object via temp object to instance object */
   ay_status = ay_object_copy(orig, &temp);
   if(ay_status)
     return ay_status;
 
   memcpy(i, temp, sizeof(ay_object));
 
+  /* repair pointers */
   i->next = inext;
+  i->name = iname;
 
+  /* free temporary object */
+  if(temp->name)
+    free(temp->name);
+  if(temp)
+    free(temp);
+
+  /* use transformation attributes from instance, not from original */
   i->movx = movx;
   i->movy = movy;
   i->movz = movz;

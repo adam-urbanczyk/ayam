@@ -345,48 +345,58 @@ ay_material_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	}
       strcpy(newname, string);
     }
+
   if(newname != NULL)
     {
+      /* Is the new name different from the old one? */
       if(strcmp(newname, oldname))
 	{
-	  /* register new name, */
+	  /* Yes, register new name. */
 	  newname_status = ay_matt_registermaterial(newname, material);
 	  if(!newname_status)
 	    {
+	      /* New name is successfully registered! */
+
+	      /* Now correctly dispose the old name. */
 	      if(oldname)
 		oldname_status = ay_matt_isregistered(oldname);
 	      else
 		oldname_status = AY_FALSE;
 
-	      if(oldname_status == AY_FALSE)
-		{ /* oldname is not registered, do not de-register */
-		  if(oldname)
-		    {
-		      free(o->name);
-		      o->name = NULL;
-		    }
-		}
-	      else
-		{ /* oldname is registered, de-register it */
-
-		  /* but check first, if this is the registered object */
+	      if(oldname_status != AY_FALSE)
+		{
+		  /* old name is already registered, de-register it;
+		     but only if this really is the registered material
+		     object (there can be materials with the same name) */
 		  ay_status = ay_matt_getmaterial(oldname, &oldmat);
 		  if(oldmat == material)
 		    {
 		      ay_matt_deregister(oldname);
 		    }
 		}
+
+	      if(o->name)
+		{
+		  free(o->name);
+		}
+	      /* finally, set new name */
 	      o->name = newname;
 	    }
 	  else
-	    { /* new name is already registered! */
+	    {
+	      /* new name is already registered! */
 	      ay_error(AY_ERROR, fname,
 		       "Material name is already registered!");
 	      ay_error(AY_ERROR, fname, "Falling back to old name!");
-	    }
+	      free(newname);
+	    } /* if */
+	}
+      else
+	{
+	  /* No, newname == oldname, thus discard new name. */
+	  free(newname);
 	} /* if */
     } /* if */
-
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
