@@ -20,7 +20,9 @@
 
 int ay_wrib_sm(char *file, char *image, int width, int height);
 
-void ay_wrib_displaytags();
+void ay_wrib_displaytags(void);
+
+void ay_wrib_hidertags(void);
 
 /* cot() used by currently unused FrameCamera() */
 /*
@@ -513,7 +515,7 @@ ay_wrib_object(char *file, ay_object *o)
  *  write display tags that are attached to the root object
  */
 void
-ay_wrib_displaytags()
+ay_wrib_displaytags(void)
 {
  char fname[] = "wrib_displaytags";
  ay_object *root = NULL;
@@ -669,7 +671,7 @@ ay_wrib_displaytags()
  *  write hider tags that are attached to the root object
  */
 void
-ay_wrib_hidertags()
+ay_wrib_hidertags(void)
 {
  char fname[] = "wrib_hidertags";
  ay_object *root = NULL;
