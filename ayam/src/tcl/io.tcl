@@ -10,7 +10,7 @@
 # io.tcl - scene io helper procs
 
 # io_replaceScene:
-# clear scene, then read new
+# clear scene, then read new scene file
 #
 proc io_replaceScene { } {
     global ay tcl_platform
@@ -69,6 +69,8 @@ proc io_replaceScene { } {
 		.fl.con delete end-1lines end
 		Console:prompt .fl.con "\n"
 	    }
+
+	    io_readMainGeom
 
 	} else {
 	    ayError 2 "Ayam" "There were errors while loading:"
@@ -196,6 +198,7 @@ proc io_saveScene { ask selected } {
     if { $filename != "" } {
 	# fix window positions
 	viewUPos
+	io_saveMainGeom
 	global ay_error
 	set ay_error ""
 	saveScene $filename $selected
@@ -219,7 +222,7 @@ proc io_saveScene { ask selected } {
 # io_saveScene
 
 
-# exportRIB:
+# io_exportRIB:
 # 
 # 
 proc io_exportRIB { {expview "" } } {
@@ -374,9 +377,8 @@ proc io_lcAuto {  } {
 # io_lcAuto
 
 
-# loadCustomp:
-# 
-# 
+# io_loadCustomp:
+#  load a plugin
 proc io_loadCustom { } {
     global ayprefs
 
@@ -400,8 +402,7 @@ ifilename ""
 }   }
 
 # io_importMops:
-#
-#
+#  import a Mops scene file
 proc io_importMops { } {
     global ay tcl_platform
 
@@ -565,6 +566,7 @@ proc io_mruLoad { index } {
 		.fl.con delete end-1lines end
 		Console:prompt .fl.con "\n"
 	    }
+	    io_readMainGeom
 	} else {
 	    ayError 2 "Ayam" "There were errors while loading:"
 	    ayError 2 "Ayam" "$filename"
@@ -616,7 +618,7 @@ proc io_mruUMenu {  } {
 
 
 # io_warnChanged:
-#  
+#  raise a warning reqester, that the scene contains unsaved changes
 proc io_warnChanged {  } {
     global ay ayprefs
 
@@ -644,7 +646,7 @@ set answer [tk_messageBox -title $t -type okcancel -icon warning -message $m]
 
 
 # io_saveEnv:
-#  
+#  save working environment scene file
 proc io_saveEnv {  } {
  global ay ayprefs ay_error tcl_platform
 
@@ -678,6 +680,7 @@ proc io_saveEnv {  } {
      if { (![file exists $savefilename]) ||
      ([file exists $savefilename] && [file writable $savefilename]) } {
 	 viewUPos
+	 io_saveMainGeom
 	 selOb
 	 uCL cs
 	 goTop
@@ -727,7 +730,7 @@ on the next start."
 
 
 # io_getRIBName:
-#
+#  derive a RIB file name for export
 proc io_getRIBName { } {
     global ay ayprefs
 
@@ -759,6 +762,7 @@ proc io_getRIBName { } {
 	    }
 	}
     }
+    # if
 
 
     if { $ayprefs(Image) == "Ask" } {
@@ -816,7 +820,6 @@ proc io_exportRIBfC { } {
 # io_exportRIBfC
 
 
-##############################
 # io_RenderSM:
 #  export shadow map RIB and render all shadow maps
 proc io_RenderSM { } {
@@ -899,7 +902,7 @@ set answer [tk_messageBox -title $t -type okcancel -icon warning -message $m]
 #io_RenderSM
 
 
-# exportRIBSO:
+# io_exportRIBSO:
 #  export RIB from all selected objects
 # 
 proc io_exportRIBSO { } {
@@ -922,3 +925,99 @@ proc io_exportRIBSO { } {
  return;
 }
 # io_exportRIBSO
+
+
+# io_saveMainGeom:
+#  fill potentially present "SaveMainGeom" tag with current
+#  main and toolbox window geometry
+proc io_saveMainGeom { } {
+    global ay tagnames tagvals
+    
+    if { $ay(lb) == 0 } {
+	set tree $ay(tree)
+	set sel [$tree selection get]
+	treeSelect root:0
+    } else {
+	set lb $ay(olb)
+
+	set selection [$lb curselection]
+	goTop
+	selOb 0
+    }
+    getTags tagnames tagvals
+    set i 0
+    foreach tagname $tagnames {
+	if { $tagname == "SaveMainGeom" } {
+	    if { [winfo exists .tbw] } {
+		set geom "1,[winGetGeom .] [winGetGeom .tbw]"
+	    } else {
+		set geom 0,[winGetGeom .]
+	    }
+
+	    setTags -index $i SaveMainGeom $geom
+	}
+	incr i
+    }
+
+    if { $ay(lb) == 0 } {
+	$tree selection set $sel
+	treeSelect $sel
+    } else {
+	#selOb $sel
+    }
+
+ return;
+}
+# io_saveMainGeom
+
+
+# io_readMainGeom:
+#  update geometry of main and toolbox window with data from potentially
+#  present SaveMainGeom tag
+proc io_readMainGeom { } {
+    global ay tagnames tagvals
+    
+    if { $ay(lb) == 0 } {
+	set tree $ay(tree)
+	set sel [$tree selection get]
+	treeSelect root:0
+    } else {
+	set lb $ay(olb)
+
+	set selection [$lb curselection]
+	goTop
+	selOb 0
+    }
+    getTags tagnames tagvals
+    set i 0
+    foreach tagname $tagnames {
+	if { $tagname == "SaveMainGeom" } {
+	    set hasTBGeom 0
+	    scan [lindex $tagvals $i] "%d," hasTBGeom
+
+	    if {$hasTBGeom} {
+		scan [lindex $tagvals $i] "%d,%s %s" dummy mgeom tgeom
+		if { [winfo exists .tbw] } {
+		    winMoveOrResize .tbw $tgeom
+		}
+	    } else {
+		scan [lindex $tagvals $i] "%d,%s" dummy mgeom
+	    }
+
+	    winMoveOrResize . $mgeom
+
+	}
+	incr i
+    }
+
+    if { $ay(lb) == 0 } {
+	$tree selection set $sel
+	treeSelect $sel
+    } else {
+	#selOb $sel
+    }
+
+ return;
+}
+# io_readMainGeom
+
