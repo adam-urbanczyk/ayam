@@ -479,7 +479,10 @@ selected object(s)
 
 The <tt/Help/ menu:
 <itemize>
-<item><tt/Help/, opens a web brauser and displays the documentation
+<item><tt/Help/, opens a web browser and displays the documentation
+the URL to display is taken from the <tt/Docs/ preference setting.
+<item><tt/Help on object/, opens a web browser and displays
+documentation about the currently selected type of object
 <item><tt/About/, displays some version, copyright,
 and trademark information
 <item><tt/Show Tooltips/, enables tool tips (balloon help)
