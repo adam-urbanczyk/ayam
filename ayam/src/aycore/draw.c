@@ -642,3 +642,69 @@ ay_draw_bgimage(struct Togl *togl)
 
  return;
 } /* ay_draw_bgimage */
+
+
+/* ay_draw_needredraw:
+ *  For two lists of objects in the scene, decide whether a redraw
+ *  is necessary when the objects in oldsel are deselected and the
+ *  objects in newsel are selected (if e.g. oldsel contains a material
+ *  and newsel a hidden object, no redraw is necessary, because nothing
+ *  would change in any view anyway).
+ *  Both lists may be empty.
+ */
+void
+ay_draw_needredraw(ay_list_object *oldsel, ay_list_object *newsel,
+		   int *result)
+{
+ int oldseldrawn = AY_FALSE, newseldrawn = AY_FALSE;
+ ay_object *o = NULL;
+ ay_list_object *s = NULL;
+
+  *result = AY_TRUE;
+
+  s = oldsel;
+  while(s)
+    {
+      o = s->object;
+      if(o->type != AY_IDMATERIAL)
+	{
+	  if(!o->hide)
+	    {
+	      oldseldrawn = AY_TRUE;
+	    }
+	}
+      s = s->next;
+    }
+
+  s = newsel;
+  while(s)
+    {
+      o = s->object;
+      if(o->type != AY_IDMATERIAL)
+	{
+	  if(!o->hide)
+	    {
+	      newseldrawn = AY_TRUE;
+	    }
+	}
+      s = s->next;
+    }
+
+  if(!oldseldrawn && !newseldrawn)
+    {
+      *result = AY_FALSE;
+      return;
+    }
+
+  /* check for identical (one object) selections */
+  if(oldsel && newsel && (!oldsel->next) && (!newsel->next))
+    {
+      if(oldsel->object == newsel->object)
+	{
+	  *result = AY_FALSE;
+	  return;
+	}
+    }
+
+ return;
+} /* ay_draw_needredraw */

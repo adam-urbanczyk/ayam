@@ -31,9 +31,11 @@ bind $f.li <Double-ButtonPress-1> {
     global ay
     set list [$ay(olb) curselection]
     eval [subst "goDown $list"]
-    selOb
+    cS
     olb_update
-    rV
+    if { $ay(need_redraw) == 1 } {
+	rV
+    }
 }
 
 bind $f.li <Return> { olb_select }
@@ -66,7 +68,9 @@ $m add command -label "Switch to Tree" -command\
     set ay(SelectedLevel) \"root\";\
     tree_paintLevel \"root\";\
     set ay(DropActive) 0;\
-    rV"
+    if \{ \$ay(need_redraw) == 1 \} \{\
+    rV;\
+    \}"
 $m add separator
 set em $ay(editmenu)
 $m add command -label "Copy Object" -command "$em invoke 0"
@@ -118,17 +122,20 @@ frame $f.f1
 set f $f.f1
 button $f.bnon -text "None"  -padx 0 -pady 0 -command {
     global ay
-    $ay(olb) selection clear 0 end
-    selOb
+    cS
     plb_update
-    rV
+    if { $ay(need_redraw) == 1 } {
+	rV
+    }
 } -takefocus 0 -highlightthickness 0
 
 button $f.bup -text "Up" -padx 0 -pady 0  -command {
+    cS
     goUp
-    selOb
     olb_update
-    rV
+    if { $ay(need_redraw) == 1 } {
+	rV
+    }
 } -takefocus 0 -highlightthickness 0
 pack $f.bnon $f.bup -in $f -side top -fill x -expand yes
 
@@ -146,14 +153,18 @@ button $f.ball -text "All"   -padx 0 -pady 0 -command {
 	eval [subst "selOb $selection"]
 	olb_update
     }
-    rV
+    if { $ay(need_redraw) == 1 } {
+	rV
+    }
 } -takefocus 0 -highlightthickness 0
 
 button $f.btop -text "Top" -padx 0 -pady 0  -command {
+    cS
     goTop
-    selOb
     olb_update
-    rV
+    if { $ay(need_redraw) == 1 } {
+	rV
+    }
 } -takefocus 0 -highlightthickness 0
 
 pack $f.ball $f.btop -in $f -side top -fill x -expand yes
@@ -171,16 +182,17 @@ button $f.binv -text "Inv"  -padx 0 -pady 0 -command {
 	$ay(olb) selection clear $element
     }
     olb_select
-    rV
 } -takefocus 0 -highlightthickness 0
     
 button $f.bdwn -text "Down" -padx 0 -pady 0  -command {
     global ay
     set list [$ay(olb) curselection]
     eval [subst "goDown $list"]
-    selOb
+    cS
     olb_update
-    rV
+    if { $ay(need_redraw) == 1 } {
+	rV
+    }
 } -takefocus 0 -highlightthickness 0
 
 pack $f.binv $f.bdwn -in $f -side top -fill x -expand yes
@@ -253,6 +265,10 @@ proc olb_select { } {
 
     plb_update
 
-    rV
+    if { $ay(need_redraw) == 1 } {
+	rV
+    }
+
+ return;
 }
 # olb_select

@@ -366,6 +366,7 @@ array set ay {
  sext ""
  locales { en de }
  ScanShaders 0
+ need_redraw 1
 }
 
 set ay_error 0
