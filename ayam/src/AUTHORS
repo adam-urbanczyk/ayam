@@ -1,6 +1,8 @@
+Bertrand Coconnier:
+ object picking code
 Frank (copper) Pagels:
  MetaBalls custom object
 Hermann Birkholz:
- initial tree widget, shadow maps, AI, and IDR implementation
+ initial tree widget, shadow maps, automatic instancing, and IDR implementation
 Randolf Schultz (rschultz@informatik.uni-rostock.de):
  the rest
