@@ -246,9 +246,10 @@ ay_ict_interpolateG4D(int iorder, int length,
   if(!(knotv = calloc(nlength+order, sizeof(double))))
     return AY_EOMEM;
 
-  a = 0;
   if(!(lengths = calloc(length-1, sizeof(double))))
     return AY_EOMEM;
+
+  a = 0;
   for(i = 0; i < (length-1); i++)
     {
       
@@ -299,7 +300,7 @@ ay_ict_interpolateG4D(int iorder, int length,
     }
 
   ay_status = ay_nb_GlobalInterpolation4D(nlength-1, ncontrolv, vk,
-					      knotv, order-1);
+					  knotv, order-1);
 
   if(ay_status)
     { free(vk); free(ncontrolv); free(knotv); return ay_status; }
@@ -354,17 +355,18 @@ ay_ict_interpolateG4DC(int iorder, int length, double iparam,
     {
       
       lengths[i] = AY_VLEN((controlv[a+3] - controlv[a]),
-			     (controlv[a+4] - controlv[a+1]),
-			     (controlv[a+5] - controlv[a+2]));
+			   (controlv[a+4] - controlv[a+1]),
+			   (controlv[a+5] - controlv[a+2]));
 
       chordlength += lengths[i];
 
       a += 3;
     }
+
   a = (length-1)*3;
   lengths[length-1] = AY_VLEN((controlv[0] - controlv[a]),
-				(controlv[1] - controlv[a+1]),
-				(controlv[2] - controlv[a+2]));
+			      (controlv[1] - controlv[a+1]),
+			      (controlv[2] - controlv[a+2]));
 
   chordlength += lengths[length-1];
 
@@ -376,7 +378,7 @@ ay_ict_interpolateG4DC(int iorder, int length, double iparam,
   AY_V3SCAL(D,iparam)
 
   /* calc parametric values */
-  if(!(vk = calloc(length+1, sizeof(double))))
+  if(!(vk = calloc(length+2, sizeof(double))))
     return AY_EOMEM;
 
   vk[0] = 0.0;
@@ -388,7 +390,7 @@ ay_ict_interpolateG4DC(int iorder, int length, double iparam,
       vk[i] = knot;
       j++;
     }
-  vk[length] = 1.0;
+  vk[length+1] = 1.0;
 
   iN = length+1-(order-1)+1;
   for(j = 0; j <= iN; j++)
@@ -427,7 +429,7 @@ ay_ict_interpolateG4DC(int iorder, int length, double iparam,
   ncontrolv[((nlength-1)*4)+3] = 1.0;
 
   ay_status = ay_nb_GlobalInterpolation4DD(length, ncontrolv, vk,
-					       knotv, order-1, D, D);
+					   knotv, order-1, D, D);
 
   if(ay_status)
     { free(vk); free(ncontrolv); free(knotv); return ay_status; }
