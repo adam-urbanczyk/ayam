@@ -169,7 +169,13 @@ ay_draw_view(struct Togl *togl)
       ay_draw_grid(togl);
     }
 
-  if(view->drawlevel)
+  /* draw bounds of parametric space of current NURBS patch */
+  if(view->type == AY_VTTRIM)
+    {
+      ay_draw_trimview();
+    }
+
+  if(view->drawlevel || view->type == AY_VTTRIM)
     {
       o = ay_currentlevel->object;
       glPushMatrix();
@@ -309,7 +315,7 @@ ay_draw_view(struct Togl *togl)
     } /* if */
 
 
-  if(view->drawlevel)
+  if(view->drawlevel || view->type == AY_VTTRIM)
     {
       glMatrixMode(GL_MODELVIEW);
       glPopMatrix();
@@ -795,3 +801,50 @@ ay_draw_needredraw(ay_list_object *oldsel, ay_list_object *newsel,
 
  return;
 } /* ay_draw_needredraw */
+
+
+/* ay_draw_trimview:
+ *  draw a view of type Trim by drawing the
+ *  bounds of parametric space of current NURBS patch as rectangle
+ */
+void
+ay_draw_trimview(void)
+{
+ ay_nurbpatch_object *patch = NULL;
+ GLfloat minx, maxx, miny, maxy;
+
+ /* check, whether the current level is inside a NURBPatch object */
+ if(ay_currentlevel && ay_currentlevel->object != ay_root)
+   {
+     if(ay_currentlevel->next &&
+	(ay_currentlevel->next->object->type == AY_IDNPATCH))
+       {
+	 /* it is; get the patch */
+	 patch = (ay_nurbpatch_object *)
+	   (ay_currentlevel->next->object->refine);
+
+	 /* draw the bounds of its parametric space as rectangle */
+	 minx = (GLfloat)((patch->uknotv)[0]);
+	 miny = (GLfloat)((patch->vknotv)[0]);
+ 
+	 maxx = (GLfloat)((patch->uknotv)[patch->width + patch->uorder - 1]);
+	 maxy = (GLfloat)((patch->vknotv)[patch->height + patch->vorder - 1]);
+
+	 glColor3d((GLdouble)ay_prefs.ser, (GLdouble)ay_prefs.seg,
+		   (GLdouble)ay_prefs.seb);
+
+	 glBegin(GL_LINE_LOOP);
+	  glVertex3f(minx, miny, 0.0);
+	  glVertex3f(maxx, miny, 0.0);
+	  glVertex3f(maxx, maxy, 0.0);
+	  glVertex3f(minx, maxy, 0.0);
+	 glEnd();
+
+	 glColor3d((GLdouble)ay_prefs.obr, (GLdouble)ay_prefs.obg,
+		   (GLdouble)ay_prefs.obb);
+
+       } /* if */
+   } /* if */
+
+ return;
+} /* ay_draw_trimview */
