@@ -1,4 +1,4 @@
-[CVS, 10. 04. 2003]:
+[CVS, 16. 04. 2003]:
 o bug fixes:
   - fixed RIB import creating object names with malicious characters (spaces)
     (SF 686419)
@@ -57,15 +57,21 @@ o bug fixes:
     (SF 715773)
   - fixed undo de-registering materials with changing names
     (SF 715110)
+  - fixed trim views getting wrong window names after reading from scene files
+    (SF 720122)
+  - fixed show/hide not being undoable
+    (SF 721631)
+  - fixed optimize PolyMesh not being undoable
+    (SF 721632)
 o added support for inline declarations of e.g. shader parameters to the
   RIB import plugin
 o added an example scene for subdivision meshes
-o added an adaptive calculation mode to the MetaBalls custom object
+o added an adaptive calculation mode to the "MetaBalls" custom object
   (Frank Pagels)
 o improved object tree update process; it now checks for scene changes that
   may occur while the widget is updating, and schedules an extra update
   operation if this happens
-o the ConcatNC object can now also create a fillet for a single parameter
+o the "ConcatNC" object can now also create a fillet for a single parameter
   curve to close it
 o the BWidgets package is now requested with exact version (1.2.1) so that
   newer (inkompatible) installed versions of BWidgets can cause no harm
@@ -84,8 +90,16 @@ o added tag type "NoExport" that prevents objects from being exported to RIBs
 o shaded views now also draw grids
 o material drop and the drop actions for views and cameras are now undoable
 o added a NURBS to polygon tesselation facility based on the GLU tesselator
+o added "SMethod" and "SParam" preference settings (section "Misc") to
+  control the polygon tesselation
 o improved drawing speed of NURBS curves and surfaces that are outside
   the viewing volume
+o improved look of check buttons on Win32 if used exclusively in a GUI
+o added a hidden preference setting "Prompt" that may be used to adapt the
+  prompt in the Ayam console
+o added support for NURBS curve providing objects (e.g. "ICurve" and
+  "Instance") to be used as trim curves
+o added a keyboard shortcut for the "Edit Master"-Feature (Ctrl+M)
 
 
 [07. 02. 2003] Ayam1.4:
