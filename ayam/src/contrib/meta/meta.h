@@ -153,7 +153,7 @@ typedef struct meta_world_s
 
   double *vertex;
   double *nvertex;
-  GLuint *vindex;
+  int 	*vindex;
   int	tablesize;
   int	*vhash;
   int	h1,h2;
