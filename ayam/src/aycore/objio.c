@@ -29,6 +29,12 @@ int ay_objio_writevertices(FILE *fileptr, unsigned int n, int stride,
 
 int ay_objio_writencurve(FILE *fileptr, ay_object *o, double *m);
 
+int ay_objio_writetcurve(FILE *fileptr, ay_object *o, double *m);
+
+int ay_objio_writetrim(FILE *fileptr, ay_object *o);
+
+int ay_objio_writetrimids(FILE *fileptr, ay_object *o);
+
 int ay_objio_writenpatch(FILE *fileptr, ay_object *o, double *m);
 
 int ay_objio_writelevel(FILE *fileptr, ay_object *o, double *m);
@@ -41,7 +47,11 @@ int ay_objio_writebox(FILE *fileptr, ay_object *o, double *m);
 
 int ay_objio_writepomesh(FILE *fileptr, ay_object *o, double *m);
 
-int ay_objio_writeobject(FILE *fileptr, ay_object *o);
+int ay_objio_writeclone(FILE *fileptr, ay_object *o, double *m);
+
+int ay_objio_writeinstance(FILE *fileptr, ay_object *o, double *m);
+
+int ay_objio_writeobject(FILE *fileptr, ay_object *o, int writeend);
 
 int ay_objio_writescenetcmd(ClientData clientData, Tcl_Interp *interp,
 			    int argc, char *argv[]);
@@ -481,7 +491,7 @@ ay_objio_writelevel(FILE *fileptr, ay_object *o, double *m)
       down = o->down;
       while(down->next)
 	{
-	  ay_status = ay_objio_writeobject(fileptr, down);
+	  ay_status = ay_objio_writeobject(fileptr, down, AY_TRUE);
 	  down = down->next;
 	}
       memcpy(tm, m1, 16*sizeof(double));
@@ -509,7 +519,7 @@ ay_objio_writencconvertible(FILE *fileptr, ay_object *o, double *m)
     {
       if(t->type == AY_IDNCURVE)
 	{
-	  ay_status = ay_objio_writeobject(fileptr, t);
+	  ay_status = ay_objio_writeobject(fileptr, t, AY_FALSE);
 	}
 
       t = t->next;
@@ -539,7 +549,7 @@ ay_objio_writenpconvertible(FILE *fileptr, ay_object *o, double *m)
     {
       if(t->type == AY_IDNPATCH)
 	{
-	  ay_status = ay_objio_writeobject(fileptr, t);
+	  ay_status = ay_objio_writeobject(fileptr, t, AY_FALSE);
 	}
 
       t = t->next;
@@ -716,6 +726,57 @@ ay_objio_writepomesh(FILE *fileptr, ay_object *o, double *m)
 } /* ay_objio_writepomesh */
 
 
+/* ay_objio_writeclone:
+ *
+ */
+int
+ay_objio_writeclone(FILE *fileptr, ay_object *o, double *m)
+{
+ int ay_status = AY_OK;
+ ay_clone_object *cl;
+ ay_object *clone;
+
+  if(!o)
+   return AY_ENULL;
+
+  cl = (ay_clone_object *)o->refine;
+
+  clone = cl->clones;
+
+  while(clone)
+    {
+      ay_status = ay_objio_writeobject(fileptr, clone, AY_TRUE);
+
+      clone = clone->next;
+    }
+
+ return ay_status;
+} /* ay_objio_writeclone */
+
+
+/* ay_objio_writeinstance:
+ *
+ */
+int
+ay_objio_writeinstance(FILE *fileptr, ay_object *o, double *m)
+{
+ int ay_status = AY_OK;
+ ay_object *orig, tmp = {0};
+
+  if(!o || !o->refine)
+   return AY_ENULL;
+
+  orig = (ay_object *)o->refine;
+
+  ay_trafo_copy(orig, &tmp);
+  ay_trafo_copy(o, orig);
+  ay_status = ay_objio_writeobject(fileptr, orig, AY_FALSE);
+  ay_trafo_copy(orig, &tmp);
+
+ return ay_status;
+} /* ay_objio_writeinstance */
+
+
 #if 0
 /* ay_objio_writencurve:
  *
@@ -733,7 +794,7 @@ ay_objio_writencurve(FILE *fileptr, ay_object *o, double *m)
  *
  */
 int
-ay_objio_writeobject(FILE *fileptr, ay_object *o)
+ay_objio_writeobject(FILE *fileptr, ay_object *o, int writeend)
 {
  int ay_status = AY_OK;
  char fname[] = "objio_writeobject";
@@ -777,7 +838,8 @@ ay_objio_writeobject(FILE *fileptr, ay_object *o)
 	      ay_error(AY_ERROR, fname, "Error exporting object.");
 	      ay_status = AY_OK;
 	    }
-	  fprintf(fileptr, "end\n");
+	  if(writeend)
+	    fprintf(fileptr, "end\n");
 	}
     }
   else
@@ -832,12 +894,12 @@ ay_objio_writescene(char *filename, int selected)
 	{
 	  if(o->selected)
 	    {
-	      ay_status = ay_objio_writeobject(fileptr, o);
+	      ay_status = ay_objio_writeobject(fileptr, o, AY_TRUE);
 	    }
 	}
       else
 	{
-	  ay_status = ay_objio_writeobject(fileptr, o);
+	  ay_status = ay_objio_writeobject(fileptr, o, AY_TRUE);
 	}
 
       if(ay_status)
@@ -906,6 +968,10 @@ ay_objio_init(Tcl_Interp *interp)
 				       ay_objio_writencurve);
   ay_status = ay_objio_registerwritecb((char *)(AY_IDLEVEL),
 				       ay_objio_writelevel);
+  ay_status = ay_objio_registerwritecb((char *)(AY_IDCLONE),
+				       ay_objio_writeclone);
+  ay_status = ay_objio_registerwritecb((char *)(AY_IDINSTANCE),
+				       ay_objio_writeinstance);
 
   ay_status = ay_objio_registerwritecb((char *)(AY_IDICURVE),
 				       ay_objio_writencconvertible);
