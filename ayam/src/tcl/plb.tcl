@@ -525,7 +525,15 @@ proc plb_showprop { prop } {
 	$l selection set [expr $prop - 1]
     }
 
+    update
+
     plb_update
+
+    if { $ay(lb) == 1 } {
+	focus -force $ay(olb)
+    } else {
+	focus -force $ay(tree)
+    }
 
  return;
 }
