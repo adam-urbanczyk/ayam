@@ -414,7 +414,7 @@ void ay_riopt_init(Tcl_Interp *interp);
 int ay_sdmesht_tesselate(ay_sdmesh_object *sdmesh);
 
 /* sel.c */
-int ay_sel_free(void);
+int ay_sel_free(int clear_selflag);
 
 int ay_sel_add(ay_object *o);
 

@@ -162,7 +162,7 @@ ay_clipb_cuttcmd(ClientData clientData, Tcl_Interp *interp,
     o->next = NULL;
 
   /* free selection */
-  ay_status = ay_sel_free();
+  ay_status = ay_sel_free(AY_TRUE);
 
   ay_notify_parent();
 
