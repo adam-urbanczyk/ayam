@@ -103,6 +103,8 @@ char *ay_ridisp_tagtype;
 
 char *ay_rihider_tagtype;
 
+char *ay_noexport_tagtype;
+
 static char *ay_log = "/tmp/ay.log";
 
 int ay_wrib_framenum = 0;
