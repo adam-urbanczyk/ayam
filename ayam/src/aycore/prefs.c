@@ -180,14 +180,6 @@ ay_prefs_gettcmd(ClientData clientData, Tcl_Interp *interp,
   to = Tcl_NewIntObj(ay_prefs.excludehidden);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "MIResetDM", -1);
-  to = Tcl_NewIntObj(ay_prefs.mopsiresetdisplaymode);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton, "MIResetST", -1);
-  to = Tcl_NewIntObj(ay_prefs.mopsiresettolerance);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
   /* Misc */
   Tcl_SetStringObj(ton, "ListTypes", -1);
   to = Tcl_NewIntObj(ay_prefs.list_types);
@@ -474,14 +466,6 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
   Tcl_SetStringObj(ton, "ExcludeHidden", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &ay_prefs.excludehidden);
-
-  Tcl_SetStringObj(ton, "MIResetDM", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &ay_prefs.mopsiresetdisplaymode);
-
-  Tcl_SetStringObj(ton, "MIResetST", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &ay_prefs.mopsiresettolerance);
 
   /* Misc */
   Tcl_SetStringObj(ton, "ListTypes", -1);
