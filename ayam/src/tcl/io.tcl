@@ -265,20 +265,28 @@ proc io_exportRIB { {expview "" } } {
 		set efilename [tk_getSaveFile -filetypes $filetypes -parent .\
 			-title "Export to file:"]
 	    } else {
-		if { $ayprefs(RIBFile) == "Scenefile" } {
-		    if { $filename != "" } {
+		    if { $ayprefs(RIBFile) != "Scenefile" && \
+			    $ayprefs(RIBFile) != "Scene" } {
+			set efilename $ayprefs(RIBFile)
+		    }
+
+		    if { $ayprefs(RIBFile) == "Scenefile" } {
+			if { $filename != "" } {
 			set efilename [file rootname [file tail $filename]].rib
-		    } else {
-			if { $ayprefs(RIBFile) == "Scene" } {
-			    set efilename [file rootname $filename].rib
 			} else {
 			    set efilename unnamed.rib
 			}
 		    }
-		} else {
-		    set efilename $ayprefs(RIBFile)
+
+		    if { $ayprefs(RIBFile) == "Scene" } {
+			if { $filename != "" } {
+			    set efilename [file rootname $filename].rib
+			} else { 
+			    set efilename unnamed.rib
+			}
+		    }
 		}
-	    }
+
 
 	    if { $ayprefs(Image) == "Ask"} {
 		set filetypes {{"TIFF" ".tiff"} {"TIF" ".tif"} {"All files" *}}
