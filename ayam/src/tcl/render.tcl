@@ -136,12 +136,12 @@ proc render_select { } {
 	    3 {
 		# Aqsis 0.9.0
 		set ayprefs(QRender)\
-			"aqsis -progress -fb -progressformat %p %s"
-		set ayprefs(QRenderPT) "%d"
-		set ayprefs(Render) "aqsis -progress -fb -progressformat %p %s"
-		set ayprefs(RenderPT) "%d"
-		set ayprefs(SMRender) "aqsis -progress -progressformat %p %s"
-		set ayprefs(SMRenderPT) "%d"
+			"aqsis -Progress -fb  %s"
+		set ayprefs(QRenderPT) "R90000%d"
+		set ayprefs(Render) "aqsis -Progress -fb %s"
+		set ayprefs(RenderPT) "R90000%d"
+		set ayprefs(SMRender) "aqsis -Progress %s"
+		set ayprefs(SMRenderPT) "R90000%d"
 		set ayprefs(RenderMode) 0
 		global AYUSESLXARGS
 		if { $AYUSESLXARGS != 1 } {
