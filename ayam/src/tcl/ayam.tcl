@@ -1043,14 +1043,15 @@ while { $i < $argc } {
 	    
 	    replaceScene $filename
 	    if { $ay_error < 2 } {
+		set ay(filename) $filename
 		set windowfilename [file tail [file rootname $newfilename]]
 		wm title . "Ayam - Main - $windowfilename"
 		ayError 4 "replaceScene" "Done reading scene from:"
 		ayError 4 "replaceScene" "$filename"
 		io_mruAdd $filename
 	    } else {
-		#ayError 2 "Ayam" "There were errors while loading:"
-		#ayError 2 "Ayam" "$filename"
+		ayError 2 "Ayam" "There were errors while loading:"
+		ayError 2 "Ayam" "$filename"
 	    }
 	    set j 1
 	} else {
