@@ -1,4 +1,4 @@
-[12. Oct 2004] CVS-Head:
+[24. Oct 2004] CVS-Head:
 o bug fixes:
   - fixed "loadayslo3d.tcl" loading the wrong plugin (SF 928054)
   - fixed "Select Renderer" setting a wrong shader extension for "3Delight"
@@ -80,7 +80,11 @@ o improved behaviour of toolbox buttons for the special actions with held
 o improved single point editing wrt. scaled objects and zoomed views;
   PickEpsilon is now interpreted in object space and may not be zero
   anymore, preferences from older versions will be reset to 0.2
-
+o Gordon objects WatchCurves feature now saves the original curves in the
+  undo buffer
+o added shortcuts to select all points (<A>), invert the point selection (<I>)
+  collapse selected points (<C>) and explode the selected points (<E>) to
+  view windows
 
 [27. Mar 2004] Ayam1.7:
 o bug fixes:
@@ -447,7 +451,7 @@ o added a hidden preference setting "Prompt" that may be used to adapt the
   prompt in the Ayam console
 o added support for NURBS curve providing objects (e.g. "ICurve" and
   "Instance") to be used as trim curves
-o added a keyboard shortcut for the "Edit Master"-Feature (Ctrl+M)
+o added a keyboard shortcut for the "Edit Master"-Feature (<Ctrl+M>)
 o the console prompt now displays the name of the operations that can be
   undone and redone respectively
 
