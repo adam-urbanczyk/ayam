@@ -11,6 +11,7 @@
  */
 
 #include "ayam.h"
+#include <ctype.h>
 
 /* comp.c - compare objects */
 
@@ -77,6 +78,34 @@ int ay_comp_clone(ay_object *o1, ay_object *o2);
 int ay_comp_pomesh(ay_object *o1, ay_object *o2);
 
 /* functions */
+
+/* ay_comp_strcase:
+ *  compare two strings ignoring case, s2 must point to an
+ *  already lowercase version e.g.:
+ *  ay_comp_strcase(s1, "lowercase_string");
+ */
+int
+ay_comp_strcase(char *s1, char *s2)
+{
+
+  if(!s1 || !s2)
+    return 1;
+
+  while(*s1 != '\0')
+    {
+      if(tolower(*s1) != *s2)
+	return 1;
+
+      s1++;
+      s2++;
+    }
+
+  if(*s1 != *s2)
+    return 1;
+
+ return 0;
+} /* ay_comp_strcase */
+
 
 /* ay_comp_trafos:
  *

@@ -20,6 +20,8 @@
 
 int ay_wrib_sm(char *file, char *image, int width, int height);
 
+void ay_wrib_displaytags();
+
 /* cot() used by currently unused FrameCamera() */
 /*
 double
@@ -513,9 +515,13 @@ ay_wrib_object(char *file, ay_object *o)
 void
 ay_wrib_displaytags()
 {
+ char fname[] = "wrib_displaytags";
  ay_object *root = NULL;
  ay_tag_object *tag = NULL;
- int n = 0;
+ int i = 0, j = 0;
+ char *val = NULL, *name = NULL, *type = NULL, *mode = NULL;
+ size_t len;
+ RtToken dtype = RI_FILE, dmode = RI_RGBA;
 
   root = ay_root;
   if(!root)
@@ -525,13 +531,113 @@ ay_wrib_displaytags()
   if(!tag)
     return;
 
-
   while(tag)
     {
       if(tag->type == ay_ridisp_tagtype)
-	n++;
+	{
+	  name = NULL;
+	  val = tag->val;
+	  len = strlen(val);
+	  if(len > 1)
+	    {
+	      if(!(name = calloc(len, sizeof(char))))
+		return;
+	      if(!(type = calloc(len, sizeof(char))))
+		{ free(name); return; }
+	      if(!(mode = calloc(len, sizeof(char))))
+		{ free(name); free(type); return; }
+
+	      i = 0;
+	      j = 0;
+	      if(val[0] != '+')
+		{
+		  name[0] = '+';
+		  i++;
+		}
+	      while(val[j] && val[j] != ',')
+		{
+		  name[i] = val[j];
+		  i++; j++;
+		}
+	      name[i] = '\0';
+	      i = 0;
+	      j++;
+	      while(val[j] && val[j] != ',')
+		{
+		  type[i] = val[j];
+		  i++; j++;
+		}
+	      type[i] = '\0';
+	      i = 0;
+	      j++;
+	      while(val[j])
+		{
+		  mode[i] = val[j];
+		  i++; j++;
+		}
+	      mode[i] = '\0';
+
+	      if(!name[0] || !type[0] || !mode[0])
+		{
+
+		  ay_error(AY_ERROR, fname,
+			   "malformed RiDisplay tag encountered");
+		  free(name); free(type); free(mode);
+		  return;
+		}
+	  
+	      /* get proper type */
+	      if( ! ay_comp_strcase(type, "framebuffer"))
+		{
+		  dtype = RI_FRAMEBUFFER;
+		}
+	      if( ! ay_comp_strcase(type, "file"))
+		{
+		  dtype = RI_FILE;
+		}
+
+
+	      /* get proper mode */
+	      if( ! ay_comp_strcase(mode, "a"))
+		{
+		  dmode = RI_A;
+		}
+	      if( ! ay_comp_strcase(mode, "z"))
+		{
+		  dmode = RI_Z;
+		}
+	      if( ! ay_comp_strcase(mode, "az"))
+		{
+		  dmode = RI_AZ;
+		}
+	      if( ! ay_comp_strcase(mode, "rgb"))
+		{
+		  dmode = RI_RGB;
+		}
+	      if( ! ay_comp_strcase(mode, "rgba"))
+		{
+		  dmode = RI_RGBA;
+		}
+	      if( ! ay_comp_strcase(mode, "rgbz"))
+		{
+		  dmode = RI_RGBZ;
+		}
+	      if( ! ay_comp_strcase(mode, "rgbaz"))
+		{
+		  dmode = RI_RGBAZ;
+		}
+
+	      RiDisplay(name, dtype, dmode, RI_NULL);
+	    }
+	  else
+	    {
+	      ay_error(AY_ERROR, fname,
+		       "malformed RiDisplay tag encountered");
+	    }
+	} /* if */
+
       tag = tag->next;
-    }
+    } /* while */
 
  return;
 } /* ay_wrib_displaytags */
@@ -1016,6 +1122,9 @@ ay_wrib_scene(char *file, char *image, double *from, double *to,
     RiDisplay(RI_NULL, RI_FRAMEBUFFER, RI_RGBA, RI_NULL);
   else
     RiDisplay(image, RI_FILE, RI_RGBA, RI_NULL);
+
+  /* write additional RiDisplay statements from tags */
+  ay_wrib_displaytags();
 
   /* write imager shader */
   ay_wrib_rootsh(AY_TRUE);

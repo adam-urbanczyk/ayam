@@ -59,6 +59,8 @@ int ay_clipb_movetcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
 
 /* comp.c */
+int ay_comp_strcase(char *s1, char *s2);
+
 int ay_comp_register(ay_comparecb  *compcb, unsigned int type_id);
 
 int ay_comp_init(void);
@@ -90,6 +92,8 @@ void ay_draw_arrow(struct Togl *togl, double *from, double *to);
 
 void ay_draw_bgimage(struct Togl *togl);
 
+void ay_draw_needredraw(ay_list_object *oldsel, ay_list_object *newsel,
+			int *result);
 /* error.c */
 void ay_error(int code, char *where, char *what);
 

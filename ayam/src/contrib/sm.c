@@ -11,7 +11,6 @@
  */
 
 #include "ayam.h"
-#include <ctype.h>
 
 /* sm.c - ShadowMap generation */
 
@@ -31,6 +30,7 @@ ay_prman_data prmandata;
 char *resolutions = NULL;
 
 /* prototypes */
+
 void ay_sm_dotrafos(ay_sm_trafostack *trafo, double *px, double *py,
 		    double *pz);
 
@@ -50,32 +50,7 @@ void ay_sm_wribsmcustom(char *file, char *objfile, ay_object *o,
 			ay_sm_trafostack *trafo,
 			int rwidth, int rheight);
 
-
-/* ay_sm_strcasecmp:
- *
- */
-int
-ay_sm_strcasecmp(char *s1, char *s2)
-{
-
-  if(!s1 || !s2)
-    return 1;
-
-  while(*s1 != '\0')
-    {
-      if(tolower(*s1) != *s2)
-	return 1;
-
-      s1++;
-      s2++;
-    }
-
-  if(*s1 != *s2)
-    return 1;
-
- return 0;
-} /* ay_sm_strcasecmp */
-
+/* functions */
 
 /* ay_sm_aimz:
  *
@@ -409,26 +384,26 @@ ay_sm_wribsmcustom(char *file, char *objfile, ay_object *o,
       sarg = shader->arg;
       while(sarg)
 	{
-	  if(!ay_sm_strcasecmp(sarg->name, "from"))
+	  if(!ay_comp_strcase(sarg->name, "from"))
 	    {
 	      has_from = AY_TRUE;
 	      nlight.tfrom[0] = sarg->val.point[0];
 	      nlight.tfrom[1] = sarg->val.point[1];
 	      nlight.tfrom[2] = sarg->val.point[2];
 	    } /* if */
-	  if(!ay_sm_strcasecmp(sarg->name, "to"))
+	  if(!ay_comp_strcase(sarg->name, "to"))
 	    {
 	      has_to = AY_TRUE;
 	      nlight.tto[0] = sarg->val.point[0];
 	      nlight.tto[1] = sarg->val.point[1];
 	      nlight.tto[2] = sarg->val.point[2];
 	    } /* if */
-	  if(!ay_sm_strcasecmp(sarg->name, "coneangle"))
+	  if(!ay_comp_strcase(sarg->name, "coneangle"))
 	    {
 	      has_co = AY_TRUE;
 	      nlight.cone_angle = sarg->val.scalar;
 	    } /* if */
-	  if(!ay_sm_strcasecmp(sarg->name, "conedeltaangle"))
+	  if(!ay_comp_strcase(sarg->name, "conedeltaangle"))
 	    {
 	      nlight.cone_delta_angle = sarg->val.scalar;
 	    } /* if */
