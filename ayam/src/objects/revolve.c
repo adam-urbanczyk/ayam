@@ -414,8 +414,8 @@ ay_revolve_crtcap(ay_revolve_object *revolve, ay_object *curve, double u,
  int ay_status = AY_OK;
  int mode = 0, i = 0;
  double P1[4] = {0}, P2[4] = {0}, *controlv = NULL;
- double mr[16] = {0}, tolerance;
- GLdouble m[16] = {0};
+ double tolerance;
+ double m[16];
  ay_object *cap = NULL, *trim = NULL, *tloop = NULL;
  ay_nurbcurve_object *nc = NULL;
 
@@ -424,18 +424,8 @@ ay_revolve_crtcap(ay_revolve_object *revolve, ay_object *curve, double u,
   mode = revolve->glu_display_mode;
   tolerance = revolve->glu_sampling_tolerance;
 
-  glMatrixMode (GL_MODELVIEW);
-  glPushMatrix();
-   glLoadIdentity();
-   glTranslated(curve->movx, curve->movy, curve->movz);
-
-   ay_quat_torotmatrix(curve->quat, mr);
-   glMultMatrixd(mr);
-
-   glScaled (curve->scalx, curve->scaly, curve->scalz);
-   glGetDoublev(GL_MODELVIEW_MATRIX, m);
-  glPopMatrix();
-
+  /* get curves transformation-matrix */
+  ay_trafo_creatematrix(curve, m);
 
   ay_nb_CurvePoint4D(nc->length-1, nc->order-1,
 		     nc->knotv, nc->controlv,
@@ -597,9 +587,9 @@ ay_revolve_crtside(ay_revolve_object *revolve, ay_object *curve, double th,
  int ay_status = AY_OK;
  int mode = 0, i = 0;
  double P1[4] = {0}, P2[4] = {0}, PS[4] = {0}, PE[4] = {0}, *controlv = NULL;
- double *ccv = NULL, mr[16] = {0}, tolerance, minx, maxx, miny, maxy;
+ double *ccv = NULL, tolerance, minx, maxx, miny, maxy;
  double yaxis[3] = {0.0,1.0,0.0}, quat[4] = {0}, angle = 0.0;
- GLdouble m[16] = {0};
+ double m[16];
  ay_object *cap = NULL, *trim = NULL, *tloop = NULL;
  ay_nurbcurve_object *nc = NULL, *tc = NULL;
  int closed;
@@ -612,17 +602,8 @@ ay_revolve_crtside(ay_revolve_object *revolve, ay_object *curve, double th,
   mode = revolve->glu_display_mode;
   tolerance = revolve->glu_sampling_tolerance;
 
-  glMatrixMode (GL_MODELVIEW);
-  glPushMatrix();
-   glLoadIdentity();
-   glTranslated(curve->movx, curve->movy, curve->movz);
-
-   ay_quat_torotmatrix(curve->quat, mr);
-   glMultMatrixd(mr);
-
-   glScaled (curve->scalx, curve->scaly, curve->scalz);
-   glGetDoublev(GL_MODELVIEW_MATRIX, m);
-  glPopMatrix();
+  /* get curves transformation-matrix */
+  ay_trafo_creatematrix(curve, m);
 
   ay_nb_CurvePoint4D(nc->length-1, nc->order-1,
 		     nc->knotv, nc->controlv,

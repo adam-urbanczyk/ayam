@@ -1558,9 +1558,8 @@ ay_mfio_writetrimcurve(MF3D_FilePtr fileptr, ay_object *o)
  MF3DNURBCurve2DObj mf3do = {0};
  MF3DErr status = kMF3DNoErr;	/* temporary result code */  
  ay_nurbcurve_object *curve = (ay_nurbcurve_object*)(o->refine);
- GLdouble m[16] = {0};
- GLdouble mr[16];
- double x,y,z,w;
+ double m[16];
+ double x, y, z, w;
 
   /* we fill the MF3D-object now */
   mf3do.objectType = kMF3DObjNURBCurve2D;
@@ -1575,17 +1574,7 @@ ay_mfio_writetrimcurve(MF3D_FilePtr fileptr, ay_object *o)
     { free(mf3do.points); return AY_EOMEM; }
 
   /* get curves transformation-matrix */
-  glMatrixMode (GL_MODELVIEW);
-  glPushMatrix();
-  glLoadIdentity ();
-  glTranslated(o->movx, o->movy, o->movz);
-
-  ay_quat_torotmatrix(o->quat, mr);
-  glMultMatrixd(mr);
-
-  glScaled (o->scalx, o->scaly, o->scalz);
-  glGetDoublev(GL_MODELVIEW_MATRIX, m);
-  glPopMatrix();
+  ay_trafo_creatematrix(o, m);
 
   a = 0; b = 0;
   for(i=0; i<curve->length; i++)
