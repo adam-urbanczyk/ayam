@@ -680,6 +680,11 @@ int ay_status = AY_OK;
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 #endif /* AYENABLEWAIT */
 
+#ifdef AYENABLEFEXIT
+  Tcl_CreateCommand(interp, "fastExit", ay_tcmd_fastexittcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+#endif /* AYENABLEFEXIT */
+
   /* tmp.c */
   Tcl_CreateCommand(interp, "tmpGet", ay_tmp_gettcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
@@ -946,13 +951,19 @@ Tcl_SetVar(interp, "AYIDR", "1", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 Tcl_SetVar(interp,"AYENABLEPPREV", "0", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 #else
 Tcl_SetVar(interp, "AYENABLEPPREV", "1", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-#endif /* AY_ENABLEPPREV */
+#endif /* AYENABLEPPREV */
 
 #ifndef AYWITHAQUA
 Tcl_SetVar(interp,"AYWITHAQUA", "0", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 #else
 Tcl_SetVar(interp, "AYWITHAQUA", "1", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 #endif /* AYWITHAQUA */
+
+#ifndef AYENABLEFEXIT
+Tcl_SetVar(interp,"AYENABLEFEXIT", "0", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+#else
+Tcl_SetVar(interp, "AYENABLEFEXIT", "1", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+#endif /* AYENABLEFEXIT */
 
   if((ay_status = ay_init(interp)) != AY_OK)
     {
