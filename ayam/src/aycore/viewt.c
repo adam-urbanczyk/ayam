@@ -617,6 +617,10 @@ ay_viewt_makecurtcb(struct Togl *togl, int argc, char *argv[])
   to = Tcl_NewIntObj(view->type);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton, "cVBGImage", -1);
+  to = Tcl_NewStringObj(view->bgimage, -1);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
   Tcl_IncrRefCount(toa); Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton); Tcl_DecrRefCount(ton);
 
@@ -795,6 +799,27 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
       /* XXXX this code assumes, every argument is atleast 2 chars long! */
       switch(argv[i][1])
 	{
+	case 'b':
+	  if(!strcmp(argv[i], "-bgimage"))
+	    {
+	      if(view->bgimage)
+		{
+		  free(view->bgimage);
+		  view->bgimage = NULL;
+		} /* if */
+
+	      if(argv[i+1])
+		{
+		  if(!(view->bgimage = calloc(strlen(argv[i+1])+1,
+					      sizeof(char))))
+		    {
+		      ay_error(AY_EOMEM, fname, NULL);
+		      return TCL_OK;
+		    } /* if */
+		  strcpy(view->bgimage, argv[i+1]);
+		} /* if */
+	    }
+	  break;
 	case 'd':
 	  if(!strcmp(argv[i], "-dfromx"))
 	    {

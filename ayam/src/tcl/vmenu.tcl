@@ -136,6 +136,7 @@ $m add check -label "Draw BGImage" -variable ay(cVDrawBG) -command "\
 	global ay;\
 	$w.f3D.togl setconf -dbg \$ay(cVDrawBG);\
 	\$ay(currentView) mc"
+$m add command -label "Set BGImage" -command "viewSetBGImage $w.f3D.togl"
 
 $m add separator
 $m add check -label "Draw Grid" -variable ay(cVDrawGrid) -command "\
