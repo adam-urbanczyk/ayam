@@ -29,7 +29,8 @@ typedef struct ay_sm_trafostack_s
   double scalx, scaly, scalz;
 } ay_sm_trafostack;
 
-void ay_sm_wriballsm(char *file, ay_object *o, ay_sm_trafostack *trafo,
+void ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
+		     ay_sm_trafostack *trafo,
 		     int rwidth, int rheight);
 
 /* tree.c */

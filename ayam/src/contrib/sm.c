@@ -230,7 +230,7 @@ ay_sm_dotrafosinv(ay_sm_trafostack *trafo, double *px, double *py, double *pz)
 void
 ay_sm_wribsm(char *file, ay_sm_trafostack *trafo, ay_object *light)
 {
- ay_object *o = ay_root->next;
+  /* ay_object *o = ay_root->next;*/
  ay_light_object *l = NULL;
  double euler[3], d[3];
 
@@ -277,10 +277,13 @@ ay_sm_wribsm(char *file, ay_sm_trafostack *trafo, ay_object *light)
   RiWorldBegin();
   RiIdentity();
   /* place the objects relative to the centered light */
+  RiReadArchive(file, (RtVoid*)RI_NULL, RI_NULL);
+  /* was:
   while (o) {
       ay_wrib_object(file, o);
       o = o->next;
   }
+  */
   RiWorldEnd();
   /*  RiFrameEnd();*/
 
@@ -368,7 +371,8 @@ ay_sm_getresolution(int index, int *width, int *height,
  *  shadowmaps if selected
  */
 void
-ay_sm_wriballsm(char *file, ay_object *o, ay_sm_trafostack *trafo,
+ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
+		ay_sm_trafostack *trafo,
 		int rwidth, int rheight)
 {
  ay_light_object *light = NULL;
@@ -411,7 +415,7 @@ ay_sm_wriballsm(char *file, ay_object *o, ay_sm_trafostack *trafo,
       trafo->scalz = o->scalz;
       
       if (o->down)
-	  ay_sm_wriballsm(file, o->down, trafo, rwidth, rheight);
+	  ay_sm_wriballsm(file, objfile, o->down, trafo, rwidth, rheight);
 
       if (o->type == AY_IDLIGHT) {
 	  light = (ay_light_object *)o->refine;
@@ -480,11 +484,14 @@ ay_sm_wriballsm(char *file, ay_object *o, ay_sm_trafostack *trafo,
 		  RiWorldBegin();
 		  RiIdentity();
 		  /* place the objects relative to the centered light */
+		  RiReadArchive(objfile, (RtVoid*)RI_NULL, RI_NULL);
+		  /* was:
 		  d = ay_root->next; 
 		  while (d) {
 		      ay_wrib_object(file, d);
 		      d = d->next;
 		  }
+		  */
 		  RiWorldEnd();
 		  RiFrameEnd();
                   RiMakeShadow(zname, shdname, RI_NULL);
@@ -503,11 +510,14 @@ ay_sm_wriballsm(char *file, ay_object *o, ay_sm_trafostack *trafo,
 		  RiWorldBegin();
 		  RiIdentity();
 		  /* place the objects relative to the centered light */
+		  RiReadArchive(objfile, (RtVoid*)RI_NULL, RI_NULL);
+		  /* was:
 		  d = ay_root->next; 
 		  while (d) {
 		      ay_wrib_object(file, d);
 		      d = d->next;
 		  }
+		  */
 		  RiWorldEnd();
 		  RiFrameEnd();
                   RiMakeShadow(zname, shdname, RI_NULL);
@@ -526,11 +536,14 @@ ay_sm_wriballsm(char *file, ay_object *o, ay_sm_trafostack *trafo,
 		  RiWorldBegin();
 		  RiIdentity();
 		  /* place the objects relative to the centered light */
+		  RiReadArchive(objfile, (RtVoid*)RI_NULL, RI_NULL);
+		  /* was:
 		  d = ay_root->next; 
 		  while (d) {
 		      ay_wrib_object(file, d);
 		      d = d->next;
 		  }
+		  */
 		  RiWorldEnd();
 		  RiFrameEnd();
                   RiMakeShadow(zname, shdname, RI_NULL);
@@ -549,11 +562,14 @@ ay_sm_wriballsm(char *file, ay_object *o, ay_sm_trafostack *trafo,
 		  RiWorldBegin();
 		  RiIdentity();
 		  /* place the objects relative to the centered light */
+		  RiReadArchive(objfile, (RtVoid*)RI_NULL, RI_NULL);
+		  /* was:
 		  d = ay_root->next; 
 		  while (d) {
 		      ay_wrib_object(file, d);
 		      d = d->next;
 		  }
+		  */
 		  RiWorldEnd();
 		  RiFrameEnd();
                   RiMakeShadow(zname, shdname, RI_NULL);
@@ -572,11 +588,14 @@ ay_sm_wriballsm(char *file, ay_object *o, ay_sm_trafostack *trafo,
 		  RiWorldBegin();
 		  RiIdentity();
 		  /* place the objects relative to the centered light */
+		  RiReadArchive(objfile, (RtVoid*)RI_NULL, RI_NULL);
+		  /* was:
 		  d = ay_root->next; 
 		  while (d) {
 		      ay_wrib_object(file, d);
 		      d = d->next;
 		  }
+		  */
 		  RiWorldEnd();
 		  RiFrameEnd();
                   RiMakeShadow(zname, shdname, RI_NULL);
@@ -600,7 +619,8 @@ ay_sm_wriballsm(char *file, ay_object *o, ay_sm_trafostack *trafo,
 		  RiScreenWindow((RtFloat)-1, (RtFloat)1,
 				 (RtFloat)-1, (RtFloat)1);
 		  /* transform lightsource to origin */
-		  ay_sm_wribsm(file, trafo, o);
+		  /* was: ay_sm_wribsm(file, trafo, o);*/
+		  ay_sm_wribsm(objfile, trafo, o);
                   RiMakeShadow(zname, shdname, RI_NULL);
 		  break;
 
@@ -645,7 +665,8 @@ ay_sm_wriballsm(char *file, ay_object *o, ay_sm_trafostack *trafo,
 		      /*RiScreenWindow(xmin, xmax, ymin, ymax);*/
 		      /*RiScreenWindow(-1,1,-1,1);*/
 		      /* transform lightsource to origin */
-		      ay_sm_wribsm(file, trafo, o);
+		      /* was: ay_sm_wribsm(file, trafo, o);*/
+		      ay_sm_wribsm(objfile, trafo, o);
 		      RiMakeShadow(zname, shdname, RI_NULL);
 		      /*}*/
 		  break;
