@@ -11,6 +11,7 @@
 
 uplevel #0 { array set onio_options {
     Accuracy 1.0e-12
+    ReadCurves 1
 }   }
 
 proc onio_import { } {
@@ -48,6 +49,7 @@ proc onio_import { } {
 	pack $f -in $w -side top -fill x
 
 	addParam $f onio_options Accuracy [list 0.0 1.0e-12 0.1 1]
+	addCheck $f onio_options ReadCurves
 
 	set f [frame $w.f2]
 	button $f.bok -text "Ok" -width 5 -command {
@@ -56,7 +58,8 @@ proc onio_import { } {
 	    cd [file dirname $onio_options(FileName)]
 
 	    onioRead [file tail $onio_options(FileName)]\
-		    -a $onio_options(Accuracy)
+		    -a $onio_options(Accuracy)\
+		    -c $onio_options(ReadCurves)
 
 	    cd $oldcd
 	    goTop
