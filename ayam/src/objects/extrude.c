@@ -660,9 +660,11 @@ ay_extrude_notifycb(ay_object *o)
 
 		  if(!(cap = calloc(1,sizeof(ay_object))))
 		    return AY_EOMEM;
+		  ay_object_defaults(cap);
 		  cap->type = AY_IDNPATCH;
 		  cap->hidechilds = AY_TRUE;
-		  ay_object_defaults(cap);
+		  cap->parent = AY_TRUE;
+
 		  ay_npt_createcap(z,curve,&uminx,&umaxx,&uminy,&umaxy,&angle,
 				  (ay_nurbpatch_object **)&(cap->refine));
 
@@ -795,9 +797,11 @@ ay_extrude_notifycb(ay_object *o)
 
 		  if(!(cap = calloc(1,sizeof(ay_object))))
 		    return AY_EOMEM;
+		  ay_object_defaults(cap);
 		  cap->type = AY_IDNPATCH;
 		  cap->hidechilds = AY_TRUE;
-		  ay_object_defaults(cap);
+		  cap->parent = AY_TRUE;
+
 		  ay_npt_createcap(z,curve,&lminx,&lmaxx,&lminy,&lmaxy,&angle,
 				  (ay_nurbpatch_object **)&(cap->refine));
 
@@ -907,7 +911,7 @@ ay_extrude_notifycb(ay_object *o)
 	    }
 	  else
 	    {
-	      ay_status = ay_object_crtendlevel(&(trim->down));
+	      ay_status = ay_object_crtendlevel(&(ext->upper_cap->down));
 	    }
 	}
       if(ext->lower_cap)
@@ -923,7 +927,7 @@ ay_extrude_notifycb(ay_object *o)
 	    }
 	  else
 	    {
-	      ay_status = ay_object_crtendlevel(&(trim->down));
+	      ay_status = ay_object_crtendlevel(&(ext->lower_cap->down));
 	    }
 	}
 
