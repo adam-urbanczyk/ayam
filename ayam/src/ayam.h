@@ -134,14 +134,6 @@ typedef struct ay_list_object_s
 } ay_list_object;
 
 
-typedef struct ay_undo_object_s
-{
-  int from_select;
-  ay_object *objects;
-  ay_list_object *references;
-} ay_undo_object;
-
-
 /* Shaders */
 typedef struct ay_shader_arg_s
 {

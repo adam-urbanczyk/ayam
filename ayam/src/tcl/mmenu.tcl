@@ -278,23 +278,23 @@ $m.nct add command -label "Sweep" -command "sweep_crt;"
 $m.nct add command -label "Skin" -command "skin_crt;"
 $m.nct add command -label "Cap" -command "cap_crt;"
 $m.nct add separator
-$m.nct add command -label "Revert" -command { undo save; revertNC;
+$m.nct add command -label "Revert" -command { undo save Revert; revertNC;
                                               plb_update; rV }
 $m.nct add command -label "Concat" -command { concatNC; uCR; rV}
 $m.nct add command -label "Split" -command { 
 runTool ay(splitu) {"Split at:"} "undo save; splitNC %0; uCR; sL; rV" }
-$m.nct add command -label "Refine" -command { undo save; refineNC;
+$m.nct add command -label "Refine" -command { undo save Refine; refineNC;
                                               plb_update; rV }
 #$m.nct add command -label "Refine with" -command { runTool ay(refinekn) {"New Knots:"} "refineNC \{%0\}; plb_update; rV" }
-$m.nct add command -label "Clamp" -command { undo save; clampNC;
+$m.nct add command -label "Clamp" -command { undo save Clamp; clampNC;
                                              plb_update; rV }
 $m.nct add command -label "Elevate" -command {
     runTool ay(elevd) {"Elevate by:"}\
-	    "undo save; elevateNC %0; plb_update; rV" }
+	    "undo save Elevate; elevateNC %0; plb_update; rV" }
 $m.nct add command -label "Insert Knot" -command {
     runTool [list ay(insknu) ay(insknr)]\
 	    [list "Insert knot at:" "Insert times:"]\
-	    "undo save; insknNC %0 %1; plb_update; rV" }
+	    "undo save InsKn; insknNC %0 %1; plb_update; rV" }
 
 $m.nct add separator
 $m.nct add command -label "Collapse Points" -command { collNC; rV; }
@@ -318,9 +318,9 @@ $m.pm add command -label "Merge" -command {
 }
 $m.pm add command -label "Optimize" -command { pomesh_optimize }
 $m add separator
-$m add command -label "Hide" -command "undo save;hide; rV"
+$m add command -label "Hide" -command "undo save Hide;hide; rV"
 $m add command -label "Hide All" -command "hide -all; rV"
-$m add command -label "Show" -command "undo save;show; rV"
+$m add command -label "Show" -command "undo save Show;show; rV"
 $m add command -label "Show All" -command "show -all; rV"
 $m add separator
 $m add command -label "Convert" -command "global ay; convOb; update; cS;\
@@ -366,10 +366,10 @@ set sm [menu $m.pnt -tearoff 0]
 $sm add command -label "Select All Points" -command "selPoints;rV"
 $sm add command -label "Invert Selection" -command "invSelPoints;rV"
 $sm add command -label "Apply Trafo To All Points"\
-	-command "undo save;applyTrafo all;\
+	-command "undo save ApplyTr; applyTrafo all;\
 	plb_update;forceNot;rV"
 $sm add command -label "Apply Trafo To Selected Points"\
-	-command "undo save;applyTrafo sel;\
+	-command "undo save ApplyTr; applyTrafo sel;\
 	plb_update;forceNot;rV"
 
 $m add cascade -menu $m.ins -label "Instances"

@@ -187,8 +187,6 @@ proc tree_paintLevel { node } {
 proc tree_selectItem { redraw tree node } {
   global ay
 
-    undo savsel
-    
     set ay(ts) 1; 
     set nlist [$tree selection get]
     $ay(tree) selection clear
@@ -222,8 +220,6 @@ proc tree_selectItem { redraw tree node } {
 proc tree_toggleSelection { tree node } {
  global ay
 
-    undo savsel
-    
     set ay(ts) 1;
     set SelectedLevel $ay(SelectedLevel)
 

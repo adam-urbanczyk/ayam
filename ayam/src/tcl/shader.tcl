@@ -275,7 +275,7 @@ proc shader_setNew { win type stype } {
     }
 
     shader_DbToArray $shaderarguments
-    undo save
+    undo save SetShader
     shaderSet $type ay_shader
     plb_update
 
@@ -388,7 +388,7 @@ proc shader_setDefaultsXML { type } {
     }
 
     shader_DbToArray $shaderarguments
-    undo save
+    undo save ShadDflts
     shaderSet $type ay_shader
     plb_update
 
@@ -421,7 +421,7 @@ proc shader_setDefaults { type } {
     }
 
     shader_DbToArray $shaderarguments
-    undo save
+    undo save ShadDflts
     shaderSet $type ay_shader
     plb_update
 
@@ -443,7 +443,8 @@ if { $type == "exterior" } { set stype "volume" }
 
 addCommand $w c1 "Set new shader." "shader_setNew $w $type $stype"
 
-addCommand $w c2 "Delete shader." "undo save; shaderSet $type; plb_update"
+addCommand $w c2 "Delete shader." "undo save DelShader; shaderSet $type;\
+	plb_update"
 
 if { $ay(slcext) != ".xml" } {
     addCommand $w c3 "Default Values." "shader_setDefaults $type;"

@@ -48,7 +48,7 @@ proc actionRotView { w } {
 
     bind $w <ButtonPress-1> {
 	set ay(action) 1
-	undo save
+	undo save RotView
 	%W mc
 	set oldx %x
 	set oldy %y
@@ -76,7 +76,7 @@ proc actionMoveView { w } {
 
     bind $w <ButtonPress-1> {
 	set ay(action) 1
-	undo save
+	undo save MovView
 	%W mc
 	%W movevac -start %x %y
 	update
@@ -101,7 +101,7 @@ proc actionZoomView { w } {
 
     bind $w <ButtonPress-1> {
 	set ay(action) 1
-	undo save
+	undo save ZoomView
 	%W mc
 	%W zoomvac -start %y
 	update
@@ -126,7 +126,7 @@ proc actionMoveZView { w } {
 
     bind $w <ButtonPress-1> {
 	set ay(action) 1
-	undo save
+	undo save MovZView
 	%W mc
 	%W movezvac -start %y
 	update
@@ -151,7 +151,7 @@ proc actionMoveOb { w } {
 
     bind $w <ButtonPress-1> {
 	set ay(action) 1
-	undo save
+	undo save MoveObj
 	%W mc
 	%W moveoac -start %x %y
 	update
@@ -176,7 +176,7 @@ proc actionRotOb { w } {
 
     bind $w <ButtonPress-1> {
 	set ay(action) 1
-	undo save
+	undo save RotObj
 	%W mc
 	%W rotoac -start %x %y
 	update
@@ -212,7 +212,7 @@ proc actionRotObA { w } {
     viewTitle $w "" "Select_a_Point"
 
     bind $w <ButtonPress-1> {
-	undo save
+	undo save RotObjA
 	%W mc
 	update
 	%W setconf -gmark %x %y 1
@@ -234,7 +234,7 @@ proc actionSc1DXOb { w } {
 
     bind $w <ButtonPress-1> {
 	set ay(action) 1
-	undo save
+	undo save Sc1DXObj
 	%W mc
 	%W sc1dxoac -start %x %y
 	update
@@ -258,7 +258,7 @@ proc actionSc1DYOb { w } {
 
     bind $w <ButtonPress-1> {
 	set ay(action) 1
-	undo save
+	undo save Sc1DYObj
 	%W mc
 	%W sc1dyoac -start %x %y
 	update
@@ -282,7 +282,7 @@ proc actionSc1DZOb { w } {
 
     bind $w <ButtonPress-1> {
 	set ay(action) 1
-	undo save
+	undo save Sc1DZObj
 	%W mc
 	%W sc1dzoac -start %x %y
 	update
@@ -306,7 +306,7 @@ proc actionSc2DOb { w } {
 
     bind $w <ButtonPress-1> {
 	set ay(action) 1
-	undo save
+	undo save Sc2DObj
 	%W mc
 	%W sc2doac -start %x %y
 	update
@@ -330,7 +330,7 @@ proc actionSc3DOb { w } {
 
     bind $w <ButtonPress-1> {
 	set ay(action) 1
-	undo save
+	undo save Sc3DObj
 	%W mc
 	%W sc3doac -start %x %y
 	update
@@ -354,7 +354,7 @@ proc actionStr2DOb { w } {
 
     bind $w <ButtonPress-1> {
 	set ay(action) 1
-	undo save
+	undo save Str2DObj
 	%W mc
 	%W str2doac -start %x %y
 	update
@@ -583,7 +583,7 @@ proc editPointDp { } {
 	($array(w) != $array(w2))} {
 	    set array(changed) 1
 	    if { [winfo exists $array(window)] } {
-		undo save
+		undo save DEditPnt
 		$array(window) dpepac -apply
 		rV
 		plb_update
@@ -645,7 +645,7 @@ proc actionEditP { w } {
 
     bind $w <ButtonPress-1> {
 	set ay(action) 1
-	undo save
+	undo save EditPnt
 	%W mc
 	%W startpepac %x %y
 	%W pepac -start %x %y
@@ -668,7 +668,7 @@ proc actionEditWP { w } {
 
     bind $w <ButtonPress-1> {
 	set ay(action) 1
-	undo save
+	undo save EditWPnt
 	%W startpepac %x %y
 	%W wepac -start %x
     }
@@ -699,7 +699,7 @@ proc actionInsertP { w } {
     viewTitle $w "" "Insert_Points"
 
     bind $w <ButtonPress-1> {
-	undo save
+	undo save InsPnt
 	%W mc
 	%W insertpac %x %y
     }
@@ -719,7 +719,7 @@ proc actionDeleteP { w } {
     viewTitle $w "" "Delete_Points"
 
     bind $w <ButtonPress-1> {
-	undo save
+	undo save DelPnt
 	%W mc
 	%W deletepac %x %y
     }

@@ -274,8 +274,6 @@ proc olb_update { } {
 proc olb_select { } {
     global ay
 
-    undo savsel
-
     set lb $ay(olb)
     set selection [$lb curselection]
     
