@@ -429,7 +429,8 @@ ay_concatnc_notifycb(ay_object *o)
     {
       
       ay_status = ay_nct_concatmultiple(concatnc->closed, concatnc->knot_type,
-					curves, &concatnc->ncurve);
+					concatnc->fillgaps, curves,
+					&concatnc->ncurve);
 
       if(ay_status)
 	{
