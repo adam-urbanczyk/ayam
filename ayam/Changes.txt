@@ -1,4 +1,4 @@
-[27. 07. 2003] CVS-Head:
+[06. 08. 2003] CVS-Head:
 o bug fixes:
   - fixed crash when exporting scenes with malformed RiAttribute/RiOption
     tags (type c or p, with a component missing) (SF 753550)
@@ -52,7 +52,12 @@ o the shader selection dialog now binds to the keyboard and cycle-selects
 o added preference setting "Modeling/DefaultAction" to choose between "Pick"
   and "None" to be invoked when the <Esc> key is pressed in a view window
 o added keyboard shortcut for object picking action (<P>)
-  
+o added support for RiAttribute tags to light objects
+o the ConcatNC attribute property now displays order and length of the
+  resulting NURBS curve
+o added scripting interface command "rescaleKnNC" that rescales a knot vector
+  of a NURBS curve object to the range 0.0 - 1.0
+
 
 [10. 05. 2003] Ayam1.5.1:
 o bug fixes:
