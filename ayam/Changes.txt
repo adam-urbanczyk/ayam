@@ -1,7 +1,7 @@
-[26. 08. 2003] CVS-Head:
+[03. 09. 2003] CVS-Head:
 o bug fixes:
   - fixed crash when exporting scenes with malformed RiAttribute/RiOption
-    tags (type c or p, with a component missing) (SF 753550)
+    tags (type "c" or "p", with a component missing) (SF 753550)
   - fixed rotate view action destroying light sources shader parameter
     settings (SF 753552)
   - fixed RIB import of arbitrary attributes (SF 754934)
@@ -9,15 +9,16 @@ o bug fixes:
   - fixed manually resizing view windows not updating the "ViewAttrib"
     property (SF 766347)
   - fixed picking in shaded views making grids draw in black color (SF 770221)
-  - fixed forAll scripting interface command not tracking index (variable i)
-    correctly for recursive invocations (SF 774626)
-  - fixed memory leak for RIB export of RiHider and RiDisplay tags with
+  - fixed "forAll" scripting interface command not tracking index
+    (variable "i") correctly for recursive invocations (SF 774626)
+  - fixed memory leak for RIB export of "RiHider" and "RiDisplay" tags with
     additional arguments (SF 787525)
-  - fixed memory leak for RIB export of RiAttribute/RiOption tags (SF 788535)
+  - fixed memory leak for RIB export of "RiAttribute" and "RiOption" tags
+    (SF 788535)
   - fixed broken "maintain selection" option of "uS" scripting interface
     command (SF 794052)
-  - fixed conversion of cap objects ignoring the transformation attributes
-    of the cap object (SF 795293)
+  - fixed conversion of "Cap" objects ignoring the transformation attributes
+    of the "Cap" object (SF 795293)
   - fixed crash when clipboard operations were used directly after view
     close (when the corresponding view object was selected) (SF 797213)
 o added preference setting "Misc/SavePrefsGeom" to control saving of the
@@ -32,9 +33,9 @@ o added a new drawing mode "ShadeAndDraw" that displays e.g. shaded
   representation
 o added a new icon based menu to switch the drawing mode to all view windows
 o light source objects now honour "NoExport" tags
-o added support for IntPair and FloatPair parameters to RiAttribute and
-  RiOption tags, as well as to all tags, that allow a parameter list in
-  the style of the RiAttribute tag; new type designating characters
+o added support for IntPair and FloatPair parameters to "RiAttribute" and
+  "RiOption" tags, as well as to all tags, that allow a parameter list in
+  the style of the "RiAttribute" tag; new type designating characters
   are "j" for IntPair and "g" for FloatPair
 o added a new regexp based method of extracting the progress from the output
   of the renderer (needed for Pixie-1.2.1 and up)
@@ -80,13 +81,18 @@ o added new tag type "SaveMainGeom" that is automatically filled with the
 o added new RiOption "StdDisplay" that may be used to inhibit writing of the
   standard Display option to exported RIB files
 o added new option to convert mechanism that replaces the original objects
-  with the new converted object
+  with the new converted object, see new main menu entry:
+  "Tools/Convert (In Place)" or press <Shift> when using the conversion from
+  the toolbox
 o the default conversion option for objects of type "Instance" now creates
   new objects (and does not replace the instance with a normal object)
 o conversion of Revolve, Extrude, Sweep, and Skin objects now always
   creates a Level object, if the original object has caps or bevels
 o the "remove tags"-menu in the tags property now also displays tag type
   names (and not just tag numbers)
+o added keyboard bindings for the object hierarchy tree: <Left>, <Right>, <Up>,
+  <Down>, <Home>, <End> move the selection, <Space> opens/closes nodes with
+  child nodes, and <Ctrl+a> selects all nodes in the current level
 
 
 [10. 05. 2003] Ayam1.5.1:
