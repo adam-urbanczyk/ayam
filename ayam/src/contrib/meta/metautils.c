@@ -673,10 +673,11 @@ meta_calceffect (meta_world * w)
   w->stackpos = 0;
 
   /* Reset Hash */
-  memset(w->vhash,0,(sizeof (GLuint) * ((w->tablesize-1) + (w->tablesize/10 -1) + (w->tablesize/100 -1))));
+  memset(w->vhash,0,(sizeof (int) * ((w->tablesize-1) + (w->tablesize/10 -1) + (w->tablesize/100 -1))));
   w->h1 = w->tablesize/10;
   w->h2 = w->tablesize/100;
   w->actindex = 0;
+  w->indexnum = 0;
   
   while (o->next != NULL)
     {
