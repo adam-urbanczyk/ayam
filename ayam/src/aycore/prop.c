@@ -467,13 +467,14 @@ ay_prop_setmattcmd(ClientData clientData, Tcl_Interp *interp,
  char fname[] = "setMat";
  int ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
- ay_object *o = NULL;
+ ay_object *o = NULL, *m = NULL;
  char *n1="matPropData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  char *string = NULL;
  int stringlen;
- unsigned int *refcountptr;
  ay_mat_object *material = NULL;
+
+ printf("setMat!\n");
 
   if(!sel)
     {
@@ -498,30 +499,33 @@ ay_prop_setmattcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
+  if(o->mat)
+    {
+      m = o->mat->objptr;
+      if(m)
+	m->refcount--;
+      else
+	ay_error(AY_ERROR, fname, "could not decrease material refcount!");
+    }
+
+  o->mat = NULL;
+
   if(stringlen > 0)
     {
       ay_status = ay_matt_getmaterial(string, &material);
       if(!ay_status)
 	{
 	  o->mat = material;
-	  refcountptr = material->refcountptr;
-	  (*refcountptr)++;
+	  m = material->objptr;
+	  if(m)
+	    m->refcount++;
+	  else
+	    ay_error(AY_ERROR, fname, "could not increase material refcount!");
 	}
       else
 	{
 	  ay_error(AY_ERROR, fname, "material is not registered");
 	}
-    }
-  else
-    {
-      if(o->mat)
-	{
-	  refcountptr = o->mat->refcountptr;
-	  (*refcountptr)--;
-	}
-
-      o->mat = NULL;
-      
     }
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
