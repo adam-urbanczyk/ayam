@@ -4,36 +4,33 @@
 
 <title>Ayam Tutorial #1
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>04. Jan 2003
+<date>26. Jul 2004
 <abstract>
 This is the first tutorial for Ayam, a free 3D
 modeling environment for the RenderMan interface.
 This version of the tutorial is
-tailored to version 1.4 (and up) of Ayam.
-We will do nothing fancy in this first tutorial just a wooden
+tailored to version 1.7 (and up) of Ayam.
+We will do nothing fancy in this first tutorial, just a wooden
 sphere on a gray ground.
 But even if you feel like you know how to do such a simple thing 
-with any modeling environment please read on as this tutorial gives
+with any modeling environment, please read on, as this tutorial gives
 also some important general handling instructions for Ayam.
 </abstract>
 
 <sect>Ayam User Interface
 <p>
-Ayam user interface consists of three types of windows,
-the main window, a toolbox and view windows.
-Note, that whenever shortcuts are mentioned in the following
-sections they belong to a certain window that has to be activated
-before the key press. Otherwise you risk the shortcut being sent
-to the wrong window and possibly cause wrong things.<p>
-Because of its multiple window user interface Ayam is most
-comfortably used with a window system where a window gets automatically
+The Ayam user interface consists of three types of windows:
+the main window, a toolbox, and view windows.
+Please note that whenever keyboard shortcuts are mentioned in the following
+sections, they belong to a certain window that has to be activated
+before the key press. Otherwise you risk the keyboard shortcut being sent
+to the wrong window and possibly cause unwanted actions.<p>
+Thus, and because of its multiple window user interface, Ayam is most
+comfortably used with a window system where a window is automatically
 activated when the mouse pointer enters it (this policy is often
-called "focus follows mouse").
-Unfortunately, this behaviour is not easy to achieve on
-Windows (you may either use the PowerToys to enable this or
-try to change the registry key
-<tt>HKEY_CURRENT_USER/Control_Panel/Mouse/ActivateWindowTracking</tt> to
-1 using "regedit").
+called "focus follows mouse"). Since version 1.4, Ayam can
+automatically activate the right windows if the preference
+setting <tt>AutoFocus</tt> is enabled.
 
 <sect1>The Main Window
 <p>
@@ -44,24 +41,24 @@ try to change the registry key
 </figure><p>
 The figure shows a snapshot of the main window with 3 sections marked:
 <enum>
-<item>The <bf/Objects/ section lets you select objects (no picking of
-objects in view windows!). As you can see, there are some objects
-in the current scene, and an object called <tt/Root/
-that is currently selected.
+<item>The <bf/Objects/ section lets you select objects.
+As you can see in the figure, there are already some objects
+in the current scene, and an object called <tt/"Root"/
+is currently selected.
 <item>The <bf/properties listbox/ shows the properties of a single
-selected object, the selected object (Root) has 4 properties:
-<tt/RiOptions/, <tt/Tags/, <tt/Atmosphere/, and <tt/Imager/.
+selected object, the selected object (<tt/"Root"/) has 4 properties:
+<tt/"RiOptions"/, <tt/"Tags"/, <tt/"Atmosphere"/, and <tt/"Imager"/.
 You may select just one of the properties.
 The <bf/property GUI/ lets you modify the settings of the selected
-property (<tt/RiOptions/ in this case), never forget to press
-the <tt/Apply/ button to make your changes actually happen.
+property (<tt/"RiOptions"/ in this case). Never forget to press
+the <tt/"Apply"/ button to make your changes actually happen.
 <item>The <bf/console/ is for text output (warnings, error messages)
 and input. Input should be considered a feature for the advanced
 Ayam user. We will not use it in this first tutorial.
 In case you accidentally activated the console by clicking into it
 (it will then display a blinking cursor and a black rim),
 remember that you have to press <tt/&lt;Shift-Tab&gt;/ in order to enable
-the shortcuts to the main menu entries again.
+the keyboard shortcuts to the main menu entries again.
 </enum>
 
 <sect1>The View Window
@@ -72,7 +69,7 @@ the shortcuts to the main menu entries again.
 <caption>A View Window</caption>
 </figure><p>
 This figure shows a view window, which displays currently
-nothing but a small coordinate system that marks the origin of
+nothing but a small coordinate system, that marks the origin of
 the world. The axes are color coded (red x, green y, blue z).
 <p>
 Now take a look at the title bar of the window.
@@ -81,18 +78,18 @@ It reads <tt/"View1 - Front - Pick"/.
 but we will not make use of multiple views in this first tutorial),
 <tt/"Front"/ is the type of the view.
 Finally, <tt/"Pick"/ means that there is currently no special
-modeling action activated
-in this view; in the current mode you may pick (select) objects with your
-mouse.
+modeling action activated in this view.
+Instead, the currently activated action allows you to pick (select)
+objects with your mouse.
 <p>
 But back to the type. The type of a view is an important property
 of a view, because it limits the scope of all modeling actions in
-this view. In a view of type <tt/Front/ you can move objects in the
+this view. In a view of type <tt/"Front"/ you can move objects in the
 direction of the x axis or y axis, but never in the direction of the
-z axis. You have to switch to a different type of view (e.g. <tt/Side/)
+z axis. You have to switch to a different type of view (e.g. <tt/"Side"/)
 to move an object in the direction of the z axis.<p>
 There is an easy way to switch the type of a view, simply use
-one of the following shortcuts: <tt/&lt;Ctrl-f&gt;/ (switch to front),
+one of the following keyboard shortcuts: <tt/&lt;Ctrl-f&gt;/ (switch to front),
 <tt/&lt;Ctrl-s&gt;/ (switch to side), <tt/&lt;Ctrl-t&gt;/ (switch to top).
 
 <sect1>The Tool Box
@@ -103,7 +100,7 @@ one of the following shortcuts: <tt/&lt;Ctrl-f&gt;/ (switch to front),
 <caption>The Tool Box Window</caption>
 </figure><p>
 The figure shows the tool box window. The first two
-rows of buttons are Transformation actions; the buttons in this section start
+rows of buttons start
 interactive modeling actions that transform objects. Note, that
 there is a tool tip for each button, that is activated when the
 mouse pointer is left standing for a while over a button. This
@@ -175,7 +172,7 @@ no view opened. You may open a first view (we do not need
 more than one in this tutorial) by clicking
 on the camera button in the tool box window.
 If you are unsure simply wait for the tool tip to appear,
-then browse through the buttons until the tool tip reads <tt/"new view"/.
+then browse through the buttons until the tool tip reads <tt/"new View"/.
 If Ayam crashes or blocks now, something is terribly wrong with your
 OpenGL setup and you should fix it. If you use a self compiled binary
 and Ayam crashes while opening a view this is a sure sign, that
@@ -193,7 +190,7 @@ which we create using the tool box.<p>
 this is the first icon in this section. If you are unsure
 simply wait for the tool tip to appear, then browse through the
 buttons until the tool tip reads <tt/"create Box"/.<p>
-Your view should display a box like in figure 5:<p>
+Your view should now display a box like in figure 5:<p>
 <figure loc="!ht">
 <eps file="pics/gbox1.ps" height="6cm">
 <img src="pics/gbox1.gif">
@@ -204,8 +201,9 @@ We change its shape to a large flat slab using the
 <tt/Transformations/ property of this object:<p>
 <bf/Step 2:/ Go to the <bf/main window/ and click on
 <tt/Transformations/ in the <bf/properties listbox/.<p>
-<bf/Step 3:/ Change the entries for <tt/Scale_X/, <tt/Scale_Y/ and
-<tt/Scale_Z/ to 100, 0.1 and 100 respectively. You may have to scroll
+<bf/Step 3:/ Change the entries for <tt/"Scale_X/", <tt/"Scale_Y"/, and
+<tt/"Scale_Z"/ to <tt/"100"/, <tt/"0.1"/, and <tt/"100"/ respectively.
+You may have to scroll
 the <bf/property GUI/ down to see the scale entries. You may
 jump from one entry to the next using the <tt/&lt;Tab&gt;/ key.
 The main window should now look like in figure 6:<p>
@@ -214,7 +212,7 @@ The main window should now look like in figure 6:<p>
 <img src="pics/maingb1.gif">
 <caption>scaling using the transformations property</caption>
 </figure><p>
-<bf/Step 4:/ Press the <tt/Apply/ button.
+<bf/Step 4:/ Press the <tt/"Apply"/ button.
 The view should display an image like figure 7 (we are looking at the
 slab from a side):<p>
 <figure loc="!ht">
@@ -255,20 +253,22 @@ the view displays a similar image as that of figure 9:<p>
 Now we will add a material to the sphere to make it "wooden".
 <p>
 <bf/Step 1:/ Go back to the <bf/main window/.
-Make sure, that the sphere is still selected,
-so that the new material will be associated with the sphere.
+Make sure that the sphere object is still selected,
+so that the new material will be associated with it.
 Now create a material object using the menu entry
 <tt>"Edit/Material"</tt> (you can also use the keyboard shortcut
 <tt>&lt;Ctrl+m&gt;</tt>). 
-A dialog box (see figure 10) will pop up asking you for a name for this
-new material object, enter "wood" and press the <tt/"Ok"/-button:<p>
+A dialog box (see figure 10) will pop up, asking you for a name for this
+new material object; enter "wood" and press the <tt/"Ok"/-button:<p>
 <figure loc="!ht">
 <eps file="pics/crtmat.ps" height="1.5cm">
 <img src="pics/crtmat.gif">
 <caption>creating a material object</caption>
 </figure>
 <p>
-<bf/Step 2:/ Select the
+<bf/Step 2:/ The newly created material object will immediately be
+selected and display its properties in the <bf/properties listbox/.
+Select the
 <tt/"Surface"/ entry in the <bf/properties listbox/.
 A new <bf/property GUI/ appears, as displayed in figure 11:<p>
 <figure loc="!ht">
@@ -299,9 +299,8 @@ a lot of entries now, that are the parameters of the shader
 But we do not need to change anything here.<p>
 <bf/Step 5:/ Press the <tt/"Apply"/ button.<p>
 
-We do not need to set a material for the box, as the
-default material in Ayam is matte. This default may
-be changed in the preferences, however.
+We do not need to set a material for the box, as the default material
+in Ayam is <tt/"matte"/, which is sufficient for this tutorial.
 
 <sect>Lighting the Scene
 <p>
@@ -309,9 +308,9 @@ Now we will create and place a light source.
 <p>
 <bf/Step 1:/ Create a light source object by clicking
 on the light bulb in the <bf/tool window/.
-We will light the scene with
-a light source of type <tt/"Distant"/ which is very easy to use.
-For that, we have to change the type of the newly created light source.<p>
+We will light the scene with a light source of type <tt/"Distant"/ which
+is very easy to use.
+For that, we have to change the type of the newly created light source:<p>
 <bf/Step 2:/ Go to the <bf/main window/ and click on the
 <tt/"LightAttr"/ entry in the
 <bf/properties listbox/. A new <bf/property GUI/ appears,
@@ -327,21 +326,23 @@ as displayed in figure 14:
 first entry (the <tt/"Type"/ menubutton) in the <bf/property GUI/.
 Change the type to <tt/"Distant"/.
 <p>
-<bf/Step 4:/ Press the <tt/Apply/ button.
+<bf/Step 4:/ Press the <tt/"Apply"/ button.
+The <bf/property GUI/ changes and display some new options,
+related to the new type of the light source.
 In the next step we enable shadow generation for our light source
 (it is switched off by default!).
 <p>
-<bf/Step 5:/ Click on the <tt/Shadows/ checkbutton to turn it on.
+<bf/Step 5:/ Click on the <tt/"Shadows"/ checkbutton to turn it on.
 <p>
-<bf/Step 6:/ Press the <tt/Apply/ button. The light source is
+<bf/Step 6:/ Press the <tt/"Apply"/ button. The light source is
 now parameterized appropriately but it is lighting into the
 wrong direction. We use the <tt/Transformations/
 property again to make the lightsource light by a -45 degree angle
 down.
 <p>
 <bf/Step 7:/ Click on the <tt/"Transformations"/ entry in the
-<bf/properties listbox/. Change the <tt/"Rotate_X"/ entry to -45
-and press the <tt/Apply/ button. We will check what we have done
+<bf/properties listbox/. Change the <tt/"Rotate_X"/ entry to <tt/"-45"/
+and press the <tt/"Apply"/ button. We will check what we have done
 by looking at the scene from the side in the next step.<p>
 <bf/Step 8:/ Go back to the <bf/view window/ and switch its type to
 <tt/Side/ using the shortcut <tt/&lt;Ctrl-s&gt;/. It should show the
@@ -352,14 +353,16 @@ scene from the side as in figure 15:
 <img src="pics/light2.gif">
 <caption>side view</caption>
 </figure><p>
-Dont worry about the fact that the light source seems to be located
-in the origin of the scene, <tt/"Distant"/ light sources do not have a
-distinctive point from which they are lighting. All that counts is
-the direction.
+Do not worry about the fact that the light source seems to be located
+in the origin of the scene. <tt/"Distant"/ light sources do not have a
+distinctive point from which they are lighting. All that counts for
+a <tt/"Distant"/ light is the direction and thus our light is now
+parameterized correctly and we may render the scene in the next
+section.
 
 <sect>Rendering the Scene
 <p>
-Rendering includes setup of the camera and invoking the
+Rendering a scene includes setup of the camera and invoking the
 final renderer.<p>
 <bf/Step 1:/ Switch the type of the view window to
 <tt/"Perspective"/ using the shortcut <tt/&lt;Ctrl-p&gt;/.
@@ -378,16 +381,21 @@ figure 17:<p>
 <img src="pics/rgl.gif">
 <caption>rgl preview</caption>
 </figure><p>
-The sphere is a bit too small and not centered.
+(If Ayam now complains about rgl not being found, BMRT is not set
+up correctly. Please read and execute the BMRT installation instructions
+again, then return here.)
+As you can see, the sphere is a bit too small and not centered.
+We will fix this now.
 You can get rid of the preview window using the <tt/&lt;Esc&gt;/ key.<p>
 <bf/Step 3:/ Select the sphere in the <bf/main window/.<p>
 <bf/Step 4:/ Go back to the view and press
 <tt/&lt;Ctrl-o&gt;/.
 This shortcuts changes the parameters of a view so that it displays
-the center of the selected object(s) and adapts the zoom factor
-of the view so that the selected object(s) are well sized.<p>
+the center of the selected objects and adapts the zoom factor
+of the view so that the selected objects are well sized.<p>
 <bf/Step 5:/ Start the BMRT-raytracer (rendrib) using the
-shortcut <tt/&lt;Ctrl-R&gt;/ (note the capital r!).
+shortcut <tt/&lt;Ctrl-R&gt;/ (note the capital r; you have to press
+Control, Shift, and r simultaneously!).
 You have to wait a bit until the renderer finishes the image
 as displayed in figure 18:<p>
 <figure loc="!ht">
@@ -401,14 +409,20 @@ All done!<p>
 Your homework for today:<p>
 Make the lighting in this image more interesting with
 a spotlight. Here is what to do (the tutorial should have
-teached you how to do the following tasks):<p>
+teached you how to execute the following tasks):<p>
 <itemize>
-<item>Change the type of the light source to <tt/Spot/.
-<item>Change its <tt/Intensity/ to 150 and its <tt/ConeAngle/ to 15.
-<item>Switch to a side view and move the light using an
-interactive modeling action so that it lights the sphere.
+<item>Select the light source.
+<item>Change the type of the light source to <tt/"Spot"/.
+<item>Change its <tt/"Intensity"/ to <tt/"150"/ and its <tt/"ConeAngle"/
+to <tt/"15"/.
+<item>Go back to the view and switch it to type <tt/"Side"/,
+then move the light using an
+interactive modeling action so that it lights the sphere
+(the arrow of the light source should point directly onto the sphere
+when you are finished).
 If you do not move the light, it will probably be located inside
-the box and not light anything!
+the box and not be able light anything!
+<item>Select the sphere.
 <item>Switch to a perspective view and adjust it properly using
 the zoom to object feature.
 <item>Render again.
@@ -421,5 +435,3 @@ The resulting image should look like figure 19:<p>
 </figure><p>
 
 </article>
-
-
