@@ -44,6 +44,9 @@ proc io_replaceScene { } {
 	set filename $newfilename
 	global ay_error
 	set ay_error ""
+	grab .fu
+	update
+
 	replaceScene $filename
 
 	if { $ay_error < 2 } {
@@ -76,6 +79,8 @@ proc io_replaceScene { } {
 	rV
 	io_mruAdd $filename
 	set ay(sc) 0
+	grab release .fu
+	update
 	after idle viewMouseToCurrent
     }
 
@@ -118,6 +123,9 @@ proc io_insertScene { } {
 	update
 	global ay ay_error
 	set ay_error ""
+	grab .fu
+	update
+
 	insertScene $ifilename
 
 	if { $ay_error < 2 } {
@@ -138,7 +146,8 @@ proc io_insertScene { } {
 	rV
 	io_mruAdd $filename
 	set ay(sc) 1
-
+	grab release .fu
+	update
 	after idle viewMouseToCurrent
     }
 
@@ -255,51 +264,15 @@ proc io_exportRIB { {expview "" } } {
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command { 
 	global ay ayprefs
-	set filename $ay(filename)
+
 	set selection [.exportRIBw.f1.fview.lb curselection]
 	if {$selection != ""} {
 	    set sname [.exportRIBw.f1.fview.lb get $selection]
 	    scan $sname "%s (%s)" name type
-	    if { $ayprefs(RIBFile) == "Ask" || $ayprefs(RIBFile) == "" } {
-		set filetypes {{"RIB" ".rib"} {"All files" *}}
-		set efilename [tk_getSaveFile -filetypes $filetypes -parent .\
-			-title "Export to file:"]
-	    } else {
-		    if { $ayprefs(RIBFile) != "Scenefile" && \
-			    $ayprefs(RIBFile) != "Scene" } {
-			set efilename $ayprefs(RIBFile)
-		    }
 
-		    if { $ayprefs(RIBFile) == "Scenefile" } {
-			if { $filename != "" } {
-			set efilename [file rootname [file tail $filename]].rib
-			} else {
-			    set efilename unnamed.rib
-			}
-		    }
-
-		    if { $ayprefs(RIBFile) == "Scene" } {
-			if { $filename != "" } {
-			    set efilename [file rootname $filename].rib
-			} else { 
-			    set efilename unnamed.rib
-			}
-		    }
-		}
-
-
-	    if { $ayprefs(Image) == "Ask"} {
-		set filetypes {{"TIFF" ".tiff"} {"TIF" ".tif"} {"All files" *}}
-		set imagename "[tk_getSaveFile -filetypes $filetypes -parent .\
-			-title "Render to file:"]"
-		if { $imagename == "" } { set efilename "" }
-	    } else {
-		if { $ayprefs(Image) == "RIB" } {
-		    set imagename [file rootname [file tail $efilename]].tif
-		} else {
-		    set imagename $ayprefs(Image)
-		}
-	    }
+	    set ribname [io_getRIBName]
+	    set efilename [lindex $ribname 0]
+	    set imagename [lindex $ribname 1]
 
 	    if { $efilename != ""} {
 		if { $imagename != "" } {
@@ -441,7 +414,11 @@ proc io_importMops { } {
 	update
 	global ay_error
 	set ay_error ""
+	grab .fu
+	update
+
 	importMops $ifilename
+
 	if { $ay_error < 2 } {
 	    ayError 4 "importMops" "Done importing objects from:"
 	    ayError 4 "importMops" "$ifilename"
@@ -456,6 +433,8 @@ proc io_importMops { } {
 	uS
 	rV
 	set ay(sc) 1
+	grab release .fu
+	update
 	after idle viewMouseToCurrent
     }
 
@@ -500,6 +479,9 @@ proc io_mruLoad { index } {
 	cS; plb_update
 	set ay_error ""
 	set filename [lindex $ayprefs(mru) $index]
+	grab .fu
+	update
+
 	replaceScene $filename
 
 	if { $ay_error < 2 } {
@@ -532,6 +514,8 @@ proc io_mruLoad { index } {
 
 	uS
 	rV
+	grab release .fu
+	update
 	after idle viewMouseToCurrent
     }
 
@@ -642,3 +626,56 @@ proc io_saveEnv {  } {
  return;
 }
 # io_saveEnv
+
+
+# io_getRIBName:
+#
+proc io_getRIBName { } {
+    global ay ayprefs
+
+    set filename $ay(filename)
+
+    if { $ayprefs(RIBFile) == "Ask" || $ayprefs(RIBFile) == "" } {
+	set filetypes {{"RIB" ".rib"} {"All files" *}}
+	set ribname [tk_getSaveFile -filetypes $filetypes -parent .\
+		-title "Export to file:"]
+    } else {
+	if { $ayprefs(RIBFile) != "Scenefile" && \
+		$ayprefs(RIBFile) != "Scene" } {
+	    set ribname $ayprefs(RIBFile)
+	}
+
+	if { $ayprefs(RIBFile) == "Scenefile" } {
+	    if { $filename != "" } {
+		set ribname [file rootname [file tail $filename]].rib
+	    } else {
+		set ribname unnamed.rib
+	    }
+	}
+
+	if { $ayprefs(RIBFile) == "Scene" } {
+	    if { $filename != "" } {
+		set ribname [file rootname $filename].rib
+	    } else { 
+		set ribname unnamed.rib
+	    }
+	}
+    }
+
+
+    if { $ayprefs(Image) == "Ask"} {
+	set filetypes {{"TIF" ".tif"} {"TIFF" ".tiff"} {"All files" *}}
+	set imagename "[tk_getSaveFile -filetypes $filetypes -parent .\
+		-title "Render to file:"]"
+	if { $imagename == "" } { set ribname "" }
+    } else {
+	if { $ayprefs(Image) == "RIB" } {
+	    set imagename [file rootname [file tail $ribname]].tif
+	} else {
+	    set imagename $ayprefs(Image)
+	}
+    }
+
+ return [list $ribname $imagename ]
+}
+# io_getRIBName

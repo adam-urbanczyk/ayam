@@ -151,9 +151,9 @@ proc shortcut_view { w } {
     bind $w <[repcont $aymainshortcuts(ExportRIB)]> "$w.$m invoke 3"
     $w.$m entryconfigure 3 -accelerator $aymainshortcuts(ExportRIB)
     # global AY_ENABLEPPREV
-    # if {$AY_ENABLEPPREV == 1} { invoke 8 } else { invoke 5 } 
-    bind $w <[repcont $ayviewshortcuts(Close)]> "$w.$m invoke 8"
-    $w.$m entryconfigure 8 -accelerator $ayviewshortcuts(Close)
+    # if {$AY_ENABLEPPREV == 1} { invoke 10 } else { invoke 7 } 
+    bind $w <[repcont $ayviewshortcuts(Close)]> "$w.$m invoke 10"
+    $w.$m entryconfigure 10 -accelerator $ayviewshortcuts(Close)
 
 
     set m $ay(typem)

@@ -31,18 +31,27 @@ $m add command\
 -command {
  global env ayprefs ay tcl_platform
 
- tmpGet $ayprefs(TmpDir) tmpfile
+ if { $ayprefs(ShadowMaps) < 1 } {
+     tmpGet $ayprefs(TmpDir) tmpfile
 
- if { $tcl_platform(platform) == "windows" } {
-    # Windows sucks big time!
+     if { $tcl_platform(platform) == "windows" } {
+	 # Windows sucks big time!
      
-    regsub -all {\\} $tmpfile {/} tmpfile
-    #was: regsub -all {\\} $tmpfile {\\\\\\\\\\\\\\\\} tmpfile
+	 regsub -all {\\} $tmpfile {/} tmpfile
+	 #was: regsub -all {\\} $tmpfile {\\\\\\\\\\\\\\\\} tmpfile
+     }
+
+     $ay(currentView) wrib -file $tmpfile -image ${tmpfile}.tif -temp
+
+     lappend ay(tmpfiles) $tmpfile
+ } else {
+
+     set ribname [io_getRIBName]
+     set tmpfile [lindex $ribname 0]
+     set imagename [lindex $ribname 1]
+
+     $ay(currentView) wrib -file $tmpfile -image $imagename -temp
  }
-
- $ay(currentView) wrib -file $tmpfile -image ${tmpfile}.tif -temp
-
- lappend ay(tmpfiles) $tmpfile
 
  if { $ayprefs(QRenderUI) != 1} {
      set command "exec "
@@ -70,16 +79,26 @@ $m add command\
 -command {\
 global env ayprefs ay tcl_platform
 
- tmpGet $ayprefs(TmpDir) tmpfile
+if { $ayprefs(ShadowMaps) < 1 } {
+    tmpGet $ayprefs(TmpDir) tmpfile
 
- if { $tcl_platform(platform) == "windows" } {
-    # Windows sucks big time!
-    regsub -all {\\} $tmpfile {/} tmpfile
- }
+    if { $tcl_platform(platform) == "windows" } {
+	# Windows sucks big time!
+	regsub -all {\\} $tmpfile {/} tmpfile
+    }
 
  $ay(currentView) wrib -file $tmpfile -image ${tmpfile}.tif -temp
 
  lappend ay(tmpfiles) [list $tmpfile]
+} else {
+
+    set ribname [io_getRIBName]
+    set tmpfile [lindex $ribname 0]
+    set imagename [lindex $ribname 1]
+
+    $ay(currentView) wrib -file $tmpfile -image $imagename -temp
+
+}
 
 # $tcl_platform(platform) == "windows" || 
  if { $ayprefs(RenderUI) != 1} {
@@ -129,7 +148,65 @@ $m add command -label "Close PPrev" -command {
     $togl setconf -pprev 0
 }
 # endif
+$m add separator
+$m add command -label "Create ShadowMaps" -command {
+    global env ayprefs ay tcl_platform
+    set togl $ay(currentView)
+    set w [winfo toplevel $togl]
 
+    if { $ayprefs(ShadowMaps) != 2 } {
+	set t "ShadowMaps are not enabled!"
+	set m "ShadowMaps are not enabled\nin the preferences.\
+\nSelect \"Ok\" to enable them and continue.\
+\nSelect \"Cancel\" to stop operation."
+set answer [tk_messageBox -title $t -type okcancel -icon warning -message $m]
+	    if { $answer == "cancel" } {
+		return 1;
+	    } else {
+		set ayprefs(ShadowMaps) 2
+		set ayprefse(ShadowMaps) 2
+	    }
+	}
+    set ribname [io_getRIBName]
+    set efilename [lindex $ribname 0]
+    set imagename [lindex $ribname 1]
+
+    if { $efilename != ""} {
+	if { $imagename != "" } {
+	    $w.f3D.togl wrib -file $efilename -image $imagename -smonly
+	    ayError 4 "Create SM" "Done exporting scene to:"
+	    ayError 4 "Create SM" "$efilename"
+
+	} else {
+	    $w.f3D.togl wrib -file $efilename -smonly
+	    ayError 4 "Create SM" "Done exporting scene to:"
+	    ayError 4 "Create SM" "$efilename"
+	}
+    }
+
+ ayError 4 "Create SM" "Now rendering shadow maps..."
+
+ if { $ayprefs(SMRenderUI) != 1} {
+     set command "exec "
+
+     regsub -all {%s} $ayprefs(SMRender) $efilename command2
+
+     append command $command2
+     append command " &"
+
+     eval [subst "$command"]
+ } else {
+     
+     regsub -all {%s} $ayprefs(SMRender) $efilename command
+
+     runRenderer "$command" "$ayprefs(SMRenderPT)"
+
+ }
+
+ update
+ tmp_clean 0
+
+}
 $m add separator
 
 # "after 100" because on Win32 the <Enter>-binding fires when the menu
