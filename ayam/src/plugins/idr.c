@@ -96,6 +96,173 @@ int idr_get2dbbc(ay_object *o, int *left, int *right,
 
 /* functions */
 
+double
+idr_get_dist(double *p1, double *p2)
+{
+ double p3[3];
+
+  AY_V3SUB(p3, p2, p1)
+
+ return(AY_V3LEN(p3));
+}
+
+/* idr_propagate_dist:
+ *
+ */
+int
+idr_propagate_dist(double *p1, ay_object *from, ay_object *cur, double threshhold)
+{
+ ay_object *o = NULL;
+ int ay_status = AY_OK;
+ GLdouble mm[16];
+ double p2[3];
+
+
+ o = cur;
+ 
+ while(o->next)
+   {
+     if(o != from)
+       {
+	 
+	 if(o->down && o->down->next)
+	   {
+	     ay_clevel_add(o);
+	     ay_clevel_add(o->down);
+	     ay_status = idr_propagate_dist(p1, from, o->down, threshhold);
+	     ay_clevel_del();
+	     ay_clevel_del();
+	   }
+	  if(!((o->type == AY_IDLEVEL) &&
+	       (((ay_level_object *)(o->refine))->type == AY_LTLEVEL)))
+	    {
+	      p2[0] = o->movx;
+	      p2[1] = o->movy;
+	      p2[2] = o->movz;
+
+	      glMatrixMode(GL_MODELVIEW);
+	      glPushMatrix();
+	      glLoadIdentity();
+	      ay_trafo_getall(ay_currentlevel->next);
+
+	      glGetDoublev(GL_MODELVIEW_MATRIX, mm);
+	      glPopMatrix();
+
+	      ay_trafo_apply3(p2, mm);
+ 
+	      if(idr_get_dist(p1, p2) < threshhold)
+		{
+		  /* make o important! */
+		  if(!o->tags)
+		    {
+		      ay_tags_copyall(from, o);
+		    }
+		}
+	    }
+       }
+
+     o = o->next;
+   }
+
+ return AY_OK;
+} /* idr_propagate_dist */
+
+
+/* idr_propagate_disttcmd:
+ *
+ */
+int
+idr_propagate_disttcmd(ClientData clientData, Tcl_Interp *interp,
+		       int argc, char *argv[])
+{
+ ay_object *o = NULL, *from = NULL;
+ int ay_status = AY_OK;
+ ay_list_object *oldclevel = ay_currentlevel, *l = NULL;
+ ay_list_object *sel = ay_selection;
+ char fname[] = "idr_propagate_disttcmd";
+ double p[3], p2[3];
+ GLdouble mm[16];
+ double threshhold = 0.0;
+
+ if(argc>0)
+   {
+     Tcl_GetDouble(interp, argv[1], &threshhold);
+     printf("threshhold: %g\n",threshhold);
+   }
+ 
+
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, fname, NULL);
+      return TCL_OK;
+    }
+
+  from = sel->object;
+
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+   glLoadIdentity();
+   ay_trafo_getall(ay_currentlevel->next);
+
+   glGetDoublev(GL_MODELVIEW_MATRIX, mm);
+  glPopMatrix();
+
+  p[0] = from->movx;
+  p[1] = from->movy;
+  p[2] = from->movz;
+  ay_trafo_apply3(p,mm);
+
+  ay_currentlevel = NULL;
+  ay_clevel_add(ay_root);
+
+
+  o = ay_root->next;
+  while(o->next)
+    {
+
+      if(o != from)
+	{
+	  if(o->down && o->down->next)
+	    {
+	      ay_clevel_add(o);
+	      ay_clevel_add(o->down);
+	      ay_status = idr_propagate_dist(p, from, o->down, threshhold);
+	      ay_clevel_del();
+	      ay_clevel_del();
+	    }
+
+	  if(!((o->type == AY_IDLEVEL) &&
+	       (((ay_level_object *)(o->refine))->type == AY_LTLEVEL)))
+	    {
+
+	      p2[0] = o->movx;
+	      p2[1] = o->movy;
+	      p2[2] = o->movz;
+
+	      if(idr_get_dist(p, p2) < threshhold)
+		{
+		  /* make o important! */
+		  if(!o->tags)
+		    {
+		      ay_tags_copyall(from, o);
+		    }
+		}
+	    }
+
+
+	}
+
+      o = o->next;
+    }
+
+  ay_clevel_delall();
+  free(ay_currentlevel);
+
+  ay_currentlevel = oldclevel;
+
+ return TCL_OK;
+} /* idr_propagate_disttcmd */
+
 
 /* idr_save_selected:
  *
@@ -1549,7 +1716,6 @@ idr_translate_points(RtPoint position, RtPoint direction, double roll,
 
 /*
  * idr_get2dbbc:
-
  */
 int
 idr_get2dbbc(ay_object *o, int *left, int *right,
@@ -3847,7 +4013,8 @@ Idr_Init(Tcl_Interp *interp)
   
   Tcl_CreateCommand(interp, "idr_treeSelect", idr_tree_selecttcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
-  
+  Tcl_CreateCommand(interp, "idr_propDist", idr_propagate_disttcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   /* register IDR tag type */
   ay_status = ay_tags_register(interp, idr_idrtagname, &idr_idrtagtype);

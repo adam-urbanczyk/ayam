@@ -155,6 +155,9 @@ proc idr_open {} {
 
 	}
     }
+    addCommand $f1 c2 "Propagate" {
+	    idr_propDist 1.0
+    }
     pack $f1 -side top -fill x -expand yes
 
 
@@ -350,8 +353,8 @@ proc idr_actionDefReg { w {del ""} } {
 # idr_actionDefReg
 
 # for making changed objects important
-rename treeSelect oldtreeSelect
-rename idr_treeSelect treeSelect
+#rename treeSelect oldtreeSelect
+#rename idr_treeSelect treeSelect
 
 global ay
 $ay(cm) add command -label "Open IDR" -command "idr_open"
