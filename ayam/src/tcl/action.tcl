@@ -12,7 +12,8 @@
 set ay(LastSelection) ""
 
 #stdReleaseBind:
-# standard release binding: force notification (if neccesary);
+# standard release binding for modeling actions:
+# force notification (if necessary);
 # redraw all views; update property GUI
 proc stdReleaseBind { w } {
     bind $w <ButtonRelease-1> {
@@ -153,6 +154,8 @@ proc actionRotObabindp { w x y } {
 
     bind $w <ButtonPress-1> "%W mc;%W rotoaac -start %x %y $x $y"
     bind $w <B1-Motion> "%W rotoaac -winxy %x %y $x $y"
+
+    stdReleaseBind $w
 }
 
 proc actionRotObA { w } {
@@ -501,6 +504,7 @@ proc actionDEditP { w } {
     }
     bind $w <B1-Motion> {}
 
+    stdReleaseBind $w
 }
 # actionDEditP
 
@@ -632,10 +636,11 @@ proc actionSplitNC { w } {
 # actionSplitNC
 
 #actionClear:
-# not really an action, clears all bindings
-# normally bound to the Esc-key
+# not really an action, clears all bindings, establishes object
+# pick bindings and is normally bound to the Esc-key
 proc actionClear { w } {
     viewTitle $w "" "Pick"
+
     bind $w <ButtonPress-1> ""
     bind $w <B1-Motion> ""
     bind $w <ButtonRelease-1> ""
