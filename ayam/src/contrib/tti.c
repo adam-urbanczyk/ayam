@@ -22,6 +22,10 @@
  #include <netinet/in.h>
 #endif
 
+#ifdef WIN32
+ #include <Winsock2.h>
+#endif
+
 #define step 0.15
 
 #define read32bit(p) (((p[0]<<24)|(p[1]<<16)|(p[2]<<8)|p[3]))
