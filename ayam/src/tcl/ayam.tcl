@@ -152,6 +152,11 @@ on its name, then press <Ctrl+Shift+i> (Copy Marked Prop).}
 {Ayam may be completely iconified using <Ctrl+Shift+z> (zap).}
 {To create a material for a selected object, press <Ctrl+m>.}
 {Extensive documentation is available as HTML and PDF.}
+{Use F2/F3 to adjust the sampling rate for NURBS display}
+{Use F4/F5 to toggle wireframe/NURBS display.}
+{Use F6 to toggle "lazy notification" on/off.}
+{Do not underestimate the power of the Skin!}
+{To find the master of an instance, press <Ctrl+Shift+m>}
 }
 }
 # array ayprefs
