@@ -184,6 +184,7 @@ $m add command -label "Perspective" -command {
     update
 #    actionClear $w
     viewTitle $w Persp ""
+    viewSetGridIcon $w 1.0
     $togl render
 }
 $m add separator
