@@ -221,6 +221,8 @@ int ay_object_getnametcmd(ClientData clientData, Tcl_Interp *interp,
 
 int ay_object_crtendlevel(ay_object **o);
 
+int ay_object_deleteinstances(ay_object **o);
+
 /* otype.c */
 int ay_otype_register(char *name,
 		      ay_createcb  *crtcb,

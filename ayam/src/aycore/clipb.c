@@ -14,6 +14,7 @@
 
 /* clipb.c - functions for the object clipboard */
 
+
 /* ay_clipb_copytcmd:
  *  copy currently selected objects to the clipboard
  */
@@ -23,9 +24,9 @@ ay_clipb_copytcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int ay_status = AY_OK;
  char fname[] = "copOb";
- ay_object *clip = ay_clipboard, *o = NULL, *t = NULL;
+ ay_object *clip = NULL, *o = NULL, *t = NULL;
  ay_list_object *sel = ay_selection;
-
+ 
   if(!sel)
     {
       ay_error(AY_ENOSEL, fname, NULL);
@@ -33,6 +34,10 @@ ay_clipb_copytcmd(ClientData clientData, Tcl_Interp *interp,
     }
 
   /* clear old clipboard */
+  /* first, delete all instance objects */
+  ay_object_deleteinstances(&ay_clipboard);
+  clip = ay_clipboard;
+  /* now delete all normal objects */
   while(clip)
     {
       t = ay_clipboard;
@@ -97,7 +102,7 @@ ay_clipb_cuttcmd(ClientData clientData, Tcl_Interp *interp,
  int ay_status = AY_OK;
  char fname[] = "cutOb";
  ay_list_object *sel = ay_selection;
- ay_object *o = NULL, *clip = ay_clipboard, *t = NULL;
+ ay_object *o = NULL, *clip = NULL, *t = NULL;
 
   if(!sel)
     {
@@ -105,10 +110,11 @@ ay_clipb_cuttcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  /* objects may get deleted */
-  /*  ay_undo_clear();*/
-
   /* clear old clipboard */
+  /* first, delete all instance objects */
+  ay_object_deleteinstances(&ay_clipboard);
+  clip = ay_clipboard;
+  /* now delete all normal objects */
   while(clip)
     {
       t = ay_clipboard;

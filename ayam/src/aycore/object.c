@@ -200,6 +200,23 @@ ay_object_delete(ay_object *o)
  if(o->refcount > 0)
    return AY_EREF;
 
+  /* delete children first */
+  if(o->down)
+    {
+      down = o->down;
+      while(down)
+	{
+	  d = down;
+	  down = down->next;
+	  ay_status = AY_OK;
+	  ay_status = ay_object_delete(d);
+	  if(ay_status)
+	    {
+	      return ay_status;
+	    } /* if */
+	} /* while */
+    } /* if */
+
   arr = ay_deletecbt.arr;
   cb = (ay_deletecb *)(arr[o->type]);
   if(cb)
@@ -213,7 +230,8 @@ ay_object_delete(ay_object *o)
     ay_selp_clear(o);
 
   /* delete tags */
-  ay_tags_delall(o);
+  if(o->tags)
+    ay_tags_delall(o);
 
   /* remove reference to material */
   if(o->mat)
@@ -228,19 +246,6 @@ ay_object_delete(ay_object *o)
     {
       free(o->name);
       o->name = NULL;
-    }
-
-  /* delete children */
-  if(o->down)
-    {
-      down = o->down;
-      while(down)
-	{
-	  d = down;
-	  down = down->next;
-	  ay_status = ay_object_delete(d);
-	}
-
     }
 
   /* finally, delete the object */
@@ -792,3 +797,45 @@ ay_object_crtendlevel(ay_object **o)
 
  return ay_status;
 } /* ay_object_crtendlevel */
+
+
+/* ay_object_deleteinstances:
+ *  remove all instance objects from objects pointed to by **o,
+ *  which will eventually be modified (if *o is an instance);
+ *  is able to work with multiple and nested objects!
+ */
+int
+ay_object_deleteinstances(ay_object **o)
+{
+ int ay_status = AY_OK;
+ ay_object **last = NULL, *next = NULL, *co = NULL;
+
+  if(!o || !*o)
+    return AY_OK;
+
+  co = *o;
+  last = o;
+  while(co)
+    {
+      if(co->down)
+	{
+	  ay_status = ay_object_deleteinstances(&(co->down));
+	} /* if */
+
+      if(co->type == AY_IDINSTANCE)
+	{
+	  next = co->next;
+	  ay_status = ay_object_delete(co);
+	  (*last) = next;
+	  co = next;
+	}
+      else
+	{
+	  last = &(co->next);
+	  co = co->next;
+	} /* if */
+    } /* while */
+
+ return ay_status;
+} /* ay_object_deleteinstances */
+
