@@ -328,8 +328,15 @@ $m add command -label "Hide All" -command "hide -all; rV"
 $m add command -label "Show" -command "undo save Show;show; rV"
 $m add command -label "Show All" -command "show -all; rV"
 $m add separator
-$m add command -label "Convert" -command "global ay; convOb; update; cS;\
-set ay(ul) \$ay(CurrentLevel); uS; sL; rV"
+$m add command -label "Convert" -command {
+    global ay
+    convOb; update; cS; set ay(ul) $ay(CurrentLevel); uS; rV
+}
+$m add command -label "Convert (In Place)" -command {
+    global ay;
+    undo save Convert;
+    convOb -inplace; update; cS; set ay(ul) $ay(CurrentLevel); uS; rV
+}
 $m add separator
 $m add command -label "Force Notification" -command "forceNot; rV"
 $m add separator
