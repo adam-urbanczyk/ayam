@@ -746,9 +746,9 @@ aycsg_cleartree(ay_object *t)
 	{
 	  aycsg_cleartree(t->down);
 	}
-      temp =  t->next;
+      temp = t->next;
       free(t);
-      t = t->next;
+      t = temp;
     } // while
 
  return;
