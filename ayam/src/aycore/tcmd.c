@@ -683,3 +683,59 @@ ay_tcmd_fastexittcmd(ClientData clientData, Tcl_Interp *interp,
   exit(0);
 } /* ay_tcmd_fastexittcmd */
 #endif /* AYENABLEFEXIT */
+
+
+/* ay_tcmd_withobtcmd:
+ *  this command modifies the selection before executing
+ *  another command of the Ayam scripting interface
+ */
+int
+ay_tcmd_withobtcmd(ClientData clientData, Tcl_Interp *interp,
+		   int argc, char *argv[])
+{
+ int ay_status = AY_OK, result = TCL_OK;
+ char fname[] = "withOb";
+ ay_list_object *oldsel = ay_selection, *l = NULL;
+ int i = 0, index = 0, commandindex = 3;
+
+  if(!oldsel)
+    {
+      ay_error(AY_ENOSEL, fname, NULL);
+      return TCL_OK;
+    }
+
+  if(argc < 3)
+    {
+      ay_error(AY_EARGS, fname, "index \\\[do\\\] command");
+      return TCL_OK;
+    }
+
+  if(strcmp(argv[2], "do"))
+    commandindex--;
+
+  if(commandindex >= argc)
+    {
+      return TCL_OK;
+    }
+
+  Tcl_GetInt(interp, argv[1], &index);
+
+  l = oldsel;
+  while(l)
+    {
+      if(i == index)
+	{
+	  ay_selection = NULL;
+	  ay_sel_add(l->object);
+	  if(argv[commandindex])
+	    result = Tcl_Eval(interp, argv[commandindex]);
+	  ay_status = ay_sel_free(AY_FALSE);
+	  ay_selection = oldsel;
+	  break;
+	} /* if */
+      i++;
+      l = l->next;
+    } /* while */
+
+ return TCL_OK;
+} /* ay_tcmd_withobtcmd */
