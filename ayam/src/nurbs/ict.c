@@ -763,7 +763,7 @@ ay_ict_resize(ay_icurve_object *curve, int new_length)
 
 
 /* ay_ict_revert:
- *  revert a NURBS curve
+ *  revert an interpolating curve
  */
 int
 ay_ict_revert(ay_icurve_object *curve)
@@ -800,7 +800,7 @@ ay_ict_revert(ay_icurve_object *curve)
 
 
 /* ay_ict_reverttcmd:
- *  revert an Icurve
+ *  revert an interpolating curve
  */
 int
 ay_ict_reverttcmd(ClientData clientData, Tcl_Interp *interp,
