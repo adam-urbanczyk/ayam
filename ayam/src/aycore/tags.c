@@ -151,6 +151,8 @@ ay_tags_register(Tcl_Interp *interp, char *name, char **result)
 
 /* ay_tags_temp:
  *  if set == 1: mark tag type "name" temporary, it will not be saved
+ *               to files and possibly excluded from the tag property
+ *               GUIs as well
  *  if set == 0: set result to 1 if tag type "name" is temporary
  *               else set result to 0
  */
@@ -578,3 +580,137 @@ ay_tags_deletetcmd(ClientData clientData, Tcl_Interp * interp,
   return TCL_OK;
 } /* ay_tags_deletetcmd */
 
+
+/* ay_tags_parseplist:
+ *  
+ */
+int
+ay_tags_parseplist(char *str, int declare, RtInt *argc, RtToken **tokensr,
+		   RtPointer **valuesr)
+{
+ char *tmp = NULL, *parname = NULL, *partype = NULL, *parval = NULL;
+ char tok[] = ",";
+ RtInt *itemp;
+ RtFloat *ftemp;
+ RtPoint *ptemp;
+ RtString *stemp;
+ RtColor *ctemp;
+ RtToken *tokens;
+ RtPointer *values;
+
+  if(!str || !argc || !tokens || !values)
+    return AY_ENULL;
+
+  if(*str == '\0')
+    return AY_OK;
+
+  /* make a copy of str, so that we may parse it using strtok() */
+  if(!(tmp = calloc(1, strlen(str)+1)))
+    { return AY_EOMEM; }
+  strcpy(tmp, str);
+
+
+  *argc = 0;
+  parval = NULL;
+  partype = NULL;
+  parname = NULL;
+  tokens = NULL;
+  values = NULL;
+
+  /* get first name */
+  parname = strtok(tmp, tok);
+
+  while(parname)
+    {
+      /* get type */
+      partype = strtok(NULL, tok);
+
+      if(partype)
+	{
+	  /* get value */
+	  parval = strtok(NULL, tok);
+	  if(parval)
+	    {
+	      /* we have all three needed components and thus
+		 may allocate memory for the new parameter */
+	      if(!(tokens = realloc(tokens, sizeof(RtToken))))
+		return AY_EOMEM;
+	      if(!(values = realloc(values, sizeof(RtPointer))))
+		return AY_EOMEM;
+
+	      /* copy name */
+	      if(!(tokens[*argc] = calloc(strlen(parname)+1, sizeof(char))))
+		    { return AY_EOMEM; }
+	      strcpy(tokens[*argc], parname);
+
+	      switch(*partype)
+		{
+		case 'i':
+		  if(!(itemp = calloc(1, sizeof(RtInt))))
+		    { return AY_EOMEM; }
+		  values[*argc] = (RtPointer)itemp;
+		  sscanf(parval, "%d", itemp);
+		  if(declare)
+		    RiDeclare(parname, "integer");
+		  break;
+		case 'f':
+		  if(!(ftemp = calloc(1, sizeof(RtFloat))))
+		    { return AY_EOMEM; }
+		  values[*argc] = (RtPointer)ftemp;
+		  sscanf(parval, "%f", ftemp);
+		  if(declare)
+		    RiDeclare(parname, "float");
+		  break;
+		case 's':
+		  if(!(stemp = calloc(1, sizeof(RtString))))
+		    { return AY_EOMEM; }
+		  if(!(*stemp = calloc(strlen(parval)+1, sizeof(char))))
+		    { return AY_EOMEM; }
+		  strcpy(*stemp, parval);
+		  values[*argc] = (RtPointer)stemp;
+		  if(declare)
+		    RiDeclare(parname, "string");
+		  break;
+		case 'p':
+		  if(!(ptemp = calloc(1, sizeof(RtPoint))))
+		    { return AY_EOMEM; }
+		  values[*argc] = (RtPointer)ptemp;
+		  sscanf(parval, "%f", &((*ptemp)[0]));
+		  parval = strtok(NULL, tok);
+		  sscanf(parval, "%f", &((*ptemp)[1]));
+		  parval = strtok(NULL, tok);
+		  sscanf(parval, "%f", &((*ptemp)[2]));
+		  if(declare)
+		    RiDeclare(parname, "point");
+		  break;
+		case 'c':
+		  if(!(ctemp = calloc(1, sizeof(RtColor))))
+		    { return AY_EOMEM; }
+		  values[*argc] = (RtPointer)ctemp;
+		  sscanf(parval, "%f", &((*ctemp)[0]));
+		  parval = strtok(NULL, tok);
+		  sscanf(parval, "%f", &((*ctemp)[1]));
+		  parval = strtok(NULL, tok);
+		  sscanf(parval, "%f", &((*ctemp)[2]));
+		  if(declare)
+		    RiDeclare(parname, "color");
+		  break;
+		default:
+		  break;
+		} /* switch */
+	      	      
+	      *argc = *argc+1;
+
+	    } /* if(parval */
+
+	} /* if(partype */
+
+      /* get next name */
+      parname = strtok(NULL, tok);
+    } /* while(parname */
+
+  *tokensr = tokens;
+  *valuesr = values;
+
+ return AY_OK;
+} /* ay_tags_parseplist */

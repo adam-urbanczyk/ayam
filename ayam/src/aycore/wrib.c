@@ -522,6 +522,9 @@ ay_wrib_displaytags()
  char *val = NULL, *name = NULL, *type = NULL, *mode = NULL;
  size_t len;
  RtToken dtype = RI_FILE, dmode = RI_RGBA;
+ RtToken *tokens;
+ RtPointer *values;
+ RtInt argc;
 
   root = ay_root;
   if(!root)
@@ -570,7 +573,7 @@ ay_wrib_displaytags()
 	      type[i] = '\0';
 	      i = 0;
 	      j++;
-	      while(val[j])
+	      while(val[j] && val[j] != ',')
 		{
 		  mode[i] = val[j];
 		  i++; j++;
@@ -626,8 +629,16 @@ ay_wrib_displaytags()
 		{
 		  dmode = RI_RGBAZ;
 		}
-
-	      RiDisplay(name, dtype, dmode, RI_NULL);
+	      if(val[j] == ',')
+		{
+		  ay_tags_parseplist(&(val[j]), AY_TRUE,
+				     &argc, &tokens, &values);
+		  RiDisplayV(name, dtype, dmode, argc, tokens, values);
+		}
+	      else
+		{
+		  RiDisplay(name, dtype, dmode, RI_NULL);
+		}
 	    }
 	  else
 	    {
