@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>16. Sep 2002
+<date>3. Oct 2002
 <abstract>
 This is the documentation of Ayam (1.3) - a free 3D modeling environment
 for the RenderMan interface.
@@ -3159,15 +3159,41 @@ The ConcatNC object concatenates all child objects
 to a single NURBS curve. Since the ConcatNC object also
 provides a NURBS curve, it is possible to use it as
 child object for another ConcatNC object (with possibly
-different parameters).<p>
+different parameters) or as a parameter object for a tool object
+that works with NURBS curves such as Revolve or Extrude..<p>
 How does the concatenation work?
-The control points of all child curves are simply copied
+First, all curves will be clamped (see section
+<ref id="clat" name="clamp tool"> for more information on clamping).
+Then, the control points of all child curves are simply copied
 into a new big vector, without checking for double
 points.
-Furthermore, attributes like order, knot type, display mode, tolerance
-etc. are taken from the first child object.
-It is currently not possible to concatenate NURBS curves
-with custom knot vectors.
+Attributes like order, display mode, tolerance
+etc. for the new concatenated curve are taken from the first child object.
+The knot sequence of the new concatenated curve will be NURBS.
+This means, the shape of the concatenated curve will differ from the
+child curves if
+any of the child curves has a custom knot vector with non
+equidistant knots.
+
+The following attributes further control the
+concatenation process:
+<sect2>ConcatNCAttr<label id="concatncp">
+<p>
+<itemize>
+<item>Using <tt/"Closed"/ you may create a closed concatenated curve.
+If <tt/"FillGaps"/ (below) is enabled, an additional fillet will
+be created for the last and the first child curve to close
+the concatenated curve. If <tt/"FillGaps"/ (below) is not enabled,
+the concatenated curve will be closed with the same algorithm
+that is also used by the close curve tool (possibly changing
+the shape again!).
+<item><tt/"FillGaps"/, creates fillet curves for all gaps between
+the child curves of the ConcatNC object. The fillet curves will be
+cubic Bezier curves. The direction of the tangents in the endpoints of
+the fillets and the gap enclosing curves will match, so that the
+transition should be C1 continuous.
+<item><tt/"Revert"/ the orientation of the concatenated curve will be reversed.
+</itemize>
 
 <sect1>RiInc Object<label id="riincobj">
 <p>
@@ -4807,7 +4833,8 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <ref id="pap" name="paraboloid attribute">,
 <ref id="hyp" name="hyperboloid attribute">,
 <ref id="ncattr" name="NURBCurve attribute">,
-<ref id="icp" name="ICurve attribute">
+<ref id="icp" name="ICurve attribute">,
+<ref id="concatncp" name="ConcatNC attribute">
 <item>Closed BSpline: <ref id="cbspt" name="closed BSpline tool">
 <item>Close_U, Close_V: <ref id="pmattr" name="PatchMesh attribute">
 <item>Collapse: <ref id="collt" name="Collapse tool">
@@ -4885,6 +4912,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 
 <label id="indexf">F
 <itemize>
+<item>FillGaps: <ref id="concatncp" name="ConcatNC attribute">
 <item>FilterFunc: <ref id="rio" name="RenderMan interface option">
 <item>FilterWidth: <ref id="rio" name="RenderMan interface option">
 <item>FindU: <ref id="miscac" name="modeling action">
@@ -5111,7 +5139,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Reset: <ref id="propgui" name="reset property GUI">
 <item>ResInstances: <ref id="prefrib" name="preference setting">
 <item>Resolve all Instances: <ref id="mmspecial" name="main menu entry">
-<item>Revert: <ref id="revertt" name="Revert tool">
+<item>Revert: <ref id="revertt" name="Revert tool">,
+<ref id="concatncp" name="ConcatNC attribute">
 <item>revertNC: <ref id="gncp" name="scripting interface command">
 <item>Revolve: <ref id="revolveobj" name="object">,
 <ref id="revt" name="Revolve tool">
