@@ -655,10 +655,6 @@ ay_pmt_swapuv(ay_pamesh_object *pm)
   pm->width = pm->height;
   pm->height = i;
 
-  i = pm->uorder;
-  pm->uorder = pm->vorder;
-  pm->vorder = i;
-
   i = pm->btype_u;
   pm->btype_u = pm->btype_v;
   pm->btype_v = i;
@@ -667,7 +663,7 @@ ay_pmt_swapuv(ay_pamesh_object *pm)
   pm->ustep = pm->vstep;
   pm->vstep = i;
 
-  dt = pm->ubasis
+  dt = pm->ubasis;
   pm->ubasis = pm->vbasis;
   pm->vbasis = dt;
 
