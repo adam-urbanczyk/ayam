@@ -152,7 +152,7 @@ proc prefs_open {} {
     addCheck $fw ayprefse MIResetST
     addText $fw e2 "UI:"
     addCheck $fw ayprefse SaveAddsMRU
-
+    addCheck $fw ayprefse ToolBoxTrans
     # select last selected preference section
     pack $nb -fill both -expand yes
     $nb raise $ay(prefssection)

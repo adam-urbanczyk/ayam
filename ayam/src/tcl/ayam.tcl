@@ -102,7 +102,7 @@ array set ayprefs {
  EnvFile "~/.ayam2view.ay"
  EFlush 2000
  mru {}
-
+ ToolBoxTrans 0
  Kill "kill"
  Cat "cat"
 

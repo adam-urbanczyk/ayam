@@ -28,6 +28,10 @@ proc toolbox_open { } {
 
     if { $tcl_platform(platform) == "windows" } {
 	wm transient $w .
+    } else {
+	if { $ayprefs(ToolBoxTrans) == 1 } {
+	    wm transient $w .
+	}
     }
 
     foreach i $ayprefs(toolBoxList) {
