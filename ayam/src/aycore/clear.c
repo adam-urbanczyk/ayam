@@ -43,6 +43,10 @@ ay_clear_scene(void)
   /* clear undo buffer */
   ay_status = ay_undo_clear();
 
+  /* remove all instance objects from the scene */
+  ay_status = ay_object_deleteinstances(&(ay_root->next));
+  o = ay_root;
+
   /* for all material objects in scene:
    * - remove references to them from clipboard
    * - additionally, deregister those materials
@@ -52,6 +56,9 @@ ay_clear_scene(void)
    */
   ay_status = ay_matt_removecliprefs(ay_root);
 
+  /* remove all references from normal objects to material objects */
+  ay_status = ay_matt_removeallrefs(ay_root);
+
   /* remove all objects now, no unlink necessary */
   o = o->next;
   while(o->next)
@@ -59,6 +66,10 @@ ay_clear_scene(void)
       o2 = o->next;
 
       ay_status = ay_object_delete(o);
+
+      if(ay_status != AY_OK)
+	printf("Memory leaked!\n");
+
       /* XXXX ignore errors about reference counts */
       o = o2;
     }
