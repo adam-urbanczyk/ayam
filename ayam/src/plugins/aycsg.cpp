@@ -1384,6 +1384,44 @@ aycsg_cleartmtags()
 
 extern "C" {
 
+
+// aycsg_display:
+//  this small wrapper makes aycsg_rendertcb() callable as ToglDisplayFunc
+void
+aycsg_display(struct Togl *togl)
+{
+
+  aycsg_rendertcb(togl, 0, NULL);
+
+ return;
+} // aycsg_display
+
+
+// aycsg_toggletcb:
+//  this callback toggles the display callback of view <togl> between
+//  standard behaviour and aycsg_rendertcb()
+int
+aycsg_toggletcb(struct Togl *togl, int argc, char *argv[])
+{
+ ay_view_object *view = NULL;
+
+  if(!togl)
+    return TCL_OK;
+  view = (ay_view_object *)Togl_GetClientData(togl);
+
+  if(view->altdispcb)
+    {
+      view->altdispcb = NULL;
+    }
+  else
+    {
+      view->altdispcb = aycsg_display;
+    }
+
+ return TCL_OK;
+} // aycsg_toggletcb
+
+
 // Aycsg_Init | aycsg_inittcmd:
 //  initialize aycsg module
 //  note: this function _must_ be capitalized exactly this way
@@ -1457,8 +1495,9 @@ Aycsg_Init(Tcl_Interp *interp)
       return TCL_OK;
     }
 
-  // create a new command for all views (Togl widgets)
+  // create new commands for all views (Togl widgets)
   Togl_CreateCommand("rendercsg", aycsg_rendertcb);
+  Togl_CreateCommand("togglecsg", aycsg_toggletcb);
 
 #ifndef AYCSGWRAPPED
   ay_error(AY_EOUTPUT, fname, "Plugin 'aycsg' successfully loaded.");
