@@ -2351,33 +2351,7 @@ ay_npt_birail1(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 	  ay_trafo_apply4(&controlv[i*cs->length*stride+j*stride], mi);
 	} /* for */
 
-      /* create caps (if sweep is not closed) */
-      if(i == 0)
-	{
-	  if(has_start_cap && !closed)
-	    {
-	      curve = NULL;
-	      ay_status = ay_object_copy(o1, &curve);
-	      ay_trafo_defaults(curve);
-	      ay_status = ay_capt_createfromcurve(curve, start_cap);
-	      /* transform cap */
-	      /* apply scaling */
-	      if(lent0 > AY_EPSILON)
-		{
-		  (*start_cap)->scalx *= lent0;
-		  (*start_cap)->scaly *= lent0;
-		}
-	      /* fix direction for aycsg */
-	      (*start_cap)->scalz *= -1.0;
-	      /* rotate it */
-	      if(fabs(rots[0]) > AY_EPSILON)
-		{
-		  ay_quat_axistoquat(&(rots[1]), AY_D2R(-rots[0]), quat);
-		  ay_quat_add(quat, (*start_cap)->quat,
-			      (*start_cap)->quat);
-		} /* if */
-	    } /* if */
-	} /* if */
+      /* create end-cap (if birail is not closed) */
       if(i == sections)
 	{
 	  if(has_end_cap && !closed)
@@ -2387,16 +2361,21 @@ ay_npt_birail1(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 	      ay_trafo_defaults(curve);
 	      ay_status = ay_capt_createfromcurve(curve, end_cap);
 	      /* transform cap */
-
+	      AY_V3SUB(T0, p2, p1)
+	      lent0 = AY_V3LEN(T0);
 	      /* apply scaling */
 	      if(lent0 > AY_EPSILON)
 		{
-		  (*end_cap)->scalx *= lent0;
-		  (*end_cap)->scaly *= lent0;
+		  (*end_cap)->scalx *= lent0/len0;
+		  (*end_cap)->scaly *= lent0/len0;
 		}
 
+	      (*end_cap)->movx = p1[0]+((p2[0]-p1[0])/2.0);
+	      (*end_cap)->movy = p1[1]+((p2[1]-p1[1])/2.0);
+	      (*end_cap)->movz = p1[2]+((p2[2]-p1[2])/2.0);
+
 	      /* rotate it */
-	      for(j = 0; j <= sections; j++)
+	      for(j = 1; j <= sections; j++)
 		{
 		  if(fabs(rots[j*4]) > AY_EPSILON)
 		    {
@@ -2415,6 +2394,19 @@ ay_npt_birail1(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
       memcpy(p4, p2, 3*sizeof(double));
 
     } /* for */
+
+  /* create start cap (if birail is not closed) */
+  if(has_start_cap && !closed)
+    {
+      curve = NULL;
+      ay_status = ay_object_copy(o1, &curve);
+      ay_trafo_defaults(curve);
+      ay_status = ay_capt_createfromcurve(curve, start_cap);
+      /* transform cap */
+      
+      /* fix direction for aycsg */
+      (*start_cap)->scalz *= -1.0;
+    } /* if */
 
   /* return result */
   *patch = new;
