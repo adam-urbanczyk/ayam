@@ -629,7 +629,7 @@ ay_view_readcb(FILE *fileptr, ay_object *o)
   vtemp.drawhandles = AY_TRUE;
 
   /* open the view */
-  sprintf(command,"viewOpen %d %d\n", width, height);
+  sprintf(command,"viewOpen %d %d 0\n", width, height);
   Tcl_Eval(ay_interp, command);
   Tcl_Eval(ay_interp, update_cmd);
       
