@@ -179,11 +179,11 @@ proc render_select { } {
 	    6 {
 		# Pixie
 		set ayprefs(QRender) "rndr %s"
-		set ayprefs(QRenderPT) ""
+		set ayprefs(QRenderPT) " - %d"
 		set ayprefs(Render) "rndr %s"
-		set ayprefs(RenderPT) ""
+		set ayprefs(RenderPT) " - %d"
 		set ayprefs(SMRender) "rndr %s"
-		set ayprefs(SMRenderPT) ""
+		set ayprefs(SMRenderPT) " - %d"
 		set ayprefs(RenderMode) 1
 		set splugin "aysdr"
 		if { $ay(ScanShaders) == 1 } {
