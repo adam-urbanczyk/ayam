@@ -20,8 +20,9 @@ cc -o rrib rrib.c -I/home/randi/sdk/affine0008/include/
 #include <ribrdr.h>
 #include <ribnop.h>
 
-/* force ayam.h to _not_ include ri.h from BMRT or ributil.h from Affine */
-/* as these would clash with the Affine includes above */
+/* force ayam.h to _not_ include ri.h from BMRT or Aqsis
+ * or ributil.h from Affine
+ * as these would clash with the Affine includes above */
 
 #ifdef AYUSEBMRTRIBOUT
 #undef AYUSEBMRTRIBOUT
@@ -29,6 +30,10 @@ cc -o rrib rrib.c -I/home/randi/sdk/affine0008/include/
 
 #ifdef AYUSEAFFINE
 #undef AYUSEAFFINE
+#endif
+
+#ifdef AYUSEAQSISRIB
+#undef AYUSEAQSISRIB
 #endif
 
 #include <ayam.h>
