@@ -458,7 +458,7 @@ proc toolbox_open { } {
 	##################
 
 	if { $i == "toolobjs" } {
-	    lappend ay(toolbuttons) brevo bex bswp bskin
+	    lappend ay(toolbuttons) brevo bex bswp bcap
 
 	    button $f.brevo -image ay_Revolve_img -padx 0 -pady 0 -command {
 		revolve_crt; 
@@ -478,22 +478,17 @@ proc toolbox_open { } {
 	    balloon_set $f.bswp "create Sweep"
 
 	    #####
-	    button $f.bskin -image ay_Skin_img -padx 0 -pady 0 -command {
-		skin_crt;
+	    button $f.bcap -image ay_Cap_img -padx 0 -pady 0 -command {
+		cap_crt;
 	    }
-	    balloon_set $f.bskin "create Skin"
+	    balloon_set $f.bcap "create Cap"
 
 
 	}
 	##################
 
 	if { $i == "toolobjs2" } {
-	    lappend ay(toolbuttons) bgord bbirail1 bbirail2 bcap
-
-	    button $f.bgord -image ay_Gordon_img -padx 0 -pady 0 -command {
-		gordon_crt;
-	    }
-	    balloon_set $f.bgord "create Gordon"
+	    lappend ay(toolbuttons) bbirail1 bbirail2 bgord bskin
 
 	    #####
 	    button $f.bbirail1 -image ay_Birail1_img -padx 0 -pady 0 -command {
@@ -507,11 +502,16 @@ proc toolbox_open { } {
 	    }
 	    balloon_set $f.bbirail2 "create Birail2"
 
-	    #####
-	    button $f.bcap -image ay_Cap_img -padx 0 -pady 0 -command {
-		cap_crt;
+	    button $f.bgord -image ay_Gordon_img -padx 0 -pady 0 -command {
+		gordon_crt;
 	    }
-	    balloon_set $f.bcap "create Cap"
+	    balloon_set $f.bgord "create Gordon"
+
+	    #####
+	    button $f.bskin -image ay_Skin_img -padx 0 -pady 0 -command {
+		skin_crt;
+	    }
+	    balloon_set $f.bskin "create Skin"
 
 	}
 	##################
