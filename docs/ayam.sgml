@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>28. Jul 2002
+<date>16. Aug 2002
 <abstract>
 This is the documentation of Ayam (1.3) - a free 3D modeling environment
 for the RenderMan interface.
@@ -2631,6 +2631,51 @@ outlines of the patch (OutlinePatch). The default setting
 <tt>"Drawing/DisplayMode"</tt> should be used.
 </itemize>
 
+<sect1>PolyMesh Object<label id="polymeshobj">
+<p>
+
+The PolyMesh object may be used to include objects that
+have been modeled using the polygonal modeling paradigm
+in Ayam scenes.
+<p>
+There are no special modeling actions for this type of object, but
+you may select and modify single points as you can do it with other
+object types, e.g. curves.
+<p>
+The PolyMesh object is equivalent to the general points polygons
+primitive of the RenderMan interface. This means, each PolyMesh
+object may contain multiple general (convex or concave) polygons,
+which in turn may consist of an outer loop and an arbitrary number
+of inner loops that describe holes in the polygon. The loops use a point
+indexing scheme to efficiently reuse coordinate values.
+This general approach requires a so called tesselation to be carried
+out, in order for the PolyMesh object to be shaded.
+For that, Ayam uses the tesselation routines of the GLU library.
+<p>
+Ayam is able to automatically create face normals for PolyMeshes.
+They will be calculated while tesselating the PolyMesh and be
+perpendicular to the plane determined by the first three vertices
+of the outer loop of a polygon.
+Furthermore, Ayam supports vertex normals (normals stored for every
+control point).
+<p>
+Note, that storing a bunch of triangles each in its own PolyMesh
+object will lead to a real waste of memory. You may use the
+merge tool (main menu <tt>"Tools/PolyMesh/Merge"</tt>) to merge
+many PolyMesh objects into a single PolyMesh object.
+
+<sect2>PolyMeshAttr<label id="pomattr">
+<p>
+The PolyMeshAttr GUI just displays some information about the
+PolyMesh object:
+<itemize>
+<item><tt/"NPolys"/ the number of polygons.
+<item><tt/"NControls"/ the total number of control points
+defined.
+<item><tt/"HasNormals"/ is 1 if the object uses vertex normals,
+else it is 0.
+</itemize>
+
 <sect1>Instance Object<label id="instobj">
 <p>
 The term instance is unfortunately misleading (and can be very confusing
@@ -3597,39 +3642,6 @@ without changing the shape of the curves by n.
 The knot type of the elevated curves will be changed to custom.
 </itemize>
 
-getNC:
- <itemize>
- <item>Synopsis: <tt/"getNC index varx vary varz varw"/
- <item>Description: Get the control point (index) of the currently
-selected NURBS curve and write it's coordinates into the variables
-varx, vary, varz and varw.
-</itemize>
-
-setNC:
-<itemize>
- <item>Synopsis: <tt/"setNC index x y z w"/
- <item>Description: Set the control point (index) of the currently selected
-NURBS curve to the coordinates x, y, z and w. If the curve has no
-weight information the value in w is simply discarded.
-</itemize>
-
-getNP:
-<itemize>
- <item>Synopsis: <tt/"getNP indexu indexv varx vary varz varw"/
- <item>Description: Get the control point (indexu, indexv) of the currently
-selected NURBS patch and write it's coordinates into the variables
-varx, vary, varz and varw.
-</itemize>
-
-setNP:
-<itemize>
- <item>Synopsis: <tt/"setNP indexu indexv x y z w"/
- <item>Description: Set the control point (indexu, indexv) of the
-currently selected NURBS patch to the coordinates x, y, z and w.
-If the patch has no weight information the value in w is simply
-discarded.
-</itemize>
-
 insknNC - insert knot:
 <itemize>
  <item>Synopsis: <tt/"insknNC u r"/
@@ -3660,7 +3672,7 @@ revertNC:
 
 splitNP:
 <itemize>
- <item>Synopsis: <tt/"splitNP u|v"/
+ <item>Synopsis: <tt/"splitNP (u|v)"/
  <item>Description: splits the selected NURBPatch into NURBS curves,
 along u or v.
 </itemize>
@@ -3669,6 +3681,35 @@ buildNP:
 <itemize>
  <item>Synopsis: <tt/"buildNPatch"/
  <item>Description: builds a NURBPatch from the selected NURBS curves.
+</itemize>
+
+
+<sect2>Manipulating Points<label id="scpoints">
+<p>
+
+Use these two commands to read or manipulate single
+points of arbitrary objects.
+Note, that the exact arguments needed, depend on the
+type of the object, e.g. a NURBS curve requires just one
+index parameter (indexu), whereas a NURBS patch requires two
+(indexu and indexv).
+
+getPnt:
+<itemize>
+ <item>Synopsis: <tt/"getPnt [-trafo] indexu [indexv] varx vary varz [varw]"/
+ <item>Description: Get a control point of the currently
+selected object and write it's coordinates into the variables
+varx, vary, varz and varw.
+If the special argument <tt/"-trafo"/ is given, the coordinates
+will be transformed by the values given in the objects
+Transformation property.
+</itemize>
+
+setPnt:
+<itemize>
+ <item>Synopsis: <tt/"setNP indexu [indexv] x y z [w]"/
+ <item>Description: Set a control point of the
+currently selected object to the coordinates x, y, z and w.
 </itemize>
 
 
@@ -3723,7 +3764,6 @@ the command <tt/"uCL cl"/ may be used instead of <tt/"uS"/.
 </itemize>
 
 
-
 plb_update:
 <itemize>
  <item>Synopsis: <tt/"plb_update"/
@@ -3765,8 +3805,8 @@ want. Use <tt>"forAllT"</tt> in this case.
   <item>The command will not have access to global arrays unless
 e.g. one of the following construct is in use:<p>
 
-<tt>"forAll 0 &lcub;uplevel &num;0 &lcub;command&rcub;&rcub;"</tt><p>
-<tt>"forAll 0 &lcub;global arrayname; commands&rcub;"</tt><p>
+<tt>"forAll 0 &lcub; uplevel &num;0 &lcub; command &rcub; &rcub;"</tt><p>
+<tt>"forAll 0 &lcub; global arrayname; commands &rcub;"</tt><p>
   <item>It is not possible to use commands that change the object
 hierarchy (e.g. deleting or inserting objects). Command
 may just modify existing objects.
@@ -3784,7 +3824,7 @@ by de-selecting the property using e.g. the property context menu.<p>
 
 Note, that the type strings will be converted to lowercase before
 comparison, so that it is legal to use it e.g. this way:
-<p><tt>"forAllT ncurve 0 &lcub;puts $i$&rcub;"</tt><p>
+<p><tt>"forAllT ncurve 0 &lcub;puts $i&rcub;"</tt><p>
  <item>Deficiencies:
  <itemize>
   <item>The command will not have access to global arrays unless
@@ -3840,7 +3880,6 @@ but they are not needed in the Tcl script context.
 Place should describe the procedure where the error occured.
 Detail is the string to be output.
 </itemize>
-
 
 
 <sect2>Miscellaneous<label id="gtype">
@@ -3969,7 +4008,7 @@ while { $i < $len } {
     set z [expr $i/3.0]
 
     # move control point to new position
-    setNC $i $x $y $z $w
+    setPnt $i $x $y $z $w
 
     incr angle 90
     incr i
@@ -4305,6 +4344,7 @@ primitives:
 <item>Quadrics (Sphere, Disk, Cylinder, Cone, Paraboloid, Hyperboloid, Torus)
 <item>bilinear and bicubic patches and patch meshes
 <item>NURBS patches (with trim curves)
+<item>polygons and polygon meshes
 </itemize>
 
 Furthermore, the plugin supports reading of CSG, Object-Instances,
@@ -4697,8 +4737,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 
 <label id="indexg">G
 <itemize>
-<item>getNC: <ref id="gncp" name="scripting interface command">
-<item>getNP: <ref id="gncp" name="scripting interface command">
+<item>getPnt: <ref id="scpoints" name="scripting interface command">
 <item>getType: <ref id="gtype" name="scripting interface command">
 <item>Gimbal Lock: <ref id="gimb" name="avoiding">
 <item>goDown: <ref id="gdown" name="scripting interface command">
@@ -4857,6 +4896,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Pick:<ref id="objsel" name="pick objects within a view">
 <item>PickEpsilon: <ref id="prefmodel" name="preference setting">
 <item>Point: <ref id="pdsl" name="light type">
+<item>PolyMesh: <ref id="polymeshobj" name="object">
 <item>PPRender: <ref id="prefrib" name="preference setting">
 <item>Preferences: <ref id="prefs" name="Preferences">,
 <ref id="hidprefs" name="Hidden Preference Settings">
@@ -4952,8 +4992,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Selection: <ref id="prefdraw" name="preference setting">
 <item>Set Gridsize: <ref id="vmconf" name="view menu entry">
 <item>Set FOV: <ref id="vmconf" name="view menu entry">
-<item>setNC: <ref id="gncp" name="scripting interface command">
-<item>setNP: <ref id="gncp" name="scripting interface command">
+<item>setPnt: <ref id="scpoints" name="scripting interface command">
 <item>Shade: <ref id="prefdraw" name="preference setting">,
 <ref id="vmconf" name="view menu entry">
 <item>Shader: <ref id="shd" name="property">
