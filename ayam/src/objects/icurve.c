@@ -731,12 +731,23 @@ ay_icurve_convertcb(ay_object *o, int in_place)
     {
       ay_status = ay_object_copy(ic->ncurve, &new);
 
-      /* reset display mode of new curve to "global" */
-      nc = (ay_nurbcurve_object *)(new->refine);
-      nc->display_mode = 0;
+      if(new)
+	{
+	  /* reset display mode of new curve to "global" */
+	  nc = (ay_nurbcurve_object *)(new->refine);
+	  nc->display_mode = 0;
 
-      ay_trafo_copy(o, new);
-      ay_status = ay_object_link(new);
+	  ay_trafo_copy(o, new);
+
+	  if(!in_place)
+	    {
+	      ay_status = ay_object_link(new);
+	    }
+	  else
+	    {
+	      ay_status = ay_object_replace(new, o);
+	    }
+	}
     }
 
  return ay_status;

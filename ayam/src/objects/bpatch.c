@@ -675,7 +675,18 @@ ay_bpatch_convertcb(ay_object *o, int in_place)
     return AY_ENULL;
   
   ay_status = ay_provide_object(o, AY_IDNPATCH, &new);
-  ay_status = ay_object_link(new);
+
+  if(new)
+    {
+      if(!in_place)
+	{
+	  ay_status = ay_object_link(new);
+	}
+      else
+	{
+	  ay_status = ay_object_replace(new, o);
+	}
+    }
 
  return ay_status;
 } /* ay_bpatch_convertcb */

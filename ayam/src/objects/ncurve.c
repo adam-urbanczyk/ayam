@@ -1009,7 +1009,14 @@ ay_ncurve_convertcb(ay_object *o, int in_place)
 
   ay_notify_force(new);
 
-  ay_status = ay_object_link(new);
+  if(!in_place)
+    {
+      ay_status = ay_object_link(new);
+    }
+  else
+    {
+      ay_status = ay_object_replace(new, o);
+    }
 
  return ay_status;
 } /* ay_ncurve_convertcb */
