@@ -140,11 +140,6 @@ $m add check -label "Use Grid" -variable ay(cVUseGrid) -command "\
 
 $m add command -label "Set GridSize" -command "viewSetGrid $w.f3D.togl"
 
-$m add check -label "Local Grid" -variable ay(cVLocal) -command "\
-	global ay;\
-	$w.f3D.togl setconf -local \$ay(cVLocal);\
-	\$ay(currentView) mc"
-
 $m add separator
 $m add command -label "Half Size" -command "\
     global ay;\
@@ -186,6 +181,11 @@ $m add command -label "Zoom to Object" -command "\
 $m add command -label "Align to Parent" -command "\
 	global ay;\
 	$w.f3D.togl mc; $w.f3D.togl align; \$ay(currentView) mc"
+
+$m add check -label "Edit Local" -variable ay(cVLocal) -command "\
+	global ay;\
+	$w.f3D.togl setconf -local \$ay(cVLocal);\
+	\$ay(currentView) mc"
 
 # XXXX This could be just a label or a menu displaying current action
 # or even allowing to start modeling actions, but which actions?
