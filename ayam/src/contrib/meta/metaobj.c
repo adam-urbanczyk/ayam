@@ -170,7 +170,7 @@ metaobj_deletecb (void *c)
   if (w)
     free (w);
 
-#if !META_USEVERTEXARRAY
+#if META_USEVERTEXARRAY
   if( w->vindex)
   	free(w->vindex);
   if(w->vhash)
@@ -574,7 +574,7 @@ metaobj_readcb (FILE * fileptr, ay_object * o)
       return AY_EOMEM;
     }
 
-#if !META_USEVERTEXARRAY
+#if META_USEVERTEXARRAY
 
   w->tablesize = 40000;
 
