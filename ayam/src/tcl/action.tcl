@@ -480,7 +480,7 @@ button $f.bok -text "Ok" -width 5 -pady $ay(pady) -command {
 	     set array(changed) 1
     }
 
-    if { [winfo exists $ay(currentView) } {
+    if { [winfo exists $ay(currentView)] } {
 	focus $ay(currentView)
     } else {
 	focus .
