@@ -288,8 +288,8 @@ ay_text_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   Tcl_SetStringObj(ton,"String",-1);
-  if(text->unistring)
-    to = Tcl_NewUnicodeObj(text->unistring, -1);
+  if(text->unistring && (text->unistring[0] != 0))
+    to = Tcl_NewUnicodeObj(text->unistring, Tcl_UniCharLen(text->unistring));
   else
     to = Tcl_NewStringObj(emptystring, -1);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
