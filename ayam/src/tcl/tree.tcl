@@ -9,7 +9,7 @@
 
 # tree.tcl - the object hierarchy tree widget
 
-package require BWidget
+package require -exact BWidget 1.2.1
 
 
 set ay(tree) ""
