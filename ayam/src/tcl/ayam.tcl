@@ -84,7 +84,7 @@ array set ayprefs {
  TmpDir "/tmp"
  KeepNTmpFiles 5
 
- Plugins "."
+ Plugins "plugins"
 
  Wpclip_pastetosel 1
  WarnChanged 1
@@ -388,6 +388,9 @@ if { $tcl_platform(platform) == "windows" } {
     image create photo emptyimg
     emptyimg blank
     emptyimg configure -width 6 -height 6
+} else {
+    set ayprefs(Plugins) "[file dirname [info nameofexecutable]]/plugins"
+    set ayprefs(Scripts) "plugins/loadrrib.tcl;plugins/loadidr.tcl"
 }
 
 # are true color visuals available?
