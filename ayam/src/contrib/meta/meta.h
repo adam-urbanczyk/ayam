@@ -23,13 +23,13 @@
 #include "ayam.h"
 
 #define PROGNAME "Meta Object Modul"
-#define VERSION	 "0.9"
+#define VERSION	 "1.0"
 
 
 #define ABS(a) (((a) < 0 ) ? -(a) : (a))
 
-#define MAXCUBE 80
-#define MAXPOLY 10000
+#define mt_MAXCUBE 80
+#define mt_MAXPOLY 10000
 
 /* coefficients of influence equation */
 #define A -.444444
@@ -38,7 +38,7 @@
 
 /* some macros to keep things cleaner */
 #define SQ(val) ((val) * (val))
-#define CUBE(val) ((val) * (val) * (val))
+#define CUB(val) ((val) * (val) * (val))
 #define DIST(x1, y1, z1, x2, y2, z2) (tmp->scalex*SQ(x1 - x2) + tmp->scaley*SQ(y1 - y2) + tmp->scalez*SQ(z1-z2))
 
 #define META_OK  0
@@ -47,11 +47,12 @@
 #define SHADE	0
 #define WIRE	1
 
-#define META1	0
-#define META2	1
-#define META3	2
-#define TORUS	3
-#define HEART	4
+#define mt_META	0
+/*#define META2	1*/
+/*#define META3	2*/
+#define mt_TORUS	1
+#define mt_CUBE	2
+#define mt_HEART	3
 
 typedef struct xy
 {
@@ -90,7 +91,10 @@ typedef struct BLOB
   int negativ;
   int rot;
   int formula;
-
+  int ex;				/* Edgesharp for Cubes */
+  int ey;
+  int ez;
+  
   double scalex;
   double scaley;
   double scalez;
@@ -147,24 +151,25 @@ typedef struct WORLD
   int maxstack;
   int edgecode;
   double unisize;
+  unsigned int *cid;
 
 }
 world;
 
 
-void initgrid (world * w);
-int calcballs (world * w, int mode);
-double calcall (double x1, double y1, double z1, world * w);
+void mt_initgrid (world * w);
+int mt_calceffect (world * w, int mode);
+double mt_calcall (double x1, double y1, double z1, world * w);
 int Polygonise (world * w, GRIDCELL * grid, double isolevel, int mode);
-void getnormal (world * w, XYZ * point, XYZ * normal);
-void movedown (GRIDCELL * cube, world * w);
-void moveup (GRIDCELL * cube, world * w);
-void moveleft (GRIDCELL * cube, world * w);
-void moveright (GRIDCELL * cube, world * w);
-void movefront (GRIDCELL * cube, world * w);
-void moveback (GRIDCELL * cube, world * w);
-int initcubestack (world * w);
-int freecubestack (world * w);
+void mt_getnormal (world * w, XYZ * point, XYZ * normal);
+void mt_movedown (GRIDCELL * cube, world * w);
+void mt_moveup (GRIDCELL * cube, world * w);
+void mt_moveleft (GRIDCELL * cube, world * w);
+void mt_moveright (GRIDCELL * cube, world * w);
+void mt_movefront (GRIDCELL * cube, world * w);
+void mt_moveback (GRIDCELL * cube, world * w);
+int mt_initcubestack (world * w);
+int mt_freecubestack (world * w);
 
 
 #endif

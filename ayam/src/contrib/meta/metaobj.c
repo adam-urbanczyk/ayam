@@ -48,7 +48,7 @@ metaobj_createcb (int argc, char *argv[], ay_object * o)
       return AY_ERROR;
     }
 
-  w->maxpoly = MAXPOLY;
+  w->maxpoly = mt_MAXPOLY;
 
 
   if (!
@@ -74,11 +74,11 @@ metaobj_createcb (int argc, char *argv[], ay_object * o)
     }
 
 
-  w->aktcubes = MAXCUBE;	/* erstmal maximale anzahl */
+  w->aktcubes = mt_MAXCUBE;	/* erstmal maximale anzahl */
 
   if (!
       (w->mgrid =
-       (char *) calloc (1, sizeof (char) * MAXCUBE * MAXCUBE * MAXCUBE)))
+       (char *) calloc (1, sizeof (char) * mt_MAXCUBE * mt_MAXCUBE * mt_MAXCUBE)))
     {
       if (w->Vertex3d);
       free (w->Vertex3d);
@@ -91,7 +91,7 @@ metaobj_createcb (int argc, char *argv[], ay_object * o)
     }
 
 
-  initcubestack (w);
+  mt_initcubestack (w);
 
   w->lastmark = 0;
 
@@ -113,8 +113,9 @@ metaobj_createcb (int argc, char *argv[], ay_object * o)
 
   w->currentnumpoly = 0;
   w->o = o->down;
+  w->cid = &metacomp_id;
 
-  calcballs (w, SHADE);
+  mt_calceffect (w, SHADE);
 
   return AY_OK;
 } /* metaobj_createcb */
@@ -140,7 +141,7 @@ metaobj_deletecb (void *c)
   if (w->mgrid);
   free (w->mgrid);
 
-  freecubestack (w);
+  mt_freecubestack (w);
 
   if (w)
     free (w);
@@ -206,7 +207,7 @@ metaobj_copycb (void *src, void **dst)
     }
 
 
-  initcubestack (w);
+  mt_initcubestack (w);
 
   *dst = (void *) w;
 
@@ -436,7 +437,7 @@ metaobj_readcb (FILE * fileptr, ay_object * o)
   w->unisize = 4L;
   w->edgelength = w->unisize / (double) w->aktcubes;
 
-  initcubestack (w);
+  mt_initcubestack (w);
 
   o->parent = AY_TRUE;
   o->refine = w;
@@ -532,40 +533,44 @@ metaobj_notifycb (ay_object * o)
 
   while (down->next != NULL)
     {
-      b = (blob *) down->refine;
+	 if(down->type == metacomp_id)
+	 {
+	      b = (blob *) down->refine;
 
-      glPushMatrix ();
+	      glPushMatrix ();
 
-      glLoadIdentity ();
-      glTranslated (down->movx, down->movy, down->movz);
-      glGetDoublev (GL_MODELVIEW_MATRIX, m);
+	      glLoadIdentity ();
+	      glTranslated (down->movx, down->movy, down->movz);
+	      glGetDoublev (GL_MODELVIEW_MATRIX, m);
 
-      glLoadIdentity ();
+	      glLoadIdentity ();
 
-      glTranslated (down->movx, down->movy, down->movz);
-      ay_quat_toeuler(down->quat, eu);
-      glRotated(eu[2]*180/M_PI,1,0,0);
-      glRotated(eu[1]*180/M_PI,0,1,0);
-      glRotated(eu[0]*180/M_PI,0,0,1);
+	      glTranslated (down->movx, down->movy, down->movz);
+	      ay_quat_toeuler(down->quat, eu);
+	      glRotated(eu[2]*180/AY_PI,1,0,0);
+	      glRotated(eu[1]*180/AY_PI,0,1,0);
+	      glRotated(eu[0]*180/AY_PI,0,0,1);
       
-      glTranslated (-down->movx, -down->movy, -down->movz);
-      glGetDoublev (GL_MODELVIEW_MATRIX, b->rm);
+     	 glTranslated (-down->movx, -down->movy, -down->movz);
+     	 glGetDoublev (GL_MODELVIEW_MATRIX, b->rm);
 
-      glPopMatrix ();
+     	 glPopMatrix ();
 
-      p[0] = m[0] * b->p.x + m[4] * b->p.y + m[8] * b->p.z + m[12] * 1.0;
-      p[1] = m[1] * b->p.x + m[5] * b->p.y + m[9] * b->p.z + m[13] * 1.0;
-      p[2] = m[2] * b->p.x + m[6] * b->p.y + m[10] * b->p.z + m[14] * 1.0;
+     	 p[0] = m[0] * b->p.x + m[4] * b->p.y + m[8] * b->p.z + m[12] * 1.0;
+    		 p[1] = m[1] * b->p.x + m[5] * b->p.y + m[9] * b->p.z + m[13] * 1.0;
+   		 p[2] = m[2] * b->p.x + m[6] * b->p.y + m[10] * b->p.z + m[14] * 1.0;
 
-      b->cp.x = p[0];
-      b->cp.y = p[1];
-      b->cp.z = p[2];
+	      b->cp.x = p[0];
+	      b->cp.y = p[1];
+	      b->cp.z = p[2];
 
-      b->scalex = 1 / (down->scalx < 0.00001 ? 0.00001 : down->scalx);
-      b->scaley = 1 / (down->scaly < 0.00001 ? 0.00001 : down->scaly);
-      b->scalez = 1 / (down->scalz < 0.00001 ? 0.00001 : down->scalz);
+	      b->scalex = 1 / (down->scalx < 0.00001 ? 0.00001 : down->scalx);
+	      b->scaley = 1 / (down->scaly < 0.00001 ? 0.00001 : down->scaly);
+	      b->scalez = 1 / (down->scalz < 0.00001 ? 0.00001 : down->scalz);
 
-      down = down->next;
+     }
+
+	 down = down->next;
     }
 
   w = (world *) o->refine;
@@ -573,7 +578,7 @@ metaobj_notifycb (ay_object * o)
   w->currentnumpoly = 0;
   w->o = o->down;
 
-  calcballs (w, SHADE);
+  mt_calceffect (w, SHADE);
 
   return AY_OK;
 
@@ -664,7 +669,9 @@ metacomp_createcb (int argc, char *argv[], ay_object * o)
   b->scalex = 1;
   b->scaley = 1;
   b->scalez = 1;
-
+  b->ex = 8;
+  b->ey = 8;
+  b->ez = 8;
   b->rm[0] = 1; /* init rotmatrix */
   b->rm[5] = 1;
   b->rm[10] = 1;
@@ -784,9 +791,23 @@ metacomp_setpropcb (Tcl_Interp * interp, int argc, char *argv[],
   to = Tcl_ObjGetVar2 (interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj (interp, to, &b->c);
 
+/*
   Tcl_SetStringObj (ton, "Strenght", -1);
   to = Tcl_ObjGetVar2 (interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj (interp, to, &b->s);
+*/
+
+  Tcl_SetStringObj (ton, "EdgeX", -1);
+  to = Tcl_ObjGetVar2 (interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj (interp, to, &b->ex);
+
+  Tcl_SetStringObj (ton, "EdgeY", -1);
+  to = Tcl_ObjGetVar2 (interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj (interp, to, &b->ey);
+
+  Tcl_SetStringObj (ton, "EdgeZ", -1);
+  to = Tcl_ObjGetVar2 (interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj (interp, to, &b->ez);
 
   Tcl_IncrRefCount (toa);
   Tcl_DecrRefCount (toa);
@@ -851,8 +872,22 @@ metacomp_getpropcb (Tcl_Interp * interp, int argc, char *argv[],
   to = Tcl_NewDoubleObj (b->c);
   Tcl_ObjSetVar2 (interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
+/*
   Tcl_SetStringObj (ton, "Strenght", -1);
   to = Tcl_NewDoubleObj (b->s);
+  Tcl_ObjSetVar2 (interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+*/
+
+  Tcl_SetStringObj (ton, "EdgeX", -1);
+  to = Tcl_NewIntObj (b->ex);
+  Tcl_ObjSetVar2 (interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj (ton, "EdgeY", -1);
+  to = Tcl_NewIntObj (b->ey);
+  Tcl_ObjSetVar2 (interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj (ton, "EdgeZ", -1);
+  to = Tcl_NewIntObj (b->ez);
   Tcl_ObjSetVar2 (interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   Tcl_SetStringObj (ton, "Formula", -1);
@@ -928,6 +963,9 @@ metacomp_readcb (FILE * fileptr, ay_object * o)
   fscanf (fileptr, "%lg\n", &b->s);
   fscanf (fileptr, "%d\n", &b->formula);
   fscanf (fileptr, "%d\n", &b->rot);
+  fscanf (fileptr, "%d\n", &b->ex);
+  fscanf (fileptr, "%d\n", &b->ey);
+  fscanf (fileptr, "%d\n", &b->ez);
 
   o->refine = b;
 
@@ -957,6 +995,9 @@ metacomp_writecb (FILE * fileptr, ay_object * o)
   fprintf (fileptr, "%g\n", b->s);
   fprintf (fileptr, "%d\n", b->formula);
   fprintf (fileptr, "%d\n", b->rot);
+  fprintf (fileptr, "%d\n", b->ex);
+  fprintf (fileptr, "%d\n", b->ey);
+  fprintf (fileptr, "%d\n", b->ez);
 
   return AY_OK;
 
