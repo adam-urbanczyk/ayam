@@ -4017,7 +4017,10 @@ of this curve at a specific point, which should have a value between
 (0) and the second cross section (1) over the interpolated curve.
 Thus, a straight line running from point (0,0) to (1,1) will mimic
 the standard linear interpolation that would be carried out if no
-interpolation control curve were present.
+interpolation control curve were present. Note, however, that the
+interpolation control curve has no influence on the first and last
+copy of the respective cross section curve. Those will always exactly
+match the parameter curves.
 <p>
 The following parameters further control the birailing process:
 
@@ -4045,8 +4048,8 @@ of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 <caption>Skin Object (left: Curves, right: Resulting Skinned Surface)</caption>
 </figure>
 <p>
-The skin object forms a surface defined by a set of curves, where
-the first and last curve will always be interpolated by the surface
+The skin object forms a surface defined by a set of cross section curves,
+where the first and last curve will always be interpolated by the surface
 (this process is sometimes also called lofting).<p>
 Note that in contrast to the build from curves tool,
 the curves may be of arbitrary length and order. You may e.g.
@@ -4672,10 +4675,10 @@ consisting of 6 NURBPatches.
 <sect1>The Revolve Tool<label id="revt">
 <p>
 <itemize>
-<item>Arguments: The revolve tool takes a single NURBS curve from
+<item>Arguments: The revolve tool takes the selected objects from
 the selection.
 <item>Operation: It creates a Revolve object, and moves
-the selected curve to it.
+the selected objects to it.
 <item>Note: See section <ref id="revolveobj" name="Revolve Object">
 for more information regarding the revolve object.
 </itemize>
@@ -4683,10 +4686,10 @@ for more information regarding the revolve object.
 <sect1>The Extrude Tool<label id="extt">
 <p>
 <itemize>
-<item>Arguments: The revolve tool takes the selected NURBS curves from
+<item>Arguments: The extrude tool takes the selected objects from
 the selection.
 <item>Operation: It creates an Extrude object, and moves
-the selected curves to it.
+the selected objects to it.
 <item>Note: See section <ref id="extrudeobj" name="Extrude Object">
 for more information regarding the extrude object.
 </itemize>
@@ -4694,34 +4697,67 @@ for more information regarding the extrude object.
 <sect1>The Sweep Tool<label id="swpt">
 <p>
 <itemize>
-<item>Arguments: The sweep tool takes two NURBS curves from
+<item>Arguments: The sweep tool takes the selected objects from
 the selection.
 <item>Operation: It creates a Sweep object, and moves
-the selected curves to it.
+the selected objects to it.
 <item>Note: See section <ref id="sweepobj" name="Sweep Object">
 for more information regarding the sweep object.
-</itemize>
-
-<sect1>The Skin Tool<label id="skit">
-<p>
-<itemize>
-<item>Arguments: The skin tool takes all NURBS curves from
-the selection.
-<item>Operation: It creates a Skin object, and moves
-the selected curves to it.
-<item>Note: See section <ref id="skinobj" name="Skin Object">
-for more information regarding the skin object.
 </itemize>
 
 <sect1>The Cap Tool<label id="capt">
 <p>
 <itemize>
-<item>Arguments: The cap tool takes a single NURBS curve from
+<item>Arguments: The cap tool takes the selected objects from
 the selection.
 <item>Operation: It creates a Cap object, and moves
-the selected curve to it.
+the selected objects to it.
 <item>Note: See section <ref id="capobj" name="Cap Object">
 for more information regarding the cap object.
+</itemize>
+
+<sect1>The Birail1 Tool<label id="bi1t">
+<p>
+<itemize>
+<item>Arguments: The birail1 tool takes the selected objects from
+the selection.
+<item>Operation: It creates a Birail1 object, and moves
+the selected objects to it.
+<item>Note: See section <ref id="birail1obj" name="Birail1 Object">
+for more information regarding the birail1 object.
+</itemize>
+
+<sect1>The Birail2 Tool<label id="bi2t">
+<p>
+<itemize>
+<item>Arguments: The birail2 tool takes the selected objects from
+the selection.
+<item>Operation: It creates a Birail2 object, and moves
+the selected objects to it.
+<item>Note: See section <ref id="birail2obj" name="Birail2 Object">
+for more information regarding the birail2 object.
+</itemize>
+
+<sect1>The Gordon Tool<label id="gort">
+<p>
+<itemize>
+<item>Arguments: The gordon tool takes the selected objects from
+the selection.
+<item>Operation: It creates a Gordon object, and moves
+the selected objects to it.
+<item>Note: See section <ref id="gordonobj" name="Gordon Object">
+for more information regarding the gordon object.
+</itemize>
+
+<sect1>The Skin Tool<label id="skit">
+<p>
+<itemize>
+<item>Arguments: The skin tool takes the selected objects from
+the selection.
+<item>Operation: It creates a Skin object, and moves
+the selected objects to it.
+<item>Note: See section <ref id="skinobj" name="Skin Object">
+for more information regarding the skin object.
 </itemize>
 
 <sect1>The Revert Tool<label id="revertt">
@@ -6887,7 +6923,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Local: <ref id="vat" name="view attribute">,
 <ref id="editlocal" name ="Editing in Local Space">
 <item>Locale: <ref id="prefgui" name="preference setting">
-<item>Loft: <ref id="skinobj" name="skin object">,
+<item>Loft: <ref id="skinobj" name="skin object">
 <item>LogFile: <ref id="prefgui" name="preference setting">
 <item>Logging: <ref id="prefgui" name="preference setting">
 <item>LowerBevel: <ref id="extrattr" name="extrude attribute">
