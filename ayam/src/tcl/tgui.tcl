@@ -112,6 +112,8 @@ proc tgui_addtag { } {
     
     if { $tgui_tessparam(SaveToTag) == 1 } {
 
+	undo save AddTPTag
+
 	forAllT NPatch 0 {
 	    global tgui_tessparam
 	    set val [format "%d,%g" $tgui_tessparam(SMethod)\
@@ -137,6 +139,35 @@ proc tgui_addtag { } {
  return;
 }
 # tgui_addtag
+
+
+# tgui_remtag:
+#
+#
+proc tgui_remtag { } {
+    global tgui_tessparam
+    
+    forAllT NPatch 0 {
+
+	set tagnames ""
+	set tagvals ""
+	getTags tagnames tagvals
+	if { ($tagnames != "") } {
+	    while { ([lsearch $tagnames "TP"] != -1) } {
+		set index [lsearch $tagnames "TP"]
+		set tagnames [lreplace $tagnames $index $index]
+		set tagvals [lreplace $tagvals $index $index]
+		setTags $tagnames $tagvals
+	    }
+	    # while
+	}
+	# if
+    }
+    # forAllT
+
+ return;
+}
+# tgui_remtag
 
 
 # tgui_readtag:
@@ -194,12 +225,10 @@ proc tgui_open { } {
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
     addMenu $f tgui_tessparam SMethod $ay(smethods)
-    trace variable tgui_tessparam(SMethod) w tgui_update
     set f [frame $f.fSParam -relief sunken -borderwidth 1]
     label $f.l -text "SParam:" -width 14
     label $f.ll -text "0"
     scale $f.s -showvalue 0 -orient h -from 0 -to 100\
-	-variable tgui_tessparam(SParam)\
 	-highlightthickness 0
     if { $ayprefs(LazyNotify) == 1 } {
 	bind $f.s <ButtonPress-1> "set tgui_tessparam(MB1Down) 1"
@@ -208,7 +237,7 @@ proc tgui_open { } {
 
     label $f.lr -text "100"
     entry $f.e -width 5
-    trace variable tgui_tessparam(SParam) w tgui_update
+
     pack $f.l -in $f -side left -fill x -expand no
     pack $f.ll -in $f -side left -expand no
     pack $f.s -in $f -side left -fill x -expand yes
@@ -220,15 +249,12 @@ proc tgui_open { } {
     # read preferences from eventually present TP tag
     tgui_readtag
 
+    # remove potentially present TP tags, lest they get in our way while
+    # tesselating with our own method and parameter
+    tgui_remtag
+
     # create first tesselation
     tgui_update
-
-    $f.s conf -command tgui_update
-    event add <<CommitTG>> <KeyPress-Return> <FocusOut>
-    bind $f.e <<CommitTG>> "$f.s conf -command \"\"; \
-                            tgui_recalcslider \[$f.e get\]; \
-                            $f.s set \[$f.e get\]; \
-                            $f.s conf -command tgui_update"
 
     set f $w.f1
     addCheck $f tgui_tessparam SaveToTag
@@ -242,7 +268,7 @@ proc tgui_open { } {
 
     button $f.bca -text "Cancel" -width 5 -command {
 	tguiCmd ca; grab release .tguiw; focus .; destroy .tguiw; undo;
-	undo save AddTPTag; tgui_addtag
+	tgui_addtag; rV
     }
     # button
 
@@ -252,6 +278,22 @@ proc tgui_open { } {
     winCenter $w
     grab $w
     focus $w.f2.bok
+
+    # initiate update machinery
+    set f $w.f1.fSParam
+    $f.s conf -variable tgui_tessparam(SParam) -command tgui_update
+    trace variable tgui_tessparam(SMethod) w tgui_update
+    #trace variable tgui_tessparam(SParam) w tgui_update
+
+    event add <<CommitTG>> <KeyPress-Return> <FocusOut>
+    bind $f.e <<CommitTG>> "if { \[$f.e get\] != \$tgui_tessparam(SParam) } { \
+	                         $f.s conf -command \"\"; \
+				 tgui_recalcslider \[$f.e get\]; \
+				 $f.s set \[$f.e get\]; \
+				 set tgui_tessparam(SParam) \[$f.e get\]; \
+				 $f.s conf -command tgui_update; \
+			     }"
+
     tkwait window $w
 
     after idle viewMouseToCurrent
