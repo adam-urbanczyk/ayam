@@ -10,12 +10,18 @@
  *
  */
 
+/* ayslo.c - Plug-In to scan shaders compiled with shader (PRMan)
+   using libsloargs  */
+
+/* force ayam.h to not include BMRT/slc.h as this would clash with PRMan/slo.h
+   due to a double defined POINT */
+#ifdef AYUSESLCARGS
+#undef AYUSESLCARGS
+#endif
+
 #include "ayam.h"
 
 #include <slo.h>
-
-/* ayslo.c - Plug-In to scan shaders compiled with shader (PRMan)
-   using libsloargs  */
 
 /* prototypes of functions local to this module */
 int ayslo_scanslosarg(SLO_VISSYMDEF *symbol, Tcl_DString *ds);
@@ -108,11 +114,11 @@ ayslo_scanslotcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  slo_SetPath(Tcl_GetVar(ay_interp, vname, TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG));
+  Slo_SetPath(Tcl_GetVar(ay_interp, vname, TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG));
 
-  if((slo_SetShader(argv[1])) == -1)
+  if((Slo_SetShader(argv[1])) == -1)
     {
-      ay_error(AY_ERROR, fname, "slo_SetShader failed for:");
+      ay_error(AY_ERROR, fname, "Slo_SetShader failed for:");
       ay_error(AY_ERROR, fname, argv[1]);
       return TCL_OK;
     }
@@ -120,10 +126,10 @@ ayslo_scanslotcmd(ClientData clientData, Tcl_Interp *interp,
   Tcl_DStringInit(&ds);
 
   /* get name of shader */
-  Tcl_DStringAppend(&ds, argv[1]/*slo_GetName()*/, -1);
+  Tcl_DStringAppend(&ds, argv[1]/*Slo_GetName()*/, -1);
 
   /* get type of shader */
-  type = slo_GetType();
+  type = Slo_GetType();
   switch (type)
     {
     case SLO_TYPE_SURFACE:
@@ -149,20 +155,20 @@ ayslo_scanslotcmd(ClientData clientData, Tcl_Interp *interp,
    }
 
   /* get arguments of shader */
-  numargs = slo_GetNArgs();
+  numargs = Slo_GetNArgs();
   Tcl_DStringAppend(&ds, "{ ", -1);
   for(i = 1; i <= numargs; i++)
     {
 
       symbol = NULL;
-      symbol = slo_GetArgById(i);
+      symbol = Slo_GetArgById(i);
 
       if(!symbol)
 	{
 	  ay_error(AY_ERROR, fname, "Cannot get symbol from shader:");
 	  ay_error(AY_ERROR, fname, argv[1]);
 	  /*
-	  slo_EndShader();
+	  Slo_EndShader();
 	  Tcl_DStringFree(&ds);
 	  return TCL_OK;
 	  */
@@ -214,7 +220,7 @@ ayslo_scanslotcmd(ClientData clientData, Tcl_Interp *interp,
 	  for(j = 0; j < arraylen; j++)
 	    {
 	      element = NULL;
-	      element = slo_GetArrayArgElement(symbol, j);
+	      element = Slo_GetArrayArgElement(symbol, j);
 	      if(!element)
 		{
 		  ay_error(AY_ERROR, fname, "Could not get array element:");
@@ -244,7 +250,7 @@ ayslo_scanslotcmd(ClientData clientData, Tcl_Interp *interp,
   Tcl_DStringAppend(&ds, "} ", -1);
 
 
-  slo_EndShader();
+  Slo_EndShader();
 
   Tcl_SetVar(interp, argv[2], Tcl_DStringValue(&ds), TCL_LEAVE_ERR_MSG);
 
