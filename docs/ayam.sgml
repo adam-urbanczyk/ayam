@@ -3267,12 +3267,12 @@ in Ayam:
 control the quality of the sampling when rendering the patch.
 A setting of 0.0 means, that the global preference setting
 <tt>"Drawing/Tolerance"</tt> should be used.
-<item><tt/"Display"/ sets the display mode, either the control
-hull is drawn, or just the outlines of the polygons created by
-the tesselation (OutlinePolygon), or just the
-outlines of the patch (OutlinePatch). The default setting
-(Global) means, that the global preference setting
-<tt>"Drawing/DisplayMode"</tt> should be used.
+<item><tt/"DisplayMode"/ sets the display mode, either the control
+hull is drawn (<tt/"ControlHull"/), or just the outlines of the polygons
+created by the tesselation (<tt/"OutlinePolygon"/), or just the
+outlines of the patch (<tt/"OutlinePatch"/). The default setting
+(<tt/"Global"/) means, that the value of the global preference setting
+<tt>"Drawing/DisplayMode"</tt> should be used instead.
 </itemize>
 
 <sect1>Trim Curves<label id="trim">
@@ -3943,7 +3943,74 @@ The attributes <tt/"StartCap"/ and <tt/"EndCap"/ may be
 used to automatically create cap surfaces, that close the
 birailed surface on the respective end.
 Note that this only works properly if the cross section
-curve is closed and planar (defined in the XY plane).
+curve is closed and planar (e.g. defined in the XY plane).
+<p>
+See section <ref id="npattr" name="NPatchAttrib"> for a description
+of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
+
+<sect1>Birail2 Object<label id="birail2obj">
+<p>
+<figure loc="ht">
+<eps file="pics/birail2.ps" height="5cm">
+<img src="pics/birail2.gif">
+<caption>Birail2 Object (left: Curves, right: Resulting Swept Surface)</caption>
+</figure>
+<p>
+The Birail2 object forms a surface by sweeping a cross section
+(or profile) curve along two so called rail curves, while morphing it
+into a second cross section (or profile) curve. The morphing process
+may be controlled by a fifth parameter curve.
+The object hierarchy of a Birail2 object, thus, looks like this:
+<code>
++-Birail2
+ | Cross_Section1(NCurve)
+ | Rail1(NCurve)
+ | Rail2(NCurve)
+ | Cross_Section2(NCurve)
+ \ [Interpolation_Control(NCurve)]
+</code>
+<p>
+When the cross sections touch the rail curves in their respective starting
+points, the resulting surface will interpolate the rail curves.
+The direction of the cross section curves will be parallel to the v
+parametric dimension (height) and the direction of the rail curves will be
+parallel to the u parametric dimension (width) of the resulting surface.
+Height and width of the surface will be derived from the length of the
+cross section curves and the number of sections, respectively.
+<p>
+Note that the cross section curves do not have to be two dimensional, and,
+in contrast to the normal Sweep object, they also do not have to be
+defined in a special plane. Furthermore, they do not have to be compatible
+in terms of length, order, and knots. Incompatible curves will be made
+compatible before birailing automatically, the height of the resulting
+surface, however, is not easily predictable anymore in this case.
+Also note that the precision with which the
+resulting surface will interpolate the rail curves depends on the
+number of sections choosen.
+<p>
+If a fifth curve is present as parameter object, this curve will
+control the morphing (interpolation) process. The y coordinate
+of this curve at a specific point, which should have a value between
+0 and 1, will control the ratio of control of the first cross section
+(0) and the second cross section (1) over the interpolated curve.
+Thus, a straight line running from point (0,0) to (1,1) will mimic
+the standard linear interpolation that would be carried out if no
+interpolation control curve were present.
+<p>
+The following parameters further control the birailing process:
+
+<sect2>Birail2Attr Property<label id="birail2p">
+<p>
+The parameter <tt/"Sections"/ determines how many
+sections (in u direction) should be used, when generating the
+birailed NURBS patch. The birailed NURBS patch always has sections+1 control
+points in u direction.
+<p>
+The attributes <tt/"StartCap"/ and <tt/"EndCap"/ may be
+used to automatically create cap surfaces, that close the
+birailed surface on the respective end.
+Note that this only works properly if the cross section
+curve is closed and planar (e.g. defined in the XY plane).
 <p>
 See section <ref id="npattr" name="NPatchAttrib"> for a description
 of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
@@ -4297,7 +4364,7 @@ shape may be preserved completely.
 
 <sect1>ExtrNC Object<label id="extrncobj">
 <p>
-The ExtrNC object extracts a NURBS curve from a NURB patch object,
+The ExtrNC object extracts a NURBS curve from a NURBS patch object,
 for use as parameter object for other tool objects, like e.g.
 Revolve.
 
@@ -6560,6 +6627,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>bicubic/bilinear PatchMesh:
 <ref id="patchmeshobj" name="PatchMesh object">
 <item>Birail1: <ref id="birail1obj" name="object">
+<item>Birail2: <ref id="birail2obj" name="object">
 <item>Bound: <ref id="riattrs" name="RenderMan/BMRT attribute">
 <item>BoundCoord: <ref id="riattrs" name="RenderMan/BMRT attribute">
 <item>Box: <ref id="boxobj" name="object">
@@ -6661,7 +6729,8 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>EndCap: <ref id="rep" name="revolve attribute">,
 <ref id="swp" name="sweep attribute">,
 <ref id="skp" name="skin attribute">,
-<ref id="birail1p" name="birail1 attribute">
+<ref id="birail1p" name="birail1 attribute">,
+<ref id="birail2p" name="birail2 attribute">
 <item>EnvFile: <ref id="prefgui" name="preference setting">
 <item>Epsilon: <ref id="moattr" name="MetaObj attributes">
 <item>ErrorLevel: <ref id="rribopt" name="RIB import option">
@@ -6999,7 +7068,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>SDMesh: <ref id="sdmeshobj" name="object">
 <item>Sections: <ref id="swp" name="sweep attribute">,
 <ref id="rep" name="Revolve attribute">,
-<ref id="birail1p" name="Birail1 attribute">
+<ref id="birail1p" name="Birail1 attribute">,
+<ref id="birail2p" name="Birail2 attribute">
 <item>Select: <ref id="obj" name="select objects with the tree/listbox">,
 <ref id="objsel" name="select objects within a view">,
 <ref id="selac" name="select points">
@@ -7048,7 +7118,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>StartCap: <ref id="rep" name="revolve attribute">,
 <ref id="swp" name="sweep attribute">,
 <ref id="skp" name="skin attribute">,
-<ref id="birail1p" name="birail1 attribute">
+<ref id="birail1p" name="birail1 attribute">,
+<ref id="birail2p" name="birail2 attribute">
 <item>StdDisplay: <ref id="rio" name="RenderMan interface option">,
 <item>Step_U, Step_V: <ref id="pmattr" name="PatchMesh attribute">
 <item>StepSize: <ref id="moattr" name="MetaObj attributes">
