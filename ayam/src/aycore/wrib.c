@@ -24,7 +24,7 @@ int ay_wrib_sm(char *file, char *image, int width, int height);
 
 
 /* ay_wrib_noexport:
- *  check for presence of NoExport tag
+ *  check for presence of NoExport tag for object o;
  *  returns AY_TRUE if found, else returns AY_FALSE
  */
 int
@@ -410,6 +410,7 @@ ay_wrib_object(char *file, ay_object *o)
  void **arr = NULL;
  ay_wribcb *cb = NULL;
  ay_level_object *l = NULL, *ld = NULL;
+ ay_light_object *light = NULL;
  char *parname = "name";
 
   if(!o)
@@ -492,6 +493,9 @@ ay_wrib_object(char *file, ay_object *o)
      section of the RIB */
   if(o->down && o->down->next && (o->type != AY_IDLIGHT))
     {
+
+      /* first, if the current object is a level object,
+	 write appropriate SolidBegin statements */
       down = o->down;
       l = NULL;
       if(o->type == AY_IDLEVEL)
@@ -520,6 +524,34 @@ ay_wrib_object(char *file, ay_object *o)
 	    } /* switch */
 	} /* if */
 
+      /* before writing the child objects, check for local lights
+	 and switch them on */
+      down = o->down;
+      while(down->next)
+	{
+	  if(down->type == AY_IDLIGHT)
+	    {
+	      light = (ay_light_object*) down->refine;
+	      if(light->type != AY_LITCUSTOM)
+		{
+		  if(light->on && light->local)
+		    {
+		      RiIlluminate(light->light_handle, RI_TRUE);
+		    }
+		}
+	      else
+		{
+		  if(light->lshader && light->on && light->local)
+		    {
+		      RiIlluminate(light->light_handle, RI_TRUE);
+		    }
+		}
+	    } /* if */
+	  down = down->next;
+	} /* while */
+
+      /* finally, write the child objects */
+      down = o->down;
       while(down->next)
 	{
 	  ld = NULL;
@@ -563,6 +595,33 @@ ay_wrib_object(char *file, ay_object *o)
 	  down = down->next;
 	} /* while */
 
+      /* after writing the child objects, check for local lights
+	 and switch them off again */
+      down = o->down;
+      while(down->next)
+	{
+	  if(down->type == AY_IDLIGHT)
+	    {
+	      light = (ay_light_object*) down->refine;
+	      if(light->type != AY_LITCUSTOM)
+		{
+		  if(light->on && light->local)
+		    {
+		      RiIlluminate(light->light_handle, RI_FALSE);
+		    }
+		}
+	      else
+		{
+		  if(light->lshader && light->on && light->local)
+		    {
+		      RiIlluminate(light->light_handle, RI_FALSE);
+		    }
+		}
+	    } /* if */
+	  down = down->next;
+	} /* while */
+
+      /* write appropriate SolidEnd statements */
       if(l)
 	{
 	  if(l->type > 1)
@@ -914,24 +973,30 @@ ay_wrib_defmat(char *file)
 
 
 /* ay_wrib_checklights:
- *
+ *  recursively browse through the scene and check for lights
+ *  that are switched on; if none are to be found: return AY_FALSE,
+ *  else return AY_TRUE;
  */
 int
 ay_wrib_checklights(ay_object *o)
 {
- int  i = 0;
+ int  i = AY_FALSE;
  ay_light_object *light = NULL;
 
   if(!o)
-    return 0;
+    return AY_FALSE;
 
   while(o->next)
     {
       if(o->down)
 	{
 	  i = ay_wrib_checklights(o->down);
-	  if(i == 1)
-	    return 1;
+	  if(i)
+	    {
+	      /* no need for further checks; we found atleast one
+		 light that is switched on => break recursion */
+	      return i;
+	    }
 	}
 
       if((o->type == AY_IDLIGHT) && (!(ay_wrib_noexport(o))))
@@ -943,24 +1008,29 @@ ay_wrib_checklights(ay_object *o)
 	      if(light->lshader)
 		{
 		  if(light->on)
-		    return 1;
+		    {
+		      return AY_TRUE;
+		    }
 		}
 	    }
 	  else
 	    {
 	      if(light->on)
-		return 1;
-	    }
-	}
+		{
+		  return AY_TRUE;
+		}
+	    } /* if */
+	} /* if */
       o = o->next;
-    }
+    } /* while */
 
  return i;
 } /* ay_wrib_checklights */
 
 
 /* ay_wrib_lights:
- *
+ *  XXXX Bug! The method of accumulating transformations via
+ *  the OpenGL MODELVIEW_MATRIX stack fails, if no view is open!
  */
 int
 ay_wrib_lights(char *file, ay_object *o)
@@ -1080,7 +1150,6 @@ ay_wrib_lights(char *file, ay_object *o)
 		      ay_status = ay_shader_wrib(light->lshader,
 						 AY_STAREALIGHT,
 						 &light_handle);
-
 		      ay_status = ay_wrib_object(file, o->down);
 		      RiAttributeEnd();
 		    }
@@ -1211,19 +1280,22 @@ ay_wrib_lights(char *file, ay_object *o)
 	      break;
 	    } /* switch */
 
+	  light->light_handle = light_handle;
+
+	  /* immediately switch on all lights that are not local */
 	  switch(light->type)
 	    {
 	    case AY_LITCUSTOM:
 	      if(light->lshader)
 		{
-		  if(light->on)
+		  if(light->on && !light->local)
 		    RiIlluminate(light_handle, RI_TRUE);
 		  else
 		    RiIlluminate(light_handle, RI_FALSE);
 		}
 	      break;
 	    default:
-	      if(light->on)
+	      if(light->on && !light->local)
 		RiIlluminate(light_handle, RI_TRUE);
 	      else
 		RiIlluminate(light_handle, RI_FALSE);
@@ -2064,7 +2136,8 @@ ay_wrib_pprevclose()
 
 
 /* ay_wrib_init:
- *  initialize wrib module by registering the RiDisplay and RiHider tag type
+ *  initialize wrib module by registering the RiDisplay, RiHider, and
+ *  NoExport tag types
  */
 void
 ay_wrib_init(Tcl_Interp *interp)

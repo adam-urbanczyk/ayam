@@ -22,6 +22,7 @@ getProp
 # create new UI
 addMenu $w LightAttrData Type {Custom Point Distant Spot}
 addCheck $w LightAttrData IsOn
+addCheck $w LightAttrData IsLocal
 addCheck $w LightAttrData Shadows
 if { $LightAttrData(Type) == 0 } {
     addParam $w LightAttrData Samples

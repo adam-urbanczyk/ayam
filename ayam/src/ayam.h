@@ -378,8 +378,10 @@ typedef struct ay_light_object_s
 {
   int type; /* custom, point, spot, distant */
   int on; /* 0 off, 1 on */
-  int shadows; /* 0 off, 1 on */
-  int samples; /* default 1 */
+  int local; /* light only local objects (same level and below)? 0 off, 1 on */
+  RtLightHandle light_handle; /* handle of local lights */
+  int shadows; /* cast shadows? 0 off, 1 on */
+  int samples; /* number of samples (for area lights), default 1 */
   int colr, colg, colb;
   double intensity;
   double cone_angle;
@@ -1059,7 +1061,7 @@ extern unsigned int ay_current_primlevel;
 #define AY_EPSILON 1.0e-06
 
 /* Version Strings */
-#define AY_VERSIONSTR "1.5"
+#define AY_VERSIONSTR "1.6pre"
 #define AY_VERSIONSTRMI "0"
 
 #include "aycore.h"
