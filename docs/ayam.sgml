@@ -357,7 +357,7 @@ to the ayamrc file after making a backup copy of this file (see section
 information about this file).
 <item><tt/1./,<tt/2./,<tt/3./,<tt/4./, immediately replace the
 current scene with the one in the menu entry. The menu entries
-are updated and rotated upon successful loading of a scene.
+are updated and rotated upon successful loading and saving of a scene.
 <item><tt/Exit!/, remove all temporary files, save preferences (if
 AutoSavePrefs is turned on) and quit the application.
 </itemize>
@@ -471,6 +471,8 @@ select and parameterize a RiOption tag to add as tag to the Root object
 select and parameterize a RiAttribute tag to add as tag to the currently
 selected object(s)
 (see <ref id="riatag" name="RiAttribute Tag">).
+<item><tt/Toggle ToolBox/ closes or opens the ToolBox window again
+(see <ref id="toolb" name="The Tool Box Window">).
 </itemize>
 
 The <tt/Help/ menu:
@@ -498,23 +500,27 @@ name, current type, and action of the view.
 
 <sect2>The View Menu<label id="vm">
 <p>
-Here are all meny entries of the <tt/View/ menu:
+Here are all meny entries of the <tt/"View"/ menu:
 <itemize>
-<item><tt/Quick Render/, the scene is exported to a RIB using the
+<item><tt/Quick Render/: the scene is exported to a RIB using the
 camera settings of the current view; then the <tt/"QRender"/ command
-(see the preferences) will be called.
-<item><tt/Render/, the scene is exported to a RIB using the
+(see the preferences) will be called. Note, that the RIB export
+will override the RiOption settings for image size and use the current
+window size instead.
+<item><tt/Render/: the scene is exported to a RIB using the
 camera settings of the current view; then the <tt/"Render"/ command
-(see the preferences) will be called.
-<item><tt/Redraw/, forces the OpenGL-widget to be drawn, this is
+(see the preferences) will be called. Note, that the RIB export
+will override the RiOption settings for image size and use the current
+window size instead.
+<item><tt/Redraw/: forces the OpenGL-widget to be drawn, this is
 particularly useful if automatic redrawing of the view has been disabled.
 <item><tt/Export RIB/ exports the scene to a RIB. This does exactly the
-same as the main menu entry, except that the current view is
+same as the main menu entry <tt/Export RIB/, except that the current view is
 already selected in the dialog box.
-<item><tt/Close/, the View window will be removed.
+<item><tt/Close/: the View window will be removed.
 </itemize>
 
-The <tt/Type/ menu entries:
+The <tt/"Type"/ menu entries:
 <itemize>
 <item><tt/Front/
 <item><tt/Side/
@@ -528,7 +534,7 @@ See sections <ref id="viewobj" name="View Object"> and
 <ref id="vwsc" name="View Window Shortcuts and Actions">
 for more information.
 
-The <tt/Configure/, menu may be used to change preferences of the view. 
+The <tt/"Configure"/ menu may be used to change preferences of the view. 
 Some preferences are outlined in section <ref id="viewobj" name="View Object">.
 The other possible actions are:
 <itemize>
@@ -549,6 +555,19 @@ the currently selected objects are centered in the view.
 system of the parent object of the current level.
 </itemize>
 
+The <tt/"Grid"/ menu may be used to change the current grid size:<p>
+On the right hand side in the menu bar there is a little icon
+that displays the current grid size.
+You may click on the icon to display a menu with predefined
+grid size values.
+Choosing one of the values 0.1, 0.25, 0.5, or 1.0 will set the
+grid size of the view to the value and additionally
+switch on drawing of the grid and snapping to the grid.
+The last entry, however, will set the grid size to 0.0 and
+switch off drawing and snapping to the grid.
+If a gridsize other than 0.1, 0.25, 0.5, or 1.0 is in effect
+for the view, a different icon with a small x will be displayed in the
+menu instead.
 
 <sect2>View Window Shortcuts and Actions<label id="vwsc">
 <p>
@@ -581,14 +600,14 @@ If you have a wheel mouse and it is configured to send
 Mouse4 and Mouse5 button events, Ayam will zoom the view
 when you turn the wheel.
 
-Using the menu entry <tt/Zoom to Object/ or
+Using the menu entry <tt/"Zoom to Object"/ or
 the shortcut <tt/&lt;Ctrl+o&gt;/ you can change the
 views from to and zoom settings so that the selected objects
 will be displayed centered in the view window.
 This is handy, if you are e.g. searching for objects or simply
 lost in space.
 
-Using the menu entry <tt/Align/ or
+Using the menu entry <tt/"Align"/ or
 the shortcut <tt/&lt;Ctrl+a&gt;/ you can change the
 views camera settings so that it is aligned to the
 coordinate system of the parent object of the current
@@ -3850,6 +3869,7 @@ T
 <item>TmpDir: <ref id="prefgui" name="preference setting">
 <item>To: <ref id="camp" name="camera property">,
 <ref id="lip" name="light attribute">
+<item>Toggle ToolBox: <ref id="mm" name="main menu entry">,
 <item>Tolerance: <ref id="prefdraw" name="preference setting">,
 <ref id="ncattr" name="NURBCurve attribute">,
 <ref id="npattr" name="NURBPatch attribute">
