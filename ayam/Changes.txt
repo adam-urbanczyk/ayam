@@ -1,4 +1,4 @@
-[CVS, 2. 1. 2003]:
+[CVS, 15. 01. 2003]:
 o bug fixes:
   - fixed remembering of the state of the object selection listbox/tree
     when the context menu or a double click on the label is used to
@@ -79,13 +79,19 @@ o added new object type "SDMesh"; RIB-Import now also handles
 o edited points are now immediately snapped to grid coordinates
 o direct point editing dialogue now stays open all the time
 o added a Local/Global menu to the direct point editing dialogue
-o the splash screen now grabs the focus to avoid problems with stray
-  mouse events delivered other windows when the splash screen is closed
+o the splash screen now grabs the focus to avoid problems with stray mouse
+  events delivered to other windows when the splash screen is closed
   manually by the user
 o added some example scenes to demonstrate new features of concatnc, clone,
   and sweep objects
 o added invert point selection feature (see new main menu entry:
   "Special/Points/Invert Selection")
+o the Win32 executable is now statically linked with the GLU library from
+  the free OpenGL sample implementation (OSS) from SGI; the compiled library
+  (superglu) kindly provided by the Coin3D project (http://www.coin3d.org/)
+o added support for user defined clipping planes
+o views of type "Trim" now draw the bounds of the parametric space as
+  a rectangle again
 
 
 [15. 10. 2002] Ayam1.3:
