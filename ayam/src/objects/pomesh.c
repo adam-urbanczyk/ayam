@@ -615,7 +615,7 @@ ay_pomesh_wribcb(char *file, ay_object *o)
  RtPointer *parms = NULL;
  unsigned int i = 0, a = 0;
  unsigned int total_loops = 0, total_verts = 0;
- int stride = 0, n = 0, pvc = 0;
+ int stride = 0, j, n = 0, pvc = 0;
 
   if(!o)
     return AY_OK;
@@ -748,10 +748,10 @@ ay_pomesh_wribcb(char *file, ay_object *o)
       RiPointsGeneralPolygonsV((RtInt)pomesh->npolys, nloops, nverts, verts,
 			       (RtInt)n, tokens, parms);
 
-      for(i = (pomesh->has_normals?2:1); i < n; i++)
+      for(j = (pomesh->has_normals?2:1); j < n; j++)
 	{
-	  free(tokens[i]);
-	  free(parms[i]);
+	  free(tokens[j]);
+	  free(parms[j]);
 	}
 
       free(tokens);

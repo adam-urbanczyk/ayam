@@ -628,7 +628,7 @@ ay_sdmesh_wribcb(char *file, ay_object *o)
  RtPointer *parms = NULL;
  unsigned int i = 0, a = 0;
  unsigned int total_verts = 0, total_intargs = 0, total_floatargs = 0;
- int n = 0, pvc = 0;
+ int j, n = 0, pvc = 0;
 
   if(!o)
     return AY_OK;
@@ -791,10 +791,10 @@ ay_sdmesh_wribcb(char *file, ay_object *o)
 			    (RtInt)n, tokens, parms);
 	} /* if */
 
-      for(i = 1; i < n; i++)
+      for(j = 1; j < n; j++)
 	{
-	  free(tokens[i]);
-	  free(parms[i]);
+	  free(tokens[j]);
+	  free(parms[j]);
 	}
 
       free(tokens);
