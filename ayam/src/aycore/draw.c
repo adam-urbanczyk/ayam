@@ -585,6 +585,8 @@ ay_draw_bgimage(struct Togl *togl)
     {
       glDisable(GL_DEPTH_TEST);
       glEnable(GL_TEXTURE_2D);
+      glEnable(GL_BLEND);
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       glMatrixMode(GL_PROJECTION);
       glPushMatrix();
        glLoadIdentity();
@@ -613,7 +615,7 @@ ay_draw_bgimage(struct Togl *togl)
      glMatrixMode(GL_PROJECTION);
      glPopMatrix();
      glMatrixMode(GL_MODELVIEW);
-
+     glDisable(GL_BLEND);
      glEnable(GL_DEPTH_TEST);
      glDisable(GL_TEXTURE_2D);
 
