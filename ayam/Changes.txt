@@ -1,4 +1,4 @@
-[30. Aug 2004] CVS-Head:
+[11. Sep 2004] CVS-Head:
 o bug fixes:
   - fixed "loadayslo3d.tcl" loading the wrong plugin (SF 928054)
   - fixed "Select Renderer" setting a wrong shader extension for "3Delight"
@@ -19,6 +19,7 @@ o bug fixes:
   - fixed broken shader parsing with newer Pixie versions (>1.2.9) (SF 998535)
   - fixed create NURBS tools not setting the scene changed state (SF 1008840)
   - fixed RIB import of archives with relative path names (SF 1009841)
+  - fixed broken matrix property GUI elements (SF 1021320)
 o added a new object type "Text", that uses Bezier curves extracted from
   TTF (TrueType) font description files together with the extrusion mechanism
   to form three dimensional letters (TTF parsing provided by Frank Pagels)
@@ -48,6 +49,12 @@ o improved behaviour of single point editing actions for multiple selected
   objects
 o fixed problems exiting Ayam on Mac OS X introducing a fast exit compile
   time option
+o improved preferences window management
+o added toXYNC scripting interface command that rotates an arbitrary
+  oriented planar NURBS curve back to the XY plane
+o caps may now be created of arbitrary oriented planar curves
+o added new object type "ExtrNC" that extracts a NURBS curve from a
+  NURBS patch object delivered as child object, as usual
 
 
 [27. Mar 2004] Ayam1.7:
