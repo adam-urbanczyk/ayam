@@ -1,6 +1,15 @@
-[INSTALL, 2. Jan 2003]
+[INSTALL, 28. Apr 2003]
 
 Installation Instructions for Ayam (Unix only).
+
+Contents:
+
+1. General Installation Instructions
+2. IRIX Specific Information
+
+
+1. General Installation Instructions
+------------------------------------
 
 To install Ayam into your system edit the Makefile to your liking
 switch to root and do a:
@@ -21,6 +30,15 @@ environment variable, otherwise Ayam might not be able to load the plugins.
 The installation procedure will also install the current Makefile,
 that may be used to uninstall Ayam again, e.g. using:
 >make -f /usr/local/lib/Makefile uninstall
+
+
+2. IRIX Specific Information
+----------------------------
+
+o On IRIX there is currently no ayslx plug-in. You may safely ignore the
+  warnings about a missing ayslx.so file, that occur during the installation.
+o On IRIX you have to adapt the variable LD_LIBRARYN32_PATH instead of
+  LD_LIBRARY_PATH.
 
 End of Installation Instructions,
 -- 
