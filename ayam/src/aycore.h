@@ -601,6 +601,9 @@ int ay_tcmd_fastexittcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
 #endif /* AYENABLEFEXIT */
 
+int ay_tcmd_withobtcmd(ClientData clientData, Tcl_Interp *interp,
+		       int argc, char *argv[]);
+
 /* tgui.c */
 int ay_tgui_init(Tcl_Interp *interp);
 
