@@ -14,12 +14,15 @@ proc zap { } {
     global ay
     set windows $ay(views)
     lappend windows .
+
+    lappend windows $ay(zapwindows)
     if { [winfo exists .prefsw] } { lappend windows .prefsw }
     if { [winfo exists .tbw] } { 
 	if { [wm transient .tbw] == "" } {
 	    lappend windows .tbw
 	}
     }
+    if { [winfo exists .ayscw] } { lappend windows .ayscw }
     set ay(zapped) ""
     foreach w $windows {
 
