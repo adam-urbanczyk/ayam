@@ -82,12 +82,33 @@ ay_vact_movetcb(struct Togl *togl, int argc, char *argv[])
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
    glLoadIdentity();
+   /* check, whether we are able to derive camera orientation angles from t */
    if(!t[0] && !t[2])
      {
+       /* no, this (hopefully just) happens with Top views, that
+	  are Y-Axis aligned and express a useful angle in view->up */
+
+       /* XXXX this currently only works for real Y-aligned Top views */
+       t[0] = -view->up[0];
+       t[1] = -view->up[1];
+       t[2] = -view->up[2];
+       roty = AY_R2D(atan2(t[0], t[2]));
+
+       if(fabs(view->roll) > AY_EPSILON)
+	 glRotated(-view->roll, 0.0, 1.0, 0.0);
+       
+       glRotated(roty, 0.0, 1.0, 0.0);
+       
        glTranslated(dxw, 0.0, -dyw);
+       
+       glRotated(-roty, 0.0, 1.0, 0.0);
+       
+       if(fabs(view->roll) > AY_EPSILON)
+	 glRotated(view->roll, 0.0, 1.0, 0.0);
      }
    else
      {
+       /* yes, derive angles from t */
        roty = AY_R2D(atan2(t[0], t[2]));
 
        t2[0]=t[0];
@@ -95,14 +116,22 @@ ay_vact_movetcb(struct Togl *togl, int argc, char *argv[])
        if(t[0] && t[2])
 	 rotx = AY_R2D(atan2(t[1], AY_V2LEN(t2)));
 
+       if(fabs(view->roll) > AY_EPSILON)
+	 glRotated(-view->roll, 0.0, 0.0, 1.0);
+
        glRotated(roty, 0.0, 1.0, 0.0);
        glRotated(-rotx, 1.0, 0.0, 0.0);
+
        if(view->up[1] > 0.0)
 	 glTranslated(dxw, dyw, 0.0);
        else
 	 glTranslated(-dxw, -dyw, 0.0);
+
        glRotated(rotx, 1.0, 0.0, 0.0);
        glRotated(-roty, 0.0, 1.0, 0.0);
+
+       if(fabs(view->roll) > AY_EPSILON)
+	 glRotated(view->roll, 0.0, 0.0, 1.0);
      }
    glGetDoublev(GL_MODELVIEW_MATRIX, mm);
   glPopMatrix();
