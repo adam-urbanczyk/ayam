@@ -10,6 +10,9 @@
  *
  */
 
+/* ayso.c - Plug-In to scan shaders compiled with shaderdc (RenderDotC)
+   using libsoargs  */
+
 /* force ayam.h to not include BMRT/slc.h as this would clash with RDC/so.h
    due to a double defined SO_H */
 #ifdef AYUSESLCARGS
@@ -19,9 +22,6 @@
 #include "ayam.h"
 
 #include "so.h"
-
-/* ayso.c - Plug-In to scan shaders compiled with shaderdc (RenderDotC)
-   using libsoargs  */
 
 /* prototypes of functions local to this module */
 int ayso_scansosarg(SO_VISSYMDEF *symbol, Tcl_DString *ds);
