@@ -37,7 +37,7 @@ char ayslb_version_mi[] = AY_VERSIONSTRMI;
 // prototypes of functions local to this module
 int aycsg_rendertcb(struct Togl *togl, int argc, char *argv[]);
 
-int aycsg_flatten(ay_object *t);
+int aycsg_flatten(ay_object *t, int parent_csgtype);
 
 int aycsg_applyrule1(ay_object *t);
 int aycsg_applyrule2(ay_object *t);
@@ -83,7 +83,7 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
 
   ay_status = aycsg_normalize(aycsg_root);
 
-  ay_status = aycsg_flatten(aycsg_root);
+  ay_status = aycsg_flatten(aycsg_root, AY_LTUNION);
 
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
@@ -130,30 +130,47 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
 // aycsg_flatten:
 //  convert tree to primitive array for rendering
 int
-aycsg_flatten(ay_object *t)
+aycsg_flatten(ay_object *t, int parent_csgtype)
 {
  int ay_status = AY_OK;
 
   while(t)
     {
       // is t a primitive?
-      if(t->CSGTYPE != AY_LTPRIM)
+      if(t->CSGTYPE == AY_LTPRIM)
 	{
-	  // No.
-	  if(t->CSGTYPE == AY_LTINT)
+	  // yes
+	  // is this the lowest and leftmost primitive in the tree?
+	  // the simple check (t->next) is possible, because the
+	  // tree is binary _and_ normalized
+	  if(t->next)
 	    {
+	      // yes, this is always an intersecting primitive
 	      primitives.push_back(new OpenCSG::ayCSGPrimitive(t,
-						 OpenCSG::Intersection, 1));
+						OpenCSG::Intersection, 1));
 	    }
 	  else
 	    {
-	      primitives.push_back(new OpenCSG::ayCSGPrimitive(t,
-						 OpenCSG::Subtraction, 1));
-	    }
+	      // no, use parent_csgtype to determine CSG operation
+	      if(parent_csgtype == AY_LTDIFF)
+		{
+		  primitives.push_back(new OpenCSG::ayCSGPrimitive(t,
+						    OpenCSG::Subtraction, 1));
+		}
+	      else
+		{
+		  primitives.push_back(new OpenCSG::ayCSGPrimitive(t,
+						    OpenCSG::Intersection, 1));
+		} // if
+	    } // if
 
+	}
+      else
+	{
+	  // no
 	  if((t->type == AY_IDLEVEL) && (t->down))
 	    {
-	      ay_status = aycsg_flatten(t->down);
+	      ay_status = aycsg_flatten(t->down, t->CSGTYPE);
 	    }
 	} // if
 
@@ -742,13 +759,18 @@ aycsg_cleartree(ay_object *t)
 
   while(t)
     {
-      if((t->type == AY_IDLEVEL) && t->down)
+      if((t->type == AY_IDLEVEL) && t->down && (t->CSGTYPE != AY_LTPRIM))
 	{
 	  aycsg_cleartree(t->down);
+
+	  temp = t->next;
+	  free(t);
+	  t = temp;
 	}
-      temp = t->next;
-      free(t);
-      t = temp;
+      else
+	{
+	  t = t->next;
+	} // if
     } // while
 
  return;
