@@ -879,7 +879,7 @@ ay_instt_getmastertcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
- ay_list_object *clevel = ay_currentlevel;
+ ay_list_object *clevel = ay_currentlevel, *lev;
  ay_object *o = NULL, *master = NULL;
  char fname[] = "getMaster";
  int result = AY_FALSE;
@@ -923,9 +923,14 @@ ay_instt_getmastertcmd(ClientData clientData, Tcl_Interp *interp,
   Tcl_SetVar(interp, argv[1], Tcl_DStringValue(&ds), TCL_LEAVE_ERR_MSG);
 
   Tcl_DStringFree(&ds);
-  
-  ay_clevel_delall();
-  free(ay_currentlevel);
+
+  while(ay_currentlevel)
+    {
+      lev = ay_currentlevel->next;
+      free(ay_currentlevel);
+      ay_currentlevel = lev; 
+    }
+
   ay_currentlevel = clevel;
 
  return TCL_OK;

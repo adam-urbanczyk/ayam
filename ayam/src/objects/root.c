@@ -79,12 +79,29 @@ int
 ay_root_deletecb(void *c)
 {
  ay_root_object *root = NULL;
+ ay_riopt_object *riopt = NULL;
 
   if(!c)
     return AY_ENULL;
 
   root = (ay_root_object *)(c);
 
+  riopt = root->riopt;
+  if(riopt->textures)
+    {
+      free(riopt->textures);
+      riopt->textures = NULL;
+    }
+  if(riopt->includes)
+    {
+      free(riopt->includes);
+      riopt->includes = NULL;
+    }
+  if(riopt->shaders)
+    {
+      free(riopt->shaders);
+      riopt->shaders = NULL;
+    }
   free(root->riopt);
   free(root);
 
@@ -553,6 +570,24 @@ ay_root_readcb(FILE *fileptr, ay_object *o)
   if(!root)
     return AY_ENULL;
 
+  riopt = root->riopt;
+  if(riopt->textures)
+    {
+      free(riopt->textures);
+      riopt->textures = NULL;
+    }
+  if(riopt->includes)
+    {
+      free(riopt->includes);
+      riopt->includes = NULL;
+    }
+  if(riopt->shaders)
+    {
+      free(riopt->shaders);
+      riopt->shaders = NULL;
+    }
+  riopt = NULL;
+
   /* read RiOptions */
   if(!(riopt = calloc(1, sizeof(ay_riopt_object))))
     { return AY_EOMEM; }
@@ -583,23 +618,10 @@ ay_root_readcb(FILE *fileptr, ay_object *o)
   if(read == '\r')
     fgetc(fileptr);
 
-  if(riopt->textures)
-    {
-      free(riopt->textures);
-      riopt->textures = NULL;
-    }
   ay_read_string(fileptr, &(riopt->textures));
-  if(riopt->includes)
-    {
-      free(riopt->includes);
-      riopt->includes = NULL;
-    }
+
   ay_read_string(fileptr, &(riopt->includes));
-  if(riopt->shaders)
-    {
-      free(riopt->shaders);
-      riopt->shaders = NULL;
-    }
+
   ay_read_string(fileptr, &(riopt->shaders));
 
   fscanf(fileptr,"%d\n",&riopt->texturemem);
@@ -623,7 +645,6 @@ ay_root_readcb(FILE *fileptr, ay_object *o)
 	  root->atmosphere = NULL;
 	}
       ay_status = ay_read_shader(fileptr, &(root->atmosphere));
-
     }
 
   /* read Imager */

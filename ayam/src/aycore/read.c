@@ -385,10 +385,12 @@ ay_read_object(FILE *fileptr)
 	    {
 	      sprintf(err, "Unknown object type: %s", type_name);
 	      ay_error(AY_ERROR, fname, err);
+	      free(type_name);
 	      free(o);
 	      return AY_OK;
 	    } /* if */
 	} /* if */
+      free(type_name);
     }
   else
     {
@@ -434,7 +436,7 @@ ay_read_object(FILE *fileptr)
 	  free(o); o = NULL;
 	  return ay_status;
 	}
-    }
+    } /* if */
 
   if(o)
     {
@@ -453,9 +455,9 @@ ay_read_object(FILE *fileptr)
     } /* if */
 
   if(ay_read_version == 0)
-  {
-    fscanf(fileptr, "%d\n", &has_child);
-  }
+    {
+      fscanf(fileptr, "%d\n", &has_child);
+    }
 
   if(has_child)
     {
