@@ -55,7 +55,7 @@ $w.ftext.text insert end \
 Ayam, a free 3D Tcl/Tk/OpenGL/RenderMan modeler
 
 Ayam is
-Copyright (c) 1998-2003 by Randolf Schultz
+Copyright (c) 1998-2004 by Randolf Schultz
 (rschultz@informatik.uni-rostock.de)
 All Rights Reserved
 
