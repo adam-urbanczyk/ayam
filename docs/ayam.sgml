@@ -4560,6 +4560,19 @@ number of data points and will be scaled to the specified width
 and by the specified height value. See also the image above.
 </itemize>
 
+<sect1>The Shift Closed B-Spline Tool<label id="shiftclbspt">
+<p>
+<itemize>
+<item>Arguments: The shift closed B-Spline tool takes a number of
+NURBS curves, that should be closed B-Splines, from the selection and
+requests one additional integer parameter.
+<item>Operation: The control points of the curve(s) will be shifted, so that
+the second control point will be the first after.
+The shifting process will be repeated according to the parameter value
+given. Eventually selected points will still be selected after this
+operation.
+</itemize>
+
 <sect1>The Collapse Points Tool<label id="collt">
 <p>
 <itemize>
@@ -6736,6 +6749,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>ShadowMaps: <ref id="prefrib" name="preference setting">,
 <ref id="shadowmaps" name="using shadowmaps">
 <item>Shadows: <ref id="lip" name="light attribute">
+<item>Shift Closed B-Spline:
+<ref id="shiftclbspt" name="shift closed B-Spline tool">
 <item>Show: <ref id="mmtools" name="main menu entry">
 <item>Show All: <ref id="mmtools" name="main menu entry">
 <item>Show Shortcuts: <ref id="mmhelp" name="main menu entry">
