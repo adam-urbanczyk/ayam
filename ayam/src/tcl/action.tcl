@@ -687,7 +687,7 @@ proc actionEditWP { w } {
 
 #
 proc actionResetWP { w } {
-
+    undo save ResetWeight
     $w wrpac
     rV
 }
