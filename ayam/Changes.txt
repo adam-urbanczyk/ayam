@@ -1,4 +1,4 @@
-[05. 07. 2003] CVS-Head:
+[12. 07. 2003] CVS-Head:
 o bug fixes:
   - fixed crash when exporting scenes with malformed RiAttribute/RiOption
     tags (type c or p, with a component missing) (SF 753550)
@@ -6,6 +6,9 @@ o bug fixes:
     settings (SF 753552)
   - fixed RIB import of arbitrary attributes (SF 754934)
   - fixed tag points using drag selection selecting wrong points (SF 763820)
+  - fixed manually resizing view windows not updating the "ViewAttrib"
+    property (SF 766347)
+  - fixed picking in shaded views making grids draw in black color (SF 770221)
 o added preference setting "Misc/SavePrefsGeom" to control saving of the
   geometry of the preference editor window
 o added two new renderers, Angel and Pixie, to the Select_Renderer feature
@@ -30,7 +33,8 @@ o improved the "Special/Save Environment" feature, it now always
   pops up a file requester, and asks to adapt the preferences
   to use the new environment file
 o improved drawing speed of selection rectangles (now using GL_COLOR_LOGIC_OP
-  and XOR, if OpenGL1.1 is available)
+  and XOR, if OpenGL 1.1 is available)
+o added support for using Aqsis libri2rib as BMRT libribout replacement
 
 
 [10. 05. 2003] Ayam1.5.1:
