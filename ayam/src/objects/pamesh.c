@@ -229,6 +229,7 @@ ay_pamesh_drawcb(struct Togl *togl, ay_object *o)
 {
  int display_mode = ay_prefs.glu_display_mode;
  ay_pamesh_object *pamesh = NULL;
+ ay_object *p = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -248,11 +249,13 @@ ay_pamesh_drawcb(struct Togl *togl, ay_object *o)
     }
   else
     {
-      /* No, draw the NURBS patch, if present */
-      if(pamesh->npatch)
+      /* No, draw the NURBS patch(es), if present */
+      p = pamesh->npatch;
+      while(p)
 	{
-	  ay_draw_object(togl, pamesh->npatch, AY_FALSE);
-	}
+	  ay_draw_object(togl, p, AY_FALSE);
+	  p = p->next;
+	} /* while */
     } /* if */
 
  return AY_OK;
@@ -263,13 +266,16 @@ int
 ay_pamesh_shadecb(struct Togl *togl, ay_object *o)
 {
  ay_pamesh_object *pamesh = NULL;
+ ay_object *p = NULL;
 
   pamesh = (ay_pamesh_object *)o->refine;
 
-  if(pamesh->npatch)
+  p = pamesh->npatch;
+  while(p)
     {
-      ay_shade_object(togl, pamesh->npatch);
-    }
+      ay_shade_object(togl, p);
+      p = p->next;
+    } /* while */
 
  return AY_OK;
 } /* ay_pamesh_shadecb */
