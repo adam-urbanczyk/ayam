@@ -47,11 +47,13 @@ proc forAll_tree { recursive command } {
 		treeSelect ""
 		set oldclevel $ay(CurrentLevel)
 		set ay(CurrentLevel) $sel
+		set oldi $i
 		update
 		catch {forAll_tree 1 $command} retCode
 		if { $retCode == -1 } {
 		    return -1;
 		}
+		set i $oldi
 		goUp
 		set ay(CurrentLevel) $oldclevel
 		$tree selection clear
@@ -105,10 +107,13 @@ proc forAll_lb { recursive command } {
 		uS
 		$lb selection clear 0 end
 		selOb
+		set oldi $i
+		update
 		catch {forAll_lb 1 $command} retCode
 		if { $retCode == -1 } {
 		    return -1;
 		}
+		set i $oldi
 		goUp
 		uS
 		$lb selection set $sel
@@ -207,11 +212,13 @@ proc forAllT_tree { type recursive command } {
 		treeSelect ""
 		set oldclevel $ay(CurrentLevel)
 		set ay(CurrentLevel) $sel
+		set old i $i
 		update
 		catch { forAllT_tree $type $recursive $command } retCode
 		if { $retCode == -1 } {
 		    return -1;
 		}
+		set i $oldi
 		goUp
 		set ay(CurrentLevel) $oldclevel
 		$tree selection clear
@@ -272,10 +279,13 @@ proc forAllT_lb { type recursive command } {
 		uS
 		$lb selection clear 0 end
 		selOb
+		set oldi $i
+		update
 		catch {forAllT_lb $type $recursive $command} retCode
 		if { $retCode == -1 } {
 		    return -1;
 		}
+		set i $oldi
 		goUp
 		uS
 		$lb selection set $sel
