@@ -510,7 +510,7 @@ ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
 	  ay_sm_wriballsm(file, objfile, o->down, trafo, rwidth, rheight);
 	}
 
-      if(o->type == AY_IDLIGHT)
+      if((o->type == AY_IDLIGHT) && (!(ay_wrib_noexport(o))))
 	{
 	  light = (ay_light_object *)o->refine;
 	  if((light->on) && /*(light->type != AY_LITCUSTOM) &&*/
