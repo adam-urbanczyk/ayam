@@ -53,7 +53,7 @@ Cylinder, Cone, Hyperboloid, Paraboloid and Torus), MetaBalls,
 polygonal meshes, subdivision meshes and more.
 <item>All primitives may be combined with the common
 CSG-operations: Intersection, Difference, and Union.
-<item>NURBS modeling includes extrude, revolve, sweep and skin
+<item>NURBS modeling includes extrude, revolve, sweep, skin and gordon
 operations (with caps, holes, and bevels) realized as Tool-Objects.
 <item>Custom objects that may freely implement their representations
 (using OpenGL and RIB) and even small GUIs to edit their type specific
@@ -68,7 +68,14 @@ n level undo.
 <p>
 This section describes the user interface of Ayam.
 
-The whole application may be iconified (zapped) using
+The user interface is split into three types of toplevel windows:
+a main window, a toolbox and an arbitrary number of view windows.
+The main window displays the object hierarchy and lets you edit
+object properties, the toolbox window allows for easy creation of
+objects and starting of modelling actions. The modelling actions
+are then carried out in view windows, where the scene is displayed.
+
+The whole application with all windows may be iconified (zapped) using
 the shortcut <tt/&lt;Ctrl+Z&gt;/. If any of the windows
 iconified by zap is de-iconified, all other windows
 iconified by zap will be de-iconified as well.
@@ -371,7 +378,7 @@ focus away from the console.
 You may try this out by typing <tt/tip/ in the console,
 then press <tt/&lt;TAB&gt;/.
 The console automagically completes <tt/tip/ to <tt/tipoftheDay/
-(the procedure that prints out the tip of the day, try it).<p>
+(the procedure that prints out the tip of the day, just try it).<p>
 
 Another simple demonstration of the consoles capabilities:
 <itemize>
@@ -767,11 +774,16 @@ camera settings of the current view; then the <tt/"QRender"/ command
 (see the preferences) will be called. Note that the RIB export
 will override the RiOption settings for image size and use the current
 window size instead.
+Also note that the environment variable <tt/SHADERS/ will be adapted
+to the preference setting <tt/Shaders/ for rendering.
 <item><tt/Render/: the scene is exported to a RIB using the
 camera settings of the current view; then the <tt/"Render"/ command
 (see the preferences) will be called. Note that the RIB export
 will override the RiOption settings for image size and use the current
 window size instead.
+Also note that the environment variable <tt/SHADERS/ will be adapted
+to the preference setting <tt/Shaders/ for rendering.
+
 <item><tt/Redraw/: forces the OpenGL-widget to be drawn, this is
 particularly useful if automatic redrawing of the view has been disabled.
 <item><tt/Export RIB/ exports the scene to a RIB. This does exactly the
@@ -1304,7 +1316,7 @@ attributes on RIB export.
 
 <item><tt/"WriteIdent"/ determines, whether Ayam should
 write special RiAttributes
-(<tt>RiAttribute "identifier" &lsqb"name"&rsqb</tt>)
+(<tt>RiAttribute "identifier" &lsqb;"name"&rsqb;</tt>)
 with the names of the objects to the RIB to aid in RIB file debugging.
 
 <item><tt/"ShadowMaps"/ determines, whether shadow maps should
