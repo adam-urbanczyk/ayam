@@ -501,6 +501,7 @@ ay_tti_handle_simple_glyf(ay_tti_font *ttfont, ay_tti_glyf *glyf,
 	{
 	  if(flags[k] & ONOROFF)
 	    {
+	      
 	      x1 = (xabs[k] - lsb + startx) * scale_factor;
 	      y1 = (yabs[k] - ttfont->descent + yoffset) * scale_factor;
 
@@ -524,7 +525,7 @@ ay_tti_handle_simple_glyf(ay_tti_font *ttfont, ay_tti_glyf *glyf,
 		  vert->outlines[co].numpoints++;
 		}
 
-	      if((flags[k+1] & ONOROFF) && ((k + 1) <= last_point))
+	      if(((k + 1) <= last_point) && (flags[k+1] & ONOROFF))
 		{
 		  i = vert->outlines[co].numpoints;
 
@@ -543,8 +544,7 @@ ay_tti_handle_simple_glyf(ay_tti_font *ttfont, ay_tti_glyf *glyf,
 		  vert->outlines[co].points[i+2].x = x2;
 		  vert->outlines[co].points[i+2].y = y2;
 		  vert->outlines[co].numpoints++;
-		  
-		  k++;	
+		  /*k++;*/
 		}
 
 	      k++;
@@ -597,7 +597,10 @@ ay_tti_handle_simple_glyf(ay_tti_font *ttfont, ay_tti_glyf *glyf,
 		      vert->outlines[co].points[i+2].y = y3;
 		      vert->outlines[co].numpoints += 3;
 
-		      k += 2;
+		      if(flags[k+2] & ONOROFF)
+			k += 1;
+		      else
+			k += 2;
 
 		      x1 = x3;
 		      y1 = y3;
@@ -607,11 +610,24 @@ ay_tti_handle_simple_glyf(ay_tti_font *ttfont, ay_tti_glyf *glyf,
 			  i = vert->outlines[co].numpoints;
 
 			  vert->outlines[co].points[i].x =
-			    vert->outlines[co].points[0].x;
+			    vert->outlines[co].points[i-1].x;
 			  vert->outlines[co].points[i].y =
+			    vert->outlines[co].points[i-1].y;
+
+			  vert->outlines[co].points[i+1].x =
+			    (vert->outlines[co].points[i-1].x+
+			     vert->outlines[co].points[0].x)/2.0;
+
+			  vert->outlines[co].points[i+1].y =
+			    (vert->outlines[co].points[i-1].y+
+			     vert->outlines[co].points[0].y)/2.0;
+
+			  vert->outlines[co].points[i+2].x =
+			    vert->outlines[co].points[0].x;
+			  vert->outlines[co].points[i+2].y =
 			    vert->outlines[co].points[0].y;
 
-			  vert->outlines[co].numpoints++;
+			  vert->outlines[co].numpoints +=3 ;
 			}
 		    }
 		  else
@@ -1185,7 +1201,7 @@ ay_tti_outlinetoncurve(ay_tti_outline *outline, ay_object **result)
       controlv[a]     = (outline->points[i]).x;
       controlv[a + 1] = (outline->points[i]).y;
       controlv[a + 3] = 1.0;
-      printf("%g, %g\n",controlv[a],controlv[a + 1]);
+      /*      printf("%g, %g\n",controlv[a],controlv[a + 1]);*/
       a += stride;
     }
 
