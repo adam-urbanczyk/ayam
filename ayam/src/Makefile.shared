@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile.shared [22. Mar 2002]
+# Makefile.shared [22. Apr 2002]
 # Makefile for Ayam (shared version)
 
 # Where shall the executable be installed?
@@ -37,11 +37,10 @@ LD = CC
 #LD = g++
 
 # flags for the compiler
-# o add -DAYUSEAFFINE if you use the Affine Toolkit
-#   as libribout replacement
-# _else_
-# o add -DAYUSEBMRTRIBOUT if you link with libribout from BMRT
-# o add -DAYUSESLCARGS if you link with libslcargs from BMRT
+# o add -DAYUSEAFFINE if you use the Affine Toolkit as libribout replacement
+#   _else_
+#   add -DAYUSEBMRTRIBOUT if you link with libribout from BMRT
+# o add -DAYUSESLCARGS if you use libslcargs from BMRT
 # o add -DAYNOTEMPNAM if your system has no tempnam();
 #   (unlikely, but tempnam() is not ANSI)
 #   Note, that the preference setting TmpDir will always be ignored then!
@@ -50,7 +49,7 @@ LD = CC
 CFLAGS = -O -fullwarn -DAYUSESLCARGS -DAYUSEBMRTRIBOUT
 # Linux:
 #CFLAGS = -g -Wall -DAYUSESLCARGS -DAYUSEBMRTRIBOUT
-# Solaris:
+# Solaris (-DSOLARIS_BUG is needed by togl.c to work around a bug in libXmu):
 #CFLAGS = -O -DSOLARIS_BUG -DAYUSESLCARGS -DAYUSEBMRTRIBOUT
 
 # extra ld flags needed to compile ayam
@@ -89,7 +88,7 @@ TCLLIB = -L$(TCLDIR)/unix -ltcl8.0
 #TCLLIB = -ltcl
 
 # Tk sources directory
-# Note, you need the Tk sources in order to compile Ayam!
+# Note: You need the Tk sources in order to compile Ayam!
 #TKDIR = ../../tk8.2.2
 TKDIR = ../../tk8.0
 
@@ -121,7 +120,8 @@ AFFINEOBJS =
 
 # BMRT
 # If you use the libribout from BMRT2.x (x >= 5), do _not_ link with
-# libslcargs, as its functionality is already present in libribout!
+# libslcargs, as its functionality is already present in libribout
+# (in any case, keep -DAYUSESLCARGS set in CFLAGS)!
 BMRTDIR = ../../BMRT2.5
 BMRTINCDIR = $(BMRTDIR)/include
 BMRTLIBDIR = $(BMRTDIR)/lib

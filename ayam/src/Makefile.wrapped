@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile.wrapped [18. Apr 2002]
+# Makefile.wrapped [22. Apr 2002]
 # Makefile for Ayam (wrapped version)
 
 # Where shall the executables be installed?
@@ -38,22 +38,25 @@ CC = cc
 LD = g++
 
 # flags for the compiler
-# o add -DAYUSEAFFINE if you use the Affine Toolkit
-#   as libribout replacement
-# _else_
-# o add -DAYUSEBMRTRIBOUT if you link with libribout from BMRT
-# o add -DAYUSESLCARGS if you link with libslcargs from BMRT
+# o add -DAYUSEAFFINE if you use the Affine Toolkit as libribout replacement
+#   _else_
+#   add -DAYUSEBMRTRIBOUT if you link with libribout from BMRT
+# o add -DAYUSESLCARGS if you use libslcargs from BMRT
 # o add -DAYNOTEMPNAM if your system has no tempnam();
 #   (unlikely, but tempnam() is not ANSI)
 #   Note, that the preference setting TmpDir will always be ignored then!
 # o always use -DAYWRAPPED to create a wrapped binary
+# o to link one of the provided plugins into the binary you may specify
+#   -DAYIDRWRAPPED, -DMETAWRAPPED, or -DRRIBWRAPPED
+#   Note, that in this case you need to adjust ADDOBJS and ADDLIBS properly
+#   as well, see below!
 
 # IRIX:
 #CFLAGS = -O -fullwarn -woff 1048 -DAYWRAPPED -DAYUSESLCARGS -DAYUSEBMRTRIBOUT
 # Linux:
 CFLAGS = -O2 -Wall -DAYWRAPPED -DAYUSESLCARGS -DAYUSEBMRTRIBOUT
 #CFLAGS = -g -Wall -DAYWRAPPED -DAYUSESLCARGS -DAYUSEBMRTRIBOUT
-# Solaris:
+# Solaris (-DSOLARIS_BUG is needed by togl.c to work around a bug in libXmu):
 #CFLAGS = -O -DSOLARIS_BUG -DAYWRAPPED -DAYUSESLCARGS -DAYUSEBMRTRIBOUT
 
 
@@ -110,7 +113,7 @@ TCLLIB = -L$(TCLDIR)/unix -ltcl8.2
 #TCLLIB = -ltcl
 
 # Tk sources directory
-# Note, you need the Tk sources in order to compile Ayam!
+# Note: You need the Tk sources in order to compile Ayam!
 TKDIR = ../../tk8.2.2
 #TKDIR = ../../tk8.0
 #TKDIR = /home/randi/work/tk8.0/generic
@@ -141,7 +144,8 @@ AFFINEOBJS =
 
 # BMRT
 # If you use the libribout from BMRT2.x (x >= 5), do _not_ link with
-# libslcargs, as its functionality is already present in libribout!
+# libslcargs, as its functionality is already present in libribout
+# (in any case, keep -DAYUSESLCARGS set in CFLAGS)!
 BMRTDIR = ../../BMRT2.6
 BMRTINCDIR = $(BMRTDIR)/include
 BMRTLIBDIR = $(BMRTDIR)/lib
@@ -172,7 +176,7 @@ ZLIB = -L$(WRAPDIR) -lz
 STDCPPLIB = -L/usr/lib -lstdc++ -lgcc
 # IRIX
 # using cc (IRIX, Solaris) use
-#STDCPPLIB = 
+#STDCPPLIB =
 
 # BWidgets
 # where are the BWidgets?
@@ -201,10 +205,6 @@ DL = -ldl
 
 # RRIB Plugin Required Libraries
 RRIBLIBS = -L /home/randi/sdk/affine0008/lib -lribrdr -lribhash -lribnop -lm
-
-#############################################
-# nothing needs to be changed below this line
-#############################################
 
 AYAMOBJS = aycore/bbc.o\
 	aycore/clear.o\
@@ -314,6 +314,10 @@ RRIBOBJS = plugins/rrib.o
 # to ADDLIB in this case
 ADDOBJS =
 ADDLIB =
+
+#############################################
+# nothing needs to be changed below this line
+#############################################
 
 .c.o: 
 	$(CC) -c $(CFLAGS) $*.c -o $@ -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR)
