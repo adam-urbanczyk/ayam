@@ -817,6 +817,15 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 		      return TCL_OK;
 		    } /* if */
 		  strcpy(view->bgimage, argv[i+1]);
+		  o = ay_root->down;
+		  while(o)
+		    {
+		      if(o->refine == view)
+			{
+			  ay_notify_force(o);
+			}
+		      o = o->next;
+		    } /* while */
 		} /* if */
 	    }
 	  break;
