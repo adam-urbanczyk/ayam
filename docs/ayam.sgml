@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>24. Nov 2004
+<date>2. Feb 2005
 <abstract>
 This is the documentation of Ayam (1.8) - a free 3D modeling environment
 for the RenderMan interface.
@@ -2361,13 +2361,13 @@ An example for a TP tag could look like this:
 
 <sect2>DC Tag<label id="dctag">
 <p>
-The tag type <tt/"DC"/ is only used by the aycsg CSG preview plugin
+The tag type <tt/"DC"/ is only used by the AyCSG CSG preview plugin
 to store the depth complexity of CSG primitives.
 The syntax of the DC tag is:
 <tt>"&lt;dcval&gt;"</tt>
 where <tt/"&lt;dcval&gt;"/ is a positive integer value describing the
 depth complexity of the CSG primitive. See also section
-<ref id="aycsg" name="CSG preview using the aycsg plugin">
+<ref id="aycsg" name="CSG preview using the AyCSG plugin">
 for more information regarding the depth complexity value.
 <p>
 An example for a DC tag (valid for e.g. a torus) could look like this:
@@ -2854,7 +2854,7 @@ display the results of CSG operations, all objects are always drawn
 completely, even though a CSG operation cut parts away.
 Since Ayam 1.8 there is a plugin available, that is able to preview
 the CSG operations, see also section
-<ref id="aycsg" name="CSG preview using the aycsg plugin">.
+<ref id="aycsg" name="CSG preview using the AyCSG plugin">.
 
 New solid primitives may be created with levels of type <tt/"Primitive"/.
 Note that Ayam is not able to check, whether your new primitive obeys
@@ -6747,7 +6747,7 @@ in: Hamza M., Sarfraz M. (ed.): Computer Graphics and Imaging (CGIM 2001)
 Conference Proceedings, Honolulu, Hawaii, 13-16 August 2001,
 ISBN 0-88986-303-2</it>
 
-<sect1>CSG preview using the aycsg plugin<label id="aycsg">
+<sect1>CSG preview using the AyCSG plugin<label id="aycsg">
 <p>
 <figure loc="ht">
 <eps file="pics/csgex.ps" height="5cm">
@@ -6755,7 +6755,7 @@ ISBN 0-88986-303-2</it>
 <caption>CSG preview example (left without, right with CSG)</caption>
 </figure>
 <p>
-The aycsg plugin may be used to resolve and preview CSG operations.
+The AyCSG plugin may be used to resolve and preview CSG operations.
 For this, the plugin uses image based CSG rendering algorithms provided
 by the OpenCSG library. The OpenCSG library, currently, supports
 the Goldfeather and the SCS algorithm. The latter only works
@@ -6773,27 +6773,30 @@ A regular sphere has a depth complexity of 1, a torus of 2, but do
 not confuse depth complexity with genus, they are different values!
 A 3D representation of the letter A e.g. has a genus of
 1 but a depth complexity of 3.
-The depth complexity of a primitive should be stored in a DC tag.
+The depth complexity of a primitive should be stored in a <tt/"DC"/ tag.
 A torus would e.g. get a tag named <tt/"DC"/ with the value <tt/"2"/.
+If no <tt/"DC"/ tag is present for a primitive, a default value for
+the depth complexity of <tt/"1"/ will be used.
 If you fail to correctly specify the depth complexity, rendering
-errors, like missing parts of surfaces will occur.
+errors, like missing parts of surfaces, will occur.
 <p>
-Note that the correct operation of aycsg not only depends on the
+Note that the correct operation of AyCSG not only depends on the
 depth complexity but also the winding order of the OpenGL primitives
 (triangles or quads) used for drawing of the CSG primitives. The
 winding order has to be consistent in a scene, so that the rendering
 algorithm can decide what is inside and what is outside by looking
 at a single OpenGL primitive. For all quadric primitives of Ayam
 the winding order is always consistent. However, for NURBS patches
-this depends on the orientation of the patch dimensions. If NURBS
-patches are used in CSG operations you, consequently, may need to
-revert the patches.
+the winding order depends on the orientation of the patch dimensions.
+If NURBS patches are used in CSG operations you, consequently, may
+need to revert the patches (e.g. using the <tt/"RevertU"/ tool,
+see <ref id="revertut" name="Revert U tool">).
 If the winding order of some of the primitives in a CSG hierarchy
 is not right, the respective primitives will not be effective
 in the CSG operations to the extent that the rendered image becomes
 completely empty.
 <p>
-The aycsg rendering obeys the <tt>"Draw Selection only"</tt> and
+The AyCSG rendering obeys the <tt>"Draw Selection only"</tt> and
 <tt>"Draw Level only"</tt> view options as well as the hide attribute
 of objects. If the CSG rendering fails, you might still get a
 preview of the important CSG using objects by selecting them
@@ -6802,23 +6805,24 @@ and enabling the <tt>"Draw Selection only"</tt> view option.
 Also note that CSG rendering requires fast graphics hardware
 (the more fillrate, the better). Furthermore, your OpenGL subsystem
 has to support the PBuffers extension and, depending on the
-rendering options choosen, a stencil buffer. Speedups may be
+rendering options chosen, a stencil buffer. Speedups may be
 achieved using the <tt>"GL_ARB_occlusion_query"</tt> or
-<tt>"GL_NV_occlusion_query"</tt>
-extensions (if available to you).
+<tt>"GL_NV_occlusion_query"</tt> extensions (if available to you).
 <p>
-Once the aycsg plugin is loaded successfully you can render the CSG
+Once the AyCSG plugin is loaded successfully you can render the CSG
 preview in any view window using the keyboard shortcut
 <tt>&lt;Ctrl+Shift+c&gt;</tt> or using the new button in the menu
 bar of every view window. If you hold down <tt>&lt;Shift&gt;</tt>
 while pressing the button, the view will continually render CSG.
 <p>
-The aycsg plugin supports the following options, that are available
+The AyCSG plugin supports the following options, that are available
 through the main menu entry <tt>"Custom/AyCSG Preferences"</tt>:
 <itemize>
 <item><tt/"Algorithm"/ allows to switch between the Goldfeather and
 SCS algorithm. Note again that the SCS algorithm only works correctly
-for convex primitives.
+for convex primitives. The <tt/"Automatic"/ setting chooses one
+of the algorithms based on whether concave primitives (depth complexity
+&gt; 1) are present or not.
 <item><tt/"DCSampling"/ determines a depth complexity sampling
 strategy. Quoting from the OpenCSG documentation, the following options
 are available:
