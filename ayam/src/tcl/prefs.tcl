@@ -20,12 +20,16 @@ proc prefs_set {} {
 }
 # prefs_set
 
-proc prefs_rcnb { nb page } {
+# prefs_rsnb:
+#  resize notebook nb so that the page page is displayed in full size
+proc prefs_rsnb { nb page } {
     global ay
+    update
     $nb configure -height [winfo reqheight [$nb getframe $page] ]
     set ay(prefssection) $page
 return;
 }
+# prefs_rsnb
 
 # prefs_open:
 #  
@@ -67,7 +71,7 @@ proc prefs_open {} {
     # PrefsGUIs
     # Main
     set fw [$nb insert end Main -text Main\
-	    -raisecmd "prefs_rcnb $nb Main"]
+	    -raisecmd "prefs_rsnb $nb Main"]
     addText $fw e0 "Shaders:"
     addMDir $fw ayprefse Shaders
     addCommand $fw c1 "Scan Shaders" {
@@ -91,7 +95,7 @@ proc prefs_open {} {
 
     # Modeling
     set fw [$nb insert end Modeling -text Modeling\
-	    -raisecmd "prefs_rcnb $nb Modeling"]
+	    -raisecmd "prefs_rsnb $nb Modeling"]
     addParam $fw ayprefse PickEpsilon
     addParam $fw ayprefse HandleSize
     addCheck $fw ayprefse LazyNotify
@@ -100,7 +104,7 @@ proc prefs_open {} {
 
     # Drawing
     set fw [$nb insert end Drawing -text Drawing\
-	    -raisecmd "prefs_rcnb $nb Drawing"]
+	    -raisecmd "prefs_rsnb $nb Drawing"]
 
     addParam $fw ayprefse Tolerance { 5 10 25 50 75 90 }
     set l $ay(npdisplaymodes)
@@ -118,7 +122,7 @@ proc prefs_open {} {
 
     # RIB Export
     set fw [$nb insert end RIB-Export -text RIB-Export\
-	    -raisecmd "prefs_rcnb $nb RIB-Export"]
+	    -raisecmd "prefs_rsnb $nb RIB-Export"]
     addFile $fw ayprefse RIBFile
     addFile $fw ayprefse Image
     addCheck $fw ayprefse ResInstances
@@ -137,7 +141,7 @@ proc prefs_open {} {
 
     # Misc
     set fw [$nb insert end Misc -text Misc\
-	    -raisecmd "prefs_rcnb $nb Misc"]
+	    -raisecmd "prefs_rsnb $nb Misc"]
     
     addText $fw e0 "Errors:"
     addCheck $fw ayprefse RedirectTcl
@@ -154,8 +158,9 @@ proc prefs_open {} {
     $nb raise $ay(prefssection)
 #    update
     $nb see $ay(prefssection)
-#    update
-    prefs_rcnb $nb $ay(prefssection)
+
+    # resize notebook so that section is visible
+    prefs_rsnb $nb $ay(prefssection)
 
     # controlling buttons
     set f [frame $w.f3]
