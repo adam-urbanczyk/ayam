@@ -13,7 +13,7 @@
 # clear Scene, read 
 #
 proc io_replaceScene { } {
-    global ay
+    global ay tcl_platform
 
     set filename $ay(filename)
 
@@ -25,10 +25,16 @@ proc io_replaceScene { } {
     }
 
     set types {{"Ayam Scene" ".ay"} {"All files" *}}
-    
-    set newfilename [tk_getOpenFile -filetypes $types -parent .\
-	    -initialfile [file tail $filename] -initialdir $dirname\
-	    -title "Select file to load:"]
+
+    if { $tcl_platform(os) != "Darwin" } {
+	set newfilename [tk_getOpenFile -filetypes $types -parent .\
+		-initialfile [file tail $filename] -initialdir $dirname\
+		-title "Select file to load:"]
+    } else {
+	set newfilename [tk_getOpenFile -filetypes $types -parent .\
+		-initialfile [file tail $filename]\
+		-title "Select file to load:"]
+    }
 
     if { $newfilename != "" } {
 	viewCloseAll
@@ -83,7 +89,7 @@ proc io_replaceScene { } {
 #
 #
 proc io_insertScene { } {
-    global ay
+    global ay tcl_platform
 
     set filename $ay(filename)
 
@@ -97,9 +103,15 @@ proc io_insertScene { } {
     }
     set types {{"Ayam Scene" ".ay"} {"All files" *}}
 
-    set ifilename [tk_getOpenFile -filetypes $types -parent .\
-	    -initialfile [file tail $filename] -initialdir $dirname\
-	    -title "Select file to load:"]
+    if { $tcl_platform(os) != "Darwin" } {
+	set ifilename [tk_getOpenFile -filetypes $types -parent .\
+		-initialfile [file tail $filename] -initialdir $dirname\
+		-title "Select file to load:"]
+    } else {
+	set ifilename [tk_getOpenFile -filetypes $types -parent .\
+		-initialfile [file tail $filename]\
+		-title "Select file to load:"]
+    }
 
     if { $ifilename != "" } {
 	cS; plb_update
@@ -139,7 +151,7 @@ proc io_insertScene { } {
 # 
 #
 proc io_saveScene { ask selected } {
-    global ay
+    global ay tcl_platform
 
     set tmp $ay(filename)
     set filename $ay(filename)
@@ -153,9 +165,16 @@ proc io_saveScene { ask selected } {
 	    if { $dirname == "." } { set dirname [pwd] }
 	}
 	set types {{"Ayam Scene" ".ay"} {"All files" *}}
-	set filename [tk_getSaveFile -filetypes $types -parent .\
-		-initialfile [file tail $filename]\
-		-initialdir $dirname -title "Select file to save to:"]
+
+	if { $tcl_platform(os) != "Darwin" } {
+	    set filename [tk_getSaveFile -filetypes $types -parent .\
+		    -initialfile [file tail $filename]\
+		    -initialdir $dirname -title "Select file to save to:"]
+	} else {
+	    set filename [tk_getSaveFile -filetypes $types -parent .\
+		    -initialfile [file tail $filename]\
+		    -title "Select file to save to:"]
+	}
     }
 
     if { $filename != "" } {
@@ -381,7 +400,7 @@ proc io_loadCustom { } {
 #
 #
 proc io_importMops { } {
-    global ay
+    global ay tcl_platform
 
     set filename $ay(filename)
 
@@ -395,9 +414,15 @@ proc io_importMops { } {
     }
     set types {{"Mops Scene" ".mop"} {"All files" *}}
 
-    set ifilename [tk_getOpenFile -filetypes $types -parent .\
-	    -initialfile [file tail $filename] -initialdir $dirname\
-	    -title "Select file to import:"]
+    if { $tcl_platform(os) != "Darwin" } {
+	set ifilename [tk_getOpenFile -filetypes $types -parent .\
+		-initialfile [file tail $filename] -initialdir $dirname\
+		-title "Select file to import:"]
+    } else {
+	set ifilename [tk_getOpenFile -filetypes $types -parent .\
+		-initialfile [file tail $filename]\
+		-title "Select file to import:"]
+    }
 
     if { $ifilename != "" } {
 	cS; plb_update
