@@ -698,10 +698,10 @@ $view mc
 set ay(ImageFile) $ay(cVBGImage)
 update
 
-addFile $f ay ImageFile
+addFileT $f ay ImageFile { {"TIF" ".tif"} {"TIFF" ".tiff"} {"All files" *} }
 
 set f [frame $w.f2]
-button $f.bok -text "Ok" -pady $ay(pady) -width 5 -command "\
+button $f.bok -text "Ok" -pady $ay(pady) -width 15 -command "\
 	global ay;\
 	$view mc;\
 	$view setconf -bgimage \$ay(ImageFile);\
@@ -712,7 +712,7 @@ button $f.bok -text "Ok" -pady $ay(pady) -width 5 -command "\
 	destroy $w"
 
 
-button $f.bca -text "Cancel" -pady $ay(pady) -width 5 -command "\
+button $f.bca -text "Cancel" -pady $ay(pady) -width 15 -command "\
 	global ay;
 	grab release .setBGI;\
 	focus $view;\
