@@ -2277,6 +2277,9 @@ ay_npt_skinu(ay_object *curves, int order, int knot_type,
   K = numcurves;
   N = curve->length;
 
+  if(interpolate == 1 && knot_type != AY_KTCUSTOM)
+    knot_type = AY_KTCUSTOM;
+
   if(order < 3)
     order = 3;
   if(order > numcurves)
@@ -2444,6 +2447,9 @@ ay_npt_skinv(ay_object *curves, int order, int knot_type,
 
   K = numcurves;
   N = curve->length;
+
+  if(interpolate == 1 && knot_type != AY_KTCUSTOM)
+    knot_type = AY_KTCUSTOM;
 
   if(order < 3)
     order = 3;
