@@ -171,7 +171,7 @@ ay_pamesh_copycb(void *src, void **dst)
 
 
 int
-ay_pamesh_drawchcb(struct Togl *togl, ay_object *o)
+ay_pamesh_drawcpcb(struct Togl *togl, ay_object *o)
 {
  ay_pamesh_object *pamesh = NULL;
  double *ver = NULL;
@@ -217,7 +217,7 @@ ay_pamesh_drawchcb(struct Togl *togl, ay_object *o)
     }
 
  return AY_OK;
-} /* ay_pamesh_drawchcb */
+} /* ay_pamesh_drawcpcb */
 
 
 int
@@ -231,71 +231,40 @@ ay_pamesh_drawcb(struct Togl *togl, ay_object *o)
 
   pamesh = (ay_pamesh_object *)o->refine;
 
-  if(!pamesh)
-    return AY_ENULL;
-
-  ay_pamesh_drawchcb(togl, o);
-
-#if 0
   if(pamesh->glu_display_mode != 0)
     {
       display_mode = pamesh->glu_display_mode-1;
     }
 
+  /* draw just the control polygon? */
   if(display_mode == 0)
-    ay_pamesh_drawchcb(togl, o);
+    {
+      /* Yes */
+      ay_pamesh_drawcpcb(togl, o);
+    }
+  else
+    {
+      /* No, draw the NURBS patch, if present */
+      if(pamesh->npatch)
+	{
+	  ay_draw_object(togl, pamesh->npatch, AY_FALSE);
+	}
+    } /* if */
 
-  if(display_mode == 1)
-    ay_pamesh_drawglucb(togl, o);
-
-  if(display_mode == 2)
-    ay_pamesh_drawglucb(togl, o);
-#endif
-
-  return AY_OK;
-}
+ return AY_OK;
+} /* ay_pamesh_drawcb */
 
 
 int
 ay_pamesh_shadecb(struct Togl *togl, ay_object *o)
 {
- int ay_status = AY_OK;
- ay_pamesh_object *pm = NULL;
- static ay_nurbpatch_object *np = NULL;
- static ay_object p;
+ ay_pamesh_object *pamesh = NULL;
 
-  pm = (ay_pamesh_object *)o->refine;
+  pamesh = (ay_pamesh_object *)o->refine;
 
-  if(pm->type == AY_PTBICUBIC)
+  if(pamesh->npatch)
     {
-      if(pm->width == 4 && pm->height == 4)
-	{
-	  if(!np)
-	    {
-	      ay_npt_create(4,4,4,4,
-			    AY_KTBEZIER, AY_KTBEZIER, pm->controlv, NULL, NULL,
-			    &np);
-	    }
-	  else
-	    {
-	      np->controlv = pm->controlv;
-	    }
-	  memset(&p, 0, sizeof(ay_object));
-	  ay_object_defaults(&p);
-	  p.refine = np;
-	  p.type = AY_IDNPATCH;
-	  ay_shade_object(togl, &p);
-
-	}
-    }
-  else
-    {
-      /* shade bilinear patch mesh */
-      if(pm->npatch)
-	{
-	  ay_shade_object(togl, pm->npatch);
-	}
-
+      ay_shade_object(togl, pamesh->npatch);
     }
 
  return AY_OK;
