@@ -673,7 +673,7 @@ ay_undo_copy(ay_undo_object *uo)
       if((c->type != AY_IDVIEW) &&
 	 (c->type != AY_IDROOT) && notify)
 	{
-	  ay_notify_forceparent(o);
+	  ay_notify_forceparent(o, AY_TRUE);
 	  notify = AY_FALSE;
 	} /* if */
 
@@ -1115,6 +1115,51 @@ ay_undo_clear(void)
 
  return AY_OK;
 } /* ay_undo_clear */
+
+
+/* ay_undo_clearobj:
+ *  clear all undo information of object <o> from undo buffer
+ */
+int
+ay_undo_clearobj(ay_object *o)
+{
+ int ay_status = AY_OK;
+ int i = 0;
+ ay_undo_object *uo = NULL;
+ ay_object **lu = NULL, *u = NULL;
+ ay_list_object **lr = NULL, *r = NULL;
+
+  for(i = 0; i < undo_buffer_size-1; i++)
+    {
+      uo = &(undo_buffer[i]);
+      lu = &(uo->objects);
+      lr = &(uo->references);
+      u = uo->objects;
+      r = uo->references;
+      while(u)
+	{
+	  if(r->object == o)
+	    {
+	      *lu = u->next;
+	      *lr = r->next;
+	      u->next = NULL;
+	      ay_status = ay_undo_deletemulti(u);
+	      free(r);
+	      u = *lu;
+	      r = *lr;
+	    }
+	  else
+	    {
+	      lu = &(u->next);
+	      lr = &(r->next);
+	      u = u->next;
+	      r = r->next;
+	    } /* if */
+	} /* while */
+    } /* for */
+
+ return AY_OK;
+} /* ay_undo_clearobj */
 
 
 /* ay_undo_undotcmd:

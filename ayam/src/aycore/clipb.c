@@ -55,6 +55,7 @@ ay_clipb_copytcmd(ClientData clientData, Tcl_Interp *interp,
 		   "Use menu: \\\"Special/Clipboard/Paste (Move)\\\" first!");
 	  return TCL_OK;
 	}
+      ay_status = ay_undo_clearobj(o);
     }
   ay_clipboard = NULL;
 
@@ -111,10 +112,19 @@ ay_clipb_cuttcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
+  /* do not cut root object! */
+  if(sel->object == ay_root)
+    {
+      ay_error(AY_EWARN, fname, "Can not cut root object!");
+      sel = sel->next;
+    }
+
   /* clear old clipboard */
+
   /* first, delete all instance objects */
   ay_object_deleteinstances(&ay_clipboard);
   clip = ay_clipboard;
+
   /* now delete all normal objects */
   while(clip)
     {
@@ -129,18 +139,13 @@ ay_clipb_cuttcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_error(AY_ERROR, fname, "Could not clear clipboard!");
 	  ay_error(AY_ERROR, fname,
 		   "Maybe there are referenced objects in it?");
-	  ay_error(AY_ERROR, fname, "Use menu: \\\"Special/Paste (Move)\\\" first!");
+	  ay_error(AY_ERROR, fname,
+		   "Use menu: \\\"Special/Paste (Move)\\\" first!");
 	  return TCL_OK;
 	} /* if */
+      ay_status = ay_undo_clearobj(o);
     } /* while */
   ay_clipboard = NULL;
-
-  /* do not cut root object! */
-  if(sel->object == ay_root)
-    {
-      ay_error(AY_EWARN, fname, "Can not cut root object!");
-      sel = sel->next;
-    }
 
   /* cut objects to clipboard */
   if(sel)

@@ -118,7 +118,7 @@ ay_notify_force(ay_object *o)
  *  call notification callback of parents of object o
  */
 int
-ay_notify_forceparent(ay_object *o)
+ay_notify_forceparent(ay_object *o, int silent)
 {
  int ay_status = AY_OK;
  char fname[] = "notify_forceparent";
@@ -139,7 +139,10 @@ ay_notify_forceparent(ay_object *o)
 
   if(!found)
     {
-      ay_error(AY_ERROR, fname, "object not found in scene");
+      if(!silent)
+	{
+	  ay_error(AY_ERROR, fname, "object not found in scene");
+	}
       return AY_OK;
     }
 

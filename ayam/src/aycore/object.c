@@ -304,8 +304,6 @@ ay_object_deletetcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
-	  ay_status = ay_undo_clear();
-
 	  ay_object_unlink(o);
 
 	  ay_status = ay_object_delete(o);
@@ -315,6 +313,9 @@ ay_object_deletetcmd(ClientData clientData, Tcl_Interp *interp,
 	      ay_object_link(o);
 	      return TCL_OK;
 	    } /* if */
+
+	  ay_status = ay_undo_clearobj(o);
+
 	}
       sel = sel->next;
     } /* while */

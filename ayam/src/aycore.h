@@ -169,7 +169,7 @@ int ay_notify_parent(void);
 
 int ay_notify_force(ay_object *o);
 
-int ay_notify_forceparent(ay_object *o);
+int ay_notify_forceparent(ay_object *o, int silent);
 
 int ay_notify_forcetcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
@@ -665,6 +665,8 @@ void ay_trafo_pointstoplane(double x1, double y1, double z1,
 int ay_undo_init(int buffer_size);
 
 int ay_undo_clear(void);
+
+int ay_undo_clearobj(ay_object *o);
 
 int ay_undo_undotcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[]);
