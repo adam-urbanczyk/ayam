@@ -200,9 +200,9 @@ ay_text_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp,to, &(text->height));
 
-  Tcl_SetStringObj(ton,"Revert",-1);
+  Tcl_SetStringObj(ton,"RevertBevels",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(text->revert));
+  Tcl_GetIntFromObj(interp,to, &(text->revert_bevels));
 
   Tcl_SetStringObj(ton,"UpperCap",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -276,8 +276,8 @@ ay_text_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_NewDoubleObj(text->height);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Revert",-1);
-  to = Tcl_NewIntObj(text->revert);
+  Tcl_SetStringObj(ton,"RevertBevels",-1);
+  to = Tcl_NewIntObj(text->revert_bevels);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
@@ -340,17 +340,17 @@ ay_text_readcb(FILE *fileptr, ay_object *o)
     { return AY_EOMEM; }
 
   ay_read_string(fileptr, &(text->fontname));
-
   ay_read_string(fileptr, &(text->string));
 
   fscanf(fileptr,"%lg\n",&text->height);
-  fscanf(fileptr,"%d\n",&text->revert);
+
   fscanf(fileptr,"%d\n",&text->has_upper_cap);
   fscanf(fileptr,"%d\n",&text->has_lower_cap);
   fscanf(fileptr,"%d\n",&text->has_upper_bevels);
   fscanf(fileptr,"%d\n",&text->has_lower_bevels);
   fscanf(fileptr,"%d\n",&text->bevel_type);
   fscanf(fileptr,"%lg\n",&text->bevel_radius);
+  fscanf(fileptr,"%d\n",&text->revert_bevels);
   fscanf(fileptr,"%d\n",&text->glu_display_mode);
   fscanf(fileptr,"%lg\n",&text->glu_sampling_tolerance);
 
@@ -372,14 +372,16 @@ ay_text_writecb(FILE *fileptr, ay_object *o)
 
   fprintf(fileptr, "%s\n", text->fontname);
   fprintf(fileptr, "%s\n", text->string);
+
   fprintf(fileptr, "%g\n", text->height);
-  fprintf(fileptr, "%d\n", text->revert);
   fprintf(fileptr, "%d\n", text->has_upper_cap);
   fprintf(fileptr, "%d\n", text->has_lower_cap);
   fprintf(fileptr, "%d\n", text->has_upper_bevels);
   fprintf(fileptr, "%d\n", text->has_lower_bevels);
   fprintf(fileptr, "%d\n", text->bevel_type);
   fprintf(fileptr, "%g\n", text->bevel_radius);
+  fprintf(fileptr, "%d\n", text->revert_bevels);
+
   fprintf(fileptr, "%d\n", text->glu_display_mode);
   fprintf(fileptr, "%g\n", text->glu_sampling_tolerance);
 
@@ -414,6 +416,9 @@ ay_text_bbccb(ay_object *o, double *bbox, int *flags)
 {
  ay_text_object *text = NULL;
  ay_object *p = NULL;
+ double bbt[24] = {0};
+ double xmin = DBL_MAX, xmax = -DBL_MAX, ymin = DBL_MAX;
+ double ymax = -DBL_MAX, zmin = DBL_MAX, zmax = -DBL_MAX;
 
   if(!o || !bbox)
     return AY_ENULL;
@@ -423,14 +428,45 @@ ay_text_bbccb(ay_object *o, double *bbox, int *flags)
     {
       p = text->npatch;
 
-      /*
       while(p->next)
 	{
-	  p = p->next;
-	}
-      */
+	  ay_bbc_get(p, bbt);
 
-      ay_bbc_get(p, bbox);
+	  if(bbt[0] < xmin)
+	    xmin = bbt[0];
+	  if(bbt[6] > xmax)
+	    xmax = bbt[6];
+	  if(bbt[13] < ymin)
+	    ymin = bbt[13];
+	  if(bbt[1] > ymax)
+	    ymax = bbt[1];
+	  if(bbt[5] < zmin)
+	    zmin = bbt[5];
+	  if(bbt[2] > zmax)
+	    zmax = bbt[2];
+
+	  p = p->next;
+	} /* while */
+
+      /* fill in results */
+      /* P1 */
+      bbox[0] = xmin; bbox[1] = ymax; bbox[2] = zmax;
+      /* P2 */
+      bbox[3] = xmin; bbox[4] = ymax; bbox[5] = zmin;
+      /* P3 */
+      bbox[6] = xmax; bbox[7] = ymax; bbox[8] = zmin;
+      /* P4 */
+      bbox[9] = xmax; bbox[10] = ymax; bbox[11] = zmax;
+
+      /* P5 */
+      bbox[12] = xmin; bbox[13] = ymin; bbox[14] = zmax;
+      /* P6 */
+      bbox[15] = xmin; bbox[16] = ymin; bbox[17] = zmin;
+      /* P7 */
+      bbox[18] = xmax; bbox[19] = ymin; bbox[20] = zmin;
+      /* P8 */
+      bbox[21] = xmax; bbox[22] = ymin; bbox[23] = zmax;
+
       *flags = 1;
     }
   else
@@ -447,16 +483,19 @@ int
 ay_text_notifycb(ay_object *o)
 {
  int ay_status = AY_OK;
+ char fname[] = "text_notifycb";
  int tti_status = 0;
  ay_text_object *text = NULL;
  ay_tti_letter letter = {0};
  ay_tti_outline *outline;
- ay_object *curves = NULL, *newcurve = NULL, **nextcurve = NULL;
+ ay_object *curve = NULL, *newcurve = NULL;
+ ay_object *holes = NULL, **nexthole = NULL;
  ay_object *patch, **nextnpatch;
  ay_object ext = {0}, endlevel = {0};
  ay_extrude_object extrude = {0};
  char *c;
  int i;
+ double xoffset = 0.0, yoffset = 0.0;
 
   if(!o)
     return AY_ENULL;
@@ -472,6 +511,7 @@ ay_text_notifycb(ay_object *o)
      !text->string || text->string[0] == '\0')
     return AY_OK;
 
+  ext.type = AY_IDEXTRUDE;
   ext.refine = &extrude;
   extrude.height = text->height;
   extrude.has_lower_cap = text->has_lower_cap;
@@ -483,35 +523,72 @@ ay_text_notifycb(ay_object *o)
   extrude.glu_display_mode = text->glu_display_mode;
   extrude.glu_sampling_tolerance = text->glu_sampling_tolerance;
 
-  ext.type = AY_IDEXTRUDE;
-  
   c = text->string;
   while(*c != '\0')
     {
       tti_status = ay_tti_getcurves(text->fontname, *c, &letter);
+      if(tti_status)
+	{
+	  ay_error(AY_ERROR, fname, "could not get curves from font:");
+	  switch(tti_status)
+	    {
+	    case AY_TTI_NOMEM:
+	      ay_error(AY_EOMEM, fname, NULL);
+	      break;
+	    case AY_TTI_NOTFOUND:
+	      ay_error(AY_EOPENFILE, fname, text->fontname);
+	      break;
+	    case AY_TTI_BADFONT:
+	      ay_error(AY_ERROR, fname, "bad font file, need TTF");
+	      break;
+	    default:
+	      break;
+	    } /* switch */
+	  return AY_ERROR;
+	} /* if */
 
       if(letter.numoutlines > 0)
 	{
-	  nextcurve = &curves;
+	  nexthole = &holes;
+	  curve = NULL;
+	  holes = NULL;
 	  for(i = 0; i < letter.numoutlines; i++)
 	    {
 	      outline = &((letter.outlines)[i]);
+
 	      newcurve = NULL;
 	      ay_status = ay_tti_outlinetoncurve(outline, &newcurve);
+	      if(ay_status || !newcurve)
+		{
+		  ay_error(AY_ERROR, fname, "failed to convert outline:");
+		  ay_error(ay_status, fname, NULL);
+		  continue;
+		}
 
-	      if(newcurve && text->revert)
+	      if(text->revert_bevels)
 		ay_nct_revert((ay_nurbcurve_object*)(newcurve->refine));
+
+	      newcurve->movx = xoffset;
+	      newcurve->movy = yoffset;
 
 	      if(outline->filled)
 		{
 		  /* this outline is a true outline */
 
 		  /* if there are already outlines (and possibly holes)
-		     in <curves> we need to create patches from them now */
-		  if(curves)
+		     in <curve> we need to create patches from them now */
+		  if(curve)
 		    {
-		      *nextcurve = &endlevel;
-		      ext.down = curves;
+		      if(holes)
+			{
+			  curve->next = holes;
+			  *nexthole = &endlevel;
+			}
+		      else
+			{
+			  curve->next = &endlevel;
+			}
+		      ext.down = curve;
 		      extrude.npatch = NULL;
 		      extrude.upper_cap = NULL;
 		      extrude.lower_cap = NULL;
@@ -564,27 +641,41 @@ ay_text_notifycb(ay_object *o)
 			    } /* while */
 			} /* if */
 
-		      *nextcurve = NULL;
-		      ay_object_deletemulti(curves);
-		      curves = NULL;
+		      if(holes)
+			{
+			  *nexthole = NULL;
+			  ay_object_deletemulti(holes);
+			  holes = NULL;
+			  nexthole = &(holes);
+			}
+		      ay_object_delete(curve);
 		    } /* if */
+		  
+		  curve = newcurve;
 
-		  *nextcurve = newcurve;
+
 		}
 	      else
 		{
 		  /* this "outline" is a hole which we just append */
-		  *nextcurve = newcurve;
+		  *nexthole = newcurve;
+		  nexthole = &(newcurve->next);
 		} /* if */
 
-	      nextcurve = &(newcurve->next);
-
-	      if((i == letter.numoutlines-1) && (curves))
+	      if((i == letter.numoutlines-1) && (curve))
 		{
 		  /* end of loop reached, but there are still unconverted
-		     outlines in <curves> => convert them to patches now */
-		  *nextcurve = &endlevel;
-		  ext.down = curves;
+		     outlines in <curve> => convert them to patches now */
+		  if(holes)
+		    {
+		      curve->next = holes;
+		      *nexthole = &endlevel;
+		    }
+		  else
+		    {
+		      curve->next = &endlevel;
+		    }
+		  ext.down = curve;
 		  extrude.npatch = NULL;
 		  extrude.upper_cap = NULL;
 		  extrude.lower_cap = NULL;
@@ -636,18 +727,26 @@ ay_text_notifycb(ay_object *o)
 			  patch = patch->next;
 			} /* while */
 		    } /* if */
+		  if(holes)
+		    {
+		      *nexthole = NULL;
+		      ay_object_deletemulti(holes);
+		      holes = NULL;
+		      nexthole = &(holes);
+		    }
 
-		  *nextcurve = NULL;
-		  ay_object_deletemulti(curves);
-		  curves = NULL;
+		  ay_object_delete(curve);
+		  curve = NULL;
 		} /* if */
 	    } /* for */
 	} /* if */
 
-
+      xoffset = letter.xoffset;
+      /*yoffset = letter.yoffset;*/
       c++;
     } /* while */
 
+  /* free (temporary) font structure */
   tti_status = ay_tti_getcurves(NULL, 0, NULL);
 
  return AY_OK;
