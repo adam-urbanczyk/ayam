@@ -97,8 +97,8 @@ bind $f.li <ButtonPress-5> {
 # plb context menu
 set m [menu $ay(plb).popup -tearoff 0]
 $m add command -label "Deselect Property" -command {
-    global ay;
-    $ay(plb) selection clear 0 end;
+    global ay
+    $ay(plb) selection clear 0 end
     plb_update
 }
 $m add command -label "Copy Property" -command {
@@ -107,8 +107,10 @@ $m add command -label "Copy Property" -command {
 $m add command -label "Copy Marked Property" -command {
     pclip_copy 1
 }
-$m add command -label "Paste Property" -command {global ay;
-pclip_paste; set ay(sc) 1
+$m add command -label "Paste Property" -command {
+    global ay
+    pclip_paste
+    set ay(sc) 1
 }
 
 bind $f.li <ButtonPress-3> {
@@ -119,12 +121,14 @@ bind $f.li <ButtonPress-3> {
     set y [lindex $xy 1]
 
     tk_popup $ay(plb).popup $x $y
-    return;
 }
 
 # plb scrollbar
 set ay(pss) $f.s
-scrollbar $f.s -command {global ay; $ay(plb) yview} -takefocus 0
+scrollbar $f.s -takefocus 0 -command {
+    global ay
+    $ay(plb) yview
+}
 
 pack $f.li $f.s -in $f -side left -fill y -expand no
 
@@ -155,8 +159,7 @@ button $f.b1 -text "Apply" -padx 10 -pady 0 -command {
     global pclip_reset $arrname
     array set pclip_reset  [array get $arrname]
     rV
-} -takefocus 0\
--highlightthickness 0
+} -takefocus 0 -highlightthickness 0
 
 button $f.b2 -text "Reset" -padx 10 -pady 0 -command {
     global ay
@@ -167,8 +170,7 @@ button $f.b2 -text "Reset" -padx 10 -pady 0 -command {
     global $prop pclip_reset
     eval [subst "set arrname \$${prop}(arr)"]
     array set $arrname [array get pclip_reset]
-} -takefocus 0\
--highlightthickness 0
+} -takefocus 0 -highlightthickness 0
 
 pack $f.b1 $f.b2 -in $f -side left -fill x -expand yes 
 pack $f -in $w.fArg -side bottom -fill x -expand no
@@ -238,6 +240,7 @@ if { $ay(lb) == 1 } {
 }
 
 set lb $ay(plb)
+set oldsel ""
 set oldsel [$lb curselection]
 
 # delete current entries
@@ -294,10 +297,13 @@ if { [llength $index] == 1 } {
 		array set pclip_omit { }
 		array set pclip_omit_label { }
 	    }
+	    #if
 	}
+	#if
     }
-
+    #if
 }
+#if
 
 }
 # plb_update
