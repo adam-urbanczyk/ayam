@@ -403,6 +403,8 @@ void ay_quat_toeuler(double q[4], double euler[3]);
 /* read.c */
 int ay_read_string(FILE *fileptr, char **result);
 
+int ay_read_unistring(FILE *fileptr, Tcl_UniChar **result);
+
 int ay_read_skip(FILE *fileptr);
 
 int ay_read_header(FILE *fileptr);

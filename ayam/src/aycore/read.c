@@ -65,6 +65,63 @@ ay_read_string(FILE *fileptr, char **result)
  return ay_status;
 } /* ay_read_string */
 
+/* ay_read_unistring:
+ *
+ */
+int
+ay_read_unistring(FILE *fileptr, Tcl_UniChar **result)
+{
+ int ay_status = AY_OK;
+ char readchar, *str;
+ int read, uc = 0, i = 0;
+ Tcl_DString ds;
+ Tcl_UniChar *unistring = NULL, *tmp;
+
+  Tcl_DStringInit(&ds);
+  read = getc(fileptr);
+
+  if(read == EOF)
+    {Tcl_DStringFree(&ds); return AY_EUEOF;}
+
+  if((char)read == '\n')
+    {Tcl_DStringFree(&ds); return AY_OK;}
+
+  while((char)read != '\n')
+    {
+      readchar = (char)read;
+
+      Tcl_DStringAppend(&ds, &readchar, 1);
+
+      if(read == ' ')
+	{
+	  sscanf(Tcl_DStringValue(&ds), "%d", &uc);
+	  tmp = unistring;
+	  if(!(unistring = realloc(unistring, sizeof(Tcl_UniChar))))
+	    {free(tmp); Tcl_DStringFree(&ds); return AY_EOMEM;}
+	  unistring[i] = (Tcl_UniChar)uc;
+	  i++;
+	  Tcl_DStringFree(&ds);
+	  Tcl_DStringInit(&ds);
+	}
+
+      read = getc(fileptr);
+
+      if(read == EOF)
+	{Tcl_DStringFree(&ds); return AY_EUEOF;}
+
+    } /* while */
+
+  /* terminate unistring */
+  tmp = unistring;
+  if(!(unistring = realloc(unistring, sizeof(Tcl_UniChar))))
+    {free(tmp); Tcl_DStringFree(&ds); return AY_EOMEM;}
+  unistring[i] = (Tcl_UniChar)0;
+  *result = unistring;
+
+ return ay_status;
+} /* ay_read_unistring */
+
+
 
 /* ay_read_skip:
  *  skip to next entity, marked by a single bell, or two bell's!

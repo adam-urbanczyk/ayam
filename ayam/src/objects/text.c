@@ -49,7 +49,13 @@ ay_text_deletecb(void *c)
 
   if(text->npatch)
     ay_object_deletemulti(text->npatch);
-   
+
+  if(text->fontname)
+    free(text->fontname);
+
+  if(text->unistring)
+    free(text->unistring);
+
   free(text);
 
  return AY_OK;
@@ -71,7 +77,7 @@ ay_text_copycb(void *src, void **dst)
 
   tdst->npatch = NULL;
   tdst->fontname = NULL;
-  tdst->string = NULL;
+  tdst->unistring = NULL;
 
   if(tsrc->fontname)
     {
@@ -83,16 +89,20 @@ ay_text_copycb(void *src, void **dst)
       strcpy(tdst->fontname, tsrc->fontname);
     }
 
-  if(tsrc->string)
+  if(tsrc->unistring)
     {
-      if(!(tdst->string = calloc(strlen(tsrc->string)+1, sizeof(char))))
+      if(!(tdst->unistring = calloc(Tcl_UniCharLen(tsrc->unistring)+1,
+				    sizeof(Tcl_UniChar))))
 	{
 	  if(tdst->fontname)
 	    free(tdst->fontname);
 	  free(tdst);
 	  return AY_EOMEM;
 	}
-      strcpy(tdst->string, tsrc->string);
+
+      memcpy(tdst->unistring, tsrc->unistring,
+	     Tcl_UniCharLen(tsrc->unistring)*sizeof(Tcl_UniChar));
+
     }
   
   *dst = tdst;
@@ -157,6 +167,7 @@ ay_text_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  char *result;
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_text_object *text = NULL;
+ Tcl_UniChar *unistr = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -177,28 +188,31 @@ ay_text_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       return TCL_OK;
     }
   strcpy(text->fontname, result);
-
-  result = Tcl_GetVar2(interp, n1, "String",
-		       TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  if(text->string)
-    {
-      free(text->string);
-      text->string = NULL;
-    }
-
-  if(!(text->string = calloc(strlen(result)+1, sizeof(char))))
-    {
-      ay_error(AY_EOMEM, fname, NULL);
-      return TCL_OK;
-    }
-  strcpy(text->string, result);
-
+  
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
 
   Tcl_SetStringObj(ton,"Height",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp,to, &(text->height));
+
+  Tcl_SetStringObj(ton,"String",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  unistr = Tcl_GetUnicode(to);
+
+  if(text->unistring)
+    {
+      free(text->unistring);
+      text->unistring = NULL;
+    }
+
+  if(!(text->unistring = calloc(Tcl_UniCharLen(unistr)+1,
+				sizeof(Tcl_UniChar))))
+    {
+      ay_error(AY_EOMEM, fname, NULL);
+      return TCL_OK;
+    }
+  memcpy(text->unistring, unistr, Tcl_UniCharLen(unistr)*sizeof(Tcl_UniChar));
 
   Tcl_SetStringObj(ton,"Revert",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -258,6 +272,7 @@ ay_text_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  int ay_status = AY_OK;
  char *n1="TextAttrData";
+ char emptystring[] = "";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_text_object *text = NULL;
 
@@ -273,7 +288,10 @@ ay_text_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   Tcl_SetStringObj(ton,"String",-1);
-  to = Tcl_NewStringObj(text->string, -1);
+  if(text->unistring)
+    to = Tcl_NewUnicodeObj(text->unistring, -1);
+  else
+    to = Tcl_NewStringObj(emptystring, -1);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   Tcl_SetStringObj(ton,"Height",-1);
@@ -349,10 +367,10 @@ ay_text_readcb(FILE *fileptr, ay_object *o)
     { return AY_EOMEM; }
 
   ay_read_string(fileptr, &(text->fontname));
-  ay_read_string(fileptr, &(text->string));
+  ay_read_unistring(fileptr, &(text->unistring));
 
   fscanf(fileptr,"%lg\n",&text->height);
-
+  fscanf(fileptr,"%d\n",&text->revert);
   fscanf(fileptr,"%d\n",&text->has_upper_cap);
   fscanf(fileptr,"%d\n",&text->has_lower_cap);
   fscanf(fileptr,"%d\n",&text->has_upper_bevels);
@@ -373,6 +391,7 @@ int
 ay_text_writecb(FILE *fileptr, ay_object *o)
 {
  ay_text_object *text = NULL;
+ Tcl_UniChar *uc = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -384,12 +403,22 @@ ay_text_writecb(FILE *fileptr, ay_object *o)
   else
     fprintf(fileptr, "%s\n", text->fontname);
 
-  if(!text->string || text->string[0] == '\0')
-    fprintf(fileptr, "\n");
+  if(!text->unistring || text->unistring[0] == 0)
+    {
+      fprintf(fileptr, "\n");
+    }
   else
-    fprintf(fileptr, "%s\n", text->string);
-
+    {
+      uc = text->unistring;
+      while(*uc != 0)
+	{
+	  fprintf(fileptr, "%d ", (int)*uc);
+	  uc++;
+	}
+      fprintf(fileptr, "\n");
+    }
   fprintf(fileptr, "%g\n", text->height);
+  fprintf(fileptr, "%d\n", text->revert);
   fprintf(fileptr, "%d\n", text->has_upper_cap);
   fprintf(fileptr, "%d\n", text->has_lower_cap);
   fprintf(fileptr, "%d\n", text->has_upper_bevels);
@@ -509,7 +538,7 @@ ay_text_notifycb(ay_object *o)
  ay_object *patch, **nextnpatch;
  ay_object ext = {0}, endlevel = {0};
  ay_extrude_object extrude = {0};
- char *c;
+ Tcl_UniChar *uc;
  int i;
  double xoffset = 0.0, yoffset = 0.0;
 
@@ -524,7 +553,7 @@ ay_text_notifycb(ay_object *o)
   nextnpatch = &(text->npatch);
 
   if(!text->fontname || text->fontname[0] == '\0' ||
-     !text->string || text->string[0] == '\0')
+     !text->unistring || text->unistring[0] == 0)
     return AY_OK;
 
   ext.type = AY_IDEXTRUDE;
@@ -539,11 +568,12 @@ ay_text_notifycb(ay_object *o)
   extrude.glu_display_mode = text->glu_display_mode;
   extrude.glu_sampling_tolerance = text->glu_sampling_tolerance;
 
-  c = text->string;
-  while(*c != '\0')
+  uc = text->unistring;
+  while(*uc != 0)
     {
       /*0x3071*/
-      tti_status = ay_tti_getcurves(text->fontname, *c, &letter);
+      tti_status = ay_tti_getcurves(text->fontname, *uc, &letter);
+      printf("%d\n",*uc);
       if(tti_status)
 	{
 	  ay_error(AY_ERROR, fname, "could not get curves from font:");
@@ -563,7 +593,7 @@ ay_text_notifycb(ay_object *o)
 	    } /* switch */
 	  return AY_ERROR;
 	} /* if */
-
+      printf("no:%d\n",letter.numoutlines);
       if(letter.numoutlines > 0)
 	{
 	  nexthole = &holes;
@@ -760,7 +790,7 @@ ay_text_notifycb(ay_object *o)
 
       xoffset = letter.xoffset;
       /*yoffset = letter.yoffset;*/
-      c++;
+      uc++;
     } /* while */
 
   /* free (temporary) font structure */

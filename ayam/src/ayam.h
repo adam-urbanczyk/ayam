@@ -390,7 +390,7 @@ typedef struct ay_gordon_object_s {
 typedef struct ay_text_object_s
 {
   char *fontname;
-  char *string;
+  Tcl_UniChar *unistring;
   double height;
   int revert;
   int has_upper_cap;
