@@ -1,4 +1,13 @@
-[CVS 08. 07. 2002]
+[CVS, 15. 07. 2002]:
+o bug fixes:
+  - fixed memory leaks in the shadow map RIB export module
+o added a permanent preview feature; a constantly open RIB stream
+  to a (fast) RenderMan renderer like rgl immediately displays all
+  changes in the scene without the need to repeatedly hit Ctrl-r and
+  close the preview window again.
+
+
+[09. 07. 2002] Ayam1.2:
 o bug fixes:
   - fixed color select buttons in preferences not updating on "load defaults"
   - fixed missing RiSolidBegin/End for spheres with thetamax != 360
@@ -70,6 +79,7 @@ o added a show shortcuts feature to the main help menu
 o improved the installation procedure
 o the "UndoLevels" preference setting allows the undo system to be
   switched off completely using the special value "-1" now
+
 
 [17. 01. 2002] Ayam1.1:
 o bug fixes:
