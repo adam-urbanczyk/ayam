@@ -211,7 +211,7 @@ proc shortcut_viewactions { w } {
 set i $ayviewshortcuts(ZoomVButton)
     
 bind $w.f3D.togl <ButtonPress-${i}> {
-	undo view [winfo name [winfo toplevel %W]]
+	undo save
 	%W zoomvac -start %y
 	update
 }
@@ -223,7 +223,7 @@ bind $w.f3D.togl <B${i}-Motion> {
 set i  $ayviewshortcuts(MoveVButton)
 
 bind $w.f3D.togl <ButtonPress-${i}> {
-	undo view [winfo name [winfo toplevel %W]]
+	undo save
 	%W movevac -start %x %y
 	update
 }
@@ -234,7 +234,7 @@ bind $w.f3D.togl <B${i}-Motion> {
 
 
 bind $w.f3D.togl <ButtonPress-4> {
-    undo view [winfo name [winfo toplevel %W]]
+    undo save
     $ay(currentView) setconf -dzoom 0.5
     update
     $ay(currentView) reshape
@@ -243,7 +243,7 @@ bind $w.f3D.togl <ButtonPress-4> {
 
 
 bind $w.f3D.togl <ButtonPress-5> {
-    undo view [winfo name [winfo toplevel %W]]
+    undo save
     $ay(currentView) setconf -dzoom 2
     update
     $ay(currentView) reshape
@@ -287,7 +287,7 @@ proc altrotatebinding { w } {
 }
 
 bind $w <Alt-ButtonPress-1> {
-    undo view [winfo name [winfo toplevel %W]]
+    undo save
     set oldx %x
     set oldy %y
     set ay(oldbinding) [bind %W <B1-Motion>]
