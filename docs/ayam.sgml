@@ -2255,7 +2255,7 @@ standard NURBS patch (order, width, and height 4).
 Note that not all geometric objects currently honour PV tags
 on RIB export. The geometric objects currently supporting PV tags
 are: SDMesh, PolyMesh, PatchMesh, NURBPatch, and BPatch.
-
+<p>
 Furthermore, the number of data elements, which depends on the
 detail or storage class, the type of geometric primitive, and the
 configuration of the geometric primitive is not checked by Ayam.
@@ -2315,7 +2315,7 @@ The tag type <tt/"SaveMainGeom"/ can be used to save the geometry
 of the main window and the toolbox window (if open) with a scene
 file. For that the scene saving code checks for the presence of
 a <tt/"SaveMainGeom"/ tag for the root object and fills it with
-the geometry information. The scene reading code again checks
+the current geometry information. The scene reading code checks
 for the presence of a <tt/"SaveMainGeom"/ tag for the root object
 after replacing a scene and re-establishes the geometries of
 main and toolbox window.
@@ -2336,6 +2336,9 @@ tesselation method.<p>
 TP tags may be easily created using the tesselation GUI, that can
 be started with the main menu entry <tt>"Tools/NPatch/Tesselate"</tt>
 (see also section <ref id="tesst" name="The Tesselation Tool">).
+<p>
+An example for a TP tag could look like this:
+<code>TP 1,0.5</code>
 
 <sect2>DC Tag<label id="dctag">
 <p>
@@ -2347,6 +2350,9 @@ where <tt/"&lt;dcval&gt;"/ is a positive integer value describing the
 depth complexity of the CSG primitive. See also section
 <ref id="aycsg" name="CSG preview using the aycsg plugin">
 for more information regarding the depth complexity value.
+<p>
+An example for a DC tag (valid for e.g. a torus) could look like this:
+<code>DC 2</code>
 
 <sect2>Internal Tags
 <p>
