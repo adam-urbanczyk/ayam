@@ -904,6 +904,59 @@ ay_ncurve_bbccb(ay_object *o, double *bbox, int *flags)
 
 
 int
+ay_ncurve_convertcb(ay_object *o)
+{
+ int ay_status = AY_OK;
+ int i, a, b;
+ ay_nurbcurve_object *nc = NULL;
+ ay_icurve_object *ic = NULL;
+ ay_object *new = NULL;
+ 
+  if(!o)
+    { return AY_ENULL; }
+
+  nc = (ay_nurbcurve_object *) o->refine;
+
+  if(!(new = calloc(1, sizeof(ay_object))))
+    { return AY_EOMEM; }
+
+  ay_object_defaults(new);
+  new->type = AY_IDICURVE;
+  ay_trafo_copy(o, new);
+
+  if(!(ic = calloc(1, sizeof(ay_icurve_object))))
+    { free(new); return AY_EOMEM; }
+
+  new->refine = ic;
+
+  ic->length = nc->length;
+  ic->closed = nc->closed;
+  ic->glu_sampling_tolerance = nc->glu_sampling_tolerance;
+  ic->display_mode = nc->display_mode;
+  ic->iparam = 1.0/8.0;
+  ic->iorder = nc->order; /* XXXX ? */
+
+  if(!(ic->controlv = calloc(1, ic->length*3*sizeof(double))))
+    { free(new); free(ic); return AY_EOMEM; }
+
+  a = 0; b = 0;
+  for(i = 0; i < ic->length; i++)
+    {
+      memcpy(&(ic->controlv[a]), &(nc->controlv[b]), 3*sizeof(double));
+      a += 3;
+      b += 4;
+    }
+
+  ay_notify_force(new);
+
+  ay_status = ay_object_link(new);
+
+ return ay_status;
+} /* ay_ncurve_convertcb */
+
+
+
+int
 ay_ncurve_init(Tcl_Interp *interp)
 {
  int ay_status = AY_OK;
@@ -920,9 +973,11 @@ ay_ncurve_init(Tcl_Interp *interp)
 				    ay_ncurve_getpntcb,
 				    ay_ncurve_readcb,
 				    ay_ncurve_writecb,
-				    NULL,
+				    NULL, /* no RIB export */
 				    ay_ncurve_bbccb,
 				    AY_IDNCURVE);
+
+  ay_status = ay_convert_register(ay_ncurve_convertcb, AY_IDNCURVE);
 
   ay_matt_nomaterial(AY_IDNCURVE);
 
