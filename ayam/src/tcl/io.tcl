@@ -44,7 +44,6 @@ proc io_replaceScene { } {
 	set filename $newfilename
 	global ay_error
 	set ay_error ""
-	grab .fu
 	update
 
 	replaceScene $filename
@@ -79,8 +78,11 @@ proc io_replaceScene { } {
 	rV
 	io_mruAdd $filename
 	set ay(sc) 0
-	grab release .fu
 	update
+
+	foreach view $ay(views) { viewBind $view }
+	update
+
 	after idle viewMouseToCurrent
     }
 
@@ -122,7 +124,8 @@ proc io_insertScene { } {
 	update
 	global ay ay_error
 	set ay_error ""
-	grab .fu
+
+	foreach view $ay(views) { viewUnBind $view }
 	update
 
 	insertScene $ifilename
@@ -145,8 +148,11 @@ proc io_insertScene { } {
 	rV
 	io_mruAdd $filename
 	set ay(sc) 1
-	grab release .fu
 	update
+
+	foreach view $ay(views) { viewBind $view }
+	update
+
 	after idle viewMouseToCurrent
     }
 
@@ -296,7 +302,7 @@ proc io_exportRIB { {expview "" } } {
     }
 
     button $f.bca -text "Cancel" -pady $ay(pady) -width 5 -command "\
-	    focus . ; destroy $w"
+	    grab release .exportRIBw; focus .; destroy $w"
 
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
     pack $f -in $w -side bottom -fill x
@@ -439,9 +445,13 @@ proc io_importMops { } {
 	
 	set f [frame $w.f2]
 	button $f.bok -text "Ok" -width 5 -command {
-	    global mopsi_options
+	    global mopsi_options ay_error
 	    cS; plb_update
+	    set ay_error ""
 	    update
+	    foreach view $ay(views) { viewUnBind $view }
+	    update
+
 	    set filename $mopsi_options(ifilename)
 	    importMops $filename
 
@@ -464,15 +474,14 @@ proc io_importMops { } {
 	    rV
 	    set ay(sc) 1
 	    
-	    grab release .mopI
-	    focus .
 	    destroy .mopI
+	    foreach view $ay(views) { viewBind $view }
+	    update
 
 	    after idle viewMouseToCurrent
 	}
 
 	button $f.bca -text "Cancel" -width 5 -command "\
-		grab release .mopI;\
 		focus .;\
 		destroy .mopI"
 
@@ -480,9 +489,8 @@ proc io_importMops { } {
 	pack $f -in $w -side bottom -fill x
 
 	winCenter $w
-	grab $w
+	
 	focus $w.f2.bok
-	tkwait window $w
 
     }
 
@@ -527,7 +535,6 @@ proc io_mruLoad { index } {
 	cS; plb_update
 	set ay_error ""
 	set filename [lindex $ayprefs(mru) $index]
-	grab .fu
 	update
 
 	replaceScene $filename
@@ -562,9 +569,13 @@ proc io_mruLoad { index } {
 
 	uS
 	rV
-	grab release .fu
 	update
+
+	foreach view $ay(views) { viewBind $view }
+	update
+
 	after idle viewMouseToCurrent
+	
     }
 
  return;

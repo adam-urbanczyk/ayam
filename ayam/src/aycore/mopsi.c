@@ -410,7 +410,7 @@ ay_mopsi_views(Tcl_Interp *interp, FILE *fileptr, int insert)
       vtemp.drawhandles = AY_TRUE;
 
       /* open the view */
-      sprintf(command,"viewOpen %d %d\n",width,height);
+      sprintf(command, "viewOpen %d %d 0\n", width, height);
       Tcl_Eval(interp, command);
       Tcl_Eval(interp, update_cmd);
       

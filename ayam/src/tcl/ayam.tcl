@@ -1135,6 +1135,8 @@ proc bgerror { message } {
 }
 # bgerror
 
+# now activate all views
+foreach view $ay(views) { viewBind $view }
 # if there is a view window under the mouse pointer, make it current
 after idle viewMouseToCurrent
 

@@ -362,107 +362,167 @@ return;
 #
 #
 #
-proc viewOpen { width height } {
-global ay
-
- update
- set ay(cviewsema) 1
- update
-
- if { [llength $ay(views)] == 0 } {
-  set w .view1
- } else {
-  set lastname [lindex $ay(views) end]
-  scan $lastname ".view%d" lastid
-  set w .view[expr $lastid + 1]
- }
-
- catch {destroy $w}
- if { $ay(truecolor) == 1 } {
-     toplevel $w  -visual truecolor
- } else {
-     toplevel $w
- }
-
- scan $w ".%s" name
- wm iconname $w $name
-
- frame $w.fMenu -bd 2 -relief raised
- vmenu_open $w
- pack $w.fMenu -side top -fill x
-
-
- frame $w.f3D
-
- togl $w.f3D.togl -rgba true -double true -depth true\
-	 -ident $name -width $width -height $height
-
-
-pack $w.f3D -in $w -fill both -expand yes
-pack $w.f3D.togl -in $w.f3D -fill both -expand yes
-update
-
-# add to list of views
-lappend ay(views) $w
-
-$w.f3D.togl setconf -name $name
-
-viewTitle $w Front Pick
-
-set ay(currentView) $w.f3D.togl
-
-# internal bindings
-bind $w <Enter> {
+proc viewOpen { width height {establish_bindings 1} } {
     global ay
-    if { $ay(cviewsema) != 1 } {
-	update
-	set ay(cviewsema) 1
-	update
-	set w [winfo toplevel %W]
-	$w.f3D.togl mc
-	set ay(currentView) $w.f3D.togl
-	set ay(cviewsema) 0
-	update
+
+    update
+    set ay(cviewsema) 1
+    update
+
+    if { [llength $ay(views)] == 0 } {
+	set w .view1
+    } else {
+	set lastname [lindex $ay(views) end]
+	scan $lastname ".view%d" lastid
+	set w .view[expr $lastid + 1]
     }
 
-    bind [winfo toplevel %W] <$ayviewshortcuts(RotMod)-Motion> {
-	set w [winfo toplevel %W]
-	$w.f3D.togl configure -cursor exchange
-	bind $w <$ayviewshortcuts(RotMod)-Motion> {}
-	bind $w <Motion> {}
-    }
-    bind [winfo toplevel %W] <Motion> {
-	set w [winfo toplevel %W]
-	$w.f3D.togl configure -cursor left_ptr
-	bind $w <Motion> {}
-	bind $w <$ayviewshortcuts(RotMod)-Motion> {}
+    catch {destroy $w}
+    if { $ay(truecolor) == 1 } {
+	toplevel $w  -visual truecolor
+    } else {
+	toplevel $w
     }
 
+    scan $w ".%s" name
+    wm iconname $w $name
 
-}
+    frame $w.fMenu -bd 2 -relief raised
+    vmenu_open $w
+    pack $w.fMenu -side top -fill x
 
 
-wm protocol $w WM_DELETE_WINDOW "viewClose $w;\
-global ay; set ay(ul) root:0; uS"
+    frame $w.f3D
+
+    togl $w.f3D.togl -rgba true -double true -depth true\
+	    -ident $name -width $width -height $height
 
 
-# bind menu shortcuts
-shortcut_view $w
+    pack $w.f3D -in $w -fill both -expand yes
+    pack $w.f3D.togl -in $w.f3D -fill both -expand yes
+    update
 
-# bind actions
-shortcut_viewactions $w
+    # add to list of views
+    lappend ay(views) $w
 
-# bind default action
-actionClear $w.f3D.togl
+    $w.f3D.togl setconf -name $name
 
- update
- set ay(cviewsema) 0
- update
+    viewTitle $w Front Pick
+
+    set ay(currentView) $w.f3D.togl
+
+    wm protocol $w WM_DELETE_WINDOW "viewClose $w;\
+	    global ay; set ay(ul) root:0; uS"
+
+    if { $establish_bindings == 1 } {
+
+	# bind internal bindings
+	bind $w <Enter> {
+	    global ay
+	    if { $ay(cviewsema) != 1 } {
+		update
+		set ay(cviewsema) 1
+		update
+		set w [winfo toplevel %W]
+		$w.f3D.togl mc
+		set ay(currentView) $w.f3D.togl
+		set ay(cviewsema) 0
+		update
+	    }
+
+	    bind [winfo toplevel %W] <$ayviewshortcuts(RotMod)-Motion> {
+		set w [winfo toplevel %W]
+		$w.f3D.togl configure -cursor exchange
+		bind $w <$ayviewshortcuts(RotMod)-Motion> {}
+		bind $w <Motion> {}
+	    }
+	    bind [winfo toplevel %W] <Motion> {
+		set w [winfo toplevel %W]
+		$w.f3D.togl configure -cursor left_ptr
+		bind $w <Motion> {}
+		bind $w <$ayviewshortcuts(RotMod)-Motion> {}
+	    }
+
+
+	}
+
+	# bind menu shortcuts
+	shortcut_view $w
+
+	# bind actions
+	shortcut_viewactions $w
+
+	# bind default action
+	actionClear $w.f3D.togl
+    } else {
+	$w configure -cursor watch
+    }
+
+    update
+    set ay(cviewsema) 0
+    update
 
 return;
 }
 # viewOpen
 
+proc viewBind { w } {
+
+    # internal bindings
+    bind $w <Enter> {
+	global ay
+	if { $ay(cviewsema) != 1 } {
+	    update
+	    set ay(cviewsema) 1
+	    update
+	    set w [winfo toplevel %W]
+	    $w.f3D.togl mc
+	    set ay(currentView) $w.f3D.togl
+	    set ay(cviewsema) 0
+	    update
+	}
+
+	bind [winfo toplevel %W] <$ayviewshortcuts(RotMod)-Motion> {
+	    set w [winfo toplevel %W]
+	    $w.f3D.togl configure -cursor exchange
+	    bind $w <$ayviewshortcuts(RotMod)-Motion> {}
+	    bind $w <Motion> {}
+	}
+	bind [winfo toplevel %W] <Motion> {
+	    set w [winfo toplevel %W]
+	    $w.f3D.togl configure -cursor left_ptr
+	    bind $w <Motion> {}
+	    bind $w <$ayviewshortcuts(RotMod)-Motion> {}
+	}
+    }
+
+    # bind menu shortcuts
+    shortcut_view $w
+
+    # bind actions
+    shortcut_viewactions $w
+
+    # bind default action
+    actionClear $w.f3D.togl
+
+    $w configure -cursor {}
+    $w.f3D.togl configure -cursor {}
+
+ return;
+}
+# viewBind
+
+proc viewUnBind { w } {
+
+    foreach v [ bind $w ] { bind $w $v {} }
+    foreach v [ bind $w.f3D.togl ] { bind $w.f3D.togl $v {} }
+    update
+    $w configure -cursor watch
+    $w.f3D.togl configure -cursor watch
+
+ return;
+}
+# viewUnBind
 
 #
 proc viewCloseAll { } {
@@ -663,15 +723,15 @@ proc viewMouseToCurrent { } {
     global ay 
 
     set focused [focus -displayof .]
-
+ 
     if { $focused != "" } {
-
-	foreach view $ay(views) {
-
-	    if { [string compare $view $focused] == 0 } {
-		${view}.f3D.togl mc
-	    }
-	}
+ 
+ 	foreach view $ay(views) {
+ 	    if { [string compare $view $focused] == 0 } {
+ 		${view}.f3D.togl mc
+		set ay(currentView) ${view}.f3D.togl
+ 	    }
+ 	}
     }
 
 }
