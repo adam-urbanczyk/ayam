@@ -14,7 +14,7 @@ global ay MetaObj_props MetaObjAttr MetaObjAttrData
 
 set MetaObj_props { Transformations Attributes Material Tags MetaObjAttr }
 
-
+if {0} {
 proc stdReleaseBind { w } {
      bind $w <ButtonRelease-1> {
 
@@ -29,6 +29,7 @@ proc stdReleaseBind { w } {
      }
 }
 # stdReleaseBind
+}
 
 proc metaobj_getAttr { } {
 global ay MetaObjAttr MetaObjAttrData
@@ -41,7 +42,8 @@ getProp
 addParam $w MetaObjAttrData NumSamples {20 40 60 80 120 140 160 180 200}
 addParam $w MetaObjAttrData IsoLevel 0.6
 addCheck $w MetaObjAttrData "ShowWorld"
-addCheck $w MetaObjAttrData Adaptive
+#addCheck $w MetaObjAttrData Adaptive
+addMenu $w MetaObjAttrData Adaptive {none always automatic}
 
 if {$MetaObjAttrData(Adaptive) != 0} {
 addParam $w MetaObjAttrData Flatness 0.9

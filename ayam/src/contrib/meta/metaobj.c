@@ -77,7 +77,7 @@ metaobj_createcb (int argc, char *argv[], ay_object * o)
 
   if (!
       (w->mgrid =
-       (char *) calloc (1, sizeof (char) * META_MAXCUBE * META_MAXCUBE * META_MAXCUBE)))
+       (short *) calloc (1, sizeof (short) * META_MAXCUBE * META_MAXCUBE * META_MAXCUBE)))
     {
       if (w->Vertex3d);
       free (w->Vertex3d);
@@ -235,8 +235,8 @@ metaobj_copycb (void *src, void **dst)
 
   if (!
       (w->mgrid =
-       (char *) calloc (1,
-			sizeof (char) * w->aktcubes * w->aktcubes *
+       (short *) calloc (1,
+			sizeof (short) * w->aktcubes * w->aktcubes *
 			w->aktcubes)))
     {
       free (w->Vertex3d);
@@ -501,8 +501,8 @@ metaobj_setpropcb (Tcl_Interp * interp, int argc, char *argv[], ay_object * o)
 
   if (!
       (w->mgrid =
-       (char *) calloc (1,
-			sizeof (char) * w->aktcubes * w->aktcubes *
+       (short *) calloc (1,
+			sizeof (short) * w->aktcubes * w->aktcubes *
 			w->aktcubes)))
     return AY_EOMEM;
 
@@ -627,8 +627,8 @@ metaobj_readcb (FILE * fileptr, ay_object * o)
 
   if (!
       (w->mgrid =
-       (char *) calloc (1,
-			sizeof (char) * w->aktcubes * w->aktcubes *
+       (short *) calloc (1,
+			sizeof (short) * w->aktcubes * w->aktcubes *
 			w->aktcubes)))
     {
       free (w->vertex);
@@ -762,6 +762,8 @@ metaobj_notifycb (ay_object * o)
   double p[3] = { 0 };
   meta_world *w;
   char *adapt;
+  char vname[] = "ay";
+  char vname1[] = "action";
   
  glMatrixMode (GL_MODELVIEW);
 
@@ -814,25 +816,25 @@ metaobj_notifycb (ay_object * o)
   w->currentnumpoly = 0;
   w->o = o->down;
   
-/*
-  adapt = Tcl_GetVar(ay_interp,"meta_mouseup",TCL_GLOBAL_ONLY);
+  adapt = Tcl_GetVar2(ay_interp,vname,vname1,TCL_GLOBAL_ONLY);
  
   w->adaptflag = 0;
   
-  if(*adapt == '1')
+  if(w->adapt)
   {
-   w->adaptflag = 1;
+    if(w->adapt == 1)
+	  w->adaptflag = 1;
+    else {
+     if(*adapt == '0')
+     {
+      w->adaptflag = 1;
+     }
+	else
+	{
+	 w->adaptflag = 0;
+	}
+    }
   }
-
-  *adapt = '0';
-  Tcl_SetVar(ay_interp,"meta_mouseup",adapt,TCL_GLOBAL_ONLY);
-  
-
-  if(w->adaptflag ==1)
-  {
-     ay_notify_parent();
-  }
-*/
 
   meta_calceffect (w);
 
@@ -939,6 +941,8 @@ metaobj_convertcb(ay_object *o)
   metaobj_providecb(o, AY_IDPOMESH, new);
   new->type = AY_IDPOMESH;
   ay_object_defaults(new);
+  ay_trafo_copy(o, new);
+  
   ay_status = ay_object_link(new);
 
   return ay_status;
@@ -1005,8 +1009,7 @@ Metaobj_Init (Tcl_Interp * interp)
 int
 metacomp_notifycb (ay_object * o)
 {
-    ay_notify_parent ();
-	return 0;
+ return 0;
 }
 
 int
@@ -1195,7 +1198,6 @@ metacomp_setpropcb (Tcl_Interp * interp, int argc, char *argv[],
   Tcl_DecrRefCount (toa);
   Tcl_IncrRefCount (ton);
   Tcl_DecrRefCount (ton);
-
 
   ay_notify_parent ();
 

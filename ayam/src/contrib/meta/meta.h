@@ -139,8 +139,8 @@ meta_grid;
 
 typedef struct meta_world_s
 {
-  char *mgrid;
-  char lastmark;
+  short *mgrid;
+  short lastmark;
 
   meta_grid *grid;
   meta_gridcell cell;
