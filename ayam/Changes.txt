@@ -1,4 +1,4 @@
-[CVS, 31. 01. 2003]:
+[CVS, 06. 02. 2003]:
 o bug fixes:
   - fixed remembering of the state of the object selection listbox/tree
     when the context menu or a double click on the label is used to
@@ -35,6 +35,8 @@ o bug fixes:
     a wrong NURBS curve specification (too high order, wrong knot vector)
   - fixed broken creation of shadow maps from point light sources that make
     use of their "From"-values
+  - fixed preference setting TclPrecision being ignored
+  - fixed RIB export of scenes using instances and shadow maps
 o reduced number of redraws when selecting hidden or material objects
 o added a RiDisplay tag type, that allows to add more output files
   (e.g. containing depth buffer information) to the scene
