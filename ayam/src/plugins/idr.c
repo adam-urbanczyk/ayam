@@ -1676,6 +1676,7 @@ idr_wrib_object(ay_object *o, char *file, int mode)
  *  from: source point of the camera
  *  to: target point of the camera
  *  roll, zoom: roll angle and zoom factor of the camera
+ *  nearp, farp: clipping planes
  *  width, height: dimension of the full image
  *  type: type of projection
  *  left, bottom, right, top: region of the full image to be rendered
@@ -1686,6 +1687,7 @@ idr_wrib_scene(char *file, char *image, double importance, int exclude,
 	       double *from,
 	       double *to,
 	       double roll, double zoom,
+	       double nearp, double farp,
 	       int width, int height, int type,
 	       int left, int bottom, int right, int top)
 {
@@ -1695,7 +1697,7 @@ idr_wrib_scene(char *file, char *image, double importance, int exclude,
  RtFloat aspect = 1.0, swleft, swright, swtop, swbot;
  double fakt;
  /* RtFloat bias0 = 0.5, bias1 = 0.5;*/
- RtFloat fov = (RtFloat)90.0;
+ RtFloat fov = (RtFloat)90.0, rinearp, rifarp;
  char *objfile = NULL, *pos = NULL;
  int filelen = 0;
 
@@ -1711,8 +1713,9 @@ idr_wrib_scene(char *file, char *image, double importance, int exclude,
     ay_status = ay_instt_wribiarchives(file, o);
   }
 
-  aspect = (RtFloat)(width/((double)height));
   /* assemble args */
+  aspect = (RtFloat)(width/((double)height));
+
   f[0] = (RtFloat) from[0];
   f[1] = (RtFloat) from[1];
   f[2] = (RtFloat) from[2];
@@ -1726,8 +1729,8 @@ idr_wrib_scene(char *file, char *image, double importance, int exclude,
   d[2] = (RtFloat)(to[2] - from[2]);
 
 
-
-  if(!file) /* dump .rib to stdout? */
+  /* dump .rib to stdout? */
+  if(!file)
     RiBegin(RI_NULL);
   else
     RiBegin(file);
@@ -1758,19 +1761,23 @@ idr_wrib_scene(char *file, char *image, double importance, int exclude,
 	}
 
 
-        /* wrib root RiOption tags (possibly containing shadow bias) */
+      /* wrib root RiOption tags (possibly containing shadow bias) */
       ay_status = ay_riopt_wrib(ay_root);
 
       ay_sm_wriballsm(file, objfile, ay_root->next, NULL, width, height);
       ay_prefs.wrib_sm = AY_FALSE;
-    }
+    } /* if */
 
-
-  if(!image) /* render to image file or to frame buffer? */
+  /* render to image file or to frame buffer? */
+  if(!image)
     RiDisplay(RI_NULL, RI_FRAMEBUFFER, RI_RGBA, RI_NULL);
   else
     RiDisplay(image, RI_FILE, RI_RGBA, RI_NULL);
 
+  /* write additional RiDisplay statements from tags */
+  ay_wrib_displaytags();
+  /* write RiHider statements from tags */
+  ay_wrib_hidertags();
   /* write imager shader */
   ay_wrib_rootsh(AY_TRUE);
 
@@ -1798,6 +1805,26 @@ idr_wrib_scene(char *file, char *image, double importance, int exclude,
   swtop = top/fakt;
   swbot = bottom/fakt;
 
+  /* clipping planes */
+  if(nearp != 0.0 || farp != 0.0)
+    {
+      if(nearp != 0.0)
+	{
+	  rinearp = (RtFloat)nearp;
+	  if(type == AY_VTPERSP)
+	    zoom /= nearp;
+	}
+      else
+	rinearp = RI_EPSILON;
+
+      if(farp != 0.0)
+	rifarp = (RtFloat)farp;
+      else
+	rifarp = RI_INFINITY;
+
+      RiClipping(rinearp, rifarp);
+    }
+
   RiScreenWindow((RtFloat)swleft*zoom, (RtFloat)swright*zoom,
 		 (RtFloat)swbot*zoom, (RtFloat)swtop*zoom);
 
@@ -1822,7 +1849,7 @@ idr_wrib_scene(char *file, char *image, double importance, int exclude,
   /* wrib RiOptions */
   ay_status = ay_wrib_rioptions();
 
-  /* wrib root RiOption tags*/
+  /* wrib root objects RiOption tags*/
   ay_status = ay_riopt_wrib(ay_root);
 
   RiWorldBegin();
@@ -3199,8 +3226,8 @@ idr_wrib_tcb(struct Togl *togl, int argc, char *argv[])
 	    /* write RIB */
 	    idr_wrib_scene(part->RIBFile, part->ImageFile,
 			   (params[i]).importance, (params[i]).exclude,
-			   view->from, view->to, view->roll,
-			   view->zoom, width, height,
+			   view->from, view->to, view->roll, view->zoom,
+			   view->nearp, view->farp, width, height,
 			   view->type, -width/2, -height/2,
 			   -width/2+width, -height/2+height);
 
@@ -3252,8 +3279,8 @@ idr_wrib_tcb(struct Togl *togl, int argc, char *argv[])
 
 	    idr_wrib_scene(part->RIBFile, part->ImageFile, 
 			   (params[i]).importance, (params[i]).exclude,
-			   view->from, view->to, view->roll,
-			   view->zoom, width, height,
+			   view->from, view->to, view->roll, view->zoom,
+			   view->nearp, view->farp, width, height,
 			   view->type, part->left, part->bottom,
 			   part->right, part->top);
 
@@ -3390,8 +3417,8 @@ idr_wrib_tcb(struct Togl *togl, int argc, char *argv[])
 
 		idr_wrib_scene(part->RIBFile, part->ImageFile, 
 			       (params[i]).importance, (params[i]).exclude,
-			       view->from, view->to, view->roll,
-			       view->zoom, width, height,
+			       view->from, view->to, view->roll, view->zoom,
+			       view->nearp, view->farp, width, height,
 			       view->type, part->left, part->bottom,
 			       part->right, part->top);
 
