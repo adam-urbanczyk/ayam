@@ -4014,7 +4014,7 @@ ay_nct_shiftcbstcmd(ClientData clientData, Tcl_Interp *interp,
   if(argc > 1)
    Tcl_GetInt(interp, argv[1], &times);
 
-  if(i < 1)
+  if(times < 1)
     {
       ay_error(AY_ERROR, fname, "Parameter must be higher than 1.");
       return TCL_OK;
