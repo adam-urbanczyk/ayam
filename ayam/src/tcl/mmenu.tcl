@@ -295,6 +295,20 @@ menu .fu.fMenu.hlp.m -tearoff 0
 .fu.fMenu.hlp.m add command -label "Help" -command {
     global ayprefs
     browser_urlOpen $ayprefs(Docs) }
+
+.fu.fMenu.hlp.m add command -label "Help on object" -command {
+    global ayprefs
+    set selected ""
+    getSel selected
+    if { $selected == "" } { 
+	ayError 2 "Help on object" "Please select an object!"
+	return;
+    }
+    getType type
+    set type [string tolower $type]
+    browser_urlOpen $ayprefs(Docs)ayam-4.html\#${type}obj
+}
+
 .fu.fMenu.hlp.m add command -label "About" -command "aboutAyam"
 .fu.fMenu.hlp.m add checkbutton -label "Show Tooltips" -variable ayprefs(showtt)
 pack .fu.fMenu.hlp -in .fu.fMenu -side right
