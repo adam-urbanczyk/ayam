@@ -1119,6 +1119,9 @@ new geometries of windows. Might be useful, if you suffer from jumping
 windows.
 <item><tt/"ListTypes"/ determines, whether the type of an
 object should be displayed in brackets in the tree view or listbox.
+<item><tt/"MarkHidden"/ determines, whether hidden objects
+should be marked (using a preceding exclamation mark)
+in the tree view.
 <item><tt/"AutoSavePrefs"/, if this is switched on, Ayam will write
 the preferences settings to the file ayamrc when the program quits.
 <item><tt/"BakOnReplace"/, if this is switched on, Ayam will make
@@ -6202,6 +6205,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <label id="indexm">M
 <itemize>
 <item>MajorRad: <ref id="top" name="torus attribute">
+<item>MarkHidden: <ref id="prefgui" name="preference setting">
 <item>Master: <ref id="mmedit" name="edit menu entry">
 <item>Material: <ref id="materialobj" name="object">,
 <ref id="mmedit" name="edit menu entry">
