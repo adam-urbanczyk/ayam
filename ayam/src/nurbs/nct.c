@@ -1590,25 +1590,27 @@ ay_nct_findu(struct Togl *togl, ay_object *o,
 
   startu = c->knotv[c->order-1];
   endu = c->knotv[c->length];
+
   for(k = 0; k < 3; k++)
     {
       U[0] = startu;
-
-      for(i = 1; i < samples; i++)
+      for(i = 1; i < samples-1; i++)
 	{
-	  U[i] = U[i-1]+(endu - startu)/samples;
+	  U[i] = U[i-1]+(endu - startu)/(samples-1);
 	}
+      U[samples-1] = endu;
 
-      for(i = 0; i < samples; i++)
+      for(i = 0; i < samples-1; i++)
        {
 	 ay_status = ay_nb_CurvePoint4D(c->length-1, c->order-1, c->knotv,
-					c->controlv, U[i], &(cp[i*stride]));
+					c->controlv, U[i]+((U[i+1]-U[i])/2.0),
+					&(cp[i*stride]));
 
        }
 
       min_distance = DBL_MAX;
       j = 0;
-      for(i = 0; i < samples; i++)
+      for(i = 0; i < (samples-1); i++)
 	{
 	  distance = AY_VLEN((point[0] - cp[j]),
 			     (point[1] - cp[j+1]),
@@ -1616,8 +1618,8 @@ ay_nct_findu(struct Togl *togl, ay_object *o,
 
 	  if(distance < min_distance)
 	    {
-	      *u = U[i];
-	      starti = i-1;
+	      *u = U[i]+((U[i+1]-U[i])/2.0);
+	      starti = i;
 	      endi = i+1;
 	      min_distance = distance;
 	    }
@@ -4158,3 +4160,198 @@ ay_nct_shiftcbstcmd(ClientData clientData, Tcl_Interp *interp,
 
  return TCL_OK;
 } /* ay_nct_shiftcbstcmd */
+
+
+/* ay_nct_toxy :
+ *  modify the planar NURBS curve <c>, so that it is defined in the XY plane
+ *  by detecting the current orientation, adding the relevant rotation
+ *  information to the transformation attributes and rotating the control
+ *  points of the planar curve to the XY plane
+ */
+int
+ay_nct_toxy(ay_object *c)
+{
+ int ay_status = AY_OK;
+ ay_nurbcurve_object *nc = NULL;
+ double *p, *tp1, *tp2, *tp3, V1[3], V2[3], A[3], B[3];
+ double Z[3] = {0,0,1};
+ double angle, len, m[16], quat[4], euler[3];
+ int i, stride = 4, have_good_points = AY_FALSE, max_tries = 0;
+ 
+  if(!c)
+    return AY_ENULL;
+
+  if(!c->type == AY_IDNCURVE)
+    return AY_EARGS;
+
+  nc = (ay_nurbcurve_object *)c->refine;
+
+  if(nc->length < 3)
+    return AY_ERROR;
+
+  /* try to get three "good" points, they should be not equal,
+     not in line, and span a triangle to get the orientation from */
+  tp1 = nc->controlv;
+  tp2 = &(nc->controlv[(nc->length/2)*stride]);
+
+  /* check, whether we, probably, operate on a closed B-Spline curve,
+     if yes, we choose a different set of initial points */
+  p = &(nc->controlv[(nc->length-(nc->order-1))*stride]);
+  if(AY_COMP3DP(tp1, p))
+    {
+      /*printf("Detected closed BSpline!\n");*/
+      tp1 = &(nc->controlv[(nc->order/2)*stride]);
+      tp3 = &(nc->controlv[(nc->length-(nc->order/2))*stride]);
+    }
+  else
+    {
+      /*printf("Detected normal curve!\n");*/
+      tp3 = &(nc->controlv[(nc->length-2)*stride]);
+    }
+
+  /*
+    printf("first indizes %d %d %d\n",
+    (tp1-nc->controlv)/stride,
+    (tp2-nc->controlv)/stride,
+    (tp3-nc->controlv)/stride);
+  */
+
+  /* check and correct the points */
+  while(!have_good_points  && (max_tries < (nc->length/2)))
+    {
+      have_good_points = AY_TRUE;
+      if(AY_COMP3DP(tp1, tp2))
+	{
+	  tp2 += stride;
+	  have_good_points = AY_FALSE;
+	}
+      if(AY_COMP3DP(tp2, tp3))
+	{
+	  tp3 -= stride;
+	  have_good_points = AY_FALSE;
+	}
+      if(AY_COMP3DP(tp1, tp3))
+	{
+	  tp3 -= stride;
+	  have_good_points = AY_FALSE;
+	}
+
+      if(have_good_points)
+	{
+	  AY_V3SUB(V1, tp2, tp1);
+	  len = AY_V3LEN(V1);
+	  AY_V3SCAL(V1,(1.0/len));
+	  
+	  AY_V3SUB(V2, tp3, tp1);
+	  len = AY_V3LEN(V2);
+	  AY_V3SCAL(V2, (1.0/len));
+
+	  angle = AY_R2D(acos(AY_V3DOT(V1,V2)));
+	  if(angle < AY_EPSILON)
+	    {
+	      /* V1 and V2 are parallel */
+	      have_good_points = AY_FALSE;
+	      tp2 += stride;
+	    }
+	} /* if */
+
+      max_tries++;
+    } /* while */
+
+  if(!have_good_points)
+    return AY_ERROR;
+  /*
+    printf("indizes after correction %d %d %d\n",
+    (tp1-nc->controlv)/stride,
+    (tp2-nc->controlv)/stride,
+    (tp3-nc->controlv)/stride);
+  */
+
+  /* now we may calculate the orientation of the curve */
+  AY_V3CROSS(A, V1, V2);
+  len = AY_V3LEN(A);
+  AY_V3SCAL(A, (1.0/len));
+
+  /* A is now perpendicular to the plane in which the curve is defined
+     thus, we calculate angle and rotation axis (B) between A and Z (0,0,1) */
+  angle = AY_R2D(acos(AY_V3DOT(A, Z)));
+  if((fabs(angle) < AY_EPSILON) || (fabs(angle - 180.0) < AY_EPSILON))
+    {
+      /* Nothing to do, as curve ist properly aligned with
+	 XY plane already...*/
+      return AY_OK;
+    }
+  AY_V3CROSS(B, A, Z);
+  len = AY_V3LEN(B);
+  AY_V3SCAL(B, (1.0/len));
+
+  /*printf("angle %g, B: %g %g %g\n",angle,B[0],B[1],B[2]);*/
+  if(angle > AY_EPSILON)
+    {
+      /* calculate rotation matrix */
+      ay_trafo_identitymatrix(m);
+      ay_trafo_rotatematrix(angle, B[0], B[1], B[2], m);
+
+      /* apply rotation matrix to all points */
+      p = nc->controlv;
+      for(i = 0; i < nc->length; i++)
+	{
+	  ay_trafo_apply4(p, m);
+	  p += stride;
+	} /* for */
+
+      /* calculate new transformation attributes */
+      ay_quat_axistoquat(B, AY_D2R(angle), quat);
+      ay_quat_add(c->quat, quat, c->quat);
+      ay_quat_toeuler(c->quat, euler);
+      c->rotx = AY_R2D(euler[0]);
+      c->roty = AY_R2D(euler[1]);
+      c->rotz = AY_R2D(euler[2]);
+    } /* if */
+
+ return ay_status;
+} /* ay_nct_toxy */
+
+
+/* ay_nct_toxytcmd:
+ *  
+ */
+int
+ay_nct_toxytcmd(ClientData clientData, Tcl_Interp *interp,
+		int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ char fname[] = "toXYNC";
+ ay_list_object *sel = ay_selection;
+ ay_object *src = NULL;
+
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, fname, NULL);
+      return TCL_OK;
+    }
+
+  while(sel)
+    {
+      src = sel->object;
+      if(src->type != AY_IDNCURVE)
+	{
+	  ay_error(AY_ERROR, fname, "Object is not a NURBCurve!");
+	}
+      else
+	{
+	  ay_status = ay_nct_toxy(src);
+	  if(ay_status)
+	    {
+	      ay_error(ay_status, fname,
+		       "Could not align object to XY plane!");
+	    }
+	} /* if */
+
+      sel = sel->next;
+    } /* while */
+
+  ay_notify_parent();
+
+ return TCL_OK;
+} /* ay_nct_toxytcmd */
