@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile [16. Nov 2001]
+# Makefile [16. Jul 2002]
 # Makefile for the first Ayam tutorial
 
 all: htm pdf3
@@ -45,7 +45,7 @@ pdf2:
 pdf3: pdf2
 	pdflatex tutorial1.tex
 	pdflatex tutorial1.tex
-	rm tutorial1.tex tutorial1.toc tutorial1.log tutorial1.aux
+	rm tutorial1.tex tutorial1.log tutorial1.aux
 
 clean:
 	rm -f *.html *.txt html/*.html tutorial1l.tex tutorial1.tex
