@@ -14,6 +14,45 @@
 
 /* objsel.c - select objects on a viewport */
 
+void
+ay_objsel_pushlnames(ay_list_object *lo)
+{
+ ay_object *o = NULL;
+
+  if(!lo)
+    return;
+  
+  if(lo->next)
+    ay_objsel_pushlnames(lo->next->next);
+
+  if(lo->object)
+    {
+      o = lo->object;
+      o->glname = ++ay_current_glname;
+      glPushName(o->glname);
+    }
+
+ return;
+} /* ay_objsel_pushlnames */
+
+void
+ay_objsel_poplnames(ay_list_object *lo)
+{
+
+  if(!lo)
+    return;
+  
+  if(lo->next)
+    ay_objsel_poplnames(lo->next->next);
+
+  if(lo->object)
+    {
+      glPopName();
+    }
+
+ return;
+} /* ay_objsel_poplnames */
+
 
 /* ay_objsel_process_hits: process data returned by the selection mode of
  * OpenGL in order to find which objects have been selected
@@ -257,11 +296,13 @@ ay_objsel_processcb (struct Togl *togl, int argc, char *argv[])
   ay_current_glname = 1;
   ay_root->glname = 1;
 
-  if(view->drawlevel)
+  if(view->drawlevel || view->type == AY_VTTRIM)
     {
       o = ay_currentlevel->object;
       glPushMatrix();
-      ay_trafo_getall(ay_currentlevel);
+      glLoadIdentity();
+      ay_trafo_getall(ay_currentlevel->next);
+      ay_objsel_pushlnames(ay_currentlevel->next);
     }
 
   if(!view->shade)
@@ -305,10 +346,11 @@ ay_objsel_processcb (struct Togl *togl, int argc, char *argv[])
       glEnable(GL_LIGHTING);
     }
     
-  if(view->drawlevel)
+  if(view->drawlevel || view->type == AY_VTTRIM)
     {
       glMatrixMode(GL_MODELVIEW);
       glPopMatrix();
+      ay_objsel_poplnames(ay_currentlevel->next);
     }
 
   glMatrixMode (GL_PROJECTION);
