@@ -1378,7 +1378,7 @@ ay_wrib_lights(char *file, ay_object *o)
  *  propagate changes to this function also to ay_wrib_pprevdraw()!
  */
 int
-ay_wrib_scene(char *file, char *image, double *from, double *to,
+ay_wrib_scene(char *file, char *image, int temp, double *from, double *to,
 	      double roll, double zoom, double nearp, double farp,
 	      int width, int height, int type)
 {
@@ -1491,7 +1491,7 @@ ay_wrib_scene(char *file, char *image, double *from, double *to,
      { /* image file */
        root = (ay_root_object*)(ay_root->refine);
        riopt = root->riopt;
-       if(riopt->use_std_display)
+       if(riopt->use_std_display || temp)
 	 {
 	   RiDisplay(image, RI_FILE, RI_RGBA, RI_NULL);
 	 }
@@ -1787,8 +1787,8 @@ ay_wrib_cb(struct Togl *togl, int argc, char *argv[])
       view->roll += 180.0;
     }
 
-  ay_status = ay_wrib_scene(file, image, view->from, view->to, view->roll,
-			    view->zoom, view->nearp, view->farp,
+  ay_status = ay_wrib_scene(file, image, temp, view->from, view->to,
+			    view->roll, view->zoom, view->nearp, view->farp,
 			    width, height, view->type);
 
   if(view->up[1] < 0.0)
@@ -1905,7 +1905,8 @@ ay_wrib_tcmd(ClientData clientData, Tcl_Interp * interp,
 
   if(!(smonly || selonly))
     {
-      ay_status = ay_wrib_scene(file, image, cam->from, cam->to, cam->roll,
+      ay_status = ay_wrib_scene(file, image, AY_FALSE,
+				cam->from, cam->to, cam->roll,
 				cam->zoom, cam->nearp, cam->farp,
 				width, height, AY_VTPERSP);
     }
