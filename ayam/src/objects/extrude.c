@@ -940,6 +940,103 @@ ay_extrude_notifycb(ay_object *o)
 
 
 int
+ay_extrude_providecb(ay_object *o, unsigned int type, ay_object **result)
+{
+ int ay_status = AY_OK;
+ char fname[] = "extrude_providecb";
+ ay_extrude_object *e = NULL;
+ ay_object *new = NULL, **t = NULL, *p = NULL;
+
+  if(!o || !result)
+    return AY_ENULL;
+
+  e = (ay_extrude_object *) o->refine;
+
+  if(type == AY_IDNPATCH)
+    {
+      t = &(new);
+
+      /* copy extrusion(s) */
+      p = e->npatch;
+      while(p)
+	{
+	  ay_status = ay_object_copy(p, t);
+	  if(ay_status)
+	    {
+	      ay_error(ay_status, fname, NULL);
+	      return AY_ERROR;
+	    }
+	  ay_trafo_copy(o, *t);
+	  t = &((*t)->next);
+	  p = p->next;
+	} /* while */
+
+      /* copy caps */
+      p = e->upper_cap;
+      while(p)
+	{
+	  ay_status = ay_object_copy(p, t);
+	  if(ay_status)
+	    {
+	      ay_error(ay_status, fname, NULL);
+	      return AY_ERROR;
+	    }
+	  ay_trafo_add(o, *t);
+	  t = &((*t)->next);
+	  p = p->next;
+	} /* while */
+
+      p = e->lower_cap;
+      while(p)
+	{
+	  ay_status = ay_object_copy(p, t);
+	  if(ay_status)
+	    {
+	      ay_error(ay_status, fname, NULL);
+	      return AY_ERROR;
+	    }
+	  ay_trafo_add(o, *t);
+	  t = &((*t)->next);
+	  p = p->next;
+	} /* while */
+
+      /* copy bevels */
+      p = e->upper_bevels;
+      while(p)
+	{
+	  ay_status = ay_object_copy(p, t);
+	  if(ay_status)
+	    {
+	      ay_error(ay_status, fname, NULL);
+	      return AY_ERROR;
+	    }
+	  ay_trafo_add(o, *t);
+	  t = &((*t)->next);
+	  p = p->next;
+	} /* while */
+
+      p = e->lower_bevels;
+      while(p)
+	{
+	  ay_status = ay_object_copy(p, t);
+	  if(ay_status)
+	    {
+	      ay_error(ay_status, fname, NULL);
+	      return AY_ERROR;
+	    }
+	  ay_trafo_add(o, *t);
+	  t = &((*t)->next);
+	  p = p->next;
+	} /* while */
+
+      *result = new;
+    } /* if */
+
+ return ay_status;
+} /* ay_extrude_providecb */
+
+
+int
 ay_extrude_convertcb(ay_object *o)
 {
  int ay_status = AY_OK;
@@ -1029,6 +1126,8 @@ ay_extrude_init(Tcl_Interp *interp)
   ay_status = ay_notify_register(ay_extrude_notifycb, AY_IDEXTRUDE);
 
   ay_status = ay_convert_register(ay_extrude_convertcb, AY_IDEXTRUDE);
+
+  ay_status = ay_provide_register(ay_extrude_providecb, AY_IDEXTRUDE);
 
  return ay_status;
 } /* ay_extrude_init */

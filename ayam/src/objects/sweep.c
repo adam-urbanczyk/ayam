@@ -503,16 +503,79 @@ ay_sweep_notifycb(ay_object *o)
 
 
 int
+ay_sweep_providecb(ay_object *o, unsigned int type, ay_object **result)
+{
+ int ay_status = AY_OK;
+ char fname[] = "sweep_providecb";
+ ay_sweep_object *s = NULL;
+ ay_object *new = NULL, **t = NULL, *p = NULL;
+
+  if(!o || !result)
+    return AY_ENULL;
+
+  s = (ay_sweep_object *) o->refine;
+
+  if(type == AY_IDNPATCH)
+    {
+      t = &(new);
+
+      /* copy sweep */
+      ay_status = ay_object_copy(s->npatch, t);
+      if(ay_status)
+	{
+	  ay_error(ay_status, fname, NULL);
+	  return AY_ERROR;
+	}
+      ay_trafo_copy(o, *t);
+      t = &((*t)->next);
+
+      /* copy caps */
+      p = s->start_cap;
+      while(p)
+	{
+	  ay_status = ay_object_copy(p, t);
+	  if(ay_status)
+	    {
+	      ay_error(ay_status, fname, NULL);
+	      return AY_ERROR;
+	    }
+	  ay_trafo_add(o, *t);
+	  t = &((*t)->next);
+	  p = p->next;
+	} /* while */
+
+      p = s->end_cap;
+      while(p)
+	{
+	  ay_status = ay_object_copy(p, t);
+	  if(ay_status)
+	    {
+	      ay_error(ay_status, fname, NULL);
+	      return AY_ERROR;
+	    }
+	  ay_trafo_add(o, *t);
+	  t = &((*t)->next);
+	  p = p->next;
+	} /* while */
+
+      *result = new;
+    } /* if */
+
+ return ay_status;
+} /* ay_sweep_providecb */
+
+
+int
 ay_sweep_convertcb(ay_object *o)
 {
  int ay_status = AY_OK;
- ay_sweep_object *r = NULL;
+ ay_sweep_object *s = NULL;
  ay_object *new = NULL, *last = NULL;
 
   if(!o)
     return AY_ENULL;
 
-  r = (ay_sweep_object *) o->refine;
+  s = (ay_sweep_object *) o->refine;
 
   if((o->scalx != 0.0) || (o->scaly != 0.0) || (o->scalz != 0.0))
     {
@@ -531,21 +594,21 @@ ay_sweep_convertcb(ay_object *o)
 
       ay_status = ay_object_link(new);
 
-      if(r->npatch)
+      if(s->npatch)
 	{
-	  ay_status = ay_object_copy(r->npatch, &(new->down));
+	  ay_status = ay_object_copy(s->npatch, &(new->down));
 	  last = new->down;
 	}
 
-      if(r->start_cap)
+      if(s->start_cap)
 	{
-	  ay_status = ay_object_copy(r->start_cap, &(last->next));
+	  ay_status = ay_object_copy(s->start_cap, &(last->next));
 	  last = last->next;
 	}
 
-      if(r->end_cap)
+      if(s->end_cap)
 	{
-	  ay_status = ay_object_copy(r->end_cap, &(last->next));
+	  ay_status = ay_object_copy(s->end_cap, &(last->next));
 	  last = last->next;
 	}
 
@@ -553,25 +616,25 @@ ay_sweep_convertcb(ay_object *o)
     }
   else
     {
-      if(r->npatch)
+      if(s->npatch)
 	{
-	  ay_status = ay_object_copy(r->npatch, &new);
+	  ay_status = ay_object_copy(s->npatch, &new);
 	  ay_trafo_copy(o, new);
 	  ay_status = ay_object_link(new);
 	}
 
-      if(r->start_cap)
+      if(s->start_cap)
 	{
 	  new = NULL;
-	  ay_status = ay_object_copy(r->start_cap, &new);
+	  ay_status = ay_object_copy(s->start_cap, &new);
 	  ay_trafo_add(o, new);
 	  ay_status = ay_object_link(new);
 	}
 
-      if(r->end_cap)
+      if(s->end_cap)
 	{
 	  new = NULL;
-	  ay_status = ay_object_copy(r->end_cap, &new);
+	  ay_status = ay_object_copy(s->end_cap, &new);
 	  ay_trafo_add(o, new);
 	  ay_status = ay_object_link(new);
 	}
@@ -607,6 +670,8 @@ ay_sweep_init(Tcl_Interp *interp)
   ay_status = ay_notify_register(ay_sweep_notifycb, AY_IDSWEEP);
 
   ay_status = ay_convert_register(ay_sweep_convertcb, AY_IDSWEEP);
+
+  ay_status = ay_provide_register(ay_sweep_providecb, AY_IDSWEEP);
 
  return ay_status;
 } /* ay_sweep_init */

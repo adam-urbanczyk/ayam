@@ -507,6 +507,69 @@ ay_skin_notifycb(ay_object *o)
 
 
 int
+ay_skin_providecb(ay_object *o, unsigned int type, ay_object **result)
+{
+ int ay_status = AY_OK;
+ char fname[] = "skin_providecb";
+ ay_skin_object *s = NULL;
+ ay_object *new = NULL, **t = NULL, *p = NULL;
+
+  if(!o || !result)
+    return AY_ENULL;
+
+  s = (ay_skin_object *) o->refine;
+
+  if(type == AY_IDNPATCH)
+    {
+      t = &(new);
+
+      /* copy skin */
+      ay_status = ay_object_copy(s->npatch, t);
+      if(ay_status)
+	{
+	  ay_error(ay_status, fname, NULL);
+	  return AY_ERROR;
+	}
+      ay_trafo_copy(o, *t);
+      t = &((*t)->next);
+
+      /* copy caps */
+      p = s->start_cap;
+      while(p)
+	{
+	  ay_status = ay_object_copy(p, t);
+	  if(ay_status)
+	    {
+	      ay_error(ay_status, fname, NULL);
+	      return AY_ERROR;
+	    }
+	  ay_trafo_add(o, *t);
+	  t = &((*t)->next);
+	  p = p->next;
+	} /* while */
+
+      p = s->end_cap;
+      while(p)
+	{
+	  ay_status = ay_object_copy(p, t);
+	  if(ay_status)
+	    {
+	      ay_error(ay_status, fname, NULL);
+	      return AY_ERROR;
+	    }
+	  ay_trafo_add(o, *t);
+	  t = &((*t)->next);
+	  p = p->next;
+	} /* while */
+
+      *result = new;
+    } /* if */
+
+ return ay_status;
+} /* ay_skin_providecb */
+
+
+int
 ay_skin_convertcb(ay_object *o)
 {
  int ay_status = AY_OK;
@@ -610,6 +673,8 @@ ay_skin_init(Tcl_Interp *interp)
   ay_status = ay_notify_register(ay_skin_notifycb, AY_IDSKIN);
 
   ay_status = ay_convert_register(ay_skin_convertcb, AY_IDSKIN);
+
+  ay_status = ay_provide_register(ay_skin_providecb, AY_IDSKIN);
 
  return ay_status;
 } /* ay_skin_init */
