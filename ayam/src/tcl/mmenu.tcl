@@ -19,12 +19,16 @@ menu .fu.fMenu.fil.m -tearoff 0
 set m .fu.fMenu.fil.m
 $m add command -label "New"\
 	-command {
-    global ay ayprefs
+    global ay ayprefs tcl_platform
     if { ! [io_warnChanged] } { 
 	update; newScene; uS;
 	if { $ayprefs(NewLoadsEnv) == 1 } {
 	    viewCloseAll; cS; plb_update
-	    catch [replaceScene [file nativename $ayprefs(EnvFile)]]
+	    set filename [file nativename $ayprefs(EnvFile)]
+	    if { $tcl_platform(platform) == "windows" } {
+		regsub -all {\\} $filename {/} filename
+	    }
+	    catch [replaceScene $filename]
 	}
 	set ay(filename) ""
 	wm title . "Ayam - Main"
