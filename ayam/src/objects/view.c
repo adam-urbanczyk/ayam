@@ -951,7 +951,7 @@ ay_view_dropcb(ay_object *o)
     }
 
   view = (ay_view_object *)o->refine;
-
+  Togl_MakeCurrent(view->togl);
   width = Togl_Width(view->togl);
   height = Togl_Height(view->togl);
 
@@ -1005,6 +1005,8 @@ ay_view_dropcb(ay_object *o)
 
 	      ay_toglcb_reshape(view->togl);
 	      ay_toglcb_display(view->togl);
+	      ay_viewt_uprop(view);
+	      view->drawmarker = AY_FALSE;
 
 	    }
 	  break;
@@ -1019,6 +1021,8 @@ ay_view_dropcb(ay_object *o)
 	  
 	  ay_toglcb_reshape(view->togl);
 	  ay_toglcb_display(view->togl);
+	  ay_viewt_uprop(view);
+	  view->drawmarker = AY_FALSE;
 	  break;
 	default:
 	  break;
