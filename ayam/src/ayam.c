@@ -817,6 +817,9 @@ Tcl_SetVar(interp, "AYIDR", "1", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
       return TCL_ERROR;
     }
 
+ Tcl_SetVar2(interp, "ay", "ay_version", AYVERSIONSTR, TCL_GLOBAL_ONLY |
+	     TCL_LEAVE_ERR_MSG);
+
  return TCL_OK;
 } /* Tcl_AppInit */
 

@@ -24,7 +24,16 @@ wm transient .
 frame $w.ftext
 frame $w.fbutton
 
-getVersion
+if { $ay(views) != "" } {
+    getVersion
+} else {
+    set ay(gl_ver) "Not available unless a view is open."
+    set ay(gl_ren) ""
+    set ay(gl_ven) ""
+    set ay(gl_ext) ""
+    set ay(glu_ver) ""
+    set ay(glu_ext) ""
+}
 
 pack $w.ftext -in $w -side top -expand yes -fill both
 pack $w.fbutton -in $w -side bottom
