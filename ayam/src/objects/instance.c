@@ -583,7 +583,7 @@ ay_instance_convertcb(ay_object *i, int in_place)
  double scalx, scaly, scalz;
  double quat[4];
  ay_object *orig = NULL, *temp = NULL;
- ay_object *inext = NULL;
+ ay_object *inext = NULL, *new = NULL;
 
   if(i->type != AY_IDINSTANCE)
     return AY_ERROR;
@@ -592,70 +592,84 @@ ay_instance_convertcb(ay_object *i, int in_place)
   if(!orig)
     return AY_ERROR;
 
+  if(in_place)
+    {
+      /* convert the instance to a normal object "in place" */
+      movx = i->movx;
+      movy = i->movy;
+      movz = i->movz;
 
-  movx = i->movx;
-  movy = i->movy;
-  movz = i->movz;
+      rotx = i->rotx;
+      roty = i->roty;
+      rotz = i->rotz;
 
-  rotx = i->rotx;
-  roty = i->roty;
-  rotz = i->rotz;
+      scalx = i->scalx;
+      scaly = i->scaly;
+      scalz = i->scalz;
 
-  scalx = i->scalx;
-  scaly = i->scaly;
-  scalz = i->scalz;
+      quat[0] = i->quat[0];
+      quat[1] = i->quat[1];
+      quat[2] = i->quat[2];
+      quat[3] = i->quat[3];
 
-  quat[0] = i->quat[0];
-  quat[1] = i->quat[1];
-  quat[2] = i->quat[2];
-  quat[3] = i->quat[3];
+      inext = i->next;
+      iname = i->name;
 
-  inext = i->next;
-  iname = i->name;
+      /* free some data that may be accidentally attached to the
+	 instance object (by errors in other parts of the core?) */
+      if(i->selp)
+	ay_selp_clear(i);
 
-  /* free some data that may be accidentally attached to the
-     instance object (by errors in other parts of the core?) */
-  if(i->selp)
-    ay_selp_clear(i);
+      ay_tags_delall(i);
 
-  ay_tags_delall(i);
+      /* copy data from original object via temp object to instance object */
+      ay_status = ay_object_copy(orig, &temp);
+      if(ay_status)
+	return ay_status;
 
-  /* copy data from original object via temp object to instance object */
-  ay_status = ay_object_copy(orig, &temp);
-  if(ay_status)
-    return ay_status;
+      memcpy(i, temp, sizeof(ay_object));
 
-  memcpy(i, temp, sizeof(ay_object));
+      /* repair pointers */
+      i->next = inext;
+      i->name = iname;
 
-  /* repair pointers */
-  i->next = inext;
-  i->name = iname;
+      /* free temporary object */
+      if(temp->name)
+	free(temp->name);
+      if(temp)
+	free(temp);
 
-  /* free temporary object */
-  if(temp->name)
-    free(temp->name);
-  if(temp)
-    free(temp);
+      /* use transformation attributes from instance, not from original */
+      i->movx = movx;
+      i->movy = movy;
+      i->movz = movz;
 
-  /* use transformation attributes from instance, not from original */
-  i->movx = movx;
-  i->movy = movy;
-  i->movz = movz;
+      i->rotx = rotx;
+      i->roty = roty;
+      i->rotz = rotz;
 
-  i->rotx = rotx;
-  i->roty = roty;
-  i->rotz = rotz;
+      i->scalx = scalx;
+      i->scaly = scaly;
+      i->scalz = scalz;
 
-  i->scalx = scalx;
-  i->scaly = scaly;
-  i->scalz = scalz;
+      i->quat[0] = quat[0];
+      i->quat[1] = quat[1];
+      i->quat[2] = quat[2];
+      i->quat[3] = quat[3];
 
-  i->quat[0] = quat[0];
-  i->quat[1] = quat[1];
-  i->quat[2] = quat[2];
-  i->quat[3] = quat[3];
-
-  orig->refcount--;
+      orig->refcount--;
+    }
+  else
+    {
+      /* create a copy of instanced object with transformation
+	 attributes from the instance object */
+      ay_status = ay_object_copy(orig, &new);
+      if(new)
+	{
+	  ay_trafo_copy(i, new);
+	  ay_status = ay_object_link(new);
+	} /* if */
+    } /* if */
 
  return ay_status;
 } /* ay_instance_convertcb */
