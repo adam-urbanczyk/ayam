@@ -395,7 +395,7 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
 	  else
 	    {
 	      ay_pe_homcpo = tmpi;
-	      ay_pe_homcpo[ay_pe_objectslen] = ay_point_edit_coords_hom;
+	      ay_pe_homcpo[ay_pe_objectslen] = ay_point_edit_coords_homogenous;
 	    }
 
 	  /* remember pointer to current object */
