@@ -403,7 +403,7 @@ proc viewDrop { w tree dropx dropy currentoperation datatype data } {
     #puts "viewDrop: $currentoperation $datatype $data"
 
     $w drop
-    focus $w
+    after 100 "focus -force $w"
 
 return;
 }
