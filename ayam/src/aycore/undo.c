@@ -926,12 +926,6 @@ ay_undo_undotcmd(ClientData clientData, Tcl_Interp *interp,
  int mode = 0; /* default mode is "undo" */
  char *a = "ay", *n = "sc", *v = "1";
 
-  /* protect undo code from too small buffers */
-  if(undo_buffer_size < 2)
-    {
-      return TCL_OK;
-    }
-
   /* parse args */
   if(argc > 1)
     {
@@ -947,6 +941,17 @@ ay_undo_undotcmd(ClientData clientData, Tcl_Interp *interp,
 	    ay_error(AY_EARGS, fname, "redo|save|clear|savsel");
 	    return TCL_OK;
 	  }
+    }
+
+  /* protect undo code from too small buffers */
+  if(undo_buffer_size < 2)
+    {
+      if(mode == 2)
+	{
+	  /* set scene changed flag */
+	  Tcl_SetVar2(interp, a, n, v, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	}
+      return TCL_OK;
     }
 
   switch(mode)
