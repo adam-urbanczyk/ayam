@@ -202,7 +202,7 @@ proc render_select { } {
 		set ay(autoload) $splugin
 		io_lcAuto
 	    }
-	    scanAllShaders
+	    shader_scanAll
 	}
 
 	ayError 4 "Renderer_Select" "Now using \$newr to render."
