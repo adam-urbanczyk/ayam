@@ -3496,7 +3496,7 @@ instance, then use the main menu entry: <tt>"Edit/Master"</tt>.
 <figure loc="ht">
 <eps file="pics/clone.ps" height="5cm">
 <img src="pics/clone.gif">
-<caption>Clone Object with Trajectory (white)</caption>
+<caption>Clone Object with Trajectory Curve (white)</caption>
 </figure>
 <p>
 The Clone object allows you to easily create and control a number
@@ -3540,7 +3540,7 @@ instances. They are not used, if a trajectory curve is present.
 <figure loc="ht">
 <eps file="pics/revolve.ps" height="5cm">
 <img src="pics/revolve.gif">
-<caption>Revolve Object (Curve, Surface of Revolution)</caption>
+<caption>Revolve Object (left: Curve, right: Surface of Revolution)</caption>
 </figure>
 <p>
 The Revolve object forms a surface of revolution from
@@ -3602,7 +3602,8 @@ of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 <figure loc="ht">
 <eps file="pics/extrude.ps" height="4cm">
 <img src="pics/extrude.gif">
-<caption>Extrude Object (Curve, normal Extrusion, Extrusion with Caps)</caption>
+<caption>Extrude Object (left: Curve, middle: normal Extrusion,
+right: Extrusion with Caps)</caption>
 </figure>
 <p>
 The extrude object forms an extrusion from
@@ -3696,7 +3697,7 @@ control points) if cap generation fails due to self intersecting bevels.
 <figure loc="ht">
 <eps file="pics/sweep.ps" height="6cm">
 <img src="pics/sweep.gif">
-<caption>Sweep Object (Two Curves, Resulting Swept Surface)</caption>
+<caption>Sweep Object (left: Curves, right: Resulting Swept Surface)</caption>
 </figure>
 <p>
 The sweep object forms a surface that results from
@@ -3785,7 +3786,7 @@ of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 <figure loc="ht">
 <eps file="pics/skin.ps" height="6cm">
 <img src="pics/skin.gif">
-<caption>Skin Object (Curves, Resulting Skinned Surface)</caption>
+<caption>Skin Object (left: Curves, right: Resulting Skinned Surface)</caption>
 </figure>
 <p>
 The skin object forms a surface defined by a set of curves, where
@@ -3865,16 +3866,23 @@ of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 <sect1>Gordon Object<label id="gordonobj">
 <p>
 <figure loc="ht">
-<eps file="pics/sgordon.ps" height="6cm">
-<img src="pics/sgordon.gif">
-<caption>Gordon Surface with Parameter Curves (white)</caption>
+<eps file="pics/gordon-hood.ps" height="6cm">
+<img src="pics/gordon-hood.gif">
+<caption>Gordon Object (left: Curves, right: Resulting Gordon
+Surface)</caption>
 </figure>
 <p>
 The Gordon object forms a surface defined by two sets of intersecting
 curves (a network of curves), where all curves will always be interpolated
-by the surface. The image above shows the simplest configuration
+by the surface. The image below shows the simplest configuration
 of such a network consisting of four parameter curves.
 Note the order and the direction of the curves.
+<p>
+<figure loc="ht">
+<eps file="pics/sgordon.ps" height="6cm">
+<img src="pics/sgordon.gif">
+<caption>Gordon Surface with Parameter Curves (white)</caption>
+</figure>
 <p>
 The curves may be of arbitrary length and order. You may e.g.
 use a curve of order 2 and length 6 with a second curve
