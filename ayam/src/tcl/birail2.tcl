@@ -26,7 +26,7 @@ DisplayMode 1
 # create Birail2Attr-UI
 set w [frame $ay(pca).$Birail2Attr(w)]
 
-addCheck $w Birail2AttrData Close
+#addCheck $w Birail2AttrData Close
 addParam $w Birail2AttrData Sections
 addCheck $w Birail2AttrData StartCap
 addCheck $w Birail2AttrData EndCap
