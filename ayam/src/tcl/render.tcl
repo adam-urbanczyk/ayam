@@ -89,7 +89,7 @@ proc render_select { } {
 		set ayprefs(QRenderPT) ""
 		set ayprefs(Render) "rendrib -d 4 %s"
 		set ayprefs(RenderPT) "Done computing %d"
-		set ayprefs(SMRender) "rendrib -d 4 %s"
+		set ayprefs(SMRender) "rendrib %s"
 		set ayprefs(SMRenderPT) "Done computing %d"
 		set ayprefs(RenderMode) 0
 		if { $ay(ScanShaders) == 1 } {
@@ -104,7 +104,7 @@ proc render_select { } {
 		set ayprefs(QRenderPT) ""
 		set ayprefs(Render) "rendrib -d 4 -Progress %s"
 		set ayprefs(RenderPT) "R90000 %d"
-		set ayprefs(SMRender) "rendrib -d 4 -Progress %s"
+		set ayprefs(SMRender) "rendrib -Progress %s"
 		set ayprefs(SMRenderPT) "R90000 %d"
 		set ayprefs(RenderMode) 0
 		if { $ay(ScanShaders) == 1 } {
