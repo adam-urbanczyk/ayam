@@ -93,6 +93,18 @@ In this manual, the following typographic conventions are used:
 <code>
 set riopt(runtime) { a b }
 </code>
+<item>Object hierarchies:
+<code>
++-Parent_Object(Type)
+ | First_Child_Object(Type)
+ | Second_Child_Object(Type)
+ | [Third_Child_Object_may_be_present_or_not(Type)]
+ | Empty_Level(Level)
+ +-Sub_Level(Level)
+ | | First_Child_Object_of_Sub_Level(Type)
+ | \ Last_Child_Object_of_Sub_Level(Type)
+ \ Last_Child_Object(Type)
+</code>
 </itemize>
 
 <sect>The Ayam GUI
@@ -4108,7 +4120,18 @@ of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 <p>
 The skin object forms a surface defined by a set of cross section curves,
 where the first and last curve will always be interpolated by the surface
-(this process is sometimes also called lofting).<p>
+(this process is sometimes also called lofting).
+<p>
+The complete template for the Skin object hierarchy, consequently,
+looks like this:
+<code>
++-Skin
+ | C1(NCurve)
+ | C2(NCurve)
+ | [...
+ \ Cn(NCurve)]
+</code>
+<p>
 Note that in contrast to the build from curves tool,
 the curves may be of arbitrary length and order. You may e.g.
 easily skin a curve of order 2 and length 6 with a second curve
@@ -4191,8 +4214,8 @@ Surface)</caption>
 <p>
 The Gordon object forms a surface defined by two sets of intersecting
 curves (a network of curves), where all curves will always be interpolated
-by the surface. The image below shows the simplest configuration
-of such a network consisting of four parameter curves.
+by the surface (see image above). The image below shows the simplest
+configuration of such a network consisting of four parameter curves.
 Note the order and the direction of the curves.
 <p>
 <figure loc="ht">
@@ -4255,6 +4278,23 @@ like this:
  | V2(NCurve)
  | Level
  \ Intersections(NPatch)
+</code>
+<p>
+The complete template for the Gordon object hierarchy, consequently,
+looks like this:
+<code>
++-Gordon
+ | U1(NCurve)
+ | U2(NCurve)
+ | [...
+ | Un(NCurve)]
+ | Level
+ | V1(NCurve)
+ | V2(NCurve)
+ | [...
+ | Vn(NCurve)]
+ | [Level
+ \ Intersections(NPatch)]
 </code>
 <p>
 You may convert the current Gordon surface to an ordinary NURBS
@@ -4588,6 +4628,16 @@ available, you have to load the <tt>"metaobj"</tt> plugin using the menu entry
 single meta component (a sphere) in it. The meta world is represented
 by a <tt>"MetaObj"</tt> object and the component by a <tt>"MetaComp"</tt>
 object which is a child of the <tt>"MetaObj"</tt> object.
+<p>
+The complete template for the MetaObj object hierarchy, consequently,
+looks like this:
+<code>
++-MetaWorld(MetaObj)
+ | C1(MetaComp)
+ | [...
+ \ Cn(MetaComp)]
+</code>
+<p>
 Meta components live only in a meta world, therefore it makes no sense
 to create <tt>"MetaComp"</tt> objects in other places except as a
 child of a <tt>"MetaObj"</tt> object. Type, parameters, and
