@@ -80,8 +80,8 @@ proc shortcut_main { w } {
     $m entryconfigure 5 -accelerator $aymainshortcuts(SaveAs)
     bind $w <[repcont $aymainshortcuts(Save)]> "$m invoke 6"
     $m entryconfigure 6 -accelerator $aymainshortcuts(Save)
-    bind $w <[repcont $aymainshortcuts(ExportRIB)]> "$m invoke 10"
-    $m entryconfigure 10 -accelerator $aymainshortcuts(ExportRIB)
+    bind $w <[repcont $aymainshortcuts(ExportRIB)]> "$m.ex invoke 0"
+    $m.ex entryconfigure 0 -accelerator $aymainshortcuts(ExportRIB)
 
     bind $w <[repcont $aymainshortcuts(MRU1)]> "$m invoke 16"
     $m entryconfigure 16\

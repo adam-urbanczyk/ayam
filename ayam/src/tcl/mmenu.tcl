@@ -75,7 +75,10 @@ $m add command -label "Save" -command "io_saveScene dontask 0"
 $m add separator
 $m add command -label "Import Mops" -command "io_importMops"
 $m add separator
-$m add command -label "Export RIB" -command "io_exportRIB"
+$m add cascade -menu $m.ex -label "Export"
+menu $m.ex -tearoff 0
+$m.ex add command -label "RenderMan RIB" -command "io_exportRIB"
+$m.ex add command -label "Wavefront OBJ" -command "io_exportOBJ 0"
 $m add separator
 $m add command -label "Load Custom" -command "io_loadCustom"
 $m add separator
