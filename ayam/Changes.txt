@@ -1,4 +1,4 @@
-[CVS, 09. 03. 2003]:
+[CVS, 17. 03. 2003]:
 o bug fixes:
   - fixed RIB import creating object names with malicious characters (spaces)
     (SF 686419)
@@ -50,6 +50,10 @@ o improved object tree update process; it now checks for scene changes that
   operation if this happens
 o the ConcatNC object can now also create a fillet for a single parameter
   curve to close it
+o the BWidgets package is now requested with exact version (1.2.1) so that
+  newer (inkompatible) installed versions of BWidgets can cause no harm
+o added a compile time option "-DAYWITHAQUA" to distinguish between
+  MacOSX-Aqua and MacOSX-X11
 
 
 [07. 02. 2003] Ayam1.4:
