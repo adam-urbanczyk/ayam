@@ -188,7 +188,7 @@ AYSLOLIBS = -L $(PRMANDIR)/lib -lsloargs -ltarget -lzip
 # Ayslo3d Plugin
 3DLDIR = /usr/local/3delight
 #3DLDIR = /usr/local/3delight-0.9.6/Linux-i686-libstdc++-3
-AYSLO3INCDIR = $(3DLDIR)/include
+AYSLO3DINCDIR = $(3DLDIR)/include
 AYSLO3DLIBS = -L $(3DLDIR)/lib -l3delight
 
 #############################################
