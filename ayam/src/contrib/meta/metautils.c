@@ -26,16 +26,15 @@
 #define pos(p) (w->mgrid[p.x * w->aktcubes * w->aktcubes + p.y * w->aktcubes + p.z])
 
 
-/* calculate the effect for all metaballs in list */
+/* calculate the effect for all components in list */
 double
 meta_calcall (double x1, double y1, double z1, meta_world * w)
 {
-  double effect, dist, radius, tmpeffect, falloff;
+  double effect, dist, radius, tmpeffect;
   meta_blob *tmp;
   ay_object *o;
   double x, y, z;
   Tcl_Obj *to = NULL, *ton = NULL;
-  int i = 0;
 
   effect = 0;
   dist = 0;
@@ -51,83 +50,49 @@ meta_calcall (double x1, double y1, double z1, meta_world * w)
       	tmp = (meta_blob *) o->refine;
       	radius = tmp->r * tmp->r;
 
-      	/* rotate the Object */
-	 	if (!(tmp->formula == META_TORUS))
-		{
+      	/* rotate and scale the Object */
 
 	  	x =
-	  	  tmp->rm[0] * x1 + tmp->rm[4] * y1 + tmp->rm[8] * z1 +
-	  	  tmp->rm[12] * 1.0;
+	  	  (tmp->rm[0] * x1 + tmp->rm[4] * y1 + tmp->rm[8] * z1 +
+	  	  tmp->rm[12] * 1.0)* tmp->scalex;
 	  	y =
-	  	  tmp->rm[1] * x1 + tmp->rm[5] * y1 + tmp->rm[9] * z1 +
-	  	  tmp->rm[13] * 1.0;
+	  	  (tmp->rm[1] * x1 + tmp->rm[5] * y1 + tmp->rm[9] * z1 +
+	  	  tmp->rm[13] * 1.0)* tmp->scaley;
 	  	z =
-	  	  tmp->rm[2] * x1 + tmp->rm[6] * y1 + tmp->rm[10] * z1 +
-	  	  tmp->rm[14] * 1.0;
-
-	  	dist = META_DIST (x, y, z, tmp->cp.x, tmp->cp.y, tmp->cp.z);
-		}
+	  	  (tmp->rm[2] * x1 + tmp->rm[6] * y1 + tmp->rm[10] * z1 +
+	  	  tmp->rm[14] * 1.0)* tmp->scalez;
 
 
-     	 /* the normal metaball */
-	 if (tmp->formula == META_BALL)
-	 {
-	   if (dist <= radius)
-	   {
-		 tmpeffect = tmp->a * META_CUB (dist) / META_CUB (radius) +
-		   tmp->b * META_SQ (dist) / META_SQ (radius) + tmp->c * dist / radius +
-		    1.0;
+
+    	       /* the normal metaball */
+
+	      if (tmp->formula == META_BALL)
+	      {
+    	         dist = META_DIST (x, y, z, tmp->cp.x, tmp->cp.y, tmp->cp.z);
+	         if (dist <= radius)
+	         {
+		       tmpeffect = tmp->a * META_CUB (dist) / META_CUB (radius) +
+		       tmp->b * META_SQ (dist) / META_SQ (radius) + tmp->c * dist / radius + 1.0;
 	
-		      if (tmp->negativ)
-			{
-			  effect -= tmpeffect;
-			}
-		      else
-			effect += tmpeffect;
-	    }
+		       if (tmp->negativ)
+			  {
+			    effect -= tmpeffect;
+			  }
+		       else
+			  effect += tmpeffect;
+	         }
 
-	}
+	      }
 
 
-/*
-      if (tmp->formula == 1)
-      {
-	if (dist <= radius)
-	{
-	      falloff = 1.0f - (dist / radius);
-	      tmpeffect = tmp->s * falloff * falloff;
-
-		 if (tmp->negativ)
-		{
-		  effect -= tmpeffect;
-		}
-	      else
-		effect += tmpeffect;
-
-	    }
-	}
-
-      if (tmp->formula == 2)
-	{
-
-	  tmpeffect = radius / (dist < 0.00001 ? 0.00001 : dist);
-
-	  if (tmp->negativ)
-	    {
-	      effect -= tmpeffect;
-	    }
-	  else
-	    effect += tmpeffect;
-
-	}
-*/
-
+		 /* a Cube */
+		 
 		 if (tmp->formula == META_CUBE)
 		 {
 
 		  {	 
-		   tmpeffect = (tmp->scalex*pow(META_ABS(x-tmp->cp.x),tmp->ex) +  tmp->scaley*pow(META_ABS(y -tmp->cp.y),tmp->ey) \
-		   +  tmp->scalez*pow(META_ABS(z - tmp->cp.z),tmp->ez))*9000;
+		   tmpeffect = (pow(META_ABS(x-tmp->cp.x),tmp->ex) +  pow(META_ABS(y -tmp->cp.y),tmp->ey) \
+		   +  pow(META_ABS(z - tmp->cp.z),tmp->ez))*9000;
 		 
 		   tmpeffect = 1/(tmpeffect < 0.00001 ? 0.00001 : tmpeffect);
 	
@@ -142,32 +107,19 @@ meta_calcall (double x1, double y1, double z1, meta_world * w)
 		}
 	 
 
+		 /* a Torus */
+		 
 		 if (tmp->formula == META_TORUS)
 		{
 
-		  x1 = (x1 - tmp->cp.x);
-		  y1 = (y1 - tmp->cp.y);
-		  z1 = (z1 - tmp->cp.z);
-
-		  x =
-		    (tmp->rm[0] * x1 + tmp->rm[4] * y1 + tmp->rm[8] * z1 +
-		     tmp->rm[12] * 1.0) * tmp->scalex;
-		  y =
-		    (tmp->rm[1] * x1 + tmp->rm[5] * y1 + tmp->rm[9] * z1 +
-		     tmp->rm[13] * 1.0) * tmp->scaley;
-		  z =
-		    (tmp->rm[2] * x1 + tmp->rm[6] * y1 + tmp->rm[10] * z1 +
-		     tmp->rm[14] * 1.0) * tmp->scalez;
-
 		  if (tmp->rot)
 		    tmpeffect =
-		      META_SQ (x * x + META_SQ (y) + z * z + tmp->Ro * tmp->Ro -
-			  tmp->Ri * tmp->Ri) - 4.0 * META_SQ (tmp->Ro) * (META_SQ (z) + META_SQ (y));
+		      META_SQ (META_SQ(x - tmp->cp.x) + META_SQ (y - tmp->cp.y) + META_SQ(z - tmp->cp.z) + tmp->Ro * tmp->Ro -
+			  tmp->Ri * tmp->Ri) - 4.0 * META_SQ (tmp->Ro) * (META_SQ (z - tmp->cp.z) + META_SQ (y - tmp->cp.y));
 		  else
 		    tmpeffect =
-		      META_SQ (x * x + META_SQ (y) + z * z + tmp->Ro * tmp->Ro -
-			  tmp->Ri * tmp->Ri) - 4.0 * META_SQ (tmp->Ro) * (META_SQ (x) + META_SQ (y));
-
+		      META_SQ (META_SQ(x - tmp->cp.x) + META_SQ (y - tmp->cp.y) + META_SQ(z - tmp->cp.z) + tmp->Ro * tmp->Ro -
+			  tmp->Ri * tmp->Ri) - 4.0 * META_SQ (tmp->Ro) * (META_SQ (x - tmp->cp.x) + META_SQ (y - tmp->cp.y));
 
 		  if (tmp->negativ)
 		    {
@@ -178,71 +130,71 @@ meta_calcall (double x1, double y1, double z1, meta_world * w)
 		    effect += 1 / (tmpeffect < 0.00001 ? 0.00001 : tmpeffect) * 0.006;
 		}
 
-    	if (tmp->formula == META_HEART)
-	{
-	  x = x1 - tmp->cp.x;
-	  y = y1 - tmp->cp.y;
-	  z = z1 - tmp->cp.z;
+          /* create a heart */
+
+    	     if (tmp->formula == META_HEART)
+	     {
+
+	       tmpeffect =
+	          META_CUB (2 * META_SQ (x - tmp->cp.x) + META_SQ (y - tmp->cp.y) + META_SQ (z - tmp->cp.z) - 1) -
+		     (0.1 * META_SQ (x - tmp->cp.x) + META_SQ (y - tmp->cp.y)) * META_CUB (z - tmp->cp.z);
+
+	       if (tmp->negativ)
+	       {
+	          effect -=
+		     1 / (tmpeffect < 0.00001 ? 0.00001 : tmpeffect) * 0.002;
+	       }
+	       else
+	          effect += 1 / (tmpeffect < 0.00001 ? 0.00001 : tmpeffect) * 0.002;
+	     }
 
 
-	  tmpeffect =
-	    META_CUB (2 * META_SQ (x) + META_SQ (y) + META_SQ (z) - 1) - (0.1 * META_SQ (x) +
-	      META_SQ (y)) * META_CUB (z);
-
-
-	  if (tmp->negativ)
-	  {
-	      effect -=
-		1 / (tmpeffect < 0.00001 ? 0.00001 : tmpeffect) * 0.002;
-	  }
-	  else
-	       effect += 1 / (tmpeffect < 0.00001 ? 0.00001 : tmpeffect) * 0.002;
-	}
-
-	}
-      if (tmp->formula == META_CUSTOM)
-	{
-	  ton = Tcl_NewStringObj("x", -1);
-	  to = Tcl_NewDoubleObj(x);
-	  Tcl_ObjSetVar2(ay_interp, ton, NULL, to, TCL_LEAVE_ERR_MSG |
+         /* a custom formula */
+	    
+	    if (tmp->formula == META_CUSTOM)
+	    {
+	       ton = Tcl_NewStringObj("x", -1);
+	       to = Tcl_NewDoubleObj(x - tmp->cp.x);
+	       Tcl_ObjSetVar2(ay_interp, ton, NULL, to, TCL_LEAVE_ERR_MSG |
 			TCL_GLOBAL_ONLY);
-	  Tcl_SetStringObj(ton, "y", -1);
-  	  to = Tcl_NewDoubleObj(y);
-	  Tcl_ObjSetVar2(ay_interp, ton, NULL, to, TCL_LEAVE_ERR_MSG |
-			TCL_GLOBAL_ONLY);
-
-	  Tcl_SetStringObj(ton, "z", -1);
-  	  to = Tcl_NewDoubleObj(z);
-	  Tcl_ObjSetVar2(ay_interp, ton, NULL, to, TCL_LEAVE_ERR_MSG |
-			TCL_GLOBAL_ONLY);
-	  Tcl_SetStringObj(ton, "f", -1);
-  	  to = Tcl_NewDoubleObj(0.0);
-	  Tcl_ObjSetVar2(ay_interp, ton, NULL, to, TCL_LEAVE_ERR_MSG |
+	       Tcl_SetStringObj(ton, "y", -1);
+  	       to = Tcl_NewDoubleObj(y - tmp->cp.y);
+	       Tcl_ObjSetVar2(ay_interp, ton, NULL, to, TCL_LEAVE_ERR_MSG |
 			TCL_GLOBAL_ONLY);
 
-	  if(tmp->expression)
-	    Tcl_GlobalEvalObj(ay_interp, tmp->expression);
+	       Tcl_SetStringObj(ton, "z", -1);
+  	       to = Tcl_NewDoubleObj(z - tmp->cp.z);
+	       Tcl_ObjSetVar2(ay_interp, ton, NULL, to, TCL_LEAVE_ERR_MSG |
+			TCL_GLOBAL_ONLY);
+	       Tcl_SetStringObj(ton, "f", -1);
+  	       to = Tcl_NewDoubleObj(0.0);
+	       Tcl_ObjSetVar2(ay_interp, ton, NULL, to, TCL_LEAVE_ERR_MSG |
+			TCL_GLOBAL_ONLY);
 
-	  Tcl_SetStringObj(ton, "f", -1);
-	  to = Tcl_ObjGetVar2(ay_interp, ton, NULL, TCL_LEAVE_ERR_MSG |
+	      if(tmp->expression)
+	      Tcl_GlobalEvalObj(ay_interp, tmp->expression);
+
+	      Tcl_SetStringObj(ton, "f", -1);
+	      to = Tcl_ObjGetVar2(ay_interp, ton, NULL, TCL_LEAVE_ERR_MSG |
 			      TCL_GLOBAL_ONLY);
-	  Tcl_GetDoubleFromObj(ay_interp, to, &tmpeffect);
+	      Tcl_GetDoubleFromObj(ay_interp, to, &tmpeffect);
 
-	  Tcl_IncrRefCount (ton);
-	  Tcl_DecrRefCount (ton);
+	      Tcl_IncrRefCount (ton);
+	      Tcl_DecrRefCount (ton);
 
-	  if(tmp->negativ)
-	    {
-	      effect -= 1 / (tmpeffect < 0.00001 ? 0.00001 : tmpeffect) *
-		0.002;
+	      if(tmp->negativ)
+	      {
+	        effect -= 1 / (tmpeffect < 0.00001 ? 0.00001 : tmpeffect) *
+		   0.002;
+	      }
+	      else
+	      {
+	        effect += 1 / (tmpeffect < 0.00001 ? 0.00001 : tmpeffect) *
+		   0.002;
+	      }
 	    }
-	  else
-	    {
-	      effect += 1 / (tmpeffect < 0.00001 ? 0.00001 : tmpeffect) *
-		0.002;
-	    }
-	}
 
+      }
 	o = o->next;
 
     }
@@ -672,6 +624,8 @@ meta_calceffect (meta_world * w)
   w->lastmark++;
   w->stackpos = 0;
 
+ w->zahl = 0;
+
 #if META_USEVERTEXARRAY
   /* Reset Hash */
   memset(w->vhash,0,(sizeof (int) * ((w->tablesize-1) + (w->tablesize/10 -1) + (w->tablesize/100 -1))));
@@ -719,7 +673,7 @@ meta_calceffect (meta_world * w)
 	 	 cube = w->stack[w->stackpos];
 
 
-	  	if (w->currentnumpoly >= (w->maxpoly + 5))
+	  	if (w->currentnumpoly+150 >= (w->maxpoly))
 	    	{
 
 	     	 if (!
@@ -741,6 +695,8 @@ meta_calceffect (meta_world * w)
 		}
 		  code = meta_polygonise (w, &cube, w->isolevel);
 
+		 // printf("iso %f \n",w->isolevel);
+		  
 		  pos (cube.pos) = w->lastmark;	/* mark that cube is visited */
 
 		  if ((code != 0) || (code == 300))
@@ -770,11 +726,13 @@ meta_getnormal (meta_world * w, meta_xyz * p, meta_xyz * normal)
 
   f = meta_calcall (p->x, p->y, p->z, w);
 
-  /*
-     xn = ncalcall(p->x-0.01, p->y, p->z,w) - ncalcall(p->x+0.01, p->y, p->z,w);
-     yn = ncalcall(p->x, p->y-0.01, p->z,w) - ncalcall(p->x, p->y+0.01, p->z,w);
-     zn = ncalcall(p->x, p->y, p->z-0.01,w) - ncalcall(p->x, p->y, p->z+0.01,w);
-   */
+  
+/*
+     xn = (meta_calcall(p->x+d, p->y, p->z,w) - meta_calcall(p->x-d, p->y, p->z,w))/(2*d);
+     yn = (meta_calcall(p->x, p->y+d, p->z,w) - meta_calcall(p->x, p->y-d, p->z,w))/(2*d);
+     zn = (meta_calcall(p->x, p->y, p->z+d,w) - meta_calcall(p->x, p->y, p->z-d,w))/(2*d);
+*/
+
 
   xn = (meta_calcall (p->x + d, p->y, p->z, w) - f) / d;
   yn = (meta_calcall (p->x, p->y + d, p->z, w) - f) / d;
