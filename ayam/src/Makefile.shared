@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile.shared [4. Nov 2001]
+# Makefile.shared [8. Feb 2001]
 # Makefile for Ayam (shared version)
 
 # Where shall the executable be installed?
@@ -9,7 +9,7 @@ BINDIR=/usr/local/bin
 #BINDIR=/usr/local/bin
 
 # Where shall the documentation be installed?
-# Note: The specified directory _must_ exist!
+# Note: The specified directory _must_ exist and be writable!
 # Note^2: A subdir "ayam" will be created in this dir
 DOCDIR=/usr/doc/
 #DOCDIR=/usr/doc/
@@ -142,6 +142,9 @@ DL = -ldl
 # NetBSD:
 #DL =
 
+# RRIB Plugin Required Libraries
+RRIBLIBS = -L /home/randi/sdk/affine0008/lib -lribrdr -lribhash -lribnop -lm -lz
+
 #############################################
 # nothing needs to be changed below this line
 #############################################
@@ -245,6 +248,9 @@ METAOBJS = contrib/meta/metaobj.o \
 	contrib/meta/move.o \
 	contrib/meta/marching.o
 
+RRIBOBJS = plugins/rrib.o
+
+
 .c.o: 
 	$(CC) -c $(CFLAGS) $*.c -o $@ -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR)
 
@@ -267,6 +273,9 @@ mfio.so: plugins/mfio.o mf3d
 
 metaobj.so: $(METAOBJS)
 	$(CC) -shared $(METAOBJS) -o contrib/meta/metaobj.so
+
+rrib.so: $(RRIBOBJS)
+	$(CC) -shared $(RRIBOBJS) -o plugins/rrib.so $(RRIBLIBS)
 
 clean:
 	rm -f core *.o *.so $(AYAMOBJS) $(TOGLOBJECT) plugins/*.o
