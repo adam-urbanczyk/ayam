@@ -2692,11 +2692,15 @@ So watch out for already existing procedures and commands when
 implementing your own!<p>
 Using procedures and commands not listed in this documentation
 is dangerous too. Implementation and interfaces of that
-commands may change in future versions.<p>
+commands may change in future versions.
+
 The scripting interface may be used directly from the console
 of Ayam. You can, of course, also write procedures in your own
 Tcl script files, that may be loaded at any time into Ayam using
-the console and the command <tt/"source"/.<p>
+the console and the Tcl command <tt/"source"/.<p>
+You can also arrange for a script to be executed automatically
+on startup using the preference setting <tt>"Main/Scripts"</tt>.
+
 Note, that most of the listed commands work in background,
 without changing anything to the Ayam GUI and Ayam view windows,
 for execution speed. If you want your changes to become visible
@@ -3181,9 +3185,57 @@ callback for the selected object(s) and their parents, or if no object
 is selected for all objects of the scene.
 </itemize>
 
-<sect>Miscellaneous
+<sect1>Scripting Interface Examples
 <p>
 
+<sect2>Moving Objects<label id="scexmov">
+<p>
+The following example script shows how to move a selected object
+to a specified position in space.
+<code>
+proc placeOb { x y z } {
+  global transfPropData
+
+  # copy Transformations-property data to
+  # global array "transfPropData"
+  getTrafo
+
+  # set array values according to procedure parameters
+  set transfPropData(Translate_X) $x
+  set transfPropData(Translate_Y) $y
+  set transfPropData(Translate_Z) $z
+
+  # copy Transformations-property data from
+  # global array "transfPropData" to selected object
+  setTrafo
+
+}
+</code>
+In order to move all selected objects to 1 1 1 you may enter the
+following into the console:
+<code>
+forAll 0 {placeOb 1 1 1}
+</code>
+But perhaps you would rather like a small GUI for that?
+No problem:
+<code>
+global ay
+$ay(cm) add command -label "Place Object" -command {
+ runTool {x y z} {"X:" "Y:" "Z:"} "placeOb %0 %1 %2"
+}
+</code>
+
+<sect2>Moving NURBS points<label id="scexnurb">
+<p>
+The following example script shows how to move control points
+of a selected NURBS curve.
+<code>
+Later.
+</code>
+
+
+<sect>Miscellaneous
+<p>
 <sect1>Ayamrc File<label id="ayamrc">
 <p>
 To customize Ayam the ayamrc file may be used.
