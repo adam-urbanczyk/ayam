@@ -276,9 +276,10 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
 #endif
 
   // draw CSG
+  glClearDepth((GLfloat)1.0);
   glClearColor((GLfloat)ay_prefs.bgr, (GLfloat)ay_prefs.bgg,
 	       (GLfloat)ay_prefs.bgb, (GLfloat)0.0);
-  glClear(GL_COLOR_BUFFER_BIT);
+  glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
@@ -300,8 +301,8 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
 
 	  ay_status = aycsg_flatten(o, togl, AY_LTUNION, calc_bbs);
 
-	  glClearDepth((GLfloat)1.0);
-	  glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+	  // XXXX do we need this?
+	  glClear(GL_STENCIL_BUFFER_BIT);
 
 	  // fill depth buffer (resolve CSG operations)
 	  glDisable(GL_LIGHTING);
