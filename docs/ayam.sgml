@@ -944,9 +944,14 @@ will add that file to the most recently used list in the main menu
 for quick access.
 <item><tt/"ToolBoxTrans"/; controls whether the tool box window
 should be declared as a transient window of the main window.
-It will then (depending on the window manager or its configuration)
-get a different or no decoration, no icon, and will always be iconified
+It will then, depending on the window manager or its configuration,
+get a different or no decoration, no icon (or no entry in the
+task bar on Windows), and will always be iconified
 when the main window gets iconified.
+<item><tt/"RGTrans"/; controls whether the render gui windows
+should be declared as a transient window of the main window.
+See the discussion of <tt/"ToolBoxTrans"/ above for more information
+about transient windows.
 </itemize>
 
 <sect>Interactive Actions (Modeling)<label id="iac">
@@ -4253,6 +4258,7 @@ R
 <ref id="revt" name="Revolve tool">
 <item>RGBA_ONE, RGBA_MIN, RGBA_MAX, RGBA_Dither:
 <ref id="rio" name="RenderMan interface option">
+<item>RGTrans: <ref id="prefmisc" name="preference setting">
 <item>RiAttribute: <ref id="riattrs" name="property">,
 <ref id="riatag" name="tag type">,
 <ref id="rioptdb" name="RiOption and RiAttributes Database">
@@ -4342,6 +4348,7 @@ T
 <ref id="ncattr" name="NURBCurve attribute">,
 <ref id="npattr" name="NURBPatch attribute">
 <item>Tool: <ref id="toolb" name="tool box window">
+<item>ToolBoxTrans: <ref id="prefmisc" name="preference setting">
 <item>Torus: <ref id="mm" name="main menu entry">,
 <ref id="torusobj" name="object">
 <item>Transformations: <ref id="trap" name="transformations property">
