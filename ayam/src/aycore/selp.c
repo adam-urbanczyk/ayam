@@ -1,7 +1,7 @@
 /*
  * Ayam, a free 3D modeler for the RenderMan interface.
  *
- * Ayam is copyrighted 1998-2001 by Randolf Schultz
+ * Ayam is copyrighted 1998-2004 by Randolf Schultz
  * (rschultz@informatik.uni-rostock.de) and others.
  *
  * All rights reserved.
@@ -20,7 +20,7 @@
 void
 ay_selp_clear(ay_object *o)
 {
-  ay_point_object *next = NULL, *p = NULL;
+ ay_point_object *next = NULL, *p = NULL;
 
   if(!o)
     return;
@@ -72,7 +72,7 @@ ay_selp_selall(ay_object *o)
       newp->point = ay_point_edit_coords[i];
       newp->homogenous = ay_point_edit_coords_homogenous;
     } /* for */
-      
+
  return AY_OK;
 } /* ay_selp_selall */
 
