@@ -231,6 +231,9 @@ array set ayviewshortcuts {
     Break "Escape"
     MoveVButton "3"
     ZoomVButton "2"
+
+    RotMod "Alt"
+    RotModKey "Alt_L"
 }
 
 

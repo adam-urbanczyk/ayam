@@ -225,7 +225,7 @@ proc shortcut_viewactions { w } {
     # this binding allows to rotate any view regardless
     # of any active action; the old active action will
     # be re established again once the mouse button is released
-    bind $w.f3D.togl <Alt-ButtonPress-1> {
+    bind $w.f3D.togl <$ayviewshortcuts(RotMod)-ButtonPress-1> {
 
 	undo save
 
@@ -249,11 +249,11 @@ proc shortcut_viewactions { w } {
 	break;
     }
 
-    bind $w <KeyPress-Alt_L> {
+    bind $w <KeyPress-$ayviewshortcuts(RotModKey)> {
 	[winfo toplevel %W].f3D.togl configure -cursor exchange
     }
 
-    bind $w <KeyRelease-Alt_L> {
+    bind $w <KeyRelease-$ayviewshortcuts(RotModKey)> {
 	[winfo toplevel %W].f3D.togl configure -cursor left_ptr
     }
 
