@@ -340,8 +340,9 @@ int
 ay_tti_handle_simple_glyf(ay_tti_font *ttfont, ay_tti_glyf *glyf,
 			  ay_tti_letter *vert, double *matrix)
 {
+ ay_tti_outline *tmpptr = NULL;
  unsigned short *contour_end_pt;
- signed short ncontours, n_inst, last_point;
+ signed short ncontours, n_inst, last_point, oldcontour;
  unsigned char *ptr;
 #define GLYFSZ 2000
  signed short xabs[GLYFSZ], yabs[GLYFSZ], xrel[GLYFSZ], yrel[GLYFSZ];
@@ -356,9 +357,27 @@ ay_tti_handle_simple_glyf(ay_tti_font *ttfont, ay_tti_glyf *glyf,
   contour_end_pt = (unsigned short *) ((unsigned char *) glyf +
 				       sizeof(ay_tti_glyf));
 
-  vert->numoutlines = ncontours;
-  vert->outlines = (ay_tti_outline *)calloc(1, sizeof(ay_tti_outline) *
-					    ncontours);
+  oldcontour = vert->numoutlines;
+  vert->numoutlines += ncontours;
+  
+  if(vert->outlines)
+    {
+      tmpptr = realloc(vert->outlines, sizeof(ay_tti_outline) *
+		       vert->numoutlines);
+      if(!tmpptr)
+	{
+	  return AY_TTI_NOMEM;
+	}
+      vert->outlines = tmpptr;
+    }
+  else
+    {
+      vert->outlines = NULL;
+      vert->outlines = (ay_tti_outline *)calloc(1, sizeof(ay_tti_outline) *
+						ncontours);
+      if(!vert->outlines)
+	return AY_TTI_NOMEM;
+    } /* if */
 
   last_point = ntohs(contour_end_pt[ncontours - 1]);
   n_inst = ntohs(contour_end_pt[ncontours]);
@@ -487,12 +506,12 @@ ay_tti_handle_simple_glyf(ay_tti_font *ttfont, ay_tti_glyf *glyf,
   startx = ttfont->soffset;
   yoffset = ttfont->yoffset;
 
-  for(co = 0; co < ncontours; co++)
+  for(co = oldcontour; co < (ncontours+oldcontour); co++)
     {
       x1 = 0.0;
       y1 = 0.0;
 
-      last_point = ntohs(contour_end_pt[co]);
+      last_point = ntohs(contour_end_pt[co-oldcontour]);
 
       maxpoint = 2000;
 
@@ -984,7 +1003,7 @@ ay_tti_getstring(TMOD_TRUETYPE *ttype, ay_tti_font *ttfont, char *s,
 int
 ay_tti_getchar(ay_tti_font *ttfont, int c, ay_tti_letter *vert)
 {
- int out;
+ short out;
  ay_tti_glyf *glyf = 0;
  double  matrix[6];
 
@@ -997,7 +1016,10 @@ ay_tti_getchar(ay_tti_font *ttfont, int c, ay_tti_letter *vert)
   /*	printf("Outlines %d\n",out); */
 
   /* store number of outlines */
-  vert->numoutlines = out;
+  
+ /* vert->numoutlines = out; */
+  vert->numoutlines = 0;
+  
   /*	vert->outlines = (ay_tti_outline *)TExecAlloc0(TExecBase, 0,
 	sizeof(ay_tti_outline)*out); */
 
