@@ -41,6 +41,7 @@ proc ai_open { } {
 	} else {
 	    goTop; cS; uS; rV
 	}
+	set ay(sc) 1
 	undo clear
     }
 
@@ -65,6 +66,7 @@ proc ai_resolve { } {
     } else {
 	goTop; cS; uS; rV
     }
+    set ay(sc) 1
     undo clear
 }
 # ai_resolve
