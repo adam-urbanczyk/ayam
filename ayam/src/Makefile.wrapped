@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile.wrapped [9. Jun 2002]
+# Makefile.wrapped [23. Jun 2002]
 # Makefile for Ayam (wrapped version)
 
 # Choose an installation prefix.
@@ -390,16 +390,20 @@ metaobj.so: $(METAOBJS)
 rrib.so: $(RRIBOBJS)
 	$(CC) -shared $(RRIBOBJS) -o plugins/rrib.so $(RRIBLIBS)
 
-release: all
-	mv ayam ../bin/ayam
+mostlyclean:
+	-rm -f core
+	-rm -f *.o
+	-rm -f *.so
+	-rm -f $(AYAMOBJS) 
+	-rm -f $(TOGLOBJECT)
+	-rm -f plugins/*.o
+	-rm -f plugins/*.so
+	-rm -f contrib/meta/*.o
+	-rm -f contrib/meta/*.so
+	-rm -f ayamsh ayam
 
-clean:
-	rm -f core *.o *.so $(AYAMOBJS) $(TOGLOBJECT) plugins/*.o
-	rm -f contrib/meta/*.o contrib/meta/*.so
-	rm -f plugins/*.so ayamsh ayam
-
-mostlyclean: clean
-	rm -f $(AFFINEOBJS)
+clean: mostlyclean
+	-rm -f $(AFFINEOBJS)
 	cd MF3D; make -f Makefile.mf3d clean
 
 cl:
