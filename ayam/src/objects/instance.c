@@ -681,7 +681,7 @@ ay_instance_providecb(ay_object *o, unsigned int type, ay_object **result)
  int ay_status = AY_OK;
  ay_object *i = NULL;
 
-  if(!o || !result)
+  if(!o)
     return AY_ENULL;
 
   if(!result)
