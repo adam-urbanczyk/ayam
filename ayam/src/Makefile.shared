@@ -55,6 +55,7 @@ LD = CC
 # o add -DAYNOTEMPNAM if your system has no tempnam();
 #   (unlikely, but tempnam() is not ANSI)
 #   Note, that the preference setting TmpDir will always be ignored then!
+# o add -DAYENABLEPPREV to enable the permanent preview feature
 
 # IRIX:
 CFLAGS = -O -fullwarn -DAYUSESLCARGS -DAYUSEBMRTRIBOUT

@@ -61,6 +61,7 @@ LD = g++
 #   -DAYIDRWRAPPED, -DMETAWRAPPED, or -DRRIBWRAPPED
 #   Note, that in this case you need to adjust ADDOBJS and ADDLIBS properly
 #   as well, see below!
+# o add -DAYENABLEPPREV to enable the permanent preview feature
 
 # IRIX:
 #CFLAGS = -O -fullwarn -woff 1048 -DAYWRAPPED -DAYUSESLCARGS -DAYUSEBMRTRIBOUT

@@ -132,22 +132,22 @@ $m add command -label "Export RIB" -command {
     global ay
     io_exportRIB [winfo toplevel $w]
 }
-# global AY_ENABLEPPREV
-# if {$AY_ENABLEPPREV == 1} { ... }
-$m add separator
+global AYENABLEPPREV
+if {$AYENABLEPPREV == 1} {
+    $m add separator
 
-$m add command -label "Open PPrev" -command {
-    set togl $ay(currentView)
-    set w [winfo toplevel $togl]
-    $togl setconf -pprev 1
-}
+    $m add command -label "Open PPrev" -command {
+	set togl $ay(currentView)
+	set w [winfo toplevel $togl]
+	$togl setconf -pprev 1
+    }
 
-$m add command -label "Close PPrev" -command {
-    set togl $ay(currentView)
-    set w [winfo toplevel $togl]
-    $togl setconf -pprev 0
+    $m add command -label "Close PPrev" -command {
+	set togl $ay(currentView)
+	set w [winfo toplevel $togl]
+	$togl setconf -pprev 0
+    }
 }
-# endif
 $m add separator
 $m add command -label "Create ShadowMaps" -command {
     global env ayprefs ay tcl_platform

@@ -162,8 +162,10 @@ proc prefs_open {} {
     addCheckB $fw ayprefse SMRenderUI [ms ayprefse_SMRenderUI]
     addStringB $fw ayprefse SMRenderPT [ms ayprefse_SMRenderPT]\
 	    [list "R90000 %d" "Done computing %d" "%d"]
-    addStringB $fw ayprefse PPRender [ms ayprefse_PPRender] [list "rgl"]
-
+    global AYENABLEPPREV
+    if { $AYENABLEPPREV == 1 } {
+	addStringB $fw ayprefse PPRender [ms ayprefse_PPRender] [list "rgl"]
+    }
     # Misc
     set fw [$nb insert end Misc -text Misc\
 	    -raisecmd "prefs_rsnb $nb Misc"]

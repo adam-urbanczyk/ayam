@@ -672,13 +672,15 @@ int ay_wrib_scene(char *file, char *image, double *from, double *to,
 
 int ay_wrib_cb(struct Togl *togl, int argc, char *argv[]);
 
-/* #ifdef AY_ENABLEPPREV */
+#ifdef AYENABLEPPREV
 int ay_wrib_pprevdraw(ay_view_object *view);
 
 int ay_wrib_pprevopen(ay_view_object *view);
 
 void ay_wrib_pprevclose();
-/* #endif */
+#endif
+
+void ay_wrib_init(Tcl_Interp *interp);
 
 /* write.c */
 int ay_write_header(FILE *fileptr);
@@ -693,8 +695,6 @@ int ay_write_scene(char *fname, int selected);
 
 int ay_write_scenetcmd(ClientData clientData, Tcl_Interp * interp,
 		       int argc, char *argv[]);
-
-
 
 
 #endif /* __aycore_h__ */

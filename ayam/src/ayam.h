@@ -700,11 +700,9 @@ typedef struct ay_prefs_object_s
   int glu_display_mode;
   int nc_display_mode;
   int glu_cache_float;
-  /* #ifdef AY_ENABLEPPREV */
   /* is a permanent preview window open? */
   int pprev_open;
   char *pprender;
-  /* #endif */
 } ay_prefs_object;
 
 typedef struct ay_point_object_s
@@ -854,6 +852,7 @@ extern char *ay_instt_oitagtype;
 extern char *ay_riattr_tagtype;
 extern char *ay_riopt_tagtype;
 extern char *ay_tc_tagtype;
+extern char *ay_ridisp_tagtype;
 
 extern unsigned int ay_current_glname;
 

@@ -99,6 +99,8 @@ char *ay_riopt_tagtype;
 
 char *ay_tc_tagtype;
 
+char *ay_ridisp_tagtype;
+
 static char *ay_log = "/tmp/ay.log";
 
 /* prototypes for initialization callbacks of additional included modules */
@@ -202,6 +204,9 @@ ay_init(Tcl_Interp *interp)
 
   /* initialize rioption tag helper module */
   ay_riopt_init(interp);
+
+  /* initialize wrib module */
+  ay_wrib_init(interp);
 
   /* initialize object comparison helper module */
   if((ay_status = ay_comp_init()))
@@ -838,10 +843,10 @@ Tcl_SetVar(interp,"AYIDR", "0", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 Tcl_SetVar(interp, "AYIDR", "1", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 #endif
 
-#ifndef AY_ENABLEPPREV
-Tcl_SetVar(interp,"AY_ENABLEPPREV", "0", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+#ifndef AYENABLEPPREV
+Tcl_SetVar(interp,"AYENABLEPPREV", "0", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 #else
-Tcl_SetVar(interp, "AY_ENABLEPPREV", "1", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+Tcl_SetVar(interp, "AYENABLEPPREV", "1", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 #endif /* AY_ENABLEPPREV */
 
 
