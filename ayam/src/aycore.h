@@ -535,6 +535,7 @@ int ay_trafo_rotobtcmd(ClientData clientData, Tcl_Interp * interp,
 int ay_trafo_rotseltcmd(ClientData clientData, Tcl_Interp * interp,
 			int argc, char *argv[]);
 
+int ay_trafo_multmatrix4(double *m1, double *m2);
 
 /* undo.c */
 int ay_undo_init(int buffer_size);
