@@ -1,4 +1,4 @@
-[CVS, 15. 01. 2003]:
+[CVS, 20. 01. 2003]:
 o bug fixes:
   - fixed remembering of the state of the object selection listbox/tree
     when the context menu or a double click on the label is used to
@@ -8,7 +8,7 @@ o bug fixes:
   - fixed broken RIB-export of RiAttribute/RiOption color/point tags
   - fixed merging of polymesh objects with different number of
     vertices and control points
-  - fixed Materials level created by RIB import losing the child
+  - fixed Materials level created by RIB-import losing the child
     objects when the imported scene is saved and then read again
   - fixed broken delete operation of Clone objects
   - fixed edit_material not scrolling the tree widget properly when the
@@ -27,12 +27,16 @@ o bug fixes:
     available shaders
   - fixed rotate about modelling action not rotating around a grid point
     in views of type "Side", when the view is additionally moved sideways
+  - fixed view objects not reading "BGImage" and "DrawBG" parameters from
+    scenes written by Ayam1.3
+  - fixed RIB-import not resetting the object name when done importing,
+    leading to wrongly named objects for the next invocation of RIB-import
 o reduced number of redraws when selecting hidden or material objects
 o added a RiDisplay tag type, that allows to add more output files
   (e.g. containing depth buffer information) to the scene
 o added a RiHider tag type, that allows to select and parameterize
   a different hider algorithm
-o added import of RiDisplay and RiHider statements to the RIB import plugin
+o added import of RiDisplay and RiHider statements to the RIB-import plugin
 o added french translations for the preferences balloon help texts
   (Michel Armand)
 o added PolyMesh optimization tool, that reduces the number of control
@@ -69,12 +73,12 @@ o a new shortcut <Ctrl+l> has been added to the view menu entry
 o the handles of editable points of objects are now only drawn, when
   a modelling action is in effect, that could modify editable points
 o added support for "RiSides" to the RiAttribute property of material
-  objects; RIB-Import now also handles RiSides
+  objects; RIB-import now also handles RiSides
 o the RenderGUI windows look a little bit nicer now on the Win32 platform
 o added an internal kill command for the Win32 platform ("w32kill") that
   may be used by the RenderGUIs to stop the rendering (set hidden preference
   option "Kill" to "w32kill" to accomplish this)
-o added new object type "SDMesh"; RIB-Import now also handles
+o added new object type "SDMesh"; RIB-import now also handles
   subdivision meshes
 o edited points are now immediately snapped to grid coordinates
 o direct point editing dialogue now stays open all the time
@@ -89,9 +93,15 @@ o added invert point selection feature (see new main menu entry:
 o the Win32 executable is now statically linked with the GLU library from
   the free OpenGL sample implementation (OSS) from SGI; the compiled library
   (superglu) kindly provided by the Coin3D project (http://www.coin3d.org/)
-o added support for user defined clipping planes
+o added support for user defined clipping planes; RIB-import now also
+  handles RiClipping
 o views of type "Trim" now draw the bounds of the parametric space as
   a rectangle again
+o added a new preference setting "AutoFocus" that arranges for all views and
+  the main window to take over the focus automatically when the mouse pointer
+  enters it (without the need to adapt any window manager configuration and
+  also working fine on Win32)
+o added support for the mouse wheel to the Win32 version
 
 
 [15. 10. 2002] Ayam1.3:
