@@ -35,7 +35,7 @@ ay_icurve_createcb(int argc, char *argv[], ay_object *o)
       if(!strcmp(argv[i],"-length"))
 	{
 	  Tcl_GetInt(ay_interp, argv[i+1], &length);
-	  if(length <= 0) length = 4;
+	  if(length <= 2) length = 4;
 	  i+=2;
 	}
       else
@@ -355,13 +355,13 @@ ay_icurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   if(new_length != icurve->length)
     {
-      if(new_length > 1)
+      if(new_length > 2)
 	{
 	  ay_status = ay_ict_resize(icurve, new_length);
 	}
       else
 	{
-	  ay_error(AY_ERROR,fname,"Length must be > 1!");
+	  ay_error(AY_ERROR,fname,"Length must be > 2!");
 	}
     }
 
@@ -667,11 +667,9 @@ ay_icurve_notifycb(ay_object *o)
      hull being drawn */
   nc = (ay_nurbcurve_object *)ncurve->refine;
   nc->display_mode = 1;
+  nc->glu_sampling_tolerance = icurve->glu_sampling_tolerance;
 
   icurve->ncurve = ncurve;
-
-  ((ay_nurbcurve_object *)ncurve->refine)->glu_sampling_tolerance =
-    icurve->glu_sampling_tolerance;
 
  return AY_OK;
 } /* ay_icurve_notifycb */
