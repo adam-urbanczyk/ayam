@@ -746,7 +746,7 @@ ay_material_dropcb(ay_object *o)
  unsigned int *refcountptr;
  int success = AY_FALSE;
  char arg[] = "save";
- char *argv[2] = {NULL, arg};
+ char *argv[2] = {0};
 
   if(!sel)
     {
@@ -764,11 +764,14 @@ ay_material_dropcb(ay_object *o)
       return AY_EDONOTLINK;
     }
 
+  /* no need to fake a selection here, because all view
+     objects are saved by each undo operation anyway */
+  argv[1] = arg;
   ay_status = ay_undo_undotcmd(NULL, ay_interp, 2, argv);
 
   while(sel)
     {
-      s = sel->object; 
+      s = sel->object;
 
       if(ay_matt_mayhavematerial(s->type))
 	{
