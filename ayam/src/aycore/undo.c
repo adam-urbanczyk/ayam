@@ -324,6 +324,11 @@ ay_undo_copyview(ay_view_object *src, ay_view_object *dst)
   dst->togl = otogl;
   dst->dirty = AY_TRUE;
   dst->bgimage = NULL;
+  dst->rect_xmin = 0.0;
+  dst->rect_xmax = 0.0;
+  dst->rect_ymin = 0.0;
+  dst->rect_ymax = 0.0;
+  dst->drawrect = 0;
 
   /* copy BGImage */
   if(src->bgimage)
