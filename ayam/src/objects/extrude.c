@@ -1037,7 +1037,7 @@ ay_extrude_providecb(ay_object *o, unsigned int type, ay_object **result)
 
 
 int
-ay_extrude_convertcb(ay_object *o)
+ay_extrude_convertcb(ay_object *o, int in_place)
 {
  int ay_status = AY_OK;
  ay_extrude_object *r = NULL;

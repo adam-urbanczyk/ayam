@@ -843,7 +843,7 @@ ay_sdmesh_notifycb(ay_object *o)
 
 
 int
-ay_sdmesh_convertcb(ay_object *o)
+ay_sdmesh_convertcb(ay_object *o, int in_place)
 {
  int ay_status = AY_OK;
  ay_sdmesh_object *sdmesh = NULL;

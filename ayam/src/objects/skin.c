@@ -570,7 +570,7 @@ ay_skin_providecb(ay_object *o, unsigned int type, ay_object **result)
 
 
 int
-ay_skin_convertcb(ay_object *o)
+ay_skin_convertcb(ay_object *o, int in_place)
 {
  int ay_status = AY_OK;
  ay_skin_object *r = NULL;

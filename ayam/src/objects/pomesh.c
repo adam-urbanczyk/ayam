@@ -798,7 +798,7 @@ ay_pomesh_notifycb(ay_object *o)
 
 
 int
-ay_pomesh_convertcb(ay_object *o)
+ay_pomesh_convertcb(ay_object *o, int in_place)
 {
  int ay_status = AY_OK;
  ay_pomesh_object *pomesh = NULL;

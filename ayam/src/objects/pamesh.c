@@ -1191,7 +1191,7 @@ ay_pamesh_providecb(ay_object *o, unsigned int type, ay_object **result)
 
 
 int
-ay_pamesh_convertcb(ay_object *o)
+ay_pamesh_convertcb(ay_object *o, int in_place)
 {
  int ay_status = AY_OK;
  ay_pamesh_object *pamesh = NULL;
