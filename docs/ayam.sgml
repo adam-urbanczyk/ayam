@@ -4,9 +4,9 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>26. Apr 2002
+<date>16. May 2002
 <abstract>
-This is the documentation of Ayam - a free 3D modeling environment
+This is the documentation of Ayam (1.2) - a free 3D modeling environment
 for the RenderMan interface.
 
 Please note, that this document is intended to be a reference manual,
@@ -510,6 +510,8 @@ this feature will not work with frame redirects e.g.
 <tt>http://www.ayam3d.org/</tt>; use
 <tt>http://ayam.sourceforge.net/docs/</tt> or a <tt>file:</tt>-URL
 as base URL in the <tt/Docs/ preference setting instead!
+<item><tt/Show Shortcuts/, displays some shortcuts for modeling
+actions
 <item><tt/About/, displays some version, copyright,
 and trademark information
 <item><tt/Show Tooltips/, enables tool tips (balloon help)
@@ -567,9 +569,28 @@ See sections <ref id="viewobj" name="View Object"> and
 for more information.
 
 The <tt/"Configure"/ menu may be used to change preferences of the view. 
-Some preferences are outlined in section <ref id="viewobj" name="View Object">.
-The other possible actions are:
+Some preferences are outlined in greater detail in
+section <ref id="vat" name="ViewAttrib">.
 <itemize>
+<item><tt/Automatic Redraw/, toggles whether the view should
+be redrawn, whenever the scene changes. If this is disabled,
+you can force a redraw using <tt>View/Redraw</tt>.
+<item><tt/Shade/ toggles whether the view should draw a shaded
+representation rather than a wireframe.
+<item><tt/Draw Selection only/, if this is enabled, just the
+currently selected objects (and their children) will be drawn.
+<item><tt/Draw Level only/, if this is enabled, just the
+objects of the current level (and their children) will be drawn.
+<item><tt/Draw BGImage/, if this is enabled, a background
+image will be drawn. You can define this image using the
+view attribute <tt/BGImage/.
+<item><tt/Draw Grid/, if this is enabled the grid will be drawn.
+<item><tt/Use Grid/, if this is enabled the grid will be used to
+constrain modeling actions to grid coordinates.
+<item><tt/Set Gridsize/, may be used to change the size of the grid
+associated with this view.
+<item><tt/Local Grid/, if this is enabled the grid will be
+interpreted as if defined in the local coordinate space.
 <item><tt/Half Size/, change width and height to the half of the
 current values.
 <item><tt/Double Size/, change width and height to the double of the
@@ -580,7 +601,7 @@ selected camera object to the view.
 selected camera object from the view.
 <item><tt/Set FOV/, lets you specify a field of view value
 for the view, and adapts the zoom accordingly. This is just
-working for perspective views of course.
+working for perspective views, of course.
 <item><tt/Zoom to Object/, adapt the camera settings, so that
 the currently selected objects are centered in the view.
 <item><tt/Align to Parent/, align the view to the coordinate
@@ -1677,8 +1698,11 @@ in local coordinate systems is possible.
 
 <item><tt/"DrawBG"/ controls whether the background image should
 be drawn.
-<item><tt/"BGImage"/ is the name of a 32 bit RGBA-TIFF file, that will
-be used as texture for the background image. Ayam will reread
+<item><tt/"BGImage"/ is the name of a TIFF file, that will
+be used as texture for the background image. Ayam will read
+this image once when you apply the changes to the
+<tt/"ViewAttrib"/ property
+but reread
 the image file if the notification callback of the view object
 is invoked (e.g. using the main menu entry
 <tt>"Tools/Force Notification"</tt>).
