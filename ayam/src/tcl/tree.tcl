@@ -388,7 +388,7 @@ proc tree_drop { tree from droppos currentoperation datatype data } {
 		set ay(DropActive) 0
 		return;
 	    }
-	    # prevent moving of objects into its own childs
+	    # prevent moving of objects into their own childs
 	    while { $parent != "root" } {
 		if { [lsearch $selection $parent] != "-1" } {
 		    if { $selection != $parent } {
@@ -561,6 +561,7 @@ proc tree_move { } {
 	set ay(SelectedLevel) $level
 	tree_paintLevel $level
 	tree_handleSelection
+	plb_update
     }
 
  return;
