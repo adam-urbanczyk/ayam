@@ -1,4 +1,4 @@
-INSTALL [17. Dec 2002]
+INSTALL [2. Jan 2003]
 
 Compilation Instructions for Ayam
 ---------------------------------
@@ -50,12 +50,15 @@ version of Ayam:
   an installed Tcl/Tk on your system, please
   _get the source distribution_ of Tcl/Tk and get the right
   version, as Togl is known to crash if Tcl/Tk versions mismatch!
-- OpenGL
+- OpenGL ( gl.h, glu.h, libGL.so, libGLU.so )
+  Version of GL is uncritical ( 1.1 should do ),
+  Version of GLU should be atleast 1.2 ( due to the use of the GLU
+  tesselation facility in the PolyMesh and SubdivisionMesh objects ),
   ( Mesa may be used as replacement for a real OpenGL. Since
     version 3.5, Mesa uses the GLU from the free OpenGL sample
     implementation from SGI and is therefore able to display
     trimmed NURBS. Either install this version of Mesa, or the GLU
-    from the SGI sample implementation.)
+    from the SGI sample implementation. )
   http://www.mesa3d.org/
 - BMRT ( ri.h, slc.h, libribout.a, libslcargs.a )
   http://www.exluna.com/
@@ -64,7 +67,9 @@ version of Ayam:
   If BMRT is not available on your platform, you can still
   compile Ayam with the Affine Toolkit with reduced functionality,
   read: no parsing of slc-compiled shaders.
-- TIFF (tiffio.h and libtiff)
+  You can also use libslxargs from Aqsis ( http://www.aqsis.com/ )
+  as libslcargs replacement.
+- TIFF ( tiffio.h, libtiff.so )
   http://www.libtiff.org/
 - The Affine Toolkit
   http://www.affine.com/
@@ -86,18 +91,19 @@ directory, editing of the Makefile will be easier.
 
 You have all required software and installed/compiled it successfully?
 
-- copy Makefile.shared to Makefile
-
+- copy Makefile.shared to Makefile:
 >cp Makefile.shared Makefile
 
 - edit the Makefile, until it tells you to stop, all necessary
-  information should be in the Makefile ( yes, this _is_ a lot of work )
+  information should be in the Makefile ( yes, this _is_ a lot of work ):
 
-- issue a
+>emacs Makefile
+
+- now issue a:
 >make
 
 Now ayamsh should be compiled and ready for a test run.
--try it:
+- try it:
 >./ayamsh tcl/ayam.tcl
 
 If all went fine, you can now install Ayam:
@@ -109,18 +115,17 @@ It will create some sub-directories there, namely:
 /usr/local/ayam/lib for the plugins and accompanying Tcl files, and
 /usr/local/ayam/doc for the documentation.
 
-You may want to add "/usr/local/ayam/bin" to your PATH variable.
+You may want to add "/usr/local/ayam/bin" to your PATH environment variable.
 Be sure to also add "." or "/usr/local/ayam/lib" to your LD_LIBRARY_PATH
-variable, otherwise Ayam might not be able to load the plugins.
+environment variable, otherwise Ayam might not be able to load the plugins.
 
 The installation procedure will also install the current Makefile,
 that may be used to uninstall Ayam again, e.g. using:
 >make -f /usr/local/ayam/lib/Makefile uninstall
 
-The installation procedure also creates a shell script
-named ayam, that calls ayamsh the right way,
-so that after installation you can start Ayam
-typing:
+The installation procedure also creates a shell script named "ayam",
+that calls "ayamsh" the right way, so that after installation you can
+start Ayam by typing:
 >ayam
 
 
@@ -142,6 +147,9 @@ version of Ayam:
   Note, that you do not need to _install_ Tcl/Tk to compile and use
   the wrapped standalone version of Ayam. But compiling this Tcl/Tk
   is still necessary. Compile static versions of Tcl/TK using:
+  >cd tcl8.2.x/unix
+  >./configure --disable-shared; make
+  >cd tk8.2.x/unix
   >./configure --disable-shared; make
   Also note, that Wrap0.3 currently only works with Tcl/Tk 8.2.x, not
   8.3.x, and not 8.4!
@@ -155,21 +163,26 @@ version of Ayam:
   and do not "make clean" afterwards. Note, that Makefile.wrapped
   is tuned to be used with Wrap0.3. If you use newer versions you
   will likely have to adapt the ayam: and ayamwrap: targets.
-- OpenGL
+- OpenGL ( gl.h, glu.h, libGL.so, libGLU.so )
+  Version of GL is uncritical ( 1.1 should do ),
+  Version of GLU should be atleast 1.2 ( due to the use of the GLU
+  tesselation facility in the PolyMesh and SubdivisionMesh objects ),
   ( Mesa may be used as replacement for a real OpenGL. Since
     version 3.5, Mesa uses the GLU from the free OpenGL sample
     implementation from SGI and is therefore able to display
     trimmed NURBS. Either install this version of Mesa, or the GLU
-    from the SGI sample implementation.)
+    from the SGI sample implementation. )
   http://www.mesa3d.org/
-- BMRT (ri.h, slc.h, libribout.a, libslcargs.a)
+- BMRT ( ri.h, slc.h, libribout.a, libslcargs.a )
   http://www.exluna.com/
   Note, that BMRT's libribout.a and libslcargs.a come as binary only,
   they might not be available on your platform!
   If BMRT is not available on your platform, you can still
   compile Ayam with the Affine Toolkit with reduced functionality,
   read: no parsing of slc-compiled shaders.
-- TIFF (tiffio.h and libtiff)
+  You can also use libslxargs from Aqsis ( http://www.aqsis.com/ )
+  as libslcargs replacement.
+- TIFF ( tiffio.h, libtiff.so )
   http://www.libtiff.org/
 - The Affine Toolkit
   http://www.affine.com/
@@ -192,12 +205,12 @@ to the Ayam directory, editing of the Makefile will be easier.
 
 You have all required software and installed/compiled it successfully?
 
-- copy Makefile.wrapped to Makefile
-
+- copy Makefile.wrapped to Makefile:
 >cp Makefile.wrapped Makefile
 
 - edit the Makefile, until it tells you to stop, all necessary
-  information should be in the Makefile ( yes, this _is_ a lot of work )
+  information should be in the Makefile ( yes, this _is_ a lot of work ):
+>emacs Makefile
 
 - issue a
 >make
@@ -215,9 +228,9 @@ It will create some sub-directories there, namely:
 /usr/local/ayam/lib for the plugins and accompanying Tcl files, and
 /usr/local/ayam/doc for the documentation.
 
-You may want to add "/usr/local/ayam/bin" to your PATH variable.
+You may want to add "/usr/local/ayam/bin" to your PATH environment variable.
 Be sure to also add "." or "/usr/local/ayam/lib" to your LD_LIBRARY_PATH
-variable, otherwise Ayam might not be able to load the plugins.
+environment variable, otherwise Ayam might not be able to load the plugins.
 
 The installation procedure will also install the current Makefile,
 that may be used to uninstall Ayam again, e.g. using:
@@ -230,7 +243,7 @@ that may be used to uninstall Ayam again, e.g. using:
 Independent from the build type of Ayam, the Makefiles contain
 additional targets to build plugins and manage the installation.
 
-3.1 MF3D Import/Export plugin
+3.1 MF3D Import/Export Plugin
 -----------------------------
 
 To compile the MF3D Import/Export plugin two steps are required:
@@ -245,12 +258,12 @@ Use it via menu entry "Custom/3DMF/Import" and "Custom/3DMF/Export"
 respectively.
 
 
-3.3 RIB import plugin
+3.2 RIB Import Plugin
 ---------------------
 
 Additional prerequisites for the RIB import plugin:
 You need the full Affine distribution
-(download it from http://www.affine.com/)!
+( download it from http://www.affine.com/ )!
 
 Compile libribrdr.a, libribhash.a and libribnop.a.
 This is done using 
@@ -288,6 +301,7 @@ Now compile the plugin:
 Load it via menu entry "File/Load Custom".
 Use it via menu entry "Custom/RRIB/Import RIB"
 
+
 3.3 Importance Driven Rendering
 -------------------------------
 
@@ -298,6 +312,7 @@ libtiff library and libtiff headers have to be installed.
 
 Load it via menu entry "File/Load Custom".
 Use it via menu entry "Custom/Open IDR".
+
 
 3.4 Shader Parsing Plugins
 --------------------------
@@ -323,17 +338,18 @@ scanning code of Ayam will be disabled, and Ayam will from
 that moment on just scan shaders of the type supported by
 the plugin loaded.
 
-3.5 Installing/Uninstalling
----------------------------
+
+3.5 Installing/Uninstalling Ayam
+--------------------------------
 
 Use
 >make clean
 to remove all objects; this step is necessary if you switch build types
-(shared->wrapped)!
+( shared <-> wrapped )!
 
 >make mostlyclean
 to make clean but not remove the objects that never change,
-like Apples mf3d code, Affines sribw code.
+like Apples mf3d code and Affines sribw code.
 
 >make install
 to install Ayam into the system.
@@ -344,12 +360,15 @@ It will create some sub-directories there, namely:
 /usr/local/ayam/lib for the plugins and accompanying Tcl files, and
 /usr/local/ayam/doc for the documentation.
 
-You may want to add "/usr/local/ayam/bin" to your PATH variable.
+You may want to add "/usr/local/ayam/bin" to your PATH environment variable.
 Be sure to also add "." or "/usr/local/ayam/lib" to your LD_LIBRARY_PATH
-variable, otherwise Ayam might not be able to load the plugins.
+environment variable, otherwise Ayam might not be able to load the plugins.
 
 The installation procedure will also install the current Makefile,
 that may be used to uninstall Ayam again, e.g. using:
 >make -f /usr/local/ayam/lib/Makefile uninstall
 
-End of Compilation Instructions
+End of Compilation Instructions,
+-- 
+http://www.ayam3d.org/    Reconstruct the World!
+

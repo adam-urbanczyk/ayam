@@ -1,4 +1,6 @@
-[INSTALL, 8. Jul 2002]
+[INSTALL, 2. Jan 2003]
+
+Installation Instructions for Ayam (Unix only).
 
 To install Ayam into your system edit the Makefile to your liking
 switch to root and do a:
@@ -12,13 +14,14 @@ It will create some sub-directories there, namely:
 /usr/local/ayam/lib for the plugins and accompanying Tcl files, and
 /usr/local/ayam/doc for the documentation.
 
-You may want to add "/usr/local/ayam/bin" to your PATH variable.
+You may want to add "/usr/local/ayam/bin" to your PATH environment variable.
 Be sure to also add "." or "/usr/local/ayam/lib" to your LD_LIBRARY_PATH
-variable, otherwise Ayam might not be able to load the plugins.
+environment variable, otherwise Ayam might not be able to load the plugins.
 
 The installation procedure will also install the current Makefile,
 that may be used to uninstall Ayam again, e.g. using:
 >make -f /usr/local/lib/Makefile uninstall
 
+End of Installation Instructions,
 -- 
 http://www.ayam3d.org/    Reconstruct the World!
