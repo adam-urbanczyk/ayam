@@ -745,6 +745,8 @@ ay_material_dropcb(ay_object *o)
  ay_mat_object *mat, *oldmat, *regmat = NULL;
  unsigned int *refcountptr;
  int success = AY_FALSE;
+ char arg[] = "save";
+ char *argv[2] = {NULL, arg};
 
   if(!sel)
     {
@@ -761,6 +763,8 @@ ay_material_dropcb(ay_object *o)
       ay_error(AY_ERROR, fname, "Please rename it to register!");
       return AY_EDONOTLINK;
     }
+
+  ay_status = ay_undo_undotcmd(NULL, ay_interp, 2, argv);
 
   while(sel)
     {
