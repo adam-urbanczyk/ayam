@@ -331,6 +331,7 @@ $m.npt add command -label "Revert U" -command {
     undo save RevertU; revertU; plb_update; rV}
 $m.npt add command -label "Revert V" -command {
     undo save RevertV; revertV; plb_update; rV}
+$m.npt add command -label "Tesselate" -command tgui_open
 $m.npt add separator
 $m.npt add command -label "Split to Curves (u)" -command {
     splitNP u; uS; sL; rV}
