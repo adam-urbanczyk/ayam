@@ -17,21 +17,39 @@
 #include "opennurbs.h"
 #include "opennurbs_extensions.h"
 
-// local preprocessor definitions
+// local types
+typedef int (onio_writecb) (ay_object *o, ONX_Model *p_m);
 
 // global variables
 
 char onio_version_ma[] = AY_VERSIONSTR;
 char onio_version_mi[] = AY_VERSIONSTRMI;
 
+static Tcl_HashTable onio_write_ht;
 
 // prototypes of functions local to this module
+
+int onio_writenpatch(ay_object *o, ONX_Model *p_m);
+
+int onio_writencurve(ay_object *o, ONX_Model *p_m);
+
+int onio_writeobject(ay_object *o, ONX_Model *p_m);
+
+int onio_registerwritecb(char *type, onio_writecb *cb);
+
+int onio_writetcmd(ClientData clientData, Tcl_Interp *interp,
+		   int argc, char *argv[]);
+
+/////////////////////////////////////////////////////////////////////////
 
 int onio_readnurbssurface(ON_NurbsSurface *p_s);
 
 int onio_readnurbscurve(ON_NurbsCurve *p_c);
 
 int onio_readobject(const ON_Object *p_o);
+
+int onio_readtcmd(ClientData clientData, Tcl_Interp *interp,
+		  int argc, char *argv[]);
 
 extern "C" {
 
@@ -42,7 +60,254 @@ int Onio_Init(Tcl_Interp *interp);
 
 // functions
 
-// onio_readnurbssurface
+
+// onio_writenpatch:
+//
+int
+onio_writenpatch(ay_object *o, ONX_Model *p_m)
+{
+ int ay_status = AY_OK;
+ int i, j, a, stride = 4;
+ ay_nurbpatch_object *np = NULL;
+ ON_NurbsSurface *p_n = NULL;
+
+  if(!o || !p_m)
+    return AY_ENULL;
+
+  np = (ay_nurbpatch_object *)o->refine;
+  p_n = new ON_NurbsSurface(3, true, np->uorder, np->vorder,
+			    np->width, np->height);
+
+  // copy knots, ignoring "superfluous"/"phantom" end knots
+  for(i = 0; i < np->uorder+np->width-2; i++)
+    p_n->SetKnot(0, i, np->uknotv[i+1]);
+  for(i = 0; i < np->vorder+np->height-2; i++)
+    p_n->SetKnot(1, i, np->uknotv[i+1]);
+  // copy control points
+  a = 0;
+  for(i = 0; i < np->width; i++)
+    {
+      for(j = 0; j < np->height; j++)
+	{	
+	  p_n->SetCV(i, j, ON::homogeneous_rational, &(np->controlv[a]));
+	  a += stride;
+	}
+    }
+
+  ONX_Model_Object& mo = p_m->m_object_table.AppendNew();
+  mo.m_object = p_n;
+  mo.m_bDeleteObject = false;
+  /*
+    if(object_attributes)
+    mo.m_attributes = object_attributes[i];
+  */
+
+ return ay_status;
+} // onio_writenpatch
+
+
+// onio_writencurve:
+//
+int
+onio_writencurve(ay_object *o, ONX_Model *p_m)
+{
+ int ay_status = AY_OK;
+
+  if(!o || !p_m)
+    return AY_ENULL;
+
+
+ return ay_status;
+} // onio_writencurve
+
+
+// onio_writeobject:
+//
+int
+onio_writeobject(ay_object *o, ONX_Model *p_m)
+{
+ int ay_status = AY_OK;
+ char fname[] = "onio_writeobject";
+ Tcl_HashTable *ht = &onio_write_ht;
+ Tcl_HashEntry *entry = NULL;
+ char err[255];
+ onio_writecb *cb = NULL;
+
+  if(!o || !p_m)
+    return AY_ENULL;
+
+  if((entry = Tcl_FindHashEntry(ht, (char *)(o->type))))
+    {
+      cb = (onio_writecb*)Tcl_GetHashValue(entry);
+      if(cb)
+	{
+	  ay_status = cb(o, p_m);
+	  if(ay_status)
+	    {
+	      ay_error(AY_ERROR, fname, "Error exporting object.");
+	      ay_status = AY_OK;
+	    }
+	}
+    }
+  else
+    {
+      snprintf(err, 254, "No callback registered for this type: %d.",
+	       o->type);
+      ay_error(AY_EWARN, fname, err);
+    } // if
+
+ return ay_status;
+} // onio_writeobject
+
+
+// onio_writetcmd:
+//
+int
+onio_writetcmd(ClientData clientData, Tcl_Interp *interp,
+	       int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ char fname[] = "onio_write";
+ FILE *fp = NULL;
+ const char *filename = NULL;
+ int version = 3;
+ ay_object *o = ay_root;
+ ONX_Model model;
+ const ON_Layer *p_layer = NULL;
+ ON_3dmObjectAttributes attribs;
+ //ON_TextLog& error_log;
+
+
+  // parse args
+  if(argc < 2)
+    {
+      ay_error(AY_EARGS, fname, "filename");
+      return TCL_OK;
+    }
+
+  filename = argv[1];
+  fp = ON::OpenFile(filename, "wb");
+
+  if(!fp)
+    {
+      ay_error(AY_EOPENFILE, fname, argv[1]);
+      return TCL_OK;
+    }
+
+  // some notes
+  //model.m_properties.m_Notes.m_notes = sNotes;
+  //model.m_properties.m_Notes.m_bVisible = (model.m_properties.m_Notes.m_notes.Length() > 0);
+
+  // set revision history information
+  model.m_properties.m_RevisionHistory.NewRevision();
+  
+  // set application information
+  model.m_properties.m_Application.m_application_name = "Ayam";
+  model.m_properties.m_Application.m_application_URL = "http://www.ayam3d.org/";
+  model.m_properties.m_Application.m_application_details = "onio (OpenNURBS) plugin";
+
+  /*
+  if( 0 != settings)
+    model.m_settings = *settings;
+
+  if(0 != material && material_count > 0)
+  {
+    model.m_material_table.Reserve(material_count);
+    for (i = 0; i < material_count; i++)
+      model.m_material_table.Append(material[i]);
+  }
+  */
+  // layer table
+  {
+    // Each object in the object table (written below)
+    // should be on a defined layer.  There should be
+    // at least one layer with layer index 0 in every file.
+
+    // layer table indices begin at 0
+    ON_Layer default_layer;
+    default_layer.SetLayerIndex(0);
+    default_layer.SetLayerName("Default");
+    p_layer = &default_layer;
+    model.m_layer_table.Append(p_layer[0]);
+  }
+
+  // light table
+  /*
+  if (0 != light && light_count > 0)
+  {
+    for (i = 0; i < light_count; i++) 
+    {
+      ONX_Model_RenderLight& mrl = model.m_light_table.AppendNew();
+      mrl.m_light = light[i];
+      if ( light_attributes )
+        mrl.m_attributes = light_attributes[i];
+    }
+  }
+  */
+
+  // object table
+  // get object attributes and make sure layer and material indices are legit
+  while(o)
+    {
+      ay_status = onio_writeobject(o, &model);
+
+      o = o->next;
+    } // while
+
+  // archive to write to
+  ON_BinaryFile archive(ON::write3dm, fp);
+
+  // set uuid's, indices, etc.
+  model.Polish();
+
+  // write model to archive
+  bool ok = model.Write(archive,
+                        version, 
+                        __FILE__ " onio_writetcmd() " __DATE__, 
+                        NULL/*&error_log*/);
+  if(!ok)
+    {
+      ay_error(AY_ERROR, fname, "Error writing file!");
+    }
+
+
+  ON::CloseFile(fp);
+
+ return TCL_OK;
+} // onio_writetcmd
+
+// onio_registerwritecb:
+//
+int
+onio_registerwritecb(char *name, onio_writecb *cb)
+{
+ int ay_status = AY_OK;
+ int new_item = 0;
+ Tcl_HashEntry *entry = NULL;
+ Tcl_HashTable *ht = &onio_write_ht;
+
+  if(!cb)
+    return AY_ENULL;
+
+  if((entry = Tcl_FindHashEntry(ht, name)))
+    {
+      return AY_ERROR; /* name already registered */
+    }
+  else
+    {
+      /* create new entry */
+      entry = Tcl_CreateHashEntry(ht, name, &new_item);
+      Tcl_SetHashValue(entry, (char*)cb);
+    }
+
+ return ay_status;
+} // onio_registerwritecb
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+
+
+// onio_readnurbssurface:
 //
 int
 onio_readnurbssurface(ON_NurbsSurface *p_s)
@@ -77,7 +342,7 @@ onio_readnurbssurface(ON_NurbsSurface *p_s)
     { free(controlv); return AY_EOMEM; }
   if(!(vknotv = (double*)calloc(height+p_s->m_order[1], sizeof(double))))
     { free(controlv); free(uknotv); return AY_EOMEM; }
-  
+
   // copy data into new (safe) memory
   a = 0; b = 0;
   for(i = 0; i < width; i++)
@@ -103,7 +368,7 @@ onio_readnurbssurface(ON_NurbsSurface *p_s)
 	    } // for
 	} // for
     } // if
-  
+
   // if weights are in the file but the dimension of the surface is
   // higher than 3, copy the weights in this step
   if(p_s->m_is_rat && (p_s->m_dim > 3))
@@ -171,7 +436,7 @@ onio_readnurbssurface(ON_NurbsSurface *p_s)
 } // onio_readnurbssurface
 
 
-// onio_readnurbscurve
+// onio_readnurbscurve:
 //
 int
 onio_readnurbscurve(ON_NurbsCurve *p_c)
@@ -203,7 +468,7 @@ onio_readnurbscurve(ON_NurbsCurve *p_c)
     return AY_EOMEM;
   if(!(knotv = (double*)calloc(length+p_c->m_order, sizeof(double))))
     { free(controlv); return AY_EOMEM; }
-  
+
   // copy data into new (safe) memory
   a = 0; b = 0;
   for(i = 0; i < length; i++)
@@ -224,7 +489,7 @@ onio_readnurbscurve(ON_NurbsCurve *p_c)
 	  b += 4;
 	} // for
     } // if
-  
+
   // if weights are in the file but the dimension of the curve is
   // higher than 3, copy the weights in this step
   if(p_c->m_is_rat && (p_c->m_dim > 3))
@@ -237,7 +502,7 @@ onio_readnurbscurve(ON_NurbsCurve *p_c)
 	  b += 4;
 	} // for
     } // if
-  
+
   // copy the knot vector
   a = 1; b = 0;
   for(i = 0; i < length+p_c->m_order-2; i++)
@@ -340,12 +605,14 @@ onio_readobject(const ON_Object *p_o)
       break;
     default:
       break;
-    }
+    } // switch
 
  return ay_status;
 } // onio_readobject
 
 
+// onio_readtcmd:
+//
 int
 onio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 	      int argc, char *argv[])
@@ -409,7 +676,6 @@ onio_readtcmd(ClientData clientData, Tcl_Interp *interp,
   // destroy this model
   model.Destroy();
 
-
  return TCL_OK;
 } // onio_readtcmd
 
@@ -429,6 +695,7 @@ int
 Onio_Init(Tcl_Interp *interp)
 #endif
 {
+ int ay_status = AY_OK;
  char fname[] = "Onio_Init";
  // int err;
  // int ay_status = AY_OK;
@@ -471,6 +738,16 @@ Onio_Init(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "onioRead", onio_readtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  Tcl_CreateCommand(interp, "onioWrite", onio_writetcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  /* init hash table for write callbacks */
+  Tcl_InitHashTable(&onio_write_ht, TCL_ONE_WORD_KEYS);
+
+  /* fill hash table */
+  ay_status = onio_registerwritecb((char *)(AY_IDNPATCH),
+				   onio_writenpatch);
+		
 
 #ifndef ONIOWRAPPED
   ay_error(AY_EOUTPUT, fname, "Plugin 'onio' successfully loaded.");
@@ -480,6 +757,3 @@ Onio_Init(Tcl_Interp *interp)
 } // Aycsg_Init | onio_inittcmd
 
 } // extern "C"
-
-// remove local preprocessor definitions
-
