@@ -332,6 +332,7 @@ install:
 	-$(INSTALL) plugins/loadidr.tcl $(LIBDIR)
 	-$(INSTALL) plugins/rrib.so plugins/rrib.tcl $(LIBDIR)
 	-$(INSTALL) plugins/loadrrib.tcl $(LIBDIR)
+	-$(INSTALL) Makefile $(LIBDIR)
 	$(MKDIR) $(DOCDIR)
 	$(INSTALL) $(DOCFILES) $(DOCDIR)
 	$(MKDIR) $(DOCDIR)/html
