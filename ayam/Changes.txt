@@ -1,4 +1,4 @@
-[CVS, 24. 01. 2003]:
+[CVS, 31. 01. 2003]:
 o bug fixes:
   - fixed remembering of the state of the object selection listbox/tree
     when the context menu or a double click on the label is used to
@@ -33,6 +33,8 @@ o bug fixes:
     leading to wrongly named objects for the next invocation of RIB-import
   - fixed creation of NURBS curves with desired length 2 or 3 creating
     a wrong NURBS curve specification (too high order, wrong knot vector)
+  - fixed broken creation of shadow maps from point light sources that make
+    use of their "From"-values
 o reduced number of redraws when selecting hidden or material objects
 o added a RiDisplay tag type, that allows to add more output files
   (e.g. containing depth buffer information) to the scene
@@ -104,6 +106,9 @@ o added a new preference setting "AutoFocus" that arranges for all views and
   enters it (without the need to adapt any window manager configuration and
   also working fine on Win32)
 o added support for the mouse wheel to the Win32 version
+o RIB-export now writes different frame numbers for shadow maps and the
+  image so that you may re-render e.g. just the image more easily even
+  when the "ShadowMaps" preference setting is "Automatic"
 
 
 [15. 10. 2002] Ayam1.3:
