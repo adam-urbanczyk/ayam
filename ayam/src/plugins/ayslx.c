@@ -1,7 +1,7 @@
 /*
  * Ayam, a free 3D modeler for the RenderMan interface.
  *
- * Ayam is copyrighted 1998-2001 by Randolf Schultz
+ * Ayam is copyrighted 1998-2003 by Randolf Schultz
  * (rschultz@informatik.uni-rostock.de) and others.
  *
  * All rights reserved.
@@ -16,6 +16,10 @@
 
 /* ayslx.c - Plug-In to scan shaders compiled with aqsl (Aqsis)
    using libslxargs  */
+
+/* global variables */
+char ayslx_version_ma[] = AY_VERSIONSTR;
+char ayslx_version_mi[] = AY_VERSIONSTRMI;
 
 /* prototypes of functions local to this module */
 int ayslx_scanslxsarg(SLX_VISSYMDEF *symbol, Tcl_DString *ds);
@@ -255,13 +259,29 @@ ayslx_scanslxtcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* note: this function _must_ be capitalized exactly this way
- * regardless of filename (see: man n load)!
+ * regardless of the filename of the shared object (see: man n load)!
  */
 int
 Ayslx_Init(Tcl_Interp *interp)
 {
  char fname[] = "ayslx_init";
  char vname[] = "ay(sext)", vval[] = ".slx";
+
+  /* first, check versions */
+  if(strcmp(ay_version_ma, ayslx_version_ma))
+    {
+      ay_error(AY_ERROR, fname,
+	       "Plugin has been compiled for a different Ayam version!");
+      ay_error(AY_ERROR, fname, "It is unsafe to continue! Bailing out...");
+      return TCL_OK;
+    }
+
+  if(strcmp(ay_version_mi, ayslx_version_mi))
+    {
+      ay_error(AY_ERROR, fname,
+	       "Plugin has been compiled for a different Ayam version!");
+      ay_error(AY_ERROR, fname, "However, it is probably safe to continue...");
+    }
 
   Tcl_SetVar(interp, vname, vval, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
