@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>29. Dec 2002
+<date>12. Jan 2003
 <abstract>
 This is the documentation of Ayam (1.4) - a free 3D modeling environment
 for the RenderMan interface.
@@ -1430,6 +1430,15 @@ picked point does not have weight information (is not homogenous).
 Using the small menu on top of the coordinate window you may
 determine whether editing takes place in local object or global
 world space.
+<p>
+Notice that since Ayam 1.4 the direct point editing dialog may stay
+open all the time. Furthermore, it is not necessary that the original
+object stays selected, you may select other objects to e.g. infer new
+point coordinates from their properties and apply them to the
+original object.
+However, certain actions like deleting objects, will also delete the
+reference to the selected points. In this case you will have to select
+the object and then a point to edit again.
 </itemize>
 
 <sect1>Inserting or Deleting Points<label id="insdelac">
@@ -4939,9 +4948,9 @@ RiOptions and RiAttributes, and shaders (except transformation
 shaders and without array arguments!).
 <p>
 The RRIB plugin does not support reading of curves, implicit surfaces
-(blobby models), procedural objects, delayed read archives, and
-other calls to the RenderMan Interface not that useful for a RIB
-import like e.g. RiMakeTexture.
+(blobby models), procedural objects, delayed read archives, arbitrary
+primitive variables (e.g. varying or vertex) and other calls to the
+RenderMan Interface not that useful for a RIB import like e.g. RiMakeTexture.
 Unsupported geometric primitives and other calls to the RenderMan Interface
 are silently ignored.
 <p>
