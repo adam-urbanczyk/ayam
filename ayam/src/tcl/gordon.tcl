@@ -26,6 +26,7 @@ DisplayMode 1
 # create GordonAttr-UI
 set w [frame $ay(pca).$GordonAttr(w)]
 
+addCheck $w GordonAttrData WatchCurves
 addParam $w GordonAttrData Order_U
 addParam $w GordonAttrData Order_V
 
