@@ -375,6 +375,7 @@ ay_trafo_delegate(ay_object *o)
  double xaxis[3] = {1.0, 0.0, 0.0};
  double yaxis[3] = {0.0, 1.0, 0.0};
  double zaxis[3] = {0.0, 0.0, 1.0};
+ double m[16] = {0}, v1[4] = {0};
 
   if(!o)
     return AY_ENULL;
@@ -387,6 +388,28 @@ ay_trafo_delegate(ay_object *o)
   child = o->down;
   while(child)
     {
+
+      if((o->quat[0] != 0.0) || (o->quat[1] != 0.0) ||
+	 (o->quat[2] != 0.0) || (o->quat[3] != 1.0))
+	{
+	  if((fabs(child->movx) > AY_EPSILON) ||
+	     (fabs(child->movy) > AY_EPSILON) ||
+	     (fabs(child->movz) > AY_EPSILON))
+	    {
+
+	      v1[0] = child->movx;
+	      v1[1] = child->movy;
+	      v1[1] = child->movy;
+
+	      ay_quat_torotmatrix(o->quat, m);
+	      ay_trafo_apply3(v1, m);
+	      
+	      child->movx = v1[0];
+	      child->movy = v1[1];
+	      child->movz = v1[2];
+	    } /* if */
+	} /* if */
+
       child->movx += o->movx;
       child->movy += o->movy;
       child->movz += o->movz;
