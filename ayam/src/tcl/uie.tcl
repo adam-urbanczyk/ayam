@@ -31,6 +31,8 @@ proc updateParam { w prop name op } {
 
 return;
 }
+# updateParam
+
 
 #
 #
@@ -80,6 +82,7 @@ if { $tcl_platform(platform) == "windows" } {
 pack $f -in $w -side top -fill x
 return;
 }
+# addParam
 
 
 #
@@ -124,6 +127,7 @@ for { set i 12 } { $i < 16 } { incr i } {
 pack $f $f1 $f2 $f3 $f4 -in $w -side top -fill x
 return;
 }
+# addMatrix
 
 
 #
@@ -148,6 +152,8 @@ proc updateColor { w prop name button } {
 
 return;
 }
+# updateColor
+
 
 #
 #
@@ -181,6 +187,8 @@ proc updateColorFromE { w prop name button } {
 
 return;
 }
+# proc updateColorFromE
+
 
 #
 #
@@ -267,6 +275,7 @@ proc addColor { w prop name  {def {}}} {
 
  return;
 }
+# addColor
 
 
 #
@@ -310,6 +319,7 @@ proc addCheck { w prop name } {
 
 return;
 }
+# addCheck
 
 
 #
@@ -366,6 +376,8 @@ proc addMenu { w prop name elist } {
 
 return;
 }
+# addMenu
+
 
 #
 #
@@ -408,6 +420,8 @@ proc addString { w prop name  {def {}}} {
 
 return;
 }
+# addString
+
 
 #
 #
@@ -469,6 +483,8 @@ proc addFile { w prop name {def {}} } {
 
 return;
 }
+# addFile
+
 
 #
 #
@@ -500,11 +516,11 @@ proc addMDir { w prop name } {
 	if { \$filen != \"\" } {
 	  if { \$${prop}($name) != \"\" } {
 	      set ${prop}($name) \$${prop}($name)\$sep\[file dirname \$filen\];
-	    } else {
-		set ${prop}($name) \[file dirname \$filen\];
-	    };
+	  } else {
+	      set ${prop}($name) \[file dirname \$filen\];
+	  };
 	  update;
-          eval balloon_setsplit $f.e \$${prop}($name) 15;
+	  eval balloon_setsplit $f.e \[list \$${prop}($name)\] 15;
 	};
 	" 
 	pack $f.l -in $f -side left -fill x
@@ -514,6 +530,7 @@ proc addMDir { w prop name } {
 
 return;
 }
+# addMDir
 
 
 #
@@ -551,7 +568,7 @@ proc addMFile { w prop name } {
 	  set ${prop}($name) \$filen;\
          };\
 	 update;
-         eval balloon_setsplit $f.e \$${prop}($name) 15;
+         eval balloon_setsplit $f.e \[list \$${prop}($name)\] 15;
         };\
 	" 
 	pack $f.l -in $f -side left -fill x
@@ -559,14 +576,17 @@ proc addMFile { w prop name } {
 	pack $f.e -in $f -side left -fill both -expand yes
 	pack $f -in $w -side top -fill x
 
-return;
+ return;
 }
+# addMFile
+
 
 #
 #
 #
 proc addCommand { w name text command } {
     global ayprefs
+
     set bw 1
 
     set f [frame $w.f${name} -relief sunken -bd $bw]
@@ -576,34 +596,41 @@ proc addCommand { w name text command } {
     pack $f.b -in $f -side left -fill x -expand yes
     pack $f -in $w -side top -fill x
 
-return;
+ return;
 }
+# addCommand
+
 
 #
 #
 #
 proc addText { w name text} {
 
-set f [frame $w.${name}]
+    set f [frame $w.${name}]
 
-label $f.l -text $text
+    label $f.l -text $text
 
-pack $f.l -in $f
-pack $f -in $w -side top
-return;
+    pack $f.l -in $f
+    pack $f -in $w -side top
+
+ return;
 }
+# addText
+
 
 #
 #
 #
 proc addInfo { w prop name } {
-set bw 1
-set f [frame $w.f${name} -relief sunken -bd $bw]
+    set bw 1
+    set f [frame $w.f${name} -relief sunken -bd $bw]
 
-label $f.l1 -width 10 -text ${name}:
-label $f.l2 -textvariable ${prop}(${name})
+    label $f.l1 -width 10 -text ${name}:
+    label $f.l2 -textvariable ${prop}(${name})
 
-pack $f.l1 $f.l2 -in $f -side left
-pack $f -in $w -side top -fill x
-return;
+    pack $f.l1 $f.l2 -in $f -side left
+    pack $f -in $w -side top -fill x
+
+ return;
 }
+# addInfo
