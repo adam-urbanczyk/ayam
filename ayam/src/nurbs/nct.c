@@ -205,7 +205,7 @@ ay_nct_collapseselp(ay_object *o)
       selp = selp->next;
     }
 
-  if((!selp) || (count < 2))
+  if((!o->selp) || (count < 2))
     {
       ay_error(AY_ERROR, fname, "Select (<t>ag) atleast two points first!");
       return AY_ERROR;
