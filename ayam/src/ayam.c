@@ -756,6 +756,9 @@ int ay_status = AY_OK;
   /* wrib.c */
   Togl_CreateCommand("wrib", ay_wrib_cb);
 
+  Tcl_CreateCommand(interp, "wrib", ay_wrib_tcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
   /* write.c */
   Tcl_CreateCommand(interp, "saveScene", ay_write_scenetcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);

@@ -1542,6 +1542,7 @@ ay_wrib_sm(char *file, char *image, int width, int height)
 } /* ay_wrib_sm */
 
 
+
 /* ay_wrib_cb:
  *
  */
@@ -1569,7 +1570,7 @@ ay_wrib_cb(struct Togl *togl, int argc, char *argv[])
 
   /* assemble args */
   i = 2;
-  while(i+1<=argc)
+  while(i+1 <= argc)
     {
       if(!strcmp(argv[i],"-file"))
 	file = argv[i+1];
@@ -1583,7 +1584,7 @@ ay_wrib_cb(struct Togl *togl, int argc, char *argv[])
 	if(!strcmp(argv[i],"-smonly"))
 	  smonly = 1;
 
-      i+=2;
+      i += 2;
     }
 
   root = (ay_root_object*)(ay_root->refine);
@@ -1634,6 +1635,119 @@ ay_wrib_cb(struct Togl *togl, int argc, char *argv[])
 
  return TCL_OK;
 } /* ay_wrib_cb */
+
+
+/* ay_wrib_tcmd
+ *
+ */
+int
+ay_wrib_tcmd(ClientData clientData, Tcl_Interp * interp,
+	     int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ ay_list_object *sel = ay_selection;
+ ay_camera_object *cam = NULL;
+ ay_root_object *root = NULL;
+ ay_riopt_object *riopt = NULL;
+ int width = 400;
+ int height = 300;
+ int i, smonly = 0;
+ char *file = NULL, *image = NULL;
+ char fname[] = "wrib";
+
+ /*
+  if(argc <= 1)
+    {
+      ay_error(AY_EARGS, fname,
+	 "\\[-file <filename>\\] \\[-image <imagename>\\] \\[-smonly\\]");
+      return TCL_OK;
+    }
+ */
+
+  /* assemble args */
+  i = 1;
+  while(i+1 <= argc)
+    {
+      if(!strcmp(argv[i],"-file"))
+	file = argv[i+1];
+      else
+	if(!strcmp(argv[i],"-image"))
+	  image = argv[i+1];
+	else
+	  if(!strcmp(argv[i],"-smonly"))
+	    smonly = 1;
+
+      i += 2;
+    }
+
+  if(!smonly && (!sel || (sel->object->type != AY_IDCAMERA)))
+   {
+     ay_error(AY_ERROR, fname, "Please select a camera object!");
+     return TCL_OK;
+   }
+
+  if(!smonly)
+    cam = (ay_camera_object*)(sel->object->refine);
+
+#ifdef AYENABLEPPREV
+  /* is a permanent preview window open? */
+  if(ay_prefs.pprev_open)
+    {
+      ay_error(AY_ERROR, fname, "Please close the permanent preview first!");
+      return AY_ERROR;
+    }
+#endif
+
+  root = (ay_root_object*)(ay_root->refine);
+  riopt = root->riopt;
+
+  /* override view width/height ? */
+  if(riopt->width > 0)
+    width = riopt->width;
+
+  if(riopt->height > 0)
+    height = riopt->height;
+
+  /* default */
+  if(!file)
+    {
+      file = "unnamed.rib";
+    }
+
+  if(!image)
+    {
+      image = "unnamed.tif";
+    }
+
+  /* adjust roll, if up vector points down */
+  if(!smonly && (cam->up[1] < 0.0))
+    {
+      cam->roll += 180.0;
+    }
+
+  if(!smonly)
+    {
+      ay_status = ay_wrib_scene(file, image, cam->from, cam->to, cam->roll,
+				cam->zoom, cam->nearp, cam->farp,
+				width, height, AY_VTPERSP);
+    }
+  else
+    {
+      ay_status = ay_wrib_sm(file, image, width, height);
+    }
+
+  if(!smonly && (cam->up[1] < 0.0))
+    {
+      cam->roll -= 180.0;
+    }
+
+  if(ay_status)
+    {
+      ay_error(ay_status, fname, NULL);
+    }
+
+ return TCL_OK;
+} /* ay_wrib_tcmd */
 
 
 #ifdef AYENABLEPPREV
