@@ -494,7 +494,7 @@ int
 ay_tess_tristopomesh(ay_tess_tri *tris, ay_object **result)
 {
  int ay_status = AY_OK;
- ay_object *new;
+ ay_object *new = NULL;
  ay_pomesh_object *po = NULL;
  ay_tess_tri *tri;
  unsigned int numtris = 0, i;
@@ -980,7 +980,8 @@ ay_tess_setautonormal(double *v1, double *v2, double *v3)
  *
  */
 int
-ay_tess_pomeshf(ay_pomesh_object *pomesh, unsigned int f,
+ay_tess_pomeshf(ay_pomesh_object *pomesh,
+		unsigned int f, unsigned int m, unsigned int n,
 		int optimize,
 		ay_pomesh_object **trpomesh)
 {
@@ -990,14 +991,14 @@ ay_tess_pomeshf(ay_pomesh_object *pomesh, unsigned int f,
  return AY_ERROR;
 #else
  int ay_status = AY_OK;
- unsigned int i = 0, j = 0, k = 0, m = 0, n = 0;
+ unsigned int j = 0, k = 0;
  unsigned int a;
  int stride = 0;
  GLUtesselator *tess = NULL;
  ay_tess_object to = {0};
  double p1[3], p2[3], p3[3], p4[3], n1[3], n2[3], n3[3], n4[4];
  ay_tess_tri *t1 = NULL, *t2;
- ay_object *new = NULL;
+ ay_object *tmpo = NULL;
 
   if(pomesh->has_normals)
     stride = 6;
@@ -1025,36 +1026,19 @@ ay_tess_pomeshf(ay_pomesh_object *pomesh, unsigned int f,
 		  (GLUtessErrorProc)ay_error_glucb);
   gluTessCallback(tess, GLU_TESS_BEGIN_DATA,
 		  (GLUtessBeginProc)ay_tess_begindata);
-#else
-  gluTessCallback(tess, GLU_TESS_ERROR, ay_error_glucb);
-  gluTessCallback(tess, GLU_TESS_BEGIN_DATA, ay_tess_begindata);
-#endif
-
-  if(!pomesh->has_normals)
-    {
-#if defined(WIN32) && !defined(AYUSESUPERGLU)
-      gluTessCallback(tess, GLU_TESS_VERTEX_DATA,
-		      (GLUtessVertexProc)ay_tess_vertexdata);
-#else
-      gluTessCallback(tess, GLU_TESS_VERTEX_DATA, ay_tess_vertexdata);
-#endif
-    }
-  else
-    {
-#if defined(WIN32) && !defined(AYUSESUPERGLU)
-      gluTessCallback(tess, GLU_TESS_VERTEX_DATA,
-		      (GLUtessVertexProc)ay_tess_normaldata);
-#else
-      gluTessCallback(tess, GLU_TESS_VERTEX_DATA, ay_tess_normaldata);
-#endif
-    } /* if */
-
-#if defined(WIN32) && !defined(AYUSESUPERGLU)
+  gluTessCallback(tess, GLU_TESS_VERTEX_DATA,
+		  (GLUtessVertexProc)ay_tess_vertexdata);
+  /*  gluTessCallback(tess, GLU_TESS_NORMAL_DATA,
+      (GLUtessVertexProc)ay_tess_normaldata);*/
   gluTessCallback(tess, GLU_TESS_END_DATA,
 		  (GLUtessEndProc)ay_tess_enddata);
   gluTessCallback(tess, GLU_TESS_COMBINE_DATA,
 		  (GLUtessCombineProc)ay_tess_combinedata);
 #else
+  gluTessCallback(tess, GLU_TESS_ERROR, ay_error_glucb);
+  gluTessCallback(tess, GLU_TESS_BEGIN_DATA, ay_tess_begindata);
+  gluTessCallback(tess, GLU_TESS_VERTEX_DATA, ay_tess_vertexdata);
+  /*  gluTessCallback(tess, GLU_TESS_NORMAL_DATA, ay_tess_normaldata);*/
   gluTessCallback(tess, GLU_TESS_END_DATA, ay_tess_enddata);
   gluTessCallback(tess, GLU_TESS_COMBINE_DATA, ay_tess_combinedata);
 #endif
@@ -1086,20 +1070,25 @@ ay_tess_pomeshf(ay_pomesh_object *pomesh, unsigned int f,
   /* free combined vertices */
   ay_tess_managecombined(NULL);
 
+  if(!to.tris)
+    return AY_ERROR;
+
   /* the tess_object should now contain lots of triangles;
      copy them to the PolyMesh object */
-  ay_status = ay_tess_tristopomesh(to.tris, &new);
+  ay_status = ay_tess_tristopomesh(to.tris, &tmpo);
+
+  if(!tmpo)
+    return AY_ERROR;
 
   /* immediately optimize the polymesh (remove multiply used vertices) */
   if(optimize)
-    ay_status = ay_pomesht_optimizecoords((ay_pomesh_object*)new->refine,
+    ay_status = ay_pomesht_optimizecoords((ay_pomesh_object*)tmpo->refine,
 					  AY_FALSE);
 
   /* return result */
-  *trpomesh = new->refine;
+  *trpomesh = tmpo->refine;
 
-  /* clean up */
-  free(new);
+  free(tmpo);
 
   /* free triangles */
   t1 = to.tris;
@@ -1117,7 +1106,7 @@ ay_tess_pomeshf(ay_pomesh_object *pomesh, unsigned int f,
 
 
 /* ay_tess_pomesh:
- *
+ *  unfinished - do not use
  */
 int
 ay_tess_pomesh(ay_pomesh_object *pomesh, int optimize)
@@ -1127,6 +1116,7 @@ ay_tess_pomesh(ay_pomesh_object *pomesh, int optimize)
  ay_error(AY_ERROR, fname, "This function is just available on GLU V1.2+ !");
  return AY_ERROR;
 #else
+ /*
  int ay_status = AY_OK;
  unsigned int i = 0, j = 0, k = 0, l = 0, m = 0, n = 0;
  ay_object *to = NULL;
@@ -1134,7 +1124,7 @@ ay_tess_pomesh(ay_pomesh_object *pomesh, int optimize)
 
   if(!pomesh)
     return AY_ENULL;
-
+ */
  return AY_OK;
 #endif
 } /* ay_tess_pomesh */

@@ -387,8 +387,8 @@ int ay_tess_npatch(ay_object *o, int smethod, double sparam,
 
 int ay_tess_npatchtcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
-
-int ay_tess_pomeshf(ay_pomesh_object *pomesh, unsigned int f,
+int ay_tess_pomeshf(ay_pomesh_object *pomesh,
+		    unsigned int f, unsigned int m, unsigned int n,
 		    int optimize,
 		    ay_pomesh_object **trpomesh);
 
