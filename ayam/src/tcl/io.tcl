@@ -41,8 +41,6 @@ proc io_replaceScene { } {
 	replaceScene $filename
 
 	if { $ay_error < 2 } {
-	    uS
-	    rV
 	    set windowfilename [file tail [file rootname $filename]]
 	    wm title . "Ayam - Main - $windowfilename"
 	    set ay(filename) $filename
@@ -60,10 +58,16 @@ proc io_replaceScene { } {
 	} else {
 	    ayError 2 "Ayam" "There were errors while loading:"
 	    ayError 2 "Ayam" "$filename"
-	    uS
-	    rV
 	}
-	
+
+	goTop
+	selOb
+	set ay(CurrentLevel) "root"
+	set ay(SelectedLevel) "root"
+	update
+
+	uS
+	rV
 	io_mruAdd $filename
 	set ay(sc) 0
 	after idle viewMouseToCurrent
@@ -103,6 +107,7 @@ proc io_insertScene { } {
 	global ay ay_error
 	set ay_error ""
 	insertScene $ifilename
+
 	if { $ay_error < 2 } {
 	    ayError 4 "insertScene" "Done inserting objects from:"
 	    ayError 4 "insertScene" "$ifilename"
@@ -110,11 +115,18 @@ proc io_insertScene { } {
 	    ayError 2 "Ayam" "There were errors while loading:"
 	    ayError 2 "Ayam" "$ifilename"
 	}
-	io_mruAdd $filename
-	set ay(ul) $ay(CurrentLevel)
+
+	goTop
+	selOb
+	set ay(CurrentLevel) "root"
+	set ay(SelectedLevel) "root"
+	update
+
 	uS
 	rV
+	io_mruAdd $filename
 	set ay(sc) 1
+
 	after idle viewMouseToCurrent
     }
 
@@ -397,6 +409,13 @@ proc io_importMops { } {
 	    ayError 4 "importMops" "Done importing objects from:"
 	    ayError 4 "importMops" "$ifilename"
 	}
+
+	goTop
+	selOb
+	set ay(CurrentLevel) "root"
+	set ay(SelectedLevel) "root"
+	update
+
 	uS
 	rV
 	set ay(sc) 1
@@ -445,10 +464,9 @@ proc io_mruLoad { index } {
 	set ay_error ""
 	set filename [lindex $ayprefs(mru) $index]
 	replaceScene $filename
-	
+
 	if { $ay_error < 2 } {
-	    uS
-	    rV
+
 	    set windowfilename [file tail [file rootname $filename]]
 	    wm title . "Ayam - Main - $windowfilename"
 	    set ay(filename) $filename
@@ -467,10 +485,16 @@ proc io_mruLoad { index } {
 	} else {
 	    ayError 2 "Ayam" "There were errors while loading:"
 	    ayError 2 "Ayam" "$filename"
-	    uS
-	    rV
 	}
 
+	goTop
+	selOb
+	set ay(CurrentLevel) "root"
+	set ay(SelectedLevel) "root"
+	update
+
+	uS
+	rV
 	after idle viewMouseToCurrent
     }
 
@@ -559,6 +583,7 @@ proc io_saveEnv {  } {
 	 set temp $ay(sc)
 	 set ay_error 0
 	 saveScene $filename 1
+
 	 if { $ay_error < 2 } {
 	     ayError 4 "saveEnv" "Done writing environment to:"
 	     ayError 4 "saveEnv" "$filename"
