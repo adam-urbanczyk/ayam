@@ -246,6 +246,16 @@ ay_undo_copyview(ay_view_object *src, ay_view_object *dst)
   dst->dirty = AY_TRUE;
   dst->bgimage = NULL;
 
+  /* copy BGImage */
+  if(src->bgimage)
+    {
+      if(!(dst->bgimage = calloc(strlen(src->bgimage)+1, sizeof(char))))
+	{
+	  return AY_EOMEM;
+	}
+      strcpy(dst->bgimage, src->bgimage);
+    }
+
  return AY_OK;
 }/* ay_undo_copyview */
 
@@ -621,7 +631,7 @@ ay_undo_copysave(ay_object *src, ay_object **dst)
  ay_object *new = NULL;
  void **arr = NULL;
  ay_copycb *cb = NULL;
- ay_view_object *view = NULL;
+ ay_view_object *srcview = NULL, *dstview = NULL;
  ay_root_object *root = NULL;
 
   if(!src || !dst)
@@ -649,13 +659,26 @@ ay_undo_copysave(ay_object *src, ay_object **dst)
     {
     case AY_IDVIEW:
 
-      view = (ay_view_object *)(src->refine);
-
+      srcview = (ay_view_object *)(src->refine);
+      
       if(!(new->refine = calloc(1, sizeof(ay_view_object))))
 	return AY_EOMEM;
+      dstview = (ay_view_object *)(new->refine);
 
-      memcpy((ay_view_object *)(new->refine), view, sizeof(ay_view_object));
-      ((ay_view_object *)new->refine)->bgimage = NULL;
+      memcpy(dstview, srcview, sizeof(ay_view_object));
+      dstview->bgimage = NULL;
+
+      /* copy BGImage */
+      if(srcview->bgimage)
+	{
+	  if(!(dstview->bgimage = calloc(strlen(srcview->bgimage)+1,
+					 sizeof(char))))
+	    {
+	      return AY_EOMEM;
+	    }
+
+	  strcpy(dstview->bgimage, srcview->bgimage);
+	}
       break;
     case AY_IDROOT:
 
@@ -689,7 +712,7 @@ ay_undo_copysave(ay_object *src, ay_object **dst)
 	  return AY_ERROR;
 	}
       break;
-    }
+    } /* switch */
 
   /* copy name */
   if(src->name)
