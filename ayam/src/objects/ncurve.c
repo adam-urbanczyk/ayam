@@ -33,12 +33,20 @@ ay_ncurve_createcb(int argc, char *argv[], ay_object *o)
       if(!strcmp(argv[i],"-length"))
 	{
 	  Tcl_GetInt(ay_interp, argv[i+1], &length);
-	  if(length <= 0) length = 4;
+
+	  if(length <= 1)
+	    length = 4;
+
+	  if(length < order)
+	    order = length;
+
 	  i+=2;
 	}
       else
-	i++;
-    }
+	{
+	  i++;
+	}
+    } /* while */
 
   if((ay_status = ay_nct_create(order, length, kt, cv, kv,
 				(ay_nurbcurve_object**)&(o->refine))))
