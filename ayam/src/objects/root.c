@@ -573,6 +573,14 @@ ay_root_readcb(FILE *fileptr, ay_object *o)
       ay_status = ay_read_shader(fileptr, &(root->imager));
     }
 
+  /* link newly read tags to old root object */
+  ay_tags_delall(ay_root);
+  if(o->tags)
+    {
+      ay_root->tags = o->tags;
+      o->tags = NULL;
+    }
+
  return AY_EDONOTLINK;
 } /* ay_root_readcb */
 
