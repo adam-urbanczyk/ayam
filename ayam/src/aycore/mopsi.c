@@ -1982,26 +1982,40 @@ ay_mopsi_scene(Tcl_Interp *interp, char *filename, int insert)
 
 
 int
-ay_mopsi_tcmd(ClientData clientData, Tcl_Interp * interp,
+ay_mopsi_tcmd(ClientData clientData, Tcl_Interp *interp,
 	      int argc, char *argv[])
 {
  int ay_status = AY_OK;
  char fname[] = "import_mops";
+ char *n1="mopsi_options";
+ Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
 
- /* check args */
- if(argc != 2)
-   {
-     ay_error(AY_EARGS, fname, "filename");
-     return TCL_OK;
-   }
+  /* check args */
+  if(argc != 2)
+    {
+      ay_error(AY_EARGS, fname, "filename");
+      return TCL_OK;
+    }
 
- ay_mopsi_lastread = NULL;
- ay_mopsi_materialnumber = 0;
+  toa = Tcl_NewStringObj(n1, -1);
+  ton = Tcl_NewStringObj("ResetDM", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &ay_prefs.mopsiresetdisplaymode);
 
- ay_status = ay_mopsi_scene(interp, argv[1], AY_TRUE);
+  Tcl_SetStringObj(ton, "ResetST", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &ay_prefs.mopsiresettolerance);
 
- if(ay_status)
-   ay_error(ay_status, fname, NULL);
+  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
+  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+
+  ay_mopsi_lastread = NULL;
+  ay_mopsi_materialnumber = 0;
+
+  ay_status = ay_mopsi_scene(interp, argv[1], AY_TRUE);
+
+  if(ay_status)
+    ay_error(ay_status, fname, NULL);
 
  return TCL_OK;
 }
