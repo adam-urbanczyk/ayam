@@ -16,7 +16,7 @@ proc zap { } {
     lappend windows .
     if { [winfo exists .prefsw] } { lappend windows .prefsw }
     if { [winfo exists .tbw] } { 
-	if { $ayprefs(ToolBoxTrans) == 0 } {
+	if { [wm transient .tbw] == "" } {
 	    lappend windows .tbw
 	}
     }
