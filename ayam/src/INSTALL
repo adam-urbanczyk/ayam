@@ -1,16 +1,16 @@
-INSTALL [8. May 2003]
+INSTALL [31. Dec 2003]
 
 Compilation Instructions for Ayam
 ---------------------------------
 
-There are two major ways to compile Ayam, "shared" and
-"wrapped standalone" ( using Wrap0.3 ).
+There are two major ways to compile Ayam, "shared" and "wrapped standalone"
+( using Wrap0.3 ).
 The binaries you get with the binary distribution of Ayam are "wrapped
 standalone". This means Tcl/Tk and the main Tcl-scripts of Ayam are all
 statically combined in the binary. This means no hassle with Tcl/Tk
-versions. You do not need an installed Tcl/Tk at all! However, the
-creation of "wrapped standalone" executables of Ayam is a bit tricky.
-Therefore, if you really want to or have to compile Ayam:
+versions. You do not need an installed Tcl/Tk at all! However, the creation
+of "wrapped standalone" executables of Ayam is a bit tricky. Therefore,
+if you really want to or have to compile Ayam:
 _Please compile a "shared" version of Ayam!_
 
 
@@ -359,14 +359,6 @@ shaders of the type supported by the plugin loaded.
 --------------------------------
 
 Use
->make clean
-to remove all objects; this step is necessary if you switch build types
-( shared <-> wrapped )!
-
->make mostlyclean
-to make clean but not remove the objects that never change,
-like Apples mf3d code and Affines sribw code.
-
 >make install
 to install Ayam into the system.
 
@@ -383,6 +375,15 @@ environment variable, otherwise Ayam might not be able to load the plugins.
 The installation procedure will also install the current Makefile,
 that may be used to uninstall Ayam again, e.g. using:
 >make -f /usr/local/ayam/lib/Makefile uninstall
+
+Use
+>make clean
+to remove all objects; this step is necessary if you switch build types
+( shared <-> wrapped )!
+
+>make mostlyclean
+to make clean but not remove the objects that never change,
+like Apples mf3d code and Affines sribw code.
 
 End of Compilation Instructions,
 -- 
