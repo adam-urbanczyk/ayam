@@ -577,6 +577,8 @@ int ay_trafo_multmatrix4(double *m1, double *m2);
 
 int ay_trafo_invmatrix4(double *m, double *mi);
 
+int ay_trafo_apply(ay_object *o, double *p, int stride, int reusem);
+
 /* undo.c */
 int ay_undo_init(int buffer_size);
 
