@@ -1914,13 +1914,32 @@ idr_get2dbbc(ay_object *o, int *left, int *right,
  double bb[24] = {0};
  double xmin = DBL_MAX, ymin = DBL_MAX;
  double xmax = -DBL_MAX, ymax = -DBL_MAX;
- int i;
+ int i, found = AY_FALSE;
+ ay_list_object *oldclevel = ay_currentlevel;
+ char fname[] = "idr_get2dbbc";
 
-  glGetDoublev(GL_MODELVIEW_MATRIX, mvm);
+
   glGetDoublev(GL_PROJECTION_MATRIX, pm);
   glGetIntegerv(GL_VIEWPORT, vp);
 
+  ay_currentlevel = NULL;
+  ay_clevel_find(ay_root->next, o, &found);
+
+  if(!found)
+    ay_error(AY_ERROR,fname,"Object not found!");
+
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+   glLoadIdentity();
+   ay_trafo_getall(ay_currentlevel->next);
+   glGetDoublev(GL_MODELVIEW_MATRIX, mvm);
+  glPopMatrix();
+
+  ay_clevel_delall(); free(ay_currentlevel);
+  ay_currentlevel = oldclevel;
+
   ay_bbc_get(o, bb);
+
   for(i=0;i<24;i+=3)
     {
       gluProject((GLdouble)bb[i], (GLdouble)bb[i+1],
