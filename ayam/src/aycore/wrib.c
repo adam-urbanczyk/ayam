@@ -1639,9 +1639,10 @@ ay_wrib_tcmd(ClientData clientData, Tcl_Interp * interp,
  ay_camera_object *cam = NULL;
  ay_root_object *root = NULL;
  ay_riopt_object *riopt = NULL;
+ int old_resinstances = ay_prefs.resolveinstances;
  int width = 400;
  int height = 300;
- int i, smonly = 0;
+ int i, selonly = 0, smonly = 0;
  char *file = NULL, *image = NULL;
  char fname[] = "wrib";
 
@@ -1666,17 +1667,26 @@ ay_wrib_tcmd(ClientData clientData, Tcl_Interp * interp,
 	else
 	  if(!strcmp(argv[i],"-smonly"))
 	    smonly = 1;
+	  else
+	    if(!strcmp(argv[i],"-selonly"))
+	      selonly = 1;
 
       i += 2;
     }
 
-  if(!smonly && (!sel || (sel->object->type != AY_IDCAMERA)))
+  if((!(smonly || selonly)) && (!sel || (sel->object->type != AY_IDCAMERA)))
    {
      ay_error(AY_ERROR, fname, "Please select a camera object!");
      return TCL_OK;
    }
 
-  if(!smonly)
+  if(selonly && (!sel))
+   {
+     ay_error(AY_ENOSEL, fname, NULL);
+     return TCL_OK;
+   }
+
+  if(!(smonly || selonly))
     cam = (ay_camera_object*)(sel->object->refine);
 
 #ifdef AYENABLEPPREV
@@ -1710,12 +1720,12 @@ ay_wrib_tcmd(ClientData clientData, Tcl_Interp * interp,
     }
 
   /* adjust roll, if up vector points down */
-  if(!smonly && (cam->up[1] < 0.0))
+  if(!(smonly || selonly) && (cam->up[1] < 0.0))
     {
       cam->roll += 180.0;
     }
 
-  if(!smonly)
+  if(!(smonly || selonly))
     {
       ay_status = ay_wrib_scene(file, image, cam->from, cam->to, cam->roll,
 				cam->zoom, cam->nearp, cam->farp,
@@ -1723,10 +1733,31 @@ ay_wrib_tcmd(ClientData clientData, Tcl_Interp * interp,
     }
   else
     {
-      ay_status = ay_wrib_sm(file, image, width, height);
-    }
+      if(smonly)
+	{
+	  ay_status = ay_wrib_sm(file, image, width, height);
+	}
+      else
+	{
+	  /* export selected objects only */
 
-  if(!smonly && (cam->up[1] < 0.0))
+	  /* thus, always resolve instances */
+	  ay_prefs.resolveinstances = AY_TRUE;
+
+	  RiBegin(file);
+	   while(sel)
+	     {
+	       ay_wrib_object(file, sel->object);
+	       sel = sel->next;
+	     } /* while */
+	  RiEnd();
+
+	  /* restore old value */
+	  ay_prefs.resolveinstances = old_resinstances;
+	} /* if */
+    } /* if */
+
+  if(!(smonly || selonly) && (cam->up[1] < 0.0))
     {
       cam->roll -= 180.0;
     }

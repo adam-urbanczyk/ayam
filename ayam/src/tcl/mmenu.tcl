@@ -385,6 +385,7 @@ $m add separator
 $m add cascade -menu $m.rib -label "RIB-Export"
 set sm [menu $m.rib -tearoff 0]
 $sm add command -label "From Camera" -command "io_exportRIBfC"
+$sm add command -label "Selected Objects" -command "io_exportRIBSO"
 $sm add command -label "Create ShadowMaps" -command "io_RenderSM"
 $m add separator
 $m add command -label "Toggle Toolbox" -command "toolbox_toggle"

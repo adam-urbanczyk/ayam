@@ -858,3 +858,28 @@ set answer [tk_messageBox -title $t -type okcancel -icon warning -message $m]
  return;
 }
 #io_RenderSM
+
+
+# exportRIBSO:
+#  export RIB from all selected objects
+# 
+proc io_exportRIBSO { } {
+    global ay ayprefs ay_error
+
+    set ribname [io_getRIBName]
+    set efilename [lindex $ribname 0]
+    set ay_error ""
+
+    if { $efilename != "" } {
+	wrib -file $efilename -selonly
+	if { $ay_error < 2 } {
+	    ayError 4 "exportRIB" "Done exporting objects to:"
+	    ayError 4 "exportRIB" "$efilename"
+	} else {
+	    ayError 2 "exportRIB" "Could not export RIB!"
+	}
+    }
+
+ return;
+}
+# io_exportRIBSO
