@@ -369,7 +369,8 @@ ay_text_readcb(FILE *fileptr, ay_object *o)
 
   fscanf(fileptr,"%lg",&text->height);
   read = fgetc(fileptr);
-
+  if(read == '\r')
+    fgetc(fileptr);
   ay_read_string(fileptr, &(text->fontname));
   ay_read_unistring(fileptr, &(text->unistring));
 
