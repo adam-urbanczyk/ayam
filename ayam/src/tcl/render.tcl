@@ -76,7 +76,7 @@ proc render_select { } {
     
     # ok/cancel buttons
     set f [frame $w.fb1]
-    button $f.bok -text "Ok" -pady 1 -width 5 -command {
+    button $f.bok -text "Ok" -pady $ay(pady) -width 5 -command {
 	global ay ayprefs
 
 	set sel [.selRenw.flb.li curselection]
@@ -209,17 +209,24 @@ proc render_select { } {
 
 	set ay(srr) $sel
 
+	focus .
+	grab release .selRenw
 	destroy .selRenw
     }
     #-command
 
 
-    button $f.bca -text "Cancel" -pady 1 -width 5 -command "destroy $w"
+    button $f.bca -text "Cancel" -pady $ay(pady) -width 5 -command "\
+	focus . ; destroy $w "
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
     pack $f -in $w -side top -fill x
 
     # center window
     winCenter $w
+
+    grab $w
+    focus $f.bok
+    tkwait window $w
 
  return;
 }

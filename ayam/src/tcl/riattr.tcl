@@ -166,9 +166,8 @@ proc riattr_addp { } {
 
     # buttons
     set f [frame $w.f3]
-    button $f.bok -text "Ok" -width 5 -command { 
+    button $f.bok -text "Ok" -pady $ay(pady) -width 5 -command { 
 	global riattr riattrval
-
 
 	set lb .addRiAttrw.f1.li
  
@@ -217,7 +216,8 @@ proc riattr_addp { } {
 
     }
 
-    button $f.bca -text "Cancel" -width 5 -command "destroy $w"
+    button $f.bca -text "Cancel" -pady $ay(pady) -width 5 -command "\
+	focus . ; destroy $w "
 
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
     pack $f -in $w -side bottom -fill x
@@ -228,3 +228,4 @@ proc riattr_addp { } {
 
  return;
 }
+# riattr_addp

@@ -31,12 +31,14 @@ proc ai_open {} {
 
     pack $f -in $w -side top -fill x
     set f [frame $w.fl]
-    button $f.bok -text "Start" -width 6 -command { 
+    button $f.bok -text "Start" -pady $ay(pady) -width 6 -command { 
+	focus .
 	destroy .aiw
 	ai_makeInstances;uS
     }
 
-    button $f.bca -text "Cancel" -width 6 -command { 
+    button $f.bca -text "Cancel" -pady $ay(pady) -width 6 -command { 
+	focus .
 	destroy .aiw
     }
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes

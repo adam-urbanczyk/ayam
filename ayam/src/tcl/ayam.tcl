@@ -315,6 +315,7 @@ set oldy 0
 
 # miscellaneous global values
 array set ay {
+ pady 3
  failsafe 0
  showsplash 1
  aysplash "../lib/ayam-splash.gif"
@@ -372,6 +373,7 @@ set ay_error 0
 # platform specific initialization
 if { $tcl_platform(platform) == "windows" } {
     set ay(separator) ";"
+    set ay(pady) 0
     set ayprefs(TmpDir) "$env(TEMP)"
     regsub -all {\\} $ayprefs(TmpDir) {/} ayprefs(TmpDir)
     set ayprefs(EnvFile) "~/2view.ay"

@@ -227,7 +227,7 @@ proc tc_edit { } {
 
     # action buttons
     set f [frame $w.fab1]
-    button $f.b1 -text "RotateL" -width 7  -pady 0 -command {
+    button $f.b1 -text "RotateL" -width 7 -pady $ay(pady) -command {
 	global tc
 	array set ttc [array get tc]
 
@@ -242,7 +242,7 @@ proc tc_edit { } {
 
 	tc_updateCanvas .tcEditw.fc.ca
     }
-    button $f.b2 -text "RotateR" -width 7  -pady 0 -command {
+    button $f.b2 -text "RotateR" -width 7 -pady $ay(pady) -command {
 
 	global tc
 	array set ttc [array get tc]
@@ -260,7 +260,7 @@ proc tc_edit { } {
 
     }
 
-    button $f.b3 -text "FlipS" -width 5 -pady 0 -command {
+    button $f.b3 -text "FlipS" -width 5 -pady $ay(pady) -command {
 	global tc
 	array set ttc [array get tc]
 
@@ -276,7 +276,7 @@ proc tc_edit { } {
 	tc_updateCanvas .tcEditw.fc.ca
     }
 
-    button $f.b4 -text "FlipT" -width 5 -pady 0 -command {
+    button $f.b4 -text "FlipT" -width 5 -pady $ay(pady) -command {
 	global tc
 	array set ttc [array get tc]
 
@@ -298,7 +298,7 @@ proc tc_edit { } {
     set f [frame $w.fab2]
     entry $f.e -text "Amount:" -width 8 -textvariable tc(amount)
 
-    button $f.b1 -text "ScaleS" -width 6 -pady 0 -command {
+    button $f.b1 -text "ScaleS" -width 6 -pady $ay(pady) -command {
 	global tc
 	foreach i [list 1 3 5 7] {
 	    set tc(v$i) [expr $tc(v$i) * $tc(amount)]
@@ -306,7 +306,7 @@ proc tc_edit { } {
 	tc_updateCanvas .tcEditw.fc.ca
     }
 
-    button $f.b2 -text "ScaleT" -width 6 -pady 0 -command {
+    button $f.b2 -text "ScaleT" -width 6 -pady $ay(pady) -command {
 	global tc
 	foreach i [list 2 4 6 8] {
 	    set tc(v$i) [expr $tc(v$i) * $tc(amount)]
@@ -314,7 +314,7 @@ proc tc_edit { } {
 	tc_updateCanvas .tcEditw.fc.ca
     }
 
-    button $f.b3 -text "MoveS" -width 5 -pady 0 -command {
+    button $f.b3 -text "MoveS" -width 5 -pady $ay(pady) -command {
 	global tc
 	foreach i [list 1 3 5 7] {
 	    set tc(v$i) [expr $tc(v$i) + $tc(amount)]
@@ -322,7 +322,7 @@ proc tc_edit { } {
 	tc_updateCanvas .tcEditw.fc.ca
     }
 
-    button $f.b4 -text "MoveT" -width 5 -pady 0 -command {
+    button $f.b4 -text "MoveT" -width 5 -pady $ay(pady) -command {
 	global tc
 	foreach i [list 2 4 6 8] {
 	    set tc(v$i) [expr $tc(v$i) + $tc(amount)]
@@ -330,7 +330,8 @@ proc tc_edit { } {
 	tc_updateCanvas .tcEditw.fc.ca
     }
 
-    pack $f.e $f.b1 $f.b2 $f.b3 $f.b4\
+    pack $f.e  -pady 0 -fill both -in $f -side left -expand yes
+    pack $f.b1 $f.b2 $f.b3 $f.b4\
 	    -in $f -side left -fill x -expand yes
     pack $f -side top -fill x -expand no
 
@@ -367,12 +368,14 @@ proc tc_edit { } {
     set f [frame $w.fb1]
 
     # load menubutton
-    menubutton $f.mb1 -text "Load" -relief raised -menu $f.mb1.m
+    menubutton $f.mb1 -text "Load" -pady $ay(pady) -relief raised\
+	    -menu $f.mb1.m
     set m [menu $f.mb1.m -tearoff 0 -postcommand {
 	bind .tcEditw <Enter> "" } ]
 
     # save menubutton
-    menubutton $f.mb2 -text "Save" -relief raised -menu $f.mb2.m
+    menubutton $f.mb2 -text "Save" -pady $ay(pady) -relief raised\
+	    -menu $f.mb2.m
     set m [menu $f.mb2.m -tearoff 0 -postcommand {
 	bind .tcEditw <Enter> "" } ]
 
@@ -383,12 +386,12 @@ proc tc_edit { } {
 
     # dismiss button
     set f [frame $w.fb2]
-    button $f.bd -text "Dismiss" -width 5 -command {
+    button $f.bd -text "Dismiss" -pady $ay(pady) -command {
 	global tclist tcindex tc tcumsema
 	# clean up
+	unset tc tclist tcindex tcumsema
 	focus .
 	destroy .tcEditw
-	unset tc tclist tcindex tcumsema
     }
     pack $f.bd -in $f -side left -fill x -expand yes
     pack $f -in $w -side bottom -fill x
