@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>25. Dec 2001
+<date>16. Jan 2002
 <abstract>
 This is the documentation of Ayam - a free 3D modeling environment
 for the RenderMan interface.
@@ -3913,6 +3913,10 @@ Bernd, without your help I surely would not be that far, thanks!
 
 Furthermore, I would like to thank the following people:
 <itemize>
+<item>H. Birkholz: initial implementation of the tree widget, shadow map
+support, AI, and IDR
+<item>F. (Copper) Pagels: Metaballs custom object
+<item>S. Echavia: Icons
 <item>Larry Gritz: BMRT
 <item>Benjamin Bederson, Brian Paul et. al.: The Togl Widget
 <item>Jeffrey Hobbs: tkMegaWidget set
