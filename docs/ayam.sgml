@@ -2110,6 +2110,17 @@ Note that regardless of potentially present <tt/"NoExport"/ tags,
 RIB archives will be created for all referenced objects all the
 time (even if <tt/"NoExport"/ tags are added to all instances).
 
+<sect2>SaveMainGeom Tag<label id="savemaingeomtag">
+<p>
+The tag type <tt/"SaveMainGeom"/ can be used to save the geometry
+of the main window and the toolbox window (if open) with a scene
+file. For that the scene saving code checks for the presence of
+a <tt/"SaveMainGeom"/ tag for the root object and fills it with
+the geometry information. The scene reading code again checks
+for the presence of a <tt/"SaveMainGeom"/ tag for the root object
+after replacing a scene and re-establishes the geometries of
+main and toolbox window.
+
 <sect2>Internal Tags
 <p>
 The following tags are of no general use. They are used
@@ -2161,7 +2172,7 @@ These will always use the dimensions of the view window.
 <item><tt/"StdDisplay"/, if this is enabled, a standard display
 statement will be written to the RIB, which looks like this:
 
-<tt>Display "unnamed.tif" "file "rgba"</tt>
+<code>Display "unnamed.tif" "file "rgba"</code>
 
 If you disable this option, be sure to add atleast one
 RiDisplay tag to the root object (see also section
@@ -6310,6 +6321,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Save as: <ref id="mmfile" name="main menu entry">
 <item>Save Prefs: <ref id="mmfile" name="main menu entry">
 <item>SaveAddsMRU: <ref id="prefmisc" name="preference setting">
+<item>SaveMainGeom: <ref id="savemaingeomtag" name="tag type">
 <item>SavePrefsGeom: <ref id="prefmisc" name="preference setting">
 <item>saveScene: <ref id="scio" name="scripting interface command">
 <item>Scale: <ref id="trap" name="transformations property">,
@@ -6482,3 +6494,4 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 
 
 </article>
+
