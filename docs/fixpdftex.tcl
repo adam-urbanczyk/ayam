@@ -11,6 +11,7 @@
 set infile [ open [lindex $argv 0] r ]
 set outfile [ open [lindex $argv 1] w ]
 set height 0
+set rewriteItemize 0
 while { ![eof $infile] } {
     gets $infile buf
     set index [ string first "height=" $buf ]
@@ -26,7 +27,8 @@ while { ![eof $infile] } {
     } else {
 	set index [ string first "section\{Index\}" $buf ]
 	if { $index > -1 } {
-	    puts $outfile "\\twocolumn \\section\{Index\} \{ \\footnotesize"
+	    puts $outfile "\\twocolumn \\section\{Index\} \{ \\footnotesize "
+	    set rewriteItemize 1
 	} else {
 	    set index [ string first "end\{document" $buf ]
 	    if { $index > -1 } {
@@ -37,7 +39,13 @@ while { ![eof $infile] } {
 		    puts $outfile\
 			    "\\documentclass\[a4paper,11pt\]\{article\}"
 		} else {
-		    puts $outfile $buf
+		    set index [ string first "\\begin\{itemize" $buf ]
+		    if { ($index > -1) && $rewriteItemize } {
+			puts $outfile\
+		         "\\begin\{itemize\}\\setlength\{\\itemsep\}\{-0.5ex\}"
+		    } else {
+			puts $outfile $buf
+		    }
 		}
 	    }
 	}
