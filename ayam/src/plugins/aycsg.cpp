@@ -63,7 +63,12 @@ int aycsg_rendertcb(struct Togl *togl, int argc, char *argv[]);
 
 int aycsg_drawtoplevelprim(Togl *togl);
 
-int aycsg_flatten(ay_object *t, struct Togl *togl, int parent_csgtype);
+void aycsg_getNDCBB(ay_object *t, struct Togl *togl,
+		    double *minx, double *miny, double *minz,
+		    double *maxx, double *maxy, double *maxz);
+
+int aycsg_flatten(ay_object *t, struct Togl *togl, int parent_csgtype,
+		  int calc_bbs);
 
 void aycsg_clearprimitives();
 
@@ -293,7 +298,7 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
 	  // it is needed by OpenCSG...
 	  ay_prefs.use_materialcolor = AY_FALSE;
 
-	  ay_status = aycsg_flatten(o, togl, AY_LTUNION);
+	  ay_status = aycsg_flatten(o, togl, AY_LTUNION, calc_bbs);
 
 	  glClearDepth((GLfloat)1.0);
 	  glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -399,11 +404,100 @@ aycsg_drawtoplevelprim(Togl *togl)
 } // aycsg_drawtoplevelprim
 
 
+// aycsg_getNDCBB:
+//  get bounding box of object t in normalised device coordinates
+void aycsg_getNDCBB(ay_object *t, struct Togl *togl,
+		    double *minx, double *miny, double *minz,
+		    double *maxx, double *maxy, double *maxz)
+{
+ int ay_status;
+ int i;
+ double bb[24] = {0}, m[16], mm[16], pm[16], vp[4];
+ ay_view_object *view = NULL;
+ int width = Togl_Width(togl);
+ int height = Togl_Height(togl);
+ double aspect = ((double)width) / ((double)height);  
+
+  if(!t || !togl)
+    return;
+
+  view = (ay_view_object *)Togl_GetClientData(togl);
+
+  ay_status = ay_bbc_get(t, bb);
+
+  *minx = DBL_MAX; *maxx = DBL_MIN;
+  *miny = DBL_MAX; *maxy = DBL_MIN;
+  *minz = DBL_MAX; *maxz = DBL_MIN;
+
+  // transform BB to NDC (normalized device coordinates)
+
+  if(t->tags && (t->tags->type == aycsg_tm_tagtype))
+    {
+      memcpy(m, t->tags->val, 16*sizeof(double));
+    }
+  else
+    {
+      ay_trafo_identitymatrix(m);
+    }
+
+  glGetDoublev(GL_MODELVIEW_MATRIX, mm);
+  glGetDoublev(GL_PROJECTION_MATRIX, pm);
+  glGetDoublev(GL_VIEWPORT, vp);
+
+  for(i = 0; i < 24; i += 3)
+    {
+      ay_trafo_apply3(&(bb[i]), m);
+      ay_trafo_apply3(&(bb[i]), mm);
+      ay_trafo_apply3(&(bb[i]), pm);
+
+      if(bb[i] < *minx)
+	{
+	  *minx = bb[i];
+	}
+      if(bb[i] > *maxx)
+	{
+	  *maxx = bb[i];
+	}
+      if(bb[i+1] < *miny)
+	{
+	  *miny = bb[i+1];
+	}
+      if(bb[i+1] > *maxy)
+	{
+	  *maxy = bb[i+1];
+	}
+      if(bb[i+2] < *minz)
+	{
+	  *minz = bb[i+2];
+	}
+      if(bb[i+2] > *maxz)
+	{
+	  *maxz = bb[i+2];
+	}
+    } // for
+
+  if(view->type == AY_VTPERSP)
+    {
+      *minx *= aspect*view->zoom;
+      *maxx *= aspect*view->zoom;
+      *miny *= view->zoom;
+      *maxy *= view->zoom;
+    }
+
+#ifdef AYCSGDBG
+  printf("BB: %g %g %g %g %g %g\n", *minx, *miny, *minz, *maxx, *maxy, *maxz);
+#endif
+
+ return;
+} // aycsg_getNDCBB
+
+
 // aycsg_flatten:
 //  _recursively_ convert tree <t> to primitive array for resolving CSG
 //  and rendering, <t> should be normalized using aycsg_normalize()
 int
-aycsg_flatten(ay_object *t, struct Togl *togl, int parent_csgtype)
+aycsg_flatten(ay_object *t, struct Togl *togl, int parent_csgtype,
+	      int calc_bbs)
 {
  int ay_status = AY_OK;
  ay_tag_object *tag = NULL;
@@ -456,14 +550,22 @@ aycsg_flatten(ay_object *t, struct Togl *togl, int parent_csgtype)
 	    } // if
 	} // if
 
+      if(calc_bbs)
+	{
+	  double minx, miny, minz, maxx, maxy, maxz;
+	  OpenCSG::Primitive *p = primitives.back();
+	  aycsg_getNDCBB(t, togl, &minx, &miny, &minz, &maxx, &maxy, &maxz);
+	  p->setBoundingBox(minx, miny, minz, maxx, maxy, maxz);
+	} // if
+
     }
   else
     {
       // no
       if((t->type == AY_IDLEVEL) && (t->down) && (t->down->next))
 	{
-	  ay_status = aycsg_flatten(t->down, togl, t->CSGTYPE);
-	  ay_status = aycsg_flatten(t->down->next, togl, t->CSGTYPE);
+	  ay_status = aycsg_flatten(t->down, togl, t->CSGTYPE, calc_bbs);
+	  ay_status = aycsg_flatten(t->down->next, togl, t->CSGTYPE, calc_bbs);
 	}
     } // if
 
