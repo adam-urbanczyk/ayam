@@ -1757,7 +1757,9 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
 	  ay_status = ay_notify_parent();
 	} /* if */
       ay_toglcb_display(togl);
-      ay_status = ay_pact_flashpoint(AY_TRUE);
+      /* flash option given? */
+      if(argc > 5)
+	ay_status = ay_pact_flashpoint(AY_TRUE);
     } /* if */
 
   oldwinx = winx;
