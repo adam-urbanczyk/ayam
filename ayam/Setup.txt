@@ -1,4 +1,4 @@
-[Setup.txt, 10. Nov 2003]
+[Setup.txt, 8. Sep 2004]
 
 Setup instructions for Ayam (Unix only)
 ---------------------------------------
@@ -50,8 +50,8 @@ preferences using the main menu entry "File/Save Prefs".
 -------------------------------------------
 
 If you fail to correctly determine the type of your window
-manager, the geometry of the main window and the toolbox
-will be wrong after restart of Ayam. Furthermore, the main
+manager, Ayam will not be able to properly remember the geometry
+of the main window and the toolbox. Furthermore, the main
 window may jump, each time a new property is selected.
 This is because, unfortunately, different X window managers
 report different values for the geometries of top level windows,
