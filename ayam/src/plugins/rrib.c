@@ -1633,7 +1633,29 @@ RtVoid
 ay_rrib_RiGeneralPolygon(RtInt nloops, RtInt nvertices[],
 			 RtInt n, RtToken tokens[], RtPointer parms[])
 {
-   (void)nloops; (void)nvertices; (void)n; (void)tokens; (void)parms;
+ RtInt *vertices = NULL, total_verts = 0;
+ int i;
+
+  for(i = 0; i < nloops; i++)
+    {
+      total_verts += nvertices[i];
+    }
+
+  if(!(vertices = calloc(total_verts, sizeof(RtInt))))
+    return;
+
+  for(i = 0; i < total_verts; i++)
+    {
+      vertices[i] = i;
+    }
+
+  ay_rrib_RiPointsGeneralPolygons(1, &nloops, nvertices, vertices,
+				  n, tokens, parms);
+
+  /* clean up */
+  free(vertices);
+
+ return;
 } /* ay_rrib_RiGeneralPolygon */
 
 
@@ -2561,7 +2583,24 @@ RtVoid
 ay_rrib_RiPolygon(RtInt nvertices,
 		  RtInt n, RtToken tokens[], RtPointer parms[])
 {
-   (void)nvertices; (void)n; (void)tokens; (void)parms;
+ RtInt *vertices = NULL;
+ int i, j = 1;
+
+  if(!(vertices = calloc(nvertices, sizeof(RtInt))))
+    return;
+
+  for(i = 0; i < nvertices; i++)
+    {
+      vertices[i] = i;
+    }
+
+  ay_rrib_RiPointsGeneralPolygons(1, &j, &nvertices, vertices,
+				  n, tokens, parms);
+
+  /* clean up */
+  free(vertices);
+
+ return;
 } /* ay_rrib_RiPointsPolygon */
 
 
@@ -3682,9 +3721,13 @@ ay_rrib_initgprims(void)
 
   gRibNopRITable[kRIB_POINTSGENERALPOLYGONS] =
     (PRIB_RIPROC)ay_rrib_RiPointsGeneralPolygons;
-
   gRibNopRITable[kRIB_POINTSPOLYGONS] =
     (PRIB_RIPROC)ay_rrib_RiPointsPolygons;
+  gRibNopRITable[kRIB_GENERALPOLYGON] =
+    (PRIB_RIPROC)ay_rrib_RiGeneralPolygon;
+  gRibNopRITable[kRIB_POLYGON] =
+    (PRIB_RIPROC)ay_rrib_RiPolygon;
+
 
   gRibNopRITable[kRIB_SOLIDBEGIN] = (PRIB_RIPROC)ay_rrib_RiSolidBegin;
   gRibNopRITable[kRIB_SOLIDEND] = (PRIB_RIPROC)ay_rrib_RiSolidEnd;
@@ -3714,9 +3757,12 @@ ay_rrib_cleargprims(void)
 
   gRibNopRITable[kRIB_POINTSGENERALPOLYGONS] =
     (PRIB_RIPROC)RiNopPointsGeneralPolygonsV;
-
   gRibNopRITable[kRIB_POINTSPOLYGONS] =
     (PRIB_RIPROC)RiNopPointsPolygonsV;
+  gRibNopRITable[kRIB_GENERALPOLYGON] =
+    (PRIB_RIPROC)RiNopGeneralPolygonV;
+  gRibNopRITable[kRIB_POLYGON] =
+    (PRIB_RIPROC)RiNopPolygonV;
 
   gRibNopRITable[kRIB_SOLIDBEGIN] = (PRIB_RIPROC)RiNopSolidBegin;
   gRibNopRITable[kRIB_SOLIDEND] = (PRIB_RIPROC)RiNopSolidEnd;
