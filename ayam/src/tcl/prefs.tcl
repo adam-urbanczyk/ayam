@@ -26,23 +26,44 @@ proc prefs_set {} {
 # prefs_rsnb:
 #  resize notebook nb so that the page page is displayed in full size
 proc prefs_rsnb { nb page } {
-    global ay ayprefs
+    global ay ayprefs tcl_platform
+
     update
+
     if { ($ayprefs(SavePrefsGeom) != 0) && ($ay(prefsgeom) != "") } {
 	set owidth [string range $ay(prefsgeom) 0\
 		[string first x $ay(prefsgeom)]]
 	set owidth [string trimright $owidth x]
     }
+
+    set oldwidth [expr [winfo width $nb] - 4]
+
     wm geometry .prefsw {}
     $nb configure -height [winfo reqheight [$nb getframe $page]]
+
     if { ($ayprefs(SavePrefsGeom) != 0) && ($ay(prefsgeom) != "") && \
 	    [info exists owidth] } {
-	update idletasks
+	update
 	set ng [winGetGeom .prefsw]
 	set ng ${owidth}[string range $ng [string first x $ng] end]
+	if { ($tcl_platform(platform) != "windows") &&
+	     ($ayprefs(TwmCompat) == 0) } {
+	    set x [winfo rootx .prefsw]
+	    set y [winfo rooty .prefsw]
+	} else {
+	    set ng [wm geom .prefsw]
+	    regexp {([0-9]+)?x?([0-9]+)?(\+|\-)?([0-9]+)?(\+|\-)?([0-9]+)?} \
+		$ng blurb nw nh blurb2 x blurb3 y
+	}
+	set ng ""
+	if { $x >= 0 } { append ng "+$x" } else { append ng "-$x" }
+	if { $y >= 0 } { append ng "+$y" } else { append ng "-$y" }
+	$nb configure -width $oldwidth
 	winMoveOrResize .prefsw $ng
     }
+
     set ay(prefssection) $page
+
  return;
 }
 # prefs_rsnb
