@@ -700,26 +700,62 @@ ay_clone_convertcb(ay_object *o, int in_place)
 {
  int ay_status = AY_OK;
  ay_clone_object *cc = NULL;
- ay_object *clone = NULL, *newo = NULL, *down = NULL;
+ ay_object *clone = NULL, *new = NULL, *down = NULL, **next = NULL;
 
   if(!o)
     return AY_ENULL;
 
+  /* dow we have any child objects? */
   down = o->down;
   if(!down || !down->next)
     return AY_OK;
 
   cc = (ay_clone_object *) o->refine;
 
+  /* first, create new objects */
+
+  if(!(new = calloc(1, sizeof(ay_object))))
+    { return AY_EOMEM; }
+
+  ay_object_defaults(new);
+  new->type = AY_IDLEVEL;
+  new->parent = AY_TRUE;
+  new->inherit_trafos = AY_TRUE;
+  ay_trafo_copy(o, new);
+
+  if(!(new->refine = calloc(1, sizeof(ay_level_object))))
+    { free(new); return AY_EOMEM; }
+
+  ((ay_level_object *)(new->refine))->type = AY_LTLEVEL;
+
+  next = &(new->down);
+  ay_status = ay_object_copy(down, next);
+  next = &((*next)->next);
   clone = cc->clones;
   while(clone)
     {
-      newo = NULL;
-      ay_status = ay_object_copy(down, &newo);
-      ay_trafo_copy(clone, newo);
-      ay_status = ay_object_link(newo);
+      ay_status = ay_object_copy(down, next);
+      ay_trafo_copy(clone, *next);
+      next = &((*next)->next);
       clone = clone->next;
-    }
+    } /* while */
+  
+  ay_status = ay_object_crtendlevel(next);
+
+
+  /* second, link new objects, or replace old objects with them */
+
+  if(new)
+    {
+      if(!in_place)
+	{
+	  ay_status = ay_object_link(new);
+	}
+      else
+	{
+	  ay_object_replace(new, o);
+	} /* if */
+    } /* if */
 
  return ay_status;
 } /* ay_clone_convertcb */
@@ -737,6 +773,7 @@ ay_clone_providecb(ay_object *o, unsigned int type, ay_object **result)
 
   cc = (ay_clone_object *) o->refine;
 
+  /* dow we have any child objects? */
   down = o->down;
   if(!down || !down->next)
     return AY_OK;
