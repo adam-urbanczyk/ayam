@@ -47,7 +47,7 @@ proc prefs_open {} {
 
     set w .prefsw
     catch {destroy $w}
-    toplevel $w -width 350 -height 400
+    toplevel $w -width 370 -height 400
     wm title $w "Ayam Preferences"
     wm iconname $w "Ayam"
     wm withdraw $w
@@ -94,6 +94,7 @@ proc prefs_open {} {
     set l $ay(locales)
     addStringB $fw ayprefse Locale [ms ayprefse_Locale] $l
     addCheckB $fw ayprefse AutoResize [ms ayprefse_AutoResize]
+    addCheckB $fw ayprefse AutoFocus [ms ayprefse_AutoFocus]
     addCheckB $fw ayprefse TwmCompat [ms ayprefse_TwmCompat]
     addCheckB $fw ayprefse ListTypes [ms ayprefse_ListTypes]
     addCheckB $fw ayprefse AutoSavePrefs [ms ayprefse_AutoSavePrefs]
@@ -218,7 +219,7 @@ proc prefs_open {} {
 	prefs_set
 	rV
     }
-    button $f.bdef -text "Def." -width 8 -command {
+    button $f.bdef -text "Defaults" -width 8 -command {
 	global ay ayprefse ayprefsdefaults
 	set avnames [array names ayprefsdefaults]
 	foreach j $avnames {
@@ -240,7 +241,8 @@ proc prefs_open {} {
 	    unset ayprefse($j)
 	}
 	focus .
-	destroy .prefsw }
+	destroy .prefsw
+    }
 
     pack $f.bok $f.bap $f.bdef $f.bca -in $f -side left -fill x -expand yes
     pack $f -in $w -side bottom -fill x -expand no

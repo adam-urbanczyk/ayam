@@ -142,6 +142,15 @@ proc shortcut_main { w } {
     # bind function keys
     shortcut_fkeys $w
 
+    global ayprefs
+    if { $ayprefs(AutoFocus) == 1 } {
+	bind $w <Enter> {
+	    if { "%W" == "[winfo toplevel %W]" } {
+		focus %W
+	    }
+	}
+    }
+
  return;
 }
 # shortcut_main
@@ -347,6 +356,23 @@ proc shortcut_viewactions { w } {
 	%W render
     }
 
+    global tcl_platform
+    if { $tcl_platform(platform) == "windows" } {
+	bind $w.f3D.togl <MouseWheel> {
+	    undo save
+	    %W mc
+	    if { %D < 0.0 } {
+		%W setconf -dzoom 2
+	    } else {
+		%W setconf -dzoom 0.5
+	    }
+	    update
+	    %W reshape
+	    %W render
+	}
+    }
+
+
     bind $w <$ayviewshortcuts(Break)> "actionClear $w.f3D.togl"
     bind $w <$ayviewshortcuts(MoveV)> "actionMoveView $w.f3D.togl"
     bind $w <$ayviewshortcuts(MoveZV)> "actionMoveZView $w.f3D.togl"
@@ -381,7 +407,7 @@ proc shortcut_viewactions { w } {
 
 #shortcut_altrotatebinding:
 # Setup key bindings for rotation of a 3D-View while
-# the Alt key is hold down.
+# the Alt key is held down.
 #
 proc shortcut_altrotatebinding { w } {
     bind $w <B1-Motion> {

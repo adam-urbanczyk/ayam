@@ -1,6 +1,6 @@
 # Ayam, a free 3D modeler for the RenderMan interface.
 #
-# Ayam is copyrighted 1998-2002 by Randolf Schultz
+# Ayam is copyrighted 1998-2003 by Randolf Schultz
 # (rschultz@informatik.uni-rostock.de) and others.
 #
 # All rights reserved.
@@ -57,8 +57,10 @@ ms_set en ayprefse_Shaders "A list of paths where your compiled shaders reside"
 ms_set en ayprefse_ScanShaders "Initiates rebuild of internal shader database."
 ms_set en ayprefse_Locale "Language to use for balloon help texts.\
 \nChanges will take effect after restart of Ayam!"
-ms_set en ayprefse_AutoResize "Resize main window according to property gui?"
-ms_set en ayprefse_TwmCompat "Is your Window Manager TWM compatible?"
+ms_set en ayprefse_AutoResize "Resize main window according to property GUI?"
+ms_set en ayprefse_AutoFocus "Move focus to window with mouse cursor?\
+\nChanges will take effect after restart of Ayam!"
+ms_set en ayprefse_TwmCompat "Is your window manager TWM compatible?"
 ms_set en ayprefse_ListTypes "Show object types in the tree/list view?"
 ms_set en ayprefse_AutoSavePrefs "Save preferences on exit?"
 ms_set en ayprefse_LoadEnv "Load environment on startup?"
@@ -70,7 +72,7 @@ ms_set en ayprefse_Docs "An URL that points to the documentation."
 ms_set en ayprefse_TmpDir "A path where temporary files are to be saved."
 
 ms_set en ayprefse_PickEpsilon "Maximum allowed distance from picked point\
-to editable point;\n 0.0 means nearest point wins."
+to editable point;\n0.0 means nearest point wins."
 ms_set en ayprefse_HandleSize "Size of the handles of editable points."
 ms_set en ayprefse_LazyNotify "Notify parent objects about changes just on\
 mouse up?"
@@ -159,7 +161,7 @@ ms_set en ayprefse_ToolBoxTrans "Make the toolbox window transient?"
 ms_set en ayprefse_ToolBoxShrink "Make the toolbox window shrink wrap around\
 its contents,\nwhen the user resizes it?"
 ms_set en ayprefse_RGTrans "Make all rendering user interfaces transient?"
-ms_set en ayprefse_HideTmpTags "Hide all tags marked temporary from\n the\
+ms_set en ayprefse_HideTmpTags "Hide all tags marked temporary from\nthe\
 tag property GUIs?"
 ms_set en ayprefse_TclPrecision "Precision of Tcl mathematics."
 
@@ -178,11 +180,14 @@ ms_set de ayprefse_Shaders "Eine Liste von Verzeichnissen, in denen sich\
 ms_set de ayprefse_ScanShaders "Baut interne Shader-Datenbank neu auf."
 ms_set de ayprefse_AutoResize "Soll das Hauptfenster sich der Größe der\
 Eigenschaften anpassen?"
+ms_set de ayprefse_AutoFocus "Soll der Fokus automatisch dem Fenster mit\
+dem\nMauszeiger zugeordnet werden?\nÄnderungen werden erst nach\
+Neustart von Ayam wirksam!"
 ms_set de ayprefse_TwmCompat "Ist der verwendete Fenster-Manager\
 zu TWM kompatibel?"
 ms_set de ayprefse_ListTypes "Sollen die Objekttypen in der Listen- bzw.\
 \nBaumansicht angezeigt werden?"
-ms_set de ayprefse_Locale "Sprache für Hilfe-Texte.\
+ms_set de ayprefse_Locale "Sprache für Hilfetexte.\
 \nÄnderungen werden erst nach Neustart von Ayam wirksam!"
 ms_set de ayprefse_AutoSavePrefs "Sollen die Voreinstellungen beim Beenden\
 gespeichert werden?"

@@ -94,6 +94,19 @@ bind $f.li <ButtonPress-5> {
     break
 }
 
+global tcl_platform
+if { $tcl_platform(platform) == "windows" } {
+    bind $f.li <MouseWheel> {
+	global ay
+	if { %D < 0.0 } {
+	    $ay(plb) yview scroll 1 pages
+	} else {
+	    $ay(plb) yview scroll -1 pages 
+	}
+	break
+    }
+}
+
 # plb context menu
 set m [menu $ay(plb).popup -tearoff 0]
 $m add command -label "Deselect Property" -command {
@@ -202,6 +215,18 @@ bind . <ButtonPress-4> {
 bind . <ButtonPress-5> {
     global ay
     $ay(pca) yview scroll 1 pages
+}
+
+global tcl_platform
+if { $tcl_platform(platform) == "windows" } {
+    bind . <MouseWheel> {
+	global ay
+	if { %D < 0.0 } {
+	    $ay(pca) yview scroll 1 pages
+	} else {
+	    $ay(pca) yview scroll -1 pages 
+	}
+    }
 }
 
 pack $f.ca -in $f -side left -fill both -expand yes

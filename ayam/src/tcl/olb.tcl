@@ -40,7 +40,10 @@ bind $f.li <Double-ButtonPress-1> {
 
 bind $f.li <Return> { olb_select }
 
-bind $f.li <ButtonRelease-1> { after 150 olb_select }
+bind $f.li <ButtonRelease-1> { after 150 olb_select
+ global ay
+ focus $ay(olb)
+}
     
 bind $f.li <KeyRelease-space> { olb_select }
 
@@ -54,6 +57,19 @@ bind $f.li <ButtonPress-5> {
     global ay
     $ay(olb) yview scroll 1 pages
     break
+}
+
+global tcl_platform
+if { $tcl_platform(platform) == "windows" } {
+    bind $f.li <MouseWheel> {
+	global ay
+	if { %D < 0.0 } {
+	    $ay(olb) yview scroll 1 pages
+	} else {
+	    $ay(olb) yview scroll -1 pages 
+	}
+	break
+    }
 }
 
 # olb context menu
