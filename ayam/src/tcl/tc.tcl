@@ -132,10 +132,10 @@ proc tc_updateMenu { } {
 	global tc
 	puts "tc_edit: Loading values from BPatch..."
 
-	getBP 0 tc(v1) tc(v2) dummy
-	getBP 1 tc(v3) tc(v4) dummy
-	getBP 3 tc(v5) tc(v6) dummy
-	getBP 2 tc(v7) tc(v8) dummy
+	getPnt -trafo 0 tc(v1) tc(v2) dummy
+	getPnt -trafo 1 tc(v3) tc(v4) dummy
+	getPnt -trafo 3 tc(v5) tc(v6) dummy
+	getPnt -trafo 2 tc(v7) tc(v8) dummy
 
 	tc_updateCanvas .tcEditw.fc.ca
 	bind .tcEditw <Enter> {tc_updateMenu}
@@ -160,10 +160,10 @@ proc tc_updateMenu { } {
     $m add command -label "To BPatch" -command {
 	global tc
 
-	setBP 0 $tc(v1) $tc(v2) 0.0
-	setBP 1 $tc(v3) $tc(v4) 0.0
-	setBP 3 $tc(v5) $tc(v6) 0.0
-	setBP 2 $tc(v7) $tc(v8) 0.0
+	setPnt 0 $tc(v1) $tc(v2) 0.0
+	setPnt 1 $tc(v3) $tc(v4) 0.0
+	setPnt 3 $tc(v5) $tc(v6) 0.0
+	setPnt 2 $tc(v7) $tc(v8) 0.0
 
 	rV
 	tc_updateCanvas .tcEditw.fc.ca
