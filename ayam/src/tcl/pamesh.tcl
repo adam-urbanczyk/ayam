@@ -50,17 +50,21 @@ addParam $w PatchMeshAttrData Width
 addParam $w PatchMeshAttrData Height
 addCheck $w PatchMeshAttrData Close_U
 addCheck $w PatchMeshAttrData Close_V
-addMenu $w PatchMeshAttrData BType_U [list Bezier B-Spline CatmullRom Hermite Custom]
-addMenu $w PatchMeshAttrData BType_V [list Bezier B-Spline CatmullRom Hermite Custom]
 
-if { $PatchMeshAttrData(BType_U) == 4 } {
-    addParam $w PatchMeshAttrData Step_U
-    addMatrix $w PatchMeshAttrData Basis_U
-}
+if { $PatchMeshAttrData(Type) == 1 } {
 
-if { $PatchMeshAttrData(BType_V) == 4 } {
-    addParam $w PatchMeshAttrData Step_V
-    addMatrix $w PatchMeshAttrData Basis_V
+    addMenu $w PatchMeshAttrData BType_U [list Bezier B-Spline CatmullRom Hermite Custom]
+    addMenu $w PatchMeshAttrData BType_V [list Bezier B-Spline CatmullRom Hermite Custom]
+
+    if { $PatchMeshAttrData(BType_U) == 4 } {
+	addParam $w PatchMeshAttrData Step_U
+	addMatrix $w PatchMeshAttrData Basis_U
+    }
+
+    if { $PatchMeshAttrData(BType_V) == 4 } {
+	addParam $w PatchMeshAttrData Step_V
+	addMatrix $w PatchMeshAttrData Basis_V
+    }
 }
 
 addParam $w PatchMeshAttrData Tolerance
