@@ -702,6 +702,14 @@ typedef struct ay_extrnc_object_s
 } ay_extrnc_object;
 
 
+typedef struct ay_script_object_s
+{
+  char *script;
+  int type; /* 0 - Inactive, 1 - Run, 2 - Create, 3 -  Modify */
+  ay_object *cm_objects; /* created or modified objects */
+} ay_script_object;
+
+
 typedef struct ay_view_object_s
 {
   struct Togl *togl;
@@ -1037,6 +1045,7 @@ extern unsigned int ay_current_primlevel;
 #define AY_IDBIRAIL1       32
 #define AY_IDBIRAIL2       33
 #define AY_IDEXTRNC        34
+#define AY_IDSCRIPT        35
 #define AY_IDLAST          50
 
 /* Level Object SubType Ids */

@@ -354,6 +354,7 @@ AYAMOBJS = aycore/bbc.o\
 	objects/revolve.o\
 	objects/riinc.o\
 	objects/root.o\
+	objects/script.o\
 	objects/sdmesh.o\
 	objects/sphere.o\
 	objects/skin.o\
