@@ -9,6 +9,8 @@
 
 # aycsg.tcl - aycsg CSG preview plugin Tcl code
 
+global ay ayprefs
+
 # addToProc:
 #  add code in <addition> to the code of procedure <procedure>
 #  replacing the last "return;"-statement in that procedure
@@ -33,15 +35,44 @@ proc addToProc { procedure addition } {
 }
 # addToProc
 
-global ay ayprefs
-
-# we always need an open view (OpenGL context) upon startup for the
-# GLEW initialization, if there is none, we open it here
-if { $ay(views) == "" } {
-    viewOpen 400 300
-    update
+# the aycsg icon
+set imgdata {\
+R0lGODlhGQAZAOcAAGZiVqKahuLWttbKrsbCsoJ6Zsa2nrqulpKKdtra2q6ijvLiwraqkm5qWpqa
+mu7ewo6GcpKSknZyYqKint7Ssr6ymrKmkpqSfurevoqCbqamnqqiisK+soJ+es7Cpsq+oop+bure
+wtrKrnZybqKWgo6OiubautbGqoaGhqqehsK2mm5uZnpyYp6WftLGqn56cn52Zraulq6qqpaOeq6m
+jm5mVtrOss6+poZ+aoqGgqaekqaehuLStsa+qoaCfuraut7OsmpmVnJuYp6SfqqmppKGdrauoubW
+upaWksq6ou7evqaahtLCqsa6nu7iwn5+dqamonZ2bsKymp6emmpmXrKqkqqqptrOupaKdq6iinp2
+bsq+pnJuZpqOerKmjnZyanJqWraqlqKiooJ6bsa6opaSkubavo6GdvLixt7StmpmWmpiVnZuXoJ+
+duLWuoqCcoJ6aqqeisK2npaOfuLSuqamptbGrnpyZp6Wgm5mWnJqXuravoZ+bp6enoJ+fpaKenp2
+csa+rpaWlnJuav//////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////ywAAAAAGQAZAAAI/gATCBxI
+sKDBgnUSKkw4wU+DEQ2eoBCzUKFAMRgzIhkEoAEMPjDY5Fnzok9GjAIrttGToUiXC3gCDPlzBo6Q
+EgtTJnTwAsYfPDsUWLAQo0ocmRDAPEkoRqeYPHC6pGBQQU6TD0maqKjgZcidNTkSXqwThcWcHQyk
+bPHgYoAdF1t6tKiRR0sBlAnqRFBTJIWFA1uYiABCgYINERCgIuiCR0cdgVAGwcDzlwwTGzyOaBYQ
+RwKEISkUMIjRNIEYvnEOkLkxAIgZDD/2nGBRhASNMAcqGCAiMEKeGV6keBDBw8SeB0oedMlAWQWZ
+Hh88QBHoQMIFL3Iu8/ixwMkCGwWG/mQ58MHFiQE2HieYwGKIAhWXj+xR4j0Ogh2qXQzOrL4PGDxZ
+VPDBADxg8MACaJzhXgXDuWHcEbyZlgcCqX1gR3F7YDBAGyQwkERrR2DghA2lTaBGBgHEYIALNrhh
+xh4qZEBCGBamkeECBKgnhhYwdFGFCjecAIQAR0gBwRLkDUCBfCFYUZpeNRQRRxgqbKEfEAqgCJgd
+QOwRAhli5VXHC1rMgJZaLrgwBA54MNAEl0e4wZROE+QBwwxZhFEBGVuccUcXFbpwBZhhYlRHH2vA
+gEAAoh2wRB5nkKAAgz3UQdGTllq6AhggzBBTHIlegJYRmYbJlKEOfAEGDHBkUIAaHSDMQRFTluqk
+kBhQHOqDBCMAgoAgl1Z00LDEChQQADs=
 }
-# if
+image create photo ay_aycsg_img -format GIF -data $imgdata
+
+# add icon to view menus
+set a "\
+button \$w.fMenu.baycsg -padx 0 -pady 0 -borderwidth 0 -image ay_aycsg_img -command \{global ay; \$ay(currentView) rendercsg;\};pack \$w.fMenu.baycsg -in \$w.fMenu -side right"
+addToProc vmenu_open $a
+
+foreach view $ay(views) {
+    set w $view
+    eval $a
+}
 
 # add key binding to view windows to initiate the CSG drawing
 set a "bind \$w <Control-C> {global ay; \$ay(currentView) rendercsg;}"
@@ -52,6 +83,9 @@ foreach view $ay(views) {
 	    {global ay; $ay(currentView) rendercsg;}
 }
 # foreach
+
+
+# code for the aycsg preferences dialog
 
 uplevel #0 {
     array set aycsg_options {
@@ -71,7 +105,7 @@ uplevel #0 {
 proc aycsgPreferences { } {
     global aycsg_options aycsg_options_save
 
-    array unset aycsg_options_save
+    array set aycsg_options_save ""
     array set aycsg_options_save [array get aycsg_options]
 
     set w .aycsgprefs
@@ -148,5 +182,26 @@ proc aycsgPreferences { } {
 # add aycsg-preferences dialog to custom menu
 set m $ay(cm)
 $m add command -label "AyCSG Preferences" -command aycsgPreferences 
+
+# we always need an open view (OpenGL context) upon startup for the
+# GLEW initialization, if there is none, we open it here
+if { $ay(views) == "" } {
+    set t "Open View?"
+    set m\
+"Initialization of AyCSG requires an open view window!\nMay I open one now?"
+    set answer [tk_messageBox -title $t -type okcancel -icon question\
+	    -message $m]
+    if { $answer == "ok" } {
+	viewOpen 400 300
+	update
+    }
+}
+# if
+
+global AYCSGWRAPPED
+if { $AYCSGWRAPPED == 1 } {
+    aycsgInit
+}
+#if
 
 return;
