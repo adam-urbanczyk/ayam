@@ -168,22 +168,32 @@ ay_shade_view(struct Togl *togl)
     } /* if */
   
   if(sel)
-    { /* shade just selected objects */
+    { /* process the selected objects */
 
       glPushMatrix();
       if(!view->drawlevel)
 	ay_trafo_getall(ay_currentlevel->next);
 
-      while(sel)
+      /* all objects have been shaded already, if
+         DrawSelectionOnly is _not_ enabled */
+      if(view->drawsel)
 	{
-	  ay_status = ay_shade_object(togl, sel->object);
-	  sel = sel->next;
-	} /* while */
-
-      /* let all handles appear "on top" of current drawing */
-      glClear(GL_DEPTH_BUFFER_BIT);
+	  while(sel)
+	    {
+	      ay_status = ay_shade_object(togl, sel->object);
+	      sel = sel->next;
+	    } /* while */
+	} /* if */
 
       /* draw handles of selected objects */
+
+      /* let all handles appear "on top" of current drawing         */
+      /* Do we really want this? In a shaded view, the user expects */
+      /* probably removal of hidden bits. On the other hand, he     */
+      /* might not be able to reach all handles he wants to then.   */
+      glClear(GL_DEPTH_BUFFER_BIT);
+
+      /* set size of points */
       glPointSize((GLfloat)ay_prefs.handle_size);
 
       /* set color for selected objects */
