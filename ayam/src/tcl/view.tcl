@@ -1,6 +1,6 @@
 # Ayam, a free 3D modeler for the RenderMan interface.
 #
-# Ayam is copyrighted 1998-2001 by Randolf Schultz
+# Ayam is copyrighted 1998-2003 by Randolf Schultz
 # (rschultz@informatik.uni-rostock.de) and others.
 #
 # All rights reserved.
@@ -609,9 +609,14 @@ addParam $w CameraData Up_X
 addParam $w CameraData Up_Y
 addParam $w CameraData Up_Z
 
-addText $w e5 "Misc:"
+addText $w e5 "Clipping Planes:"
+addParam $w CameraData Near
+addParam $w CameraData Far
+
+addText $w e6 "Misc:"
 addParam $w CameraData Roll
 addParam $w CameraData Zoom
+
 
 array set ViewAttrib {
 arr   ViewAttribData
