@@ -801,9 +801,7 @@ int
 ay_view_notifycb(ay_object *o)
 {
  ay_view_object *view = NULL;
- unsigned int bo = 1;  /* test byte order */
- unsigned char *r, b;
- uint32 *image = NULL, w, h, c;
+ uint32 *image = NULL, w, h;
  TIFF* tif;
  char fname[] = "view_notifycb";
  GLint result;
@@ -851,7 +849,7 @@ ay_view_notifycb(ay_object *o)
   if(view->bgimage && view->bgimage[0] != '\0')
     {
 
-      tif = TIFFOpen(view->bgimage, "r");
+      tif = TIFFOpen(view->bgimage, "rH");
       if(tif)
 	{
 	  TIFFGetField(tif, TIFFTAG_IMAGEWIDTH, &w);
@@ -868,26 +866,6 @@ ay_view_notifycb(ay_object *o)
 	      ay_error(AY_ERROR, fname, view->bgimage);
 	      TIFFClose(tif);
 	      return AY_FALSE;
-	    }
-	  else
-	    {
-	      /* check byte order */
-	      r = (unsigned char *)&bo;
-	      if(((r[0] == 0) && (TIFFIsByteSwapped(tif) == 0)) ||
-		 ((r[0] == 1) && (TIFFIsByteSwapped(tif) != 0)))
-		{
-		  /* byte order must be corrected: we need intel format */
-		  for(c = 0; c < w*h; c++)
-		    {
-		      r = (unsigned char *)&image[c];
-		      b = r[0];
-		      r[0] = r[3];
-		      r[3] = b;
-		      b = r[1];
-		      r[1] = r[2];
-		      r[2] = b;
-		    }
-		}
 	    }
 	  TIFFClose(tif);
 	}
