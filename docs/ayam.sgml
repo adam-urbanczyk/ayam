@@ -4,9 +4,9 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>30. Jan 2003
+<date>22. Mar 2003
 <abstract>
-This is the documentation of Ayam (1.4) - a free 3D modeling environment
+This is the documentation of Ayam (1.5) - a free 3D modeling environment
 for the RenderMan interface.
 
 Please note, that this document is intended to be a reference manual,
@@ -584,7 +584,7 @@ equal objects). See section <ref id="ai" name="Automatic Instancing">
 for more information regarding automatic instancing.
 <item><tt>Tags/Add RiOption</tt>, pops up a small dialog box, where you may
 select and parameterize a RiOption tag to add as tag to the Root object
-(see <ref id="riotag" name="RiOption Tag">). The root object does
+(see <ref id="riotag" name="RiOption Tag">). The Root object does
 not have to be selected, and the current selection will not be changed
 by this action.
 <item><tt>Tags/Add RiAttribute</tt>, pops up a small dialog box, where you may
@@ -606,6 +606,26 @@ and rescan for compiled shaders. Note, that in order for the
 properly you also have to set the <tt>"Main/Shaders"</tt> and
 <tt>"Main/Plugins"</tt> preference setting correctly
 (see also section <ref id="prefmain" name="The Main Preferences">).
+
+<item><tt>RIB-Export/From Camera</tt>, writes a complete RIB of
+the current scene with the camera transformations taken from the
+currently selected camera object. The size of the rendered image will
+be taken from the RiOptions of the root object. If they are zero,
+default values of 400 pixels width and 300 pixels height will be used.
+
+<item><tt>RIB-Export/Selected Objects</tt>, exports only the
+selected objects to a RIB. Note that instances will always be resolved
+and light objects are simply ignored. Note also that this RIB,
+since it e.g. lacks camera transformation and WorldBegin/End directives,
+may not be rendered directly by a RenderMan compliant renderer
+(unless the renderer is really forgiving about mis-structured RIBs).
+The main use of this feature is to let you create RIBs that may be easily
+included in other RIBs using e.g. ReadArchive.
+
+<item><tt>RIB-Export/Create ShadowMaps</tt>, creates the shadow maps
+for the current scene.
+See also section <ref id="shadowmaps" name="Using ShadowMaps">.
+
 <item><tt/Toggle ToolBox/ closes or opens the toolbox window
 (see <ref id="toolb" name="The Tool Box Window">). From version 1.3 on,
 Ayam remembers the state of the toolbox in the saved preferences.
@@ -656,6 +676,7 @@ name, current type, and action of the view.
 
 <sect1>The View Menu<label id="vm">
 <p>
+<label id="vmview">
 Here are all meny entries of the <tt/"View"/ menu:
 <itemize>
 <item><tt/Quick Render/: the scene is exported to a RIB using the
@@ -686,7 +707,8 @@ for each different setting.
 As the RIB client library usually is not able to handle more
 than one open RIB stream, RIB-Export and direct rendering from
 view windows is not available until the permanent view window is closed.
-
+<item><tt/Create ShadowMaps/: creates the shadow maps for the current scene.
+See also section <ref id="shadowmaps" name="Using ShadowMaps">.
 <item><tt/Close/: the View window will be removed.
 </itemize>
 
@@ -2584,7 +2606,8 @@ Furthermore, for each light source for which a shadow map should be
 created, the attributes <tt/"IsOn"/ and <tt/"UseSM"/ have to be
 switched on.
 <p>
-If <tt>"RIB-Export/ShadowMaps"</tt> is set to <tt>"Automatic"</tt>,
+If the preference setting <tt>"RIB-Export/ShadowMaps"</tt> is set to
+<tt>"Automatic"</tt>,
 Ayam will create a special version of the RIB on export, that creates
 all shadow maps automatically. This is done, by rendering depth images
 from the position of every light source that casts shadows.
@@ -2596,11 +2619,20 @@ are written to a second RIB file named <tt>"&lt;scene&gt;.obj.rib"</tt>.
 This file is read from the main RIB several times via
 <tt>"ReadArchive"</tt>.
 <p>
-If <tt>"RIB-Export/ShadowMaps"</tt> is set to <tt>"Manual"</tt>,
+Because multiple files (RIBs and shadow maps) are used, it is suggested
+to change the preference setting <tt>"RIB-Export/RIBFile"</tt> to
+<tt>"Scenefile"</tt>. This will strip the leading absolute path component
+from the filenames so that you may move the scene from one
+system to another more easily.
+<p>
+If the preference setting <tt>"RIB-Export/ShadowMaps"</tt> is set to
+<tt>"Manual"</tt>,
 the exported scene will not render the shadow maps but rather
 expects them to be present already. You can create them manually
 (hence the name <tt>"Manual"</tt>) using the view menu entry
-<tt>"View/Create ShadowMaps"</tt>. This approach has the advantage,
+<tt>"View/Create ShadowMaps"</tt> or the main menu entry
+<tt>"Special/RIB-Export/Create ShadowMaps"</tt>.
+The manual approach has the advantage,
 that the shadow maps will not be re-created each time you render
 the scene.
 <p>
@@ -2612,17 +2644,18 @@ lights of type <tt>"Point"</tt> and custom lights that have a light
 shader argument named "from".
 Six shadow maps pointing in all possible axis aligned
 directions and named <tt>"&lt;rib&gt;.point&lt;num&gt;_&lt;dir&gt;.shd"</tt>
-(where <tt>"&lt;rib&gt;"</tt> is the base-name of the RIB,
+(where <tt>"&lt;rib&gt;"</tt> is the name of the RIB,
 <tt>"&lt;num&gt;"</tt> is the number of the light source that makes
 use of shadow maps and <tt>"&lt;dir&gt;"</tt> is one of
-<tt/"+x"/, <tt/"-x"/, <tt/"+y"/, <tt/"-y"/, <tt/"+z"/, or <tt/"-z"/)
+<tt/"x+"/, <tt/"x-"/, <tt/"y+"/, <tt/"y-"/, <tt/"z+"/, or <tt/"z-"/)
 will be created.
 <p>
 The distant method is used with lights of type <tt>"Distant"</tt>
 and custom lights that have a light
 shader argument named "from" and a light
 shader argument named "to".
-One shadow map is created and named <tt>"&lt;rib&gt;.dist&lt;num&gt;.shd"</tt>.
+One shadow map is created and named
+<tt>"&lt;rib&gt;.dist&lt;num&gt;.shd"</tt>.
 By default, the size of the shadow map is 1 by 1 units in world space,
 but this may be adapted using the scale transformation attributes of
 the light object.
@@ -2631,7 +2664,8 @@ The spot method is used with lights of type <tt>"Spot"</tt>
 and custom lights that have a light
 shader argument named "from", a light
 shader argument named "to", and a light shader argument named "coneangle".
-One shadow map is created and named <tt>"&lt;rib&gt;.spot&lt;num&gt;.shd"</tt>.
+One shadow map is created and named
+<tt>"&lt;rib&gt;.spot&lt;num&gt;.shd"</tt>.
 The spot method uses the cone angle (and additionally the delta cone
 angle, if present) argument to determine the size of the shadow map
 in world space.
@@ -2648,6 +2682,14 @@ selecting the right shader and parameterizing it accordingly.
 See the discussion above for the names of the shadow map files.
 Those file names, probably, will have to be entered as parameter
 to the light shader.
+<p>
+For example, you will not get any shadows if you use a light source of type
+<tt/"Custom"/ with a <tt/"distantlight"/ shader attached, even though
+Ayam is able to create the necessary shadow maps. The <tt/"distantlight"/
+shader just makes no use of them.
+You have to manually switch to a shader that
+makes use of the shadow maps (<tt/"shadowdistant"/ in this case) to get
+shadows.
 <p>
 Here is a short example for a scene using a shadow map:
 <enum>
@@ -3074,14 +3116,18 @@ The sole purpose of instance objects is to save storage.
 The amount of saved diskspace can be very high, but this depends
 heavily on the scene. If there are no similar objects in the scene
 you can hardly use instancing. Similar means "the same except for
-the transformation property" in this context.<p>
-
+the transformation property" in this context.
+<p>
 Some simple rules for instancing:
 <itemize>
 <item>No instances may be created of objects of the following types:
 Root, View, Instance, Material, Light. Do not try to fool
 Ayam and create instances of levels that contain aforementioned
-types of objects, things will go awry!
+types of objects, things will go awry! You may, however, put some instances
+into a level object and create instances of this level
+(this is sometimes called hierarchical instancing). But you may not
+put instances of a level into the very same level (this would
+be recursive instancing, which is not supported by Ayam).
 <item>The original object may not be deleted from the scene
 as long as there are instances of that object in the scene or in the
 object clipboard.
@@ -3092,21 +3138,22 @@ If you cannot delete an object, and the error message tells
 you something about a reference counter, then you were about
 to violate the second rule. Clean the clipboard using
 the menu <tt>"Special/Clipboard/Paste (Move)"</tt> and delete
-or resolve all references.<p>
-
+or resolve all references.
+<p>
 Note, that it is not possible to copy a master object and some instances
 of it, so that the new instances point to the newly created master.
 All copies of instance objects always point to the same master object.
-
 However, it is possible to move instances using Drag-and-Drop in the tree
 view or using the clipboard with <tt>"Edit/Cut"</tt> and then
-<tt>"Special/Clipboard/Paste (Move)"</tt>.<p>
-
+<tt>"Special/Clipboard/Paste (Move)"</tt>.
+<p>
 You can resolve an instance object at any time using
 the converter registered for objects of type <tt>Instance</tt> (simply
 select the instance object and use the menu entry
-<tt>"Tools/Convert"</tt>).<p>
-
+<tt>"Tools/Convert"</tt>). To resolve all instance objects in a scene
+to normal objects, you may use the main menu entry:
+<tt>"Special/Instances/Resolve all Instances"</tt>.
+<p>
 The RIB export of instances does not use the RiInstance facility
 of the RenderMan interface, but the ReadArchive mechanism.
 This means, every original object in the scene will be written
@@ -3115,6 +3162,12 @@ cause that archive file to be read. You can change that behaviour
 using the preference setting <tt/"ResInstances"/.
 If <tt/"ResInstances"/ is enabled, all instances will be resolved
 (temporarily) before being exported to RIB.
+<p>
+Ayam may create instances automatically (see section
+<ref id="ai" name="Automatic Instancing">).
+<p>
+To easily find the master object of an instance, just select the
+instance, then use the main menu entry: <tt>"Edit/Master"</tt>.
 
 <sect1>Clone Object<label id="cloneobj">
 <p>
@@ -5546,6 +5599,8 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Convert: <ref id="mmtools" name="main menu entry">
 <item>convOb: <ref id="gtype" name="scripting interface command">
 <item>CreateMP: <ref id="ncattr" name="NURBCurve attribute">
+<item>Create ShadowMaps: <ref id="mmspecial" name="main menu entry">,
+<ref id="vmview" name="view menu entry">
 <item>crtOb: <ref id="crtob" name="scripting interface command">
 <item>Custom: <ref id="cul" name="light type">
 <item>Custom Object: <ref id="customobj" name="what is">
@@ -5617,7 +5672,8 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Formula: <ref id="mcattr" name="MetaComp attribute">
 <item>From: <ref id="camp" name="camera property">,
 <ref id="lip" name="light attribute">
-<item>From Camera: <ref id="vmconf" name="view menu entry">
+<item>From Camera: <ref id="mmspecial" name="main menu entry">,
+<ref id="vmconf" name="view menu entry">
 <item>Front: <ref id="vmtype" name="view menu entry">
 </itemize>
 
@@ -5899,6 +5955,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Select: <ref id="obj" name="select objects with the tree/listbox">,
 <ref id="objsel" name="select objects within a view">,
 <ref id="selac" name="select points">
+<item>Selected Objects: <ref id="mmspecial" name="main menu entry">
 <item>Select Renderer: <ref id="mmspecial" name="main menu entry">
 <item>Selection: <ref id="prefdraw" name="preference setting">
 <item>Set Gridsize: <ref id="vmconf" name="view menu entry">
