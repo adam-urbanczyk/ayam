@@ -107,6 +107,9 @@ ay_undo_deletemulti(ay_object *o)
 	    ay_selp_clear(d);
 	  /* delete tags */
 	  ay_tags_delall(d);
+	  /* free name */
+	  if(d->name)
+	    free(d->name);
 	  /* now, free generic object */
 	  free(d);
 	  break;
@@ -116,6 +119,9 @@ ay_undo_deletemulti(ay_object *o)
 	    ay_selp_clear(d);
 	  /* delete tags */
 	  ay_tags_delall(d);
+	  /* free name */
+	  if(d->name)
+	    free(d->name);
 	  /* now, free generic object */
 	  free(d);
 	  break;
