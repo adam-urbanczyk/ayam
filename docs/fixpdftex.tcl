@@ -32,7 +32,13 @@ while { ![eof $infile] } {
 	    if { $index > -1 } {
 		puts $outfile "\}\\end\{document\}"
 	    } else {
-		puts $outfile $buf
+		set index [ string first "documentclass" $buf ]
+		if { $index > -1 } {
+		    puts $outfile\
+			    "\\documentclass\[a4paper,11pt\]\{article\}"
+		} else {
+		    puts $outfile $buf
+		}
 	    }
 	}
     }
