@@ -1268,7 +1268,7 @@ RtVoid
 ay_rrib_RiFrameBegin(RtInt frame)
 {
 
-   if(ay_rrib_readframe != -1 || !ay_rrib_readpartial)
+   if((!ay_rrib_readpartial) && (ay_rrib_readframe != -1))
      {
        if(frame == ay_rrib_readframe)
 	 {
@@ -1280,8 +1280,8 @@ ay_rrib_RiFrameBegin(RtInt frame)
 	 {
 	   ay_rrib_cleargprims();
 	   ay_rrib_cleargeneral();
-	 }
-     }
+	 } /* if */
+     } /* if */
 
  return;
 } /* ay_rrib_RiFrameBegin */
@@ -4029,6 +4029,7 @@ ay_rrib_linkobject(void *object, int type)
  ay_object *o = NULL, *t = NULL;
  int ay_status = AY_OK;
  char *fname = "ay_rrib_linkobject";
+ size_t len;
 
   ay_rrib_co.refine = object;
   ay_rrib_co.type = type;
@@ -4049,6 +4050,19 @@ ay_rrib_linkobject(void *object, int type)
 
     }
 
+  /*if(ay_rrib_readname)*/
+  if(ay_rrib_cattributes->identifier_name)
+    {
+      len = strlen(ay_rrib_cattributes->identifier_name);
+      if(len)
+      {
+	if(!(ay_rrib_co.name = calloc(len+1,sizeof(char))))
+	  {
+	    return;
+	  }
+	strcpy(ay_rrib_co.name, ay_rrib_cattributes->identifier_name);
+      }
+    }
 
   if(ay_rrib_co.parent && (!ay_rrib_co.down))
     {
