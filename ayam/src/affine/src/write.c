@@ -444,7 +444,6 @@ static void AddToHashTable( char *name, int classNtype, int n )
    register  char      *p;
    register  HASHATOM  *h;
 
-   
    p = name;
    hashvalue = *p;
    while ( *p++ )
@@ -485,7 +484,7 @@ static int GetFromHashTable( char *name, int* classNtype, int *n )
    int                 hashvalue;
    register  char      *p;
    register  HASHATOM  *h;
-   
+
    p = name;
    hashvalue = *p;
    while ( *p++ )
@@ -503,6 +502,8 @@ static int GetFromHashTable( char *name, int* classNtype, int *n )
       h = h->next;
    }
    
+
+
    return 0; /* nothing found */
 }
 
@@ -617,11 +618,13 @@ char *GetClassNType( char *name, char *declaration,
       classNtype |= INT;
       p += 7;
    }
+   /* XXXX this if fires for "intensity", which is a float...
    else if ( !strncmp( "int", p, 3 ) )
    {
       classNtype |= INT;
       p += 3;
    }
+   */
    else if ( !strncmp( "matrix", p, 6 ) )
    {
       classNtype |= MATRIX;
@@ -849,6 +852,7 @@ static void HandleParamList( va_list ap,
 	    u = classNtype & TYPE;
 	    if ( INT == u )
 	    {
+
 	       ip = ( vectorform ? (RtInt*)parms[t] : va_arg(ap,RtInt*) );
 	       for ( i=0; i<(ntype - 1); i++ )
 		  fprintf( fp, "%d ", ip[i] );
