@@ -1,6 +1,6 @@
 # Ayam, a free 3D modeler for the RenderMan interface.
 #
-# Ayam is copyrighted 1998-2003 by Randolf Schultz
+# Ayam is copyrighted 1998-2004 by Randolf Schultz
 # (rschultz@informatik.uni-rostock.de) and others.
 #
 # All rights reserved.
@@ -182,6 +182,12 @@ imported\nobjects to \\\"Global\\\"?"
 ms_set en mopsi_options_ResetST "Reset all SamplingTolerance attributes of\
 imported\nobjects to \\\"0.0\\\"?"
 
+# OBJ-Import/Export
+ms_set en objio_options_Selected "Export only selected object(s)."
+ms_set en objio_options_TessPoMesh "Tesselate all PolyMesh objects to\
+triangles."
+ms_set en objio_options_OmitCurves "Omit all NURBS curves from exported file."
+
 #
 # fill "de"-locale
 ms_init de
@@ -343,6 +349,12 @@ ms_set de mopsi_options_ResetST "Sollen alle SamplingTolerance-Attribute von\
 importierten\nObjekten auf \\\"0.0\\\" zurückgesetzt werden?"
 
 
+# OBJ-Import/Export
+ms_set de objio_options_Selected "Exportiert nur ausgewählte Objekte."
+ms_set de objio_options_TessPoMesh "Wandelt alle PolyMesh-Objekte zu\
+Dreiecksnetzen."
+ms_set de objio_options_OmitCurves "Verhindert das Exportieren von Kurven."
+
 #
 # fill "fr"-locale...
 ms_init fr
@@ -474,3 +486,10 @@ DisplayMode de tous\nles objets lors de l'importation depuis une scène Mops?"
 ms_set fr mopsi_options_ResetST "Réinitialiser à 0.0 tous les attributs\
 SamplingTolerance de tous\nles objets lors de l'importation depuis une scène\
 Mops?"
+
+#XXXX add french translation:
+# OBJ-Import/Export
+#ms_set fr objio_options_Selected "Export only selected object(s)."
+#ms_set fr objio_options_TessPoMesh "Tesselate all PolyMesh objects to\
+#triangles."
+#ms_set fr objio_options_OmitCurves "Omit all NURBS curves from exported file."
