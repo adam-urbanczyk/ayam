@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile [16. Nov 2001]
+# Makefile [18. Nov 2001]
 # Makefile for the Ayam reference manual
 
 all: htm pdf3
@@ -48,5 +48,5 @@ pdf3: pdf2
 	rm ayam.tex ayam.toc ayam.log ayam.aux
 
 clean:
-	rm -f *.html *.txt html/*.html ayaml.tex ayam.tex
-
+	rm -rf html ayam.tex ayam.dvi ayam.txt ayam.pdf ayam.ps
+	rm -rf ayaml.sgml ayaml.tex ayaml.dvi ayaml.pdf ayaml.ps
