@@ -1416,16 +1416,16 @@ ay_npt_sweep(ay_object *o, ay_object *o2, int sections,
  ay_nurbpatch_object *new = NULL;
  ay_nurbcurve_object *tr, *cs;
  double *controlv = NULL;
- int i=0, j=0, stride;
+ int i = 0, j = 0, a = 0, stride;
  double u, p1[4], p2[4];
  double T0[3] = {0.0,0.0,-1.0};
  double T1[3] = {0.0,0.0,0.0};
  double A[3] = {0.0,0.0,0.0};
  double len = 0.0, plen = 0.0;
- double m[16] = {0}, mcs[16], mtr[16];
+ double m[16] = {0}, mi[16] = {0}, mcs[16], mtr[16];
  double mr[16];
  double quat[4] = {0};
- double *rots = NULL;
+ double *cscv = NULL, *trcv = NULL, *rots = NULL;
 
   if(!o || !o2 || !patch)
     return AY_ENULL;
@@ -1433,36 +1433,51 @@ ay_npt_sweep(ay_object *o, ay_object *o2, int sections,
   if((o->type != AY_IDNCURVE) || (o2->type != AY_IDNCURVE))
     return AY_OK;
 
-  if(!(rots = calloc((sections+1)*4, sizeof(double))))
-    {
-      return AY_EOMEM;
-    }
-
   cs = (ay_nurbcurve_object *)(o->refine);
   tr = (ay_nurbcurve_object *)(o2->refine);
 
   stride = 4;
 
-  /* get curves transformation-matrix */
-  /* first, get a special matrix (ignoring translation attributes)
-     from the cross section */
-  ay_trafo_identitymatrix(mcs);
-  ay_quat_torotmatrix(o->quat, mr);
-  ay_trafo_multmatrix4(mcs, mr);
+  /* apply scale and rotation to cross-section curves controlv */
+  if(!(cscv = calloc(cs->length*stride, sizeof(double))))
+    { return AY_EOMEM; }
+  memcpy(cscv, cs->controlv, cs->length*stride*sizeof(double));
+
+  ay_quat_torotmatrix(o->quat, mcs);
   ay_trafo_scalematrix(o->scalx, o->scaly, o->scalz, mcs);
 
-  /* now get full matrix from the trajectory */
-  ay_trafo_creatematrix(o2, mtr);
+  a = 0;
+  for(i = 0; i < cs->length; i++)
+    {
+      ay_trafo_apply4(&(cscv[a]), mcs);
+      a += stride;
+    }
+
+  /* apply all transformations to trajectory curves controlv */
+  if(!(trcv = calloc(tr->length*stride, sizeof(double))))
+    { free(cscv); return AY_EOMEM; }
+  memcpy(trcv, tr->controlv, tr->length*stride*sizeof(double));
   
+  ay_trafo_creatematrix(o2, mtr);
+  a = 0;
+  for(i = 0; i < cs->length; i++)
+    {
+      ay_trafo_apply4(&(trcv[a]), mtr);
+      a += stride;
+    }
+
   /* calloc the new patch */
   if(!(new = calloc(1, sizeof(ay_nurbpatch_object))))
-    return AY_EOMEM;
+    { free(cscv); free(trcv); return AY_EOMEM; }
   if(!(controlv = calloc(cs->length*(sections+1)*stride, sizeof(double))))
-    { free(new); return AY_EOMEM; }
+    { free(cscv); free(trcv); free(new); return AY_EOMEM; }
   if(!(new->vknotv = calloc(cs->length+cs->order, sizeof(double))))
-    { free(new); free(controlv); return AY_EOMEM; }
+    { free(cscv); free(trcv); free(new); free(controlv); return AY_EOMEM; }
   if(!(new->uknotv = calloc(sections+4, sizeof(double))))
-    { free(new->vknotv); free(new); free(controlv); return AY_EOMEM; }
+    {
+      free(cscv); free(trcv); free(new->vknotv); free(new); free(controlv);
+      return AY_EOMEM;
+    }
 
   new->vorder = cs->order;
   new->uorder = 4;
@@ -1477,14 +1492,18 @@ ay_npt_sweep(ay_object *o, ay_object *o2, int sections,
 
   ay_status = ay_knots_createnp(new);
   if(ay_status)
-    { free(new); free(controlv); return ay_status; }
+    {
+      free(cscv); free(trcv); free(new->uknotv); free(new->vknotv);
+      free(new); free(controlv);
+      return ay_status;
+    }
 
   if(cs->knot_type == AY_KTCUSTOM)
     {
       memcpy(new->vknotv,cs->knotv,(cs->length+cs->order)*sizeof(double));
     }
 
-  ay_nb_CurvePoint4D(tr->length-1,tr->order-1,tr->knotv,tr->controlv,
+  ay_nb_CurvePoint4D(tr->length-1, tr->order-1, tr->knotv, trcv,
 		     tr->knotv[tr->order-1], p1);
 
   plen = fabs(tr->knotv[tr->length] - tr->knotv[tr->order-1]);
@@ -1493,22 +1512,30 @@ ay_npt_sweep(ay_object *o, ay_object *o2, int sections,
   T0[1] = 0.0;
   T0[2] = 0.0;
 
-  /* copy cross sections controlv section+1 times */
-  for(i=0;i<=sections;i++)
+  ay_trafo_identitymatrix(mr);
+
+  if(!(rots = calloc((sections+1)*4, sizeof(double))))
     {
-      memcpy(&controlv[i*stride*cs->length],cs->controlv,
+      free(cscv); free(trcv); free(new->uknotv); free(new->vknotv);
+      free(new); free(controlv);
+      return AY_EOMEM;
+    }
+
+  /* copy cross sections controlv section+1 times and sweep it */
+  for(i = 0; i <= sections; i++)
+    {
+      memcpy(&controlv[i*stride*cs->length], cscv,
 	     cs->length*stride*sizeof(double));
 
-      u = tr->knotv[tr->order-1]+(((double)i/sections)*plen);
-
-
-      ay_nb_CurvePoint4D(tr->length-1,tr->order-1,tr->knotv,tr->controlv,
-			 u, p2);
+      /* create transformation matrix */
+      ay_trafo_identitymatrix(m);
 
       if(rotate)
 	{
-	  ay_nb_ComputeFirstDer4D(tr->length-1,tr->order-1,tr->knotv,
-				  tr->controlv, u, T1);
+	  u = tr->knotv[tr->order-1]+(((double)i/sections)*plen);
+
+	  ay_nb_ComputeFirstDer4D(tr->length-1, tr->order-1, tr->knotv,
+				  trcv, u, T1);
 
 	  len = AY_V3LEN(T1);
 	  AY_V3SCAL(T1,(1.0/len))
@@ -1523,38 +1550,35 @@ ay_npt_sweep(ay_object *o, ay_object *o2, int sections,
 	      
 	      rots[i*4+0] = AY_R2D(acos(AY_V3DOT(T0,T1)));
 	      memcpy(&rots[i*4+1], A, 3*sizeof(double));
-	    }
+
+	      if(fabs(rots[i*4]) > AY_EPSILON)
+		{
+		  ay_trafo_rotatematrix(-rots[i*4], rots[i*4+1],
+					rots[i*4+2], rots[i*4+3], mr);
+		}
+	    } /* if */
 
 	  memcpy(T0, T1, 3*sizeof(double));
 
+	  ay_trafo_multmatrix4(m, mr);
 	} /* if rotate */
-     
-       ay_trafo_identitymatrix(m);
-       ay_trafo_multmatrix4(m, mtr);
 
-       AY_V3SUB(p2, p2, p1)
+      ay_nb_CurvePoint4D(tr->length-1, tr->order-1, tr->knotv,
+			 trcv, u, p2);
 
-       ay_trafo_translatematrix(p2[0], p2[1], p2[2], m);
-       ay_trafo_translatematrix(p1[0], p1[1], p1[2], m);
+      AY_V3SUB(p2, p2, p1)
 
-       if(rotate)
-	 {
-	   for(j = i; j >= 0; j--)
-	     {
-	       if(fabs(rots[j*4]) > AY_EPSILON)
-		 {
-		   ay_trafo_rotatematrix(rots[j*4], rots[j*4+1],
-					 rots[j*4+2], rots[j*4+3], m);
-		 } /* if */
-	     } /* for */
-	 } /* if rotate */
+      ay_trafo_translatematrix(-p1[0], -p1[1], -p1[2], m);
 
-       ay_trafo_multmatrix4(m, mcs);
-	       
+      ay_trafo_translatematrix(-p2[0], -p2[1], -p2[2], m);
+ 
+      ay_trafo_invmatrix4(m, mi);
+      mi[15] = 1.0;
+
       /* sweep profile */
-      for(j=0;j<cs->length;j++)
+      for(j = 0; j < cs->length; j++)
 	{
-	  ay_trafo_apply4(&controlv[i*cs->length*stride+j*stride], m);
+	  ay_trafo_apply4(&controlv[i*cs->length*stride+j*stride], mi);
 	} /* for */
 
       /* create caps */
@@ -1568,7 +1592,7 @@ ay_npt_sweep(ay_object *o, ay_object *o2, int sections,
 	      ay_status = ay_capt_createfromcurve(curve, start_cap);
 	      /* transform cap */
 	      ay_nb_CurvePoint4D(tr->length-1,tr->order-1,tr->knotv,
-				 tr->controlv, u, p2);
+				 trcv, u, p2);
 	      ay_trafo_copy(o, *start_cap);
 	      (*start_cap)->movx = p2[0];
 	      (*start_cap)->movy = p2[1];
@@ -1583,7 +1607,6 @@ ay_npt_sweep(ay_object *o, ay_object *o2, int sections,
 				  (*start_cap)->quat);
 		    } /* if */
 		} /* if */
-	      
 	    } /* if */
 	} /* if */
       if(i == sections)
@@ -1595,8 +1618,8 @@ ay_npt_sweep(ay_object *o, ay_object *o2, int sections,
 	      ay_trafo_defaults(curve);
 	      ay_status = ay_capt_createfromcurve(curve, end_cap);
 	      /* transform cap */
-	      ay_nb_CurvePoint4D(tr->length-1,tr->order-1,tr->knotv,
-				 tr->controlv, u, p2);
+	      ay_nb_CurvePoint4D(tr->length-1, tr->order-1, tr->knotv,
+				 trcv, u, p2);
 	      ay_trafo_copy(o, *end_cap);
 	      (*end_cap)->movx = p2[0];
 	      (*end_cap)->movy = p2[1];
@@ -1604,7 +1627,7 @@ ay_npt_sweep(ay_object *o, ay_object *o2, int sections,
 
 	      if(rotate)
 		{
-		  for(j = 0; j<=sections; j++)
+		  for(j = 0; j <= sections; j++)
 		    {
 		      if(fabs(rots[j*4]) > AY_EPSILON)
 			{
@@ -1621,12 +1644,13 @@ ay_npt_sweep(ay_object *o, ay_object *o2, int sections,
 
     } /* for */
 
+  /* return result */
   *patch = new;
 
-  if(rots)
-    {
-      free(rots);
-    }
+  /* clean up */
+  free(rots);
+  free(cscv);
+  free(trcv);
 
  return ay_status;
 } /* ay_npt_sweep */
