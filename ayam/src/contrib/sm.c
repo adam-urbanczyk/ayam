@@ -481,7 +481,7 @@ ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
  ay_sm_trafostack *newtrafo;
  RtFloat fov;
  /*double bb[24]; int i;*/
- ay_object *d;
+ /*ay_object *d;*/
  char *zname = NULL, *shdname = NULL;
  /*double xmin = DBL_MAX, ymin = DBL_MAX, xmax = -DBL_MAX, ymax = -DBL_MAX;*/
  double px, py, pz;
@@ -574,11 +574,14 @@ ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
 		  RiWorldBegin();
 		  RiIdentity();
 		  /* place the objects relative to the centered light */
+		  RiReadArchive(objfile, (RtVoid*)RI_NULL, RI_NULL);
+		  /* was:
 		  d = ay_root->next; 
 		  while (d) {
 		      ay_wrib_object(file, d);
 		      d = d->next;
 		  }
+		  */
 		  RiWorldEnd();
 		  RiFrameEnd();
                   RiMakeShadow(zname, shdname, RI_NULL);
