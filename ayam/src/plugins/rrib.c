@@ -2452,8 +2452,84 @@ ay_rrib_RiPointsGeneralPolygons(RtInt npolys, RtInt nloops[],
 				RtInt nvertices[], RtInt vertices[],
 				RtInt n, RtToken tokens[], RtPointer parms[])
 {
-   (void)npolys; (void)nloops; (void)nvertices; (void)vertices; 
-   (void)n; (void)tokens; (void)parms;
+ ay_pomesh_object pm = {0};
+ int i = 0, a = 0, stride = 0;
+ unsigned int total_loops = 0, total_verts = 0, nc_needed = 0;
+ RtPointer tokensfound[PPWTBL_LAST];
+ RtFloat *pp = NULL, *pw = NULL;
+
+  pm.npolys = npolys;
+
+  RibGetUserParameters(Ppw, PPWTBL_LAST, n, tokens, parms, tokensfound);
+  if(tokensfound[PPWTBL_PW])
+    {
+      pw = (RtFloat*)tokensfound[PPWTBL_PW];
+      stride = 4;
+    }
+  else
+    {
+      if(tokensfound[PPWTBL_P])
+	{
+	  pw = (RtFloat*)tokensfound[PPWTBL_P];
+	  stride = 3;
+	}
+      else
+	{
+	  return;
+	} /* if */
+    } /* if */
+
+  if(!(pm.nloops = calloc(npolys, sizeof(unsigned int))))
+    return;
+  for(i = 0; i < npolys; i++)
+    {
+      pm.nloops[i] = (unsigned int) nloops[i];
+      total_loops += nloops[i];
+    } /* for */
+
+  if(!(pm.nverts = calloc(total_loops, sizeof(unsigned int))))
+    { free(pm.nloops); return; }
+  for(i = 0; i < total_loops; i++)
+    {
+      pm.nverts[i] = (unsigned int) nvertices[i];
+      total_verts += nvertices[i];
+    } /* for */
+
+  if(!(pm.verts = calloc(total_verts, sizeof(unsigned int))))
+    { free(pm.nloops); free(pm.nverts); return; }
+  for(i = 0; i < total_verts; i++)
+    {
+      pm.verts[i] = (unsigned int) vertices[i];
+      if(nc_needed < (unsigned int)(vertices[i]))
+	{
+	  nc_needed = (unsigned int)(vertices[i]);
+	}
+    } /* for */
+  nc_needed++;
+
+  if(!(pm.controlv = calloc(nc_needed*3, sizeof(double))))
+    { free(pm.nloops); free(pm.nverts); free(pm.verts); return; }
+  a = 0;
+  pp = pw;
+  for(i = 0; i < nc_needed; i++)
+    {
+      pm.controlv[a]   = (double)(pp[0]);
+      pm.controlv[a+1] = (double)(pp[1]);
+      pm.controlv[a+2] = (double)(pp[2]);
+      a += 3;
+      pp += stride;
+    } /* for */
+  pm.ncontrols = nc_needed;
+
+  /* now link the object to the scene */
+  ay_rrib_linkobject((void *)(&pm), AY_IDPOMESH);
+
+  free(pm.nloops);
+  free(pm.nverts);
+  free(pm.verts);
+  free(pm.controlv);
+
+ return;
 } /* ay_rrib_RiPointsGeneralPolygons */
 
 
@@ -2461,8 +2537,23 @@ RtVoid
 ay_rrib_RiPointsPolygons(RtInt npolys, RtInt nvertices[], RtInt vertices[],
 			 RtInt n, RtToken tokens[], RtPointer parms[])
 {
-   (void)npolys; (void)nvertices; (void)vertices; 
-   (void)n; (void)tokens; (void)parms;
+ RtInt *nloops;
+ int i;
+
+  if(!(nloops = calloc(npolys, sizeof(RtInt))))
+    return;
+
+  for(i = 0; i < npolys; i++)
+    {
+      nloops[i] = 1;
+    }
+
+  ay_rrib_RiPointsGeneralPolygons(npolys, nloops, nvertices, vertices,
+				  n, tokens, parms);
+
+  free(nloops);
+
+ return;
 } /* ay_rrib_RiPointsPolygons */
 
 
@@ -3589,6 +3680,12 @@ ay_rrib_initgprims(void)
   gRibNopRITable[kRIB_PATCHMESH] = (PRIB_RIPROC)ay_rrib_RiPatchMesh;
   gRibNopRITable[kRIB_BASIS] = (PRIB_RIPROC)ay_rrib_RiBasis;
 
+  gRibNopRITable[kRIB_POINTSGENERALPOLYGONS] =
+    (PRIB_RIPROC)ay_rrib_RiPointsGeneralPolygons;
+
+  gRibNopRITable[kRIB_POINTSPOLYGONS] =
+    (PRIB_RIPROC)ay_rrib_RiPointsPolygons;
+
   gRibNopRITable[kRIB_SOLIDBEGIN] = (PRIB_RIPROC)ay_rrib_RiSolidBegin;
   gRibNopRITable[kRIB_SOLIDEND] = (PRIB_RIPROC)ay_rrib_RiSolidEnd;
 
@@ -3614,6 +3711,12 @@ ay_rrib_cleargprims(void)
   gRibNopRITable[kRIB_PATCH] = (PRIB_RIPROC)RiNopPatchV;
   gRibNopRITable[kRIB_PATCHMESH] = (PRIB_RIPROC)RiNopPatchMeshV;
   gRibNopRITable[kRIB_BASIS] = (PRIB_RIPROC)RiNopBasis;
+
+  gRibNopRITable[kRIB_POINTSGENERALPOLYGONS] =
+    (PRIB_RIPROC)RiNopPointsGeneralPolygonsV;
+
+  gRibNopRITable[kRIB_POINTSPOLYGONS] =
+    (PRIB_RIPROC)RiNopPointsPolygonsV;
 
   gRibNopRITable[kRIB_SOLIDBEGIN] = (PRIB_RIPROC)RiNopSolidBegin;
   gRibNopRITable[kRIB_SOLIDEND] = (PRIB_RIPROC)RiNopSolidEnd;
@@ -4130,6 +4233,7 @@ ay_rrib_linkmaterial(ay_object *o)
     {
       return;
     }
+
   mat->colr = attr->colr;
   mat->colg = attr->colg;
   mat->colb = attr->colb;
@@ -4279,13 +4383,12 @@ ay_rrib_linkmaterial(ay_object *o)
       linkwith = mat;
     } /* if */
 
-  if(linkwith->objptr == m)
+  /* increase the reference counter */
+  (*(linkwith->refcountptr))++;
+
+  /* dispose unlinked material object */
+  if(linkwith->objptr != m)
     {
-      m->refcount++;
-    }
-  else
-    {
-      oldm->refcount++;
       ay_object_delete(m);
     }
 
