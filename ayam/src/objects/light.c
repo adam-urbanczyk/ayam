@@ -163,14 +163,14 @@ ay_light_drawcb(struct Togl *togl, ay_object *o)
 	  sarg = shader->arg;
 	  while(sarg)
 	    {
-	      if(!ay_sm_strcasecmp(sarg->name, "from"))
+	      if(!ay_comp_strcase(sarg->name, "from"))
 		{
 		  has_from = AY_TRUE;
 		  from[0] = sarg->val.point[0];
 		  from[1] = sarg->val.point[1];
 		  from[2] = sarg->val.point[2];
 		}
-	      if(!ay_sm_strcasecmp(sarg->name, "to"))
+	      if(!ay_comp_strcase(sarg->name, "to"))
 		{
 		  has_to = AY_TRUE;
 		  to[0] = sarg->val.point[0];
@@ -362,14 +362,14 @@ ay_light_drawhcb(struct Togl *togl, ay_object *o)
 	  sarg = shader->arg;
 	  while(sarg)
 	    {
-	      if(!ay_sm_strcasecmp(sarg->name,"from"))
+	      if(!ay_comp_strcase(sarg->name,"from"))
 		{
 		  has_from = AY_TRUE;
 		  from[0] = sarg->val.point[0];
 		  from[1] = sarg->val.point[1];
 		  from[2] = sarg->val.point[2];
 		}
-	      if(!ay_sm_strcasecmp(sarg->name,"to"))
+	      if(!ay_comp_strcase(sarg->name,"to"))
 		{
 		  has_to = AY_TRUE;
 		  to[0] = sarg->val.point[0];
@@ -474,14 +474,14 @@ ay_light_getpntcb(ay_object *o, double *p)
 	  sarg = shader->arg;
 	  while(sarg)
 	    {
-	      if(!ay_sm_strcasecmp(sarg->name,"from"))
+	      if(!ay_comp_strcase(sarg->name,"from"))
 		{
 		  has_from = AY_TRUE;
 		  light->tfrom[0] = sarg->val.point[0];
 		  light->tfrom[1] = sarg->val.point[1];
 		  light->tfrom[2] = sarg->val.point[2];
 		}
-	      if(!ay_sm_strcasecmp(sarg->name,"to"))
+	      if(!ay_comp_strcase(sarg->name,"to"))
 		{
 		  has_to = AY_TRUE;
 		  light->tto[0] = sarg->val.point[0];
@@ -923,14 +923,14 @@ ay_light_bbccb(ay_object *o, double *bbox, int *flags)
 	  sarg = shader->arg;
 	  while(sarg)
 	    {
-	      if(!ay_sm_strcasecmp(sarg->name,"from"))
+	      if(!ay_comp_strcase(sarg->name,"from"))
 		{
 		  has_from = AY_TRUE;
 		  from[0] = sarg->val.point[0];
 		  from[1] = sarg->val.point[1];
 		  from[2] = sarg->val.point[2];
 		}
-	      if(!ay_sm_strcasecmp(sarg->name,"to"))
+	      if(!ay_comp_strcase(sarg->name,"to"))
 		{
 		  has_to = AY_TRUE;
 		  to[0] = sarg->val.point[0];
@@ -1031,13 +1031,13 @@ ay_light_notifycb(ay_object *o)
 	  sarg = shader->arg;
 	  while(sarg)
 	    {
-	      if(!ay_sm_strcasecmp(sarg->name,"from"))
+	      if(!ay_comp_strcase(sarg->name,"from"))
 		{
 		  sarg->val.point[0] = (float)light->tfrom[0];
 		  sarg->val.point[1] = (float)light->tfrom[1];
 		  sarg->val.point[2] = (float)light->tfrom[2];
 		}
-	      if(!ay_sm_strcasecmp(sarg->name,"to"))
+	      if(!ay_comp_strcase(sarg->name,"to"))
 		{
 		  sarg->val.point[0] = (float)light->tto[0];
 		  sarg->val.point[1] = (float)light->tto[1];
