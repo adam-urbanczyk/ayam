@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile.shared [30. Aug 2004]
+# Makefile.shared [7. Dec 2004]
 # Makefile for Ayam (shared version)
 
 # Choose an installation prefix.
@@ -252,14 +252,15 @@ AYSLO3DLIBS = -L$(3DLDIR)/lib -l3delight
 SDRDIR = /usr/local
 AYSDRINCDIR = $(SDRDIR)/include
 PIXIESRC = /home/user/Pixie/src
-AYSDRLIBS = $(PIXIESRC)/common/os.o -L$(SDRDIR)/lib -lsdr
+AYSDRLIBS = $(PIXIESRC)/common/os.o $(PIXIESRC)/common/memoryman.o -L$(SDRDIR)/lib -lsdr
 
 # Aycsg Plugin
 # OpenCSG
-OPENCSGDIR = ../../OpenCSG-0.9.2
+OPENCSGDIR = ../../OpenCSG-1.0.1
 OPENCSGINCDIR = $(OPENCSGDIR)/include
-OPENCSGOBJS = $(OPENCSGDIR)/src/batch.o\
+OPENCSGOBJS = $(OPENCSGDIR)/src/area.o $(OPENCSGDIR)/src/batch.o\
 	$(OPENCSGDIR)/src/openglHelper.o\
+	$(OPENCSGDIR)/src/occlusionQuery.o\
 	$(OPENCSGDIR)/src/renderGoldfeather.o\
 	$(OPENCSGDIR)/src/channelManager.o\
 	$(OPENCSGDIR)/src/primitive.o\
@@ -267,10 +268,11 @@ OPENCSGOBJS = $(OPENCSGDIR)/src/batch.o\
 	$(OPENCSGDIR)/src/opencsgRender.o\
 	$(OPENCSGDIR)/src/primitiveHelper.o\
 	$(OPENCSGDIR)/src/scissorMemo.o\
+	$(OPENCSGDIR)/src/stencilManager.o\
 	$(OPENCSGDIR)/RenderTexture/RenderTexture.o
 
 
-GLEWDIR = ../../OpenCSG-0.9.2/glew
+GLEWDIR = ../../OpenCSG-1.0.1/glew
 GLEWINCDIR = $(GLEWDIR)/include
 GLEWLIB = -L$(GLEWDIR)/lib -lGLEW
 
