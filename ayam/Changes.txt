@@ -1,4 +1,4 @@
-[24. 09. 2003] CVS-Head:
+[26. 09. 2003] Ayam1.6:
 o bug fixes:
   - fixed crash when exporting scenes with malformed RiAttribute/RiOption
     tags (type "c" or "p", with a component missing) (SF 753550)
@@ -108,6 +108,8 @@ o improved focus handling in main window; switching the focus from the object
   tree/listbox to the property GUI is now much faster
 o updated shader parsing code to follow the incompatible changes in Aqsis
   V0.7.19 libslxargs
+o updated shader parsing code of ayslo3d plugin to follow the incompatible
+  changes in 3Delight-1.0.6
 o added preferences option "MarkHidden", that controls whether hidden objects
   should be preceded by an exclamation mark in the tree view
 o wrapped executables now no longer need to run BWidgets from external files
