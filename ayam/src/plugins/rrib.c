@@ -89,21 +89,7 @@ typedef struct ay_rrib_attrstate_s {
   /* Exterior */
   ay_shader *eshader;
 
-  /* BMRT Specific Attributes */
-   /* Radiosity */
-    /* Average Color */
-    int avr, avg, avb, ava;
-    /* Emitted Color */
-    int emr, emg, emb, ema;
-    /* Specular Color */
-    int spr, spg, spb, spa;
-    /* Meshing */
-    double patch_size, elem_size, min_size;
-    /* Calculation */
-    int zonal; /* dontset, none, zonal_receives, zonal_shoots, full_zonal */
-    /* Caustics */
-    int has_caustics; /* no, yes */
-
+  /* BMRT Specific Attributes */  
    /* Shadows */
    int cast_shadows; /* Os, none, opaque, surface */
 
@@ -114,6 +100,9 @@ typedef struct ay_rrib_attrstate_s {
    int camera; /* yes, no */
    int reflection; /* yes, no */
    int shadow; /* yes, no */
+
+  /* all other RiAttributes */
+  ay_tag_object *tags;
 
 } ay_rrib_attrstate;
 
@@ -140,6 +129,8 @@ ay_object *ay_rrib_lrobject;
 
 /* light handle */
 int ay_rrib_clighthandle;
+/* first read light */
+ay_object *ay_rrib_flobject;
 
 /* import options */
 int ay_rrib_readframe;
@@ -182,6 +173,9 @@ void ay_rrib_poptrafos(void);
 void ay_rrib_readshader(char *sname, int stype,
 			RtInt n, RtToken tokens[], RtPointer parms[],
 			ay_shader **result);
+void ay_rrib_readtag(char *tagtype, char *tagname, char *name,
+		     int i, RtToken tokens[], RtPointer parms[],
+		     ay_tag_object **destination);
 void ay_rrib_initgeneral(void);
 int ay_rrib_initgprims(void);
 int ay_rrib_cleargprims(void);
@@ -602,6 +596,7 @@ ay_rrib_RiLightSource(RtToken name,
   l.cone_angle = 30.0;
   l.cone_delta_angle = 5.0;
   l.beam_distribution = 2.0;
+  l.sm_resolution = 0;
 
   if(ay_rrib_cattributes->light_samples != -1)
     l.samples = ay_rrib_cattributes->light_samples;
@@ -612,6 +607,7 @@ ay_rrib_RiLightSource(RtToken name,
     l.shadows = ay_rrib_cattributes->light_shadows;
   else
     l.shadows = 0;
+
 
 
   /* check for default light source types first */
@@ -703,6 +699,11 @@ ay_rrib_RiLightSource(RtToken name,
   ay_object_delete(ay_rrib_co.down);
   ay_rrib_co.down = NULL;
 
+  if(ay_rrib_clighthandle == 1)
+    {
+      ay_rrib_flobject = o;
+    }
+
  return((RtLightHandle)(ay_rrib_clighthandle++));
 } /* ay_rrib_RiLightSource */
 
@@ -735,14 +736,14 @@ RtVoid ay_rrib_RiAtmosphereV( RtToken name,
 RtVoid ay_rrib_RiAttribute(RtToken name,
 			   RtInt n, RtToken tokens[], RtPointer parms[])
 {
- int i, itemp;
+ int i, itemp, attribute_handled = AY_FALSE;
  double dtemp;
  char *stemp = NULL;
  char fname[] = "ay_rrib_RiAttribute";
 
   if(!strcmp(name,"identifier"))
     {
-      if(n > 0)
+      for(i = 0; i < n; i++)
 	{
 	  if(!strcmp(tokens[0], "name"))
 	    {
@@ -757,8 +758,15 @@ RtVoid ay_rrib_RiAttribute(RtToken name,
 		    free(ay_rrib_cattributes->identifier_name);
 		  ay_rrib_cattributes->identifier_name = stemp;
 		}
+	      attribute_handled = AY_TRUE;
 	    }
-	}
+	  if(!attribute_handled)
+	    {
+	      ay_rrib_readtag(ay_riattr_tagtype, "RiAttribute", name,
+			      i, tokens, parms, &(ay_rrib_cattributes->tags));
+	    }
+	} /* for */
+      return;
     }
 
   if(!strcmp(name,"light"))
@@ -771,13 +779,21 @@ RtVoid ay_rrib_RiAttribute(RtToken name,
 		ay_rrib_cattributes->light_shadows = AY_TRUE;
 	      else
 		ay_rrib_cattributes->light_shadows = AY_FALSE;
+	      attribute_handled = AY_TRUE;
 	    }
 	  if(!strcmp(tokens[i], "nsamples"))
 	    {
 	      sscanf(((char *)(parms[i])), "%lg", &dtemp);
 	      ay_rrib_cattributes->light_shadows = (int)dtemp;
+	      attribute_handled = AY_TRUE;
+	    }
+	  if(!attribute_handled)
+	    {
+	      ay_rrib_readtag(ay_riattr_tagtype, "RiAttribute", name,
+			      i, tokens, parms, &(ay_rrib_cattributes->tags));
 	    }
 	} /* for */
+      return;
     }
 
   if(!strcmp(name,"render"))
@@ -788,6 +804,7 @@ RtVoid ay_rrib_RiAttribute(RtToken name,
 	    {
 	      sscanf(((char *)(parms[i])), "%d", &itemp);
 	      ay_rrib_cattributes->true_displacement = itemp;
+	      attribute_handled = AY_TRUE;
 	    }
 	  if(!strcmp(tokens[i], "cast_shadows"))
 	    {
@@ -805,6 +822,7 @@ RtVoid ay_rrib_RiAttribute(RtToken name,
 		  itemp = 3;
 		}
 	      ay_rrib_cattributes->cast_shadows = itemp;
+	      attribute_handled = AY_TRUE;
 	    }
 	  if(!strcmp(tokens[i], "visibility"))
 	    {
@@ -823,8 +841,15 @@ RtVoid ay_rrib_RiAttribute(RtToken name,
 		{
 		  ay_rrib_cattributes->camera = AY_TRUE;
 		}
+	      attribute_handled = AY_TRUE;
+	    }
+	  if(!attribute_handled)
+	    {
+	      ay_rrib_readtag(ay_riattr_tagtype, "RiAttribute", name,
+			      i, tokens, parms, &(ay_rrib_cattributes->tags));
 	    }
 	} /* for */
+      return;
     }
 
   if(!strcmp(name,"displacementbound"))
@@ -848,15 +873,29 @@ RtVoid ay_rrib_RiAttribute(RtToken name,
 		  itemp = 0;
 		}
 	      ay_rrib_cattributes->dbound = itemp;
+	      attribute_handled = AY_TRUE;
 	    }
 	  if(!strcmp(tokens[i], "sphere"))
 	    {
 	      sscanf(((char *)(parms[i])), "%lg", &dtemp);
 	      ay_rrib_cattributes->dbound_val = dtemp;
+	      attribute_handled = AY_TRUE;
+	    }
+	  if(!attribute_handled)
+	    {
+	      ay_rrib_readtag(ay_riattr_tagtype, "RiAttribute", name,
+			      i, tokens, parms, &(ay_rrib_cattributes->tags));
 	    }
 	} /* for */
+      return;
     }
-  
+
+  for(i = 0; i < n; i++)
+    {
+      ay_rrib_readtag(ay_riattr_tagtype, "RiAttribute", name,
+		      i, tokens, parms, &(ay_rrib_cattributes->tags));
+    }
+
  return;
 }
 
@@ -1192,9 +1231,32 @@ RtVoid ay_rrib_RiIdentity( void )
 }
 
 
-RtVoid ay_rrib_RiIlluminate( RtLightHandle light, RtBoolean onoff )
+RtVoid ay_rrib_RiIlluminate(RtLightHandle light, RtBoolean onoff)
 { 
-   (void)light; (void)onoff;
+ ay_object *o = NULL;
+ ay_light_object *l = NULL;
+ int i = 0;
+
+  o = ay_rrib_flobject;
+  while(o->next && i < (int)light)
+    {
+      if(o->type == AY_IDLIGHT)
+	{
+	  l = (ay_light_object *)o->refine;
+	  if(onoff)
+	    {
+	      l->on = AY_TRUE;
+	    }
+	  else
+	    {
+	      l->on = AY_FALSE;
+	    }
+	  i++;
+	}
+      o = o->next;
+    } /* while */
+
+ return;
 }
 
 
@@ -1565,12 +1627,50 @@ RtVoid ay_rrib_RiSkew( RtFloat angle, RtFloat dx1, RtFloat dy1, RtFloat dz1,
 
 RtVoid ay_rrib_RiSolidBegin( RtToken operation )
 { 
-   (void)operation;
+ ay_level_object l;
+
+
+ l.type = AY_LTLEVEL;
+
+  if(!strcmp(operation,"primitive"))
+    l.type = AY_LTPRIM;
+
+  if(!strcmp(operation,"union"))
+    l.type = AY_LTUNION;
+
+  if(!strcmp(operation,"difference"))
+    l.type = AY_LTDIFF;
+
+  if(!strcmp(operation,"intersection"))
+    l.type = AY_LTINT;
+ 
+  ay_rrib_co.parent = AY_TRUE;
+  ay_rrib_linkobject((void *)(&l), AY_IDLEVEL);
+  ay_rrib_co.parent = AY_FALSE;
+  ay_object_delete(ay_rrib_co.down);
+  ay_rrib_co.down = NULL;
+
+  ay_clevel_add(ay_rrib_lrobject);
+  ay_clevel_add(ay_rrib_lrobject->down);
+  ay_next = &(ay_rrib_lrobject->down);
+
+  ay_rrib_pushtrafos();
+  ay_rrib_RiIdentity();
+
+ return;
 }
 
 
 RtVoid ay_rrib_RiSolidEnd( void )
 { 
+
+  ay_clevel_del();
+  ay_next = &(ay_currentlevel->object->next);
+  ay_clevel_del();
+
+  ay_rrib_poptrafos();
+
+ return;
 }
 
 
@@ -1664,6 +1764,10 @@ RtVoid ay_rrib_RiTranslate( RtFloat dx, RtFloat dy, RtFloat dz )
 
 RtVoid ay_rrib_RiWorldBegin( void )
 {
+
+  ay_rrib_RiIdentity();
+
+ return;
 }
 
 
@@ -1809,16 +1913,14 @@ ay_rrib_readshader(char *sname, int stype,
 		   RtInt n, RtToken tokens[], RtPointer parms[],
 		   ay_shader **result)
 {
- int ay_status = AY_OK;
- int i = 0, j = 0, k = 0, argtype;
+ int i = 0, j = 0, k = 0;
  ay_shader *s = NULL;
  ay_shader_arg *sarg = NULL, **nextsarg = NULL;
  RIB_HASHHND ht = NULL;
  PRIB_HASHATOM  p = NULL;
  int type, link;
  char fname[] = "ay_rrib_readshader";
- double dtemp = 0.0, mtemp[16];
- int itemp = 0;
+ double dtemp = 0.0;
  char *stemp = NULL;
  RtColor *col;
  RtPoint *pnt;
@@ -1974,13 +2076,140 @@ ay_rrib_readshader(char *sname, int stype,
   *result = s;
 
  return;
-}
+} /* ay_rrib_readshader */
+
+
+void
+ay_rrib_readtag(char *tagtype, char *tagname, char *name,
+		int i, RtToken tokens[], RtPointer parms[],
+		ay_tag_object **destination)
+{
+ int ay_status = AY_OK;
+ int type;
+ ay_tag_object *n = NULL;
+ Tcl_DString ds;
+ RIB_HASHHND ht = NULL;
+ PRIB_HASHATOM  p = NULL;
+ char fname[] = "ay_rrib_readtag";
+ RtColor *col;
+ RtPoint *pnt;
+ char *valstr = NULL, valbuf[255], typechar;
+
+ if(!destination)
+   return;
+
+  if(!(n = calloc(1, sizeof(ay_tag_object))))
+    {
+      return;
+    }
+
+  if(!(n->name = calloc(strlen(tagname)+1, sizeof(char))))
+    {
+      return;
+    }
+
+  ht = RibGetHashHandle(grib);
+
+  p = NULL;
+  p = RibFindMatch(ht, kRIB_HASH_VARIABLE,
+		   kRIB_UNKNOWNCLASS | kRIB_UNKNOWNTYPE,
+		   (void*)(tokens[i]));
+
+  if(p)
+    {
+      type = kRIB_TYPE_MASK & p->code;
+
+      switch(type)
+	{
+	case kRIB_INTTYPE:
+	  typechar = 'i';
+	  sprintf(valbuf,"%d", (int)(*((RtInt *)(parms[i]))));
+	  valstr = valbuf;
+	  break;
+	case kRIB_FLOATTYPE:
+	  typechar = 'f';
+	  sprintf(valbuf,"%f", (float)(*((RtFloat *)(parms[i]))));
+	  valstr = valbuf;
+	  break;
+	case kRIB_STRINGTYPE:
+	  typechar = 's';
+	  break;
+	case kRIB_COLORTYPE:
+	  typechar = 'c';
+	  col = (RtColor *)(parms[i]);
+	  sprintf(valbuf,"%f,%f,%f", (float)((*col)[0]),(float)((*col)[1]),
+		  (float)((*col)[2]));
+	  valstr = valbuf;
+	  break;		  
+	case kRIB_POINTTYPE:
+	  typechar = 'p';
+	  pnt = (RtPoint *)(parms[i]);
+	  sprintf(valbuf,"%f,%f,%f", (float)((*pnt)[0]),(float)((*pnt)[1]),
+		  (float)((*pnt)[2]));
+	  break;
+	default:
+	  ay_error(AY_ERROR, fname,
+		   "Skipping parameter of unknown type:");
+	  ay_error(AY_ERROR, fname, tokens[i]);
+	  free(n->name);
+	  free(n);
+	  return;
+	  break;
+	} /* switch */
+    }
+  else
+    {
+      ay_error(AY_ERROR, fname, "Skipping undeclared token:");
+      ay_error(AY_ERROR, fname, tokens[i]);
+      free(n->name);
+      free(n);
+      return;
+    }
+
+  n->type = tagtype;
+
+  Tcl_DStringInit(&ds);
+
+  Tcl_DStringAppend(&ds, name, -1);
+  Tcl_DStringAppend(&ds, ",", -1);
+  Tcl_DStringAppend(&ds, (char *)(tokens[i]), -1);
+  Tcl_DStringAppend(&ds, ",", -1);
+  Tcl_DStringAppend(&ds, &typechar, 1);
+  Tcl_DStringAppend(&ds, ",", -1);
+  if(typechar == 's')
+    {
+      Tcl_DStringAppend(&ds, (char *)(parms[i]), -1);
+    }
+  else
+    {
+      Tcl_DStringAppend(&ds, valstr, -1);
+    }
+
+  if(!(n->val = calloc(strlen(Tcl_DStringValue(&ds))+1, sizeof(char))))
+    {
+      free(n->name);
+      free(n);
+      Tcl_DStringFree(&ds);
+      return;
+    }
+
+  strcpy(n->val, Tcl_DStringValue(&ds));
+
+  Tcl_DStringFree(&ds);
+
+  n->next = *destination;
+  *destination = n;
+
+ return;
+} /* ay_rrib_readtag */
+
 
 void
 ay_rrib_initgeneral(void)
 {
  int ay_status = AY_OK;
 
+  gRibNopRITable[kRIB_WORLDBEGIN] = (PRIB_RIPROC)ay_rrib_RiWorldBegin;
   gRibNopRITable[kRIB_TRANSFORMBEGIN] = (PRIB_RIPROC)ay_rrib_RiTransformBegin;
   gRibNopRITable[kRIB_TRANSFORMEND] = (PRIB_RIPROC)ay_rrib_RiTransformEnd;
   gRibNopRITable[kRIB_CONCATTRANSFORM] =
@@ -2009,11 +2238,11 @@ ay_rrib_initgeneral(void)
   gRibNopRITable[kRIB_LIGHTSOURCE] = (PRIB_RIPROC)ay_rrib_RiLightSource;
   gRibNopRITable[kRIB_AREALIGHTSOURCE] =
     (PRIB_RIPROC)ay_rrib_RiAreaLightSource;
-
+  gRibNopRITable[kRIB_ILLUMINATE] = (PRIB_RIPROC)ay_rrib_RiIlluminate;
 
 
  return;
-}
+} /* ay_rrib_initgeneral */
 
 int
 ay_rrib_initgprims(void)
@@ -2029,6 +2258,9 @@ ay_rrib_initgprims(void)
   gRibNopRITable[kRIB_TORUS] = (PRIB_RIPROC)ay_rrib_RiTorus;
   gRibNopRITable[kRIB_NUPATCH] = (PRIB_RIPROC)ay_rrib_RiNuPatch;
   gRibNopRITable[kRIB_TRIMCURVE] = (PRIB_RIPROC)ay_rrib_RiTrimCurve;
+
+  gRibNopRITable[kRIB_SOLIDBEGIN] = (PRIB_RIPROC)ay_rrib_RiSolidBegin;
+  gRibNopRITable[kRIB_SOLIDEND] = (PRIB_RIPROC)ay_rrib_RiSolidEnd;
 
  return ay_status;
 } /* ay_rrib_initgprims */
@@ -2047,6 +2279,9 @@ ay_rrib_cleargprims(void)
   gRibNopRITable[kRIB_TORUS] = (PRIB_RIPROC)RiNopTorusV;
   gRibNopRITable[kRIB_NUPATCH] = (PRIB_RIPROC)RiNopNuPatchV;
   gRibNopRITable[kRIB_TRIMCURVE] = (PRIB_RIPROC)RiNopTrimCurve;
+
+  gRibNopRITable[kRIB_SOLIDBEGIN] = (PRIB_RIPROC)RiNopSolidBegin;
+  gRibNopRITable[kRIB_SOLIDEND] = (PRIB_RIPROC)RiNopSolidEnd;
 
  return ay_status;
 } /* ay_rrib_cleargprims */
@@ -2075,6 +2310,7 @@ ay_rrib_pushattribs(void)
       newstate->dshader = NULL;
       newstate->ishader = NULL;
       newstate->eshader = NULL;
+      newstate->tags = NULL;
 
       if(ay_rrib_cattributes->sshader)
 	{
@@ -2124,9 +2360,8 @@ ay_rrib_pushattribs(void)
       newstate->shading_rate = 1.0;
       newstate->colr = -1;
       newstate->opr = -1;
-      
-
     }
+
   /* link new state to stack */
   newstate->next = ay_rrib_cattributes;
   ay_rrib_cattributes = newstate;
@@ -2153,6 +2388,7 @@ void
 ay_rrib_popattribs(void)
 {
  ay_rrib_attrstate *nextstate = NULL;
+ ay_tag_object *tag = NULL;
  char fname[] = "ay_rrib_popattribs";
  int ay_status = AY_OK;
 
@@ -2175,6 +2411,40 @@ ay_rrib_popattribs(void)
   if(ay_rrib_cattributes->identifier_name)
     {
       free(ay_rrib_cattributes->identifier_name);
+    }
+
+  if(ay_rrib_cattributes->sshader)
+    {
+      ay_shader_free(ay_rrib_cattributes->sshader);
+      ay_rrib_cattributes->sshader = NULL;
+    }
+
+  if(ay_rrib_cattributes->dshader)
+    {
+      ay_shader_free(ay_rrib_cattributes->dshader);
+      ay_rrib_cattributes->dshader = NULL;
+    }
+
+  if(ay_rrib_cattributes->ishader)
+    {
+      ay_shader_free(ay_rrib_cattributes->ishader);
+      ay_rrib_cattributes->ishader = NULL;
+    }
+
+  if(ay_rrib_cattributes->eshader)
+    {
+      ay_shader_free(ay_rrib_cattributes->eshader);
+      ay_rrib_cattributes->eshader = NULL;
+    }
+
+  if(ay_rrib_cattributes->tags)
+    {
+      while(ay_rrib_cattributes->tags)
+	{
+	  tag = ay_rrib_cattributes->tags;
+	  ay_rrib_cattributes->tags = tag->next;
+	  ay_tags_free(tag);
+	}
     }
 
   free(ay_rrib_cattributes);
@@ -2339,6 +2609,7 @@ ay_rrib_readrib(char *filename, int frame)
   ay_object_defaults(&ay_rrib_co);
 
   ay_rrib_clighthandle = 1;
+  ay_rrib_flobject = NULL;
 
   /* initialize trafo and attribute attribute stacks */
   ay_rrib_ctrafos = NULL;
