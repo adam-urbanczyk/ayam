@@ -255,9 +255,9 @@ ay_read_tags(FILE *fileptr, ay_object *o)
      last = tag;
    } /* for */
 
-
  return ay_status;
 } /* ay_read_tags */
+
 
 /* ay_read_shader:
  *  XXXX leaks memory in low-mem situation
@@ -448,7 +448,7 @@ ay_read_object(FILE *fileptr)
 	    ay_tags_delall(o);
 	  free(o); o = NULL;
 	  return ay_status;
-	}
+	} /* if */
     } /* if */
 
   if(o)
@@ -543,7 +543,7 @@ ay_read_scene(Tcl_Interp *interp, char *filename, int insert)
   ay_instt_createoidht(ay_root->next);
   /* link instance objects to their originals */
   ay_instt_connect(ay_root->next, &(ay_root->next));
-  /* force rebuild of all custom objects, that rely on children */
+  /* force rebuild of all objects, that rely on children */
   o = ay_root->next;
   while(o)
     {
