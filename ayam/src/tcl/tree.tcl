@@ -712,9 +712,12 @@ update
 # add context-menu
 set m [menu $ay(tree).popup -tearoff 0]
 
+global aymainshortcuts
+
 $m add cascade -label "Tree" -menu $ay(tree).popup.tree
 set m [menu $ay(tree).popup.tree -tearoff 0]
-$m add command -label "Rebuild" -command "tree_reset"
+$m add command -label "Rebuild" -command "tree_reset"\
+	-accelerator $aymainshortcuts(RebuildTree)
 $m add command -label "Expand" -command "tree_expand"
 $m add command -label "Collapse" -command "tree_collapse"
 
