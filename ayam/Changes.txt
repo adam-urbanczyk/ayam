@@ -1,4 +1,4 @@
-[CVS, 17. 03. 2003]:
+[CVS, 22. 03. 2003]:
 o bug fixes:
   - fixed RIB import creating object names with malicious characters (spaces)
     (SF 686419)
@@ -12,6 +12,7 @@ o bug fixes:
   - fixed several memory leaks in undo mechanism
     (SF 694941)
   - fixed memory leak in edit master feature
+    (SF 705442)
   - fixed several memory leaks in RIB import
     (SF 699852)
   - fixed undo/redo clearing the background image of view windows
@@ -54,6 +55,15 @@ o the BWidgets package is now requested with exact version (1.2.1) so that
   newer (inkompatible) installed versions of BWidgets can cause no harm
 o added a compile time option "-DAYWITHAQUA" to distinguish between
   MacOSX-Aqua and MacOSX-X11
+o added Tcl scripting interface command "wrib" that lets you export RIBs
+  from a selected "Camera" object (and does not need a view window)
+  Thus, you may now create, model, or modify scenes without any view windows
+  and still can get your RIBs for rendering.
+o added a new sub menu to the "Special" main menu: "RIB-Export", it allows
+  you to export a RIB from a selected "Camera" object, and to create shadow
+  maps
+o added RIB export from selected objects feature (menu
+  "Special/RIB-Export/Selected Objects")
 
 
 [07. 02. 2003] Ayam1.4:
