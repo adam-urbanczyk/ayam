@@ -2277,7 +2277,6 @@ for the presence of a <tt/"SaveMainGeom"/ tag for the root object
 after replacing a scene and re-establishes the geometries of
 main and toolbox window.
 
-
 <sect2>TP Tag<label id="tptag">
 <p>
 The tag type <tt/"TP"/ can be used to save tesselation parameters
@@ -2305,7 +2304,6 @@ where <tt/"&lt;dcval&gt;"/ is a positive integer value describing the
 depth complexity of the CSG primitive. See also section XXXX
 for more information regarding the depth complexity.
 
-
 <sect2>Internal Tags
 <p>
 The following tags are of no general use. They are used
@@ -2316,7 +2314,7 @@ This tag is used by the RIB exporter and the scene storage
 facility to establish links between instance objects and
 the original objects they are pointing to.<p>
 The tag type <tt/OI/ is not meant to be used by the end user.
-Furthermore, changing the IDs avails to nothing as the
+Furthermore, changing the IDs manually avails to nothing as the
 tags are rebuilt before every export/save operation.
 
 <sect3>MI - Material ID Tag<label id="mitt">
@@ -2325,26 +2323,41 @@ This tag is used by the RIB exporter and the scene storage
 facility to establish links between material objects and
 the objects they are assigned to.<p>
 The tag type <tt/MI/ is not meant to be used by the end user.
-Furthermore, changing the IDs avails to nothing as the
+Furthermore, changing the IDs manually avails to nothing as the
 tags are rebuilt before every export/save operation.
+
+<sect2>List of Known Tags
+<p>
+This section contains a comprehensive list of tag names, that are
+known in Ayam 1.8 and in the accompanying extensions.
+<p>
+<tt>"RiAttribute", "RiOption", "RiHider", "RiDisplay", "NoExport", "TC",
+"PV", "SaveMainGeom", "TP", "MI", "OI", "DC", "IDR", "IIDR", "RIDR",
+"R3IDR", "CIDR", "CCIDR"</tt>
+<p>
+Documentation on those tags can be found in the sections above.
+
 
 <sect1>Root Object<label id="rootobj">
 <p>
-There is always exactly one root object in the scene.
+There is always exactly one Root object in the scene.
 This object is something special in that it cannot be deleted
 or copied.
 It holds options global to the scene like RiOptions, atmosphere and
-imager shaders. Furthermore, all views are
-child objects of the root object.
-
+imager shaders. Furthermore, all currently open view windows are child
+objects of the Root object.
+<p>
 If you hide the Root object the little red/green/blue coordinate system
 will not be drawn in any view.
+<p>
+The global scene options are documented in the following sections.
 
 <sect2>RiOptions Property<label id="rio">
 <p>
-RenderMan Interface options.
+This property carries RenderMan Interface options.
 Both, standard and BMRT specific options may be set using this
-property.
+property. For the sake of brevity only a short description of
+the available options will be given here.
 Please refer to the documentation of the RenderMan Interface
 and the documentation of BMRT for more detailed information about the
 options.
@@ -2400,12 +2413,14 @@ tesselated geometry.
 
 <sect2>Imager, Atmosphere Property<label id="imager">
 <p>
-These properties let you define shaders for the
-root object, please refer to section
+The Imager and Atmosphere properties let you define shaders for the
+Root object, please refer to section
 <ref id="shd" name="Shaders Properties">
 for information on how to deal with shader property GUIs.
+<p>
 Imager shaders are executed once for every rendered pixel,
 they may e.g. be used to set a specific background color.
+<p>
 Atmosphere shaders are volume shaders that
 may be used to implement global atmospheric
 optical effects like fog.
@@ -3564,12 +3579,26 @@ Thus, the object hierarchy of a Clone object may look like this:
 If you use a trajectory curve to place the clones, you may want
 to hide the parameter object and add a <tt/"NoExport"/ tag to it.
 Otherwise the original object will appear twice, on the trajectory and
-on its normal position.
+on its normal position. Note that the transformation attributes of
+the parameter object will be completely overwritten when placing the
+clones on the trajectory curve. If the parameter object has distinct
+scale or rotation attributes it should be placed inside a level object
+like this:
+<code>
++-Clone
+ +-Level
+ |\-Cloned-Object with non-standard Scale/Rotation
+ \ Trajectory(NCurve)
+</code>
 <p>
 It is not possible to create clones from objects that may not
 be master objects of instance objects (e.g. light objects, or
 material objects). However, (since Ayam 1.7) it is possible to use
 instances as parameter objects.
+<p>
+If an instance object is used as parameter object it should be placed
+in a level (see above) and the <tt/"NoExport"/ tag should added to the
+level object (as you can not add tags to instance objects).
 <p>
 The following attributes further control the
 clone process:
