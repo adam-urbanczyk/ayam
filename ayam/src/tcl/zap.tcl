@@ -15,7 +15,6 @@ proc zap { } {
     set windows $ay(views)
     lappend windows .
 
-    lappend windows $ay(zapwindows)
     if { [winfo exists .prefsw] } { lappend windows .prefsw }
     if { [winfo exists .tbw] } { 
 	if { [wm transient .tbw] == "" } {
