@@ -358,8 +358,15 @@ int ay_npt_gordon(ay_object *cu, ay_object *cv, ay_object *in,
 		  int uorder, int vorder,
 		  ay_nurbpatch_object **gordon);
 
-/* pmt.c */
+int ay_npt_gordonmodw(ay_object *o1, ay_object *o2);
 
+int ay_npt_gordoncc(ay_object *o1, ay_object *o2, int stride,
+		    double *p1, double *p2, double *pp1, double *pp2,
+		    double *m1, double *m2);
+
+int ay_npt_gordonwc(ay_object *g);
+
+/* pmt.c */
 int ay_pmt_tonpatch(ay_pamesh_object *pamesh, ay_object **result);
 
 int ay_pmt_valid(ay_pamesh_object *pamesh, int *detail);
