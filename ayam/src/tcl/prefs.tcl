@@ -82,6 +82,7 @@ proc prefs_open {} {
     addParam $fw ayprefse TclPrecision { 4 5 6 }
     addCheck $fw ayprefse AutoSavePrefs
     addCheck $fw ayprefse LoadEnv
+    addCheck $fw ayprefse NewLoadsEnv
     addFile $fw ayprefse EnvFile
     addMFile $fw ayprefse Scripts
     addMDir $fw ayprefse Plugins
@@ -137,7 +138,7 @@ proc prefs_open {} {
     # Misc
     set fw [$nb insert end Misc -text Misc\
 	    -raisecmd "prefs_rcnb $nb Misc"]
-
+    
     addText $fw e0 "Errors:"
     addCheck $fw ayprefse RedirectTcl
     addCheck $fw ayprefse Logging

@@ -19,9 +19,16 @@ menu .fu.fMenu.fil.m -tearoff 0
 set m .fu.fMenu.fil.m
 $m add command -label "New"\
 	-command {
-    global ay
+    global ay ayprefs
     if { ! [io_warnChanged] } { 
-	update; newScene; uS; rV; set ay(sc) 0
+	update; newScene; uS;
+	if { $ayprefs(NewLoadsEnv) == 1 } {
+	    viewCloseAll; cS; plb_update
+	    catch [replaceScene [file nativename $ayprefs(EnvFile)]]
+	}
+	uS;
+	rV;
+	set ay(sc) 0
     }
 }
 $m add separator

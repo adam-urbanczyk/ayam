@@ -87,6 +87,8 @@ array set ayprefs {
  Wpclip_pastetosel 1
  WarnChanged 1
 
+ NewLoadsEnv 1
+
  RedirectTcl 1
  Logging 0
  LogFile "/tmp/ay.log"
