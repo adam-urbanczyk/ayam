@@ -436,7 +436,6 @@ array set ay {
  sc 0
  tblayoutsema 0
  LastSelection ""
- slcext ""
  sext ""
  locales { en de fr }
  ScanShaders 0
