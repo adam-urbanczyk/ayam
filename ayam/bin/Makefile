@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile [5. Jun 2002]
+# Makefile [7. Jun 2002]
 # Makefile for the installation of Ayam (precompiled wrapped version)
 
 # Choose an installation prefix.
@@ -25,24 +25,31 @@ DOCDIR = ${PREFIX}/doc
 INSTALL = install
 MKDIR = mkdir -p
 
-DOCFILES = ../Setup.txt ../Changes ../License ../doc/refcard.tcl\
+DOCFILES = ../Setup.txt ../Changes.txt ../License.txt ../doc/refcard.tcl\
 ../doc/refcard.ps ../doc/ayam.pdf
 
-install: ayamsh
+install:
 	$(MKDIR) $(BINDIR)
 	$(INSTALL) ayam $(BINDIR)
+	-ln -s $(LIBDIR) $(BINDIR)/plugins
 	$(MKDIR) $(LIBDIR)
 	-$(INSTALL) plugins/metaobj.so $(LIBDIR)
-	-$(INSTALL) plugins/metaobj/metaobj.tcl $(LIBDIR)
-	-$(INSTALL) plugins/metaobj/metacomp.tcl $(LIBDIR)
+	-$(INSTALL) plugins/metaobj.tcl $(LIBDIR)
+	-$(INSTALL) plugins/metacomp.tcl $(LIBDIR)
 	-$(INSTALL) plugins/mfio.so plugins/mfio.tcl $(LIBDIR)
 	-$(INSTALL) plugins/idr.so plugins/idr.tcl $(LIBDIR)
+	-$(INSTALL) plugins/loadidr.tcl $(LIBDIR)
 	-$(INSTALL) plugins/rrib.so plugins/rrib.tcl $(LIBDIR)
+	-$(INSTALL) plugins/loadrrib.tcl $(LIBDIR)
+	$(MKDIR) $(DOCDIR)
 	$(INSTALL) $(DOCFILES) $(DOCDIR)
 	$(MKDIR) $(DOCDIR)/html
 	$(MKDIR) $(DOCDIR)/html/pics
 	$(INSTALL) ../doc/html/*.html $(DOCDIR)/html
 	$(INSTALL) ../doc/html/pics/* $(DOCDIR)/html/pics
+	@echo "Installation completed."
+	@echo "Add $(BINDIR) to your PATH."
+	@echo "Add $(LIBDIR) to your LD_LIBRARY_PATH."
 
 uninstall:
 	-rm -f $(BINDIR)/ayam
@@ -51,6 +58,6 @@ uninstall:
 	-rm -rf $(LIBDIR)/mfio.so $(LIBDIR)/mfio.tcl
 	-rm -rf $(LIBDIR)/idr.so $(LIBDIR)/idr.tcl
 	-rm -rf $(LIBDIR)/rrib.so $(LIBDIR)/rrib.tcl
-	-cd $(DOCDIR); rm -rf Setup.txt Changes License refcard.tcl\
+	-cd $(DOCDIR); rm -rf Setup.txt Changes.txt License.txt refcard.tcl\
 refcard.ps ayam.pdf html;
 
