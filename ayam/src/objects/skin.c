@@ -380,12 +380,13 @@ ay_skin_bbccb(ay_object *o, double *bbox, int *flags)
 int
 ay_skin_notifycb(ay_object *o)
 {
+ int ay_status = AY_OK;
+ ay_nurbcurve_object *curve = NULL;
  ay_skin_object *skin = NULL;
  ay_object *down = NULL, *c = NULL, *last = NULL, *all_curves = NULL;
  ay_object *newo = NULL;
- int ay_status = AY_OK;
- int mode = 0, count = 0;
- double tolerance;
+ int mode = 0, count = 0, i, a;
+ double m[16] = {0}, tolerance;
 
   if(!o)
     return AY_ENULL;    
@@ -428,6 +429,24 @@ ay_skin_notifycb(ay_object *o)
 
       if(c)
 	{
+	  /* immediately apply transformation attributes to control points */
+	  if((c->movx != 0.0) || (c->movy != 0.0) || (c->movz != 0.0) ||
+	     (c->rotx != 0.0) || (c->roty != 0.0) || (c->rotz != 0.0) ||
+	     (c->scalx != 1.0) || (c->scaly != 1.0) || (c->scalz != 1.0) ||
+	     (c->quat[0] != 0.0) || (c->quat[1] != 0.0) ||
+	     (c->quat[2] != 0.0) || (c->quat[3] != 1.0))
+	    {
+	      ay_trafo_creatematrix(c, m);
+	      curve = (ay_nurbcurve_object *)c->refine;
+	      a = 0;
+	      for(i = 0; i < curve->length; i++)
+		{
+		  ay_trafo_apply4(&(curve->controlv[a]), m);
+		  a += 4;
+		}
+	    } /* if */
+
+	  /* link curve to list */
 	  if(last)
 	    last->next = c;
 	  else
@@ -455,6 +474,8 @@ ay_skin_notifycb(ay_object *o)
 
   ay_object_defaults(newo);
   newo->type = AY_IDNPATCH;
+  newo->parent = AY_TRUE;
+  newo->hide_children = AY_TRUE;
 
   /* create caps */
   if(skin->has_start_cap)
@@ -475,9 +496,9 @@ ay_skin_notifycb(ay_object *o)
       ay_trafo_copy(last, skin->end_cap);
     } /* if */
 
-  ay_status = ay_npt_skin(all_curves, skin->uorder, skin->uknot_type,
-			  skin->interpolate,
-			  (ay_nurbpatch_object **)(&(newo->refine)));
+  ay_status = ay_npt_skinu(all_curves, skin->uorder, skin->uknot_type,
+			   skin->interpolate,
+			   (ay_nurbpatch_object **)(&(newo->refine)));
 
   if(ay_status)
     {
@@ -509,7 +530,7 @@ ay_skin_notifycb(ay_object *o)
     }
 
   /* remove temporary curves */
- cleanup:
+cleanup:
   while(all_curves)
     {
       c = all_curves->next;

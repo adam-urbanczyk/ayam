@@ -31,7 +31,7 @@ set w [frame $ay(pca).$SkinAttr(w)]
 
 addCheck $w SkinAttrData Interpolate
 addParam $w SkinAttrData Order_U
-addMenu $w SkinAttrData Knot-Type_U [list Bezier B-Spline NURB]
+addMenu $w SkinAttrData Knot-Type_U [list Bezier B-Spline NURB Custom]
 addCheck $w SkinAttrData StartCap
 addCheck $w SkinAttrData EndCap
 global ay
