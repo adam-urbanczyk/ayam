@@ -53,11 +53,22 @@ proc viewTitle { w type action } {
 
     set newvname [format "View%d" $number]
 
-    if { $type != "" } { set oldtype $type }
+    if { $type != "" } {
+	set oldtype $type
+
+	if { $type == "Persp" } {
+	    $w.fMenu.c.m entryconfigure 16 -state normal
+	} else {
+	    $w.fMenu.c.m entryconfigure 16 -state disabled
+
+	}
+    }
     if { $action != "" } { set oldaction $action }
     set newname [format "%s - %s - %s" $newvname $oldtype $oldaction]
     wm title $w $newname
     update idletasks
+
+
 
 return;
 }
