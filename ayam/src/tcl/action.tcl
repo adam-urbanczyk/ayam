@@ -176,6 +176,7 @@ proc actionRotObA { w } {
 	%W mc
 	update
 	%W setconf -mark %x %y 1
+	%W rotoaac
 	actionRotObabindp %W %x %y
     }
     bind $w <ButtonRelease-1> { }

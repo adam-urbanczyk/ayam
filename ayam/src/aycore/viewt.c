@@ -945,10 +945,6 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
       clear_drawmarker = AY_FALSE;
     }
 #endif
-  else
-    {
-      clear_drawmarker = AY_FALSE;
-    }
 
   if(clear_drawmarker)
     {
