@@ -736,4 +736,34 @@ proc tree_close { w } {
 destroy $w.ftr
 
 }
+#tree_close
 
+#tree_toggle:
+#
+proc tree_toggle { } {
+    global ay ayprefs
+
+    set w .fu.fMain.fHier
+
+    if { [winfo exists $ay(tree)] } {
+	tree_close $w
+	olb_open $w
+	olb_update
+	rV
+	set ayprefs(showtr) 0
+    } else {
+	cS; uS
+	olb_close $w
+	tree_open $w
+	tree_update root
+	plb_update
+	set ay(CurrentLevel) "root"
+	set ay(SelectedLevel) "root"
+	tree_paintLevel "root"
+	set ay(DropActive) 0
+	rV
+	set ayprefs(showtr) 1
+    }
+
+}
+#tree_toggle

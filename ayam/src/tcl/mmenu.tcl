@@ -354,6 +354,9 @@ $m add command -label "Add RiAttribute" -command "riattr_addp"
 $m add command -label "Edit TexCoords" -command "tc_edit"
 $m add separator
 $m add command -label "Toggle Toolbox" -command "toolbox_toggle"
+$m add command -label "Toggle TreeView" -command "tree_toggle"
+$m add separator
+$m add command -label "Zap Ayam" -command zap
 
 if { $tcl_platform(os) != "Darwin" } {
     # Help

@@ -15,15 +15,16 @@
 array set ayprefs {
  autosaveprefs 0
  showtt 1
+ showtb 1
+ showtr 1
  Balloon 1500
  TwmCompat 0
  toolBoxList {trafo trafo2 solids misco nurbs toolobjs points nctools1 nctools2 camera misc}
- toolBoxGeom ""
  AutoResize 1
  ListTypes 1
  AutoSavePrefs 1
  PickEpsilon 0.2
- PickTolerance 5.
+ PickTolerance 5.0
  UseMatColor 0
  HandleSize 6
  LazyNotify 0
@@ -781,14 +782,15 @@ if { $AYWRAPPED == 1 } {
     lappend auto_path $bwdir
     ayam_loadscript tree
 }
+
+# load script for object listbox (olb)
+ayam_loadscript olb
+
 tree_open .fu.fMain.fHier
 update
 
-# create the object listbox
-ayam_loadscript olb
-
 #olb_open .fu.fMain.fHier
-update
+#update
 
 # object bar
 # has to be initialized before the pane for Object Hierarchy!
@@ -967,12 +969,22 @@ if { $ay(failsafe) == 0 } {
 }
 prefs_set
 
+# immediately switch to ListBox?
+if { $ayprefs(showtr) == 0 } {
+    tree_close .fu.fMain.fHier
+    olb_open .fu.fMain.fHier
+    olb_update
+}
+update
+
 shader_scanAll
 
 puts stdout "Establishing key bindings..."
 shortcut_main .
 
-toolbox_open
+if { $ayprefs(showtb) == 1 } {
+    toolbox_open
+}
 
 if { $ayprefs(mainGeom) != "" } {
     winMoveOrResize . $ayprefs(mainGeom)
@@ -1009,14 +1021,18 @@ foreach script $scripts {
 puts stdout "Processing remaining arguments..."
 set i 0
 set j 0
+grab .fu
+
 while { $i < $argc } {
     set arg [lindex $argv $i]
     if { [file extension $arg] == ".ay" } {
 	set newfilename $arg
+	
 	if { $j == 0 } {
 	    viewCloseAll
 	    set filename $newfilename
 	    set ay_error ""
+	    
 	    replaceScene $filename
 	    if { $ay_error < 2 } {
 		set windowfilename [file tail [file rootname $newfilename]]
@@ -1037,6 +1053,8 @@ while { $i < $argc } {
     }
  incr i
 }
+grab release .fu
+
 puts stdout "The tip of the day is:"
 tipoftheDay
 puts stdout "Ayam-Startup-Sequence finished. Reconstruct the World!"
