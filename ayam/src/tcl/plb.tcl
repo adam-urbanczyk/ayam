@@ -305,6 +305,7 @@ if { [llength $index] == 1 } {
 }
 #if
 
+ return;
 }
 # plb_update
 

@@ -84,7 +84,7 @@ ay_sel_setfromlbtcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int ay_status = AY_OK;
  char fname[] = "selOb";
- ay_list_object *oldsel, *newsel;
+ ay_list_object *oldsel, *newsel, *t;
  ay_object *o = ay_currentlevel->object;
  int i = 0, j = 1, argvi = 0, start = 1, need_redraw = AY_TRUE;
  char vname[] = "ay(need_redraw)", yes[] = "1", no[] = "0";
@@ -168,7 +168,12 @@ ay_sel_setfromlbtcmd(ClientData clientData, Tcl_Interp *interp,
 
   /* now, free old selection */
   ay_selection = oldsel;
-  ay_status = ay_sel_free();
+  while(ay_selection)
+    {
+      t = ay_selection;
+      ay_selection = t->next;
+      free(t);
+    }
   ay_selection = newsel;
 
  return TCL_OK;

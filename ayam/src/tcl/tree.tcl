@@ -201,6 +201,7 @@ proc tree_selectItem { redraw tree node } {
     }
 
     plb_update
+
  return;
 }
 # tree_selectItem

@@ -418,9 +418,9 @@ int
 ay_tree_selecttcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
 {
- int ay_status = AY_OK;
- /* char fname[] = "treeSelect";*/
- ay_list_object *oldsel, *newsel;
+ /* int ay_status = AY_OK; */
+ /* char fname[] = "treeSelect"; */
+ ay_list_object *oldsel, *newsel, *t;
  ay_object *o;
  int i, need_redraw = AY_TRUE;
  char vname[] = "ay(need_redraw)", yes[] = "1", no[] = "0";
@@ -462,7 +462,12 @@ ay_tree_selecttcmd(ClientData clientData, Tcl_Interp *interp,
 
   /* now, free old selection */
   ay_selection = oldsel;
-  ay_status = ay_sel_free();
+  while(ay_selection)
+    {
+      t = ay_selection;
+      ay_selection = t->next;
+      free(t);
+    }
   ay_selection = newsel;
 
  return TCL_OK;
