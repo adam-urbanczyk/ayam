@@ -124,6 +124,7 @@ ay_object_createtcmd(ClientData clientData, Tcl_Interp *interp,
  Tcl_HashEntry *entry = NULL;
  ay_createcb *cb = NULL;
  ay_object *o = NULL;
+ char *a = "ay", *n = "sc", *v = "1";
 
   if(argc < 2)
     {
@@ -175,6 +176,9 @@ ay_object_createtcmd(ClientData clientData, Tcl_Interp *interp,
 
 
   ay_object_link(o);
+
+  /* set scene changed flag */
+  Tcl_SetVar2(interp, a, n, v, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
  return TCL_OK;
 } /* ay_object_createtcmd */
