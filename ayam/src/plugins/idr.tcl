@@ -124,19 +124,22 @@ proc idr_open {} {
     addMenu $f1 idrprefs OptimizeBB1 $bboptimize_entries
     addString $f1 idrprefs Renderer1 [list "rendrib" "rgl -dumprgba"]
     pack $f1 -side top
+    set f1 [frame $f.f3]
+    addText $f1 e1 "Global Parameters:"
+    addCheck $f1 idrprefs CacheParts
+    pack $f1 -side top -fill x -expand yes
 
     set f $w.fu.fl
     # Global IDR Parameters?
     set f1 [frame $f.f1]
-    addText $f1 e1 "IDR Params:"
+    addText $f1 e1 "Assign Importance:"
     addMenu $f1 idrprefs Mode {Manual Selection Changed 2DRegions 3DRegions}
-    addCheck $f1 idrprefs CacheParts
     pack $f1 -side top -fill x -expand yes
 
     # Actions!
     set f1 [frame $f.f2]
     addText $f1 e1 "IDR Actions:"
-    addCommand $f1 c0 "DefRegion" {
+    addCommand $f1 c0 "DefineRegion" {
 	set selection ""
 	set selection [.idrw.fu.fl.fview.lb curselection]
 	if { $selection != "" } {
@@ -146,7 +149,7 @@ proc idr_open {} {
 
 	}
     }
-    addCommand $f1 c1 "DelRegions" {
+    addCommand $f1 c1 "DeleteRegions" {
 	set selection ""
 	set selection [.idrw.fu.fl.fview.lb curselection]
 	if { $selection != "" } {
@@ -172,7 +175,7 @@ proc idr_open {} {
 
 
     set f [frame $w.fl]
-    button $f.bgo -text "Go!" -width 6 -command { 
+    button $f.bgo -text "Render!" -width 6 -command { 
 	set selection ""
 	set selection [.idrw.fu.fl.fview.lb curselection]
 	if { $selection != "" } {
