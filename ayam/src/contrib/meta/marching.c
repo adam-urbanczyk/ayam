@@ -49,7 +49,10 @@ VertexInterp (double isolevel, meta_xyz * p1, meta_xyz * p2, double valp1, doubl
 int
 meta_polygonise (meta_world * w, meta_gridcell * grid, double isolevel)
 {
-  int i, j, ti, hash;
+  int i, j, ti;
+#if META_USEVERTEXARRAY
+  int  hash;
+#endif
   int cubeindex, edgeindex;
   meta_xyz vertlist[12];
   meta_xyz normlist[12];
@@ -162,10 +165,6 @@ meta_polygonise (meta_world * w, meta_gridcell * grid, double isolevel)
     }
   /* Create the triangle */
 
-  /*
-     vptr = &w->Vertex3d[w->currentnumpoly*9];
-     nptr = &w->Vertex3d[w->currentnumpoly*9+w->maxpoly*9];
-   */
 
   vptr = &w->vertex[w->currentnumpoly * 9];
   nptr = &w->nvertex[w->currentnumpoly * 9];
@@ -176,8 +175,9 @@ meta_polygonise (meta_world * w, meta_gridcell * grid, double isolevel)
 
       for (j = 0; j < 3; ++j)
 	{
+#if 0
 	  int ix,iy,iz;
-	  
+#endif	  
 	  ti = triTable[cubeindex][i + j];
 
 #if 0
@@ -202,10 +202,14 @@ meta_polygonise (meta_world * w, meta_gridcell * grid, double isolevel)
 	  	*vptr++ = vertlist[ti].y;
 	  	*vptr++ = vertlist[ti].z;
 
+#if META_USEVERTEXARRAY
+
 	  	*viptr++ = w->actindex;
 
 		w->vhash[hash] = w->actindex;
   	     w->actindex++;
+#endif
+
 
 
 #if 0

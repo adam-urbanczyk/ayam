@@ -89,6 +89,8 @@ metaobj_createcb (int argc, char *argv[], ay_object * o)
     }
 
 
+#if META_USEVERTEXARRAY
+
   w->tablesize = 40000;
 
   if (!
@@ -111,6 +113,7 @@ metaobj_createcb (int argc, char *argv[], ay_object * o)
    (w->vhash =
        (int *) calloc (1, sizeof (int) * ((w->tablesize-1) + (w->tablesize/10 -1) + (w->tablesize/100 -1))));
 
+#endif
 
 
   meta_initcubestack (w);
@@ -170,6 +173,9 @@ metaobj_deletecb (void *c)
   if( w->vindex)
   	free(w->vindex);
 	
+  if(w->vhash)
+     free(w->vhash);
+
   return AY_OK;
 } /* metaobj_deletecb */
 
@@ -230,6 +236,8 @@ metaobj_copycb (void *src, void **dst)
     }
 
 
+#if META_USEVERTEXARRAY
+
   if (!
       (w->vindex =
        (GLuint *) calloc (1, sizeof (GLuint) * ((w->tablesize-1) + (w->tablesize/10 -1) + (w->tablesize/100 -1)))))
@@ -250,6 +258,8 @@ metaobj_copycb (void *src, void **dst)
    (w->vhash =
        (int *) calloc (1, sizeof (int) * ((w->tablesize-1) + (w->tablesize/10 -1) + (w->tablesize/100 -1))));
 
+#endif
+
   meta_initcubestack (w);
 
   *dst = (void *) w;
@@ -262,28 +272,32 @@ int
 metaobj_drawcb (struct Togl *togl, ay_object * o)
 {
   meta_world *w;
-  /*
+
+#if !META_USEVERTEXARRAY
   double x, y, z, x1, y1, z1, x2, y2, z2;
   int i;
-  */
+#endif
+
   double *vptr;
   
   w = (meta_world *) o->refine;
 
   vptr = w->vertex;
 
-#if 1
+#if META_USEVERTEXARRAY
+
   glEnableClientState(GL_VERTEX_ARRAY);
   glVertexPointer(3, GL_DOUBLE, 0, w->vertex);
 
   glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
 
   glDrawElements(GL_TRIANGLES, w->currentnumpoly*3, GL_UNSIGNED_INT, w->vindex);
+
 #endif
 
   if (w->showworld)
   {
-  	double u;
+  	float u;
 	u = w->unisize/2;
 
      glBegin (GL_LINE_STRIP);
@@ -325,7 +339,7 @@ metaobj_drawcb (struct Togl *togl, ay_object * o)
   }
 
 
-#if 0 
+#if !META_USEVERTEXARRAY
 
   glBegin (GL_LINES);
 
@@ -367,12 +381,14 @@ metaobj_shadecb (struct Togl *togl, ay_object * o)
 {
   meta_world *w;
   double *vptr, *nptr;
-  /* int i; */
+  int i;
 
   w = (meta_world *) o->refine;
 
   vptr = w->vertex;
   nptr = w->nvertex;
+
+#if META_USEVERTEXARRAY
 
   glEnableClientState(GL_VERTEX_ARRAY);
   glEnableClientState(GL_NORMAL_ARRAY);
@@ -381,8 +397,9 @@ metaobj_shadecb (struct Togl *togl, ay_object * o)
 
   glDrawElements(GL_TRIANGLES, w->currentnumpoly*3, GL_UNSIGNED_INT, w->vindex);
 
+#endif
 
-#if 0
+#if !META_USEVERTEXARRAY
 
   glBegin (GL_TRIANGLES);
 

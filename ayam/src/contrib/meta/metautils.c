@@ -672,12 +672,14 @@ meta_calceffect (meta_world * w)
   w->lastmark++;
   w->stackpos = 0;
 
+#if META_USEVERTEXARRAY
   /* Reset Hash */
   memset(w->vhash,0,(sizeof (int) * ((w->tablesize-1) + (w->tablesize/10 -1) + (w->tablesize/100 -1))));
   w->h1 = w->tablesize/10;
   w->h2 = w->tablesize/100;
   w->actindex = 0;
   w->indexnum = 0;
+#endif
   
   while (o->next != NULL)
     {
