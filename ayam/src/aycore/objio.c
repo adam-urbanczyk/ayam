@@ -51,6 +51,8 @@ int ay_objio_writeclone(FILE *fileptr, ay_object *o, double *m);
 
 int ay_objio_writeinstance(FILE *fileptr, ay_object *o, double *m);
 
+int ay_objio_writescript(FILE *fileptr, ay_object *o, double *m);
+
 int ay_objio_writeobject(FILE *fileptr, ay_object *o, int writeend);
 
 int ay_objio_writescenetcmd(ClientData clientData, Tcl_Interp *interp,
@@ -909,6 +911,36 @@ ay_objio_writeinstance(FILE *fileptr, ay_object *o, double *m)
 
  return ay_status;
 } /* ay_objio_writeinstance */
+
+
+/* ay_objio_writescript:
+ *
+ */
+int
+ay_objio_writescript(FILE *fileptr, ay_object *o, double *m)
+{
+ int ay_status = AY_OK;
+ ay_object *cmo = NULL;
+ ay_script_object *sc = NULL;
+
+  if(!o || !o->refine)
+   return AY_ENULL;
+
+  sc = (ay_script_object *)o->refine;
+
+
+  if(((sc->type == 1) || (sc->type == 2)) && (sc->cm_objects))
+    {
+      cmo = sc->cm_objects;
+      while(cmo)
+	{
+	  ay_status = ay_objio_writeobject(fileptr, cmo, AY_TRUE);
+	  cmo = cmo->next;
+	}
+    } /* if */
+
+ return ay_status;
+} /* ay_objio_writescript */
 
 
 #if 0
