@@ -688,7 +688,7 @@ ay_objio_writepomesh(FILE *fileptr, ay_object *o, double *m)
   /* write normals */
   if(po->has_normals)
     {
-      p1 = po->controlv;
+      p1 = &(po->controlv[3]);
       for(i = 0; i < po->ncontrols; i++)
 	{
 	  fprintf(fileptr, "vn %g %g %g\n", p1[0], p1[1], p1[2]);
