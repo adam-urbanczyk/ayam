@@ -97,7 +97,7 @@ proc forAll_lb { recursive command } {
 		uS
 		$lb selection clear 0 end
 		selOb
-		catch {forAll 1 $command}
+		catch {forAll_lb 1 $command}
 		goUp
 		uS
 		$lb selection set $sel
@@ -146,8 +146,6 @@ proc forAll { recursive command } {
 	rV
     } else {
 	forAll_lb $recursive $command
-
-
     }
 
  return;
@@ -194,7 +192,7 @@ proc forAllT_tree { type recursive command } {
 		set oldclevel $ay(CurrentLevel)
 		set ay(CurrentLevel) $sel
 		update
-		catch {forAll_tree 1 $command}
+		catch {forAllT_tree $type $recursive $command}
 		goUp
 		set ay(CurrentLevel) $oldclevel
 		$tree selection clear
@@ -249,7 +247,7 @@ proc forAllT_lb { type recursive command } {
 		uS
 		$lb selection clear 0 end
 		selOb
-		catch {forAll 1 $command}
+		catch {forAllT_lb $type $recursive $command}
 		goUp
 		uS
 		$lb selection set $sel
@@ -291,7 +289,7 @@ proc forAllT { type recursive command } {
 	set sel [$tree selection get]
 
 	# now call commands
-	catch {forAllT_tree $recursive $type $command}
+	catch {forAllT_tree $type $recursive $command}
 
 	# recover state of tree widget
 	$tree selection set $sel
@@ -302,9 +300,7 @@ proc forAllT { type recursive command } {
 	set ay(DropActive) 0
 	rV
     } else {
-	forAllT_lb $recursive $type $command
-
-
+	forAllT_lb $type $recursive $command
     }
 
  return;
