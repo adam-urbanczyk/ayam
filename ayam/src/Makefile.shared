@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile.shared [21. Feb 2001]
+# Makefile.shared [22. Mar 2002]
 # Makefile for Ayam (shared version)
 
 # Where shall the executable be installed?
@@ -210,6 +210,7 @@ AYAMOBJS = aycore/bbc.o\
 	objects/material.o\
 	objects/ncurve.o\
 	objects/npatch.o\
+	objects/pamesh.o\
 	objects/parab.o\
 	objects/revolve.o\
 	objects/riinc.o\
