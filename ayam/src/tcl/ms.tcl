@@ -7,7 +7,7 @@
 #
 # See the file License for details.
 
-# ms.tcl - msgcat "aequivalent"
+# ms.tcl - msgcat "equivalent"
 
 # ms_set:
 #  fill
@@ -54,7 +54,7 @@ namespace eval ms {}
 # fill "en"-locale...
 ms_init en
 ms_set en ayprefse_Shaders "A list of paths where your compiled shaders reside"
-ms_set en ayprefse_ScanShaders "Initiate rebuild of internal shader database."
+ms_set en ayprefse_ScanShaders "Initiates rebuild of internal shader database."
 ms_set en ayprefse_Locale "Language to use for balloon help texts.\
 \nChanges will take effect after restart of Ayam!"
 ms_set en ayprefse_AutoResize "Resize main window according to property gui?"
@@ -98,15 +98,22 @@ ms_set en ayprefse_Shade "Color to use in shaded views when UseMatColor\
 ms_set en ayprefse_Light "Color to use for (unselected) light objects."
 
 # RIB-Export
-ms_set en ayprefse_RIBFile "Name of the RIB file to create on Export."
-ms_set en ayprefse_Image "Name of the image file created, when rendering\
-\nthe exported RIB file."
+ms_set en ayprefse_RIBFile "Name of the RIB file to create on export.\
+\nScene: Derive name from scene path and filename,\
+\nScenefile: Derive name from scene filename (without path),\
+\nAsk: Ask for filename on export."
+ms_set en ayprefse_Image "Name of the image file that is created\nwhen\
+the exported RIB file is rendered.\
+\nRIB: Derive image filename from RIB filename."
 ms_set en ayprefse_ResInstances "Resolve all instance objects to normal\
 \nobjects while exporting to a RIB?"
 ms_set en ayprefse_CheckLights "Add a distant headlight to the scene,\
-\nif no other light exists?"
+\nif no other (active) lights exist?"
 ms_set en ayprefse_DefaultMat "Write a default material statement to the\
-\nRIB, that will be used by all objects without material?"
+\nRIB, that will be used by all objects without material?\
+\nnone: no default material,\
+\nmatte: write a simple RiMatte without parameters,\
+\ndefault: write the material object named \\\"default\\\"."
 ms_set en ayprefse_RIStandard "Omit all attributes and options that are not\
 \ncontained in the RenderMan Interface Standard?"
 ms_set en ayprefse_WriteIdent "Write an identificator derived from the\
@@ -152,15 +159,15 @@ ms_set en ayprefse_ToolBoxTrans "Make the toolbox window transient?"
 ms_set en ayprefse_ToolBoxShrink "Make the toolbox window shrink wrap around\
 its contents,\nwhen the user resizes it?"
 ms_set en ayprefse_RGTrans "Make all rendering user interfaces transient?"
-ms_set en ayprefse_HideTmpTags "Hide all tags marked temporary from\
-the tag property GUIs?"
+ms_set en ayprefse_HideTmpTags "Hide all tags marked temporary from\n the\
+tag property GUIs?"
 ms_set en ayprefse_TclPrecision "Precision of Tcl mathematics."
 
 # Mops-Import
 ms_set en mopsi_options_ResetDM "Reset all DisplayMode attributes of\
-imported objects to \\\"Global\\\"?"
-ms_set en mopsi_options_ResetST "Reset all Tolerance attributes of\
-imported objects to \\\"0.0\\\"?"
+imported\nobjects to \\\"Global\\\"?"
+ms_set en mopsi_options_ResetST "Reset all SamplingTolerance attributes of\
+imported\nobjects to \\\"0.0\\\"?"
 
 #
 # fill "de"-locale
@@ -173,7 +180,7 @@ ms_set de ayprefse_AutoResize "Soll das Hauptfenster sich der Größe der\
 Eigenschaften anpassen?"
 ms_set de ayprefse_TwmCompat "Ist der verwendete Fenster-Manager\
 zu TWM kompatibel?"
-ms_set de ayprefse_ListTypes "Sollen die Objekttypen in der Listen bzw.\
+ms_set de ayprefse_ListTypes "Sollen die Objekttypen in der Listen- bzw.\
 \nBaumansicht angezeigt werden?"
 ms_set de ayprefse_Locale "Sprache für Hilfe-Texte.\
 \nÄnderungen werden erst nach Neustart von Ayam wirksam!"
@@ -182,7 +189,7 @@ gespeichert werden?"
 ms_set de ayprefse_LoadEnv "Soll die Arbeitsumgebung beim Start geladen\
 werden?"
 ms_set de ayprefse_NewLoadsEnv "Soll die Arbeitsumgebung beim Erstellen\
-einer neuen Szene geladen werden?"
+einer neuen Szene neu geladen werden?"
 ms_set de ayprefse_EnvFile "Vollständiger Dateiname der Arbeitsumgebung."
 ms_set de ayprefse_Scripts "Eine Liste von Skripten, die beim Starten\
 ausgeführt werden sollen."
@@ -196,8 +203,8 @@ ms_set de ayprefse_PickEpsilon "Größte erlaubte Entfernung zwischen\
 ausgewähltem und editierbarem Punkt;\
 \n0.0 wählt jedoch immer den nächsten Punkt."
 ms_set de ayprefse_HandleSize "Größe der editierbaren Punkte."
-ms_set de ayprefse_LazyNotify "Sollen die Eltern über Änderungen an den\
-\nKindern nur am Ende einer Modellieraktion\nbenachrichtigt werden?"
+ms_set de ayprefse_LazyNotify "Sollen Elternobjekte über Änderungen an den\
+\nKindobjekten nur am Ende einer Modellieraktion\nbenachrichtigt werden?"
 ms_set de ayprefse_EditSnaps "Sollen editierte Punkte zunächst zu den\
 \nGitter-Koordinaten bewegt werden?"
 ms_set de ayprefse_UndoLevels "Anzahl zurücknehmbarer Modellierschritte;\
@@ -225,13 +232,17 @@ keine Materialfarbe hat."
 ms_set de ayprefse_Light "Farbe für nicht selektierte Lichtquellen."
 
 # RIB-Export
-ms_set de ayprefse_RIBFile "Name der RIB-Datei für den RIB-Export"
-ms_set de ayprefse_Image "Name der Bilddatei, die beim Rendern\nder\
-exportierten RIB-Datei erzeugt wird."
+ms_set de ayprefse_RIBFile "Name der RIB-Datei für den RIB-Export.\
+\nScene: RIB-Dateiname von Pfad und Namen der Szene ableiten,\
+\nScenefile: RIB-Dateiname vom Namen der Szene (ohne Pfad) ableiten,
+\nAsk: RIB-Dateinamen beim Export erfragen."
+ms_set de ayprefse_Image "Bilddatei, die beim Rendern der\
+exportierten\nRIB-Datei erzeugt wird.\
+RIB: Bilddatei vom Namen der RIB-Datei ableiten."
 ms_set de ayprefse_ResInstances "Sollen alle Instanzen-Objekte während des\
 Exportierens\nin normale Objekte umgewandelt werden?"
 ms_set de ayprefse_CheckLights "Soll eine Standardlichtquelle hinzugefügt\
-werden,\nwenn keine andere Lichtquelle existiert?"
+werden,\nwenn keine andere (aktive) Lichtquelle existiert?"
 ms_set de ayprefse_DefaultMat "Standard-Material, das für alle Objekte\nohne\
 eigenes Material benutzt wird."
 ms_set de ayprefse_RIStandard "Sollen alle Attribute und Optionen,\ndie nicht\
@@ -293,9 +304,9 @@ ms_set de ayprefse_TclPrecision "Genauigkeit der Wandlung von Gleitkommazahlen v
 
 # Mops-Import
 ms_set de mopsi_options_ResetDM "Sollen alle DisplayMode-Attribute von\
-importierten Objekten auf \\\"Global\\\" zurückgesetzt werden?"
-ms_set de mopsi_options_ResetST "Sollen alle Tolerance-Attribute von\
-importierten Objekten auf \\\"0.0\\\" zurückgesetzt werden?"
+importierten Objekten\nauf \\\"Global\\\" zurückgesetzt werden?"
+ms_set de mopsi_options_ResetST "Sollen alle SamplingTolerance-Attribute von\
+importierten\nObjekten auf \\\"0.0\\\" zurückgesetzt werden?"
 
 
 #
@@ -416,10 +427,11 @@ ms_set fr ayprefse_ToolBoxShrink "Rendre la fenêtre Boîte-à-Outils ajustable\
 à son contenu,\nlorsque l'utilisateur en modifie la taille?"
 ms_set fr ayprefse_RGTrans "Rendre toutes les interface utilisateur transient?"
 ms_set fr ayprefse_HideTmpTags "Cacher tous les étiquette marquées\
-temporaires dans les propriétés de l'interface graphique?"
+temporaires\ndans les propriétés de l'interface graphique?"
 ms_set fr ayprefse_TclPrecision "Precision des mathématiques Tcl."
 
 ms_set fr mopsi_options_ResetDM "Réinitialiser à Global tous les attributs\
-DisplayMode de tous les objets lors de l'importation\ndepuis une scène Mops?"
+DisplayMode de tous\nles objets lors de l'importation depuis une scène Mops?"
 ms_set fr mopsi_options_ResetST "Réinitialiser à 0.0 tous les attributs\
-Tolerance de tous les objets lors de l'importation\ndepuis une scène Mops?"
+SamplingTolerance de tous\nles objets lors de l'importation depuis une scène\
+Mops?"
