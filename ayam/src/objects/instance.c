@@ -684,6 +684,19 @@ ay_instance_providecb(ay_object *o, unsigned int type, ay_object **result)
   if(!o || !result)
     return AY_ENULL;
 
+  if(!result)
+    {
+      i = (ay_object *) o->refine;
+      if(i->type == type)
+	{
+	  return AY_OK;
+	}
+      else
+	{
+	  return(ay_provide_object(i, type, NULL));
+	}
+    }
+
   i = (ay_object *) o->refine;
 
   if(i->type == type)
