@@ -25,4 +25,5 @@
 *.ps  -k 'b'
 *.tiff -k 'b'
 *.tif -k 'b'
+*.ico -k 'b'
 
