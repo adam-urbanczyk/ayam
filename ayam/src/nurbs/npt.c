@@ -88,11 +88,12 @@ ay_npt_create(int uorder, int vorder, int width, int height,
  *
  */
 int
-ay_npt_revolve(ay_object *o, double arc, ay_nurbpatch_object **patch)
+ay_npt_revolve(ay_object *o, double arc, int sections,
+	       ay_nurbpatch_object **patch)
 {
  int ay_status = AY_OK;
  ay_nurbpatch_object *new = NULL;
- ay_nurbcurve_object *curve;
+ ay_nurbcurve_object *curve, *tmpnc = NULL;
  double *uknotv = NULL, *tcontrolv = NULL;
  double radius = 0.0, w = 0.0, ww = 0.0, x, y, z;
  int i = 0, j = 0, a = 0, b = 0, c = 0;
@@ -158,19 +159,42 @@ ay_npt_revolve(ay_object *o, double arc, ay_nurbpatch_object **patch)
       if(new->vknotv)
 	free(new->vknotv);
       new->vknotv = NULL;
-
-      if(arc>0.0)
+      if(sections == 0)
 	{
-	 ay_status = ay_nb_CreateNurbsCircle(radius, 0.0, arc,
-					     &(new->height),&new->vknotv,
-					     &tcontrolv);
+	  if(arc>0.0)
+	    {
+	      ay_status = ay_nb_CreateNurbsCircle(radius, 0.0, arc,
+						  &(new->height),&new->vknotv,
+						  &tcontrolv);
+	    }
+	  else
+	    {
+	      ay_status = ay_nb_CreateNurbsCircle(radius, arc, 0.0,
+						  &(new->height), &new->vknotv,
+						  &tcontrolv);
+	    } /* if */
 	}
       else
 	{
-	 ay_status = ay_nb_CreateNurbsCircle(radius, arc, 0.0,
-					     &(new->height), &new->vknotv,
-					     &tcontrolv);
-	}
+	  if(arc == 360.0)
+	    {
+	      tmpnc = NULL;
+	      ay_status = ay_nct_crtcircbsp(sections, radius, 360.0, 3,
+					    &tmpnc);
+	      if(!tmpnc)
+		return AY_ERROR;
+	      
+	      tcontrolv = tmpnc->controlv;
+	      new->vknotv = tmpnc->knotv;
+	      new->height = tmpnc->length;
+	      free(tmpnc);
+	      
+	    }
+	  else
+	    {
+	      return AY_ERROR;
+	    } /* if */
+	} /* if */
 
       if(!new->controlv)
 	{
@@ -1333,7 +1357,7 @@ ay_npt_crtnspheretcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  ay_status = ay_npt_revolve(newc, 360.0,
+  ay_status = ay_npt_revolve(newc, 360.0, 0,
 			     (ay_nurbpatch_object **)&(o->refine));
 
   if(ay_status)
@@ -1791,7 +1815,7 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
  double mr[16];
  double quat[4] = {0};
  double *cscv = NULL, *trcv = NULL, *sfcv = NULL, *rots = NULL;
-
+      int b;
   if(!o1 || !o2 || !patch)
     return AY_ENULL;
 
@@ -1919,7 +1943,7 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
   /* copy cross sections controlv section+1 times and sweep it */
   for(i = 0; i <= sections; i++)
     {
-      memcpy(&controlv[i * stride * cs->length], cscv,
+      memcpy(&(controlv[i * stride * cs->length]), &(cscv[0]),
 	     cs->length * stride * sizeof(double));
 
       /* create transformation matrix */
@@ -2003,6 +2027,7 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 	{
 	  ay_trafo_apply4(&controlv[i*cs->length*stride+j*stride], mi);
 	} /* for */
+
 
       /* create caps (if sweep is not closed) */
       if(i == 0)

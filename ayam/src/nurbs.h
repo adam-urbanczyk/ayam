@@ -220,6 +220,9 @@ int ay_nct_crtncircletcmd(ClientData clientData, Tcl_Interp *interp,
 int ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
 
+int ay_nct_crtcircbsp(int sections, double radius, double arc, int order,
+		      ay_nurbcurve_object **result);
+
 int ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
 			    int argc, char *argv[]);
 
@@ -269,7 +272,8 @@ int ay_npt_create(int uorder, int vorder, int width, int height,
 		  double *controlv, double *uknotv, double *vknotv,
 		  ay_nurbpatch_object **patchptr);
 
-int ay_npt_revolve(ay_object *o, double arc, ay_nurbpatch_object **patch);
+int ay_npt_revolve(ay_object *o, double arc, int sections,
+		   ay_nurbpatch_object **patch);
 
 int ay_npt_drawtrimcurve(struct Togl *togl, ay_object *o, GLUnurbsObj *no);
 

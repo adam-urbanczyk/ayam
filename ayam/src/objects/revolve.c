@@ -938,7 +938,7 @@ ay_revolve_notifycb(ay_object *o)
   ay_object_defaults(npatch);
   npatch->type = AY_IDNPATCH;
 
-  ay_status = ay_npt_revolve(curve, revolve->thetamax,
+  ay_status = ay_npt_revolve(curve, revolve->thetamax, revolve->sections,
 			     (ay_nurbpatch_object **)(&(npatch->refine)));
 
   if(ay_status)
