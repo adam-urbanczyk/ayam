@@ -578,7 +578,7 @@ ay_viewt_align(struct Togl *togl, int argc, char *argv[])
  *  
  */
 void
-ay_viewt_alignlocal()
+ay_viewt_alignlocal(void)
 {
  ay_object *o = ay_root;
  ay_view_object *view = NULL;

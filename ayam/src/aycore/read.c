@@ -291,7 +291,7 @@ ay_read_attributes(FILE *fileptr, ay_object *o)
 /* ay_read_tags:
  *  
  */
-int 
+int
 ay_read_tags(FILE *fileptr, ay_object *o)
 {
  int ay_status = AY_OK;

@@ -30,6 +30,8 @@ int ay_pact_deletenc(ay_nurbcurve_object *curve,
 int ay_pact_deleteic(ay_icurve_object *icurve,
 		     double objX, double objY, double objZ);
 
+int ay_pact_flashpoint(int ignore_old);
+
 /* functions: */
 
 /* ay_pact_getpoint:

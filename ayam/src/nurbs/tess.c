@@ -80,6 +80,8 @@ void ay_tess_managecombined(void *userData);
 
 int ay_tess_tristopomesh(ay_tess_tri *tris, int has_vn, ay_object **result);
 
+void ay_tess_setautonormal(double *v1, double *v2, double *v3);
+
 /* functions */
 
 /* ay_tess_checktri:

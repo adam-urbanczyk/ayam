@@ -428,6 +428,8 @@ int ay_read_header(FILE *fileptr);
 
 int ay_read_attributes(FILE *fileptr, ay_object *o);
 
+int ay_read_tags(FILE *fileptr, ay_object *o);
+
 int ay_read_shader(FILE *fileptr, ay_shader **result);
 
 int ay_read_object(FILE *fileptr);
@@ -738,7 +740,7 @@ int ay_viewt_zoomtoobj(struct Togl *togl, int argc, char *argv[]);
 
 int ay_viewt_align(struct Togl *togl, int argc, char *argv[]);
 
-void ay_viewt_alignlocal();
+void ay_viewt_alignlocal(void);
 
 int ay_viewt_makecurtcb(struct Togl *togl, int argc, char *argv[]);
 
@@ -816,6 +818,8 @@ void ay_wrib_init(Tcl_Interp *interp);
 int ay_write_header(FILE *fileptr);
 
 int ay_write_attributes(FILE *fileptr, ay_object *o);
+
+int ay_write_tags(FILE *fileptr, ay_object *o);
 
 int ay_write_shader(FILE *fileptr, ay_shader *shader);
 
