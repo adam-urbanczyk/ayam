@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>23. Jun 2003
+<date>6. Jul 2003
 <abstract>
 This is the documentation of Ayam (1.6) - a free 3D modeling environment
 for the RenderMan interface.
@@ -545,7 +545,10 @@ saved with their materials. It is also possible to save
 instance objects without their master objects. This will lead
 to errors while loading such a scene later on.
 <item><tt/Save Environment/, saves the root object and all
-views to the file pointed to by the preference
+views to a so called environment scene file, which is read
+on program startup and <tt>"File/New"</tt>.
+Initially, the file requester that asks for the name
+of the new environment uses the value of the preference
 setting <tt>"Main/EnvFile"</tt>. Note, that there will be no
 check whether loading of that environment on next start up is
 enabled in the preferences. Note also, that using <tt/Save Environment/
@@ -5192,6 +5195,10 @@ may e.g. be established using a small script:
 <item><tt/"BackupExt"/: is the file name extension to be used for backup
 files. Default values are <tt>"&tilde;"</tt> for Unix and
 <tt>".bak"</tt> for Win32.
+<item><tt/"SelXOR_R"/, <tt/"SelXOR_G"/, <tt/"SelXOR_B"/: determine
+a color value that is used for drag selection rectangles.
+Note that the color is not used directly but combined with the
+color value of already drawn pixels by XOR.
 </itemize>
 
 <sect2>RiOption and RiAttributes Database<label id="rioptdb">
@@ -6143,6 +6150,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Selected Objects: <ref id="mmspecial" name="main menu entry">
 <item>Select Renderer: <ref id="mmspecial" name="main menu entry">
 <item>Selection: <ref id="prefdraw" name="preference setting">
+<item>SelXOR_R, SelXOR_G, SelXOR_B:
+<ref id="hidprefs" name="hidden preference setting">
 <item>Set Gridsize: <ref id="vmconf" name="view menu entry">
 <item>Set FOV: <ref id="vmconf" name="view menu entry">
 <item>setPnt: <ref id="scipoints" name="scripting interface command">
