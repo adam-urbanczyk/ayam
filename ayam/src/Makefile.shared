@@ -335,10 +335,12 @@ AYAMOBJS = aycore/bbc.o\
 	objects/skin.o\
 	objects/sweep.o\
 	objects/torus.o\
+	objects/text.o\
 	objects/view.o\
 	contrib/ai.o\
 	contrib/sm.o\
 	contrib/tree.o\
+	contrib/tti.o\
 	contrib/objsel.o\
 	ayam.o
 
@@ -371,7 +373,7 @@ RRIBOBJS = plugins/rrib.o
 
 
 .c.o: 
-	$(CC) -c $(CFLAGS) $*.c -o $@ -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR) -I$(AQSISINCDIR) -I$(TIFFINCDIR)
+	$(CC) -c $(CFLAGS) $*.c -o $@ -I. -IMF3D -Icontrib -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR) -I$(AQSISINCDIR) -I$(TIFFINCDIR)
 
 all: ayamsh csphere.so mfio.so metaobj.so
 

@@ -386,6 +386,16 @@ typedef struct ay_gordon_object_s {
   int glu_display_mode;
 } ay_gordon_object;
 
+
+typedef struct ay_text_object_s
+{
+  char *fontname;
+  char *string;
+
+  ay_object *npatch;
+} ay_text_object;
+
+
 typedef struct ay_light_object_s
 {
   int type; /* custom, point, spot, distant */
@@ -958,6 +968,7 @@ extern unsigned int ay_current_primlevel;
 #define AY_IDCLONE         28
 #define AY_IDSDMESH        29
 #define AY_IDGORDON        30
+#define AY_IDTEXT          31
 #define AY_IDLAST          50
 
 /* Level Object SubType Ids */

@@ -348,11 +348,13 @@ AYAMOBJS = aycore/bbc.o\
 	objects/sphere.o\
 	objects/skin.o\
 	objects/sweep.o\
+	objects/text.o\
 	objects/torus.o\
 	objects/view.o\
 	contrib/ai.o\
 	contrib/sm.o\
 	contrib/tree.o\
+	contrib/tti.o\
 	contrib/objsel.o\
 	ayam.o
 
@@ -426,7 +428,7 @@ AYSDRLIBS = $(PIXIESRC)/common/os.o -L$(SDRDIR)/lib -lsdr
 #############################################
 
 .c.o: 
-	$(CC) -c $(CFLAGS) $*.c -o $@ -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR) -I$(AQSISINCDIR) -I$(TIFFINCDIR)
+	$(CC) -c $(CFLAGS) $*.c -o $@ -I. -IMF3D -Icontrib -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR) -I$(AQSISINCDIR) -I$(TIFFINCDIR)
 
 all: wrappedayam csphere.so mfio.so metaobj.so
 
