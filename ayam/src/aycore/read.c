@@ -113,7 +113,12 @@ ay_read_header(FILE *fileptr)
 
   ay_read_string(fileptr, &version);
 
-  ay_read_version = 0;
+  ay_read_version = 1;
+
+  if(!strcmp(version,"1.0"))
+    {
+      ay_read_version = 0;
+    }
 
   if(!strcmp(version,"1.1"))
     {
@@ -374,6 +379,11 @@ ay_read_object(FILE *fileptr)
 
   o->type = type;
 
+  if(ay_read_version > 0)
+    {
+      fscanf(fileptr, "%d\n", &has_child);
+    }
+
   ay_status = ay_read_attributes(fileptr, o);
 
   ay_status = ay_read_tags(fileptr, o);
@@ -423,7 +433,10 @@ ay_read_object(FILE *fileptr)
 
     } /* if */
 
-  fscanf(fileptr, "%d\n", &has_child);
+  if(ay_read_version == 0)
+  {
+    fscanf(fileptr, "%d\n", &has_child);
+  }
 
   if(has_child)
     {
