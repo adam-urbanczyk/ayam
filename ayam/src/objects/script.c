@@ -140,7 +140,7 @@ ay_script_drawcb(struct Togl *togl, ay_object *o)
 	  mo = sc->cm_objects;
 	  while(mo)
 	    {
-	      ay_draw_object(togl, mo, o->selected);
+	      ay_draw_object(togl, mo, AY_TRUE);
 	      mo = mo->next;
 	    } /* while */
 	} /* if */
