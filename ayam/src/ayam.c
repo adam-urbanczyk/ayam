@@ -632,6 +632,11 @@ int ay_status = AY_OK;
   Tcl_CreateCommand(interp, "getGLErr", ay_tcmd_getglerrortcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+#ifdef AYENABLEWAIT
+  Tcl_CreateCommand(interp, "waitPid", ay_tcmd_waitpidtcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+#endif /* AYENABLEWAIT */
+
   /* tmp.c */
   Tcl_CreateCommand(interp, "tmpGet", ay_tmp_gettcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);

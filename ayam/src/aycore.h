@@ -551,6 +551,11 @@ int ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 int ay_tcmd_getglerrortcmd(ClientData clientData, Tcl_Interp *interp,
 			   int argc, char *argv[]);
 
+#ifdef AYENABLEWAIT
+int ay_tcmd_waitpidtcmd(ClientData clientData, Tcl_Interp *interp,
+			int argc, char *argv[]);
+#endif /* AYENABLEWAIT */
+
 /* tmp.c */
 int ay_tmp_gettcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[]);

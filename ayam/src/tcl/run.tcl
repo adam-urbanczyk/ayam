@@ -91,7 +91,6 @@ proc runGetStderr { num cmd channel } {
     if { [eof $channel] } {
         # program completed
         catch { close $channel }
-	catch { destroy .render${num} }
     } else {
         set xx [gets $channel]
 	if { $xx != "" } { 
@@ -108,9 +107,9 @@ proc runGetStderr { num cmd channel } {
 proc runGetStdout { num cmd template channel } {
     global ayprefs ay
     if { [eof $channel] } {
-        # program completed
-        catch { close $channel }
-	catch { destroy .render${num} }
+        # program completed => invoke cancel button to properly
+	# clean up all processes and destroy the RenderGUI window
+	catch { .render${num}.bca invoke }
     } else {
         set xx [gets $channel]
 
@@ -145,11 +144,13 @@ proc runGetStdout { num cmd template channel } {
 		if {$ay(renderbeep${num})} {bell}
 
 	    }
+	    # if
 
 	}
-
+	# if
 	update
     }
+    # if
 }
 # runGetStdout
 
@@ -170,6 +171,8 @@ proc runRenderer { cmd template } {
     } else {
 	set cat "cat"
     }
+
+    set wait $ayprefs(Wait)
 
     incr ay(rnum)
 
@@ -226,9 +229,12 @@ proc runRenderer { cmd template } {
 
     button $w.bca -text "Cancel!" -width 16 -command "\
 	    foreach i {$pids} {\
-	    if { \"$kill\" == \"w32kill\" } {\
-	    w32kill \$i; } else {\
-	    exec $kill \$i &}; };\
+	     if { \"$kill\" == \"w32kill\" } {\
+	      w32kill \$i; } else {\
+	      exec $kill \$i }; };\
+	    foreach i {$pids} {\
+	     if { \"$wait\" != \"\" } {\
+	      catch \{ $wait \$i \}; }; };\
 	    catch \{ fileevent $ioPipe readable \"\" \} ;\
 	    catch \{ fileevent $ioFid readable \"\" \} ;\
 	    focus .;\
@@ -254,12 +260,16 @@ proc runRenderer { cmd template } {
     # Esc-Key == Cancel button
     bind $w <Escape> "$w.bca invoke"
 
-    # bind to close button of window decoration
-    wm protocol $w WM_DELETE_WINDOW "\
-	    catch \{ fileevent $ioPipe readable \"\" \} ;\
-	    catch \{ fileevent $ioFid readable \"\" \} ;\
-	    focus .;\
-	    destroy $w;"
+    # disable close button of window decoration
+    # (if we would allow to close the dialog, before rendering
+    # finishes or the cancel button is used, we would not be able
+    # to properly clean up all started processes, because unfortunately
+    # (or better, stupidly ;)) the necessary information is tied to the
+    # cancel button)
+    # XXXX reorganize the code, so that the pids are not bound
+    # to the cancel button, then enable premature closing of the RenderGUI
+    # window again
+    wm protocol $w WM_DELETE_WINDOW "#donothing"
 
     focus $w
 
