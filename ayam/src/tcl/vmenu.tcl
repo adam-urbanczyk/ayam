@@ -154,8 +154,8 @@ $m add command -label "Set GridSize" -command "viewSetGrid $w.f3D.togl"
 $m add separator
 $m add command -label "Half Size" -command "\
     global ay;\
-    set neww \[expr (\[winfo width $w\] / 2)\];\
-    set newh \[expr (\[winfo height $w\] / 2)\];\
+    set neww \[expr (\[winfo reqwidth $w.f3D.togl\] / 2)\];\
+    set newh \[expr (\[winfo reqheight $w.f3D.togl\] / 2)\];\
     wm geometry $w \"\";\
     $w.f3D.togl mc;\
     $w.f3D.togl configure -width \$neww -height \$newh;\
@@ -164,8 +164,8 @@ $m add command -label "Half Size" -command "\
 
 $m add command -label "Double Size" -command "\
     global ay;\
-    set neww \[expr (\[winfo width $w\] * 2)\];\
-    set newh \[expr (\[winfo height $w\] * 2)\];\
+    set neww \[expr (\[winfo reqwidth $w.f3D.togl\] * 2)\];\
+    set newh \[expr (\[winfo reqheight $w.f3D.togl\] * 2)\];\
     wm geometry $w \"\";\
     $w.f3D.togl mc;\
     $w.f3D.togl configure -width \$neww -height \$newh;\
@@ -209,7 +209,7 @@ $m add command -label "Align to Object" -command "\
 if { ! $AYWITHAQUA } {
     menubutton $w.fMenu.mm -image ay_MMGlobLoc_img -menu $w.fMenu.mm.m\
 	    -padx 0 -pady 0 -borderwidth 0
-    balloon_set $w.fMenu.mm "change local/global mode"
+    balloon_set $w.fMenu.mm "change global/local mode"
     set m [menu $w.fMenu.mm.m -tearoff 0]
 
     set ay(mmodem) fMenu.mm.m
