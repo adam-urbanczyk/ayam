@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>10. Mar 2004
+<date>17. Jun 2004
 <abstract>
 This is the documentation of Ayam (1.7) - a free 3D modeling environment
 for the RenderMan interface.
@@ -958,7 +958,7 @@ and click mouse button 1 (the leftmost one).
 Once you select an object, any objects previously
 selected are unselected automatically.
 <item> To select an additional object, move the cursor to the object and
-<tt/&lt;Shift&gt;/+Click (again with the leftmost mouse button).
+<tt/&lt;Control&gt;/+Click (again with the leftmost mouse button).
 Previously selected objects remain selected, and
 the newly picked object is added to the selection. Notice that the picked item
 must belong to the same level as the previously selected objects. An
@@ -969,7 +969,7 @@ around them. For more information see
 
 <sect2>Drag-selecting Multiple Objects<label id="mulobjsel">
 <p>
-You can select multiple objects using the <tt/&lt;Shift&gt;/+Click method
+You can select multiple objects using the <tt/&lt;Control&gt;/+Click method
 described in section <ref id="oneobjsel" name="Selecting Individual Objects">.
 An additional method for selecting multiple objects is to drag a rectangle
 around those objects. However only objects that belong to the current level
@@ -991,7 +991,7 @@ automatically.
 </enum>
 
 <p>
-Note that if you press <tt/&lt;Shift&gt;/ during the drag-selection, objects
+Note that if you press <tt/&lt;Control&gt;/ during the drag-selection, objects
 that are enclosed by the rectangle will be added to the current selection
 instead of replacing it.
 
@@ -3586,9 +3586,25 @@ Using the parameter <tt/"ThetaMax"/ you can specify the
 sweeping angle of the revolution just like with an ordinary
 RenderMan quadric.
 
+Since Ayam 1.8 the Revolve object supports a B-Spline mode,
+that may be enabled by setting the new parameter <tt/"Sections"/
+to a value higher than 2. In this mode, a circular B-Spline is
+used as basis for the surface of revolution, instead of the
+standard NURBS circle. Depending on the number of sections
+choosen, the surface of revolution does not exactly interpolate
+the parameter curve, but the surface may be edited more easily
+after a possible conversion to an ordinary NURBS patch object,
+because the control points will not be rational.
+In addition to the number of sections, in B-Spline mode it is
+possible to control the order of the surface of revolution
+using the new parameter <tt/"Order"/. If <tt/"Order"/ is 0,
+a standard value of 3 will be used.
+Note that the B-Spline mode is currently only available for
+full revolutions (<tt/"ThetaMax"/ should be 360.0).
+
 The revolve object can automatically generate caps,
-which are trimmed NURBS patches. Using <tt/"UpperCap"/,
-<tt/"LowerCap"/, <tt/"StartCap"/, and <tt/"EndCap"/,
+which are trimmed NURBS patches. Using the parameters
+<tt/"UpperCap"/, <tt/"LowerCap"/, <tt/"StartCap"/, and <tt/"EndCap"/,
 you determine whether such caps should be
 generated, default is off (no caps).
 
@@ -5884,7 +5900,7 @@ Instances may be easily created again using Automatic Instancing
 
 <sect1>Wavefront OBJ Export<label id="expwav">
 <p>
-Since Ayam1.7, it is possible to export scenes or objects to
+Since Ayam 1.7, it is possible to export scenes or objects to
 the Wavefront OBJ format (version 3.0).
 The corresponding main menu entry is
 <tt>"File/Export/Wavefront OBJ"</tt>.
@@ -6602,7 +6618,8 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Option: <ref id="riotag" name="RiOption tag type">
 <item>Order: <ref id="ncattr" name="NURBCurve attribute">,
 <ref id="npattr" name="NURBPatch attribute">,
-<ref id="icp" name="ICurve attribute">
+<ref id="icp" name="ICurve attribute">,
+<ref id="rep" name="Revolve attribute">
 <item>Order_U: <ref id="skp" name="skin attribute">
 </itemize>
 
@@ -6729,7 +6746,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>scalOb, scalSel: <ref id="scitrafo" name="scripting interface command">
 <item>Scripts: <ref id="prefgui" name="preference setting">
 <item>SDMesh: <ref id="sdmeshobj" name="object">
-<item>Sections: <ref id="swp" name="sweep attribute">
+<item>Sections: <ref id="swp" name="sweep attribute">,
+<ref id="rep" name="Revolve attribute">
 <item>Select: <ref id="obj" name="select objects with the tree/listbox">,
 <ref id="objsel" name="select objects within a view">,
 <ref id="selac" name="select points">
