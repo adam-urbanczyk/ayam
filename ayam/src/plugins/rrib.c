@@ -833,7 +833,9 @@ ay_rrib_RiNuPatch(RtInt nu, RtInt uorder, RtFloat uknot[],
     } /* for */
 
   ay_rrib_co.parent = AY_TRUE;
+  ay_rrib_co.hide_children = AY_TRUE;
   ay_rrib_linkobject((void *)(&np), AY_IDNPATCH);
+  ay_rrib_co.hide_children = AY_FALSE;
   ay_rrib_co.parent = AY_FALSE;
   ay_object_delete(ay_rrib_co.down);
   ay_rrib_co.down = NULL;
@@ -1111,6 +1113,12 @@ ay_rrib_RiLightSource(RtToken name,
   ay_object_delete(ay_rrib_co.down);
   ay_rrib_co.down = NULL;
 
+  if(l.lshader)
+    {
+      ay_shader_free(l.lshader);
+      l.lshader = NULL;
+    }
+  
   if(ay_rrib_clighthandle == 1)
     {
       ay_rrib_flobject = o;
@@ -2489,6 +2497,9 @@ ay_rrib_RiPatchMesh(RtToken type, RtInt nu, RtToken uwrap,
 
   ay_rrib_linkobject((void *)(&pm), AY_IDPAMESH);
 
+  ay_object_deletemulti(pm.npatch);
+  pm.npatch = NULL;
+
   free(pm.controlv);
   pm.controlv = NULL;
 
@@ -3226,7 +3237,7 @@ ay_rrib_RiSubdivisionMesh(RtToken scheme, RtInt nfaces,
 	{
 	  sm.intargs[i] = (int)(intargs[i]);
 	}
-      if(!(sm.floatargs = calloc(total_floatargs, sizeof(int))))
+      if(!(sm.floatargs = calloc(total_floatargs, sizeof(double))))
 	{
 	  free(sm.nverts); free(sm.verts); free(sm.controlv); free(sm.tags);
 	  free(sm.nargs); if(sm.intargs){free(sm.intargs);}
@@ -4994,7 +5005,6 @@ ay_rrib_linkobject(void *object, int type)
  ay_object *o = NULL, *t = NULL;
  int ay_status = AY_OK;
  char *fname = "ay_rrib_linkobject";
- size_t len;
 
   ay_rrib_co.refine = object;
   ay_rrib_co.type = type;
@@ -5010,23 +5020,13 @@ ay_rrib_linkobject(void *object, int type)
 	  while(t->next)
 	    t = t->next;
 	  ay_status = ay_object_crtendlevel(&(t->next));
-	  ay_rrib_cattributes->trimcurves = NULL;
 	}
-
     }
 
   /*if(ay_rrib_readname)*/
   if(ay_rrib_cattributes->identifier_name)
     {
-      len = strlen(ay_rrib_cattributes->identifier_name);
-      if(len)
-      {
-	if(!(ay_rrib_co.name = calloc(len+1,sizeof(char))))
-	  {
-	    return;
-	  }
-	strcpy(ay_rrib_co.name, ay_rrib_cattributes->identifier_name);
-      }
+      ay_rrib_co.name = ay_rrib_cattributes->identifier_name;
     }
 
   if(ay_rrib_co.parent && (!ay_rrib_co.down))
@@ -5048,6 +5048,18 @@ ay_rrib_linkobject(void *object, int type)
     {
       ay_rrib_linkmaterial(o);
       ay_rrib_linktexcoord(o);
+    }
+
+  ay_rrib_co.name = NULL;
+
+  if(type == AY_IDNPATCH)
+    {
+      if(ay_rrib_cattributes->trimcurves)
+	{
+	  ay_object_delete(t->next);
+	  t->next = NULL;
+	  ay_rrib_co.down = NULL;
+	}
     }
 
  return;
@@ -5203,6 +5215,13 @@ ay_rrib_readrib(char *filename, int frame, int read_camera, int read_options,
   if(ay_rrib_co.tags)
     ay_tags_delall(&ay_rrib_co);
   ay_rrib_co.tags = NULL;
+
+  /* clean up attribute and trafo stacks */
+  while(ay_rrib_ctrafos)
+    ay_rrib_poptrafos();
+
+  while(ay_rrib_cattributes)
+    ay_rrib_popattribs();
 
  return AY_OK;
 } /* ay_rrib_readrib */
