@@ -1438,7 +1438,12 @@ point coordinates from their properties and apply them to the
 original object.
 However, certain actions like deleting objects, will also delete the
 reference to the selected points. In this case you will have to select
-the object and then a point to edit again.
+the object and then a point to edit again. Furthermore notice that
+the coordinate values displayed in the direct point editing window
+will not update when the point is modified by another modeling
+action. Simply click on the point again in a view where the
+direct point editing action is active, to update the coordinate
+values.
 </itemize>
 
 <sect1>Inserting or Deleting Points<label id="insdelac">
@@ -1494,15 +1499,15 @@ XY-, ZY-, or XZ-plane (depending on the type of view used).
 <p>
 However, if a view is aligned and switched to local, you can also
 edit in local object space. This means you can e.g. edit a
-generating curve of a Skin object where both objects
-are rotated and scaled arbitrarily
+two-dimensional parameter curve of a Skin object where both objects
+(curve and skin) are rotated and scaled arbitrarily
 and make sure that the curve remains two-dimensional all the time.
 <p>
-All you need to do is to select the curve and then press
-<tt/"Ctrl+a"/ to first align the view and then <tt/"Ctrl+l"/ to make it local.
+All you need to do is to first select the curve and then press
+<tt/"Ctrl+a"/ to align the view and then <tt/"Ctrl+l"/ to make it local.
 In practice, this means that the input plane of an aligned local view
 will match the XY-, ZY-, or XZ-plane of the local object space,
-depending on the type of the view (Front, Side, or Top).
+depending on the type of the view (<tt/"Front"/, <tt/"Side"/, or <tt/"Top"/).
 <p>
 Furthermore, grids will also act as if defined in local object space.
 In contrast to their normal behaviour, they can also be scaled
@@ -1582,7 +1587,7 @@ enter 75.
 Then press the apply button.
 If you change multiple entries the rotations made will be
 in the order X (if changed) then Y (if changed) then Z (if changed).
-I urge you to not change more than one entry at once until you exactly
+Do not change more than one entry at once until you exactly
 know what you are doing.
 
 Undoing a single rotation works in the same way, just use a subtraction
@@ -1659,7 +1664,7 @@ attached shader.
 If no plugin is loaded, the official Ayam binaries use libslcargs
 (from BMRT) to parse shaders that have been compiled with slc (the
 shader compiler from BMRT). Parsing incorporates detecting the
-type of the shader, and the names, types, and default values of
+type of the shader and detecting the names, types, and default values of
 all shader arguments.
 <p>
 Note, that currently, Ayam only works properly with shaders
@@ -1985,63 +1990,74 @@ optical effects like fog.
 <p>
 Every view window has a corresponding view object
 as a child object of the root object.
-You can change camera settings, the type of the view 
-and other things related to the view using it's properties.
+You can change camera settings, the type of the view,
+and other things related to the view using the properties of the view object.
 Note, that deleting the object that represents a view, will not
 close the view window. You will just lose a way to configure it.
 Please, do not mess with the objects in other ways (e.g. copy them),
 you are asking for trouble otherwise!
-
-When a camera object is dropped onto a view object
-using drag and drop in the tree view
-the camera settings of the camera object will
-be copied to the views camera.
-
-When a light object is dropped onto a view object
-using drag and drop in the tree view
-the views camera will be changed, so that
-the user looks along the light to see what objects of the scene
-are lighted by the light object (this works best
-with perspective views).
-
-<sect2>Camera<label id="camp">
 <p>
-<itemize>
-<item><tt/"From"/ is the point from which the camera (that is attached
-to the view) is looking from.
-<item><tt/"To"/ is the point the camera is looking to.
-<item><tt/"Up"/ is the up vector of the camera.
-<item><tt/"Roll"/ defines an angle by which the camera is rotated
-around the axis that is defined by the points from and to.
-<item><tt/"Zoom"/ is a zoomfactor.
-</itemize>
-
-Note, that the up vector is not checked for erroneous values
-(e.g. pointing in the direction of from-to).
-
-<sect2>ViewAttrib<label id="vat">
-<p>
-The view is associated with a virtual camera.
+Each view is associated with a virtual camera.
 The type of the view determines the Up-vector of that camera.
 If the type is "Top" the Up-vector corresponds to the world
 Z-axis, else the world Y-axis.
-The type of the view additionally determines the so called input-plane
-of the view. Interactive actions in a view are limited to that
-input-plane. The input planes are as following: Front - XY-plane,
+The type of the view, additionally, determines the so called input plane
+of the view. Interactive modeling actions in a view are limited to that
+input plane (unless the view is switched to local modeling; available since
+Ayam1.4; see also section <ref id="editlocal" name="Editing in Local Space">).
+The standard input planes are as following: Front - XY-plane,
 Side - ZY-plane, Top - XZ-plane, Trim - XY-plane.
-In perspective views, no interactive actions are possible.
-You may just position the camera and draw or render.
-
-Views of type trim are very special. They are used to edit
+<p>
+In perspective views no interactive modeling actions are possible,
+but you may position the camera and pick objects.
+<p>
+Views of type <tt/"Trim"/ are very special. They are used to edit
 trimcurves of NURBPatch objects only. They display that trimcurves as
 normal NURBCurves when the current level is inside a NURBPatch.
 The extensions of the patch in parameter-space are drawn as a rectangle.
 The trimcurves should completely lie inside this rectangle.
+Note that picking of objects currently does not work in views of type
+<tt/"Trim"/.
+<p>
+View object act in special ways, when certain objects are dropped
+onto them in the tree view:
+<p>
+When a camera object is dropped onto a view object
+using drag and drop in the tree view
+the camera settings of the camera object will
+be copied to the views camera.
+<p>
+When a light object of type <tt/"Spot"/ is dropped onto a view object
+using drag and drop in the tree view
+the views camera will be changed, so that
+the user looks along the light to see what objects of the scene
+are lighted by the light object (this works best
+with perspective views that have equal width and height).
+<p>
 
-Finally, here are all elements of the ViewAttrib property:
+<sect2>Camera<label id="camp">
+<p>
+This section describes all elements of the <tt/"Camera"/ property:
+<itemize>
+<item><tt/"From"/ is the point where the camera (that is attached
+to the view) is situated.
+<item><tt/"To"/ is the point the camera is looking to.
+<item><tt/"Up"/ is the up vector of the camera.
+<item><tt/"Roll"/ defines an angle by which the camera is rotated
+around the axis that is defined by the points from and to.
+<item><tt/"Zoom"/ is a zoom factor.
+</itemize>
+
+Note, that the up vector is not checked for erroneous values
+(e.g. pointing in the direction of from-to) when applying the changes
+of the <tt/"Camera"/ property.
+
+<sect2>ViewAttrib<label id="vat">
+<p>
+This section describes the elements of the <tt/"ViewAttrib"/ property:
 <itemize>
 <item><tt/"Type"/ specifies the type of the view. Front, Side, Top (all
-parallel), Perspective and Trim may be selected.
+parallel), Perspective and Trim (again parallel) may be selected.
 <item><tt/"Width"/ and <tt/"Height"/ control the size of the view
 window.
 <item><tt/"Redraw"/ toggles automatic redrawing of the view.
