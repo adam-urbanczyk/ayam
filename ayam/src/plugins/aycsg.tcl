@@ -191,6 +191,8 @@ proc aycsgPreferences { } {
 
     after idle viewMouseToCurrent
 
+    unset aycsg_options_save
+
  return;
 }
 # aycsgPreferences
@@ -220,5 +222,3 @@ if { $AYCSGWRAPPED == 1 } {
     aycsgInit
 }
 #if
-
-return;
