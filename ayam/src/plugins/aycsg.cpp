@@ -121,6 +121,7 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
   Togl_SwapBuffers(togl);
 
   aycsg_cleartree(aycsg_root);
+  aycsg_root = NULL;
 
  return TCL_OK;
 } // aycsg_rendertcb
@@ -744,7 +745,7 @@ aycsg_cleartree(ay_object *t)
 	  aycsg_cleartree(t->down);
 	}
       temp =  t->next;
-      free(temp);
+      free(t);
       t = t->next;
     } // while
 
@@ -795,6 +796,8 @@ Aycsg_Init(Tcl_Interp *interp)
 	       "Plugin has been compiled for a different Ayam version!");
       ay_error(AY_ERROR, fname, "However, it is probably safe to continue...");
     }
+
+  aycsg_root = NULL;
 
   // initialize GLEW
   err = glewInit();
