@@ -235,6 +235,7 @@ ay_tags_istemptcmd(ClientData clientData, Tcl_Interp * interp,
   if(argc < 2)
     {
       ay_error(AY_EARGS, fname, "tagname");
+      return TCL_OK;
     }
 
   ay_tags_temp(interp, argv[1], 0, &temp);
