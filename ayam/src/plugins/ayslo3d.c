@@ -68,7 +68,11 @@ ayslo3d_scanslo3dsarg(SLO_VISSYMDEF *symbol, Tcl_DString *ds)
 	{
 	  for(j = 0; j < 4; j++)
 	    {
+#ifdef AYOLDSLO3D
 	      deffltval = (double)((*((symbol->svd_default).matrixval))[i][j]);
+#else
+	      deffltval = (double)(((symbol->svd_default).matrixval)[i*4+j]);
+#endif /* AYOLDSLO3D */
 	      sprintf(buffer, "%g ", deffltval);
 	      Tcl_DStringAppend(ds, buffer, -1);
 	    } /* for */
