@@ -68,6 +68,7 @@ install:
 	-$(INSTALL) plugins/aysdr.so $(LIBDIR)
 	-$(INSTALL) plugins/loadaysdr.tcl $(LIBDIR)
 	-$(INSTALL) plugins/aycsg.so $(LIBDIR)
+	-$(INSTALL) plugins/aycsg.tcl $(LIBDIR)
 	-$(INSTALL) plugins/loadaycsg.tcl $(LIBDIR)
 	-$(INSTALL) Makefile $(LIBDIR)
 	$(MKDIR) $(DOCDIR)
@@ -95,7 +96,7 @@ uninstall:
 	-rm -rf $(LIBDIR)/ayslx.so $(LIBDIR)/loadayslx.tcl
 	-rm -rf $(LIBDIR)/ayso.so $(LIBDIR)/loadayso.tcl
 	-rm -rf $(LIBDIR)/aysdr.so $(LIBDIR)/loadaysdr.tcl
-	-rm -rf $(LIBDIR)/aycsg.so $(LIBDIR)/loadaycsg.tcl
+	-rm -rf $(LIBDIR)/aycsg.so $(LIBDIR)/aycsg.tcl $(LIBDIR)/loadaycsg.tcl
 	-cd $(DOCDIR); rm -rf Setup.txt Changes.txt License.txt refcard.tcl\
 refcard.ps ayam.pdf html;
 	-rm -rf $(LIBDIR)/Makefile
