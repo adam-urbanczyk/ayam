@@ -1,26 +1,45 @@
-[CVS, 08. 03. 2003]:
+[CVS, 09. 03. 2003]:
 o bug fixes:
   - fixed RIB import creating object names with malicious characters (spaces)
+    (SF 686419)
   - fixed RenderGUI creating zombie processes on Linux, enable bug fix
     with -DAYENABLEWAIT in CFLAGS and set ayprefs(Wait) "waitPid" in .ayamrc
+    (SF 687408)
   - fixed several memory leaks while reading scenes
+    (SF 691567)
   - fixed memory leak while exporting to RIB
+    (SF 691572)
   - fixed several memory leaks in undo mechanism
+    (SF 694941)
   - fixed memory leak in edit master feature
   - fixed several memory leaks in RIB import
-  - fixed undo/reado clearing the background image of view windows
+    (SF 699852)
+  - fixed undo/redo clearing the background image of view windows
+    (SF 694946)
   - fixed RIB import of one set of trim curves for multiple patches
+    (SF 695923)
   - fixed memory leak in NURBS curve property (that occurs, when the curve
     is closed, has multiple points, and is opened again using the property)
+    (SF 697948)
   - fixed memory leak in material object property
+    (SF 699855)
   - fixed memory leak converting instances to real objects via convert
     object and "Special/Instances/Resolve all Instances"
+    (SF 699853)
   - fixed Tcl error messages about already existing nodes when tree updates
     run parallel, e.g. when pasting objects into the scene in fast sequence
+    (SF 697124)
   - fixed "Resolve all Instances" and "Automatic Instancing" not clearing the
     undo buffer (undo after those operations may lead to broken scenes)
+    (SF 697128)
   - fixed "Apply Trafo to all/selected Points" not being undoable
+    (SF 697942)
   - fixed trim views drawing no bounds for trim loops
+    (SF 699849)
+  - fixed creation of RIBs with RiSpec violating RiSolid hierarchies
+    (SF 698147)
+  - fixed divide by zero Tcl error when resizing the toolbox window
+    (SF 700834)
 o added support for inline declarations of e.g. shader parameters to the
   RIB import plugin
 o added an example scene for subdivision meshes
@@ -41,7 +60,7 @@ o bug fixes:
     using the window decoration close button
   - fixed broken RIB-export of Clone objects
   - fixed broken RIB-export of RiAttribute/RiOption color/point tags
-  - fixed merging of polymesh objects with different number of
+  - fixed merging of PolyMesh objects with different number of
     vertices and control points
   - fixed Materials level created by RIB-import losing the child
     objects when the imported scene is saved and then read again
@@ -127,8 +146,8 @@ o added a Local/Global menu to the direct point editing dialogue
 o the splash screen now grabs the focus to avoid problems with stray mouse
   events delivered to other windows when the splash screen is closed
   manually by the user
-o added some example scenes to demonstrate new features of concatnc, clone,
-  and sweep objects
+o added some example scenes to demonstrate new features of ConcatNC, Clone,
+  and Sweep objects
 o added invert point selection feature (see new main menu entry:
   "Special/Points/Invert Selection")
 o the Win32 executable is now statically linked with the GLU library from
