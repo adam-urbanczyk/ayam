@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>4. Feb 2004
+<date>1. Mar 2004
 <abstract>
 This is the documentation of Ayam (1.7) - a free 3D modeling environment
 for the RenderMan interface.
@@ -1091,7 +1091,7 @@ Use
 apply all changes,
 <item><tt/"Apply"/ to apply the changes, but
 leave the editor open,
-<item><tt/"Def."/ to reset to the settings
+<item><tt/"Revert"/ to reset to the settings
 that have been loaded on program startup (these
 are not the factory defaults, to get back to the factory
 defaults, restart Ayam with the command line option <tt/"-failsafe"/!),
@@ -1112,6 +1112,9 @@ with slc from BMRT). Using the <tt/"Add"/ button, you may add
 another path, simply press it and select a file inside the directory
 you want to add. Note that currently the filename of a compiled shader
 may contain just two <tt/"."/ at maximum.
+The environment variable SHADERS will be adapted to match the contents
+of this preference setting, so that renderers started by Ayam see
+exactly the same shaders as Ayam.
 <item><tt/"Scan for Shaders!"/ initiates a rebuild of the internal
 shaders database. All shaders in the directories specified by
 the <tt/"Shaders"/ entry will be scanned and entered in that database.
@@ -4567,7 +4570,7 @@ and by the specified height value. See also the image above.
 NURBS curves, that should be closed B-Splines, from the selection and
 requests one additional integer parameter.
 <item>Operation: The control points of the curve(s) will be shifted, so that
-the second control point will be the first after.
+the second control point will be the first after this operation.
 The shifting process will be repeated according to the parameter value
 given. Eventually selected points will still be selected after this
 operation.
@@ -5764,7 +5767,6 @@ values (if provided) are three float values in curly braces, such as
 <item>c: a color, the default values (if provided) are three float
 values in curly braces, such as <tt>{{0.0 0.0 0.0}{1.0 1.0 1.0}}</tt>
 </itemize>
-
 
 <sect1>Import of Mops Scenes<label id="impmops">
 <p>
