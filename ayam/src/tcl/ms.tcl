@@ -70,11 +70,12 @@ ms_set en ayprefse_Docs "An URL that points to the documentation."
 ms_set en ayprefse_TmpDir "A path where temporary files are to be saved."
 
 ms_set en ayprefse_PickEpsilon "Maximum allowed distance from picked point\
-to editable point;\n 0.0 means nearest point wins"
+to editable point;\n 0.0 means nearest point wins."
 ms_set en ayprefse_HandleSize "Size of the handles of editable points."
 ms_set en ayprefse_LazyNotify "Notify parent objects about changes just on\
 mouse up?"
-ms_set en ayprefse_EditSnaps "Snap coordinates of edited points to grid coordinates?"
+ms_set en ayprefse_EditSnaps "Snap coordinates of edited points to grid\
+coordinates?"
 ms_set en ayprefse_UndoLevels "Number of undoable modelling steps;\
 \n-1 means Undo/Redo is disabled."
 
@@ -293,104 +294,125 @@ ms_set de ayprefse_TclPrecision "Genauigkeit der Wandlung von Gleitkommazahlen v
 
 # fill "fr"-locale...
 ms_init fr
-ms_set fr ayprefse_Shaders " Liste de chemins où résident vos shaders compilés."
-ms_set fr ayprefse_ScanShaders "Initialise la reconstruction de la base interne Shader."
+ms_set fr ayprefse_Shaders " Liste de chemins où résident vos shaders\
+compilés."
+ms_set fr ayprefse_ScanShaders "Initialise la reconstruction de la base\
+interne Shader."
 ms_set fr ayprefse_Locale "Langue des bulles d'aide.\
 \nLe changement prendra effet après le redémarrage d'Ayam!"
-ms_set fr ayprefse_AutoResize "Redéfinir la taille de la fenêtre principale selon les propriétés par défaut."
-ms_set fr ayprefse_TwmCompat "Votre gestionnaire de fenêtre est-il compatible TWM?"
-ms_set fr ayprefse_ListTypes "Montrer les types d'objets dans la vue en arbre/liste?"
+ms_set fr ayprefse_AutoResize "Redéfinir la taille de la fenêtre principale\
+selon les propriétés par défaut."
+ms_set fr ayprefse_TwmCompat "Votre gestionnaire de fenêtre est-il\
+compatible TWM?"
+ms_set fr ayprefse_ListTypes "Montrer les types d'objets dans la vue en\
+arbre/liste?"
 ms_set fr ayprefse_AutoSavePrefs "Sauvegarder les paramètres en quittant?"
 ms_set fr ayprefse_LoadEnv "Charger l'environnement au démarrage?"
-ms_set fr ayprefse_NewLoadsEnv "Charger l'environnement lors de l'ouverture/la création d'un fichier?"
+ms_set fr ayprefse_NewLoadsEnv "Charger l'environnement lors de\
+l'ouverture/la création d'un fichier?"
 ms_set fr ayprefse_EnvFile "Chemin et nom de l'environnement."
 ms_set fr ayprefse_Scripts "Liste de scripts TCL à exécuter au démarrage."
 ms_set fr ayprefse_Plugins "Liste de chemins où se trouvent les plugins."
 ms_set fr ayprefse_Docs "URL poitant vers la documentation."
-ms_set fr ayprefse_TmpDir "Chemin vers le dossier de sauvegarde des fichiers temporaire."
+ms_set fr ayprefse_TmpDir "Chemin vers le dossier de sauvegarde des fichiers\
+temporaire."
 
-ms_set fr ayprefse_PickEpsilon "Distance maximale autorisée du point sélectionné\
-vers le point éditable;\n 0.0 signifie le point le plus proche"
+ms_set fr ayprefse_PickEpsilon "Distance maximale autorisée du point\
+sélectionné vers le point éditable;\n0.0 signifie le point le plus proche."
 ms_set fr ayprefse_HandleSize "Taille des pognées des points éditables."
-ms_set fr ayprefse_LazyNotify "Notifier les objets parent à propos des changement simplement\
- au survol de souris?"
-ms_set fr ayprefse_EditSnaps "Faire correspondre les coordonnées des points édités avec celles de la grille?"
-ms_set fr ayprefse_UndoLevels "Nombre de pas d'annulation dans l'historique de modélisation;\
-\n-1 correspond à la désactivation de l'historique."
+ms_set fr ayprefse_LazyNotify "Notifier les objets parent à propos des\
+changement simplement au survol de souris?"
+ms_set fr ayprefse_EditSnaps "Faire correspondre les coordonnées des points\
+édités avec celles de la grille?"
+ms_set fr ayprefse_UndoLevels "Nombre de pas d'annulation dans l'historique\
+de modélisation;\n-1 correspond à la désactivation de l'historique."
 
 # Drawing
 ms_set fr ayprefse_Tolerance "Tolérance utilisée pour les courbes NURBS\
 ou les surface surfaces.\nLes petites valeurs induisent un rendu plus lent\
-mais une meilleure qualité.\nLes objets NURBS peuvent outrepasser localement cette configuration."
+mais une meilleure qualité.\nLes objets NURBS peuvent outrepasser\
+localement cette configuration."
 ms_set fr ayprefse_DisplayMode "Détermine comment les surfaces seront tracées\
-\nLes objets Surface objects peuvent outrepasser localement cette configuration."
-ms_set fr ayprefse_NCDisplayMode "Détermine comment les surfaces seront tracées\
-\nLes objets Courbe objects peuvent outrepasser localement cette configuration."
-ms_set fr ayprefse_UseMatColor "Utiliser les couleurs du matériau pour les vue ombrées?"
+\nLes objets Surface objects peuvent outrepasser localement cette\
+configuration."
+ms_set fr ayprefse_NCDisplayMode "Détermine comment les surfaces seront\
+tracées\nLes objets Courbe objects peuvent outrepasser localement\
+cette configuration."
+ms_set fr ayprefse_UseMatColor "Utiliser les couleurs du matériau pour\
+les vue ombrées?"
 ms_set fr ayprefse_Background "Couleur de fond."
 ms_set fr ayprefse_Object "Couleur pour les objets non sélectionnés."
 ms_set fr ayprefse_Selection "Couleur pour les objets sélectionnés."
 ms_set fr ayprefse_Grid "Couleur pour les grilles"
 ms_set fr ayprefse_Tag "Couleur pour les points (é)sélectionnés."
-ms_set fr ayprefse_Shade "Couleur pour les vues ombrées lorsque que UseMatColor\
-\nn'est as activé ou que l'objet n'a pas de matériau affecté ou pas de coueur de matériau."
+ms_set fr ayprefse_Shade "Couleur pour les vues ombrées lorsque que\
+UseMatColor\nn'est as activé ou que l'objet n'a pas de matériau\
+affecté\nou pas de coueur de matériau."
 ms_set fr ayprefse_Light "Couleur pour les objets Lumière (sélectionnés)."
 
 # RIB-Export
 ms_set fr ayprefse_RIBFile "Nom du fichier RIB à créer lors de l'Exportation."
-ms_set fr ayprefse_Image "Nom du fichier image lors du rendu du fichier RIB exporté."
-ms_set fr ayprefse_ResInstances "Résoudre toutes les instance des objets à des objets\
-\nnormaux lors de l'exportation RIB?"
+ms_set fr ayprefse_Image "Nom du fichier image lors du rendu du fichier\
+RIB exporté."
+ms_set fr ayprefse_ResInstances "Résoudre toutes les instance des objets\
+à des objets\nnormaux lors de l'exportation RIB?"
 ms_set fr ayprefse_CheckLights "Ajouter une source lumineuse distante,\
 \nsi aucune source n'a été définie?"
 ms_set fr ayprefse_DefaultMat "Définir un matériau par défaut dans le fichier\
 \nRIB; il sera utilisé par tous les objets sans matériau?"
-ms_set fr ayprefse_RIStandard "Omettre tous les attributs et toutes les options non définis\
-\nen standard dans l'Interface RenderMan?"
+ms_set fr ayprefse_RIStandard "Omettre tous les attributs et toutes les\
+options non définis\nen standard dans l'Interface RenderMan?"
 ms_set fr ayprefse_WriteIdent "Ecrire un identificateur dérivé\
 du nom des objets dans le fichier RIB?"
-ms_set fr ayprefse_ShadowMaps "Utiliser les ShadowMaps ?\nAutomatic: Ou,\
+ms_set fr ayprefse_ShadowMaps "Utiliser les ShadowMaps?\nAutomatic: Oui,\
 Créer un RIB activant tout le temps le rendu ShadowMaps.\
-\nManual: Oui, mais le rendu des ShadowMaps sera activé par l'utilisateur seulement
-(Menu: View/Create ShadowMaps)"
-ms_set fr ayprefse_ExcludeHidden "Omettre les objets cachés à l'exportation RIB?"
+\nManual: Oui, mais le rendu des ShadowMaps sera activé par l'utilisateur\
+seulement\n(Menu: View/Create ShadowMaps)"
+ms_set fr ayprefse_ExcludeHidden "Omettre les objets cachés à l'exportation\
+RIB?"
 ms_set fr ayprefse_RenderMode "Mode de rendu à l'écran?"
-ms_set fr ayprefse_QRender "Nom et paramètres du moteur de rendu à utiliser pour\
-les rendus d'aperçu rapides\n\\\"%s\\\" sera remplacé par le nom du fichier du\
- RIB."
-ms_set fr ayprefse_QRenderUI "Activer l'interface utilisateur lors le rendu rapide."
-ms_set fr ayprefse_QRenderPT "Modèle pour la progression à partir de la sortie du moteur de rendu \
-.\n\\\"%d\\\" montre la position du numéro de progression dans la sortie."
-ms_set fr ayprefse_Render "Nom et paramètres du moteur de rendu à utiliser pour\
-les rendus d'aperçu.\n\\\"%s\\\" sera remplacé par le nom du fichier du\
+ms_set fr ayprefse_QRender "Nom et paramètres du moteur de rendu à utiliser\
+pour les rendus d'aperçu rapides\n\\\"%s\\\" sera remplacé par le nom\
+du fichier du RIB."
+ms_set fr ayprefse_QRenderUI "Activer l'interface utilisateur lors le\
+rendu rapide."
+ms_set fr ayprefse_QRenderPT "Modèle pour la progression à partir de la\
+sortie du moteur de rendu.\n\\\"%d\\\" montre la position du numéro\
+de progression dans la sortie."
+ms_set fr ayprefse_Render "Nom et paramètres du moteur de rendu à utiliser\
+pour les rendus d'aperçu.\n\\\"%s\\\" sera remplacé par le nom du fichier du\
 RIB."
 ms_set fr ayprefse_RenderUI "Activer l'interface utilisateur lors le rendu."
-ms_set fr ayprefse_RenderPT "Modèle pour la progression à partir de la sortie du moteur de rendu \
-.\n\\\"%d\\\" montre la position du numéro de progression dans la sortie."
-ms_set fr ayprefse_SMRender "Nom et paramètres du moteur de rendu à utiliser pour\
-les shadow maps.\n\\\"%s\\\" sera remplacé par le nom du fichier du\
+ms_set fr ayprefse_RenderPT "Modèle pour la progression à partir de la\
+sortie du moteur de rendu.\n\\\"%d\\\" montre la position du numéro de\
+progression dans la sortie."
+ms_set fr ayprefse_SMRender "Nom et paramètres du moteur de rendu à utiliser\
+pour les shadow maps.\n\\\"%s\\\" sera remplacé par le nom du fichier du\
 RIB."
 ms_set fr ayprefse_SMRenderUI "Enable user interface for shadow map rendering."
-ms_set fr ayprefse_SMRenderPT "Modèle pour la progression à partir de la sortie du moteur de rendu \
-.\n\\\"%d\\\" montre la position du numéro de progression dans la sortie."
-ms_set fr ayprefse_PPRender "Moteur de rendu à utiliser pour l'aperçu permanent."
+ms_set fr ayprefse_SMRenderPT "Modèle pour la progression à partir de la\
+sortie du moteur de rendu.\n\\\"%d\\\" montre la position du numéro de\
+progression dans la sortie."
+ms_set fr ayprefse_PPRender "Moteur de rendu à utiliser pour l'aperçu\
+permanent."
 
 # Misc
-ms_set fr ayprefse_RedirectTcl "Rediriger tous les messages d'erreur TCL vers la\
-console?"
+ms_set fr ayprefse_RedirectTcl "Rediriger tous les messages d'erreur\
+TCL vers la console?"
 ms_set fr ayprefse_Logging "Sauvegarder tous les message dans un fichier?"
-ms_set fr ayprefse_LogFile "Chemin et nom du fichier de sauvegarde des messages?"
-ms_set fr ayprefse_MIResetDM "Réinitialiser à Global tous les attributs DisplayMode de\
-tous les objets lors de l'importation\ndepuis une scène Mops?"
-ms_set fr ayprefse_MIResetST "Réinitialiser à 0.0 tous les attributs Tolerance de\
-tous les objets lors de l'importation\ndepuis une scène Mops?"
-ms_set fr ayprefse_SaveAddsMRU "Ajouter le nom des scène sauvegardées à l'entrée de menu\
-\n Most-Recently-Used files?"
+ms_set fr ayprefse_LogFile "Chemin et nom du fichier de sauvegarde des\
+messages?"
+ms_set fr ayprefse_MIResetDM "Réinitialiser à Global tous les attributs\
+DisplayMode de tous les objets lors de l'importation\ndepuis une scène Mops?"
+ms_set fr ayprefse_MIResetST "Réinitialiser à 0.0 tous les attributs\
+Tolerance de tous les objets lors de l'importation\ndepuis une scène Mops?"
+ms_set fr ayprefse_SaveAddsMRU "Ajouter le nom des scène sauvegardées à\
+l'entrée de menu\nMost-Recently-Used files?"
 ms_set fr ayprefse_ToolBoxTrans "Rendre la fenêtre Boîte-à-Outils transient?"
 ms_set fr ayprefse_ToolBoxShrink "Rendre la fenêtre Boîte-à-Outils ajustable\
 à son contenu,\nlorsque l'utilisateur en modifie la taille?"
 ms_set fr ayprefse_RGTrans "Rendre toutes les interface utilisateur transient?"
-ms_set fr ayprefse_HideTmpTags "Cacher tous les étiquette marquées temporaires\
-dans les propriétés de l'interface graphique?"
+ms_set fr ayprefse_HideTmpTags "Cacher tous les étiquette marquées\
+temporaires dans les propriétés de l'interface graphique?"
 ms_set fr ayprefse_TclPrecision "Precision des mathématiques Tcl."
 
