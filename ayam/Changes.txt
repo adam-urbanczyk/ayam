@@ -1,4 +1,4 @@
-[11. Sep 2004] CVS-Head:
+[17. Sep 2004] CVS-Head:
 o bug fixes:
   - fixed "loadayslo3d.tcl" loading the wrong plugin (SF 928054)
   - fixed "Select Renderer" setting a wrong shader extension for "3Delight"
@@ -20,6 +20,7 @@ o bug fixes:
   - fixed create NURBS tools not setting the scene changed state (SF 1008840)
   - fixed RIB import of archives with relative path names (SF 1009841)
   - fixed broken matrix property GUI elements (SF 1021320)
+  - fixed session management of shared executables (SF 1029709)
 o added a new object type "Text", that uses Bezier curves extracted from
   TTF (TrueType) font description files together with the extrusion mechanism
   to form three dimensional letters (TTF parsing provided by Frank Pagels)
@@ -55,7 +56,8 @@ o added toXYNC scripting interface command that rotates an arbitrary
 o caps may now be created of arbitrary oriented planar curves
 o added new object type "ExtrNC" that extracts a NURBS curve from a
   NURBS patch object delivered as child object, as usual
-
+o added flashing of control points to the single point editing action
+  controlled via the new preferences option "Modeling/FlashPoints"
 
 [27. Mar 2004] Ayam1.7:
 o bug fixes:
