@@ -314,6 +314,11 @@ $m add cascade -menu $m.npt -label "NURBPatch"
 menu $m.npt -tearoff 0
 $m.npt add command -label "Swap UV" -command {
     undo save SwapUV; swapUV; plb_update; rV}
+$m.npt add command -label "Elevate UV" -command { 
+    runTool [list ay(elevnpu) ay(elevnpv)]\
+	    [list "Elevate U by:" "Elevate V by:"]\
+	    "undo save ElevateUV; elevateNPU %0; elevateNPV %1; plb_update; rV"
+}
 $m.npt add separator
 $m.npt add command -label "Split to Curves (u)" -command {
     splitNP u; uS; sL; rV}

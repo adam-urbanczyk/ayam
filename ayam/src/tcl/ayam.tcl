@@ -459,6 +459,8 @@ array set ay {
  curvatp 100
  curvatw 5.0
  curvats 1.0
+ elevnpu 1
+ elevnpv 1
 }
 # array ay
 
