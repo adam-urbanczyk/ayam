@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>16. Jan 2002
+<date>23. Apr 2002
 <abstract>
 This is the documentation of Ayam - a free 3D modeling environment
 for the RenderMan interface.
@@ -989,9 +989,15 @@ upon quick rendering a view, <tt>%s</tt> denotes the name of the RIB file.
 <item><tt/"Render"/ determines the command that should be executed,
 upon normal rendering of a view, <tt>%s</tt> denotes the name of the RIB file.
 <item><tt/"RenderUI"/ enables the renderer user interface, which
-consists of a simple progress bar and a cancel button and is displayed
+consists of a simple progress bar, a label that displays the
+estimated or elapsed rendering time, a checkbutton to control
+ringing the bell when the rendering is finished,
+and a cancel button. This UI is displayed
 when a renderer is invoked directly from the <tt/"Render"/ view
 menu entry (or the equivalent keyboard shortcut).
+Proper work of this UI depends on the existence of
+two programs: <tt/"cat"/ and <tt/"kill"/. If you do not have
+those programs in your path, do not enable the RenderUI.
 <item><tt/"RenderPT"/ is a string that contains a progress output
 template used by Ayam to determine the current percentage of
 rendering for display in the RenderUI. The special symbol <tt/"%d"/
@@ -1047,16 +1053,21 @@ It will then, depending on the window manager or its configuration,
 get a different or no decoration, no icon (or no entry in the
 task bar on Windows), and will always be iconified
 when the main window gets iconified.
-<item><tt/"RGTrans"/; controls whether the render gui windows
+<item><tt/"ToolBoxShrink"/; controls whether the tool box window
+should automatically shrink-wrap around the calculated layout 
+of the buttons after a resize operation.
+<item><tt/"RGTrans"/; controls whether the RenderUI-windows
 should be declared as a transient window of the main window.
 See the discussion of <tt/"ToolBoxTrans"/ above for more information
 about transient windows.
+<item><tt/"HideTmpTags"/ may be used to hide tags that are marked
+temporary from the tag property GUI.
 </itemize>
 
 <sect>Interactive Actions (Modeling)<label id="iac">
 <p>
-Before invoking any action you should select
-one or more objects in the main window!<p>
+Before invoking any modeling action you should select
+one or more objects using the main window or using the pick action!<p>
 
 Every action can be started with a key press (a shortcut) when
 the focus is in a view window or by pressing the
@@ -2177,9 +2188,10 @@ settings:<p>
 please see section <ref id="ncattr" name="NCurveAttrib">.
 </itemize>
 
-The next parameters control the appearance of the patch.
+The next parameters control the appearance of the patch for display
+in Ayam:
 <itemize>
-<item><tt/"Tolerance"/ is in fact GLU sampling tolerance, used to
+<item><tt/"Tolerance"/ is in fact the GLU sampling tolerance used to
 control the quality of the sampling when rendering the patch.
 A setting of 0.0 means, that the global preference setting
 <tt>"Drawing/Tolerance"</tt> should be used.
@@ -2256,6 +2268,58 @@ four points defining the geometry of the patch:<p>
 <item><tt/"P2_X"/, <tt/"P2_Y"/, <tt/"P2_Z"/, second point.
 <item><tt/"P3_X"/, <tt/"P3_Y"/, <tt/"P3_Z"/, third point.
 <item><tt/"P4_X"/, <tt/"P4_Y"/, <tt/"P4_Z"/, fourth point.
+</itemize>
+
+<sect1>PatchMesh Object<label id="patchmeshobj">
+<p>
+
+The PatchMesh object may be used to model with bilinear and
+bicubic patch meshes.
+The PatchMesh object may be converted to a NURBS patch
+representation. However, this does not work for all possible
+types of patch meshes (e.g. patch meshes with the basis types
+Catmull-Rom, Hermite, or Custom).
+The NURBS patch representation is also in use when
+drawing the patch mesh (if the <tt/"DisplayMode"/ is not <tt/"ControlHull"/)
+and when shading the patch mesh.
+Consequently, there is currently no shaded representation of
+patch meshes of basis type Catmull-Rom, Hermite or Custom.
+
+<sect2>PatchMeshAttr<label id="pmattr">
+<p>
+The first section of the PatchMeshAttr property contains patch specific
+settings:<p>
+<itemize>
+<item><tt/"Type"/ may be set to <tt/"Bilinear"/ or <tt/"Bicubic"/.
+<item><tt/"Width"/ and <tt/"Height"/ control the dimensions of the patch.
+<item><tt/"Close_U"/ and <tt/"Close_V"/ determine, whether the patch
+mesh should be closed in u- and v-direction respectively.
+<item><tt/"BType_U"/ and <tt/"BType_V"/ control the basis type
+for bicubic patches. You may choose between the basis types:
+<tt/"Bezier"/, <tt/"B-Spline"/, <tt/"Catmull-Rom"/,
+<tt/"Hermite"/, and <tt/"Custom"/.
+In the latter case (<tt/"Custom"/), additional parameters may be set.
+Those are <tt/"Step_U"//<tt/"Step_V"/ (the stepsize of the basis) and
+<tt/"Basis_U"//<tt/"Basis_V"/ the basis itself
+(please see the RenderMan Companion for a discussion of basis types).
+</itemize>
+The parameters <tt/"BType_U"/ and <tt/"BType_V"/ and consequently
+<tt/"Step_U"//<tt/"Step_V"/ and <tt/"Basis_U"//<tt/"Basis_V"/ are
+only available to bicubic patch meshes.
+
+The next parameters control the appearance of the patch for display
+in Ayam:
+<itemize>
+<item><tt/"Tolerance"/ is in fact GLU sampling tolerance, used to
+control the quality of the sampling when rendering the patch.
+A setting of 0.0 means, that the global preference setting
+<tt>"Drawing/Tolerance"</tt> should be used.
+<item><tt/"DisplayMode"/ sets the display mode, either the control
+hull is drawn, or just the outlines of the polygons created by
+the tesselation (OutlinePolygon), or just the
+outlines of the patch (OutlinePatch). The default setting
+(Global) means, that the global preference setting
+<tt>"Drawing/DisplayMode"</tt> should be used.
 </itemize>
 
 <sect1>Instance Object<label id="instobj">
@@ -3796,13 +3860,22 @@ your special needs using the ayamrc file.
 Note, that if you do that the GUI (the menu entries)
 will adapt to your changes but certainly neither this documentation nor
 the tutorials!
-Ayam does not check for clashes!
+Ayam does not check for clashes! This means, the last set binding
+for a key will be used.
 On Unix, the output of the program <tt/xev/ and the
 manual page for the <tt/bind/ command of Tk provide helpful
 information about which strings may be used to describe
 key presses.
 For your convenience, the special string <tt/"Ctrl"/ will be replaced by
 <tt/"Control"/ before a shortcut is handed to the <tt/bind/ command.
+
+Example:
+<code>
+set aymainshortcuts(Prefs) {Ctrl-p}
+</code>
+sets the keyboard shortcut for opening of the preferences editor
+to <tt/&lt;Ctrl+p&gt;/.
+See the ayamrc file itself for a complete listing of available shortcuts.
 
 <sect2>Hidden Preference Settings<label id="hidprefs">
 <p>
@@ -3908,6 +3981,64 @@ tolerance and display mode)
 of NURBS primitives should be reset
 to using global preference values (the default in Ayam)
 instead of using the values from the Mops scene file.
+
+<sect1>Import of RenderMan Interface Bytestreams (RIB)<label id="rrib">
+<p>
+
+Using the RRIB (Read RIB) plugin you may import RenderMan Interface
+Bytestreams into Ayam.
+Start importing a RIB using the menu entry <tt>"Custom/RRIB/Import RIB"</tt>.
+The RRIB plugin supports the following geometric
+primitives:
+<itemize>
+<item>Quadrics (Sphere, Disk, Cylinder, Cone, Paraboloid, Hyperboloid, Torus)
+<item>bilinear and bicubic patches and patch meshes
+<item>NURBS patches (with trim curves)
+</itemize>
+
+Furthermore, the plugin supports reading of CSG, Object-Instances,
+Archives, Light sources (including AreaLights), arbitrary linear
+transformations (except shear transformations!), arbitrary
+RiOptions and RiAttributes, and shaders.
+
+The import may be controlled via different options:<label id="rribopt">
+<itemize>
+<item><tt/"ReadFrame"/, specifies the number of the frame in the RIB
+to read. A value of -1 means, all frames are to be read. If you specify
+a frame number and this frame does not show up in the RIB as
+<tt/"FrameBegin &lt;yournumber&gt;"/ nothing will be
+imported!
+<item><tt/"ReadCamera"/: if this is switched on, a Camera object will
+be created when the RIB plugin encounters a <tt/"WorldBegin"/. You may drag
+this camera object onto a View object in Ayam.
+<item><tt/"ReadOptions"/, controls, whether RiOptions are
+to be imported from the RIB to the scene. Note, that those
+RiOptions will overwrite the current global settings in the Ayam scene.
+<item><tt/"ReadLights"/, if this is enabled the lights from the
+RIB will be imported.
+<item><tt/"ReadMaterial"/, controls, whether material objects
+are to be created for the imported objects. All material objects
+are created in a special level named <tt/"Materials"/ in the top level
+of the scene. The plugin tries to keep the number of generated
+material objects as low as possible by comparing with already
+existing materials in this level. This also works with material
+objects that exist before the RRIB plugin is invoked (as long as
+they reside in this special level).
+<item><tt/"ReadPartial"/, this option is useful if you want to
+import partial RIBs (e.g. archives) that do not
+contain a <tt/"WorldBegin"/.
+Be careful with this option (i.e. use it only if reading of a RIB fails),
+as it switches reading of all types of objects on, regardless of
+the RIB structure.
+<item><tt/"ErrorLevel"/, this option controls how many error messages
+should be printed to the Ayam console while reading the RIB. Available
+values are: <tt/"Silence"/ no output except for severe errors,
+<tt/"Errors"/ all error messages should be printed,
+<tt/"Warnings"/, all error and warning messages should be printed,
+and finally <tt/"All"/ all messages, even informative,
+should be printed.
+</itemize>
+
 
 <sect1>Automatic Instancing<label id="ai">
 <p>
@@ -4020,20 +4151,20 @@ Bernd, without your help I surely would not be that far, thanks!
 
 Furthermore, I would like to thank the following people:
 <itemize>
-<item>B. Coconnier: object picking
-<item>H. Birkholz: initial implementation of the tree widget, shadow map
+<item>Bertrand Coconnier: object picking
+<item>Hermann Birkholz: initial implementation of the tree widget, shadow map
 support, AI, and IDR
-<item>F. (Copper) Pagels: Metaballs custom object
-<item>S. Echavia: Icons
+<item>Frank (Copper) Pagels: Metaballs custom object
+<item>Stephen Echavia: Icons
 <item>Larry Gritz: BMRT
 <item>Benjamin Bederson, Brian Paul et. al.: The Togl Widget
 <item>Jeffrey Hobbs: tkMegaWidget set
 <item>Jan Nijtmans: Tcl/Tk PlusPatches, tcl2c, Wrap
 <item>Thomas E. Burge: The Affine Toolkit
 <item>Apple, Duet Development Corp.: 3DMF parser
-<item>M. J. Kilgard: GLUT
-<item>L. Piegl and W. Tiller: The NURBS Book
-<item>W.T. Hewitt and D. Yipp: The NURBS Procedure Library
+<item>Mark J. Kilgard: GLUT
+<item>Les A. Piegl and Wayne Tiller: The NURBS Book
+<item>W. T. Hewitt and D. Yip: The NURBS Procedure Library
 <item>Philippe Lavoie: The NURBS++ Library
 <item>Everyone involved in the development of Tcl/Tk, OpenGL, The RenderMan
 Interface
@@ -4076,13 +4207,17 @@ A
 B
 <itemize>
 <item>Background: <ref id="prefdraw" name="preference setting">
+<item>Basis_U, Basis_V: <ref id="pmattr" name="PatchMesh attribute">
 <item>Bevel: <ref id="handb" name="using bevels">
 <item>BevelRadius, BevelType: <ref id="extrattr" name="extrude attribute">
+<item>bicubic/bilinear PatchMesh:
+<ref id="patchmeshobj" name="PatchMesh object">
 <item>Bound: <ref id="riattrs" name="RenderMan/BMRT attribute">
 <item>BoundCoord: <ref id="riattrs" name="RenderMan/BMRT attribute">
 <item>Box: <ref id="mm" name="main menu entry">,
 <ref id="boxobj" name="object">
 <item>BPatch: <ref id="bpatchobj" name="object">
+<item>BType_U, BType_V: <ref id="pmattr" name="PatchMesh attribute">
 <item>Build: <ref id="bfct" name="build from curves tool">
 <item>buildNP: <ref id="gncp" name="scripting interface command">
 </itemize>
@@ -4106,6 +4241,7 @@ C
 <ref id="ncattr" name="NURBCurve attribute">,
 <ref id="icp" name="ICurve attribute">
 <item>Closed BSpline: <ref id="cbspt" name="closed BSpline tool">
+<item>Close_U, Close_V: <ref id="pmattr" name="PatchMesh attribute">
 <item>Collapse: <ref id="collt" name="Collapse tool">
 <item>Color: <ref id="riattrs" name="RenderMan/BMRT attribute">
 <item>copOb: <ref id="copob" name="scripting interface command">
@@ -4142,7 +4278,8 @@ D
 <ref id="diskobj" name="object">
 <item>Displacement: <ref id="matshader" name="shader">
 <item>DisplayMode: <ref id="prefdraw" name="preference setting">,
-<ref id="npattr" name="NURBPatch attribute">
+<ref id="npattr" name="NURBPatch attribute">,
+<ref id="pmattr" name="PatchMesh attribute">
 <item>Distant: <ref id="pdsl" name="light type">
 <item>Docs: <ref id="prefgui" name="preference setting">
 <item>DrawGrid, DrawLevel, DrawSel:
@@ -4159,6 +4296,7 @@ E
 <ref id="swp" name="sweep attribute">,
 <ref id="skp" name="skin attribute">
 <item>EnvFile: <ref id="prefgui" name="preference setting">
+<item>ErrorLevel: <ref id="rribopt" name="RIB import option">
 <item>ExcludeHidden: <ref id="prefrib" name="preference setting">
 <item>ExpGain, ExpGamma: <ref id="rio" name="RenderMan interface option">
 <item>Explode: <ref id="explt" name="Explode tool">
@@ -4197,11 +4335,12 @@ H
 <item>HandleSize: <ref id="prefmodel" name="preference setting">
 <item>hasChild: <ref id="gtype" name="scripting interface command">
 <item>Height: <ref id="rio" name="RenderMan interface option">,
-<ref id="vat" name="view attribute">,
 <ref id="bxp" name="box attribute">,
 <ref id="cnp" name="cone attribute">,
 <ref id="npattr" name="NURBPatch attribute">,
-<ref id="extrattr" name="extrude attribute">
+<ref id="pmattr" name="PatchMesh attribute">,
+<ref id="extrattr" name="extrude attribute">,
+<ref id="vat" name="view attribute">
 <item>Hide: <ref id="mm" name="main menu entry">
 <item>Hole: <ref id="handb" name="using holes">
 <item>Hyperboloid: <ref id="mm" name="main menu entry">,
@@ -4213,6 +4352,8 @@ I
 <item>ICurve: <ref id="icurveobj" name ="object">
 <item>Image: <ref id="prefrib" name="preference setting">
 <item>Imager: <ref id="imager" name="property">
+<item>import Mops Scene: <ref id="impmops" name="Mops Import">
+<item>import RIB: <ref id="rrib" name="RIB Import">
 <item>Insert: <ref id="insdelac" name="insert points">
 <item>insKn: <ref id="gncp" name="scripting interface command">
 <item>Insert Knot: <ref id="insknt" name="insert knot tool">
@@ -4321,6 +4462,7 @@ P
 <item>pasOb: <ref id="copob" name="scripting interface command">
 <item>Paste: <ref id="mm" name="main menu entry">
 <item>Paste Property: <ref id="mm" name="main menu entry">
+<item>PatchMesh: <ref id="patchmeshobj" name="object">
 <item>PatchSamples: <ref id="rio" name="RenderMan interface option">
 <item>PhiMin, PhiMax: <ref id="top" name="torus attribute">
 <item>Pick:<ref id="objsel" name="pick objects within a view">
@@ -4349,6 +4491,8 @@ R
 <ref id="cnp" name="cone attribute">,
 <ref id="cyp" name="cylinder attribute">
 <item>RadSteps: <ref id="rio" name="RenderMan interface option">
+<item>ReadFrame, ReadCamera, ReadOptions, ReadLights, ReadMaterial,
+ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>RedirectTcl: <ref id="prefmisc" name="preference setting">
 <item>Redo: <ref id="undos" name="The Undo System">
 <item>Redraw: <ref id="vm" name="view menu entry">,
@@ -4376,6 +4520,7 @@ R
 <item>RiAttribute: <ref id="riattrs" name="property">,
 <ref id="riatag" name="tag type">,
 <ref id="rioptdb" name="RiOption and RiAttributes Database">
+<item>RIB import: <ref id="rrib" name="RIB Import">
 <item>RIBFile: <ref id="prefrib" name="preference setting">
 <item>RiInc: <ref id="riincobj" name="object">
 <item>RiOptions: <ref id="rio" name="RenderMan interface options property">,
@@ -4436,6 +4581,7 @@ S
 <item>StartCap: <ref id="rep" name="revolve attribute">,
 <ref id="swp" name="sweep attribute">,
 <ref id="skp" name="skin attribute">
+<item>Step_U, Step_V: <ref id="pmattr" name="PatchMesh attribute">
 <item>Stretch: <ref id="scalac" name="stretch object">
 <item>Surface: <ref id="matshader" name="shader">
 <item>Sweep: <ref id="sweepobj" name="object">,
@@ -4460,6 +4606,7 @@ T
 <ref id="lip" name="light attribute">
 <item>Toggle ToolBox: <ref id="mm" name="main menu entry">,
 <item>Tolerance: <ref id="prefdraw" name="preference setting">,
+<ref id="pmattr" name="PatchMesh attribute">,
 <ref id="ncattr" name="NURBCurve attribute">,
 <ref id="npattr" name="NURBPatch attribute">
 <item>Tool: <ref id="toolb" name="tool box window">
@@ -4473,9 +4620,10 @@ T
 <item>TrimRect: <ref id="trrt" name="TrimRect tool">
 <item>TrueDisp: <ref id="attrs" name="RenderMan/BMRT attribute">
 <item>TwmCompat: <ref id="prefgui" name="preference setting">
-<item>Type: <ref id="vat" name="view attribute">,
+<item>Type: <ref id="levelobj" name="level attribute">,
 <ref id="lip" name="light attribute">,
-<ref id="levelobj" name="level attribute">
+<ref id="pmattr" name="patchmesh attribute">,
+<ref id="vat" name="view attribute">
 </itemize>
 
 U
@@ -4508,9 +4656,10 @@ W
 <itemize>
 <item>Weight: <ref id="iac" name="single point weight editing">
 <item>Width: <ref id="rio" name="RenderMan interface option">,
-<ref id="vat" name="view attribute">,
 <ref id="bxp" name="box attribute">,
-<ref id="npattr" name="NURBPatch attribute">
+<ref id="npattr" name="NURBPatch attribute">,
+<ref id="pmattr" name="PatchMesh attribute">,
+<ref id="vat" name="view attribute">
 <item>WriteIdent: <ref id="prefrib" name="preference setting">
 </itemize>
 
