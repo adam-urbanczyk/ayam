@@ -3657,12 +3657,17 @@ ay_rrib_readtag(char *tagtype, char *tagname, char *name,
 		int i, RtToken tokens[], RtPointer parms[],
 		ay_tag_object **destination)
 {
- int found = AY_FALSE;
+ int type, found = AY_FALSE;
  ay_tag_object *n = NULL, *ot;
  Tcl_DString ds;
- /*char fname[] = "ay_rrib_readtag";*/
-
- if(!destination)
+ RIB_HASHHND ht = NULL;
+ PRIB_HASHATOM  p = NULL;
+ char fname[] = "ay_rrib_readtag";
+ RtColor *col;
+ RtPoint *pnt;
+ char *valstr = NULL, valbuf[255], typechar;
+ 
+  if(!destination)
    return;
 
   if(!(n = calloc(1, sizeof(ay_tag_object))))
@@ -3679,25 +3684,80 @@ ay_rrib_readtag(char *tagtype, char *tagname, char *name,
 
   n->type = tagtype;
 
+  ht = RibGetHashHandle(grib);
+
+  p = NULL;
+  p = RibFindMatch(ht, kRIB_HASH_VARIABLE,
+		   kRIB_UNKNOWNCLASS | kRIB_UNKNOWNTYPE,
+		   (void*)(tokens[i]));
+
+  if(p)
+    {
+      type = kRIB_TYPE_MASK & p->code;
+
+      switch(type)
+	{
+	case kRIB_INTTYPE:
+	  typechar = 'i';
+	  sprintf(valbuf,"%d", (int)(*((RtInt *)(parms[i]))));
+	  valstr = valbuf;
+	  break;
+	case kRIB_FLOATTYPE:
+	  typechar = 'f';
+	  sprintf(valbuf,"%f", (float)(*((RtFloat *)(parms[i]))));
+	  valstr = valbuf;
+	  break;
+	case kRIB_STRINGTYPE:
+	  typechar = 's';
+	  break;
+	case kRIB_COLORTYPE:
+	  typechar = 'c';
+	  col = (RtColor *)(parms[i]);
+	  sprintf(valbuf,"%f,%f,%f", (float)((*col)[0]),(float)((*col)[1]),
+		  (float)((*col)[2]));
+	  valstr = valbuf;
+	  break;		  
+	case kRIB_POINTTYPE:
+	  typechar = 'p';
+	  pnt = (RtPoint *)(parms[i]);
+	  sprintf(valbuf,"%f,%f,%f", (float)((*pnt)[0]),(float)((*pnt)[1]),
+		  (float)((*pnt)[2]));
+	  break;
+	default:
+	  ay_error(AY_ERROR, fname,
+		   "Skipping parameter of unknown type:");
+	  ay_error(AY_ERROR, fname, tokens[i]);
+	  free(n->name);
+	  free(n);
+	  return;
+	  break;
+	} /* switch */
+    }
+  else
+    {
+      ay_error(AY_ERROR, fname, "Skipping undeclared token:");
+      ay_error(AY_ERROR, fname, tokens[i]);
+      free(n->name);
+      free(n);
+      return;
+    }
+
   Tcl_DStringInit(&ds);
 
   Tcl_DStringAppend(&ds, name, -1);
-
-  /* XXXX enforce to read just a single parameter */
-  if(i > 0)
+  Tcl_DStringAppend(&ds, ",", -1);
+  Tcl_DStringAppend(&ds, (char *)(tokens[i]), -1);
+  Tcl_DStringAppend(&ds, ",", -1);
+  Tcl_DStringAppend(&ds, &typechar, 1);
+  Tcl_DStringAppend(&ds, ",", -1);
+  if(typechar == 's')
     {
-      ay_rrib_readparams(1, tokens, parms, &ds);
+      Tcl_DStringAppend(&ds, *((char **)(parms[i])), -1);
     }
-    /*
-    else
-      {
-        ay_error(AY_ERROR, fname, "skipping tag without parameters");
-        free(n->name);
-        free(n);
-        Tcl_DStringFree(&ds);
-        return;
-      }
-    */
+  else
+    {
+      Tcl_DStringAppend(&ds, valstr, -1);
+    }
 
   if(!(n->val = calloc(strlen(Tcl_DStringValue(&ds))+1, sizeof(char))))
     {
@@ -3729,6 +3789,7 @@ ay_rrib_readtag(char *tagtype, char *tagname, char *name,
 		  free(n);
 		}
 	    }
+	  ot = ot->next;
 	}
 
       if(!found)
