@@ -316,7 +316,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 {
  ay_list_object *sel = ay_selection;
  ay_object *src = NULL;
- int indexu = 0, indexv = 0, i = 1, j = 0;
+ int indexu = 0, indexv = 0, i = 1, j = 0, argc2 = argc;
  int homogenous = AY_FALSE, trafo = AY_FALSE;
  double *p = NULL, *tp = NULL, tmp[4] = {0};
  GLdouble m[16];
@@ -324,10 +324,10 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
  char fname[] = "getPnt";
  Tcl_Obj *to = NULL, *ton = NULL;
 
-  if(argc == 0)
+  if(argc <= 1)
     {
       ay_error(AY_EARGS, fname,
-	       "[-trafo] (index | indexu indexv) varx vary varz [varw]");
+	       "\\[-trafo\\] (index | indexu indexv) varx vary varz \\[varw\\]");
       return TCL_OK;
     }
 
@@ -341,6 +341,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
     {
       trafo = AY_TRUE;
       i++;
+      argc2--;
     }
   
   while(sel)
@@ -351,6 +352,11 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
       switch(src->type)
 	{
 	case AY_IDNCURVE:
+	  if(argc2 < 6)
+	    {
+	      ay_error(AY_EARGS, fname, "\\[-trafo\\] index varx vary varz varw");
+	      return TCL_OK;
+	    }
 	  Tcl_GetInt(interp, argv[i], &indexu);
 	  ay_nct_getpntfromindex((ay_nurbcurve_object*)(src->refine),
 				 indexu, &p);
@@ -358,6 +364,11 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	  j = i+1;
 	  break;
 	case AY_IDICURVE:
+	  if(argc2 < 5)
+	    {
+	      ay_error(AY_EARGS, fname, "\\[-trafo\\] index varx vary varz");
+	      return TCL_OK;
+	    }
 	  Tcl_GetInt(interp, argv[i], &indexu);
 	  ay_ict_getpntfromindex((ay_icurve_object*)(src->refine),
 				 indexu, &p);
@@ -365,6 +376,12 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	  j = i+1;
 	  break;
 	case AY_IDNPATCH:
+	  if(argc2 < 7)
+	    {
+	      ay_error(AY_EARGS, fname,
+		       "\\[-trafo\\] indexu indexv varx vary varz varw");
+	      return TCL_OK;
+	    }
 	  Tcl_GetInt(interp, argv[i], &indexu);
 	  Tcl_GetInt(interp, argv[i+1], &indexv);
 	  ay_npt_getpntfromindex((ay_nurbpatch_object*)(src->refine),
@@ -373,6 +390,11 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	  j = i+2;
 	  break;
 	case AY_IDBPATCH:
+	  if(argc2 < 5)
+	    {
+	      ay_error(AY_EARGS, fname, "\\[-trafo\\] index varx vary varz");
+	      return TCL_OK;
+	    }
 	  Tcl_GetInt(interp, argv[i], &indexu);
 	  ay_tcmd_getbppntfromindex((ay_bpatch_object*)(src->refine),
 				    indexu, &p);
@@ -380,6 +402,12 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	  j = i+1;
 	  break;
 	case AY_IDPAMESH:
+	  if(argc2 < 7)
+	    {
+	      ay_error(AY_EARGS, fname,
+		       "\\[-trafo\\] indexu indexv varx vary varz varw");
+	      return TCL_OK;
+	    }
 	  Tcl_GetInt(interp, argv[i], &indexu);
 	  Tcl_GetInt(interp, argv[i+1], &indexv);
 	  ay_pmt_getpntfromindex((ay_pamesh_object*)(src->refine),
@@ -472,9 +500,9 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
  double *p = NULL;
  char fname[] = "setPnt";
 
-  if(argc == 0)
+  if(argc <= 1)
     {
-      ay_error(AY_EARGS, fname, "(index | indexu indexv) x y z [w]");
+      ay_error(AY_EARGS, fname, "(index | indexu indexv) x y z \\[w\\]");
       return TCL_OK;
     }
 
@@ -492,6 +520,11 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
       switch(src->type)
 	{
 	case AY_IDNCURVE:
+	  if(argc < 6)
+	    {
+	      ay_error(AY_EARGS, fname, "index x y z w");
+	      return TCL_OK;
+	    }
 	  Tcl_GetInt(interp, argv[1], &indexu);
 	  ay_nct_getpntfromindex((ay_nurbcurve_object*)(src->refine),
 				 indexu, &p);
@@ -499,6 +532,11 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	  i = 2;
 	  break;
 	case AY_IDICURVE:
+	  if(argc < 5)
+	    {
+	      ay_error(AY_EARGS, fname, "index x y z");
+	      return TCL_OK;
+	    }
 	  Tcl_GetInt(interp, argv[1], &indexu);
 	  ay_ict_getpntfromindex((ay_icurve_object*)(src->refine),
 				 indexu, &p);
@@ -506,6 +544,11 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	  i = 2;
 	  break;
 	case AY_IDNPATCH:
+	  if(argc < 7)
+	    {
+	      ay_error(AY_EARGS, fname, "indexu indexv x y z w");
+	      return TCL_OK;
+	    }
 	  Tcl_GetInt(interp, argv[1], &indexu);
 	  Tcl_GetInt(interp, argv[2], &indexv);
 	  ay_npt_getpntfromindex((ay_nurbpatch_object*)(src->refine),
@@ -514,6 +557,11 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	  i = 3;
 	  break;
 	case AY_IDBPATCH:
+	  if(argc < 5)
+	    {
+	      ay_error(AY_EARGS, fname, "index x y z");
+	      return TCL_OK;
+	    }
 	  Tcl_GetInt(interp, argv[1], &indexu);
 	  ay_tcmd_getbppntfromindex((ay_bpatch_object*)(src->refine),
 				    indexu, &p);
@@ -521,6 +569,11 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	  i = 2;
 	  break;
 	case AY_IDPAMESH:
+	  if(argc < 6)
+	    {
+	      ay_error(AY_EARGS, fname, "indexu indexv x y z w");
+	      return TCL_OK;
+	    }
 	  Tcl_GetInt(interp, argv[1], &indexu);
 	  Tcl_GetInt(interp, argv[2], &indexv);
 	  ay_pmt_getpntfromindex((ay_pamesh_object*)(src->refine),
