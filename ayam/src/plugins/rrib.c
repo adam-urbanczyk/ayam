@@ -159,9 +159,14 @@ int ay_rrib_cobjecthandle;
  */
 ay_list_object *ay_rrib_objects;
 ay_list_object *ay_rrib_lastobject;
+
 /* temporary space for ay_next while reading objects between
    RiObjectBegin/End */
 ay_object **ay_rrib_aynext;
+
+/* flag used by AreaLights to determine whether to continue
+   reading geometric primitives after the AreaLight geometry */
+int ay_rrib_readinggprims;
 
 /* fov */
 double ay_rrib_fov;
@@ -185,8 +190,8 @@ int ay_rrib_readmateriali; /* read material and attributes (internal) */
 int ay_rrib_readpartial; /* read partial RIB (e.g. without WorldBegin/End) */
 int ay_rrib_errorlevel; /* 0: silence, 1: errors, 2: warnings, 3: all */
 
-/* grib is used by Affine to specify the current RIB */
-/* ay_rrib_RiReadArchive() keeps a copy of this on the stack
+/* grib is used by Affine to specify the current RIB;
+   ay_rrib_RiReadArchive() keeps a copy of it on the stack
    when recursively descending into other RIBs */
 PRIB_INSTANCE grib;
 
@@ -217,7 +222,7 @@ enum {
 
 /*
  * The following table was created originally by starting emacs and
- * typing some text.
+ * typing some text. :)
  */
 char N[] = {
     0,  1 , 'N',
@@ -1696,11 +1701,13 @@ ay_rrib_RiFrameBegin(RtInt frame)
 	{
 	  ay_rrib_cframe = frame;
 	  ay_rrib_initgprims();
+	  ay_rrib_readinggprims = 1;
 	  ay_rrib_initgeneral();
 	}
       else
 	{
 	  ay_rrib_cleargprims();
+	  ay_rrib_readinggprims = 1;
 	  ay_rrib_cleargeneral();
 	} /* if */
     } /* if */
@@ -1715,14 +1722,15 @@ ay_rrib_RiFrameEnd( void )
 
   ay_rrib_popattribs();
 
-  if(ay_rrib_readframe != -1 || !ay_rrib_readpartial)
+  if((ay_rrib_readframe != -1) || (!ay_rrib_readpartial))
     {
       if(ay_rrib_cframe == ay_rrib_readframe)
 	{
 	  ay_rrib_cleargprims();
+	  ay_rrib_readinggprims = 0;
 	  ay_rrib_cleargeneral();
 	}
-    }
+    } /* if */
 
  return;
 } /* ay_rrib_RiFrameEnd */
@@ -3408,9 +3416,13 @@ ay_rrib_RiWorldBegin(void)
       ay_rrib_readmateriali = 1;
     }
 
-  /* start reading gprims if all frames are to be read */
+  /* start reading gprims, if all frames are to be read */
+  /* XXXX should we rather wait for the first FrameBegin? */
   if(ay_rrib_readframe == -1)
-    ay_rrib_initgprims();
+    {
+      ay_rrib_initgprims();
+      ay_rrib_readinggprims = 1;
+    }
 
  return;
 } /* ay_rrib_RiWorldBegin */
@@ -3421,6 +3433,7 @@ ay_rrib_RiWorldEnd(void)
 {
 
   ay_rrib_cleargprims();
+  ay_rrib_readinggprims = 0;
 
  return;
 } /* ay_rrib_RiWorldEnd */
@@ -4418,15 +4431,15 @@ ay_rrib_pushattribs(void)
   newstate->next = ay_rrib_cattributes;
   ay_rrib_cattributes = newstate;
 
-  /* did we just read an RiAttribute after an AreaLight? */
+  /* did we just read an AttributeBegin after an AreaLight? */
   if(ay_rrib_cattributes->read_arealight_geom > 0)
     {
       /* Yes. Start reading geometric primitives of the arealight. */
       ay_rrib_cattributes->read_arealight_geom++;
       ay_rrib_initgprims();
 
-      /* find light source and start adding next objects as childs */
-      /* XXXX assume, the area light source is the last object we read */
+      /* Find light source and start adding next objects as child objects. */
+      /* XXXX this assumes, the area light source is the last object we read */
       ay_status = ay_clevel_add(ay_rrib_lrobject);
       ay_status = ay_clevel_add(ay_rrib_lrobject->down);
       ay_next = &(ay_rrib_lrobject->down);
@@ -4503,14 +4516,17 @@ ay_rrib_popattribs(void)
   ay_rrib_cattributes = nextstate;
   if(ay_rrib_cattributes)
     {
+      /* Are we currently reading AreaLight geometry? */
       if(ay_rrib_cattributes->read_arealight_geom > 0)
 	{
-	  /*      ay_rrib_cattributes->read_arealight_geom--;*/
+	  /* Yes. */
+	  ay_rrib_cattributes->read_arealight_geom--;
+	  /* Is this the last AttributeEnd of the AreaLight geometry? */
 	  if(ay_rrib_cattributes->read_arealight_geom == 1)
 	    {
-	      /* found matching AttributeEnd, stop reading geometry
-		 if not reading anything anyway (ay_rrib_readpartial == 1) */
-	      if(!ay_rrib_readpartial)
+	      /* Yes. Stop reading gprims if not reading everything
+		 (read_partial == 1) anyway. */
+	      if(!ay_rrib_readinggprims)
 		{
 		  ay_rrib_cleargprims();
 		}
@@ -4927,7 +4943,7 @@ ay_rrib_linkmaterial(ay_object *o)
 	  if(oldm->type == AY_IDMATERIAL)
 	    {
 	      /* do not let accidentally set transformations
-		  make the comparison fail */
+		 make the comparison fail */
 	      ay_trafo_copy(oldm, m);
 	      /* compare objects */
 	      if(ay_comp_objects(oldm, m))
@@ -5080,7 +5096,7 @@ ay_rrib_linkobject(void *object, int type)
 	    t = t->next;
 	  ay_status = ay_object_crtendlevel(&(t->next));
 	}
-    }
+    } /* if */
 
   /*if(ay_rrib_readname)*/
   if(ay_rrib_cattributes->identifier_name)
@@ -5118,8 +5134,8 @@ ay_rrib_linkobject(void *object, int type)
 	  ay_object_delete(t->next);
 	  t->next = NULL;
 	  ay_rrib_co.down = NULL;
-	}
-    }
+	} /* if */
+    } /* if */
 
  return;
 } /* ay_rrib_linkobject */
@@ -5190,6 +5206,7 @@ ay_rrib_readrib(char *filename, int frame, int read_camera, int read_options,
   memset(&ay_rrib_co, '\0', sizeof(ay_object));
   ay_object_defaults(&ay_rrib_co);
 
+  ay_rrib_readinggprims = 0;
   ay_rrib_clighthandle = 1;
   ay_rrib_flobject = NULL;
   ay_rrib_cobjecthandle = 1;
@@ -5390,16 +5407,21 @@ ay_rrib_readribtcmd(ClientData clientData, Tcl_Interp *interp,
 	  if(old_aynext)
 	    {
 	      if(*old_aynext != n)
-		ay_next = old_aynext;
+		{
+		  ay_next = old_aynext;
+		}
 	      else
-		ay_next = &(n->next);
-	    }
+		{
+		  ay_next = &(n->next);
+		} /* if */
+	    } /* if */
 	} /* if */
     } /* if */
 
   ay_status = ay_rrib_readrib(argv[1], frame, read_camera, read_options,
 			      read_lights, read_material, read_partial,
 			      error_level);
+
   if(ay_status)
     {
       ay_error(AY_ERROR, fname, NULL);
