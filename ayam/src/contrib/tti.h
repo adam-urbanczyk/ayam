@@ -19,9 +19,8 @@
 
 enum {
   AY_TTI_OK,
-  AY_TTI_NOFSYS,
   AY_TTI_NOMEM,
-  AY_TTI_NOFOUND,
+  AY_TTI_NOTFOUND,
   AY_TTI_BADFONT
 };
 
@@ -66,6 +65,8 @@ typedef struct ay_tti_outline_s
 
 typedef struct ay_tti_letter_s
 {
+  double xoffset;
+  double yoffset;
   int numoutlines;
   ay_tti_outline *outlines;
 } ay_tti_letter;

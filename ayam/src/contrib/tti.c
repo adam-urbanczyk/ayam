@@ -779,12 +779,14 @@ ay_tti_findglyf(TTF_CMAP4 *cm, int c)
       cmap_idRangeOffset = (signed short *) (ptr + (seg_c2 * 3) + 2);
 
       /* search range for code */
-      i = 0;
+      i = -1;
       found = 0;
       do
 	{
+	  i++;
 	  if(ntohs(cmap_seg_end[i]) >= c)
 	    found = 1;
+
 	}
       while((i < cmap_n_segs) && (!found));
 
@@ -1019,8 +1021,10 @@ ay_tti_getchar(ay_tti_font *ttfont, int c, ay_tti_letter *vert)
     {
       ay_tti_handle_simple_glyf(ttfont, glyf, vert, matrix);
     }
-
+  /*
   ttfont->soffset += (ntohs(ttfont->hmtx[(ttfont->numberOfHMetrics>1)?ttfont->nglyf:0].advanceWidth));
+  */
+  vert->xoffset += (ntohs(ttfont->hmtx[(ttfont->numberOfHMetrics>1)?ttfont->nglyf:0].advanceWidth))/(double)ttfont->unitem;
 
  return 0;
 } /* ay_tti_getchar */
@@ -1036,6 +1040,7 @@ ay_tti_open(ay_tti_font *ttfont, char *font)
  TTF_DIRECTORY *tdir;
  TTF_HHEA *hhea;
 
+  ttfont->fontptr = NULL;
   ttfont->fontptr = fopen(font, "rb");
 
   if(ttfont->fontptr)
@@ -1111,20 +1116,21 @@ ay_tti_open(ay_tti_font *ttfont, char *font)
 	  return AY_TTI_OK;
 	}
       else
-	{		/* not a font */
+	{
+	  /* not a TTF font */
 	  fclose(ttfont->fontptr);
 	  free(ttfont->buffer);
-	  return AY_TTI_NOFOUND;
+	  return AY_TTI_BADFONT;
 	} /* if */
     }
   else
     {
-      fclose(ttfont->fontptr);
-      return AY_TTI_NOFOUND;
+      error = AY_TTI_NOTFOUND;
     } /* if */
 
 cleanup:
-  fclose(ttfont->fontptr);
+  if(ttfont->fontptr)
+    fclose(ttfont->fontptr);
 
  return error;
 } /* ay_tti_open */
