@@ -887,10 +887,11 @@ The next sub-section contains Mops Import related preferences:
 <itemize>
 <item><tt/"MIResetDM"/; if this is enabled display mode
 settings of all NURBS patches (and NURBS patch creating
-tool objects as e.g. Revolve) will be reset to "Global" so
+tool objects as e.g. Revolve) read from Mops scenes
+will be reset to "Global" so
 that the gobal preference setting is in use.
 <item><tt/"MIResetST"/; arranges for all sampling
-tolerance settings of NURBS curves and NURBS patches
+tolerance settings of NURBS curves and NURBS patches read from Mops scenes
 to be set to "0.0", so that the global preference setting
 is used.
 </itemize>
@@ -900,6 +901,12 @@ related preferences:
 <item><tt/"SaveAddsMRU"/; if this is switched on, saving to a file
 will add that file to the most recently used list in the main menu
 for quick access.
+<item><tt/"ToolBoxTrans"/; controls whether the tool box window
+should be declared as a transient window of the main window.
+It will then (depending on the window manager) get a different
+or no decoration, no icon, and will always be iconified when the main window
+gets iconified. This setting has no effect on Win32. On this platform
+the tool box will always be a transient window to save space on the task bar.
 </itemize>
 
 <sect>Interactive Actions (Modeling)<label id="iac">
