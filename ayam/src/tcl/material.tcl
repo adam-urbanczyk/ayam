@@ -93,7 +93,7 @@ proc material_createp { } {
 	}
     }
 
-    button $f.bca -text "Cancel" -width 5 -command "destroy $w"
+    button $f.bca -text "Cancel" -width 5 -command "focus .;destroy $w"
 
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
     pack $f -in $w -side bottom -fill x
