@@ -3719,21 +3719,21 @@ ay_npt_topolytcmd(ClientData clientData, Tcl_Interp *interp,
  double sparam = ay_prefs.sparam;
  int smethod = ay_prefs.smethod+1;
 
- if(argc > 1)
-   {
-     Tcl_GetInt(interp, argv[1], &smethod);
+  if(argc > 1)
+    {
+      Tcl_GetInt(interp, argv[1], &smethod);
 
-     if(smethod == 1)
-       sparam = 0.5;
+      if(smethod == 1)
+	sparam = 0.5;
 
-     if(smethod == 2)
-       sparam = 50.0;
+      if(smethod == 2)
+	sparam = 50.0;
 
-     if(argc > 2)
-       {
-	 Tcl_GetDouble(interp, argv[2], &sparam);
-       }
-   }
+      if(argc > 2)
+	{
+	  Tcl_GetDouble(interp, argv[2], &sparam);
+	}
+    }
 
   while(sel)
     {
@@ -3753,9 +3753,13 @@ ay_npt_topolytcmd(ClientData clientData, Tcl_Interp *interp,
 	      return TCL_OK;
 	    }
 	}
+      else
+	{
+	  ay_error(AY_ERROR, fname, "object is not a NPatch");
+	}
 
       sel = sel->next;
-    }
+    } /* while */
 
  return TCL_OK;
 } /* ay_npt_topolytcmd */
@@ -3770,7 +3774,7 @@ ay_npt_elevateu(ay_nurbpatch_object *patch, int t)
  int ay_status = AY_OK;
  double *Uh = NULL, *Qw = NULL, *realQw = NULL, *realUh = NULL;
  int nw = 0;
- char fname[] = "elevateu";
+ char fname[] = "ay_npt_elevateu";
 
   /* alloc new knotv & new controlv */
   if(!(Uh = calloc((patch->width + patch->width*t +
@@ -3796,24 +3800,24 @@ ay_npt_elevateu(ay_nurbpatch_object *patch, int t)
 
   if(ay_status)
     {
-      ay_error(ay_status,fname,"degree elevation failed");
-      free(Uh); free(Qw); return AY_ERROR;
+      free(Uh); free(Qw);
+      ay_error(ay_status, fname, "degree elevation failed");
+      return AY_ERROR;
     }
 
   if(!(realQw = realloc(Qw, nw*patch->height*4*sizeof(double))))
     {
-      ay_error(AY_ERROR, fname, "Memory may have leaked!");
+      free(Qw); free(Uh);
       ay_error(AY_EOMEM, fname, NULL);
       return AY_EOMEM;
     }
 
   if(!(realUh = realloc(Uh, (nw+patch->uorder+t)*sizeof(double))))
     {
-      ay_error(AY_ERROR, fname, "Memory may have leaked!");
+      free(realQw); free(Uh);
       ay_error(AY_EOMEM, fname, NULL);
       return AY_EOMEM;
     }
-
 
   free(patch->uknotv);
   patch->uknotv = realUh;
@@ -3859,8 +3863,7 @@ ay_npt_elevateutcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
-	  ay_error(AY_ERROR, fname, "object is not a NURBPatch");
-
+	  ay_error(AY_ERROR, fname, "object is not a NPatch");
 	} /* if */
 
       sel = sel->next;
@@ -3881,7 +3884,7 @@ ay_npt_elevatev(ay_nurbpatch_object *patch, int t)
  int ay_status = AY_OK;
  double *Vh = NULL, *Qw = NULL, *realQw = NULL, *realVh = NULL;
  int nh = 0, i, ind1, ind2;
- char fname[] = "elevateNPV";
+ char fname[] = "ay_npt_elevatev";
 
   /* alloc new knotv & new controlv */
   if(!(Vh = calloc((patch->height + patch->height*t +
@@ -3907,13 +3910,14 @@ ay_npt_elevatev(ay_nurbpatch_object *patch, int t)
 
   if(ay_status)
     {
-      ay_error(ay_status,fname,"degree elevation failed");
-      free(Vh); free(Qw); return AY_ERROR;
+      free(Vh); free(Qw); 
+      ay_error(ay_status, fname, "degree elevation failed");
+      return AY_ERROR;
     }
   
   if(!(realQw = calloc(nh*patch->width*4, sizeof(double))))
     {
-      ay_error(AY_ERROR, fname, "Memory may have leaked!");
+      free(Vh); free(Qw); 
       ay_error(AY_EOMEM, fname, NULL);
       return AY_EOMEM;
     }
@@ -3929,11 +3933,10 @@ ay_npt_elevatev(ay_nurbpatch_object *patch, int t)
   
   if(!(realVh = realloc(Vh, (nh+patch->vorder+t)*sizeof(double))))
     {
-      ay_error(AY_ERROR, fname, "Memory may have leaked!");
+      free(realQw); free(Vh);
       ay_error(AY_EOMEM, fname, NULL);
       return AY_EOMEM;
     }
-
 
   free(patch->vknotv);
   patch->vknotv = realVh;
@@ -3962,7 +3965,7 @@ ay_npt_elevatevtcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_nurbpatch_object *patch = NULL;
  int t = 1;
- char fname[] = "elevNPV";
+ char fname[] = "elevateNPV";
 
   if(argc >= 2)
     Tcl_GetInt(interp, argv[1], &t);
@@ -3979,8 +3982,7 @@ ay_npt_elevatevtcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
-	  ay_error(AY_ERROR, fname, "object is not a NURBPatch");
-
+	  ay_error(AY_ERROR, fname, "object is not a NPatch");
 	} /* if */
 
       sel = sel->next;
@@ -4017,7 +4019,7 @@ ay_npt_swapuvtcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
-	  ay_error(AY_ERROR, fname, "object is not a NURBPatch");
+	  ay_error(AY_ERROR, fname, "object is not a NPatch");
 	} /* if */
       sel = sel->next;
     } /* while */
