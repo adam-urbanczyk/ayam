@@ -2831,7 +2831,7 @@ ay_nct_concatmultiple(int closed, int knot_type, int fillgaps,
  int ay_status;
  char fname[] = "nct_concatmultiple";
  double *newknotv = NULL, *newcontrolv = NULL, *ncv = NULL;
- int numcurves = 0, i, j, a, order = -1, length = 0, ktype;
+ int numcurves = 0, i, j, k, a, order = -1, length = 0, ktype;
  int glu_display_mode = 0;
  double glu_sampling_tolerance = 0.0;
  ay_nurbcurve_object *nc;
@@ -2895,22 +2895,34 @@ ay_nct_concatmultiple(int closed, int knot_type, int fillgaps,
 
       a = 0;
       j = 0;
+      k = 0;
       o = curves;
       while(o)
 	{
 	  nc = (ay_nurbcurve_object *)o->refine;
 
-	  for(i = 0; i < nc->length+nc->order; i++)
+	  for(i = k; i < nc->length+nc->order; i++)
 	    {
 	      newknotv[a] = nc->knotv[i]+j;
 	      a++;
 	    }
 
-	  j+=2;
-
 	  o = o->next;
 	  if(o)
-	    o = o->next;
+	    {
+	      if(o->name && !(strcmp(o->name, "Fillet")))
+		{
+		  o = o->next;
+		  j += 2;
+		  k = 0;
+		}
+	      else
+		{
+		  nc = (ay_nurbcurve_object *)o->refine;
+		  k = nc->order;
+		  j++;
+		}
+	    }
 	} /* while */
 
       if(closed)
@@ -2991,6 +3003,7 @@ ay_nct_fillgap(int order, double tanlen,
  ay_object *o = NULL;
  ay_nurbcurve_object *c = NULL;
  int ay_status = AY_OK;
+ char *oname = "Fillet";
 
   n = c1->length;
   p = c1->order-1;
@@ -3092,6 +3105,11 @@ ay_nct_fillgap(int order, double tanlen,
 
   o->refine = c;
   o->type = AY_IDNCURVE;
+
+  if(!(o->name = calloc(strlen(oname)+1, sizeof(char))))
+    { free(o); free(controlv); return AY_EOMEM; }
+
+  strcpy(o->name, oname);
 
   *result = o;
 
