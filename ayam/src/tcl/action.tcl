@@ -550,15 +550,22 @@ proc editPointDp { } {
 	($array(z) != $array(z2)) ||
 	($array(w) != $array(w2))} {
 	    set array(changed) 1
-	    $array(window) dpepac -apply
-	    rV;plb_update
+	    if { [winfo exists $array(window)] } {
+		undo save
+		$array(window) dpepac -apply
+		rV
+		plb_update
+	    } else {
+		ayError 2 "editPointDp" "Lost window to apply changes to!"
+	    }
 	}
 
     }
 
     button $f.bca -text "Cancel" -width 5 -pady $ay(pady) -command "\
-	    if { [winfo exists $ay(currentView)] } {\
-	    focus $ay(currentView) } else { focus . };\
+	    global ay;\
+	    if { [winfo exists \$ay(currentView)] } {\
+	    focus \$ay(currentView) } else { focus . };\
 	    destroy $w"
 
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
@@ -581,7 +588,6 @@ proc actionDEditP { w } {
     viewTitle $w "" "Direct_Point_Edit"
 
     bind $w <ButtonPress-1> {
-	undo save
 	%W mc
 	set editPointDarray(valid) 0
 	%W dpepac -start %x %y
