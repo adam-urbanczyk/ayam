@@ -3338,7 +3338,7 @@ ay_nb_DecomposeCurve(int stride, int n, int p, double *U, double *Pw,
 		  i1 = k*stride;
 		  i2 = (k-1)*stride;
 		  lQw[i1]   = alpha*lQw[i1]   + (1.0-alpha)*lQw[i2];
-		  lQw[i1+1] = alpha*lQw[i1+1] + (1.0-alpha)*lQw[i2+2];
+		  lQw[i1+1] = alpha*lQw[i1+1] + (1.0-alpha)*lQw[i2+1];
 		  lQw[i1+2] = alpha*lQw[i1+2] + (1.0-alpha)*lQw[i2+2];
 		  if(stride > 3)
 		    lQw[i1+3] = alpha*lQw[i1+3] + (1.0-alpha)*lQw[i2+3];
@@ -3372,3 +3372,239 @@ ay_nb_DecomposeCurve(int stride, int n, int p, double *U, double *Pw,
 
  return AY_OK;
 } /* ay_nb_DecomposeCurve */
+
+
+/*
+ * ay_nb_InsertKnotSurfU:
+ *  insert knot u into surface stride, w, h, p, UP, Pw
+ *  r times
+ *  UQ: new knots, Qw: new controls (both allocated outside!)
+ */
+int
+ay_nb_InsertKnotSurfU(int stride, int w, int h, int p, double *UP, double *Pw,
+		      double u, int k, int s, int r,
+		      double *UQ, double *Qw)
+{
+ int ay_status = AY_OK;
+ int i, j, L, row, ul, h1 = h+1;
+ int ai, i1, i2;
+ double *alpha = NULL, *Rw = NULL;
+
+  if(!(alpha = calloc((r+1)*(p-j-s+1), sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+
+  if(!(Rw = calloc((p-s+1)*stride, sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+
+  /* Load new knot vector. */
+  ul = w + p + 1;
+  for(i = 0; i <= k; i++)
+    UQ[i] = UP[i];
+  for(i = 1; i <= r; i++)
+    UQ[k+i] = u;
+  for(i = k+1; i <= ul; i++)
+    UQ[i+r] = UP[i];
+
+  /* Save the alphas. */
+  for(j = 1; j <= r; j++)
+    {
+      L = k-p+j;
+      for(i = 0; i <= p-j-s; i++)
+	{
+	  /*alpha[i][j] = (u-UP[L+i])/(UP[i+k+1]-UP[L+i]);*/
+	  ai = j*(p-j-s)+i;
+	  alpha[ai] = (u-UP[L+i])/(UP[i+k+1]-UP[L+i]);
+	} /* for */
+    } /* for */
+
+  /* For each row... */
+  for(row = 0; row <= h; row++)
+    {
+      /* Save unaltered control points. */
+      for(i = 0; i <= k-p; i++)
+	{
+	  /*Qw[i][row] = Pw[i][row];*/
+	  i1 = (i*h1+row)*stride;
+	  i2 = (i*h1+row)*stride;
+	  memcpy(&(Qw[i1]), &(Pw[i2]), stride*sizeof(double));
+	}
+      for(i = k-s; i <= w; i++)
+	{
+	  /*Qw[i+1][row] = Pw[i][row];*/
+	  i1 = ((i+1)*h1+row)*stride;
+	  i2 = (i*h1+row)*stride;
+	  memcpy(&(Qw[i1]), &(Pw[i2]), stride*sizeof(double));
+	}
+      /* Load auxiliary control points. */
+      for(i = 0; i <= p-s; i++)
+	{
+	  /*Rw[i] = Pw[k-p+i][row];*/
+	  i1 = i*stride;
+	  i2 = ((k-p+i)*h1+row)*stride;
+	  memcpy(&(Rw[i1]), &(Pw[i2]), stride*sizeof(double));
+	}
+      /* Insert the knot r times. */
+      for(j = r; j <= r; j++)
+	{
+	  L = k-p+j;
+	  for(i = 0; i <= p-j-s; i++)
+	    {
+	      /*Rw[i] = alpha[i][j]*Rw[i+1] + (1.0-alpha[i][j])*Rw[i]*/
+	      ai = j*(p-j-s)+i;
+	      i1 = i*stride;
+	      i2 = (i+1)*stride;
+	      Rw[i1]   = alpha[ai]*Rw[i2]   + (1.0-alpha[ai])*Rw[i1];
+	      Rw[i1+1] = alpha[ai]*Rw[i2+1] + (1.0-alpha[ai])*Rw[i1+1];
+	      Rw[i1+2] = alpha[ai]*Rw[i2+2] + (1.0-alpha[ai])*Rw[i1+2];
+	      if(stride > 3)
+		Rw[i1+3] = alpha[ai]*Rw[i2+3] + (1.0-alpha[ai])*Rw[i1+3];
+	    } /* for */
+
+	  /*Qw[L][row] = Rw[0];*/
+	  i1 = (L*h1+row)*stride;
+	  memcpy(&(Qw[i1]), &(Rw[0]), stride*sizeof(double));
+
+	  /*Qw[k+r-j-s][row] = Rw[p-j-s];*/
+	  i1 = ((k+r-j-s)*h1+row)*stride;
+	  i2 = (p-j-s)*stride;
+	  memcpy(&(Qw[i1]), &(Rw[i2]), stride*sizeof(double));
+	} /* for */
+
+      /* Load the remaining control points. */
+      for(i = L+1; i < k-s; i++)
+	{
+	  /*Qw[i][row] = Rw[i-L];*/
+	  i1 = (i*h1+row)*stride;
+	  i2 = (i-L)*stride;
+	  memcpy(&(Qw[i1]), &(Rw[i2]), stride*sizeof(double));
+	} /* for */
+    } /* for */
+
+ cleanup:
+
+  if(alpha)
+    free(alpha);
+  if(Rw)
+    free(Rw);
+
+ return ay_status;
+} /* ay_nb_InsertKnotSurfU */
+
+
+/*
+ * ay_nb_InsertKnotSurfV:
+ *  insert knot v into surface stride, w, h, q, VP, Pw
+ *  r times
+ *  VQ: new knots, Qw: new controls (both allocated outside!)
+ */
+int
+ay_nb_InsertKnotSurfV(int stride, int w, int h, int q, double *VP, double *Pw,
+		      double v, int k, int s, int r,
+		      double *VQ, double *Qw)
+{
+ int ay_status = AY_OK;
+ int i, j, L, col, vl, nh, h1 = h+1;
+ int ai, i1, i2;
+ double *alpha = NULL, *Rw = NULL;
+
+  if(!(alpha = calloc((r+1)*(q-j-s+1), sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+
+  if(!(Rw = calloc((q-s+1)*stride, sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+
+  nh = h + r + 1;
+
+  /* Load new knot vector. */
+  vl = h + q + 1;
+  for(i = 0; i <= k; i++)
+    VQ[i] = VP[i];
+  for(i = 1; i <= r; i++)
+    VQ[k+i] = v;
+  for(i = k+1; i <= vl; i++)
+    VQ[i+r] = VP[i];
+
+  /* Save the alphas. */
+  for(j = 1; j <= r; j++)
+    {
+      L = k-q+j;
+      for(i = 0; i <= q-j-s; i++)
+	{
+	  /*alpha[i][j] = (v-VP[L+i])/(VP[i+k+1]-VP[L+i]);*/
+	  ai = j*(q-j-s)+i;
+	  alpha[ai] = (v-VP[L+i])/(VP[i+k+1]-VP[L+i]);
+	} /* for */
+    } /* for */
+
+  /* For each column... */
+  for(col = 0; col <= w; col++)
+    {
+      /* Save unaltered control points. */
+      for(i = 0; i <= k-q; i++)
+	{
+	  /*Qw[col][i] = Pw[col][i];*/
+	  i1 = (col*nh+i)*stride;
+	  i2 = (col*h1+i)*stride;
+	  memcpy(&(Qw[i1]), &(Pw[i2]), stride*sizeof(double));
+	}
+      for(i = k-s; i <= h; i++)
+	{
+	  /*Qw[col][i+1] = Pw[col][i];*/
+	  i1 = (col*nh+i+1)*stride;
+	  i2 = (col*h1+i)*stride;
+	  memcpy(&(Qw[i1]), &(Pw[i2]), stride*sizeof(double));
+	}
+      /* Load auxiliary control points. */
+      for(i = 0; i <= q-s; i++)
+	{
+	  /*Rw[i] = Pw[col][k-q+i];*/
+	  i1 = i*stride;
+	  i2 = (col*h1+(k-q+i))*stride;
+	  memcpy(&(Rw[i1]), &(Pw[i2]), stride*sizeof(double));
+	}
+      /* Insert the knot r times. */
+      for(j = r; j <= r; j++)
+	{
+	  L = k-q+j;
+	  for(i = 0; i <= q-j-s; i++)
+	    {
+	      /*Rw[i] = alpha[i][j]*Rw[i+1] + (1.0-alpha[i][j])*Rw[i]*/
+	      ai = j*(q-j-s)+i;
+	      i1 = i*stride;
+	      i2 = (i+1)*stride;
+	      Rw[i1]   = alpha[ai]*Rw[i2]   + (1.0-alpha[ai])*Rw[i1];
+	      Rw[i1+1] = alpha[ai]*Rw[i2+1] + (1.0-alpha[ai])*Rw[i1+1];
+	      Rw[i1+2] = alpha[ai]*Rw[i2+2] + (1.0-alpha[ai])*Rw[i1+2];
+	      if(stride > 3)
+		Rw[i1+3] = alpha[ai]*Rw[i2+3] + (1.0-alpha[ai])*Rw[i1+3];
+	    } /* for */
+
+	  /*Qw[col][L] = Rw[0];*/
+	  i1 = (col*nh+L)*stride;
+	  memcpy(&(Qw[i1]), &(Rw[0]), stride*sizeof(double));
+
+	  /*Qw[col][k+r-j-s] = Rw[q-j-s];*/
+	  i1 = (col*nh+(k+r-j-s))*stride;
+	  i2 = (q-j-s)*stride;
+	  memcpy(&(Qw[i1]), &(Rw[i2]), stride*sizeof(double));
+	} /* for */
+
+      /* Load the remaining control points. */
+      for(i = L+1; i < k-s; i++)
+	{
+	  /*Qw[col][i] = Rw[i-L];*/
+	  i1 = (col*nh+i)*stride;
+	  i2 = (i-L)*stride;
+	  memcpy(&(Qw[i1]), &(Rw[i2]), stride*sizeof(double));
+	} /* for */
+    } /* for */
+
+ cleanup:
+
+  if(alpha)
+    free(alpha);
+  if(Rw)
+    free(Rw);
+
+ return ay_status;
+} /* ay_nb_InsertKnotSurfV */
