@@ -34,6 +34,8 @@ $m add command -label "Render" -command "viewRender $w 0;\
 
 $m add command -label "Redraw" -command "\
 	global ay;\
+	$w.f3D.togl mc;\
+	$w.f3D.togl reshape;\
 	$w.f3D.togl redraw;\
 	\$ay(currentView) mc"
 
