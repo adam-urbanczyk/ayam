@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>1. Nov 2004
+<date>24. Nov 2004
 <abstract>
 This is the documentation of Ayam (1.8) - a free 3D modeling environment
 for the RenderMan interface.
@@ -4465,7 +4465,8 @@ The extraction process is controlled by the following attributes:
 Available values are <tt/"U0"/, <tt/"Un"/: extract boundary curve along
 width; <tt/"V0"/, <tt/"Vn"/: extract boundary curve along
 height;  <tt/"U"/, <tt/"V"/ extract curve along width and height
-respectively at specified parametric value (see below).
+respectively at specified parametric value (see below). The
+options <tt/"U"/, <tt/"V"/ are not implemented in Ayam 1.8!
 <item><tt/"Parameter"/ controls the parametric value in u or v
 direction in the parameter space of the NURBS patch object where the
 curve should be extracted.
@@ -5969,18 +5970,19 @@ uS
 sL
 # prepare moving
 set i 0
-set w 1.0
+set r 3.0
 set angle 0
+set angled [expr 3.14159265/2.0]
 while { $i < $len } {
 
-    set x [expr 3*cos($angle)]
-    set y [expr 3*sin($angle)]
+    set x [expr $r*cos($angle)]
+    set y [expr $r*sin($angle)]
     set z [expr $i/3.0]
 
     # move control point to new position
-    setPnt $i $x $y $z $w
+    setPnt $i $x $y $z 1.0
 
-    incr angle 90
+    set angle [expr $angle + $angled]
     incr i
 }
 # redraw all views
@@ -6041,6 +6043,12 @@ proc easySweep { } {
 # easySweep
 </code>
 
+Run this pocedure by selecting a NURBS curve object, then type
+into the console:
+<code>
+easySweep
+</code>
+
 You may add this command to the main menu as well:
 <code>
 global ay
@@ -6048,6 +6056,10 @@ $ay(cm) add command -label "Easy Sweep" -command {
  easySweep
 }
 </code>
+After running the above script you should have a new menu
+entry <tt>Custom/Easy Sweep</tt> that calls the <tt>easySweep</tt>
+procedure.
+
 <sect2>Tool Box Buttons<label id="scextoolbox">
 <p>
 Here is another example that shows how you may add buttons
@@ -6058,7 +6070,7 @@ the size 25 by 25 pixels.
 global ay
 
 # create an image from a GIF file:
-image create photo myImage -format gif -file /home/user/agif
+image create photo myImage -format gif -file /home/user/a.gif
 
 set b .tbw.f.mybutton
 
@@ -6666,7 +6678,11 @@ The aycsg plugin may be used to resolve and preview CSG operations.
 For this, the plugin uses image based CSG rendering algorithms provided
 by the OpenCSG library. The OpenCSG library, currently, supports
 the Goldfeather and the SCS algorithm. The latter only works
-properly with convex primitives.
+properly with convex primitives. Since both, Goldfeather and SCS, are
+image based rendering algorithms, there is no limit in geometric object
+types that may be used in CSG hierarchies. You may e.g. use Quadrics, NURBS,
+and Metaballs in every possible combination. You just have to make sure,
+that every CSG primitive describes a closed space.
 <p>
 In order for the CSG rendering algorithms to work properly, the depth
 complexity (convexity) of a primitive must be known.
