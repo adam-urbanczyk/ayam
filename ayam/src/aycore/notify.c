@@ -120,7 +120,7 @@ ay_notify_forceparent(ay_object *o)
 {
  int ay_status = AY_OK;
  char fname[] = "notify_forceparent";
- ay_list_object *oldclevel = ay_currentlevel;
+ ay_list_object *oldclevel = ay_currentlevel, *lev;
  int found = AY_FALSE;
 
   if(!ay_root->next)
@@ -143,8 +143,12 @@ ay_notify_forceparent(ay_object *o)
 
   ay_status = ay_notify_parent();
 
-  ay_clevel_delall();
-  free(ay_currentlevel);
+  while(ay_currentlevel)
+    {
+      lev = ay_currentlevel->next;
+      free(ay_currentlevel);
+      ay_currentlevel = lev; 
+    }
 
   ay_currentlevel = oldclevel;
 

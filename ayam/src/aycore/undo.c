@@ -383,7 +383,8 @@ ay_undo_copy(ay_undo_object *uo)
  ay_object *o = NULL, *c = NULL;
  ay_list_object *r = NULL;
  void **arr = NULL;
- ay_copycb *cb = NULL;
+ ay_deletecb *dcb = NULL;
+ ay_copycb *ccb = NULL;
  char view_repairtitle_cmd[] = "viewRepairTitle ", buf[64];
  char view_setgridicon_cmd[] = "viewSetGridIcon .";
  Tcl_DString ds;
@@ -480,10 +481,15 @@ ay_undo_copy(ay_undo_object *uo)
 	    }
 	  break;
 	default:
+	  arr = ay_deletecbt.arr;
+	  dcb = (ay_deletecb*)(arr[c->type]);
+	  if(dcb)
+	    ay_status = dcb(o->refine);
+
 	  arr = ay_copycbt.arr;
-	  cb = (ay_copycb*)(arr[c->type]);
-	  if(cb)
-	    ay_status = cb(c->refine, &(o->refine));
+	  ccb = (ay_copycb*)(arr[c->type]);
+	  if(ccb)
+	    ay_status = ccb(c->refine, &(o->refine));
 
 	  if(ay_status)
 	    {
