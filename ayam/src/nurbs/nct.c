@@ -2376,7 +2376,7 @@ ay_nct_getorientation(ay_nurbcurve_object *curve, double *orient)
   stride = 4;
   j = stride;
   m = 0;
-  for(i = 0; i < curve->length; i++)
+  for(i = 0; i < curve->length-1; i++)
     {
       if((cv[j+1] < miny) || ((cv[j+1] == miny) && (cv[j] < minx)))
 	{
@@ -2393,8 +2393,8 @@ ay_nct_getorientation(ay_nurbcurve_object *curve, double *orient)
   j = m;
   while(!found && (wrap<2))
     {
-      if((cv[m*stride] != cv[j*stride]) &&
-	 (cv[m*stride+1] != cv[j*stride+1]))
+      if((fabs(cv[m*stride] - cv[j*stride]) > AY_EPSILON) &&
+	 (fabs(cv[m*stride+1] - cv[j*stride+1]) > AY_EPSILON))
 	{
 	  found = AY_TRUE;
 	}
@@ -2428,8 +2428,8 @@ ay_nct_getorientation(ay_nurbcurve_object *curve, double *orient)
   j = m;
   while(!found && (wrap<2))
     {
-      if((cv[m*stride] != cv[j*stride]) &&
-	 (cv[m*stride+1] != cv[j*stride+1]))
+      if((fabs(cv[m*stride] != cv[j*stride]) > AY_EPSILON) &&
+	 (fabs(cv[m*stride+1] != cv[j*stride+1]) > AY_EPSILON))
 	{
 	  found = AY_TRUE;
 	}
