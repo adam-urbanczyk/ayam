@@ -327,6 +327,9 @@ ay_init(Tcl_Interp *interp)
   if((ay_status = ay_sweep_init(interp)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 
+  if((ay_status = ay_text_init(interp)))
+    { ay_error(ay_status, fname, NULL); return AY_ERROR; }
+
   if((ay_status = ay_torus_init(interp)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 

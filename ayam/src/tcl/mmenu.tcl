@@ -244,6 +244,8 @@ $m add command -label "Camera" \
 	-command "crtOb Camera; uCR; sL;rV;"
 $m add command -label "RiInc" \
 	-command "crtOb RiInc; uCR; sL;rV;"
+$m add command -label "Text" \
+	-command "crtOb Text; uCR; sL;rV;"
 
 if { ! $AYWITHAQUA } {
     pack .fu.fMenu.cr -in .fu.fMenu -side left

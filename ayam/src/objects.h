@@ -99,6 +99,9 @@ int ay_skin_init(Tcl_Interp *interp);
 /* sweep.c */
 int ay_sweep_init(Tcl_Interp *interp);
 
+/* text.c */
+int ay_text_init(Tcl_Interp *interp);
+
 /* torus.c */
 int ay_torus_init(Tcl_Interp *interp);
 
