@@ -1,4 +1,4 @@
-INSTALL [21. Feb 2002]
+INSTALL [22. Feb 2002]
 
 Compilation Instructions for Ayam
 ---------------------------------
@@ -14,6 +14,12 @@ However, the creation of wrapped standalone executables
 of Ayam is a bit tricky.
 Therefore, if you really want to or have to compile Ayam:
 _Please compile a shared version of Ayam!_
+
+
+Contents:
+1. Compiling a Shared Version of Ayam
+2. Compiling a Wrapped Standalone Version of Ayam
+3. Additional Targets (Compiling Plugins)
 
 
 1. Compiling a Shared Version of Ayam
@@ -186,8 +192,8 @@ If all went fine, you can now install Ayam:
 >make install
 
 
-3. Additional Targets
----------------------
+3. Additional Targets (Compiling Plugins)
+-----------------------------------------
 
 Independent from the build type of Ayam, the Makefiles contain
 additional targets to build plugins and manage installation.
@@ -218,17 +224,16 @@ Compile libribrdr.a, libribhash.a and libribnop.a.
 This is done using 
 >cd affine
 
-
 >make setup<your platform>
 (use sun as platform on Linux)
 
-If you are using Affine0008 you need to tune the Makefile now to not
+If you are using Affine0008 you need to tune the Makefile to not
 use libz:
-remove -DRIB_ZLIB from COPTS and do not link with libz.
+remove "-DRIB_ZLIB" from COPTS and do not link with libz.
 
 If you are using Affine0008 and gcc you, additionally, need to change
 readrib/declare.c:
-change all occurences of the variable "inline" to "myinline"
+o change all occurences of the variable "inline" to "myinline"
 
 now compile Affine:
 >make World
