@@ -33,7 +33,12 @@ int ayso_scansosarg(SO_VISSYMDEF *symbol, Tcl_DString *ds);
 int ayso_scansotcmd(ClientData clientData, Tcl_Interp *interp,
 			    int argc, char *argv[]);
 
+#ifdef WIN32
+static Tcl_Interp *ay_plugin_interp;
+__declspec( dllexport ) int Ayso_Init(Tcl_Interp *interp);
+#else
 int Ayso_Init(Tcl_Interp *interp);
+#endif
 
 /* functions: */
 
@@ -266,12 +271,24 @@ ayso_scansotcmd(ClientData clientData, Tcl_Interp *interp,
 /* note: this function _must_ be capitalized exactly this way
  * regardless of the filename of the shared object (see: man n load)!
  */
+#ifdef WIN32
+__declspec( dllexport ) int
+Ayso_Init(Tcl_Interp *interp)
+#else
 int
 Ayso_Init(Tcl_Interp *interp)
+#endif
 {
  char fname[] = "ayso_init";
  char vname[] = "ay(sext)", vval[] = ".so";
 
+#ifdef WIN32
+  ay_plugin_interp = interp;
+  if(Tcl_InitStubs(interp, "8.2", 0) == NULL)
+    {
+      return TCL_ERROR;
+    }
+#else
   /* first, check versions */
   if(strcmp(ay_version_ma, ayso_version_ma))
     {
@@ -287,6 +304,7 @@ Ayso_Init(Tcl_Interp *interp)
 	       "Plugin has been compiled for a different Ayam version!");
       ay_error(AY_ERROR, fname, "However, it is probably safe to continue...");
     }
+#endif
 
   Tcl_SetVar(interp, vname, vval, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 

@@ -35,8 +35,12 @@ int ayslb_scanshader(char *fname, Tcl_DString *ds);
 
 int ayslb_scanslbtcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
-
+#ifdef WIN32
+static Tcl_Interp *ay_plugin_interp;
+__declspec( dllexport ) int Ayslb_Init(Tcl_Interp *interp);
+#else
 int Ayslb_Init(Tcl_Interp *interp);
+#endif
 
 #define MAXSHADERLENGTH 160000
 #define MAXNSHADERARGS 4000
@@ -368,12 +372,24 @@ ayslb_scanslbtcmd(ClientData clientData, Tcl_Interp *interp,
 /* note: this function _must_ be capitalized exactly this way
  * regardless of the filename of the shared object (see: man n load)!
  */
+#ifdef WIN32
+__declspec( dllexport ) int
+Ayslb_Init(Tcl_Interp *interp)
+#else
 int
 Ayslb_Init(Tcl_Interp *interp)
+#endif
 {
  char fname[] = "ayslb_init";
  char vname[] = "ay(sext)", vval[] = ".slb";
 
+#ifdef WIN32
+  ay_plugin_interp = interp;
+  if(Tcl_InitStubs(interp, "8.2", 0) == NULL)
+    {
+      return TCL_ERROR;
+    }
+#else
   /* first, check versions */
   if(strcmp(ay_version_ma, ayslb_version_ma))
     {
@@ -389,6 +405,7 @@ Ayslb_Init(Tcl_Interp *interp)
 	       "Plugin has been compiled for a different Ayam version!");
       ay_error(AY_ERROR, fname, "However, it is probably safe to continue...");
     }
+#endif
 
   Tcl_SetVar(interp, vname, vval, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 

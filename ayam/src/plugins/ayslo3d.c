@@ -25,9 +25,14 @@ char ayslo3d_version_mi[] = AY_VERSIONSTRMI;
 int ayslo3d_scanslo3dsarg(SLO_VISSYMDEF *symbol, Tcl_DString *ds);
 
 int ayslo3d_scanslo3dtcmd(ClientData clientData, Tcl_Interp *interp,
-			    int argc, char *argv[]);
+			  int argc, char *argv[]);
 
+#ifdef WIN32
+static Tcl_Interp *ay_plugin_interp;
+__declspec( dllexport ) int Ayslo_Init(Tcl_Interp *interp);
+#else
 int Ayslo_Init(Tcl_Interp *interp);
+#endif
 
 /* functions: */
 
@@ -41,7 +46,7 @@ ayslo3d_scanslo3dsarg(SLO_VISSYMDEF *symbol, Tcl_DString *ds)
  int ay_status = AY_OK;
  char buffer[255];
  double deffltval;
- char *defstrval;
+ const char *defstrval;
  int i, j;
 
   switch(symbol->svd_type)
@@ -230,7 +235,7 @@ ayslo3d_scanslo3dtcmd(ClientData clientData, Tcl_Interp *interp,
 	      if(!element)
 		{
 		  ay_error(AY_ERROR, fname, "Could not get array element:");
-		  ay_error(AY_ERROR, fname, symbol->svd_name);
+		  ay_error(AY_ERROR, fname, (char*)symbol->svd_name);
 		  Tcl_DStringFree(&ds);
 		  return TCL_OK;
 		} /* if */
@@ -269,12 +274,24 @@ ayslo3d_scanslo3dtcmd(ClientData clientData, Tcl_Interp *interp,
 /* note: this function _must_ be capitalized _and named_ exactly this way
  * regardless of the filename of the shared object (see: man n load)!
  */
+#ifdef WIN32
+__declspec( dllexport ) int
+Ayslo_Init(Tcl_Interp *interp)
+#else
 int
 Ayslo_Init(Tcl_Interp *interp)
+#endif
 {
  char fname[] = "ayslo3d_init";
  char vname[] = "ay(sext)", vval[] = ".sdl";
 
+#ifdef WIN32
+  ay_plugin_interp = interp;
+  if(Tcl_InitStubs(interp, "8.2", 0) == NULL)
+    {
+      return TCL_ERROR;
+    }
+#else
   /* first, check versions */
   if(strcmp(ay_version_ma, ayslo3d_version_ma))
     {
@@ -290,6 +307,7 @@ Ayslo_Init(Tcl_Interp *interp)
 	       "Plugin has been compiled for a different Ayam version!");
       ay_error(AY_ERROR, fname, "However, it is probably safe to continue...");
     }
+#endif
 
   Tcl_SetVar(interp, vname, vval, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
