@@ -191,18 +191,22 @@ if { [llength $alltags] > 0 } {
 }
 # setTagsp
 
+# editTagshelper:
+#  used to edit tags
 proc editTagshelper { index } {
  global tagsPropData
  set tagsPropData(names) [lreplace $tagsPropData(names) $index $index [.addTag.fu.e get]]
  set tagsPropData(values) [lreplace $tagsPropData(values) $index $index [.addTag.fm.e get]]
  grab release .addTag
+ focus .
  destroy .addTag
  setTagsp
  plb_update
 }
+#editTagshelper
 
 # addTagp:
-# also used to edit tags
+#  used to edit and add tags
 proc addTagp { {edit -1} } {
 global ay tagsPropData Tags
 
@@ -220,7 +224,7 @@ wm iconname $w "Ayam"
 wm transient $w .
 
 set f [frame $w.fu]
-label $f.lt -text "Type:"
+label $f.lt -text "Type:" -width 6
 entry $f.e -width 30
 pack $f.lt -in $f -padx 2 -pady 2 -side left
 pack $f.e -in $f -padx 2 -pady 2 -side left -fill x -expand yes
@@ -231,7 +235,7 @@ if { $edit >= 0 } {
 }
 
 set f [frame $w.fm]
-label $f.lv -text "Value:"
+label $f.lv -text "Value:" -width 6
 entry $f.e -width 30
 pack $f.lv -in $f -padx 2 -pady 2 -side left
 pack $f.e -in $f -padx 2 -pady 2 -side left -fill x -expand yes
@@ -242,17 +246,18 @@ if { $edit >= 0 } {
 }
 
 set f [frame $w.fd]
-button $f.bok -text "Ok" -pady 1 -width 5 -command {
+button $f.bok -text "Ok" -pady $ay(pady) -width 5 -command {
     global ay
     if { [.addTag.fu.e get] != "" } {
 	addTag [.addTag.fu.e get] [.addTag.fm.e get]
     }
     grab release .addTag
+    focus .
     destroy .addTag
     plb_update
 }
 
-button $f.bclr -text "Clear" -pady 1 -width 5 -command {
+button $f.bclr -text "Clear" -pady $ay(pady) -width 5 -command {
     global ay
 
     .addTag.fu.e delete 0 end
@@ -263,7 +268,7 @@ if { $edit >= 0 } {
 $f.bok configure -command "editTagshelper $edit"
 }
 
-button $f.bca -text "Cancel" -pady 1 -width 5 -command "grab release .addTag; destroy $w"
+button $f.bca -text "Cancel" -pady $ay(pady) -width 5 -command "grab release .addTag; focus .; destroy $w"
 
 pack $f.bok $f.bclr $f.bca -in $f -side left -fill x -expand yes
 pack $f -in $w -side top -fill x
