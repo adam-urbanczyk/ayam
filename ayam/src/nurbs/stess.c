@@ -33,7 +33,7 @@ typedef struct ay_stess_uvpl_s {
 
 
 /* local preprocessor definitions: */
-#define STESS_EPSILON 0.000001
+#define AY_STESSEPSILON 0.000001
 
 
 /* prototypes of functions local to this module: */
@@ -49,9 +49,9 @@ ay_stess_2DCurvePoints4D(int n, int p, double *U, double *Pw, int num,
 			 int *Clen, double **C)
 {
  int span, j, k, l, m;
- double *N = NULL, Cw[3], *Ct = NULL, u, ud, umin, umax; 
+ double *N = NULL, Cw[3], *Ct = NULL, u, ud, umin, umax;
 
-  if(!(N = calloc(p+1,sizeof(double))))
+  if(!(N = calloc(p+1, sizeof(double))))
     return AY_EOMEM;
 
   j = 0;
@@ -79,15 +79,15 @@ ay_stess_2DCurvePoints4D(int n, int p, double *U, double *Pw, int num,
   ud = (umax-umin)/((*Clen)-1);
   u = umin;
 
-  for(l=0; l<(*Clen); l++)
+  for(l = 0; l < (*Clen); l++)
     {
-      span = ay_nb_FindSpan(n,p,u,U);
+      span = ay_nb_FindSpan(n, p, u, U);
 
-      ay_nb_BasisFuns(span,u,p,U,N);
-      
-      memset(Cw,0,3*sizeof(double));
+      ay_nb_BasisFuns(span, u, p, U, N);
 
-      for(j=0; j<=p; j++)
+      memset(Cw, 0, 3*sizeof(double));
+
+      for(j = 0; j <= p; j++)
 	{
 	  k = (span-p+j)*4;
 	  Cw[0] = Cw[0] + N[j]*Pw[k];
@@ -118,9 +118,9 @@ ay_stess_2DCurvePoints3D(int n, int p, double *U, double *P, int num,
 			 int *Clen, double **C)
 {
  int span, j, k, l, m;
- double *N = NULL, *Ct = NULL, u, ud, umin, umax; 
+ double *N = NULL, *Ct = NULL, u, ud, umin, umax;
 
-  if(!(N = calloc(p+1,sizeof(double))))
+  if(!(N = calloc(p+1, sizeof(double))))
     return AY_EOMEM;
 
   j = 0;
@@ -147,12 +147,12 @@ ay_stess_2DCurvePoints3D(int n, int p, double *U, double *P, int num,
 
   for(l = 0; l < (*Clen); l++)
     {
-      span = ay_nb_FindSpan(n,p,u,U);
+      span = ay_nb_FindSpan(n, p, u, U);
 
-      ay_nb_BasisFuns(span,u,p,U,N);
-      
+      ay_nb_BasisFuns(span, u, p, U, N);
+
       m = l*2;
-      for(j=0; j<=p; j++)
+      for(j = 0; j <= p; j++)
 	{
 	  k = (span-p+j)*3;
 	  Ct[m]   = Ct[m]   + N[j]*P[k];
@@ -178,9 +178,9 @@ ay_stess_CurvePoints4D(int n, int p, double *U, double *Pw, int num,
 		       int *Clen, double **C)
 {
  int span, j, k, l, m;
- double *N = NULL, Cw[4], *Ct = NULL, u, ud, umin, umax; 
+ double *N = NULL, Cw[4], *Ct = NULL, u, ud, umin, umax;
 
-  if(!(N = calloc(p+1,sizeof(double))))
+  if(!(N = calloc(p+1, sizeof(double))))
     return AY_EOMEM;
 
   j = 0;
@@ -205,15 +205,15 @@ ay_stess_CurvePoints4D(int n, int p, double *U, double *Pw, int num,
   ud = (umax-umin)/((*Clen)-1);
   u = umin;
 
-  for(l=0; l<(*Clen); l++)
+  for(l = 0; l < (*Clen); l++)
     {
-      span = ay_nb_FindSpan(n,p,u,U);
+      span = ay_nb_FindSpan(n, p, u, U);
 
-      ay_nb_BasisFuns(span,u,p,U,N);
-      
-      memset(Cw,0,4*sizeof(double));
+      ay_nb_BasisFuns(span, u, p, U, N);
 
-      for(j=0; j<=p; j++)
+      memset(Cw, 0, 4*sizeof(double));
+
+      for(j = 0; j <= p; j++)
 	{
 	  k = (span-p+j)*4;
 	  Cw[0] = Cw[0] + N[j]*Pw[k];
@@ -246,9 +246,9 @@ ay_stess_CurvePoints3D(int n, int p, double *U, double *P, int num,
 		       int *Clen, double **C)
 {
  int span, j, k, l, m;
- double *N = NULL, *Ct = NULL, u, ud, umin, umax; 
+ double *N = NULL, *Ct = NULL, u, ud, umin, umax;
 
-  if(!(N = calloc(p+1,sizeof(double))))
+  if(!(N = calloc(p+1, sizeof(double))))
     return AY_EOMEM;
 
   j = 0;
@@ -275,12 +275,12 @@ ay_stess_CurvePoints3D(int n, int p, double *U, double *P, int num,
 
   for(l = 0; l < (*Clen); l++)
     {
-      span = ay_nb_FindSpan(n,p,u,U);
+      span = ay_nb_FindSpan(n, p, u, U);
 
-      ay_nb_BasisFuns(span,u,p,U,N);
-      
+      ay_nb_BasisFuns(span, u, p, U, N);
+
       m = l*3;
-      for(j=0; j<=p; j++)
+      for(j = 0; j <= p; j++)
 	{
 	  k = (span-p+j)*3;
 	  Ct[m]   = Ct[m]   + N[j]*P[k];
@@ -309,11 +309,11 @@ ay_stess_SurfacePoints4D(int n, int m, int p, int q, double *U, double *V,
  int spanu = 0, spanv = 0, indu = 0, indv = 0, l = 0, k = 0, i = 0, j = 0;
  int a, b;
  double u, v, ud, vd, umin, umax, vmin, vmax, *Nu = NULL, *Nv = NULL;
- double Cw[4] = {0}, *Ct = NULL, temp[4] = {0}; 
+ double Cw[4] = {0}, *Ct = NULL, temp[4] = {0};
 
-  if(!(Nu = calloc(p+1,sizeof(double))))
+  if(!(Nu = calloc(p+1, sizeof(double))))
     return AY_EOMEM;
-  if(!(Nv = calloc(q+1,sizeof(double))))
+  if(!(Nv = calloc(q+1, sizeof(double))))
     return AY_EOMEM;
 
   j = 0;
@@ -360,18 +360,18 @@ ay_stess_SurfacePoints4D(int n, int m, int p, int q, double *U, double *V,
       for(b = 0; b < (*Cm); b++)
 	{
 
-	  spanu = ay_nb_FindSpan(n,p,u,U);
-	  ay_nb_BasisFuns(spanu,u,p,U,Nu);
-	  spanv = ay_nb_FindSpan(m,q,v,V);
-	  ay_nb_BasisFuns(spanv,v,q,V,Nv);
+	  spanu = ay_nb_FindSpan(n, p, u, U);
+	  ay_nb_BasisFuns(spanu, u, p, U, Nu);
+	  spanv = ay_nb_FindSpan(m, q, v, V);
+	  ay_nb_BasisFuns(spanv, v, q, V, Nv);
 
 	  indu = spanu - p;
-	  for(l=0; l<=q; l++)
+	  for(l =0 ; l <= q; l++)
 	    {
 	      memset(temp, 0, 4*sizeof(double));
 	      indv = spanv - q + l;
 
-	      for(k=0; k<=p; k++)
+	      for(k = 0; k <= p; k++)
 		{
 		  /* was: temp = temp + Nu[k]*Pw[indu+k][indv]; */
 		  i = (((indu+k)*(m+1))+indv)*4;
@@ -380,24 +380,24 @@ ay_stess_SurfacePoints4D(int n, int m, int p, int q, double *U, double *V,
 		  temp[1] += Nu[k]*Pw[i+1];
 		  temp[2] += Nu[k]*Pw[i+2];
 		  temp[3] += Nu[k]*Pw[i+3];
-		}
+		} /* for */
 	      /* was: Cw = Cw + Nv[l]*temp */
 	      Cw[0] += Nv[l]*temp[0];
 	      Cw[1] += Nv[l]*temp[1];
 	      Cw[2] += Nv[l]*temp[2];
 	      Cw[3] += Nv[l]*temp[3];
-	    }
-  
+	    } /* for */
+
 	  j = (a*(*Cn)+b)*3;
 	  Ct[j]   = Cw[0]/Cw[3];
 	  Ct[j+1] = Cw[1]/Cw[3];
 	  Ct[j+2] = Cw[2]/Cw[3];
-	  
-	  v += vd;  
-	}
+
+	  v += vd;
+	} /* for */
 
       u += ud;
-    }
+    } /* for */
 
   *C = Ct;
 
@@ -418,11 +418,11 @@ ay_stess_SurfacePoints3D(int n, int m, int p, int q, double *U, double *V,
  int spanu = 0, spanv = 0, indu = 0, indv = 0, l = 0, k = 0, i = 0, j = 0;
  int a, b;
  double u, v, ud, vd, umin, umax, vmin, vmax, *Nu = NULL, *Nv = NULL;
- double temp[3] = {0}, *Ct = NULL; 
+ double temp[3] = {0}, *Ct = NULL;
 
-  if(!(Nu = calloc(p+1,sizeof(double))))
+  if(!(Nu = calloc(p+1, sizeof(double))))
     return AY_EOMEM;
-  if(!(Nv = calloc(q+1,sizeof(double))))
+  if(!(Nv = calloc(q+1, sizeof(double))))
     return AY_EOMEM;
 
   j = 0;
@@ -469,19 +469,19 @@ ay_stess_SurfacePoints3D(int n, int m, int p, int q, double *U, double *V,
       for(b = 0; b < (*Cm); b++)
 	{
 
-	  spanu = ay_nb_FindSpan(n,p,u,U);
-	  ay_nb_BasisFuns(spanu,u,p,U,Nu);
-	  spanv = ay_nb_FindSpan(m,q,v,V);
-	  ay_nb_BasisFuns(spanv,v,q,V,Nv);
+	  spanu = ay_nb_FindSpan(n, p, u, U);
+	  ay_nb_BasisFuns(spanu, u, p, U, Nu);
+	  spanv = ay_nb_FindSpan(m, q, v, V);
+	  ay_nb_BasisFuns(spanv, v, q, V, Nv);
 
 	  indu = spanu - p;
 	  j = (a*(*Cn)+b)*3;
-	  for(l=0; l<=q; l++)
+	  for(l = 0; l <= q; l++)
 	    {
 	      memset(temp, 0, 3*sizeof(double));
 	      indv = spanv - q + l;
 
-	      for(k=0; k<=p; k++)
+	      for(k = 0; k <= p; k++)
 		{
 		  /* was: temp = temp + Nu[k]*P[indu+k][indv]; */
 		  i = (((indu+k)*(m+1))+indv)*3;
@@ -489,18 +489,18 @@ ay_stess_SurfacePoints3D(int n, int m, int p, int q, double *U, double *V,
 		  temp[0] += Nu[k]*P[i];
 		  temp[1] += Nu[k]*P[i+1];
 		  temp[2] += Nu[k]*P[i+2];
-		}
+		} /* for */
 	      /* was: Cw = Cw + Nv[l]*temp */
 	      Ct[j]   += Nv[l]*temp[0];
 	      Ct[j+1] += Nv[l]*temp[1];
 	      Ct[j+2] += Nv[l]*temp[2];
-	    }
-  
-	  v += vd;  
-	}
+	    } /* for */
+
+	  v += vd;
+	} /* for */
 
       u += ud;
-    }
+    } /* for */
 
   *C = Ct;
 
@@ -564,13 +564,18 @@ ay_st_TessTrimCurves(ay_object *o, int num, int *nt, double ***tt,
  GLdouble mm[16];
 
   /* count trimloops */
-  /* XXXX BUG! we count childs and not NC providing objects */
   d = o->down;
-  while(d)
+  while(d->next)
     {
-      numtrims++;
+      if((d->type == AY_IDNCURVE) ||
+	 (ay_provide_object(d, AY_IDNCURVE, NULL) == AY_OK) ||
+	 ((d->type == AY_IDLEVEL) && (d->down) && (d->down->next)))
+	numtrims++;
       d = d->next;
-    }
+    } /* while */
+
+  if(numtrims == 0)
+    return AY_OK;
 
   /* tesselate trimloops and get their orientation */
   if(!(tts = calloc(numtrims, sizeof(double *))))
@@ -584,80 +589,65 @@ ay_st_TessTrimCurves(ay_object *o, int num, int *nt, double ***tt,
   d = o->down;
   while(d)
     {
-      if(d->type == AY_OTNURBCURVE)
+      if(d->type == AY_IDNCURVE)
 	{
 	  c = (ay_nurbcurve_object *)d->object;
-	  glMatrixMode (GL_MODELVIEW);
+	  glMatrixMode(GL_MODELVIEW);
 	  glPushMatrix();
 	   glLoadIdentity();
 	   glTranslated(d->movx, d->movy, d->movz);
 	   ay_build_rotmatrix(m, d->quat);
 	   glMultMatrixf(&(m[0][0]));
-	   glScaled (d->scalx, d->scaly, d->scalz);
+	   glScaled(d->scalx, d->scaly, d->scalz);
 	   glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 	  glPopMatrix();
 	}
       else
 	{
 	  dd = NULL;
-	  ay_status = ay_get_object(d, AY_OTNURBCURVE, &dd);
+	  ay_status = ay_provide_object(d, AY_IDNCURVE, &dd);
 	  if(dd)
 	    got_object = AY_TRUE;
 
 	  c = (ay_nurbcurve_object *)dd->object;
 
-	  glMatrixMode (GL_MODELVIEW);
+	  glMatrixMode(GL_MODELVIEW);
 	  glPushMatrix();
 	   glLoadIdentity();
 	   glTranslated(dd->movx, dd->movy, dd->movz);
 	   ay_build_rotmatrix(m, dd->quat);
 	   glMultMatrixf(&(m[0][0]));
-	   glScaled (dd->scalx, dd->scaly, dd->scalz);
+	   glScaled(dd->scalx, dd->scaly, dd->scalz);
 	   glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 	  glPopMatrix();
-	}
+	} /* if */
 
-      if(!(dtmp = calloc(c->length*(c->has_weights?4:3), sizeof(double))))
+      if(!(dtmp = calloc(c->length*4, sizeof(double))))
 	{ return AY_EOMEM; } /* XXXX Memory Leak? */
 
       /* apply transformations */
-      if(c->has_weights)
+
+      for(j = 0; j < c->length; j++)
 	{
-	  for(j = 0; j < c->length; j++)
-	    {
-	      memcpy(p1, &(c->controlv[j*4]), 4*sizeof(double));
-	      AY_APTRAN4(p2, p1, mm)
-	      memcpy(&(dtmp[j*4]), p2, 4*sizeof(double));
-	    }
+	  memcpy(p1, &(c->controlv[j*4]), 4*sizeof(double));
+	  AY_APTRAN4(p2, p1, mm)
+	  memcpy(&(dtmp[j*4]), p2, 4*sizeof(double));
 	}
-      else
-	{
-	  for(j = 0; j < c->length; j++)
-	    {
-	      memcpy(p1, &(c->controlv[j*3]), 3*sizeof(double));
-	      AY_APTRAN3(p2, p1, mm)
-	      memcpy(&(dtmp[j*3]), p2, 3*sizeof(double));
-	    }
-	}
-      
-      if(c->has_weights)
-	ay_stess_2DCurvePoints4D(c->length-1, c->order-1, c->knotv, dtmp,
-				 num, &(tls[i]), &(tts[i]));
-      else
-	ay_stess_2DCurvePoints3D(c->length-1, c->order-1, c->knotv, dtmp,
-				 num, &(tls[i]), &(tts[i]));
+
+      ay_stess_2DCurvePoints4D(c->length-1, c->order-1, c->knotv, dtmp,
+			       num, &(tls[i]), &(tts[i]));
 
       free(dtmp);
       dtmp = NULL;
 
       /* get orientation of trimloop */
       angle = 0.0;
-      ay_get_nc_orientation(c, &angle);
+      ay_nct_getorientation(c, &angle);
       if(angle > 0.0)
 	tds[i] = 1;
 
       if(got_object)
-	ay_delete_multi_objects(dd);
+	ay_object_deletemulti(dd);
 
       i++;
       d = d->next;
@@ -680,7 +670,7 @@ int
 ay_stess_MergeUVectors(ay_stess_uvp *a, ay_stess_uvp *b)
 {
  ay_stess_uvp *p1, *p2, *p3;
- int done = 0, inserted = 0, count = 0, toggle = 0;
+ int done = AY_FALSE, inserted = 0, count = 0, toggle = 0;
 
   p2 = b;
   while(p2)
@@ -689,9 +679,10 @@ ay_stess_MergeUVectors(ay_stess_uvp *a, ay_stess_uvp *b)
 	toggle = 0;
       else
 	toggle = 1;
+
       count++;
       p2 = p2->next;
-    }
+    } /* while */
 
   /* never insert uneven numbers of points! */
   if(toggle)
@@ -709,7 +700,7 @@ ay_stess_MergeUVectors(ay_stess_uvp *a, ay_stess_uvp *b)
 	}
 
       return AY_OK;
-    }
+    } /* if */
 
   while(!done)
     {
@@ -725,7 +716,7 @@ ay_stess_MergeUVectors(ay_stess_uvp *a, ay_stess_uvp *b)
 		  { /* Danger! Check for intersecting trimloops: */
 		    if(p1->type == 1)
 		      return AY_ERROR; /* XXXX early exit! */
-		    
+
 		    /* We, accidentally, have here a trimloop
 		     * point that is identical to a wanted uv-point;
 		     * we therefore have to transmogrify the uv-point to
@@ -741,6 +732,7 @@ ay_stess_MergeUVectors(ay_stess_uvp *a, ay_stess_uvp *b)
 		    b = p3;
 		    inserted = 1;
 		  }
+
 	      if(p2)
 		if((p2->v > p1->v) && (p2->v < p1->next->v))
 		  {
@@ -758,7 +750,7 @@ ay_stess_MergeUVectors(ay_stess_uvp *a, ay_stess_uvp *b)
 	} /* while */
 
       if(!b)
-	done = 1;
+	done = AY_TRUE;
 
     } /* while */
 
@@ -774,36 +766,37 @@ int
 ay_stess_MergeVVectors(ay_stess_uvp *a, ay_stess_uvp *b)
 {
  ay_stess_uvp *p1, *p2, *p3;
- int done = 0, inserted = 0, count = 0, toggle = 0;
+ int done = AY_FALSE, inserted = 0, count = 0, toggle = 0;
 
- p2 = b;
- while(p2)
-   {
-     if(toggle)
-       toggle = 0;
-     else
-       toggle = 1;
-     count++;
-     p2 = p2->next;
-   }
+  p2 = b;
+  while(p2)
+    {
+      if(toggle)
+	toggle = 0;
+      else
+	toggle = 1;
 
- /* never insert uneven numbers of points! */
- if(toggle)
-   {
-     /*
+      count++;
+      p2 = p2->next;
+    } /* while */
+
+  /* never insert uneven numbers of points! */
+  if(toggle)
+    {
+      /*
      fprintf(stderr,"Uneven number of trimloop points (%d) detected!\n",count);
-     */
+      */
 
-     /* free b */
-     while(b)
-       {
-	 p2 = b->next;
-	 free(b);
-	 b = p2;
-       }
+      /* free b */
+      while(b)
+	{
+	  p2 = b->next;
+	  free(b);
+	  b = p2;
+	}
 
-     return AY_OK;
-   }
+      return AY_OK;
+    } /* if */
 
   while(!done)
     {
@@ -819,7 +812,7 @@ ay_stess_MergeVVectors(ay_stess_uvp *a, ay_stess_uvp *b)
 		  { /* Danger! Check for intersecting trimloops: */
 		    if(p1->type == 1)
 		      return AY_ERROR; /* XXXX early exit! */
-		    
+
 		    /* We, accidentally, have here a trimloop
 		     * point that is identical to a wanted uv-point;
 		     * we therefore have to transmogrify the uv-point to
@@ -835,6 +828,7 @@ ay_stess_MergeVVectors(ay_stess_uvp *a, ay_stess_uvp *b)
 		    b = p3;
 		    inserted = 1;
 		  }
+
 	      if(p2)
 		if((p2->u > p1->u) && (p2->u < p1->next->u))
 		  {
@@ -852,7 +846,7 @@ ay_stess_MergeVVectors(ay_stess_uvp *a, ay_stess_uvp *b)
 	} /* while */
 
       if(!b)
-	done = 1;
+	done = AY_TRUE;
 
     } /* while */
 
@@ -877,7 +871,7 @@ ay_stess_TessTrimmedNPU(Tcl_Interp *interp, ay_object *o, int num,
  double p3[2], p4[2], *U, *V, u, v;
  double umin, umax, vmin, vmax, ud, vd;
  int i, j, k, l, ind;
- int out = 0, first_loop = 1, first_loop_cw = 0;
+ int out = 0, first_loop = AY_TRUE, first_loop_cw = AY_FALSE;
  int Cm, Cn, trimloop_point, done;
  char fname[] = "TessTrimmedNPU";
 
@@ -927,193 +921,194 @@ ay_stess_TessTrimmedNPU(Tcl_Interp *interp, ay_object *o, int num,
 
   /* fill desired uv-coords */
   for(i = 0; i < Cn; i++)
-   {
-     v = vmin;
-     olduvp = &(uvps[i]);
-     for(j = 0; j < Cm; j++)
-     {
-       if(!(newuvp = calloc(1, sizeof(ay_stess_uvp))))
-	 {
-	   return AY_EOMEM;
-	 }
-       /* type == 0 */
-       newuvp->u = u;
-       newuvp->v = v;
-       *olduvp = newuvp;
-       olduvp = &(newuvp->next);
-       v += vd;
-     }
-     u += ud;
-   }
+    {
+      v = vmin;
+      olduvp = &(uvps[i]);
+      for(j = 0; j < Cm; j++)
+	{
+	  if(!(newuvp = calloc(1, sizeof(ay_stess_uvp))))
+	    {
+	      return AY_EOMEM;
+	    }
+	  /* type == 0 */
+	  newuvp->u = u;
+	  newuvp->v = v;
+	  *olduvp = newuvp;
+	  olduvp = &(newuvp->next);
+	  v += vd;
+	} /* for */
+      u += ud;
+    } /* for */
 
   u = umin;
   /* match desired uv coords of patch tesselation with trimloops */
   for(i = 0; i < Cn; i++)
-   {
-    v = vmin;
-    olduvp = &trimuvp;
-    trimuvp = NULL;
-    p3[0] = u;
-    p4[0] = u;
-    /* calc all intersections of all trimloops with current u */
-    for(j = 0; j < (Cm-1); j++)
-     {
-      p3[1] = v;
-      p4[1] = v+vd;
-      for(k = 0; k < numtrims; k++)
-       {	
-	tt = tcs[k];
-
-	for(l = 0; l < (tcslens[k]-1); l++)
-	  {
-	   /* pre-select trimloop section */
-	   ind = l*2;
-	   if(((tt[ind] <= u) && (tt[ind+2] >= u)) ||
-	      ((tt[ind] >= u) && (tt[ind+2] <= u)))
+    {
+      v = vmin;
+      olduvp = &trimuvp;
+      trimuvp = NULL;
+      p3[0] = u;
+      p4[0] = u;
+      /* calc all intersections of all trimloops with current u */
+      for(j = 0; j < (Cm-1); j++)
+	{
+	  p3[1] = v;
+	  p4[1] = v+vd;
+	  for(k = 0; k < numtrims; k++)
 	    {
-	      ipoint[0] = 0.0;
-	      ipoint[1] = 0.0;
+	      tt = tcs[k];
 
-	      if((ay_stess_IntersectLines2D(&(tt[ind]), &(tt[ind+2]), p3, p4,
-					    ipoint)))
-		{ /* u-line intersects with trimcurve */
+	      for(l = 0; l < (tcslens[k]-1); l++)
+		{
+		  /* pre-select trimloop section */
+		  ind = l*2;
+		  if(((tt[ind] <= u) && (tt[ind+2] >= u)) ||
+		     ((tt[ind] >= u) && (tt[ind+2] <= u)))
+		    {
+		      ipoint[0] = 0.0;
+		      ipoint[1] = 0.0;
 
-		  /* test commented out, because it will make
-		     problems with uvp-types */
+		      if((ay_stess_IntersectLines2D(&(tt[ind]), &(tt[ind+2]),
+						    p3, p4, ipoint)))
+			{ /* u-line intersects with trimcurve */
 
-		  /* check whether ipoint is farther away enough
-                     from current v, v+vd */
-		  /* if((fabs(ipoint[1] - v) > STESS_EPSILON) &&
-		     (fabs(ipoint[1] - (v+vd)) > STESS_EPSILON))
-		    {*/ /* yes it is */
-		      /* add new point */
-		      if(!(newuvp = calloc(1, sizeof(ay_stess_uvp))))
-			{
-			  return AY_EOMEM;
-			}
-		      newuvp->type = 1;
-		      newuvp->dir = tcsdirs[k];
-		      newuvp->u = ipoint[0];
-		      newuvp->v = ipoint[1];
-		      *olduvp = newuvp;
-		      olduvp = &(newuvp->next);
-		      /*		    }*/ /* if */
-		} /* if */
-	    } /* if */
-	  } /* for */
-       } /* for */
+			  /* test commented out, because it will make
+			     problems with uvp-types */
 
-      v += vd;
-     } /* for */
+			  /* check whether ipoint is farther away enough
+			     from current v, v+vd */
+			  /* if((fabs(ipoint[1] - v) > AY_STESSEPSILON) &&
+			     (fabs(ipoint[1] - (v+vd)) > AY_STESSEPSILON))
+			     {*/ /* yes it is */
+			  /* add new point */
+			  if(!(newuvp = calloc(1, sizeof(ay_stess_uvp))))
+			    {
+			      return AY_EOMEM;
+			    }
+			  newuvp->type = 1;
+			  newuvp->dir = tcsdirs[k];
+			  newuvp->u = ipoint[0];
+			  newuvp->v = ipoint[1];
+			  *olduvp = newuvp;
+			  olduvp = &(newuvp->next);
+			  /*		    }*/ /* if */
+			} /* if */
+		    } /* if */
+		} /* for */
+	    } /* for */
 
-    /* merge vectors */
-    if(trimuvp)
-      {
-	ay_status = AY_OK;
-	ay_status = ay_stess_MergeUVectors(uvps[i], trimuvp);
-	if(ay_status)
-	  {
-	    ay_error(interp, AY_ERROR, fname,
+	  v += vd;
+	} /* for */
+
+      /* merge vectors */
+      if(trimuvp)
+	{
+	  ay_status = AY_OK;
+	  ay_status = ay_stess_MergeUVectors(uvps[i], trimuvp);
+	  if(ay_status)
+	    {
+	      ay_error(interp, AY_ERROR, fname,
 		       "Intersecting or misoriented Trimcurves!\n");
 
-	    if(trimuvp)
-	      {
-		uvpptr = trimuvp;
-		while(uvpptr)
-		  {
-		    uvpptr2 = uvpptr->next;
-		    free(uvpptr);
-		    uvpptr = uvpptr2;
-		  }
-	      }
-	    return AY_ERROR;
-	  }
-      }
+	      if(trimuvp)
+		{
+		  uvpptr = trimuvp;
+		  while(uvpptr)
+		    {
+		      uvpptr2 = uvpptr->next;
+		      free(uvpptr);
+		      uvpptr = uvpptr2;
+		    }
+		} /* if */
+	      return AY_ERROR;
+	    } /* if */
+	} /* if */
 
-    u += ud;
-   } /* for */
+      u += ud;
+    } /* for */
 
 
   /* remove unwanted uvps */
   first_loop = 1;
   for(i = 0; i < Cn; i++)
-   {
-    olduvp = &(uvps[i]);
-    uvpptr = uvps[i];
+    {
+      olduvp = &(uvps[i]);
+      uvpptr = uvps[i];
 
-    while(uvpptr)
-      {
-	/* act only on trimloop-points */
-	if(uvpptr->type == 1)
-	  {
-	    if(first_loop)
-	      {
-		if(uvpptr->dir == 0)
-		  { /* cw */
-		    /* remember that we probably have to delete whole lines */
-		    first_loop_cw = 1;
-		    /* since this loop is cw, we came from outside */
-		    out = 1;
-		  }
-	      }
-	    first_loop = 0;
+      while(uvpptr)
+	{
+	  /* act only on trimloop-points */
+	  if(uvpptr->type == 1)
+	    {
+	      if(first_loop)
+		{
+		  if(uvpptr->dir == 0)
+		    { /* cw */
+		      /* remember that we probably have to delete whole
+			 lines */
+		      first_loop_cw = AY_TRUE;
+		      /* since this loop is cw, we came from outside */
+		      out = 1;
+		    }
+		}
+	      first_loop = AY_FALSE;
 
-	    if(out)
-	      {
-		/*
-		 * we enter the patch again, and remove all
-		 * uvps that we skipped since we left the patch
-		 */
-		/* free unwanted vertices */
-		if(uvpptr != (*olduvp))
-		  {
-		    uvpptr2 = (*olduvp)->next;
-		    (*olduvp)->next = uvpptr;
-		    while(uvpptr2 != uvpptr)
-		      {
-			uvpptr3 = uvpptr2->next;
-			free(uvpptr2);
-			uvpptr2 = uvpptr3;
-		      } /* while */
-		  }
+	      if(out)
+		{
+		  /*
+		   * we enter the patch again, and remove all
+		   * uvps that we skipped since we left the patch
+		   */
+		  /* free unwanted vertices */
+		  if(uvpptr != (*olduvp))
+		    {
+		      uvpptr2 = (*olduvp)->next;
+		      (*olduvp)->next = uvpptr;
+		      while(uvpptr2 != uvpptr)
+			{
+			  uvpptr3 = uvpptr2->next;
+			  free(uvpptr2);
+			  uvpptr2 = uvpptr3;
+			} /* while */
+		    } /* if */
 
-		/* we are now "in" */
-		out = 0;
-	      }
-	    else
-	      {
-		/*
-		 * we are about to leave the patch and remember
-		 * where we are; we will delete later from
-		 * uvpptr->next on, all intermediate uvps
-		 */
-		olduvp = &(uvpptr->next);
-		/* we are now out */
-		out = 1;
-	      }
-	  } /* if */
-	uvpptr = uvpptr->next;
-      } /* while */
-   } /* for */
+		  /* we are now "in" */
+		  out = 0;
+		}
+	      else
+		{
+		  /*
+		   * we are about to leave the patch and remember
+		   * where we are; we will delete later from
+		   * uvpptr->next on, all intermediate uvps
+		   */
+		  olduvp = &(uvpptr->next);
+		  /* we are now out */
+		  out = 1;
+		}
+	    } /* if */
+	  uvpptr = uvpptr->next;
+	} /* while */
+    } /* for */
 
   /* remove unwanted lines (all lines that contain no trimloop point) */
-  if(first_loop_cw == 1)
+  if(first_loop_cw)
     {
       for(i=0; i < Cn; i++)
 	{
-	  trimloop_point = 0;
-	  done = 0;
-	  uvpptr = uvps[i]; 
+	  trimloop_point = AY_FALSE;
+	  done = AY_FALSE;
+	  uvpptr = uvps[i];
 
 	  while(uvpptr && (!done))
 	    {
 	      if(uvpptr->type == 1)
 		{
-		  trimloop_point = 1;
-		  done = 1;
-		}
+		  trimloop_point = AY_TRUE;
+		  done = AY_TRUE;
+		} /* if */
 	      uvpptr = uvpptr->next;
-	    }
+	    } /* while */
 
 	  if(!trimloop_point)
 	    {
@@ -1123,32 +1118,26 @@ ay_stess_TessTrimmedNPU(Tcl_Interp *interp, ay_object *o, int num,
 		  uvpptr2 = uvpptr->next;
 		  free(uvpptr);
 		  uvpptr = uvpptr2;
-		}
+		} /* while */
 	      uvps[i] = NULL;
-	    }
-
-	}
-    }
+	    } /* if */
+	} /* for */
+    } /* if */
 
   /* finally, calculate surfacepoints */
   for(i = 0; i < Cn; i++)
     {
-      uvpptr = uvps[i]; 
+      uvpptr = uvps[i];
 
       while(uvpptr)
 	{
-	  if(p->has_weights)
-	    ay_nb_SurfacePoint4D(p->width-1, p->height-1,
-	     p->uorder-1, p->vorder-1, p->uknotv, p->vknotv, 
-	     p->controlv, uvpptr->u, uvpptr->v, uvpptr->C);
-	  else
-	    ay_nb_SurfacePoint3D(p->width-1, p->height-1,
-	     p->uorder-1, p->vorder-1, p->uknotv, p->vknotv, 
-	     p->controlv, uvpptr->u, uvpptr->v, uvpptr->C);
+	  ay_nb_SurfacePoint4D(p->width-1, p->height-1,
+			    p->uorder-1, p->vorder-1, p->uknotv, p->vknotv,
+			    p->controlv, uvpptr->u, uvpptr->v, uvpptr->C);
 
 	  uvpptr = uvpptr->next;
-	}
-    }
+	} /* while */
+    } /* for */
 
   *flcw = first_loop_cw;
   *result = uvps;
@@ -1174,7 +1163,7 @@ ay_stess_TessTrimmedNPV(Tcl_Interp *interp, ay_object *o, int num,
  double p3[2], p4[2], *U, *V, u, v;
  double umin, umax, vmin, vmax, ud, vd;
  int i, j, k, l, ind;
- int out = 0, first_loop = 1, first_loop_cw = 0;
+ int out = 0, first_loop = AY_TRUE, first_loop_cw = AY_FALSE;
  int Cm, Cn, trimloop_point, done;
  char fname[] = "TessTrimmedNPV";
 
@@ -1228,115 +1217,115 @@ ay_stess_TessTrimmedNPV(Tcl_Interp *interp, ay_object *o, int num,
   /* fill desired uv-coords */
   v = vmin;
   for(i = 0; i < Cm; i++)
-   {
-     u = umin;
-     olduvp = &(uvps[i]);
-     for(j = 0; j < Cn; j++)
-     {
-       if(!(newuvp = calloc(1, sizeof(ay_stess_uvp))))
-	 {
-	   return AY_EOMEM;
-	 }
-       /* type == 0 */
-       newuvp->u = u;
-       newuvp->v = v;
-       *olduvp = newuvp;
-       olduvp = &(newuvp->next);
-       u += ud;
-     }
-     v += vd;
-   }
+    {
+      u = umin;
+      olduvp = &(uvps[i]);
+      for(j = 0; j < Cn; j++)
+	{
+	  if(!(newuvp = calloc(1, sizeof(ay_stess_uvp))))
+	    {
+	      return AY_EOMEM;
+	    }
+	  /* type == 0 */
+	  newuvp->u = u;
+	  newuvp->v = v;
+	  *olduvp = newuvp;
+	  olduvp = &(newuvp->next);
+	  u += ud;
+	}
+      v += vd;
+    } /* for */
 
   v = vmin;
   /* match desired uv coords of patch tesselation with trimloops */
   for(i = 0; i < Cm; i++)
-   {
-    u = umin;
-    olduvp = &trimuvp;
-    trimuvp = NULL;
-    p3[1] = v;
-    p4[1] = v;
-    /* calc all intersections of all trimloops with current u */
-    for(j = 0; j < (Cn-1); j++)
-     {
-      p3[0] = u;
-      p4[0] = u+ud;
-      for(k = 0; k < numtrims; k++)
-       {	
-	tt = tcs[k];
-
-	for(l = 0; l < (tcslens[k]-1); l++)
-	  {
-	   /* pre-select trimloop section */
-	   ind = l*2;
-	   if(((tt[ind+1] <= v) && (tt[ind+2+1] >= v)) ||
-	      ((tt[ind+1] >= v) && (tt[ind+2+1] <= v)))
+    {
+      u = umin;
+      olduvp = &trimuvp;
+      trimuvp = NULL;
+      p3[1] = v;
+      p4[1] = v;
+      /* calc all intersections of all trimloops with current u */
+      for(j = 0; j < (Cn-1); j++)
+	{
+	  p3[0] = u;
+	  p4[0] = u+ud;
+	  for(k = 0; k < numtrims; k++)
 	    {
-	      ipoint[0] = 0.0;
-	      ipoint[1] = 0.0;
+	      tt = tcs[k];
 
-	      if((ay_stess_IntersectLines2D(&(tt[ind]), &(tt[ind+2]), p3, p4,
-					    ipoint)))
-		{ /* u-line intersects with trimcurve */
+	      for(l = 0; l < (tcslens[k]-1); l++)
+		{
+		  /* pre-select trimloop section */
+		  ind = l*2;
+		  if(((tt[ind+1] <= v) && (tt[ind+2+1] >= v)) ||
+		     ((tt[ind+1] >= v) && (tt[ind+2+1] <= v)))
+		    {
+		      ipoint[0] = 0.0;
+		      ipoint[1] = 0.0;
 
-		  /* test commented out, because it will make
-		     problems with uvp-types */
+		      if((ay_stess_IntersectLines2D(&(tt[ind]), &(tt[ind+2]),
+						    p3, p4, ipoint)))
+			{ /* u-line intersects with trimcurve */
 
-		  /* check whether ipoint is farther away enough
-                     from current v, v+vd */
-		  /* if((fabs(ipoint[1] - v) > STESS_EPSILON) &&
-		     (fabs(ipoint[1] - (v+vd)) > STESS_EPSILON))
-		    {*/ /* yes it is */
-		      /* add new point */
-		      if(!(newuvp = calloc(1, sizeof(ay_stess_uvp))))
-			{
-			  return AY_EOMEM;
-			}
-		      newuvp->type = 1;
-		      newuvp->dir = tcsdirs[k];
-		      newuvp->u = ipoint[0];
-		      newuvp->v = ipoint[1];
-		      *olduvp = newuvp;
-		      olduvp = &(newuvp->next);
-		      /*		    }*/ /* if */
-		} /* if */
-	    } /* if */
-	  } /* for */
-       } /* for */
+			  /* test commented out, because it will make
+			     problems with uvp-types */
 
-      u += ud;
-     } /* for */
+			  /* check whether ipoint is farther away enough
+			     from current v, v+vd */
+			  /* if((fabs(ipoint[1] - v) > AY_STESSEPSILON) &&
+			     (fabs(ipoint[1] - (v+vd)) > AY_STESSEPSILON))
+			     {*/ /* yes it is */
+			  /* add new point */
+			  if(!(newuvp = calloc(1, sizeof(ay_stess_uvp))))
+			    {
+			      return AY_EOMEM;
+			    }
+			  newuvp->type = 1;
+			  newuvp->dir = tcsdirs[k];
+			  newuvp->u = ipoint[0];
+			  newuvp->v = ipoint[1];
+			  *olduvp = newuvp;
+			  olduvp = &(newuvp->next);
+			  /*		    }*/ /* if */
+			} /* if */
+		    } /* if */
+		} /* for */
+	    } /* for */
 
-    /* merge vectors */
-    if(trimuvp)
-      {
-	ay_status = AY_OK;
-	ay_status = ay_stess_MergeVVectors(uvps[i], trimuvp);
-	if(ay_status)
-	  {
-	    ay_error(interp, AY_ERROR, fname,
+	  u += ud;
+	} /* for */
+
+      /* merge vectors */
+      if(trimuvp)
+	{
+	  ay_status = AY_OK;
+	  ay_status = ay_stess_MergeVVectors(uvps[i], trimuvp);
+	  if(ay_status)
+	    {
+	      ay_error(interp, AY_ERROR, fname,
 		       "Intersecting or misoriented Trimcurves!\n");
 
-	    if(trimuvp)
-	      {
-		uvpptr = trimuvp;
-		while(uvpptr)
-		  {
-		    uvpptr2 = uvpptr->next;
-		    free(uvpptr);
-		    uvpptr = uvpptr2;
-		  }
-	      }
-	    return AY_ERROR;
-	  }
-      }
+	      if(trimuvp)
+		{
+		  uvpptr = trimuvp;
+		  while(uvpptr)
+		    {
+		      uvpptr2 = uvpptr->next;
+		      free(uvpptr);
+		      uvpptr = uvpptr2;
+		    }
+		}
+	      return AY_ERROR;
+	    }
+	}
 
-    v += vd;
-   } /* for */
+      v += vd;
+    } /* for */
 
 
   /* remove unwanted uvps */
-  first_loop = 1;
+  first_loop = AY_TRUE;
   for(i = 0; i < Cm; i++)
    {
     olduvp = &(uvps[i]);
@@ -1355,7 +1344,7 @@ ay_stess_TessTrimmedNPV(Tcl_Interp *interp, ay_object *o, int num,
 		    out = 1;
 		  }
 	      }
-	    first_loop = 0;
+	    first_loop = AY_FALSE;
 
 	    if(out)
 	      {
@@ -1396,23 +1385,23 @@ ay_stess_TessTrimmedNPV(Tcl_Interp *interp, ay_object *o, int num,
    } /* for */
 
   /* remove unwanted lines (all lines that contain no trimloop point) */
-  if(first_loop_cw == 1)
+  if(first_loop_cw)
     {
       for(i = 0; i < Cn; i++)
 	{
-	  trimloop_point = 0;
-	  done = 0;
-	  uvpptr = uvps[i]; 
+	  trimloop_point = AY_FALSE;
+	  done = AY_FALSE;
+	  uvpptr = uvps[i];
 
 	  while(uvpptr && (!done))
 	    {
 	      if(uvpptr->type == 1)
 		{
-		  trimloop_point = 1;
-		  done = 1;
-		}
+		  trimloop_point = AY_TRUE;
+		  done = AY_TRUE;
+		} /* if */
 	      uvpptr = uvpptr->next;
-	    }
+	    } /* while */
 
 	  if(!trimloop_point)
 	    {
@@ -1422,32 +1411,27 @@ ay_stess_TessTrimmedNPV(Tcl_Interp *interp, ay_object *o, int num,
 		  uvpptr2 = uvpptr->next;
 		  free(uvpptr);
 		  uvpptr = uvpptr2;
-		}
+		} /* while */
 	      uvps[i] = NULL;
-	    }
-
-	}
-    }
+	    } /* if */
+	} /* for */
+    } /* if */
 
   /* finally, calculate surfacepoints */
   for(i = 0; i < Cm; i++)
     {
-      uvpptr = uvps[i]; 
+      uvpptr = uvps[i];
 
       while(uvpptr)
 	{
-	  if(p->has_weights)
-	    ay_nb_SurfacePoint4D(p->width-1, p->height-1,
-	     p->uorder-1, p->vorder-1, p->uknotv, p->vknotv, 
-	     p->controlv, uvpptr->u, uvpptr->v, uvpptr->C);
-	  else
-	    ay_nb_SurfacePoint3D(p->width-1, p->height-1,
-	     p->uorder-1, p->vorder-1, p->uknotv, p->vknotv, 
-	     p->controlv, uvpptr->u, uvpptr->v, uvpptr->C);
+
+	  ay_nb_SurfacePoint4D(p->width-1, p->height-1,
+			       p->uorder-1, p->vorder-1, p->uknotv, p->vknotv,
+			       p->controlv, uvpptr->u, uvpptr->v, uvpptr->C);
 
 	  uvpptr = uvpptr->next;
-	}
-    }
+	} /* while */
+    } /* for */
 
   *result = uvps;
 
@@ -1456,7 +1440,7 @@ ay_stess_TessTrimmedNPV(Tcl_Interp *interp, ay_object *o, int num,
 
 
 /* ay_stess_DrawTrimmedSurface:
- *   
+ *
  */
 int
 ay_stess_DrawTrimmedSurface(Tcl_Interp *interp, ay_object *o, int num)
@@ -1510,13 +1494,15 @@ ay_stess_DrawTrimmedSurface(Tcl_Interp *interp, ay_object *o, int num)
 		  glVertex3dv((GLdouble*)(uvpptr->C));
 		  glEnd();
 		  out = 1;
-		}
+		} /* if */
 	    }
 	  else
-	    glVertex3dv((GLdouble*)(uvpptr->C));
+	    {
+	      glVertex3dv((GLdouble*)(uvpptr->C));
+	    } /* if */
 
 	  uvpptr = uvpptr->next;
-	}
+	} /* while */
 
       if(!out)
 	glEnd();
@@ -1555,13 +1541,15 @@ ay_stess_DrawTrimmedSurface(Tcl_Interp *interp, ay_object *o, int num)
 		  glVertex3dv((GLdouble*)(uvpptr->C));
 		  glEnd();
 		  out = 1;
-		}
+		} /* if */
 	    }
 	  else
-	    glVertex3dv((GLdouble*)(uvpptr->C));
+	    {
+	      glVertex3dv((GLdouble*)(uvpptr->C));
+	    } /* if */
 
 	  uvpptr = uvpptr->next;
-	}
+	}  /* while */
 
       if(!out)
 	glEnd();
@@ -1573,21 +1561,16 @@ ay_stess_DrawTrimmedSurface(Tcl_Interp *interp, ay_object *o, int num)
   for(i = 0; i < numtrims; i++)
     {
       glBegin(GL_LINE_STRIP);
-      for(j = 0; j < tcslens[i]; j++)
-	{
-	  if(p->has_weights)
-	    ay_nb_SurfacePoint4D(p->width-1, p->height-1,
-	     p->uorder-1, p->vorder-1, p->uknotv, p->vknotv, 
-	     p->controlv, tcs[i][j*2], tcs[i][j*2+1], p4);
-	  else
-	    ay_nb_SurfacePoint3D(p->width-1, p->height-1,
-	     p->uorder-1, p->vorder-1, p->uknotv, p->vknotv, 
-	     p->controlv, tcs[i][j*2], tcs[i][j*2+1], p4);
+       for(j = 0; j < tcslens[i]; j++)
+	 {
+	   ay_nb_SurfacePoint4D(p->width-1, p->height-1,
+	       	       p->uorder-1, p->vorder-1, p->uknotv, p->vknotv,
+	       	       p->controlv, tcs[i][j*2], tcs[i][j*2+1], p4);
 
-	  glVertex3dv((GLdouble*)(p4));
-	}
+	   glVertex3dv((GLdouble*)(p4));
+	 } /* for */
       glEnd();
-    }
+    } /* for */
 
   /* clean up the mess */
 cleanup:
@@ -1599,9 +1582,11 @@ cleanup:
 	  free(tcs[i]);
 	}
       free(tcs);
-    }
+    } /* if */
+
   if(tcslens)
     free(tcslens);
+
   if(tcsdirs)
     free(tcsdirs);
 
@@ -1617,9 +1602,9 @@ cleanup:
 	      uvpptr = uvpptr2;
 	    }
 	  ups[i] = NULL;
-	}
+	} /* for */
       free(ups);
-    }
+    } /* if */
 
   if(vps)
     {
@@ -1633,12 +1618,12 @@ cleanup:
 	      uvpptr = uvpptr2;
 	    }
 	  vps[i] = NULL;
-	}
+	} /* for */
       free(vps);
-    }
+    } /* if */
 
  return AY_OK;
 } /* ay_stess_DrawTrimmedSurface */
 
 /* remove local preprocessor definitions */
-#undef STESS_EPSILON
+#undef AY_STESSEPSILON
