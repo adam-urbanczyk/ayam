@@ -105,7 +105,7 @@ ay_level_shadecb(struct Togl *togl, ay_object *o)
 
 
 int
-ay_level_getpntcb(ay_object *o, double *p)
+ay_level_getpntcb(int mode, ay_object *o, double *p)
 {
   if(!o)
     return AY_ENULL;

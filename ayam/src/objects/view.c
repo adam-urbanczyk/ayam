@@ -445,11 +445,12 @@ ay_view_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
 
 int
-ay_view_getpntcb(ay_object *o, double *p)
+ay_view_getpntcb(int mode, ay_object *o, double *p)
 {
  ay_view_object *view = NULL;
  double min_dist = ay_prefs.pick_epsilon, dist = 0.0;
- double *pecoords = NULL;
+ double *pecoord = NULL, **pecoords = NULL, *c;
+ int a;
 
   if(!o || !p)
     return AY_ENULL;
@@ -466,7 +467,7 @@ ay_view_getpntcb(ay_object *o, double *p)
 
 
   /* select all points? */
-  if((p[0] == DBL_MIN) && (p[1] == DBL_MIN) && (p[2] == DBL_MIN))
+  if(mode == 0)
     { /* yes */
 
       if(!(ay_point_edit_coords = calloc(2, sizeof(double*))))
@@ -481,36 +482,82 @@ ay_view_getpntcb(ay_object *o, double *p)
   else
     { /* no */
 
-      dist = AY_VLEN((p[0] - view->from[0]),
-		     (p[1] - view->from[1]),
-		     (p[2] - view->from[2]));
+      /* selection based on a single point? */
+      if(mode == 1)
+	{ /* yes */
 
-      if(dist < min_dist)
-	{
-	  pecoords = view->from;
-	  min_dist = dist;
-	}
+	  dist = AY_VLEN((p[0] - view->from[0]),
+			 (p[1] - view->from[1]),
+			 (p[2] - view->from[2]));
 
-      dist = AY_VLEN((p[0] - view->to[0]),
-		     (p[1] - view->to[1]),
-		     (p[2] - view->to[2]));
+	  if(dist < min_dist)
+	    {
+	      pecoord = view->from;
+	      min_dist = dist;
+	    }
 
-      if(dist < min_dist)
-	{
-	  pecoords = view->to;
-	  min_dist = dist;
+	  dist = AY_VLEN((p[0] - view->to[0]),
+			 (p[1] - view->to[1]),
+			 (p[2] - view->to[2]));
+
+	  if(dist < min_dist)
+	    {
+	      pecoord = view->to;
+	      min_dist = dist;
 	    
+	    }
+
+	  if(!pecoord)
+	    return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
+
+	  if(!(ay_point_edit_coords = calloc(1, sizeof(double*))))
+	    return AY_EOMEM;
+
+	  ay_point_edit_coords[0] = pecoord;
+	  ay_point_edit_coords_homogenous = AY_FALSE;
+	  ay_point_edit_coords_number = 1;
+
 	}
+      else
+	{ /* no */
+	  /* selection based on planes */
+	  c = view->from;
+	  a = 0;
+	  /* test point c against the four planes in p */
+	  if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) && 
+	     ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) && 
+	     ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) && 
+	     ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
+	    {
 
-      if(!pecoords)
-	return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
+	      if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
+		return AY_EOMEM;
+	      pecoords[a] = c;
+	      a++;		  
+	    } /* if */
 
-      if(!(ay_point_edit_coords = calloc(1, sizeof(double*))))
-	return AY_EOMEM;
+	  c = view->to;
+	  /* test point c against the four planes in p */
+	  if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) && 
+	     ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) && 
+	     ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) && 
+	     ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
+	    {
 
-      ay_point_edit_coords[0] = pecoords;
-      ay_point_edit_coords_homogenous = AY_FALSE;
-      ay_point_edit_coords_number = 1;
+	      if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
+		return AY_EOMEM;
+	      pecoords[a] = c;
+	      a++;		  
+	    } /* if */
+
+	  if(!pecoords)
+	    return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
+
+	  ay_point_edit_coords_homogenous = AY_FALSE;
+	  ay_point_edit_coords = pecoords;
+	  ay_point_edit_coords_number = a;
+
+	} /* if */
     } /* if */
 
  return AY_OK;

@@ -897,7 +897,7 @@ ay_mopsi_shaders(FILE *fileptr)
 	 light = (ay_light_object*)o->refine;
 
 	 light->lshader = shader;
-	 ay_status = ay_pact_getpoint(o, p);
+	 ay_status = ay_pact_getpoint(1, o, p);
 	 shader = NULL;
        }
 

@@ -290,7 +290,7 @@ void ay_matt_nomaterial(unsigned int type);
 int ay_matt_mayhavematerial(unsigned int type);
 
 /* pact.c */
-int ay_pact_getpoint(ay_object *o, double *obj);
+int ay_pact_getpoint(int mode, ay_object *o, double *obj);
 
 int ay_pact_seltcb(struct Togl *togl, int argc, char *argv[]);
 
@@ -617,6 +617,10 @@ void ay_trafo_scalematrix(double x, double y, double z, double *m);
 void ay_trafo_rotatematrix(double angle, double x, double y, double z,
 			   double *m);
 
+void ay_trafo_pointstoplane(double x1, double y1, double z1,
+			    double x2, double y2, double z2,
+			    double x3, double y3, double z3,
+			    double *A, double *B, double *C, double *D);
 /* undo.c */
 int ay_undo_init(int buffer_size);
 
@@ -642,6 +646,10 @@ void ay_viewt_rotate(ay_view_object *view, double rotx, double roty,
 int ay_viewt_wintoobj(struct Togl *togl, ay_object *o,
 		      double winX, double winY,
 		      double *objX, double *objY, double *objZ);
+
+int ay_viewt_winrecttoobj(struct Togl *togl, ay_object *o,
+			  double winX, double winY, double winX2, double winY2,
+			  double *obj);
 
 int ay_viewt_wintoworld(struct Togl *togl, double winX, double winY,
 			double *worldX, double *worldY, double *worldZ);

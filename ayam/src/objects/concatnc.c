@@ -117,7 +117,7 @@ ay_concatnc_drawhcb(struct Togl *togl, ay_object *o)
 
 
 int
-ay_concatnc_getpntcb(ay_object *o, double *p)
+ay_concatnc_getpntcb(int mode, ay_object *o, double *p)
 {
 
  return AY_OK;

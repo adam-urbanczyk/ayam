@@ -750,7 +750,7 @@ typedef int (ay_drawcb) (struct Togl *togl,  ay_object *o);
 typedef int (ay_propcb) (Tcl_Interp *interp, int argc, char *argv[],
 			 ay_object *o);
 
-typedef int (ay_getpntcb) (ay_object *o, double *p);
+typedef int (ay_getpntcb) (int mode, ay_object *o, double *p);
 
 typedef int (ay_wribcb) (char *file, ay_object *o);
 

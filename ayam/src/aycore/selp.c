@@ -56,7 +56,7 @@ ay_selp_selall(ay_object *o)
     return AY_ENULL;
 
   ay_selp_clear(o);
-  ay_status = ay_pact_getpoint(o, p);
+  ay_status = ay_pact_getpoint(0, o, p);
 
   for(i = 0; i < ay_point_edit_coords_number; i++)
     {

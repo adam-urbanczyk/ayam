@@ -132,7 +132,7 @@ ay_cap_drawhcb(struct Togl *togl, ay_object *o)
 
 
 int
-ay_cap_getpntcb(ay_object *o, double *p)
+ay_cap_getpntcb(int mode, ay_object *o, double *p)
 {
 
  return AY_OK;

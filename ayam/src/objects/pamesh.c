@@ -348,11 +348,11 @@ ay_pamesh_drawhcb(struct Togl *togl, ay_object *o)
 
 
 int
-ay_pamesh_getpntcb(ay_object *o, double *p)
+ay_pamesh_getpntcb(int mode, ay_object *o, double *p)
 {
  ay_pamesh_object *pamesh = NULL;
  double min_dist = ay_prefs.pick_epsilon, dist = 0.0;
- double *pecoords = NULL, *control = NULL;
+ double *pecoord = NULL, **pecoords = NULL, *control = NULL, *c;
  int i = 0, j = 0, a = 0, found = AY_FALSE;
 
   if(!o || !p)
@@ -369,7 +369,7 @@ ay_pamesh_getpntcb(ay_object *o, double *p)
   ay_point_edit_coords = NULL;
 
   /* select all points? */
-  if((p[0] == DBL_MIN) && (p[1] == DBL_MIN) && (p[2] == DBL_MIN))
+  if(mode == 0)
     { /* yes */
       if(!(ay_point_edit_coords = calloc(pamesh->width * pamesh->height,
 					 sizeof(double*))))
@@ -386,37 +386,79 @@ ay_pamesh_getpntcb(ay_object *o, double *p)
     }
   else
     { /* no */
-      control = pamesh->controlv;
-      for(i = 0; i < (pamesh->width * pamesh->height); i++)
-	{
-	  dist = AY_VLEN((p[0] - control[j]),
+
+      /* selection based on a single point? */
+      if(mode == 1)
+	{ /* yes */
+
+	  control = pamesh->controlv;
+
+	  for(i = 0; i < (pamesh->width * pamesh->height); i++)
+	    {
+	      dist = AY_VLEN((p[0] - control[j]),
 			     (p[1] - control[j+1]),
 			     (p[2] - control[j+2]));
 
-	  if(dist < min_dist)
-	    {
-	      pecoords = &(control[j]);
-	      min_dist = dist;
+	      if(dist < min_dist)
+		{
+		  pecoord = &(control[j]);
+		  min_dist = dist;
+		}
+
+	      j += 4;
 	    }
 
-	  j += 4;
+	  if(!pecoord)
+	    return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
+
+	  ay_point_edit_coords_homogenous = AY_TRUE;
+
+	  if(!found)
+	    {
+
+	      if(!(ay_point_edit_coords = calloc(1, sizeof(double*))))
+		return AY_EOMEM;
+
+	      ay_point_edit_coords[0] = pecoord;
+	      ay_point_edit_coords_number = 1;
+	    }
 	}
+      else
+	{ /* no */
 
-      if(!pecoords)
-	return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
+	  /* selection based on planes */
+	  control = pamesh->controlv;
+	  j = 0;
+	  a = 0;
+	  for(i = 0; i < pamesh->width * pamesh->height; i++)
+	    {
+	      c = &(control[j]);
 
-      ay_point_edit_coords_homogenous = AY_TRUE;
+	      /* test point c against the four planes in p */
+	      if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) && 
+		 ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) && 
+		 ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) && 
+		 ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
+		{
 
-      if(!found)
-	{
+		  if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
+		    return AY_EOMEM;
+		  pecoords[a] = &(control[j]);
+		  a++;		  
+		} /* if */
 
-	  if(!(ay_point_edit_coords = calloc(1, sizeof(double*))))
-	    return AY_EOMEM;
+	      j += 4;
+	    } /* for */
 
-	  ay_point_edit_coords[0] = pecoords;
-	  ay_point_edit_coords_number = 1;
-	}
-    }
+	  if(!pecoords)
+	    return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
+
+	  ay_point_edit_coords_homogenous = AY_TRUE;
+	  ay_point_edit_coords = pecoords;
+	  ay_point_edit_coords_number = a;
+
+	} /* if */
+    } /* if */
 
  return AY_OK;
 } /* ay_pamesh_getpntcb */
