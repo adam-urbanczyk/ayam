@@ -382,6 +382,12 @@ array set ay {
  need_redraw 1
  sstsema 0
  mouseup 0
+ gl_ver ""
+ gl_ven ""
+ gl_ren ""
+ gl_ext ""
+ glu_ver ""
+ glu_ext ""
 }
 # array ay
 
