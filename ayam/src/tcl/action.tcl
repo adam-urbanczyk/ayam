@@ -811,7 +811,7 @@ proc actionPick { w } {
 	focus %W
     }
 
-    bind $w <Shift-ButtonRelease-1> {
+    bind $w <Control-ButtonRelease-1> {
 	%W setconf -rect $oldx $oldy %x %y 0
 
 	if { [winfo exists .reconsider] == 0} {
