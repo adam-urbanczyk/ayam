@@ -1,4 +1,4 @@
-/* $Id: togl.c,v 1.5 2003/02/26 20:11:54 randolf Exp $ */
+/* $Id: togl.c,v 1.6 2004/10/19 21:17:20 randolf Exp $ */
 
 /*
  * Togl - a Tk OpenGL widget
@@ -13,6 +13,9 @@
 
 /*
  * $Log: togl.c,v $
+ * Revision 1.6  2004/10/19 21:17:20  randolf
+ * fixed compilation error on SGI/gcc
+ *
  * Revision 1.5  2003/02/26 20:11:54  randolf
  * fixed free()ing of visinfo
  *
@@ -199,6 +202,15 @@
 #endif /* X11 */
 #endif
 #include <tcl.h>
+
+/* fix compilation error (initializer element is not constant)
+   with gcc on IRIX */
+#ifdef __sgi
+#ifdef __GNUC__
+#undef offsetof
+#endif
+#endif
+
 #include <tk.h>
 
 /* XXXX always include tkInt.h */
