@@ -35,6 +35,8 @@ ay_clear_scene(void)
     {
       ay_error(AY_ERROR, fname,
 	       "There are referencing objects in the clipboard!");
+      ay_error(AY_ERROR, fname,
+	       "Use menu: \\\"Special/Paste (Move)\\\" first!");
       return AY_ERROR;
     }
 
