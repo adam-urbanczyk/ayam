@@ -1,7 +1,7 @@
 # ------------------------------------------------------------------------------
 #  tree.tcl
 #  This file is part of Unifix BWidget Toolkit
-#  $Id: tree.tcl,v 1.2 2002/01/08 07:04:28 randolf Exp $
+#  $Id: tree.tcl,v 1.3 2003/09/19 06:56:46 randolf Exp $
 # ------------------------------------------------------------------------------
 #  Index of commands:
 #     - Tree::create
@@ -885,12 +885,17 @@ proc Tree::_draw_node { path node x0 y0 deltax deltay padx showlines } {
 
     if { [string compare $dc "never"] && ($len || ![string compare $dc "allways"]) } {
         if { $exp } {
-            set bmp [file join $env(BWIDGET_LIBRARY) "images" "minus.xbm"]
+	    #XXXX
+            #set bmp [file join $env(BWIDGET_LIBRARY) "images" "minus.xbm"]
+	    set bmp "minus"
         } else {
-            set bmp [file join $env(BWIDGET_LIBRARY) "images" "plus.xbm"]
+	    #XXXX
+            #set bmp [file join $env(BWIDGET_LIBRARY) "images" "plus.xbm"]
+	    set bmp "plus"
         }
+	#XXXX was -bitmpa @$bmp...
         $path:cmd create bitmap $x0 $y0 \
-            -bitmap     @$bmp \
+	    -bitmap     $bmp \
             -background [$path:cmd cget -background] \
             -foreground [Widget::getoption $path -linesfill] \
             -tags       "cross c:$node" -anchor c
@@ -978,13 +983,18 @@ proc Tree::_update_nodes { path } {
 
             if { [string compare $dc "never"] && ($len || ![string compare $dc "allways"]) } {
                 if { $exp } {
-                    set bmp [file join $env(BWIDGET_LIBRARY) "images" "minus.xbm"]
+		    #XXXX
+		    # set bmp [file join $env(BWIDGET_LIBRARY) "images" "minus.xbm"]
+		    set bmp "minus"
                 } else {
-                    set bmp [file join $env(BWIDGET_LIBRARY) "images" "plus.xbm"]
+		    #XXXX
+		    # set bmp [file join $env(BWIDGET_LIBRARY) "images" "plus.xbm"]
+		    set bmp "plus"
                 }
                 if { $idc == "" } {
+		    #XXXX was -bitmpa @$bmp...
                     $path:cmd create bitmap [expr {$x0-$deltax-5}] $y0 \
-                        -bitmap     @$bmp \
+		        -bitmap $bmp\
                         -background [$path:cmd cget -background] \
                         -foreground [Widget::getoption $path -linesfill] \
                         -tags       "cross c:$node" -anchor c

@@ -9,8 +9,9 @@
 
 # tree.tcl - the object hierarchy tree widget
 
-package require -exact BWidget 1.2.1
-
+if { $AYWRAPPED != 1 } {
+    package require -exact BWidget 1.2.1
+}
 
 set ay(tree) ""
 #set ay(ObjectBar) ""
