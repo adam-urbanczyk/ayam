@@ -333,6 +333,8 @@ typedef struct ay_pamesh_object_s {
 		  AY_BTCUSTOM */
   double *ubasis; /* [16], only in use for btype_u == AY_BTCUSTOM */
   double *vbasis; /* [16], only in use for btype_v == AY_BTCUSTOM */
+  double glu_sampling_tolerance;
+  int glu_display_mode;
 } ay_pamesh_object;
 
 
