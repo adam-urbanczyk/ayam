@@ -120,6 +120,8 @@ proc prefs_open {} {
     addParamB $fw ayprefse HandleSize [ms ayprefse_HandleSize] { 4 5 6 8 }
     addCheckB $fw ayprefse LazyNotify [ms ayprefse_LazyNotify]
     addCheckB $fw ayprefse EditSnaps [ms ayprefse_EditSnaps]
+    set l $ay(defactions)
+    addMenuB $fw ayprefse DefaultAction [ms ayprefse_DefaultAction] $l
     addParamB $fw ayprefse UndoLevels [ms ayprefse_UndoLevels] { -1 2 5 10 20 }
 
     # Drawing

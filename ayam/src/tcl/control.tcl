@@ -73,7 +73,8 @@ proc forAll_tree { recursive command } {
 }
 # forAll_tree
 
-#
+
+# forAll_lb
 #
 #
 proc forAll_lb { recursive command } {
@@ -141,7 +142,7 @@ proc forAll_lb { recursive command } {
 # forAll_lb
 
 
-#
+# forAll:
 #
 #
 proc forAll { recursive command } {
@@ -174,7 +175,7 @@ proc forAll { recursive command } {
 # forAll
 
 
-#
+# forAllT_tree:
 #
 #
 proc forAllT_tree { type recursive command } {
@@ -244,7 +245,7 @@ proc forAllT_tree { type recursive command } {
 # forAllT_tree
 
 
-#
+# forAllT_lb:
 #
 #
 proc forAllT_lb { type recursive command } {
@@ -318,7 +319,8 @@ proc forAllT_lb { type recursive command } {
 }
 # forAllT_lb
 
-#
+
+# forAllT:
 #
 #
 proc forAllT { type recursive command } {
@@ -348,13 +350,18 @@ proc forAllT { type recursive command } {
 
  return;
 }
+# forAllT
 
-# allow canceling of user Tcl-scripts in the console
-bind .fl.con.console <Control-KeyPress-C> {set cancelled 1}
-bind .fl.con.console <Control-KeyRelease-C> {set cancelled 0}
+# allow cancelling of user Tcl-scripts in the console
 
 set cancelled 0
 
+bind .fl.con.console <Control-KeyPress-C> {set cancelled 1}
+bind .fl.con.console <Control-KeyRelease-C> {set cancelled 0}
+
+#
+#
+#
 proc cancelled {} {
     global cancelled
     # give the user a chance to press Ctrl+C
@@ -363,6 +370,7 @@ proc cancelled {} {
 	error "Cancelled!"
     }
 }
+# cancelled
 
 rename while _while
 proc while {condition body} {
@@ -373,3 +381,54 @@ rename for _for
 proc for {start test next body} {
     uplevel [list _for $start $test $next "cancelled;$body"]
 }
+
+#bind .fl.con.console <FocusIn> "renameWhileFor"
+#bind .fl.con.console <FocusOut> "unrenameWhileFor"
+
+#
+#
+#
+proc renameWhileFor { } {
+    uplevel \#0 {
+	rename while _while
+	proc while {condition body} {
+	    uplevel [list _while $condition "cancelled;$body"]
+	}
+
+	rename for _for
+	proc for {start test next body} {
+	    uplevel [list _for $start $test $next "cancelled;$body"]
+	}
+
+	#rename foreach _foreach
+	#proc foreach {vname args} {
+	#    puts "vname: $vname"
+	#    set elems [lrange $args 0 end-1]
+	#    puts "elems: $elems"
+	#    set body [lindex $args end]
+	#    puts "body: $body"
+	#    uplevel [list _foreach $vname $elems "cancelled;$body"]
+	#}
+    }
+    #uplevel
+ return;
+}
+# renameWhileFor
+
+
+#
+#
+#
+proc unrenameWhileFor { } {
+    uplevel \#0 {
+	#rename foreach {}
+	rename for {}
+	rename while {}
+	#rename _foreach foreach 
+	rename _for for
+	rename _while while
+    }
+    #uplevel
+ return;
+}
+# unrenameWhileFor
