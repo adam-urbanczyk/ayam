@@ -65,8 +65,8 @@ ay_tree_getclevel(char *node)
 {
  int ay_status = AY_OK;
  int i = 4, p, n;
- ay_object *o = ay_root;;
- 
+ ay_object *o = ay_root;
+
   ay_status = ay_clevel_delall();
 
   if (memcmp(node, "root:", 5))
@@ -144,7 +144,7 @@ ay_tree_getobject(char *node)
 {
  int i = 4, p, n, c;
  ay_object *o = NULL;
- 
+
   if(memcmp(node, "root:", 5))
     return NULL;
 
@@ -305,7 +305,7 @@ ay_tree_crttreestring(Tcl_Interp *interp, ay_object *o,
 
 
 /* ay_tree_crtstringfromobj:
- * 
+ *
  */
 int
 ay_tree_crtstringfromobj(ay_object *level, ay_object *o, ay_list_object *list,
@@ -342,7 +342,7 @@ ay_tree_crtstringfromobj(ay_object *level, ay_object *o, ay_list_object *list,
 	      tmp = tmp->next;
 	    }
 
-	  free(last->next);	      
+	  free(last->next);
 	  last->next = NULL;
 	}
       else
@@ -369,7 +369,7 @@ ay_tree_crtstringfromobj(ay_object *level, ay_object *o, ay_list_object *list,
 		  tmp = tmp->next;
 		}
 
-	      free(last->next);	      
+	      free(last->next);
 	      last->next = NULL;
 
 	    } /* if */
@@ -415,7 +415,7 @@ ay_tree_gettreetcmd(ClientData clientData, Tcl_Interp *interp,
   Tcl_SetVar(interp, argv[1], "", TCL_LEAVE_ERR_MSG);
 
   ay_tree_crttreestring(interp, o, &ds);
-  
+
   Tcl_SetVar(interp, argv[1], Tcl_DStringValue(&ds), TCL_LEAVE_ERR_MSG);
 
   Tcl_DStringFree(&ds);
@@ -474,7 +474,7 @@ ay_tree_selecttcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(need_redraw)
     {
-      Tcl_SetVar(interp, vname, yes, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY); 
+      Tcl_SetVar(interp, vname, yes, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
     }
   else
     {
@@ -491,6 +491,11 @@ ay_tree_selecttcmd(ClientData clientData, Tcl_Interp *interp,
     }
   ay_selection = newsel;
 
+  if(need_redraw)
+    {
+      ay_viewt_alignlocal();
+    }
+  
  return TCL_OK;
 } /* ay_tree_selecttcmd */
 
@@ -510,7 +515,7 @@ int ayext_createbox(ay_object *o, char *treesel) {
   box->width  = 1.0;
   box->length = 1.0;
   box->height = 1.0;
-   
+
   o->type = AY_OTBOX;
   o->object = box;
 
@@ -746,7 +751,7 @@ ay_tree_dndtcmd(ClientData clientData, Tcl_Interp *interp,
 	  has_callback = AY_TRUE;
 	  ay_status = cb(p);
 	}
-      
+
       if((has_callback == AY_FALSE) && (!p->parent))
 	{
 	  ay_error(AY_ERROR, fname, "Can not place objects here!");
@@ -770,7 +775,7 @@ ay_tree_dndtcmd(ClientData clientData, Tcl_Interp *interp,
 	  t = &(p->next);
 	  p = p->next;
 	}
-      
+
     }
   else
     { /* move object between two others */
@@ -782,7 +787,7 @@ ay_tree_dndtcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
-	  
+
 	  if(p)
 	    {
 	      p = p->down;

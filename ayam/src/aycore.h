@@ -700,6 +700,8 @@ int ay_viewt_zoomtoobj(struct Togl *togl, int argc, char *argv[]);
 
 int ay_viewt_align(struct Togl *togl, int argc, char *argv[]);
 
+void ay_viewt_alignlocal();
+
 int ay_viewt_makecurtcb(struct Togl *togl, int argc, char *argv[]);
 
 void ay_viewt_changetype(ay_view_object *view, int type);
