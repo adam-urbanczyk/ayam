@@ -703,12 +703,14 @@ $m add separator
 $m add command -label "Deselect Object" -command {
     cS;plb_update;rV}
 $m add separator
-$m add command -label "Copy Object" -command ".fu.fMenu.ed.m invoke 0"
-$m add command -label "Cut Object" -command ".fu.fMenu.ed.m invoke 1"
-$m add command -label "Paste Object" -command ".fu.fMenu.ed.m invoke 2"
+
+set em $ay(editmenu)
+$m add command -label "Copy Object" -command "$em invoke 0"
+$m add command -label "Cut Object" -command "$em invoke 1"
+$m add command -label "Paste Object" -command "$em invoke 2"
 #$m add command -label "Paste (Move)" -command "cmovOb;uS;rV"
 $m add separator
-$m add command -label "Delete Object" -command ".fu.fMenu.ed.m invoke 3"
+$m add command -label "Delete Object" -command "$em invoke 3"
 
 bind $ay(tree) <ButtonPress-3> "tree_popup $ay(tree)"
 

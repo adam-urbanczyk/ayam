@@ -27,7 +27,7 @@ proc repkp { string } {
 # 
 #
 proc shortcut_main { w } {
-    global aymainshortcuts
+    global ay aymainshortcuts
 
     if { [winfo exists .fl.con] == 1 } {
 	bind .fl.con.console <[repcont $aymainshortcuts(SwCon)]> {
@@ -44,65 +44,68 @@ proc shortcut_main { w } {
 
     }
 
+    set m $ay(filemenu)
+    bind $w <[repcont $aymainshortcuts(New)]> "$m invoke 0"
+    $m entryconfigure 0 -accelerator $aymainshortcuts(New)
+    bind $w <[repcont $aymainshortcuts(Replace)]> "$m invoke 2"
+    $m entryconfigure 2 -accelerator $aymainshortcuts(Replace)
+    bind $w <[repcont $aymainshortcuts(Insert)]> "$m invoke 3"
+    $m entryconfigure 3 -accelerator $aymainshortcuts(Insert)
+    bind $w <[repcont $aymainshortcuts(SaveAs)]> "$m invoke 5"
+    $m entryconfigure 5 -accelerator $aymainshortcuts(SaveAs)
+    bind $w <[repcont $aymainshortcuts(Save)]> "$m invoke 6"
+    $m entryconfigure 6 -accelerator $aymainshortcuts(Save)
+    bind $w <[repcont $aymainshortcuts(ExportRIB)]> "$m invoke 10"
+    $m entryconfigure 10 -accelerator $aymainshortcuts(ExportRIB)
 
-    bind $w <[repcont $aymainshortcuts(New)]> ".fu.fMenu.fil.m invoke 0"
-    .fu.fMenu.fil.m entryconfigure 0 -accelerator $aymainshortcuts(New)
-    bind $w <[repcont $aymainshortcuts(Replace)]> ".fu.fMenu.fil.m invoke 2"
-    .fu.fMenu.fil.m entryconfigure 2 -accelerator $aymainshortcuts(Replace)
-    bind $w <[repcont $aymainshortcuts(Insert)]> ".fu.fMenu.fil.m invoke 3"
-    .fu.fMenu.fil.m entryconfigure 3 -accelerator $aymainshortcuts(Insert)
-    bind $w <[repcont $aymainshortcuts(SaveAs)]> ".fu.fMenu.fil.m invoke 5"
-    .fu.fMenu.fil.m entryconfigure 5 -accelerator $aymainshortcuts(SaveAs)
-    bind $w <[repcont $aymainshortcuts(Save)]> ".fu.fMenu.fil.m invoke 6"
-    .fu.fMenu.fil.m entryconfigure 6 -accelerator $aymainshortcuts(Save)
-    bind $w <[repcont $aymainshortcuts(ExportRIB)]> ".fu.fMenu.fil.m invoke 10"
-    .fu.fMenu.fil.m entryconfigure 10 -accelerator $aymainshortcuts(ExportRIB)
-
-    bind $w <[repcont $aymainshortcuts(MRU1)]> ".fu.fMenu.fil.m invoke 16"
-    .fu.fMenu.fil.m entryconfigure 16\
+    bind $w <[repcont $aymainshortcuts(MRU1)]> "$m invoke 16"
+    $m entryconfigure 16\
 	    -accelerator [repkp $aymainshortcuts(MRU1)]
-    bind $w <[repcont $aymainshortcuts(MRU2)]> ".fu.fMenu.fil.m invoke 17"
-    .fu.fMenu.fil.m entryconfigure 17\
+    bind $w <[repcont $aymainshortcuts(MRU2)]> "$m invoke 17"
+    $m entryconfigure 17\
 	    -accelerator [repkp $aymainshortcuts(MRU2)]
-    bind $w <[repcont $aymainshortcuts(MRU3)]> ".fu.fMenu.fil.m invoke 18"
-    .fu.fMenu.fil.m entryconfigure 18\
+    bind $w <[repcont $aymainshortcuts(MRU3)]> "$m invoke 18"
+    $m entryconfigure 18\
 	    -accelerator [repkp $aymainshortcuts(MRU3)]
-    bind $w <[repcont $aymainshortcuts(MRU4)]> ".fu.fMenu.fil.m invoke 19"
-    .fu.fMenu.fil.m entryconfigure 19\
+    bind $w <[repcont $aymainshortcuts(MRU4)]> "$m invoke 19"
+    $m entryconfigure 19\
 	    -accelerator [repkp $aymainshortcuts(MRU4)]
 
 
-    bind $w <[repcont $aymainshortcuts(Quit)]> ".fu.fMenu.fil.m invoke 21"
-    .fu.fMenu.fil.m entryconfigure 21 -accelerator $aymainshortcuts(Quit)
+    bind $w <[repcont $aymainshortcuts(Quit)]> "$m invoke 21"
+    $m entryconfigure 21 -accelerator $aymainshortcuts(Quit)
+
 
     bind $w <[repcont $aymainshortcuts(Apply)]> ".fu.fMain.fProp.fArg.fb.b1 invoke"
 
-    bind $w <[repcont $aymainshortcuts(Copy)]> ".fu.fMenu.ed.m invoke 0"
-    .fu.fMenu.ed.m entryconfigure 0 -accelerator $aymainshortcuts(Copy)
-    bind $w <[repcont $aymainshortcuts(Cut)]> ".fu.fMenu.ed.m invoke 1"
-    .fu.fMenu.ed.m entryconfigure 1 -accelerator $aymainshortcuts(Cut)
-    bind $w <[repcont $aymainshortcuts(Paste)]> ".fu.fMenu.ed.m invoke 2"
-    .fu.fMenu.ed.m entryconfigure 2 -accelerator $aymainshortcuts(Paste)
-    bind $w <[repcont $aymainshortcuts(CopyP)]> ".fu.fMenu.ed.m invoke 5"
-    .fu.fMenu.ed.m entryconfigure 5 -accelerator $aymainshortcuts(CopyP)
-    bind $w <[repcont $aymainshortcuts(ICopyP)]> ".fu.fMenu.ed.m invoke 6"
-    .fu.fMenu.ed.m entryconfigure 6 -accelerator $aymainshortcuts(ICopyP)
-    bind $w <[repcont $aymainshortcuts(PasteP)]> ".fu.fMenu.ed.m invoke 7"
-    .fu.fMenu.ed.m entryconfigure 7 -accelerator $aymainshortcuts(PasteP)
+    set m $ay(editmenu)
+    bind $w <[repcont $aymainshortcuts(Copy)]> "$m invoke 0"
+    $m entryconfigure 0 -accelerator $aymainshortcuts(Copy)
+    bind $w <[repcont $aymainshortcuts(Cut)]> "$m invoke 1"
+    $m entryconfigure 1 -accelerator $aymainshortcuts(Cut)
+    bind $w <[repcont $aymainshortcuts(Paste)]> "$m invoke 2"
+    $m entryconfigure 2 -accelerator $aymainshortcuts(Paste)
+    bind $w <[repcont $aymainshortcuts(CopyP)]> "$m invoke 5"
+    $m entryconfigure 5 -accelerator $aymainshortcuts(CopyP)
+    bind $w <[repcont $aymainshortcuts(ICopyP)]> "$m invoke 6"
+    $m entryconfigure 6 -accelerator $aymainshortcuts(ICopyP)
+    bind $w <[repcont $aymainshortcuts(PasteP)]> "$m invoke 7"
+    $m entryconfigure 7 -accelerator $aymainshortcuts(PasteP)
 
-    bind $w <[repcont $aymainshortcuts(Undo)]> ".fu.fMenu.ed.m invoke 9"
-    .fu.fMenu.ed.m entryconfigure 9 -accelerator $aymainshortcuts(Undo)
-    bind $w <[repcont $aymainshortcuts(Redo)]> ".fu.fMenu.ed.m invoke 10"
-    .fu.fMenu.ed.m entryconfigure 10 -accelerator $aymainshortcuts(Redo)
+    bind $w <[repcont $aymainshortcuts(Undo)]> "$m invoke 9"
+    $m entryconfigure 9 -accelerator $aymainshortcuts(Undo)
+    bind $w <[repcont $aymainshortcuts(Redo)]> "$m invoke 10"
+    $m entryconfigure 10 -accelerator $aymainshortcuts(Redo)
 
-    bind $w <[repcont $aymainshortcuts(Material)]> ".fu.fMenu.ed.m invoke 12"
-    .fu.fMenu.ed.m entryconfigure 12 -accelerator $aymainshortcuts(Material)
+    bind $w <[repcont $aymainshortcuts(Material)]> "$m invoke 12"
+    $m entryconfigure 12 -accelerator $aymainshortcuts(Material)
 
-    bind $w <[repcont $aymainshortcuts(Prefs)]> ".fu.fMenu.ed.m invoke 14"
-    .fu.fMenu.ed.m entryconfigure 14 -accelerator $aymainshortcuts(Prefs)
+    bind $w <[repcont $aymainshortcuts(Prefs)]> "$m invoke 14"
+    $m entryconfigure 14 -accelerator $aymainshortcuts(Prefs)
 
-    bind $w <[repcont $aymainshortcuts(Help)]> ".fu.fMenu.hlp.m invoke 0"
-    .fu.fMenu.hlp.m entryconfigure 0 -accelerator $aymainshortcuts(Help)
+    set m $ay(helpmenu)
+    bind $w <[repcont $aymainshortcuts(Help)]> "$m invoke 0"
+    $m entryconfigure 0 -accelerator $aymainshortcuts(Help)
 
     bind $w <[repcont $aymainshortcuts(Zap)]> zap
     bind $w <Map> unzap
@@ -115,10 +118,11 @@ proc shortcut_main { w } {
 # XXXX currently unused
 #
 proc shortcut_toolbox { w } {
-    global ayviewshortcuts aymainshortcuts
+    global ay ayviewshortcuts aymainshortcuts
 
-    bind $w <[repcont $aymainshortcuts(Undo)]> ".fu.fMenu.ed.m invoke 9"
-    bind $w <[repcont $aymainshortcuts(Redo)]> ".fu.fMenu.ed.m invoke 10"
+    set m $ay(editmenu)
+    bind $w <[repcont $aymainshortcuts(Undo)]> "$m invoke 9"
+    bind $w <[repcont $aymainshortcuts(Redo)]> "$m invoke 10"
 }
 # shortcut_toolbox
 
@@ -128,11 +132,12 @@ proc shortcut_toolbox { w } {
 #
 #
 proc shortcut_view { w } {
-    global ayviewshortcuts aymainshortcuts
+    global ay ayviewshortcuts aymainshortcuts
 
     # some main window shortcuts
-    bind $w <[repcont $aymainshortcuts(Undo)]> ".fu.fMenu.ed.m invoke 9"
-    bind $w <[repcont $aymainshortcuts(Redo)]> ".fu.fMenu.ed.m invoke 10"
+    set m $ay(editmenu)
+    bind $w <[repcont $aymainshortcuts(Undo)]> "$m invoke 9"
+    bind $w <[repcont $aymainshortcuts(Redo)]> "$m invoke 10"
 
     # view window shortcuts
     bind $w <[repcont $ayviewshortcuts(QRender)]> "$w.fMenu.v.m invoke 0"

@@ -9,14 +9,28 @@
 
 # mmenu.tcl - the main menu
 
-frame .fu.fMenu -bd 2 -relief raised
-pack .fu.fMenu -side top -fill x
+global ay tcl_platform
 
-# File
-menubutton .fu.fMenu.fil -text "File" -menu .fu.fMenu.fil.m -padx 3
+if { $tcl_platform(os) != "Darwin" } {
+    frame .fu.fMenu -bd 2 -relief raised
+    pack .fu.fMenu -side top -fill x
+    # File
+    menubutton .fu.fMenu.fil -text "File" -menu .fu.fMenu.fil.m -padx 3
 
-menu .fu.fMenu.fil.m -tearoff 0
-set m .fu.fMenu.fil.m
+    menu .fu.fMenu.fil.m -tearoff 0
+    set m .fu.fMenu.fil.m
+} else {
+    #frame .fu.fMenu
+    #pack .fu.fMenu -side top -fill x
+    set mb [menu .fu.menubar -tearoff 0 -type menubar]
+    . configure -menu $mb
+    # File
+    set m [menu $mb.mfil -tearoff 0]
+    $mb add cascade -label "File" -menu $m
+}
+
+set ay(filemenu) $m
+
 $m add command -label "New"\
 	-command {
     global ay ayprefs tcl_platform
@@ -88,12 +102,22 @@ $m add command -label "Exit!" -command {
 	exit
     }
 }
-pack .fu.fMenu.fil -in .fu.fMenu -side left
 
-# Edit
-menubutton .fu.fMenu.ed -text "Edit" -menu .fu.fMenu.ed.m -padx 3
-menu .fu.fMenu.ed.m  -tearoff 0
-set m .fu.fMenu.ed.m
+
+if { $tcl_platform(os) != "Darwin" } {
+    pack .fu.fMenu.fil -in .fu.fMenu -side left
+
+    # Edit
+    menubutton .fu.fMenu.ed -text "Edit" -menu .fu.fMenu.ed.m -padx 3
+    menu .fu.fMenu.ed.m  -tearoff 0
+    set m .fu.fMenu.ed.m
+} else {
+    # Edit
+    set m [menu $mb.medi -tearoff 0]
+    $mb add cascade -label "Edit" -menu $m
+
+}
+set ay(editmenu) $m
 $m add command -label "Copy" -command {copOb}
 $m add command -label "Cut" -command {cutOb; cS;
 global ay; set ay(ul) $ay(CurrentLevel); uS; rV; set ay(sc) 1}
@@ -114,12 +138,21 @@ $m add command -label "Material" -command {material_edit;}
 $m add separator
 $m add command -label "Preferences" -command {prefs_open; rV}
 
-pack .fu.fMenu.ed -in .fu.fMenu -side left
+if { $tcl_platform(os) != "Darwin" } {
+    pack .fu.fMenu.ed -in .fu.fMenu -side left
 
-# Create
-menubutton .fu.fMenu.cr -text "Create" -menu .fu.fMenu.cr.m -padx 3
-menu .fu.fMenu.cr.m -tearoff 0
-set m .fu.fMenu.cr.m
+    # Create
+    menubutton .fu.fMenu.cr -text "Create" -menu .fu.fMenu.cr.m -padx 3
+    menu .fu.fMenu.cr.m -tearoff 0
+    set m .fu.fMenu.cr.m
+} else {
+    # Create
+    set m [menu $mb.mcrt -tearoff 0]
+    $mb add cascade -label "Create" -menu $m
+}
+
+set ay(createmenu) $m
+
 $m add command -label "NURBCurve" -command {
 runTool ay(nclen) "Length:" "crtOb NCurve -length %0; uCR; sL; rV;"
     
@@ -197,12 +230,20 @@ $m add command -label "Camera" \
 $m add separator
 $m add command -label "RiInc" \
 	-command "crtOb RiInc; uCR; sL;rV;"
-pack .fu.fMenu.cr -in .fu.fMenu -side left
 
-# Tools
-menubutton .fu.fMenu.tool -text "Tools" -menu .fu.fMenu.tool.m -padx 3
+if { $tcl_platform(os) != "Darwin" } {
+    pack .fu.fMenu.cr -in .fu.fMenu -side left
 
-set m [menu .fu.fMenu.tool.m -tearoff 0]
+    # Tools
+    menubutton .fu.fMenu.tool -text "Tools" -menu .fu.fMenu.tool.m -padx 3
+    set m [menu .fu.fMenu.tool.m -tearoff 0]
+} else {
+    # Tools
+    set m [menu $mb.mtools -tearoff 0]
+    $mb add cascade -label "Tools" -menu $m
+}
+
+set ay(toolsmenu) $m
 
 $m add cascade -menu $m.nc -label "Create"
 menu $m.nc -tearoff 0
@@ -264,19 +305,30 @@ $m add command -label "Convert" -command "convOb; cS; uS; sL; rV"
 $m add separator
 $m add command -label "Force Notification" -command "forceNot; rV"
 
+if { $tcl_platform(os) != "Darwin" } {
+    pack .fu.fMenu.tool -in .fu.fMenu -side left
 
-pack .fu.fMenu.tool -in .fu.fMenu -side left
+    # Custom
+    menubutton .fu.fMenu.cust -text "Custom" -menu .fu.fMenu.cust.m -padx 3
+    menu .fu.fMenu.cust.m -tearoff 0
+    pack .fu.fMenu.cust -in .fu.fMenu -side left
+    set ay(cm) .fu.fMenu.cust.m
+    # Special
+    menubutton .fu.fMenu.spec -text "Special" -menu .fu.fMenu.spec.m -padx 3
+    set m [menu .fu.fMenu.spec.m -tearoff 0]
+    pack .fu.fMenu.spec -in .fu.fMenu -side left
 
-# Custom
-menubutton .fu.fMenu.cust -text "Custom" -menu .fu.fMenu.cust.m -padx 3
-global ay; set ay(cm) [menu .fu.fMenu.cust.m -tearoff 0]
-pack .fu.fMenu.cust -in .fu.fMenu -side left
+} else {
+    # Custom
+    set m [menu $mb.mcust -tearoff 0]
+    $mb add cascade -label "Custom" -menu $m
+    set ay(cm) $m
+    # Special
+    set m [menu $mb.mspecial -tearoff 0]
+    $mb add cascade -label "Special" -menu $m
+}
+set ay(specialmenu) $m
 
-
-# Special
-menubutton .fu.fMenu.spec -text "Special" -menu .fu.fMenu.spec.m -padx 3
-pack .fu.fMenu.spec -in .fu.fMenu -side left
-set m [menu .fu.fMenu.spec.m -tearoff 0]
 $m add command -label "Save Selected as" -command "io_saveScene ask 1"
 $m add command -label "Save Environment" -command "io_saveEnv"
 $m add separator
@@ -298,15 +350,24 @@ $m add command -label "Add RiAttribute" -command "riattr_addp"
 $m add separator
 $m add command -label "Toggle Toolbox" -command "toolbox_toggle"
 
-# Help
-menubutton .fu.fMenu.hlp -text "Help" -menu .fu.fMenu.hlp.m -padx 3
+if { $tcl_platform(os) != "Darwin" } {
+    # Help
+    menubutton .fu.fMenu.hlp -text "Help" -menu .fu.fMenu.hlp.m -padx 3
+    set m [menu .fu.fMenu.hlp.m -tearoff 0]
+    pack .fu.fMenu.hlp -in .fu.fMenu -side right
 
-menu .fu.fMenu.hlp.m -tearoff 0
-.fu.fMenu.hlp.m add command -label "Help" -command {
+} else {
+    # Help
+    set m [menu $mb.help -tearoff 0]
+    $mb add cascade -label "Help" -menu $m
+}
+set ay(helpmenu) $m
+
+$m add command -label "Help" -command {
     global ayprefs
     browser_urlOpen $ayprefs(Docs) }
 
-.fu.fMenu.hlp.m add command -label "Help on object" -command {
+$m add command -label "Help on object" -command {
     global ayprefs
     set selected ""
     getSel selected
@@ -319,9 +380,8 @@ menu .fu.fMenu.hlp.m -tearoff 0
     browser_urlOpen $ayprefs(Docs)ayam-4.html\#${type}obj
 }
 
-.fu.fMenu.hlp.m add command -label "About" -command "aboutAyam"
-.fu.fMenu.hlp.m add checkbutton -label "Show Tooltips" -variable ayprefs(showtt)
-pack .fu.fMenu.hlp -in .fu.fMenu -side right
+$m add command -label "About" -command "aboutAyam"
+$m add checkbutton -label "Show Tooltips" -variable ayprefs(showtt)
 
 # XXXX Win32 Menus are a bit to tall
 global tcl_platform
@@ -337,7 +397,9 @@ if { $tcl_platform(platform) == "windows" } {
 #  XXXX add code to avoid creating double entries when
 #  custom objects are overloaded?
 proc mmenu_addcustom { name command } {
-    set m .fu.fMenu.cr.m.cus
+    global ay
+    set m $ay(createmenu).cus
+#    set m .fu.fMenu.cr.m.cus
     $m add command -label $name -command $command
 
  return

@@ -668,16 +668,13 @@ pack .fu -in . -side top
 frame .fu.fMain
 update
 
+# initialize io procedures
 ayam_loadscript io
 
 # create the main menu
 ayam_loadscript mmenu
 
-# create the object listbox
-ayam_loadscript olb
 frame .fu.fMain.fHier
-#olb_open .fu.fMain.fHier
-
 # The Tree-Widget
 treeInit
 #XXXX wie laedt man BWidgets in einem wrapped executable?
@@ -709,6 +706,13 @@ if { $AYWRAPPED == 1 } {
     ayam_loadscript tree
 }
 tree_open .fu.fMain.fHier
+update
+
+# create the object listbox
+ayam_loadscript olb
+
+#olb_open .fu.fMain.fHier
+update
 
 # object bar
 # has to be initialized before the pane for Object Hierarchy!
