@@ -805,6 +805,12 @@ ay_comp_concatnc(ay_object *o1, ay_object *o2)
   if(p1->revert != p2->revert)
     return AY_FALSE;
 
+  if(p1->knot_type != p2->knot_type)
+    return AY_FALSE;
+
+  if(p1->ftlength != p2->ftlength)
+    return AY_FALSE;
+
  return AY_TRUE;
 } /* ay_comp_concatnc */
 
@@ -820,7 +826,13 @@ ay_comp_clone(ay_object *o1, ay_object *o2)
   p1 = (ay_clone_object *)o1->refine;
   p2 = (ay_clone_object *)o2->refine;
 
-  if(p1->clones != p2->clones)
+  if(p1->numclones != p2->numclones)
+    return AY_FALSE;
+
+  if(p1->rotate != p2->rotate)
+    return AY_FALSE;
+
+  if(p1->mirror != p2->mirror)
     return AY_FALSE;
 
   if((p1->movx == p2->movx) && (p1->movy == p2->movy) &&
