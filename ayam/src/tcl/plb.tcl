@@ -305,6 +305,14 @@ set lb $ay(plb)
 set oldsel ""
 set oldsel [$lb curselection]
 
+if { $oldsel == "" } {
+    if { $ay(lb) == 1 } {
+	bind $ay(olb) <Key-Tab> "focus .fl.con.console;break"
+    } else {
+	bind $ay(tree) <Key-Tab> "focus .fl.con.console;break"
+    }
+}
+
 # delete current entries
 $lb delete 0 end
 

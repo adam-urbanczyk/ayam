@@ -702,6 +702,9 @@ $tree bindText  <ButtonPress-1> "tree_selectItem 1 $sw.tree"
 # open sub tree
 $tree bindText  <Double-ButtonPress-1> "tree_toggleSub $sw.tree"
 
+bind $tree <Key-Tab> "focus .fl.con.console;break"
+
+
 # switch back to good old listbox
 bind $la <Double-ButtonPress-1> "\
 	global ayprefs; tree_close $w; olb_open $w;\
