@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile.wrapped [7. Dec 2004]
+# Makefile.wrapped [17. Mar 2005]
 # Makefile for Ayam (wrapped version)
 
 # Choose an installation prefix.
@@ -34,23 +34,24 @@ INSTALL = ./ninstall
 MKDIR = mkdir -p
 
 # the compiler
-CC = cc
+#CC = cc
 #CC = gcc
 
 # the C++ compiler (just in use for the AyCSG and onio plugin)
-CXX = CC
+#CXX = CC
 #CXX = g++-3.0
 
 # the linker
 # Starting with BMRT2.5, libribout and libslcargs are in C++,
 # which forces us to use "CC" or "g++" to link the right libraries
 # automatically
+LD = $(CXX)
 # IRIX:
 #LD = CC
 # Linux:
-LD = g++
+#LD = g++
 # MacOSX
-LD = cc
+#LD = cc
 
 # flags for the compiler
 # o add -DAYUSEAFFINE if you use the Affine Toolkit as libribout replacement
@@ -644,7 +645,7 @@ uninstall:
 refcard.ps ayam.pdf html;
 	-rm -rf $(LIBDIR)/Makefile
 
-.SUFFIXES: .so .o
+.SUFFIXES: .so .o .cpp
 
 .o.so: 
 	$(CC) $(SHLFLAGS) -o $@ $*.o
