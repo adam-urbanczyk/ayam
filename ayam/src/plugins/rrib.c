@@ -225,11 +225,13 @@ void ay_rrib_readtag(char *tagtype, char *tagname, char *name,
 
 void ay_rrib_initgeneral(void);
 
+void ay_rrib_cleargeneral(void);
+
 void ay_rrib_initoptions(void);
 
-int ay_rrib_initgprims(void);
+void ay_rrib_initgprims(void);
 
-int ay_rrib_cleargprims(void);
+void ay_rrib_cleargprims(void);
 
 void ay_rrib_trafotoobject(ay_object *o, double *transform);
 
@@ -1263,18 +1265,19 @@ ay_rrib_RiFrameAspectRatio(RtFloat aspect)
 RtVoid
 ay_rrib_RiFrameBegin(RtInt frame)
 {
- int ay_status = AY_OK;
 
    if(ay_rrib_readframe != -1 || !ay_rrib_readpartial)
      {
        if(frame == ay_rrib_readframe)
 	 {
 	   ay_rrib_cframe = frame;
-	   ay_status = ay_rrib_initgprims();
+	   ay_rrib_initgprims();
+	   ay_rrib_initgeneral();
 	 }
        else
 	 {
-	   ay_status = ay_rrib_cleargprims();
+	   ay_rrib_cleargprims();
+	   ay_rrib_cleargeneral();
 	 }
      }
 
@@ -1285,13 +1288,13 @@ ay_rrib_RiFrameBegin(RtInt frame)
 RtVoid
 ay_rrib_RiFrameEnd( void )
 {
- int ay_status = AY_OK;
 
   if(ay_rrib_readframe != -1 || !ay_rrib_readpartial)
     {
       if(ay_rrib_cframe == ay_rrib_readframe)
 	{
-	  ay_status = ay_rrib_cleargprims();
+	  ay_rrib_cleargprims();
+	  ay_rrib_cleargeneral();
 	}
     }
 
@@ -2586,7 +2589,7 @@ ay_rrib_RiWorldBegin(void)
 
   /* start reading gprims if all frames are to be read */
   if(ay_rrib_readframe == -1)
-    ay_status = ay_rrib_initgprims();
+    ay_rrib_initgprims();
 
  return;
 } /* ay_rrib_RiWorldBegin */
@@ -3138,7 +3141,6 @@ ay_rrib_initgeneral(void)
   gRibNopRITable[kRIB_ATTRIBUTEBEGIN] = (PRIB_RIPROC)ay_rrib_RiAttributeBegin;
   gRibNopRITable[kRIB_ATTRIBUTEEND] = (PRIB_RIPROC)ay_rrib_RiAttributeEnd;
   gRibNopRITable[kRIB_ATTRIBUTE] = (PRIB_RIPROC)ay_rrib_RiAttribute;
-  gRibNopRITable[kRIB_DECLARE] = (PRIB_RIPROC)ay_rrib_RiDeclare;
   gRibNopRITable[kRIB_COLOR] = (PRIB_RIPROC)ay_rrib_RiColor;
   gRibNopRITable[kRIB_OPACITY] = (PRIB_RIPROC)ay_rrib_RiOpacity;
   gRibNopRITable[kRIB_SHADINGRATE] = (PRIB_RIPROC)ay_rrib_RiShadingRate;
@@ -3161,6 +3163,50 @@ ay_rrib_initgeneral(void)
 
  return;
 } /* ay_rrib_initgeneral */
+
+void
+ay_rrib_cleargeneral(void)
+{
+
+  gRibNopRITable[kRIB_WORLDBEGIN] = (PRIB_RIPROC)RiNopWorldBegin;
+  gRibNopRITable[kRIB_PROJECTION] = (PRIB_RIPROC)RiNopProjectionV;
+
+  gRibNopRITable[kRIB_TRANSFORM] = (PRIB_RIPROC)RiNopTransform;
+  gRibNopRITable[kRIB_TRANSFORMBEGIN] = (PRIB_RIPROC)RiNopTransformBegin;
+  gRibNopRITable[kRIB_TRANSFORMEND] = (PRIB_RIPROC)RiNopTransformEnd;
+  gRibNopRITable[kRIB_CONCATTRANSFORM] =
+    (PRIB_RIPROC)RiNopConcatTransform;
+  gRibNopRITable[kRIB_IDENTITY] = (PRIB_RIPROC)RiNopIdentity;
+  gRibNopRITable[kRIB_TRANSLATE] = (PRIB_RIPROC)RiNopTranslate;
+  gRibNopRITable[kRIB_ROTATE] = (PRIB_RIPROC)RiNopRotate;
+  gRibNopRITable[kRIB_SCALE] = (PRIB_RIPROC)RiNopScale;
+
+
+  gRibNopRITable[kRIB_ATTRIBUTEBEGIN] = (PRIB_RIPROC)RiNopAttributeBegin;
+  gRibNopRITable[kRIB_ATTRIBUTEEND] = (PRIB_RIPROC)RiNopAttributeEnd;
+  gRibNopRITable[kRIB_ATTRIBUTE] = (PRIB_RIPROC)RiNopAttributeV;
+  gRibNopRITable[kRIB_COLOR] = (PRIB_RIPROC)RiNopColor;
+  gRibNopRITable[kRIB_OPACITY] = (PRIB_RIPROC)RiNopOpacity;
+  gRibNopRITable[kRIB_SHADINGRATE] = (PRIB_RIPROC)RiNopShadingRate;
+  gRibNopRITable[kRIB_SHADINGINTERPOLATION] =
+    (PRIB_RIPROC)RiNopShadingInterpolation;
+  
+  gRibNopRITable[kRIB_SURFACE] = (PRIB_RIPROC)RiNopSurfaceV;
+  gRibNopRITable[kRIB_DISPLACEMENT] = (PRIB_RIPROC)RiNopDisplacementV;
+  gRibNopRITable[kRIB_INTERIOR] = (PRIB_RIPROC)RiNopInteriorV;
+  gRibNopRITable[kRIB_EXTERIOR] = (PRIB_RIPROC)RiNopExteriorV;
+
+  gRibNopRITable[kRIB_LIGHTSOURCE] = (PRIB_RIPROC)RiNopLightSourceV;
+  gRibNopRITable[kRIB_AREALIGHTSOURCE] =
+    (PRIB_RIPROC)RiNopAreaLightSourceV;
+  gRibNopRITable[kRIB_ILLUMINATE] = (PRIB_RIPROC)RiNopIlluminate;
+
+  gRibNopRITable[kRIB_OBJECTBEGIN] = (PRIB_RIPROC)RiNopObjectBegin;
+  gRibNopRITable[kRIB_OBJECTEND] = (PRIB_RIPROC)RiNopObjectEnd;
+  gRibNopRITable[kRIB_READARCHIVE] = (PRIB_RIPROC)RiNopReadArchiveV;
+
+ return;
+} /* ay_rrib_cleargeneral */
 
 void
 ay_rrib_initoptions(void)
@@ -3189,10 +3235,9 @@ ay_rrib_initoptions(void)
  return;
 } /* ay_rrib_initoptions */
 
-int
+void
 ay_rrib_initgprims(void)
 {
- int ay_status = AY_OK;
 
   gRibNopRITable[kRIB_SPHERE] = (PRIB_RIPROC)ay_rrib_RiSphere;
   gRibNopRITable[kRIB_CYLINDER] = (PRIB_RIPROC)ay_rrib_RiCylinder;
@@ -3213,13 +3258,12 @@ ay_rrib_initgprims(void)
 
   gRibNopRITable[kRIB_OBJECTINSTANCE] = (PRIB_RIPROC)ay_rrib_RiObjectInstance;
 
- return ay_status;
+ return;
 } /* ay_rrib_initgprims */
 
-int
+void
 ay_rrib_cleargprims(void)
 {
- int ay_status = AY_OK;
 
   gRibNopRITable[kRIB_SPHERE] = (PRIB_RIPROC)RiNopSphereV;
   gRibNopRITable[kRIB_CYLINDER] = (PRIB_RIPROC)RiNopCylinderV;
@@ -3240,7 +3284,7 @@ ay_rrib_cleargprims(void)
 
   gRibNopRITable[kRIB_OBJECTINSTANCE] = (PRIB_RIPROC)RiNopObjectInstance;
 
- return ay_status;
+ return;
 } /* ay_rrib_cleargprims */
 
 
@@ -3330,7 +3374,7 @@ ay_rrib_pushattribs(void)
   if(ay_rrib_cattributes->read_arealight_geom > 0)
     {
       ay_rrib_cattributes->read_arealight_geom++;
-      ay_status = ay_rrib_initgprims();
+      ay_rrib_initgprims();
 
       /* find light source and start adding next objects as childs */
       /* XXXX assume, the area light source is the last object we read */
@@ -3350,7 +3394,6 @@ ay_rrib_popattribs(void)
  ay_rrib_attrstate *nextstate = NULL;
  ay_tag_object *tag = NULL;
  char fname[] = "ay_rrib_popattribs";
- int ay_status = AY_OK;
 
   if(!ay_rrib_cattributes)
     {
@@ -3421,7 +3464,7 @@ ay_rrib_popattribs(void)
 		 if not reading anything anyway (ay_rrib_readpartial == 1) */
 	      if(!ay_rrib_readpartial)
 		{
-		  ay_status = ay_rrib_cleargprims();
+		  ay_rrib_cleargprims();
 		}
 	      ay_rrib_cattributes->read_arealight_geom = 0;
 	      /* go up in the scene hierarchy */
@@ -4019,7 +4062,6 @@ ay_rrib_readrib(char *filename, int frame, int read_camera, int read_options,
 		int read_lights, int read_material, int read_partial,
 		int error_level)
 {
- int ay_status = AY_OK;
  RIB_HANDLE rib = NULL;
  ay_list_object *tl = NULL;
 
@@ -4053,13 +4095,24 @@ ay_rrib_readrib(char *filename, int frame, int read_camera, int read_options,
   ay_rrib_readpartial = read_partial;
   ay_rrib_errorlevel = error_level;
 
+
+  gRibNopRITable[kRIB_FRAMEBEGIN] = (PRIB_RIPROC)ay_rrib_RiFrameBegin;
+  gRibNopRITable[kRIB_FRAMEEND] = (PRIB_RIPROC)ay_rrib_RiFrameEnd;
+  gRibNopRITable[kRIB_DECLARE] = (PRIB_RIPROC)ay_rrib_RiDeclare;
+
   if(read_partial)
     {
-      ay_status = ay_rrib_initgprims();
+      ay_rrib_initgeneral();
+      ay_rrib_initgprims();
       ay_rrib_readmateriali = ay_rrib_readmaterial; 
     }
-
-  ay_rrib_initgeneral();
+  else
+    {
+      if(frame == -1)
+	{
+	  ay_rrib_initgeneral();
+	}
+    }
 
   if(ay_rrib_readoptions)
     ay_rrib_initoptions();
