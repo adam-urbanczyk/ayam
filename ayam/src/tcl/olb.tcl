@@ -81,7 +81,7 @@ bind $f.li <End> "selNPFL 3;break"
 
 bind $f.li <Right> "$f.b;uS;break"
 
-
+bind $f.li <Key-Tab> "focus .fl.con.console;break"
 
 #bind $f.li <KeyRelease-space> { olb_select }
 
