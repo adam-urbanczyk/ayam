@@ -217,7 +217,7 @@ proc io_saveScene { ask selected } {
 # io_saveScene
 
 
-# exportRIBp:
+# exportRIB:
 # 
 # 
 proc io_exportRIB { {expview "" } } {
@@ -275,7 +275,7 @@ proc io_exportRIB { {expview "" } } {
 	global ay ayprefs
 
 	set selection [.exportRIBw.f1.fview.lb curselection]
-	if {$selection != ""} {
+	if { $selection != "" } {
 	    set sname [.exportRIBw.f1.fview.lb get $selection]
 	    scan $sname "%s (%s)" name type
 
@@ -283,7 +283,7 @@ proc io_exportRIB { {expview "" } } {
 	    set efilename [lindex $ribname 0]
 	    set imagename [lindex $ribname 1]
 
-	    if { $efilename != ""} {
+	    if { $efilename != "" } {
 		if { $imagename != "" } {
 		    .$name.f3D.togl wrib -file $efilename -image $imagename
 		    ayError 4 "exportRIB" "Done exporting scene to:"
@@ -722,7 +722,7 @@ proc io_getRIBName { } {
     }
 
 
-    if { $ayprefs(Image) == "Ask"} {
+    if { $ayprefs(Image) == "Ask" } {
 	set filetypes {{"TIF" ".tif"} {"TIFF" ".tiff"} {"All files" *}}
 	set imagename "[tk_getSaveFile -filetypes $filetypes -parent .\
 		-title "Render to file:"]"
@@ -738,3 +738,123 @@ proc io_getRIBName { } {
  return [list $ribname $imagename ]
 }
 # io_getRIBName
+
+
+# exportRIBfC:
+#  export RIB from selected camera object
+# 
+proc io_exportRIBfC { } {
+    global ay ayprefs ay_error
+
+    set ribname [io_getRIBName]
+    set efilename [lindex $ribname 0]
+    set imagename [lindex $ribname 1]
+    set ay_error ""
+
+    if { $efilename != "" } {
+	if { $imagename != "" } {
+	    wrib -file $efilename -image $imagename
+	    if { $ay_error < 2 } {
+		ayError 4 "exportRIB" "Done exporting scene to:"
+		ayError 4 "exportRIB" "$efilename"
+	    } else {
+		ayError 2 "exportRIB" "Could not export scene!"
+	    }
+
+	} else {
+	    wrib -file $efilename
+	    if { $ay_error < 2 } {
+		ayError 4 "exportRIB" "Done exporting scene to:"
+		ayError 4 "exportRIB" "$efilename"
+	    } else {
+		ayError 2 "exportRIB" "Could not export scene!"
+	    }
+	}
+    }
+
+ return;
+}
+# io_exportRIBfC
+
+
+##############################
+# io_RenderSM:
+#  export shadow map RIB and render all shadow maps
+proc io_RenderSM { } {
+    global env ayprefs ay tcl_platform ay_error
+
+    if { $ayprefs(ShadowMaps) != 2 } {
+	set t "ShadowMaps are not enabled!"
+	set m "ShadowMaps are not enabled\nin the preferences.\
+\nSelect \"Ok\" to enable them and continue.\
+\nSelect \"Cancel\" to stop operation."
+set answer [tk_messageBox -title $t -type okcancel -icon warning -message $m]
+	    if { $answer == "cancel" } {
+		return 1;
+	    } else {
+		set ayprefs(ShadowMaps) 2
+		set ayprefse(ShadowMaps) 2
+	    }
+	}
+
+    set ribname [io_getRIBName]
+    set efilename [lindex $ribname 0]
+    set imagename [lindex $ribname 1]
+
+    set ay_error ""
+
+    if { $efilename != ""} {
+	if { $imagename != "" } {
+	    wrib -file $efilename -image $imagename -smonly
+	    if { $ay_error < 2 } {
+		ayError 4 "Create SM" "Done exporting scene to:"
+		ayError 4 "Create SM" "$efilename"
+		set render 1
+	    } else {
+		ayError 2 "exportRIB" "Could not export scene!"
+		set render 0
+	    }
+	} else {
+	    wrib -file $efilename -image $imagename -smonly
+	    if { $ay_error < 2 } {
+		ayError 4 "Create SM" "Done exporting scene to:"
+		ayError 4 "Create SM" "$efilename"
+		set render 1
+	    } else {
+		ayError 2 "exportRIB" "Could not export scene!"
+		set render 0
+	    }
+	}
+	# if
+    }
+    # if
+
+    if { $render } { 
+	ayError 4 "Create SM" "Now rendering all shadow maps..."
+    
+	if { $ayprefs(SMRenderUI) != 1} {
+	    set command "exec "
+
+	    regsub -all {%s} $ayprefs(SMRender) $efilename command2
+
+	    append command $command2
+	    append command " &"
+
+	    eval [subst "$command"]
+	} else {
+     
+	    regsub -all {%s} $ayprefs(SMRender) $efilename command
+	
+	    runRenderer "$command" "$ayprefs(SMRenderPT)"
+
+	}
+	# if
+    }
+    # if
+
+    update
+    tmp_clean 0
+
+ return;
+}
+#io_RenderSM
