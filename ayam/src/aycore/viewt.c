@@ -14,7 +14,6 @@
 
 /* viewt.c - view tools */
 
-
 /* ay_viewt_setupprojection:
  *  setup the current projection matrix
  *  to reflect "from" and "to" camera settings
@@ -1227,21 +1226,25 @@ int
 ay_viewt_griddify(struct Togl *togl, double *winx, double *winy)
 {
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
- int width = Togl_Width (togl);
- int height = Togl_Height (togl);
+ ay_object *o = NULL;
+ int width = Togl_Width(togl);
+ int height = Togl_Height(togl);
  double refx = 0.0, refy = 0.0, refz = 0.0;
  double gdx = 0.0, gdy = 0.0;
  double gridx = view->grid/view->conv_x,
-   gridy = view->grid/view->conv_y, gh = view->grid/view->conv_x/2.0;
- double m[16] = {0}, p1[3] = {0};
+   gridy = view->grid/view->conv_y, gridz = 0.0;
+ double ghx = view->grid/view->conv_x/2.0,
+   ghy = view->grid/view->conv_y/2.0;
+ double m[16] = {0};
  GLdouble mp[16], mm[16];
  GLint vp[4];
 
   if(view->grid != 0.0)
     {
-      /* get reference point in window coords */
+      
       if(!view->local)
 	{
+	  /* get reference point in window coords */
 	  switch(view->type)
 	    {
 	    case AY_VTFRONT:
@@ -1261,58 +1264,70 @@ ay_viewt_griddify(struct Togl *togl, double *winx, double *winy)
 	}
       else
 	{
+	  /* get reference point and grid size in window coords */
 	  glGetIntegerv(GL_VIEWPORT, vp);
 	  glGetDoublev(GL_PROJECTION_MATRIX, mp);
 	  glMatrixMode(GL_MODELVIEW);
 	  glPushMatrix();
 	   ay_trafo_getall(ay_currentlevel->next);
+
+	   if(view->aligned && ay_selection)
+	     {
+	       o = ay_selection->object;
+	       glTranslated((GLdouble)o->movx, (GLdouble)o->movy,
+			    (GLdouble)o->movz);
+	       ay_quat_torotmatrix(o->quat, m);
+	       glMultMatrixd((GLdouble*)m);
+	  
+	       glScaled((GLdouble)o->scalx, (GLdouble)o->scaly,
+			(GLdouble)o->scalz);
+	     } /* if */
+
 	   glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 	  glPopMatrix();
 	  gluProject(0.0, 0.0, 0.0, mm, mp, vp, &refx, &refy, &refz);
-	  refy = height-refy;
+	  
+	  switch(view->type)
+	    {
+	    case AY_VTFRONT:
+	    case AY_VTTRIM:
+	      gluProject(view->grid, view->grid, 0.0, mm, mp, vp,
+			 &gridx, &gridy, &gridz);
+	      break;
+	    case AY_VTSIDE:
+	      gluProject(view->grid, view->grid, 0.0, mm, mp, vp,
+			 &gridx, &gridy, &gridz);
+	      break;
+	    case AY_VTTOP:
+	      gluProject(view->grid, 0.0, -view->grid, mm, mp, vp,
+			 &gridx, &gridy, &gridz);
+	      break;
+	    }
+
+	  gridx = gridx-refx;
+	  gridy = gridy-refy;
+
+	  ghx = gridx/2.0;
+	  ghy = gridy/2.0;
 	} /* if */
-      
-      if(view->local)
-	{
-	  glMatrixMode (GL_MODELVIEW);
-	  glPushMatrix();
-	   glLoadIdentity();
-	   ay_trafo_getalls(ay_currentlevel->next);
-	   glGetDoublev(GL_MODELVIEW_MATRIX, m);
-	  glPopMatrix();
 
-	  p1[0] = gridx;
-	  p1[1] = gridy;
-	  p1[2] = 0.0;
-  
-	  ay_trafo_apply3(p1, m);
-
-	  gridx = p1[0];
-	  gridy = p1[1];
-
-
-	  p1[0] = gh;
-	  p1[1] = 0.0;
-	  p1[2] = 0.0;
-  
-	  ay_trafo_apply3(p1, m);
-
-	  gh = p1[0];
-	} /* if */
-      
+      /* from grid reference, grid size and current window coordinates
+	 compute new window coordinates, that are snapped to the grid;
+         snapping to new coordinate values occurs halfway between two
+	 grid corners (thus, the use of ghx/ghy) */
       gdx = fmod(*winx-refx, gridx);
       gdy = fmod(*winy-refy, gridy);
 
       if(*winx>refx)
 	{
-	  if(gdx >= gh)
+	  if(gdx >= ghx)
 	    *winx += (gridx-gdx);
 	  else
 	    *winx -= gdx;
 	}
       else
 	{
-	  if(gdx <= -gh)
+	  if(gdx <= -ghx)
 	    *winx -= (gridx+gdx);
 	  else
 	    *winx -= gdx;
@@ -1320,21 +1335,20 @@ ay_viewt_griddify(struct Togl *togl, double *winx, double *winy)
 
       if(*winy>refy)
 	{
-	  if(gdy >= gh)
+	  if(gdy >= ghy)
 	    *winy += (gridy-gdy);
 	  else
 	    *winy -= gdy;
 	}
       else
 	{
-	  if(gdy <= -gh)
+	  if(gdy <= -ghy)
 	    *winy -= (gridy+gdy);
 	  else
 	    *winy -= gdy;
 	} /* if */
 
     } /* if */
-  
 
  return AY_OK;
 } /* ay_viewt_griddify */

@@ -26,6 +26,7 @@ int ay_pact_deletenc(ay_nurbcurve_object *curve,
 
 int ay_pact_deleteic(ay_icurve_object *icurve,
 		     double objX, double objY, double objZ);
+
 /* functions: */
 
 /* ay_pact_getpoint:
@@ -1242,7 +1243,7 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
  char fname[] = "edit_points";
  Tcl_Interp *interp = Togl_Interp (togl);
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
- ay_list_object *sel = ay_selection;
+ /*ay_list_object *sel = ay_selection;*/
  static double oldwinx = 0.0, oldwiny = 0.0;
  double winx = 0.0, winy = 0.0;
  double movX, movY, movZ, dx=0.0, dy=0.0, dz=0.0, *coords;
@@ -1250,7 +1251,7 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
  int i = 0;
  static int multiple = AY_FALSE;
  static GLdouble m[16] = {0};
- GLdouble mo[16] = {0};
+ /*GLdouble mo[16] = {0};*/
  ay_object *o = ay_point_edit_object;
 
   if(!o) return TCL_OK;
@@ -1361,6 +1362,7 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
   oldwinx = winx;
   oldwiny = winy;
 
+  /* XXXX uncomment when startpedit deals with multiple objects */
   /*
   if(multiple)
     {
@@ -1427,7 +1429,7 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
 	    {
 	      ay_status = ay_notify_parent();
 	    } /* if */
-
+	  ay_toglcb_display(togl);
 	} /* if */
 
     } /* if */

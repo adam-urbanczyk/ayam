@@ -331,216 +331,268 @@ ay_draw_grid(struct Togl *togl)
  int height = Togl_Height(togl);
  double aspect = (double)width / (double)height;
  double grid = view->grid;
- double j;
+ double j, dx, dy;
  double minwinx = 0.0, minwiny = 0.0, maxwinx = 0.0, maxwiny = 0.0;
  double m[16];
-
-  if(grid < 1E-6)
-    return;
-
-  switch(view->type)
-    {
-    case AY_VTFRONT:
-    case AY_VTTRIM:
-      if(aspect > 1.0)
-	{
-	  minwinx = floor(((-aspect * view->zoom) - fabs(view->from[0]))/
-			  (view->grid<1.0?view->grid:1.0/view->grid));
-	  minwiny = floor(((-view->zoom) - fabs(view->from[1]))/
-			  (view->grid<1.0?view->grid:1.0/view->grid));
-	}
-      else
-	{
-	  minwiny = floor(((view->zoom/-aspect) - fabs(view->from[1]))/
-			  (view->grid<1.0?view->grid:1.0/view->grid));
-	  minwinx = floor(((-view->zoom) - fabs(view->from[0]))/
-			  (view->grid<1.0?view->grid:1.0/view->grid));
-	}
-      break;
-    case AY_VTSIDE:
-      if(aspect > 1.0)
-	{
-	  minwinx = floor(((-aspect * view->zoom) - fabs(view->from[2]))/
-			  (view->grid<1.0?view->grid:1.0/view->grid));
-	  minwiny = floor(((-view->zoom) - fabs(view->from[1]))/
-			  (view->grid<1.0?view->grid:1.0/view->grid));
-	}
-      else
-	{
-	  minwiny = floor(((view->zoom/-aspect) - fabs(view->from[1]))/
-			  (view->grid<1.0?view->grid:1.0/view->grid));
-	  minwinx = floor(((-view->zoom) - fabs(view->from[2]))/
-			  (view->grid<1.0?view->grid:1.0/view->grid));
-	}
-      break;
-    case AY_VTTOP:
-      if(aspect > 1.0)
-	{
-	  minwinx = floor(((-aspect * view->zoom) - fabs(view->from[0]))/
-			  (view->grid<1.0?view->grid:1.0/view->grid));
-	  minwiny = floor(((-view->zoom) - fabs(view->from[2]))/
-			  (view->grid<1.0?view->grid:1.0/view->grid));
-	}
-      else
-	{
-	  minwiny = floor(((view->zoom/-aspect) - fabs(view->from[2]))/
-			  (view->grid<1.0?view->grid:1.0/view->grid));
-	  minwinx = floor(((-view->zoom) - fabs(view->from[0]))/
-			  (view->grid<1.0?view->grid:1.0/view->grid));
-	}
-      break;
-    }
+ GLdouble mp[16], mm[16], owinx, owiny, owinz, gwinx, gwiny, gwinz;
+ GLint vp[4];
 
   if(view->local)
     {
+      glGetIntegerv(GL_VIEWPORT, vp);
+      glMatrixMode(GL_PROJECTION);
+      glGetDoublev(GL_PROJECTION_MATRIX, mp);
+      glMatrixMode(GL_MODELVIEW);
       glPushMatrix();
-      if(ay_currentlevel && ay_currentlevel->next)
-	{
-	  ay_trafo_getall(ay_currentlevel->next);
-	}
-      if(view->aligned && ay_selection)
-	{
-	  o = ay_selection->object;
-	  glTranslated((GLdouble)o->movx, (GLdouble)o->movy,
-		       (GLdouble)o->movz);
-	  ay_quat_torotmatrix(o->quat, m);
-	  glMultMatrixd((GLdouble*)m);
+       if(ay_currentlevel && ay_currentlevel->next)
+	 {
+	   ay_trafo_getall(ay_currentlevel->next);
+	 }
+       if(view->aligned && ay_selection)
+	 {
+	   o = ay_selection->object;
+	   glTranslated((GLdouble)o->movx, (GLdouble)o->movy,
+			(GLdouble)o->movz);
+	   ay_quat_torotmatrix(o->quat, m);
+	   glMultMatrixd((GLdouble*)m);
 	  
-	  /*
-	  XXXX the aligned grid should not be scaled!
-	  glScaled((GLdouble)o->scalx, (GLdouble)o->scaly,
-		   (GLdouble)o->scalz);
-	  */
-	} /* if */
-      glGetDoublev(GL_MODELVIEW_MATRIX, m);
+	   
+	   glScaled((GLdouble)o->scalx, (GLdouble)o->scaly,
+		    (GLdouble)o->scalz);
+	   
+	 } /* if */
+       glGetDoublev(GL_MODELVIEW_MATRIX, mm);
+      glPopMatrix();
+
+      gluProject(0.0, 0.0, 0.0, mm, mp, vp, &owinx, &owiny, &owinz);
+      
       switch(view->type)
 	{
 	case AY_VTFRONT:
 	case AY_VTTRIM:
-	  minwinx *= m[0];
-	  minwiny *= m[5];
+	  gluProject(view->grid, view->grid, 0.0, mm, mp, vp,
+		     &gwinx, &gwiny, &gwinz);
 	  break;
 	case AY_VTSIDE:
-	  minwinx *= m[10];
-	  minwiny *= m[5];
+	  gluProject(view->grid, view->grid, 0.0, mm, mp, vp,
+		     &gwinx, &gwiny, &gwinz);
 	  break;
 	case AY_VTTOP:
-	  minwinx *= m[0];
-	  minwiny *= m[10];
+	  gluProject(view->grid, 0.0, -view->grid, mm, mp, vp,
+		     &gwinx, &gwiny, &gwinz);
 	  break;
 	}
-    } /* if */
+      
+      dx = gwinx-owinx;
+      if(dx < 1.0)
+	dx = 1.0;
 
-  maxwinx = -minwinx;
-  maxwiny = -minwiny;
+      dy = gwiny-owiny;
+      if(dy < 1.0)
+	dy = 1.0;
 
-  glColor3d((GLdouble)ay_prefs.grr, (GLdouble)ay_prefs.grg,
-	    (GLdouble)ay_prefs.grb);
+      glColor3d((GLdouble)ay_prefs.grr, (GLdouble)ay_prefs.grg,
+		(GLdouble)ay_prefs.grb);
 
-  glBegin(GL_LINES);
-
-  switch(view->type)
-    {
-    case AY_VTFRONT:
-    case AY_VTTRIM:
-      /* vertical lines */
-      for(j = 0.0; j < maxwinx; j += view->grid)
-	{
-	  glVertex3d((GLdouble)j, (GLdouble)minwiny, (GLdouble)0.0);
-	  glVertex3d((GLdouble)j, (GLdouble)maxwiny, (GLdouble)0.0);
-	}
-      for(j = (0.0-view->grid); j > minwinx; j -= view->grid)
-	{
-	  glVertex3d((GLdouble)j, (GLdouble)minwiny, (GLdouble)0.0);
-	  glVertex3d((GLdouble)j, (GLdouble)maxwiny, (GLdouble)0.0);
-	}
-
-      /* horizontal lines */
-      for(j = 0.0; j < maxwiny; j += view->grid)
-	{
-	  glVertex3d((GLdouble)minwinx, (GLdouble)j, (GLdouble)0.0);
-	  glVertex3d((GLdouble)maxwinx, (GLdouble)j, (GLdouble)0.0);
-	}
-      for(j = (0.0-view->grid); j > minwiny; j -= view->grid)
-	{
-	  glVertex3d((GLdouble)minwinx, (GLdouble)j, (GLdouble)0.0);
-	  glVertex3d((GLdouble)maxwinx, (GLdouble)j, (GLdouble)0.0);
-	}
-      break;
-    case AY_VTSIDE:
-      /* vertical lines */
-      for(j = 0.0; j < maxwinx; j += view->grid)
-	{
-	  glVertex3d((GLdouble)0.0, (GLdouble)minwiny, (GLdouble)j);
-	  glVertex3d((GLdouble)0.0, (GLdouble)maxwiny, (GLdouble)j);
-	}
-      for(j = (0.0-view->grid); j > minwinx; j -= view->grid)
-	{
-	  glVertex3d((GLdouble)0.0, (GLdouble)minwiny, (GLdouble)j);
-	  glVertex3d((GLdouble)0.0, (GLdouble)maxwiny, (GLdouble)j);
-	}
-
-      /* horizontal lines */
-      for(j = 0.0; j < maxwiny; j += view->grid)
-	{
-	  glVertex3d((GLdouble)0.0, (GLdouble)j, (GLdouble)minwinx);
-	  glVertex3d((GLdouble)0.0, (GLdouble)j, (GLdouble)maxwinx);
-	}
-      for(j = (0.0-view->grid); j > minwiny; j -= view->grid)
-	{
-	  glVertex3d((GLdouble)0.0, (GLdouble)j, (GLdouble)minwinx);
-	  glVertex3d((GLdouble)0.0, (GLdouble)j, (GLdouble)maxwinx);
-	}
-      break;
-    case AY_VTTOP:
-      /* vertical lines */
-      for(j = 0.0; j < maxwinx; j += view->grid)
-	{
-	  glVertex3d((GLdouble)j, (GLdouble)0.0, (GLdouble)minwiny);
-	  glVertex3d((GLdouble)j, (GLdouble)0.0, (GLdouble)maxwiny);
-	}
-      for(j = (0.0-view->grid); j > minwinx; j -= view->grid)
-	{
-	  glVertex3d((GLdouble)j, (GLdouble)0.0, (GLdouble)minwiny);
-	  glVertex3d((GLdouble)j, (GLdouble)0.0, (GLdouble)maxwiny);
-	}
-
-      /* horizontal lines */
-      for(j = 0.0; j < maxwiny; j += view->grid)
-	{
-	  glVertex3d((GLdouble)minwinx, (GLdouble)0.0, (GLdouble)j);
-	  glVertex3d((GLdouble)maxwinx, (GLdouble)0.0, (GLdouble)j);
-	}
-      for(j = (0.0-view->grid); j > minwiny; j -= view->grid)
-	{
-	  glVertex3d((GLdouble)minwinx, (GLdouble)0.0, (GLdouble)j);
-	  glVertex3d((GLdouble)maxwinx, (GLdouble)0.0, (GLdouble)j);
-	}
-      break;
-    case AY_VTPERSP:
-      minwinx = -(25.0 * view->grid);
-      minwiny = -(25.0 * view->grid);
-      maxwinx = (25.0 * view->grid);
-      maxwiny = (25.0 * view->grid);
-      /* draw lines */
-      for(j = -25.0 * view->grid; j < maxwinx; j += view->grid)
-	{
-	  /* vertical */
-	  glVertex3d((GLdouble)j, (GLdouble)0.0, (GLdouble)minwiny);
-	  glVertex3d((GLdouble)j, (GLdouble)0.0, (GLdouble)maxwiny);
-	  /* horizontal */
-	  glVertex3d((GLdouble)minwinx, (GLdouble)0.0, (GLdouble)j);
-	  glVertex3d((GLdouble)maxwinx, (GLdouble)0.0, (GLdouble)j);
-	}
-      break;
-    }
-
-  glEnd();
-
-  if(view->local)
-    {
+      glMatrixMode(GL_PROJECTION);
+      glPushMatrix();
+       glLoadIdentity();
+       glOrtho(0, width, 0, height, -100.0, 100.0);
+       glMatrixMode(GL_MODELVIEW);
+       glPushMatrix();
+        glLoadIdentity();
+	glBegin(GL_LINES);
+	for(j = owinx; j < width; j += dx)
+	  {
+	    glVertex3d(j,    0.0, 0.0);
+	    glVertex3d(j, height, 0.0);
+	  }
+	for(j = owinx; j > 0.0; j -= dx)
+	  {
+	    glVertex3d(j,    0.0, 0.0);
+	    glVertex3d(j, height, 0.0);
+	  }
+	for(j = owiny; j < height; j += dy)
+	  {
+	    glVertex3d(  0.0, j, 0.0);
+	    glVertex3d(width, j, 0.0);
+	  }
+	for(j = owiny; j > 0.0; j -= dy)
+	  {
+	    glVertex3d(  0.0, j, 0.0);
+	    glVertex3d(width, j, 0.0);
+	  }
+	glEnd();
+       glPopMatrix();
+       glMatrixMode(GL_PROJECTION);
       glPopMatrix();
+      glMatrixMode(GL_MODELVIEW);
     }
+  else
+    {
+  
+      if(grid < 1E-6)
+	return;
+
+      switch(view->type)
+	{
+	case AY_VTFRONT:
+	case AY_VTTRIM:
+	  if(aspect > 1.0)
+	    {
+	      minwinx = floor(((-aspect * view->zoom) - fabs(view->from[0]))/
+			      (view->grid<1.0?view->grid:1.0/view->grid));
+	      minwiny = floor(((-view->zoom) - fabs(view->from[1]))/
+			      (view->grid<1.0?view->grid:1.0/view->grid));
+	    }
+	  else
+	    {
+	      minwiny = floor(((view->zoom/-aspect) - fabs(view->from[1]))/
+			      (view->grid<1.0?view->grid:1.0/view->grid));
+	      minwinx = floor(((-view->zoom) - fabs(view->from[0]))/
+			      (view->grid<1.0?view->grid:1.0/view->grid));
+	    }
+	  break;
+	case AY_VTSIDE:
+	  if(aspect > 1.0)
+	    {
+	      minwinx = floor(((-aspect * view->zoom) - fabs(view->from[2]))/
+			      (view->grid<1.0?view->grid:1.0/view->grid));
+	      minwiny = floor(((-view->zoom) - fabs(view->from[1]))/
+			      (view->grid<1.0?view->grid:1.0/view->grid));
+	    }
+	  else
+	    {
+	      minwiny = floor(((view->zoom/-aspect) - fabs(view->from[1]))/
+			      (view->grid<1.0?view->grid:1.0/view->grid));
+	      minwinx = floor(((-view->zoom) - fabs(view->from[2]))/
+			      (view->grid<1.0?view->grid:1.0/view->grid));
+	    }
+	  break;
+	case AY_VTTOP:
+	  if(aspect > 1.0)
+	    {
+	      minwinx = floor(((-aspect * view->zoom) - fabs(view->from[0]))/
+			      (view->grid<1.0?view->grid:1.0/view->grid));
+	      minwiny = floor(((-view->zoom) - fabs(view->from[2]))/
+			      (view->grid<1.0?view->grid:1.0/view->grid));
+	    }
+	  else
+	    {
+	      minwiny = floor(((view->zoom/-aspect) - fabs(view->from[2]))/
+			      (view->grid<1.0?view->grid:1.0/view->grid));
+	      minwinx = floor(((-view->zoom) - fabs(view->from[0]))/
+			      (view->grid<1.0?view->grid:1.0/view->grid));
+	    }
+	  break;
+	}
+
+      maxwinx = -minwinx;
+      maxwiny = -minwiny;
+
+      glColor3d((GLdouble)ay_prefs.grr, (GLdouble)ay_prefs.grg,
+		(GLdouble)ay_prefs.grb);
+
+      glBegin(GL_LINES);
+
+      switch(view->type)
+	{
+	case AY_VTFRONT:
+	case AY_VTTRIM:
+	  /* vertical lines */
+	  for(j = 0.0; j < maxwinx; j += view->grid)
+	    {
+	      glVertex3d((GLdouble)j, (GLdouble)minwiny, (GLdouble)0.0);
+	      glVertex3d((GLdouble)j, (GLdouble)maxwiny, (GLdouble)0.0);
+	    }
+	  for(j = (0.0-view->grid); j > minwinx; j -= view->grid)
+	    {
+	      glVertex3d((GLdouble)j, (GLdouble)minwiny, (GLdouble)0.0);
+	      glVertex3d((GLdouble)j, (GLdouble)maxwiny, (GLdouble)0.0);
+	    }
+
+	  /* horizontal lines */
+	  for(j = 0.0; j < maxwiny; j += view->grid)
+	    {
+	      glVertex3d((GLdouble)minwinx, (GLdouble)j, (GLdouble)0.0);
+	      glVertex3d((GLdouble)maxwinx, (GLdouble)j, (GLdouble)0.0);
+	    }
+	  for(j = (0.0-view->grid); j > minwiny; j -= view->grid)
+	    {
+	      glVertex3d((GLdouble)minwinx, (GLdouble)j, (GLdouble)0.0);
+	      glVertex3d((GLdouble)maxwinx, (GLdouble)j, (GLdouble)0.0);
+	    }
+	  break;
+	case AY_VTSIDE:
+	  /* vertical lines */
+	  for(j = 0.0; j < maxwinx; j += view->grid)
+	    {
+	      glVertex3d((GLdouble)0.0, (GLdouble)minwiny, (GLdouble)j);
+	      glVertex3d((GLdouble)0.0, (GLdouble)maxwiny, (GLdouble)j);
+	    }
+	  for(j = (0.0-view->grid); j > minwinx; j -= view->grid)
+	    {
+	      glVertex3d((GLdouble)0.0, (GLdouble)minwiny, (GLdouble)j);
+	      glVertex3d((GLdouble)0.0, (GLdouble)maxwiny, (GLdouble)j);
+	    }
+
+	  /* horizontal lines */
+	  for(j = 0.0; j < maxwiny; j += view->grid)
+	    {
+	      glVertex3d((GLdouble)0.0, (GLdouble)j, (GLdouble)minwinx);
+	      glVertex3d((GLdouble)0.0, (GLdouble)j, (GLdouble)maxwinx);
+	    }
+	  for(j = (0.0-view->grid); j > minwiny; j -= view->grid)
+	    {
+	      glVertex3d((GLdouble)0.0, (GLdouble)j, (GLdouble)minwinx);
+	      glVertex3d((GLdouble)0.0, (GLdouble)j, (GLdouble)maxwinx);
+	    }
+	  break;
+	case AY_VTTOP:
+	  /* vertical lines */
+	  for(j = 0.0; j < maxwinx; j += view->grid)
+	    {
+	      glVertex3d((GLdouble)j, (GLdouble)0.0, (GLdouble)minwiny);
+	      glVertex3d((GLdouble)j, (GLdouble)0.0, (GLdouble)maxwiny);
+	    }
+	  for(j = (0.0-view->grid); j > minwinx; j -= view->grid)
+	    {
+	      glVertex3d((GLdouble)j, (GLdouble)0.0, (GLdouble)minwiny);
+	      glVertex3d((GLdouble)j, (GLdouble)0.0, (GLdouble)maxwiny);
+	    }
+
+	  /* horizontal lines */
+	  for(j = 0.0; j < maxwiny; j += view->grid)
+	    {
+	      glVertex3d((GLdouble)minwinx, (GLdouble)0.0, (GLdouble)j);
+	      glVertex3d((GLdouble)maxwinx, (GLdouble)0.0, (GLdouble)j);
+	    }
+	  for(j = (0.0-view->grid); j > minwiny; j -= view->grid)
+	    {
+	      glVertex3d((GLdouble)minwinx, (GLdouble)0.0, (GLdouble)j);
+	      glVertex3d((GLdouble)maxwinx, (GLdouble)0.0, (GLdouble)j);
+	    }
+	  break;
+	case AY_VTPERSP:
+	  minwinx = -(25.0 * view->grid);
+	  minwiny = -(25.0 * view->grid);
+	  maxwinx = (25.0 * view->grid);
+	  maxwiny = (25.0 * view->grid);
+	  /* draw lines */
+	  for(j = -25.0 * view->grid; j < maxwinx; j += view->grid)
+	    {
+	      /* vertical */
+	      glVertex3d((GLdouble)j, (GLdouble)0.0, (GLdouble)minwiny);
+	      glVertex3d((GLdouble)j, (GLdouble)0.0, (GLdouble)maxwiny);
+	      /* horizontal */
+	      glVertex3d((GLdouble)minwinx, (GLdouble)0.0, (GLdouble)j);
+	      glVertex3d((GLdouble)maxwinx, (GLdouble)0.0, (GLdouble)j);
+	    }
+	  break;
+	}
+
+      glEnd();
+    } /* if */
 
   glClear(GL_DEPTH_BUFFER_BIT);
 

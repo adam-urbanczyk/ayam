@@ -571,7 +571,6 @@ proc actionEditP { w } {
 
     bind $w <B1-Motion> {
 	%W pepac -winxy %x %y
-	%W render
     }
 
     stdReleaseBind $w
