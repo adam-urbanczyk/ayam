@@ -924,6 +924,10 @@ ay_undo_undotcmd(ClientData clientData, Tcl_Interp *interp,
       break;
     case 2:
       ay_status = ay_undo_save();
+      
+      /* set scene changed flag */
+      Tcl_SetVar2(interp, a, n, v, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
       break;
     case 3:
       ay_status = ay_undo_clear();
@@ -934,8 +938,6 @@ ay_undo_undotcmd(ClientData clientData, Tcl_Interp *interp,
     default:
       break;
     }
-
-  Tcl_SetVar2(interp, a, n, v, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
  return TCL_OK;
 } /* ay_undo_undotcmd */

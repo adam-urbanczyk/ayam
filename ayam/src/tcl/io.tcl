@@ -293,8 +293,6 @@ proc io_lc { filename } {
 	load $filename
     }
 
-    set ay(sc) 1
-
  return;
 }
 # io_lc
