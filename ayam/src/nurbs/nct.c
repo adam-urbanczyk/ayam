@@ -2377,6 +2377,55 @@ ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_nct_split */
 
 
+/* ay_nct_crtcircbsp:
+ *  XXXX this only works for arc == 360.0!
+ */
+int
+ay_nct_crtcircbsp(int sections, double radius, double arc, int order,
+		  ay_nurbcurve_object **result)
+{
+ int ay_status;
+ ay_nurbcurve_object *curve = NULL;
+ double *controlv, m[16], angle;
+ int len, a, i;
+
+  if((sections < 2) || (radius < 0.0) || (order < 2))
+    return AY_ERROR;
+
+  if(!result)
+    return AY_ENULL;
+
+
+  len = sections+(order-1);
+
+  if(!(controlv = calloc(len*4, sizeof(double))))
+    {
+      return AY_EOMEM;
+    }
+
+  angle = arc/sections;
+
+  ay_trafo_identitymatrix(m);
+  for(i = 0; i < len; i++)
+    {
+      a = i*4;
+      controlv[a] = radius;
+      controlv[a+1] = 0.0;
+      controlv[a+2] = 0.0;
+      controlv[a+3] = 1.0;
+      ay_trafo_rotatematrix(angle, 0.0, 0.0, 1.0, m);
+      ay_trafo_apply3(&(controlv[a]), m);
+    } /* for */
+
+  ay_status = ay_nct_create(order, len, AY_KTBSPLINE, controlv, NULL,
+			    &curve);
+
+  *result = curve;
+
+ return ay_status;
+} /* ay_nct_crtcircbsp */
+
+
 /* ay_nct_crtclosedbsptcmd:
  *
  */
@@ -2418,7 +2467,7 @@ ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(!(controlv = calloc((num+3)*4, sizeof(double))))
     {
-      free(curve);
+      free(o);
       ay_error(AY_EOMEM, fname, NULL);
       return TCL_OK;
     }
