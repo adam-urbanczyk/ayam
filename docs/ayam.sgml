@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>6. Oct 2002
+<date>12. Oct 2002
 <abstract>
 This is the documentation of Ayam (1.3) - a free 3D modeling environment
 for the RenderMan interface.
@@ -32,7 +32,7 @@ Ayam is a free 3D modeling environment for the RenderMan Interface
 On which platforms is Ayam available?<p>
 Ayam is primarily aimed at the platforms BMRT (Blue Moon Rendering
 Tools, a RenderMan compliant renderer by Larry Gritz (Exluna))
-runs on (those are Linux, IRIX, Win32). Despite of this, Ayam may be used
+runs on (those are Linux, IRIX, and Win32). Despite of this, Ayam may be used
 on many more platforms with any RenderMan compliant renderer.
 Due to limitations in the Win32 operating system(s)
 (no backlinking) and the current implementation of Ayam,
@@ -45,15 +45,15 @@ In this case, no parsing of slc compiled shaders will be possible.<p>
 What are the features of Ayam?<p>
 Here is a short summary:
 <itemize>
-<item>RIB (RenderMan Interface Bytestream) export.
+<item>RIB (RenderMan Interface Bytestream) export and import.
 <item>Support for NURBS curves, interpolating curves, (trimmed)
 NURBS surfaces, bilinear and bicubic patches and patch meshes,
 Boxes, Quadrics (Sphere, Disk,
-Cylinder, Cone, Hyperboloid, Paraboloid and Torus).
+Cylinder, Cone, Hyperboloid, Paraboloid and Torus), and polygonal meshes.
 <item>All primitives may be combined with the common
 CSG-operations: Intersection, Difference, and Union.
-<item>NURBS modeling includes extrude (with caps, holes and bevels),
-revolve (with caps), sweep and skin operations.
+<item>NURBS modeling includes extrude, revolve, sweep and skin
+operations (with caps, holes, and bevels).
 <item>Custom objects that may freely implement their representations
 (using OpenGL and RIB) and even small GUIs to edit their type specific
 parameters may be written by the user and dynamically loaded at runtime.
@@ -337,9 +337,11 @@ The <tt/File/ menu deals with standard file operations:<label id="filem">
 <itemize>
 <item><tt/New/, clears the current scene (deletes all objects).
 <item><tt/Replace/, clears the current scene and closes all views,
-then loads a new scene from disk.
+then loads a new scene from disk. All objects from the file
+will be read.
 <item><tt/Insert/, inserts the objects and views of a ayam file
-into the current scene.
+into the current scene. All objects from the file
+will be read.
 <item><tt/Save as/, saves the current scene asking for a new file name.
 <item><tt/Save/, saves the scene. If the scene has not been saved before
 (read, you have not given it a file name) you will be asked for
@@ -476,7 +478,10 @@ may create entries here.
 The <tt/Special/ menu:
 <itemize>
 <item><tt/Save Selected as/, saves just the currently selected objects
-to disk.
+to disk. Note, that Ayam will not check, whether the objects are
+saved with their materials. It is also possible to save
+instance objects without their master objects. This will lead
+to errors while loading such a scene later on.
 <item><tt/Save Environment/, saves the root object and all
 views to the file pointed to by the preference
 setting <tt>"Main/EnvFile"</tt>. Note, that there will be no
@@ -502,12 +507,12 @@ selected object(s).
 transformations property of the selected objects to all points of those
 objects.
 This will have the effect of resetting the transformations property
-to the default values without moving the points.
+to the default values without transforming the points.
 <item><tt>Points/Apply To Selected</tt>, applies the transformations
 encoded in the
 transformations property of the selected objects to the selected points.
-This will reset the transformations property without moving the
-selected points. The points currently not selected will be moved,
+This will reset the transformations property without transforming the
+selected points. The points currently not selected will be transformed,
 however!
 <item><tt>Instances/Resolve all Instances</tt>, converts all instances
 of the current level (and its child objects) to normal objects.
@@ -2759,10 +2764,12 @@ to violate the second rule. Clean the clipboard using
 the menu <tt>"Special/Clipboard/Paste (Move)"</tt> and delete
 or resolve all references.<p>
 
-Currently, it is not possible to copy a master object and some instances
+Note, that it is not possible to copy a master object and some instances
 of it, so that the new instances point to the newly created master.
-However, it is possible to move them using drag and drop in the tree
-view or using the menu <tt>"Edit/Cut"</tt> then
+All copies of instance objects always point to the same master object.
+
+However, it is possible to move instances using drag and drop in the tree
+view or using the clipboard with <tt>"Edit/Cut"</tt> and then
 <tt>"Special/Clipboard/Paste (Move)"</tt>.<p>
 
 You can resolve an instance object at any time using
@@ -2840,7 +2847,8 @@ direction only (Revolution does not change!).
 </itemize>
 
 You may convert the current surface of revolution and the caps,
-if there are any, to ordinary NURBS patches. 
+if there are any, to ordinary NURBS patches using the main menu entry
+<tt>"Tools/Convert"</tt>. 
 
 <sect2>RevolveAttr<label id="rep">
 <p>
@@ -2896,7 +2904,8 @@ coordinate system. If not, they will be squashed down
 to this plane!<p>
 
 You may convert the current surface of extrusion and the caps and bevels,
-if there are any, to ordinary NURBS patches. 
+if there are any, to ordinary NURBS patches using the main menu entry
+<tt>"Tools/Convert"</tt>. 
 
 <sect2>ExtrudeAttr<label id="extrattr">
 <p>
@@ -3001,7 +3010,9 @@ Section <ref id="scexsweep" name="Easy Sweep"> has an example
 script that automates creation and parameterization of
 a suitable cross section curve.
 
-You may convert the current sweep to an ordinary NURBS patch.
+You may convert the current sweep and the caps, if there are any,
+to ordinary NURBS patches using the main menu entry
+<tt>"Tools/Convert"</tt>.
 
 <sect2>SweepAttr<label id="swp">
 <p>
@@ -3055,7 +3066,9 @@ a width of 2 and a height of 10!
 The skin custom object has the generating NURBS curves as child objects
 and watches their changes and adapts to them automagically.
 
-You may convert the currently selected skin to an ordinary NURBS patch.
+You may convert the current skin and the caps, if there are any,
+to ordinary NURBS patches using the main menu entry
+<tt>"Tools/Convert"</tt>.
 
 <sect2>SkinAttr<label id="skp">
 <p>
@@ -3111,6 +3124,11 @@ cap generation may fail, if the control points of the
 first curve have weights and the curve leaves the convex
 hull of the control polygon. Be careful when using weights!<p>
 
+You may convert the current cap
+to an ordinary NURBS patch using the main menu entry
+<tt>"Tools/Convert"</tt>.
+
+
 <sect2>CapAttr<label id="capp">
 <p>
 See section <ref id="npattr" name="NPatchAttrib"> for a description
@@ -3146,7 +3164,8 @@ the provide mechanism (revolve, sweep, extrude, skin) are
 able to work with an ICurve object instead of an object
 of type NURBCurve.
 
-You may convert the currently selected ICurve to an ordinary NURBS curve.
+You may convert the current ICurve to an ordinary NURBS curve
+using the main menu entry <tt>"Tools/Convert"</tt>.
 
 <sect2>ICurveAttr<label id="icp">
 <p>
@@ -3186,12 +3205,12 @@ to a single NURBS curve. Since the ConcatNC object also
 provides a NURBS curve, it is possible to use it as
 child object for another ConcatNC object (with possibly
 different parameters) or as a parameter object for a tool object
-that works with NURBS curves such as Revolve or Extrude..<p>
+that works with NURBS curves such as Revolve or Extrude.<p>
 How does the concatenation work?
 First, all curves will be clamped (see section
 <ref id="clat" name="clamp tool"> for more information on clamping).
 Then, the control points of all child curves are simply copied
-into a new big vector, without checking for double
+into a new big control point vector, without checking for double
 points.
 Attributes like order, display mode, tolerance
 etc. for the new concatenated curve are taken from the first child object.
@@ -3200,6 +3219,9 @@ This means, the shape of the concatenated curve will differ from the
 child curves if
 any of the child curves has a custom knot vector with non
 equidistant knots.
+
+You may convert the current ConcatNC object to an ordinary NURBS curve
+using the main menu entry <tt>"Tools/Convert"</tt>.
 
 The following attributes further control the
 concatenation process:
@@ -3223,7 +3245,7 @@ transition should be C1 continuous.
 
 <sect1>RiInc Object<label id="riincobj">
 <p>
-RiInc objects are used to include RIB snippets into your
+RiInc objects may be used to include objects or whole scene parts into your
 scenes that, for some reason, are just available as
 a piece of RIB.
 <sect2>RiIncAttr<label id="riincp">
@@ -3253,24 +3275,30 @@ information regarding it's properties.
 
 <sect1>Metaball Object<label id="metaobjobj"><label id="metacompobj">
 <p>
-A metaball object is a <ref id="customobj" name="Custom Object">. It allows you
-modelling with implicit surfaces in realtime.
-
+A metaball object is a custom object (see also section
+<ref id="customobj" name="Custom Object">).
+It allows you to model with implicit surfaces in realtime.
+<p>
 To start modelling you should first create a MetaObj object using the menu
-<tt>"Create/Custom Object/MetaObj"</tt>.
-This creates a meta-world with a single meta-component (a sphere) in it.
-Meta-components live only in a meta-world. Type, parameters, and
-transformation attributes of the meta-components define the function
+<tt>"Create/Custom Object/MetaObj"</tt> (if this menu entry is not
+available, you have to load the <tt>"metaobj"</tt> plugin using the menu entry
+<tt>"File/Load Custom"</tt>).
+<tt>"Create/Custom Object/MetaObj"</tt> creates a so called meta world with a
+single meta component (a sphere) in it.
+Meta components live only in a meta world. Type, parameters, and
+transformation attributes of the meta components define the function
 of an implicit surface. The MetaObj object, that represents the
-meta-world, evaluates this function on a regular grid and creates a polygonal
+meta world, evaluates this function on a regular three-dimensional
+grid and creates a polygonal
 representation for a specific function value (the so called threshold value).
-This process may be parameterized using the <tt/"MetaObjAttr"/
-
+<p>
+This process may be further parameterized using the <tt/"MetaObjAttr"/
+property:
 <sect2>MetaObjAttr<label id="moattr">
 <p>
 <itemize>
 <item>With the parameter <tt/"NumSamples"/ you specify the resolution of the
-three dimensional regular grid, on which the implicit function is
+three-dimensional regular grid, on which the implicit function is
 evaluated, in each dimension.
 A higher number of samples results in better quality but more polygons
 are created and more CPU power and memory are needed. For modelling
@@ -3279,7 +3307,7 @@ you may increase this to about 160.
 <item><tt/"IsoLevel"/, defines the threshold value for that a polygonal
 representation of the implicit function should be created. Normally, you
 should not need to change this value.
-<item>To show the actual bounds of the meta-world, you may enable
+<item>To show the actual bounds of the meta world, you may enable
 the <tt>"ShowWorld"</tt> parameter.
 </itemize>
 
@@ -3290,8 +3318,8 @@ A <tt/"MetaComp"/ object has the following properties.
 <sect2>MetaCompAttr<label id="mcattr">
 <p>
 <itemize>
-<item><tt/"Formula"/ specifies the type of the meta-component.
-The following types are available: Metaball, Torus, Cube, Heart and
+<item><tt/"Formula"/ specifies the type of the meta component.
+The following types are available: Metaball, Torus, Cube, Heart, and
 Custom which gives you the possibility to use your own formulas.
 <item>With the parameter <tt/"Negative"/ you define a component with a
 negative effect on the implicit function value.
@@ -4477,7 +4505,8 @@ Finally, you may adapt the database of RiOptions and
 RiAttributes to your rendering system.
 You can then easily add those options and attributes
 to your scene using tags and the main menu entries
-<tt>"Special/Tags/Add RiOption"</tt> and <tt>"Special/Tags/Add RiAttribute"</tt>,
+<tt>"Special/Tags/Add RiOption"</tt> and
+<tt>"Special/Tags/Add RiAttribute"</tt>,
 see also sections
 <ref id="riatag" name="RiAttribute Tag"> and
 <ref id="riotag" name="RiOption Tag">.
@@ -4544,10 +4573,14 @@ instead of using the values from the Mops scene file.
 
 <sect1>Import of RenderMan Interface Bytestreams (RIB)<label id="rrib">
 <p>
-
 Using the RRIB (Read RIB) plugin you may import RenderMan Interface
 Bytestreams into Ayam.
-Start importing a RIB using the menu entry <tt>"Custom/RRIB/Import RIB"</tt>.
+Start importing a RIB using the menu entry
+<tt>"Custom/RRIB/Import RIB"</tt>
+(if this menu entry is not available, you have to load the
+<tt>"rrib"</tt> plugin using the menu entry
+<tt>"File/Load Custom"</tt>).
+<p>
 The RRIB plugin supports the following geometric
 primitives:
 <itemize>
@@ -4604,6 +4637,12 @@ should be printed.
 <p>
 Using the MFIO plugin you may import and export scenes
 from to the 3DMF format (version 1.0 only!) from Apple.
+Start importing a 3DMF file using the menu entry
+<tt>"Custom/3DMF/Import"</tt>
+(if this menu entry is not available, you have to load the
+<tt>"mfio"</tt> plugin using the menu entry
+<tt>"File/Load Custom"</tt>).
+<p>
 Import supports the following primitives: Polylines,
 NURBS curves, NURBS surfaces (with trim curves), Triangles, TriGrids,
 Polygons, general Polygons, Boxes, Ellipsoids, Cylinders, Cones,
@@ -4612,39 +4651,40 @@ The following transformations are supported: Scale, Translate, Rotate,
 RotateQuaternion, RotateAxis (if axis is X, Y, or Z). Furthermore,
 the import plugin reads the structure of the scene from Container
 objects. Reference objects will be resolved to normal objects while importing.
-
+<p>
 The MFIO export supports the following primitives: NURBS curves and surfaces
 (with trim curves) including all NURBS curve/surface providing objects,
 such as ICurve, Skin etc., Box, Sphere, Disk, Cone,
 Cylinder, Torus, and PolyMesh.
 Instance objects will be resolved for export.
 Level objects (regardless of type) will be written as Container objects.
-
+<p>
 Support for import/export of lights, camera attributes as well as
 material attributes is currently not available.
 
 <sect1>Shader Parsing Plugins<label id="spplugins">
 <p>
-
 Since Ayam1.3, the following plugins are provided to allow
 parsing of shaders: <tt/"ayslb"/ for Air, <tt/"ayslx"/ for Aqsis,
-<tt/"ayso"/ for RDC, <tt/"ayslo"/ for PRMan, and <tt/"ayslo3d"/ for 3Delight
+<tt/"ayso"/ for RDC, <tt/"ayslo"/ for PRMan, and <tt/"ayslo3d"/ for 3Delight.
 <p>
 After loading of one of the aforementioned plugins, Ayam will
 be able to parse shaders compiled with the shader compiler
 of the respective renderer. A shader parsing plugin may be loaded
 automatically on startup of Ayam using one of the provided Tcl scripts:
 <tt/"loadayslb.tcl"/, <tt/"loadayslo.tcl"/, <tt/"loadayslo3d.tcl"/,
-<tt/"loadayslx.tcl"/, and <tt/"loadayso.tcl"/. Those scripts may be
-adapted by the user to set a different
-Shaders preference setting or to immediately scan for shaders
+<tt/"loadayslx.tcl"/, and <tt/"loadayso.tcl"/.
+Simply add the script to the preference setting
+<tt>"Main/Scripts"</tt> using the <tt>"Add"</tt> button in the
+preferences editor.
+Those scripts may be further adapted by the user to set a different
+<tt/"Shaders"/ preference setting or to immediately scan for shaders
 after loading. However, the standard behavior while loading of
 such a plugin requires you to scan manually for shaders and to adapt
 the shaders search path manually too, using the preferences editor.
 
 <sect1>Automatic Instancing<label id="ai">
 <p>
-
 Automatic Instancing is available via the main menu entry:
 <tt>"Special/Instances/Automatic Instancing"</tt>.
 Automatic Instancing creates instances from all instantiable
@@ -4673,7 +4713,7 @@ After instantiation some statistics will be displayed in the console.
 More information about this subject can be found in:<p>
 <it>Schultz, R., and Schumann, H.: "Automatic Instancing of
 Hierarchically Organized Objects", in: Kunii T.L. (ed.): Spring
-Conference on Computer Graphics 2001 Conference Proceedings, Budmerice,
+Conference on Computer Graphics (SCCG 2001) Conference Proceedings, Budmerice,
 Slovakia, 25-28 April 2001, ISBN 80-223-1606-7</it>
 
 <sect1>Importance Driven Rendering (IDR)<label id="idr">
