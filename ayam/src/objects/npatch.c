@@ -272,7 +272,8 @@ ay_npatch_drawglucb(struct Togl *togl, ay_object *o)
 		  GL_MAP2_VERTEX_4);
 
   /* propagate changes to trimcurve walking code also to:
-     shadecb(), wribcb(), nurbs/npt.c/ay_npt_topolymesh()! */
+     shadecb(), nurbs/npt.c/wribtrimcurves(),
+     nurbs/npt.c/ay_npt_topolymesh()! */
 
   /* draw trimcurves */
   if(o->down && o->down->next)
@@ -309,10 +310,8 @@ ay_npatch_drawglucb(struct Togl *togl, ay_object *o)
 							&nc);
 			  if(nc)
 			    {
-			      gluBeginTrim(npatch->no);
 			      ay_status = ay_npt_drawtrimcurve(togl, nc,
 							       npatch->no);
-			      gluEndTrim(npatch->no);
 			      ay_object_delete(nc);
 			    } /* if */
 			} /* if */
@@ -570,10 +569,8 @@ ay_npatch_shadecb(struct Togl *togl, ay_object *o)
 							&nc);
 			  if(nc)
 			    {
-			      gluBeginTrim(npatch->no);
 			      ay_status = ay_npt_drawtrimcurve(togl, nc,
 							       npatch->no);
-			      gluEndTrim(npatch->no);
 			      ay_object_delete(nc);
 			    } /* if */
 			} /* if */
