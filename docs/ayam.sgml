@@ -6670,6 +6670,24 @@ A 3D representation of the letter A e.g. has a genus of
 The depth complexity of a primitive should be stored in a DC tag.
 A torus would e.g. get a tag named <tt/"DC"/ with the value <tt/"2"/.
 <p>
+Note that the correct operation of aycsg not only depends on the
+depth complexity but also the winding order of the OpenGL primitives
+(triangles or quads) used for drawing of the CSG primitives. The
+winding order has to be consistent in a scene, so that the rendering
+algorithm can decide what is inside and what is outside by looking
+at a single OpenGL primitive. For all quadric primitives of Ayam
+the winding order is always consistent. However, for NURBS patches
+this depends on the orientation of the patch dimensions. If NURBS
+patches are used in CSG operations you, consequently, may need to
+revert the patches.
+<p>
+Also note that CSG rendering requires fast graphics hardware
+(the more fillrate, the better). Furthermore, your OpenGL subsystem
+has to support the PBuffers extension and, depending on the
+rendering options choosen, a stencil buffer. Speedups may be
+achieved using the GL_ARB_occlusion_query or GL_NV_occlusion_query
+extensions (if available to you).
+<p>
 Once the aycsg plugin is loaded successfully you can render the CSG
 preview in any view window using the keyboard shortcut
 <tt>&lt;Ctrl+Shift+c&gt;</tt> or using the new button in the menu
@@ -6680,18 +6698,22 @@ The aycsg plugin supports the following options, that are available
 through the main menu entry <tt>"Custom/AyCSG Preferences"</tt>:
 <itemize>
 <item><tt/"Algorithm"/ allows to switch between the Goldfeather and
-SCS algorithm.
+SCS algorithm. Note again that the SCS algorithm only works correctly
+for convex primitives.
 <item><tt/"DCSampling"/ determines a depth complexity sampling
 strategy. Quoting from the OpenCSG documentation, the following options
 are available:
+<p><p>
 <tt/"NoDCSampling"/: Does not employ the depth complexity. This essentially
 makes the algorithm O(n&sup2;), but with low constant costs.
+<p>
 <tt/"OcclusionQuery"/: Uses occlusion queries to profit implicitly from
 depth complexity without calculating it. This is especially useful for the
 SCS algorithm where this strategy is applied at shape level, resulting in
 a O(n*k') algorithm (where k' <= k), without significant constant overhead.
 This strategy requires hardware occlusion queries, i.E., the OpenGL
 extension GL_ARB_occlusion_query or GL_NV_occlusion_query.
+<p>
 <tt/"DCSampling"/: Calculates the depth complexity k using the stencil
 buffer. This makes the algorithm O(n*k), but with high constant costs.
 In case of the Goldfeather algorithm, the literature denotes this as
