@@ -13,7 +13,7 @@
 #
 #
 proc aboutAyam {} {
-global ay tcl_version tk_version tcl_patchLevel tk_patchLevel
+global ay tcl_version tk_version tcl_patchLevel tk_patchLevel tcl_platform
 set w .aboutw
 # there can only be one
 catch {destroy $w}
@@ -28,11 +28,17 @@ if { $ay(views) != "" } {
     getVersion
 } else {
     set ay(gl_ver) "Not available unless a view is open."
-    set ay(gl_ren) ""
-    set ay(gl_ven) ""
-    set ay(gl_ext) ""
-    set ay(glu_ver) ""
-    set ay(glu_ext) ""
+}
+
+global AYWRAPPED
+if { $AYWRAPPED == 1 } { set wrappedorshared "wrapped" } else {
+    set wrappedorshared "shared"
+}
+
+if { $tcl_version >= 8.1 } {
+    set platform [string toupper $tcl_platform(platform) 0 0 ]
+} else {
+    set platform [string toupper $tcl_platform(platform) ]
 }
 
 pack $w.ftext -in $w -side top -expand yes -fill both
@@ -49,7 +55,7 @@ $w.ftext.text insert end \
 Ayam, a free 3D Tcl/Tk/OpenGL/RenderMan modeler
 
 Ayam is
-Copyright (c) 1998-2002 by Randolf Schultz
+Copyright (c) 1998-2003 by Randolf Schultz
 (rschultz@informatik.uni-rostock.de)
 All Rights Reserved
 
@@ -78,18 +84,19 @@ $w.ftext.text tag bind httag2 <ButtonPress-1> {
     browser_urlOpen "http://wwwicg.informatik.uni-rostock.de/~rschultz/ayam/"}
 $w.ftext.text insert end \
 "
-Ayam: $ay(ay_version)
+Ayam: $ay(ay_version) ($wrappedorshared) on: $platform/$tcl_platform(os)($tcl_platform(osVersion))
 
-Tcl
-Version: $tcl_version
-PatchLevel: $tcl_patchLevel
+Tcl-Version: $tcl_version
+Tcl-PatchLevel: $tcl_patchLevel
 
-Tk
-Version: $tk_version
-PatchLevel: $tk_patchLevel
+Tk-Version: $tk_version
+Tk-PatchLevel: $tk_patchLevel
+
+OpenGL-Version: $ay(gl_ver)
+
+GLU-Version: $ay(glu_ver)
 
 OpenGL
-Version:  $ay(gl_ver)
 Renderer: $ay(gl_ren)
 Vendor:   $ay(gl_ven)
 "
@@ -99,12 +106,12 @@ $w.ftext.text insert end "Extension: $i
 " 
 }
 
+if { $ay(glu_ext) != "" } {
 $w.ftext.text insert end \
 "
 GLU
-Version: $ay(glu_ver)
 "
-
+}
 foreach i $ay(glu_ext) {
 $w.ftext.text insert end "Extension: $i
 " 
@@ -152,8 +159,11 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 $w.ftext.text tag add "tag3" end-19lines end
 
 $w.ftext.text tag configure tag3 -justify center
+# Disabling the text widget (unfortunately) prohibits selection
+# on Win32 so we have to live with the user being able to _modify_
+# the contents of the text widget:
+#$w.ftext.text configure -state disabled
 
-$w.ftext.text configure -state disabled
 bind $w <Next> "$w.ftext.text yview scroll 1 pages"
 bind $w <Prior> "$w.ftext.text yview scroll -1 pages"
 
@@ -166,4 +176,13 @@ bind $w.ftext.text <ButtonPress-5>\
 button $w.fbutton.b -text "Dismiss" -pady $ay(pady) -command "destroy $w"
 pack $w.fbutton.b -in $w.fbutton
 
+bind $w.ftext.text <ButtonRelease-1> {
+    if {[string match %W [selection own -displayof %W]]} {
+	clipboard clear -displayof %W
+	catch {clipboard append -displayof %W [selection get -displayof %W]}
+    }
 }
+# bind
+
+}
+# aboutAyam
