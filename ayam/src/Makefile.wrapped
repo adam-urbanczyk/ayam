@@ -378,6 +378,11 @@ AYSLOLIBS = -L $(PRMANDIR)/lib -lsloargs -ltarget -lzip
 AYSLO3DINCDIR = $(3DLDIR)/include
 AYSLO3DLIBS = -L $(3DLDIR)/lib -l3delight
 
+# Aysdr Plugin
+SDRDIR = /usr/local
+AYSDRINCDIR = $(SDRDIR)/include
+AYSDRLIBS = -L $(SDRDIR)/lib -lsdr
+
 
 #############################################
 # nothing needs to be changed below this line
@@ -458,6 +463,10 @@ ayslo3d.so:
 ayslb.so:
 	$(CC) -c $(CFLAGS) plugins/ayslb.c -o plugins/ayslb.o -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR) -I$(AQSISINCDIR) -I$(TIFFINCDIR)
 	$(CC) -shared plugins/ayslb.o -o plugins/ayslb.so
+
+aysdr.so:
+	$(CC) -c $(CFLAGS) plugins/aysdr.c -o plugins/aysdr.o -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR) -I$(AQSISINCDIR) -I$(TIFFINCDIR) -I$(AYSDRINCDIR)
+	$(CC) -shared plugins/aysdr.o -o plugins/aysdr.so $(LDSWSTATIC) $(AYSDRLIBS) $(LDSWDYNAMIC)
 
 mostlyclean:
 	-rm -f core
