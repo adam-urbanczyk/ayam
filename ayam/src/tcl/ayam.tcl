@@ -857,9 +857,8 @@ pack .fl.con -in .fl -expand 1 -fill both
 bind .fl.con.console $aymainshortcuts(SwCon) { focus [tk_focusNext %W] }
 
 # fix Shift-Tab binding
-if { ( $tcl_platform(platform) != "windows" ) &&
-     ( $tcl_platform(os) != "Darwin" ) } {
-	bind all <ISO_Left_Tab> {tkTabToWindow [tk_focusPrev %W]}
+if { ( $tcl_platform(platform) != "windows" ) && ( ! $AYWITHAQUA ) } {
+    bind all <ISO_Left_Tab> { tkTabToWindow [tk_focusPrev %W] }
 }
 
 # bind to mouse wheel on UNIX
@@ -1136,7 +1135,7 @@ io_mruUMenu
 bind all <Tab> +plb_focus
 bind all <Shift-Tab> +plb_focus
 if { ( $tcl_platform(platform) != "windows" ) &&
-     ( $tcl_platform(os) != "Darwin" ) } {
+     ( ! $AYWITHAQUA ) } {
     bind all <ISO_Left_Tab> +plb_focus
 }
 

@@ -9,9 +9,9 @@
 
 # mmenu.tcl - the main menu
 
-global ay tcl_platform
+global ay AYWITHAQUA
 
-if { $tcl_platform(os) != "Darwin" } {
+if { ! $AYWITHAQUA } {
     frame .fu.fMenu -bd 2 -relief raised
     pack .fu.fMenu -side top -fill x
     # File
@@ -109,7 +109,7 @@ $m add command -label "Exit!" -command {
 }
 
 
-if { $tcl_platform(os) != "Darwin" } {
+if { ! $AYWITHAQUA } {
     pack .fu.fMenu.fil -in .fu.fMenu -side left
 
     # Edit
@@ -144,7 +144,7 @@ $m add command -label "Master" -command {instance_edit;}
 $m add separator
 $m add command -label "Preferences" -command {prefs_open; rV}
 
-if { $tcl_platform(os) != "Darwin" } {
+if { ! $AYWITHAQUA } {
     pack .fu.fMenu.ed -in .fu.fMenu -side left
 
     # Create
@@ -237,7 +237,7 @@ $m add command -label "Camera" \
 $m add command -label "RiInc" \
 	-command "crtOb RiInc; uCR; sL;rV;"
 
-if { $tcl_platform(os) != "Darwin" } {
+if { ! $AYWITHAQUA } {
     pack .fu.fMenu.cr -in .fu.fMenu -side left
 
     # Tools
@@ -322,7 +322,7 @@ set ay(ul) \$ay(CurrentLevel); uS; sL; rV"
 $m add separator
 $m add command -label "Force Notification" -command "forceNot; rV"
 
-if { $tcl_platform(os) != "Darwin" } {
+if { ! $AYWITHAQUA } {
     pack .fu.fMenu.tool -in .fu.fMenu -side left
 
     # Custom
@@ -386,7 +386,7 @@ $m add command -label "Toggle TreeView" -command "tree_toggle"
 $m add separator
 $m add command -label "Zap Ayam" -command "zap"
 
-if { $tcl_platform(os) != "Darwin" } {
+if { ! $AYWITHAQUA } {
     # Help
     menubutton .fu.fMenu.hlp -text "Help" -menu .fu.fMenu.hlp.m -padx 3
     set m [menu .fu.fMenu.hlp.m -tearoff 0]

@@ -706,9 +706,9 @@ proc viewRepairTitle { w type } {
 # viewSetGridIcon:
 #  set correct grid icon according to gridsize
 proc viewSetGridIcon { w gridsize } {
-    global ay tcl_platform
+    global ay tcl_platform AYWITHAQUA
 
-    if { $tcl_platform(os) != "Darwin" } {
+    if { ! $AYWITHAQUA } {
 	set m fMenu.g
 	set conf "$w.$m configure"
     } else {
