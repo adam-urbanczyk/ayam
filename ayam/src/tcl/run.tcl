@@ -207,22 +207,24 @@ proc runRenderer { cmd template } {
 
     set f [frame $w.f2]
     label $f.la -text "~ 0:00:00 to go"
+    pack $f.la -in $f -side left -fill x -expand yes
+
     set ay(renderbeep$ay(rnum)) 0
     global tcl_platform
     if { $tcl_platform(platform) == "windows" } {
 	checkbutton $f.cb -image emptyimg -variable ay(renderbeep$ay(rnum))\
 		-bd 1 -indicatoron 0 -selectcolor #b03060
-
+	balloon_set $f.cb "Beep when finished."
+	pack $f.cb -in $f -side left -pady 2 -expand yes -anchor center
     } else {
 	checkbutton $f.cb -variable ay(renderbeep$ay(rnum))
+	balloon_set $f.cb "Beep when finished."
+	pack $f.cb -in $f -side left -fill x -expand yes
     }
-    balloon_set $f.cb "Beep when finished."
+    pack $f -in $w -side top -fill x
+
     button $w.bca -text "Cancel!" -width 16 -command "\
 	    foreach i {$pids} { exec $kill \$i &}; destroy $w"
-
-    pack $f.la -in $f -side left -fill x -expand yes
-    pack $f.cb -in $f -side left -fill x -expand yes
-    pack $f -in $w -side top -fill x
     pack $w.bca -in $w -side bottom -anchor s -fill x -expand yes
 
     winCenter $w
