@@ -3856,7 +3856,10 @@ switching to lazy notification.
 The curves may be of arbitrary length and order. You may e.g.
 use a curve of order 2 and length 6 with a second curve
 of order 4 and length 4 and a third curve with order 3 and 5
-control points.
+control points. Note, however, that only non-rational curves
+can be used as parameter curves for a gordon surface.
+If the parameter curves have weights, the weight information
+of the curves will simply be ignored.
 <p>
 The gordon object has the generating NURBS curves as child objects
 and watches their changes and adapts to them automagically.
@@ -3874,8 +3877,7 @@ If present, this intersection patch always takes precedence.
 You may want to add a <tt>"NoExport"</tt> tag to this patch.
 <p>
 You may convert the current gordon surface to an ordinary NURBS
-patch using the main menu entry
-<tt>"Tools/Convert"</tt>.
+patch using the main menu entry <tt>"Tools/Convert"</tt>.
 
 <sect2>GordonAttr Property<label id="gop">
 <p>
