@@ -97,6 +97,8 @@ char *ay_riattr_tagtype;
 
 char *ay_riopt_tagtype;
 
+char *ay_tc_tagtype;
+
 static char *ay_log = "/tmp/ay.log";
 
 /* prototypes for initialization callbacks of additional included modules */
@@ -194,6 +196,9 @@ ay_init(Tcl_Interp *interp)
 
   /* initialize riattribute tag helper module */
   ay_riattr_init(interp);
+
+  /* initialize tc tag helper module */
+  ay_tc_init(interp);
 
   /* initialize rioption tag helper module */
   ay_riopt_init(interp);

@@ -465,6 +465,11 @@ int ay_tags_gettcmd(ClientData clientData, Tcl_Interp * interp,
 int ay_tags_deletetcmd(ClientData clientData, Tcl_Interp * interp,
 		       int argc, char *argv[]);
 
+/* tc.c */
+int ay_tc_wrib(ay_object *o);
+
+void ay_tc_init(Tcl_Interp *interp);
+
 /* tcmd.c */
 int ay_tcmd_reverttcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[]);

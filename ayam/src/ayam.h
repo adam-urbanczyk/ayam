@@ -803,7 +803,7 @@ extern char ay_version_mi[];
 extern char *ay_instt_oitagtype;
 extern char *ay_riattr_tagtype;
 extern char *ay_riopt_tagtype;
-
+extern char *ay_tc_tagtype;
 
 extern unsigned int ay_current_glname;
 
