@@ -113,7 +113,8 @@ proc idr_open {} {
     addCheck $f1 idrprefs ExcludeOther0
     addCheck $f1 idrprefs HalfRes0
     addMenu $f1 idrprefs OptimizeBB0 $bboptimize_entries
-    addString $f1 idrprefs Renderer0 [list "rgl -dumprgba" "rendrib"]
+    addString $f1 idrprefs Renderer0 [list "rgl -dumprgba" \
+"rgl -sketch -dumprgba -rd 5" "rendrib"]
     pack $f1 -side top
 
     # High Quality Rendering Parameters
@@ -122,7 +123,8 @@ proc idr_open {} {
     addCheck $f1 idrprefs ExcludeOther1
     addCheck $f1 idrprefs HalfRes1
     addMenu $f1 idrprefs OptimizeBB1 $bboptimize_entries
-    addString $f1 idrprefs Renderer1 [list "rendrib" "rgl -dumprgba"]
+    addString $f1 idrprefs Renderer1 [list "rendrib" "rgl -dumprgba" \
+"rgl -sketch -dumprgba -rd 5"]
     pack $f1 -side top
     set f1 [frame $f.f3]
     addText $f1 e1 "Global Parameters:"
@@ -277,7 +279,7 @@ proc idr_run { view } {
 	menu $w.m.f.m
 	$w.m.f.m add command -label "Save as ..." -command {
 	    
-	    set types {{"Image" ".tiff"} {"All files" *}}
+	    set types {{"Image" ".tif"} {"All files" *}}
 	    set newfilename [tk_getSaveFile -filetypes $types\
 		    -parent . -title "Choose destination file:"]
 	    if { $newfilename != "" } {
