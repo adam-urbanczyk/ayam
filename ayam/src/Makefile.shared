@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile.shared [9. Jun 2002]
+# Makefile.shared [23. Jun 2002]
 # Makefile for Ayam (shared version)
 
 # Choose an installation prefix.
@@ -295,7 +295,7 @@ metaobj.so: $(METAOBJS)
 rrib.so: $(RRIBOBJS)
 	$(CC) -shared $(RRIBOBJS) -o plugins/rrib.so $(RRIBLIBS)
 
-clean:
+mostlyclean:
 	-rm -f core
 	-rm -f *.o
 	-rm -f *.so
@@ -307,7 +307,7 @@ clean:
 	-rm -f contrib/meta/*.so
 	-rm -f ayamsh ayam
 
-mostlyclean: clean
+clean: mostlyclean
 	-rm -f $(AFFINEOBJS)
 	-cd MF3D; make -f Makefile.mf3d clean
 

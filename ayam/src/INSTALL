@@ -1,4 +1,4 @@
-INSTALL [23. May 2002]
+INSTALL [23. Jun 2002]
 
 Compilation Instructions for Ayam
 ---------------------------------
@@ -276,11 +276,12 @@ Use it via menu entry "Custom/Open IDR".
 
 Use
 >make clean
-to remove objects; this step is necessary if you switch build types
+to remove all objects; this step is necessary if you switch build types
 (shared->wrapped)!
 
 >make mostlyclean
-to additionally remove even the objects that never change (Apples mf3d code).
+to make clean but not remove the objects that never change,
+like Apples mf3d code, Affines sribw code.
 
 >make install
 to install Ayam into the system.
