@@ -281,7 +281,7 @@ proc toolbox_open { } {
 	if { $i == "misc" } {
 	    lappend ay(toolbuttons) bhide bconv bnot bund
 	    button $f.bhide -image ay_Show_img -padx 0 -pady 0 -command {
-		hide -toggle; rV
+		undo save; hide -toggle; rV
 	    }
 	    balloon_set $f.bhide "hide/show object"
 
