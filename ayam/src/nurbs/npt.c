@@ -4745,6 +4745,15 @@ ay_npt_gordon(ay_object *cu, ay_object *cv, ay_object *in,
       free(interpatch->controlv);
       free(interpatch);
     }
+  if(unifiedU)
+    {
+      free(unifiedU);
+    }
+  if(unifiedV)
+    {
+      free(unifiedV);
+    }
+
 
  return ay_status;
 } /* ay_npt_gordon */

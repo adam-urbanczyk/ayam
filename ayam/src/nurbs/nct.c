@@ -3943,8 +3943,7 @@ ay_nct_makecompatible(ay_object *cu)
 
       if(ay_status)
 	{
-	  fprintf(stderr,"Memory may have leaked!\n");
-	  return ay_status;
+	  goto cleanup;
 	}
 
       Ua = Ubar;
@@ -3962,10 +3961,15 @@ ay_nct_makecompatible(ay_object *cu)
       ay_status = ay_knots_merge(curve, Ubar, Ubarlen);
       if(ay_status)
 	{
-	  free(Ubar); return ay_status;
+	  goto cleanup;
 	}
       o = o->next;
     } /* while */
+
+ cleanup:
+
+  if(Ubar)
+    free(Ubar);
 
  return ay_status;
 } /* ay_nct_makecompatible */
