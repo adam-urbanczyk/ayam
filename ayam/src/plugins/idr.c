@@ -3581,12 +3581,14 @@ idr_combineresultstcmd(ClientData clientData, Tcl_Interp *interp,
     }
 
   if(idr_picture_buf)
-      free(idr_picture_buf);
+    _TIFFfree(idr_picture_buf);
+
+  idr_picture_buf = NULL;
 
   /* we save the final result into idr_picture_buf */
   if(!(idr_picture_buf =
        (uint32*)_TIFFmalloc(idr_picture_width*idr_picture_height*
-			    sizeof(uint32))))
+       sizeof(uint32))))
     {
       ay_error(AY_EOMEM, fname, NULL);
       return TCL_OK;
@@ -3601,6 +3603,7 @@ idr_combineresultstcmd(ClientData clientData, Tcl_Interp *interp,
 					       idr_picture_height*
 					       sizeof (uint32));
 
+
       if(!idr_read_tiff(part->ImageFile, part->rgba_result,
 			&w, &h, interp))
 	{
@@ -3613,7 +3616,7 @@ idr_combineresultstcmd(ClientData clientData, Tcl_Interp *interp,
 		       idr_picture_height, part->rgba_result,
 		       w, h, part->left, part->bottom, part->alpha);
 
-      free(part->rgba_result);
+      _TIFFfree(part->rgba_result);
 
       part = part->next;
     } /* while */
