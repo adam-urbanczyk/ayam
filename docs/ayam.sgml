@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>18. Dec 2002
+<date>23. Dec 2002
 <abstract>
 This is the documentation of Ayam (1.4) - a free 3D modeling environment
 for the RenderMan interface.
@@ -528,6 +528,9 @@ displacement shader to a surface shader (as long as the copied arguments
 of both shaders have the same names and types).
 <item><tt>Points/Select All Points</tt>, selects all points of the currently
 selected object(s).
+<item><tt>Points/Invert Selection</tt>, selects all points of the currently
+selected object(s) that are not selected, and de-select all points that
+are currently selected.
 <item><tt>Points/Apply To All</tt>, applies the transformations encoded in the
 transformations property of the selected objects to all points of those
 objects.
@@ -1149,39 +1152,57 @@ exported to RIB files.
 <item><tt/"RenderMode"/ allows to switch between two different methods
 of forcing a renderer to render to the screen (via a RiDisplay statement
 in the exported RIB, necessary for e.g. PRMan and RDC;
-or via a command line argument).
+or via a command line argument, e.g. <tt>-d</tt> for rendrib from BMRT).
 
 <item><tt/"QRender"/ determines the command that should be executed,
 upon quick rendering a view, <tt>%s</tt> denotes the name of the RIB file.
 
-<item><tt/"QRenderUI"/, see discussion of <tt/"RenderUI"/ below.
+<item><tt/"QRenderUI"/, enables the Rendering GUI for quick rendering,
+see discussion of <tt/"RenderUI"/ below.
 
-<item><tt/"QRenderPT"/, see discussion of <tt/"RenderPT"/ below.
+<item><tt/"QRenderPT"/, progress template for quick rendering,
+see discussion of <tt/"RenderPT"/ below.
 
 <item><tt/"Render"/ determines the command that should be executed,
 upon normal rendering of a view, <tt>%s</tt> denotes the name of the RIB file.
 
-<item><tt/"RenderUI"/ enables the renderer user interface, which
-consists of a simple progress bar, a label that displays the
+<item><tt/"RenderUI"/ enables the renderer user interface (Rendering GUI),
+which consists of a simple progress bar, a label that displays the
 estimated or elapsed rendering time, a checkbutton to control
 ringing the bell when the rendering is finished,
-and a cancel button. This UI is displayed
-when a renderer is invoked directly from the <tt/"Render"/ view
-menu entry (or the equivalent keyboard shortcut).
-Proper work of this UI depends on the existence of
-two external programs: <tt/"cat"/ and <tt/"kill"/. If you do not have
-those programs in your path, do not enable the RenderUI.
+and a cancel button. This GUI is displayed
+when a renderer is invoked directly from a view window
+using the <tt/"Render"/ view menu entry (or the equivalent keyboard shortcut).
+Proper work of this GUI depends on the existence of
+two external programs: <tt/"cat"/ and <tt/"kill"/ (those programs
+should be available on every Unix platform). If you do not have
+those programs in your path, do not enable the RenderUI option.
+On the Win32 platform you may also use an internal kill command
+<tt>"w32kill"</tt> that has been introduced in Ayam1.4.
+See also section <ref id="hidprefs" name="Hidden Preference Settings">.
 
 <item><tt/"RenderPT"/ is a string that contains a progress output
-template used by Ayam to determine the current percentage of
-rendering for display in the RenderUI. The special symbol <tt/"%d"/
+template used by Ayam to determine the current percentage of completion
+of the rendering for display in the Rendering GUI. The special symbol <tt/"%d"/
 denotes the position of the percentage number in the output of the renderer.
 For rendrib from BMRT2.6 this should be set to <tt/"R90000 %d"/ and
 the special command line option <tt/"-Progress"/ should be used.
 For rendrib from BMRT2.5 it should be set to "<tt/"Done computing %d"/
 and no special option has to be given to the renderer.
+
+<item><tt/"SMRender"/, renderer to use for the rendering of shadow maps
+using the view menu entry <tt>"View/Create ShadowMaps</tt>,
+<tt>%s</tt> denotes the name of the RIB file.
+<item><tt/"SMRenderUI"/, enables the Rendering GUI for the rendering
+of shadow maps, see discussion of <tt/"RenderUI"/ above.
+<item><tt/"SMRenderPT"/, progress template for the rendering
+of shadow maps, see discussion of <tt/"RenderPT"/ above.
+
 <item><tt/"PPRender"/ is the name of the renderer to use for the
-permanent preview feature.
+permanent preview feature (see also section <ref id="vm" name="View Menu">).
+This setting is just available, if the compile
+time option <tt/AYENABLEPPREV/ has been set.
+This option is not set for the official Ayam binaries.
 </itemize>
 
 <sect2>Miscellaneous Preferences<label id="prefmisc">
@@ -1302,18 +1323,18 @@ of the selected objects around a specified point in space.
 The action requires a point to be specified using a single
 click after the action has been started.
 The point will then be marked by a little red cross.
-You need to restart the action (press <tt/&lt;a&gt;/ another
-time) to rotate about a different point.
+If you want to rotate about a different point, you need to restart the
+action (press <tt/&lt;a&gt;/ again).
+<p>
 After the first click, the action works the same way as
 the Rotate action, except that it rotates around the specified point.
 This also works with multiple selected objects.
 Note, that this action does not only change the Rotate_X(_Y,_Z)
 properties of the selected objects, but also the Translate_X(_Y,_Z)
-properties.<p>
-
+properties.
+<p>
 To avoid degenerated coordinates due to roundoff errors
 it is highly suggested to use grids with this action.
-
 
 <sect1>Scaling Objects or Selected Points<label id="scalac">
 <p>
@@ -2811,10 +2832,12 @@ object types, e.g. curves.
 The SDMesh object is equivalent to the Subdivision Mesh
 primitive of the RenderMan interface. This means, each SDMesh
 object may contain multiple faces with arbitrary number
-of vertices that form a polygonal mesh. This mesh is then refined
-using the so called Catmull-Clark subdivision scheme and depending
-on the number of refinement (or subdivision) steps results in
-a smooth surface.
+of vertices that form a polygonal mesh. This polygonal mesh is
+then successively refined using a subdivision scheme and, depending
+on the number of refinement (or subdivision) steps, results in
+a more or less smooth surface. There are several different
+subdivision schemes, but the only scheme currently supported
+by most RenderMan compliant renderers is "Catmull-Clark".
 <p>
 Tags may be specified for faces, edges, or vertices
 to control the subdivision process (e.g. to create sharp corners or edges
@@ -3530,49 +3553,75 @@ in the expr-statement above) to speed up the expression.
 
 <sect>NURBS Modeling Tools<label id="nmtool">
 <p>
-You can find all NURBS modeling tools in the <tt/"Tools"/ menu.
+This section describes NURBS curve and surface related modeling
+tools, which you can find in the <tt/"Tools"/ menu.
 
 <sect1>The Closed BSpline Tool<label id="cbspt">
 <p>
+<figure loc="ht">
+<eps file="pics/multip.ps" height="5cm">
+<img src="pics/multip.gif">
+<caption>A Closed B-Spline</caption>
+</figure>
 <itemize>
-<item>Arguments: Number of control points
-<item>Operation: Creates a closed B-Spline curve with numcontrol points+3
-control points. 
-<item>Note: Numcontrol points must be atleast 3. The first three control
+<item>Arguments: Number of control points (i).
+<item>Operation: This tool creates a closed cubic B-Spline curve with
+i+3 control points in the XY plane. The control points are arranged
+in a circle of radius 1 centered around the origin. This gives the curve
+a circular appearance (see image above) but it is not a true circle.
+Use the NURBCircle
+tool (see below) to create a true circle instead.
+<item>Note: i must be atleast 3. The first three control
 points of the new curve will be identical to the last three.
-Additionally, the curve will be marked as closed, so that single point
+Additionally, the curve will be marked as closed, and the generation
+of multiple points will be enabled, so that point
 edit actions know that they may need to move two points.
+See also section <ref id="ncurvemp" name="Multiple Points">.
 </itemize>
 
 <sect1>The NURBCircle Tool<label id="ncirct">
 <p>
 <itemize>
 <item>Arguments: None.
-<item>Operation: The NURBCircle tool creates a full circle NURBS curve
+<item>Operation: The NURBCircle tool creates a full circular NURBS curve
 of radius 1 in the XY plane located at the origin.
-<item> Note: You can use this circle to easily create a NURB-Torus by moving
+<item>Note: The NURBS curve created by the NURBCircle tool is rational
+(uses weights). This means, editing the curve (e.g. moving control points)
+may lead to unpredicted results (the curve does not behave exactly
+as wished). Use a closed B-Spline
+created with the Closed BSpline Tool (see above) if you want to edit
+the curve further.
+You can use this circle to easily create a NURBS-torus by moving
 the circle along X and then revolving it. The amount of movement
-determines the radius of the Torus, whereas the radius of the circle
+determines the radius of the torus, whereas the radius of the circle
 determines the thickness.
 </itemize>
 
 <sect1>The NURBCircleArc Tool<label id="ncircat">
 <p>
 <itemize>
-<item>Arguments: angle of arc
+<item>Arguments: angle of the arc in degrees
 <item>Operation: The NURBCircle tool creates a circular NURBS curve
-arc of radius 1 in the XY plane located at the origin.
+arc of radius 1, with the specified angle, in the XY plane,
+located at the origin.
 </itemize>
 
 <sect1>The TrimRect Tool<label id="trrt">
 <p>
 <itemize>
 <item>Arguments: None
-<item>Operation: Creates a piecewise linear NURBS curve of rectangular
+<item>Operation: The TrimRect tool creates a piecewise linear
+NURBS curve of rectangular
 shape, that fits in the (u,v) parameter space of a NURBS patch, for use
 as trim curve.
-<item>Note: If the current level is not inside a NURBS patch a simple
-rectangular curve will be created instead.
+<item>Note: To fit the curve to the parameter space of a NURBS patch,
+the current level should be inside the NURBS patch.
+If the current level is not inside a NURBS patch, a
+curve with the coordinates (-1,-1), (-1,1), (1,1), and (1,-1)
+will be created instead.
+See section <ref id="trim" name="Trim Curves"> for a more
+detailed discussion of trim curves and how to use this rectangular
+curve.
 </itemize>
 
 <sect1>The NURBSphere Tool<label id="nspt">
@@ -3637,6 +3686,17 @@ the selected curves to it.
 for more information regarding the skin object.
 </itemize>
 
+<sect1>The Cap Tool<label id="capt">
+<p>
+<itemize>
+<item>Arguments: The cap tool takes a single NURBS curve from
+the selection.
+<item>Operation: It creates a Cap object, and moves
+the selected curve to it.
+<item>Note: See section <ref id="capobj" name="Cap Object">
+for more information regarding the cap object.
+</itemize>
+
 <sect1>The Revert Tool<label id="revertt">
 <p>
 <itemize>
@@ -3658,8 +3718,131 @@ and a new third curve will be created.
 <item>Note: If one of the curves has weights, the resulting curve
 will have weights too. If the knot type of the first curve
 is custom, it will be converted to NURB, otherwise the knot type
-of the new curve will be that of the first selected curve. The selected
-NURBS curves will not be deleted.
+of the new curve will be that of the first selected curve.
+Due to those changes of the knot values the resulting curve might
+differ from the original curves.
+See also section <ref id="concatncobj" name="ConcatNC Object">.
+The original NURBS curves will not be deleted by this tool.
+</itemize>
+
+<sect1>The Split Tool<label id="splitt">
+<p>
+<figure loc="ht">
+<eps file="pics/splitnc.ps" height="4cm">
+<img src="pics/splitnc.gif">
+<caption>Left: original curve, Right: resulting split curves for t=0.5</caption>
+</figure>
+<itemize>
+<item>Arguments: The split curves tool takes a single NURBS curve from
+the selection and additionally requests a parametric value.
+<item>Operation: The selected NURBS curve will be split into two
+new NURBS curves at the designated parametric value. The splitting process
+involves application of knot insertion, so that both new curves will
+get a custom knot vector.
+<item>Note: The original selected NURBS curve will be changed and
+form the first of the two new curves, so you may want to keep a copy
+of it somewhere.
+</itemize>
+
+
+<sect1>The Elevate Tool<label id="elevt">
+<p>
+<itemize>
+<item>Arguments: The elevate tool takes a number of NURBS curves from
+the selection and additionally requests an integer value.
+<item>Operation: The order of the selected NURBS curves will be raised
+by the specified integer value without changing the shape of the curve.
+<item>Note: If the knot vector of the curve is not clamped, it
+will be clamped automatically. The knot type of the curve will
+be changed to custom.
+</itemize>
+
+<sect1>The Refine Tool<label id="refit">
+<p>
+<figure loc="ht">
+<eps file="pics/refine.ps" height="4cm">
+<img src="pics/refine.gif">
+<caption>Successive Application of Refine Tool</caption>
+</figure>
+<itemize>
+<item>Arguments: The refine tool takes a number of NURBS curves from
+the selection.
+<item>Operation: The knot vectors of the selected NURBS curves will be
+refined by inserting a knot in the middle of each inner knot interval
+without changing the shape of the curve.
+<item>Note: Because a new knot is inserted in the middle of
+each interval, knot vectors of type NURB and B-Spline will
+not change in type. See the image above for an example of a
+successive refinement of a simple NURBS curve. Note, that the shape
+of the curve does not change, but the position of
+certain control points does.
+If you want to refine a curve with new control points and not
+change the position of existing control points, use the NCAttribute
+property GUI instead (simply increase the length of the curve
+by oldlength-1).
+</itemize>
+
+<sect1>The Clamp Tool<label id="clat">
+<p>
+<figure loc="ht">
+<eps file="pics/clampnc.ps" height="4cm">
+<img src="pics/clampnc.gif">
+<caption>Left: original curve, Right: clamped curve</caption>
+</figure>
+<itemize>
+<item>Arguments: The clamp tool takes a number of NURBS curves from
+the selection.
+<item>Operation: The knot vectors of the selected NURBS curves will be
+changed using knot insertion so that the first and the last knot
+have a multiplicity equal to the order of the curve,
+without changing the shape of the curve. The curve will
+interpolate the first and the last control point afterwards.
+The knot type of the curve will be changed to custom.
+</itemize>
+
+<sect1>The Insert Knot Tool<label id="insknt">
+<p>
+<figure loc="ht">
+<eps file="pics/inskn.ps" height="4cm">
+<img src="pics/inskn.gif">
+<caption>Left: original curve, Right: a knot has been inserted 1 time at t=0.5</caption>
+</figure>
+<itemize>
+<item>Arguments: The insert knot tool takes a number of NURBS curves from
+the selection and requests two additional values, a parametric value t
+and an integer value i.
+<item>Operation: The specified knot (t) will be inserted i
+times into the knot vector of the selected curves, without changing the
+shape of the curve(s).
+The knot type of the curve will be changed to custom.
+</itemize>
+
+<sect1>The Collapse Points Tool<label id="collt">
+<p>
+<itemize>
+<item>Arguments: The collapse tool expects a selected NURBS curve
+and a number of selected (tagged) control points (see section
+<ref id="selac" name="Selecting Points"> for information on how
+to select (tag) control points).
+<item>Operation: The selected control points will be made a
+single multiple point, all points will get the coordinate values
+of the last tagged point.
+</itemize>
+
+<sect1>The Explode Points Tool<label id="explt">
+<p>
+<itemize>
+<item>Arguments: The explode tool expects a selected NURBS curve
+and a number of selected (tagged) multiple points (see section
+<ref id="selac" name="Selecting Points"> for information on how
+to select (tag) control points).
+<item>Operation: The points forming the selected multiple points will
+be made to simple points again and may be edited separately.
+<item>Note, that even though you might have exploded some multiple points
+Ayam will re-create them on several occasions like reading
+of a scene, inserting/deleting points, and applying the NURBCurveAttrib
+property if they still have identical coordinate values. In other
+words, you should immediately edit the control points after exploding!
 </itemize>
 
 <sect1>The Split to Curves Tool<label id="sptct">
@@ -3684,80 +3867,6 @@ Width: length of the first selected curve,
 Height: number of used curves. Other parameters (Knot-Type_U, Knots_U
 etc.) are taken from the first curve.
 <item>Note: The NURBS curves are not deleted afterwards.
-</itemize>
-
-<sect1>The Elevate Tool<label id="elevt">
-<p>
-<itemize>
-<item>Arguments: The elevate tool takes a number of NURBS curves from
-the selection.
-<item>Operation: The order of the selected NURBS curves will be raised
-by the specified value without changing the shape of the curve.
-<item>Note: If the knot vector of the curve is not clamped, it
-will be clamped automatically. The knot type of the curve will
-be changed to custom.
-</itemize>
-
-<sect1>The Refine Tool<label id="refit">
-<p>
-<itemize>
-<item>Arguments: The refine tool takes a number of NURBS curves from
-the selection.
-<item>Operation: The knot vectors of the selected NURBS curves will be
-refined by inserting a knot in the middle of each inner knot interval
-without changing the shape of the curve. The knot type of the curve will
-be changed to custom.
-</itemize>
-
-<sect1>The Clamp Tool<label id="clat">
-<p>
-<itemize>
-<item>Arguments: The clamp tool takes a number of NURBS curves from
-the selection.
-<item>Operation: The knot vectors of the selected NURBS curves will be
-changed using knot insertion so that the first and the last knot
-have a multiplicity equal to the order of the curve,
-without changing the shape of the curve. The curve will
-interpolate the first and the last control point afterwards.
-The knot type of the curve will be changed to custom.
-</itemize>
-
-<sect1>The Insert Knot Tool<label id="insknt">
-<p>
-<itemize>
-<item>Arguments: The insert knot tool takes a number of NURBS curves from
-the selection.
-<item>Operation: The specified knot will be inserted a specified number
-of times into the knot vector of the selected curves.
-The knot type of the curve will be changed to custom.
-</itemize>
-
-<sect1>The Collapse Tool<label id="collt">
-<p>
-<itemize>
-<item>Arguments: The collapse tool expects a selected NURBS curve
-and a number of selected (tagged) control points (see section
-<ref id="selac" name="Selecting Points"> for information on how
-to select (tag) control points).
-<item>Operation: The selected control points will be made a
-single multiple point, all points will get the coordinate values
-of the last tagged point.
-</itemize>
-
-<sect1>The Explode Tool<label id="explt">
-<p>
-<itemize>
-<item>Arguments: The explode tool expects a selected NURBS curve
-and a number of selected (tagged) multiple points (see section
-<ref id="selac" name="Selecting Points"> for information on how
-to select (tag) control points).
-<item>Operation: The points forming the selected multiple points will
-be made to simple points again and may be edited separately.
-<item>Note, that even though you might have exploded some multiple points
-Ayam will re-create them on several occasions like reading
-of a scene, inserting/deleting points, and applying the NURBCurveAttrib
-property if they still have identical coordinate values. In other
-words, you should immediately edit the control points after exploding!
 </itemize>
 
 
@@ -4358,8 +4467,8 @@ proc placeOb { x y z } {
   # copy Transformations-property data from
   # global array "transfPropData" to selected object
   setTrafo
-
 }
+# placeOb
 </code>
 In order to move all selected objects to 1 1 1 you may enter the
 following into the console:
@@ -4481,7 +4590,7 @@ the size 25 by 25 pixels.
 global ay
 
 # create an image from a GIF file:
-image create photo myImage -format gif -file /home/user/a.gif
+image create photo myImage -format gif -file /home/user/agif
 
 set b .tbw.f.mybutton
 
@@ -4509,11 +4618,11 @@ b) Ayam manages a list of all buttons in the global array ay
 in <tt/"ay(toolbuttons)"/, the order in that list is the order
 in which buttons appear in the tool box c) automatic layout
 management is carried out by the procedure <tt/"toolbox_layout"/.
-
+<p>
 Adding buttons with just text is a little bit more involved,
 as the sizes of the new buttons often do not fit well in the
-icon button scheme with its constant button size.<p>
-
+icon button scheme with its constant button size.
+<p>
 Here is an example that adds two buttons to the bottom of the
 tool box spanning the whole window (this works best with the
 standard tool box layout of 4 by 12 buttons):
@@ -4636,13 +4745,13 @@ tool box window (default; using all available sections: <tt>{trafo
 trafo2 solids misco nurbs toolobjs points nctools1 nctools2 camera
 misc}</tt>)
 <item><tt/"Kill"/: name of a program that kills other processes and accepts
-a process id as argument (used by the Direct Rendering GUI)
+a process id as argument (used by the Rendering GUI)
 (default: <tt>"kill"</tt>) (a setting of <tt>"kill"</tt> will be
 automatically replaced by <tt>"kill.exe"</tt> on Win32)
 On the Win32 platform you may also use an internal kill command
 <tt>"w32kill"</tt> that has been introduced in Ayam1.4.
 <item><tt/"Cat"/: name of a program that can read from and write to
-a pipe (used by the Direct Rendering GUI) (default: <tt>"cat"</tt>)
+a pipe (used by the Rendering GUI) (default: <tt>"cat"</tt>)
 (a setting of <tt>"cat"</tt> will be
 automatically replaced by <tt>"cat.exe"</tt> on Win32)
 <item><tt/"KeepNTmpFiles"/: how many
@@ -5365,6 +5474,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <ref id="skp" name="skin attribute">
 <item>Intersection: <ref id="mmcreate" name="main menu entry">,
 <ref id="levelobj" name="object">
+<item>Invert Selection: <ref id="mmspecial" name="main menu entry">
 <item>IParam: <ref id="icp" name="ICurve attribute">
 <item>IsoLevel: <ref id="moattr" name="MetaObj attribute">
 <item>IsOn: <ref id="lip" name="light attribute">
