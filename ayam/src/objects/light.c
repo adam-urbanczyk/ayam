@@ -643,7 +643,7 @@ ay_light_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  ay_light_object *light = NULL;
 
   if(!o)
-    return AY_ENULL;
+   return AY_ENULL;
 
   light = (ay_light_object *)o->refine;
 
@@ -729,6 +729,8 @@ ay_light_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+
+  ay_notify_force(o);
 
  return AY_OK;
 } /* ay_light_setpropcb */
@@ -1076,6 +1078,7 @@ ay_light_bbccb(ay_object *o, double *bbox, int *flags)
 int
 ay_light_notifycb(ay_object *o)
 {
+ char fname[] = "light_notify";
  ay_light_object *light = NULL;
  ay_shader *shader = NULL;
  ay_shader_arg *sarg = NULL;
@@ -1084,6 +1087,14 @@ ay_light_notifycb(ay_object *o)
     return AY_ENULL;    
 
   light = (ay_light_object *)(o->refine);
+
+  /* warn user, if light shader exists but type is not custom */
+  if((light->type != AY_LITCUSTOM) && light->lshader)
+    {
+      ay_error(AY_EWARN, fname,
+	       "This light will not use the attached light shader!");
+    }
+
 
   /*
    * no action needed for objects of internal types;
