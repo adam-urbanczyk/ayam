@@ -737,7 +737,8 @@ int
 ay_tti_searchtable(ay_tti_font *ttfont, char *tablename)
 {
  int count = 0;
- unsigned char dummy[5], *dummyptr;
+ char dummy[5];
+ unsigned char *dummyptr;
  int success, offset;
 
   fseek(ttfont->fontptr, 12, SEEK_SET);
