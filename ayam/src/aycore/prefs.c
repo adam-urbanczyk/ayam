@@ -248,7 +248,10 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
       if((itemp != -1) && (itemp < 2)/* && (itemp < 1000)*/)
 	{
 	  itemp = 2;
-	  
+
+	  ay_error(AY_ERROR, fname,
+		   "Illegal value for UndoLevels encountered, reset to 2.");
+
 	  to = Tcl_NewIntObj(itemp);
 	  Tcl_ObjSetVar2(interp, toa, ton, to,
 			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
