@@ -623,7 +623,9 @@ int
 ay_tags_parseplist(char *str, int declare, RtInt *argc, RtToken **tokensr,
 		   RtPointer **valuesr)
 {
+ char fname[] = "ay_tags_parseplist", e1[] = "Missing value in parameter!";
  char *tmp = NULL, *parname = NULL, *partype = NULL, *parval = NULL;
+ char *parval2 = NULL;
  char tok[] = ",";
  RtInt *itemp;
  RtFloat *ftemp;
@@ -669,9 +671,9 @@ ay_tags_parseplist(char *str, int declare, RtInt *argc, RtToken **tokensr,
 	      /* we have all three needed components and thus
 		 may allocate memory for the new parameter */
 	      if(!(tokens = realloc(tokens, sizeof(RtToken))))
-		return AY_EOMEM;
+		{ return AY_EOMEM; }
 	      if(!(values = realloc(values, sizeof(RtPointer))))
-		return AY_EOMEM;
+		{ return AY_EOMEM; }
 
 	      /* copy name */
 	      if(!(tokens[*argc] = calloc(strlen(parname)+1, sizeof(char))))
@@ -686,7 +688,25 @@ ay_tags_parseplist(char *str, int declare, RtInt *argc, RtToken **tokensr,
 		  values[*argc] = (RtPointer)itemp;
 		  sscanf(parval, "%d", itemp);
 		  if(declare)
-		    RiDeclare(parname, "integer");
+		    { RiDeclare(parname, "integer"); }
+		  break;
+		case 'j':
+		  if(!(itemp = calloc(2, sizeof(RtInt))))
+		    { return AY_EOMEM; }
+		  values[*argc] = (RtPointer)itemp;
+		  sscanf(parval, "%d", itemp);
+		  parval2 = strtok(NULL, tok);
+		  if(parval2)
+		    {
+		      sscanf(parval2, "%d", &(itemp[1]));
+		    }
+		  else
+		    {
+		      ay_error(AY_ERROR, fname, e1);
+		    }
+
+		  if(declare)
+		    { RiDeclare(parname, "integer[2]"); }
 		  break;
 		case 'f':
 		  if(!(ftemp = calloc(1, sizeof(RtFloat))))
@@ -694,7 +714,25 @@ ay_tags_parseplist(char *str, int declare, RtInt *argc, RtToken **tokensr,
 		  values[*argc] = (RtPointer)ftemp;
 		  sscanf(parval, "%f", ftemp);
 		  if(declare)
-		    RiDeclare(parname, "float");
+		    { RiDeclare(parname, "float"); }
+		  break;
+		case 'g':
+		  if(!(ftemp = calloc(2, sizeof(RtFloat))))
+		    { return AY_EOMEM; }
+		  values[*argc] = (RtPointer)ftemp;
+		  sscanf(parval, "%f", ftemp);
+		  parval2 = strtok(NULL, tok);
+		  if(parval2)
+		    {
+		      sscanf(parval2, "%f", &(ftemp[1]));
+		    }
+		  else
+		    {
+		      ay_error(AY_ERROR, fname, e1);
+		    }
+
+		  if(declare)
+		    { RiDeclare(parname, "float[2]"); }
 		  break;
 		case 's':
 		  if(!(stemp = calloc(1, sizeof(RtString))))
@@ -704,7 +742,7 @@ ay_tags_parseplist(char *str, int declare, RtInt *argc, RtToken **tokensr,
 		  strcpy(*stemp, parval);
 		  values[*argc] = (RtPointer)stemp;
 		  if(declare)
-		    RiDeclare(parname, "string");
+		    { RiDeclare(parname, "string"); }
 		  break;
 		case 'p':
 		  if(!(ptemp = calloc(1, sizeof(RtPoint))))
@@ -712,11 +750,25 @@ ay_tags_parseplist(char *str, int declare, RtInt *argc, RtToken **tokensr,
 		  values[*argc] = (RtPointer)ptemp;
 		  sscanf(parval, "%f", &((*ptemp)[0]));
 		  parval = strtok(NULL, tok);
-		  sscanf(parval, "%f", &((*ptemp)[1]));
+		  if(parval)
+		    {
+		      sscanf(parval, "%f", &((*ptemp)[1]));
+		    }
+		  else
+		    {
+		      ay_error(AY_ERROR, fname, e1);
+		    }
 		  parval = strtok(NULL, tok);
-		  sscanf(parval, "%f", &((*ptemp)[2]));
+		  if(parval)
+		    {
+		      sscanf(parval, "%f", &((*ptemp)[2]));
+		    }
+		  else
+		    {
+		      ay_error(AY_ERROR, fname, e1);
+		    }
 		  if(declare)
-		    RiDeclare(parname, "point");
+		    { RiDeclare(parname, "point"); }
 		  break;
 		case 'c':
 		  if(!(ctemp = calloc(1, sizeof(RtColor))))
@@ -724,11 +776,25 @@ ay_tags_parseplist(char *str, int declare, RtInt *argc, RtToken **tokensr,
 		  values[*argc] = (RtPointer)ctemp;
 		  sscanf(parval, "%f", &((*ctemp)[0]));
 		  parval = strtok(NULL, tok);
-		  sscanf(parval, "%f", &((*ctemp)[1]));
+		  if(parval)
+		    {
+		      sscanf(parval, "%f", &((*ctemp)[1]));
+		    }
+		  else
+		    {
+		      ay_error(AY_ERROR, fname, e1);
+		    }
 		  parval = strtok(NULL, tok);
-		  sscanf(parval, "%f", &((*ctemp)[2]));
+		  if(parval)
+		    {
+		      sscanf(parval, "%f", &((*ctemp)[2]));
+		    }
+		  else
+		    {
+		      ay_error(AY_ERROR, fname, e1);
+		    }
 		  if(declare)
-		    RiDeclare(parname, "color");
+		    { RiDeclare(parname, "color"); }
 		  break;
 		default:
 		  break;
