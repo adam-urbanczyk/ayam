@@ -765,7 +765,7 @@ ay_script_convertcb(ay_object *o, int in_place)
 int
 ay_script_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
- /*int ay_status = AY_OK;*/
+ int ay_status = AY_OK;
  ay_script_object *sc = NULL;
  ay_object *cmo = NULL, *po = NULL, **npo = NULL;
 
@@ -784,9 +784,19 @@ ay_script_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  cmo = sc->cm_objects;
 	  while(cmo)
 	    {
-	      ay_provide_object(cmo, type, npo);
+	      
+	      if(cmo->type != type)
+		{
+		  ay_provide_object(cmo, type, npo);
+		}
+	      else
+		{
+		  ay_status = ay_object_copy(cmo, npo);
+		}
+
 	      if(*npo)
 		npo = &((*npo)->next);
+
 	      cmo = cmo->next;
 	    } /* while */
 	  *result = po;
