@@ -179,11 +179,11 @@ proc render_select { } {
 	    6 {
 		# Pixie
 		set ayprefs(QRender) "rndr %s"
-		set ayprefs(QRenderPT) " - %d"
-		set ayprefs(Render) "rndr %s"
-		set ayprefs(RenderPT) " - %d"
-		set ayprefs(SMRender) "rndr %s"
-		set ayprefs(SMRenderPT) " - %d"
+		set ayprefs(QRenderPT) "regexp -- {^.* - (\\\[0-9\\\]+)} string dummy percent"
+		set ayprefs(Render) "rndr -progress %s"
+		set ayprefs(RenderPT) "regexp -- {^.* - (\\\[0-9\\\]+)} string dummy percent"
+		set ayprefs(SMRender) "rndr -progress %s"
+		set ayprefs(SMRenderPT) "regexp -- {^.* - (\\\[0-9\\\]+)} string dummy percent"
 		set ayprefs(RenderMode) 1
 		set splugin "aysdr"
 		if { $ay(ScanShaders) == 1 } {
