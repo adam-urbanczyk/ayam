@@ -1166,7 +1166,15 @@ if { $ayprefs(Version) == 0 } {
     set ayprefs(Version) $ay(ay_version)
     # overwrite old toolbox content, so that users see all the new
     # icons in any case
-    set ayprefs(toolBoxList) {trafo trafo2 solids misco nurbs toolobjs nptools1 points nctools1 nctools2 camera misc}
+    set ayprefs(toolBoxList) {trafo trafo2 solids misco nurbs toolobjs\
+	    nptools1 points nctools1 nctools2 camera misc}
+}
+
+if { ([string first pre $ayprefs(Version)] == -1) } {
+    if { ($ayprefs(Version) < 1.8) } {
+	set ayprefs(toolBoxList) {trafo trafo2 solids misco nurbs toolobjs\
+		toolobjs2 nptools1 points nctools1 nctools2 camera misc}
+    }
 }
 
 # update_prompt - print a first prompt after configuration change
