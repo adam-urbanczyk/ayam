@@ -52,10 +52,8 @@ proc shader_scanAll {} {
     if { $sext == ".xml" } {
 	ayError 2 scanAllShaders "No shader parsing library available."
 	ayError 2 scanAllShaders "Falling back to XML parsing."
-	set ay(slcext) ".xml"
 	return;
     }
-
 
     set temp ""
     if { $ayprefs(Shaders) == "" } {
@@ -202,10 +200,10 @@ proc shader_cycSel { w k l } {
 proc shader_setNew { win type stype } {
     upvar #0 ${type}ShaderData sArgArray
 
-    global env prefs ay ay_error
+    global env prefs ay ay_error AYUSESLCARGS AYUSESLXARGS
 
     eval "set shaders \$ay(${stype}shaders)"
-    if { $ay(slcext) == ".xml" } {
+    if { ($ay(sext) == "") && !$AYUSESLCARGS && !$AYUSESLXARGS } {
 	set types {{"Parsed Shader" ".xml"} {"All files" *}}
   
 	set newfilename [tk_getOpenFile -filetypes $types -parent .\
@@ -303,7 +301,7 @@ proc shader_setNew { win type stype } {
     tkwait window $w
 
     # now we have the new shader
-    global newshaderindex AYUSESLCARGS AYUSESLXARGS
+    global newshaderindex
     if {$newshaderindex == ""} {return;}
 
     set shadername [lindex $shaders $newshaderindex]
@@ -486,7 +484,7 @@ proc shader_setDefaults { type } {
 #  create new shader GUI in w
 #  lets user select new shaders of type type
 proc shader_buildGUI { w type } {
-global ay ay_shader
+global ay ay_shader AYUSESLCARGS AYUSESLXARGS
 
 set stype $type
 if { $type == "atmosphere" } { set stype "volume" }
@@ -498,11 +496,12 @@ addCommand $w c1 "Set new shader!" "shader_setNew $w $type $stype"
 addCommand $w c2 "Delete shader!" "undo save DelShader; shaderSet $type;\
 	plb_update"
 
-if { $ay(slcext) != ".xml" } {
-    addCommand $w c3 "Default Values!" "shader_setDefaults $type;"
-} else {
+if { ($ay(sext) == "") && !$AYUSESLCARGS && !$AYUSESLXARGS } {
     addCommand $w c3 "Default Values!" "shader_setDefaultsXML $type;"
+} else {
+    addCommand $w c3 "Default Values!" "shader_setDefaults $type;"
 }
+
 if { $ay_shader(Name) == "" } { return; }
 
 addText $w e1 $ay_shader(Name)
