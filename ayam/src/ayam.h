@@ -1170,7 +1170,7 @@ extern unsigned int ay_current_primlevel;
                             (fabs(P1[3]-P2[3]) < AY_EPSILON))
 
 /* Version Strings */
-#define AY_VERSIONSTR "1.8pre"
+#define AY_VERSIONSTR "1.8"
 #define AY_VERSIONSTRMI "0"
 
 #include "aycore.h"
