@@ -2613,6 +2613,14 @@ the property GUI will be changed when you use the <tt/"Apply"/-button.
 <tt/"IsOn"/ allows you to switch the light off or on. The default
 value is on.<p>
 
+<tt/"IsLocal"/ controls whether the light source should light
+just local objects (objects, that are defined in the same level
+in the scene hierarchy as the
+light source object or below) or all objects in the scene.
+The default is off, all objects in the scene are lighted!
+The <tt/"IsLocal"/ attribute is ignored for lights that are
+defined in the root level of the scene.<p>
+
 With the light attribute <tt/"Shadows"/ you may determine
 whether the lightsource should cast shadows.
 The default is off, no shadows!<p>
@@ -5926,8 +5934,10 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <ref id="levelobj" name="object">
 <item>Invert Selection: <ref id="mmspecial" name="main menu entry">
 <item>IParam: <ref id="icp" name="ICurve attribute">
+<item>IsLocal: <ref id="lip" name="light attribute">
 <item>IsoLevel: <ref id="moattr" name="MetaObj attribute">
 <item>IsOn: <ref id="lip" name="light attribute">
+
 </itemize>
 
 <label id="indexj">J
