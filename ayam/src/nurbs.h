@@ -392,4 +392,5 @@ int ay_tess_pomeshf(ay_pomesh_object *pomesh,
 		    int optimize,
 		    ay_pomesh_object **trpomesh);
 
-int ay_tess_pomesh(ay_pomesh_object *pomesh, int optimize);
+int ay_tess_pomesh(ay_pomesh_object *pomesh, int optimize,
+		   ay_pomesh_object **trpomesh);
