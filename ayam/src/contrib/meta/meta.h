@@ -27,6 +27,7 @@ extern unsigned int metacomp_id;
 #define META_USEVERTEXARRAY 0
 
 #define META_ABS(a) (((a) < 0 ) ? -(a) : (a))
+#define META_SIGN(a) ((a) < 0 ? -1.0 : 1.0)
 
 #define META_MAXCUBE 80
 #define META_MAXPOLY 10000
@@ -39,7 +40,7 @@ extern unsigned int metacomp_id;
 /* some macros to keep things cleaner */
 #define META_SQ(val) ((val) * (val))
 #define META_CUB(val) ((val) * (val) * (val))
-#define META_DIST(x1, y1, z1, x2, y2, z2) (tmp->scalex*META_SQ(x1 - x2) + tmp->scaley*META_SQ(y1 - y2) + tmp->scalez*META_SQ(z1-z2))
+#define META_DIST(x1, y1, z1, x2, y2, z2) (META_SQ(x1 - x2) + META_SQ(y1 - y2) + META_SQ(z1-z2))
 
 #define META_OK  0
 #define META_ERROR  1
@@ -70,6 +71,13 @@ typedef struct meta_intxyz_s
 }
 meta_intxyz;
 
+typedef struct meta_vertex_s
+{
+  meta_xyz p;		/* position */
+  meta_xyz n;		/* normal */
+  double d;		/* density */
+}
+meta_vertex;
 
 typedef struct meta_blob_s
 {
@@ -117,8 +125,15 @@ typedef struct meta_gridcell_s
   meta_xyz p[8];
   double val[8];
   meta_intxyz pos;
+  meta_xyz n[8];
 }
 meta_gridcell;
+
+typedef struct meta_acell_s
+{
+  meta_vertex v[8];  
+}
+meta_acell;
 
 typedef struct meta_grid_s
 {
@@ -161,6 +176,11 @@ typedef struct meta_world_s
 
   int showworld;
 
+  meta_acell acell;			/* cell for adaptive refinement */  
+
+  int zahl;
+  int adaptflag;
+  
 }
 meta_world;
 
