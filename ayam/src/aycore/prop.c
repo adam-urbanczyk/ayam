@@ -474,8 +474,6 @@ ay_prop_setmattcmd(ClientData clientData, Tcl_Interp *interp,
  int stringlen;
  ay_mat_object *material = NULL;
 
- printf("setMat!\n");
-
   if(!sel)
     {
       ay_error(AY_ENOSEL, fname, NULL);
