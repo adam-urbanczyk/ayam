@@ -356,10 +356,8 @@ ay_draw_grid(struct Togl *togl)
 	   ay_quat_torotmatrix(o->quat, m);
 	   glMultMatrixd((GLdouble*)m);
 	  
-	   
 	   glScaled((GLdouble)o->scalx, (GLdouble)o->scaly,
 		    (GLdouble)o->scalz);
-	   
 	 } /* if */
        glGetDoublev(GL_MODELVIEW_MATRIX, mm);
       glPopMatrix();
@@ -374,20 +372,20 @@ ay_draw_grid(struct Togl *togl)
 		     &gwinx, &gwiny, &gwinz);
 	  break;
 	case AY_VTSIDE:
-	  gluProject(view->grid, view->grid, 0.0, mm, mp, vp,
+	  gluProject(0.0, view->grid, view->grid, mm, mp, vp,
 		     &gwinx, &gwiny, &gwinz);
 	  break;
 	case AY_VTTOP:
-	  gluProject(view->grid, 0.0, -view->grid, mm, mp, vp,
+	  gluProject(view->grid, 0.0, view->grid, mm, mp, vp,
 		     &gwinx, &gwiny, &gwinz);
 	  break;
 	}
       
-      dx = gwinx-owinx;
+      dx = fabs(gwinx-owinx);
       if(dx < 1.0)
 	dx = 1.0;
 
-      dy = gwiny-owiny;
+      dy = fabs(gwiny-owiny);
       if(dy < 1.0)
 	dy = 1.0;
 

@@ -181,6 +181,8 @@ ay_viewt_wintoobj(struct Togl *togl, ay_object *o,
    gluUnProject(winx, winy, (GLdouble)winz, modelMatrix, projMatrix, viewport,
 		objX, objY, objZ);
 
+   /*  fprintf(stderr,"ObjX:%g; ObjY:%g; ObjZ:%g\n",*objX, *objY, *objZ); */
+
   glPopMatrix();
 
  return ay_status;
@@ -1299,7 +1301,7 @@ ay_viewt_griddify(struct Togl *togl, double *winx, double *winy)
 	      gridy = height-gridy;
 	      break;
 	    case AY_VTSIDE:
-	      gluProject(view->grid, view->grid, 0.0, mm, mp, vp,
+	      gluProject(0.0, view->grid, -view->grid, mm, mp, vp,
 			 &gridx, &gridy, &gridz);
 	      gridy = height-gridy;
 	      break;
