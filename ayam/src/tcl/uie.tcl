@@ -395,7 +395,7 @@ proc addString { w prop name  {def {}}} {
 	set m [menu $mb.m -tearoff 0]
 	foreach val $def {
 	    $m add command -label $val\
-	     -command "global $prop; $e delete 0 end; $e insert end $val;"
+		    -command "global $prop; $e delete 0 end; $e insert end \{$val\};"
 	}
     }
 
@@ -448,7 +448,7 @@ proc addFile { w prop name {def {}} } {
 	    set m [menu $mb.m -tearoff 0]
 	    foreach val $def {
 		$m add command -label $val\
-			-command "global $prop; $e delete 0 end; $e insert end $val;"
+			-command "global $prop; $e delete 0 end; $e insert end \{$val\};"
 	    }
 	}
 
