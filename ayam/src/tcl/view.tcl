@@ -707,9 +707,11 @@ proc viewToggleMode { w } {
 
     if { $ay(cVMode) > 0 } {
 	$togl setconf -shade 0
+	viewSetModeIcon $w 0
 	set ay(cVMode) 0
     } else {
 	$togl setconf -shade 1
+	viewSetModeIcon $w 1
 	set ay(cVMode) 1
     }
 
