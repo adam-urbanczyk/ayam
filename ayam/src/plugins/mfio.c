@@ -24,7 +24,6 @@ static MF3DErr ay_mfio_mf3d_errno;
 
 static MF3DDataFormatEnum ay_mfio_mf3d_data_format;
 
-
 static Tcl_HashTable ay_mfio_read_ht;
 
 static Tcl_HashTable ay_mfio_write_ht;
@@ -37,6 +36,8 @@ typedef int (ay_mfio_readcb) (MF3DVoidObjPtr object);
 
 typedef int (ay_mfio_writecb) (MF3D_FilePtr fileptr, ay_object *o);
 
+int export_curves;
+int export_colors;
 
 /* prototypes of functions local to this module: */
 int ay_mfio_registerreadcb(char *type, ay_mfio_readcb *cb);
@@ -72,6 +73,12 @@ int ay_mfio_readtcol(MF3DVoidObjPtr object);
 int ay_mfio_readobject(MF3DVoidObjPtr object);
 
 int ay_mfio_readscene(Tcl_Interp *interp, char *filename);
+
+/***/
+
+int ay_mfio_writencconvertible(MF3D_FilePtr fileptr, ay_object *o);
+
+int ay_mfio_writenpconvertible(MF3D_FilePtr fileptr, ay_object *o);
 
 int ay_mfio_writenurbcurve(MF3D_FilePtr fileptr, ay_object *o);
 
@@ -166,27 +173,31 @@ ay_mfio_readnurbpatch(MF3DVoidObjPtr object)
 
   /* copy data into new (safe) memory */
   a = 0; b = 0;
-  for(i=0;i<width;i++)
-    for(j=0;j<height;j++)
-      {
-	controlv[b++] = (o->points)[a].x;
-	controlv[b++] = (o->points)[a].y;
-	controlv[b++] = (o->points)[a].z;
-	controlv[b++] = (o->points)[a].w;
-	a++;
-      }
+  for(i = 0; i < width; i++)
+    {
+      for(j = 0; j < height; j++)
+	{
+	  controlv[b++] = (o->points)[a].x;
+	  controlv[b++] = (o->points)[a].y;
+	  controlv[b++] = (o->points)[a].z;
+	  controlv[b++] = (o->points)[a].w;
+	  a++;
+	} /* for */
+    } /* for */
+
   a = 0;
   for(i=0;i<width+o->uOrder;i++)
     {
       uknotv[a] = (o->uKnots)[a];
       a++;
-    }
+    } /* for */
+
   a = 0;
   for(i=0;i<height+o->vOrder;i++)
     {
       vknotv[a] = (o->vKnots)[a];
       a++;
-    }
+    } /* for */
 
   /* now create a NURBPatch */
   ay_status = ay_npt_create(o->uOrder, o->vOrder, width, height,
@@ -246,20 +257,21 @@ ay_mfio_readnurbcurve(MF3DVoidObjPtr object)
 
   /* copy data into new (safe) memory */
   a = 0; b = 0;
-  for(i=0;i<length;i++)
+  for(i = 0; i < length; i++)
     {
       controlv[b++] = (o->points)[a].x;
       controlv[b++] = (o->points)[a].y;
       controlv[b++] = (o->points)[a].z;
       controlv[b++] = (o->points)[a].w;
       a++;
-    }
+    } /* for */
+
   a = 0;
   for(i=0;i<length+o->order;i++)
     {
       knotv[a] = (o->knots)[a];
       a++;
-    }
+    } /* for */
 
   /* now create a NURBCurve */
   ay_status = ay_nct_create(o->order, length,
@@ -328,7 +340,7 @@ ay_mfio_readpolyline(MF3DVoidObjPtr object)
       controlv[b++] = (o->vertices)[a].z;
       controlv[b++] = 1.0;
       a++;
-    }
+    } /* for */
 
   /* now create a NURBCurve */
   ay_status = ay_nct_create(2, length,
@@ -1199,7 +1211,7 @@ ay_mfio_readrotaaxis(MF3DVoidObjPtr object)
 
 
 /* ay_mfio_readdcol:
- *
+ *  XXXX this should create a material object
  */
 int
 ay_mfio_readdcol(MF3DVoidObjPtr object)
@@ -1222,7 +1234,7 @@ ay_mfio_readdcol(MF3DVoidObjPtr object)
 
 
 /* ay_mfio_readtcol:
- *
+ * XXXX this should create a material object
  */
 int
 ay_mfio_readtcol(MF3DVoidObjPtr object)
@@ -1287,17 +1299,17 @@ ay_mfio_readecntr(MF3DVoidObjPtr object)
  int ay_status = AY_OK;
  char fname[] = "mfio_readecntr";
 
- ay_status = ay_object_crtendlevel(ay_next);
+  ay_status = ay_object_crtendlevel(ay_next);
 
- if(ay_status)
-   {
-     ay_error(AY_ERROR, fname,
-	      "Could not create EndLevel object, scene is corrupt now!");
-   }
+  if(ay_status)
+    {
+      ay_error(AY_ERROR, fname,
+	       "Could not create EndLevel object, scene is corrupt now!");
+    }
 
- ay_mfio_lastreadobject = ay_currentlevel->object;
-
- ay_clevel_del();
+  ay_mfio_lastreadobject = ay_currentlevel->object;
+  
+  ay_clevel_del();
 
  return ay_status;
 } /* ay_mfio_readecntr */
@@ -1326,8 +1338,8 @@ ay_mfio_readobject(MF3DVoidObjPtr object)
 	    {
 	      ay_error(AY_ERROR, fname, "Error importing object.");
 	      ay_status = AY_OK;
-	    }
-	}
+	    } /* if */
+	} /* if */
     }
   else
     {
@@ -1335,7 +1347,7 @@ ay_mfio_readobject(MF3DVoidObjPtr object)
 	      object->objectType);
       ay_error(AY_EWARN, fname, err);
       ay_status = AY_OK;
-    }
+    } /* if */
  
  return ay_status;
 } /* ay_mfio_readobject */
@@ -1367,8 +1379,8 @@ ay_mfio_readscene(Tcl_Interp *interp, char *filename)
 	{
 	  ay_mfio_mf3d_errno = status;
 	  return AY_ERROR;
-	}
-    }
+	} /* if */
+    } /* if */
 
   nextObjIsRoot = kMF3DBooleanFalse;
 
@@ -1383,8 +1395,8 @@ ay_mfio_readscene(Tcl_Interp *interp, char *filename)
 	    { 
 	      ay_mfio_mf3d_errno = status;
 	      return AY_ERROR;
-	    }
-	}
+	    } /* if */
+	} /* if */
 
       if ((status == kMF3DNoErr) && object->objectType == kMF3DObjReference)
 	{	/* If we have just read a Reference object, resolve it.
@@ -1398,16 +1410,16 @@ ay_mfio_readscene(Tcl_Interp *interp, char *filename)
 	    {	/* We are in a container which must mean we have an
 		 * external reference.
 		 */
-	      status = MF3DReadAnObject (metafilePtr, &extStorageObj);
+	      status = MF3DReadAnObject(metafilePtr, &extStorageObj);
 
 	      if (status != kMF3DNoErr)
 		{ 
 		  ay_mfio_mf3d_errno = status;
 		  
 		  return AY_ERROR;
-		}
+		} /* if */
 
-	    }
+	    } /* if */
 
 	  /* Resolve the reference. This causes metafilePtr to point
 	   * to the referenced object, so that the next call to
@@ -1421,43 +1433,118 @@ ay_mfio_readscene(Tcl_Interp *interp, char *filename)
 	   * automatically after the reference has been resolved).
 	   */
 	  if(status == kMF3DNoErr)
-	    status = MF3DResolveReference (metafilePtr,
-					 (MF3DReferenceObjPtr) object,
-					 (MF3DStorageObjPtr) extStorageObj);
+	    {
+	      status = MF3DResolveReference(metafilePtr,
+					    (MF3DReferenceObjPtr) object,
+					    (MF3DStorageObjPtr) extStorageObj);
+	    } /* if */
 
 	  /* Dispose the external storage object, if there is one.
 	   * The Reference object will be disposed later.
 	   */
-	  MF3DDisposeObject (extStorageObj);
+	  MF3DDisposeObject(extStorageObj);
 	}
 
       /* If the object we just read is a BeginContainer object, the next
        * object read will be the root object of the container.
        */
-      if (status == kMF3DNoErr && object->objectType == kMF3DObjContainer)
-	nextObjIsRoot = kMF3DBooleanTrue;
+      if(status == kMF3DNoErr && object->objectType == kMF3DObjContainer)
+	{
+	  nextObjIsRoot = kMF3DBooleanTrue;
+	}
       else
-	nextObjIsRoot = kMF3DBooleanFalse;
+	{
+	  nextObjIsRoot = kMF3DBooleanFalse;
+	}
 
-      if (status == kMF3DNoErr)
+      if(status == kMF3DNoErr)
 	{
 	  ay_status = ay_mfio_readobject(object);
 	  if(ay_status)
 	    return ay_status;
 	}
+
       /* Dispose the object */
       if (status == kMF3DNoErr)
-	MF3DDisposeObject(object);
+	{
+	  MF3DDisposeObject(object);
+	}
 
-    }
+    } /* while */
 
   /* Close the file */
-  status = MF3DClose (metafilePtr);
-  if (status != kMF3DNoErr)
-    return AY_ECLOSEFILE;
+  status = MF3DClose(metafilePtr);
+  if(status != kMF3DNoErr)
+    {
+      return AY_ECLOSEFILE;
+    }
 
   return AY_OK;
 } /* ay_mfio_readscene */
+
+/***/
+
+/* ay_mfio_writencconvertible:
+ *  write an object, that is convertible to a NURBCurve object
+ */
+int 
+ay_mfio_writencconvertible(MF3D_FilePtr fileptr, ay_object *o)
+{
+ int ay_status = AY_OK;
+ ay_object *c = NULL;
+
+  if(!o)
+   return AY_ENULL;
+
+  ay_status = ay_provide_object(o, AY_IDNCURVE, &c);
+  if(c)
+    {
+      if(c->type == AY_IDNCURVE)
+	{
+	  ay_status = ay_mfio_writenurbcurve(fileptr, c);
+	}
+
+      ay_status = ay_object_delete(c);
+
+      return AY_OK;
+    } /* if */
+
+ return ay_status;
+} /* ay_mfio_writencconvertible */
+
+
+/* ay_mfio_writenpconvertible:
+ *  write an object, that is convertible to a NURBPatch object
+ */
+int 
+ay_mfio_writenpconvertible(MF3D_FilePtr fileptr, ay_object *o)
+{
+ int ay_status = AY_OK;
+ ay_object *p = NULL, *t = NULL;
+
+  if(!o)
+   return AY_ENULL;
+
+  ay_status = ay_provide_object(o, AY_IDNPATCH, &p);
+  if(p)
+    {
+      t = p;
+      while(t)
+	{
+	  if(t->type == AY_IDNPATCH)
+	    {
+	      ay_status = ay_mfio_writenurbpatch(fileptr, t);
+	    } /* if */
+	  t = t->next;
+	} /* while */
+
+      ay_status = ay_object_deletemulti(p);
+
+      return AY_OK;
+    } /* if */
+
+ return ay_status;
+} /* ay_mfio_writenpconvertible */
 
 
 /* ay_mfio_writetrimcurve:
@@ -1512,11 +1599,9 @@ ay_mfio_writetrimcurve(MF3D_FilePtr fileptr, ay_object *o)
       w = curve->controlv[b];
       b++;
 
-
       (mf3do.points)[a].x = m[0]*x + m[4]*y + m[8]*z + m[12]*w;
       (mf3do.points)[a].y = m[1]*x + m[5]*y + m[9]*z + m[13]*w;
       (mf3do.points)[a].w = w;
-
 
       a++;
     }
@@ -1580,27 +1665,31 @@ ay_mfio_writenurbpatch(MF3D_FilePtr fileptr, ay_object *o)
 
   a = 0; b = 0;
   for(i=0; i<patch->width; i++)
-    for(j=0; j<patch->height; j++)
-      {
-	(mf3do.points)[a].x = patch->controlv[b++];
-	(mf3do.points)[a].y = patch->controlv[b++];
-	(mf3do.points)[a].z = patch->controlv[b++];
-	(mf3do.points)[a].w = patch->controlv[b++];
+    {
+      for(j=0; j<patch->height; j++)
+	{
+	  (mf3do.points)[a].x = patch->controlv[b++];
+	  (mf3do.points)[a].y = patch->controlv[b++];
+	  (mf3do.points)[a].z = patch->controlv[b++];
+	  (mf3do.points)[a].w = patch->controlv[b++];
 
-	a++;
-      }
+	  a++;
+	} /* for */
+    } /* for */
+
   a = 0;
   for(i=0; i<patch->width+patch->uorder; i++)
     {
       (mf3do.uKnots)[a] = patch->uknotv[a]; 
       a++;
-    }
+    } /* for */
+
   a = 0;
   for(i=0; i<patch->height+patch->vorder; i++)
     {
       (mf3do.vKnots)[a] = patch->vknotv[a];
       a++;
-    }
+    } /* for */
 
   /* we write out the patch now */
   status = MF3DWriteAnObject (fileptr, (MF3DVoidObjPtr)&mf3do);
@@ -1632,14 +1721,14 @@ ay_mfio_writenurbpatch(MF3D_FilePtr fileptr, ay_object *o)
 	{ free(mf3do.points); free(mf3do.vKnots); free(mf3do.uKnots);
 	ay_mfio_mf3d_errno = status; return AY_ERROR; }
 
-      if(trim->type == AY_IDNCURVE)       /* single trimcurve? */
+      if(trim->type == AY_IDNCURVE) /* single trimcurve? */
 	{
 	  ay_status = ay_mfio_writetrimcurve(fileptr, trim);
 	  if(ay_status)
 	    { free(mf3do.points); free(mf3do.vKnots); free(mf3do.uKnots);
 	      return ay_status; }
 	}
-      else if(trim->type == AY_IDLEVEL)      /* trimloop? */
+      else if(trim->type == AY_IDLEVEL) /* trimloop? */
 	{
 	  trim = trim->down;
 	  while(trim)
@@ -1705,24 +1794,25 @@ ay_mfio_writenurbcurve(MF3D_FilePtr fileptr, ay_object *o)
     { free(mf3do.points); return AY_EOMEM; }
 
   a = 0; b = 0;
-  for(i=0; i<curve->length; i++)
+  for(i = 0; i < curve->length; i++)
     {
-	(mf3do.points)[a].x = curve->controlv[b++];
-	(mf3do.points)[a].y = curve->controlv[b++];
-	(mf3do.points)[a].z = curve->controlv[b++];
-	(mf3do.points)[a].w = curve->controlv[b++];
+      (mf3do.points)[a].x = curve->controlv[b++];
+      (mf3do.points)[a].y = curve->controlv[b++];
+      (mf3do.points)[a].z = curve->controlv[b++];
+      (mf3do.points)[a].w = curve->controlv[b++];
 
-	a++;
-      }
+      a++;
+    } /* for */
+
   a = 0;
-  for(i=0; i<curve->length+curve->order; i++)
+  for(i = 0; i < curve->length + curve->order; i++)
     {
       (mf3do.knots)[a] = curve->knotv[a]; 
       a++;
     }
 
   /* we write out the curve now */
-  status = MF3DWriteAnObject (fileptr, (MF3DVoidObjPtr)&mf3do);
+  status = MF3DWriteAnObject(fileptr, (MF3DVoidObjPtr)&mf3do);
   if(status != kMF3DNoErr)
     { ay_mfio_mf3d_errno = status; return AY_ERROR; }
 
@@ -2072,7 +2162,7 @@ ay_mfio_writetorus(MF3D_FilePtr fileptr, ay_object *o)
   mf3do.torus = &td;
 
   /* we write out the torus now */
-  status = MF3DWriteAnObject (fileptr, (MF3DVoidObjPtr)&mf3do);
+  status = MF3DWriteAnObject(fileptr, (MF3DVoidObjPtr)&mf3do);
   if(status != kMF3DNoErr)
     { ay_mfio_mf3d_errno = status; return AY_ERROR; }
 
@@ -2095,12 +2185,13 @@ int
 ay_mfio_writeattributes(MF3D_FilePtr fileptr, ay_object *o)
 {
  int ay_status = AY_OK;
+ ay_object *mo = NULL;
  double euler[3] = {0};
  MF3DTranslateObj to = {0};
  MF3DScaleObj so = {0};
  MF3DRotateObj ro = {0};
- /* MF3DDiffuseColorObj dco = {0};
- MF3DTransparencyColorObj tco = {0};*/
+ MF3DDiffuseColorObj dco = {0};
+ MF3DTransparencyColorObj tco = {0};
  MF3DErr status = kMF3DNoErr;	/* temporary result code */  
 
   to.objectType = kMF3DObjTranslateTransform;
@@ -2109,31 +2200,31 @@ ay_mfio_writeattributes(MF3D_FilePtr fileptr, ay_object *o)
   to.translate.z = (MF3DFloat32)o->movz;
 
   if((o->movx != 0.0) || (o->movy != 0.0) || (o->movz != 0.0))
-    status = MF3DWriteAnObject (fileptr, (MF3DVoidObjPtr)&to);
+    status = MF3DWriteAnObject(fileptr, (MF3DVoidObjPtr)&to);
   if(status != kMF3DNoErr)
     { ay_mfio_mf3d_errno = status; return AY_ERROR; }
 
-  ay_quat_toeuler(o->quat,euler);
+  ay_quat_toeuler(o->quat, euler);
 
   ro.objectType = kMF3DObjRotateTransform;
   ro.axis = MF3DAxisZ;
   ro.radians = -euler[0];
   if(euler[0] != 0.0)
-    status = MF3DWriteAnObject (fileptr, (MF3DVoidObjPtr)&ro);
+    status = MF3DWriteAnObject(fileptr, (MF3DVoidObjPtr)&ro);
   if(status != kMF3DNoErr)
     { ay_mfio_mf3d_errno = status; return AY_ERROR; }
 
   ro.axis = MF3DAxisY;
   ro.radians = -euler[1];
   if(euler[1] != 0.0)
-    status = MF3DWriteAnObject (fileptr, (MF3DVoidObjPtr)&ro);
+    status = MF3DWriteAnObject(fileptr, (MF3DVoidObjPtr)&ro);
   if(status != kMF3DNoErr)
     { ay_mfio_mf3d_errno = status; return AY_ERROR; }
 
   ro.axis = MF3DAxisX;
   ro.radians = -euler[2];
   if(euler[2] != 0.0)
-    status = MF3DWriteAnObject (fileptr, (MF3DVoidObjPtr)&ro);
+    status = MF3DWriteAnObject(fileptr, (MF3DVoidObjPtr)&ro);
   if(status != kMF3DNoErr)
     { ay_mfio_mf3d_errno = status; return AY_ERROR; }
 
@@ -2143,28 +2234,40 @@ ay_mfio_writeattributes(MF3D_FilePtr fileptr, ay_object *o)
   so.scale.z = o->scalz;
 
   if((o->scalx != 1.0) || (o->scaly != 1.0) || (o->scalz != 1.0))
-    status = MF3DWriteAnObject (fileptr, (MF3DVoidObjPtr)&so);
+    status = MF3DWriteAnObject(fileptr, (MF3DVoidObjPtr)&so);
   if(status != kMF3DNoErr)
     { ay_mfio_mf3d_errno = status; return AY_ERROR; }
 
-  /*
-    XXXX get color from material
-  dco.objectType = kMF3DObjDiffuseColor;
-  dco.diffuseColor.red = o->colr;
-  dco.diffuseColor.green = o->colg;
-  dco.diffuseColor.blue = o->colb;
-  status = MF3DWriteAnObject (fileptr, (MF3DVoidObjPtr)&dco);
-  if(status != kMF3DNoErr)
-    { ay_mfio_mf3d_errno = status; return AY_ERROR; }
+  if(o->type == AY_IDINSTANCE)
+    mo = (ay_object *)o->refine;
+  else
+    mo = o;
 
-  tco.objectType = kMF3DObjTransparencyColor;
-  tco.transparency.red = o->opr;
-  tco.transparency.green = o->opg;
-  tco.transparency.blue = o->opb;
-  status = MF3DWriteAnObject (fileptr, (MF3DVoidObjPtr)&tco);
-  if(status != kMF3DNoErr)
-    { ay_mfio_mf3d_errno = status; return AY_ERROR; }
-  */
+  if(mo->mat)
+    {
+      if(mo->mat->colr != -1)
+	{
+	  dco.objectType = kMF3DObjDiffuseColor;
+	  dco.diffuseColor.red = mo->mat->colr;
+	  dco.diffuseColor.green = mo->mat->colg;
+	  dco.diffuseColor.blue = mo->mat->colb;
+	  status = MF3DWriteAnObject(fileptr, (MF3DVoidObjPtr)&dco);
+	  if(status != kMF3DNoErr)
+	    { ay_mfio_mf3d_errno = status; return AY_ERROR; }
+	} /* if */
+
+      if(mo->mat->opr != -1)
+	{
+	  tco.objectType = kMF3DObjTransparencyColor;
+	  tco.transparency.red = mo->mat->opr;
+	  tco.transparency.green = mo->mat->opg;
+	  tco.transparency.blue = mo->mat->opb;
+	  status = MF3DWriteAnObject(fileptr, (MF3DVoidObjPtr)&tco);
+	  if(status != kMF3DNoErr)
+	    { ay_mfio_mf3d_errno = status; return AY_ERROR; }
+	} /* if */
+
+    } /* if */
 
  return ay_status;
 } /* ay_mfio_writeattributes */
@@ -2180,21 +2283,23 @@ ay_mfio_writelevel(MF3D_FilePtr fileptr, ay_object *o)
  ay_object *level = o;
 
   if(!o)
-    return AY_OK;
+    {
+      return AY_OK;
+    }
   
   o = o->down;
-  if(o)
+  if(o && o->next)
     {
       ay_status = ay_mfio_writecntr(fileptr);
       ay_status = ay_mfio_writeattributes(fileptr, level);
-      while(o)
+      while(o->next)
 	{
 	  ay_status = ay_mfio_writeobject(fileptr, o);
 	  o = o->next;
-	}
+	} /* while */
 
       ay_status = ay_mfio_writeecntr(fileptr);
-    }
+    } /* if */
 
  return ay_status;
 } /* ay_mfio_writelevel */
@@ -2320,7 +2425,7 @@ ay_mfio_writeobject(MF3D_FilePtr fileptr, ay_object *object)
       sprintf(err,"No callback registered for this type: %d.",
 	      object->type);
       ay_error(AY_EWARN, fname, err);
-    }
+    } /* if */
  
  return ay_status;
 } /* ay_mfio_writeobject */
@@ -2338,6 +2443,12 @@ ay_mfio_writescene(Tcl_Interp *interp, char *filename)
  MF3DErr status = kMF3DNoErr;	/* temporary result code        */
  MF3DMetafileObj mfo = {0};
 
+  /* scene empty? */
+  if(!co)
+    {
+      return AY_OK;
+    }
+
   mfo.objectType = kMF3DObjMetafile;
   mfo.dataFormat = ay_mfio_mf3d_data_format;
   mfo.majorVersion = (MF3DUns16)1;
@@ -2347,17 +2458,17 @@ ay_mfio_writescene(Tcl_Interp *interp, char *filename)
   mfo.typeSeed = kMF3DMinimumTypeSeed;
 
   /* Open the metafile */
-  status = MF3DOpenOutputStdCFile (ay_mfio_mf3d_data_format, filename,
-				   &metafilePtr);
+  status = MF3DOpenOutputStdCFile(ay_mfio_mf3d_data_format, filename,
+				  &metafilePtr);
   if (status != kMF3DNoErr)
     return AY_EOPENFILE;
 
   /* write the metafile-object */
-  status = MF3DWriteAnObject (metafilePtr, (MF3DVoidObjPtr)&mfo);
+  status = MF3DWriteAnObject(metafilePtr, (MF3DVoidObjPtr)&mfo);
   if(status != kMF3DNoErr)
     { ay_mfio_mf3d_errno = status; return AY_ERROR; }
 
-  while(co)
+  while(co->next)
     {
       ay_status = ay_mfio_writeobject(metafilePtr, co);
       if (ay_status)
@@ -2367,9 +2478,9 @@ ay_mfio_writescene(Tcl_Interp *interp, char *filename)
     }
 
   /* Close the file */
-  status = MF3DClose (metafilePtr);
-  if (status != kMF3DNoErr)
-    return AY_ECLOSEFILE;
+  status = MF3DClose(metafilePtr);
+  if(status != kMF3DNoErr)
+    { return AY_ECLOSEFILE; }
 
  return AY_OK;
 } /* ay_mfio_writescene */
@@ -2778,6 +2889,24 @@ Mfio_Init(Tcl_Interp *interp)
 				       ay_mfio_writetorus);
   ay_status = ay_mfio_registerwritecb((char *)(AY_IDINSTANCE),
 				       ay_mfio_writeinstance);
+
+  ay_status = ay_mfio_registerwritecb((char *)(AY_IDICURVE),
+				       ay_mfio_writencconvertible);
+
+  ay_status = ay_mfio_registerwritecb((char *)(AY_IDEXTRUDE),
+				       ay_mfio_writenpconvertible);
+  ay_status = ay_mfio_registerwritecb((char *)(AY_IDREVOLVE),
+				       ay_mfio_writenpconvertible);
+  ay_status = ay_mfio_registerwritecb((char *)(AY_IDSWEEP),
+				       ay_mfio_writenpconvertible);
+  ay_status = ay_mfio_registerwritecb((char *)(AY_IDSKIN),
+				       ay_mfio_writenpconvertible);
+  ay_status = ay_mfio_registerwritecb((char *)(AY_IDCAP),
+				       ay_mfio_writenpconvertible);
+  ay_status = ay_mfio_registerwritecb((char *)(AY_IDPAMESH),
+				       ay_mfio_writenpconvertible);
+  ay_status = ay_mfio_registerwritecb((char *)(AY_IDBPATCH),
+				       ay_mfio_writenpconvertible);
 
 
   /* register some C-functions as Tcl-Commands */
