@@ -24,7 +24,7 @@ getProp
 
 # create new UI
 addMenu $w MetaCompAttrData Formula {MetaBalls_1 MetaBalls_2 MetaBalls_3 Torus Test}
-addCheck $w MetaCompAttrData Negativ
+addCheck $w MetaCompAttrData Negative
 
 if { $MetaCompAttrData(Formula) == 0 } {
 	addParam $w MetaCompAttrData Radius
@@ -77,7 +77,7 @@ Formula  0
 # create MetaCompAttr-UI
 set w [frame $ay(pca).$MetaCompAttr(w)]
 
-addCheck $w MetaCompAttrData Negativ
+addCheck $w MetaCompAttrData Negative
 
 # add menu entry to Create/Custom sub-menu
 mmenu_addcustom MetaComp "crtOb MetaComp;uS;sL;rV"
