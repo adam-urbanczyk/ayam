@@ -1693,6 +1693,8 @@ idr_wrib_scene(char *file, char *image, double importance, int exclude,
  double fakt;
  /* RtFloat bias0 = 0.5, bias1 = 0.5;*/
  RtFloat fov = (RtFloat)90.0;
+ char *objfile = NULL, *pos = NULL;
+ int filelen = 0;
 
  if(!ay_prefs.resolveinstances)
   {
@@ -1731,16 +1733,32 @@ idr_wrib_scene(char *file, char *image, double importance, int exclude,
   if(ay_prefs.use_sm)
     {
       ay_prefs.wrib_sm = AY_TRUE;
-      /* XXXX what are these good for?
-       * do we need them ?
-       */
-      /*
-      RiOption((RtToken)"shadow", (RtToken)"bias0",
-	     (RtPointer)(&bias0), RI_NULL);
-      RiOption((RtToken)"shadow", (RtToken)"bias1",
-	     (RtPointer)(&bias1), RI_NULL);
-      */
-      ay_sm_wriballsm(file, ay_root->next, NULL, width, height);
+
+      filelen = strlen(file);
+
+      if(!(objfile = calloc(filelen+64, sizeof(char))))
+	return AY_EOMEM;
+
+      pos = strstr(file, ".rib");
+
+      if(pos)
+	{
+	  sprintf(objfile, "%s", file);
+	  pos = NULL;
+	  pos = strstr(objfile, ".rib");
+	  if(pos)
+	    sprintf(pos, "%s", ".obj.rib");
+	}
+      else
+	{
+	  sprintf(objfile, "%s.obj.rib", file);
+	}
+
+
+        /* wrib root RiOption tags (possibly containing shadow bias) */
+      ay_status = ay_riopt_wrib(ay_root);
+
+      ay_sm_wriballsm(file, objfile, ay_root->next, NULL, width, height);
       ay_prefs.wrib_sm = AY_FALSE;
     }
 
