@@ -84,6 +84,17 @@ ay_concatnc_copycb(void *src, void **dst)
 int
 ay_concatnc_drawcb(struct Togl *togl, ay_object *o)
 {
+ ay_concatnc_object *cc = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  cc = (ay_concatnc_object *)o->refine;
+
+  if(cc->ncurve)
+    {
+      ay_draw_object(togl, cc->ncurve, AY_TRUE);
+    }
 
  return AY_OK;
 } /* ay_concatnc_drawcb */
@@ -375,7 +386,7 @@ ay_concatnc_init(Tcl_Interp *interp)
 				    ay_concatnc_deletecb,
 				    ay_concatnc_copycb,
 				    ay_concatnc_drawcb,
-				    ay_concatnc_drawhcb,
+				    NULL, /* no handles */
 				    NULL, /* no shading */
 				    ay_concatnc_setpropcb,
 				    ay_concatnc_getpropcb,
