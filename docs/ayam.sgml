@@ -4298,7 +4298,7 @@ in the expr-statement above) to speed up the expression.
 <sect>NURBS Modeling Tools<label id="nmtool">
 <p>
 This section describes NURBS curve and surface related modeling
-tools, which you can find in the <tt/"Tools"/ menu.
+tools, which you can find in the <tt/"Tools"/ menu of the main window.
 
 <sect1>The Closed BSpline Tool<label id="cbspt">
 <p>
@@ -4312,9 +4312,13 @@ tools, which you can find in the <tt/"Tools"/ menu.
 <item>Operation: This tool creates a closed cubic B-Spline curve with
 i+3 control points in the XY plane. The control points are arranged
 in a circle of radius 1 centered around the origin. This gives the curve
-a circular appearance (see image above) but it is not a true circle.
-Use the NURBCircle
-tool (see below) to create a true circle instead.
+a circular appearance (see image above) but it is not a true circle:
+If few control points are used, the radius of the circular curve
+is clearly smaller than 1. Furthermore, the parameterisation and
+curvature of the closed B-Spline are not exactly as one would
+expect from a circle.
+However, you can use the NURBCircle tool (see below) to create a true
+circle instead.
 <item>Note: i must be atleast 3. The first three control
 points of the new curve will be identical to the last three.
 Additionally, the curve will be marked as closed, and the generation
@@ -4325,6 +4329,11 @@ See also section <ref id="ncurvemp" name="Multiple Points">.
 
 <sect1>The NURBCircle Tool<label id="ncirct">
 <p>
+<figure loc="ht">
+<eps file="pics/ncircle.ps" height="5cm">
+<img src="pics/ncircle.gif">
+<caption>A NURBS Circle</caption>
+</figure>
 <itemize>
 <item>Arguments: None.
 <item>Operation: The NURBCircle tool creates a full circular NURBS curve
@@ -4491,6 +4500,12 @@ of it somewhere.
 
 <sect1>The Elevate Tool<label id="elevt">
 <p>
+<figure loc="ht">
+<eps file="pics/elevate.ps" height="4cm">
+<img src="pics/elevate.gif">
+<caption>Successive Application of Elevate Tool (Order 3 (left), 4 (middle),
+5 (right))</caption>
+</figure>
 <itemize>
 <item>Arguments: The elevate tool takes a number of NURBS curves from
 the selection and additionally requests an integer value.
@@ -4498,7 +4513,8 @@ the selection and additionally requests an integer value.
 by the specified integer value without changing the shape of the curve.
 <item>Note: If the knot vector of the curve is not clamped, it
 will be clamped automatically. The knot type of the curve will
-be changed to custom.
+be changed to custom. New control points will be added and the position
+of old control points may be changed in the progress.
 </itemize>
 
 <sect1>The Refine Tool<label id="refit">
