@@ -807,34 +807,21 @@ extern Tcl_HashTable ay_otypesht;
 extern ay_table ay_typenamest;
 
 extern ay_table ay_createcbt;
-
 extern ay_table ay_deletecbt;
-
 extern ay_table ay_copycbt;
-
 extern ay_table ay_drawcbt;
-
 extern ay_table ay_drawhcbt;
-
 extern ay_table ay_shadecbt;
-
 extern ay_table ay_getpropcbt;
-
 extern ay_table ay_setpropcbt;
-
 extern ay_table ay_getpntcbt;
-
 extern ay_table ay_wribcbt;
-
 extern ay_table ay_readcbt;
-
 extern ay_table ay_writecbt;
-
 extern ay_table ay_notifycbt;
+extern ay_table ay_bbccbt;
 
 extern ay_table ay_treedropcbt;
-
-extern ay_table ay_bbccbt;
 
 extern Tcl_HashTable ay_tagtypesht;
 
@@ -847,9 +834,6 @@ extern ay_table ay_oidptrt;
 extern ay_table ay_convertcbt;
 
 extern ay_table ay_providecbt;
-
-
-
 
 extern int ay_errno;
 
@@ -869,7 +853,7 @@ extern char *ay_rihider_tagtype;
 
 extern unsigned int ay_current_glname;
 
-/* Defines */
+/* Definitions */
 
 /* The Truth */
 #define AY_TRUE      1
@@ -930,7 +914,7 @@ extern unsigned int ay_current_glname;
 
 #define AY_IDLAST          30
 
-/* Level Object SubTypes */
+/* Level Object SubType Ids */
 #define AY_LTEND    0
 #define AY_LTLEVEL  1
 #define AY_LTUNION  2
@@ -938,7 +922,7 @@ extern unsigned int ay_current_glname;
 #define AY_LTINT    4
 #define AY_LTPRIM   5
 
-/* View Object SubTypes */
+/* View Object SubType Ids */
 #define AY_VTFRONT  0
 #define AY_VTSIDE   1
 #define AY_VTTOP    2
@@ -1039,12 +1023,9 @@ extern unsigned int ay_current_glname;
 /* avoid direct comparison of doubles with 0.0 */
 #define AY_EPSILON 1.0e-06
 
-/* Picking */
-#define AYDEFAULTPICKEPSILON 0.2;
-
 /* Version Strings */
-#define AYVERSIONSTR "1.4pre"
-#define AYVERSIONSTRMI "0"
+#define AY_VERSIONSTR "1.4pre"
+#define AY_VERSIONSTRMI "0"
 
 #include "aycore.h"
 #include "nurbs.h"

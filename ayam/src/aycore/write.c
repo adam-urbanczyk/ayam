@@ -23,7 +23,7 @@ ay_write_header(FILE *fileptr)
  int ay_status = AY_OK;
 
  fprintf(fileptr,"Ayam\n");
- fprintf(fileptr,"%s\n", AYVERSIONSTR);
+ fprintf(fileptr,"%s\n", AY_VERSIONSTR);
 
  return ay_status;
 } /* ay_write_header */
