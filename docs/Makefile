@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile [16. Dec 2002]
+# Makefile [10. Oct 2004]
 # Makefile for the Ayam reference manual
 
 # on Debian3.0 (Woody) the pdf3 target does not work anymore,
@@ -18,7 +18,7 @@ htm:
 	cp ayam.sgml html
 	cd html;sgml2html -s 1 ayam.sgml;rm ayam.sgml;cd ..
 	./fixhtml.tcsh
-
+	-cd html;../corrwh.pl;cd ..
 txt:
 	sgml2txt -f ayam.sgml
 
