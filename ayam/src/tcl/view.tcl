@@ -190,8 +190,10 @@ proc viewTitle { w type action } {
 	set m $ay(confm)
 	if { $type == "Persp" } {
 	    $w.$m entryconfigure 16 -state normal
+	    $w.$m entryconfigure 17 -state normal
 	} else {
 	    $w.$m entryconfigure 16 -state disabled
+	    $w.$m entryconfigure 17 -state disabled
 	}
 
     }
