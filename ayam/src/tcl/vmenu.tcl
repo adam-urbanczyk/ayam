@@ -103,10 +103,22 @@ $m add check -label "Automatic Redraw" -variable ay(cVRedraw) -command "\
 	global ay;\
 	$w.f3D.togl setconf -draw \$ay(cVRedraw);\
 	\$ay(currentView) mc"
+set cm [menu $m.mmode -tearoff 0]
+$m add cascade -label "Mode" -menu $cm
 
-$m add check -label "Shade" -variable ay(cVShade) -command "\
+$cm add radio -label "Draw" -variable ay(cVMode) -value 0 -command "\
 	global ay;\
-	$w.f3D.togl setconf -shade \$ay(cVShade);\
+	$w.f3D.togl setconf -shade \$ay(cVMode);\
+	\$ay(currentView) mc"
+
+$cm add radio -label "Shade" -variable ay(cVMode) -value 1 -command "\
+	global ay;\
+	$w.f3D.togl setconf -shade \$ay(cVMode);\
+	\$ay(currentView) mc"
+
+$cm add radio -label "ShadeAndDraw" -variable ay(cVMode) -value 2 -command "\
+	global ay;\
+	$w.f3D.togl setconf -shade \$ay(cVMode);\
 	\$ay(currentView) mc"
 
 $m add check -label "Draw Selection only" -variable ay(cVDrawSel) -command "\
