@@ -489,6 +489,11 @@ ay_concatnc_convertcb(ay_object *o, int in_place)
 	  /* reset display mode of new curve to "global" */
 	  nc = (ay_nurbcurve_object *)(new->refine);
 	  nc->display_mode = 0;
+
+	  /* immediately create and show the multiple points */
+	  nc->createmp = AY_TRUE;
+	  ay_nct_recreatemp(nc);
+
 	  ay_trafo_copy(o, new);
 
 	  if(!in_place)
