@@ -9,7 +9,7 @@
 
 # concatnc.tcl - concatnc objects Tcl code
 
-set ConcatNC_props { Transformations Attributes Material Tags ConcatNCAttr }
+set ConcatNC_props { Transformations Attributes Tags ConcatNCAttr }
 
 
 array set ConcatNCAttr {
