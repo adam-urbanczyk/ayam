@@ -1026,7 +1026,7 @@ ay_view_dropcb(ay_object *o)
  double from[3], to[3], mr[16];
  GLdouble m[16];
  char arg[] = "save";
- char *argv[2] = {NULL, arg};
+ char *argv[2] = {0};
 
   if(!sel)
     {
@@ -1050,6 +1050,7 @@ ay_view_dropcb(ay_object *o)
 	    {
 	      /* no need to fake a selection here, because all view
 		 objects are saved by each undo operation anyway */
+	      argv[1] = arg;
 	      ay_status = ay_undo_undotcmd(NULL, ay_interp, 2, argv);
 
 	      /* ay_viewt_changetype(view, AY_VTPERSP); */
@@ -1106,6 +1107,7 @@ ay_view_dropcb(ay_object *o)
 
 	  /* no need to fake a selection here, because all view
 	     objects are saved by each undo operation anyway */
+	  argv[1] = arg;
 	  ay_status = ay_undo_undotcmd(NULL, ay_interp, 2, argv);
 	  
 	  memcpy(view->from, camera->from, 3*sizeof(double));
