@@ -94,6 +94,9 @@ void ay_draw_bgimage(struct Togl *togl);
 
 void ay_draw_needredraw(ay_list_object *oldsel, ay_list_object *newsel,
 			int *result);
+
+void ay_draw_trimview(void);
+
 /* error.c */
 void ay_error(int code, char *where, char *what);
 
@@ -545,8 +548,8 @@ int ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 int ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
 
-int ay_tcmd_getglerrortcmd(ClientData clientData, Tcl_Interp *interp,
-			   int argc, char *argv[]);
+int ay_tcmd_geterrortcmd(ClientData clientData, Tcl_Interp *interp,
+			 int argc, char *argv[]);
 
 /* tmp.c */
 int ay_tmp_gettcmd(ClientData clientData, Tcl_Interp *interp,
