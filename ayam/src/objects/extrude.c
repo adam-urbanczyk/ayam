@@ -625,7 +625,7 @@ ay_extrude_notifycb(ay_object *o)
 		return ay_status;
 
 	      /* work around error with rotated curves */
-	      /*	      Extrude_apply_rsNC(trim);*/
+	      ay_nct_applytrafo(trim);
 
 	      curve = (ay_nurbcurve_object *)trim->refine;
 
@@ -757,7 +757,7 @@ ay_extrude_notifycb(ay_object *o)
 		return ay_status;
 
 	      /* work around error with rotated curves */
-	      /*	      Extrude_apply_rsNC(trim);*/
+	      ay_nct_applytrafo(trim);
 
 	      curve = (ay_nurbcurve_object *)trim->refine;
 

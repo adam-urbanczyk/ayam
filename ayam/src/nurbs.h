@@ -210,6 +210,7 @@ int ay_nct_isclosed(ay_nurbcurve_object *nc);
 
 int ay_nct_createfrompatch(ay_object *p, int where, ay_object **cu);
 
+int ay_nct_applytrafo(ay_object *c);
 
 /* npt.c */
 int ay_npt_create(int uorder, int vorder, int width, int height,
