@@ -255,39 +255,6 @@ ay_instance_wribcb(char *file, ay_object *o)
  ay_wribcb *cb = NULL;
  ay_level_object *l = NULL;
 
-  if(!ay_prefs.resolveinstances)
-    {
-      tag = o->tags;
-      while(tag && !found)
-	{
-	  if(tag->type == ay_instt_oitagtype)
-	    {
-	      if(!file)
-		{
-		  RiReadArchive(tag->val,(RtVoid*)RI_NULL,RI_NULL);
-		}
-	      else
-		{
-		  if(!(iafilename = calloc(1,
-					   strlen(tag->val)+strlen(file)+2)))
-		    return AY_EOMEM;
-		  strcpy(iafilename,file);
-		  iafilename[strlen(file)] = '-';
-		  strcpy(&(iafilename[strlen(file)+1]),tag->val);
-		  RiReadArchive(iafilename,(RtVoid*)RI_NULL,RI_NULL);
-		  free(iafilename);
-		}
-	      found = AY_TRUE;
-	    }
-	  tag = tag->next;
-	}
-
-      if(!found)
-	return AY_ERROR; /* This should never happen! */
-
-      return AY_OK; /* XXXX early exit! */
-    }
-
   orig = (ay_object *)o->refine;
 
   if(!orig)
@@ -298,8 +265,43 @@ ay_instance_wribcb(char *file, ay_object *o)
 
   if(cb)
     {
-      ay_status = cb(file, orig);
-    }
+      if(!ay_prefs.resolveinstances)
+	{
+	  tag = o->tags;
+	  while(tag && !found)
+	    {
+	      if(tag->type == ay_instt_oitagtype)
+		{
+		  if(!file)
+		    {
+		      RiReadArchive(tag->val,(RtVoid*)RI_NULL,RI_NULL);
+		    }
+		  else
+		    {
+		      if(!(iafilename = calloc(1,
+					   strlen(tag->val)+strlen(file)+2)))
+			return AY_EOMEM;
+		      strcpy(iafilename,file);
+		      iafilename[strlen(file)] = '-';
+		      strcpy(&(iafilename[strlen(file)+1]),tag->val);
+		      RiReadArchive(iafilename,(RtVoid*)RI_NULL,RI_NULL);
+		      free(iafilename);
+		    }
+		  found = AY_TRUE;
+		}
+	      tag = tag->next;
+	    }
+
+	  if(!found)
+	    return AY_ERROR; /* This should never happen! */
+
+	  return AY_OK; /* XXXX early exit! */
+	}
+      else
+	{
+	  ay_status = cb(file, orig);
+	}
+    } /* if(cb) */
   
   if(orig->down)
     {

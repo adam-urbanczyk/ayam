@@ -344,7 +344,11 @@ ay_instt_wribiarchives(char *file, ay_object *o)
 
   while(o->next)
     {
-      if((o->refcount) && (o->type != AY_IDMATERIAL))
+
+      arr = ay_wribcbt.arr;
+      cb = (ay_wribcb *)(arr[o->type]);
+		  
+      if((o->refcount) && (o->type != AY_IDMATERIAL) && (cb))
 	{
 	  found = AY_FALSE;
 	  tag = o->tags;
@@ -380,10 +384,10 @@ ay_instt_wribiarchives(char *file, ay_object *o)
 		    }
 
 		  /* XXXX write tags */
-
+		  /*
 		  arr = ay_wribcbt.arr;
 		  cb = (ay_wribcb *)(arr[o->type]);
-		  
+		  */
 		  if(cb)
 		    {
 		      /* write name */

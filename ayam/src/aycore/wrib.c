@@ -378,17 +378,17 @@ ay_wrib_object(char *file, ay_object *o)
   if(ay_prefs.excludehidden && o->hide)
     return AY_OK;
 
+  arr = ay_wribcbt.arr;
+  cb = (ay_wribcb *)(arr[o->type]);
+
   if((!ay_prefs.resolveinstances) && (o->type != AY_IDMATERIAL) &&
-     (o->refcount))
+     (o->refcount) && (cb))
     {
       
       ay_status = ay_wrib_refobject(file, o);
 
       return AY_OK; /* XXXX early exit */
     }
-
-  arr = ay_wribcbt.arr;
-  cb = (ay_wribcb *)(arr[o->type]);
 
   if(cb)
     {
