@@ -65,6 +65,7 @@ static Tcl_HashTable ay_objio_write_ht; /* write callbacks */
 
 static int objio_tesspomesh = AY_FALSE;
 
+static int objio_omitcurves = AY_FALSE;
 
 /* functions */
 
@@ -147,6 +148,9 @@ ay_objio_writencurve(FILE *fileptr, ay_object *o, double *m)
  ay_nurbcurve_object *nc;
  double *v = NULL, *p1, *p2, pw[3];
  int stride = 4, i;
+
+  if(objio_omitcurves)
+    return AY_OK;
 
   if(!o)
     return AY_ENULL;
@@ -518,6 +522,9 @@ ay_objio_writencconvertible(FILE *fileptr, ay_object *o, double *m)
 {
  int ay_status = AY_OK;
  ay_object *c = NULL, *t;
+
+  if(objio_omitcurves)
+    return AY_OK;
 
   if(!o)
    return AY_ENULL;
@@ -970,7 +977,8 @@ ay_objio_writeobject(FILE *fileptr, ay_object *o, int writeend)
     }
   else
     {
-      sprintf(err, "No callback registered for this type: %d.", o->type);
+      sprintf(err, "Cannot export objects of type: %s.",
+	      ay_object_gettypename(o->type));
       ay_error(AY_EWARN, fname, err);
     } /* if */
 
@@ -985,7 +993,7 @@ int
 ay_objio_writescene(char *filename, int selected)
 {
  int ay_status = AY_OK;
- ay_object *o = ay_root;
+ ay_object *o = ay_root->next;
  FILE *fileptr = NULL;
  char fname[] = "objio_writescene";
 
@@ -1067,12 +1075,16 @@ ay_objio_writescenetcmd(ClientData clientData, Tcl_Interp *interp,
     }
 
   objio_tesspomesh = AY_FALSE;
+  objio_omitcurves = AY_FALSE;
 
   if(argc > 2)
     selected = atoi(argv[2]);
 
   if(argc > 3)
     objio_tesspomesh = atoi(argv[3]);
+
+  if(argc > 4)
+    objio_omitcurves = atoi(argv[4]);
 
   ay_status = ay_objio_writescene(argv[1], selected);
 
