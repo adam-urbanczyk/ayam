@@ -241,6 +241,7 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
  char *n1="ayprefs", *n2 = "ayprefse";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  int itemp = 0, ay_status = AY_OK;
+ double dtemp = 0.0;
  char fname[] = "set_prefs";
  char *str = NULL;
  char *ucargs[3] = {0}, ucarg1[] = "clear";
@@ -249,7 +250,32 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
   toa = Tcl_NewStringObj(n1, -1);
   ton = Tcl_NewStringObj("PickEpsilon", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &ay_prefs.pick_epsilon);
+  Tcl_GetDoubleFromObj(interp, to, &dtemp);
+
+  if(dtemp > 0.0)
+    {
+      ay_prefs.pick_epsilon = dtemp;
+    }
+  else
+    {
+      ay_error(AY_ERROR, fname,
+       "Illegal value for PickEpsilon (should be >0.0), reset.");
+      if(ay_prefs.pick_epsilon > 0.0)
+	{
+	  to = Tcl_NewDoubleObj(ay_prefs.pick_epsilon);
+	}
+      else
+	{
+	  ay_prefs.pick_epsilon = 0.2;
+	  to = Tcl_NewDoubleObj(0.2);
+	}
+      Tcl_ObjSetVar2(interp, toa, ton, to,
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      Tcl_SetStringObj(toa, n2, -1);
+      Tcl_ObjSetVar2(interp, toa, ton, to,
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      Tcl_SetStringObj(toa, n1, -1);
+    }
 
   Tcl_SetStringObj(ton, "HandleSize", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -275,7 +301,7 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
 	  itemp = 2;
 
 	  ay_error(AY_ERROR, fname,
-		   "Illegal value for UndoLevels encountered, reset to 2.");
+	   "Illegal value for UndoLevels (should be >2 or -1), reset to 2.");
 
 	  to = Tcl_NewIntObj(itemp);
 	  Tcl_ObjSetVar2(interp, toa, ton, to,
