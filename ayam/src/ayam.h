@@ -1066,7 +1066,7 @@ extern unsigned int ay_current_primlevel;
 #define AY_EPSILON 1.0e-06
 
 /* Version Strings */
-#define AY_VERSIONSTR "1.6pre"
+#define AY_VERSIONSTR "1.6"
 #define AY_VERSIONSTRMI "0"
 
 #include "aycore.h"
