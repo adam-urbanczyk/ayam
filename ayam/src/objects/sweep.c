@@ -655,6 +655,9 @@ ay_sweep_convertcb(ay_object *o, int in_place)
 	  ay_status = ay_object_copy(r->npatch, next);
 	  if(*next)
 	    {
+	      (*next)->parent = AY_TRUE;
+	      ay_object_crtendlevel(&(*next)->down);
+	      next = &((*next)->next);
 	      next = &((*next)->next);
 	    }
 	}
@@ -685,6 +688,9 @@ ay_sweep_convertcb(ay_object *o, int in_place)
 	{
 	  ay_status = ay_object_copy(r->npatch, &new);
 	  ay_trafo_copy(o, new);
+	  new->hide_children = AY_TRUE;
+	  new->parent = AY_TRUE;
+	  ay_object_crtendlevel(&(new->down));
 	}
     } /* if */
 
