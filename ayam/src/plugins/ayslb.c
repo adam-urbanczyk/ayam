@@ -36,7 +36,8 @@ int ayslb_scanshader(char *fname, Tcl_DString *ds);
 int ayslb_scanslbtcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
 #ifdef WIN32
-static Tcl_Interp *ay_plugin_interp;
+extern Tcl_Interp *ay_plugin_interp;
+Tcl_Interp *ay_plugin_interp;
 __declspec( dllexport ) int Ayslb_Init(Tcl_Interp *interp);
 #else
 int Ayslb_Init(Tcl_Interp *interp);
@@ -150,14 +151,16 @@ ayslb_scanshader(char *fname, Tcl_DString *ds)
 		  Tcl_DStringAppend(ds, " transformation ", -1);
 		  break;
 		case shProcedure:
-		  ay_error(AY_EWARN, fname,
+		  ay_error(AY_ERROR, fname,
 			   "skipping unsupported procedure shader");
+		  fclose(f);
 		  return AY_ERROR; /* early exit! */
 		  /*Tcl_DStringAppend(ds, " procedure ", -1);*/
 		  break;
 		default:
 		  ay_error(AY_EWARN, fname,
 			   "skipping shader of unkown type");
+		  fclose(f);
 		  return AY_ERROR; /* early exit! */
 		  break;
 		}
@@ -413,7 +416,7 @@ Ayslb_Init(Tcl_Interp *interp)
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   ay_error(AY_EOUTPUT, fname,
-	   "Plug-In \\\"ayslb\\\" successfully loaded.");
+	   "Plug-In 'ayslb' successfully loaded.");
   ay_error(AY_EOUTPUT, fname,
 	   "Ayam will now scan for .slb-shaders only!");
 

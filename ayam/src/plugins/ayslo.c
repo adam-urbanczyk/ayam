@@ -35,7 +35,8 @@ int ayslo_scanslotcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 #ifdef WIN32
-static Tcl_Interp *ay_plugin_interp;
+extern Tcl_Interp *ay_plugin_interp;
+Tcl_Interp *ay_plugin_interp;
 __declspec( dllexport ) int Ayslo_Init(Tcl_Interp *interp);
 #else
 int Ayslo_Init(Tcl_Interp *interp);
@@ -314,7 +315,7 @@ Ayslo_Init(Tcl_Interp *interp)
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   ay_error(AY_EOUTPUT, fname,
-	   "Plug-In \\\"ayslo\\\" successfully loaded.");
+	   "Plug-In 'ayslo' loaded.");
   ay_error(AY_EOUTPUT, fname,
 	   "Ayam will now scan for .slo-shaders only!");
 

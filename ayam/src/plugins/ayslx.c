@@ -28,7 +28,8 @@ int ayslx_scanslxtcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
 
 #ifdef WIN32
-static Tcl_Interp *ay_plugin_interp;
+extern Tcl_Interp *ay_plugin_interp;
+Tcl_Interp *ay_plugin_interp;
 __declspec( dllexport ) int Ayslx_Init(Tcl_Interp *interp);
 #else
 int Ayslx_Init(Tcl_Interp *interp);
@@ -318,7 +319,7 @@ Ayslx_Init(Tcl_Interp *interp)
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   ay_error(AY_EOUTPUT, fname,
-	   "Plug-In \\\"ayslx\\\" successfully loaded.");
+	   "Plug-In 'ayslx' loaded.");
   ay_error(AY_EOUTPUT, fname,
 	   "Ayam will now scan for .slx-shaders only!");
 

@@ -37,7 +37,8 @@ int aysdr_scansdrtcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
 
 #ifdef WIN32
-static Tcl_Interp *ay_plugin_interp;
+extern Tcl_Interp *ay_plugin_interp;
+Tcl_Interp *ay_plugin_interp;
 __declspec( dllexport ) int Aysdr_Init(Tcl_Interp *interp);
 #else
 int Aysdr_Init(Tcl_Interp *interp);
@@ -315,7 +316,7 @@ Aysdr_Init(Tcl_Interp *interp)
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   ay_error(AY_EOUTPUT, fname,
-	   "Plug-In \\\"aysdr\\\" successfully loaded.");
+	   "Plug-In 'aysdr' loaded.");
   ay_error(AY_EOUTPUT, fname,
 	   "Ayam will now scan for .sdr-shaders only!");
 
