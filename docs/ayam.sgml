@@ -3910,9 +3910,14 @@ will be fully ignored. All other transformation attributes
 (of cross section and trajectory!) will be used to determine
 place, orientation and size of the sweep object!
 <p>
-The cross section curve has to be defined in the YZ-plane. This means,
+The cross section curve has to be defined in the YZ-plane of the
+Sweep objects coordinate system but it also has to be defined in the
+XY-plane of its own coordinate system. This means,
 that a simple circular curve as e.g. created with the toolbox has to
-be rotated 90 degrees around the Y-axis.
+be rotated by 90 degrees around the Y-axis using its transformation
+attributes to follow these rules. Later editing of this curve has
+to be done in a Side view (or in an aligned local Front view, if
+the Sweep object itself is transformed somehow).
 <p>
 The scaling function is sampled for each section and the Y-component
 of the coordinates of the current curve point will be used as
@@ -3932,12 +3937,13 @@ Here is a short example for the creation of a sweep:
 cross section.)
 <item>Rotate it by 90 degrees around the Y-axis. (Use the
 <tt/"Transformations"/ property for that.)
-<item>Create a simple NURBS curve using the toolbox.
+<item>Create a simple NURBS curve using the toolbox. (This will be our
+trajectory.)
 <item>Select both curves. (Select the first curve, hold down
 the <tt/"Shift"/ key and select the other curve.)
 <item>Create the Sweep object using the toolbox.
 <item>Now you may enter the Sweep object and modify
-the second curve, the trajectory. (Press <tt/"e"/,
+e.g. the second curve, the trajectory. (Press <tt/"e"/,
 then drag some control points around.)
 <item>To modify the cross section you would need to switch to a
 view of type <tt/"Side"/. (Use the <tt/&lt;Ctrl+s&gt;/ shortcut while
@@ -4017,6 +4023,13 @@ in contrast to the normal Sweep object, it also does not have to be
 defined in a special plane. Also note that the precision with which the
 resulting surface will interpolate the rail curves depends on the
 number of sections choosen.
+<p>
+The Birail1 object watches the child objects and adapts to them
+automatically via the notification mechanism.
+<p>
+You may convert the current birailed surface and the caps,
+if there are any, to ordinary NURBS patches using the main menu entry
+<tt>"Tools/Convert"</tt>.
 <p>
 The following parameters further control the birailing process:
 
@@ -4098,6 +4111,13 @@ interpolation control curve were present. Note, however, that the
 interpolation control curve has no influence on the first and last
 copy of the respective cross section curve. Those will always exactly
 match the parameter curves.
+<p>
+The Birail2 object watches the child objects and adapts to them
+automatically via the notification mechanism.
+<p>
+You may convert the current birailed surface and the caps,
+if there are any, to ordinary NURBS patches using the main menu entry
+<tt>"Tools/Convert"</tt>.
 <p>
 The following parameters further control the birailing process:
 
@@ -4304,6 +4324,9 @@ looks like this:
  \ Intersections(NPatch)]
 </code>
 <p>
+The Gordon object watches the child objects and adapts to them
+automatically via the notification mechanism.
+<p>
 You may convert the current Gordon surface to an ordinary NURBS
 patch using the main menu entry <tt>"Tools/Convert"</tt>.
 <p>
@@ -4343,13 +4366,14 @@ of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 </figure>
 <p>
 The cap object forms a surface that fills
-a planar NURBS curve. If multiple curves
+a closed planar NURBS curve. If multiple curves
 are present as child objects, the curves
 following the first curve define holes in
 the cap surface (see also section
 <ref id="handb" name="Using Holes and Bevels">).
 <p>
-Consequently, the object hierarchy of a Cap object may look like this:
+Consequently, the template for the object hierarchy of a Cap object
+looks like this:
 <code>
 +-Cap
  | Outline(NCurve)
@@ -4364,6 +4388,9 @@ and defined in the XY plane. Furthermore,
 cap generation may fail, if the control points of the
 first curve have weights and the curve leaves the convex
 hull of the control polygon. Be careful when using weights!
+<p>
+The Cap object watches the child objects and adapts to them
+automatically via the notification mechanism.
 <p>
 You may convert the current cap
 to an ordinary NURBS patch object using the main menu entry
@@ -4690,7 +4717,6 @@ also possible to edit the code in an external editor and
 copy it to the script object using the clipboard and the
 context menu entry <tt/"Paste (Replace)"/.
 </itemize>
-
 
 
 <sect1>Custom Objects<label id="customobj">
