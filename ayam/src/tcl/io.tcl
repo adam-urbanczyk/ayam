@@ -1070,6 +1070,7 @@ proc io_exportOBJ { selected } {
 	set filename "unnamed.obj"
 	set dirname [pwd]
     } else {
+	set filename $ay(filename)
 	set dirname [file dirname $tmp]
 	if { $dirname == "." } { set dirname [pwd] }
     }
