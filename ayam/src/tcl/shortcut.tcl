@@ -240,6 +240,13 @@ proc shortcut_viewactions { w } {
 	break;
     }
 
+    bind $w <KeyPress-Alt_L> {
+	%W.f3D.togl configure -cursor exchange
+    }
+
+    bind $w <KeyRelease-Alt_L> {
+	%W.f3D.togl configure -cursor left_ptr
+    }
 
 
 set i $ayviewshortcuts(ZoomVButton)
