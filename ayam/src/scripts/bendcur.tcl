@@ -12,7 +12,7 @@ set umax [lindex $NCurveAttrData(Knots)\
 set ud [expr ($umax-$umin)/($length-1)]
 set u 0.0
 for {set i 0} {$i < $length} {incr i} {
-    withOb 1 do {getPnt -u $u sx sy sz}
+    withOb 1 do {getPnt -u $u sx sy sz sw}
     withOb 0 do {getPnt $i x y z w}
     set y [expr $y + $sy]
     withOb 0 do {setPnt $i $x $y $z $w}
