@@ -350,6 +350,7 @@ if { [llength $index] == 1 } {
 	    set width [expr [winfo reqwidth $ay(pca).$w] + 10]
 	    set height [expr [winfo reqheight $ay(pca).$w] + 10]
 	    $ay(pca) configure -width $width
+	    $ay(pca) configure -height $height
 	    $ay(pca) configure -scrollregion [list 0 5 $width $height]
 
 	    # resize main?
@@ -454,8 +455,8 @@ proc plb_focus { } {
 	    set height [$ca cget -height]
 	    set visible [$ca yview]
 	    set wypos [winfo y [winfo parent $w]]
-	    set fraction [expr (double($wypos) +\
-	    double([winfo reqheight $w]))/double($height)]
+	    set fraction [expr (double($wypos)+[winfo reqheight $w])/\
+	                       double($height)]
 	    if { ($fraction < [lindex $visible 0]) ||
 	         ($fraction > [lindex $visible 1]) } {
 		     set fraction [expr double($wypos)/double($height)]
