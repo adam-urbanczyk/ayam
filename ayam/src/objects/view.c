@@ -815,6 +815,7 @@ ay_view_notifycb(ay_object *o)
   view = (ay_view_object *)(o->refine);
 
   /* reset rotx,rotz recalc roty */
+  /*
   view->rotx = 0.0;
   view->roty = 0.0;
   view->rotz = 0.0;
@@ -822,7 +823,7 @@ ay_view_notifycb(ay_object *o)
   temp[0] = view->to[0]-view->from[0];
   temp[1] = view->to[2]-view->from[2];
   view->roty = 180.0+AY_R2D(atan2(temp[0],temp[1]));
-
+  */
   /*
   switch(view->type)
     {
