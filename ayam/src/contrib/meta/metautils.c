@@ -48,7 +48,6 @@ calcall (double x1, double y1, double z1, world * w)
 
       if (!(tmp->formula == TORUS))
 	{
-	  //              printf("%f %f %f\n",tmp->rm[0],tmp->rm[4],tmp->rm[8]);
 
 	  x =
 	    tmp->rm[0] * x1 + tmp->rm[4] * y1 + tmp->rm[8] * z1 +
@@ -63,7 +62,6 @@ calcall (double x1, double y1, double z1, world * w)
 	  dist = DIST (x, y, z, tmp->cp.x, tmp->cp.y, tmp->cp.z);
 	}
 
-      //      dist = DIST(x1, y1, z1, x, y, z);
 
       if (tmp->formula == 0)
 	{
