@@ -160,6 +160,10 @@ ay_gordon_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
 
+  Tcl_SetStringObj(ton,"WatchCurves",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &(gordon->wcc));
+
   Tcl_SetStringObj(ton,"Order_U",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(gordon->uorder));
@@ -204,6 +208,10 @@ ay_gordon_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   ton = Tcl_NewStringObj(n1,-1);
 
+  Tcl_SetStringObj(ton,"WatchCurves",-1);
+  to = Tcl_NewIntObj(gordon->wcc);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
 
   Tcl_SetStringObj(ton,"Order_U",-1);
   to = Tcl_NewIntObj(gordon->uorder);
@@ -345,6 +353,10 @@ ay_gordon_notifycb(ay_object *o)
   /* get parameter curves */
   if(!o->down)
     return AY_OK;
+
+  if(gordon->wcc)
+    ay_status = ay_npt_gordonwc(o);
+
   down = o->down;
 
   while(down->next)

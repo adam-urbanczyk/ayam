@@ -379,6 +379,7 @@ typedef struct ay_sdmesh_object_s {
 typedef struct ay_gordon_object_s {
   /* cache NURBS patch representation */
   ay_object *npatch;
+  int wcc; /* watch (and automatically correct parameter curves) */
   int uorder;
   int vorder;
   double glu_sampling_tolerance;
