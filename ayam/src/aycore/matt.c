@@ -441,6 +441,10 @@ ay_matt_wrib(char *file, ay_mat_object *m)
   /*  else
       RiShadingInterpolation(RI_CONSTANT);*/
 
+  if(m->sides != 0)
+    {
+      RiSides((RtInt)(m->sides));
+    }
 
   if(!ay_prefs.ristandard)
     {

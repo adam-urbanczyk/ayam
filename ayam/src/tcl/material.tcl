@@ -26,9 +26,10 @@ w     fRiAttr
 }
 
 array set RiAttrData {
-   Interpolation 0
-   BoundCoord 0
-   CastShadows 0
+    Interpolation 0
+    BoundCoord 0
+    CastShadows 0
+    Sides 0
 }
 
 # create RiAttributes-UI
@@ -43,9 +44,9 @@ addColor $w RiAttrData Opacity
 addText $w e3 "Shading:"
 addParam $w RiAttrData ShadingRate
 addMenu $w RiAttrData Interpolation [list Constant Smooth]
+addMenu $w RiAttrData Sides [list DontSet 1 2]
 
 addText $w e4 "Displacement:"
-
 addMenu $w RiAttrData BoundCoord [list Object Shader Camera]
 addParam $w RiAttrData BoundVal
 
