@@ -1271,6 +1271,11 @@ if { ($ayprefs(LoadEnv) == 1) && ($ay(failsafe) == 0) } {
     uS
 }
 
+# now, a view is probably open and we may initialize aycsg (if wrapped in)
+if { $AYCSGWRAPPED == 1 } {
+    ayam_loadscript aycsg
+}
+
 # process remaining arguments (load further scene(s))
 puts stdout "Processing remaining arguments..."
 set i 0
