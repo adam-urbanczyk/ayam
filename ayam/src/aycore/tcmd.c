@@ -322,18 +322,19 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[])
 {
  ay_list_object *sel = ay_selection;
+ ay_nurbcurve_object *nc = NULL;
  ay_object *src = NULL;
- int indexu = 0, indexv = 0, i = 1, j = 0, argc2 = argc;
- int homogenous = AY_FALSE, trafo = AY_FALSE;
- double *p = NULL, *tp = NULL, tmp[4] = {0};
- double m[16];
+ int indexu = 0, indexv = 0, i = 1, j = 1, argc2 = argc;
+ int homogenous = AY_FALSE, trafo = AY_FALSE, param = AY_FALSE;
+ double *p = NULL, *tp = NULL, tmp[4] = {0}, utmp[4] = {0};
+ double m[16], u = 0.0;
  char fname[] = "getPnt";
  Tcl_Obj *to = NULL, *ton = NULL;
 
   if(argc <= 1)
     {
       ay_error(AY_EARGS, fname,
-	       "\\[-trafo\\] (index | indexu indexv) varx vary varz \\[varw\\]");
+      "\\[-trafo|-u\\] (index | u | indexu indexv) varx vary varz \\[varw\\]");
       return TCL_OK;
     }
 
@@ -343,13 +344,25 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  if(!strcmp(argv[1], "-trafo"))
+  while((j < 3) && (j < argc))
     {
-      trafo = AY_TRUE;
-      i++;
-      argc2--;
-    }
-  
+      if(!strcmp(argv[j], "-trafo"))
+	{
+	  trafo = AY_TRUE;
+	  i++;
+	  argc2--;
+	}
+
+      if(!strcmp(argv[j], "-u"))
+	{
+	  param = AY_TRUE;
+	  i++;
+	  argc2--;
+	}
+      j++;
+    } /* while */
+
+  j = 0;
   while(sel)
     {
       src = sel->object;
@@ -360,13 +373,26 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	case AY_IDNCURVE:
 	  if(argc2 < 6)
 	    {
-	      ay_error(AY_EARGS, fname, "\\[-trafo\\] index varx vary varz varw");
+	      ay_error(AY_EARGS, fname,
+		       "\\[-trafo|-u\\] ( index | u ) varx vary varz varw");
 	      return TCL_OK;
 	    }
-	  Tcl_GetInt(interp, argv[i], &indexu);
-	  ay_nct_getpntfromindex((ay_nurbcurve_object*)(src->refine),
-				 indexu, &p);
-	  homogenous = AY_TRUE;
+	  if(!param)
+	    {
+	      Tcl_GetInt(interp, argv[i], &indexu);
+	      ay_nct_getpntfromindex((ay_nurbcurve_object*)(src->refine),
+				     indexu, &p);
+	      homogenous = AY_TRUE;
+	    }
+	  else
+	    {
+	      Tcl_GetDouble(interp, argv[i], &u);
+	      p = utmp;
+	      nc = (ay_nurbcurve_object *)(src->refine);
+	      ay_nb_CurvePoint4D(nc->length-1, nc->order-1, nc->knotv,
+				 nc->controlv, u, p);
+	      homogenous = AY_FALSE;
+	    }
 	  j = i+1;
 	  break;
 	case AY_IDICURVE:
@@ -706,7 +732,7 @@ ay_tcmd_withobtcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(argc < 3)
     {
-      ay_error(AY_EARGS, fname, "index \\\[do\\\] command");
+      ay_error(AY_EARGS, fname, "index \\[do\\] command");
       return TCL_OK;
     }
 
