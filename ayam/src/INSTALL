@@ -1,4 +1,4 @@
-INSTALL [23. Jun 2002]
+INSTALL [8. Jul 2002]
 
 Compilation Instructions for Ayam
 ---------------------------------
@@ -103,7 +103,21 @@ Now ayamsh should be compiled and ready for a test run.
 If all went fine, you can now install Ayam:
 >make install
 
-The installation procedure creates a shell script
+By default, Ayam will install into /usr/local/ayam.
+It will create some sub-directories there, namely:
+/usr/local/ayam/bin for the executable,
+/usr/local/ayam/lib for the plugins and accompanying Tcl files, and
+/usr/local/ayam/doc for the documentation.
+
+You may want to add "/usr/local/ayam/bin" to your PATH variable.
+Be sure to also add "." or "/usr/local/ayam/lib" to your LD_LIBRARY_PATH
+variable, otherwise Ayam might not be able to load the plugins.
+
+The installation procedure will also install the current Makefile,
+that may be used to uninstall Ayam again, e.g. using:
+>make -f /usr/local/lib/Makefile uninstall
+
+The installation procedure also creates a shell script
 named ayam, that calls ayamsh the right way,
 so that after installation you can start Ayam
 typing:
@@ -195,12 +209,26 @@ Now Ayam should be compiled and ready for a test run.
 If all went fine, you can now install Ayam:
 >make install
 
+By default, Ayam will install into /usr/local/ayam.
+It will create some sub-directories there, namely:
+/usr/local/ayam/bin for the executable,
+/usr/local/ayam/lib for the plugins and accompanying Tcl files, and
+/usr/local/ayam/doc for the documentation.
+
+You may want to add "/usr/local/ayam/bin" to your PATH variable.
+Be sure to also add "." or "/usr/local/ayam/lib" to your LD_LIBRARY_PATH
+variable, otherwise Ayam might not be able to load the plugins.
+
+The installation procedure will also install the current Makefile,
+that may be used to uninstall Ayam again, e.g. using:
+>make -f /usr/local/lib/Makefile uninstall
+
 
 3. Additional Targets (Compiling Plugins)
 -----------------------------------------
 
 Independent from the build type of Ayam, the Makefiles contain
-additional targets to build plugins and manage installation.
+additional targets to build plugins and manage the installation.
 
 3.1 MF3D Import/Export plugin
 -----------------------------
@@ -286,8 +314,9 @@ like Apples mf3d code, Affines sribw code.
 >make install
 to install Ayam into the system.
 
->make uninstall
-to remove all previously installed files from the system.
+The installation procedure will also install the current Makefile,
+that may be used to uninstall Ayam again, e.g. using:
+>make -f /usr/local/lib/Makefile uninstall
 
 End of Compilation Instructions
 
