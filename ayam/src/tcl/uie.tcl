@@ -84,10 +84,10 @@ if { $def != {} } {
 global tcl_platform
 if { $tcl_platform(platform) == "windows" } {
     pack $f.l -in $f -side left
-    pack $f.b1 -in $f -side left -pady 0 -fill x -expand yes
-    pack $f.e -in $f -side left -pady 0 -fill y
-    pack $f.b2 -in $f -side left -pady 0 -fill x -expand yes
-    if { $mb != "" } { pack $mb -side left -pady 0 -fill both -expand yes}
+    pack $f.b1 -in $f -side left -pady 0 -fill x -expand no
+    pack $f.e -in $f -side left -pady 0 -fill both -expand yes
+    pack $f.b2 -in $f -side left -pady 0 -fill x -expand no
+    if { $mb != "" } { pack $mb -side left -pady 0 -fill both -expand no}
 } else {
     $f.b1 configure -highlightthickness 1
     $f.b2 configure -highlightthickness 1
@@ -596,7 +596,8 @@ proc addFile { w prop name {def {}} } {
     bind $f.e <Key-Escape> {resetFocus}
 
 
-    button $f.b -text "Set" -bd $bw -padx 0 -pady 0 -takefocus 0 -command "\
+    button $f.b -text "Set" -width 4 -bd $bw -padx 0 -pady 0 -takefocus 0\
+     -command "\
 	global $prop;
 	set filen \[$f.e get\];
 	set filen \[tk_getOpenFile -parent . -title \"Set File:\"];
@@ -677,7 +678,8 @@ proc addMDir { w prop name } {
     bind $f.e <1> "+balloon_setsplit $f.e \[$f.e get\] 15"
     eval balloon_setsplit $f.e  \$${prop}(${name}) 15
 
-    button $f.b -text "Add" -bd $bw -padx 0 -pady 0 -takefocus 0 -command "\
+    button $f.b -text "Add" -width 4 -bd $bw -padx 0 -pady 0 -takefocus 0\
+     -command "\
 	global $prop;
 	set filen \[$f.e get\];
 	global ay;
@@ -738,7 +740,8 @@ proc addMFile { w prop name } {
     bind $f.e <1> "+balloon_setsplit $f.e \[$f.e get\] 15"
     eval balloon_setsplit $f.e \$${prop}(${name}) 15
 
-    button $f.b -text "Add" -bd $bw -padx 0 -pady 0 -takefocus 0 -command "\
+    button $f.b -text "Add" -width 4 -bd $bw -padx 0 -pady 0 -takefocus 0\
+     -command "\
 	global $prop;\
 	set filen \[$f.e get\];\
 	global ay;\
