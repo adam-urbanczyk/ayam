@@ -384,6 +384,9 @@ proc viewOpen { width height {establish_bindings 1} } {
     }
     #bind
 
+    DropSite::register $w.f3D.togl -dropcmd viewDrop\
+	    -droptypes {TREE_NODE {copy {}} IMAGE { copy {}}}
+
     update
     set ay(cviewsema) 0
     update
@@ -391,6 +394,20 @@ proc viewOpen { width height {establish_bindings 1} } {
 return;
 }
 # viewOpen
+
+
+###############################
+# viewDrop:
+proc viewDrop { w tree dropx dropy currentoperation datatype data } {
+
+    #puts "viewDrop: $currentoperation $datatype $data"
+
+    $w drop
+    focus $w
+
+return;
+}
+# viewDrop
 
 
 ##############################
