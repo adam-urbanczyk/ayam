@@ -33,7 +33,6 @@ set w [frame $ay(pca).$MetaObjAttr(w)]
 
 addParam $w MetaObjAttrData Gridwith 40
 addParam $w MetaObjAttrData Isolevel 0.6
-addParam $w MetaObjAttrData MaxPoly  5000
 
 # add menu entry to Create/Custom sub-menu
 mmenu_addcustom MetaObj "crtOb MetaObj;uS;sL;rV"
