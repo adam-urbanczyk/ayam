@@ -16,10 +16,27 @@
 
 /* this hash table links the image names with the corresponding creation
    functions for drag and drop creation */
-Tcl_HashTable ay_creatednd_ht;
+/*Tcl_HashTable ay_creatednd_ht;*/
 
-/* XXXX nearly all prototypes are missing! */
 
+/* prototypes of functions local to this module: */
+
+void ay_tree_dellist(ay_list_object *list);
+
+void ay_tree_crttreestring(Tcl_Interp *interp, ay_object *o, Tcl_DString *ds);
+
+int ay_tree_crtstringfromobj(ay_object *level, ay_object *o,
+			     ay_list_object *list,
+			     Tcl_DString *ds);
+
+int ay_tree_gettreetcmd(ClientData clientData, Tcl_Interp *interp,
+			int argc, char *argv[]);
+
+int ay_tree_dndtcmd(ClientData clientData, Tcl_Interp *interp,
+		    int argc, char *argv[]);
+
+
+/* functions: */
 
 /* ay_tree_registerdrop:
  *  register the tree drop callback cb for
@@ -232,8 +249,7 @@ ay_tree_crtnodename(ay_object *parent, ay_list_object *list, Tcl_DString *ds)
  *  create a tree structure in a Tcl string list
  */
 void
-ay_tree_crttreestring(Tcl_Interp *interp, ay_object *o,
-		      Tcl_DString *ds)
+ay_tree_crttreestring(Tcl_Interp *interp, ay_object *o, Tcl_DString *ds)
 {
  char *name = NULL;
  char *tname = NULL;
@@ -495,7 +511,7 @@ ay_tree_selecttcmd(ClientData clientData, Tcl_Interp *interp,
     {
       ay_viewt_alignlocal();
     }
-  
+
  return TCL_OK;
 } /* ay_tree_selecttcmd */
 
