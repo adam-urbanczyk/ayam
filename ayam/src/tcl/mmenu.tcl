@@ -342,23 +342,38 @@ set ay(specialmenu) $m
 
 $m add command -label "Save Selected as" -command "io_saveScene ask 1"
 $m add command -label "Save Environment" -command "io_saveEnv"
-$m add separator
-$m add command -label "Paste (Move)" -command {cmovOb; cS;
+
+$m add cascade -menu $m.clp -label "Clipboard"
+set sm [menu $m.clp -tearoff 0]
+$sm add command -label "Paste (Move)" -command {cmovOb; cS;
 global ay; set ay(ul) $ay(CurrentLevel); uS; rV; set ay(sc) 1}
-$m add command -label "Paste Property to Selected" -command "pclip_pastetosel;forceNot;rV"
-$m add separator
-$m add command -label "Select All Points" -command "selPoints;rV"
-$m add command -label "Apply Trafo To All" -command "applyTrafo all;\
+$sm add command -label "Paste Property to Selected" -command "pclip_pastetosel;forceNot;rV"
+
+$m add cascade -menu $m.pnt -label "Points"
+set sm [menu $m.pnt -tearoff 0]
+$sm add command -label "Select All Points" -command "selPoints;rV"
+$sm add command -label "Apply Trafo To All Points"\
+	-command "applyTrafo all;\
 	plb_update;forceNot;rV"
-$m add command -label "Apply Trafo To Selected" -command "applyTrafo sel;\
+$sm add command -label "Apply Trafo To Selected Points"\
+	-command "applyTrafo sel;\
 	plb_update;forceNot;rV"
+
+$m add cascade -menu $m.ins -label "Instances"
+set sm [menu $m.ins -tearoff 0]
+$sm add command -label "Resolve all Instances"\
+	-command "ai_resolveInstances;uS"
+$sm add command -label "Automatic Instancing" -command "ai_open"
+
+
+$m add cascade -menu $m.tag -label "Tags"
+set sm [menu $m.tag -tearoff 0]
+$sm add command -label "Add RiOption" -command "riopt_addp"
+$sm add command -label "Add RiAttribute" -command "riattr_addp"
+$sm add command -label "Edit TexCoords" -command "tc_edit"
 $m add separator
-$m add command -label "Resolve all Instances" -command "ai_resolveInstances;uS"
-$m add command -label "Automatic Instancing" -command "ai_open"
-$m add separator
-$m add command -label "Add RiOption" -command "riopt_addp"
-$m add command -label "Add RiAttribute" -command "riattr_addp"
-$m add command -label "Edit TexCoords" -command "tc_edit"
+#$sm add command -label "Create ShadowMaps" -command "riopt_addp"
+$m add command -label "Select Renderer" -command "render_select"
 $m add separator
 $m add command -label "Toggle Toolbox" -command "toolbox_toggle"
 $m add command -label "Toggle TreeView" -command "tree_toggle"
