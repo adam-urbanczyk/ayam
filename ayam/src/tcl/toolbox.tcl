@@ -11,12 +11,18 @@
 
 # toolbox_open:
 proc toolbox_open { } {
-    global ayprefs ayviewshortcuts aymainshortcuts
+    global ayprefs ayviewshortcuts aymainshortcuts tcl_platform
 
     set w .tbw
     catch {destroy $w}
     
-    toplevel $w -visual truecolor
+    set visuals [winfo visualsavailable .]
+    if { [lsearch $visuals truecolor*] != -1 } {
+	toplevel $w -visual truecolor
+    } else {
+	toplevel $w
+    }
+
     wm title $w "Tools"
     wm iconname $w "Tools"
 
