@@ -448,6 +448,9 @@ int ay_tags_copyall(ay_object *src, ay_object *dst);
 
 int ay_tags_temp(Tcl_Interp *interp, char *name, int set, int *result);
 
+int ay_tags_istemptcmd(ClientData clientData, Tcl_Interp * interp,
+		       int argc, char *argv[]);
+
 int ay_tags_register(Tcl_Interp *interp, char *name, char **result);
 
 int ay_tags_settcmd(ClientData clientData, Tcl_Interp * interp,
