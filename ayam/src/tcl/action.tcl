@@ -175,7 +175,7 @@ proc actionRotObA { w } {
 	undo save
 	%W mc
 	update
-	%W setconf -mark %x %y 1
+	%W setconf -gmark %x %y 1
 	%W rotoaac
 	actionRotObabindp %W %x %y
     }
