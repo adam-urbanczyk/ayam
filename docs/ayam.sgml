@@ -4756,7 +4756,8 @@ the selection.
 <item>Operation: A modal dialog box (see image above) will pop up,
 that allows to select a tesselation method via a drop-down menu
 and tune the corresponding tesselation parameter using a slider and
-an entry widget.
+an entry widget. The initial parameter values will be derived from
+the TP tag of the first of the selected objects (if it has such a tag).
 The selected NURBS patches will be tesselated with the chosen parameters.
 The PolyMesh objects created by the tesselation will immediately be
 displayed in all view windows instead of the original NURBS patches.
