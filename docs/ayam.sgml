@@ -4414,6 +4414,12 @@ of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 
 <sect1>Text Object<label id="textobj">
 <p>
+<figure loc="!ht">
+<eps file="pics/text-ayam.ps" height="4cm">
+<img src="pics/text-ayam.gif">
+<caption>Text Object set in Verdana</caption>
+</figure>
+<p>
 Text objects may be used to easily create objects that form letters or
 even whole words in very high quality. For that, they parse TrueType font
 description files, extract the Bezier curves from the font description,
