@@ -745,6 +745,7 @@ metaobj_notifycb (ay_object * o)
   w->currentnumpoly = 0;
   w->o = o->down;
   
+/*
   adapt = Tcl_GetVar(ay_interp,"meta_mouseup",TCL_GLOBAL_ONLY);
  
   w->adaptflag = 0;
@@ -752,7 +753,6 @@ metaobj_notifycb (ay_object * o)
   if(*adapt == '1')
   {
    w->adaptflag = 1;
-//   printf("up!!!!\n");
   }
 
   *adapt = '0';
@@ -764,7 +764,7 @@ metaobj_notifycb (ay_object * o)
   {
      ay_notify_parent();
   }
-
+*/
   return AY_OK;
 
 } /* metaobj_notifycb */
