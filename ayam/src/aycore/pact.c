@@ -722,7 +722,7 @@ ay_pact_insertnc(ay_nurbcurve_object *curve,
 	  section = sections*index/(curve->length-1);
 
 	  k = 0; i = 0;
-	  for(j = 0; j < curve->length+curve->order-1; j++)
+	  for(j = 0; j < curve->length+curve->order-2; j++)
 	    {
 	      
 	      if((j >= curve->order-1) &&
@@ -745,6 +745,9 @@ ay_pact_insertnc(ay_nurbcurve_object *curve,
 		}
 	      
 	    } /* for */
+
+	  newknotv[curve->length+curve->order-1] =
+	    curve->knotv[curve->length+curve->order-2];
 
 	  free(curve->knotv);
 	  curve->knotv = newknotv;
