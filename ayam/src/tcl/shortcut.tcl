@@ -356,7 +356,7 @@ proc shortcut_view { w } {
     
     #bind $w <[repcont $ayviewshortcuts(Shade)]> "$w.$m invoke 1"
     #$w.$m entryconfigure 1 -accelerator $ayviewshortcuts(Shade)
-    bind $w <[repcont $ayviewshortcuts(Shade)]> "viewToggleMode $w"
+    bind $w <[repcont $ayviewshortcuts(Shade)]> "viewToggleDMode $w"
 
     bind $w <[repcont $ayviewshortcuts(DGrid)]> "$w.$m invoke 8"
     $w.$m entryconfigure 8 -accelerator $ayviewshortcuts(DGrid)
@@ -374,8 +374,12 @@ proc shortcut_view { w } {
     bind $w <[repcont $ayviewshortcuts(ZoomTO)]> "$w.$m invoke 19"
     $w.$m entryconfigure 20 -accelerator $ayviewshortcuts(Align)
     bind $w <[repcont $ayviewshortcuts(Align)]> "$w.$m invoke 20"
-    $w.$m entryconfigure 21 -accelerator $ayviewshortcuts(Local)
-    bind $w <[repcont $ayviewshortcuts(Local)]> "$w.$m invoke 21"
+
+    #set m $ay(mmodem)
+    #$w.$m entryconfigure 1 -accelerator $ayviewshortcuts(Local)
+    #bind $w <[repcont $ayviewshortcuts(Local)]> "$w.$m invoke 1"
+
+    bind $w <[repcont $ayviewshortcuts(Local)]> "viewToggleMMode $w"
 
     bind $w <[repcont $ayviewshortcuts(RotL)]>\
 	    "$w.f3D.togl setconf -undrotx 1 -drotx 5.0 -droty 0.0"

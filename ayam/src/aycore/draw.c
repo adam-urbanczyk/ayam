@@ -328,7 +328,7 @@ ay_draw_grid(struct Togl *togl)
  GLdouble mp[16], mm[16], owinx, owiny, owinz, gwinx, gwiny, gwinz;
  GLint vp[4];
 
-  if(view->local)
+  if(view->local && view->type != AY_VTPERSP)
     {
       glGetIntegerv(GL_VIEWPORT, vp);
       glMatrixMode(GL_PROJECTION);

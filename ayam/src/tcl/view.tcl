@@ -377,6 +377,7 @@ return;
 ##############################
 # viewBind:
 proc viewBind { w } {
+    global ayviewshortcuts
 
     # internal bindings
     bind $w <Enter> {
@@ -391,20 +392,32 @@ proc viewBind { w } {
 	    set ay(cviewsema) 0
 	    update
 	}
+	#if
 
-	bind [winfo toplevel %W] <$ayviewshortcuts(RotMod)-Motion> {
-	    set w [winfo toplevel %W]
-	    $w.f3D.togl configure -cursor exchange
-	    bind $w <$ayviewshortcuts(RotMod)-Motion> {}
-	    bind $w <Motion> {}
-	}
+	$w.f3D.togl configure -cursor left_ptr
 
-	bind [winfo toplevel %W] <Motion> {
-	    set w [winfo toplevel %W]
-	    $w.f3D.togl configure -cursor left_ptr
-	    bind $w <Motion> {}
-	    bind $w <$ayviewshortcuts(RotMod)-Motion> {}
+	if { $ayprefs(AutoFocus) == 1 } {
+	    focus [winfo toplevel %W].f3D.togl
 	}
+	break;
+    }
+    #bind
+
+    bind $w <$ayviewshortcuts(RotMod)-Enter> {
+	global ay ayprefs
+	if { $ay(cviewsema) != 1 } {
+	    update
+	    set ay(cviewsema) 1
+	    update
+	    set w [winfo toplevel %W]
+	    $w.f3D.togl mc
+	    set ay(currentView) $w.f3D.togl
+	    set ay(cviewsema) 0
+	    update
+	}
+	#if
+
+	$w.f3D.togl configure -cursor exchange
 
 	if { $ayprefs(AutoFocus) == 1 } {
 	    focus [winfo toplevel %W].f3D.togl
@@ -433,8 +446,8 @@ proc viewBind { w } {
 # viewUnBind:
 proc viewUnBind { w } {
 
-    foreach v [ bind $w ] { bind $w $v {} }
-    foreach v [ bind $w.f3D.togl ] { bind $w.f3D.togl $v {} }
+    foreach v [ bind $w ] { bind $w $v "" }
+    foreach v [ bind $w.f3D.togl ] { bind $w.f3D.togl $v "" }
     update
     $w configure -cursor watch
     $w.f3D.togl configure -cursor watch
@@ -530,7 +543,8 @@ proc setViewAttr { } {
     if { $ViewAttribData(Width) != $pclip_reset(Width) ||
     $ViewAttribData(Height) != $pclip_reset(Height) } {
 
-	.${o}.f3D.togl configure -width $ViewAttribData(Width) -height $ViewAttribData(Height)
+	.${o}.f3D.togl configure -width $ViewAttribData(Width)\
+		-height $ViewAttribData(Height)
 	update
     }
     if { $ViewAttribData(Type) != $pclip_reset(Type) } {
@@ -575,7 +589,7 @@ proc viewSetGridIcon { w gridsize } {
 	set conf "$w.$m configure"
     } else {
 	set m menubar.mgrid
-	set conf "$w.menubar entryconfigure 4"
+	set conf "$w.menubar entryconfigure 5"
     }
 
     if { $gridsize == 0.1 } {
@@ -606,9 +620,9 @@ proc viewSetGridIcon { w gridsize } {
 
 
 ##############################
-# viewSetModeIcon:
+# viewSetDModeIcon:
 #  set correct drawing mode icon according to mode
-proc viewSetModeIcon { w mode } {
+proc viewSetDModeIcon { w mode } {
     global ay AYWITHAQUA
 
     if { ! $AYWITHAQUA } {
@@ -616,7 +630,7 @@ proc viewSetModeIcon { w mode } {
 	set conf "$w.$m configure"
     } else {
 	set m menubar.dm
-	set conf "$w.menubar entryconfigure 3"
+	set conf "$w.menubar entryconfigure 4"
     }
 
     if { $mode == 0 } {
@@ -631,7 +645,31 @@ proc viewSetModeIcon { w mode } {
 
  return;
 }
-# viewSetModeIcon
+# viewSetDModeIcon
+
+
+##############################
+# viewSetMModeIcon:
+#  set correct modelling mode (global/local) icon according to mode
+proc viewSetMModeIcon { w mode } {
+    global ay AYWITHAQUA
+
+    if { ! $AYWITHAQUA } {
+	set m fMenu.mm
+	set conf "$w.$m configure"
+    } else {
+	set conf "$w.menubar entryconfigure 3"
+    }
+
+    if { $mode == 0 } {
+	eval "$conf -image ay_MMGlobLoc_img"
+    } else {
+	eval "$conf -image ay_MMLocGlob_img"
+    }
+
+ return;
+}
+# viewSetMModeIcon
 
 
 ##############################
@@ -658,27 +696,50 @@ proc viewMouseToCurrent { } {
 
 
 ##############################
-# viewToggleMode:
+# viewToggleDMode:
 #  toggle drawing mode from shade (Shade _or_ ShadeAndDraw) to draw
-proc viewToggleMode { w } {
+proc viewToggleDMode { w } {
     global ay
 
     set togl $w.f3D.togl
     
     set w [winfo toplevel $togl]
 
-    if { $ay(cVMode) > 0 } {
+    if { $ay(cVDMode) > 0 } {
 	$togl setconf -shade 0
-	viewSetModeIcon $w 0
-	set ay(cVMode) 0
+	viewSetDModeIcon $w 0
+	set ay(cVDMode) 0
     } else {
 	$togl setconf -shade 1
-	viewSetModeIcon $w 1
-	set ay(cVMode) 1
+	viewSetDModeIcon $w 1
+	set ay(cVDMode) 1
     }
 
 }
-# viewToggleMode
+# viewToggleDMode
+
+##############################
+# viewToggleMMode:
+#  toggle modelling mode (local <> global)
+proc viewToggleMMode { w } {
+    global ay
+
+    set togl $w.f3D.togl
+    
+    set w [winfo toplevel $togl]
+
+    if { $ay(cVMMode) > 0 } {
+	$togl setconf -local 0
+	viewSetMModeIcon $w 0
+	set ay(cVMMode) 0
+    } else {
+	$togl setconf -local 1
+	viewSetMModeIcon $w 1
+	set ay(cVMMode) 1
+    }
+
+}
+# viewToggleMMode
 
 
 

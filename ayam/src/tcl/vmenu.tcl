@@ -106,19 +106,19 @@ $m add check -label "Automatic Redraw" -variable ay(cVRedraw) -command "\
 set cm [menu $m.mmode -tearoff 0]
 $m add cascade -label "Drawing Mode" -menu $cm
 
-$cm add radio -label "Draw" -variable ay(cVMode) -value 0 -command "\
+$cm add radio -label "Draw" -variable ay(cVDMode) -value 0 -command "\
 	global ay;\
-	$w.f3D.togl setconf -shade \$ay(cVMode);\
+	$w.f3D.togl setconf -shade \$ay(cVDMode);\
 	\$ay(currentView) mc"
 
-$cm add radio -label "Shade" -variable ay(cVMode) -value 1 -command "\
+$cm add radio -label "Shade" -variable ay(cVDMode) -value 1 -command "\
 	global ay;\
-	$w.f3D.togl setconf -shade \$ay(cVMode);\
+	$w.f3D.togl setconf -shade \$ay(cVDMode);\
 	\$ay(currentView) mc"
 
-$cm add radio -label "ShadeAndDraw" -variable ay(cVMode) -value 2 -command "\
+$cm add radio -label "ShadeAndDraw" -variable ay(cVDMode) -value 2 -command "\
 	global ay;\
-	$w.f3D.togl setconf -shade \$ay(cVMode);\
+	$w.f3D.togl setconf -shade \$ay(cVDMode);\
 	\$ay(currentView) mc"
 
 $m add check -label "Draw Selection only" -variable ay(cVDrawSel) -command "\
@@ -193,11 +193,6 @@ $m add command -label "Align to Object" -command "\
 	global ay;\
 	$w.f3D.togl mc; $w.f3D.togl align; \$ay(currentView) mc"
 
-$m add check -label "Edit Local" -variable ay(cVLocal) -command "\
-	global ay;\
-	$w.f3D.togl setconf -local \$ay(cVLocal);\
-	\$ay(currentView) mc"
-
 # XXXX This could be just a label or a menu displaying current action
 # or even allowing to start modeling actions, but which actions?
 #menubutton $w.fMenu.a -image ay_Move_img -menu $w.fMenu.a.m -padx 3
@@ -205,6 +200,33 @@ $m add check -label "Edit Local" -variable ay(cVLocal) -command "\
 #$w.fMenu.a.m add command\
 #-label "Quick Render"\
 #-command {exit}
+
+# Modelling Mode Menu
+if { ! $AYWITHAQUA } {
+    menubutton $w.fMenu.mm -image ay_MMGlobLoc_img -menu $w.fMenu.mm.m\
+	    -padx 0 -pady 0 -borderwidth 0
+    balloon_set $w.fMenu.mm "change local/global mode"
+    set m [menu $w.fMenu.mm.m -tearoff 0]
+
+    set ay(mmodem) fMenu.mm.m
+} else {
+    set m [menu $mb.mm -tearoff 0]
+    $mb add cascade -image ay_MMGlobLoc_img -menu $m
+    set ay(mmodem) menubar.mm
+}
+
+
+$m add command -image ay_MMGlobLoc_img -hidemargin 1 -command "\
+        global ay; set ay(cVMMode) 0;\
+	$w.f3D.togl setconf -local \$ay(cVMMode);\
+	viewSetMModeIcon $w 0;\
+	\$ay(currentView) mc"
+
+$m add command -image ay_MMLocGlob_img -hidemargin 1 -command "\
+        global ay; set ay(cVMMode) 1;\
+	$w.f3D.togl setconf -local \$ay(cVMMode);\
+	viewSetMModeIcon $w 1;\
+	\$ay(currentView) mc"
 
 # Drawing Mode Menu
 if { ! $AYWITHAQUA } {
@@ -222,24 +244,24 @@ if { ! $AYWITHAQUA } {
 
 
 $m add command -image ay_DMDraw_img -hidemargin 1 -command "\
-        global ay; set ay(cVMode) 0;\
-	$w.f3D.togl setconf -shade \$ay(cVMode);\
-	viewSetModeIcon $w 0;\
+        global ay; set ay(cVDMode) 0;\
+	$w.f3D.togl setconf -shade \$ay(cVDMode);\
+	viewSetDModeIcon $w 0;\
 	\$ay(currentView) mc"
 
 $m add command -image ay_DMShade_img -hidemargin 1 -command "\
-        global ay; set ay(cVMode) 1;\
-	$w.f3D.togl setconf -shade \$ay(cVMode);\
-	viewSetModeIcon $w 1;\
+        global ay; set ay(cVDMode) 1;\
+	$w.f3D.togl setconf -shade \$ay(cVDMode);\
+	viewSetDModeIcon $w 1;\
 	\$ay(currentView) mc"
 $m add command -image ay_DMShadeDraw_img -hidemargin 1 -command "\
-        global ay; set ay(cVMode) 2;\
-	$w.f3D.togl setconf -shade \$ay(cVMode);\
-	viewSetModeIcon $w 2;\
+        global ay; set ay(cVDMode) 2;\
+	$w.f3D.togl setconf -shade \$ay(cVDMode);\
+	viewSetDModeIcon $w 2;\
 	\$ay(currentView) mc"
 
 
-# Grid
+# Grid Menu
 if { ! $AYWITHAQUA } {
     menubutton $w.fMenu.g -image ay_Grid_img -menu $w.fMenu.g.m\
 	    -padx 0 -pady 0 -borderwidth 0
@@ -280,6 +302,8 @@ if { ! $AYWITHAQUA } {
     pack $w.fMenu.g -in $w.fMenu -side right
 
     pack $w.fMenu.dm -in $w.fMenu -side right
+
+    pack $w.fMenu.mm -in $w.fMenu -side right
 
     #pack $w.fMenu.a -in $w.fMenu -side right
 

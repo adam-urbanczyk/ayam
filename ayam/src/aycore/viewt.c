@@ -590,30 +590,39 @@ ay_viewt_makecurtcb(struct Togl *togl, int argc, char *argv[])
   ton = Tcl_NewStringObj("cVRedraw", -1);
   to = Tcl_NewIntObj(view->redraw);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton, "cVMode", -1);
+
+  Tcl_SetStringObj(ton, "cVDMode", -1);
   to = Tcl_NewIntObj(view->shade);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
   Tcl_SetStringObj(ton, "cVDrawSel", -1);
   to = Tcl_NewIntObj(view->drawsel);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
   Tcl_SetStringObj(ton, "cVDrawLevel", -1);
   to = Tcl_NewIntObj(view->drawlevel);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
   Tcl_SetStringObj(ton, "cVDrawBG", -1);
   to = Tcl_NewIntObj(view->drawbg);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
   Tcl_SetStringObj(ton, "cVDrawGrid", -1);
   to = Tcl_NewIntObj(view->drawgrid);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
   Tcl_SetStringObj(ton, "cVUseGrid", -1);
   to = Tcl_NewIntObj(view->usegrid);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton, "cVLocal", -1);
+
+  Tcl_SetStringObj(ton, "cVMMode", -1);
   to = Tcl_NewIntObj(view->local);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
   Tcl_SetStringObj(ton, "cVGridSize", -1);
   to = Tcl_NewDoubleObj(view->grid);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
   Tcl_SetStringObj(ton, "cVFOV", -1);
   to = Tcl_NewDoubleObj((atan(view->zoom)*180.0)/AY_PI*2.0);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
