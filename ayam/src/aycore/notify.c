@@ -47,32 +47,37 @@ ay_notify_parent(void)
  ay_notifycb *cb = NULL;
 
   while(lev)
-  {
-    o = NULL;
+    {
+      o = NULL;
 
-    if(lev->next)
-      if(lev->next->object)
-	o = lev->next->object;
+      if(lev->next)
+	{
+	  if(lev->next->object)
+	    {
+	      o = lev->next->object;
+	    } /* if */
+	} /* if */
 
-    if(o)
-      {
-	arr = ay_notifycbt.arr;
-	cb = (ay_notifycb *)(arr[o->type]);
-	if(cb)
-	  ay_status = cb(o);
+      if(o)
+	{
+	  arr = ay_notifycbt.arr;
+	  cb = (ay_notifycb *)(arr[o->type]);
+	  if(cb)
+	    ay_status = cb(o);
 
-	if(ay_status)
-	  {
-	    ay_error(AY_ERROR, fname, "notify callback failed");
-	    return AY_ERROR;
-	  }
+	  if(ay_status)
+	    {
+	      ay_error(AY_ERROR, fname, "notify callback failed");
+	      return AY_ERROR;
+	    } /* if */
+	} /* if */
 
-      }
-
-    lev = lev->next;
-    if(lev)
       lev = lev->next;
-  }
+      if(lev)
+	{
+	  lev = lev->next;
+	}
+    } /* while */
 
  return ay_status;
 } /* ay_notify_parent */
@@ -125,6 +130,11 @@ ay_notify_forceparent(ay_object *o, int silent)
  ay_list_object *oldclevel = ay_currentlevel, *lev;
  int found = AY_FALSE;
 
+  if(!o)
+    {
+      return AY_ENULL;
+    }
+  
   if(!ay_root->next)
     {
       return AY_OK;
@@ -142,9 +152,9 @@ ay_notify_forceparent(ay_object *o, int silent)
       if(!silent)
 	{
 	  ay_error(AY_ERROR, fname, "object not found in scene");
-	}
-      return AY_OK;
-    }
+	} /* if */
+      return AY_OK; /* XXXX early exit! */
+    } /* if */
 
   ay_status = ay_notify_parent();
 
@@ -152,7 +162,7 @@ ay_notify_forceparent(ay_object *o, int silent)
     {
       lev = ay_currentlevel->next;
       free(ay_currentlevel);
-      ay_currentlevel = lev; 
+      ay_currentlevel = lev;
     }
 
   ay_currentlevel = oldclevel;
@@ -182,7 +192,7 @@ ay_notify_forcetcmd(ClientData clientData, Tcl_Interp * interp,
 	{
 	  ay_status = ay_notify_force(o);
 	  o = o->next;
-	}
+	} /* while */
     }
   else
     {
@@ -193,13 +203,13 @@ ay_notify_forcetcmd(ClientData clientData, Tcl_Interp * interp,
 	    {
 	      ay_error(AY_ERROR, fname, NULL);
 	      return TCL_OK;
-	    }
+	    } /* if */
 	  sel = sel->next;
-	}
+	} /* while */
 
       ay_notify_parent();
 
-    }
+    } /* if */
 
  return TCL_OK;
 } /* ay_notify_forcetcmd */
