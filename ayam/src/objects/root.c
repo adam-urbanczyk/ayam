@@ -93,15 +93,20 @@ ay_root_deletecb(void *c)
       free(riopt->textures);
       riopt->textures = NULL;
     }
-  if(riopt->includes)
-    {
-      free(riopt->includes);
-      riopt->includes = NULL;
-    }
   if(riopt->shaders)
     {
       free(riopt->shaders);
       riopt->shaders = NULL;
+    }
+  if(riopt->archives)
+    {
+      free(riopt->archives);
+      riopt->archives = NULL;
+    }
+  if(riopt->procedurals)
+    {
+      free(riopt->procedurals);
+      riopt->procedurals = NULL;
     }
   free(root->riopt);
   free(root);
@@ -372,21 +377,6 @@ ay_root_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     }
   strcpy(riopt->textures, result);
 
-  result = Tcl_GetVar2(interp, n1, "Includes",
-		       TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  if(riopt->includes)
-    {
-      free(riopt->includes);
-      riopt->includes = NULL;
-    }
-
-  if(!(riopt->includes = calloc(strlen(result)+1, sizeof(char))))
-    {
-      ay_error(AY_EOMEM, fname, NULL);
-      return TCL_OK;
-    }
-  strcpy(riopt->includes, result);
-
   result = Tcl_GetVar2(interp, n1, "Shaders",
 		       TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   if(riopt->shaders)
@@ -401,6 +391,36 @@ ay_root_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       return TCL_OK;
     }
   strcpy(riopt->shaders, result);
+
+  result = Tcl_GetVar2(interp, n1, "Archives",
+		       TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  if(riopt->archives)
+    {
+      free(riopt->archives);
+      riopt->archives = NULL;
+    }
+
+  if(!(riopt->archives = calloc(strlen(result)+1, sizeof(char))))
+    {
+      ay_error(AY_EOMEM, fname, NULL);
+      return TCL_OK;
+    }
+  strcpy(riopt->archives, result);
+
+  result = Tcl_GetVar2(interp, n1, "Procedurals",
+		       TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  if(riopt->procedurals)
+    {
+      free(riopt->procedurals);
+      riopt->procedurals = NULL;
+    }
+
+  if(!(riopt->procedurals = calloc(strlen(result)+1, sizeof(char))))
+    {
+      ay_error(AY_EOMEM, fname, NULL);
+      return TCL_OK;
+    }
+  strcpy(riopt->procedurals, result);
 
 
   Tcl_SetStringObj(ton, "TextureMem", -1);
@@ -532,12 +552,16 @@ ay_root_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_NewStringObj(riopt->textures, -1);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton, "Includes", -1);
-  to = Tcl_NewStringObj(riopt->includes, -1);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
   Tcl_SetStringObj(ton, "Shaders", -1);
   to = Tcl_NewStringObj(riopt->shaders, -1);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+  Tcl_SetStringObj(ton, "Archives", -1);
+  to = Tcl_NewStringObj(riopt->archives, -1);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+  Tcl_SetStringObj(ton, "Procedurals", -1);
+  to = Tcl_NewStringObj(riopt->procedurals, -1);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
@@ -587,15 +611,20 @@ ay_root_readcb(FILE *fileptr, ay_object *o)
       free(riopt->textures);
       riopt->textures = NULL;
     }
-  if(riopt->includes)
-    {
-      free(riopt->includes);
-      riopt->includes = NULL;
-    }
   if(riopt->shaders)
     {
       free(riopt->shaders);
       riopt->shaders = NULL;
+    }
+  if(riopt->archives)
+    {
+      free(riopt->archives);
+      riopt->archives = NULL;
+    }
+  if(riopt->procedurals)
+    {
+      free(riopt->procedurals);
+      riopt->procedurals = NULL;
     }
   riopt = NULL;
 
@@ -631,7 +660,7 @@ ay_root_readcb(FILE *fileptr, ay_object *o)
 
   ay_read_string(fileptr, &(riopt->textures));
 
-  ay_read_string(fileptr, &(riopt->includes));
+  ay_read_string(fileptr, &(riopt->archives));
 
   ay_read_string(fileptr, &(riopt->shaders));
 
@@ -672,7 +701,14 @@ ay_root_readcb(FILE *fileptr, ay_object *o)
 
   if(ay_read_version >= 5)
     {
-      fscanf(fileptr,"%d\n", &riopt->use_std_display);
+      fscanf(fileptr,"%d", &riopt->use_std_display);
+      read = fgetc(fileptr);
+
+      if(read == '\r')
+	fgetc(fileptr);
+
+      ay_read_string(fileptr, &(riopt->procedurals));
+
     }
   else
     {
@@ -738,8 +774,8 @@ ay_root_writecb(FILE *fileptr, ay_object *o)
   else
     fprintf(fileptr,"\n");
 
-  if(riopt->includes)
-    fprintf(fileptr,"%s\n",riopt->includes);
+  if(riopt->archives)
+    fprintf(fileptr,"%s\n",riopt->archives);
   else
     fprintf(fileptr,"\n");
 
@@ -777,6 +813,11 @@ ay_root_writecb(FILE *fileptr, ay_object *o)
     }
 
   fprintf(fileptr,"%d\n",riopt->use_std_display);
+
+  if(riopt->procedurals)
+    fprintf(fileptr,"%s\n",riopt->procedurals);
+  else
+    fprintf(fileptr,"\n");
 
  return AY_OK;
 } /* ay_root_writecb */
@@ -874,15 +915,20 @@ ay_root_wribcb(char *file, ay_object *o)
 	RiOption((RtToken)"searchpath", (RtToken)"texture",
 		 (RtPointer)(&riopt->textures), RI_NULL);
 
-    if(riopt->includes)
-      if((riopt->textures)[0] != '\0')
-	RiOption((RtToken)"searchpath", (RtToken)"include",
-		 (RtPointer)(&riopt->includes), RI_NULL);
-
     if(riopt->shaders)
       if((riopt->textures)[0] != '\0')
 	RiOption((RtToken)"searchpath", (RtToken)"shader",
 		 (RtPointer)(&riopt->shaders), RI_NULL);
+
+    if(riopt->archives)
+      if((riopt->textures)[0] != '\0')
+	RiOption((RtToken)"searchpath", (RtToken)"archive",
+		 (RtPointer)(&riopt->archives), RI_NULL);
+
+    if(riopt->procedurals)
+      if((riopt->textures)[0] != '\0')
+	RiOption((RtToken)"searchpath", (RtToken)"procedural",
+		 (RtPointer)(&riopt->procedurals), RI_NULL);
 
     rtitemp = riopt->texturemem;
     RiOption((RtToken)"limits", (RtToken)"texturememory",

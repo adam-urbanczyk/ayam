@@ -2285,19 +2285,19 @@ ay_rrib_RiOption(RtToken name,
 	      strcpy(riopt->shaders, stemp);
 	      option_handled = AY_TRUE;
 	    }
-	  if(!strcmp(tokens[i], "include"))
+	  if(!strcmp(tokens[i], "archive"))
 	    {
 	      stemp = *((char **)(parms[i]));
-	      if(riopt->includes)
-		free(riopt->includes);
-	      riopt->includes = NULL;
-	      if(!(riopt->includes = calloc(strlen(stemp)+1,
-					   sizeof(char))))
+	      if(riopt->archives)
+		free(riopt->archives);
+	      riopt->archives = NULL;
+	      if(!(riopt->archives = calloc(strlen(stemp)+1,
+					    sizeof(char))))
 		{
 		  ay_error(AY_EOMEM, fname, NULL);
 		  return;
 		}
-	      strcpy(riopt->includes, stemp);
+	      strcpy(riopt->archives, stemp);
 	      option_handled = AY_TRUE;
 	    }
 	  if(!strcmp(tokens[i], "texture"))
@@ -2313,6 +2313,21 @@ ay_rrib_RiOption(RtToken name,
 		  return;
 		}
 	      strcpy(riopt->textures, stemp);
+	      option_handled = AY_TRUE;
+	    }
+	  if(!strcmp(tokens[i], "procedural"))
+	    {
+	      stemp = *((char **)(parms[i]));
+	      if(riopt->procedurals)
+		free(riopt->procedurals);
+	      riopt->procedurals = NULL;
+	      if(!(riopt->procedurals = calloc(strlen(stemp)+1,
+					   sizeof(char))))
+		{
+		  ay_error(AY_EOMEM, fname, NULL);
+		  return;
+		}
+	      strcpy(riopt->procedurals, stemp);
 	      option_handled = AY_TRUE;
 	    }
 	} /* for */

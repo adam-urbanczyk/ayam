@@ -283,20 +283,28 @@ ay_wrib_rioptions(void)
 		   (RtPointer)(&riopt->textures), RI_NULL);
 	}
 
-    if(riopt->includes)
-      if((riopt->includes)[0] != '\0')
-	{
-	  RiDeclare((RtToken)"include", "string");
-	  RiOption((RtToken)"searchpath", (RtToken)"include",
-		   (RtPointer)(&riopt->includes), RI_NULL);
-	}
-
     if(riopt->shaders)
       if((riopt->shaders)[0] != '\0')
 	{
 	  RiDeclare((RtToken)"shader", "string");
 	  RiOption((RtToken)"searchpath", (RtToken)"shader",
 		   (RtPointer)(&riopt->shaders), RI_NULL);
+	}
+
+    if(riopt->archives)
+      if((riopt->archives)[0] != '\0')
+	{
+	  RiDeclare((RtToken)"archive", "string");
+	  RiOption((RtToken)"searchpath", (RtToken)"archive",
+		   (RtPointer)(&riopt->archives), RI_NULL);
+	}
+
+    if(riopt->procedurals)
+      if((riopt->procedurals)[0] != '\0')
+	{
+	  RiDeclare((RtToken)"procedural", "string");
+	  RiOption((RtToken)"searchpath", (RtToken)"procedural",
+		   (RtPointer)(&riopt->procedurals), RI_NULL);
 	}
 
     rtitemp = riopt->texturemem;
