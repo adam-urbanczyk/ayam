@@ -603,8 +603,6 @@ ay_revolve_crtside(ay_revolve_object *revolve, ay_object *curve, double th,
  ay_nurbcurve_object *nc = NULL, *tc = NULL;
  int closed;
 
-
-
   nc = (ay_nurbcurve_object *)curve->refine;
   ccv = nc->controlv;
 
@@ -625,18 +623,17 @@ ay_revolve_crtside(ay_revolve_object *revolve, ay_object *curve, double th,
    glGetDoublev(GL_MODELVIEW_MATRIX, m);
   glPopMatrix();
 
-
   ay_nb_CurvePoint4D(nc->length-1, nc->order-1,
 		     nc->knotv, nc->controlv,
 		     nc->knotv[nc->order - 1], P1);
-
+  
   /* apply transform */
   AY_APTRAN3(PS,P1,m)
-
+  
   ay_nb_CurvePoint4D(nc->length-1, nc->order-1,
 		     nc->knotv, nc->controlv,
 		     nc->knotv[nc->length], P1);
-
+  
   /* apply transform */
   AY_APTRAN3(PE,P1,m)
 
@@ -672,18 +669,18 @@ ay_revolve_crtside(ay_revolve_object *revolve, ay_object *curve, double th,
   if(!closed)
     {
       /* P1 {0, PS.y, 0} */
-      controlv[1] = PS[1];
+      controlv[1] = miny/*PS[1]*/;
       controlv[3] = 1.0;
       /* P2 {0, PE.y, 0} */
-      controlv[5] = PE[1];
+      controlv[5] = maxy/*PE[1]*/;
       controlv[7] = 1.0;
       /* P3 {maxx, PS.y, 0} */
       controlv[8] = maxx;
-      controlv[9] = PS[1];
+      controlv[9] = miny/*PS[1]*/;
       controlv[11] = 1.0;
       /* P4 {maxx, PE.y, 0} */
       controlv[12] = maxx;
-      controlv[13] = PE[1];
+      controlv[13] = maxy/*PE[1]*/;
       controlv[15] = 1.0;
     }
   else
@@ -704,7 +701,6 @@ ay_revolve_crtside(ay_revolve_object *revolve, ay_object *curve, double th,
       controlv[12] = maxx;
       controlv[13] = maxy;
       controlv[15] = 1.0;
-
     }
 
   ay_status = ay_npt_create(2, 2, 2, 2,
@@ -749,6 +745,10 @@ ay_revolve_crtside(ay_revolve_object *revolve, ay_object *curve, double th,
 	{
 	  trim->movy = -fabs(miny)*trim->scaly;
 	}
+      /* XXXX add reversion of curve, if maxy is at end of curve ?
+      if(???)
+      ay_nct_revert((ay_nurbcurve_object *)(trim->refine));
+      */
     }
   else
     {
@@ -821,9 +821,9 @@ ay_revolve_crtside(ay_revolve_object *revolve, ay_object *curve, double th,
 	}
       else
 	{
-	  trim->movy = fabs(miny)*trim->scaly;
+	  trim->movy = -fabs(miny)*trim->scaly;
 	}
-
+      
       ay_nct_revert((ay_nurbcurve_object *)(trim->refine));
 
       trim->next = tloop->down->next;
