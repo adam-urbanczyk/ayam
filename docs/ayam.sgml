@@ -742,10 +742,12 @@ frequently:
 
 <itemize>
 <item> To select a single object within a view, move the cursor to the object
-and click mouse button 1. Once you select an object, any objects previously
+and click mouse button 1 (the leftmost one).
+Once you select an object, any objects previously
 selected are unselected automatically.
 <item> To select an additional object, move the cursor to the object and
-<tt/&lt;Shift&gt;/+Click. Previously selected objects remain selected, and
+<tt/&lt;Shift&gt;/+Click (again with the leftmost mouse button).
+Previously selected objects remain selected, and
 the newly picked object is added to the selection. Notice that the picked item
 must belong to the same level as the previously selected objects. An
 alternative method for selecting multiple objects is to drag a rectangle
@@ -777,7 +779,7 @@ automatically.
 </enum>
 
 <p>
-Note that if you press <tt/&lt;Shift&gt;/ during the drag-selection, objects
+Note, that if you press <tt/&lt;Shift&gt;/ during the drag-selection, objects
 that are enclosed by the rectangle will be added to the current selection
 instead of replacing it.
 
@@ -4501,23 +4503,24 @@ in the buttons in the Tag Property GUI (default: 30)
 
 <sect2>RiOption and RiAttributes Database<label id="rioptdb">
 <p>
-Finally, you may adapt the database of RiOptions and
+Using your ayamrc file, you may adapt the database of RiOptions and
 RiAttributes to your rendering system.
+<p>
 You can then easily add those options and attributes
-to your scene using tags and the main menu entries
+to your scenes using tags and the main menu entries
 <tt>"Special/Tags/Add RiOption"</tt> and
 <tt>"Special/Tags/Add RiAttribute"</tt>,
 see also sections
 <ref id="riatag" name="RiAttribute Tag"> and
 <ref id="riotag" name="RiOption Tag">.
-
+<p>
 The syntax for a new RiOption is quite simple:
 <code>
 set riopt(runtime) { { verbosity s { "silent" "normal" "stats" "debug" } } }
 </code>
-This snippet adds the Option <tt>"verbosity"</tt> to the section
-<tt>"runtime"</tt>, declares it as a string using <tt>"s"</tt> and
-provides a list of default values:
+This snippet sets the section <tt>"runtime"</tt> and adds a single
+option, <tt>"verbosity"</tt>, to it. The option is declared to be of type
+string using <tt>"s"</tt> and provided with a list of default values:
 <tt>"{ "silent" "normal" "stats" "debug" }"</tt>.
 
 To add another option to this section, say the option <tt>"op"</tt>
@@ -4536,8 +4539,11 @@ Available types of parameters are:
 <item>i: a scalar integer value
 <item>f: a scalar float value
 <item>s: a string value
-<item>p: a point in space (simply three float values)
-<item>c: a color
+<item>p: a point in space (simply three float values), the default
+values (if provided) are three float values in curly braces, such as
+<tt>{{0.0 0.0 0.0}{1.0 1.0 1.0}}</tt>
+<item>c: a color, the default values (if provided) are three float
+values in curly braces, such as <tt>{{0.0 0.0 0.0}{1.0 1.0 1.0}}</tt>
 </itemize>
 
 
@@ -4636,31 +4642,48 @@ should be printed.
 <sect1>3DMF Import Export (MFIO) Plugin<label id="mfioplugin">
 <p>
 Using the MFIO plugin you may import and export scenes
-from to the 3DMF format (version 1.0 only!) from Apple.
+from (to) the 3DMF format (version 1.0 only!) from Apple.
 Start importing a 3DMF file using the menu entry
 <tt>"Custom/3DMF/Import"</tt>
 (if this menu entry is not available, you have to load the
 <tt>"mfio"</tt> plugin using the menu entry
 <tt>"File/Load Custom"</tt>).
 <p>
-Import supports the following primitives: Polylines,
-NURBS curves, NURBS surfaces (with trim curves), Triangles, TriGrids,
-Polygons, general Polygons, Boxes, Ellipsoids, Cylinders, Cones,
-Disks, and Tori.
-The following transformations are supported: Scale, Translate, Rotate,
-RotateQuaternion, RotateAxis (if axis is X, Y, or Z). Furthermore,
-the import plugin reads the structure of the scene from Container
+Import supports the following primitives:
+<itemize>
+<item> Polyline, Triangle, TriGrid, Polygon, general Polygon, Box,
+<item> NURBS curve, NURBS surface (with trim curves),
+<item> Ellipsoid, Cylinder, Cone, Disk, and Torus.
+</itemize>
+
+The following transformations are supported:
+<itemize>
+<item> Scale,
+<item> Translate,
+<item> Rotate, RotateQuaternion, RotateAxis (if axis is X, Y, or Z).
+</itemize>
+Furthermore, the import plugin reads the structure of the scene from Container
 objects. Reference objects will be resolved to normal objects while importing.
 <p>
-The MFIO export supports the following primitives: NURBS curves and surfaces
-(with trim curves) including all NURBS curve/surface providing objects,
-such as ICurve, Skin etc., Box, Sphere, Disk, Cone,
-Cylinder, Torus, and PolyMesh.
-Instance objects will be resolved for export.
+The MFIO export supports the following primitives:
+<itemize>
+<item> NURBS curve and NURBS surface (with trim curves) including all
+NURBS curve/surface providing objects, such as ICurve, Skin etc.,
+<item> Sphere, Disk, Cone, Cylinder, Torus,
+<item> Box, and PolyMesh.
+</itemize>
+
+All transformations are supported and will be written as
+Translate, Rotate, and Scale transformations, respectively.
+All Instance objects will be resolved for export.
 Level objects (regardless of type) will be written as Container objects.
+If an object has a material, the color and opacity of the material
+will be written as DiffuseColor and TransparencyColor, if the red
+component has a value different from -1.
 <p>
-Support for import/export of lights, camera attributes as well as
-material attributes is currently not available.
+Support for import or export of lights, camera attributes as well as
+material attributes other than material color and opacity is currently
+not available.
 
 <sect1>Shader Parsing Plugins<label id="spplugins">
 <p>
@@ -4670,18 +4693,25 @@ parsing of shaders: <tt/"ayslb"/ for Air, <tt/"ayslx"/ for Aqsis,
 <p>
 After loading of one of the aforementioned plugins, Ayam will
 be able to parse shaders compiled with the shader compiler
-of the respective renderer. A shader parsing plugin may be loaded
+of the respective renderer.
+<p>
+A shader parsing plugin may be loaded
 automatically on startup of Ayam using one of the provided Tcl scripts:
 <tt/"loadayslb.tcl"/, <tt/"loadayslo.tcl"/, <tt/"loadayslo3d.tcl"/,
 <tt/"loadayslx.tcl"/, and <tt/"loadayso.tcl"/.
-Simply add the script to the preference setting
+To automatically load a plugin simply add the appropriate
+script to the preference setting
 <tt>"Main/Scripts"</tt> using the <tt>"Add"</tt> button in the
 preferences editor.
-Those scripts may be further adapted by the user to set a different
-<tt/"Shaders"/ preference setting or to immediately scan for shaders
-after loading. However, the standard behavior while loading of
+<p>
+Additionally, those scripts may be further adapted by the user to
+set a different <tt/"Shaders"/ preference setting or to immediately
+scan for shaders after loading of the plugin. For that, just comment
+out the corresponding lines in the script.
+However, the standard behavior while loading of
 such a plugin requires you to scan manually for shaders and to adapt
-the shaders search path manually too, using the preferences editor.
+the shaders search path manually too. Both actions may be carried
+out using the preferences editor.
 
 <sect1>Automatic Instancing<label id="ai">
 <p>
