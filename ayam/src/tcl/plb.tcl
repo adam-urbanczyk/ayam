@@ -40,12 +40,6 @@ set ay(plb) $f.li
 bind $f.li <ButtonRelease-1> {
     global ay pclip_omit pclip_omit_label sel
 
-    if { $ay(lb) == 0 } {
-	after 100 {global ay; focus -force $ay(tree)}
-    } else {
-	after 100 {global ay; focus -force $ay(olb)}
-    }
-
     set sel ""
     getSel sel
     if { $sel == "" } { break }
@@ -53,7 +47,7 @@ bind $f.li <ButtonRelease-1> {
     set lb $ay(plb)
     if { [$lb size] < 1 } { return }
     set prop [$lb get [$lb curselection]]
-    eval [subst "set w \$${prop}(w)"]
+    eval [subst "set ww \$${prop}(w)"]
 
     set getprocp ""
     eval [subst "set getprocp \$${prop}(gproc)"]
@@ -62,11 +56,11 @@ bind $f.li <ButtonRelease-1> {
     eval [subst "set arrname \$${prop}(arr)"]
     global pclip_reset $arrname
     array set pclip_reset  [array get $arrname]
-    $ay(pca) itemconfigure 1 -window $ay(pca).$w
+    $ay(pca) itemconfigure 1 -window $ay(pca).$ww
 
     # resize canvas
-    set width [expr [winfo reqwidth $ay(pca).$w] + 10]
-    set height [expr [winfo reqheight $ay(pca).$w] + 10]
+    set width [expr [winfo reqwidth $ay(pca).$ww] + 10]
+    set height [expr [winfo reqheight $ay(pca).$ww] + 10]
     $ay(pca) configure -width $width
     $ay(pca) configure -height $height
     $ay(pca) configure -scrollregion [list 0 5 $width $height]
@@ -87,24 +81,31 @@ bind $f.li <ButtonRelease-1> {
 	array set pclip_omit { }
 	array set pclip_omit_label { }
     }
+
+    if { $ay(lb) == 0 } {
+	global ay; focus -force $ay(tree)
+    } else {
+	global ay; focus -force $ay(olb)
+    }
+
     # improve focus traversal (speed-wise)
     global tcl_platform AYWITHAQUA
     if { $ay(lb) == 1 } {
 	bind $ay(olb) <Key-Tab>\
-		"focus [tk_focusNext $ay(pca).$w];break"
-	bind [tk_focusNext $ay(pca).$w] <Shift-Tab>\
+		"focus [tk_focusNext $ay(pca).$ww];break"
+	bind [tk_focusNext $ay(pca).$ww] <Shift-Tab>\
 		"focus $ay(olb);break"
 	if { ( $tcl_platform(platform) != "windows" ) && ( ! $AYWITHAQUA ) } {
-	    bind [tk_focusNext $ay(pca).$w] <ISO_Left_Tab>\
+	    bind [tk_focusNext $ay(pca).$ww] <ISO_Left_Tab>\
 		    "focus $ay(olb);break"
 	}
     } else {
 	bind $ay(tree) <Key-Tab>\
-		"focus [tk_focusNext $ay(pca).$w];break"
-	bind [tk_focusNext $ay(pca).$w] <Shift-Tab>\
+		"focus [tk_focusNext $ay(pca).$ww];break"
+	bind [tk_focusNext $ay(pca).$ww] <Shift-Tab>\
 		"focus $ay(tree);break"
 	if { ( $tcl_platform(platform) != "windows" ) && ( ! $AYWITHAQUA ) } {
-	    bind [tk_focusNext $ay(pca).$w] <ISO_Left_Tab>\
+	    bind [tk_focusNext $ay(pca).$ww] <ISO_Left_Tab>\
 		    "focus $ay(tree);break"
 	}
     }
