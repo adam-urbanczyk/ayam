@@ -127,6 +127,11 @@ unsigned int ay_current_primlevel = 0;
   int Rrib_Init(Tcl_Interp *interp);
 #endif
 
+Pixmap minus_bitmap;
+Pixmap plus_bitmap;
+#include "tcl/BWidget-1.2.1/images/minus.xbm"
+#include "tcl/BWidget-1.2.1/images/plus.xbm"
+
 /* ay_init:
  *  create tables, ay_root
  */
@@ -912,8 +917,14 @@ Tcl_SetVar(interp, "AYWITHAQUA", "1", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
       return TCL_ERROR;
     }
 
- Tcl_SetVar2(interp, "ay", "ay_version", AY_VERSIONSTR, TCL_GLOBAL_ONLY |
-	     TCL_LEAVE_ERR_MSG);
+  Tcl_SetVar2(interp, "ay", "ay_version", AY_VERSIONSTR, TCL_GLOBAL_ONLY |
+	      TCL_LEAVE_ERR_MSG);
+
+  /* create bitmaps */
+  Tk_DefineBitmap(interp, "minus", minus_bits, minus_width, minus_height);
+  minus_bitmap = Tk_GetBitmap(interp, Tk_MainWindow(interp), "minus");
+  Tk_DefineBitmap(interp, "plus", plus_bits, plus_width, plus_height);
+  plus_bitmap = Tk_GetBitmap(interp, Tk_MainWindow(interp), "plus");
 
  return TCL_OK;
 } /* Tcl_AppInit */

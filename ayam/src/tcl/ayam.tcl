@@ -788,7 +788,11 @@ proc tipoftheDay { } {
 proc ayam_loadscript { file } {
     global AYWRAPPED
     if { $AYWRAPPED == 1 } {
-	uplevel #0 wrap::source tcl/${file}.tcl
+	if { [string first BWidgets $file ] < 0 } {
+	    uplevel #0 wrap::source tcl/${file}.tcl
+	} else {
+	    uplevel #0 wrap::source ${file}.tcl
+	}
     } else {
 	set oldcd [ pwd ] 
 	set scdir [ info script ]
@@ -864,29 +868,24 @@ wm protocol . WM_DELETE_WINDOW {
 }
 
 frame .fu.fMain.fHier
+
 # create the tree widget
 treeInit
-#XXXX wie laedt man BWidgets in einem wrapped executable?
 if { $AYWRAPPED == 1 } {
-    if { $tcl_platform(platform) == "windows" } {
-	lappend auto_path [file dirname [info nameofexecutable]]
-    } else {
-	set curdir [pwd]
-	cd $ayprefs(TmpDir)
-
-	if { $ay(failsafe) == 1 } { catch {file delete -force BWidgets} }
-	if { [auto_execok unzip] != "" } {
-	    exec unzip -o -u -qq [info nameofexecutable] BWidgets/\*
-	} else {
-	    puts "Could not execute unzip, please install it!"
-	    exit
-	}
-	cd $curdir
-	lappend auto_path ${ayprefs(TmpDir)}/BWidgets
-    }
+    set env(BWIDGET_LIBRARY) "."
+    ayam_loadscript bwlangrc
+    ayam_loadscript BWidgets/init
+    ayam_loadscript BWidgets/widget
+    ayam_loadscript BWidgets/utils
+    ayam_loadscript BWidgets/scrollw
+    ayam_loadscript BWidgets/dragsite
+    ayam_loadscript BWidgets/dropsite
+    ayam_loadscript BWidgets/tree
+    ayam_loadscript BWidgets/dynhelp
+    ayam_loadscript BWidgets/arrow
+    ayam_loadscript BWidgets/notebook
     ayam_loadscript tree
 } else {
-
     set scdir [file dirname [info script]]
     if { [file pathtype $scdir] == "relative" } {
 	set bwdir [file join [pwd] $scdir]/BWidget-1.2.1
