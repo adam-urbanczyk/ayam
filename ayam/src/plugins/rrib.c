@@ -3609,6 +3609,7 @@ ay_rrib_readshader(char *sname, int stype,
  RtColor *col;
  RtPoint *pnt;
  RtMatrix *mat;
+ RtString *str;
  char *token = NULL;
 
   if(!(s = calloc(1, sizeof(ay_shader))))
@@ -3670,14 +3671,14 @@ ay_rrib_readshader(char *sname, int stype,
 		  break;
 		case kRIB_STRINGTYPE:
 		  sarg->type = AY_SASTRING;
+		  str = (RtString *)(parms[i]);
 		  stemp = NULL;
-		  if(!(stemp = calloc(strlen(((char *)(parms[i])))+1,
-				      sizeof(char))))
+		  if(!(stemp = calloc(strlen(*str)+1, sizeof(char))))
 		    {
 		      link = AY_FALSE;
 		      break;
 		    }
-		  strcpy(stemp, parms[i]);
+		  strcpy(stemp, *str);
 		  sarg->val.string = stemp;
 		  break;
 		case kRIB_COLORTYPE:
@@ -5128,6 +5129,7 @@ ay_rrib_readrib(char *filename, int frame, int read_camera, int read_options,
  ay_list_object *tl = NULL;
 
   /* initialize global variables */
+  memset(&ay_rrib_co, '\0', sizeof(ay_object));
   ay_object_defaults(&ay_rrib_co);
 
   ay_rrib_clighthandle = 1;
