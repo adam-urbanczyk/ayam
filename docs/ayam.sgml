@@ -3878,12 +3878,12 @@ The object hierarchy of a Birail1 object, thus, looks like this:
  \ Rail2(NCurve)
 </code>
 <p>
-The cross section has to touch the rail curves in their respective starting
-points.
-The direction of the cross section curve will be parallel to the u
-parametric dimension (width) and the direction of the rail curves will be
-parallel to the v parametric dimension of the resulting surface. Width
-and height of the surface will be derived from the length of the
+When the cross section touches the rail curves in their respective starting
+points, the resulting surface will interpolate the rail curves.
+The direction of the cross section curve will be parallel to the v
+parametric dimension (height) and the direction of the rail curves will be
+parallel to the u parametric dimension (width) of the resulting surface.
+Height and width of the surface will be derived from the length of the
 cross section curve and the number of sections, respectively.
 <p>
 Note that the cross section curve does not have to be two dimensional, and,
@@ -3898,13 +3898,13 @@ The following parameters further control the birailing process:
 <p>
 The parameter <tt/"Sections"/ determines how many
 sections (in u direction) should be used, when generating the
-sweep NURBS patch. The NURBS patch always has sections+1 control
+birailed NURBS patch. The birailed NURBS patch always has sections+1 control
 points in u direction.
 <p>
 The attributes <tt/"StartCap"/ and <tt/"EndCap"/ may be
 used to automatically create cap surfaces, that close the
-Sweep on both ends.
-Note that this works properly only if the cross section
+birailed surface on the respective end.
+Note that this only works properly if the cross section
 curve is closed and planar (defined in the XY plane).
 <p>
 See section <ref id="npattr" name="NPatchAttrib"> for a description
@@ -6488,6 +6488,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>BGImage: <ref id="vat" name="view attribute">
 <item>bicubic/bilinear PatchMesh:
 <ref id="patchmeshobj" name="PatchMesh object">
+<item>Birail1: <ref id="birail1obj" name="object">
 <item>Bound: <ref id="riattrs" name="RenderMan/BMRT attribute">
 <item>BoundCoord: <ref id="riattrs" name="RenderMan/BMRT attribute">
 <item>Box: <ref id="boxobj" name="object">
@@ -6923,7 +6924,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Scripts: <ref id="prefgui" name="preference setting">
 <item>SDMesh: <ref id="sdmeshobj" name="object">
 <item>Sections: <ref id="swp" name="sweep attribute">,
-<ref id="rep" name="Revolve attribute">
+<ref id="rep" name="Revolve attribute">,
+<ref id="birail1p" name="Birail1 attribute">
 <item>Select: <ref id="obj" name="select objects with the tree/listbox">,
 <ref id="objsel" name="select objects within a view">,
 <ref id="selac" name="select points">
