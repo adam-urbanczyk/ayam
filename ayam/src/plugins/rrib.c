@@ -104,6 +104,12 @@ typedef struct ay_rrib_attrstate_s {
   /* all other RiAttributes */
   ay_tag_object *tags;
 
+  int btype_u, btype_v;
+  RtBasis *ubasisptr;
+  RtBasis *vbasisptr;
+  RtInt ustep;
+  RtInt vstep;
+
 } ay_rrib_attrstate;
 
 ay_rrib_attrstate *ay_rrib_cattributes;
@@ -139,7 +145,12 @@ ay_list_object *ay_rrib_objects;
 ay_list_object *ay_rrib_lastobject;
 ay_object **ay_rrib_aynext;
 
+/* fov */
+double ay_rrib_fov;
+int width, height;
+
 /* import options */
+int ay_rrib_rh;
 int ay_rrib_readframe;
 int ay_rrib_readoptions;
 int ay_rrib_readcamera;
@@ -172,6 +183,10 @@ char Ppw[] = {
 RtVoid ay_rrib_RiSphere(RtFloat radius, RtFloat zmin, RtFloat zmax,
 			RtFloat thetamax,
 			RtInt n, RtToken tokens[], RtPointer parms[]);
+
+RtVoid ay_rrib_RiPatchMesh(RtToken type, RtInt nu, RtToken uwrap, 
+			   RtInt nv, RtToken vwrap, 
+			   RtInt n, RtToken tokens[], RtPointer parms[]);
 
 void ay_rrib_pushattribs(void);
 
@@ -912,6 +927,7 @@ RtVoid ay_rrib_RiAttributeBegin( void )
 {
 
   ay_rrib_pushattribs();
+  ay_rrib_pushtrafos();
 
 }
 
@@ -919,15 +935,68 @@ RtVoid ay_rrib_RiAttributeBegin( void )
 RtVoid ay_rrib_RiAttributeEnd( void )
 {
 
+  ay_rrib_poptrafos();
   ay_rrib_popattribs();
 
 }
 
 
 
-RtVoid ay_rrib_RiBasis( RtBasis ubasis, RtInt ustep, RtBasis vbasis, RtInt vstep )
+RtVoid ay_rrib_RiBasis(RtBasis ubasis, RtInt ustep,
+		       RtBasis vbasis, RtInt vstep)
 {
-   (void)ubasis; (void)ustep; (void)vbasis; (void)vstep; 
+ int ubasis_custom = AY_TRUE;
+ int vbasis_custom = AY_TRUE;
+
+  if(ubasis == RiBezierBasis)
+    {
+      ay_rrib_cattributes->btype_u = AY_BTBEZIER;
+      ubasis_custom = AY_FALSE;
+    }
+
+  if(ubasis == RiBSplineBasis)
+    {
+      ay_rrib_cattributes->btype_u = AY_BTBSPLINE;
+      ubasis_custom = AY_FALSE;
+    }
+
+  if(ubasis == RiCatmullRomBasis)
+    {
+      ay_rrib_cattributes->btype_u = AY_BTCATMULLROM;
+      ubasis_custom = AY_FALSE;
+    }
+
+  if(ubasis == RiHermiteBasis)
+    {
+      ay_rrib_cattributes->btype_u = AY_BTHERMITE;
+      ubasis_custom = AY_FALSE;
+    }
+
+  if(vbasis == RiBezierBasis)
+    {
+      ay_rrib_cattributes->btype_v = AY_BTBEZIER;
+      vbasis_custom = AY_FALSE;
+    }
+
+  if(vbasis == RiBSplineBasis)
+    {
+      ay_rrib_cattributes->btype_v = AY_BTBSPLINE;
+      vbasis_custom = AY_FALSE;
+    }
+
+  if(vbasis == RiCatmullRomBasis)
+    {
+      ay_rrib_cattributes->btype_v = AY_BTCATMULLROM;
+      vbasis_custom = AY_FALSE;
+    }
+
+  if(vbasis == RiHermiteBasis)
+    {
+      ay_rrib_cattributes->btype_v = AY_BTHERMITE;
+      vbasis_custom = AY_FALSE;
+    }
+
+ return;
 }
 
 
@@ -959,26 +1028,6 @@ RtVoid ay_rrib_RiColorSamples( RtInt n, RtFloat nRGB[], RtFloat RGBn[] )
    (void)n; (void)nRGB; (void)RGBn;
 }
 
-
-RtVoid ay_rrib_RiConcatTransform( RtMatrix transform)
-{ 
- int i, j, k;
- double m[16];
-
- k = 0;
- for(i = 0; i < 4; i++)
-   {
-     for(j = 0; j < 4; j++)
-       {
-	 m[k] = (double)transform[i][j];
-	 k++;
-       }
-   }
-
-  ay_trafo_multmatrix4(ay_rrib_ctrafos->m, m);
-
- return;
-}
 
 
 
@@ -1735,25 +1784,176 @@ RtVoid ay_rrib_RiOrientation( RtToken orientation )
    (void)orientation;
 }
 
-RtVoid ay_rrib_RiPatchV( RtToken type, 
-		RtInt n, RtToken tokens[], RtPointer parms[] )
+RtVoid ay_rrib_RiPatch(RtToken type, 
+		       RtInt n, RtToken tokens[], RtPointer parms[])
 { 
-   (void)type; (void)n; (void)tokens; (void)parms;
+ ay_bpatch_object bp;
+ int i = 0, stride = 4;
+ RtPointer tokensfound[PPWTBL_LAST];
+ RtFloat *pw = NULL;
+
+ if(!strcmp(type, RI_BICUBIC))
+   {
+     ay_rrib_RiPatchMesh(RI_BICUBIC, 4, (RtToken)"no",
+			 4, (RtToken)"no", n, tokens, parms);
+     return;
+   }
+
+  RibGetUserParameters(Ppw, PPWTBL_LAST, n, tokens, parms, tokensfound);
+  if(tokensfound[PPWTBL_PW])
+    {
+      pw = (RtFloat*)tokensfound[PPWTBL_PW];
+      stride = 4;
+    }
+  else
+    {
+      if(tokensfound[PPWTBL_P])
+	{
+	  pw = (RtFloat*)tokensfound[PPWTBL_P];
+	  stride = 3;
+	}
+      else
+	{
+	  return;
+	}
+    }
+
+  /* XXXX divide by w? */
+
+  i = 0;
+  bp.p1[0] = pw[i];
+  bp.p1[1] = pw[i+1];
+  bp.p1[2] = pw[i+2];
+  i += stride;
+
+  bp.p2[0] = pw[i];
+  bp.p2[1] = pw[i+1];
+  bp.p2[2] = pw[i+2];
+  i += stride;
+
+  bp.p4[0] = pw[i];
+  bp.p4[1] = pw[i+1];
+  bp.p4[2] = pw[i+2];
+  i += stride;
+
+  bp.p3[0] = pw[i];
+  bp.p3[1] = pw[i+1];
+  bp.p3[2] = pw[i+2];
+
+
+  ay_rrib_linkobject((void *)(&bp), AY_IDBPATCH);
+
+ return;
 }
 
 
-RtVoid ay_rrib_RiPatchMeshV( RtToken type, RtInt nu, RtToken uwrap, 
-		    RtInt nv, RtToken vwrap, 
-		    RtInt n, RtToken tokens[], RtPointer parms[] )
-{ 
-   (void)type; (void)nu; (void)uwrap; (void)nv; (void)vwrap; 
-   (void)n; (void)tokens; (void)parms;
-}
-
-
-RtVoid ay_rrib_RiPerspective( RtFloat fov )
+RtVoid ay_rrib_RiPatchMesh(RtToken type, RtInt nu, RtToken uwrap, 
+			   RtInt nv, RtToken vwrap, 
+			   RtInt n, RtToken tokens[], RtPointer parms[])
 {
-   (void)fov;
+ ay_pamesh_object pm;
+ int i = 0, j = 0, stride = 4;
+ double *p = NULL;
+ RtPointer tokensfound[PPWTBL_LAST];
+ RtFloat *pp = NULL, *pw = NULL;
+
+ /*
+  pm.glu_sampling_tolerance = 0.0;
+  pm.glu_display_mode = 0;
+ */
+
+ if(!strcmp(type, RI_BILINEAR))
+    pm.type = AY_PTBILINEAR;
+  else
+    pm.type = AY_PTBICUBIC;
+
+  pm.width = (int)nu;
+  if(!strcmp(uwrap, RI_PERIODIC))
+    pm.close_u = AY_TRUE;
+  else
+    pm.close_u = AY_FALSE;
+
+  pm.height = (int)nv;
+  if(!strcmp(vwrap, RI_PERIODIC))
+    pm.close_v = AY_TRUE;
+  else
+    pm.close_v = AY_FALSE;
+
+  pm.btype_u = ay_rrib_cattributes->btype_u;
+  pm.btype_v = ay_rrib_cattributes->btype_v;
+
+  pm.ubasis = NULL;
+  pm.vbasis = NULL;
+
+  RibGetUserParameters(Ppw, PPWTBL_LAST, n, tokens, parms, tokensfound);
+  if(tokensfound[PPWTBL_PW])
+    {
+      pw = (RtFloat*)tokensfound[PPWTBL_PW];
+      stride = 4;
+    }
+  else
+    {
+      if(tokensfound[PPWTBL_P])
+	{
+	  pw = (RtFloat*)tokensfound[PPWTBL_P];
+	  stride = 3;
+	}
+      else
+	{
+	  if(pm.ubasis)
+	    free(pm.ubasis);
+	  if(pm.vbasis)
+	    free(pm.vbasis);
+	  return;
+	}
+    }
+  
+  if(!(pm.controlv = calloc(nu*nv*4, sizeof(double))))
+    {
+      if(pm.ubasis)
+	free(pm.ubasis);
+      if(pm.vbasis)
+	free(pm.vbasis);
+      return;
+    }
+
+  pp = pw;
+  for(i = 0; i < nv; i++)
+    {
+      p = &(pm.controlv[i*4]);
+      for(j = 0; j < nu; j++)
+	{
+	  p[0] = (double)(pp[0]);
+	  p[1] = (double)(pp[1]);
+	  p[2] = (double)(pp[2]);
+
+	  if(stride == 4)
+	    {	  
+	      p[3] = (double)(pp[3]);
+	    }
+	  else
+	    {
+	      p[3] = 1.0;
+	    } /* if */
+
+	  p += (nv*4);
+	  pp += stride;
+	} /* for */
+    } /* for */
+
+  ay_rrib_linkobject((void *)(&pm), AY_IDPAMESH);
+
+  free(pm.controlv);
+
+ return;
+}
+
+
+RtVoid ay_rrib_RiPerspective(RtFloat fov)
+{
+   ay_rrib_fov = (double)fov;
+   ay_rrib_RiIdentity();
+ return;
 }
 
 
@@ -1834,10 +2034,33 @@ RtVoid ay_rrib_RiPolygonV( RtInt nvertices,
 }
 
 
-RtVoid ay_rrib_RiProjectionV( RtToken name, 
-		     RtInt n, RtToken tokens[], RtPointer parms[] )
+RtVoid ay_rrib_RiProjection(RtToken name, 
+			    RtInt n, RtToken tokens[], RtPointer parms[])
 { 
-   (void)name; (void)n; (void)tokens; (void)parms;
+
+  if(!strcmp(name, "perspective"))
+    {
+      /* perspective projection */
+      ay_rrib_fov = 90.0;
+      /* get fov (if specified) */
+      if(n > 0)
+	{
+	  if(!strcmp(tokens[0], "fov"))
+	    ay_rrib_fov = (double)(*((RtFloat*)(parms[0])));
+	}
+    }
+  else
+    {
+      /* assume parallel projection */
+    }
+
+
+
+  /* start reading camera transformations, thus set current trafos to
+     default values */
+  ay_rrib_RiIdentity();
+
+ return;
 }
 
 
@@ -1865,7 +2088,6 @@ RtVoid ay_rrib_RiReadArchive(RtToken name,
 			     RtVoid (*callback)( RtToken, char*, char* ),
 			     RtInt n, RtToken tokens[], RtPointer parms[])
 { 
- int ay_status = AY_OK;
  RIB_HANDLE rib = NULL, oldgrib;
  char fname[] = "ay_rrib_RiReadArchive";
 
@@ -1911,6 +2133,27 @@ RtVoid ay_rrib_RiReverseOrientation( void )
 }
 
 
+RtVoid ay_rrib_RiConcatTransform( RtMatrix transform)
+{ 
+ int i, j, k;
+ double m[16];
+
+ k = 0;
+ for(i = 0; i < 4; i++)
+   {
+     for(j = 0; j < 4; j++)
+       {
+	 m[k] = (double)transform[i][j];
+	 k++;
+       }
+   }
+
+  ay_trafo_multmatrix4(ay_rrib_ctrafos->m, m);
+
+ return;
+}
+
+
 RtVoid ay_rrib_RiRotate( RtFloat angle, RtFloat dx, RtFloat dy, RtFloat dz )
 { 
  double quat[4];
@@ -1920,7 +2163,7 @@ RtVoid ay_rrib_RiRotate( RtFloat angle, RtFloat dx, RtFloat dy, RtFloat dz )
   axis[0] = (double)dx;
   axis[1] = (double)dy;
   axis[2] = (double)dz;
-  ay_quat_axistoquat(axis, AY_D2R((double)angle), quat);
+  ay_quat_axistoquat(axis, -AY_D2R((double)angle), quat);
   ay_quat_torotmatrix(quat, m);
   ay_trafo_multmatrix4(ay_rrib_ctrafos->m, m);
 
@@ -1942,11 +2185,51 @@ RtVoid ay_rrib_RiScale( RtFloat dx, RtFloat dy, RtFloat dz )
  return;
 }
 
+RtVoid ay_rrib_RiTransform( RtMatrix transform )
+{ 
+ int i, j, k;
+
+  k = 0;
+  for(i=0;i<4;i++)
+    {
+      for(j=0;j<4;j++)
+	{
+	  ay_rrib_ctrafos->m[k] = transform[i][j];
+	  k++;
+	}
+    }
+
+ return;
+}
+
+
+RtVoid ay_rrib_RiTranslate( RtFloat dx, RtFloat dy, RtFloat dz )
+{ 
+ double m[16] = {0};
+ 
+  m[0] = 1.0;
+  m[5] = 1.0;
+  m[10] = 1.0;
+  m[15] = 1.0;
+  /*
+  m[3] = (double)dx;
+  m[7] = (double)dy;
+  m[11] = (double)dz;
+  */
+  m[12] = (double)dx;
+  m[13] = (double)dy;
+  m[14] = (double)dz;
+
+  ay_trafo_multmatrix4(ay_rrib_ctrafos->m, m);
+
+ return;
+}
 
 RtVoid ay_rrib_RiScreenWindow( RtFloat left, RtFloat right, 
 		      RtFloat bottom, RtFloat top )
 { 
    (void)left; (void)right; (void)bottom; (void)top;
+
 }
 
 
@@ -2084,10 +2367,6 @@ RtVoid ay_rrib_RiTextureCoordinates( RtFloat s1, RtFloat t1,
 
 
 
-RtVoid ay_rrib_RiTransform( RtMatrix transform )
-{ 
-   (void)transform;
-}
 
 
 RtVoid ay_rrib_RiTransformBegin( void )
@@ -2106,31 +2385,48 @@ RtVoid ay_rrib_RiTransformEnd( void )
 }
 
 
-RtVoid ay_rrib_RiTranslate( RtFloat dx, RtFloat dy, RtFloat dz )
-{ 
- double m[16] = {0};
-
-  m[0] = 1.0;
-  m[5] = 1.0;
-  m[10] = 1.0;
-  m[15] = 1.0;
-  m[3] = (double)dx;
-  m[7] = (double)dy;
-  m[11] = (double)dz;
-
-  ay_trafo_multmatrix4(ay_rrib_ctrafos->m, m);
-
- return;
-}
-
-
 
 
 RtVoid ay_rrib_RiWorldBegin( void )
 {
+  /* ay_camera_object c;
+ ay_level_object l;
+
+  c.from[0] = 0.0;
+  c.from[1] = 0.0;
+  c.from[2] = 0.0;
+  c.to[0] = 0.0;
+  c.to[1] = 0.0;
+  c.to[2] = 1.0;
+  c.up[0] = 0.0;
+  c.up[1] = 1.0;
+  c.up[2] = 0.0;
+  c.roll = 0.0;
+  if(fabs(ay_rrib_fov) > AY_EPSILON)
+    {
+      c.zoom = fabs(tan(AY_D2R(ay_rrib_fov/2.0)));
+    }
+  else
+    {
+      c.zoom = 1.0;
+    }
+
+  ay_trafo_apply3(c.from, ay_rrib_ctrafos->m);
+  ay_trafo_apply3(c.to, ay_rrib_ctrafos->m);
+  ay_trafo_apply3(c.up, ay_rrib_ctrafos->m);
 
   ay_rrib_RiIdentity();
 
+  ay_rrib_linkobject((void *)(&c), AY_IDCAMERA);
+
+  l.type = AY_LTLEVEL;
+  ay_rrib_co.parent = AY_TRUE;
+  ay_rrib_linkobject((void *)(&l), AY_IDLEVEL);
+  ay_rrib_co.parent = AY_FALSE;
+  ay_object_delete(ay_rrib_co.down);
+  ay_rrib_co.down = NULL;
+  ay_rrib_RiIdentity();
+ */
  return;
 }
 
@@ -2616,6 +2912,9 @@ ay_rrib_initgeneral(void)
 {
 
   gRibNopRITable[kRIB_WORLDBEGIN] = (PRIB_RIPROC)ay_rrib_RiWorldBegin;
+  gRibNopRITable[kRIB_PROJECTION] = (PRIB_RIPROC)ay_rrib_RiProjection;
+
+  gRibNopRITable[kRIB_TRANSFORM] = (PRIB_RIPROC)ay_rrib_RiTransform;
   gRibNopRITable[kRIB_TRANSFORMBEGIN] = (PRIB_RIPROC)ay_rrib_RiTransformBegin;
   gRibNopRITable[kRIB_TRANSFORMEND] = (PRIB_RIPROC)ay_rrib_RiTransformEnd;
   gRibNopRITable[kRIB_CONCATTRANSFORM] =
@@ -2695,6 +2994,10 @@ ay_rrib_initgprims(void)
   gRibNopRITable[kRIB_NUPATCH] = (PRIB_RIPROC)ay_rrib_RiNuPatch;
   gRibNopRITable[kRIB_TRIMCURVE] = (PRIB_RIPROC)ay_rrib_RiTrimCurve;
 
+  gRibNopRITable[kRIB_PATCH] = (PRIB_RIPROC)ay_rrib_RiPatch;
+  gRibNopRITable[kRIB_PATCHMESH] = (PRIB_RIPROC)ay_rrib_RiPatchMesh;
+  gRibNopRITable[kRIB_BASIS] = (PRIB_RIPROC)ay_rrib_RiBasis;
+
   gRibNopRITable[kRIB_SOLIDBEGIN] = (PRIB_RIPROC)ay_rrib_RiSolidBegin;
   gRibNopRITable[kRIB_SOLIDEND] = (PRIB_RIPROC)ay_rrib_RiSolidEnd;
 
@@ -2717,6 +3020,10 @@ ay_rrib_cleargprims(void)
   gRibNopRITable[kRIB_TORUS] = (PRIB_RIPROC)RiNopTorusV;
   gRibNopRITable[kRIB_NUPATCH] = (PRIB_RIPROC)RiNopNuPatchV;
   gRibNopRITable[kRIB_TRIMCURVE] = (PRIB_RIPROC)RiNopTrimCurve;
+
+  gRibNopRITable[kRIB_PATCH] = (PRIB_RIPROC)RiNopPatchV;
+  gRibNopRITable[kRIB_PATCHMESH] = (PRIB_RIPROC)RiNopPatchMeshV;
+  gRibNopRITable[kRIB_BASIS] = (PRIB_RIPROC)RiNopBasis;
 
   gRibNopRITable[kRIB_SOLIDBEGIN] = (PRIB_RIPROC)RiNopSolidBegin;
   gRibNopRITable[kRIB_SOLIDEND] = (PRIB_RIPROC)RiNopSolidEnd;
@@ -2983,15 +3290,18 @@ ay_rrib_poptrafos(void)
 } /* ay_rrib_poptrafos */
 
 
+/*
+ * Matrix Decomposition Code borrowed from Graphics Gems II unmatrix.c
+ */
 void
 ay_rrib_trafotoobject(ay_object *o, double *transform)
 {
- double v1[3], v2[3], v3[3];
+ double v1[3], v2[3], v3[3], v4[3];
  double sx, sy, sz;
  double rx, ry, rz;
  int i;
- double quat[4];
- double axis[3];
+ double axis[3], quat[4] = {0};
+ char fname[] = "ay_rrib_trafotoobject";
 
   o->scalx = 1.0;
   o->scaly = 1.0;
@@ -3004,6 +3314,8 @@ ay_rrib_trafotoobject(ay_object *o, double *transform)
   o->roty = 0.0;
   o->rotz = 0.0;
 
+  quat[3] = 1.0;
+
   if(fabs(transform[15]) <= AY_EPSILON )
     return;
 
@@ -3012,26 +3324,31 @@ ay_rrib_trafotoobject(ay_object *o, double *transform)
       transform[i] /= transform[15];
 
   /* decompose matrix */
-  o->movx = (double)transform[3];
-  o->movy = (double)transform[7];
-  o->movz = (double)transform[11];
 
+  /* get translation */
+  o->movx = (double)transform[12];
+  o->movy = (double)transform[13];
+  o->movz = (double)transform[14];
+  
+  /* get row vectors containing scale&rotation */
   v1[0] = (double)transform[0];
-  v1[1] = (double)transform[4];
-  v1[2] = (double)transform[8];
+  v1[1] = (double)transform[1];
+  v1[2] = (double)transform[2];
 
-  v2[0] = (double)transform[1];
+  v2[0] = (double)transform[4];
   v2[1] = (double)transform[5];
-  v2[2] = (double)transform[9];
+  v2[2] = (double)transform[6];
 
-  v3[0] = (double)transform[2];
-  v3[1] = (double)transform[6];
+  v3[0] = (double)transform[8];
+  v3[1] = (double)transform[9];
   v3[2] = (double)transform[10];
 
+  /* get scale */
   sx = AY_V3LEN(v1);
   sy = AY_V3LEN(v2);
   sz = AY_V3LEN(v3);
 
+  /* normalize row vectors */
   if(fabs(sx) > AY_EPSILON)
     {
       o->scalx *= sx;
@@ -3048,6 +3365,34 @@ ay_rrib_trafotoobject(ay_object *o, double *transform)
       AY_V3SCAL(v3, 1.0/sz);
     }
 
+  /*
+   * Check for a coordinate system flip.  If the determinant
+   * is -1, then negate the matrix and the scaling factors.
+   */
+  AY_V3CROSS(v4, v2, v3)
+  if(AY_V3DOT(v1, v4) < 0)
+    {
+      ay_error(AY_EWARN, fname, "Coordinate system flip detected!");
+      
+      o->scalx *= -1.0;
+      o->scaly *= -1.0;
+      o->scalz *= -1.0;
+      
+      for ( i = 0; i < 3; i++ )
+	{
+	  v1[i] *= -1;
+	}
+      for ( i = 0; i < 3; i++ )
+	{
+	  v2[i] *= -1;
+	}
+      for ( i = 0; i < 3; i++ )
+	{
+	  v3[i] *= -1;
+	}
+    }
+
+  /* now get rotation */
   ry = asin(-v1[2]);
   if(cos(ry) != 0)
     {
@@ -3065,8 +3410,12 @@ ay_rrib_trafotoobject(ay_object *o, double *transform)
       axis[0] = 1.0;
       axis[1] = 0.0;
       axis[2] = 0.0;
-      ay_quat_axistoquat(axis, rx, quat);
-      ay_quat_add(o->quat, quat, o->quat);
+      quat[0] = 0.0;
+      quat[1] = 0.0;
+      quat[2] = 0.0;
+      quat[3] = 1.0;
+      ay_quat_axistoquat(axis, -rx, quat);
+      ay_quat_add(quat, o->quat, o->quat);
       o->rotx = AY_R2D(rx);
     }
 
@@ -3075,8 +3424,12 @@ ay_rrib_trafotoobject(ay_object *o, double *transform)
       axis[0] = 0.0;
       axis[1] = 1.0;
       axis[2] = 0.0;
-      ay_quat_axistoquat(axis, ry, quat);
-      ay_quat_add(o->quat, quat, o->quat);
+      quat[0] = 0.0;
+      quat[1] = 0.0;
+      quat[2] = 0.0;
+      quat[3] = 1.0;
+      ay_quat_axistoquat(axis, -ry, quat);
+      ay_quat_add(quat, o->quat, o->quat);
       o->roty = AY_R2D(ry);
     }
 
@@ -3085,13 +3438,18 @@ ay_rrib_trafotoobject(ay_object *o, double *transform)
       axis[0] = 0.0;
       axis[1] = 0.0;
       axis[2] = 1.0;
-      ay_quat_axistoquat(axis, rz, quat);
-      ay_quat_add(o->quat, quat, o->quat);
+      quat[0] = 0.0;
+      quat[1] = 0.0;
+      quat[2] = 0.0;
+      quat[3] = 1.0;
+      ay_quat_axistoquat(axis, -rz, quat);
+      ay_quat_add(quat, o->quat, o->quat);
       o->rotz = AY_R2D(rz);
     }
 
  return;
 } /* ay_rrib_trafotoobject */
+
 
 void
 ay_rrib_linkobject(void *object, int type)
@@ -3154,6 +3512,9 @@ ay_rrib_readrib(char *filename, int frame)
   ay_rrib_objects = NULL;
   ay_rrib_lastobject = NULL;
 
+  /* default fov */
+  ay_rrib_fov = 45.0;
+
   /* initialize trafo and attribute attribute stacks */
   ay_rrib_ctrafos = NULL;
   ay_rrib_pushtrafos();
@@ -3195,7 +3556,7 @@ ay_rrib_readribtcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(argc < 2)
     {
-      ay_error(AY_EARGS, fname, "filename \\[framenumber\\]!");
+      ay_error(AY_EARGS, fname, "filename \\[framenumber\\] \\[rh|lh\\]!");
       return TCL_OK;
     }
 
@@ -3207,6 +3568,8 @@ ay_rrib_readribtcmd(ClientData clientData, Tcl_Interp *interp,
     {
       frame = -1;
     }
+
+  ay_rrib_rh = AY_TRUE;
 
   ay_status = ay_rrib_readrib(argv[1], frame);
   if(ay_status)
