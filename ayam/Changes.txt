@@ -1,4 +1,4 @@
-[CVS, 20. 11. 2002]:
+[CVS, 28. 11. 2002]:
 o bug fixes:
   - fixed remembering of the state of the object selection listbox/tree
     when the context menu or a double click on the label is used to
@@ -14,6 +14,8 @@ o bug fixes:
   - fixed edit_material not scrolling the tree widget properly when the
     material object is in the root level of the scene
   - fixed "align view" setting a wrong up-vector for views of type "Top"
+  - fixed object picking by dragging the mouse in conjunction with
+    "draw level only" rendering the view useless
 o reduced number of redraws when selecting hidden or material objects
 o added a RiDisplay tag type, that allows to add more output files
   (e.g. containing depth buffer information) to the scene
@@ -45,6 +47,16 @@ o added edit master feature (main menu "Edit/Master") that finds and
   selects the master object of an instance object (similar to the edit
   material feature)
 o "align view" now aligns to the object space of the selected object
+  (and not just to the object space of the current parent object);
+  in addition, grids are now drawn and handled correctly for aligned views
+o the configure menu of view windows has been rearranged to make it more
+  clear, that aligned local views not only draw a grid aligned to local
+  object space, but that editing takes also place in that space
+o a new shortcut <Ctrl+l> has been added to the view menu entry
+  "Configure/Edit Local"
+o the handles of editable points of objects are now only drawn, when
+  a modelling action is in effect, that could modify them
+o added support for "RiSides" to the RiAttribute property of material objects
 
 [15. 10. 2002] Ayam1.3:
 o bug fixes:
