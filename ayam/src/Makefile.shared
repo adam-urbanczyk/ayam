@@ -72,6 +72,11 @@ GLINCDIR = /usr/X11R6/include/
 # link options for linking with OpenGL libraries
 GLLIBS = -lGLU -lGL
 
+# TIFF
+TIFFINCDIR = /usr/include/
+# link options for linking with TIFF library
+TIFFLIB = -ltiff
+
 # Tcl/Tk
 # Tcl directory
 #TCLDIR = ../../tcl8.2.2
@@ -256,12 +261,12 @@ RRIBOBJS = plugins/rrib.o
 
 
 .c.o: 
-	$(CC) -c $(CFLAGS) $*.c -o $@ -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR)
+	$(CC) -c $(CFLAGS) $*.c -o $@ -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR) -I$(TIFFINCDIR)
 
 all: ayamsh csphere.so mfio.so metaobj.so
 
 ayamsh: $(AYAMOBJS) $(TOGLOBJECT) $(AFFINEOBJS)
-	$(LD) $(AYAMOBJS) $(TOGLOBJECT) $(EXLDFLAGS) -o ayamsh $(TKLIB) $(TCLLIB) $(GLLIBS) $(X11LIBS) $(RIBOUTLIB) $(SLCARGSLIB) $(AFFINEOBJS) -lm $(DL)
+	$(LD) $(AYAMOBJS) $(TOGLOBJECT) $(EXLDFLAGS) -o ayamsh $(TKLIB) $(TCLLIB) $(GLLIBS) $(X11LIBS) $(RIBOUTLIB) $(SLCARGSLIB) $(AFFINEOBJS) $(TIFFLIB) -lm $(DL)
 
 csphere.so: $(CSPHEREOBJS)
 	$(CC) -shared $(CSPHEREOBJS) -o plugins/csphere.so

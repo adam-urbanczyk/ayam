@@ -94,6 +94,8 @@ ay_undo_deletemulti(ay_object *o)
 	{
 	case AY_IDVIEW:
 	  view = (ay_view_object *)d->refine;
+	  if(view->bgimage)
+	    free(view->bgimage);
 	  free(view);
 	  /* delete selected points */
 	  if(d->selp)
@@ -237,6 +239,7 @@ ay_undo_copyview(ay_view_object *src, ay_view_object *dst)
 
   dst->togl = otogl;
   dst->dirty = AY_TRUE;
+  dst->bgimage = NULL;
 
  return AY_OK;
 }/* ay_undo_copyview */
@@ -641,7 +644,7 @@ ay_undo_copysave(ay_object *src, ay_object **dst)
 	return AY_EOMEM;
 
       memcpy((ay_view_object *)(new->refine), view, sizeof(ay_view_object));
-
+      ((ay_view_object *)new->refine)->bgimage = NULL;
       break;
     case AY_IDROOT:
 

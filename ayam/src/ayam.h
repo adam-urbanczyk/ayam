@@ -598,6 +598,10 @@ typedef struct ay_view_object_s
   /* call reshape before drawing */
   int dirty;
 
+  /* background image */
+  int drawbg;
+  char *bgimage;
+
 } ay_view_object;
 
 
@@ -976,7 +980,7 @@ extern unsigned int ay_current_glname;
 #define AYDEFAULTPICKEPSILON 0.2;
 
 /* Version Strings */
-#define AYVERSIONSTR "1.2pre"
+#define AYVERSIONSTR "1.2"
 #define AYVERSIONSTRMI "0"
 
 #include "aycore.h"
