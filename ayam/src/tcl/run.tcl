@@ -124,7 +124,7 @@ proc runGetStdout { num cmd template channel } {
 	    catch {SetProgress .render${num}.f1.p $percent}
 
 	    set cur [clock seconds]
-	    set start $ay(rstarttime$ay(rnum))
+	    set start $ay(rstarttime${num})
 	    set fulltime [expr ($cur-$start)*100.0/$percent]
 	    set togo [expr (100.0-$percent)*$fulltime/100.0]
 	    set hours [expr int(floor($togo/3600))]
@@ -139,6 +139,9 @@ proc runGetStdout { num cmd template channel } {
 		set secs [expr int(round($fulltime-($hours*3600)-($mins*60)))]
 		set string [format "%d:%02d:%02d elapsed"  $hours $mins $secs]
 		.render${num}.f2.la configure -text $string
+		
+		if {$ay(renderbeep${num})} {bell}
+
 	    }
 
 	}
@@ -210,11 +213,24 @@ proc runRenderer { cmd template } {
 
     set f [frame $w.f2]
     label $f.la -text "~ 0:00:00 to go"
-    button $f.bca -text "Cancel!" -width 16 -command "\
+    set ay(renderbeep$ay(rnum)) 0
+    global tcl_platform
+    if { $tcl_platform(platform) == "windows" } {
+	checkbutton $f.cb -image emptyimg -variable ay(renderbeep$ay(rnum))\
+		-bd 1 -indicatoron 0 -selectcolor #b03060
+
+    } else {
+	checkbutton $f.cb -variable ay(renderbeep$ay(rnum))
+    }
+    balloon_set $f.cb "Beep when finished."
+    button $w.bca -text "Cancel!" -width 16 -command "\
 	    foreach i {$pids} { exec $kill \$i &}; destroy $w"
-    pack $f.la -in $f -side top -fill x -expand yes
-    pack $f.bca -in $f -side bottom -fill x -expand yes
-    pack $f -in $w -side bottom -fill x
+
+    pack $f.la -in $f -side left -fill x -expand yes
+    pack $f.cb -in $f -side left -fill x -expand yes
+    pack $f -in $w -side top -fill x
+    pack $w.bca -in $w -side bottom -anchor s -fill x -expand yes
+
 
 
     winCenter $w
