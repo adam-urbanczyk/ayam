@@ -669,6 +669,9 @@ set w .
 wm title $w "Ayam - Main"
 wm iconname $w "Ayam"
 wm withdraw .
+# XXXX Meet ICCCM requirements?
+wm command . "[info nameofexecutable] $argv"
+wm client . [info hostname]
 
 # create the upper frame...
 frame .fu
@@ -856,6 +859,11 @@ ayam_loadscript about
 ayam_loadscript browser
 ayam_loadscript ai
 ayam_loadscript prog
+
+if { $AYIDRWRAPPED == 1 } {
+    ayam_loadscript idr
+}
+
 # bind . <Configure> { if { "%W" == "." } { puts stderr "%w" } }
 # olb_update
 # EOF
