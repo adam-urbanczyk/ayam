@@ -374,7 +374,7 @@ frame $w.ftext
 
 frame $w.fbutton
 pack $w.fbutton -in $w -side bottom
-button $w.fbutton.b -text "Dismiss" -command "destroy $w"
+button $w.fbutton.b -text "Dismiss" -pady $ay(pady) -command "destroy $w"
 pack $w.fbutton.b -in $w.fbutton
 
 pack $w.ftext -in $w -side top -expand yes -fill both
