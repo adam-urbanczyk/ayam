@@ -1993,36 +1993,36 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
  *
  */
 int
-ay_npt_interpolateu(ay_nurbpatch_object *patch)
+ay_npt_interpolateu(ay_nurbpatch_object *patch, int order)
 {
  int ay_status = AY_OK;
  char fname[] = "npt_interpolateu";
  int i, k, N, K, stride, ind, ind2, pu;
- double *vk = NULL, *d = NULL, *Pw = NULL, v[3] = {0};
- double *V = NULL, *Q = NULL;
+ double *uk = NULL, *d = NULL, *Pw = NULL, v[3] = {0};
+ double *U = NULL, *Q = NULL;
 
   K = patch->width;
   N = patch->height;
   stride = 4;
   Pw = patch->controlv;
-  pu = patch->uorder-1;
+  pu = order-1;
 
-  if(!(vk = calloc(K>N?K:N, sizeof(double))))
+  if(!(uk = calloc(K, sizeof(double))))
     return AY_EOMEM;
 
   if(!(d = calloc(N, sizeof(double))))
     {
-      free(vk); return AY_EOMEM;
+      free(uk); return AY_EOMEM;
     }
 
-  if(!(V = calloc(K+patch->uorder, sizeof(double))))
+  if(!(U = calloc(K+patch->uorder, sizeof(double))))
     {
-      free(vk); free(d); return AY_EOMEM;
+      free(uk); free(d); return AY_EOMEM;
     }
 
   if(!(Q = calloc(K*4, sizeof(double))))
     {
-      free(vk); free(d); free(V); return AY_EOMEM;
+      free(uk); free(d); free(U); return AY_EOMEM;
     }
 
   /* find average chord length */
@@ -2041,52 +2041,51 @@ ay_npt_interpolateu(ay_nurbpatch_object *patch)
 	  if(AY_V3LEN(v) < AY_EPSILON)
 	    {
 	      ay_error(AY_ERROR, fname, "Can not interpolate this patch!" );
-	      free(vk); free(d); free(V); return AY_OK;
+	      free(uk); free(d); free(U); return AY_OK;
 	    }
 	  ind2 += N*stride;
-	}
-
-    }
+	} /* for */
+    } /* for */
 
   /* create knotv */
   ind = N*stride;
   ind2 = 0;
-  vk[0] = 0.0;
+  uk[0] = 0.0;
   for(k = 1; k < K; k++)
     {
-      vk[k] = 0.0;
+      uk[k] = 0.0;
       for(i = 0; i < N; i++)
 	{
 	  v[0] = Pw[ind]   - Pw[ind2];
 	  v[1] = Pw[ind+1] - Pw[ind2+1];
 	  v[2] = Pw[ind+2] - Pw[ind2+2];
 
-	  vk[k] += (AY_V3LEN(v)/d[i]);
+	  uk[k] += (AY_V3LEN(v)/d[i]);
 	  ind += stride;
 	  ind2 += stride;
 	}
 
-      vk[k] /= N;
-      vk[k] += vk[k-1];
+      uk[k] /= N;
+      uk[k] += uk[k-1];
     }
-  vk[(K>N?K:N)-1] = 1.0;
+  uk[K-1] = 1.0;
 
 
   for(i = 1; i < (K-pu); i++)
     {
-      V[i+pu] = 0.0;
+      U[i+pu] = 0.0;
 
       for(k = i; k < (i+pu); k++)
 	{
-	  V[i+pu] += vk[k];
+	  U[i+pu] += uk[k];
 	}
 
-      V[i+pu] /= pu;
+      U[i+pu] /= pu;
     }
   for(i = 0; i <= pu; i++)
-    V[i] = 0.0;
-  for(i = (K/*-pu-1*/); i < (K+patch->uorder); i++)
-    V[i] = 1.0;
+    U[i] = 0.0;
+  for(i = (K/*-pu-1*/); i < (K+pu+1); i++)
+    U[i] = 1.0;
 
   /* interpolate */
   for(i = 0; i < N; i++)
@@ -2100,10 +2099,10 @@ ay_npt_interpolateu(ay_nurbpatch_object *patch)
 	  ind += N*stride;
 	}
 
-      ay_status = ay_nb_GlobalInterpolation4D(K-1, Q, vk, V, pu);
+      ay_status = ay_nb_GlobalInterpolation4D(K-1, Q, uk, U, pu);
 
       if(ay_status)
-	{ free(d); free(vk); free(V); free(Q); return ay_status; }
+	{ free(d); free(uk); free(U); free(Q); return ay_status; }
 
       ind = i*stride;
       for(k = 0; k < K; k++)
@@ -2114,10 +2113,11 @@ ay_npt_interpolateu(ay_nurbpatch_object *patch)
     }
 
   free(patch->uknotv);
-  patch->uknotv = V;
+  patch->uknotv = U;
   patch->uknot_type = AY_KTCUSTOM;
+  patch->uorder = pu+1;
 
-  free(vk);
+  free(uk);
   free(d);
   free(Q);
 
@@ -2125,257 +2125,289 @@ ay_npt_interpolateu(ay_nurbpatch_object *patch)
 } /* ay_npt_interpolateu */
 
 
-/* ay_npt_skin:
+/* ay_npt_interpolatev:
  *
  *
  */
 int
-ay_npt_skin(ay_object *curves, int order, int knot_type,
-	    int interpolate, ay_nurbpatch_object **skin)
+ay_npt_interpolatev(ay_nurbpatch_object *patch, int order)
 {
  int ay_status = AY_OK;
- ay_object *o = NULL;
- ay_nurbcurve_object *curve = NULL;
- int numcurves = 0, max_order = 0;
- int stride, nh = 0, numknots = 0, t = 0, i, j, a, b;
- int Ualen, Ublen, Ubarlen, clamp_me;
- double *Uh = NULL, *Qw = NULL, *realUh = NULL, *realQw = NULL;
- double *Ubar = NULL, *Ua = NULL, *Ub = NULL;
- double *skc = NULL, u = 0.0;
- double m[16];
+ char fname[] = "npt_interpolatev";
+ int i, k, N, K, stride, ind, ind2, pv;
+ double *vk = NULL, *d = NULL, *Pw = NULL, v[3] = {0};
+ double *V = NULL;
 
-  /* clamp curves */
-  o = curves;
-  while(o)
+  K = patch->width;
+  N = patch->height;
+  stride = 4;
+  Pw = patch->controlv;
+  pv = patch->vorder-1;
+
+  if(!(vk = calloc(N, sizeof(double))))
+    return AY_EOMEM;
+
+  if(!(d = calloc(K, sizeof(double))))
     {
-      curve = (ay_nurbcurve_object *) o->refine;
-      clamp_me = AY_FALSE;
-      if(curve->knot_type == AY_KTBSPLINE)
+      free(vk); return AY_EOMEM;
+    }
+
+  if(!(V = calloc(N+patch->vorder, sizeof(double))))
+    {
+      free(vk); free(d); return AY_EOMEM;
+    }
+
+  /* find average chord length */
+  for(i = 0; i < K; i++)
+    {
+      ind = (i*N)*stride;
+      d[i] = 0.0;
+      for(k = 1; k < N; k++)
 	{
-	  clamp_me = AY_TRUE;
-	}
-      else
-	{
-	  if(curve->knot_type == AY_KTCUSTOM)
+	  ind2 = ind+stride;
+	  v[0] = Pw[ind2]   - Pw[ind];
+	  v[1] = Pw[ind2+1] - Pw[ind+1];
+	  v[2] = Pw[ind2+2] - Pw[ind+2];
+	  d[i] += AY_V3LEN(v);
+	  if(AY_V3LEN(v) < AY_EPSILON)
 	    {
-	      a = 1;
-	      u = curve->knotv[0];
-	      for(i = 1; i < curve->order; i++)
-		if(u == curve->knotv[i])
-		  a++;
-
-	      j = curve->length+curve->order-1;
-	      b = 1;
-	      u = curve->knotv[j];
-	      for(i = j-1; i >= curve->length; i--)
-		if(u == curve->knotv[i])
-		  b++;
-
-	      if((a < curve->order) || (b < curve->order))
-		{
-		  clamp_me = AY_TRUE;
-		}
+	      ay_error(AY_ERROR, fname, "Can not interpolate this patch!" );
+	      free(vk); free(d); free(V); return AY_OK;
 	    }
-	}
+	  ind += stride;
+	} /* for */
+    } /* for */
 
-      if(clamp_me)
-	ay_status = ay_nct_clamp(curve);
-
-      o = o->next;
-    }
-
-  /* rescale knots to range 0.0 - 1.0 */
-  o = curves;
-  while(o)
+  /* create knotv */
+  vk[0] = 0.0;
+  for(k = 1; k < N; k++)
     {
-      curve = (ay_nurbcurve_object *) o->refine;
-      if(curve->knotv[0] != 0.0 || curve->knotv[
-	  curve->length+curve->order-1] != 1.0)
+      ind = k*stride;
+      vk[k] = 0.0;
+      for(i = 0; i < K; i++)
 	{
-	  ay_status = ay_knots_rescaleknotv(curve->length+curve->order,
-					    curve->knotv);
-	}
-      o = o->next;
-    }
+	  ind2 = ind+(N*stride);
+	  v[0] = Pw[ind2]   - Pw[ind];
+	  v[1] = Pw[ind2+1] - Pw[ind+1];
+	  v[2] = Pw[ind2+2] - Pw[ind+2];
 
-  /* find max order */
+	  vk[k] += (AY_V3LEN(v)/d[i]);
+	  ind += N*stride;
+	}
+
+      vk[k] /= K;
+      vk[k] += vk[k-1];
+    }
+  vk[N-1] = 1.0;
+
+
+  for(i = 1; i < (N-pv); i++)
+    {
+      V[i+pv] = 0.0;
+
+      for(k = i; k < (i+pv); k++)
+	{
+	  V[i+pv] += vk[k];
+	}
+
+      V[i+pv] /= pv;
+    }
+  for(i = 0; i <= pv; i++)
+    V[i] = 0.0;
+  for(i = (N/*-pu-1*/); i < (N+pv+1); i++)
+    V[i] = 1.0;
+
+  /* interpolate */
+  for(i = 0; i < K; i++)
+    {
+      ind = i*N*stride;
+
+      ay_status = ay_nb_GlobalInterpolation4D(N-1,
+			&(patch->controlv[ind]), vk, V, pv);
+
+      if(ay_status)
+	{ free(d); free(vk); free(V); return ay_status; }
+
+    } /* for */
+
+  free(patch->vknotv);
+  patch->vknotv = V;
+  patch->vknot_type = AY_KTCUSTOM;
+  patch->vorder = pv+1;
+
+  free(vk);
+  free(d);
+
+ return AY_OK;
+} /* ay_npt_interpolatev */
+
+
+/* ay_npt_skinu:
+ *
+ *
+ */
+int
+ay_npt_skinu(ay_object *curves, int order, int knot_type,
+	     int interpolate, ay_nurbpatch_object **skin)
+{
+ int ay_status = AY_OK;
+ ay_object *o = NULL, *o2 = NULL;
+ ay_nurbcurve_object *curve = NULL, *c1 = NULL, *c2 = NULL;
+ int numcurves = 0;
+ int stride = 4, K, N, i, b, k, degU, ind;
+ double *skc = NULL, *U = NULL, *uk = NULL, *d = NULL, *V = NULL;
+ double v[3] = {0};
+
+  ay_status = ay_nct_makecompatible(curves);
+  if(ay_status)
+    {goto cleanup;}
+
   o = curves;
   while(o)
     {
-      curve = (ay_nurbcurve_object *) o->refine;
-      if(curve->order > max_order)
-	max_order = curve->order;
-
       numcurves++;
       o = o->next;
     }
 
-  /* degree elevate */
-  o = curves;
-  while(o)
+  curve = (ay_nurbcurve_object*)(curves->refine);
+  if(!(V = calloc(curve->length+curve->order, sizeof(double))))
+    {ay_status = AY_EOMEM; goto cleanup;}
+  memcpy(V, curve->knotv, (curve->length+curve->order)*sizeof(double));
+
+  K = numcurves;
+  N = curve->length;
+
+  if(order < 3)
+    order = 3;
+  if(order > numcurves)
+    order = numcurves;
+  degU = order-1;
+
+  if(knot_type == AY_KTBEZIER)
+    if(order < numcurves)
+      order = numcurves;
+
+  if(knot_type == AY_KTCUSTOM)
     {
-      curve = (ay_nurbcurve_object *) o->refine;
-      if(curve->order < max_order)
+      /* knot averaging */
+      if(!(uk = calloc(numcurves, sizeof(double))))
+	{ay_status = AY_EOMEM; goto cleanup;}
+      if(!(d = calloc(curve->length, sizeof(double))))
+	{ay_status = AY_EOMEM; goto cleanup;}
+      if(!(U = calloc(numcurves+order, sizeof(double))))
+	{ay_status = AY_EOMEM; goto cleanup;}
+
+      for(i = 0; i < N; i++)
 	{
-	  stride = 4;
-	  t = max_order - curve->order;
-
-	  /* alloc new knotv & new controlv */
-	  if(!(Uh = calloc((curve->length + curve->length*t +
-			    curve->order + t),
-			   sizeof(double))))
+	  d[i] = 0;
+	  o = curves;
+	  c1 = (ay_nurbcurve_object*)(o->refine);
+	  ind = i*stride;
+	  for(k = 1; k < K; k++)
 	    {
-	      return AY_EOMEM;
-	    }
-	  if(!(Qw = calloc((curve->length + curve->length*t)*4,
-			   sizeof(double))))
-	    {
-	      free(Uh);
-	      return AY_EOMEM;
-	    }
+	      o2 = o->next;
+	      c2 = (ay_nurbcurve_object*)(o2->refine);
+	      v[0] = c2->controlv[ind]   - c1->controlv[ind];
+	      v[1] = c2->controlv[ind+1] - c1->controlv[ind+1];
+	      v[2] = c2->controlv[ind+2] - c1->controlv[ind+2];
+	      d[i] += AY_V3LEN(v);
+	      o = o2;
+	      c1 = c2;
+	    } /* for */
+	  if(d[i] < AY_EPSILON)
+	    {ay_status = AY_ERROR; goto cleanup;}
+	} /* for */
 
-	  ay_status = ay_nb_DegreeElevateCurve(stride, curve->length-1,
-		       curve->order-1, curve->knotv, curve->controlv,
-		       t, &nh, Uh, Qw);
-
-	  if(ay_status)
-	    {
-	      free(Uh); free(Qw); return ay_status;
-	    }
-
-	  if(!(realQw = realloc(Qw, nh*4*sizeof(double))))
-	    {
-	      return AY_EOMEM;
-	    }
-
-	  if(!(realUh = realloc(Uh, (nh+curve->order+t)*sizeof(double))))
-	    {
-	      return AY_EOMEM;
-	    }
-
-	  free(curve->knotv);
-	  curve->knotv = realUh;
-
-	  free(curve->controlv);
-	  curve->controlv = realQw;
-
-	  curve->knot_type = AY_KTCUSTOM;
-
-	  curve->order += t;
-
-	  curve->length = nh;
-
-	  numknots += (curve->order + curve->length);
-
-	  Qw = NULL;
-	  Uh = NULL;
-	  realQw = NULL;
-	  realUh = NULL;
-	} /* if */
-      o = o->next;
-    } /* while */
-
-  /* unify knots */
-  o = curves;
-  curve = (ay_nurbcurve_object *) o->refine;
-  Ua = curve->knotv;
-  Ualen = curve->length+curve->order;
-
-  o = o->next;
-  while(o)
-    {
-      curve = (ay_nurbcurve_object *)o->refine;
-      Ub = curve->knotv;
-      Ublen = curve->length+curve->order;
-
-      ay_status = ay_knots_unify(Ua, Ualen, Ub, Ublen, &Ubar, &Ubarlen);
-
-      if(ay_status)
+      o = curves;
+      c1 = (ay_nurbcurve_object*)(o->refine);
+      uk[0] = 0;
+      for(k = 1; k < K; k++)
 	{
-	  fprintf(stderr,"Memory may have leaked!\n");
-	  return ay_status;
-	}
+	  o2 = o->next;
+	  c2 = (ay_nurbcurve_object*)(o2->refine);
+	  uk[k] = 0;
+	  ind = 0;
+	  for(i = 0; i < N; i++)
+	    {
+ 	      v[0] = (c2->controlv[ind]   - c1->controlv[ind])/d[i];
+	      v[1] = (c2->controlv[ind+1] - c1->controlv[ind+1])/d[i];
+	      v[2] = (c2->controlv[ind+2] - c1->controlv[ind+2])/d[i];
+	      uk[k] += AY_V3LEN(v);
+	      ind += stride;
+	    } /* for */
+	  uk[k] /= N;
+	  uk[k] += uk[k-1];
+	  o = o2;
+	  c1 = c2;
+	} /* for */
+      uk[numcurves-1] = 1.0;
 
-      Ua = Ubar;
-      Ualen = Ubarlen;
-
-      o = o->next;
-    }
-
-  /* merge knots */
-  o = curves;
-  while(o)
-    {
-      curve = (ay_nurbcurve_object *) o->refine;
-
-      ay_status = ay_knots_merge(curve, Ubar, Ubarlen);
-      if(ay_status)
+      for(i = 1; i < K-degU; i++)
 	{
-	  free(Ubar); return ay_status;
-	}
-      o = o->next;
-    }
+	  U[i+degU] = 0.0;
+	  for(k = i; k < i+degU; k++)
+	    {
+	      U[i+degU] += uk[k];
+	    }
+	  U[i+degU] /= degU;
+	} /* for */
+      for(i = 0; i <= degU; i++)
+	U[i] = 0.0;
+      for(i = K; i <= K+degU; i++)
+	U[i] = 1.0;
+    } /* if */
 
   /* construct patch */
   o = curves;
   curve = (ay_nurbcurve_object *) o->refine;
 
   if(!(skc = calloc((curve->length * numcurves * 4), sizeof(double))))
-    {
-      free(Ubar); return AY_EOMEM;
-    }
+    {ay_status = AY_EOMEM; goto cleanup;}
 
   b = 0;
-  i = 0;
-
   while(o)
     {
       curve = (ay_nurbcurve_object *) o->refine;
-
-      /* get curves transformation-matrix */
-      ay_trafo_creatematrix(o, m);
-
-      stride = 4;
-
-      for(i = 0; i < curve->length; i++)
+      if(interpolate == 1 && degU > 1)
 	{
-	  a = i*stride;
-
-
-	  ay_trafo_apply4(&(curve->controlv[a]), m);
-
-	  memcpy(&(skc[b]), &(curve->controlv[a]), stride*sizeof(double));
-
-	  b += 4;
+	  ay_status = ay_nb_GlobalInterpolation4D(curve->length-1,
+						  curve->controlv,
+						  uk, U, degU);
 	}
-
+      memcpy(&(skc[b]), curve->controlv, N*stride*sizeof(double));
+      b += N*stride;
       o = o->next;
     } /* while */
-
-  if(order > numcurves)
-    order = numcurves;
-  if(order < 2)
-    order = 2;
-
-  if(knot_type == AY_KTBEZIER)
-    if(order < numcurves)
-      order = numcurves;
 
   ay_status = ay_npt_create(order, curve->order,
 			    numcurves, curve->length,
 			    knot_type, AY_KTCUSTOM,
-			    skc, NULL, Ubar, skin);
+			    skc, U, V, skin);
 
   if(ay_status)
-    {
-      free(Ubar); free(skc); return ay_status;
-    }
+    {goto cleanup;}
 
-  if(interpolate)
-    ay_status = ay_npt_interpolateu(*skin);
+  U = NULL;
+  V = NULL;
+  skc = NULL;
+
+  if(interpolate == 2)
+    ay_status = ay_npt_interpolateu(*skin, order);
+
+cleanup:
+  if(uk)
+    free(uk);
+  if(d)
+    free(d);
+  if(U)
+    free(U);
+  if(V)
+    free(V);
+  if(skc)
+    free(skc);
 
  return ay_status;
-} /* ay_npt_skin */
+} /* ay_npt_skinu */
 
 
 /* ay_npt_skinv:
@@ -2387,10 +2419,168 @@ ay_npt_skinv(ay_object *curves, int order, int knot_type,
 	     int interpolate, ay_nurbpatch_object **skin)
 {
  int ay_status = AY_OK;
+ ay_object *o = NULL, *o2 = NULL;
+ ay_nurbcurve_object *curve = NULL, *c1 = NULL, *c2 = NULL;
+ int numcurves = 0;
+ int stride = 4, K, N, i, a, b, c, k, degV, ind;
+ double *skc = NULL, *U = NULL, *vk = NULL, *d = NULL, *V = NULL;
+ double v[3] = {0};
 
-  ay_status = ay_npt_skin(curves, order, knot_type, interpolate, skin);
+  ay_status = ay_nct_makecompatible(curves);
+  if(ay_status)
+    {goto cleanup;}
 
-  ay_status = ay_npt_swapuv(*skin);
+  o = curves;
+  while(o)
+    {
+      numcurves++;
+      o = o->next;
+    }
+
+  curve = (ay_nurbcurve_object*)(curves->refine);
+  if(!(U = calloc(curve->length+curve->order, sizeof(double))))
+    {ay_status = AY_EOMEM; goto cleanup;}
+  memcpy(U, curve->knotv, (curve->length+curve->order)*sizeof(double));
+
+  K = numcurves;
+  N = curve->length;
+
+  if(order < 3)
+    order = 3;
+  if(order > numcurves)
+    order = numcurves;
+  degV = order-1;
+
+  if(knot_type == AY_KTBEZIER)
+    if(order < numcurves)
+      order = numcurves;
+
+  if(knot_type == AY_KTCUSTOM)
+    {
+      /* knot averaging */
+      if(!(vk = calloc(numcurves, sizeof(double))))
+	{ay_status = AY_EOMEM; goto cleanup;}
+      if(!(d = calloc(curve->length, sizeof(double))))
+	{ay_status = AY_EOMEM; goto cleanup;}
+      if(!(V = calloc(numcurves+order, sizeof(double))))
+	{ay_status = AY_EOMEM; goto cleanup;}
+
+      for(i = 0; i < N; i++)
+	{
+	  d[i] = 0;
+	  o = curves;
+	  c1 = (ay_nurbcurve_object*)(o->refine);
+	  ind = i*stride;
+	  for(k = 1; k < K; k++)
+	    {
+	      o2 = o->next;
+	      c2 = (ay_nurbcurve_object*)(o2->refine);
+	      v[0] = c2->controlv[ind]   - c1->controlv[ind];
+	      v[1] = c2->controlv[ind+1] - c1->controlv[ind+1];
+	      v[2] = c2->controlv[ind+2] - c1->controlv[ind+2];
+	      d[i] += AY_V3LEN(v);
+	      o = o2;
+	      c1 = c2;
+	    } /* for */
+	  if(d[i] < AY_EPSILON)
+	    {ay_status = AY_ERROR; goto cleanup;}
+	} /* for */
+
+      o = curves;
+      c1 = (ay_nurbcurve_object*)(o->refine);
+      vk[0] = 0;
+      for(k = 1; k < K; k++)
+	{
+	  o2 = o->next;
+	  c2 = (ay_nurbcurve_object*)(o2->refine);
+	  vk[k] = 0;
+	  ind = 0;
+	  for(i = 0; i < N; i++)
+	    {
+ 	      v[0] = (c2->controlv[ind]   - c1->controlv[ind])/d[i];
+	      v[1] = (c2->controlv[ind+1] - c1->controlv[ind+1])/d[i];
+	      v[2] = (c2->controlv[ind+2] - c1->controlv[ind+2])/d[i];
+	      vk[k] += AY_V3LEN(v);
+	      ind += stride;
+	    } /* for */
+	  vk[k] /= N;
+	  vk[k] += vk[k-1];
+	  o = o2;
+	  c1 = c2;
+	} /* for */
+      vk[numcurves-1] = 1.0;
+
+      for(i = 1; i < K-degV; i++)
+	{
+	  V[i+degV] = 0.0;
+	  for(k = i; k < i+degV; k++)
+	    {
+	      V[i+degV] += vk[k];
+	    }
+	  V[i+degV] /= degV;
+	} /* for */
+      for(i = 0; i <= degV; i++)
+	V[i] = 0.0;
+      for(i = K; i <= K+degV; i++)
+	V[i] = 1.0;
+    } /* if */
+
+  /* construct patch */
+  o = curves;
+  curve = (ay_nurbcurve_object *) o->refine;
+
+  if(!(skc = calloc((curve->length * numcurves * stride), sizeof(double))))
+    {ay_status = AY_EOMEM; goto cleanup;}
+
+  c = 0;
+  while(o)
+    {
+      curve = (ay_nurbcurve_object *) o->refine;
+
+      if(interpolate == 1 && degV > 1)
+	{
+	  ay_status = ay_nb_GlobalInterpolation4D(curve->length-1,
+						  curve->controlv,
+						  vk, V, degV);
+	}
+      b = c*stride;
+      a = 0;
+      for(i = 0; i < curve->length; i++)
+	{
+	  memcpy(&(skc[b]), &(curve->controlv[a]), stride*sizeof(double));
+	  b += K*stride;
+	  a += stride;
+	}
+      c++;
+      o = o->next;
+    } /* while */
+
+  ay_status = ay_npt_create(curve->order, order,
+			    curve->length, numcurves,
+			    AY_KTCUSTOM, knot_type,
+			    skc, U, V, skin);
+
+  if(ay_status)
+    {goto cleanup;}
+
+  U = NULL;
+  V = NULL;
+  skc = NULL;
+
+  if(interpolate == 2)
+    ay_status = ay_npt_interpolatev(*skin, order);
+
+cleanup:
+  if(vk)
+    free(vk);
+  if(d)
+    free(d);
+  if(U)
+    free(U);
+  if(V)
+    free(V);
+  if(skc)
+    free(skc);
 
  return ay_status;
 } /* ay_npt_skinv */
@@ -4061,22 +4251,291 @@ ay_npt_swapuvtcmd(ClientData clientData, Tcl_Interp *interp,
  *
  */
 int
-ay_npt_gordon(ay_object *cu, ay_object *cv, int uorder, int vorder,
+ay_npt_gordon(ay_object *cu, ay_object *cv, ay_object *in,
+	      int uorder, int vorder,
 	      ay_nurbpatch_object **gordon)
 {
  int ay_status = AY_OK;
- ay_nurbpatch_object *skinu = NULL, *skinv = NULL;
- int knot_type = AY_KTNURB;
+ char fname[] = "ay_npt_gordon";
+ ay_object *c;
+ ay_object *lcu = NULL, *lcv = NULL; /* last cu/cv curve */
+ ay_nurbcurve_object *nc = NULL;
+ ay_nurbpatch_object *interpatch = NULL, *skinu = NULL, *skinv = NULL;
+ int knot_type = AY_KTNURB, uo, vo;
+ int i, j, k, numcu = 0, numcv = 0; /* numbers of parameter curves */
+ int need_interpol = AY_FALSE;
+ double *intersections = NULL; /* matrix of intersection points */
+ double *unifiedU = NULL, *unifiedV = NULL;
+ int uUlen, uVlen;
 
   if(!cu || !cv || !gordon)
     return AY_ENULL;
 
+  /* count parameter curves, assuming all objects are of the right
+     type (NURBS Curve) */
+  c = cu;
+  while(c)
+    {
+      numcu++;
+      lcu = c;
+      c = c->next;
+    }
 
-  ay_status = ay_npt_skin(cu, uorder, knot_type, AY_FALSE, &skinu);
-  ay_status = ay_npt_skinv(cv, vorder, knot_type, AY_FALSE, &skinv);
+  c = cv;
+  while(c)
+    {
+      numcv++;
+      lcv = c;
+      c = c->next;
+    }
+  
+  if(uorder < 2)
+    uorder = 4;
+
+  if(vorder < 2)
+    vorder = 4;
+
+  /* make curves compatible (defined on the same knot vector) */
+  ay_status = ay_nct_makecompatible(cu);
+  ay_status = ay_nct_makecompatible(cv);
+
+  /* assume, we always get enough parameter curves (>=2 in each dimension) */
+
+  if(!in)
+    {
+      /* calculate intersection points */
+      if(!(intersections = calloc(numcu*numcv*4, sizeof(double))))
+	return AY_EOMEM;
+
+      /* immediately put the four endpoints of the first/last u curve into the
+	 corners of the intersections array, we need them in any case */
+      nc = (ay_nurbcurve_object *)cu->refine;
+      i = 0;
+      ay_nb_CurvePoint4D(nc->length-1, nc->order-1, nc->knotv, nc->controlv,
+			 nc->knotv[nc->order-1], &(intersections[i]));
+      i = (numcu-1)*numcv*4;
+      ay_nb_CurvePoint4D(nc->length-1, nc->order-1, nc->knotv, nc->controlv,
+			 nc->knotv[nc->length], &(intersections[i]));
+
+      nc = (ay_nurbcurve_object *)lcu->refine;
+      i = (numcu-1)*4;
+      ay_nb_CurvePoint4D(nc->length-1, nc->order-1, nc->knotv, nc->controlv,
+			 nc->knotv[nc->order-1], &(intersections[i]));
+      i = ((numcu-1)*numcv+(numcv-1))*4;
+      ay_nb_CurvePoint4D(nc->length-1, nc->order-1, nc->knotv, nc->controlv,
+			 nc->knotv[nc->length], &(intersections[i]));
+
+      /* first, check for some easy cases */
+      if((numcu == 2) && (numcv == 2))
+	{
+	  /* dead easy, we have just 4 intersection points, which we already
+	     got from the start/end points of the two u curves, no
+	     interpolation needed */
+	  need_interpol = AY_FALSE;
+	}
+      else
+	{
+	  if(numcu == 2) /* && numcv > 2 */
+	    {
+	      /* still easy, we can get all intersections from curve
+		 endpoints */
+	  
+	      /* get missing intersection points */
+	      c = cv->next;
+	      i = 2*4;
+	      for(j = 1; j < numcv; j++)
+		{
+		  nc = (ay_nurbcurve_object *)c->refine;
+
+		  ay_nb_CurvePoint4D(nc->length-1, nc->order-1, nc->knotv,
+				     nc->controlv, nc->knotv[nc->order-1],
+				     &(intersections[i]));
+		  i += 4;
+		  ay_nb_CurvePoint4D(nc->length-1, nc->order-1, nc->knotv,
+				     nc->controlv, nc->knotv[nc->length],
+				     &(intersections[i]));
+		  i += 4;
+		  c = c->next;
+		} /* for */
+
+	      need_interpol = AY_TRUE;
+	    }
+	  else
+	    {
+	      if(numcv == 2) /* && numcu > 2 */
+		{
+		  /* still easy, we can get all intersections from
+		     curve endpoints */
+
+		  /* get missing intersection points */
+		  c = cu->next;
+		  i = 4;
+		  for(j = 1; j < numcu; j++)
+		    {
+		      nc = (ay_nurbcurve_object *)c->refine;
+		      ay_nb_CurvePoint4D(nc->length-1, nc->order-1, nc->knotv,
+					 nc->controlv, nc->knotv[nc->order-1],
+					 &(intersections[i]));
+		      i += 4;
+		      c = c->next;
+		    } /* for */
+
+		  c = cu->next;
+		  i = ((numcu-1)*numcv)*4;
+		  for(j = 1; j < numcu; j++)
+		    {
+		      nc = (ay_nurbcurve_object *)c->refine;
+		      ay_nb_CurvePoint4D(nc->length-1, nc->order-1, nc->knotv,
+					 nc->controlv, nc->knotv[nc->length],
+					 &(intersections[i]));
+		      i += 4;
+		      c = c->next;
+		    } /* for */
+
+		  need_interpol = AY_TRUE;
+		}
+	      else
+		{
+		  /* this is the general, hard case... */
+
+		  /* XXXX ...which is not supported yet... */
+		  free(intersections);
+		  ay_error(AY_ERROR, fname,
+			   "unsupported number of u/v curves");
+		  return AY_ERROR;
+		  /*
+		    ay_status = ay_nct_intersectca(cu, cv, intersections);
+		    need_interpol = AY_TRUE;
+		  */
+		} /* if */
+	    } /* if */
+	} /* if */
+
+      uo = uorder;
+      if(numcu < uorder)
+	uorder = numcu;
+
+      vo = vorder;
+      if(numcv < vorder)
+	vorder = numcv;
+
+      ay_status = ay_npt_create(uorder, vorder, numcu, numcv,
+				AY_KTNURB, AY_KTNURB,
+				intersections, NULL, NULL,
+				&interpatch);
+    }
+  else 
+    {
+      interpatch = (ay_nurbpatch_object*)in->refine;
+      if((numcu == 2) && (numcv == 2))
+	{
+	  need_interpol = AY_FALSE;
+	}
+      else
+	{
+	  need_interpol = AY_TRUE;
+	}
+    } /* if */
+
+  if(need_interpol)
+    {
+      ay_status = ay_npt_interpolateu(interpatch, uorder);
+      ay_status = ay_npt_interpolatev(interpatch, vorder);
+    }
+
+  ay_status = ay_npt_skinv(cu, uorder, AY_KTCUSTOM, 1, &skinu);
+  ay_status = ay_npt_skinu(cv, vorder, AY_KTCUSTOM, 1, &skinv);
 
 
+  if(skinu->uorder > uo)
+    uo = skinu->uorder;
+  if(skinv->uorder > uo)
+    uo = skinv->uorder;
 
+  if(skinu->vorder > vo)
+    vo = skinu->vorder;
+  if(skinv->vorder > vo)
+    vo = skinv->vorder;
+
+
+  if(skinu->uorder < uo)
+    ay_status = ay_npt_elevateu(skinu, uo-skinu->uorder);
+
+  if(skinu->vorder < vo)
+    ay_status = ay_npt_elevatev(skinu, vo-skinu->vorder);
+
+  if(skinv->uorder < uo)
+    ay_status = ay_npt_elevateu(skinv, uo-skinv->uorder);
+
+  if(skinv->vorder < vo)
+    ay_status = ay_npt_elevatev(skinv, vo-skinv->vorder);
+
+  if(interpatch->uorder < uo)
+    ay_status = ay_npt_elevateu(interpatch, uo-interpatch->uorder);
+
+  if(interpatch->vorder < vo)
+    ay_status = ay_npt_elevatev(interpatch, vo-interpatch->vorder);
+
+  
+  ay_status = ay_knots_unify(skinu->uknotv, skinu->width+skinu->uorder,
+			     skinv->uknotv, skinv->width+skinu->uorder,
+			     &unifiedU, &uUlen);
+  ay_status = ay_knots_unify(unifiedU, uUlen,
+			     interpatch->uknotv, interpatch->width+
+			     interpatch->uorder,
+			     &unifiedU, &uUlen);
+
+  ay_status = ay_knots_unify(skinu->vknotv, skinu->height+skinu->vorder,
+			     skinv->vknotv, skinv->height+skinv->vorder,
+			     &unifiedV, &uVlen);
+  ay_status = ay_knots_unify(unifiedV, uVlen,
+			     interpatch->vknotv, interpatch->height+
+			     interpatch->vorder,
+			     &unifiedV, &uVlen);
+
+  ay_status = ay_knots_mergesurf(skinu, unifiedU, uUlen, unifiedV, uVlen);
+  
+  ay_status = ay_knots_mergesurf(skinv, unifiedU, uUlen, unifiedV, uVlen);
+  
+  ay_status = ay_knots_mergesurf(interpatch, unifiedU, uUlen, unifiedV, uVlen);
+
+  for(i = 0; i < skinu->width; i++)
+    {
+      for(j = 0; j < skinu->height; j++)
+	{
+	  k = (i*skinu->height+j)*4;
+	  skinu->controlv[k] += skinv->controlv[k];
+	  skinu->controlv[k] -= interpatch->controlv[k];
+
+	  skinu->controlv[k+1] += skinv->controlv[k+1];
+	  skinu->controlv[k+1] -= interpatch->controlv[k+1];
+
+	  skinu->controlv[k+2] += skinv->controlv[k+2];
+	  skinu->controlv[k+2] -= interpatch->controlv[k+2];
+	  /*
+	  skinu->controlv[k+3] += skinv->controlv[k+3];
+	  skinu->controlv[k+3] -= interpatch->controlv[k+3];
+	  */
+	  skinu->controlv[k+3] = 1.0;
+	} /* for */
+    } /* for */
+
+  *gordon = skinu;
+
+  if(skinv)
+    {
+      free(skinv->uknotv);
+      free(skinv->vknotv);
+      free(skinv->controlv);
+      free(skinv);
+    }
+  if(interpatch)
+    {
+      free(interpatch->uknotv);
+      free(interpatch->vknotv);
+      free(interpatch->controlv);
+      free(interpatch);
+    }
 
  return ay_status;
 } /* ay_npt_gordon */

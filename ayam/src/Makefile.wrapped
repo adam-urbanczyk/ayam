@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile.wrapped [18. Oct 2003]
+# Makefile.wrapped [14. Dec 2003]
 # Makefile for Ayam (wrapped version)
 
 # Choose an installation prefix.
@@ -326,6 +326,7 @@ AYAMOBJS = aycore/bbc.o\
 	objects/cylinder.o\
 	objects/disk.o\
 	objects/extrude.o\
+	objects/gordon.o\
 	objects/hyperb.o\
 	objects/icurve.o\
 	objects/instance.o\

@@ -422,3 +422,148 @@ ay_knots_merge(ay_nurbcurve_object *curve, double *Ubar, int Ubarlen)
 
  return AY_OK;
 } /* ay_knots_merge */
+
+
+/* ay_knots_mergesurf:
+ *
+ */
+int
+ay_knots_mergesurf(ay_nurbpatch_object *patch,
+		   double *Ubar, int Ubarlen, double *Vbar, int Vbarlen)
+{
+ double *X = NULL, *Ufoo = NULL, *U = NULL, *Vfoo = NULL, *V = NULL;
+ double *Qw = NULL;
+ int r, ia, ib, done;
+
+ if(Ubar)
+   {
+     if(!(X = calloc(Ubarlen, sizeof(double))))
+       {
+	 return AY_EOMEM;
+       }
+  
+     U = patch->uknotv;
+
+     /* find knots to insert */
+     r = 0;
+     ia = 0;
+     ib = 0;
+     done = AY_FALSE;
+     while(!done)
+       {
+	 if(Ubar[ib] == U[ia])
+	   {
+	     ib++;
+	     ia++;
+	   }
+	 else
+	   {
+	     X[r] = Ubar[ib];
+	     r++;
+	     ib++;
+	   }
+	 done = ((ia >= (patch->width+patch->uorder)) || (ib >= Ubarlen));
+       }
+  
+     if(r == 0)
+       {
+	 free(X);
+       }
+     else
+       {
+	 if(!(Ufoo = calloc((patch->width + patch->uorder + r), 
+			    sizeof(double))))
+	   {
+	     free(X); return AY_EOMEM;
+	   }
+
+	 if(!(Qw = calloc((patch->width + r)*patch->height*4, 
+			  sizeof(double))))
+	   {
+	     free(X); free(Ufoo); return AY_EOMEM;
+	   }
+
+	 ay_nb_RefineKnotVectSurfU(4, patch->width-1, patch->height-1,
+				   patch->uorder-1, patch->uknotv,
+				   patch->controlv,
+				   X, r-1, Ufoo, Qw);
+
+	 free(patch->uknotv);
+	 patch->uknotv = Ufoo;
+  
+	 free(patch->controlv);
+	 patch->controlv = Qw;
+
+	 free(X);
+	 X = NULL;
+	 Qw = NULL;
+
+	 patch->width += r;
+       } /* if */
+   } /* if */
+
+ if(Vbar)
+   {
+     X = NULL;
+     if(!(X = calloc(Vbarlen, sizeof(double))))
+       {
+	 return AY_EOMEM;
+       }
+  
+     V = patch->vknotv;
+
+     /* find knots to insert */
+     r = 0;
+     ia = 0;
+     ib = 0;
+     done = AY_FALSE;
+     while(!done)
+       {
+	 if(Vbar[ib] == V[ia])
+	   {
+	     ib++;
+	     ia++;
+	   }
+	 else
+	   {
+	     X[r] = Vbar[ib];
+	     r++;
+	     ib++;
+	   }
+	 done = ((ia >= (patch->height+patch->vorder)) || (ib >= Vbarlen));
+       }
+  
+     if(r == 0)
+       {
+	 free(X); return AY_OK;
+       }
+
+     if(!(Vfoo = calloc((patch->height + patch->vorder + r), 
+			sizeof(double))))
+       {
+	 free(X); return AY_EOMEM;
+       }
+
+     if(!(Qw = calloc(patch->width*(patch->height + r)*4, 
+		      sizeof(double))))
+       {
+	 free(X); free(Vfoo); return AY_EOMEM;
+       }
+
+     ay_nb_RefineKnotVectSurfV(4, patch->width-1, patch->height-1,
+			       patch->vorder-1, patch->vknotv, patch->controlv,
+			       X, r-1, Vfoo, Qw);
+
+     free(patch->vknotv);
+     patch->vknotv = Vfoo;
+  
+     free(patch->controlv);
+     patch->controlv = Qw;
+
+     free(X);
+	  
+     patch->height += r;
+   } /* if */
+
+ return AY_OK;
+} /* ay_knots_mergesurf */

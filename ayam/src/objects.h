@@ -42,6 +42,9 @@ int ay_disk_init(Tcl_Interp *interp);
 /* extrude.c */
 int ay_extrude_init(Tcl_Interp *interp);
 
+/* gordon.c */
+int ay_gordon_init(Tcl_Interp *interp);
+
 /* hyperb.c */
 int ay_hyperb_init(Tcl_Interp *interp);
 
