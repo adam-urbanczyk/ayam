@@ -4195,7 +4195,7 @@ idr_tree_selecttcmd(ClientData clientData, Tcl_Interp *interp,
   ay_status = idr_assign_impchanged();
 
   /* free old selection */
-  ay_status = ay_sel_free();
+  ay_status = ay_sel_free(AY_TRUE);
 
   /* update current level */
   if (argc > 1)
