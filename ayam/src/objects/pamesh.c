@@ -309,7 +309,7 @@ ay_pamesh_shadecb(struct Togl *togl, ay_object *o)
   p = pamesh->npatch;
   while(p)
     {
-      ay_shade_object(togl, p);
+      ay_shade_object(togl, p, AY_FALSE);
       p = p->next;
     } /* while */
 

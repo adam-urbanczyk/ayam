@@ -80,9 +80,7 @@ ay_draw_object(struct Togl *togl, ay_object *o, int selected)
       o->glname = 0;
       return AY_OK;
     }
-   
-  o->glname = ++ay_current_glname;
- 
+
   glPushMatrix();
 
    glTranslated((GLdouble)o->movx, (GLdouble)o->movy, (GLdouble)o->movz);
@@ -95,6 +93,7 @@ ay_draw_object(struct Togl *togl, ay_object *o, int selected)
 
    if(selected != AY_TRUE)
      {
+       o->glname = ++ay_current_glname;
        glPushName(o->glname);
      }
 

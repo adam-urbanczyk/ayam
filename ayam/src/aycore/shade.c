@@ -18,7 +18,7 @@
  *  shade a single object and children
  */
 int
-ay_shade_object(struct Togl *togl, ay_object *o)
+ay_shade_object(struct Togl *togl, ay_object *o, int push_name)
 {
  int ay_status = AY_OK;
  char fname[] = "shade_object";
@@ -31,7 +31,10 @@ ay_shade_object(struct Togl *togl, ay_object *o)
  int cw = AY_FALSE, reset_color = AY_FALSE;
 
   if(o->hide)
-   return AY_OK;
+    {
+      o->glname = 0;
+      return AY_OK;
+    }
 
   /* if an odd number of scale factors are negative
      swap front and back faces */
@@ -48,25 +51,35 @@ ay_shade_object(struct Togl *togl, ay_object *o)
    glMultMatrixd((GLdouble *)m);
    glScaled((GLdouble)o->scalx, (GLdouble)o->scaly, (GLdouble)o->scalz);
 
-   if(ay_prefs.use_materialcolor)
+   if(push_name)
      {
-       if(o->type == AY_IDINSTANCE)
-	 mo = (ay_object *)o->refine;
-       else
-	 mo = o;
 
-       if(mo->mat)
+       o->glname = ++ay_current_glname;
+
+       glPushName(o->glname);
+     }
+   else
+     {
+       if(ay_prefs.use_materialcolor)
 	 {
-	   if(mo->mat->colr != -1)
-	     {
-	       reset_color = AY_TRUE;
-	       glGetMaterialfv(GL_FRONT, GL_AMBIENT, oldcolor);
+	   if(o->type == AY_IDINSTANCE)
+	     mo = (ay_object *)o->refine;
+	   else
+	     mo = o;
 
-	       color[0] = (GLfloat)(mo->mat->colr/255.0);
-	       color[1] = (GLfloat)(mo->mat->colg/255.0);
-	       color[2] = (GLfloat)(mo->mat->colb/255.0);
-	       color[3] = (GLfloat)1.0;
-	       glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, color);
+	   if(mo->mat)
+	     {
+	       if(mo->mat->colr != -1)
+		 {
+		   reset_color = AY_TRUE;
+		   glGetMaterialfv(GL_FRONT, GL_AMBIENT, oldcolor);
+
+		   color[0] = (GLfloat)(mo->mat->colr/255.0);
+		   color[1] = (GLfloat)(mo->mat->colg/255.0);
+		   color[2] = (GLfloat)(mo->mat->colb/255.0);
+		   color[3] = (GLfloat)1.0;
+		   glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, color);
+		 } /* if */
 	     } /* if */
 	 } /* if */
      } /* if */
@@ -88,10 +101,15 @@ ay_shade_object(struct Togl *togl, ay_object *o)
        down = o->down;
        while(down)
 	 {
-	   ay_status = ay_shade_object(togl, down);
+	   ay_status = ay_shade_object(togl, down, push_name);
 	   down = down->next;
 	 } /* while */
      } /* if */
+
+   if(push_name)
+     {
+       glPopName();
+     }
 
   glPopMatrix();
   
@@ -162,7 +180,7 @@ ay_shade_view(struct Togl *togl)
     {
       while(o)
 	{
-	  ay_status = ay_shade_object(togl, o);
+	  ay_status = ay_shade_object(togl, o, AY_FALSE);
 	  o = o->next;
 	} /* while */
     } /* if */
@@ -180,7 +198,7 @@ ay_shade_view(struct Togl *togl)
 	{
 	  while(sel)
 	    {
-	      ay_status = ay_shade_object(togl, sel->object);
+	      ay_status = ay_shade_object(togl, sel->object, AY_FALSE);
 	      sel = sel->next;
 	    } /* while */
 	} /* if */

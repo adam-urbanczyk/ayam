@@ -161,27 +161,27 @@ ay_extrude_shadecb(struct Togl *togl, ay_object *o)
   p = extrude->npatch;
   while(p)
     {
-      ay_shade_object(togl, p);
+      ay_shade_object(togl, p, AY_FALSE);
       p = p->next;
     }
 
   if(extrude->upper_cap)
-    ay_shade_object(togl, extrude->upper_cap);
+    ay_shade_object(togl, extrude->upper_cap, AY_FALSE);
 
   if(extrude->lower_cap)
-    ay_shade_object(togl, extrude->lower_cap);
+    ay_shade_object(togl, extrude->lower_cap, AY_FALSE);
 
   p = extrude->upper_bevels;
   while(p)
     {
-      ay_shade_object(togl, p);
+      ay_shade_object(togl, p, AY_FALSE);
       p = p->next;
     }
 
   p = extrude->lower_bevels;
   while(p)
     {
-      ay_shade_object(togl, p);
+      ay_shade_object(togl, p, AY_FALSE);
       p = p->next;
     }
 

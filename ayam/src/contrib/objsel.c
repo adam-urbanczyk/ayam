@@ -58,7 +58,7 @@ ay_objsel_process_hits (GLint hits, GLuint buffer[], char *var)
       name = *(ptr++);
       z1 = (float) *(ptr++) / 0x7fffffff;
       z2 = (float) *(ptr++) / 0x7fffffff;
-
+      /*printf("%f %f\n", z1, z2);*/
       o = ay_root;
       strncat (node, "root", size);
 
@@ -250,11 +250,24 @@ ay_objsel_processcb (struct Togl *togl, int argc, char *argv[])
   glMatrixMode (GL_MODELVIEW);
 
   ay_current_glname = 0;
-  
-  while(o->next)
+
+  if(!view->shade)
     {
-      ay_status = ay_draw_object(togl, o, 2);
-      o = o->next;
+      while(o->next)
+	{
+	  ay_status = ay_draw_object(togl, o, 2);
+	  o = o->next;
+	}
+    }
+  else
+    {
+      glDisable(GL_LIGHTING);
+      while(o->next)
+	{
+	  ay_status = ay_shade_object(togl, o, AY_TRUE);
+	  o = o->next;
+	}
+      glEnable(GL_LIGHTING);
     }
     
   glMatrixMode (GL_PROJECTION);

@@ -496,6 +496,8 @@ ay_npatch_shadecb(struct Togl *togl, ay_object *o)
 
   gluNurbsProperty(npatch->no, GLU_DISPLAY_MODE, GLU_FILL);
 
+  gluNurbsProperty(npatch->no, GLU_AUTO_LOAD_MATRIX, GL_FALSE);
+
   gluNurbsSurface(npatch->no, (GLint)uknot_count, uknots, 
 		  (GLint)vknot_count, vknots, 
 		  (GLint)height*4, (GLint)4, controls,

@@ -155,19 +155,19 @@ ay_revolve_shadecb(struct Togl *togl, ay_object *o)
     return AY_ENULL;
 
   if(revolve->npatch)
-    ay_shade_object(togl, revolve->npatch);
+    ay_shade_object(togl, revolve->npatch, AY_FALSE);
 
   if(revolve->upper_cap)
-    ay_shade_object(togl, revolve->upper_cap);
+    ay_shade_object(togl, revolve->upper_cap, AY_FALSE);
 
   if(revolve->lower_cap)
-    ay_shade_object(togl, revolve->lower_cap);
+    ay_shade_object(togl, revolve->lower_cap, AY_FALSE);
 
   if(revolve->start_cap)
-    ay_shade_object(togl, revolve->start_cap);
+    ay_shade_object(togl, revolve->start_cap, AY_FALSE);
 
   if(revolve->end_cap)
-    ay_shade_object(togl, revolve->end_cap);
+    ay_shade_object(togl, revolve->end_cap, AY_FALSE);
 
  return AY_OK;
 } /* ay_revolve_shadecb */
