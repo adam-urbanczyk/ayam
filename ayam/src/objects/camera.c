@@ -222,7 +222,8 @@ ay_camera_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	       "Near has to be positive for perspective views!");
     }
 
-  if(camera->nearp >= camera->farp)
+  if((camera->nearp != 0.0 || camera->farp != 0.0) &&
+     (camera->nearp >= camera->farp))
     {
       ay_error(AY_EWARN, fname, "Near should be smaller than far!");
     }
