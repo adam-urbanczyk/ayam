@@ -130,12 +130,6 @@ typedef struct meta_gridcell_s
 }
 meta_gridcell;
 
-typedef struct meta_acell_s
-{
-  meta_vertex v[8];  
-}
-meta_acell;
-
 typedef struct meta_grid_s
 {
   meta_xyz p;
@@ -178,11 +172,15 @@ typedef struct meta_world_s
   int showworld;
   int version;
 
-  meta_acell acell;			/* cell for adaptive refinement */  
-
-  int zahl;
   int adaptflag;
   
+  int adapt;
+  double flatness;
+  double epsilon;
+  double step;
+
+  double scale;
+
 }
 meta_world;
 

@@ -12,7 +12,7 @@
 
 global ay MetaObj_props MetaObjAttr MetaObjAttrData
 
-set MetaObj_props { Transformations Attributes Material Tags MetaObjAttr }
+set MetaObj_props { Transformations Attributes MetaObjAttr }
 
 
 proc stdReleaseBind { w } {
@@ -30,11 +30,35 @@ proc stdReleaseBind { w } {
 }
 # stdReleaseBind
 
+proc metaobj_getAttr { } {
+global ay MetaObjAttr MetaObjAttrData
+
+catch {destroy $ay(pca).$MetaObjAttr(w)}
+set w [frame $ay(pca).$MetaObjAttr(w)]
+getProp
+
+
+addParam $w MetaObjAttrData NumSamples {20 40 60 80 120 140 160 180 200}
+addParam $w MetaObjAttrData IsoLevel 0.6
+addCheck $w MetaObjAttrData "ShowWorld"
+addCheck $w MetaObjAttrData Adaptiv
+
+if {$MetaObjAttrData(Adaptiv) != 0} {
+addParam $w MetaObjAttrData Flatness 0.9
+addParam $w MetaObjAttrData Epsilon 0.0001
+addParam $w MetaObjAttrData Step 0.0001
+}
+
+$ay(pca) itemconfigure 1 -window $w
+plb_resize
+
+}
+
 
 array set MetaObjAttr {
 arr   MetaObjAttrData
 sproc ""
-gproc ""
+gproc metaobj_getAttr
 w     fMetaObjAttr
 
 }
@@ -50,7 +74,13 @@ set w [frame $ay(pca).$MetaObjAttr(w)]
 addParam $w MetaObjAttrData NumSamples {20 40 60 80 120 140 160 180 200}
 addParam $w MetaObjAttrData IsoLevel 0.6
 addCheck $w MetaObjAttrData "ShowWorld"
+addCheck $w MetaObjAttrData Adaptiv
 
+##if {$MetaObjAttrData(Adaptiv) == 1} {
+#addParam $w MetaObjAttrData Flatness 0.9
+#addParam $w MetaObjAttrData Epsilon 0.0001
+#addParam $w MetaObjAttrData Step 0.0001
+#}
 global meta_mouseup; set meta_mouseup 1
 
 # add menu entry to Create/Custom sub-menu

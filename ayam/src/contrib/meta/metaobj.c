@@ -139,8 +139,13 @@ metaobj_createcb (int argc, char *argv[], ay_object * o)
   w->currentnumpoly = 0;
   w->o = o->down;
 
-  w->version = 2;
+  w->version = 3;
   
+  w->adapt = 0;
+  w->flatness = 0.9;
+  w->epsilon = 0.001;
+  w->step = 0.001;
+
   meta_calceffect (w);
 
   return AY_OK;
@@ -461,6 +466,22 @@ metaobj_setpropcb (Tcl_Interp * interp, int argc, char *argv[], ay_object * o)
   to = Tcl_ObjGetVar2 (interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj (interp, to, &w->showworld);
 
+  Tcl_SetStringObj (ton, "Adaptiv", -1);
+  to = Tcl_ObjGetVar2 (interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj (interp, to, &w->adapt);
+
+  Tcl_SetStringObj (ton, "Flatness", -1);
+  to = Tcl_ObjGetVar2 (interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj (interp, to, &w->flatness);
+
+  Tcl_SetStringObj (ton, "Epsilon", -1);
+  to = Tcl_ObjGetVar2 (interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj (interp, to, &w->epsilon);
+
+  Tcl_SetStringObj (ton, "Step", -1);
+  to = Tcl_ObjGetVar2 (interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj (interp, to, &w->step);
+
   Tcl_IncrRefCount (toa);
   Tcl_DecrRefCount (toa);
   Tcl_IncrRefCount (ton);
@@ -520,6 +541,24 @@ metaobj_getpropcb (Tcl_Interp * interp, int argc, char *argv[], ay_object * o)
   to = Tcl_NewIntObj (w->showworld);
   Tcl_ObjSetVar2 (interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj (ton, "Adaptiv", -1);
+  to = Tcl_NewIntObj (w->adapt);
+  Tcl_ObjSetVar2 (interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj (ton, "Flatness", -1);
+  to = Tcl_NewDoubleObj (w->flatness);
+  Tcl_ObjSetVar2 (interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  if(w->flatness>0.99f)
+    w->flatness = 0.99;
+    
+  Tcl_SetStringObj (ton, "Epsilon", -1);
+  to = Tcl_NewDoubleObj (w->epsilon);
+  Tcl_ObjSetVar2 (interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj (ton, "Step", -1);
+  to = Tcl_NewDoubleObj (w->step);
+  Tcl_ObjSetVar2 (interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   Tcl_IncrRefCount (toa);
   Tcl_DecrRefCount (toa);
@@ -546,8 +585,22 @@ metaobj_readcb (FILE * fileptr, ay_object * o)
   fscanf (fileptr, "%d\n", &w->aktcubes);
   fscanf (fileptr, "%lg\n", &w->isolevel);
  
+  w->adapt = 0;
+  w->flatness = 0.9;
+  w->epsilon = 0.001;
+  w->step = 0.001;
+
   if(ay_read_version >= 3)
   {  fscanf (fileptr, "%d\n", &w->version);
+
+     if(w->version>=3)
+	{
+		fscanf (fileptr, "%d\n", &w->adapt);
+     	fscanf (fileptr, "%lg\n", &w->flatness);
+     	fscanf (fileptr, "%lg\n", &w->epsilon);
+     	fscanf (fileptr, "%lg\n", &w->step);
+	}
+
   }
 
   w->maxpoly = 10000;
@@ -636,6 +689,10 @@ metaobj_writecb (FILE * fileptr, ay_object * o)
   fprintf (fileptr, "%g\n", w->isolevel);
   fprintf (fileptr, "%d\n", w->version);
 
+  fprintf (fileptr, "%d\n", w->adapt);
+  fprintf (fileptr, "%g\n", w->flatness);
+  fprintf (fileptr, "%g\n", w->epsilon);
+  fprintf (fileptr, "%g\n", w->step);
 
   return AY_OK;
 } /* metaobj_writecb */
