@@ -875,7 +875,7 @@ ay_shader_gettcmd(ClientData clientData, Tcl_Interp * interp,
       break;
     default:
       return TCL_OK;
-      break;
+      /*      break;*/
     } /* switch */
 
 

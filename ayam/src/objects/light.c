@@ -450,7 +450,7 @@ ay_light_getpntcb(int mode, ay_object *o, double *p)
  ay_shader_arg *sarg = NULL;
  double min_dist = ay_prefs.pick_epsilon, dist = 0.0;
  double *pecoord = NULL, **pecoords = NULL, *c;
- int has_from = 0, has_to = 0, numpts = 0, a;
+ int has_from = 0, has_to = 0, numpts = 0, a = 0;
 
   if(!o || !p)
     return AY_ENULL;
@@ -518,7 +518,7 @@ ay_light_getpntcb(int mode, ay_object *o, double *p)
       if(has_to)
 	numpts++;
 
-      if(numpts>0)
+      if(numpts > 0)
 	{
 	  if(!(ay_point_edit_coords = calloc(numpts, sizeof(double*))))
 	    return AY_EOMEM;
@@ -588,7 +588,6 @@ ay_light_getpntcb(int mode, ay_object *o, double *p)
 	  if(has_from)
 	    {
 	      c = light->tfrom;
-	      a = 0;
 	      /* test point c against the four planes in p */
 	      if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) && 
 		 ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) && 
