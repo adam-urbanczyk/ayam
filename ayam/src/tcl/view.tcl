@@ -371,6 +371,7 @@ proc viewOpen { width height {establish_bindings 1} } {
 	set tmp ""
 	set tmp [$lb curselection]
 	if { ($tmp != "") && ([$lb get $tmp] == "ViewAttrib") } {
+	    getProp
 	    plb_update
 	}
     }
