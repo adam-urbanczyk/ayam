@@ -1,6 +1,6 @@
 # Ayam, a free 3D modeler for the RenderMan interface.
 #
-# Ayam is copyrighted 1998-2001 by Randolf Schultz
+# Ayam is copyrighted 1998-2002 by Randolf Schultz
 # (rschultz@informatik.uni-rostock.de) and others.
 #
 # All rights reserved.
@@ -49,7 +49,7 @@ $w.ftext.text insert end \
 Ayam, a free 3D Tcl/Tk/OpenGL/RenderMan modeler
 
 Ayam is
-Copyright (c) 1998-2001 by Randolf Schultz
+Copyright (c) 1998-2002 by Randolf Schultz
 (rschultz@informatik.uni-rostock.de)
 All Rights Reserved
 
@@ -115,16 +115,16 @@ $w.ftext.text insert end \
 
 Ayam is based on the following fine software:
 
-o BMRT (Blue Moon Rendering Tools) by Larry Gritz
+o BMRT (Blue Moon Rendering Tools) by Larry Gritz (Exluna)
 o The Togl widget by Benjamin Bederson, Brian Paul et al.
 o The tkMegaWidget set by Jeffrey Hobbs
+o The Affine Toolkit by Thomas E. Burge
 o The 3DMF parser from Apple (Duet Development Corp.)
 o libtiff (Sam Leffler, Silicon Graphics et al.)
 o Tcl/Tk, OpenGL, The RenderMan Interface (too many to list)
 
 Ayam learned a lot from the code of:
 
-o The Affine Toolkit by Thomas E. Burge
 o GLUT by M. Kilgard
 o The NURBS Book by L. Piegl and W. Tiller
 o The NURBS Procedure Library by W.T. Hewitt and D. Yipp
