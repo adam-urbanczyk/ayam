@@ -264,7 +264,8 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp * interp,
  ay_object *o = NULL;
  ay_tag_object *new = NULL, **next = NULL;
  Tcl_HashEntry *entry = NULL;
- int index = 0, i;
+ Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ int index = 0, i, pasteProp = AY_FALSE;
  char fname[] = "setTags";
 
   if(argc < 3)
@@ -375,6 +376,14 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp * interp,
       return TCL_OK; /* early exit! */
     } /* if */
 
+  /* normal setTags functionality */
+
+  /* is a paste property in progress? */
+  toa = Tcl_NewStringObj("ay", -1);
+  ton = Tcl_NewStringObj("pasteProp", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &pasteProp);
+
   while(sel)
     {
       o = sel->object;
@@ -384,11 +393,23 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp * interp,
 	  return TCL_OK;
 	}
 
-      /* delete old tags */
-      ay_tags_delall(o);
+      next = &(o->tags);
+      if(!pasteProp)
+	{
+	  /* delete old tags */
+	  ay_tags_delall(o);
+	}
+      else
+	{
+	  new = o->tags;
+	  while(new)
+	    {
+	      next = &(new->next);
+	      new = new->next;
+	    }
+	} /* if */
 
       /* add new tags */
-      next = &(o->tags);
       for(index = 1; index < argc-1; index += 2)
 	{
 	  if(strcmp(argv[index], ""))
