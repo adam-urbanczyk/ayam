@@ -50,6 +50,8 @@ LD = CC
 #   _else_
 #   add -DAYUSEBMRTRIBOUT if you link with libribout from BMRT
 # o add -DAYUSESLCARGS if you use libslcargs from BMRT
+#   _or_
+#   add -DAYUSESLXARGS if you use libslxargs from Aqsis
 # o add -DAYNOTEMPNAM if your system has no tempnam();
 #   (unlikely, but tempnam() is not ANSI)
 #   Note, that the preference setting TmpDir will always be ignored then!
@@ -131,6 +133,14 @@ AFFINEOBJS =
 # if you use Affine (add -DAYUSEAFFINE to CFLAGS!):
 #AFFINEOBJS = ./affine/src/write.o ./affine/src/constant.o
 
+# Aqsis
+AQSISDIR = /usr/local/aqsis
+AQSISINCDIR = $(AQSISDIR)/include
+AQSISLIBDIR = $(AQSISDIR)/lib
+# if you do not use Aqsis libslxargs:
+AQSISOBJS = 
+# if you use Aqsis libslxargs (add -DAYUSESLXARGS to CFLAGS!):
+#AQSISOBJS = $(AQSISDIR)/libshadervm.so $(AQSISDIR)/libshaderexecenv.so $(AQSISDIR)/libslxargs.so $(AQSISDIR)/libaqsistypes.so
 
 # BMRT
 # If you use the libribout from BMRT2.x (x >= 5), do _not_ link with
@@ -270,12 +280,12 @@ RRIBOBJS = plugins/rrib.o
 
 
 .c.o: 
-	$(CC) -c $(CFLAGS) $*.c -o $@ -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR) -I$(TIFFINCDIR)
+	$(CC) -c $(CFLAGS) $*.c -o $@ -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR) -I$(AQSISINCDIR) -I$(TIFFINCDIR)
 
 all: ayamsh csphere.so mfio.so metaobj.so
 
 ayamsh: $(AYAMOBJS) $(TOGLOBJECT) $(AFFINEOBJS)
-	$(LD) $(AYAMOBJS) $(TOGLOBJECT) $(EXLDFLAGS) -o ayamsh $(TKLIB) $(TCLLIB) $(GLLIBS) $(X11LIBS) $(RIBOUTLIB) $(SLCARGSLIB) $(AFFINEOBJS) $(TIFFLIB) -lm $(DL)
+	$(LD) $(AYAMOBJS) $(TOGLOBJECT) $(EXLDFLAGS) -o ayamsh $(TKLIB) $(TCLLIB) $(GLLIBS) $(X11LIBS) $(RIBOUTLIB) $(SLCARGSLIB) $(AFFINEOBJS) $(AQSISOBJS) $(TIFFLIB) -lm $(DL)
 
 csphere.so: $(CSPHEREOBJS)
 	$(CC) -shared $(CSPHEREOBJS) -o plugins/csphere.so
