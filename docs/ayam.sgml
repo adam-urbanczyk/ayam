@@ -4,9 +4,9 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>7. Jul 2002
+<date>28. Jul 2002
 <abstract>
-This is the documentation of Ayam (1.2) - a free 3D modeling environment
+This is the documentation of Ayam (1.3) - a free 3D modeling environment
 for the RenderMan interface.
 
 Please note, that this document is intended to be a reference manual,
@@ -846,6 +846,8 @@ Watch the console for error messages that may appear while scanning.
 The next sub-section contains GUI (user interface) related
 settings.<label id="prefgui">
 <itemize>
+<item><tt/"Locale"/, sets a language for the balloon help texts,
+the default value menu shows all currently available locales.
 <item><tt/"AutoResize"/ toggles, whether the main window
 should be resized horizontally according to the property GUI whenever
 a new GUI is displayed.
@@ -854,8 +856,6 @@ new geometries of windows. Might be useful, if you suffer from jumping
 windows.
 <item><tt/"ListTypes"/ determines, whether the type of an
 object should be displayed in brackets in the tree view or listbox.
-<item><tt/"TclPrecision"/; this is the precision Tcl handles doubles
-with.
 <item><tt/"AutoSavePrefs"/, if this is switched on, Ayam will write
 the preferences settings to the file ayamrc when the program quits.
 <item><tt/"LoadEnv"/, if this is switched on, Ayam will load
@@ -1060,7 +1060,8 @@ For rendrib from BMRT2.6 this should be set to <tt/"R90000 %d"/ and
 the special command line option <tt/"-Progress"/ should be used.
 For rendrib from BMRT2.5 it should be set to "<tt/"Done computing %d"/
 and no special option has to be given to the renderer.
-
+<item><tt/"PPRender"/ is the name of the renderer to use for the
+permanent preview feature.
 </itemize>
 
 <sect2>Miscellaneous Preferences<label id="prefmisc">
@@ -1116,6 +1117,8 @@ See the discussion of <tt/"ToolBoxTrans"/ above for more information
 about transient windows.
 <item><tt/"HideTmpTags"/ may be used to hide tags that are marked
 temporary (internal tag types do so) from the tag property GUI.
+<item><tt/"TclPrecision"/; this is the precision Tcl handles doubles
+with.
 </itemize>
 
 <sect>Interactive Actions (Modeling)<label id="iac">
@@ -1599,6 +1602,58 @@ horizontal stripes now.<p>
 
 Note, that the exact behaviour depends heavily on the shader and its use
 of the texture coordinates!
+
+<sect2>Texture Coordinate Editor<label id="tce">
+<p>
+The texture coordinate editor may be opened using the
+main menu entry <tt>"Special/Edit TexCoords"</tt> and
+lets you edit texture coordinate
+tags in an intuitive way.<p>
+For that, the texture coordinates are displayed as a black
+polygon in a canvas with regard to the original values,
+that are displayed in gray.
+Small arrows point to positive s and t direction respectively.
+
+<figure loc="ht">
+<eps file="pics/tce.ps" height="6cm">
+<img src="pics/tce.gif">
+<caption>Texture Coordinate Editor</caption>
+</figure>
+<p>
+
+The <tt/"RotateR"/ and <tt/"RotateL"/ buttons shift the coordinate
+values between the four points. This results in a 90 degree
+rotation.
+<p>
+The <tt/"FlipS"/ and <tt/"FlipT"/ buttons flip the texture
+coordinate values in s and t direction respectively. This is
+useful, if you want to correct a texture mapping for
+an image that appears upside down.
+<p>
+The next buttons allow to move (using <tt/"MoveS"/ and <tt/"MoveT"/)
+and scale (using <tt/"ScaleS"/ and <tt/"ScaleT"/) the texture coordinates
+by a specific amount that is given in the first entry field.
+<p>
+The <tt/"Load"/ and <tt/"Save"/ menu buttons allow you to:
+<itemize>
+<item>load the default values
+<item>load texture coordinates from a selected BPatch object:
+The xy coordinates of the four points of the selected BPatch
+will be interpreted as st coordinates.
+This allows for more complex transformations of the texture coordinates
+e.g. rotations about an angle of 45 degrees.
+<item>load TC tags from the selected object
+<item>save the texture coordinates to a BPatch object
+<item>save TC tags to a selected object; Note, that it is not
+possible to save the TC tag to multiple selected objects.
+Use the property clipboard to achieve this.
+</itemize>
+Note, that the tag numbers in the
+menu entries count TC tags only.
+
+The texture coordinate dialog is modeless, it may stay open
+while you model.
+The <tt/"Dismiss"/ button closes the dialog.
 
 <sect2>Internal Tags
 <p>
@@ -4692,6 +4747,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Load Custom: <ref id="mm" name="main menu entry">
 <item>LoadEnv: <ref id="prefgui" name="preference setting">
 <item>Local: <ref id="vat" name="view attribute">
+<item>Locale: <ref id="prefgui" name="preference setting">
 <item>LogFile: <ref id="prefgui" name="preference setting">
 <item>Logging: <ref id="prefgui" name="preference setting">
 <item>LowerBevel: <ref id="extrattr" name="extrude attribute">
@@ -4761,6 +4817,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Pick:<ref id="objsel" name="pick objects within a view">
 <item>PickEpsilon: <ref id="prefmodel" name="preference setting">
 <item>Point: <ref id="pdsl" name="light type">
+<item>PPRender: <ref id="prefrib" name="preference setting">
 <item>Preferences: <ref id="prefs" name="Preferences">,
 <ref id="hidprefs" name="Hidden Preference Settings">
 <item>Properties: <ref id="propgui" name="property GUI">
@@ -4888,8 +4945,9 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Tag: <ref id="prefdraw" name="preference setting">
 <item>Tags: <ref id="tags" name="property">
 <item>TC: <ref id="tctag" name="tag type">
-<item>TclPrecision: <ref id="prefgui" name="preference setting">
-<item>TextureCoordinates: <ref id="tctag" name="tag type">
+<item>TclPrecision: <ref id="prefmisc" name="preference setting">
+<item>TextureCoordinates: <ref id="tctag" name="tag type">,
+<ref id="tce" name="texture coordinate editor">
 <item>ThetaMax: <ref id="spattr" name="sphere attribute">,
 <ref id="dkp" name="disk attribute">,
 <ref id="cnp" name="cone attribute">,
