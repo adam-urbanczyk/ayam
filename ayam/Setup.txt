@@ -41,7 +41,7 @@ take effect.
 
 You can switch off automatic saving of the preferences in the
 preference settings (Pref: "Main/AutoSavePrefs").
-If you switched off AutoSavePrefs, you can force saving of the
+If you switched off AutoSavePrefs, you can enforce saving of the
 preferences using the main menu entry "File/Save Prefs".
 
 
@@ -102,7 +102,7 @@ RRIB: RIB Import
 MFIO: 3DMF Import/Export
 IDR: Importance Driven Rendering
 MetaObj: the MetaBalls custom object
-ayslx, ayslb, ayso, ayslo, ayslo3d: shader parsing plugins
+ayslx, ayslb, ayso, ayslo, ayslo3d, aysdr: shader parsing plugins
 
 You may load the plugins
 a) manually if you need them (using the main menu "File/Load Custom") or
@@ -119,6 +119,9 @@ when a scene containing this type of object is being read.
 Be sure to add the path to the respective shared object (file with
 the file name extension ".so") _or_ "." to your LD_LIBRARY_PATH
 environment variable, otherwise loading of the plugin will fail.
+
+Note that on IRIX, you probably have to modify LD_LIBRARYN32_PATH
+instead of LD_LIBRARY_PATH.
 
 
 5. Create and save a working environment
