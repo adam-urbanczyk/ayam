@@ -17,7 +17,7 @@
 
 ay_table ay_comparecbt;
 
-/* functions local to this module */
+/* prototypes of functions local to this module */
 
 int ay_comp_tag(ay_tag_object *t1, ay_tag_object *t2);
 
@@ -78,6 +78,9 @@ int ay_comp_clone(ay_object *o1, ay_object *o2);
 int ay_comp_pomesh(ay_object *o1, ay_object *o2);
 
 int ay_comp_sdmesh(ay_object *o1, ay_object *o2);
+
+int ay_comp_gordon(ay_object *o1, ay_object *o2);
+
 
 /* functions */
 
@@ -932,6 +935,25 @@ ay_comp_sdmesh(ay_object *o1, ay_object *o2)
 } /* ay_comp_sdmesh */
 
 
+/* ay_comp_gordon:
+ *
+ */
+int
+ay_comp_gordon(ay_object *o1, ay_object *o2)
+{
+  ay_gordon_object *s1, *s2;
+
+  s1 = (ay_gordon_object *)o1->refine;
+  s2 = (ay_gordon_object *)o2->refine;
+
+  if((s1->uorder != s2->uorder) ||
+     (s1->vorder != s2->vorder))
+    return AY_FALSE;
+
+ return AY_TRUE;
+} /* ay_comp_gordon */
+
+
 /* ay_comp_register:
  *  register the compare callback compcb for
  *  objects of type type_id
@@ -1029,6 +1051,7 @@ ay_comp_init()
   ay_status = ay_comp_register(ay_comp_clone, AY_IDCLONE);
   ay_status = ay_comp_register(ay_comp_pomesh, AY_IDPOMESH);
   ay_status = ay_comp_register(ay_comp_sdmesh, AY_IDSDMESH);
+  ay_status = ay_comp_register(ay_comp_gordon, AY_IDGORDON);
 
 
  return ay_status;
