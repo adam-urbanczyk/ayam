@@ -429,11 +429,14 @@ ay_clone_wribcb(char *file, ay_object *o)
 {
  ay_clone_object *cc = NULL;
  ay_object *c = NULL;
+ int old_resinstances;
 
   if(!o)
     return AY_ENULL;
 
   cc = (ay_clone_object *)o->refine;
+  old_resinstances = ay_prefs.resolveinstances;
+  ay_prefs.resolveinstances = AY_TRUE;
   
   c = cc->clones;
   while(c)
@@ -441,6 +444,8 @@ ay_clone_wribcb(char *file, ay_object *o)
       ay_wrib_object(file, c);
       c = c->next;
     }
+
+  ay_prefs.resolveinstances = old_resinstances;
 
  return AY_OK;
 } /* ay_clone_wribcb */
