@@ -487,13 +487,42 @@ proc toolbox_open { } {
 	}
 	##################
 
-	if { $i == "nptools1" } {
-	    lappend ay(toolbuttons) bgord bswpuv brevu brevv
+	if { $i == "toolobjs2" } {
+	    lappend ay(toolbuttons) bgord bbirail1 bbirail2 bcap
 
 	    button $f.bgord -image ay_Gordon_img -padx 0 -pady 0 -command {
 		gordon_crt;
 	    }
 	    balloon_set $f.bgord "create Gordon"
+
+	    #####
+	    button $f.bbirail1 -image ay_Birail1_img -padx 0 -pady 0 -command {
+		birail1_crt;
+	    }
+	    balloon_set $f.bbirail1 "create Birail1"
+
+	    #####
+	    button $f.bbirail2 -image ay_Birail2_img -padx 0 -pady 0 -command {
+		birail2_crt;
+	    }
+	    balloon_set $f.bbirail2 "create Birail2"
+
+	    #####
+	    button $f.bcap -image ay_Cap_img -padx 0 -pady 0 -command {
+		cap_crt;
+	    }
+	    balloon_set $f.bcap "create Cap"
+
+	}
+	##################
+
+	if { $i == "nptools1" } {
+	    lappend ay(toolbuttons) bextrnc bswpuv brevu brevv
+
+	    button $f.bextrnc -image ay_NPExtrNC_img -padx 0 -pady 0 -command {
+		extrnc_crt;
+	    }
+	    balloon_set $f.bextrnc "extract NURBCurve"
 
 	    #####
 	    button $f.bswpuv -image ay_NPSwapUV_img -padx 0 -pady 0 -command {
