@@ -45,7 +45,9 @@ void ay_sm_getresolution(int index, int *width, int *height,
 void ay_sm_aimz(double *direction);
 
 void ay_sm_placecamera(double *position, double *direction, double roll);
-
+void ay_sm_wribsmcustom(char *file, char *objfile, ay_object *o,
+			ay_sm_trafostack *trafo,
+			int rwidth, int rheight);
 
 /* ay_sm_aimz:
  *
@@ -366,6 +368,78 @@ ay_sm_getresolution(int index, int *width, int *height,
 } /* ay_sm_getresolution */
 
 
+/* ay_sm_wribsmcustom:
+ */
+void
+ay_sm_wribsmcustom(char *file, char *objfile, ay_object *o,
+		   ay_sm_trafostack *trafo,
+		   int rwidth, int rheight)
+{
+ ay_object lo = {0};
+ ay_light_object *light = NULL, nlight = {0};
+ ay_shader *shader = NULL;
+ ay_shader_arg *sarg = NULL;
+ int has_from = 0, has_to = 0, has_co = 0;
+
+  ay_object_defaults(&lo);
+  lo.refine = &nlight;
+  lo.type = AY_IDLIGHT;
+  light = (ay_light_object *)o->refine;
+
+  if(light->lshader)
+    {
+      shader = light->lshader;
+
+      memcpy(&nlight, light, sizeof(ay_light_object));
+      nlight.lshader = NULL;
+      nlight.type = -1;
+      
+      sarg = shader->arg;
+      while(sarg)
+	{
+	  if(!strcmp(sarg->name,"from"))
+	    {
+	      has_from = AY_TRUE;
+	      nlight.tfrom[0] = sarg->val.point[0];
+	      nlight.tfrom[1] = sarg->val.point[1];
+	      nlight.tfrom[2] = sarg->val.point[2];
+	    } /* if */
+	  if(!strcmp(sarg->name,"to"))
+	    {
+	      has_to = AY_TRUE;
+	      nlight.tto[0] = sarg->val.point[0];
+	      nlight.tto[1] = sarg->val.point[1];
+	      nlight.tto[2] = sarg->val.point[2];
+	    } /* if */
+	  if(!strcmp(sarg->name,"coneangle"))
+	    {
+	      has_co = AY_TRUE;
+	      nlight.cone_angle = sarg->val.scalar;
+	    } /* if */
+	  if(!strcmp(sarg->name,"conedeltaangle"))
+	    {
+	      nlight.cone_delta_angle = sarg->val.scalar;
+	    } /* if */
+	  sarg = sarg->next;	      
+	}/* while */
+
+      if(has_from)
+	nlight.type = AY_LITPOINT;
+      if(has_from && has_to)
+	nlight.type = AY_LITDISTANT;
+      if(has_from && has_to && has_co)
+	nlight.type = AY_LITSPOT;
+
+      if(nlight.type != -1)
+	{
+	  ay_sm_wriballsm(file, objfile, &lo, trafo, rwidth, rheight);
+	}
+    } /* if */
+
+ return;
+} /* ay_sm_wribsmcustom */
+
+
 /* ay_sm_wriballsm:
  *  search whole tree for lightsources and create their
  *  shadowmaps if selected
@@ -419,12 +493,14 @@ ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
 
       if (o->type == AY_IDLIGHT) {
 	  light = (ay_light_object *)o->refine;
-	  if ((light->on) && (light->type != AY_LITCUSTOM) &&
+	  if ((light->on) && /*(light->type != AY_LITCUSTOM) &&*/
 	      (light->use_sm))
 	    {
+	      if(light->type != AY_LITCUSTOM)
+		{
+		  countsm++;
+		}
 
-	      countsm++;
- 
 	      if(light->sm_resolution == 0)
 		{
 		  width = 256;
@@ -436,8 +512,9 @@ ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
 		  height = light->sm_resolution;
 		}
 
-	      switch (light->type) {
-	      case AY_LITPOINT:
+	      switch (light->type)
+		{
+		case AY_LITPOINT:
 		  /* render six shadowmaps: z+, x+, z-, x-, y+, y- */
 		  fov = (RtFloat)95.0;  /* 95 degrees suggested in Pixar's
 					   application notes */
@@ -627,7 +704,7 @@ ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
 	      case AY_LITDISTANT:
 		  /* render shadowmap for distant light */
 		  /* first get bounding box of scene */
-#if 0
+                  #if 0
 		  d = ay_root->next;
 		  while (d) {
 		      if ((d->type != AY_IDLIGHT) && (d->type != AY_IDROOT)
@@ -650,7 +727,7 @@ ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
 		      d = d->next;
 		  }
 		  if ((xmin < xmax) && (ymin < ymax)) {
-#endif
+                  #endif
 		      sprintf(zname, "%s.dist%d.z", file, countsm);
 		      sprintf(shdname, "%s.dist%d.shd", file, countsm);
 		      RiDisplay(zname, "zfile", "z", RI_NULL);
@@ -669,12 +746,18 @@ ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
 		      ay_sm_wribsm(objfile, trafo, o);
 		      RiMakeShadow(zname, shdname, RI_NULL);
 		      /*}*/
-		  break;
-	      }
-	  }
-      }
-      o = o->next;
-  }
+		      break;
+
+		  case AY_LITCUSTOM:
+		    ay_sm_wribsmcustom(file, objfile, o, trafo,
+				       rwidth, rheight);
+		    break;
+		  } /* switch */
+		}
+	    }
+	  o = o->next;
+      } /* while */
+
   newtrafo = trafo;
   trafo = trafo->next;
   free(newtrafo);
