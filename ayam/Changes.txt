@@ -1,8 +1,12 @@
-[2. Apr 2004] CVS-Head:
+[27. Apr 2004] CVS-Head:
 o bug fixes:
   - fixed "loadayslo3d.tcl" loading the wrong plugin (SF 928054)
   - fixed "Select Renderer" setting a wrong shader extension for "3Delight"
     (SF 928055)
+o added a new object type "Text", that uses Bezier curves extracted from
+  TTF (TrueType) font description files together with the extrusion mechanism
+  to form three dimensional letters
+o added a CSG preview plugin (aycsg) based on OpenCSG
 
 
 [27. Mar 2004] Ayam1.7:
