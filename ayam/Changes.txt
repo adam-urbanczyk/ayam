@@ -1,4 +1,4 @@
-[CVS, 12. 12. 2002]:
+[CVS, 16. 12. 2002]:
 o bug fixes:
   - fixed remembering of the state of the object selection listbox/tree
     when the context menu or a double click on the label is used to
@@ -18,6 +18,10 @@ o bug fixes:
     "draw level only" rendering the view useless
   - fixed "move view" action not working properly in local aligned views
     of type "Top"
+  - fixed object listbox context menu generating an empty Tcl error message
+  - fixed official Linux executable not be able to execute other NVidia-OpenGL
+    using programs (by patching the Tcl-source to not use vfork() but fork())
+  - fixed problems building the documentation on Debian 3.0 (Woody)
 o reduced number of redraws when selecting hidden or material objects
 o added a RiDisplay tag type, that allows to add more output files
   (e.g. containing depth buffer information) to the scene
@@ -65,9 +69,14 @@ o the RenderGUI windows look a little bit nicer now on the Win32 platform
 o added an internal kill command for the Win32 platform ("w32kill") that
   may be used by the RenderGUIs to stop the rendering (set hidden preference
   option "Kill" to "w32kill" to accomplish this)
-o added new object type "SDMesh"
+o added new object type "SDMesh"; RIB-Import now also handles
+  subdivision meshes
 o edited points are now immediately snapped to grid coordinates
 o direct point editing dialogue now stays open all the time
+o added a Local/Global menu to the direct point editing dialogue
+o the splash screen now grabs the focus to avoid problems with stray
+  mouse events delivered other windows when the splash screen is closed
+  manually by the user
 
 
 [15. 10. 2002] Ayam1.3:
