@@ -1,4 +1,4 @@
-[23. 1. 2004] CVS-Head:
+[31. 1. 2004] CVS-Head:
 o bug fixes:
   - fixed object picking in draw-level-only views (SF 817796)
   - fixed (RIB) import of geometry after AreaLights (SF 825629)
@@ -39,8 +39,8 @@ o added new tag type "PV" for primitive variables
 o RIB-Import: added support for primitive variables to all geometric primitives
 o RIB-Export: added support for primitive variables to objects of the
   following types: NPatch, BPatch, PatchMesh, PolyMesh, and SDMesh
-o added "swapUV" scripting interface command that swaps the u and v
-  parametric dimensions of the selected NURBS patch(es)
+o added "swapUV" scripting interface command and NURBS patch tool that swaps
+  the u and v parametric dimensions of BPatch, PaMesh, and NPatch objects
 o added "elevateNPU"/"elevateNPV" scripting interface commands that elevate
   the order of the selected NURBS patch(es) in the parametric dimension u/v
 o reduced number of necessary redraws for subsequent "select all" operations
@@ -76,6 +76,12 @@ o added support for invoking a standard web browser to display the
   help/documentation for MacOSX
 o eliminated unnecessary redraws for clicks in the free space of the tree
   widget (to select the last object in the current level)
+o added "revertU"/"revertV" scripting interface commands and NURBS patch
+  tools that revert BPatch, PaMesh, and NPatch objects in the respective
+  parametric dimension
+o holding down the "Shift"-key now initiates a complete notify when the
+  "Force Notification" button in the toolbox is pressed
+o added a Wavefront OBJ export module
 
 
 [26. 09. 2003] Ayam1.6:
