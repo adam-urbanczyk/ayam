@@ -89,10 +89,17 @@ ay_sel_setfromlbtcmd(ClientData clientData, Tcl_Interp *interp,
  int i = 0, j = 1, argvi = 0, start = 1, need_redraw = AY_TRUE;
  char vname[] = "ay(need_redraw)", yes[] = "1", no[] = "0";
 
+  /* clear selected flags from currently selected objects */
+  t = ay_selection;
+  while(t)
+    {
+      t->object->selected = AY_FALSE;
+      t = t->next;
+    }
+
   /* save old selection for later comparison with new */
   oldsel = ay_selection;
   ay_selection = NULL;
-
 
   /* nothing selected? -> bail out */
   if(argc > 1)
