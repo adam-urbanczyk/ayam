@@ -18,7 +18,7 @@ array set ayprefs {
  showtr 1
  Balloon 1500
  TwmCompat 0
- toolBoxList {trafo trafo2 solids misco nurbs toolobjs nptools1 points nctools1 nctools2 camera misc}
+ toolBoxList {trafo trafo2 solids misco nurbs toolobjs toolobjs2 nptools1 points nctools1 nctools2 camera misc}
  AutoResize 1
  ListTypes 1
  MarkHidden 1
@@ -176,6 +176,8 @@ on its name, then press <Ctrl+Shift+i> (Copy Marked Prop).}
 {Press <1> - <9> to quickly select properties.}
 {Hold down <Shift> and drag the mouse to zoom into regions.}
 {Menu keyboard shortcuts do not work? Press <Esc> first!}
+{Drag geometric objects into a view to zoom the view to them.}
+{Drag light objects into a view to look through the light.}
 }
 }
 # array ayprefs
