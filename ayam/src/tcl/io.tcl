@@ -10,7 +10,7 @@
 # io.tcl - scene io helper procs
 
 # io_replaceScene:
-# clear Scene, read 
+# clear scene, then read new
 #
 proc io_replaceScene { } {
     global ay tcl_platform
@@ -89,9 +89,8 @@ proc io_replaceScene { } {
 # io_replaceScene
 
 
-
 # io_insertScene:
-#
+#  insert a scene
 #
 proc io_insertScene { } {
     global ay tcl_platform
@@ -157,7 +156,7 @@ proc io_insertScene { } {
 
 
 # io_saveScene:
-# 
+#  save a scene file
 #
 proc io_saveScene { ask selected } {
     global ay tcl_platform
@@ -192,7 +191,7 @@ proc io_saveScene { ask selected } {
 	global ay_error
 	set ay_error ""
 	saveScene $filename $selected
-	if { $ay_error == "" } {
+	if { $ay_error < 2 } {
 	    set windowfilename [file tail [file rootname $filename]]
 	    wm title . "Ayam - Main - $windowfilename"
 	    set ay(filename) $filename
@@ -200,10 +199,14 @@ proc io_saveScene { ask selected } {
 	    ayError 4 "saveScene" "$filename"
 	    io_mruAdd $filename
 	    set ay(sc) 0
+	} else {
+	    ayError 2 "Ayam" "There were errors while saving to:"
+	    ayError 2 "Ayam" "$filename"
 	}
 
     }
 
+ return;
 }
 # io_saveScene
 
@@ -326,6 +329,7 @@ proc io_lc { filename } {
  return;
 }
 # io_lc
+
 
 # io_lcAuto - automatically load custom object:
 #

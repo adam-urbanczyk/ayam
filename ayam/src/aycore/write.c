@@ -292,6 +292,7 @@ ay_write_scene(char *fname, int selected)
  int ay_status = AY_OK;
  ay_object *o = ay_root;
  FILE *fileptr = NULL;
+ char funcname[] = "ay_write_scene";
 
   if(selected)
     {
@@ -305,7 +306,10 @@ ay_write_scene(char *fname, int selected)
     return AY_ENULL;
 
   if(!(fileptr = fopen(fname, "wb")))
-    return AY_EOPENFILE;
+    {
+      ay_error(AY_EOPENFILE, funcname, fname);
+      return AY_ERROR;
+    }
 
   clearerr(fileptr);
 
@@ -381,12 +385,6 @@ ay_write_scenetcmd(ClientData clientData, Tcl_Interp *interp,
     selected = atoi(argv[2]);
 
   ay_status = ay_write_scene(argv[1], selected);
-
-  if(ay_status)
-    {
-      ay_error(ay_status, fname, NULL);
-      return TCL_OK;
-    }
 
  return TCL_OK;
 } /* ay_write_scenetcmd */
