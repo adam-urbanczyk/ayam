@@ -664,6 +664,10 @@ int ay_status = AY_OK;
   Tcl_CreateCommand(interp, "getSel", ay_sel_getseltcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  Tcl_CreateCommand(interp, "hSL", ay_sel_hsltcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+
   /* shader.c */
   Tcl_CreateCommand(interp, "shaderScanSLC", ay_shader_scanslctcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);

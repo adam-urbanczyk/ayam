@@ -222,9 +222,75 @@ ay_sel_getseltcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       i++;
       o = o->next;
-    }
-
+    } /* while */
 
  return TCL_OK;
 } /* ay_sel_getseltcmd */
+
+
+/* ay_sel_hsltcmd:
+ *  hidden select last (allow selection of the last object in the current
+ *  level without any feedback in the GUI)
+ */
+int
+ay_sel_hsltcmd(ClientData clientData, Tcl_Interp *interp,
+	       int argc, char *argv[])
+{
+ /*int ay_status = AY_OK;
+   char fname[] = "hSL";*/
+ ay_list_object *cl = ay_currentlevel;
+ ay_object *l, *o;
+ int num = 1, tnum;
+
+  if(argc > 1)
+    {
+      if(argv[1])
+	Tcl_GetInt(interp, argv[1], &num);
+    } /* if */
+
+  if(cl)
+    l = cl->object;
+  else
+    return TCL_OK;
+
+  if(num == 1)
+    {
+      while(l && l->next)
+	{
+	  o = l;
+	  l = l->next;
+	} /* while */
+
+      if(o)
+	{
+	  ay_sel_free(AY_FALSE);
+	  ay_sel_add(o);
+	} /* while */
+    }
+  else
+    {
+      tnum = 0;
+      ay_sel_free(AY_FALSE);
+
+      l = ay_currentlevel->object;
+      while(l && l->next)
+	{
+	  tnum++;
+	  l = l->next;
+	} /* while */
+      tnum -= num;
+      l = ay_currentlevel->object;
+      while(l && l->next)
+	{
+	  tnum--;
+	  if(tnum <= 0)
+	    {
+	      ay_sel_add(l);
+	    }
+	  l = l->next;
+	} /* while */
+    } /* if */
+
+ return TCL_OK;
+} /* ay_sel_hsltcmd */
 
