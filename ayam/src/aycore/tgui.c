@@ -17,8 +17,10 @@
 
 /* global variables for this module: */
 
-static ay_object *ay_tgui_origs = NULL;
-static ay_list_object *ay_tgui_origrefs = NULL;
+static ay_object *ay_tgui_origs = NULL; /* original objects */
+static ay_list_object *ay_tgui_origrefs = NULL; /* place of originals
+						   in scene */
+
 
 /* prototypes of functions local to this module: */
 
@@ -60,7 +62,8 @@ ay_tgui_open(void)
   while(sel)
     {
 
-      if(sel->object && sel->object->type == AY_IDNPATCH)
+      if(sel->object && ((sel->object->type == AY_IDNPATCH) ||
+		       (!ay_provide_object(sel->object, AY_IDNPATCH, NULL))))
 	{
 	  new = NULL;
 	  if(!(new = calloc(1, sizeof(ay_object))))
@@ -82,6 +85,7 @@ ay_tgui_open(void)
 	}
       else
 	{
+
 	  ay_error(AY_EWARN, fname,
 		   "Omitting object of wrong type, need NPatch!");
 	} /* if */
@@ -115,7 +119,8 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
  char fname[] = "tgui_update";
  ay_tag_object *tag = NULL;
  ay_list_object *oref = NULL;
- ay_object *o = NULL, *tmp = NULL;
+ ay_list_object *newl = NULL, **lastl = NULL, *polist = NULL;
+ ay_object *o = NULL, *tmp = NULL, *tmpnp = NULL;
  ay_deletecb *cb = NULL;
  void **arr = NULL;
  int smethod = 0;
@@ -167,8 +172,55 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
 	  tag = tag->next;
 	} /* while */
 
-      tmp = NULL;
-      ay_status = ay_tess_npatch(o, smethod+1, sparam, &tmp);
+      if(o->type == AY_IDNPATCH)
+	{
+	  tmp = NULL;
+	  ay_status = ay_tess_npatch(o, smethod+1, sparam, &tmp);
+	}
+      else
+	{
+	  tmpnp = NULL;
+	  ay_status = ay_provide_object(o, AY_IDNPATCH, &tmpnp);
+	  if(tmpnp)
+	    {
+	      if(tmpnp->next)
+		{
+		  lastl = &polist;
+		  while(tmpnp)
+		    {
+		      tmp = NULL;
+		      ay_status = ay_tess_npatch(tmpnp, smethod+1, sparam,
+						 &tmp);
+		      
+		      newl = NULL;
+		      if(!(newl = calloc(1, sizeof(ay_list_object))))
+			return AY_EOMEM;
+		      newl->object = tmp;
+		      *lastl = newl;
+		      lastl = &(newl->next);
+		      
+		      tmpnp = tmpnp->next;
+		    } /* while */
+
+		  tmp = NULL;
+		  ay_status = ay_pomesht_merge(polist, &tmp);
+
+		  while(polist)
+		    {
+		      newl = polist;
+		      polist = newl->next;
+		      ay_object_delete(newl->object);
+		      free(newl);
+		    } /* while */
+		}
+	      else
+		{
+		  tmp = NULL;
+		  ay_status = ay_tess_npatch(tmpnp, smethod+1, sparam, &tmp);
+		} /* if */
+	      ay_object_deletemulti(tmpnp);
+	    } /* if */
+	} /* if */
 
       if(tmp)
 	{
@@ -178,7 +230,6 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
 	  tmp = NULL;
 	}
       oref->object->type = AY_IDPOMESH;
-
 
       /* PolyMesh objects have no trim curves... */
       oref->object->down = NULL;
@@ -234,15 +285,22 @@ ay_tgui_ok(void)
 		{
 		  l = l->next;
 		}
-	      free(l->next);
+	      ay_object_delete(l->next);
 	      l->next = ay_clipboard;
 	      ay_clipboard = o->down;
 	      o->down = NULL;
 	      ay_error(AY_ERROR, fname, "Moved trimcurves to clipboard!");
 
 	    } /* if */
+	  o->down = NULL;
 	} /* if */
-      free(o);
+
+      o->name = NULL;
+      o->selp = NULL;
+      o->mat = NULL;
+      o->tags = NULL;
+      ay_object_delete(o);
+      /*free(o);*/
 
       /* remove reference to original object (in scene) */
       oref = ay_tgui_origrefs;
@@ -280,7 +338,7 @@ ay_tgui_cancel(void)
       if(ay_status)
 	return ay_status;
 
-      oref->object->type = AY_IDNPATCH;
+      oref->object->type = o->type;
       oref->object->refine = o->refine;
       /* move trim curves */
       oref->object->down = o->down;
