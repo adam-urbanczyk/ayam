@@ -292,7 +292,10 @@ ay_concatnc_notifycb(ay_object *o)
       else
 	{
 	  ay_provide_object(down, AY_IDNCURVE, next);
+	  if(*next)
+	    next = &((*next)->next);
 	}
+
 
       down = down->next;
     } /* while */
