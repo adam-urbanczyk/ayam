@@ -1,7 +1,8 @@
-[readme.txt 17. Nov 2001]
+[readme.txt 03. May 2002]
 
 This directory contains the sources (SGML and pictures) for the main
-Ayam documentation, the Ayam reference manual.
+Ayam documentation (the Ayam reference manual) and a Tcl-script to
+create a reference card.
 
 In order to build your own version of the documentation you need the
 following prerequisites:
@@ -32,11 +33,26 @@ To build a plain text version
 (beware, output misses a lot of formatting information):
 >make txt
 
+To build the real good looking PDF version:
+>make pdf3
+
 To build a simple and not good looking PDF version made with dvipdf:
 >make pdf
 
-To build the real good looking PDF version:
->make pdf3
+
+To create the reference card, you need the following prerequisites:
+o LaTeX
+o dvips
+
+How do you create the reference card?
+o Start Ayam.
+o Enter into the Ayam console:
+  >source ../docs/refcard.tcl
+  (substitute ../docs with the real path, of refcard.tcl)
+  >printHotKeys myrefcard.tex
+o Now enter into a normal shell:
+  >latex myrefcard.tex
+  >dvips myrefcard.tex -o myrefcard.ps
 
 
 -- 
