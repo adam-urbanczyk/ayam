@@ -1254,7 +1254,8 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
  /*GLdouble mo[16] = {0};*/
  ay_object *o = ay_point_edit_object;
 
-  if(!o) return TCL_OK;
+  if(!o)
+    return TCL_OK;
 
   if(argc >= 4)
     {
@@ -1319,32 +1320,36 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
 	      glGetDoublev(GL_MODELVIEW_MATRIX, m);
 	      glPopMatrix();
 
+	      /* snap selected points to grid coordinates */
 	      if(ay_point_edit_coords)
 		{
-		  for(i=0;i<ay_point_edit_coords_number;i++)
+		  if(view->usegrid && ay_prefs.edit_snaps_to_grid &&
+		     (view->grid != 0.0))
 		    {
-		      coords = ay_point_edit_coords[i]; 
-		    
-		      if(view->usegrid && ay_prefs.edit_snaps_to_grid &&
-			 (view->grid != 0.0))
+		      for(i = 0; i < ay_point_edit_coords_number; i++)
 			{
+			  coords = ay_point_edit_coords[i]; 
+			  
 			  if(!view->local)
 			    {
 			      ay_trafo_applyall(ay_currentlevel->next, o,
 						coords);
-			    }
+			    } /* if */
 
-			  ay_pact_griddify(&(coords[0]),view->grid);
-			  ay_pact_griddify(&(coords[1]),view->grid);
-			  ay_pact_griddify(&(coords[2]),view->grid);
+			  ay_pact_griddify(&(coords[0]), view->grid);
+			  ay_pact_griddify(&(coords[1]), view->grid);
+			  ay_pact_griddify(&(coords[2]), view->grid);
 
 			  if(!view->local)
 			    {
 			      ay_trafo_applyalli(ay_currentlevel->next, o,
 						 coords);
 			    } /* if */
-			} /* if */
-		    } /* for */
+			} /* for */
+		      /* XXXX this redraw is only necessary if coords are
+			 really changed by the snap to grid operation */
+		      ay_toglcb_display(togl);
+		    } /* if */
 		} /* if */
 	      return TCL_OK;
 	    } /* if */
