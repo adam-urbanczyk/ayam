@@ -468,6 +468,9 @@ ay_viewt_makecurtcb(struct Togl *togl, int argc, char *argv[])
   Tcl_SetStringObj(ton, "cVGridSize", -1);
   to = Tcl_NewDoubleObj(view->grid);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetStringObj(ton, "cVFOV", -1);
+  to = Tcl_NewDoubleObj((atan(view->zoom)*180.0)/AY_PI*2.0);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   Tcl_SetStringObj(ton, "cVType", -1);
   to = Tcl_NewIntObj(view->type);

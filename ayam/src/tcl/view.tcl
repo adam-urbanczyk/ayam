@@ -88,6 +88,8 @@ wm transient $w [winfo toplevel $view]
 
 set f [frame $w.f1]
 pack $f -in $w -side top -fill x
+
+set ay(FOV) $ay(cVFOV)
 addParam $f ay FOV
 
 set f [frame $w.f2]
