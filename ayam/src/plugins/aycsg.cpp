@@ -333,6 +333,7 @@ aycsg_drawtoplevelprim(Togl *togl)
       // is t a primitive?
       if(t->CSGTYPE == AY_LTPRIM)
 	{
+	  has_tm = AY_FALSE;
 	  if(t->tags && (t->tags->type == aycsg_tm_tagtype))
 	    {
 	      has_tm = AY_TRUE;
