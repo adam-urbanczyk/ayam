@@ -42,9 +42,9 @@ int ay_undo_redo(void);
 
 int ay_undo_undo(void);
 
-int ay_undo_copysave(ay_object *src, ay_object **dst);
-
 int ay_undo_save(void);
+
+int ay_undo_copysave(ay_object *src, ay_object **dst);
 
 int ay_undo_savesel(void);
 
@@ -479,16 +479,21 @@ ay_undo_copy(ay_undo_object *uo)
 	}
 
       /* copy name */
-      if(o->name)
+      if(o->type != AY_IDMATERIAL)
 	{
-	  free(o->name);
-	  o->name = NULL;
-	}
-      if(c->name)
-	{
-	  if(!(o->name = calloc(strlen(c->name)+1, sizeof(char))))
-	    return AY_EOMEM;
-	  strcpy(o->name, c->name);
+
+	  if(o->name)
+	    {
+	      free(o->name);
+	      o->name = NULL;
+	    }
+	  if(c->name)
+	    {
+	      if(!(o->name = calloc(strlen(c->name)+1, sizeof(char))))
+		return AY_EOMEM;
+	      strcpy(o->name, c->name);
+	    }
+
 	}
 
       /* copy tags */
@@ -542,6 +547,21 @@ ay_undo_copy(ay_undo_object *uo)
 	  o->refine = c->refine;
 	  break;
 	case AY_IDMATERIAL:
+	  if(o->name)
+	    {
+	      ay_matt_deregister(o->name);
+	      free(o->name);
+	      o->name = NULL;
+	    }
+	  if(c->name)
+	    {
+	      ay_matt_registermaterial(c->name,
+				       (ay_mat_object *)(o->refine));
+	      if(!(o->name = calloc(strlen(c->name)+1, sizeof(char))))
+		return AY_EOMEM;
+	      strcpy(o->name, c->name);
+	    }
+	    
 	  ay_status = ay_undo_copymat((ay_mat_object *)(c->refine),
 				      (ay_mat_object *)(o->refine));
 
@@ -1034,6 +1054,7 @@ ay_undo_undotcmd(ClientData clientData, Tcl_Interp *interp,
  char fname[] = "undo";
  int mode = 0; /* default mode is "undo" */
  char *a = "ay", *n = "sc", *v = "1";
+ char *n2 = "uc", v2[64];
 
   /* parse args */
   if(argc > 1)
@@ -1087,6 +1108,10 @@ ay_undo_undotcmd(ClientData clientData, Tcl_Interp *interp,
     default:
       break;
     }
+
+  /* set undo buffer pointer */
+  sprintf(v2, "%d", undo_current);
+  Tcl_SetVar2(interp, a, n2, v2, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
  return TCL_OK;
 } /* ay_undo_undotcmd */
