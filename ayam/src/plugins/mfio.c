@@ -56,6 +56,22 @@ int ay_mfio_readtriangle(MF3DVoidObjPtr object);
 
 int ay_mfio_readtrigrid(MF3DVoidObjPtr object);
 
+int ay_mfio_readbox(MF3DVoidObjPtr object);
+
+int ay_mfio_readellipsoid(MF3DVoidObjPtr object);
+
+int ay_mfio_readcylinder(MF3DVoidObjPtr object);
+
+int ay_mfio_readcone(MF3DVoidObjPtr object);
+
+int ay_mfio_readdisk(MF3DVoidObjPtr object);
+
+int ay_mfio_readtorus(MF3DVoidObjPtr object);
+
+int ay_mfio_readquat(MF3DVoidObjPtr object);
+
+int ay_mfio_readrotaaxis(MF3DVoidObjPtr object);
+
 int ay_mfio_readcntr(MF3DVoidObjPtr object);
 
 int ay_mfio_readecntr(MF3DVoidObjPtr object);
@@ -81,6 +97,18 @@ int ay_mfio_writencconvertible(MF3D_FilePtr fileptr, ay_object *o);
 int ay_mfio_writenpconvertible(MF3D_FilePtr fileptr, ay_object *o);
 
 int ay_mfio_writenurbcurve(MF3D_FilePtr fileptr, ay_object *o);
+
+int ay_mfio_writepolymesh(MF3D_FilePtr fileptr, ay_object *o);
+
+int ay_mfio_writebox(MF3D_FilePtr fileptr, ay_object *o);
+
+int ay_mfio_writecylinder(MF3D_FilePtr fileptr, ay_object *o);
+
+int ay_mfio_writecone(MF3D_FilePtr fileptr, ay_object *o);
+
+int ay_mfio_writedisk(MF3D_FilePtr fileptr, ay_object *o);
+
+int ay_mfio_writetorus(MF3D_FilePtr fileptr, ay_object *o);
 
 int ay_mfio_writetrimcurve(MF3D_FilePtr fileptr, ay_object *o);
 
