@@ -379,19 +379,34 @@ proc io_lcAuto {  } {
 # io_lcAuto
 
 
-# io_loadCustomp:
-#  load a plugin
+# io_loadCustom:
+#  load a custom object/plugin
 proc io_loadCustom { } {
-    global ayprefs
+    global ay ayprefs
 
-    set filetypes {{"Custom Object" ".so"} {"Custom Object" ".dll"} {"All files" *}}
+    set pftype .$ay(soext)
+    
+    set filetypes [list [list "Custom Object" $pftype] {"All files" *}]
 
-    set filename [tk_getOpenFile -filetypes $filetypes -parent .\
-	    -title "Select Custom Object:"]
+    if { ( $ayprefs(Plugins) != "plugins" ) || ( [file exists "plugins"] ) } {
+	set idir $ayprefs(Plugins)
+    }
+
+    set oldcdir [pwd]
+
+    if { $idir == "" } {
+	set filename [tk_getOpenFile -filetypes $filetypes -parent .\
+		-title "Select Custom Object:"]
+    } else {
+	set filename [tk_getOpenFile -filetypes $filetypes -parent .\
+		-initialdir $idir -title "Select Custom Object:"]
+    }
 
     if { $filename != "" } { 
 	io_lc $filename
     }
+
+    cd $oldcdir
 
  return;
 }
