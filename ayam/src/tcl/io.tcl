@@ -252,7 +252,7 @@ proc io_exportRIB { {expview "" } } {
 		if { $imagename == "" } { set efilename "" }
 	    } else {
 		if { $ayprefs(Image) == "RIB" } {
-		    set imagename [file rootname $efilename].tiff
+		    set imagename [file rootname [file tail $efilename]].tif
 		} else {
 		    set imagename $ayprefs(Image)
 		}
