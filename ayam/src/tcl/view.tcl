@@ -365,7 +365,16 @@ proc viewOpen { width height {establish_bindings 1} } {
 	$w configure -cursor watch
     }
 
-    bind $w <Configure> "plb_update"
+    bind $w <Configure> {
+	global ay
+	set lb $ay(plb)
+	set tmp ""
+	set tmp [$lb curselection]
+	if { ($tmp != "") && ([$lb get $tmp] == "ViewAttrib") } {
+	    plb_update
+	}
+    }
+    #bind
 
     update
     set ay(cviewsema) 0
