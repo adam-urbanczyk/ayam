@@ -214,7 +214,7 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[])
 {
   /* char fname[] = "setPrefs";*/
- char *n1="ayprefs";
+ char *n1="ayprefs", *n2 = "ayprefse";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  int itemp = 0, ay_status = AY_OK;
  char fname[] = "set_prefs";
@@ -244,18 +244,29 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(itemp != ay_prefs.undo_levels)
     {
-      if((itemp > 1)/* && (itemp < 1000)*/)
+      if((itemp < 2)/* && (itemp < 1000)*/)
 	{
-	  ay_status = ay_undo_clear();
-	  ay_status = ay_undo_init(itemp);
-	  if(ay_status)
-	    {
-	      ay_error(ay_status, fname, NULL);
-	      return TCL_OK;
-	    }
-	  
-	  ay_prefs.undo_levels = itemp;
+	  itemp = 2;
+
+	  to = Tcl_NewIntObj(itemp);
+	  Tcl_ObjSetVar2(interp, toa, ton, to,
+			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	  Tcl_SetStringObj(toa, n2, -1);
+	  Tcl_ObjSetVar2(interp, toa, ton, to,
+			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	  Tcl_SetStringObj(toa, n1, -1);
 	}
+
+      ay_status = ay_undo_clear();
+      ay_status = ay_undo_init(itemp);
+      if(ay_status)
+	{
+	  ay_error(ay_status, fname, NULL);
+	  return TCL_OK;
+	}
+	  
+      ay_prefs.undo_levels = itemp;
+
     }
 
   Tcl_SetStringObj(ton, "Tolerance", -1);
