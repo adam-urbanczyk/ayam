@@ -2,6 +2,7 @@
 #
 # Makefile [27. May 2003]
 # Makefile for Ayam example scene shaders
+# Warning! This Makefile uses GNU make syntax!
 
 SOURCES = RCClouds.sl\
 	RSstripessrf.sl\
