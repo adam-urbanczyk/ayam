@@ -110,7 +110,8 @@ ay_instt_connect(ay_object *o, ay_object **last)
 		  if(!(entry = Tcl_FindHashEntry(ht, tag->val)))
 		    { /* OID not registered? */
 		      ay_error(AY_ERROR, fname,
-			       "Could not connect instance, removing it!");
+                    "Could not connect instance, removing instance with OID:");
+		      ay_error(AY_ERROR, fname, tag->val);
 		      *last = o->next;
 		      ay_status = ay_object_delete(o);
 		      removed = AY_TRUE;

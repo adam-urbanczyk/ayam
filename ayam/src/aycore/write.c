@@ -309,6 +309,8 @@ ay_write_scene(char *fname, int selected)
 
   clearerr(fileptr);
 
+  /* clear oid tags from scene */
+  ay_status = ay_instt_clearoidtags(ay_root);
   /* reset oid counter for saving of Instance objects */
   ay_status = ay_instt_createoid(NULL);
   /* create oid tags for master objects */
