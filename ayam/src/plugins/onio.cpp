@@ -33,14 +33,24 @@ ay_object *onio_lrobject = NULL;
 
 static double tm[16] = {0}; // current transformation matrix
 
-int onio_importcurves;
-
+int onio_importcurves = AY_TRUE;
+int onio_exportcurves = AY_TRUE;
+double onio_accuracy = 1.0e-12;
 
 // prototypes of functions local to this module
 
 int onio_getnurbsurfobj(ay_object *o, ON_NurbsSurface **pp_n, double *m);
 
 int onio_writenpatch(ay_object *o, ONX_Model *p_m, double *m);
+
+int onio_get2dcurveobj(ay_object *o, ON_NurbsCurve **pp_c);
+
+int onio_addtrim(ay_object *o, ON_BrepLoop::TYPE ltype,
+		 ON_BrepTrim::TYPE ttype,
+		 ON_Brep *p_b, ON_BrepFace *p_f);
+
+bool onio_isboundingloop(ay_object *o);
+
 
 int onio_writetrimmednpatch(ay_object *o, ONX_Model *p_m, double *m);
 
@@ -223,15 +233,14 @@ onio_get2dcurveobj(ay_object *o, ON_NurbsCurve **pp_c)
 //
 int
 onio_addtrim(ay_object *o, ON_BrepLoop::TYPE ltype, ON_BrepTrim::TYPE ttype,
-	     ON_Brep *p_b,
-	     ON_BrepFace *p_f)
+	     ON_Brep *p_b, ON_BrepFace *p_f)
 {
  int ay_status = AY_OK;
  char fname[] = "onio_addtrim";
  ON_NurbsCurve c, c2, *p_c = NULL;
  ON_Curve *p_curve = NULL;
  unsigned int c2i, c3i;
- double tolerance = 0.1;//0.1;
+ double tolerance = onio_accuracy;
 
   if(!o || !p_b)
     return AY_ENULL;
@@ -250,7 +259,6 @@ onio_addtrim(ay_object *o, ON_BrepLoop::TYPE ltype, ON_BrepTrim::TYPE ttype,
 	  p_curve = pSurface->Pushup(c, tolerance);
 	  if(p_curve == NULL)
 	    {
-	      //  printf("pushup failed!\n");
 	      ay_error(AY_ERROR, fname, "pushup failed");
 	      return AY_ERROR;
 	    }
@@ -332,7 +340,7 @@ onio_writetrimmednpatch(ay_object *o, ONX_Model *p_m, double *m)
  ON_PlaneSurface ps, *p_ps = NULL;
  ON_Brep *p_b = NULL;
  ON_BrepFace *p_f = NULL;
- double tolerance = 1.0e-12;
+ double tolerance = onio_accuracy;
  ON_BrepLoop::TYPE ltype = ON_BrepLoop::inner;
 
   if(!o || !p_m || !m)
@@ -353,8 +361,9 @@ onio_writetrimmednpatch(ay_object *o, ONX_Model *p_m, double *m)
       *p_p = plane;
       p_ps = new ON_PlaneSurface();
       ON_Interval ext;
-      // XXXX the use of ControlPolygonLength() assumes that the quadrilateral
-      // we have here is a rectangle (what it does not have to be!)
+      // XXXX the use of ControlPolygonLength() further assumes that the
+      // quadrilateral we have here is a rectangle (what it surely does
+      // not have to be!)
       double w = p_s->ControlPolygonLength(0);
       double minx = -w/2.0, maxx = w/2.0;
       ext.Set(minx, maxx);
@@ -395,7 +404,9 @@ onio_writetrimmednpatch(ay_object *o, ONX_Model *p_m, double *m)
     } // if
 
   down = o->down;
-  // remove outer loop because we cut away the outside with our own trims?
+
+  // remove earlier created bounding trimloop because we cut away the
+  // outside with our own trims?
   if(down && !onio_isboundingloop(down))
     {
       // Yes.
@@ -481,6 +492,9 @@ onio_writencurve(ay_object *o, ONX_Model *p_m, double *m)
   if(!o || !p_m || !m)
     return AY_ENULL;
 
+  if(!onio_exportcurves)
+    return AY_OK;
+
   nc = (ay_nurbcurve_object *)o->refine;
   p_c = new ON_NurbsCurve(3, true, nc->order, nc->length);
 
@@ -522,6 +536,9 @@ onio_writencconvertible(ay_object *o, ONX_Model *p_m, double *m)
 
   if(!o || !p_m || !m)
     return AY_ENULL;
+
+  if(!onio_exportcurves)
+    return AY_OK;
 
   ay_status = ay_provide_object(o, AY_IDNCURVE, &p);
   if(p)
@@ -653,21 +670,33 @@ onio_writetcmd(ClientData clientData, Tcl_Interp *interp,
  char fname[] = "onio_write";
  FILE *fp = NULL;
  const char *filename = NULL;
- int version = 3;
+ int i = 2, version = 3;
  ay_object *o = ay_root;
  ONX_Model model;
  const ON_Layer *p_layer = NULL;
  ON_3dmObjectAttributes attribs;
  //ON_TextLog& error_log;
 
-  // parse args
+  // check args
   if(argc < 2)
     {
       ay_error(AY_EARGS, fname, "filename");
       return TCL_OK;
     }
 
+  // parse args
   filename = argv[1];
+
+  while(i+1 < argc)
+    {
+      if(!strcmp(argv[i], "-c"))
+	{
+	  sscanf(argv[i+1], "%d", &onio_exportcurves);
+	}
+      i+=2;
+    } // while
+
+  // open the file for writing
   fp = ON::OpenFile(filename, "wb");
 
   if(!fp)

@@ -13,6 +13,7 @@ uplevel #0 { array set onio_options {
     Accuracy 1.0e-12
     ReadCurves 1
     ReadLayers -1
+    WriteCurves 1
 }   }
 
 proc onio_import { } {
@@ -112,15 +113,15 @@ proc onio_import { } {
 proc onio_export { } {
     global ay
 
-    set filename $ay(filename)
-
     set types {{"3DM (Rhino) Files" ".3dm"} {"All files" *}}
 
-    if { $filename == "" } {
+    if { $ay(filename) == "" } {
+	set filename "unnamed.3dm"
 	set dirname [pwd]
     } else {
-	set dirname [file dirname $filename]
+	set dirname [file dirname $ay(filename)]
 	if { $dirname == "." } { set dirname [pwd] }
+	set filename [file rootname $ay(filename)].3dm
     }
 
     set efilename [tk_getSaveFile -filetypes $types -parent .\
@@ -144,6 +145,7 @@ proc onio_export { } {
 	pack $f -in $w -side top -fill x
 
 	addParam $f onio_options Accuracy
+	addCheck $f onio_options WriteCurves
 
 	set f [frame $w.f2]
 	button $f.bok -text "Ok" -width 5 -command {
