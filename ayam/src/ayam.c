@@ -358,6 +358,13 @@ ay_init(Tcl_Interp *interp)
     return AY_EOMEM;
   strcpy(ay_prefs.logfile, ay_log);
 
+  if(!(ay_prefs.pprender = calloc(3+1, sizeof(char))))
+    {
+      free(ay_prefs.logfile);
+      return AY_EOMEM;
+    }
+  strcpy(ay_prefs.pprender, "rgl");
+
   /* no selected points */
   ay_point_edit_object = NULL;
   ay_point_edit_coords = NULL;

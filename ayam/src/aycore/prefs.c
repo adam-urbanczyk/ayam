@@ -201,6 +201,10 @@ ay_prefs_gettcmd(ClientData clientData, Tcl_Interp *interp,
   to = Tcl_NewStringObj(ay_prefs.logfile, -1);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton, "PPRender", -1);
+  to = Tcl_NewStringObj(ay_prefs.pprender, -1);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
@@ -503,6 +507,22 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
 
       strcpy(ay_prefs.logfile, str);
     }
+
+  Tcl_SetStringObj(ton, "PPRender", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  str = Tcl_GetStringFromObj(to, NULL);
+
+  if(str)
+    {
+      if(ay_prefs.pprender)
+	free(ay_prefs.pprender);
+      ay_prefs.pprender = NULL;
+	  
+      if(!(ay_prefs.pprender = calloc(strlen(str)+1, sizeof(char))))
+	return AY_EOMEM;
+
+      strcpy(ay_prefs.pprender, str);
+    } /* if */
 
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
