@@ -19,6 +19,7 @@ static char *ay_pamesh_name = "PatchMesh";
 int
 ay_pamesh_createcb(int argc, char *argv[], ay_object *o)
 {
+ int ay_status = AY_OK;
  int width = 4, height = 4;
  int i = 0, j = 0, k = 0;
  double *cv = NULL, dx = 0.25;
@@ -80,6 +81,9 @@ ay_pamesh_createcb(int argc, char *argv[], ay_object *o)
 
   p->controlv = cv;
   o->refine = (void *)p;
+
+  /* immediately create NURBS patch representation */
+  ay_status = ay_pmt_tonpatch(p, &(p->npatch));
 
  return AY_OK;
 } /* ay_pamesh_createcb */
@@ -385,9 +389,9 @@ ay_pamesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  char fname[] = "pamesh_setpropcb";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_pamesh_object *pamesh = NULL;
- int new_uclose, new_width, new_btype_u;
- int new_vclose, new_height, new_btype_v;
- int new_type, j;
+ int new_close_u, new_width, new_btype_u;
+ int new_close_v, new_height, new_btype_v;
+ int new_type, j, update = AY_FALSE;
  double dtemp;
  char *man[] = {"_0","_1","_2","_3","_4","_5","_6","_7","_8","_9","_10","_11","_12","_13","_14","_15"};
 
@@ -409,11 +413,11 @@ ay_pamesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   Tcl_SetStringObj(ton,"Close_U",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &new_uclose);
+  Tcl_GetIntFromObj(interp,to, &new_close_u);
 
   Tcl_SetStringObj(ton,"Close_V",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &new_vclose);
+  Tcl_GetIntFromObj(interp,to, &new_close_v);
 
   Tcl_SetStringObj(ton,"Type",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -427,10 +431,22 @@ ay_pamesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &new_btype_v);
 
+  if((pamesh->width != new_width)||(pamesh->height != new_height)||
+     (pamesh->btype_u != new_btype_u)||(pamesh->btype_v != new_btype_v)||
+     (pamesh->close_u != new_close_u)||(pamesh->close_v != new_close_v)||
+     (pamesh->type != new_type))
+    {
+      update = AY_TRUE;
+    }
+
   pamesh->type = new_type;
   pamesh->btype_u = new_btype_u;
   pamesh->btype_v = new_btype_v;
-
+  /* XXXX Or close it like NURBS Curves? */
+  /*
+  pamesh->close_u = new_close_u;
+  pamesh->close_v = new_close_v;
+  */
   if(pamesh->btype_u == AY_BTCUSTOM)
     {
       if(!pamesh->ubasis)
@@ -549,7 +565,7 @@ ay_pamesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	pamesh->height = new_height;
     } /* if */
 
-  if(AY_OK)
+  if(update)
     ay_notify_force(o);
 
   ay_status = ay_notify_parent();
@@ -1045,6 +1061,31 @@ ay_pamesh_notifycb(ay_object *o)
 
 
 int
+ay_pamesh_convertcb(ay_object *o)
+{
+ int ay_status = AY_OK;
+ ay_pamesh_object *pamesh = NULL;
+ ay_object *p = NULL, *new = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  pamesh = (ay_pamesh_object *) o->refine;
+  p = pamesh->npatch;
+  while(p)
+    {
+      ay_status = ay_object_copy(p, &new);
+      ay_trafo_copy(o, new);
+      ay_status = ay_object_link(new);
+
+      p = p->next;
+    } /* while */
+
+ return ay_status;
+} /* ay_pamesh_convertcb */
+
+
+int
 ay_pamesh_init(Tcl_Interp *interp)
 {
  int ay_status = AY_OK;
@@ -1066,6 +1107,8 @@ ay_pamesh_init(Tcl_Interp *interp)
 				    AY_IDPAMESH);
 
   ay_status = ay_notify_register(ay_pamesh_notifycb, AY_IDPAMESH);
+
+  ay_status = ay_convert_register(ay_pamesh_convertcb, AY_IDPAMESH);
 
  return ay_status;
 } /* ay_pamesh_init */
