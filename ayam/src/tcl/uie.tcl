@@ -195,12 +195,12 @@ proc updateColorFromE { w prop name button } {
     if { $red < -1 } { set $rname 0; set red 0 }
     if { $red > 255 } { set $rname 255; set red 255 }
 
-    if { $green < 0 } { set $gname 0; set green 0 }
+    if { $green < -1 } { set $gname 0; set green 0 }
     if { $green > 255 } { set $gname 255; set green 255 }
 
-    if { $blue < 0 } { set $bname 0; set blue 0 }
+    if { $blue < -1 } { set $bname 0; set blue 0 }
     if { $blue > 255 } { set $bname 255; set blue 255 }
-    if { $red == -1 } {
+    if { ($red == -1) || ($green == -1) || ($blue == -1) } {
 	set newcolor black
     } else {
 	set newcolor [format "#%02x%02x%02x" $red $green $blue]
