@@ -9,12 +9,13 @@
 
 This document describes how to set up Ayam on the Win32 platform.
 <p>
-The executable of Ayam is located in the directory named "bin".<br>
+The executable of Ayam is located in the directory named <code>"bin"</code>
+.<br>
 You do not need to install Ayam in the system, you can start it
 directly with a double click from where you unpacked the archive.<br>
 If you get error messages about input or output file handles
 when trying to render directly from Ayam, please use the
-accompanying batch file "ayam.bat" to start Ayam.<p>
+accompanying batch file <code>"ayam.bat"</code> to start Ayam.<p>
 
 Before you start modelling with Ayam, the following three things have
 to be done:
@@ -30,77 +31,86 @@ in the console on first startup. We are going to fix them now.
 
 <H2>1. Saving Preferences</H2>
 
-All preference settings (Menu: "Edit/Preferences") are
+All preference settings (Menu: <code>"Edit/Preferences"</code>) are
 automatically saved when you leave Ayam.<br>
 
 The preferences are saved to the file:<br>
-"$(HOME)/ayamrc" if the environment variable "HOME" exists<br>
-"$(TEMP)/ayamrc" else.
+<code>"$(HOME)/ayamrc"</code> if the environment variable
+<code>"HOME"</code> exists<br>
+<code>"$(TEMP)/ayamrc"</code> else.
 <p>
 The following steps need to be done if you (for some reason)
 do not like it that way, or the preferences end up in silly
-places (e.g. Win95 is setting your $(HOME) to "C:/", so that
-the preferences end up in "C:/ayamrc"...).<br>
+places (e.g. Win95 is setting your $(HOME) to <code>"C:/"</code>, so that
+the preferences end up in <code>"C:/ayamrc"</code>...).<br>
 However, if anything is fine with you, just skip to Step 2 now.<p>
 
 You can change the path and filename of the preference settings
-using the environment variable "AYAMRC".<br>
+using the environment variable <code>"AYAMRC"</code>.<br>
 How do you set an environment variable?<p>
 
-An easy way to do this is to edit the batch file "ayam.bat",
+An easy way to do this is to edit the batch file <code>"ayam.bat"</code>,
 and use it to start Ayam (this route does not work on Windows-NT4!):
 <UL>
  <LI> quit Ayam
- <LI> edit the file "ayam.bat"
- <LI> remove the leading "rem" from the line "rem SET AYAMRC=D:/Ayam/ayamrc"
- <LI> you should change the path "D:/Ayam/ayamrc" to a more appropriate
-setting; notice that the drive and the path you use already have to exist,
-and that you should have write permissions to the path that you choose
- <LI> save the file "ayam.bat"
- <LI> use the batch file "ayam.bat" to start Ayam
- <LI> remember to always use the file "ayam.bat" to start Ayam in the future
+ <LI> edit the file <code>"ayam.bat"</code>
+ <LI> remove the leading <code>"rem"</code> from the line
+<code>"rem SET AYAMRC=D:/Ayam/ayamrc"</code>
+ <LI> you should change the path <code>"D:/Ayam/ayamrc"</code> to a more
+appropriate setting; notice that the drive and the path you use already
+have to exist, and that you should have write permissions to the path
+that you choose
+ <LI> save the file <code>"ayam.bat"</code>
+ <LI> use the batch file <code>"ayam.bat"</code> to start Ayam
+ <LI> remember to always use the file <code>"ayam.bat"</code> to start
+Ayam in the future
 </UL>
 
 Alternatively:
 <UL>
  <LI> quit Ayam
 
- <LI> WinXP: open
-"Start/Control Panel/System/Advanced/Environment Variables"<br>
-Add a new variable named "AYAMRC" and set it e.g. to "D:/ayam/ayamrc";
+ <LI> <b>WinXP</b>: open
+<code>"Start/Control Panel/System/Advanced/Environment Variables"</code><br>
+Add a new variable named <code>"AYAMRC"</code> and set it e.g. to
+<code>"D:/ayam/ayamrc"</code>;
 notice that the drive and the path you use already have to exist,
 and that you should have write permissions to the path that you choose
 
- <LI> WinNT/2000: open "Start/Settings/Control Panel/System/Environment"<br>
-Add a new variable named "AYAMRC"
+ <LI> <b>WinNT/2000</b>: open
+<code>"Start/Settings/Control Panel/System/Environment"</code><br>
+Add a new variable named <code>"AYAMRC"</code>
 (On Win2000 you need to be administrator to be able to do this.)
-and set it e.g. to "D:/ayam/ayamrc";
+and set it e.g. to <code>"D:/ayam/ayamrc"</code>;
 notice that the drive and the path you use already have to exist,
 and that you should have write permissions to the path that you choose
 
- <LI> Win95/98/98SE: From the start menu, choose "Run" and enter
-"sysedit", then click "Ok".
-Select the window that is displaying "AUTOEXEC.BAT".
+ <LI> <b>Win95/98/98SE</b>: From the start menu, choose <code>"Run"</code>
+and enter <code>"sysedit"</code>, then click <code>"Ok"</code>.
+Select the window that is displaying <code>"AUTOEXEC.BAT"</code>.
 Add the line<br>
 SET AYAMRC=D:/ayam/ayamrc<br>
 to it. Notice that the drive and the path you use already have to exist,
 and that you should have write permissions to the path that you choose.
 
- <LI> WinME: Open "Start/Programs/Accessories/System Tools/System Information".
-This brings up a window titled "Microsoft Help and Support".
-From here, choose the "Tools" menu, then select the "System-Configuration"
-utility. Click the "Environment" tab.
-Add a new variable named "AYAMRC" and set it e.g. to "D:/ayam/ayamrc";
+ <LI> <b>WinME</b>: Open
+<code>"Start/Programs/Accessories/System Tools/System Information"</code>.
+This brings up a window titled <code>"Microsoft Help and Support"</code>.
+From here, choose the <code>"Tools"</code> menu, then select the
+<code>"System-Configuration"</code> utility. Click the
+<code>"Environment"</code> tab.
+Add a new variable named <code>"AYAMRC"</code> and set it e.g. to
+<code>"D:/ayam/ayamrc"</code>;
 notice that the drive and the path you use already have to exist,
-and that you should have write permissions to the path that you choose
+and that you should have write permissions to the path that you choose.
  <LI> restart Windows
  <LI> start Ayam again
 </UL>
 
 You can switch off automatic saving of the preferences on exit using the
-preference setting "Main/AutoSavePrefs".
-If you switched off "AutoSavePrefs", you can enforce saving of the
-preferences using the menu entry "File/Save Prefs".<p>
+preference setting <code>"Main/AutoSavePrefs"</code>.
+If you switched off <code>"AutoSavePrefs"</code>, you can enforce saving
+of the preferences using the menu entry <code>"File/Save Prefs"</code>.<p>
 
 Remember: NEVER use backslashes (\) in any path or filename you enter to Ayam.
 
@@ -111,19 +121,23 @@ shaders are small files that carry material descriptions.
 Some example shaders come with your RenderMan compatible renderer
 (e.g. BMRT), but you may also create your own.<br>
 Currently, Ayam can only work with shaders that have been
-compiled with "slc" from BMRT, so you should get and
+compiled with <code>"slc"</code> from BMRT, so you should get and
 install BMRT first.<br>
 Now you need to point Ayam to the directories where your slc-compiled
 shaders reside in order to use them with the material
 objects in Ayam.
-This is done using the preference setting "Main/Shaders".
-Just open the preferences using the main menu entry "Edit/Preferences",
-enter the appropriate paths (separated by ";")
-into the string entry labeled "Shaders".<br>
+This is done using the preference setting <code>"Main/Shaders"</code>.
+Just open the preferences using the main menu entry
+<code>"Edit/Preferences"</code>,
+enter the appropriate paths (separated by semicolons <code>";"</code>)
+into the string entry labeled <code>"Shaders"</code>.<br>
 An example string could look like this:<br>
-D:/BMRT2.6/shaders/;D:/Ayam/scn/shaders/<br>
-Now press the "Scan Shaders" button below and watch the console for
-error messages.<p>
+<samp>
+D:/BMRT2.6/shaders/;D:/Ayam/scn/shaders/
+</samp>
+<br>
+Now press the <code>"Scan Shaders"</code> button below and watch the
+console for error messages.<p>
 
 Remember: NEVER use backslashes (\) in any path or filename you enter to Ayam.
 
@@ -134,37 +148,42 @@ that contains the specification of some view windows.
 This file is loaded automatically on every start of Ayam and
 presents you with a standard working environment, consisting
 of e.g. a traditional 3-view layout (Front, Side, Perspective).
-
+To create your own working environment, follow the steps below:
 <UL>
+ <LI> Start Ayam.
  <LI> Open and arrange as many views as you like using the
-menu entry "Create/View".<br>
+menu entry <code>"Create/View"</code>.<br>
 If Ayam crashes or blocks during opening of a view
 then probably something with your OpenGL setup is seriously broken.
 Fix this, then return here.
  <LI> Save the environment using the menu entry
-"Special/Save Environment". This will save the environment
-to the file given in the preference setting "Main/EnvFile".
-The default setting is "~/2view.ay".
-The tilde "~" always expands to the home directory of the current user.
-If you have a single or no user on your system you might want
+<code>"Special/Save Environment"</code>. This will save the environment
+to the file given in the preference setting <code>"Main/EnvFile"</code>.
+The default setting is <code>"~/2view.ay"</code>.
+The tilde <code>"~"</code> always expands to the home directory of the
+current user. If you have a single or no user on your system you might want
 to put an absolute path into the preference setting
-"Main/EnvFile" first (e.g. set it to "D:/ayam/2view.ay").
+<code>"Main/EnvFile"</code> first (e.g. set it to
+<code>"D:/ayam/2view.ay"</code>).
 Notice that the drive and the path you use already have to exist,
 and that you should have write permissions.
 <br>
-Do not switch off the preference setting "Main/LoadEnv",
+Do not switch off the preference setting <code>"Main/LoadEnv"</code>,
 as this would inhibit automatic loading of the working
 environment on startup.
+<LI> You can immediately try loading of the new environment using
+the main menu entry <code>"File/New"</code> (provided that the
+preference setting <code>"Main/NewLoadsEnv"</code> is not switched off).
 </UL>
 
 Remember: NEVER use backslashes (\) in any path or filename you enter to Ayam.
 <p>
 We are set.
 Quit Ayam and start it again, check the console for errors; then
-download "Tutorial #1" and do it.
+download <code>"Tutorial #1"</code> and do it.
 
 <HR>
-<i>Randolf Schultz, 13. Jan 2003<BR>
+<i>Randolf Schultz, 3. Jul 2003<BR>
 <A HREF="http://www.ayam3d.org/">
 http://www.ayam3d.org/</A>&nbsp;&nbsp;&nbsp;&nbsp;Reconstruct the World!
 </i>
