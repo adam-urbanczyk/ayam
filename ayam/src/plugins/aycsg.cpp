@@ -1384,17 +1384,24 @@ aycsg_cleartmtags()
 
 extern "C" {
 
-// Aycsg_Init:
+// Aycsg_Init | aycsg_inittcmd:
 //  initialize aycsg module
 //  note: this function _must_ be capitalized exactly this way
 //  regardless of the filename of the shared object (see: man n load)!
+#ifdef AYCSGWRAPPED
+int
+aycsg_inittcmd(ClientData clientData, Tcl_Interp *interp,
+	       int argc, char *argv[])
+#else
 int
 Aycsg_Init(Tcl_Interp *interp)
+#endif
 {
  char fname[] = "Aycsg_Init";
  int err;
  int ay_status = AY_OK;
 
+#ifndef AYCSGWRAPPED
   // first, check versions
   if(strcmp(ay_version_ma, aycsg_version_ma))
     {
@@ -1410,6 +1417,7 @@ Aycsg_Init(Tcl_Interp *interp)
 	       "Plugin has been compiled for a different Ayam version!");
       ay_error(AY_ERROR, fname, "However, it is probably safe to continue...");
     }
+#endif
 
   aycsg_root = NULL;
 
@@ -1429,6 +1437,7 @@ Aycsg_Init(Tcl_Interp *interp)
   ay_ppoh_init(interp);
 #endif
 
+#ifndef AYCSGWRAPPED
   // source aycsg.tcl, it contains Tcl-code for new key bindings etc.
   if((Tcl_EvalFile(interp, "aycsg.tcl")) != TCL_OK)
      {
@@ -1436,23 +1445,27 @@ Aycsg_Init(Tcl_Interp *interp)
 		  "Error while sourcing \\\"aycsg.tcl\\\"!");
        return TCL_OK;
      }
+#endif
 
   // initialize GLEW
   err = glewInit();
-  if (GLEW_OK != err) {
-    // problem: glewInit failed, something is seriously wrong
-    ay_error(AY_ERROR, fname, "GLEW Initialization failed.");
-    //ay_error(AY_ERROR, fname, glewGetErrorString(err));
-    return TCL_OK;
-  }
+  if(GLEW_OK != err)
+    {
+      // problem: glewInit failed, something is seriously wrong
+      ay_error(AY_ERROR, fname, "GLEW Initialization failed:");
+      ay_error(AY_ERROR, fname, (char*)glewGetErrorString(err));
+      return TCL_OK;
+    }
 
   // create a new command for all views (Togl widgets)
   Togl_CreateCommand("rendercsg", aycsg_rendertcb);
 
+#ifndef AYCSGWRAPPED
   ay_error(AY_EOUTPUT, fname, "Plugin 'aycsg' successfully loaded.");
+#endif
 
  return TCL_OK;
-} // Aycsg_Init
+} // Aycsg_Init | aycsg_inittcmd
 
 } // extern "C"
 
