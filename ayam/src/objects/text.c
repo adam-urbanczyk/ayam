@@ -29,7 +29,7 @@ ay_text_createcb(int argc, char *argv[], ay_object *o)
       return AY_ERROR;
     }
 
-  text->height = 1.0;
+  text->height = 0.5;
 
   o->refine = text;
 
@@ -418,7 +418,7 @@ ay_text_notifycb(ay_object *o)
     return AY_OK;
 
   ext.refine = &extrude;
-  extrude.height = 1.0;
+  extrude.height = text->height;
   extrude.has_lower_cap = text->has_lower_cap;
   extrude.has_upper_cap = text->has_upper_cap;
   extrude.glu_display_mode = text->glu_display_mode;
@@ -585,6 +585,8 @@ ay_text_notifycb(ay_object *o)
 
       c++;
     } /* while */
+
+  tti_status = ay_tti_getcurves(NULL, 0, NULL);
 
  return AY_OK;
 } /* ay_text_notifycb */
