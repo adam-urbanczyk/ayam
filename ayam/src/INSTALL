@@ -1,4 +1,4 @@
-INSTALL [28. Feb 2004]
+INSTALL [17. Mar 2004]
 
 Compilation Instructions for Ayam
 ---------------------------------
@@ -49,7 +49,7 @@ version of Ayam:
   _get the source distribution_ of Tcl/Tk and get the right
   version, as Togl is known to crash if Tcl/Tk versions mismatch!
 - OpenGL ( gl.h, glu.h, libGL.so, libGLU.so )
-  Version of GL is uncritical ( 1.1 should do ),
+  Version of GL is uncritical ( 1.1 should do, see also Note 1 ),
   Version of GLU should be atleast 1.2 ( due to the use of the GLU
   tesselation facility in the PolyMesh and SubdivisionMesh objects ),
   ( Mesa may be used as replacement for a real OpenGL. Since
@@ -84,6 +84,10 @@ version of Ayam:
 Tip:
 If you unpack Tcl/Tk and BMRT as sister directories to the Ayam
 directory, editing of the Makefile will be easier.
+
+Note 1:
+If OpenGL 1.1 is not available to you, you can still compile Ayam, if your
+OpenGL is supporting the polygon offset extension (e.g. on IRIX 6.2).
 
 
 1.2 Step 2 - Compiling
