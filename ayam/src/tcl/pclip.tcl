@@ -99,6 +99,8 @@ proc pclip_paste { } {
 	global ay
 	set ay(pasteProp) 1
 
+	undo save "PasteProp"
+
 	forAll 0 {
 	    global ay pclip_prop curtypes
 	    if { $ay(lb) == 1 } {
