@@ -130,6 +130,9 @@ int ay_nb_DegreeElevateSurfU(int stride, int w, int h, int p, double *U,
 			     double *Pw, int t,
 			     int *nw, double *Uh, double *Qw);
 
+int ay_nb_DegreeElevateSurfV(int stride, int w, int h, int p, double *V,
+			     double *Pw, int t,
+			     int *nh, double *Vh, double *Qw);
 
 /* nct.c */
 int ay_nct_create(int order, int length, int knot_type,
@@ -309,13 +312,18 @@ int ay_npt_topolymesh(ay_object *o, int smethod, double sparam,
 int ay_npt_topolytcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
 
-int ay_npt_swapuvtcmd(ClientData clientData, Tcl_Interp *interp,
-		      int argc, char *argv[]);
-
 int ay_npt_elevateu(ay_nurbpatch_object *patch, int t);
 
 int ay_npt_elevateutcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
+
+int ay_npt_elevatev(ay_nurbpatch_object *patch, int t);
+
+int ay_npt_elevatevtcmd(ClientData clientData, Tcl_Interp *interp,
+			int argc, char *argv[]);
+
+int ay_npt_swapuvtcmd(ClientData clientData, Tcl_Interp *interp,
+		      int argc, char *argv[]);
 
 /* pmt.c */
 
