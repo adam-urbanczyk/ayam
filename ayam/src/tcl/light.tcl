@@ -31,15 +31,16 @@ if { $LightAttrData(Type) != 0 } {
     addParam $w LightAttrData Intensity
     addColor $w LightAttrData Color
 }
+
+addCheck $w LightAttrData UseSM
+addParam $w LightAttrData SMRes
+
 if { $LightAttrData(Type) == 3 } {
     addParam $w LightAttrData ConeAngle
     addParam $w LightAttrData ConeDAngle
     addParam $w LightAttrData BeamDistrib
 }
-if { $LightAttrData(Type) != 0 } {
-addCheck $w LightAttrData UseSM
-addParam $w LightAttrData SMRes
-}
+
 if { $LightAttrData(Type) != 0 } {
     addParam $w LightAttrData From_X
     addParam $w LightAttrData From_Y
