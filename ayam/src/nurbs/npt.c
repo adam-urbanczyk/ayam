@@ -2431,30 +2431,34 @@ ay_npt_birail1(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 	      ay_trafo_defaults(curve);
 	      ay_status = ay_capt_createfromcurve(curve, end_cap);
 	      /* transform cap */
-	      AY_V3SUB(T0, p2, p1)
-	      lent0 = AY_V3LEN(T0);
-	      /* apply scaling */
-	      if(lent0 > AY_EPSILON)
+	      if(*end_cap)
 		{
-		  (*end_cap)->scalx *= scalx;
-		  (*end_cap)->scaly *= scaly;
-		}
-
-	      (*end_cap)->movx = p1[0]+((p2[0]-p1[0])/2.0);
-	      (*end_cap)->movy = p1[1]+((p2[1]-p1[1])/2.0);
-	      (*end_cap)->movz = p1[2]+((p2[2]-p1[2])/2.0);
-
-	      /* rotate it */
-	      for(j = 1; j <= sections; j++)
-		{
-		  if(fabs(rots[j*4]) > AY_EPSILON)
+		  ay_trafo_copy(o1, *end_cap);
+		  AY_V3SUB(T0, p2, p1)
+		    lent0 = AY_V3LEN(T0);
+		  /* apply scaling */
+		  if(lent0 > AY_EPSILON)
 		    {
-		      ay_quat_axistoquat(&(rots[j*4+1]),
-					 AY_D2R(-rots[j*4]), quat);
-		      ay_quat_add(quat, (*end_cap)->quat,
-				  (*end_cap)->quat);
-		    } /* if */
-		} /* for */
+		      (*end_cap)->scalx *= scalx;
+		      (*end_cap)->scaly *= scaly;
+		    }
+
+		  (*end_cap)->movx = p1[0]+((p2[0]-p1[0])/2.0);
+		  (*end_cap)->movy = p1[1]+((p2[1]-p1[1])/2.0);
+		  (*end_cap)->movz = p1[2]+((p2[2]-p1[2])/2.0);
+
+		  /* rotate it */
+		  for(j = 1; j <= sections; j++)
+		    {
+		      if(fabs(rots[j*4]) > AY_EPSILON)
+			{
+			  ay_quat_axistoquat(&(rots[j*4+1]),
+					     AY_D2R(-rots[j*4]), quat);
+			  ay_quat_add(quat, (*end_cap)->quat,
+				      (*end_cap)->quat);
+			} /* if */
+		    } /* for */
+		} /* if */
 	    } /* if */
 	} /* if */
 
@@ -2471,9 +2475,12 @@ ay_npt_birail1(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
       ay_trafo_defaults(curve);
       ay_status = ay_capt_createfromcurve(curve, start_cap);
       /* transform cap */
-      
-      /* fix direction for aycsg */
-      (*start_cap)->scalz *= -1.0;
+      if(*start_cap)
+	{
+	  ay_trafo_copy(o1, *start_cap);
+	  /* fix direction for aycsg */
+	  (*start_cap)->scalz *= -1.0;
+	} /* if */
     } /* if */
 
   /* return result */
