@@ -95,8 +95,11 @@ proc shortcut_main { w } {
     bind $w <[repcont $aymainshortcuts(Redo)]> ".fu.fMenu.ed.m invoke 10"
     .fu.fMenu.ed.m entryconfigure 10 -accelerator $aymainshortcuts(Redo)
 
-    bind $w <[repcont $aymainshortcuts(Prefs)]> ".fu.fMenu.ed.m invoke 12"
-    .fu.fMenu.ed.m entryconfigure 12 -accelerator $aymainshortcuts(Prefs)
+    bind $w <[repcont $aymainshortcuts(Material)]> ".fu.fMenu.ed.m invoke 12"
+    .fu.fMenu.ed.m entryconfigure 12 -accelerator $aymainshortcuts(Material)
+
+    bind $w <[repcont $aymainshortcuts(Prefs)]> ".fu.fMenu.ed.m invoke 14"
+    .fu.fMenu.ed.m entryconfigure 14 -accelerator $aymainshortcuts(Prefs)
 
     bind $w <[repcont $aymainshortcuts(Help)]> ".fu.fMenu.hlp.m invoke 0"
     .fu.fMenu.hlp.m entryconfigure 0 -accelerator $aymainshortcuts(Help)
@@ -127,9 +130,11 @@ proc shortcut_toolbox { w } {
 proc shortcut_view { w } {
     global ayviewshortcuts aymainshortcuts
 
+    # some main window shortcuts
     bind $w <[repcont $aymainshortcuts(Undo)]> ".fu.fMenu.ed.m invoke 9"
     bind $w <[repcont $aymainshortcuts(Redo)]> ".fu.fMenu.ed.m invoke 10"
 
+    # view window shortcuts
     bind $w <[repcont $ayviewshortcuts(QRender)]> "$w.fMenu.v.m invoke 0"
     $w.fMenu.v.m entryconfigure 0 -accelerator $ayviewshortcuts(QRender)
     bind $w <[repcont $ayviewshortcuts(Render)]> "$w.fMenu.v.m invoke 1"
