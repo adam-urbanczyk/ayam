@@ -21,7 +21,6 @@
 #include <stdio.h>
 #include <time.h>
 #include "ayam.h"
-#include <GL/glut.h>
 
 extern unsigned int metacomp_id;
 
@@ -147,6 +146,7 @@ typedef struct meta_world_s
   int	*vhash;
   int	h1,h2;
   int	actindex;
+  int 	indexnum;
     
   int currentnumpoly;
   int maxpoly;

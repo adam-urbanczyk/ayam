@@ -89,7 +89,7 @@ metaobj_createcb (int argc, char *argv[], ay_object * o)
     }
 
 
-  w->tablesize = 20000;
+  w->tablesize = 40000;
 
   if (!
       (w->vindex =
@@ -135,7 +135,6 @@ metaobj_createcb (int argc, char *argv[], ay_object * o)
 
   w->currentnumpoly = 0;
   w->o = o->down;
- // w->cid = &metacomp_id;
 
   meta_calceffect (w);
 
@@ -263,17 +262,24 @@ int
 metaobj_drawcb (struct Togl *togl, ay_object * o)
 {
   meta_world *w;
-  double *vptr, x, y, z, x1, y1, z1, x2, y2, z2;
+  /*
+  double x, y, z, x1, y1, z1, x2, y2, z2;
   int i;
-
+  */
+  double *vptr;
+  
   w = (meta_world *) o->refine;
 
   vptr = w->vertex;
 
+#if 1
   glEnableClientState(GL_VERTEX_ARRAY);
   glVertexPointer(3, GL_DOUBLE, 0, w->vertex);
 
-  glDrawElements(GL_LINES, w->currentnumpoly*3, GL_UNSIGNED_INT, w->vindex);
+  glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
+
+  glDrawElements(GL_TRIANGLES, w->currentnumpoly*3, GL_UNSIGNED_INT, w->vindex);
+#endif
 
   if (w->showworld)
   {
@@ -361,7 +367,7 @@ metaobj_shadecb (struct Togl *togl, ay_object * o)
 {
   meta_world *w;
   double *vptr, *nptr;
-  int i;
+  /* int i; */
 
   w = (meta_world *) o->refine;
 
@@ -550,7 +556,7 @@ metaobj_readcb (FILE * fileptr, ay_object * o)
       return AY_EOMEM;
     }
 
-  w->tablesize = 20000;
+  w->tablesize = 40000;
 
   if (!
       (w->vindex =

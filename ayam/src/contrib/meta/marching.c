@@ -169,7 +169,7 @@ meta_polygonise (meta_world * w, meta_gridcell * grid, double isolevel)
 
   vptr = &w->vertex[w->currentnumpoly * 9];
   nptr = &w->nvertex[w->currentnumpoly * 9];
-  viptr = &w->vindex[w->currentnumpoly * 3];
+  viptr = &w->vindex[w->indexnum];
 
   for (i = 0; triTable[cubeindex][i] != -1; i += 3)
     {
@@ -180,16 +180,20 @@ meta_polygonise (meta_world * w, meta_gridcell * grid, double isolevel)
 	  
 	  ti = triTable[cubeindex][i + j];
 
-	  ix = (vertlist[ti].x+2) * 10000;
-	  iy = (vertlist[ti].y+2) * 10000;
-	  iz = (vertlist[ti].z+2) * 10000;
+#if 0
+	  ix = (vertlist[ti].x+2) * 40000;
+	  iy = (vertlist[ti].y+2) * 40000;
+	  iz = (vertlist[ti].z+2) * 40000;
 	  
-	  hash = ix%w->tablesize + iy%w->h2 + iz%w->h1;
+	  hash = ix%w->tablesize + iy%w->h1 + iz%w->h2;
 
-	//printf("hash: %d ix %d iy %d iz %d\n",w->vhash[hash],ix,iy,iz);	
+	  printf("hash: %d w->actindex %d\n",w->vhash[hash],w->indexnum);	
 
-	 // if ((!w->vhash[hash]&&(w->actindex))||(!w->actindex))	
+
+	  if (((w->vhash[hash]==0)&&(w->actindex!=0))||(w->actindex==0))	
 	  {
+#endif
+
 	  	*nptr++ = normlist[ti].x;
 	  	*nptr++ = normlist[ti].y;
 	  	*nptr++ = normlist[ti].z;
@@ -199,15 +203,21 @@ meta_polygonise (meta_world * w, meta_gridcell * grid, double isolevel)
 	  	*vptr++ = vertlist[ti].z;
 
 	  	*viptr++ = w->actindex;
-	//	w->vhash[hash] = w->actindex;
+
+		w->vhash[hash] = w->actindex;
   	     w->actindex++;
 
-	//printf("%d\n",w->actindex);	
 
+#if 0
 	  }
-	  //else	/* double vertex */
-	  //	*viptr++ = w->vhash[hash];
-	  
+	  else	/* double vertex */
+	  {
+	    *viptr++ = w->vhash[hash];
+	    printf("double!!!\n");
+	  }
+#endif
+	  w->indexnum++;
+
 	  
 	}
 
