@@ -320,7 +320,7 @@ ay_ppoh_printtcmd(ClientData clientData, Tcl_Interp *interp,
 int
 ay_ppoh_init(Tcl_Interp *interp)
 {
- char fname[] = "ppoh_init";
+  /*char fname[] = "ppoh_init";*/
  static int initialized = AY_FALSE;
  /* int ay_status = AY_OK;*/
 
