@@ -666,7 +666,7 @@ ay_bpatch_bbccb(ay_object *o, double *bbox, int *flags)
 
 
 int
-ay_bpatch_convertcb(ay_object *o)
+ay_bpatch_convertcb(ay_object *o, int in_place)
 {
  int ay_status = AY_OK;
  ay_object *new = NULL;

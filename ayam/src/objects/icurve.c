@@ -715,7 +715,7 @@ ay_icurve_notifycb(ay_object *o)
 
 
 int
-ay_icurve_convertcb(ay_object *o)
+ay_icurve_convertcb(ay_object *o, int in_place)
 {
  int ay_status = AY_OK;
  ay_icurve_object *ic = NULL;

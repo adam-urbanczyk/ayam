@@ -964,7 +964,7 @@ ay_ncurve_bbccb(ay_object *o, double *bbox, int *flags)
 
 
 int
-ay_ncurve_convertcb(ay_object *o)
+ay_ncurve_convertcb(ay_object *o, int in_place)
 {
  int ay_status = AY_OK;
  int i, a, b;

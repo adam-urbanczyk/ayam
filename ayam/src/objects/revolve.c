@@ -1056,7 +1056,7 @@ ay_revolve_providecb(ay_object *o, unsigned int type, ay_object **result)
 } /* ay_revolve_providecb */
 
 int
-ay_revolve_convertcb(ay_object *o)
+ay_revolve_convertcb(ay_object *o, int in_place)
 {
  int ay_status = AY_OK;
  ay_revolve_object *r = NULL;

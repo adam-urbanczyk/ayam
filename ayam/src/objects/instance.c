@@ -574,7 +574,7 @@ ay_instance_bbccb(ay_object *o, double *bbox, int *flags)
  * propagate changes to this function to ay_instt_resolve()!
  */
 int
-ay_instance_convertcb(ay_object *i)
+ay_instance_convertcb(ay_object *i, int in_place)
 {
  int ay_status = AY_OK;
  char *iname = NULL;
