@@ -24,9 +24,6 @@ typedef struct ay_prman_data_s {
 ay_prman_data prmandata;
 #endif
 
-#define SMEPSILON 1.0e-05
-
-
 char *resolutions = NULL;
 
 /* prototypes */
@@ -93,23 +90,23 @@ ay_sm_aimz(double *direction)
 
   if(direction[1] > 0.0)
     {
-      if(fabs(xrot) > SMEPSILON)
+      if(fabs(xrot) > AY_EPSILON)
 	RiRotate((RtFloat)xrot, (RtFloat)1.0,(RtFloat)0.0,(RtFloat)0.0);
     }
   else
     {
-      if(fabs(xrot) > SMEPSILON)
+      if(fabs(xrot) > AY_EPSILON)
 	RiRotate((RtFloat)-xrot, (RtFloat)1.0,(RtFloat)0.0,(RtFloat)0.0);
     }
 
   if(direction[0] < 0.0)
     {
-      if(fabs(yrot) > SMEPSILON)
+      if(fabs(yrot) > AY_EPSILON)
 	RiRotate((RtFloat)yrot, (RtFloat)0.0,(RtFloat)1.0,(RtFloat)0.0);
     }
   else
     {
-      if(fabs(yrot) > SMEPSILON)
+      if(fabs(yrot) > AY_EPSILON)
 	RiRotate((RtFloat)-yrot, (RtFloat)0.0,(RtFloat)1.0,(RtFloat)0.0);
     }
 
@@ -124,18 +121,18 @@ void
 ay_sm_placecamera(double *position, double *direction, double roll)
 {
   /* XXXX RiIdentity(); */
-  if(fabs(roll) > SMEPSILON)
+  if(fabs(roll) > AY_EPSILON)
     RiRotate((RtFloat)-roll, (RtFloat)0.0, (RtFloat)0.0, (RtFloat)1.0);
 
   ay_sm_aimz(direction);
 
-  if((fabs(position[0]) > SMEPSILON) || (fabs(position[1]) > SMEPSILON) ||
-     (fabs(position[2]) > SMEPSILON))
-    RiTranslate((RtFloat) ((fabs(position[0]) > SMEPSILON) ? -position[0] :
+  if((fabs(position[0]) > AY_EPSILON) || (fabs(position[1]) > AY_EPSILON) ||
+     (fabs(position[2]) > AY_EPSILON))
+    RiTranslate((RtFloat) ((fabs(position[0]) > AY_EPSILON) ? -position[0] :
 		 0.0),
-		(RtFloat) ((fabs(position[1]) > SMEPSILON) ? -position[1] :
+		(RtFloat) ((fabs(position[1]) > AY_EPSILON) ? -position[1] :
 		 0.0),
-		(RtFloat) ((fabs(position[2]) > SMEPSILON) ? -position[2] :
+		(RtFloat) ((fabs(position[2]) > AY_EPSILON) ? -position[2] :
 		0.0));
 
  return;
@@ -219,11 +216,12 @@ ay_sm_dotrafosinv(ay_sm_trafostack *trafo, double *px, double *py, double *pz)
 void
 ay_sm_wribsm(char *file, ay_sm_trafostack *trafo, ay_object *light)
 {
-  /* ay_object *o = ay_root->next;*/
+ /* ay_object *o = ay_root->next;*/
  ay_light_object *l = NULL;
  double euler[3], d[3];
 
- /*  RiFrameBegin(1);*/
+  /* was: */
+  /*  RiFrameBegin(1);*/
   RiIdentity();
   RiScale((RtFloat)-1.0, (RtFloat)1.0, (RtFloat)1.0);
   /*RiRotate(RtFloat)180, RtFloat)0, RtFloat)1, RtFloat)0);*/
@@ -236,45 +234,56 @@ ay_sm_wribsm(char *file, ay_sm_trafostack *trafo, ay_object *light)
   ay_sm_placecamera(l->tfrom, d, 0.0);
 
   /* move light to origin via trafo structure */
-  while (trafo) {
-     if ((trafo->scalx != 1.0) || (trafo->scaly != 1.0) ||
+  while(trafo)
+    {
+      if((trafo->scalx != 1.0) || (trafo->scaly != 1.0) ||
 	 (trafo->scalz != 1.0))
-       RiScale((RtFloat)(1.0/trafo->scalx), (RtFloat)(1.0/trafo->scaly),
-	 (RtFloat)(1.0/trafo->scalz));
+	{
+	  RiScale((RtFloat)(1.0/trafo->scalx), (RtFloat)(1.0/trafo->scaly),
+		  (RtFloat)(1.0/trafo->scalz));
+	}
 
-     if(trafo->quat[0] != 0.0 || trafo->quat[1] != 0.0 ||
-	trafo->quat[2] != 0.0 || trafo->quat[3] != 1.0)
+      if((trafo->quat[0] != 0.0) || (trafo->quat[1] != 0.0) ||
+	 (trafo->quat[2] != 0.0) || (trafo->quat[3] != 1.0))
+	{
+	  ay_quat_toeuler(trafo->quat, euler);
+	  if(fabs(euler[2]) > AY_EPSILON)
+	    RiRotate((RtFloat)AY_R2D(euler[2]),
+		     (RtFloat)1.0, (RtFloat)0.0, (RtFloat)0.0);
+	  if(fabs(euler[1]) > AY_EPSILON)
+	    RiRotate((RtFloat)AY_R2D(euler[1]),
+		     (RtFloat)0.0, (RtFloat)1.0, (RtFloat)0.0);
+	  if(fabs(euler[0]) > AY_EPSILON)
+	    RiRotate((RtFloat)AY_R2D(euler[0]),
+		     (RtFloat)0.0, (RtFloat)0.0, (RtFloat)1.0);
+	}
+
+     if((fabs(trafo->movx) > AY_EPSILON) ||
+	(fabs(trafo->movy) > AY_EPSILON) ||
+	(fabs(trafo->movz) > AY_EPSILON))
        {
-	 ay_quat_toeuler(trafo->quat, euler);
-	 if(fabs(euler[2]) > 1.0e-05)
-	   RiRotate((RtFloat)AY_R2D(euler[2]),
-		    (RtFloat)1.0, (RtFloat)0.0, (RtFloat)0.0);
-	 if(fabs(euler[1]) > 1.0e-05)
-	   RiRotate((RtFloat)AY_R2D(euler[1]),
-		    (RtFloat)0.0, (RtFloat)1.0, (RtFloat)0.0);
-	 if(fabs(euler[0]) > 1.0e-05)
-	   RiRotate((RtFloat)AY_R2D(euler[0]),
-		    (RtFloat)0.0, (RtFloat)0.0, (RtFloat)1.0);
+	 RiTranslate((RtFloat)(-trafo->movx), (RtFloat)(-trafo->movy),
+		     (RtFloat)(-trafo->movz));
        }
 
-     if ((trafo->movx != 0) || (trafo->movy != 0) || (trafo->movz != 0))
-       RiTranslate((RtFloat)(-trafo->movx), (RtFloat)(-trafo->movy),
-	 (RtFloat)(-trafo->movz));
      trafo = trafo->next;
-  }
+    } /* while */
 
   RiWorldBegin();
-  RiIdentity();
-  /* place the objects relative to the centered light */
-  RiReadArchive(file, (RtVoid*)RI_NULL, RI_NULL);
-  /* was:
-  while (o) {
-      ay_wrib_object(file, o);
-      o = o->next;
-  }
-  */
+   RiIdentity();
+   /* place the objects relative to the centered light */
+   RiReadArchive(file, (RtVoid*)RI_NULL, RI_NULL);
+   /* was:
+   while(o)
+   {
+    ay_wrib_object(file, o);
+    o = o->next;
+   }
+   */
   RiWorldEnd();
-  /*  RiFrameEnd();*/
+
+  /* was: */
+  /* RiFrameEnd();*/
 
  return;
 } /* ay_sm_wribsm */
@@ -290,66 +299,77 @@ ay_sm_getresolution(int index, int *width, int *height,
 {
  int p = 0, m, w, h;
 
-  if (index > 1) {
+  if(index > 1)
+    {
       /* predefined resolution; look up resolution table */
       *width = 256; *height = 256;  /* default values */
-      if (resolutions) {
-	  while ((resolutions[p] != 0) && (index != 1)) {
-	      while ((resolutions[p] != 0) && (resolutions[p] != ' '))
-		  p++;
+      if(resolutions)
+	{
+	  while((resolutions[p] != 0) && (index != 1))
+	    {
+	      while((resolutions[p] != 0) && (resolutions[p] != ' '))
+		p++;
 	      index--;
 	      if (resolutions[p] != 0)
-		  p++;
-	  }
-	  if (index == 1) {
+		p++;
+	    }
+	  if(index == 1)
+	    {
 	      /* read width and height from Tcl-string */
-	      if (resolutions[p] != 0)
-		  p--;
+	      if(resolutions[p] != 0)
+		p--;
 	      p--;
 	      w = 0; h = 0;
 	      m = 1;
-	      while ((p >= 0) && (resolutions[p] >= '0') &&
-		     (resolutions[p] <= '9')) {
+	      while((p >= 0) && (resolutions[p] >= '0') &&
+		    (resolutions[p] <= '9'))
+		{
 		  h+= m*(resolutions[p]-'0');
 		  m*= 10;
 		  p--;
-	      }
+		}
 
-	      while ((p >= 0) && ((resolutions[p] < '0') ||
-				  (resolutions[p] > '9')))
+	      while((p >= 0) && ((resolutions[p] < '0') ||
+				 (resolutions[p] > '9')))
+		{
 		  p--;
+		}
 
 	      m = 1;
-	      while ((p >= 0) && (resolutions[p] >= '0') &&
-		     (resolutions[p] <= '9')) {
+	      while((p >= 0) && (resolutions[p] >= '0') &&
+		    (resolutions[p] <= '9'))
+		{
 		  w+= m*(resolutions[p]-'0');
 		  m*= 10;
 		  p--;
-	      }
-	      if ((w > 1) && (h > 1) && (w < 65536) && (h < 65536)) {
+		}
+
+	      if((w > 1) && (h > 1) && (w < 65536) && (h < 65536))
+		{
 		  /* calculate next matching power of two for w and h */
 		  *width = 1; *height = 1;
 		  while (*width < w)
-		      *width = *width<<1;
+		    *width = *width<<1;
 		  while (*height < h)
-		      *height = *height<<1;
-	      }
-	  }
-      }
-  }
-  else {
+		    *height = *height<<1;
+		}
+	    }
+	}
+    }
+  else
+    {
       /* automatic resolution; for now the next higher power of two than
 	 the rendering resolution */
       *width = 1; *height = 1;
       while (*width < rwidth)
-          *width = *width<<1;
+	*width = *width<<1;
       while (*height < rheight)
-          *height = *height<<1;
+	*height = *height<<1;
       if (*width > *height)
-          *height = *width;
+	*height = *width;
       else
-          *width = *height;
-  }
+	*width = *height;
+    }
 
  return;
 } /* ay_sm_getresolution */
@@ -429,7 +449,7 @@ ay_sm_wribsmcustom(char *file, char *objfile, ay_object *o,
 
 /* ay_sm_wriballsm:
  *  search whole tree for lightsources and create their
- *  shadowmaps if selected
+ *  shadowmaps if use_sm is enabled
  */
 void
 ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
@@ -454,6 +474,7 @@ ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
 
   if(!(zname = calloc(filelen+64, sizeof(char))))
     return;
+
   if(!(shdname = calloc(filelen+64, sizeof(char))))
     {
       free(zname);
@@ -471,7 +492,8 @@ ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
 
   newtrafo->next = trafo;
   trafo = newtrafo;
-  while (o) {
+  while(o)
+    {
       trafo->movx = o->movx;
       trafo->movy = o->movy;
       trafo->movz = o->movz;
@@ -483,13 +505,16 @@ ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
       trafo->scaly = o->scaly;
       trafo->scalz = o->scalz;
       
-      if (o->down)
+      if(o->down)
+	{
 	  ay_sm_wriballsm(file, objfile, o->down, trafo, rwidth, rheight);
+	}
 
-      if (o->type == AY_IDLIGHT) {
+      if(o->type == AY_IDLIGHT)
+	{
 	  light = (ay_light_object *)o->refine;
-	  if ((light->on) && /*(light->type != AY_LITCUSTOM) &&*/
-	      (light->use_sm))
+	  if((light->on) && /*(light->type != AY_LITCUSTOM) &&*/
+	     (light->use_sm))
 	    {
 	      if(light->type != AY_LITCUSTOM)
 		{
@@ -507,13 +532,16 @@ ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
 		  height = light->sm_resolution;
 		}
 
-	      switch (light->type)
+	      switch(light->type)
 		{
 		case AY_LITPOINT:
 		  /* render six shadowmaps: z+, x+, z-, x-, y+, y- */
 		  fov = (RtFloat)95.0;  /* 95 degrees suggested in Pixar's
 					   application notes */
-		  px = 0.0; py = 0.0; pz = 0.0;
+		  /*px = 0.0; py = 0.0; pz = 0.0;*/
+		  px = light->tfrom[0];
+		  py = light->tfrom[1];
+		  pz = light->tfrom[2];
 		  ay_sm_dotrafos(trafo, &px, &py, &pz);
 		  /*
 		  ay_sm_getresolution(light->sm_resolution,
@@ -526,22 +554,22 @@ ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
 		  RiProjection("perspective", "fov", &fov, RI_NULL);
 		  /* looking along positive z axis */
 		  /* transform lightsource to origin */
-		  RiFrameBegin((RtInt)1.0);
-		  RiIdentity();
-		  RiScale((RtFloat)-1.0, (RtFloat)1.0, (RtFloat)1.0);
-		  RiTranslate((RtFloat)-px, (RtFloat)-py, (RtFloat)-pz);
-		  RiWorldBegin();
-		  RiIdentity();
-		  /* place the objects relative to the centered light */
-		  RiReadArchive(objfile, (RtVoid*)RI_NULL, RI_NULL);
-		  /* was:
-		  d = ay_root->next; 
-		  while (d) {
-		      ay_wrib_object(file, d);
-		      d = d->next;
-		  }
-		  */
-		  RiWorldEnd();
+		  RiFrameBegin((RtInt)1);
+		   RiIdentity();
+		   RiScale((RtFloat)-1.0, (RtFloat)1.0, (RtFloat)1.0);
+		   RiTranslate((RtFloat)-px, (RtFloat)-py, (RtFloat)-pz);
+		   RiWorldBegin();
+		    RiIdentity();
+		    /* place the objects relative to the centered light */
+		    RiReadArchive(objfile, (RtVoid*)RI_NULL, RI_NULL);
+		    /* was:
+		       d = ay_root->next; 
+		       while (d) {
+		       ay_wrib_object(file, d);
+		       d = d->next;
+		       }
+		    */
+		   RiWorldEnd();
 		  RiFrameEnd();
                   RiMakeShadow(zname, shdname, RI_NULL);
 
@@ -551,23 +579,23 @@ ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
 		  RiFormat(width, height, (RtFloat)-1.0);
 		  RiProjection("perspective", "fov", &fov, RI_NULL);
 		  /* transform lightsource to origin */
-		  RiFrameBegin((RtInt)1.0);
-		  RiIdentity();
-		  RiScale((RtFloat)-1.0, (RtFloat)1.0, (RtFloat)1.0);
-		  RiRotate((RtFloat)-90, (RtFloat)0, (RtFloat)1, (RtFloat)0);
-		  RiTranslate((RtFloat)-px, (RtFloat)-py, (RtFloat)-pz);
-		  RiWorldBegin();
-		  RiIdentity();
-		  /* place the objects relative to the centered light */
-		  RiReadArchive(objfile, (RtVoid*)RI_NULL, RI_NULL);
-		  /* was:
-		  d = ay_root->next; 
-		  while (d) {
-		      ay_wrib_object(file, d);
-		      d = d->next;
-		  }
-		  */
-		  RiWorldEnd();
+		  RiFrameBegin((RtInt)1);
+		   RiIdentity();
+		   RiScale((RtFloat)-1.0, (RtFloat)1.0, (RtFloat)1.0);
+		   RiRotate((RtFloat)-90, (RtFloat)0, (RtFloat)1, (RtFloat)0);
+		   RiTranslate((RtFloat)-px, (RtFloat)-py, (RtFloat)-pz);
+		   RiWorldBegin();
+		    RiIdentity();
+		    /* place the objects relative to the centered light */
+		    RiReadArchive(objfile, (RtVoid*)RI_NULL, RI_NULL);
+		    /* was:
+		       d = ay_root->next; 
+		       while (d) {
+		       ay_wrib_object(file, d);
+		       d = d->next;
+		       }
+		    */
+		   RiWorldEnd();
 		  RiFrameEnd();
                   RiMakeShadow(zname, shdname, RI_NULL);
 
@@ -577,23 +605,23 @@ ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
 		  RiFormat(width, height, (RtFloat)-1.0);
 		  RiProjection("perspective", "fov", &fov, RI_NULL);
 		  /* transform lightsource to origin */
-		  RiFrameBegin((RtInt)1.0);
-		  RiIdentity();
-		  RiScale((RtFloat)-1.0, (RtFloat)1.0, (RtFloat)1.0);
-		  RiRotate((RtFloat)180, (RtFloat)0, (RtFloat)1, (RtFloat)0);
-		  RiTranslate((RtFloat)-px, (RtFloat)-py, (RtFloat)-pz);
-		  RiWorldBegin();
-		  RiIdentity();
-		  /* place the objects relative to the centered light */
-		  RiReadArchive(objfile, (RtVoid*)RI_NULL, RI_NULL);
-		  /* was:
-		  d = ay_root->next; 
-		  while (d) {
-		      ay_wrib_object(file, d);
-		      d = d->next;
-		  }
-		  */
-		  RiWorldEnd();
+		  RiFrameBegin((RtInt)1);
+		   RiIdentity();
+		   RiScale((RtFloat)-1.0, (RtFloat)1.0, (RtFloat)1.0);
+		   RiRotate((RtFloat)180, (RtFloat)0, (RtFloat)1, (RtFloat)0);
+		   RiTranslate((RtFloat)-px, (RtFloat)-py, (RtFloat)-pz);
+		   RiWorldBegin();
+		    RiIdentity();
+		    /* place the objects relative to the centered light */
+		    RiReadArchive(objfile, (RtVoid*)RI_NULL, RI_NULL);
+		    /* was:
+		       d = ay_root->next; 
+		       while (d) {
+		       ay_wrib_object(file, d);
+		       d = d->next;
+		       }
+		    */
+		   RiWorldEnd();
 		  RiFrameEnd();
                   RiMakeShadow(zname, shdname, RI_NULL);
 
@@ -604,22 +632,22 @@ ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
 		  RiProjection("perspective", "fov", &fov, RI_NULL);
 		  /* transform lightsource to origin */
 		  RiFrameBegin((RtInt)1);
-		  RiIdentity();
-		  RiScale((RtFloat)-1.0, (RtFloat)1.0, (RtFloat)1.0);
-		  RiRotate((RtFloat)90, (RtFloat)0, (RtFloat)1, (RtFloat)0);
-		  RiTranslate((RtFloat)-px, (RtFloat)-py, (RtFloat)-pz);
-		  RiWorldBegin();
-		  RiIdentity();
-		  /* place the objects relative to the centered light */
-		  RiReadArchive(objfile, (RtVoid*)RI_NULL, RI_NULL);
-		  /* was:
-		  d = ay_root->next; 
-		  while (d) {
-		      ay_wrib_object(file, d);
-		      d = d->next;
-		  }
-		  */
-		  RiWorldEnd();
+		   RiIdentity();
+		   RiScale((RtFloat)-1.0, (RtFloat)1.0, (RtFloat)1.0);
+		   RiRotate((RtFloat)90, (RtFloat)0, (RtFloat)1, (RtFloat)0);
+		   RiTranslate((RtFloat)-px, (RtFloat)-py, (RtFloat)-pz);
+		   RiWorldBegin();
+		    RiIdentity();
+		    /* place the objects relative to the centered light */
+		    RiReadArchive(objfile, (RtVoid*)RI_NULL, RI_NULL);
+		    /* was:
+		       d = ay_root->next; 
+		       while (d) {
+		       ay_wrib_object(file, d);
+		       d = d->next;
+		       }
+		    */
+		   RiWorldEnd();
 		  RiFrameEnd();
                   RiMakeShadow(zname, shdname, RI_NULL);
 
@@ -630,22 +658,22 @@ ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
 		  RiProjection("perspective", "fov", &fov, RI_NULL);
 		  /* transform lightsource to origin */
 		  RiFrameBegin((RtInt)1);
-		  RiIdentity();
-		  RiScale((RtFloat)-1.0, (RtFloat)1.0, (RtFloat)1.0);
-		  RiRotate((RtFloat)90, (RtFloat)1, (RtFloat)0, (RtFloat)0);
-		  RiTranslate((RtFloat)-px, (RtFloat)-py, (RtFloat)-pz);
-		  RiWorldBegin();
-		  RiIdentity();
-		  /* place the objects relative to the centered light */
-		  RiReadArchive(objfile, (RtVoid*)RI_NULL, RI_NULL);
-		  /* was:
-		  d = ay_root->next; 
-		  while (d) {
-		      ay_wrib_object(file, d);
-		      d = d->next;
-		  }
-		  */
-		  RiWorldEnd();
+		   RiIdentity();
+		   RiScale((RtFloat)-1.0, (RtFloat)1.0, (RtFloat)1.0);
+		   RiRotate((RtFloat)90, (RtFloat)1, (RtFloat)0, (RtFloat)0);
+		   RiTranslate((RtFloat)-px, (RtFloat)-py, (RtFloat)-pz);
+		   RiWorldBegin();
+		    RiIdentity();
+		    /* place the objects relative to the centered light */
+		    RiReadArchive(objfile, (RtVoid*)RI_NULL, RI_NULL);
+		    /* was:
+		       d = ay_root->next; 
+		       while (d) {
+		       ay_wrib_object(file, d);
+		       d = d->next;
+		       }
+		    */
+		   RiWorldEnd();
 		  RiFrameEnd();
                   RiMakeShadow(zname, shdname, RI_NULL);
 
@@ -656,22 +684,23 @@ ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
 		  RiProjection("perspective", "fov", &fov, RI_NULL);
 		  /* transform lightsource to origin */
 		  RiFrameBegin((RtInt)1);
-		  RiIdentity();
-		  RiScale((RtFloat)-1.0, (RtFloat)1.0, (RtFloat)1.0);
-		  RiRotate((RtFloat)-90.0, (RtFloat)1, (RtFloat)0, (RtFloat)0);
-		  RiTranslate((RtFloat)-px, (RtFloat)-py, (RtFloat)-pz);
-		  RiWorldBegin();
-		  RiIdentity();
-		  /* place the objects relative to the centered light */
-		  RiReadArchive(objfile, (RtVoid*)RI_NULL, RI_NULL);
-		  /* was:
-		  d = ay_root->next; 
-		  while (d) {
-		      ay_wrib_object(file, d);
-		      d = d->next;
-		  }
-		  */
-		  RiWorldEnd();
+		   RiIdentity();
+		   RiScale((RtFloat)-1.0, (RtFloat)1.0, (RtFloat)1.0);
+		   RiRotate((RtFloat)-90.0, (RtFloat)1, (RtFloat)0,
+			    (RtFloat)0);
+		   RiTranslate((RtFloat)-px, (RtFloat)-py, (RtFloat)-pz);
+		   RiWorldBegin();
+		    RiIdentity();
+		    /* place the objects relative to the centered light */
+		    RiReadArchive(objfile, (RtVoid*)RI_NULL, RI_NULL);
+		    /* was:
+		       d = ay_root->next; 
+		       while (d) {
+		       ay_wrib_object(file, d);
+		       d = d->next;
+		       }
+		    */
+		   RiWorldEnd();
 		  RiFrameEnd();
                   RiMakeShadow(zname, shdname, RI_NULL);
 		  break;
@@ -680,22 +709,23 @@ ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
 		  /* render shadowmap for spotlight */
 		  sprintf(zname, "%s.spot%d.z", file, countsm);
 		  sprintf(shdname, "%s.spot%d.shd", file, countsm);
-
-		  RiDisplay(zname, "zfile", "z", RI_NULL);
-		  /* Camera! */
-		  /*
-		  ay_sm_getresolution(light->sm_resolution,
-				      &width, &height, rwidth, rheight);
-		  */
-		  RiFormat(width, height, (RtFloat)-1.0);
-		  fov = (RtFloat)(light->cone_angle*360.0/AY_PI);
-		  RiProjection("perspective", "fov", &fov, RI_NULL);
-		  RiFrameAspectRatio((RtFloat)1.0);
-		  RiScreenWindow((RtFloat)-1, (RtFloat)1,
-				 (RtFloat)-1, (RtFloat)1);
-		  /* transform lightsource to origin */
-		  /* was: ay_sm_wribsm(file, trafo, o);*/
-		  ay_sm_wribsm(objfile, trafo, o);
+		  RiFrameBegin((RtInt)1);
+		   RiDisplay(zname, "zfile", "z", RI_NULL);
+		   /* Camera! */
+		   /*
+		   ay_sm_getresolution(light->sm_resolution,
+		   &width, &height, rwidth, rheight);
+		   */
+		   RiFormat(width, height, (RtFloat)-1.0);
+		   fov = (RtFloat)(light->cone_angle*360.0/AY_PI);
+		   RiProjection("perspective", "fov", &fov, RI_NULL);
+		   RiFrameAspectRatio((RtFloat)1.0);
+		   RiScreenWindow((RtFloat)-1, (RtFloat)1,
+				  (RtFloat)-1, (RtFloat)1);
+		   /* transform lightsource to origin */
+		   /* was: ay_sm_wribsm(file, trafo, o);*/
+		   ay_sm_wribsm(objfile, trafo, o);
+		  RiFrameEnd();
                   RiMakeShadow(zname, shdname, RI_NULL);
 		  break;
 
@@ -724,37 +754,39 @@ ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
 		      }
 		      d = d->next;
 		  }
-		  if ((xmin < xmax) && (ymin < ymax)) {
+		  /*if ((xmin < xmax) && (ymin < ymax)) {*/
                   #endif
-		      sprintf(zname, "%s.dist%d.z", file, countsm);
-		      sprintf(shdname, "%s.dist%d.shd", file, countsm);
-		      RiDisplay(zname, "zfile", "z", RI_NULL);
-		      /* Camera! */
-		      /*
-		      ay_sm_getresolution(light->sm_resolution,
-					  &width, &height, rwidth, rheight);
-		      */
-		      RiFormat(width, height, (RtFloat)-1.0);
-		      RiProjection("orthographic", RI_NULL);
-		      RiFrameAspectRatio((RtFloat)1.0);
-		      /*RiScreenWindow(xmin, xmax, ymin, ymax);*/
-		      /*RiScreenWindow(-1,1,-1,1);*/
-		      /* transform lightsource to origin */
-		      /* was: ay_sm_wribsm(file, trafo, o);*/
-		      ay_sm_wribsm(objfile, trafo, o);
-		      RiMakeShadow(zname, shdname, RI_NULL);
-		      /*}*/
-		      break;
+		    sprintf(zname, "%s.dist%d.z", file, countsm);
+		    sprintf(shdname, "%s.dist%d.shd", file, countsm);
+		    RiFrameBegin((RtInt)1);
+		     RiDisplay(zname, "zfile", "z", RI_NULL);
+		     /* Camera! */
+		     /*
+		       ay_sm_getresolution(light->sm_resolution,
+		       &width, &height, rwidth, rheight);
+		     */
+		     RiFormat(width, height, (RtFloat)-1.0);
+		     RiProjection("orthographic", RI_NULL);
+		     RiFrameAspectRatio((RtFloat)1.0);
+		     /*RiScreenWindow(xmin, xmax, ymin, ymax);*/
+		     /*RiScreenWindow(-1,1,-1,1);*/
+		     /* transform lightsource to origin */
+		     /* was: ay_sm_wribsm(file, trafo, o);*/
+		     ay_sm_wribsm(objfile, trafo, o);
+		    RiFrameEnd();
+		    RiMakeShadow(zname, shdname, RI_NULL);
+		    /*}*/
+		    break;
 
 		  case AY_LITCUSTOM:
 		    ay_sm_wribsmcustom(file, objfile, o, trafo,
 				       rwidth, rheight);
 		    break;
 		  } /* switch */
-		}
-	    }
+	       } /* if */
+	    } /* if */
 	  o = o->next;
-      } /* while */
+	} /* while */
 
   newtrafo = trafo;
   trafo = trafo->next;
