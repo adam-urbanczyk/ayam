@@ -524,7 +524,7 @@ void ay_tc_init(Tcl_Interp *interp);
 
 /* tcmd.c */
 int ay_tcmd_reverttcmd(ClientData clientData, Tcl_Interp *interp,
-		     int argc, char *argv[]);
+		       int argc, char *argv[]);
 
 void ay_tcmd_showall(ay_object *o);
 
@@ -540,7 +540,7 @@ int ay_tcmd_getvertcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
 
 int ay_tcmd_getbppntfromindex(ay_bpatch_object *patch, int index,
-			  double **p);
+			      double **p);
 
 int ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
@@ -723,7 +723,7 @@ int ay_wrib_object(char *file, ay_object *o);
 int ay_wrib_refobject(char *file, ay_object *o);
 
 int ay_wrib_scene(char *file, char *image, double *from, double *to,
-		  double roll, double zoom,
+		  double roll, double zoom, double near, double far,
 		  int width, int height, int type);
 
 int ay_wrib_cb(struct Togl *togl, int argc, char *argv[]);

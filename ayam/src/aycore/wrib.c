@@ -451,7 +451,7 @@ ay_wrib_object(char *file, ay_object *o)
 
     } /* if */
 
-  /* wrib child objects, but do not descent into light sources as
+  /* write child objects, but do not descent into light sources as
      the arealight geometry has been written long ago in the lights
      section of the RIB */
   if(o->down && (o->type != AY_IDLIGHT))
@@ -823,7 +823,7 @@ ay_wrib_defmat(char *file)
       break;
     default:
       break;
-    }
+    } /* switch */
 
  return;
 } /* ay_wrib_defmat */
@@ -894,27 +894,27 @@ ay_wrib_lights(char *file, ay_object *o)
  /* shadowmap names */
  char *shadowptr = NULL, *pxptr = NULL, *nxptr = NULL;
  char *pyptr = NULL, *nyptr = NULL, *pzptr = NULL, *nzptr = NULL;
- int filelen = 0;
+ int filenlen = 0;
  RtLightHandle light_handle;
 
   if(!o || !file)
     return ay_status;
 
-  filelen = strlen(file);
+  filenlen = strlen(file);
 
-  if(!(shadowptr = calloc(filelen+64, sizeof(char))))
+  if(!(shadowptr = calloc(filenlen+64, sizeof(char))))
     return AY_EOMEM;
-  if(!(pxptr = calloc(filelen+64, sizeof(char))))
+  if(!(pxptr = calloc(filenlen+64, sizeof(char))))
     return AY_EOMEM;
-  if(!(nxptr = calloc(filelen+64, sizeof(char))))
+  if(!(nxptr = calloc(filenlen+64, sizeof(char))))
     return AY_EOMEM;
-  if(!(pyptr = calloc(filelen+64, sizeof(char))))
+  if(!(pyptr = calloc(filenlen+64, sizeof(char))))
     return AY_EOMEM;
-  if(!(nyptr = calloc(filelen+64, sizeof(char))))
+  if(!(nyptr = calloc(filenlen+64, sizeof(char))))
     return AY_EOMEM;
-  if(!(pzptr = calloc(filelen+64, sizeof(char))))
+  if(!(pzptr = calloc(filenlen+64, sizeof(char))))
     return AY_EOMEM;
-  if(!(nzptr = calloc(filelen+64, sizeof(char))))
+  if(!(nzptr = calloc(filenlen+64, sizeof(char))))
     return AY_EOMEM;
 
   while(o)
@@ -1159,16 +1159,16 @@ ay_wrib_lights(char *file, ay_object *o)
  */
 int
 ay_wrib_scene(char *file, char *image, double *from, double *to,
-	      double roll, double zoom,
+	      double roll, double zoom, double near, double far,
 	      int width, int height, int type)
 {
  int ay_status = AY_OK;
  ay_object *o = ay_root;
  RtPoint f, t, d;
  RtFloat aspect = (RtFloat)1.0, swleft, swright, swtop, swbot;
- RtFloat fov = (RtFloat)90.0;
+ RtFloat fov = (RtFloat)90.0, nearp, farp;
  char *objfile = NULL, *pos = NULL;
- int filelen = 0;
+ int filenlen = 0;
 
  if(!ay_prefs.resolveinstances)
   {
@@ -1183,8 +1183,9 @@ ay_wrib_scene(char *file, char *image, double *from, double *to,
   }
 
 
-  aspect = (RtFloat)(width/((double)height));
   /* assemble args */
+  aspect = (RtFloat)(width/((double)height));
+
   f[0] = (RtFloat) from[0];
   f[1] = (RtFloat) from[1];
   f[2] = (RtFloat) from[2];
@@ -1207,9 +1208,9 @@ ay_wrib_scene(char *file, char *image, double *from, double *to,
     {
       ay_prefs.wrib_sm = AY_TRUE;
 
-      filelen = strlen(file);
+      filenlen = strlen(file);
 
-      if(!(objfile = calloc(filelen+64, sizeof(char))))
+      if(!(objfile = calloc(filenlen+64, sizeof(char))))
 	return AY_EOMEM;
 
       pos = strstr(file, ".rib");
@@ -1233,7 +1234,7 @@ ay_wrib_scene(char *file, char *image, double *from, double *to,
     {
       ay_prefs.wrib_sm = AY_TRUE;
 
-      /* wrib root RiOption tags (possibly containing shadow bias) */
+      /* write root RiOption tags (possibly containing shadow bias) */
       ay_status = ay_riopt_wrib(ay_root);
 
       ay_sm_wriballsm(file, objfile, ay_root->next, NULL, width, height);
@@ -1267,6 +1268,26 @@ ay_wrib_scene(char *file, char *image, double *from, double *to,
   swbot = (RtFloat)-1.0;
   swtop = (RtFloat)1.0;
 
+  /* clipping planes */
+  if(near != 0.0 || far != 0.0)
+    {
+      if(near != 0.0)
+	{
+	  nearp = (RtFloat)near;
+	  if(type == AY_VTPERSP)
+	    zoom /= near;
+	}
+      else
+	nearp = RI_EPSILON;
+
+      if(far != 0.0)
+	farp = (RtFloat)far;
+      else
+	farp = RI_INFINITY;
+
+      RiClipping(nearp, farp);
+    }
+
   RiScreenWindow((RtFloat)(swleft*zoom), (RtFloat)(swright*zoom),
 		 (RtFloat)(swbot*zoom), (RtFloat)(swtop*zoom));
 
@@ -1285,13 +1306,14 @@ ay_wrib_scene(char *file, char *image, double *from, double *to,
   /* convert rh to lh */
   RiArchiveRecord(RI_COMMENT, "rh->lh");
   RiScale((RtFloat)-1.0, (RtFloat)1.0, (RtFloat)1.0);
+
   RiArchiveRecord(RI_COMMENT, "Camera!");
   ay_wrib_placecamera(f, d, roll);
 
-  /* wrib RiOptions */
+  /* write RiOptions */
   ay_status = ay_wrib_rioptions();
 
-  /* wrib root RiOption tags */
+  /* write root RiOption tags */
   ay_status = ay_riopt_wrib(ay_root);
 
   RiWorldBegin();
@@ -1325,6 +1347,7 @@ ay_wrib_scene(char *file, char *image, double *from, double *to,
     {
       RiReadArchive(objfile, (RtVoid*)RI_NULL, RI_NULL);
     }
+
   RiWorldEnd();
 
   /* Cut! */
@@ -1361,7 +1384,7 @@ ay_wrib_sm(char *file, char *image, int width, int height)
  int ay_status = AY_OK;
  ay_object *o = ay_root;
  char *objfile = NULL, *pos = NULL;
- int filelen = 0;
+ int filenlen = 0;
 
  if(!ay_prefs.resolveinstances)
   {
@@ -1375,18 +1398,17 @@ ay_wrib_sm(char *file, char *image, int width, int height)
     ay_status = ay_instt_wribiarchives(file, o);
   }
 
-
   if(!file) /* dump .rib to stdout? */
     RiBegin(RI_NULL);
   else
     RiBegin(file);
 
-  /* write shadow maps */
+  /* inform other code that we write shadow maps now */
   ay_prefs.wrib_sm = AY_TRUE;
 
-  filelen = strlen(file);
+  filenlen = strlen(file);
 
-  if(!(objfile = calloc(filelen+64, sizeof(char))))
+  if(!(objfile = calloc(filenlen+64, sizeof(char))))
     return AY_EOMEM;
 
   pos = strstr(file, ".rib");
@@ -1404,9 +1426,10 @@ ay_wrib_sm(char *file, char *image, int width, int height)
       sprintf(objfile, "%s.obj.rib", file);
     }
 
-  /* write RiHider statements from tags */
+  /* write RiHider tags */
   ay_wrib_hidertags();
-  /* wrib root RiOption tags (possibly containing shadow bias settings) */
+
+  /* write RiOption tags (possibly containing shadow bias settings) */
   ay_status = ay_riopt_wrib(ay_root);
 
   ay_sm_wriballsm(file, objfile, ay_root->next, NULL, width, height);
@@ -1505,7 +1528,8 @@ ay_wrib_cb(struct Togl *togl, int argc, char *argv[])
   if(!smonly)
     {
       ay_status = ay_wrib_scene(file, image, view->from, view->to, view->roll,
-				view->zoom, width, height, view->type);
+				view->zoom, view->near, view->far,
+				width, height, view->type);
     }
   else
     {
@@ -1525,8 +1549,8 @@ ay_wrib_cb(struct Togl *togl, int argc, char *argv[])
  return TCL_OK;
 } /* ay_wrib_cb */
 
-#ifdef AYENABLEPPREV
 
+#ifdef AYENABLEPPREV
 /* ay_wrib_pprevdraw:
  *
  */
@@ -1538,7 +1562,7 @@ ay_wrib_pprevdraw(ay_view_object *view)
  int old_resinstances = ay_prefs.resolveinstances;
  RtPoint f, t, d;
  RtFloat aspect = (RtFloat)1.0, swleft, swright, swtop, swbot;
- RtFloat fov = (RtFloat)90.0;
+ RtFloat fov = (RtFloat)90.0, nearp, farp;
  struct Togl *togl = NULL;
  int width, height, i;
  double zoom, roll, *from, *to;
@@ -1583,10 +1607,12 @@ ay_wrib_pprevdraw(ay_view_object *view)
 
   /* XXXX does this constant framenumber hurt? */
   RiFrameBegin((RtInt)1);
+
   RiDisplay("PPrev", RI_FRAMEBUFFER, RI_RGBA, RI_NULL);
 
   /* write RiHider statements from tags */
   ay_wrib_hidertags();
+
   /* write imager shader */
   ay_wrib_rootsh(AY_TRUE);
 
@@ -1603,6 +1629,26 @@ ay_wrib_pprevdraw(ay_view_object *view)
   swright =  (RtFloat)aspect;
   swbot = (RtFloat)-1.0;
   swtop = (RtFloat)1.0;
+
+  /* clipping planes */
+  if(view->near != 0.0 || view->far != 0.0)
+    {
+      if(view->near != 0.0)
+	{
+	  nearp = (RtFloat)view->near;
+	  if(view->type == AY_VTPERSP)
+	    zoom /= view->near;
+	}
+      else
+	nearp = RI_EPSILON;
+
+      if(view->far != 0.0)
+	farp = (RtFloat)view->far;
+      else
+	farp = RI_INFINITY;
+
+      RiClipping(nearp, farp);
+    }
 
   RiScreenWindow((RtFloat)(swleft*zoom), (RtFloat)(swright*zoom),
 		 (RtFloat)(swbot*zoom), (RtFloat)(swtop*zoom));
@@ -1625,10 +1671,10 @@ ay_wrib_pprevdraw(ay_view_object *view)
   RiArchiveRecord(RI_COMMENT, "Camera!");
   ay_wrib_placecamera(f, d, roll);
 
-  /* wrib RiOptions */
+  /* write RiOptions */
   ay_status = ay_wrib_rioptions();
 
-  /* wrib root RiOption tags */
+  /* write root RiOption tags */
   ay_status = ay_riopt_wrib(ay_root);
 
   RiWorldBegin();
@@ -1736,11 +1782,11 @@ ay_wrib_pprevclose()
 
  return;
 } /* ay_wrib_pprevclose */
+#endif /* AYENABLEPPREV */
 
-#endif
 
 /* ay_wrib_init:
- *  initialize wrib module by registering the RiDisplay tag type
+ *  initialize wrib module by registering the RiDisplay and RiHider tag type
  */
 void
 ay_wrib_init(Tcl_Interp *interp)
