@@ -201,11 +201,10 @@ proc material_edit { } {
 	# forAll
 
 	if { $matobject != "" } {
-
+	    set node "root"
 	    if { $matlevel != "root" } {
 		regsub -all ":" $matlevel " " level
 		set first 1
-		set node "root"
 		foreach l $level {
 		    if { $l != "root" } {
 			if { $first == 1 || $ay(lb) == 1 } {
