@@ -53,10 +53,15 @@ install:
 	-$(INSTALL) plugins/rrib.tcl $(LIBDIR)
 	-$(INSTALL) plugins/loadrrib.tcl $(LIBDIR)
 	-$(INSTALL) plugins/ayslb.so $(LIBDIR)
+	-$(INSTALL) plugins/loadayslb.tcl $(LIBDIR)
 	-$(INSTALL) plugins/ayslo.so $(LIBDIR)
+	-$(INSTALL) plugins/loadayslo.tcl $(LIBDIR)
 	-$(INSTALL) plugins/ayslo3d.so $(LIBDIR)
+	-$(INSTALL) plugins/loadayslo3d.tcl $(LIBDIR)
 	-$(INSTALL) plugins/ayslx.so $(LIBDIR)
+	-$(INSTALL) plugins/loadayslx.tcl $(LIBDIR)
 	-$(INSTALL) plugins/ayso.so $(LIBDIR)
+	-$(INSTALL) plugins/loadayso.tcl $(LIBDIR)
 	-$(INSTALL) Makefile $(LIBDIR)
 	$(MKDIR) $(DOCDIR)
 	$(INSTALL) $(DOCFILES) $(DOCDIR)
@@ -77,11 +82,11 @@ uninstall:
 	-rm -rf $(LIBDIR)/idr.so $(LIBDIR)/idr.tcl
 	-rm -rf $(LIBDIR)/rrib.so $(LIBDIR)/rrib.tcl
 	-rm -rf $(LIBDIR)/loadrrib.tcl $(LIBDIR)/loadidr.tcl
-	-rm -rf $(LIBDIR)/ayslb.so
-	-rm -rf $(LIBDIR)/ayslo.so
-	-rm -rf $(LIBDIR)/ayslo3d.so
-	-rm -rf $(LIBDIR)/ayslx.so
-	-rm -rf $(LIBDIR)/ayso.so
+	-rm -rf $(LIBDIR)/ayslb.so $(LIBDIR)/loadayslb.tcl
+	-rm -rf $(LIBDIR)/ayslo.so $(LIBDIR)/loadayslo.tcl
+	-rm -rf $(LIBDIR)/ayslo3d.so $(LIBDIR)/loadayslo3d.tcl
+	-rm -rf $(LIBDIR)/ayslx.so $(LIBDIR)/loadayslx.tcl
+	-rm -rf $(LIBDIR)/ayso.so $(LIBDIR)/loadayso.tcl
 	-cd $(DOCDIR); rm -rf Setup.txt Changes.txt License.txt refcard.tcl\
 refcard.ps ayam.pdf html;
 	-rm -rf $(LIBDIR)/Makefile
