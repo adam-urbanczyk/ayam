@@ -350,14 +350,16 @@ Ayam supports the following shader parsing plugins:
 "ayslo3d" for 3Delight, and "aysdr" for Pixie.
 Additional prerequisites:
 The respective renderer has to be installed to compile a shader parsing
-plugin.
+plugin. To compile "aysdr", the Pixie renderer source tree has to be
+available, configured and compiled.
+
 
 In order to compile those plugins, adapt the following variables
 in the Makefile:
 for Aqsis: AQSISDIR, AYSLXINCDIR, AYSLXLIBS,
 for RenderDotC: RDCDIR, AYSOINCDIR, AYSOLIBS,
 for PRMan: PRMANDIR, AYSLOINCDIR, AYSLOLIBS,
-for 3Delight: 3DLDIR, AYSLO3INCDIR, AYSLO3DLIBS,
+for 3Delight: 3DLDIR, AYSLO3DINCDIR, AYSLO3DLIBS,
 for Pixie: SDRDIR, AYSDRINCDIR, PIXIESRC, AYSDRLIBS
 
 then type:
@@ -373,16 +375,19 @@ of Ayam will be disabled, and Ayam will from that moment on just scan
 shaders of the type supported by the plugin loaded.
 
 
-3.5 Aycsg (CSG Preview) Plugin
+3.5 AyCSG (CSG Preview) Plugin
 ------------------------------
 
-Additional prerequisites to compile the Aycsg plugin are:
+Additional prerequisites to compile the AyCSG plugin are:
 OpenCSG ( get it from http://www.opencsg.org/ )
 GLEW ( GLEW is included in OpenCSG, otherwise get it from
  http://glew.sourceforge.net/ )
 RenderTexture (RenderTexture is included in OpenCSG, otherwise get it from
  http://www.markmark.net/misc/rendertexture.html )
+
 Your OpenGL subsystem has to support the PBuffers extension.
+ ( Check with "glxinfo". If you have no GLX PBuffers you can compile Ayam
+   with Mesa without hardware acceleration to get PBuffers. )
 
 Download and compile all prerequisites. Compile the example application
 of OpenCSG and try it to check whether your OpenGL subsystem is compatible.
@@ -395,7 +400,8 @@ then type:
 >make aycsg.so
 
 Load it via menu entry "File/Load Custom".
-Use it via ".view1.f3D.togl rendercsg" in the console (experimental!).
+Use it via the new icon in the view menu bar.
+See also the AyCSG preferences in the main menu "Custom/AyCSG Preferences".
 
 
 3.6 Installing/Uninstalling Ayam
