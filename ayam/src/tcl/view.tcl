@@ -269,6 +269,8 @@ wm transient $w [winfo toplevel $view]
 set f [frame $w.f1]
 pack $f -in $w -side top -fill x
 
+set ay(GridSize) $ay(cVGridSize)
+
 addParam $f ay GridSize
 
 set f [frame $w.f2]
