@@ -293,12 +293,12 @@ proc addCheck { w prop name } {
 	checkbutton $f.cb -image emptyimg -variable ${prop}(${name})\
 		-bd $bw -indicatoron 0 -selectcolor #b03060
 
-	bind $f <Enter> { %W.cb configure -state active }
-	bind $f <Leave> { %W.cb configure -state normal }
+	bind $f <Enter> { %W configure -background #ececec }
+	bind $f <Leave> { %W configure -background SystemButtonFace }
 	bind $f <1> { %W.cb invoke }
 
 	pack $f.l -in $f -side left
-	pack $f.cb -in $f -side left -padx 50 -pady 2
+	pack $f.cb -in $f -side left -pady 2 -expand yes -anchor center
     } else {
 	checkbutton $f.cb -variable ${prop}(${name}) -bd $bw -pady 1
 	pack $f.l -in $f -side left
