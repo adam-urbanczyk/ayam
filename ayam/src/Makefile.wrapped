@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile.wrapped [4. Oct 2003]
+# Makefile.wrapped [18. Oct 2003]
 # Makefile for Ayam (wrapped version)
 
 # Choose an installation prefix.
@@ -45,6 +45,8 @@ CC = cc
 #LD = CC
 # Linux:
 LD = g++
+# MacOSX
+LD = cc
 
 # flags for the compiler
 # o add -DAYUSEAFFINE if you use the Affine Toolkit as libribout replacement
@@ -90,6 +92,8 @@ CFLAGS = -O2 -DAYWRAPPED -DAYUSESLCARGS -DAYUSEBMRTRIBOUT -DAYENABLEWAIT
 # Linux:
 LDSWSTATIC = -Wl,-Bstatic
 #LDSWSTATIC = -Wl,-Bstatic
+# MacOSX:
+#LDSWSTATIC =
 
 # ld flag to switch to dynamic linking
 # IRIX:
@@ -97,6 +101,8 @@ LDSWSTATIC = -Wl,-Bstatic
 # Linux:
 LDSWDYNAMIC = -Wl,-Bdynamic
 #LDSWDYNAMIC = -Wl,-Bdynamic
+# MacOSX:
+#LDSWDYNAMIC =
 
 # extra ld flags needed to compile ayam
 # (gcc needs -rdynamic to allow shared objects access to global symbols)
@@ -105,7 +111,8 @@ LDSWDYNAMIC = -Wl,-Bdynamic
 #EXLDFLAGS =
 # Linux:
 EXLDFLAGS = -rdynamic -nodefaultlibs
-
+# MacOSX:
+#EXLDFLAGS = -flat_namespace -undefined suppress
 
 # Togl
 # Path to "togl.h":
@@ -113,7 +120,6 @@ TOGLINCDIR = togl
 
 # Path to "togl.o":
 TOGLOBJECT = togl/togl.o
-
 
 # OpenGL
 # where are the OpenGL headers?
@@ -220,7 +226,7 @@ ZLIB = -L$(WRAPDIR) -lz
 # using gcc, to link stdc++ statically, use:
 STDCPPLIB = -L/usr/lib -lstdc++ -lgcc
 # IRIX
-# using cc (IRIX, Solaris) use
+# using cc (IRIX, Solaris, MacOSX) use
 #STDCPPLIB =
 
 # BWidgets
@@ -238,18 +244,27 @@ UPX = touch
 # do you want to strip the executable?
 # yes:
 STRIP = strip
+# MacOSX:
 # no:
 #STRIP = touch
 
 # Dynamic Loading
 # Library for dynamic loading (contains dlopen())
-# Linux, IRIX, Solaris:
+# Linux, IRIX, Solaris, (MacOSX: get libdl from Fink!):
 DL = -ldl
 # NetBSD:
 #DL =
 
+# linker flags to produce shared modules:
+# Linux, Solaris, IRIX:
+SHLFLAGS = -shared
+# MacOSX:
+#SHLFLAGS = -bundle -flat_namespace -undefined suppress
+
 # RRIB Plugin Required Libraries
-RRIBLIBS = -L /home/randi/sdk/affine0008/lib -lribrdr -lribhash -lribnop -lm
+# where is Affine?
+AFFINEDIR = ../../affine0008
+RRIBLIBS = -L$(AFFINEDIR)/lib -lribrdr -lribhash -lribnop -lm
 
 AYAMOBJS = aycore/bbc.o\
 	aycore/clear.o\
@@ -375,29 +390,29 @@ ADDLIB =
 
 # Ayslx Plugin (Aqsis)
 AYSLXINCDIR = $(AQSISDIR)/include
-AYSLXLIBS = $(AQSISDIR)/lib/rcdummy.o $(AQSISDIR)/lib/libshadervm.so $(AQSISDIR)/lib/libshaderexecenv.so $(AQSISDIR)/lib/libslxargs.so $(AQSISDIR)/lib/libaqsistypes.so -L /usr/local/lib -llog4cpp
+AYSLXLIBS = $(AQSISDIR)/lib/rcdummy.o $(AQSISDIR)/lib/libshadervm.so $(AQSISDIR)/lib/libshaderexecenv.so $(AQSISDIR)/lib/libslxargs.so $(AQSISDIR)/lib/libaqsistypes.so -L/usr/local/lib -llog4cpp
 
 # Ayso Plugin (RenderDotC, RDC)
 RDCDIR = /usr/local/rdc
 AYSOINCDIR = $(RDCDIR)/include
-AYSOLIBS = -L $(RDCDIR)/lib -lsoargs
+AYSOLIBS = -L$(RDCDIR)/lib -lsoargs
 
 # Ayslo Plugin (PRman)
 PRMANDIR = /usr/local/prman
 AYSLOINCDIR = $(PRMANDIR)/include
-AYSLOLIBS = -L $(PRMANDIR)/lib -lsloargs -ltarget -lzip
+AYSLOLIBS = -L$(PRMANDIR)/lib -lsloargs -ltarget -lzip
 
 # Ayslo3d Plugin (3Delight)
 3DLDIR = /usr/local/3delight
 #3DLDIR = /usr/local/3delight-0.9.6/Linux-i686-libstdc++-3
 AYSLO3DINCDIR = $(3DLDIR)/include
-AYSLO3DLIBS = -L $(3DLDIR)/lib -l3delight
+AYSLO3DLIBS = -L$(3DLDIR)/lib -l3delight
 
 # Aysdr Plugin (Pixie)
 SDRDIR = /usr/local
 AYSDRINCDIR = $(SDRDIR)/include
 PIXIESRC = /home/user/Pixie/src
-AYSDRLIBS = $(PIXIESRC)/common/os.o -L $(SDRDIR)/lib -lsdr
+AYSDRLIBS = $(PIXIESRC)/common/os.o -L$(SDRDIR)/lib -lsdr
 
 
 #############################################
@@ -443,46 +458,46 @@ rewraprm:
 rewrap: rewraprm ayamwrap
 
 csphere.so: $(CSPHEREOBJS)
-	$(CC) -shared $(CSPHEREOBJS) -o plugins/csphere.so
+	$(CC) $(SHLFLAGS) $(CSPHEREOBJS) -o plugins/csphere.so
 
 idr.so: $(IDROBJS)
-	$(CC) -shared $(IDROBJS) -o plugins/idr.so -ltiff
+	$(CC) $(SHLFLAGS) $(IDROBJS) -o plugins/idr.so $(TIFFLIB)
 
 mf3d:
 	cd MF3D; make -f Makefile.mf3d
 
 mfio.so: plugins/mfio.o mf3d
-	$(CC) -shared $(MF3DOBJS) plugins/mfio.o -o plugins/mfio.so
+	$(CC) $(SHLFLAGS) $(MF3DOBJS) plugins/mfio.o -o plugins/mfio.so
 
 metaobj.so: $(METAOBJS)
-	$(CC) -shared $(METAOBJS) -o contrib/meta/metaobj.so
+	$(CC) $(SHLFLAGS) $(METAOBJS) -o contrib/meta/metaobj.so
 
 rrib.so: $(RRIBOBJS)
-	$(CC) -shared $(RRIBOBJS) -o plugins/rrib.so $(RRIBLIBS)
+	$(CC) $(SHLFLAGS) $(RRIBOBJS) -o plugins/rrib.so $(RRIBLIBS)
 
 ayslx.so:
 	$(CC) -c $(CFLAGS) plugins/ayslx.c -o plugins/ayslx.o -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR) -I$(AQSISINCDIR) -I$(TIFFINCDIR) -I$(AYSLXINCDIR)
-	$(CC) -shared plugins/ayslx.o -o plugins/ayslx.so $(AYSLXLIBS)
+	$(CC) $(SHLFLAGS) plugins/ayslx.o -o plugins/ayslx.so $(AYSLXLIBS)
 
 ayso.so:
 	$(CC) -c $(CFLAGS) plugins/ayso.c -o plugins/ayso.o -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR) -I$(AQSISINCDIR) -I$(TIFFINCDIR) -I$(AYSOINCDIR)
-	$(CC) -shared plugins/ayso.o -o plugins/ayso.so $(AYSOLIBS)
+	$(CC) $(SHLFLAGS) plugins/ayso.o -o plugins/ayso.so $(AYSOLIBS)
 
 ayslo.so:
 	$(CC) -c $(CFLAGS) plugins/ayslo.c -o plugins/ayslo.o -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR) -I$(AQSISINCDIR) -I$(TIFFINCDIR) -I$(AYSLOINCDIR)
-	$(CC) -shared plugins/ayslo.o -o plugins/ayslo.so $(AYSLOLIBS)
+	$(CC) $(SHLFLAGS) plugins/ayslo.o -o plugins/ayslo.so $(AYSLOLIBS)
 
 ayslo3d.so:
 	$(CC) -c $(CFLAGS) plugins/ayslo3d.c -o plugins/ayslo3d.o -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR) -I$(AQSISINCDIR) -I$(TIFFINCDIR) -I$(AYSLO3DINCDIR)
-	$(CC) -shared plugins/ayslo3d.o -o plugins/ayslo3d.so $(AYSLO3DLIBS)
+	$(CC) $(SHLFLAGS) plugins/ayslo3d.o -o plugins/ayslo3d.so $(AYSLO3DLIBS)
 
 ayslb.so:
 	$(CC) -c $(CFLAGS) plugins/ayslb.c -o plugins/ayslb.o -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR) -I$(AQSISINCDIR) -I$(TIFFINCDIR)
-	$(CC) -shared plugins/ayslb.o -o plugins/ayslb.so
+	$(CC) $(SHLFLAGS) plugins/ayslb.o -o plugins/ayslb.so
 
 aysdr.so:
 	$(CC) -c $(CFLAGS) plugins/aysdr.c -o plugins/aysdr.o -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR) -I$(AQSISINCDIR) -I$(TIFFINCDIR) -I$(AYSDRINCDIR)
-	$(CC) -shared plugins/aysdr.o -o plugins/aysdr.so $(LDSWSTATIC) $(AYSDRLIBS) $(LDSWDYNAMIC)
+	$(CC) $(SHLFLAGS) plugins/aysdr.o -o plugins/aysdr.so $(LDSWSTATIC) $(AYSDRLIBS) $(LDSWDYNAMIC)
 
 mostlyclean:
 	-rm -f core
@@ -565,4 +580,4 @@ refcard.ps ayam.pdf html;
 .SUFFIXES: .so .o
 
 .o.so: 
-	$(CC) -shared -o $@ $*.o
+	$(CC) $(SHLFLAGS) -o $@ $*.o
