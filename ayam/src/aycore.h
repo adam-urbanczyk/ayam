@@ -545,6 +545,9 @@ int ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 int ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
 
+int ay_tcmd_getglerrortcmd(ClientData clientData, Tcl_Interp *interp,
+			   int argc, char *argv[]);
+
 /* tmp.c */
 int ay_tmp_gettcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[]);
