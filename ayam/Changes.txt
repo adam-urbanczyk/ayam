@@ -96,6 +96,9 @@ o the order of the Ayam Startup Sequence has changed, so that shader parsing
 o added hidden preference setting "IconGamma" that may be used to adapt the
   contrast of all icons (especially the menu bar icons and especially on the
   Mips/IRIX platform)
+o added "shiftClosedBS" scripting interface command that shifts the control
+  points of a closed B-Spline curve, see also new main menu entry:
+  "Tools/NCurve/Shift BSpline"
 
 
 [26. 09. 2003] Ayam1.6:
