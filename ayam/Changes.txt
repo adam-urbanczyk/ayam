@@ -1,9 +1,10 @@
-[CVS 08. 02. 2002]
+[CVS 23. 02. 2002]
 o bug fixes:
   - fixed color select buttons in preferences not updating on "load defaults"
   - fixed missing RiSolidBegin/End for spheres with thetamax != 360
   - fixed RiAttribute tags not exporting when attached to material objects
   - fixed broken integer RiOption and RiAttribute declarations
+  - fixed broken Camera property GUI of the Camera object
 o improved RIB export of quadric primitives with negative thetamax
 o the mouse cursor now changes when the "alt rotate" action is in effect
 
