@@ -177,7 +177,7 @@ onio_writenpatch(ay_object *o, ONX_Model *p_m, double *m)
 
 
 // onio_get2dcurveobj:
-//
+//  propagate changes to onio_writencurve()
 int
 onio_get2dcurveobj(ay_object *o, ON_NurbsCurve **pp_c)
 {
@@ -397,7 +397,7 @@ onio_writetrimmednpatch(ay_object *o, ONX_Model *p_m, double *m)
       ltype = ON_BrepLoop::outer;
     }
 
-  while(down)
+  while(down && down->next)
     {
       if(!onio_isboundingloop(down))
 	{
@@ -461,7 +461,7 @@ onio_writenpconvertible(ay_object *o, ONX_Model *p_m, double *m)
 
 
 // onio_writencurve:
-//
+//  propagate changes to onio_get2dcurveobj()
 int
 onio_writencurve(ay_object *o, ONX_Model *p_m, double *m)
 {
