@@ -1,12 +1,32 @@
-[CVS 23. 02. 2002]
+[CVS 27. 04. 2002]
 o bug fixes:
   - fixed color select buttons in preferences not updating on "load defaults"
   - fixed missing RiSolidBegin/End for spheres with thetamax != 360
   - fixed RiAttribute tags not exporting when attached to material objects
   - fixed broken integer RiOption and RiAttribute declarations
   - fixed broken Camera property GUI of the Camera object
+  - fixed broken "-h" command line option
+  - fixed memory leak in the Skin notification callback
+  - fixed error connecting instances while loading certain scenes
+  - fixed grid menu button not updating when switching a view to perspective
+  - fixed writing of preferences and deleting of temporary files when the
+    main window is closed to quit Ayam
 o improved RIB export of quadric primitives with negative thetamax
 o the mouse cursor now changes when the "alt rotate" action is in effect
+o the modifier key for the "alt rotate" action is now configurable using
+  "ayviewshortcuts(RotMod)" and "ayviewshortcuts(RotModKey)" respectively
+o added a RIB import plugin
+o added a new object type "PatchMesh"
+o direct point editing now works for multiple selected objects
+o resizing of the toolbox now works better for opaque resize
+o shrink wrapping of the toolbox may now be turned off completely using
+  "Preferences/Misc/ToolBoxShrink"
+o added a checkbutton to the rendering GUI that controls ringing the
+  bell when the rendering finishes
+o added an object picking facility, you can now click in view windows
+  to select objects (Bertrand Coconnier)
+o the default action for view windows is now "Pick" (and not "None")
+o added a reference card to the documentation
 
 [17. 01. 2002] Ayam1.1:
 o bug fixes:
