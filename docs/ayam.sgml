@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>23. Apr 2002
+<date>26. Apr 2002
 <abstract>
 This is the documentation of Ayam - a free 3D modeling environment
 for the RenderMan interface.
@@ -29,16 +29,16 @@ In addition, you can use the provided SGML-source to generate other formats.
 What is Ayam?<p>
 Ayam is a free 3D modeling environment for the RenderMan Interface
 (formerly known as <tt>"The Mops"</tt>).<p>
-What platforms does Ayam run on?<p>
+On which platforms is Ayam available?<p>
 Ayam is primarily aimed at the platforms BMRT (Blue Moon Rendering
 Tools, a RenderMan compliant renderer by Larry Gritz (Exluna))
-runs on (Linux, IRIX, Win32). Despite of this, Ayam may be used
+runs on (those are Linux, IRIX, Win32). Despite of this, Ayam may be used
 on many more platforms with any RenderMan compliant renderer.
 Due to limitations in the Win32 operating system(s)
 (no backlinking) and the current implementation of Ayam,
 dynamic loading of custom objects is currently not available on the
 Win32 platform!<p>
-For platforms where BMRT is not available (e.g. xBSD), Ayam
+For platforms where BMRT is not available (e.g. FreeBSD or NetBSD), Ayam
 may be compiled with code from the Affine Toolkit with limited
 functionality (see also the file INSTALL).
 In this case, no parsing of slc compiled shaders will be possible.<p>
@@ -47,10 +47,11 @@ Here is a short summary:
 <itemize>
 <item>RIB (RenderMan Interface Bytestream) export.
 <item>Support for NURBS curves, interpolating curves, (trimmed)
-NURBS surfaces, bilinear patches, Boxes, Quadrics (Sphere, Disk,
+NURBS surfaces, bilinear and bicubic patches and patch meshes,
+Boxes, Quadrics (Sphere, Disk,
 Cylinder, Cone, Hyperboloid, Paraboloid and Torus).
-All primitives may be combined with the common
-CSG operations Intersection, Difference and Union.
+<item>All primitives may be combined with the common
+CSG-operations: Intersection, Difference, and Union.
 <item>NURBS modeling includes extrude (with caps, holes and bevels),
 revolve (with caps), sweep and skin operations.
 <item>Custom objects that may freely implement their representations
@@ -103,7 +104,7 @@ speed and versatility. The tree is much more versatile but also slower.
 
 Both representations manage a so called <tt/"current level"/.
 This level is the level displayed in the listbox.
-In the tree view the current level is drawn in black, while all
+In the tree view the current level is drawn in black while all
 other levels are grayed out. Selection of objects
 may only take place in the current level!
 
@@ -196,18 +197,19 @@ that are organized in list form. The lists may be scrolled if they get
 too long.<p>
 If the elements of the property GUI do not fit into the screen
 space defined by the current window size, Ayam will automatically
-resize the window when you select a property. You can switch
-this behaviour off with the preference setting
+resize the window when you select a property. You can toggle
+this behaviour using the preference setting
 <tt/"AutoResize"/ (see section <ref id="prefs" name="Preferences">).
 
-If a property is shown and a different object is selected,
+If an object and a property are selected and a different object is selected,
 the property GUI that has the same index as the previously
 selected property in the properties listbox will be
 selected and shown. This is not necessarily a property
 of the same type.
 To avoid that or to clear the property
-GUI for fast browsing through the scene you can double
-click on the "Properties" label.
+GUI for fast browsing through the scene you may double
+click on the "Properties" label to de-select the current
+property.
 
 What properties exactly
 will be shown, and how the GUIs look alike depends on the
@@ -220,7 +222,7 @@ The various things that may be changed using a property GUI
 will normally not be applied until the "Apply"-button is pressed!<p>
 You can undo all changes to the arguments of a property that
 have been made after the last click on "Apply" with the "Reset" button.
-This is, however, not an undo mechanism!<p>
+This does, however, not use the undo mechanism of Ayam!<p>
 Note, that property GUIs of custom objects may also offer interactive
 elements that do an instant "Apply". Most GUIs of the
 core objects of Ayam and the Scene object do not change anything
@@ -719,7 +721,7 @@ intersect this line are considered to be possible candidates for selection.
 <p>
 <figure loc="ht">
 <eps file="pics/ampick.ps" height="3cm">
-<img src="pics/ampick.png">
+<img src="pics/ampick.gif">
 <caption>List of Ambiguous Candidates</caption>
 </figure>
 
@@ -1199,7 +1201,7 @@ will be added to the list of selected points for the selected object.
 If the selected point is already in that list
 it will be removed from the list instead. Note that the list
 of selected points will not be deleted from the object
-until a deselect is performed using the shortcut <tt/&lt;D&gt;/.<p>
+until a de-select is performed using the shortcut <tt/&lt;D&gt;/.<p>
 
 Note, that the list of selected points is not copied, if the object is copied
 using the clipboard.
@@ -3446,7 +3448,7 @@ of the current level if nothing has been selected. If recursive
 is 1 then forAll will recurse into every object (if it has child objects)
 before the execution of command. Note, that forAll will run
 slowly if a property GUI is displayed. You can make it run faster
-by deselecting the property using e.g. the property context menu.
+by de-selecting the property using e.g. the property context menu.
  <item> Deficiencies:
  <itemize>
   <item>A recursive forAll will
@@ -3471,7 +3473,7 @@ forAllT:
 additional type check. The command will not be executed if the type of the
 current object does not match the argument type. Note, that forAll will run
 slowly if a property GUI is displayed. You can make it run faster
-by deselecting the property using e.g. the property context menu.<p>
+by de-selecting the property using e.g. the property context menu.<p>
 
 Note, that the type strings will be converted to lowercase before
 comparison, so that it is legal to use it e.g. this way:
