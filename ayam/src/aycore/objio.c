@@ -515,15 +515,20 @@ ay_objio_writencconvertible(FILE *fileptr, ay_object *o, double *m)
 
   ay_status = ay_provide_object(o, AY_IDNCURVE, &c);
   t = c;
-  while(t)
+  while(t->next)
     {
       if(t->type == AY_IDNCURVE)
 	{
-	  ay_status = ay_objio_writeobject(fileptr, t, AY_FALSE);
+	  ay_status = ay_objio_writeobject(fileptr, t, AY_TRUE);
 	}
 
       t = t->next;
     } /* while */
+
+  if(t->type == AY_IDNCURVE)
+    {
+      ay_status = ay_objio_writeobject(fileptr, t, AY_FALSE);
+    }
 
   ay_status = ay_object_deletemulti(c);
 
@@ -545,15 +550,21 @@ ay_objio_writenpconvertible(FILE *fileptr, ay_object *o, double *m)
 
   ay_status = ay_provide_object(o, AY_IDNPATCH, &p);
   t = p;
-  while(t)
+  while(t->next)
     {
       if(t->type == AY_IDNPATCH)
 	{
-	  ay_status = ay_objio_writeobject(fileptr, t, AY_FALSE);
+	  ay_status = ay_objio_writeobject(fileptr, t, AY_TRUE);
 	}
 
       t = t->next;
     } /* while */
+
+  if(t->type == AY_IDNPATCH)
+    {
+      ay_status = ay_objio_writeobject(fileptr, t, AY_FALSE);
+    }
+
   ay_status = ay_object_deletemulti(p);
 
  return ay_status;
