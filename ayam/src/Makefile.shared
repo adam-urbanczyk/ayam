@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile.shared [20. Jan 2004]
+# Makefile.shared [30. Aug 2004]
 # Makefile for Ayam (shared version)
 
 # Choose an installation prefix.
@@ -65,6 +65,7 @@ LD = CC
 #   Note, that the preference setting TmpDir will always be ignored then!
 # o add -DAYENABLEPPREV to enable the permanent preview feature
 # o add -DAYENABLEWAIT to enable the waitPid command (Unix/Linux only)
+# o add -DAYENABLEFEXIT to enable the fast exit procedure (MacOSX)
 # o add -DAYWITHAQUA if you use a Tcl/Tk for Aqua (not X11)
 # o add -DAYNOUNISTDH if your system has no "unistd.h" (no "times()" system
 #   call); if you add this option, the detection of held down keys will be
@@ -82,7 +83,7 @@ CFLAGS = -O -DAYUSESLCARGS -DAYUSEBMRTRIBOUT
 # MacOSX with Aqua:
 #CFLAGS = -O -DAYWITHAQUA -DAYUSEAFFINE
 # MacOSX with X11:
-#CFLAGS = -O -DAYUSEAFFINE
+#CFLAGS = -O -DAYUSEAFFINE -DAYENABLEFEXIT
 
 # ld flag to switch to static linking
 # IRIX:
