@@ -48,6 +48,8 @@ ay_notify_parent(void)
 
   while(lev)
   {
+    o = NULL;
+
     if(lev->next)
       if(lev->next->object)
 	o = lev->next->object;
