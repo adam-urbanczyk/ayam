@@ -3498,18 +3498,40 @@ ay_nct_curvplottcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
- ay_object *o;
- ay_nurbcurve_object *c = NULL, *c2 = NULL;
+ ay_object *o, *po = NULL;
+ ay_nurbcurve_object *c, *c2 = NULL;
  char fname[] = "curvPlot";
- double t, dt, curv, *controlv;
- int a = 0, samples = 100;
+ double width = 5.0, scale = 1.0, t, dt, *controlv;
+ int a = 0, b = 0, samples = 100, freepo;
 
   if(argc >= 2)
     Tcl_GetInt(interp, argv[1], &samples);
 
+  if(argc >= 3)
+    Tcl_GetDouble(interp, argv[2], &width);
+
+  if(argc >= 4)
+    Tcl_GetDouble(interp, argv[3], &scale);
+
   while(sel)
     {
+      freepo = AY_FALSE;
+      c = NULL;
       if(sel->object->type == AY_IDNCURVE)
+	{
+	  c = (ay_nurbcurve_object *)sel->object->refine;
+	}
+      else
+	{
+	  ay_status = ay_provide_object(sel->object, AY_IDNCURVE, &po);
+	  if(po)
+	    {
+	      freepo = AY_TRUE;
+	      c = (ay_nurbcurve_object *)po->refine;
+	    }
+	}
+
+      if(c)
 	{
 	  controlv = NULL;
 	  if(!(controlv = calloc(samples*4, sizeof(double))))
@@ -3527,27 +3549,28 @@ ay_nct_curvplottcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_object_defaults(o);
 	  o->type = AY_IDNCURVE;
 
-	  c = (ay_nurbcurve_object *)sel->object->refine;
 	  dt = (c->knotv[c->length+c->order-1]-c->knotv[0])/((double)samples);
 	  a = 0;
+	  b = 0;
 	  for(t = c->knotv[0]; t < c->knotv[c->length+c->order-1]; t += dt)
 	    {
-	      controlv[a] = (double)a/20.0;
-	      controlv[a+1] = ay_nct_getcurvature(c, t);
+	      controlv[a] = (double)b*width/samples;
+	      controlv[a+1] = ay_nct_getcurvature(c, t)*scale;
 	      controlv[a+3] = 1.0;
 	      a += 4;
+	      b++;
 	    }
 	  
 	  ay_status = ay_nct_create(4, samples, AY_KTNURB, controlv, NULL,
 				    &c2);
 	  o->refine = c2;
 	  ay_object_link(o);
-	  
-	}
-      else
+	} /* if */	  
+
+      if(freepo)
 	{
-	  ay_error(AY_ERROR, fname, "object is not a NURBCurve");
-	} /* if */
+	  ay_object_deletemulti(po);
+	}
 
       sel = sel->next;
     } /* while */
