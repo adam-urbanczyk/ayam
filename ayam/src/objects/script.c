@@ -138,8 +138,8 @@ ay_script_drawcb(struct Togl *togl, ay_object *o)
 
   switch(sc->type)
     {
+    case 1:
     case 2:
-    case 3:
       if(sc->cm_objects)
 	{
 	  mo = sc->cm_objects;
@@ -174,8 +174,8 @@ ay_script_shadecb(struct Togl *togl, ay_object *o)
 
   switch(sc->type)
     {
+    case 1:
     case 2:
-    case 3:
       if(sc->cm_objects)
 	{
 	  mo = sc->cm_objects;
@@ -230,6 +230,10 @@ ay_script_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   toa = Tcl_NewStringObj(n1, -1);
   ton = Tcl_NewStringObj(n1, -1);
 
+  Tcl_SetStringObj(ton, "Active", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(sc->active));
+
   Tcl_SetStringObj(ton, "Type", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &(sc->type));
@@ -241,14 +245,10 @@ ay_script_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       o->parent = AY_TRUE;
       break;
     case 1:
-      o->hide_children = AY_FALSE;
-      o->parent = AY_TRUE;
-      break;
-    case 2:
       o->hide_children = AY_TRUE;
       o->parent = AY_FALSE;
       break;
-    case 3:
+    case 2:
       o->hide_children = AY_TRUE;
       o->parent = AY_TRUE;
       break;
@@ -316,6 +316,11 @@ ay_script_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   ton = Tcl_NewStringObj(n1, -1);
 
+  Tcl_SetStringObj(ton, "Active", -1);
+  to = Tcl_NewIntObj(sc->active);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
   Tcl_SetStringObj(ton, "Type", -1);
   to = Tcl_NewIntObj(sc->type);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
@@ -349,6 +354,7 @@ ay_script_readcb(FILE *fileptr, ay_object *o)
   if(!(sc = calloc(1, sizeof(ay_script_object))))
     { return AY_EOMEM; }
 
+  fscanf(fileptr, "%d\n", &sc->active);
   fscanf(fileptr, "%d\n", &sc->type);
   fscanf(fileptr, "%d\n", &len);
 
@@ -387,6 +393,7 @@ ay_script_writecb(FILE *fileptr, ay_object *o)
 
   sc = (ay_script_object *)(o->refine);
 
+  fprintf(fileptr, "%d\n", sc->active);
   fprintf(fileptr, "%d\n", sc->type);
   if(sc->script)
     {
@@ -415,8 +422,8 @@ ay_script_wribcb(char *file, ay_object *o)
 
   switch(sc->type)
     {
+    case 1:
     case 2:
-    case 3:
       if(sc->cm_objects)
 	{
 	  mo = sc->cm_objects;
@@ -453,8 +460,8 @@ ay_script_bbccb(ay_object *o, double *bbox, int *flags)
 
   switch(sc->type)
     {
+    case 1:
     case 2:
-    case 3:
       if(sc->cm_objects)
 	{
 	  mo = sc->cm_objects;
@@ -566,20 +573,20 @@ ay_script_notifycb(ay_object *o)
 
   sc = (ay_script_object *)(o->refine);
 
-  if((sc->type == 0) || (!sc->script) || (sc->script && !strlen(sc->script)))
+  if((sc->active == 0) || (!sc->script) || (sc->script && !strlen(sc->script)))
     {
       /* script is inactive or empty, bail out... */
       sema = 0;
       return AY_OK;
     } /* if */
 
-  if(sc->type == 1)
+  if(sc->type == 0)
     {
       /* Just Run */
       result = Tcl_GlobalEval(ay_interp, sc->script);
     } /* if */
 
-  if(sc->type == 2)
+  if(sc->type == 1)
     {
       /* Create Children */
 
@@ -629,7 +636,7 @@ ay_script_notifycb(ay_object *o)
 
     } /* if */
 
-  if(sc->type == 3)
+  if(sc->type == 2)
     {
       /* Modify Children */
 
@@ -750,8 +757,8 @@ ay_script_convertcb(ay_object *o, int in_place)
 
   switch(sc->type)
     {
+    case 1:
     case 2:
-    case 3:
       if(sc->cm_objects)
 	{
 	  if(in_place)
@@ -844,8 +851,8 @@ ay_script_providecb(ay_object *o, unsigned int type, ay_object **result)
 
   switch(sc->type)
     {
+    case 1:
     case 2:
-    case 3:
       if(sc->cm_objects)
 	{
 	  npo = &po;
