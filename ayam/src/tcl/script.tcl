@@ -32,15 +32,38 @@ array set ScriptAttrData {
 set w [frame $ay(pca).$ScriptAttr(w)]
 addMenu $w ScriptAttrData Type [list Inactive Run Create Modify]
 pack [text $w.tScript -width 60 -height 60]
-eval [subst "bindtags $w.tScript \{$w.tScript Text all\}"]
-bind $w.tScript <Key-Escape> {resetFocus}
+set t $w.tScript
+eval [subst "bindtags $t \{$t Text all\}"]
+bind $t <Key-Escape> {resetFocus}
+
+# create popup menu
+set m [menu $t.popup -tearoff 0]
+$m add command -label "Clear All" -command "$t delete 1.0 end"
+$m add command -label "Paste (Replace)" -command {
+    global ay ScriptAttr
+    set t $ay(pca).${ScriptAttr(w)}.tScript
+    set nt ""
+    set nt [selection get]
+    if { $nt != "" } {
+	$t delete 1.0 end
+	$t insert end $nt
+    }
+}
+# bind popup menu
+bind $t <3> {
+    set xy [winfo pointerxy .];
+    set x [lindex $xy 0]
+    set y [lindex $xy 1]
+    tk_popup $t.popup $x $y
+}
+# bind
 
 # Tcl -> C
 proc setScriptp { } {
  global ay ScriptAttr ScriptAttrData
 
     set t $ay(pca).$ScriptAttr(w).tScript
-    set ScriptAttrData(Script) [$t get 0.0 end]
+    set ScriptAttrData(Script) [$t get 1.0 end]
     setProp
 
  return;
@@ -53,8 +76,8 @@ proc getScriptp { } {
 
     set t $ay(pca).$ScriptAttr(w).tScript
     getProp
-    $t delete 0.0 end
-    $t insert 0.0 $ScriptAttrData(Script)
+    $t delete 1.0 end
+    $t insert 1.0 $ScriptAttrData(Script)
 
  return;
 }
