@@ -1,4 +1,4 @@
-[CVS, 10. 09. 2002]:
+[CVS, 15. 09. 2002]:
 o bug fixes:
   - fixed memory leaks in the shadow map RIB export module
   - fixed ICurves crash for length 2
@@ -55,6 +55,15 @@ o added a new object type "ConcatNC" that concatenates multiple NURBS
   curves or NURBS curve providing objects
 o added a new object type "Clone" that creates n instances of its child
   object and transforms each instance by a specified transformation
+o Ayam now remembers the state of the toolbox (open/closed) and the
+  object selection widget (listbox or treeview) in the ayamrc file
+o added a "RenderMode" preference setting that allows to switch between
+  two different methods of forcing a renderer to render to the screen (via
+  RiDisplay, necessary for e.g. PRMan and RDC; or via command line argument)
+o added a select renderer feature (main menu "Special/Select Renderer")
+  that allows to switch between different renderers more easily; currently
+  supported are BMRT2.5, BMRT2.6, Aqsis, Air, 3Delight, RDC, and PRMan
+o reorganized the "Main/Special" menu by introduction of cascaded sub-menus
 
 [09. 07. 2002] Ayam1.2:
 o bug fixes:
