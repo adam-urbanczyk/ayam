@@ -94,6 +94,8 @@ int ay_mfio_writelevel(MF3D_FilePtr fileptr, ay_object *o);
 
 int ay_mfio_writeinstance(MF3D_FilePtr fileptr, ay_object *o);
 
+int ay_mfio_writeclone(MF3D_FilePtr fileptr, ay_object *o);
+
 int ay_mfio_writecntr(MF3D_FilePtr fileptr);
 
 int ay_mfio_writeecntr(MF3D_FilePtr fileptr);
@@ -2432,6 +2434,34 @@ ay_mfio_writeinstance(MF3D_FilePtr fileptr, ay_object *o)
 } /* ay_mfio_writeinstance */
 
 
+/* ay_mfio_writeclone:
+ *
+ */
+int
+ay_mfio_writeclone(MF3D_FilePtr fileptr, ay_object *o)
+{
+ int ay_status = AY_OK;
+ ay_clone_object *cl = NULL;
+ ay_object *clone = NULL;
+
+  if(!o)
+    return AY_OK;
+
+  cl = (ay_clone_object *)o->refine;
+
+  clone = cl->clones;
+
+  while(clone)
+    {
+      ay_status = ay_mfio_writeobject(fileptr, clone);
+
+      clone = clone->next;
+    }
+
+ return ay_status;
+} /* ay_mfio_writeclone */
+
+
 /* ay_mfio_writecntr:
  *
  */
@@ -2967,6 +2997,8 @@ Mfio_Init(Tcl_Interp *interp)
 				       ay_mfio_writetorus);
   ay_status = ay_mfio_registerwritecb((char *)(AY_IDINSTANCE),
 				       ay_mfio_writeinstance);
+  ay_status = ay_mfio_registerwritecb((char *)(AY_IDCLONE),
+				       ay_mfio_writeclone);
 
   ay_status = ay_mfio_registerwritecb((char *)(AY_IDICURVE),
 				       ay_mfio_writencconvertible);
@@ -2984,6 +3016,8 @@ Mfio_Init(Tcl_Interp *interp)
   ay_status = ay_mfio_registerwritecb((char *)(AY_IDPAMESH),
 				       ay_mfio_writenpconvertible);
   ay_status = ay_mfio_registerwritecb((char *)(AY_IDBPATCH),
+				       ay_mfio_writenpconvertible);
+  ay_status = ay_mfio_registerwritecb((char *)(AY_IDGORDON),
 				       ay_mfio_writenpconvertible);
 
   ay_status = ay_mfio_registerwritecb((char *)(AY_IDPOMESH),
