@@ -177,6 +177,10 @@ ay_clone_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(clone->numclones < 0)
     clone->numclones = 0;
 
+  Tcl_SetStringObj(ton,"Rotate",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &(clone->rotate));
+
   Tcl_SetStringObj(toa, n1, -1);
   Tcl_SetStringObj(ton, "Translate_X", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -304,6 +308,11 @@ ay_clone_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton,"Rotate",-1);
+  to = Tcl_NewIntObj(clone->rotate);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
   Tcl_SetStringObj(ton,"Translate_X", -1);
   to = Tcl_NewDoubleObj(clone->movx);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -385,6 +394,11 @@ ay_clone_readcb(FILE *fileptr, ay_object *o)
   fscanf(fileptr,"%lg\n",&clone->scaly);
   fscanf(fileptr,"%lg\n",&clone->scalz);
 
+  if(ay_read_version > 3)
+    {
+      fscanf(fileptr,"%d\n",&clone->rotate);
+    }
+
   o->refine = clone;
 
  return AY_OK;
@@ -419,6 +433,8 @@ ay_clone_writecb(FILE *fileptr, ay_object *o)
   fprintf(fileptr,"%g\n",clone->scalx);
   fprintf(fileptr,"%g\n",clone->scaly);
   fprintf(fileptr,"%g\n",clone->scalz);
+
+  fprintf(fileptr, "%d\n", clone->rotate);
 
  return AY_OK;
 } /* ay_clone_writecb */
@@ -537,10 +553,12 @@ ay_clone_bbccb(ay_object *o, double *bbox, int *flags)
 int
 ay_clone_notifycb(ay_object *o)
 {
+ int ay_status = AY_OK;
  char fname[] = "clone_notifycb";
  ay_clone_object *clone = NULL;
  ay_object *down = NULL, *newo = NULL, **next = NULL, trafo = {0};
- int i = 0;
+ ay_object *tr = NULL;
+ int i = 0, tr_iscopy = AY_FALSE;
  double euler[3];
 
   if(!o)
@@ -555,40 +573,93 @@ ay_clone_notifycb(ay_object *o)
   down = o->down;
   if(down->type != AY_IDINSTANCE)
     {
-      ay_trafo_defaults(&trafo);
-      next = &(clone->clones);
-      for(i = 0; i < clone->numclones; i++)
-	{
-	  /* prepare transformation attributes */
-	  trafo.movx += clone->movx;
-	  trafo.movy += clone->movy;
-	  trafo.movz += clone->movz;
+      /* arrange clones along curve? */
+      if(down->next)
+	{ /* Yes! */
 
-	  trafo.scalx *= clone->scalx;
-	  trafo.scaly *= clone->scaly;
-	  trafo.scalz *= clone->scalz;
+	  /* get trajectory curve */
+	  if(down->next->type != AY_IDNCURVE)
+	    {
+	      ay_status = ay_provide_object(down->next, AY_IDNCURVE, &tr);
+	      if(!tr)
+		{
+		  /* XXXX issue error message? */
+		  return AY_OK;
+		}
+	      else
+		{
+		  tr_iscopy = AY_TRUE;
+		}
+	    }
+	  else
+	    {
+	      tr = down->next;
+	    }
 
-	  ay_quat_add(trafo.quat, clone->quat, trafo.quat);
-	  ay_quat_toeuler(trafo.quat, euler);
+	  /* create clones */
+	  next = &(clone->clones);
+	  for(i = 0; i < clone->numclones; i++)
+	    {
+	      /* create a new instance object */
+	      newo = NULL;
+	      if(!(newo = calloc(1, sizeof(ay_object))))
+		return AY_EOMEM; /* XXXX memory leak! */
 
-	  trafo.rotx = AY_R2D(euler[0]);
-	  trafo.roty = AY_R2D(euler[1]);
-	  trafo.rotz = AY_R2D(euler[2]);
+	      ay_object_defaults(newo);
+	      newo->type = AY_IDINSTANCE;
+	      newo->refine = down;
 
-	  /* create a new instance object */
-	  newo = NULL;
-	  if(!(newo = calloc(1, sizeof(ay_object))))
-	    return AY_EOMEM;
+	      /* link new instance object */
+	      *next = newo;
+	      next = &(newo->next);
+	    } /* for */
 
-	  ay_object_defaults(newo);
-	  newo->type = AY_IDINSTANCE;
-	  newo->refine = down;
-	  ay_trafo_copy(down, newo);
-	  ay_trafo_add(&trafo, newo);
-	  *next = newo;
+	  ay_status = ay_nct_arrange(clone->clones, tr, clone->rotate);
 
-	  next = &(newo->next);
-	} /* for */
+	  if(tr_iscopy)
+	    {
+	      ay_object_delete(tr);
+	    }
+	}
+      else
+	{ /* No! */
+	  ay_trafo_defaults(&trafo);
+	  next = &(clone->clones);
+	  for(i = 0; i < clone->numclones; i++)
+	    {
+	      /* prepare transformation attributes */
+	      trafo.movx += clone->movx;
+	      trafo.movy += clone->movy;
+	      trafo.movz += clone->movz;
+
+	      trafo.scalx *= clone->scalx;
+	      trafo.scaly *= clone->scaly;
+	      trafo.scalz *= clone->scalz;
+
+	      ay_quat_add(trafo.quat, clone->quat, trafo.quat);
+	      ay_quat_toeuler(trafo.quat, euler);
+
+	      trafo.rotx = AY_R2D(euler[0]);
+	      trafo.roty = AY_R2D(euler[1]);
+	      trafo.rotz = AY_R2D(euler[2]);
+
+	      /* create a new instance object */
+	      newo = NULL;
+	      if(!(newo = calloc(1, sizeof(ay_object))))
+		return AY_EOMEM; /* XXXX memory leak! */
+
+	      ay_object_defaults(newo);
+	      newo->type = AY_IDINSTANCE;
+	      newo->refine = down;
+	      ay_trafo_copy(down, newo);
+	      ay_trafo_add(&trafo, newo);
+
+	      /* link new instance */
+	      *next = newo;
+	      next = &(newo->next);
+	    } /* for */
+	} /* if */
+
     }
   else
     {
