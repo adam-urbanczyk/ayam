@@ -1,4 +1,4 @@
-[06. 08. 2003] CVS-Head:
+[15. 08. 2003] CVS-Head:
 o bug fixes:
   - fixed crash when exporting scenes with malformed RiAttribute/RiOption
     tags (type c or p, with a component missing) (SF 753550)
@@ -11,6 +11,9 @@ o bug fixes:
   - fixed picking in shaded views making grids draw in black color (SF 770221)
   - fixed forAll scripting interface command not tracking index (variable i)
     correctly for recursive invocations (SF 774626)
+  - fixed memory leak for RIB export of RiHider and RiDisplay tags with
+    additional arguments (SF 787525)
+  - fixed memory leak for RIB export of RiAttribute/RiOption tags (SF 788535)
 o added preference setting "Misc/SavePrefsGeom" to control saving of the
   geometry of the preference editor window
 o added two new renderers, Angel and Pixie, to the Select_Renderer feature
@@ -57,6 +60,14 @@ o the ConcatNC attribute property now displays order and length of the
   resulting NURBS curve
 o added scripting interface command "rescaleKnNC" that rescales a knot vector
   of a NURBS curve object to the range 0.0 - 1.0
+o added "Set BGImage" entry to the "Configure" menu of view windows
+o added a new, shape preserving knot vector generation algorithm to the
+  "ConcatNC" tool object, enable it by switching the new "Knot-Type" attribute
+  from "NURB" to "Custom"
+o added a new parameter to the fillet creation algorithm for the "ConcatNC"
+  object, it is named "FTLength" (Fillet Tangent Length) and controls the
+  lengths of the outer fillet segments, which are tangential to the original
+  curves
 
 
 [10. 05. 2003] Ayam1.5.1:
