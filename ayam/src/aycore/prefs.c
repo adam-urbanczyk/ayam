@@ -244,10 +244,11 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(itemp != ay_prefs.undo_levels)
     {
-      if((itemp < 2)/* && (itemp < 1000)*/)
+
+      if((itemp != -1) && (itemp < 2)/* && (itemp < 1000)*/)
 	{
 	  itemp = 2;
-
+	  
 	  to = Tcl_NewIntObj(itemp);
 	  Tcl_ObjSetVar2(interp, toa, ton, to,
 			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -256,6 +257,7 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
 			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 	  Tcl_SetStringObj(toa, n1, -1);
 	}
+
 
       ay_status = ay_undo_clear();
       ay_status = ay_undo_init(itemp);

@@ -56,14 +56,15 @@ int
 ay_undo_init(int buffer_size)
 {
 
-  if(buffer_size == 0)
-    {
-      return AY_OK;
-    }
-
   if(undo_buffer)
     free(undo_buffer);
   undo_buffer = NULL;
+
+  if(buffer_size <= 0)
+    {
+      undo_buffer_size = -1;
+      return AY_OK;
+    }
 
   if(!(undo_buffer = calloc(buffer_size, sizeof(ay_undo_object))))
     return AY_EOMEM;
@@ -924,6 +925,12 @@ ay_undo_undotcmd(ClientData clientData, Tcl_Interp *interp,
  char fname[] = "undo";
  int mode = 0; /* default mode is "undo" */
  char *a = "ay", *n = "sc", *v = "1";
+
+  /* protect undo code from too small buffers */
+  if(undo_buffer_size < 2)
+    {
+      return TCL_OK;
+    }
 
   /* parse args */
   if(argc > 1)
