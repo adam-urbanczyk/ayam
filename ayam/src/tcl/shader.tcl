@@ -493,15 +493,15 @@ if { $type == "atmosphere" } { set stype "volume" }
 if { $type == "interior" } { set stype "volume" }
 if { $type == "exterior" } { set stype "volume" }
 
-addCommand $w c1 "Set new shader." "shader_setNew $w $type $stype"
+addCommand $w c1 "Set new shader!" "shader_setNew $w $type $stype"
 
-addCommand $w c2 "Delete shader." "undo save DelShader; shaderSet $type;\
+addCommand $w c2 "Delete shader!" "undo save DelShader; shaderSet $type;\
 	plb_update"
 
 if { $ay(slcext) != ".xml" } {
-    addCommand $w c3 "Default Values." "shader_setDefaults $type;"
+    addCommand $w c3 "Default Values!" "shader_setDefaults $type;"
 } else {
-    addCommand $w c3 "Default Values." "shader_setDefaultsXML $type;"
+    addCommand $w c3 "Default Values!" "shader_setDefaultsXML $type;"
 }
 if { $ay_shader(Name) == "" } { return; }
 
