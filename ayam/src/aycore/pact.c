@@ -1277,10 +1277,10 @@ ay_pact_griddify(double *n, double grid)
 	  else
 	    {
 	      *n -= m;
-	    }
-	}
+	    } /* if */
+	} /* if */
+    } /* if */
 
-    }
  return;
 } /* ay_pact_griddify */
 
@@ -1387,11 +1387,33 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
 			      ay_trafo_applyall(ay_currentlevel->next, o,
 						coords);
 			    } /* if */
-
-			  ay_pact_griddify(&(coords[0]), view->grid);
-			  ay_pact_griddify(&(coords[1]), view->grid);
-			  ay_pact_griddify(&(coords[2]), view->grid);
-
+			  if(ay_prefs.snap3d)
+			    {
+			      ay_pact_griddify(&(coords[0]), view->grid);
+			      ay_pact_griddify(&(coords[1]), view->grid);
+			      ay_pact_griddify(&(coords[2]), view->grid);
+			    }
+			  else
+			    {
+			      switch(view->type)
+				{
+				case AY_VTFRONT:
+				case AY_VTTRIM:
+				  ay_pact_griddify(&(coords[0]), view->grid);
+				  ay_pact_griddify(&(coords[1]), view->grid);
+				  break;
+				case AY_VTSIDE:
+				  ay_pact_griddify(&(coords[1]), view->grid);
+				  ay_pact_griddify(&(coords[2]), view->grid);
+				  break;
+				case AY_VTTOP:
+				  ay_pact_griddify(&(coords[0]), view->grid);
+				  ay_pact_griddify(&(coords[2]), view->grid);
+				  break;
+				default:
+				  break;
+				} /* switch */
+			    } /* if */
 			  if(!view->local)
 			    {
 			      ay_trafo_applyalli(ay_currentlevel->next, o,

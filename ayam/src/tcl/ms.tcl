@@ -80,6 +80,7 @@ ms_set en ayprefse_LazyNotify "Notify parent objects about changes just on\
 mouse up?"
 ms_set en ayprefse_EditSnaps "Snap coordinates of edited points to grid\
 coordinates?"
+ms_set en ayprefse_Snap3D "Snap coordinate values in all three dimensions?"
 ms_set en ayprefse_DefaultAction "Modelling action invoked, when <Esc> key\
 is pressed."
 ms_set en ayprefse_UndoLevels "Number of undoable modelling steps;\
@@ -219,15 +220,17 @@ ms_set de ayprefse_TmpDir "Verzeichnis für temporäre Dateien."
 
 # Modeling
 ms_set de ayprefse_PickEpsilon "Größte erlaubte Entfernung zwischen\
-ausgewähltem und editierbarem Punkt;\
-\n0.0 wählt jedoch immer den nächsten Punkt."
+\nausgewähltem und editierbaren Punkt;\
+\n0.0: es wird immer der nächste Punkt gewählt."
 ms_set de ayprefse_HandleSize "Größe der editierbaren Punkte."
 ms_set de ayprefse_LazyNotify "Sollen Elternobjekte über Änderungen an den\
 \nKindobjekten nur am Ende einer Modellieraktion\nbenachrichtigt werden?"
 ms_set de ayprefse_EditSnaps "Sollen editierte Punkte zunächst zu den\
 \nGitter-Koordinaten bewegt werden?"
+ms_set de ayprefse_Snap3D "Soll das Bewegen zu Gitter-Koordinaten (s.o.) in\
+\nallen drei Dimensionen erfolgen?"
 ms_set de ayprefse_DefaultAction "Modellier-Aktion, die beim Drücken der\
-<Esc>-Taste gestartet werden soll."
+\n<Esc>-Taste gestartet werden soll."
 ms_set de ayprefse_UndoLevels "Anzahl zurücknehmbarer Modellierschritte;\
 \n-1 schaltet das Undo-System aus."
 

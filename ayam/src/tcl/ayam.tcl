@@ -29,6 +29,7 @@ array set ayprefs {
  HandleSize 6
  LazyNotify 0
  EditSnaps 1
+ Snap3D 0
 
  Tolerance 30.0
  DisplayMode 0
