@@ -1,31 +1,58 @@
-/* simple NURB tesselators */
+/*
+ * Ayam, a free 3D modeler for the RenderMan interface.
+ *
+ * Ayam is copyrighted 1998-2004 by Randolf Schultz
+ * (rschultz@informatik.uni-rostock.de) and others.
+ *
+ * All rights reserved.
+ *
+ * See the file License for details.
+ *
+ */
 
-#include "mops.h"
+#include "ayam.h"
 
-typedef struct stess_uvp_s {
-  struct stess_uvp_s *next;
-  int type; /* 0 - original point, 1 - trimloop point */
-  int dir;  /* direction of associated trimcurve, 1 - ccw, 0 - cw */
-  double u, v;
-  double C[4];
-} stess_uvp;
+/* stess.c simple NURB tesselators */
 
-typedef struct stess_uvpl_s {
-  struct stess_uvpl_s *next;
-  struct stess_uvp_s *uvp;
-} stess_uvpl;
+/* definition of types local to this module: */
 
+/* a tesselated point */
+typedef struct ay_stess_uvp_s {
+  struct ay_stess_uvp_s *next;
+  int type;    /* 0 - original point, 1 - trimloop point */
+  int dir;     /* direction of associated trimcurve, 1 - ccw, 0 - cw */
+  double u, v; /* associated parametric values of this point */
+  double C[4]; /* coordinates of this point */
+} ay_stess_uvp;
+
+/* a list of lists (lines) of tesselated points */
+typedef struct ay_stess_uvpl_s {
+  struct stess_uvpl_s *next; /* next list (line) of points */
+  struct stess_uvp_s *uvp;   /* a list (line) of points */
+} ay_stess_uvpl;
+
+
+/* local preprocessor definitions: */
 #define STESS_EPSILON 0.000001
 
+
+/* prototypes of functions local to this module: */
+
+
+/* functions: */
+
+/* ay_stess_2DCurvePoints4D:
+ *   calculate all points of a 2D curve (TrimCurve)
+ */
 int
-mops_nb_2DCurvePoints4D(int n, int p, double *U, double *Pw, int num,
-			int *Clen, double **C)
+ay_stess_2DCurvePoints4D(int n, int p, double *U, double *Pw, int num,
+			 int *Clen, double **C)
 {
  int span, j, k, l, m;
  double *N = NULL, Cw[3], *Ct = NULL, u, ud, umin, umax; 
 
   if(!(N = calloc(p+1,sizeof(double))))
-    return MOPS_OUTOFMEM;
+    return AY_EOMEM;
 
   j = 0;
   while(U[j] == U[j+1])
@@ -44,16 +71,19 @@ mops_nb_2DCurvePoints4D(int n, int p, double *U, double *Pw, int num,
   *Clen = (n*num);
 
   if(!(Ct = calloc(*Clen*2, sizeof(double))))
-    return MOPS_OUTOFMEM;
+    {
+      free(N);
+      return AY_EOMEM;
+    }
 
   ud = (umax-umin)/((*Clen)-1);
   u = umin;
 
   for(l=0; l<(*Clen); l++)
     {
-      span = mops_nb_FindSpan(n,p,u,U);
+      span = ay_nb_FindSpan(n,p,u,U);
 
-      mops_nb_BasisFuns(span,u,p,U,N);
+      ay_nb_BasisFuns(span,u,p,U,N);
       
       memset(Cw,0,3*sizeof(double));
 
@@ -70,25 +100,28 @@ mops_nb_2DCurvePoints4D(int n, int p, double *U, double *Pw, int num,
 	Ct[m+1] = Cw[1]/Cw[2];
 
       u += ud;
-    }
+    } /* for */
 
   *C = Ct;
 
   free(N);
 
- return MOPS_OK;
-}
+ return AY_OK;
+} /* ay_stess_2DCurvePoints4D */
 
 
+/* ay_stess_2DCurvePoints3D:
+ *   calculate all points of a 2D curve (TrimCurve)
+ */
 int
-mops_nb_2DCurvePoints3D(int n, int p, double *U, double *P, int num,
-		      int *Clen, double **C)
+ay_stess_2DCurvePoints3D(int n, int p, double *U, double *P, int num,
+			 int *Clen, double **C)
 {
  int span, j, k, l, m;
  double *N = NULL, *Ct = NULL, u, ud, umin, umax; 
 
   if(!(N = calloc(p+1,sizeof(double))))
-    return MOPS_OUTOFMEM;
+    return AY_EOMEM;
 
   j = 0;
   while(U[j] == U[j+1])
@@ -107,16 +140,16 @@ mops_nb_2DCurvePoints3D(int n, int p, double *U, double *P, int num,
   *Clen = n*num;
 
   if(!(Ct = calloc(*Clen*2, sizeof(double))))
-    return MOPS_OUTOFMEM;
+    return AY_EOMEM;
 
   ud = (umax-umin)/((*Clen)-1);
   u = umin;
 
   for(l = 0; l < (*Clen); l++)
     {
-      span = mops_nb_FindSpan(n,p,u,U);
+      span = ay_nb_FindSpan(n,p,u,U);
 
-      mops_nb_BasisFuns(span,u,p,U,N);
+      ay_nb_BasisFuns(span,u,p,U,N);
       
       m = l*2;
       for(j=0; j<=p; j++)
@@ -133,19 +166,22 @@ mops_nb_2DCurvePoints3D(int n, int p, double *U, double *P, int num,
 
   free(N);
 
- return MOPS_OK;
-}
+ return AY_OK;
+} /* ay_stess_2DCurvePoints3D */
 
 
+/* ay_stess_CurvePoints4D:
+ *   calculate all points of a 3D curve with weights
+ */
 int
-mops_nb_CurvePoints4D(int n, int p, double *U, double *Pw, int num,
-		      int *Clen, double **C)
+ay_stess_CurvePoints4D(int n, int p, double *U, double *Pw, int num,
+		       int *Clen, double **C)
 {
  int span, j, k, l, m;
  double *N = NULL, Cw[4], *Ct = NULL, u, ud, umin, umax; 
 
   if(!(N = calloc(p+1,sizeof(double))))
-    return MOPS_OUTOFMEM;
+    return AY_EOMEM;
 
   j = 0;
   while(U[j] == U[j+1])
@@ -164,16 +200,16 @@ mops_nb_CurvePoints4D(int n, int p, double *U, double *Pw, int num,
   *Clen = (n*num);
 
   if(!(Ct = calloc(*Clen*3, sizeof(double))))
-    return MOPS_OUTOFMEM;
+    return AY_EOMEM;
 
   ud = (umax-umin)/((*Clen)-1);
   u = umin;
 
   for(l=0; l<(*Clen); l++)
     {
-      span = mops_nb_FindSpan(n,p,u,U);
+      span = ay_nb_FindSpan(n,p,u,U);
 
-      mops_nb_BasisFuns(span,u,p,U,N);
+      ay_nb_BasisFuns(span,u,p,U,N);
       
       memset(Cw,0,4*sizeof(double));
 
@@ -198,19 +234,22 @@ mops_nb_CurvePoints4D(int n, int p, double *U, double *Pw, int num,
 
   free(N);
 
- return MOPS_OK;
-}
+ return AY_OK;
+} /* ay_stess_CurvePoints4D */
 
 
+/* ay_stess_CurvePoints3D:
+ *   calculate all points of a 3D curve
+ */
 int
-mops_nb_CurvePoints3D(int n, int p, double *U, double *P, int num,
-		      int *Clen, double **C)
+ay_stess_CurvePoints3D(int n, int p, double *U, double *P, int num,
+		       int *Clen, double **C)
 {
  int span, j, k, l, m;
  double *N = NULL, *Ct = NULL, u, ud, umin, umax; 
 
   if(!(N = calloc(p+1,sizeof(double))))
-    return MOPS_OUTOFMEM;
+    return AY_EOMEM;
 
   j = 0;
   while(U[j] == U[j+1])
@@ -229,16 +268,16 @@ mops_nb_CurvePoints3D(int n, int p, double *U, double *P, int num,
   *Clen = n*num;
 
   if(!(Ct = calloc(*Clen*3, sizeof(double))))
-    return MOPS_OUTOFMEM;
+    return AY_EOMEM;
 
   ud = (umax-umin)/((*Clen)-1);
   u = umin;
 
   for(l = 0; l < (*Clen); l++)
     {
-      span = mops_nb_FindSpan(n,p,u,U);
+      span = ay_nb_FindSpan(n,p,u,U);
 
-      mops_nb_BasisFuns(span,u,p,U,N);
+      ay_nb_BasisFuns(span,u,p,U,N);
       
       m = l*3;
       for(j=0; j<=p; j++)
@@ -256,13 +295,16 @@ mops_nb_CurvePoints3D(int n, int p, double *U, double *P, int num,
 
   free(N);
 
- return MOPS_OK;
-}
+ return AY_OK;
+} /* ay_stess_CurvePoints3D */
 
 
+/* ay_stess_SurfacePoints4D:
+ *   calculate all points of a surface with weights
+ */
 int
-mops_nb_SurfacePoints4D(int n, int m, int p, int q, double *U, double *V,
-			double *Pw, int num, int *Cn, int *Cm, double **C)
+ay_stess_SurfacePoints4D(int n, int m, int p, int q, double *U, double *V,
+			 double *Pw, int num, int *Cn, int *Cm, double **C)
 {
  int spanu = 0, spanv = 0, indu = 0, indv = 0, l = 0, k = 0, i = 0, j = 0;
  int a, b;
@@ -270,9 +312,9 @@ mops_nb_SurfacePoints4D(int n, int m, int p, int q, double *U, double *V,
  double Cw[4] = {0}, *Ct = NULL, temp[4] = {0}; 
 
   if(!(Nu = calloc(p+1,sizeof(double))))
-    return MOPS_OUTOFMEM;
+    return AY_EOMEM;
   if(!(Nv = calloc(q+1,sizeof(double))))
-    return MOPS_OUTOFMEM;
+    return AY_EOMEM;
 
   j = 0;
   while(U[j] == U[j+1])
@@ -310,7 +352,7 @@ mops_nb_SurfacePoints4D(int n, int m, int p, int q, double *U, double *V,
   vd = (umax-umin)/((*Cm)-1);
 
   if(!(Ct = calloc((*Cn)*(*Cm)*3, sizeof(double))))
-    return MOPS_OUTOFMEM;
+    return AY_EOMEM;
 
   for(a = 0; a < (*Cn); a++)
     {
@@ -318,10 +360,10 @@ mops_nb_SurfacePoints4D(int n, int m, int p, int q, double *U, double *V,
       for(b = 0; b < (*Cm); b++)
 	{
 
-	  spanu = mops_nb_FindSpan(n,p,u,U);
-	  mops_nb_BasisFuns(spanu,u,p,U,Nu);
-	  spanv = mops_nb_FindSpan(m,q,v,V);
-	  mops_nb_BasisFuns(spanv,v,q,V,Nv);
+	  spanu = ay_nb_FindSpan(n,p,u,U);
+	  ay_nb_BasisFuns(spanu,u,p,U,Nu);
+	  spanv = ay_nb_FindSpan(m,q,v,V);
+	  ay_nb_BasisFuns(spanv,v,q,V,Nv);
 
 	  indu = spanu - p;
 	  for(l=0; l<=q; l++)
@@ -362,13 +404,16 @@ mops_nb_SurfacePoints4D(int n, int m, int p, int q, double *U, double *V,
   free(Nu);
   free(Nv);
 
- return MOPS_OK;
-}
+ return AY_OK;
+} /* ay_stess_SurfacePoints4D */
 
 
+/* ay_stess_SurfacePoints3D:
+ *   calculate all points of a surface
+ */
 int
-mops_nb_SurfacePoints3D(int n, int m, int p, int q, double *U, double *V,
-			double *P, int num, int *Cn, int *Cm, double **C)
+ay_stess_SurfacePoints3D(int n, int m, int p, int q, double *U, double *V,
+			 double *P, int num, int *Cn, int *Cm, double **C)
 {
  int spanu = 0, spanv = 0, indu = 0, indv = 0, l = 0, k = 0, i = 0, j = 0;
  int a, b;
@@ -376,9 +421,9 @@ mops_nb_SurfacePoints3D(int n, int m, int p, int q, double *U, double *V,
  double temp[3] = {0}, *Ct = NULL; 
 
   if(!(Nu = calloc(p+1,sizeof(double))))
-    return MOPS_OUTOFMEM;
+    return AY_EOMEM;
   if(!(Nv = calloc(q+1,sizeof(double))))
-    return MOPS_OUTOFMEM;
+    return AY_EOMEM;
 
   j = 0;
   while(U[j] == U[j+1])
@@ -416,7 +461,7 @@ mops_nb_SurfacePoints3D(int n, int m, int p, int q, double *U, double *V,
   vd = (umax-umin)/((*Cm)-1);
 
   if(!(Ct = calloc((*Cn)*(*Cm)*3, sizeof(double))))
-    return MOPS_OUTOFMEM;
+    return AY_EOMEM;
 
   for(a = 0; a < (*Cn); a++)
     {
@@ -424,10 +469,10 @@ mops_nb_SurfacePoints3D(int n, int m, int p, int q, double *U, double *V,
       for(b = 0; b < (*Cm); b++)
 	{
 
-	  spanu = mops_nb_FindSpan(n,p,u,U);
-	  mops_nb_BasisFuns(spanu,u,p,U,Nu);
-	  spanv = mops_nb_FindSpan(m,q,v,V);
-	  mops_nb_BasisFuns(spanv,v,q,V,Nv);
+	  spanu = ay_nb_FindSpan(n,p,u,U);
+	  ay_nb_BasisFuns(spanu,u,p,U,Nu);
+	  spanv = ay_nb_FindSpan(m,q,v,V);
+	  ay_nb_BasisFuns(spanv,v,q,V,Nv);
 
 	  indu = spanu - p;
 	  j = (a*(*Cn)+b)*3;
@@ -462,22 +507,21 @@ mops_nb_SurfacePoints3D(int n, int m, int p, int q, double *U, double *V,
   free(Nu);
   free(Nv);
 
- return MOPS_OK;
-}
+ return AY_OK;
+} /* ay_stess_SurfacePoints3D */
 
 
-/*
- * mops_intersect_lines2D:
- * Code taken from the c.g.algorithms FAQ, which in turn points to:
- * Graphics Gems III pp. 199-202 "Faster Line Segment Intersection"
+/* ay_stess_IntersectLines2D:
+ *  Code taken from the c.g.algorithms FAQ, which in turn points to:
+ *  Graphics Gems III pp. 199-202 "Faster Line Segment Intersection"
  *
- * Input:   p1[2],p2[2]; p3[2],p4[2] - 2 2D line segments
- * Returns: 0 - no intersection in the given segments
- *          1 - segments intersect in point ip
+ *  Input:   p1[2],p2[2]; p3[2],p4[2] - 2 2D line segments
+ *  Returns: 0 - no intersection in the given segments
+ *           1 - segments intersect in point ip
  */
 int
-mops_intersect_lines2D(double *p1, double *p2, double *p3, double *p4,
-		       double *ip)
+ay_stess_IntersectLines2D(double *p1, double *p2, double *p3, double *p4,
+			  double *ip)
 {
  double r, s, den;
 
@@ -501,18 +545,21 @@ mops_intersect_lines2D(double *p1, double *p2, double *p3, double *p4,
   ip[1] = p1[1]+r*(p2[1]-p1[1]);
 
  return 1;
-}
+} /* ay_stess_IntersectLines2D */
 
 
+/* ay_stess_TessTrimCurves:
+ *  tesselate all trim curves of object <o>
+ */
 int
-mops_st_TessTrimCurves(mops_object *o, int num, int *nt, double ***tt,
-		       int **tl, int **td)
+ay_st_TessTrimCurves(ay_object *o, int num, int *nt, double ***tt,
+		     int **tl, int **td)
 {
- int mops_status = MOPS_OK;
+ int ay_status = AY_OK;
  double *dtmp = NULL, angle, **tts, p1[4], p2[4];
  int i, j, numtrims = 0, *tls, *tds, got_object = 0;
- mops_object *d = NULL, *dd = NULL;
- mops_nurbcurve_object *c = NULL;
+ ay_object *d = NULL, *dd = NULL;
+ ay_nurbcurve_object *c = NULL;
  GLfloat m[4][4];
  GLdouble mm[16];
 
@@ -527,24 +574,24 @@ mops_st_TessTrimCurves(mops_object *o, int num, int *nt, double ***tt,
 
   /* tesselate trimloops and get their orientation */
   if(!(tts = calloc(numtrims, sizeof(double *))))
-    return MOPS_OUTOFMEM;
+    return AY_EOMEM;
   if(!(tls = calloc(numtrims, sizeof(int))))
-    { free(tts); return MOPS_OUTOFMEM; }
+    { free(tts); return AY_EOMEM; }
   if(!(tds = calloc(numtrims, sizeof(int))))
-    { free(tts); free(tls); return MOPS_OUTOFMEM; }
+    { free(tts); free(tls); return AY_EOMEM; }
 
   i = 0;
   d = o->down;
   while(d)
     {
-      if(d->type == MOPS_OTNURBCURVE)
+      if(d->type == AY_OTNURBCURVE)
 	{
-	  c = (mops_nurbcurve_object *)d->object;
+	  c = (ay_nurbcurve_object *)d->object;
 	  glMatrixMode (GL_MODELVIEW);
 	  glPushMatrix();
 	   glLoadIdentity();
 	   glTranslated(d->movx, d->movy, d->movz);
-	   mops_build_rotmatrix(m, d->quat);
+	   ay_build_rotmatrix(m, d->quat);
 	   glMultMatrixf(&(m[0][0]));
 	   glScaled (d->scalx, d->scaly, d->scalz);
 	   glGetDoublev(GL_MODELVIEW_MATRIX, mm);
@@ -553,17 +600,17 @@ mops_st_TessTrimCurves(mops_object *o, int num, int *nt, double ***tt,
       else
 	{
 	  dd = NULL;
-	  mops_status = mops_get_object(d, MOPS_OTNURBCURVE, &dd);
+	  ay_status = ay_get_object(d, AY_OTNURBCURVE, &dd);
 	  if(dd)
-	    got_object = MOPS_TRUE;
+	    got_object = AY_TRUE;
 
-	  c = (mops_nurbcurve_object *)dd->object;
+	  c = (ay_nurbcurve_object *)dd->object;
 
 	  glMatrixMode (GL_MODELVIEW);
 	  glPushMatrix();
 	   glLoadIdentity();
 	   glTranslated(dd->movx, dd->movy, dd->movz);
-	   mops_build_rotmatrix(m, dd->quat);
+	   ay_build_rotmatrix(m, dd->quat);
 	   glMultMatrixf(&(m[0][0]));
 	   glScaled (dd->scalx, dd->scaly, dd->scalz);
 	   glGetDoublev(GL_MODELVIEW_MATRIX, mm);
@@ -571,7 +618,7 @@ mops_st_TessTrimCurves(mops_object *o, int num, int *nt, double ***tt,
 	}
 
       if(!(dtmp = calloc(c->length*(c->has_weights?4:3), sizeof(double))))
-	{ return MOPS_OUTOFMEM; } /* XXXX Memory Leak? */
+	{ return AY_EOMEM; } /* XXXX Memory Leak? */
 
       /* apply transformations */
       if(c->has_weights)
@@ -579,7 +626,7 @@ mops_st_TessTrimCurves(mops_object *o, int num, int *nt, double ***tt,
 	  for(j = 0; j < c->length; j++)
 	    {
 	      memcpy(p1, &(c->controlv[j*4]), 4*sizeof(double));
-	      MOPS_APTRAN4(p2, p1, mm)
+	      AY_APTRAN4(p2, p1, mm)
 	      memcpy(&(dtmp[j*4]), p2, 4*sizeof(double));
 	    }
 	}
@@ -588,29 +635,29 @@ mops_st_TessTrimCurves(mops_object *o, int num, int *nt, double ***tt,
 	  for(j = 0; j < c->length; j++)
 	    {
 	      memcpy(p1, &(c->controlv[j*3]), 3*sizeof(double));
-	      MOPS_APTRAN3(p2, p1, mm)
+	      AY_APTRAN3(p2, p1, mm)
 	      memcpy(&(dtmp[j*3]), p2, 3*sizeof(double));
 	    }
 	}
       
       if(c->has_weights)
-	mops_nb_2DCurvePoints4D(c->length-1, c->order-1, c->knotv, dtmp,
-				num, &(tls[i]), &(tts[i]));
+	ay_stess_2DCurvePoints4D(c->length-1, c->order-1, c->knotv, dtmp,
+				 num, &(tls[i]), &(tts[i]));
       else
-	mops_nb_2DCurvePoints3D(c->length-1, c->order-1, c->knotv, dtmp,
-				num, &(tls[i]), &(tts[i]));
+	ay_stess_2DCurvePoints3D(c->length-1, c->order-1, c->knotv, dtmp,
+				 num, &(tls[i]), &(tts[i]));
 
       free(dtmp);
       dtmp = NULL;
 
       /* get orientation of trimloop */
       angle = 0.0;
-      mops_get_nc_orientation(c, &angle);
+      ay_get_nc_orientation(c, &angle);
       if(angle > 0.0)
 	tds[i] = 1;
 
       if(got_object)
-	mops_delete_multi_objects(dd);
+	ay_delete_multi_objects(dd);
 
       i++;
       d = d->next;
@@ -621,44 +668,48 @@ mops_st_TessTrimCurves(mops_object *o, int num, int *nt, double ***tt,
   *tl = tls;
   *td = tds;
 
- return MOPS_OK;
-}
+ return AY_OK;
+} /* ay_stess_TessTrimCurves */
 
 
+/* ay_stess_MergeUVectors:
+ *   merge two vectors (lines) of points on a surface, removing
+ *   double points in the progress
+ */
 int
-mops_nb_MergeUVectors(stess_uvp *a, stess_uvp *b)
+ay_stess_MergeUVectors(ay_stess_uvp *a, ay_stess_uvp *b)
 {
- stess_uvp *p1, *p2, *p3;
+ ay_stess_uvp *p1, *p2, *p3;
  int done = 0, inserted = 0, count = 0, toggle = 0;
 
- p2 = b;
- while(p2)
-   {
-     if(toggle)
-       toggle = 0;
-     else
-       toggle = 1;
-     count++;
-     p2 = p2->next;
-   }
+  p2 = b;
+  while(p2)
+    {
+      if(toggle)
+	toggle = 0;
+      else
+	toggle = 1;
+      count++;
+      p2 = p2->next;
+    }
 
- /* never insert uneven numbers of points! */
- if(toggle)
-   {
-     /*
+  /* never insert uneven numbers of points! */
+  if(toggle)
+    {
+      /*
      fprintf(stderr,"Uneven number of trimloop points (%d) detected!\n",count);
-     */
+      */
 
-     /* free b */
-     while(b)
-       {
-	 p2 = b->next;
-	 free(b);
-	 b = p2;
-       }
+      /* free b */
+      while(b)
+	{
+	  p2 = b->next;
+	  free(b);
+	  b = p2;
+	}
 
-     return MOPS_OK;
-   }
+      return AY_OK;
+    }
 
   while(!done)
     {
@@ -673,7 +724,7 @@ mops_nb_MergeUVectors(stess_uvp *a, stess_uvp *b)
 		if(p2->v == p1->v)
 		  { /* Danger! Check for intersecting trimloops: */
 		    if(p1->type == 1)
-		      return MOPS_ERROR; /* XXXX early exit! */
+		      return AY_ERROR; /* XXXX early exit! */
 		    
 		    /* We, accidentally, have here a trimloop
 		     * point that is identical to a wanted uv-point;
@@ -711,14 +762,18 @@ mops_nb_MergeUVectors(stess_uvp *a, stess_uvp *b)
 
     } /* while */
 
- return MOPS_OK;
-}
+ return AY_OK;
+} /* ay_stess_MergeUVectors */
 
 
+/* ay_stess_MergeVVectors:
+ *   merge two vectors (lines) of points on a surface, removing
+ *   double points in the progress
+ */
 int
-mops_nb_MergeVVectors(stess_uvp *a, stess_uvp *b)
+ay_stess_MergeVVectors(ay_stess_uvp *a, ay_stess_uvp *b)
 {
- stess_uvp *p1, *p2, *p3;
+ ay_stess_uvp *p1, *p2, *p3;
  int done = 0, inserted = 0, count = 0, toggle = 0;
 
  p2 = b;
@@ -747,7 +802,7 @@ mops_nb_MergeVVectors(stess_uvp *a, stess_uvp *b)
 	 b = p2;
        }
 
-     return MOPS_OK;
+     return AY_OK;
    }
 
   while(!done)
@@ -763,7 +818,7 @@ mops_nb_MergeVVectors(stess_uvp *a, stess_uvp *b)
 		if(p2->u == p1->u)
 		  { /* Danger! Check for intersecting trimloops: */
 		    if(p1->type == 1)
-		      return MOPS_ERROR; /* XXXX early exit! */
+		      return AY_ERROR; /* XXXX early exit! */
 		    
 		    /* We, accidentally, have here a trimloop
 		     * point that is identical to a wanted uv-point;
@@ -801,19 +856,23 @@ mops_nb_MergeVVectors(stess_uvp *a, stess_uvp *b)
 
     } /* while */
 
- return MOPS_OK;
-}
+ return AY_OK;
+} /* ay_stess_MergeVVectors */
 
 
+/* ay_stess_TessTrimmedNPU:
+ *  tesselate NURBS patch <o> into lines in parametric direction u
+ */
 int
-mops_nb_TessTrimmedNPU(Tcl_Interp *interp, mops_object *o, int num,
-		       int numtrims, double **tcs, int *tcslens, int *tcsdirs,
-		       int *flcw, stess_uvp ***result)
+ay_stess_TessTrimmedNPU(Tcl_Interp *interp, ay_object *o, int num,
+			int numtrims,
+			double **tcs, int *tcslens, int *tcsdirs,
+			int *flcw, ay_stess_uvp ***result)
 {
- int mops_status = MOPS_OK;
- mops_nurbpatch_object *p = NULL;
- stess_uvp **uvps = NULL, *uvpptr, *newuvp, **olduvp, *trimuvp;
- stess_uvp *uvpptr2, *uvpptr3;
+ int ay_status = AY_OK;
+ ay_nurbpatch_object *p = NULL;
+ ay_stess_uvp **uvps = NULL, *uvpptr, *newuvp, **olduvp, *trimuvp;
+ ay_stess_uvp *uvpptr2, *uvpptr3;
  double *tt, ipoint[2] = {0};
  double p3[2], p4[2], *U, *V, u, v;
  double umin, umax, vmin, vmax, ud, vd;
@@ -822,7 +881,7 @@ mops_nb_TessTrimmedNPU(Tcl_Interp *interp, mops_object *o, int num,
  int Cm, Cn, trimloop_point, done;
  char fname[] = "TessTrimmedNPU";
 
-  p = (mops_nurbpatch_object *)o->object;
+  p = (ay_nurbpatch_object *)o->object;
 
   /* calc desired uv coords for patch tesselation */
   U = p->uknotv;
@@ -844,9 +903,9 @@ mops_nb_TessTrimmedNPU(Tcl_Interp *interp, mops_object *o, int num,
   ud = (umax-umin)/((Cn)-1);
   u = umin;
 
-  if(!(uvps = calloc(Cn, sizeof(stess_uvp *))))
+  if(!(uvps = calloc(Cn, sizeof(ay_stess_uvp *))))
     {
-      return MOPS_OUTOFMEM;
+      return AY_EOMEM;
     }
   V = p->vknotv;
   j = 0;
@@ -873,9 +932,9 @@ mops_nb_TessTrimmedNPU(Tcl_Interp *interp, mops_object *o, int num,
      olduvp = &(uvps[i]);
      for(j = 0; j < Cm; j++)
      {
-       if(!(newuvp = calloc(1, sizeof(stess_uvp))))
+       if(!(newuvp = calloc(1, sizeof(ay_stess_uvp))))
 	 {
-	   return MOPS_OUTOFMEM;
+	   return AY_EOMEM;
 	 }
        /* type == 0 */
        newuvp->u = u;
@@ -915,8 +974,8 @@ mops_nb_TessTrimmedNPU(Tcl_Interp *interp, mops_object *o, int num,
 	      ipoint[0] = 0.0;
 	      ipoint[1] = 0.0;
 
-	      if((mops_intersect_lines2D(&(tt[ind]), &(tt[ind+2]), p3, p4,
-					 ipoint)))
+	      if((ay_stess_IntersectLines2D(&(tt[ind]), &(tt[ind+2]), p3, p4,
+					    ipoint)))
 		{ /* u-line intersects with trimcurve */
 
 		  /* test commented out, because it will make
@@ -928,9 +987,9 @@ mops_nb_TessTrimmedNPU(Tcl_Interp *interp, mops_object *o, int num,
 		     (fabs(ipoint[1] - (v+vd)) > STESS_EPSILON))
 		    {*/ /* yes it is */
 		      /* add new point */
-		      if(!(newuvp = calloc(1, sizeof(stess_uvp))))
+		      if(!(newuvp = calloc(1, sizeof(ay_stess_uvp))))
 			{
-			  return MOPS_OUTOFMEM;
+			  return AY_EOMEM;
 			}
 		      newuvp->type = 1;
 		      newuvp->dir = tcsdirs[k];
@@ -950,11 +1009,11 @@ mops_nb_TessTrimmedNPU(Tcl_Interp *interp, mops_object *o, int num,
     /* merge vectors */
     if(trimuvp)
       {
-	mops_status = MOPS_OK;
-	mops_status = mops_nb_MergeUVectors(uvps[i], trimuvp);
-	if(mops_status)
+	ay_status = AY_OK;
+	ay_status = ay_stess_MergeUVectors(uvps[i], trimuvp);
+	if(ay_status)
 	  {
-	    mops_error(interp, MOPS_ERROR, fname,
+	    ay_error(interp, AY_ERROR, fname,
 		       "Intersecting or misoriented Trimcurves!\n");
 
 	    if(trimuvp)
@@ -967,7 +1026,7 @@ mops_nb_TessTrimmedNPU(Tcl_Interp *interp, mops_object *o, int num,
 		    uvpptr = uvpptr2;
 		  }
 	      }
-	    return MOPS_ERROR;
+	    return AY_ERROR;
 	  }
       }
 
@@ -1079,11 +1138,11 @@ mops_nb_TessTrimmedNPU(Tcl_Interp *interp, mops_object *o, int num,
       while(uvpptr)
 	{
 	  if(p->has_weights)
-	    mops_nb_SurfacePoint4D(p->width-1, p->height-1,
+	    ay_nb_SurfacePoint4D(p->width-1, p->height-1,
 	     p->uorder-1, p->vorder-1, p->uknotv, p->vknotv, 
 	     p->controlv, uvpptr->u, uvpptr->v, uvpptr->C);
 	  else
-	    mops_nb_SurfacePoint3D(p->width-1, p->height-1,
+	    ay_nb_SurfacePoint3D(p->width-1, p->height-1,
 	     p->uorder-1, p->vorder-1, p->uknotv, p->vknotv, 
 	     p->controlv, uvpptr->u, uvpptr->v, uvpptr->C);
 
@@ -1094,28 +1153,32 @@ mops_nb_TessTrimmedNPU(Tcl_Interp *interp, mops_object *o, int num,
   *flcw = first_loop_cw;
   *result = uvps;
 
- return mops_status;
-}
+ return ay_status;
+} /* ay_stess_TessTrimmedNPU */
 
 
+/* ay_stess_TessTrimmedNPV:
+ *  tesselate NURBS patch <o> into lines in parametric direction v
+ */
 int
-mops_nb_TessTrimmedNPV(Tcl_Interp *interp, mops_object *o, int num,
-		       int numtrims, double **tcs, int *tcslens, int *tcsdirs,
-		       int flcw, stess_uvp ***result)
+ay_stess_TessTrimmedNPV(Tcl_Interp *interp, ay_object *o, int num,
+			int numtrims,
+			double **tcs, int *tcslens, int *tcsdirs,
+			int flcw, ay_stess_uvp ***result)
 {
- int mops_status = MOPS_OK;
- mops_nurbpatch_object *p = NULL;
- stess_uvp **uvps = NULL, *uvpptr, *newuvp, **olduvp, *trimuvp;
- stess_uvp *uvpptr2, *uvpptr3;
+ int ay_status = AY_OK;
+ ay_nurbpatch_object *p = NULL;
+ ay_stess_uvp **uvps = NULL, *uvpptr, *newuvp, **olduvp, *trimuvp;
+ ay_stess_uvp *uvpptr2, *uvpptr3;
  double *tt, ipoint[2] = {0};
  double p3[2], p4[2], *U, *V, u, v;
  double umin, umax, vmin, vmax, ud, vd;
  int i, j, k, l, ind;
  int out = 0, first_loop = 1, first_loop_cw = 0;
  int Cm, Cn, trimloop_point, done;
- char fname[] = "TessTrimmedNPU";
+ char fname[] = "TessTrimmedNPV";
 
-  p = (mops_nurbpatch_object *)o->object;
+  p = (ay_nurbpatch_object *)o->object;
   first_loop_cw = flcw;
 
 
@@ -1157,9 +1220,9 @@ mops_nb_TessTrimmedNPV(Tcl_Interp *interp, mops_object *o, int num,
   Cm = (p->height-1)*num;
   vd = (umax-umin)/((Cm)-1);
 
-  if(!(uvps = calloc(Cm, sizeof(stess_uvp *))))
+  if(!(uvps = calloc(Cm, sizeof(ay_stess_uvp *))))
     {
-      return MOPS_OUTOFMEM;
+      return AY_EOMEM;
     }
 
   /* fill desired uv-coords */
@@ -1170,9 +1233,9 @@ mops_nb_TessTrimmedNPV(Tcl_Interp *interp, mops_object *o, int num,
      olduvp = &(uvps[i]);
      for(j = 0; j < Cn; j++)
      {
-       if(!(newuvp = calloc(1, sizeof(stess_uvp))))
+       if(!(newuvp = calloc(1, sizeof(ay_stess_uvp))))
 	 {
-	   return MOPS_OUTOFMEM;
+	   return AY_EOMEM;
 	 }
        /* type == 0 */
        newuvp->u = u;
@@ -1212,8 +1275,8 @@ mops_nb_TessTrimmedNPV(Tcl_Interp *interp, mops_object *o, int num,
 	      ipoint[0] = 0.0;
 	      ipoint[1] = 0.0;
 
-	      if((mops_intersect_lines2D(&(tt[ind]), &(tt[ind+2]), p3, p4,
-					 ipoint)))
+	      if((ay_stess_IntersectLines2D(&(tt[ind]), &(tt[ind+2]), p3, p4,
+					    ipoint)))
 		{ /* u-line intersects with trimcurve */
 
 		  /* test commented out, because it will make
@@ -1225,9 +1288,9 @@ mops_nb_TessTrimmedNPV(Tcl_Interp *interp, mops_object *o, int num,
 		     (fabs(ipoint[1] - (v+vd)) > STESS_EPSILON))
 		    {*/ /* yes it is */
 		      /* add new point */
-		      if(!(newuvp = calloc(1, sizeof(stess_uvp))))
+		      if(!(newuvp = calloc(1, sizeof(ay_stess_uvp))))
 			{
-			  return MOPS_OUTOFMEM;
+			  return AY_EOMEM;
 			}
 		      newuvp->type = 1;
 		      newuvp->dir = tcsdirs[k];
@@ -1247,11 +1310,11 @@ mops_nb_TessTrimmedNPV(Tcl_Interp *interp, mops_object *o, int num,
     /* merge vectors */
     if(trimuvp)
       {
-	mops_status = MOPS_OK;
-	mops_status = mops_nb_MergeVVectors(uvps[i], trimuvp);
-	if(mops_status)
+	ay_status = AY_OK;
+	ay_status = ay_stess_MergeVVectors(uvps[i], trimuvp);
+	if(ay_status)
 	  {
-	    mops_error(interp, MOPS_ERROR, fname,
+	    ay_error(interp, AY_ERROR, fname,
 		       "Intersecting or misoriented Trimcurves!\n");
 
 	    if(trimuvp)
@@ -1264,7 +1327,7 @@ mops_nb_TessTrimmedNPV(Tcl_Interp *interp, mops_object *o, int num,
 		    uvpptr = uvpptr2;
 		  }
 	      }
-	    return MOPS_ERROR;
+	    return AY_ERROR;
 	  }
       }
 
@@ -1374,11 +1437,11 @@ mops_nb_TessTrimmedNPV(Tcl_Interp *interp, mops_object *o, int num,
       while(uvpptr)
 	{
 	  if(p->has_weights)
-	    mops_nb_SurfacePoint4D(p->width-1, p->height-1,
+	    ay_nb_SurfacePoint4D(p->width-1, p->height-1,
 	     p->uorder-1, p->vorder-1, p->uknotv, p->vknotv, 
 	     p->controlv, uvpptr->u, uvpptr->v, uvpptr->C);
 	  else
-	    mops_nb_SurfacePoint3D(p->width-1, p->height-1,
+	    ay_nb_SurfacePoint3D(p->width-1, p->height-1,
 	     p->uorder-1, p->vorder-1, p->uknotv, p->vknotv, 
 	     p->controlv, uvpptr->u, uvpptr->v, uvpptr->C);
 
@@ -1388,32 +1451,35 @@ mops_nb_TessTrimmedNPV(Tcl_Interp *interp, mops_object *o, int num,
 
   *result = uvps;
 
- return mops_status;
-}
+ return ay_status;
+} /* ay_stess_TessTrimmedNPV */
 
 
+/* ay_stess_DrawTrimmedSurface:
+ *   
+ */
 int
-mops_stess_drawtrimmednurb(Tcl_Interp *interp, mops_object *o, int num)
+ay_stess_DrawTrimmedSurface(Tcl_Interp *interp, ay_object *o, int num)
 {
- int mops_status = MOPS_OK;
+ int ay_status = AY_OK;
  double **tcs = NULL;
  double p4[4] = {0};
  int numtrims = 0, *tcslens = NULL, *tcsdirs = NULL;
  int i, j, Cm, Cn, out = 0, first_loop_cw = 0;
- stess_uvp **ups = NULL, **vps = NULL, *uvpptr, *uvpptr2;
- mops_nurbpatch_object *p = NULL;
+ ay_stess_uvp **ups = NULL, **vps = NULL, *uvpptr, *uvpptr2;
+ ay_nurbpatch_object *p = NULL;
 
-  p = (mops_nurbpatch_object *)o->object;
+  p = (ay_nurbpatch_object *)o->object;
   Cn = (p->width-1)*num;
   Cm = (p->height-1)*num;
 
-  mops_status = mops_st_TessTrimCurves(o, num, &numtrims,  &tcs,
+  ay_status = ay_stess_TessTrimCurves(o, num, &numtrims,  &tcs,
 				      &tcslens,  &tcsdirs);
 
-  if(mops_status)
+  if(ay_status)
     goto cleanup;
 
-  mops_status = mops_nb_TessTrimmedNPU(interp, o, num, numtrims, tcs,
+  ay_status = ay_stess_TessTrimmedNPU(interp, o, num, numtrims, tcs,
 				       tcslens, tcsdirs, &first_loop_cw, &ups);
 
   if(first_loop_cw != 1)
@@ -1457,8 +1523,8 @@ mops_stess_drawtrimmednurb(Tcl_Interp *interp, mops_object *o, int num)
 
     } /* for */
 
-  mops_status = mops_nb_TessTrimmedNPV(interp, o, num, numtrims, tcs,
-				       tcslens, tcsdirs, first_loop_cw, &vps);
+  ay_status = ay_stess_TessTrimmedNPV(interp, o, num, numtrims, tcs,
+				      tcslens, tcsdirs, first_loop_cw, &vps);
 
   if(first_loop_cw != 1)
     out = 0;
@@ -1503,18 +1569,18 @@ mops_stess_drawtrimmednurb(Tcl_Interp *interp, mops_object *o, int num)
     } /* for */
 
 
-  /* draw trimcurves */
+  /* draw trimcurves (outlines) */
   for(i = 0; i < numtrims; i++)
     {
       glBegin(GL_LINE_STRIP);
       for(j = 0; j < tcslens[i]; j++)
 	{
 	  if(p->has_weights)
-	    mops_nb_SurfacePoint4D(p->width-1, p->height-1,
+	    ay_nb_SurfacePoint4D(p->width-1, p->height-1,
 	     p->uorder-1, p->vorder-1, p->uknotv, p->vknotv, 
 	     p->controlv, tcs[i][j*2], tcs[i][j*2+1], p4);
 	  else
-	    mops_nb_SurfacePoint3D(p->width-1, p->height-1,
+	    ay_nb_SurfacePoint3D(p->width-1, p->height-1,
 	     p->uorder-1, p->vorder-1, p->uknotv, p->vknotv, 
 	     p->controlv, tcs[i][j*2], tcs[i][j*2+1], p4);
 
@@ -1571,6 +1637,8 @@ cleanup:
       free(vps);
     }
 
- return MOPS_OK;
-}
+ return AY_OK;
+} /* ay_stess_DrawTrimmedSurface */
 
+/* remove local preprocessor definitions */
+#undef STESS_EPSILON
