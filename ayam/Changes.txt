@@ -1,13 +1,17 @@
-[CVS, 31. 10. 2002]:
+[CVS, 4. 11. 2002]:
 o bug fixes:
   - fixed remembering of the state of the object selection listbox/tree
     when the context menu or a double click on the label is used to
     switch between both representations or the toolbox window is closed
     using the window decoration close button
   - fixed broken RIB-export of Clone objects
+  - fixed broken RIB-export of RiAttribute/RiOption color/point tags
 o reduced number of redraws when selecting hidden or material objects
 o added a RiDisplay tag type, that allows to add more output files
   (e.g. containing depth buffer information) to the scene
+o added a RiHider tag type, that allows to select and parameterize
+  a different hider algorithm
+o added import of RiDisplay and RiHider statements to the RIB import plugin
 o added french translations for the preferences balloon help texts
   (Michel Armand)
 o added PolyMesh optimization tool, that reduces the number of control
@@ -17,6 +21,11 @@ o added global keyboard shortcuts to easily switch display-mode,
 o the Mops import options have been moved from the preferences to
   a small option requester
 o the direct point editing dialogue is now always transient
+o rotate about modelling action: the point to rotate about is now
+  snapped to grid coordinates immediately
+o the Sweep is now much faster for highly curved trajectories
+  (e.g. the speedup factor for the "sgi cube" is about 4.5)
+
 
 [15. 10. 2002] Ayam1.3:
 o bug fixes:
@@ -109,6 +118,7 @@ o changed calculation of bevels for the Extrude object; the bevels are
   thus, if cap generation fails, reduce the radius of the bevels
 o all RenderGUI windows now automatically try to raise themself, should
   they be obscured, e.g. by the renderer window (but just one time)
+
 
 [09. 07. 2002] Ayam1.2:
 o bug fixes:
