@@ -862,28 +862,26 @@ ay_draw_trimview(void)
  *  
  */
 void
-ay_draw_rectangle(struct Togl *togl, double xmin, double ymin, double xmax,
-		  double ymax)
+ay_draw_rectangle(int winwidth, int winheight,
+		  double xmin, double ymin, double xmax, double ymax)
 {
- ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
- int width = Togl_Width(togl), height = Togl_Height(togl);
 
   glDisable(GL_DEPTH_TEST);
   glMatrixMode(GL_PROJECTION);
   glPushMatrix();
-  glLoadIdentity();
-  glOrtho(0, width, 0, height, -100.0, 100.0);
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix();
-  glLoadIdentity();
-  glBegin(GL_LINE_LOOP);
-  glVertex3d(xmin, height-ymin, 0.0);
-  glVertex3d(xmax, height-ymin, 0.0);
-  glVertex3d(xmax, height-ymax, 0.0);
-  glVertex3d(xmin, height-ymax, 0.0);
-  glEnd();
-  glPopMatrix();
-  glMatrixMode(GL_PROJECTION);
+   glLoadIdentity();
+   glOrtho(0, winwidth, 0, winheight, -100.0, 100.0);
+   glMatrixMode(GL_MODELVIEW);
+   glPushMatrix();
+    glLoadIdentity();
+    glBegin(GL_LINE_LOOP);
+     glVertex3d(xmin, winheight-ymin, 0.0);
+     glVertex3d(xmax, winheight-ymin, 0.0);
+     glVertex3d(xmax, winheight-ymax, 0.0);
+     glVertex3d(xmin, winheight-ymax, 0.0);
+    glEnd();
+   glPopMatrix();
+   glMatrixMode(GL_PROJECTION);
   glPopMatrix();
   glEnable(GL_DEPTH_TEST);
 

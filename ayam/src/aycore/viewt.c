@@ -777,6 +777,8 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
  char fname[] = "view_setconf";
  Tcl_Interp *interp = ay_interp;
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
+ int width = Togl_Width(togl);
+ int height = Togl_Height(togl);
  ay_object *o = NULL;
  int argi = 0, need_redraw = AY_TRUE;
  double argd = 0.0, rotx = 0.0, roty = 0.0, rotz = 0.0;
@@ -1042,11 +1044,14 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 	      Tcl_GetDouble(interp, argv[i+4], &view->rect_ymax);
 	      
 	      Tcl_GetInt(interp, argv[i+5], &view->drawrect);
-#ifdef GL_VERSION_1_1
 	      need_redraw = AY_FALSE;
+	      /*XXXX DBG*/
+/*#undef GL_VERSION_1_1*/
+#ifdef GL_VERSION_1_1	      
 	      glDrawBuffer(GL_FRONT);
 	      glEnable(GL_COLOR_LOGIC_OP);
 	      glLogicOp(GL_XOR);
+	      /*XXXX DBG*/
 	      /*glLogicOp(GL_COPY);*/
 
 	       glColor3d((GLdouble)ay_prefs.sxr, (GLdouble)ay_prefs.sxg,
@@ -1057,14 +1062,16 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 		  (old_rect_xmax != 0.0) && (old_rect_ymax != 0.0))
 		 {
 		   
-		   ay_draw_rectangle(togl, old_rect_xmin, old_rect_ymin,
+		   ay_draw_rectangle(width, height,
+				     old_rect_xmin, old_rect_ymin,
 				     old_rect_xmax, old_rect_ymax);
 		   
 		 }
 
 	       if(view->drawrect)
 		 {
-		   ay_draw_rectangle(togl, view->rect_xmin, view->rect_ymin,
+		   ay_draw_rectangle(width, height,
+				     view->rect_xmin, view->rect_ymin,
 				     view->rect_xmax, view->rect_ymax);
 		 }
 	       else
@@ -1084,10 +1091,14 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 	      if(view->drawrect)
 		{
 		  glDrawBuffer(GL_FRONT);
-		  ay_draw_rectangle(togl, view->rect_xmin, view->rect_ymin,
+		  glColor3d((GLdouble)ay_prefs.tpr, (GLdouble)ay_prefs.tpg,
+			 (GLdouble)ay_prefs.tpb);
+		  ay_draw_rectangle(width, height,
+				    view->rect_xmin, view->rect_ymin,
 				    view->rect_xmax, view->rect_ymax);
+
 		  glDrawBuffer(GL_BACK);
-		}
+		} /* if */
 #endif
 	    } /* if */
 	  break;
