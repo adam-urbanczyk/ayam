@@ -1,7 +1,9 @@
+Michel Armand (michel@linuxgraphic.org):
+ french translation of preferences balloon help
 Bertrand Coconnier:
  object picking code
 Frank (copper) Pagels:
- MetaBalls custom object
+ MetaBalls custom object, PolyMesh optimization
 Hermann Birkholz:
  initial tree widget, shadow maps, automatic instancing, and IDR implementation
 Randolf Schultz (rschultz@informatik.uni-rostock.de):
