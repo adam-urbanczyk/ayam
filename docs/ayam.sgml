@@ -4761,6 +4761,9 @@ the TP tag of the first of the selected objects (if it has such a tag).
 The selected NURBS patches will be tesselated with the chosen parameters.
 The PolyMesh objects created by the tesselation will immediately be
 displayed in all view windows instead of the original NURBS patches.
+If the preference option <tt/"LazyNotify"/ is enabled, updates of the
+tesselation that normally occur while dragging the slider will be
+deferred until the mouse button is released.
 If the <tt/"Ok"/ button is pressed to close the tesselation tool, all
 selected NURBS patch objects will be replaced by their tesselated
 counterparts;
