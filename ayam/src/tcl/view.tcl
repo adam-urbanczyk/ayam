@@ -423,7 +423,7 @@ proc viewBind { w } {
     #bind
 
     bind $w <$ayviewshortcuts(RotMod)-Enter> {
-	global ay ayprefs
+	global ay ayprefs ayviewshortcuts
 	if { $ay(cviewsema) != 1 } {
 	    update
 	    set ay(cviewsema) 1
@@ -445,7 +445,7 @@ proc viewBind { w } {
     #bind
 
     bind $w <$ayviewshortcuts(ZoomRMod)-Enter> {
-	global ay ayprefs
+	global ay ayprefs ayviewshortcuts
 	if { $ay(cviewsema) != 1 } {
 	    update
 	    set ay(cviewsema) 1
@@ -459,6 +459,12 @@ proc viewBind { w } {
 	#if
 
 	$w.f3D.togl configure -cursor sizing
+
+	# save old bindings
+	set i $ayviewshortcuts(ZoomRButton)
+	set ay(oldbinding) [bind $w.f3D.togl <B${i}-Motion>]
+	set ay(oldb1binding) [bind $w.f3D.togl <ButtonPress-${i}>]
+	set ay(oldb1rbinding) [bind $w.f3D.togl <ButtonRelease-${i}>]
 
 	if { $ayprefs(AutoFocus) == 1 } {
 	    focus [winfo toplevel %W].f3D.togl
