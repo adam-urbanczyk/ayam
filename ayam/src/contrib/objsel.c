@@ -172,7 +172,7 @@ ay_objsel_processcb (struct Togl *togl, int argc, char *argv[])
 {
  ay_view_object *view = (ay_view_object *) Togl_GetClientData (togl);
  /* char fname[] = "objsel_process"; */
- ay_object *o = ay_root;
+ ay_object *o = ay_root->next;
  ay_list_object *sel = ay_selection;
  int ay_status = AY_OK;
  int width = Togl_Width (togl);
@@ -253,7 +253,8 @@ ay_objsel_processcb (struct Togl *togl, int argc, char *argv[])
 
   glMatrixMode (GL_MODELVIEW);
 
-  ay_current_glname = 0;
+  ay_current_glname = 1;
+  ay_root->glname = 1;
 
   if(view->drawlevel)
     {
@@ -311,6 +312,7 @@ ay_objsel_processcb (struct Togl *togl, int argc, char *argv[])
 
   glMatrixMode (GL_PROJECTION);
   glPopMatrix ();
+  glPopName();
   glFinish ();
 
   hits = glRenderMode (GL_RENDER);
