@@ -109,7 +109,7 @@ proc prefs_open {} {
     addParam $fw ayprefse HandleSize
     addCheck $fw ayprefse LazyNotify
     addCheck $fw ayprefse EditSnaps
-    addParam $fw ayprefse UndoLevels { 1 10 20 }
+    addParam $fw ayprefse UndoLevels { -1 2 5 10 20 }
 
     # Drawing
     set fw [$nb insert end Drawing -text Drawing\
