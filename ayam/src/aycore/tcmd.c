@@ -496,7 +496,7 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_object *src = NULL;
  double dtemp = 0.0;
- int indexu = 0, indexv = 0, i, homogenous = AY_FALSE;
+ int indexu = 0, indexv = 0, i = 0, homogenous = AY_FALSE;
  double *p = NULL;
  char fname[] = "setPnt";
 
