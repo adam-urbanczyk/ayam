@@ -66,6 +66,7 @@ bind $f.l <Double-ButtonPress-1> "pclip_toggleomit $f.l $name"
 button $f.b1 -pady 1 -bd $bw -text "/2" -command "updateParam $w $prop $name /2" -takefocus 0 -highlightthickness 0
 
 set e [entry $f.e -width 8 -textvariable ${prop}(${name}) -bd $bw]
+bindtags $f.e {$f.e Entry all}
 
 button $f.b2 -pady 1 -bd $bw -text "*2"  -command "updateParam $w $prop $name *2" -takefocus 0 -highlightthickness 0
 set mb ""
@@ -143,21 +144,25 @@ pack $f.l -in $f
 set f1 [frame $w.f${name}1 -relief sunken -bd $bw]
 for { set i 0 } { $i < 4 } { incr i } {
     entry $f1.e$i -width 6 -textvariable ${prop}(${name}_${i}) -bd $bw
+    bindtags $f1.e$i {$f1.e$i Entry all}
     pack $f1.e$i -in $f1 -side left -fill both
 }
 set f2 [frame $w.f${name}2 -relief sunken -bd $bw]
 for { set i 4 } { $i < 8 } { incr i } {
     entry $f2.e$i -width 6 -textvariable ${prop}(${name}_${i}) -bd $bw
+    bindtags $f2.e$i {$f2.e$i Entry all}
     pack $f2.e$i -in $f2 -side left -fill both
 }
 set f3 [frame $w.f${name}3 -relief sunken -bd $bw]
 for { set i 8 } { $i < 12 } { incr i } {
     entry $f3.e$i -width 6 -textvariable ${prop}(${name}_${i}) -bd $bw
+    bindtags $f3.e$i {$f3.e$i Entry all}
     pack $f3.e$i -in $f3 -side left -fill both
 }
 set f4 [frame $w.f${name}4 -relief sunken -bd $bw]
 for { set i 12 } { $i < 16 } { incr i } {
     entry $f4.e$i -width 6 -textvariable ${prop}(${name}_${i}) -bd $bw
+    bindtags $f4.e$i {$f4.e$i Entry all}
     pack $f4.e$i -in $f4 -side left -fill both
 }
 
@@ -259,8 +264,11 @@ proc addColor { w prop name {def {}}} {
     set f [frame $w.f${name}]
 
     set e1 [entry $f.er -width 4 -textvariable ${prop}(${name}_R) -bd $bw]
+    bindtags $f.er {$f.er Entry all}
     set e2 [entry $f.eg -width 4 -textvariable ${prop}(${name}_G) -bd $bw]
+    bindtags $f.eg {$f.eg Entry all}
     set e3 [entry $f.eb -width 4 -textvariable ${prop}(${name}_B) -bd $bw]
+    bindtags $f.eb {$f.eb Entry all}
 
     bind $e1 <FocusOut> "updateColorFromE $w $prop $name $f.b1"
     bind $e2 <FocusOut> "updateColorFromE $w $prop $name $f.b1"
@@ -310,9 +318,9 @@ proc addColor { w prop name {def {}}} {
 	     $e3 insert end [lindex $val 2];\
 	     updateColorFromE $w $prop $name $f.b1"
 	}
+	# foreach
     }
-
-
+    # if
 
     pack $f.er $f.eg $f.eb $f.b1 -in $f -fill both -expand yes\
 	    -side left -padx 2
@@ -480,6 +488,7 @@ proc addString { w prop name  {def {}}} {
     }
 
     set e [entry $f.e -textvariable ${prop}(${name}) -width 15 -bd $bw]
+    bindtags $f.e {$f.e Entry all}
     set mb ""
     if { $def != {} } {
 	set mb [menubutton $f.b3 -pady 1 -bd $bw -text "Def" -takefocus 0\
@@ -556,6 +565,8 @@ proc addFile { w prop name {def {}} } {
     }
 
     set e [entry $f.e -textvariable ${prop}(${name}) -width 15 -bd $bw]
+    bindtags $f.e {$f.e Entry all}
+
     button $f.b -text "Set" -bd $bw -padx 0 -pady 0 -command "\
 	global $prop;
 	set filen \[$f.e get\];
@@ -567,34 +578,35 @@ proc addFile { w prop name {def {}} } {
         }
 	"
 
-	set mb ""
-	if { $def != {} } {
-	    set mb [menubutton $f.b3 -pady 1 -bd $bw -text "Def" -takefocus 0\
-		    -highlightthickness 0 -relief raised -menu $f.b3.m]
-	    if { $tcl_platform(platform) == "windows" } {
-		$mb configure -pady 0
-	    }
-	    set m [menu $mb.m -tearoff 0]
-	    foreach val $def {
-		$m add command -label $val\
-			-command "global $prop; $e delete 0 end; $e insert end \{$val\};"
-	    }
+    set mb ""
+    if { $def != {} } {
+	set mb [menubutton $f.b3 -pady 1 -bd $bw -text "Def" -takefocus 0\
+		-highlightthickness 0 -relief raised -menu $f.b3.m]
+	if { $tcl_platform(platform) == "windows" } {
+	    $mb configure -pady 0
 	}
-
-
-	pack $f.l -in $f -side left -fill x
-	pack $f.e -in $f -side left -fill both -expand yes
-	pack $f.b -in $f -side left -fill x
-
-	if { $mb != "" } { 
-	    if { $tcl_platform(platform) == "windows" } {
-		pack $mb -side right -fill both -expand no
-	    } else {
-		pack $mb -side right -fill x -expand no
-	    }
+	set m [menu $mb.m -tearoff 0]
+	foreach val $def {
+	    $m add command -label $val\
+		    -command "global $prop; $e delete 0 end; $e insert end \{$val\};"
 	}
+	# foreach
+    }
+    # if
 
-	pack $f -in $w -side top -fill x
+    pack $f.l -in $f -side left -fill x
+    pack $f.e -in $f -side left -fill both -expand yes
+    pack $f.b -in $f -side left -fill x
+
+    if { $mb != "" } { 
+	if { $tcl_platform(platform) == "windows" } {
+	    pack $mb -side right -fill both -expand no
+	} else {
+	    pack $mb -side right -fill x -expand no
+	}
+    }
+
+    pack $f -in $w -side top -fill x
 
 return;
 }
@@ -630,6 +642,7 @@ proc addMDir { w prop name } {
     }
 
     entry $f.e -textvariable ${prop}(${name}) -width 15 -bd $bw
+    bindtags $f.e {$f.e Entry all}
     bind $f.e <1> "+balloon_setsplit $f.e \[$f.e get\] 15"
     eval balloon_setsplit $f.e  \$${prop}(${name}) 15
 
@@ -649,12 +662,12 @@ proc addMDir { w prop name } {
 	  eval balloon_setsplit $f.e \[list \$${prop}($name)\] 15;
 	};
 	" 
-	pack $f.l -in $f -side left -fill x
-	pack $f.b -in $f -side right -fill x
-	pack $f.e -in $f -side left -fill both -expand yes
-	pack $f -in $w -side top -fill x
+    pack $f.l -in $f -side left -fill x
+    pack $f.b -in $f -side right -fill x
+    pack $f.e -in $f -side left -fill both -expand yes
+    pack $f -in $w -side top -fill x
 
-return;
+ return;
 }
 # addMDir
 
@@ -688,6 +701,7 @@ proc addMFile { w prop name } {
     }
 
     entry $f.e -textvariable ${prop}(${name}) -width 15 -bd $bw
+    bindtags $f.e {$f.e Entry all}
     bind $f.e <1> "+balloon_setsplit $f.e \[$f.e get\] 15"
     eval balloon_setsplit $f.e \$${prop}(${name}) 15
 
@@ -708,10 +722,11 @@ proc addMFile { w prop name } {
          eval balloon_setsplit $f.e \[list \$${prop}($name)\] 15;
         };\
 	" 
-	pack $f.l -in $f -side left -fill x
-	pack $f.b -in $f -side right -fill x
-	pack $f.e -in $f -side left -fill both -expand yes
-	pack $f -in $w -side top -fill x
+
+    pack $f.l -in $f -side left -fill x
+    pack $f.b -in $f -side right -fill x
+    pack $f.e -in $f -side left -fill both -expand yes
+    pack $f -in $w -side top -fill x
 
  return;
 }
