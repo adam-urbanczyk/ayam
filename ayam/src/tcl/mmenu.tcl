@@ -26,6 +26,8 @@ $m add command -label "New"\
 	    viewCloseAll; cS; plb_update
 	    catch [replaceScene [file nativename $ayprefs(EnvFile)]]
 	}
+	set ay(filename) ""
+	wm title . "Ayam - Main"
 	uS;
 	rV;
 	set ay(sc) 0
