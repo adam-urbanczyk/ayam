@@ -15,9 +15,13 @@
 
 /* comp.c - compare objects */
 
+
+/* global variables: */
+
 ay_table ay_comparecbt;
 
-/* prototypes of functions local to this module */
+
+/* prototypes of functions local to this module: */
 
 int ay_comp_tag(ay_tag_object *t1, ay_tag_object *t2);
 
@@ -84,6 +88,8 @@ int ay_comp_gordon(ay_object *o1, ay_object *o2);
 int ay_comp_text(ay_object *o1, ay_object *o2);
 
 int ay_comp_birail1(ay_object *o1, ay_object *o2);
+
+int ay_comp_birail2(ay_object *o1, ay_object *o2);
 
 int ay_comp_extrnc(ay_object *o1, ay_object *o2);
 
@@ -1051,6 +1057,27 @@ ay_comp_birail1(ay_object *o1, ay_object *o2)
 } /* ay_comp_birail1 */
 
 
+/* ay_comp_birail2:
+ *
+ */
+int
+ay_comp_birail2(ay_object *o1, ay_object *o2)
+{
+ ay_birail2_object *s1, *s2;
+
+  s1 = (ay_birail2_object *)o1->refine;
+  s2 = (ay_birail2_object *)o2->refine;
+
+  if((s1->close != s2->close) ||
+     (s1->sections != s2->sections) ||
+     (s1->has_start_cap != s2->has_start_cap) ||
+     (s1->has_end_cap != s2->has_end_cap))
+    return AY_FALSE;
+
+ return AY_TRUE;
+} /* ay_comp_birail2 */
+
+
 /* ay_comp_extrnc:
  *
  */
@@ -1170,6 +1197,7 @@ ay_comp_init()
   ay_status = ay_comp_register(ay_comp_gordon, AY_IDGORDON);
   ay_status = ay_comp_register(ay_comp_text, AY_IDTEXT);
   ay_status = ay_comp_register(ay_comp_birail1, AY_IDBIRAIL1);
+  ay_status = ay_comp_register(ay_comp_birail2, AY_IDBIRAIL2);
   ay_status = ay_comp_register(ay_comp_extrnc, AY_IDEXTRNC);
 
 
