@@ -488,7 +488,8 @@ ay_undo_copy(ay_undo_object *uo)
 
       /* copy selected points? No! */
       /*ay_status = ay_undo_copyselp(c, o);*/
-
+      ay_selp_clear(o);
+      
       /* copy all other attributes */
       o->type = c->type;
       /*o->selected = c->selected;*/
