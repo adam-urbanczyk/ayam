@@ -32,6 +32,8 @@ static Tcl_HashTable onio_write_ht;
 
 ay_object *onio_lrobject = NULL;
 
+int onio_importcurves;
+
 // prototypes of functions local to this module
 
 int onio_writenpatch(ay_object *o, ONX_Model *p_m);
@@ -863,28 +865,58 @@ onio_getncurvefromcurve(const ON_Curve *p_o, double accuracy,
     }
   if(ON_PolylineCurve::Cast(p_o))
     {
-      (ON_PolylineCurve::Cast(p_o))->GetNurbForm(c, accuracy, NULL);
-      handled = AY_TRUE;
+      if((ON_PolylineCurve::Cast(p_o))->GetNurbForm(c, accuracy, NULL))
+	{
+	  handled = AY_TRUE;
+	}
+      else
+	{
+	  return AY_ERROR;
+	}
     }
   if(ON_PolyCurve::Cast(p_o))
     {
-      (ON_PolyCurve::Cast(p_o))->GetNurbForm(c, accuracy, NULL);
-      handled = AY_TRUE;
+      if((ON_PolyCurve::Cast(p_o))->GetNurbForm(c, accuracy, NULL))
+	{
+	  handled = AY_TRUE;
+	}
+      else
+	{
+	  return AY_ERROR;
+	}
     }
   if(ON_LineCurve::Cast(p_o))
     {
-      (ON_LineCurve::Cast(p_o))->GetNurbForm(c, accuracy, NULL);
-      handled = AY_TRUE;
+      if((ON_LineCurve::Cast(p_o))->GetNurbForm(c, accuracy, NULL))
+	{
+	  handled = AY_TRUE;
+	}
+      else
+	{
+	  return AY_ERROR;
+	}
     }
   if(ON_ArcCurve::Cast(p_o))
     {
-      (ON_ArcCurve::Cast(p_o))->GetNurbForm(c, accuracy, NULL);
-      handled = AY_TRUE;
+      if((ON_ArcCurve::Cast(p_o))->GetNurbForm(c, accuracy, NULL))
+	{
+	  handled = AY_TRUE;
+	}
+      else
+	{
+	  return AY_ERROR;
+	}
     }
   if(ON_CurveOnSurface::Cast(p_o))
     {
-      (ON_CurveOnSurface::Cast(p_o))->GetNurbForm(c, accuracy, NULL);
-      handled = AY_TRUE;
+      if((ON_CurveOnSurface::Cast(p_o))->GetNurbForm(c, accuracy, NULL))
+      {
+	 handled = AY_TRUE;
+	}
+      else
+	{
+	  return AY_ERROR;
+	}
     }
 
   if(!handled)
@@ -895,7 +927,7 @@ onio_getncurvefromcurve(const ON_Curve *p_o, double accuracy,
   **pp_c = c;
 
  return AY_OK;
-} // onio_getncurve
+} // onio_getncurvefromcurve
 
 
 // onio_readbrep:
@@ -1018,7 +1050,8 @@ onio_readbrep(ON_Brep *p_b, double accuracy)
 	      ay_status = onio_getncurvefromcurve(p_c, accuracy, &p_nc);
 	      if(ay_status)
 		{
-		  return AY_ERROR;
+		  continue;
+		  //return AY_ERROR;
 		}
 
 	      ay_status = onio_readnurbscurve(p_nc);
@@ -1027,7 +1060,8 @@ onio_readbrep(ON_Brep *p_b, double accuracy)
 
 	      if(ay_status)
 		{
-		  return AY_ERROR;
+		  continue;
+		  //return AY_ERROR;
 		}
 
 	      // XXXX do we need to decode the topology?
@@ -1124,10 +1158,10 @@ onio_readreference(ONX_Model *p_m, ON_InstanceRef *p_r, double accuracy)
   if(p_m->m_object_table[p_m->ObjectIndex(uuid)].m_object)
     {
       ay_status = onio_readobject(p_m,
-			p_m->m_object_table[p_m->ObjectIndex(uuid)].m_object,
+                   p_m->m_object_table[p_m->ObjectIndex(uuid)].m_object,
 				  accuracy);
 
-      // XXXX apply transform of p_r
+      // apply trafo
 
     } // if
 
@@ -1150,33 +1184,36 @@ onio_readobject(ONX_Model *p_m, const ON_Object *p_o, double accuracy)
   switch(p_o->ObjectType())
     {
     case ON::curve_object:
-      if(ON_NurbsCurve::Cast(p_o))
-	ay_status = onio_readnurbscurve((ON_NurbsCurve*)p_o);
-      if(ON_PolylineCurve::Cast(p_o))
+      if(onio_importcurves)
 	{
-	  (ON_PolylineCurve::Cast(p_o))->GetNurbForm(c, accuracy, NULL);
-	  ay_status = onio_readnurbscurve(&c);
-	}
-      if(ON_PolyCurve::Cast(p_o))
-	{
-	  (ON_PolyCurve::Cast(p_o))->GetNurbForm(c, accuracy, NULL);
-	  ay_status = onio_readnurbscurve(&c);
-	}
-      if(ON_LineCurve::Cast(p_o))
-	{
-	  (ON_LineCurve::Cast(p_o))->GetNurbForm(c, accuracy, NULL);
-	  ay_status = onio_readnurbscurve(&c);
-	}
-      if(ON_ArcCurve::Cast(p_o))
-	{
-	  (ON_ArcCurve::Cast(p_o))->GetNurbForm(c, accuracy, NULL);
-	  ay_status = onio_readnurbscurve(&c);
-	}
-      if(ON_CurveOnSurface::Cast(p_o))
-	{
-	  (ON_CurveOnSurface::Cast(p_o))->GetNurbForm(c, accuracy, NULL);
-	  ay_status = onio_readnurbscurve(&c);
-	}
+	  if(ON_NurbsCurve::Cast(p_o))
+	    ay_status = onio_readnurbscurve((ON_NurbsCurve*)p_o);
+	  if(ON_PolylineCurve::Cast(p_o))
+	    {
+	      (ON_PolylineCurve::Cast(p_o))->GetNurbForm(c, accuracy, NULL);
+	      ay_status = onio_readnurbscurve(&c);
+	    }
+	  if(ON_PolyCurve::Cast(p_o))
+	    {
+	      (ON_PolyCurve::Cast(p_o))->GetNurbForm(c, accuracy, NULL);
+	      ay_status = onio_readnurbscurve(&c);
+	    }
+	  if(ON_LineCurve::Cast(p_o))
+	    {
+	      (ON_LineCurve::Cast(p_o))->GetNurbForm(c, accuracy, NULL);
+	      ay_status = onio_readnurbscurve(&c);
+	    }
+	  if(ON_ArcCurve::Cast(p_o))
+	    {
+	      (ON_ArcCurve::Cast(p_o))->GetNurbForm(c, accuracy, NULL);
+	      ay_status = onio_readnurbscurve(&c);
+	    }
+	  if(ON_CurveOnSurface::Cast(p_o))
+	    {
+	      (ON_CurveOnSurface::Cast(p_o))->GetNurbForm(c, accuracy, NULL);
+	      ay_status = onio_readnurbscurve(&c);
+	    }
+	} // if
       break;
     case ON::surface_object:
       if(ON_NurbsSurface::Cast(p_o))
@@ -1229,6 +1266,8 @@ onio_readtcmd(ClientData clientData, Tcl_Interp *interp,
  int i = 2;
  double accuracy = 0.1;
 
+  onio_importcurves = AY_TRUE;
+
   // check args
   if(argc < 2)
     {
@@ -1243,6 +1282,11 @@ onio_readtcmd(ClientData clientData, Tcl_Interp *interp,
       if(!strcmp(argv[i], "-a"))
 	{
 	  sscanf(argv[i+1], "%lg", &accuracy);
+	}
+      else
+      if(!strcmp(argv[i], "-c"))
+	{
+	  sscanf(argv[i+1], "%d", &onio_importcurves);
 	}
       i+=2;
     } // while
