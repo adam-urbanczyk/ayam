@@ -1048,6 +1048,13 @@ while { $i < $argc } {
 		wm title . "Ayam - Main - $windowfilename"
 		ayError 4 "replaceScene" "Done reading scene from:"
 		ayError 4 "replaceScene" "$filename"
+		if { [file exists $filename] } {
+		    set dirname [file dirname $filename]
+		    cd $dirname
+		    set .fl.con(-prompt) {[file tail [pwd]]>}
+		    .fl.con delete end-1lines end
+		    Console:prompt .fl.con "\n"
+		}
 		io_mruAdd $filename
 	    } else {
 		ayError 2 "Ayam" "There were errors while loading:"
