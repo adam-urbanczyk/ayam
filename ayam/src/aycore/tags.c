@@ -230,20 +230,89 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp * interp,
  ay_object *o = NULL;
  ay_tag_object *new = NULL, **next = NULL;
  Tcl_HashEntry *entry = NULL;
- int index = 0;
+ int index = 0, i;
  char fname[] = "setTags";
 
   if(argc < 3)
     {
-      ay_error(AY_EARGS, fname, "\\[type value\\]");
+      ay_error(AY_EARGS, fname, "\\[type value\\]|-index index type value");
       return TCL_OK;
     }
 
   if(!sel)
-    return TCL_OK;
+    {
+      ay_error(AY_ENOSEL, fname, NULL);
+      return TCL_OK;
+    }
 
   if(!sel->object)
     return TCL_OK;
+
+  if(!strcmp(argv[1],"-index"))
+    {
+      if(argc < 5)
+	{
+	  ay_error(AY_EARGS, fname,
+		   "\\[type value\\]|-index index type value");
+	  return TCL_OK;
+	}
+
+      Tcl_GetInt(ay_interp, argv[2], &index);
+
+      /* find tag */
+      o = sel->object;
+      new = o->tags;
+      for(i = 0; i < index; i++)
+	{
+	  if(!new)
+	    {
+	      ay_error(AY_ERROR, fname, "Tag not found!");
+	      return TCL_OK;
+	    }
+	  new = new->next;
+	} /* for */
+
+      if(strcmp(argv[3], ""))
+	{
+	  if(new->name)
+	    {
+	      free(new->name);
+	      new->name = NULL;
+	    }
+	  if(new->val)
+	    {
+	      free(new->val);
+	      new->val = NULL;
+	    }
+	  /* we first try to resolve the tag type */
+	  if(!(entry = Tcl_FindHashEntry(&ay_tagtypesht, argv[3])))
+	    {
+	      ay_error(AY_EWARN, fname, "Tag type is not registered!");
+	    }
+	  if(entry)
+	    {
+	      new->type = (char *)Tcl_GetHashValue(entry);
+	    }
+
+	  if(!(new->name = calloc(strlen(argv[3])+1, sizeof(char))))
+	    {
+	      ay_error(AY_EOMEM, fname, NULL);
+	      return TCL_OK;
+	    }
+	  strcpy(new->name, argv[3]);
+
+
+	  if(!(new->val = calloc(strlen(argv[4])+1, sizeof(char))))
+	    {
+	      ay_error(AY_EOMEM, fname, NULL);
+	      return TCL_OK;
+	    }
+	  strcpy(new->val, argv[4]);
+	  
+	} /* if */
+
+      return TCL_OK; /* early exit! */
+    } /* if */
 
   while(sel)
     {
@@ -254,34 +323,38 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp * interp,
       next = &(o->tags);
       for(index = 1; index < argc-1; index += 2)
 	{
-	  /* we first try to resolve the tag type */
 	  if(strcmp(argv[index], ""))
 	    {
+
+	      if(!(new = calloc(1,sizeof(ay_tag_object))))
+		{
+		  ay_error(AY_EOMEM, fname, NULL);
+		  return TCL_OK;
+		}
+
+	      /* we first try to resolve the tag type */
 	      if(!(entry = Tcl_FindHashEntry(&ay_tagtypesht, argv[index])))
 		{
 		  ay_error(AY_EWARN, fname, "Tag type is not registered!");
 		}
-	      if(!(new = calloc(1,sizeof(ay_tag_object))))
+	      if(entry)
 		{
-		  ay_error(AY_EOMEM,fname,NULL);
-		  return TCL_OK;
+		  new->type = (char *)Tcl_GetHashValue(entry);
 		}
+
 	      if(!(new->name = calloc(strlen(argv[index])+1, sizeof(char))))
 		{
 		  ay_error(AY_EOMEM, fname, NULL);
 		  return TCL_OK;
 		}
-	      strcpy(new->name,argv[index]);
-
-	      if(entry)
-		new->type = (char *)Tcl_GetHashValue(entry);
+	      strcpy(new->name, argv[index]);
 
 	      if(!(new->val = calloc(strlen(argv[index+1])+1, sizeof(char))))
 		{
 		  ay_error(AY_EOMEM, fname, NULL);
 		  return TCL_OK;
 		}
-	      strcpy(new->val,argv[index+1]);
+	      strcpy(new->val, argv[index+1]);
 
 	      /* link new tag */
 	      *next = new;
@@ -316,7 +389,10 @@ ay_tags_addtcmd(ClientData clientData, Tcl_Interp * interp,
      }
  
   if(!sel)
-    return TCL_OK;
+    {
+      ay_error(AY_ENOSEL, fname, NULL);
+      return TCL_OK;
+    }
 
   if(!sel->object)
     return TCL_OK;

@@ -351,6 +351,7 @@ $m add command -label "Automatic Instancing" -command "ai_open"
 $m add separator
 $m add command -label "Add RiOption" -command "riopt_addp"
 $m add command -label "Add RiAttribute" -command "riattr_addp"
+$m add command -label "Edit TexCoords" -command "tc_edit"
 $m add separator
 $m add command -label "Toggle Toolbox" -command "toolbox_toggle"
 
