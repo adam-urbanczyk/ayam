@@ -5500,8 +5500,11 @@ ay_rrib_readrib(char *filename, int frame, int read_camera, int read_options,
 		int read_lights, int read_material, int read_partial,
 		int error_level)
 {
+ int ay_status = AY_OK;
  RIB_HANDLE rib = NULL;
  ay_list_object *tl = NULL;
+
+  ay_status = ay_tags_append(NULL, NULL);
 
   /* initialize global variables */
   memset(&ay_rrib_co, '\0', sizeof(ay_object));
