@@ -611,9 +611,11 @@ ay_pomesh_wribcb(char *file, ay_object *o)
  ay_pomesh_object *pomesh = NULL;
  RtInt *nloops = NULL, *nverts = NULL, *verts = NULL;
  RtPoint *controls = NULL, *normals = NULL;
+ RtToken *tokens = NULL;
+ RtPointer *parms = NULL;
  unsigned int i = 0, a = 0;
  unsigned int total_loops = 0, total_verts = 0;
- int stride = 0;
+ int stride = 0, n = 0, pvc = 0;
 
   if(!o)
     return AY_OK;
@@ -698,12 +700,64 @@ ay_pomesh_wribcb(char *file, ay_object *o)
       verts[i] = (RtInt)(pomesh->verts[i]);
     } /* for */
 
-  if(pomesh->has_normals)
-    RiPointsGeneralPolygons((RtInt)pomesh->npolys, nloops, nverts, verts,
-			    "P", controls, "N", normals, NULL);
+  /* Do we have any primitive variables? */
+  if(!(pvc = ay_pv_count(o)))
+    {
+      /* No */
+      if(pomesh->has_normals)
+	RiPointsGeneralPolygons((RtInt)pomesh->npolys, nloops, nverts, verts,
+				"P", controls, "N", normals, NULL);
+      else
+	RiPointsGeneralPolygons((RtInt)pomesh->npolys, nloops, nverts, verts,
+				"P", controls, NULL);
+    }
   else
-    RiPointsGeneralPolygons((RtInt)pomesh->npolys, nloops, nverts, verts,
-			  "P", controls, NULL);
+    {
+      /* Yes, we have primitive variables. */
+      if(pomesh->has_normals)
+	{
+	  if(!(tokens = calloc(pvc+2, sizeof(RtToken))))
+	    return AY_EOMEM;
+
+	  if(!(parms = calloc(pvc+2, sizeof(RtPointer))))
+	    return AY_EOMEM;
+
+	  tokens[0] = "Pw";
+	  parms[0] = (RtPointer)controls;
+	  tokens[1] = "N";
+	  parms[1] = (RtPointer)normals;
+
+	  n = 2;
+	  ay_pv_filltokpar(o, AY_TRUE, 2, &n, tokens, parms);
+	}
+      else
+	{
+	  if(!(tokens = calloc(pvc+1, sizeof(RtToken))))
+	    return AY_EOMEM;
+
+	  if(!(parms = calloc(pvc+1, sizeof(RtPointer))))
+	    return AY_EOMEM;
+
+	  tokens[0] = "Pw";
+	  parms[0] = (RtPointer)controls;
+
+	  n = 1;
+	  ay_pv_filltokpar(o, AY_TRUE, 1, &n, tokens, parms);
+	} /* if */
+
+      RiPointsGeneralPolygonsV((RtInt)pomesh->npolys, nloops, nverts, verts,
+			       (RtInt)n, tokens, parms);
+
+      for(i = (pomesh->has_normals?2:1); i < n; i++)
+	{
+	  free(tokens[i]);
+	  free(parms[i]);
+	}
+
+      free(tokens);
+      free(parms);
+    } /* if */
+
 
   /* clean up */
   free(controls);
