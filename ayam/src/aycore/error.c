@@ -84,7 +84,14 @@ ay_error(int code, char *where, char *what)
   ay_errno = code;
 
   if(code == AY_OK)
-    return;
+    {
+      ton = Tcl_NewStringObj("ay_error", -1);
+      to = Tcl_NewIntObj(code);
+      Tcl_ObjSetVar2(interp, ton, NULL, to, TCL_LEAVE_ERR_MSG |
+		     TCL_GLOBAL_ONLY);
+      Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+      return;
+    }
 
   Tcl_DStringInit(&ds);
 
