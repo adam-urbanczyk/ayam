@@ -1,7 +1,7 @@
 /*
  * Ayam, a free 3D modeler for the RenderMan interface.
  *
- * Ayam is copyrighted 1998-2003 by Randolf Schultz
+ * Ayam is copyrighted 1998-2005 by Randolf Schultz
  * (rschultz@informatik.uni-rostock.de) and others.
  *
  * All rights reserved.
@@ -14,7 +14,7 @@
    using libsdr  */
 
 /* force ayam.h to not include BMRT/slc.h as this would clash with Pixie/sdr.h
-   due to a doubly defined enums like POINT... */
+   due to doubly defined enums like POINT... */
 #ifdef AYUSESLCARGS
 #undef AYUSESLCARGS
 #endif
@@ -127,11 +127,11 @@ aysdr_scansdrsarg(TSdrParameter *param, Tcl_DString *ds)
 
 
 /* aysdr_scansdrtcmd:
- *  scan a shader compiled with shader using libsdr
+ *  scan a shader compiled with sdrc using libsdr
  */
 int
 aysdr_scansdrtcmd(ClientData clientData, Tcl_Interp *interp,
-			int argc, char *argv[])
+		  int argc, char *argv[])
 {
  char fname[] = "shaderScanSDR";
  /* int i = 0, j = 0, numargs = 0; */
@@ -169,7 +169,7 @@ aysdr_scansdrtcmd(ClientData clientData, Tcl_Interp *interp,
 
   /* get name of shader */
   Tcl_DStringAppend(&ds, argv[1], -1);
-  
+
   /* get type of shader */
   stype = shader->type;
   switch(stype)
@@ -276,7 +276,7 @@ aysdr_scansdrtcmd(ClientData clientData, Tcl_Interp *interp,
 
       Tcl_DStringAppend(&ds, "} ", -1);
 
-	} 
+	}
       else
 	{
 	  ay_error(AY_EWARN,fname,"Skipping array argument!");

@@ -104,11 +104,11 @@ ayslo_scanslosarg(SLO_VISSYMDEF *symbol, Tcl_DString *ds)
 
 
 /* ayslo_scanslotcmd:
- *  scan a shader compiled with shader using libsoargs
+ *  scan a shader compiled with shader using libsloargs
  */
 int
 ayslo_scanslotcmd(ClientData clientData, Tcl_Interp *interp,
-			int argc, char *argv[])
+		  int argc, char *argv[])
 {
  char fname[] = "shaderScanSLO";
  int i = 0, j = 0, numargs = 0;
@@ -256,7 +256,7 @@ ayslo_scanslotcmd(ClientData clientData, Tcl_Interp *interp,
 	} /* if */
       Tcl_DStringAppend(&ds, "} ", -1);
 
-	} 
+	}
       else
 	{
 	  ay_error(AY_EWARN,fname,"Skipping array argument!");
