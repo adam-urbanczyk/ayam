@@ -3045,12 +3045,46 @@ rV - redraw all views:
 iconified views and views where automatic redraw has been turned off.
 </itemize>
 
+uCL - update current level:
+<itemize>
+ <item>Synopsis: <tt/"uCL mode [args]"/
+ <item>Description: see discussion of <tt/"uS"/ below.
+</itemize>
+
+uCR - update current level:
+<itemize>
+ <item>Synopsis: <tt/"uCR"/
+ <item>Description: see discussion of <tt/"uS"/ below.
+</itemize>
+
 uS - update select:
 <itemize>
- <item>Synopsis: <tt/"uS"/
- <item>Description: Get the names of all objects of the current level
-and display them in the hierarchy listbox/tree view.
+ <item>Synopsis: <tt/"uS [update_prop maintain_selection]"/
+ <item>Description: Update the object listbox or tree view after a change
+to the object hierarchy.<p>
+
+If update_prop is 0 no update of the property GUIs will take place.
+If maintain_selection is 1 the old selection will be established again.
+If both arguments are omitted update_prop defaults
+to 1 and maintain_selection to 0.
+ <item>Deficiencies: uS completely removes the object tree from
+the tree widget and rebuilds
+it, which can be a very time consuming operation (depending on the complexity
+of the scene). There are two options to speed this process up:
+ <itemize>
+ <item> If there were just changes to the current level (and below)
+the global array entry <tt/"ay(ul)"/ (UpdateLevel) may be set
+to the current level before calling <tt/"uS"/. This will not remove
+the complete scene but just the part below <tt/"ay(ul)"/.
+ <item> If objects have been created and thus need to be
+added to the current level, the command <tt/"uCR"/ may be used instead
+of <tt/"uS"/.
+ <item> If just names or types of objects of the current level changed,
+the command <tt/"uCL cl"/ may be used instead of <tt/"uS"/.
+ </itemize>
 </itemize>
+
+
 
 plb_update:
 <itemize>
@@ -4052,6 +4086,7 @@ T
 
 U
 <itemize>
+<item>uCL, uCR: <ref id="upd" name="scripting interface command">
 <item>Undo: <ref id="mm" name="main menu entry">
 <item>UndoLevels: <ref id="prefmodel" name="preference setting">
 <item>Union: <ref id="mm" name="main menu entry">,
