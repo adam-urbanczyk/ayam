@@ -119,7 +119,7 @@ ay_ns_execute(ay_object *o, char *script)
   old_sel = ay_selection;
   ay_selection = NULL;
 
-  ay_sel_add(o);
+  ay_status = ay_sel_add(o);
 
   Tk_RestrictEvents(ay_ns_restrictall, NULL, &old_restrictcd);
   result = Tcl_GlobalEval(ay_interp, script);
