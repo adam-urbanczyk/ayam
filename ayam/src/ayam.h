@@ -976,7 +976,7 @@ extern unsigned int ay_current_glname;
 #define AYDEFAULTPICKEPSILON 0.2;
 
 /* Version Strings */
-#define AYVERSIONSTR "1.1"
+#define AYVERSIONSTR "1.2pre"
 #define AYVERSIONSTRMI "0"
 
 #include "aycore.h"
