@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>30. Jul 2003
+<date>9. Aug 2003
 <abstract>
 This is the documentation of Ayam (1.6) - a free 3D modeling environment
 for the RenderMan interface.
@@ -789,8 +789,10 @@ currently selected objects (and their children) will be drawn.
 <item><tt/Draw Level only/, if this is enabled, just the
 objects of the current level (and their children) will be drawn.
 <item><tt/Draw BGImage/, if this is enabled, a background
-image will be drawn. You can define this image using the
-view attribute <tt/BGImage/.
+image will be drawn.
+<item><tt/Set BGImage/, may be used to set the current background
+image of the view, which should be a TIFF file.
+You can also set this image using the view attribute <tt/BGImage/.
 <item><tt/Draw Grid/, if this is enabled the grid will be drawn.
 <item><tt/Use Grid/, if this is enabled the grid will be used to
 constrain modeling actions to grid coordinates.
@@ -4715,6 +4717,14 @@ revertNC:
  <item>Description: Revert the direction of the selected NURBS curves.
 </itemize>
 
+rescaleKnNC:
+<itemize>
+ <item>Synopsis: <tt/"rescaleKnNC"/
+ <item>Description: Rescale the knot vector(s) of the selected NURBS curve(s)
+to the range 0.0 1.0. The knot type of the curve has to be <tt/"Custom"/!
+This operation does not change the shape of the curve.
+</itemize>
+
 splitNP:
 <itemize>
  <item>Synopsis: <tt/"splitNP (u|v)"/
@@ -6244,6 +6254,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>RenderPT, RenderUI: <ref id="prefrib" name="preference setting">
 <item>Replace: <ref id="mmfile" name="main menu entry">
 <item>replaceScene: <ref id="scio" name="scripting interface command">
+<item>rescaleKnNC: <ref id="scinurbs" name="scripting interface command">
 <item>Reset: <ref id="propgui" name="reset property GUI">
 <item>ResetDM, ResetST: <ref id="impmops" name="Mops import option">
 <item>ResInstances: <ref id="prefrib" name="preference setting">
@@ -6305,6 +6316,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Selection: <ref id="prefdraw" name="preference setting">
 <item>SelXOR_R, SelXOR_G, SelXOR_B:
 <ref id="hidprefs" name="hidden preference setting">
+<item>Set BGImage: <ref id="vmconf" name="view menu entry">
 <item>Set Gridsize: <ref id="vmconf" name="view menu entry">
 <item>Set FOV: <ref id="vmconf" name="view menu entry">
 <item>setPnt: <ref id="scipoints" name="scripting interface command">
