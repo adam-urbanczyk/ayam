@@ -356,13 +356,13 @@ proc actionTagP { w } {
 	if { ($oldx != %x) || ($oldy != %y)} {
 	    %W selpac %x %y $oldx $oldy
 	}
-	$w.f3D.togl setconf -rect $oldx $oldy %x %y 0
+	%W setconf -rect $oldx $oldy %x %y 0
 	rV
 	update
     }
 
     bind $w <B1-Motion> {
-	$w.f3D.togl setconf -rect $oldx $oldy %x %y 1
+	%W setconf -rect $oldx $oldy %x %y 1
     }
 
     $w setconf -drawh 1
@@ -756,7 +756,7 @@ proc actionClear { w } {
     }
 
     bind $w <ButtonRelease-1> {
-	$w.f3D.togl setconf -rect $oldx $oldy %x %y 0
+	%W setconf -rect $oldx $oldy %x %y 0
 
 	if { [winfo exists .reconsider] == 0} {
 	    if { ($oldx == %x) || ($oldy == %y)} {
@@ -773,7 +773,7 @@ proc actionClear { w } {
     }
 
     bind $w <Shift-ButtonRelease-1> {
-	$w.f3D.togl setconf -rect $oldx $oldy %x %y 0
+	%W setconf -rect $oldx $oldy %x %y 0
 
 	if { [winfo exists .reconsider] == 0} {
 	    if { ($oldx == %x) || ($oldy == %y)} {
@@ -790,7 +790,7 @@ proc actionClear { w } {
     }
     
     bind $w <B1-Motion> {
-	$w.f3D.togl setconf -rect $oldx $oldy %x %y 1
+	%W setconf -rect $oldx $oldy %x %y 1
     }
 
     $t.f3D.togl setconf -drawh 0
