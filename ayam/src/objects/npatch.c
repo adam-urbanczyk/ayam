@@ -263,6 +263,8 @@ ay_npatch_drawglucb(struct Togl *togl, ay_object *o)
     gluNurbsProperty(npatch->no, GLU_DISPLAY_MODE, GLU_OUTLINE_POLYGON);
 
 
+  gluNurbsProperty(npatch->no, GLU_CULLING, GL_TRUE);
+
   gluNurbsSurface(npatch->no, (GLint)uknot_count, uknots, 
 		  (GLint)vknot_count, vknots, 
 		  (GLint)height*4, (GLint)4, controls,
