@@ -1265,8 +1265,19 @@ of the rendering for display in the Rendering GUI. The special symbol <tt/"%d"/
 denotes the position of the percentage number in the output of the renderer.
 For rendrib from BMRT2.6 this should be set to <tt/"R90000 %d"/ and
 the special command line option <tt/"-Progress"/ should be used.
-For rendrib from BMRT2.5 it should be set to "<tt/"Done computing %d"/
+For rendrib from BMRT2.5 it should be set to <tt/"Done computing %d"/
 and no special option has to be given to the renderer.
+If the output of the renderer contains variable strings before
+the progress number, a second variant of parsing the output using
+regular expressions is available since Ayam 1.6. In this case, the
+progress template should be a complete regexp command for Tcl
+that parses the string contained in the variable named <tt/"string"/
+and puts the parsed progress number into a variable named <tt/"progress"/.
+Here is an example that works with Pixie-1.2.1, which outputs
+strings like <tt/"fish.rib (222):  - 10.00 percent"/:
+<code>
+regexp -- {^.* - (\[0-9\]+)} string dummy percent
+</code>
 
 <item><tt/"SMRender"/, renderer to use for the rendering of shadow maps
 using the view menu entry <tt>"View/Create ShadowMaps</tt>,
