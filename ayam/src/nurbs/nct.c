@@ -3965,7 +3965,8 @@ ay_nct_makecompatible(ay_object *cu)
 
 
 /* ay_nct_shiftcbs:
- *  shift the control points of a closed B-Spline
+ *  shift the control points of a closed B-Spline one time so that the
+ *  second control point will be the first (and so on) afterwards
  */
 int
 ay_nct_shiftcbs(ay_nurbcurve_object *curve)
@@ -4004,10 +4005,20 @@ ay_nct_shiftcbstcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[])
 {
  int ay_status = AY_OK;
+ char fname[] = "shiftCBNC";
  ay_list_object *sel = ay_selection;
  ay_nurbcurve_object *curve = NULL;
  ay_object *src = NULL;
- char fname[] = "shiftCBNC";
+ int i, times = 1;
+
+  if(argc > 1)
+   Tcl_GetInt(interp, argv[1], &times);
+
+  if(i < 1)
+    {
+      ay_error(AY_ERROR, fname, "Parameter must be higher than 1.");
+      return TCL_OK;
+    }
 
   if(!sel)
     {
@@ -4025,12 +4036,14 @@ ay_nct_shiftcbstcmd(ClientData clientData, Tcl_Interp *interp,
       else
 	{
 	  curve = (ay_nurbcurve_object*)src->refine;
-
-	  ay_status = ay_nct_shiftcbs(curve);
-	  if(ay_status)
+	  for(i = 0; i < times; i++)
 	    {
-	      ay_error(ay_status, fname, "Could not shift NCurve!");
-	    }
+	      ay_status = ay_nct_shiftcbs(curve);
+	      if(ay_status)
+		{
+		  ay_error(ay_status, fname, "Could not shift NCurve!");
+		}
+	    } /* for */
 
 	} /* if */
 
