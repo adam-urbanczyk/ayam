@@ -1,5 +1,13 @@
+# Emacs, this is -*- Mode: makefile -*-
+#
+# Makefile [16. Nov 2001]
+# Makefile for the Ayam reference manual
+
 all: htm pdf3
 
+# do not try to be smart and rename this target to html
+# as then the date-stamp comparing mechanism of make stumbles
+# over the existing "html" directory!
 htm:
 	rm -rf html
 	mkdir html
