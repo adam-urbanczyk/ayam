@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>27. Jan 2003
+<date>30. Jan 2003
 <abstract>
 This is the documentation of Ayam (1.4) - a free 3D modeling environment
 for the RenderMan interface.
@@ -104,7 +104,7 @@ The default representation is a tree view. The second
 available representation is a simple listbox (as known from The Mops).
 The two representations have very different properties regarding
 speed, use of resources, and versatility. The tree is, due to the
-drag-and-drop operations, much more versatile but also slower.
+Drag-and-Drop operations, much more versatile but also slower.
 
 Both representations manage a so called <tt/"current level"/.
 This level is the level that is displayed in the object listbox.
@@ -136,7 +136,7 @@ clicks on the well known plus/minus symbols
 in front of the name of those
 objects.
 
-Drag and drop operation is also possible to move
+Drag-and-Drop operation is also possible to move
 objects in the hierarchy and to initiate special
 actions like connecting materials to objects.
 However, this last feature is documented in section
@@ -370,7 +370,7 @@ for more information.
 asking which camera (which view) to use.
 <item><tt/Load Custom/, loads a file containing a custom object or a plugin.
 Depending on the OS Ayam is running on, these are files with the
-extension so or dll.
+file name extension so or dll.
 See section <ref id="customobj" name="Custom Objects">
 for more information about custom objects.
 <item><tt/Save Prefs/, save the current preference settings
@@ -423,56 +423,87 @@ will be created first.<p>
 <item><tt/Master/, searches for the master object of the
 currently selected instance object and selects it for editing,
 see section <ref id="instanceobj" name="Instance Object">.
+
 <item><tt/Preferences/, opens the preferences dialogue (see section
 <ref id="prefs" name="Preferences"> for more information).
 </itemize>
 
 <label id="mmcreate">
-The <tt/Create/ menu entries let you create objects:
+The <tt/Create/ menu entries let you create objects. In contrast
+to the object creation via the toolbox some menu entries
+present you with small requesters, where you may adjust
+parameters for the object to be created.
+Here are the entries of the <tt/Create/ menu:
 <itemize>
 <item><tt/NURBCurve/, create a new NURBS curve. A small dialog box will
-pop up, where you may specify the length of the new curve.
+pop up, where you may specify the length of the new curve. See
+also section <ref id="ncurveobj" name="NCurve Object">.
 <item><tt/ICurve/, create a new interpolating curve. A small dialog box will
-pop up, where you may specify the length of the new curve.
+pop up, where you may specify the length of the new curve. See
+also section <ref id="icurveobj" name="ICurve Object">.
 <item><tt/NURBPatch/, create a new NURBS patch. A small dialog box will
-pop up, where you may specify the width and height of the new patch.
-<item><tt/BPatch/, create a new bilinear patch.
+pop up, where you may specify the width and height of the new patch. See
+also section <ref id="npatchobj" name="NPatch Object">.
+<item><tt/BPatch/, create a new bilinear patch. See
+also section <ref id="bpatchobj" name="BPatch Object">.
+<item><tt/PatchMesh/, create a new patch mesh. See
+also section <ref id="patchmeshobj" name="PatchMesh Object">.
 <item><tt/Solid/, create a new solid primitive object, for use in CSG.
 <tt/Box,/ <tt/Sphere/, <tt/Disk/, <tt/Cone/, <tt/Cylinder/, <tt/Torus/,
 <tt/Hyperboloid/ or <tt/Paraboloid/ may be selected.
-<item><tt/Level/, create a new hierarchy object. <tt/Level/
+See also section <ref id="csgprim" name="CSG Primitives">.
+<item><tt/Level/, creates a new hierarchy object. <tt/Level/
 just groups objects, <tt/Union/, <tt/Intersection/,
-<tt/Difference/ and <tt/Primitive/ are CSG operations.
-<item><tt/Light/, create a new light source.
+<tt/Difference/, and <tt/Primitive/ are CSG operations. See
+also section <ref id="levelobj" name="Level Object">.
+<item><tt/Light/, create a new light source. See
+also section <ref id="lightobj" name="Light Object">.
 <item><tt/Custom Object/, create a new custom object. If this sub-menu
-is empty no custom object has been loaded yet.
+is empty no custom object has been loaded yet. See
+also section <ref id="customobj" name="Custom Object">.
 <item><tt/Instance/, create an instance of the currently selected
 object, see section <ref id="instanceobj" name="Instance Object">
 for more information regarding instances.
 <item><tt/Clone/, create a clone object, see
 section <ref id="cloneobj" name="Clone Object">
-<item><tt/View/, a new View window will be opened.
+<item><tt/View/, a new View window will be opened. See
+also section <ref id="viewobj" name="View Object">.
 <item><tt/Material/, create a new material. A small dialog box will
-pop up, where you have to specify the name of the new material.
+pop up, where you have to specify the name of the new material. See
+also section <ref id="materialobj" name="Material Object">.
 <item><tt/Camera/, create a new camera. Camera objects may be used
-to temporarily save view camera settings.
+to temporarily save view camera settings, see
+section <ref id="cameraobj" name="Camera Object">.
 <item><tt/RiInc/, create a new RIB-include object. Those objects
-may be used to include RIBs that just exist on disk into your scene.
+may be used to include objects into your scenes
+that just exist as a piece of RIB, see
+also section <ref id="riincobj" name="RInc Object">.
 </itemize>
 
 <label id="mmtools">
 The <tt/Tools/ menu:
 <itemize>
-<item><tt/Create/,
-<item><tt/NURBCurve/,
-<item><tt/NURBPatch/, are sub-menus with various NURBS based modeling
-tools that are explained in depth in section
+<item><tt/Create/, <tt/NURBCurve/, and
+<tt/NURBPatch/, are sub-menus with various NURBS based modeling
+tools, that are explained in depth in section
 <ref id="nmtool" name="NURBS Modeling Tools">.
 <item><tt/PolyMesh/: sub-menu for polygonal mesh related tools:
 <itemize>
 <item><tt/Merge/: merges all currently selected PolyMesh objects into
 a single PolyMesh object, without checking for doubly used points,
-loops, or faces.
+loops, or faces. Normally, the currently selected PolyMesh objects will not
+be changed by this tool. But you may let the merge-tool delete them
+immediately, if you enable the <tt/RemoveMerged/-option.
+If the <tt/OptimizeNew/-option is enabled, the <tt/Optimize/-tool
+(see below) will be started with the newly created merged object.
+<item><tt/Optimize/: optimizes the selected PolyMesh object(s)
+by removing all doubly used control points (if the option
+<tt/OptimizeCoords/ is enabled) or doubly used faces (not implemented yet).
+If the option <tt/IgnoreNormals/ is enabled, the optimize-tool will
+consider points with equal coordinates but differing normals
+to be equal (and optimize them).
+Removing doubly used control points may decrease the memory consumption
+by a factor of about six.
 </itemize>
 <item><tt/Show/, <tt/Hide/ set and unset the <tt/Hide/
 attribute of the selected object(s) thus making them invisible.
@@ -485,14 +516,15 @@ and all views!) regardles of the currently selected objects (and
 without changing the current selection).
 <item><tt/Convert/, starts the convert action that has been
 registered for the type of the selected object(s). The exact
-behaviour depends on the type of the selected object(s).
-Instances are e.g. resolved to normal objects in place.
-Revolve objects will
-be converted to simple NURBS patches without destroying the original
-objects.
+behaviour depends on the type of the selected object(s):
+Instances are e.g. resolved to normal objects in place but
+Revolve objects will be converted to simple NURBS patches without
+destroying the original objects.
 <item><tt/Force Notification/, force the notification callbacks of
 all selected objects (or all objects in the scene if no objects are selected)
-to be called.
+to be called. The notification callbacks are used by objects
+like e.g. Revolve to be informed about changes of their child
+objects and properly adapt to those changes.
 </itemize>
 
 <label id="mmcustom">
@@ -598,16 +630,17 @@ this feature will not work with frame redirects e.g.
 <tt>http://www.ayam3d.org/</tt>; use
 <tt>http://ayam.sourceforge.net/docs/</tt> or a <tt>file:</tt>-URL
 as base URL in the <tt/Docs/ preference setting instead!
-<item><tt/Show Shortcuts/, displays some shortcuts for modeling
-actions
+<item><tt/Show Shortcuts/, displays some important shortcuts for modeling
+actions, you may leave this window open when doing your first
+steps in modeling with Ayam.
 <item><tt/About/, displays some version, copyright,
-and trademark information
+and trademark information.
 <item><tt/Show Tooltips/, enables tool tips (balloon help)
 for various user interface elements (including the tool box buttons).
 </itemize>
 
 
-<sect1>Anatomy of a View
+<sect1>Anatomy of a View<label id="viewwin">
 <p>
 <figure loc="ht">
 <eps file="pics/view.ps" height="7cm">
@@ -885,7 +918,7 @@ name="Hidden Preference Settings">).
 </figure>
 <p>
 The tool window displays some buttons that start interactive
-modeling actions, other modeling tools, or create objects.<p>
+modeling actions or other modeling tools, or create objects.<p>
 Note, that in contrast to the keyboard shortcuts of the
 view windows the buttons switch to the modeling actions for
 all available views. For more information about the actions
@@ -895,7 +928,8 @@ The tool window may be configured by the user using the
 preference setting toolBoxList in the ayamrc file.
 You may select from the groups and change the order in which
 they appear in the tool window. See section
-<ref id="hidprefs" name="Hidden Preference Settings"> for more information.<p>
+<ref id="hidprefs" name="Hidden Preference Settings"> for
+more information.<p>
 
 You may also resize the window to change from the vertical
 standard layout to a horizontal one, optimizing the
@@ -1632,8 +1666,8 @@ to material objects (see also section
 of the current object to its material.
 <item><tt/"Name"/ is the name of the material of this object.
 An easy way to connect materials to objects is to simply
-drop the geometric objects onto the material object using drag and
-drop in the tree view.
+drop the geometric objects onto the material object using Drag-and-Drop
+in the tree view.
 </itemize>
 
 <sect1>Shaders<label id="shd">
@@ -2029,8 +2063,9 @@ optical effects like fog.
 
 <sect1>View Object<label id="viewobj">
 <p>
-Every view window has a corresponding view object
-as a child object of the root object.
+Every view window (see also section
+<ref id="viewwin" name="Anatomy of a View">)
+has a corresponding view object as a child object of the root object.
 You can change camera settings, the type of the view,
 and other things related to the view using the properties of the view object.
 Note, that deleting the object that represents a view, will not
@@ -2064,12 +2099,12 @@ View object act in special ways, when certain objects are dropped
 onto them in the tree view:
 <p>
 When a camera object is dropped onto a view object
-using drag and drop in the tree view
+using Drag-and-Drop in the tree view
 the camera settings of the camera object will
 be copied to the views camera.
 <p>
 When a light object of type <tt/"Spot"/ is dropped onto a view object
-using drag and drop in the tree view
+using Drag-and-Drop in the tree view
 the views camera will be changed, so that
 the user looks along the light to see what objects of the scene
 are lighted by the light object (this works best
@@ -2142,7 +2177,7 @@ is invoked (e.g. using the main menu entry
 <tt>"Tools/Force Notification"</tt>).
 </itemize>
 
-<sect1>Camera Object<label id="camobj">
+<sect1>Camera Object<label id="cameraobj">
 <p>
 Camera objects are used to temporarily save camera settings
 of views.
@@ -2154,7 +2189,7 @@ When a view object is dropped onto a camera object using Drag-and-Drop
 in the tree view, the camera settings from the view will be copied
 to the camera object.
 
-<sect1>CSG Primitives <label id="csgprim">
+<sect1>CSG Primitives<label id="csgprim">
 <p>
 <figure loc="ht">
 <eps file="pics/primitives.ps" height="7cm">
@@ -2379,7 +2414,7 @@ Material objects are used to attach RiAttributes and
 shaders to geometric objects.
 
 When geometric objects are dropped onto a material object
-using drag and drop in the tree view
+using Drag-and-Drop in the tree view
 they will be connected to this object.
 
 When geometric objects are connected to a material
@@ -2515,7 +2550,7 @@ point editing actions (see also section <ref id="iac" name="interactive actions"
 <item><tt/"Color"/ is the color of the light, emitted by the light source.
 <item><tt/"Intensity"/ is the intensity of the light, emitted by the
 light source. Note, that the standard point and spot lights have
-a quadratic (with distance) falloff, that requires the intensity
+a quadratic falloff (with distance), that requires the intensity
 to be set to quite high values in order to achieve some
 illumination effect (e.g. around 30 for the standard distance of
 <tt/"From"/ and <tt/"To"/ of a spot light).
@@ -2527,10 +2562,11 @@ off in the beam of the spot light. Larger values result in narrower
 light sources.
 </itemize>
 
-In order to ease the parameterization of spot or distant lights,
+In order to ease the parameterization of spot lights,
 you may drop the light source object on to a view object
-(preferably one with a perspective viewing transformation)
-to see what objects of the scene are lighted by
+(preferably one with a perspective viewing transformation and with
+equal width and height)
+to see what objects of the scene are actually lighted by
 the light object.
 
 <sect2>Using ShadowMaps<label id="shadowmaps">
@@ -2600,16 +2636,16 @@ and <tt>"shadowpoint"</tt> respectively. Additionally, the shader
 will be parameterized to use the created shadow maps.
 If the light source is of type <tt>"Custom"</tt>, no automatic renaming
 and adjusting of the shader takes place. This means, you have
-to make sure that the shader really uses the shadow maps by
-selecting the right shader and parameterizing it.
+to make sure that the shader really uses the shadow maps, by
+selecting the right shader and parameterizing it accordingly.
 See the discussion above for the names of the shadow map files.
 Those file names, probably, will have to be entered as parameter
 to the light shader.
 <p>
 Here is a short example for a scene using a shadow map:
 <enum>
-<item>Go to the preferences and enable <tt/"ShadowMaps"/ in the
-section <tt/"RIB-Export"/.
+<item>Go to the preferences (section <tt/"RIB-Export"/) and set
+<tt/"ShadowMaps"/ to <tt>"Automatic"</tt>.
 <item>Create two boxes.
 <item>Open the <tt/"Transformations"/ property of the second box.
 <item>Translate it by X: 0.0, Y: -1.0, Z: 0.0.
@@ -2618,7 +2654,7 @@ section <tt/"RIB-Export"/.
 <item>Open the <tt/"LightAttr"/ property.
 <item>Change the type to <tt/"Spot"/. Press <tt/"Apply"/.
 <item>Now change the parameters of the spot light to <tt/"IsOn"/: Yes,
-<tt/"Shadows"/: Yes, <tt/"Intensity"/: 18.0,
+<tt/"Intensity"/: 18.0,
 <tt/"UseSM"/: Yes, <tt/"ConeAngle"/: 45.0, <tt/"BeamDistrib"/: 3.0,
 <tt/"From"/: -2, 2, 2, <tt/"To"/: 1, 0, -1;
 leave all other parameters at their default values.
@@ -2640,7 +2676,6 @@ is in use. This command line
 option may inhibit writing of the shadow maps, so that the resulting
 image will look wrong.
 
-
 <sect2>Using AreaLights<label id="alob">
 <p>
 A common idealized light source has no own geometry. This means
@@ -2658,7 +2693,7 @@ An example:
 <item>Create a custom light object.
 <item>Assign the arealight light shader to it.
 <item>Create a Sphere.
-<item>Drag and Drop the Sphere onto the Light object so that it becomes
+<item>Drag-and-Drop the Sphere onto the Light object so that it becomes
 a child of the light object.
 <item>Transform the object to your hearts content; the position
 and size of the object determines the position and size of the lightsource!
@@ -2991,8 +3026,8 @@ of vertices that form a polygonal mesh. This polygonal mesh is
 then successively refined using a subdivision scheme and, depending
 on the number of refinement (or subdivision) steps, results in
 a more or less smooth surface. There are several different
-subdivision schemes, but the only scheme currently supported
-by most RenderMan compliant renderers is "Catmull-Clark".
+subdivision schemes, but the scheme currently supported
+by most RenderMan compliant renderers is named "Catmull-Clark".
 <p>
 Tags may be specified for faces, edges, or vertices
 to control the subdivision process (e.g. to create sharp corners or edges
@@ -3056,7 +3091,7 @@ Note, that it is not possible to copy a master object and some instances
 of it, so that the new instances point to the newly created master.
 All copies of instance objects always point to the same master object.
 
-However, it is possible to move instances using drag and drop in the tree
+However, it is possible to move instances using Drag-and-Drop in the tree
 view or using the clipboard with <tt>"Edit/Cut"</tt> and then
 <tt>"Special/Clipboard/Paste (Move)"</tt>.<p>
 
@@ -3589,7 +3624,7 @@ representation of the RIB.
 What is a custom object?
 
 Think of it as a plugin that extends Ayam's capabilities by
-defining totally new types of objects.
+defining totally new types of e.g. geometric objects.
 A simple example is the CSphere custom object, which implements
 a sphere and has a new property named <tt/"CSphereAttr"/.
 This property contains all parameters of a simple RenderMan Interface
@@ -5463,7 +5498,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 
 <label id="indexc">C
 <itemize>
-<item>Camera: <ref id="camobj" name="camera object">,
+<item>Camera: <ref id="cameraobj" name="camera object">,
 <ref id="camp" name="view property">
 <item>Cap: <ref id="capobj" name="object">,
 <item>CastShadows: <ref id="riattrs" name="RenderMan/BMRT attribute">
@@ -5957,7 +5992,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <itemize>
 <item>Variance: <ref id="rio" name="RenderMan interface option">
 <item>View: <ref id="mmcreate" name="main menu entry">,
-<ref id="viewobj" name="object">
+<ref id="viewobj" name="object">,
+<ref id="viewwin" name="Anatomy of a View">
 <item>ViewAttrib: <ref id="vat" name="property">
 </itemize>
 
