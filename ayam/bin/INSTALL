@@ -1,4 +1,4 @@
-[INSTALL, 26. Sep 2003]
+[INSTALL, 30. Dec 2003]
 
 Installation Instructions for Ayam (Unix only).
 
@@ -6,6 +6,7 @@ Contents:
 
 1. General Installation Instructions
 2. IRIX Specific Information
+3. Mac OS X Specific Information
 
 
 1. General Installation Instructions
@@ -29,7 +30,13 @@ environment variable, otherwise Ayam might not be able to load the plugins.
 
 The installation procedure will also install the current Makefile,
 that may be used to uninstall Ayam again, e.g. using:
->make -f /usr/local/lib/Makefile uninstall
+>make -f /usr/local/ayam/lib/Makefile uninstall
+
+To check what installing/uninstalling will do to your system use
+>make -n install
+or
+>make -n uninstall
+first.
 
 
 2. IRIX Specific Information
@@ -41,6 +48,20 @@ o On IRIX there is currently no aysdr plug-in. You may safely ignore the
   warnings about a missing aysdr.so file, that occur during the installation.
 o On IRIX you have to adapt the variable LD_LIBRARYN32_PATH instead of
   LD_LIBRARY_PATH.
+
+
+3. Mac OS X Specific Information
+--------------------------------
+
+The Mac OS X binary of Ayam was compiled on the SourceForge compile farm
+on Mac OS X 10.1 using X11. Support for plugins has been switched off.
+There are no plugins distributed with this release.
+The MetaObj custom object is statically compiled into the binary.
+Because BMRT is not available on Mac OS X, this binary has been compiled
+without libslcargs and will scan .xml shader description files created
+by sl2xml from the K-3D project only.
+I am not able to test this binary on my own! The main tester (Daniel Amor)
+reported that it will only run, when started from an xterm.
 
 End of Installation Instructions,
 -- 
