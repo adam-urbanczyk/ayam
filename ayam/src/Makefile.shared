@@ -303,7 +303,8 @@ IDROBJS = plugins/idr.o
 METAOBJS = contrib/meta/metaobj.o \
 	contrib/meta/metautils.o \
 	contrib/meta/move.o \
-	contrib/meta/marching.o
+	contrib/meta/marching.o \
+	contrib/meta/adaptive.o
 
 RRIBOBJS = plugins/rrib.o
 
