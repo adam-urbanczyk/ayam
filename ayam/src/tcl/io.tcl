@@ -334,7 +334,7 @@ proc io_lcAuto {  } {
 
     set name [string tolower $ay(autoload)].so
 
-    regsub -all $ay(separator) $ayprefs(Plugins) " " paths
+    set paths [split "$ayprefs(Plugins)" $ay(separator)]
 
     foreach path $paths {
 	set filename [file join $path $name]
