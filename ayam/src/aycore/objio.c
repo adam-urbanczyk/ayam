@@ -143,7 +143,7 @@ int
 ay_objio_writencurve(FILE *fileptr, ay_object *o, double *m)
 {
  ay_nurbcurve_object *nc;
- double *v = NULL, *p1, *p2;
+ double *v = NULL, *p1, *p2, pw[3];
  int stride = 4, i;
 
   if(!o)
@@ -159,7 +159,10 @@ ay_objio_writencurve(FILE *fileptr, ay_object *o, double *m)
   p2 = nc->controlv;
   for(i = 0; i < nc->length; i++)
     {
-      AY_APTRAN3(p1,p2,m)
+      pw[0] = p2[0]/p2[3];
+      pw[1] = p2[1]/p2[3];
+      pw[2] = p2[2]/p2[3];
+      AY_APTRAN3(p1,pw,m)
       p1[3] = p2[3];
       p1 += stride;
       p2 += stride;
@@ -201,7 +204,7 @@ int
 ay_objio_writetcurve(FILE *fileptr, ay_object *o, double *m)
 {
  ay_nurbcurve_object *nc;
- double v[3] = {0}, *p1, ma[16] = {0}, mn[16] = {0};
+ double v[3] = {0}, *p1, pw[2], ma[16] = {0}, mn[16] = {0};
  int stride = 4, i;
 
   if(!o)
@@ -219,7 +222,9 @@ ay_objio_writetcurve(FILE *fileptr, ay_object *o, double *m)
   p1 = nc->controlv;
   for(i = 0; i < nc->length; i++)
     {
-      AY_APTRAN3(v,p1,ma)
+      pw[0] = p1[0]/p1[3];
+      pw[1] = p1[1]/p1[3];
+      AY_APTRAN3(v,pw,ma)
       v[2] = p1[3];
       fprintf(fileptr, "vp %lg %lg %lg\n", v[0], v[1], v[2]);
       p1 += stride;
@@ -228,8 +233,7 @@ ay_objio_writetcurve(FILE *fileptr, ay_object *o, double *m)
   /* write 2D rational bspline curve */
   fprintf(fileptr, "cstype rat bspline\n");
   fprintf(fileptr, "deg %d\n", nc->order-1);
-  fprintf(fileptr, "curv2 %lg %lg", nc->knotv[0],
-	  nc->knotv[nc->length+nc->order-1]);
+  fprintf(fileptr, "curv2 ");
 
   for(i = nc->length; i > 0; i--)
     {
@@ -392,7 +396,7 @@ ay_objio_writenpatch(FILE *fileptr, ay_object *o, double *m)
 {
  int ay_status = AY_OK;
  ay_nurbpatch_object *np;
- double *v = NULL, *p1, *p2;
+ double *v = NULL, *p1, *p2, pw[3];
  int stride = 4, i, j;
 
   if(!o)
@@ -417,7 +421,10 @@ ay_objio_writenpatch(FILE *fileptr, ay_object *o, double *m)
       p2 = &(np->controlv[i*stride]);
       for(j = 0; j < np->width; j++)
 	{
-	  AY_APTRAN3(p1,p2,m)
+	  pw[0] = p2[0]/p2[3];
+	  pw[1] = p2[1]/p2[3];
+	  pw[2] = p2[2]/p2[3];
+	  AY_APTRAN3(p1,pw,m)
 	  p1[3] = p2[3];
 	  p1 += stride;
 	  p2 += np->height*stride;
@@ -428,7 +435,7 @@ ay_objio_writenpatch(FILE *fileptr, ay_object *o, double *m)
   ay_objio_writevertices(fileptr, (unsigned int)(np->width * np->height),
 			 stride, v);
 
-  /* write bspline curve */
+  /* write bspline surface */
   fprintf(fileptr, "cstype rat bspline\n");
   fprintf(fileptr, "deg %d %d\n", np->uorder-1, np->vorder-1);
   fprintf(fileptr, "surf %lg %lg %lg %lg", np->uknotv[0],
