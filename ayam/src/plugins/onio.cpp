@@ -30,10 +30,13 @@ char onio_version_mi[] = AY_VERSIONSTRMI;
 
 static Tcl_HashTable onio_write_ht;
 
+ay_object *onio_lrobject = NULL;
 
 // prototypes of functions local to this module
 
 int onio_writenpatch(ay_object *o, ONX_Model *p_m);
+
+int onio_writetrimmednpatch(ay_object *o, ONX_Model *p_m);
 
 int onio_writenpconvertible(ay_object *o, ONX_Model *p_m);
 
@@ -54,6 +57,11 @@ int onio_readnurbssurface(ON_NurbsSurface *p_s);
 
 int onio_readnurbscurve(ON_NurbsCurve *p_c);
 
+int onio_getncurvefromcurve(const ON_Curve *p_o, double accuracy,
+			    ON_NurbsCurve** pp_c);
+
+int onio_readbrep(ON_Brep *p_b, double accuracy);
+
 int onio_readobject(const ON_Object *p_o);
 
 int onio_readtcmd(ClientData clientData, Tcl_Interp *interp,
@@ -63,23 +71,22 @@ extern "C" {
 
 int Onio_Init(Tcl_Interp *interp);
 
-}
+} // extern "C"
 
 
 // functions
 
-
-// onio_writenpatch:
+// onio_getsurfobj:
 //
 int
-onio_writenpatch(ay_object *o, ONX_Model *p_m)
+onio_getsurfobj(ay_object *o, ON_NurbsSurface **pp_n)
 {
  int ay_status = AY_OK;
  int i, j, a, stride = 4;
  ay_nurbpatch_object *np = NULL;
  ON_NurbsSurface *p_n = NULL;
 
-  if(!o || !p_m)
+  if(!o || !pp_n)
     return AY_ENULL;
 
   np = (ay_nurbpatch_object *)o->refine;
@@ -103,16 +110,206 @@ onio_writenpatch(ay_object *o, ONX_Model *p_m)
 	}
     }
 
+  // return result
+  *pp_n = p_n;
+
+ return ay_status;
+} // onio_getsurfobj
+
+
+// onio_writenpatch:
+//
+int
+onio_writenpatch(ay_object *o, ONX_Model *p_m)
+{
+ int ay_status = AY_OK;
+ ON_NurbsSurface *p_n = NULL;
+
+  if(!o || !p_m)
+    return AY_ENULL;
+
+  // is this patch trimmed?
+  if(o->down)
+    {
+      // yes
+      ay_status = onio_writetrimmednpatch(o, p_m);
+      return ay_status;
+    }
+  
+  ay_status = onio_getsurfobj(o, &p_n);
+  if(p_n)
+    {
+      ONX_Model_Object& mo = p_m->m_object_table.AppendNew();
+      mo.m_object = p_n;
+      mo.m_bDeleteObject = false;
+      /*
+	if(object_attributes)
+	mo.m_attributes = object_attributes[i];
+      */
+    } // if
+
+ return ay_status;
+} // onio_writenpatch
+
+
+// onio_get2dcurveobj:
+//
+int
+onio_get2dcurveobj(ay_object *o, ON_NurbsCurve **pp_c)
+{
+ int ay_status = AY_OK;
+ ay_nurbcurve_object *nc = NULL;
+ double cv[4];
+ int i, a, stride = 4;
+ ON_NurbsCurve *p_c = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  nc = (ay_nurbcurve_object *)o->refine;
+  p_c = new ON_NurbsCurve(2, true, nc->order, nc->length);
+
+  // copy knots, ignoring "superfluous"/"phantom" end knots
+  for(i = 0; i < nc->order+nc->length-2; i++)
+    {
+      p_c->SetKnot(i, nc->knotv[i+1]);
+    }
+ 
+  // copy control points
+  a = 0;
+  for(i = 0; i < nc->length; i++)
+    {
+      memcpy(cv, &(nc->controlv[a]), stride*sizeof(double));
+      cv[2] = cv[3];
+      p_c->SetCV(i, ON::homogeneous_rational, cv);
+      a += stride;
+    }
+
+  // return result
+  *pp_c = p_c;
+
+ return ay_status;
+} // onio_get2dcurveobj
+
+
+// onio_addtrim:
+//
+int
+onio_addtrim(ay_object *o, ON_Brep *p_b, ON_BrepFace& face,
+	     ON_NurbsSurface *p_n)
+{
+ int ay_status = AY_OK;
+ ON_NurbsCurve c, *p_c = NULL, p_c2;
+ ON_Curve *p_curve = NULL;
+ unsigned int c2i, c3i;
+ double tolerance = 1;//0.1;
+
+  if(!o || !p_b || !p_n)
+    return AY_ENULL;
+
+
+
+  if(o->type == AY_IDNCURVE)
+    {
+      onio_get2dcurveobj(o, &p_c);
+      if(p_c)
+	{
+	  c2i = p_b->m_C2.Count();
+	  p_b->m_C2.Append(p_c);
+	  c3i = p_b->m_C3.Count();
+	  c = *p_c;
+	  const ON_Surface* pSurface = face.SurfaceOf();
+	  p_curve = pSurface->Pushup(c, tolerance);
+	  if(p_curve == NULL)
+	    printf("pushup failed!\n");
+	  //p_curve->GetNurbForm(p_c2, 0.1, NULL);
+
+	  //p_b->m_C3.Append(&p_c2);
+
+	  ON_BrepVertex& v1 = p_b->NewVertex(p_c->PointAtStart());
+	  v1.m_tolerance = 0.0;
+	  ON_BrepVertex& v2 = p_b->NewVertex(p_c->PointAtEnd());
+	  v2.m_tolerance = 0.0;
+
+	  //ON_BrepEdge& e1 = p_b->NewEdge(v1, v2, c3i);
+	  //e1.m_tolerance = 0.0;
+
+	  ON_BrepLoop& l1 = p_b->NewLoop(ON_BrepLoop::inner, face);	  
+	  //p_b->NewTrim(e1, false, l1, c2i);
+
+	} // if
+    } // if
+
+ return ay_status;
+} // onio_addtrim
+
+
+// onio_isboundingloop:
+//
+bool
+onio_isboundingloop(ay_object *o)
+{
+ ay_nurbcurve_object *nc = NULL;
+
+  if(!o)
+    return false;
+
+  if(!o->type == AY_IDNCURVE)
+    return false;
+
+  nc = (ay_nurbcurve_object*)o->refine;
+
+  if(nc->order != 2 || nc->length != 4)
+    return false;
+
+  // XXXX add check control points
+
+ return true;
+} // onio_isboundingloop
+
+
+// onio_writetrimmednpatch:
+//
+int
+onio_writetrimmednpatch(ay_object *o, ONX_Model *p_m)
+{
+ int ay_status = AY_OK;
+ ay_object *down;
+ ON_NurbsSurface s, *p_s = NULL;
+ ON_Brep *p_b = NULL;
+ ON_BrepFace f, *p_f = NULL;
+  if(!o || !p_m)
+    return AY_ENULL;
+
+  ay_status = onio_getsurfobj(o, &p_s);
+  if(p_s == NULL)
+    return ay_status;
+  s = *p_s;
+
+  p_b = new ON_Brep();
+  // create new face from surface (creates a bounding trimloop as well!)
+  p_f = p_b->NewFace(s);
+  f = *p_f;
+
+  down = o->down;
+  while(down)
+    {
+      if(!onio_isboundingloop(down))
+	ay_status = onio_addtrim(down, p_b, f, p_s);
+
+      down = down->next;
+    }
+
   ONX_Model_Object& mo = p_m->m_object_table.AppendNew();
-  mo.m_object = p_n;
+  mo.m_object = p_b;
   mo.m_bDeleteObject = false;
   /*
     if(object_attributes)
     mo.m_attributes = object_attributes[i];
   */
-
+ 
  return ay_status;
-} // onio_writenpatch
+} // onio_writetrimmednpatch
 
 
 // onio_writenpconvertible:
@@ -529,11 +726,15 @@ onio_readnurbssurface(ON_NurbsSurface *p_s)
   newo->hide_children = AY_TRUE;
   newo->inherit_trafos = AY_FALSE;
 
+  ay_object_crtendlevel(&(newo->down));
+
   // link the new patch into the scene hierarchy
   ay_status = ay_object_link(newo);
 
   if(ay_status)
     ay_status = ay_object_delete(newo);
+  else
+    onio_lrobject = newo;
 
  return ay_status;
 } // onio_readnurbssurface
@@ -636,9 +837,269 @@ onio_readnurbscurve(ON_NurbsCurve *p_c)
 
   if(ay_status)
     ay_status = ay_object_delete(newo);
+  else
+    onio_lrobject = newo;
 
  return ay_status;
 } // onio_readnurbscurve
+
+
+// onio_getncurvefromcurve:
+//
+int
+onio_getncurvefromcurve(const ON_Curve *p_o, double accuracy,
+			ON_NurbsCurve** pp_c)
+{
+ ON_NurbsCurve c;
+ int handled = AY_FALSE;
+
+  if(!p_o || ! pp_c)
+   return AY_ENULL;
+
+  if(ON_NurbsCurve::Cast(p_o))
+    {
+      (ON_NurbsCurve::Cast(p_o))->GetNurbForm(c, accuracy, NULL);
+      handled = AY_TRUE;
+    }
+  if(ON_PolylineCurve::Cast(p_o))
+    {
+      (ON_PolylineCurve::Cast(p_o))->GetNurbForm(c, accuracy, NULL);
+      handled = AY_TRUE;
+    }
+  if(ON_LineCurve::Cast(p_o))
+    {
+      (ON_LineCurve::Cast(p_o))->GetNurbForm(c, accuracy, NULL);
+      handled = AY_TRUE;
+    }
+  if(ON_ArcCurve::Cast(p_o))
+    {
+      (ON_ArcCurve::Cast(p_o))->GetNurbForm(c, accuracy, NULL);
+      handled = AY_TRUE;
+    }
+  if(ON_CurveOnSurface::Cast(p_o))
+    {
+      (ON_CurveOnSurface::Cast(p_o))->GetNurbForm(c, accuracy, NULL);
+      handled = AY_TRUE;
+    }
+
+  if(!handled)
+    return AY_ERROR;
+
+  // return result
+  *pp_c = new ON_NurbsCurve();
+  **pp_c = c;
+
+ return AY_OK;
+} // onio_getncurve
+
+
+// onio_readbrep:
+//
+int
+onio_readbrep(ON_Brep *p_b, double accuracy)
+{
+ int ay_status = AY_OK;
+ int i;
+ ON_NurbsSurface s;
+ const ON_Surface* p_s = NULL;
+ ay_object **oldnext = ay_next, *lo = NULL, *o;
+ ay_level_object *level = NULL;
+
+  for(i = 0; i < p_b->m_F.Count(); ++i)
+    {
+      const ON_BrepFace& face = p_b->m_F[i];
+
+      if(face.m_si < 0 || face.m_si >= p_b->m_S.Count())
+	{
+	  // invalid brep
+	  return AY_ERROR;
+	}
+
+      p_s = p_b->m_S[face.m_si];
+      if(!p_s)
+	{
+	  // invalid brep
+	  return AY_ERROR;
+	} // if
+
+      p_s->GetNurbForm(s, accuracy);
+      ay_status = onio_readnurbssurface(&s);
+
+      if(ay_status)
+	return ay_status;
+
+      // loop_count = number of trimming loops on this face (>=1)
+      const int loop_count = face.m_li.Count(); 
+
+      int fli; // face's loop index
+      for(fli = 0; fli < loop_count; fli++)
+	{
+	  const int li = face.m_li[fli]; // li = brep loop index
+	  const ON_BrepLoop& loop = p_b->m_L[li];
+
+	  // loop_edge_count = number of trimming edges in this loop
+	  const int loop_trim_count = loop.m_ti.Count();
+
+	  // do we need to create a level object?
+	  if(loop_trim_count > 1)
+	    {
+	      // yes
+
+	      if(ay_next == &(onio_lrobject->next))
+		{
+		  ay_next = &(onio_lrobject->down);
+		}
+
+	      if(!(level = (ay_level_object *)calloc(1,
+			    sizeof(ay_level_object))))
+		{
+		  return AY_EOMEM;
+		}
+
+	      level->type = AY_LTLEVEL;
+
+	      if(!(lo = (ay_object *) calloc(1, sizeof(ay_object))))
+		{
+		  return AY_EOMEM;
+		}
+
+	      lo->type = AY_IDLEVEL;
+	      lo->refine = level;
+	      lo->parent = AY_TRUE;
+	      lo->inherit_trafos = AY_TRUE;
+
+	      ay_status = ay_object_crtendlevel(&(lo->down));
+
+	      ay_status = ay_object_link(lo);
+	      printf("hier\n");
+	      ay_next = &(lo->down);
+	    }
+
+	  int lti; // loop's trim index
+	  for(lti = 0; lti < loop_trim_count; lti++)
+	    {
+	      const int ti = loop.m_ti[lti]; // ti = brep trim index
+	      const ON_BrepTrim& trim = p_b->m_T[ti];
+
+	      //////////////////////////////////////////////////////
+	      // 2d trimming information
+	      //
+	      // Each trim has a 2d parameter space curve.
+	      ON_Curve* p_c = NULL;
+	      const int c2i = trim.m_c2i; // c2i = brep 2d curve index
+	      if(c2i < 0 || c2i >= p_b->m_C2.Count())
+		{
+		  // invalid brep m_T[ti].m_c2i
+		  return AY_ERROR;
+		}
+
+	      p_c = p_b->m_C2[c2i];
+	      if(!p_c)
+		{
+		  // invalid brep m_C2[c2i] is NULL
+		  return AY_ERROR;
+		}
+
+	      // add trim curve to Ayam NURBSPatch object
+	      if((loop_trim_count < 2) && (ay_next == &(onio_lrobject->next)))
+		{
+		  ay_next = &(onio_lrobject->down);
+		}
+
+	      ON_NurbsCurve* p_nc = NULL;
+	      ay_status = onio_getncurvefromcurve(p_c, accuracy, &p_nc);
+	      if(ay_status)
+		{
+		  return AY_ERROR;
+		}
+
+	      ay_status = onio_readnurbscurve(p_nc);
+
+	      delete p_nc;
+
+	      if(ay_status)
+		{
+		  return AY_ERROR;
+		}
+
+	      // XXXX do we need to decode the topology?
+
+	      //////////////////////////////////////////////////////
+	      // topology and 3d geometry information
+	      //
+
+	      // Trim starts at v0 and ends at v1.  When the trim
+	      // is a loop or on a singular surface side, v0i and v1i
+	      // will be equal.
+	      //const int v0i = trim.m_vi[0]; // v0i = brep vertex index
+	      //const int v1i = trim.m_vi[1]; // v1i = brep vertex index
+	      //const ON_BrepVertex& v0 = p_b->m_V[v0i];
+	      //const ON_BrepVertex& v1 = p_b->m_V[v1i];
+	      // The vX.m_ei[] array contains the p_b->m_E[] indices of
+	      // the edges that begin or end at vX.
+#if 0
+	      const int ei = trim.m_ei;
+	      if(ei == -1)
+		{
+		  // This trim lies on a portion of a singular surface side.
+		  // The vertex indices are still valid and will be equal.
+		}
+	      else
+		{
+		  // If trim.m_bRev3d is FALSE, the orientations of the 3d edge
+		  // and the 3d curve obtained by composing the surface and 2d
+		  // curve agree.
+		  //
+		  // If trim.m_bRev3d is TRUE, the orientations of the 3d edge
+		  // and the 3d curve obtained by composing the surface and 2d
+		  // curve are opposite.
+		  const ON_BrepEdge& edge = p_b->m_E[ei];
+		  const int c3i = edge.m_c3i;
+		  const ON_Curve* p3dCurve = NULL;
+
+		  if(c3i < 0 || c3i >= p_b->m_C3.Count())
+		    {
+		      // invalid brep m_E[%d].m_c3i
+		      return AY_ERROR;
+		    }
+		  else
+		    {
+		      p3dCurve = p_b->m_C3[c3i];
+		      if(!p3dCurve)
+			{
+			  // invalid brep m_C3[%d] is NULL
+			  return AY_ERROR;
+			}
+		    } // if
+
+		  // The edge.m_ti[] array contains the p_b->m_T[] indices
+		  // for the other trims that are joined to this edge.
+		} // if
+#endif
+
+	    } // for
+	  // do we need to repair ay_next because we created a level?
+	  if(loop_trim_count > 1)
+	    {
+	      // yes
+	      ay_next = &(lo->next);
+	    } // if
+	} // for
+    } // for
+
+  if(onio_lrobject && onio_lrobject->down)
+    {
+      o = onio_lrobject->down;
+      while(o->next)
+	o = o->next;
+      ay_object_crtendlevel(&(o->next));
+
+    } // if
+
+  ay_next = oldnext;
+
+ return ay_status;
+} // onio_readbrep
 
 
 // onio_readobject:
@@ -648,8 +1109,8 @@ onio_readobject(const ON_Object *p_o)
 {
  int ay_status = AY_OK;
  double accuracy = 0.1;
- ON_NurbsSurface p_s;
- ON_NurbsCurve p_c;
+ ON_NurbsSurface s;
+ ON_NurbsCurve c;
 
   if(!p_o)
     return AY_ENULL;
@@ -661,23 +1122,23 @@ onio_readobject(const ON_Object *p_o)
 	ay_status = onio_readnurbscurve((ON_NurbsCurve*)p_o);
       if(ON_PolylineCurve::Cast(p_o))
 	{
-	  (ON_PolylineCurve::Cast(p_o))->GetNurbForm(p_c, accuracy, NULL);
-	  ay_status = onio_readnurbscurve(&p_c);
+	  (ON_PolylineCurve::Cast(p_o))->GetNurbForm(c, accuracy, NULL);
+	  ay_status = onio_readnurbscurve(&c);
 	}
       if(ON_LineCurve::Cast(p_o))
 	{
-	  (ON_LineCurve::Cast(p_o))->GetNurbForm(p_c, accuracy, NULL);
-	  ay_status = onio_readnurbscurve(&p_c);
+	  (ON_LineCurve::Cast(p_o))->GetNurbForm(c, accuracy, NULL);
+	  ay_status = onio_readnurbscurve(&c);
 	}
       if(ON_ArcCurve::Cast(p_o))
 	{
-	  (ON_ArcCurve::Cast(p_o))->GetNurbForm(p_c, accuracy, NULL);
-	  ay_status = onio_readnurbscurve(&p_c);
+	  (ON_ArcCurve::Cast(p_o))->GetNurbForm(c, accuracy, NULL);
+	  ay_status = onio_readnurbscurve(&c);
 	}
       if(ON_CurveOnSurface::Cast(p_o))
 	{
-	  (ON_CurveOnSurface::Cast(p_o))->GetNurbForm(p_c, accuracy, NULL);
-	  ay_status = onio_readnurbscurve(&p_c);
+	  (ON_CurveOnSurface::Cast(p_o))->GetNurbForm(c, accuracy, NULL);
+	  ay_status = onio_readnurbscurve(&c);
 	}
       break;
     case ON::surface_object:
@@ -685,26 +1146,29 @@ onio_readobject(const ON_Object *p_o)
 	ay_status = onio_readnurbssurface((ON_NurbsSurface*)p_o);
       if(ON_RevSurface::Cast(p_o))
 	{
-	  (ON_RevSurface::Cast(p_o))->GetNurbForm(p_s, accuracy);
-	  ay_status = onio_readnurbssurface(&p_s);
+	  (ON_RevSurface::Cast(p_o))->GetNurbForm(s, accuracy);
+	  ay_status = onio_readnurbssurface(&s);
 	}
       if(ON_SumSurface::Cast(p_o))
 	{
-	  (ON_SumSurface::Cast(p_o))->GetNurbForm(p_s, accuracy);
-	  ay_status = onio_readnurbssurface(&p_s);
+	  (ON_SumSurface::Cast(p_o))->GetNurbForm(s, accuracy);
+	  ay_status = onio_readnurbssurface(&s);
 	}
       if(ON_PlaneSurface::Cast(p_o))
 	{
-	  (ON_PlaneSurface::Cast(p_o))->GetNurbForm(p_s, accuracy);
-	  ay_status = onio_readnurbssurface(&p_s);
+	  (ON_PlaneSurface::Cast(p_o))->GetNurbForm(s, accuracy);
+	  ay_status = onio_readnurbssurface(&s);
 	}
       /*
       if(ON_BezierSurface::Cast(p_o))
 	{
-	  ON_BezierSurface::Cast(p_o).GetNurbForm(p_s);
-	  ay_status = onio_readnurbssurface((ON_NurbsSurface*)p_s);
+	  ON_BezierSurface::Cast(p_o).GetNurbForm(s);
+	  ay_status = onio_readnurbssurface((ON_NurbsSurface*)s);
 	}
       */
+      break;
+    case ON::brep_object:
+      ay_status = onio_readbrep((ON_Brep *)p_o, accuracy);
       break;
     default:
       break;
@@ -761,6 +1225,8 @@ onio_readtcmd(ClientData clientData, Tcl_Interp *interp,
     {
       ay_error(AY_ERROR, fname, "Model is not valid!");
     }
+
+  onio_lrobject = NULL;
 
   for(int i = 0; i < model.m_object_table.Capacity(); ++i)
     {
