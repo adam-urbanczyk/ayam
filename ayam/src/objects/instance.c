@@ -368,25 +368,26 @@ ay_instance_bbccb(ay_object *o, double *bbox, int *flags)
   if(!o || !bbox || !flags)
     return AY_ENULL;
 
-   t = (ay_object *)o->refine;
-
-  /* get transformations of t */
+  /* get transformations of o */
   glMatrixMode (GL_MODELVIEW);
   glPushMatrix();
    glLoadIdentity();
 
-   glTranslated(t->movx, t->movy, t->movz);
+   glTranslated(o->movx, o->movy, o->movz);
 	
-   ay_quat_torotmatrix(t->quat, mr);
+   ay_quat_torotmatrix(o->quat, mr);
    glMultMatrixd(mr);
   
-   glScaled (t->scalx, t->scaly, t->scalz);
+   glScaled (o->scalx, o->scaly, o->scalz);
    glGetDoublev(GL_MODELVIEW_MATRIX, (GLdouble *)m);
   glPopMatrix();
+
+   t = (ay_object *)o->refine;
 
   /* get bounding boxes of children of t (if any) */
   if(t->down)
     {
+
       d = t->down;  
       while(d->next)
 	{
@@ -522,7 +523,7 @@ ay_instance_bbccb(ay_object *o, double *bbox, int *flags)
   /* P8 */
   bbox[21] = xmax; bbox[22] = ymin; bbox[23] = zmax;
 
-  *flags = 0;
+  *flags = 3;
 
  return AY_OK;
 } /* ay_instance_bbccb */

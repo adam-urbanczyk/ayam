@@ -15,7 +15,13 @@
 /* bbc.c - bounding box calculation */
 
 /* ay_bbc_get:
- *  
+ *  changes to this function also need to be applied to:
+ *  objects/instance.c/ay_instance_bbccb()
+ *  flag values in bbc callback mean:
+ *  0 - normal bounding box
+ *  1 - exclusive bounding box, discard children bounding box (e.g. NURBSPatch)
+ *  2 - no own bounding box, but children have one (e.g. Level)
+ *  3 - normal bounding box, but discard transformations (e.g. Instance)
  */
 int
 ay_bbc_get(ay_object *o, double *bbox)
@@ -129,12 +135,15 @@ ay_bbc_get(ay_object *o, double *bbox)
     { /* bounding box of object o is not marked invalid/non-existent */
       /* thus, merge bounding box of object o with child(ren) bounding box */
 
-      /* apply transformations */
-      a = 0;
-      for(i = 0; i < 8; i++)
+      if(flags != 3)
 	{
-	  ay_trafo_apply3(&(bbt[a]), m);
-	  a += 3;
+	  /* apply transformations */
+	  a = 0;
+	  for(i = 0; i < 8; i++)
+	    {
+	      ay_trafo_apply3(&(bbt[a]), m);
+	      a += 3;
+	    }
 	}
 
       a = 0;
