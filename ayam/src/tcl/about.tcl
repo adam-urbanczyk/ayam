@@ -116,9 +116,10 @@ $w.ftext.text insert end \
 Ayam is based on the following fine software:
 
 o BMRT (Blue Moon Rendering Tools) by Larry Gritz
-o The Togl widget by Benjamin Bederson, Brian Paul et. al.
+o The Togl widget by Benjamin Bederson, Brian Paul et al.
 o The tkMegaWidget set by Jeffrey Hobbs
 o The 3DMF parser from Apple (Duet Development Corp.)
+o libtiff (Sam Leffler, Silicon Graphics et al.)
 o Tcl/Tk, OpenGL, The RenderMan Interface (too many to list)
 
 Ayam learned a lot from the code of:
@@ -142,9 +143,13 @@ Copyright (c) 1995, 1996, 1997, 1998 Thomas E. Burge
 All rights reserved.
 
 Affine (R) is a registered trademark of Thomas E. Burge
+
+TIFF Software is
+Copyright (c) 1988-1997 Sam Leffler
+Copyright (c) 1991-1997 Silicon Graphics, Inc.
 "
 
-$w.ftext.text tag add "tag3" end-14lines end
+$w.ftext.text tag add "tag3" end-19lines end
 
 $w.ftext.text tag configure tag3 -justify center
 
