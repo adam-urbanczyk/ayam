@@ -675,7 +675,8 @@ set i 0
 set j 0
 while { $i < $argc } {
     set arg [lindex $argv $i]
-    if { ! [ string compare "-h" $arg ] } {
+    if { (! [ string compare "-h" $arg ]) ||
+         (! [ string compare "-help" $arg ]) } {
 	puts " -h:        Display this help"
 	puts " -nosplash: Do not display splash-image"
 	puts " -failsafe: Do not load preferences and do not open a view"
@@ -693,7 +694,6 @@ while { $i < $argc } {
     }
  incr i
 }
-
 
 # show splash screen
 ayam_loadscript win
@@ -740,6 +740,8 @@ if { $AYWRAPPED == 1 } {
     } else {
 	set curdir [pwd]
 	cd $ayprefs(TmpDir)
+
+	if {$ay(failsafe) == 1 } { catch {file delete -force BWidgets} }
 	if { [auto_execok unzip] != "" } {
 	    exec unzip -u -qq [info nameofexecutable] BWidgets/\*
 	} else {
