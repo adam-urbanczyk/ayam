@@ -44,6 +44,45 @@ ay_object ay_rrib_co;
 /* current material object */
 ay_mat_object ay_rrib_cm;
 
+/* attribute state stack */
+typedef struct ay_rrib_attrstate_s {
+  struct ay_rrib_attrstate_s *next;
+  ay_object *trimcurves;
+
+} ay_rrib_attrstate;
+
+ay_rrib_attrstate *ay_rrib_cattributes;
+
+/* transformation stack */
+typedef struct ay_rrib_trafostate_s {
+  struct ay_rrib_trafostate_s *next;
+
+  double movx, movy, movz;
+  double scalx, scaly, scalz;
+  double quat[4];
+
+} ay_rrib_trafostate;
+
+ay_rrib_trafostate *ay_rrib_ctrafos;
+
+
+/* current frame */
+int ay_rrib_cframe;
+
+/* last read object */
+ay_object *ay_rrib_lrobject;
+
+/* light handle */
+int ay_rrib_clighthandle;
+
+/* import options */
+int ay_rrib_readframe;
+int ay_rrib_readoptions;
+int ay_rrib_readcamera;
+int ay_rrib_readlights;
+int ay_rrib_readobjects;
+
+
 /* how to sort through the data */
 enum {
    PPWTBL_P,
@@ -68,6 +107,16 @@ RtVoid ay_rrib_RiSphere(RtFloat radius, RtFloat zmin, RtFloat zmax,
 			RtFloat thetamax,
 			RtInt n, RtToken tokens[], RtPointer parms[]);
 
+void ay_rrib_pushattribs(void);
+void ay_rrib_popattribs(void);
+void ay_rrib_pushtrafos(void);
+void ay_rrib_poptrafos(void);
+
+void ay_rrib_initgeneral(void);
+int ay_rrib_initgprims(void);
+int ay_rrib_cleargprims(void);
+
+void ay_rrib_linkobject(void *object, int type);
 
 /* functions: */
 
@@ -76,8 +125,6 @@ RtVoid ay_rrib_RiSphere(RtFloat radius, RtFloat zmin, RtFloat zmax,
 			RtInt n, RtToken tokens[], RtPointer parms[])
 {
  ay_sphere_object s;
- ay_object *o = NULL;
- int ay_status = AY_OK;
 
   s.closed = AY_FALSE;
   s.radius = (double)radius;
@@ -85,10 +132,7 @@ RtVoid ay_rrib_RiSphere(RtFloat radius, RtFloat zmin, RtFloat zmax,
   s.zmax = (double)zmax;
   s.thetamax = (double)thetamax;
 
-  ay_rrib_co.refine = (void *)(&s);
-  ay_rrib_co.type = AY_IDSPHERE;
-  ay_status = ay_object_copy(&ay_rrib_co, &o);
-  ay_status = ay_object_link(o);
+  ay_rrib_linkobject((void *)(&s), AY_IDSPHERE);
 
  return;
 } /* ay_rrib_RiSphere */
@@ -99,8 +143,6 @@ RtVoid ay_rrib_RiCylinder(RtFloat radius, RtFloat zmin, RtFloat zmax,
 			  RtInt n, RtToken tokens[], RtPointer parms[])
 { 
  ay_cylinder_object c;
- ay_object *o = NULL;
- int ay_status = AY_OK;
 
   c.closed = AY_FALSE;
   c.radius = (double)radius;
@@ -108,10 +150,7 @@ RtVoid ay_rrib_RiCylinder(RtFloat radius, RtFloat zmin, RtFloat zmax,
   c.zmax = (double)zmax;
   c.thetamax = (double)thetamax;
 
-  ay_rrib_co.refine = (void *)(&c);
-  ay_rrib_co.type = AY_IDCYLINDER;
-  ay_status = ay_object_copy(&ay_rrib_co, &o);
-  ay_status = ay_object_link(o);
+  ay_rrib_linkobject((void *)(&c), AY_IDCYLINDER);
 
  return;
 } /* ay_rrib_RiCylinder */
@@ -121,17 +160,12 @@ RtVoid ay_rrib_RiDisk(RtFloat height, RtFloat radius, RtFloat thetamax,
 		      RtInt n, RtToken tokens[], RtPointer parms[])
 { 
  ay_disk_object d;
- ay_object *o = NULL;
- int ay_status = AY_OK;
 
   d.height = (double)height;
   d.radius = (double)radius;
   d.thetamax = (double)thetamax;
 
-  ay_rrib_co.refine = (void *)(&d);
-  ay_rrib_co.type = AY_IDDISK;
-  ay_status = ay_object_copy(&ay_rrib_co, &o);
-  ay_status = ay_object_link(o);
+  ay_rrib_linkobject((void *)(&d), AY_IDDISK);
 
  return;
 } /* ay_rrib_RiDisk */
@@ -141,18 +175,13 @@ RtVoid ay_rrib_RiCone(RtFloat height, RtFloat radius, RtFloat thetamax,
 		      RtInt n, RtToken tokens[], RtPointer parms[])
 { 
  ay_cone_object c;
- ay_object *o = NULL;
- int ay_status = AY_OK;
 
   c.closed = AY_FALSE;
   c.height = (double)height;
   c.radius = (double)radius;
   c.thetamax = (double)thetamax;
 
-  ay_rrib_co.refine = (void *)(&c);
-  ay_rrib_co.type = AY_IDCONE;
-  ay_status = ay_object_copy(&ay_rrib_co, &o);
-  ay_status = ay_object_link(o);
+  ay_rrib_linkobject((void *)(&c), AY_IDCONE);
 
  return;
 } /* ay_rrib_RiCone */
@@ -164,8 +193,6 @@ RtVoid ay_rrib_RiParaboloid(RtFloat rmax,
 			    RtInt n, RtToken tokens[], RtPointer parms[])
 { 
  ay_paraboloid_object p;
- ay_object *o = NULL;
- int ay_status = AY_OK;
 
   p.closed = AY_FALSE;
   p.rmax = (double)rmax;
@@ -173,10 +200,7 @@ RtVoid ay_rrib_RiParaboloid(RtFloat rmax,
   p.zmax = (double)zmax;
   p.thetamax = (double)thetamax;
 
-  ay_rrib_co.refine = (void *)(&p);
-  ay_rrib_co.type = AY_IDPARABOBOLOID;
-  ay_status = ay_object_copy(&ay_rrib_co, &o);
-  ay_status = ay_object_link(o);
+  ay_rrib_linkobject((void *)(&p), AY_IDPARABOBOLOID);
 
  return;
 } /* ay_rrib_RiParaboloid */
@@ -186,8 +210,6 @@ RtVoid ay_rrib_RiHyperboloid(RtPoint point1, RtPoint point2, RtFloat thetamax,
 			     RtInt n, RtToken tokens[], RtPointer parms[])
 { 
  ay_hyperboloid_object h;
- ay_object *o = NULL;
- int ay_status = AY_OK;
 
   h.closed = AY_FALSE;
   h.p1[0] = (double)(point1[0]);
@@ -200,10 +222,7 @@ RtVoid ay_rrib_RiHyperboloid(RtPoint point1, RtPoint point2, RtFloat thetamax,
 
   h.thetamax = (double)thetamax;
 
-  ay_rrib_co.refine = (void *)(&h);
-  ay_rrib_co.type = AY_IDHYPERBOLOID;
-  ay_status = ay_object_copy(&ay_rrib_co, &o);
-  ay_status = ay_object_link(o);
+  ay_rrib_linkobject((void *)(&h), AY_IDHYPERBOLOID);
 
  return;
 } /* ay_rrib_RiHyperboloid */
@@ -214,8 +233,6 @@ RtVoid ay_rrib_RiTorus(RtFloat majorradius, RtFloat minorradius,
 		       RtInt n, RtToken tokens[], RtPointer parms[])
 { 
  ay_torus_object t;
- ay_object *o = NULL;
- int ay_status = AY_OK;
 
   t.closed = AY_FALSE;
   t.majorrad = (double)majorradius;
@@ -224,10 +241,7 @@ RtVoid ay_rrib_RiTorus(RtFloat majorradius, RtFloat minorradius,
   t.phimax = (double)phimax;
   t.thetamax = (double)thetamax;
 
-  ay_rrib_co.refine = (void *)(&t);
-  ay_rrib_co.type = AY_IDTORUS;
-  ay_status = ay_object_copy(&ay_rrib_co, &o);
-  ay_status = ay_object_link(o);
+  ay_rrib_linkobject((void *)(&t), AY_IDTORUS);
 
  return;
 } /* ay_rrib_RiTorus */
@@ -240,8 +254,6 @@ RtVoid ay_rrib_RiNuPatch(RtInt nu, RtInt uorder, RtFloat uknot[],
 			 RtInt n, RtToken tokens[], RtPointer parms[])
 {
  ay_nurbpatch_object np;
- ay_object *o = NULL;
- int ay_status = AY_OK;
  int i = 0, j = 0, stride = 4;
  double *p = NULL;
  RtPointer tokensfound[PPWTBL_LAST];
@@ -296,10 +308,13 @@ RtVoid ay_rrib_RiNuPatch(RtInt nu, RtInt uorder, RtFloat uknot[],
 	}
     }
   
-
   if(!(np.controlv = calloc(nu*nv*4, sizeof(double))))
-    return;
-  
+    {
+      free(np.uknotv);
+      free(np.vknotv);
+      return;
+    }
+
   pp = pw;
   for(i = 0; i < nv; i++)
     {
@@ -317,19 +332,20 @@ RtVoid ay_rrib_RiNuPatch(RtInt nu, RtInt uorder, RtFloat uknot[],
 	  else
 	    {
 	      p[3] = 1.0;
-	    }
+	    } /* if */
 
 	  p += (nv*4);
 	  pp += stride;
-	}
-    }
+	} /* for */
+    } /* for */
 
+  ay_rrib_co.parent = AY_TRUE;
+  ay_rrib_linkobject((void *)(&np), AY_IDNPATCH);
+  ay_rrib_co.parent = AY_FALSE;
 
-
-  ay_rrib_co.refine = (void *)(&np);
-  ay_rrib_co.type = AY_IDNPATCH;
-  ay_status = ay_object_copy(&ay_rrib_co, &o);
-  ay_status = ay_object_link(o);
+  free(np.uknotv);
+  free(np.vknotv);
+  free(np.controlv);
 
  return;
 } /* ay_rrib_RiNuPatch */
@@ -339,17 +355,245 @@ RtVoid ay_rrib_RiTrimCurve(RtInt nloops, RtInt ncurves[], RtInt order[],
 			   RtFloat knot[], RtFloat min[], RtFloat max[], 
 			   RtInt n[], RtFloat u[], RtFloat v[], RtFloat w[])
 {
+ int i = 0, j = 0, k = 0, l = 0;
+ RtInt *orderptr = NULL, *nptr = NULL;
+ RtFloat *knotptr = NULL, *uptr = NULL, *vptr = NULL, *wptr = NULL;
+ ay_nurbcurve_object *nc = NULL;
+ ay_object *o = NULL, *level = NULL, **ncinloop = NULL;
+ int ay_status = AY_OK;
 
+
+  nptr = n;
+  orderptr = order;
+  knotptr = knot;
+  uptr = u;
+  vptr = v;
+  wptr = w;
+  
+  for(i = 0; i < nloops; i++)
+   {
+     if(ncurves[i] > 1)
+       { /* read trim loop */
+	 /* create level */
+	 level = NULL;
+	 if(!(level = calloc(1, sizeof(ay_object))))
+	   return;
+	 ay_object_defaults(level);
+	 level->type = AY_IDLEVEL;
+	 level->parent = AY_TRUE;
+	 if(!(level->refine = calloc(1, sizeof(ay_level_object))))
+	   return;
+	 ((ay_level_object *)(level->refine))->type = AY_LTLEVEL;
+
+	 ay_status = ay_object_crtendlevel(&(level->down));
+	 ncinloop = &(level->down);
+
+
+	 /* read loops curves */
+	 for(j = 0; j < ncurves[i]; j++)
+	   {
+	     if(!(nc = calloc(1, sizeof(ay_nurbcurve_object))))
+	       return;
+
+	     nc->length = (int)*nptr;
+	     nc->order = (int)*orderptr;
+
+	     if(!(nc->knotv = calloc((*nptr + *orderptr), sizeof(double))))
+	       return;
+
+	     for(k = 0; k < (*nptr + *orderptr); k++)
+	       {
+		 nc->knotv[k] = (double)*knotptr;
+		 knotptr++;
+	       }
+	     
+	     if(!(nc->controlv = calloc((*nptr * 4), sizeof(double))))
+	       return;
+
+	     l = 0;
+	     for(k = 0; k < *nptr; k++)
+	       {
+		 nc->controlv[l] = (double)*uptr;
+		 nc->controlv[l+1] = (double)*vptr;
+		 nc->controlv[l+3] = (double)*wptr;
+		 l += 4;
+		 uptr++;
+		 vptr++;
+		 wptr++;
+	       } /* for */
+
+	     /* link trimcurve */
+	     o = NULL;
+	     if(!(o = calloc(1, sizeof(ay_object))))
+	       return;
+	     ay_object_defaults(o);
+	     o->type = AY_IDNCURVE;
+	     o->refine = (void *)nc;
+
+	     o->next = *ncinloop;
+	     *ncinloop = o;
+	     ncinloop = &(o->next);
+
+	     orderptr++;
+	     nptr++;
+	   } /* for */
+
+	 /* link level */
+	 level->next = ay_rrib_cattributes->trimcurves;
+	 ay_rrib_cattributes->trimcurves = level;
+
+
+       }
+     else
+       { /* read single trimcurve */
+	 if(!(nc = calloc(1, sizeof(ay_nurbcurve_object))))
+	   return;
+
+	 nc->length = (int)*nptr;
+	 nc->order = (int)*orderptr;
+
+	 if(!(nc->knotv = calloc((*nptr + *orderptr), sizeof(double))))
+	   return;
+
+	 for(k = 0; k < (*nptr + *orderptr); k++)
+	   {
+	     nc->knotv[k] = (double)*knotptr;
+	     knotptr++;
+	   }
+
+	 if(!(nc->controlv = calloc((*nptr * 4), sizeof(double))))
+	   return;
+
+	 l = 0;
+	 for(k = 0; k < *nptr; k++)
+	   {
+	     nc->controlv[l] = (double)*uptr;
+	     nc->controlv[l+1] = (double)*vptr;
+	     nc->controlv[l+3] = (double)*wptr;
+	     l += 4;
+	     uptr++;
+	     vptr++;
+	     wptr++;
+	   } /* for */
+
+	 /* link trimcurve */
+	 o = NULL;
+	 if(!(o = calloc(1, sizeof(ay_object))))
+	   return;
+	 ay_object_defaults(o);
+	 o->type = AY_IDNCURVE;
+	 o->refine = (void *)nc;
+	 o->next = ay_rrib_cattributes->trimcurves;
+	 ay_rrib_cattributes->trimcurves = o;
+
+	 orderptr++;
+	 nptr++;
+       } /* if */
+   } /* for */
+
+ return;
 } /* ay_rrib_RiTrimCurve */
 
 
-RtLightHandle ay_rrib_RiAreaLightSourceV( RtToken name, 
-			     RtInt n, RtToken tokens[], RtPointer parms[] )
+
+
+RtLightHandle
+ay_rrib_RiLightSource(RtToken name, 
+		      RtInt n, RtToken tokens[], RtPointer parms[])
 {
-   (void)name; (void)n; (void)tokens; (void)parms;
-   
-   /* Fake it. */
-   /*return (RtLightHandle)LastLightHandle++;*/
+ ay_light_object l;
+ ay_object *o = NULL;
+ int ay_status = AY_OK;
+ int i = 0;
+ RtPoint *pnt = NULL;
+ RtColor *col = NULL;
+
+  l.type = AY_LITCUSTOM;
+  l.lshader = NULL;
+  l.intensity = 1.0;
+  l.tfrom[0] = 0.0;
+  l.tfrom[1] = 0.0;
+  l.tfrom[2] = 0.0;
+
+  l.tto[0] = 0.0;
+  l.tto[1] = 0.0;
+  l.tto[2] = 1.0;
+
+  l.colr = 255;
+  l.colg = 255;
+  l.colb = 255;
+
+  l.cone_angle = 30.0;
+  l.cone_delta_angle = 5.0;
+  l.beam_distribution = 2.0;
+
+  printf("%s\n",name);
+
+
+  if(!strcmp(name, "spotlight"))
+    {
+      l.type = AY_LITSPOT;
+    }
+
+
+  if(!strcmp(name, "distantlight"))
+    {
+      l.type = AY_LITDISTANT;
+    }
+
+  if(!strcmp(name, "pointlight"))
+    {
+      l.type = AY_LITPOINT;
+    }
+
+
+  for(i = 0; i < n; i++)
+    {
+      if(!strcmp(tokens[i],"intensity"))
+	{
+	  l.intensity = (double)(*((float*)(parms[i])));
+	}
+      if(!strcmp(tokens[i],"from"))
+	{
+	  pnt = (RtPoint*)(parms[i]);
+	  l.tfrom[0] = (double)((*pnt)[0]);
+	  l.tfrom[1] = (double)((*pnt)[1]);
+	  l.tfrom[2] = (double)((*pnt)[2]);
+	}
+      if(!strcmp(tokens[i],"to"))
+	{
+	  pnt = (RtPoint*)(parms[i]);
+	  l.tto[0] = (double)((*pnt)[0]);
+	  l.tto[1] = (double)((*pnt)[1]);
+	  l.tto[2] = (double)((*pnt)[2]);
+	}
+      if(!strcmp(tokens[i],"lightcolor"))
+	{
+	  col = (RtColor*)(parms[i]);
+	  l.colr = (int)((*col)[0])*255.0;
+	  l.colg = (int)((*col)[1])*255.0;
+	  l.colb = (int)((*col)[2])*255.0;
+	}
+
+    } /* for */
+
+  ay_rrib_co.refine = (void *)(&l);
+  ay_rrib_co.type = AY_IDLIGHT;
+  ay_status = ay_object_copy(&ay_rrib_co, &o);
+  ay_status = ay_object_link(o);
+
+ return((RtLightHandle)(ay_rrib_clighthandle++));
+} /* ay_rrib_RiLightSource */
+
+
+
+RtLightHandle
+ay_rrib_RiAreaLightSource(RtToken name, 
+			  RtInt n, RtToken tokens[], RtPointer parms[])
+{
+ 
+
+ return ((RtLightHandle)(ay_rrib_clighthandle++));
 }
 
 
@@ -368,12 +612,18 @@ RtVoid ay_rrib_RiAttributeV( RtToken name,
 
 
 RtVoid ay_rrib_RiAttributeBegin( void )
-{ 
+{
+
+  ay_rrib_pushattribs();
+
 }
 
 
 RtVoid ay_rrib_RiAttributeEnd( void )
 {
+
+  ay_rrib_popattribs();
+
 }
 
 
@@ -535,12 +785,38 @@ RtVoid ay_rrib_RiFrameAspectRatio( RtFloat aspect )
 
 RtVoid ay_rrib_RiFrameBegin( RtInt frame )
 { 
-   (void)frame;
+ int ay_status = AY_OK;
+
+   if(ay_rrib_readframe != -1)
+     {
+       if(frame == ay_rrib_readframe)
+	 {
+	   ay_rrib_cframe = frame;
+	   ay_status = ay_rrib_initgprims();
+	 }
+       else
+	 {
+	   ay_status = ay_rrib_cleargprims();
+	 }
+     }
+
+ return;
 }
 
 
 RtVoid ay_rrib_RiFrameEnd( void )
 { 
+ int ay_status = AY_OK;
+
+  if(ay_rrib_readframe != -1)
+    {
+      if(ay_rrib_cframe == ay_rrib_readframe)
+	{
+	  ay_status = ay_rrib_cleargprims();
+	}
+    }
+
+ return;
 }
 
 
@@ -579,7 +855,22 @@ RtVoid ay_rrib_RiHiderV( RtToken type,
 
 
 RtVoid ay_rrib_RiIdentity( void )
-{ 
+{
+
+  ay_rrib_ctrafos->movx = 0.0;
+  ay_rrib_ctrafos->movy = 0.0;
+  ay_rrib_ctrafos->movz = 0.0;
+
+  ay_rrib_ctrafos->scalx = 1.0;
+  ay_rrib_ctrafos->scaly = 1.0;
+  ay_rrib_ctrafos->scalz = 1.0;
+
+  ay_rrib_ctrafos->quat[0] = 0.0;
+  ay_rrib_ctrafos->quat[1] = 0.0;
+  ay_rrib_ctrafos->quat[2] = 0.0;
+  ay_rrib_ctrafos->quat[3] = 1.0;
+
+ return;
 }
 
 
@@ -610,17 +901,6 @@ RtVoid ay_rrib_RiInteriorV( RtToken name,
 { 
    (void)name; (void)n; (void)tokens; (void)parms;
 }
-
-
-RtLightHandle ay_rrib_RiLightSourceV( RtToken name, 
-                              RtInt n, RtToken tokens[], RtPointer parms[] )
-{
-   (void)name; (void)n; (void)tokens; (void)parms;
-
-   /* Fake it. */
-   /*   return (RtLightHandle)LastLightHandle++;*/
-}
-
 
 RtVoid ay_rrib_RiMakeBumpV( char *picturename, char *texturename, 
 		   RtToken swrap, RtToken twrap,
@@ -867,13 +1147,27 @@ RtVoid ay_rrib_RiReverseOrientation( void )
 
 RtVoid ay_rrib_RiRotate( RtFloat angle, RtFloat dx, RtFloat dy, RtFloat dz )
 { 
-   (void)angle; (void)dx; (void)dy; (void)dz; 
+ double quat[4];
+ double axis[3];
+
+  axis[0] = (double)dx;
+  axis[1] = (double)dy;
+  axis[2] = (double)dz;
+  ay_quat_axistoquat(axis, AY_D2R((double)angle), quat);
+  ay_quat_add(ay_rrib_ctrafos->quat, quat, ay_rrib_ctrafos->quat);
+
+ return;
 }
 
 
 RtVoid ay_rrib_RiScale( RtFloat dx, RtFloat dy, RtFloat dz )
-{ 
-   (void)dx; (void)dy; (void)dz;
+{
+
+  ay_rrib_ctrafos->scalx *= (double)dx;
+  ay_rrib_ctrafos->scaly *= (double)dy;
+  ay_rrib_ctrafos->scalz *= (double)dz;
+
+ return;
 }
 
 
@@ -978,18 +1272,29 @@ RtVoid ay_rrib_RiTransform( RtMatrix transform )
 
 
 RtVoid ay_rrib_RiTransformBegin( void )
-{ 
+{
+
+  ay_rrib_pushtrafos();
+
 }
 
 
 RtVoid ay_rrib_RiTransformEnd( void )
-{ 
+{
+
+  ay_rrib_poptrafos();
+
 }
 
 
 RtVoid ay_rrib_RiTranslate( RtFloat dx, RtFloat dy, RtFloat dz )
 { 
-   (void)dx; (void)dy; (void)dz;
+
+  ay_rrib_ctrafos->movx += (double)dx;
+  ay_rrib_ctrafos->movy += (double)dy;
+  ay_rrib_ctrafos->movz += (double)dz;
+
+ return;
 }
 
 
@@ -1136,8 +1441,28 @@ RtVoid ay_rrib_RiProcDynamicLoad( RtPointer data, RtFloat detail )
    (void)detail;
 }
 
+
+void
+ay_rrib_initgeneral(void)
+{
+ int ay_status = AY_OK;
+
+  gRibNopRITable[kRIB_TRANSFORMBEGIN] = (PRIB_RIPROC)ay_rrib_RiTransformBegin;
+  gRibNopRITable[kRIB_TRANSFORMEND] = (PRIB_RIPROC)ay_rrib_RiTransformEnd;
+  gRibNopRITable[kRIB_IDENTITY] = (PRIB_RIPROC)ay_rrib_RiIdentity;
+  gRibNopRITable[kRIB_TRANSLATE] = (PRIB_RIPROC)ay_rrib_RiTranslate;
+  gRibNopRITable[kRIB_ROTATE] = (PRIB_RIPROC)ay_rrib_RiRotate;
+  gRibNopRITable[kRIB_SCALE] = (PRIB_RIPROC)ay_rrib_RiScale;
+
+
+  gRibNopRITable[kRIB_ATTRIBUTEBEGIN] = (PRIB_RIPROC)ay_rrib_RiAttributeBegin;
+  gRibNopRITable[kRIB_ATTRIBUTEEND] = (PRIB_RIPROC)ay_rrib_RiAttributeEnd;
+
+ return;
+}
+
 int
-ay_rrib_initgprims()
+ay_rrib_initgprims(void)
 {
  int ay_status = AY_OK;
 
@@ -1149,25 +1474,249 @@ ay_rrib_initgprims()
   gRibNopRITable[kRIB_HYPERBOLOID] = (PRIB_RIPROC)ay_rrib_RiHyperboloid;
   gRibNopRITable[kRIB_TORUS] = (PRIB_RIPROC)ay_rrib_RiTorus;
   gRibNopRITable[kRIB_NUPATCH] = (PRIB_RIPROC)ay_rrib_RiNuPatch;
+  gRibNopRITable[kRIB_TRIMCURVE] = (PRIB_RIPROC)ay_rrib_RiTrimCurve;
+
+  gRibNopRITable[kRIB_LIGHTSOURCE] = (PRIB_RIPROC)ay_rrib_RiLightSource;
 
 
  return ay_status;
-}
+} /* ay_rrib_initgprims */
+
+int
+ay_rrib_cleargprims(void)
+{
+ int ay_status = AY_OK;
+
+  gRibNopRITable[kRIB_SPHERE] = (PRIB_RIPROC)RiNopSphereV;
+  gRibNopRITable[kRIB_CYLINDER] = (PRIB_RIPROC)RiNopCylinderV;
+  gRibNopRITable[kRIB_DISK] = (PRIB_RIPROC)RiNopDiskV;
+  gRibNopRITable[kRIB_CONE] = (PRIB_RIPROC)RiNopConeV;
+  gRibNopRITable[kRIB_PARABOLOID] = (PRIB_RIPROC)RiNopParaboloidV;
+  gRibNopRITable[kRIB_HYPERBOLOID] = (PRIB_RIPROC)RiNopHyperboloidV;
+  gRibNopRITable[kRIB_TORUS] = (PRIB_RIPROC)RiNopTorusV;
+  gRibNopRITable[kRIB_NUPATCH] = (PRIB_RIPROC)RiNopNuPatchV;
+  gRibNopRITable[kRIB_TRIMCURVE] = (PRIB_RIPROC)RiNopTrimCurve;
+
+ return ay_status;
+} /* ay_rrib_cleargprims */
+
+
+void
+ay_rrib_pushattribs(void)
+{
+ ay_rrib_attrstate *newstate = NULL;
+ char fname[] = "ay_rrib_pushattribs";
+ int ay_status = AY_OK;
+
+  if(!(newstate = calloc(1, sizeof(ay_rrib_attrstate))))
+    {
+      ay_error(AY_EOMEM, fname, NULL);
+      return;
+    }
+
+  /* copy old into new state */
+  if(ay_rrib_cattributes)
+    {
+      memcpy(newstate, ay_rrib_cattributes, sizeof(ay_rrib_attrstate));
+
+      newstate->trimcurves = NULL;
+#if 0
+      if(ay_rrib_cattributes->trimcurves)
+	{
+	  /* XXXX Bug: this simple copy means, only the first trimcurve
+	     survives a BeginAttribute! */
+	  ay_status = ay_object_copy(ay_rrib_cattributes->trimcurves,
+				     &(newstate->trimcurves));
+
+
+	}
+#endif
+    }
+
+  /* link new state to stack */
+  newstate->next = ay_rrib_cattributes;
+  ay_rrib_cattributes = newstate;
+
+ return;
+} /* ay_rrib_pushattribs */
+
+
+void
+ay_rrib_popattribs(void)
+{
+ ay_rrib_attrstate *nextstate = NULL;
+ char fname[] = "ay_rrib_popattribs";
+
+  if(!ay_rrib_cattributes)
+    {
+      ay_error(AY_ERROR, fname, "No states left!");
+      return;
+    }
+
+  nextstate = ay_rrib_cattributes->next;
+
+  /* free toplevel state */
+
+  if(ay_rrib_cattributes->trimcurves)
+    {
+      ay_object_deletemulti(ay_rrib_cattributes->trimcurves);
+      ay_rrib_cattributes->trimcurves = NULL;
+    }
+
+  free(ay_rrib_cattributes);
+
+  ay_rrib_cattributes = nextstate;
+
+ return;
+} /* ay_rrib_popattribs */
+
+
+void
+ay_rrib_pushtrafos(void)
+{
+ ay_rrib_trafostate *newstate = NULL;
+ char fname[] = "ay_rrib_pushtrafos";
+ int ay_status = AY_OK;
+
+  if(!(newstate = calloc(1, sizeof(ay_rrib_trafostate))))
+    {
+      ay_error(AY_EOMEM, fname, NULL);
+      return;
+    }
+
+  /* copy old into new state or initialize first state */
+  if(ay_rrib_ctrafos)
+    {
+      memcpy(newstate, ay_rrib_ctrafos, sizeof(ay_rrib_trafostate));
+    }
+  else
+    {
+      newstate->scalx = 1.0;
+      newstate->scaly = 1.0;
+      newstate->scalz = 1.0;
+      newstate->quat[3] = 1.0; 
+    }
+  /* link new state to stack */
+  newstate->next = ay_rrib_ctrafos;
+  ay_rrib_ctrafos = newstate;
+
+ return;
+} /* ay_rrib_pushtrafos */
+
+
+void
+ay_rrib_poptrafos(void)
+{
+ ay_rrib_trafostate *nextstate = NULL;
+ char fname[] = "ay_rrib_poptrafos";
+
+  if(!ay_rrib_ctrafos)
+    {
+      ay_error(AY_ERROR, fname, "No states left!");
+      return;
+    }
+
+  nextstate = ay_rrib_ctrafos->next;
+
+  /* free toplevel state */
+
+  free(ay_rrib_ctrafos);
+
+  ay_rrib_ctrafos = nextstate;
+
+ return;
+} /* ay_rrib_poptrafos */
+
+
+void
+ay_rrib_linkobject(void *object, int type)
+{
+ ay_object *o = NULL, *t = NULL;
+ double euler[3] = {0};
+ int ay_status = AY_OK;
+ char *fname = "ay_rrib_linkobject";
+
+  ay_rrib_co.refine = object;
+  ay_rrib_co.type = type;
+
+  ay_rrib_co.movx = ay_rrib_ctrafos->movx;
+  ay_rrib_co.movy = ay_rrib_ctrafos->movy;
+  ay_rrib_co.movz = ay_rrib_ctrafos->movz;
+
+  ay_rrib_co.scalx = ay_rrib_ctrafos->scalx;
+  ay_rrib_co.scaly = ay_rrib_ctrafos->scaly;
+  ay_rrib_co.scalz = ay_rrib_ctrafos->scalz;
+
+  ay_rrib_co.quat[0] = ay_rrib_ctrafos->quat[0];
+  ay_rrib_co.quat[1] = ay_rrib_ctrafos->quat[1];
+  ay_rrib_co.quat[2] = ay_rrib_ctrafos->quat[2];
+  ay_rrib_co.quat[3] = ay_rrib_ctrafos->quat[3];
+
+  ay_quat_toeuler(ay_rrib_ctrafos->quat, euler);
+  ay_rrib_co.rotx = AY_R2D(euler[2]);
+  ay_rrib_co.roty = AY_R2D(euler[1]);
+  ay_rrib_co.rotz = AY_R2D(euler[0]);
+
+  if(type == AY_IDNPATCH)
+    {
+      if(ay_rrib_cattributes->trimcurves)
+	{
+	  ay_rrib_co.down = ay_rrib_cattributes->trimcurves;
+	  t = ay_rrib_co.down;
+	  while(t->next)
+	    t = t->next;
+	  ay_status = ay_object_crtendlevel(&(t->next));
+	  ay_rrib_cattributes->trimcurves = NULL;
+	}
+
+    }
+
+
+  if(ay_rrib_co.parent && (!ay_rrib_co.down))
+    {
+      ay_status = ay_object_crtendlevel(&(ay_rrib_co.down));
+      if(ay_status)
+	{
+	  ay_error(AY_ERROR, fname,
+          "Could not create terminating level object, scene is corrupt now!");
+	}
+    }
+
+  ay_status = ay_object_copy(&ay_rrib_co, &o);
+  ay_status = ay_object_link(o);
+
+  ay_rrib_lrobject = o;
+
+ return;
+} /* ay_rrib_linkobject */
 
 
 int
 ay_rrib_readrib(char *filename, int frame)
 {
- RIB_HANDLE  rib;
-
+ int ay_status = AY_OK;
+ RIB_HANDLE rib;
+       
   ay_object_defaults(&ay_rrib_co);
+
+  ay_rrib_clighthandle = 1;
+
+  ay_rrib_readframe = frame;
+
+  if(frame == -1)
+    {
+      ay_status = ay_rrib_initgprims();
+    }
+
+  ay_rrib_initgeneral();
+
+  ay_rrib_ctrafos = NULL;
+  ay_rrib_pushtrafos();
+  ay_rrib_cattributes = NULL;
+  ay_rrib_pushattribs();
 
   /* Table included in libraries. */ 
   rib = RibOpen( filename, kRIB_LAST_RI, gRibNopRITable);
-
-
-  /* fill table */
-  
   RibRead(rib);
   RibClose(rib);
 
@@ -1211,7 +1760,7 @@ int
 Rrib_Init(Tcl_Interp *interp)
 {
  char fname[] = "rrib_init";
- int ay_status = AY_OK;
+ /* int ay_status = AY_OK;*/
 
   /* first, check versions */
   if(strcmp(ay_version_ma, ay_rrib_version_ma))
@@ -1228,8 +1777,6 @@ Rrib_Init(Tcl_Interp *interp)
 	       "Plugin has been compiled for a different Ayam version!");
       ay_error(AY_ERROR, fname, "However, it is probably safe to continue...");
     }
-
-  ay_status = ay_rrib_initgprims();
 
   /* register some C-functions as Tcl-Commands */
   Tcl_CreateCommand (interp, "rrib",
