@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>21. Jun 2003
+<date>23. Jun 2003
 <abstract>
 This is the documentation of Ayam (1.6) - a free 3D modeling environment
 for the RenderMan interface.
@@ -1041,6 +1041,9 @@ windows.
 object should be displayed in brackets in the tree view or listbox.
 <item><tt/"AutoSavePrefs"/, if this is switched on, Ayam will write
 the preferences settings to the file ayamrc when the program quits.
+<item><tt/"BakOnReplace"/, if this is switched on, Ayam will make
+a backup copy of each scene file it loads via main menu
+<tt>"File/Replace"</tt> or via the most recently used list.
 <item><tt/"LoadEnv"/, if this is switched on, Ayam will load
 the scene file specified by <tt/"EnvFile"/ on startup. 
 <item><tt/"NewLoadsEnv"/, if this is switched on, Ayam will load
@@ -5166,6 +5169,9 @@ the scene hierarchy) you need to bind a write-trace to that variable,
 that calls the procedure <tt/"update_prompt"/. This write-trace
 may e.g. be established using a small script:
 <tt/"trace variable &lt;vname&gt; update_prompt"/.
+<item><tt/"BackupExt"/: is the file name extension to be used for backup
+files. Default values are <tt>"&tilde;"</tt> for Unix and
+<tt>".bak"</tt> for Win32.
 </itemize>
 
 <sect2>RiOption and RiAttributes Database<label id="rioptdb">
@@ -5694,6 +5700,8 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <itemize>
 <item>Background: <ref id="prefdraw" name="preference setting">
 <item>Background Image: <ref id="vat" name="view attribute">
+<item>BackupExt: <ref id="hidprefs" name="hidden preference setting">
+<item>BakOnReplace: <ref id="prefmain" name="preference setting">
 <item>Basis_U, Basis_V: <ref id="pmattr" name="PatchMesh attribute">
 <item>BeamDistrib: <ref id="lip" name="light attribute">
 <item>Bevel: <ref id="handb" name="using bevels">
