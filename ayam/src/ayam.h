@@ -700,6 +700,8 @@ typedef struct ay_prefs_object_s
   double pick_epsilon;
   int lazynotify;
   int undo_levels;
+  int snap3d;
+
   /* RIB export prefs */
   int resolveinstances;
   int checklights;

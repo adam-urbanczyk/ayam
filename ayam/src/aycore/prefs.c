@@ -45,6 +45,10 @@ ay_prefs_gettcmd(ClientData clientData, Tcl_Interp *interp,
   to = Tcl_NewIntObj(ay_prefs.undo_levels);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton, "Snap3D", -1);
+  to = Tcl_NewIntObj(ay_prefs.snap3d);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
   Tcl_SetStringObj(ton, "Tolerance", -1);
   to = Tcl_NewDoubleObj(ay_prefs.glu_sampling_tolerance);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -293,6 +297,10 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
       ay_prefs.undo_levels = itemp;
 
     }
+
+  Tcl_SetStringObj(ton, "Snap3D", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &ay_prefs.snap3d);
 
   Tcl_SetStringObj(ton, "Tolerance", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
