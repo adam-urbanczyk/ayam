@@ -60,15 +60,13 @@ proc viewTitle { w type action } {
 	    $w.fMenu.c.m entryconfigure 16 -state normal
 	} else {
 	    $w.fMenu.c.m entryconfigure 16 -state disabled
-
 	}
+
     }
     if { $action != "" } { set oldaction $action }
     set newname [format "%s - %s - %s" $newvname $oldtype $oldaction]
     wm title $w $newname
     update idletasks
-
-
 
 return;
 }
@@ -189,21 +187,25 @@ global ay
   set w .view[expr $lastid + 1]
  }
 
-catch {destroy $w}
-toplevel $w
+ catch {destroy $w}
+ if { $ay(truecolor) == 1 } {
+     toplevel $w  -visual truecolor
+ } else {
+     toplevel $w
+ }
 
-scan $w ".%s" name
-wm iconname $w $name
+ scan $w ".%s" name
+ wm iconname $w $name
 
-frame $w.fMenu -bd 2 -relief raised
-vmenu_open $w
-pack $w.fMenu -side top -fill x
+ frame $w.fMenu -bd 2 -relief raised
+ vmenu_open $w
+ pack $w.fMenu -side top -fill x
 
 
-frame $w.f3D
+ frame $w.f3D
 
-togl $w.f3D.togl -rgba true -double true -depth true\
-	-ident $name -width $width -height $height
+ togl $w.f3D.togl -rgba true -double true -depth true\
+	 -ident $name -width $width -height $height
 
 
 pack $w.f3D -in $w -fill both -expand yes
