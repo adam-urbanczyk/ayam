@@ -253,6 +253,7 @@ ay_cylinder_shadecb(struct Togl *togl, ay_object *o)
 	{
 	  if(!(qobj = gluNewQuadric()))
 	    return AY_EOMEM;
+	  gluQuadricOrientation(qobj, GLU_INSIDE);
 	  gluDisk(qobj, 0.0, radius, 8, 1);
 	  gluDeleteQuadric(qobj);
 
