@@ -1,4 +1,4 @@
-[CVS 27. 11. 2001] Ayam1.0x:
+[CVS 11. 12. 2001] Ayam1.0x:
 o bug fixes:
   - fixed custom lights always exporting as AreaLight to RIB
   - fixed tags not loading from scene files to root object
@@ -12,6 +12,12 @@ o bug fixes:
     conjunction with grids
   - fixed undo/redo not calling notification callbacks
   - fixed weight edit crashing when applied to objects without editable points
+  - fixed menu entry "View/Close" creating Tcl errors on Win32
+  - fixed reset weights action crashing
+  - fixed "Set new shader!" dialogue creating a Tcl error when closed
+    with window close button
+  - fixed console menu not working on Win32
+  - fixed forAllT scripting interface command
 o added auto-scrolling to property with focus (<Tab> scrolls the property GUI)
 o added "Scene changed!" warning requester to various scene destroying
   operations, like "File/New"
@@ -23,7 +29,12 @@ o "File/Save(As)" now adds filenames to the most recently used list too
 o added "Special/Toggle Toolbox" menu entry to open/close the toolbox window
 o added some example scripts to the documentation
 o the current fov is now displayed in the set fov dialogue initially
-o added a context menu to the property listbox
+o added a context menu to the property listbox and the object listbox
+o improved checkbutton property gui element on Win32
+o the toolbox looks much nicer now on Win32
+o added preferences setting "Misc/ToolBoxTrans" that may be used to make
+  the tool box window transient on Unix (the toolbox is now always transient
+  on Win32 to save space in the task bar)
 
 [02. 10. 2001] Ayam1.0 beta4:
 o bug fixes:
