@@ -317,26 +317,33 @@ ay_concatnc_notifycb(ay_object *o)
     {
       ay_nct_applytrafo(ncurve);
       ay_nct_clamp((ay_nurbcurve_object *)ncurve->refine);
+      ncurve = ncurve->next;
+    }
+
+  if(concatnc->fillgaps)
+    {
+      ay_status = ay_nct_fillgaps(concatnc->closed, curves);
+      if(ay_status)
+	{
+	  ay_error(AY_ERROR, fname, "Failed to create fillets!");
+	}
+    }
+
+  ncurve = curves;
+  while(ncurve)
+    {
       numcurves++;
       ncurve = ncurve->next;
     }
 
   if(numcurves > 1)
     {
-      if(concatnc->fillgaps)
-	{
-	  ay_status = ay_nct_fillgaps(concatnc->closed, curves);
-	  if(ay_status)
-	    {
-	      ay_error(AY_ERROR, fname, "failed to create fillets");
-	    }
-	}
-
+      
       ay_status = ay_nct_concatmultiple(curves, &concatnc->ncurve);
 
       if(ay_status)
 	{
-	  ay_error(AY_ERROR, fname, "failed to concat curves");
+	  ay_error(AY_ERROR, fname, "Failed to concat curves!");
 	}
       else
 	{
