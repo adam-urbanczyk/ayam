@@ -210,12 +210,14 @@ int ay_nct_applytrafo(ay_object *c);
 
 int ay_nct_getpntfromindex(ay_nurbcurve_object *curve, int index, double **p);
 
-int ay_nct_concatmultiple(ay_object *curves, ay_object **result);
+int ay_nct_concatmultiple(int knot_type, ay_object *curves,
+			  ay_object **result);
 
-int ay_nct_fillgap(ay_nurbcurve_object *c1, ay_nurbcurve_object *c2,
+int ay_nct_fillgap(int order, double tanlen,
+		   ay_nurbcurve_object *c1, ay_nurbcurve_object *c2,
 		   ay_object **result);
 
-int ay_nct_fillgaps(int closed, ay_object *curves);
+int ay_nct_fillgaps(int closed, int order, double tanlen, ay_object *curves);
 
 int ay_nct_arrange(ay_object *o, ay_object *t, int rotate);
 

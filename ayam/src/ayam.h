@@ -492,6 +492,8 @@ typedef struct ay_concatnc_object_s
   int closed;
   int fillgaps;
   int revert;
+  int knot_type;
+  double ftlength;
 
   double glu_sampling_tolerance;
   int display_mode;
