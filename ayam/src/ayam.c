@@ -117,6 +117,8 @@ char *ay_savegeom_tagtype;
 
 char *ay_tp_tagtype;
 
+char *ay_ns_tagtype;
+
 static char *ay_log = "/tmp/ay.log";
 
 int ay_wrib_framenum = 0;
@@ -247,6 +249,9 @@ ay_init(Tcl_Interp *interp)
 
   /* initialize rioption tag helper module */
   ay_riopt_init(interp);
+
+  /* initialize ns tag helper module */
+  ay_ns_init(interp);
 
   /* initialize wrib module */
   ay_wrib_init(interp);
