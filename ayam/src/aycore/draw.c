@@ -39,7 +39,7 @@ ay_draw_selp(ay_object *o)
 	 {
 	   glVertex3d((GLdouble)point->point[0], (GLdouble)point->point[1],
 		      (GLdouble)point->point[2]);
-	  
+
 	   point = point->next;
 	 }
 
@@ -88,7 +88,7 @@ ay_draw_object(struct Togl *togl, ay_object *o, int selected)
    ay_quat_torotmatrix(o->quat, m);
    glMultMatrixd((GLdouble*)m);
    glScaled((GLdouble)o->scalx, (GLdouble)o->scaly, (GLdouble)o->scalz);
-  
+
    arr = ay_drawcbt.arr;
    cb = (ay_drawcb *)(arr[o->type]);
 
@@ -104,7 +104,7 @@ ay_draw_object(struct Togl *togl, ay_object *o, int selected)
    if(ay_status)
      {
        ay_error(AY_ERROR, fname, "draw callback failed");
-       
+
        glPopMatrix();
        return AY_ERROR;
      }
@@ -121,12 +121,12 @@ ay_draw_object(struct Togl *togl, ay_object *o, int selected)
 	   down = down->next;
 	 } /* while */
      }
- 
+
   if(selected == 2)
     {
       glPopName();
     }
- 
+
   glPopMatrix();
 
  return AY_OK;
@@ -227,13 +227,10 @@ ay_draw_view(struct Togl *togl, int draw_offset)
       /* draw handles of selected objects */
       if(view->drawhandles)
 	{
-	  /* let all handles appear "on top" of current drawing,    */
-	  /* we can't use the glDisable(GL_DEPTH_TEST);-method here */
-	  /* because we need the Z-values for vertice picking...    */
-	  if(!draw_offset)
-	    {
-	      glClear(GL_DEPTH_BUFFER_BIT);
-	    }
+	  /* let all handles appear "on top" of current drawing;     */
+	  /* we cannot use the glDisable(GL_DEPTH_TEST);-method here */
+	  /* because we need the Z-values for vertice picking...     */
+	  glClear(GL_DEPTH_BUFFER_BIT);
 
 	  /* set size of points */
 	  glPointSize((GLfloat)ay_prefs.handle_size);
@@ -255,7 +252,7 @@ ay_draw_view(struct Togl *togl, int draw_offset)
 		  glMultMatrixd((GLdouble*)m);
 		  glScaled((GLdouble)o->scalx, (GLdouble)o->scaly,
 			   (GLdouble)o->scalz);
-  
+
 		  cb = (ay_drawcb *)(arr[o->type]);
 
 		  if(cb)
@@ -349,7 +346,7 @@ ay_draw_grid(struct Togl *togl)
 			(GLdouble)o->movz);
 	   ay_quat_torotmatrix(o->quat, m);
 	   glMultMatrixd((GLdouble*)m);
-	  
+
 	   glScaled((GLdouble)o->scalx, (GLdouble)o->scaly,
 		    (GLdouble)o->scalz);
 	 } /* if */
@@ -357,7 +354,7 @@ ay_draw_grid(struct Togl *togl)
       glPopMatrix();
 
       gluProject(0.0, 0.0, 0.0, mm, mp, vp, &owinx, &owiny, &owinz);
-      
+
       switch(view->type)
 	{
 	case AY_VTFRONT:
@@ -374,7 +371,7 @@ ay_draw_grid(struct Togl *togl)
 		     &gwinx, &gwiny, &gwinz);
 	  break;
 	}
-      
+
       dx = fabs(gwinx-owinx);
       if(dx < 1.0)
 	dx = 1.0;
@@ -422,7 +419,7 @@ ay_draw_grid(struct Togl *togl)
     }
   else
     {
-  
+
       if(grid < 1E-6)
 	return;
 
@@ -606,7 +603,7 @@ ay_draw_arrow(struct Togl *togl, double *from, double *to)
   glGetDoublev(GL_MODELVIEW_MATRIX, mvm);
   glGetDoublev(GL_PROJECTION_MATRIX, pm);
   glGetIntegerv(GL_VIEWPORT, vp);
-	  
+
   gluProject((GLdouble)to[0], (GLdouble)to[1],
 	     (GLdouble)to[2], mvm, pm, vp,
 	     &win1x, &win1y, &win1z);
@@ -617,7 +614,7 @@ ay_draw_arrow(struct Togl *togl, double *from, double *to)
 
   p1x = win1x+AY_POINTER;
   p1y = win1y+AY_POINTER;
-  
+
   p2x = win1x+AY_POINTER;
   p2y = win1y-AY_POINTER;
 
@@ -652,7 +649,7 @@ ay_draw_arrow(struct Togl *togl, double *from, double *to)
      glVertex3d(win1x,win1y,win1z);
      glVertex3d(p2x,p2y,win1z);
     glEnd();
-      
+
     glPopMatrix();
    glMatrixMode(GL_PROJECTION);
    glPopMatrix();
@@ -688,15 +685,15 @@ ay_draw_bgimage(struct Togl *togl)
        glMatrixMode(GL_MODELVIEW);
        glPushMatrix();
        glLoadIdentity();
-       
+
        glColor3d((GLdouble)ay_prefs.bgr, (GLdouble)ay_prefs.bgg,
 		 (GLdouble)ay_prefs.bgb);
-       
+
        color[0] = (GLfloat)ay_prefs.bgr;
        color[1] = (GLfloat)ay_prefs.bgg;
        color[2] = (GLfloat)ay_prefs.bgb;
        glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, color);
-       
+
        glBegin(GL_QUADS);
         glTexCoord2i(0, 0);
 	glVertex3i(0, 0, 0);
@@ -710,7 +707,7 @@ ay_draw_bgimage(struct Togl *togl)
         glTexCoord2i(1, 0);
 	glVertex3i(w, 0, 0);
        glEnd();
-      
+
      glPopMatrix();
      glMatrixMode(GL_PROJECTION);
      glPopMatrix();
@@ -834,7 +831,7 @@ ay_draw_trimview(void)
        {
 	 minx = (GLfloat)((patch->uknotv)[0]);
 	 miny = (GLfloat)((patch->vknotv)[0]);
- 
+
 	 maxx = (GLfloat)((patch->uknotv)[patch->width + patch->uorder - 1]);
 	 maxy = (GLfloat)((patch->vknotv)[patch->height + patch->vorder - 1]);
 
@@ -859,7 +856,7 @@ ay_draw_trimview(void)
 
 
 /* ay_draw_rectangle:
- *  
+ *
  */
 void
 ay_draw_rectangle(int winwidth, int winheight,
