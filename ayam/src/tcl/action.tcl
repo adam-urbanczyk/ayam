@@ -635,7 +635,7 @@ proc actionSplitNC { w } {
 # not really an action, clears all bindings
 # normally bound to the Esc-key
 proc actionClear { w } {
-    viewTitle $w "" "None"
+    viewTitle $w "" "Pick"
     bind $w <ButtonPress-1> ""
     bind $w <B1-Motion> ""
     bind $w <ButtonRelease-1> ""

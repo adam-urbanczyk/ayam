@@ -559,19 +559,19 @@ ay_view_readcb(FILE *fileptr, ay_object *o)
   /* set window title */
   if(vtemp.type == AY_VTFRONT)
     sprintf(command,
-	    "global ay;viewTitle [lindex $ay(views) end] Front None");
+	    "global ay;viewTitle [lindex $ay(views) end] Front Pick");
   if(vtemp.type == AY_VTSIDE)
     sprintf(command,
-	    "global ay;viewTitle [lindex $ay(views) end] Side None");
+	    "global ay;viewTitle [lindex $ay(views) end] Side Pick");
   if(vtemp.type == AY_VTTOP)
     sprintf(command,
-	    "global ay;viewTitle [lindex $ay(views) end] Top None");
+	    "global ay;viewTitle [lindex $ay(views) end] Top Pick");
   if(vtemp.type == AY_VTPERSP)
     sprintf(command,
-	    "global ay;viewTitle [lindex $ay(views) end] Persp None");
+	    "global ay;viewTitle [lindex $ay(views) end] Persp Pick");
   if(vtemp.type == AY_VTTRIM)
     sprintf(command,
-	    "global ay;viewTitle [lindex $ay(views)_views end] Trim None");
+	    "global ay;viewTitle [lindex $ay(views)_views end] Trim Pick");
 
   Tcl_Eval(ay_interp, command);
 
