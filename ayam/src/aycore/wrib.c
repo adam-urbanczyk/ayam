@@ -22,6 +22,38 @@ int ay_wrib_sm(char *file, char *image, int width, int height);
 
 /* functions: */
 
+/* ay_wrib_noexport:
+ *  check for NoExport tag
+ */
+int
+ay_wrib_noexport(ay_object *o)
+{
+ ay_tag_object *tag = NULL;
+
+  if(o)
+    {
+      if(o->tags)
+	{
+	  tag = o->tags;
+	  while(tag)
+	    {
+	      if(tag->type == ay_noexport_tagtype)
+		{
+		  return AY_TRUE;
+		}
+	      else
+		{
+		  return AY_FALSE;
+		}
+	      tag = tag->next;
+	    } /* while */
+	} /* if */
+    } /* if */
+
+ return AY_FALSE;
+} /* ay_wrib_noexport */
+
+
 /* cot() used by currently unused FrameCamera() */
 /*
 double
@@ -33,6 +65,7 @@ else
  return (cos (in) / sin (in));
 }
 */
+
 
 /* ay_wrib_aimz:
  *
@@ -379,7 +412,6 @@ ay_wrib_object(char *file, ay_object *o)
  void **arr = NULL;
  ay_wribcb *cb = NULL;
  ay_level_object *l = NULL, *ld = NULL;
- ay_tag_object *tag = NULL;
  char *parname = "name";
 
   if(!o)
@@ -388,17 +420,8 @@ ay_wrib_object(char *file, ay_object *o)
   if(ay_prefs.excludehidden && o->hide)
     return AY_OK;
 
-  if(o->tags)
-    {
-      tag = o->tags;
-      while(tag)
-	{
-	  if(tag->type == ay_noexport_tagtype)
-	    return AY_OK;
-	  tag = tag->next;
-	}
-    }
-
+  if(ay_wrib_noexport(o))
+    return AY_OK;
 
   arr = ay_wribcbt.arr;
   cb = (ay_wribcb *)(arr[o->type]);
@@ -913,7 +936,7 @@ ay_wrib_checklights(ay_object *o)
 	    return 1;
 	}
 
-      if(o->type == AY_IDLIGHT)
+      if((o->type == AY_IDLIGHT) && (!(ay_wrib_noexport(o))))
 	{
 	  light = (ay_light_object *)o->refine;
 
@@ -960,6 +983,7 @@ ay_wrib_lights(char *file, ay_object *o)
  int filenlen = 0;
  RtLightHandle light_handle;
 
+
   if(!o || !file)
     return ay_status;
 
@@ -994,7 +1018,7 @@ ay_wrib_lights(char *file, ay_object *o)
 	  glPopMatrix();
 	}
 
-      if(o->type == AY_IDLIGHT)
+      if((o->type == AY_IDLIGHT) && (!(ay_wrib_noexport(o))))
 	{
 	  light = (ay_light_object *)o->refine;
 
