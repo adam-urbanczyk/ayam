@@ -253,9 +253,15 @@ ay_level_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
  int ay_status = AY_OK;
  ay_object *t = NULL;
+ ay_level_object *l = NULL;
 
   if(!o)
     return AY_ENULL;
+
+  l = (ay_level_object *)o->refine;
+
+  if(l->type == AY_LTEND)
+    return AY_OK;
 
   /* check for presence of any child objects */
   if(!o->down || (o->down && !o->down->next))
