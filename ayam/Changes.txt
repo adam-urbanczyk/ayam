@@ -62,6 +62,10 @@ o added shaders not found in the BMRT distribution to "scn/shaders" to
 o RIB-Export: no archives are created for instances of objects that
   would not be exported anyway
 o added a little label to the rendering GUI that displays the rendering time
+o Due to a flaw in the design of the file format, Ayam1.0b4 and below
+  will not read Ayam1.1 files. On the other hand, Ayam1.1 reads files
+  from 1.0b4 and below just fine.
+
 
 [02. 10. 2001] Ayam1.0 beta4:
 o bug fixes:
