@@ -555,6 +555,8 @@ proc io_saveEnv {  } {
 	 uCL cs
 	 goTop
 	 selOb 0
+	 # save scene changed status
+	 set temp $ay(sc)
 	 set ay_error 0
 	 saveScene $filename 1
 	 if { $ay_error < 2 } {
@@ -564,7 +566,8 @@ proc io_saveEnv {  } {
 	     ayError 2 "saveEnv" "There were errors while writing:"
 	     ayError 2 "saveEnv" "$filename" 
 	 }
-
+	 # reset scene changed status to old value
+	 set ay(sc) $temp
 	 selOb
 	 uCL cs
 	 rV
