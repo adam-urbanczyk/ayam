@@ -23,7 +23,8 @@ ay_objsel_process_hits (GLint hits, GLuint buffer[], char *var)
 {
   char fname[] = "objsel_process_hits";
   char *node = NULL, *tmp = NULL;
-  int i = 0, size = 0;
+  int i = 0;
+  unsigned int size = 0;
   GLint *ptr = NULL;
 
   ptr = (GLint *) buffer;
@@ -61,7 +62,7 @@ ay_objsel_process_hits (GLint hits, GLuint buffer[], char *var)
       z2 = (float) *(ptr++) / 0x7fffffff;
       /*printf("%f %f\n", z1, z2);*/
       o = ay_root;
-      strncat (node, "root", size);
+      strncat (node, "root", (size_t)size);
 
       for (j = 0; j < name; j++)
 	{
@@ -107,7 +108,7 @@ ay_objsel_process_hits (GLint hits, GLuint buffer[], char *var)
 	      if ((strlen (node) + strlen (tmp) + 10) > size)
 		{
 		  size += 256;
-		  node = (char*) realloc (node, size * sizeof (char));
+		  node = (char*) realloc(node, (size_t)(size * sizeof (char)));
 		  if (!node)
 		    {
 		      free (node);
@@ -118,11 +119,11 @@ ay_objsel_process_hits (GLint hits, GLuint buffer[], char *var)
 		}
 
 	      /* Adds the level number to the node */
-	      strncat (node, tmp, size);
+	      strncat (node, tmp, (size_t)size);
 	    } /* if */
 	} /* for */
 
-      strncat(node, " ", size);
+      strncat(node, " ", (size_t)size);
       
       /* If OpenGL found that the grid or the coordinate system are in the
        * selection then a stand-alone "root " (i.e. an empty node) is generated
@@ -195,8 +196,8 @@ ay_objsel_processcb (struct Togl *togl, int argc, char *argv[])
       
       x = (x1 + x2) / 2.0;
       y = (y1 + y2) / 2.0;
-      boxh = abs(y2 - y1);
-      boxw = abs(x2 - x1);
+      boxh = abs((int)(y2 - y1));
+      boxw = abs((int)(x2 - x1));
     }
   else
     {

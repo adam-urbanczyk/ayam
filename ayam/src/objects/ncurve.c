@@ -232,7 +232,8 @@ ay_ncurve_drawglucb(struct Togl *togl, ay_object *o)
       gluNurbsProperty(ncurve->no, GLU_NURBS_MODE_EXT, GLU_NURBS_RENDERER_EXT);
 #endif /* AYIRIXBUG */
 
-      gluNurbsProperty(ncurve->no, GLU_SAMPLING_TOLERANCE, sampling_tolerance);
+      gluNurbsProperty(ncurve->no, GLU_SAMPLING_TOLERANCE,
+		       (GLfloat)sampling_tolerance);
 
       gluNurbsProperty(ncurve->no, GLU_CULLING, GL_TRUE);
 
