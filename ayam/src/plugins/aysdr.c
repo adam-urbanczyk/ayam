@@ -56,10 +56,10 @@ aysdr_scansdrsarg(TSdrParameter *param, Tcl_DString *ds)
 
   switch(param->type)
     {
-    case POINT:
-    case COLOR:
-    case VECTOR:
-    case NORMAL:
+    case TYPE_POINT:
+    case TYPE_COLOR:
+    case TYPE_VECTOR:
+    case TYPE_NORMAL:
       Tcl_DStringAppend(ds, "{ ", -1);
       deffltval = (double)((param->defaultValue).vector[0]);
       sprintf(buffer, "%g ", deffltval);
@@ -72,7 +72,7 @@ aysdr_scansdrsarg(TSdrParameter *param, Tcl_DString *ds)
       Tcl_DStringAppend(ds, buffer, -1);
       Tcl_DStringAppend(ds, "} ", -1);
       break;
-    case MATRIX:
+    case TYPE_MATRIX:
       Tcl_DStringAppend(ds, "{ ", -1);
       for(j = 0; j < 16; j++)
 	{
@@ -82,12 +82,12 @@ aysdr_scansdrsarg(TSdrParameter *param, Tcl_DString *ds)
 	} /* for */
       Tcl_DStringAppend(ds, "} ", -1);
       break;
-    case FLOAT:
+    case TYPE_FLOAT:
       deffltval = (double)((param->defaultValue).scalar);
       sprintf(buffer, "%g ", deffltval);
       Tcl_DStringAppend(ds, buffer, -1);
       break;
-    case STRING:
+    case TYPE_STRING:
       defstrval = (param->defaultValue).string;
       Tcl_DStringAppend(ds, defstrval, -1);
       Tcl_DStringAppend(ds, " ", -1);
@@ -115,7 +115,7 @@ aysdr_scansdrtcmd(ClientData clientData, Tcl_Interp *interp,
  int arraylen;
  ESdrShaderType stype;
  Tcl_DString ds;
- /* char vname[] = "ayprefs(Shaders)"; */
+ char vname[] = "ayprefs(Shaders)";
 
   if(argc < 3)
     {
@@ -125,7 +125,9 @@ aysdr_scansdrtcmd(ClientData clientData, Tcl_Interp *interp,
   /*
   Sdr_SetPath(Tcl_GetVar(ay_interp, vname, TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG));
   */
-  if(!(shader = sdrGet(argv[1])))
+  if(!(shader = sdrGet(argv[1],
+		       Tcl_GetVar(ay_interp, vname,
+				  TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG))))
     {
       ay_error(AY_ERROR, fname, "sdrGet failed for:");
       ay_error(AY_ERROR, fname, argv[1]);
@@ -141,19 +143,19 @@ aysdr_scansdrtcmd(ClientData clientData, Tcl_Interp *interp,
   stype = shader->type;
   switch(stype)
     {
-    case SURFACE:
+    case SHADER_SURFACE:
       Tcl_DStringAppend(&ds, " surface ", -1);
      break;
-   case DISPLACEMENT:
+   case SHADER_DISPLACEMENT:
       Tcl_DStringAppend(&ds, " displacement ", -1);
      break;
-   case LIGHT:
+   case SHADER_LIGHT:
       Tcl_DStringAppend(&ds, " light ", -1);
      break;
-   case VOLUME:
+   case SHADER_VOLUME:
      Tcl_DStringAppend(&ds, " volume ", -1);
      break;
-   case IMAGER:
+   case SHADER_IMAGER:
      Tcl_DStringAppend(&ds, " imager ", -1);
      break;
      /* the shader type "transformation" is unknown to Pixie-1.1.2 */
@@ -182,25 +184,25 @@ aysdr_scansdrtcmd(ClientData clientData, Tcl_Interp *interp,
 
       switch(param->type)
 	{
-	case POINT:
+	case TYPE_POINT:
 	  Tcl_DStringAppend(&ds, "point ", -1);
 	  break;
-	case COLOR:
+	case TYPE_COLOR:
 	  Tcl_DStringAppend(&ds, "color ", -1);
 	  break;
-	case VECTOR:
+	case TYPE_VECTOR:
 	  Tcl_DStringAppend(&ds, "vector ", -1);
 	  break;
-	case NORMAL:
+	case TYPE_NORMAL:
 	  Tcl_DStringAppend(&ds, "normal ", -1);
 	  break;
-	case MATRIX:
+	case TYPE_MATRIX:
 	  Tcl_DStringAppend(&ds, "matrix ", -1);
 	  break;
-	case FLOAT:
+	case TYPE_FLOAT:
 	  Tcl_DStringAppend(&ds, "float ", -1);
 	  break;
-	case STRING:
+	case TYPE_STRING:
 	  Tcl_DStringAppend(&ds, "string ", -1);
 	  break;
 	default:
@@ -212,11 +214,12 @@ aysdr_scansdrtcmd(ClientData clientData, Tcl_Interp *interp,
       sprintf(buffer, "%d ", arraylen);
       Tcl_DStringAppend(&ds, buffer, -1);
 
-      if(arraylen == 1)
+      if(arraylen > 1)
 	{
-	  Tcl_DStringAppend(&ds, "{ ", -1);
 	  /* XXXX TBD */
           #if 0
+	  Tcl_DStringAppend(&ds, "{ ", -1);
+
 	  for(j = 0; j < arraylen; j++)
 	    {
 	      element = NULL;
@@ -230,9 +233,10 @@ aysdr_scansdrtcmd(ClientData clientData, Tcl_Interp *interp,
 		} /* if */
 	      aysdr_scansdrsarg(element, &ds);
 	    } /* for */
-          #endif /* 0 */
+
 	  aysdr_scansdrsarg(param, &ds);
 	  Tcl_DStringAppend(&ds, "} ", -1);
+          #endif /* 0 */
 	}
       else
 	{
@@ -270,7 +274,7 @@ int
 Aysdr_Init(Tcl_Interp *interp)
 {
  char fname[] = "aysdr_init";
- char vname[] = "ay(sext)", vval[] = ".slo";
+ char vname[] = "ay(sext)", vval[] = ".sdr";
 
   /* first, check versions */
   if(strcmp(ay_version_ma, aysdr_version_ma))
