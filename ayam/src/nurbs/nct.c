@@ -2730,3 +2730,101 @@ ay_nct_getpntfromindex(ay_nurbcurve_object *curve, int index, double **p)
 
  return TCL_OK;
 } /* ay_nct_getpntfromindex */
+
+
+/* ay_nct_concatmultiple:
+ *  
+ *  
+ */
+int
+ay_nct_concatmultiple(ay_object *curves, ay_object **result)
+{
+ int ay_status;
+ char fname[] = "nct_concatmultiple";
+ double *newcontrolv = NULL, *ncv = NULL;
+ int order = 0, length = 0, ktype = -1;
+ int glu_display_mode = 0;
+ double glu_sampling_tolerance = 0.0;
+ ay_nurbcurve_object *nc;
+ ay_object *o = NULL, *newo = NULL;
+
+  if(!curves)
+    {
+      ay_error(AY_ENULL, fname, NULL);
+      return AY_ERROR;
+    }
+
+  if(!(newo = calloc(1, sizeof(ay_object))))
+    {
+      ay_error(AY_EOMEM, fname, NULL);
+      return AY_ERROR;
+    }
+
+  newo->type = AY_IDNCURVE;
+  ay_status = ay_object_defaults(newo);
+
+  o = curves;
+  while(o)
+    {
+      nc = (ay_nurbcurve_object *)o->refine;
+
+      /* take order and ktype from first curve */
+      if(ktype == -1)
+	{
+	  order = nc->order;
+	  ktype = nc->knot_type;
+	  glu_sampling_tolerance = nc->glu_sampling_tolerance;
+	  glu_display_mode = nc->display_mode;
+	}
+
+      length += nc->length;
+      o = o->next;
+    } /* while */
+
+  if(ktype == AY_KTCUSTOM)
+    {
+      ay_error(AY_ERROR, fname,
+	       "Dont know how to concat curves with custom knots, yet.");
+      return AY_ERROR;
+    }
+
+  if(!(newcontrolv = calloc(length * 4, sizeof(double))))
+    {
+      ay_error(AY_EOMEM, fname, NULL);
+      free(newo);
+      return AY_ERROR;
+    }
+
+  ncv = newcontrolv;
+  o = curves;
+  while(o)
+    {
+      nc = (ay_nurbcurve_object *)o->refine;
+      memcpy(ncv, nc->controlv, nc->length * 4 * sizeof(double));
+      ncv += (nc->length * 4);
+      o = o->next;
+    } /* while */
+
+  ay_status = ay_nct_create(order, length,
+			    ktype, newcontrolv, NULL,
+			    (ay_nurbcurve_object **)&(newo->refine));
+
+  if(ay_status)
+    {
+      ay_error(ay_status, fname, NULL);
+      return AY_ERROR;
+    }
+
+  nc = (ay_nurbcurve_object *)newo->refine;
+  if(nc)
+    {
+      ay_nct_recreatemp(nc);
+
+      nc->glu_sampling_tolerance = glu_sampling_tolerance;
+      nc->display_mode = glu_display_mode;
+    }
+
+  *result = newo;
+
+ return AY_OK;
+} /* ay_nct_concatmultiple */
