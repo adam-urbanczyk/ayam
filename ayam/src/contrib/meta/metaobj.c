@@ -758,13 +758,15 @@ metaobj_notifycb (ay_object * o)
   *adapt = '0';
   Tcl_SetVar(ay_interp,"meta_mouseup",adapt,TCL_GLOBAL_ONLY);
   
-  meta_calceffect (w);
 
   if(w->adaptflag ==1)
   {
      ay_notify_parent();
   }
 */
+
+  meta_calceffect (w);
+
   return AY_OK;
 
 } /* metaobj_notifycb */
