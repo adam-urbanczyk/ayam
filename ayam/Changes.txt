@@ -1,4 +1,4 @@
-[CVS 8. 1. 2002] Ayam1.1:
+[17. 01. 2002] Ayam1.1:
 o bug fixes:
   - fixed custom lights always exporting as AreaLight to RIB
   - fixed tags not loading from scene files to root object
