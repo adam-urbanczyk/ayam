@@ -300,6 +300,18 @@ ay_view_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	} /* if */
     } /* if */
 
+  /* check clipping planes */
+  if(view->type == AY_VTPERSP && view->near < 0.0)
+    {
+      ay_error(AY_EWARN, fname,
+	       "Near has to be positive for perspective views!");
+    }
+
+  if(view->near >= view->far)
+    {
+      ay_error(AY_EWARN, fname, "Near should be smaller than far!");
+    }
+
   ay_notify_force(o);
 
   Tcl_IncrRefCount(toa); Tcl_DecrRefCount(toa);

@@ -39,12 +39,12 @@ ay_viewt_setupprojection(struct Togl *togl)
 
   if(view->type == AY_VTPERSP)
     {
-      if(view->near == 0.0)
+      if(view->near <= 0.0)
 	{
 	  near = 1.0;
 	}
 
-      if(view->far == 0.0)
+      if((view->far == 0.0) || (view->far <= near))
 	{
 	  far = 1000.0;
 	}

@@ -162,6 +162,7 @@ ay_camera_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  ay_camera_object *camera = NULL;
  char *n1 = "CameraData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char fname[] = "camera_setpropcb";
 
   if(!o)
     return AY_ENULL;
@@ -213,6 +214,18 @@ ay_camera_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_SetStringObj(ton, "Roll", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp, to, &camera->roll);
+
+  /* check clipping planes */
+  if(camera->near < 0.0)
+    {
+      ay_error(AY_EWARN, fname,
+	       "Near has to be positive for perspective views!");
+    }
+
+  if(camera->near >= camera->far)
+    {
+      ay_error(AY_EWARN, fname, "Near should be smaller than far!");
+    }
 
   Tcl_IncrRefCount(toa); Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton); Tcl_DecrRefCount(ton);
