@@ -61,6 +61,10 @@ array set ayprefs {
  Light_G 250
  Light_B 150
 
+ SelXOR_R 255
+ SelXOR_G 128
+ SelXOR_B 0
+
  RIBFile "Scene"
  Image "RIB"
  ResInstances 0

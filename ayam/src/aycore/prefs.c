@@ -150,6 +150,18 @@ ay_prefs_gettcmd(ClientData clientData, Tcl_Interp *interp,
   to = Tcl_NewIntObj((int)(ay_prefs.lib*255));
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton, "SelXOR_R", -1);
+  to = Tcl_NewIntObj((int)(ay_prefs.sxr*255));
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton, "SelXOR_G", -1);
+  to = Tcl_NewIntObj((int)(ay_prefs.sxg*255));
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton, "SelXOR_B", -1);
+  to = Tcl_NewIntObj((int)(ay_prefs.sxb*255));
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
 
   /* RIB */
   Tcl_SetStringObj(ton, "ResInstances", -1);
@@ -444,6 +456,27 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
   if(itemp < 0) itemp = 0;
   if(itemp > 255) itemp = 255;
   ay_prefs.lib = (double)(itemp/255.0);
+
+  Tcl_SetStringObj(ton, "SelXOR_R", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &itemp);
+  if(itemp < 0) itemp = 0;
+  if(itemp > 255) itemp = 255;
+  ay_prefs.sxr = (double)(itemp/255.0);
+
+  Tcl_SetStringObj(ton, "SelXOR_G", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &itemp);
+  if(itemp < 0) itemp = 0;
+  if(itemp > 255) itemp = 255;
+  ay_prefs.sxg = (double)(itemp/255.0);
+
+  Tcl_SetStringObj(ton, "SelXOR_B", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &itemp);
+  if(itemp < 0) itemp = 0;
+  if(itemp > 255) itemp = 255;
+  ay_prefs.sxb = (double)(itemp/255.0);
 
 
   /* RIB */

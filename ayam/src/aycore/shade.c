@@ -274,31 +274,6 @@ ay_shade_view(struct Togl *togl)
 
   glDisable(GL_LIGHTING);
 
-  /* draw rectangle */
-  if(view->drawrect)
-    {
-      glColor3d((GLdouble)ay_prefs.tpr, (GLdouble)ay_prefs.tpg,
-		(GLdouble)ay_prefs.tpb);
-      glDisable(GL_DEPTH_TEST);
-      glMatrixMode(GL_PROJECTION);
-      glPushMatrix();
-       glLoadIdentity();
-       glOrtho(0, width, 0, height, -100.0, 100.0);
-       glMatrixMode(GL_MODELVIEW);
-       glPushMatrix();
-        glLoadIdentity();
-        glBegin(GL_LINE_LOOP);
-	 glVertex3d(view->rect_xmin, height-view->rect_ymin, 0.0);
-	 glVertex3d(view->rect_xmax, height-view->rect_ymin, 0.0);
-	 glVertex3d(view->rect_xmax, height-view->rect_ymax, 0.0);
-	 glVertex3d(view->rect_xmin, height-view->rect_ymax, 0.0);
-	glEnd();
-       glPopMatrix();
-       glMatrixMode(GL_PROJECTION);
-      glPopMatrix();
-      glEnable(GL_DEPTH_TEST);
-    } /* if */
-
   /* draw marker */
   if(view->drawmarker)
     {

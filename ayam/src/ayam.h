@@ -702,6 +702,7 @@ typedef struct ay_prefs_object_s
   double tpr, tpg, tpb; /* tagged points color */
   double shr, shg, shb; /* default shade color */
   double lir, lig, lib; /* default light color */
+  double sxr, sxg, sxb; /* default drag selection rectangle color (XOR) */
 
   int use_materialcolor;
 

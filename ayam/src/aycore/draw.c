@@ -277,31 +277,6 @@ ay_draw_view(struct Togl *togl, int draw_offset)
 
   if(!draw_offset)
     {
-      /* draw rectangle */
-      if(view->drawrect)
-	{
-	  glColor3d((GLdouble)ay_prefs.tpr, (GLdouble)ay_prefs.tpg,
-		    (GLdouble)ay_prefs.tpb);
-	  glDisable(GL_DEPTH_TEST);
-	  glMatrixMode(GL_PROJECTION);
-	  glPushMatrix();
-	   glLoadIdentity();
-	   glOrtho(0, width, 0, height, -100.0, 100.0);
-	   glMatrixMode(GL_MODELVIEW);
-	   glPushMatrix();
-	    glLoadIdentity();
-	    glBegin(GL_LINE_LOOP);
-	     glVertex3d(view->rect_xmin, height-view->rect_ymin, 0.0);
-	     glVertex3d(view->rect_xmax, height-view->rect_ymin, 0.0);
-	     glVertex3d(view->rect_xmax, height-view->rect_ymax, 0.0);
-	     glVertex3d(view->rect_xmin, height-view->rect_ymax, 0.0);
-	    glEnd();
-	   glPopMatrix();
-	   glMatrixMode(GL_PROJECTION);
-	  glPopMatrix();
-	  glEnable(GL_DEPTH_TEST);
-	} /* if */
-
       /* draw marker */
       if(view->drawmarker)
 	{
@@ -881,3 +856,37 @@ ay_draw_trimview(void)
 
  return;
 } /* ay_draw_trimview */
+
+
+/* ay_draw_rectangle:
+ *  
+ */
+void
+ay_draw_rectangle(struct Togl *togl, double xmin, double ymin, double xmax,
+		  double ymax)
+{
+ ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
+ int width = Togl_Width(togl), height = Togl_Height(togl);
+
+  glDisable(GL_DEPTH_TEST);
+  glMatrixMode(GL_PROJECTION);
+  glPushMatrix();
+  glLoadIdentity();
+  glOrtho(0, width, 0, height, -100.0, 100.0);
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+  glLoadIdentity();
+  glBegin(GL_LINE_LOOP);
+  glVertex3d(xmin, height-ymin, 0.0);
+  glVertex3d(xmax, height-ymin, 0.0);
+  glVertex3d(xmax, height-ymax, 0.0);
+  glVertex3d(xmin, height-ymax, 0.0);
+  glEnd();
+  glPopMatrix();
+  glMatrixMode(GL_PROJECTION);
+  glPopMatrix();
+  glEnable(GL_DEPTH_TEST);
+
+ return;
+} /* ay_draw_rectangle */
+
