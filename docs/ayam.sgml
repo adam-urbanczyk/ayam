@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>23. Jul 2003
+<date>27. Jul 2003
 <abstract>
 This is the documentation of Ayam (1.6) - a free 3D modeling environment
 for the RenderMan interface.
@@ -855,8 +855,11 @@ systems.
 
 <sect1>Selecting Objects within a View<label id="objsel">
 <p>
-When no action is active for views (i.e. the views action is
-<tt/"Pick"/) you can pick objects that appear within a view.
+When the views action is
+<tt/"Pick"/ you can pick objects that appear within a view.
+You can invoke this action by pressing <tt/&lt;Shift+p&gt;/
+or make this action the default action using the preference
+setting <tt>"Modeling/DefaultAction"</tt>.
 This section describes techniques that you can use for selecting
 one or more objects within a view.
 
@@ -1100,6 +1103,8 @@ to the child objects automagically.
 <item><tt/"EditSnaps"/ determines, whether points
 should be snapped to the grid when a grid is defined and
 in use for the single point modeling actions.
+<item><tt/"DefaultAction"/ determines the modelling action
+that should be active after a press of the <tt/&lt;Esc&gt;/ key.
 <item><tt/"UndoLevels"/ determines the number of modeling steps
 that should be saved in the undo buffer. Useful values range
 from 2 to 50 (depending on how much memory you like to spend).
@@ -1398,8 +1403,9 @@ view windows simultaneously.<p>
 To break an action, the <tt/&lt;Esc&gt;/ key may be used.
 
 The default action for all views, which is also in effect after
-use of the <tt/&lt;Esc&gt;/ key, is <tt/"Pick"/,
-see section
+use of the <tt/&lt;Esc&gt;/ key, is <tt/"None"/ or <tt/"Pick"/
+(depending on the preference setting <tt>"Modeling/DefaultAction"</tt>)
+See section
 <ref id="objsel" name="Selecting Objects within a View">
 for more information about picking objects.
 
@@ -5908,6 +5914,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 
 <label id="indexd">D
 <itemize>
+<item>DefaultAction: <ref id="prefmodel" name="preference setting">
 <item>DefaultMat: <ref id="prefrib" name="preference setting">
 <item>delegTrafo: <ref id="scitrafo" name="scripting interface command">
 <item>Delete: <ref id="mmedit" name="main menu entry">,
