@@ -404,7 +404,24 @@ Use it via the new icon in the view menu bar.
 See also the AyCSG preferences in the main menu "Custom/AyCSG Preferences".
 
 
-3.6 Installing/Uninstalling Ayam
+3.6 onio (OpenNURBS IO) Plugin for Rhino 3DM
+--------------------------------------------
+
+Additional prerequisites to compile the onio plugin are:
+OpenNURBS ( get it from http://www.opennurbs.com/ ).
+
+In order to compile the plugin, adapt the following variables
+in the Ayam Makefile:
+OPENNURBSDIR
+
+then type:
+>make onio.so
+
+Load it via menu entry "File/Load Custom".
+Use it via menu entry "Custom/OpenNURBS IO/Import 3DM"
+
+
+3.7 Installing/Uninstalling Ayam
 --------------------------------
 
 Use
