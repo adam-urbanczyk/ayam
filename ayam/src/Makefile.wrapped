@@ -442,6 +442,10 @@ ayslo3d.so:
 	$(CC) -c $(CFLAGS) plugins/ayslo3d.c -o plugins/ayslo3d.o -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR) -I$(AQSISINCDIR) -I$(TIFFINCDIR) -I$(AYSLO3DINCDIR)
 	$(CC) -shared plugins/ayslo3d.o -o plugins/ayslo3d.so $(AYSLO3DLIBS)
 
+ayslb.so:
+	$(CC) -c $(CFLAGS) plugins/ayslb.c -o plugins/ayslb.o -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR) -I$(AQSISINCDIR) -I$(TIFFINCDIR)
+	$(CC) -shared plugins/ayslb.o -o plugins/ayslb.so
+
 mostlyclean:
 	-rm -f core
 	-rm -f *.o
