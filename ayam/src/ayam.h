@@ -570,6 +570,9 @@ typedef struct ay_view_object_s
   int drawgrid; /* draw grid */
   int usegrid; /* use (snap to) grid */
   int shade; /* shade view */
+  /*#ifdef AY_ENABLEPPREV*/
+  int ppreview; /* create a permanent preview */
+  /*#endif*/
 
   /* camera */
   double from[3];
@@ -661,7 +664,10 @@ typedef struct ay_prefs_object_s
   int glu_display_mode;
   int nc_display_mode;
   int glu_cache_float;
-
+  /* #ifdef AY_ENABLEPPREV */
+  /* is a permanent preview window open? */
+  int pprev_open;
+  /* #endif */
 } ay_prefs_object;
 
 typedef struct ay_point_object_s
@@ -922,9 +928,11 @@ extern unsigned int ay_current_glname;
 #define AY_KTNURB      2
 #define AY_KTCUSTOM    3
 
-/* Basis Matrix Types */
+/* Patch Mesh Types */
 #define AY_PTBILINEAR  0
 #define AY_PTBICUBIC   1
+
+/* Basis Matrix Types */
 #define AY_BTBEZIER     0
 #define AY_BTBSPLINE    1
 #define AY_BTCATMULLROM 2

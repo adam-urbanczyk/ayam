@@ -1020,7 +1020,7 @@ ay_wrib_scene(char *file, char *image, double *from, double *to,
   /* wrib RiOptions */
   ay_status = ay_wrib_rioptions();
 
-  /* wrib root RiOption tags*/
+  /* wrib root RiOption tags */
   ay_status = ay_riopt_wrib(ay_root);
 
   RiWorldBegin();
@@ -1098,6 +1098,15 @@ ay_wrib_cb(struct Togl *togl, int argc, char *argv[])
  char *file = NULL, *image = NULL;
  char fname[] = "write_rib";
 
+  /* #ifdef AY_ENABLEPPREV */
+  /* is a permanent preview window open? */
+  if(ay_prefs.pprev_open)
+    {
+      ay_error(AY_ERROR, fname, "Please close the permanent preview first!");
+      return AY_ERROR;
+    }
+  /* #endif */
+
   /* assemble args */
   i = 2;
   while(i+1<=argc)
@@ -1150,3 +1159,203 @@ ay_wrib_cb(struct Togl *togl, int argc, char *argv[])
 
  return TCL_OK;
 } /* ay_wrib_cb */
+
+/* #ifdef AY_ENABLEPPREV */
+
+/* ay_wrib_pprevdraw:
+ *
+ */
+int
+ay_wrib_pprevdraw(ay_view_object *view)
+{
+ int ay_status = AY_OK;
+ ay_object *o = ay_root;
+ int old_resinstances = ay_prefs.resolveinstances;
+ RtPoint f, t, d;
+ RtFloat aspect = (RtFloat)1.0, swleft, swright, swtop, swbot;
+ RtFloat fov = (RtFloat)90.0;
+ struct Togl *togl = NULL;
+ int width, height, i;
+ double zoom, roll, *from, *to;
+
+  from = view->from;
+  to = view->to;
+  togl = view->togl;
+  width = Togl_Width(togl);
+  height = Togl_Height(togl);
+  zoom = view->zoom;
+  roll = view->roll;
+  /* adjust roll, if up vector points down */
+  if(view->up[1] < 0.0)
+    {
+      roll += 180.0;
+    }
+
+  aspect = (RtFloat)(width/((double)height));
+
+  /* assemble args */
+  f[0] = (RtFloat) from[0];
+  f[1] = (RtFloat) from[1];
+  f[2] = (RtFloat) from[2];
+
+  t[0] = (RtFloat) to[0];
+  t[1] = (RtFloat) to[1];
+  t[2] = (RtFloat) to[2];
+
+  d[0] = (RtFloat)(to[0] - from[0]);
+  d[1] = (RtFloat)(to[1] - from[1]);
+  d[2] = (RtFloat)(to[2] - from[2]);
+
+  /* when rendering to a pipe, do not create extra files
+     for instances but rather resolve them */
+  ay_prefs.resolveinstances = AY_TRUE;
+
+  /* XXXX does this constant framenumber hurt? */
+  RiFrameBegin((RtInt)1);
+  RiDisplay("PPrev", RI_FRAMEBUFFER, RI_RGBA, RI_NULL);
+
+  /* write imager shader */
+  ay_wrib_rootsh(AY_TRUE);
+
+  /* Camera! */
+  RiFormat(width, height, (RtFloat)-1.0);
+  if(view->type != AY_VTPERSP)
+    RiProjection("orthographic", RI_NULL);
+  else
+    RiProjection("perspective", "fov", (RtPointer)&fov, RI_NULL);
+
+  RiFrameAspectRatio((RtFloat)aspect);
+
+  swleft = (RtFloat)-aspect;
+  swright =  (RtFloat)aspect;
+  swbot = (RtFloat)-1.0;
+  swtop = (RtFloat)1.0;
+
+  RiScreenWindow((RtFloat)swleft*zoom, (RtFloat)swright*zoom,
+		 (RtFloat)swbot*zoom, (RtFloat)swtop*zoom);
+
+  RiIdentity();
+
+  /* check for lights */
+  if(ay_prefs.checklights)
+    {
+      if(!ay_wrib_checklights(ay_root))
+	{ /* no lights in scene -> add a distant headlight */
+	  RiArchiveRecord(RI_COMMENT, "Default Distant Headlight");
+	  RiLightSource("distantlight", RI_NULL);
+	}
+    }
+
+  /* convert rh to lh */
+  RiArchiveRecord(RI_COMMENT, "rh->lh");
+  RiScale((RtFloat)-1.0, (RtFloat)1.0, (RtFloat)1.0);
+  RiArchiveRecord(RI_COMMENT, "Camera!");
+  ay_wrib_placecamera(f, d, roll);
+
+  /* wrib RiOptions */
+  ay_status = ay_wrib_rioptions();
+
+  /* wrib root RiOption tags */
+  ay_status = ay_riopt_wrib(ay_root);
+
+  RiWorldBegin();
+
+  /* Lights! */
+  RiArchiveRecord(RI_COMMENT, "Lights!");
+  ay_status = ay_wrib_lights("rgl", ay_root->next);
+
+  RiIdentity();
+
+  /* Action! */
+  RiArchiveRecord(RI_COMMENT, "Action!");
+
+  /* write atmosphere shader */
+  ay_wrib_rootsh(AY_FALSE);
+
+  /* write default material */
+  ay_wrib_defmat("rgl");
+
+   o = ay_root->next;
+   while(o->next)
+     {
+       ay_status = ay_wrib_object("rgl", o);
+       o = o->next;
+     }
+
+  RiWorldEnd();
+  RiFrameEnd();
+
+  /* XXXX */
+  for(i = 0;i < 500; i++)
+    {
+      RiArchiveRecord(RI_COMMENT, "Redraw please!\n");
+    }
+
+  ay_prefs.resolveinstances = old_resinstances;
+
+ return ay_status;
+} /* ay_wrib_pprevdraw */
+
+
+/* ay_wrib_pprevopen:
+ *
+ */
+int
+ay_wrib_pprevopen(ay_view_object *view)
+{
+ int ay_status = AY_OK;
+
+  /* first, close eventually already open permanent preview window */
+  ay_wrib_pprevclose();
+
+  view->ppreview = AY_TRUE;
+
+  /* now, open the new permanent preview window */
+  RiBegin("rgl");
+
+  /* and draw it */
+  ay_status = ay_wrib_pprevdraw(view);
+
+  ay_prefs.pprev_open = AY_TRUE;
+  
+ return ay_status;
+} /* ay_wrib_pprevopen */
+
+
+/* ay_wrib_pprevclose:
+ *
+ */
+void
+ay_wrib_pprevclose()
+{
+ ay_object *o = ay_root->down;
+ ay_view_object *v = NULL;
+ char fname[] = "pprevclose";
+
+ while(o)
+   {
+     if(o->type == AY_IDVIEW)
+       { 
+	 v = (ay_view_object *)o->refine;
+
+	 if(v->ppreview)
+	   {
+	     ay_error(AY_EOUTPUT, fname,
+"Please close the permanent preview window now manually,");
+	     ay_error(AY_EOUTPUT, fname,"using the Esc-key!");
+
+	     RiEnd();
+
+	     v->ppreview = AY_FALSE;
+	     ay_prefs.pprev_open = AY_FALSE;
+
+	   } /* if */
+
+       } /* if */
+     o = o->next;
+   } /* while */
+
+ return;
+} /* ay_wrib_pprevclose */
+
+/* #endif */
