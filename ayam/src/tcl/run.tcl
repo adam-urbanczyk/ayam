@@ -183,7 +183,7 @@ proc runRenderer { cmd template } {
 
     fconfigure $ioFid -buffering none -blocking 0
     fileevent $ioFid readable "\
-	    runGetStdout $ay(rnum) [lindex $cmd 0] \"$template\" $ioFid"
+     runGetStdout $ay(rnum) [lindex $cmd 0] \"$template\" $ioFid"
 
     global pids
     set pids [list [pid $ioPipe]]
@@ -240,6 +240,12 @@ proc runRenderer { cmd template } {
 	     
 	}
     }
+
+    # bind to close button of window decoration
+    wm protocol $w WM_DELETE_WINDOW "\
+	fileevent $ioPipe readable \"\";\
+	fileevent $ioFid readable \"\";\
+	destroy $w;"
 
  return;   
 }
