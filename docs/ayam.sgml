@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>3. Feb 2004
+<date>4. Feb 2004
 <abstract>
 This is the documentation of Ayam (1.7) - a free 3D modeling environment
 for the RenderMan interface.
@@ -2147,7 +2147,7 @@ The <tt/"Dismiss"/ button closes the dialog.
 <p>
 The tag type <tt/"PV"/ can be used to attach arbitrary data
 to geometric primitives and even sub-primitives.
-When rendering all data is handed over to the surface shader
+When rendering, all data is handed over to the surface shader
 attached to the respective geometric primitive. Note that Ayam does
 not check, whether your shader actually uses this data.
 With the help of primitive variables you can e.g. attach your
@@ -3500,8 +3500,8 @@ to hide the parameter object and add a <tt/"NoExport"/ tag to it.
 <p>
 It is not possible to create clones from objects that may not
 be master objects of instance objects (e.g. light objects, or
-material objects). Since Ayam 1.7 it is possible to use instances
-as parameter objects.
+material objects). However, since Ayam 1.7 it is possible to use
+instances as parameter objects.
 <p>
 The following attributes further control the
 clone process:
@@ -4495,8 +4495,8 @@ The knot type of the curve will be changed to custom.
 </figure>
 <itemize>
 <item>Arguments: The plot curvature tool takes a number of NURBS curves from
-the selection and requests three additional values, a number of data
-points, a width value and a height value.
+the selection and requests three additional values: the number of data
+points, the width value and the height value.
 <item>Operation: A new NURBS curve, depicting the curvature of the selected
 NURBS curve, will be created for each of the selected
 NURBS curves. The curvature plots will have a length defined by the
@@ -4535,9 +4535,9 @@ words, you should immediately edit the control points after exploding!
 <sect1>The Swap UV Tool<label id="swapuvt">
 <p>
 <itemize>
-<item>Arguments: The swap uv tool takes a number of NURBS patches from
-the selection.
-<item>Operation: The u and v dimension of the selected NURBS patches will
+<item>Arguments: The swap uv tool takes a number of NURBS patches
+or BPatch or PatchMesh objects from the selection.
+<item>Operation: The u and v dimension of the selected objects will
 be swapped without changing the shape of the patches.
 </itemize>
 
@@ -4556,19 +4556,19 @@ be changed to custom.
 <sect1>The Revert U Tool<label id="revertut">
 <p>
 <itemize>
-<item>Arguments: The revert u tool takes a number of NURBS patches from
-the selection.
-<item>Operation: The control point arrays of the patches will be reversed
-in the u dimension (width).
+<item>Arguments: The revert u tool takes a number of NURBS patches
+or BPatch or PatchMesh objects from the selection.
+<item>Operation: The control point arrays of the selected objects
+will be reversed in the u dimension (width).
 </itemize>
 
 <sect1>The Revert V Tool<label id="revertvt">
 <p>
 <itemize>
-<item>Arguments: The revert v tool takes a number of NURBS patches from
-the selection.
-<item>Operation: The control point arrays of the patches will be reversed
-in the v dimension (height).
+<item>Arguments: The revert v tool takes a number of NURBS patches
+or BPatch or PatchMesh objects from the selection.
+<item>Operation: The control point arrays of the selected objects
+will be reversed in the v dimension (height).
 </itemize>
 
 <sect1>The Split to Curves Tool<label id="sptct">
@@ -5644,6 +5644,9 @@ a color value that is used for drag selection rectangles.
 Note that the color is not used directly but combined with the
 color value of already drawn pixels by XOR. The default values
 are 255 for the red, 128 for the green, and 0 for the blue component.
+<item><tt/"IconGamma"/: this setting may be used to adapt the contrast
+of all icons (in view menu and toolbox) to your display gamma. If you
+are on a SGI it is recommended to set this to about "0.7".
 </itemize>
 
 <sect2>RiOption and RiAttributes Database<label id="rioptdb">
@@ -6394,6 +6397,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 
 <label id="indexi">I
 <itemize>
+<item>IconGamma: <ref id="hidprefs" name="hidden preference setting">
 <item>ICurve: <ref id="icurveobj" name ="object">
 <item>IDR: <ref id="idr" name="IDR plugin">
 <item>IgnoreNormals: <ref id="mmtools" name="Optimize PolyMesh tool option">
