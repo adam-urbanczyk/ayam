@@ -125,6 +125,10 @@ proc shortcut_main { w } {
     bind $w <[repcont $aymainshortcuts(Material)]> "$m invoke 12"
     $m entryconfigure 12 -accelerator $aymainshortcuts(Material)
 
+    bind $w <[repcont $aymainshortcuts(Master)]> "$m invoke 13"
+    $m entryconfigure 13 -accelerator $aymainshortcuts(Master)
+
+
     bind $w <[repcont $aymainshortcuts(Prefs)]> "$m invoke 15"
     $m entryconfigure 15 -accelerator $aymainshortcuts(Prefs)
 
@@ -182,7 +186,8 @@ proc shortcut_view { w } {
     bind $w <[repcont $aymainshortcuts(Undo)]> "$m invoke 9"
     bind $w <[repcont $aymainshortcuts(Redo)]> "$m invoke 10"
     bind $w <[repcont $aymainshortcuts(Material)]> "$m invoke 12"
-    $m entryconfigure 12 -accelerator $aymainshortcuts(Material)
+    bind $w <[repcont $aymainshortcuts(Master)]> "$m invoke 13"
+
 
     # view window shortcuts
     set m $ay(viewm)
