@@ -29,6 +29,7 @@ $w.fMenu.v.m add command\
 
  $ay(currentView) wrib -file $tmpfile -image ${tmpfile}.tif -temp
 
+ lappend ay(tmpfiles) $tmpfile
 
  if { $ayprefs(QRenderUI) != 1} {
      set command "exec "
@@ -49,7 +50,6 @@ $w.fMenu.v.m add command\
 
  update
  tmp_clean 0
-
 }
 
 $w.fMenu.v.m add command\
@@ -67,6 +67,7 @@ global env ayprefs ay tcl_platform
  $ay(currentView) wrib -file $tmpfile -image ${tmpfile}.tif -temp
 
  lappend ay(tmpfiles) [list $tmpfile]
+
 # $tcl_platform(platform) == "windows" || 
  if { $ayprefs(RenderUI) != 1} {
      set command "exec "

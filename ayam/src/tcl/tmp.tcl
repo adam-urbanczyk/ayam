@@ -32,8 +32,8 @@ proc tmp_clean { all } {
                 #puts "Removing some temporary files..."
 		set oldcd [pwd]
 		cd [file dirname $i]
-		set files [glob [file tail $i]*]
-		foreach j $files { file delete $j }
+		set files [glob -nocomplain [file tail $i]*]
+		foreach j $files { catch [file delete $j] }
 		cd $oldcd
 	    } else {
 		lappend new_tempfiles $i
