@@ -1,20 +1,20 @@
 # Ayam, a free 3D modeler for the RenderMan interface.
 #
-# Ayam is copyrighted 1998-2001 by Randolf Schultz
+# Ayam is copyrighted 1998-2004 by Randolf Schultz
 # (rschultz@informatik.uni-rostock.de) and others.
 #
 # All rights reserved.
 #
 # See the file License for details.
 
-# text.tcl - interpolating curves objects Tcl code
+# text.tcl - text objects Tcl code
 
 set Text_props { Transformations Attributes Material Tags TextAttr }
 
 
 array set TextAttr {
 arr   TextAttrData
-sproc ""
+sproc "textSetProp"
 gproc ""
 w     fTextAttr
 
@@ -29,3 +29,10 @@ set w [frame $ay(pca).$TextAttr(w)]
 
 addFile $w TextAttrData FontName
 addString $w TextAttrData String
+
+proc textSetProp { } {
+    setProp
+    update
+    forceNot
+    rV
+}
