@@ -135,6 +135,11 @@ ay_read_header(FILE *fileptr)
       ay_read_version = 3;
     }
 
+  if(!strcmp(version,"1.4"))
+    {
+      ay_read_version = 4;
+    }
+
   free(version);
 
  return ay_status;
