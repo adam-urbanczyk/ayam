@@ -2301,8 +2301,9 @@ to store the depth complexity of CSG primitives.
 The syntax of the DC tag is:
 <tt>"&lt;dcval&gt;"</tt>
 where <tt/"&lt;dcval&gt;"/ is a positive integer value describing the
-depth complexity of the CSG primitive. See also section XXXX
-for more information regarding the depth complexity.
+depth complexity of the CSG primitive. See also section
+<ref id="aycsg" name="CSG preview using the aycsg plugin">
+for more information regarding the depth complexity value.
 
 <sect2>Internal Tags
 <p>
@@ -4677,10 +4678,12 @@ consisting of 6 NURBPatches.
 <itemize>
 <item>Arguments: The revolve tool takes the selected objects from
 the selection.
-<item>Operation: It creates a Revolve object, and moves
+<item>Operation: The tool creates a Revolve object, and moves
 the selected objects to it.
 <item>Note: See section <ref id="revolveobj" name="Revolve Object">
 for more information regarding the revolve object.
+This tool uses the object clipboard to move the objects so that the
+original clipboard contents are lost when this tool finishes.
 </itemize>
 
 <sect1>The Extrude Tool<label id="extt">
@@ -4688,10 +4691,12 @@ for more information regarding the revolve object.
 <itemize>
 <item>Arguments: The extrude tool takes the selected objects from
 the selection.
-<item>Operation: It creates an Extrude object, and moves
+<item>Operation: The tool creates an Extrude object, and moves
 the selected objects to it.
 <item>Note: See section <ref id="extrudeobj" name="Extrude Object">
 for more information regarding the extrude object.
+This tool uses the object clipboard to move the objects so that the
+original clipboard contents are lost when this tool finishes.
 </itemize>
 
 <sect1>The Sweep Tool<label id="swpt">
@@ -4699,10 +4704,12 @@ for more information regarding the extrude object.
 <itemize>
 <item>Arguments: The sweep tool takes the selected objects from
 the selection.
-<item>Operation: It creates a Sweep object, and moves
+<item>Operation: The tool creates a Sweep object, and moves
 the selected objects to it.
 <item>Note: See section <ref id="sweepobj" name="Sweep Object">
 for more information regarding the sweep object.
+This tool uses the object clipboard to move the objects so that the
+original clipboard contents are lost when this tool finishes.
 </itemize>
 
 <sect1>The Cap Tool<label id="capt">
@@ -4710,10 +4717,12 @@ for more information regarding the sweep object.
 <itemize>
 <item>Arguments: The cap tool takes the selected objects from
 the selection.
-<item>Operation: It creates a Cap object, and moves
+<item>Operation: The tool creates a Cap object, and moves
 the selected objects to it.
 <item>Note: See section <ref id="capobj" name="Cap Object">
 for more information regarding the cap object.
+This tool uses the object clipboard to move the objects so that the
+original clipboard contents are lost when this tool finishes.
 </itemize>
 
 <sect1>The Birail1 Tool<label id="bi1t">
@@ -4721,10 +4730,12 @@ for more information regarding the cap object.
 <itemize>
 <item>Arguments: The birail1 tool takes the selected objects from
 the selection.
-<item>Operation: It creates a Birail1 object, and moves
+<item>Operation: The tool creates a Birail1 object, and moves
 the selected objects to it.
 <item>Note: See section <ref id="birail1obj" name="Birail1 Object">
 for more information regarding the birail1 object.
+This tool uses the object clipboard to move the objects so that the
+original clipboard contents are lost when this tool finishes.
 </itemize>
 
 <sect1>The Birail2 Tool<label id="bi2t">
@@ -4732,10 +4743,12 @@ for more information regarding the birail1 object.
 <itemize>
 <item>Arguments: The birail2 tool takes the selected objects from
 the selection.
-<item>Operation: It creates a Birail2 object, and moves
+<item>Operation: The tool creates a Birail2 object, and moves
 the selected objects to it.
 <item>Note: See section <ref id="birail2obj" name="Birail2 Object">
 for more information regarding the birail2 object.
+This tool uses the object clipboard to move the objects so that the
+original clipboard contents are lost when this tool finishes.
 </itemize>
 
 <sect1>The Gordon Tool<label id="gort">
@@ -4743,10 +4756,12 @@ for more information regarding the birail2 object.
 <itemize>
 <item>Arguments: The gordon tool takes the selected objects from
 the selection.
-<item>Operation: It creates a Gordon object, and moves
+<item>Operation: The tool creates a Gordon object, and moves
 the selected objects to it.
 <item>Note: See section <ref id="gordonobj" name="Gordon Object">
 for more information regarding the gordon object.
+This tool uses the object clipboard to move the objects so that the
+original clipboard contents are lost when this tool finishes.
 </itemize>
 
 <sect1>The Skin Tool<label id="skit">
@@ -4754,10 +4769,12 @@ for more information regarding the gordon object.
 <itemize>
 <item>Arguments: The skin tool takes the selected objects from
 the selection.
-<item>Operation: It creates a Skin object, and moves
+<item>Operation: The tool creates a Skin object, and moves
 the selected objects to it.
 <item>Note: See section <ref id="skinobj" name="Skin Object">
 for more information regarding the skin object.
+This tool uses the object clipboard to move the objects so that the
+original clipboard contents are lost when this tool finishes.
 </itemize>
 
 <sect1>The Revert Tool<label id="revertt">
@@ -4806,7 +4823,6 @@ get a custom knot vector.
 form the first of the two new curves, so you may want to keep a copy
 of it somewhere.
 </itemize>
-
 
 <sect1>The Elevate Tool<label id="elevt">
 <p>
@@ -5008,6 +5024,19 @@ Width: length of the first selected curve,
 Height: number of used curves. Other parameters (Knot-Type_U, Knots_U
 etc.) are taken from the first curve.
 <item>Note: The NURBS curves are not deleted afterwards.
+</itemize>
+
+<sect1>The Extract NC Tool<label id="extnct">
+<p>
+<itemize>
+<item>Arguments: The Extract NC tool takes the selected objects from
+the selection.
+<item>Operation: The tool creates a ExtrNC object, and moves
+the selected objects to it.
+<item>Note: See section <ref id="extrncobj" name="ExtrNC Object">
+for more information regarding the ExtrNC object.
+This tool uses the object clipboard to move the objects so that the
+original clipboard contents are lost when this tool finishes.
 </itemize>
 
 <sect1>The Tesselation Tool<label id="tesst">
@@ -6484,6 +6513,34 @@ in: Hamza M., Sarfraz M. (ed.): Computer Graphics and Imaging (CGIM 2001)
 Conference Proceedings, Honolulu, Hawaii, 13-16 August 2001,
 ISBN 0-88986-303-2</it>
 
+<sect1>CSG preview using the aycsg plugin<label id="aycsg">
+<p>
+The aycsg plugin may be used to resolve and preview CSG operations.
+For this, the plugin uses image based CSG rendering algorithms provided
+by the OpenCSG library. The OpenCSG library, currently, supports
+the Goldfeather and the SCS algorithm. The latter only works
+properly with convex primitives.
+<p>
+In order for the CSG rendering algorithms to work properly, the depth
+complexity of a primitive must be known.
+The depth complexity of a primitive determines the maximum number
+of forward oriented surfaces any ray through this primitive would pass.
+A regular sphere has a depth complexity of 1, a torus of 2, but do
+not confuse depth complexity with genus, they are different values.
+The depth complexity of a primitive should be stored in a DC tag.
+<p>
+The aycsg plugin supports the following options available
+through the main menu entry <tt>"Custom/AyCSG Preferences"</tt>:
+<itemize>
+<item><tt/"Algorithm"/ allows to switch between the Goldfeather and
+SCS algorithm.
+<item><tt/"DCSampling"/ determines a depth complexity sampling
+strategy.
+<item><tt/"CalcBBS"/ determines whether bounding boxes should be
+calculated and used for speed up (not working at the moment).
+</itemize>
+
+
 <sect1>Increasing drawing speed<label id="incds">
 <p>
 In case of sluggish response of the user interface of Ayam
@@ -6798,7 +6855,8 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Export RIB: <ref id="mmfile" name="main menu entry">
 <item>Expression: <ref id="mcattr" name="MetaComp attribute">
 <item>Exterior: <ref id="matshader" name="shader">
-<item>ExtrNC:<ref id="extrncobj" name="ExtrNC object">
+<item>ExtrNC:<ref id="extrncobj" name="ExtrNC object">,
+<ref id="extnct" name="Extract NC tool">
 <item>Extrude: <ref id="extrudeobj" name="object">,
 <ref id="extt" name="Extrude tool">
 </itemize>
