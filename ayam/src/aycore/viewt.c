@@ -800,13 +800,14 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
  char *tclargv[3] = {0};
 #ifndef AYNOUNISTDH
  static clock_t t_lastcalled = 0, t_current = 0;
+ struct tms tbuf;
 #endif
 #ifdef WIN32
  static DWORD t_lastcalled = 0, t_current = 0;
 #endif
 
 #ifndef AYNOUNISTDH
-  t_current = times(NULL);
+  t_current = times(&tbuf);
 
   if(t_lastcalled != 0)
     {
@@ -1322,7 +1323,7 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
      to detect whether the user holds down a key if we are called
      in the future again */
 #ifndef AYNOUNISTDH
-  t_lastcalled = times(NULL);
+  t_lastcalled = times(&tbuf);
 #endif
 #ifdef WIN32
   t_lastcalled = GetTickCount();
