@@ -903,9 +903,9 @@ ay_wrib_scene(char *file, char *image, double *from, double *to,
  ay_object *o = ay_root;
  RtPoint f, t, d;
  RtFloat aspect = (RtFloat)1.0, swleft, swright, swtop, swbot;
- /* RtFloat bias0 = (RtFloat)0.5, bias1 = (RtFloat)0.5;*/
  RtFloat fov = (RtFloat)90.0;
-
+ char *objfile = NULL, *pos = NULL;
+ int filelen = 0;
 
  if(!ay_prefs.resolveinstances)
   {
@@ -943,16 +943,32 @@ ay_wrib_scene(char *file, char *image, double *from, double *to,
   if(ay_prefs.use_sm)
     {
       ay_prefs.wrib_sm = AY_TRUE;
-      /* XXXX what are these good for?
-       * do we need them ?
-       */
-      /*
-      RiOption((RtToken)"shadow", (RtToken)"bias0",
-	     (RtPointer)(&bias0), RI_NULL);
-      RiOption((RtToken)"shadow", (RtToken)"bias1",
-	     (RtPointer)(&bias1), RI_NULL);
-      */
-      ay_sm_wriballsm(file, ay_root->next, NULL, width, height);
+
+      filelen = strlen(file);
+
+      if(!(objfile = calloc(filelen+64, sizeof(char))))
+	return AY_EOMEM;
+
+      pos = strstr(file, ".rib");
+
+      if(pos)
+	{
+	  sprintf(objfile, "%s", file);
+	  pos = NULL;
+	  pos = strstr(objfile, ".rib");
+	  if(pos)
+	    sprintf(pos, "%s", ".obj.rib");
+	}
+      else
+	{
+	  sprintf(objfile, "%s.obj.rib", file);
+	}
+
+
+        /* wrib root RiOption tags (possibly containing shadow bias) */
+      ay_status = ay_riopt_wrib(ay_root);
+
+      ay_sm_wriballsm(file, objfile, ay_root->next, NULL, width, height);
       ay_prefs.wrib_sm = AY_FALSE;
     }
 
@@ -1023,16 +1039,43 @@ ay_wrib_scene(char *file, char *image, double *from, double *to,
   /* write default material */
   ay_wrib_defmat(file);
 
-  o = ay_root->next;
-  while(o->next)
+  /* write objects */
+  if(!ay_prefs.use_sm)
     {
-      ay_status = ay_wrib_object(file, o);
-      o = o->next;
+      o = ay_root->next;
+      while(o->next)
+	{
+	  ay_status = ay_wrib_object(file, o);
+	  o = o->next;
+	}
+    }
+  else
+    {
+      RiReadArchive(objfile, (RtVoid*)RI_NULL, RI_NULL);
     }
   RiWorldEnd();
 
   /* Cut! */
   RiEnd();
+
+  /* if shadowmaps are in use, write second RIB containing objects */
+  if(ay_prefs.use_sm)
+    {
+      RiBegin(objfile);
+      
+      o = ay_root->next;
+      while(o->next)
+	{
+	  ay_status = ay_wrib_object(objfile, o);
+	  o = o->next;
+	}
+
+      RiEnd();
+
+      if(objfile)
+	free(objfile);
+
+    } /* if */
 
  return ay_status;
 } /* ay_wrib_scene */
