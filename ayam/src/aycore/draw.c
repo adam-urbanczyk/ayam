@@ -429,56 +429,53 @@ ay_draw_grid(struct Togl *togl)
 	case AY_VTTRIM:
 	  if(aspect > 1.0)
 	    {
-	      minwinx = floor(((-aspect * view->zoom) - fabs(view->from[0]))/
-			      (view->grid<1.0?view->grid:1.0/view->grid));
-	      minwiny = floor(((-view->zoom) - fabs(view->from[1]))/
-			      (view->grid<1.0?view->grid:1.0/view->grid));
+	      minwinx = ((-aspect * view->zoom) + view->from[0]) - grid;
+	      minwiny = ((-view->zoom) + view->from[1]) - grid;
 	    }
 	  else
 	    {
-	      minwiny = floor(((view->zoom/-aspect) - fabs(view->from[1]))/
-			      (view->grid<1.0?view->grid:1.0/view->grid));
-	      minwinx = floor(((-view->zoom) - fabs(view->from[0]))/
-			      (view->grid<1.0?view->grid:1.0/view->grid));
+	      minwiny = ((view->zoom/-aspect) + view->from[1]) - grid;
+	      minwinx = ((-view->zoom) + view->from[0] - grid);
 	    }
 	  break;
 	case AY_VTSIDE:
 	  if(aspect > 1.0)
 	    {
-	      minwinx = floor(((-aspect * view->zoom) - fabs(view->from[2]))/
-			      (view->grid<1.0?view->grid:1.0/view->grid));
-	      minwiny = floor(((-view->zoom) - fabs(view->from[1]))/
-			      (view->grid<1.0?view->grid:1.0/view->grid));
+	      minwinx =  ((-aspect * view->zoom) + view->from[2]) - grid;
+	      minwiny = ((-view->zoom) + view->from[1]) - grid;
 	    }
 	  else
 	    {
-	      minwiny = floor(((view->zoom/-aspect) - fabs(view->from[1]))/
-			      (view->grid<1.0?view->grid:1.0/view->grid));
-	      minwinx = floor(((-view->zoom) - fabs(view->from[2]))/
-			      (view->grid<1.0?view->grid:1.0/view->grid));
+	      minwiny = ((view->zoom/-aspect) + view->from[1]) - grid;
+	      minwinx = ((-view->zoom) + view->from[2] - grid);
 	    }
 	  break;
 	case AY_VTTOP:
 	  if(aspect > 1.0)
 	    {
-	      minwinx = floor(((-aspect * view->zoom) - fabs(view->from[0]))/
-			      (view->grid<1.0?view->grid:1.0/view->grid));
-	      minwiny = floor(((-view->zoom) - fabs(view->from[2]))/
-			      (view->grid<1.0?view->grid:1.0/view->grid));
+	      minwinx = ((-aspect * view->zoom) + view->from[0]) - grid;
+	      minwiny = ((-view->zoom) + view->from[2]) - grid;
 	    }
 	  else
 	    {
-	      minwiny = floor(((view->zoom/-aspect) - fabs(view->from[2]))/
-			      (view->grid<1.0?view->grid:1.0/view->grid));
-	      minwinx = floor(((-view->zoom) - fabs(view->from[0]))/
-			      (view->grid<1.0?view->grid:1.0/view->grid));
+	      minwiny = ((-aspect * view->zoom) + view->from[2]) - grid;
+	      minwinx = ((-view->zoom) + view->from[0] - grid);
 	    }
 	  break;
 	}
 
-      maxwinx = -minwinx;
-      maxwiny = -minwiny;
+      if(aspect > 1.0)
+	{
+	  maxwinx = minwinx + 2*((aspect * view->zoom)) + grid;
+	  maxwiny = minwiny + 2*(view->zoom) + grid;
+	}
+      else
+	{
+	  maxwinx = minwinx + 2*((view->zoom/aspect)) + grid;
+	  maxwiny = minwiny + 2*(-view->zoom) + grid;
+	}
 
+      /*printf("%g %g %g %g\n",minwinx,maxwinx,minwiny,maxwiny);*/
       glColor3d((GLdouble)ay_prefs.grr, (GLdouble)ay_prefs.grg,
 		(GLdouble)ay_prefs.grb);
 
