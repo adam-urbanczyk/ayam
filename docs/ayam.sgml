@@ -4278,10 +4278,11 @@ Bernd, without your help I surely would not be that far, thanks!
 
 Furthermore, I would like to thank the following people:
 <itemize>
-<item>Bertrand Coconnier: object picking
+<item>Bertrand Coconnier: implementation of object picking
 <item>Hermann Birkholz: initial implementation of the tree widget, shadow map
 support, AI, and IDR
-<item>Frank (Copper) Pagels: Metaballs custom object
+<item>Frank (Copper) Pagels: MetaBalls custom object, providing a lot of
+good music
 <item>Stephen Echavia: Icons
 <item>Larry Gritz: BMRT
 <item>Benjamin Bederson, Brian Paul et. al.: The Togl Widget
@@ -4310,6 +4311,10 @@ Copyright (c) 1995, 1996, 1997, 1998 Thomas E. Burge
 All rights reserved.
 
 Affine (R) is a registered trademark of Thomas E. Burge.
+
+TIFF Software is
+Copyright (c) 1988-1997 Sam Leffler
+Copyright (c) 1991-1997 Silicon Graphics, Inc.
 
 <sect>Index
 <p>
