@@ -32,11 +32,11 @@ VertexInterp (double isolevel, meta_xyz * p1, meta_xyz * p2, double valp1, doubl
   double mu;
   /* XYZ p; */
 
-  if (ABS (isolevel - valp1) < 0.00001)
+  if (META_ABS (isolevel - valp1) < 0.00001)
     *d = *p1;			/* return(p1); */
-  if (ABS (isolevel - valp2) < 0.00001)
+  if (META_ABS (isolevel - valp2) < 0.00001)
     *d = *p2;			/* return(p2); */
-  if (ABS (valp1 - valp2) < 0.00001)
+  if (META_ABS (valp1 - valp2) < 0.00001)
     *d = *p1;			/* return(p1); */
   mu = (isolevel - valp1) / (valp2 - valp1);
   d->x = p1->x + mu * (p2->x - p1->x);
