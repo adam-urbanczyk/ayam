@@ -971,3 +971,74 @@ ay_trafo_multmatrix4(double *m1, double *m2)
  return AY_OK;
 } /* ay_trafo_multmatrix4 */
 
+#define MAT(m,r,c) (m)[(c)*4+(r)]
+
+/*
+ * ay_trafo_invmatrix4:
+ *  borrowed from Mesa3.2.1/matrix.c which in turn borrowed it
+ *  from Graphics Gems II
+ */
+int
+ay_trafo_invmatrix4(double *m, double *mi)
+{
+ double pos, neg, t;
+ double det;
+
+  if(!m || !mi)
+    return AY_ENULL;
+
+
+   /* Calculate the determinant of upper left 3x3 submatrix and
+    * determine if the matrix is singular. 
+    */
+   pos = neg = 0.0;
+   t =  MAT(m,0,0) * MAT(m,1,1) * MAT(m,2,2);
+   if (t >= 0.0) pos += t; else neg += t;
+
+   t =  MAT(m,1,0) * MAT(m,2,1) * MAT(m,0,2);
+   if (t >= 0.0) pos += t; else neg += t;
+
+   t =  MAT(m,2,0) * MAT(m,0,1) * MAT(m,1,2);
+   if (t >= 0.0) pos += t; else neg += t;
+
+   t = -MAT(m,2,0) * MAT(m,1,1) * MAT(m,0,2);
+   if (t >= 0.0) pos += t; else neg += t;
+
+   t = -MAT(m,1,0) * MAT(m,0,1) * MAT(m,2,2);
+   if (t >= 0.0) pos += t; else neg += t;
+
+   t = -MAT(m,0,0) * MAT(m,2,1) * MAT(m,1,2);
+   if (t >= 0.0) pos += t; else neg += t;
+
+   det = pos + neg;
+
+   if (det*det < 1e-25) 
+      return AY_ERROR;
+   
+   det = 1.0 / det;
+   MAT(mi,0,0) = (  (MAT(m,1,1)*MAT(m,2,2) - MAT(m,2,1)*MAT(m,1,2) )*det);
+   MAT(mi,0,1) = (- (MAT(m,0,1)*MAT(m,2,2) - MAT(m,2,1)*MAT(m,0,2) )*det);
+   MAT(mi,0,2) = (  (MAT(m,0,1)*MAT(m,1,2) - MAT(m,1,1)*MAT(m,0,2) )*det);
+   MAT(mi,1,0) = (- (MAT(m,1,0)*MAT(m,2,2) - MAT(m,2,0)*MAT(m,1,2) )*det);
+   MAT(mi,1,1) = (  (MAT(m,0,0)*MAT(m,2,2) - MAT(m,2,0)*MAT(m,0,2) )*det);
+   MAT(mi,1,2) = (- (MAT(m,0,0)*MAT(m,1,2) - MAT(m,1,0)*MAT(m,0,2) )*det);
+   MAT(mi,2,0) = (  (MAT(m,1,0)*MAT(m,2,1) - MAT(m,2,0)*MAT(m,1,1) )*det);
+   MAT(mi,2,1) = (- (MAT(m,0,0)*MAT(m,2,1) - MAT(m,2,0)*MAT(m,0,1) )*det);
+   MAT(mi,2,2) = (  (MAT(m,0,0)*MAT(m,1,1) - MAT(m,1,0)*MAT(m,0,1) )*det);
+
+   /* Do the translation part */
+   MAT(mi,0,3) = - (MAT(m,0,3) * MAT(mi,0,0) +
+		     MAT(m,1,3) * MAT(mi,0,1) +
+		     MAT(m,2,3) * MAT(mi,0,2) );
+   MAT(mi,1,3) = - (MAT(m,0,3) * MAT(mi,1,0) +
+		     MAT(m,1,3) * MAT(mi,1,1) +
+		     MAT(m,2,3) * MAT(mi,1,2) );
+   MAT(mi,2,3) = - (MAT(m,0,3) * MAT(mi,2,0) +
+		     MAT(m,1,3) * MAT(mi,2,1) +
+		     MAT(m,2,3) * MAT(mi,2,2) );
+    
+
+ return AY_OK;
+} /* ay_trafo_invmatrix4 */
+
+#undef MAT
