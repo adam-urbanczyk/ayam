@@ -917,6 +917,16 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 
       Tcl_GetInt(interp, argv[i+3], &view->drawmarker);
     } /* if */
+  else
+  if(!strcmp(argv[i],"-gmark"))
+    {
+      Tcl_GetDouble(interp, argv[i+1], &view->markx);
+      Tcl_GetDouble(interp, argv[i+2], &view->marky);
+      if(view->usegrid)
+	ay_viewt_griddify(togl, &view->markx, &view->marky);
+      Tcl_GetInt(interp, argv[i+3], &view->drawmarker);
+    } /* if */
+  else
   if(!strcmp(argv[i],"-name"))
     {
       o = ay_root->down;
