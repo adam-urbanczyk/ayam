@@ -241,6 +241,8 @@ int ay_object_deleteinstances(ay_object **o);
 
 int ay_object_replace(ay_object *src, ay_object *dst);
 
+int ay_object_ccp(ay_object *o);
+
 /* objio.c */
 int ay_objio_writescene(char *filename, int selected);
 
@@ -310,6 +312,8 @@ int ay_matt_mayhavematerial(unsigned int type);
 
 /* pact.c */
 int ay_pact_getpoint(int mode, ay_object *o, double *obj);
+
+void ay_pact_pedclear(ay_object *o);
 
 int ay_pact_seltcb(struct Togl *togl, int argc, char *argv[]);
 
