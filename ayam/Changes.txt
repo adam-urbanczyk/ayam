@@ -1,3 +1,12 @@
+[CVS 08. 02. 2002]
+o bug fixes:
+  - fixed color select buttons in preferences not updating on "load defaults"
+  - fixed missing RiSolidBegin/End for spheres with thetamax != 360
+  - fixed RiAttribute tags not exporting when attached to material objects
+  - fixed broken integer RiOption and RiAttribute declarations
+o improved RIB export of quadric primitives with negative thetamax
+o the mouse cursor now changes when the "alt rotate" action is in effect
+
 [17. 01. 2002] Ayam1.1:
 o bug fixes:
   - fixed custom lights always exporting as AreaLight to RIB
