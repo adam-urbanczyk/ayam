@@ -1,7 +1,7 @@
 /*
  * Ayam, a free 3D modeler for the RenderMan interface.
  *
- * Ayam is copyrighted 1998-2001 by Randolf Schultz
+ * Ayam is copyrighted 1998-2002 by Randolf Schultz
  * (rschultz@informatik.uni-rostock.de) and others.
  *
  * All rights reserved.
@@ -75,7 +75,7 @@ ay_tcmd_reverttcmd(ClientData clientData, Tcl_Interp * interp,
   ay_notify_parent();
 
  return TCL_OK;
-}
+} /* ay_tcmd_reverttcmd */
 
 
 /* ay_tcmd_showtcmd:
@@ -103,7 +103,8 @@ ay_tcmd_showtcmd(ClientData clientData, Tcl_Interp * interp,
     } /* while */
 
  return TCL_OK;
-}
+} /* ay_tcmd_showtcmd */
+
 
 /* ay_tcmd_hidetcmd:
  *  
@@ -155,7 +156,8 @@ ay_tcmd_hidetcmd(ClientData clientData, Tcl_Interp * interp,
     } /* while */
 
  return TCL_OK;
-}
+} /* ay_tcmd_hidetcmd */
+
 
 /* ay_tcmd_getvertcmd:
  *  get all version information from the current OpenGL/GLU and Ayam
