@@ -97,6 +97,7 @@ onio_getnurbsurfobj(ay_object *o, ON_NurbsSurface **pp_n)
 {
  int ay_status = AY_OK;
  int i, j, a, stride = 4;
+ double *cv, m[16];
  ay_nurbpatch_object *np = NULL;
  ON_NurbsSurface *p_n = NULL;
 
@@ -113,13 +114,18 @@ onio_getnurbsurfobj(ay_object *o, ON_NurbsSurface **pp_n)
   for(i = 0; i < np->vorder+np->height-2; i++)
     p_n->SetKnot(1, i, np->vknotv[i+1]);
 
+  ay_trafo_creatematrix(o, m);
+
   // copy control points
   a = 0;
+  cv = p_n->m_cv;
   for(i = 0; i < np->width; i++)
     {
       for(j = 0; j < np->height; j++)
 	{
 	  p_n->SetCV(i, j, ON::homogeneous_rational, &(np->controlv[a]));
+	  ay_trafo_apply4(cv, m);
+	  cv += 4;
 	  a += stride;
 	} // for
     } // for
