@@ -1266,6 +1266,7 @@ ay_viewt_griddify(struct Togl *togl, double *winx, double *winy)
 	{
 	  /* get reference point and grid size in window coords */
 	  glGetIntegerv(GL_VIEWPORT, vp);
+	  glMatrixMode(GL_PROJECTION);
 	  glGetDoublev(GL_PROJECTION_MATRIX, mp);
 	  glMatrixMode(GL_MODELVIEW);
 	  glPushMatrix();
@@ -1286,17 +1287,19 @@ ay_viewt_griddify(struct Togl *togl, double *winx, double *winy)
 	   glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 	  glPopMatrix();
 	  gluProject(0.0, 0.0, 0.0, mm, mp, vp, &refx, &refy, &refz);
-	  
+	  refy = height-refy;
 	  switch(view->type)
 	    {
 	    case AY_VTFRONT:
 	    case AY_VTTRIM:
 	      gluProject(view->grid, view->grid, 0.0, mm, mp, vp,
 			 &gridx, &gridy, &gridz);
+	      gridy = height-gridy;
 	      break;
 	    case AY_VTSIDE:
 	      gluProject(view->grid, view->grid, 0.0, mm, mp, vp,
 			 &gridx, &gridy, &gridz);
+	      gridy = height-gridy;
 	      break;
 	    case AY_VTTOP:
 	      gluProject(view->grid, 0.0, -view->grid, mm, mp, vp,
@@ -1305,8 +1308,8 @@ ay_viewt_griddify(struct Togl *togl, double *winx, double *winy)
 	    }
 
 	  gridx = gridx-refx;
-	  gridy = gridy-refy;
-
+	  gridy = -(gridy-refy);
+	  
 	  ghx = gridx/2.0;
 	  ghy = gridy/2.0;
 	} /* if */
