@@ -113,7 +113,7 @@ array set ayprefs {
  HideTmpTags 0
  Kill "kill"
  Cat "cat"
- Wait "waitPid"
+ Wait ""
  MaxTagLen 30
 
  Locale "en"
@@ -372,6 +372,7 @@ array set ay {
  ts 0
  ul ""
  TreeUpdateSema 0
+ ExtraTreeUpdate 0
  co ""
  cm ""
  rnum 0
