@@ -1,10 +1,11 @@
-[8. Jan 2005] CVS-Head:
+[18. Jan 2005] CVS-Head:
 o bug fixes:
   - fixed "setPnt/getPnt" scripting interface commands for NURBS patches
     with differing width and height (SF 1091407)
+  - fixed Tcl errors for property listbox scrollbar on Win32 (SF 1104662)
 o added a new object type "Script", that executes small Tcl scripts to
   create complex objects, modify objects or do other things
-o added example scripts for the new Script object type to the "scripts"
+o added example scripts for the new Script object type to the new "scripts"
   sub-directory
 o added tag type "NS" that may contain small Tcl scripts to be executed
   when the notification callback fires
