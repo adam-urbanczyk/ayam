@@ -141,12 +141,12 @@ proc prefs_open {} {
     addCheck $fw ayprefse WriteIdent
     addCheck $fw ayprefse ShadowMaps
     addCheck $fw ayprefse ExcludeHidden
-    addString $fw ayprefse QRender
+    addString $fw ayprefse QRender [list "rgl %s" "rgl -rd 10 %s"]
     addCheck $fw ayprefse QRenderUI
     addString $fw ayprefse QRenderPT
-    addString $fw ayprefse Render
+    addString $fw ayprefse Render [list "rendrib -d 4 -Progress %s" "rendrib -d 4 %s" "aqsis -fb %s"]
     addCheck $fw ayprefse RenderUI
-    addString $fw ayprefse RenderPT
+    addString $fw ayprefse RenderPT [list "R90000 %d" "Done computing %d" "%d"]
 
     # Misc
     set fw [$nb insert end Misc -text Misc\
