@@ -4357,21 +4357,25 @@ determines the thickness.
 <item>Operation: The NURBCircle tool creates a circular NURBS curve
 arc of radius 1, with the specified angle, in the XY plane,
 located at the origin.
+<item>Note: The NURBS curve created by the NURBCircleArc tool is rational
+(uses weights). This means, editing the curve (e.g. moving control points)
+may lead to unpredicted results (the curve does not behave exactly
+as wished).
 </itemize>
 
 <sect1>The TrimRect Tool<label id="trrt">
 <p>
 <itemize>
 <item>Arguments: None
-<item>Operation: The TrimRect tool creates a piecewise linear
-NURBS curve of rectangular
-shape, that fits in the (u,v) parameter space of a NURBS patch, for use
-as trim curve.
+<item>Operation: The TrimRect tool creates a two-dimensional piecewise
+linear NURBS curve of rectangular shape in the XY plane, that fits in
+the (u,v) parameter space of a NURBS patch, for use as trim curve.
 <item>Note: To fit the curve to the parameter space of a NURBS patch,
-the current level should be inside the NURBS patch.
-If the current level is not inside a NURBS patch, a
-curve with the coordinates (-1,-1), (-1,1), (1,1), and (1,-1)
-will be created instead.
+the NURBS patch object should be selected or the current level should be
+inside the NURBS patch.
+If no NURBS patch object is selected and the current level is not inside
+a NURBS patch, a curve with the coordinates (-1,-1), (-1,1), (1,1),
+and (1,-1) will be created instead.
 See section <ref id="trim" name="Trim Curves"> for a more
 detailed discussion of trim curves and how to use this rectangular
 curve.
@@ -4654,7 +4658,8 @@ the selection and additionally requests two integer values.
 by the specified integer values without changing the shape of the patches.
 <item>Note: If the knot vector of the patch is not clamped, it
 will be clamped automatically. The knot type of the patch will
-be changed to custom.
+be changed to custom. New control points will be added and the position
+of old control points may be changed in the progress.
 </itemize>
 
 <sect1>The Revert U Tool<label id="revertut">
