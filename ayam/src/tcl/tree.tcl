@@ -182,7 +182,7 @@ proc tree_selectItem { redraw tree node } {
     set ay(ts) 1; 
     set nlist [$tree selection get]
     $ay(tree) selection clear
-    treeSelect ""
+    #treeSelect ""
     $ay(tree) selection set $node
     #tree_handleSelection
     if { [lsearch $nlist $node] == "-1" } {
@@ -195,7 +195,9 @@ proc tree_selectItem { redraw tree node } {
     $tree bindText  <ButtonPress-1> "tree_selectItem 1 $tree"
 
     if { $redraw == 1 } {
-	rV
+	if { $ay(need_redraw) == 1 } {
+	    rV
+	}
     }
 
     plb_update
@@ -236,7 +238,10 @@ proc tree_toggleSelection { tree node } {
 
     tree_handleSelection
     plb_update
-    rV
+    if { $ay(need_redraw) == 1 } {
+	rV
+    }
+
  return;
 }
 # tree_toggleSelection
@@ -280,7 +285,11 @@ proc tree_multipleSelection { tree node } {
     eval [subst "$tree selection add $selnodes"]
     tree_handleSelection
     plb_update
-    rV
+
+    if { $ay(need_redraw) == 1 } {
+	rV
+    }
+
     $tree bindText  <ButtonPress-1> ""
     $tree bindText  <ButtonRelease-1> "tree_selectItem 1 $tree"
 
@@ -698,10 +707,19 @@ set m $ay(tree).popup
 
 $m add separator
 $m add command -label "Switch to Listbox" -command\
- "tree_close $w; olb_open $w; olb_update; rV"
+ "global ay; tree_close $w; olb_open $w; cS; olb_update;\
+ if \{ \$ay(need_redraw) == 1 \} \{\
+  rV;\
+ \}"
 $m add separator
 $m add command -label "Deselect Object" -command {
-    cS;plb_update;rV}
+    global ay
+    cS
+    plb_update
+    if { $ay(need_redraw) == 1 } {
+	rV
+    }
+}
 $m add separator
 
 set em $ay(editmenu)
@@ -733,7 +751,7 @@ set ay(DropActive) 0
 #
 proc tree_close { w } {
 
-destroy $w.ftr
+    destroy $w.ftr
 
 }
 #tree_close
@@ -748,8 +766,11 @@ proc tree_toggle { } {
     if { [winfo exists $ay(tree)] } {
 	tree_close $w
 	olb_open $w
+	cS
 	olb_update
-	rV
+	if { $ay(need_redraw) == 1 } {
+	    rV
+	}
 	set ayprefs(showtr) 0
     } else {
 	cS; uS
@@ -761,7 +782,9 @@ proc tree_toggle { } {
 	set ay(SelectedLevel) "root"
 	tree_paintLevel "root"
 	set ay(DropActive) 0
-	rV
+	if { $ay(need_redraw) == 1 } {
+	    rV
+	}
 	set ayprefs(showtr) 1
     }
 

@@ -83,72 +83,93 @@ ay_sel_setfromlbtcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[])
 {
  int ay_status = AY_OK;
- int i = 0, j = 1, argvi = 0, start = 1;
+ char fname[] = "selOb";
+ ay_list_object *oldsel, *newsel;
  ay_object *o = ay_currentlevel->object;
- char fname[] = "sel_setfromlb";
+ int i = 0, j = 1, argvi = 0, start = 1, need_redraw = AY_TRUE;
+ char vname[] = "ay(need_redraw)", yes[] = "1", no[] = "0";
 
-  /* first, clear old selection */
-  if(ay_selection)
-    ay_sel_free();
+  /* save old selection for later comparison with new */
+  oldsel = ay_selection;
+  ay_selection = NULL;
+
 
   /* nothing selected? -> bail out */
-  if(argc == 1)
-    return TCL_OK; 
-
-  /* first item in clevel selected? (this is root or "..") */
-  if(atoi(argv[1]) == 0)
+  if(argc > 1)
     {
-      start++;
-
-      /* root selected? */
-      if(o == ay_root)
+      /* first item in clevel selected? (this is root or "..") */
+      if(atoi(argv[1]) == 0)
 	{
-	  ay_status = ay_sel_add(o);
-	  if(ay_status)
-	    {
-	      ay_error(ay_status, fname, NULL);
-	      return TCL_OK;
-	    }
+	  start++;
 
-	  if(o->next)
-	    o = o->next;
+	  /* root selected? */
+	  if(o == ay_root)
+	    {
+	      ay_status = ay_sel_add(o);
+	      if(ay_status)
+		{
+		  ay_error(ay_status, fname, NULL);
+		  return TCL_OK;
+		}
+
+	      if(o->next)
+		o = o->next;
+	    }
 	}
+
+      if(o == ay_root)
+	o = o->next;
+
+      /* iterate through arguments and select appropriate objects */
+      for(i = start; i < argc; i++)
+	{
+	  argvi = atoi(argv[i]);
+
+	  while(j != argvi)
+	    {
+	      j++;
+
+	      if(o)
+		o = o->next;	
+
+	      if(!o)
+		break;
+
+	      /* no reset of o for next iteration, because we believe
+		 that the arguments are sorted! */
+	    } /* while */
+
+	  /* found a selected object -> add to the list */
+	  if(o)
+	    {
+	      ay_status = ay_sel_add(o);
+	      if(ay_status)
+		{
+		  ay_error(ay_status, fname, NULL);
+		  return TCL_OK;
+		}
+	    } /* if */
+
+	} /* for */
+    } /* if */
+
+  newsel = ay_selection;
+  /* do we need a complete redraw ? */
+  ay_draw_needredraw(oldsel, newsel, &need_redraw);
+
+  if(need_redraw)
+    {
+      Tcl_SetVar(interp, vname, yes, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY); 
+    }
+  else
+    {
+      Tcl_SetVar(interp, vname, no, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
     }
 
-  if(o == ay_root)
-    o = o->next;
-
-  /* iterate through arguments and select appropriate objects */
-  for(i = start; i < argc; i++)
-    {
-      argvi = atoi(argv[i]);
-
-      while(j != argvi)
-	{
-	  j++;
-
-	  if(o)
-	    o = o->next;	
-
-	  if(!o)
-	    break;
-
-	  /* no reset of o for next iteration, because we believe
-	     that the arguments are sorted! */
-	} /* while */
-
-      /* found a selected object -> add to the list */
-      if(o)
-	{
-	  ay_status = ay_sel_add(o);
-	  if(ay_status)
-	    {
-	      ay_error(ay_status, fname, NULL);
-	      return TCL_OK;
-	    }
-	} /* if */
-
-    } /* for */
+  /* now, free old selection */
+  ay_selection = oldsel;
+  ay_status = ay_sel_free();
+  ay_selection = newsel;
 
  return TCL_OK;
 } /* ay_sel_setfromlbtcmd */

@@ -420,30 +420,50 @@ ay_tree_selecttcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int ay_status = AY_OK;
  /* char fname[] = "treeSelect";*/
+ ay_list_object *oldsel, *newsel;
  ay_object *o;
- int i;
+ int i, need_redraw = AY_TRUE;
+ char vname[] = "ay(need_redraw)", yes[] = "1", no[] = "0";
 
-  /* first, free old selection */
-  ay_status = ay_sel_free();
+  /* save old selection for later comparison with new */
+  oldsel = ay_selection;
+  ay_selection = NULL;
 
   /* update current level */
-  if (argc > 1)
+  if(argc > 1)
     {
       ay_tree_getclevel(argv[1]);
+
+      /* now, add selected objects */
+      i = 1;
+      while(i != argc)
+	{
+	  o = ay_tree_getobject(argv[i]);
+	  if(o)
+	    {
+	      ay_sel_add(o);
+	    }
+	  i++;
+	}
+    } /* if */
+
+  newsel = ay_selection;
+  /* do we need a complete redraw ? */
+  ay_draw_needredraw(oldsel, newsel, &need_redraw);
+
+  if(need_redraw)
+    {
+      Tcl_SetVar(interp, vname, yes, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY); 
     }
   else
     {
-      return TCL_OK;
+      Tcl_SetVar(interp, vname, no, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
     }
 
-  /* now, add selected objects */
-  i = 1;
-  while (i != argc) {
-      o = ay_tree_getobject(argv[i]);
-      if(o)
-	ay_sel_add(o);
-      i++;
-  }
+  /* now, free old selection */
+  ay_selection = oldsel;
+  ay_status = ay_sel_free();
+  ay_selection = newsel;
 
  return TCL_OK;
 } /* ay_tree_selecttcmd */
