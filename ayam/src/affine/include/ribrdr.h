@@ -1,5 +1,5 @@
 /* 
- * Copyright (c) 1995, 1996, 1997, 1998 Thomas E. Burge.  All rights reserved.
+ * Copyright (c) 1995-1999 Thomas E. Burge.  All rights reserved.
  * 
  * Affine (R) is a registered trademark of Thomas E. Burge
  *
@@ -16,7 +16,7 @@
  * notices appear in all software and any related documentation:
  *
  *                 The Affine (R) Libraries and Tools are 
- *          Copyright (c) 1995, 1996, 1997, 1998 Thomas E. Burge.  
+ *                Copyright (c) 1995-1999 Thomas E. Burge.  
  *                          All rights reserved.
  *         Affine (R) is a registered trademark of Thomas E. Burge.
  *
@@ -113,6 +113,12 @@
  *       07-15-99  Incremented version number.
  *       10-05-99  Added RibFindFile() and archivesearchpath fields 
  *                 to PRIB_INSTANCE.
+ *       10-17-99  Changed hint table Set/Get functions to match those
+ *                 for the Ri tables.  Added rib->hintlevel, kRIB_RILEVEL99,
+ *                 and kRIB_HINTLEVEL99.
+ *       02-24-00  Added RibNuCurvesV and RibImplicitV to allow linking with 
+ *                 client libraries such as librib.a which do not have the
+ *                 Ri functions.  Also RibGeometricRepresentation.
  *    
  *
  *
@@ -275,8 +281,11 @@ enum RIB_RICALLS {
    kRIB_PROCRUNPROGRAM,
    kRIB_LAST_RI
 };
+/* Last call with an actual RIB binding. */
 #define kRIB_LAST_RIB (kRIB_ARCHIVERECORD+1)
-#define kRIB_RILEVEL98  115
+
+/* The number of Ri function pointers in the Ri Table as of 99 release. */
+#define kRIB_RILEVEL99  116
 
 enum {
    kRIB_CAMERAORIENTATION_HINT,  /* ##CameraOrientation */
@@ -293,6 +302,8 @@ enum {
    kRIB_LAST_HINT
 };
 
+/* The number of hint function pointers in the Hint Table as of 99 release. */
+#define kRIB_HINTLEVEL99  11
 
 /*   
  *   Error Handling
@@ -580,6 +591,7 @@ typedef struct _RIB_INSTANCE {
    PRIB_HASHTABLE         phashtable;
    int                    rilevel;
    PRIB_RITABLE           ritable;
+   int                    hintlevel;
    PRIB_HINTTABLE         hinttable;
    PRIB_ARCRECFILTERPROC  arcrechandler;
    PRIB_ARCREC            arcreclist;
@@ -721,15 +733,18 @@ RIB_UINT32
       : 1 /* Error */ ) 
 
 #define RibGetHintTableSize( /* RIB_HANDLE */ rib )  \
-               (sizeof(PRIB_ARCRECFILTERPROC)*kRIB_LAST_HINT)
+			     ( (rib) ? ((PRIB_INSTANCE)(rib))->hintlevel : 0 )
 
 #define /* PRIB_HINTTABLE */ RibGetHintTable( /* RIB_HANDLE */ rib ) \
      ( (rib) ? ((PRIB_INSTANCE)(rib))->hinttable : NULL ) 
 
 #define /* int */ RibSetHintTable( /* RIB_HANDLE */ rib,        \
+				   /*int*/ hint_level,          \
                                   /* PRIB_HINTTABLE */ table )  \
      ( (rib)&&(table)                                           \
-      ? ((((PRIB_INSTANCE)(rib))->hinttable=(table)),NULL)      \
+      ? ((((PRIB_INSTANCE)(rib))->hinttable=(table)),           \
+	 (((PRIB_INSTANCE)(rib))->hintlevel=(hint_level)),      \
+	 NULL)                                                  \
       : 1 /* Error */ ) 
 
 #define /* RtBoolean */ RibShouldFreeData( /* RIB_HANDLE */ rib )          \
@@ -1105,6 +1120,19 @@ int
 #endif 
 
 
+#ifndef __RIB_FILE_RIBFUNC
+extern  
+#endif
+RtVoid
+   RibNuCurvesV( RtInt ncurves, RtInt nvertices[], RtInt order[],
+		RtFloat knot[], RtFloat min[], RtFloat max[], 
+		RtInt n, RtToken tokens[], RtPointer parms[] ),
+   RibImplicitV( RtInt a, RtInt b[], RtInt c, RtFloat d[],
+		   RtInt e, RtFloat f[], RtInt g, RtFloat h[],
+		   RtInt n, RtToken tokens[], RtPointer parms[] ),
+   RibGeometricRepresentation( RtToken type );
+
+
 /* 
  *   Globals
  *
@@ -1115,12 +1143,8 @@ extern int gRibNSubfiles;
 extern int gRibNOpenSubfiles;
 #endif
 
-#if defined(RIB_INCLUDE_RITABLE)
-#include <ritable.h>
-#else
 #ifndef __RIB_FILE_RITABLE
 extern PRIB_RIPROC gRibRITable[];
-#endif
 #endif
 
 #ifndef __RIB_FILE_READFUNC
