@@ -26,126 +26,22 @@ if { $tcl_platform(os) != "Darwin" } {
     set ay(viewm) menubar.mview
 }
 
-$m add command\
--label "Quick Render"\
--command {
- global env ayprefs ay tcl_platform
+$m add command -label "Quick Render" -command "viewRender $w 1;\
+	\$ay(currentView) mc"
 
- if { $ayprefs(ShadowMaps) < 1 } {
-     tmpGet $ayprefs(TmpDir) tmpfile
+$m add command -label "Render" -command "viewRender $w 0;\
+	\$ay(currentView) mc"
 
-     if { $tcl_platform(platform) == "windows" } {
-	 # Windows sucks big time!
-     
-	 regsub -all {\\} $tmpfile {/} tmpfile
-	 #was: regsub -all {\\} $tmpfile {\\\\\\\\\\\\\\\\} tmpfile
-     }
-
-     if { $ayprefs(RenderMode) == 0 } {
-	 $ay(currentView) wrib -file $tmpfile -image ${tmpfile}.tif -temp
-     } else {
-	 $ay(currentView) wrib -file $tmpfile -temp
-     }
-
-     lappend ay(tmpfiles) $tmpfile
- } else {
-
-     set ribname [io_getRIBName]
-     set tmpfile [lindex $ribname 0]
-     set imagename [lindex $ribname 1]
-     if { $ayprefs(RenderMode) == 0 } {
-	 $ay(currentView) wrib -file $tmpfile -image $imagename -temp
-     } else {
-	 $ay(currentView) wrib -file $tmpfile -temp
-     }
-
- }
-
- if { $ayprefs(QRenderUI) != 1} {
-     set command "exec "
-
-     regsub -all {%s} $ayprefs(QRender) $tmpfile command2
-
-     append command $command2
-     append command " &"
-
-     eval [subst "$command"]
- } else {
-     
-     regsub -all {%s} $ayprefs(QRender) $tmpfile command
-
-     runRenderer "$command" $ayprefs(QRenderPT)
-
- }
-
- update
- tmp_clean 0
-}
-
-$m add command\
--label "Render"\
--command {
-global env ayprefs ay tcl_platform
-
-if { $ayprefs(ShadowMaps) < 1 } {
-    tmpGet $ayprefs(TmpDir) tmpfile
-
-    if { $tcl_platform(platform) == "windows" } {
-	# Windows sucks big time!
-	regsub -all {\\} $tmpfile {/} tmpfile
-    }
-
-    if { $ayprefs(RenderMode) == 0 } {
-	$ay(currentView) wrib -file $tmpfile -image ${tmpfile}.tif -temp
-    } else {
-	$ay(currentView) wrib -file $tmpfile -temp
-    }
-
-    lappend ay(tmpfiles) [list $tmpfile]
-} else {
-
-    set ribname [io_getRIBName]
-    set tmpfile [lindex $ribname 0]
-    set imagename [lindex $ribname 1]
-    if { $ayprefs(RenderMode) == 0 } {
-	$ay(currentView) wrib -file $tmpfile -image $imagename -temp
-    } else {
-	$ay(currentView) wrib -file $tmpfile -temp
-    }
-}
-
-# $tcl_platform(platform) == "windows" || 
- if { $ayprefs(RenderUI) != 1} {
-     set command "exec "
-
-     regsub -all {%s} $ayprefs(Render) $tmpfile command2
-
-     append command $command2
-     append command " &"
-
-     eval [subst "$command"]
- } else {
-     
-     regsub -all {%s} $ayprefs(Render) $tmpfile command
-
-     runRenderer "$command" "$ayprefs(RenderPT)"
-
- }
-
- update
- tmp_clean 0
-
-}
-
-$m add command -label "Redraw" -command {
-    global ay
-    $ay(currentView) redraw
-}
+$m add command -label "Redraw" -command "\
+	global ay;\
+	$w.f3D.togl redraw;\
+	\$ay(currentView) mc"
 
 $m add command -label "Export RIB" -command {
     global ay
     io_exportRIB [winfo toplevel $w]
 }
+
 global AYENABLEPPREV
 if { $AYENABLEPPREV == 1 } {
     $m add separator
@@ -163,64 +59,10 @@ if { $AYENABLEPPREV == 1 } {
     }
 }
 $m add separator
-$m add command -label "Create ShadowMaps" -command {
-    global env ayprefs ay tcl_platform
-    set togl $ay(currentView)
-    set w [winfo toplevel $togl]
+$m add command -label "Create ShadowMaps" -command "\
+	viewRenderSM $w;\
+	\$ay(currentView) mc"
 
-    if { $ayprefs(ShadowMaps) != 2 } {
-	set t "ShadowMaps are not enabled!"
-	set m "ShadowMaps are not enabled\nin the preferences.\
-\nSelect \"Ok\" to enable them and continue.\
-\nSelect \"Cancel\" to stop operation."
-set answer [tk_messageBox -title $t -type okcancel -icon warning -message $m]
-	    if { $answer == "cancel" } {
-		return 1;
-	    } else {
-		set ayprefs(ShadowMaps) 2
-		set ayprefse(ShadowMaps) 2
-	    }
-	}
-    set ribname [io_getRIBName]
-    set efilename [lindex $ribname 0]
-    set imagename [lindex $ribname 1]
-
-    if { $efilename != ""} {
-	if { $imagename != "" } {
-	    $w.f3D.togl wrib -file $efilename -image $imagename -smonly
-	    ayError 4 "Create SM" "Done exporting scene to:"
-	    ayError 4 "Create SM" "$efilename"
-
-	} else {
-	    $w.f3D.togl wrib -file $efilename -smonly
-	    ayError 4 "Create SM" "Done exporting scene to:"
-	    ayError 4 "Create SM" "$efilename"
-	}
-    }
-
- ayError 4 "Create SM" "Now rendering shadow maps..."
-
- if { $ayprefs(SMRenderUI) != 1} {
-     set command "exec "
-
-     regsub -all {%s} $ayprefs(SMRender) $efilename command2
-
-     append command $command2
-     append command " &"
-
-     eval [subst "$command"]
- } else {
-     
-     regsub -all {%s} $ayprefs(SMRender) $efilename command
-
-     runRenderer "$command" "$ayprefs(SMRenderPT)"
-
- }
-
- update
- tmp_clean 0
-
-}
 $m add separator
 
 # "after 100" because on Win32 the <Enter>-binding fires when the menu
@@ -239,76 +81,14 @@ if { $tcl_platform(os) != "Darwin" } {
     set ay(typem) menubar.mtype
 }
 
-$m add command -label "Front" -command {
-    global ay
-    undo save
-    set togl $ay(currentView)
-    set w [winfo toplevel $togl]
+$m add command -label "Front" -command "viewSetType $w 0"
 
-    $togl setconf -type 0 -fromx 0.0 -fromy 0.0 -fromz 10.0\
-	    -tox 0.0 -toy 0.0 -toz 0.0 -upx 0.0 -upy 1.0 -upz 0.0
-
-    update
-#    actionClear $w
-    viewTitle $w Front ""
-    $togl render
-}
-$m add command -label "Side" -command {
-    global ay
-    undo save
-    set togl $ay(currentView)
-    set w [winfo toplevel $togl]
-
-    $togl setconf -type 1 -fromx 10.0 -fromy 0.0 -fromz 0.0\
-	    -tox 0.0 -toy 0.0 -toz 0.0 -upx 0.0 -upy 1.0 -upz 0.0
-    update
-#    actionClear $w
-    viewTitle $w Side ""
-    $togl render
-}
-$m add command -label "Top" -command {
-    global ay
-    undo save
-    set togl $ay(currentView)
-    set w [winfo toplevel $togl]
-
-    $togl setconf -type 2 -fromx 0.0 -fromy 10.0 -fromz 0.0\
-	    -tox 0.0 -toy 0.0 -toz 0.0 -upx 0.0 -upy 0.0 -upz -1.0
-    update
-#    actionClear $w
-    viewTitle $w Top ""
-    $togl render
-}
+$m add command -label "Side" -command "viewSetType $w 1"
+$m add command -label "Top" -command "viewSetType $w 2"
 $m add separator
-$m add command -label "Perspective" -command {
-    global ay
-    undo save
-    set togl $ay(currentView)
-    set w [winfo toplevel $togl]
-    $togl setconf -type 3 -fromx 0.0 -fromy 0 -fromz 15.0\
-	    -tox 0.0 -toy 0.0 -toz 0.0  -upx 0.0 -upy 1.0 -upz 0.0\
-	    -drawg 1 -grid 1 -drotx 45 -droty -30
-    update
-#    actionClear $w
-    viewTitle $w Persp ""
-    viewSetGridIcon $w 1.0
-    $togl render
-}
+$m add command -label "Perspective" -command "viewSetType $w 3"
 $m add separator
-$m add command -label "Trim" -command {
-    global ay
-    undo save
-    set togl $ay(currentView)
-    set w [winfo toplevel $togl]
-    $togl setconf -type 4 -fromx 0.0 -fromy 0.0 -fromz 10.0\
-	    -tox 0.0 -toy 0.0 -toz 0.0 -upx 0.0 -upy 1.0 -upz 0.0\
-	    -zoom 1.0
-    update
-#    actionClear $w
-    viewTitle $w Trim ""
-    update
-    $togl render
-}
+$m add command -label "Trim" -command  "viewSetType $w 4"
 
 # Configure Menu
 if { $tcl_platform(os) != "Darwin" } {
@@ -321,99 +101,91 @@ if { $tcl_platform(os) != "Darwin" } {
     set ay(confm) menubar.mconf
 }
 
-$m add check -label "Automatic Redraw" -variable ay(cVRedraw)\
-	-command {
-    global ay
-    $ay(currentView) setconf -draw $ay(cVRedraw)
-}
-$m add check -label "Shade" -variable ay(cVShade) -command {
-    global ay
-    $ay(currentView) setconf -shade $ay(cVShade)
-    set w [winfo toplevel $ay(currentView)]
-#    if { $ay(cVShade) == 1 } {
-#	$w.fMenu.g configure -state disabled
-#    } else {
-#	$w.fMenu.g configure -state enabled
-#    }
-}
-$m add check -label "Draw Selection only" -variable ay(cVDrawSel)\
-	-command {
-    global ay
-    $ay(currentView) setconf -dsel $ay(cVDrawSel)
-}
-$m add check -label "Draw Level only" -variable ay(cVDrawLevel)\
-	-command {
-    global ay
-    $ay(currentView) setconf -dlev $ay(cVDrawLevel) 
-}
+$m add check -label "Automatic Redraw" -variable ay(cVRedraw) -command "\
+	global ay;\
+	$w.f3D.togl setconf -draw \$ay(cVRedraw);\
+	\$ay(currentView) mc"
+
+$m add check -label "Shade" -variable ay(cVShade) -command "\
+	global ay;\
+	$w.f3D.togl setconf -shade \$ay(cVShade);\
+	\$ay(currentView) mc"
+
+$m add check -label "Draw Selection only" -variable ay(cVDrawSel) -command "\
+	global ay;\
+	$w.f3D.togl setconf -dsel \$ay(cVDrawSel);\
+	\$ay(currentView) mc"
+
+$m add check -label "Draw Level only" -variable ay(cVDrawLevel) -command "\
+	global ay;\
+	$w.f3D.togl setconf -dlev \$ay(cVDrawLevel);\
+	\$ay(currentView) mc"
+
 $m add separator
-$m add check -label "Draw BGImage" -variable ay(cVDrawBG)\
-	-command {
-    global ay
-    $ay(currentView) setconf -dbg $ay(cVDrawBG) 
-}
+$m add check -label "Draw BGImage" -variable ay(cVDrawBG) -command "\
+	global ay;\
+	$w.f3D.togl setconf -dbg \$ay(cVDrawBG);\
+	\$ay(currentView) mc"
+
 $m add separator
-$m add check -label "Draw Grid" -variable ay(cVDrawGrid) -command {
-    global ay
-    $ay(currentView) setconf -drawg $ay(cVDrawGrid)
-}
-$m add check -label "Use Grid" -variable ay(cVUseGrid) -command {
-    global ay
-    $ay(currentView) setconf -ugrid $ay(cVUseGrid)
-}
+$m add check -label "Draw Grid" -variable ay(cVDrawGrid) -command "\
+	global ay;\
+	$w.f3D.togl setconf -drawg \$ay(cVDrawGrid);\
+	\$ay(currentView) mc"
 
-$m add command -label "Set GridSize" -command {
-    global ay;
-    viewSetGrid $ay(currentView)
-}
+$m add check -label "Use Grid" -variable ay(cVUseGrid) -command "\
+	global ay;\
+	$w.f3D.togl setconf -ugrid \$ay(cVUseGrid);\
+	\$ay(currentView) mc"
 
-$m add check -label "Local Grid" -variable ay(cVLocal) -command {
-    global ay
-    $ay(currentView) setconf -local $ay(cVLocal)
-}
+$m add command -label "Set GridSize" -command "viewSetGrid $w.f3D.togl"
+
+$m add check -label "Local Grid" -variable ay(cVLocal) -command "\
+	global ay;\
+	$w.f3D.togl setconf -local \$ay(cVLocal);\
+	\$ay(currentView) mc"
+
 $m add separator
-$m add command -label "Half Size" -command {
-    global ay
+$m add command -label "Half Size" -command "\
+    global ay;\
+    set neww \[expr (\[winfo width $w\] / 2)\];\
+    set newh \[expr (\[winfo height $w\] / 2)\];\
+    wm geometry $w \"\";\
+    $w.f3D.togl mc;\
+    $w.f3D.togl configure -width \$neww -height \$newh;\
+    after 500 \"$w.f3D.togl mc; $w.f3D.togl setconf -dfromx 0.0\";\
+    \$ay(currentView) mc"
 
-    set v $ay(currentView)
-
-    set neww [expr ([winfo width $v] / 2)]
-    set newh [expr ([winfo height $v] / 2)]
-    wm geometry [winfo toplevel $v] ""
-    $v configure -width $neww -height $newh
-    update
-    $v setconf -dfromx 0.0
-}
-
-$m add command -label "Double Size" -command {
-    global ay
-
-    set v $ay(currentView)
-
-    set neww [expr ([winfo width $v] * 2)]
-    set newh [expr ([winfo height $v] * 2)]
-    wm geometry [winfo toplevel $v] ""
-    $v configure -width $neww -height $newh
-    update
-    $v setconf -dfromx 0.0
-}
+$m add command -label "Double Size" -command "\
+    global ay;\
+    set neww \[expr (\[winfo width $w\] * 2)\];\
+    set newh \[expr (\[winfo height $w\] * 2)\];\
+    wm geometry $w \"\";\
+    $w.f3D.togl mc;\
+    $w.f3D.togl configure -width \$neww -height \$newh;\
+    after 500 \"$w.f3D.togl mc; $w.f3D.togl setconf -dfromx 0.0\";\
+    \$ay(currentView) mc"
 
 $m add separator
 
-$m add command -label "From Camera" -command { global ay;
-$ay(currentView) fromcam }
+$m add command -label "From Camera" -command "\
+	global ay;\
+	$w.f3D.togl mc; $w.f3D.togl fromcam; \$ay(currentView) mc"
 
-$m add command -label "To Camera" -command { global ay;
-$ay(currentView) tocam }
+$m add command -label "To Camera" -command "\
+	global ay;\
+	$w.f3D.togl mc; $w.f3D.togl tocam; \$ay(currentView) mc"
 
-$m add command -label "Set FOV" -command { global ay; viewSetFOV $ay(currentView)}
+$m add command -label "Set FOV" -command "viewSetFOV $w.f3D.togl"
 
 $m add separator
-$m add command -label "Zoom to Object" -command { global ay;
-$ay(currentView) zoomob }
+$m add command -label "Zoom to Object" -command "\
+	global ay;\
+	$w.f3D.togl mc; $w.f3D.togl zoomob; \$ay(currentView) mc"
 
-$m add command -label "Align to Parent" -command { global ay;
-$ay(currentView) align }
+$m add command -label "Align to Parent" -command "\
+	global ay;\
+	$w.f3D.togl mc; $w.f3D.togl align; \$ay(currentView) mc"
 
 # XXXX This could be just a label or a menu displaying current action
 # or even allowing to start modeling actions, but which actions?

@@ -636,6 +636,8 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
  double temp[3] = {0};
  int i = 2;
 
+  Togl_MakeCurrent(togl);
+
   while(i+1 < argc)
   {
   rotx = 0.0; roty = 0.0; rotz = 0.0;

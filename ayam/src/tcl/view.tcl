@@ -9,6 +9,197 @@
 
 # view.tcl - view window management
 
+
+##############################
+# viewSetType:
+proc viewSetType { w type } {
+ global ay ayprefs tcl_platform
+
+    undo save
+    set togl $w.f3D.togl
+    
+    set w [winfo toplevel $togl]
+    $togl mc
+    switch $type {
+	0 {
+	    $togl setconf -type 0 -fromx 0.0 -fromy 0.0 -fromz 10.0\
+		    -tox 0.0 -toy 0.0 -toz 0.0 -upx 0.0 -upy 1.0 -upz 0.0
+	    viewTitle $w Front ""
+	}
+	1 {
+	    $togl setconf -type 1 -fromx 10.0 -fromy 0.0 -fromz 0.0\
+		    -tox 0.0 -toy 0.0 -toz 0.0 -upx 0.0 -upy 1.0 -upz 0.0
+	    viewTitle $w Side ""
+	}
+	2 {
+	    $togl setconf -type 2 -fromx 0.0 -fromy 10.0 -fromz 0.0\
+		    -tox 0.0 -toy 0.0 -toz 0.0 -upx 0.0 -upy 0.0 -upz -1.0
+	    viewTitle $w Top ""
+	}
+	3 {
+	    $togl setconf -type 3 -fromx 0.0 -fromy 0 -fromz 15.0\
+		    -tox 0.0 -toy 0.0 -toz 0.0  -upx 0.0 -upy 1.0 -upz 0.0\
+		    -drawg 1 -grid 1 -drotx 45 -droty -30
+	    viewTitle $w Persp ""
+	    viewSetGridIcon $w 1.0
+	}
+	4 {
+	    $togl setconf -type 4 -fromx 0.0 -fromy 0.0 -fromz 10.0\
+		    -tox 0.0 -toy 0.0 -toz 0.0 -upx 0.0 -upy 1.0 -upz 0.0\
+		    -zoom 1.0
+	    viewTitle $w Trim ""
+	}
+    }
+    #switch
+
+    $togl render
+    $ay(currentView) mc
+    update
+    #actionClear $w
+
+ return;
+}
+#viewSetType
+
+
+##############################
+# viewRender:
+proc viewRender { w type } {
+    global env ayprefs ay tcl_platform tmpfile
+
+    set togl $w.f3D.togl
+
+    if { $ayprefs(ShadowMaps) < 1 } {
+	tmpGet $ayprefs(TmpDir) tmpfile
+
+	if { $tcl_platform(platform) == "windows" } {
+	    # Windows sucks big time!
+	    regsub -all {\\} $tmpfile {/} tmpfile
+	}
+
+	if { $ayprefs(RenderMode) == 0 } {
+	    $togl wrib -file $tmpfile -image ${tmpfile}.tif -temp
+	} else {
+	    $togl wrib -file $tmpfile -temp
+	}
+
+	lappend ay(tmpfiles) [list $tmpfile]
+    } else {
+
+	set ribname [io_getRIBName]
+	set tmpfile [lindex $ribname 0]
+	set imagename [lindex $ribname 1]
+	if { $ayprefs(RenderMode) == 0 } {
+	    $togl wrib -file $tmpfile -image $imagename -temp
+	} else {
+	    $togl wrib -file $tmpfile -temp
+	}
+    }
+
+    # $tcl_platform(platform) == "windows" ||
+    set renderui 0
+    if { $type == 1 } {
+        if { $ayprefs(QRenderUI) == 1} { set renderui 1 }
+    } else {
+        if { $ayprefs(RenderUI) == 1} { set renderui 1 }
+    }
+ 
+    if { $renderui != 1} {
+	set command "exec "
+
+	if { $type == 1 } {
+	    regsub -all {%s} $ayprefs(QRender) $tmpfile command2
+	} else {
+	    regsub -all {%s} $ayprefs(Render) $tmpfile command2
+	}
+
+	append command $command2
+	append command " &"
+
+	eval [subst "$command"]
+    } else {
+     
+	regsub -all {%s} $ayprefs(Render) $tmpfile command
+
+	runRenderer "$command" "$ayprefs(RenderPT)"
+
+    }
+    # if
+
+    update
+    tmp_clean 0
+
+ return;
+}
+#viewRender
+
+
+##############################
+# viewRenderSM:
+proc viewRenderSM { w } {
+    global env ayprefs ay tcl_platform
+
+    set togl $w.f3D.togl
+    set w [winfo toplevel $togl]
+
+    if { $ayprefs(ShadowMaps) != 2 } {
+	set t "ShadowMaps are not enabled!"
+	set m "ShadowMaps are not enabled\nin the preferences.\
+\nSelect \"Ok\" to enable them and continue.\
+\nSelect \"Cancel\" to stop operation."
+set answer [tk_messageBox -title $t -type okcancel -icon warning -message $m]
+	    if { $answer == "cancel" } {
+		return 1;
+	    } else {
+		set ayprefs(ShadowMaps) 2
+		set ayprefse(ShadowMaps) 2
+	    }
+	}
+    set ribname [io_getRIBName]
+    set efilename [lindex $ribname 0]
+    set imagename [lindex $ribname 1]
+
+    if { $efilename != ""} {
+	if { $imagename != "" } {
+	    $togl wrib -file $efilename -image $imagename -smonly
+	    ayError 4 "Create SM" "Done exporting scene to:"
+	    ayError 4 "Create SM" "$efilename"
+
+	} else {
+	    $togl wrib -file $efilename -smonly
+	    ayError 4 "Create SM" "Done exporting scene to:"
+	    ayError 4 "Create SM" "$efilename"
+	}
+    }
+    # if
+
+    ayError 4 "Create SM" "Now rendering shadow maps..."
+    
+    if { $ayprefs(SMRenderUI) != 1} {
+	set command "exec "
+
+	regsub -all {%s} $ayprefs(SMRender) $efilename command2
+
+	append command $command2
+	append command " &"
+
+	eval [subst "$command"]
+    } else {
+     
+	regsub -all {%s} $ayprefs(SMRender) $efilename command
+	
+	runRenderer "$command" "$ayprefs(SMRenderPT)"
+
+    }
+
+    update
+    tmp_clean 0
+
+ return;
+}
+#viewRenderSM
+
+
 ##############################
 # viewUPos:
 # get the positions of all views
@@ -96,7 +287,6 @@ button $f.bok -text "Ok" -pady $ay(pady) -width 5 -command "global ay;\
 	$view mc;\
 	$view setconf -fovx \$ay(FOV);\
 	$view render;\
-	$ay(currentView) mc;\
 	update;\
 	grab release .setFov;\
 	focus $view;\
@@ -143,7 +333,6 @@ button $f.bok -text "Ok" -pady $ay(pady) -width 5 -command "\
 	$view setconf -grid \$ay(GridSize);\
 	$view render;\
 	viewSetGridIcon [winfo toplevel $view] \$ay(GridSize);\
-	$ay(currentView) mc;\
 	update;\
 	grab release .setGrid;\
 	focus $view;\
