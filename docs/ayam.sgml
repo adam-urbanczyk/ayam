@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>16. Nov 2001
+<date>17. Nov 2001
 <abstract>
 This is the documentation of Ayam - a free 3D modeling environment
 for the RenderMan interface.
@@ -642,7 +642,9 @@ defaults, restart Ayam with the command line option <tt/"-failsafe"/!),
 
 The preferences are divided into five sections.
 
-The <tt/"Main"/ section:<label id="prefmain">
+<sect2>The Main Preferences<label id="prefmain">
+<p>
+The <tt/"Main"/ section contains the most used preference settings:
 <itemize>
 <item><tt/"Shaders"/ contains a number of paths (separated by <tt/":"/
 on Unix and <tt/";"/ on Win32) where Ayam looks for compiled
@@ -692,7 +694,9 @@ HTML format.
 created, e.g. when rendering views.
 </itemize>
 
-The next section of the preferences, <tt/"Modeling"/,<label id="prefmodel">
+<sect2>Modeling Preferences<label id="prefmodel">
+<p>
+The next section of the preferences, <tt/"Modeling"/,
 contains modeling related settings:
 <itemize>
 <item><tt/"PickEpsilon"/ is used by the single point editing actions
@@ -711,39 +715,51 @@ to the child objects automagically.
 should be snapped to the grid when a grid is defined and
 in use for the single point modeling actions.
 <item><tt/"UndoLevels"/ determines the number of modeling steps
-that should be saved in the undo buffer.
+that should be saved in the undo buffer. Useful values range
+from 1 to 50 (depending on how much memory you like to spend).
 </itemize>
 
-The next section, <tt/"Drawing"/, lets you specify<label id="prefdraw">
+<sect2>Drawing Preferences<label id="prefdraw">
+<p>
+The preferences in the <tt/"Drawing"/ section let you specify
 how objects are being drawn:
 <itemize>
 <item><tt/"Tolerance"/ is in fact GLU sampling tolerance, used to
 control the quality of the sampling when rendering a NURBS curve
 or NURBS patch using GLU.
-Smaller tolerance settings lead to higher quality.
-<item><tt/"DisplayMode"/ sets the display mode for NURBS patches,
-either the control hull (or control polygon) is drawn (ControlHull), or 
+Smaller tolerance settings lead to higher quality. Useful values
+range from 1 to 100.
+This setting has no effect for objects that override it
+using a local tolerance setting different from 0.
+<item><tt/"DisplayMode"/ sets the display mode for NURBS patches.
+Either the control hull (or control polygon) is drawn (ControlHull), or 
 just the outlines of the polygons created by the tesselation
 (OutlinePoly), or just the outlines of the patch (OutlinePatch).
 Note, that this setting just affects the drawing of patches if
 the view is not in shaded mode.
+Note also, that this setting has no effect for objects that override it
+using a local DisplayMode setting different from "Global".
 <item><tt/"NCDisplayMode"/ sets the display mode for NURBS curves,
 The control hull (control polygon) or the curve or a
 combination of both may be displayed.
+Note, that this setting has no effect for objects that override it
+using a local DisplayMode setting different from "Global".
 <item><tt/"UseMatColor"/ determines, whether the shaded representation
 uses the color defined by the material of an object for
 rendering.
 <item><tt/"Background"/, <tt/"Object"/, <tt/"Selection"/, <tt/"Grid"/,
-<tt/"Tag"/ and <tt/"Shade"/ let you set colors. 
+<tt/"Tag"/, <tt/"Shade"/, and <tt/"Light"/ let you set colors that
+will be used when drawing or shading. 
 </itemize>
 
-The next section, <tt/"RIB-Export"/, contains settings that<label id="prefrib">
+<sect2>The RIB-Export Preferences<label id="prefrib">
+<p>
+The <tt/"RIB-Export"/ section of the preferences contains settings that
 affect how RIBs are created.
-contain two GUI elements
 <itemize>
 <item><tt/"RIBFile"/ allows to set the file Ayam is exporting
 RenderMan Interface Bytestreams (RIBs) to. Note, that some
-filenames have special meaning. If you set <tt/"rendrib"/ as filename
+filenames have special meaning. If you set it to <tt/"rendrib"/ as filename
 libribout.a does not create a file at all, but immediately pipes the
 resulting ByteStream into rendrib (the BMRT renderer) for rendering.
 When you use these options of direct rendering, be warned, that
@@ -826,10 +842,12 @@ and no special option has to be given to the renderer.
 
 </itemize>
 
-The next section (<tt/"Misc"/) contains the dreaded miscellaneous
-settings.<label id="prefmisc">
+<sect2>Miscellaneous Preferences<label id="prefmisc">
+<p>
+The (<tt/"Misc"/) section of the preferences contains the dreaded
+miscellaneous settings.
 
-The first sub-section deals with error message handling.
+The first sub-section deals with error message handling:
 <itemize>
 <item><tt/"RedirectTcl"/ controls, whether error messages
 stemming from Tcl/Tk should be redirected to the console,
@@ -3457,6 +3475,7 @@ A
 
 B
 <itemize>
+<item>Background: <ref id="prefdraw" name="preference setting">
 <item>Bevel: <ref id="handb" name="using bevels">
 <item>BevelRadius, BevelType: <ref id="extrattr" name="extrude attribute">
 <item>Bound: <ref id="riattrs" name="RenderMan/BMRT attribute">
@@ -3568,6 +3587,8 @@ G
 <item>goDown: <ref id="gdown" name="scripting interface command">
 <item>goTop: <ref id="gdown" name="scripting interface command">
 <item>goUp: <ref id="gdown" name="scripting interface command">
+<item>Grid: <ref id="vat" name="view attribute">
+<ref id="prefdraw" name="drawing preference setting">
 </itemize>
 
 H
@@ -3630,6 +3651,7 @@ L
 <ref id="levelobj" name="object and properties">
 <item>Light: <ref id="mm" name="main menu entry">,
 <ref id="lightobj" name="object">
+<ref id="prefdraw" name="preference setting">
 <item>LightAttr: <ref id="lip" name="property">,
 <item>LightShader: <ref id="lightobj" name="light">
 <item>ListTypes: <ref id="prefgui" name="preference setting">
@@ -3678,6 +3700,7 @@ N
 
 O
 <itemize>
+<item>Object: <ref id="prefdraw" name="preference setting">
 <item>Objects: <ref id="obj" name="tree/listbox">
 <item>OI: <ref id="oitt" name="tag type">
 <item>Order: <ref id="ncattr" name="NURBCurve attribute">,
@@ -3780,8 +3803,10 @@ S
 <item>Sections: <ref id="swp" name="sweep attribute">
 <item>Select: <ref id="obj" name="select objects">,
 <ref id="iac" name="select points">
+<item>Selection: <ref id="prefdraw" name="preference setting">
 <item>setNC: <ref id="gncp" name="scripting interface command">
 <item>setNP: <ref id="gncp" name="scripting interface command">
+<item>Shade: <ref id="prefdraw" name="preference setting">
 <item>Shader: <ref id="shd" name="property">
 <item>Shaders: <ref id="prefmain" name="preference setting">
 <item>ShadingRate: <ref id="attrs" name="RenderMan/BMRT attribute">
@@ -3811,6 +3836,7 @@ S
 
 T
 <itemize>
+<item>Tag: <ref id="prefdraw" name="preference setting">
 <item>Tags: <ref id="tags" name="property">
 <item>TclPrecision: <ref id="prefgui" name="preference setting">
 <item>ThetaMax: <ref id="spattr" name="sphere attribute">,
