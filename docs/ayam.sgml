@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>17. Jan 2003
+<date>27. Jan 2003
 <abstract>
 This is the documentation of Ayam (1.4) - a free 3D modeling environment
 for the RenderMan interface.
@@ -945,12 +945,14 @@ on Unix and <tt/";"/ on Win32) where Ayam looks for compiled
 shaders (e.g. files with the extension <tt/".slc"/ that have been compiled
 with slc from BMRT). Using the <tt/"Add"/ button, you may add
 another path, simply press it and select a file inside the directory
-you want to add. Note, that currently the filenames may contain
-just two <tt/"."/ at maximum.
+you want to add. Note, that currently the filename of a compiled shader
+may contain just two <tt/"."/ at maximum.
 <item><tt/"Scan for Shaders!"/ initiates a rebuild of the internal
 shaders database. All shaders in the directories specified by
 the <tt/"Shaders"/ entry will be scanned and entered in that database.
 Watch the console for error messages that may appear while scanning.
+See also section <ref id="parseshd" name="Shader Parsing"> for more
+information on scanning shaders.
 </itemize>
 
 The next sub-section contains GUI (user interface) related
@@ -962,6 +964,12 @@ The value will have no effect until Ayam is restarted!
 <item><tt/"AutoResize"/ toggles, whether the main window
 should be resized horizontally according to the property GUI whenever
 a new GUI is displayed.
+<item><tt/"AutoFocus"/ controls whether Ayam should automatically
+move the focus to a view or the main window, when the mouse pointer
+enters it. Note, that this may only work correctly, when a window
+of Ayam already has the focus. Notice also, that moving the focus
+to a window might also raise it (depending on your operating system
+or window manager).
 <item><tt/"TwmCompat"/ changes, how Ayam tells the window manager
 new geometries of windows. Might be useful, if you suffer from jumping
 windows.
@@ -1894,6 +1902,39 @@ The texture coordinate dialog is modeless, it may stay open
 while you model.
 The <tt/"Dismiss"/ button closes the dialog.
 
+<sect2>RiHider Tag<label id="rihtag">
+<p>
+The tag type <tt/"RiHider"/ can be used to choose and parameterize
+different algorithms for hidden surface removal.
+RiHider tags have to be attached to the root object in order to be used.
+The syntax of a RiHider tag is quite similar to a RiAttribute tag:
+<tt/"&lt;type&gt;,&lt;parameterlist&gt;"/
+where <tt/"&lt;parameterlist&gt;"/ is a comma separated list
+of triplets consisting of name, type, and value of a parameter.
+
+An example for a RiHider tag could look like this:
+<code>RiHider hidden,depthfilter,s,midpoint</code>
+
+<sect2>RiDisplay Tag<label id="ridtag">
+<p>
+The tag type <tt/"RiDisplay"/ can be used to add more output
+files of different type (e.g. containing depth-buffer information)
+to the scene.
+RiDisplay tags have to be attached to the root object in order to be used.
+The syntax of a RiDisplay tag is as follows:
+<tt/"&lt;name&gt;,&lt;type&gt;,&lt;mode&gt;,&lt;parameterlist&gt;"/,
+where name is e.g. a file or device name, type specifies the
+destination of the image data (e.g. screen or file), mode
+specifies which information should be stored or displayed
+(e.g. color values: rgb, or depth values: z),
+and <tt/"&lt;parameterlist&gt;"/ is a comma separated list
+of triplets consisting of name, type, and value of a parameter.
+The name will be automatically changed to "+name" on RIB export
+if it does not already start with a plus.
+
+An example for a RiDisplay tag could look like this:
+<code>RiDisplay imagez.tif,file,z</code>
+
 <sect2>Internal Tags
 <p>
 The following tags are of no general use. They are used
@@ -2496,34 +2537,44 @@ the light object.
 <p>
 Using shadow maps requires the global preference setting
 <tt>"RIB-Export/ShadowMaps"</tt> to be switched on.
-Furthermore, for each light source that should cast a shadow, the
-attributes <tt/"IsOn"/, <tt/"Shadows"/, and <tt/"UseSM"/ have
-to be switched on.
-If <tt>"RIB-Export/ShadowMaps"</tt> is switched on, Ayam will create
-a special version of the RIB on export, that creates all shadow maps
-automatically. This is done, by rendering depth images from the
-position of every light source that casts shadows.
+Furthermore, for each light source for which a shadow map should be
+created, the attributes <tt/"IsOn"/ and <tt/"UseSM"/ have to be
+switched on.
+<p>
+If <tt>"RIB-Export/ShadowMaps"</tt> is set to <tt>"Automatic"</tt>,
+Ayam will create a special version of the RIB on export, that creates
+all shadow maps automatically. This is done, by rendering depth images
+from the position of every light source that casts shadows.
 Special light source shaders later pick up these depth images
 and calculate shadows.
 This approach implies, that the scene is rendered multiple times.
 To reduce the size of the RIB, the objects to be rendered
-are written to a second RIB file named <tt>"&lt;scene>.obj.rib"</tt>.
+are written to a second RIB file named <tt>"&lt;scene&gt;.obj.rib"</tt>.
 This file is read from the main RIB several times via
 <tt>"ReadArchive"</tt>.
-
+<p>
+If <tt>"RIB-Export/ShadowMaps"</tt> is set to <tt>"Manual"</tt>,
+the exported scene will not render the shadow maps but rather
+expects them to be present already. You can create them manually
+(hence the name <tt>"Manual"</tt>) using the view menu entry
+<tt>"View/Create ShadowMaps"</tt>. This approach has the advantage,
+that the shadow maps will not be re-created each time you render
+the scene.
+<p>
 Ayam supports three different methods for the creation
-of shadow maps of different types: point, distant, and spot.
+of shadow maps for certain types of light sources: point, distant, and spot:
+<p>
 The point method is used with
 lights of type <tt>"Point"</tt> and custom lights that have a light
 shader argument named "from".
-Six shadow maps pointing in all possible
+Six shadow maps pointing in all possible axis aligned
 directions and named <tt>"&lt;rib&gt;.point&lt;num&gt;_&lt;dir&gt;.shd"</tt>
 (where <tt>"&lt;rib&gt;"</tt> is the base-name of the RIB,
 <tt>"&lt;num&gt;"</tt> is the number of the light source that makes
 use of shadow maps and <tt>"&lt;dir&gt;"</tt> is one of
-<tt/"+x, -x, +y, -y, +z, or -z"/)
-will be created.<p>
-
+<tt/"+x"/, <tt/"-x"/, <tt/"+y"/, <tt/"-y"/, <tt/"+z"/, or <tt/"-z"/)
+will be created.
+<p>
 The distant method is used with lights of type <tt>"Distant"</tt>
 and custom lights that have a light
 shader argument named "from" and a light
@@ -2531,30 +2582,31 @@ shader argument named "to".
 One shadow map is created and named <tt>"&lt;rib&gt;.dist&lt;num&gt;.shd"</tt>.
 By default, the size of the shadow map is 1 by 1 units in world space,
 but this may be adapted using the scale transformation attributes of
-the light object.<p>
-
+the light object.
+<p>
 The spot method is used with lights of type <tt>"Spot"</tt>
 and custom lights that have a light
-shader argument named "from" and a light
-shader argument named "to" and a light shader argument named "coneangle".
+shader argument named "from", a light
+shader argument named "to", and a light shader argument named "coneangle".
 One shadow map is created and named <tt>"&lt;rib&gt;.spot&lt;num&gt;.shd"</tt>.
 The spot method uses the cone angle (and additionally the delta cone
 angle, if present) argument to determine the size of the shadow map
-in world space.<p>
-
+in world space.
+<p>
 If a light object of type <tt>"Spot"</tt>, <tt>"Distant"</tt> or
-<tt>"Point"</tt> is used, Ayam changes the name of the exported
+<tt>"Point"</tt> is used, Ayam automatically changes the name of the exported
 light shader to <tt>"shadowspot"</tt>, <tt>"shadowdistant"</tt>,
 and <tt>"shadowpoint"</tt> respectively. Additionally, the shader
 will be parameterized to use the created shadow maps.
 If the light source is of type <tt>"Custom"</tt>, no automatic renaming
 and adjusting of the shader takes place. This means, you have
-to make sure that the shader really uses the shadow maps.
+to make sure that the shader really uses the shadow maps by
+selecting the right shader and parameterizing it.
 See the discussion above for the names of the shadow map files.
 Those file names, probably, will have to be entered as parameter
-to the light shader.<p>
-
-A short example for a scene using a shadow map:
+to the light shader.
+<p>
+Here is a short example for a scene using a shadow map:
 <enum>
 <item>Go to the preferences and enable <tt/"ShadowMaps"/ in the
 section <tt/"RIB-Export"/.
@@ -5379,6 +5431,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Atmosphere: <ref id="imager" name="property">
 <item>Attributes: <ref id="attrs" name="attributes property">,
 <ref id="riattrs" name="RenderMan/BMRT attributes property">
+<item>AutoFocus: <ref id="prefgui" name="preference setting">
 <item>Automatic Instancing: <ref id="mmspecial" name="main menu entry">
 <item>Automatic Redraw: <ref id="vmconf" name="view menu entry">
 <item>AutoResize: <ref id="prefgui" name="preference setting">
@@ -5756,6 +5809,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <ref id="rioptdb" name="RiOption and RiAttributes Database">
 <item>RIB import: <ref id="rrib" name="RIB Import">
 <item>RIBFile: <ref id="prefrib" name="preference setting">
+<item>RiDisplay: <ref id="ridtag" name="tag type">
+<item>RiHider: <ref id="rihtag" name="tag type">
 <item>RiInc: <ref id="riincobj" name="object">
 <item>RiOption: <ref id="riotag" name="tag type">
 <item>RiOptions: <ref id="rio" name="RenderMan interface options property">,
