@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>27. Jul 2003
+<date>30. Jul 2003
 <abstract>
 This is the documentation of Ayam (1.6) - a free 3D modeling environment
 for the RenderMan interface.
@@ -143,8 +143,22 @@ However, this last feature is documented in section
 <ref id="obandprp" name="Ayam Objects and Properties">
 as it is object type specific.
 
+<label id="treecontm">
 The rightmost mouse button opens a context menu with
-basic tree and clipboard operations.
+basic tree and clipboard operations:
+<itemize>
+<item><tt>"Tree/Rebuild"</tt> completely removes the tree nodes, rebuilds the
+hierarchy, and selects the root object
+<item><tt>"Tree/Open"</tt> opens all nodes with child nodes
+<item><tt>"Tree/Close"</tt> closes all nodes with child nodes
+<item><tt>"Switch to Listbox"</tt> removes the tree and replaces it
+with the object listbox (see below).
+<item><tt>"Deselect Object"</tt> deselects the currently selected
+object(s).
+<item><tt>"Copy Object", "Cut Object", "Paste Object", "Delete Object"</tt>
+are standard clipboard operations as documented in
+section <ref id="mmedit" name="main menu">.
+</itemize>
 
 
 <bf/Listbox:/<label id="listbox">
@@ -167,9 +181,9 @@ and a single click to select objects, multiple objects may be selected using
 click and drag, or holding down the Shift or Control key while clicking.
 Keyboard operation is also possible if the listbox has the
 input focus.<p>
-A ".." is displayed as the first element of the current level
+A <tt/".."/ is displayed as the first element of the current level
 if you are "inside" a level or another object.
-A double click on the ".." takes you to the parent level.
+A double click on the <tt/".."/ takes you to the parent level.
 The buttons below the listbox
 may be used to change the selection or to quickly
 jump through the hierarchy. They should be self explanatory.
@@ -179,6 +193,16 @@ top level, even though the scene seems to be empty.
 See section <ref id="rootobj" name="Root Object"> for more
 information regarding this special object, and what it is good for.
 Note, that you cannot delete or copy this object.
+
+<label id="lbcontm">
+The rightmost mouse button opens a small context menu:
+<itemize>
+<item><tt>"Switch to Tree"</tt> removes the listbox and replaces it
+with the tree view (see above).
+<item><tt>"Copy Object", "Cut Object", "Paste Object", "Delete Object"</tt>
+are standard clipboard operations as documented in
+section <ref id="mmedit" name="main menu">.
+</itemize>
 
 <sect2>Properties<label id="propgui">
 <p>
@@ -5875,6 +5899,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <ref id="clat" name="clamp tool">
 <item>Clipboard: <ref id="sciclip" name="scripting interface commands">
 <item>Clone:<ref id="cloneobj" name="object">
+<item>Close: <ref id="treecontm" name="tree context menu entry">
 <item>Closed: <ref id="spattr" name="sphere attribute">,
 <ref id="cnp" name="cone attribute">,
 <ref id="cyp" name="cylinder attribute">,
@@ -6144,6 +6169,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Objects: <ref id="obj" name="tree/listbox">,
 <ref id="objsel" name="selection within a view">
 <item>OI: <ref id="oitt" name="tag type">
+<item>Open: <ref id="treecontm" name="tree context menu entry">
 <item>OptimizeCoords: <ref id="mmtools" name="Optimize PolyMesh tool option">
 <item>OptimizeFaces: <ref id="mmtools" name="Optimize PolyMesh tool option">
 <item>OptimizeNew: <ref id="mmtools" name="Merge PolyMesh tool option">
@@ -6197,6 +6223,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>RadSteps: <ref id="rio" name="RenderMan interface option">
 <item>ReadFrame, ReadCamera, ReadOptions, ReadLights, ReadMaterial,
 ReadPartial: <ref id="rribopt" name="RIB import option">
+<item>Rebuild: <ref id="treecontm" name="tree context menu entry">
 <item>RedirectTcl: <ref id="prefmisc" name="preference setting">
 <item>Redo: <ref id="undos" name="The Undo System">,
 <ref id="mmedit" name="main menu entry">
