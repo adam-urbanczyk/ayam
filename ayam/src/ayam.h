@@ -122,6 +122,7 @@ typedef struct ay_list_object_s
 
 typedef struct ay_undo_object_s
 {
+  int from_select;
   ay_object *objects;
   ay_list_object *references;
 } ay_undo_object;

@@ -161,18 +161,20 @@ proc tree_paintLevel { node } {
 proc tree_selectItem { redraw tree node } {
   global ay
 
+    undo savsel
+    
     set ay(ts) 1; 
     set nlist [$tree selection get]
     $ay(tree) selection clear
     treeSelect ""
     $ay(tree) selection set $node
-    tree_handleSelection
+    #tree_handleSelection
     if { [lsearch $nlist $node] == "-1" } {
 	$tree selection set $node
 	set ay(SelectedLevel) [$tree parent $node]
 	$tree selection set $node
-        tree_handleSelection
     }
+    tree_handleSelection
     $tree bindText  <ButtonRelease-1> ""
     $tree bindText  <ButtonPress-1> "tree_selectItem 1 $tree"
 
@@ -190,6 +192,9 @@ proc tree_selectItem { redraw tree node } {
 # multiple selection via ctrl-key; only allowed within on level
 proc tree_toggleSelection { tree node } {
  global ay
+
+    undo savsel
+    
     set ay(ts) 1;
     set SelectedLevel $ay(SelectedLevel)
 
@@ -222,9 +227,10 @@ proc tree_toggleSelection { tree node } {
 
 
 #tree_multipleSelection
-# multiple selection via shift-key; only allowed within on level
+# multiple selection via shift-key; only allowed within one level
 proc tree_multipleSelection { tree node } {
  global ay
+
     set ay(ts) 1;
     set SelectedLevel $ay(SelectedLevel)
 
@@ -272,8 +278,6 @@ proc tree_multipleSelection { tree node } {
 # do any stuff for the selected objects such as highligting the selected level
 proc tree_handleSelection { } {
   global ay
-
-    undo save
 
     if { $ay(SelectedLevel) != $ay(CurrentLevel) } {
 	tree_paintLevel $ay(SelectedLevel)
