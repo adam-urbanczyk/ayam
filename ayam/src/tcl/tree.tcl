@@ -688,7 +688,8 @@ $m add separator
 $m add command -label "Switch to Listbox" -command\
  "tree_close $w; olb_open $w; olb_update; rV"
 $m add separator
-$m add command -label "Deselect Object" -command "cS;uS;rV"
+$m add command -label "Deselect Object" -command {
+    cS;plb_update;rV}
 $m add separator
 $m add command -label "Copy Object" -command ".fu.fMenu.ed.m invoke 0"
 $m add command -label "Cut Object" -command ".fu.fMenu.ed.m invoke 1"
