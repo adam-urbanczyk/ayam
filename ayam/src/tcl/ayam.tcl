@@ -364,6 +364,7 @@ array set ay {
  slcext ""
  sext ""
  locales { en de }
+ ScanShaders 0
 }
 
 set ay_error 0

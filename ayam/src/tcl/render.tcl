@@ -60,14 +60,21 @@ proc render_select { } {
 
     pack $f -in $w -side top -fill x
 
-    global riattr
     set names [list BMRT2.5 BMRT2.6 Aqsis Air 3Delight RDC PRMan]
     foreach name $names {
 	$f.li insert end "$name"
     }
 
+    if { [info exists ay(srr)] } {
+	$f.li selection set $ay(srr)
+    }
 
-
+    # checkbutton
+    set f [frame $w.fch]
+    addCheck $f ay ScanShaders
+    pack $f -in $w -side top -fill x
+    
+    # ok/cancel buttons
     set f [frame $w.fb1]
     button $f.bok -text "Ok" -pady 1 -width 5 -command {
 	global ay ayprefs
@@ -85,6 +92,10 @@ proc render_select { } {
 		set ayprefs(SMRender) "rendrib -d 4 %s"
 		set ayprefs(SMRenderPT) "Done computing %d"
 		set ayprefs(RenderMode) 0
+		if { $ay(ScanShaders) == 1 } {
+		    set ay(sext) ""
+		}
+		set newr "BMRT2.5"
 	    }
 
 	    1 {
@@ -96,6 +107,10 @@ proc render_select { } {
 		set ayprefs(SMRender) "rendrib -d 4 -Progress %s"
 		set ayprefs(SMRenderPT) "R90000 %d"
 		set ayprefs(RenderMode) 0
+		if { $ay(ScanShaders) == 1 } {
+		    set ay(sext) ""
+		}
+		set newr "BMRT2.6"
 	    }
 
 	    2 {
@@ -107,6 +122,11 @@ proc render_select { } {
 		set ayprefs(SMRender) "aqsis %s"
 		set ayprefs(SMRenderPT) "Done computing %d"
 		set ayprefs(RenderMode) 0
+		set splugin "ayslx"
+		if { $ay(ScanShaders) == 1 } {
+		    set ay(sext) ".slx"
+		}
+		set newr "Aqsis"
 	    }
 
 	    3 { 
@@ -118,6 +138,11 @@ proc render_select { } {
 		set ayprefs(SMRender) "air -Progress %s"
 		set ayprefs(SMRenderPT) "R90000 %d"
 		set ayprefs(RenderMode) 0
+		set splugin "ayslb"
+		if { $ay(ScanShaders) == 1 } {
+		    set ay(sext) ".slb"
+		}
+		set newr "Air"
 	    }
 
 	    4 {
@@ -129,6 +154,11 @@ proc render_select { } {
 		set ayprefs(SMRender) "renderdl %s"
 		set ayprefs(SMRenderPT) ""
 		set ayprefs(RenderMode) 0
+		set splugin "ayslo3d"
+		if { $ay(ScanShaders) == 1 } {
+		    set ay(sext) ".slo"
+		}
+		set newr "3Delight"
 	    }
 
 	    5 {
@@ -140,6 +170,11 @@ proc render_select { } {
 		set ayprefs(SMRender) "renderdc %s"
 		set ayprefs(SMRenderPT) ""
 		set ayprefs(RenderMode) 1
+		set splugin "ayso"
+		if { $ay(ScanShaders) == 1 } {
+		    set ay(sext) ".so"
+		}
+		set newr "RDC"
 	    }
 
 	    6 {
@@ -151,16 +186,33 @@ proc render_select { } {
 		set ayprefs(SMRender) "render -progress %s"
 		set ayprefs(SMRenderPT) " %d"
 		set ayprefs(RenderMode) 1
+		set splugin "ayslo"
+		if { $ay(ScanShaders) == 1 } {
+		    set ay(sext) ".slo"
+		}
+		set newr "PRMan"
 	    }
 
 	    default { puts Whoops? }
 	}
 	# switch
 
+	if { $ay(ScanShaders) == 1 } {
+	    if { $sel > 1 } {
+		set ay(autoload) $splugin
+		io_lcAuto
+	    }
+	    scanAllShaders
+	}
+
+	ayError 4 "Renderer_Select" "Now using \$newr to render."
+
+	set ay(srr) $sel
 
 	destroy .selRenw
     }
     #-command
+
 
     button $f.bca -text "Cancel" -pady 1 -width 5 -command "destroy $w"
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
