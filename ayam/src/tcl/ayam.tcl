@@ -880,6 +880,7 @@ ayam_loadscript bpatch
 ayam_loadscript camera
 ayam_loadscript cap
 ayam_loadscript cone
+ayam_loadscript concatnc
 ayam_loadscript cylinder
 ayam_loadscript disk
 ayam_loadscript extrude

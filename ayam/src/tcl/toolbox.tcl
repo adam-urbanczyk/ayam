@@ -399,9 +399,9 @@ proc toolbox_open { } {
 
 	    #####
 	    button $f.bconc -image ay_Concat_img -padx 0 -pady 0 -command {
-		concatNC; uCR;sL;rV
+		concatnc_crt
 	    }
-	    balloon_set $f.bconc "concat curves"
+	    balloon_set $f.bconc "create ConcatNC\n(concat curves)"
 
 	    #####
 	    button $f.bclamp -image ay_Clamp_img -padx 0 -pady 0 -command {

@@ -464,6 +464,18 @@ typedef struct ay_icurve_object_s
   ay_object *ncurve;
 } ay_icurve_object;
 
+typedef struct ay_concatnc_object_s
+{
+  int closed;
+  int mode;
+
+  double glu_sampling_tolerance;
+  int display_mode;
+
+  /* cache NURBS curve representation */
+  ay_object *ncurve;
+} ay_concatnc_object;
+
 typedef struct ay_cap_object_s
 {
   double glu_sampling_tolerance;
@@ -890,6 +902,7 @@ extern unsigned int ay_current_glname;
 #define AY_IDCAP           24
 #define AY_IDPAMESH        25
 #define AY_IDPOMESH        26
+#define AY_IDCONCATNC      27
 
 #define AY_IDLAST          30
 
