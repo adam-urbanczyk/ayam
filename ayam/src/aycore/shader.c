@@ -75,7 +75,7 @@ ay_shader_scanslcsarg(SLC_VISSYMDEF *symbol, Tcl_DString *ds)
 
  return ay_status;
 } /* ay_shader_scanslcsarg */
-#endif
+#endif /* AYUSESLCARGS */
 
 /* ay_shader_scanslctcmd:
  *  scan a shader compiled with slc with libslcargs.a
@@ -84,8 +84,8 @@ int
 ay_shader_scanslctcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[])
 {
-#ifdef AYUSESLCARGS
  char fname[] = "shaderScanSLC";
+#ifdef AYUSESLCARGS
  int i = 0, j = 0, numargs = 0;
  SLC_VISSYMDEF *symbol = NULL, *element = NULL;
  SLC_TYPE type;
@@ -236,7 +236,8 @@ ay_shader_scanslctcmd(ClientData clientData, Tcl_Interp *interp,
   Tcl_SetVar(interp, argv[2], Tcl_DStringValue(&ds), TCL_LEAVE_ERR_MSG);
 
   Tcl_DStringFree(&ds);
-#endif
+#endif /* AYUSESLCARGS */
+ ay_error(AY_ERROR, fname, "This Ayam has not been linked with libslcargs!");
  return TCL_OK;
 } /* ay_shader_scanslctcmd */
 
@@ -299,7 +300,7 @@ ay_shader_scanslxsarg(SLX_VISSYMDEF *symbol, Tcl_DString *ds)
 
  return ay_status;
 } /* ay_shader_scanslxsarg */
-#endif
+#endif /* AYUSESLXARGS */
 
 /* ay_shader_scanslxtcmd:
  *  scan a shader compiled with aqsl with libslxargs
@@ -308,8 +309,8 @@ int
 ay_shader_scanslxtcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[])
 {
-#ifdef AYUSESLXARGS
  char fname[] = "shaderScanSLX";
+#ifdef AYUSESLXARGS
  int i = 0, j = 0, numargs = 0;
  SLX_VISSYMDEF *symbol = NULL, *element = NULL;
  SLX_TYPE type;
@@ -465,7 +466,10 @@ ay_shader_scanslxtcmd(ClientData clientData, Tcl_Interp *interp,
   Tcl_SetVar(interp, argv[2], Tcl_DStringValue(&ds), TCL_LEAVE_ERR_MSG);
 
   Tcl_DStringFree(&ds);
-#endif
+#endif /* AYUSESLXARGS */
+ ay_error(AY_ERROR, fname, "This Ayam has not been linked with libslxargs!");
+ ay_error(AY_ERROR, fname,
+	  "Load the ayslx plugin and use shaderScan instead!");
  return TCL_OK;
 } /* ay_shader_scanslxtcmd */
 
