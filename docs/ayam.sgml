@@ -1162,15 +1162,25 @@ the scene file specified by <tt/"EnvFile"/ on startup.
 the scene file specified by <tt/"EnvFile"/ also when the scene is
 cleared using the main menu entry <tt>"File/New"</tt>.
 <item><tt/"EnvFile"/; This file typically contains some view
-objects to create a standard 2-, 3-, or 4-view working environment.
-<item><tt/"Scripts"/ is a list of filenames of Tcl scripts that should
-be executed on startup.
+objects to create a standard 2-, 3-, or 4-view working environment
+and is automatically loaded upon startup of Ayam (if the preference option
+<tt/"LoadEnv"/, see above, is switched on) and upon clearing the scene
+using <tt>"File/New"</tt> (if the preference option
+<tt/"NewLoadsEnv"/, see above, is switched on).
+<item><tt/"Scripts"/ is a list of Tcl scripts that will
+be executed on startup. The scripts have to be specified with full
+path and filename. If non absolute paths are used they are relative
+to the current directory of Ayam on application startup (which is typically
+the directory where the Ayam executable resides).
+Multiple entries have to be separated
+by a colon (:) on Unix and by a semicolon (;) on Win32.
 <item><tt/"Plugins"/ is a list of directories that contain custom
 objects or plugins. Those directories will e.g. be searched for
 custom objects when unknown object types are encountered while reading
 Ayam scene files. If a matching custom object is found, it will be
 automatically loaded into Ayam, so that scene loading may proceed without
-an error.
+an error. Multiple entries have to be separated
+by a colon (:) on Unix and by a semicolon (;) on Win32.
 <item><tt/"Docs"/ is an URL that points to the documentation in
 HTML format.
 <item><tt/"TmpDir"/ is the directory, where temporary RIBs are
