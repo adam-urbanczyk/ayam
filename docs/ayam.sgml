@@ -2158,6 +2158,16 @@ will be used for the image-size instead of the corresponding
 dimension of the view window, but only for real RIB exports
 and not for the QuickRender and Render actions in view windows.
 These will always use the dimensions of the view window.
+<item><tt/"StdDisplay"/, if this is enabled, a standard display
+statement will be written to the RIB, which looks like this:
+
+<tt>Display "unnamed.tif" "file "rgba"</tt>
+
+If you disable this option, be sure to add atleast one
+RiDisplay tag to the root object (see also section
+<ref id="ridtag" name="RiDisplay Tag">), otherwise your RIB will
+not contain a Display statement. This option has no effect on
+RIBs that render directly to the screen.
 <item><tt/"Variance"/, maximum allowed variance of two pixel values.
 The default 0.0 causes no setting in the RIB. If the variance is > 0.0
 no pixel samples setting will be written to the RIB. Various
@@ -6351,6 +6361,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>StartCap: <ref id="rep" name="revolve attribute">,
 <ref id="swp" name="sweep attribute">,
 <ref id="skp" name="skin attribute">
+<item>StdDisplay: <ref id="rio" name="RenderMan interface option">,
 <item>Step_U, Step_V: <ref id="pmattr" name="PatchMesh attribute">
 <item>StepSize: <ref id="moattr" name="MetaObj attributes">
 <item>Stretch: <ref id="scalac" name="stretch object">
