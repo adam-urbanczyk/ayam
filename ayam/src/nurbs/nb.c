@@ -2979,8 +2979,8 @@ ay_nb_RefineKnotVectSurfU(int stride, int w, int h, int p, double *U,
 			  double *Ubar, double *Qw)
 {
  int ay_status = AY_OK;
- double m, n, a, b, alpha;
- int i, j, k, l, ind, col;
+ double alpha;
+ int m, n, a, b, i, j, k, l, ind, col;
  int i1, i2;
 
   m = w+p+1;
@@ -3096,8 +3096,8 @@ ay_nb_RefineKnotVectSurfV(int stride, int w, int h, int p, double *V,
 			  double *Vbar, double *Qw)
 {
  int ay_status = AY_OK;
- double m, n, a, b, alpha;
- int i, j, k, l, ind, row;
+ double alpha;
+ int m, n, a, b, i, j, k, l, ind, row;
  int i1, i2, he = h+r+2;
 
   m = h+p+1;
