@@ -1155,6 +1155,9 @@ ay_npatch_readcb(FILE *fileptr, ay_object *o)
 
   if(npatch->uknot_type == AY_KTCUSTOM)
     {
+      if(npatch->uknotv)
+	free(npatch->uknotv);
+      npatch->uknotv = NULL;
       if(!(npatch->uknotv =
 	   calloc((npatch->width + npatch->uorder), sizeof(double))))
 	{ free(npatch); return AY_EOMEM; }
@@ -1165,7 +1168,9 @@ ay_npatch_readcb(FILE *fileptr, ay_object *o)
 
   if(npatch->vknot_type == AY_KTCUSTOM)
     {
-      free(npatch->vknotv);
+      if(npatch->vknotv)
+	free(npatch->vknotv);
+      npatch->vknotv = NULL;
 
       if(!(npatch->vknotv =
 	   calloc((npatch->height + npatch->vorder), sizeof(double))))
