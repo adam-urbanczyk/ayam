@@ -155,8 +155,8 @@ proc pclip_pastetosel { } {
 
     if { $ayprefs(Wpclip_pastetosel) == 1 } {
 	
-	set c [tk_messageBox -type okcancel -icon warning -message\
-"This operation\ is potentially dangerous. Proceed if you know what you are doing!"]
+	set c [tk_messageBox -title "Warning!" -type okcancel -icon warning\
+-message "This operation may destroy the current property. Proceed if you know what you are doing!"]
 
      if { $c == "cancel" } { return; }
 
