@@ -255,7 +255,11 @@ proc prefs_save { } {
 	    ($ayprefs(TwmCompat) != 1) } {
 	set x [winfo rootx .]
 	set y [winfo rooty .]
+	set w [winfo width .]
+	set h [winfo height .]
+
 	set ng ""
+	append ng "${w}x${h}"
 	if { $x >= 0 } { append ng "+$x" } else { append ng "-$x" }
 	if { $y >= 0 } { append ng "+$y" } else { append ng "-$y" }
 	set ayprefs(mainGeom) $ng
@@ -269,7 +273,11 @@ proc prefs_save { } {
 		($ayprefs(TwmCompat) != 1) } {
 	    set x [winfo rootx .tbw]
 	    set y [winfo rooty .tbw]
+	    set w [winfo width .tbw]
+	    set h [winfo height .tbw]
+
 	    set ng ""
+	    append ng "${w}x${h}"
 	    if { $x >= 0 } { append ng "+$x" } else { append ng "-$x" }
 	    if { $y >= 0 } { append ng "+$y" } else { append ng "-$y" }
 	    set ayprefs(toolBoxGeom) $ng
