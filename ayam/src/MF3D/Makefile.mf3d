@@ -1,0 +1,29 @@
+# Emacs, this is -*- Mode: makefile -*-
+#
+# Makefile.mf3d [1. Sep 2001]
+# Makefile for MF3D code
+
+MF3DOBJS = mf3d.o\
+ mfbinrd.o\
+ mffile.o\
+ mfgroups.o\
+ mflabels.o\
+ mfmemory.o\
+ mfobject.o\
+ mfobjtyp.o\
+ mfprimtv.o\
+ mfrslntn.o\
+ mfstdchk.o\
+ mftextrd.o\
+ mftextut.o\
+ mftextwr.o
+
+MF3DCFLAGS =
+
+.c.o: 
+	$(CC) -c $(MF3DCFLAGS) $*.c -I.
+
+all: $(MF3DOBJS)
+
+clean:
+	rm -f *.o

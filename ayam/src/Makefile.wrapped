@@ -1,0 +1,392 @@
+# Emacs, this is -*- Mode: makefile -*-
+#
+# Makefile.wrapped [1. Sep 2001]
+# Makefile for Ayam (wrapped version)
+
+# Where shall the executables be installed?
+# Note: The specified directory _must_ exist!
+BINDIR=/usr/local/bin
+#BINDIR=/usr/local/bin
+
+# Where shall the documentation be installed?
+# Note: The specified directory _must_ exist!
+# Note^2: A subdir "ayam" will be created in this dir
+DOCDIR=/usr/doc/
+#DOCDIR=/usr/doc/
+
+# Where shall the button images & custom objects be installed?
+# Note: The specified directory _must_ exist!
+# Note^2: A subdir "ayam" will be created in this dir
+LIBDIR=/usr/local/lib/
+#LIBDIR=/usr/local/lib/
+
+INSTALL = install
+INSTALLD = install -m 0644
+MKDIR = mkdir -p
+
+# the compiler
+CC = cc
+#CC = gcc
+
+# the linker
+# Starting with BMRT2.5, libribout and libslcargs are in C++,
+# which forces us to use "CC" or "g++" to link the right libraries
+# automatically
+# IRIX:
+#LD = CC
+# Linux:
+LD = g++
+
+# flags for the compiler
+# o add -DAYUSEAFFINE if you use the Affine Toolkit
+#   as libribout replacement
+# _else_
+# o add -DAYUSEBMRTRIBOUT if you link with libribout from BMRT
+# o add -DAYUSESLCARGS if you link with libslcargs from BMRT
+# o add -DAYNOTEMPNAM if your system has no tempnam();
+#   (unlikely, but tempnam() is not ANSI)
+#   Note, that the preference setting TmpDir will always be ignored then!
+# o always use -DAYWRAPPED to create a wrapped binary
+
+# IRIX:
+#CFLAGS = -O -fullwarn -woff 1048 -DAYWRAPPED -DAYUSESLCARGS -DAYUSEBMRTRIBOUT
+# Linux:
+CFLAGS = -O2 -Wall -DAYWRAPPED -DAYUSESLCARGS -DAYUSEBMRTRIBOUT
+#CFLAGS = -g -Wall -DAYWRAPPED -DAYUSESLCARGS -DAYUSEBMRTRIBOUT
+# Solaris:
+#CFLAGS = -O -DSOLARIS_BUG -DAYWRAPPED -DAYUSESLCARGS -DAYUSEBMRTRIBOUT
+
+
+# ld flag to switch to static linking
+# IRIX:
+#LDSWSTATIC = -static
+# Linux:
+LDSWSTATIC = -Wl,-Bstatic
+#LDSWSTATIC = -Wl,-Bstatic
+
+# ld flag to switch to dynamic linking
+# IRIX:
+#LDSWDYNAMIC = -dynamic
+# Linux:
+LDSWDYNAMIC = -Wl,-Bdynamic
+#LDSWDYNAMIC = -Wl,-Bdynamic
+
+# extra ld flags needed to compile ayam
+# (gcc needs -rdynamic to allow shared objects access to global symbols)
+# (gcc needs -nodefaultlibs to allow libstdc++ be compiled statically)
+# IRIX:
+#EXLDFLAGS =
+# Linux:
+EXLDFLAGS = -rdynamic -nodefaultlibs
+
+
+# Togl
+# Path to "togl.h":
+TOGLINCDIR = togl
+
+# Path to "togl.o":
+TOGLOBJECT = togl/togl.o
+
+
+# OpenGL
+# where are the OpenGL headers?
+GLINCDIR = /usr/X11R6/include/
+# link options for linking with OpenGL libraries
+GLLIBS = -lGLU -lGL
+
+
+# Tcl/Tk
+# Tcl directory
+TCLDIR = ../../tcl8.2.2
+#TCLDIR = ../../tcl8.0
+
+# Tcl includes
+TCLINC = -I$(TCLDIR)/generic
+
+# Tcl library
+# link options for linking with Tcl library
+TCLLIB = -L$(TCLDIR)/unix -ltcl8.2
+#TCLLIB = -L$(TCLDIR)/unix -ltcl8.0
+#TCLLIB = -ltcl
+
+# Tk directory
+TKDIR = ../../tk8.2.2
+#TKDIR = ../../tk8.0
+#TKDIR = /home/randi/work/tk8.0/generic
+
+# Tk includes
+TKINC = -I$(TKDIR)/generic -I$(TKDIR)/unix
+
+# Tk library
+# link options for linking with Tk library
+TKLIB = -L$(TKDIR)/unix -ltk8.2
+#TKLIB = -L$(TKDIR)/unix -ltk8.0
+#TCLLIB = -ltk
+
+
+# X11 library
+# link options for linking with X11
+X11LIBS = -L/usr/X11R6/lib -lXmu -lXext -lX11
+#X11LIBS = -L/usr/X11R6/lib -lXmu -lXext -lX11
+
+
+# Affine Toolkit
+# where is ributil.h?
+AFFINEINCDIR = ./affine/include
+# if you do not use Affine:
+AFFINEOBJS = 
+# if you use affine (add -DAYUSEAFFINE to CFLAGS!):
+#AFFINEOBJS = ./affine/src/write.o ./affine/src/constant.o
+
+# BMRT
+# If you use the libribout from BMRT2.x (x >= 5), do _not_ link with
+# libslcargs, as its functionality is already present in libribout!
+BMRTDIR = ../../BMRT2.6
+BMRTINCDIR = $(BMRTDIR)/include
+BMRTLIBDIR = $(BMRTDIR)/lib
+# if you do not use Affine
+RIBOUTLIB = -L$(BMRTLIBDIR) -lribout
+# if you use Affine
+#RIBOUTLIB =
+# if you do not use libslcargs from BMRT
+SLCARGSLIB =
+# if you use Affine and libslcargs from BMRT
+#SLCARGSLIB =  -L$(BMRTLIBDIR) -lslcargs
+
+
+# Wrap
+# where is the wrap distribution?
+WRAPDIR = ../../wrap0.3
+WRAPOBJS = $(WRAPDIR)/wrapChan.o $(WRAPDIR)/wrapInit.o $(WRAPDIR)/wrapRsrc.o $(WRAPDIR)/compat/tclLoadNone.o $(WRAPDIR)/tkAppInit.o
+
+# zlib
+# link options for linking with zlib
+ZLIB = -L$(WRAPDIR) -lz
+
+# libstdc++
+# To make the Linux exe more portable between Linux
+# distributions, we link libstdc++ statically.
+# Linux
+# using gcc, to link stdc++ statically, use:
+STDCPPLIB = -L/usr/lib -lstdc++ -lgcc
+# IRIX
+# using cc (IRIX, Solaris) use
+#STDCPPLIB = 
+
+# BWidgets
+# where are the BWidgets?
+BWIDGETS = tcl/BWidget-1.2.1
+
+# UPX
+# do you have upx (universal packer for executables) installed?
+# yes:
+#UPX = upx
+# no:
+UPX = touch
+
+# strip
+# do you want to strip the executable?
+# yes:
+#STRIP = strip
+# no:
+STRIP = touch
+
+# Dynamic Loading
+# Library for dynamic loading (contains dlopen())
+# Linux, IRIX, Solaris:
+DL = -ldl
+# NetBSD:
+#DL =
+
+#############################################
+# nothing needs to be changed below this line
+#############################################
+
+AYAMOBJS = aycore/bbc.o\
+	aycore/clear.o\
+	aycore/clevel.o\
+	aycore/clipb.o\
+	aycore/comp.o\
+	aycore/convert.o\
+	aycore/draw.o\
+	aycore/error.o\
+	aycore/geom.o\
+	aycore/instt.o\
+	aycore/mopsi.o\
+	aycore/notify.o\
+	aycore/oact.o\
+	aycore/object.o\
+	aycore/otype.o\
+	aycore/matt.o\
+	aycore/pact.o\
+	aycore/prop.o\
+	aycore/provide.o\
+	aycore/prefs.o\
+	aycore/quat.o\
+	aycore/read.o\
+	aycore/riattr.o\
+	aycore/riopt.o\
+	aycore/sel.o\
+	aycore/selp.o\
+	aycore/shade.o\
+	aycore/shader.o\
+	aycore/table.o\
+	aycore/tags.o\
+	aycore/tcmd.o\
+	aycore/toglcb.o\
+	aycore/tmp.o\
+	aycore/trafo.o\
+	aycore/undo.o\
+	aycore/vact.o\
+	aycore/viewt.o\
+	aycore/wrib.o\
+	aycore/write.o\
+	nurbs/capt.o\
+	nurbs/ict.o\
+	nurbs/knots.o\
+	nurbs/nb.o\
+	nurbs/nct.o\
+	nurbs/npt.o\
+	objects/box.o\
+	objects/bpatch.o\
+	objects/camera.o\
+	objects/cap.o\
+	objects/cone.o\
+	objects/cylinder.o\
+	objects/disk.o\
+	objects/extrude.o\
+	objects/hyperb.o\
+	objects/icurve.o\
+	objects/instance.o\
+	objects/level.o\
+	objects/light.o\
+	objects/material.o\
+	objects/ncurve.o\
+	objects/npatch.o\
+	objects/parab.o\
+	objects/revolve.o\
+	objects/riinc.o\
+	objects/root.o\
+	objects/sphere.o\
+	objects/skin.o\
+	objects/sweep.o\
+	objects/torus.o\
+	objects/view.o\
+	contrib/ai.o\
+	contrib/sm.o\
+	contrib/tree.o\
+	ayam.o
+
+MF3DOBJS = MF3D/mf3d.o\
+ MF3D/mfbinrd.o\
+ MF3D/mffile.o\
+ MF3D/mfgroups.o\
+ MF3D/mflabels.o\
+ MF3D/mfmemory.o\
+ MF3D/mfobject.o\
+ MF3D/mfobjtyp.o\
+ MF3D/mfprimtv.o\
+ MF3D/mfrslntn.o\
+ MF3D/mfstdchk.o\
+ MF3D/mftextrd.o\
+ MF3D/mftextut.o\
+ MF3D/mftextwr.o
+
+CSPHEREOBJS = plugins/csphere.o
+
+IDROBJS = plugins/idr.o
+
+METAOBJS = contrib/meta/metaobj.o \
+	contrib/meta/metautils.o \
+	contrib/meta/marching.o
+
+.c.o: 
+	$(CC) -c $(CFLAGS) $*.c -o $@ -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR)
+
+all: wrappedayam csphere.so mfio.so
+
+wrapMain.o: wrapMain.c
+	$(CC) -c $(CFLAGS) wrapMain.c -I$(WRAPDIR) -I$(WRAPDIR)/libz $(TCLINC) $(TKINC)
+
+ayam:  $(AYAMOBJS) $(TOGLOBJECT) $(AFFINEOBJS) wrapMain.o
+	$(LD) $(AYAMOBJS) $(TOGLOBJECT) $(WRAPOBJS) wrapMain.o $(EXLDFLAGS) -o ayam $(TKLIB) $(TCLLIB) $(LDSWDYNAMIC) $(GLLIBS) $(X11LIBS) $(RIBOUTLIB) $(SLCARGSLIB) $(AFFINEOBJS) $(ZLIB) $(LDSWSTATIC) $(STDCPPLIB) $(LDSWDYNAMIC) -lm $(DL)
+	$(STRIP) ayam
+	$(UPX) ayam
+	cat $(WRAPDIR)/null.zip >>ayam
+
+ayamwrap: ayam
+	rm -f lib
+	ln -s $(WRAPDIR)/lib lib
+	zip -A -j -u -9 ayam $(WRAPDIR)/tclInit.tcl
+	zip -A -r -u -9 ayam lib/wrap0.3 lib/tcl8.2 lib/tk8.2
+	rm -f lib
+	rm -f BWidgets
+	ln -s $(BWIDGETS) BWidgets
+	zip -A -r -u -9 ayam BWidgets/*.tcl BWidgets/lang BWidgets/images
+	rm -f BWidgets
+	cp tcl/ayam.tcl ayam.tcl
+	cp ../lib/ayam-splash.gif.uue ./ayam-splash.gif
+	zip -A -u -9 ayam ayam.tcl ayam-splash.gif tcl/*.tcl
+	rm ayam.tcl
+	rm ayam-splash.gif
+	rm -f lib
+
+wrappedayam: ayam ayamwrap
+
+rewraprm:
+	rm -f ayam
+
+rewrap: rewraprm ayamwrap
+
+csphere.so: $(CSPHEREOBJS)
+	$(CC) -shared $(CSPHEREOBJS) -o plugins/csphere.so
+
+idr.so: $(IDROBJS)
+	$(CC) -shared $(IDROBJS) -o plugins/idr.so -ltiff
+
+mf3d:
+	cd MF3D; make -f Makefile.mf3d
+
+mfio.so: plugins/mfio.o mf3d
+	$(CC) -shared $(MF3DOBJS) plugins/mfio.o -o plugins/mfio.so
+
+metaobj.so: $(METAOBJS)
+	$(CC) -shared $(METAOBJS) -o contrib/meta/metaobj.so
+
+release: all
+	mv ayam ../bin/ayam
+
+clean:
+	rm -f core *.o *.so $(AYAMOBJS) $(TOGLOBJECT) plugins/*.o
+	rm -f contrib/meta/*.o contrib/meta/*.so
+	rm -f plugins/*.so ayamsh ayam
+
+mostlyclean: clean
+	rm -f $(AFFINEOBJS)
+	cd MF3D; make -f Makefile.mf3d clean
+
+DOCFILES = ../Setup.txt ../Changes ../License ./ayam-icon.xpm ./ayamrc\
+ ./crtshdscn.tcl ../doc/ayam.sgml ../doc/ayam.ps ../doc/ayam.txt
+
+install:
+	$(INSTALL) ayam $(BINDIR)
+
+#	$(MKDIR) $(DOCDIR)/ayam/html $(DOCDIR)/ayam/sdk/html
+#	$(INSTALLD) $(DOCFILES) $(DOCDIR)/ayam
+#	$(INSTALLD) ../doc/html/* $(DOCDIR)/ayam/html
+#	$(INSTALLD) ../sdk/co.sgml ../sdk/co.ps ../sdk/co.txt $(DOCDIR)/ayam/sdk
+#	$(INSTALLD) ../sdk/html/* $(DOCDIR)/ayam/sdk/html
+
+uninstall:
+	rm -f $(BINDIR)/ayam
+	rm -rf $(LIBDIR)/ayam	
+	rm -rf $(DOCDIR)/ayam
+
+cl:
+	cat *.c *.h contrib/tree.c contrib/sm.c aycore/*.c nurbs/*.c objects/*.c plugins/*.c | wc -l
+
+
+.SUFFIXES: .so .o
+
+.o.so: 
+	$(CC) -shared -o $@ $*.o
