@@ -780,6 +780,7 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
  ay_object *o = NULL;
  int argi = 0, need_redraw = AY_TRUE;
  double argd = 0.0, rotx = 0.0, roty = 0.0, rotz = 0.0;
+ double old_rect_xmin, old_rect_ymin, old_rect_xmax, old_rect_ymax;
  double temp[3] = {0};
  int i = 2;
 
@@ -1030,12 +1031,64 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 	    }
 	  if(!strcmp(argv[i], "-rect"))
 	    {
+	      old_rect_xmin = view->rect_xmin;
+	      old_rect_ymin = view->rect_ymin;
+	      old_rect_xmax = view->rect_xmax;
+	      old_rect_ymax = view->rect_ymax;
+
 	      Tcl_GetDouble(interp, argv[i+1], &view->rect_xmin);
 	      Tcl_GetDouble(interp, argv[i+2], &view->rect_ymin);
 	      Tcl_GetDouble(interp, argv[i+3], &view->rect_xmax);
 	      Tcl_GetDouble(interp, argv[i+4], &view->rect_ymax);
 	      
 	      Tcl_GetInt(interp, argv[i+5], &view->drawrect);
+#ifdef GL_VERSION_1_1
+	      need_redraw = AY_FALSE;
+	      glDrawBuffer(GL_FRONT);
+	      glEnable(GL_COLOR_LOGIC_OP);
+	      glLogicOp(GL_XOR);
+	      /*glLogicOp(GL_COPY);*/
+
+	       glColor3d((GLdouble)ay_prefs.sxr, (GLdouble)ay_prefs.sxg,
+			 (GLdouble)ay_prefs.sxb);
+
+	       /* clear old rectangle? */
+	       if((old_rect_xmin != 0.0) && (old_rect_ymin != 0.0) &&
+		  (old_rect_xmax != 0.0) && (old_rect_ymax != 0.0))
+		 {
+		   
+		   ay_draw_rectangle(togl, old_rect_xmin, old_rect_ymin,
+				     old_rect_xmax, old_rect_ymax);
+		   
+		 }
+
+	       if(view->drawrect)
+		 {
+		   ay_draw_rectangle(togl, view->rect_xmin, view->rect_ymin,
+				     view->rect_xmax, view->rect_ymax);
+		 }
+	       else
+		 {
+		   view->rect_xmin = 0.0;
+		   view->rect_ymin = 0.0;
+		   view->rect_xmax = 0.0;
+		   view->rect_ymax = 0.0;
+		 } /* if */
+
+
+	      glDisable(GL_COLOR_LOGIC_OP);
+	      glDrawBuffer(GL_BACK);
+	      /* XXXX glFlush(); ? */
+#else
+	      ay_toglcb_display(togl);
+	      if(view->drawrect)
+		{
+		  glDrawBuffer(GL_FRONT);
+		  ay_draw_rectangle(togl, view->rect_xmin, view->rect_ymin,
+				    view->rect_xmax, view->rect_ymax);
+		  glDrawBuffer(GL_BACK);
+		}
+#endif
 	    } /* if */
 	  break;
 	case 's':

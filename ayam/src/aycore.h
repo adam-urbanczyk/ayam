@@ -97,6 +97,9 @@ void ay_draw_needredraw(ay_list_object *oldsel, ay_list_object *newsel,
 
 void ay_draw_trimview(void);
 
+void ay_draw_rectangle(struct Togl *togl, double xmin, double ymin,
+		       double xmax, double ymax);
+
 /* error.c */
 void ay_error(int code, char *where, char *what);
 
