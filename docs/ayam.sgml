@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>7. Dec 2001
+<date>11. Dec 2001
 <abstract>
 This is the documentation of Ayam - a free 3D modeling environment
 for the RenderMan interface.
@@ -1927,6 +1927,8 @@ Note, that even though you might have exploded some multiple points
 Ayam will re-create them on several occasions like reading
 of a scene, inserting/deleting points, and applying the NURBCurveAttrib
 property if they still have identical coordinate values.
+You may also totally inhibit creation of multiple points for a
+NURBS curve using the attribute <tt/"CreateMP"/.
 
 <sect2>NCurveAttrib<label id="ncattr">
 <p>
@@ -1972,6 +1974,9 @@ want a closed curve switch to type B-Spline.<p>
 Also note, that a NURBS circle as created by the NURBCircle tool
 is not a closed curve following this definition, it is nevertheless
 a closed curve.
+<item><tt/"CreateMP"/ toggles, whether multiple points should be
+created for this curve. See also the discussion in
+section <ref id="ncurvemp" name="Multiple Points">.
 </itemize>
 
 The GLU-Parameters control the appearance of the curve when
@@ -3216,7 +3221,9 @@ forAll:
 objects that have been selected currently, or for every object
 of the current level if nothing has been selected. If recursive
 is 1 then forAll will recurse into every object (if it has child objects)
-before the execution of command. 
+before the execution of command. Note, that forAll will run
+slowly if a property GUI is displayed. You can make it run faster
+by deselecting the property using e.g. the property context menu.
  <item> Deficiencies:
  <itemize>
   <item>A recursive forAll will
@@ -3238,7 +3245,9 @@ forAllT:
  <item>Synopsis: <tt>"forAllT type recursive command"</tt>
  <item>Description: forAllT works the same way as forAll, with an
 additional type check. The command will not be executed if the type of the
-current object does not match the argument type.<p>
+current object does not match the argument type. Note, that forAll will run
+slowly if a property GUI is displayed. You can make it run faster
+by deselecting the property using e.g. the property context menu.<p>
 
 Note, that the type strings will be converted to lowercase before
 comparison, so that it is legal to use it e.g. this way:
@@ -3861,6 +3870,7 @@ C
 <item>Console: <ref id="cons" name="what is">
 <item>Convert: <ref id="mm" name="main menu entry">
 <item>convOb: <ref id="gtype" name="scripting interface command">
+<item>CreateMP: <ref id="ncattr" name="NURBCurve attribute">
 <item>crtOb: <ref id="crtob" name="scripting interface command">
 <item>Custom: <ref id="cul" name="light type">
 <item>Custom Object: <ref id="customobj" name="what is">
