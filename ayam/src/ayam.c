@@ -593,6 +593,12 @@ int ay_status = AY_OK;
   Tcl_CreateCommand(interp, "getVersion", ay_tcmd_getvertcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  Tcl_CreateCommand(interp, "getBP", ay_tcmd_getbppointtcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "setBP", ay_tcmd_setbppointtcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
   /* tmp.c */
   Tcl_CreateCommand(interp, "tmpGet", ay_tmp_gettcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
