@@ -2746,11 +2746,11 @@ argument giving the name of the new material. Example:
  </itemize>
 </itemize>
 
-<sect2>Manipulating the Selection<label id="setsel">
+<sect2>Manipulating the Selection<label id="selob">
 <p>
 This function is probably the most important one, because
 a lot of the other commands operate on selected objects only.<p>
-setSelect:
+selOb:
 <itemize>
  <item>Synopsis: <tt/"selOb [index]"/
  <item>Description: Use this command to set or clear the current
@@ -3187,6 +3187,10 @@ is selected for all objects of the scene.
 
 <sect1>Scripting Interface Examples
 <p>
+Here are some example scripts for the Ayam Tcl scripting interface.
+
+You may copy and paste all examples directly from the documentation
+into the console of Ayam.
 
 <sect2>Moving Objects<label id="scexmov">
 <p>
@@ -3230,7 +3234,7 @@ $ay(cm) add command -label "Place Object" -command {
 
 <sect2>Moving NURBS points<label id="scexnurb">
 <p>
-The following example script shows how to move control points
+The following example script snippet shows how to move control points
 of a NURBS curve.
 <code>
 # first, we create a new NURBS curve with 30 control points
@@ -3246,20 +3250,81 @@ set w 1.0
 set angle 0
 while { $i < $len } {
 
- set x [expr 3*cos($angle)]
- set y [expr 3*sin($angle)]
- set z [expr $i/3.0]
+    set x [expr 3*cos($angle)]
+    set y [expr 3*sin($angle)]
+    set z [expr $i/3.0]
 
- # move control point to new position
- setNC $i $x $y $z $w
+    # move control point to new position
+    setNC $i $x $y $z $w
 
- incr angle 90
- incr i
+    incr angle 90
+    incr i
 }
 # redraw all views
 rV
 </code>
 Now use this as path for a Sweep.
+For instance, using the next small script.
+
+<sect2>Easy Sweep<label id="scexsweep">
+<p>
+The following example script shows how to easily create a
+sweep from a selected path curve (avoiding the manual and lengthy creation
+and parameterization of a suitable cross section).
+<code>
+proc easySweep { } {
+ # first, we create a sweep object
+ crtOb Sweep
+
+ # now, we need to move the selected curve (path) to
+ # the sweep and create a cross-section curve there too
+ # for that, we move the currently selected curve to the clipboard
+ cutOb
+ uS
+
+ # how does the current level look like?
+ getLevel a b
+
+ # enter the Sweep (the last object in the current level)
+ goDown [expr [llength $a]-1]
+ uS
+
+ # now, we create a new curve (a closed BSpline suitable as cross section)
+ crtClosedBS 8
+ uS
+
+ # how does the current level look like?
+ getLevel a b
+
+ # select last object (the newly created curve)
+ selOb [expr [llength $a]-1]
+
+ # now, we rotate and scale the curve
+ rotOb 0 90 0
+ scalOb 0.25 0.25 1.0
+
+ # move trajectory back (we use "cmovOb" and _not_ "pasOb", because we
+ # really move (and not copy) the curve
+ cmovOb
+ # go up to where we came from
+ goUp
+
+ # update GUI
+ uS
+ sL
+ # redraw all views
+ rV
+}
+# easySweep
+</code>
+
+You may add this command as well to the main menu:
+<code>
+global ay
+$ay(cm) add command -label "Easy Sweep" -command {
+ easySweep
+}
+</code>
 
 <sect>Miscellaneous
 <p>
