@@ -42,6 +42,9 @@ int ay_cylinder_init(Tcl_Interp *interp);
 /* disk.c */
 int ay_disk_init(Tcl_Interp *interp);
 
+/* extrnc.c */
+int ay_extrnc_init(Tcl_Interp *interp);
+
 /* extrude.c */
 int ay_extrude_init(Tcl_Interp *interp);
 
