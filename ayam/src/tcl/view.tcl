@@ -130,6 +130,7 @@ button $f.bok -text "Ok" -width 5 -command "\
 	$view mc;\
 	$view setconf -grid \$ay(GridSize);\
 	$view render;\
+	viewSetGridIcon [winfo toplevel $view] \$ay(GridSize);\
 	$ay(currentView) mc;\
 	update;\
 	grab release .setGrid;\
@@ -368,6 +369,8 @@ proc setViewAttr { } {
 	viewTitle .${o} $typename None
     }
 
+    viewSetGridIcon .${o} $ViewAttribData(Grid)
+
     setProp
 
     $ay(currentView) mc
@@ -386,6 +389,33 @@ proc viewRepairTitle { w type } {
    
 }
 # viewRepairTitle
+
+# viewSetGridIcon:
+#  set correct grid icon according to gridsize
+proc viewSetGridIcon { w gridsize } {
+    global ay 
+
+    if { $gridsize == 0.1 } {
+	    $w.fMenu.g configure -image ay_Grid01_img
+	} else {
+	    if { $gridsize == 0.25 } {
+		$w.fMenu.g configure -image ay_Grid025_img
+	    } else {
+		if { $gridsize == 0.5 } {
+		    $w.fMenu.g configure -image ay_Grid05_img
+		} else {
+		    if { $gridsize == 1.0 } {
+			$w.fMenu.g configure -image ay_Grid10_img
+		    } else {
+			$w.fMenu.g configure -image ay_Grid_img
+		    }
+		}
+	    }
+	}
+
+ return;
+}
+# viewSetGridIcon
 
 
 # create ViewAttr-UI

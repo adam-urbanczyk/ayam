@@ -72,7 +72,7 @@ tmpGet $ayprefs(TmpDir) tmpfile
      set command "exec "
 
      regsub -all {%s} $ayprefs(Render) $tmpfile command2
-
+     puts here
      append command $command2
      append command " &"
 
@@ -275,7 +275,34 @@ $ay(currentView) align }
 #-label "Quick Render"\
 #-command {exit}
 
+menubutton $w.fMenu.g -image ay_Grid_img -menu $w.fMenu.g.m -padx 0 -pady 0\
+-borderwidth 0
+menu $w.fMenu.g.m -tearoff 0
+$w.fMenu.g.m add command -image ay_Grid01_img -hidemargin 1 -command "\
+    $w.f3D.togl setconf -grid 0.1 -drawg 1 -ugrid 1;\
+    $w.f3D.togl render;\
+    viewSetGridIcon $w 0.1"
+$w.fMenu.g.m add command -image ay_Grid025_img -hidemargin 1 -command "\
+    $w.f3D.togl setconf -grid 0.25 -drawg 1 -ugrid 1;\
+    $w.f3D.togl render;\
+    viewSetGridIcon $w 0.25"
+$w.fMenu.g.m add command -image ay_Grid05_img -hidemargin 1 -command "\
+    $w.f3D.togl setconf -grid 0.5 -drawg 1 -ugrid 1;\
+    $w.f3D.togl render;\
+    viewSetGridIcon $w 0.5"
+$w.fMenu.g.m add command -image ay_Grid10_img -hidemargin 1 -command "\
+    $w.f3D.togl setconf -grid 1.0 -drawg 1 -ugrid 1;\
+    $w.f3D.togl render;\
+    viewSetGridIcon $w 1.0"
+$w.fMenu.g.m add command -image ay_Grid_img -hidemargin 1 -command "\
+    $w.f3D.togl setconf -grid 0.0 -drawg 0 -ugrid 0;\
+    $w.f3D.togl render;\
+    viewSetGridIcon $w 0.0"
+
+
 pack $w.fMenu.v $w.fMenu.t $w.fMenu.c -in $w.fMenu -side left
+
+pack $w.fMenu.g -in $w.fMenu -side right
 
 #pack $w.fMenu.a -in $w.fMenu -side right
 
