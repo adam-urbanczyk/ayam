@@ -1,4 +1,4 @@
-INSTALL [8. Jul 2002]
+INSTALL [17. Dec 2002]
 
 Compilation Instructions for Ayam
 ---------------------------------
@@ -115,7 +115,7 @@ variable, otherwise Ayam might not be able to load the plugins.
 
 The installation procedure will also install the current Makefile,
 that may be used to uninstall Ayam again, e.g. using:
->make -f /usr/local/lib/Makefile uninstall
+>make -f /usr/local/ayam/lib/Makefile uninstall
 
 The installation procedure also creates a shell script
 named ayam, that calls ayamsh the right way,
@@ -221,7 +221,7 @@ variable, otherwise Ayam might not be able to load the plugins.
 
 The installation procedure will also install the current Makefile,
 that may be used to uninstall Ayam again, e.g. using:
->make -f /usr/local/lib/Makefile uninstall
+>make -f /usr/local/ayam/lib/Makefile uninstall
 
 
 3. Additional Targets (Compiling Plugins)
@@ -306,8 +306,8 @@ Ayam supports the following shader parsing plugins:
 "ayslb" for Air, "ayso" for RDC, "ayslo" for PRMan, "ayslx" for Aqsis,
 and "ayslo3d" for 3Delight.
 
-In order to compile those plugins adapt the following variables
-in the Makefile: 
+In order to compile those plugins, adapt the following variables
+in the Makefile:
 AQSISDIR, AYSLXINCDIR, AYSLXLIBS, RDCDIR, AYSOINCDIR, AYSOLIBS,
 PRMANDIR, AYSLOINCDIR, AYSLOLIBS, 3DLDIR, AYSLO3INCDIR, AYSLO3DLIBS
 
@@ -338,9 +338,18 @@ like Apples mf3d code, Affines sribw code.
 >make install
 to install Ayam into the system.
 
+By default, Ayam will install into /usr/local/ayam.
+It will create some sub-directories there, namely:
+/usr/local/ayam/bin for the executable,
+/usr/local/ayam/lib for the plugins and accompanying Tcl files, and
+/usr/local/ayam/doc for the documentation.
+
+You may want to add "/usr/local/ayam/bin" to your PATH variable.
+Be sure to also add "." or "/usr/local/ayam/lib" to your LD_LIBRARY_PATH
+variable, otherwise Ayam might not be able to load the plugins.
+
 The installation procedure will also install the current Makefile,
 that may be used to uninstall Ayam again, e.g. using:
->make -f /usr/local/lib/Makefile uninstall
+>make -f /usr/local/ayam/lib/Makefile uninstall
 
 End of Compilation Instructions
-
