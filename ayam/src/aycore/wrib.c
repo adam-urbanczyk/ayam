@@ -1172,40 +1172,6 @@ ay_wrib_scene(char *file, char *image, double *from, double *to,
  char *objfile = NULL, *pos = NULL;
  int filenlen = 0;
 
- if(!ay_prefs.resolveinstances)
-  {
-    /* reset oid counter */
-    ay_instt_createoid(NULL);
-    /* create OI tags for all original (referenced) objects */
-    ay_status = ay_instt_createorigids(o);
-    /* create OI tags for all instance (referencing) objects */
-    /*ay_status = ay_instt_createinstanceids(o);*/
-    /* write archive files for all original (referenced) objects */
-    ay_status = ay_instt_wribiarchives(file, o);
-  }
-
-  ay_wrib_framenum = 1;
-
-  /* assemble args */
-  aspect = (RtFloat)(width/((double)height));
-
-  f[0] = (RtFloat) from[0];
-  f[1] = (RtFloat) from[1];
-  f[2] = (RtFloat) from[2];
-
-  t[0] = (RtFloat) to[0];
-  t[1] = (RtFloat) to[1];
-  t[2] = (RtFloat) to[2];
-
-  d[0] = (RtFloat)(to[0] - from[0]);
-  d[1] = (RtFloat)(to[1] - from[1]);
-  d[2] = (RtFloat)(to[2] - from[2]);
-
-  if(!file) /* dump .rib to stdout? */
-    RiBegin(RI_NULL);
-  else
-    RiBegin(file);
-
   /* create obj-file name (for use with ShadowMaps) */
   if(ay_prefs.use_sm >= 1)
     {
@@ -1231,6 +1197,47 @@ ay_wrib_scene(char *file, char *image, double *from, double *to,
 	  sprintf(objfile, "%s.obj.rib", file);
 	}
     } /* if */
+
+ if(!ay_prefs.resolveinstances)
+  {
+    /* reset oid counter */
+    ay_instt_createoid(NULL);
+    /* create OI tags for all original (referenced) objects */
+    ay_status = ay_instt_createorigids(o);
+    /* create OI tags for all instance (referencing) objects */
+    /*ay_status = ay_instt_createinstanceids(o);*/
+    /* write archive files for all original (referenced) objects */
+    if(ay_prefs.use_sm >= 1)
+      {
+	ay_status = ay_instt_wribiarchives(objfile, o);
+      }
+    else
+      {
+	ay_status = ay_instt_wribiarchives(file, o);
+      }
+  }
+
+  ay_wrib_framenum = 1;
+
+  /* assemble args */
+  aspect = (RtFloat)(width/((double)height));
+
+  f[0] = (RtFloat) from[0];
+  f[1] = (RtFloat) from[1];
+  f[2] = (RtFloat) from[2];
+
+  t[0] = (RtFloat) to[0];
+  t[1] = (RtFloat) to[1];
+  t[2] = (RtFloat) to[2];
+
+  d[0] = (RtFloat)(to[0] - from[0]);
+  d[1] = (RtFloat)(to[1] - from[1]);
+  d[2] = (RtFloat)(to[2] - from[2]);
+
+  if(!file) /* dump .rib to stdout? */
+    RiBegin(RI_NULL);
+  else
+    RiBegin(file);
 
   /* write shadow maps */
   if(ay_prefs.use_sm == 1)
@@ -1394,28 +1401,6 @@ ay_wrib_sm(char *file, char *image, int width, int height)
  char *objfile = NULL, *pos = NULL;
  int filenlen = 0;
 
- if(!ay_prefs.resolveinstances)
-  {
-    /* reset oid counter */
-    ay_instt_createoid(NULL);
-    /* create OI tags for all original (referenced) objects */
-    ay_status = ay_instt_createorigids(o);
-    /* create OI tags for all instance (referencing) objects */
-    /*ay_status = ay_instt_createinstanceids(o);*/
-    /* write archive files for all original (referenced) objects */
-    ay_status = ay_instt_wribiarchives(file, o);
-  }
-
-  ay_wrib_framenum = 1;
-
-  if(!file) /* dump .rib to stdout? */
-    RiBegin(RI_NULL);
-  else
-    RiBegin(file);
-
-  /* inform other code that we write shadow maps now */
-  ay_prefs.wrib_sm = AY_TRUE;
-
   filenlen = strlen(file);
 
   if(!(objfile = calloc(filenlen+64, sizeof(char))))
@@ -1435,6 +1420,28 @@ ay_wrib_sm(char *file, char *image, int width, int height)
     {
       sprintf(objfile, "%s.obj.rib", file);
     }
+
+ if(!ay_prefs.resolveinstances)
+  {
+    /* reset oid counter */
+    ay_instt_createoid(NULL);
+    /* create OI tags for all original (referenced) objects */
+    ay_status = ay_instt_createorigids(o);
+    /* create OI tags for all instance (referencing) objects */
+    /*ay_status = ay_instt_createinstanceids(o);*/
+    /* write archive files for all original (referenced) objects */
+    ay_status = ay_instt_wribiarchives(objfile, o);
+  }
+
+  ay_wrib_framenum = 1;
+
+  if(!file) /* dump .rib to stdout? */
+    RiBegin(RI_NULL);
+  else
+    RiBegin(file);
+
+  /* inform other code that we write shadow maps now */
+  ay_prefs.wrib_sm = AY_TRUE;
 
   /* write RiHider tags */
   ay_wrib_hidertags();
