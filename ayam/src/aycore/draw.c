@@ -200,13 +200,18 @@ ay_draw_view(struct Togl *togl)
       if(!view->drawlevel)
 	ay_trafo_getall(ay_currentlevel->next);
 
-      while(sel)
-	{
-	  ay_status = ay_draw_object(togl, sel->object, AY_TRUE);
-	  sel = sel->next;
-	} /* while */
+      /* let selected objects appear "on top" of current drawing */
+      glDisable(GL_DEPTH_TEST);
+       while(sel)
+	 {
+	   ay_status = ay_draw_object(togl, sel->object, AY_TRUE);
+	   sel = sel->next;
+	 } /* while */
+      glEnable(GL_DEPTH_TEST);
 
-      /* let all handles appear "on top" of current drawing */
+      /* let all handles appear "on top" of current drawing,    */
+      /* we can't use the glDisable(GL_DEPTH_TEST);-method here */
+      /* because we need the Z-values for vertice picking...    */
       glClear(GL_DEPTH_BUFFER_BIT);
 
       /* draw handles of selected objects */
