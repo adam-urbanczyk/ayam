@@ -379,8 +379,8 @@ ay_init(Tcl_Interp *interp)
 
   ay_prefs.list_types = AY_TRUE;
 
-  ay_prefs.sm = 3;
-  ay_prefs.smparam = 10;
+  ay_prefs.smethod = 3;
+  ay_prefs.sparam = 10;
 
   if(!(ay_prefs.logfile = calloc(strlen(ay_log)+1, sizeof(char))))
     return AY_EOMEM;

@@ -3202,7 +3202,7 @@ ay_npt_tpmenddata(void *userData)
  *  smparam - sampling method parameter
  */
 int
-ay_npt_topolymesh(ay_object *o, int sm, double smparam,
+ay_npt_topolymesh(ay_object *o, int smethod, double sparam,
 		  ay_object **pm)
 {
 #ifndef GLU_VERSION_1_3
@@ -3323,30 +3323,30 @@ ay_npt_topolymesh(ay_object *o, int sm, double smparam,
 
   gluNurbsProperty(npatch->no, GLU_DISPLAY_MODE, GLU_FILL);
 
-  if(sm == 1)
+  if(smethod == 1)
     {
       gluNurbsProperty(npatch->no, GLU_SAMPLING_METHOD,
 		       GLU_OBJECT_PARAMETRIC_ERROR);
       gluNurbsProperty(npatch->no, GLU_PARAMETRIC_TOLERANCE,
-		       (GLfloat)smparam);
+		       (GLfloat)sparam);
     }
 
-  if(sm == 2)
+  if(smethod == 2)
     {
       gluNurbsProperty(npatch->no, GLU_SAMPLING_METHOD,
 		       GLU_OBJECT_PATH_LENGTH);
       gluNurbsProperty(npatch->no, GLU_SAMPLING_TOLERANCE,
-		       (GLfloat)smparam);
+		       (GLfloat)sparam);
     }
 
-  if(sm == 3)
+  if(smethod == 3)
     {
       gluNurbsProperty(npatch->no, GLU_SAMPLING_METHOD,
 		       GLU_DOMAIN_DISTANCE);
       gluNurbsProperty(npatch->no, GLU_U_STEP,
-		       (GLfloat)smparam);
+		       (GLfloat)sparam);
       gluNurbsProperty(npatch->no, GLU_V_STEP,
-		       (GLfloat)smparam);
+		       (GLfloat)sparam);
     }
   
   /*
@@ -3521,22 +3521,22 @@ ay_npt_topolytcmd(ClientData clientData, Tcl_Interp *interp,
  char fname[] = "topoly";
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL, *new = NULL;
- double smparam = 100.0;
- int sm = 3;
+ double sparam = ay_prefs.sparam;
+ int smethod = ay_prefs.smethod;
 
  if(argc > 1)
    {
-     Tcl_GetInt(interp, argv[1], &sm);
+     Tcl_GetInt(interp, argv[1], &smethod);
 
-     if(sm == 1)
-       smparam = 0.5;
+     if(smethod == 1)
+       sparam = 0.5;
 
-     if(sm == 2)
-       smparam = 50.0;
+     if(smethod == 2)
+       sparam = 50.0;
 
      if(argc > 2)
        {
-	 Tcl_GetDouble(interp, argv[2], &smparam);
+	 Tcl_GetDouble(interp, argv[2], &sparam);
        }
    }
 
@@ -3547,7 +3547,7 @@ ay_npt_topolytcmd(ClientData clientData, Tcl_Interp *interp,
       if(o->type == AY_IDNPATCH)
 	{
 	  new = NULL;
-	  ay_status = ay_npt_topolymesh(o, sm, smparam, &new);
+	  ay_status = ay_npt_topolymesh(o, smethod, sparam, &new);
 	  if(!ay_status)
 	    {
 	      ay_object_link(new);
