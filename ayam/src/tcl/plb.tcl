@@ -325,6 +325,7 @@ if { [llength $index] == 1 } {
 	    if { $ayprefs(AutoResize) == 1 } {
 		plb_resize
 	    }
+	    # update omit array
 	    if { [array exists pclip_omit] } {
 		unset pclip_omit
 		set labels [array names pclip_omit_label]
@@ -337,7 +338,12 @@ if { [llength $index] == 1 } {
 		array set pclip_omit { }
 		array set pclip_omit_label { }
 	    }
-	    #if
+	    # improve focus traversal (speed-wise)
+	    if { $ay(lb) == 1 } {
+		bind $ay(olb) <Tab> "focus [tk_focusNext $ay(pca).$w];break"
+	    } else {
+		bind $ay(tree) <Tab> "focus [tk_focusNext $ay(pca).$w];break"
+	    }
 	}
 	#if
     }
