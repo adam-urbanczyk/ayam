@@ -520,6 +520,13 @@ View Actions (View Windows):
  Zoom out View       $ayviewshortcuts(ZoomO)
  Zoom View           Mouse-$ayviewshortcuts(ZoomVButton)
 
+Function Keys (View Windows):
+
+ Adjust NURBS Sampling Rate: ${aymainshortcuts(SetSTL)} / ${aymainshortcuts(SetSTP)}
+ Toggle Wire/NURBS:          ${aymainshortcuts(SwWire)} / ${aymainshortcuts(SwNURBS)}
+ Toggle Lazy Notification    ${aymainshortcuts(SwLazyNotify)} 
+
+
 See the reference card in the docs
 folder for a printable and more
 complete version.
