@@ -392,13 +392,14 @@ typedef struct ay_text_object_s
   char *fontname;
   char *string;
   double height;
-  int revert;
   int has_upper_cap;
   int has_lower_cap;
   int has_upper_bevels;
   int has_lower_bevels;
   int bevel_type;
   double bevel_radius;
+  int revert_bevels;
+
   ay_object *npatch;
   double glu_sampling_tolerance;
   int glu_display_mode;
