@@ -1,0 +1,134 @@
+[Setup, 02. 10. 2001]
+
+Setup instructions for Ayam
+---------------------------
+
+The executable of Ayam is located in the directory named "bin".
+On Win32 platforms (Windows 95 - Windows 2000) always use the
+accompanying shell script "ayam.bat" to start Ayam.
+On first start of this executable, the following things have to be done:
+
+  1. Saving preferences
+  2. Determining type of window manager (UNIX only)
+  3. Setting up shaders	
+  4. Creating and saving a working environment
+
+Do not worry about any error messages in red color, that appear
+in the console on first startup. We are going to fix them now.
+
+
+1. Saving preferences
+---------------------
+
+Preference settings (Menu: "Edit/Preferences") are normally
+automatically saved on exit of the application.
+You can switch off automatic saving of preferences on exit in the
+preference settings (Pref: "Main/AutoSavePrefs").
+If you switched off AutoSavePrefs, you can force saving of the
+preferences using the menu entry "File/Save Prefs".
+
+The preferences (including the geometry of the main window and the toolbox
+and some other stuff) are saved to the file:
+UNIX: "~/.ayamrc"
+Win32: "$(HOME)/ayamrc" if the environment variable "HOME" exists
+       "$(TEMP)/ayamrc" else
+
+The following steps need to be done if you (for some reason)
+do not like it that way, or the preferences end up in silly
+places (e.g. Win95 is setting your $(HOME) to "C:/", so that
+the preferences end up in "C:/ayamrc"...).
+However, if anything is fine with you, just skip to Step 2 now.
+
+You can change the filename of the preference settings
+using the environment variable "AYAMRC".
+How do you set an environment variable?
+
+UNIX: add to your profile:
+ csh/tcsh: setenv AYAMRC /home/user/.myayamrc
+ bash/ksh/zsh: export AYAMRC=/home/user/.myayamrc
+
+Win32: edit the script "ayam.bat":
+ o remove the leading ";" from the line ";SET AYAMRC=C:/ayam/myayamrc"
+ o and change the path to a more appropriate setting
+
+ Alternatively:
+
+ WinNT/2000: open Start/Settings/Control-Panel/System/Environment
+             o Add a new Variable "AYAMRC"
+             o Set it e.g. to C:/ayam/myayamrc
+ Win95/98/ME: add to the file "C:/autoexec.bat" the line:
+              SET AYAMRC=C:/ayam/myayamrc
+
+Remember: NEVER use backslashes (\) in any path or filename you enter to Ayam.
+
+You have to restart Ayam in order for these changes to take effect.
+
+
+2. Determining type of window manager (UNIX only)
+-------------------------------------------------
+
+These steps need just to be performed on UNIX.
+For Win32 skip to step 3.
+
+Unfortunately, different window managers on UNIX report
+different geometries of top level windows, some include
+the decoration, some do not..
+If the main window jumps when you select the first property
+of the "Root" object your WM is "twm-compatible".
+To check this, just click on "Root" in the tree view,
+then on "RiOptions" in the listbox to the right and watch
+your main window.
+If it jumps downward, you should set "TwmCompat" to "on" in the
+preferences!
+If you fail to correctly determine the type of your window
+manager, the geometry of the main window and the toolbox
+will be wrong after restart of Ayam. Furthermore, the main
+window may jump, each time a new property is selected.
+
+
+3. Setting up shaders
+---------------------
+
+What are shaders? For the moment, we can safely assume that
+shaders are small files that carry material descriptions.
+Shaders come with your RenderMan compatible renderer (e.g. BMRT),
+but you may also create your own of course.
+Currently, Ayam can only work with shaders that have been
+compiled with "slc" from BMRT, so you should get and
+install BMRT from http://www.exluna.com/.
+You need to point Ayam to the directories where your slc-compiled
+shaders reside in order to use them with the material
+objects in Ayam.
+This is done using the preference setting "Main/Shaders".
+Just open the preferences, enter the appropriate paths
+into the string entry (separated by ":" on UNIX and ";" on Win32),
+and then press "Scan Shaders".
+Watch the console for error messages.
+
+Remember: NEVER use backslashes (\) in any path or filename you enter to Ayam.
+
+4. Creating and saving a working environment
+--------------------------------------------
+
+o Open and arrange as many views as you like using the
+  menu entry "Create/View".
+  [If Ayam crashes or blocks during opening of a view
+   something with your OpenGL setup is seriously broken.
+   Fix this, then return here.]
+o Save the scene using the menu entry "File/Save as" to
+  the filename that is given in the preference setting
+  "Main/EnvFile". The default setting is "~/.ayam2view.ay".
+  Change it as you like, but remember to save preferences
+  in order to let this change take effect.
+  Do not switch off the preference setting "Main/LoadEnv",
+  as this would inhibit automatic loading of the working
+  environment on startup.
+
+
+Quit the application and start it again; then
+download "Tutorial #1" and do it.
+
+End of setup instructions.
+
+-- 
+http://www.ayam3d.org/    Reconstruct the World!
