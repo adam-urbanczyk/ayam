@@ -1,3 +1,5 @@
+#ifndef __ppoh_h__
+#define __ppoh_h__
 /*
  * Ayam, a free 3D modeler for the RenderMan interface.
  *
@@ -11,6 +13,10 @@
  */
 
 #include "ayam.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
 
 /* ppoh.h - pretty print object hierarchies (for debugging purposes) */
 
@@ -28,3 +34,10 @@ int ay_ppoh_printtcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
 
 int ay_ppoh_init(Tcl_Interp *interp);
+
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
+
+#endif /* __ppoh_h__ */
