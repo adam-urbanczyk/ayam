@@ -257,6 +257,12 @@ int ay_nct_curvplottcmd(ClientData clientData, Tcl_Interp *interp,
 
 int ay_nct_makecompatible(ay_object *cu);
 
+int ay_nct_shiftcbs(ay_nurbcurve_object *curve);
+
+int ay_nct_shiftcbstcmd(ClientData clientData, Tcl_Interp *interp,
+		     int argc, char *argv[]);
+
+
 /* npt.c */
 int ay_npt_create(int uorder, int vorder, int width, int height,
 		  int uknot_type, int vknot_type,
