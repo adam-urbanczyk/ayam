@@ -737,6 +737,9 @@ void ay_wrib_displaytags(void);
 
 void ay_wrib_hidertags(void);
 
+int ay_wrib_tcmd(ClientData clientData, Tcl_Interp * interp,
+		 int argc, char *argv[]);
+
 #ifdef AYENABLEPPREV
 int ay_wrib_pprevdraw(ay_view_object *view);
 
