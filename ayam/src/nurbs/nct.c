@@ -4058,10 +4058,14 @@ ay_nct_makecompatible(ay_object *cu)
 	{
 	  goto cleanup;
 	}
+
+      if(curve->mpoints)
+	ay_status = ay_nct_recreatemp(curve);
+
       o = o->next;
     } /* while */
 
- cleanup:
+cleanup:
 
   if(Ubar)
     free(Ubar);
