@@ -427,7 +427,7 @@ ay_birail2_notifycb(ay_object *o)
       ay_status = ay_provide_object(curve2, AY_IDNCURVE, &pobject2);
       if(!pobject2)
 	{
-	  return AY_OK;
+	  goto cleanup;
 	}
       else
 	{
@@ -445,7 +445,7 @@ ay_birail2_notifycb(ay_object *o)
       ay_status = ay_provide_object(curve3, AY_IDNCURVE, &pobject3);
       if(!pobject3)
 	{
-	  return AY_OK;
+	  goto cleanup;
 	}
       else
 	{
@@ -463,7 +463,7 @@ ay_birail2_notifycb(ay_object *o)
       ay_status = ay_provide_object(curve4, AY_IDNCURVE, &pobject4);
       if(!pobject4)
 	{
-	  return AY_OK;
+	  goto cleanup;
 	}
       else
 	{
@@ -475,7 +475,7 @@ ay_birail2_notifycb(ay_object *o)
   /* birail2 */
   if(!(npatch = calloc(1, sizeof(ay_object))))
     {
-      return AY_ERROR;
+      ay_status = AY_EOMEM; goto cleanup;
     }
 
   ay_object_defaults(npatch);
@@ -488,17 +488,18 @@ ay_birail2_notifycb(ay_object *o)
 			   birail2->has_end_cap, &(birail2->end_cap));
 
   if(ay_status)
-    return ay_status;
+    goto cleanup;
 
-  /* copy sampling tolerance/mode over to new objects */
   birail2->npatch = npatch;
+  npatch = NULL;
 
-  ((ay_nurbpatch_object *)npatch->refine)->glu_sampling_tolerance =
+  /* copy sampling tolerance/mode attributes over to birail */
+  ((ay_nurbpatch_object *)birail2->npatch->refine)->glu_sampling_tolerance =
     tolerance;
-  ((ay_nurbpatch_object *)npatch->refine)->glu_display_mode =
+  ((ay_nurbpatch_object *)birail2->npatch->refine)->glu_display_mode =
     mode;
 
-  /* create caps */
+  /* copy sampling tolerance/mode attributes to caps */
   if(birail2->start_cap)
     {
       ((ay_nurbpatch_object *)
@@ -536,6 +537,9 @@ cleanup:
     {
       ay_object_delete(pobject4);
     }
+
+  if(npatch)
+    free(npatch);
 
  return AY_OK;
 } /* ay_birail2_notifycb */
