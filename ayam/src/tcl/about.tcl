@@ -163,7 +163,7 @@ bind $w.ftext.text <ButtonPress-4>\
 bind $w.ftext.text <ButtonPress-5>\
 "$w.ftext.text yview scroll 1 pages; break"
 
-button $w.fbutton.b -text "Dismiss" -command "destroy $w"
+button $w.fbutton.b -text "Dismiss" -pady $ay(pady) -command "destroy $w"
 pack $w.fbutton.b -in $w.fbutton
 
 }
