@@ -5217,7 +5217,7 @@ ay_npt_gordonwc(ay_object *g)
  *   ignored for the extraction of boundary curves
  */
 int
-ay_npt_extractnc(ay_object *npatch, int side, double param,
+ay_npt_extractnc(ay_object *npatch, int side, double param, int apply_trafo,
 		 ay_nurbcurve_object **result)
 {
  int ay_status = AY_OK;
@@ -5402,12 +5402,15 @@ ay_npt_extractnc(ay_object *npatch, int side, double param,
     } /* switch */
 
   /* apply trafos */
-  cv = nc->controlv;
-  a = 0;
-  for(i = 0; i < nc->length; i++)
+  if(apply_trafo)
     {
-      ay_trafo_apply4(&(cv[a]), m);
-      a += stride;
+      cv = nc->controlv;
+      a = 0;
+      for(i = 0; i < nc->length; i++)
+	{
+	  ay_trafo_apply4(&(cv[a]), m);
+	  a += stride;
+	}
     }
 
   /* return result */

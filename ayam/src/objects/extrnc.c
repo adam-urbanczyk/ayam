@@ -345,6 +345,7 @@ ay_extrnc_notifycb(ay_object *o)
   ncurve->type = AY_IDNCURVE;
 
   ay_status = ay_npt_extractnc(npatch, extrnc->side, extrnc->parameter,
+			       AY_FALSE,
 			       (ay_nurbcurve_object **)(&(ncurve->refine)));
 
   if(ay_status || !ncurve->refine)
@@ -352,7 +353,10 @@ ay_extrnc_notifycb(ay_object *o)
 
   extrnc->ncurve = ncurve;
 
-  /* copy sampling tolerance/mode over to new objects */
+  /* copy transformation attributes over to new object */
+  ay_trafo_copy(npatch, ncurve);
+
+  /* copy sampling tolerance/mode over to new object */
   ((ay_nurbcurve_object *)ncurve->refine)->glu_sampling_tolerance =
     tolerance;
   ((ay_nurbcurve_object *)ncurve->refine)->display_mode =
