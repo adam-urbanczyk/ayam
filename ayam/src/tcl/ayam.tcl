@@ -400,7 +400,7 @@ array set ay {
  glu_ext ""
  action 0
  uc 0
- smethods { PathDistance ParametricError DomainDistance }
+ smethods { PathLength ParametricError DomainDistance }
 }
 # array ay
 
