@@ -1044,6 +1044,7 @@ ayam_loadscript uie
 ayam_loadscript shortcut
 ayam_loadscript ms
 ayam_loadscript birail1
+ayam_loadscript birail2
 ayam_loadscript box
 ayam_loadscript bpatch
 ayam_loadscript camera

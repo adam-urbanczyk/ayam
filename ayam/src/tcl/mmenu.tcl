@@ -286,6 +286,7 @@ $m.nct add command -label "Skin" -command "skin_crt;"
 $m.nct add command -label "Gordon" -command "gordon_crt;"
 $m.nct add command -label "Cap" -command "cap_crt;"
 $m.nct add command -label "Birail1" -command "birail1_crt;"
+$m.nct add command -label "Birail2" -command "birail2_crt;"
 $m.nct add separator
 $m.nct add command -label "Revert" -command { undo save Revert; revertNC;
                                               plb_update; rV }

@@ -16,7 +16,8 @@
 
 /*
  * Quaternion code adapted from various articles
- * from c.g.a.opengl and from GLUT example code
+ * from news:c.g.a.opengl, from GLUT example code (trackball.c),
+ * and from the Irrlicht Engine (quaternion.h)
  */
 
 #define AY_QEPSILON (1.0e-05)
@@ -204,3 +205,75 @@ ay_quat_toeuler(double q[4], double euler[3])
 
  return;
 } /* ay_quat_toeuler */
+
+
+/* ay_quat_slerp:
+ *
+ */
+int
+ay_quat_slerp(double time, double q1[4], double q2[4], double *r)
+{
+ double angle = 0.0, scale = 0.0, invscale = 0.0;
+ double theta, invsintheta;
+
+  if(!r)
+    return AY_ENULL;
+
+  angle =  ay_quat_dot(q1, q2);
+ 
+  if(angle < 0.0f) 
+    {
+      q1[0] *= -1.0f;
+      q1[1] *= -1.0f;
+      q1[2] *= -1.0f;
+      q1[3] *= -1.0f;
+      angle *= -1.0f;
+    }
+ 
+  if((angle + 1.0f) > 0.05f) 
+    {
+      if((1.0f - angle) >= 0.05f)
+	{
+	  /* spherical interpolation */
+	  theta = acos(angle);
+	  invsintheta = 1.0f / sin(theta);
+	  scale = sin(theta * (1.0f-time)) * invsintheta;
+	  invscale = sin(theta * time) * invsintheta;
+	}
+      else
+	{
+	  /* linear interploation */
+	  scale = 1.0f - time;
+	  invscale = time;
+	}
+    }
+  else 
+    {
+      /*q2 = quaternion(-q1.Y, q1.X, -q1.W, q1.Z);*/
+      q2[0] = -q1[1];
+      q2[1] = q1[0];
+      q2[2] = -q1[3];
+      q2[3] = q1[2];
+      scale = sin(AY_PI * (0.5f - time));
+      invscale = sin(AY_PI * time);
+    }
+ 
+  /**this = (q1*scale) + (q2*invscale);*/
+  r[0] = (q1[0]*scale) + (q2[0]*invscale);
+  r[1] = (q1[1]*scale) + (q2[1]*invscale);
+  r[2] = (q1[2]*scale) + (q2[2]*invscale);
+  r[3] = (q1[3]*scale) + (q2[3]*invscale);
+
+ return AY_OK;
+} /* ay_quat_slerp */
+
+
+/* ay_quat_dot:
+ *
+ */
+double
+ay_quat_dot(double q1[4], double q2[4])
+{
+  return((q1[0] * q2[0]) + (q1[1] * q2[1]) +
+    (q1[2] * q2[2]) + (q1[3] * q2[3]));
+} /* ay_quat_dot */
