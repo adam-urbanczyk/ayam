@@ -304,3 +304,30 @@ proc plb_resize { } {
 
 }
 # plb_resize
+
+
+# plb_focus:
+#  this proc is bound to the Tab-key and scrolls the property
+#  canvas to display the new item that gets the focus if it is
+#  outside the current visible region of the canvas
+proc plb_focus { } {
+    global ay
+    set w [focus]
+    if { $w != "" } {
+	if { [string first $ay(pca) $w] != -1} {
+	    set ca $ay(pca)
+	    set height [$ca cget -height]
+	    set visible [$ca yview]
+	    set wypos [winfo y [winfo parent $w]]
+	    set fraction [expr (double($wypos) +\
+	    double([winfo reqheight $w]))/double($height)]
+	    if { ($fraction < [lindex $visible 0]) ||
+	         ($fraction > [lindex $visible 1]) } {
+		     set fraction [expr double($wypos)/double($height)]
+		     $ca yview moveto $fraction
+	    }
+	
+	}
+    }
+}
+# plb_focus
