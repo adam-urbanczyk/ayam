@@ -42,12 +42,15 @@ ay_pomesh_deletecb(void *c)
 
   pomesh = (ay_pomesh_object *)(c);
 
+  /* free nloops */
   if(pomesh->nloops)
     free(pomesh->nloops);
 
+  /* free nverts */
   if(pomesh->nverts)
     free(pomesh->nverts);
 
+  /* free verts */
   if(pomesh->verts)
     free(pomesh->verts);
 
@@ -94,7 +97,7 @@ ay_pomesh_copycb(void *src, void **dst)
       if(!(pomesh->nloops = calloc(pomeshsrc->npolys, sizeof(unsigned int))))
 	return AY_EOMEM;
       memcpy(pomesh->nloops, pomeshsrc->nloops,
-	     pomesh->npolys*sizeof(unsigned int));
+	     pomesh->npolys * sizeof(unsigned int));
     }
 
 
@@ -110,16 +113,16 @@ ay_pomesh_copycb(void *src, void **dst)
 	return AY_EOMEM;
       memcpy(pomesh->nverts, pomeshsrc->nverts,
 	     total_loops * sizeof(unsigned int));
-    }
 
-  for(i = 0; i < total_loops; i++)
-    {
-      total_verts += pomeshsrc->nverts[i];
-    } /* for */
-
+      for(i = 0; i < total_loops; i++)
+	{
+	  total_verts += pomeshsrc->nverts[i];
+	} /* for */
+    } /* if */
+  
+  /* copy verts */
   if(pomeshsrc->verts)
     {
-      /* copy verts */
       if(!(pomesh->verts = calloc(total_verts, sizeof(unsigned int))))
 	return AY_EOMEM;
       memcpy(pomesh->verts, pomeshsrc->verts,
@@ -172,27 +175,35 @@ ay_pomesh_drawcb(struct Togl *togl, ay_object *o)
 	   for(k = 0; k < pomesh->nverts[j]; k++)
 	    {
 	      a = pomesh->verts[l++];
-	      glVertex3dv((GLdouble*)(&(pomesh->controlv[a*3])));
+	      glVertex3dv((GLdouble*)(&(pomesh->controlv[a * 3])));
 	    }
 	  glEnd();
 	} /* for */
     } /* for */
 
-
  return AY_OK;
 } /* ay_pomesh_drawcb */
-
 
 int
 ay_pomesh_shadecb(struct Togl *togl, ay_object *o)
 {
+ int ay_status = AY_OK;
  ay_pomesh_object *pomesh = NULL;
-
+ /*
+ int i = 0, j = 0, k = 0, l = 0;
+ unsigned int a;
+ GLUtesselator *tess;
+ */
   if(!o)
     return AY_ENULL;
 
   pomesh = (ay_pomesh_object *)(o->refine);
 
+  if(1/*o->modified*/)
+    {
+      ay_status = ay_pomesht_tesselate(pomesh);
+    }
+ 
  return AY_OK;
 } /* ay_pomesh_shadecb */
 
