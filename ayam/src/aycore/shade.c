@@ -173,7 +173,7 @@ ay_shade_view(struct Togl *togl)
     {
       o = ay_currentlevel->object;
       glPushMatrix();
-      ay_trafo_getall(ay_currentlevel);
+      ay_trafo_getall(ay_currentlevel->next);
     }
 
   if(!view->drawsel)
@@ -184,7 +184,7 @@ ay_shade_view(struct Togl *togl)
 	  o = o->next;
 	} /* while */
     } /* if */
-  
+
   if(sel)
     { /* process the selected objects */
 
@@ -204,64 +204,68 @@ ay_shade_view(struct Togl *togl)
 	} /* if */
 
       /* draw handles of selected objects */
-
-      /* let all handles appear "on top" of current drawing         */
-      /* Do we really want this? In a shaded view, the user expects */
-      /* probably removal of hidden bits. On the other hand, he     */
-      /* might not be able to reach all handles he wants to then.   */
-      glClear(GL_DEPTH_BUFFER_BIT);
-
-      /* set size of points */
-      glPointSize((GLfloat)ay_prefs.handle_size);
-
-      /* set color for selected objects */
-      glColor3d((GLdouble)ay_prefs.ser, (GLdouble)ay_prefs.seg,
-		(GLdouble)ay_prefs.seb);
-      glDisable(GL_LIGHTING);
-
-      arr = ay_drawhcbt.arr;
-      sel = ay_selection;
-
-      while(sel)
+      if(view->drawhandles)
 	{
-	  o = sel->object;
+	  /* let all handles appear "on top" of current drawing         */
+	  /* Do we really want this? In a shaded view, the user expects */
+	  /* probably removal of hidden bits. On the other hand, he     */
+	  /* might not be able to reach all handles he wants to then.   */
+	  glClear(GL_DEPTH_BUFFER_BIT);
 
-	  if(!o->hide)
+	  glDisable(GL_LIGHTING);
+
+	  /* set size of points */
+	  glPointSize((GLfloat)ay_prefs.handle_size);
+
+	  /* set color for selected objects */
+	  glColor3d((GLdouble)ay_prefs.ser, (GLdouble)ay_prefs.seg,
+		    (GLdouble)ay_prefs.seb);
+	  
+	  arr = ay_drawhcbt.arr;
+	  sel = ay_selection;
+
+	  while(sel)
 	    {
-	      glPushMatrix();
+	      o = sel->object;
 
-	       glTranslated((GLdouble)o->movx, (GLdouble)o->movy,
-			    (GLdouble)o->movz);
-	       ay_quat_torotmatrix(o->quat, m);
-	       glMultMatrixd((GLdouble*)m);
-	       glScaled((GLdouble)o->scalx, (GLdouble)o->scaly,
-			(GLdouble)o->scalz);
+	      if(!o->hide)
+		{
+		  glPushMatrix();
+
+		  glTranslated((GLdouble)o->movx, (GLdouble)o->movy,
+			       (GLdouble)o->movz);
+		  ay_quat_torotmatrix(o->quat, m);
+		  glMultMatrixd((GLdouble*)m);
+		  glScaled((GLdouble)o->scalx, (GLdouble)o->scaly,
+			   (GLdouble)o->scalz);
   
-	       cb = (ay_drawcb *)(arr[o->type]);
+		  cb = (ay_drawcb *)(arr[o->type]);
 
-	       if(cb)
-		 {
-		   ay_status = cb(togl, o);
-		 }
+		  if(cb)
+		    {
+		      ay_status = cb(togl, o);
+		    }
 
-	       /* draw selected points */
-	       if(o->selp)
-		 ay_draw_selp(o);
+		  /* draw selected points */
+		  if(o->selp)
+		    ay_draw_selp(o);
 
-	      glPopMatrix();
-	    }
-	sel = sel->next;
-      } /* while */
-
+		  glPopMatrix();
+		}
+	      sel = sel->next;
+	    } /* while */
+	} /* if */
       glPopMatrix();
     } /* if */
+
+  glDisable(GL_LIGHTING);
 
   /* draw rectangle */
   if(view->drawrect)
     {
       glColor3d((GLdouble)ay_prefs.tpr, (GLdouble)ay_prefs.tpg,
 		(GLdouble)ay_prefs.tpb);
-
+      glDisable(GL_DEPTH_TEST);
       glMatrixMode(GL_PROJECTION);
       glPushMatrix();
        glLoadIdentity();
@@ -278,6 +282,7 @@ ay_shade_view(struct Togl *togl)
        glPopMatrix();
        glMatrixMode(GL_PROJECTION);
       glPopMatrix();
+      glEnable(GL_DEPTH_TEST);
     } /* if */
 
   /* draw marker */
@@ -298,7 +303,6 @@ ay_shade_view(struct Togl *togl)
 	 glVertex3d(view->markx+4.0, height-view->marky, 0.0);
 	 glVertex3d(view->markx, height-view->marky+3.0, 0.0);
 	 glVertex3d(view->markx, height-view->marky-4.0, 0.0);
-
 	glEnd();
        glPopMatrix();
        glMatrixMode(GL_PROJECTION);
@@ -309,6 +313,7 @@ ay_shade_view(struct Togl *togl)
 
   if(view->drawlevel)
     {
+      glMatrixMode(GL_MODELVIEW);
       glPopMatrix();
     }
 

@@ -27,6 +27,7 @@ ay_draw_selp(ay_object *o)
   if(o->selp)
     {
       glDisable(GL_DEPTH_TEST);
+
       /* set color for selected points */
       glColor3d((GLdouble)ay_prefs.tpr, (GLdouble)ay_prefs.tpg,
 		(GLdouble)ay_prefs.tpb);
@@ -208,48 +209,51 @@ ay_draw_view(struct Togl *togl)
 	 } /* while */
       glEnable(GL_DEPTH_TEST);
 
-      /* let all handles appear "on top" of current drawing,    */
-      /* we can't use the glDisable(GL_DEPTH_TEST);-method here */
-      /* because we need the Z-values for vertice picking...    */
-      glClear(GL_DEPTH_BUFFER_BIT);
-
       /* draw handles of selected objects */
-      glPointSize((GLfloat)ay_prefs.handle_size);
-
-      arr = ay_drawhcbt.arr;
-      sel = ay_selection;
-
-      while(sel)
+      if(view->drawhandles)
 	{
-	  o = sel->object;
+	  /* let all handles appear "on top" of current drawing,    */
+	  /* we can't use the glDisable(GL_DEPTH_TEST);-method here */
+	  /* because we need the Z-values for vertice picking...    */
+	  glClear(GL_DEPTH_BUFFER_BIT);
 
-	  if(!o->hide)
+	  /* set size of points */
+	  glPointSize((GLfloat)ay_prefs.handle_size);
+
+	  arr = ay_drawhcbt.arr;
+	  sel = ay_selection;
+
+	  while(sel)
 	    {
-	      glPushMatrix();
+	      o = sel->object;
 
-	       glTranslated((GLdouble)o->movx, (GLdouble)o->movy,
-			    (GLdouble)o->movz);
-	       ay_quat_torotmatrix(o->quat, m);
-	       glMultMatrixd((GLdouble*)m);
-	       glScaled((GLdouble)o->scalx, (GLdouble)o->scaly,
-			(GLdouble)o->scalz);
+	      if(!o->hide)
+		{
+		  glPushMatrix();
+
+		  glTranslated((GLdouble)o->movx, (GLdouble)o->movy,
+			       (GLdouble)o->movz);
+		  ay_quat_torotmatrix(o->quat, m);
+		  glMultMatrixd((GLdouble*)m);
+		  glScaled((GLdouble)o->scalx, (GLdouble)o->scaly,
+			   (GLdouble)o->scalz);
   
-	       cb = (ay_drawcb *)(arr[o->type]);
+		  cb = (ay_drawcb *)(arr[o->type]);
 
-	       if(cb)
-		 {
-		   ay_status = cb(togl, o);
-		 }
+		  if(cb)
+		    {
+		      ay_status = cb(togl, o);
+		    }
 
-	       /* draw selected points */
-	       if(o->selp)
-		 ay_draw_selp(o);
+		  /* draw selected points */
+		  if(o->selp)
+		    ay_draw_selp(o);
 
-	      glPopMatrix();
-	    }
-	sel = sel->next;
-      } /* while */
-
+		  glPopMatrix();
+		}
+	      sel = sel->next;
+	    } /* while */
+	} /* if */
       glPopMatrix();
     } /* if */
 
@@ -259,7 +263,7 @@ ay_draw_view(struct Togl *togl)
     {
       glColor3d((GLdouble)ay_prefs.tpr, (GLdouble)ay_prefs.tpg,
 		(GLdouble)ay_prefs.tpb);
-
+      glDisable(GL_DEPTH_TEST);
       glMatrixMode(GL_PROJECTION);
       glPushMatrix();
        glLoadIdentity();
@@ -276,6 +280,7 @@ ay_draw_view(struct Togl *togl)
        glPopMatrix();
        glMatrixMode(GL_PROJECTION);
       glPopMatrix();
+      glEnable(GL_DEPTH_TEST);
     } /* if */
 
   /* draw marker */
@@ -296,7 +301,6 @@ ay_draw_view(struct Togl *togl)
 	 glVertex3d(view->markx+4.0, height-view->marky, 0.0);
 	 glVertex3d(view->markx, height-view->marky+3.0, 0.0);
 	 glVertex3d(view->markx, height-view->marky-4.0, 0.0);
-
 	glEnd();
        glPopMatrix();
        glMatrixMode(GL_PROJECTION);
@@ -307,6 +311,7 @@ ay_draw_view(struct Togl *togl)
 
   if(view->drawlevel)
     {
+      glMatrixMode(GL_MODELVIEW);
       glPopMatrix();
     }
 
@@ -400,8 +405,12 @@ ay_draw_grid(struct Togl *togl)
 		       (GLdouble)o->movz);
 	  ay_quat_torotmatrix(o->quat, m);
 	  glMultMatrixd((GLdouble*)m);
+	  
+	  /*
+	  XXXX the aligned grid should not be scaled!
 	  glScaled((GLdouble)o->scalx, (GLdouble)o->scaly,
 		   (GLdouble)o->scalz);
+	  */
 	} /* if */
       glGetDoublev(GL_MODELVIEW_MATRIX, m);
       switch(view->type)

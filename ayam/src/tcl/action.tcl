@@ -43,6 +43,8 @@ proc actionRotView { w } {
     }
 
     stdReleaseBind $w
+
+    $w setconf -drawh 0
 }
 # actionRotView
 
@@ -65,6 +67,8 @@ proc actionMoveView { w } {
     }
 
     stdReleaseBind $w
+
+    $w setconf -drawh 0
 }
 # actionMoveView
 
@@ -87,6 +91,8 @@ proc actionZoomView { w } {
     }
 
     stdReleaseBind $w
+
+    $w setconf -drawh 0
 }
 # actionZoomView
 
@@ -109,6 +115,8 @@ proc actionMoveZView { w } {
     }
 
     stdReleaseBind $w
+
+    $w setconf -drawh 0
 }
 # actionMoveZView
 
@@ -131,6 +139,8 @@ proc actionMoveOb { w } {
     }
 
     stdReleaseBind $w
+
+    $w setconf -drawh 1
 }
 # actionMoveOb
 
@@ -153,6 +163,8 @@ proc actionRotOb { w } {
     }
 
     stdReleaseBind $w
+
+    $w setconf -drawh 1
 }
 # actionRotOb
 
@@ -164,6 +176,8 @@ proc actionRotObabindp { w x y } {
     bind $w <B1-Motion> "%W rotoaac -winxy %x %y $x $y"
 
     stdReleaseBind $w
+
+    $w setconf -drawh 1
 }
 # actionRotObabindp
 
@@ -181,6 +195,8 @@ proc actionRotObA { w } {
     }
     bind $w <ButtonRelease-1> { }
     bind $w <B1-Motion> { }
+
+    $w setconf -drawh 1
 }
 # actionRotObA
 
@@ -204,6 +220,7 @@ proc actionSc1DXOb { w } {
 
     stdReleaseBind $w
 
+    $w setconf -drawh 1
 }
 # actionSc1DXOb
 
@@ -226,6 +243,7 @@ proc actionSc1DYOb { w } {
 
     stdReleaseBind $w
 
+    $w setconf -drawh 1
 }
 # actionSc1DYOb
 
@@ -248,6 +266,7 @@ proc actionSc1DZOb { w } {
 
     stdReleaseBind $w
 
+    $w setconf -drawh 1
 }
 # actionSc1DZOb
 
@@ -270,6 +289,7 @@ proc actionSc2DOb { w } {
 
     stdReleaseBind $w
 
+    $w setconf -drawh 1
 }
 # actionSc2DOb
 
@@ -292,6 +312,7 @@ proc actionSc3DOb { w } {
 
     stdReleaseBind $w
 
+    $w setconf -drawh 1
 }
 # actionSc3DOb
 
@@ -314,6 +335,7 @@ proc actionStr2DOb { w } {
 
     stdReleaseBind $w
 
+    $w setconf -drawh 1
 }
 # actionStr2DOb
 
@@ -343,6 +365,7 @@ proc actionTagP { w } {
 	$w.f3D.togl setconf -rect $oldx $oldy %x %y 1
     }
 
+    $w setconf -drawh 1
 }
 # actionTagP
 
@@ -529,6 +552,8 @@ proc actionDEditP { w } {
     bind $w <B1-Motion> { }
 
     stdReleaseBind $w
+
+    $w setconf -drawh 1
 }
 # actionDEditP
 
@@ -551,6 +576,7 @@ proc actionEditP { w } {
 
     stdReleaseBind $w
 
+    $w setconf -drawh 1
 }
 # actionEditP
 
@@ -572,6 +598,7 @@ proc actionEditWP { w } {
 
     stdReleaseBind $w
 
+    $w setconf -drawh 1
 }
 # actionEditWP
 
@@ -599,6 +626,8 @@ proc actionInsertP { w } {
 
     stdReleaseBind $w
 
+    $w setconf -drawh 1
+
 }
 # actionInsertP
 
@@ -617,6 +646,8 @@ proc actionDeleteP { w } {
 
     stdReleaseBind $w
 
+    $w setconf -drawh 1
+
 }
 # actionDeleteP
 
@@ -633,6 +664,8 @@ proc actionFindU { w } {
     bind $w <B1-Motion> { }
 
     bind $w <ButtonRelease-1> { %W finduac -end %x %y; %W redraw }
+
+    $w setconf -drawh 0
 
 }
 # actionFindU
@@ -660,6 +693,7 @@ proc actionSplitNC { w } {
 	
     }
 
+    $w setconf -drawh 0
 }
 # actionSplitNC
 
@@ -717,6 +751,6 @@ proc actionClear { w } {
 	$w.f3D.togl setconf -rect $oldx $oldy %x %y 1
     }
 
-    $t.f3D.togl setconf -mark 0 0 0
+    $t.f3D.togl setconf -drawh 0 -mark 0 0 0
 }
 # actionClear

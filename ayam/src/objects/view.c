@@ -626,7 +626,7 @@ ay_view_readcb(FILE *fileptr, ay_object *o)
       fscanf(fileptr,"%d\n", &vtemp.drawbg);
     }
 
-  vtemp.drawhandles = AY_TRUE;
+  vtemp.drawhandles = AY_FALSE;
 
   /* open the view */
   sprintf(command,"viewOpen %d %d 0\n", width, height);

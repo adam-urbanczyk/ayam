@@ -15,7 +15,7 @@
 /* objsel.c - select objects on a viewport */
 
 
-/* ay_objsel_process_hits: process datas returned by the selection mode of
+/* ay_objsel_process_hits: process data returned by the selection mode of
  * OpenGL in order to find which objects have been selected
  */
 void
@@ -159,6 +159,8 @@ ay_objsel_process_hits (GLint hits, GLuint buffer[], char *var)
 
   free (node);
   free (tmp);
+
+ return;
 } /* ay_objsel_process_hits */
 
 
@@ -171,6 +173,7 @@ ay_objsel_processcb (struct Togl *togl, int argc, char *argv[])
  ay_view_object *view = (ay_view_object *) Togl_GetClientData (togl);
  /* char fname[] = "objsel_process"; */
  ay_object *o = ay_root;
+ ay_list_object *sel = ay_selection;
  int ay_status = AY_OK;
  int width = Togl_Width (togl);
  int height = Togl_Height (togl);
@@ -252,25 +255,60 @@ ay_objsel_processcb (struct Togl *togl, int argc, char *argv[])
 
   ay_current_glname = 0;
 
+  if(view->drawlevel)
+    {
+      o = ay_currentlevel->object;
+      glPushMatrix();
+      ay_trafo_getall(ay_currentlevel);
+    }
+
   if(!view->shade)
     {
-      while(o->next)
+      if(!view->drawsel)
 	{
-	  ay_status = ay_draw_object(togl, o, 2);
-	  o = o->next;
+	  while(o->next)
+	    {
+	      ay_status = ay_draw_object(togl, o, 2);
+	      o = o->next;
+	    }
+	}
+      else
+	{
+	  while(sel)
+	    {
+	      ay_status = ay_draw_object(togl, sel->object, 2);
+	      sel = sel->next;
+	    }
 	}
     }
   else
     {
       glDisable(GL_LIGHTING);
-      while(o->next)
+      if(!view->drawsel)
 	{
-	  ay_status = ay_shade_object(togl, o, AY_TRUE);
-	  o = o->next;
+	  while(o->next)
+	    {
+	      ay_status = ay_shade_object(togl, o, AY_TRUE);
+	      o = o->next;
+	    }
+	}
+      else
+	{
+	  while(sel)
+	    {
+	      ay_status = ay_shade_object(togl, sel->object, AY_TRUE);
+	      sel = sel->next;
+	    }
 	}
       glEnable(GL_LIGHTING);
     }
     
+  if(view->drawlevel)
+    {
+      glMatrixMode(GL_MODELVIEW);
+      glPopMatrix();
+    }
+
   glMatrixMode (GL_PROJECTION);
   glPopMatrix ();
   glFinish ();
@@ -279,7 +317,7 @@ ay_objsel_processcb (struct Togl *togl, int argc, char *argv[])
 
   ay_objsel_process_hits (hits, selectBuf, argv[2]);
 
-  return TCL_OK;
+ return TCL_OK;
 } /* ay_objsel_processcb */
 
 
@@ -318,5 +356,5 @@ ay_objsel_getnmfrmndtcmd(ClientData clientData, Tcl_Interp *interp,
   Tcl_SetVar(interp, argv[1], Tcl_DStringValue(&ds), TCL_LEAVE_ERR_MSG);
   Tcl_DStringFree(&ds);
 
-  return TCL_OK;
-}
+ return TCL_OK;
+} /* ay_objsel_getnmfrmndtcmd */
