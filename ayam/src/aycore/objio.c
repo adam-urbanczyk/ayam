@@ -661,7 +661,7 @@ ay_objio_writepomesh(FILE *fileptr, ay_object *o, double *m)
  /*char fname[] = "objio_writepomesh";*/
  ay_object *to = NULL;
  ay_list_object *li = NULL, **nextli = NULL, *lihead = NULL;
- ay_pomesh_object *po, *npo;
+ ay_pomesh_object *po;
  double v[3], *p1;
  int stride;
  unsigned int i, j, k, p = 0, q = 0, r = 0;
@@ -778,7 +778,6 @@ ay_objio_writepomesh(FILE *fileptr, ay_object *o, double *m)
 	  ay_status = ay_pomesht_optimizecoords(to->refine, AY_FALSE);
 	  ay_object_defaults(to);
 	  to->type = AY_IDPOMESH;
-	  to->refine = npo;
 	  /*ay_trafo_copy(o, to);*/
 	  ay_objio_writepomesh(fileptr, to, m);
 	}
