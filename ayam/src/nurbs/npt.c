@@ -2227,14 +2227,11 @@ ay_npt_birail1(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
   if(!(new = calloc(1, sizeof(ay_nurbpatch_object))))
     { ay_status = AY_EOMEM; goto cleanup; }
   if(!(controlv = calloc(cs->length*(sections+1)*stride, sizeof(double))))
-    { free(new); ay_status = AY_EOMEM; goto cleanup; }
+    { ay_status = AY_EOMEM; goto cleanup; }
   if(!(new->vknotv = calloc(cs->length+cs->order, sizeof(double))))
-    { free(new); free(controlv); ay_status = AY_EOMEM; goto cleanup; }
+    { ay_status = AY_EOMEM; goto cleanup; }
   if(!(new->uknotv = calloc(sections+4, sizeof(double))))
-    {
-      free(new->vknotv); free(new); free(controlv);
-      ay_status = AY_EOMEM; goto cleanup;
-    }
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   new->vorder = cs->order;
   new->uorder = 4;
@@ -2249,10 +2246,7 @@ ay_npt_birail1(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 
   ay_status = ay_knots_createnp(new);
   if(ay_status)
-    {
-      free(new->uknotv); free(new->vknotv); free(new); free(controlv);
-      ay_status = AY_EOMEM; goto cleanup;
-    }
+    { goto cleanup; }
 
   if(cs->knot_type == AY_KTCUSTOM)
     {
@@ -2279,10 +2273,7 @@ ay_npt_birail1(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
   ay_trafo_identitymatrix(mrs);
 
   if(!(rots = calloc((sections+1)*4, sizeof(double))))
-    {
-      free(new->uknotv); free(new->vknotv); free(new); free(controlv);
-      ay_status = AY_EOMEM; goto cleanup;
-    }
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   /* copy first section */
   memcpy(&(controlv[0]), &(cscv[0]), cs->length * stride * sizeof(double));
@@ -2503,6 +2494,9 @@ ay_npt_birail1(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
   /* return result */
   *patch = new;
 
+  new = NULL;
+  controlv = NULL;
+
   /* clean up */
 cleanup:
   if(rots)
@@ -2513,6 +2507,16 @@ cleanup:
     free(r1cv);
   if(r2cv)
     free(r2cv);
+  if(new)
+    {
+      if(new->uknotv)
+	free(new->uknotv);
+      if(new->vknotv)
+	free(new->vknotv);
+      free(new);
+    }
+  if(controlv)
+    free(controlv);
 
  return ay_status;
 } /* ay_npt_birail1 */
@@ -2623,14 +2627,12 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
   if(!(new = calloc(1, sizeof(ay_nurbpatch_object))))
     { ay_status = AY_EOMEM; goto cleanup; }
   if(!(controlv = calloc(cs1->length*(sections+1)*stride, sizeof(double))))
-    { free(new); ay_status = AY_EOMEM; goto cleanup; }
+    { ay_status = AY_EOMEM; goto cleanup; }
   if(!(new->vknotv = calloc(cs1->length+cs1->order, sizeof(double))))
-    { free(new); free(controlv); ay_status = AY_EOMEM; goto cleanup; }
+    { ay_status = AY_EOMEM; goto cleanup; }
   if(!(new->uknotv = calloc(sections+4, sizeof(double))))
-    {
-      free(new->vknotv); free(new); free(controlv);
-      ay_status = AY_EOMEM; goto cleanup;
-    }
+    { ay_status = AY_EOMEM; goto cleanup; }
+
 
   new->vorder = cs1->order;
   new->uorder = 4;
@@ -2645,10 +2647,7 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
 
   ay_status = ay_knots_createnp(new);
   if(ay_status)
-    {
-      free(new->uknotv); free(new->vknotv); free(new); free(controlv);
-      ay_status = AY_EOMEM; goto cleanup;
-    }
+    { goto cleanup; }
 
   if(cs1->knot_type == AY_KTCUSTOM)
     {
@@ -2756,10 +2755,12 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
 			   ((p5[1])),
 			   ((p5[2])),
 			   mcs);
+
   ay_trafo_scalematrix(1.0/scalx,
 		       1.0/scaly,
 		       1.0/scalz,
 		       mcs);
+
   ay_trafo_translatematrix(-(p5[0]),
 			   -(p5[1]),
 			   -(p5[2]),
@@ -2771,6 +2772,7 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
 			       ((p5[1])),
 			       ((p5[2])),
 			       mcs);
+
       ay_trafo_rotatematrix(-rotv[0], rotv[1],
 			    rotv[2], rotv[3], mcs);
 
@@ -2808,7 +2810,7 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
       ay_status = ay_interpol_1DA4D((double)i/sections, cs1->length,
 				    cs1cv, cs2cv, cs2cvi);
       if(ay_status)
-	goto cleanup;
+	{ goto cleanup; }
 
       memcpy(&(controlv[i * stride * cs1->length]), cs2cvi,
 	     cs1->length * stride * sizeof(double));
@@ -3023,6 +3025,9 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
   /* return result */
   *patch = new;
 
+  new = NULL;
+  controlv = NULL;
+
   /* clean up */
 cleanup:
   if(rots)
@@ -3037,6 +3042,16 @@ cleanup:
     free(cs2cv);
   if(cs2cvi)
     free(cs2cvi);
+  if(new)
+    {
+      if(new->uknotv)
+	free(new->uknotv);
+      if(new->vknotv)
+	free(new->vknotv);
+      free(new);
+    }
+  if(controlv)
+    free(controlv);
 
  return ay_status;
 } /* ay_npt_birail2 */
