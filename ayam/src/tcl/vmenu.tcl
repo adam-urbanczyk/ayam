@@ -321,6 +321,6 @@ if { ! $AYWITHAQUA } {
     }
 }
 
-
+return;
 }
 # vmenu_open

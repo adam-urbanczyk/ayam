@@ -135,10 +135,19 @@ unsigned int ay_current_primlevel = 0;
   int Rrib_Init(Tcl_Interp *interp);
 #endif
 
+#ifdef AYCSGWRAPPED
+int
+aycsg_inittcmd(ClientData clientData, Tcl_Interp *interp,
+	       int argc, char *argv[]);
+#endif
+
+/* bitmaps for the object tree */
 Pixmap minus_bitmap;
 Pixmap plus_bitmap;
 #include "tcl/BWidget-1.2.1/images/minus.xbm"
 #include "tcl/BWidget-1.2.1/images/plus.xbm"
+
+/* functions */
 
 /* ay_init:
  *  create tables, ay_root
@@ -473,6 +482,14 @@ ay_init(Tcl_Interp *interp)
 	     TCL_GLOBAL_ONLY);
 #endif
 
+#ifdef AYCSGWRAPPED
+  Tcl_SetVar(interp, "AYCSGWRAPPED", "1", TCL_LEAVE_ERR_MSG |
+	     TCL_GLOBAL_ONLY);
+#else
+  Tcl_SetVar(interp, "AYCSGWRAPPED", "0", TCL_LEAVE_ERR_MSG |
+	     TCL_GLOBAL_ONLY);
+#endif
+
  return ay_status;
 } /* ay_init */
 
@@ -507,6 +524,12 @@ int ay_status = AY_OK;
   Togl_DestroyFunc(ay_toglcb_destroy);
   Togl_DisplayFunc(ay_toglcb_display);
   Togl_ReshapeFunc(ay_toglcb_reshape);
+
+  /* aycsg.cpp */
+#ifdef AYCSGWRAPPED
+  Tcl_CreateCommand(interp, "aycsgInit", aycsg_inittcmd,
+		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+#endif
 
   /* clear.c */
   Tcl_CreateCommand(interp, "newScene", ay_clear_scenetcmd,

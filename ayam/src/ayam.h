@@ -14,10 +14,6 @@
 
 /* ayam.h - the main Ayam header */
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
 
 /* Includes */ 
 #include <limits.h>
@@ -33,6 +29,10 @@ extern "C" {
 #include <windows.h>
 #undef WIN32_LEAN_AND_MEAN
 #endif /* WIN32 */
+
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
 
 #include <GL/glu.h>
 
