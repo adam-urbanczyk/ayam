@@ -299,7 +299,30 @@ libtiff library and libtiff headers have to be installed.
 Load it via menu entry "File/Load Custom".
 Use it via menu entry "Custom/Open IDR".
 
-3.4 Installing/Uninstalling
+3.4 Shader Parsing Plugins
+--------------------------
+
+Ayam supports the following shader parsing plugins:
+"ayso" for RDC, "ayslo" for PRMan, "ayslx" for Aqsis,
+and "ayslo3d" for 3Delight.
+
+In order to compile those plugins adapt the following variables
+in the Makefile: 
+AQSISDIR, AYSLXINCDIR, AYSLXLIBS, RDCDIR, AYSOINCDIR, AYSOLIBS,
+PRMANDIR, AYSLOINCDIR, AYSLOLIBS, 3DLDIR, AYSLO3INCDIR, AYSLO3DLIBS
+
+then type:
+>make ayslo.so
+>make ayslo3e.so
+>make ayso.so
+>make ayslx.so
+
+After loading of one of these plugins the internal shader
+scanning code of Ayam will be disabled, and Ayam will from
+that moment on just scan shaders of the type supported by
+the plugin loaded.
+
+3.5 Installing/Uninstalling
 ---------------------------
 
 Use
