@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile.wrapped [21. Feb 2001]
+# Makefile.wrapped [22. Mar 2002]
 # Makefile for Ayam (wrapped version)
 
 # Where shall the executables be installed?
@@ -267,6 +267,7 @@ AYAMOBJS = aycore/bbc.o\
 	objects/material.o\
 	objects/ncurve.o\
 	objects/npatch.o\
+	objects/pamesh.o\
 	objects/parab.o\
 	objects/revolve.o\
 	objects/riinc.o\
