@@ -407,6 +407,9 @@ int ay_riopt_wrib(ay_object *o);
 
 void ay_riopt_init(Tcl_Interp *interp);
 
+/* sdmesht.c */
+int ay_sdmesht_tesselate(ay_sdmesh_object *sdmesh);
+
 /* sel.c */
 int ay_sel_free(void);
 

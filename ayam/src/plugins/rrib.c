@@ -745,7 +745,7 @@ ay_rrib_RiNuPatch(RtInt nu, RtInt uorder, RtFloat uknot[],
  RtPointer tokensfound[PPWTBL_LAST];
  RtFloat *pp = NULL, *pw = NULL;
 
-
+  memset(&np, '\0', sizeof(ay_nurbpatch_object));
   np.glu_sampling_tolerance = 0.0;
   np.glu_display_mode = 0;
   np.width = (int)nu;
@@ -850,7 +850,6 @@ ay_rrib_RiTrimCurve(RtInt nloops, RtInt ncurves[], RtInt order[],
  ay_nurbcurve_object *nc = NULL;
  ay_object *o = NULL, *level = NULL, **ncinloop = NULL;
  int ay_status = AY_OK;
-
 
   nptr = n;
   orderptr = order;
@@ -1090,7 +1089,7 @@ ay_rrib_RiLightSource(RtToken name,
   if(ay_status)
     {
       ay_error(AY_ERROR, fname,
-	       "Could not create terminating level object, scene is corrupt now!");
+	   "Could not create terminating level object, scene is corrupt now!");
     }
 
   ay_rrib_co.refine = (void *)(&l);
@@ -1178,15 +1177,15 @@ ay_rrib_RiAttribute(RtToken name,
 		}
 	      strcpy(ay_rrib_cattributes->identifier_name, stemp);
 	      attribute_handled = AY_TRUE;
-	    }
+	    } /* if */
 	  if(!attribute_handled)
 	    {
 	      ay_rrib_readtag(ay_riattr_tagtype, "RiAttribute", name,
 			      i, tokens, parms, &(ay_rrib_cattributes->tags));
-	    }
+	    } /* if */
 	} /* for */
       return;
-    }
+    } /* if */
 
   if(!strcmp(name,"light"))
     {
@@ -1214,7 +1213,7 @@ ay_rrib_RiAttribute(RtToken name,
 	    }
 	} /* for */
       return;
-    }
+    } /* if */
 
   if(!strcmp(name,"render"))
     {
@@ -1243,7 +1242,7 @@ ay_rrib_RiAttribute(RtToken name,
 		}
 	      ay_rrib_cattributes->cast_shadows = itemp;
 	      attribute_handled = AY_TRUE;
-	    }
+	    } /* if */
 	  if(!strcmp(tokens[i], "visibility"))
 	    {
 	      itemp = (int)(*((RtInt *)(parms[i])));
@@ -1262,7 +1261,7 @@ ay_rrib_RiAttribute(RtToken name,
 		  ay_rrib_cattributes->camera = AY_TRUE;
 		}
 	      attribute_handled = AY_TRUE;
-	    }
+	    } /* if */
 	  if(!attribute_handled)
 	    {
 	      ay_rrib_readtag(ay_riattr_tagtype, "RiAttribute", name,
@@ -1270,7 +1269,7 @@ ay_rrib_RiAttribute(RtToken name,
 	    }
 	} /* for */
       return;
-    }
+    } /* if */
 
   if(!strcmp(name,"displacementbound"))
     {
@@ -1294,7 +1293,7 @@ ay_rrib_RiAttribute(RtToken name,
 		}
 	      ay_rrib_cattributes->dbound = itemp;
 	      attribute_handled = AY_TRUE;
-	    }
+	    } /* if */
 	  if(!strcmp(tokens[i], "sphere"))
 	    {
 	      ay_rrib_cattributes->dbound_val =
@@ -1308,7 +1307,7 @@ ay_rrib_RiAttribute(RtToken name,
 	    }
 	} /* for */
       return;
-    }
+    } /* if */
 
   for(i = 0; i < n; i++)
     {
@@ -1580,7 +1579,7 @@ ay_rrib_RiDisplay(char *name, RtToken type, RtToken mode,
       free(nt);
       Tcl_DStringFree(&ds);
       return;
-    }
+    } /* if */
 
   strcpy(nt->val, Tcl_DStringValue(&ds));
 
@@ -1807,9 +1806,9 @@ ay_rrib_RiIlluminate(RtLightHandle light, RtBoolean onoff)
 	  else
 	    {
 	      l->on = AY_FALSE;
-	    }
+	    } /* if */
 	  i++;
-	}
+	} /* if */
       o = o->next;
     } /* while */
 
@@ -2170,7 +2169,7 @@ ay_rrib_RiOption(RtToken name,
 	    }
 	} /* for */
       return;
-    }
+    } /* if */
 
   if(!strcmp(name,"radiosity"))
     {
@@ -2194,7 +2193,7 @@ ay_rrib_RiOption(RtToken name,
 	    }
 	} /* for */
       return;
-    }
+    } /* if */
 
   if(!strcmp(name,"render"))
     {
@@ -2286,7 +2285,7 @@ ay_rrib_RiOption(RtToken name,
 	    }
 	} /* for */
       return;
-    }  /* if */
+    } /* if */
 
   for(i = 0; i < n; i++)
     {
@@ -2338,7 +2337,7 @@ ay_rrib_RiPatch(RtToken type,
 	{
 	  return;
 	}
-    }
+    } /* if */
 
   /* XXXX divide by w? */
 
@@ -2381,6 +2380,7 @@ ay_rrib_RiPatchMesh(RtToken type, RtInt nu, RtToken uwrap,
  RtPointer tokensfound[PPWTBL_LAST];
  RtFloat *pp = NULL, *pw = NULL;
 
+  memset(&pm, '\0', sizeof(ay_pamesh_object));
   pm.glu_sampling_tolerance = 0.0;
   pm.glu_display_mode = 0;
   pm.npatch = NULL;
@@ -2431,8 +2431,8 @@ ay_rrib_RiPatchMesh(RtToken type, RtInt nu, RtToken uwrap,
 	  if(pm.vbasis)
 	    free(pm.vbasis);
 	  return;
-	}
-    }
+	} /* if */
+    } /* if */
   
   if(!(pm.controlv = calloc(nu*nv*4, sizeof(double))))
     {
@@ -2441,7 +2441,7 @@ ay_rrib_RiPatchMesh(RtToken type, RtInt nu, RtToken uwrap,
       if(pm.vbasis)
 	free(pm.vbasis);
       return;
-    }
+    } /* if */
 
   pp = pw;
   for(i = 0; i < nv; i++)
@@ -2560,6 +2560,7 @@ ay_rrib_RiPointsGeneralPolygons(RtInt npolys, RtInt nloops[],
  RtFloat *pp = NULL, *pw = NULL;
  double *normalv = NULL;
 
+  memset(&pm, '\0', sizeof(ay_pomesh_object));
   pm.npolys = npolys;
 
   RibGetUserParameters(Ppw, PPWTBL_LAST, n, tokens, parms, tokensfound);
@@ -2701,7 +2702,7 @@ RtVoid
 ay_rrib_RiPointsPolygons(RtInt npolys, RtInt nvertices[], RtInt vertices[],
 			 RtInt n, RtToken tokens[], RtPointer parms[])
 {
- RtInt *nloops;
+ RtInt *nloops = NULL;
  int i;
 
   if(!(nloops = calloc(npolys, sizeof(RtInt))))
@@ -2715,6 +2716,7 @@ ay_rrib_RiPointsPolygons(RtInt npolys, RtInt nvertices[], RtInt vertices[],
   ay_rrib_RiPointsGeneralPolygons(npolys, nloops, nvertices, vertices,
 				  n, tokens, parms);
 
+  /* clean up */
   free(nloops);
 
  return;
@@ -2819,7 +2821,7 @@ ay_rrib_RiReadArchive(RtToken name,
   else
     {
       ay_error(AY_EOPENFILE, fname, name);
-    }
+    } /* if */
 
   grib = oldgrib;
 
@@ -2990,7 +2992,10 @@ ay_rrib_RiShutter(RtFloat min, RtFloat max)
 RtVoid
 ay_rrib_RiSides(RtInt sides)
 {
-   (void)sides;
+
+  ay_rrib_cattributes->sides = (int)sides;
+
+ return;
 } /* ay_rrib_RiSides */
 
 
@@ -3008,8 +3013,7 @@ ay_rrib_RiSolidBegin(RtToken operation)
 {
  ay_level_object l;
 
-
- l.type = AY_LTLEVEL;
+  l.type = AY_LTLEVEL;
 
   if(!strcmp(operation,"primitive"))
     l.type = AY_LTPRIM;
@@ -3079,11 +3083,165 @@ ay_rrib_RiSubdivisionMesh(RtToken scheme, RtInt nfaces,
 			  RtInt intargs[], RtFloat floatargs[],
 			  RtInt n, RtToken tokens[], RtPointer parms[])
 {
-   (void)scheme;  (void)nfaces;
-   (void)nvertices; (void)vertices;
-   (void)ntags; (void)tags;
-   (void)nargs; (void)intargs; (void)floatargs;
-   (void)n; (void)tokens; (void)parms;
+ ay_sdmesh_object sm;
+ int i = 0, a = 0, stride = 0;
+ unsigned int total_verts = 0, total_intargs = 0, total_floatargs = 0;
+ unsigned int nc_needed = 0;
+ RtPointer tokensfound[PPWTBL_LAST];
+ RtFloat *pp = NULL, *pw = NULL;
+ RtToken ccscheme = "catmullclark";
+
+  memset(&sm, '\0', sizeof(ay_sdmesh_object));
+  if(!(strcmp(scheme, ccscheme)))
+    scheme = AY_SDSCATMULL;
+  sm.nfaces = nfaces;
+
+  RibGetUserParameters(Ppw, PPWTBL_LAST, n, tokens, parms, tokensfound);
+  if(tokensfound[PPWTBL_PW])
+    {
+      pw = (RtFloat*)tokensfound[PPWTBL_PW];
+      stride = 4;
+    }
+  else
+    {
+      if(tokensfound[PPWTBL_P])
+	{
+	  pw = (RtFloat*)tokensfound[PPWTBL_P];
+	  stride = 3;
+	}
+      else
+	{
+	  return;
+	} /* if */
+    } /* if */
+
+  if(!(sm.nverts = calloc(nfaces, sizeof(unsigned int))))
+    return;
+  for(i = 0; i < nfaces; i++)
+    {
+      sm.nverts[i] = (unsigned int)(nvertices[i]);
+      total_verts += nvertices[i];
+    } /* for */
+
+  if(!(sm.verts = calloc(total_verts, sizeof(unsigned int))))
+    { free(sm.nverts); return; }
+  for(i = 0; i < total_verts; i++)
+    {
+      sm.verts[i] = (unsigned int) vertices[i];
+      /* get biggest vertice index, this is the number of controlvs we need */
+      if(nc_needed < (unsigned int)(vertices[i]))
+	{
+	  nc_needed = (unsigned int)(vertices[i]);
+	}
+    } /* for */
+  nc_needed++;
+
+  if(!(sm.controlv = calloc(nc_needed*3, sizeof(double))))
+    { free(sm.nverts); free(sm.verts); return; }
+  a = 0;
+  pp = pw;
+  for(i = 0; i < nc_needed; i++)
+    {
+      sm.controlv[a]   = (double)(pp[0]);
+      sm.controlv[a+1] = (double)(pp[1]);
+      sm.controlv[a+2] = (double)(pp[2]);
+      a += 3;
+      pp += stride;
+    } /* for */
+  sm.ncontrols = nc_needed;
+
+
+  /* get tags */
+  sm.ntags = ntags;
+  if(ntags > 0)
+    {
+      if(!(sm.tags = calloc(ntags, sizeof(int))))
+	{ free(sm.nverts); free(sm.verts); free(sm.controlv); return;}
+      for(i = 0; i < ntags; i++)
+	{
+	  /*
+	  switch(tags[i])
+	    {
+	    case RI_HOLE:
+	      sm.tags[i] = AY_SDTHOLE;
+	      break;
+	    case RI_CREASE:
+	      sm.tags[i] = AY_SDTCREASE;
+	      break;
+	    case RI_CORNER:
+	      sm.tags[i] = AY_SDTCORNER;
+	      break;
+	    case RI_INTERPOLATEBOUNDARY:
+	      sm.tags[i] = AY_SDTIB;
+	      break;
+	    default:
+	      break;
+	    }
+	  */
+	  if(!(strcmp(tags[i], "hole")))
+	    sm.tags[i] = AY_SDTHOLE;
+	  if(!(strcmp(tags[i], "crease")))
+	    sm.tags[i] = AY_SDTCREASE;
+	  if(!(strcmp(tags[i], "corner")))
+	    sm.tags[i] = AY_SDTCORNER;
+	  if(!(strcmp(tags[i], "interpolateboundary")))
+	    sm.tags[i] = AY_SDTIB;
+	} /* for */
+
+      if(!(sm.nargs = calloc(2 * ntags, sizeof(unsigned int))))
+	{
+	  free(sm.nverts); free(sm.verts); free(sm.controlv); free(sm.tags);
+	  return;
+	}
+      for(i = 0; i < (2 * ntags); i++)
+	{
+	  sm.nargs[i] = (unsigned int)(nargs[i]);
+	}
+      for(i = 0; i < (2 * ntags); i += 2)
+	{
+	  total_intargs += (unsigned int)(nargs[i]);
+	  total_floatargs += (unsigned int)(nargs[i+1]);
+	}
+      if(!(sm.intargs = calloc(total_intargs, sizeof(int))))
+	{
+	  free(sm.nverts); free(sm.verts); free(sm.controlv); free(sm.tags);
+	  free(sm.nargs);
+	  return;
+	}
+      for(i = 0; i < total_intargs; i++)
+	{
+	  sm.intargs[i] = (int)(intargs[i]);
+	}
+      if(!(sm.floatargs = calloc(total_floatargs, sizeof(int))))
+	{
+	  free(sm.nverts); free(sm.verts); free(sm.controlv); free(sm.tags);
+	  free(sm.nargs); if(sm.intargs){free(sm.intargs);}
+	  return;
+	}
+      for(i = 0; i < total_floatargs; i++)
+	{
+	  sm.floatargs[i] = (double)(floatargs[i]);
+	}
+    } /* if */
+
+  /* now link the object to the scene */
+  ay_rrib_linkobject((void *)(&sm), AY_IDSDMESH);
+
+  /* clean up */
+  free(sm.nverts);
+  free(sm.verts);
+  free(sm.controlv);
+  if(ntags > 0)
+    {
+      free(sm.tags);
+      free(sm.nargs);
+      if(intargs)
+	free(sm.intargs);
+      if(floatargs)
+	free(sm.floatargs);
+    }
+
+ return;
 } /* ay_rrib_RiSubdivisionMesh */
 
 
@@ -3253,26 +3411,29 @@ ay_rrib_RiTransformPoints(RtToken fromspace, RtToken tospace,
 RtVoid
 ay_rrib_RiErrorIgnore(RtInt code, RtInt severity, char *msg)
 {
-   (void)code; (void)severity; (void)msg;
-   printf("RiErrorIgnore\n");
-   return;
+
+  printf("RiErrorIgnore\n");
+
+ return;
 } /* ay_rrib_RiErrorIgnore */
 
 
 RtVoid
 ay_rrib_RiErrorPrint(RtInt code, RtInt severity, char *msg)
 {
-   (void)code; (void)severity; (void)msg;
-   printf("RiErrorPrint\n");
-   return;
+
+  printf("RiErrorPrint\n");
+
+ return;
 } /* ay_rrib_RiErrorPrint */
 
 RtVoid
 ay_rrib_RiErrorAbort(RtInt code, RtInt severity, char *msg)
 {
-   (void)code; (void)severity; (void)msg;
+
    printf("RiErrorAbort\n");
-   return;
+
+ return;
 } /* ay_rrib_RiErrorAbort */
 
 
@@ -3420,7 +3581,7 @@ ay_rrib_readshader(char *sname, int stype,
 
   s->type = stype;
 
-  if(!(s->name = calloc(strlen(sname)+1,sizeof(char))))
+  if(!(s->name = calloc(strlen(sname) + 1, sizeof(char))))
     {
       free(s);
       return;
@@ -3840,6 +4001,7 @@ ay_rrib_initgeneral(void)
   gRibNopRITable[kRIB_SHADINGRATE] = (PRIB_RIPROC)ay_rrib_RiShadingRate;
   gRibNopRITable[kRIB_SHADINGINTERPOLATION] =
     (PRIB_RIPROC)ay_rrib_RiShadingInterpolation;
+  gRibNopRITable[kRIB_SIDES] = (PRIB_RIPROC)ay_rrib_RiSides;
   gRibNopRITable[kRIB_TEXTURECOORDINATES] =
     (PRIB_RIPROC)ay_rrib_RiTextureCoordinates;
 
@@ -3886,6 +4048,7 @@ ay_rrib_cleargeneral(void)
   gRibNopRITable[kRIB_SHADINGRATE] = (PRIB_RIPROC)RiNopShadingRate;
   gRibNopRITable[kRIB_SHADINGINTERPOLATION] =
     (PRIB_RIPROC)RiNopShadingInterpolation;
+  gRibNopRITable[kRIB_SIDES] = (PRIB_RIPROC)RiNopSides;
   gRibNopRITable[kRIB_TEXTURECOORDINATES] =
     (PRIB_RIPROC)RiNopTextureCoordinates;
 
@@ -3961,7 +4124,8 @@ ay_rrib_initgprims(void)
     (PRIB_RIPROC)ay_rrib_RiGeneralPolygon;
   gRibNopRITable[kRIB_POLYGON] =
     (PRIB_RIPROC)ay_rrib_RiPolygon;
-
+  gRibNopRITable[kRIB_SUBDIVISIONMESH] =
+    (PRIB_RIPROC)ay_rrib_RiSubdivisionMesh;
 
   gRibNopRITable[kRIB_SOLIDBEGIN] = (PRIB_RIPROC)ay_rrib_RiSolidBegin;
   gRibNopRITable[kRIB_SOLIDEND] = (PRIB_RIPROC)ay_rrib_RiSolidEnd;
@@ -3997,6 +4161,8 @@ ay_rrib_cleargprims(void)
     (PRIB_RIPROC)RiNopGeneralPolygonV;
   gRibNopRITable[kRIB_POLYGON] =
     (PRIB_RIPROC)RiNopPolygonV;
+  gRibNopRITable[kRIB_SUBDIVISIONMESH] =
+    (PRIB_RIPROC)RiNopSubdivisionMeshV;
 
   gRibNopRITable[kRIB_SOLIDBEGIN] = (PRIB_RIPROC)RiNopSolidBegin;
   gRibNopRITable[kRIB_SOLIDEND] = (PRIB_RIPROC)RiNopSolidEnd;
@@ -4088,15 +4254,16 @@ ay_rrib_pushattribs(void)
       newstate->t3 = 1.0f;
       newstate->s4 = 1.0f;
       newstate->t4 = 1.0f;
-    }
+    } /* if */
 
   /* link new state to stack */
   newstate->next = ay_rrib_cattributes;
   ay_rrib_cattributes = newstate;
 
-
+  /* did we just read an RiAttribute after an AreaLight? */
   if(ay_rrib_cattributes->read_arealight_geom > 0)
     {
+      /* Yes. Start reading geometric primitives of the arealight. */
       ay_rrib_cattributes->read_arealight_geom++;
       ay_rrib_initgprims();
 
@@ -4105,8 +4272,7 @@ ay_rrib_pushattribs(void)
       ay_status = ay_clevel_add(ay_rrib_lrobject);
       ay_status = ay_clevel_add(ay_rrib_lrobject->down);
       ay_next = &(ay_rrib_lrobject->down);
-    }
-
+    } /* if */
 
  return;
 } /* ay_rrib_pushattribs */
@@ -4172,7 +4338,7 @@ ay_rrib_popattribs(void)
 	  ay_rrib_cattributes->tags = tag->next;
 	  ay_tags_free(tag);
 	}
-    }
+    } /* if */
 
   free(ay_rrib_cattributes);
 
@@ -4195,11 +4361,9 @@ ay_rrib_popattribs(void)
 	      ay_clevel_del();
 	      ay_next = &(ay_currentlevel->object->next);
 	      ay_clevel_del();
-
-
-	    }
-	}
-    }
+	    } /* if */
+	} /* if */
+    } /* if */
 
  return;
 } /* ay_rrib_popattribs */
@@ -4237,7 +4401,8 @@ ay_rrib_pushtrafos(void)
       newstate->m[10] = 1.0;
       newstate->m[15] = 1.0;
 
-    }
+    } /* if */
+
   /* link new state to stack */
   newstate->next = ay_rrib_ctrafos;
   ay_rrib_ctrafos = newstate;
@@ -4261,7 +4426,6 @@ ay_rrib_poptrafos(void)
   nextstate = ay_rrib_ctrafos->next;
 
   /* free toplevel state */
-
   free(ay_rrib_ctrafos);
 
   ay_rrib_ctrafos = nextstate;
@@ -4523,6 +4687,7 @@ ay_rrib_linkmaterial(ay_object *o)
 
   mat->shading_rate = attr->shading_rate;
   mat->shading_interpolation = attr->shading_interpolation;
+  mat->sides = attr->sides;
   mat->dbound_val = attr->dbound_val;
   mat->dbound = attr->dbound;
 
