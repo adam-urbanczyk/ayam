@@ -20,6 +20,10 @@ proc toolbox_open { } {
     wm title $w "Tools"
     wm iconname $w "Tools"
 
+    if { $tcl_platform(platform) == "windows" } {
+	wm transient $w .
+    }
+
     foreach i $ayprefs(toolBoxList) {
 
 	if { $i == "solids" } {
@@ -65,7 +69,7 @@ proc toolbox_open { } {
 
 	    pack $f -in $w -side top -anchor w
 	    #########
-	    set f [frame $w.fbarsol -relief raised -bd 2 -height 3]
+	    set f [frame $w.fbarsol -relief raised -bd 2 -height 2]
 	    pack $f -in $w -side top -fill x -expand yes
 	    #########
 
@@ -132,7 +136,7 @@ proc toolbox_open { } {
 
 	    pack $f -in $w -side top -anchor w
 
-	    set f [frame $w.fbarpoint -relief raised -bd 2 -height 3]
+	    set f [frame $w.fbarpoint -relief raised -bd 2 -height 2]
 	    pack $f -in $w -side top -fill x -expand yes
 
 	}
@@ -187,7 +191,7 @@ proc toolbox_open { } {
 	    #####
 	    pack $f -in $w -side top -anchor w
 
-	    set f [frame $w.fbarcamera -relief raised -bd 2 -height 3]
+	    set f [frame $w.fbarcamera -relief raised -bd 2 -height 2]
 	    pack $f -in $w -side top -fill x -expand yes
 	}
 	##################
@@ -239,7 +243,7 @@ proc toolbox_open { } {
 	    #####
 	    pack $f -in $w -side top -anchor w
 
-	    set f [frame $w.fbartrafo -relief raised -bd 2 -height 3]
+	    set f [frame $w.fbartrafo -relief raised -bd 2 -height 2]
 	    pack $f -in $w -side top -fill x -expand yes
 	}
 	##################
@@ -291,7 +295,7 @@ proc toolbox_open { } {
 	    #####
 	    pack $f -in $w -side top -anchor w
 
-	    set f [frame $w.fbartrafo2 -relief raised -bd 2 -height 3]
+	    set f [frame $w.fbartrafo2 -relief raised -bd 2 -height 2]
 	    pack $f -in $w -side top -fill x -expand yes
 	}
 
@@ -327,7 +331,7 @@ proc toolbox_open { } {
 	    #####
 	    pack $f -in $w -side top -anchor w
 	    #########
-	    set f [frame $w.fbarmisc -relief raised -bd 2 -height 3]
+	    set f [frame $w.fbarmisc -relief raised -bd 2 -height 2]
 	    pack $f -in $w -side top -fill x -expand yes
 	    #########
 
@@ -363,7 +367,7 @@ proc toolbox_open { } {
 	    #####
 	    pack $f -in $w -side top -anchor w
 	    #########
-	    set f [frame $w.fbarmisco -relief raised -bd 2 -height 3]
+	    set f [frame $w.fbarmisco -relief raised -bd 2 -height 2]
 	    pack $f -in $w -side top -fill x -expand yes
 	    #########
 
@@ -408,7 +412,7 @@ proc toolbox_open { } {
 	    #####
 	    pack $f -in $w -side top -anchor w
 	    #########
-	    set f [frame $w.fbarnct1 -relief raised -bd 2 -height 3]
+	    set f [frame $w.fbarnct1 -relief raised -bd 2 -height 2]
 	    pack $f -in $w -side top -fill x -expand yes
 	    #########
 
@@ -453,7 +457,7 @@ proc toolbox_open { } {
 	    #####
 	    pack $f -in $w -side top -anchor w
 	    #########
-	    set f [frame $w.fbarnct2 -relief raised -bd 2 -height 3]
+	    set f [frame $w.fbarnct2 -relief raised -bd 2 -height 2]
 	    pack $f -in $w -side top -fill x -expand yes
 	    #########
 
@@ -491,7 +495,7 @@ proc toolbox_open { } {
 	    #####
 	    pack $f -in $w -side top -anchor w
 	    #########
-	    set f [frame $w.fbarnurb -relief raised -bd 2 -height 3]
+	    set f [frame $w.fbarnurb -relief raised -bd 2 -height 2]
 	    pack $f -in $w -side top -fill x -expand yes
 	    #########
 
@@ -499,7 +503,7 @@ proc toolbox_open { } {
 	##################
 
 	if { $i == "toolobjs" } {
-	    set f [frame $w.ftoolobj ]
+	    set f [frame $w.ftoolobj -borderwidth 0]
 
 	    button $f.brev -image ay_Revolve_img -padx 0 -pady 0 -command {
 		revolve_crt; 
@@ -526,9 +530,9 @@ proc toolbox_open { } {
 	    pack $f.bskin -in $f -side left
 
 	    #####
-	    pack $f -in $w -side top -anchor w
+	    pack $f -in $w -side top -anchor w -fill x -expand yes
 	    #########
-	    set f [frame $w.fbartoolobj -relief raised -bd 2 -height 3]
+	    set f [frame $w.fbartoolobj -relief raised -bd 2 -height 2]
 	    pack $f -in $w -side top -fill x -expand yes
 	    #########
 
