@@ -18,6 +18,10 @@
 #include "opencsg.h"
 #include "ayCSGPrimitive.h"
 
+#ifdef AYCSGDBG
+#include "aycore/ppoh.h"
+#endif
+
 // local preprocessor definitions
 #define CSGTYPE modified
 
@@ -78,6 +82,14 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
  int orig_use_materialcolor = ay_prefs.use_materialcolor;
  GLfloat color[4] = {0.0f,0.0f,0.0f,0.0f};
  int is_csg;
+#ifdef AYCSGDBG
+ ay_printcb *cbv[4];
+
+  cbv[0] = &ay_ppoh_prtype;
+  cbv[1] = &ay_ppoh_prtrafos;
+  cbv[2] = &ay_ppoh_prflags;
+  cbv[3] = NULL;
+#endif
 
   // do not use glColor()/glMaterial() while resolving CSG,
   // it is needed by OpenCSG...
@@ -93,6 +105,11 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
 			     &is_csg, &aycsg_root);
 
   ay_status = aycsg_normalize(aycsg_root);
+
+#ifdef AYCSGDBG
+  ay_ppoh_print(aycsg_root, stdout, 0, cbv);
+  return AY_OK;
+#endif
 
   ay_status = aycsg_flatten(aycsg_root, togl, AY_LTUNION);
 
@@ -734,6 +751,8 @@ aycsg_copytree(int sel_only, ay_object *t, int *is_csg, ay_object **target)
 	return AY_EOMEM;
 
       memcpy(*target, t, sizeof(ay_object));
+      (*target)->next = NULL;
+      (*target)->down = NULL;
 
       ay_status = AY_OK;
 
@@ -886,6 +905,10 @@ Aycsg_Init(Tcl_Interp *interp)
     }
 
   aycsg_root = NULL;
+
+#ifdef AYCSGDBG
+  ay_ppoh_init(interp);
+#endif
 
   // initialize GLEW
   err = glewInit();
