@@ -587,6 +587,35 @@ ay_object_copy(ay_object *src, ay_object **dst)
 } /* ay_object_copy */
 
 
+/* ay_object_copymulti:
+ *  copy multiple objects (linked via ->next) from src to dst
+ */
+int
+ay_object_copymulti(ay_object *src, ay_object **dst)
+{
+ int ay_status = AY_OK;
+
+ if(!src || !dst)
+   return AY_ENULL;
+
+ while(src)
+   {
+     ay_status = ay_object_copy(src, dst);
+     if(ay_status|| !(*dst))
+       {
+	 return ay_status;
+       }
+     else
+       {
+	 dst = &((*dst)->next);
+       }
+     src = src->next;
+   } /* while */
+
+ return AY_OK;
+} /* ay_object_copymulti */
+
+
 /* ay_object_haschildtcmd:
  *  returns 1 if selected object has a regular (other than
  *  endlevel) child object

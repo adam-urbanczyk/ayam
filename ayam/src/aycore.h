@@ -206,6 +206,8 @@ int ay_object_setnametcmd(ClientData clientData, Tcl_Interp *interp,
 
 int ay_object_copy(ay_object *src, ay_object **dst);
 
+int ay_object_copymulti(ay_object *src, ay_object **dst);
+
 int ay_object_haschildtcmd(ClientData clientData, Tcl_Interp *interp,
 			   int argc, char *argv[]);
 
