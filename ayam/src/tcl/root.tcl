@@ -60,9 +60,9 @@ addParam $w RiOptData RadSteps
 addParam $w RiOptData PatchSamples
 
 addText $w e6 "Paths:"
-addString $w RiOptData Textures
-addString $w RiOptData Includes
-addString $w RiOptData Shaders
+addString $w RiOptData Textures [list textures]
+addString $w RiOptData Includes [list includes]
+addString $w RiOptData Shaders [list shaders]
 
 addText $w e7 "Limits:"
 addParam $w RiOptData TextureMem
