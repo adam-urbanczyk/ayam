@@ -456,7 +456,14 @@ proc addFile { w prop name {def {}} } {
 	pack $f.l -in $f -side left -fill x
 	pack $f.e -in $f -side left -fill both -expand yes
 	pack $f.b -in $f -side left -fill x
-	if { $mb != "" } { pack $mb -side right -fill x -expand no}
+
+	if { $mb != "" } { 
+	    if { $tcl_platform(platform) == "windows" } {
+		pack $mb -side right -fill both -expand no
+	    } else {
+		pack $mb -side right -fill x -expand no
+	    }
+	}
 
 	pack $f -in $w -side top -fill x
 
