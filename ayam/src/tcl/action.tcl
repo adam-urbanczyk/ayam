@@ -9,6 +9,22 @@
 
 # action.tcl - interactive actions
 
+#upAc:
+# bound to variable trace for ay(action) that in turn designates whether
+# modeling actions are going on, if ay(action) is written and 0,
+# (an action ended), we issue an additional notification, so that
+# objects may adapt their notification (do low quality but fast work, when
+# a modelling action is going on)
+proc upAc { n1 n2 op } {
+ global ay
+    if { $ay(action) == 0 } {
+	forceNot
+     }
+}
+# upAc
+
+trace variable ay(action) w upAc
+
 #stdReleaseBind:
 # standard release binding for modeling actions:
 # force notification (if necessary);
@@ -16,6 +32,7 @@
 proc stdReleaseBind { w } {
     bind $w <ButtonRelease-1> {
 	set ay(action) 0
+	update
 	if { $ayprefs(LazyNotify) == 1 } { forceNot }
 	rV
 	plb_update
