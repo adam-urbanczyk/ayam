@@ -248,6 +248,8 @@ proc prefs_open {} {
     button $f.bok -text "Ok" -width 8 -command { 
 	global ay ayprefs ayprefse
 
+	prefs_warnNeedRestart
+
 	# copy array ayprefse to ayprefs
 	set avnames [array names ayprefs]
 	foreach j $avnames {
@@ -263,6 +265,8 @@ proc prefs_open {} {
 
     button $f.bap -text "Apply" -width 8 -command { 
 	global ay ayprefs ayprefse
+
+	prefs_warnNeedRestart
 
 	# copy array ayprefse to ayprefs
 	set avnames [array names ayprefs]
@@ -554,3 +558,22 @@ proc prefs_setSamplingTolerance { plus } {
  return;
 }
 # prefs_setSamplingTolerance
+
+
+# prefs_warnNeedRestart:
+#  warn user that restart is needed for his preference changes
+#  to take (full) effect
+proc prefs_warnNeedRestart {} {
+    global env ay ayprefs ayprefse
+
+    if { $ayprefs(AutoFocus) != $ayprefse(AutoFocus) ||
+         $ayprefs(Locale) != $ayprefse(Locale) } {
+	    set t "Need Restart!"
+	    set m "Some of your changes need a restart of Ayam to take effect!"
+	set answer [tk_messageBox -title $t -type ok -icon warning -message $m]
+    }
+
+
+ return;
+}
+# prefs_warnNeedRestart
