@@ -65,16 +65,38 @@ proc rrib_import { } {
 
 
 	set f [frame $w.f2]
-	button $f.bok -text "Ok" -width 5 -command "global rrib_options;\
-	rrib $ifilename -f \$rrib_options(ReadFrame)\
-	-c \$rrib_options(ReadCamera)\
-	-o \$rrib_options(ReadOptions)\
-	-l \$rrib_options(ReadLights)\
-	-m \$rrib_options(ReadMaterial)\
-	-p \$rrib_options(ReadPartial);\
-	grab release .ribI;\
-	focus .;\
-	destroy .ribI"
+	button $f.bok -text "Ok" -width 5 -command {
+	    global rrib_options;
+	    rrib $ifilename -f $rrib_options(ReadFrame)\
+		    -c $rrib_options(ReadCamera)\
+		    -o $rrib_options(ReadOptions)\
+		    -l $rrib_options(ReadLights)\
+		    -m $rrib_options(ReadMaterial)\
+		    -p $rrib_options(ReadPartial);
+	    goTop
+	    selOb
+	    set ay(CurrentLevel) "root"
+	    set ay(SelectedLevel) "root"
+	    update
+
+	    uS
+	    rV
+
+	    set ay(sc) 1
+
+	    if { $ay_error < 2 } {
+		ayError 4 "rrib_import" "Done importing:"
+		ayError 4 "rrib_import" "$ifilename"
+	    } else {
+		ayError 2 "Ayam" "There were errors while importing:"
+		ayError 2 "Ayam" "$ifilename"
+	    }
+
+
+	    grab release .ribI;
+	    focus .;
+	    destroy .ribI
+	}
 
 	button $f.bca -text "Cancel" -width 5 -command "\
 		grab release .ribI;\
@@ -88,25 +110,6 @@ proc rrib_import { } {
 	grab $w
 	focus $w.f2.bok
 	tkwait window $w
-
-	if { $ay_error < 2 } {
-	    ayError 4 "rrib_import" "Done importing:"
-	    ayError 4 "rrib_import" "$ifilename"
-	} else {
-	    ayError 2 "Ayam" "There were errors while importing:"
-	    ayError 2 "Ayam" "$ifilename"
-	}
-
-	goTop
-	selOb
-	set ay(CurrentLevel) "root"
-	set ay(SelectedLevel) "root"
-	update
-
-	uS
-	rV
-
-	set ay(sc) 1
 
 	after idle viewMouseToCurrent
     }
