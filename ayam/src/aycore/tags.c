@@ -122,8 +122,8 @@ ay_tags_copyall(ay_object *src, ay_object *dst)
 
 /* ay_tags_append:
  *  append the tag <tag> to object <o>
- *  this routine keeps a pointer to the last tag
- *  of object o and is fast for subsequent calls
+ *  this routine keeps a pointer to the last tag of
+ *  object o and is therefore fast for subsequent calls
  */
 int
 ay_tags_append(ay_object *o, ay_tag_object *tag)
@@ -222,7 +222,7 @@ ay_tags_temp(Tcl_Interp *interp, char *name, int set, int *result)
 
 
 /* ay_tags_istemptcmd:
- *  
+ *  query for tagname in first argument, whether it is temporary or not
  */
 int
 ay_tags_istemptcmd(ClientData clientData, Tcl_Interp * interp,
@@ -254,7 +254,7 @@ ay_tags_istemptcmd(ClientData clientData, Tcl_Interp * interp,
 
 
 /* ay_tags_settcmd:
- *  
+ *  set new tags of selected object(s), after removing all old tags
  */
 int
 ay_tags_settcmd(ClientData clientData, Tcl_Interp * interp,
@@ -379,15 +379,22 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp * interp,
     {
       o = sel->object;
 
+      if(!o)
+	{
+	  return TCL_OK;
+	}
+
       /* delete old tags */
       ay_tags_delall(o);
+
+      /* add new tags */
       next = &(o->tags);
       for(index = 1; index < argc-1; index += 2)
 	{
 	  if(strcmp(argv[index], ""))
 	    {
 
-	      if(!(new = calloc(1,sizeof(ay_tag_object))))
+	      if(!(new = calloc(1, sizeof(ay_tag_object))))
 		{
 		  ay_error(AY_EOMEM, fname, NULL);
 		  return TCL_OK;
@@ -431,7 +438,7 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp * interp,
 
 
 /* ay_tags_addtcmd:
- *  
+ *  add a tag to the selected object(s)
  */
 int
 ay_tags_addtcmd(ClientData clientData, Tcl_Interp * interp,
@@ -455,19 +462,20 @@ ay_tags_addtcmd(ClientData clientData, Tcl_Interp * interp,
       return TCL_OK;
     }
 
-  if(!sel->object)
-    return TCL_OK;
-
   while(sel)
     {
       o = sel->object;
+      if(!o)
+	{
+	  return TCL_OK;
+	}
 
       /* we first try to resolve the tag type */
       if(!(entry = Tcl_FindHashEntry(&ay_tagtypesht, argv[1])))
 	{
 	  ay_error(AY_EWARN, fname, "Tag type is not registered!");
 	}
-      if(!(new = calloc(1,sizeof(ay_tag_object))))
+      if(!(new = calloc(1, sizeof(ay_tag_object))))
 	{
 	  ay_error(AY_EOMEM, fname, NULL);
 	  return TCL_OK;
@@ -509,7 +517,7 @@ ay_tags_addtcmd(ClientData clientData, Tcl_Interp * interp,
 
 
 /* ay_tags_gettcmd:
- *  
+ *  return all tags of the (first) selected object 
  */
 int
 ay_tags_gettcmd(ClientData clientData, Tcl_Interp * interp,
@@ -518,7 +526,7 @@ ay_tags_gettcmd(ClientData clientData, Tcl_Interp * interp,
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  ay_tag_object *tag = NULL;
- char fname[] = "setTags";
+ char fname[] = "getTags";
 
   if(argc < 3)
     {
@@ -527,10 +535,10 @@ ay_tags_gettcmd(ClientData clientData, Tcl_Interp * interp,
     }
 
   if(!sel)
-    return TCL_OK;
-
-  if(!sel->object)
-    return TCL_OK;
+    {
+      ay_error(AY_ENOSEL, fname, NULL);
+      return TCL_OK;
+    }
 
   Tcl_SetVar(interp,argv[1], "", TCL_LEAVE_ERR_MSG);
   Tcl_SetVar(interp,argv[2], "", TCL_LEAVE_ERR_MSG);
@@ -555,7 +563,7 @@ ay_tags_gettcmd(ClientData clientData, Tcl_Interp * interp,
 
 
 /* ay_tags_deletetcmd:
- *  
+ *  delete all tags of the selected object(s)
  */
 int
 ay_tags_deletetcmd(ClientData clientData, Tcl_Interp * interp,
@@ -575,10 +583,15 @@ ay_tags_deletetcmd(ClientData clientData, Tcl_Interp * interp,
     }
 
   if(!sel)
-    return TCL_OK;
+    {
+      ay_error(AY_ENOSEL, fname, NULL);
+      return TCL_OK;
+    }
 
   if(strcmp(argv[1], "all"))
-     mode = 1;
+    {
+      mode = 1;
+    }
 
   while(sel)
     {
@@ -599,13 +612,13 @@ ay_tags_deletetcmd(ClientData clientData, Tcl_Interp * interp,
 		{
 		  last = &(tag->next);
 		  tag = tag->next;
-		}
+		} /* if */
 	    } /* while */
 	}
       else
 	{
 	  ay_status = ay_tags_delall(o);
-	}
+	} /* if */
       sel = sel->next;
     } /* while */
  
@@ -672,20 +685,20 @@ ay_tags_parseplist(char *str, int declare, RtInt *argc, RtToken **tokensr,
 	      /* we have all three needed components and thus
 		 may allocate memory for the new parameter */
 	      if(!(tokens = realloc(tokens, sizeof(RtToken))))
-		{ return AY_EOMEM; }
+		{ free(tmp); return AY_EOMEM; }
 	      if(!(values = realloc(values, sizeof(RtPointer))))
-		{ return AY_EOMEM; }
+		{ free(tmp); return AY_EOMEM; }
 
 	      /* copy name */
 	      if(!(tokens[*argc] = calloc(strlen(parname)+1, sizeof(char))))
-		    { return AY_EOMEM; }
+		    { free(tmp); return AY_EOMEM; }
 	      strcpy(tokens[*argc], parname);
 
 	      switch(*partype)
 		{
 		case 'i':
 		  if(!(itemp = calloc(1, sizeof(RtInt))))
-		    { return AY_EOMEM; }
+		    { free(tmp); return AY_EOMEM; }
 		  values[*argc] = (RtPointer)itemp;
 		  sscanf(parval, "%d", itemp);
 		  if(declare)
@@ -693,7 +706,7 @@ ay_tags_parseplist(char *str, int declare, RtInt *argc, RtToken **tokensr,
 		  break;
 		case 'j':
 		  if(!(itemp = calloc(2, sizeof(RtInt))))
-		    { return AY_EOMEM; }
+		    { free(tmp); return AY_EOMEM; }
 		  values[*argc] = (RtPointer)itemp;
 		  sscanf(parval, "%d", itemp);
 		  parval2 = strtok(NULL, tok);
@@ -711,7 +724,7 @@ ay_tags_parseplist(char *str, int declare, RtInt *argc, RtToken **tokensr,
 		  break;
 		case 'f':
 		  if(!(ftemp = calloc(1, sizeof(RtFloat))))
-		    { return AY_EOMEM; }
+		    { free(tmp); return AY_EOMEM; }
 		  values[*argc] = (RtPointer)ftemp;
 		  sscanf(parval, "%f", ftemp);
 		  if(declare)
@@ -719,7 +732,7 @@ ay_tags_parseplist(char *str, int declare, RtInt *argc, RtToken **tokensr,
 		  break;
 		case 'g':
 		  if(!(ftemp = calloc(2, sizeof(RtFloat))))
-		    { return AY_EOMEM; }
+		    { free(tmp); return AY_EOMEM; }
 		  values[*argc] = (RtPointer)ftemp;
 		  sscanf(parval, "%f", ftemp);
 		  parval2 = strtok(NULL, tok);
@@ -737,9 +750,9 @@ ay_tags_parseplist(char *str, int declare, RtInt *argc, RtToken **tokensr,
 		  break;
 		case 's':
 		  if(!(stemp = calloc(1, sizeof(RtString))))
-		    { return AY_EOMEM; }
+		    { free(tmp); return AY_EOMEM; }
 		  if(!(*stemp = calloc(strlen(parval)+1, sizeof(char))))
-		    { return AY_EOMEM; }
+		    { free(tmp); return AY_EOMEM; }
 		  strcpy(*stemp, parval);
 		  values[*argc] = (RtPointer)stemp;
 		  if(declare)
@@ -747,7 +760,7 @@ ay_tags_parseplist(char *str, int declare, RtInt *argc, RtToken **tokensr,
 		  break;
 		case 'p':
 		  if(!(ptemp = calloc(1, sizeof(RtPoint))))
-		    { return AY_EOMEM; }
+		    { free(tmp); return AY_EOMEM; }
 		  values[*argc] = (RtPointer)ptemp;
 		  sscanf(parval, "%f", &((*ptemp)[0]));
 		  parval = strtok(NULL, tok);
@@ -773,7 +786,7 @@ ay_tags_parseplist(char *str, int declare, RtInt *argc, RtToken **tokensr,
 		  break;
 		case 'c':
 		  if(!(ctemp = calloc(1, sizeof(RtColor))))
-		    { return AY_EOMEM; }
+		    { free(tmp); return AY_EOMEM; }
 		  values[*argc] = (RtPointer)ctemp;
 		  sscanf(parval, "%f", &((*ctemp)[0]));
 		  parval = strtok(NULL, tok);
@@ -813,6 +826,8 @@ ay_tags_parseplist(char *str, int declare, RtInt *argc, RtToken **tokensr,
 
   *tokensr = tokens;
   *valuesr = values;
+
+  free(tmp);
 
  return AY_OK;
 } /* ay_tags_parseplist */
