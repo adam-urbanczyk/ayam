@@ -188,11 +188,11 @@ proc io_saveScene { ask selected } {
 	if { $tcl_platform(os) != "Darwin" } {
 	    set filename [tk_getSaveFile -filetypes $types -parent .\
 		    -initialfile [file tail $filename]\
-		    -initialdir $dirname -title "Select file to save to:"]
+		    -initialdir $dirname -title "Save scene to:"]
 	} else {
 	    set filename [tk_getSaveFile -filetypes $types -parent .\
 		    -initialfile [file tail $filename]\
-		    -title "Select file to save to:"]
+		    -title "Save scene to:"]
 	}
     }
 
@@ -655,16 +655,29 @@ proc io_saveEnv {  } {
      regsub -all {\\} $filename {/} filename
  }
 
- set m "Select \"Ok\" to save working environment to:\n$filename\nSelect \"Cancel\" to stop operation."
-
- set answer [tk_messageBox -type okcancel -title "Save Environment?"\
-	 -icon question -message $m]
-
- if { $answer == "cancel" } {
-     return;
+ if { $filename == "" } {
+     set filename "2view.ay"
+     set dirname "~"
  } else {
-     if { (![file exists $filename]) ||
-          ([file exists $filename] && [file writable $filename]) } {
+     set dirname [file dirname $filename]
+     if { $dirname == "." } { set dirname [pwd] }
+ }
+
+ set types {{"Ayam Scene" ".ay"} {"All files" *}}
+
+ if { $tcl_platform(os) != "Darwin" } {
+     set savefilename [tk_getSaveFile -filetypes $types -parent .\
+	     -initialfile [file tail $filename]\
+	     -initialdir $dirname -title "Save environment to:"]
+ } else {
+     set savefilename [tk_getSaveFile -filetypes $types -parent .\
+	     -initialfile [file tail $filename]\
+	     -title "Save environment to:"]
+ }
+
+ if { $savefilename != "" } {
+     if { (![file exists $savefilename]) ||
+     ([file exists $savefilename] && [file writable $savefilename]) } {
 	 viewUPos
 	 selOb
 	 uCL cs
@@ -673,14 +686,31 @@ proc io_saveEnv {  } {
 	 # save scene changed status
 	 set temp $ay(sc)
 	 set ay_error 0
-	 saveScene $filename 1
+	 saveScene $savefilename 1
 
 	 if { $ay_error < 2 } {
 	     ayError 4 "saveEnv" "Done writing environment to:"
-	     ayError 4 "saveEnv" "$filename"
+	     ayError 4 "saveEnv" "$savefilename"
+
+	     if { $ayprefs(EnvFile) != $savefilename } {
+
+		 set m "Select \"Ok\" to adapt the\n\
+preferences to load the\nnewly written environment\n\
+on the next start."
+
+                 set answer [tk_messageBox -type okcancel\
+			 -title "Adapt Preferences?"\
+			 -icon question -message $m]
+
+		 if { $answer == "cancel" } {
+		     return;
+		 } else {
+		     set ayprefs(EnvFile) $savefilename
+		 }
+	     }
 	 } else {
 	     ayError 2 "saveEnv" "There were errors while writing:"
-	     ayError 2 "saveEnv" "$filename" 
+	     ayError 2 "saveEnv" "$savefilename" 
 	 }
 	 # reset scene changed status to old value
 	 set ay(sc) $temp
@@ -688,7 +718,7 @@ proc io_saveEnv {  } {
 	 uCL cs
 	 rV
      } else {
-	 ayError 2 "saveEnv" "Can not write to $ayprefs(EnvFile)!"
+	 ayError 2 "saveEnv" "Can not write to ${savefilename}!"
      }
  }
 
