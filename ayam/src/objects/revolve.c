@@ -438,7 +438,7 @@ ay_revolve_crtcap(ay_revolve_object *revolve, ay_object *curve, double u,
     {return AY_EOMEM;}
   ay_object_defaults(cap);
   cap->type = AY_IDNPATCH;
-  cap->hidechilds = AY_TRUE;
+  cap->hide_children = AY_TRUE;
   cap->parent = AY_TRUE;
   cap->inherit_trafos = AY_FALSE;
 
@@ -624,7 +624,7 @@ ay_revolve_crtside(ay_revolve_object *revolve, ay_object *curve, double th,
     {return AY_EOMEM;}
   ay_object_defaults(cap);
   cap->type = AY_IDNPATCH;
-  cap->hidechilds = AY_TRUE;
+  cap->hide_children = AY_TRUE;
   cap->parent = AY_TRUE;
   cap->inherit_trafos = AY_FALSE;
 

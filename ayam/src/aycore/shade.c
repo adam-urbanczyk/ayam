@@ -96,7 +96,7 @@ ay_shade_object(struct Togl *togl, ay_object *o, int push_name)
        return AY_ERROR;
      }
 
-   if(!o->hidechilds)
+   if(!o->hide_children)
      {
        down = o->down;
        while(down)

@@ -78,32 +78,39 @@ extern "C" {
 
 typedef struct ay_object_s {
   struct ay_object_s *next;  /* next in same hierarchie-level */
-  struct ay_object_s *down;  /* childs */
+  struct ay_object_s *down;  /* children */
 
+  /* the type of the object, see AY_ID section below */
   unsigned int type;
+
+  /* the name of the object */
   char *name;
-  int selected;
-  
-  /* Stores a "name" for OpenGL selection */
+
+  /* a "name" for OpenGL selection */
   unsigned int glname;
-
-  /* modified by single point editing actions? */
-  int modified;
-
-  /* allow childs? */
-  int parent;
-
-  /* childs inherit trafos? */
-  int inherit_trafos;
 
   /* how many references of this object exist? */
   unsigned int refcount;
 
-  /* Visibility */
-  int hide;
-  int hidechilds;
+  /* is this object currently selected? */
+  int selected;
+  
+  /* is this object modified by single point editing actions? */
+  int modified;
 
-  /* Transformations */
+  /* does this object allow children? */
+  int parent;
+
+  /* do children inherit the transformation attributes? */
+  int inherit_trafos;
+
+  /* Visibility */
+  /* is this object hidden? */
+  int hide;
+  /* should the children of this object be hidden? */
+  int hide_children;
+
+  /* Transformation Attributes */
   double movx, movy, movz;
   double rotx, roty, rotz;
   double scalx, scaly, scalz;
@@ -118,6 +125,7 @@ typedef struct ay_object_s {
 
   void *refine; /* type specific object */
 } ay_object;
+
 
 typedef struct ay_list_object_s
 {

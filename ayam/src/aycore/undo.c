@@ -508,7 +508,7 @@ ay_undo_copy(ay_undo_object *uo)
       o->parent = c->parent;
       o->inherit_trafos = c->inherit_trafos;
       o->hide = c->hide;
-      o->hidechilds = c->hidechilds;
+      o->hide_children = c->hide_children;
 
       if((c->type != AY_IDVIEW) &&
 	 (c->type != AY_IDROOT) && notify)

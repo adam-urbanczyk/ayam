@@ -178,7 +178,7 @@ ay_read_attributes(FILE *fileptr, ay_object *o)
   fscanf(fileptr,"%d\n",&o->parent);
   fscanf(fileptr,"%d\n",&o->inherit_trafos);
   fscanf(fileptr,"%d\n",&o->hide);
-  fscanf(fileptr,"%d",&o->hidechilds);
+  fscanf(fileptr,"%d",&o->hide_children);
   read = fgetc(fileptr);
   ay_read_string(fileptr, &(o->name));
 

@@ -73,7 +73,7 @@ ay_npatch_createcb(int argc, char *argv[], ay_object *o)
     }
 
   o->parent = AY_TRUE;
-  o->hidechilds = AY_TRUE;
+  o->hide_children = AY_TRUE;
 
  return AY_OK;
 } /* ay_npatch_createcb */

@@ -662,7 +662,7 @@ ay_extrude_notifycb(ay_object *o)
 		    return AY_EOMEM;
 		  ay_object_defaults(cap);
 		  cap->type = AY_IDNPATCH;
-		  cap->hidechilds = AY_TRUE;
+		  cap->hide_children = AY_TRUE;
 		  cap->parent = AY_TRUE;
 		  cap->inherit_trafos = AY_FALSE;
 
@@ -800,7 +800,7 @@ ay_extrude_notifycb(ay_object *o)
 		    return AY_EOMEM;
 		  ay_object_defaults(cap);
 		  cap->type = AY_IDNPATCH;
-		  cap->hidechilds = AY_TRUE;
+		  cap->hide_children = AY_TRUE;
 		  cap->parent = AY_TRUE;
 		  cap->inherit_trafos = AY_FALSE;
 
