@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>1. Oct 2001
+<date>16. Nov 2001
 <abstract>
 This is the documentation of Ayam - a free 3D modeling environment
 for the RenderMan interface.
@@ -27,8 +27,8 @@ In addition, you can use the provided SGML-source to generate other formats.
 <sect>Introduction
 <p>
 What is Ayam?<p>
-Ayam is the successor of The Mops,
-a free 3D modeling environment for the RenderMan Interface.<p>
+Ayam is a free 3D modeling environment for the RenderMan Interface
+(formerly known as <tt>"The Mops"</tt>).<p>
 What platforms does Ayam run on?<p>
 Ayam is primarily aimed at the platforms BMRT (Blue Moon Rendering
 Tools, a RenderMan compliant renderer by Larry Gritz (Exluna))
@@ -650,7 +650,7 @@ shaders (files with the extension <tt/".slc"/ that have been compiled
 with BMRTs slc). Using the <tt/"Add"/ button, you may add
 another path, simply press it and select a file inside the directory
 you want to add. Note, that currently the filenames may contain
-just two <tt/"."/ at maximum. 
+just two <tt/"."/ at maximum.
 <item><tt/"Scan for Shaders!"/ initiates a rebuild of the internal
 shaders database. All shaders in the directories specified by
 the <tt/"Shaders"/ entry will be scanned and entered in that database.
@@ -673,10 +673,12 @@ with.
 <item><tt/"AutoSavePrefs"/, if this is switched on, Ayam will write
 the preferences settings to the file ayamrc when the program quits.
 <item><tt/"LoadEnv"/, if this is switched on, Ayam will load
-the scene file specified by <tt/"EnvFile"/ on startup. This file
-typically contains some view objects to create a standard 2-, 3-, or
-4-view working environment.
-<item><tt/"EnvFile"/; see above.
+the scene file specified by <tt/"EnvFile"/ on startup. 
+<item><tt/"NewLoadsEnv"/, if this is switched on, Ayam will load
+the scene file specified by <tt/"EnvFile"/ also when the scene is
+cleared using the main menu entry <tt>"File/New"</tt>.
+<item><tt/"EnvFile"/; This file typically contains some view
+objects to create a standard 2-, 3-, or 4-view working environment.
 <item><tt/"Scripts"/ is a list of filenames of Tcl scripts that should
 be executed on startup.
 <item><tt/"Plugins"/ is a list of directories that contain custom
@@ -842,7 +844,7 @@ to time, as Ayam will always append to <tt/"LogFile"/.
 <item><tt/"LogFile"/; see above.
 </itemize>
 
-The last sub-sections contains Mops Import related preferences:
+The next sub-section contains Mops Import related preferences:
 <itemize>
 <item><tt/"MIResetDM"/; if this is enabled display mode
 settings of all NURBS patches (and NURBS patch creating
@@ -852,6 +854,13 @@ that the gobal preference setting is in use.
 tolerance settings of NURBS curves and NURBS patches
 to be set to "0.0", so that the global preference setting
 is used.
+</itemize>
+The last sub-section contains miscellaneous user interface
+related preferences:
+<itemize>
+<item><tt/"SaveAddsMRU"/; if this is switched on, saving to a file
+will add that file to the most recently used list in the main menu
+for quick access.
 </itemize>
 
 <sect>Interactive Actions (Modeling)<label id="iac">
@@ -3655,6 +3664,7 @@ N
 <itemize>
 <item>Name: <ref id="attrs" name="attribute">
 <item>New: <ref id="mm" name="main menu entry">
+<item>NewLoadsEnv: <ref id="prefgui" name="preference setting">
 <item>newScene: <ref id="scio" name="scripting interface command">
 <item>NCDisplayMode: <ref id="prefdraw" name="preference setting">,
 <ref id="ncattr" name="NURBCurve attribute">
@@ -3761,6 +3771,7 @@ S
 <item>Save: <ref id="mm" name="main menu entry">
 <item>Save as: <ref id="mm" name="main menu entry">
 <item>Save Prefs: <ref id="mm" name="main menu entry">
+<item>SaveAddsMRU: <ref id="prefmisc" name="preference setting">
 <item>saveScene: <ref id="scio" name="scripting interface command">
 <item>Scale: <ref id="trap" name="transformation property">,
 <ref id="iac" name="scale object">
