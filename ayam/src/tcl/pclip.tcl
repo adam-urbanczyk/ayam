@@ -158,7 +158,7 @@ proc pclip_pastetosel { } {
 	set c [tk_messageBox -type okcancel -icon warning -message\
 "This operation\ is potentially dangerous. Proceed if you know what you are doing!"]
 
-if { $c == "cancel" } { return; }
+     if { $c == "cancel" } { return; }
 
     }
 
@@ -182,21 +182,33 @@ if { $c == "cancel" } { return; }
 	if { $sel != "" } {
 	    set pclip_prop [$lb get $sel ]
 	    global $pclip_prop
+
+	    # get name of property array
 	    eval [subst "set arr \$${pclip_prop}(arr)"]
+
+	    # get names of get/set procedures
 	    set gproc ""
 	    eval [subst "set gproc \$${pclip_prop}(gproc)"]
 	    set sproc ""
 	    eval [subst "set sproc \$${pclip_prop}(sproc)"]
 
+	    # get old values of property to paste to
 	    global $arr pclip_clipboard
 	    if { $gproc != "" } { $gproc } else { getProp }
+
+	    # copy values from property clipboard to property, possibly
+	    # mixing old and new values (depending on clipboard content)
 	    set avnames [array names pclip_clipboard]
 	    foreach j $avnames {
-
-		eval [subst "set $arr\(\$j\) \$pclip_clipboard\(\$j\)"]
+		eval [subst "set $arr\(\$j\) \{\$pclip_clipboard\(\$j\)\}"]
 	    }
 
+	    # copy the new values of the property to C-context
 	    if { $sproc != "" } { $sproc } else { setProp }
+
+	    # immediately read them back for proper display in
+	    # the property GUI and update the property GUI
+	    plb_update
 	} else {
 	    puts stderr "pclip_pastetosel: No Property selected!"
 	}
@@ -207,10 +219,11 @@ if { $c == "cancel" } { return; }
 }
 # pclip_pastetosel
 
+
 # shortcut to pclip_paste
 proc pasteProp { } {
 
-pclip_paste
+    pclip_paste
 
  return;
 }
