@@ -359,6 +359,7 @@ int
 ay_text_readcb(FILE *fileptr, ay_object *o)
 {
  ay_text_object *text = NULL;
+ int read = 0;
 
   if(!o)
    return AY_ENULL;
@@ -366,10 +367,12 @@ ay_text_readcb(FILE *fileptr, ay_object *o)
   if(!(text = calloc(1, sizeof(ay_text_object))))
     { return AY_EOMEM; }
 
+  fscanf(fileptr,"%lg",&text->height);
+  read = fgetc(fileptr);
+
   ay_read_string(fileptr, &(text->fontname));
   ay_read_unistring(fileptr, &(text->unistring));
 
-  fscanf(fileptr,"%lg\n",&text->height);
   fscanf(fileptr,"%d\n",&text->revert);
   fscanf(fileptr,"%d\n",&text->has_upper_cap);
   fscanf(fileptr,"%d\n",&text->has_lower_cap);
@@ -398,6 +401,8 @@ ay_text_writecb(FILE *fileptr, ay_object *o)
 
   text = (ay_text_object *)(o->refine);
 
+  fprintf(fileptr, "%g\n", text->height);
+
   if(!text->fontname || text->fontname[0] == '\0')
     fprintf(fileptr, "\n");
   else
@@ -417,7 +422,7 @@ ay_text_writecb(FILE *fileptr, ay_object *o)
 	}
       fprintf(fileptr, "\n");
     }
-  fprintf(fileptr, "%g\n", text->height);
+
   fprintf(fileptr, "%d\n", text->revert);
   fprintf(fileptr, "%d\n", text->has_upper_cap);
   fprintf(fileptr, "%d\n", text->has_lower_cap);
