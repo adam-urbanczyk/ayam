@@ -508,3 +508,47 @@ set answer [tk_messageBox -title $t -type okcancel -icon warning -message $m]
 
 }
 # io_warnChanged
+
+
+# io_saveEnv:
+#  
+proc io_saveEnv {  } {
+ global ay ayprefs ay_error
+
+ set filename [file nativename $ayprefs(EnvFile)]
+
+ set m "Select \"Ok\" to save working environment to:\n$filename\nSelect \"Cancel\" to stop operation."
+
+ set answer [tk_messageBox -type okcancel -title "Save Environment?"\
+	 -icon question -message $m]
+
+ if { $answer == "cancel" } {
+     return;
+ } else {
+     if {[file writable $ayprefs(EnvFile)]} {
+	 viewUPos
+	 selOb
+	 uCL cs
+	 goTop
+	 selOb 0
+	 set ay_error 0
+	 saveScene $filename 1
+	 if { $ay_error < 2 } {
+	     ayError 4 "saveEnv" "Done writing environment to:"
+	     ayError 4 "saveEnv" "$filename"
+	 } else {
+	     ayError 2 "saveEnv" "There were errors while writing:"
+	     ayError 2 "saveEnv" "$filename" 
+	 }
+
+	 selOb
+	 uCL cs
+	 rV
+     } else {
+	 ayError 2 "saveEnv" "Can not write to $ayprefs(EnvFile)!"
+     }
+ }
+
+ return;
+}
+# io_saveEnv

@@ -159,6 +159,7 @@ array set aymainshortcuts {
 
     Undo "Ctrl-z"
     Redo "Ctrl-y"
+    Material "Ctrl-m"
     Prefs "Ctrl-p"
 
     Help "F1"
@@ -387,6 +388,12 @@ proc uCL { mode {addargs ""} } {
 
 	}
 
+	if { $mode == "cs" } {
+	    $ay(tree) selection clear
+	}
+
+
+
     } else { eval [subst "uS $addargs"] }
 
  return;
@@ -513,6 +520,7 @@ proc sL { } {
 	$lb selection set end
 	selOb [expr [$lb index end] - 1]
 	plb_update
+	$lb see end
     } else {
 	# TreeView is active
 	undo savsel
@@ -520,6 +528,7 @@ proc sL { } {
 	$ay(tree) selection set [$ay(tree) nodes $ay(CurrentLevel) end]
 	tree_handleSelection
 	plb_update
+	$ay(tree) see [$ay(tree) nodes $ay(CurrentLevel) end]
     }
 
 
