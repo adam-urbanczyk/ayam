@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>22. Mar 2003
+<date>25. Mar 2003
 <abstract>
 This is the documentation of Ayam (1.5) - a free 3D modeling environment
 for the RenderMan interface.
@@ -612,6 +612,9 @@ the current scene with the camera transformations taken from the
 currently selected camera object. The size of the rendered image will
 be taken from the RiOptions of the root object. If they are zero,
 default values of 400 pixels width and 300 pixels height will be used.
+The type of the projection written will be perspective.
+Otherwise the RIB looks exactly the same as if exported via
+main menu <tt>File/Export RIB</tt>.
 
 <item><tt>RIB-Export/Selected Objects</tt>, exports only the
 selected objects to a RIB. Note that instances will always be resolved
@@ -2617,7 +2620,12 @@ This approach implies, that the scene is rendered multiple times.
 To reduce the size of the RIB, the objects to be rendered
 are written to a second RIB file named <tt>"&lt;scene&gt;.obj.rib"</tt>.
 This file is read from the main RIB several times via
-<tt>"ReadArchive"</tt>.
+<tt>"ReadArchive"</tt>. The RIB contains multiple frames which may
+be rendered separately.
+To help you picking the right frame number for the image (e.g.
+to re-render just the image),
+a comment with the frame number of the last frame (the image) will be
+written as last statement to the RIB.
 <p>
 Because multiple files (RIBs and shadow maps) are used, it is suggested
 to change the preference setting <tt>"RIB-Export/RIBFile"</tt> to
