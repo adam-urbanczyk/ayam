@@ -2974,7 +2974,10 @@ ay_nct_fillgaps(int closed, ay_object *curves)
 
 
 /* ay_nct_arrange:
- *  
+ *  arrange objects in o along trajectory t (a NURBS curve);
+ *  if rotate is AY_TRUE, additionally rotate all objects in
+ *  o so that their local X axis is parallel to the curve
+ *  points derivative
  */
 int
 ay_nct_arrange(ay_object *o, ay_object *t, int rotate)
