@@ -850,7 +850,7 @@ onio_readnurbscurve(ON_NurbsCurve *p_c)
 //
 int
 onio_getncurvefromcurve(const ON_Curve *p_o, double accuracy,
-			ON_NurbsCurve** pp_c)
+			ON_NurbsCurve **pp_c)
 {
  ON_NurbsCurve c;
  int handled = AY_FALSE;
@@ -878,6 +878,14 @@ onio_getncurvefromcurve(const ON_Curve *p_o, double accuracy,
     {
       if((ON_PolyCurve::Cast(p_o))->GetNurbForm(c, accuracy, NULL))
 	{
+	  /*
+	  int i;
+	  for (i = 0; i < c.m_order+c.m_cv_count-2; i++)
+	    {
+	      printf(" %g",c.m_knot[i]);
+	    }
+	  printf("\n");
+	  */
 	  handled = AY_TRUE;
 	}
       else
@@ -936,6 +944,7 @@ int
 onio_readbrep(ON_Brep *p_b, double accuracy)
 {
  int ay_status = AY_OK;
+ char fname[] = "onio_readbrep";
  int i;
  ON_NurbsSurface s;
  const ON_Surface* p_s = NULL;
@@ -952,6 +961,7 @@ onio_readbrep(ON_Brep *p_b, double accuracy)
       if(face.m_si < 0 || face.m_si >= p_b->m_S.Count())
 	{
 	  // invalid brep
+	  ay_error(AY_ERROR, fname, "invalid brep (wrong surface index)");
 	  return AY_ERROR;
 	}
 
@@ -959,11 +969,20 @@ onio_readbrep(ON_Brep *p_b, double accuracy)
       if(!p_s)
 	{
 	  // invalid brep
+	  ay_error(AY_ERROR, fname, "invalid brep (surface not found)");
 	  return AY_ERROR;
 	} // if
 
-      p_s->GetNurbForm(s, accuracy);
-      ay_status = onio_readnurbssurface(&s);
+      if(p_s->GetNurbForm(s, accuracy))
+	{
+	  ay_status = onio_readnurbssurface(&s);
+	}
+      else
+	{
+	  ay_error(AY_ERROR, fname,
+	  "Unable to convert brep face; continuing with next face.");
+	  continue;
+	}
 
       if(ay_status)
 	return ay_status;
@@ -1030,14 +1049,19 @@ onio_readbrep(ON_Brep *p_b, double accuracy)
 	      if(c2i < 0 || c2i >= p_b->m_C2.Count())
 		{
 		  // invalid brep m_T[ti].m_c2i
-		  return AY_ERROR;
+		  ay_error(AY_ERROR, fname, "invalid brep (2dcurve index)");
+		  continue;
+		  //return AY_ERROR;
 		}
 
 	      p_c = p_b->m_C2[c2i];
 	      if(!p_c)
 		{
 		  // invalid brep m_C2[c2i] is NULL
-		  return AY_ERROR;
+		  ay_error(AY_ERROR, fname,
+			   "invalid brep (cannot find 2dcurve)");
+		  continue;
+		  //return AY_ERROR;
 		}
 
 	      // add trim curve to Ayam NURBSPatch object
@@ -1050,6 +1074,8 @@ onio_readbrep(ON_Brep *p_b, double accuracy)
 	      ay_status = onio_getncurvefromcurve(p_c, accuracy, &p_nc);
 	      if(ay_status)
 		{
+		  ay_error(AY_ERROR, fname,
+		      "Unable to convert trim curve; continuing with next.");
 		  continue;
 		  //return AY_ERROR;
 		}
@@ -1060,6 +1086,8 @@ onio_readbrep(ON_Brep *p_b, double accuracy)
 
 	      if(ay_status)
 		{
+		  ay_error(AY_ERROR, fname,
+		      "Unable to convert trim curve; continuing with next.");
 		  continue;
 		  //return AY_ERROR;
 		}
@@ -1132,10 +1160,11 @@ onio_readbrep(ON_Brep *p_b, double accuracy)
   if(onio_lrobject && onio_lrobject->down)
     {
       o = onio_lrobject->down;
+
       while(o->next)
 	o = o->next;
-      ay_object_crtendlevel(&(o->next));
 
+      ay_status = ay_object_crtendlevel(&(o->next));
     } // if
 
   ay_next = oldnext;
@@ -1190,29 +1219,61 @@ onio_readobject(ONX_Model *p_m, const ON_Object *p_o, double accuracy)
 	    ay_status = onio_readnurbscurve((ON_NurbsCurve*)p_o);
 	  if(ON_PolylineCurve::Cast(p_o))
 	    {
-	      (ON_PolylineCurve::Cast(p_o))->GetNurbForm(c, accuracy, NULL);
-	      ay_status = onio_readnurbscurve(&c);
+	      if((ON_PolylineCurve::Cast(p_o))->GetNurbForm(c,
+							    accuracy, NULL))
+		{
+		  ay_status = onio_readnurbscurve(&c);
+		}
+	      else
+		{
+		  return AY_ERROR;
+		}
 	    }
 	  if(ON_PolyCurve::Cast(p_o))
 	    {
-	      (ON_PolyCurve::Cast(p_o))->GetNurbForm(c, accuracy, NULL);
-	      ay_status = onio_readnurbscurve(&c);
+	      if((ON_PolyCurve::Cast(p_o))->GetNurbForm(c, accuracy, NULL))
+		{
+		  ay_status = onio_readnurbscurve(&c);
+		}
+	      else
+		{
+		  return AY_ERROR;
+		}
 	    }
 	  if(ON_LineCurve::Cast(p_o))
 	    {
-	      (ON_LineCurve::Cast(p_o))->GetNurbForm(c, accuracy, NULL);
-	      ay_status = onio_readnurbscurve(&c);
+	      if((ON_LineCurve::Cast(p_o))->GetNurbForm(c, accuracy, NULL))
+		{
+		  ay_status = onio_readnurbscurve(&c);
+		}
+	      else
+		{
+		  return AY_ERROR;
+		}
 	    }
 	  if(ON_ArcCurve::Cast(p_o))
 	    {
-	      (ON_ArcCurve::Cast(p_o))->GetNurbForm(c, accuracy, NULL);
-	      ay_status = onio_readnurbscurve(&c);
+	      if((ON_ArcCurve::Cast(p_o))->GetNurbForm(c, accuracy, NULL))
+		{
+		  ay_status = onio_readnurbscurve(&c);
+		}
+	      else
+		{
+		  return AY_ERROR;
+		}
 	    }
 	  if(ON_CurveOnSurface::Cast(p_o))
 	    {
-	      (ON_CurveOnSurface::Cast(p_o))->GetNurbForm(c, accuracy, NULL);
-	      ay_status = onio_readnurbscurve(&c);
-	    }
+	      if((ON_CurveOnSurface::Cast(p_o))->GetNurbForm(c,
+							     accuracy, NULL))
+		{
+		  ay_status = onio_readnurbscurve(&c);
+		}
+	      else
+		{
+		  return AY_ERROR;
+		}
+	    } // if
 	} // if
       break;
     case ON::surface_object:
@@ -1220,24 +1281,48 @@ onio_readobject(ONX_Model *p_m, const ON_Object *p_o, double accuracy)
 	ay_status = onio_readnurbssurface((ON_NurbsSurface*)p_o);
       if(ON_RevSurface::Cast(p_o))
 	{
-	  (ON_RevSurface::Cast(p_o))->GetNurbForm(s, accuracy);
-	  ay_status = onio_readnurbssurface(&s);
+	  if((ON_RevSurface::Cast(p_o))->GetNurbForm(s, accuracy))
+	    {
+	      ay_status = onio_readnurbssurface(&s);
+	    }
+	  else
+	    {
+	      return AY_ERROR;
+	    }
 	}
       if(ON_SumSurface::Cast(p_o))
 	{
-	  (ON_SumSurface::Cast(p_o))->GetNurbForm(s, accuracy);
-	  ay_status = onio_readnurbssurface(&s);
+	  if((ON_SumSurface::Cast(p_o))->GetNurbForm(s, accuracy))
+	    {
+	      ay_status = onio_readnurbssurface(&s);
+	    }
+	  else
+	    {
+	      return AY_ERROR;
+	    }
 	}
       if(ON_PlaneSurface::Cast(p_o))
 	{
-	  (ON_PlaneSurface::Cast(p_o))->GetNurbForm(s, accuracy);
-	  ay_status = onio_readnurbssurface(&s);
+	  if((ON_PlaneSurface::Cast(p_o))->GetNurbForm(s, accuracy))
+	    {
+	      ay_status = onio_readnurbssurface(&s);
+	    }
+	  else
+	    {
+	      return AY_ERROR;
+	    }
 	}
       /*
       if(ON_BezierSurface::Cast(p_o))
 	{
-	  ON_BezierSurface::Cast(p_o).GetNurbForm(s);
-	  ay_status = onio_readnurbssurface((ON_NurbsSurface*)s);
+	  if((ON_BezierSurface::Cast(p_o)->GetNurbForm(s, accuracy))
+            {
+	      ay_status = onio_readnurbssurface(&s);
+            {
+	  else
+	    {
+	      return AY_ERROR;
+	    }
 	}
       */
       break;
@@ -1334,7 +1419,7 @@ onio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 	    {
 	      ay_error(ay_status, fname, NULL);
 	      ay_error(AY_ERROR, fname,
-		       "Failed to read/convert object; will continue!");
+		 "Failed to read/convert object; continuing with next!");
 	    }
 	} // if
     } // for
