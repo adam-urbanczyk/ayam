@@ -110,11 +110,11 @@ ay_selp_selalltcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_selp_applytrafotcmd:
- *  select all editable points of selected objects
+ *  apply transformation to editable points of selected objects
  */
 int
 ay_selp_applytrafotcmd(ClientData clientData, Tcl_Interp *interp,
-		   int argc, char *argv[])
+		       int argc, char *argv[])
 {
  char fname[] = "applyTrafo";
  int ay_status = AY_OK;
