@@ -712,7 +712,7 @@ addParam $w ViewAttribData Height
 
 addText $w e2 "Drawing:"
 addCheck $w ViewAttribData Redraw
-addMenu $w ViewAttribData Mode [list Draw Shade DrawAndShade]
+addMenu $w ViewAttribData Mode [list Draw Shade ShadeAndDraw]
 addCheck $w ViewAttribData DrawSel
 addCheck $w ViewAttribData DrawLevel
 
