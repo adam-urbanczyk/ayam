@@ -26,9 +26,6 @@ DisplayMode 1
 # create Birail1Attr-UI
 set w [frame $ay(pca).$Birail1Attr(w)]
 
-
-addCheck $w Birail1AttrData Rotate
-addCheck $w Birail1AttrData Interpolate
 addCheck $w Birail1AttrData Close
 addParam $w Birail1AttrData Sections
 addCheck $w Birail1AttrData StartCap
