@@ -470,6 +470,9 @@ ay_object_setnametcmd(ClientData clientData, Tcl_Interp *interp,
 
   o = sel->object;
 
+  if((o == ay_root) || (o->type == AY_IDVIEW))
+    return TCL_OK;
+
   if(o)
     {
       if(o->name)
