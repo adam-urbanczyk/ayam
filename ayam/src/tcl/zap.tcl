@@ -15,7 +15,11 @@ proc zap { } {
     set windows $ay(views)
     lappend windows .
     if { [winfo exists .prefsw] } { lappend windows .prefsw }
-    if { [winfo exists .tbw] } { lappend windows .tbw }
+    if { [winfo exists .tbw] } { 
+	if { $ayprefs(ToolBoxTrans) == 0 } {
+	    lappend windows .tbw
+	}
+    }
     set ay(zapped) ""
     foreach w $windows {
 
