@@ -770,6 +770,7 @@ proc actionSplitNC { w } {
 	%W finduac -end %x %y
 	update
 	if { $ay_error == 0 } {
+	    undo save Split
 	    splitNC $u
 	    uCR; sL; rV
 	}
