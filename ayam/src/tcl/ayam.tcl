@@ -492,15 +492,16 @@ proc sL { } {
 
     if { $ay(lb) == 1 } {
 	# plain ListBox is active
+	undo savsel
 	set lb $ay(olb)
 	$lb selection clear 0 end
 	selOb
 	$lb selection set end
 	selOb [expr [$lb index end] - 1]
-	undo save
 	plb_update
     } else {
 	# TreeView is active
+	undo savsel
 	$ay(tree) selection clear
 	$ay(tree) selection set [$ay(tree) nodes $ay(CurrentLevel) end]
 	tree_handleSelection

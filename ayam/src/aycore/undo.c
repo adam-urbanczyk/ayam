@@ -21,7 +21,7 @@ static int undo_current;
 static int undo_buffer_size;
 
 static int undo_last_op; /* last operation: -1: no op,
-			    1-2: see mode variable in ay_undo_undotcmd() */
+			    1-4: see mode variable in ay_undo_undotcmd() */
 
 /* functions local to this module */
 int ay_undo_deletemulti(ay_object *o);
@@ -45,6 +45,9 @@ int ay_undo_undo(void);
 int ay_undo_copysave(ay_object *src, ay_object **dst);
 
 int ay_undo_save(void);
+
+int ay_undo_savesel(void);
+
 
 /* ay_undo_init:
  *  
@@ -545,7 +548,7 @@ ay_undo_undo(void)
       return AY_OK;
     }
 
-  if((undo_last_op == 2) && ay_selection)
+  if(((undo_last_op == 2)||(undo_last_op == 4)) && ay_selection)
     { /* if last op was a save, we need to save current state too,
          to allow the user to get back to current state with redo */
       /* XXXX Bug: this way we cannot get back to the current state,
@@ -818,10 +821,45 @@ ay_undo_save(void)
       view = view->next;
     } /* while */
 
+  uo->from_select = AY_FALSE;
+
   undo_last_op = 2;
 
  return AY_OK;
 } /* ay_undo_save */
+
+
+/* ay_undo_savesel:
+ *  
+ */
+int
+ay_undo_savesel(void)
+{
+ int ay_status = AY_OK;
+ ay_undo_object *uo = NULL;
+
+  /* we never need to save the very first state from selection */
+  if(undo_current == -1)
+    return AY_OK;
+
+  /* if last saved state is from select, we may clear it */
+  uo = &(undo_buffer[undo_current]);
+  if(uo->from_select)
+    {
+      ay_status = ay_undo_clearuo(uo);
+      undo_current--;
+    }
+
+  ay_undo_save();
+
+  /* mark currently saved state as stemming from select operation */
+  uo = &(undo_buffer[undo_current]);
+  uo->from_select = AY_TRUE;
+
+  undo_last_op = 4;
+
+ return AY_OK;
+} /* ay_undo_savesel */
 
 
 /* ay_undo_clear:
@@ -868,8 +906,10 @@ ay_undo_undotcmd(ClientData clientData, Tcl_Interp *interp,
 	mode = 2; else
       if(!strcmp(argv[1], "clear"))
 	mode = 3; else
+      if(!strcmp(argv[1], "savsel"))
+	mode = 4; else
 	  {
-	    ay_error(AY_EARGS, fname, "redo|save|clear");
+	    ay_error(AY_EARGS, fname, "redo|save|clear|savsel");
 	    return TCL_OK;
 	  }
     }
@@ -887,6 +927,9 @@ ay_undo_undotcmd(ClientData clientData, Tcl_Interp *interp,
       break;
     case 3:
       ay_status = ay_undo_clear();
+      break;
+    case 4:
+      ay_status = ay_undo_savesel();
       break;
     default:
       break;
