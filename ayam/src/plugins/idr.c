@@ -1801,7 +1801,7 @@ idr_checkboxes(idr_picpart *part1, idr_picpart *part2,
  */
 void
 idr_combineboxes(idr_picpart *part1, idr_picpart *part2,
-		 idr_picpart *tpartlist)
+		 idr_picpart **tpartlist)
 {
  idr_picpart *part, *lastpart, *nextpart;
  int l, b, r, t, flag;
@@ -1823,10 +1823,10 @@ idr_combineboxes(idr_picpart *part1, idr_picpart *part2,
       part1->top = part2->top;
   /* delete part2 from memory */
   free(part2);
-  
+
   /* test box against all other boxes in tpartlist to prevent overlapping */
   lastpart = NULL;
-  part = tpartlist;
+  part = *tpartlist;
   while(part)
     {
       if(part != part1)
@@ -1874,7 +1874,7 @@ idr_combineboxes(idr_picpart *part1, idr_picpart *part2,
 			  free(part);
 			  part = lastpart;
 			  lastpart = NULL;
-			  tpartlist = part;  /* changed first list element */
+			  *tpartlist = part;  /* changed first list element */
 		        }
 		      break;
 
@@ -2245,7 +2245,7 @@ idr_get2dbbclist(idr_picpart **partlist, double importance,
 
       if(i == importance)
 	{
-	  ay_bbc_get(o, bb);
+	  /*	  ay_bbc_get(o, bb);*/
 	  idr_get2dbbc(o, &left, &right, &bottom, &top);
 
 	  left -= width/2;
@@ -2966,7 +2966,7 @@ idr_wrib_tcb(struct Togl *togl, int argc, char *argv[])
 			    part = part->next;
 			    i2opt--;
 			  }
-			idr_combineboxes(optpart, part, tpartlist);
+			idr_combineboxes(optpart, part, &tpartlist);
 			krit = wasted;
 		      }
 		    else
@@ -3709,6 +3709,9 @@ idr_drawroot_cb(struct Togl *togl, ay_object *o)
 	}
      v = v->next;
    }
+
+ if(!rvname)
+   return AY_OK;
 
  while(t)
    {
