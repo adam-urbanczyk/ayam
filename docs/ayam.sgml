@@ -644,6 +644,105 @@ coordinate system of the parent object of the current
 level. This is handy for modeling in local coordinate
 systems.
 
+<sect1>Selecting Objects within a View<label id="objsel">
+<p>
+When no action is active for views (i.e. the views action is
+<tt/"Pick"/) you can pick objects that appear within a view.
+This section describes techniques that you can use for selecting
+one or more objects within a view.
+
+<sect2>Selecting Individual Objects<label id="oneobjsel">
+<p>
+Selecting objects within a view is a straightforward operation that uses
+standard methods. You will use the following two selection operations most
+frequently:
+
+<itemize>
+<item> To select a single object within a view, move the cursor to the object
+and click mouse button 1. Once you select an object, any objects previously
+selected are unselected automatically.
+<item> To select an additional object, move the cursor to the object and
+<tt/&lt;Shift&gt;/+Click. Previously selected objects remain selected, and
+the newly picked object is added to the selection. Notice that the picked item
+must belong to the same level as the previously selected objects. An
+alternative method for selecting multiple objects is to drag a rectangle
+around them. For more information see
+<ref id="mulobjsel" name="Drag-selecting Multiple Objects">
+</itemize>
+
+<sect2>Drag-selecting Multiple Objects<label id="mulobjsel">
+<p>
+You can select multiple objects using the <tt/&lt;Shift&gt;/+Click method
+described in section <ref id="oneobjsel" name="Selecting Individual Objects">.
+An additional method for selecting multiple objects is to drag a rectangle
+around those objects. However only objects that belong to the current level
+can be picked within a drag-selection. If you want to select multiple objects
+that belong to another level you must change the current level by either
+selecting it in the tree/listbox or by picking one object from that level
+on a view. 
+
+<p>
+The procedure for drag-selecting multiple objects also uses a standard method:
+
+<enum>
+<item> Imagine a rectangle that encloses only the objects you want to select.
+<item> Click at one corner of the rectangle and, while continuing to press the
+mouse button, drag until you have enclosed all the objects.
+<item> Release the mouse button. All the valid objects inside or crossing the
+rectangle are selected and any objects previously selected are unselected
+automatically.
+</enum>
+
+<p>
+Note that if you press <tt/&lt;Shift&gt;/ during the drag-selection, objects
+that are enclosed by the rectangle will be added to the current selection
+instead of replacing it.
+
+<sect2>Ambiguous Picking<label id="ambobjsel">
+<p>
+In some cases Ayam is unable to differentiate between the objects you have
+selected and other nearby or related objects. This ambiguity can arise as
+follows:
+
+<itemize>
+<item>Imagine a small square surrounding the cursor. When you click an object,
+any other valid objects that fall inside this square are also considered to
+be possible selections. For example, if you select an item that is positioned
+very close to another one, Ayam may consider both items to be possible
+selections.
+<item>If your model is three-dimensional (which is likely to happen),
+imagine a line that is perpendicular to the screen and that passes through
+the cursor and into the model. When you pick an object, any objects that
+intersect this line are considered to be possible candidates for selection.
+</itemize>
+
+<p>
+<figure loc="ht">
+<eps file="pics/ampick.ps" height="3cm">
+<img src="pics/ampick.png">
+<caption>List of Ambiguous Candidates</caption>
+</figure>
+
+<p>
+If your selection is ambiguous Ayam displays a window that contains a list of
+the possible candidates for selection. When you click a name in the list,
+the corresponding object is highlighted. Click <tt/"OK"/ when you have
+determined which object to select or <tt/"Cancel"/ to close the list and keep
+the previous selection unchanged.
+
+<p>
+Notes:
+<itemize>
+<item> While the list of ambiguous candidates is opened you can not pick other
+objects within the views.
+<item> It is possible to use the <tt/"Zoom to Object"/ action (shortcut
+<tt/&lt;Ctrl+o&gt;/) while the ambiguous select listbox is open to get
+a better view of the temporarily selected object.
+<item> The tolerance used to determine whether an object should be picked
+or not can be adjusted (see <tt/"PickTolerance"/ in <ref id="hidprefs" 
+name="Hidden Preference Settings">).
+</itemize>
+
 <sect1>The Tool Box Window<label id="toolb">
 <p>
 <figure loc="ht">
@@ -968,6 +1067,12 @@ tool window will cause the action to be started in all
 view windows simultaneously.<p>
 
 To break an action, the <tt/&lt;Esc&gt;/ key may be used.
+
+The default action for all views, which is also in effect after
+use of the <tt/&lt;Esc&gt;/ key, is <tt/"Pick"/,
+see section
+<ref id="objsel" name="Selecting Objects within a View">
+for more information about picking objects.
 
 Note, that the modeling actions
 are not available in perspective views.<p>
@@ -3729,6 +3834,8 @@ Rendering should be kept on disk (default: 5)
 requester? (default: 1 - yes)
 <item><tt/"DailyTips"/: a list of strings that appear as tips
 on startup in the console
+<item><tt/"PickTolerance"/: the tolerance used to determine whether an object
+should be picked or not (default: 5)
 </itemize>
 
 <sect2>RiOption and RiAttributes Database<label id="rioptdb">
@@ -3865,10 +3972,10 @@ that render very slowly.
 <item>Write/translate tutorials.
 <item>Implement custom objects. This will be discussed a bit more later on.
 <item>Donate source to improve several critical parts of the modeler,
-e.g. a better picking code.
-More ideas: better (more exact) lighting simulation (is this possible to do
-with OpenGL at all?), CSG-preview with OpenGL, Import of RIB's using
-the Affine Toolkit, support for subdivision surfaces.
+some ideas are: better (more exact) lighting simulation (is this
+possible to do with OpenGL at all?), CSG-preview with OpenGL,
+support for subdivision surfaces. The project page of Ayam
+on SourceForge lists some more tasks.
 <item>Debug the MF3D code, which is currently not working
 well with binary files from different byte-order platforms.
 <item>Donate money by registering ShellyLib.
@@ -3913,6 +4020,7 @@ Bernd, without your help I surely would not be that far, thanks!
 
 Furthermore, I would like to thank the following people:
 <itemize>
+<item>B. Coconnier: object picking
 <item>H. Birkholz: initial implementation of the tree widget, shadow map
 support, AI, and IDR
 <item>F. (Copper) Pagels: Metaballs custom object
@@ -4196,7 +4304,8 @@ N
 O
 <itemize>
 <item>Object: <ref id="prefdraw" name="preference setting">
-<item>Objects: <ref id="obj" name="tree/listbox">
+<item>Objects: <ref id="obj" name="tree/listbox">,
+<ref id="objsel" name="selection within a view">
 <item>OI: <ref id="oitt" name="tag type">
 <item>Order: <ref id="ncattr" name="NURBCurve attribute">,
 <ref id="npattr" name="NURBPatch attribute">,
@@ -4214,6 +4323,7 @@ P
 <item>Paste Property: <ref id="mm" name="main menu entry">
 <item>PatchSamples: <ref id="rio" name="RenderMan interface option">
 <item>PhiMin, PhiMax: <ref id="top" name="torus attribute">
+<item>Pick:<ref id="objsel" name="pick objects within a view">
 <item>PickEpsilon: <ref id="prefmodel" name="preference setting">
 <item>Point: <ref id="pdsl" name="light type">
 <item>Preferences: <ref id="prefs" name="Preferences">,
@@ -4298,7 +4408,8 @@ S
 <item>scalOb, scalSel: <ref id="movob" name="scripting interface command">
 <item>Scripts: <ref id="prefgui" name="preference setting">
 <item>Sections: <ref id="swp" name="sweep attribute">
-<item>Select: <ref id="obj" name="select objects">,
+<item>Select: <ref id="obj" name="select objects with the tree/listbox">,
+<ref id="objsel" name="select objects within a view">,
 <ref id="selac" name="select points">
 <item>Selection: <ref id="prefdraw" name="preference setting">
 <item>setNC: <ref id="gncp" name="scripting interface command">
