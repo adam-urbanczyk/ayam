@@ -522,6 +522,7 @@ idr_3dreg_topart(ay_object *o, ay_view_object *view, idr_picpart **partlist)
       part->right = right;
       part->bottom = bottom;
       part->top = top;
+      part->alpha = 2;
     } /* if */
 
  return AY_OK;
@@ -2771,9 +2772,12 @@ idr_wrib_tcb(struct Togl *togl, int argc, char *argv[])
 	    part->right = -width/2+width;
 	    part->top = -height/2+height;
 
-	    if(idrmode>2)
+	    if(idrmode>2/*&&i==0*/)
 	      part->alpha = 1;
-
+	    /*
+	    if(idrmode>2&&i==1)
+	      part->alpha = 2;
+	    */
 	    /* construct RIBFile/ImageFile */
 	    sprintf(buf, "%s_%d_0.rib", idrbase, i);
 	    if(!(part->RIBFile = calloc(strlen(buf)+1, sizeof(char))))
@@ -3170,6 +3174,7 @@ idr_combine_pics(uint32 *db, int dw, int dh, uint32 *sb, int sw, int sh,
 		 int l, int b, int part_alpha)
 {
  int x, y, z, a;
+ unsigned char ra;
  unsigned char *pixel_src, *pixel_dst;
   l+= dw/2;
   b+= dh/2; 
@@ -3182,7 +3187,19 @@ idr_combine_pics(uint32 *db, int dw, int dh, uint32 *sb, int sw, int sh,
 	      pixel_src = (char *)&sb[y*sw+x];
 	      if(part_alpha)
 		{
-		  a = 255;
+		  if(part_alpha>1)
+		    {
+		      glReadPixels(x+l,y+b,1,1,GL_RED, GL_UNSIGNED_BYTE, &ra);
+		      if(ra!=127)
+			a = 0;
+		      else
+			a = 255;
+		      /*printf("hier %d\n",ra);*/
+		    }
+		  else
+		    {
+		      a = 255;
+		    }
 		}
 	      else
 		{
@@ -3844,6 +3861,7 @@ Idr_Init(Tcl_Interp *interp)
       ay_error(AY_ERROR, fname, "Error registering IIDR tag type!");
       return TCL_OK;
     }
+  ay_status = ay_tags_temp(interp, idr_iidrtagname, 1, NULL);
 
   ay_status = ay_tags_register(interp, idr_ridrtagname, &idr_ridrtagtype);
   if(ay_status)
@@ -3865,12 +3883,15 @@ Idr_Init(Tcl_Interp *interp)
       ay_error(AY_ERROR, fname, "Error registering CIDR tag type!");
       return TCL_OK;
     }
+  ay_status = ay_tags_temp(interp, idr_cidrtagname, 1, NULL);
+
   ay_status = ay_tags_register(interp, idr_ccidrtagname, &idr_ccidrtagtype);
   if(ay_status)
     {
       ay_error(AY_ERROR, fname, "Error registering CCIDR tag type!");
       return TCL_OK;
     }
+  ay_status = ay_tags_temp(interp, idr_ccidrtagname, 1, NULL);
 
   /* dirty hack! overwrite root-object drawing routine */
   arr = ay_drawcbt.arr;

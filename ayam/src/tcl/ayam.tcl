@@ -312,6 +312,7 @@ if { $tcl_platform(platform) == "windows" } {
     set ay(separator) ";"
     set ayprefs(TmpDir) "$env(TEMP)"
     regsub -all {\\} $ayprefs(TmpDir) {/} ayprefs(TmpDir)
+    set ayprefs(EnvFile) "~/2view.ay"
     set ayprefs(PickEpsilon) 0.0
     set sc ""
     set scdir ""

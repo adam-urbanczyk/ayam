@@ -1,0 +1,131 @@
+<!DOCTYPE HTML SYSTEM "html.dtd">
+<HTML>
+<HEAD>
+<TITLE>Ayam Win32 Setup</TITLE>
+</HEAD>
+<BODY>
+
+<H1>Ayam Win32 Setup</H1>
+
+The executable of Ayam is located in the directory named "bin".<br>
+You do not need to install Ayam in the system, you can start it
+directly with a double click from where you unpacked the archive.<br>
+If you get error messages about input or output file handles
+when trying to render directly from Ayam, please use the
+accompanying batch file "ayam.bat" to start Ayam.<p>
+
+On the first start of Ayam, the following things have to be done:
+<UL>
+ <LI> Saving Preferences
+ <LI> Setting up Shaders
+ <LI> Creating and Saving a Working Environment
+</UL>
+
+Do not worry about any error messages in red color, that appear
+in the console on first startup. We are going to fix them now.
+
+
+<H2>1. Saving Preferences</H2>
+
+All preference settings (Menu: "Edit/Preferences") are
+automatically saved when you leave Ayam.<br>
+
+The preferences are saved to the file:<br>
+"$(HOME)/ayamrc" if the environment variable "HOME" exists<br>
+"$(TEMP)/ayamrc" else<p>
+
+The following steps need to be done if you (for some reason)
+do not like it that way, or the preferences end up in silly
+places (e.g. Win95 is setting your $(HOME) to "C:/", so that
+the preferences end up in "C:/ayamrc"...).<br>
+However, if anything is fine with you, just skip to Step 2 now.<p>
+
+You can change the path and filename of the preference settings
+using the environment variable "AYAMRC".<br>
+How do you set an environment variable?<p>
+
+Edit the batch file "ayam.bat" (This does not work on WindowsNT!):
+<UL>
+ <LI> quit Ayam
+ <LI> remove the leading ";" from the line ";SET AYAMRC=C:/ayam/myayamrc"
+ <LI> change the path to a more appropriate setting
+ <LI> use the batch file "ayam.bat" to start Ayam
+</UL>
+
+Alternatively:
+<UL>
+ <LI> quit Ayam
+ <LI> WinXP: open Start/Control Panel/System/Advanced/Environment Variables<br>
+Add a new variable named "AYAMRC" and set it e.g. to C:/ayam/myayamrc
+ <LI> WinNT/2000: open Start/Settings/Control Panel/System/Environment<br>
+Add a new variable named "AYAMRC" and set it e.g. to C:/ayam/myayamrc
+ <LI> Win95/98/ME: add to the file "C:/autoexec.bat" the line:<br>
+SET AYAMRC=C:/ayam/myayamrc<br>
+ <LI> restart Windows
+ <LI> start Ayam again
+</UL>
+
+You can switch off automatic saving of preferences on exit using the
+preference setting "Main/AutoSavePrefs".
+If you switched off AutoSavePrefs, you can enforce saving of the
+preferences using the menu entry "File/Save Prefs".<p>
+
+Remember: NEVER use backslashes (\) in any path or filename you enter to
+Ayam.<p>
+
+<H2>2. Setting up Shaders</H2>
+
+What are shaders? For the moment, we can safely assume that
+shaders are small files that carry material descriptions.
+Some example shaders come with your RenderMan compatible renderer
+(e.g. BMRT), but you may also create your own of course.<br>
+Currently, Ayam can only work with shaders that have been
+compiled with "slc" from BMRT, so you should get and
+install BMRT from
+<A HREF="http://www.exluna.com/">http://www.exluna.com/</A>.
+Now you need to point Ayam to the directories where your slc-compiled
+shaders reside in order to use them with the material
+objects in Ayam.
+This is done using the preference setting "Main/Shaders".
+Just open the preferences, enter the appropriate paths (separated by ";")
+into the string entry labeled "Shaders".<br>
+An example string could look like this:<br>
+D:/BMRT2.6/shaders/;D:/Ayam/scn/shaders/<br>
+Now press the "Scan Shaders" button below and watch the console for
+error messages.<p>
+Remember: NEVER use backslashes (\) in any path or filename you enter to Ayam.
+
+
+<H2>3. Creating and Saving a Working Environment</H2>
+
+<UL>
+ <LI> Open and arrange as many views as you like using the
+menu entry "Create/View".<br>
+If Ayam crashes or blocks during opening of a view
+then probably something with your OpenGL setup is seriously broken.
+Fix this, then return here.
+ <LI> Save the environment using the menu entry
+"Special/Save Environment". This will save the environment
+to the file given in the preference setting "Main/EnvFile".
+The default setting is "~/2view.ay".
+The "~" always expands to the home directory of the current user.
+If you have a single or no user on your system you might want
+to put an absolute path into "EnvFile" like e.g. "D:/ayam/2view.ay".<br>
+Do not switch off the preference setting "Main/LoadEnv",
+as this would inhibit automatic loading of the working
+environment on startup.
+</UL>
+
+Remember: NEVER use backslashes (\) in any path or filename you enter to
+Ayam.<p>
+
+Quit the application and start it again; then
+download "Tutorial #1" and do it.
+
+<HR>
+<i>Randolf Schultz, 7. Jan 2002<BR>
+<A HREF="http://www.ayam3d.org/">
+http://www.ayam3d.org/</A>&nbsp;&nbsp;&nbsp;&nbsp;Reconstruct the World!
+</i>
+</BODY>
+</HTML>
