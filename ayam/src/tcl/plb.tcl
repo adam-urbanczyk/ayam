@@ -501,3 +501,32 @@ proc plb_focus { } {
     }
 }
 # plb_focus
+
+
+#plb_showprop:
+#
+#
+proc plb_showprop { prop } {
+    global ay
+
+    set l $ay(plb)
+
+    set len [$l size ]
+
+    if { $len < 1 } {
+	return;
+    }
+
+    $l selection clear 0 end
+
+    if { $prop == 0 } {
+	$l selection set [expr $len - 1]
+    } else {
+	$l selection set [expr $prop - 1]
+    }
+
+    plb_update
+
+ return;
+}
+# plb_showprop
