@@ -573,7 +573,8 @@ proc io_saveEnv {  } {
  if { $answer == "cancel" } {
      return;
  } else {
-     if {[file writable $filename]} {
+     if { (![file exists $filename]) ||
+          ([file exists $filename] && [file writable $filename]) } {
 	 viewUPos
 	 selOb
 	 uCL cs
