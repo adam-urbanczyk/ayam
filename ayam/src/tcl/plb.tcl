@@ -38,9 +38,14 @@ listbox $f.li -width 14 -height 12 -yscrollcommand {global ay; $ay(pss) set}\
 set ay(plb) $f.li
 
 bind $f.li <ButtonRelease-1> {
-    global ay pclip_omit pclip_omit_label
+    global ay pclip_omit pclip_omit_label sel
 
-    global sel
+    if { $ay(lb) == 0 } {
+	after 100 {global ay; focus -force $ay(tree)}
+    } else {
+	after 100 {global ay; focus -force $ay(olb)}
+    }
+
     set sel ""
     getSel sel
     if { $sel == "" } { break }
@@ -82,11 +87,15 @@ bind $f.li <ButtonRelease-1> {
 	array set pclip_omit { }
 	array set pclip_omit_label { }
     }
-    if { $ay(lb) == 0 } {
-	focus $ay(tree)
+    # improve focus traversal (speed-wise)
+    if { $ay(lb) == 1 } {
+	bind $ay(olb) <Key-Tab>\
+		"focus [tk_focusNext $ay(pca).$w];break"
     } else {
-	focus $ay(olb)
+	bind $ay(tree) <Key-Tab>\
+		"focus [tk_focusNext $ay(pca).$w];break"
     }
+
 }
 #bind
 
@@ -340,9 +349,11 @@ if { [llength $index] == 1 } {
 	    }
 	    # improve focus traversal (speed-wise)
 	    if { $ay(lb) == 1 } {
-		bind $ay(olb) <Tab> "focus [tk_focusNext $ay(pca).$w];break"
+		bind $ay(olb) <Key-Tab>\
+			"focus [tk_focusNext $ay(pca).$w];break"
 	    } else {
-		bind $ay(tree) <Tab> "focus [tk_focusNext $ay(pca).$w];break"
+		bind $ay(tree) <Key-Tab>\
+			"focus [tk_focusNext $ay(pca).$w];break"
 	    }
 	}
 	#if
