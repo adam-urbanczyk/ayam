@@ -4,9 +4,9 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>23. Apr 2003
+<date>20. Jun 2003
 <abstract>
-This is the documentation of Ayam (1.5) - a free 3D modeling environment
+This is the documentation of Ayam (1.6) - a free 3D modeling environment
 for the RenderMan interface.
 
 Please note, that this document is intended to be a reference manual,
@@ -2030,6 +2030,10 @@ The tag type <tt/"NoExport"/ can be used to exclude certain objects
 from exported RIBs. The value string of this tag is ignored. All
 that counts is the presence of the tag. Child objects of objects
 with the <tt/"NoExport"/ tag will also be excluded from the RIB.
+Since Ayam1.6, light objects also honour the <tt/"NoExport"/ tag.
+Note that regardless of potentially present <tt/"NoExport"/ tags,
+RIB archives will be created for all referenced objects all the
+time (even if <tt/"NoExport"/ tags are added to all instances).
 
 <sect2>Internal Tags
 <p>
@@ -2542,6 +2546,11 @@ light is affected while passing through an object.
 
 <sect1>Light Object<label id="lightobj">
 <p>
+In contrast to the light sources as defined in the RenderMan
+interface, Ayam light sources are always global. This means,
+regardless of the place of a light source in the scene
+hierarchy, it will always light all other objects.
+
 The behaviour of a light source object depends heavily on the type
 of the light source.
 There are four different types available:
@@ -2549,8 +2558,7 @@ There are four different types available:
 
 Custom Lights:<label id="cul">
 <p>
-Light sources of type custom use
-the attached light shader.
+Light sources of type custom use the attached light shader.
 
 Note, that Ayam is trying to guess from the names of the light shader
 arguments to draw the light.
@@ -2608,7 +2616,8 @@ spot:
 <itemize>
 <item><tt/"From"/ and <tt/"To"/ denote position and target of the light
 source as point in space. You may edit both points using standard
-point editing actions (see also section <ref id="iac" name="interactive actions">).
+point editing actions (see also section
+<ref id="iac" name="interactive actions">).
 <item><tt/"Color"/ is the color of the light, emitted by the light source.
 <item><tt/"Intensity"/ is the intensity of the light, emitted by the
 light source. Note, that the standard point and spot lights have
@@ -4256,7 +4265,7 @@ argument giving the name of the new material. Example:
 
 <sect2>Manipulating the Selection<label id="selob">
 <p>
-This function is probably the most important one, because
+This command is probably the most important one, because
 a lot of the other commands operate on selected objects only.<p>
 selOb:
 <itemize>
@@ -4266,7 +4275,7 @@ selection, index may be an ordered list of indizes, a single index or empty.
 If no index is given, the current selection will be cleared.
 </itemize>
 
-<sect2>Clipboard Operations<label id="copob">
+<sect2>Clipboard Operations<label id="sciclip">
 <p>
 
 copOb - copy object:
@@ -4320,7 +4329,7 @@ Note, that you may call this procedure also using the shortcut
 <tt/"pasteProp"/.
 </itemize>
 
-<sect2>Hierarchy Operations<label id="gdown">
+<sect2>Hierarchy Operations<label id="scihier">
 <p>
 
 goDown:
@@ -4343,7 +4352,7 @@ goTop:
  <item>Description: Go to the top level of the object hierarchy.
 </itemize>
 
-<sect2>Transformations<label id="movob">
+<sect2>Transformations<label id="scitrafo">
 <p>
 
 movOb - move objects:
@@ -4405,21 +4414,22 @@ delegTrafo - delegate transformations:
  <item>Synopsis: <tt/"delegTrafo"/
  <item>Description: delegates the transformations associated
 with the selected objects to their child objects. Additionally,
-the transformations
-of the selected objects will be reset to the default values.
+the transformations of the selected objects will be reset to the
+default values.
 </itemize>
 
-applyTrafo - delegate transformations:
+applyTrafo - apply transformations:
 <itemize>
  <item>Synopsis: <tt/"applyTrafo sel&verbar;all"/
  <item>Description: applies the transformations encoded in the
 transformation attributes of the selected objects to the points
-(either all points, or just the seleted ones) of those objects.
+(either all points, or just the selected ones if there are any)
+of those objects.
 Additionally, the transformations of the selected objects will
 be reset to the default values.
 </itemize>
 
-<sect2>Manipulating Shaders<label id="delsh">
+<sect2>Manipulating Shaders<label id="scishaders">
 <p>
 
 shaderSet:
@@ -4442,8 +4452,46 @@ or <tt/"interior"/. The shader will be written to an array
 pointed to by varname.
 </itemize>
 
+<sect2>Manipulating Tags<label id="scitags">
+<p>
 
-<sect2>Manipulating NURBS Curves and Surfaces<label id="gncp">
+addTag:
+<itemize>
+ <item>Synopsis: <tt/"addTag type value"/
+ <item>Description: Add a tag with type-string type and value-string
+value to the currently selected objects(s).
+It is legal to deliver <tt>""</tt> as value parameter. This is e.g.
+needed for the <tt/"NoExport"/ tag.
+</itemize>
+
+delTags:
+<itemize>
+ <item>Synopsis: <tt/"delTags type"/
+ <item>Description: Delete all tags of type-string type from
+the currently selected objects(s).
+If type is <tt/"all"/, all tags are deleted from the
+currently selected objects(s).
+</itemize>
+
+getTags:
+<itemize>
+ <item>Synopsis: <tt/"getTags tvname vvname"/
+ <item>Description: Get all tags from
+the currently selected objects and put them as lists into two
+variables named tvname for the tag type-strings and vvname for the tag
+value-strings.
+</itemize>
+
+setTags:
+<itemize>
+ <item>Synopsis: <tt/"setTags tags"/
+ <item>Description: Clear all tags from the currently selected object
+and set new tags. The tag type-strings are taken from the list elements
+with even index numbers
+and the tag value-strings from the list elements with odd index numbers.
+</itemize>
+
+<sect2>Manipulating NURBS Curves and Surfaces<label id="scinurbs">
 <p>
 
 clampNC:
@@ -4506,7 +4554,7 @@ buildNP:
 </itemize>
 
 
-<sect2>Manipulating Points<label id="scpoints">
+<sect2>Manipulating Points<label id="scipoints">
 <p>
 
 Use these two commands to read or manipulate single
@@ -4535,7 +4583,7 @@ currently selected object to the coordinates x, y, z and w.
 </itemize>
 
 
-<sect2>Updating the GUI<label id="upd">
+<sect2>Updating the GUI<label id="sciupd">
 <p>
 
 rV - redraw all views:
@@ -4686,7 +4734,7 @@ saveScene:
  <item>Description: saves the current scene to filename.
 </itemize>
 
-<sect2>Reporting Errors<label id="sierr">
+<sect2>Reporting Errors<label id="scierr">
 <p>
 
 ayError:
@@ -5581,32 +5629,32 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 
 <sect>Index
 <p>
-<ref id="indexa" name="A">
-<ref id="indexb" name="B">
-<ref id="indexc" name="C">
-<ref id="indexd" name="D">
-<ref id="indexe" name="E">
-<ref id="indexf" name="F">
-<ref id="indexg" name="G">
-<ref id="indexh" name="H">
-<ref id="indexi" name="I">
-<ref id="indexj" name="J">
-<ref id="indexk" name="K">
-<ref id="indexl" name="L">
-<ref id="indexm" name="M">
-<ref id="indexn" name="N">
-<ref id="indexo" name="O">
-<ref id="indexp" name="P">
-<ref id="indexq" name="Q">
-<ref id="indexr" name="R">
-<ref id="indexs" name="S">
-<ref id="indext" name="T">
-<ref id="indexu" name="U">
-<ref id="indexv" name="V">
-<ref id="indexw" name="W">
-<ref id="indexx" name="X">
-<ref id="indexy" name="Y">
-<ref id="indexz" name="Z">
+<ref id="indexa" name="A ">
+<ref id="indexb" name=" B ">
+<ref id="indexc" name=" C ">
+<ref id="indexd" name=" D ">
+<ref id="indexe" name=" E ">
+<ref id="indexf" name=" F ">
+<ref id="indexg" name=" G ">
+<ref id="indexh" name=" H ">
+<ref id="indexi" name=" I ">
+<ref id="indexj" name=" J ">
+<ref id="indexk" name=" K ">
+<ref id="indexl" name=" L ">
+<ref id="indexm" name=" M ">
+<ref id="indexn" name=" N ">
+<ref id="indexo" name=" O ">
+<ref id="indexp" name=" P ">
+<ref id="indexq" name=" Q ">
+<ref id="indexr" name=" R ">
+<ref id="indexs" name=" S ">
+<ref id="indext" name=" T ">
+<ref id="indexu" name=" U ">
+<ref id="indexv" name=" V ">
+<ref id="indexw" name=" W ">
+<ref id="indexx" name=" X ">
+<ref id="indexy" name=" Y ">
+<ref id="indexz" name=" Z ">
 <p>
 
 <label id="indexa">A
@@ -5617,6 +5665,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Align to Parent: <ref id="vmconf" name="view menu entry">,
 <ref id="vwsc" name="view action">
 <item>Apply: <ref id="propgui" name="apply property GUI">
+<item>applyTrafo: <ref id="scitrafo" name="scripting interface command">
 <item>Area Light: <ref id="alob" name="creation of">
 <item>Atmosphere: <ref id="imager" name="property">
 <item>Attributes: <ref id="attrs" name="attributes property">,
@@ -5627,7 +5676,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>AutoResize: <ref id="prefgui" name="preference setting">
 <item>AutoSavePrefs: <ref id="prefgui" name="preference setting">
 <item>ayamrc: <ref id="ayamrc" name="Ayamrc File">
-<item>ayError: <ref id="sierr" name="scripting interface command">
+<item>ayError: <ref id="scierr" name="scripting interface command">
 </itemize>
 
 <label id="indexb">B
@@ -5648,7 +5697,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>BPatch: <ref id="bpatchobj" name="object">
 <item>BType_U, BType_V: <ref id="pmattr" name="PatchMesh attribute">
 <item>Build: <ref id="bfct" name="build from curves tool">
-<item>buildNP: <ref id="gncp" name="scripting interface command">
+<item>buildNP: <ref id="scinurbs" name="scripting interface command">
 </itemize>
 
 <label id="indexc">C
@@ -5659,8 +5708,9 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>CastShadows: <ref id="riattrs" name="RenderMan/BMRT attribute">
 <item>CheckLights: <ref id="prefrib" name="preference setting">
 <item>Circle: <ref id="ncirct" name="NURBS circle tool">
-<item>clampNC: <ref id="gncp" name="scripting interface command">,
+<item>clampNC: <ref id="scinurbs" name="scripting interface command">,
 <ref id="clat" name="clamp tool">
+<item>Clipboard: <ref id="sciclip" name="scripting interface commands">
 <item>Clone:<ref id="cloneobj" name="object">
 <item>Closed: <ref id="spattr" name="sphere attribute">,
 <ref id="cnp" name="cone attribute">,
@@ -5676,7 +5726,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Collapse: <ref id="collt" name="Collapse tool">
 <item>Color: <ref id="riattrs" name="RenderMan/BMRT attribute">,
 <ref id="lip" name="light attribute">
-<item>copOb: <ref id="copob" name="scripting interface command">
+<item>copOb: <ref id="sciclip" name="scripting interface command">
 <item>Copy: <ref id="mmedit" name="main menu entry">
 <item>Copy Property: <ref id="mmedit" name="main menu entry">,
 <ref id="propgui" name="copying properties">
@@ -5695,7 +5745,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Custom: <ref id="cul" name="light type">
 <item>Custom Object: <ref id="customobj" name="what is">
 <item>Cut: <ref id="mmedit" name="main menu entry">
-<item>cutOb: <ref id="copob" name="scripting interface command">
+<item>cutOb: <ref id="sciclip" name="scripting interface command">
 <item>Cylinder: <ref id="mmcreate" name="main menu entry">,
 <ref id="cylinderobj" name="object">
 </itemize>
@@ -5703,10 +5753,10 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <label id="indexd">D
 <itemize>
 <item>DefaultMat: <ref id="prefrib" name="preference setting">
-<item>delegTrafo: <ref id="movob" name="scripting interface command">
+<item>delegTrafo: <ref id="scitrafo" name="scripting interface command">
 <item>Delete: <ref id="mmedit" name="main menu entry">,
 <ref id="insdelac" name="delete points">
-<item>delOb: <ref id="copob" name="scripting interface command">
+<item>delOb: <ref id="sciclip" name="scripting interface command">
 <item>Difference: <ref id="mmcreate" name="main menu entry">,
 <ref id="levelobj" name="object and properties">
 <item>Direct Editing: <ref id="editac" name="edit points">
@@ -5733,7 +5783,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Edit Local: <ref id="vmconf" name="view menu entry">,
 <ref id="editlocal" name ="Editing in Local Space">
 <item>EditSnaps: <ref id="prefmodel" name="preference setting">
-<item>elevateNC: <ref id="gncp" name="scripting interface command">,
+<item>elevateNC: <ref id="scinurbs" name="scripting interface command">,
 <ref id="elevt" name="elevate tool">
 <item>EndCap: <ref id="rep" name="revolve attribute">,
 <ref id="swp" name="sweep attribute">,
@@ -5771,12 +5821,12 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 
 <label id="indexg">G
 <itemize>
-<item>getPnt: <ref id="scpoints" name="scripting interface command">
+<item>getPnt: <ref id="scipoints" name="scripting interface command">
 <item>getType: <ref id="gtype" name="scripting interface command">
 <item>Gimbal Lock: <ref id="gimb" name="avoiding">
-<item>goDown: <ref id="gdown" name="scripting interface command">
-<item>goTop: <ref id="gdown" name="scripting interface command">
-<item>goUp: <ref id="gdown" name="scripting interface command">
+<item>goDown: <ref id="scihier" name="scripting interface command">
+<item>goTop: <ref id="scihier" name="scripting interface command">
+<item>goUp: <ref id="scihier" name="scripting interface command">
 <item>Grid: <ref id="vat" name="view attribute">
 <ref id="prefdraw" name="drawing preference setting">
 </itemize>
@@ -5816,7 +5866,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Importance Driven Rendering: <ref id="idr" name="IDR plugin">
 <item>Insert: <ref id="mmfile" name="main menu entry">,
 <ref id="insdelac" name="insert points">
-<item>insKn: <ref id="gncp" name="scripting interface command">
+<item>insKn: <ref id="scinurbs" name="scripting interface command">
 <item>Insert Knot: <ref id="insknt" name="insert knot tool">
 <item>insertScene: <ref id="scio" name="scripting interface command">
 <item>Instance: <ref id="instanceobj" name ="object">
@@ -5891,7 +5941,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Mops Import: <ref id="impmops" name="Import of Mops Scenes">
 <item>Move: <ref id="vwsc" name="view action">,
 <ref id="iac" name="move object">
-<item>movOb, movSel: <ref id="movob" name="scripting interface command">
+<item>movOb, movSel: <ref id="scitrafo" name="scripting interface command">
 <item>Multiple Point: <ref id="ncurvemp" name="Multiple Points">
 </itemize>
 
@@ -5913,6 +5963,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <ref id="ncurveobj" name="object">
 <item>NURBPatch: <ref id="mmcreate" name="main menu entry">,
 <ref id="npatchobj" name="object">
+<item>NURBS: <ref id="scinurbs" name="scripting interface commands">
 <item>NURBSphere: <ref id="nspt" name="NURBS sphere tool">
 </itemize>
 
@@ -5936,7 +5987,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>P1, P2: <ref id="hyp" name="hyperboloid attribute">
 <item>Paraboloid: <ref id="mmcreate" name="main menu entry">,
 <ref id="paraboloidobj" name="object">
-<item>pasOb: <ref id="copob" name="scripting interface command">
+<item>pasOb: <ref id="sciclip" name="scripting interface command">
 <item>Paste: <ref id="mmedit" name="main menu entry">
 <item>Paste Property: <ref id="mmedit" name="main menu entry">
 <item>PatchMesh: <ref id="patchmeshobj" name="object">
@@ -5984,7 +6035,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Reference Counter: <ref id="instanceobj" name="Instance Object">,
 <ref id="materialobj" name="Material Object">
 <item>References: <ref id="secref" name="references">
-<item>refineNC: <ref id="gncp" name="scripting interface command">,
+<item>refineNC: <ref id="scinurbs" name="scripting interface command">,
 <ref id="refit" name="refine tool">
 <item>RemoveMerged: <ref id="mmtools" name="Merge PolyMesh tool option">
 <item>Render: <ref id="vm" name="view menu entry">,
@@ -6000,7 +6051,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Resolve all Instances: <ref id="mmspecial" name="main menu entry">
 <item>Revert: <ref id="revertt" name="Revert tool">,
 <ref id="concatncp" name="ConcatNC attribute">
-<item>revertNC: <ref id="gncp" name="scripting interface command">
+<item>revertNC: <ref id="scinurbs" name="scripting interface command">
 <item>Revolve: <ref id="revolveobj" name="object">,
 <ref id="revt" name="Revolve tool">
 <item>RGBA_ONE, RGBA_MIN, RGBA_MAX, RGBA_Dither:
@@ -6026,8 +6077,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <ref id="swp" name="sweep attribute">
 <item>Rotation: <ref id="trap" name="transformation property">,
 <ref id="gimb" name="using the transformations property">
-<item>rotOb, rotSel: <ref id="movob" name="scripting interface command">
-<item>rV: <ref id="upd" name="scripting interface command">
+<item>rotOb, rotSel: <ref id="scitrafo" name="scripting interface command">
+<item>rV: <ref id="sciupd" name="scripting interface command">
 </itemize>
 
 <label id="indexs">S
@@ -6042,7 +6093,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>saveScene: <ref id="scio" name="scripting interface command">
 <item>Scale: <ref id="trap" name="transformation property">,
 <ref id="scalac" name="scale object">
-<item>scalOb, scalSel: <ref id="movob" name="scripting interface command">
+<item>scalOb, scalSel: <ref id="scitrafo" name="scripting interface command">
 <item>Scripts: <ref id="prefgui" name="preference setting">
 <item>SDMesh: <ref id="sdmeshobj" name="object">
 <item>Sections: <ref id="swp" name="sweep attribute">
@@ -6054,12 +6105,13 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Selection: <ref id="prefdraw" name="preference setting">
 <item>Set Gridsize: <ref id="vmconf" name="view menu entry">
 <item>Set FOV: <ref id="vmconf" name="view menu entry">
-<item>setPnt: <ref id="scpoints" name="scripting interface command">
+<item>setPnt: <ref id="scipoints" name="scripting interface command">
 <item>Shade: <ref id="prefdraw" name="preference setting">,
 <ref id="vmconf" name="view menu entry">
 <item>Shader: <ref id="shd" name="property">
 <item>Shader Parsing: <ref id="spplugins" name="shader parsing plugins">
-<item>Shaders: <ref id="prefmain" name="preference setting">
+<item>Shaders: <ref id="prefmain" name="preference setting">,
+<ref id="scishaders" name="scripting interface commands">
 <item>ShadingRate: <ref id="attrs" name="RenderMan/BMRT attribute">
 <item>ShadowBias: <ref id="rio" name="RenderMan interface option">
 <item>ShadowMaps: <ref id="prefrib" name="preference setting">,
@@ -6080,7 +6132,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <ref id="nspt" name="NURBS sphere tool">
 <item>Split: <ref id="sptct" name="split to curves tool">,
 <item>Split Curve: <ref id="miscac" name="modeling action">
-<item>splitNPatch: <ref id="gncp" name="scripting interface command">
+<item>splitNPatch: <ref id="scinurbs" name="scripting interface command">
 <item>Spot: <ref id="pdsl" name="light type">
 <item>StartCap: <ref id="rep" name="revolve attribute">,
 <ref id="swp" name="sweep attribute">,
@@ -6097,7 +6149,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <label id="indext">T
 <itemize>
 <item>Tag: <ref id="prefdraw" name="preference setting">
-<item>Tags: <ref id="tags" name="tags property">
+<item>Tags: <ref id="tags" name="tags property">,
+<ref id="scitags" name="scripting interface commands">
 <item>TC: <ref id="tctag" name="tag type">
 <item>TclPrecision: <ref id="prefmisc" name="preference setting">
 <item>TextureCoordinates: <ref id="tctag" name="tag type">,
@@ -6142,7 +6195,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 
 <label id="indexu">U
 <itemize>
-<item>uCL, uCR: <ref id="upd" name="scripting interface command">
+<item>uCL, uCR: <ref id="sciupd" name="scripting interface command">
 <item>Undo: <ref id="undos" name="The Undo System">,
 <ref id="mmedit" name="main menu entry">
 <item>UndoLevels: <ref id="prefmodel" name="preference setting">
@@ -6152,7 +6205,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>UpperCap: <ref id="rep" name="revolve attribute">,
 <ref id="extrattr" name="extrude attribute">
 <item>Up Vector: <ref id="camp" name="camera property">
-<item>uS: <ref id="upd" name="scripting interface command">
+<item>uS: <ref id="sciupd" name="scripting interface command">
 <item>UseGrid: <ref id="vat" name="view attribute">,
 <ref id="vmconf" name="view menu entry">
 <item>UseMatColor: <ref id="prefdraw" name="preference setting">
