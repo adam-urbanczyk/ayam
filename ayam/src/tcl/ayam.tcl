@@ -1173,8 +1173,12 @@ grab .fu
 
 while { $i < $argc } {
     set arg [lindex $argv $i]
-    if { [file extension $arg] == ".ay" } {
-	regsub -all {\\} $arg {/} newfilename
+    # .AY is delivered by Win98 file associations...
+    if { ([file extension $arg] == ".ay") || \
+         ([file extension $arg] == ".AY") } {
+
+        regsub -all {\\} $arg {/} newfilename
+
 	if { $j == 0 } {
 	    viewCloseAll
 	    set filename $newfilename
