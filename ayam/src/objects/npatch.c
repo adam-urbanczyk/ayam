@@ -1351,7 +1351,8 @@ ay_npatch_providecb(ay_object *o, unsigned int type, ay_object **result)
 
   if(type == AY_IDPOMESH)
     {
-      ay_status = ay_npt_topolymesh(o, ay_prefs.sm, ay_prefs.smparam, result);
+      ay_status = ay_npt_topolymesh(o, ay_prefs.smethod, ay_prefs.sparam,
+				    result);
     } /* if */
 
  return ay_status;

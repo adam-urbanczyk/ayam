@@ -282,7 +282,8 @@ int ay_npt_createcap(double z, ay_nurbcurve_object *curve,
 int ay_npt_getpntfromindex(ay_nurbpatch_object *patch, int indexu, int indexv,
 			   double **p);
 
-int ay_npt_topolymesh(ay_object *o, int sm, double smparam, ay_object **pm);
+int ay_npt_topolymesh(ay_object *o, int smethod, double sparam,
+		      ay_object **pm);
 
 int ay_npt_topolytcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);

@@ -189,7 +189,12 @@ proc prefs_open {} {
     addCheckB $fw ayprefse ToolBoxShrink [ms ayprefse_ToolBoxShrink]
     addCheckB $fw ayprefse RGTrans [ms ayprefse_RGTrans]
     addCheckB $fw ayprefse HideTmpTags [ms ayprefse_HideTmpTags]
-    addParamB $fw ayprefse TclPrecision [ms ayprefse_TclPrecision] { 4 5 6 12 }
+    addParamB $fw ayprefse TclPrecision [ms ayprefse_TclPrecision]\
+	    { 4 5 6 12 17 }
+    addText $fw e3 "Tesselation:"
+    addMenuB $fw ayprefse SMethod [ms ayprefse_SMethod]\
+	    $ay(smethods)
+    addParamB $fw ayprefse SParam [ms ayprefse_SParam] { 10 0.5 1 30 }
 
     # select last selected preference section
     pack $nb -fill both -expand yes

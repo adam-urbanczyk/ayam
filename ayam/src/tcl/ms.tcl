@@ -163,7 +163,11 @@ its contents,\nwhen the user resizes it?"
 ms_set en ayprefse_RGTrans "Make all rendering user interfaces transient?"
 ms_set en ayprefse_HideTmpTags "Hide all tags marked temporary from\nthe\
 tag property GUIs?"
-ms_set en ayprefse_TclPrecision "Precision of Tcl mathematics."
+ms_set en ayprefse_TclPrecision "Precision of Tcl mathematics.\nHigh values\
+lead to exact but hard\nto edit numbers in entry fields."
+ms_set en ayprefse_SMethod "Sampling method to be used for NURBS\nto PolyMesh\
+conversions."
+ms_set en ayprefse_SParam "Sampling method parameter."
 
 # Mops-Import
 ms_set en mopsi_options_ResetDM "Reset all DisplayMode attributes of\
@@ -305,7 +309,13 @@ ms_set de ayprefse_RGTrans "Sollen alle Rendering Fenster als transient\
 markiert werden?"
 ms_set de ayprefse_HideTmpTags "Sollen temporäre Tags aus den Tag\
 Eigenschaften ausgeblendet werden?"
-ms_set de ayprefse_TclPrecision "Genauigkeit der Wandlung von Gleitkommazahlen von Tcl."
+ms_set de ayprefse_TclPrecision "Genauigkeit der Wandlung von\
+Gleitkommazahlen von Tcl.\nHohe Werte führen zu exakten aber schwer\
+editierbaren\nWerten in Eingabefeldern."
+ms_set de ayprefse_SMethod "Sampling-Methode, die für NURBS zu\nPolyMesh\
+Umwandlungen benutzt wird."
+ms_set de ayprefse_SParam "Parameter der Sampling-Methode."
+
 
 # Mops-Import
 ms_set de mopsi_options_ResetDM "Sollen alle DisplayMode-Attribute von\
@@ -434,6 +444,11 @@ ms_set fr ayprefse_RGTrans "Rendre toutes les interface utilisateur transient?"
 ms_set fr ayprefse_HideTmpTags "Cacher tous les étiquette marquées\
 temporaires\ndans les propriétés de l'interface graphique?"
 ms_set fr ayprefse_TclPrecision "Precision des mathématiques Tcl."
+
+#XXXX add french translation:
+#ms_set fr ayprefse_SMethod "Sampling method to be used for NURBS\nto PolyMesh\
+#conversions."
+#ms_set fr ayprefse_SParam "Sampling method parameter."
 
 ms_set fr mopsi_options_ResetDM "Réinitialiser à Global tous les attributs\
 DisplayMode de tous\nles objets lors de l'importation depuis une scène Mops?"

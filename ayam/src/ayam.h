@@ -733,8 +733,8 @@ typedef struct ay_prefs_object_s
   int glu_cache_float;
 
   /* sampling mode/quality for NURBS -> PolyMesh conversion */
-  int sm;
-  double smparam;
+  int smethod;
+  double sparam;
 
   /* is a permanent preview window open? */
   int pprev_open;
