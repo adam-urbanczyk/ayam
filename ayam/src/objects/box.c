@@ -140,41 +140,43 @@ ay_box_shadecb(struct Togl *togl, ay_object *o)
   hh = (GLdouble)(box->height * 0.5);
 
   glBegin(GL_QUADS);
+   // front
    glNormal3d((GLdouble)0.0,(GLdouble)0.0,(GLdouble)1.0);
-   glVertex3d( wh, hh, lh);
-   glVertex3d(-wh, hh, lh);
    glVertex3d(-wh,-hh, lh);
    glVertex3d( wh,-hh, lh);
-
-   glNormal3d((GLdouble)0.0,(GLdouble)-1.0,(GLdouble)0.0);
    glVertex3d( wh, hh, lh);
    glVertex3d(-wh, hh, lh);
-   glVertex3d(-wh, hh,-lh);
-   glVertex3d( wh, hh,-lh);
 
+   // top
+   glNormal3d((GLdouble)0.0,(GLdouble)1.0,(GLdouble)0.0);
+   glVertex3d( wh, hh,-lh);
+   glVertex3d(-wh, hh,-lh);
+   glVertex3d(-wh, hh, lh);
+   glVertex3d( wh, hh, lh);
+   // right
    glNormal3d((GLdouble)1.0,(GLdouble)0.0,(GLdouble)0.0);
+   glVertex3d( wh,-hh, lh);
+   glVertex3d( wh,-hh,-lh);
+   glVertex3d( wh, hh,-lh);
    glVertex3d( wh, hh, lh);
-   glVertex3d( wh,-hh, lh);
+   // back
+   glNormal3d((GLdouble)0.0,(GLdouble)0.0,(GLdouble)-1.0);
    glVertex3d( wh,-hh,-lh);
-   glVertex3d( wh, hh,-lh);
-
-   glNormal3d((GLdouble)0.0,(GLdouble)0.0,(GLdouble)1.0);
-   glVertex3d( wh, hh,-lh);
-   glVertex3d(-wh, hh,-lh);
    glVertex3d(-wh,-hh,-lh);
-   glVertex3d( wh,-hh,-lh);
-
+   glVertex3d(-wh, hh,-lh);
+   glVertex3d( wh, hh,-lh);
+   // bottom
    glNormal3d((GLdouble)0.0,(GLdouble)-1.0,(GLdouble)0.0);
-   glVertex3d( wh,-hh, lh);
    glVertex3d(-wh,-hh, lh);
    glVertex3d(-wh,-hh,-lh);
    glVertex3d( wh,-hh,-lh);
-
-   glNormal3d((GLdouble)1.0,(GLdouble)0.0,(GLdouble)0.0);
-   glVertex3d(-wh, hh, lh);
-   glVertex3d(-wh,-hh, lh);
-   glVertex3d(-wh,-hh,-lh);
+   glVertex3d( wh,-hh, lh);
+   // left
+   glNormal3d((GLdouble)-1.0,(GLdouble)0.0,(GLdouble)0.0);
    glVertex3d(-wh, hh,-lh);
+   glVertex3d(-wh,-hh,-lh);
+   glVertex3d(-wh,-hh, lh);
+   glVertex3d(-wh, hh, lh);
   glEnd();
 
  return AY_OK;
