@@ -827,7 +827,8 @@ proc rV { } {
 	foreach view $ay(views) {
 	  	if { [winfo ismapped $view] } {
 	    set view ${view}.f3D.togl
-#	    $view mc
+	    $view mc
+	    $view reshape
 	    $view render
 	}  
 	}
