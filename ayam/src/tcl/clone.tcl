@@ -20,11 +20,17 @@ w     fCloneAttr
 
 }
 
+array set CloneAttrData {
+ Mirror 0
+}
+
 # create CloneAttr-UI
 set w [frame $ay(pca).$CloneAttr(w)]
 
 addParam $w CloneAttrData NumClones
 addCheck $w CloneAttrData Rotate
+addMenu $w CloneAttrData Mirror [list "No" "At YZ-Plane" "At XZ-Plane"\
+	"At XY-Plane" ]
 addText $w e1 "Translation:"
 addParam $w CloneAttrData Translate_X
 addParam $w CloneAttrData Translate_Y
