@@ -145,7 +145,7 @@ proc tc_updateMenu { } {
 
     set i 1
     foreach tag $tclist {
-	$m add command -label "From Tag#$i" -command "\
+	$m add command -label "From TC Tag#$i" -command "\
 	    global tc tclist;\
 	    scan $tag \"%g,%g,%g,%g,%g,%g,%g,%g\" tc(v1) tc(v2) tc(v3)\
 	    tc(v4) tc(v5) tc(v6) tc(v7) tc(v8);\
@@ -175,7 +175,7 @@ proc tc_updateMenu { } {
 
     if { [llength $tclist] > 0 } {
 	foreach tag $tclist {
-	    $m add command -label "To Tag#$i" -command "\
+	    $m add command -label "To TC Tag#$i" -command "\
  	      global tc tcindex;\
 	      setTags -index [lindex $tcindex $i] TC\
  \"\$tc(v1),\$tc(v2),\$tc(v3),\$tc(v4),\$tc(v5),\$tc(v6),\$tc(v7),\$tc(v8)\";\
@@ -186,7 +186,7 @@ proc tc_updateMenu { } {
 	}
     }
 
-    $m add command -label "To Tag#$i" -command {
+    $m add command -label "To TC Tag#$i" -command {
 	global tc
 	addTag TC\
 	      "$tc(v1),$tc(v2),$tc(v3),$tc(v4),$tc(v5),$tc(v6),$tc(v7),$tc(v8)"
