@@ -10,6 +10,12 @@ o bug fixes:
   - fixed empty ayamrc when toolbox window is closed on exit (SF 977750)
   - fixed crash with -h command line option (SF 979966)
   - fixed zooming of view windows via numeric keypad (SF 986519)
+  - fixed swapUV/revertU/revertV NURBS patch tools not undoable (SF 994389)
+  - fixed bevels from extrusions getting wrong knot vector types (SF 994626)
+  - fixed caps and bevels of converted extrusions getting wrong transformation
+    attributes (SF 994632)
+  - fixed broken caps of skins (SF 995711)
+  - fixed broken curvature plots of rational curves (SF 997184)
 o added a new object type "Text", that uses Bezier curves extracted from
   TTF (TrueType) font description files together with the extrusion mechanism
   to form three dimensional letters
