@@ -1,12 +1,20 @@
-[CVS, 26. 02. 2003]:
+[CVS, 03. 03. 2003]:
 o bug fixes:
   - fixed RIB import creating object names with malicious characters (spaces)
   - fixed RenderGUI creating zombie processes on Linux, enable bug fix
     with -DAYENABLEWAIT in CFLAGS and set ayprefs(Wait) "waitPid" in .ayamrc
-  - fixed memory leaks while reading scenes
+  - fixed several memory leaks while reading scenes
   - fixed memory leak while exporting to RIB
-  - fixed memory leaks in undo mechanism
+  - fixed several memory leaks in undo mechanism
   - fixed memory leak in edit master feature
+  - fixed several memory leaks in RIB import
+  - fixed undo/reado clearing the background image of view windows
+  - fixed RIB import of one set of trim curves for multiple patches
+  - fixed memory leak in NURBS curve property (that occurs, when the curve
+    is closed, has multiple points, and is opened again using the property)
+  - fixed memory leak in material object property
+  - fixed memory leak converting instances to real objects via convert
+    object and "Special/Instances/Resolve all Instances"
 o added support for inline declarations of e.g. shader parameters to the
   RIB import plugin
 o added an example scene for subdivision meshes
