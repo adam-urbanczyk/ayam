@@ -34,6 +34,7 @@ ay_object *onio_lrobject = NULL;
 int onio_importcurves;
 
 // prototypes of functions local to this module
+int onio_getnurbsurfobj(ay_object *o, ON_NurbsSurface **pp_n);
 
 int onio_writenpatch(ay_object *o, ONX_Model *p_m);
 
@@ -89,10 +90,10 @@ int Onio_Init(Tcl_Interp *interp);
 
 // functions
 
-// onio_getsurfobj:
+// onio_getnurbsurfobj:
 //
 int
-onio_getsurfobj(ay_object *o, ON_NurbsSurface **pp_n)
+onio_getnurbsurfobj(ay_object *o, ON_NurbsSurface **pp_n)
 {
  int ay_status = AY_OK;
  int i, j, a, stride = 4;
@@ -120,14 +121,14 @@ onio_getsurfobj(ay_object *o, ON_NurbsSurface **pp_n)
 	{
 	  p_n->SetCV(i, j, ON::homogeneous_rational, &(np->controlv[a]));
 	  a += stride;
-	}
-    }
+	} // for
+    } // for
 
   // return result
   *pp_n = p_n;
 
  return ay_status;
-} // onio_getsurfobj
+} // onio_getnurbsurfobj
 
 
 // onio_writenpatch:
@@ -149,7 +150,7 @@ onio_writenpatch(ay_object *o, ONX_Model *p_m)
       return ay_status;
     }
 
-  ay_status = onio_getsurfobj(o, &p_n);
+  ay_status = onio_getnurbsurfobj(o, &p_n);
   if(p_n)
     {
       ONX_Model_Object& mo = p_m->m_object_table.AppendNew();
@@ -172,7 +173,7 @@ onio_get2dcurveobj(ay_object *o, ON_NurbsCurve **pp_c)
 {
  int ay_status = AY_OK;
  ay_nurbcurve_object *nc = NULL;
- double cv[4];
+ double cv[4], m[16];
  int i, a, stride = 4;
  ON_NurbsCurve *p_c = NULL;
 
@@ -188,11 +189,14 @@ onio_get2dcurveobj(ay_object *o, ON_NurbsCurve **pp_c)
       p_c->SetKnot(i, nc->knotv[i+1]);
     }
 
+  ay_trafo_creatematrix(o, m);
+
   // copy control points
   a = 0;
   for(i = 0; i < nc->length; i++)
     {
       memcpy(cv, &(nc->controlv[a]), stride*sizeof(double));
+      ay_trafo_apply3(cv, m);
       cv[2] = cv[3];
       p_c->SetCV(i, ON::homogeneous_rational, cv);
       a += stride;
@@ -208,19 +212,18 @@ onio_get2dcurveobj(ay_object *o, ON_NurbsCurve **pp_c)
 // onio_addtrim:
 //
 int
-onio_addtrim(ay_object *o, ON_Brep *p_b, ON_BrepFace& face,
-	     ON_NurbsSurface *p_n)
+onio_addtrim(ay_object *o, ON_BrepLoop::TYPE ltype, ON_BrepTrim::TYPE ttype,
+	     ON_Brep *p_b,
+	     ON_BrepFace *p_f)
 {
  int ay_status = AY_OK;
- ON_NurbsCurve c, *p_c = NULL, p_c2;
+ ON_NurbsCurve c, c2, *p_c = NULL;
  ON_Curve *p_curve = NULL;
  unsigned int c2i, c3i;
- double tolerance = 1;//0.1;
+ double tolerance = 0.1;//0.1;
 
-  if(!o || !p_b || !p_n)
+  if(!o || !p_b)
     return AY_ENULL;
-
-
 
   if(o->type == AY_IDNCURVE)
     {
@@ -231,24 +234,42 @@ onio_addtrim(ay_object *o, ON_Brep *p_b, ON_BrepFace& face,
 	  p_b->m_C2.Append(p_c);
 	  c3i = p_b->m_C3.Count();
 	  c = *p_c;
-	  const ON_Surface* pSurface = face.SurfaceOf();
-	  p_curve = pSurface->Pushup(c, tolerance);
-	  if(p_curve == NULL)
-	    printf("pushup failed!\n");
-	  //p_curve->GetNurbForm(p_c2, 0.1, NULL);
 
-	  //p_b->m_C3.Append(&p_c2);
+	  const ON_Surface *pSurface = p_f->SurfaceOf();
+	  p_curve = pSurface->Pushup(c, tolerance);
+	  //if(p_curve == NULL)
+	  //  printf("pushup failed!\n");
+
+	  p_curve->GetNurbForm(c2, tolerance, NULL);
+	  p_c = new ON_NurbsCurve(c2);
+	  p_b->m_C3.Append(p_c);
 
 	  ON_BrepVertex& v1 = p_b->NewVertex(p_c->PointAtStart());
 	  v1.m_tolerance = 0.0;
-	  ON_BrepVertex& v2 = p_b->NewVertex(p_c->PointAtEnd());
-	  v2.m_tolerance = 0.0;
+	  // no need to create a second vertex for a closed curve...
+	  //ON_BrepVertex& v2 = p_b->NewVertex(p_c->PointAtEnd());
+	  //v2.m_tolerance = 0.0;
 
-	  //ON_BrepEdge& e1 = p_b->NewEdge(v1, v2, c3i);
-	  //e1.m_tolerance = 0.0;
+	  ON_BrepEdge& edge = p_b->NewEdge(v1, v1, c3i);
+	  edge.m_tolerance = 0.0;
 
-	  ON_BrepLoop& l1 = p_b->NewLoop(ON_BrepLoop::inner, face);
-	  //p_b->NewTrim(e1, false, l1, c2i);
+	  ON_BrepLoop& loop = p_b->NewLoop(ltype);
+	  loop.m_fi = p_f->m_face_index;
+	  if(ON_BrepLoop::outer == ltype)
+	    {
+	      // the index of the outer loop is always 
+	      // in face.m_li[0]
+	      p_f->m_li.Insert(0,loop.m_loop_index);
+	    }
+	  else
+	    {
+	      p_f->m_li.Append(loop.m_loop_index);
+	    }
+
+	  ON_BrepTrim& trim = p_b->NewTrim(edge, false, loop, c2i);
+	  trim.m_type = ttype;
+	  trim.m_tolerance[0] = 0.0;
+	  trim.m_tolerance[1] = 0.0;
 
 	} // if
     } // if
@@ -288,30 +309,85 @@ onio_writetrimmednpatch(ay_object *o, ONX_Model *p_m)
 {
  int ay_status = AY_OK;
  ay_object *down;
+ ay_nurbpatch_object *np = NULL;
  ON_NurbsSurface s, *p_s = NULL;
+ ON_Plane plane, *p_p = NULL;
+ ON_PlaneSurface ps, *p_ps = NULL;
  ON_Brep *p_b = NULL;
- ON_BrepFace f, *p_f = NULL;
+ ON_BrepFace *p_f = NULL;
+ double tolerance = 1.0e-12;
+
   if(!o || !p_m)
     return AY_ENULL;
 
-  ay_status = onio_getsurfobj(o, &p_s);
+  np = (ay_nurbpatch_object*)(o->refine);
+
+  ay_status = onio_getnurbsurfobj(o, &p_s);
   if(p_s == NULL)
     return ay_status;
-  s = *p_s;
 
-  p_b = new ON_Brep();
-  // create new face from surface (creates a bounding trimloop as well!)
-  p_f = p_b->NewFace(s);
-  f = *p_f;
+  if((np->width == 2) && (np->height == 2) &&
+     (p_s->IsPlanar(&plane, tolerance)))
+    {
+      // assume, that we have here an Ayam cap surface that can be converted
+      // to a rectangular PlaneSurface instead of a NurbsSurface
+      p_p = new ON_Plane();
+      *p_p = plane;
+      p_ps = new ON_PlaneSurface();
+      ON_Interval ext;
+      // XXXX the use of ControlPolygonLength() assumes that the quadrilateral
+      // we have here is a rectangle (what it does not have to be!)
+      double w = p_s->ControlPolygonLength(0);
+      double minx = -w/2.0, maxx = w/2.0;
+      ext.Set(minx, maxx);
+      p_ps->SetExtents(0, ext, false);
+      minx = np->uknotv[np->uorder-1];
+      maxx = np->uknotv[np->width];
+      p_ps->SetDomain(0, minx, maxx);
+
+      double h = p_s->ControlPolygonLength(1);
+      double miny = -h/2.0, maxy = h/2.0;
+      ext.Set(miny, maxy);
+      p_ps->SetExtents(1, ext, false);
+      miny = np->vknotv[np->vorder-1];
+      maxy = np->vknotv[np->height];
+      p_ps->SetDomain(1, miny, maxy);
+
+      p_ps->m_plane = *p_p;
+
+      ps = *p_ps;
+      p_b = new ON_Brep();
+      // create new face from surface (creates a bounding trimloop as well!)
+      p_f = p_b->NewFace(ps);
+
+      //p_b->DeleteLoop(p_b->m_L[0], true);
+      //p_b->Compact();
+
+      delete p_s;
+      p_s = NULL;
+    }
+  else
+    {
+      s = *p_s;
+      p_b = new ON_Brep();
+      // create new face from surface (creates a bounding trimloop as well!)
+      p_f = p_b->NewFace(s);
+    } // if
 
   down = o->down;
   while(down)
     {
       if(!onio_isboundingloop(down))
-	ay_status = onio_addtrim(down, p_b, f, p_s);
+	{
+	  ay_status = onio_addtrim(down,
+				   ON_BrepLoop::inner,
+				   ON_BrepTrim::boundary,
+				   p_b, p_f);
+	  // XXXX check ay_status
+	} // if
 
       down = down->next;
-    }
+    } // while
 
   ONX_Model_Object& mo = p_m->m_object_table.AppendNew();
   mo.m_object = p_b;
@@ -487,7 +563,6 @@ onio_writetcmd(ClientData clientData, Tcl_Interp *interp,
  const ON_Layer *p_layer = NULL;
  ON_3dmObjectAttributes attribs;
  //ON_TextLog& error_log;
-
 
   // parse args
   if(argc < 2)
@@ -844,11 +919,26 @@ onio_readnurbscurve(ON_NurbsCurve *p_c)
       b = 3;
       for(i = 0; i < length; i++)
 	{
-
 	  controlv[b] = 1.0;
 	  b += 4;
 	} // for
+    }
+  else
+    {
+      if(p_c->m_dim == 2)
+	{
+	  b = 2;
+	  for(i = 0; i < length; i++)
+	    {
+	      controlv[b+1] = controlv[b];
+	      controlv[b] = 0.0;
+	      b += 4;
+	    } // for
+	} // if
     } // if
+
+  
+
 
   // if weights are in the file but the dimension of the curve is
   // higher than 3, copy the weights in this step
@@ -1398,10 +1488,10 @@ onio_readlayer(ONX_Model &model, int li, double accuracy)
  ay_object *newo = NULL;
  ay_level_object *newlevel = NULL;
 
-  if(li < 0 || li > model.m_layer_table.Capacity())
+  if((li < 0) || (li > model.m_layer_table.Capacity()))
     {
       ay_error(AY_ERROR, fname, "layer index invalid");
-      // XXXX inform user about model.m_layer_table.Capacity()
+      // XXXX inform user about real model.m_layer_table.Capacity()
       return AY_ERROR;
     }
 
@@ -1409,7 +1499,7 @@ onio_readlayer(ONX_Model &model, int li, double accuracy)
   if(!layer)
     return AY_ENULL;
 
-  // XXXX create level object, named as the layer
+  // create level object, named as the layer
   if(!(newo = (ay_object*)calloc(1, sizeof(ay_object))))
     return AY_EOMEM;
   if(!(newlevel = (ay_level_object*)calloc(1, sizeof(ay_level_object))))
@@ -1427,7 +1517,7 @@ onio_readlayer(ONX_Model &model, int li, double accuracy)
   ay_next = &(newo->down);
 
   // read layer name
-  if(layer->LayerName() && layer->LayerName().Length() > 0)
+  if(layer->LayerName() && (layer->LayerName().Length() > 0))
     {
       int length = layer->LayerName().Length();
       int clength = onio_w2c_size(length, layer->LayerName());
