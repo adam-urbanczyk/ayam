@@ -28,6 +28,9 @@ o bug fixes:
   - fixed IDR plugins propagate parent action crashing for objects in the
     root level (SF 878550)
   - fixed conversion not initiating notification (SF 882935)
+  - fixed 3DMF export not supporting "Clone" objects (SF 888029)
+  - fixed bounding box calculation of trimmed NURBS patches and "Cap" objects
+    (SF 889831)
 o when the keyboard focus is moved from object tree/listbox to property GUI,
   the GUI is now scrolling to the entry with the focus immediately
 o added "curvPlot" scripting interface command that creates a curvature
@@ -52,6 +55,8 @@ o the "Select Renderer" feature no longer loads the "ayslx" plugin if scan
 o improved initial directory and file type setting of "Load Custom Object"
   file dialog
 o added support for shader parsing plugins on the Win32 platform
+o the "Select Renderer" feature is now able to automatically load shader
+  parsing plugins on the Win32 platform
 o improved mouse wheel handling for property GUI scrolling on Win32
 o added new object type "Gordon" for Gordon surfaces
 o pasting a Tag property now adds the new tags to the old ones, rather
@@ -81,7 +86,16 @@ o added "revertU"/"revertV" scripting interface commands and NURBS patch
   parametric dimension
 o holding down the "Shift"-key now initiates a complete notify when the
   "Force Notification" button in the toolbox is pressed
-o added a Wavefront OBJ export module
+o added a Wavefront OBJ export module, see new main menu entry:
+  "File/Export/Wavefront OBJ"
+o the RIB export main menu entry has moved to the new main submenu:
+  "File/Export"
+o the order of the Ayam Startup Sequence has changed, so that shader parsing
+  plugins loaded automatically via the "Scripts" preference setting may be
+  utilized automatically in the initial shader parsing pass
+o added hidden preference setting "IconGamma" that may be used to adapt the
+  contrast of all icons (especially the menu bar icons and especially on the
+  Mips/IRIX platform)
 
 
 [26. 09. 2003] Ayam1.6:
