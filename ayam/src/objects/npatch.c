@@ -1257,7 +1257,9 @@ ay_npatch_wribcb(char *file, ay_object *o)
  RtInt nu, nv, uorder, vorder;
  RtFloat *uknots = NULL, *vknots = NULL;
  RtFloat *controls = NULL;
- int i = 0, j = 0, a = 0, b = 0;
+ RtToken *tokens = NULL;
+ RtPointer *parms = NULL;
+ int i = 0, j = 0, a = 0, b = 0, n = 0, pvc = 0;
 
   if(!o)
     return AY_OK;
@@ -1275,9 +1277,9 @@ ay_npatch_wribcb(char *file, ay_object *o)
   vorder = (RtInt)patch->vorder;
 
   if((uknots = calloc(nu+uorder, sizeof(RtFloat))) == NULL)
-    return AY_EOMEM; 
+    return AY_EOMEM;
   if((vknots = calloc(nv+vorder, sizeof(RtFloat))) == NULL)
-    return AY_EOMEM;  
+    return AY_EOMEM;
   if((controls = calloc(nu*nv*4, sizeof(RtFloat))) == NULL)
     return AY_EOMEM;
     
@@ -1312,10 +1314,45 @@ ay_npatch_wribcb(char *file, ay_object *o)
 	}
     }
 
+  /* Do we have any primitive variables? */
+  if(!(pvc = ay_pv_count(o)))
+    {
+      /* No */
+      RiNuPatch(nu, uorder, uknots,
+		(RtFloat)uknots[uorder-1], (RtFloat)uknots[nu],
+		nv, vorder, vknots,
+		(RtFloat)vknots[vorder-1], (RtFloat)vknots[nv],
+		"Pw", controls, NULL);
+    }
+  else
+    {
+      /* Yes, we have primitive variables. */
+      if(!(tokens = calloc(pvc+1, sizeof(RtToken))))
+	return AY_EOMEM;
 
-  RiNuPatch(nu, uorder, uknots, (RtFloat)uknots[uorder-1], (RtFloat)uknots[nu],
-	    nv, vorder, vknots, (RtFloat)vknots[vorder-1], (RtFloat)vknots[nv],
-	    "Pw", controls, NULL);
+      if(!(parms = calloc(pvc+1, sizeof(RtPointer))))
+	return AY_EOMEM;
+
+      tokens[0] = "Pw";
+      parms[0] = (RtPointer)controls;
+
+      n = 1;
+      ay_pv_filltokpar(o, AY_TRUE, 1, &n, tokens, parms);
+
+      RiNuPatchV(nu, uorder, uknots,
+		(RtFloat)uknots[uorder-1], (RtFloat)uknots[nu],
+		nv, vorder, vknots,
+		(RtFloat)vknots[vorder-1], (RtFloat)vknots[nv],
+		(RtInt)n, tokens, parms);
+
+      for(i = 1; i < n; i++)
+	{
+	  free(tokens[i]);
+	  free(parms[i]);
+	}
+      free(tokens);
+      free(parms);
+    }
 
   free(uknots);
   free(vknots);

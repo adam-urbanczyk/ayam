@@ -876,6 +876,7 @@ extern char *ay_instt_oitagtype;
 extern char *ay_riattr_tagtype;
 extern char *ay_riopt_tagtype;
 extern char *ay_tc_tagtype;
+extern char *ay_pv_tagtype;
 extern char *ay_ridisp_tagtype;
 extern char *ay_rihider_tagtype;
 extern char *ay_noexport_tagtype;

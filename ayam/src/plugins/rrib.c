@@ -575,6 +575,9 @@ void ay_rrib_readtag(char *tagtype, char *tagname, char *name,
 		     int i, RtToken tokens[], RtPointer parms[],
 		     ay_tag_object **destination);
 
+void ay_rrib_readpvs(int n, RtToken tokens[], RtPointer parms[],
+		     int ahandlen, char **ahand, ay_tag_object **dest);
+
 void ay_rrib_fixname(char *name);
 
 void ay_rrib_initgeneral(void);
@@ -765,6 +768,7 @@ ay_rrib_RiNuPatch(RtInt nu, RtInt uorder, RtFloat uknot[],
  double *p = NULL;
  RtPointer tokensfound[PPWTBL_LAST];
  RtFloat *pp = NULL, *pw = NULL;
+ char *hvars[2] = {"P","Pw"};
 
   memset(&np, '\0', sizeof(ay_nurbpatch_object));
   np.glu_sampling_tolerance = 0.0;
@@ -846,6 +850,8 @@ ay_rrib_RiNuPatch(RtInt nu, RtInt uorder, RtFloat uknot[],
 	} /* for */
     } /* for */
 
+  ay_rrib_readpvs(n, tokens, parms, 2, hvars, &(ay_rrib_co.tags));
+
   ay_rrib_co.parent = AY_TRUE;
   ay_rrib_co.hide_children = AY_TRUE;
   ay_rrib_linkobject((void *)(&np), AY_IDNPATCH);
@@ -853,6 +859,8 @@ ay_rrib_RiNuPatch(RtInt nu, RtInt uorder, RtFloat uknot[],
   ay_rrib_co.parent = AY_FALSE;
   ay_object_delete(ay_rrib_co.down);
   ay_rrib_co.down = NULL;
+
+  ay_tags_delall(&ay_rrib_co);
 
   free(np.uknotv);
   free(np.vknotv);
@@ -4109,6 +4117,229 @@ ay_rrib_readtag(char *tagtype, char *tagname, char *name,
 
  return;
 } /* ay_rrib_readtag */
+
+/* ay_rrib_readpvs:
+ *  read primitive variable(s) from tokens[] and parms[] omitting
+ *  variables already handled (ahand[]), creating PV tag(s)
+ */
+void
+ay_rrib_readpvs(int n, RtToken tokens[], RtPointer parms[],
+		int ahandlen, char **ahand, ay_tag_object **dest)
+{
+ char fname[] = "ay_rrib_readpv";
+ int i, j, already_handled, numitems;
+ unsigned int *ctypes, *csizes;
+ RtToken token = NULL;
+ RtInt *ints, cints, cnverts;
+ RtFloat *floats;
+ RtString *strings;
+ RtColor *colors, *col;
+ RtPoint *points, *pnt;
+ int type, class;
+ ay_tag_object *nt = NULL;
+ Tcl_DString ds;
+ RIB_HASHHND ht = NULL;
+ PRIB_HASHATOM p = NULL;
+ char valbuf[255];
+
+  if(!tokens || !parms || !dest)
+    return;
+
+  RibGetVectorCacheInfo(grib, &cints, &cnverts, &ctypes, &csizes);
+
+  for(i = 0; i < n; i++)
+    {
+      token = tokens[i];
+      while(RibIsaWhiteSpace(*token) == RI_TRUE)
+	{
+	  token++;
+	}
+ 
+      /* check if already handled */
+      already_handled = AY_FALSE;
+      for(j = 0; j < ahandlen; j++)
+	{
+	  if(!strcmp(token, ahand[j]))
+	    {
+	      already_handled = AY_TRUE;
+	      break;
+	    }
+	} /* for */
+
+      if(!already_handled)
+	{
+	  nt = NULL;
+	  if(!(nt = calloc(1, sizeof(ay_tag_object))))
+	    {
+	      ay_error(AY_EOMEM, fname, NULL);
+	      return;
+	    }
+	 
+	  if(!(nt->name = calloc(3, sizeof(char))))
+	    {
+	      ay_error(AY_EOMEM, fname, NULL);
+	      free(nt);
+	      return;
+	    }
+
+	 strcpy(nt->name, "PV");
+
+	 nt->type = ay_pv_tagtype;
+
+	 /* parse data to string */
+	 ht = RibGetHashHandle(grib);
+
+	 p = NULL;
+	 p = RibFindMatch(ht, kRIB_HASH_VARIABLE,
+			  kRIB_UNKNOWNCLASS | kRIB_UNKNOWNTYPE,
+			  (void*)token);
+
+	 if(p)
+	   {
+	     Tcl_DStringInit(&ds);
+	     Tcl_DStringAppend(&ds, token, -1);
+
+	     class = kRIB_CLASS_MASK & p->code;
+	     switch(class)
+	       {
+	       case kRIB_UNIFORMCLASS:
+		 Tcl_DStringAppend(&ds, ",uniform", -1);
+		 break;
+	       case kRIB_VARYINGCLASS:
+		 Tcl_DStringAppend(&ds, ",varying", -1);
+		 break;
+	       case kRIB_VERTEXCLASS:
+		 Tcl_DStringAppend(&ds, ",vertex", -1);
+		 break;
+	       case kRIB_CONSTANTCLASS:
+		 Tcl_DStringAppend(&ds, ",constant", -1);
+		 break;
+	       default:
+		 ay_error(AY_ERROR, fname,
+		    "Skipping variable of unknown or unsupported class:");
+		 ay_error(AY_ERROR, fname, tokens[i]);
+		 free(nt->name);
+		 free(nt);
+		 nt = NULL;
+		 break;
+	       } /* switch */
+
+	     type = kRIB_TYPE_MASK & p->code;
+	     switch(type)
+	       {
+	       case kRIB_INTTYPE:
+		 Tcl_DStringAppend(&ds, ",i", -1);
+		 ints = (RtInt *)(parms[i]);
+		 numitems = csizes[i];
+		 sprintf(valbuf,",%d", numitems);
+		 Tcl_DStringAppend(&ds, valbuf, -1);
+		 for(j = 0; j < numitems; j++)
+		   {
+		     sprintf(valbuf,",%d", (int)(ints[j]));
+		     Tcl_DStringAppend(&ds, valbuf, -1);
+		   }
+		 break;
+	       case kRIB_FLOATTYPE:
+		 Tcl_DStringAppend(&ds, ",f", -1);
+		 floats = (RtFloat *)(parms[i]);
+		 numitems = csizes[i];
+		 sprintf(valbuf,",%d", numitems);
+		 Tcl_DStringAppend(&ds, valbuf, -1);
+		 for(j = 0; j < numitems; j++)
+		   {
+		     sprintf(valbuf,",%f", (float)(floats[j]));
+		     Tcl_DStringAppend(&ds, valbuf, -1);
+		   }
+		 break;
+	       case kRIB_STRINGTYPE:
+		 Tcl_DStringAppend(&ds, ",s", -1);
+		 strings = (RtString *)(parms[i]);
+		 numitems = csizes[i];
+		 sprintf(valbuf,",%d", numitems);
+		 Tcl_DStringAppend(&ds, valbuf, -1);
+		 for(j = 0; j < numitems; j++)
+		   {
+		     Tcl_DStringAppend(&ds, ",", 1);
+		     Tcl_DStringAppend(&ds, strings[j], -1);
+		   }
+		 break;
+	       case kRIB_COLORTYPE:
+		 Tcl_DStringAppend(&ds, ",c", -1);
+		 colors = (RtColor *)(parms[i]);
+		 numitems = csizes[i];
+		 sprintf(valbuf,",%d", numitems);
+		 Tcl_DStringAppend(&ds, valbuf, -1);
+		 for(j = 0; j < numitems; j++)
+		   {
+		     col = &(colors[j]);
+		     sprintf(valbuf,",%f,%f,%f",(float)((*col)[0]),
+			     (float)((*col)[1]),
+			     (float)((*col)[2]));
+		     Tcl_DStringAppend(&ds, valbuf, -1);
+		   }
+		 break;
+	       case kRIB_POINTTYPE:
+		 Tcl_DStringAppend(&ds, ",p", -1);
+		 points = (RtPoint *)(parms[i]);
+		 numitems = csizes[i];
+		 sprintf(valbuf,",%d", numitems);
+		 Tcl_DStringAppend(&ds, valbuf, -1);
+		 for(j = 0; j < numitems; j++)
+		   {
+		     pnt = &(points[j]);
+		     sprintf(valbuf,",%f,%f,%f",(float)((*pnt)[0]),
+			     (float)((*pnt)[1]),
+			     (float)((*pnt)[2]));
+		     Tcl_DStringAppend(&ds, valbuf, -1);
+		   }
+		 break;
+	       default:
+		 ay_error(AY_ERROR, fname,
+		    "Skipping variable of unknown or unsupported type:");
+		 ay_error(AY_ERROR, fname, tokens[i]);
+		 free(nt->name);
+		 free(nt);
+		 nt = NULL;
+		 break;
+	       } /* switch */
+	   }
+	 else
+	   {
+	     ay_error(AY_ERROR, fname, "Skipping undeclared token:");
+	     ay_error(AY_ERROR, fname, tokens[i]);
+	     free(nt->name);
+	     free(nt);
+	     nt = NULL;
+	   } /* if */
+
+	 /* create tag value string */
+	 if(nt)
+	   {
+	     if(!(nt->val = calloc(strlen(Tcl_DStringValue(&ds))+1,
+				  sizeof(char))))
+	       {
+		 ay_error(AY_EOMEM, fname, NULL);
+		 free(nt->name);
+		 free(nt);
+		 Tcl_DStringFree(&ds);
+		 return;
+	       }
+
+	     strcpy(nt->val, Tcl_DStringValue(&ds));
+
+	     /* now link new tag */
+	     nt->next = *dest;
+	     *dest = nt;
+	     dest = &(nt->next);
+	   } /* if */
+
+	 Tcl_DStringFree(&ds);
+
+       } /* if (!already_handled */
+   } /* for */
+
+ return;
+} /* ay_rrib_readpvs */
 
 
 /* avoid names with spaces or other characters that may be
