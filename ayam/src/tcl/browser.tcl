@@ -20,6 +20,9 @@ proc browser_findExecutable {progname varname} {
 
 proc browser_urlOpen {url} {
     global env tcl_platform
+
+    ayError 4 "Help" "Launching browser, please wait..."
+
     switch $tcl_platform(platform) {
         "unix" {
 
