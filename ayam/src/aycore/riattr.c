@@ -190,6 +190,11 @@ ay_riattr_wrib(ay_object *o)
       tag = tag->next;
     } /* while */
 
+  if(tagvaltmp)
+    {
+      free(tagvaltmp);
+    }
+
  return AY_OK;
 } /* ay_riattr_wrib */
 
