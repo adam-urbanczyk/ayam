@@ -186,6 +186,7 @@ proc shortcut_main { w } {
 
     bind $w <[repcont $aymainshortcuts(SelNone)]> {
 	cS
+	plb_update
 	if { $ay(need_redraw) == 1 } {
 	    rV
 	}
