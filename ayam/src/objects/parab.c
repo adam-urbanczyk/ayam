@@ -49,7 +49,7 @@ ay_parab_deletecb(void *c)
  ay_paraboloid_object *parab = NULL;
 
   if(!c)
-    return AY_ENULL;    
+    return AY_ENULL;
 
   parab = (ay_paraboloid_object *)(c);
 
@@ -68,9 +68,9 @@ ay_parab_copycb(void *src, void **dst)
     return AY_ENULL;
 
   if(!(parab = calloc(1, sizeof(ay_paraboloid_object))))
-    return AY_EOMEM; 
+    return AY_EOMEM;
 
-  memcpy(parab, src, sizeof(ay_paraboloid_object)); 
+  memcpy(parab, src, sizeof(ay_paraboloid_object));
 
   *dst = (void *)parab;
 
@@ -94,7 +94,7 @@ ay_parab_drawcb(struct Togl *togl, ay_object *o)
   if(!parab)
     return AY_ENULL;
 
-  
+
   hdiff = ((parab->zmax-parab->zmin)/4);
   thetadiff = AY_D2R(parab->thetamax/8);
   f = parab->rmax/(sqrt(parab->zmax));
@@ -196,7 +196,7 @@ ay_parab_shadecb(struct Togl *togl, ay_object *o)
   if(!parab)
     return AY_ENULL;
 
-  
+  /* calculate some points on a quadric curve */
   hdiff = ((parab->zmax-parab->zmin)/4);
   thetadiff = AY_D2R(parab->thetamax/8);
   f = parab->rmax/(sqrt(parab->zmax));
@@ -207,80 +207,81 @@ ay_parab_shadecb(struct Togl *togl, ay_object *o)
       height += hdiff;
     }
 
-  /* draw */
+  /* draw the paraboloid */
   height = parab->zmin;
   for(i = 0; i < 4; i++)
     {
       angle = 0.0;
       glBegin(GL_QUAD_STRIP);
-      for(j = 0; j <= 8; j++)
-	{
-	  /* XXXX these normals are probably a bit off  */
-	  glNormal3d(-cos(angle)*R[i], -sin(angle)*R[i], parab->zmax-height);
+       for(j = 0; j <= 8; j++)
+	 {
+	   /* XXXX these normals are probably a bit off  */
+	   glNormal3d(cos(angle)*R[i+1], sin(angle)*R[i+1],
+		      -parab->zmax-(height+hdiff));
 
-	  glVertex3d(cos(angle)*R[i], sin(angle)*R[i], height);
+	   glVertex3d(cos(angle)*R[i+1], sin(angle)*R[i+1], height+hdiff);
 
-	  glNormal3d(-cos(angle)*R[i+1], -sin(angle)*R[i+1],
-		     parab->zmax-(height+hdiff));
+	   glNormal3d(cos(angle)*R[i], sin(angle)*R[i], -parab->zmax-height);
 
-	  glVertex3d(cos(angle)*R[i+1], sin(angle)*R[i+1], height+hdiff);
+	   glVertex3d(cos(angle)*R[i], sin(angle)*R[i], height);
 
-	  angle += thetadiff;
-	}
+	   angle += thetadiff;
+	 } /* for */
       glEnd();
       height += hdiff;
-    }
-
+    } /* for */
 
   if(parab->closed)
     {
       if(fabs(parab->thetamax) != 360.0)
 	{
-
 	  glPushMatrix();
 
 	  glNormal3d(0.0, -1.0, 0.0);
 	  glBegin(GL_TRIANGLE_FAN);
 	   glVertex3d(0.0,  0.0, parab->zmax);
+
 	   height = parab->zmin;
 	   for(i = 0; i <= 4; i++)
 	     {
-	       glVertex3d(R[i],0.0,height);
+	       glVertex3d(R[i], 0.0, height);
 	       height += hdiff;
 	     }
 	  glEnd();
+
 	  if(parab->zmin > 0.0)
 	    {
 	      glBegin(GL_TRIANGLES);
-	      glVertex3d(0.0,  0.0, parab->zmax);
-	      glVertex3d(0.0, 0.0, parab->zmin);
-	      glVertex3d(R[0], 0.0, parab->zmin);
+	       glVertex3d(0.0,  0.0, parab->zmax);
+	       glVertex3d(0.0, 0.0, parab->zmin);
+	       glVertex3d(R[0], 0.0, parab->zmin);
 	      glEnd();
 	    }
 
+	  glNormal3d(0.0, 1.0, 0.0);
 	  glRotated(parab->thetamax, 0.0, 0.0, 1.0);
-
 	  glBegin(GL_TRIANGLE_FAN);
 	   glVertex3d(0.0,  0.0, parab->zmax);
-	   height = parab->zmin;
-	   for(i = 0; i <= 4; i++)
+	   height = parab->zmax;
+	   for(i = 4; i >= 0; i--)
 	     {
-	       glVertex3d(R[i],0.0,height);
-	       height += hdiff;
+	       glVertex3d(R[i], 0.0, height);
+	       height -= hdiff;
 	     }
 	  glEnd();
+
 	  if(parab->zmin > 0.0)
 	    {
 	      glBegin(GL_TRIANGLES);
-	      glVertex3d(0.0,  0.0, parab->zmax);
-	      glVertex3d(0.0, 0.0, parab->zmin);
-	      glVertex3d(R[0], 0.0, parab->zmin);
+	       glVertex3d(0.0,  0.0, parab->zmax);
+	       glVertex3d(R[0], 0.0, parab->zmin);
+	       glVertex3d(0.0, 0.0, parab->zmin);
 	      glEnd();
 	    }
 
 	  glPopMatrix();
 
-	}
+	} /* if */
 
       /* draw caps */
 
@@ -292,6 +293,7 @@ ay_parab_shadecb(struct Togl *togl, ay_object *o)
 	  qobj = NULL;
 	  if(!(qobj = gluNewQuadric()))
 	    return AY_EOMEM;
+	  gluQuadricOrientation(qobj, GLU_INSIDE);
 	  glTranslated(0.0, 0.0, parab->zmin);
 	  if(fabs(parab->thetamax) != 360.0)
 	    {
@@ -326,7 +328,7 @@ ay_parab_shadecb(struct Togl *togl, ay_object *o)
        gluDeleteQuadric(qobj);
 
       glPopMatrix();
-	
+
     }
 
  return AY_OK;
@@ -348,7 +350,7 @@ ay_parab_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     return AY_ENULL;
 
   parab = (ay_paraboloid_object *)o->refine;
-  
+
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
 
@@ -372,7 +374,7 @@ ay_parab_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     {
       ay_error(AY_ERROR, fname, "ZMin must be >= 0.0!");
     }
-  
+
   Tcl_SetStringObj(ton,"ZMax",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp,to, &dtemp);
@@ -556,7 +558,7 @@ ay_parab_wribcb(char *file, ay_object *o)
 	  K = (RtFloat)((2*paraboloid->zmax)/K);
 	  Sx = (RtFloat)((B3 - B0)/( K*(rmin - paraboloid->rmax) ));
 	  Sy = (RtFloat)(K*rmin * Sx + B0);
-	  
+
 	  patch[4][2] = patch[5][2] = patch[6][2] = patch[7][2] =
 	    (RtFloat)((patch[0][2] + 2*Sy)/3.0);
 	  patch[7][0] = (RtFloat)((rmin + 2*Sx)/3.0);
@@ -597,7 +599,7 @@ ay_parab_bbccb(ay_object *o, double *bbox, int *flags)
   if(!o || !bbox)
     return AY_ENULL;
 
-  parab = (ay_paraboloid_object *)o->refine; 
+  parab = (ay_paraboloid_object *)o->refine;
 
   r = parab->rmax;
   zmi = parab->zmin;

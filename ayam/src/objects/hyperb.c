@@ -48,7 +48,7 @@ ay_hyperb_deletecb(void *c)
  ay_hyperboloid_object *h = NULL;
 
   if(!c)
-    return AY_ENULL;    
+    return AY_ENULL;
 
   h = (ay_hyperboloid_object *)(c);
 
@@ -67,9 +67,9 @@ ay_hyperb_copycb(void *src, void **dst)
     return AY_ENULL;
 
   if(!(h = calloc(1, sizeof(ay_hyperboloid_object))))
-    return AY_EOMEM; 
+    return AY_EOMEM;
 
-  memcpy(h, src, sizeof(ay_hyperboloid_object)); 
+  memcpy(h, src, sizeof(ay_hyperboloid_object));
 
   *dst = (void *)h;
 
@@ -204,15 +204,15 @@ ay_hyperb_shadecb(struct Togl *togl, ay_object *o)
   if(!h)
     return AY_ENULL;
 
-  
+
   rmi = sqrt((h->p1[0]*h->p1[0])+(h->p1[1]*h->p1[1]));
   ami = acos(h->p1[0]/rmi);
-  if (h->p1[1] < 0.0)
+  if(h->p1[1] < 0.0)
     ami = -ami;
 
   rma = sqrt((h->p2[0]*h->p2[0])+(h->p2[1]*h->p2[1]));
   ama = acos(h->p2[0]/rma);
-  if (h->p2[1] < 0.0)
+  if(h->p2[1] < 0.0)
     ama = -ama;
 
   thetadiff = AY_D2R(h->thetamax/8);
@@ -237,11 +237,11 @@ ay_hyperb_shadecb(struct Togl *togl, ay_object *o)
 
   /* XXXX this is just a gross approximation of the hyperboloids shape */
   glBegin(GL_QUAD_STRIP);
-   for(i = 0; i <= 8; i++)
+   for(i = 8; i >= 0; i--)
      {
-       glNormal3d(-P1[i*2], -P1[i*2+1], 0.0);
+       glNormal3d(P1[i*2], P1[i*2+1], 0.0);
        glVertex3d(P1[i*2], P1[i*2+1], h->p1[2]);
-       glNormal3d(-P2[i*2], -P2[i*2+1], 0.0);
+       glNormal3d(P2[i*2], P2[i*2+1], 0.0);
        glVertex3d(P2[i*2], P2[i*2+1], h->p2[2]);
      }
   glEnd();
@@ -252,6 +252,7 @@ ay_hyperb_shadecb(struct Togl *togl, ay_object *o)
       qobj = NULL;
       if(!(qobj = gluNewQuadric()))
 	return AY_EOMEM;
+      gluQuadricOrientation(qobj, GLU_INSIDE);
       glPushMatrix();
        glRotated(AY_R2D(ami),0.0,0.0,1.0);
        glTranslated(0.0, 0.0, h->p1[2]);
@@ -320,7 +321,7 @@ ay_hyperb_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     return AY_ENULL;
 
   hyperb = (ay_hyperboloid_object *)o->refine;
-  
+
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
 
@@ -518,7 +519,7 @@ ay_hyperb_wribcb(char *file, ay_object *o)
        RiTransformBegin();
         RiRotate(angle, (RtFloat)0.0, (RtFloat)0.0, (RtFloat)1.0);
 	RiDisk(p1[2], radius, (RtFloat)hyperb->thetamax, RI_NULL);
-       RiTransformEnd();     
+       RiTransformEnd();
 
        radius = (RtFloat)sqrt(p2[0]*p2[0] + p2[1]*p2[1]);
        angle = (RtFloat)(180.0/AY_PI * acos(p2[0]/radius));
