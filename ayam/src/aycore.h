@@ -480,6 +480,8 @@ int ay_tags_deletetcmd(ClientData clientData, Tcl_Interp * interp,
 /* tc.c */
 int ay_tc_wrib(ay_object *o);
 
+int ay_tc_wribindex(ay_object *o, int index);
+
 void ay_tc_init(Tcl_Interp *interp);
 
 /* tcmd.c */
