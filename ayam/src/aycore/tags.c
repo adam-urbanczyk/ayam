@@ -633,7 +633,7 @@ ay_tags_parseplist(char *str, int declare, RtInt *argc, RtToken **tokensr,
  RtToken *tokens;
  RtPointer *values;
 
-  if(!str || !argc || !tokens || !values)
+  if(!str || !argc || !tokensr || !valuesr)
     return AY_ENULL;
 
   if(*str == '\0')
