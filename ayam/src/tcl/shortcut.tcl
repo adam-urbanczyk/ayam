@@ -103,11 +103,15 @@ proc shortcut_main { w } {
     bind $w <[repcont $aymainshortcuts(Prefs)]> "$m invoke 14"
     $m entryconfigure 14 -accelerator $aymainshortcuts(Prefs)
 
+
     set m $ay(helpmenu)
     bind $w <[repcont $aymainshortcuts(Help)]> "$m invoke 0"
     $m entryconfigure 0 -accelerator $aymainshortcuts(Help)
 
+    set m $ay(specialmenu)
     bind $w <[repcont $aymainshortcuts(Zap)]> zap
+    $m entryconfigure 20 -accelerator $aymainshortcuts(Zap)
+
     bind $w <Map> unzap
 }
 # shortcut_main

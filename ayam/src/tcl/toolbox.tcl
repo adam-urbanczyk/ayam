@@ -560,11 +560,14 @@ proc toolbox_layout { } {
 # toolbox_toggle:
 #  open or close toolbox window
 proc toolbox_toggle { } {
+    global ayprefs
 
     if { [winfo exists .tbw] } {
 	catch {destroy .tbw}
+	set ayprefs(showtb) 0
     } else {
 	toolbox_open
+	set ayprefs(showtb) 1
     }
 
  return;
