@@ -627,12 +627,15 @@ proc uS { {update_prop "" } {maintain_selection "" } } {
 
 	eval [subst "$lb insert end $curlevel"]
 
+	if { $maintain_selection && ($sel != "") } {
+	    $lb selection set $sel
+	    selOb $sel
+	}
+
 	if { $update_prop == 1 } {
 	    plb_update
 	}
-	if { $maintain_selection && ($sel != "") } {
-	    $lb selection set $sel
-	}
+
     } else {
 	update
 	# TreeView is active
@@ -646,6 +649,7 @@ proc uS { {update_prop "" } {maintain_selection "" } } {
 	    tree_update $ay(ul)
 	    set ay(ul) ""
 	}
+
 	if { $ay(SelectedLevel) != "" } {
 	    if { [$ay(tree) exists $ay(SelectedLevel)] } {
 		tree_openTree $ay(tree) $ay(SelectedLevel)
@@ -661,15 +665,18 @@ proc uS { {update_prop "" } {maintain_selection "" } } {
 	    update
 	    tree_paintLevel $ay(SelectedLevel)
 	}
+
+	if { $maintain_selection && ($sel != "") } {
+	    $t selection set $sel
+	    treeSelect $sel
+	}
+
 	if { $update_prop == 1 } {
 	    plb_update
 	}
 
-	if { $maintain_selection && ($sel != "") } {
-	    $t selection set $sel
-	}
-
     }
+    # if
 
  return;
 }
