@@ -24,9 +24,6 @@ getProp
 
 # create new UI
 addMenu $w MetaCompAttrData Formula {MetaBalls_1 MetaBalls_2 MetaBalls_3 Torus Test}
-addParam $w MetaCompAttrData Xpos
-addParam $w MetaCompAttrData Ypos
-addParam $w MetaCompAttrData Zpos
 addCheck $w MetaCompAttrData Negativ
 
 if { $MetaCompAttrData(Formula) == 0 } {
@@ -80,9 +77,6 @@ Formula  0
 # create MetaCompAttr-UI
 set w [frame $ay(pca).$MetaCompAttr(w)]
 
-addParam $w MetaCompAttrData Xpos
-addParam $w MetaCompAttrData Ypos
-addParam $w MetaCompAttrData Zpos
 addCheck $w MetaCompAttrData Negativ
 
 # add menu entry to Create/Custom sub-menu
