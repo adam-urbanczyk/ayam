@@ -955,10 +955,13 @@ Tcl_SetVar(interp, "AYWITHAQUA", "1", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 	      TCL_LEAVE_ERR_MSG);
 
   /* create bitmaps */
-  Tk_DefineBitmap(interp, "minus", minus_bits, minus_width, minus_height);
-  minus_bitmap = Tk_GetBitmap(interp, Tk_MainWindow(interp), "minus");
-  Tk_DefineBitmap(interp, "plus", plus_bits, plus_width, plus_height);
-  plus_bitmap = Tk_GetBitmap(interp, Tk_MainWindow(interp), "plus");
+  if(Tk_MainWindow(interp))
+    {
+      Tk_DefineBitmap(interp, "minus", minus_bits, minus_width, minus_height);
+      minus_bitmap = Tk_GetBitmap(interp, Tk_MainWindow(interp), "minus");
+      Tk_DefineBitmap(interp, "plus", plus_bits, plus_width, plus_height);
+      plus_bitmap = Tk_GetBitmap(interp, Tk_MainWindow(interp), "plus");
+    }
 
  return TCL_OK;
 } /* Tcl_AppInit */
