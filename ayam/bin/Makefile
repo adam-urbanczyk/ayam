@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile [7. Jun 2002]
+# Makefile [02. Sep 2002]
 # Makefile for the installation of Ayam (precompiled wrapped version)
 
 # Choose an installation prefix.
@@ -52,6 +52,11 @@ install:
 	-$(INSTALL) plugins/rrib.so $(LIBDIR)
 	-$(INSTALL) plugins/rrib.tcl $(LIBDIR)
 	-$(INSTALL) plugins/loadrrib.tcl $(LIBDIR)
+	-$(INSTALL) plugins/ayslb.so $(LIBDIR)
+	-$(INSTALL) plugins/ayslo.so $(LIBDIR)
+	-$(INSTALL) plugins/ayslo3d.so $(LIBDIR)
+	-$(INSTALL) plugins/ayslx.so $(LIBDIR)
+	-$(INSTALL) plugins/ayso.so $(LIBDIR)
 	-$(INSTALL) Makefile $(LIBDIR)
 	$(MKDIR) $(DOCDIR)
 	$(INSTALL) $(DOCFILES) $(DOCDIR)
@@ -72,6 +77,11 @@ uninstall:
 	-rm -rf $(LIBDIR)/idr.so $(LIBDIR)/idr.tcl
 	-rm -rf $(LIBDIR)/rrib.so $(LIBDIR)/rrib.tcl
 	-rm -rf $(LIBDIR)/loadrrib.tcl $(LIBDIR)/loadidr.tcl
+	-rm -rf $(LIBDIR)/ayslb.so
+	-rm -rf $(LIBDIR)/ayslo.so
+	-rm -rf $(LIBDIR)/ayslo3d.so
+	-rm -rf $(LIBDIR)/ayslx.so
+	-rm -rf $(LIBDIR)/ayso.so
 	-cd $(DOCDIR); rm -rf Setup.txt Changes.txt License.txt refcard.tcl\
 refcard.ps ayam.pdf html;
 	-rm -rf $(LIBDIR)/Makefile
