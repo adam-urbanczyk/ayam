@@ -2277,9 +2277,6 @@ ay_npt_skinu(ay_object *curves, int order, int knot_type,
   K = numcurves;
   N = curve->length;
 
-  if(interpolate == 1 && knot_type != AY_KTCUSTOM)
-    knot_type = AY_KTCUSTOM;
-
   if(order < 3)
     order = 3;
   if(order > numcurves)
@@ -2371,12 +2368,7 @@ ay_npt_skinu(ay_object *curves, int order, int knot_type,
   while(o)
     {
       curve = (ay_nurbcurve_object *) o->refine;
-      if(interpolate == 1 && degU > 1)
-	{
-	  ay_status = ay_nb_GlobalInterpolation4D(curve->length-1,
-						  curve->controlv,
-						  uk, U, degU);
-	}
+
       memcpy(&(skc[b]), curve->controlv, N*stride*sizeof(double));
       b += N*stride;
       o = o->next;
@@ -2394,7 +2386,7 @@ ay_npt_skinu(ay_object *curves, int order, int knot_type,
   V = NULL;
   skc = NULL;
 
-  if(interpolate == 2)
+  if(interpolate && degU > 1)
     ay_status = ay_npt_interpolateu(*skin, order);
 
 cleanup:
@@ -2447,9 +2439,6 @@ ay_npt_skinv(ay_object *curves, int order, int knot_type,
 
   K = numcurves;
   N = curve->length;
-
-  if(interpolate == 1 && knot_type != AY_KTCUSTOM)
-    knot_type = AY_KTCUSTOM;
 
   if(order < 3)
     order = 3;
@@ -2543,12 +2532,6 @@ ay_npt_skinv(ay_object *curves, int order, int knot_type,
     {
       curve = (ay_nurbcurve_object *) o->refine;
 
-      if(interpolate == 1 && degV > 1)
-	{
-	  ay_status = ay_nb_GlobalInterpolation4D(curve->length-1,
-						  curve->controlv,
-						  vk, V, degV);
-	}
       b = c*stride;
       a = 0;
       for(i = 0; i < curve->length; i++)
@@ -2573,7 +2556,7 @@ ay_npt_skinv(ay_object *curves, int order, int knot_type,
   V = NULL;
   skc = NULL;
 
-  if(interpolate == 2)
+  if(interpolate && degV > 2)
     ay_status = ay_npt_interpolatev(*skin, order);
 
 cleanup:
@@ -4267,7 +4250,7 @@ ay_npt_gordon(ay_object *cu, ay_object *cv, ay_object *in,
  ay_object *lcu = NULL, *lcv = NULL; /* last cu/cv curve */
  ay_nurbcurve_object *nc = NULL;
  ay_nurbpatch_object *interpatch = NULL, *skinu = NULL, *skinv = NULL;
- int knot_type = AY_KTNURB, uo, vo;
+ int uo, vo;
  int i, j, k, numcu = 0, numcv = 0; /* numbers of parameter curves */
  int need_interpol = AY_FALSE;
  double *intersections = NULL; /* matrix of intersection points */
@@ -4449,8 +4432,8 @@ ay_npt_gordon(ay_object *cu, ay_object *cv, ay_object *in,
       ay_status = ay_npt_interpolatev(interpatch, vorder);
     }
 
-  ay_status = ay_npt_skinv(cu, uorder, AY_KTCUSTOM, 1, &skinu);
-  ay_status = ay_npt_skinu(cv, vorder, AY_KTCUSTOM, 1, &skinv);
+  ay_status = ay_npt_skinv(cu, uorder, AY_KTCUSTOM, AY_TRUE, &skinu);
+  ay_status = ay_npt_skinu(cv, vorder, AY_KTCUSTOM, AY_TRUE, &skinv);
 
 
   if(skinu->uorder > uo)
