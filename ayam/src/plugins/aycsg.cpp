@@ -93,7 +93,11 @@ void aycsg_cleartree(ay_object *t);
 void aycsg_cleartmtags();
 
 extern "C" {
+
+void aycsg_display(struct Togl *togl);
+
 int Aycsg_Init(Tcl_Interp *interp);
+
 }
 
 // functions
@@ -170,7 +174,7 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  Tcl_Interp *interp = ay_interp;
  int opencsg_algorithm = 0, opencsg_dcsampling = 0, calc_bbs = AY_FALSE;
-
+ Togl_Callback *oldaltdispcb = NULL;
 #ifdef AYCSGDBG
  ay_printcb *cbv[4];
 
@@ -231,6 +235,10 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
   ay_prefs.use_materialcolor = AY_FALSE;
 
   view = (ay_view_object *)Togl_GetClientData(togl);
+
+  // tell shade callbacks we are rendering CSG
+  oldaltdispcb = view->altdispcb;
+  view->altdispcb = aycsg_display;
 
   aycsg_clearprimitives();
   aycsg_root = NULL;
@@ -317,6 +325,9 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
   // clear all TM tags
   aycsg_cleartmtags();
   aycsg_tmtags = NULL;
+
+  // restore alternative display callback of view window
+  view->altdispcb = oldaltdispcb;
 
  return TCL_OK;
 } // aycsg_rendertcb
