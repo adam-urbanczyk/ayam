@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>1. Mar 2004
+<date>10. Mar 2004
 <abstract>
 This is the documentation of Ayam (1.7) - a free 3D modeling environment
 for the RenderMan interface.
@@ -5897,8 +5897,8 @@ objects (ICurve, ConcatNC)
 to NPatch objects (BPatch, PatchMesh, Revolve, Sweep, Extrude, Skin,
 Cap, Gordon)
 <item> PolyMesh and objects that may be converted to PolyMesh objects
-(MetaObj), faces with holes are not supported by the Wavefront
-format and will be discarded
+(MetaObj), faces with holes are not supported by the Wavefront OBJ
+format and will be tesselated to triangles for export automatically
 <item> Box
 <item> Instance, Clone; both will be resolved to normal objects for export
 as Wavefront OBJ does not support referenced geometry
@@ -5911,6 +5911,9 @@ Since Wavefront OBJ does not support separate transformation attributes,
 all transformation attributes will be used to transform the coordinate
 values (the control points) of the exported objects.
 
+The Wavefront OBJ export, currently, ignores all material information
+and possibly present primitive variable tags. Only the pure geometry
+information is written to the OBJ file.
 
 <sect1>3DMF Import Export (MFIO) Plugin<label id="mfioplugin">
 <p>
