@@ -71,6 +71,54 @@ int Aycsg_Init(Tcl_Interp *interp);
 
 // functions
 
+#ifdef AYCSGDBG
+// aycsg_printppohcb:
+//  ppoh callback to print the CSG type (for debugging purposes only)
+int
+aycsg_printppohcb(ay_object *o, FILE *fileptr, char *prefix)
+{
+ int ay_status = AY_OK;
+
+  if(o->type == AY_IDLEVEL)
+    {
+
+      if(prefix)
+	{
+	  fprintf(fileptr, "%s", prefix);
+	}
+
+      fprintf(fileptr, "CSG-Type: ");
+
+      switch(o->modified)
+	{
+	case AY_LTEND:
+	  fprintf(fileptr, "EndLevel");
+	  break;
+	case AY_LTLEVEL:
+	  fprintf(fileptr, "Level");
+	  break;
+	case AY_LTUNION:
+	  fprintf(fileptr, "Union");
+	  break;
+	case AY_LTDIFF:
+	  fprintf(fileptr, "Difference");
+	  break;
+	case AY_LTINT:
+	  fprintf(fileptr, "Intersection");
+	  break;
+	case AY_LTPRIM:
+	  fprintf(fileptr, "Primitive");
+	  break;
+	default:
+	  break;
+	} /* switch */
+      fprintf(fileptr, "\n");
+    } /* if */
+
+ return ay_status;
+} // aycsg_printppohcb
+#endif
+
 // aycsg_rendertcb:
 //  Togl callback that renders CSG in the view pointed to by <togl>
 int
@@ -87,7 +135,7 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
 
   cbv[0] = &ay_ppoh_prtype;
   cbv[1] = &ay_ppoh_prtrafos;
-  cbv[2] = &ay_ppoh_prflags;
+  cbv[2] = &aycsg_printppohcb/*ay_ppoh_prflags*/;
   cbv[3] = NULL;
 #endif
 
