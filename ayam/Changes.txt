@@ -1,4 +1,4 @@
-[15. 08. 2003] CVS-Head:
+[22. 08. 2003] CVS-Head:
 o bug fixes:
   - fixed crash when exporting scenes with malformed RiAttribute/RiOption
     tags (type c or p, with a component missing) (SF 753550)
@@ -68,6 +68,15 @@ o added a new parameter to the fillet creation algorithm for the "ConcatNC"
   object, it is named "FTLength" (Fillet Tangent Length) and controls the
   lengths of the outer fillet segments, which are tangential to the original
   curves
+o added new tag type "SaveMainGeom" that is automatically filled with the
+  geometries of main window and toolbox on scene saving and used to restore
+  the geometry upon reading of scenes if it is present for the root object
+o added new RiOption "StdDisplay" that may be used to inhibit writing of the
+  standard Display option to exported RIB files
+o added new option to convert mechanism that replaces the original objects
+  with the new converted object
+o the "remove tags"-menu in the tags property now also displays tag type
+  names (and not just tag numbers)
 
 
 [10. 05. 2003] Ayam1.5.1:
