@@ -20,9 +20,9 @@
 int
 ay_pmt_tonpatch(ay_pamesh_object *pamesh, ay_object **result)
 {
- double **evw = NULL, *cv = NULL;
+ double *cv = NULL;
  int evwinwidth, evwinheight, ktu, ktv, uorder, vorder;
- int i = 0, j = 0, winu, winv, k, l, a, b;
+ int i = 0, j = 0, winu, winv, k, a, b;
  ay_object *o = NULL, **nexto = NULL;
  char fname[] = "ay_pmt_tonpatch";
  int ay_status = AY_OK;
@@ -96,12 +96,9 @@ ay_pmt_tonpatch(ay_pamesh_object *pamesh, ay_object **result)
   else
     {
 
-      if(!(evw = calloc(evwinwidth*evwinheight, sizeof(double*))))
-	return AY_EOMEM;
-
       winu = (pamesh->width/(evwinwidth-1));
       winv = (pamesh->height/(evwinheight-1));
-      printf("winu %d, winv %d\n",winu,winv);
+
       if(winu == 0)
 	{
 	  ay_error(AY_ERROR, fname,
@@ -128,7 +125,10 @@ ay_pmt_tonpatch(ay_pamesh_object *pamesh, ay_object **result)
 
 	      cv = NULL;
 	      if(!(cv = calloc(evwinwidth*evwinheight*4, sizeof(double))))
-		return AY_EOMEM;
+		{
+		  free(o);
+		  return AY_EOMEM;
+		}
 
 	      /* place evaluation window and copy control points */
 	      a = 0;
