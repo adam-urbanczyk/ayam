@@ -464,6 +464,9 @@ int ay_sel_setfromlbtcmd(ClientData clientData, Tcl_Interp *interp,
 int ay_sel_getseltcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
 
+int ay_sel_hsltcmd(ClientData clientData, Tcl_Interp *interp,
+		   int argc, char *argv[]);
+
 /* selp.c */
 void ay_selp_clear(ay_object *o);
 
