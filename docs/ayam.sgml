@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>14. Apr 2003
+<date>23. Apr 2003
 <abstract>
 This is the documentation of Ayam (1.5) - a free 3D modeling environment
 for the RenderMan interface.
@@ -3755,15 +3755,20 @@ A metaball object is a custom object (see also section
 <ref id="customobj" name="Custom Object">).
 It allows you to model with implicit surfaces in realtime.
 <p>
-To start modelling you should first create a MetaObj object using the menu
+To start modelling you should first create a <tt>"MetaObj"</tt> object
+using the menu entry
 <tt>"Create/Custom Object/MetaObj"</tt> (if this menu entry is not
 available, you have to load the <tt>"metaobj"</tt> plugin using the menu entry
-<tt>"File/Load Custom"</tt>).
+<tt>"File/Load Custom"</tt> first).
 <tt>"Create/Custom Object/MetaObj"</tt> creates a so called meta world with a
-single meta component (a sphere) in it.
-Meta components live only in a meta world. Type, parameters, and
+single meta component (a sphere) in it. The meta world is represented
+by a <tt>"MetaObj"</tt> object and the component by a <tt>"MetaComp"</tt>
+object which is a child of the <tt>"MetaObj"</tt> object.
+Meta components live only in a meta world, therefore it makes no sense
+to create <tt>"MetaComp"</tt> objects in other places except as a
+child of a <tt>"MetaObj"</tt> object. Type, parameters, and
 transformation attributes of the meta components define the function
-of an implicit surface. The MetaObj object, that represents the
+of an implicit surface. The <tt>"MetaObj"</tt> object, that represents the
 meta world, evaluates this function on a regular three-dimensional
 grid and creates a polygonal
 representation for a specific function value (the so called threshold value).
@@ -3787,6 +3792,22 @@ should not need to change this value.
 the <tt>"ShowWorld"</tt> parameter.
 </itemize>
 
+New in Ayam1.5 is an adaptive calculation mode of the implicit
+surface. It may be switched on using the new attribute
+<tt>"Adaptive"</tt>. In the adaptive calculation mode, Ayam tries
+to vary the resolution of the resulting polygonal mesh according to
+the features of the implicit surface in order
+to capture fine details, even though a coarse grid is used.
+This is not done using a successively refined grid but by a
+refinement of the triangles created by the original algorithm
+(see also XXXX).
+You may control the adaptation process using three parameters:
+<tt>"Flatness"</tt>, <tt>"Epsilon"</tt>, and <tt>"StepSize"</tt>.
+If <tt>"Adaptive"</tt> is set to <tt>"automatic"</tt>, Ayam will
+not use the adaptive calculation while a modelling action is in
+progress. This mode has been introduced, because the adaptive mode
+may consume a considerable amount of CPU ressources.
+
 While modelling with meta balls you may add other <tt/"MetaComp"/ objects
 to the <tt/"MetaObj"/ object and parameterize them.
 A <tt/"MetaComp"/ object has the following properties.
@@ -3796,7 +3817,7 @@ A <tt/"MetaComp"/ object has the following properties.
 <itemize>
 <item><tt/"Formula"/ specifies the type of the meta component.
 The following types are available: Metaball, Torus, Cube, Heart, and
-Custom which gives you the possibility to use your own formulas.
+Custom. The latter gives you the possibility to use your own formulas.
 <item>With the parameter <tt/"Negative"/ you define a component with a
 negative effect on the implicit function value.
 Negative components are not visible on their own but they are useful
@@ -5070,12 +5091,18 @@ are inside or touch this area are considered picked
 in the buttons in the Tag Property GUI (default: 30)
 <item><tt/"Wait"/: set this to <tt/"waitPid"/ if you want to enable
 the work around for zombie processes created by the Rendering GUI.
-This is necessary for the Linux platform.
+This is e.g. necessary for the Linux platform.
 <item><tt/"Prompt"/: controls the prompt for the console. If
-set to an empty string a default of <tt/"[file tail [pwd]]&gt;"/
-will be used, which displays the last component of the current
-directory of Ayam. You may e.g. change this to <tt/"[pwd]&gt;"/
-to see the full path. If you want to display the value of a
+set to an empty string a default of
+<code>
+\[Undo:$ay(undoo)/Redo:$ay(redoo)\].../[file tail [pwd]]&gt;
+</code>
+will be used, which displays the name of the operations that you can
+undo and redo and the last component of the current
+directory of Ayam.
+You may e.g. change this to <tt/"[pwd]&gt;"/
+to see just the full path name of the current directory.
+If you want to display the value of a
 variable in the prompt (e.g. designating the current level in
 the scene hierarchy) you need to bind a write-trace to that variable,
 that calls the procedure <tt/"update_prompt"/. This write-trace
@@ -5586,6 +5613,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <itemize>
 <item>About: <ref id="mmhelp" name="main menu entry">
 <item>Action: <ref id="iac" name="interactive actions">
+<item>Adaptive: <ref id="moattr" name="MetaObj attributes">
 <item>Align to Parent: <ref id="vmconf" name="view menu entry">,
 <ref id="vwsc" name="view action">
 <item>Apply: <ref id="propgui" name="apply property GUI">
@@ -5711,6 +5739,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <ref id="swp" name="sweep attribute">,
 <ref id="skp" name="skin attribute">
 <item>EnvFile: <ref id="prefgui" name="preference setting">
+<item>Epsilon: <ref id="moattr" name="MetaObj attributes">
 <item>ErrorLevel: <ref id="rribopt" name="RIB import option">
 <item>ExcludeHidden: <ref id="prefrib" name="preference setting">
 <item>ExpGain, ExpGamma: <ref id="rio" name="RenderMan interface option">
@@ -5729,6 +5758,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>FilterFunc: <ref id="rio" name="RenderMan interface option">
 <item>FilterWidth: <ref id="rio" name="RenderMan interface option">
 <item>FindU: <ref id="miscac" name="modeling action">
+<item>Flatness: <ref id="moattr" name="MetaObj attributes">
 <item>forAll, forAllT: <ref id="fall" name="scripting interface command">
 <item>forceNot: <ref id="gtype" name="scripting interface command">
 <item>Formula: <ref id="mcattr" name="MetaComp attribute">
@@ -6056,6 +6086,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <ref id="swp" name="sweep attribute">,
 <ref id="skp" name="skin attribute">
 <item>Step_U, Step_V: <ref id="pmattr" name="PatchMesh attribute">
+<item>StepSize: <ref id="moattr" name="MetaObj attributes">
 <item>Stretch: <ref id="scalac" name="stretch object">
 <item>Subdivision Mesh: <ref id="sdmeshobj" name="SDMesh object">
 <item>Surface: <ref id="matshader" name="shader">
