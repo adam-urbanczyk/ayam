@@ -102,16 +102,16 @@ void ay_nb_DersBasisFuns(int i, double u, int p, int n, double *U,
 			 double *ders);
 
 void ay_nb_ComputeFirstDer3D(int n, int p, double *U, double *P, double u,
-			     double *CK);
+			     double *C1);
 
 void ay_nb_ComputeSecDer3D(int n, int p, double *U, double *P, double u,
-			   double *CK);
+			   double *C2);
 
 void ay_nb_ComputeFirstDer4D(int n, int p, double *U, double *Pw, double u,
-			     double *CK);
+			     double *C1);
 
 void ay_nb_ComputeSecDer4D(int n, int p, double *U, double *Pw, double u,
-			   double *CK);
+			   double *C2);
 
 void ay_nb_CompFirstDerSurf4D(int n, int m, int p, int q, double *U, double *V,
 			      double *Pw, double u, double v, double *C);
