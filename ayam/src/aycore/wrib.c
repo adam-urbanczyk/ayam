@@ -1152,6 +1152,36 @@ ay_wrib_lights(char *file, ay_object *o)
       o = o->next;
     } /* while */
 
+  /* clean up */
+  if(shadowptr)
+    {
+      free(shadowptr);
+    }
+  if(pxptr)
+    {
+      free(pxptr);
+    }
+  if(nxptr)
+    {
+      free(nxptr);
+    }
+  if(pyptr)
+    {
+      free(pyptr);
+    }
+  if(nyptr)
+    {
+      free(nyptr);
+    }
+  if(pzptr)
+    {
+      free(pzptr);
+    }
+  if(nzptr)
+    {
+      free(nzptr);
+    }
+
   return ay_status;
 } /* ay_wrib_lights */
 
