@@ -14,6 +14,7 @@
 
 /* pomesht.c -  PolyMesh object tools */
 
+/* types local to this module */
 typedef struct ay_pomesht_listobject_s
 {
   struct ay_pomesht_listobject_s *next;
@@ -814,6 +815,10 @@ ay_pomesht_optimizetcmd(ClientData clientData, Tcl_Interp * interp,
 	    { /* emit error message */
 	      ay_error(AY_ERROR, fname, "could not optimize object");
 	    }
+	}
+      else
+	{
+	  ay_error(AY_ERROR, fname, "Can only operate on PolyMesh objects!");
 	} /* if */
 
       sel = sel->next;

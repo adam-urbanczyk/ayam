@@ -141,6 +141,8 @@ proc pomesh_optimize { } {
 
 	set ay_error ""
 
+	undo save
+
 	optiPo -c $pomeshopt_options(OptimizeCoords)\
 		-n $pomeshopt_options(IgnoreNormals)\
 		-f $pomeshopt_options(OptimizeFaces);
