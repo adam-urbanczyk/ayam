@@ -696,6 +696,8 @@ ay_pamesh_readcb(FILE *fileptr, ay_object *o)
   fscanf(fileptr,"%d\n",&pamesh->type);
   fscanf(fileptr,"%d\n",&pamesh->btype_u);
   fscanf(fileptr,"%d\n",&pamesh->btype_v);
+  fscanf(fileptr,"%d\n",&pamesh->ustep);
+  fscanf(fileptr,"%d\n",&pamesh->vstep);
 
   if(pamesh->btype_u == AY_BTCUSTOM)
     {
@@ -773,6 +775,8 @@ ay_pamesh_writecb(FILE *fileptr, ay_object *o)
   fprintf(fileptr, "%d\n", pamesh->type);
   fprintf(fileptr, "%d\n", pamesh->btype_u);
   fprintf(fileptr, "%d\n", pamesh->btype_v);
+  fprintf(fileptr, "%d\n", pamesh->ustep);
+  fprintf(fileptr, "%d\n", pamesh->vstep);
 
   if(pamesh->btype_u == AY_BTCUSTOM)
     {
