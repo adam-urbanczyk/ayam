@@ -287,7 +287,9 @@ proc toolbox_open { } {
 
 	    #####
 	    button $f.bconv -image ay_Convert_img -padx 0 -pady 0 -command {
-		convOb; uS; rV
+		global ay
+		set m $ay(toolsmenu)
+		$m invoke 13
 	    }
 	    balloon_set $f.bconv "convert object"
 
