@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile [30. Dec 2001]
+# Makefile [16. Sep 2002]
 # Makefile for Ayam example scene shaders
 
 SOURCES = RCClouds.sl\
@@ -25,6 +25,21 @@ AQSLFLAGS =
 SHADERDL = shaderdl
 SDLFLAGS =
 
+# RenderDotC
+RDCSHADERS := $(SOURCES:%.sl=%.so)
+SHADERDC = shaderdc
+SDCFLAGS =
+
+# PRMan
+PRMANSHADERS := $(SOURCES:%.sl=%.slo)
+SHADER = shader
+SFLAGS =
+
+# Air
+AIRSHADERS := $(SOURCES:%.sl=%.slb)
+SHADERD = shaded
+SDFLAGS =
+
 #########
 
 slc: $(SLCSHADERS)
@@ -44,15 +59,34 @@ sld: $(3DLSHADERS)
 3dlight: sld
 
 
-all: slc slx sld
+so: $(RDCSHADERS)
+
+rdc: so
+
+
+slo: $(PRMANSHADERS)
+
+prman: slo
+
+
+slb: $(AIRSHADERS)
+
+air: slb
+
+
+all: slc slx sld so slo slb
 
 clean:
-	rm -rf *.slc
-	rm -rf *.slx
-	rm -rf *.sdl
+	-rm -rf *.slc
+	-rm -rf *.slx
+	-rm -rf *.sdl
+	-rm -rf *.so
+	-rm -rf *.slo
+	-rm -rf *.slb
 
 
-.SUFFIXES: .slc .slx .sld .sl
+
+.SUFFIXES: .slc .slx .sld .so .slo .slb .sl
 
 .sl.slc:
 	$(SLC) $(SLCFLAGS) $*.sl
@@ -62,3 +96,12 @@ clean:
 
 .sl.sld:
 	$(SHADERDL) $(SDLFLAGS) $*.sl
+
+.sl.so:
+	$(SHADERDC) $(SDCFLAGS) $*.sl
+
+.sl.slo:
+	$(SHADER) $(SFLAGS) $*.sl
+
+.sl.slb:
+	$(SHADERD) $(SDFLAGS) $*.sl
