@@ -12,13 +12,13 @@
 
 #include "ayam.h"
 
-/* nb.c - various NURB related functions */
+/* nb.c - various NURBS related functions */
 
 /*
- * code adapted from "The NURBS Book" by Piegl, Tiller
+ * code adapted from "The NURBS Book" by Les Piegl, Wayne Tiller;
  * code marked NURBS++ derived from (or contains changes
  * to the original NURBS-Book code from) the NURBS++-Library
- * by P. Lavoie
+ * by Philippe Lavoie.
  */
 
 
@@ -50,7 +50,7 @@ ay_nb_LUDecompose(int n, double *A, int *pivot)
     pivot[k] = k;
 
   sign = 1;
-  
+
   if(nm1 >= 1)	/* non-trivial problem */
     {
       for(k = 0; k < nm1; k++)
@@ -73,11 +73,11 @@ ay_nb_LUDecompose(int n, double *A, int *pivot)
 	  pivot[k] = l;
 
 	  if(elem[l*n+k] != 0.0)
-	    {			
+	    {
 	      /* nonsingular pivot found */
 	      /* interchange needed */
 	      if(l != k)
-		{	
+		{
 		  for(i = k; i < n; i++)
 		    {
 		      t = elem[l*n+i];
@@ -98,7 +98,7 @@ ay_nb_LUDecompose(int n, double *A, int *pivot)
 	  else		/* pivot singular */
 	    errval = k;
 	}
-      
+
     }
 
   pivot[nm1] = nm1;
@@ -108,9 +108,9 @@ ay_nb_LUDecompose(int n, double *A, int *pivot)
   memcpy(A, elem, n*n*sizeof(double));
 
   free(elem);
-  
+
   return AY_OK;
-}
+} /* ay_nb_LUDecompose */
 
 
 /*
@@ -151,7 +151,7 @@ ay_nb_LUInvert(int n, double *inv, int *pivot)
 	      ten = inv[k*n+j];
 	      inv[k*n+j] = 0.0;
 	      for(i = 0; i < kp1; i++)
-		inv[i*n+j] += (ten * inv[i*n+k]);	      
+		inv[i*n+j] += (ten * inv[i*n+k]);
 	    }
 	}
     }
@@ -186,13 +186,13 @@ ay_nb_LUInvert(int n, double *inv, int *pivot)
 	    }
 
 	} /* for */
-      
+
     } /* if(nm >= 1) */
 
   free(work);
 
  return AY_OK;
-}
+} /* ay_nb_LUInvert */
 
 
 /*
@@ -231,7 +231,7 @@ ay_nb_GlobalInterpolation4D(int n, double *Q, double *ub, double *Uc, int d)
     {
       span = ay_nb_FindSpan(n, d, ub[i], U);
       ay_nb_BasisFuns(span, ub[i], d, U, N);
-      for(j = 0; j <= d; j++) 
+      for(j = 0; j <= d; j++)
 	{
 	  ind = (i*(n+1)) + (span-d+j);
 	  A[ind] = N[j];
@@ -245,12 +245,12 @@ ay_nb_GlobalInterpolation4D(int n, double *Q, double *ub, double *Uc, int d)
 
   if(ay_status)
     { free(A); free(N); free(qq); free(xx); free(pivot); return ay_status; }
-  
+
   ay_status = ay_nb_LUInvert(n+1, A, pivot);
 
   if(ay_status)
     { free(A); free(N); free(qq); free(xx); free(pivot); return ay_status; }
-    
+
   /* Init matrix for LSE */
   memcpy(qq,Q,(n+1)*4*sizeof(double));
 
@@ -262,7 +262,7 @@ ay_nb_GlobalInterpolation4D(int n, double *Q, double *ub, double *Uc, int d)
 	  t = 0.0;
 	  for(k = 0; k < (n+1); k++)
 	    {
-	      t += (A[i*(n+1)+k] * qq[k*4+j]); 
+	      t += (A[i*(n+1)+k] * qq[k*4+j]);
 	    }
 	  xx[i*4+j] = t;
 	}
@@ -275,10 +275,10 @@ ay_nb_GlobalInterpolation4D(int n, double *Q, double *ub, double *Uc, int d)
   free(N);
   free(qq);
   free(xx);
-  free(pivot); 
+  free(pivot);
 
  return AY_OK;
-}
+} /* ay_nb_GlobalInterpolation4D */
 
 
 /*
@@ -323,7 +323,7 @@ ay_nb_GlobalInterpolation4DD(int n, double *Q, double *ub, double *Uc, int d,
     {
       span = ay_nb_FindSpan(n+2, d, ub[k], U);
       ay_nb_BasisFuns(span, ub[k], d, U, N);
-      for(j = 0; j <= d; j++) 
+      for(j = 0; j <= d; j++)
 	{
 	  ind = (i*(n+3)) + (span-d+j);
 	  A[ind] = N[j];
@@ -343,12 +343,12 @@ ay_nb_GlobalInterpolation4DD(int n, double *Q, double *ub, double *Uc, int d,
 
   if(ay_status)
     { free(A); free(N); free(qq); free(xx); free(pivot); return ay_status; }
-  
+
   ay_status = ay_nb_LUInvert(n+3, A, pivot);
 
   if(ay_status)
     { free(A); free(N); free(qq); free(xx); free(pivot); return ay_status; }
-    
+
   /* Init matrix for LSE */
   memcpy(qq,Q,(n+3)*4*sizeof(double));
 
@@ -372,7 +372,7 @@ ay_nb_GlobalInterpolation4DD(int n, double *Q, double *ub, double *Uc, int d,
 	  t = 0.0;
 	  for(k = 0; k < (n+3); k++)
 	    {
-	      t += (A[i*(n+3)+k] * qq[k*4+j]); 
+	      t += (A[i*(n+3)+k] * qq[k*4+j]);
 	    }
 	  xx[i*4+j] = t;
 	}
@@ -392,10 +392,10 @@ ay_nb_GlobalInterpolation4DD(int n, double *Q, double *ub, double *Uc, int d,
   free(N);
   free(qq);
   free(xx);
-  free(pivot); 
+  free(pivot);
 
  return AY_OK;
-}
+} /* ay_nb_GlobalInterpolation4DD */
 
 
 /*
@@ -407,7 +407,7 @@ ay_nb_GlobalInterpolation4DD(int n, double *Q, double *ub, double *Uc, int d,
  */
 int
 ay_nb_RemoveKnot(int stride, int n, int p, double *U, double *Pw,
-		   int r, int s, int num, double *Ubar, double *Qw)
+		 int r, int s, int num, double *Ubar, double *Qw)
 {
  int i, j, k, ii, jj, off, t;
  int m, ord, fout, last, first;
@@ -449,9 +449,9 @@ ay_nb_RemoveKnot(int stride, int n, int p, double *U, double *Pw,
 	  ti = ii*stride;
 	  tj = i*stride;
 	  tk = (ii-1)*stride;
-	  temp[ti]   = (Pw[tj]   - (1.0 - alfi) * temp[tk])   / alfi; 
-	  temp[ti+1] = (Pw[tj+1] - (1.0 - alfi) * temp[tk+1]) / alfi; 
-	  temp[ti+2] = (Pw[tj+2] - (1.0 - alfi) * temp[tk+2]) / alfi; 
+	  temp[ti]   = (Pw[tj]   - (1.0 - alfi) * temp[tk])   / alfi;
+	  temp[ti+1] = (Pw[tj+1] - (1.0 - alfi) * temp[tk+1]) / alfi;
+	  temp[ti+2] = (Pw[tj+2] - (1.0 - alfi) * temp[tk+2]) / alfi;
 	  if(stride == 4)
 	    temp[ti+3] = 1.0;
 	  /* temp[jj] = (Pw[j] - alfj * temp[jj+1]) / (1.0-alfj); */
@@ -528,7 +528,7 @@ ay_nb_RemoveKnot(int stride, int n, int p, double *U, double *Pw,
   free(temp);
 
  return AY_OK;
-}
+} /* ay_nb_removeKnot */
 
 
 /*
@@ -572,7 +572,7 @@ ay_nb_Bin(int maxn, int maxk, double *bin)
     }
 
  return;
-}
+} /* ay_nb_Bin */
 
 
 /*
@@ -584,8 +584,8 @@ ay_nb_Bin(int maxn, int maxk, double *bin)
  * and probably _resized_ according to nh after elevation!
  */
 int
-ay_nb_DegreeElevateCurve(int stride, int n, int p, double *U, double *Pw, 
-			   int t, int *nh, double *Uh, double *Qw)
+ay_nb_DegreeElevateCurve(int stride, int n, int p, double *U, double *Pw,
+			 int t, int *nh, double *Uh, double *Qw)
 {
  int m, ph, ph2, bai, bai2, bal, ki, ki2, kj;
  int i, j, k, mpi, maxit, kind, cind, r, oldr, a, b, mh, mul;
@@ -688,7 +688,7 @@ ay_nb_DegreeElevateCurve(int stride, int n, int p, double *U, double *Pw,
       i = b;
       while((b < m) && (U[b] >= U[b+1])) /* was == */
 	b++;
-      
+
       mul = b-i+1;
       mh += mul+t;
       ub = U[b];
@@ -778,7 +778,7 @@ ay_nb_DegreeElevateCurve(int stride, int n, int p, double *U, double *Pw,
 	      i = first;
 	      j = last;
 	      kj = j-kind+1;
-	      
+
 	      while((j-i) > tr) /* Loop and compute the new        */
 		{                /* control points for removal step */
 		  if(i < cind)
@@ -892,7 +892,7 @@ ay_nb_DegreeElevateCurve(int stride, int n, int p, double *U, double *Pw,
   free(bin);
 
  return AY_OK;
-}
+} /* ay_nb_DegreeElevateCurve */
 
 
 /*
@@ -902,14 +902,14 @@ ay_nb_DegreeElevateCurve(int stride, int n, int p, double *U, double *Pw,
  * n, Q[]: points to interpolate
  * U: knot vector
  * P: controls for the spline, of size n+2!
- * P must already contain P[0], P[1], P[n+1] and P[n+2] 
- * (precalculated using ends condition)                          
+ * P must already contain P[0], P[1], P[n+1] and P[n+2]
+ * (precalculated using ends condition)
  */
 int
 ay_nb_SolveTridiagonal(int n, double *Q, double *U, double *P)
 {
  int ay_status = AY_OK;
- double *abc = NULL, *R = NULL, *dd = NULL; 
+ double *abc = NULL, *R = NULL, *dd = NULL;
  double den;
  int i, a;
 
@@ -961,13 +961,13 @@ ay_nb_SolveTridiagonal(int n, double *Q, double *U, double *P)
   ay_nb_BasisFuns(n+2, U[n+2], 3, U, abc);
 
   den = abc[1] - abc[0]*dd[n];
-  
+
   a = n*3;
-  
+
   P[a]   = (Q[a-3]-abc[2]*P[a+3]-abc[0]*P[a-3])/den;
   P[a+1] = (Q[a-2]-abc[2]*P[a+4]-abc[0]*P[a-2])/den;
   P[a+2] = (Q[a-1]-abc[2]*P[a+5]-abc[0]*P[a-1])/den;
-  
+
   a = (n-1)*3;
   for(i = (n-1); i >= 2; i--)
     {
@@ -982,13 +982,13 @@ ay_nb_SolveTridiagonal(int n, double *Q, double *U, double *P)
   free(R);
 
  return ay_status;
-}
+} /* ay_nb_SolveTridiagonal */
 
 
 int
 ay_nb_CurveInsertKnot4D(int np, int p, double *UP, double *Pw, double u,
-			  int k, int s, int r, int *nq, double *UQ,
-			  double *Qw)
+			int k, int s, int r, int *nq, double *UQ,
+			double *Qw)
 {
  int i,j,L=0,i1,i2;
  double mp = 0.0, alpha = 0.0, *Rw = NULL;
@@ -1075,12 +1075,13 @@ ay_nb_CurveInsertKnot4D(int np, int p, double *UP, double *Pw, double u,
   free(Rw);
 
  return AY_OK;
-}
+} /* ay_nb_CurveInsertKnot4D */
+
 
 int
 ay_nb_CurveInsertKnot3D(int np, int p, double *UP, double *P, double u,
-			  int k, int s, int r, int *nq, double *UQ,
-			  double *Q)
+			int k, int s, int r, int *nq, double *UQ,
+			double *Q)
 {
  int i,j,L=0,i1,i2;
  double mp = 0.0, alpha = 0.0, *R = NULL;
@@ -1160,7 +1161,7 @@ ay_nb_CurveInsertKnot3D(int np, int p, double *UP, double *P, double u,
   free(R);
 
  return AY_OK;
-}
+} /* ay_nb_CurveInsertKnot3D */
 
 
 /*
@@ -1182,7 +1183,7 @@ ay_nb_FindSpan(int n, int p, double u, double *U)
 
   /* was: */
   /*  if(u == U[n+1]) return(n);*/
- 
+
   low = 0; /* was: low = p; */
   high = n+1;
   mid = (low+high)/2;
@@ -1198,7 +1199,7 @@ ay_nb_FindSpan(int n, int p, double u, double *U)
     }
 
  return(mid);
-}
+} /* ay_nb_FindSpan */
 
 
 /*
@@ -1210,6 +1211,7 @@ int
 ay_nb_FindSpanMult(int n, int p, double u, double *U, int *s)
 {
  int low, mid, high, l;
+
   if(u >= U[n])
     {
       mid = n;
@@ -1232,23 +1234,24 @@ ay_nb_FindSpanMult(int n, int p, double u, double *U, int *s)
 		high = mid;
 	      else
 		low = mid;
-	      
+
 	      mid = (low+high)/2;
-	    }
-	}
-    }
+	    } /* while */
+	} /* if */
+    } /* if */
 
   l = mid;
 
-  while( l >= 0 )
-	{
-	  if( U[l] != u ) break;
-	  l--;
-	}
+  while(l >= 0)
+    {
+      if(U[l] != u)
+	break;
+      l--;
+    }
   *s = mid - l;
 
  return(mid);
-}
+} /* ay_nb_FindSpanMult */
 
 
 /*
@@ -1286,16 +1289,16 @@ ay_nb_BasisFuns(int i, double u, int p, double *U, double *N)
 
   free(left);
   free(right);
-  
+
  return;
-}
+} /* ay_nb_BasisFuns */
 
 
 int
 ay_nb_CurvePoint4D(int n, int p, double *U, double *Pw, double u, double *C)
 {
  int span, j, k;
- double *N = NULL, Cw[4] = {0}; 
+ double *N = NULL, Cw[4] = {0};
 
  if(!(N = calloc(p+1,sizeof(double))))
    return AY_EOMEM;
@@ -1320,14 +1323,14 @@ ay_nb_CurvePoint4D(int n, int p, double *U, double *Pw, double u, double *C)
   free(N);
 
  return AY_OK;
-}
+} /* ay_nb_CurvePoint4D */
 
 
 int
 ay_nb_CurvePoint3D(int n, int p, double *U, double *P, double u, double *C)
 {
  int span, j, k;
- double *N = NULL; 
+ double *N = NULL;
 
  if(!(N = calloc(p+1,sizeof(double))))
    return AY_EOMEM;
@@ -1344,20 +1347,21 @@ ay_nb_CurvePoint3D(int n, int p, double *U, double *P, double u, double *C)
       k = (span-p+j)*3;
       C[0] = C[0] + N[j]*P[k];
       C[1] = C[1] + N[j]*P[k+1];
-      C[2] = C[2] + N[j]*P[k+2]; 
+      C[2] = C[2] + N[j]*P[k+2];
     }
 
   free(N);
 
  return AY_OK;
-}
+} /* ay_nb_CurvePoint3D */
+
 
 int
 ay_nb_SurfacePoint4D(int n, int m, int p, int q, double *U, double *V,
 		       double *Pw, double u, double v, double *C)
 {
  int spanu = 0, spanv = 0, indu = 0, indv = 0, l = 0, k = 0, i = 0, j = 0;
- double *Nu = NULL, *Nv = NULL, Cw[4] = {0}, temp[4] = {0}; 
+ double *Nu = NULL, *Nv = NULL, Cw[4] = {0}, temp[4] = {0};
 
   if(!(Nu = calloc(p+1,sizeof(double))))
     return AY_EOMEM;
@@ -1391,23 +1395,23 @@ ay_nb_SurfacePoint4D(int n, int m, int p, int q, double *U, double *V,
       Cw[2] += Nv[l]*temp[2];
       Cw[3] += Nv[l]*temp[3];
     }
-  
+
   for(j = 0; j < 4; j++)
     C[j] = Cw[j]/Cw[3];
-  
+
   free(Nu);
   free(Nv);
 
  return AY_OK;
-}
+} /* ay_nb_SurfacePoint4D */
 
 
 int
 ay_nb_SurfacePoint3D(int n, int m, int p, int q, double *U, double *V,
-		       double *P, double u, double v, double *C)
+		     double *P, double u, double v, double *C)
 {
  int spanu = 0, spanv = 0, indu = 0, indv = 0, l = 0, k = 0, i = 0;
- double *Nu = NULL, *Nv = NULL, temp[3] = {0}; 
+ double *Nu = NULL, *Nv = NULL, temp[3] = {0};
 
   if(!(Nu = calloc(p+1,sizeof(double))))
     return AY_EOMEM;
@@ -1449,7 +1453,7 @@ ay_nb_SurfacePoint3D(int n, int m, int p, int q, double *U, double *V,
   free(Nv);
 
  return AY_OK;
-}
+} /* ay_nb_SurfacePoint3D */
 
 
 void
@@ -1542,12 +1546,12 @@ ay_nb_DersBasisFuns(int i, double u, int p, int n, double *U, double *ders)
   free(a);
 
  return;
-}
+} /* ay_nb_DersBasisFuns */
 
 
 void
 ay_nb_ComputeFirstDer3D(int n, int p, double *U, double *P, double u,
-			  double *CK)
+			double *CK)
 {
  int span = 0,j,r;
  double *nders = NULL;
@@ -1570,14 +1574,13 @@ ay_nb_ComputeFirstDer3D(int n, int p, double *U, double *P, double u,
       CK[0] = CK[0] + nders[(p+1)+j] * P[r];
       CK[1] = CK[1] + nders[(p+1)+j] * P[r+1];
       CK[2] = CK[2] + nders[(p+1)+j] * P[r+2];
-
     }
 
   if(nders)
     free(nders);
 
  return;
-}
+} /* ay_nb_ComputeFirstDer3D */
 
 
 void
@@ -1601,23 +1604,22 @@ ay_nb_ComputeSecDer3D(int n, int p, double *U, double *P, double u,
   for(j=0;j<=p;j++)
     {
       r = (span-p+j)*3;
-      
+
       CK[0] = CK[0] + nders[((p+1)*2)+j] * P[r];
       CK[1] = CK[1] + nders[((p+1)*2)+j] * P[r+1];
       CK[2] = CK[2] + nders[((p+1)*2)+j] * P[r+2];
-
     }
 
   if(nders)
     free(nders);
 
  return;
-}
+} /* ay_nb_ComputeSecDer3D */
 
 
 void
 ay_nb_ComputeFirstDer4D(int n, int p, double *U, double *Pw, double u,
-			  double *CK)
+			double *CK)
 {
  int span = 0,j,k;
  double *nders = NULL;
@@ -1639,18 +1641,17 @@ ay_nb_ComputeFirstDer4D(int n, int p, double *U, double *Pw, double u,
       CK[0] = CK[0] + nders[(p+1)+j] * (Pw[k]/Pw[k+3]);
       CK[1] = CK[1] + nders[(p+1)+j] * (Pw[k+1]/Pw[k+3]);
       CK[2] = CK[2] + nders[(p+1)+j] * (Pw[k+2]/Pw[k+3]);
-
     }
 
   if(nders)
     free(nders);
 
  return;
-}
+} /* ay_nb_ComputeFirstDer4D */
 
 void
 ay_nb_ComputeSecDer4D(int n, int p, double *U, double *Pw, double u,
-			double *CK)
+		      double *CK)
 {
  int span = 0,j,k;
  double *nders = NULL;
@@ -1672,19 +1673,18 @@ ay_nb_ComputeSecDer4D(int n, int p, double *U, double *Pw, double u,
       CK[0] = CK[0] + nders[((p+1)*2)+j] * (Pw[k]/Pw[k+3]);
       CK[1] = CK[1] + nders[((p+1)*2)+j] * (Pw[k+1]/Pw[k+3]);
       CK[2] = CK[2] + nders[((p+1)*2)+j] * (Pw[k+2]/Pw[k+3]);
-
     }
 
   if(nders)
     free(nders);
 
  return;
-}
+} /* ay_nb_ComputeSecDer4D */
 
 
 void
 ay_nb_CompFirstDerSurf4D(int n, int m, int p, int q, double *U, double *V,
-			   double *Pw, double u, double v, double *C)
+			 double *Pw, double u, double v, double *C)
 {
  int i = 0, j = 0, k = 0, l = 0, h = 0, r = 0, s = 0;
  int uspan = 0, vspan = 0;
@@ -1819,15 +1819,15 @@ ay_nb_CompFirstDerSurf4D(int n, int m, int p, int q, double *U, double *V,
   free(bin);
 
  return;
-}
+} /* ay_nb_CompFirstDerSurf4D */
 
 
 void
 ay_nb_CompFirstDerSurf3D(int n, int m, int p, int q, double *U, double *V,
-			   double *P, double u, double v, double *C)
+			 double *P, double u, double v, double *C)
 {
  int i = 0, k = 0, l = 0, r = 0, s = 0;
- int uspan = 0, vspan = 0; 
+ int uspan = 0, vspan = 0;
  double *Nu = NULL, *Nv = NULL, *temp = NULL;
 
   /* du == 1, dv == 1 */
@@ -1892,10 +1892,10 @@ ay_nb_CompFirstDerSurf3D(int n, int m, int p, int q, double *U, double *V,
   free(temp);
 
  return;
-}
+} /* ay_nb_CompFirstDerSurf3D */
 
 
-/* 
+/*
    To make things easier the following assumptions
    have been made:
    O = {0.0,0.0,0.0};
@@ -1932,7 +1932,7 @@ ay_nb_CreateNurbsCircle(double r, double ths, double the,
   n = 2 * narcs;                  /* n+1 control points */
   w1 = cos(AY_D2R(dtheta/2.0)); /* dtheta/2 == base angle */
 
-  /* alloc mem for Pw and U */ 
+  /* alloc mem for Pw and U */
   if(!(Pw = calloc((n+1)*4, sizeof(double))))
     return AY_EOMEM;
 
@@ -1982,7 +1982,7 @@ ay_nb_CreateNurbsCircle(double r, double ths, double the,
     }
   switch(narcs)
     {
-    case 1: 
+    case 1:
       break;
     case 2:
       U[3] = 0.5;
@@ -2003,13 +2003,13 @@ ay_nb_CreateNurbsCircle(double r, double ths, double the,
       U[8] = 0.75;
       break;
     }
- 
+
   *knotv = U;
   *controlv = Pw;
   *length = n+1;
 
  return AY_OK;
-}
+} /* ay_nb_CreateNurbsCircle */
 
 
 void
@@ -2031,13 +2031,13 @@ ay_nb_FinduFromPoint(ay_nurbcurve_object *curve, double *point,
   if( *u < U[0] ) *u = U[0];
   if( *u > U[n-1] ) *u = U[n-1];
 
-  /* XXXX while ( 1 ) ! */  
+  /* XXXX while ( 1 ) ! */
   while(1)
     {
       t++;
       if(t > max_try)
 	{
-	  return;  
+	  return;
 	}
 
 
@@ -2091,7 +2091,7 @@ ay_nb_FinduFromPoint(ay_nurbcurve_object *curve, double *point,
       temp2 = AY_V3LEN(c2);
 
       un = *u - temp/temp2;
-    
+
       if(un < U[0]) un = U[0];
       if(un > U[n-1]) un = U[n-1];
 
@@ -2134,7 +2134,7 @@ ay_nb_RefineKnotVectCurve(int stride, int n, int p, double *U, double *Pw,
 
   a = ay_nb_FindSpan(n, p, X[0], U);
   b = ay_nb_FindSpan(n, p, X[r], U);
-  
+
   b++;
 
   for(j = 0; j <= (a-p); j++)
