@@ -449,14 +449,81 @@ ay_clone_wribcb(char *file, ay_object *o)
 int
 ay_clone_bbccb(ay_object *o, double *bbox, int *flags)
 {
+ int ay_status = AY_OK;
+ int i, a;
+ double xmin = DBL_MAX, xmax = -DBL_MAX, ymin = DBL_MAX;
+ double ymax = -DBL_MAX, zmin = DBL_MAX, zmax = -DBL_MAX;
+ double bbt[24] = {0};
+ ay_clone_object *cc = NULL;
+ ay_object *c = NULL;
 
   if(!o || !flags)
     return AY_ENULL;
 
-  /* XXXX this should rather compute the bb from all instances! */
+  cc = (ay_clone_object *)o->refine;
+  
+  c = cc->clones;
+  if(!c)
+    {  /* use the bounding boxes of the child(s) */
+      *flags = 2;
+      return AY_OK;
+    }
 
-  /* use the bounding boxes of the childs */
-  *flags = 2;
+  while(c)
+    {
+      ay_status = ay_bbc_get(c, bbt);
+
+      a = 0;
+      for(i = 0; i < 8; i++)
+	{
+	  if(bbt[a] < xmin)
+	    xmin = bbt[a];
+	  if(bbt[a] > xmax)
+	    xmax = bbt[a];
+	  a += 3;
+	} /* for */
+
+      a = 1;
+      for(i = 0; i < 8; i++)
+	{
+	  if(bbt[a] < ymin)
+	    ymin = bbt[a];
+	  if(bbt[a] > ymax)
+	    ymax = bbt[a];
+	  a += 3;
+	} /* for */
+
+      a = 2;
+      for(i = 0; i < 8; i++)
+	{
+	  if(bbt[a] < zmin)
+	    zmin = bbt[a];
+	  if(bbt[a] > zmax)
+	    zmax = bbt[a];
+	  a += 3;
+	} /* for */
+
+      c = c->next;
+    } /* while */
+
+  /* fill in results */
+  /* P1 */
+  bbox[0] = xmin; bbox[1] = ymax; bbox[2] = zmax;
+  /* P2 */
+  bbox[3] = xmin; bbox[4] = ymax; bbox[5] = zmin;
+  /* P3 */
+  bbox[6] = xmax; bbox[7] = ymax; bbox[8] = zmin;
+  /* P4 */
+  bbox[9] = xmax; bbox[10] = ymax; bbox[11] = zmax;
+
+  /* P5 */
+  bbox[12] = xmin; bbox[13] = ymin; bbox[14] = zmax;
+  /* P6 */
+  bbox[15] = xmin; bbox[16] = ymin; bbox[17] = zmin;
+  /* P7 */
+  bbox[18] = xmax; bbox[19] = ymin; bbox[20] = zmin;
+  /* P8 */
+  bbox[21] = xmax; bbox[22] = ymin; bbox[23] = zmax;
 
  return AY_OK;
 } /* ay_clone_bbccb */
