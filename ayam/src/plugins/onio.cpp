@@ -35,6 +35,7 @@ static double tm[16] = {0}; // current transformation matrix
 
 int onio_importcurves = AY_TRUE;
 int onio_exportcurves = AY_TRUE;
+int onio_expsphereasbrep = AY_FALSE;
 double onio_accuracy = 1.0e-12;
 
 // prototypes of functions local to this module
@@ -51,7 +52,6 @@ int onio_addtrim(ay_object *o, ON_BrepLoop::TYPE ltype,
 
 bool onio_isboundingloop(ay_object *o);
 
-
 int onio_writetrimmednpatch(ay_object *o, ONX_Model *p_m, double *m);
 
 int onio_writenpconvertible(ay_object *o, ONX_Model *p_m, double *m);
@@ -67,6 +67,8 @@ int onio_writeclone(ay_object *o, ONX_Model *p_m, double *m);
 int onio_writeinstance(ay_object *o, ONX_Model *p_m, double *m);
 
 int onio_writescript(ay_object *o, ONX_Model *p_m, double *m);
+
+int onio_writesphere(ay_object *o, ONX_Model *p_m, double *m);
 
 int onio_writeobject(ay_object *o, ONX_Model *p_m);
 
@@ -687,6 +689,63 @@ onio_writescript(ay_object *o, ONX_Model *p_m, double *m)
 
  return ay_status;
 } // onio_writescript
+
+
+// onio_writesphere:
+//
+int
+onio_writesphere(ay_object *o, ONX_Model *p_m, double *m)
+{
+ int ay_status = AY_OK;
+ ay_sphere_object *sphere = NULL;
+ ON_Sphere *p_sp = NULL;
+ ON_3dPoint center(0.0, 0.0, 0.0);
+
+  if(!o || !p_m || !m)
+    return AY_ENULL;
+
+  sphere = (ay_sphere_object *)o->refine;
+
+  ON_Xform xform(m);
+
+  p_sp = new ON_Sphere(center, sphere->radius);  
+
+  if(p_sp)
+    {
+      if(!onio_expsphereasbrep)
+	{
+	  ON_NurbsSurface su, *p_su = NULL;
+
+	  p_sp->GetNurbForm(su);
+
+	  su.Transform(xform);
+
+	  p_su = new ON_NurbsSurface(su);
+	  if(p_su)
+	    {
+	      ONX_Model_Object& mo = p_m->m_object_table.AppendNew();
+	      mo.m_object = p_su;
+	      mo.m_bDeleteObject = true;
+	    } // if
+	}
+      else
+	{
+	  ON_Sphere sp = *p_sp;
+	  ON_Brep *p_b = ON_BrepSphere(sp, NULL);
+
+	  if(p_b)
+	    {
+	      p_b->Transform(xform);
+	      ONX_Model_Object& mo = p_m->m_object_table.AppendNew();
+	      mo.m_object = p_b;
+	      mo.m_bDeleteObject = true;
+	    } // if
+	} // if
+      delete p_sp;
+    } // if
+
+ return ay_status;
+} // onio_writesphere
 
 
 // onio_writeobject:
@@ -2085,6 +2144,9 @@ Onio_Init(Tcl_Interp *interp)
 
   ay_status = onio_registerwritecb((char *)(AY_IDSCRIPT),
 				   onio_writescript);
+
+  ay_status = onio_registerwritecb((char *)(AY_IDSPHERE),
+				   onio_writesphere);
 
 
 #ifndef ONIOWRAPPED
