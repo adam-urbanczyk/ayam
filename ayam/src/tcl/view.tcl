@@ -308,7 +308,7 @@ return;
 ##############################
 # viewOpen:
 proc viewOpen { width height {establish_bindings 1} } {
-    global ay
+    global ay ayprefs
 
     update
     set ay(cviewsema) 1
@@ -338,9 +338,14 @@ proc viewOpen { width height {establish_bindings 1} } {
 
 
     frame $w.f3D
-
-    togl $w.f3D.togl -rgba true -double true -depth true\
-	    -ident $name -width $width -height $height
+    if { $ayprefs(AddViewParams) != "" } {
+	eval [subst "togl $w.f3D.togl -rgba true -double true -depth true\
+		-ident $name -width $width -height $height\
+		$ayprefs(AddViewParams)"]
+    } else {
+	togl $w.f3D.togl -rgba true -double true -depth true\
+		-ident $name -width $width -height $height
+    }
 
 
     pack $w.f3D -in $w -fill both -expand yes

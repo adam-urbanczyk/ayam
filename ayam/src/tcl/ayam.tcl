@@ -141,6 +141,7 @@ array set ayprefs {
  IconGamma ""
  Version 0
  Scripts ""
+ AddViewParams ""
  Docs "http://ayam.sourceforge.net/docs/"
     DailyTips {
 {Always click on drawn pixels, when picking vertices.}
