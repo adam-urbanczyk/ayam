@@ -2262,6 +2262,24 @@ ay_nb_DegreeElevateSurfU(int stride, int w, int h, int p, double *U,
  double *alfas = NULL; /* knot insertion alphas */
  double *bin = NULL; /* Binomial coefficients */
 
+ int colJ;
+ int mh = ph;
+ int kind = ph+1;
+ double ua = U[0];
+ double ub = 0.0;
+ int r = -1;
+ int oldr;
+ int a = p;
+ int b = p+1;
+ int cind = 1;
+ int rbz, lbz = 1;
+ int mul, save, s;
+ double alf;
+ int first, last, kj;
+ double den, bet, gam, numer;
+ int tr;
+ int ki, ki2;
+
   h++;
 
   /* allocate temporary arrays */
@@ -2315,24 +2333,6 @@ ay_nb_DegreeElevateSurfU(int stride, int w, int h, int p, double *U,
 	  bezalfs[bai] = bezalfs[bai2];
 	} /* for */
     } /* for */
-
-  int colJ;
-  int mh = ph;
-  int kind = ph+1;
-  double ua = U[0];
-  double ub = 0.0;
-  int r = -1;
-  int oldr;
-  int a = p;
-  int b = p+1;
-  int cind = 1;
-  int rbz, lbz = 1;
-  int mul, save, s;
-  double alf;
-  int first, last, kj;
-  double den, bet, gam, numer;
-  int tr;
-  int ki, ki2;
 
   /* for(i = 0; i < h; i++)
      P(0,i) = S.P(0,i); */
@@ -2623,7 +2623,26 @@ ay_nb_DegreeElevateSurfV(int stride, int w, int h, int p, double *V,
  double *bin = NULL; /* Binomial coefficients */
  int tnh = (h+1)+((h+1)*t);
 
+ int rowJ;
+ int mh = ph;
+ int kind = ph+1;
+ double va = V[0];
+ double vb = 0.0;
+ int r = -1;
+ int oldr;
+ int a = p;
+ int b = p+1;
+ int cind = 1;
+ int rbz, lbz = 1;
+ int mul, save, s;
+ double alf;
+ int first, last, kj;
+ double den, bet, gam, numer;
+ int tr;
+ int ki, ki2;
+
   w++;
+
 
   /* allocate temporary arrays */
   if(!(bezalfs = calloc((p+t+1)*(p+1), sizeof(double))))
@@ -2676,24 +2695,6 @@ ay_nb_DegreeElevateSurfV(int stride, int w, int h, int p, double *V,
 	  bezalfs[bai] = bezalfs[bai2];
 	} /* for */
     } /* for */
-
-  int rowJ;
-  int mh = ph;
-  int kind = ph+1;
-  double va = V[0];
-  double vb = 0.0;
-  int r = -1;
-  int oldr;
-  int a = p;
-  int b = p+1;
-  int cind = 1;
-  int rbz, lbz = 1;
-  int mul, save, s;
-  double alf;
-  int first, last, kj;
-  double den, bet, gam, numer;
-  int tr;
-  int ki, ki2;
 
   h++;
   for(i = 0; i < w; i++)
