@@ -47,6 +47,11 @@ SL2XMLFLAGS =
 CPP = gpp
 CPPFLAGS = -C
 
+# Pixie
+SDRSHADERS := $(SOURCES:%.sl=%.sdr)
+SDRC = sdrc
+SDRCFLAGS =
+
 #########
 
 slc: $(SLCSHADERS)
@@ -85,7 +90,13 @@ xml: $(XMLSHADERS)
 
 k3d: xml
 
-all: slc slx sld so slo slb
+
+sdr: $(SDRSHADERS)
+
+pixie: sdr
+
+
+all: slc slx sld so slo slb sdr
 
 clean:
 	-rm -rf *.slc
@@ -95,10 +106,10 @@ clean:
 	-rm -rf *.slo
 	-rm -rf *.slb
 	-rm -rf *.xml
+	-rm -rf *.sdr
+	-rm -rf *.slpp
 
-
-
-.SUFFIXES: .slc .slx .sld .so .slo .slb .xml .sl
+.SUFFIXES: .slc .slx .sld .so .slo .slb .xml .sdr .sl
 
 .sl.slc:
 	$(SLC) $(SLCFLAGS) $*.sl
@@ -121,3 +132,7 @@ clean:
 .sl.xml:
 	$(CPP) $(CPPFLAGS) -o $*.slpp $*.sl
 	$(SL2XML) $(SL2XMLFLAGS) $*.slpp > $*.xml
+	rm -f $*.slpp
+
+.sl.sdr:
+	$(SDRC) $(SDRCFLAGS) $*.sl
