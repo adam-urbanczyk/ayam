@@ -128,6 +128,11 @@ set i 0
 foreach tag $names {
     if { !$ayprefs(HideTmpTags) || ![tagIsTemp $tag] } {
 	set val [lindex $values $i]
+	set len [string length $val]
+	if { $len > $ayprefs(MaxTagLen) } {
+	    set val [string range $val 0 $ayprefs(MaxTagLen)]
+	    set val "${val}..."
+	}
 	button $w.b$i -text "$tag: $val" -command "addTagp $i" -bd 1 -pady 0
 	pack $w.b$i -fill x -expand yes
     }
@@ -193,8 +198,9 @@ wm transient $w .
 set f [frame $w.fu]
 label $f.lt -text "Type:"
 entry $f.e -width 30
-pack $f.lt $f.e -in $f -padx 2 -pady 2 -side left
-pack $f -in $w -side top
+pack $f.lt -in $f -padx 2 -pady 2 -side left
+pack $f.e -in $f -padx 2 -pady 2 -side left -fill x -expand yes
+pack $f -in $w -side top -fill x -expand yes
 
 if { $edit >= 0 } {
     $f.e insert 0 [lindex $tagsPropData(names) $edit]
@@ -203,15 +209,16 @@ if { $edit >= 0 } {
 set f [frame $w.fm]
 label $f.lv -text "Value:"
 entry $f.e -width 30
-pack $f.lv $f.e -in $f -padx 2 -pady 2 -side left
-pack $f -in $w -side top
+pack $f.lv -in $f -padx 2 -pady 2 -side left
+pack $f.e -in $f -padx 2 -pady 2 -side left -fill x -expand yes
+pack $f -in $w -side top -fill x -expand yes
 
 if { $edit >= 0 } {
     $f.e insert 0 [lindex $tagsPropData(values) $edit]
 }
 
 set f [frame $w.fd]
-button $f.bok -text "Ok" -pady 0 -width 5 -command {
+button $f.bok -text "Ok" -pady 1 -width 5 -command {
     global ay
     if { [.addTag.fu.e get] != "" } {
 	addTag [.addTag.fu.e get] [.addTag.fm.e get]
@@ -221,7 +228,7 @@ button $f.bok -text "Ok" -pady 0 -width 5 -command {
     plb_update
 }
 
-button $f.bclr -text "Clear" -pady 0 -width 5 -command {
+button $f.bclr -text "Clear" -pady 1 -width 5 -command {
     global ay
 
     .addTag.fu.e delete 0 end
@@ -232,7 +239,7 @@ if { $edit >= 0 } {
 $f.bok configure -command "editTagshelper $edit"
 }
 
-button $f.bca -text "Cancel" -pady 0 -width 5 -command "grab release .addTag; destroy $w"
+button $f.bca -text "Cancel" -pady 1 -width 5 -command "grab release .addTag; destroy $w"
 
 pack $f.bok $f.bclr $f.bca -in $f -side left -fill x -expand yes
 pack $f -in $w -side top -fill x
