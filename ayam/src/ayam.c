@@ -825,6 +825,12 @@ Tcl_SetVar(interp,"AYIDR", "0", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 Tcl_SetVar(interp, "AYIDR", "1", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 #endif
 
+#ifndef AY_ENABLEPPREV
+Tcl_SetVar(interp,"AY_ENABLEPPREV", "0", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+#else
+Tcl_SetVar(interp, "AY_ENABLEPPREV", "1", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+#endif /* AY_ENABLEPPREV */
+
 
   if((ay_status = ay_init(interp)) != AY_OK)
     {

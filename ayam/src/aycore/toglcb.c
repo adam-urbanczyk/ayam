@@ -106,6 +106,16 @@ ay_toglcb_destroy(struct Togl *togl)
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  int recreate_clevel = AY_FALSE;
 
+  /*#ifdef AY_ENABLEPPREV*/
+  if(view)
+    {
+    if(view->ppreview)
+      {
+	ay_wrib_pprevclose();
+      }
+    }
+  /*#endif*/
+
   /* unlink and delete view object */
   l = clevel->object;
   if(l == root->down)
@@ -147,6 +157,7 @@ ay_toglcb_destroy(struct Togl *togl)
     {
       if(view->bgimage)
 	free(view->bgimage);
+
       free(view);
     }
 

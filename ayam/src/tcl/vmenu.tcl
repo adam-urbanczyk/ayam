@@ -12,7 +12,7 @@
 proc vmenu_open { w } {
 global ay tcl_platform
 
-# View
+# View Menu
 if { $tcl_platform(os) != "Darwin" } {
     menubutton $w.fMenu.v -text "View" -menu $w.fMenu.v.m -padx 3
 
@@ -113,6 +113,22 @@ $m add command -label "Export RIB" -command {
     global ay
     io_exportRIB [winfo toplevel $w]
 }
+# global AY_ENABLEPPREV
+# if {$AY_ENABLEPPREV == 1} { ... }
+$m add separator
+
+$m add command -label "Open PPrev" -command {
+    set togl $ay(currentView)
+    set w [winfo toplevel $togl]
+    $togl setconf -pprev 1
+}
+
+$m add command -label "Close PPrev" -command {
+    set togl $ay(currentView)
+    set w [winfo toplevel $togl]
+    $togl setconf -pprev 0
+}
+# endif
 
 $m add separator
 
@@ -121,7 +137,7 @@ $m add separator
 $m add command -label "Close" -command "after 100 \{viewClose $w;\
 	global ay; set ay(ul) root:0; uS\}"
 
-# Type
+# Type Menu
 if { $tcl_platform(os) != "Darwin" } {
     menubutton $w.fMenu.t -text "Type" -menu $w.fMenu.t.m -padx 3
     set m [menu $w.fMenu.t.m -tearoff 0]
@@ -203,7 +219,7 @@ $m add command -label "Trim" -command {
     $togl render
 }
 
-# Configure
+# Configure Menu
 if { $tcl_platform(os) != "Darwin" } {
     menubutton $w.fMenu.c -text "Configure" -menu $w.fMenu.c.m -padx 3
     set m [menu $w.fMenu.c.m -tearoff 0]
