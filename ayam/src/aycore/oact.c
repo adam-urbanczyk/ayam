@@ -466,6 +466,7 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
  Tcl_Interp *interp = Togl_Interp (togl);
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  static double oldwinx = 0.0, oldwiny = 0.0;
+ static double oldfromx = 0.0, oldfromy = 0.0, oldfromz = 0.0;
  double height = Togl_Height(togl);
  double winx = 0.0, winy = 0.0, ax=0.0, ay=0.0, ay2=0.0, axo=0.0, ayo=0.0;
  double dummy;
@@ -485,11 +486,23 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
  ay_point_object *point = NULL;
  char fname[] = "rotate_object_about";
 
+
   /* parse args */
   if(argc == 7)
     {
       if(!strcmp(argv[2],"-winxy"))
       {
+	if(!view->drawmarker)
+	  {
+	    /* if view->drawmarker is not enabled some other action
+	       changed view trafos so that the point is not valid
+	       anymore and we should request a new point */
+	    ay_error(AY_ERROR, fname,
+		  "Lost point to rotate about. Please restart this action!");
+	    return TCL_OK;
+	  }
+
+
 	Tcl_GetDouble(interp, argv[3], &winx);
 	Tcl_GetDouble(interp, argv[4], &winy);
 	Tcl_GetDouble(interp, argv[5], &ax);
@@ -504,7 +517,18 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
       else
 	if(!strcmp(argv[2],"-start"))
 	  {
-	    
+	    if(oldfromx != view->from[0] ||
+	       oldfromy != view->from[1] ||
+	       oldfromz != view->from[2])
+	      {
+		/* if some other action
+		   changed view trafos so that the point is not valid
+		   anymore and we should request a new point */
+		ay_error(AY_ERROR, fname,
+	         "Lost point to rotate about. Please restart this action!");
+		return TCL_OK;
+	      }
+
 	    if(!ay_selection)
 	      {
 		ay_error(AY_ENOSEL, fname, NULL);
@@ -529,6 +553,11 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 	    oldwinx = winx;
 	    oldwiny = winy;
 
+	    oldfromx = view->from[0];
+	    oldfromy = view->from[1];
+	    oldfromz = view->from[2];
+
+	    
 	  }
     }
   else

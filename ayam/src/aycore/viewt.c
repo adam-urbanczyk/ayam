@@ -362,7 +362,7 @@ ay_viewt_zoomtoobj(struct Togl *togl, int argc, char *argv[])
 	  dt[2] = view->from[2] - view->to[2];
 	  l = AY_V3LEN(dt);
 	  */
-	}
+	} /* if */
 
       if(view->zoom < 1E-6 || view->zoom > 1E6)
 	view->zoom = 3.0;
@@ -371,8 +371,8 @@ ay_viewt_zoomtoobj(struct Togl *togl, int argc, char *argv[])
       ay_toglcb_display(togl);
       
       ay_viewt_uprop(view);
-
-    }
+      view->drawmarker = AY_FALSE;
+    } /* if (sel) */
 
  return TCL_OK;
 } /* ay_viewt_zoomtoobj */
@@ -388,6 +388,11 @@ ay_viewt_align(struct Togl *togl, int argc, char *argv[])
  GLdouble m[16] = {0};
  double from[3] = {0.0,0.0,10.0}, to[3] = {0}, up[3] = {0.0,1.0,0.0};
 
+  /* no parent object? */
+  if(ay_currentlevel->object == ay_root)
+    return TCL_OK;
+
+  /* get parent objects transformation */
   glMatrixMode (GL_MODELVIEW);
   glPushMatrix();
    glLoadIdentity();
@@ -423,6 +428,7 @@ ay_viewt_align(struct Togl *togl, int argc, char *argv[])
   ay_toglcb_display(togl);
       
   ay_viewt_uprop(view);
+  view->drawmarker = AY_FALSE;
 
  return TCL_OK;
 } /* ay_viewt_align */
@@ -481,7 +487,6 @@ ay_viewt_makecurtcb(struct Togl *togl, int argc, char *argv[])
 
   Tcl_IncrRefCount(toa); Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton); Tcl_DecrRefCount(ton);
-
 
  return TCL_OK;
 } /* ay_viewt_makecurtcb */
@@ -553,7 +558,7 @@ ay_viewt_changetype(ay_view_object *view, int type)
       break;
     default:
       break;
-    }
+    } /* switch */
 
   view->rotx = 0.0;
   view->roty = 0.0;
@@ -571,11 +576,12 @@ ay_viewt_changetype(ay_view_object *view, int type)
 	    {
 	      view->zoom /= 12.0;
 	    }
-	}
+	} /* if */
 
-    }
+    } /* if */
 
   view->type = type;
+  view->drawmarker = AY_FALSE;
 
  return;
 } /* ay_viewt_changetype */
@@ -595,7 +601,9 @@ ay_viewt_reshapetcb(struct Togl *togl, int argc, char *argv[])
 
 
 /* ay_viewt_redrawtcb:
- *  draw a view regardless of automatic redraw setting
+ *  draw a view regardless of automatic redraw setting (used by
+ *  "View/Redraw Ctrl+d")
+ *  apply changes to this function also to ay_toglcb_display()!
  */
 int
 ay_viewt_redrawtcb(struct Togl *togl, int argc, char *argv[])
@@ -617,6 +625,12 @@ ay_viewt_redrawtcb(struct Togl *togl, int argc, char *argv[])
 
   Togl_SwapBuffers(togl);
 
+#ifdef AYENABLEPPREV
+  /* redraw permanent preview window? */
+  if(view->ppreview)
+    ay_wrib_pprevdraw(view);
+#endif
+
  return TCL_OK;
 } /* ay_viewt_redrawtcb */
 
@@ -634,15 +648,15 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
  int argi = 0;
  double argd = 0.0, rotx = 0.0, roty = 0.0, rotz = 0.0;
  double temp[3] = {0};
- int i = 2;
+ int i = 2, clear_drawmarker = AY_TRUE;
 
   Togl_MakeCurrent(togl);
 
   while(i+1 < argc)
   {
   rotx = 0.0; roty = 0.0; rotz = 0.0;
-  Tcl_GetDouble(interp,argv[i+1],&argd);
-
+  Tcl_GetDouble(interp, argv[i+1], &argd);
+  clear_drawmarker = AY_TRUE;
   if(!strcmp(argv[i],"-fromx"))
     {
       view->from[0] = argd;
@@ -784,21 +798,28 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
   if(!strcmp(argv[i],"-grid"))
     {
       if(argd >= 0.0)
-	view->grid = argd;
+	{
+	  view->grid = argd;
+	}
       else
-	view->grid = 0.0;
+	{
+	  view->grid = 0.0;
+	} /* if */
+      clear_drawmarker = AY_FALSE;
     }
   else
   if(!strcmp(argv[i],"-drawg"))
     {
       Tcl_GetInt(interp, argv[i+1], &argi);
       view->drawgrid = argi;
+      clear_drawmarker = AY_FALSE;
     }
   else
   if(!strcmp(argv[i],"-ugrid"))
     {
       Tcl_GetInt(interp, argv[i+1], &argi);
       view->usegrid = argi;
+      clear_drawmarker = AY_FALSE;
     }
   else
   if(!strcmp(argv[i],"-local"))
@@ -811,30 +832,35 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
     {
       Tcl_GetInt(interp, argv[i+1], &argi);
       view->drawsel = argi;
+      clear_drawmarker = AY_FALSE;
     }
   else
   if(!strcmp(argv[i],"-dlev"))
     {
       Tcl_GetInt(interp, argv[i+1], &argi);
       view->drawlevel = argi;
+      clear_drawmarker = AY_FALSE;
     }
   else
   if(!strcmp(argv[i],"-dbg"))
     {
       Tcl_GetInt(interp, argv[i+1], &argi);
       view->drawbg = argi;
+      clear_drawmarker = AY_FALSE;
     }
   else
   if(!strcmp(argv[i],"-draw"))
     {
       Tcl_GetInt(interp, argv[i+1], &argi);
       view->redraw = argi;
+      clear_drawmarker = AY_FALSE;
     }
   else
   if(!strcmp(argv[i],"-shade"))
     {
       Tcl_GetInt(interp, argv[i+1], &argi);
       view->shade = argi;
+      clear_drawmarker = AY_FALSE;
     }
   else
   if(!strcmp(argv[i],"-type"))
@@ -848,7 +874,7 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
       view->rotx = 0.0;
       view->roty = 0.0;
       view->rotz = 0.0;
-
+      view->drawmarker = AY_FALSE;
     }
   else
   if(!strcmp(argv[i],"-fovx"))
@@ -867,7 +893,7 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
       Tcl_GetDouble(interp, argv[i+4], &view->rect_ymax);
 
       Tcl_GetInt(interp, argv[i+5], &view->drawrect);
-
+      clear_drawmarker = AY_FALSE;
     } /* if */
   else
   if(!strcmp(argv[i],"-mark"))
@@ -876,7 +902,7 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
       Tcl_GetDouble(interp, argv[i+2], &view->marky);
 
       Tcl_GetInt(interp, argv[i+3], &view->drawmarker);
-
+      clear_drawmarker = AY_FALSE;
     } /* if */
   if(!strcmp(argv[i],"-name"))
     {
@@ -898,13 +924,14 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 	    } /* if */
 	  o = o->next;
 	} /* while */
-
+      clear_drawmarker = AY_FALSE;
     } /* if */
   else
   if(!strcmp(argv[i],"-pos"))
     {
       Tcl_GetInt(interp, argv[i+1], &view->pos_x);
       Tcl_GetInt(interp, argv[i+2], &view->pos_y);
+      clear_drawmarker = AY_FALSE;
     }
 #ifdef AYENABLEPPREV
   else
@@ -915,9 +942,20 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 	ay_wrib_pprevopen(view);
       else
 	ay_wrib_pprevclose();
+      clear_drawmarker = AY_FALSE;
     }
 #endif
-  i+=2;
+  else
+    {
+      clear_drawmarker = AY_FALSE;
+    }
+
+  if(clear_drawmarker)
+    {
+      view->drawmarker = AY_FALSE;
+    }
+
+  i += 2;
   } /* while */
 
   ay_toglcb_reshape(togl);
@@ -930,7 +968,7 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 
 
 /* ay_viewt_fromcamtcb:
- *  draw a view regardless of automatic fromcam setting
+ *  copy from/to/up from the selected camera object to view <togl>
  */
 int
 ay_viewt_fromcamtcb(struct Togl *togl, int argc, char *argv[])
@@ -964,13 +1002,14 @@ ay_viewt_fromcamtcb(struct Togl *togl, int argc, char *argv[])
   ay_toglcb_display(togl);
 
   ay_viewt_uprop(view);
+  view->drawmarker = AY_FALSE;
 
  return TCL_OK;
 } /* ay_viewt_fromcamtcb */
 
 
 /* ay_viewt_tocamtcb:
- *  copy view camera to camera object
+ *  copy camera settings of view <togl> to the selected camera object
  */
 int
 ay_viewt_tocamtcb(struct Togl *togl, int argc, char *argv[])
@@ -1026,10 +1065,10 @@ ay_viewt_uprop(ay_view_object *view)
 	      if(sview == view)
 		{
 		  ay_prop_gettcmd(NULL, interp, 0, NULL);
-		}
-	    }
-	}
-    }
+		} /* if */
+	    } /* if */
+	} /* if */
+    } /* if */
 
  return;
 } /* ay_viewt_uprop */
@@ -1083,17 +1122,17 @@ ay_viewt_griddify(struct Togl *togl, double *winx, double *winy)
 	   ay_trafo_getall(ay_currentlevel->next);
 	   glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 	  glPopMatrix();
-	  gluProject(0.0,0.0,0.0,mm,mp,vp,&refx,&refy,&refz);
+	  gluProject(0.0, 0.0, 0.0, mm, mp, vp, &refx, &refy, &refz);
 	  refy = height-refy;
-	}
+	} /* if */
       
       if(view->local)
 	{
 	  glMatrixMode (GL_MODELVIEW);
 	  glPushMatrix();
-	  glLoadIdentity();
-	  ay_trafo_getalls(ay_currentlevel->next);
-	  glGetDoublev(GL_MODELVIEW_MATRIX, m);
+	   glLoadIdentity();
+	   ay_trafo_getalls(ay_currentlevel->next);
+	   glGetDoublev(GL_MODELVIEW_MATRIX, m);
 	  glPopMatrix();
 
 	  p1[0] = gridx;
@@ -1113,7 +1152,7 @@ ay_viewt_griddify(struct Togl *togl, double *winx, double *winy)
 	  ay_trafo_apply3(p1, m);
 
 	  gh = p1[0];
-	}
+	} /* if */
       
       gdx = fmod(*winx-refx, gridx);
       gdy = fmod(*winy-refy, gridy);
@@ -1146,7 +1185,7 @@ ay_viewt_griddify(struct Togl *togl, double *winx, double *winy)
 	    *winy -= (gridy+gdy);
 	  else
 	    *winy -= gdy;
-	}
+	} /* if */
 
     } /* if */
   

@@ -197,6 +197,7 @@ ay_toglcb_reshape(struct Togl *togl)
 
 /* ay_toglcb_display:
  *  Togl callback, draw view togl
+ *  apply changes to this function also to ay_viewt_redrawtcb()!
  */
 void
 ay_toglcb_display(struct Togl *togl)
