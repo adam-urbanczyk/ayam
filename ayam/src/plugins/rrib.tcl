@@ -48,7 +48,7 @@ proc rrib_import { } {
 	set rrib_options(FileName) $ifilename
 	set w .ribI
 	catch {destroy $w}
-	toplevel $w
+	toplevel $w -class ayam
 	wm title $w "RRIB Options"
 	wm iconname $w "Ayam"
 	wm transient $w .
