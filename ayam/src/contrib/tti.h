@@ -147,4 +147,9 @@ typedef struct ay_tti_font_s
   double scale;
 } ay_tti_font;
 
+int ay_tti_getcurves(char *ttfname, int letter, ay_tti_letter *cur);
+
+int ay_tti_outlinetoncurve(ay_tti_outline *outline, ay_object **result);
+
+
 #endif /* TTI_H_ */
