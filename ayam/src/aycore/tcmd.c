@@ -321,11 +321,13 @@ int
 ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[])
 {
+ int ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
  ay_nurbcurve_object *nc = NULL;
- ay_object *src = NULL;
+ ay_object *src = NULL, *po = NULL;
  int indexu = 0, indexv = 0, i = 1, j = 1, argc2 = argc;
  int homogenous = AY_FALSE, trafo = AY_FALSE, param = AY_FALSE;
+ int handled = AY_FALSE;
  double *p = NULL, *tp = NULL, tmp[4] = {0}, utmp[4] = {0};
  double m[16], u = 0.0;
  char fname[] = "getPnt";
@@ -449,8 +451,56 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	  break;
 
 	default:
-	  ay_error(AY_EWARN, fname,
-		   "don't know how to get point from this object");
+	  handled = AY_FALSE;
+	  if(argc2 < 7)
+	    {
+	      po = NULL;
+	      ay_status = ay_provide_object(src, AY_IDNCURVE, &po);
+	      if(po)
+		{
+		  if(argc2 < 6)
+		    {
+		      ay_error(AY_EARGS, fname,
+			 "\\[-trafo|-u\\] ( index | u ) varx vary varz varw");
+		      return TCL_OK;
+		    }
+		  if(!param)
+		    {
+		      Tcl_GetInt(interp, argv[i], &indexu);
+		      ay_nct_getpntfromindex((ay_nurbcurve_object*)
+					     (po->refine),
+					     indexu, &p);
+		      homogenous = AY_TRUE;
+		    }
+		  else
+		    {
+		      Tcl_GetDouble(interp, argv[i], &u);
+		      p = utmp;
+		      nc = (ay_nurbcurve_object *)(po->refine);
+		      ay_nb_CurvePoint4D(nc->length-1, nc->order-1, nc->knotv,
+					 nc->controlv, u, p);
+		      homogenous = AY_FALSE;
+		    } /* if */
+		  j = i+1;
+		  handled = AY_TRUE;
+		  ay_object_deletemulti(po);
+		} /* if */
+	    } /* if */
+
+	  /*
+	  if(argc2 == 7)
+	    {
+	      po = NULL;
+	      ay_status = ay_provide_object(src, AY_IDNPATCH, &po);
+	      if(po)
+		{
+		}
+	    }
+	  */
+
+	  if(!handled)
+	    ay_error(AY_EWARN, fname,
+		     "don't know how to get point from this object");
 	  break;
 	} /* switch */
 
