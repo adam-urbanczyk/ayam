@@ -603,6 +603,7 @@ install:
 	-$(INSTALL) plugins/aysdr.tcl $(LIBDIR)
 	-$(INSTALL) plugins/loadaycsg.tcl $(LIBDIR)
 	-$(INSTALL) plugins/aycsg.so $(LIBDIR)
+	-$(INSTALL) plugins/aycsg.tcl $(LIBDIR)
 	-$(INSTALL) Makefile $(LIBDIR)
 	$(MKDIR) $(DOCDIR)
 	$(INSTALL) $(DOCFILES) $(DOCDIR)
