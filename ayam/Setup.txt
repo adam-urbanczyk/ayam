@@ -1,17 +1,22 @@
-[Setup, 08. 01. 2002]
+[Setup.txt, 09. Jun 2002]
 
 Setup instructions for Ayam (Unix only)
 ---------------------------------------
 
 The executable of Ayam is located in the directory named "bin".
-On first start of this executable, the following things have to be done:
+You can use Ayam directly from where you unpacked, or install it
+into your system. If you want to install, just follow the instructions
+in the file "bin/INSTALL" first.
+
+Before you start modelling with Ayam, you should set it up
+properly. The following things have to be done for that:
 
   1. Saving preferences
   2. Determining type of window manager
   3. Setting up shaders	
   4. Creating and saving a working environment
 
-Do not worry about any error messages in red color, that appear
+Do not worry about any error messages in red color, that appeared
 in the console on first startup. We are going to fix them now.
 
 
@@ -43,20 +48,21 @@ preferences using the menu entry "File/Save Prefs".
 2. Determining type of window manager
 -------------------------------------
 
-Unfortunately, different X window managers report different
-values for the geometries of top level windows, some include
-the decoration, some do not.
-If the main window jumps when you select the first property
-of the "Root" object your WM is "twm-compatible".
-To check this, just click on "Root" in the tree view,
-then on "RiOptions" in the listbox to the right and watch
-your main window.
-If it jumps downward, you should set "TwmCompat" to "on" in the
-preferences!
 If you fail to correctly determine the type of your window
 manager, the geometry of the main window and the toolbox
 will be wrong after restart of Ayam. Furthermore, the main
 window may jump, each time a new property is selected.
+This is because, unfortunately, different X window managers report
+different values for the geometries of top level windows, some include
+the decoration, some do not.
+
+If the main window jumps when you select the first property
+of the "Root" object your WM is "twm-compatible".
+To check this, just start Ayam, click on "Root" in the tree view,
+then on "RiOptions" in the listbox to the right and watch
+your main window.
+If it jumps downward, you should set "TwmCompat" to "on" in the
+preferences!
 
 
 3. Setting up shaders
@@ -78,28 +84,36 @@ into the string entry labeled "Shaders".
 Now press the "Scan Shaders" button below and watch the console for
 error messages.
 
+
 4. Creating and saving a working environment
 --------------------------------------------
 
-The working environment is simply an almost empty Ayam scene file,
-that contains the specification of some view windows.
-This file is loaded automatically on every start of Ayam and
-presents you with a standard working environment, consisting
-of e.g. a traditional 3-view layout (Front, Side, Perspective).
+The working environment is simply an almost empty Ayam scene file.
+This file just contains the specification of some view windows.
+It is loaded automatically on every start of Ayam and presents you
+with a standard working environment, consisting of e.g. a traditional
+3-view layout (Front-, Side-, and Perspective-View).
 
+How do you create such a file?
+
+o Start Ayam.
 o Open and arrange as many views as you like using the
   menu entry "Create/View".
   [If Ayam crashes or blocks during opening of a view
    something with your OpenGL setup is seriously broken.
    Fix this, then return here.]
-o Save the environment using the menu entry
+o Save the environment using the main menu entry
   "Special/Save Environment". This will save the environment
   to the file given in the preference setting "Main/EnvFile".
-  The default setting is "~/.ayam2view.ay".
+  The default setting is "~/.ayam2view.ay". You may of course
+  change the setting in "Main/EnvFile" to your liking before
+  saving the environment.
   Do not switch off the preference setting "Main/LoadEnv",
   as this would inhibit automatic loading of the working
   environment on startup.
-
+  If the preference setting "Main/NewLoadsEnv" is enabled, the
+  working environment will also be read, if you clear the scene
+  using the main menu entry "File/New".
 
 Quit the application and start it again; then
 download "Tutorial #1" and do it.
