@@ -417,14 +417,15 @@ ay_birail1_notifycb(ay_object *o)
     } /* if */
 
   if(!o->down->next)
-    return AY_OK;
+    goto cleanup;
+
   curve2 = o->down->next;
   if(curve2->type != AY_IDNCURVE)
     {
       ay_status = ay_provide_object(curve2, AY_IDNCURVE, &pobject2);
       if(!pobject2)
 	{
-	  return AY_OK;
+	  goto cleanup;
 	}
       else
 	{
@@ -434,7 +435,7 @@ ay_birail1_notifycb(ay_object *o)
     } /* if */
 
   if(!o->down->next->next)
-    return AY_OK;
+    goto cleanup;
 
   curve3 = o->down->next->next;
   if(curve3->type != AY_IDNCURVE)
@@ -442,7 +443,7 @@ ay_birail1_notifycb(ay_object *o)
       ay_status = ay_provide_object(curve3, AY_IDNCURVE, &pobject3);
       if(!pobject3)
 	{
-	  return AY_OK;
+	  goto cleanup;
 	}
       else
 	{
@@ -454,7 +455,7 @@ ay_birail1_notifycb(ay_object *o)
   /* birail1 */
   if(!(npatch = calloc(1, sizeof(ay_object))))
     {
-      return AY_ERROR;
+      ay_status = AY_EOMEM; goto cleanup;
     }
 
   ay_object_defaults(npatch);
@@ -467,17 +468,19 @@ ay_birail1_notifycb(ay_object *o)
 			   birail1->has_end_cap, &(birail1->end_cap));
 
   if(ay_status)
-    return ay_status;
+    goto cleanup;
 
-  /* copy sampling tolerance/mode over to new objects */
   birail1->npatch = npatch;
 
-  ((ay_nurbpatch_object *)npatch->refine)->glu_sampling_tolerance =
+  npatch = NULL;
+
+  /* copy sampling tolerance/mode attributes over to birail */
+  ((ay_nurbpatch_object *)birail1->npatch->refine)->glu_sampling_tolerance =
     tolerance;
-  ((ay_nurbpatch_object *)npatch->refine)->glu_display_mode =
+  ((ay_nurbpatch_object *)birail1->npatch->refine)->glu_display_mode =
     mode;
 
-  /* create caps */
+  /* copy sampling tolerance/mode attributes to caps */
   if(birail1->start_cap)
     {
       ((ay_nurbpatch_object *)
@@ -494,6 +497,7 @@ ay_birail1_notifycb(ay_object *o)
        (birail1->end_cap->refine))->glu_display_mode = mode;
     }
 
+cleanup:
   /* remove provided objects */
   if(got_c1)
     {
@@ -510,7 +514,10 @@ ay_birail1_notifycb(ay_object *o)
       ay_object_delete(pobject3);
     }
 
- return AY_OK;
+  if(npatch)
+    free(npatch);
+
+ return ay_status;
 } /* ay_birail1_notifycb */
 
 
