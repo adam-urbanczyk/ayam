@@ -1,4 +1,4 @@
-[4. Oct 2004] CVS-Head:
+[12. Oct 2004] CVS-Head:
 o bug fixes:
   - fixed "loadayslo3d.tcl" loading the wrong plugin (SF 928054)
   - fixed "Select Renderer" setting a wrong shader extension for "3Delight"
@@ -49,20 +49,31 @@ o added new object type "Birail2" that sweeps a cross section curve along
   two so called rail curves while morphing it into a second cross section
   curve at the end of the rail curves
 o added provide mechanism capabilites to the Level object, thus it is now
-  possible to use a Level object to add tags to an Instance object, that is
-  used as parameter object of a tool object
+  possible to use an intermediate Level object to add tags to an Instance
+  object (that is used as parameter object of a tool object)
 o improved behaviour of single point editing actions for multiple selected
   objects
 o fixed problems exiting Ayam on Mac OS X introducing a fast exit compile
   time option
 o improved preferences window management
-o added toXYNC scripting interface command that rotates an arbitrary
+o added "toXYNC" scripting interface command that rotates an arbitrary
   oriented planar NURBS curve back to the XY plane
 o caps may now be created of arbitrary oriented planar curves
 o added new object type "ExtrNC" that extracts a NURBS curve from a
   NURBS patch object delivered as child object, as usual
 o added flashing of control points to the single point editing action
   controlled via the new preferences option "Modeling/FlashPoints"
+o added NURBS curve tool "makeCompNC" that makes the selected NURBS curves
+  compatible for e.g. skinning, see also the new main menu entry
+  "Tools/NURBCurve/Make Compatible"
+o View windows are now drop targets like the view objects in the Root level,
+  this means you can now e.g. drag&drop normal objects from the tree view
+  to any view window and the view window will zoom to the dropped objects,
+  dropping lights lets you see through the light, dropping cameras copies
+  the settings from the camera to the view
+o the HTML version of the documentation now contains more correct image tags
+o improved behaviour of toolbox buttons for the special actions with held
+  down "Shift" key
 
 
 [27. Mar 2004] Ayam1.7:
