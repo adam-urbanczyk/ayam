@@ -49,7 +49,7 @@ VertexInterp (double isolevel, XYZ * p1, XYZ * p2, double valp1, double valp2,
 int
 Polygonise (world * w, GRIDCELL * grid, double isolevel, int mode)
 {
-  int i, j, ntriang, ti;
+  int i, j, ti;
   int cubeindex, edgeindex;
   XYZ vertlist[12];
   XYZ normlist[12];

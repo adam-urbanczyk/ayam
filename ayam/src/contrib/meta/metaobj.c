@@ -114,7 +114,6 @@ metaobj_createcb (int argc, char *argv[], ay_object * o)
   w->currentnumpoly = 0;
   w->o = o->down;
 
-  //metaobj_notifycb(o);
   calcballs (w, SHADE);
 
   return AY_OK;
@@ -521,7 +520,6 @@ int
 metaobj_notifycb (ay_object * o)
 {
   GLdouble m[16];
-  double rm[16];
   double eu[3];
   blob *b;
   ay_object *down;
@@ -545,13 +543,11 @@ metaobj_notifycb (ay_object * o)
       glLoadIdentity ();
 
       glTranslated (down->movx, down->movy, down->movz);
-      //ay_quat_torotmatrix (down->quat, rm);
       ay_quat_toeuler(down->quat, eu);
       glRotated(eu[2]*180/M_PI,1,0,0);
       glRotated(eu[1]*180/M_PI,0,1,0);
       glRotated(eu[0]*180/M_PI,0,0,1);
       
-      //glMultMatrixd ((GLdouble *) rm);
       glTranslated (-down->movx, -down->movy, -down->movz);
       glGetDoublev (GL_MODELVIEW_MATRIX, b->rm);
 
