@@ -109,7 +109,10 @@ ay_read_header(FILE *fileptr)
     return ay_status;
 
   if(!strstr(nbuffer, "Ayam"))
-    return AY_EFORMAT;
+    {
+      free(nbuffer);
+      return AY_EFORMAT;
+    }
 
   ay_read_string(fileptr, &version);
 
@@ -141,6 +144,7 @@ ay_read_header(FILE *fileptr)
     }
 
   free(version);
+  free(nbuffer);
 
  return ay_status;
 } /* ay_read_header */
