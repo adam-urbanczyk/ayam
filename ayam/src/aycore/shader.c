@@ -1160,7 +1160,7 @@ ay_shader_settcmd(ClientData clientData, Tcl_Interp * interp,
 	      to  = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
 				   TCL_GLOBAL_ONLY);
 	      Tcl_GetDoubleFromObj(interp, to, &dtemp);
-	      newarg->val.point[j] = (float)dtemp;
+	      newarg->val.matrix[j] = (float)dtemp;
 	    } /* for */
 	  break;
 
