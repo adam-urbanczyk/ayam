@@ -328,6 +328,8 @@ int ay_pomesht_merge(ay_list_object *list, ay_object **result);
 int ay_pomesht_mergetcmd(ClientData clientData, Tcl_Interp * interp,
 			 int argc, char *argv[]);
 
+int ay_pomesht_optimizecoords(ay_pomesh_object *pomesh, int ignore_normals);
+
 int ay_pomesht_optimizetcmd(ClientData clientData, Tcl_Interp * interp,
 			    int argc, char *argv[]);
 
