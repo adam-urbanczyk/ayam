@@ -14,6 +14,12 @@
 
 /* error.c - functions for writing out error messages */
 
+
+/* prototypes of functions local to this module: */
+void ay_error_wlog(char *message);
+
+/* functions: */
+
 /* ay_error_wlog:
  *
  */
