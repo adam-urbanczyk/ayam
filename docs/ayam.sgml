@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>5. Dec 2002
+<date>18. Dec 2002
 <abstract>
 This is the documentation of Ayam (1.4) - a free 3D modeling environment
 for the RenderMan interface.
@@ -2499,17 +2499,25 @@ B-Spline curves easily.<p>
 
 <sect2>Multiple Points<label id="ncurvemp">
 <p>
+<figure loc="ht">
+<eps file="pics/multip.ps" height="5cm">
+<img src="pics/multip.gif">
+<caption>A NURBS Curve with Multiple Points (big handles)</caption>
+</figure>
+<p>
 The NURBS curves of Ayam support so called multiple points.
-A multiple point is made of different control points that have
+A multiple point is made of a number of different control points that have
 the same coordinates.
-Modeling actions will work on all the control points that
+Modeling actions will always modify all the control points that
 make up a multiple point.
 Multiple points will be drawn with a bigger
-handle than normal points.
+handle than normal points (see image above).
 They may e.g. be used to create closed curves.
-Note, that the control points do not have to be consecutive.
+Note, that the control points that make up a multiple point
+do not have to be consecutive (in the control point vector of the
+NURBS curve).
 Multiple points may be created using the collapse tool,
-and split up again using the exlode tool (see sections
+and split up again using the explode tool (see sections
 <ref id="collt" name="The Collapse Tool"> and
 <ref id="explt" name="The Explode Tool"> for more information regarding
 those tools).
@@ -2517,6 +2525,8 @@ Note, that even though you might have exploded some multiple points
 Ayam will re-create them on several occasions like reading
 of a scene, inserting/deleting points, and applying the NURBCurveAttrib
 property if they still have identical coordinate values.
+In other words, you should immediately edit the control
+points after exploding!
 You may also totally inhibit creation of multiple points for a
 NURBS curve using the attribute <tt/"CreateMP"/.
 
@@ -2888,6 +2898,12 @@ If <tt/"ResInstances"/ is enabled, all instances will be resolved
 
 <sect1>Clone Object<label id="cloneobj">
 <p>
+<figure loc="ht">
+<eps file="pics/clone.ps" height="5cm">
+<img src="pics/clone.gif">
+<caption>Clone Object with Trajectory (white)</caption>
+</figure>
+<p>
 The Clone object allows you to easily create and control a number
 of instances of a single object.
 The instances will be created internally and transformed,
@@ -3107,6 +3123,12 @@ scale factor, that is applied to the cross section in Y- and Z-direction.
 This implies, that a scaling function that does nothing should e.g. be
 linear from (0,1,0) to (1,1,0).
 <p>
+<figure loc="ht">
+<eps file="pics/ssweep.ps" height="5cm">
+<img src="pics/ssweep.gif">
+<caption>Sweep Object with Scaling Function (white)</caption>
+</figure>
+<p>
 Here is a short example for the creation of a sweep:
 <itemize>
 <item>Create a circular BSpline using the toolbox. (This will be our
@@ -3318,6 +3340,12 @@ of the last attribute: <tt/"Tolerance"/ .
 
 <sect1>ConcatNC Object<label id="concatncobj">
 <p>
+<figure loc="ht">
+<eps file="pics/concatnc.ps" height="5cm">
+<img src="pics/concatnc.gif">
+<caption>ConcatNC Object from a Linear Curve and 3 Instances (white)</caption>
+</figure>
+<p>
 The ConcatNC object concatenates all child objects
 (which should be NURBS curves or provide NURBS curves)
 to a single NURBS curve. Since the ConcatNC object also
@@ -3394,6 +3422,12 @@ you should refer to the documentation of the custom object for more
 information regarding it's properties.
 
 <sect1>Metaball Object<label id="metaobjobj"><label id="metacompobj">
+<p>
+<figure loc="ht">
+<eps file="pics/meta.ps" height="5cm">
+<img src="pics/meta.gif">
+<caption>A Metaball Object from Six Meta Components</caption>
+</figure>
 <p>
 A metaball object is a custom object (see also section
 <ref id="customobj" name="Custom Object">).
@@ -3719,10 +3753,11 @@ and a number of selected (tagged) multiple points (see section
 to select (tag) control points).
 <item>Operation: The points forming the selected multiple points will
 be made to simple points again and may be edited separately.
-<item>Even though you might have exploded some multiple points
+<item>Note, that even though you might have exploded some multiple points
 Ayam will re-create them on several occasions like reading
 of a scene, inserting/deleting points, and applying the NURBCurveAttrib
-property if they still have identical coordinate values.
+property if they still have identical coordinate values. In other
+words, you should immediately edit the control points after exploding!
 </itemize>
 
 
@@ -5038,8 +5073,6 @@ Musgrave, Peachey, Perlin, and Worley (Academic Press, 1994)
 WWW resources:
 <itemize>
 <item>The RenderMan Repository: <tt>http://www.renderman.org/</tt>
-<item>RenderMan Interface Specifications:
-<tt>http://www.pixar.com/renderman/developers_corner/rispec/index.html</tt>
 </itemize>
 
 <sect1>Acknowledgements
