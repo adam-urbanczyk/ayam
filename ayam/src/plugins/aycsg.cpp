@@ -378,6 +378,7 @@ aycsg_flatten(ay_object *t, struct Togl *togl, int parent_csgtype)
 	  // yes
 
 	  // get depth complexity
+	  dc = 1;
 	  if(t->tags)
 	    {
 	      tag = t->tags;
@@ -1112,12 +1113,13 @@ aycsg_delegateall(ay_object *t)
 
   while(o)
     {
-      if(o->down && (o->type == AY_IDLEVEL)/* && (o->CSGTYPE != AY_LTPRIM)*/)
+
+      if(o->down && (o->type == AY_IDLEVEL) && (o->CSGTYPE != AY_LTPRIM))
 	{
 	  ay_status = aycsg_delegatetrafo(o);
 	} // if
 
-      if(o->down)
+      if(o->down && (o->CSGTYPE != AY_LTPRIM))
 	{
 	  ay_status = aycsg_delegateall(o->down);
 	} // if
@@ -1221,8 +1223,8 @@ aycsg_copytree(int sel_only, ay_object *t, int *is_csg, ay_object **target)
 		{
 		  while(tmp->next)
 		    tmp = tmp->next;
-		}
-	      ay_object_crtendlevel(&(tmp->next));
+		  ay_object_crtendlevel(&(tmp->next));
+		} // if
 	    } // if
 	} // if
 
