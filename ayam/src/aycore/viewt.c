@@ -1257,7 +1257,7 @@ ay_viewt_griddify(struct Togl *togl, double *winx, double *winy)
 	      refy = (height/2.0)+(view->from[1]/view->conv_y);
 	      break;
 	    case AY_VTSIDE:
-	      refx = (width/2.0)-(view->from[2]/view->conv_x);
+	      refx = (width/2.0)+(view->from[2]/view->conv_x);
 	      refy = (height/2.0)+(view->from[1]/view->conv_y);
 	      break;
 	    case AY_VTTOP:
