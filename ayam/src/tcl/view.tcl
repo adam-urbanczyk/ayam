@@ -228,6 +228,7 @@ addParam $f ay FOV
 set f [frame $w.f2]
 button $f.bok -text "Ok" -pady $ay(pady) -width 5 -command "global ay;\
 	$view mc;\
+	undo save SetFOV;\
 	$view setconf -fovx \$ay(FOV);\
 	$view render;\
 	update;\
@@ -274,6 +275,7 @@ set f [frame $w.f2]
 button $f.bok -text "Ok" -pady $ay(pady) -width 5 -command "\
 	global ay;\
 	$view mc;\
+	undo save SetGrid;\
 	$view setconf -grid \$ay(GridSize);\
 	$view render;\
 	viewSetGridIcon [winfo toplevel $view] \$ay(GridSize);\
