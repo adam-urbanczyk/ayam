@@ -11,16 +11,23 @@ PREFIX = /usr/local/ayam
 #PREFIX = /usr/freeware
 #PREFIX = /usr
 
+# if PREFIX points to a generic directory (e.g. /usr) and not
+# to a directory specific to Ayam (e.g. /usr/local/ayam) you
+# probably want to switch LN to echo (this way the installation
+# will not create a softlink named "plugins" in PREFIX/bin)
+LN = ln -s
+#LN = echo
+
 # Where shall the executable be installed?
-BINDIR = ${PREFIX}/bin
+BINDIR = $(PREFIX)/bin
 
 # Where shall the plugins and custom objects be installed?
-LIBDIR = ${PREFIX}/lib
-#LIBDIR = ${PREFIX}/lib/ayam
+LIBDIR = $(PREFIX)/lib
+#LIBDIR = $(PREFIX)/lib/ayam
 
 # Where shall the documentation be installed?
-DOCDIR = ${PREFIX}/doc
-#DOCDIR = ${PREFIX}/doc/ayam
+DOCDIR = $(PREFIX)/doc
+#DOCDIR = $(PREFIX)/doc/ayam
 
 INSTALL = install
 MKDIR = mkdir -p
@@ -31,7 +38,7 @@ DOCFILES = ../Setup.txt ../Changes.txt ../License.txt ../doc/refcard.tcl\
 install:
 	$(MKDIR) $(BINDIR)
 	$(INSTALL) ayam $(BINDIR)
-	-ln -s $(LIBDIR) $(BINDIR)/plugins
+	-$(LN) $(LIBDIR) $(BINDIR)/plugins
 	$(MKDIR) $(LIBDIR)
 	-$(INSTALL) plugins/metaobj.so $(LIBDIR)
 	-$(INSTALL) plugins/metaobj.tcl $(LIBDIR)
