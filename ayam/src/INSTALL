@@ -1,4 +1,4 @@
-INSTALL [31. Dec 2003]
+INSTALL [28. Feb 2004]
 
 Compilation Instructions for Ayam
 ---------------------------------
@@ -91,15 +91,24 @@ directory, editing of the Makefile will be easier.
 
 You have all required software and installed/compiled it successfully?
 
+Since Ayam1.7, a Tcl script is provided, that helps to create a basic
+Makefile. Just run it by typing:
+>wish ayamConf.tcl
+and select your RIB-writer, shader-parser, and operating system.
+Now you can make additional adjustments, e.g. determine where the
+Tcl/Tk sources are, and where BMRT or Aqsis are installed.
+Then press the "Create Makefile!" button.
+
+If you do not use ayamConf.tcl you will need to execute the following
+two steps:
 - copy Makefile.shared to Makefile:
 >cp Makefile.shared Makefile
 
 - edit the Makefile, until it tells you to stop, all necessary
   information should be in the Makefile ( yes, this _is_ a lot of work ):
-
 >emacs Makefile
 
-- now issue a:
+- if you are done editing the Makefile just enter:
 >make
 
 Now ayamsh should be compiled and ready for a test run.
