@@ -58,5 +58,12 @@ proc getScriptp { } {
  return;
 }
 # getScriptp
+global SCRIPTPLUGIN
+if { [info exists SCRIPTPLUGIN] } {
+# add menu entry to Create/Custom sub-menu
+mmenu_addcustom Script "crtOb Script;uS;sL;"
 
+# tell the rest of Ayam (or other custom objects), that we are loaded
+lappend ay(co) Script
+}
 return;

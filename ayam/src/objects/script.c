@@ -954,6 +954,9 @@ Script_Init(Tcl_Interp *interp)
 
   ay_matt_nomaterial(ay_script_id);
 
+  Tcl_SetVar(interp, "SCRIPTPLUGIN", "1", TCL_LEAVE_ERR_MSG |
+	     TCL_GLOBAL_ONLY);
+
   /* source script.tcl, it contains a Tcl-code to build
      the Script-Attributes Property GUI */
   if((Tcl_EvalFile(interp, "script.tcl")) != TCL_OK)
