@@ -248,19 +248,21 @@ ay_wrib_rioptions(void)
 	}
 
     if(riopt->includes)
-      if((riopt->textures)[0] != '\0')
+      if((riopt->includes)[0] != '\0')
 	{
 	  RiDeclare((RtToken)"include", "string");
 	  RiOption((RtToken)"searchpath", (RtToken)"include",
 		   (RtPointer)(&riopt->includes), RI_NULL);
 	}
+
     if(riopt->shaders)
-      if((riopt->textures)[0] != '\0')
+      if((riopt->shaders)[0] != '\0')
 	{
 	  RiDeclare((RtToken)"shader", "string");
 	  RiOption((RtToken)"searchpath", (RtToken)"shader",
 		   (RtPointer)(&riopt->shaders), RI_NULL);
 	}
+
     rtitemp = riopt->texturemem;
     RiDeclare((RtToken)"texturememory", "int");
     RiOption((RtToken)"limits", (RtToken)"texturememory",
