@@ -564,7 +564,7 @@ ay_clone_notifycb(ay_object *o)
  ay_clone_object *clone = NULL;
  ay_object *down = NULL, *newo = NULL, **next = NULL, trafo = {0};
  ay_object *tr;
- int i = 0, tr_iscopy = AY_FALSE;
+ int i = 0, use_trajectory = AY_FALSE, tr_iscopy = AY_FALSE;
  double euler[3];
 
   if(!o)
@@ -578,14 +578,29 @@ ay_clone_notifycb(ay_object *o)
       free(tr);
     }
   tr = NULL;
-
+  
   /* get (first) child object */
   down = o->down;
-  if(down->type != AY_IDINSTANCE)
+
+  if(!down)
+    return AY_OK;
+
+  if(
+     (down->type != AY_IDINSTANCE) &&
+     (down->type != AY_IDMATERIAL) &&
+     (down->type != AY_IDLIGHT) &&
+     (down->type != AY_IDCAMERA) &&
+     (down->type != AY_IDVIEW)
+    )
     {
       /* arrange clones along curve? */
-      if(down->next)
-	{ /* Yes! */
+      if(down->next && down->next->next && (down->next->type != AY_IDLEVEL))
+	{
+	  use_trajectory = AY_TRUE;
+	}
+
+      if(use_trajectory)
+	{ /* Yes, use trajectory curve! */
 
 	  /* get trajectory curve */
 	  if(down->next->type != AY_IDNCURVE)
@@ -632,7 +647,7 @@ ay_clone_notifycb(ay_object *o)
 	    }
 	}
       else
-	{ /* No! */
+	{ /* No, do not use trajectory curve! */
 	  ay_trafo_defaults(&trafo);
 	  next = &(clone->clones);
 	  for(i = 0; i < clone->numclones; i++)
@@ -673,7 +688,7 @@ ay_clone_notifycb(ay_object *o)
     }
   else
     {
-      ay_error(AY_ERROR, fname, "cannot clone from instance");
+      ay_error(AY_ERROR, fname, "cannot clone this object");
     } /* if */
 
  return AY_OK;
