@@ -24,10 +24,13 @@ w     fConcatNCAttr
 set w [frame $ay(pca).$ConcatNCAttr(w)]
 
 addCheck $w ConcatNCAttrData Closed
-addCheck $w ConcatNCAttrData Mode
+addCheck $w ConcatNCAttrData FillGaps
+addCheck $w ConcatNCAttrData Revert
 
 array set ConcatNCAttrData {
-
+Closed 0
+FillGaps 0
+Revert 0
 }
 
 #concatnc_crt:
