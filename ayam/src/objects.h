@@ -60,6 +60,9 @@ int ay_ncurve_init(Tcl_Interp *interp);
 /* npatch.c */
 int ay_npatch_init(Tcl_Interp *interp);
 
+/* pamesh.c */
+int ay_pamesh_init(Tcl_Interp *interp);
+
 /* parab.c */
 int ay_parab_init(Tcl_Interp *interp);
 
