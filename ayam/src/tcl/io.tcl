@@ -714,18 +714,19 @@ proc io_saveEnv {  } {
 
 	     if { $ayprefs(EnvFile) != $savefilename } {
 
-		 set m "Select \"Ok\" to adapt the\n\
-preferences to load the\nnewly written environment\n\
-on the next start."
+		 set m "Select \"Ok\" to make the\
+\nnewly written environment\
+\nyour default environment."
 
                  set answer [tk_messageBox -type okcancel\
-			 -title "Adapt Preferences?"\
+			 -title "Make Default?"\
 			 -icon question -message $m]
 
 		 if { $answer == "cancel" } {
 		     return;
 		 } else {
 		     set ayprefs(EnvFile) $savefilename
+		     set ayprefse(EnvFile) $savefilename
 		 }
 	     }
 	 } else {
