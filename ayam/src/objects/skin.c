@@ -429,23 +429,6 @@ ay_skin_notifycb(ay_object *o)
 
       if(c)
 	{
-	  /* immediately apply transformation attributes to control points */
-	  if((c->movx != 0.0) || (c->movy != 0.0) || (c->movz != 0.0) ||
-	     (c->rotx != 0.0) || (c->roty != 0.0) || (c->rotz != 0.0) ||
-	     (c->scalx != 1.0) || (c->scaly != 1.0) || (c->scalz != 1.0) ||
-	     (c->quat[0] != 0.0) || (c->quat[1] != 0.0) ||
-	     (c->quat[2] != 0.0) || (c->quat[3] != 1.0))
-	    {
-	      ay_trafo_creatematrix(c, m);
-	      curve = (ay_nurbcurve_object *)c->refine;
-	      a = 0;
-	      for(i = 0; i < curve->length; i++)
-		{
-		  ay_trafo_apply4(&(curve->controlv[a]), m);
-		  a += 4;
-		}
-	    } /* if */
-
 	  /* link curve to list */
 	  if(last)
 	    last->next = c;
@@ -491,8 +474,37 @@ ay_skin_notifycb(ay_object *o)
       ay_status = ay_object_copy(last, &c);
       ay_trafo_defaults(c);
       ay_status = ay_capt_createfromcurve(c, &(skin->end_cap));
-      ay_trafo_copy(last, skin->end_cap);
+      if(skin->end_cap)
+	{
+	  ay_trafo_copy(last, skin->end_cap);
+	  skin->end_cap->scalz *= -1.0;
+	}
     } /* if */
+
+
+  c = all_curves;
+  while(c)
+    {
+      /* apply transformation attributes to control points */
+      if((c->movx != 0.0) || (c->movy != 0.0) || (c->movz != 0.0) ||
+	 (c->rotx != 0.0) || (c->roty != 0.0) || (c->rotz != 0.0) ||
+	 (c->scalx != 1.0) || (c->scaly != 1.0) || (c->scalz != 1.0) ||
+	 (c->quat[0] != 0.0) || (c->quat[1] != 0.0) ||
+	 (c->quat[2] != 0.0) || (c->quat[3] != 1.0))
+	{
+	  ay_trafo_creatematrix(c, m);
+	  curve = (ay_nurbcurve_object *)c->refine;
+	  a = 0;
+	  for(i = 0; i < curve->length; i++)
+	    {
+	      ay_trafo_apply4(&(curve->controlv[a]), m);
+	      a += 4;
+	    }
+	} /* if */
+
+      c = c->next;
+    } /* while */
+
 
   ay_status = ay_npt_skinu(all_curves, skin->uorder, skin->uknot_type,
 			   skin->interpolate,
