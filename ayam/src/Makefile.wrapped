@@ -285,6 +285,7 @@ AYAMOBJS = aycore/bbc.o\
 	aycore/interpol.o\
 	aycore/mopsi.o\
 	aycore/notify.o\
+	aycore/ns.o\
 	aycore/oact.o\
 	aycore/object.o\
 	aycore/objio.o\

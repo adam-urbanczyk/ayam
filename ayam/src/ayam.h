@@ -976,6 +976,7 @@ extern char *ay_ridisp_tagtype;
 extern char *ay_rihider_tagtype;
 extern char *ay_noexport_tagtype;
 extern char *ay_tp_tagtype;
+extern char *ay_ns_tagtype;
 
 extern unsigned int ay_current_glname;
 extern int ay_wrib_framenum;

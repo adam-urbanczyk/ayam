@@ -183,6 +183,13 @@ int ay_notify_forceparent(ay_object *o, int silent);
 int ay_notify_forcetcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
 
+
+/* ns.c */
+int ay_ns_execute(ay_object *o, char *script);
+
+void ay_ns_init(Tcl_Interp *interp);
+
+
 /* oact.c */
 int ay_oact_movetcb(struct Togl *togl, int argc, char *argv[]);
 
