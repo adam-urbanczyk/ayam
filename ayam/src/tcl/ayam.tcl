@@ -242,11 +242,30 @@ array set ayviewshortcuts {
 
 
 array set riattr {
-    radiosity { {averagecolor c } {emissioncolor c} {patchsize f}\
-	    {elemsize f} {minsize f} {zonal s} }
-
-    render { {use_shadingrate i {1 0}} {patch_multiplier f}\
-	    {patch_maxlevel f} {patch_minlevel f} }
+    caustic { { maxpixeldist f {16} }
+              { ngather i {75} }
+              { specularcolor c {{0 0 0}} }
+              { refractioncolor c {{0 0 0}} }
+              { refractionindex f {1.0} }
+            }
+    indirect { { maxerror f {0.25 0.2 0.175 0.15 0.125 0.1} }
+               { maxpixeldist f {20} }
+               { nsamples i {256} }
+	     }
+    light { { nphotons i {0 10000 25000 50000} }
+	  }
+    radiosity { { averagecolor c }
+                { emissioncolor c }
+                { patchsize f {4} }
+	        { elemsize f {2} }
+                { minsize f {1} }
+                { zonal s {none zonal_receives zonal_shoots fully_zonal} }
+              }
+    render { { use_shadingrate i {1 0} }
+             { patch_multiplier f {1.0} }
+	     { patch_maxlevel f {256} }
+             { patch_minlevel f {1} }
+           }
 
     trimcurve { {sense s {"inside" "outside"}} }
 
@@ -254,15 +273,28 @@ array set riattr {
 
 
 array set riopt {
-    radiosity { {steps i} {minpatchsamples i} }
+    indirect { {savefile s {"indirect.dat"} }
+               {seedfile s {"indirect.dat"} }
+             }
 
-    render { {minsamples i} {maxsamples i}\
-	    {minshadowbias f} {max_raylevel i} {prmanspecular i}\
-	    {useprmandspy i}}
+    limits { {derivmemory i {2} }
+           }
+
+    radiosity { { steps i {0 32 64 128} }
+                { minpatchsamples i {1 2 3 4} }
+              }
+
+    render { {minsamples i {8}}
+             {maxsamples i {64}}
+	     {minshadowbias f {0.01 0.005 0.0025 0.001} }
+	     {max_raylevel i {4 2 8 16} }
+	     {prmanspecular i {0 1} }
+	     {useprmandspy i {0 1} }
+           }
 
     runtime { { verbosity s { "silent" "normal" "stats" "debug" } } }
     shadow { { bias0 f {0.01 0.1 0.25 0.5} } { bias1 f {0.01 0.1 0.25 0.5} } }
-    statistics { {endofframe i} {filename s} }
+    statistics { {endofframe i {0 1 2 3} } {filename s} }
 }
 
 array set rioptval {}
