@@ -395,9 +395,9 @@ ay_cap_convertcb(ay_object *o, int in_place)
 
       if(new)
 	{
+	  ay_trafo_add(o, new);
 	  if(!in_place)
 	    {
-	      /* ay_trafo_copy(o, new); */
 	      ay_status = ay_object_link(new);
 	    }
 	  else
@@ -426,7 +426,10 @@ ay_cap_providecb(ay_object *o, unsigned int type, ay_object **result)
       if(cap->npatch)
 	{
 	  ay_status = ay_object_copy(cap->npatch, result);
-	  /*	  ay_trafo_copy(o, *result);*/
+	  if(*result)
+	    {
+	      ay_trafo_add(o, *result);
+	    }
 	}
     }
 

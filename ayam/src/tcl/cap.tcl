@@ -9,7 +9,7 @@
 
 # cap.tcl - cap objects Tcl code
 
-set Cap_props { Attributes Material Tags CapAttr }
+set Cap_props { Transformations Attributes Material Tags CapAttr }
 
 
 array set CapAttr {
