@@ -1683,7 +1683,6 @@ ay_npt_sweep(ay_object *o, ay_object *o2, int sections,
   T0[0] = 1.0;
   T0[1] = 0.0;
   T0[2] = 0.0;
-  T0[3] = 0.0;
 
   /* copy cross sections controlv section+1 times */
   for(i=0;i<=sections;i++)
