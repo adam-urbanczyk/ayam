@@ -614,7 +614,7 @@ ay_undo_copy(ay_undo_object *uo)
 	  break;
 	default:
 	  arr = ay_deletecbt.arr;
-	  dcb = (ay_deletecb*)(arr[c->type]);
+	  dcb = (ay_deletecb*)(arr[o->type]);
 	  if(dcb)
 	    ay_status = dcb(o->refine);
 
@@ -655,7 +655,7 @@ ay_undo_copy(ay_undo_object *uo)
 	    }
 
 	  o->mat = c->mat;
-	}
+	} /* if */
 
       /* copy selected points? No! */
       /*ay_status = ay_undo_copyselp(c, o);*/
@@ -675,11 +675,11 @@ ay_undo_copy(ay_undo_object *uo)
 	{
 	  ay_notify_forceparent(o);
 	  notify = AY_FALSE;
-	}
+	} /* if */
 
       c = c->next;
       r = r->next;
-    }
+    } /* while */
 
 
  return AY_OK;
