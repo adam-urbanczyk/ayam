@@ -1,13 +1,18 @@
-[22. 05. 2003] CVS-Head:
+[27. 05. 2003] CVS-Head:
 o bug fixes:
+  none
 o added preference setting "Misc/SavePrefsGeom" to control saving of the
   geometry of the preference editor window
+o added Angel and Pixie to Select_Renderer feature
+o added support for sl2xml in favour of sdpslparse
+
 
 [10. 05. 2003] Ayam1.5.1:
 o bug fixes:
  - fixed erroneus drawing of NURBS patches with certain OpenGL/GLU
    implementations
    (SF 735600)
+
 
 [05. 05. 2003] Ayam1.5:
 o bug fixes:
