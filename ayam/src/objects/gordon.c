@@ -151,7 +151,11 @@ ay_gordon_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  /* char fname[] = "gordon_setpropcb";*/
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_gordon_object *gordon = NULL;
-
+ int new_wcc;
+ char uarg1[] = "save", uarg2[] = "WatchCurves";
+ char *uargv[3] = {0};
+ ay_list_object *oldsel = NULL, *newsel = NULL;
+ ay_object *down = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -163,7 +167,7 @@ ay_gordon_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   Tcl_SetStringObj(ton,"WatchCurves",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(gordon->wcc));
+  Tcl_GetIntFromObj(interp,to, &(new_wcc));
 
   Tcl_SetStringObj(ton,"Order_U",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -184,6 +188,49 @@ ay_gordon_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
+
+  if((new_wcc != gordon->wcc) && new_wcc)
+    {
+      /* save old selection */
+      oldsel = ay_selection;
+
+      /* fake selection containing all parameter curves */
+      down = o->down;
+      ay_selection = NULL;
+      while(down)
+	{
+	  if(!(newsel = calloc(1, sizeof(ay_list_object))))
+	    {
+	      return AY_EOMEM; /* XXXX leaks mem in low mem situation! */
+	    }
+	  newsel->object = down;
+	  newsel->next = ay_selection;
+	  ay_selection = newsel;
+	  down = down->next;
+	} /* while */
+
+      /* call "undo save WatchCurves" */
+      if(ay_selection)
+	{
+	  /* undo save */
+	  uargv[1] = uarg1;
+	  uargv[2] = uarg2;
+	  ay_status = ay_undo_undotcmd(NULL, ay_interp, 3, uargv);
+	} /* if */
+
+      /* clear faked selection */
+      while(ay_selection)
+	{
+	  newsel = ay_selection->next;
+	  free(ay_selection);
+	  ay_selection = newsel;
+	} /* while */
+
+      /* now restore original selection */
+      ay_selection = oldsel;
+    }
+  gordon->wcc = new_wcc;
+    
   ay_status = ay_notify_force(o);
 
   ay_status = ay_notify_parent();
@@ -376,6 +423,8 @@ ay_gordon_notifycb(ay_object *o)
 	      getinpatch = AY_TRUE; 
 	    }
 	  last = NULL;
+	  down = down->next;
+	  continue;
 	}
       if(!getinpatch)
 	{
