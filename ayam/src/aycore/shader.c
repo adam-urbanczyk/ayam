@@ -313,16 +313,19 @@ ay_shader_scanslxtcmd(ClientData clientData, Tcl_Interp *interp,
  int i = 0, j = 0, numargs = 0;
  SLX_VISSYMDEF *symbol = NULL, *element = NULL;
  SLX_TYPE type;
- char buffer[255], shaderpath[] = "/usr/local/aqsis/shaders";
+ char buffer[255];
  int arraylen;
  Tcl_DString ds;
+ char vname[] = "ayprefs(Shaders)";
 
   if(argc < 3)
     {
       ay_error(AY_EARGS, fname, "shaderpath varname");
       return TCL_OK;
     }
-  SLX_SetPath(shaderpath);
+
+  SLX_SetPath(Tcl_GetVar(ay_interp, vname, TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG));
+
   if((SLX_SetShader(argv[1])) == -1)
     {
       ay_error(AY_ERROR, fname, "SLX_SetShader failed for:");
