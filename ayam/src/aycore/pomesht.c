@@ -25,6 +25,8 @@ void ay_pomesht_tcbBegin(GLenum prim);
 
 void ay_pomesht_tcbVertex(void *data);
 
+void ay_pomesht_tcbVertexN(void *data);
+
 void ay_pomesht_tcbEnd(void);
 
 void ay_pomesht_tcbCombine(GLdouble c[3], void *d[4], GLfloat w[4],
@@ -51,13 +53,20 @@ ay_pomesht_tcbVertex(void *data)
   glVertex3dv((GLdouble *)data);
 } /* ay_pomesht_tcbVertex */
 
+void
+ay_pomesht_tcbVertexN(void *data)
+
+{
+  glNormal3dv(((GLdouble *)data)+3);
+  glVertex3dv((GLdouble *)data);
+} /* ay_pomesht_tcbVertexN */
+
 
 void
 ay_pomesht_tcbEnd(void)
 {
   glEnd();
 } /* ay_pomesht_tcbEnd */
-
 
 void
 ay_pomesht_tcbCombine(GLdouble c[3], void *d[4], GLfloat w[4], void **out)
@@ -74,7 +83,7 @@ ay_pomesht_tcbCombine(GLdouble c[3], void *d[4], GLfloat w[4], void **out)
   /* remember pointer to free it later */
   ay_pomesht_ManageCombined((void*)nv);
 
-  *out = nv; 
+  *out = nv;
 } /* ay_pomesht_tcbCombine */
 
 
@@ -120,8 +129,21 @@ ay_pomesht_setautonormal(double *v1, double *v2, double *v3)
   AY_V3SUB(t1, v1, v2)
   AY_V3SUB(t2, v1, v3)
   AY_V3CROSS(n, t1, t2)
-  glNormal3dv(n);
 
+  /* the next fragment should be unneeded, because we enable
+     GL_NORMALIZE in ay_toglcb_create */
+
+  /*
+  AY_V3NORM(n)
+
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+   glLoadIdentity();
+  */
+   glNormal3dv(n);
+  /*
+  glPopMatrix();
+  */
  return;
 } /* ay_pomesht_setautonormal */
 
@@ -132,9 +154,14 @@ ay_pomesht_setautonormal(double *v1, double *v2, double *v3)
 int
 ay_pomesht_tesselate(ay_pomesh_object *pomesh)
 {
- int i = 0, j = 0, k = 0, l = 0;
+ int i = 0, j = 0, k = 0, l = 0, stride = 0;
  unsigned int a;
  GLUtesselator *tess = NULL;
+
+  if(pomesh->has_normals)
+    stride = 6;
+  else
+    stride = 3;
 
   for(i = 0; i < pomesh->npolys; i++)
     {
@@ -147,17 +174,26 @@ ay_pomesht_tesselate(ay_pomesh_object *pomesh)
       gluTessCallback(tess, GLU_TESS_ERROR, ay_error_glucb);
 #endif
       gluTessCallback(tess, GLU_TESS_BEGIN, ay_pomesht_tcbBegin);
-      gluTessCallback(tess, GLU_TESS_VERTEX, ay_pomesht_tcbVertex);
+      if(!pomesh->has_normals)
+	{
+	  gluTessCallback(tess, GLU_TESS_VERTEX, ay_pomesht_tcbVertex);
+	}
+      else
+	{
+	  gluTessCallback(tess, GLU_TESS_VERTEX, ay_pomesht_tcbVertexN);
+	}
       gluTessCallback(tess, GLU_TESS_END, ay_pomesht_tcbEnd);
       gluTessCallback(tess, GLU_TESS_COMBINE, ay_pomesht_tcbCombine);
 
       /* GLU 1.2 only: */
       /*gluTessBeginPolygon(tess, NULL);*/
       gluBeginPolygon(tess);
-
-       ay_pomesht_setautonormal(&pomesh->controlv[pomesh->verts[l]*3],
-				&pomesh->controlv[pomesh->verts[l+1]*3],
-				&pomesh->controlv[pomesh->verts[l+2]*3]);
+      if(!pomesh->has_normals)
+	{
+	  ay_pomesht_setautonormal(&pomesh->controlv[pomesh->verts[l]*stride],
+				  &pomesh->controlv[pomesh->verts[l+1]*stride],
+				 &pomesh->controlv[pomesh->verts[l+2]*stride]);
+	}
 
        for(j = 0; j < pomesh->nloops[i]; j++)
 	 {
@@ -165,8 +201,8 @@ ay_pomesht_tesselate(ay_pomesh_object *pomesh)
 	    for(k = 0; k < pomesh->nverts[j]; k++)
 	      {
 		a = pomesh->verts[l++];
-		gluTessVertex(tess, (GLdouble*)(&(pomesh->controlv[a * 3])),
-			      (GLdouble*)(&(pomesh->controlv[a * 3])));
+		gluTessVertex(tess, (GLdouble*)(&(pomesh->controlv[a*stride])),
+			      (GLdouble*)(&(pomesh->controlv[a*stride])));
 	      } /* for */
 	    /*gluTessEndContour(tess);*/
 	    gluNextContour(tess, GLU_INTERIOR);
@@ -181,3 +217,4 @@ ay_pomesht_tesselate(ay_pomesh_object *pomesh)
 
  return AY_OK;
 } /* ay_pomesht_tesselate */
+

@@ -349,10 +349,8 @@ typedef struct ay_pomesh_object_s {
   unsigned int *verts;
 
   unsigned int ncontrols;
-  double *controlv;
   int has_normals;
-  double *normalv;
-
+  double *controlv;
 } ay_pomesh_object;
 
 typedef struct ay_light_object_s
