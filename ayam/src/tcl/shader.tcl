@@ -129,7 +129,7 @@ proc shader_scanAll {} {
     foreach i [list surface displacement imager light volume transformation] {
 	set shadernamelistname ay(${i}shaders)
 	eval set list \$$shadernamelistname
-	set $shadernamelistname [lsort $list]
+	set $shadernamelistname [lsort -dictionary $list]
     }
 
     # luniq (remove multiple entries)
@@ -168,8 +168,37 @@ proc shader_scanAll {} {
 # shader_scanAll
 
 
+# shader_cycSel:
+#  arrange for listbox entries in list <l> to be cycle-selected
+#  when key <k> is pressed for listbox <w>
+proc shader_cycSel { w k l } {
+    global $l
+
+    # get old list
+    eval [subst "set ol {\$$l}"] 
+
+    set i [lindex $ol 0]
+
+    # make selection and scroll listbox, so that it is visible
+    $w selection clear 0 end
+    $w selection set $i
+    $w see $i
+
+    # rotate list, so that next invocation uses next list entry
+    if { [llength $ol] > 1 } {
+	set nl [lrange $ol 1 end]
+	lappend nl [lindex $ol 0]
+	set $l $nl
+    }
+
+ return;
+}
+# shader_cycSel
+
+
 # shader_setNew:
-#
+#  set a new shader for selected object (invoked from "Set new Shader"-button
+#  in shader property dialogues)
 proc shader_setNew { win type stype } {
     upvar #0 ${type}ShaderData sArgArray
 
@@ -207,14 +236,38 @@ proc shader_setNew { win type stype } {
     set w .setShaderw
     catch {destroy $w}
     toplevel $w
-    wm title $w "Ayam - Set Shader"
+    wm title $w "Set Shader"
     wm iconname $w "Ayam"
     wm transient $w .
 
     set f [frame $w.f1]
     listbox $f.lb -width 20 -height 10 -selectmode single\
 	    -exportselection 0 -yscrollcommand {.setShaderw.f1.fsc.sc set}
+    # insert shaders into listbox
     eval [subst "$f.lb insert 0 $shaders"]
+
+    # arrange for keyboard to cycle-select through shaders
+    # first, clear some global lists
+    foreach shader $shaders {
+	set fc [string tolower [string index $shader 0]]
+	global ${fc}list
+	set ${fc}list {}
+    }
+    # foreach
+    # now, fill the global lists with list indizes, and arrange for
+    # the respective key on the keyboard to cycle-select using shader_cycsel
+    set i 0
+    foreach shader $shaders {
+	set fc [string tolower [string index $shader 0]]
+	global ${fc}list
+	lappend ${fc}list $i
+	if { [ llength ${fc}list ] == 1 } {
+	    bind $w <KeyPress-${fc}> "shader_cycSel $f.lb $fc ${fc}list" 
+	}
+	incr i
+    }
+    # foreach
+
     pack $f.lb -in $f -side left -fill both -expand yes
     set f [frame $f.fsc]
     scrollbar $f.sc -command {.setShaderw.f1.lb yview} -takefocus 0
@@ -600,8 +653,7 @@ proc shader_findShader { sname } {
 
 proc shader_getAtm { } {
 global ay ay_shader Atmosphere
-
-catch {destroy $ay(pca).$Atmosphere(w)}
+destroy $ay(pca).$Atmosphere(w)
 set w [frame $ay(pca).$Atmosphere(w)]
 shaderGet atmosphere ay_shader
 shader_buildGUI $w atmosphere
