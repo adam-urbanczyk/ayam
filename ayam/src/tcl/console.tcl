@@ -606,11 +606,12 @@ interp alias {} console_dialog {} ConsoleDialog
 	$m add command -label "Load File" -und 0 \
 		-command [list Console_load $W]
 	$m add cascade -label "Save ..."  -und 0 -menu $m.save
-	$m add separator
-	$m add cascade -label "Attach Console"	-und 7 -menu $m.apps \
-		-state disabled
-	$m add cascade -label "Attach Namespace" -und 7 -menu $m.name \
-		-state disabled
+	# XXXX disabled attached menus, we do not use them
+	#$m add separator
+	#$m add cascade -label "Attach Console"	-und 7 -menu $m.apps \
+	#	-state disabled
+	#$m add cascade -label "Attach Namespace" -und 7 -menu $m.name \
+	#	-state disabled
 #
 # XXXX We do not allow a quit from the console, because we will then
 # not be able to clear the temporary files
@@ -633,20 +634,21 @@ interp alias {} console_dialog {} ConsoleDialog
 	$s add command -label "Stderr"	-und 3 \
 		-command [list Console_save $W stderr]
 
+	# XXXX disabled attached menus, we do not use them
 	## Attach Console Menu
 	##
-	menu $m.apps -disabledforeground $data(-promptcolor) \
-		-postcommand [list ConsoleAttachMenu $m.apps]
+	#menu $m.apps -disabledforeground $data(-promptcolor) \
+	#	-postcommand [list ConsoleAttachMenu $m.apps]
 
 	## Attach Interpreter Menu
 	##
-	menu $m.int -disabledforeground $data(-promptcolor) -tearoff 0 \
-		-postcommand [list ConsoleAttachMenu $m.int interp]
+	#menu $m.int -disabledforeground $data(-promptcolor) -tearoff 0 \
+	#	-postcommand [list ConsoleAttachMenu $m.int interp]
 
 	## Attach Namespace Menu
 	##
-	menu $m.name -disabledforeground $data(-promptcolor) -tearoff 0 \
-		-postcommand [list ConsoleAttachMenu $m.name namespace]
+	#menu $m.name -disabledforeground $data(-promptcolor) -tearoff 0 \
+	#	-postcommand [list ConsoleAttachMenu $m.name namespace]
     }
 
     ## Edit Menu
