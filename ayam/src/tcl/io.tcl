@@ -225,8 +225,8 @@ proc io_saveScene { ask selected } {
 
 
 # io_exportRIB:
-# 
-# 
+#
+#
 proc io_exportRIB { {expview "" } } {
     global ay
 
@@ -246,6 +246,8 @@ proc io_exportRIB { {expview "" } } {
     listbox $f.lb -width 15 -height 5 -selectmode single\
 	    -exportselection 0 -yscrollcommand {.exportRIBw.f1.fview.sc set}
 
+    set ocw $ay(currentView)
+
     set index 0
     set firstselect 0
     foreach i $ay(views) {
@@ -264,8 +266,11 @@ proc io_exportRIB { {expview "" } } {
 	    $f.lb insert end "$name ([lindex $ay(viewtypenames) $ay(cVType)])"
 	    incr index
 	}
+    }
+    # foreach
 
-
+    if { $ocw != "" } {
+	$ocw mc
     }
 
     #    catch {eval [subst "$currentView getViewConfig"]}
@@ -278,7 +283,7 @@ proc io_exportRIB { {expview "" } } {
     pack $f -in $w.f1 -side top -fill x -fill y
 
     set f [frame $w.f2]
-    button $f.bok -text "Ok" -pady $ay(pady) -width 5 -command { 
+    button $f.bok -text "Ok" -pady $ay(pady) -width 5 -command {
 	global ay ayprefs
 
 	set selection [.exportRIBw.f1.fview.lb curselection]
@@ -295,18 +300,21 @@ proc io_exportRIB { {expview "" } } {
 		    .$name.f3D.togl wrib -file $efilename -image $imagename
 		    ayError 4 "exportRIB" "Done exporting scene to:"
 		    ayError 4 "exportRIB" "$efilename"
-
 		} else {
 		    .$name.f3D.togl wrib -file $efilename
 		    ayError 4 "exportRIB" "Done exporting scene to:"
 		    ayError 4 "exportRIB" "$efilename"
 		}
+		# if
 	    }
+	    # if
 	}
+	# if
 	focus .
 	grab release .exportRIBw
 	destroy .exportRIBw
     }
+    # button
 
     button $f.bca -text "Cancel" -pady $ay(pady) -width 5 -command "\
 	    grab release .exportRIBw; focus .; destroy $w"
@@ -387,7 +395,7 @@ proc io_loadCustom { } {
     global ay ayprefs
 
     set pftype .$ay(soext)
-    
+
     set filetypes [list [list "Custom Object" $pftype] {"All files" *}]
 
     set idir ""
@@ -413,7 +421,7 @@ proc io_loadCustom { } {
 		-initialdir $idir -title "Select Custom Object:"]
     }
 
-    if { $filename != "" } { 
+    if { $filename != "" } {
 	io_lc $filename
     }
 
@@ -473,7 +481,7 @@ proc io_importMops { } {
 
 	addCheckB $f mopsi_options ResetDM [ms mopsi_options_ResetDM]
 	addCheckB $f mopsi_options ResetST [ms mopsi_options_ResetST]
-	
+
 	set f [frame $w.f2]
 	button $f.bok -text "Ok" -width 5 -command {
 	    global mopsi_options ay_error
@@ -504,7 +512,7 @@ proc io_importMops { } {
 	    uS
 	    rV
 	    set ay(sc) 1
-	    
+
 	    destroy .mopI
 	    foreach view $ay(views) { viewBind $view }
 	    update
@@ -520,7 +528,7 @@ proc io_importMops { } {
 	pack $f -in $w -side bottom -fill x
 
 	winCenter $w
-	
+
 	focus $w.f2.bok
 
     }
@@ -607,7 +615,7 @@ proc io_mruLoad { index } {
 	    if { [file exists $filename] } {
 		set dirname [file dirname $filename]
 		cd $dirname
-		
+
 		set .fl.con(-prompt) {[file tail [pwd]]>}
 		.fl.con delete end-1lines end
 		Console:prompt .fl.con "\n"
@@ -632,7 +640,7 @@ proc io_mruLoad { index } {
 	update
 
 	after idle viewMouseToCurrent
-	
+
     }
 
  return;
@@ -759,7 +767,7 @@ proc io_saveEnv {  } {
 	     }
 	 } else {
 	     ayError 2 "saveEnv" "There were errors while writing:"
-	     ayError 2 "saveEnv" "$savefilename" 
+	     ayError 2 "saveEnv" "$savefilename"
 	 }
 	 # reset scene changed status to old value
 	 set ay(sc) $temp
@@ -769,7 +777,9 @@ proc io_saveEnv {  } {
      } else {
 	 ayError 2 "saveEnv" "Can not write to ${savefilename}!"
      }
+     # if
  }
+ # if
 
  return;
 }
@@ -804,7 +814,7 @@ proc io_getRIBName { } {
 	if { $ayprefs(RIBFile) == "Scene" } {
 	    if { $filename != "" } {
 		set ribname [file rootname $filename].rib
-	    } else { 
+	    } else {
 		set ribname unnamed.rib
 	    }
 	}
@@ -832,7 +842,7 @@ proc io_getRIBName { } {
 
 # exportRIBfC:
 #  export RIB from selected camera object
-# 
+#
 proc io_exportRIBfC { } {
     global ay ayprefs ay_error
 
@@ -850,7 +860,7 @@ proc io_exportRIBfC { } {
 	    } else {
 		ayError 2 "exportRIB" "Could not export scene!"
 	    }
-
+	    # if
 	} else {
 	    wrib -file $efilename
 	    if { $ay_error < 2 } {
@@ -859,8 +869,11 @@ proc io_exportRIBfC { } {
 	    } else {
 		ayError 2 "exportRIB" "Could not export scene!"
 	    }
+	    # if
 	}
+	# if
     }
+    # if
 
  return;
 }
@@ -918,9 +931,9 @@ set answer [tk_messageBox -title $t -type okcancel -icon warning -message $m]
     }
     # if
 
-    if { $render } { 
+    if { $render } {
 	ayError 4 "Create SM" "Now rendering all shadow maps..."
-    
+
 	if { $ayprefs(SMRenderUI) != 1} {
 	    set command "exec "
 
@@ -931,9 +944,9 @@ set answer [tk_messageBox -title $t -type okcancel -icon warning -message $m]
 
 	    eval [subst "$command"]
 	} else {
-     
+
 	    regsub -all {%s} $ayprefs(SMRender) $efilename command
-	
+
 	    runRenderer "$command" "$ayprefs(SMRenderPT)"
 
 	}
@@ -951,7 +964,7 @@ set answer [tk_messageBox -title $t -type okcancel -icon warning -message $m]
 
 # io_exportRIBSO:
 #  export RIB from all selected objects
-# 
+#
 proc io_exportRIBSO { } {
     global ay ayprefs ay_error
 
@@ -968,6 +981,7 @@ proc io_exportRIBSO { } {
 	    ayError 2 "exportRIB" "Could not export RIB!"
 	}
     }
+    # if
 
  return;
 }
@@ -979,7 +993,7 @@ proc io_exportRIBSO { } {
 #  main and toolbox window geometry
 proc io_saveMainGeom { } {
     global ay tagnames tagvals
-    
+
     if { $ay(lb) == 0 } {
 	set tree $ay(tree)
 	set sel [$tree selection get]
@@ -1023,7 +1037,7 @@ proc io_saveMainGeom { } {
 #  present SaveMainGeom tag
 proc io_readMainGeom { } {
     global ay tagnames tagvals
-    
+
     if { $ay(lb) == 0 } {
 	set tree $ay(tree)
 	set sel [$tree selection get]
@@ -1153,7 +1167,7 @@ proc io_exportOBJ { selected } {
 	pack $f -in $w -side bottom -fill x
 
 	winCenter $w
-	
+
 	focus $w.f2.bok
 
     }
