@@ -62,6 +62,7 @@ ay_material_createcb(int argc, char *argv[], ay_object *o)
 
       material->nameptr = &(o->name);
       material->refcountptr = &(o->refcount);
+      material->objptr = o;
 
       /* default color & opacity values */
       material->colr = 220;
@@ -160,6 +161,7 @@ ay_material_copycb(void *src, void **dst)
 
   material->nameptr = NULL;
   material->refcountptr = NULL;
+  material->objptr = NULL;
   *dst = (void *)material;
   srcm = (ay_mat_object *)src;
 
@@ -480,6 +482,13 @@ ay_material_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       o->refcount = 0;
     }
 
+  /* repair objptr if it has not been set, after e.g.
+     a clipboard operation */
+  if(!material->objptr)
+    {
+      material->objptr = o;
+    }
+
   Tcl_SetStringObj(ton,"RefCount",-1);
   to = Tcl_NewIntObj(o->refcount);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -571,6 +580,7 @@ ay_material_readcb(FILE *fileptr, ay_object *o)
 
   material->nameptr = &(o->name);
   material->refcountptr = &(o->refcount);
+  material->objptr = o;
 
   if(material->registered)
     {

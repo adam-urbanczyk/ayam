@@ -160,6 +160,7 @@ ay_undo_copymat(ay_mat_object *src, ay_mat_object *dst)
  int ay_status = AY_OK;
  char **onameptr;
  unsigned int *orefcountptr;
+ ay_object *oobjptr;
  int oregistered;
 
   if(dst->sshader)
@@ -189,12 +190,14 @@ ay_undo_copymat(ay_mat_object *src, ay_mat_object *dst)
   oregistered = dst->registered;
   onameptr = dst->nameptr;
   orefcountptr = dst->refcountptr;
+  oobjptr = dst->objptr;
 
   memcpy(dst, src, sizeof(ay_mat_object));
 
   dst->registered = oregistered;
   dst->nameptr = onameptr;
   dst->refcountptr = orefcountptr;
+  dst->objptr = oobjptr;
 
   if(src->sshader)
     {
