@@ -1328,6 +1328,14 @@ Aycsg_Init(Tcl_Interp *interp)
   // create a new command for all views (Togl widgets)
   Togl_CreateCommand("rendercsg", aycsg_rendertcb);
 
+  // source aycsg.tcl, it contains Tcl-code for new key bindings
+  if((Tcl_EvalFile(interp, "aycsg.tcl")) != TCL_OK)
+     {
+       ay_error(AY_ERROR, fname,
+		  "Error while sourcing \\\"aycsg.tcl\\\"!");
+       return TCL_OK;
+     }
+
   ay_error(AY_EOUTPUT, fname, "Plugin 'aycsg' successfully loaded.");
 
  return TCL_OK;
