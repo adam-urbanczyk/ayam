@@ -2879,6 +2879,9 @@ idr_wrib_tcb(struct Togl *togl, int argc, char *argv[])
 	    idr_getpartlist(&tpartlist, togl, idrmode, params[i].importance,
 			     width, height, ay_root);
 
+	    if(!tpartlist)
+	      break;
+
 	    /* remove overlapping from bounding box list */
 	    idr_removeoverlappingboxes(&tpartlist);
 
