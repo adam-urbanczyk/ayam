@@ -356,49 +356,7 @@ proc viewOpen { width height {establish_bindings 1} } {
 	    global ay; set ay(ul) root:0; uS"
 
     if { $establish_bindings == 1 } {
-
-	# bind internal bindings
-	bind $w <Enter> {
-	    global ay ayprefs
-	    if { $ay(cviewsema) != 1 } {
-		update
-		set ay(cviewsema) 1
-		update
-		set w [winfo toplevel %W]
-		$w.f3D.togl mc
-		set ay(currentView) $w.f3D.togl
-		set ay(cviewsema) 0
-		update
-	    }
-
-	    bind [winfo toplevel %W] <$ayviewshortcuts(RotMod)-Motion> {
-		set w [winfo toplevel %W]
-		$w.f3D.togl configure -cursor exchange
-		bind $w <$ayviewshortcuts(RotMod)-Motion> {}
-		bind $w <Motion> {}
-	    }
-	    bind [winfo toplevel %W] <Motion> {
-		set w [winfo toplevel %W]
-		$w.f3D.togl configure -cursor left_ptr
-		bind $w <Motion> {}
-		bind $w <$ayviewshortcuts(RotMod)-Motion> {}
-	    }
-
-	    if { $ayprefs(AutoFocus) == 1 } {
-		focus [winfo toplevel %W].f3D.togl
-	    }
-
-	}
-	#bind
-
-	# bind menu shortcuts
-	shortcut_view $w
-
-	# bind actions
-	shortcut_viewactions $w
-
-	# bind default action
-	actionClear $w.f3D.togl
+	viewBind $w
     } else {
 	$w configure -cursor watch
     }
