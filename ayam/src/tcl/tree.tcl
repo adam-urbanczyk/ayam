@@ -91,7 +91,10 @@ proc tree_blockUI { } {
 proc tree_update { node } {
     global ay
     if { $ay(TreeUpdateSema) == 1 } {
-	return 
+	# inform the currently running update process, that we have some
+	# more changes to the scene to consider
+	set ay(ExtraTreeUpdate) 1
+	return
     } else {
 	set ay(TreeUpdateSema) 1
     }
@@ -133,6 +136,13 @@ proc tree_update { node } {
     . configure -cursor {}
 
     set ay(TreeUpdateSema) 0
+
+    if { $ay(ExtraTreeUpdate) == 1 } {
+	set ay(ExtraTreeUpdate) 0
+	ayError 1 tree_update "Doing an extra update for node \\\"$node\\\"."
+	update
+	tree_update $node
+    }
 
  return;
 }
