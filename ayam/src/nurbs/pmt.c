@@ -143,7 +143,8 @@ ay_pmt_bicubiccltonpatch(ay_pamesh_object *pamesh, ay_object **result)
     }
 
 
-  if((evwinwidth == pamesh->width) && (evwinheight == pamesh->height))
+  if((evwinwidth == pamesh->width) && (evwinheight == pamesh->height) &&
+     (ktu != AY_KTBEZIER) && (ktv != AY_KTBEZIER))
     {
       if(!(o = calloc(1, sizeof(ay_object))))
 	return AY_EOMEM;
@@ -213,7 +214,8 @@ ay_pmt_bicubiccltonpatch(ay_pamesh_object *pamesh, ay_object **result)
     }
   else
     {
-
+      return AY_OK;
+#if 0
       winu = (pamesh->width/(evwinwidth-1));
       winv = (pamesh->height/(evwinheight-1));
 
@@ -252,8 +254,9 @@ ay_pmt_bicubiccltonpatch(ay_pamesh_object *pamesh, ay_object **result)
 	      a = 0;
 	      for(k = 0; k < evwinwidth; k++)
 		{
-		  b = ((3*i*pamesh->height)+(j*3)+(k*pamesh->height))*4;
+		  b = ((3*i*pamesh->height)+(j*3)+(k*pamesh->height));
 
+		  b *= 4;
 		  /* because row/column order is identical for
 		     PatchMeshes and NURBS Patches,
 		     we may copy a whole line of control points
@@ -282,8 +285,11 @@ ay_pmt_bicubiccltonpatch(ay_pamesh_object *pamesh, ay_object **result)
 
 
 	    }/* for */
-	}/* for */
 
+
+
+	}/* for */
+#endif
     } /* if */
 
 
@@ -293,6 +299,8 @@ ay_pmt_bicubiccltonpatch(ay_pamesh_object *pamesh, ay_object **result)
 
 /* ay_pmt_tonpatch:
  *   create a number of NURBS patches from a PatchMesh
+ *   o this function will not work properly or crash if the PatchMesh
+ *     fails the validity check using ay_pmt_valid() below!
  */
 int
 ay_pmt_tonpatch(ay_pamesh_object *pamesh, ay_object **result)
@@ -459,3 +467,126 @@ ay_pmt_tonpatch(ay_pamesh_object *pamesh, ay_object **result)
 
  return AY_OK;
 } /* ay_pmt_tonpatch */
+
+
+/* ay_pmt_valid:
+ *   check PatchMesh pamesh for validity
+ *   returns AY_OK (0) if mesh is valid
+ *   else:
+ *   1: too few control points (need atleast 4 by 4)
+ *   2: stepsize too small
+ *   3: u-basistype width mismatch
+ *   4: v-basistype height mismatch
+ *   
+ */
+int
+ay_pmt_valid(ay_pamesh_object *pamesh, int *detail)
+{
+ int w, h, stepu, stepv;
+
+  if(pamesh->type == AY_PTBILINEAR)
+    { /* bilinear patch mesh */
+      /* nothing to check */
+      return AY_OK;
+    }
+  else
+    { /* bicubic patch mesh */
+
+      if((pamesh->width < 4) || (pamesh->height < 4))
+	{
+	  return 1;
+	}
+
+      switch(pamesh->btype_u)
+	{
+	case AY_BTBEZIER:
+	  stepu = 3;
+	  break;
+	case AY_BTBSPLINE:
+	  stepu = 1;
+	  break;
+	case AY_BTCATMULLROM:
+	  stepu = 1;
+	  break;
+	case AY_BTHERMITE:
+	  stepu = 2;
+	  break;
+	case AY_BTCUSTOM:
+	  stepu = pamesh->ustep;
+	  break;
+	default:
+	  break;
+
+	} /* switch */
+
+      if(stepu <= 0)
+	{
+	  return 2;
+	}
+
+      if(pamesh->close_u)
+	{ /* periodic patch */
+	  if(fabs(fmod((double)pamesh->width-4+(4-stepu), stepu)) >
+	     AY_EPSILON)
+	    {
+	      /**detail =*/
+	      return 3;
+	    }
+	}
+      else
+	{ /* non periodic patch */
+	  if(fabs(fmod((double)pamesh->width-4, stepu)) > AY_EPSILON)
+	    {
+	      /**detail =*/
+	      return 3;
+	    }
+	}
+
+      switch(pamesh->btype_v)
+	{
+	case AY_BTBEZIER:
+	  stepv = 3;
+	  break;
+	case AY_BTBSPLINE:
+	  stepv = 1;
+	  break;
+	case AY_BTCATMULLROM:
+	  stepv = 1;
+	  break;
+	case AY_BTHERMITE:
+	  stepv = 2;
+	  break;
+	case AY_BTCUSTOM:
+	  stepv = pamesh->vstep;
+	  break;
+	default:
+	  break;
+
+	} /* switch */
+
+      if(stepv <= 0)
+	{
+	  return 2;
+	}
+
+      if(pamesh->close_v)
+	{ /* periodic patch */
+	  if(fabs(fmod((double)pamesh->height-4+(4-stepv), stepv)) >
+	     AY_EPSILON)
+	    {
+	      /**detail =*/
+	      return 4;
+	    }
+	}
+      else
+	{ /* non periodic patch */
+	  if(fabs(fmod((double)pamesh->height-4, stepv)) > AY_EPSILON)
+	    {
+	      /**detail =*/
+	      return 4;
+	    }
+	}
+    } /* if */
+
+  return AY_OK;
+} /* ay_pmt_valid */

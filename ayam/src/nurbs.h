@@ -281,3 +281,5 @@ int ay_npt_createcap(double z, ay_nurbcurve_object *curve,
 /* pmt.c */
 
 int ay_pmt_tonpatch(ay_pamesh_object *pamesh, ay_object **result);
+
+int ay_pmt_valid(ay_pamesh_object *pamesh, int *detail);
