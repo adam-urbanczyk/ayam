@@ -40,6 +40,7 @@ proc io_replaceScene { } {
 	viewCloseAll
 	cS; plb_update
 	#    .fu.fMain.fHier.fsel.bnon invoke
+	set ay(askedscriptdisable) 0
 	update
 	set filename $newfilename
 	global ay_error ayprefs
@@ -128,6 +129,7 @@ proc io_insertScene { } {
 
     if { $ifilename != "" } {
 	cS; plb_update
+	set ay(askedscriptdisable) 0
 	update
 	global ay ay_error
 	set ay_error ""

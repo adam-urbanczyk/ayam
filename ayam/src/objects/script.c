@@ -12,7 +12,7 @@
 
 #include "ayam.h"
 
-#include <Xutil.h>
+#include <X11/Xutil.h>
 
 /* script.c - script object */
 
@@ -346,10 +346,13 @@ ay_script_readcb(FILE *fileptr, ay_object *o)
 {
  ay_script_object *sc = NULL;
  int i, len;
- int readc;
+ int readc, deactivate = 0;
+ char script_disable_cmd[] = "script_disable";
+ Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char a1[] = "ay", n1[] = "scriptdisable";
 
- if(!o)
-   return AY_ENULL;
+  if(!o)
+    return AY_ENULL;
 
   if(!(sc = calloc(1, sizeof(ay_script_object))))
     { return AY_EOMEM; }
@@ -378,6 +381,24 @@ ay_script_readcb(FILE *fileptr, ay_object *o)
   o->refine = sc;
 
   ay_trafo_defaults(o);
+
+  if(sc->active)
+    {
+      Tcl_Eval(ay_interp, script_disable_cmd);
+      toa = Tcl_NewStringObj(a1, -1);
+      ton = Tcl_NewStringObj(n1, -1);
+      to = Tcl_ObjGetVar2(ay_interp, toa, ton,
+			  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      Tcl_GetIntFromObj(ay_interp, to, &(deactivate));
+
+      if(deactivate)
+	{
+	  sc->active = AY_FALSE;
+	}
+
+      Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
+      Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+    }
 
  return AY_OK;
 } /* ay_script_readcb */

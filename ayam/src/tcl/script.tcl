@@ -92,4 +92,28 @@ mmenu_addcustom Script "crtOb Script;uS;sL;"
 # tell the rest of Ayam (or other custom objects), that we are loaded
 lappend ay(co) Script
 }
+
+# script_disable:
+#  ask user for permission to disable all script objects loaded
+#  with a scene file
+proc script_disable { } {
+    global ay ayprefs
+
+    if { $ayprefs(AskScriptDisable) && !$ay(askedscriptdisable) } {
+	set t "Disable Scripts?"
+	set m "Scene contains Script objects, disable them?"
+	set answer [tk_messageBox -title $t -type yesno -icon warning -message $m]
+	if { $answer == "yes" } {
+	    set ay(scriptdisable) 1
+	} else {
+	    set ay(scriptdisable) 0
+	}
+	set ay(askedscriptdisable) 1
+    }
+
+return;
+}
+# script_disable
+
+
 return;

@@ -143,6 +143,8 @@ array set ayprefs {
  Scripts ""
  AddViewParams ""
  FlashPoints 1
+ AskScriptDisable 1
+
  Docs "http://ayam.sourceforge.net/docs/"
     DailyTips {
 {Always click on drawn pixels, when picking vertices.}
@@ -509,6 +511,8 @@ array set ay {
  oldb1rbinding ""
  shiftcbsp 1
  zoomr 0
+ askedscriptdisable 0
+ scriptdisable 0
 }
 # array ay
 
