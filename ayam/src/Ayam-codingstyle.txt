@@ -1,24 +1,25 @@
 [Ayam-codingstyle.txt]
 
-While I do welcome patches (especially, if they fix bad
-bugs or add essential functionality) I will reject any code
-that fails to comply with the following guidelines:
+I do welcome patches (especially, if they fix bad bugs
+or add essential functionality) but I will reject any
+code that fails to comply with the following guidelines:
 
 o line length maximal 79 characters
 o indentation: Emacs-C-mode-style (2 chars) this is also
   easy to achieve with "indent" without any parameters (GNU style),
   exceptions (not mandatory):
   - local variables and last return in a function indent one character
-  - glBegin()-glEnd(), RiBegin()-RiEnd() pairs indent one character
+  - glBegin()-glEnd(), glPushMatrix()-glPopMatrix(), and RiBegin()-RiEnd()
+    pairs indent one character
 o all {} are on their _own_ line (resembles the look of Pascal code a bit)
 o Ayam symbols and typenames are all preceded by "ay_"
-o all preprocessor definitions are preceded by "AY" and are in ALL CAPS
+o all preprocessor definitions/macros are preceded by "AY_" and are
+  in ALL CAPS
 o function naming convention: ay_<modulename>_getblurb<type>
   mandatory types: "cb": Ayam callback, "tcb": Togl callback,
                    "tcmd": Tcl command
-o variable naming convention (not mandatory) ay_varname<type>
-  type: "d": double, "i": int, "p": pointer, "t": ayam table 
 o all functions end with "} /* <function_name> */"
+o long if/while/for/switch-statements end with "} /* if */", "} /* while */"...
 
 example:
 
@@ -54,7 +55,7 @@ ay_ayam_init(Tcl_Interp *interp)
 -snap-
 
 Note: Those rules are not established to annoy you, but to keep the
-code readable (especially for me).
+code consistent and readable (especially for me).
 
 Randolf,
 -- 
