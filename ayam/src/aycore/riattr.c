@@ -94,15 +94,21 @@ ay_riattr_wrib(ay_object *o)
 			break;
 			case 'p':
 			  RiDeclare(parname, "point");
-			  sscanf(parval, "%f,%f,%f", &ptemp[0], &ptemp[1],
-				 &ptemp[2]);
+			  sscanf(parval, "%f", &ptemp[0]);
+			  parval = strtok(NULL, tok);
+			  sscanf(parval, "%f", &ptemp[1]);
+			  parval = strtok(NULL, tok);
+			  sscanf(parval, "%f", &ptemp[2]);
 			  RiAttribute(attrname, parname,
 				      (RtPointer)&ptemp, RI_NULL);
 			  break;
 			case 'c':
 			  RiDeclare(parname, "color");
-			  sscanf(parval, "%f,%f,%f", &color[0], &color[1],
-				 &color[2]);
+			  sscanf(parval, "%f", &color[0]);
+			  parval = strtok(NULL, tok);
+			  sscanf(parval, "%f", &color[1]);
+			  parval = strtok(NULL, tok);
+			  sscanf(parval, "%f", &color[2]);
 			  RiAttribute(attrname, parname,
 				      (RtPointer)&color, RI_NULL);
 			  break;

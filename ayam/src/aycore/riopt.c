@@ -59,17 +59,17 @@ ay_riopt_wrib(ay_object *o)
 	      parname = NULL;
 
 	      /* get name */
-	      parname = strtok(NULL,tok);
+	      parname = strtok(NULL, tok);
 	      /* get type */
 	      if(parname)
-		partype = strtok(NULL,tok);
+		partype = strtok(NULL, tok);
 	      else 
 		partype = NULL;
 
 	      if(partype)
 		{
 		  /* get value */
-		  parval = strtok(NULL,tok);
+		  parval = strtok(NULL, tok);
 		  if(parval)
 		    {
 		      switch(*partype)
@@ -78,32 +78,38 @@ ay_riopt_wrib(ay_object *o)
 			  RiDeclare(parname, "integer");
 			  sscanf(parval, "%d", &itemp);
 			  RiOption(attrname, parname,
-				      (RtPointer)&itemp, RI_NULL);
+				   (RtPointer)&itemp, RI_NULL);
 			  break;
 			case 'f':
 			  RiDeclare(parname, "float");
 			  sscanf(parval, "%f", &ftemp);
 			  RiOption(attrname, parname,
-				      (RtPointer)&ftemp, RI_NULL);
+				   (RtPointer)&ftemp, RI_NULL);
 			  break;
 			case 's':
 			  RiDeclare(parname, "string");
 			  RiOption(attrname, parname,
-				      (RtPointer)&parval, RI_NULL);
+				   (RtPointer)&parval, RI_NULL);
 			break;
 			case 'p':
 			  RiDeclare(parname, "point");
-			  sscanf(parval, "%f,%f,%f", &ptemp[0], &ptemp[1],
-				 &ptemp[2]);
+			  sscanf(parval, "%f", &ptemp[0]);
+			  parval = strtok(NULL, tok);
+			  sscanf(parval, "%f", &ptemp[1]);
+			  parval = strtok(NULL, tok);
+			  sscanf(parval, "%f", &ptemp[2]);
 			  RiOption(attrname, parname,
-				      (RtPointer)&ptemp, RI_NULL);
+				   (RtPointer)&ptemp, RI_NULL);
 			  break;
 			case 'c':
 			  RiDeclare(parname, "color");
-			  sscanf(parval, "%f,%f,%f", &color[0], &color[1],
-				 &color[2]);
+			  sscanf(parval, "%f", &color[0]);
+			  parval = strtok(NULL, tok);
+			  sscanf(parval, "%f", &color[1]);
+			  parval = strtok(NULL, tok);
+			  sscanf(parval, "%f", &color[2]);
 			  RiOption(attrname, parname,
-				      (RtPointer)&color, RI_NULL);
+				   (RtPointer)&color, RI_NULL);
 			  break;
 			default:
 			  break;
