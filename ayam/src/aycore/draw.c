@@ -92,7 +92,7 @@ ay_draw_object(struct Togl *togl, ay_object *o, int selected)
    arr = ay_drawcbt.arr;
    cb = (ay_drawcb *)(arr[o->type]);
 
-   if(selected != AY_TRUE)
+   if(selected == 2)
      {
        o->glname = ++ay_current_glname;
        glPushName(o->glname);
@@ -122,7 +122,7 @@ ay_draw_object(struct Togl *togl, ay_object *o, int selected)
 	 } /* while */
      }
  
-  if(selected != AY_TRUE)
+  if(selected == 2)
     {
       glPopName();
     }
