@@ -99,6 +99,11 @@ char *ay_riopt_tagtype;
 
 static char *ay_log = "/tmp/ay.log";
 
+/* prototypes for initialization callbacks of additional included modules */
+#ifdef AYIDRWRAPPED
+  int Idr_Init(Tcl_Interp *interp);
+#endif
+
 /* ay_init:
  *  create tables, ay_root
  */
@@ -347,7 +352,6 @@ ay_init(Tcl_Interp *interp)
 
   /* initialize additional included modules */
 #ifdef AYIDRWRAPPED
-  int Idr_Init(Tcl_Interp *interp);
   if((ay_status = Idr_Init(interp)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
   Tcl_SetVar(interp,"AYIDRWRAPPED", "1", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
