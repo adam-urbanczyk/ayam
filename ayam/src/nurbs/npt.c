@@ -4697,17 +4697,17 @@ ay_npt_extractnc(ay_object *npatch, int side, double param,
       for(i = 0; i < nc->length*stride; i += stride)
 	{
 	  memcpy(&(cv[i]), &(np->controlv[a]), stride*sizeof(double));
-	  a += np->width*stride;
+	  a += np->height*stride;
 	}
       memcpy(nc->knotv, np->uknotv, (nc->length+nc->order)*sizeof(double));
       break;
     case 1:
       /* un */
-      a = (np->width-1)*stride;
+      a = (np->height-1)*stride;
       for(i = 0; i < nc->length*stride; i += stride)
 	{
 	  memcpy(&(cv[i]), &(np->controlv[a]), stride*sizeof(double));
-	  a += np->width*stride;
+	  a += np->height*stride;
 	}
       memcpy(nc->knotv, np->uknotv, (nc->length+nc->order)*sizeof(double));
       break;
@@ -4718,8 +4718,9 @@ ay_npt_extractnc(ay_object *npatch, int side, double param,
       break;
     case 3:
       /* vn */
-      memcpy(nc->controlv, &(np->controlv[np->width*(np->height-1)*stride]),
-	     nc->length*stride*sizeof(double));
+      memcpy(nc->controlv,
+	     &(np->controlv[((np->width*np->height)-np->height)*stride]),
+	nc->length*stride*sizeof(double));
       memcpy(nc->knotv, np->vknotv, (nc->length+nc->order)*sizeof(double));
       break;
     default:
