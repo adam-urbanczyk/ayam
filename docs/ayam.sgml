@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>29. Dec 2003
+<date>6. Jan 2004
 <abstract>
 This is the documentation of Ayam (1.7) - a free 3D modeling environment
 for the RenderMan interface.
@@ -896,6 +896,9 @@ camera around the point it is looking to.
 modeling mode, when holding down the <tt/&lt;Alt&gt;/-key.
 <item><tt/&lt;o&gt;/ starts zooming the view. Moving the mouse up
 zooms in and moving the mouse down zooms out.
+<item>Since Ayam 1.7 zooming the view into a rectangular region
+defined through a mouse drag is also possible in any
+modeling mode, when holding down the <tt/&lt;Shift&gt;/-key.
 </itemize>
 
 You may also move the view by dragging with the rightmost mouse
@@ -915,9 +918,11 @@ lost in space.
 Using the menu entry <tt/"Align to Parent"/ or
 the shortcut <tt/&lt;Ctrl+a&gt;/ you can change the
 views camera settings so that it is aligned to the
-coordinate system of the parent object of the current
-level. This is handy for modeling in local coordinate
-systems.
+coordinate system of the currently selected object.
+This is handy for modeling in local coordinate systems
+(e.g. editing the points of a 2D curve defined in the
+XY-plane that has been rotated around the Y-axis).
+See also section <ref id="editlocal" name="Editing in Local Space">.
 
 <sect1>Selecting Objects within a View<label id="objsel">
 <p>
