@@ -173,7 +173,7 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
       if(tmp)
 	{
 	  oref->object->refine = tmp->refine;
-	  ay_trafo_copy(tmp, oref->object);
+	  /*ay_trafo_copy(tmp, oref->object);*/
 	  free(tmp);
 	  tmp = NULL;
 	}
