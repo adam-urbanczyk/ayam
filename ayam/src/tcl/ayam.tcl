@@ -466,6 +466,7 @@ array set ay {
  elevnpu 1
  elevnpv 1
  soext "so"
+ oldbinding ""
 }
 # array ay
 
