@@ -601,6 +601,7 @@ ay_rrib_RiSphere(RtFloat radius, RtFloat zmin, RtFloat zmax,
 {
  ay_sphere_object s;
 
+  s.is_simple = AY_FALSE;
   s.closed = AY_FALSE;
   s.radius = (double)radius;
   s.zmin = (double)zmin;
@@ -620,6 +621,7 @@ ay_rrib_RiCylinder(RtFloat radius, RtFloat zmin, RtFloat zmax,
 {
  ay_cylinder_object c;
 
+  c.is_simple = AY_FALSE;
   c.closed = AY_FALSE;
   c.radius = (double)radius;
   c.zmin = (double)zmin;
@@ -638,6 +640,7 @@ ay_rrib_RiDisk(RtFloat height, RtFloat radius, RtFloat thetamax,
 {
  ay_disk_object d;
 
+  d.is_simple = AY_FALSE;
   d.height = (double)height;
   d.radius = (double)radius;
   d.thetamax = (double)thetamax;
@@ -654,6 +657,7 @@ ay_rrib_RiCone(RtFloat height, RtFloat radius, RtFloat thetamax,
 {
  ay_cone_object c;
 
+  c.is_simple = AY_FALSE;
   c.closed = AY_FALSE;
   c.height = (double)height;
   c.radius = (double)radius;
@@ -1002,7 +1006,8 @@ ay_rrib_RiLightSource(RtToken name,
   l.tfrom[0] = 0.0;
   l.tfrom[1] = 0.0;
   l.tfrom[2] = 0.0;
-
+  l.on = AY_TRUE;
+  l.use_sm = AY_FALSE;
   l.tto[0] = 0.0;
   l.tto[1] = 0.0;
   l.tto[2] = 1.0;
@@ -5025,6 +5030,7 @@ ay_rrib_readribtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  n->type = AY_IDLEVEL;
 	  ay_object_defaults(n);
+	  n->parent = AY_TRUE;
 	  n->refine = l;
       
 	  old_aynext = ay_next;
