@@ -826,7 +826,7 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
     }
 #endif
 #ifdef WIN32
-  t_current = GetTickCount(void);
+  t_current = GetTickCount();
 
   if(t_lastcalled != 0)
     {
@@ -1325,7 +1325,7 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
   t_lastcalled = times(NULL);
 #endif
 #ifdef WIN32
-  t_lastcalled = GetTickCount(void);
+  t_lastcalled = GetTickCount();
 #endif
 
  return TCL_OK;
