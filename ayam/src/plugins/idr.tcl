@@ -30,13 +30,14 @@ array set idrprefs {
     ExcludeOther0 0
     OptimizeBB0 0
     Renderer0 "rgl -dumprgba"
+    HalfSR0 0
 
     Importance1 1.0
     HalfRes1 0
     ExcludeOther1 0
     OptimizeBB1 1
     Renderer1 "rendrib"
-
+    HalfSR1 0
 
 }
 
@@ -114,6 +115,7 @@ proc idr_open {} {
     addText $f1 e1 "LQ Params:"
     addCheck $f1 idrprefs ExcludeOther0
     addCheck $f1 idrprefs HalfRes0
+#    addCheck $f1 idrprefs HalfSR0
     addMenu $f1 idrprefs OptimizeBB0 $bboptimize_entries
     addString $f1 idrprefs Renderer0 [list "rgl -dumprgba" \
 "rgl -sketch -dumprgba -rd 5" "rendrib"]
@@ -124,6 +126,7 @@ proc idr_open {} {
     addText $f1 e1 "HQ Params:"
     addCheck $f1 idrprefs ExcludeOther1
     addCheck $f1 idrprefs HalfRes1
+#    addCheck $f1 idrprefs HalfSR1
     addMenu $f1 idrprefs OptimizeBB1 $bboptimize_entries
     addString $f1 idrprefs Renderer1 [list "rendrib" "rgl -dumprgba" \
 "rgl -sketch -dumprgba -rd 5"]
