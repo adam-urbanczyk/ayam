@@ -1,4 +1,4 @@
-[03. 09. 2003] CVS-Head:
+[10. 09. 2003] CVS-Head:
 o bug fixes:
   - fixed crash when exporting scenes with malformed RiAttribute/RiOption
     tags (type "c" or "p", with a component missing) (SF 753550)
@@ -21,6 +21,8 @@ o bug fixes:
     of the "Cap" object (SF 795293)
   - fixed crash when clipboard operations were used directly after view
     close (when the corresponding view object was selected) (SF 797213)
+  - fixed scene loading via command line argument changing the prompt
+    (SF 800914)
 o added preference setting "Misc/SavePrefsGeom" to control saving of the
   geometry of the preference editor window
 o added two new renderers, Angel and Pixie, to the Select_Renderer feature
@@ -92,7 +94,17 @@ o the "remove tags"-menu in the tags property now also displays tag type
   names (and not just tag numbers)
 o added keyboard bindings for the object hierarchy tree: <Left>, <Right>, <Up>,
   <Down>, <Home>, <End> move the selection, <Space> opens/closes nodes with
-  child nodes, and <Ctrl+a> selects all nodes in the current level
+  child nodes, <Ctrl+a> selects all nodes in the current level and <Ctrl+n>
+  removes the selection
+o all keyboard bindings (except <Space>) also work for the object listbox
+o when property GUI elements have the input focus an initial press of the
+  <Esc> key is needed now before any main menu keyboard shortcuts may be used
+o rotating a view via keyboard is now undoable; if the user holds down
+  an arrow-button, only one entry is made to the undo buffer
+o multiple selected objects are now always processed in the order in which
+  they occur in the scene, not the order in which they have been selected
+o improved focus handling in main window; switching the focus from the object
+  tree/listbox to the property GUI is now much faster
 
 
 [10. 05. 2003] Ayam1.5.1:
