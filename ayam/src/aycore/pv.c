@@ -37,7 +37,7 @@ ay_pv_filltokpar(ay_object *o, int declare, int start,
  RtString *stemp;
  RtPoint *ptemp;
  RtColor *ctemp;
- char fname[] = "ay_pv_fillparams", e1[] = "Missing value in tag!";
+ char fname[] = "ay_pv_filltokpar", e1[] = "Missing data value in PV-tag!";
  Tcl_DString ds;
 
   if(!o)
@@ -118,6 +118,10 @@ ay_pv_filltokpar(ay_object *o, int declare, int start,
 				      sscanf(pvvalue, "%d", &(itemp[i]));
 				      pvvalue = strtok(NULL, tok);
 				    }
+				  else
+				    {
+				      ay_error(AY_EWARN, fname, e1);
+				    }
 				}
 			      parms[start] = (RtPointer)itemp;
 			      break;
@@ -134,6 +138,10 @@ ay_pv_filltokpar(ay_object *o, int declare, int start,
 				    {
 				      sscanf(pvvalue, "%f", &(ftemp[i]));
 				      pvvalue = strtok(NULL, tok);
+				    }
+				  else
+				    {
+				      ay_error(AY_EWARN, fname, e1);
 				    }
 				}
 			      parms[start] = (RtPointer)ftemp;
@@ -155,6 +163,10 @@ ay_pv_filltokpar(ay_object *o, int declare, int start,
 				      strcpy(stemp[i], pvvalue);
 				      pvvalue = strtok(NULL, tok);
 				    }
+				  else
+				    {
+				      ay_error(AY_EWARN, fname, e1);
+				    }
 				}
 			      parms[start] = (RtPointer)stemp;
 			      break;
@@ -172,15 +184,27 @@ ay_pv_filltokpar(ay_object *o, int declare, int start,
 				      sscanf(pvvalue, "%f", &((ptemp[i])[0]));
 				      pvvalue = strtok(NULL, tok);
 				    }
+				  else
+				    {
+				      ay_error(AY_EWARN, fname, e1);
+				    }
 				  if(pvvalue)
 				    {
 				      sscanf(pvvalue, "%f", &((ptemp[i])[1]));
 				      pvvalue = strtok(NULL, tok);
 				    }
+				  else
+				    {
+				      ay_error(AY_EWARN, fname, e1);
+				    }
 				  if(pvvalue)
 				    {
 				      sscanf(pvvalue, "%f", &((ptemp[i])[2]));
 				      pvvalue = strtok(NULL, tok);
+				    }
+				  else
+				    {
+				      ay_error(AY_EWARN, fname, e1);
 				    }
 				} /* for */
 			      parms[start] = (RtPointer)ptemp;
@@ -199,15 +223,27 @@ ay_pv_filltokpar(ay_object *o, int declare, int start,
 				      sscanf(pvvalue, "%f", &((ctemp[i])[0]));
 				      pvvalue = strtok(NULL, tok);
 				    }
+				  else
+				    {
+				      ay_error(AY_EWARN, fname, e1);
+				    }
 				  if(pvvalue)
 				    {
 				      sscanf(pvvalue, "%f", &((ctemp[i])[1]));
 				      pvvalue = strtok(NULL, tok);
 				    }
+				  else
+				    {
+				      ay_error(AY_EWARN, fname, e1);
+				    }
 				  if(pvvalue)
 				    {
 				      sscanf(pvvalue, "%f", &((ctemp[i])[2]));
 				      pvvalue = strtok(NULL, tok);
+				    }
+				  else
+				    {
+				      ay_error(AY_EWARN, fname, e1);
 				    }
 				} /* for */
 			      parms[start] = (RtPointer)ctemp;
@@ -224,10 +260,10 @@ ay_pv_filltokpar(ay_object *o, int declare, int start,
 			  Tcl_DStringFree(&ds);
 			  start++;
 			  (*added)++;
-			} /* if */
+			} /* if(pvvalue */
 
-		    } /* if(pvvalue */
-
+		    } /* if(n > 0 */
+		  
 		} /* if(pvtype */
 
 	    } /* if(pvname */
