@@ -246,31 +246,52 @@ int
 ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
 {
  int ay_status = AY_OK;
+ char fname[] = "pointEdit";
  Tcl_Interp *interp = Togl_Interp (togl);
  /*  ay_view_info *view = Togl_GetClientData(togl);*/
  double winX = 0.0, winY = 0.0;
  /*  double pickepsilon = ay_prefs.pick_epsilon;*/
  double obj[3] = {0};
  ay_list_object *sel = ay_selection;
- int stop = AY_FALSE;
+ int penumber = 0;
+ double **pecoords = NULL, **tmp = NULL;
 
-  while(sel && !stop)
+  Tcl_GetDouble(interp, argv[2], &winX);
+  Tcl_GetDouble(interp, argv[3], &winY);
+
+  while(sel)
     {
-      Tcl_GetDouble(interp, argv[2], &winX);
-      Tcl_GetDouble(interp, argv[3], &winY);
-
       ay_status = ay_viewt_wintoobj(togl, sel->object, winX, winY,
 				    &(obj[0]), &(obj[1]), &(obj[2]));
 
       ay_status = ay_pact_getpoint(1, sel->object, obj);
       if(ay_point_edit_coords)
 	{
-	  stop = AY_TRUE;
+	  if(!(tmp = realloc(pecoords, (ay_point_edit_coords_number +
+					penumber)*sizeof(double*))))
+	    {
+	      ay_error(AY_EOMEM, fname, NULL);
+	      free(pecoords);
+	      return TCL_OK;
+	    }
+	  else
+	    {
+	      pecoords = tmp;
+	      memcpy(&(pecoords[penumber]), ay_point_edit_coords,
+		     ay_point_edit_coords_number*sizeof(double*));
+	      penumber += ay_point_edit_coords_number;
+	    }
+
 	  ay_point_edit_object = sel->object;
 	}
 
       sel = sel->next;
     } /* while */
+
+  ay_point_edit_coords_number = penumber;
+  if(ay_point_edit_coords)
+    free(ay_point_edit_coords);
+  ay_point_edit_coords = pecoords;
 
  return TCL_OK;
 } /* ay_pact_startpetcb */
