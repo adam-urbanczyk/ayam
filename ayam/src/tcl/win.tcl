@@ -71,8 +71,26 @@ global ayprefs tcl_platform
 	    if { $nw != "" } { set width $nw } 
 	    if { $nh != "" } { set height $nh } 
 
-	    set newgeom "${width}x${height}"
 
+	    if { ($ayprefs(TwmCompat) == 0) &&
+	    ($tcl_platform(platform) != "windows") } {
+		set x [winfo rootx $w]
+		set y [winfo rooty $w]
+		set newgeom "${width}x${height}"
+
+		if { $x >= 0 } { 
+		    append newgeom "+$x" 
+		} else { 
+		    append newgeom "-$x" 
+		}
+		if { $y >= 0 } { 
+		    append newgeom "+$y"
+		} else {
+		    append newgeom "-$y"
+		}
+	    } else {
+		set newgeom "${width}x${height}"
+	    }
 	    wm geom $w $newgeom
 	} else {
 	    if { $nx != "" } { set x $nx }
