@@ -1156,6 +1156,9 @@ aycsg_binarify(ay_object *parent, ay_object *left, ay_object **target)
 
   memcpy(tmp, parent, sizeof(ay_object));
 
+  if(parent->CSGTYPE == AY_LTDIFF)
+    tmp->CSGTYPE = AY_LTUNION;
+
   tmp->next = NULL;
   tmp->down = left;
 
