@@ -251,12 +251,17 @@ proc runRenderer { cmd template } {
 	}
     }
 
+    # Esc-Key == Cancel button
+    bind $w <Escape> "$w.bca invoke"
+
     # bind to close button of window decoration
     wm protocol $w WM_DELETE_WINDOW "\
 	fileevent $ioPipe readable \"\";\
 	fileevent $ioFid readable \"\";\
 	focus .;\
 	destroy $w;"
+
+    focus $w
 
  return;   
 }
