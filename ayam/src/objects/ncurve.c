@@ -56,6 +56,7 @@ ay_ncurve_createcb(int argc, char *argv[], ay_object *o)
       cv[i*4+3] = 1.0;
     }
 
+  ((ay_nurbcurve_object*)(o->refine))->createmp = AY_TRUE;
 
  return AY_OK;
 } /* ay_ncurve_createcb */
@@ -439,6 +440,10 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &new_closed);
 
+  Tcl_SetStringObj(ton,"CreateMP",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &(ncurve->createmp));
+
   Tcl_SetStringObj(ton,"Tolerance",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp,to, &(ncurve->glu_sampling_tolerance));
@@ -670,6 +675,11 @@ ay_ncurve_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton,"CreateMP",-1);
+  to = Tcl_NewIntObj(ncurve->createmp);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
   Tcl_SetStringObj(ton,"Knot-Type",-1);
   to = Tcl_NewIntObj(ncurve->knot_type);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
@@ -756,6 +766,15 @@ ay_ncurve_readcb(FILE *fileptr, ay_object *o)
   fscanf(fileptr,"%lg\n",&(ncurve->glu_sampling_tolerance));
   fscanf(fileptr,"%d\n",&(ncurve->display_mode));
 
+  if(ay_read_version >= 1)
+    {
+      fscanf(fileptr,"%d\n",&(ncurve->createmp));
+    }
+  else
+    {
+      ncurve->createmp = AY_TRUE;
+    }
+
   ay_nct_recreatemp(ncurve);
 
   o->refine = ncurve;
@@ -798,6 +817,7 @@ ay_ncurve_writecb(FILE *fileptr, ay_object *o)
   fprintf(fileptr, "%d\n", ncurve->closed);
   fprintf(fileptr, "%g\n", ncurve->glu_sampling_tolerance);
   fprintf(fileptr, "%d\n", ncurve->display_mode);
+  fprintf(fileptr, "%d\n", ncurve->createmp);
 
  return AY_OK;
 } /* ay_ncurve_writecb */

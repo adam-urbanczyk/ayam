@@ -272,6 +272,7 @@ typedef struct ay_nurbcurve_object_s
   int knot_type; /* bezier, bspline, nurb, custom */
   int length;
   int closed;
+  int createmp;
   double *controlv;
   double *knotv;
   double glu_sampling_tolerance;
@@ -935,8 +936,8 @@ extern char *ay_riopt_tagtype;
 #define AYDEFAULTPICKEPSILON 0.2;
 
 /* Version Strings */
-#define AYVERSIONSTR "1.0"
-#define AYVERSIONSTRMI "a"
+#define AYVERSIONSTR "1.1"
+#define AYVERSIONSTRMI "0"
 
 #include "aycore.h"
 #include "nurbs.h"

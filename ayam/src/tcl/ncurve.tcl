@@ -30,6 +30,7 @@ set w [frame $ay(pca).$NCurveAttr(w)]
 addParam $w NCurveAttrData Length
 addParam $w NCurveAttrData Order
 addCheck $w NCurveAttrData Closed
+addCheck $w NCurveAttrData CreateMP
 addMenu $w NCurveAttrData Knot-Type [list Bezier B-Spline NURB Custom]
 addString $w NCurveAttrData Knots
 addParam $w NCurveAttrData Tolerance

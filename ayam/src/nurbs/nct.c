@@ -111,6 +111,9 @@ ay_nct_recreatemp(ay_nurbcurve_object *c)
 
   ay_nct_clearmp(c);
 
+  if(!c->createmp)
+    return AY_OK;
+
   if(!(tmp = calloc(c->length, sizeof(double *))))
     return AY_EOMEM;
 
