@@ -169,10 +169,7 @@ bind $f.li <ButtonPress-3> {
 
 # plb scrollbar
 set ay(pss) $f.s
-scrollbar $f.s -takefocus 0 -command {
-    global ay
-    $ay(plb) yview
-}
+scrollbar $f.s -takefocus 0 -command { global ay; $ay(plb) yview }
 
 pack $f.li $f.s -in $f -side left -fill y -expand no
 
