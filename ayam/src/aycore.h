@@ -267,6 +267,8 @@ int ay_matt_deregister(char *name);
 
 int ay_matt_getmaterial(char *name, ay_mat_object **material);
 
+int ay_matt_removeallrefs(ay_object *o);
+
 int ay_matt_removerefs(ay_object *o, ay_mat_object *material);
 
 int ay_matt_removecliprefs(ay_object *o);

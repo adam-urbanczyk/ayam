@@ -138,6 +138,41 @@ ay_matt_getmaterial(char *name, ay_mat_object **material)
 } /* ay_matt_getmaterial */
 
 
+/* ay_matt_removeallrefs:
+ *  recursively remove all references to material objects from
+ *  all objects besides and beneath o
+ */
+int
+ay_matt_removeallrefs(ay_object *o)
+{
+ int ay_status = AY_OK;
+ ay_mat_object *m = NULL;
+
+  while(o)
+    {
+      if(o->mat)
+	{
+	  m = o->mat;
+
+	  o->mat = NULL;
+
+	  if(m->refcountptr)
+	    {
+	      (*(m->refcountptr))--;
+	    } /* if */
+	} /* if */
+
+      if(o->down)
+	{
+	  ay_status = ay_matt_removeallrefs(o->down);
+	} /* if */
+
+      o = o->next;
+    } /* while */
+
+ return ay_status;
+} /* ay_matt_removeallrefs */
+
 
 /* ay_matt_removerefs:
  *  
@@ -146,6 +181,7 @@ int
 ay_matt_removerefs(ay_object *o, ay_mat_object *material)
 {
  int ay_status = AY_OK;
+ ay_mat_object *m = NULL;
 
  if(!o || !material)
    return AY_OK;
@@ -154,6 +190,13 @@ ay_matt_removerefs(ay_object *o, ay_mat_object *material)
     {
       if(o->mat == material)
 	{
+	  m = (ay_mat_object *)(o->mat);
+
+	  if(m->refcountptr)
+	    {
+	      (*(m->refcountptr))--;
+	    }
+
 	  o->mat = NULL;
 	}
 
