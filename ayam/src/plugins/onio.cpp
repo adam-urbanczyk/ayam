@@ -854,11 +854,47 @@ Onio_Init(Tcl_Interp *interp)
   ay_status = onio_registerwritecb((char *)(AY_IDEXTRUDE),
 				   onio_writenpconvertible);
 
+  ay_status = onio_registerwritecb((char *)(AY_IDREVOLVE),
+				   onio_writenpconvertible);
+
+  ay_status = onio_registerwritecb((char *)(AY_IDSWEEP),
+				   onio_writenpconvertible);
+
+  ay_status = onio_registerwritecb((char *)(AY_IDSKIN),
+				   onio_writenpconvertible);
+
+  ay_status = onio_registerwritecb((char *)(AY_IDGORDON),
+				   onio_writenpconvertible);
+
+  ay_status = onio_registerwritecb((char *)(AY_IDBIRAIL1),
+				   onio_writenpconvertible);
+
+  ay_status = onio_registerwritecb((char *)(AY_IDBIRAIL2),
+				   onio_writenpconvertible);
+
+  ay_status = onio_registerwritecb((char *)(AY_IDCAP),
+				   onio_writenpconvertible);
+
+  ay_status = onio_registerwritecb((char *)(AY_IDBPATCH),
+				   onio_writenpconvertible);
+
+  ay_status = onio_registerwritecb((char *)(AY_IDPAMESH),
+				   onio_writenpconvertible);
+
+  ay_status = onio_registerwritecb((char *)(AY_IDTEXT),
+				   onio_writenpconvertible);
+
 
   ay_status = onio_registerwritecb((char *)(AY_IDNCURVE),
 				   onio_writencurve);
 
   ay_status = onio_registerwritecb((char *)(AY_IDICURVE),
+				   onio_writencconvertible);
+
+  ay_status = onio_registerwritecb((char *)(AY_IDCONCATNC),
+				   onio_writencconvertible);
+
+  ay_status = onio_registerwritecb((char *)(AY_IDEXTRNC),
 				   onio_writencconvertible);
 
 
