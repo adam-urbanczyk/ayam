@@ -204,7 +204,7 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp * interp,
 	      strcpy(new->name,argv[index]);
 
 	      if(entry)
-		new->type = Tcl_GetHashValue(entry);
+		new->type = (char *)Tcl_GetHashValue(entry);
 
 	      if(!(new->val = calloc(strlen(argv[index+1])+1, sizeof(char))))
 		{
@@ -273,7 +273,7 @@ ay_tags_addtcmd(ClientData clientData, Tcl_Interp * interp,
       strcpy(new->name,argv[1]);
 
       if(entry)
-	new->type = Tcl_GetHashValue(entry);
+	new->type = (char *)Tcl_GetHashValue(entry);
 
       if(!(new->val = calloc(strlen(argv[2])+1, sizeof(char))))
 	{

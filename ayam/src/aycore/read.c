@@ -197,7 +197,7 @@ ay_read_tags(FILE *fileptr, ay_object *o)
        }
 
      if(entry)
-       tag->type = Tcl_GetHashValue(entry);
+       tag->type = (char *)Tcl_GetHashValue(entry);
 
      ay_read_string(fileptr,&(tag->val));
 

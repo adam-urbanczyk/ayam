@@ -603,8 +603,8 @@ int
 ay_sphere_wribcb(char *file, ay_object *o)
 {
  ay_sphere_object *sphere = NULL;
- RtPoint  P1[16];
- RtPoint  P2[16];
+ RtPoint P1[16];
+ RtPoint P2[16];
  RtFloat rmin, rmax;
  RtFloat xmid, zmid;
  RtFloat angle, circle;
@@ -690,16 +690,16 @@ ay_sphere_wribcb(char *file, ay_object *o)
 	/* Calculate the patch from bottom to middle. */
 	P1[0][Z] = P1[1][Z] = P1[2][Z] = P1[3][Z] = zmin; /* height */
 	P1[0][X] = (RtFloat)0.0;
-	P1[3][X] = rmin; /* radius */
-	P1[1][X] = P1[3][X]/3.0;
-	P1[2][X] = 2*P1[1][X];
+	P1[3][X] = (RtFloat)rmin; /* radius */
+	P1[1][X] = (RtFloat)(P1[3][X]/3.0);
+	P1[2][X] = (RtFloat)(2.0*P1[1][X]);
 
 	P1[12][Z] = P1[13][Z] = P1[14][Z] = P1[15][Z] = zmid; /* middle's
 								 height */
 	P1[12][X] = (RtFloat)0.0;
 	P1[15][X] = xmid;
-	P1[13][X] = P1[15][X]/3.0;
-	P1[14][X] = 2*P1[13][X];
+	P1[13][X] = (RtFloat)(P1[15][X]/3.0);
+	P1[14][X] = (RtFloat)(2.0*P1[13][X]);
    
 	angle = (RtFloat)(phimin + AY_HALFPI);
 	circle = (RtFloat)((UNITCIRCLE/AY_PI)*radius*phidiff);
@@ -707,31 +707,31 @@ ay_sphere_wribcb(char *file, ay_object *o)
 	P1[4][Z] = P1[5][Z] = P1[6][Z] = P1[7][Z] =
 	  (RtFloat)(zmin + circle*sin(angle));
 	P1[4][X] = (RtFloat)0.0;
-	P1[7][X]  = rmin + circle*cos(angle);
-	P1[5][X] = P1[7][X]/3.0;
-	P1[6][X] = 2*P1[5][X];
+	P1[7][X] = (RtFloat)(rmin + circle*cos(angle));
+	P1[5][X] = (RtFloat)(P1[7][X]/3.0);
+	P1[6][X] = (RtFloat)(2.0*P1[5][X]);
 
 	angle = (RtFloat)(phimin + phidiff/2.0 - AY_HALFPI);
 	P1[8][Z]  = P1[9][Z] = P1[10][Z] = P1[11][Z] = (RtFloat)
 	  (zmid + circle*sin(angle));
 	P1[8][X]  = (RtFloat)0.0;
-	P1[11][X] = xmid + circle*cos(angle);
-	P1[9][X]  = P1[11][X]/3.0;
-	P1[10][X] = 2*P1[9][X];
+	P1[11][X] = (RtFloat)(xmid + circle*cos(angle));
+	P1[9][X]  = (RtFloat)(P1[11][X]/3.0);
+	P1[10][X] = (RtFloat)(2.0*P1[9][X]);
 
 
 	/* Calculate the patch from equator to top. */
 	P2[0][Z] = P2[1][Z] = P2[2][Z] = P2[3][Z] = zmid; /* middle's height */
 	P2[0][X] = (RtFloat)0.0;
 	P2[3][X] = xmid;
-	P2[1][X] = P2[3][X]/3.0;
-	P2[2][X] = 2*P2[1][X];
+	P2[1][X] = (RtFloat)(P2[3][X]/3.0);
+	P2[2][X] = (RtFloat)(2.0*P2[1][X]);
 
 	P2[12][Z] = P2[13][Z] = P2[14][Z] = P2[15][Z] = zmax; /* height */
 	P2[12][X] = (RtFloat)0.0;
 	P2[15][X] = rmax; /* Radius at zmax. */
-	P2[13][X] = P2[15][X]/3.0;
-	P2[14][X] = 2*P2[13][X];
+	P2[13][X] = (RtFloat)(P2[15][X]/3.0);
+	P2[14][X] = (RtFloat)(2.0*P2[13][X]);
    
 	angle = (RtFloat)(phimin + phidiff/2.0 + AY_HALFPI);
 	circle = (RtFloat)((UNITCIRCLE/AY_PI)*radius*phidiff);
@@ -739,17 +739,17 @@ ay_sphere_wribcb(char *file, ay_object *o)
 	P2[4][Z] = P2[5][Z] = P2[6][Z] = P2[7][Z] =
 	  (RtFloat)(zmid + circle*sin(angle)); 
 	P2[4][X] = (RtFloat)0.0;
-	P2[7][X]  = (RtFloat)(xmid + circle*cos(angle));
-	P2[5][X] = P2[7][X]/3.0;
-	P2[6][X] = 2*P2[5][X];
+	P2[7][X] = (RtFloat)(xmid + circle*cos(angle));
+	P2[5][X] = (RtFloat)(P2[7][X]/3.0);
+	P2[6][X] = (RtFloat)(2.0*P2[5][X]);
 
 	angle = phimin + phidiff - AY_HALFPI;                  
 	P2[8][Z]  = P2[9][Z] = P2[10][Z] = P2[11][Z] = zmax +
 	  circle*sin(angle);
 	P2[8][X]  = (RtFloat)0.0;
 	P2[11][X] = (RtFloat)(rmax + circle*cos(angle));
-	P2[9][X]  = P2[11][X]/3.0;
-	P2[10][X] = 2*P2[9][X];
+	P2[9][X]  = (RtFloat)(P2[11][X]/3.0);
+	P2[10][X] = (RtFloat)(2.0*P2[9][X]);
 
 	RiPatch( RI_BICUBIC, RI_P, (RtPointer)P1, NULL ); 
 	RiPatch( RI_BICUBIC, RI_P, (RtPointer)P2, NULL );

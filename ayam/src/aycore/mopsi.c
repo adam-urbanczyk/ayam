@@ -1062,7 +1062,7 @@ ay_mopsi_tags(FILE *fileptr)
        }
 
      if(entry)
-       tag->type = Tcl_GetHashValue(entry);
+       tag->type = (char *)Tcl_GetHashValue(entry);
 
      ay_mopsi_string(fileptr,&(tag->val));
 

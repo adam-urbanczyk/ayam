@@ -362,7 +362,7 @@ int
 ay_matt_wrib(char *file, ay_mat_object *m)
 {
  int ay_status = AY_OK;
- RtColor color = {0};
+ RtColor color = {0.0f,0.0f,0.0f};
  RtFloat dbound;
  RtInt on = (RtInt)1, itemp;
  char *nonstr = "none", *opstr = "opaque", *shadestr = "shade";
@@ -375,18 +375,18 @@ ay_matt_wrib(char *file, ay_mat_object *m)
   /* Color */
   if((m->colr != -1) && (m->colg != -1) && (m->colb != -1))
     {
-      color[0] = (RtFloat)m->colr/255.0;
-      color[1] = (RtFloat)m->colg/255.0;
-      color[2] = (RtFloat)m->colb/255.0;
+      color[0] = (RtFloat)(m->colr/255.0);
+      color[1] = (RtFloat)(m->colg/255.0);
+      color[2] = (RtFloat)(m->colb/255.0);
       RiColor(color);
     }
 
   /* Opacity */
   if((m->opr != -1) && (m->opg != -1) && (m->opb != -1))
     {
-      color[0] = (RtFloat)m->opr/255.0;
-      color[1] = (RtFloat)m->opg/255.0;
-      color[2] = (RtFloat)m->opb/255.0;
+      color[0] = (RtFloat)(m->opr/255.0);
+      color[1] = (RtFloat)(m->opg/255.0);
+      color[2] = (RtFloat)(m->opb/255.0);
       RiOpacity(color);
     }
 

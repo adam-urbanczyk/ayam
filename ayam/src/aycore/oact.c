@@ -22,7 +22,7 @@ ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
 {
  int ay_status = AY_OK;
  Tcl_Interp *interp = Togl_Interp(togl);
- ay_view_object *view = Togl_GetClientData(togl);
+ ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  ay_point_object *point = NULL;
  static double oldwinx = 0.0, oldwiny = 0.0;
  double winx = 0.0, winy = 0.0;
@@ -177,9 +177,9 @@ ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
 	   glScaled (1.0/o->scalx, 1.0/o->scaly, 1.0/o->scalz);
 
 	   ay_quat_toeuler(o->quat, euler);
-	   glRotatef(AY_R2D(euler[0]), 0.0, 0.0, 1.0);
-	   glRotatef(AY_R2D(euler[1]), 0.0, 1.0, 0.0);
-	   glRotatef(AY_R2D(euler[2]), 1.0, 0.0, 0.0);
+	   glRotated(AY_R2D(euler[0]), 0.0, 0.0, 1.0);
+	   glRotated(AY_R2D(euler[1]), 0.0, 1.0, 0.0);
+	   glRotated(AY_R2D(euler[2]), 1.0, 0.0, 0.0);
 
 	   glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 	  glPopMatrix();
@@ -246,7 +246,7 @@ int
 ay_oact_rottcb(struct Togl *togl, int argc, char *argv[])
 {
  Tcl_Interp *interp = Togl_Interp (togl);
- ay_view_object *view = Togl_GetClientData(togl);
+ ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  static double oldwinx = 0.0, oldwiny = 0.0;
  double height = Togl_Height(togl);
  double winx = 0.0, winy = 0.0, tpoint[4] = {0};
@@ -464,7 +464,7 @@ int
 ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 {
  Tcl_Interp *interp = Togl_Interp (togl);
- ay_view_object *view = Togl_GetClientData(togl);
+ ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  static double oldwinx = 0.0, oldwiny = 0.0;
  double height = Togl_Height(togl);
  double winx = 0.0, winy = 0.0, ax=0.0, ay=0.0, ay2=0.0, axo=0.0, ayo=0.0;
@@ -887,7 +887,7 @@ int
 ay_oact_sc1DXcb(struct Togl *togl, int argc, char *argv[])
 {
  Tcl_Interp *interp = Togl_Interp (togl);
- ay_view_object *view = Togl_GetClientData(togl);
+ ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  double height = Togl_Height(togl);
  static double oldwinx = 0.0, oldwiny = 0.0;
  double winx = 0.0, winy = 0.0, dscalx = 1.0;
@@ -1084,7 +1084,7 @@ int
 ay_oact_sc1DYcb(struct Togl *togl, int argc, char *argv[])
 {
  Tcl_Interp *interp = Togl_Interp (togl);
- ay_view_object *view = Togl_GetClientData(togl);
+ ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  double height = Togl_Height(togl);
  static double oldwinx = 0.0, oldwiny = 0.0;
  double winx = 0.0, winy = 0.0, dscaly = 1.0;
@@ -1270,7 +1270,7 @@ int
 ay_oact_sc1DZcb(struct Togl *togl, int argc, char *argv[])
 {
  Tcl_Interp *interp = Togl_Interp (togl);
- ay_view_object *view = Togl_GetClientData(togl);
+ ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  double height = Togl_Height(togl);
  static double oldwinx = 0.0, oldwiny = 0.0;
  double winx = 0.0, winy = 0.0, dscalz = 1.0;
@@ -1948,7 +1948,7 @@ int
 ay_oact_sc2Dcb(struct Togl *togl, int argc, char *argv[])
 {
  Tcl_Interp *interp = Togl_Interp (togl);
- ay_view_object *view = Togl_GetClientData(togl);
+ ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  double height = Togl_Height(togl);
  static double oldwinx = 0.0, oldwiny = 0.0;
  double winx = 0.0, winy = 0.0, dscal = 1.0;
@@ -2143,7 +2143,7 @@ int
 ay_oact_sc3Dcb(struct Togl *togl, int argc, char *argv[])
 {
  Tcl_Interp *interp = Togl_Interp (togl);
- ay_view_object *view = Togl_GetClientData(togl);
+ ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  double height = Togl_Height(togl);
  static double oldwinx = 0.0, oldwiny = 0.0;
  double winx = 0.0, winy = 0.0, dscal = 1.0;
@@ -2307,7 +2307,7 @@ ay_oact_sc3Dcb(struct Togl *togl, int argc, char *argv[])
 int
 ay_oact_str2Dcb(struct Togl *togl, int argc, char *argv[])
 {
- ay_view_object *view = Togl_GetClientData(togl);
+ ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
 
  switch(view->type)
    {
