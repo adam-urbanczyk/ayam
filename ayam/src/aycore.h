@@ -157,7 +157,7 @@ void ay_instt_init(Tcl_Interp *interp);
 int ay_mopsi_tcmd(ClientData clientData, Tcl_Interp * interp,
 		  int argc, char *argv[]);
 
-int ay_mopsi_register(char *typename, ay_mopsicb *cb);
+int ay_mopsi_register(char *tname, ay_mopsicb *cb);
 
 int ay_mopsi_init(void);
 
