@@ -1,10 +1,16 @@
-[CVS, 15. 07. 2002]:
+[CVS, 28. 07. 2002]:
 o bug fixes:
   - fixed memory leaks in the shadow map RIB export module
 o added a permanent preview feature; a constantly open RIB stream
   to a (fast) RenderMan renderer like rgl immediately displays all
   changes in the scene without the need to repeatedly hit Ctrl-r and
   close the preview window again.
+o The "TclPrecision" preference setting has been moved to the "Misc"
+  preferences section.
+o Added balloon help for all preference settings.
+o Added a "Locale" preference setting and a locale system, that allows to
+  display language specific balloon help texts (german translations of
+  various balloon help texts provided initially).
 
 
 [09. 07. 2002] Ayam1.2:
