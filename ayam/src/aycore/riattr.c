@@ -23,11 +23,12 @@ ay_riattr_wrib(ay_object *o)
  ay_tag_object *tag = NULL;
  RtColor color = {0.0f,0.0f,0.0f};
  char *tagvaltmp = NULL, *attrname = NULL, *parname = NULL,
-   *partype = NULL, *parval = NULL;
+   *partype = NULL, *parval = NULL, *parval2 = NULL;
  char tok[] = ",";
- RtInt itemp;
- RtFloat ftemp;
+ RtInt itemp, i2temp[2] = {0};
+ RtFloat ftemp, f2temp[2] = {0.0f,0.0f};
  RtPoint ptemp = {0.0f,0.0f,0.0f};
+ char fname[] = "ay_riattr_wrib";
 
   if(!o)
     return AY_ENULL;
@@ -81,11 +82,45 @@ ay_riattr_wrib(ay_object *o)
 			  RiAttribute(attrname, parname,
 				      (RtPointer)&itemp, RI_NULL);
 			  break;
+			case 'j':
+			  RiDeclare(parname, "integer[2]");
+			  
+			  sscanf(parval, "%d", &(i2temp[0]));
+			  parval2 = strtok(NULL, tok);
+			  if(parval2)
+			    {
+			      sscanf(parval2, "%d", &(i2temp[1]));
+			    }
+			  else
+			    {
+			      ay_error(AY_ERROR, fname, "missing value");
+			    }
+			  RiAttribute(attrname, parname,
+				      (RtPointer)&i2temp,
+				      RI_NULL);
+			  break;
 			case 'f':
 			  RiDeclare(parname, "float");
 			  sscanf(parval, "%f", &ftemp);
 			  RiAttribute(attrname, parname,
 				      (RtPointer)&ftemp, RI_NULL);
+			  break;
+			case 'g':
+			  RiDeclare(parname, "float[2]");
+			  
+			  sscanf(parval, "%f", &(f2temp[0]));
+			  parval2 = strtok(NULL, tok);
+			  if(parval2)
+			    {
+			      sscanf(parval2, "%f", &(f2temp[1]));
+			    }
+			  else
+			    {
+			      ay_error(AY_ERROR, fname, "missing value");
+			    }
+			  RiAttribute(attrname, parname,
+				      (RtPointer)&f2temp,
+				      RI_NULL);
 			  break;
 			case 's':
 			  RiDeclare(parname, "string");
