@@ -208,6 +208,35 @@ return
 proc shortcut_viewactions { w } {
     global ayviewshortcuts
 
+    # this binding allows to rotate any view regardless
+    # of any active action; the old active action will
+    # be re established again once the mouse button is released
+    bind $w.f3D.togl <Alt-ButtonPress-1> {
+
+	undo save
+
+	set oldx %x
+	set oldy %y
+	# save old bindings
+	set ay(oldbinding) [bind %W <B1-Motion>]
+	set ay(oldb1binding) [bind %W <ButtonPress-1>]
+	set ay(oldb1rbinding) [bind %W <ButtonRelease-1>]
+	bind %W <ButtonPress-1> { #nothing }
+	bind %W <ButtonRelease-1> { #nothing }
+	shortcut_altrotatebinding %W
+
+	bind %W <ButtonRelease-1> {
+	    # restore old bindings
+	    bind %W <ButtonRelease-1> { #nothing }
+	    bind %W <B1-Motion> $ay(oldbinding)
+	    bind %W <ButtonPress-1> $ay(oldb1binding)
+	    bind %W <ButtonRelease-1> $ay(oldb1rbinding)
+	}
+	break;
+    }
+
+
+
 set i $ayviewshortcuts(ZoomVButton)
     
 bind $w.f3D.togl <ButtonPress-${i}> {
@@ -277,28 +306,22 @@ bind $w <$ayviewshortcuts(DeleteP)> "actionDeleteP $w.f3D.togl"
 bind $w <$ayviewshortcuts(FindU)> "actionFindU $w.f3D.togl"
 bind $w <$ayviewshortcuts(SplitNC)> "actionSplitNC $w.f3D.togl"
 
-proc altrotatebinding { w } {
+
+return;
+}
+# shortcut_viewactions
+
+#shortcut_altrotatebinding:
+# Setup key bindings for rotation of a 3D-View while
+# the Alt key is hold down.
+#
+proc shortcut_altrotatebinding { w } {
     bind $w <B1-Motion> {
 	%W setconf -drotx [expr ($oldx - %x)] -droty [expr ($oldy - %y)]
 	set oldx %x
 	set oldy %y
 	update
+	break;
     }
 }
-
-bind $w <Alt-ButtonPress-1> {
-    undo save
-    set oldx %x
-    set oldy %y
-    set ay(oldbinding) [bind %W <B1-Motion>]
-    altrotatebinding %W
-
-    bind $w <Alt-KeyRelease> {
-        bind %W <Alt-KeyRelease> ""
-        bind %W <B1-Motion> $ay(oldbinding)
-    }
-}
-
- return;
-}
-# shortcut_viewactions
+# shortcut_altrotatebinding
