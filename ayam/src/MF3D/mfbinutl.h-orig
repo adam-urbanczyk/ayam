@@ -1,0 +1,63 @@
+#ifndef	MF3D_BINARYUTILS_H
+#define	MF3D_BINARYUTILS_H
+/*==============================================================================
+ *
+ *	File:		MFBINUTL.H
+ *
+ *	Function:	Binary swap utilities
+ *
+ *	Version:	Metafile:	Version 1.0 3DMF files
+ *				Package:	Release #3 of this code
+ *
+ *	Author(s):	Rick Wong (RWW), Duet Development Corp.
+ *				John Kelly (JRK), Duet Development Corp.
+ *
+ *	Copyright:	(c) 1995 by Apple Computer, Inc., all rights reserved.
+ *
+ *	Change History (most recent first):
+ *		FBL_JRK	Lowercase include file names
+ *		FB7_JRK	Pragma macros
+ *		Fabio	Changed file name to 8 characters
+ *		F2H_RWW	File created.
+ *==============================================================================
+ */
+#if defined(applec) || defined(__MWERKS__) || defined(THINK_C)
+#pragma once
+#endif
+
+#include "mfassert.h"
+
+#define	MF3D_Swap4(a, b)	(*(long *)&(a)) ^= (*(long *)&(b));				\
+							(*(long *)&(b)) ^= (*(long *)&(a));				\
+							(*(long *)&(a)) ^= (*(long *)&(b))
+
+#define	MF3D_ByteSwap2(n)	(*(long*)&(n)) =								\
+								(((*(long*)&(n)) & 0xFF00) >> 8) |			\
+								(((*(long*)&(n)) & 0x00FF) << 8)
+
+#define	MF3D_ByteSwap4(n)	(*(long*)&(n)) =								\
+								(((*(long*)&(n)) & 0xFF000000) >> 24)	|	\
+								(((*(long*)&(n)) & 0x00FF0000) >> 8)	|	\
+								(((*(long*)&(n)) & 0x0000FF00) << 8)	|	\
+								(((*(long*)&(n)) & 0x000000FF) << 24)
+
+#define	MF3D_ByteSwap8(n)	MF3D_ByteSwap4(*(long *)&(n));					\
+							MF3D_Swap4(*(long *)&(n), *(((long *)&(n))+1));	\
+							MF3D_ByteSwap4(*(long *)&(n));
+
+#define	MF3D_ByteSwap(bytes, n)		MFASSERT(bytes == 8 || bytes == 4 ||	\
+											bytes == 2);					\
+									if (bytes == 8)							\
+									{	MF3D_ByteSwap8(n);					\
+									}										\
+									else if (bytes == 4)					\
+									{	MF3D_ByteSwap4(n);					\
+									}										\
+									else if (bytes == 2)					\
+									{	MF3D_ByteSwap2(n);					\
+									}										\
+									else									\
+									{	MFASSERT(bytes);					\
+									}
+
+#endif

@@ -1,0 +1,63 @@
+[02. 10. 2001] Ayam1.0 beta4:
+o bug fixes:
+  - Skin does not crash in interpolation mode, if two identical curves
+    are present.
+  - Weight edit does not crash anymore, if no objects are selected.
+  - Tree Drag-and-Drop could crash Ayam when root object was dragged
+    to certain targets.
+  - Reading a scene via MostRecentlyUsed list sets internal scene
+    filename correctly now.
+  - Improved picking of points with arrows (e.g. last point of a NURBS curve).
+  - Shading with material color (preference setting "UseMatColor") is now
+    working for all objects.
+  - Finally? fixed orientation detection routine for 2D curves, thus
+    improving automatic cap generation for various object types.
+  - Views do not get wrong settings while loading scenes or fast switching
+    of view windows on slower machines anymore.
+  - "forAll", "forAllT", and consequently "Edit/Paste Property" now work
+    correctly for nested object hierarchies.
+  - ...
+o 3DMF import/export plugin revived.
+o Preferences dialog looks much nicer now (uses a notebook for
+  category selection, "Shaders" GUI-element uses the tooltip
+  mechanism to display all paths of the entry at once now).
+o Direct rendering of views creates a small GUI consisting of
+  a progressbar and a cancel button (to stop the rendering!) now.
+  Use "Prefs/RIB-Export/RenderUI" to enable and "Prefs/RIB-Export/RenderPT"
+  to configure.
+  This is disabled on Win32, since Tcl is not able to execute a kill
+  program on this platform.
+o Some User-Interface-Elements (of property GUIs) allow default
+  values now.
+o Added new object type "Cap", that creates a cap from planar
+  NURBS curves.
+o Added automatic loading of custom objects when reading Ayam
+  scene files.
+o Implemented automatic cap generation for the Sweep object.
+o Implemented automatic cap generation for the Skin object.
+o Improved "Direct-Point-Edit" mode, you may select different points
+  now, while the coordinate requester is open. Additionally, it is
+  checking now, whether notification and redraws are really necessary.
+o Added keyboard shortcuts to Most-Recently-Used file menu entries.
+o SDK reworked.
+o Plugins moved to "plugins" directory.
+
+[26. 07. 2001] Ayam1.0 beta3:
+o a whole lot of bug fixes
+o Mops Import much improved
+  - imports now ICurves and Materials
+  - GLU display mode and sampling rate settings may
+    be reset to global settings while importing
+o added "Automatic Instancing"
+o added RIB Export preference setting "ExcludeHidden"
+o Tree Widget blocks the GUI now on long update operations
+o internal Tcl/Tk Errors are now redirected to the console
+o added some example scenes
+o added Setup.txt, Changes
+
+[12. 06. 2001] Ayam1.0 beta2:
+o some bug fixes including a fix for a serious memory leak in the
+  notification callbacks of the extrude/revolve tool objects
+
+
+[31. 05. 2001] First Public Release (Ayam1.0 beta1)

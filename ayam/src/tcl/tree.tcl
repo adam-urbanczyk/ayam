@@ -1,0 +1,717 @@
+# Ayam, a free 3D modeler for the RenderMan interface.
+#
+# Ayam is copyrighted 1998-2001 by Randolf Schultz
+# (rschultz@informatik.uni-rostock.de) and others.
+#
+# All rights reserved.
+#
+# See the file License for details.
+
+# tree.tcl - the object hierarchy tree widget
+
+package require BWidget
+
+
+set ay(tree) ""
+#set ay(ObjectBar) ""
+#set ay(NoteBook) ""
+
+set ay(DropActive) "0"
+set ay(CurrentLevel) ""
+set ay(SelectedLevel) ""
+
+# for drag and drop within the tree
+set ay(DndDestination) ""
+
+# tree_openTree:
+#
+proc tree_openTree { tree node } {
+
+    regsub -all ":" $node " " nodes
+    eval "set b [list $nodes]"
+
+    set c [lrange $b 1 end] 
+    set node "root:"
+    foreach elem $c {
+	append node $elem
+
+	if { [$tree exists $node] } {
+	    $tree itemconfigure $node -open 1
+	}
+	append node ":"
+    }
+
+ return;
+}
+# tree_openTree
+
+
+#tree_createSub:
+# set up tree content
+proc tree_createSub { tree node l count } {
+ global ay
+    set cs [lindex $l 0]
+    set ll [expr [llength $l]-1]
+    if { $node == $ay(CurrentLevel) } {
+	set color "black"
+    } else {
+	set color "darkgrey"
+    }
+    $tree insert end $node $node:$count -text $cs -drawcross auto -open 0 -fill $color -image emptybm
+    if { $ll != 0 } {
+        for {set x 0} {$x<$ll} {set x [expr $x+1]} {
+            tree_createSub $tree $node:$count [lindex $l [expr $x+1]] $x
+        }
+    }
+
+ return;
+}
+# tree_createSub
+
+
+#tree_blockUI:
+# 
+proc tree_blockUI { } {
+    grab .fl
+    . configure -cursor watch
+    update
+ return;
+}
+
+
+#tree_update:
+# This procedure recreates the subtree pointed to by node.
+# treeGetString is a C-command witch returns the subtree
+# content as a list of lists of lists... string.
+# This string is recursivly traversed by tree_createSub
+# The nodes are named this way: root:<index in root level>[:<index2>[: ... ]]
+proc tree_update { node } {
+    global ay
+    if { $ay(TreeUpdateSema) == 1 } {
+	return 
+    } else {
+	set $ay(TreeUpdateSema) 1
+    }
+
+    # update may take some time, take measures:
+    # after 0.1s we block the UI and make the
+    # mouse cursor a watch
+    after 100 tree_blockUI
+
+    treeGetString curtree $node
+    set count 0
+    # redraw AFTER recreation, not while (can see building process)
+    $ay(tree) configure -redraw 0
+    $ay(tree) delete [$ay(tree) nodes $node]
+    # insert tree items
+    foreach n $curtree {
+        tree_createSub $ay(tree) $node $n $count
+        incr count
+    }
+    $ay(tree) configure -redraw 1
+
+
+    # unblock UI
+    grab release .fl
+    after cancel tree_blockUI
+    . configure -cursor {}
+
+    set $ay(TreeUpdateSema) 0
+
+ return;
+}
+# tree_update
+
+
+#tree_paintLevel:
+# The current selected level is colored black; the rest should be darkgrey
+#
+proc tree_paintLevel { node } {
+ global ay
+
+    set CurrentLevel $ay(CurrentLevel)
+
+    if { $CurrentLevel != "" } {
+	set nlist [$ay(tree) nodes $CurrentLevel]
+	foreach n $nlist {
+	    set old [$ay(tree) itemcget $n -fill]
+	    if { $old == "black" } {
+		$ay(tree) itemconfigure $n -fill darkgrey
+	    }
+	}
+    }
+    set CurrentLevel $node
+    set nlist [$ay(tree) nodes $CurrentLevel]
+    foreach n $nlist {
+	set old [$ay(tree) itemcget $n -fill]
+	if { $old == "darkgrey" } {
+	    $ay(tree) itemconfigure $n -fill black
+	}
+    }
+
+    set ay(CurrentLevel) $CurrentLevel
+
+ return;
+}
+# tree_paintLevel
+
+
+#tree_selectItem
+# select one tree item; clicking an already selected object does nothing
+proc tree_selectItem { redraw tree node } {
+  global ay
+
+    set ay(ts) 1; 
+    set nlist [$tree selection get]
+    $ay(tree) selection clear
+    treeSelect ""
+    $ay(tree) selection set $node
+    tree_handleSelection
+    if { [lsearch $nlist $node] == "-1" } {
+	$tree selection set $node
+	set ay(SelectedLevel) [$tree parent $node]
+	$tree selection set $node
+        tree_handleSelection
+    }
+    $tree bindText  <ButtonRelease-1> ""
+    $tree bindText  <ButtonPress-1> "tree_selectItem 1 $tree"
+
+    if { $redraw == 1 } {
+	rV
+    }
+
+    plb_update
+ return;
+}
+# tree_selectItem
+
+
+#tree_toggleSelection
+# multiple selection via ctrl-key; only allowed within on level
+proc tree_toggleSelection { tree node } {
+ global ay
+    set ay(ts) 1;
+    set SelectedLevel $ay(SelectedLevel)
+
+    set nlist [$tree selection get]
+    if { [lsearch $nlist $node] != -1 } {
+	if { [llength $nlist] > "1" } {
+	    $tree selection remove $node
+	}
+    } else {
+	if { [llength $nlist] != "0" } {
+	    set parent [$tree parent $node]
+	    if { $parent == $SelectedLevel } {
+		$tree selection add $node
+	    } else {
+	ayError 1 "toggleSelection" "Can not select from different levels!"
+	    }
+	} else {
+	    $tree selection add $node
+	}
+    }
+    $tree bindText  <ButtonPress-1> ""
+    $tree bindText  <ButtonRelease-1> "tree_selectItem 1 $tree"
+
+    tree_handleSelection
+    plb_update
+    rV
+ return;
+}
+# tree_toggleSelection
+
+
+#tree_multipleSelection
+# multiple selection via shift-key; only allowed within on level
+proc tree_multipleSelection { tree node } {
+ global ay
+    set ay(ts) 1;
+    set SelectedLevel $ay(SelectedLevel)
+
+    set nlist [$tree selection get]
+
+    if { [llength $nlist] != "1" } {
+	ayError 1 "multipleSelection" "Select a single object first!"
+	return;
+    }
+
+    if { [lsearch $nlist $node] != -1 } {
+	ayError 1 "multipleSelection" "Select a different object!"
+	return;
+    }
+
+    set parent [$tree parent $node]
+    if { $parent != $SelectedLevel } {
+	ayError 1 "multipleSelection" "Can not select from different levels!"
+	return;
+    }
+
+    set index1 [$tree index $nlist]
+    set index2 [$tree index $node]
+
+    if { $index1 < $index2 } {
+	set selnodes [$tree nodes $parent $index1 $index2]
+    } else {
+	set selnodes [$tree nodes $parent $index2 $index1]
+    }
+
+    eval [subst "$tree selection add $selnodes"]
+    tree_handleSelection
+    plb_update
+    rV
+    $tree bindText  <ButtonPress-1> ""
+    $tree bindText  <ButtonRelease-1> "tree_selectItem 1 $tree"
+
+
+ return;
+}
+# tree_multipleSelection
+
+
+#tree_handleSelection:
+# do any stuff for the selected objects such as highligting the selected level
+proc tree_handleSelection { } {
+  global ay
+
+    undo save
+
+    if { $ay(SelectedLevel) != $ay(CurrentLevel) } {
+	tree_paintLevel $ay(SelectedLevel)
+    }
+    set nlist [$ay(tree) selection get]
+    eval [subst "treeSelect $nlist"]
+
+ return;
+}
+# tree_handleSelection
+
+
+
+#tree_drop:
+# user dropped object in the tree view
+proc tree_drop { tree from droppos currentoperation datatype data } {
+  global ay
+
+    # is a drop action just active?
+    # this semaphor avoids being called multiple times
+    # in case the user moves the mouse shortly after
+    # release of the mouse button (Bug in BWidgets?)
+    if { $ay(DropActive) == 0 } {
+	set ay(DropActive) 1
+
+	set pos [lindex $droppos 0]
+	set parent "root"
+	set position -1
+	set selection ""
+	set selection [$ay(tree) selection get]
+
+	if { $selection == "" } {
+	 set ay(DropActive) 0
+	    return;   
+	}
+
+	if { $pos == "node" } {
+	    set parent [lindex $droppos 1]
+	    set position -1
+	}
+	if { $pos == "position" } {
+	    set parent [lindex $droppos 1]
+	    set position [lindex $droppos 2]
+	}
+	# reject dropping of objects onto root
+	if { $parent == "root:0" } {
+
+	    if { $selection != "root:0" } {
+		ayError 2 tree_drop "Can not place objects here!"
+	    }
+	    set ay(DropActive) 0
+	    return;
+	}
+	# reject
+	if { $parent == "root" && $position == "0" } {
+
+	    ayError 2 tree_drop "Can not place objects here!"
+
+	    set ay(DropActive) 0
+	    return;
+	}
+
+	if { $from == $tree } {
+	    # drag 'n drop within the tree
+	    set err 0
+	    # prevent moving of the root object
+	    if { $data == "root:0" } {
+		ayError 2 tree_drop "Can not move root!"
+
+		set ay(DropActive) 0
+		return;
+	    }
+	    # prevent moving of objects into its own childs
+	    while { $parent != "root" } {
+		if { [lsearch $selection $parent] != "-1" } {
+		    if { $selection != $parent } {
+		ayError 2 tree_drop "Can not place selected objects here!"
+		    }
+		    set err 1
+		}
+		if { [$ay(tree) exists $parent] } {
+		    set parent [$ay(tree) parent $parent]
+		}
+	    }
+
+	    if { $err == "0" } {
+		set ay(DndDestination) $droppos
+		tree_move
+	    }
+	    set ay(DropActive) 0
+	} else {
+	    # create object via objectbar
+	    set ay(DropActive) "1"
+	    set newnode ""
+	    set i [string first "img" $data ]
+	    set otype [string range $data 0 [expr $i-1]]
+	    puts $otype
+	    crtOb $otype
+	    sL
+	    set ay(DndDestination) $position
+#	    tree_move
+#	    set  
+#	    CreateDndObject $data $parent $position $selection newnode
+#	    puts $data
+	    if { $newnode == "" } {
+		ayError 1 tree_drop "Unable to create object!"
+	    } else {
+		tree_update $parent
+		if { $parent != "root" } {
+		    $ay(tree) itemconfigure $parent -open 1
+		}
+		#tree_selectItem 1 $ay(tree) $newnode
+	    }
+	    set ay(DropActive) 0
+	    
+	}
+    } else {
+	# XXXX eliminate this warning, it appears too often?
+	#ayError 1 tree_drop "Drop action already active!"
+    }
+ return;
+}
+# tree_drop
+
+
+#tree_openSub:
+# open/close subtree in tree view
+proc tree_openSub { tree state node } {
+global ay
+    set ay(ts) 1;
+    $tree itemconfigure $node -open $state
+    $tree configure -redraw 1
+ return;
+}
+# tree_openSub
+
+
+#tree_toggleSub:
+proc tree_toggleSub { tree node } {
+
+    if { [$tree itemcget $node -open] == 1 } {
+	tree_openSub $tree 0 $node
+    } else {
+	tree_openSub $tree 1 $node
+    }
+ return;
+}
+# tree_toggleSub
+
+
+#tree_popup:
+# tree context menu
+proc tree_popup { tree } {
+    global ay
+
+    set xy [winfo pointerxy .]
+    set x [lindex $xy 0]
+    set y [lindex $xy 1]
+
+    tk_popup $tree.popup $x $y
+    return;
+}
+# tree_popup
+
+
+#tree_move:
+proc tree_move { } {
+ global ay
+    set old_selection [$ay(tree) selection get]
+    set pos [lindex $ay(DndDestination) 0]
+    set parent "root"
+    set position -1
+    if { $pos == "node" } {
+	set parent [lindex $ay(DndDestination) 1]
+	set position -1
+    }
+    if { $pos == "position" } {
+	set parent [lindex $ay(DndDestination) 1]
+	set position [lindex $ay(DndDestination) 2]
+    }
+    global ay_error
+    set ay_error 0
+    set newclevel ""
+    treeDnd $parent $position newclevel
+    if { $ay_error == 0 } {
+	
+	set $ay(SelectedLevel) "root"
+
+	if { $newclevel != "no-drop" } {
+	    tree_update $ay(CurrentLevel)
+	    update
+
+	    if { $newclevel != "" } {
+		eval "set b [list $newclevel]"
+
+		set node root
+		foreach elem $b {
+		    append node ":"
+		    append node $elem
+		}
+
+		if { [$ay(tree) exists $node] } {
+		    set node [$ay(tree) parent $node]
+		} else {
+		    set node root
+		}
+
+		if { [$ay(tree) exists $node] } {
+		    tree_update $node
+		    update
+		    if { $node != "root" } {
+			$ay(tree) itemconfigure $node -open 1
+		    }
+		}
+	    }
+
+	    set ay(CurrentLevel) "root"
+	    set ay(SelectedLevel) "root"
+	    update
+	    $ay(tree) selection clear
+	    tree_handleSelection
+	    tree_selectItem 0 $ay(tree) "root:0"
+	    tree_paintLevel "root"
+	    forceNot all
+	    plb_update
+	    rV
+	} else {
+	    $ay(tree) selection set $old_selection
+	    tree_handleSelection
+	    forceNot all
+	    plb_update
+	    rV
+	}
+	
+    } else {
+	set ay(CurrentLevel) "root"
+	set ay(SelectedLevel) "root"
+	update
+	$ay(tree) selection clear
+	tree_handleSelection
+	tree_selectItem 0 $ay(tree) "root:0"
+	tree_paintLevel "root"
+	forceNot all
+	plb_update
+	rV
+    }
+
+ return;
+}
+# tree_move
+
+
+#tree_expand:
+proc tree_expand { } {
+ global ay
+    set nlist [$ay(tree) nodes root]
+    foreach n $nlist {
+	$ay(tree) opentree $n
+    }
+ return;
+}
+# tree_expand
+
+
+#tree_collapse:
+proc tree_collapse { } {
+ global ay
+    set nlist [$ay(tree) nodes root]
+    foreach n $nlist {
+	$ay(tree) closetree $n
+    }
+ return;
+}
+# tree_collapse
+
+
+# -----------------------------------------------------------------
+# Clipboard operations cut, paste and delete need an updateTree
+proc CutToClipboard { } {
+ global ayHierarchyTree CurrentSelectedLevel
+ 
+    cutOb
+    updateayTree $CurrentSelectedLevel
+}
+
+proc PasteFromClipboard { } {
+ global ayHierarchyTree CurrentSelectedLevel
+ 
+    pasOb
+    updateayTree $CurrentSelectedLevel
+}
+
+proc DeleteSelection { } {
+ global ayHierarchyTree CurrentSelectedLevel
+ 
+    delOb
+    updateayTree $CurrentSelectedLevel
+}
+
+
+# tree_open:
+# create object hierarchy tree widget
+proc tree_open { w } {
+global ay
+
+set ay(lb) 0
+# frame
+set fr [frame $w.ftr]
+set f $fr
+
+# label
+set la [label $f.la -text "Objects:" -padx 0 -pady 0]
+
+# a scrolled window
+set sw [ScrolledWindow $f.sw -bd 2 -relief sunken]
+
+image create bitmap emptybm
+
+# the tree widget
+global tcl_platform
+if { $tcl_platform(platform) == "windows" } {
+    set width 12
+} else {
+    set width 15
+}
+set tree [Tree $sw.tree -width $width -height 15\
+	-relief flat -borderwidth 0\
+	-highlightthickness 0\
+	-redraw 0\
+	-padx 1\
+	-opencmd   "tree_openSub $sw.tree 1" \
+	-closecmd  "tree_openSub $sw.tree 0" \
+	-dragenabled true \
+	-dropenabled true \
+	-droptypes {TREE_NODE {copy {}} IMAGE { copy {}} } \
+	-dropovermode pn\
+	-dropcmd "tree_drop" ]
+
+# XXXX was:
+#	-droptypes {TREE_NODE {copy {}} IMAGE { copy {}} }
+
+
+$sw setwidget $tree
+set ay(tree) $tree
+
+# bindings
+# scroll tree with wheel
+bind $tree <ButtonPress-4> "$tree yview scroll -1 pages; break"
+bind $tree <ButtonPress-5> "$tree yview scroll 1 pages; break"
+# ay(ts) is triggered, whenever a true selection
+# occurs in the tree, if not (ay(ts) is 0) we
+# select the last element of the current level
+bind $tree <ButtonRelease-1> "+\
+after 10 { global ay; if { \$ay(ts) == 0 } { sL; rV }; set ay(ts) 0 }"
+
+# multiple selection
+$tree bindText  <Control-ButtonPress-1> "tree_toggleSelection $sw.tree"
+$tree bindText  <Control-Double-ButtonPress-1> "tree_toggleSelection $sw.tree"
+
+$tree bindText  <Shift-ButtonPress-1> "tree_multipleSelection $sw.tree"
+# the next bindings consume unwanted events that would
+# make the tree_selectItem-Binding fire, because tree_toggleSelection
+# and tree_multipleSelection _change_ the binding for tree_selectItem
+# from ButtonPress to ButtonRelease, to allow DnD of multiple selected
+# objects, a single tree_selectItem re-establishes the normal
+# binding to ButtonPress-1 then
+$tree bindText  <Shift-ButtonRelease-1> "set dummy "
+$tree bindText  <Control-ButtonRelease-1> "set dummy "
+
+# select a single object
+$tree bindText  <ButtonPress-1> "tree_selectItem 1 $sw.tree"
+# open sub tree
+$tree bindText  <Double-ButtonPress-1> "tree_toggleSub $sw.tree"
+
+# switch back to good old listbox
+bind $la <Double-ButtonPress-1> "tree_close $w; olb_open $w;\
+	olb_update; rV"
+balloon_set $la "Double click here\nto switch to listbox"
+
+# pack widgets
+pack $fr -side top -expand yes -fill both
+pack $la -side top -fill x -expand no
+pack $sw -side top -expand yes -fill both -pady 1
+
+update
+# add context-menu
+set m [menu $ay(tree).popup -tearoff 0]
+
+$m add cascade -label "Tree" -menu $ay(tree).popup.tree
+set m [menu $ay(tree).popup.tree -tearoff 0]
+$m add command -label "Rebuild" -command {
+    tree_update root;
+    set ay(CurrentLevel) "root"
+    set ay(SelectedLevel) "root"
+    update
+    $ay(tree) selection clear
+    tree_handleSelection
+    tree_selectItem 0 $ay(tree) "root:0"
+    tree_paintLevel "root"
+    plb_update
+}
+$m add command -label "Expand" -command "tree_expand"
+$m add command -label "Collapse" -command "tree_collapse"
+
+set m $ay(tree).popup
+$m add separator
+$m add command -label "Deselect" -command "cS;uS;rV"
+$m add separator
+$m add command -label "Cut" -command "cutOb;cS;uS;rV"
+$m add command -label "Copy" -command "copOb"
+$m add command -label "Paste" -command {
+    pasOb;cS; global ay; set ay(ul) $ay(CurrentLevel); uS;rV}
+#$m add command -label "Paste (Move)" -command "cmovOb;uS;rV"
+$m add separator
+$m add command -label "Delete" -command "delOb;cS;uS;rV"
+
+bind $ay(tree) <ButtonPress-3> "tree_popup $ay(tree)"
+
+# XXXX unfortunately, this does not work
+# because this steals all events otherwise
+# meant for nodes
+#bind $ay(tree) <ButtonPress-1> "sL;rV"
+
+set ay(CurrentLevel) "root"
+set ay(SelectedLevel) "root"
+tree_paintLevel "root"
+set ay(DropActive) 0
+
+
+ return;
+}
+# tree_open
+
+#tree_close:
+#
+proc tree_close { w } {
+
+destroy $w.ftr
+
+}
+

@@ -1,0 +1,42 @@
+o line length max 79 characters
+o indention: Emacs-C-mode-style (2 chars), except local variables and
+  last return in a function (just 1 char), glBegin()-glEnd(),
+  RiBegin()-RiEnd() pairs indent one character
+o all {} are on their _own_ line (resembles the look of Pascal code a bit)
+o Ayam symbols and typenames are all preceeded by "ay_"
+o all preprocessor definitions are preceeded by "AY" and are in ALL CAPS
+o function naming convention: ay_[modulename]_getblurb[type]
+  type: "cb": Ayam callback, "tcb": Togl callback, "tcmd": Tcl command
+o variable naming convention (not mandatory) ay_varname[type]
+  type: "d": double, "i": int, "p": pointer, "t": ayam table 
+
+example:
+
+/*
+ * ayam_init:
+ *  create ay_root, tables
+ *  In:
+ *  interp: the Tcl interpreter
+ */
+int
+ay_init(Tcl_Interp *interp)
+{
+ ay_status = AY_OK;
+
+  ay_interp = interp;
+
+  /* initialize tables */
+  Tcl_InitHashTable(&ay_otypesht, TCL_STRING_KEYS);
+
+  if(ay_table_init(ay_typenamest))
+    {
+      return AY_ERROR;
+    }
+  /* fill tables (init object types) */
+
+  /* create root object */
+
+ return ay_status;
+} /* ay_init */
+
+

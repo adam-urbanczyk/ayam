@@ -1,0 +1,187 @@
+INSTALL [1. Sep 2001]
+
+Compilation Instructions for Ayam
+---------------------------------
+
+There are two major ways to compile Ayam, "shared" and
+"wrapped standalone" ( using Wrap0.3 ).
+The binaries you get with the binary distribution of Ayam are
+wrapped standalone. This means Tcl/Tk and the main Tcl-scripts
+of Ayam are all statically combined in the binary.
+This means no hassle with Tcl/Tk versions. You do not need an
+installed Tcl/Tk at all!
+However, the creation of wrapped standalone executables
+of Ayam is a bit tricky.
+Therefore, if you really want to or have to compile Ayam:
+_Please compile a shared version of Ayam!_
+
+
+1. Compiling a Shared Version of Ayam
+-------------------------------------
+
+1.1 Step 1 - Requirements
+-------------------------
+
+The following requirements _must_ be met to compile a shared
+version of Ayam:
+
+- ANSI-C-compiler
+- Tcl/Tk ( atleast V8.0 )
+  ftp://ftp.scriptics.com/pub/tcl/
+  ( May move to SourceForge in the future, see:
+    http://tcl.sourceforge.net/ ) 
+  Note, that a complete installation of Tcl/Tk is required.
+  However:
+   On most systems, there should be an installed Tcl/Tk 8.x nowadays.
+   If this is the case
+   ( check it by typing "wish" in a shell, then type "puts $tcl_patchLevel" )
+   you then just have to download the sources of the installed
+   version ( see output of the puts command! ), unpack them,
+   and run configure.
+   No compiling of this Tcl/Tk is necessary!
+  Note also, that Ayam uses Togl, a Tk-Widget that needs internal
+  Tk-headers to be compiled. It is _not sufficient_ to just have
+  an installed Tcl/Tk on your system, please
+  _get the source distribution_ of Tcl/Tk and get the right
+  version, as Togl is known to crash if Tcl/Tk versions mismatch!
+- OpenGL
+  ( Mesa may be used as replacement for a real OpenGL. Since
+    version 3.5, Mesa uses the GLU from the free OpenGL sample
+    implementation from SGI and is therefore able to display
+    trimmed NURBS. Either install this version of Mesa, or the GLU
+    from the SGI sample implementation.)
+  http://www.mesa3d.org/
+- BMRT ( ri.h, slc.h, libribout.a, libslcargs.a )
+  http://www.exluna.com/
+  Note, that BMRT's libribout.a and libslcargs.a come as binary only,
+  they might not be available on your platform!
+  If BMRT is not available on your platform, you can still
+  compile Ayam with the Affine Toolkit with reduced functionality,
+  read: no parsing of slc-compiled shaders.
+- The Affine Toolkit
+  http://www.affine.com/
+  Source code of Affines Simple RIB writer is distributed with Ayam.
+  No download necessary!
+- BWidgets
+  http://tcllib.sourceforge.net/
+  Ayam has just been tested with BWidgetsV1.2.1 so far.
+  BWidgetsV1.2.1 are distributed with Ayam ( see subdir tcl/BWidget-1.2.1/ ).
+  No download necessary!
+
+Tip:
+If you unpack Tcl/Tk and BMRT as sister directories to the Ayam
+directory, editing of the Makefile will be easier.
+
+
+1.2 Step 2 - Compiling
+----------------------
+
+You have all required software and installed/compiled it successfully?
+
+- copy Makefile.shared to Makefile
+
+>cp Makefile.shared Makefile
+
+- edit the Makefile, until it tells you to stop, all necessary
+  information should be in the Makefile ( yes, this _is_ a lot of work )
+
+- issue a
+>make
+
+Now ayamsh should be compiled and ready for a test run.
+-try it:
+>./ayamsh tcl/ayam.tcl
+
+If all went fine, you can now install Ayam:
+>make install
+
+The installation procedure creates a shell script
+named ayam, that calls ayamsh the right way,
+so that after installation you can start Ayam
+typing:
+>ayam
+
+
+
+2. Compiling a Wrapped Standalone Version of Ayam
+-------------------------------------------------
+
+2.1 Step 1 - Requirements
+-------------------------
+
+The following requirements _must_ be met to compile a wrapped standalone
+version of Ayam:
+
+- ANSI-C-compiler
+- Tcl/Tk ( atleast V8.2.1 )
+  ftp://ftp.scriptics.com/pub/tcl/
+  ( May move to SourceForge in the future, see:
+    http://tcl.sourceforge.net/ )
+  Note, that you do not need to _install_ Tcl/Tk to compile and use
+  the wrapped standalone version of Ayam. But compiling this Tcl/Tk
+  is still necessary. Compile static versions of Tcl/TK using:
+  >./configure --disable-shared; make
+- A zip utility that understands the -A option ( zip2.2 does ).
+- Wrap0.3
+  http://purl.oclc.org/net/nijtmans/wrap.html
+  Please compile a static "libz":
+  >make z
+  and a wrapped "wish" using wrap:
+  >make
+  and do not "make clean" afterwards. Note, that Makefile.wrapped
+  is tuned to be used with Wrap0.3. If you use newer versions you
+  will likely have to adapt the ayam: and ayamwrap: targets.
+- OpenGL
+  ( Mesa may be used as replacement for a real OpenGL. Since
+    version 3.5, Mesa uses the GLU from the free OpenGL sample
+    implementation from SGI and is therefore able to display
+    trimmed NURBS. Either install this version of Mesa, or the GLU
+    from the SGI sample implementation.)
+  http://www.mesa3d.org/
+- BMRT (ri.h, slc.h, libribout.a, libslcargs.a)
+  http://www.exluna.com/
+  Note, that BMRT's libribout.a and libslcargs.a come as binary only,
+  they might not be available on your platform!
+  If BMRT is not available on your platform, you can still
+  compile Ayam with the Affine Toolkit with reduced functionality,
+  read: no parsing of slc-compiled shaders.
+- The Affine Toolkit
+  http://www.affine.com/
+  Source code of Affines Simple RIB writer is distributed with Ayam.
+  No download necessary!
+- BWidgets
+  http://tcllib.sourceforge.net/
+  Ayam has just been tested with BWidgetsV1.2.1 so far.
+  BWidgetsV1.2.1 are distributed with Ayam ( see subdir tcl/BWidget-1.2.1/ ).
+  No download necessary!
+
+
+Tip:
+If you unpack Tcl/Tk, Wrap, and BMRT as sister directories
+to the Ayam directory, editing of the Makefile will be easier.
+
+
+2.2 Step 2 - Compiling
+----------------------
+
+You have all required software and installed/compiled it successfully?
+
+- copy Makefile.wrapped to Makefile
+
+>cp Makefile.wrapped Makefile
+
+- edit the Makefile, until it tells you to stop, all necessary
+  information should be in the Makefile ( yes, this _is_ a lot of work )
+
+- issue a
+>make
+
+Now Ayam should be compiled and ready for a test run.
+-try it:
+>./ayam
+
+If all went fine, you can now install Ayam:
+>make install
+
+End of Compilation Instructions
+
