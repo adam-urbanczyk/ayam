@@ -15,6 +15,7 @@
 /* npt.c NURBS patch tools */
 
 /* types local to this module */
+
 typedef struct ay_npt_tesstri_s {
   struct ay_npt_tesstri_s *next;
 
@@ -53,6 +54,7 @@ typedef struct ay_npt_tessobject_s {
 
 
 /* prototypes of functions local to this module */
+
 int ay_npt_tpmchecktri(double *p1, double *p2, double *p3);
 
 void ay_npt_tpmbegindata(GLenum type, void *userData);
@@ -256,7 +258,6 @@ ay_npt_revolve(ay_object *o, double arc, ay_nurbpatch_object **patch)
 } /* ay_npt_revolve */
 
 
-
 /* ay_npt_drawtrimcurve:
  *
  */
@@ -323,7 +324,7 @@ ay_npt_drawtrimcurve(struct Togl *togl, ay_object *o, GLUnurbsObj *no)
 		(GLint)3, GLU_MAP1_TRIM_3);
 
  return AY_OK;
-} /* ay_npt_drawtrim */
+} /* ay_npt_drawtrimcurve */
 
 
 /* ay_npt_resizearrayw:
@@ -2048,7 +2049,6 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
       ay_trafo_translatematrix(-p2[0], -p2[1], -p2[2], m);
 
       ay_trafo_invmatrix4(m, mi);
-      mi[15] = 1.0;
 
       /* sweep profile */
       for(j = 0; j < cs->length; j++)
@@ -4748,3 +4748,267 @@ ay_npt_gordon(ay_object *cu, ay_object *cv, ay_object *in,
 
  return ay_status;
 } /* ay_npt_gordon */
+
+
+/* ay_npt_gordonmodw:
+ *  calculate which curve to modify, in order to follow the latest changes
+ *  in the geometry of the other; decision is based on whether one object
+ *  of the two is flagged "modified" or "currently selected"
+ *  (XXXX could be extended by comparing lists of selected points, but
+ *  seems to work ok for gordon); returns:
+ *  0 - modify o1
+ *  1 - modify o2
+ */
+int
+ay_npt_gordonmodw(ay_object *o1, ay_object *o2)
+{
+
+  if(o1->modified && !o2->modified)
+    {
+      return 1;
+    }
+  else
+    {
+      if(!o1->modified && o2->modified)
+	{
+	  return 0;
+	}
+      else
+	{
+	  if(o1->selected && !o2->selected)
+	    {
+	      return 1;
+	    }
+	  else
+	    {
+	      if(!o1->selected && o2->selected)
+		{
+		  return 0;
+		}
+	      else
+		{
+		  /* always modify o2 in favour of o1 if */
+		  return 1;
+		}
+	    } /* if */
+	} /* if */
+    } /* if */
+
+} /* ay_npt_gordonmodw */
+
+
+/* ay_npt_gordoncc:
+ *  compare and possibly correct two curve endpoints (<p1> and <p2>)
+ *  of curve objects <o1> and <o2>; work with stride <stride>;
+ *  copy new point data to object at position <pp1>, <pp2> respectively;
+ *  use precalculated inverse transformation matrix <m1> or <m2>
+ *  (the two curve objects do not necessarily have the same trafos)
+ */
+int
+ay_npt_gordoncc(ay_object *o1, ay_object *o2, int stride,
+		double *p1, double *p2, double *pp1, double *pp2,
+		double *m1, double *m2)
+{
+ double tp[3];
+ int modify;
+
+  AY_V3SUB(tp, p1, p2)
+  if((fabs(tp[0]) > AY_EPSILON) || (fabs(tp[1]) > AY_EPSILON) ||
+     (fabs(tp[2]) > AY_EPSILON))
+    {
+      if(AY_V3LEN(tp) > AY_EPSILON)
+	{
+	  /* the points do not match, find out which
+	     curve is to be modified */
+	  modify = ay_npt_gordonmodw(o1, o2);
+
+	  if(modify)
+	    {
+	      /* modify o2 (p2 <= p1) */
+	      if(pp2)
+		{
+		  memcpy(pp2, p1, stride*sizeof(double));
+		  ay_trafo_apply3(pp2, m2);
+		  if(stride == 4)
+		    pp2[3] = 1.0;
+		}
+	    }
+	  else
+	    {
+	      /* modify o1 (p1 <= p2) */
+	      if(pp1)
+		{
+		  memcpy(pp1, p2, stride*sizeof(double));
+		  ay_trafo_apply3(pp1, m1);
+		  if(stride == 4)
+		    pp1[3] = 1.0;
+		}
+	    }
+	} /* if */
+    } /* if */
+
+ return AY_OK;
+} /* ay_npt_gordoncc */
+
+
+/* ay_npt_gordonwc:
+ *  watch and properly configure the outer four parameter curves of a
+ *  gordon surface <g> (compare and possibly correct their endpoints)
+ *  XXXX should be extended to cover also the inner curve endpoints
+ */
+int
+ay_npt_gordonwc(ay_object *g)
+{
+ int ay_status = AY_OK;
+ ay_nurbcurve_object *nc;
+ ay_icurve_object  *ic;
+ ay_object *firstu = NULL, *lastu = NULL, *firstv = NULL, *lastv = NULL;
+ ay_object *last = NULL, *down;
+ double fum[16], lum[16], fvm[16], lvm[16];
+ double fumi[16], lumi[16], fvmi[16], lvmi[16];
+ double p1[3], p2[3], p3[3], p4[3], p5[3], p6[3], p7[3], p8[3];
+ double *pp1 = NULL, *pp2 = NULL, *pp3 = NULL, *pp4 = NULL;
+ double *pp5 = NULL, *pp6 = NULL, *pp7 = NULL, *pp8 = NULL; 
+
+  if(!g || !g->down || !g->down->next)
+    return AY_ENULL;
+
+  /* get curves */
+  down = g->down;
+  firstu = down;
+  while(down->next)
+    {
+      if(down->type == AY_IDLEVEL)
+	{
+	  lastu = last;
+	  firstv = down->next;
+	}
+      last = down;	
+      lastv = down;
+      down = down->next;
+    }
+
+  if((!lastu) || (!firstv) || (!lastv) || (firstu == lastu) ||
+     (firstv == lastv))
+    return AY_OK;
+
+  /* get transformation matrices */
+  ay_trafo_creatematrix(firstu, fum);
+  ay_trafo_invmatrix4(fum, fumi);
+  ay_trafo_creatematrix(lastu, lum);
+  ay_trafo_invmatrix4(lum, lumi);
+  ay_trafo_creatematrix(firstv, fvm);
+  ay_trafo_invmatrix4(fvm, fvmi);
+  ay_trafo_creatematrix(lastv, lvm);
+  ay_trafo_invmatrix4(lvm, lvmi);
+
+  /* get all 8 corner points; transform them to gordon object space */
+  if(firstu->type == AY_IDNCURVE)
+    {
+      nc = (ay_nurbcurve_object *)firstu->refine;
+      pp1 = &(nc->controlv[0]);
+      pp2 = &(nc->controlv[(nc->length-1)*4]);
+    }
+  if(firstu->type == AY_IDICURVE)
+    {
+      ic = (ay_icurve_object *)firstu->refine;
+      pp1 = &(ic->controlv[0]);
+      pp2 = &(ic->controlv[(ic->length-1)*3]);
+    }
+  if(pp1)
+    AY_APTRAN3(p1, pp1, fum)
+  if(pp2)
+    AY_APTRAN3(p2, pp2, fum)
+
+  if(lastu->type == AY_IDNCURVE)
+    {
+      nc = (ay_nurbcurve_object *)lastu->refine;
+      pp3 = &(nc->controlv[0]);
+      pp4 = &(nc->controlv[(nc->length-1)*4]);
+    }
+  if(lastu->type == AY_IDICURVE)
+    {
+      ic = (ay_icurve_object *)lastu->refine;
+      pp3 = &(ic->controlv[0]);
+      pp4 = &(ic->controlv[(ic->length-1)*3]);
+    }
+  if(pp3)
+    AY_APTRAN3(p3, pp3, lum)
+  if(pp4)
+    AY_APTRAN3(p4, pp4, lum)
+
+  if(firstv->type == AY_IDNCURVE)
+    {
+      nc = (ay_nurbcurve_object *)firstv->refine;
+      pp5 = &(nc->controlv[0]);
+      pp6 = &(nc->controlv[(nc->length-1)*4]);
+    }
+  if(firstv->type == AY_IDICURVE)
+    {
+      ic = (ay_icurve_object *)firstv->refine;
+      pp5 = &(ic->controlv[0]);
+      pp6 = &(ic->controlv[(ic->length-1)*3]);
+    }
+  if(pp5)
+    AY_APTRAN3(p5, pp5, fvm)
+  if(pp6)
+    AY_APTRAN3(p6, pp6, fvm)
+
+  if(lastv->type == AY_IDNCURVE)
+    {
+      nc = (ay_nurbcurve_object *)lastv->refine;
+      pp7 = &(nc->controlv[0]);
+      pp8 = &(nc->controlv[(nc->length-1)*4]);
+    }
+  if(lastv->type == AY_IDICURVE)
+    {
+      ic = (ay_icurve_object *)lastv->refine;
+      pp7 = &(ic->controlv[0]);
+      pp8 = &(ic->controlv[(ic->length-1)*3]);
+    }
+  if(pp7)
+    AY_APTRAN3(p7, pp7, lvm)
+  if(pp8)
+    AY_APTRAN3(p8, pp8, lvm)
+
+  /* now compare and possibly correct the points */
+  /* XXXX make those "&&" below "||", when NCurve providing objects are
+     supported by the endpoint calculating code above; gordoncc() can
+     already work with one pp == NULL, if only the point data is complete */
+  if(pp1 && pp5)
+    {
+      ay_status = ay_npt_gordoncc(firstu, firstv,
+				  ((firstu->type == AY_IDNCURVE) &&
+				   (firstv->type == AY_IDNCURVE))?4:3,
+				  p1, p5, pp1, pp5, fumi, fvmi);
+
+    }
+
+  if(pp2 && pp7)
+    {
+      ay_status = ay_npt_gordoncc(firstu, lastv,
+				  ((firstu->type == AY_IDNCURVE) &&
+				   (lastv->type == AY_IDNCURVE))?4:3,
+				  p2, p7, pp2, pp7, fumi, lvmi);
+    }
+
+  if(pp3 && pp6)
+    {
+      ay_status = ay_npt_gordoncc(lastu, firstv,
+				  ((lastu->type == AY_IDNCURVE) &&
+				   (firstv->type == AY_IDNCURVE))?4:3,
+				  p3, p6, pp3, pp6, lumi, fvmi);
+    }
+
+
+  if(pp4 && pp8)
+    {
+      ay_status = ay_npt_gordoncc(lastu, lastv,
+				  ((lastu->type == AY_IDNCURVE) &&
+				   (lastv->type == AY_IDNCURVE))?4:3,
+				  p4, p8, pp4, pp8, lumi, lvmi);
+    }
+
+ return ay_status;
+} /* ay_npt_gordonwc */
+
