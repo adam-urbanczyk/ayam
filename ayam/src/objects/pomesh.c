@@ -549,7 +549,7 @@ ay_pomesh_wribcb(char *file, ay_object *o)
  int ay_status = AY_OK;
  ay_pomesh_object *pomesh = NULL;
  RtInt *nloops = NULL, *nverts = NULL, *verts = NULL;
- RtPoint *controls = NULL;
+ RtPoint *controls = NULL, *normals = NULL;
  int i = 0, a = 0, stride = 0;
  unsigned int total_loops = 0, total_verts = 0;
 
@@ -573,10 +573,33 @@ ay_pomesh_wribcb(char *file, ay_object *o)
       controls[i][1] = (RtFloat)pomesh->controlv[a+1];
       controls[i][2] = (RtFloat)pomesh->controlv[a+2];
       a += stride;
-    }
+    } /* for */
+
+  if(pomesh->has_normals)
+    {
+      if(!(normals = calloc(pomesh->ncontrols, sizeof(RtPoint))))
+	{
+	  free(controls); return AY_EOMEM;
+	}
+
+      a = 3;
+      for(i = 0; i < pomesh->ncontrols; i++)
+	{
+	  normals[i][0] = (RtFloat)pomesh->controlv[a];
+	  normals[i][1] = (RtFloat)pomesh->controlv[a+1];
+	  normals[i][2] = (RtFloat)pomesh->controlv[a+2];
+	  a += stride;
+	} /* for */
+    } /* if */
+
 
   if(!(nloops = calloc(pomesh->npolys, sizeof(RtInt))))
-    { free(controls); return AY_EOMEM; }
+    {
+      free(controls); 
+      if(normals)
+	free(normals);
+      return AY_EOMEM;
+    }
 
   for(i = 0; i < pomesh->npolys; i++)
     {
@@ -585,7 +608,13 @@ ay_pomesh_wribcb(char *file, ay_object *o)
     } /* for */
   
   if(!(nverts = calloc(total_loops, sizeof(RtInt))))
-    { free(controls); free(nloops); return AY_EOMEM; }
+    {
+      free(controls); 
+      if(normals)
+	free(normals);
+      free(nloops);
+      return AY_EOMEM;
+    }
 
   for(i = 0; i < total_loops; i++)
     {
@@ -594,18 +623,30 @@ ay_pomesh_wribcb(char *file, ay_object *o)
     } /* for */
 
   if(!(verts = calloc(total_verts, sizeof(RtInt))))
-    { free(controls); free(nloops); free(nverts); return AY_EOMEM; }
+    {
+      free(controls);
+      if(normals)
+	free(normals);
+      free(nloops);
+      free(nverts);
+      return AY_EOMEM; }
 
   for(i = 0; i < total_verts; i++)
     {
       verts[i] = (RtInt)(pomesh->verts[i]);
     } /* for */
 
-  RiPointsGeneralPolygons((RtInt)pomesh->npolys, nloops, nverts, verts,
+  if(pomesh->has_normals)
+    RiPointsGeneralPolygons((RtInt)pomesh->npolys, nloops, nverts, verts,
+			    "P", controls, "N", normals, NULL);
+  else
+    RiPointsGeneralPolygons((RtInt)pomesh->npolys, nloops, nverts, verts,
 			  "P", controls, NULL);
 
   /* clean up */
   free(controls);
+  if(normals)
+    free(normals);
   free(nloops);
   free(nverts);
   free(verts);
