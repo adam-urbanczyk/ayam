@@ -253,10 +253,17 @@ destroy $w.fArg
 }
 # plb_close
 
-
+set ay(PlbUpdateSema) 0
 #
 proc plb_update { } {
 global ay curtypes pclip_omit pclip_omit_label
+
+# protect against double updates
+if { $ay(PlbUpdateSema) == 1 } {
+    return
+} else {
+    set ay(PlbUpdateSema) 1
+}
 
 if { $ay(lb) == 1 } {
     set index [$ay(olb) curselection]
@@ -329,6 +336,8 @@ if { [llength $index] == 1 } {
     #if
 }
 #if
+
+set ay(PlbUpdateSema) 0
 
  return;
 }
