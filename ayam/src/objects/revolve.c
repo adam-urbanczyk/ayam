@@ -216,6 +216,10 @@ ay_revolve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(revolve->sections));
 
+  Tcl_SetStringObj(ton,"Order",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &(revolve->order));
+
   Tcl_SetStringObj(ton,"UpperCap",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(revolve->has_upper_cap));
@@ -277,6 +281,10 @@ ay_revolve_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_NewIntObj(revolve->sections);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton,"Order",-1);
+  to = Tcl_NewIntObj(revolve->order);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
   Tcl_SetStringObj(ton,"UpperCap",-1);
   to = Tcl_NewIntObj(revolve->has_upper_cap);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
@@ -335,6 +343,7 @@ ay_revolve_readcb(FILE *fileptr, ay_object *o)
   if(ay_read_version >= 7)
     {
       fscanf(fileptr,"%d\n",&revolve->sections);
+      fscanf(fileptr,"%d\n",&revolve->order);
     }
 
   o->refine = revolve;
@@ -361,6 +370,7 @@ ay_revolve_writecb(FILE *fileptr, ay_object *o)
   fprintf(fileptr, "%d\n", revolve->glu_display_mode);
   fprintf(fileptr, "%g\n", revolve->glu_sampling_tolerance);
   fprintf(fileptr, "%d\n", revolve->sections);
+  fprintf(fileptr, "%d\n", revolve->order);
 
  return AY_OK;
 } /* ay_revolve_writecb */
@@ -939,6 +949,7 @@ ay_revolve_notifycb(ay_object *o)
   npatch->type = AY_IDNPATCH;
 
   ay_status = ay_npt_revolve(curve, revolve->thetamax, revolve->sections,
+			     revolve->order,
 			     (ay_nurbpatch_object **)(&(npatch->refine)));
 
   if(ay_status)

@@ -28,6 +28,7 @@ set w [frame $ay(pca).$RevolveAttr(w)]
 
 addParam $w RevolveAttrData ThetaMax
 addParam $w RevolveAttrData Sections
+addParam $w RevolveAttrData Order
 addCheck $w RevolveAttrData UpperCap
 addCheck $w RevolveAttrData LowerCap
 addCheck $w RevolveAttrData StartCap

@@ -272,7 +272,7 @@ int ay_npt_create(int uorder, int vorder, int width, int height,
 		  double *controlv, double *uknotv, double *vknotv,
 		  ay_nurbpatch_object **patchptr);
 
-int ay_npt_revolve(ay_object *o, double arc, int sections,
+int ay_npt_revolve(ay_object *o, double arc, int sections, int order,
 		   ay_nurbpatch_object **patch);
 
 int ay_npt_drawtrimcurve(struct Togl *togl, ay_object *o, GLUnurbsObj *no);

@@ -578,23 +578,24 @@ typedef struct ay_riinc_object_s
 
 typedef struct ay_revolve_object_s
 {
- ay_object *npatch;
+  ay_object *npatch;
 
- double thetamax;
+  double thetamax;
 
- int sections;
+  int sections;
+  int order;
 
- int has_upper_cap;
- ay_object *upper_cap;
- int has_lower_cap;
- ay_object *lower_cap;
- int has_start_cap;
- ay_object *start_cap;
- int has_end_cap;
- ay_object *end_cap;
+  int has_upper_cap;
+  ay_object *upper_cap;
+  int has_lower_cap;
+  ay_object *lower_cap;
+  int has_start_cap;
+  ay_object *start_cap;
+  int has_end_cap;
+  ay_object *end_cap;
 
- double glu_sampling_tolerance;
- int glu_display_mode;
+  double glu_sampling_tolerance;
+  int glu_display_mode;
 } ay_revolve_object;
 
 typedef struct ay_extrude_object_s

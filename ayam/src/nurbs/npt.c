@@ -88,7 +88,7 @@ ay_npt_create(int uorder, int vorder, int width, int height,
  *
  */
 int
-ay_npt_revolve(ay_object *o, double arc, int sections,
+ay_npt_revolve(ay_object *o, double arc, int sections, int order,
 	       ay_nurbpatch_object **patch)
 {
  int ay_status = AY_OK;
@@ -117,6 +117,9 @@ ay_npt_revolve(ay_object *o, double arc, int sections,
       arc = 360.0;
     }
 
+  if((sections == 0) || (order <= 1))
+    order = 3;
+
   /* calloc the new patch */
   if(!(new = calloc(1, sizeof(ay_nurbpatch_object))))
     return AY_EOMEM;
@@ -129,7 +132,7 @@ ay_npt_revolve(ay_object *o, double arc, int sections,
   memcpy(uknotv,curve->knotv,(curve->length+curve->order)*sizeof(double));
   new->uknotv = uknotv;
   new->uorder = curve->order;
-  new->vorder = 3;
+  new->vorder = order;
   new->uknot_type = curve->knot_type;
   new->vknot_type = AY_KTCUSTOM;
   new->width = curve->length;
@@ -179,7 +182,7 @@ ay_npt_revolve(ay_object *o, double arc, int sections,
 	  if(arc == 360.0)
 	    {
 	      tmpnc = NULL;
-	      ay_status = ay_nct_crtcircbsp(sections, radius, 360.0, 3,
+	      ay_status = ay_nct_crtcircbsp(sections, radius, 360.0, order,
 					    &tmpnc);
 	      if(!tmpnc)
 		return AY_ERROR;
@@ -1357,7 +1360,7 @@ ay_npt_crtnspheretcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  ay_status = ay_npt_revolve(newc, 360.0, 0,
+  ay_status = ay_npt_revolve(newc, 360.0, 0, 0,
 			     (ay_nurbpatch_object **)&(o->refine));
 
   if(ay_status)
