@@ -4331,7 +4331,7 @@ ay_npt_getpntfromindex(ay_nurbpatch_object *patch, int indexu, int indexv,
       return TCL_OK;
     }
 
-  *p = &(patch->controlv[(indexu*patch->width+indexv)*stride]);
+  *p = &(patch->controlv[(indexu*patch->height+indexv)*stride]);
 
  return TCL_OK;
 } /* ay_npt_getpntfromindex */
