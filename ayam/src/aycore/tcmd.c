@@ -267,26 +267,67 @@ ay_tcmd_getvertcmd(ClientData clientData, Tcl_Interp * interp,
  return TCL_OK;
 } /* ay_tcmd_getvertcmd */
 
-
-/* ay_tcmd_getbppointtcmd:
+/* ay_tcmd_getbppntfromindex:
  *  
  *  
  */
 int
-ay_tcmd_getbppointtcmd(ClientData clientData, Tcl_Interp *interp,
-		       int argc, char *argv[])
+ay_tcmd_getbppntfromindex(ay_bpatch_object *patch, int index,
+			  double **p)
+{
+ char fname[] = "ay_tcmd_getbppntfromindex";
+
+  if(index >= 4 || index < 0)
+    {
+      ay_error(AY_ERROR, fname, "index out of range");
+      return TCL_OK;
+    }
+
+  switch(index)
+    {
+    case 0:
+      *p = patch->p1;
+      break;
+    case 1:
+      *p = patch->p2;
+      break;
+    case 2:
+      *p = patch->p3;
+      break;
+    case 3:
+      *p = patch->p4;
+      break;
+    default:
+      *p = patch->p1;
+      break;
+    } /* switch */
+
+ return AY_OK;
+} /* ay_tcmd_getbppntfromindex */
+
+
+/* ay_tcmd_getpointtcmd:
+ *  
+ *  
+ */
+int
+ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
+		     int argc, char *argv[])
 {
  ay_list_object *sel = ay_selection;
  ay_object *src = NULL;
- ay_bpatch_object *patch = NULL;
- int index = 0;
- double *p = NULL;
- char fname[] = "getBP";
+ int indexu = 0, indexv = 0, i = 1, j = 0;
+ int homogenous = AY_FALSE, trafo = AY_FALSE;
+ double *p = NULL, *tp = NULL, tmp[4] = {0};
+ GLdouble m[16];
+ double rm[16];
+ char fname[] = "getPnt";
  Tcl_Obj *to = NULL, *ton = NULL;
 
-  if(argc != 5)
+  if(argc == 0)
     {
-      ay_error(AY_EARGS, fname, "index varx vary varz");
+      ay_error(AY_EARGS, fname,
+	       "[-trafo] (index | indexu indexv) varx vary varz [varw]");
       return TCL_OK;
     }
 
@@ -296,90 +337,144 @@ ay_tcmd_getbppointtcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
+  if(!strcmp(argv[1], "-trafo"))
+    {
+      trafo = AY_TRUE;
+      i++;
+    }
+  
   while(sel)
     {
       src = sel->object;
-      if(src->type != AY_IDBPATCH)
+      p = NULL;
+      homogenous = AY_FALSE;
+      switch(src->type)
 	{
-	  ay_error(AY_ERROR, fname, "object is not a BPatch");
-	  return TCL_OK;
-	}
-      else
+	case AY_IDNCURVE:
+	  Tcl_GetInt(interp, argv[i], &indexu);
+	  ay_nct_getpntfromindex((ay_nurbcurve_object*)(src->refine),
+				 indexu, &p);
+	  homogenous = AY_TRUE;
+	  j = i+1;
+	  break;
+	case AY_IDICURVE:
+	  Tcl_GetInt(interp, argv[i], &indexu);
+	  ay_ict_getpntfromindex((ay_icurve_object*)(src->refine),
+				 indexu, &p);
+	  homogenous = AY_FALSE;
+	  j = i+1;
+	  break;
+	case AY_IDNPATCH:
+	  Tcl_GetInt(interp, argv[i], &indexu);
+	  Tcl_GetInt(interp, argv[i+1], &indexv);
+	  ay_npt_getpntfromindex((ay_nurbpatch_object*)(src->refine),
+				 indexu, indexv, &p);
+	  homogenous = AY_TRUE;
+	  j = i+2;
+	  break;
+	case AY_IDBPATCH:
+	  Tcl_GetInt(interp, argv[i], &indexu);
+	  ay_tcmd_getbppntfromindex((ay_bpatch_object*)(src->refine),
+				    indexu, &p);
+	  homogenous = AY_FALSE;
+	  j = i+1;
+	  break;
+	case AY_IDPAMESH:
+	  Tcl_GetInt(interp, argv[i], &indexu);
+	  Tcl_GetInt(interp, argv[i+1], &indexv);
+	  ay_pmt_getpntfromindex((ay_pamesh_object*)(src->refine),
+				 indexu, indexv, &p);
+	  homogenous = AY_TRUE;
+	  j = i+2;
+	  break;
+
+	default:
+	  ay_error(AY_EWARN, fname,
+		   "don't know how to get point from this object");
+	  break;
+	} /* switch */
+
+      if(p)
 	{
-	  patch = (ay_bpatch_object*)src->refine;
+	  /* apply trafos? */
+	  if(trafo)
+	    { /* Yes! */
+	      glPushMatrix();
+	       glTranslated(src->movx, src->movy, src->movz);
+	       ay_quat_torotmatrix(src->quat, rm);
+	       glMultMatrixd((GLdouble *)rm);
+	       glScaled(src->scalx, src->scaly, src->scalz);
+	       glGetDoublev(GL_MODELVIEW_MATRIX, m);
+	      glPopMatrix();
 
-	  Tcl_GetInt(interp, argv[1], &index);
+	      if(homogenous)
+		{
+		  memcpy(tmp, p, 4*sizeof(double));
+		  ay_trafo_apply4(tmp, m);
+		}
+	      else
+		{
+		  memcpy(tmp, p, 3*sizeof(double));
+		  ay_trafo_apply3(tmp, m);
+		}
 
-	  if(index >= 4 || index < 0)
+	      tp = tmp;
+	    }
+	  else
+	    { /* No! */
+	      tp = p;
+	    }
+	    
+	  ton = Tcl_NewStringObj(argv[j], -1);
+	  to = Tcl_NewDoubleObj(tp[0]);
+	  Tcl_ObjSetVar2(interp, ton, NULL, to, TCL_LEAVE_ERR_MSG |
+			 TCL_GLOBAL_ONLY | TCL_PARSE_PART1);
+
+	  Tcl_SetStringObj(ton, argv[j+1], -1);
+	  to = Tcl_NewDoubleObj(tp[1]);
+	  Tcl_ObjSetVar2(interp, ton, NULL, to, TCL_LEAVE_ERR_MSG |
+			 TCL_GLOBAL_ONLY | TCL_PARSE_PART1);
+
+	  Tcl_SetStringObj(ton, argv[j+2], -1);
+	  to = Tcl_NewDoubleObj(tp[2]);
+	  Tcl_ObjSetVar2(interp, ton, NULL, to, TCL_LEAVE_ERR_MSG |
+			 TCL_GLOBAL_ONLY | TCL_PARSE_PART1);
+	  if(homogenous)
 	    {
-	      ay_error(AY_ERROR, fname, "index out of range");
-	      return TCL_OK;
+	      Tcl_SetStringObj(ton, argv[j+3], -1);
+	      to = Tcl_NewDoubleObj(tp[3]);
+	      Tcl_ObjSetVar2(interp, ton, NULL, to, TCL_LEAVE_ERR_MSG |
+			     TCL_GLOBAL_ONLY | TCL_PARSE_PART1);
 	    }
 
-	  switch(index)
-	    {
-	    case 0:
-	      p = patch->p1;
-	      break;
-	    case 1:
-	      p = patch->p2;
-	      break;
-	    case 2:
-	      p = patch->p3;
-	      break;
-	    case 3:
-	      p = patch->p4;
-	      break;
-	    default:
-	      p = patch->p1;
-	      break;
-	    } /* switch */
-
-	  ton = Tcl_NewStringObj(argv[2],-1);
-	  to = Tcl_NewDoubleObj(p[0]);
-	  Tcl_ObjSetVar2(interp,ton,NULL,to, TCL_LEAVE_ERR_MSG |
-			 TCL_GLOBAL_ONLY | TCL_PARSE_PART1);
-
-	  Tcl_SetStringObj(ton,argv[3],-1);
-	  to = Tcl_NewDoubleObj(p[1]);
-	  Tcl_ObjSetVar2(interp,ton,NULL,to, TCL_LEAVE_ERR_MSG |
-			 TCL_GLOBAL_ONLY | TCL_PARSE_PART1);
-
-	  Tcl_SetStringObj(ton,argv[4],-1);
-	  to = Tcl_NewDoubleObj(p[2]);
-	  Tcl_ObjSetVar2(interp,ton,NULL,to, TCL_LEAVE_ERR_MSG |
-			 TCL_GLOBAL_ONLY | TCL_PARSE_PART1);
-	  
 	  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
-
 	} /* if */
 
       sel = sel->next;
     } /* while */
 
  return TCL_OK;
-} /* ay_tcmd_getbppointtcmd */
+} /* ay_tcmd_getpointtcmd */
 
 
-/* ay_tcmd_setbppointtcmd:
+/* ay_tcmd_setpointtcmd:
  *  
  *  
  */
 int
-ay_tcmd_setbppointtcmd(ClientData clientData, Tcl_Interp *interp,
-		       int argc, char *argv[])
+ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
+		     int argc, char *argv[])
 {
  ay_list_object *sel = ay_selection;
  ay_object *src = NULL;
- ay_bpatch_object *patch = NULL;
  double dtemp = 0.0;
- int index = 0;
+ int indexu = 0, indexv = 0, i, homogenous = AY_FALSE;
  double *p = NULL;
- char fname[] = "setBP";
+ char fname[] = "setPnt";
 
-  if(argc != 5)
+  if(argc == 0)
     {
-      ay_error(AY_EARGS, fname, "index x y z");
+      ay_error(AY_EARGS, fname, "(index | indexu indexv) x y z [w]");
       return TCL_OK;
     }
 
@@ -392,51 +487,69 @@ ay_tcmd_setbppointtcmd(ClientData clientData, Tcl_Interp *interp,
   while(sel)
     {
       src = sel->object;
-      if(src->type != AY_IDBPATCH)
+      p = NULL;
+      homogenous = AY_FALSE;
+      switch(src->type)
 	{
-	  ay_error(AY_ERROR, fname, "object is not a BPatch");
-	  return TCL_OK;
-	}
-      else
+	case AY_IDNCURVE:
+	  Tcl_GetInt(interp, argv[1], &indexu);
+	  ay_nct_getpntfromindex((ay_nurbcurve_object*)(src->refine),
+				 indexu, &p);
+	  homogenous = AY_TRUE;
+	  i = 2;
+	  break;
+	case AY_IDICURVE:
+	  Tcl_GetInt(interp, argv[1], &indexu);
+	  ay_ict_getpntfromindex((ay_icurve_object*)(src->refine),
+				 indexu, &p);
+	  homogenous = AY_FALSE;
+	  i = 2;
+	  break;
+	case AY_IDNPATCH:
+	  Tcl_GetInt(interp, argv[1], &indexu);
+	  Tcl_GetInt(interp, argv[2], &indexv);
+	  ay_npt_getpntfromindex((ay_nurbpatch_object*)(src->refine),
+				 indexu, indexv, &p);
+	  homogenous = AY_TRUE;
+	  i = 3;
+	  break;
+	case AY_IDBPATCH:
+	  Tcl_GetInt(interp, argv[1], &indexu);
+	  ay_tcmd_getbppntfromindex((ay_bpatch_object*)(src->refine),
+				    indexu, &p);
+	  homogenous = AY_FALSE;
+	  i = 2;
+	  break;
+	case AY_IDPAMESH:
+	  Tcl_GetInt(interp, argv[1], &indexu);
+	  Tcl_GetInt(interp, argv[2], &indexv);
+	  ay_pmt_getpntfromindex((ay_pamesh_object*)(src->refine),
+				 indexu, indexv, &p);
+	  homogenous = AY_TRUE;
+	  i = 3;
+	  break;
+	default:
+	  ay_error(AY_EWARN, fname,
+		   "don't know how to set point of this object");
+	  break;
+	} /* switch */
+
+      if(p)
 	{
-	  patch = (ay_bpatch_object*)src->refine;
-
-	  Tcl_GetInt(interp, argv[1], &index);
-
-	  if(index >= 4 || index < 0)
-	    {
-	      ay_error(AY_ERROR, fname, "index out of range");
-	      return TCL_OK;
-	    }
-
-	  switch(index)
-	    {
-	    case 0:
-	      p = patch->p1;
-	      break;
-	    case 1:
-	      p = patch->p2;
-	      break;
-	    case 2:
-	      p = patch->p3;
-	      break;
-	    case 3:
-	      p = patch->p4;
-	      break;
-	    default:
-	      p = patch->p1;
-	      break;
-	    } /* switch */
-
-	  Tcl_GetDouble(interp, argv[2], &dtemp);
+	  Tcl_GetDouble(interp, argv[i], &dtemp);
 	  p[0] = dtemp;
 
-	  Tcl_GetDouble(interp, argv[3], &dtemp);
+	  Tcl_GetDouble(interp, argv[i+1], &dtemp);
 	  p[1] = dtemp;
 
-	  Tcl_GetDouble(interp, argv[4], &dtemp);
+	  Tcl_GetDouble(interp, argv[i+2], &dtemp);
 	  p[2] = dtemp;
 
+	  if(homogenous)
+	    {
+	      Tcl_GetDouble(interp, argv[i+3], &dtemp);
+	      p[3] = dtemp;
+	    } /* if */
 	} /* if */
 
       sel = sel->next;
@@ -445,4 +558,4 @@ ay_tcmd_setbppointtcmd(ClientData clientData, Tcl_Interp *interp,
   ay_notify_parent();
 
  return TCL_OK;
-} /* ay_tcmd_setbppointtcmd */
+} /* ay_tcmd_setpointtcmd */

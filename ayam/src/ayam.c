@@ -593,10 +593,10 @@ int ay_status = AY_OK;
   Tcl_CreateCommand(interp, "getVersion", ay_tcmd_getvertcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "getBP", ay_tcmd_getbppointtcmd,
+  Tcl_CreateCommand(interp, "getPnt", ay_tcmd_getpointtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "setBP", ay_tcmd_setbppointtcmd,
+  Tcl_CreateCommand(interp, "setPnt", ay_tcmd_setpointtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   /* tmp.c */
@@ -759,12 +759,6 @@ int ay_status = AY_OK;
   Tcl_CreateCommand(interp, "crtClosedBS", ay_nct_crtclosedbsptcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "getNC", ay_nct_getncpointtcmd,
-		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
-
-  Tcl_CreateCommand(interp, "setNC", ay_nct_setncpointtcmd,
-		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
-
   /* nurbs/npt.c */
 
   Tcl_CreateCommand(interp, "crtNSphere", ay_npt_crtnspheretcmd,
@@ -778,13 +772,6 @@ int ay_status = AY_OK;
 
   Tcl_CreateCommand(interp, "buildNP", ay_npt_buildfromcurvestcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
-
-  Tcl_CreateCommand(interp, "getNP", ay_npt_getnppointtcmd,
-		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
-
-  Tcl_CreateCommand(interp, "setNP", ay_npt_setnppointtcmd,
-		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
-
 
 
 

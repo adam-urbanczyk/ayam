@@ -2347,157 +2347,6 @@ ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_nct_crtclosedbsptcmd */
 
 
-/* ay_nct_getncpointtcmd:
- *  
- *  
- */
-int
-ay_nct_getncpointtcmd(ClientData clientData, Tcl_Interp *interp,
-		      int argc, char *argv[])
-{
- ay_list_object *sel = ay_selection;
- ay_object *src = NULL;
- ay_nurbcurve_object *curve = NULL;
- int stride = 4, index = 0;
- char fname[] = "get_ncurve_point";
- Tcl_Obj *to = NULL, *ton = NULL;
-
-  if(argc!=6)
-    {
-      ay_error(AY_EARGS, fname, "index varx vary varz varw");
-      return TCL_OK;
-    }
-
-  if(!sel)
-    {
-      ay_error(AY_ENOSEL, fname, NULL);
-      return TCL_OK;
-    }
-
-  while(sel)
-    {
-      src = sel->object;
-      if(src->type != AY_IDNCURVE)
-	{
-	  ay_error(AY_ERROR, fname, "object is not a NURBCurve");
-	  return TCL_OK;
-	}
-      else
-	{
-	  curve = (ay_nurbcurve_object*)src->refine;
-
-	  Tcl_GetInt(interp, argv[1], &index);
-	  index *= stride;
-
-	  if(index >= curve->length*stride || index < 0)
-	    {
-	      ay_error(AY_ERROR, fname, "index out of range");
-	      return TCL_OK;
-	    }
-	  ton = Tcl_NewStringObj(argv[2],-1);
-	  to = Tcl_NewDoubleObj(curve->controlv[index]);
-	  Tcl_ObjSetVar2(interp,ton,NULL,to,
-			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-	  Tcl_SetStringObj(ton,argv[3],-1);
-	  to = Tcl_NewDoubleObj(curve->controlv[index+1]);
-	  Tcl_ObjSetVar2(interp,ton,NULL,to,
-			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-	  Tcl_SetStringObj(ton,argv[4],-1);
-	  to = Tcl_NewDoubleObj(curve->controlv[index+2]);
-	  Tcl_ObjSetVar2(interp,ton,NULL,to,
-			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	  
-	  Tcl_SetStringObj(ton,argv[5],-1);
-	  to = Tcl_NewDoubleObj(curve->controlv[index+3]);
-	  Tcl_ObjSetVar2(interp,ton,NULL,to,
-			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-	  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
-
-	} /* if */
-
-      sel = sel->next;
-    } /* while */
-
- return TCL_OK;
-} /* ay_nct_getncpointtcmd */
-
-
-/* ay_nct_setncpointtcmd:
- *  
- *  
- */
-int
-ay_nct_setncpointtcmd(ClientData clientData, Tcl_Interp *interp,
-		      int argc, char *argv[])
-{
- ay_list_object *sel = ay_selection;
- ay_object *src = NULL;
- ay_nurbcurve_object *curve = NULL;
- double dtemp = 0.0;
- int stride = 4, index = 0;
- char fname[] = "set_ncurve_point";
-
-  if(argc<6)
-    {
-      ay_error(AY_EARGS, fname, "index x y z w");
-      return TCL_OK;
-    }
-
-  if(!sel)
-    {
-      ay_error(AY_ENOSEL, fname, NULL);
-      return TCL_OK;
-    }
-
-  while(sel)
-    {
-      src = sel->object;
-      if(src->type != AY_IDNCURVE)
-	{
-	  ay_error(AY_ERROR, fname, "object is not a NURBCurve");
-	  return TCL_OK;
-	}
-      else
-	{
-	  curve = (ay_nurbcurve_object*)src->refine;
-
-	  Tcl_GetInt(interp, argv[1], &index);
-	  index *= stride;
-
-	  if(index >= curve->length*stride || index < 0)
-	    {
-	      ay_error(AY_ERROR, fname, "index out of range");
-	      return TCL_OK;
-	    }
-
-	  Tcl_GetDouble(interp, argv[2], &dtemp);
-	  curve->controlv[index] = dtemp;
-
-	  Tcl_GetDouble(interp, argv[3], &dtemp);
-	  curve->controlv[index+1] = dtemp;
-
-	  Tcl_GetDouble(interp, argv[4], &dtemp);
-	  curve->controlv[index+2] = dtemp;
-
-	  Tcl_GetDouble(interp, argv[5], &dtemp);
-	  curve->controlv[index+3] = dtemp;
-
-	  ay_nct_recreatemp(curve);
-
-	} /* if */
-
-      sel = sel->next;
-    } /* while */
-
-  ay_notify_parent();
-
- return TCL_OK;
-} /* ay_nct_setncpointtcmd */
-
-
 /* ay_nct_getorientation:
  *  return a negative value if curve is ccw (or cw? :)
  *  this is my third attempt on (and a complete rewrite of) this routine
@@ -2856,3 +2705,25 @@ ay_nct_applytrafo(ay_object *c)
 
  return AY_OK;
 } /* ay_nct_applytrafo */
+
+
+/* ay_nct_getpntfromindex:
+ *  
+ *  
+ */
+int
+ay_nct_getpntfromindex(ay_nurbcurve_object *curve, int index, double **p)
+{
+ int stride = 4;
+ char fname[] = "ay_nct_getpntfromindex";
+
+  if(index >= curve->length || index < 0)
+    {
+      ay_error(AY_ERROR, fname, "index out of range");
+      return TCL_OK;
+    }
+
+  *p = &(curve->controlv[index*stride]);
+
+ return TCL_OK;
+} /* ay_nct_getpntfromindex */

@@ -584,3 +584,32 @@ ay_pmt_valid(ay_pamesh_object *pamesh, int *detail)
 
   return AY_OK;
 } /* ay_pmt_valid */
+
+
+/* ay_pmt_getpntfromindex:
+ *  
+ *  
+ */
+int
+ay_pmt_getpntfromindex(ay_pamesh_object *patch, int indexu, int indexv,
+		       double **p)
+{
+ int stride = 4;
+ char fname[] = "ay_pmt_getpntfromindex";
+
+  if(indexu >= patch->width || indexu < 0)
+    {
+      ay_error(AY_ERROR, fname, "index u out of range");
+      return TCL_OK;
+    }
+
+  if(indexv >= patch->height || indexv < 0)
+    {
+      ay_error(AY_ERROR, fname, "index v out of range");
+      return TCL_OK;
+    }
+
+  *p = &(patch->controlv[(indexu*patch->width+indexv)*stride]);
+
+ return TCL_OK;
+} /* ay_pmt_getpntfromindex */

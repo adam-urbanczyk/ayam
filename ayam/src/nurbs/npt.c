@@ -1460,177 +1460,6 @@ ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_npt_buildfromcurvestcmd */
 
 
-/* ay_npt_getnppointtcmd:
- *  
- *  
- */
-int
-ay_npt_getnppointtcmd(ClientData clientData, Tcl_Interp *interp,
-		      int argc, char *argv[])
-{
- ay_list_object *sel = ay_selection;
- ay_object *src = NULL;
- ay_nurbpatch_object *patch = NULL;
- int stride = 3, indexu = 0, indexv = 0;
- char fname[] = "get_npatch_point";
- Tcl_Obj *to = NULL, *ton = NULL;
-
-  if(argc < 7)
-    {
-      ay_error(AY_EARGS, fname,
-		 "indexu indexv varx vary varz varw");
-      return TCL_OK;
-    }
-
-  if(!sel)
-    {
-      ay_error(AY_ENOSEL, fname, NULL);
-      return TCL_OK;
-    }
-
-  while(sel)
-    {
-      src = sel->object;
-      if(src->type != AY_IDNPATCH)
-	{
-	  ay_error(AY_ERROR, fname, "object is not a NURBPatch");
-	  return TCL_OK;
-	}
-      else
-	{
-	  patch = (ay_nurbpatch_object*)src->refine;
-	  stride = 4;
-
-	  Tcl_GetInt(interp, argv[1], &indexu);
-	  if(indexu >= patch->width*stride || indexu < 0)
-	    {
-	      ay_error(AY_ERROR, fname, "index u out of range");
-	      return TCL_OK;
-	    }
-	  indexu *= patch->height;
-	  indexu *= stride;
-
-	  Tcl_GetInt(interp, argv[2], &indexv);
-	  if(indexv >= patch->height*stride || indexv < 0)
-	    {
-	      ay_error(AY_ERROR, fname, "index v out of range");
-	      return TCL_OK;
-	    }
-	  indexu += (indexv*stride);
-
-	  ton = Tcl_NewStringObj(argv[3],-1);
-	  to = Tcl_NewDoubleObj(patch->controlv[indexu]);
-	  Tcl_ObjSetVar2(interp,ton,NULL,to,
-			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-	  Tcl_SetStringObj(ton,argv[4],-1);
-	  to = Tcl_NewDoubleObj(patch->controlv[indexu+1]);
-	  Tcl_ObjSetVar2(interp,ton,NULL,to,
-			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-	  Tcl_SetStringObj(ton,argv[5],-1);
-	  to = Tcl_NewDoubleObj(patch->controlv[indexu+2]);
-	  Tcl_ObjSetVar2(interp,ton,NULL,to,
-			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-	  Tcl_SetStringObj(ton,argv[6],-1);
-	  to = Tcl_NewDoubleObj(patch->controlv[indexu+3]);
-	  Tcl_ObjSetVar2(interp,ton,NULL,to,
-			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-	  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
-
-	} /* if */
-
-      sel = sel->next;
-    } /* while */
-
- return TCL_OK;
-} /* ay_npt_getnppointtcmd */
-
-
-/* ay_npt_setnppointtcmd:
- *  
- *  
- */
-int
-ay_npt_setnppointtcmd(ClientData clientData, Tcl_Interp *interp,
-		      int argc, char *argv[])
-{
- ay_list_object *sel = ay_selection;
- ay_object *src = NULL;
- ay_nurbpatch_object *patch = NULL;
- double dtemp = 0.0;
- int stride = 3, indexu = 0, indexv = 0;
- char fname[] = "set_npatch_point";
-
-  if(argc < 7)
-    {
-      ay_error(AY_EARGS, fname, "indexu indexv x y z w");
-      return TCL_OK;
-    }
-
-  if(!sel)
-    {
-      ay_error(AY_ENOSEL, fname, NULL);
-      return TCL_OK;
-    }
-
-  while(sel)
-    {
-      src = sel->object;
-      if(src->type != AY_IDNPATCH)
-	{
-	  ay_error(AY_ERROR, fname, "object is not a NURBPatch");
-	  return TCL_OK;
-	}
-      else
-	{
-	  patch = (ay_nurbpatch_object*)src->refine;
-	  stride = 4;
-
-	  Tcl_GetInt(interp, argv[1], &indexu);
-	  if(indexu >= patch->width || indexu < 0)
-	    {
-	      ay_error(AY_ERROR, fname, "index u out of range");
-	      return TCL_OK;
-	    }
-
-	  indexu *= stride;
-
-	  Tcl_GetInt(interp, argv[2], &indexv);
-	  if(indexv >= patch->height || indexv < 0)
-	    {
-	      ay_error(AY_ERROR, fname, "index v out of range");
-	      return TCL_OK;
-	    }
-
-	  indexu += (indexv*patch->width*stride);
-
-	  Tcl_GetDouble(interp, argv[3], &dtemp);
-	  patch->controlv[indexu] = dtemp;
-
-	  Tcl_GetDouble(interp, argv[4], &dtemp);
-	  patch->controlv[indexu+1] = dtemp;
-
-	  Tcl_GetDouble(interp, argv[5], &dtemp);
-	  patch->controlv[indexu+2] = dtemp;
-
-	  Tcl_GetDouble(interp, argv[6], &dtemp);
-	  patch->controlv[indexu+3] = dtemp;	    
-
-
-	} /* if */
-
-      sel = sel->next;
-    } /* while */
-
-  ay_notify_parent();
-
- return TCL_OK;
-} /* ay_npt_setnppointtcmd */
-
-
 /* ay_npt_sweep:
  *  sweep cross section o along path o2 possibly rotating it,
  *  so that it always is perpendicular to the path.
@@ -2931,3 +2760,31 @@ ay_npt_createcap(double z, ay_nurbcurve_object *curve,
  return ay_status;
 } /* ay_npt_createcap */
 
+
+/* ay_npt_getpntfromindex:
+ *  
+ *  
+ */
+int
+ay_npt_getpntfromindex(ay_nurbpatch_object *patch, int indexu, int indexv,
+		       double **p)
+{
+ int stride = 4;
+ char fname[] = "ay_npt_getpntfromindex";
+
+  if(indexu >= patch->width || indexu < 0)
+    {
+      ay_error(AY_ERROR, fname, "index u out of range");
+      return TCL_OK;
+    }
+
+  if(indexv >= patch->height || indexv < 0)
+    {
+      ay_error(AY_ERROR, fname, "index v out of range");
+      return TCL_OK;
+    }
+
+  *p = &(patch->controlv[(indexu*patch->width+indexv)*stride]);
+
+ return TCL_OK;
+} /* ay_npt_getpntfromindex */
