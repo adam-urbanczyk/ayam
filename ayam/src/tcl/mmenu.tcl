@@ -334,7 +334,7 @@ $m add command -label "Convert" -command {
 }
 $m add command -label "Convert (In Place)" -command {
     global ay;
-    undo save Convert;
+    #undo save Convert;
     convOb -inplace; update; cS; set ay(ul) $ay(CurrentLevel); uS; rV
 }
 $m add separator
