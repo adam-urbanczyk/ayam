@@ -271,7 +271,7 @@ ay_text_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_text_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- int ay_status = AY_OK;
+  /*int ay_status = AY_OK;*/
  char *n1="TextAttrData";
  char emptystring[] = "";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
