@@ -141,6 +141,7 @@ meta_tri_adapt(meta_vertex *v0, meta_vertex *v1, meta_vertex *v2, int k, meta_wo
 	  w->currentnumpoly++;
 	  
    }
+
    else
    {
 
@@ -153,7 +154,8 @@ meta_tri_adapt(meta_vertex *v0, meta_vertex *v1, meta_vertex *v2, int k, meta_wo
   	 meta_tri_adapt(v2,&m3,&m2,k,w);
   	 meta_tri_adapt(&m1,&m2,&m3,k,w);
    }
-   
+
+ 
 }
 
 

@@ -736,17 +736,19 @@ meta_getnormal (meta_world * w, meta_xyz * p, meta_xyz * normal)
   f = meta_calcall (p->x, p->y, p->z, w);
 
   
-/*
+
      xn = (meta_calcall(p->x+d, p->y, p->z,w) - meta_calcall(p->x-d, p->y, p->z,w))/(2*d);
      yn = (meta_calcall(p->x, p->y+d, p->z,w) - meta_calcall(p->x, p->y-d, p->z,w))/(2*d);
      zn = (meta_calcall(p->x, p->y, p->z+d,w) - meta_calcall(p->x, p->y, p->z-d,w))/(2*d);
-*/
 
 
+
+
+/*
   xn = (meta_calcall (p->x + d, p->y, p->z, w) - f) / d;
   yn = (meta_calcall (p->x, p->y + d, p->z, w) - f) / d;
   zn = (meta_calcall (p->x, p->y, p->z + d, w) - f) / d;
-
+*/
   old = sqrt (META_SQ (xn) + META_SQ (yn) + META_SQ (zn));
 
   if (old != 0.0)
