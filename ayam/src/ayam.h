@@ -606,6 +606,7 @@ typedef struct ay_prefs_object_s
   double grr, grg, grb; /* grid color */
   double tpr, tpg, tpb; /* tagged points color */
   double shr, shg, shb; /* default shade color */
+  double lir, lig, lib; /* default light color */
 
   int use_materialcolor;
 

@@ -55,6 +55,10 @@ array set ayprefs {
  Shade_G 191
  Shade_B 165
 
+ Light_R 220
+ Light_G 220
+ Light_B 150
+
  RIBFile "Scene"
  Image "RIB"
  ResInstances 0
