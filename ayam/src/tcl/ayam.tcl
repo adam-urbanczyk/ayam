@@ -135,6 +135,7 @@ array set ayprefs {
  BakOnReplace 0
  BackupExt "~"
 
+ DefaultAction 1
 
  Scripts ""
  Docs "http://ayam.sourceforge.net/docs/"
@@ -160,11 +161,12 @@ on its name, then press <Ctrl+Shift+i> (Copy Marked Prop).}
 {Ayam may be completely iconified using <Ctrl+Shift+z> (zap).}
 {To create a material for a selected object, press <Ctrl+m>.}
 {Extensive documentation is available as HTML and PDF.}
-{Use F2/F3 to adjust the sampling rate for NURBS display}
+{Use F2/F3 to adjust the sampling rate for NURBS display.}
 {Use F4/F5 to toggle wireframe/NURBS display.}
 {Use F6 to toggle "lazy notification" on/off.}
 {Do not underestimate the power of the Skin!}
-{To find the master of an instance, press <Ctrl+Shift+m>}
+{To find the master of an instance, press <Ctrl+Shift+m>.}
+{Your object tree needs updating? Press <Ctrl+l>.}
 }
 }
 # array ayprefs
@@ -281,6 +283,8 @@ array set ayviewshortcuts {
 
     RotMod "Alt"
     RotModKey "Alt_L"
+
+    Pick "P"
 }
 # array ayviewshortcuts
 
@@ -448,6 +452,7 @@ array set ay {
  redoo none
  smethods { PathLength ParametricError DomainDistance }
  prefsgeom ""
+ defactions { None Pick }
 }
 # array ay
 

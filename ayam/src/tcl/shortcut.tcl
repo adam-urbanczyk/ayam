@@ -411,6 +411,7 @@ proc shortcut_viewactions { w } {
     bind $w <$ayviewshortcuts(DeleteP)> "actionDeleteP $w.f3D.togl"
     bind $w <$ayviewshortcuts(FindU)> "actionFindU $w.f3D.togl"
     bind $w <$ayviewshortcuts(SplitNC)> "actionSplitNC $w.f3D.togl"
+    bind $w <$ayviewshortcuts(Pick)> "actionPick $w.f3D.togl"
 
  return;
 }

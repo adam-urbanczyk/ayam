@@ -780,16 +780,12 @@ proc actionSplitNC { w } {
 }
 # actionSplitNC
 
-#actionClear:
-# not really an action, clears all bindings, establishes object
-# pick bindings and is normally bound to the Esc-key
-proc actionClear { w } {
-    viewTitle $w "" "Pick"
 
-    bind $w <ButtonPress-1> ""
-    bind $w <B1-Motion> ""
-    bind $w <ButtonRelease-1> ""
-    set t [winfo toplevel $w]
+#actionPick:
+# establish object picking bindings
+proc actionPick { w } {
+
+    viewTitle $w "" "Pick"
 
     bind $w <ButtonPress-1> {
 	set oldx %x
@@ -836,7 +832,35 @@ proc actionClear { w } {
 	%W setconf -rect $oldx $oldy %x %y 1
     }
 
+    set t [winfo toplevel $w]
     $t.f3D.togl setconf -drawh 0
     $t.f3D.togl setconf -mark 0 0 0
+
+ return;
+}
+#actionPick
+
+#actionClear:
+# not really an action, clears all bindings, establishes picking bindings
+# when requested via preferences and is normally bound to the Esc-key
+proc actionClear { w } {
+    global ayprefs
+
+    bind $w <ButtonPress-1> ""
+    bind $w <B1-Motion> ""
+    bind $w <ButtonRelease-1> ""
+
+    if { $ayprefs(DefaultAction) == 0 } {
+	viewTitle $w "" "None"
+
+	set t [winfo toplevel $w]
+
+	$t.f3D.togl setconf -drawh 0
+	$t.f3D.togl setconf -mark 0 0 0
+    } else {
+	actionPick $w
+    }
+
+ return;
 }
 # actionClear
