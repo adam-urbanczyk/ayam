@@ -388,13 +388,11 @@ proc shortcut_view { w } {
     bind $w <[repcont $ayviewshortcuts(RotD)]>\
 	    "$w.f3D.togl setconf -undroty 1 -droty 5.0 -drotx 0.0"
 
-    bind $w <[repcont $ayviewshortcuts(ZoomI)]> {
-	%W.f3D.togl setconf -dzoom 0.9
-    }
+    bind $w <[repcont $ayviewshortcuts(ZoomI)]>\
+	    "$w.f3D.togl setconf -dzoom 0.9"
 
-    bind $w <[repcont $ayviewshortcuts(ZoomO)]> {
-	%W.f3D.togl setconf -dzoom 1.1
-    }
+    bind $w <[repcont $ayviewshortcuts(ZoomO)]>\
+	    "$w.f3D.togl setconf -dzoom 1.1"
 
     bind $w <[repcont $aymainshortcuts(Zap)]> zap
     bind $w <Map> unzap
