@@ -351,7 +351,8 @@ proc addCheck { w prop name } {
 	bind $f <1> { %W.cb invoke }
 
 	pack $f.l -in $f -side left
-	pack $f.cb -in $f -side left -pady 2 -expand yes -anchor center
+	pack $f.cb -in $f -side left -padx 10 -pady 2 -expand yes\
+		-anchor center
     } else {
 	checkbutton $f.cb -variable ${prop}(${name}) -bd $bw -pady 1
 	pack $f.l -in $f -side left
