@@ -483,7 +483,7 @@ cleanup:
     }
 
   if(inpatch)
-      ay_object_delete(inpatch);
+    ay_object_delete(inpatch);
 
  return ay_status;
 } /* ay_gordon_notifycb */
@@ -540,6 +540,9 @@ ay_gordon_convertcb(ay_object *o, int in_place)
     {
       ay_status = ay_object_copy(r->npatch, &new);
       ay_trafo_copy(o, new);
+      new->hide_children = AY_TRUE;
+      new->parent = AY_TRUE;
+      ay_object_crtendlevel(&(new->down));
     }
 
   /* second, link new objects, or replace old objects with them */

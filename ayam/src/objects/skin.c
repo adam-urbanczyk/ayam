@@ -474,8 +474,6 @@ ay_skin_notifycb(ay_object *o)
 
   ay_object_defaults(newo);
   newo->type = AY_IDNPATCH;
-  newo->parent = AY_TRUE;
-  newo->hide_children = AY_TRUE;
 
   /* create caps */
   if(skin->has_start_cap)
@@ -567,6 +565,10 @@ ay_skin_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  return AY_ERROR;
 	}
       ay_trafo_copy(o, *t);
+      (*t)->hide_children = AY_TRUE;
+      (*t)->parent = AY_TRUE;
+      ay_object_crtendlevel(&(*t)->down);
+
       t = &((*t)->next);
 
       /* copy caps */
@@ -641,7 +643,12 @@ ay_skin_convertcb(ay_object *o, int in_place)
 	{
 	  ay_status = ay_object_copy(r->npatch, next);
 	  if(*next)
-	    next = &((*next)->next);
+	    {
+	      (*next)->hide_children = AY_TRUE;
+	      (*next)->parent = AY_TRUE;
+	      ay_object_crtendlevel(&(*next)->down);
+	      next = &((*next)->next);
+	    }
 	}
 
       if(r->start_cap)
@@ -666,6 +673,9 @@ ay_skin_convertcb(ay_object *o, int in_place)
 	{
 	  ay_status = ay_object_copy(r->npatch, &new);
 	  ay_trafo_copy(o, new);
+	  new->hide_children = AY_TRUE;
+	  new->parent = AY_TRUE;
+	  ay_object_crtendlevel(&(new->down));
 	}
     } /* if */
 

@@ -1008,6 +1008,7 @@ ay_revolve_providecb(ay_object *o, unsigned int type, ay_object **result)
 	      return AY_ERROR;
 	    }
 	  ay_trafo_copy(o, *t);
+
 	  t = &((*t)->next);
 	  p = p->next;
 	} /* while */
@@ -1111,7 +1112,13 @@ ay_revolve_convertcb(ay_object *o, int in_place)
 	{
 	  ay_status = ay_object_copy(r->npatch, next);
 	  if(*next)
-	    next = &((*next)->next);
+	    {
+	      (*next)->hide_children = AY_TRUE;
+	      (*next)->parent = AY_TRUE;
+	      ay_object_crtendlevel(&(*next)->down);
+	      next = &((*next)->next);
+	    }
+
 	}
 
       if(r->upper_cap)
@@ -1149,6 +1156,9 @@ ay_revolve_convertcb(ay_object *o, int in_place)
 	{
 	  ay_status = ay_object_copy(r->npatch, &new);
 	  ay_trafo_copy(o, new);
+	  new->hide_children = AY_TRUE;
+	  new->parent = AY_TRUE;
+	  ay_object_crtendlevel(&(new->down));
 	}
     } /* if */
 
