@@ -254,6 +254,41 @@ int
 ay_pamesh_shadecb(struct Togl *togl, ay_object *o)
 {
  int ay_status = AY_OK;
+ ay_pamesh_object *pm = NULL;
+ static ay_nurbpatch_object *np = NULL;
+ static ay_object p;
+
+  pm = (ay_pamesh_object *)o->refine;
+
+  if(pm->type == AY_PTBICUBIC)
+    {
+      if(pm->width == 4 && pm->height == 4)
+	{
+	  if(!np)
+	    {
+	      ay_npt_create(4,4,4,4,
+			    AY_KTBEZIER, AY_KTBEZIER, pm->controlv, NULL, NULL,
+			    &np);
+	    }
+	  else
+	    {
+	      np->controlv = pm->controlv;
+	    }
+	  memset(&p, 0, sizeof(ay_object));
+	  ay_object_defaults(&p);
+	  p.refine = np;
+	  p.type = AY_IDNPATCH;
+	  ay_shade_object(togl, &p);
+
+	}
+    }
+  else
+    {
+      /* shade bilinear patch mesh */
+
+
+    }
+
 
  return AY_OK;
 } /* ay_pamesh_shadecb */
@@ -417,7 +452,7 @@ ay_pamesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   pamesh->btype_u = new_btype_u;
   pamesh->btype_v = new_btype_v;
 
-#if 0
+
   Tcl_SetStringObj(ton,"Tolerance",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp,to, &(pamesh->glu_sampling_tolerance));
@@ -425,7 +460,8 @@ ay_pamesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_SetStringObj(ton,"DisplayMode",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(pamesh->glu_display_mode));
-#endif
+
+
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
@@ -461,7 +497,6 @@ ay_pamesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
       updateKnots = 1;
     }
-
 #endif
   ay_status = ay_notify_parent();
 
@@ -520,7 +555,7 @@ ay_pamesh_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_NewIntObj(pamesh->btype_v);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
-#if 0
+
   Tcl_SetStringObj(ton,"Tolerance",-1);
   to = Tcl_NewDoubleObj(pamesh->glu_sampling_tolerance);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
@@ -530,7 +565,6 @@ ay_pamesh_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_NewIntObj(pamesh->glu_display_mode);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
-#endif
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
@@ -609,10 +643,10 @@ ay_pamesh_readcb(FILE *fileptr, ay_object *o)
 	     &(pamesh->controlv[a+3]));
       a+=4;
     }
-#if 0
+
   fscanf(fileptr,"%lg\n",&(pamesh->glu_sampling_tolerance));
   fscanf(fileptr,"%d\n",&(pamesh->glu_display_mode));
-#endif
+
   o->refine = pamesh;
 
  return AY_OK;
@@ -662,10 +696,10 @@ ay_pamesh_writecb(FILE *fileptr, ay_object *o)
 	      pamesh->controlv[a+3]);
       a+=4;
     }
-#if 0
+
   fprintf(fileptr, "%g\n", pamesh->glu_sampling_tolerance);
   fprintf(fileptr, "%d\n", pamesh->glu_display_mode);
-#endif
+
  return AY_OK;
 } /* ay_pamesh_writecb */
 
