@@ -71,8 +71,11 @@ proc pomesh_merge { } {
 	    focus .
 	    destroy .pomeshmerge
 	} else {
+	    
 	   if { $pomeshmerge_options(RemoveMerged) == 1 } {
 	       catch {delOb}; uS; sL; rV
+	    } else {
+		uS; sL; rV
 	    }
 
 	    grab release .pomeshmerge

@@ -472,7 +472,7 @@ ay_pomesht_merge(ay_list_object *list, ay_object **result)
 	    {
 	      k = 0;
 	      ay_trafo_apply(o, dummy, 3, AY_FALSE);
-	      for(j = 0; j < pmverts; j++)
+	      for(j = 0; j < pm->ncontrols; j++)
 		{
 		  memcpy(&(npm->controlv[nextcontrols + k]),
 			 &(pm->controlv[k]),
