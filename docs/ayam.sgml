@@ -74,14 +74,15 @@ Due to limitations in the Win32 operating system(s)
 dynamic loading of custom objects is currently not available on the
 Win32 platform!
 <p>
-How do I read this manual?
+How should one read this manual?
 <p>
 Since this manual is intended to be a reference manual only, it is
 probably pointless to read it from the beginning to the end
 (except maybe for the next section, explaining the basics).
-Instead, just look up the documentation of things you are interested
-in, cross references will then guide you to other important parts.
-This manual has a large index, use it! 
+Instead, just look up the documentation of the things you are interested
+in via the table of contents or the index. Cross references will then
+guide you to other important parts of the documentation.
+Again: this manual has a rather large index, use it! 
 <p>
 In this manual, the following typographic conventions are used:
 <itemize>
@@ -525,7 +526,7 @@ If the selected object has no material yet, a new material
 will be created first.<p>
 <item><tt/Master/, searches for the master object of the
 currently selected instance object and selects it for editing,
-see section <ref id="instanceobj" name="Instance Object">.
+see also section <ref id="instanceobj" name="Instance Object">.
 
 <item><tt/Preferences/, opens the preferences dialog (see section
 <ref id="prefs" name="Preferences"> for more information).
@@ -1813,7 +1814,8 @@ two-dimensional parameter curve of a skin object where both objects
 and make sure that the curve remains two-dimensional all the time.
 <p>
 All you need to do is to first select the curve and then press
-<tt/"Ctrl+a"/ to align the view and then <tt/"Ctrl+l"/ to make it local.
+<tt/&lt;Ctrl+a&gt;/ to align the view and then <tt/&lt;Ctrl+l&gt;/ to
+make it local.
 In practice, this means that the input plane of an aligned local view
 will match the XY-, ZY-, or XZ-plane of the local object space,
 depending on the type of the view (<tt/"Front"/, <tt/"Side"/, or <tt/"Top"/).
@@ -2501,7 +2503,7 @@ The trimcurves should completely lie inside this rectangle.
 Note that picking of objects currently does not work in views of type
 <tt/"Trim"/.
 <p>
-View object act in special ways, when certain objects are dropped
+View objects act in special ways, when certain objects are dropped
 onto them in the tree view:
 <p>
 When a camera object is dropped onto a view object
@@ -2516,6 +2518,11 @@ the user looks along the light to see what objects of the scene
 are lighted by the light object (this works best
 with perspective views that have equal width and height).
 <p>
+Since Ayam 1.8 it is possible, to directly drag objects from the
+tree view to a view window, for geometric objects, the view then
+performs a zoom to object operation, for cameras and light sources
+the views camera will be changed accordingly (see the description
+of Drag-and-Drop with view objects above).
 
 <sect2>Camera Property<label id="camp">
 <p>
@@ -3905,7 +3912,7 @@ the <tt/"Shift"/ key and select the other curve.)
 the second curve, the trajectory. (Press <tt/"e"/,
 then drag some control points around.)
 <item>To modify the cross section you would need to switch to a
-view of type <tt/"Side"/. (Use the <tt/"Ctrl+s"/ shortcut while
+view of type <tt/"Side"/. (Use the <tt/&lt;Ctrl+s&gt;/ shortcut while
 the view has the input focus.)
 </itemize>
 
@@ -4227,7 +4234,19 @@ This third argument should be a NURBS patch object that describes
 all intersection points (by its control points).
 If present, this intersection patch always takes precedence over the
 intersection points calculated internally.
-You may want to add a <tt>"NoExport"</tt> tag to this patch.
+You may want to add a <tt>"NoExport"</tt> tag to this patch. The object
+hierarchy of a Gordon object using such a patch, consequently looks
+like this:
+<code>
++-Gordon
+ | U1(NCurve)
+ | U2(NCurve)
+ | Level
+ | V1(NCurve)
+ | V2(NCurve)
+ | Level
+ \ Intersections(NPatch)
+</code>
 <p>
 You may convert the current Gordon surface to an ordinary NURBS
 patch using the main menu entry <tt>"Tools/Convert"</tt>.
@@ -6693,7 +6712,7 @@ ControlHull display modes.
 object(s) or the current level.
 <item>Iconify views you do not need, they will not be redrawn then.
 <item>Switch off automatic redrawing of slow redrawing (e.g. shaded)
-views, and control their redraw by pressing <tt/"Ctrl+d"/ manually.
+views, and control their redraw by pressing <tt/&lt;Ctrl+d&gt;/ manually.
 <item>Do not create unnecessary caps, they are trimmed NURBS patches
 that render very slowly.
 <item>Disable <tt/"UseMatColor"/.
