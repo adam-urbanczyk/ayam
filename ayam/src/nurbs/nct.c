@@ -2971,3 +2971,133 @@ ay_nct_fillgaps(int closed, ay_object *curves)
 
  return AY_OK;
 } /* ay_nct_fillgaps */
+
+
+/* ay_nct_arrange:
+ *  
+ */
+int
+ay_nct_arrange(ay_object *o, ay_object *t, int rotate)
+{
+ int ay_status = AY_OK;
+ ay_object *l;
+ ay_nurbcurve_object *tr;
+ int i = 0, a = 0, stride;
+ double u, p1[4];
+ double T0[3] = {0.0,0.0,-1.0};
+ double T1[3] = {0.0,0.0,0.0};
+ double A[3] = {0.0,0.0,0.0};
+ double len = 0.0, plen = 0.0;
+ double mtr[16];
+ double *trcv = NULL, angle, quat[4], euler[3];
+ unsigned int n = 0;
+
+  if(!o || !t)
+    return AY_ENULL;
+
+  if(t->type != AY_IDNCURVE)
+    return AY_OK;
+
+  /* count objects */
+  l = o;
+  while(l)
+    {
+      n++;
+      l = l->next;
+    }
+
+  stride = 4;
+
+  /* apply all transformations to trajectory curves controlv */
+  tr = (ay_nurbcurve_object *)(t->refine);
+  if(!(trcv = calloc(tr->length*stride, sizeof(double))))
+    { return AY_EOMEM; }
+  memcpy(trcv, tr->controlv, tr->length*stride*sizeof(double));
+  
+  ay_trafo_creatematrix(t, mtr);
+  a = 0;
+  for(i = 0; i < tr->length; i++)
+    {
+      ay_trafo_apply4(&(trcv[a]), mtr);
+      a += stride;
+    }
+
+  plen = fabs(tr->knotv[tr->length] - tr->knotv[tr->order-1]);
+
+  T0[0] = 1.0;
+  T0[1] = 0.0;
+  T0[2] = 0.0;
+
+  l = NULL;
+  i = 0;
+
+  while(o)
+    {
+      u = tr->knotv[tr->order-1]+(((double)i/n)*plen);
+
+      /* calculate new translation */
+      ay_nb_CurvePoint4D(tr->length-1, tr->order-1, tr->knotv, trcv,
+			 u, p1);
+
+      o->movx = p1[0];
+      o->movy = p1[1];
+      o->movz = p1[2];
+
+      if(l)
+	{
+	  memcpy(o->quat, l->quat, 4*sizeof(double));
+	  o->rotx = l->rotx;
+	  o->roty = l->roty;
+	  o->rotz = l->rotz;
+	}
+      else
+	{
+	  memset(o->quat, 0, 3*sizeof(double));
+	  o->quat[3] = 1.0;
+	}
+
+      if(rotate)
+	{
+	  
+	  ay_nb_ComputeFirstDer4D(tr->length-1, tr->order-1, tr->knotv,
+				  trcv, u, T1);
+
+	  len = AY_V3LEN(T1);
+	  AY_V3SCAL(T1,(1.0/len))
+
+	  if(((fabs(fabs(T1[0])-fabs(T0[0])) > AY_EPSILON) ||
+	      (fabs(fabs(T1[1])-fabs(T0[1])) > AY_EPSILON) ||
+	      (fabs(fabs(T1[2])-fabs(T0[2])) > AY_EPSILON)))
+	    {
+	      AY_V3CROSS(A,T0,T1)
+	      len = AY_V3LEN(A);
+	      AY_V3SCAL(A,(1.0/len))
+	      
+	      angle = acos(AY_V3DOT(T0,T1));
+
+	      if(fabs(angle) > AY_EPSILON)
+		{
+		  ay_quat_axistoquat(A, -angle, quat);
+		  ay_quat_add(quat, o->quat, o->quat);
+		  ay_quat_toeuler(o->quat, euler);
+		  o->rotx = AY_R2D(euler[0]);
+		  o->roty = AY_R2D(euler[1]);
+		  o->rotz = AY_R2D(euler[2]);
+		} /* if */
+	    } /* if */
+
+	  memcpy(T0, T1, 3*sizeof(double));
+
+	} /* if rotate */
+
+      i++;
+      l = o;
+      o = o->next;
+    } /* while */
+
+
+  /* clean up */
+  free(trcv);
+
+ return ay_status;
+} /* ay_nct_arrange */

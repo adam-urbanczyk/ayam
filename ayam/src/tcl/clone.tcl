@@ -24,6 +24,7 @@ w     fCloneAttr
 set w [frame $ay(pca).$CloneAttr(w)]
 
 addParam $w CloneAttrData NumClones
+addCheck $w CloneAttrData Rotate
 addText $w e1 "Translation:"
 addParam $w CloneAttrData Translate_X
 addParam $w CloneAttrData Translate_Y
