@@ -1115,7 +1115,7 @@ should be declared as a transient window of the main window.
 See the discussion of <tt/"ToolBoxTrans"/ above for more information
 about transient windows.
 <item><tt/"HideTmpTags"/ may be used to hide tags that are marked
-temporary from the tag property GUI.
+temporary (internal tag types do so) from the tag property GUI.
 </itemize>
 
 <sect>Interactive Actions (Modeling)<label id="iac">
@@ -4400,8 +4400,35 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 
 <sect>Index
 <p>
+<ref id="indexa" name="A">
+<ref id="indexb" name="B">
+<ref id="indexc" name="C">
+<ref id="indexd" name="D">
+<ref id="indexe" name="E">
+<ref id="indexf" name="F">
+<ref id="indexg" name="G">
+<ref id="indexh" name="H">
+<ref id="indexi" name="I">
+<ref id="indexj" name="J">
+<ref id="indexk" name="K">
+<ref id="indexl" name="L">
+<ref id="indexm" name="M">
+<ref id="indexn" name="N">
+<ref id="indexo" name="O">
+<ref id="indexp" name="P">
+<ref id="indexq" name="Q">
+<ref id="indexr" name="R">
+<ref id="indexs" name="S">
+<ref id="indext" name="T">
+<ref id="indexu" name="U">
+<ref id="indexv" name="V">
+<ref id="indexw" name="W">
+<ref id="indexx" name="X">
+<ref id="indexy" name="Y">
+<ref id="indexz" name="Z">
+<p>
 
-A
+<label id="indexa">A
 <itemize>
 <item>Action: <ref id="iac" name="interactive actions">
 <item>Align to Parent: <ref id="vwsc" name="view action">
@@ -4418,7 +4445,7 @@ A
 <item>ayError: <ref id="sierr" name="scripting interface command">
 </itemize>
 
-B
+<label id="indexb">B
 <itemize>
 <item>Background: <ref id="prefdraw" name="preference setting">
 <item>Background Image: <ref id="vat" name="view attribute">
@@ -4438,7 +4465,7 @@ B
 <item>buildNP: <ref id="gncp" name="scripting interface command">
 </itemize>
 
-C
+<label id="indexc">C
 <itemize>
 <item>Camera: <ref id="camobj" name="camera object">,
 <ref id="camp" name="view property">
@@ -4480,7 +4507,7 @@ C
 <ref id="cylinderobj" name="object">
 </itemize>
 
-D
+<label id="indexd">D
 <itemize>
 <item>DefaultMat: <ref id="prefrib" name="preference setting">
 <item>delegTrafo: <ref id="movob" name="scripting interface command">
@@ -4502,7 +4529,7 @@ D
 <ref id="vat" name="view attribute">
 </itemize>
 
-E
+<label id="indexe">E
 <itemize>
 <item>Edit: <ref id="editac" name="edit points">
 <item>EditSnaps: <ref id="prefmodel" name="preference setting">
@@ -4522,7 +4549,7 @@ E
 <ref id="extt" name="Extrude tool">
 </itemize>
 
-F
+<label id="indexf">F
 <itemize>
 <item>FilterFunc: <ref id="rio" name="RenderMan interface option">
 <item>FilterWidth: <ref id="rio" name="RenderMan interface option">
@@ -4533,7 +4560,7 @@ F
 <ref id="lip" name="light attribute">
 </itemize>
 
-G
+<label id="indexg">G
 <itemize>
 <item>getNC: <ref id="gncp" name="scripting interface command">
 <item>getNP: <ref id="gncp" name="scripting interface command">
@@ -4546,7 +4573,7 @@ G
 <ref id="prefdraw" name="drawing preference setting">
 </itemize>
 
-H
+<label id="indexh">H
 <itemize>
 <item>HandleSize: <ref id="prefmodel" name="preference setting">
 <item>hasChild: <ref id="gtype" name="scripting interface command">
@@ -4559,12 +4586,13 @@ H
 <ref id="vat" name="view attribute">
 <item>Hidden Preferences: <ref id="hidprefs" name="Hidden Preference Settings">
 <item>Hide: <ref id="mm" name="main menu entry">
+<item>HideTmpTags: <ref id="prefmisc" name="preference setting">
 <item>Hole: <ref id="handb" name="using holes">
 <item>Hyperboloid: <ref id="mm" name="main menu entry">,
 <ref id="hyperboloidobj" name="object">
 </itemize>
 
-I
+<label id="indexi">I
 <itemize>
 <item>ICurve: <ref id="icurveobj" name ="object">
 <item>Image: <ref id="prefrib" name="preference setting">
@@ -4588,19 +4616,19 @@ I
 <item>IsOn: <ref id="lip" name="light attribute">
 </itemize>
 
-J
+<label id="indexj">J
 <itemize>
 <item>
 </itemize>
 
-K
+<label id="indexk">K
 <itemize>
 <item>Knots: <ref id="ncattr" name="NURBCurve attribute">
 <item>Knot-Type: <ref id="ncattr" name="NURBCurve attribute">
 <item>Knot-Type_U: <ref id="skp" name="skin attribute">
 </itemize>
 
-L
+<label id="indexl">L
 <itemize>
 <item>LazyNotify: <ref id="prefmodel" name="preference setting">
 <item>Length: <ref id="bxp" name="box attribute">,
@@ -4624,7 +4652,7 @@ L
 <ref id="extrattr" name="extrude attribute">
 </itemize>
 
-M
+<label id="indexm">M
 <itemize>
 <item>MajorRad: <ref id="top" name="torus attribute">
 <item>Material: <ref id="materialobj" name="object">,
@@ -4644,7 +4672,7 @@ M
 <item>Multiple Point: <ref id="ncurvemp" name="Multiple Points">
 </itemize>
 
-N
+<label id="indexn">N
 <itemize>
 <item>Name: <ref id="attrs" name="attribute">
 <item>New: <ref id="mm" name="main menu entry">
@@ -4660,7 +4688,7 @@ N
 <item>NURBSphere: <ref id="nspt" name="NURBS sphere tool">
 </itemize>
 
-O
+<label id="indexo">O
 <itemize>
 <item>Object: <ref id="prefdraw" name="preference setting">
 <item>Objects: <ref id="obj" name="tree/listbox">,
@@ -4672,7 +4700,7 @@ O
 <item>Order_U: <ref id="skp" name="skin attribute">
 </itemize>
 
-P
+<label id="indexp">P
 <itemize>
 <item>P1, P2: <ref id="hyp" name="hyperboloid attribute">
 <item>Paraboloid: <ref id="mm" name="main menu entry">,
@@ -4694,7 +4722,7 @@ P
 <item>PRManSpec: <ref id="rio" name="RenderMan interface option">
 </itemize>
 
-Q
+<label id="indexq">Q
 <itemize>
 <item>QRender: <ref id="prefrib" name="preference setting">
 <item>QRenderPT, QRenderUI: <ref id="prefrib" name="preference setting">
@@ -4702,7 +4730,7 @@ Q
 <item>Quick Render: <ref id="vm" name="view menu entry">
 </itemize>
 
-R
+<label id="indexr">R
 <itemize>
 <item>Radius: <ref id="spattr" name="sphere attribute">,
 <ref id="dkp" name="disk attribute">,
@@ -4757,7 +4785,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>rV: <ref id="upd" name="scripting interface command">
 </itemize>
 
-S
+<label id="indexs">S
 <itemize>
 <item>Samples: <ref id="lip" name="light attribute">
 <item>Samples_X: <ref id="rio" name="RenderMan interface option">
@@ -4807,7 +4835,7 @@ S
 <ref id="swpt" name="Sweep tool">
 </itemize>
 
-T
+<label id="indext">T
 <itemize>
 <item>Tag: <ref id="prefdraw" name="preference setting">
 <item>Tags: <ref id="tags" name="property">
@@ -4847,7 +4875,7 @@ T
 <ref id="vat" name="view attribute">
 </itemize>
 
-U
+<label id="indexu">U
 <itemize>
 <item>uCL, uCR: <ref id="upd" name="scripting interface command">
 <item>Undo: <ref id="undos" name="The Undo System">,
@@ -4865,7 +4893,7 @@ U
 <item>UseSM: <ref id="lip" name="light attribute">
 </itemize>
 
-V
+<label id="indexv">V
 <itemize>
 <item>Variance: <ref id="rio" name="RenderMan interface option">
 <item>View: <ref id="mm" name="main menu entry">,
@@ -4873,7 +4901,7 @@ V
 <item>ViewAttrib: <ref id="vat" name="property">
 </itemize>
 
-W
+<label id="indexw">W
 <itemize>
 <item>Weight: <ref id="iac" name="single point weight editing">
 <item>Width: <ref id="rio" name="RenderMan interface option">,
@@ -4884,17 +4912,17 @@ W
 <item>WriteIdent: <ref id="prefrib" name="preference setting">
 </itemize>
 
-X
+<label id="indexx">X
 <itemize>
 <item> 
 </itemize>
 
-Y
+<label id="indexy">Y
 <itemize>
 <item> 
 </itemize>
 
-Z
+<label id="indexz">Z
 <itemize>
 <item>ZMin, ZMax: <ref id="spattr" name="sphere attribute">,
 <ref id="dkp" name="disk attribute">,
