@@ -14,12 +14,15 @@
 
 /* pmt.c PatchMesh tools */
 
-/* prototypes of functions local to this module */
+
+/* prototypes of functions local to this module: */
+
 int ay_pmt_bilinearcltonpatch(ay_pamesh_object *pamesh, ay_object **result);
 
 int ay_pmt_bicubiccltonpatch(ay_pamesh_object *pamesh, ay_object **result);
 
-/* functions */
+
+/* functions: */
 
 /* ay_pmt_bilinearcltonpatch:
  *   create a NURBS patch from a closed bilinear PatchMesh
@@ -59,7 +62,7 @@ ay_pmt_bilinearcltonpatch(ay_pamesh_object *pamesh, ay_object **result)
     {
       memcpy(&(cv[a]), &(pamesh->controlv[b]),
 	     pamesh->height*4*sizeof(double));
-      
+
 
       a += pamesh->height*4;
       if(pamesh->close_v)
@@ -471,7 +474,7 @@ ay_pmt_tonpatch(ay_pamesh_object *pamesh, ay_object **result)
  *   2: stepsize too small
  *   3: u-basistype width mismatch
  *   4: v-basistype height mismatch
- *   
+ *
  */
 int
 ay_pmt_valid(ay_pamesh_object *pamesh, int *detail)
@@ -587,8 +590,8 @@ ay_pmt_valid(ay_pamesh_object *pamesh, int *detail)
 
 
 /* ay_pmt_getpntfromindex:
- *  
- *  
+ *
+ *
  */
 int
 ay_pmt_getpntfromindex(ay_pamesh_object *patch, int indexu, int indexv,
@@ -613,3 +616,116 @@ ay_pmt_getpntfromindex(ay_pamesh_object *patch, int indexu, int indexv,
 
  return TCL_OK;
 } /* ay_pmt_getpntfromindex */
+
+
+/* ay_pmt_swapuv:
+ *
+ *
+ */
+int
+ay_pmt_swapuv(ay_pamesh_object *pm)
+{
+ int ay_status = AY_OK;
+ int stride = 4, i1 = 0, i2 = 0, i, j;
+ double *dt, *ncontrolv = NULL;
+
+  if(!pm)
+    return AY_ENULL;
+
+  if(!(ncontrolv = calloc(pm->width*pm->height*stride, sizeof(double))))
+    return AY_EOMEM;
+
+  for(i = 0; i < pm->width; i++)
+    {
+      i2 = i*stride;
+      for(j = 0; j < pm->height; j++)
+	{
+	  memcpy(&(ncontrolv[i2]), &(pm->controlv[i1]),
+		 stride*sizeof(double));
+
+	  i1 += stride;
+	  i2 += (pm->width*stride);
+	} /* for */
+    } /* for */
+
+  free(pm->controlv);
+  pm->controlv = ncontrolv;
+
+  i = pm->width;
+  pm->width = pm->height;
+  pm->height = i;
+
+  i = pm->uorder;
+  pm->uorder = pm->vorder;
+  pm->vorder = i;
+
+  i = pm->btype_u;
+  pm->btype_u = pm->btype_v;
+  pm->btype_v = i;
+
+  i = pm->ustep;
+  pm->ustep = pm->vstep;
+  pm->vstep = i;
+
+  dt = pm->ubasis
+  pm->ubasis = pm->vbasis;
+  pm->vbasis = dt;
+
+ return ay_status;
+} /* ay_pmt_swapuv */
+
+
+/* ay_pmt_revertu:
+ *
+ *
+ */
+int
+ay_pmt_revertu(ay_pamesh_object *pm)
+{
+ int ay_status = AY_OK;
+ int i, j, ii, jj, stride = 4;
+ double t[4];
+
+  for(i = 0; i < pm->height; i++)
+    {
+      for(j = 0; j < pm->width/2; j++)
+	{
+	  ii = (j*pm->height+i)*stride;
+	  jj = ((pm->width-1-j)*pm->height+i)*stride;
+	  memcpy(t, &(pm->controlv[ii]), stride*sizeof(double));
+	  memcpy(&(pm->controlv[ii]), &(pm->controlv[jj]),
+		 stride*sizeof(double));
+	  memcpy(&(pm->controlv[jj]), t, stride*sizeof(double));
+	}
+    }
+
+ return ay_status;
+} /* ay_pmt_revertu */
+
+/* ay_pmt_revertv:
+ *  
+ */
+int
+ay_pmt_revertv(ay_pamesh_object *pm)
+{
+ int ay_status = AY_OK;
+ int i, j, ii, jj, stride = 4;
+ double t[4];
+
+  for(i = 0; i < pm->width; i++)
+    {
+      ii = i*pm->height*stride;
+      jj = ii + ((pm->height-1)*stride);
+      for(j = 0; j < pm->height/2; j++)
+	{
+	  memcpy(t, &(pm->controlv[ii]), stride*sizeof(double));
+	  memcpy(&(pm->controlv[ii]), &(pm->controlv[jj]),
+		 stride*sizeof(double));
+	  memcpy(&(pm->controlv[jj]), t, stride*sizeof(double));
+	  ii += stride;
+	  jj -= stride;
+	}
+    }
+
+ return ay_status;
+} /* ay_pmt_revertv */

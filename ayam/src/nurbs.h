@@ -366,3 +366,9 @@ int ay_pmt_valid(ay_pamesh_object *pamesh, int *detail);
 
 int ay_pmt_getpntfromindex(ay_pamesh_object *patch, int indexu, int indexv,
 			   double **p);
+
+int ay_pmt_swapuv(ay_pamesh_object *pm);
+
+int ay_pmt_revertu(ay_pamesh_object *pm);
+
+int ay_pmt_revertv(ay_pamesh_object *pm);
