@@ -39,7 +39,7 @@ int aycsg_rendertcb(struct Togl *togl, int argc, char *argv[]);
 
 int aycsg_drawtoplevelprim(Togl *togl);
 
-int aycsg_flatten(ay_object *t, int parent_csgtype);
+int aycsg_flatten(ay_object *t, struct Togl *togl, int parent_csgtype);
 
 void aycsg_clearprimitives();
 
@@ -91,7 +91,7 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
 
   ay_status = aycsg_normalize(aycsg_root);
 
-  ay_status = aycsg_flatten(aycsg_root, AY_LTUNION);
+  ay_status = aycsg_flatten(aycsg_root, togl, AY_LTUNION);
 
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
@@ -136,6 +136,7 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
 
   if(view->drawlevel)
     {
+      glMatrixMode(GL_MODELVIEW);
       glPopMatrix();
     }
 
@@ -173,9 +174,9 @@ aycsg_drawtoplevelprim(Togl *togl)
 
 // aycsg_flatten:
 //  _recursively_ convert tree <t> to primitive array for resolving CSG
-//  and rendering
+//  and rendering, <t> should be normalized using aycsg_normalize()
 int
-aycsg_flatten(ay_object *t, int parent_csgtype)
+aycsg_flatten(ay_object *t, struct Togl *togl, int parent_csgtype)
 {
  int ay_status = AY_OK;
 
@@ -191,7 +192,7 @@ aycsg_flatten(ay_object *t, int parent_csgtype)
 	  if(t->next)
 	    {
 	      // yes, this is always an intersecting primitive
-	      primitives.push_back(new OpenCSG::ayCSGPrimitive(t,
+	      primitives.push_back(new OpenCSG::ayCSGPrimitive(t, togl,
 						OpenCSG::Intersection, 1));
 	    }
 	  else
@@ -199,12 +200,12 @@ aycsg_flatten(ay_object *t, int parent_csgtype)
 	      // no, use parent_csgtype to determine CSG operation
 	      if(parent_csgtype == AY_LTDIFF)
 		{
-		  primitives.push_back(new OpenCSG::ayCSGPrimitive(t,
+		  primitives.push_back(new OpenCSG::ayCSGPrimitive(t, togl,
 						    OpenCSG::Subtraction, 1));
 		}
 	      else
 		{
-		  primitives.push_back(new OpenCSG::ayCSGPrimitive(t,
+		  primitives.push_back(new OpenCSG::ayCSGPrimitive(t, togl,
 						    OpenCSG::Intersection, 1));
 		} // if
 	    } // if
@@ -215,7 +216,7 @@ aycsg_flatten(ay_object *t, int parent_csgtype)
 	  // no
 	  if((t->type == AY_IDLEVEL) && (t->down))
 	    {
-	      ay_status = aycsg_flatten(t->down, t->CSGTYPE);
+	      ay_status = aycsg_flatten(t->down, togl, t->CSGTYPE);
 	    }
 	} // if
 
@@ -704,7 +705,9 @@ aycsg_binarify(ay_object *parent, ay_object *left, ay_object **target)
 //  omits terminating end-level objects!,
 //  descends just into level objects, does not copy type specific objects,
 //  converts to binary form, informs caller via <is_csg> whether subtree
-//  <t> contains CSG operations
+//  <t> contains CSG operations, removes parents with a single child,
+//  delegates transformations to CSG primitives, if <sel_only> is AY_TRUE
+//  just copies selected objects
 int
 aycsg_copytree(int sel_only, ay_object *t, int *is_csg, ay_object **target)
 {

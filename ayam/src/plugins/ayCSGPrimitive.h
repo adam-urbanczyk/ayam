@@ -1,7 +1,7 @@
 /*
  * Ayam, a free 3D modeler for the RenderMan interface.
  *
- * Ayam is copyrighted 1998-2002 by Randolf Schultz
+ * Ayam is copyrighted 1998-2004 by Randolf Schultz
  * (rschultz@informatik.uni-rostock.de) and others.
  *
  * All rights reserved.
@@ -22,7 +22,8 @@ namespace OpenCSG {
 
     class  ayCSGPrimitive : public Primitive {
     public:
-        ayCSGPrimitive(ay_object *ayobject, Operation, unsigned int convexity);
+        ayCSGPrimitive(ay_object *ayobject, struct Togl *togl,
+		       Operation, unsigned int convexity);
 
         void setAyObject(ay_object *);
         ay_object *getAyObject() const;
