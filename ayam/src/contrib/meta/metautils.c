@@ -43,7 +43,7 @@ mt_calcall (double x1, double y1, double z1, world * w)
   while (o->next != NULL)
     {
 
-	if(o->type == *w->cid)
+	if(o->type == metacomp_id)
 	{
 
       	tmp = (blob *) o->refine;
@@ -631,7 +631,7 @@ mt_calceffect (world * w, int mode)
     {
       n++;
 
-	if(o->type == *w->cid)
+	if(o->type == metacomp_id)
 	{
      	 b = (blob *) o->refine;
 
