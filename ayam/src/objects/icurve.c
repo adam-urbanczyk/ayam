@@ -745,7 +745,7 @@ ay_icurve_init(Tcl_Interp *interp)
 				    ay_icurve_getpntcb,
 				    ay_icurve_readcb,
 				    ay_icurve_writecb,
-				    NULL,
+				    NULL, /* no RIB export */
 				    ay_icurve_bbccb,
 				    AY_IDICURVE);
 
