@@ -5424,41 +5424,6 @@ option <tt/"-failsafe"/.
 Use <tt/"parray ayprefs"/ in the console to see what is there.
 More documentation to come.
 
-<sect2>Miscellaneous global arrays and variables<label id="globvar">
-<p>
-Every property has a corresponding global array, where the data
-of the property is saved.
-This global array only holds useful data when the respective
-property GUI is active, or when it has been filled explicitly by
-the so called get-property callback.
-The data may be transferred back to the selected object using
-the so called set-property callback.
-The names of the array and the callbacks may be inferred from another global
-array that is named like the property itself, e.g. for the tags
-property the following global array is defined:
-<code>
-array set Tags {
-arr   tagsPropData
-sproc setTagsp
-gproc getTagsp
-w     fTagsAttr
-}
-</code>
-
-If sproc or gproc are empty (<tt/""/), a standard callback
-named <tt/"setProp"/ or <tt/"getProp"/ should be used.
-
-The following global arrays and callbacks to get or set the data
-exist:
-<itemize>
- <item>property, array, get-property callback, set-property callback
- <item>Transformations, transfPropData, getTrafo, setTrafo
- <item>Attributes, attrPropData, getAttr, setAttrp
- <item>Material, matPropData, getMat, setMat
- <item>Tags, tagsPropData, getTagsp, setTagsp
- <item>list incomplete, more to come...
-</itemize>
-
 
 
 More documentation to come.
@@ -5507,6 +5472,51 @@ selOb - select object(s):
 selection, index may be an ordered list of indizes, a single index or empty.
 If no index is given, the current selection will be cleared.
 </itemize>
+
+<p>
+withOb - work on certain selected object(s):
+<itemize>
+ <item>Synopsis: <tt/"withOb index command"/
+ <item>Description: Use this command to execute command on a
+single object from a multiple selection designated by index.
+</itemize>
+
+<sect2>Manipulating Properties<label id="sciprop">
+<p>
+
+Every property has a corresponding global array, where the data
+of the property is saved.
+This global array only holds useful data when the respective
+property GUI is active, or when it has been filled explicitly by
+the so called get-property callback.
+The data may be transferred back to the selected object using
+the so called set-property callback.
+The names of the array and the callbacks may be inferred from another global
+array that is named like the property itself, e.g. for the tags
+property the following global array is defined:
+<code>
+array set Tags {
+arr   tagsPropData
+sproc setTagsp
+gproc getTagsp
+w     fTagsAttr
+}
+</code>
+
+If sproc or gproc are empty (<tt/""/), a standard callback
+named <tt/"setProp"/ or <tt/"getProp"/ should be used.
+
+The following global arrays and callbacks to get or set the data
+exist:
+<itemize>
+ <item>property, array, get-property callback, set-property callback
+ <item>Transformations, transfPropData, getTrafo, setTrafo
+ <item>Attributes, attrPropData, getAttr, setAttrp
+ <item>Material, matPropData, getMat, setMat
+ <item>Tags, tagsPropData, getTagsp, setTagsp
+ <item>list incomplete, more to come...
+</itemize>
+
 
 <sect2>Clipboard Operations<label id="sciclip">
 <p>
@@ -7614,6 +7624,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Selected Objects: <ref id="mmspecial" name="main menu entry">
 <item>Select Renderer: <ref id="mmspecial" name="main menu entry">
 <item>Selection: <ref id="prefdraw" name="preference setting">
+<item>selOb: <ref id="selob" name="scripting interface command">
 <item>SelXOR_R, SelXOR_G, SelXOR_B:
 <ref id="hidprefs" name="hidden preference setting">
 <item>Set BGImage: <ref id="vmconf" name="view menu entry">
@@ -7760,6 +7771,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <ref id="npattr" name="NURBPatch attribute">,
 <ref id="pmattr" name="PatchMesh attribute">,
 <ref id="vat" name="view attribute">
+<item>withOb: <ref id="selob" name="scripting interface command">
 <item>WriteIdent: <ref id="prefrib" name="preference setting">
 </itemize>
 
