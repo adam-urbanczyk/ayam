@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile.wrapped [02. Sep 2002]
+# Makefile.wrapped [15. Oct 2002]
 # Makefile for Ayam (wrapped version)
 
 # Choose an installation prefix.
@@ -42,9 +42,9 @@ CC = cc
 # which forces us to use "CC" or "g++" to link the right libraries
 # automatically
 # IRIX:
-#LD = CC
+LD = CC
 # Linux:
-LD = g++
+#LD = g++
 
 # flags for the compiler
 # o add -DAYUSEAFFINE if you use the Affine Toolkit as libribout replacement
@@ -63,11 +63,11 @@ LD = g++
 #   as well, see below!
 # o add -DAYENABLEPPREV to enable the permanent preview feature
 
-# IRIX:
-#CFLAGS = -O -fullwarn -woff 1048 -DAYWRAPPED -DAYUSESLCARGS -DAYUSEBMRTRIBOUT
+CFLAGS = -O -DAYWRAPPED -DAYUSESLCARGS -DAYUSEBMRTRIBOUT
+# IRIX (-DAYIRIXBUG is needed by ncurve.c to work around a bug in libGLU):
+#CFLAGS = -O -fullwarn -woff 1048 -DAYWRAPPED -DAYIRIXBUG -DAYUSESLCARGS -DAYUSEBMRTRIBOUT
 # Linux:
-CFLAGS = -O2 -Wall -DAYWRAPPED -DAYUSESLCARGS -DAYUSEBMRTRIBOUT
-#CFLAGS = -g -Wall -DAYWRAPPED -DAYUSESLCARGS -DAYUSEBMRTRIBOUT
+#CFLAGS = -O2 -Wall -DAYWRAPPED -DAYUSESLCARGS -DAYUSEBMRTRIBOUT
 # Solaris (-DSOLARIS_BUG is needed by togl.c to work around a bug in libXmu):
 #CFLAGS = -O -DSOLARIS_BUG -DAYWRAPPED -DAYUSESLCARGS -DAYUSEBMRTRIBOUT
 
@@ -129,7 +129,7 @@ TCLLIB = -L$(TCLDIR)/unix -ltcl8.2
 #TCLLIB = -ltcl
 
 # Tk sources directory
-# Note: You need the Tk sources in order to compile Ayam!
+# Note: You really need the Tk sources in order to compile Ayam!
 TKDIR = ../../tk8.2.2
 #TKDIR = ../../tk8.0
 #TKDIR = /home/randi/work/tk8.0/generic
@@ -165,7 +165,7 @@ AQSISLIBDIR = $(AQSISDIR)/lib
 # if you do not use Aqsis libslxargs:
 AQSISOBJS = 
 # if you use Aqsis libslxargs (add -DAYUSESLXARGS to CFLAGS!):
-#AQSISOBJS = $(AQSISDIR)/libshadervm.so $(AQSISDIR)/libshaderexecenv.so $(AQSISDIR)/libslxargs.so $(AQSISDIR)/libaqsistypes.so
+#AQSISOBJS = $(AQSISLIBDIR)/rcdummy.o $(AQSISLIBDIR)/libshadervm.so $(AQSISLIBDIR)/libshaderexecenv.so $(AQSISLIBDIR)/libslxargs.so $(AQSISLIBDIR)/libaqsistypes.so
 
 # BMRT
 # If you use the libribout from BMRT2.x (x >= 5), do _not_ link with
@@ -174,7 +174,7 @@ AQSISOBJS =
 BMRTDIR = ../../BMRT2.6
 BMRTINCDIR = $(BMRTDIR)/include
 BMRTLIBDIR = $(BMRTDIR)/lib
-# if you do not use Affine
+# if you use BMRT libribout and not Affine
 RIBOUTLIB = -L$(BMRTLIBDIR) -lribout
 # if you use Affine
 #RIBOUTLIB =

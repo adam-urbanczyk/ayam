@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile.shared [02. Sep 2002]
+# Makefile.shared [15. Oct 2002]
 # Makefile for Ayam (shared version)
 
 # Choose an installation prefix.
@@ -57,8 +57,9 @@ LD = CC
 #   Note, that the preference setting TmpDir will always be ignored then!
 # o add -DAYENABLEPPREV to enable the permanent preview feature
 
-# IRIX:
-CFLAGS = -O -fullwarn -DAYUSESLCARGS -DAYUSEBMRTRIBOUT
+CFLAGS = -O -DAYUSESLCARGS -DAYUSEBMRTRIBOUT
+# IRIX (-DAYIRIXBUG is needed by ncurve.c to work around a bug in libGLU)::
+#CFLAGS = -O -fullwarn -DAYIRIXBUG -DAYUSESLCARGS -DAYUSEBMRTRIBOUT
 # Linux:
 #CFLAGS = -g -Wall -DAYUSESLCARGS -DAYUSEBMRTRIBOUT
 # Solaris (-DSOLARIS_BUG is needed by togl.c to work around a bug in libXmu):
@@ -105,7 +106,7 @@ TCLLIB = -L$(TCLDIR)/unix -ltcl8.0
 #TCLLIB = -ltcl
 
 # Tk sources directory
-# Note: You need the Tk sources in order to compile Ayam!
+# Note: You really need the Tk sources in order to compile Ayam!
 #TKDIR = ../../tk8.2.2
 TKDIR = ../../tk8.0
 
@@ -141,7 +142,7 @@ AQSISLIBDIR = $(AQSISDIR)/lib
 # if you do not use Aqsis libslxargs:
 AQSISOBJS = 
 # if you use Aqsis libslxargs (add -DAYUSESLXARGS to CFLAGS!):
-#AQSISOBJS = $(AQSISDIR)/libshadervm.so $(AQSISDIR)/libshaderexecenv.so $(AQSISDIR)/libslxargs.so $(AQSISDIR)/libaqsistypes.so
+#AQSISOBJS = $(AQSISLIBDIR)/rcdummy.o $(AQSISLIBDIR)/libshadervm.so $(AQSISLIBDIR)/libshaderexecenv.so $(AQSISLIBDIR)/libslxargs.so $(AQSISLIBDIR)/libaqsistypes.so
 
 # BMRT
 # If you use the libribout from BMRT2.x (x >= 5), do _not_ link with
@@ -150,7 +151,7 @@ AQSISOBJS =
 BMRTDIR = ../../BMRT2.5
 BMRTINCDIR = $(BMRTDIR)/include
 BMRTLIBDIR = $(BMRTDIR)/lib
-# if you do not use Affine
+# if you use BMRT libribout and not Affine
 RIBOUTLIB = -L$(BMRTLIBDIR) -lribout
 # if you use Affine
 #RIBOUTLIB =
