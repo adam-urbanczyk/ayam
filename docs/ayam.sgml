@@ -2733,6 +2733,10 @@ shadow maps, e.g. Photorealistic RenderMan (prman) or Aqsis.
 This scene is distributed with Ayam as an example scene named
 <tt>"shadowmaps.ay"</tt>.
 
+Note, that for Aqsis you should add a RiHider hidden,depthfilter,s,midpoint
+tag to your root object if shadow maps are in use. Other renderers might
+require additional tweaking using shadow bias RiOption tags.
+
 Do not render directly from a view window if your renderer
 does not write image files when the command line option
 to render directly to the display (-d for rendrib, or -fb for Aqsis)
