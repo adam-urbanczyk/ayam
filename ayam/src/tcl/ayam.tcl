@@ -182,6 +182,7 @@ array set aymainshortcuts {
     Undo "Ctrl-z"
     Redo "Ctrl-y"
     Material "Ctrl-m"
+    Master "Ctrl-M"
     Prefs "Ctrl-p"
 
     Help "F1"
