@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>2. Dec 2001
+<date>7. Dec 2001
 <abstract>
 This is the documentation of Ayam - a free 3D modeling environment
 for the RenderMan interface.
@@ -1020,19 +1020,24 @@ The modeling action <tt/"Select Points"/
 may be applied to a NURBS curve, NURBS patch or objects
 that support single point editing only. Objects draw the
 selectable points using small rectangular handles.
-The selected points
-may be modified using the modeling actions discussed above.
-After the pick (the selection of a point), the
-selected point will be added to the list of selected points for the
-selected object (selected points will be drawn in dark red).
+Selected points will be drawn in dark red.<p>
+
+The selected points may be modified using the modeling actions
+Move, Rotate, and Scale as discussed above.
+Selected points always take precedence for those modeling actions.<p>
+
+After the pick (the selection of a point), the picked point
+will be added to the list of selected points for the selected object.
 If the selected point is already in that list
 it will be removed from the list instead. Note that the list
 of selected points will not be deleted from the object
-until a deselect is performed using the shortcut <tt/&lt;D&gt;/.
-The list is not
-copied, if the object is copied using the clipboard, however.
-The list is not reconstructed upon undo too!<p>
-It is perfectly legal to select some points, move them using
+until a deselect is performed using the shortcut <tt/&lt;D&gt;/.<p>
+
+Note, that the list of selected points is not copied, if the object is copied
+using the clipboard.
+Undo and redo will destroy the list of selected points too!<p>
+
+However, it is perfectly legal to select some points, move them using
 the move action, then switch to single point editing, edit
 some other or even one of the selected points, switch back
 to the selection action, add other points to the selection or delete some
@@ -1043,7 +1048,8 @@ You may also add a bigger number of points
 to the selection using a click and drag operation. All points
 that are drawn in the rectangular region defined by the click and drag
 will be added to the selection. The click and drag selection
-may take some time, depending on the size of the region!<p>
+may take some time, depending on the size of the region! Note, that
+currently only points that are visible will be added to the list.<p>
 
 <sect1>Editing Points<label id="editac">
 <p>
@@ -1890,15 +1896,30 @@ and size of the object determines the position and size of the lightsource!
 <sect1>NURBCurve Object<label id="ncurveobj">
 <p>
 NURBS curves are used to build more complex smoothly shaped 
-objects using operations like extrude, revolve or sweep.
+objects using operations like extrude, revolve, sweep or skin.
 They can be closed and used to emulate Bezier and
 B-Spline curves easily.<p>
-NURBS curves support so called multiple points. These are control points
-that have the same coordinates. Those points will be drawn with a bigger
-handle, than normal points. See sections
+
+<sect2>Multiple Points<label id="ncurvemp">
+<p>
+The NURBS curves of Ayam support so called multiple points.
+A multiple point is made of different control points that have
+the same coordinates.
+Modeling actions will work on all the control points that
+make up a multiple point.
+Multiple points will be drawn with a bigger
+handle than normal points.
+They may e.g. be used to create closed curves.
+Note, that the control points do not have to be consecutive.
+Multiple points may be created using the collapse tool,
+and split up again using the exlode tool (see sections
 <ref id="collt" name="The Collapse Tool"> and
 <ref id="explt" name="The Explode Tool"> for more information regarding
-multiple points.
+those tools).
+Note, that even though you might have exploded some multiple points
+Ayam will re-create them on several occasions like reading
+of a scene, inserting/deleting points, and applying the NURBCurveAttrib
+property if they still have identical coordinate values.
 
 <sect2>NCurveAttrib<label id="ncattr">
 <p>
@@ -2735,7 +2756,9 @@ The knot type of the curve will be changed to custom.
 <p>
 <itemize>
 <item>Arguments: The collapse tool expects a selected NURBS curve
-and a number of selected (tagged) control points.
+and a number of selected (tagged) control points (see section
+<ref id="selac" name="Selecting Points"> for information on how
+to select (tag) control points).
 <item>Operation: The selected control points will be made a
 single multiple point, all points will get the coordinate values
 of the last tagged point.
@@ -2745,9 +2768,15 @@ of the last tagged point.
 <p>
 <itemize>
 <item>Arguments: The explode tool expects a selected NURBS curve
-and a number of selected (tagged) multiple points.
+and a number of selected (tagged) multiple points (see section
+<ref id="selac" name="Selecting Points"> for information on how
+to select (tag) control points).
 <item>Operation: The points forming the selected multiple points will
 be made to simple points again and may be edited separately.
+<item>Even though you might have exploded some multiple points
+Ayam will re-create them on several occasions like reading
+of a scene, inserting/deleting points, and applying the NURBCurveAttrib
+property if they still have identical coordinate values.
 </itemize>
 
 
@@ -3987,6 +4016,7 @@ M
 <item>Move: <ref id="vwsc" name="view action">,
 <ref id="iac" name="move object">
 <item>movOb, movSel: <ref id="movob" name="scripting interface command">
+<item>Multiple Point: <ref id="ncurvemp" name="Multiple Points">
 </itemize>
 
 N
