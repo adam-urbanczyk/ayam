@@ -5353,7 +5353,7 @@ ay_npt_extractnc(ay_object *npatch, int side, double param,
       if(r < 1)
 	Qw = NULL;
 
-      memcpy(nc->knotv, np->vknotv, (nc->length+nc->order)*sizeof(double));
+      memcpy(nc->knotv, np->uknotv, (nc->length+nc->order)*sizeof(double));
 
       break;
     case 5:
@@ -5394,7 +5394,7 @@ ay_npt_extractnc(ay_object *npatch, int side, double param,
       if(r < 1)
 	Qw = NULL;
 
-      memcpy(nc->knotv, np->uknotv, (nc->length+nc->order)*sizeof(double));
+      memcpy(nc->knotv, np->vknotv, (nc->length+nc->order)*sizeof(double));
       break;
     default:
       ay_status = AY_ERROR;
