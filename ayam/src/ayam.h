@@ -392,6 +392,7 @@ typedef struct ay_text_object_s
   char *fontname;
   char *string;
   double height;
+  int revert;
   int has_upper_cap;
   int has_lower_cap;
   int has_upper_bevels;

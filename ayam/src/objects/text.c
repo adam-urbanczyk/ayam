@@ -200,6 +200,10 @@ ay_text_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp,to, &(text->height));
 
+  Tcl_SetStringObj(ton,"Revert",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &(text->revert));
+
   Tcl_SetStringObj(ton,"RevertBevels",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(text->revert_bevels));
@@ -275,6 +279,11 @@ ay_text_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_SetStringObj(ton,"Height",-1);
   to = Tcl_NewDoubleObj(text->height);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton,"Revert",-1);
+  to = Tcl_NewIntObj(text->revert);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
 
   Tcl_SetStringObj(ton,"RevertBevels",-1);
   to = Tcl_NewIntObj(text->revert_bevels);
@@ -370,8 +379,15 @@ ay_text_writecb(FILE *fileptr, ay_object *o)
 
   text = (ay_text_object *)(o->refine);
 
-  fprintf(fileptr, "%s\n", text->fontname);
-  fprintf(fileptr, "%s\n", text->string);
+  if(!text->fontname || text->fontname[0] == '\0')
+    fprintf(fileptr, "\n");
+  else
+    fprintf(fileptr, "%s\n", text->fontname);
+
+  if(!text->string || text->string[0] == '\0')
+    fprintf(fileptr, "\n");
+  else
+    fprintf(fileptr, "%s\n", text->string);
 
   fprintf(fileptr, "%g\n", text->height);
   fprintf(fileptr, "%d\n", text->has_upper_cap);
@@ -526,6 +542,7 @@ ay_text_notifycb(ay_object *o)
   c = text->string;
   while(*c != '\0')
     {
+      /*0x3071*/
       tti_status = ay_tti_getcurves(text->fontname, *c, &letter);
       if(tti_status)
 	{
@@ -571,7 +588,7 @@ ay_text_notifycb(ay_object *o)
 	      newcurve->movx = xoffset;
 	      newcurve->movy = yoffset;
 
-	      if(outline->filled)
+	      if((text->revert?(outline->filled):(!outline->filled)))
 		{
 		  /* this outline is a true outline */
 
