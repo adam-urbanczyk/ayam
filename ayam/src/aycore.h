@@ -241,6 +241,11 @@ int ay_object_deleteinstances(ay_object **o);
 
 int ay_object_replace(ay_object *src, ay_object *dst);
 
+/* objio.c */
+int ay_objio_writescene(char *filename, int selected);
+
+int ay_objio_init(Tcl_Interp *interp);
+
 /* otype.c */
 int ay_otype_register(char *name,
 		      ay_createcb  *crtcb,
