@@ -277,3 +277,7 @@ int ay_npt_createcap(double z, ay_nurbcurve_object *curve,
 		     double *ominx, double *omaxx,
 		     double *ominy, double *omaxy, double *oangle,
 		     ay_nurbpatch_object **cap);
+
+/* pmt.c */
+
+int ay_pmt_tonpatch(ay_pamesh_object *pamesh, ay_object **result);
