@@ -674,8 +674,10 @@ $tree bindText  <ButtonPress-1> "tree_selectItem 1 $sw.tree"
 $tree bindText  <Double-ButtonPress-1> "tree_toggleSub $sw.tree"
 
 # switch back to good old listbox
-bind $la <Double-ButtonPress-1> "tree_close $w; olb_open $w;\
-	olb_update; rV"
+bind $la <Double-ButtonPress-1> "\
+	global ayprefs; tree_close $w; olb_open $w;\
+	cS; olb_update; if \{ \$ay(need_redraw) == 1 \} \{rV\};\
+	set ayprefs(showtr) 0"
 balloon_set $la "Double click here\nto switch to listbox"
 
 # pack widgets
@@ -706,11 +708,10 @@ $m add command -label "Collapse" -command "tree_collapse"
 set m $ay(tree).popup
 
 $m add separator
-$m add command -label "Switch to Listbox" -command\
- "global ay; tree_close $w; olb_open $w; cS; olb_update;\
- if \{ \$ay(need_redraw) == 1 \} \{\
-  rV;\
- \}"
+$m add command -label "Switch to Listbox" -command "\
+	global ay ayprefs; tree_close $w; olb_open $w; cS; olb_update;\
+	if \{ \$ay(need_redraw) == 1 \} \{rV\};\
+	set ayprefs(showtr) 0"
 $m add separator
 $m add command -label "Deselect Object" -command {
     global ay
