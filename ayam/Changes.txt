@@ -1,4 +1,4 @@
-[10. 09. 2003] CVS-Head:
+[17. 09. 2003] CVS-Head:
 o bug fixes:
   - fixed crash when exporting scenes with malformed RiAttribute/RiOption
     tags (type "c" or "p", with a component missing) (SF 753550)
@@ -23,6 +23,7 @@ o bug fixes:
     close (when the corresponding view object was selected) (SF 797213)
   - fixed scene loading via command line argument changing the prompt
     (SF 800914)
+  - fixed material drag and drop not updating the property GUI (SF 807670)
 o added preference setting "Misc/SavePrefsGeom" to control saving of the
   geometry of the preference editor window
 o added two new renderers, Angel and Pixie, to the Select_Renderer feature
@@ -105,6 +106,10 @@ o multiple selected objects are now always processed in the order in which
   they occur in the scene, not the order in which they have been selected
 o improved focus handling in main window; switching the focus from the object
   tree/listbox to the property GUI is now much faster
+o updated shader parsing code to follow the incompatible changes in Aqsis
+  V0.7.19 libslxargs
+o added preferences option "MarkHidden", that controls whether hidden objects
+  should be preceded by an exclamation mark in the tree view
 
 
 [10. 05. 2003] Ayam1.5.1:
