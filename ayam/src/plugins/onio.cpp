@@ -62,7 +62,7 @@ int onio_getncurvefromcurve(const ON_Curve *p_o, double accuracy,
 
 int onio_readbrep(ON_Brep *p_b, double accuracy);
 
-int onio_readobject(const ON_Object *p_o);
+int onio_readobject(const ON_Object *p_o, double accuracy);
 
 int onio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 		  int argc, char *argv[]);
@@ -971,9 +971,9 @@ onio_readbrep(ON_Brep *p_b, double accuracy)
 	      ay_status = ay_object_crtendlevel(&(lo->down));
 
 	      ay_status = ay_object_link(lo);
-	      printf("hier\n");
+
 	      ay_next = &(lo->down);
-	    }
+	    } // if
 
 	  int lti; // loop's trim index
 	  for(lti = 0; lti < loop_trim_count; lti++)
@@ -1105,10 +1105,9 @@ onio_readbrep(ON_Brep *p_b, double accuracy)
 // onio_readobject:
 //
 int
-onio_readobject(const ON_Object *p_o)
+onio_readobject(const ON_Object *p_o, double accuracy)
 {
  int ay_status = AY_OK;
- double accuracy = 0.1;
  ON_NurbsSurface s;
  ON_NurbsCurve c;
 
@@ -1187,15 +1186,27 @@ onio_readtcmd(ClientData clientData, Tcl_Interp *interp,
  int ay_status = AY_OK;
  char fname[] = "onio_read";
  ONX_Model model;
+ int i = 2;
+ double accuracy = 0.1;
 
   // check args
-  if(argc != 2)
+  if(argc < 2)
     {
       ay_error(AY_EARGS, fname, "filename");
       return TCL_OK;
     }
 
   const char *filename = argv[1];
+
+  while(i+1 < argc)
+    {
+      if(!strcmp(argv[i], "-a"))
+	{
+	  sscanf(argv[i+1], "%lg", &accuracy);
+	}
+      i+=2;
+    } // while
+
 
   // open file containing opennurbs archive
   FILE *archive_fp = ON::OpenFile(filename, "rb");
@@ -1232,7 +1243,8 @@ onio_readtcmd(ClientData clientData, Tcl_Interp *interp,
     {
       if((model.m_object_table[i]).m_object)
 	{
-	  ay_status = onio_readobject((model.m_object_table[i]).m_object);
+	  ay_status = onio_readobject((model.m_object_table[i]).m_object,
+				      accuracy);
 	  if(ay_status)
 	    {
 	      ay_error(ay_status, fname, NULL);
