@@ -1,4 +1,4 @@
-[16. Aug 2004] CVS-Head:
+[24. Aug 2004] CVS-Head:
 o bug fixes:
   - fixed "loadayslo3d.tcl" loading the wrong plugin (SF 928054)
   - fixed "Select Renderer" setting a wrong shader extension for "3Delight"
@@ -41,6 +41,9 @@ o added Tesselation GUI that helps to determine the best matching tesselation
 o added keyboard shortcuts to display property GUIs, using keys <0> to <9>
 o added new object type "Birail1" that sweeps a cross section curve along
   two so called rail curves
+o added provide mechanism capabilites to the Level object, thus it is now
+  possible to use a Level object to add tags to an Instance object, that is
+  used as parameter object of a tool object
 
 
 [27. Mar 2004] Ayam1.7:
