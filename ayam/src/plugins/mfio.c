@@ -1832,6 +1832,95 @@ ay_mfio_writenurbcurve(MF3D_FilePtr fileptr, ay_object *o)
 } /* ay_mfio_writenurbcurve */
 
 
+/* ay_mfio_writepolymesh:
+ *
+ */
+int 
+ay_mfio_writepolymesh(MF3D_FilePtr fileptr, ay_object *o)
+{
+ int ay_status = AY_OK;
+ int stride = 3;
+ unsigned int i = 0, j = 0, k = 0, a = 0, b = 0, pind = 0;
+ MF3DGeneralPolygonObj mf3do = {0};
+ MF3DPolygonDataPtr pd = NULL;
+ MF3DErr status = kMF3DNoErr;	/* temporary result code */  
+ ay_pomesh_object *pm = (ay_pomesh_object*)(o->refine);
+
+  /* write enclosing container */
+  ay_status = ay_mfio_writecntr(fileptr);
+  if(ay_status)
+    { return ay_status; }
+
+  if(pm->has_normals)
+    {
+      stride = 6;
+    }
+  else
+    {
+      stride = 3;
+    }
+
+  /* write all polygons of the mesh as single objects */
+  for(i = 0; i < pm->npolys; i++)
+    {
+      /* fill the MF3D-object */
+      mf3do.objectType = kMF3DObjGeneralPolygon;
+      mf3do.nContours = pm->nloops[i];
+
+      if(!(mf3do.polygons = calloc(pm->nloops[i], sizeof(MF3DPolygonData))))
+	{ return AY_EOMEM; }
+
+      /* fill the MF3DPolygonData Objects */
+      for(j = 0; j < pm->nloops[i]; j++)
+	{
+	  pd = (MF3DPolygonDataPtr)(&(mf3do.polygons[j]));
+
+	  pd->nVertices = pm->nverts[a];
+
+	  if(!(pd->vertices = calloc(pm->nverts[a], sizeof(MF3DPoint3D))))
+	    { /* XXXX Memory leaks here! */ return AY_EOMEM; }
+
+	  for(k = 0; k < pm->nverts[a]; k++)
+	    {
+	      pind = stride * (pm->verts[b]);
+	      ((pd->vertices)[k]).x = pm->controlv[pind];
+	      ((pd->vertices)[k]).y = pm->controlv[pind+1];
+	      ((pd->vertices)[k]).z = pm->controlv[pind+2];
+	      b++;
+	    } /* for */
+
+	  a++;
+	} /* for */
+
+      /* we write out the object now */
+      status = MF3DWriteAnObject (fileptr, (MF3DVoidObjPtr)&mf3do);
+      if(status != kMF3DNoErr)
+	{  /* XXXX Memory leaks here! */
+	  ay_mfio_mf3d_errno = status; return AY_ERROR; }
+
+      /* write attributes */
+      ay_status = ay_mfio_writeattributes(fileptr, o);
+      if(ay_status)
+	{  /* XXXX Memory leaks here! */
+	  return ay_status; }
+
+      /* delete the object */
+      for(j = 0; j < pm->nloops[i]; j++)
+	{
+	  pd = (MF3DPolygonDataPtr)(&(mf3do.polygons[j]));
+	  free(pd->vertices);
+	} /* for */
+      free(mf3do.polygons);
+      mf3do.polygons = NULL;
+    } /* for */
+
+  /* close container */
+  ay_status = ay_mfio_writeecntr(fileptr);
+
+ return ay_status;
+} /* ay_mfio_writepolymesh */
+
+
 /* ay_mfio_writebox:
  *
  */
@@ -2907,6 +2996,9 @@ Mfio_Init(Tcl_Interp *interp)
 				       ay_mfio_writenpconvertible);
   ay_status = ay_mfio_registerwritecb((char *)(AY_IDBPATCH),
 				       ay_mfio_writenpconvertible);
+
+  ay_status = ay_mfio_registerwritecb((char *)(AY_IDPOMESH),
+				       ay_mfio_writepolymesh);
 
 
   /* register some C-functions as Tcl-Commands */
