@@ -484,10 +484,17 @@ proc toolbox_open { } {
 	winMoveOrResize .tbw ${width}x${height}
     }
     update
+
     # establish main shortcuts also for toolbox
     shortcut_main $w
 
     toolbox_layout
+
+    wm protocol $w WM_DELETE_WINDOW {
+	global ayprefs
+	set ayprefs(showtb) 0
+	destroy .tbw
+    }
 
  return;
 }
