@@ -102,7 +102,7 @@ void
 ay_toglcb_destroy(struct Togl *togl)
 {
  ay_object *root = ay_root, *o, *o2, *l;
- ay_list_object *clevel = ay_currentlevel;
+ ay_list_object *clevel = ay_currentlevel, *sel = ay_selection, **lsel = NULL;
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  int recreate_clevel = AY_FALSE;
 
@@ -115,6 +115,24 @@ ay_toglcb_destroy(struct Togl *togl)
       }
     }
 #endif
+
+  /* unlink from selection */
+  lsel = &(ay_selection);
+  while(sel)
+    {
+      if(sel->object && sel->object->type == AY_IDVIEW &&
+	 (((ay_view_object*)(sel->object->refine)) == view))
+	{
+	  *lsel = sel->next;
+	  free(sel);
+	  break;
+	}
+      else
+	{
+	  lsel = &(sel->next);
+	  sel = sel->next;
+	}
+    } /* while */
 
   /* unlink and delete view object */
   l = clevel->object;
