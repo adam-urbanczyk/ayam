@@ -151,6 +151,8 @@ ay_shade_view(struct Togl *togl)
       view->dirty = AY_FALSE;
     }
 
+  glDisable(GL_LIGHTING);
+
   /* draw background image */
   if(view->drawbg)
     {
