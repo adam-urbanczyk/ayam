@@ -106,7 +106,6 @@ proc prefs_open {} {
     set fw [$nb insert end Modeling -text Modeling\
 	    -raisecmd "prefs_rsnb $nb Modeling"]
     addParam $fw ayprefse PickEpsilon
-    addParam $fw ayprefse PickTolerance
     addParam $fw ayprefse HandleSize
     addCheck $fw ayprefse LazyNotify
     addCheck $fw ayprefse EditSnaps
