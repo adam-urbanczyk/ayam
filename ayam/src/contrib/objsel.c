@@ -14,6 +14,18 @@
 
 /* objsel.c - select objects on a viewport */
 
+
+/* prototypes of functions local to this module: */
+
+void ay_objsel_pushlnames(ay_list_object *lo);
+
+void ay_objsel_poplnames(ay_list_object *lo);
+
+void ay_objsel_process_hits (GLint hits, GLuint buffer[], char *var);
+
+
+/* functions: */
+
 void
 ay_objsel_pushlnames(ay_list_object *lo)
 {

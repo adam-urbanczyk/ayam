@@ -149,7 +149,13 @@ Pixmap plus_bitmap;
 #include "tcl/BWidget-1.2.1/images/minus.xbm"
 #include "tcl/BWidget-1.2.1/images/plus.xbm"
 
-/* functions */
+
+/* prototypes of functions local to this module: */
+
+int ay_init(Tcl_Interp *interp);
+
+
+/* functions: */
 
 /* ay_init:
  *  create tables, ay_root
