@@ -1394,7 +1394,7 @@ int
 ay_npatch_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
  int ay_status = AY_OK;
- char fname[] = "npatch_providecb";
+ /*char fname[] = "npatch_providecb";*/
  
   if(!o || !result)
     return AY_ENULL;
@@ -1407,6 +1407,27 @@ ay_npatch_providecb(ay_object *o, unsigned int type, ay_object **result)
 
  return ay_status;
 } /* ay_npatch_providecb */
+
+int
+ay_npatch_convertcb(ay_object *o)
+{
+ int ay_status = AY_OK;
+ /*char fname[] = "npatch_convertcb";*/
+ ay_object *new = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  ay_status = ay_npatch_providecb(o, AY_IDPOMESH, &new);
+
+  if(new)
+    {
+      ay_trafo_copy(o, new);
+      ay_status = ay_object_link(new);
+    }
+
+ return ay_status;
+} /* ay_npatch_convertcb */
 
 int
 ay_npatch_init(Tcl_Interp *interp)
@@ -1430,6 +1451,8 @@ ay_npatch_init(Tcl_Interp *interp)
 				    AY_IDNPATCH);
 
   ay_status = ay_provide_register(ay_npatch_providecb, AY_IDNPATCH);
+
+  ay_status = ay_convert_register(ay_npatch_convertcb, AY_IDNPATCH);
 
  return ay_status;
 } /* ay_npatch_init */
