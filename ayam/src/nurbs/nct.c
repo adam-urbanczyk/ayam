@@ -4189,6 +4189,21 @@ ay_nct_toxy(ay_object *c)
   if(nc->length < 3)
     return AY_ERROR;
 
+  ay_trafo_identitymatrix(m);
+  ay_trafo_scalematrix(c->scalx, c->scaly, c->scalz, m);
+
+  /* apply scale matrix to all points */
+  p = nc->controlv;
+  for(i = 0; i < nc->length; i++)
+    {
+      ay_trafo_apply4(p, m);
+      p += stride;
+    } /* for */
+
+  c->scalx = 1.0;
+  c->scaly = 1.0;
+  c->scalz = 1.0;
+
   /* try to get three "good" points, they should be not equal,
      not in line, and span a triangle to get the orientation from */
   tp1 = nc->controlv;

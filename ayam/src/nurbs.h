@@ -265,6 +265,8 @@ int ay_nct_shiftcbs(ay_nurbcurve_object *curve);
 int ay_nct_shiftcbstcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[]);
 
+int ay_nct_toxy(ay_object *c);
+
 int ay_nct_toxytcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[]);
 

@@ -32,7 +32,7 @@ ay_capt_createfromcurve(ay_object *c, ay_object **ca)
  double minx = 0.0, miny = 0.0, maxx = 0.0, maxy = 0.0, angle = 0.0;
  double firstmovx = 0.0, firstmovy = 0.0, trimmx = 0.0, trimmy = 0.0;
  int first = AY_TRUE, i = 0, stride = 4;
- double m[16];
+ double z;
 
   if(!c || !ca)
     return AY_ENULL;
@@ -43,10 +43,11 @@ ay_capt_createfromcurve(ay_object *c, ay_object **ca)
       if(!c->type == AY_IDNCURVE)
 	return AY_ERROR;
 
-      nc = (ay_nurbcurve_object *)(c->refine);
+      ay_status = ay_nct_toxy(c);
+      if(ay_status)
+	return AY_ERROR;
 
-      /* get curves transformation-matrix */
-      ay_trafo_creatematrix(c, m);
+      nc = (ay_nurbcurve_object *)(c->refine);
 
       if(first)
 	{
@@ -61,6 +62,11 @@ ay_capt_createfromcurve(ay_object *c, ay_object **ca)
 	  npatch->inherit_trafos = AY_FALSE;
 	  npatch->hide_children = AY_TRUE;
 	  npatch->down = c;
+
+	  ay_trafo_copy(c, npatch);
+	  npatch->scalx = 1.0;
+	  npatch->scaly = 1.0;
+	  npatch->scalz = 1.0;
 
 	  /* calloc the new patch */
 	  if(!(np = calloc(1, sizeof(ay_nurbpatch_object))))
@@ -87,8 +93,6 @@ ay_capt_createfromcurve(ay_object *c, ay_object **ca)
 	  stride = 4;
 	  while(i < nc->length*stride)
 	    {
-	      ay_trafo_apply4(&(nc->controlv[i]), m);
-
 	      if(nc->controlv[i] > maxx)
 		maxx = nc->controlv[i];
 	      if(nc->controlv[i] < minx)
@@ -97,7 +101,7 @@ ay_capt_createfromcurve(ay_object *c, ay_object **ca)
 		maxy = nc->controlv[i+1];
 	      if(nc->controlv[i+1] < miny)
 		miny = nc->controlv[i+1];
-		
+
 	      i += stride;
 	    } /* while */
 
@@ -116,32 +120,18 @@ ay_capt_createfromcurve(ay_object *c, ay_object **ca)
 	  np->controlv[12] = maxx;
 	  np->controlv[13] = maxy;
 
+	  z = nc->controlv[2];
+
 	  for(i = 2; i <= 15; i += 4)
 	    {
-	      /*      np->controlv[i] = z;*/
+	      np->controlv[i] = z;
 	      np->controlv[i+1] = 1.0;
 	    } /* for */
-	  /*
-	  maxx *= c->scalx;
-	  minx *= c->scalx;
-	  maxy *= c->scaly;
-	  miny *= c->scaly;
-	  */
 	}
       else
 	{
-	  stride = 4;
-	  i = 0;
-	  while(i < nc->length*stride)
-	    {
-	      ay_trafo_apply4(&(nc->controlv[i]), m);
-
-	      i += stride;
-	    } /* while */
-
 	  /* clear trafo */
 	  ay_trafo_defaults(c);
-
 	} /* if */
 
       ay_nct_getorientation(nc, &angle);
@@ -157,7 +147,7 @@ ay_capt_createfromcurve(ay_object *c, ay_object **ca)
 	  c->scaly /= fabs(maxy-miny);
 	  c->movx = -(minx + (fabs(maxx-minx)/2.0))*c->scalx;
 	  c->movy = -(miny + (fabs(maxy-miny)/2.0))*c->scaly;
-	    
+
 	  c->movx += 0.5;
 	  c->movy += 0.5;
 
@@ -175,7 +165,7 @@ ay_capt_createfromcurve(ay_object *c, ay_object **ca)
 	  c->scaly /= fabs(maxy-miny);
 	  c->movx = -(minx + (fabs(maxx-minx)/2.0))*c->scalx;
 	  c->movy = -(miny + (fabs(maxy-miny)/2.0))*c->scaly;
-	    
+
 	  c->movx += 0.5+(trimmx/fabs(maxx-minx));
 	  c->movy += 0.5+(trimmy/fabs(maxy-miny));
 
