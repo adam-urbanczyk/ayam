@@ -130,7 +130,11 @@ proc idr_open {} {
     pack $f1 -side top
     set f1 [frame $f.f3]
     addText $f1 e1 "Global Parameters:"
-    addCheck $f1 idrprefs CacheParts
+    if { [auto_execok diff] != "" } {
+	addCheck $f1 idrprefs CacheParts
+    } else {
+	set idrprefs(CacheParts) 0
+    }
     pack $f1 -side top -fill x -expand yes
 
     set f $w.fu.fl
