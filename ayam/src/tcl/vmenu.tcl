@@ -178,7 +178,7 @@ $m add command -label "Zoom to Object" -command "\
 	global ay;\
 	$w.f3D.togl mc; $w.f3D.togl zoomob; \$ay(currentView) mc"
 
-$m add command -label "Align to Parent" -command "\
+$m add command -label "Align to Object" -command "\
 	global ay;\
 	$w.f3D.togl mc; $w.f3D.togl align; \$ay(currentView) mc"
 

@@ -1239,15 +1239,18 @@ int
 ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "ay_pact_epcb";
+ char fname[] = "edit_points";
  Tcl_Interp *interp = Togl_Interp (togl);
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
+ ay_list_object *sel = ay_selection;
  static double oldwinx = 0.0, oldwiny = 0.0;
  double winx = 0.0, winy = 0.0;
  double movX, movY, movZ, dx=0.0, dy=0.0, dz=0.0, *coords;
  double euler[3] = {0};
  int i = 0;
+ static int multiple = AY_FALSE;
  static GLdouble m[16] = {0};
+ GLdouble mo[16] = {0};
  ay_object *o = ay_point_edit_object;
 
   if(!o) return TCL_OK;
@@ -1255,92 +1258,132 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
   if(argc >= 4)
     {
       if(!strcmp(argv[2],"-winxy"))
-      {
-	Tcl_GetDouble(interp, argv[3], &winx);
-	Tcl_GetDouble(interp, argv[4], &winy);
+	{
+	  Tcl_GetDouble(interp, argv[3], &winx);
+	  Tcl_GetDouble(interp, argv[4], &winy);
 
-
-	if(view->usegrid)
-	  {
-	    ay_viewt_griddify(togl, &winx, &winy);
-	  }
-      }
+	  if(view->usegrid)
+	    {
+	      ay_viewt_griddify(togl, &winx, &winy);
+	    }
+	}
       else
-	if(!strcmp(argv[2],"-start"))
-	  {
-	    Tcl_GetDouble(interp, argv[3], &winx);
-	    Tcl_GetDouble(interp, argv[4], &winy);
+	{
+	  if(!strcmp(argv[2],"-start"))
+	    {
+	      Tcl_GetDouble(interp, argv[3], &winx);
+	      Tcl_GetDouble(interp, argv[4], &winy);
 
-	    if(view->usegrid)
-	      {
-		ay_viewt_griddify(togl, &winx, &winy);
-	      }
+	      if(view->usegrid)
+		{
+		  ay_viewt_griddify(togl, &winx, &winy);
+		}
 
-	    oldwinx = winx;
-	    oldwiny = winy;
+	      oldwinx = winx;
+	      oldwiny = winy;
 
-	    glMatrixMode(GL_MODELVIEW);
-	    glPushMatrix();
-	    glScaled (1.0/o->scalx, 1.0/o->scaly, 1.0/o->scalz);
+	      if(ay_selection && ay_selection->next)
+		multiple = AY_TRUE;
+	      else
+		multiple = AY_FALSE;
 
-	    ay_quat_toeuler(o->quat, euler);
-	    glRotated(AY_R2D(euler[0]), 0.0, 0.0, 1.0);
-	    glRotated(AY_R2D(euler[1]), 0.0, 1.0, 0.0);
-	    glRotated(AY_R2D(euler[2]), 1.0, 0.0, 0.0);
+	      glMatrixMode(GL_MODELVIEW);
+	      glPushMatrix();
+	      /* XXXX uncomment when startpedit deals with multiple objects */
+	      /*
+	      if(!multiple)
+		{
+	      */
+		  glScaled (1.0/o->scalx, 1.0/o->scaly, 1.0/o->scalz);
+		  if(!view->aligned)
+		    {
+		      ay_quat_toeuler(o->quat, euler);
+		      glRotated(AY_R2D(euler[0]), 0.0, 0.0, 1.0);
+		      glRotated(AY_R2D(euler[1]), 0.0, 1.0, 0.0);
+		      glRotated(AY_R2D(euler[2]), 1.0, 0.0, 0.0);
+		    }
+		  glTranslated(-o->movx, -o->movy, -o->movz);
+		/*
+		}
+		*/
+	      if(!view->local)
+		{
+		  ay_trafo_getalli(ay_currentlevel->next);
+		}
+	      else
+		{
+		  ay_trafo_getallis(ay_currentlevel->next);
+		}
 
-	    glTranslated(-o->movx, -o->movy, -o->movz);
+	      glGetDoublev(GL_MODELVIEW_MATRIX, m);
+	      glPopMatrix();
 
-	    if(!view->local)
-	      {
-		ay_trafo_getalli(ay_currentlevel->next);
-	      }
-	    else
-	      {
-		ay_trafo_getallis(ay_currentlevel->next);
-	      }
-
-	    glGetDoublev(GL_MODELVIEW_MATRIX, m);
-	    glPopMatrix();
-
-
-	    if(ay_point_edit_coords)
-	      {
-		for(i=0;i<ay_point_edit_coords_number;i++)
-		  {
-		    coords = ay_point_edit_coords[i]; 
+	      if(ay_point_edit_coords)
+		{
+		  for(i=0;i<ay_point_edit_coords_number;i++)
+		    {
+		      coords = ay_point_edit_coords[i]; 
 		    
-		    if(view->usegrid && ay_prefs.edit_snaps_to_grid &&
-		       (view->grid != 0.0))
-		      {
-			if(!view->local)
-			  {
-			    ay_trafo_applyall(ay_currentlevel->next,o,coords);
-			  }
+		      if(view->usegrid && ay_prefs.edit_snaps_to_grid &&
+			 (view->grid != 0.0))
+			{
+			  if(!view->local)
+			    {
+			      ay_trafo_applyall(ay_currentlevel->next, o,
+						coords);
+			    }
 
-			ay_pact_griddify(&(coords[0]),view->grid);
-			ay_pact_griddify(&(coords[1]),view->grid);
-			ay_pact_griddify(&(coords[2]),view->grid);
+			  ay_pact_griddify(&(coords[0]),view->grid);
+			  ay_pact_griddify(&(coords[1]),view->grid);
+			  ay_pact_griddify(&(coords[2]),view->grid);
 
-			if(!view->local)
-			  {
-			    ay_trafo_applyalli(ay_currentlevel->next,o,coords);
-			  }
-		      } /* if */
-		  } /* for */
-	      } /* if */
-	  }  /* if */
+			  if(!view->local)
+			    {
+			      ay_trafo_applyalli(ay_currentlevel->next, o,
+						 coords);
+			    } /* if */
+			} /* if */
+		    } /* for */
+		} /* if */
+	      return TCL_OK;
+	    } /* if */
+	} /* if */
     }
   else
     {
       ay_error(AY_EARGS, fname, NULL);
       return TCL_OK;
-    } 
+    } /* if */
 
   dx = -(oldwinx - winx) * view->conv_x;
   dy = (oldwiny - winy) * view->conv_y;
 
   oldwinx = winx;
   oldwiny = winy;
+
+  /*
+  if(multiple)
+    {
+      glMatrixMode(GL_MODELVIEW);
+      glPushMatrix();
+      
+       glScaled (1.0/o->scalx, 1.0/o->scaly, 1.0/o->scalz);
+       if(!view->aligned)
+	 {
+	   ay_quat_toeuler(o->quat, euler);
+	   glRotated(AY_R2D(euler[0]), 0.0, 0.0, 1.0);
+	   glRotated(AY_R2D(euler[1]), 0.0, 1.0, 0.0);
+	   glRotated(AY_R2D(euler[2]), 1.0, 0.0, 0.0);
+	 }
+       glTranslated(-o->movx, -o->movy, -o->movz);
+
+       glGetDoublev(GL_MODELVIEW_MATRIX, mo);
+      glPopMatrix();
+
+      ay_trafo_multmatrix4(mo,m);
+      memcpy(m, mo, 16*sizeof(GLdouble));
+    }
+  */
 
   /* Side or Top view? */
   if(view->type == AY_VTSIDE)
@@ -1400,7 +1443,7 @@ int
 ay_pact_wetcb(struct Togl *togl, int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "ay_pact_wetcb";
+ char fname[] = "weight_edit";
  Tcl_Interp *interp = Togl_Interp (togl);
  /*  ay_view_info *view = Togl_GetClientData(togl);*/
  double dx, winx = 0.0, new_weight, *coords;
@@ -1478,8 +1521,8 @@ int
 ay_pact_wrtcb(struct Togl *togl, int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "ay_pact_wrtcb";
- double p[3] = {DBL_MIN, DBL_MIN, DBL_MIN}, *coords;
+ char fname[] = "reset_weights";
+ double p[3], *coords;
  int i;
  ay_object *o = NULL;
  ay_list_object *sel = ay_selection;

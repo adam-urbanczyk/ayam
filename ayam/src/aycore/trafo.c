@@ -308,7 +308,7 @@ ay_trafo_getallr(ay_list_object *lo)
 
   if(lo->next)
    {
-     ay_trafo_getallsr(lo->next->next);
+     ay_trafo_getallr(lo->next->next);
    }
 
   if((o != ay_root) && o->down)

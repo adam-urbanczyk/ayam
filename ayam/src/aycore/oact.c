@@ -175,12 +175,13 @@ ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
 	  glMatrixMode(GL_MODELVIEW);
 	  glPushMatrix();
 	   glScaled (1.0/o->scalx, 1.0/o->scaly, 1.0/o->scalz);
-
-	   ay_quat_toeuler(o->quat, euler);
-	   glRotated(AY_R2D(euler[0]), 0.0, 0.0, 1.0);
-	   glRotated(AY_R2D(euler[1]), 0.0, 1.0, 0.0);
-	   glRotated(AY_R2D(euler[2]), 1.0, 0.0, 0.0);
-
+	   if(!view->aligned)
+	     {
+	       ay_quat_toeuler(o->quat, euler);
+	       glRotated(AY_R2D(euler[0]), 0.0, 0.0, 1.0);
+	       glRotated(AY_R2D(euler[1]), 0.0, 1.0, 0.0);
+	       glRotated(AY_R2D(euler[2]), 1.0, 0.0, 0.0);
+	     }
 	   glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 	  glPopMatrix();
 
