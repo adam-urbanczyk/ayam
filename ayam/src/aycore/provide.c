@@ -1,7 +1,7 @@
 /*
  * Ayam, a free 3D modeler for the RenderMan interface.
  *
- * Ayam is copyrighted 1998-2001 by Randolf Schultz
+ * Ayam is copyrighted 1998-2004 by Randolf Schultz
  * (rschultz@informatik.uni-rostock.de) and others.
  *
  * All rights reserved.
@@ -12,11 +12,11 @@
 
 #include "ayam.h"
 
-/* provide.c - functions for object notification */
+/* provide.c - functions for provide mechanism */
 
 /* ay_provide_register:
- *  register the conversion callback notcb for
- *  objects of type type_id
+ *  register the provide callback <provcb> for
+ *  objects of type <type_id>
  */
 int
 ay_provide_register(ay_providecb *provcb, unsigned int type_id)
@@ -51,18 +51,35 @@ ay_provide_object(ay_object *o, unsigned int type, ay_object **result)
     {
       ay_status = cb(o, type, result);
 
+      if(!result)
+	{
+	  /* caller just wants to test ability to provide
+	     => return ay_status without checking */
+	  return ay_status;
+	}
+
       if(ay_status)
 	{
 	  ay_error(AY_ERROR, fname, "provide callback failed");
 	  return AY_ERROR;
 	}
     }
-  /*
   else
     {
-     ay_error(AY_ERROR, fname, "No provide callback registered!"); 
-    }
-  */
+      if(!result)
+	{
+	  /* caller just wants to test ability to provide
+	     and this object has no provide callback at all... */
+	  return AY_ERROR;
+	}
+        /*
+	  else
+	  {
+	  ay_error(AY_ERROR, fname, "No provide callback registered!"); 
+	  }
+	*/
+    } /* if */
+
 
  return AY_OK;
 } /* ay_provide_object */
