@@ -33,8 +33,6 @@ void ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
 		     ay_sm_trafostack *trafo,
 		     int rwidth, int rheight);
 
-int ay_sm_strcasecmp(char *s1, char *s2);
-
 /* tree.c */
 void ay_tree_getclevel(char *node);
 
