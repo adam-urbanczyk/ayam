@@ -21,6 +21,8 @@
 #include "marching.h"
 
 
+void meta_boxscan(meta_world *w, meta_gridcell *cube);
+
 /*
    Linearly interpolate the position where an isosurface cuts
    an edge between two vertices, each with their own scalar value
@@ -86,10 +88,24 @@ meta_polygonise (meta_world * w, meta_gridcell * grid, double isolevel)
   w->edgecode = edgeTable[cubeindex];
   edgeindex = edgeTable[cubeindex];
 
-  /* Cube is entirely in/out of the surface */
+
+   /* Cube is entirely in/out of the surface */
   if (edgeindex == 0)
     return (0);
 
+
+  /* Adaptive */
+
+  w->scale = 1.0;
+  
+  if(w->adapt)
+  {
+     meta_boxscan(w,grid);
+     return (cubeindex);
+  }
+
+ 
+ 
   /* Find the vertices where the surface intersects the cube */
   if (edgeindex & 1)
     {

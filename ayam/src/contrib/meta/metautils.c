@@ -62,7 +62,7 @@ meta_calcall (double x1, double y1, double z1, meta_world * w)
 	  	    (tmp->rm[2] * x1 + tmp->rm[6] * y1 + tmp->rm[10] * z1 +
 	  	    tmp->rm[14] * 1.0);
 
-	  	if (!tmp->formula == META_BALL)
+	  	if (!((tmp->formula == META_BALL)&&(w->version==1)))
 	     {
 			x *= tmp->scalex;
 			y *= tmp->scaley;
@@ -74,8 +74,13 @@ meta_calcall (double x1, double y1, double z1, meta_world * w)
 
 	      if (tmp->formula == META_BALL)
 	      {
-    	         dist = META_DIST (x, y, z, tmp->cp.x, tmp->cp.y, tmp->cp.z);
-	         if (dist <= radius)
+    	         if(w->version==1)
+		    	  dist = META_DIST (x, y, z, tmp->cp.x, tmp->cp.y, tmp->cp.z);
+		    else
+		    	  dist = META_DIST2 (x, y, z, tmp->cp.x, tmp->cp.y, tmp->cp.z);
+	         
+		    
+		    if (dist <= radius)
 	         {
 		       tmpeffect = tmp->a * META_CUB (dist) / META_CUB (radius) +
 		       tmp->b * META_SQ (dist) / META_SQ (radius) + tmp->c * dist / radius + 1.0;
@@ -630,7 +635,6 @@ meta_calceffect (meta_world * w)
   w->lastmark++;
   w->stackpos = 0;
 
- w->zahl = 0;
 
 #if META_USEVERTEXARRAY
   /* Reset Hash */
@@ -727,7 +731,7 @@ meta_getnormal (meta_world * w, meta_xyz * p, meta_xyz * normal)
   double xn, yn, zn, old, scale;
   double f, d;
 
-  d = w->edgelength / 100;
+  d = (w->edgelength / 500);  /**w->scale;*/
 
   f = meta_calcall (p->x, p->y, p->z, w);
 
