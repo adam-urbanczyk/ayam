@@ -754,19 +754,7 @@ metacomp_setpropcb (Tcl_Interp * interp, int argc, char *argv[],
   to = Tcl_ObjGetVar2 (interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj (interp, to, &b->r);
 
-  Tcl_SetStringObj (ton, "Xpos", -1);
-  to = Tcl_ObjGetVar2 (interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj (interp, to, &b->p.x);
-
-  Tcl_SetStringObj (ton, "Ypos", -1);
-  to = Tcl_ObjGetVar2 (interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj (interp, to, &b->p.y);
-
-  Tcl_SetStringObj (ton, "Zpos", -1);
-  to = Tcl_ObjGetVar2 (interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj (interp, to, &b->p.z);
-
-  Tcl_SetStringObj (ton, "Negativ", -1);
+  Tcl_SetStringObj (ton, "Negative", -1);
   to = Tcl_ObjGetVar2 (interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj (interp, to, &b->negativ);
 
@@ -833,19 +821,7 @@ metacomp_getpropcb (Tcl_Interp * interp, int argc, char *argv[],
   to = Tcl_NewDoubleObj (b->r);
   Tcl_ObjSetVar2 (interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj (ton, "Xpos", -1);
-  to = Tcl_NewDoubleObj (b->p.x);
-  Tcl_ObjSetVar2 (interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj (ton, "Ypos", -1);
-  to = Tcl_NewDoubleObj (b->p.y);
-  Tcl_ObjSetVar2 (interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj (ton, "Zpos", -1);
-  to = Tcl_NewDoubleObj (b->p.z);
-  Tcl_ObjSetVar2 (interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj (ton, "Negativ", -1);
+  Tcl_SetStringObj (ton, "Negative", -1);
   to = Tcl_NewIntObj (b->negativ);
   Tcl_ObjSetVar2 (interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
