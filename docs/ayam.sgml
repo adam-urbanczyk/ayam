@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>18. Dec 2001
+<date>25. Dec 2001
 <abstract>
 This is the documentation of Ayam - a free 3D modeling environment
 for the RenderMan interface.
@@ -330,7 +330,7 @@ shortcuts that are displayed in each entry. You can adapt the shortcuts
 using the file <tt>"ayamrc"</tt>
 (See section <ref id="ayamrc" name="Ayamrc File">).
 
-The <tt/File/ menu deals with standard file operations:
+The <tt/File/ menu deals with standard file operations:<label id="filem">
 <itemize>
 <item><tt/New/, clears the current scene (deletes all objects).
 <item><tt/Replace/, clears the current scene and closes all views,
@@ -362,7 +362,8 @@ are updated and rotated upon successful loading and saving of a scene.
 AutoSavePrefs is turned on) and quit the application.
 </itemize>
 
-The <tt/Edit/ menu contains standard clipboard operations:
+The <tt/Edit/ menu contains object and property clipboard
+operations, undo actions and lets you open the preferences editor:<label id="editm">
 <itemize>
 <item><tt/Copy/, copies the currently selected object(s) into the clipboard.
 <item><tt/Cut/, moves the currently selected object(s) into the clipboard.
@@ -370,8 +371,9 @@ The <tt/Edit/ menu contains standard clipboard operations:
 of the scene.
 Note, that the content of the clipboard remains intact after this
 operation, this means that you can paste multiple times!
-
-<item><tt/Delete/, removes the selected object(s) from the scene.
+You can move objects
+out of the clipboard using the menu entry <tt>"Special/Paste (Move)"</tt>.
+<item><tt/Delete/, removes the selected object(s) from the scene.<p>
 
 <item><tt/Copy Property/, copies the currently selected property of the
 currently selected object to the property clipboard (the property
@@ -382,12 +384,19 @@ of the currently selected property of the
 currently selected object to the property clipboard (the property
 clipboard is completely independent from the normal object clipboard!).
 <item><tt/Paste Property/, copies a property from the property clipboard
-to the currently selected object(s). 
+to the currently selected object(s).<p>
+
 <item><tt/Undo/, perform undo operation (see section
 <ref id="undos" name="The Undo System"> for more information)
 <item><tt/Redo/, perform redo operation (see section
-<ref id="undos" name="The Undo System"> for more information)
-<item><tt/Preferences/, open preferences dialog (see section
+<ref id="undos" name="The Undo System"> for more information)<p>
+
+<item><tt/Material/, searches for the material object currently
+associated with the selected object and selects it for editing.
+If the selected object has no material yet, a new material
+will be created first.<p>
+
+<item><tt/Preferences/, opens the preferences dialogue (see section
 <ref id="prefs" name="Preferences"> for more information).
 </itemize>
 
@@ -445,6 +454,11 @@ The <tt/Special/ menu:
 <itemize>
 <item><tt/Save Selected as/, saves just the currently selected objects
 to disk.
+<item><tt/Save Environment/, saves the root object and all
+current views to the file pointed to by the preference
+setting <tt>"Main/EnvFile"</tt>. Note, that there will be no
+check whether loading of that environment on next start up is
+enabled in the preferences.
 <item><tt/Paste (move)/, moves objects from the clipboard back
 to the scene (clearing the clipboard). This is the only way to
 get referenced objects out of the clipboard.
@@ -3260,9 +3274,10 @@ e.g. also descend into NURBS patches (if they have trim curves) and apply
 the command to the trim curves, which might not exactly be what you
 want. Use <tt>"forAllT"</tt> in this case.
   <item>The command will not have access to global arrays unless
-e.g. the following construct is in use:<p>
+e.g. one of the following construct is in use:<p>
 
 <tt>"forAll 0 &lcub;uplevel &num;0 &lcub;command&rcub;&rcub;"</tt><p>
+<tt>"forAll 0 &lcub;global arrayname; commands&rcub;"</tt><p>
   <item>It is not possible to use commands that change the object
 hierarchy (e.g. deleting or inserting objects). Command
 may just modify existing objects.
@@ -4131,7 +4146,8 @@ L
 M
 <itemize>
 <item>MajorRad: <ref id="top" name="torus attribute">
-<item>Material: <ref id="materialobj" name="object">
+<item>Material: <ref id="materialobj" name="object">,
+<ref id="editm" name="edit menu entry">
 <item>MaxRayLevel: <ref id="rio" name="RenderMan interface option">
 <item>Menu: <ref id="mm" name="main menu">,
 <ref id="vm" name="view menu">
