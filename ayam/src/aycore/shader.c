@@ -483,6 +483,10 @@ ay_shader_free(ay_shader *shader)
       while(arg)
 	{
 	  argtmp = arg->next;
+	  if(arg->name)
+	    {
+	      free(arg->name);
+	    }
 
 	  if(arg->type == AY_SASTRING)
 	    {
@@ -494,6 +498,9 @@ ay_shader_free(ay_shader *shader)
 	}
 
     }
+
+  if(shader->name)
+    free(shader->name);
 
   /* finally, delete the shader*/
   free(shader);
