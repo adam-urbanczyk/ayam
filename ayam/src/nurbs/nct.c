@@ -3503,6 +3503,8 @@ ay_nct_curvplottcmd(ClientData clientData, Tcl_Interp *interp,
  char fname[] = "curvPlot";
  double width = 5.0, scale = 1.0, t, dt, *controlv;
  int a = 0, b = 0, samples = 100, freepo;
+ char *cname;
+ Tcl_DString ds;
 
   if(argc >= 2)
     Tcl_GetInt(interp, argv[1], &samples);
@@ -3517,9 +3519,11 @@ ay_nct_curvplottcmd(ClientData clientData, Tcl_Interp *interp,
     {
       freepo = AY_FALSE;
       c = NULL;
+      cname = NULL;
       if(sel->object->type == AY_IDNCURVE)
 	{
 	  c = (ay_nurbcurve_object *)sel->object->refine;
+	  cname = sel->object->name;
 	}
       else
 	{
@@ -3528,6 +3532,7 @@ ay_nct_curvplottcmd(ClientData clientData, Tcl_Interp *interp,
 	    {
 	      freepo = AY_TRUE;
 	      c = (ay_nurbcurve_object *)po->refine;
+	      cname = sel->object->name;
 	    }
 	}
 
@@ -3563,8 +3568,20 @@ ay_nct_curvplottcmd(ClientData clientData, Tcl_Interp *interp,
 	  
 	  ay_status = ay_nct_create(4, samples, AY_KTNURB, controlv, NULL,
 				    &c2);
+	  Tcl_DStringInit(&ds);
+	  Tcl_DStringAppend(&ds, "Curvature", -1);
+	  if(cname)
+	    {
+	      Tcl_DStringAppend(&ds, "_of_", -1);
+	      Tcl_DStringAppend(&ds, cname, -1);
+	    }
+	  if((o->name = calloc(Tcl_DStringLength(&ds)+1, sizeof(char))))
+	    {
+	      strcpy(o->name, Tcl_DStringValue(&ds));
+	    }
 	  o->refine = c2;
 	  ay_object_link(o);
+	  Tcl_DStringFree(&ds);
 	} /* if */	  
 
       if(freepo)
