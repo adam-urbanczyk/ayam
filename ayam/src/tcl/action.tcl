@@ -9,8 +9,6 @@
 
 # action.tcl - interactive actions
 
-set ay(LastSelection) ""
-
 #stdReleaseBind:
 # standard release binding for modeling actions:
 # force notification (if necessary);
@@ -46,6 +44,8 @@ proc actionRotView { w } {
 
     stdReleaseBind $w
 }
+# actionRotView
+
 
 #
 proc actionMoveView { w } {
@@ -66,6 +66,8 @@ proc actionMoveView { w } {
 
     stdReleaseBind $w
 }
+# actionMoveView
+
 
 #
 proc actionZoomView { w } {
@@ -86,6 +88,8 @@ proc actionZoomView { w } {
 
     stdReleaseBind $w
 }
+# actionZoomView
+
 
 #
 proc actionMoveZView { w } {
@@ -106,6 +110,8 @@ proc actionMoveZView { w } {
 
     stdReleaseBind $w
 }
+# actionMoveZView
+
 
 #
 proc actionMoveOb { w } {
@@ -126,6 +132,8 @@ proc actionMoveOb { w } {
 
     stdReleaseBind $w
 }
+# actionMoveOb
+
 
 #
 proc actionRotOb { w } {
@@ -146,7 +154,7 @@ proc actionRotOb { w } {
 
     stdReleaseBind $w
 }
-
+# actionRotOb
 
 proc actionRotObabindp { w x y } {
 
@@ -157,6 +165,7 @@ proc actionRotObabindp { w x y } {
 
     stdReleaseBind $w
 }
+# actionRotObabindp
 
 proc actionRotObA { w } {
 
@@ -169,12 +178,10 @@ proc actionRotObA { w } {
 	%W setconf -mark %x %y 1
 	actionRotObabindp %W %x %y
     }
-    bind $w <ButtonRelease-1> ""
-    bind $w <B1-Motion> ""
+    bind $w <ButtonRelease-1> { }
+    bind $w <B1-Motion> { }
 }
-
-
-
+# actionRotObA
 
 
 #
@@ -254,6 +261,7 @@ proc actionSc2DOb { w } {
 	%W sc2doac -start %x %y
 	update
     }
+
     bind $w <B1-Motion> {
 	%W sc2doac -winxy %x %y
 	update
@@ -275,6 +283,7 @@ proc actionSc3DOb { w } {
 	%W sc3doac -start %x %y
 	update
     }
+
     bind $w <B1-Motion> {
 	%W sc3doac -winxy %x %y
 	update
@@ -502,7 +511,7 @@ proc actionDEditP { w } {
 	%W dpepac %x %y
 	update
     }
-    bind $w <B1-Motion> {}
+    bind $w <B1-Motion> { }
 
     stdReleaseBind $w
 }
@@ -571,6 +580,8 @@ proc actionInsertP { w } {
 	%W insertpac %x %y
     }
 
+    bind $w <B1-Motion> { }
+
     stdReleaseBind $w
 
 }
@@ -586,6 +597,8 @@ proc actionDeleteP { w } {
 	%W mc
 	%W deletepac %x %y
     }
+
+    bind $w <B1-Motion> { }
 
     stdReleaseBind $w
 
