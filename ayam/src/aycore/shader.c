@@ -289,7 +289,7 @@ ay_shader_scanslxsarg(SLX_VISSYMDEF *symbol, Tcl_DString *ds)
       Tcl_DStringAppend(ds, buffer, -1);
       break;
     case SLX_TYPE_STRING:
-      defstrval = (symbol->svd_default).stringval;
+      defstrval = *(symbol->svd_default).stringval;
       Tcl_DStringAppend(ds, defstrval, -1);
       Tcl_DStringAppend(ds, " ", -1);
       break;
@@ -313,7 +313,7 @@ ay_shader_scanslxtcmd(ClientData clientData, Tcl_Interp *interp,
  int i = 0, j = 0, numargs = 0;
  SLX_VISSYMDEF *symbol = NULL, *element = NULL;
  SLX_TYPE type;
- char buffer[255];
+ char buffer[255], shaderpath[] = "/usr/local/aqsis/shaders";
  int arraylen;
  Tcl_DString ds;
 
@@ -322,7 +322,7 @@ ay_shader_scanslxtcmd(ClientData clientData, Tcl_Interp *interp,
       ay_error(AY_EARGS, fname, "shaderpath varname");
       return TCL_OK;
     }
-
+  SLX_SetPath(shaderpath);
   if((SLX_SetShader(argv[1])) == -1)
     {
       ay_error(AY_ERROR, fname, "SLX_SetShader failed for:");
@@ -364,7 +364,7 @@ ay_shader_scanslxtcmd(ClientData clientData, Tcl_Interp *interp,
   /* get arguments of shader */
   numargs = SLX_GetNArgs();
   Tcl_DStringAppend(&ds, "{ ", -1);
-  for(i = 1; i <= numargs; i++)
+  for(i = 0; i < numargs; i++)
     {
 
       symbol = NULL;
@@ -374,9 +374,11 @@ ay_shader_scanslxtcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  ay_error(AY_ERROR, fname, "Cannot get symbol from shader:");
 	  ay_error(AY_ERROR, fname, argv[1]);
+	  /*
 	  SLX_EndShader();
 	  Tcl_DStringFree(&ds);
 	  return TCL_OK;
+	  */
 	}
 
       /* XXXX temporarily discard array arguments   */
@@ -411,6 +413,7 @@ ay_shader_scanslxtcmd(ClientData clientData, Tcl_Interp *interp,
 	  Tcl_DStringAppend(&ds, "string ", -1);
 	  break;
 	default:
+	  Tcl_DStringAppend(&ds, "unknown ", -1);
 	  break;
 	}
 
