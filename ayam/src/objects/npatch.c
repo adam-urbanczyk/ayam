@@ -85,7 +85,7 @@ ay_npatch_deletecb(void *c)
  ay_nurbpatch_object *npatch = NULL;
 
   if(!c)
-    return AY_ENULL;    
+    return AY_ENULL;
 
   npatch = (ay_nurbpatch_object *)(c);
 
@@ -121,9 +121,9 @@ ay_npatch_copycb(void *src, void **dst)
   npatchsrc = (ay_nurbpatch_object *)src;
 
   if(!(npatch = calloc(1, sizeof(ay_nurbpatch_object))))
-    return AY_EOMEM; 
+    return AY_EOMEM;
 
-  memcpy(npatch, src, sizeof(ay_nurbpatch_object)); 
+  memcpy(npatch, src, sizeof(ay_nurbpatch_object));
 
   npatch->no = NULL;
 
@@ -131,19 +131,19 @@ ay_npatch_copycb(void *src, void **dst)
   kl = npatch->uorder + npatch->width;
   if(!(npatch->uknotv = calloc(kl, sizeof(double))))
     return AY_EOMEM;
-  memcpy(npatch->uknotv, npatchsrc->uknotv, kl * sizeof(double)); 
+  memcpy(npatch->uknotv, npatchsrc->uknotv, kl * sizeof(double));
 
   kl = npatch->vorder + npatch->height;
   if(!(npatch->vknotv = calloc(kl, sizeof(double))))
     return AY_EOMEM;
-  memcpy(npatch->vknotv, npatchsrc->vknotv, kl * sizeof(double)); 
+  memcpy(npatch->vknotv, npatchsrc->vknotv, kl * sizeof(double));
 
   /* copy controlv */
   if(!(npatch->controlv = calloc(4 * npatch->width * npatch->height,
 				 sizeof(double))))
     return AY_EOMEM;
   memcpy(npatch->controlv, npatchsrc->controlv,
-	 4 * npatch->width * npatch->height * sizeof(double)); 
+	 4 * npatch->width * npatch->height * sizeof(double));
 
   *dst = (void *)npatch;
 
@@ -229,7 +229,7 @@ ay_npatch_drawglucb(struct Togl *togl, ay_object *o)
   a=0;
   for(i=0;i<width*height*4;i++)
     {
-      controls[a] = (GLfloat)npatch->controlv[a]; 
+      controls[a] = (GLfloat)npatch->controlv[a];
       a++;
     }
 
@@ -237,10 +237,10 @@ ay_npatch_drawglucb(struct Togl *togl, ay_object *o)
     {
       npatch->no = gluNewNurbsRenderer();
       if(npatch->no == NULL)
-	{ 
-	  free(uknots); uknots = NULL; 
-	  free(vknots); vknots = NULL; 
-	  free(controls); controls = NULL; 
+	{
+	  free(uknots); uknots = NULL;
+	  free(vknots); vknots = NULL;
+	  free(controls); controls = NULL;
 	  return AY_EOMEM;
 	}
     }
@@ -265,8 +265,8 @@ ay_npatch_drawglucb(struct Togl *togl, ay_object *o)
 
   gluNurbsProperty(npatch->no, GLU_CULLING, GL_TRUE);
 
-  gluNurbsSurface(npatch->no, (GLint)uknot_count, uknots, 
-		  (GLint)vknot_count, vknots, 
+  gluNurbsSurface(npatch->no, (GLint)uknot_count, uknots,
+		  (GLint)vknot_count, vknots,
 		  (GLint)height*4, (GLint)4, controls,
 		  (GLint)npatch->uorder, (GLint)npatch->vorder,
 		  GL_MAP2_VERTEX_4);
@@ -372,12 +372,12 @@ ay_npatch_drawchcb(struct Togl *togl, ay_object *o)
 	  }
       glEnd();
     }
-  
+
   a = 0;
   for(j = 0; j < height; j++)
     {
       a = j * 4;
-      
+
       glBegin(GL_LINE_STRIP);
 	for(i = 0; i < width; i++)
 	  {
@@ -496,7 +496,7 @@ ay_npatch_shadecb(struct Togl *togl, ay_object *o)
   a=0;
   for(i=0;i<width*height*4;i++)
     {
-      controls[a] = (GLfloat)npatch->controlv[a]; 
+      controls[a] = (GLfloat)npatch->controlv[a];
       a++;
     }
 
@@ -504,10 +504,10 @@ ay_npatch_shadecb(struct Togl *togl, ay_object *o)
     {
       npatch->no = gluNewNurbsRenderer();
       if(npatch->no == NULL)
-	{ 
-	  free(uknots); uknots = NULL; 
-	  free(vknots); vknots = NULL; 
-	  free(controls); controls = NULL; 
+	{
+	  free(uknots); uknots = NULL;
+	  free(vknots); vknots = NULL;
+	  free(controls); controls = NULL;
 	  return AY_EOMEM;
 	}
     }
@@ -528,14 +528,13 @@ ay_npatch_shadecb(struct Togl *togl, ay_object *o)
   /*gluNurbsProperty(npatch->no, GLU_AUTO_LOAD_MATRIX, GL_FALSE);*/
   gluNurbsProperty(npatch->no, GLU_CULLING, GL_TRUE);
 
-  gluNurbsSurface(npatch->no, (GLint)uknot_count, uknots, 
-		  (GLint)vknot_count, vknots, 
+  gluNurbsSurface(npatch->no, (GLint)uknot_count, uknots,
+		  (GLint)vknot_count, vknots,
 		  (GLint)height*4, (GLint)4, controls,
 		  (GLint)npatch->uorder, (GLint)npatch->vorder,
 		  GL_MAP2_VERTEX_4);
 
   /* draw trimcurves */
-   /* draw trimcurves */
   if(o->down && o->down->next)
     {
       trim = o->down;
@@ -626,7 +625,7 @@ ay_npatch_drawhcb(struct Togl *togl, ay_object *o)
   glEnd();
 
   /* draw arrows */
-  ay_draw_arrow(togl, &(ver[width*height*4-8]), &(ver[width*height*4-4])); 
+  ay_draw_arrow(togl, &(ver[width*height*4-8]), &(ver[width*height*4-4]));
 
  return AY_OK;
 } /* ay_npatch_drawhcb */
@@ -720,16 +719,16 @@ ay_npatch_getpntcb(int mode, ay_object *o, double *p)
 	      c = &(control[j]);
 
 	      /* test point c against the four planes in p */
-	      if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) && 
-		 ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) && 
-		 ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) && 
+	      if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) &&
+		 ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) &&
+		 ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
 		 ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
 		{
 
 		  if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
 		    return AY_EOMEM;
 		  pecoords[a] = &(control[j]);
-		  a++;		  
+		  a++;		
 		} /* if */
 
 	      j += 4;
@@ -769,7 +768,7 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     return AY_ENULL;
 
   npatch = (ay_nurbpatch_object *)o->refine;
-  
+
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
 
@@ -1087,29 +1086,29 @@ ay_npatch_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 		 TCL_GLOBAL_ONLY);
 
   Tcl_SetVar2(interp,n1,"Knots_U","", TCL_LEAVE_ERR_MSG |
-	      TCL_GLOBAL_ONLY); 
+	      TCL_GLOBAL_ONLY);
   Tcl_SetStringObj(ton,"Knots_U",-1);
   for(i=0; i<npatch->width+npatch->uorder; i++)
     {
-      
+
       to = Tcl_NewDoubleObj((npatch->uknotv)[i]);
 
-      Tcl_ObjSetVar2(interp,toa,ton,to,TCL_APPEND_VALUE | 
+      Tcl_ObjSetVar2(interp,toa,ton,to,TCL_APPEND_VALUE |
 		     TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG |
-		     TCL_GLOBAL_ONLY);      
+		     TCL_GLOBAL_ONLY);
     }
 
   Tcl_SetVar2(interp,n1,"Knots_V","", TCL_LEAVE_ERR_MSG |
-	      TCL_GLOBAL_ONLY); 
+	      TCL_GLOBAL_ONLY);
   Tcl_SetStringObj(ton,"Knots_V",-1);
   for(i=0; i<npatch->height+npatch->vorder; i++)
     {
-      
+
       to = Tcl_NewDoubleObj((npatch->vknotv)[i]);
 
-      Tcl_ObjSetVar2(interp,toa,ton,to,TCL_APPEND_VALUE | 
+      Tcl_ObjSetVar2(interp,toa,ton,to,TCL_APPEND_VALUE |
 		     TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG |
-		     TCL_GLOBAL_ONLY);      
+		     TCL_GLOBAL_ONLY);
     }
 
   Tcl_SetStringObj(ton,"Tolerance",-1);
@@ -1149,7 +1148,7 @@ ay_npatch_readcb(FILE *fileptr, ay_object *o)
   fscanf(fileptr,"%d\n",&npatch->vorder);
   fscanf(fileptr,"%d\n",&npatch->uknot_type);
   fscanf(fileptr,"%d\n",&npatch->vknot_type);
-  
+
   ay_status = ay_knots_createnp(npatch);
   if(ay_status)
     { free(npatch); return ay_status; }
@@ -1178,7 +1177,7 @@ ay_npatch_readcb(FILE *fileptr, ay_object *o)
 
   if(!(npatch->controlv = calloc(npatch->width*npatch->height*4,
 				 sizeof(double))))
-    { 
+    {
       free(npatch->uknotv); free(npatch->vknotv); free(npatch);
       return AY_EOMEM;
     }
@@ -1282,7 +1281,7 @@ ay_npatch_wribcb(char *file, ay_object *o)
     return AY_EOMEM;
   if((controls = calloc(nu*nv*4, sizeof(RtFloat))) == NULL)
     return AY_EOMEM;
-    
+
   a=0;
   for(i=0;i<nu+uorder;i++)
     {
@@ -1302,13 +1301,13 @@ ay_npatch_wribcb(char *file, ay_object *o)
       b = i*4;
       for(j=0;j<nu;j++)
 	{
-	  controls[a] = (RtFloat)patch->controlv[b]; 
+	  controls[a] = (RtFloat)patch->controlv[b];
 	  a++;
-	  controls[a] = (RtFloat)patch->controlv[b+1]; 
+	  controls[a] = (RtFloat)patch->controlv[b+1];
 	  a++;
-	  controls[a] = (RtFloat)patch->controlv[b+2]; 
+	  controls[a] = (RtFloat)patch->controlv[b+2];
 	  a++;
-	  controls[a] = (RtFloat)patch->controlv[b+3]; 
+	  controls[a] = (RtFloat)patch->controlv[b+3];
 	  a++;
 	  b+=(nv*4);
 	}
@@ -1350,9 +1349,10 @@ ay_npatch_wribcb(char *file, ay_object *o)
 	  free(tokens[i]);
 	  free(parms[i]);
 	}
+
       free(tokens);
       free(parms);
-    }
+    } /* if */
 
   free(uknots);
   free(vknots);
@@ -1373,7 +1373,7 @@ ay_npatch_bbccb(ay_object *o, double *bbox, int *flags)
   if(!o || !bbox)
     return AY_ENULL;
 
-  npatch = (ay_nurbpatch_object *)o->refine; 
+  npatch = (ay_nurbpatch_object *)o->refine;
 
   controlv = npatch->controlv;
 
@@ -1432,7 +1432,7 @@ ay_npatch_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
  int ay_status = AY_OK;
  /*char fname[] = "npatch_providecb";*/
- 
+
   if(!o || !result)
     return AY_ENULL;
 
