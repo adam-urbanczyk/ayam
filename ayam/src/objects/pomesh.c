@@ -448,7 +448,7 @@ ay_pomesh_readcb(FILE *fileptr, ay_object *o)
   fscanf(fileptr, "%d\n", &pomesh->has_normals);
   if(pomesh->has_normals)
     {
-      if(!(pomesh->controlv = calloc(pomesh->ncontrols * 3, sizeof(double))))
+      if(!(pomesh->normalv = calloc(pomesh->ncontrols * 3, sizeof(double))))
 	{ return AY_EOMEM; } 
       a = 0;
       for(i = 0; i < pomesh->ncontrols; i++)
@@ -515,7 +515,7 @@ ay_pomesh_writecb(FILE *fileptr, ay_object *o)
 
   /* write normalv */
   fprintf(fileptr, "%d\n", pomesh->has_normals);
-  if(pomesh->has_normals)
+  if(pomesh->has_normals && pomesh->normalv)
     {
       a = 0;
       for(i = 0; i < pomesh->ncontrols; i++)
