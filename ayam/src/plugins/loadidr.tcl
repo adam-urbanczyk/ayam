@@ -1,2 +1,4 @@
-io_lc /home/randi/aysf/plugins/idr.so;
+cd plugins
+catch {io_lc idr.so}
+cd ..
 return;
