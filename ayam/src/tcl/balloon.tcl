@@ -90,7 +90,7 @@ proc balloon_show {w arg} {
 #
 proc balloon_setsplit { w s len } {
     global ay
-    balloon_set $w ""
+    balloon_clear $w
     if {[string length $s] > $len } {
 	regsub -all $ay(separator) $s  "\n" s2 
 	
@@ -112,3 +112,16 @@ proc balloon_setsplit { w s len } {
  return;
 }
 # balloon_setsplit
+
+#
+#
+#
+proc balloon_clear { w } {
+
+    bind $w <Enter> ""
+
+    bind $w <Leave> ""
+
+ return;
+}
+# balloon_clear
