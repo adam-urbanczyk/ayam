@@ -976,6 +976,19 @@ RtVoid ay_rrib_RiConcatTransform( RtMatrix transform)
 { 
  double v1[3], v2[3], v3[3];
  double sx, sy, sz;
+ double rx, ry, rz;
+ int i, j;
+ double quat[4];
+ double axis[3];
+
+  if(fabs(transform[3][3]) <= AY_EPSILON )
+    return;
+
+  /* normalize matrix */
+  for(i = 0; i < 4; i++)
+    for(j = 0; j < 4; j++)
+      transform[i][j] /= transform[3][3];
+
 
   /* decompose matrix */
   ay_rrib_ctrafos->movx += (double)transform[3][0];
@@ -1005,8 +1018,44 @@ RtVoid ay_rrib_RiConcatTransform( RtMatrix transform)
   if(fabs(sz) > AY_EPSILON)
     ay_rrib_ctrafos->scalz *= sz;
 
+  ry = asin(-v1[2]);
+  if(cos(ry) != 0)
+    {
+      rx = atan2(v2[2], v3[2]);
+      rz = atan2(v1[1], v1[0]);
+    }
+  else
+    {
+      rx = atan2(v2[0], v2[1]);
+      rz = 0;
+    }
 
+  if(fabs(rx) > AY_EPSILON)
+    {
+      axis[0] = 1.0;
+      axis[1] = 0.0;
+      axis[2] = 0.0;
+      ay_quat_axistoquat(axis, rx, quat);
+      ay_quat_add(ay_rrib_ctrafos->quat, quat, ay_rrib_ctrafos->quat);
+    }
 
+  if(fabs(ry) > AY_EPSILON)
+    {
+      axis[0] = 0.0;
+      axis[1] = 1.0;
+      axis[2] = 0.0;
+      ay_quat_axistoquat(axis, ry, quat);
+      ay_quat_add(ay_rrib_ctrafos->quat, quat, ay_rrib_ctrafos->quat);
+    }
+
+  if(fabs(rz) > AY_EPSILON)
+    {
+      axis[0] = 0.0;
+      axis[1] = 0.0;
+      axis[2] = 1.0;
+      ay_quat_axistoquat(axis, rz, quat);
+      ay_quat_add(ay_rrib_ctrafos->quat, quat, ay_rrib_ctrafos->quat);
+    }
 
  return;
 }
