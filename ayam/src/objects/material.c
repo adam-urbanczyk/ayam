@@ -409,7 +409,7 @@ ay_material_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_material_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- char *n1="RiAttrData";
+ char *n1 = "RiAttrData", *n2 = "MaterialAttrData";
  int ay_status = AY_OK;
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_mat_object *material = NULL, *mat = NULL;
@@ -507,6 +507,7 @@ ay_material_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       material->objptr = o;
     }
 
+  Tcl_SetStringObj(toa,n2,-1);
   Tcl_SetStringObj(ton,"RefCount",-1);
   to = Tcl_NewIntObj(o->refcount);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);

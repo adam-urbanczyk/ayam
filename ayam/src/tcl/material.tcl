@@ -9,7 +9,10 @@
 
 # material.tcl - material objects Tcl code
 
-set Material_props { RiAttributes Tags Surface Displacement Interior Exterior }
+set Material_props { RiAttributes Tags Surface Displacement Interior\
+	Exterior MaterialAttr }
+
+# RiAttributes Property:
 
 proc setRiAttrp { } {
     setProp
@@ -35,9 +38,6 @@ array set RiAttrData {
 # create RiAttributes-UI
 set w [frame $ay(pca).$RiAttributes(w)]
 
-addString $w RiAttrData Materialname
-addInfo $w RiAttrData RefCount
-addInfo $w RiAttrData Registered
 addColor $w RiAttrData Color
 addColor $w RiAttrData Opacity
 
@@ -160,7 +160,7 @@ proc material_edit { } {
     if { $mat == "" } {
 	# there is no material currently associated with this
 	# object; therefore, we create a new material
-	global RiAttrData
+	global MaterialAttrData
 	set ay_error 0
 	material_createp
 
@@ -168,7 +168,7 @@ proc material_edit { } {
 	# we link it to the object and select it again for editing
 	if { $ay_error > 0 } { return; }
 	getProp
-	set newmaterial $RiAttrData(Materialname)
+	set newmaterial $MaterialAttrData(Materialname)
 	selOb $sel
 	set matPropData(Name) $newmaterial
 	setMat
@@ -188,11 +188,11 @@ proc material_edit { } {
 	}
 
 	forAllT material 1 {
-	    global ay mat RiAttrData matlevel matobject
+	    global ay mat MaterialAttrData matlevel matobject
 
 	    getProp
 
-	    if { $RiAttrData(Materialname) == $mat } {
+	    if { $MaterialAttrData(Materialname) == $mat } {
 		set matlevel $ay(CurrentLevel)
 		getSel matobject
 		return -1;
@@ -254,3 +254,29 @@ proc material_edit { } {
  return;
 }
 #  material_edit
+
+# MaterialAttr Property:
+
+proc setMaterialAttrp { } {
+    setProp
+    uCL cl "0 1"
+ return;
+}
+
+array set MaterialAttr {
+    arr   MaterialAttrData
+    sproc setMaterialAttrp
+    gproc ""
+    w     fMaterialAttr
+}
+
+array set MaterialAttrData {
+    dummy 0
+}
+
+# create MaterialAttr-UI
+set w [frame $ay(pca).$MaterialAttr(w)]
+
+addString $w MaterialAttrData Materialname
+addInfo $w MaterialAttrData RefCount
+addInfo $w MaterialAttrData Registered
