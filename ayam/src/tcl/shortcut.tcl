@@ -221,8 +221,9 @@ proc shortcut_view { w } {
     set m $ay(confm)
     bind $w <[repcont $ayviewshortcuts(Auto)]> "$w.$m invoke 0"
     $w.$m entryconfigure 0 -accelerator $ayviewshortcuts(Auto)
-    bind $w <[repcont $ayviewshortcuts(Shade)]> "$w.$m invoke 1"
-    $w.$m entryconfigure 1 -accelerator $ayviewshortcuts(Shade)
+    
+    #bind $w <[repcont $ayviewshortcuts(Shade)]> "$w.$m invoke 1"
+    #$w.$m entryconfigure 1 -accelerator $ayviewshortcuts(Shade)
 
     bind $w <[repcont $ayviewshortcuts(DGrid)]> "$w.$m invoke 7"
     $w.$m entryconfigure 7 -accelerator $ayviewshortcuts(DGrid)

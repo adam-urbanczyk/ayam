@@ -700,6 +700,9 @@ proc viewMouseToCurrent { } {
 
 # create ViewAttr-UI
 set w [frame $ay(pca).$ViewAttrib(w)]
+array set ViewAttribData {
+    Mode 0
+}
 
 addMenu $w ViewAttribData Type [list Front Side Top Persp Trim]
 
@@ -709,7 +712,7 @@ addParam $w ViewAttribData Height
 
 addText $w e2 "Drawing:"
 addCheck $w ViewAttribData Redraw
-addCheck $w ViewAttribData Shade
+addMenu $w ViewAttribData Mode [list Draw Shade DrawAndShade]
 addCheck $w ViewAttribData DrawSel
 addCheck $w ViewAttribData DrawLevel
 
@@ -721,4 +724,3 @@ addCheck $w ViewAttribData Local
 addText $w e4 "Background:"
 addCheck $w ViewAttribData DrawBG
 addFile $w ViewAttribData BGImage
-

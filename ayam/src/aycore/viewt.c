@@ -585,7 +585,7 @@ ay_viewt_makecurtcb(struct Togl *togl, int argc, char *argv[])
   ton = Tcl_NewStringObj("cVRedraw", -1);
   to = Tcl_NewIntObj(view->redraw);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_SetStringObj(ton, "cVShade", -1);
+  Tcl_SetStringObj(ton, "cVMode", -1);
   to = Tcl_NewIntObj(view->shade);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_SetStringObj(ton, "cVDrawSel", -1);
