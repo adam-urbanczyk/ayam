@@ -1,7 +1,7 @@
-[9. 12. 2003] CVS-Head:
+[31. 12. 2003] CVS-Head:
 o bug fixes:
   - fixed object picking in draw-level-only views (SF 817796)
-  - fixed import of geometry after AreaLights (SF 825629)
+  - fixed (RIB) import of geometry after AreaLights (SF 825629)
   - fixed degree elevation of rational curves (SF 831901)
   - fixed drawing of handles for drawing mode "ShadeAndDraw" (SF 835166)
   - fixed memory leak in skin notification callback (SF 839424)
@@ -13,6 +13,14 @@ o bug fixes:
   - fixed automatic scrolling to property GUI elements for dynamic
     property GUIs (SF 850477)
   - fixed "Reset Weights" action not being undoable (SF 856762)
+  - fixed NURBS patches created by converting tool objects not accepting
+    trim curves (SF 860474)
+  - fixed pasting of properties using the property clipboard not being
+    undoable (SF 864860)
+  - fixed certain modelling states, in conjunction with changed selections,
+    not being reachable by redo (SF 866321)
+  - fixed undo system creating "null" states in the undo buffer, when
+    modelling is resumed after redo (SF 868328)
 o when the keyboard focus is moved from object tree/listbox to property GUI,
   the GUI is now scrolling to the entry with the focus immediately
 o added "curvPlot" scripting interface command that creates a curvature
@@ -23,7 +31,7 @@ o improved resizing of property GUI elements
 o added new tag type "PV" for primitive variables
 o RIB-Import: added support for primitive variables to all geometric primitives
 o RIB-Export: added support for primitive variables to objects of the
-  following types: NPatch, BPatch, PatchMesh, PolyMesh, SDMesh
+  following types: NPatch, BPatch, PatchMesh, PolyMesh, and SDMesh
 o added "swapUV" scripting interface command that swaps the u and v
   parametric dimensions of the selected NURBS patch(es)
 o added "elevateNPU"/"elevateNPV" scripting interface commands that elevate
@@ -31,11 +39,20 @@ o added "elevateNPU"/"elevateNPV" scripting interface commands that elevate
 o reduced number of necessary redraws for subsequent "select all" operations
 o added keyboard shortcuts to extend the current selection by pressing
   <Shift-Up> and <Shift-Down> to the object tree and listbox
-o the select render feature no longer loads the "ayslx" plugin if scan
+o the "Select Renderer" feature no longer loads the "ayslx" plugin if scan
   shaders is enabled and libslxargs has been compiled into Ayam as primary
   shader parsing library
 o improved initial directory and file type setting of "Load Custom Object"
   file dialog
+o added support for shader parsing plugins on the Win32 platform
+o improved mouse wheel handling for property GUI scrolling on Win32
+o added new object type "Gordon" for Gordon surfaces
+o pasting a Tag property now adds the new tags to the old ones, rather
+  than completely replacing them
+o added new option to the "Clone" object that may be used to create
+  clones mirrored at the YZ-, XZ,- or XY-plane
+o the "Clone" object can now also create clones of "Instance" objects
+  
 
 
 [26. 09. 2003] Ayam1.6:
