@@ -232,6 +232,16 @@ proc render_select { } {
 	}
 	# switch
 
+	if { ($sel > 0) && ($sel < 9) } {
+	    set ayprefse(QRender) $ayprefs(QRender)
+	    set ayprefse(QRenderPT) $ayprefs(QRenderPT)
+	    set ayprefse(Render) $ayprefs(Render)
+	    set ayprefse(RenderPT) $ayprefs(RenderPT)
+	    set ayprefse(SMRender) $ayprefs(SMRender)
+	    set ayprefse(SMRenderPT) $ayprefs(SMRenderPT)
+	    set ayprefse(RenderMode) $ayprefs(RenderMode)
+	}
+
 	if { $ay(ScanShaders) == 1 } {
 	    if { $splugin != "" } {
 		set ay(autoload) $splugin
