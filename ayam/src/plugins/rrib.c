@@ -2389,19 +2389,23 @@ RtVoid ay_rrib_RiTransformEnd( void )
 
 RtVoid ay_rrib_RiWorldBegin( void )
 {
-  /* ay_camera_object c;
- ay_level_object l;
+ int ay_status = AY_OK;
+ ay_camera_object c;
+ double mi[16];
+ char fname[] = "ay_rrib_RiWorldBegin";
+ /* ay_level_object l;*/
 
   c.from[0] = 0.0;
   c.from[1] = 0.0;
-  c.from[2] = 0.0;
+  c.from[2] = -10.0;
   c.to[0] = 0.0;
   c.to[1] = 0.0;
-  c.to[2] = 1.0;
+  c.to[2] = 0.0;
   c.up[0] = 0.0;
   c.up[1] = 1.0;
   c.up[2] = 0.0;
   c.roll = 0.0;
+
   if(fabs(ay_rrib_fov) > AY_EPSILON)
     {
       c.zoom = fabs(tan(AY_D2R(ay_rrib_fov/2.0)));
@@ -2411,14 +2415,24 @@ RtVoid ay_rrib_RiWorldBegin( void )
       c.zoom = 1.0;
     }
 
-  ay_trafo_apply3(c.from, ay_rrib_ctrafos->m);
-  ay_trafo_apply3(c.to, ay_rrib_ctrafos->m);
-  ay_trafo_apply3(c.up, ay_rrib_ctrafos->m);
+  ay_status = ay_trafo_invmatrix4(ay_rrib_ctrafos->m, mi);
+  if(ay_status)
+    {
+      ay_error(AY_ERROR, fname, "Could not invert camera transformation.");
+      ay_rrib_RiIdentity();
+      return;
+    }
+
+
+  ay_trafo_apply3(c.from, mi);
+  ay_trafo_apply3(c.to, mi);
+  ay_trafo_apply3(c.up, mi);
 
   ay_rrib_RiIdentity();
 
   ay_rrib_linkobject((void *)(&c), AY_IDCAMERA);
 
+  /*
   l.type = AY_LTLEVEL;
   ay_rrib_co.parent = AY_TRUE;
   ay_rrib_linkobject((void *)(&l), AY_IDLEVEL);
@@ -2426,7 +2440,8 @@ RtVoid ay_rrib_RiWorldBegin( void )
   ay_object_delete(ay_rrib_co.down);
   ay_rrib_co.down = NULL;
   ay_rrib_RiIdentity();
- */
+  */
+
  return;
 }
 
@@ -3502,7 +3517,6 @@ ay_rrib_readrib(char *filename, int frame)
 {
  int ay_status = AY_OK;
  RIB_HANDLE rib = NULL;
-
 
   ay_object_defaults(&ay_rrib_co);
 
