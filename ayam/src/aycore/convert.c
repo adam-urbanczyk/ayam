@@ -96,6 +96,10 @@ ay_convert_forcetcmd(ClientData clientData, Tcl_Interp * interp,
       sel = sel->next;
     }
 
+  if(ay_selection)
+    {
+      ay_status = ay_notify_parent();
+    }
 
  return TCL_OK;
 } /* ay_convert_forcetcmd */
