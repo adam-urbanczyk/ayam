@@ -1,4 +1,4 @@
-[CVS, 04. 04. 2003]:
+[CVS, 10. 04. 2003]:
 o bug fixes:
   - fixed RIB import creating object names with malicious characters (spaces)
     (SF 686419)
@@ -53,6 +53,10 @@ o bug fixes:
   - fixed changing the material of an object using the property GUI leading
     to wrong reference counters
     (SF 715106)
+  - fixed DnD crash for multiple objects containing root
+    (SF 715773)
+  - fixed undo de-registering materials with changing names
+    (SF 715110)
 o added support for inline declarations of e.g. shader parameters to the
   RIB import plugin
 o added an example scene for subdivision meshes
@@ -78,6 +82,10 @@ o added RIB export from selected objects feature (menu
   "Special/RIB-Export/Selected Objects")
 o added tag type "NoExport" that prevents objects from being exported to RIBs
 o shaded views now also draw grids
+o material drop and the drop actions for views and cameras are now undoable
+o added a NURBS to polygon tesselation facility based on the GLU tesselator
+o improved drawing speed of NURBS curves and surfaces that are outside
+  the viewing volume
 
 
 [07. 02. 2003] Ayam1.4:
