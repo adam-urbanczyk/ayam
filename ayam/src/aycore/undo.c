@@ -883,9 +883,10 @@ ay_undo_save(void)
 {
  int ay_status = AY_OK;
  ay_undo_object *uo = NULL, *uo2 = NULL;
- ay_list_object *sel = ay_selection, *r = NULL, *lastr = NULL;
- ay_object **nexto = NULL, *view = NULL;
+ ay_list_object *sel = ay_selection, *r = NULL, *lastr = NULL, *lsr = NULL;
+ ay_object **nexto = NULL, *view = NULL, *lso = NULL;
  int i;
+ char *saved_opname = NULL;
 
   /* we always save all views now */
   if((!sel) && (!ay_root->down->next))
@@ -916,7 +917,6 @@ ay_undo_save(void)
     }
   else
     {
-      undo_current++;
       /* to avoid, that the user gets (after a undo/redo)
        * into an old sequence of changed states using
        * redo after a save, we clear the undo buffer
@@ -924,14 +924,30 @@ ay_undo_save(void)
        */
       if((undo_last_op == 0) || (undo_last_op == 1))
 	{
-
+	  if(undo_last_op == 0)
+	    undo_current++;
+	  uo = &(undo_buffer[undo_current]);
+	  /* first, save name of operation */
+	  saved_opname = uo->operation;
+	  uo->operation = NULL;
+	  /* clear tail of undo buffer */
 	  for(i = undo_current; i < undo_buffer_size; i++)
 	    {
 	      uo = &(undo_buffer[i]);
 	      ay_status = ay_undo_clearuo(uo);
 	    }
+	  /* reconstruct operation name */
+	  uo = &(undo_buffer[undo_current]);
+	  uo->operation = saved_opname;
 	}
-
+      else
+	{
+	  undo_current++;
+	  uo = &(undo_buffer[undo_current]);
+	  /* link name of saved modelling operation to this undo object */
+	  uo->operation = undo_saved_op;
+	  undo_saved_op = NULL;
+	} /* if */
     } /* if */
 
   uo = &(undo_buffer[undo_current]);
@@ -940,10 +956,6 @@ ay_undo_save(void)
     { /* yes, free them */
       ay_status = ay_undo_clearuo(uo);
     }
-
-  /* link name of saved modelling operation to this undo object */
-  uo->operation = undo_saved_op;
-  undo_saved_op = NULL;
 
   /* finally, we may copy all currently selected objects 
    * and references to the original objects to the undo buffer
@@ -962,7 +974,7 @@ ay_undo_save(void)
        */
 	  /* copy reference */
 	  r = NULL;
-	  if(!(r = calloc(1,sizeof(ay_list_object))))
+	  if(!(r = calloc(1, sizeof(ay_list_object))))
 	    {
 	      return AY_EOMEM;
 	    }
@@ -996,7 +1008,7 @@ ay_undo_save(void)
     {
       /* copy reference */
       r = NULL;
-      if(!(r = calloc(1,sizeof(ay_list_object))))
+      if(!(r = calloc(1, sizeof(ay_list_object))))
 	{
 	  return AY_EOMEM;
 	}
@@ -1022,6 +1034,55 @@ ay_undo_save(void)
       nexto = &((*nexto)->next);
       view = view->next;
     } /* while */
+
+  /* now, save all objects from last undo state _again_
+   * (XXXX if not saved in this state already); this is, because
+   * the user might have changed the selection after a modelling
+   * action...
+   */
+  if(undo_current > 0)
+    {
+      uo2 = &(undo_buffer[undo_current-1]);
+      lso = uo2->objects;
+      lsr = uo2->references;
+      while(lso)
+	{
+	  if(lso->type == AY_IDVIEW)
+	    {
+	      break;
+	    }
+	  
+	  /* copy reference */
+	  r = NULL;
+	  if(!(r = calloc(1, sizeof(ay_list_object))))
+	    {
+	      return AY_EOMEM;
+	    }
+
+	  if(uo->references)
+	    {
+	      lastr->next = r;
+	    }
+	  else
+	    {
+	      uo->references = r;
+	    }
+      
+	  lastr = r;
+
+	  r->object = lsr->object;
+
+	  /* copy object */
+	  ay_status = ay_undo_copysave(lsr->object, nexto);
+	  if(ay_status)
+	    return ay_status;
+
+	  nexto = &((*nexto)->next);
+
+	  lso = lso->next;
+	  lsr = lsr->next;
+	} /* while */
+    } /* if */
 
   undo_last_op = 2;
 
