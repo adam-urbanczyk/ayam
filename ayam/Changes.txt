@@ -23,6 +23,9 @@ o bug fixes:
   - fixed session management of shared executables (SF 1029709)
   - fixed direct point editing failing to initiate notification (SF 1033192)
   - fixed "ZoomRectangle" destroying actions in other view windows (SF 1039858)
+  - fixed RIB-Export ignoring custom up-vectors (SF 744119)
+  - fixed slow drawing of small grids far away from the origin (SF 1047772)
+  - fixed compilation on SGI/IRIX using gcc (SF 1050515)
 o added a new object type "Text", that uses Bezier curves extracted from
   TTF (TrueType) font description files together with the extrusion mechanism
   to form three dimensional letters (TTF parsing provided by Frank Pagels)
@@ -74,6 +77,9 @@ o View windows are now drop targets like the view objects in the Root level,
 o the HTML version of the documentation now contains more correct image tags
 o improved behaviour of toolbox buttons for the special actions with held
   down "Shift" key
+o improved single point editing wrt. scaled objects and zoomed views;
+  PickEpsilon is now interpreted in object space and may not be zero
+  anymore, preferences from older versions will be reset to 0.2
 
 
 [27. Mar 2004] Ayam1.7:
