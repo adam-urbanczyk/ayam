@@ -235,8 +235,10 @@ ms_set de ayprefse_LazyNotify "Sollen Elternobjekte über Änderungen an den\
 \nKindobjekten nur am Ende einer Modellieraktion\nbenachrichtigt werden?"
 ms_set de ayprefse_EditSnaps "Sollen editierte Punkte zunächst zu den\
 \nGitter-Koordinaten bewegt werden?"
-ms_set de ayprefse_Snap3D "Soll das Bewegen zu Gitter-Koordinaten (s.o.) in\
-\nallen drei Dimensionen erfolgen?"
+ms_set de ayprefse_Snap3D "Soll das Bewegen von Punkten zu Gitter-Koordinaten\
+\nin allen drei Dimensionen erfolgen?"
+ms_set de ayprefse_FlashPoints "Sollen editierbare Punkte aufleuchten, wenn\
+der\nMauszeiger über ihnen steht?"
 ms_set de ayprefse_DefaultAction "Modellier-Aktion, die beim Drücken der\
 \n<Esc>-Taste gestartet werden soll."
 ms_set de ayprefse_UndoLevels "Anzahl zurücknehmbarer Modellierschritte;\
@@ -270,7 +272,7 @@ ms_set de ayprefse_RIBFile "Name der RIB-Datei für den RIB-Export.\
 \nAsk: RIB-Dateinamen beim RIB-Export erfragen."
 ms_set de ayprefse_Image "Name der Bilddatei, die beim Rendern der\
 exportierten\nRIB-Datei erzeugt wird.\
-RIB: Bilddatei vom Namen der RIB-Datei ableiten."
+\nRIB: Bilddatei vom Namen der RIB-Datei ableiten."
 ms_set de ayprefse_ResInstances "Sollen alle Instanzen-Objekte während des\
 Exportierens\nin normale Objekte umgewandelt werden?"
 ms_set de ayprefse_CheckLights "Soll eine Standardlichtquelle hinzugefügt\
