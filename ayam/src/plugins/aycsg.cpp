@@ -33,10 +33,20 @@ OpenCSG::Algorithm algo = OpenCSG::Automatic;
 OpenCSG::DepthComplexityAlgorithm depthalgo =
  OpenCSG::NoDepthComplexitySampling;
 
-ay_object *aycsg_root;
+ay_object *aycsg_root; // the root of the local copy of the object tree
 
-char ayslb_version_ma[] = AY_VERSIONSTR;
-char ayslb_version_mi[] = AY_VERSIONSTRMI;
+// TM tags are used to store transformation attributes delegated from
+// parents (CSG operation objects) to their children (e.g. primitives)
+char *aycsg_tm_tagtype;
+typedef struct aycsg_taglistelem_s {
+  struct aycsg_taglistelem_s *next;
+  ay_tag_object *tag;
+} aycsg_taglistelem;
+// all TM tags created by aycsg are managed using this list
+aycsg_taglistelem *aycsg_tmtags;
+
+char aycsg_version_ma[] = AY_VERSIONSTR;
+char aycsg_version_mi[] = AY_VERSIONSTRMI;
 
 // prototypes of functions local to this module
 int aycsg_rendertcb(struct Togl *togl, int argc, char *argv[]);
@@ -60,12 +70,18 @@ int aycsg_normalize(ay_object *t);
 
 int aycsg_removetlu(ay_object *o, ay_object **t);
 
+int aycsg_delegatetrafo(ay_object *o);
+
+int aycsg_delegateall(ay_object *t);
+
 int aycsg_binarify(ay_object *parent, ay_object *left, ay_object **target);
 
 int aycsg_copytree(int sel_only, ay_object *t, int *is_csg,
 		   ay_object **target);
 
 void aycsg_cleartree(ay_object *t);
+
+void aycsg_cleartmtags();
 
 extern "C" {
 int Aycsg_Init(Tcl_Interp *interp);
@@ -80,6 +96,15 @@ int
 aycsg_printppohcb(ay_object *o, FILE *fileptr, char *prefix)
 {
  int ay_status = AY_OK;
+
+  if(o->tags && (o->tags->type == aycsg_tm_tagtype))
+    {
+      if(prefix)
+	{
+	  fprintf(fileptr, "%s", prefix);
+	}
+      fprintf(fileptr, "Has TM tag\n");
+    }
 
   if(o->type == AY_IDLEVEL)
     {
@@ -113,13 +138,14 @@ aycsg_printppohcb(ay_object *o, FILE *fileptr, char *prefix)
 	  break;
 	default:
 	  break;
-	} /* switch */
+	} // switch
       fprintf(fileptr, "\n");
-    } /* if */
+    } // if
 
  return ay_status;
 } // aycsg_printppohcb
 #endif
+
 
 // aycsg_rendertcb:
 //  Togl callback that renders CSG in the view pointed to by <togl>
@@ -151,16 +177,21 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
   aycsg_root = NULL;
 
   ay_status = aycsg_copytree(view->drawsel,
-		       view->drawlevel?ay_currentlevel->object:ay_root->next,
-		       &is_csg, &aycsg_root);
+			     (view->drawsel||view->drawlevel)?
+			     ay_currentlevel->object:ay_root->next,
+			     &is_csg, &aycsg_root);
 
+  ay_status = aycsg_delegateall(aycsg_root);
+  
   ay_status = aycsg_removetlu(aycsg_root, &aycsg_root);
-
+  
 #ifdef AYCSGDBG
   ay_ppoh_print(aycsg_root, stdout, 0, cbv);
-  aycsg_cleartree(aycsg_root);
+  /*  aycsg_cleartree(aycsg_root);
   aycsg_root = NULL;
-  return TCL_OK;
+  aycsg_cleartmtags();
+  aycsg_tmtags = NULL;
+  return TCL_OK;*/
 #endif
 
   ay_status = aycsg_normalize(aycsg_root);
@@ -170,7 +201,7 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-  if(view->drawlevel)
+  if(view->drawsel || view->drawlevel)
     {
       glPushMatrix();
       ay_trafo_getall(ay_currentlevel->next);
@@ -199,8 +230,8 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
 
   ay_prefs.use_materialcolor = orig_use_materialcolor;
   glDepthFunc(GL_EQUAL);
-   for (std::vector<OpenCSG::Primitive*>::const_iterator i =
-	  primitives.begin(); i != primitives.end(); ++i) {
+   for(std::vector<OpenCSG::Primitive*>::const_iterator i =
+	 primitives.begin(); i != primitives.end(); ++i) {
      (*i)->render();
    }
   glDepthFunc(GL_LESS);
@@ -208,7 +239,7 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
   // now draw non-CSG top level primitives
   ay_status = aycsg_drawtoplevelprim(togl);
 
-  if(view->drawlevel)
+  if(view->drawsel || view->drawlevel)
     {
       glMatrixMode(GL_MODELVIEW);
       glPopMatrix();
@@ -217,8 +248,13 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
   // swap buffers
   Togl_SwapBuffers(togl);
 
+  // clear local copy of object tree
   aycsg_cleartree(aycsg_root);
   aycsg_root = NULL;
+
+  // clear all TM tags
+  aycsg_cleartmtags();
+  aycsg_tmtags = NULL;
 
  return TCL_OK;
 } // aycsg_rendertcb
@@ -231,13 +267,24 @@ aycsg_drawtoplevelprim(Togl *togl)
 {
  int ay_status = AY_OK;
  ay_object *t = aycsg_root;
+ int has_tm = AY_FALSE;
 
   while(t)
     {
       // is t a primitive?
       if(t->CSGTYPE == AY_LTPRIM)
 	{
+	  if(t->tags && (t->tags->type == aycsg_tm_tagtype))
+	    {
+	      has_tm = AY_TRUE;
+	      glPushMatrix();
+	      glMultMatrixd((GLdouble*)(t->tags->val));
+	    }
 	  ay_status = ay_shade_object(togl, t, AY_FALSE);
+	  if(has_tm)
+	    {
+	      glPopMatrix();
+	    }
 	}
       t = t->next;
     } // while
@@ -306,8 +353,8 @@ aycsg_flatten(ay_object *t, struct Togl *togl, int parent_csgtype)
 void
 aycsg_clearprimitives()
 {
-  for (std::vector<OpenCSG::Primitive*>::const_iterator i =
-	 primitives.begin(); i != primitives.end(); ++i)
+  for(std::vector<OpenCSG::Primitive*>::const_iterator i =
+	primitives.begin(); i != primitives.end(); ++i)
     {
       OpenCSG::ayCSGPrimitive* p =
 	static_cast<OpenCSG::ayCSGPrimitive*>(*i);
@@ -753,7 +800,7 @@ aycsg_removetlu(ay_object *o, ay_object **t)
 	  if((o->CSGTYPE == AY_LTUNION) || (o->CSGTYPE == AY_LTPRIM))
 	    {
 	      // delegate transformation attributes
-	      ay_trafo_delegate(o);
+	      aycsg_delegatetrafo(o);
 
 	      // replace o with its child(ren)
 	      if(o->down)
@@ -789,6 +836,191 @@ aycsg_removetlu(ay_object *o, ay_object **t)
 
  return ay_status;
 } // aycsg_removetlu
+
+
+// aycsg_delegatetrafo:
+//  delegate transformation attributes from object <o> to its child(ren);
+//  in contrast to ay_trafo_delegate(), this function also works properly
+//  if the children already have arbitrary transformation attributes by
+//  using TM tags to store additional transformations
+int
+aycsg_delegatetrafo(ay_object *o)
+{
+ int ay_status = AY_OK;
+ ay_object *down = NULL;
+ ay_tag_object *tag = NULL;
+ aycsg_taglistelem *tle = NULL;
+ double tm[16] = {0};
+
+  if(!o)
+    return AY_ENULL;
+
+  if(!o->down)
+    return AY_ERROR;
+
+  down = o->down;
+
+  if((o->movx != 0.0) || (o->movy != 0.0) || (o->movz != 0.0) ||
+     (o->rotx != 0.0) || (o->roty != 0.0) || (o->rotz != 0.0) ||
+     (o->scalx != 1.0) || (o->scaly != 1.0) || (o->scalz != 1.0) ||
+     (o->quat[0] != 0.0) || (o->quat[1] != 0.0) || (o->quat[2] != 0.0) || 
+     (o->quat[3] != 1.0) || (o->tags && (o->tags->type == aycsg_tm_tagtype)))
+    {
+
+      while(down)
+	{
+
+	  // has <o> a TM tag?
+	  if(o->tags && (o->tags->type == aycsg_tm_tagtype))
+	    {
+	      // yes, copy it first (before the normal transformation
+	      //  attributes) to <down>
+
+	      // has <down> already a TM tag?
+	      if(down->tags && (down->tags->type == aycsg_tm_tagtype))
+		{
+		  // yes, just multiply new transformations into it
+		  /*
+		  memcpy(tm, o->tags->val, 16*sizeof(double));
+		  ay_trafo_multmatrix4(tm, (double*)down->tags->val);
+		  memcpy(down->tags->val, tm, 16*sizeof(double));
+		  */
+		  ay_trafo_multmatrix4((double*)down->tags->val,
+				       (double*)o->tags->val);
+		}
+	      else
+		{
+		  // no, create, fill, and link a new tag
+		  tag = NULL;
+		  if(!(tag = (ay_tag_object*)calloc(1, sizeof(ay_tag_object))))
+		    return AY_EOMEM;
+		  tag->type = aycsg_tm_tagtype;
+		  if(!(tag->val = (char*)calloc(16, sizeof(double))))
+		    {
+		      free(tag); return AY_EOMEM;
+		    }
+		  memcpy(tag->val, o->tags->val, 16*sizeof(double));
+		  tle = NULL;
+		  if(!(tle = (aycsg_taglistelem*)calloc(1,
+			       sizeof(aycsg_taglistelem))))
+		    {
+		      free(tag->val); free(tag); return AY_EOMEM;
+		    }
+		  tle->tag = tag;
+		  tle->next = aycsg_tmtags;
+		  aycsg_tmtags = tle;
+		  tag->next = down->tags;
+		  down->tags = tag;
+		} // if
+	    } // if
+	  
+	  // has <down> already a TM tag?
+	  if(down->tags && (down->tags->type == aycsg_tm_tagtype))
+	    {
+	      // yes, just multiply new transformations into it
+	      /*
+	      ay_trafo_creatematrix(o, tm);
+	      ay_trafo_multmatrix4(tm, (double*)down->tags->val);
+	      memcpy(down->tags->val, tm, 16*sizeof(double));
+	      */
+	      ay_trafo_creatematrix(o, tm);
+	      ay_trafo_multmatrix4((double*)down->tags->val, tm);
+	    }
+	  else
+	    {
+	      // no, create, fill, and link a new tag
+	      tag = NULL;
+	      if(!(tag = (ay_tag_object*)calloc(1, sizeof(ay_tag_object))))
+		return AY_EOMEM;
+	      tag->type = aycsg_tm_tagtype;
+	      if(!(tag->val = (char*)calloc(16, sizeof(double))))
+		{
+		  free(tag); return AY_EOMEM;
+		}
+	      ay_trafo_creatematrix(o, (double*)tag->val);
+	      tle = NULL;
+	      if(!(tle = (aycsg_taglistelem*)calloc(1,
+			   sizeof(aycsg_taglistelem))))
+		{
+		  free(tag->val); free(tag); return AY_EOMEM;
+		}
+	      tle->tag = tag;
+	      tle->next = aycsg_tmtags;
+	      aycsg_tmtags = tle;
+	      tag->next = down->tags;
+	      down->tags = tag;
+	    } // if
+
+	  // copy material pointer
+	  if(!down->mat)
+	    {
+	      if(o->mat)
+		{
+		  down->mat = o->mat;
+		} // if
+	    } // if
+	  
+	  down = down->next;
+	} // while
+
+      // reset to default trafos
+      o->movx = 0.0;
+      o->movy = 0.0;
+      o->movz = 0.0;
+
+      o->scalx = 1.0;
+      o->scaly = 1.0;
+      o->scalz = 1.0;
+
+      o->rotx = 0.0;
+      o->roty = 0.0;
+      o->rotz = 0.0;
+
+      o->quat[0] = 0.0;
+      o->quat[1] = 0.0;
+      o->quat[2] = 0.0;
+      o->quat[3] = 1.0;
+
+      if(o->tags && (o->tags->type == aycsg_tm_tagtype))
+	{
+	  // no worries, we keep a pointer to the tm tag in aycsg_tmtags...
+	  o->tags = o->tags->next;
+	} // if
+    } // if
+
+ return ay_status;
+} // aycsg_delegatetrafo
+
+
+// aycsg_delegateall:
+//  _recursively_ delegate transformation attributes from all CSG-Operation
+//  level objects to their children for subtree <t>
+int
+aycsg_delegateall(ay_object *t)
+{
+ int ay_status = AY_OK;
+ ay_object *o = t;
+
+  if(!t)
+    return AY_ENULL;
+
+  while(o)
+    {
+      if(o->down && (o->type == AY_IDLEVEL)/* && (o->CSGTYPE != AY_LTPRIM)*/)
+	{
+	  ay_status = aycsg_delegatetrafo(o);
+	} // if
+
+      if(o->down)
+	{
+	  ay_status = aycsg_delegateall(o->down);
+	} // if
+
+      o = o->next;
+    } // while
+
+ return ay_status;
+} // aycsg_delegateall
 
 
 // aycsg_binarify:
@@ -838,8 +1070,7 @@ aycsg_binarify(ay_object *parent, ay_object *left, ay_object **target)
 //  descends just into level objects, does not copy type specific objects,
 //  converts to binary form, informs caller via <is_csg> whether subtree
 //  <t> contains CSG operations, removes parents with a single child,
-//  delegates transformations to CSG primitives, if <sel_only> is AY_TRUE
-//  just copies selected objects
+//  if <sel_only> is AY_TRUE: just copies selected objects
 int
 aycsg_copytree(int sel_only, ay_object *t, int *is_csg, ay_object **target)
 {
@@ -885,7 +1116,7 @@ aycsg_copytree(int sel_only, ay_object *t, int *is_csg, ay_object **target)
 	  if(((*target)->down) && (!(*target)->down->next))
 	    {
 	      // t has just one child, and may be discarded
-	      ay_trafo_delegate(*target);
+	      aycsg_delegatetrafo(*target);
 	      tmp = (*target)->down;
 	      free(*target);
 	      *target = tmp;
@@ -933,7 +1164,7 @@ aycsg_copytree(int sel_only, ay_object *t, int *is_csg, ay_object **target)
 	      break;
 	    } // switch
 
-	  if((l->type > 1) && (l->type < 5))
+	  if(lis_csg || (l->type > 1) && (l->type < 5))
 	    {
 	      lis_csg = 1;
 
@@ -974,6 +1205,7 @@ aycsg_cleartree(ay_object *t)
 	{
 	  aycsg_cleartree(t->down);
 	} // if
+
       temp = t->next;
       free(t);
       t = temp;
@@ -981,6 +1213,32 @@ aycsg_cleartree(ay_object *t)
 
  return;
 } // aycsg_cleartree
+
+
+// aycsg_cleartmtags:
+//  
+void
+aycsg_cleartmtags()
+{
+ aycsg_taglistelem *tle = NULL;
+
+  while(aycsg_tmtags)
+    {
+      tle = aycsg_tmtags->next;
+      
+      if(aycsg_tmtags->tag)
+	{
+	  if(aycsg_tmtags->tag->val)
+	    free(aycsg_tmtags->tag->val);
+	  free(aycsg_tmtags->tag);
+	} // if
+      free(aycsg_tmtags);
+
+      aycsg_tmtags = tle;
+    } // while
+
+ return;
+} // aycsg_cleartmtags
 
 
 extern "C" {
@@ -994,9 +1252,10 @@ Aycsg_Init(Tcl_Interp *interp)
 {
  char fname[] = "Aycsg_Init";
  int err;
+ int ay_status = AY_OK;
 
   // first, check versions
-  if(strcmp(ay_version_ma, ayslb_version_ma))
+  if(strcmp(ay_version_ma, aycsg_version_ma))
     {
       ay_error(AY_ERROR, fname,
 	       "Plugin has been compiled for a different Ayam version!");
@@ -1004,7 +1263,7 @@ Aycsg_Init(Tcl_Interp *interp)
       return TCL_OK;
     }
 
-  if(strcmp(ay_version_mi, ayslb_version_mi))
+  if(strcmp(ay_version_mi, aycsg_version_mi))
     {
       ay_error(AY_ERROR, fname,
 	       "Plugin has been compiled for a different Ayam version!");
@@ -1012,6 +1271,13 @@ Aycsg_Init(Tcl_Interp *interp)
     }
 
   aycsg_root = NULL;
+
+  // register TM tag type
+  ay_status = ay_tags_register(interp, "TM", &aycsg_tm_tagtype);
+  if(ay_status)
+    return TCL_OK;
+
+  aycsg_tmtags = NULL;
 
 #ifdef AYCSGDBG
   ay_ppoh_init(interp);
