@@ -3539,7 +3539,7 @@ ay_nct_curvplottcmd(ClientData clientData, Tcl_Interp *interp,
       if(c)
 	{
 	  controlv = NULL;
-	  if(!(controlv = calloc(samples*4, sizeof(double))))
+	  if(!(controlv = calloc((samples+1)*4, sizeof(double))))
 	    {
 	      ay_error(AY_EOMEM, fname, NULL);
 	      return TCL_OK;
