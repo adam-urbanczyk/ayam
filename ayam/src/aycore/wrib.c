@@ -667,8 +667,8 @@ ay_wrib_displaytags(void)
  char *val = NULL, *name = NULL, *type = NULL, *mode = NULL;
  size_t len;
  RtToken dtype = RI_FILE, dmode = RI_RGBA;
- RtToken *tokens;
- RtPointer *values;
+ RtToken *tokens = NULL;
+ RtPointer *values = NULL;
  RtInt argc;
 
   root = ay_root;
@@ -794,6 +794,16 @@ ay_wrib_displaytags(void)
 
 	      free(name); free(type); free(mode);
 	      /* free plist */
+	      if(tokens)
+		{
+		  free(tokens);
+		  tokens = NULL;
+		}
+	      if(values)
+		{
+		  free(values);
+		  values = NULL;
+		}
 
 	    }
 	  else
@@ -823,8 +833,8 @@ ay_wrib_hidertags(void)
  char *val = NULL, *type = NULL;
  size_t len;
  RtToken htype = RI_HIDDEN;
- RtToken *tokens;
- RtPointer *values;
+ RtToken *tokens = NULL;
+ RtPointer *values = NULL;
  RtInt argc;
 
   root = ay_root;
@@ -895,6 +905,17 @@ ay_wrib_hidertags(void)
 		}
 
 	      free(type);
+	      /* free plist */
+	      if(tokens)
+		{
+		  free(tokens);
+		  tokens = NULL;
+		}
+	      if(values)
+		{
+		  free(values);
+		  values = NULL;
+		}
 	    }
 	  else
 	    {
