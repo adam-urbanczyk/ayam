@@ -163,6 +163,8 @@ proc viewUPos { } {
 }
 # viewUPos
 
+
+##############################
 # viewTitle:
 # set title bar of window w (for views only)
 # type = "" -> no change, action = "" -> no change
@@ -201,6 +203,7 @@ proc viewTitle { w type action } {
 return;
 }
 # viewTitle
+
 
 ##############################
 # viewSetFOV:
@@ -249,6 +252,7 @@ return;
 # viewSetFOV
 
 
+##############################
 # viewSetGrid:
 proc viewSetGrid { view } {
 global ay
@@ -297,9 +301,8 @@ return;
 # viewSetGrid
 
 
-#
-#
-#
+##############################
+# viewOpen:
 proc viewOpen { width height {establish_bindings 1} } {
     global ay
 
@@ -408,6 +411,9 @@ return;
 }
 # viewOpen
 
+
+##############################
+# viewBind:
 proc viewBind { w } {
 
     # internal bindings
@@ -460,6 +466,9 @@ proc viewBind { w } {
 }
 # viewBind
 
+
+##############################
+# viewUnBind:
 proc viewUnBind { w } {
 
     foreach v [ bind $w ] { bind $w $v {} }
@@ -472,7 +481,9 @@ proc viewUnBind { w } {
 }
 # viewUnBind
 
-#
+
+##############################
+# viewCloseAll:
 proc viewCloseAll { } {
   global ay
 
@@ -485,7 +496,8 @@ proc viewCloseAll { } {
 # viewCloseAll
 
 
-#
+##############################
+# viewClose:
 proc viewClose { w } {
   global ay
 
@@ -526,57 +538,8 @@ proc viewClose { w } {
 # viewClose
 
 
-set View_props { Camera ViewAttrib }
-
-
-array set Camera {
-arr   CameraData
-sproc setCameraAttr
-gproc ""
-w     fCamera
-}
-# create Camera-UI
-set w [frame $ay(pca).$Camera(w)]
-
-addText $w e2 "From:"
-addParam $w CameraData From_X
-addParam $w CameraData From_Y
-addParam $w CameraData From_Z
-
-addText $w e3 "To:"
-addParam $w CameraData To_X
-addParam $w CameraData To_Y
-addParam $w CameraData To_Z
-
-addText $w e4 "Up:"
-addParam $w CameraData Up_X
-addParam $w CameraData Up_Y
-addParam $w CameraData Up_Z
-
-addText $w e5 "Clipping Planes:"
-addParam $w CameraData Near
-addParam $w CameraData Far
-
-addText $w e6 "Misc:"
-addParam $w CameraData Roll
-addParam $w CameraData Zoom
-
-
-array set ViewAttrib {
-arr   ViewAttribData
-sproc setViewAttr
-gproc ""
-w     fViewAttr
-}
-
-array set ViewAttribData {
-Type 0
-}
-
-
+##############################
 # setCameraAttr:
-#
-#
 proc setCameraAttr { } {
     global ay
     set cw $ay(currentView)
@@ -593,9 +556,8 @@ proc setCameraAttr { } {
 # setCameraAttr
 
 
+##############################
 # setViewAttr:
-#
-#
 proc setViewAttr { } {
     global ay ViewAttribData pclip_reset
 
@@ -625,6 +587,8 @@ proc setViewAttr { } {
 }
 # setViewAttr
 
+
+##############################
 # viewRepairTitle:
 #  after undo/redo, set correct view title
 proc viewRepairTitle { w type } {
@@ -637,6 +601,8 @@ proc viewRepairTitle { w type } {
 }
 # viewRepairTitle
 
+
+##############################
 # viewSetGridIcon:
 #  set correct grid icon according to gridsize
 proc viewSetGridIcon { w gridsize } {
@@ -676,6 +642,8 @@ proc viewSetGridIcon { w gridsize } {
 }
 # viewSetGridIcon
 
+
+##############################
 # viewMouseToCurrent:
 #  set current view to the view that has the focus;
 #  used after startup and loading of scenes
@@ -698,11 +666,81 @@ proc viewMouseToCurrent { } {
 # viewMouseToCurrent
 
 
-# create ViewAttr-UI
-set w [frame $ay(pca).$ViewAttrib(w)]
-array set ViewAttribData {
-    Mode 0
+##############################
+# viewToggleMode:
+#  toggle drawing mode from shade (Shade _or_ ShadeAndDraw) to draw
+proc viewToggleMode { w } {
+    global ay
+
+    set togl $w.f3D.togl
+    
+    set w [winfo toplevel $togl]
+
+    if { $ay(cVMode) > 0 } {
+	$togl setconf -shade 0
+	set ay(cVMode) 0
+    } else {
+	$togl setconf -shade 1
+	set ay(cVMode) 1
+    }
+
 }
+# viewToggleMode
+
+
+# some code, that has to be executed in global context when this
+# module is sourced the first time (on application startup):
+
+# objects of type View have just two editable properties:
+set View_props { Camera ViewAttrib }
+
+# create Camera-UI
+array set Camera {
+arr   CameraData
+sproc setCameraAttr
+gproc ""
+w     fCamera
+}
+
+set w [frame $ay(pca).$Camera(w)]
+
+addText $w e2 "From:"
+addParam $w CameraData From_X
+addParam $w CameraData From_Y
+addParam $w CameraData From_Z
+
+addText $w e3 "To:"
+addParam $w CameraData To_X
+addParam $w CameraData To_Y
+addParam $w CameraData To_Z
+
+addText $w e4 "Up:"
+addParam $w CameraData Up_X
+addParam $w CameraData Up_Y
+addParam $w CameraData Up_Z
+
+addText $w e5 "Clipping Planes:"
+addParam $w CameraData Near
+addParam $w CameraData Far
+
+addText $w e6 "Misc:"
+addParam $w CameraData Roll
+addParam $w CameraData Zoom
+
+# create ViewAttr-UI
+array set ViewAttrib {
+arr   ViewAttribData
+sproc setViewAttr
+gproc ""
+w     fViewAttr
+}
+
+array set ViewAttribData {
+ Type 0
+ Mode 0
+}
+
+set w [frame $ay(pca).$ViewAttrib(w)]
 
 addMenu $w ViewAttribData Type [list Front Side Top Persp Trim]
 
