@@ -454,7 +454,15 @@ proc plb_focus { } {
 	    set ca $ay(pca)
 	    set height [$ca cget -height]
 	    set visible [$ca yview]
-	    set wypos [winfo y [winfo parent $w]]
+	    set ww $w
+	    set wypos 0
+	    incr wypos [winfo y $ww]
+	    set increment 0
+	    while { [winfo parent $ww] != $ay(pca) } {
+		incr wypos $increment
+		set ww [winfo parent $ww]
+		set increment [winfo y $ww]
+	    }
 	    set fraction [expr (double($wypos)+[winfo reqheight $w])/\
 	                       double($height)]
 	    if { ($fraction < [lindex $visible 0]) ||
