@@ -340,6 +340,21 @@ typedef struct ay_pamesh_object_s {
 
 } ay_pamesh_object;
 
+typedef struct ay_pomesh_object_s {
+  int type; /* currently unused */
+
+  unsigned int npolys;
+  unsigned int *nloops;
+  unsigned int *nverts;
+  unsigned int *verts;
+
+  unsigned int ncontrols;
+  double *controlv;
+  int has_normals;
+  double *normalv;
+
+} ay_pomesh_object;
+
 typedef struct ay_light_object_s
 {
   int type; /* custom, point, spot, distant */
@@ -876,6 +891,7 @@ extern unsigned int ay_current_glname;
 #define AY_IDSKIN          23
 #define AY_IDCAP           24
 #define AY_IDPAMESH        25
+#define AY_IDPOMESH        26
 
 #define AY_IDLAST          30
 
