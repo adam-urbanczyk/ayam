@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile.shared [15. Oct 2002]
+# Makefile.shared [14. Dec 2002]
 # Makefile for Ayam (shared version)
 
 # Choose an installation prefix.
@@ -221,6 +221,7 @@ AYAMOBJS = aycore/bbc.o\
 	aycore/read.o\
 	aycore/riattr.o\
 	aycore/riopt.o\
+	aycore/sdmesht.o\
 	aycore/sel.o\
 	aycore/selp.o\
 	aycore/shade.o\
@@ -268,6 +269,7 @@ AYAMOBJS = aycore/bbc.o\
 	objects/revolve.o\
 	objects/riinc.o\
 	objects/root.o\
+	objects/sdmesh.o\
 	objects/sphere.o\
 	objects/skin.o\
 	objects/sweep.o\
