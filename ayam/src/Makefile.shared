@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile.shared [14. Dec 2002]
+# Makefile.shared [17. Dec 2002]
 # Makefile for Ayam (shared version)
 
 # Choose an installation prefix.
@@ -172,7 +172,6 @@ DL = -ldl
 RRIBLIBS = -L /home/randi/sdk/affine0008/lib -lribrdr -lribhash -lribnop -lm
 
 # Ayslx Plugin
-AQSISDIR = /usr/local/aqsis
 AYSLXINCDIR = $(AQSISDIR)/include
 AYSLXLIBS = $(AQSISDIR)/lib/rcdummy.o $(AQSISDIR)/lib/libshadervm.so $(AQSISDIR)/lib/libshaderexecenv.so $(AQSISDIR)/lib/libslxargs.so $(AQSISDIR)/lib/libaqsistypes.so
 
