@@ -618,6 +618,72 @@ ay_bpatch_bbccb(ay_object *o, double *bbox, int *flags)
 
 
 int
+ay_bpatch_convertcb(ay_object *o)
+{
+ int ay_status = AY_OK;
+ ay_object *new = NULL;
+
+  if(!o)
+    return AY_ENULL;
+  
+  ay_status = ay_provide_object(o, AY_IDNPATCH, &new);
+  ay_status = ay_object_link(new);
+
+ return ay_status;
+} /* ay_bpatch_convertcb */
+
+
+int
+ay_bpatch_providecb(ay_object *o, unsigned int type, ay_object **result)
+{
+ int ay_status = AY_OK;
+ char fname[] = "bpatch_providecb";
+ ay_bpatch_object *bp = NULL;
+ ay_object *new = NULL;
+ double *cv = NULL;
+
+  if(!o || !result)
+    return AY_ENULL;
+
+  bp = (ay_bpatch_object *) o->refine;
+
+  if(type == AY_IDNPATCH)
+    {
+      if(!(new = calloc(1, sizeof(ay_object))))
+	return AY_EOMEM;
+
+      new->type = AY_IDNPATCH;
+      ay_object_defaults(new);
+      ay_trafo_copy(o, new);
+
+      if((ay_status = ay_npt_create(2, 2, 2, 2, AY_KTNURB, AY_KTNURB,
+				    NULL, NULL, NULL,
+				    (ay_nurbpatch_object**)&(new->refine))))
+	{
+	  free(new);
+	  ay_error(ay_status, fname, NULL);
+	  return ay_status;
+	} /* if */
+
+      cv = ((ay_nurbpatch_object*)(new->refine))->controlv;
+      
+      memcpy(&(cv[0]), bp->p1, 3*sizeof(double));
+      cv[3] = 1.0;
+      memcpy(&(cv[4]), bp->p4, 3*sizeof(double));
+      cv[7] = 1.0;
+      memcpy(&(cv[8]), bp->p2, 3*sizeof(double));
+      cv[11] = 1.0;
+      memcpy(&(cv[12]), bp->p3, 3*sizeof(double));
+      cv[15] = 1.0;
+
+      *result = new;
+    } /* if */
+
+ return ay_status;
+} /* ay_bpatch_providecb */
+
+
+int
 ay_bpatch_init(Tcl_Interp *interp)
 {
  int ay_status = AY_OK;
@@ -641,6 +707,9 @@ ay_bpatch_init(Tcl_Interp *interp)
   Tcl_SetVar(interp,"propertyList","BPatchAttr", TCL_APPEND_VALUE |
 	     TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
+  ay_status = ay_convert_register(ay_bpatch_convertcb, AY_IDBPATCH);
+
+  ay_status = ay_provide_register(ay_bpatch_providecb, AY_IDBPATCH);
 
  return ay_status;
 } /* ay_bpatch_init */

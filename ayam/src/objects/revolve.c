@@ -980,6 +980,101 @@ ay_revolve_notifycb(ay_object *o)
 
 
 int
+ay_revolve_providecb(ay_object *o, unsigned int type, ay_object **result)
+{
+ int ay_status = AY_OK;
+ char fname[] = "revolve_providecb";
+ ay_revolve_object *r = NULL;
+ ay_object *new = NULL, **t = NULL, *p = NULL;
+
+  if(!o || !result)
+    return AY_ENULL;
+
+  r = (ay_revolve_object *) o->refine;
+
+  if(type == AY_IDNPATCH)
+    {
+      t = &(new);
+
+      /* copy revolution */
+      p = r->npatch;
+      while(p)
+	{
+	  ay_status = ay_object_copy(p, t);
+	  if(ay_status)
+	    {
+	      ay_error(ay_status, fname, NULL);
+	      return AY_ERROR;
+	    }
+	  ay_trafo_copy(o, *t);
+	  t = &((*t)->next);
+	  p = p->next;
+	} /* while */
+
+      /* copy caps */
+      p = r->upper_cap;
+      while(p)
+	{
+	  ay_status = ay_object_copy(p, t);
+	  if(ay_status)
+	    {
+	      ay_error(ay_status, fname, NULL);
+	      return AY_ERROR;
+	    }
+	  ay_trafo_add(o, *t);
+	  t = &((*t)->next);
+	  p = p->next;
+	} /* while */
+
+      p = r->lower_cap;
+      while(p)
+	{
+	  ay_status = ay_object_copy(p, t);
+	  if(ay_status)
+	    {
+	      ay_error(ay_status, fname, NULL);
+	      return AY_ERROR;
+	    }
+	  ay_trafo_add(o, *t);
+	  t = &((*t)->next);
+	  p = p->next;
+	} /* while */
+
+      p = r->start_cap;
+      while(p)
+	{
+	  ay_status = ay_object_copy(p, t);
+	  if(ay_status)
+	    {
+	      ay_error(ay_status, fname, NULL);
+	      return AY_ERROR;
+	    }
+	  ay_trafo_add(o, *t);
+	  t = &((*t)->next);
+	  p = p->next;
+	} /* while */
+
+      p = r->end_cap;
+      while(p)
+	{
+	  ay_status = ay_object_copy(p, t);
+	  if(ay_status)
+	    {
+	      ay_error(ay_status, fname, NULL);
+	      return AY_ERROR;
+	    }
+	  ay_trafo_add(o, *t);
+	  t = &((*t)->next);
+	  p = p->next;
+	} /* while */
+
+      *result = new;
+    } /* if */
+
+ return ay_status;
+} /* ay_revolve_providecb */
+
+int
 ay_revolve_convertcb(ay_object *o)
 {
  int ay_status = AY_OK;
@@ -1111,6 +1206,8 @@ ay_revolve_init(Tcl_Interp *interp)
   ay_status = ay_notify_register(ay_revolve_notifycb, AY_IDREVOLVE);
 
   ay_status = ay_convert_register(ay_revolve_convertcb, AY_IDREVOLVE);
+
+  ay_status = ay_provide_register(ay_revolve_providecb, AY_IDREVOLVE);
 
  return ay_status;
 } /* ay_revolve_init */
