@@ -893,7 +893,12 @@ wm title $w "Ayam - Main"
 wm iconname $w "Ayam"
 wm withdraw .
 # XXXX Does this meet ICCCM requirements?
-wm command . "[info nameofexecutable] $argv"
+if { $AYWRAPPED == 1 } {
+    wm command . "[info nameofexecutable] $argv"
+} else {
+    set script [file join [pwd] $argv0]
+    wm command . "[info nameofexecutable] $script $argv"
+}
 wm client . [info hostname]
 
 # create the upper frame...
