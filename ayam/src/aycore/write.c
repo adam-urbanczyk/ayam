@@ -42,9 +42,9 @@ ay_write_attributes(FILE *fileptr, ay_object *o)
 
   if((o->movx != 0.0) || (o->movy != 0.0) || (o->movz != 0.0) ||
      (o->rotx != 0.0) || (o->roty != 0.0) || (o->rotz != 0.0) ||
-     (o->scalx != 0.0) || (o->scaly != 0.0) || (o->scalz != 0.0) ||
+     (o->scalx != 1.0) || (o->scaly != 1.0) || (o->scalz != 1.0) ||
      (o->quat[0] != 0.0) || (o->quat[1] != 0.0) || (o->quat[2] != 0.0) || 
-     (o->quat[3] != 0.0))
+     (o->quat[3] != 1.0))
     {
       fprintf(fileptr,"1\n");
       fprintf(fileptr,"%g\n",o->movx);
