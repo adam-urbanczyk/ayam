@@ -205,17 +205,17 @@ ay_wrib_rioptions(void)
   if(!ay_prefs.ristandard)
   {
     rtitemp = riopt->MinSamples;
-    RiDeclare((RtToken)"minsamples", "int");
+    RiDeclare((RtToken)"minsamples", "integer");
     RiOption((RtToken)"render", (RtToken)"minsamples",
 	     (RtPointer)(&rtitemp), RI_NULL);
 
     rtitemp = riopt->MaxSamples;
-    RiDeclare((RtToken)"maxsamples", "int");
+    RiDeclare((RtToken)"maxsamples", "integer");
     RiOption((RtToken)"render", (RtToken)"maxsamples",
 	     (RtPointer)(&rtitemp), RI_NULL);
     
     rtitemp = riopt->MaxRayLevel;
-    RiDeclare((RtToken)"max_raylevel", "int");
+    RiDeclare((RtToken)"max_raylevel", "integer");
     RiOption((RtToken)"render", (RtToken)"max_raylevel",
 	     (RtPointer)(&rtitemp), RI_NULL);
 
@@ -225,17 +225,17 @@ ay_wrib_rioptions(void)
 	     (RtPointer)(&rtftemp), RI_NULL);
 
     rtitemp = riopt->PRManSpec;
-    RiDeclare((RtToken)"prmanspecular", "int");
+    RiDeclare((RtToken)"prmanspecular", "integer");
     RiOption((RtToken)"render", (RtToken)"prmanspecular",
 	     (RtPointer)(&rtitemp), RI_NULL);
 
     rtitemp = riopt->RadSteps;
-    RiDeclare((RtToken)"steps", "int");
+    RiDeclare((RtToken)"steps", "integer");
     RiOption((RtToken)"radiosity", (RtToken)"steps",
 	     (RtPointer)(&riopt->RadSteps), RI_NULL);
 
     rtitemp = riopt->PatchSamples;
-    RiDeclare((RtToken)"minpatchsamples", "int");
+    RiDeclare((RtToken)"minpatchsamples", "integer");
     RiOption((RtToken)"radiosity", (RtToken)"minpatchsamples",
 	     (RtPointer)(&riopt->PatchSamples), RI_NULL);
 
@@ -264,12 +264,12 @@ ay_wrib_rioptions(void)
 	}
 
     rtitemp = riopt->texturemem;
-    RiDeclare((RtToken)"texturememory", "int");
+    RiDeclare((RtToken)"texturememory", "integer");
     RiOption((RtToken)"limits", (RtToken)"texturememory",
 	     &rtitemp, RI_NULL);
 
     rtitemp = riopt->geommem;
-    RiDeclare((RtToken)"geommemory", "int");
+    RiDeclare((RtToken)"geommemory", "integer");
     RiOption((RtToken)"limits", (RtToken)"geommemory",
 	     &rtitemp, RI_NULL);
   }

@@ -75,7 +75,7 @@ ay_riopt_wrib(ay_object *o)
 		      switch(*partype)
 			{
 			case 'i':
-			  RiDeclare(parname, "int");
+			  RiDeclare(parname, "integer");
 			  sscanf(parval, "%d", &itemp);
 			  RiOption(attrname, parname,
 				      (RtPointer)&itemp, RI_NULL);

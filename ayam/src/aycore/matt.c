@@ -403,7 +403,7 @@ ay_matt_wrib(char *file, ay_mat_object *m)
     {
       if(m->true_displacement)
 	{
-	  RiDeclare((RtToken)"truedisplacement", "int");
+	  RiDeclare((RtToken)"truedisplacement", "integer");
 	  RiAttribute("render", "truedisplacement", &on, RI_NULL);
 	}
 
@@ -458,7 +458,7 @@ ay_matt_wrib(char *file, ay_mat_object *m)
 	  if(m->shadow)
 	    itemp += 4;
 
-	  RiDeclare((RtToken)"visibility", "int");
+	  RiDeclare((RtToken)"visibility", "integer");
 	  RiAttribute("render", "visibility", (RtPointer)&itemp, RI_NULL);
 
 	} /* if */
