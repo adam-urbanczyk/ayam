@@ -275,6 +275,9 @@ ay_init(Tcl_Interp *interp)
   if((ay_status = ay_disk_init(interp)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 
+  if((ay_status = ay_extrnc_init(interp)))
+    { ay_error(ay_status, fname, NULL); return AY_ERROR; }
+
   if((ay_status = ay_extrude_init(interp)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 

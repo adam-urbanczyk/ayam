@@ -4614,3 +4614,127 @@ ay_npt_gordonwc(ay_object *g)
  return ay_status;
 } /* ay_npt_gordonwc */
 
+
+/* ay_npt_extractnc:
+ *  extract a NURBS curve from the NURBS patch <npatch>
+ *  side: specifies extraction of a boundary curve (0-3) or of a curve at
+ *   a specific parametric value (4 - along u dimension, 5 - along v dimension)
+ *  param: parametric value at which curve is extracted; this parameter is
+ *   ignored for the extraction of boundary curves
+ */
+int
+ay_npt_extractnc(ay_object *npatch, int side, double param,
+		 ay_nurbcurve_object **result)
+{
+ int ay_status = AY_OK;
+ ay_nurbpatch_object *np  = NULL;
+ ay_nurbcurve_object *nc = NULL;
+ double *cv, m[16];
+ int stride = 4, i, a;
+
+  if(!npatch || !result)
+    return AY_ENULL;
+
+  if(!npatch->type == AY_IDNPATCH)
+    return AY_ERROR;
+
+  if(!(nc = calloc(1, sizeof(ay_nurbcurve_object))))
+    return AY_EOMEM;
+  
+  np = (ay_nurbpatch_object *)npatch->refine;
+
+  switch(side)
+    {
+    case 0:
+    case 1:
+      nc->order =  np->uorder;
+      nc->knot_type = np->uknot_type;
+      nc->length = np->width;
+      break;
+    case 2:
+    case 3:
+      nc->order = np->vorder;
+      nc->knot_type = np->vknot_type;
+      nc->length = np->height;
+      break;
+    default:
+      ay_status = AY_ERROR;
+      goto cleanup;
+    } /* switch */
+
+  ay_trafo_creatematrix(npatch, m);
+
+  if(!(nc->knotv = calloc(nc->length+nc->order, sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+
+  if(!(nc->controlv = calloc(nc->length*stride, sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+
+  /* copy controlv and knotv */
+  cv = nc->controlv;
+  switch(side)
+    {
+    case 0:
+      /* u0 */
+      a = 0;
+      for(i = 0; i < nc->length*stride; i += stride)
+	{
+	  memcpy(&(cv[i]), &(np->controlv[a]), stride*sizeof(double));
+	  a += np->width*stride;
+	}
+      memcpy(nc->knotv, np->uknotv, (nc->length+nc->order)*sizeof(double));
+      break;
+    case 1:
+      /* un */
+      a = (np->width-1)*stride;
+      for(i = 0; i < nc->length*stride; i += stride)
+	{
+	  memcpy(&(cv[i]), &(np->controlv[a]), stride*sizeof(double));
+	  a += np->width*stride;
+	}
+      memcpy(nc->knotv, np->uknotv, (nc->length+nc->order)*sizeof(double));
+      break;
+    case 2:
+      /* v0 */
+      memcpy(nc->controlv, np->controlv, nc->length*stride*sizeof(double));
+      memcpy(nc->knotv, np->vknotv, (nc->length+nc->order)*sizeof(double));
+      break;
+    case 3:
+      /* vn */
+      memcpy(nc->controlv, &(np->controlv[np->width*(np->height-1)*stride]),
+	     nc->length*stride*sizeof(double));
+      memcpy(nc->knotv, np->vknotv, (nc->length+nc->order)*sizeof(double));
+      break;
+    default:
+      ay_status = AY_ERROR;
+      goto cleanup;
+    } /* switch */
+
+  /* apply trafos */
+  cv = nc->controlv;
+  a = 0;
+  for(i = 0; i < nc->length; i++)
+    {
+      ay_trafo_apply4(&(cv[a]), m);
+      a += stride;
+    }
+
+  /* return result */
+  *result = nc;
+  nc = NULL;
+
+cleanup:
+
+  if(nc)
+    {
+      if(nc->knotv)
+	free(nc->knotv);
+
+      if(nc->controlv)
+	free(nc->controlv);
+
+      free(nc);
+    } /* if */
+
+ return ay_status;
+} /* ay_npt_extractnc */

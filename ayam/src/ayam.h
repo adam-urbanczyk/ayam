@@ -654,6 +654,7 @@ typedef struct ay_birail1_object_s
  int glu_display_mode;
 } ay_birail1_object;
 
+
 typedef struct ay_skin_object_s
 {
  ay_object *npatch;
@@ -672,6 +673,16 @@ typedef struct ay_skin_object_s
  double glu_sampling_tolerance;
  int glu_display_mode;
 } ay_skin_object;
+
+
+typedef struct ay_extrnc_object_s
+{
+  ay_object *ncurve;
+  int side;
+  double parameter;
+  double glu_sampling_tolerance;
+  int glu_display_mode;
+} ay_extrnc_object;
 
 
 typedef struct ay_view_object_s
@@ -1001,6 +1012,8 @@ extern unsigned int ay_current_primlevel;
 #define AY_IDGORDON        30
 #define AY_IDTEXT          31
 #define AY_IDBIRAIL1       32
+#define AY_IDBIRAIL2       33
+#define AY_IDEXTRNC        34
 #define AY_IDLAST          50
 
 /* Level Object SubType Ids */

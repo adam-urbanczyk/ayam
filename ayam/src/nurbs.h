@@ -375,6 +375,9 @@ int ay_npt_gordoncc(ay_object *o1, ay_object *o2, int stride,
 
 int ay_npt_gordonwc(ay_object *g);
 
+
+
+
 /* pmt.c */
 int ay_pmt_tonpatch(ay_pamesh_object *pamesh, ay_object **result);
 
