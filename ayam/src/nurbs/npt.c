@@ -2530,12 +2530,12 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
 	       int has_end_cap, ay_object **end_cap)
 {
  int ay_status = AY_OK;
- ay_object *curve = NULL, *ot = NULL;
+ ay_object *curve = NULL;
  ay_nurbpatch_object *new = NULL;
  ay_nurbcurve_object *cs1, *cs2, *r1, *r2, *tc;
  double *controlv = NULL;
  int i = 0, j = 0, a = 0, stride;
- double u, p1[4], p2[4], p5[4], p6[4], p7[4], p8[4];
+ double u, p1[4], p2[4], p5[4], p6[4], p7[4], p8[4], p9[4];
  double T0[3] = {0.0,0.0,-1.0};
  double T1[3] = {0.0,0.0,0.0};
  double A[3] = {0.0,0.0,0.0};
@@ -2544,7 +2544,9 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
  double mr[16], mrs[16];
  /*double quat[4] = {0};*/
  double *cs1cv = NULL, *cs2cv = NULL, *r1cv = NULL, *r2cv = NULL, *rots = NULL;
+ double *cs2cvi = NULL;
  double scalx, scaly, scalz;
+ double rotv[4];
 
   if(!o1 || !o2 || !o3 || !o4 || !patch ||
      (has_start_cap && !start_cap) || (has_end_cap && !end_cap))
@@ -2613,6 +2615,10 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
       a += stride;
     }
 
+  /* get scratch memory for interpolated curve */
+  if(!(cs2cvi = calloc(cs2->length * stride, sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+
   /* calloc the new patch */
   if(!(new = calloc(1, sizeof(ay_nurbpatch_object))))
     { ay_status = AY_EOMEM; goto cleanup; }
@@ -2649,17 +2655,23 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
       memcpy(new->vknotv,cs1->knotv,(cs1->length+cs1->order)*sizeof(double));
     }
 
+  /* copy last section */
+  memcpy(&(controlv[sections * cs2->length * stride]), &(cs2cv[0]),
+	 cs2->length * stride * sizeof(double));
+
   /* calculate last point of rail1 and rail2 */
   ay_nb_CurvePoint4D(r1->length-1, r1->order-1, r1->knotv, r1cv,
-		     r1->knotv[r1->length], p1);
+		     r1->knotv[r1->length], p7);
+  memcpy(p9, p7, 3*sizeof(double));
 
   ay_nb_CurvePoint4D(r2->length-1, r2->order-1, r2->knotv, r2cv,
-		     r2->knotv[r2->length], p2);
+		     r2->knotv[r2->length], p8);
   /* from rail endpoints calculate distance between them
      (this is needed to calculate the correct scale factor
      for the interpolated cross sections later on) */
-  AY_V3SUB(T0, p2, p1)
-  lentn = AY_V3LEN(T0);
+  AY_V3SUB(T1, p8, p7)
+  lentn = AY_V3LEN(T1);
+  AY_V3SCAL(T1,(1.0/lentn))
 
   /* calculate first point of rail1 and rail2 */
   ay_nb_CurvePoint4D(r1->length-1, r1->order-1, r1->knotv, r1cv,
@@ -2677,6 +2689,107 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
   plenr1 = fabs(r1->knotv[r1->length] - r1->knotv[r1->order-1]);
   plenr2 = fabs(r2->knotv[r2->length] - r2->knotv[r2->order-1]);
 
+  /* transform control points of second cross-section back to
+     first section (using the end vectors of the rail curves) */
+  ay_trafo_identitymatrix(mcs);
+  ay_trafo_identitymatrix(mr);
+
+  if(((fabs(fabs(T1[0])-fabs(T0[0])) > AY_EPSILON) ||
+      (fabs(fabs(T1[1])-fabs(T0[1])) > AY_EPSILON) ||
+      (fabs(fabs(T1[2])-fabs(T0[2])) > AY_EPSILON)))
+    {
+
+      AY_V3CROSS(A,T0,T1);
+      lent0 = AY_V3LEN(A);
+      AY_V3SCAL(A,(1.0/lent0));
+
+      rotv[0] = AY_R2D(acos(AY_V3DOT(T0,T1)));
+      memcpy(&rotv[1], A, 3*sizeof(double));
+
+      if(fabs(rotv[0]) > AY_EPSILON)
+        {
+	  ay_trafo_rotatematrix(-rotv[0], rotv[1],
+				rotv[2], rotv[3], mr);
+        } /* if */
+    } /* if */
+
+  ay_trafo_apply3(p7, mr);
+  ay_trafo_apply3(p8, mr);
+
+  if(fabs(p6[0]-p5[0]) > AY_EPSILON)
+    {
+      if(fabs(p8[0]-p7[0])/fabs(p6[0]-p5[0]) > AY_EPSILON)
+	  scalx = fabs(p8[0]-p7[0])/fabs(p6[0]-p5[0]);
+      else
+	  scalx = 1.0;
+    }
+  else
+    {
+      scalx = 1.0;
+    }
+
+  if(fabs(p6[1]-p5[1]) > AY_EPSILON)
+    {
+      if(fabs(p8[1]-p7[1])/fabs(p6[1]-p5[1]) > AY_EPSILON)
+	scaly = fabs(p8[1]-p7[1])/fabs(p6[1]-p5[1]);
+      else
+	scaly = 1.0;
+    }
+  else
+    {
+      scaly = 1.0;
+    }
+
+  if(fabs(p6[2]-p5[2]) > AY_EPSILON)
+    {
+      if(fabs(p8[2]-p7[2])/fabs(p6[2]-p5[2]) > AY_EPSILON)
+	  scalz = fabs(p8[2]-p7[2])/fabs(p6[2]-p5[2]);
+      else
+	  scalz = 1.0;
+    }
+  else
+    {
+      scalz = 1.0;
+    }
+
+  ay_trafo_translatematrix(((p5[0])),
+			   ((p5[1])),
+			   ((p5[2])),
+			   mcs);
+  ay_trafo_scalematrix(1.0/scalx,
+		       1.0/scaly,
+		       1.0/scalz,
+		       mcs);
+  ay_trafo_translatematrix(-(p5[0]),
+			   -(p5[1]),
+			   -(p5[2]),
+			   mcs);
+
+  if(fabs(rotv[0]) > AY_EPSILON)
+    {
+      ay_trafo_translatematrix(((p5[0])),
+			       ((p5[1])),
+			       ((p5[2])),
+			       mcs);
+      ay_trafo_rotatematrix(-rotv[0], rotv[1],
+			    rotv[2], rotv[3], mcs);
+
+      ay_trafo_translatematrix(-(p5[0]),
+			       -(p5[1]),
+			       -(p5[2]),
+			       mcs);
+    } /* if */
+
+  ay_trafo_translatematrix(-(p9[0]-p1[0]),
+			   -(p9[1]-p1[1]),
+			   -(p9[2]-p1[2]),
+			   mcs);
+
+  for(j = 0; j < cs2->length; j++)
+    {
+      ay_trafo_apply4(&cs2cv[j*stride], mcs);
+    } /* for */
+
   ay_trafo_identitymatrix(mr);
   ay_trafo_identitymatrix(mrs);
 
@@ -2692,15 +2805,12 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
   /* copy cross sections controlv section times and sweep it along the rails */
   for(i = 1; i < sections; i++)
     {
-      ot = NULL;
-
-      ay_status = ay_interpol_ncurves((double)i/sections, o1, o4, &ot);
+      ay_status = ay_interpol_1DA4D((double)i/sections, cs1->length,
+				    cs1cv, cs2cv, cs2cvi);
       if(ay_status)
 	goto cleanup;
 
-      tc = (ay_nurbcurve_object*)(ot->refine);
-      
-      memcpy(&(controlv[i * stride * cs1->length]), &(tc->controlv[0]),
+      memcpy(&(controlv[i * stride * cs1->length]), cs2cvi,
 	     cs1->length * stride * sizeof(double));
 
       u = r1->knotv[r1->order-1]+(((double)i/sections)*plenr1);
@@ -2925,6 +3035,8 @@ cleanup:
     free(r2cv);
   if(cs2cv)
     free(cs2cv);
+  if(cs2cvi)
+    free(cs2cvi);
 
  return ay_status;
 } /* ay_npt_birail2 */
