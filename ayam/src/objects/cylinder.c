@@ -295,15 +295,17 @@ ay_cylinder_shadecb(struct Togl *togl, ay_object *o)
     {
       glPushMatrix();
 
-       glNormal3d(0.0, -1.0, 0.0);
+       glNormal3d(0.0, 1.0, 0.0);
        glBegin(GL_QUADS);
         glVertex3d(0.0,    0.0, zmin);
-	glVertex3d(radius, 0.0, zmin);
-	glVertex3d(radius, 0.0, zmax);
 	glVertex3d(0.0,    0.0, zmax);
+	glVertex3d(radius, 0.0, zmax);
+	glVertex3d(radius, 0.0, zmin);
        glEnd();
 
+       glNormal3d(0.0, -1.0, 0.0);
        glRotated(thetamax, 0.0, 0.0, 1.0);
+
        glBegin(GL_QUADS);
         glVertex3d(0.0,    0.0, zmin);
 	glVertex3d(radius, 0.0, zmin);
@@ -319,9 +321,11 @@ ay_cylinder_shadecb(struct Togl *togl, ay_object *o)
        qobj = NULL;
        if(!(qobj = gluNewQuadric()))
 	 return AY_EOMEM;
+       gluQuadricOrientation(qobj, GLU_INSIDE);
 
        glTranslated(0.0,0.0,zmin);
        glRotated(thetamax-90.0, 0.0, 0.0, 1.0);
+
        gluPartialDisk(qobj, 0.0, radius, 8, 1, 0.0, thetamax);
 
        gluDeleteQuadric(qobj);
@@ -336,6 +340,7 @@ ay_cylinder_shadecb(struct Togl *togl, ay_object *o)
 
        glTranslated(0.0, 0.0, zmax);
        glRotated(thetamax-90.0, 0.0, 0.0, 1.0);
+
        gluPartialDisk(qobj, 0.0, radius, 8, 1, 0.0, thetamax);
 
        gluDeleteQuadric(qobj);
