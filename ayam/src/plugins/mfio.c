@@ -1,7 +1,7 @@
 /*
  * Ayam, a free 3D modeler for the RenderMan interface.
  *
- * Ayam is copyrighted 1998-2001 by Randolf Schultz
+ * Ayam is copyrighted 1998-2002 by Randolf Schultz
  * (rschultz@informatik.uni-rostock.de) and others.
  *
  * All rights reserved.
@@ -12,15 +12,48 @@
 
 #include "ayam.h"
 
-/* mfio.c - 3DMF Import/Export */
+/* mfio.c - 3DMF Import/Export Plugin */
 
 #include <mf3d.h>
 #include <mferrors.h>
 
-/* functions local to this module */
+/* global variables and structs: */
+static ay_object *ay_mfio_lastreadobject;
+
+static MF3DErr ay_mfio_mf3d_errno;
+
+static MF3DDataFormatEnum ay_mfio_mf3d_data_format;
+
+
+static Tcl_HashTable ay_mfio_read_ht;
+
+static Tcl_HashTable ay_mfio_write_ht;
+
+
+char ay_mfio_version_ma[] = AYVERSIONSTR;
+char ay_mfio_version_mi[] = AYVERSIONSTRMI;
+
+typedef int (ay_mfio_readcb) (MF3DVoidObjPtr object);
+
+typedef int (ay_mfio_writecb) (MF3D_FilePtr fileptr, ay_object *o);
+
+
+/* prototypes of functions local to this module: */
+int ay_mfio_registerreadcb(char *type, ay_mfio_readcb *cb);
+
 int ay_mfio_readnurbcurve(MF3DVoidObjPtr object);
 
 int ay_mfio_readnurbpatch(MF3DVoidObjPtr object);
+
+int ay_mfio_readpolyline(MF3DVoidObjPtr object);
+
+int ay_mfio_readgeneralpolygon(MF3DVoidObjPtr object);
+
+int ay_mfio_readpolygon(MF3DVoidObjPtr object);
+
+int ay_mfio_readtriangle(MF3DVoidObjPtr object);
+
+int ay_mfio_readtrigrid(MF3DVoidObjPtr object);
 
 int ay_mfio_readcntr(MF3DVoidObjPtr object);
 
@@ -62,35 +95,23 @@ int ay_mfio_writeobject(MF3D_FilePtr fileptr, ay_object *object);
 
 int ay_mfio_writescene(Tcl_Interp *interp, char *filename);
 
+int ay_mfio_registerwritecb(char *name, ay_mfio_writecb *cb);
+
 int ay_mfio_importscenetcmd(ClientData clientData, Tcl_Interp * interp,
 				int argc, char *argv[]);
 
 int ay_mfio_exportscenetcmd(ClientData clientData, Tcl_Interp *interp,
 			      int argc, char *argv[]);
 
+void ay_mfio_printerr(MF3DErr errcode);
+
+int Mfio_Init(Tcl_Interp *interp);
 
 
-/* global variables and structs */
-static ay_object *ay_mfio_lastreadobject;
-
-static MF3DErr ay_mfio_mf3d_errno;
-
-static MF3DDataFormatEnum ay_mfio_mf3d_data_format;
-
-
-static Tcl_HashTable ay_mfio_read_ht;
-
-static Tcl_HashTable ay_mfio_write_ht;
-
-
-char ay_mfio_version_ma[] = AYVERSIONSTR;
-char ay_mfio_version_mi[] = AYVERSIONSTRMI;
-
-typedef int (ay_mfio_readcb) (MF3DVoidObjPtr object);
-
-typedef int (ay_mfio_writecb) (MF3D_FilePtr fileptr, ay_object *o);
-
-/********************************************/
+/* functions: */
+/* ay_mfio_registerreadcb:
+ *
+ */
 int
 ay_mfio_registerreadcb(char *type, ay_mfio_readcb *cb)
 {
@@ -116,7 +137,10 @@ ay_mfio_registerreadcb(char *type, ay_mfio_readcb *cb)
  return ay_status;
 } /* ay_mfio_registerreadcb */
 
-/********************************************/
+
+/* ay_mfio_readnurbpatch:
+ *
+ */
 int
 ay_mfio_readnurbpatch(MF3DVoidObjPtr object)
 {
@@ -190,12 +214,16 @@ ay_mfio_readnurbpatch(MF3DVoidObjPtr object)
   ay_status = ay_object_defaults(newo);
 
   newo->parent = AY_TRUE;
+  newo->hidechilds = AY_TRUE;
   newo->inherit_trafos = AY_FALSE;
 
  return ay_status;
-}
+} /* ay_mfio_readnurbpatch */
 
 
+/* ay_mfio_readnurbcurve:
+ *
+ */
 int
 ay_mfio_readnurbcurve(MF3DVoidObjPtr object)
 {
@@ -261,9 +289,441 @@ ay_mfio_readnurbcurve(MF3DVoidObjPtr object)
   ay_status = ay_object_defaults(newo);
 
  return ay_status;
-}
+} /* ay_mfio_readnurbcurve */
 
 
+/* ay_mfio_readpolyline:
+ *
+ */
+int
+ay_mfio_readpolyline(MF3DVoidObjPtr object)
+{
+ int ay_status = AY_OK;
+ int length, i, a, b;
+ double *controlv = NULL;
+ MF3DPolyLineObjPtr o = (MF3DPolyLineObjPtr) object;
+ ay_nurbcurve_object *curve = NULL;
+ ay_object *newo = NULL;
+ char fname[] = "mfio_readpolyline";
+
+  /* get some info about the polyline */
+  if(o->nVertices > INT_MAX)
+    {
+      ay_error(AY_ERROR, fname, "polyline is too long");
+      return AY_OK;
+    }
+
+  length = (int) o->nVertices;
+
+  /* alloc new (safe) memory */
+  if(!(controlv = calloc(length*4, sizeof(double))))
+    return AY_EOMEM; 
+
+  /* copy data into new (safe) memory */
+  a = 0; b = 0;
+  for(i = 0; i < length; i++)
+    {
+      controlv[b++] = (o->vertices)[a].x;
+      controlv[b++] = (o->vertices)[a].y;
+      controlv[b++] = (o->vertices)[a].z;
+      controlv[b++] = 1.0;
+      a++;
+    }
+
+  /* now create a NURBCurve */
+  ay_status = ay_nct_create(2, length,
+			    AY_KTNURB, controlv, NULL,
+			    &curve);
+
+  if(ay_status)
+    { free(controlv); return ay_status; }  
+
+  /* link the new curve into the hierarchy */
+  if(!(newo = calloc(1, sizeof(ay_object))))
+    { free(controlv); return AY_EOMEM; }
+
+  newo->type = AY_IDNCURVE;
+  newo->refine = curve;
+
+  ay_status = ay_object_link(newo);
+
+  if(ay_status)
+    {
+      ay_object_delete(newo);
+      return ay_status;
+    }
+
+  ay_mfio_lastreadobject = newo;
+
+  ay_status = ay_object_defaults(newo);
+
+ return ay_status;
+} /* ay_mfio_readpolyline */
+
+
+/* ay_mfio_readgeneralpolygon:
+ *
+ */
+int
+ay_mfio_readgeneralpolygon(MF3DVoidObjPtr object)
+{
+ int ay_status = AY_OK;
+ MF3DGeneralPolygonObjPtr o = (MF3DGeneralPolygonObjPtr) object;
+ MF3DPolygonDataPtr p;
+ ay_pomesh_object *pomesh = NULL;
+ ay_object *newo = NULL;
+ unsigned int i = 0, j = 0, a = 0, total_verts = 0;
+
+  if(!(pomesh = calloc(1, sizeof(ay_pomesh_object))))
+    return AY_EOMEM;
+
+  p = o->polygons;
+  
+  pomesh->npolys = 1;
+
+  if(!(pomesh->nloops = calloc(1, sizeof(unsigned int))))
+    { free(pomesh); return AY_EOMEM; }
+  pomesh->nloops[0] = o->nContours;
+
+  if(!(pomesh->nverts = calloc(o->nContours, sizeof(unsigned int))))
+    { free(pomesh->nloops); free(pomesh); return AY_EOMEM; }
+
+  for(i = 0; i < o->nContours; i++)
+    {
+      pomesh->nverts[i] = p->nVertices;
+      total_verts += p->nVertices;
+      p++;
+    } /* for */
+
+  if(!(pomesh->verts = calloc(total_verts, sizeof(unsigned int))))
+    {
+      free(pomesh->nverts); free(pomesh->nloops); free(pomesh);
+      return AY_EOMEM;
+    }
+
+  for(i = 0; i < total_verts; i++)
+    {
+      pomesh->verts[i] = i;
+    } /* for */
+
+  if(!(pomesh->controlv = calloc(total_verts * 3, sizeof(double))))
+    {
+      free(pomesh->verts); free(pomesh->nverts); free(pomesh->nloops);
+      free(pomesh); return AY_EOMEM;
+    }
+
+  p = o->polygons;
+  a = 0;
+  for(i = 0; i < o->nContours; i++)
+    {
+      for(j = 0; j < p->nVertices; j++)
+	{
+	  pomesh->controlv[a]   = (double)(p->vertices[i].x);
+	  pomesh->controlv[a+1] = (double)(p->vertices[i].y);
+	  pomesh->controlv[a+2] = (double)(p->vertices[i].z);
+	  a += 3;
+	} /* for */
+      p++;
+    } /* for */
+
+
+  if(!(newo = calloc(1, sizeof(ay_object))))
+    { 
+      free(pomesh->controlv); free(pomesh->verts); free(pomesh->nverts);
+      free(pomesh->nloops); free(pomesh); return AY_EOMEM;
+    }
+
+  ay_object_defaults(newo);
+  newo->type = AY_IDPOMESH;
+  newo->refine = pomesh;
+
+  ay_status = ay_object_link(newo);
+
+  if(ay_status)
+    {
+      ay_object_delete(newo);
+      return ay_status;
+    }
+
+  ay_mfio_lastreadobject = newo;
+
+ return ay_status;
+} /* ay_mfio_readgeneralpolygon */
+
+
+/* ay_mfio_readpolygon:
+ *
+ */
+int
+ay_mfio_readpolygon(MF3DVoidObjPtr object)
+{
+ int ay_status = AY_OK;
+ MF3DPolygonObjPtr o = (MF3DPolygonObjPtr) object;
+ ay_pomesh_object *pomesh = NULL;
+ ay_object *newo = NULL;
+ unsigned int i = 0, a = 0;
+
+  if(!(pomesh = calloc(1, sizeof(ay_pomesh_object))))
+    return AY_EOMEM;
+
+  pomesh->npolys = 1;
+
+  if(!(pomesh->nloops = calloc(1, sizeof(unsigned int))))
+    return AY_EOMEM;
+  pomesh->nloops[0] = 1;
+
+  if(!(pomesh->nverts = calloc(1, sizeof(unsigned int))))
+    return AY_EOMEM;
+  pomesh->nverts[0] = o->nVertices;
+
+  if(!(pomesh->verts = calloc(o->nVertices, sizeof(unsigned int))))
+    return AY_EOMEM;
+
+  for(i = 0; i < o->nVertices; i++)
+    {
+      pomesh->verts[i] = i;
+    } /* for */
+
+  if(!(pomesh->controlv = calloc(o->nVertices * 3, sizeof(double))))
+    return AY_EOMEM;
+
+  a = 0;
+  for(i = 0; i < o->nVertices; i++)
+    {
+      pomesh->controlv[a]   = (double)(o->vertices[i].x);
+      pomesh->controlv[a+1] = (double)(o->vertices[i].y);
+      pomesh->controlv[a+2] = (double)(o->vertices[i].z);
+      a += 3;
+    } /* for */
+
+
+  if(!(newo = calloc(1, sizeof(ay_object))))
+    { 
+      free(pomesh->controlv); free(pomesh->verts); free(pomesh->nverts);
+      free(pomesh->nloops); free(pomesh); return AY_EOMEM;
+    }
+
+  ay_object_defaults(newo);
+  newo->type = AY_IDPOMESH;
+  newo->refine = pomesh;
+
+  ay_status = ay_object_link(newo);
+
+  if(ay_status)
+    {
+      ay_object_delete(newo);
+      return ay_status;
+    }
+
+  ay_mfio_lastreadobject = newo;
+
+ return ay_status;
+} /* ay_mfio_readpolygon */
+
+
+/* ay_mfio_readtriangle:
+ *
+ */
+int
+ay_mfio_readtriangle(MF3DVoidObjPtr object)
+{
+ int ay_status = AY_OK;
+ MF3DTriangleObjPtr o = (MF3DTriangleObjPtr) object;
+ ay_pomesh_object *pomesh = NULL;
+ ay_object *newo = NULL;
+
+  if(!(pomesh = calloc(1, sizeof(ay_pomesh_object))))
+    return AY_EOMEM;
+
+  pomesh->npolys = 1;
+
+  if(!(pomesh->nloops = calloc(1, sizeof(unsigned int))))
+    { free(pomesh); return AY_EOMEM; }
+  pomesh->nloops[0] = 1;
+
+  if(!(pomesh->nverts = calloc(1, sizeof(unsigned int))))
+    { free(pomesh->nloops); free(pomesh); return AY_EOMEM; }
+  pomesh->nverts[0] = 1;
+
+  if(!(pomesh->verts = calloc(3, sizeof(unsigned int))))
+    {
+      free(pomesh->nverts); free(pomesh->nloops); free(pomesh);
+      return AY_EOMEM;
+    }
+  pomesh->verts[0] = 0;
+  pomesh->verts[1] = 1;
+  pomesh->verts[2] = 2;
+
+  if(!(pomesh->controlv = calloc(3 * 3, sizeof(double))))
+    {
+      free(pomesh->verts); free(pomesh->nverts); free(pomesh->nloops);
+      free(pomesh); return AY_EOMEM;
+    }
+
+  pomesh->controlv[0] = (double)(o->vertex1.x);
+  pomesh->controlv[1] = (double)(o->vertex1.y);
+  pomesh->controlv[2] = (double)(o->vertex1.z);
+
+  pomesh->controlv[3] = (double)(o->vertex2.x);
+  pomesh->controlv[4] = (double)(o->vertex2.y);
+  pomesh->controlv[5] = (double)(o->vertex2.z);
+
+  pomesh->controlv[6] = (double)(o->vertex3.x);
+  pomesh->controlv[7] = (double)(o->vertex3.y);
+  pomesh->controlv[8] = (double)(o->vertex3.z);
+
+  if(!(newo = calloc(1, sizeof(ay_object))))
+    { free(pomesh); return AY_EOMEM; }
+
+  ay_object_defaults(newo);
+  newo->type = AY_IDPOMESH;
+  newo->refine = pomesh;
+
+  ay_status = ay_object_link(newo);
+
+  if(ay_status)
+    {
+      ay_object_delete(newo);
+      return ay_status;
+    }
+
+  ay_mfio_lastreadobject = newo;
+
+ return ay_status;
+} /* ay_mfio_readtriangle */
+
+
+/* ay_mfio_readtrigrid:
+ *
+ */
+int
+ay_mfio_readtrigrid(MF3DVoidObjPtr object)
+{
+ int ay_status = AY_OK;
+ MF3DTriGridObjPtr o = (MF3DTriGridObjPtr) object;
+ ay_pomesh_object *pomesh = NULL;
+ ay_object *newo = NULL;
+ unsigned int i = 0, j = 0, k = 0, l = 0, a = 0;
+ unsigned int u, v;
+ int uquadtype = AY_FALSE, vquadtype = AY_FALSE;
+
+  if(!(pomesh = calloc(1, sizeof(ay_pomesh_object))))
+    return AY_EOMEM;
+
+  u = o->numRows;
+  v = o->numColumns;
+  
+  pomesh->npolys = u * v;
+
+  if(!(pomesh->nloops = calloc(u * v, sizeof(unsigned int))))
+    { free(pomesh); return AY_EOMEM; }
+  for(i = 0; i < (u * v); i++)
+    {
+      pomesh->nloops[i] = 1;
+    }
+
+  if(!(pomesh->nverts = calloc( u * v, sizeof(unsigned int))))
+    { free(pomesh->nloops); free(pomesh); return AY_EOMEM; }
+  for(i = 0; i < (u * v); i++)
+    {
+      pomesh->nverts[i] = 3;
+    } /* for */
+
+  if(!(pomesh->verts = calloc(u * v, sizeof(unsigned int))))
+    {
+      free(pomesh->nverts); free(pomesh->nloops); free(pomesh);
+      return AY_EOMEM;
+    }
+
+  vquadtype = AY_TRUE;
+  a = 0;
+  for(i = 0; i < v; i++)
+    {
+      j = i*u;
+      k = i*u + u;
+      uquadtype = vquadtype;
+      for(l = 0; l < u; l++)
+	{
+	  /* always work on two triangles (a quadrilateral) at once;
+	     the quadtype (how are the triangles orientated in the quad)
+	     alternates in u _and_ v direction... */
+	  if(uquadtype)
+	    {
+	      pomesh->verts[a]   = j;
+	      pomesh->verts[a+1] = k+1;
+	      pomesh->verts[a+2] = k;
+	      pomesh->verts[a+3] = j;
+	      pomesh->verts[a+4] = j+1;
+	      pomesh->verts[a+5] = k+1;
+	    }
+	  else
+	    {
+	      pomesh->verts[a]   = j;
+	      pomesh->verts[a+1] = j+1;
+	      pomesh->verts[a+2] = k;
+	      pomesh->verts[a+3] = k;
+	      pomesh->verts[a+4] = j+1;
+	      pomesh->verts[a+5] = k+1;
+	    }
+	  a += 6;
+
+	  /* toggle uquadtype */
+	  if(uquadtype)
+	    uquadtype = AY_FALSE;
+	  else
+	    uquadtype = AY_TRUE;
+	} /* for */
+
+      /* toggle vquadtype */
+      if(vquadtype)
+	vquadtype = AY_FALSE;
+      else
+	vquadtype = AY_TRUE;
+    } /* for */
+
+  if(!(pomesh->controlv = calloc(u * v * 3, sizeof(double))))
+    {
+      free(pomesh->verts); free(pomesh->nverts); free(pomesh->nloops);
+      free(pomesh); return AY_EOMEM;
+    }
+
+  a = 0;
+  for(i = 0; i < (u * v); i++)
+    {
+      pomesh->controlv[a]   = (double)(o->vertices[i].x);
+      pomesh->controlv[a+1] = (double)(o->vertices[i].y);
+      pomesh->controlv[a+2] = (double)(o->vertices[i].z);
+      a += 3;
+    } /* for */
+
+
+  if(!(newo = calloc(1, sizeof(ay_object))))
+    {
+      free(pomesh->controlv); free(pomesh->verts); free(pomesh->nverts);
+      free(pomesh->nloops); free(pomesh); return AY_EOMEM;
+    }
+
+  ay_object_defaults(newo);
+  newo->type = AY_IDPOMESH;
+  newo->refine = pomesh;
+
+  ay_status = ay_object_link(newo);
+
+  if(ay_status)
+    {
+      ay_object_delete(newo);
+      return ay_status;
+    }
+
+  ay_mfio_lastreadobject = newo;
+
+ return ay_status;
+} /* ay_mfio_readtrigrid */
+
+
+/* ay_mfio_readbox:
+ *
+ */
 int
 ay_mfio_readbox(MF3DVoidObjPtr object)
 {
@@ -314,9 +774,12 @@ ay_mfio_readbox(MF3DVoidObjPtr object)
     }
 
  return ay_status;
-}
+} /* ay_mfio_readbox */
 
 
+/* ay_mfio_readellipsoid:
+ *
+ */
 int
 ay_mfio_readellipsoid(MF3DVoidObjPtr object)
 {
@@ -365,9 +828,12 @@ ay_mfio_readellipsoid(MF3DVoidObjPtr object)
     }
 
  return ay_status;
-}
+} /* ay_mfio_readellipsoid */
 
 
+/* ay_mfio_readcylinder:
+ *
+ */
 int
 ay_mfio_readcylinder(MF3DVoidObjPtr object)
 {
@@ -416,9 +882,12 @@ ay_mfio_readcylinder(MF3DVoidObjPtr object)
     }
 
  return ay_status;
-}
+} /* ay_mfio_readcylinder */
 
 
+/* ay_mfio_readcone:
+ *
+ */
 int
 ay_mfio_readcone(MF3DVoidObjPtr object)
 {
@@ -466,9 +935,12 @@ ay_mfio_readcone(MF3DVoidObjPtr object)
     }
 
  return ay_status;
-}
+} /* ay_mfio_readcone */
 
 
+/* ay_mfio_readdisk:
+ *
+ */
 int
 ay_mfio_readdisk(MF3DVoidObjPtr object)
 {
@@ -515,9 +987,12 @@ ay_mfio_readdisk(MF3DVoidObjPtr object)
     }
 
  return ay_status;
-}
+} /* ay_mfio_readdisk */
 
 
+/* ay_mfio_readtorus:
+ *
+ */
 int
 ay_mfio_readtorus(MF3DVoidObjPtr object)
 {
@@ -567,9 +1042,12 @@ ay_mfio_readtorus(MF3DVoidObjPtr object)
     }
 
  return ay_status;
-}
+} /* ay_mfio_readtorus */
 
 
+/* ay_mfio_readscal:
+ *
+ */
 int
 ay_mfio_readscal(MF3DVoidObjPtr object)
 {
@@ -585,8 +1063,12 @@ ay_mfio_readscal(MF3DVoidObjPtr object)
  o->scalz *= t->scale.z;
 
  return ay_status;
-}
+} /* ay_mfio_readscal */
 
+
+/* ay_mfio_readtran:
+ *
+ */
 int
 ay_mfio_readtran(MF3DVoidObjPtr object)
 {
@@ -602,9 +1084,12 @@ ay_mfio_readtran(MF3DVoidObjPtr object)
  o->movz += t->translate.z;
 
  return ay_status;
-}
+} /* ay_mfio_readtran */
 
 
+/* ay_mfio_readrot:
+ *
+ */
 int
 ay_mfio_readrot(MF3DVoidObjPtr object)
 {
@@ -646,8 +1131,12 @@ ay_mfio_readrot(MF3DVoidObjPtr object)
    }
 
  return ay_status;
-}
+} /* ay_mfio_readrot */
 
+
+/* ay_mfio_readquat:
+ *
+ */
 int
 ay_mfio_readquat(MF3DVoidObjPtr object)
 {
@@ -671,9 +1160,12 @@ ay_mfio_readquat(MF3DVoidObjPtr object)
   o->rotz = euler[0];
 
  return ay_status;
-}
+} /* ay_mfio_readquat */
 
-/* XXXX this is only valid for axes located in the origin! */
+
+/* ay_mfio_readrotaaxis:
+ * XXXX this is only valid for axes located in the origin!
+ */
 int
 ay_mfio_readrotaaxis(MF3DVoidObjPtr object)
 {
@@ -703,8 +1195,12 @@ ay_mfio_readrotaaxis(MF3DVoidObjPtr object)
    }
 
  return ay_status;
-}
+} /* ay_mfio_readrotaaxis */
 
+
+/* ay_mfio_readdcol:
+ *
+ */
 int
 ay_mfio_readdcol(MF3DVoidObjPtr object)
 {
@@ -722,9 +1218,12 @@ ay_mfio_readdcol(MF3DVoidObjPtr object)
  */
 
  return ay_status;
-}
+} /* ay_mfio_readdcol */
 
 
+/* ay_mfio_readtcol:
+ *
+ */
 int
 ay_mfio_readtcol(MF3DVoidObjPtr object)
 {
@@ -742,9 +1241,12 @@ ay_mfio_readtcol(MF3DVoidObjPtr object)
  */
 
  return ay_status;
-}
+} /* ay_mfio_readtcol */
 
 
+/* ay_mfio_readcntr:
+ *
+ */
 int
 ay_mfio_readcntr(MF3DVoidObjPtr object)
 {
@@ -773,9 +1275,12 @@ ay_mfio_readcntr(MF3DVoidObjPtr object)
   ay_status = ay_object_defaults(newo);
 
  return ay_status;
-}
+} /* ay_mfio_readcntr */
 
 
+/* ay_mfio_readecntr:
+ *
+ */
 int
 ay_mfio_readecntr(MF3DVoidObjPtr object)
 {
@@ -795,9 +1300,12 @@ ay_mfio_readecntr(MF3DVoidObjPtr object)
  ay_clevel_del();
 
  return ay_status;
-}
+} /* ay_mfio_readecntr */
 
 
+/* ay_mfio_readobject:
+ *
+ */
 int
 ay_mfio_readobject(MF3DVoidObjPtr object)
 {
@@ -830,9 +1338,12 @@ ay_mfio_readobject(MF3DVoidObjPtr object)
     }
  
  return ay_status;
-}
+} /* ay_mfio_readobject */
 
 
+/* ay_mfio_readscene:
+ *
+ */
 int
 ay_mfio_readscene(Tcl_Interp *interp, char *filename)
 {
@@ -845,9 +1356,19 @@ ay_mfio_readscene(Tcl_Interp *interp, char *filename)
 
   /* Open the metafile */
   status = MF3DOpenInputStdCFile (filename, &metafilePtr);
-  if (status != kMF3DNoErr)
-    return AY_EOPENFILE;
-
+  if(status != kMF3DNoErr)
+    {
+      if(status > kMF3DTopError)
+	{
+	  ay_mfio_printerr(status);
+	  status = kMF3DNoErr;
+	}
+      else
+	{
+	  ay_mfio_mf3d_errno = status;
+	  return AY_ERROR;
+	}
+    }
 
   nextObjIsRoot = kMF3DBooleanFalse;
 
@@ -882,6 +1403,7 @@ ay_mfio_readscene(Tcl_Interp *interp, char *filename)
 	      if (status != kMF3DNoErr)
 		{ 
 		  ay_mfio_mf3d_errno = status;
+		  
 		  return AY_ERROR;
 		}
 
@@ -935,9 +1457,12 @@ ay_mfio_readscene(Tcl_Interp *interp, char *filename)
     return AY_ECLOSEFILE;
 
   return AY_OK;
-}
+} /* ay_mfio_readscene */
 
 
+/* ay_mfio_writetrimcurve:
+ *
+ */
 int 
 ay_mfio_writetrimcurve(MF3D_FilePtr fileptr, ay_object *o)
 {
@@ -1014,9 +1539,12 @@ ay_mfio_writetrimcurve(MF3D_FilePtr fileptr, ay_object *o)
   free(mf3do.knots);
 
  return ay_status;
-}
+} /* ay_mfio_writetrimcurve */
 
 
+/* ay_mfio_writenurbpatch:
+ *
+ */
 int 
 ay_mfio_writenurbpatch(MF3D_FilePtr fileptr, ay_object *o)
 {
@@ -1143,9 +1671,12 @@ ay_mfio_writenurbpatch(MF3D_FilePtr fileptr, ay_object *o)
   ay_status = ay_mfio_writeecntr(fileptr);
 
  return ay_status;
-}
+} /* ay_mfio_writenurbpatch */
 
 
+/* ay_mfio_writenurbcurve:
+ *
+ */
 int 
 ay_mfio_writenurbcurve(MF3D_FilePtr fileptr, ay_object *o)
 {
@@ -1208,9 +1739,12 @@ ay_mfio_writenurbcurve(MF3D_FilePtr fileptr, ay_object *o)
   ay_status = ay_mfio_writeecntr(fileptr);
 
  return ay_status;
-}
+} /* ay_mfio_writenurbcurve */
 
 
+/* ay_mfio_writebox:
+ *
+ */
 int 
 ay_mfio_writebox(MF3D_FilePtr fileptr, ay_object *o)
 {
@@ -1259,9 +1793,12 @@ ay_mfio_writebox(MF3D_FilePtr fileptr, ay_object *o)
   ay_status = ay_mfio_writeecntr(fileptr);
 
  return ay_status;
-}
+} /* ay_mfio_writebox */
 
 
+/* ay_mfio_writesphere:
+ *
+ */
 int 
 ay_mfio_writesphere(MF3D_FilePtr fileptr, ay_object *o)
 {
@@ -1310,9 +1847,12 @@ ay_mfio_writesphere(MF3D_FilePtr fileptr, ay_object *o)
   ay_status = ay_mfio_writeecntr(fileptr);
 
  return ay_status;
-}
+} /* ay_mfio_writesphere */
 
 
+/* ay_mfio_writecylinder:
+ *
+ */
 int 
 ay_mfio_writecylinder(MF3D_FilePtr fileptr, ay_object *o)
 {
@@ -1373,9 +1913,12 @@ ay_mfio_writecylinder(MF3D_FilePtr fileptr, ay_object *o)
   ay_status = ay_mfio_writeecntr(fileptr);
 
  return ay_status;
-}
+} /* ay_mfio_writecylinder */
 
 
+/* ay_mfio_writecone:
+ *
+ */
 int 
 ay_mfio_writecone(MF3D_FilePtr fileptr, ay_object *o)
 {
@@ -1436,9 +1979,12 @@ ay_mfio_writecone(MF3D_FilePtr fileptr, ay_object *o)
   ay_status = ay_mfio_writeecntr(fileptr);
 
  return ay_status;
-}
+} /* ay_mfio_writecone */
 
 
+/* ay_mfio_writedisk:
+ *
+ */
 int 
 ay_mfio_writedisk(MF3D_FilePtr fileptr, ay_object *o)
 {
@@ -1483,9 +2029,12 @@ ay_mfio_writedisk(MF3D_FilePtr fileptr, ay_object *o)
   ay_status = ay_mfio_writeecntr(fileptr);
 
  return ay_status;
-}
+} /* ay_mfio_writedisk */
 
 
+/* ay_mfio_writetorus:
+ *
+ */
 int 
 ay_mfio_writetorus(MF3D_FilePtr fileptr, ay_object *o)
 {
@@ -1536,9 +2085,12 @@ ay_mfio_writetorus(MF3D_FilePtr fileptr, ay_object *o)
   ay_status = ay_mfio_writeecntr(fileptr);
 
  return ay_status;
-}
+} /* ay_mfio_writetorus */
 
 
+/* ay_mfio_writeattributes:
+ *
+ */
 int 
 ay_mfio_writeattributes(MF3D_FilePtr fileptr, ay_object *o)
 {
@@ -1615,9 +2167,12 @@ ay_mfio_writeattributes(MF3D_FilePtr fileptr, ay_object *o)
   */
 
  return ay_status;
-}
+} /* ay_mfio_writeattributes */
 
 
+/* ay_mfio_writelevel:
+ *
+ */
 int 
 ay_mfio_writelevel(MF3D_FilePtr fileptr, ay_object *o)
 {
@@ -1642,9 +2197,12 @@ ay_mfio_writelevel(MF3D_FilePtr fileptr, ay_object *o)
     }
 
  return ay_status;
-}
+} /* ay_mfio_writelevel */
 
 
+/* ay_mfio_writeinstance:
+ *
+ */
 int 
 ay_mfio_writeinstance(MF3D_FilePtr fileptr, ay_object *o)
 {
@@ -1688,9 +2246,12 @@ ay_mfio_writeinstance(MF3D_FilePtr fileptr, ay_object *o)
   orig->movz = movz;
 
  return ay_status;
-}
+} /* ay_mfio_writeinstance */
 
 
+/* ay_mfio_writecntr:
+ *
+ */
 int 
 ay_mfio_writecntr(MF3D_FilePtr fileptr)
 {
@@ -1706,9 +2267,12 @@ ay_mfio_writecntr(MF3D_FilePtr fileptr)
     { ay_mfio_mf3d_errno = status; return AY_ERROR; }
 
  return ay_status;
-}
+} /* ay_mfio_writecntr */
 
 
+/* ay_mfio_writeecntr:
+ *
+ */
 int 
 ay_mfio_writeecntr(MF3D_FilePtr fileptr)
 {
@@ -1722,9 +2286,12 @@ ay_mfio_writeecntr(MF3D_FilePtr fileptr)
     { ay_mfio_mf3d_errno = status; return AY_ERROR; }
 
  return ay_status;
-}
+} /* ay_mfio_writeecntr */
 
 
+/* ay_mfio_writeobject:
+ *
+ */
 int 
 ay_mfio_writeobject(MF3D_FilePtr fileptr, ay_object *object)
 {
@@ -1756,8 +2323,12 @@ ay_mfio_writeobject(MF3D_FilePtr fileptr, ay_object *object)
     }
  
  return ay_status;
-}
+} /* ay_mfio_writeobject */
 
+
+/* ay_mfio_writescene:
+ *
+ */
 int
 ay_mfio_writescene(Tcl_Interp *interp, char *filename)
 {
@@ -1801,8 +2372,12 @@ ay_mfio_writescene(Tcl_Interp *interp, char *filename)
     return AY_ECLOSEFILE;
 
  return AY_OK;
-}
+} /* ay_mfio_writescene */
 
+
+/* ay_mfio_registerwritecb:
+ *
+ */
 int
 ay_mfio_registerwritecb(char *name, ay_mfio_writecb *cb)
 {
@@ -1829,10 +2404,9 @@ ay_mfio_registerwritecb(char *name, ay_mfio_writecb *cb)
 } /* ay_mfio_registerwritecb */
 
 
-/************************************/
-/************************************/
-/************************************/
-
+/* ay_mfio_importscenetcmd:
+ *
+ */
 int
 ay_mfio_importscenetcmd(ClientData clientData, Tcl_Interp * interp,
 			int argc, char *argv[])
@@ -1853,6 +2427,7 @@ ay_mfio_importscenetcmd(ClientData clientData, Tcl_Interp * interp,
 
   if(ay_status)
     {
+      ay_mfio_printerr(ay_mfio_mf3d_errno);
       ay_error(AY_ERROR, fname, "Error while importing from:");
       ay_error(AY_ERROR, fname, argv[1]);
     }
@@ -1863,9 +2438,12 @@ ay_mfio_importscenetcmd(ClientData clientData, Tcl_Interp * interp,
     }
 
  return TCL_OK;
-}
+} /* ay_mfio_importscenetcmd */
 
 
+/* ay_mfio_exportscenetcmd:
+ *
+ */
 int
 ay_mfio_exportscenetcmd(ClientData clientData, Tcl_Interp *interp,
 			  int argc, char *argv[])
@@ -1884,6 +2462,7 @@ ay_mfio_exportscenetcmd(ClientData clientData, Tcl_Interp *interp,
   
   if(ay_status)
     {
+      ay_mfio_printerr(ay_mfio_mf3d_errno);
       ay_error(AY_ERROR, fname, "Error while exporting to:");
       ay_error(AY_ERROR, fname, argv[1]);
     }
@@ -1894,10 +2473,201 @@ ay_mfio_exportscenetcmd(ClientData clientData, Tcl_Interp *interp,
     }
 
  return TCL_OK;
-}
+} /* ay_mfio_exportscenetcmd */
 
 
-/*
+/* ay_mfio_printerr:
+ *
+ */
+void
+ay_mfio_printerr(MF3DErr errcode)
+{
+ char fname[] = "MFIO";
+
+  switch(errcode)
+    {
+    case kMF3DErrInvalidParameter:
+      ay_error(AY_ERROR, fname, "Invalid Parameter");
+      break;
+    case kMF3DErrOutOfMemory:
+      ay_error(AY_EOMEM, fname, NULL);
+      break;
+    case kMF3DErrNoObjectsFound:
+      ay_error(AY_ERROR, fname, "No Objects Found");
+      break;
+    case kMF3DErrCantParse:
+      ay_error(AY_ERROR, fname, "Cant Parse");
+      break;
+    case kMF3DErrDidntReadEntireObj:
+      ay_error(AY_ERROR, fname, "Didnt Read Entire Obj");
+      break;
+    case kMF3DErrObjHasTooManyLabels:
+      ay_error(AY_ERROR, fname, "Obj Has Too Many Labels");
+      break;
+    case kMF3DErrIllegalObjName:
+      ay_error(AY_ERROR, fname, "Illegal Obj Name");
+      break;
+    case kMF3DErrUnquotedString:
+      ay_error(AY_ERROR, fname, "Unquoted String");
+      break;
+    case kMF3DErrRawDataOddNumberOfHexChars:
+      ay_error(AY_ERROR, fname, "Raw Data Odd Number Of Hex Chars");
+      break;
+    case kMF3DErrIllegalEnum:
+      ay_error(AY_ERROR, fname, "Illegal Enum");
+      break;
+    case kMF3DErrIllegalDataType:
+      ay_error(AY_ERROR, fname, "Illegal Data Type");
+      break;
+    case kMF3DErrWrongObjType:
+      ay_error(AY_ERROR, fname, "Wrong Obj Type");
+      break;
+    case kMF3DErrNotAReferenceObj:
+      ay_error(AY_ERROR, fname, "Not A Reference Obj");
+      break;
+    case kMF3DErrReferenceNotFound:
+      ay_error(AY_ERROR, fname, "Reference Not Found");
+      break;
+
+    case kMF3DErrTooManyStorageObjects:
+      ay_error(AY_ERROR, fname, "Too Many Storage Objects");
+      break;
+    case kMF3DErrIllegalUserObjectType:
+      ay_error(AY_ERROR, fname, "Illegal User Object Type");
+      break;
+    case kMF3DErrNIndicesLessThanZero:
+      ay_error(AY_ERROR, fname, "NIndices Less Than Zero");
+      break;
+    case kMF3DErrNIndicesGreaterThanNObjects:
+      ay_error(AY_ERROR, fname, "NIndices Greater Than NObjects");
+      break;
+    case kMF3DErrNumCornersIsZero:
+      ay_error(AY_ERROR, fname, "Num Corners Is Zero");
+      break;
+    case kMF3DErrNumEdgesIsZero:
+      ay_error(AY_ERROR, fname, "Num Edges Is Zero");
+      break;
+    case kMF3DErrNumFacesIsZero:
+      ay_error(AY_ERROR, fname, "Num Faces Is Zero");
+      break;
+    case kMF3DErrOrderTooSmall:
+      ay_error(AY_ERROR, fname, "Order Too Small");
+      break;
+    case kMF3DErrTooFewPoints:
+      ay_error(AY_ERROR, fname, "Too Few Points");
+      break;
+
+    case kMF3DErrNumContoursIsZero:
+      ay_error(AY_ERROR, fname, "Num Contours Is Zero");
+      break;
+
+    case kMF3DErrTooFewVertices:
+      ay_error(AY_ERROR, fname, "Too Few Vertices");
+      break;
+
+    case kMF3DErrWidthOrHeightIsZero:
+      ay_error(AY_ERROR, fname, "Width Or Height Is Zero");
+      break;
+
+    case kMF3DErrNotEnoughEndGroups:
+      ay_error(AY_ERROR, fname, "Not Enough End Groups");
+      break;
+    case kMF3DErrTooManyEndGroups:
+      ay_error(AY_ERROR, fname, "Too Many End Groups");
+      break;
+    case kMF3DErrTooManyEndContainers:
+      ay_error(AY_ERROR, fname, "Too Many End Containers");
+      break;
+    case kMF3DErrContainedObjTooBig:
+      ay_error(AY_ERROR, fname, "Contained Obj Too Big");
+      break;
+    case kMF3DErrCantWrite:
+      ay_error(AY_ERROR, fname, "Cant Write");
+      break;
+    case kMF3DErrIllegalRefID:
+      ay_error(AY_ERROR, fname, "Illegal Ref ID");
+      break;
+    case kMF3DErrTwoObjectsWithSameRefID:
+      ay_error(AY_ERROR, fname, "Two Objects With Same Ref ID");
+      break;
+    case kMF3DErrTwoObjectsWithSameRefName:
+      ay_error(AY_ERROR, fname, "Two Objects With Same Ref Name");
+      break;
+    case kMF3DErrGroupTypeNotSpecified:
+      ay_error(AY_ERROR, fname, "Group Type Not Specified");
+      break;
+
+    case kMF3DErrFailedToOpen:
+      ay_error(AY_ERROR, fname, "Failed To Open");
+      break;
+    case kMF3DErrReadFailedEOF:
+      ay_error(AY_ERROR, fname, "ReadFailedEOF");
+      break;
+    case kMF3DErrReadFailed:
+      ay_error(AY_ERROR, fname, "ReadFailed");
+      break;
+    case kMF3DErrReadPartialEOF:
+      ay_error(AY_ERROR, fname, "Read Partial EOF");
+      break;
+    case kMF3DErrReadPartial:
+      ay_error(AY_ERROR, fname, "Read Partial");
+      break;
+
+    case kMF3DErrWriteFailedEOF:
+      ay_error(AY_ERROR, fname, "Write Failed EOF");
+      break;
+    case kMF3DErrWriteFailed:
+      ay_error(AY_ERROR, fname, "Write Failed");
+      break;
+    case kMF3DErrWritePartialEOF:
+      ay_error(AY_ERROR, fname, "Write Partial EOF");
+      break;
+    case kMF3DErrWritePartial:
+      ay_error(AY_ERROR, fname, "Write Partial");
+      break;
+
+    case kMF3DErrTellFailed:
+      ay_error(AY_ERROR, fname, "Tell Failed");
+      break;
+    case kMF3DErrSeekFailed:
+      ay_error(AY_ERROR, fname, "Seek Failed");
+      break;
+    case kMF3DErrSeekOutOfRange:
+      ay_error(AY_ERROR, fname, "Seek Out Of Range");
+      break;
+
+    case kMF3DErrCloseEOF:
+      ay_error(AY_ERROR, fname, "Close EOF");
+      break;
+
+    case kMF3DErrUnsupportedUns64:
+      ay_error(AY_ERROR, fname, "Unsupported Uns 64");
+      break;
+    case kMF3DErrUnsupportedInt64:
+      ay_error(AY_ERROR, fname, "Unsupported Int 64");
+      break;
+    case kMF3DErrUnsupportedMetafileFormat:
+      ay_error(AY_ERROR, fname, "Unsupported Metafile Format");
+      break;
+
+    case kMF3DWarnNewerMetafileFormat:
+      ay_error(AY_EWARN, fname, "Newer Metafile Format Detected");
+      break;
+    case kMF3DWarnWrongUnknownTypeFormat:
+      ay_error(AY_EWARN, fname, "Wrong Unknown Type Format Detected");
+      break;
+
+    default:
+      ay_error(AY_ERROR, fname, "Unknown Error Code, Internal Error");
+      printf("MFIO-Error: %u\n",errcode);
+      break;
+    } /* switch */
+
+  return;
+} /* ay_mfio_printerr */
+
+
+/* Mfio_Init:
  *
  */
 int
@@ -1936,6 +2706,21 @@ Mfio_Init(Tcl_Interp *interp)
 
   ay_status = ay_mfio_registerreadcb((char *)(kMF3DObjNURBCurve),
 				       ay_mfio_readnurbcurve);
+
+  ay_status = ay_mfio_registerreadcb((char *)(kMF3DObjPolyLine),
+				       ay_mfio_readpolyline);
+
+  ay_status = ay_mfio_registerreadcb((char *)(kMF3DObjGeneralPolygon),
+				     ay_mfio_readgeneralpolygon);
+
+  ay_status = ay_mfio_registerreadcb((char *)(kMF3DObjPolygon),
+				     ay_mfio_readpolygon);
+
+  ay_status = ay_mfio_registerreadcb((char *)(kMF3DObjTriangle),
+				     ay_mfio_readtriangle);
+
+  ay_status = ay_mfio_registerreadcb((char *)(kMF3DObjTriGrid),
+				     ay_mfio_readtrigrid);
 
   ay_status = ay_mfio_registerreadcb((char *)(kMF3DObjBox),
 				       ay_mfio_readbox);
