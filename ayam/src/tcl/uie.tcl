@@ -520,6 +520,27 @@ proc addFileB { w prop name help {def {}} } {
 #
 #
 #
+proc addFileT { w prop name ftypes {def {}} } {
+
+    addFile $w $prop $name $def
+    set f $w.f${name}
+    $f.b configure -command "\
+	    global $prop;\
+	    set filen \[$f.e get\];\
+	    set filen \[tk_getOpenFile -filetypes {$ftypes} -parent .\
+	    -title \"Set File:\"];\
+	    if { \$filen != \"\" } {\
+	    $f.e delete 0 end;\
+	    $f.e insert 0 \$filen;\
+	    set ${prop}($name) \$filen;\
+	}"
+
+}
+# addFileT
+
+#
+#
+#
 proc addFile { w prop name {def {}} } {
     global $prop ayprefs tcl_platform
 
@@ -544,7 +565,7 @@ proc addFile { w prop name {def {}} } {
 	    $f.e insert 0 \$filen;
 	    set ${prop}($name) \$filen;
         }
-	" 
+	"
 
 	set mb ""
 	if { $def != {} } {
