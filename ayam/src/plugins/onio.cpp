@@ -316,6 +316,7 @@ onio_writetrimmednpatch(ay_object *o, ONX_Model *p_m)
  ON_Brep *p_b = NULL;
  ON_BrepFace *p_f = NULL;
  double tolerance = 1.0e-12;
+ ON_BrepLoop::TYPE ltype = ON_BrepLoop::inner;
 
   if(!o || !p_m)
     return AY_ENULL;
@@ -360,9 +361,6 @@ onio_writetrimmednpatch(ay_object *o, ONX_Model *p_m)
       // create new face from surface (creates a bounding trimloop as well!)
       p_f = p_b->NewFace(ps);
 
-      //p_b->DeleteLoop(p_b->m_L[0], true);
-      //p_b->Compact();
-
       delete p_s;
       p_s = NULL;
     }
@@ -375,15 +373,25 @@ onio_writetrimmednpatch(ay_object *o, ONX_Model *p_m)
     } // if
 
   down = o->down;
+  // remove outer loop because we cut away the outside with our own trims?
+  if(down && !onio_isboundingloop(down))
+    {
+      // Yes.
+      p_b->DeleteLoop(p_b->m_L[0], true);
+      p_b->Compact();
+      ltype = ON_BrepLoop::outer;
+    }
+
   while(down)
     {
       if(!onio_isboundingloop(down))
 	{
 	  ay_status = onio_addtrim(down,
-				   ON_BrepLoop::inner,
+				   ltype,
 				   ON_BrepTrim::boundary,
 				   p_b, p_f);
 	  // XXXX check ay_status
+	  ltype = ON_BrepLoop::inner;
 	} // if
 
       down = down->next;
