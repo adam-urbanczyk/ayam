@@ -336,6 +336,10 @@ proc tgui_readtag { } {
 proc tgui_open { } {
     global ay ayprefs ay_error tgui_tessparam
 
+    # deselect property
+    $ay(plb) selection clear 0 end
+    plb_update
+
     undo save Tesselate
 
     set w .tguiw
@@ -344,12 +348,15 @@ proc tgui_open { } {
     wm title $w "Tesselation Parameters"
     wm iconname $w "Ayam"
     #wm transient $w .
+    wm withdraw $w
 
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
     addMenu $f tgui_tessparam SMethod $ay(smethods)
+
     set f [frame $f.fSParam -relief sunken -borderwidth 1]
     label $f.l -text "SParam:" -width 14
+
     label $f.ll -text "0"
     scale $f.s -showvalue 0 -orient h -from 0 -to 100\
 	-highlightthickness 0
@@ -369,6 +376,7 @@ proc tgui_open { } {
     tgui_remtag
 
     # copy selected objects to internal buffer
+
     set ay_error ""
     tguiCmd in
     if { $ay_error > 1 } {
@@ -394,15 +402,15 @@ proc tgui_open { } {
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {
 	tguiCmd op; focus .; destroy .tguiw;
-	uCL cl; plb_update
+	uCL cl; plb_update;
     }
     # button
 
     button $f.bca -text "Cancel" -width 5 -command {
-	tguiCmd ca; focus .; destroy .tguiw; undo;
+	tguiCmd ca; focus .; destroy .tguiw;
 	tgui_addtag;
-	uCL cl {1 1};
-	rV
+	uCL cl {1 1}; plb_update;
+	rV;
     }
     # button
 
@@ -430,11 +438,15 @@ proc tgui_open { } {
 				 $f.s conf -command tgui_update; \
 			     }"
 
+    wm deiconify $w
+
     tgui_block
 
     tkwait window $w
 
-    tgui_unblock
+    trace vdelete tgui_tessparam(SMethod) w tgui_update
+
+    after idle tgui_unblock
 
     after idle viewMouseToCurrent
 
