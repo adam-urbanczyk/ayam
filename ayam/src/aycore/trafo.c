@@ -1038,6 +1038,7 @@ ay_trafo_invmatrix4(double *m, double *mi)
 		     MAT(m,1,3) * MAT(mi,2,1) +
 		     MAT(m,2,3) * MAT(mi,2,2) );
 
+   MAT(mi,3,3) = 1;
 
  return AY_OK;
 } /* ay_trafo_invmatrix4 */
