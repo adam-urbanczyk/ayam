@@ -9,6 +9,10 @@
 
 # icons.tcl - this file carries all icon images
 
+# all icons are of size 25x25
+# imgdata may be created by juen as follows:
+# juen -a image.gif
+
 #set imgdata {\}
 #image create photo ay_Level_img -format GIF -data $imgdata
 
@@ -31,7 +35,6 @@ CgAKAAAFPiAgjiQQCGgqDCZRGPCBJC1sHImyAAxzz4qGA0Bg4HTCB4+BhEQeEoAg0IA4oBOKKOCI
 VCZZi8jyfVwwGUAIADs=
 }
 image create photo ay_Boxt_img -format GIF -data $imgdata
-
 # Cone
 set imgdata {\
 R0lGODdhGQAZAIQAAMe7osO3nsCzm6ieiouCcCwpIxsZFWRfVoJ7bLWuns/Cp7azrDk1Lr67t1ZS
@@ -548,7 +551,7 @@ zed2+lMAADs=
 }
 image create photo ay_GridX_img -format GIF -data $imgdata
 
-
+# Drawing Mode Menu Icons:
 # DMDraw
 set imgdata {\
 R0lGODdhGQAZAKEAANnZ2by8vOnp6QAAACwAAAAAGQAZAAACaYSPqRntD2MzMoiLRaXwWqd5EAeW
@@ -606,3 +609,20 @@ MmZM3Ut0QIIK7iaePPjipHwIEx0umFlgb32AXhskcIEFTCzwBAsjvMYFGGYw4wwAi2RnxhkYLICB
 DBdcEIYYZORyCYSWQLMAEWhIYcYSaRCxwCSogGgJIwRIYYAUUhQxiS6WHKLjjoIEAgA7
 }
 image create photo ay_DMShadeDraw_img -format GIF -data $imgdata
+
+# Modelling Mode (Local/Global) Menu Icons:
+# MMLocGlob
+set imgdata {\
+R0lGODdhGQAZAIAAAOnp6b29vSwAAAAAGQAZAAACU4SPqRntD2Mz8UhJK7i6hs09mQOG0PiZWFlO
+pPK6Ytam01bLNvnmes3y/U6xC4t44wQZN6HwhMOoPqCcc8abLUaopwj7nRa/XjBUjGqiy6qt210A
+ADs=
+}
+image create photo ay_MMLocGlob_img -format GIF -data $imgdata
+
+# MMGlobLoc
+set imgdata {\
+R0lGODdhGQAZAMIAAOnp6b29vb28vLy8vLy9vAAAAAAAAAAAACwAAAAAGQAZAAADXgi63N5BDBKq
+vfiqMED+37aAZPWAHpqmYcBim4taL722WhbXsg7fvtzPNCPqgK6YjDVKGp1Cmwnp4dF6uyBs2NtG
+pV1vGGwllrOkMlSNW5eO0+ljPlK+ufb7VU7vMxIAOw==
+}
+image create photo ay_MMGlobLoc_img -format GIF -data $imgdata
