@@ -1,3 +1,17 @@
+[CVS 02. 11. 2001] Ayam1.0x:
+o bug fixes:
+  - fixed custom lights always exporting as AreaLight to RIB
+  - fixed tags not loading from scene files to root object
+  - fixed handling of Shift-Tab for old (<8.3) Tk versions
+  - fixed view-undo problems (e.g. not setting window titles correctly)
+  - added missing declarations for some BMRT specific attributes/options
+  - fixed focus handling for set_gridsize and set_fov dialogues
+  - fixed unnecessary saving of undo states
+o added auto-scrolling to property with focus (<Tab> scrolls the property GUI)
+o added "Scene changed!" warning requester to various scene destroying
+  operations, like "File/New"
+o added MetaBalls custom object
+
 [02. 10. 2001] Ayam1.0 beta4:
 o bug fixes:
   - Skin does not crash in interpolation mode, if two identical curves
