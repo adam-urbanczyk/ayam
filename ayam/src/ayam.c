@@ -345,6 +345,16 @@ ay_init(Tcl_Interp *interp)
   ay_point_edit_coords_homogenous = AY_FALSE;
   ay_point_edit_coords_number = 0;
 
+  /* initialize additional included modules */
+#ifdef AYIDRWRAPPED
+  if((ay_status = Idr_Init(interp)))
+    { ay_error(ay_status, fname, NULL); return AY_ERROR; }
+  Tcl_SetVar(interp,"AYIDRWRAPPED", "1", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+#else
+  Tcl_SetVar(interp, "AYIDRWRAPPED", "0", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+#endif
+
+
  return ay_status;
 } /* ay_init */
 

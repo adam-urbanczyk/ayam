@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile.wrapped [22. Mar 2002]
+# Makefile.wrapped [18. Apr 2002]
 # Makefile for Ayam (wrapped version)
 
 # Where shall the executables be installed?
@@ -309,6 +309,12 @@ METAOBJS = contrib/meta/metaobj.o \
 
 RRIBOBJS = plugins/rrib.o
 
+# additional objects:
+# add e.g. $(IDROBJS) if idr is to be linked statically, also add -ltiff
+# to ADDLIB in this case
+ADDOBJS =
+ADDLIB =
+
 .c.o: 
 	$(CC) -c $(CFLAGS) $*.c -o $@ -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR)
 
@@ -317,8 +323,8 @@ all: wrappedayam csphere.so mfio.so metaobj.so
 wrapMain.o: wrapMain.c
 	$(CC) -c $(CFLAGS) wrapMain.c -I$(WRAPDIR) -I$(WRAPDIR)/libz $(TCLINC) $(TKINC)
 
-ayam:  $(AYAMOBJS) $(TOGLOBJECT) $(AFFINEOBJS) wrapMain.o
-	$(LD) $(AYAMOBJS) $(TOGLOBJECT) $(WRAPOBJS) wrapMain.o $(EXLDFLAGS) -o ayam $(TKLIB) $(TCLLIB) $(LDSWDYNAMIC) $(GLLIBS) $(X11LIBS) $(RIBOUTLIB) $(SLCARGSLIB) $(AFFINEOBJS) $(ZLIB) $(LDSWSTATIC) $(STDCPPLIB) $(LDSWDYNAMIC) -lm $(DL)
+ayam:  $(AYAMOBJS) $(TOGLOBJECT) $(AFFINEOBJS) $(ADDOBJS) wrapMain.o
+	$(LD) $(ADDOBJS) $(AYAMOBJS) $(TOGLOBJECT) $(WRAPOBJS) wrapMain.o $(EXLDFLAGS) -o ayam $(ADDLIB) $(TKLIB) $(TCLLIB) $(LDSWDYNAMIC) $(GLLIBS) $(X11LIBS) $(RIBOUTLIB) $(SLCARGSLIB) $(AFFINEOBJS) $(ZLIB) $(LDSWSTATIC) $(STDCPPLIB) $(LDSWDYNAMIC) -lm $(DL)
 	$(STRIP) ayam
 	$(UPX) ayam
 	cat $(WRAPDIR)/null.zip >>ayam

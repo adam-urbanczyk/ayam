@@ -4258,6 +4258,7 @@ Idr_Init(Tcl_Interp *interp)
 			     );
 #endif
 
+#ifndef AYIDRWRAPPED
   /* load idr GUI extensions */
   if((Tcl_EvalFile(interp, "idr.tcl")) != TCL_OK)
     {
@@ -4265,6 +4266,7 @@ Idr_Init(Tcl_Interp *interp)
 	       "Error while sourcing \\\"idr.tcl\\\"!");
       return TCL_OK;
     }
+#endif
 
   Tcl_Eval(interp, success_cmd);
 

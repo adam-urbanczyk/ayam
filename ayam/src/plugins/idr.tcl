@@ -9,7 +9,7 @@
 
 # idr.tcl - Importance Driven Rendering
 
-global idrprefs
+global idrprefs ayprefs
 
 array set idrprefs {
 
@@ -39,6 +39,8 @@ array set idrprefs {
 
 
 }
+
+set idrprefs(IDRBase) $ayprefs(TmpDir)/idr
 
 variable idrmode 0
 
