@@ -121,18 +121,18 @@ proc riattr_addp { } {
 		        addParam .addRiAttrw.f2 riattrval Point_Y
 		        addParam .addRiAttrw.f2 riattrval Point_Z
 			if { $def != "" } {
-			    addMenu .addRiOptw.f2 rioptval DPoint $def
+			    addMenu .addRiAttrw.f2 riattrval DPoint $def
 			    
-			    set rioptval(def_Point) $def
+			    set riattrval(def_Point) $def
 
-			    trace variable rioptval(DPoint) w {
+			    trace variable riattrval(DPoint) w {
 				after 100 {
-				    global rioptval
+				    global riattrval
 
-		set def [lindex $rioptval(def_Point) $rioptval(DPoint) ]
-				set rioptval(Point_X) [lindex $def 0]
-				set rioptval(Point_Y) [lindex $def 1]
-				set rioptval(Point_Z) [lindex $def 2]
+		set def [lindex $riattrval(def_Point) $riattrval(DPoint) ]
+				set riattrval(Point_X) [lindex $def 0]
+				set riattrval(Point_Y) [lindex $def 1]
+				set riattrval(Point_Z) [lindex $def 2]
 				}
 				return;
 			    }
@@ -151,7 +151,27 @@ proc riattr_addp { } {
 			    set riattrval(Color_B) 0
 			}
 			addColor .addRiAttrw.f2 riattrval Color $def
-		      }
+		    }
+		    j {
+			if { $def != {} } {
+			    set riattrval(IntPair_0) [lindex [lindex $def 0] 0]
+			    set riattrval(IntPair_1) [lindex [lindex $def 0] 1]
+			} else {
+			    set riattrval(IntPair_0) 0
+			    set riattrval(IntPair_1) 0
+			}
+			addParamPair .addRiAttrw.f2 riattrval IntPair $def
+		    }
+		    g {
+			if { $def != {} } {
+			 set riattrval(FloatPair_0) [lindex [lindex $def 0] 0]
+			 set riattrval(FloatPair_1) [lindex [lindex $def 0] 1]
+			} else {
+			    set riattrval(FloatPair_0) 0.0
+			    set riattrval(FloatPair_1) 0.0
+			}
+			addParamPair .addRiAttrw.f2 riattrval FloatPair $def
+		    }
 		    
 		}
 	    }
@@ -193,6 +213,10 @@ proc riattr_addp { } {
 	"$riattrval(Point_X),$riattrval(Point_Y),$riattrval(Point_Z)" }
 			c { set val \
 	"$riattrval(Color_R),$riattrval(Color_G),$riattrval(Color_B)" }
+                        j { set val \
+	"$riattrval(IntPair_0),$riattrval(IntPair_1)" }
+                        g { set val \
+	"$riattrval(FloatPair_0),$riattrval(FloatPair_1)" }
 			
 		    }
 		}

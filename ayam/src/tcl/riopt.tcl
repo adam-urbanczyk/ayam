@@ -155,7 +155,27 @@ proc riopt_addp { } {
 			}
 			addColor .addRiOptw.f2 rioptval Color $def
 		      }
-		    
+		      
+		    j {
+			if { $def != {} } {
+			    set rioptval(IntPair_0) [lindex [lindex $def 0] 0]
+			    set rioptval(IntPair_1) [lindex [lindex $def 0] 1]
+			} else {
+			    set rioptval(IntPair_0) 0
+			    set rioptval(IntPair_1) 0
+			}
+			addParamPair .addRioptw.f2 rioptval IntPair $def
+		    }
+		    g {
+			if { $def != {} } {
+			 set rioptval(FloatPair_0) [lindex [lindex $def 0] 0]
+			 set rioptval(FloatPair_1) [lindex [lindex $def 0] 1]
+			} else {
+			    set rioptval(FloatPair_0) 0.0
+			    set rioptval(FloatPair_1) 0.0
+			}
+			addParamPair .addRioptw.f2 rioptval FloatPair $def
+		    }
 		}
 	    }
 
@@ -197,6 +217,10 @@ proc riopt_addp { } {
 	"$rioptval(Point_X),$rioptval(Point_Y),$rioptval(Point_Z)" }
 			c { set val \
 	"$rioptval(Color_R),$rioptval(Color_G),$rioptval(Color_B)" }
+                        j { set val \
+	"$rioptval(IntPair_0),$rioptval(IntPair_1)" }
+                        g { set val \
+	"$rioptval(FloatPair_0),$rioptval(FloatPair_1)" }
 			
 		    }
 		}

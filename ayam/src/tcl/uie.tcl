@@ -98,6 +98,21 @@ return;
 #
 #
 #
+proc addParamPair { w prop name {def {}} } {
+    set fdef {}
+    set sdef {}
+    foreach i $def {
+	lappend fdef [lindex $i 0]
+	lappend sdef [lindex $i 1]
+    }
+    addParam $w $prop ${name}_0 $fdef
+    addParam $w $prop ${name}_1 $sdef
+}
+# addParamPair
+
+#
+#
+#
 proc addMatrixB { w prop name help } {
 
     addMatrix $w $prop $name
