@@ -84,7 +84,7 @@ int
 ay_selp_selalltcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
 {
- char fname[] = "selPoints";
+ char fname[] = "selAllPoints";
  int ay_status = AY_OK;
  ay_object *o = NULL;
  ay_list_object *sel = ay_selection;
@@ -196,3 +196,92 @@ ay_selp_applytrafotcmd(ClientData clientData, Tcl_Interp *interp,
 
  return TCL_OK;
 } /* ay_selp_applytrafotcmd */
+
+
+/* ay_selp_invert:
+ *  invert list of selected points for object o
+ */
+int
+ay_selp_invert(ay_object *o)
+{
+ int ay_status = AY_OK;
+ ay_point_object *t = NULL, *p = NULL, **last2 = NULL, *p2 = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  if(!o->selp)
+    {
+      ay_status = ay_selp_selall(o);
+      return ay_status;
+    }
+
+  /* save old selection of points to p */
+  p = o->selp;
+
+  /* select all points */
+  o->selp = NULL;
+  ay_status = ay_selp_selall(o);
+  if(ay_status)
+    return ay_status;
+
+  /* remove all points, that are in p (old selection), from p2 (new
+     selection); additionally, clear p */
+  while(p)
+    {
+      last2 = &(o->selp);
+      p2 = o->selp;
+      while(p2)
+	{
+	  if(p->point == p2->point)
+	    {
+	      *last2 = p2->next;
+	      free(p2);
+	      /* XXXX should be unneeded, because of the break below: */
+	      p2 = *last2;
+	      break;
+	    }
+	  else
+	    {
+	      last2 = &(p2->next);
+	      p2 = p2->next;
+	    } /* if */
+	} /* while */
+      t = p;
+      p = p->next;
+      free(t);
+    } /* while */
+
+ return AY_OK;
+} /* ay_selp_invert */
+
+
+/* ay_selp_inverttcmd:
+ *  invert selection of editable points of selected objects
+ */
+int
+ay_selp_inverttcmd(ClientData clientData, Tcl_Interp *interp,
+		   int argc, char *argv[])
+{
+ char fname[] = "invSelPoints";
+ int ay_status = AY_OK;
+ ay_object *o = NULL;
+ ay_list_object *sel = ay_selection;
+
+  while(sel)
+    {
+      o = sel->object;
+
+      ay_status = ay_selp_invert(o);
+
+      if(ay_status)
+	{
+	  ay_error(AY_ERROR, fname, NULL);
+	  return TCL_OK;
+	}
+
+      sel = sel->next;
+    } /* while */
+
+ return TCL_OK;
+} /* ay_selp_inverttcmd */

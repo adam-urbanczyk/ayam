@@ -360,6 +360,7 @@ $sm add command -label "Paste Property to Selected" -command "pclip_pastetosel;f
 $m add cascade -menu $m.pnt -label "Points"
 set sm [menu $m.pnt -tearoff 0]
 $sm add command -label "Select All Points" -command "selPoints;rV"
+$sm add command -label "Invert Selection" -command "invSelPoints;rV"
 $sm add command -label "Apply Trafo To All Points"\
 	-command "applyTrafo all;\
 	plb_update;forceNot;rV"

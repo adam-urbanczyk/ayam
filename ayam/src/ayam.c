@@ -704,6 +704,9 @@ int ay_status = AY_OK;
   Tcl_CreateCommand(interp, "applyTrafo", ay_selp_applytrafotcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  Tcl_CreateCommand(interp, "invSelPoints", ay_selp_inverttcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
   /* undo.c */
   Tcl_CreateCommand(interp, "undo", ay_undo_undotcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);

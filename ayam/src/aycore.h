@@ -432,6 +432,11 @@ int ay_selp_selalltcmd(ClientData clientData, Tcl_Interp *interp,
 int ay_selp_applytrafotcmd(ClientData clientData, Tcl_Interp *interp,
 			   int argc, char *argv[]);
 
+int ay_selp_invert(ay_object *o);
+
+int ay_selp_inverttcmd(ClientData clientData, Tcl_Interp *interp,
+		       int argc, char *argv[]);
+
 /* shade.c */
 int ay_shade_object(struct Togl *togl, ay_object *o, int push_name);
 
