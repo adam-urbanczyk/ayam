@@ -861,8 +861,18 @@ ayam_loadscript browser
 ayam_loadscript ai
 ayam_loadscript prog
 
+# load scripts of statically linked additional modules
 if { $AYIDRWRAPPED == 1 } {
     ayam_loadscript idr
+}
+
+if { $AYMETAWRAPPED == 1 } {
+    ayam_loadscript metaobj.tcl
+    ayam_loadscript metacomp.tcl
+}
+
+if { $AYRRIBWRAPPED == 1 } {
+    ayam_loadscript rrib.tcl
 }
 
 # bind . <Configure> { if { "%W" == "." } { puts stderr "%w" } }
@@ -871,6 +881,7 @@ if { $AYIDRWRAPPED == 1 } {
 if { $tcl_platform(platform) != "windows" } {
     wm deiconify .
 }
+
 # ayam_flush:
 #  flush error messages each 2s
 proc ayam_flush { } {

@@ -104,6 +104,15 @@ static char *ay_log = "/tmp/ay.log";
   int Idr_Init(Tcl_Interp *interp);
 #endif
 
+#ifdef AYMETAWRAPPED
+  int Metaobj_Init(Tcl_Interp *interp);
+  int Metacomp_Init(Tcl_Interp *interp);
+#endif
+
+#ifdef AYRRIBWRAPPED
+  int Rrib_Init(Tcl_Interp *interp);
+#endif
+
 /* ay_init:
  *  create tables, ay_root
  */
@@ -354,11 +363,29 @@ ay_init(Tcl_Interp *interp)
 #ifdef AYIDRWRAPPED
   if((ay_status = Idr_Init(interp)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
-  Tcl_SetVar(interp,"AYIDRWRAPPED", "1", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_SetVar(interp, "AYIDRWRAPPED", "1", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 #else
   Tcl_SetVar(interp, "AYIDRWRAPPED", "0", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 #endif
 
+#ifdef AYMETAWRAPPED
+  Tcl_SetVar(interp, "AYMETAWRAPPED", "1", TCL_LEAVE_ERR_MSG |
+	     TCL_GLOBAL_ONLY);
+  int Metaobj_Init(Tcl_Interp *interp);
+  int Metacomp_Init(Tcl_Interp *interp);
+#else
+  Tcl_SetVar(interp, "AYMETAWRAPPED", "0", TCL_LEAVE_ERR_MSG |
+	     TCL_GLOBAL_ONLY);
+#endif
+
+#ifdef AYRRIBWRAPPED
+  Tcl_SetVar(interp, "AYRRIBWRAPPED", "1", TCL_LEAVE_ERR_MSG |
+	     TCL_GLOBAL_ONLY);
+  int Rrib_Init(Tcl_Interp *interp);
+#else
+  Tcl_SetVar(interp, "AYRRIBWRAPPED", "0", TCL_LEAVE_ERR_MSG |
+	     TCL_GLOBAL_ONLY);
+#endif
 
  return ay_status;
 } /* ay_init */
