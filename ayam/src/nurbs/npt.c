@@ -2537,7 +2537,7 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
  int ay_status = AY_OK;
  ay_object *curve = NULL;
  ay_nurbpatch_object *new = NULL;
- ay_nurbcurve_object *cs1, *cs2, *r1, *r2, *tc, *ic;
+ ay_nurbcurve_object *cs1, *cs2, *r1, *r2, *ic;
  double *controlv = NULL;
  int i = 0, j = 0, a = 0, stride, incompatible = AY_FALSE;
  double u, p1[4], p2[4], p5[4], p6[4], p7[4], p8[4], p9[4], p10[4];
@@ -3021,64 +3021,6 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
 	  ay_trafo_apply4(&controlv[i*cs1->length*stride+j*stride], mi);
 	} /* for */
 
-      /* create end-cap (if birail is not closed) */
-      if(i == sections)
-	{
-
-	  if(has_end_cap && !closed)
-	    {
-	      curve = NULL;
-	      ay_status = ay_object_copy(o1, &curve);
-	      tc = (ay_nurbcurve_object*)curve->refine;
-	      ay_trafo_creatematrix(curve, mcs);
-	      ay_trafo_defaults(curve);
-
-	      for(j = 0; j < tc->length; j++)
-	        {
-		  ay_trafo_apply4(&(tc->controlv[j*stride]), mcs);
-		  ay_trafo_apply4(&(tc->controlv[j*stride]), mi);
-	        } /* for */
-
-	      ay_status = ay_capt_createfromcurve(curve, end_cap);
-
-	    } /* if */
-
-#if 0
-	  if(has_end_cap && !closed)
-	    {
-	      curve = NULL;
-	      ay_status = ay_object_copy(o1, &curve);
-	      tc = (ay_nurbcurve_object*)curve->refine;
-	      /*ay_trafo_defaults(curve);*/
-	      curve->scalx *= scalx;
-	      curve->scaly *= scaly;
-	      curve->scalz *= scalz;
-	      ay_status = ay_capt_createfromcurve(curve, end_cap);
-
-	      if(*end_cap)
-		{
-		  /*ay_trafo_copy(o1, *end_cap);*/
-		  
-		  (*end_cap)->movx += p1[0]+((p2[0]-p1[0])/2.0);
-		  (*end_cap)->movy += p1[1]+((p2[1]-p1[1])/2.0);
-		  (*end_cap)->movz += p1[2]+((p2[2]-p1[2])/2.0);
-
-		  /* rotate it */
-		  for(j = 1; j <= sections; j++)
-		    {
-		      if(fabs(rots[j*4]) > AY_EPSILON)
-			{
-			  ay_quat_axistoquat(&(rots[j*4+1]),
-					     AY_D2R(-rots[j*4]), quat);
-			  ay_quat_add(quat, (*end_cap)->quat,
-				      (*end_cap)->quat);
-			} /* if */
-		    } /* for */
-		} /* if */
-	    } /* if */
-#endif
-	} /* if */
-
       /* save rail vector for next iteration */
       memcpy(T0, T1, 3*sizeof(double));
       lent0 = lent1;
@@ -3099,6 +3041,17 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
 	  (*start_cap)->scalz *= -1.0;
 	} /* if */
     } /* if */
+
+
+  /* create end-cap (if birail is not closed) */
+  if(has_end_cap && !closed)
+    {
+      curve = NULL;
+      ay_status = ay_object_copy(o4, &curve);
+      /*ay_trafo_defaults(curve);*/
+      ay_status = ay_capt_createfromcurve(curve, end_cap);
+    } /* if */
+
 
   /* return result */
   *patch = new;
