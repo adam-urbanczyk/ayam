@@ -313,7 +313,7 @@ $m add command -label "Hide All" -command "hide -all; rV"
 $m add command -label "Show" -command "show; rV"
 $m add command -label "Show All" -command "show -all; rV"
 $m add separator
-$m add command -label "Convert" -command "convOb; cS; uS; sL; rV"
+$m add command -label "Convert" -command "convOb; update; cS; uCR; rV"
 $m add separator
 $m add command -label "Force Notification" -command "forceNot; rV"
 
