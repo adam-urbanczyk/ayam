@@ -34,14 +34,16 @@ ay_pamesh_createcb(int argc, char *argv[], ay_object *o)
       if(!strcmp(argv[i],"-width"))
 	{
 	  Tcl_GetInt(ay_interp, argv[i+1], &width);
-	  if(width <= 0) width = 4;
+	  /* bicubic case is default! */
+	  if(width <= 3) width = 4;
 	  i+=2;
 	}
       else
       if(!strcmp(argv[i],"-height"))
 	{
 	  Tcl_GetInt(ay_interp, argv[i+1], &height);
-	  if(height <= 0) height = 4;
+	  /* bicubic case is default! */
+	  if(height <= 3) height = 4;
 	  i+=2;
 	}
       else
@@ -429,8 +431,8 @@ ay_pamesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  char fname[] = "pamesh_setpropcb";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_pamesh_object *pamesh = NULL;
- int new_close_u, new_width, new_btype_u;
- int new_close_v, new_height, new_btype_v;
+ int new_close_u, new_width, new_btype_u, new_step_u;
+ int new_close_v, new_height, new_btype_v, new_step_v;
  int new_type, j, update = AY_FALSE;
  double dtemp;
  char *man[] = {"_0","_1","_2","_3","_4","_5","_6","_7","_8","_9","_10","_11","_12","_13","_14","_15"};
@@ -510,7 +512,10 @@ ay_pamesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
       Tcl_SetStringObj(ton,"Step_U",-1);
       to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-      Tcl_GetIntFromObj(interp,to, &(pamesh->ustep));
+      Tcl_GetIntFromObj(interp,to, &(new_step_u));
+      if(new_step_u <= 0)
+	pamesh->ustep = 1;
+
 
     }
   else
@@ -544,8 +549,9 @@ ay_pamesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
       Tcl_SetStringObj(ton,"Step_V",-1);
       to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-      Tcl_GetIntFromObj(interp,to, &(pamesh->vstep));
-
+      Tcl_GetIntFromObj(interp,to, &(new_step_v));
+      if(new_step_v <= 0)
+	pamesh->vstep = 1;
     }
   else
     {
@@ -1068,6 +1074,7 @@ ay_pamesh_notifycb(ay_object *o)
  ay_object *p = NULL;
  ay_pamesh_object *pamesh = NULL;
  ay_nurbpatch_object *np = NULL;
+ int detail;
 
   if(!o)
     return AY_ENULL;
@@ -1078,6 +1085,11 @@ ay_pamesh_notifycb(ay_object *o)
     {
       ay_object_deletemulti(pamesh->npatch);
       pamesh->npatch = NULL;
+    }
+
+  if(ay_pmt_valid(pamesh, &detail))
+    {
+      return AY_OK;
     }
 
   ay_status = ay_pmt_tonpatch(pamesh, &(pamesh->npatch));
