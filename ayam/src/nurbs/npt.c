@@ -592,6 +592,56 @@ ay_npt_resizeh(ay_nurbpatch_object *patch, int new_height)
 } /* ay_npt_resizeh */
 
 
+/* ay_npt_swapuv:
+ *  
+ */
+int
+ay_npt_swapuv(ay_nurbpatch_object *np)
+{
+ int ay_status = AY_OK;
+ int stride = 4, i1 = 0, i2 = 0, i, j;
+ double *dt, *ncontrolv = NULL;
+
+  if(!(ncontrolv = calloc(np->width*np->height*stride, sizeof(double))))
+    return AY_EOMEM;
+
+
+  for(i = 0; i < np->width; i++)
+    {
+      i2 = i*stride;
+      for(j = 0; j < np->height; j++)
+	{
+	  memcpy(&(ncontrolv[i2]), &(np->controlv[i1]),
+		 stride*sizeof(double));
+
+	  i1 += stride;
+	  i2 += (np->width*stride);
+	} /* for */
+    } /* for */
+  
+  free(np->controlv);
+  np->controlv = ncontrolv;
+
+  i = np->width;
+  np->width = np->height;
+  np->height = i;
+
+  i = np->uorder;
+  np->uorder = np->vorder;
+  np->vorder = i;
+ 
+  i = np->uknot_type;
+  np->uknot_type = np->vknot_type;
+  np->vknot_type = i;
+
+  dt = np->uknotv;
+  np->uknotv = np->vknotv;
+  np->vknotv = dt;
+
+ return ay_status;
+} /* ay_npt_swapuv */
+
+
 /* ay_npt_wribtrimcurves
  *
  */
@@ -3709,3 +3759,148 @@ ay_npt_topolytcmd(ClientData clientData, Tcl_Interp *interp,
 
  return TCL_OK;
 } /* ay_npt_topolytcmd */
+
+
+/* ay_npt_elevateu:
+ *
+ */
+int
+ay_npt_elevateu(ay_nurbpatch_object *patch, int t)
+{
+ int ay_status = AY_OK;
+ double *Uh = NULL, *Qw = NULL, *realQw = NULL, *realUh = NULL;
+ int nw = 0;
+ char fname[] = "elevateu";
+
+  /* alloc new knotv & new controlv */
+  if(!(Uh = calloc((patch->width + patch->width*t +
+		    patch->uorder + t), 
+		   sizeof(double))))
+    {
+      ay_error(AY_EOMEM, fname, NULL);
+      return AY_EOMEM;
+    }
+  if(!(Qw = calloc((patch->width + patch->width*t) * patch->height * 4,
+		   sizeof(double))))
+    {
+      free(Uh);
+      ay_error(AY_EOMEM, fname, NULL);
+      return AY_EOMEM;
+    }
+
+  /* fill Uh & Qw */
+  ay_status = ay_nb_DegreeElevateSurfU(4, patch->width-1,
+				       patch->height-1,
+				       patch->uorder-1, patch->uknotv,
+				       patch->controlv, t, &nw, Uh, Qw);
+
+  if(ay_status)
+    {
+      ay_error(ay_status,fname,"degree elevation failed");
+      free(Uh); free(Qw); return AY_ERROR;
+    }
+
+  if(!(realQw = realloc(Qw, nw*patch->height*4*sizeof(double))))
+    {
+      ay_error(AY_ERROR, fname, "Memory may have leaked!");
+      ay_error(AY_EOMEM, fname, NULL);
+      return AY_EOMEM;
+    }
+
+  if(!(realUh = realloc(Uh, (nw+patch->uorder+t)*sizeof(double))))
+    {
+      ay_error(AY_ERROR, fname, "Memory may have leaked!");
+      ay_error(AY_EOMEM, fname, NULL);
+      return AY_EOMEM;
+    }
+
+
+  free(patch->uknotv);
+  patch->uknotv = realUh;
+
+  free(patch->controlv);
+  patch->controlv = realQw;
+
+  patch->uknot_type = AY_KTCUSTOM;
+	  
+  patch->uorder += t;
+	  
+  patch->width = nw;
+
+ return ay_status;
+} /* ay_npt_elevateu */
+
+
+/* ay_npt_elevateutcmd:
+ *
+ */
+int
+ay_npt_elevateutcmd(ClientData clientData, Tcl_Interp *interp,
+		   int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ ay_list_object *sel = ay_selection;
+ ay_nurbpatch_object *patch = NULL;
+ int t = 1;
+ char fname[] = "elevNPU";
+
+  if(argc >= 2)
+    Tcl_GetInt(interp, argv[1], &t);
+
+  while(sel)
+    {
+      if(sel->object->type == AY_IDNPATCH)
+	{
+	  if(sel->object->selp)
+	    ay_selp_clear(sel->object);
+
+	  patch = (ay_nurbpatch_object *)sel->object->refine;
+	  ay_status = ay_npt_elevateu(patch, t);
+	}
+      else
+	{
+	  ay_error(AY_ERROR, fname, "object is not a NURBPatch");
+
+	} /* if */
+
+      sel = sel->next;
+    } /* while */
+
+  ay_notify_parent();
+
+ return TCL_OK;
+} /* ay_npt_elevateutcmd */
+
+
+/* ay_npt_swapuvtcmd:
+ *  
+ */
+int
+ay_npt_swapuvtcmd(ClientData clientData, Tcl_Interp *interp,
+		  int argc, char *argv[])
+{
+ int ay_status;
+ char fname[] = "swapUV";
+ ay_list_object *sel = ay_selection;
+ ay_nurbpatch_object *patch = NULL;
+
+  while(sel)
+    {
+      if(sel->object->type == AY_IDNPATCH)
+	{
+	  if(sel->object->selp)
+	    ay_selp_clear(sel->object);
+
+	  patch = (ay_nurbpatch_object *)sel->object->refine;
+
+	  ay_status = ay_npt_swapuv(patch);
+	}
+      else
+	{
+	  ay_error(AY_ERROR, fname, "object is not a NURBPatch");
+	} /* if */
+      sel = sel->next;
+    } /* while */
+
+ return TCL_OK;
+} /* ay_npt_swapuvtcmd */

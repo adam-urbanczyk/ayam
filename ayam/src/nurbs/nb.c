@@ -2231,12 +2231,12 @@ ay_nb_RefineKnotVectCurve(int stride, int n, int p, double *U, double *Pw,
  */
 int
 ay_nb_DegreeElevateSurfU(int stride, int w, int h, int p, double *U,
-			 double *Pw,
-			 int t, int *nw, double *Uh, double *Qw)
+			 double *Pw, int t,
+			 int *nw, double *Uh, double *Qw)
 {
  int ay_status = AY_OK;
  int i, j, k;
- int n = h-1;
+ int n = w;
  int m = n+p+1;
  int ph = p+t;
  int ph2 = ph/2;
@@ -2253,14 +2253,16 @@ ay_nb_DegreeElevateSurfU(int stride, int w, int h, int p, double *U,
  double *alfas = NULL; /* knot insertion alphas */
  double *bin = NULL; /* Binomial coefficients */
 
+  h++;
+
   /* allocate temporary arrays */
   if(!(bezalfs = calloc((p+t+1)*(p+1), sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
-  if(!(bpts = calloc((p+1)*w, sizeof(double))))
+  if(!(bpts = calloc((p+1)*h*stride, sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
-  if(!(ebpts = calloc((p+t+1)*w, sizeof(double))))
+  if(!(ebpts = calloc((p+t+1)*h*stride, sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
-  if(!(nextbpts = calloc((p-1)*w, sizeof(double))))
+  if(!(nextbpts = calloc((p-1)*h*stride, sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
   if(!(alfas = calloc(p-1, sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
@@ -2323,21 +2325,21 @@ ay_nb_DegreeElevateSurfU(int stride, int w, int h, int p, double *U,
   int tr;
   int ki, ki2;
 
-  /*  for(i = 0; i < w; i++)
-      P(0,i) = S.P(0,i); */
-  memcpy(Qw, Pw, w*stride*sizeof(double));
+  /* for(i = 0; i < h; i++)
+     P(0,i) = S.P(0,i); */
+  memcpy(Qw, Pw, h*stride*sizeof(double));
 
   for(i = 0; i <= ph; i++)
     {
-      U[i] = ua;
+      Uh[i] = ua;
     }
 
   /* initialize the first Bezier segment */
   for(i = 0; i <= p; i++) 
     {
-      /* for(j = 0; j < w; j++)
+      /* for(j = 0; j < h; j++)
           bpts(i,j) = S.P(i,j); */
-      memcpy(&(bpts[i*w*stride]), &(Pw[i*w*stride]), w*stride*sizeof(double));
+      memcpy(&(bpts[i*h*stride]), &(Pw[i*h*stride]), h*stride*sizeof(double));
     }
 
   /* big loop thru knot vector */
@@ -2362,7 +2364,7 @@ ay_nb_DegreeElevateSurfU(int stride, int w, int h, int p, double *U,
       if(r > 0)
 	{
 	  /* insert knot to get Bezier segment */
-	  numer = ub-ua;
+	  numer = ub - ua;
 	  for(k = p; k > mul; k--)
 	    {
 	      alfas[k-mul-1] = numer/(U[a+k]-ua);
@@ -2372,12 +2374,12 @@ ay_nb_DegreeElevateSurfU(int stride, int w, int h, int p, double *U,
 	      save = r-j; s = mul+j;
 	      for(k = p; k >= s; k--)
 		{
-		  for(colJ = 0; colJ < w; colJ++)
+		  for(colJ = 0; colJ < h; colJ++)
 		    {
 		      /* bpts(k,colJ) = alfas[k-s]*bpts(k,colJ)+
 			 (1.0-alfas[k-s])*bpts(k-1,colJ); */
-		      ki = (k*w+colJ)*stride;
-		      ki2 = ((k-1)*w+colJ)*stride;
+		      ki = (k*h+colJ)*stride;
+		      ki2 = ((k-1)*h+colJ)*stride;
 		      bpts[ki]   = alfas[k-s]*bpts[ki] +
 			            (1.0-alfas[k-s])*bpts[ki2];
 		      bpts[ki+1] = alfas[k-s]*bpts[ki+1] +
@@ -2391,12 +2393,12 @@ ay_nb_DegreeElevateSurfU(int stride, int w, int h, int p, double *U,
 		} /* for */
 	      if((p-1) > 0)
 		{
-		  /* for(colJ = 0; colJ < w; colJ++)
+		  /* for(colJ = 0; colJ < h; colJ++)
 		       {
 		         Nextbpts(save,colJ) = bpts(p,colJ);
 		       } */
-		  memcpy(&(nextbpts[save*w]), &(bpts[p*w]),
-			 w*stride*sizeof(double));
+		  memcpy(&(nextbpts[save*h*stride]), &(bpts[p*h*stride]),
+			 h*stride*sizeof(double));
 		}
 	    } /* for */
 	} /* if(r>0 */
@@ -2404,21 +2406,21 @@ ay_nb_DegreeElevateSurfU(int stride, int w, int h, int p, double *U,
       for(i = lbz; i <= ph; i++)
 	{
 	  /* degree elevate Bezier; only the points lbz,...,ph are used */
-	  /* for(colJ = 0; colJ < w; colJ++)
+	  /* for(colJ = 0; colJ < h; colJ++)
 	      {
 	        ebpts(i,colJ) = 0.0;
 	      } */
-	  memset(&(ebpts[i*w]), 0, stride*sizeof(double));
+	  memset(&(ebpts[i*h*stride]), 0, h*stride*sizeof(double));
 
 	  mpi = ((p<i)?p:i);
 	  for(j = (0>(i-t))?0:(i-t); j <= mpi; j++)
 	    {
-	      for(colJ = 0; colJ < w; colJ++)
+	      for(colJ = 0; colJ < h; colJ++)
 		{
 		  /* ebpts(i,colJ) += bezalfs(i,j)*bpts(j,colJ); */
 		  bai = i*bal+j;
-		  ki = (i*w+colJ)*stride;
-		  ki2 = (j*w+colJ)*stride;
+		  ki = (i*h+colJ)*stride;
+		  ki2 = (j*h+colJ)*stride;
 		  ebpts[ki]   += bezalfs[bai] * bpts[ki2];
 		  ebpts[ki+1] += bezalfs[bai] * bpts[ki2+1];
 		  ebpts[ki+2] += bezalfs[bai] * bpts[ki2+2];
@@ -2435,7 +2437,7 @@ ay_nb_DegreeElevateSurfU(int stride, int w, int h, int p, double *U,
 	   alfj = (ua-nc.U[kind-1])/(ub-nc.U[kind-1]); */
 	first = kind-2; last = kind;
 	den = ub-ua;
-	bet = (ub-U[kind-1])/den;
+	bet = (ub-Uh[kind-1])/den;
 	for(tr = 1; tr < oldr; tr++)
 	  {
 	    /* knot removal loop */
@@ -2447,12 +2449,12 @@ ay_nb_DegreeElevateSurfU(int stride, int w, int h, int p, double *U,
 		   removal step */
 		if(i < cind)
 		  {
-		    alf = (ub-U[i])/(ua-U[i]);
-		    for(colJ = 0; colJ < w; colJ++)
+		    alf = (ub-Uh[i])/(ua-Uh[i]);
+		    for(colJ = 0; colJ < h; colJ++)
 		      {
 			/*P(i,colJ) = alf*P(i,colJ) + (1.0-alf)*P(i-1,colJ);*/
-			ki = (i*w+colJ)*stride;
-			ki2 = ((i-1)*w+colJ)*stride;
+			ki = (i*h+colJ)*stride;
+			ki2 = ((i-1)*h+colJ)*stride;
 			Qw[ki]   = alf*Qw[ki]   + (1.0-alf)*Qw[ki2];
 			Qw[ki+1] = alf*Qw[ki+1] + (1.0-alf)*Qw[ki2+1];
 			Qw[ki+2] = alf*Qw[ki+2] + (1.0-alf)*Qw[ki2+2];
@@ -2464,13 +2466,13 @@ ay_nb_DegreeElevateSurfU(int stride, int w, int h, int p, double *U,
 		  {
 		    if(j-tr <= kind-ph+oldr)
 		      {
-			gam = (ub-U[j-tr])/den;
-			for(colJ = 0; colJ < w; colJ++)
+			gam = (ub-Uh[j-tr])/den;
+			for(colJ = 0; colJ < h; colJ++)
 			  {
 			    /* ebpts(kj,colJ) = gam*ebpts(kj,colJ) +
 			       (1.0-gam)*ebpts(kj+1,colJ); */
-			    ki = (kj*w+colJ)*stride;
-			    ki2 = ((kj+1)*w+colJ)*stride;
+			    ki = (kj*h+colJ)*stride;
+			    ki2 = ((kj+1)*h+colJ)*stride;
 			    ebpts[ki]   = gam*ebpts[ki]+
 			                   (1.0-gam)*ebpts[ki2];
 			    ebpts[ki+1] = gam*ebpts[ki+1]+
@@ -2484,12 +2486,12 @@ ay_nb_DegreeElevateSurfU(int stride, int w, int h, int p, double *U,
 		      }
 		    else
 		      {
-			for(colJ = 0; colJ < w; colJ++)
+			for(colJ = 0; colJ < h; colJ++)
 			  {
 			    /* ebpts(kj,colJ) = bet*ebpts(kj,colJ) +
 			       (1.0-bet)*ebpts(kj+1,colJ); */
-			    ki = (kj*w+colJ)*stride;
-			    ki2 = ((kj+1)*w+colJ)*stride;
+			    ki = (kj*h+colJ)*stride;
+			    ki2 = ((kj+1)*h+colJ)*stride;
 			    ebpts[ki]   = bet*ebpts[ki]+
 			                   (1.0-bet)*ebpts[ki2];
 			    ebpts[ki+1] = bet*ebpts[ki+1]+
@@ -2513,37 +2515,37 @@ ay_nb_DegreeElevateSurfU(int stride, int w, int h, int p, double *U,
 	/* load the knot u=c.U[a] */
 	for(i = 0; i < ph-oldr; i++)
 	  {
-	    U[kind++] = ua; 
+	    Uh[kind++] = ua; 
 	  }
       }
     
     for(j = lbz; j <= rbz; j++)
       {
-	/* load control points onto ncinto Qw */
-	/* for(colJ=0;colJ<S.P.cols();colJ++)
+	/* load control points into Qw */
+	/* for(colJ=0;colJ<h;colJ++)
 	  Qw(cind,colJ) = ebpts(j,colJ); */
-	memcpy(&(Qw[cind*w*stride]), &(ebpts[j*w*stride]),
-	       w*stride*sizeof(double));
+	memcpy(&(Qw[cind*h*stride]), &(ebpts[j*h*stride]),
+	       h*stride*sizeof(double));
 	cind++;
       } /* for */
     
     if(b < m)
       {
 	/* set up for next pass thru loop */
-	for(colJ = 0; colJ < w; colJ++)
+	for(colJ = 0; colJ < h; colJ++)
 	  {
 	    for(j = 0; j < r; j++)
 	      {
 		/* bpts(j,colJ) = Nextbpts(j,colJ); */
-		ki = (j*w+colJ)*stride;
+		ki = (j*h+colJ)*stride;
 		memcpy(&(bpts[ki]), &(nextbpts[ki]), stride*sizeof(double));
 	      }
 	    for(j = r; j <= p; j++)
 	      {
 		/* bpts(j,colJ) = S.P(b-p+j,colJ); */
-		ki = (j*w+colJ)*stride;
-		ki2 = ((b-p+j)*w+colJ)*stride;
-		memcpy(&(bpts[ki]), &(nextbpts[ki2]), stride*sizeof(double));
+		ki = (j*h+colJ)*stride;
+		ki2 = ((b-p+j)*h+colJ)*stride;
+		memcpy(&(bpts[ki]), &(Pw[ki2]), stride*sizeof(double));
 	      }
 	  } /* for */
 	a = b; 
@@ -2553,9 +2555,11 @@ ay_nb_DegreeElevateSurfU(int stride, int w, int h, int p, double *U,
     else
       {
 	for(i = 0; i <= ph; i++)
-	  U[kind+i] = ub;
+	  Uh[kind+i] = ub;
       } /* if */
     } /* while(b<m */
+
+  *nw = mh-ph;
 
  cleanup:
  if(bezalfs)
@@ -2568,6 +2572,8 @@ ay_nb_DegreeElevateSurfU(int stride, int w, int h, int p, double *U,
    free(nextbpts);
  if(alfas)
    free(alfas);
+ if(bin)
+   free(bin);
 
  return ay_status;
 } /* ay_nb_DegreeElevateSurfU */

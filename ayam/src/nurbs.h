@@ -126,6 +126,10 @@ void ay_nb_FinduFromPoint(ay_nurbcurve_object *curve, double *point,
 void ay_nb_RefineKnotVectCurve(int stride, int n, int p, double *U, double *Pw,
 			       double *X, int r, double *Ubar, double *Qw);
 
+int ay_nb_DegreeElevateSurfU(int stride, int w, int h, int p, double *U,
+			     double *Pw, int t,
+			     int *nw, double *Uh, double *Qw);
+
 
 /* nct.c */
 int ay_nct_create(int order, int length, int knot_type,
@@ -254,6 +258,8 @@ int ay_npt_resizearrayh(double **controlvptr, int stride,
 
 int ay_npt_resizeh(ay_nurbpatch_object *patch, int new_height);
 
+int ay_npt_swapuv(ay_nurbpatch_object *np);
+
 int ay_npt_wribtrimcurves(ay_object *o);
 
 int ay_npt_crtcobbsphere(ay_nurbpatch_object **patch);
@@ -302,6 +308,14 @@ int ay_npt_topolymesh(ay_object *o, int smethod, double sparam,
 
 int ay_npt_topolytcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
+
+int ay_npt_swapuvtcmd(ClientData clientData, Tcl_Interp *interp,
+		      int argc, char *argv[]);
+
+int ay_npt_elevateu(ay_nurbpatch_object *patch, int t);
+
+int ay_npt_elevateutcmd(ClientData clientData, Tcl_Interp *interp,
+			int argc, char *argv[]);
 
 /* pmt.c */
 
