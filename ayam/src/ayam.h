@@ -582,6 +582,8 @@ typedef struct ay_revolve_object_s
 
  double thetamax;
 
+ int sections;
+
  int has_upper_cap;
  ay_object *upper_cap;
  int has_lower_cap;
@@ -1102,7 +1104,7 @@ extern unsigned int ay_current_primlevel;
 #define AY_EPSILON 1.0e-06
 
 /* Version Strings */
-#define AY_VERSIONSTR "1.7"
+#define AY_VERSIONSTR "1.8pre"
 #define AY_VERSIONSTRMI "0"
 
 #include "aycore.h"
