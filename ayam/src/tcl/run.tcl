@@ -115,7 +115,12 @@ proc runGetStdout { num cmd template channel } {
 
 	set percent 0
 	if { $ayprefs(RenderPT) != "" } {
-	    scan $xx $template percent
+	    if { [ string first "regexp" $template ] == 0 } {
+		regsub "string" $template "{$xx}" template2
+		eval $template2
+	    } else {
+		scan $xx $template percent
+	    }
 	} else {
 	    ayError 4 $cmd $xx
 	}
