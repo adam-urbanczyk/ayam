@@ -1,3 +1,9 @@
+[11. Dec 2004] CVS-Head:
+o bug fixes: none
+o added a new object type "Script", that executes small Tcl scripts to
+  create complex objects, modify other objects or do other things
+
+
 [29. Oct 2004] Ayam1.8:
 o bug fixes:
   - fixed "loadayslo3d.tcl" loading the wrong plugin (SF 928054)
