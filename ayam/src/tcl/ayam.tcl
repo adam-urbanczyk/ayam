@@ -925,6 +925,7 @@ ayam_loadscript parab
 ayam_loadscript riinc
 ayam_loadscript revolve
 ayam_loadscript root
+ayam_loadscript sdmesh
 ayam_loadscript sphere
 ayam_loadscript skin
 ayam_loadscript sweep

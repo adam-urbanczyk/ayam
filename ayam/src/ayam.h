@@ -351,15 +351,32 @@ typedef struct ay_pamesh_object_s {
 typedef struct ay_pomesh_object_s {
   int type; /* currently unused */
 
-  unsigned int npolys;
-  unsigned int *nloops;
-  unsigned int *nverts;
-  unsigned int *verts;
+  unsigned int npolys; /* total number of polygons */
+  unsigned int *nloops; /* [npolys] */
+  unsigned int *nverts; /* [<sum of all elements of nloops>] */
+  unsigned int *verts; /* [<sum of all elements of nverts>] */
 
-  unsigned int ncontrols;
-  int has_normals;
-  double *controlv;
+  unsigned int ncontrols; /* total number of control points */
+  int has_normals; /* 0 - No, stride=3; 1 - Yes, stride=6 */
+  double *controlv; /* [ncontrols * stride] */
 } ay_pomesh_object;
+
+typedef struct ay_sdmesh_object_s {
+  int scheme; /* AY_SDCATMULL */
+
+  unsigned int nfaces; /* total number of faces */
+  unsigned int *nverts; /* [nfaces] */
+  unsigned int *verts; /* [<sum of all elements of nverts>] */
+
+  unsigned int ntags; /* total number of tags */
+  int *tags; /* [ntags] (AY_SDTHOLE, AY_SDTCORNER, AY_SDTCREASE, AY_SDTIB) */
+  unsigned int *nargs; /* [ntags * 2] */
+  int *intargs; /* [<sum of all even elements of nargs>] */
+  double *floatargs; /* [<sum of all uneven elements of nargs>] */
+
+  unsigned int ncontrols; /* total number of control points */
+  double *controlv; /* [ncontrols * 3] */
+} ay_sdmesh_object;
 
 typedef struct ay_light_object_s
 {
@@ -911,6 +928,7 @@ extern unsigned int ay_current_glname;
 #define AY_IDPOMESH        26
 #define AY_IDCONCATNC      27
 #define AY_IDCLONE         28
+#define AY_IDSDMESH        29
 
 #define AY_IDLAST          30
 
@@ -974,6 +992,16 @@ extern unsigned int ay_current_glname;
 #define AY_BTCATMULLROM 2
 #define AY_BTHERMITE    3
 #define AY_BTCUSTOM     4
+
+/* Subdivision Schemes */
+#define AY_SDSCATMULL    0
+
+/* Subdivision Tag Types */
+#define AY_SDTHOLE    0
+#define AY_SDTCORNER  1
+#define AY_SDTCREASE  2
+#define AY_SDTIB      3
+
 
 /* size of arrows */
 #define AY_POINTER 8

@@ -294,6 +294,9 @@ ay_init(Tcl_Interp *interp)
   if((ay_status = ay_pomesh_init(interp)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 
+  if((ay_status = ay_sdmesh_init(interp)))
+     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
+
   if((ay_status = ay_sphere_init(interp)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 

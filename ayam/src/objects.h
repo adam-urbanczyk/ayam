@@ -84,6 +84,9 @@ int ay_revolve_init(Tcl_Interp *interp);
 /* riinc.c */
 int ay_riinc_init(Tcl_Interp *interp);
 
+/* sdmesh.c */
+int ay_sdmesh_init(Tcl_Interp *interp);
+
 /* sphere.c */
 int ay_sphere_init(Tcl_Interp *interp);
 
