@@ -1,4 +1,4 @@
-[CVS, 12. 08. 2002]:
+[CVS, 15. 08. 2002]:
 o bug fixes:
   - fixed memory leaks in the shadow map RIB export module
   - fixed ICurves crash for length 2
@@ -12,7 +12,7 @@ o added manual control for the creation of ShadowMaps; for that,
   the preference setting "RIB-Export/ShadowMaps" is now a menu
   for the values "Never" "Automatic" "Manual"; in "Manual" mode
   ShadowMaps may be rendered explicitly using the new view menu
-  entry "View/Create ShadowMaps", afterwards it is possible to render
+  entry "View/Create ShadowMaps"; afterwards it is possible to render
   images without recreating the ShadowMaps all the time (e.g. for camera
   or material changes)
 o the "TclPrecision" preference setting has been moved to the "Misc"
@@ -28,7 +28,9 @@ o scene loading now blocks all mouse events from view windows to avoid
 o added a texture coordinates editor (main menu "Special/Edit TexCoords")
 o added a "Remove Tag!" menu button to the Tag property GUI
 o added "Show All" and "Hide All" menu entries to the main menu
-
+o replaced "setNC"/"getNC"/"setNP"/"getNP" scripting interface commands
+  with the new "setPnt"/"getPnt" commands
+o added a new object type PolyMesh (polygonal mesh)
 
 [09. 07. 2002] Ayam1.2:
 o bug fixes:
