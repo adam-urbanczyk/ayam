@@ -860,7 +860,7 @@ int ay_status = AY_OK;
   Tcl_CreateCommand(interp, "buildNP", ay_npt_buildfromcurvestcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "topoly", ay_npt_topolytcmd,
+  Tcl_CreateCommand(interp, "topoly", ay_tess_npatchtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "elevateNPU", ay_npt_elevateutcmd,

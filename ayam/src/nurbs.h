@@ -341,12 +341,6 @@ int ay_npt_createcap(double z, ay_nurbcurve_object *curve,
 int ay_npt_getpntfromindex(ay_nurbpatch_object *patch, int indexu, int indexv,
 			   double **p);
 
-int ay_npt_topolymesh(ay_object *o, int smethod, double sparam,
-		      ay_object **pm);
-
-int ay_npt_topolytcmd(ClientData clientData, Tcl_Interp *interp,
-		      int argc, char *argv[]);
-
 int ay_npt_elevateu(ay_nurbpatch_object *patch, int t);
 
 int ay_npt_elevateutcmd(ClientData clientData, Tcl_Interp *interp,
@@ -385,3 +379,17 @@ int ay_pmt_swapuv(ay_pamesh_object *pm);
 int ay_pmt_revertu(ay_pamesh_object *pm);
 
 int ay_pmt_revertv(ay_pamesh_object *pm);
+
+/* tess.c */
+
+int ay_tess_npatch(ay_object *o, int smethod, double sparam,
+		   ay_object **pm);
+
+int ay_tess_npatchtcmd(ClientData clientData, Tcl_Interp *interp,
+		       int argc, char *argv[]);
+
+int ay_tess_pomeshf(ay_pomesh_object *pomesh, unsigned int f,
+		    int optimize,
+		    ay_pomesh_object **trpomesh);
+
+int ay_tess_pomesh(ay_pomesh_object *pomesh, int optimize);
