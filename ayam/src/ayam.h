@@ -891,8 +891,12 @@ extern ay_object *ay_clipboard;
 
 extern int ay_point_edit_coords_homogenous;
 extern int ay_point_edit_coords_number;
+extern int *ay_pe_numcpo;
+extern int *ay_pe_homcpo;
 extern double **ay_point_edit_coords;
 extern ay_object *ay_point_edit_object;
+extern ay_object **ay_pe_objects;
+extern int ay_pe_objectslen;
 
 extern Tcl_HashTable ay_otypesht;
 
@@ -1111,6 +1115,8 @@ extern unsigned int ay_current_primlevel;
 #define AY_V3CROSS(r,v1,v2) {r[0]=(v1[1] * v2[2]) - (v1[2] * v2[1]);r[1]=(v1[2] * v2[0]) - (v1[0] * v2[2]);r[2]=(v1[0] * v2[1]) - (v1[1] * v2[0]);}
 
 #define AY_V3SCAL(v,f) {(v[0])*=(f);(v[1])*=(f);(v[2])*=(f);}
+
+#define AY_V2SCAL(v,f) {(v[0])*=(f);(v[1])*=(f);}
 
 /* XXXX is this nesting dangerous? wrong? */
 #define AY_V3NORM(v) {AY_V3SCAL((v),(1.0/(AY_V3LEN(v))));}

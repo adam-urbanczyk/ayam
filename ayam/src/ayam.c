@@ -31,6 +31,10 @@ int ay_point_edit_coords_homogenous;
 int ay_point_edit_coords_number;
 double **ay_point_edit_coords;
 ay_object *ay_point_edit_object;
+int *ay_pe_numcpo;
+int *ay_pe_homcpo;
+ay_object **ay_pe_objects;
+int ay_pe_objectslen;
 
 Tcl_HashTable ay_otypesht;
 
