@@ -313,6 +313,29 @@ typedef struct ay_nurbpatch_object_s
   struct ay_mpoint_object_s *mpoints;
 } ay_nurbpatch_object;
 
+
+#define AY_PTBILINEAR  0
+#define AY_PTBICUBIC   1
+#define AY_BTBEZIER     0
+#define AY_BTBSPLINE    1
+#define AY_BTCATMULLROM 2
+#define AY_BTHERMITE    3
+#define AY_BTCUSTOM     4
+
+typedef struct ay_pamesh_object_s {
+  int width, height;
+  int close_u, close_v;
+  double *controlv; /* [width*height*4] */
+  int type; /* AY_PTBILINEAR, AY_PTBICUBIC */
+  int btype_u; /* AY_BTBEZIER, AY_BTBSPLINE, AY_BTCATMULLROM, AY_BTHERMITE,
+		  AY_BTCUSTOM */
+  int btype_v; /* AY_BTBEZIER, AY_BTBSPLINE, AY_BTCATMULLROM, AY_BTHERMITE,
+		  AY_BTCUSTOM */
+  double *ubasis; /* [16], only in use for btype_u == AY_BTCUSTOM */
+  double *vbasis; /* [16], only in use for btype_v == AY_BTCUSTOM */
+} ay_pamesh_object;
+
+
 typedef struct ay_light_object_s
 {
   int type; /* custom, point, spot, distant */
@@ -834,6 +857,7 @@ extern char *ay_riopt_tagtype;
 #define AY_IDSWEEP         22
 #define AY_IDSKIN          23
 #define AY_IDCAP           24
+#define AY_IDPAMESH        25
 
 #define AY_IDLAST          30
 

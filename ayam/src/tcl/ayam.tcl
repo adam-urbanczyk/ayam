@@ -812,6 +812,7 @@ ayam_loadscript light
 ayam_loadscript material
 ayam_loadscript ncurve
 ayam_loadscript npatch
+ayam_loadscript pamesh
 ayam_loadscript parab
 ayam_loadscript riinc
 ayam_loadscript revolve
