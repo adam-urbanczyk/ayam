@@ -306,6 +306,7 @@ menu $m.pm -tearoff 0
 $m.pm add command -label "Merge" -command {
    mergePo; uCR; sL; rV;
 }
+$m.pm add command -label "Optimize" -command { pomesh_optimize }
 $m add separator
 $m add command -label "Hide" -command "hide; rV"
 $m add command -label "Hide All" -command "hide -all; rV"

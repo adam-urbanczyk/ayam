@@ -724,9 +724,30 @@ ay_pomesht_optimizetcmd(ClientData clientData, Tcl_Interp * interp,
 			int argc, char *argv[])
 {
  int ay_status = AY_OK;
+ int i = 1, optimize_coords = 1, ignore_normals = 1, optimize_faces = 0; 
  char fname[] = "optiPo";
  ay_object *o = NULL;
  ay_list_object *sel = ay_selection;
+
+  while(i+1 < argc)
+    {
+      if(!strcmp(argv[i], "-c"))
+	{
+	  sscanf(argv[i+1], "%d", &optimize_coords);
+	}
+      else
+      if(!strcmp(argv[i], "-n"))
+	{
+	  sscanf(argv[i+1], "%d", &ignore_normals);
+	}
+      else
+      if(!strcmp(argv[i], "-f"))
+	{
+	  sscanf(argv[i+1], "%d", &optimize_faces);
+	}
+
+      i += 2;
+  } /* while */
 
   if(!sel)
     {
@@ -741,8 +762,10 @@ ay_pomesht_optimizetcmd(ClientData clientData, Tcl_Interp * interp,
       if(o && o->type == AY_IDPOMESH)
 	{
 	  ay_status = AY_OK;
-	  ay_status = ay_pomesht_optimizecoords(o->refine, AY_TRUE);
-
+	  if(optimize_coords)
+	    {
+	      ay_status = ay_pomesht_optimizecoords(o->refine, ignore_normals);
+	    }
 	  if(ay_status)
 	    { /* emit error message */
 	      ay_error(AY_ERROR, fname, "could not optimize object");
