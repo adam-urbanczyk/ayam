@@ -60,6 +60,10 @@ addCheck $w RiAttrData Reflection
 addCheck $w RiAttrData Shadow
 
 
+# material_createp:
+#  helper procedure, invoked on "create material",
+#  asks for a new material name, checks it and
+#  finally creates the new material object
 proc material_createp { } {
     global ay ay_error
 
@@ -110,9 +114,10 @@ proc material_createp { } {
 }
 # material_createp
 
+
 # material_edit:
-#
-#
+#  creates or edits material object of currently selected
+#  normal object (bound to main menu entry Edit/Material)
 proc material_edit { } {
     global ay ay_error matPropData sel matlevel matobject
 
@@ -253,7 +258,7 @@ proc material_edit { } {
 
  return;
 }
-#  material_edit
+# material_edit
 
 # MaterialAttr Property:
 
@@ -280,3 +285,107 @@ set w [frame $ay(pca).$MaterialAttr(w)]
 addString $w MaterialAttrData Materialname
 addInfo $w MaterialAttrData RefCount
 addInfo $w MaterialAttrData Registered
+
+
+# material_highlight:
+#  highlights tree nodes of objects of same material (colouring them red)
+#  needs a selected material or normal object from which the material
+#  name to search for is derived
+proc material_highlight { } {
+    global ay MaterialAttrData matPropData otype mat sel oldslevel
+
+    # check, whether tree view is open
+    if { $ay(lb) != 0 } {
+	ayError 2 highlightMaterial\
+	    "This command only works for the tree view!"
+	return;
+    }
+
+    # check/save original selection
+    set sel ""
+    getSel sel
+    if { $sel == "" } {
+	ayError 2 highlightMaterial "No object selected!"
+	return;
+    }
+
+    # get type of selected object
+    getType otype
+    if { $otype == "Material" } {
+	set MaterialAttrData(Materialname) ""
+	getProp
+	# search only for materials that are registered and have
+	# objects in the scene made of this material
+	if { $MaterialAttrData(Registered) != "Yes." } {
+	  ayError 2 highlightMaterial\
+	    "Material is not registered!"
+	  return;
+	}
+	if { $MaterialAttrData(RefCount) == 0 } {
+	  ayError 2 highlightMaterial\
+	    "No objects of this Material exist!"
+	  return;
+	}
+	set mat $MaterialAttrData(Materialname)
+    } else {
+	set matPropData(Materialname) ""
+	getMat
+	set mat $matPropData(Materialname)
+    }
+    # if
+
+    if { $mat == "" } { return; }
+
+    ayError 4 highlightMaterial\
+	    "Searching for objects of material \\\"$mat\\\" ..."
+    update
+
+    # save old selection state
+    set oldclevel $ay(CurrentLevel)
+    set oldslevel $ay(SelectedLevel)
+    set oldselection [$ay(tree) selection get]
+    # go to top level and clear selection
+    set ay(CurrentLevel) "root"
+    set ay(SelectedLevel) "root"
+    goTop
+    $ay(tree) selection clear
+    selOb
+
+    global matsfound
+    set matsfound 0
+    # now find and highlight normal objects of material <mat>
+    forAll 1 {
+	global ay mat matPropData i matsfound oldslevel
+	set matPropData(Materialname) ""
+	getMat
+	update
+	set ni [ expr $i - 1 ]
+	if { $matPropData(Materialname) == $mat } {
+	    incr matsfound
+	    tree_openTree $ay(tree) $ay(CurrentLevel)
+	    update
+	    $ay(tree) itemconfigure ${ay(CurrentLevel)}:$ni -fill red
+	} else {
+	    if { $ay(CurrentLevel) != $oldslevel } {
+		$ay(tree) itemconfigure ${ay(CurrentLevel)}:$ni -fill darkgrey
+	    } else {
+		$ay(tree) itemconfigure ${ay(CurrentLevel)}:$ni -fill black
+	    }
+	}
+	# if
+    }
+    # forAll
+
+    ayError 4 highlightMaterial "Done. Found $matsfound objects."
+    unset matsfound
+
+    # re-establish old selection
+    set ay(CurrentLevel) $oldclevel
+    set ay(SelectedLevel) $oldslevel
+    $ay(tree) selection set $oldselection
+    tree_handleSelection
+    plb_update
+
+ return;
+}
+# material_highlight

@@ -332,6 +332,8 @@ $m add command -label "Convert" -command "global ay; convOb; update; cS;\
 set ay(ul) \$ay(CurrentLevel); uS; sL; rV"
 $m add separator
 $m add command -label "Force Notification" -command "forceNot; rV"
+$m add separator
+$m add command -label "Highlight Material" -command "material_highlight"
 
 if { ! $AYWITHAQUA } {
     pack .fu.fMenu.tool -in .fu.fMenu -side left
