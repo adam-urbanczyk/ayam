@@ -1,4 +1,4 @@
-[CVS, 22. 03. 2003]:
+[CVS, 28. 03. 2003]:
 o bug fixes:
   - fixed RIB import creating object names with malicious characters (spaces)
     (SF 686419)
@@ -41,11 +41,18 @@ o bug fixes:
     (SF 698147)
   - fixed divide by zero Tcl error when resizing the toolbox window
     (SF 700834)
+  - fixed broken RIB import of shader parameters of type string
+    (SF 708678)
+  - fixed undo/redo destroying tags
+    (SF 708961)
+  - fixed NURBS curve tools not being undoable when called via main menu
+    (Tools/NURBCurve), and not via tool box button
+    (SF 711212)
 o added support for inline declarations of e.g. shader parameters to the
   RIB import plugin
 o added an example scene for subdivision meshes
-o added an adaptive calculation mode to the MetaBalls custom object (Frank
-  Pagels)
+o added an adaptive calculation mode to the MetaBalls custom object
+  (Frank Pagels)
 o improved object tree update process; it now checks for scene changes that
   may occur while the widget is updating, and schedules an extra update
   operation if this happens
@@ -64,6 +71,7 @@ o added a new sub menu to the "Special" main menu: "RIB-Export", it allows
   maps
 o added RIB export from selected objects feature (menu
   "Special/RIB-Export/Selected Objects")
+o added tag type "NoExport" that prevents objects from being exported to RIBs
 
 
 [07. 02. 2003] Ayam1.4:
