@@ -152,6 +152,11 @@ ay_draw_view(struct Togl *togl)
       view->dirty = AY_FALSE;
     }
 
+  if(view->drawbg)
+    {
+      ay_draw_bgimage(togl);
+    }
+
   /* draw grid */
   if(view->drawgrid)
     {
@@ -565,3 +570,54 @@ ay_draw_arrow(struct Togl *togl, double *from, double *to)
 
  return;
 } /* ay_draw_arrow */
+
+
+/* ay_draw_bgimage:
+ *  draw background image (if there is one)
+ */
+void
+ay_draw_bgimage(struct Togl *togl)
+{
+ ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
+ GLint w = Togl_Width(togl),h = Togl_Height(togl);
+
+  if(view->bgimage)
+    {
+      glDisable(GL_DEPTH_TEST);
+      glEnable(GL_TEXTURE_2D);
+      glMatrixMode(GL_PROJECTION);
+      glPushMatrix();
+       glLoadIdentity();
+       glOrtho(0.0, (GLdouble) w, 0.0, (GLdouble) h, -1.0, 1.0);
+
+       glMatrixMode(GL_MODELVIEW);
+       glPushMatrix();
+       glLoadIdentity();
+       glColor3d((GLdouble)ay_prefs.ser, (GLdouble)ay_prefs.seg,
+		 (GLdouble)ay_prefs.seb);
+       glBegin(GL_QUADS);
+        glTexCoord2i(0, 0);
+	glVertex3i(0, 0, 0);
+
+        glTexCoord2i(0, 1);
+	glVertex3i(0, h, 0);
+
+        glTexCoord2i(1, 1);
+	glVertex3i(w, h, 0);
+
+        glTexCoord2i(1, 0);
+	glVertex3i(w, 0, 0);
+       glEnd();
+      
+     glPopMatrix();
+     glMatrixMode(GL_PROJECTION);
+     glPopMatrix();
+     glMatrixMode(GL_MODELVIEW);
+
+     glEnable(GL_DEPTH_TEST);
+     glDisable(GL_TEXTURE_2D);
+
+    } /* if */
+
+ return;
+} /* ay_draw_bgimage */

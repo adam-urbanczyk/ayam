@@ -11,6 +11,7 @@
  */
 
 #include "ayam.h"
+#include "tiffio.h"
 
 /* view.c - view object */
 
@@ -166,6 +167,8 @@ ay_view_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  char *n1 = "CameraData", *n2 = "ViewAttribData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  int itemp = 0;
+ char *result;
+ char fname[] = "view_setpropcb";
 
   if(!o)
     return AY_ENULL;
@@ -262,6 +265,33 @@ ay_view_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &view->local);
 
+  Tcl_SetStringObj(ton, "DrawBG", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &view->drawbg);
+
+  result = Tcl_GetVar2(interp, "ViewAttribData", "BGImage",
+		       TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  if((result && !view->bgimage)  ||
+     (!result && view->bgimage)  ||
+     (result && view->bgimage && strcmp(result,view->bgimage)))
+    {
+      if(view->bgimage)
+	{
+	  free(view->bgimage);
+	  view->bgimage = NULL;
+	} /* if */
+
+      if(result)
+	{
+	  if(!(view->bgimage = calloc(strlen(result)+1, sizeof(char))))
+	    {
+	      ay_error(AY_EOMEM, fname, NULL);
+	      return TCL_OK;
+	    } /* if */
+	  strcpy(view->bgimage, result);
+	} /* if */
+    } /* if */
 
   ay_notify_force(o);
 
@@ -398,6 +428,14 @@ ay_view_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_NewIntObj(view->local);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton, "DrawBG", -1);
+  to = Tcl_NewIntObj(view->drawbg);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton, "BGImage", -1);
+  to = Tcl_NewStringObj(view->bgimage, -1);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
 
   Tcl_IncrRefCount(toa); Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton); Tcl_DecrRefCount(ton);
@@ -482,7 +520,7 @@ ay_view_getpntcb(ay_object *o, double *p)
 int
 ay_view_readcb(FILE *fileptr, ay_object *o)
 {
- int width, height;
+ int width, height, read = 0;
  char command[255] = {0}, update_cmd[] = "update";
  ay_object *root = ay_root, *down, *last;
  ay_view_object vtemp = {0}, *v;
@@ -531,7 +569,15 @@ ay_view_readcb(FILE *fileptr, ay_object *o)
 
   fscanf(fileptr,"%lg\n", &vtemp.rotx);
   fscanf(fileptr,"%lg\n", &vtemp.roty);
-  fscanf(fileptr,"%lg\n", &vtemp.rotz);
+  fscanf(fileptr,"%lg", &vtemp.rotz);
+
+  read = fgetc(fileptr);
+
+  if(ay_read_version == 2)
+    {
+      ay_read_string(fileptr, &(vtemp.bgimage));
+      fscanf(fileptr,"%d\n", &vtemp.drawbg);
+    }
 
   vtemp.drawhandles = AY_TRUE;
 
@@ -553,8 +599,18 @@ ay_view_readcb(FILE *fileptr, ay_object *o)
 
   vtemp.togl = v->togl;
   memcpy(v, &vtemp, sizeof(ay_view_object));
+  v->bgimage = NULL;
+  if(vtemp.bgimage)
+    {
+      if((v->bgimage = calloc(strlen(vtemp.bgimage)+1,sizeof(char))))
+	{
+	  strcpy(v->bgimage, vtemp.bgimage);
+	}
+    }
 
-  ay_toglcb_reshape(v->togl);
+  /* was: ay_toglcb_reshape(v->togl);*/
+  /* notify also includes reshape() and additionally loads the BGImage */
+  ay_notify_force(last);
 
   /* set window title */
   if(vtemp.type == AY_VTFRONT)
@@ -591,7 +647,6 @@ ay_view_readcb(FILE *fileptr, ay_object *o)
 
   Tcl_Eval(ay_interp, update_cmd);
   
-
  return AY_EDONOTLINK;
 } /* ay_view_readcb */
 
@@ -639,6 +694,15 @@ ay_view_writecb(FILE *fileptr, ay_object *o)
   fprintf(fileptr,"%g\n",view->rotx);
   fprintf(fileptr,"%g\n",view->roty);
   fprintf(fileptr,"%g\n",view->rotz);
+  if(view->bgimage)
+    {
+      fprintf(fileptr,"%s\n",view->bgimage);
+    }
+  else
+    {
+      fprintf(fileptr,"\n");
+    }
+  fprintf(fileptr,"%d\n",view->drawbg);
 
  return AY_OK;
 } /* ay_view_writecb */
@@ -738,6 +802,12 @@ ay_view_notifycb(ay_object *o)
 {
  ay_view_object *view = NULL;
  double temp[3] = {0};
+ unsigned int bo = 1;  /* test byte order */
+ unsigned char *r, b;
+ uint32 *image = NULL, w, h, c;
+ TIFF* tif;
+ char fname[] = "view_notifycb";
+ GLint result;
 
   if(!o)
     return AY_ENULL;    
@@ -777,7 +847,83 @@ ay_view_notifycb(ay_object *o)
 
   ay_viewt_uprop(view);
 
- return AY_OK;
+  /* load texture */
+  if(view->bgimage && view->bgimage[0] != '\0')
+    {
+
+      tif = TIFFOpen(view->bgimage, "r");
+      if(tif)
+	{
+	  TIFFGetField(tif, TIFFTAG_IMAGEWIDTH, &w);
+	  TIFFGetField(tif, TIFFTAG_IMAGELENGTH, &h);
+	  if(!(image = (uint32*)_TIFFmalloc(w*h*sizeof(uint32))))
+	    {
+	      ay_error(AY_EOMEM, fname, NULL);
+	      return TCL_OK;
+	    }
+	  if(TIFFReadRGBAImage(tif, w, h, image, 0) == 0)
+	    {
+	      /* Error while reading TIFF */
+	      ay_error(AY_ERROR, fname, "TIFFReadRGBAImage() failed for:");
+	      ay_error(AY_ERROR, fname, view->bgimage);
+	      TIFFClose(tif);
+	      return AY_FALSE;
+	    }
+	  else
+	    {
+	      /* check byte order */
+	      r = (unsigned char *)&bo;
+	      if(((r[0] == 0) && (TIFFIsByteSwapped(tif) == 0)) ||
+		 ((r[0] == 1) && (TIFFIsByteSwapped(tif) != 0)))
+		{
+		  /* byte order must be corrected: we need intel format */
+		  for(c = 0; c < w*h; c++)
+		    {
+		      r = (unsigned char *)&image[c];
+		      b = r[0];
+		      r[0] = r[3];
+		      r[3] = b;
+		      b = r[1];
+		      r[1] = r[2];
+		      r[2] = b;
+		    }
+		}
+	    }
+	  TIFFClose(tif);
+	}
+      else
+	{
+	  /* Unable to open TIFF */
+	  ay_error(AY_ERROR, fname, "TIFFOpen() failed for:");
+	  ay_error(AY_ERROR, fname, view->bgimage);
+	  return AY_FALSE;
+	}
+
+      Togl_MakeCurrent(view->togl);
+
+      glEnable(GL_TEXTURE_2D);
+
+      result = gluBuild2DMipmaps(GL_TEXTURE_2D, 4, w, h, GL_RGBA,
+				 GL_UNSIGNED_BYTE, image);
+
+      if(result != 0)
+	{
+	  ay_error(AY_ERROR, fname, "Unable to create texture.");
+	  /*ay_error(AY_ERROR, fname, gluErrorString(result));*/
+	}
+
+      /* high quality texture mapping */
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+		      GL_LINEAR_MIPMAP_LINEAR);
+
+
+      glDisable(GL_TEXTURE_2D);
+      _TIFFfree(image);
+
+    } /* if */
+
+
+  return AY_OK;
 } /* ay_view_notifycb */
 
 

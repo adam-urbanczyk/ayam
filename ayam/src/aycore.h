@@ -88,6 +88,8 @@ void ay_draw_grid(struct Togl *togl);
 
 void ay_draw_arrow(struct Togl *togl, double *from, double *to);
 
+void ay_draw_bgimage(struct Togl *togl);
+
 /* error.c */
 void ay_error(int code, char *where, char *what);
 

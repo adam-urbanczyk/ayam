@@ -133,6 +133,11 @@ ay_shade_view(struct Togl *togl)
       view->dirty = AY_FALSE;
     }
 
+  if(view->drawbg)
+    {
+      ay_draw_bgimage(togl);
+    }
+
   glEnable(GL_DITHER);
   glEnable(GL_LIGHTING);
   glLightModelf(GL_LIGHT_MODEL_TWO_SIDE, (GLfloat)1.0);

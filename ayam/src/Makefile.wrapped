@@ -97,6 +97,10 @@ GLINCDIR = /usr/X11R6/include/
 # link options for linking with OpenGL libraries
 GLLIBS = -lGLU -lGL
 
+# TIFF
+TIFFINCDIR = /usr/include/
+# link options for linking with TIFF library
+TIFFLIB = -ltiff
 
 # Tcl/Tk
 # Tcl directory
@@ -322,7 +326,7 @@ ADDLIB =
 #############################################
 
 .c.o: 
-	$(CC) -c $(CFLAGS) $*.c -o $@ -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR)
+	$(CC) -c $(CFLAGS) $*.c -o $@ -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR) -I$(TIFFINCDIR)
 
 all: wrappedayam csphere.so mfio.so metaobj.so
 
@@ -330,7 +334,7 @@ wrapMain.o: wrapMain.c
 	$(CC) -c $(CFLAGS) wrapMain.c -I$(WRAPDIR) -I$(WRAPDIR)/libz $(TCLINC) $(TKINC)
 
 ayam:  $(AYAMOBJS) $(TOGLOBJECT) $(AFFINEOBJS) $(ADDOBJS) wrapMain.o
-	$(LD) $(ADDOBJS) $(AYAMOBJS) $(TOGLOBJECT) $(WRAPOBJS) wrapMain.o $(EXLDFLAGS) -o ayam $(ADDLIB) $(TKLIB) $(TCLLIB) $(LDSWDYNAMIC) $(GLLIBS) $(X11LIBS) $(RIBOUTLIB) $(SLCARGSLIB) $(AFFINEOBJS) $(ZLIB) $(LDSWSTATIC) $(STDCPPLIB) $(LDSWDYNAMIC) -lm $(DL)
+	$(LD) $(ADDOBJS) $(AYAMOBJS) $(TOGLOBJECT) $(WRAPOBJS) wrapMain.o $(EXLDFLAGS) -o ayam $(ADDLIB) $(TKLIB) $(TCLLIB) $(LDSWDYNAMIC) $(GLLIBS) $(X11LIBS) $(RIBOUTLIB) $(SLCARGSLIB) $(AFFINEOBJS) $(TIFFLIB) $(ZLIB) $(LDSWSTATIC) $(STDCPPLIB) $(LDSWDYNAMIC) -lm $(DL)
 	$(STRIP) ayam
 	$(UPX) ayam
 	cat $(WRAPDIR)/null.zip >>ayam

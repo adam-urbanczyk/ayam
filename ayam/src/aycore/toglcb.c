@@ -145,6 +145,8 @@ ay_toglcb_destroy(struct Togl *togl)
 
   if(view)
     {
+      if(view->bgimage)
+	free(view->bgimage);
       free(view);
     }
 

@@ -240,6 +240,12 @@ $m add check -label "Draw Level only" -variable ay(cVDrawLevel)\
     $ay(currentView) setconf -dlev $ay(cVDrawLevel) 
 }
 $m add separator
+$m add check -label "Draw BGImage" -variable ay(cVDrawBG)\
+	-command {
+    global ay
+    $ay(currentView) setconf -dbg $ay(cVDrawBG) 
+}
+$m add separator
 $m add check -label "Draw Grid" -variable ay(cVDrawGrid) -command {
     global ay
     $ay(currentView) setconf -drawg $ay(cVDrawGrid)
@@ -254,8 +260,7 @@ $m add command -label "Set GridSize" -command {
     viewSetGrid $ay(currentView)
 }
 
-$m add separator
-$m add check -label "Local" -variable ay(cVLocal) -command {
+$m add check -label "Local Grid" -variable ay(cVLocal) -command {
     global ay
     $ay(currentView) setconf -local $ay(cVLocal)
 }
@@ -300,7 +305,7 @@ $m add separator
 $m add command -label "Zoom to Object" -command { global ay;
 $ay(currentView) zoomob }
 
-$m add command -label "Align" -command { global ay;
+$m add command -label "Align to Parent" -command { global ay;
 $ay(currentView) align }
 
 # XXXX This could be just a label or a menu displaying current action
