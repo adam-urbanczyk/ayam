@@ -326,6 +326,11 @@ array set ayviewshortcuts {
     ZoomRButton "1"
 
     Pick "P"
+
+    SelAllP "A"
+    InvSelP "I"
+    CollP "C"
+    ExplP "E"
 }
 # array ayviewshortcuts
 
