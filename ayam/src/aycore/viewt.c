@@ -1406,9 +1406,16 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 
 	      ay_trafo_apply3(view->from, mm);
 	      ay_trafo_apply3(view->to, mm);
-
-	      view->zoom /= (width/rectw);
-
+	      if(rectw > recth)
+		{
+		  if(width != rectw)
+		    view->zoom /= (width/rectw);
+		}
+	      else
+		{
+		  if(height != recth)
+		    view->zoom /= (height/recth);
+		}
 	      view->drawmarker = AY_FALSE;
 	    }
 	  break;

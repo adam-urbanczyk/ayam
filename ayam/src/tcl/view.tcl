@@ -425,6 +425,28 @@ proc viewBind { w } {
     }
     #bind
 
+    bind $w <$ayviewshortcuts(ZoomRMod)-Enter> {
+	global ay ayprefs
+	if { $ay(cviewsema) != 1 } {
+	    update
+	    set ay(cviewsema) 1
+	    update
+	    set w [winfo toplevel %W]
+	    $w.f3D.togl mc
+	    set ay(currentView) $w.f3D.togl
+	    set ay(cviewsema) 0
+	    update
+	}
+	#if
+
+	$w.f3D.togl configure -cursor sizing
+
+	if { $ayprefs(AutoFocus) == 1 } {
+	    focus [winfo toplevel %W].f3D.togl
+	}
+    }
+    #bind
+
     # bind menu shortcuts
     shortcut_view $w
 
