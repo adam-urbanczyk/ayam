@@ -483,7 +483,7 @@ ay_pomesht_merge(ay_list_object *list, ay_object **result)
 		} /* for */
 	    } else {	  
 	      memcpy(&(npm->controlv[nextcontrols]), pm->controlv,
-		     stride * pmverts * sizeof(double));
+		     stride * pm->ncontrols * sizeof(double));
 	    }
 
 	  nextloops    += pm->npolys;
