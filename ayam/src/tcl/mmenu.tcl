@@ -160,19 +160,17 @@ if { $tcl_platform(os) != "Darwin" } {
 set ay(createmenu) $m
 
 $m add command -label "NURBCurve" -command {
-runTool ay(nclen) "Length:" "crtOb NCurve -length %0; uCR; sL; rV;"
-    
+    runTool ay(nclen) "Length:" "crtOb NCurve -length %0; uCR; sL; rV;"   
 }
 $m add command -label "ICurve" -command {
-runTool ay(iclen) "Length:" "crtOb ICurve -length %0; uCR; sL; rV;"
-
+    runTool ay(iclen) "Length:" "crtOb ICurve -length %0; uCR; sL; rV;"
 }
 $m add command -label "NURBPatch" -command {
     runTool {ay(npwidth) ay(npheight)} {"Width:" "Height:"}\
 	    "crtOb NPatch -width %0 -height %1; uCR; sL; rV;"
 }
 $m add command -label "BPatch" -command {
-crtOb BPatch; uCR; sL; rV;
+    crtOb BPatch; uCR; sL; rV;
 }
 $m add command -label "PatchMesh" -command {
     runTool {ay(pmwidth) ay(pmheight)} {"Width:" "Height:"}\
@@ -362,16 +360,15 @@ set sm [menu $m.pnt -tearoff 0]
 $sm add command -label "Select All Points" -command "selPoints;rV"
 $sm add command -label "Invert Selection" -command "invSelPoints;rV"
 $sm add command -label "Apply Trafo To All Points"\
-	-command "applyTrafo all;\
+	-command "undo save;applyTrafo all;\
 	plb_update;forceNot;rV"
 $sm add command -label "Apply Trafo To Selected Points"\
-	-command "applyTrafo sel;\
+	-command "undo save;applyTrafo sel;\
 	plb_update;forceNot;rV"
 
 $m add cascade -menu $m.ins -label "Instances"
 set sm [menu $m.ins -tearoff 0]
-$sm add command -label "Resolve all Instances"\
-	-command "ai_resolveInstances;uS"
+$sm add command -label "Resolve all Instances" -command "ai_resolve"
 $sm add command -label "Automatic Instancing" -command "ai_open"
 
 
@@ -381,13 +378,13 @@ $sm add command -label "Add RiOption" -command "riopt_addp"
 $sm add command -label "Add RiAttribute" -command "riattr_addp"
 $sm add command -label "Edit TexCoords" -command "tc_edit"
 $m add separator
-#$sm add command -label "Create ShadowMaps" -command "riopt_addp"
+#$m add command -label "Create ShadowMaps" -command "riopt_addp"
 $m add command -label "Select Renderer" -command "render_select"
 $m add separator
 $m add command -label "Toggle Toolbox" -command "toolbox_toggle"
 $m add command -label "Toggle TreeView" -command "tree_toggle"
 $m add separator
-$m add command -label "Zap Ayam" -command zap
+$m add command -label "Zap Ayam" -command "zap"
 
 if { $tcl_platform(os) != "Darwin" } {
     # Help

@@ -14,7 +14,7 @@ array set aiprefs {
     IgnoreMat 1
 }
 
-proc ai_open {} {
+proc ai_open { } {
     global ay aiprefs
 
     set w .aiw
@@ -32,9 +32,16 @@ proc ai_open {} {
     pack $f -in $w -side top -fill x
     set f [frame $w.fl]
     button $f.bok -text "Start" -pady $ay(pady) -width 6 -command { 
+	global ay
 	focus .
 	destroy .aiw
-	ai_makeInstances;uS
+	ai_makeInstances
+	if { [winfo exists $ay(tree)] } {
+	    tree_reset
+	} else {
+	    goTop; cS; uS; rV
+	}
+	undo clear
     }
 
     button $f.bca -text "Cancel" -pady $ay(pady) -width 6 -command { 
@@ -49,3 +56,15 @@ proc ai_open {} {
     focus $f.bok
 }
 # ai_open
+
+proc ai_resolve { } {
+    global ay
+    ai_resolveInstances
+    if { [winfo exists $ay(tree)] } {
+	tree_reset
+    } else {
+	goTop; cS; uS; rV
+    }
+    undo clear
+}
+# ai_resolve
