@@ -488,6 +488,10 @@ if { $tcl_platform(platform) == "windows" } {
 
     set ayprefs(BackupExt) ".bak"
 
+    # Win32 does not know KP_Add/KP_Subtract keysyms...
+    set ayviewshortcuts(ZoomI) "plus"
+    set ayviewshortcuts(ZoomO) "minus"
+
     # we use this "emptyimg" for checkbuttons
     image create photo emptyimg
     emptyimg blank
@@ -1170,11 +1174,11 @@ grab .fu
 while { $i < $argc } {
     set arg [lindex $argv $i]
     if { [file extension $arg] == ".ay" } {
-	set newfilename $arg
-	
+	regsub -all {\\} $arg {/} newfilename
 	if { $j == 0 } {
 	    viewCloseAll
 	    set filename $newfilename
+	    
 	    set ay_error ""
 	    
 	    replaceScene $filename
@@ -1187,9 +1191,7 @@ while { $i < $argc } {
 		if { [file exists $filename] } {
 		    set dirname [file dirname $filename]
 		    cd $dirname
-		    set .fl.con(-prompt) {[file tail [pwd]]>}
-		    .fl.con delete end-1lines end
-		    Console:prompt .fl.con "\n"
+		    update_prompt ay uc w
 		}
 		io_mruAdd $filename
 	    } else {
