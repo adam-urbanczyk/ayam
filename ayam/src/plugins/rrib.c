@@ -112,9 +112,7 @@ ay_rrib_attrstate *ay_rrib_cattributes;
 typedef struct ay_rrib_trafostate_s {
   struct ay_rrib_trafostate_s *next;
 
-  double movx, movy, movz;
-  double scalx, scaly, scalz;
-  double quat[4];
+  double m[16];
 
 } ay_rrib_trafostate;
 
@@ -129,8 +127,17 @@ ay_object *ay_rrib_lrobject;
 
 /* light handle */
 int ay_rrib_clighthandle;
+
 /* first read light */
 ay_object *ay_rrib_flobject;
+
+/* object handle */
+int ay_rrib_cobjecthandle;
+
+/* objects (with handles) */
+ay_list_object *ay_rrib_objects;
+ay_list_object *ay_rrib_lastobject;
+ay_object **ay_rrib_aynext;
 
 /* import options */
 int ay_rrib_readframe;
@@ -189,6 +196,8 @@ void ay_rrib_initoptions(void);
 int ay_rrib_initgprims(void);
 
 int ay_rrib_cleargprims(void);
+
+void ay_rrib_trafotoobject(ay_object *o, double *transform);
 
 void ay_rrib_linkobject(void *object, int type);
 
@@ -584,8 +593,6 @@ ay_rrib_RiLightSource(RtToken name,
  RtPoint *pnt = NULL;
  RtColor *col = NULL;
  char fname[] = "ay_rrib_RiLightSource";
- double euler[3] = {0};
-
 
   /* load some defaults */
   l.type = AY_LITCUSTOM;
@@ -684,23 +691,7 @@ ay_rrib_RiLightSource(RtToken name,
   ay_rrib_co.refine = (void *)(&l);
   ay_rrib_co.type = AY_IDLIGHT;
 
-  ay_rrib_co.movx = ay_rrib_ctrafos->movx;
-  ay_rrib_co.movy = ay_rrib_ctrafos->movy;
-  ay_rrib_co.movz = ay_rrib_ctrafos->movz;
-
-  ay_rrib_co.scalx = ay_rrib_ctrafos->scalx;
-  ay_rrib_co.scaly = ay_rrib_ctrafos->scaly;
-  ay_rrib_co.scalz = ay_rrib_ctrafos->scalz;
-
-  ay_rrib_co.quat[0] = ay_rrib_ctrafos->quat[0];
-  ay_rrib_co.quat[1] = ay_rrib_ctrafos->quat[1];
-  ay_rrib_co.quat[2] = ay_rrib_ctrafos->quat[2];
-  ay_rrib_co.quat[3] = ay_rrib_ctrafos->quat[3];
-
-  ay_quat_toeuler(ay_rrib_ctrafos->quat, euler);
-  ay_rrib_co.rotx = AY_R2D(euler[2]);
-  ay_rrib_co.roty = AY_R2D(euler[1]);
-  ay_rrib_co.rotz = AY_R2D(euler[0]);
+  ay_rrib_trafotoobject(&ay_rrib_co, ay_rrib_ctrafos->m);
 
   ay_status = ay_object_copy(&ay_rrib_co, &o);
   ay_status = ay_object_link(o);
@@ -974,88 +965,20 @@ RtVoid ay_rrib_RiColorSamples( RtInt n, RtFloat nRGB[], RtFloat RGBn[] )
 
 RtVoid ay_rrib_RiConcatTransform( RtMatrix transform)
 { 
- double v1[3], v2[3], v3[3];
- double sx, sy, sz;
- double rx, ry, rz;
- int i, j;
- double quat[4];
- double axis[3];
+ int i, j, k;
+ double m[16];
 
-  if(fabs(transform[3][3]) <= AY_EPSILON )
-    return;
+ k = 0;
+ for(i = 0; i < 4; i++)
+   {
+     for(j = 0; j < 4; j++)
+       {
+	 m[k] = (double)transform[i][j];
+	 k++;
+       }
+   }
 
-  /* normalize matrix */
-  for(i = 0; i < 4; i++)
-    for(j = 0; j < 4; j++)
-      transform[i][j] /= transform[3][3];
-
-
-  /* decompose matrix */
-  ay_rrib_ctrafos->movx += (double)transform[3][0];
-  ay_rrib_ctrafos->movy += (double)transform[3][1];
-  ay_rrib_ctrafos->movz += (double)transform[3][2];
-
-  v1[0] = (double)transform[0][0];
-  v1[1] = (double)transform[0][1];
-  v1[2] = (double)transform[0][2];
-
-  v2[0] = (double)transform[1][0];
-  v2[1] = (double)transform[1][1];
-  v2[2] = (double)transform[1][2];
-
-  v3[0] = (double)transform[2][0];
-  v3[1] = (double)transform[2][1];
-  v3[2] = (double)transform[2][2];
-
-  sx = AY_V3LEN(v1);
-  sy = AY_V3LEN(v2);
-  sz = AY_V3LEN(v3);
-
-  if(fabs(sx) > AY_EPSILON)
-    ay_rrib_ctrafos->scalx *= sx;
-  if(fabs(sy) > AY_EPSILON)
-    ay_rrib_ctrafos->scaly *= sy;
-  if(fabs(sz) > AY_EPSILON)
-    ay_rrib_ctrafos->scalz *= sz;
-
-  ry = asin(-v1[2]);
-  if(cos(ry) != 0)
-    {
-      rx = atan2(v2[2], v3[2]);
-      rz = atan2(v1[1], v1[0]);
-    }
-  else
-    {
-      rx = atan2(v2[0], v2[1]);
-      rz = 0;
-    }
-
-  if(fabs(rx) > AY_EPSILON)
-    {
-      axis[0] = 1.0;
-      axis[1] = 0.0;
-      axis[2] = 0.0;
-      ay_quat_axistoquat(axis, rx, quat);
-      ay_quat_add(ay_rrib_ctrafos->quat, quat, ay_rrib_ctrafos->quat);
-    }
-
-  if(fabs(ry) > AY_EPSILON)
-    {
-      axis[0] = 0.0;
-      axis[1] = 1.0;
-      axis[2] = 0.0;
-      ay_quat_axistoquat(axis, ry, quat);
-      ay_quat_add(ay_rrib_ctrafos->quat, quat, ay_rrib_ctrafos->quat);
-    }
-
-  if(fabs(rz) > AY_EPSILON)
-    {
-      axis[0] = 0.0;
-      axis[1] = 0.0;
-      axis[2] = 1.0;
-      ay_quat_axistoquat(axis, rz, quat);
-      ay_quat_add(ay_rrib_ctrafos->quat, quat, ay_rrib_ctrafos->quat);
-    }
+  ay_trafo_multmatrix4(ay_rrib_ctrafos->m, m);
 
  return;
 }
@@ -1300,19 +1223,17 @@ RtVoid ay_rrib_RiHiderV( RtToken type,
 
 RtVoid ay_rrib_RiIdentity( void )
 {
+ int i;
 
-  ay_rrib_ctrafos->movx = 0.0;
-  ay_rrib_ctrafos->movy = 0.0;
-  ay_rrib_ctrafos->movz = 0.0;
+  for(i = 0; i < 16; i++)
+    {
+      ay_rrib_ctrafos->m[i] = 0.0;
+    }
 
-  ay_rrib_ctrafos->scalx = 1.0;
-  ay_rrib_ctrafos->scaly = 1.0;
-  ay_rrib_ctrafos->scalz = 1.0;
-
-  ay_rrib_ctrafos->quat[0] = 0.0;
-  ay_rrib_ctrafos->quat[1] = 0.0;
-  ay_rrib_ctrafos->quat[2] = 0.0;
-  ay_rrib_ctrafos->quat[3] = 1.0;
+  ay_rrib_ctrafos->m[0] = 1.0;
+  ay_rrib_ctrafos->m[5] = 1.0;
+  ay_rrib_ctrafos->m[10] = 1.0;
+  ay_rrib_ctrafos->m[15] = 1.0;
 
  return;
 }
@@ -1494,20 +1415,147 @@ RtVoid ay_rrib_RiNuCurvesV( RtInt ncurves, RtInt nvertices[], RtInt order[],
 
 RtObjectHandle ay_rrib_RiObjectBegin( void )
 {
-   /* Fake it. */
-  /*   return (RtObjectHandle)LastObjectHandle++;*/
-}
+ ay_list_object *new = NULL;
+ char fname[] = "ay_rrib_RiObjectBegin";
+
+  if(!(new = calloc(1, sizeof(ay_list_object))))
+    {
+      ay_error(AY_EOMEM, fname, NULL);
+      return((RtObjectHandle)(ay_rrib_cobjecthandle++));
+    }
+
+  if(ay_rrib_lastobject)
+    {
+      ay_rrib_lastobject->next = new;
+    }
+  else
+    {
+      ay_rrib_objects = new;
+    }
+
+  ay_rrib_lastobject = new;
+
+  ay_rrib_aynext = ay_next;
+  ay_next = &(new->object);
+
+  ay_rrib_pushtrafos();
+  ay_rrib_RiIdentity();
+  ay_rrib_pushattribs();
+
+ return((RtObjectHandle)(ay_rrib_cobjecthandle++));
+} /* ay_rrib_RiObjectBegin */
 
 
 RtVoid ay_rrib_RiObjectEnd( void )
-{ 
-}
+{
+
+  /* stop linking read objects to object handle */
+  ay_next = ay_rrib_aynext;
+
+  ay_rrib_poptrafos();
+  ay_rrib_popattribs();
+
+ return;
+} /* ay_rrib_RiObjectEnd */
 
 
 RtVoid ay_rrib_RiObjectInstance( RtObjectHandle handle )
-{ 
-   (void)handle;
-}
+{
+ int ay_status = AY_OK;
+ ay_list_object *l = NULL;
+ ay_object *o = NULL, *c = NULL;
+ char fname[] = "ay_rrib_RiObjectInstance";
+ int i = 1, j = 0;
+ double m[16], mt[16];
+ double quat[4];
+ double axis[3];
+
+  if((int)handle > ay_rrib_cobjecthandle)
+    {
+      ay_error(AY_ERROR, fname, "undefined object handle");
+      return;
+    }
+
+  l = ay_rrib_objects;
+  while(l->next && (i < (int)handle))
+    {
+      i++;
+      l = l->next;
+    } /* while */
+
+  /* copy objects from object handle to scene */
+  /* XXXX this could be smarter by not copying but creating instances
+     for the second and next calls to ObjectInstance;
+     problematic is:
+     a) how to distinguish between first and next calls
+     b) how to deal with multiple objects in one object handle
+     c) how to remember where the instances should point to
+  */
+  if((i == (int)handle) && l)
+    {
+      o = l->object;
+      while(o)
+	{
+	  c = NULL;
+	  ay_status = ay_object_copy(o, &c);
+	  if(!ay_status)
+	    {
+	      /* XXXX should we rather concatenate the current transformations
+		 to the transformations of the objects in object handle? */
+
+	      ay_rrib_trafotoobject(c, ay_rrib_ctrafos->m);
+	      /*
+	      for(j = 0; j < 16; j++)
+		{
+		  m[j] = 0.0;
+		}
+	      m[0] = o->scalx;
+	      m[5] = o->scaly;
+	      m[10] = o->scalz;
+	      m[15] = 1.0;
+
+	      m[3] = o->movx;
+	      m[7] = o->movy;
+	      m[11] = o->movz;
+
+	      if(fabs(o->rotx) > AY_EPSILON)
+		{
+		  axis[0] = 1.0;
+		  axis[1] = 0.0;
+		  axis[2] = 0.0;
+		  ay_quat_axistoquat(axis, AY_D2R(o->rotx), quat);
+		  ay_quat_torotmatrix(quat, mt);
+		  ay_trafo_multmatrix4(m, mt);
+		}
+	      if(fabs(o->roty) > AY_EPSILON)
+		{
+		  axis[0] = 0.0;
+		  axis[1] = 1.0;
+		  axis[2] = 0.0;
+		  ay_quat_axistoquat(axis, AY_D2R(o->roty), quat);
+		  ay_quat_torotmatrix(quat, mt);
+		  ay_trafo_multmatrix4(m, mt);
+		}
+	      if(fabs(o->rotz) > AY_EPSILON)
+		{
+		  axis[0] = 0.0;
+		  axis[1] = 0.0;
+		  axis[2] = 1.0;
+		  ay_quat_axistoquat(axis, AY_D2R(o->rotz), quat);
+		  ay_quat_torotmatrix(quat, mt);
+		  ay_trafo_multmatrix4(m, mt);
+		}
+		ay_trafo_multmatrix4(m, ay_rrib_ctrafos->m);
+		ay_rrib_trafotoobject(c, m);
+	      */
+	      ay_object_link(c);
+	    } /* if */
+	  o = o->next;
+	} /* while */
+    } /* if */
+
+ return;
+} /* ay_rrib_RiObjectInstance */
 
 
 RtVoid ay_rrib_RiOpacity( RtColor color)
@@ -1519,8 +1567,8 @@ RtVoid ay_rrib_RiOpacity( RtColor color)
   ay_rrib_cattributes->opg = (int)(color[1]*255);
   ay_rrib_cattributes->opb = (int)(color[2]*255);
 
-
-}
+ return;
+} /* ay_rrib_RiOpacity */
 
 
 RtVoid ay_rrib_RiOption(RtToken name, 
@@ -1816,12 +1864,34 @@ RtVoid ay_rrib_RiQuantize(RtToken type, RtInt one,
 }
 
 
-RtVoid ay_rrib_RiReadArchiveV( RtToken name, 
-                       RtVoid (*callback)( RtToken, char*, char* ),
-                       RtInt n, RtToken tokens[], RtPointer parms[] )
+RtVoid ay_rrib_RiReadArchive(RtToken name, 
+			     RtVoid (*callback)( RtToken, char*, char* ),
+			     RtInt n, RtToken tokens[], RtPointer parms[])
 { 
-   (void)name; (void)callback;
-   (void)n; (void)tokens; (void)parms;
+ int ay_status = AY_OK;
+ RIB_HANDLE rib = NULL, oldgrib;
+ char fname[] = "ay_rrib_RiReadArchive";
+
+  oldgrib = grib;
+
+  rib = RibOpenSubfile(grib, name);
+
+  if(rib)
+    {
+      grib = (PRIB_INSTANCE)rib;      
+
+      RibRead(rib);
+
+      RibClose(rib);
+    }
+  else
+    {
+      ay_error(AY_EOPENFILE, fname, name);
+    }
+
+  grib = oldgrib;
+
+ return;
 }
 
 
@@ -1848,12 +1918,14 @@ RtVoid ay_rrib_RiRotate( RtFloat angle, RtFloat dx, RtFloat dy, RtFloat dz )
 { 
  double quat[4];
  double axis[3];
+ double m[16];
 
   axis[0] = (double)dx;
   axis[1] = (double)dy;
   axis[2] = (double)dz;
   ay_quat_axistoquat(axis, AY_D2R((double)angle), quat);
-  ay_quat_add(ay_rrib_ctrafos->quat, quat, ay_rrib_ctrafos->quat);
+  ay_quat_torotmatrix(quat, m);
+  ay_trafo_multmatrix4(ay_rrib_ctrafos->m, m);
 
  return;
 }
@@ -1861,10 +1933,14 @@ RtVoid ay_rrib_RiRotate( RtFloat angle, RtFloat dx, RtFloat dy, RtFloat dz )
 
 RtVoid ay_rrib_RiScale( RtFloat dx, RtFloat dy, RtFloat dz )
 {
+ double m[16] = {0};
 
-  ay_rrib_ctrafos->scalx *= (double)dx;
-  ay_rrib_ctrafos->scaly *= (double)dy;
-  ay_rrib_ctrafos->scalz *= (double)dz;
+  m[0] = (double)dx;
+  m[5] = (double)dy;
+  m[10] = (double)dz;
+  m[15] = 1.0;
+
+  ay_trafo_multmatrix4(ay_rrib_ctrafos->m, m);
 
  return;
 }
@@ -2035,10 +2111,17 @@ RtVoid ay_rrib_RiTransformEnd( void )
 
 RtVoid ay_rrib_RiTranslate( RtFloat dx, RtFloat dy, RtFloat dz )
 { 
+ double m[16] = {0};
 
-  ay_rrib_ctrafos->movx += (double)dx;
-  ay_rrib_ctrafos->movy += (double)dy;
-  ay_rrib_ctrafos->movz += (double)dz;
+  m[0] = 1.0;
+  m[5] = 1.0;
+  m[10] = 1.0;
+  m[15] = 1.0;
+  m[3] = (double)dx;
+  m[7] = (double)dy;
+  m[11] = (double)dz;
+
+  ay_trafo_multmatrix4(ay_rrib_ctrafos->m, m);
 
  return;
 }
@@ -2566,6 +2649,9 @@ ay_rrib_initgeneral(void)
     (PRIB_RIPROC)ay_rrib_RiAreaLightSource;
   gRibNopRITable[kRIB_ILLUMINATE] = (PRIB_RIPROC)ay_rrib_RiIlluminate;
 
+  gRibNopRITable[kRIB_OBJECTBEGIN] = (PRIB_RIPROC)ay_rrib_RiObjectBegin;
+  gRibNopRITable[kRIB_OBJECTEND] = (PRIB_RIPROC)ay_rrib_RiObjectEnd;
+  gRibNopRITable[kRIB_READARCHIVE] = (PRIB_RIPROC)ay_rrib_RiReadArchive;
 
  return;
 } /* ay_rrib_initgeneral */
@@ -2615,6 +2701,8 @@ ay_rrib_initgprims(void)
   gRibNopRITable[kRIB_SOLIDBEGIN] = (PRIB_RIPROC)ay_rrib_RiSolidBegin;
   gRibNopRITable[kRIB_SOLIDEND] = (PRIB_RIPROC)ay_rrib_RiSolidEnd;
 
+  gRibNopRITable[kRIB_OBJECTINSTANCE] = (PRIB_RIPROC)ay_rrib_RiObjectInstance;
+
  return ay_status;
 } /* ay_rrib_initgprims */
 
@@ -2635,6 +2723,8 @@ ay_rrib_cleargprims(void)
 
   gRibNopRITable[kRIB_SOLIDBEGIN] = (PRIB_RIPROC)RiNopSolidBegin;
   gRibNopRITable[kRIB_SOLIDEND] = (PRIB_RIPROC)RiNopSolidEnd;
+
+  gRibNopRITable[kRIB_OBJECTINSTANCE] = (PRIB_RIPROC)RiNopObjectInstance;
 
  return ay_status;
 } /* ay_rrib_cleargprims */
@@ -2836,6 +2926,7 @@ ay_rrib_pushtrafos(void)
 {
  ay_rrib_trafostate *newstate = NULL;
  char fname[] = "ay_rrib_pushtrafos";
+ int i;
 
   if(!(newstate = calloc(1, sizeof(ay_rrib_trafostate))))
     {
@@ -2852,10 +2943,16 @@ ay_rrib_pushtrafos(void)
     {
       /* there was no old transformation state, so we fill the very first
 	 with the default values */
-      newstate->scalx = 1.0;
-      newstate->scaly = 1.0;
-      newstate->scalz = 1.0;
-      newstate->quat[3] = 1.0; 
+      for(i = 0; i < 16; i++)
+	{
+	  newstate->m[i] = 0.0;
+	}
+
+      newstate->m[0] = 1.0;
+      newstate->m[5] = 1.0;
+      newstate->m[10] = 1.0;
+      newstate->m[15] = 1.0;
+
     }
   /* link new state to stack */
   newstate->next = ay_rrib_ctrafos;
@@ -2890,33 +2987,123 @@ ay_rrib_poptrafos(void)
 
 
 void
+ay_rrib_trafotoobject(ay_object *o, double *transform)
+{
+ double v1[3], v2[3], v3[3];
+ double sx, sy, sz;
+ double rx, ry, rz;
+ int i;
+ double quat[4];
+ double axis[3];
+
+  o->scalx = 1.0;
+  o->scaly = 1.0;
+  o->scalz = 1.0;
+  o->quat[0] = 0.0;
+  o->quat[1] = 0.0;
+  o->quat[2] = 0.0;
+  o->quat[3] = 1.0;
+
+  if(fabs(transform[15]) <= AY_EPSILON )
+    return;
+
+  /* normalize matrix */
+  for(i = 0; i < 16; i++)
+      transform[i] /= transform[15];
+
+  /* decompose matrix */
+  o->movx = (double)transform[3];
+  o->movy = (double)transform[7];
+  o->movz = (double)transform[11];
+
+  v1[0] = (double)transform[0];
+  v1[1] = (double)transform[4];
+  v1[2] = (double)transform[8];
+
+  v2[0] = (double)transform[1];
+  v2[1] = (double)transform[5];
+  v2[2] = (double)transform[9];
+
+  v3[0] = (double)transform[2];
+  v3[1] = (double)transform[6];
+  v3[2] = (double)transform[10];
+
+  sx = AY_V3LEN(v1);
+  sy = AY_V3LEN(v2);
+  sz = AY_V3LEN(v3);
+
+  if(fabs(sx) > AY_EPSILON)
+    {
+      o->scalx *= sx;
+      AY_V3SCAL(v1, 1.0/sx);
+    }
+  if(fabs(sy) > AY_EPSILON)
+    {
+      o->scaly *= sy;
+      AY_V3SCAL(v2, 1.0/sy);
+    }
+  if(fabs(sz) > AY_EPSILON)
+    {
+      o->scalz *= sz;
+      AY_V3SCAL(v3, 1.0/sz);
+    }
+
+  ry = asin(-v1[2]);
+  if(cos(ry) != 0)
+    {
+      rx = atan2(v2[2], v3[2]);
+      rz = atan2(v1[1], v1[0]);
+    }
+  else
+    {
+      rx = atan2(v2[0], v2[1]);
+      rz = 0;
+    }
+
+  if(fabs(rx) > AY_EPSILON)
+    {
+      axis[0] = 1.0;
+      axis[1] = 0.0;
+      axis[2] = 0.0;
+      ay_quat_axistoquat(axis, rx, quat);
+      ay_quat_add(o->quat, quat, o->quat);
+      o->rotx = AY_R2D(rx);
+    }
+
+  if(fabs(ry) > AY_EPSILON)
+    {
+      axis[0] = 0.0;
+      axis[1] = 1.0;
+      axis[2] = 0.0;
+      ay_quat_axistoquat(axis, ry, quat);
+      ay_quat_add(o->quat, quat, o->quat);
+      o->roty = AY_R2D(ry);
+    }
+
+  if(fabs(rz) > AY_EPSILON)
+    {
+      axis[0] = 0.0;
+      axis[1] = 0.0;
+      axis[2] = 1.0;
+      ay_quat_axistoquat(axis, rz, quat);
+      ay_quat_add(o->quat, quat, o->quat);
+      o->rotz = AY_R2D(rz);
+    }
+
+ return;
+} /* ay_rrib_trafotoobject */
+
+void
 ay_rrib_linkobject(void *object, int type)
 {
  ay_object *o = NULL, *t = NULL;
- double euler[3] = {0};
  int ay_status = AY_OK;
  char *fname = "ay_rrib_linkobject";
 
   ay_rrib_co.refine = object;
   ay_rrib_co.type = type;
 
-  ay_rrib_co.movx = ay_rrib_ctrafos->movx;
-  ay_rrib_co.movy = ay_rrib_ctrafos->movy;
-  ay_rrib_co.movz = ay_rrib_ctrafos->movz;
-
-  ay_rrib_co.scalx = ay_rrib_ctrafos->scalx;
-  ay_rrib_co.scaly = ay_rrib_ctrafos->scaly;
-  ay_rrib_co.scalz = ay_rrib_ctrafos->scalz;
-
-  ay_rrib_co.quat[0] = ay_rrib_ctrafos->quat[0];
-  ay_rrib_co.quat[1] = ay_rrib_ctrafos->quat[1];
-  ay_rrib_co.quat[2] = ay_rrib_ctrafos->quat[2];
-  ay_rrib_co.quat[3] = ay_rrib_ctrafos->quat[3];
-
-  ay_quat_toeuler(ay_rrib_ctrafos->quat, euler);
-  ay_rrib_co.rotx = AY_R2D(euler[2]);
-  ay_rrib_co.roty = AY_R2D(euler[1]);
-  ay_rrib_co.rotz = AY_R2D(euler[0]);
+  ay_rrib_trafotoobject(&ay_rrib_co, ay_rrib_ctrafos->m);
 
   if(type == AY_IDNPATCH)
     {
@@ -2963,6 +3150,9 @@ ay_rrib_readrib(char *filename, int frame)
 
   ay_rrib_clighthandle = 1;
   ay_rrib_flobject = NULL;
+  ay_rrib_cobjecthandle = 1;
+  ay_rrib_objects = NULL;
+  ay_rrib_lastobject = NULL;
 
   /* initialize trafo and attribute attribute stacks */
   ay_rrib_ctrafos = NULL;
