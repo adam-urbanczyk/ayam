@@ -26,7 +26,7 @@ while { ![eof $infile] } {
     } else {
 	set index [ string first "section\{Index\}" $buf ]
 	if { $index > -1 } {
-	    puts $outfile "\\section\{Index\} \{ \\twocolumn \\footnotesize"
+	    puts $outfile "\\twocolumn \\section\{Index\} \{ \\footnotesize"
 	} else {
 	    set index [ string first "end\{document" $buf ]
 	    if { $index > -1 } {
