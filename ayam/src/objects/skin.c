@@ -301,6 +301,14 @@ ay_skin_readcb(FILE *fileptr, ay_object *o)
   fscanf(fileptr,"%d\n",&skin->glu_display_mode);
   fscanf(fileptr,"%lg\n",&skin->glu_sampling_tolerance);
 
+  if(ay_read_version < 6)
+    {
+      if(skin->interpolate == 1)
+	{
+	  skin->interpolate = 2;
+	}
+    }
+
   o->refine = skin;
 
  return AY_OK;
