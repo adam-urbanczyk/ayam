@@ -14,7 +14,10 @@
 
 /* clevel.c - functions for current level management */
 
-
+/* ay_clevel_find:
+ *  recursively search through all objects beneath and below c
+ *  for object o and build a stack of list objects in ay_currentlevel
+ */
 int
 ay_clevel_find(ay_object *c, ay_object *o, int *found)
 {
@@ -34,6 +37,10 @@ ay_clevel_find(ay_object *c, ay_object *o, int *found)
 		{
 		  ay_clevel_del();
 		  ay_clevel_del();
+		}
+	      else
+		{
+		  return AY_OK;
 		}
 	    }
 
