@@ -37,7 +37,14 @@ proc splash_open { } {
 
     # create toplevel window
     set w .aysplash
-    toplevel $w -visual truecolor
+
+    set visuals [winfo visualsavailable .]
+    if { [lsearch $visuals truecolor*] != -1 } {
+	toplevel $w -visual truecolor
+    } else {
+	toplevel $w
+    }
+
     bind $w <Visibility> "raise $w"
     wm resizable $w 0 0 
     wm title $w "Ayam"
