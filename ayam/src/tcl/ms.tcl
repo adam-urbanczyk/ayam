@@ -158,97 +158,109 @@ ms_set en ayprefse_TclPrecision "Precision of Tcl mathematics."
 # fill "de"-locale
 ms_init de
 
-ms_set de ayprefse_Shaders "Eine Liste von Pfaden, in denen sich übersetzte\
-Shader befinden"
+ms_set de ayprefse_Shaders "Eine Liste von Verzeichnissen, in denen sich\
+\nübersetzte Shader befinden."
 ms_set de ayprefse_ScanShaders "Baut interne Shader-Datenbank neu auf."
-ms_set de ayprefse_AutoResize "Soll das Hauptfenster sich der Grösse der\
+ms_set de ayprefse_AutoResize "Soll das Hauptfenster sich der Größe der\
 Eigenschaften anpassen?"
+ms_set de ayprefse_TwmCompat "Ist der verwendete Fenster-Manager\
+zu TWM kompatibel?"
 ms_set de ayprefse_ListTypes "Sollen die Objekttypen in der Listen bzw.\
-Baumansicht angezeigt werden?"
-ms_set de ayprefse_Locale "Sprache fuer Hilfe-Texte.\
-\nAenderungen werden erst nach Neustart von Ayam wirksam!"
+\nBaumansicht angezeigt werden?"
+ms_set de ayprefse_Locale "Sprache für Hilfe-Texte.\
+\nÄnderungen werden erst nach Neustart von Ayam wirksam!"
 ms_set de ayprefse_AutoSavePrefs "Sollen die Voreinstellungen beim Beenden\
 gespeichert werden?"
 ms_set de ayprefse_LoadEnv "Soll die Arbeitsumgebung beim Start geladen\
 werden?"
 ms_set de ayprefse_NewLoadsEnv "Soll die Arbeitsumgebung beim Erstellen\
 einer neuen Szene geladen werden?"
-ms_set de ayprefse_EnvFile "Pfad und Dateiname der Arbeitsumgebung."
+ms_set de ayprefse_EnvFile "Vollständiger Dateiname der Arbeitsumgebung."
 ms_set de ayprefse_Scripts "Eine Liste von Skripten, die beim Starten\
 ausgeführt werden sollen."
-ms_set de ayprefse_Plugins "Eine Liste von Pfaden, in denen sich\
+ms_set de ayprefse_Plugins "Eine Liste von Verzeichnissen, in denen sich\
 Plug-Ins befinden."
 ms_set de ayprefse_Docs "Eine URL, die auf die Dokumentation verweist."
-ms_set de ayprefse_TmpDir "Verzeichnis für temporäre Dateien (z.B. RIBs)."
-ms_set de ayprefse_PickEpsilon "Grösste erlaubte Entfernung zwischen\
-ausgewähltem und editierbarem Punkt\n
-0.0 heisst: nimm immer den nächsten Punkt"
-ms_set de ayprefse_HandleSize "Grösse der editierbaren Punkte."
+ms_set de ayprefse_TmpDir "Verzeichnis für temporäre Dateien."
+
+# Modeling
+ms_set de ayprefse_PickEpsilon "Größte erlaubte Entfernung zwischen\
+ausgewähltem und editierbarem Punkt;\
+\n0.0 wählt jedoch immer den nächsten Punkt."
+ms_set de ayprefse_HandleSize "Größe der editierbaren Punkte."
 ms_set de ayprefse_LazyNotify "Sollen die Eltern über Änderungen an den\
-Kindern nur am Ende\neiner Modellieraktion benachrichtigt werden?"
+\nKindern nur am Ende einer Modellieraktion\nbenachrichtigt werden?"
 ms_set de ayprefse_EditSnaps "Sollen editierte Punkte zunächst zu den\
-Gitter-Koordinaten bewegt werden?"
+\nGitter-Koordinaten bewegt werden?"
 ms_set de ayprefse_UndoLevels "Anzahl zurücknehmbarer Modellierschritte;\
-\n-1 schaltet das Undo-System aus"
+\n-1 schaltet das Undo-System aus."
 
 # Drawing
-ms_set de ayprefse_Tolerance "Bestimmt die Darstellungsqualitaet von NURBS\
-Kurven und Flaechen.\nKleinere Werte fuehren zu hoeherer Qualitaet aber\
+ms_set de ayprefse_Tolerance "Bestimmt die Darstellungsqualität von NURBS\
+Kurven und Flächen.\nKleinere Werte führen zu höherer Qualität aber\
 langsamerer Darstellung.\nObjekte\
-koennen diesen Wert lokal anpassen."
-ms_set de ayprefse_DisplayMode "Darstellungsmodus von Flaechen.\
-Flaechen koennen den Darstellungsmodus lokal anpassen."
+können diesen Wert lokal anpassen."
+ms_set de ayprefse_DisplayMode "Darstellungsmodus von Flächen.\
+\nFlächen können den Darstellungsmodus lokal anpassen."
 ms_set de ayprefse_NCDisplayMode "Darstellungsmodus von Kurven.\
-Kurven koennen den Darstellungsmodus lokal anpassen."
-ms_set de ayprefse_UseMatColor "Soll die Materialfarbe fuer schattierte\
-Objekte benutzt werden?"
+\nKurven können den Darstellungsmodus lokal anpassen."
+ms_set de ayprefse_UseMatColor "Soll die Materialfarbe für schattierte\
+\nObjekte benutzt werden?"
 ms_set de ayprefse_Background "Farbe des Hintergrundes."
 ms_set de ayprefse_Object "Farbe nicht selektierter Objekte."
 ms_set de ayprefse_Selection "Farbe selektierter Objekte."
 ms_set de ayprefse_Grid "Farbe des Gitters."
 ms_set de ayprefse_Tag "Farbe selektierter Punkte."
-ms_set de ayprefse_Shade "Farbe fuer schattierte Objekte,\
-wenn UseMatColor nicht aktiviert ist\noder das Objekt kein Material oder\
+ms_set de ayprefse_Shade "Farbe für schattierte Objekte,\
+wenn UseMatColor nicht aktiviert ist oder\ndas Objekt kein Material oder\
 keine Materialfarbe hat."
-ms_set de ayprefse_Light "Farbe fuer nicht selektierte Lichtquellen."
+ms_set de ayprefse_Light "Farbe für nicht selektierte Lichtquellen."
 
 # RIB-Export
-ms_set de ayprefse_RIBFile "Name der RIB-Datei fuer den RIB-Export"
-ms_set de ayprefse_Image "Name der Bilddatei, die beim Rendern der\
+ms_set de ayprefse_RIBFile "Name der RIB-Datei für den RIB-Export"
+ms_set de ayprefse_Image "Name der Bilddatei, die beim Rendern\nder\
 exportierten RIB-Datei erzeugt wird."
-
-ms_set de ayprefse_ResInstances "Sollen alle Instanzen-Objekte waehrend des\
-Exportierens in eine RIB-Datei zu normalen Objekten gewandelt werden?"
-ms_set de ayprefse_CheckLights "Soll eine Standardlichtquelle hinzugefuegt
-werden, wenn keine andere Lichtquelle existiert?"
-ms_set de ayprefse_DefaultMat "Standard-Material, das fuer alle Objekte ohne\
+ms_set de ayprefse_ResInstances "Sollen alle Instanzen-Objekte während des\
+Exportierens\nin normale Objekte umgewandelt werden?"
+ms_set de ayprefse_CheckLights "Soll eine Standardlichtquelle hinzugefügt\
+werden,\nwenn keine andere Lichtquelle existiert?"
+ms_set de ayprefse_DefaultMat "Standard-Material, das für alle Objekte\nohne\
 eigenes Material benutzt wird."
-ms_set de ayprefse_RIStandard "Sollen alle Attribute und Optionen, die nicht\
+ms_set de ayprefse_RIStandard "Sollen alle Attribute und Optionen,\ndie nicht\
 im RenderMan Standard vorkommen,\nbeim RIB-Export ausgelassen werden?"
 ms_set de ayprefse_WriteIdent "Sollen Identifikatoren, basierend auf den\
-Objektnamen, in die RIB-Datei\ngeschrieben werden?"
+Objektnamen,\nin die RIB-Datei geschrieben werden?"
 ms_set de ayprefse_ShadowMaps "Sollen ShadowMaps verwendet werden?"
 ms_set de ayprefse_ExcludeHidden "Sollen alle versteckten Objekte beim
 RIB-Export ausgelassen werden?"
 ms_set de ayprefse_QRender "Name und Aufrufparameter des Renderers,
-der fuer schnelle Voransicht verwendet werden soll.\n\\\"%s\\\" wird
+der für schnelle Voransicht verwendet werden soll.\n\\\"%s\\\" wird
 durch den Dateinamen des RIBs ersetzt."
-ms_set de ayprefse_QRenderUI "Soll das Render-Fenster fuer schnelle\
+ms_set de ayprefse_QRenderUI "Soll das Render-Fenster für schnelle\
 Voransichten aktiviert werden?"
 ms_set de ayprefse_QRenderPT "Beschreibung der Ausgabe des\
 Rendering-Fortschritts durch den Renderer\
 \n\\\"%d\\\" beschreibt die Position des prozentualen Fortschrittswertes,
 der dann im Rendering-Fenster angezeigt wird."
 ms_set de ayprefse_Render "Name und Aufrufparameter des Renderers,
-der fuer Voransichten verwendet werden soll.\n\\\"%s\\\" wird
+der für Voransichten verwendet werden soll.\n\\\"%s\\\" wird
 durch den Dateinamen des RIBs ersetzt."
-ms_set de ayprefse_RenderUI "Soll das Render-Fenster fuer Voransichten\
+ms_set de ayprefse_RenderUI "Soll das Render-Fenster für Voransichten\
 aktiviert werden?"
 ms_set de ayprefse_RenderPT "Beschreibung der Ausgabe des\
 Rendering-Fortschritts durch den Renderer\
 \n\\\"%d\\\" beschreibt die Position des prozentualen Fortschrittswertes,
 der dann im Rendering-Fenster angezeigt wird."
-ms_set de ayprefse_PPRender "Renderer, der fuer die permanente Voransicht\
+ms_set de ayprefse_SMRender "Name und Aufrufparameter des Renderers,
+der für ShadowMaps verwendet werden soll.\n\\\"%s\\\" wird\
+durch den Dateinamen des RIBs ersetzt."
+ms_set de ayprefse_SMRenderUI "Soll das Render-Fenster für ShadowMaps\
+aktiviert werden?"
+ms_set de ayprefse_SMRenderPT "Beschreibung der Ausgabe des\
+Rendering-Fortschritts durch den ShadowMap-Renderer\
+\n\\\"%d\\\" beschreibt die Position des prozentualen Fortschrittswertes,
+der dann im Rendering-Fenster angezeigt wird."
+ms_set de ayprefse_PPRender "Renderer, der für die permanente Voransicht\
 verwendet werden soll."
 
 # Misc
@@ -257,19 +269,19 @@ die Konsole umgelenkt werden?"
 ms_set de ayprefse_Logging "Sollen alle Mitteilungen in einer Logdatei\
 mitgeschrieben werden?"
 ms_set de ayprefse_LogFile "Pfad und Name der Logdatei."
-ms_set de ayprefse_MIResetDM "Sollen alle DisplayMode Werte beim Import von\
-Mops Szenen auf Global zurueckgesetzt werden?"
-ms_set de ayprefse_MIResetST "Sollen alle Tolerance Werte beim Import von\
-Mops Szenen auf 0.0 zurueckgesetzt werden?"
+ms_set de ayprefse_MIResetDM "Sollen alle DisplayMode-Werte beim Import von\
+\nMops Szenen auf \\\"Global\\\" zurückgesetzt werden?"
+ms_set de ayprefse_MIResetST "Sollen alle Tolerance-Werte beim Import von\
+\nMops Szenen auf \\\"0.0\\\" zurückgesetzt werden?"
 ms_set de ayprefse_SaveAddsMRU "Sollen die Namen abgespeicherter Szenen\
-den zuletzt-benutzte-Dateien-Eintraegen im Menu hinzugefuegt werden?"
+den\nzuletzt-benutzte-Dateien-Einträgen im\nHauptmenü hinzugefügt werden?"
 ms_set de ayprefse_ToolBoxTrans "Soll das Werkzeugfenster als transient\
 markiert werden?"
 ms_set de ayprefse_ToolBoxShrink "Soll das Werkzeugfenster sich dem\
-Inhalt anpassen, wenn es in der Groesse veraendert wird?"
+Inhalt anpassen, wenn es in der Größe verändert wird?"
 ms_set de ayprefse_RGTrans "Sollen alle Rendering Fenster als transient\
-gekennzeichnet werden?"
-ms_set de ayprefse_HideTmpTags "Sollen temporaere Tags nicht in den Tag\
-Eigenschaften dargestellt werden?"
-ms_set de ayprefse_TclPrecision "Genauigkeit der Wandlung von Fliesskommazahlen von Tcl."
+markiert werden?"
+ms_set de ayprefse_HideTmpTags "Sollen temporäre Tags aus den Tag\
+Eigenschaften ausgeblendet werden?"
+ms_set de ayprefse_TclPrecision "Genauigkeit der Wandlung von Gleitkommazahlen von Tcl."
 
