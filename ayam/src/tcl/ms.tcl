@@ -110,9 +110,13 @@ ms_set en ayprefse_RIStandard "Omit all attributes and options that are not\
 \ncontained in the RenderMan Interface Standard?"
 ms_set en ayprefse_WriteIdent "Write an identificator derived from the\
 objects name into the RIB?"
-ms_set en ayprefse_ShadowMaps "Create a RIB that automatically renders\
-ShadowMaps?"
+ms_set en ayprefse_ShadowMaps "Should ShadowMaps be used?\nAutomatic: Yes,\
+create a RIB that automatically renders ShadowMaps all the time.\
+\nManual: Yes, but the ShadowMaps will be rendered on user request only
+(Menu: View/Create ShadowMaps)"
 ms_set en ayprefse_ExcludeHidden "Omit hidden objects on RIB export?"
+ms_set en ayprefse_RenderMode "How should the renderer be forced to render\
+to the screen?"
 ms_set en ayprefse_QRender "Name and parameters of the renderer to use for\
 quick render previews.\n\\\"%s\\\" will be replaced by the filename\
 of the RIB."
@@ -233,6 +237,8 @@ Objektnamen,\nin die RIB-Datei geschrieben werden?"
 ms_set de ayprefse_ShadowMaps "Sollen ShadowMaps verwendet werden?"
 ms_set de ayprefse_ExcludeHidden "Sollen alle versteckten Objekte beim
 RIB-Export ausgelassen werden?"
+ms_set de ayprefse_RenderMode "Wie soll der Renderer zum Rendern auf den\
+Bildschirm gezwungen werden?"
 ms_set de ayprefse_QRender "Name und Aufrufparameter des Renderers,
 der für schnelle Voransicht verwendet werden soll.\n\\\"%s\\\" wird
 durch den Dateinamen des RIBs ersetzt."

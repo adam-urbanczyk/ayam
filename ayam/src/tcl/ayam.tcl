@@ -82,6 +82,7 @@ array set ayprefs {
  SMRenderUI 1
  SMRenderPT "R90000 %d"
  PPRender "rgl"
+ RenderMode 0
  TclPrecision 6
  Shaders ""
 
