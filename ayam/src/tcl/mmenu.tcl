@@ -336,8 +336,8 @@ set ay(specialmenu) $m
 $m add command -label "Save Selected as" -command "io_saveScene ask 1"
 $m add command -label "Save Environment" -command "io_saveEnv"
 $m add separator
-$m add command -label "Paste (Move)" -command {cmovOb; uCR; rV; global ay;
-set ay(sc) 1}
+$m add command -label "Paste (Move)" -command {cmovOb; cS;
+global ay; set ay(ul) $ay(CurrentLevel); uS; rV; set ay(sc) 1}
 $m add command -label "Paste Property to Selected" -command "pclip_pastetosel;forceNot;rV"
 $m add separator
 $m add command -label "Select All Points" -command "selPoints;rV"
