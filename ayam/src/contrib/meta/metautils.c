@@ -34,6 +34,8 @@ meta_calcall (double x1, double y1, double z1, meta_world * w)
   meta_blob *tmp;
   ay_object *o;
   double x, y, z;
+  Tcl_Obj *to = NULL, *ton = NULL;
+  int i = 0;
 
   effect = 0;
   dist = 0;
@@ -198,7 +200,50 @@ meta_calcall (double x1, double y1, double z1, meta_world * w)
 	}
 
 	}
-	      o = o->next;
+      if (tmp->formula == META_CUSTOM)
+	{
+	  ton = Tcl_NewStringObj("x", -1);
+	  to = Tcl_NewDoubleObj(x);
+	  Tcl_ObjSetVar2(ay_interp, ton, NULL, to, TCL_LEAVE_ERR_MSG |
+			TCL_GLOBAL_ONLY);
+	  Tcl_SetStringObj(ton, "y", -1);
+  	  to = Tcl_NewDoubleObj(y);
+	  Tcl_ObjSetVar2(ay_interp, ton, NULL, to, TCL_LEAVE_ERR_MSG |
+			TCL_GLOBAL_ONLY);
+
+	  Tcl_SetStringObj(ton, "z", -1);
+  	  to = Tcl_NewDoubleObj(z);
+	  Tcl_ObjSetVar2(ay_interp, ton, NULL, to, TCL_LEAVE_ERR_MSG |
+			TCL_GLOBAL_ONLY);
+	  Tcl_SetStringObj(ton, "f", -1);
+  	  to = Tcl_NewDoubleObj(0.0);
+	  Tcl_ObjSetVar2(ay_interp, ton, NULL, to, TCL_LEAVE_ERR_MSG |
+			TCL_GLOBAL_ONLY);
+
+	  if(tmp->expression)
+	    Tcl_GlobalEvalObj(ay_interp, tmp->expression);
+
+	  Tcl_SetStringObj(ton, "f", -1);
+	  to = Tcl_ObjGetVar2(ay_interp, ton, NULL, TCL_LEAVE_ERR_MSG |
+			      TCL_GLOBAL_ONLY);
+	  Tcl_GetDoubleFromObj(ay_interp, to, &tmpeffect);
+
+	  Tcl_IncrRefCount (ton);
+	  Tcl_DecrRefCount (ton);
+
+	  if(tmp->negativ)
+	    {
+	      effect -= 1 / (tmpeffect < 0.00001 ? 0.00001 : tmpeffect) *
+		0.002;
+	    }
+	  else
+	    {
+	      effect += 1 / (tmpeffect < 0.00001 ? 0.00001 : tmpeffect) *
+		0.002;
+	    }
+	}
+
+	o = o->next;
 
     }
 
