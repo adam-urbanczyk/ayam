@@ -302,6 +302,13 @@ $m.npt add command -label "Split to Curves (v)" -command {
 $m.npt add command -label "Build from Curves" -command {
     buildNP; uCR; sL; rV}
 $m add separator
+
+$m add cascade -menu $m.pm -label "PolyMesh"
+menu $m.pm -tearoff 0
+$m.pm add command -label "Merge" -command {
+   mergePo; uCR; sL; rV;
+}
+$m add separator
 $m add command -label "Hide" -command "hide; rV"
 $m add command -label "Hide All" -command "hide -all; rV"
 $m add command -label "Show" -command "show; rV"

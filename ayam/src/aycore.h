@@ -311,6 +311,10 @@ int ay_pact_wrtcb(struct Togl *togl, int argc, char *argv[]);
 /* pomesht.c */
 int ay_pomesht_tesselate(ay_pomesh_object *pomesh);
 
+int ay_pomesht_merge(ay_list_object *list, ay_object **result);
+
+int ay_pomesht_mergetcmd(ClientData clientData, Tcl_Interp * interp,
+			 int argc, char *argv[]);
 
 /* prefs.c */
 int ay_prefs_gettcmd(ClientData clientData, Tcl_Interp *interp,

@@ -218,3 +218,198 @@ ay_pomesht_tesselate(ay_pomesh_object *pomesh)
  return AY_OK;
 } /* ay_pomesht_tesselate */
 
+
+/* ay_pomesht_merge:
+ *
+ */
+int
+ay_pomesht_merge(ay_list_object *list, ay_object **result)
+{
+ int ay_status = AY_OK;
+ char fname[] = "mergePo";
+ ay_list_object *lo = list;
+ ay_object *o = NULL, *no = NULL;
+ ay_pomesh_object *pm = NULL, *npm = NULL;
+ int i = 0, j = 0, k = 0, stride = 0;
+ unsigned int total_polys = 0, total_loops = 0, total_verts = 0;
+ unsigned int pmloops = 0, pmverts = 0;
+ unsigned int nextloops = 0, nextnverts = 0, nextverts = 0,
+   nextcontrols = 0;
+ int has_normals = -1;
+
+  while(lo)
+    {
+      o = lo->object;
+      if(o->type == AY_IDPOMESH)
+	{
+	  i++;
+	  pm = (ay_pomesh_object*)o->refine;
+
+	  if(has_normals != -1)
+	    {
+	      if(pm->has_normals != has_normals)
+		{
+		  ay_error(AY_ERROR, fname,
+			   "found meshes with and without vertex normals");
+		  return TCL_OK;
+		} /* if */
+	    } /* if */
+
+	  total_polys += pm->npolys;
+
+	  pmloops = 0;
+	  for(j = 0; j < pm->npolys; j++)
+	    {
+	      pmloops += pm->nloops[j];
+	      total_loops += pm->nloops[j];
+	    }
+
+	  pmverts = 0;
+	  for(j = 0; j < pmloops; j++)
+	    {
+	      pmverts += pm->nverts[j];
+	      total_verts += pm->nverts[j];
+	    }
+
+
+	  has_normals = pm->has_normals;
+	} /* if */
+      lo = lo->next;
+    } /* while */
+
+  if(i < 2)
+    {
+      ay_error(AY_ERROR, fname, "found too few meshes");
+      return AY_ERROR;
+    }
+
+  if(has_normals)
+    stride = 6;
+  else
+    stride = 3;
+
+  /* create a new PolyMesh object */
+  if(!(no = calloc(1, sizeof(ay_object))))
+    {
+      ay_error(AY_EOMEM, fname, NULL);
+      return AY_EOMEM;
+    }
+  ay_status = ay_object_defaults(no);
+
+  no->type = AY_IDPOMESH;
+
+  if(!(npm = calloc(1, sizeof(ay_pomesh_object))))
+    {
+      free(no);
+      ay_error(AY_EOMEM, fname, NULL);
+      return AY_EOMEM;
+    }
+
+  npm->npolys = total_polys;
+  npm->has_normals = has_normals;
+  npm->ncontrols = total_verts;
+
+  no->refine = (void*)npm;
+
+  /* allocate memory for new merged PolyMesh */
+  if(!(npm->nloops = calloc(total_polys, sizeof(unsigned int))))
+    {
+      free(no); free(npm); return AY_EOMEM;
+    }
+  if(!(npm->nverts = calloc(total_loops, sizeof(unsigned int))))
+    {
+      free(no); free(npm); free(npm->nloops); return AY_EOMEM;
+    }
+  if(!(npm->verts = calloc(total_verts, sizeof(unsigned int))))
+    {
+      free(no); free(npm); free(npm->nloops); free(npm->nverts);
+      return AY_EOMEM;
+    }
+  if(!(npm->controlv = calloc(stride * total_verts, sizeof(double))))
+    {
+      free(no); free(npm);  free(npm->nloops); free(npm->nverts);
+      free(npm->verts); return AY_EOMEM;
+    }
+
+  /* now we fill the new object with the values from all meshes to merge */
+  lo = list;
+  while(lo)
+    {
+      o = lo->object;
+      if(o->type == AY_IDPOMESH)
+	{
+	  i++;
+	  pm = (ay_pomesh_object*)o->refine;
+
+	  memcpy(&(npm->nloops[nextloops]), pm->nloops,
+		 pm->npolys * sizeof(unsigned int));
+
+	  pmloops = 0;
+	  for(j = 0; j < pm->npolys; j++)
+	    {
+	      pmloops += pm->nloops[j];
+	    } /* for */
+
+	  memcpy(&(npm->nverts[nextnverts]), pm->nverts,
+		 pmloops * sizeof(unsigned int));
+
+	  pmverts = 0;
+	  for(j = 0; j < pmloops; j++)
+	    {
+	      pmverts += pm->nverts[j];
+	    } /* for */
+
+	  k = 0;
+	  for(j = nextverts; j < nextverts+pmverts; j++)
+	    {
+	      npm->verts[j] = pm->verts[k]+nextverts;
+	      k++;
+	    } /* for */
+
+	  memcpy(&(npm->controlv[nextcontrols]), pm->controlv,
+		 stride * pmverts * sizeof(double));
+
+	  nextloops    += pm->npolys;
+	  nextnverts   += pmloops;
+	  nextverts    += pmverts;
+	  nextcontrols += (stride * pmverts);
+	} /* if */
+      lo = lo->next;
+    } /* while */
+
+  *result = no;
+
+ return AY_OK;
+} /* ay_pomesht_merge */
+
+/*
+ *
+ */
+int
+ay_pomesht_mergetcmd(ClientData clientData, Tcl_Interp * interp,
+		     int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ char fname[] = "mergePo";
+ ay_object *no = NULL;
+
+  if(!ay_selection)
+    {
+      ay_error(AY_ENOSEL, fname, NULL);
+      return TCL_OK;
+    }
+
+  ay_status = ay_pomesht_merge(ay_selection, &no);
+
+  if(ay_status)
+    { /* emit error message */
+      ay_error(AY_ERROR, fname, "could not merge objects");
+    }
+  else
+    { /* link the new PolyMesh to the scene */
+      ay_status = ay_object_link(no);
+    }
+
+ return TCL_OK;
+} /* ay_pomesht_mergetcmd */
+

@@ -511,6 +511,10 @@ int ay_status = AY_OK;
   Tcl_CreateCommand(interp, "getName", ay_object_getnametcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  /* pomesht.c */
+  Tcl_CreateCommand(interp, "mergePo", ay_pomesht_mergetcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
   /* prop.c */
   Tcl_CreateCommand(interp, "setProp", ay_prop_settcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
