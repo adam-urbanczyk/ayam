@@ -499,50 +499,50 @@ ay_hyperb_wribcb(char *file, ay_object *o)
   else
     {
       RiSolidBegin(RI_PRIMITIVE);
-      RiHyperboloid(p1, p2, (RtFloat)hyperb->thetamax, NULL);
-      if (p1[2] == p2[2])
-	{
-	  RiSolidEnd();
-	  return AY_OK;
-	}
+       RiHyperboloid(p1, p2, (RtFloat)hyperb->thetamax, NULL);
+       if(p1[2] == p2[2])
+	 {
+	   RiSolidEnd();
+	   return AY_OK;
+	 }
 
-      radius = (RtFloat)sqrt(p1[0]*p1[0]+p1[1]*p1[1]);
-      angle = (RtFloat)(180.0/AY_PI * acos(p1[0]/radius));
-      if (p1[1] < 0.0)
-	angle = -angle;
+       radius = (RtFloat)sqrt(p1[0]*p1[0]+p1[1]*p1[1]);
+       angle = (RtFloat)(180.0/AY_PI * acos(p1[0]/radius));
+       if(p1[1] < 0.0)
+	 angle = -angle;
 
-      RiTransformBegin();
-       RiRotate(angle, (RtFloat)0.0, (RtFloat)0.0, (RtFloat)1.0);
-       RiDisk(p1[2], radius, (RtFloat)hyperb->thetamax, RI_NULL);
-      RiTransformEnd();     
+       RiTransformBegin();
+        RiRotate(angle, (RtFloat)0.0, (RtFloat)0.0, (RtFloat)1.0);
+	RiDisk(p1[2], radius, (RtFloat)hyperb->thetamax, RI_NULL);
+       RiTransformEnd();     
 
-      radius = (RtFloat)sqrt(p2[0]*p2[0] + p2[1]*p2[1]);
-      angle = (RtFloat)(180.0/AY_PI * acos(p2[0]/radius));
-      if (p2[1] < 0.0)
-	angle = -angle;
+       radius = (RtFloat)sqrt(p2[0]*p2[0] + p2[1]*p2[1]);
+       angle = (RtFloat)(180.0/AY_PI * acos(p2[0]/radius));
+       if (p2[1] < 0.0)
+	 angle = -angle;
 
-      RiAttributeBegin();
-       RiRotate(angle, (RtFloat)0.0, (RtFloat)0.0, (RtFloat)1.0);
-       RiReverseOrientation();
-       RiDisk(p2[2], radius, (RtFloat)hyperb->thetamax, RI_NULL);
-      RiAttributeEnd();
+       RiAttributeBegin();
+        RiRotate(angle, (RtFloat)0.0, (RtFloat)0.0, (RtFloat)1.0);
+	RiReverseOrientation();
+	RiDisk(p2[2], radius, (RtFloat)hyperb->thetamax, RI_NULL);
+	RiAttributeEnd();
 
-      if(hyperb->thetamax != 360.0)
-	{
-	  patch[0][0] = p2[0]; patch[0][1] = p2[1]; patch[0][2] = p2[2];
-	  patch[1][0] = (RtFloat)0.0; patch[1][1] = (RtFloat)0.0;
-	  patch[1][2] = p2[2];
-	  patch[2][0] = p1[0]; patch[2][1] = p1[1]; patch[2][2] = p1[2];
-	  patch[3][0] = (RtFloat)0.0; patch[3][1] = (RtFloat)0.0;
-	  patch[3][2] = p1[2];
+	if(fabs(hyperb->thetamax) != 360.0)
+	  {
+	    patch[0][0] = p2[0]; patch[0][1] = p2[1]; patch[0][2] = p2[2];
+	    patch[1][0] = (RtFloat)0.0; patch[1][1] = (RtFloat)0.0;
+	    patch[1][2] = p2[2];
+	    patch[2][0] = p1[0]; patch[2][1] = p1[1]; patch[2][2] = p1[2];
+	    patch[3][0] = (RtFloat)0.0; patch[3][1] = (RtFloat)0.0;
+	    patch[3][2] = p1[2];
 
-	  RiPatch(RI_BILINEAR, RI_P, (RtPointer)patch, RI_NULL);
-	  RiAttributeBegin();
-	   RiReverseOrientation();
-	   RiRotate((RtFloat)hyperb->thetamax, (RtFloat)0.0, (RtFloat)0.0,
-		    (RtFloat)1.0);
-	   RiPatch(RI_BILINEAR, RI_P, (RtPointer)patch, RI_NULL);
-	  RiAttributeEnd();
+	    RiPatch(RI_BILINEAR, RI_P, (RtPointer)patch, RI_NULL);
+	    RiAttributeBegin();
+	     RiReverseOrientation();
+	     RiRotate((RtFloat)hyperb->thetamax, (RtFloat)0.0, (RtFloat)0.0,
+		      (RtFloat)1.0);
+	     RiPatch(RI_BILINEAR, RI_P, (RtPointer)patch, RI_NULL);
+	    RiAttributeEnd();
 	}
       RiSolidEnd();
     }

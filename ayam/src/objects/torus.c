@@ -482,7 +482,7 @@ ay_torus_wribcb(char *file, ay_object *o)
     }
   else
     {
-      RiSolidBegin(RI_UNION);
+      RiSolidBegin(RI_PRIMITIVE);
 
       RiTorus((RtFloat)torus->majorrad, (RtFloat)torus->minorrad,
 	      (RtFloat)torus->phimin, (RtFloat)torus->phimax,
@@ -501,16 +501,16 @@ ay_torus_wribcb(char *file, ay_object *o)
 	  p2[1] = (RtFloat)0.0;
 	  p2[2] = (RtFloat)(sin(AY_D2R(torus->phimin))*torus->minorrad);
 	  p2[0] += (RtFloat)torus->majorrad;
-
 	  RiHyperboloid(p1, p2, (RtFloat)torus->thetamax, RI_NULL);
 
 	  p2[0] = (RtFloat)(cos(AY_D2R(torus->phimax))*torus->minorrad);
 	  p2[1] = (RtFloat)0.0;
 	  p2[2] = (RtFloat)(sin(AY_D2R(torus->phimax))*torus->minorrad);
 	  p2[0] += (RtFloat)torus->majorrad;
-	  
-	  RiHyperboloid(p1, p2, (RtFloat)torus->thetamax, RI_NULL);
-	  
+	  RiAttributeBegin();
+	   RiReverseOrientation();
+	   RiHyperboloid(p1, p2, (RtFloat)torus->thetamax, RI_NULL);
+	  RiAttributeEnd();
 	}
 
       /* caps */

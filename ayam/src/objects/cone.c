@@ -454,7 +454,7 @@ ay_cone_wribcb(char *file, ay_object *o)
     }
   else
     {
-    if(cone->thetamax == 180.0)
+    if(fabs(cone->thetamax) == 180.0)
       {
 	RiSolidBegin(RI_PRIMITIVE);
 
@@ -489,7 +489,7 @@ ay_cone_wribcb(char *file, ay_object *o)
 
 	RiSolidEnd();
       }
-    else if(cone->thetamax == 360.0)
+    else if(fabs(cone->thetamax) == 360.0)
       {
 	RiSolidBegin(RI_PRIMITIVE);
 	 RiCone((RtFloat)cone->height, (RtFloat)cone->radius,

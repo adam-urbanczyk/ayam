@@ -509,6 +509,7 @@ ay_parab_wribcb(char *file, ay_object *o)
     {
 
       memset(patch, '\0', 16*sizeof(RtPoint));
+
       RiSolidBegin(RI_PRIMITIVE);
 
       RiParaboloid((RtFloat)paraboloid->rmax,
@@ -531,7 +532,7 @@ ay_parab_wribcb(char *file, ay_object *o)
 	  RiAttributeEnd();
 	}
 
-      if(paraboloid->thetamax != 360.0)
+      if(fabs(paraboloid->thetamax) != 360.0)
 	{
 	  patch[0][2] = patch[1][2] = patch[2][2] = patch[3][2] =
 	    (RtFloat)paraboloid->zmin;
