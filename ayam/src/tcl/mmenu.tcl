@@ -319,6 +319,8 @@ $m.nct add command -label "Plot Curvature" -command {
 $m.nct add command -label "Shift BSpline" -command {
 runTool ay(shiftcbsp) {"Times:"}\
 	    "undo save ShiftClosedBS; shiftClosedBS %0; rV" }
+$m.nct add command -label "To XY" -command {
+    undo save ToXYNC; toXYNC;}
 $m.nct add separator
 $m.nct add command -label "Collapse Points" -command { collNC; rV; }
 $m.nct add command -label "Explode Points" -command { explNC; rV; }
@@ -337,6 +339,7 @@ $m.npt add command -label "Revert U" -command {
     undo save RevertU; revertU; plb_update; rV}
 $m.npt add command -label "Revert V" -command {
     undo save RevertV; revertV; plb_update; rV}
+$m.npt add command -label "Extract NC" -command {extrnc_crt}
 $m.npt add command -label "Tesselate" -command tgui_open
 $m.npt add separator
 $m.npt add command -label "Split to Curves (u)" -command {
