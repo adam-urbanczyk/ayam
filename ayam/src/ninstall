@@ -1,0 +1,230 @@
+#!/bin/sh
+#
+# $Id: ninstall,v 1.1 2002/06/11 15:21:33 randolf Exp $
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#
+# Description: Move and  copy files setting their attributes.  Also
+# creates a directory, including  all non-existing leading directories
+# in its path.  Compatible with BSD 4.3 install, with the directory
+# creation feature from gnu install.
+#
+# usage: ninstall [-c] [-g <group> [-h] [-m <mode>] [-o <owner>] [-s]
+#        [-v] <file1> <file2>
+#
+#       ninstall [-c] [-g <group> [-h] [-m <mode>] [-o <owner>] [-s]
+#       [-v] <file> [...] <dir>
+#
+#       ninstall [-d] [-g <group> [-h] [-m <mode>] [-o <owner>] [-v]
+#       <dir>
+#
+# Command-line Options:
+#   -c  Use copy to install files (already selected as default)
+#   -d  Create directory with all non-exesting leading directories
+#   -g <group>  Set group ownership default is current group)
+#   -h  Display help message
+#   -m <mode>  Set permission mode for installed file (default is 755) 
+#   -o <owner>  Set ownership (default is current owner)
+#   -s Strip the symbol tables from installed programs
+#   -v  Display version number
+#
+# Command-line arguments:
+#   <file>   file name
+#   <dir>    directory name
+#
+# Author: Geraldo Veiga 
+# (Based on manual description of BSD 4.3 and gnu install)
+#
+# History:
+# 11/14/92 - Created
+# 12/14/92 - Support installation of multiple files into a directory
+# 12/14/92 - Change usage message
+# 12/28/92 - Test is mkdir, cp and mv were successful
+# 02/12/93 - Change default installation command to cp
+# ---------------------------------------------------------------------
+
+# Defaults for internal variables
+chgrp="chgrp"
+chmod="chmod"
+chown="chown"
+cp="cp"
+mv="mv"
+mkdir="mkdir"
+rm="rm -f"
+strip="strip"
+mode="755"
+group=""
+owner=""
+
+# Default install command
+cmd=$cp
+
+# Initialize flags
+dflag=""; sflag=""
+
+# Redefine program name
+prog=`basename $0`
+
+# Set version
+version='Version 1.0 - 02/12/93'
+
+# Usage message
+u1a="usage: $prog [-c] [-g <group> [-h] [-m <mode>] [-o <owner>] [-s] [-v]"
+u1b="       $prog [-c] [-g <group> [-h] [-m <mode>] [-o <owner>] [-s] [-v]"
+u1c="       $prog [-d] [-g <group> [-h] [-m <mode>] [-o <owner>] [-v] <dir>"
+u2a="       <file1> <file2>"
+u2b="       <file> [...] <dir>"
+
+# Parse command-line options
+while true
+do case $1 in
+   -c ) cmd=$cp; shift;;
+   -d ) dflag=1; shift;;
+   -g ) group=$2; shift; shift;;
+   -h ) echo "$u1a" >&2; echo "$u2a" >&2; echo "";
+        echo "$u1b" >&2; echo "$u2b" >&2; echo "";
+        echo "$u1c" >&2; exit 0;; 
+   -m ) mode=$2; shift; shift;;
+   -o ) owner=$2; shift; shift;;
+   -s ) sflag=1; shift ;;
+   -v ) echo "$prog: $version" >&2; exit 0;;
+   -- ) shift; break;;
+   -* ) echo "$prog: Unidentified command-line option" >&2;
+        echo "$u1a" >&2; echo "$u2a" >&2; echo "";
+        echo "$u1b" >&2; echo "$u2b" >&2; echo "";
+        echo "$u1c" >&2; exit 1;; 
+   * )	break;;
+   esac
+done
+
+# Identify last argument
+for i in $@; do last=$i; done
+
+# Install directory
+if [ "$dflag" != ""  -a $# -eq 1 ]
+then
+   # Locate existing directory
+   dir=$1
+   rest=""
+   while true
+   do
+      if [ -d $dir ]; then break; fi
+      if [ -f $dir ]
+      then echo "$prog: File $1 not a directory" >&2; exit 1
+      fi
+      rest="`basename $dir` $rest"
+      dir=`dirname $dir`
+   done
+
+   # Create directories
+   if [ ! "$rest" ]
+   then echo "$prog: Directory $1 already exists" >&2; exit 0
+   fi
+   for i in $rest
+   do
+      dir=$dir/$i
+      $mkdir $dir
+      if [ ! $? -eq 0 ]
+      then
+         echo "$prog: Cannot create directory $dir" >&2
+         exit 1
+      fi
+
+      if [ $mode ]
+      then $chmod $mode $dir
+      fi
+      if [ $group ]
+      then $chgrp $group $dir
+      fi
+      if [ $owner ]
+      then $chown $owner $dir
+      fi
+   done
+   exit 0
+
+# Install single file into file
+elif [ "$dflag" = ""  -a  $# -eq  2  -a ! -d "$last" ]
+then
+   if [ $1 = $2 -o $2 = . ]
+   then echo "$prog: Cannot install $1 onto itself" >&2; exit 1
+   fi
+
+   # Test if file exists
+   if [ ! -f $1 ]
+   then echo "$prog: Cannot open $1" >&2; exit 1
+   fi
+
+   # Get destination name
+   file=$2
+
+   # Install File
+   $rm $file; $cmd $1 $file
+   if [ ! $? -eq 0 ]
+   then
+      echo "$prog: Cannot create file $file" >&2
+      exit 1
+   fi
+
+   if [ $sflag ]
+   then $strip $file
+   fi
+   if [ $mode ]
+   then $chmod $mode $file
+   fi
+   if [ $group ]
+   then $chgrp $group $file
+   fi
+   if [ $owner ]
+   then $chown $owner $file
+   fi
+   exit 0
+
+# Install multiple files into a directory
+elif [ "$dflag" = ""  -a  $# -ge  2  -a -d "$last" ]
+then
+   dir="$last"
+   if [ "$dir" = "." ]
+   then
+      echo "$prog: Cannot install files in working directory" >&2
+      exit 1
+   fi
+   flist=`echo $@ | sed "s;  *${dir}\$;;"`
+   for i in $flist
+   do
+      # Test if file exists
+      if [ ! -f $i ]
+      then echo "$prog: Cannot open $i" >&2; exit 1
+      fi
+
+      # Get destination name
+      file=$dir/`basename $i`
+
+      # Install File
+      $rm -f $file; $cmd $i $file
+      if [ ! $? -eq 0 ]
+      then
+         echo "$prog: Cannot create file $file" >&2
+         exit 1
+      fi
+
+      if [ $sflag ]
+      then $strip $file
+      fi
+      if [ $mode ]
+      then $chmod $mode $file
+      fi
+      if [ $group ]
+      then $chgrp $group $file
+      fi
+      if [ $owner ]
+      then $chown $owner $file
+      fi
+   done
+   exit 0
+
+   # Error in command-line
+   else 
+      echo "$prog: Error in command-line" >&2
+      echo "$u1a" >&2; echo "$u2a" >&2; echo ""
+      echo "$u1b" >&2; echo "$u2b" >&2; echo ""
+      echo "$u1c" >&2; exit 1 
+fi
