@@ -164,6 +164,10 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
  int orig_use_materialcolor = ay_prefs.use_materialcolor;
  GLfloat color[4] = {0.0f,0.0f,0.0f,0.0f};
  int is_csg;
+ Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ Tcl_Interp *interp = ay_interp;
+ int opencsg_algorithm = 0, opencsg_dcsampling = 0, calc_bbs = AY_FALSE;
+
 #ifdef AYCSGDBG
  ay_printcb *cbv[4];
 
@@ -172,6 +176,52 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
   cbv[2] = &aycsg_printppohcb/*ay_ppoh_prflags*/;
   cbv[3] = NULL;
 #endif
+
+  // get global preferences
+  toa = Tcl_NewStringObj("aycsg_options", -1);
+  ton = Tcl_NewStringObj("Algorithm", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &opencsg_algorithm);
+
+  switch(opencsg_algorithm)
+    {
+    case 0:
+      algo = OpenCSG::Automatic;
+      break;
+    case 1:
+      algo = OpenCSG::Goldfeather;
+      break;
+    case 2:
+      algo = OpenCSG::SCS;
+      break;
+    default:
+      algo = OpenCSG::Automatic;
+      break;
+    } // switch
+
+  Tcl_SetStringObj(ton, "DCSampling", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &opencsg_dcsampling);
+
+  switch(opencsg_dcsampling)
+    {
+    case 0:
+      depthalgo = OpenCSG::NoDepthComplexitySampling;
+      break;
+    case 1:
+      depthalgo = OpenCSG::OcclusionQuery;
+      break;
+    case 2:
+      depthalgo = OpenCSG::DepthComplexitySampling;
+      break;
+    default:
+      depthalgo = OpenCSG::NoDepthComplexitySampling;
+      break;
+    } // switch
+
+  Tcl_SetStringObj(ton, "CalcBBS", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &calc_bbs);
 
   // do not use glColor()/glMaterial() while resolving CSG,
   // it is needed by OpenCSG...
@@ -1316,6 +1366,14 @@ Aycsg_Init(Tcl_Interp *interp)
   ay_ppoh_init(interp);
 #endif
 
+  // source aycsg.tcl, it contains Tcl-code for new key bindings
+  if((Tcl_EvalFile(interp, "aycsg.tcl")) != TCL_OK)
+     {
+       ay_error(AY_ERROR, fname,
+		  "Error while sourcing \\\"aycsg.tcl\\\"!");
+       return TCL_OK;
+     }
+
   // initialize GLEW
   err = glewInit();
   if (GLEW_OK != err) {
@@ -1327,14 +1385,6 @@ Aycsg_Init(Tcl_Interp *interp)
 
   // create a new command for all views (Togl widgets)
   Togl_CreateCommand("rendercsg", aycsg_rendertcb);
-
-  // source aycsg.tcl, it contains Tcl-code for new key bindings
-  if((Tcl_EvalFile(interp, "aycsg.tcl")) != TCL_OK)
-     {
-       ay_error(AY_ERROR, fname,
-		  "Error while sourcing \\\"aycsg.tcl\\\"!");
-       return TCL_OK;
-     }
 
   ay_error(AY_EOUTPUT, fname, "Plugin 'aycsg' successfully loaded.");
 
