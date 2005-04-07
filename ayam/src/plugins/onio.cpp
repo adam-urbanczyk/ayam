@@ -36,6 +36,7 @@ static double tm[16] = {0}; // current transformation matrix
 int onio_importcurves = AY_TRUE;
 int onio_exportcurves = AY_TRUE;
 int onio_expsphereasbrep = AY_TRUE;
+int onio_expcylinderasbrep = AY_TRUE;
 double onio_accuracy = 1.0e-12;
 
 
@@ -72,6 +73,8 @@ int onio_writeinstance(ay_object *o, ONX_Model *p_m, double *m);
 int onio_writescript(ay_object *o, ONX_Model *p_m, double *m);
 
 int onio_writesphere(ay_object *o, ONX_Model *p_m, double *m);
+
+int onio_writecylinder(ay_object *o, ONX_Model *p_m, double *m);
 
 int onio_writeobject(ay_object *o, ONX_Model *p_m);
 
@@ -784,6 +787,73 @@ onio_writesphere(ay_object *o, ONX_Model *p_m, double *m)
 
  return ay_status;
 } // onio_writesphere
+
+
+// onio_writecylinder:
+//
+int
+onio_writecylinder(ay_object *o, ONX_Model *p_m, double *m)
+{
+ int ay_status = AY_OK;
+ double tm[16] = {0};
+ ay_cylinder_object *cylinder = NULL;
+ ON_Cylinder *p_cy = NULL;
+
+
+  if(!o || !p_m || !m)
+    return AY_ENULL;
+
+  cylinder = (ay_cylinder_object *)o->refine;
+  double zmin = (cylinder->zmin<cylinder->zmax)?cylinder->zmin:cylinder->zmax;
+  double zmax = (cylinder->zmin>cylinder->zmax)?cylinder->zmin:cylinder->zmax;
+
+  ON_3dPoint center(0.0, 0.0, zmin);
+
+  ON_Circle circle(center, cylinder->radius);
+
+  onio_transposetm(m, tm);
+
+  ON_Xform xform(tm);
+
+  p_cy = new ON_Cylinder(circle, zmax-zmin);  
+
+  if(p_cy)
+    {
+      if(!onio_expcylinderasbrep)
+	{
+	  ON_NurbsSurface su, *p_su = NULL;
+
+	  p_cy->GetNurbForm(su);
+
+	  su.Transform(xform);
+
+	  p_su = new ON_NurbsSurface(su);
+	  if(p_su)
+	    {
+	      ONX_Model_Object& mo = p_m->m_object_table.AppendNew();
+	      mo.m_object = p_su;
+	      mo.m_bDeleteObject = true;
+	    } // if
+	}
+      else
+	{
+	  ON_Cylinder cy = *p_cy;
+	  ON_Brep *p_b = ON_BrepCylinder(cy, cylinder->closed,
+					 cylinder->closed, NULL);
+
+	  if(p_b)
+	    {
+	      p_b->Transform(xform);
+	      ONX_Model_Object& mo = p_m->m_object_table.AppendNew();
+	      mo.m_object = p_b;
+	      mo.m_bDeleteObject = true;
+	    } // if
+	} // if
+      delete p_cy;
+    } // if
+
+ return ay_status;
+} // onio_writecylinder
 
 
 // onio_writeobject:
@@ -2185,6 +2255,9 @@ Onio_Init(Tcl_Interp *interp)
 
   ay_status = onio_registerwritecb((char *)(AY_IDSPHERE),
 				   onio_writesphere);
+
+  ay_status = onio_registerwritecb((char *)(AY_IDCYLINDER),
+				   onio_writecylinder);
 
 
 #ifndef ONIOWRAPPED
