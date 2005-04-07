@@ -37,6 +37,7 @@ int onio_importcurves = AY_TRUE;
 int onio_exportcurves = AY_TRUE;
 int onio_expsphereasbrep = AY_TRUE;
 int onio_expcylinderasbrep = AY_TRUE;
+int onio_exptorusasbrep = AY_TRUE;
 double onio_accuracy = 1.0e-12;
 
 
@@ -75,6 +76,8 @@ int onio_writescript(ay_object *o, ONX_Model *p_m, double *m);
 int onio_writesphere(ay_object *o, ONX_Model *p_m, double *m);
 
 int onio_writecylinder(ay_object *o, ONX_Model *p_m, double *m);
+
+int onio_writetorus(ay_object *o, ONX_Model *p_m, double *m);
 
 int onio_writeobject(ay_object *o, ONX_Model *p_m);
 
@@ -121,7 +124,8 @@ int Onio_Init(Tcl_Interp *interp);
 // functions
 
 // onio_transposetm:
-//
+//  transpose 4x4 transformation matrix in <m1> from Ayam style to OpenNURBS
+//  style, return result in <m2>
 int
 onio_transposetm(double *m1, double *m2)
 {
@@ -151,6 +155,7 @@ onio_transposetm(double *m1, double *m2)
 
  return AY_OK;
 } // onio_transposetm
+
 
 // onio_getnurbsurfobj:
 //
@@ -328,7 +333,7 @@ onio_addtrim(ay_object *o, ON_BrepLoop::TYPE ltype, ON_BrepTrim::TYPE ttype,
 	  loop.m_fi = p_f->m_face_index;
 	  if(ON_BrepLoop::outer == ltype)
 	    {
-	      // the index of the outer loop is always 
+	      // the index of the outer loop is always
 	      // in face.m_li[0]
 	      p_f->m_li.Insert(0,loop.m_loop_index);
 	    }
@@ -749,7 +754,7 @@ onio_writesphere(ay_object *o, ONX_Model *p_m, double *m)
 
   ON_Xform xform(tm);
 
-  p_sp = new ON_Sphere(center, sphere->radius);  
+  p_sp = new ON_Sphere(center, sphere->radius);
 
   if(p_sp)
     {
@@ -815,15 +820,80 @@ onio_writecylinder(ay_object *o, ONX_Model *p_m, double *m)
 
   ON_Xform xform(tm);
 
-  p_cy = new ON_Cylinder(circle, zmax-zmin);  
+  p_cy = new ON_Cylinder(circle, zmax-zmin);
 
   if(p_cy)
     {
       if(!onio_expcylinderasbrep)
+        {
+          ON_NurbsSurface su, *p_su = NULL;
+
+          p_cy->GetNurbForm(su);
+
+          su.Transform(xform);
+
+          p_su = new ON_NurbsSurface(su);
+          if(p_su)
+            {
+              ONX_Model_Object& mo = p_m->m_object_table.AppendNew();
+              mo.m_object = p_su;
+              mo.m_bDeleteObject = true;
+            } // if
+        }
+      else
+        {
+          ON_Cylinder cy = *p_cy;
+          ON_Brep *p_b = ON_BrepCylinder(cy, cylinder->closed,
+                                         cylinder->closed, NULL);
+
+          if(p_b)
+            {
+              p_b->Transform(xform);
+              ONX_Model_Object& mo = p_m->m_object_table.AppendNew();
+              mo.m_object = p_b;
+              mo.m_bDeleteObject = true;
+            } // if
+        } // if
+      delete p_cy;
+    } // if
+
+ return ay_status;
+} // onio_writecylinder
+
+
+// onio_writetorus:
+//
+int
+onio_writetorus(ay_object *o, ONX_Model *p_m, double *m)
+{
+ int ay_status = AY_OK;
+ double tm[16] = {0};
+ ay_torus_object *torus = NULL;
+ ON_Torus *p_to = NULL;
+
+
+  if(!o || !p_m || !m)
+    return AY_ENULL;
+
+  torus = (ay_torus_object *)o->refine;
+
+  ON_3dPoint center(0.0, 0.0, 0.0);
+  ON_3dVector normal(0.0, 0.0, 1.0);
+  ON_Plane plane(center, normal);
+
+  onio_transposetm(m, tm);
+
+  ON_Xform xform(tm);
+
+  p_to = new ON_Torus(plane, torus->majorrad, torus->minorrad);
+
+  if(p_to)
+    {
+      if(!onio_exptorusasbrep)
 	{
 	  ON_NurbsSurface su, *p_su = NULL;
 
-	  p_cy->GetNurbForm(su);
+	  p_to->GetNurbForm(su);
 
 	  su.Transform(xform);
 
@@ -837,9 +907,8 @@ onio_writecylinder(ay_object *o, ONX_Model *p_m, double *m)
 	}
       else
 	{
-	  ON_Cylinder cy = *p_cy;
-	  ON_Brep *p_b = ON_BrepCylinder(cy, cylinder->closed,
-					 cylinder->closed, NULL);
+	  ON_Torus to = *p_to;
+	  ON_Brep *p_b = ON_BrepTorus(to, NULL);
 
 	  if(p_b)
 	    {
@@ -849,11 +918,11 @@ onio_writecylinder(ay_object *o, ONX_Model *p_m, double *m)
 	      mo.m_bDeleteObject = true;
 	    } // if
 	} // if
-      delete p_cy;
+      delete p_to;
     } // if
 
  return ay_status;
-} // onio_writecylinder
+} // onio_writetorus
 
 
 // onio_writeobject:
@@ -1882,7 +1951,7 @@ onio_readlayer(ONX_Model &model, int li, double accuracy)
     return AY_EOMEM;
   if(!(newlevel = (ay_level_object*)calloc(1, sizeof(ay_level_object))))
     return AY_EOMEM;
-  
+
   ay_object_defaults(newo);
   newo->type = AY_IDLEVEL;
   newo->inherit_trafos = AY_TRUE;
@@ -1954,7 +2023,7 @@ onio_readname(ay_object *o, ON_3dmObjectAttributes *attr)
 
   if(!o || !attr)
     return AY_OK;
-  
+
   if(o->name)
     free(o->name);
   o->name = NULL;
@@ -2258,6 +2327,9 @@ Onio_Init(Tcl_Interp *interp)
 
   ay_status = onio_registerwritecb((char *)(AY_IDCYLINDER),
 				   onio_writecylinder);
+
+  ay_status = onio_registerwritecb((char *)(AY_IDTORUS),
+				   onio_writetorus);
 
 
 #ifndef ONIOWRAPPED
