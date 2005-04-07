@@ -83,6 +83,8 @@ int onio_writecone(ay_object *o, ONX_Model *p_m, double *m);
 
 int onio_writetorus(ay_object *o, ONX_Model *p_m, double *m);
 
+int onio_writebox(ay_object *o, ONX_Model *p_m, double *m);
+
 int onio_writeobject(ay_object *o, ONX_Model *p_m);
 
 int onio_writetcmd(ClientData clientData, Tcl_Interp *interp,
@@ -989,6 +991,72 @@ onio_writetorus(ay_object *o, ONX_Model *p_m, double *m)
 
  return ay_status;
 } // onio_writetorus
+
+
+// onio_writebox:
+//
+int
+onio_writebox(ay_object *o, ONX_Model *p_m, double *m)
+{
+ int ay_status = AY_OK;
+ double tm[16] = {0};
+ ay_box_object *box = NULL;
+ ON_3dPoint corners[8];
+
+  if(!o || !p_m || !m)
+    return AY_ENULL;
+
+  box = (ay_box_object *)o->refine;
+
+  onio_transposetm(m, tm);
+
+  ON_Xform xform(tm);
+
+  corners[0].x = -(box->width/2.0);
+  corners[0].y = -(box->height/2.0);
+  corners[0].z =  (box->length/2.0);
+
+  corners[1].x =  (box->width/2.0);
+  corners[1].y = -(box->height/2.0);
+  corners[1].z =  (box->length/2.0);
+
+  corners[2].x =  (box->width/2.0);
+  corners[2].y = -(box->height/2.0);
+  corners[2].z = -(box->length/2.0);
+
+  corners[3].x = -(box->width/2.0);
+  corners[3].y = -(box->height/2.0);
+  corners[3].z = -(box->length/2.0);
+
+
+  corners[4].x = -(box->width/2.0);
+  corners[4].y =  (box->height/2.0);
+  corners[4].z =  (box->length/2.0);
+
+  corners[5].x =  (box->width/2.0);
+  corners[5].y =  (box->height/2.0);
+  corners[5].z =  (box->length/2.0);
+
+  corners[6].x =  (box->width/2.0);
+  corners[6].y =  (box->height/2.0);
+  corners[6].z = -(box->length/2.0);
+
+  corners[7].x = -(box->width/2.0);
+  corners[7].y =  (box->height/2.0);
+  corners[7].z = -(box->length/2.0);
+
+  ON_Brep *p_b = ON_BrepBox(corners, NULL);
+
+  if(p_b)
+    {
+      p_b->Transform(xform);
+      ONX_Model_Object& mo = p_m->m_object_table.AppendNew();
+      mo.m_object = p_b;
+      mo.m_bDeleteObject = true;
+    } // if
+
+ return ay_status;
+} // onio_writebox
 
 
 // onio_writeobject:
@@ -2399,6 +2467,9 @@ Onio_Init(Tcl_Interp *interp)
 
   ay_status = onio_registerwritecb((char *)(AY_IDTORUS),
 				   onio_writetorus);
+
+  ay_status = onio_registerwritecb((char *)(AY_IDBOX),
+				   onio_writebox);
 
 
 #ifndef ONIOWRAPPED
