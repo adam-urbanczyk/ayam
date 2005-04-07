@@ -35,10 +35,13 @@ static double tm[16] = {0}; // current transformation matrix
 
 int onio_importcurves = AY_TRUE;
 int onio_exportcurves = AY_TRUE;
-int onio_expsphereasbrep = AY_FALSE;
+int onio_expsphereasbrep = AY_TRUE;
 double onio_accuracy = 1.0e-12;
 
+
 // prototypes of functions local to this module
+
+int onio_transposetm(double *m1, double *m2);
 
 int onio_getnurbsurfobj(ay_object *o, ON_NurbsSurface **pp_n, double *m);
 
@@ -113,6 +116,38 @@ int Onio_Init(Tcl_Interp *interp);
 
 
 // functions
+
+// onio_transposetm:
+//
+int
+onio_transposetm(double *m1, double *m2)
+{
+
+  if(!m1 || !m2)
+    return AY_ENULL;
+
+  m2[0] = m1[0];
+  m2[1] = m1[4];
+  m2[2] = m1[8];
+  m2[3] = m1[12];
+
+  m2[4] = m1[1];
+  m2[5] = m1[5];
+  m2[6] = m1[9];
+  m2[7] = m1[13];
+
+  m2[8] = m1[2];
+  m2[9] = m1[6];
+  m2[10] = m1[10];
+  m2[11] = m1[14];
+
+  m2[12] = m1[3];
+  m2[13] = m1[7];
+  m2[14] = m1[11];
+  m2[15] = m1[15];
+
+ return AY_OK;
+} // onio_transposetm
 
 // onio_getnurbsurfobj:
 //
@@ -697,6 +732,7 @@ int
 onio_writesphere(ay_object *o, ONX_Model *p_m, double *m)
 {
  int ay_status = AY_OK;
+ double tm[16] = {0};
  ay_sphere_object *sphere = NULL;
  ON_Sphere *p_sp = NULL;
  ON_3dPoint center(0.0, 0.0, 0.0);
@@ -706,7 +742,9 @@ onio_writesphere(ay_object *o, ONX_Model *p_m, double *m)
 
   sphere = (ay_sphere_object *)o->refine;
 
-  ON_Xform xform(m);
+  onio_transposetm(m, tm);
+
+  ON_Xform xform(tm);
 
   p_sp = new ON_Sphere(center, sphere->radius);  
 
