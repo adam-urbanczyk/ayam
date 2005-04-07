@@ -37,7 +37,9 @@ int onio_importcurves = AY_TRUE;
 int onio_exportcurves = AY_TRUE;
 int onio_expsphereasbrep = AY_TRUE;
 int onio_expcylinderasbrep = AY_TRUE;
+int onio_expconeasbrep = AY_TRUE;
 int onio_exptorusasbrep = AY_TRUE;
+
 double onio_accuracy = 1.0e-12;
 
 
@@ -76,6 +78,8 @@ int onio_writescript(ay_object *o, ONX_Model *p_m, double *m);
 int onio_writesphere(ay_object *o, ONX_Model *p_m, double *m);
 
 int onio_writecylinder(ay_object *o, ONX_Model *p_m, double *m);
+
+int onio_writecone(ay_object *o, ONX_Model *p_m, double *m);
 
 int onio_writetorus(ay_object *o, ONX_Model *p_m, double *m);
 
@@ -861,6 +865,69 @@ onio_writecylinder(ay_object *o, ONX_Model *p_m, double *m)
 } // onio_writecylinder
 
 
+// onio_writecone:
+//
+int
+onio_writecone(ay_object *o, ONX_Model *p_m, double *m)
+{
+ int ay_status = AY_OK;
+ double tm[16] = {0};
+ ay_cone_object *cone = NULL;
+ ON_Cone *p_co = NULL;
+
+  if(!o || !p_m || !m)
+    return AY_ENULL;
+
+  cone = (ay_cone_object *)o->refine;
+
+  ON_3dPoint center(0.0, 0.0, cone->height);
+  ON_3dVector normal(0.0, 0.0, -1.0);
+  ON_Plane plane(center, normal);
+
+  onio_transposetm(m, tm);
+
+  ON_Xform xform(tm);
+
+  p_co = new ON_Cone(plane, cone->height, cone->radius);
+
+  if(p_co)
+    {
+      if(!onio_expconeasbrep)
+        {
+          ON_NurbsSurface su, *p_su = NULL;
+
+          p_co->GetNurbForm(su);
+
+          su.Transform(xform);
+
+          p_su = new ON_NurbsSurface(su);
+          if(p_su)
+            {
+              ONX_Model_Object& mo = p_m->m_object_table.AppendNew();
+              mo.m_object = p_su;
+              mo.m_bDeleteObject = true;
+            } // if
+        }
+      else
+        {
+          ON_Cone co = *p_co;
+          ON_Brep *p_b = ON_BrepCone(co, cone->closed, NULL);
+
+          if(p_b)
+            {
+              p_b->Transform(xform);
+              ONX_Model_Object& mo = p_m->m_object_table.AppendNew();
+              mo.m_object = p_b;
+              mo.m_bDeleteObject = true;
+            } // if
+        } // if
+      delete p_co;
+    } // if
+
+ return ay_status;
+} // onio_writecone
+
+
 // onio_writetorus:
 //
 int
@@ -870,7 +937,6 @@ onio_writetorus(ay_object *o, ONX_Model *p_m, double *m)
  double tm[16] = {0};
  ay_torus_object *torus = NULL;
  ON_Torus *p_to = NULL;
-
 
   if(!o || !p_m || !m)
     return AY_ENULL;
@@ -2327,6 +2393,9 @@ Onio_Init(Tcl_Interp *interp)
 
   ay_status = onio_registerwritecb((char *)(AY_IDCYLINDER),
 				   onio_writecylinder);
+
+  ay_status = onio_registerwritecb((char *)(AY_IDCONE),
+				   onio_writecone);
 
   ay_status = onio_registerwritecb((char *)(AY_IDTORUS),
 				   onio_writetorus);
