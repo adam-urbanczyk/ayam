@@ -1462,7 +1462,7 @@ onio_readbrep(ON_Brep *p_b, double accuracy)
  int i;
  ON_NurbsSurface s;
  const ON_Surface* p_s = NULL;
- ay_object **oldnext = ay_next, *lo = NULL, *o;
+ ay_object *lo = NULL, *o, *lf;
  ay_level_object *level = NULL;
 
 
@@ -1490,6 +1490,7 @@ onio_readbrep(ON_Brep *p_b, double accuracy)
       if(p_s->GetNurbForm(s, accuracy))
 	{
 	  ay_status = onio_readnurbssurface(&s);
+	  lf = onio_lrobject;
 	}
       else
 	{
@@ -1669,6 +1670,7 @@ onio_readbrep(ON_Brep *p_b, double accuracy)
 	      ay_next = &(lo->next);
 	    } // if
 	} // for
+      ay_next = &(lf->next);
     } // for
 
   if(onio_lrobject && onio_lrobject->down)
@@ -1680,8 +1682,6 @@ onio_readbrep(ON_Brep *p_b, double accuracy)
 
       ay_status = ay_object_crtendlevel(&(o->next));
     } // if
-
-  ay_next = oldnext;
 
  return ay_status;
 } // onio_readbrep
