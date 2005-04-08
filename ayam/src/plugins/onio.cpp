@@ -1124,7 +1124,7 @@ onio_writetcmd(ClientData clientData, Tcl_Interp *interp,
  char fname[] = "onio_write";
  FILE *fp = NULL;
  const char *filename = NULL;
- int i = 2, version = 3;
+ int t, i = 2, version = 3;
  ay_object *o = ay_root;
  ONX_Model model;
  const ON_Layer *p_layer = NULL;
@@ -1146,6 +1146,15 @@ onio_writetcmd(ClientData clientData, Tcl_Interp *interp,
       if(!strcmp(argv[i], "-c"))
 	{
 	  sscanf(argv[i+1], "%d", &onio_exportcurves);
+	}
+      else
+      if(!strcmp(argv[i], "-q"))
+	{
+	  sscanf(argv[i+1], "%d", &t);
+	  onio_expsphereasbrep = t;
+	  onio_expcylinderasbrep = t;
+	  onio_expconeasbrep = t;
+	  onio_exptorusasbrep = t;
 	}
       i+=2;
     } // while
