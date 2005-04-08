@@ -14,6 +14,7 @@ uplevel #0 { array set onio_options {
     ReadCurves 1
     ReadLayers -1
     WriteCurves 1
+    QuadAsBRep 1
 }   }
 
 proc onio_import { } {
@@ -146,6 +147,7 @@ proc onio_export { } {
 
 	addParam $f onio_options Accuracy
 	addCheck $f onio_options WriteCurves
+	addCheck $f onio_options QuadAsBRep
 
 	set f [frame $w.f2]
 	button $f.bok -text "Ok" -width 5 -command {
@@ -154,7 +156,8 @@ proc onio_export { } {
 	    cd [file dirname $onio_options(FileName)]
 
 	    onioWrite [file tail $onio_options(FileName)]\
-		    -c $onio_options(WriteCurves)
+		    -c $onio_options(WriteCurves)\
+		    -q $onio_options(QuadAsBRep)
 
 	    cd $oldcd
 	    goTop
