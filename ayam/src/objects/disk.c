@@ -1,7 +1,7 @@
 /*
  * Ayam, a free 3D modeler for the RenderMan interface.
  *
- * Ayam is copyrighted 1998-2001 by Randolf Schultz
+ * Ayam is copyrighted 1998-2005 by Randolf Schultz
  * (rschultz@informatik.uni-rostock.de) and others.
  *
  * All rights reserved.
@@ -48,7 +48,7 @@ ay_disk_deletecb(void *c)
  ay_disk_object *disk = NULL;
 
   if(!c)
-    return AY_ENULL;    
+    return AY_ENULL;
 
   disk = (ay_disk_object *)(c);
 
@@ -67,9 +67,9 @@ ay_disk_copycb(void *src, void **dst)
     return AY_ENULL;
 
   if(!(disk = calloc(1, sizeof(ay_disk_object))))
-    return AY_EOMEM; 
+    return AY_EOMEM;
 
-  memcpy(disk, src, sizeof(ay_disk_object)); 
+  memcpy(disk, src, sizeof(ay_disk_object));
 
   *dst = (void *)disk;
 
@@ -102,7 +102,7 @@ ay_disk_drawcb(struct Togl *togl, ay_object *o)
   if(disk->is_simple)
     {
       /* yes, it is */
-      
+
       w = (GLdouble)(sqrt(2.0)*0.5);
 
       /* draw */
@@ -198,7 +198,7 @@ ay_disk_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     return AY_ENULL;
 
   disk = (ay_disk_object *)o->refine;
-  
+
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
 
@@ -343,7 +343,7 @@ ay_disk_bbccb(ay_object *o, double *bbox, int *flags)
   if(!o || !bbox)
     return AY_ENULL;
 
-  disk = (ay_disk_object *)o->refine; 
+  disk = (ay_disk_object *)o->refine;
 
   r = disk->radius;
   h = disk->height;
@@ -373,6 +373,157 @@ ay_disk_bbccb(ay_object *o, double *bbox, int *flags)
 
 
 int
+ay_disk_providecb(ay_object *o, unsigned int type, ay_object **result)
+{
+ int ay_status = AY_OK;
+ int stride = 4, i, j, height;
+ double *cv = NULL, *vk = NULL, *controlv = NULL;
+ ay_disk_object *disk = NULL;
+ ay_object *new = NULL;
+ ay_nurbpatch_object *np = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  if(!result)
+    {
+      if(type == AY_IDNPATCH)
+	return AY_OK;
+      else
+	return AY_ERROR;
+    }
+
+  disk = (ay_disk_object *) o->refine;
+
+  if(type == AY_IDNPATCH)
+    {
+      if(disk->thetamax < 0.0)
+	{
+	  ay_status = ay_nb_CreateNurbsCircle(disk->radius,
+					      disk->thetamax, 0.0,
+					      &height, &vk, &cv);
+	}
+      else
+	{
+	  ay_status = ay_nb_CreateNurbsCircle(disk->radius,
+					      0.0, disk->thetamax,
+					      &height, &vk, &cv);
+	} /* if */
+
+      if(ay_status)
+	return ay_status;
+
+      if(!(controlv = calloc(1, height*2*stride*sizeof(double))))
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	}
+
+      memcpy(controlv, cv, height*stride*sizeof(double));
+      j = 2;
+      for(i = 0; i < height*2; i++)
+	{
+	  controlv[j] = disk->height;
+	  j += stride;
+	}
+      j = (height*stride)+3;
+      for(i = 0; i < height; i++)
+	{
+	  controlv[j] = 1.0;
+	  j += stride;
+	}
+
+      ay_status = ay_npt_create(2, 3, 2, height, AY_KTBEZIER, AY_KTCUSTOM,
+				controlv, NULL, vk, &np);
+
+      if(ay_status)
+	goto cleanup;
+
+      if(!(new = calloc(1, sizeof(ay_object))))
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	}
+
+      ay_object_defaults(new);
+      new->type = AY_IDNPATCH;
+      new->inherit_trafos = AY_FALSE;
+      new->parent = AY_TRUE;
+      new->hide_children = AY_TRUE;
+
+      ay_status = ay_object_crtendlevel(&(new->down));
+      if(ay_status)
+	goto cleanup;
+
+      ay_trafo_copy(o, new);
+      new->refine = np;
+
+      /* return result */
+      *result = new;
+
+      cv = NULL; vk = NULL; controlv = NULL; np = NULL; new = NULL;
+
+    } /* if */
+
+
+cleanup:
+
+  if(cv)
+    free(cv);
+
+  if(vk)
+    free(vk);
+
+  if(controlv)
+    free(controlv);
+
+  if(np)
+    free(np);
+
+  if(new)
+    {
+      if(new->down)
+	ay_object_delete(o->down);
+      free(new);
+    }
+
+ return ay_status;
+} /* ay_disk_providecb */
+
+
+int
+ay_disk_convertcb(ay_object *o, int in_place)
+{
+ int ay_status = AY_OK;
+ ay_object *new = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  /* first, create new object(s) */
+
+  ay_status = ay_disk_providecb(o, AY_IDNPATCH, &new);
+
+
+  /* second, link new objects, or replace old objects with them */
+
+  if(new)
+    {
+      if(!in_place)
+	{
+	  ay_status = ay_object_link(new);
+	}
+      else
+	{
+	  ay_object_replace(new, o);
+	} /* if */
+    } /* if */
+
+ return ay_status;
+} /* ay_disk_convertcb */
+
+
+int
 ay_disk_init(Tcl_Interp *interp)
 {
  int ay_status = AY_OK;
@@ -392,6 +543,10 @@ ay_disk_init(Tcl_Interp *interp)
 				    ay_disk_wribcb,
 				    ay_disk_bbccb,
 				    AY_IDDISK);
+
+  ay_status = ay_convert_register(ay_disk_convertcb, AY_IDDISK);
+
+  ay_status = ay_provide_register(ay_disk_providecb, AY_IDDISK);
 
  return ay_status;
 } /* ay_disk_init */
