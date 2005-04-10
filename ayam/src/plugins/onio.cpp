@@ -521,7 +521,10 @@ onio_writenpconvertible(ay_object *o, ONX_Model *p_m, double *m)
 	      // do not use m but tm because m already contains the
 	      // transformations of o and the provided objects (p)
 	      // do so as well
-	      ay_status = onio_writenpatch(t, p_m, tm);
+	      // ay_status = onio_writenpatch(t, p_m, tm);
+
+	      ay_status = onio_writeobject(t, p_m);
+
 	    } /* if */
 	  t = t->next;
 	} /* while */
@@ -608,7 +611,10 @@ onio_writencconvertible(ay_object *o, ONX_Model *p_m, double *m)
 	      // do not use m but tm because m already contains the
 	      // transformations of o and the provided objects (p)
 	      // do so as well
-	      ay_status = onio_writencurve(t, p_m, tm);
+	      // ay_status = onio_writencurve(t, p_m, tm);
+
+	      ay_status = onio_writeobject(t, p_m);
+
 	    } /* if */
 	  t = t->next;
 	} /* while */
@@ -2479,6 +2485,9 @@ Onio_Init(Tcl_Interp *interp)
 
   ay_status = onio_registerwritecb((char *)(AY_IDBOX),
 				   onio_writebox);
+
+  ay_status = onio_registerwritecb((char *)(AY_IDDISK),
+				   onio_writenpconvertible);
 
 
 #ifndef ONIOWRAPPED
