@@ -420,19 +420,18 @@ ay_disk_providecb(ay_object *o, unsigned int type, ay_object **result)
 	}
 
       memcpy(controlv, cv, height*stride*sizeof(double));
-      j = 2;
-      for(i = 0; i < height*2; i++)
-	{
-	  controlv[j] = disk->height;
-	  j += stride;
-	}
       j = (height*stride)+3;
       for(i = 0; i < height; i++)
 	{
 	  controlv[j] = 1.0;
 	  j += stride;
 	}
-
+      j = 2;
+      for(i = 0; i < height*2; i++)
+	{
+	  controlv[j] = disk->height * controlv[j+1];
+	  j += stride;
+	}
       ay_status = ay_npt_create(2, 3, 2, height, AY_KTBEZIER, AY_KTCUSTOM,
 				controlv, NULL, vk, &np);
 
