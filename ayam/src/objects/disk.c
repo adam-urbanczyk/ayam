@@ -461,7 +461,7 @@ ay_disk_providecb(ay_object *o, unsigned int type, ay_object **result)
       /* return result */
       *result = new;
 
-      cv = NULL; vk = NULL; controlv = NULL; np = NULL; new = NULL;
+      vk = NULL; controlv = NULL; np = NULL; new = NULL;
 
     } /* if */
 
