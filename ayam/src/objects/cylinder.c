@@ -1,7 +1,7 @@
 /*
  * Ayam, a free 3D modeler for the RenderMan interface.
  *
- * Ayam is copyrighted 1998-2001 by Randolf Schultz
+ * Ayam is copyrighted 1998-2005 by Randolf Schultz
  * (rschultz@informatik.uni-rostock.de) and others.
  *
  * All rights reserved.
@@ -50,7 +50,7 @@ ay_cylinder_deletecb(void *c)
  ay_cylinder_object *cylinder = NULL;
 
   if(!c)
-    return AY_ENULL;    
+    return AY_ENULL;
 
   cylinder = (ay_cylinder_object *)(c);
 
@@ -69,9 +69,9 @@ ay_cylinder_copycb(void *src, void **dst)
     return AY_ENULL;
 
   if(!(cylinder = calloc(1, sizeof(ay_cylinder_object))))
-    return AY_EOMEM; 
+    return AY_EOMEM;
 
-  memcpy(cylinder, src, sizeof(ay_cylinder_object)); 
+  memcpy(cylinder, src, sizeof(ay_cylinder_object));
 
   *dst = (void *)cylinder;
 
@@ -248,7 +248,7 @@ ay_cylinder_shadecb(struct Togl *togl, ay_object *o)
       gluCylinder(qobj, radius, radius, cylinder->zmax - cylinder->zmin, 8, 1);
 
       gluDeleteQuadric(qobj);
-      
+
       if(cylinder->closed)
 	{
 	  if(!(qobj = gluNewQuadric()))
@@ -264,7 +264,7 @@ ay_cylinder_shadecb(struct Togl *togl, ay_object *o)
 	  gluDisk(qobj, 0.0, radius, 8, 1);
 	  gluDeleteQuadric(qobj);
 	}
-      
+
       return AY_OK;
     }
 
@@ -331,7 +331,7 @@ ay_cylinder_shadecb(struct Togl *togl, ay_object *o)
        gluDeleteQuadric(qobj);
 
       glPopMatrix();
-	
+
       glPushMatrix();
 
        qobj = NULL;
@@ -366,7 +366,7 @@ ay_cylinder_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     return AY_ENULL;
 
   cylinder = (ay_cylinder_object *)o->refine;
-  
+
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
 
@@ -589,7 +589,7 @@ ay_cylinder_wribcb(char *file, ay_object *o)
  	 RiReverseOrientation();
 	 RiDisk((RtFloat)cylinder->zmin, (RtFloat)cylinder->radius,
 		(RtFloat)cylinder->thetamax, RI_NULL);
-	RiAttributeEnd(); 
+	RiAttributeEnd();
 
 	RiDisk((RtFloat)cylinder->zmax, (RtFloat)cylinder->radius,
 	       (RtFloat)cylinder->thetamax, RI_NULL);
@@ -669,7 +669,7 @@ ay_cylinder_bbccb(ay_object *o, double *bbox, int *flags)
   if(!o || !bbox)
     return AY_ENULL;
 
-  cylinder = (ay_cylinder_object *)o->refine; 
+  cylinder = (ay_cylinder_object *)o->refine;
 
   r = cylinder->radius;
   zmi = cylinder->zmin;
@@ -700,6 +700,157 @@ ay_cylinder_bbccb(ay_object *o, double *bbox, int *flags)
 
 
 int
+ay_cylinder_providecb(ay_object *o, unsigned int type, ay_object **result)
+{
+ int ay_status = AY_OK;
+ int stride = 4, i, j, height;
+ double *cv = NULL, *vk = NULL, *controlv = NULL;
+ ay_cylinder_object *cylinder = NULL;
+ ay_object *new = NULL;
+ ay_nurbpatch_object *np = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  if(!result)
+    {
+      if(type == AY_IDNPATCH)
+	return AY_OK;
+      else
+	return AY_ERROR;
+    }
+
+  cylinder = (ay_cylinder_object *) o->refine;
+
+  if(type == AY_IDNPATCH)
+    {
+      if(cylinder->thetamax < 0.0)
+	{
+	  ay_status = ay_nb_CreateNurbsCircle(cylinder->radius,
+					      cylinder->thetamax, 0.0,
+					      &height, &vk, &cv);
+	}
+      else
+	{
+	  ay_status = ay_nb_CreateNurbsCircle(cylinder->radius,
+					      0.0, cylinder->thetamax,
+					      &height, &vk, &cv);
+	} /* if */
+
+      if(ay_status)
+	return ay_status;
+
+      if(!(controlv = calloc(1, height*2*stride*sizeof(double))))
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	}
+
+      memcpy(controlv, cv, height*stride*sizeof(double));
+      j = 2;
+      for(i = 0; i < height; i++)
+	{
+	  controlv[j] = cylinder->zmin * controlv[j+1];
+	  j += stride;
+	}
+      memcpy(&(controlv[j-2]), cv, height*stride*sizeof(double));
+      for(i = 0; i < height; i++)
+	{
+	  controlv[j] = cylinder->zmax * controlv[j+1];
+	  j += stride;
+	}
+
+      ay_status = ay_npt_create(2, 3, 2, height, AY_KTBEZIER, AY_KTCUSTOM,
+				controlv, NULL, vk, &np);
+
+      if(ay_status)
+	goto cleanup;
+
+      if(!(new = calloc(1, sizeof(ay_object))))
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	}
+
+      ay_object_defaults(new);
+      new->type = AY_IDNPATCH;
+      new->inherit_trafos = AY_FALSE;
+      new->parent = AY_TRUE;
+      new->hide_children = AY_TRUE;
+
+      ay_status = ay_object_crtendlevel(&(new->down));
+      if(ay_status)
+	goto cleanup;
+
+      ay_trafo_copy(o, new);
+      new->refine = np;
+
+      /* return result */
+      *result = new;
+
+      vk = NULL; controlv = NULL; np = NULL; new = NULL;
+
+    } /* if */
+
+
+cleanup:
+
+  if(cv)
+    free(cv);
+
+  if(vk)
+    free(vk);
+
+  if(controlv)
+    free(controlv);
+
+  if(np)
+    free(np);
+
+  if(new)
+    {
+      if(new->down)
+	ay_object_delete(o->down);
+      free(new);
+    }
+
+ return ay_status;
+} /* ay_cylinder_providecb */
+
+
+int
+ay_cylinder_convertcb(ay_object *o, int in_place)
+{
+ int ay_status = AY_OK;
+ ay_object *new = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  /* first, create new object(s) */
+
+  ay_status = ay_cylinder_providecb(o, AY_IDNPATCH, &new);
+
+
+  /* second, link new objects, or replace old objects with them */
+
+  if(new)
+    {
+      if(!in_place)
+	{
+	  ay_status = ay_object_link(new);
+	}
+      else
+	{
+	  ay_object_replace(new, o);
+	} /* if */
+    } /* if */
+
+ return ay_status;
+} /* ay_cylinder_convertcb */
+
+
+int
 ay_cylinder_init(Tcl_Interp *interp)
 {
  int ay_status = AY_OK;
@@ -719,6 +870,10 @@ ay_cylinder_init(Tcl_Interp *interp)
 				    ay_cylinder_wribcb,
 				    ay_cylinder_bbccb,
 				    AY_IDCYLINDER);
+
+  ay_status = ay_convert_register(ay_cylinder_convertcb, AY_IDCYLINDER);
+
+  ay_status = ay_provide_register(ay_cylinder_providecb, AY_IDCYLINDER);
 
  return ay_status;
 } /* ay_cylinder_init */
