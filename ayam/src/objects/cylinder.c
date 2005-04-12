@@ -862,9 +862,7 @@ cleanup:
 
   if(new)
     {
-      if(new->down)
-	ay_object_delete(o->down);
-      free(new);
+      ay_object_deletemulti(new);
     }
 
  return ay_status;
