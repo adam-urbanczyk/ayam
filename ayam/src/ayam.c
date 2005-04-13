@@ -115,6 +115,8 @@ char *ay_noexport_tagtype;
 
 char *ay_savegeom_tagtype;
 
+char *ay_np_tagtype;
+
 char *ay_tp_tagtype;
 
 char *ay_ns_tagtype;
@@ -389,6 +391,9 @@ ay_init(Tcl_Interp *interp)
 
   /* register SaveGeom tag type */
   ay_tags_register(interp, "SaveMainGeom", &ay_savegeom_tagtype);
+
+  /* register NP (NewProperty) tag type */
+  ay_tags_register(interp, "NP", &ay_np_tagtype);
 
   /* create root object */
   if((ay_status = ay_object_create(AY_IDROOT, &ay_root)))
