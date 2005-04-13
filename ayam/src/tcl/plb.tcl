@@ -352,7 +352,22 @@ if { [llength $index] == 1 } {
 	global ${type}_props
 	eval [subst "set props {\$${type}_props}"]
 	eval [subst "$lb insert end $props"]
+	# insert properties from NP tags
+	set tn ""
+	getTags tn tv
+	if { ($tn != "") && ([ string first NP $tn ] != -1) } {
+	    set i 0
+	    foreach tag $tn {
+		if { [lindex $tn $i] == "NP" } {
+		    $lb insert end [lindex $tv $i] 
+		}
+		incr i
+	    }
+	    # foreach
+	}
+	# if
     }
+    # if
 
     # re-create old propgui?
     if { $oldsel != "" && $oldsel <= [$lb index end] } {
