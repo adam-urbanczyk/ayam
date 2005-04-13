@@ -693,10 +693,8 @@ proc actionDEditP { w } {
     }
 
     bind $w <B1-Motion> ""
-
     bind $w <Motion> ""
-
-    stdReleaseBind $w
+    bind $w <ButtonRelease-1> ""
 
     $w setconf -drawh 1
 
