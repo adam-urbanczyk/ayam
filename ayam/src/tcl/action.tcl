@@ -677,12 +677,14 @@ proc editPointDp { } {
 
 #
 proc actionDEditP { w } {
+    global ayprefs
 
     viewTitle $w "" "Direct_Point_Edit"
 
     bind $w <ButtonPress-1> {
 	%W mc
 	set editPointDarray(valid) 0
+	%W startpepac %x %y -flash -ignoreold
 	%W dpepac -start %x %y
 	set editPointDarray(window) %W
 	if { $editPointDarray(valid) == 1 } {
@@ -695,6 +697,13 @@ proc actionDEditP { w } {
     bind $w <B1-Motion> ""
     bind $w <Motion> ""
     bind $w <ButtonRelease-1> ""
+
+    if { $ayprefs(FlashPoints) == 1 } {
+	bind $w <Motion> {
+	    %W startpepac %x %y -flash
+	}
+    }
+    #if
 
     $w setconf -drawh 1
 
