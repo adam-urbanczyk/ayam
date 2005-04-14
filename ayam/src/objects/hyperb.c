@@ -603,6 +603,284 @@ ay_hyperb_bbccb(ay_object *o, double *bbox, int *flags)
 
 
 int
+ay_hyperboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
+{
+ int ay_status = AY_OK;
+ int stride = 4, i, j, height;
+ double rmin = 0.0, rmax = 0.0, ths = 0.0, the = 0.0;
+ double *cv = NULL, *vk = NULL, *controlv = NULL;
+ double zaxis[3]={0.0,0.0,1.0};
+ double quat[4];
+ ay_hyperboloid_object *hyperboloid = NULL, *h = NULL;
+ ay_disk_object disk = {0};
+ ay_bpatch_object bpatch = {{0}};
+ ay_object *new = NULL, d = {0}, **n = NULL;
+ ay_nurbpatch_object *np = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  if(!result)
+    {
+      if(type == AY_IDNPATCH)
+	return AY_OK;
+      else
+	return AY_ERROR;
+    }
+
+  hyperboloid = (ay_hyperboloid_object *) o->refine;
+  h = hyperboloid;
+
+  if(type == AY_IDNPATCH)
+    {
+      if(fabs((h->p1[0]*h->p1[0])+(h->p1[1]*h->p1[1]))>AY_EPSILON)
+	rmin = sqrt((h->p1[0]*h->p1[0])+(h->p1[1]*h->p1[1]));
+      ths = AY_R2D(atan(h->p1[1]/h->p1[0]));
+      the = ths + hyperboloid->thetamax;
+
+      if(hyperboloid->thetamax < 0.0)
+	{
+	  ay_status = ay_nb_CreateNurbsCircle(rmin, the, ths,
+					      &height, &vk, &cv);
+	}
+      else
+	{
+	  ay_status = ay_nb_CreateNurbsCircle(rmin, ths, the,
+					      &height, &vk, &cv);
+	} /* if */
+
+      if(ay_status)
+	return ay_status;
+
+      if(!(controlv = calloc(1, height*2*stride*sizeof(double))))
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	}
+      memcpy(controlv, cv, height*stride*sizeof(double));
+      j = 2;
+      for(i = 0; i < height; i++)
+	{
+	  controlv[j] = h->p1[2] * controlv[j+1];
+	  j += stride;
+	}
+      free(cv);
+      cv = NULL;
+      if(fabs((h->p2[0]*h->p2[0])+(h->p2[1]*h->p2[1]))>AY_EPSILON)
+	rmax = sqrt((h->p2[0]*h->p2[0])+(h->p2[1]*h->p2[1]));
+      ths = AY_R2D(atan(h->p2[1]/h->p2[0]));
+      the = ths + hyperboloid->thetamax;
+
+      if(hyperboloid->thetamax < 0.0)
+	{
+	  ay_status = ay_nb_CreateNurbsCircle(rmax, the, ths,
+					      &height, &vk, &cv);
+	}
+      else
+	{
+	  ay_status = ay_nb_CreateNurbsCircle(rmax, ths, the,
+					      &height, &vk, &cv);
+	} /* if */
+
+      if(ay_status)
+	return ay_status;
+
+      memcpy(&(controlv[height*stride]), cv, height*stride*sizeof(double));
+      j = height*stride+2;
+      for(i = 0; i < height; i++)
+	{
+	  controlv[j] = h->p2[2] * controlv[j+1];
+	  j += stride;
+	}
+
+
+      ay_status = ay_npt_create(2, 3, 2, height, AY_KTBEZIER, AY_KTCUSTOM,
+				controlv, NULL, vk, &np);
+
+      if(ay_status)
+	goto cleanup;
+
+      if(!(new = calloc(1, sizeof(ay_object))))
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	}
+
+      ay_object_defaults(new);
+      new->type = AY_IDNPATCH;
+      new->inherit_trafos = AY_FALSE;
+      new->parent = AY_TRUE;
+      new->hide_children = AY_TRUE;
+
+      ay_status = ay_object_crtendlevel(&(new->down));
+      if(ay_status)
+	goto cleanup;
+
+      ay_trafo_copy(o, new);
+      new->refine = np;
+
+      if(hyperboloid->closed)
+	{
+	  /* create caps */
+	  n = &(new->next);
+	  ay_object_defaults(&d);
+	  d.type = AY_IDDISK;
+	  d.refine = &disk;
+	  disk.radius = rmin;
+	  disk.height = h->p1[2];
+	  disk.thetamax = hyperboloid->thetamax;
+	  ths = -AY_R2D(atan(h->p1[1]/h->p1[0]));
+	  d.rotz = ths;
+	  ay_quat_axistoquat(zaxis, AY_D2R(ths), quat);
+	  ay_quat_add(quat, d.quat, d.quat);
+	  if(fabs(rmin) > AY_EPSILON)
+	    ay_provide_object(&d, AY_IDNPATCH, n);
+	  if(*n)
+	    {
+	      ay_trafo_add(o, *n);
+	      n = &((*n)->next);
+	    }
+	  disk.radius = rmax;
+	  disk.height = h->p2[2];
+	  ths = -AY_R2D(atan(h->p2[1]/h->p2[0]));
+	  d.rotz = ths;
+	  d.quat[0] = 0.0;
+	  d.quat[1] = 0.0;
+	  d.quat[2] = 0.0;
+	  d.quat[3] = 1.0;
+	  ay_quat_axistoquat(zaxis, AY_D2R(ths), quat);
+	  ay_quat_add(quat, d.quat, d.quat);
+	  if(fabs(rmax) > AY_EPSILON)
+	    ay_provide_object(&d, AY_IDNPATCH, n);
+	  if(*n)
+	    {
+	      ay_trafo_add(o, *n);
+	      n = &((*n)->next);
+	    } /* if */
+
+	  if(fabs(hyperboloid->thetamax) != 360.0)
+	    {
+	      ay_object_defaults(&d);
+	      d.type = AY_IDBPATCH;
+	      d.refine = &bpatch;
+	      memcpy(bpatch.p1, &(controlv[0]), 3*sizeof(double));
+	      memcpy(bpatch.p2, &(controlv[height*stride]), 3*sizeof(double));
+	      bpatch.p3[2] = h->p2[2];
+	      bpatch.p4[2] = h->p1[2];
+	      ay_provide_object(&d, AY_IDNPATCH, n);
+	      if(*n)
+		{
+		  ay_trafo_copy(o, *n);
+		  n = &((*n)->next);
+		  memcpy(bpatch.p1, &(controlv[height*stride-stride]),
+			 3*sizeof(double));
+		  memcpy(bpatch.p2, &(controlv[height*2*stride-stride]),
+			 3*sizeof(double));
+		  ay_provide_object(&d, AY_IDNPATCH, n);
+		  if(*n)
+		    {
+		      ay_trafo_copy(o, *n);
+		    } /* if */
+		} /* if */
+	    } /* if */
+	} /* if */
+
+      /* return result */
+      *result = new;
+
+      vk = NULL; controlv = NULL; np = NULL; new = NULL;
+
+    } /* if */
+
+
+cleanup:
+
+  if(cv)
+    free(cv);
+
+  if(vk)
+    free(vk);
+
+  if(controlv)
+    free(controlv);
+
+  if(np)
+    free(np);
+
+  if(new)
+    {
+      ay_object_deletemulti(new);
+    }
+
+ return ay_status;
+} /* ay_hyperboloid_providecb */
+
+
+int
+ay_hyperboloid_convertcb(ay_object *o, int in_place)
+{
+ int ay_status = AY_OK;
+ ay_object *new = NULL, *t;
+ ay_hyperboloid_object *hyperboloid = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  hyperboloid = (ay_hyperboloid_object *) o->refine;
+
+  /* first, create new object(s) */
+
+  if(hyperboloid->closed)
+    {
+      if(!(new = calloc(1, sizeof(ay_object))))
+	{ return AY_EOMEM; }
+
+      ay_object_defaults(new);
+      new->type = AY_IDLEVEL;
+      new->parent = AY_TRUE;
+      new->inherit_trafos = AY_TRUE;
+
+      if(!(new->refine = calloc(1, sizeof(ay_level_object))))
+	{ free(new); return AY_EOMEM; }
+
+      ((ay_level_object *)(new->refine))->type = AY_LTLEVEL;
+
+      ay_status = ay_hyperboloid_providecb(o, AY_IDNPATCH, &new->down);
+      if(ay_status)
+	{ free(new->refine); free(new); return ay_status; }
+
+      t = new->down;
+      while(t->next)
+	{
+	  t = t->next;
+	}
+      ay_status = ay_object_crtendlevel(&(t->next));
+    }
+  else
+    {
+      ay_status = ay_hyperboloid_providecb(o, AY_IDNPATCH, &new);
+    }
+
+
+  /* second, link new object(s), or replace old object with it/them */
+
+  if(new)
+    {
+      if(!in_place)
+	{
+	  ay_status = ay_object_link(new);
+	}
+      else
+	{
+	  ay_object_replace(new, o);
+	} /* if */
+    } /* if */
+
+ return ay_status;
+} /* ay_hyperboloid_convertcb */
+
+
+int
 ay_hyperb_init(Tcl_Interp *interp)
 {
  int ay_status = AY_OK;
@@ -622,6 +900,10 @@ ay_hyperb_init(Tcl_Interp *interp)
 				    ay_hyperb_wribcb,
 				    ay_hyperb_bbccb,
 				    AY_IDHYPERBOLOID);
+
+  ay_status = ay_convert_register(ay_hyperboloid_convertcb, AY_IDHYPERBOLOID);
+
+  ay_status = ay_provide_register(ay_hyperboloid_providecb, AY_IDHYPERBOLOID);
 
  return ay_status;
 } /* ay_hyperb_init */
