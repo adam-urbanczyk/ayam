@@ -404,7 +404,7 @@ ay_extrnc_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  ay_error(ay_status, fname, NULL);
 	  return AY_ERROR;
 	}
-      ay_trafo_copy(o, *t);
+      ay_trafo_add(o, *t);
       t = &((*t)->next);
 
       *result = new;
@@ -430,7 +430,7 @@ ay_extrnc_convertcb(ay_object *o, int in_place)
   if(r->ncurve)
     {
       ay_status = ay_object_copy(r->ncurve, &new);
-      ay_trafo_copy(o, new);
+      ay_trafo_add(o, new);
     } /* if */
 
   /* second, link new object, or replace old object with it */
