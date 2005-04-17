@@ -34,6 +34,7 @@ ay_object *onio_lrobject = NULL;
 static double tm[16] = {0}; // current transformation matrix
 
 int onio_importcurves = AY_TRUE;
+int onio_ignorefirsttrim = AY_TRUE;
 int onio_exportcurves = AY_TRUE;
 int onio_expsphereasbrep = AY_TRUE;
 int onio_expcylinderasbrep = AY_TRUE;
@@ -1726,6 +1727,9 @@ onio_readbrep(ON_Brep *p_b, double accuracy)
       int fli; // face's loop index
       for(fli = 0; fli < loop_count; fli++)
 	{
+	  if(onio_ignorefirsttrim && fli == 0)
+	    continue;
+
 	  const int li = face.m_li[fli]; // li = brep loop index
 	  const ON_BrepLoop& loop = p_b->m_L[li];
 
@@ -2237,6 +2241,11 @@ onio_readtcmd(ClientData clientData, Tcl_Interp *interp,
       if(!strcmp(argv[i], "-c"))
 	{
 	  sscanf(argv[i+1], "%d", &onio_importcurves);
+	}
+      else
+      if(!strcmp(argv[i], "-i"))
+	{
+	  sscanf(argv[i+1], "%d", &onio_ignorefirsttrim);
 	}
       else
       if(!strcmp(argv[i], "-l"))
