@@ -13,6 +13,7 @@ uplevel #0 { array set onio_options {
     Accuracy 1.0e-12
     ReadCurves 1
     ReadLayers -1
+    IgnoreFirstTrim 1
     WriteCurves 1
     QuadAsBRep 1
 }   }
@@ -54,6 +55,7 @@ proc onio_import { } {
 	addParam $f onio_options Accuracy [list 0.0 1.0e-12 0.1 1]
 	addCheck $f onio_options ReadCurves
 	addParam $f onio_options ReadLayers [list -1 1 1-10]
+	addCheck $f onio_options IgnoreFirstTrim
 
 	set f [frame $w.f2]
 	button $f.bok -text "Ok" -width 5 -command {
@@ -64,7 +66,8 @@ proc onio_import { } {
 	    onioRead [file tail $onio_options(FileName)]\
 		    -a $onio_options(Accuracy)\
 		    -c $onio_options(ReadCurves)\
-		    -l $onio_options(ReadLayers)
+		    -l $onio_options(ReadLayers)\
+		    -i $onio_options(IgnoreFirstTrim)
 
 	    cd $oldcd
 	    goTop
