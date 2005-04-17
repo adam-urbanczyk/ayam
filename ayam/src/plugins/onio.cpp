@@ -50,6 +50,8 @@ int onio_transposetm(double *m1, double *m2);
 
 int onio_getnurbsurfobj(ay_object *o, ON_NurbsSurface **pp_n, double *m);
 
+int onio_writename(ay_object *o, ONX_Model_Object& p_mo);
+
 int onio_writenpatch(ay_object *o, ONX_Model *p_m, double *m);
 
 int onio_get2dcurveobj(ay_object *o, ON_NurbsCurve **pp_c);
@@ -209,6 +211,23 @@ onio_getnurbsurfobj(ay_object *o, ON_NurbsSurface **pp_n, double *m)
 } // onio_getnurbsurfobj
 
 
+// onio_writename:
+//
+int
+onio_writename(ay_object *o, ONX_Model_Object& p_mo)
+{
+
+  if(!o->name || (strlen(o->name) == 0))
+    return AY_OK;
+  
+  ON_wString *p_name = new ON_wString(o->name);
+  p_mo.m_attributes.m_name = *p_name;
+  delete p_name;
+
+ return AY_OK;
+} // onio_writename
+
+
 // onio_writenpatch:
 //
 int
@@ -234,10 +253,9 @@ onio_writenpatch(ay_object *o, ONX_Model *p_m, double *m)
       ONX_Model_Object& mo = p_m->m_object_table.AppendNew();
       mo.m_object = p_n;
       mo.m_bDeleteObject = true;
-      /*
-	if(object_attributes)
-	mo.m_attributes = object_attributes[i];
-      */
+
+      onio_writename(o, mo);
+
     } // if
 
  return ay_status;
@@ -491,10 +509,8 @@ onio_writetrimmednpatch(ay_object *o, ONX_Model *p_m, double *m)
   ONX_Model_Object& mo = p_m->m_object_table.AppendNew();
   mo.m_object = p_b;
   mo.m_bDeleteObject = true;
-  /*
-    if(object_attributes)
-    mo.m_attributes = object_attributes[i];
-  */
+
+  onio_writename(o, mo);
 
  return ay_status;
 } // onio_writetrimmednpatch
@@ -514,6 +530,7 @@ onio_writenpconvertible(ay_object *o, ONX_Model *p_m, double *m)
   ay_status = ay_provide_object(o, AY_IDNPATCH, &p);
   if(p)
     {
+      int first = p_m->m_object_table.Count();
       t = p;
       while(t)
 	{
@@ -531,6 +548,10 @@ onio_writenpconvertible(ay_object *o, ONX_Model *p_m, double *m)
 	} /* while */
 
       ay_status = ay_object_deletemulti(p);
+
+      int last = p_m->m_object_table.Count();
+      for(int i = first; i < last; i++)
+	onio_writename(o, p_m->m_object_table[i]);
 
       return AY_OK;
     } /* if */
@@ -578,10 +599,7 @@ onio_writencurve(ay_object *o, ONX_Model *p_m, double *m)
   mo.m_object = p_c;
   mo.m_bDeleteObject = true;
 
-  /*
-    if(object_attributes)
-    mo.m_attributes = object_attributes[i];
-  */
+  onio_writename(o, mo);
 
  return ay_status;
 } // onio_writencurve
@@ -604,6 +622,7 @@ onio_writencconvertible(ay_object *o, ONX_Model *p_m, double *m)
   ay_status = ay_provide_object(o, AY_IDNCURVE, &p);
   if(p)
     {
+      int first = p_m->m_object_table.Count();
       t = p;
       while(t)
 	{
@@ -621,6 +640,10 @@ onio_writencconvertible(ay_object *o, ONX_Model *p_m, double *m)
 	} /* while */
 
       ay_status = ay_object_deletemulti(p);
+
+      int last = p_m->m_object_table.Count();
+      for(int i = first; i < last; i++)
+	onio_writename(o, p_m->m_object_table[i]);
 
       return AY_OK;
     } /* if */
@@ -785,6 +808,9 @@ onio_writesphere(ay_object *o, ONX_Model *p_m, double *m)
 	      ONX_Model_Object& mo = p_m->m_object_table.AppendNew();
 	      mo.m_object = p_su;
 	      mo.m_bDeleteObject = true;
+	      
+	      onio_writename(o, mo);
+
 	    } // if
 	}
       else
@@ -798,6 +824,9 @@ onio_writesphere(ay_object *o, ONX_Model *p_m, double *m)
 	      ONX_Model_Object& mo = p_m->m_object_table.AppendNew();
 	      mo.m_object = p_b;
 	      mo.m_bDeleteObject = true;
+
+	      onio_writename(o, mo);
+
 	    } // if
 	} // if
       delete p_sp;
@@ -851,6 +880,9 @@ onio_writecylinder(ay_object *o, ONX_Model *p_m, double *m)
               ONX_Model_Object& mo = p_m->m_object_table.AppendNew();
               mo.m_object = p_su;
               mo.m_bDeleteObject = true;
+
+	      onio_writename(o, mo);
+
             } // if
         }
       else
@@ -865,6 +897,9 @@ onio_writecylinder(ay_object *o, ONX_Model *p_m, double *m)
               ONX_Model_Object& mo = p_m->m_object_table.AppendNew();
               mo.m_object = p_b;
               mo.m_bDeleteObject = true;
+
+	      onio_writename(o, mo);
+
             } // if
         } // if
       delete p_cy;
@@ -915,6 +950,9 @@ onio_writecone(ay_object *o, ONX_Model *p_m, double *m)
               ONX_Model_Object& mo = p_m->m_object_table.AppendNew();
               mo.m_object = p_su;
               mo.m_bDeleteObject = true;
+
+	      onio_writename(o, mo);
+
             } // if
         }
       else
@@ -928,6 +966,9 @@ onio_writecone(ay_object *o, ONX_Model *p_m, double *m)
               ONX_Model_Object& mo = p_m->m_object_table.AppendNew();
               mo.m_object = p_b;
               mo.m_bDeleteObject = true;
+
+	      onio_writename(o, mo);
+
             } // if
         } // if
       delete p_co;
@@ -978,6 +1019,9 @@ onio_writetorus(ay_object *o, ONX_Model *p_m, double *m)
 	      ONX_Model_Object& mo = p_m->m_object_table.AppendNew();
 	      mo.m_object = p_su;
 	      mo.m_bDeleteObject = true;
+
+	      onio_writename(o, mo);
+
 	    } // if
 	}
       else
@@ -991,8 +1035,12 @@ onio_writetorus(ay_object *o, ONX_Model *p_m, double *m)
 	      ONX_Model_Object& mo = p_m->m_object_table.AppendNew();
 	      mo.m_object = p_b;
 	      mo.m_bDeleteObject = true;
+
+	      onio_writename(o, mo);
+
 	    } // if
 	} // if
+
       delete p_to;
     } // if
 
@@ -1060,6 +1108,9 @@ onio_writebox(ay_object *o, ONX_Model *p_m, double *m)
       ONX_Model_Object& mo = p_m->m_object_table.AppendNew();
       mo.m_object = p_b;
       mo.m_bDeleteObject = true;
+
+      onio_writename(o, mo);
+
     } // if
 
  return ay_status;
@@ -2496,6 +2547,9 @@ Onio_Init(Tcl_Interp *interp)
 				   onio_writebox);
 
   ay_status = onio_registerwritecb((char *)(AY_IDDISK),
+				   onio_writenpconvertible);
+
+  ay_status = onio_registerwritecb((char *)(AY_IDHYPERBOLOID),
 				   onio_writenpconvertible);
 
 
