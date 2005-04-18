@@ -52,6 +52,8 @@ int onio_getnurbsurfobj(ay_object *o, ON_NurbsSurface **pp_n, double *m);
 
 int onio_writename(ay_object *o, ONX_Model_Object& p_mo);
 
+int onio_prependname(ay_object *o, ONX_Model_Object& p_mo);
+
 int onio_writenpatch(ay_object *o, ONX_Model *p_m, double *m);
 
 int onio_get2dcurveobj(ay_object *o, ON_NurbsCurve **pp_c);
@@ -226,6 +228,28 @@ onio_writename(ay_object *o, ONX_Model_Object& p_mo)
 
  return AY_OK;
 } // onio_writename
+
+
+// onio_prependname:
+//
+int
+onio_prependname(ay_object *o, ONX_Model_Object& p_mo)
+{
+
+  if(!o->name || (strlen(o->name) == 0))
+    return AY_OK;
+  
+  ON_wString *p_name = new ON_wString(o->name);
+
+  if(p_mo.m_attributes.m_name.IsEmpty())
+    p_mo.m_attributes.m_name = *p_name;
+  else
+    p_mo.m_attributes.m_name = *p_name + '/' + p_mo.m_attributes.m_name;
+
+  delete p_name;
+
+ return AY_OK;
+} // onio_prependname
 
 
 // onio_writenpatch:
@@ -674,19 +698,22 @@ onio_writelevel(ay_object *o, ONX_Model *p_m, double *m)
     {
       memcpy(m1, tm, 16*sizeof(double));
       memcpy(tm, m, 16*sizeof(double));
+
+      int first = p_m->m_object_table.Count();
+
       down = o->down;
       while(down->next)
 	{
 	  ay_status = onio_writeobject(down, p_m);
 	  down = down->next;
 	}
+
+      int last = p_m->m_object_table.Count();
+      for(int i = first; i < last; i++)
+	onio_prependname(o, p_m->m_object_table[i]);
+
       memcpy(tm, m1, 16*sizeof(double));
     } // if
-
-  /*
-    if(object_attributes)
-    mo.m_attributes = object_attributes[i];
-  */
 
  return ay_status;
 } // onio_writelevel
