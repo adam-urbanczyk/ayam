@@ -597,7 +597,7 @@ ay_trafo_add(ay_object *src, ay_object *dst)
   dst->scaly *= src->scaly;
   dst->scalz *= src->scalz;
 
-  ay_quat_add(dst->quat, src->quat, dst->quat);
+  ay_quat_add(src->quat, dst->quat, dst->quat);
   ay_quat_toeuler(dst->quat, euler);
 
   dst->rotx = AY_R2D(euler[0]);
