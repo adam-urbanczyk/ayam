@@ -1026,7 +1026,7 @@ extern unsigned int ay_current_primlevel;
 #define AY_IDDISK          11
 #define AY_IDCONE          12
 #define AY_IDCYLINDER      13
-#define AY_IDPARABOBOLOID  14
+#define AY_IDPARABOLOID    14
 #define AY_IDHYPERBOLOID   15
 #define AY_IDTORUS         16
 #define AY_IDRIINC         17

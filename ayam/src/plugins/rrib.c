@@ -728,7 +728,7 @@ ay_rrib_RiParaboloid(RtFloat rmax,
 
   ay_rrib_readpvs(n, tokens, parms, 0, NULL, &(ay_rrib_co.tags));
 
-  ay_rrib_linkobject((void *)(&p), AY_IDPARABOBOLOID);
+  ay_rrib_linkobject((void *)(&p), AY_IDPARABOLOID);
 
   ay_tags_delall(&ay_rrib_co);
 
