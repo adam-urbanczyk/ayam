@@ -902,6 +902,7 @@ ay_paraboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
 		  controlv[i*stride+3] = 1.0;
 		}
 
+	      np = NULL;
 	      ay_status = ay_npt_create(4, 4, 4, 4, AY_KTBEZIER, AY_KTBEZIER,
 					controlv, NULL, NULL, &np);
 	      if(ay_status)
@@ -915,12 +916,18 @@ ay_paraboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
 
 	      ay_status = ay_object_copy(newp, n);
 	      if(ay_status)
-		goto cleanup;
+		{
+		  newp = NULL;
+		  goto cleanup;
+		}
+
 	      ay_trafo_defaults(*n);
 	      ay_quat_axistoquat(zaxis, -AY_D2R(paraboloid->thetamax), quat);
 	      (*n)->rotz += paraboloid->thetamax;
 	      ay_quat_add((*n)->quat, quat, (*n)->quat);
 	      ay_trafo_add(o, *n);
+
+	      newp = NULL;
 	    } /* if */
 	} /* if */
 
@@ -949,6 +956,11 @@ cleanup:
   if(new)
     {
       ay_object_deletemulti(new);
+    }
+
+  if(newp)
+    {
+      ay_object_deletemulti(newp);
     }
 
  return ay_status;
