@@ -633,13 +633,13 @@ int
 ay_paraboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
  int ay_status = AY_OK;
- int stride = 4, i, j, height;
+ int stride = 4, i, j, k, height;
  double z = 0.0, r = 0.0, *cv = NULL, *vk = NULL, *controlv = NULL;
  double K, B0, B3, Sx, Sy;
+ double zaxis[3] = {0.0, 0.0, 1.0}, quat[4] = {0};
  ay_paraboloid_object *paraboloid = NULL;
  ay_disk_object disk = {0};
- ay_bpatch_object bpatch = {{0}};
- ay_object *new = NULL, d = {0}, **n = NULL;
+ ay_object *new = NULL, *newp = NULL, d = {0}, **n = NULL;
  ay_nurbpatch_object *np = NULL;
 
   if(!o)
@@ -854,7 +854,73 @@ ay_paraboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
 
 	  if(fabs(paraboloid->thetamax) != 360.0)
 	    {
-	      return;
+	      if(!(newp = calloc(1, sizeof(ay_object))))
+		{
+		  ay_status = AY_EOMEM;
+		  goto cleanup;
+		}
+	      ay_object_defaults(newp);
+	      newp->type = AY_IDNPATCH;
+	      newp->inherit_trafos = AY_FALSE;
+	      newp->parent = AY_TRUE;
+	      newp->hide_children = AY_TRUE;
+
+	      ay_status = ay_object_crtendlevel(&(newp->down));
+	      if(ay_status)
+		goto cleanup;
+
+	      controlv = NULL;
+	      if(!(controlv = calloc(4*4*stride, sizeof(double))))
+		{
+		  ay_status = AY_EOMEM;
+		  goto cleanup;
+		}
+	      /* copy first column from patch */
+	      j = 0; k = 0;
+	      for(i = 0; i < 4; i++)
+		{
+		  memcpy(&(controlv[j*stride]), &(np->controlv[k*stride]),
+			 3*sizeof(double));
+		  j += 4;
+		  k += height;
+		}
+	      /* set missing z values */
+	      for(i = 0; i < 4; i++)
+		for(j = 1; j < 4; j++)
+		  controlv[(i*4+j)*stride+2] = controlv[i*4*stride+2];
+	      /* set missing x values */
+	      j = 2;
+	      for(i = 0; i < 4; i++)
+		{
+		  controlv[(i*4+j)*stride] = controlv[(i*4)*stride]/3.0;
+		  controlv[(i*4+j-1)*stride] = controlv[(i*4+j)*stride]*2.0;
+		  j += 4;
+		}
+	      /* set all weights to 1.0 */
+	      for(i = 0; i < 16; i++)
+		{
+		  controlv[i*stride+3] = 1.0;
+		}
+
+	      ay_status = ay_npt_create(4, 4, 4, 4, AY_KTBEZIER, AY_KTBEZIER,
+					controlv, NULL, NULL, &np);
+	      if(ay_status)
+		goto cleanup;
+
+	      newp->refine = np;
+
+	      *n = newp;
+	      ay_trafo_copy(o, *n);
+	      n = &((*n)->next);
+
+	      ay_status = ay_object_copy(newp, n);
+	      if(ay_status)
+		goto cleanup;
+	      ay_trafo_defaults(*n);
+	      ay_quat_axistoquat(zaxis, -AY_D2R(paraboloid->thetamax), quat);
+	      (*n)->rotz += paraboloid->thetamax;
+	      ay_quat_add((*n)->quat, quat, (*n)->quat);
+	      ay_trafo_add(o, *n);
 	    } /* if */
 	} /* if */
 
