@@ -630,6 +630,330 @@ ay_parab_bbccb(ay_object *o, double *bbox, int *flags)
 
 
 int
+ay_paraboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
+{
+ int ay_status = AY_OK;
+ int stride = 4, i, j, height;
+ double z = 0.0, r = 0.0, *cv = NULL, *vk = NULL, *controlv = NULL;
+ double K, B0, B3, Sx, Sy;
+ ay_paraboloid_object *paraboloid = NULL;
+ ay_disk_object disk = {0};
+ ay_bpatch_object bpatch = {{0}};
+ ay_object *new = NULL, d = {0}, **n = NULL;
+ ay_nurbpatch_object *np = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  if(!result)
+    {
+      if(type == AY_IDNPATCH)
+	return AY_OK;
+      else
+	return AY_ERROR;
+    }
+
+  paraboloid = (ay_paraboloid_object *) o->refine;
+
+  if(type == AY_IDNPATCH)
+    {
+      if(paraboloid->zmin > 0.0)
+	r = sqrt(paraboloid->zmin/paraboloid->zmax);
+      K  = paraboloid->rmax * paraboloid->rmax;
+      B0 = paraboloid->zmin  - ((2 * paraboloid->zmin) / K);
+      B3 = paraboloid->zmax - (2 * paraboloid->zmax);
+      K  = (2 * paraboloid->zmax) / K;
+      Sx = (B3 - B0) / (K * (r - paraboloid->rmax));
+      Sy = (K * r * Sx + B0);
+      
+      if(paraboloid->thetamax < 0.0)
+	{
+	  ay_status = ay_nb_CreateNurbsCircle(paraboloid->rmax,
+					      paraboloid->thetamax, 0.0,
+					      &height, &vk, &cv);
+	}
+      else
+	{
+	  ay_status = ay_nb_CreateNurbsCircle(paraboloid->rmax,
+					      0.0, paraboloid->thetamax,
+					      &height, &vk, &cv);
+	} /* if */
+	  
+      if(ay_status)
+	goto cleanup;
+
+      if(!(controlv = calloc(1, height*4*stride*sizeof(double))))
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	}
+
+      memcpy(&(controlv[3*height*stride]), cv, height*stride*sizeof(double));
+
+      free(vk); free(cv);
+      vk = NULL; cv = NULL;
+
+      j = (3*height*stride) + 2;
+      for(i = 0; i < height; i++)
+	{
+	  controlv[j] = paraboloid->zmax * controlv[j+1];
+	  j += stride;
+	}
+
+      if(paraboloid->zmin > 0.0)
+	{
+	  if(paraboloid->thetamax < 0.0)
+	    {
+	      ay_status = ay_nb_CreateNurbsCircle(r,
+						  paraboloid->thetamax, 0.0,
+						  &height, &vk, &cv);
+	    }
+	  else
+	    {
+	      ay_status = ay_nb_CreateNurbsCircle(r,
+						  0.0, paraboloid->thetamax,
+						  &height, &vk, &cv);
+	    } /* if */
+	  
+	  if(ay_status)
+	    goto cleanup;
+
+	  memcpy(controlv, cv, height*stride*sizeof(double));
+	  free(vk); free(cv);
+	  vk = NULL; cv = NULL;
+
+	  j = 2;
+	  for(i = 0; i < height; i++)
+	    {
+	      controlv[j] = paraboloid->zmin * controlv[j+1];
+	      j += stride;
+	    }
+
+	}
+      else
+	{
+	  j = 3;
+	  for(i = 0; i < height; i++)
+	    {
+	      controlv[j] = controlv[j+height*3*stride];
+	      j += stride;
+	    }
+	}/* if */
+
+      r = (r + 2*Sx)/3.0;
+      if(paraboloid->thetamax < 0.0)
+	{
+	  ay_status = ay_nb_CreateNurbsCircle(r,
+					      paraboloid->thetamax, 0.0,
+					      &height, &vk, &cv);
+	}
+      else
+	{
+	  ay_status = ay_nb_CreateNurbsCircle(r,
+					      0.0, paraboloid->thetamax,
+					      &height, &vk, &cv);
+	} /* if */
+	  
+      if(ay_status)
+	goto cleanup;
+
+      memcpy(&(controlv[height*stride]), cv, height*stride*sizeof(double));
+      free(vk); free(cv);
+      vk = NULL; cv = NULL;
+      z = ((paraboloid->zmin + 2*Sy)/3.0);
+      j = (height*stride) + 2;
+      for(i = 0; i < height; i++)
+	{
+	  controlv[j] = z * controlv[j+1];
+	  j += stride;
+	}
+
+      r = (paraboloid->rmax + 2*Sx)/3.0;
+      if(paraboloid->thetamax < 0.0)
+	{
+	  ay_status = ay_nb_CreateNurbsCircle(r,
+					      paraboloid->thetamax, 0.0,
+					      &height, &vk, &cv);
+	}
+      else
+	{
+	  ay_status = ay_nb_CreateNurbsCircle(r,
+					      0.0, paraboloid->thetamax,
+					      &height, &vk, &cv);
+	} /* if */
+	  
+      if(ay_status)
+	goto cleanup;
+
+      memcpy(&(controlv[2*height*stride]), cv, height*stride*sizeof(double));
+
+      z = ((paraboloid->zmax + 2*Sy)/3.0);
+      j = (2*height*stride) + 2;
+      for(i = 0; i < height; i++)
+	{
+	  controlv[j] = z * controlv[j+1];
+	  j += stride;
+	}
+
+
+      ay_status = ay_npt_create(4, 3, 4, height, AY_KTBEZIER, AY_KTCUSTOM,
+				controlv, NULL, vk, &np);
+
+      if(ay_status)
+	goto cleanup;
+
+      if(!(new = calloc(1, sizeof(ay_object))))
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	}
+
+      ay_object_defaults(new);
+      new->type = AY_IDNPATCH;
+      new->inherit_trafos = AY_FALSE;
+      new->parent = AY_TRUE;
+      new->hide_children = AY_TRUE;
+
+      ay_status = ay_object_crtendlevel(&(new->down));
+      if(ay_status)
+	goto cleanup;
+
+      ay_trafo_copy(o, new);
+      new->refine = np;
+
+      if(paraboloid->closed)
+	{
+	  /* create caps */
+	  n = &(new->next);
+	  ay_object_defaults(&d);
+	  d.type = AY_IDDISK;
+	  d.refine = &disk;
+	  disk.thetamax = paraboloid->thetamax;
+	  if(paraboloid->zmin > 0.0)
+	    {
+	      disk.radius = sqrt(paraboloid->zmin/paraboloid->zmax);
+	      disk.height = paraboloid->zmin;
+	      ay_provide_object(&d, AY_IDNPATCH, n);
+	    } /* if */
+
+	  if(*n)
+	    {
+	      ay_trafo_copy(o, *n);
+	      n = &((*n)->next);
+	    } /* if */
+
+	  disk.radius = paraboloid->rmax;
+	  disk.height = paraboloid->zmax;
+	  ay_provide_object(&d, AY_IDNPATCH, n);
+	  if(*n)
+	    {
+	      ay_trafo_copy(o, *n);
+	      n = &((*n)->next);
+	    } /* if */
+
+
+	  if(fabs(paraboloid->thetamax) != 360.0)
+	    {
+	      return;
+	    } /* if */
+	} /* if */
+
+      /* return result */
+      *result = new;
+
+      vk = NULL; controlv = NULL; np = NULL; new = NULL;
+
+    } /* if */
+
+
+cleanup:
+
+  if(cv)
+    free(cv);
+
+  if(vk)
+    free(vk);
+
+  if(controlv)
+    free(controlv);
+
+  if(np)
+    free(np);
+
+  if(new)
+    {
+      ay_object_deletemulti(new);
+    }
+
+ return ay_status;
+} /* ay_paraboloid_providecb */
+
+
+int
+ay_paraboloid_convertcb(ay_object *o, int in_place)
+{
+ int ay_status = AY_OK;
+ ay_object *new = NULL, *t;
+ ay_paraboloid_object *paraboloid = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  paraboloid = (ay_paraboloid_object *) o->refine;
+
+  /* first, create new object(s) */
+
+  if(paraboloid->closed)
+    {
+      if(!(new = calloc(1, sizeof(ay_object))))
+	{ return AY_EOMEM; }
+
+      ay_object_defaults(new);
+      new->type = AY_IDLEVEL;
+      new->parent = AY_TRUE;
+      new->inherit_trafos = AY_TRUE;
+
+      if(!(new->refine = calloc(1, sizeof(ay_level_object))))
+	{ free(new); return AY_EOMEM; }
+
+      ((ay_level_object *)(new->refine))->type = AY_LTLEVEL;
+
+      ay_status = ay_paraboloid_providecb(o, AY_IDNPATCH, &new->down);
+      if(ay_status)
+	{ free(new->refine); free(new); return ay_status; }
+
+      t = new->down;
+      while(t->next)
+	{
+	  t = t->next;
+	}
+      ay_status = ay_object_crtendlevel(&(t->next));
+    }
+  else
+    {
+      ay_status = ay_paraboloid_providecb(o, AY_IDNPATCH, &new);
+    }
+
+
+  /* second, link new object(s), or replace old object with it/them */
+
+  if(new)
+    {
+      if(!in_place)
+	{
+	  ay_status = ay_object_link(new);
+	}
+      else
+	{
+	  ay_object_replace(new, o);
+	} /* if */
+    } /* if */
+
+ return ay_status;
+} /* ay_paraboloid_convertcb */
+
+
+int
 ay_parab_init(Tcl_Interp *interp)
 {
  int ay_status = AY_OK;
@@ -648,7 +972,11 @@ ay_parab_init(Tcl_Interp *interp)
 				    ay_parab_writecb,
 				    ay_parab_wribcb,
 				    ay_parab_bbccb,
-				    AY_IDPARABOBOLOID);
+				    AY_IDPARABOLOID);
+
+  ay_status = ay_convert_register(ay_paraboloid_convertcb, AY_IDPARABOLOID);
+
+  ay_status = ay_provide_register(ay_paraboloid_providecb, AY_IDPARABOLOID);
 
  return ay_status;
 } /* ay_parab_init */
