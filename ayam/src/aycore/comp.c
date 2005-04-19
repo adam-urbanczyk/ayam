@@ -1200,7 +1200,7 @@ ay_comp_init()
   ay_status = ay_comp_register(ay_comp_cone, AY_IDCONE);
   ay_status = ay_comp_register(ay_comp_torus, AY_IDTORUS);
   ay_status = ay_comp_register(ay_comp_hyperb, AY_IDHYPERBOLOID);
-  ay_status = ay_comp_register(ay_comp_parab, AY_IDPARABOBOLOID);
+  ay_status = ay_comp_register(ay_comp_parab, AY_IDPARABOLOID);
 
   ay_status = ay_comp_register(ay_comp_ncurve, AY_IDNCURVE);
   ay_status = ay_comp_register(ay_comp_icurve, AY_IDICURVE);

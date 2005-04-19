@@ -1880,7 +1880,7 @@ ay_mopsi_object(FILE *fileptr)
      ay_status = ay_mopsi_torus(fileptr, o);
      break;
    case MOPS_OTPARABOLOID:
-     o->type = AY_IDPARABOBOLOID;
+     o->type = AY_IDPARABOLOID;
      ay_status = ay_mopsi_paraboloid(fileptr, o);
      break;
    case MOPS_OTHYPERBOLOID:
