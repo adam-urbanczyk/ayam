@@ -222,7 +222,7 @@ int ay_nct_crtncircle(ay_nurbcurve_object **curve);
 
 int ay_nct_crtncirclearc(double arc, ay_nurbcurve_object **curve);
 
-int ay_nct_crtnhcircle(ay_nurbcurve_object **curve);
+int ay_nct_crtnhcircle(double radius, ay_nurbcurve_object **curve);
 
 int ay_nct_crtncircletcmd(ClientData clientData, Tcl_Interp *interp,
 			  int argc, char *argv[]);
@@ -325,6 +325,8 @@ int ay_npt_swapuv(ay_nurbpatch_object *np);
 int ay_npt_wribtrimcurves(ay_object *o);
 
 int ay_npt_crtcobbsphere(ay_nurbpatch_object **patch);
+
+int ay_npt_crtnsphere(double radius, ay_nurbpatch_object **patch);
 
 int ay_npt_crtnspheretcmd(ClientData clientData, Tcl_Interp *interp,
 			  int argc, char *argv[]);

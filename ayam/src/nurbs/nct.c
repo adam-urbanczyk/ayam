@@ -2166,12 +2166,12 @@ ay_nct_crtncirclearc(double arc, ay_nurbcurve_object **curve)
  *
  */
 int
-ay_nct_crtnhcircle(ay_nurbcurve_object **curve)
+ay_nct_crtnhcircle(double radius, ay_nurbcurve_object **curve)
 {
  int ay_status = AY_OK;
  ay_nurbcurve_object *new = NULL;
  double *controlv = NULL, *knotv = NULL;
- int i = 0;
+ int i = 0, stride = 4;
  double controls[20] = {
    0.0,1.0,0.0,1.0,
    1.0,1.0,0.0,1.0,
@@ -2191,6 +2191,12 @@ ay_nct_crtnhcircle(ay_nurbcurve_object **curve)
   controls[i] *= sqrt(2.0)/2.0;
   controls[i+1] *= sqrt(2.0)/2.0;
   controls[i+3] = sqrt(2.0)/2.0;
+
+  for(i = 0; i < 9; i++)
+    {
+      controls[i*stride] *= radius;
+      controls[i*stride+1] *= radius;
+    }
 
 
   if(!(new = calloc(1, sizeof(ay_nurbcurve_object))))

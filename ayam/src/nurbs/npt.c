@@ -1318,15 +1318,55 @@ ay_npt_crtcobbsphere(ay_nurbpatch_object **patch)
 } /* ay_npt_crtcobbsphere */
 
 
+/* ay_npt_crtnsphere:
+ *  create a simple NURBS sphere by revolving a half circle
+ */
+int
+ay_npt_crtnsphere(double radius, ay_nurbpatch_object **patch)
+{
+ int ay_status = AY_OK;
+ char fname[] = "crtnsphere";
+ ay_object *newc = NULL;
+
+  if(!patch)
+    return AY_ENULL;
+
+  if(!(newc = calloc(1, sizeof(ay_object))))
+    {
+      ay_error(AY_EOMEM, fname, NULL);
+      return TCL_ERROR;
+    }
+
+  newc->type = AY_IDNCURVE;
+  ay_status = ay_object_defaults(newc);
+
+  /* first, we create a half circle in the XY plane */
+  ay_status = ay_nct_crtnhcircle(radius,
+				 (ay_nurbcurve_object **)(&(newc->refine)));
+  if(ay_status)
+    {
+      free(newc);
+      return ay_status;
+    }
+
+  /* second, we revolve the half circle around the Y axis */
+  ay_status = ay_npt_revolve(newc, 360.0, 0, 0, patch);
+
+  ay_object_delete(newc);
+
+ return ay_status;
+} /* ay_npt_crtnsphere */
+
+
 /* ay_npt_crtnspheretcmd:
- *  create a simple NURBS Sphere by revolving a half circle
+ *  create a simple NURBS sphere by revolving a half circle
  */
 int
 ay_npt_crtnspheretcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[])
 {
  int ay_status;
- ay_object *newc = NULL, *o = NULL;
+ ay_object *o = NULL;
  char fname[] = "create_nsphere";
 
 
@@ -1342,35 +1382,13 @@ ay_npt_crtnspheretcmd(ClientData clientData, Tcl_Interp *interp,
   o->hide_children = AY_TRUE;
   ay_status = ay_object_crtendlevel(&(o->down));
 
-  if(!(newc = calloc(1,sizeof(ay_object))))
-    {
-      ay_error(AY_EOMEM, fname, NULL);
-      return TCL_ERROR;
-    }
-
-  newc->type = AY_IDNCURVE;
-  ay_status = ay_object_defaults(newc);
-
-  /* first, we create a half circle nurbcurve-object */
-  ay_status = ay_nct_crtnhcircle((ay_nurbcurve_object **)(&(newc->refine)));
-  if(ay_status)
-    {
-      free (newc);
-      ay_error(ay_status, fname, NULL);
-      return TCL_OK;
-    }
-
-  ay_status = ay_npt_revolve(newc, 360.0, 0, 0,
-			     (ay_nurbpatch_object **)&(o->refine));
+  ay_status = ay_npt_crtnsphere(1.0, (ay_nurbpatch_object **)&(o->refine));
 
   if(ay_status)
     {
       ay_error(ay_status, fname, NULL);
       return TCL_OK;
     }
-
-  /* we do not need the half-circle any longer */
-  ay_status = ay_object_delete(newc);
 
   ay_object_link(o);
 
@@ -1379,8 +1397,7 @@ ay_npt_crtnspheretcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_npt_crtnsphere2tcmd:
- *
- *
+ *  create a "Cobb" NURBS sphere
  */
 int
 ay_npt_crtnsphere2tcmd(ClientData clientData, Tcl_Interp *interp,
