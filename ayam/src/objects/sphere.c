@@ -832,6 +832,327 @@ ay_sphere_bbccb(ay_object *o, double *bbox, int *flags)
 
 
 int
+ay_sphere_providecb(ay_object *o, unsigned int type, ay_object **result)
+{
+ int ay_status = AY_OK;
+ int i, j, k, height, stride = 4;
+ double *cv = NULL, *cv2 = NULL, *kn = NULL;
+ double phimax, phimin, phi, rmax, rmin, thetamax, zmin, zmax, radius;
+ double xaxis[3] = {1.0, 0.0, 0.0}, quat[4] = {0};
+ ay_sphere_object *sphere = NULL;
+ ay_disk_object disk = {0};
+ ay_nurbpatch_object *np = NULL;
+ ay_object *new = NULL, *newc = NULL, *newp = NULL, d = {0}, **n = NULL;
+
+
+  if(!o)
+    return AY_ENULL;
+
+  if(!result)
+    {
+      if(type == AY_IDNPATCH)
+	return AY_OK;
+      else
+	return AY_ERROR;
+    }
+
+  sphere = (ay_sphere_object *) o->refine;
+
+  if(type == AY_IDNPATCH)
+    {
+
+      if(!(new = calloc(1, sizeof(ay_object))))
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	}
+
+      ay_object_defaults(new);
+      new->type = AY_IDNPATCH;
+      new->inherit_trafos = AY_FALSE;
+      new->parent = AY_TRUE;
+      new->hide_children = AY_TRUE;
+
+      ay_status = ay_object_crtendlevel(&(new->down));
+      if(ay_status)
+	goto cleanup;
+
+      /*ay_trafo_copy(o, new);*/
+      radius = sphere->radius;
+      if(sphere->is_simple)
+	{
+	  ay_status = ay_npt_crtnsphere(radius, (ay_nurbpatch_object **)
+					&(new->refine));
+	  ay_trafo_copy(o, new);
+	}
+      else
+	{
+	  zmin = sphere->zmin;
+	  zmax = sphere->zmax;
+	  thetamax = sphere->thetamax;
+	  if(fabs(zmax) < radius)
+	    {
+	      rmax = sqrt(radius*radius-zmax*zmax);
+	      phimax = asin(zmax/radius);
+	    }
+	  else
+	    {
+	      rmax = 0.0;
+	      phimax = AY_HALFPI;
+	    }
+
+	  if(fabs(zmin) < radius)
+	    {
+	      rmin = sqrt(radius*radius-zmin*zmin);
+	      phimin = asin(zmin/radius);
+	    }
+	  else
+	    {
+	      rmin = 0.0;
+	      phimin = -AY_HALFPI;
+	    }
+
+	  phi = fabs(phimax) + fabs(phimin);
+
+	  ay_status = ay_nb_CreateNurbsCircle(sphere->radius,
+					      AY_R2D(phimin), AY_R2D(phimax),
+					      &height, &kn, &cv);
+
+	  if(ay_status)
+	    goto cleanup;
+
+	  if(!(newc = calloc(1, sizeof(ay_object))))
+	    {
+	      ay_status = AY_EOMEM;
+	      goto cleanup;
+	    }
+	  newc->type = AY_IDNCURVE;
+	  ay_status = ay_object_defaults(newc);
+	  
+	  ay_status = ay_nct_create(3, height, AY_KTCUSTOM, cv, kn,
+				    (ay_nurbcurve_object **)&(newc->refine));
+
+	  ay_status = ay_npt_revolve(newc, -thetamax, 0, 0,
+				     (ay_nurbpatch_object **)&(new->refine));
+
+
+	  ay_quat_axistoquat(xaxis, -AY_D2R(90.0), quat);
+	  new->rotx += 90.0;
+	  ay_quat_add(new->quat, quat, new->quat);
+	  ay_trafo_add(o, new);
+
+	  kn = NULL;
+	  cv = NULL;
+
+
+	  /* create caps */
+	  if(sphere->closed)
+	    {
+	      n = &(new->next);
+	      if(fabs(zmin) < radius)
+		{
+		  ay_object_defaults(&d);
+		  d.type = AY_IDDISK;
+		  d.refine = &disk;
+		  disk.radius = rmin;
+		  disk.height = sphere->zmin;
+		  disk.thetamax = sphere->thetamax;
+		  ay_provide_object(&d, AY_IDNPATCH, n);
+		  if(*n)
+		    {
+		      ay_trafo_add(o, *n);
+		      n = &((*n)->next);
+		    }
+		} /* if */
+
+	      if(fabs(zmax) < radius)
+		{
+		  ay_object_defaults(&d);
+		  d.type = AY_IDDISK;
+		  d.refine = &disk;
+		  disk.radius = rmax;
+		  disk.height = sphere->zmax;
+		  disk.thetamax = sphere->thetamax;
+		  ay_provide_object(&d, AY_IDNPATCH, n);
+		  if(*n)
+		    {
+		      ay_trafo_add(o, *n);
+		      n = &((*n)->next);
+		    }
+		} /* if */
+
+	      if(fabs(thetamax) != 360.0)
+		{
+		  if(!(cv2 = calloc(2*height*stride, sizeof(double))))
+		    {
+		      ay_status = AY_EOMEM;
+		      goto cleanup;
+		    }
+		  np = (ay_nurbpatch_object *)new->refine;
+		  cv = np->controlv;
+		  j = 0; k = 0;
+		  for(i = 0; i < height; i++)
+		    {
+		      memcpy(&(cv2[j]), &(cv[k]), stride*sizeof(double));
+		      j += stride; k += np->width*stride;
+		    }
+		  cv = NULL;
+		  j = height*stride+1; k = 1;
+		  for(i = 0; i < height; i++)
+		    {
+		      cv2[j] = cv2[k];
+		      cv2[j+2] = 1.0;
+		      j += stride; k += stride;
+		    }
+
+		  if(!(kn = calloc(height+3, sizeof(double))))
+		    {
+		      ay_status = AY_EOMEM;
+		      goto cleanup;
+		    }
+		  memcpy(kn, np->uknotv, (height+3)*sizeof(double));
+
+		  if(!(newp = calloc(1, sizeof(ay_object))))
+		    {
+		      ay_status = AY_EOMEM;
+		      goto cleanup;
+		    }
+
+		  ay_object_defaults(newp);
+		  newp->type = AY_IDNPATCH;
+		  newp->inherit_trafos = AY_FALSE;
+		  newp->parent = AY_TRUE;
+		  newp->hide_children = AY_TRUE;
+
+		  ay_status = ay_object_crtendlevel(&(newp->down));
+		  if(ay_status)
+		    goto cleanup;
+
+		  ay_trafo_copy(new, newp);
+
+		  ay_npt_create(2, 3, 2, height, AY_KTNURB, AY_KTCUSTOM,
+				cv2, NULL, kn,
+				(ay_nurbpatch_object**)&(newp->refine));
+
+		  kn = NULL;
+		  *n = newp;
+		  n = &((*n)->next);
+
+		  ay_object_copy(newp, n);
+
+		  np = (ay_nurbpatch_object *)((*n)->refine);
+		  cv2 = np->controlv;
+		  np = (ay_nurbpatch_object *)new->refine;
+		  cv = np->controlv;
+		  j = 0; k = (np->height-1)*stride;
+		  for(i = 0; i < height; i++)
+		    {
+		      memcpy(&(cv2[j]), &(cv[k]), stride*sizeof(double));
+		      j += stride; k += np->width*stride;
+		    }
+
+		  np = NULL;
+		  cv = NULL;
+
+		} /* if */
+	    } /* if */
+	} /* if */
+
+      /* return result */
+      *result = new;
+      new = NULL;
+    } /* if */
+
+
+cleanup:
+
+  if(cv)
+    free(cv);
+
+  if(kn)
+    free(kn);
+
+  if(new)
+    {
+      if(new->down)
+	ay_object_delete(o->down);
+      free(new);
+    }
+
+  if(newc)
+    {
+      ay_object_delete(newc);
+    }
+
+ return ay_status;
+} /* ay_sphere_providecb */
+
+
+int
+ay_sphere_convertcb(ay_object *o, int in_place)
+{
+ int ay_status = AY_OK;
+ ay_object *new = NULL, *t;
+ ay_sphere_object *sphere = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  sphere = (ay_sphere_object *) o->refine;
+
+  /* first, create new object(s) */
+
+  if(sphere->closed)
+    {
+      if(!(new = calloc(1, sizeof(ay_object))))
+	{ return AY_EOMEM; }
+
+      ay_object_defaults(new);
+      new->type = AY_IDLEVEL;
+      new->parent = AY_TRUE;
+      new->inherit_trafos = AY_TRUE;
+
+      if(!(new->refine = calloc(1, sizeof(ay_level_object))))
+	{ free(new); return AY_EOMEM; }
+
+      ((ay_level_object *)(new->refine))->type = AY_LTLEVEL;
+
+      ay_status = ay_sphere_providecb(o, AY_IDNPATCH, &new->down);
+      if(ay_status)
+	{ free(new->refine); free(new); return ay_status; }
+
+      t = new->down;
+      while(t->next)
+	{
+	  t = t->next;
+	}
+      ay_status = ay_object_crtendlevel(&(t->next));
+    }
+  else
+    {
+      ay_status = ay_sphere_providecb(o, AY_IDNPATCH, &new);
+    }
+
+
+  /* second, link new object(s), or replace old object with it/them */
+
+  if(new)
+    {
+      if(!in_place)
+	{
+	  ay_status = ay_object_link(new);
+	}
+      else
+	{
+	  ay_object_replace(new, o);
+	} /* if */
+    } /* if */
+
+ return ay_status;
+} /* ay_sphere_convertcb */
+
+
+int
 ay_sphere_init(Tcl_Interp *interp)
 {
  int ay_status = AY_OK;
@@ -851,6 +1172,10 @@ ay_sphere_init(Tcl_Interp *interp)
 				    ay_sphere_wribcb,
 				    ay_sphere_bbccb,
 				    AY_IDSPHERE);
+
+  ay_status = ay_convert_register(ay_sphere_convertcb, AY_IDSPHERE);
+
+  ay_status = ay_provide_register(ay_sphere_providecb, AY_IDSPHERE);
 
  return ay_status;
 } /* ay_sphere_init */
