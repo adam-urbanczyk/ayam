@@ -2579,6 +2579,9 @@ Onio_Init(Tcl_Interp *interp)
   ay_status = onio_registerwritecb((char *)(AY_IDHYPERBOLOID),
 				   onio_writenpconvertible);
 
+  ay_status = onio_registerwritecb((char *)(AY_IDPARABOLOID),
+				   onio_writenpconvertible);
+
 
 #ifndef ONIOWRAPPED
   ay_error(AY_EOUTPUT, fname, "Plugin 'onio' successfully loaded.");
