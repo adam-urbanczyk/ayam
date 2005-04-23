@@ -991,7 +991,7 @@ int
 ay_comp_text(ay_object *o1, ay_object *o2)
 {
  ay_text_object *s1, *s2;
- unsigned long len = 0;
+ int len = 0;
 
   s1 = (ay_text_object *)o1->refine;
   s2 = (ay_text_object *)o2->refine;
@@ -1025,7 +1025,7 @@ ay_comp_text(ay_object *o1, ay_object *o2)
 	 Tcl_UniCharLen(s2->unistring))
 	return AY_FALSE;
 
-      if(Tcl_UniCharNcmp(s1->unistring, s2->unistring, len))
+      if(Tcl_UniCharNcmp(s1->unistring, s2->unistring, (unsigned long)len))
 	return AY_FALSE;
     }
   else
