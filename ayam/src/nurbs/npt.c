@@ -1367,8 +1367,22 @@ ay_npt_crtnspheretcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int ay_status;
  ay_object *o = NULL;
- char fname[] = "create_nsphere";
+ char fname[] = "crtNSphere";
+ double radius = 1.0;
+ int i = 1;
 
+  if(argc > 2)
+    {
+      /* parse args */
+      while(i+1 < argc)
+	{
+	  if(!strcmp(argv[i], "-r"))
+	    {
+	      sscanf(argv[i+1], "%lg", &radius);
+	    }
+	  i += 2;
+	} /* while */
+    } /* if */
 
   if(!(o = calloc(1, sizeof(ay_object))))
     {
@@ -1380,12 +1394,20 @@ ay_npt_crtnspheretcmd(ClientData clientData, Tcl_Interp *interp,
   ay_status = ay_object_defaults(o);
   o->parent = AY_TRUE;
   o->hide_children = AY_TRUE;
+
   ay_status = ay_object_crtendlevel(&(o->down));
-
-  ay_status = ay_npt_crtnsphere(1.0, (ay_nurbpatch_object **)&(o->refine));
-
   if(ay_status)
     {
+      free(o);
+      ay_error(ay_status, fname, NULL);
+      return TCL_OK;
+    }
+
+  ay_status = ay_npt_crtnsphere(radius, (ay_nurbpatch_object **)&(o->refine));
+  if(ay_status)
+    {
+      ay_object_delete(o->down);
+      free(o);
       ay_error(ay_status, fname, NULL);
       return TCL_OK;
     }
