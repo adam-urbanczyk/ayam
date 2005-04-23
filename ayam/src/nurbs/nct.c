@@ -2187,12 +2187,12 @@ ay_nct_crtnhcircle(double radius, ay_nurbcurve_object **curve)
   controls[i] *= sqrt(2.0)/2.0;
   controls[i+1] *= sqrt(2.0)/2.0;
   controls[i+3] = sqrt(2.0)/2.0;
-  i+=8;
+  i += 8;
   controls[i] *= sqrt(2.0)/2.0;
   controls[i+1] *= sqrt(2.0)/2.0;
   controls[i+3] = sqrt(2.0)/2.0;
 
-  for(i = 0; i < 9; i++)
+  for(i = 0; i < 5; i++)
     {
       controls[i*stride] *= radius;
       controls[i*stride+1] *= radius;
