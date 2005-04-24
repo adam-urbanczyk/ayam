@@ -823,6 +823,8 @@ onio_writesphere(ay_object *o, ONX_Model *p_m, double *m)
     {
       if(!onio_expsphereasbrep)
 	{
+	  ay_status = onio_writenpconvertible(o, p_m, m);
+	  /*
 	  ON_NurbsSurface su, *p_su = NULL;
 
 	  p_sp->GetNurbForm(su);
@@ -839,6 +841,7 @@ onio_writesphere(ay_object *o, ONX_Model *p_m, double *m)
 	      onio_writename(o, mo);
 
 	    } // if
+	  */
 	}
       else
 	{
@@ -895,6 +898,8 @@ onio_writecylinder(ay_object *o, ONX_Model *p_m, double *m)
     {
       if(!onio_expcylinderasbrep)
         {
+	  ay_status = onio_writenpconvertible(o, p_m, m);
+	  /*
           ON_NurbsSurface su, *p_su = NULL;
 
           p_cy->GetNurbForm(su);
@@ -910,7 +915,8 @@ onio_writecylinder(ay_object *o, ONX_Model *p_m, double *m)
 
 	      onio_writename(o, mo);
 
-            } // if
+	    } // if
+	  */
         }
       else
         {
@@ -965,6 +971,8 @@ onio_writecone(ay_object *o, ONX_Model *p_m, double *m)
     {
       if(!onio_expconeasbrep)
         {
+	  ay_status = onio_writenpconvertible(o, p_m, m);
+	  /*
           ON_NurbsSurface su, *p_su = NULL;
 
           p_co->GetNurbForm(su);
@@ -980,7 +988,8 @@ onio_writecone(ay_object *o, ONX_Model *p_m, double *m)
 
 	      onio_writename(o, mo);
 
-            } // if
+	    } // if
+	  */ 
         }
       else
         {
@@ -1034,6 +1043,8 @@ onio_writetorus(ay_object *o, ONX_Model *p_m, double *m)
     {
       if(!onio_exptorusasbrep)
 	{
+	  ay_status = onio_writenpconvertible(o, p_m, m);
+	  /*
 	  ON_NurbsSurface su, *p_su = NULL;
 
 	  p_to->GetNurbForm(su);
@@ -1050,6 +1061,7 @@ onio_writetorus(ay_object *o, ONX_Model *p_m, double *m)
 	      onio_writename(o, mo);
 
 	    } // if
+	  */
 	}
       else
 	{
