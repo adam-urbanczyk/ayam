@@ -471,6 +471,7 @@ array set ay {
  insknr 1
  refinekn 0.5
  splitu 0.5
+ ncircradius 1.0
  ncircarc 360.0
  cbspnum 6
  ts 0

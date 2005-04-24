@@ -2064,12 +2064,12 @@ ay_nct_concattcmd(ClientData clientData, Tcl_Interp *interp,
  *
  */
 int
-ay_nct_crtncircle(ay_nurbcurve_object **curve)
+ay_nct_crtncircle(double radius, ay_nurbcurve_object **curve)
 {
  int ay_status = AY_OK;
  ay_nurbcurve_object *new = NULL;
  double *controlv = NULL, *knotv = NULL;
- int i = 0;
+ int i = 0, stride = 4;
  double controls[36] = {
    0.0,1.0,0.0,1.0,
    1.0,1.0,0.0,1.0,
@@ -2089,18 +2089,24 @@ ay_nct_crtncircle(ay_nurbcurve_object **curve)
   controls[i] = sqrt(2.0)/2.0;
   controls[i-2] *= sqrt(2.0)/2.0;
   controls[i-3] *= sqrt(2.0)/2.0;
-  i+=8;
+  i += 8;
   controls[i] = sqrt(2.0)/2.0;
   controls[i-2] *= sqrt(2.0)/2.0;
   controls[i-3] *= sqrt(2.0)/2.0;
-  i+=8;
+  i += 8;
   controls[i] = sqrt(2.0)/2.0;
   controls[i-2] *= sqrt(2.0)/2.0;
   controls[i-3] *= sqrt(2.0)/2.0;
-  i+=8;
+  i += 8;
   controls[i] = sqrt(2.0)/2.0;
   controls[i-2] *= sqrt(2.0)/2.0;
   controls[i-3] *= sqrt(2.0)/2.0;
+
+  for(i = 0; i < 9; i++)
+    {
+      controls[i*stride] *= radius;
+      controls[i*stride+1] *= radius;
+    }
 
   if(!(new = calloc(1, sizeof(ay_nurbcurve_object))))
     return AY_EOMEM;
@@ -2113,10 +2119,10 @@ ay_nct_crtncircle(ay_nurbcurve_object **curve)
   new->length = 9;
   new->knot_type = AY_KTCUSTOM;
 
-  memcpy(controlv,controls,9*4*sizeof(double));
+  memcpy(controlv, controls, 9*4*sizeof(double));
   new->controlv = controlv;
 
-  memcpy(knotv,knots,12*sizeof(double));
+  memcpy(knotv, knots, 12*sizeof(double));
   new->knotv = knotv;
 
   new->createmp = AY_TRUE;
@@ -2131,7 +2137,7 @@ ay_nct_crtncircle(ay_nurbcurve_object **curve)
  *
  */
 int
-ay_nct_crtncirclearc(double arc, ay_nurbcurve_object **curve)
+ay_nct_crtncirclearc(double radius, double arc, ay_nurbcurve_object **curve)
 {
  int ay_status = AY_OK;
  ay_nurbcurve_object *new = NULL;
@@ -2139,14 +2145,14 @@ ay_nct_crtncirclearc(double arc, ay_nurbcurve_object **curve)
   if(!(new = calloc(1, sizeof(ay_nurbcurve_object))))
     return AY_EOMEM;
 
-  if(arc<0.0)
+  if(arc < 0.0)
     {
-      ay_status = ay_nb_CreateNurbsCircle(1.0, arc, 0.0, &(new->length),
+      ay_status = ay_nb_CreateNurbsCircle(radius, arc, 0.0, &(new->length),
 					      &new->knotv, &new->controlv);
     }
   else
     {
-      ay_status = ay_nb_CreateNurbsCircle(1.0, 0.0, arc, &(new->length),
+      ay_status = ay_nb_CreateNurbsCircle(radius, 0.0, arc, &(new->length),
 					      &new->knotv, &new->controlv);
     }
 
@@ -2198,7 +2204,6 @@ ay_nct_crtnhcircle(double radius, ay_nurbcurve_object **curve)
       controls[i*stride+1] *= radius;
     }
 
-
   if(!(new = calloc(1, sizeof(ay_nurbcurve_object))))
     return AY_EOMEM;
   if(!(controlv = calloc(5*4, sizeof(double))))
@@ -2230,9 +2235,29 @@ ay_nct_crtncircletcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[])
 {
  int ay_status;
- char fname[] = "create_ncircle";
- double arc = 0;
+ char fname[] = "crtNCircle";
+ double arc = 360.0;
  ay_object *o = NULL;
+ double radius = 1.0;
+ int i = 1;
+
+  if(argc > 2)
+    {
+      /* parse args */
+      while(i+1 < argc)
+	{
+	  if(!strcmp(argv[i], "-r"))
+	    {
+	      sscanf(argv[i+1], "%lg", &radius);
+	    }
+	  else
+	  if(!strcmp(argv[i], "-a"))
+	    {
+	      sscanf(argv[i+1], "%lg", &arc);
+	    }
+	  i += 2;
+	} /* while */
+    } /* if */
 
   if(!(o = calloc(1, sizeof(ay_object))))
     {
@@ -2246,18 +2271,19 @@ ay_nct_crtncircletcmd(ClientData clientData, Tcl_Interp *interp,
   /* we create the nurbcurve-object */
   if(argc < 2)
     {
-      ay_status = ay_nct_crtncircle((ay_nurbcurve_object **)&(o->refine));
+      ay_status = ay_nct_crtncircle(radius,
+				    (ay_nurbcurve_object **)&(o->refine));
     }
   else
     {
-      Tcl_GetDouble(interp, argv[1], &arc);
       if(arc >= 360.0 || arc <= -360.0 || arc == 0.0)
 	{
-	  ay_status = ay_nct_crtncircle((ay_nurbcurve_object **)&(o->refine));
+	  ay_status = ay_nct_crtncircle(radius,
+					(ay_nurbcurve_object **)&(o->refine));
 	}
       else
 	{
-	  ay_status = ay_nct_crtncirclearc(arc,
+	  ay_status = ay_nct_crtncirclearc(radius, arc,
 					(ay_nurbcurve_object **)&(o->refine));
 	}
 

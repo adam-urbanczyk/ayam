@@ -514,12 +514,12 @@ ay_revolve_crtcap(ay_revolve_object *revolve, ay_object *curve,
 
   if(fabs(revolve->thetamax) != 360.0)
     {
-      ay_nct_crtncirclearc(revolve->thetamax,
+      ay_nct_crtncirclearc(1.0, revolve->thetamax,
 			   (ay_nurbcurve_object **) (&(trim->refine)));
     }
   else
     {
-      ay_nct_crtncircle((ay_nurbcurve_object **) (&(trim->refine)));
+      ay_nct_crtncircle(1.0, (ay_nurbcurve_object **) (&(trim->refine)));
     }
 
   if(trim->refine)

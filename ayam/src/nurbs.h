@@ -218,9 +218,10 @@ int ay_nct_splittcmd(ClientData clientData, Tcl_Interp *interp,
 int ay_nct_concattcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
 
-int ay_nct_crtncircle(ay_nurbcurve_object **curve);
+int ay_nct_crtncircle(double radius, ay_nurbcurve_object **curve);
 
-int ay_nct_crtncirclearc(double arc, ay_nurbcurve_object **curve);
+int ay_nct_crtncirclearc(double radius, double arc,
+			 ay_nurbcurve_object **curve);
 
 int ay_nct_crtnhcircle(double radius, ay_nurbcurve_object **curve);
 
