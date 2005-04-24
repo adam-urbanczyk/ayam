@@ -266,9 +266,8 @@ $m.nc add command -label "ClosedBSpline" -command {
     runTool ay(cbspnum) "NumPoints:" "crtClosedBS %0; uCR; sL; rV;"
 }
 $m.nc add command -label "NURBCircle" -command {
-    crtNCircle; uCR; sL; rV }
-$m.nc add command -label "NURBCircleArc" -command {
-    runTool ay(ncircarc) "Arc:" "crtNCircle %0; uCR; sL; rV;"
+    runTool {ay(ncircradius) ay(ncircarc)} {"Radius:" "Arc:"}\
+	    "crtNCircle -r %0 -a %1; uCR; sL; rV;"
 }
 $m.nc add command -label "TrimRect" -command {
     crtNRect; set ay(ul) $ay(CurrentLevel); uS 0 1; rV}
