@@ -273,7 +273,8 @@ $m.nc add command -label "TrimRect" -command {
     crtNRect; set ay(ul) $ay(CurrentLevel); uS 0 1; rV}
 $m.nc add separator
 $m.nc add command -label "NURBSphere" -command {
-    crtNSphere; uCR; sL; rV}
+    runTool ay(nsphereradius) "Radius:" "crtNSphere -r %0; uCR; sL; rV;"
+    }
 $m.nc add command -label "NURBSphere2" -command {
     crtNSphere2; uCR; sL; rV}
 $m.nc add separator
