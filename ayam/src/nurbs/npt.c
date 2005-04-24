@@ -3899,8 +3899,10 @@ ay_npt_gettangentfromcontrol(int closed, int n, int p,
   before = b;
 
   /* now calc the tangent */
-  t[0] = P[after*stride] - P[before*stride];
-  t[1] = P[(after*stride)+1] - P[(before*stride)+1];
+  t[0] = (P[after*stride]/P[after*stride+3]) -
+    (P[before*stride]/P[before*stride+3]);
+  t[1] = (P[(after*stride)+1]/P[(after*stride)+3]) -
+    (P[(before*stride)+1]/P[(before*stride)+3]);
 
   /* normalize tangent vector */
   l = sqrt(t[0]*t[0]+t[1]*t[1]);
