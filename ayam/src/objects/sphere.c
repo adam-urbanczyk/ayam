@@ -1102,7 +1102,7 @@ ay_sphere_convertcb(ay_object *o, int in_place)
 
   /* first, create new object(s) */
 
-  if(sphere->closed)
+  if(!sphere->is_simple)
     {
       if(!(new = calloc(1, sizeof(ay_object))))
 	{ return AY_EOMEM; }
