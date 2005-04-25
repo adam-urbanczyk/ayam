@@ -2373,6 +2373,15 @@ for more information regarding the depth complexity value.
 An example for a DC tag (valid for e.g. a torus) could look like this:
 <code>DC 2</code>
 
+<sect2>NP Tag<label id="nptag">
+<p>
+The tag type <tt/"NP"/ (new property) may be used to add new property
+GUIs to single objects. The value of the tag is the name of a new
+property. The necessary code to manage the property data and the
+windows that make up the property GUI itself have to be present in
+the Tcl context of Ayam before the user clicks on the new property in the
+property list box.
+
 <sect2>Internal Tags
 <p>
 The following tags are of no general use. They are used
@@ -2401,7 +2410,7 @@ This section contains a comprehensive list of tag names, that are
 known in Ayam 1.8 and in the accompanying extensions.
 <p>
 <tt>"RiAttribute", "RiOption", "RiHider", "RiDisplay", "NoExport", "TC",
-"PV", "SaveMainGeom", "TP", "MI", "OI", "DC", "IDR", "IIDR", "RIDR",
+"PV", "SaveMainGeom", "TP", "MI", "OI", "DC", "NP", "IDR", "IIDR", "RIDR",
 "R3IDR", "CIDR", "CCIDR"</tt>
 <p>
 Documentation on those tags can be found in the sections above.
@@ -4147,7 +4156,8 @@ of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 <p>
 The skin object forms a surface defined by a set of cross section curves,
 where the first and last curve will always be interpolated by the surface
-(this process is sometimes also called lofting).
+(this process is sometimes also called lofting). When only two parameter
+curves are used the skin forms a so called ruled surface.
 <p>
 The complete template for the Skin object hierarchy, consequently,
 looks like this:
@@ -4655,6 +4665,12 @@ GUI of Ayam should be avoided. In particular, the following
 procedures and commands should not be used: uS, uCR, uCL, sL, selOb,
 plb_update, cutOb, copOb, delOb, undo.
 <p>
+Since Ayam1.8.2 script objects may also create their own property
+GUIs for e.g. script parameters. This is accomplished by adding
+tags of type <tt>"NP"</tt> with the name of the new property as
+value to the script object. The script itself is responsible for data
+management and property GUI creation.
+<p>
 The binary and source distributions of Ayam contain several example
 scripts for script objects in the <tt>"ayam/bin/scripts"</tt> and
 <tt>"ayam/src/scripts"</tt> directories, respectively.
@@ -4685,9 +4701,9 @@ e.g. a Sweep:
  | Cross_Section(Script)
  \ Path(NCurve)
 </code>
-The newly created object has to be selected for parameterisation
-and copying. The selection should be done using the new scripting
-interface command <tt/"hSL"/.
+The newly created object has to be selected by the script code
+for parameterisation and copying. The selection should be done
+using the new scripting interface command <tt/"hSL"/ (hidden select last).
 
 <item><tt/"Modify"/, if the script object has child objects,
 these child objects will be copied into the internal data
@@ -7481,6 +7497,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>NewLoadsEnv: <ref id="prefgui" name="preference setting">
 <item>newScene: <ref id="scio" name="scripting interface command">
 <item>NoExport: <ref id="noexporttag" name="tag type">
+<item>NP: <ref id="nptag" name="tag type">
 <item>NumClones: <ref id="cloneattr" name="Clone attribute">
 <item>NumSamples: <ref id="moattr" name="MetaObj attribute">
 <item>NURBCircle: <ref id="ncirct" name="NURBS circle tool">
@@ -7618,6 +7635,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Rotation: <ref id="trap" name="transformations property">,
 <ref id="gimb" name="using the transformations property">
 <item>rotOb, rotSel: <ref id="scitrafo" name="scripting interface command">
+<item>Ruled surface: <ref id="skinobj" name="Skin object">,
 <item>rV: <ref id="sciupd" name="scripting interface command">
 </itemize>
 
