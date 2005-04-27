@@ -1,4 +1,4 @@
-[23. Apr 2005] CVS-Head:
+[27. Apr 2005] CVS-Head:
 o bug fixes:
   - fixed provide callback (e.g. for Wavefront export) of transformed extrude
     objects with caps and bevels (SF )
@@ -8,8 +8,15 @@ o improved handling of CFLAGS and Tcl/Tk8.4 in ayamConf.tcl
 o added new plugin "onio" that imports from and exports to the Rhino 3DM
   file format using OpenNURBS (http://www.opennurbs.com/)
 o added conversion of all quadric objects to NURBS representations
-  including all caps
-o added radius option to crtNSphere scripting interface command
+  including support for all quadric parameters and all caps
+o added conversion of box objects to a NURBS representation
+o added radius option to the "crtNSphere" and "crtNCircle" scripting interface
+  commands and the respective tool menu entries in the main menu
+o improved bevel creation for extrusions of curves with weighted sections
+o added new tag type "NP" (for new property) that allows to add new
+  properties (and their property GUIs) to objects
+o added support for script controlled property GUIs to the script object
+  (see new script example "scripts/crtspiralgui.tcl")
 
 
 [14. Mar 2005] Ayam1.8.1:
