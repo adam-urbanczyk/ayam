@@ -2012,12 +2012,15 @@ onio_readreference(ONX_Model *p_m, ON_InstanceRef *p_r, double accuracy)
   ON_UUID uuid = p_r->m_instance_definition_uuid;
   if(p_m->m_object_table[p_m->ObjectIndex(uuid)].m_object)
     {
-      ay_status = onio_readobject(p_m,
-                   p_m->m_object_table[p_m->ObjectIndex(uuid)].m_object,
-				  accuracy);
-
-      // apply trafo
-
+      ON_Object *p_o =
+     (p_m->m_object_table[p_m->ObjectIndex(uuid)].m_object)->DuplicateObject();
+      if(p_o && ON_Geometry::Cast(p_o))
+	{
+	  ((ON_Geometry*)p_o)->Transform(p_r->m_xform);
+	  ay_status = onio_readobject(p_m, p_o, accuracy);
+	} // if
+      if(p_o)
+	delete p_o;
     } // if
 
  return ay_status;
