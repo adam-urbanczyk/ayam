@@ -6758,6 +6758,81 @@ Support for import or export of lights, camera attributes as well as
 material attributes other than material color and opacity is currently
 not available.
 
+<sect1>The OpenNURBS IO (onio) Plugin<label id="onioplugin">
+<p>
+Since version 1.8.2 Ayam contains a plugin that may export to
+and import from the Rhino 3DM format using the OpenNURBS toolkit.
+<p>
+The export functionality of the onio plugin currently covers
+export of all boxes, quadrics, NURBS, instances, clones, script
+objects (of type <tt/"Create"/ or <tt/"Modify"/) and objects that
+may be converted to NURBS curves or surfaces.
+Even though export of planar cap surfaces of various
+tool objects is supported, the export of general trimmed NURBS
+patches is not supported. This is because of a missing feature
+(pushing up 2D trim curves to 3D curves for arbitrary NURBS
+surfaces) in the OpenNURBS toolkit.
+<p>
+The export options include
+<tt/"Accuracy"/: this option controls the tolerance of internal
+OpenNURBS operations (currently those are:
+pushing up 2D trim curves to 3D curves and
+checking NURBS surfaces for planarity).
+<tt/"WriteCurves"/: if this option is disabled, no curves
+will be written to the exported Rhino file.
+<tt/"QuadAsBRep"/: if this option is enabled spheres, cylinders,
+cones, and torii will not be exported as collection of NURBS
+surfaces (as converted by Ayam) but as BRep objects. However,
+not all features of the quadric objects will be translated.
+The BRep sphere does not support ZMin, ZMax, and ThetaMax.
+The BRep cylinder does not support ThetaMax (base caps will
+be created if the cylinder is closed).
+The BRep cone does not support ThetaMax (a base cap will be
+created, if the cone is closed).
+The BRep torus does not support PhiMin, PhiMax, and ThetaMax.
+The option has no effect on the export of disks, hyperboloids,
+and paraboloids.
+<p>
+Since the Rhino 3DM format does not support hierarchy and
+transformation attributes per object, the hierarchy of the Ayam
+scene will be squashed and all transformation attributes will
+be applied to the control points of the objects for export.
+CSG operations are fully ignored, all objects will be written
+as if combined by the union operator.
+Furthermore, all instance objects will be resolved to normal
+objects. All objects will be written to the first layer
+(the default layer). Object names will be written as well.
+Names of level objects will be prepended to the names of their child
+objects. The object hierarchy:
+<code>
++-Arm(Level)
+ |MySphere(Sphere)
+ \MyCylinder(Cylinder)
+</code>
+for instance, leads to two objects named <tt>"Arm/MySphere"</tt>
+and <tt>"Arm/MyCylinder"</tt>.
+
+<p>
+The import functionality of the onio plugin currently covers
+import of all NURBS and BRep objects and objects that may
+be converted to NURBS using the OpenNURBS toolkit
+(those are: PolylineCurve, PolyCurve, LineCurve, ArcCurve,
+CurveOnSurface, RevSurface, SumSurface, and PlaneSurface).
+References will be resolved.
+<p>
+The <tt/"Accuracy"/ import option controls the tolerance
+of OpenNURBS internal operations, in this case the value is
+mostly used for conversion operations to the NURBS form.
+If the <tt/"ReadCurves"/ import option is switched off, no
+curves will be imported.
+By default, all objects from all layers will be imported.
+Using the <tt/"ReadLayers"/ import option, a single layer or a range
+of layers may be selected for import.
+Another import option is <tt/"IgnoreFirstTrim"/, this is useful
+if the first bounding trim loop of NURBS surfaces should be ignored.
+This trim loop is often not needed, because it encloses the whole
+surface that is not trimmed further in many cases.
+
 <sect1>Shader Parsing Plugins<label id="spplugins">
 <p>
 Since Ayam 1.3, the following plugins are provided to allow
@@ -7316,6 +7391,9 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Expand: <ref id="treecontm" name="tree context menu entry">
 <item>ExpGain, ExpGamma: <ref id="rio" name="RenderMan interface option">
 <item>Explode: <ref id="explt" name="Explode tool">
+<item>Export: <ref id="onioplugin" name="3DM (Rhino) ONIO plugin">,
+<ref id="mfioplugin" name="3DMF (Apple) MFIO plugin">,
+<ref id="expwav" name="OBJ (Wavefront) export">
 <item>Export RIB: <ref id="mmfile" name="main menu entry">
 <item>Expression: <ref id="mcattr" name="MetaComp attribute">
 <item>Exterior: <ref id="matshader" name="shader">
@@ -7394,8 +7472,10 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>IgnoreNormals: <ref id="mmtools" name="Optimize PolyMesh tool option">
 <item>Image: <ref id="prefrib" name="preference setting">
 <item>Imager: <ref id="imager" name="property">
-<item>import Mops scene: <ref id="impmops" name="Mops Import">
-<item>import RIB: <ref id="rrib" name="RIB Import">
+<item>Import: <ref id="onioplugin" name="3DM (Rhino) ONIO plugin">,
+<ref id="impmops" name="Mops Import">,
+<ref id="mfioplugin" name="3DMF (Apple) MFIO plugin">,
+<ref id="rrib" name="RIB Import">
 <item>Importance Driven Rendering: <ref id="idr" name="IDR plugin">
 <item>Insert: <ref id="mmfile" name="main menu entry">,
 <ref id="insdelac" name="insert points">
@@ -7517,6 +7597,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>OI: <ref id="oitt" name="tag type">
 <item>OmitCurves <ref id="expwav" name="Wavefront OBJ export option">
 <item>Open: <ref id="treecontm" name="tree context menu entry">
+<item>OpenNURBS: <ref id="onioplugin" name="ONIO plugin">
 <item>Optimize: <ref id="mmtools" name="Optimize PolyMesh tool">
 <item>OptimizeCoords: <ref id="mmtools" name="Optimize PolyMesh tool option">
 <item>OptimizeFaces: <ref id="mmtools" name="Optimize PolyMesh tool option">
@@ -7613,6 +7694,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>RGBA_ONE, RGBA_MIN, RGBA_MAX, RGBA_Dither:
 <ref id="rio" name="RenderMan interface option">
 <item>RGTrans: <ref id="prefmisc" name="preference setting">
+<item>Rhino: <ref id="onioplugin" name="ONIO plugin">
 <item>RiAttribute: <ref id="riattrs" name="property">,
 <ref id="riatag" name="tag type">,
 <ref id="rioptdb" name="RiOption and RiAttributes Database">
