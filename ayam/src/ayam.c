@@ -127,7 +127,8 @@ int ay_wrib_framenum = 0;
 
 unsigned int ay_current_primlevel = 0;
 
-/* prototypes for initialization callbacks of additional included modules */
+/* prototypes for initialization callbacks of additional statically
+   included modules */
 #ifdef AYIDRWRAPPED
   int Idr_Init(Tcl_Interp *interp);
 #endif
@@ -145,6 +146,10 @@ unsigned int ay_current_primlevel = 0;
 int
 aycsg_inittcmd(ClientData clientData, Tcl_Interp *interp,
 	       int argc, char *argv[]);
+#endif
+
+#ifdef AYONIOWRAPPED
+  int Onio_Init(Tcl_Interp *interp);
 #endif
 
 /* bitmaps for the object tree */
@@ -473,7 +478,7 @@ ay_init(Tcl_Interp *interp)
   ay_point_edit_coords_homogenous = AY_FALSE;
   ay_point_edit_coords_number = 0;
 
-  /* initialize additional included modules */
+  /* initialize additional statically included modules */
 #ifdef AYIDRWRAPPED
   if((ay_status = Idr_Init(interp)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
@@ -509,6 +514,16 @@ ay_init(Tcl_Interp *interp)
 	     TCL_GLOBAL_ONLY);
 #else
   Tcl_SetVar(interp, "AYCSGWRAPPED", "0", TCL_LEAVE_ERR_MSG |
+	     TCL_GLOBAL_ONLY);
+#endif
+
+#ifdef AYONIOWRAPPED
+  if((ay_status = Onio_Init(interp)))
+    { ay_error(ay_status, fname, NULL); return AY_ERROR; }
+  Tcl_SetVar(interp, "AYONIOWRAPPED", "1", TCL_LEAVE_ERR_MSG |
+	     TCL_GLOBAL_ONLY);
+#else
+  Tcl_SetVar(interp, "AYONIOWRAPPED", "0", TCL_LEAVE_ERR_MSG |
 	     TCL_GLOBAL_ONLY);
 #endif
 
