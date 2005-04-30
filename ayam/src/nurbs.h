@@ -122,10 +122,6 @@ void ay_nb_CompFirstDerSurf3D(int n, int m, int p, int q, double *U, double *V,
 int ay_nb_CreateNurbsCircle(double r, double ths, double the,
 			int *length, double **knotv, double **controlv);
 
-void ay_nb_FinduFromPoint(ay_nurbcurve_object *curve, double *point,
-			  double guess, int max_try, double e1, double e2,
-			  double *u);
-
 void ay_nb_RefineKnotVectCurve(int stride, int n, int p, double *U, double *Pw,
 			       double *X, int r, double *Ubar, double *Qw);
 
@@ -289,6 +285,9 @@ int ay_nct_toxytcmd(ClientData clientData, Tcl_Interp *interp,
 int ay_nct_makecomptcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
 
+void ay_nct_findufrompoint(ay_nurbcurve_object *curve, double *point,
+			   double guess, int max_try, double e1, double e2,
+			   double *u);
 
 /* npt.c */
 int ay_npt_create(int uorder, int vorder, int width, int height,
