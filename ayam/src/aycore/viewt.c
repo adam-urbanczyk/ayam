@@ -1368,23 +1368,23 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 	      double dxw, dyw, t[3] = {0}, t2[2] = {0},mm[16] = {0};
 	      if(view->rect_xmin<view->rect_xmax)
 		{
-		  rectw = view->rect_xmax-view->rect_xmin;
-		  dispx = (width/2)-(view->rect_xmax-(rectw/2));
+		  rectw = (int)(view->rect_xmax-view->rect_xmin);
+		  dispx = (int)((width/2)-(view->rect_xmax-(rectw/2)));
 		}
 	      else
 		{
-		  rectw = view->rect_xmin-view->rect_xmax;
-		  dispx = (width/2)-(view->rect_xmin-(rectw/2));
+		  rectw = (int)(view->rect_xmin-view->rect_xmax);
+		  dispx = (int)((width/2)-(view->rect_xmin-(rectw/2)));
 		}
 	      if(view->rect_ymin<view->rect_ymax)
 		{
-		  recth = view->rect_ymax-view->rect_ymin;
-		  dispy = (height/2)-(view->rect_ymax-(recth/2));
+		  recth = (int)(view->rect_ymax-view->rect_ymin);
+		  dispy = (int)((height/2)-(view->rect_ymax-(recth/2)));
 		}
 	      else
 		{
-		  recth = view->rect_ymin-view->rect_ymax;
-		  dispy = (height/2)-(view->rect_ymin-(recth/2));
+		  recth = (int)(view->rect_ymin-view->rect_ymax);
+		  dispy = (int)((height/2)-(view->rect_ymin-(recth/2)));
 		}
 
 	      if(!(rectw && recth))

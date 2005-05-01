@@ -335,7 +335,7 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
  int ay_status = AY_OK;
  char fname[] = "pointEdit";
  Tcl_Interp *interp = Togl_Interp (togl);
- ay_view_object *view = Togl_GetClientData(togl);
+ ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  double winX = 0.0, winY = 0.0;
  /*  double pickepsilon = ay_prefs.pick_epsilon;*/
  double obj[3] = {0};
