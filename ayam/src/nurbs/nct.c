@@ -3534,6 +3534,28 @@ ay_nct_rescaleknvnctcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *src = NULL;
  ay_nurbcurve_object *curve = NULL;
  char fname[] = "rescaleKnNC";
+ int i = 1, mode = 0;
+ double rmin = 0.0, rmax = 1.0, mindist = 1.0e-04;
+
+  /* parse args */
+  if(argc > 2)
+    {
+      while(i+1 < argc)
+	{
+	  if(!strcmp(argv[i], "-r"))
+	    {
+	      mode = 0;
+	      sscanf(argv[i+1], "%lg", &rmin);
+	      sscanf(argv[i+2], "%lg", &rmax);
+	    }
+	  if(!strcmp(argv[i], "-d"))
+	    {
+	      mode = 1;
+	      sscanf(argv[i+1], "%lg", &mindist);
+	    }
+	  i += 2;
+	} /* while */
+    } /* if */
 
   if(!sel)
     {
@@ -3554,9 +3576,20 @@ ay_nct_rescaleknvnctcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  if(curve->knot_type == AY_KTCUSTOM)
 	    {
-
-	      ay_status = ay_knots_rescaletorange(curve->length+curve->order,
-						  curve->knotv, 0.0, 1.0);
+	      if(mode)
+		{
+		  ay_status = ay_knots_rescaletomindist(curve->length+
+							curve->order,
+							curve->knotv,
+							mindist);
+		}
+	      else
+		{
+		  ay_status = ay_knots_rescaletorange(curve->length+
+						      curve->order,
+						      curve->knotv,
+						      rmin, rmax);
+		}
 	      if(ay_status)
 		{
 		  ay_error(ay_status, fname, "Could not rescale knots!");
