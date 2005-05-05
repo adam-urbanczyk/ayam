@@ -327,7 +327,7 @@ ay_knots_rescaletomindist(int n, double *knotv, double mindist /*1.0e-04*/)
 	}
     } /* for */
 
-  if(knotv_mindist < mindist)
+  if(knotv_mindist > mindist)
     return AY_OK;
 
   /* compute (safe) scale factor */
