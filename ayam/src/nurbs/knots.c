@@ -27,6 +27,9 @@ ay_knots_createnp(ay_nurbpatch_object *patch)
  int start = 0;
  double *newuknotv = NULL, *newvknotv = NULL;
 
+  if(!patch)
+    return AY_ENULL;
+
   uorder = patch->uorder;
   vorder = patch->vorder;
   width = patch->width;
@@ -88,7 +91,7 @@ ay_knots_createnp(ay_nurbpatch_object *patch)
     case AY_KTCUSTOM:
       /* user specified own knot vertices */
       break;
-    }
+    } /* switch */
 
   switch(patch->vknot_type)
     {
@@ -125,7 +128,7 @@ ay_knots_createnp(ay_nurbpatch_object *patch)
     case AY_KTCUSTOM:
       /* user specified own knot vertices */
       break;
-    }
+    } /* switch */
 
  return AY_OK;
 } /* ay_knots_createnp */
@@ -139,6 +142,9 @@ ay_knots_createnc(ay_nurbcurve_object *curve)
  int order = 0, length = 0, knot_count = 0;
  int i = 0, j = 0, kts = 0;
  double *newknotv = NULL;
+
+  if(!curve)
+    return AY_ENULL;
 
   order = curve->order;
   length = curve->length;
@@ -197,7 +203,7 @@ ay_knots_createnc(ay_nurbcurve_object *curve)
     case AY_KTCUSTOM:
       /* user specified own knot vertices */
       break;
-    }
+    } /* switch */
 
  return AY_OK;
 } /* ay_knots_createnc */
@@ -236,24 +242,31 @@ ay_knots_check(int length, int order, int knot_count, double *knotv)
 
 	  if(knotv[i] > knotv[i+1])
 	    return 4;
-	}
-    }
+	} /* if */
+    } /* for */
 
  return 0;
 } /* ay_knots_check */
 
 
-/* ay_knots_rescaleknotv:
- *
+/* ay_knots_rescaletorange:
+ *  rescale knot vector n, knotv to the new range [rmin, rmax] (rmin < rmax)
  */
 int
-ay_knots_rescaleknotv(int n, double *knotv)
+ay_knots_rescaletorange(int n, double *knotv, double rmin, double rmax)
 {
- double *tmpknv = NULL, min, max, len;
+ double *tmpknv = NULL, min, max, len, newlen;
  int i;
+
+  if(!knotv)
+    return AY_ENULL;
+
+  if(rmin >= rmax)
+    return AY_EARGS;
 
   max = knotv[0];
   min = knotv[0];
+  newlen = rmax-rmin;
 
   for(i = 0; i < n; i++)
     {
@@ -262,10 +275,10 @@ ay_knots_rescaleknotv(int n, double *knotv)
      
       if(knotv[i] < min)
 	min = knotv[i];
-    }
+    } /* for */
 
   if(min < 0.0 && max > 0.0)
-    len = max+fabs(min);
+    len = max + fabs(min);
   else
     len = max - min;
 
@@ -274,17 +287,60 @@ ay_knots_rescaleknotv(int n, double *knotv)
 
   memcpy(tmpknv, knotv, n*sizeof(double));
 
-  knotv[0] = 0.0;
+  knotv[0] = rmin;
   for(i = 1; i < n-1; i++)
     {
-      knotv[i] = (tmpknv[i] - tmpknv[0])/len;
+      knotv[i] = rmin+((tmpknv[i] - tmpknv[0])/len*newlen);
     }
-  knotv[n-1] = 1.0;
+  knotv[n-1] = rmax;
 
   free(tmpknv);
 
  return AY_OK;
-} /* ay_knots_rescaleknotv */
+} /* ay_knots_rescaletorange */
+
+
+/* ay_knots_rescaletomindist:
+ *  rescale knot vector n, knotv to the minimum distance mindist
+ *  after scaling, no distance between two knots is smaller than mindist
+ *  except for multiple knots; this is most useful for drawing with GLU
+ *  which has a very low epsilon (about 1.0e-04) to decide whether two
+ *  knot values are the same
+ */
+int
+ay_knots_rescaletomindist(int n, double *knotv, double mindist /*1.0e-04*/)
+{
+ double knotv_mindist = DBL_MAX, sf = 0.0;
+ int i;
+ 
+  if(!knotv)
+    return AY_ENULL;
+
+  for(i = 1; i < n; i++)
+    {
+      /* multiple knot? */
+      if(knotv[i] != knotv[i-1])
+	{
+	  /* No! Compute distance... */
+	  if((knotv[i] - knotv[i-1]) < knotv_mindist)
+	    knotv_mindist = (knotv[i] - knotv[i-1]);
+	}
+    } /* for */
+
+  if(knotv_mindist < mindist)
+    return AY_OK;
+
+  /* compute (safe) scale factor */
+  sf = (mindist*1.1)/knotv_mindist;
+
+  /* scale knot vector */
+  for(i = 0; i < n; i++)
+    {
+      knotv[i] *= sf;
+    } /* for */
+
+ return AY_OK;
+} /* ay_knots_rescaletomindist */
 
 
 /* ay_knots_unify:
@@ -321,13 +377,13 @@ ay_knots_unify(double *Ua, int Ualen, double *Ub, int Ublen,
 	    {
 	      t = Ub[ib];
 	      ib++;
-	    }
-	}
+	    } /* if */
+	} /* if */
       U[i] = t;
       i++;
       if((ia >= Ualen || ib >= Ublen))
 	done = AY_TRUE;
-    }
+    } /* while */
 
   if(*Ubar)
     {

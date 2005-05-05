@@ -41,7 +41,9 @@ int ay_knots_createnc(ay_nurbcurve_object *curve);
 
 int ay_knots_check(int length, int order, int knot_count, double *knotv);
 
-int ay_knots_rescaleknotv(int n, double *knotv);
+int ay_knots_rescaletorange(int n, double *knotv, double rmin, double rmax);
+
+int ay_knots_rescaletomindist(int n, double *knotv, double mindist);
 
 int ay_knots_unify(double *Ua, int Ualen, double *Ub, int Ublen,
 		   double **Ubar, int *Ubarlen);
