@@ -392,7 +392,7 @@ ay_concatnc_notifycb(ay_object *o)
 
       while(ncurve)
 	{
-	  ay_knots_rescaleknotv(nc->length+nc->order, nc->knotv);
+	  ay_knots_rescaletorange(nc->length+nc->order, nc->knotv, 0.0, 1.0);
 	  ncurve = ncurve->next;
 	} /* while */
 

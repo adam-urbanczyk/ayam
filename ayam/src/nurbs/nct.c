@@ -3550,14 +3550,13 @@ ay_nct_rescaleknvnctcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
-
 	  curve = (ay_nurbcurve_object*)src->refine;
 
 	  if(curve->knot_type == AY_KTCUSTOM)
 	    {
 
-	      ay_status = ay_knots_rescaleknotv(curve->length+curve->order,
-						curve->knotv);
+	      ay_status = ay_knots_rescaletorange(curve->length+curve->order,
+						  curve->knotv, 0.0, 1.0);
 	      if(ay_status)
 		{
 		  ay_error(ay_status, fname, "Could not rescale knots!");
@@ -3565,7 +3564,7 @@ ay_nct_rescaleknvnctcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 	  else
 	    {
-	      ay_error(ay_status, fname, "Need a custom knot vector!");
+	      ay_error(AY_ERROR, fname, "Need a custom knot vector!");
 	    } /* if */
 
 	} /* if */
@@ -3971,8 +3970,8 @@ ay_nct_makecompatible(ay_object *cu)
       if(curve->knotv[0] != 0.0 || curve->knotv[
 	  curve->length+curve->order-1] != 1.0)
 	{
-	  ay_status = ay_knots_rescaleknotv(curve->length+curve->order,
-					    curve->knotv);
+	  ay_status = ay_knots_rescaletorange(curve->length+curve->order,
+					      curve->knotv, 0.0, 1.0);
 	}
       o = o->next;
     }
