@@ -15,7 +15,7 @@
 /* nb.c - various NURBS related functions */
 
 /*
- * code adapted from "The NURBS Book" by Les Piegl, Wayne Tiller;
+ * Code adapted from "The NURBS Book" by Les Piegl, Wayne Tiller;
  * code marked NURBS++ derived from (or contains changes
  * to the original NURBS-Book code from) the NURBS++-Library
  * by Philippe Lavoie.
@@ -24,7 +24,7 @@
  * follow the NURBS book more closely (to ease debugging of core
  * NURBS algorithms) which means that:
  * n is curve->length-1, w is patch->width-1, h is patch->height-1
- * p is curve->order-1, or patch->uorder-1, q is patch->vorder-1
+ * p is curve->order-1 or patch->uorder-1, q is patch->vorder-1
  */
 
 
@@ -994,18 +994,24 @@ ay_nb_SolveTridiagonal(int n, double *Q, double *U, double *P)
 } /* ay_nb_SolveTridiagonal */
 
 
+/*
+ * ay_nb_CurveInsertKnot4D:
+ *  insert knot u into rational curve np, p, UP, Pw
+ *  r times; k: knot span, s: already present knot multiplicity (np >= r+s!) 
+ *  nq: new order, UQ: new knots, Qw: new controls (both allocated outside!)
+ */
 int
 ay_nb_CurveInsertKnot4D(int np, int p, double *UP, double *Pw, double u,
 			int k, int s, int r, int *nq, double *UQ,
 			double *Qw)
 {
- int i,j,L=0,i1,i2;
+ int i, j, L = 0, i1, i2;
  double mp = 0.0, alpha = 0.0, *Rw = NULL;
 
   mp = np+p+1;
   *nq = np + r;
 
-  if(!(Rw = calloc((p+1)*4,sizeof(double))))
+  if(!(Rw = calloc((p+1)*4, sizeof(double))))
     return AY_EOMEM;
 
   /* load new knot vector */
@@ -1087,12 +1093,18 @@ ay_nb_CurveInsertKnot4D(int np, int p, double *UP, double *Pw, double u,
 } /* ay_nb_CurveInsertKnot4D */
 
 
+/*
+ * ay_nb_CurveInsertKnot4D:
+ *  insert knot u into curve np, p, UP, P
+ *  r times; k: knot span, s: already present knot multiplicity (np >= r+s!) 
+ *  nq: new order, UQ: new knots, Q: new controls (both allocated outside!)
+ */
 int
 ay_nb_CurveInsertKnot3D(int np, int p, double *UP, double *P, double u,
 			int k, int s, int r, int *nq, double *UQ,
 			double *Q)
 {
- int i,j,L=0,i1,i2;
+ int i, j, L = 0, i1, i2;
  double mp = 0.0, alpha = 0.0, *R = NULL;
 
   mp = np+p+1;
@@ -1205,7 +1217,7 @@ ay_nb_FindSpan(int n, int p, double u, double *U)
 	low = mid;
 
       mid = (low+high)/2;
-    }
+    } /* while */
 
  return(mid);
 } /* ay_nb_FindSpan */
