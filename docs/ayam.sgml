@@ -5791,7 +5791,7 @@ clampNC:
  <item>Synopsis: <tt/"clampNC"/
  <item>Description: Clamp the knot vector of the selected NURBS curves
 without changing the shape of the curves.
-The knot type of the clamped curve will be changed to custom and
+The knot type of the clamped curve will be changed to <tt/"Custom"/ and
 the knots will have o equal values at start and end (where o is the
 order of the curve).
 </itemize>
@@ -5801,7 +5801,7 @@ elevateNC:
  <item>Synopsis: <tt/"elevateNC n"/
  <item>Description: Elevate the order of the selected NURBS curves
 without changing the shape of the curves by n.
-The knot type of the elevated curves will be changed to custom.
+The knot type of the elevated curves will be changed to <tt/"Custom"/.
 </itemize>
 
 insknNC - insert knot:
@@ -5823,7 +5823,7 @@ refineNC:
 without changing the shape of the curve with n new knots {u1 u2 un}.
 Or, if no list of new knots is given, add a new knot into each interval
 in the old knot vector.
-The knot type of the refined curve will be changed to custom.
+The knot type of the refined curve will be changed to <tt/"Custom"/.
 </itemize>
 
 revertNC:
@@ -5834,9 +5834,14 @@ revertNC:
 
 rescaleKnNC:
 <itemize>
- <item>Synopsis: <tt/"rescaleKnNC"/
+ <item>Synopsis: <tt/"rescaleKnNC [-r rmin rmax|-d mindist]"/
  <item>Description: Rescale the knot vector(s) of the selected NURBS curve(s)
-to the range 0.0 1.0. The knot type of the curve has to be <tt/"Custom"/!
+to the range <tt>[0.0, 1.0]</tt> (if no argument is present) or to the range
+<tt>[rmin, rmax]</tt> if the <tt/"-r"/ argument is given or to the minimum
+distance mindist if the <tt/"-d"/ argument is used. Scaling to a minimum
+distance ensures that all knots (except for multiple knots) have a distance
+bigger than mindist afterwards. The knot type of the curve has to be
+<tt/"Custom"/!
 This operation does not change the shape of the curve.
 </itemize>
 
@@ -5844,13 +5849,15 @@ splitNP:
 <itemize>
  <item>Synopsis: <tt/"splitNP (u|v)"/
  <item>Description: splits the selected NURBPatch into NURBS curves,
-along u or v.
+along parametric dimension u or v.
+See also section <ref id="splitt" name="The Split Tool">.
 </itemize>
 
 buildNP:
 <itemize>
  <item>Synopsis: <tt/"buildNPatch"/
  <item>Description: builds a NURBPatch from the selected NURBS curves.
+See also section <ref id="bfct" name="The Build from Curves Tool">.
 </itemize>
 
 
