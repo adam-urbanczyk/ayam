@@ -427,6 +427,7 @@ proc actionStr2DOb { w } {
 
 #
 proc actionTagP { w } {
+    global ayprefs
 
     viewTitle $w "" "Select_Points"
 
@@ -453,6 +454,14 @@ proc actionTagP { w } {
     }
 
     bind $w <Motion> ""
+
+    if { $ayprefs(FlashPoints) == 1 } {
+	bind $w <Motion> {
+	    %W startpepac %x %y -flash
+	}
+
+	bind $w <ButtonRelease-1> "+%W startpepac %x %y -flash -ignoreold"
+    }
 
     $w setconf -drawh 1
 
@@ -807,6 +816,7 @@ proc actionResetWP { w } {
 
 #
 proc actionInsertP { w } {
+    global ayprefs
 
     viewTitle $w "" "Insert_Points"
 
@@ -820,7 +830,17 @@ proc actionInsertP { w } {
 
     bind $w <Motion> ""
 
+    if { $ayprefs(FlashPoints) == 1 } {
+	bind $w <Motion> {
+	    %W startpepac %x %y -flash
+	}
+    }
+
     stdReleaseBind $w
+
+    if { $ayprefs(FlashPoints) == 1 } {
+	bind $w <ButtonRelease-1> "+%W startpepac %x %y -flash -ignoreold"
+    }
 
     $w setconf -drawh 1
 
@@ -830,6 +850,7 @@ proc actionInsertP { w } {
 
 #
 proc actionDeleteP { w } {
+    global ayprefs
 
     viewTitle $w "" "Delete_Points"
 
@@ -843,7 +864,17 @@ proc actionDeleteP { w } {
 
     bind $w <Motion> ""
 
+    if { $ayprefs(FlashPoints) == 1 } {
+	bind $w <Motion> {
+	    %W startpepac %x %y -flash
+	}
+    }
+
     stdReleaseBind $w
+
+    if { $ayprefs(FlashPoints) == 1 } {
+	bind $w <ButtonRelease-1> "+%W startpepac %x %y -flash -ignoreold"
+    }
 
     $w setconf -drawh 1
 
