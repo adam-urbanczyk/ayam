@@ -1,4 +1,4 @@
-[27. Apr 2005] CVS-Head:
+[6. May 2005] CVS-Head:
 o bug fixes:
   - fixed provide callback (e.g. for Wavefront export) of transformed extrude
     objects with caps and bevels (SF )
@@ -17,6 +17,8 @@ o added new tag type "NP" (for new property) that allows to add new
   properties (and their property GUIs) to objects
 o added support for script controlled property GUIs to the script object
   (see new script example "scripts/crtspiralgui.tcl")
+o added option to rescale knot vectors of NURBS curves to arbitrary ranges
+  and to minimum distances to the "rescaleKnNC" scripting interface command
 
 
 [14. Mar 2005] Ayam1.8.1:
