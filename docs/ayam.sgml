@@ -4490,19 +4490,28 @@ child object for another ConcatNC object (with possibly
 different parameters) or as a parameter object for a tool object
 that works with NURBS curves such as Revolve or Extrude.
 <p>
-How does the concatenation work?
-First, all curves will be clamped (see section
+How does the concatenation process work?
+First, the orders of all child curves will be elevated to the maximum order of
+all the child curves (see section
+<ref id="elevt" name="elevate tool"> for more information on elevation)
+and all curves will be clamped (see section
 <ref id="clat" name="clamp tool"> for more information on clamping).
-Then, the control points of all child curves are simply copied
+If <tt/"FillGaps"/ is enabled (see below), fillet curves will be
+created for every gap between the child curves of the ConcatNC object.
+If <tt/"Closed"/ and <tt/"FillGaps"/ are enabled an additional fillet
+is created to close the curve.
+Then, the control points of all child curves and fillets are simply copied
 into a new big control point vector, without checking for double
 points.
-Attributes like order, display mode, tolerance
-etc. for the new concatenated curve are taken from the first child object.
-The knot sequence of the new concatenated curve will be NURBS.
-This means, the shape of the concatenated curve will differ from the
-child curves if
-any of the child curves has a custom knot vector with non
-equidistant knots.
+Attributes like display mode and tolerance
+for the new concatenated curve are taken from the first child object.
+The knot sequence of the new concatenated curve will be of type
+<tt/"NURBS"/ or a custom knot vector will be computed (depending
+on the setting of <tt/"Knot-Type"/).
+If <tt/"Knot-Type"/ is <tt/"NURBS"/, the shape of the concatenated curve
+will differ from the child curves if any of the child curves has a custom
+knot vector with non equidistant knots. If <tt/"Knot-Type"/ is
+<tt/"Custom"/, the shape of the child curves will be preserved.
 <p>
 You may convert the current ConcatNC object to an ordinary NURBS curve
 object using the main menu entry <tt>"Tools/Convert"</tt>.
@@ -4524,7 +4533,8 @@ the child curves of the ConcatNC object. The fillet curves will be
 cubic Bezier curves. The direction of the tangents in the endpoints of
 the fillets and the gap enclosing curves will match, so that the
 transition should be G1 continuous.
-<item><tt/"Revert"/ the orientation of the concatenated curve will be reversed.
+<item><tt/"Revert"/ the orientation of the concatenated curve will be
+reversed.
 <item><tt/"FTLength"/ determines a scale factor for the tangent vectors
 of the fillets. A value of 1.0 leads to vectors that are as long as
 the matching vectors in the control point arrays of the original curves.
