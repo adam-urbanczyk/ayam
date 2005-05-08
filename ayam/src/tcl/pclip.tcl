@@ -221,6 +221,13 @@ proc pclip_pastetosel { } {
 }
 # pclip_pastetosel
 
+# shortcut to pclip_copy
+proc copyProp { mode } {
+
+    pclip_copy $mode
+
+ return;
+}
 
 # shortcut to pclip_paste
 proc pasteProp { } {
