@@ -5484,7 +5484,7 @@ More documentation to come.
 <p>
 
 <sect2>Creating Objects<label id="crtob">
-<p>
+<p><label id="sccrtob">
 To create new objects the <tt/"crtOb"/ command can be used.
 <itemize>
  <item>Synopsis: <tt/"crtOb type [args]"/
@@ -5516,7 +5516,7 @@ argument giving the name of the new material. Example:
 <p>
 This command is probably the most important one, because
 a lot of the other commands operate on selected objects only.
-<p>
+<p><label id="scselob">
 selOb - select object(s):
 <itemize>
  <item>Synopsis: <tt/"selOb [index]"/
@@ -5525,7 +5525,7 @@ selection, index may be an ordered list of indizes, a single index or empty.
 If no index is given, the current selection will be cleared.
 </itemize>
 
-<p>
+<p><label id="scwithob">
 withOb - work on certain selected object(s):
 <itemize>
  <item>Synopsis: <tt/"withOb index command"/
@@ -5573,32 +5573,32 @@ exist:
 <sect2>Clipboard Operations<label id="sciclip">
 <p>
 These commands operate the object clipboard:
-<p>
+<p><label id="sccopob">
 copOb - copy object:
 <itemize>
  <item>Synopsis: <tt/"copOb"/
  <item>Description: Copy the selected object(s) to the object clipboard.
 </itemize>
-
+<p><label id="sccutob">
 cutOb - cut object:
 <itemize>
  <item>Synopsis: <tt/"cutOb"/
  <item>Description: Move the selected object(s) into the object clipboard.
 </itemize>
-
+<p><label id="scpasob">
 pasOb - paste object:
 <itemize>
  <item>Synopsis: <tt/"pasOb"/
  <item>Description: Copy the selected object(s) from the object
 clipboard to the current level.
 </itemize>
-
+<p><label id="scdelob">
 delOb - delete object:
 <itemize>
  <item>Synopsis: <tt/"delOb"/
  <item>Description: Delete the selected object(s) from the scene.
 </itemize>
-
+<p><label id="sccmovob">
 cmovOb - paste (move) object:
 <itemize>
  <item>Synopsis: <tt/"cmovOb"/
@@ -5607,11 +5607,10 @@ clipboard to the current level.
 </itemize>
 
 <p>
-The following commands operate the object property clipboard,
+The following commands operate the property clipboard,
 which is totally independent from the object clipboard.
-<p>
-
-pclip_copy - copy a property to the clipboard
+<p><label id="scpclip_copy"><label id="sccopyprop">
+pclip_copy/copyProp - copy a property to the property clipboard
 <itemize>
  <item>Synopsis: <tt/"pclip_copy mode"/
  <item>Description:  Copy the currently selected
@@ -5619,9 +5618,12 @@ property from the currently selected
 object to the property clipboard.
 If mode is 0, omit all marked entries, if mode is 1 copy just
 marked entries.
+Note that you may call this procedure also using the shortcut
+<tt/"copyProp"/.
 </itemize>
 
-pclip_paste - paste a property
+<p><label id="scpclip_paste"><label id="scpasteprop">
+pclip_paste/pasteProp - paste a property
 <itemize>
  <item>Synopsis: <tt/"pclip_paste"/
  <item>Description: Copy the property from the property clipboard
@@ -5633,7 +5635,7 @@ Note that you may call this procedure also using the shortcut
 <sect2>Hierarchy Operations<label id="scihier">
 <p>
 These commands manipulate the current level of Ayam.
-<p>
+<p><label id="scgodown">
 goDown:
 <itemize>
  <item>Synopsis: <tt/"goDown index"/
@@ -5642,12 +5644,14 @@ and the current level is inside some other object (not the root)
 the parent level will be entered instead.
 </itemize>
 
+<p><label id="scgoup">
 goUp:
 <itemize>
  <item>Synopsis: <tt/"goUp"/
  <item>Description: Go one level up in the object hierarchy.
 </itemize>
 
+<p><label id="scgotop">
 goTop:
 <itemize>
  <item>Synopsis: <tt/"goTop"/
@@ -5655,8 +5659,7 @@ goTop:
 </itemize>
 
 <sect2>Transformations<label id="scitrafo">
-<p>
-
+<p><label id="scmovob">
 movOb - move objects:
 <itemize>
  <item>Synopsis: <tt/"movOb dx dy dz"/
@@ -5665,6 +5668,7 @@ objects X axis, by dy in direction of the objects Y axis and by dz in
 direction of the objects Z axis.
 </itemize>
 
+<p><label id="scrotob">
 rotOb - rotate objects:
 <itemize>
  <item>Synopsis: <tt/"rotOb dx dy dz"/
@@ -5673,6 +5677,7 @@ objects X axis, then by dy degrees around objects Y axis and then by dz degrees
 around the objects Z axis. Note the order of the rotations!
 </itemize>
 
+<p><label id="scscalob">
 scalOb - scale objects:
 <itemize>
  <item>Synopsis: <tt/"scalOb dx dy dz"/
@@ -5684,6 +5689,7 @@ direction of the objects Z axis.
 be changed to 1.0 silently!
 </itemize>
 
+<p><label id="scmovsel">
 movSel - move selected points:
 <itemize>
  <item>Synopsis: <tt/"movSel dx dy dz"/
@@ -5692,6 +5698,7 @@ objects X axis, by dy in direction of the objects Y axis and by dz in
 direction of the objects Z axis.
 </itemize>
 
+<p><label id="scrotsel">
 rotSel - rotate selected points:
 <itemize>
  <item>Synopsis: <tt/"rotSel dx dy dz"/
@@ -5700,6 +5707,7 @@ objects X axis then by dy degrees around objects Y axis and then by dz degrees
 around the objects Z axis. Note the order of the rotations!
 </itemize>
 
+<p><label id="scscalsel">
 scalSel - scale selected points:
 <itemize>
  <item>Synopsis: <tt/"scalSel dx dy dz"/
@@ -5711,6 +5719,7 @@ direction of the objects Z axis.
 be changed to 1.0 silently!
 </itemize>
 
+<p><label id="scdelegtrafo">
 delegTrafo - delegate transformations:
 <itemize>
  <item>Synopsis: <tt/"delegTrafo"/
@@ -5720,6 +5729,7 @@ the transformations of the selected objects will be reset to the
 default values.
 </itemize>
 
+<p><label id="scapplytrafo">
 applyTrafo - apply transformations:
 <itemize>
  <item>Synopsis: <tt/"applyTrafo sel&verbar;all"/
@@ -5732,8 +5742,7 @@ be reset to the default values.
 </itemize>
 
 <sect2>Manipulating Shaders<label id="scishaders">
-<p>
-
+<p><label id="scshaderset">
 shaderSet:
 <itemize>
  <item>Synopsis: <tt/"shaderSet shadertype [varname]"/
@@ -5744,6 +5753,7 @@ or <tt/"interior"/. If varname is not given, the shader in question
 is deleted from the object instead.
 </itemize>
 
+<p><label id="scshaderget">
 shaderGet:
 <itemize>
  <item>Synopsis: <tt/"shaderGet shadertype varname"/
@@ -5755,8 +5765,7 @@ pointed to by varname.
 </itemize>
 
 <sect2>Manipulating Tags<label id="scitags">
-<p>
-
+<p><label id="scaddtag">
 addTag:
 <itemize>
  <item>Synopsis: <tt/"addTag type value"/
@@ -5766,6 +5775,7 @@ It is legal to deliver <tt>""</tt> as value parameter. This is e.g.
 needed for the <tt/"NoExport"/ tag.
 </itemize>
 
+<p><label id="scdeltags">
 delTags:
 <itemize>
  <item>Synopsis: <tt/"delTags type"/
@@ -5775,6 +5785,7 @@ If type is <tt/"all"/, all tags are deleted from the
 currently selected objects(s).
 </itemize>
 
+<p><label id="scgettags">
 getTags:
 <itemize>
  <item>Synopsis: <tt/"getTags tvname vvname"/
@@ -5784,6 +5795,7 @@ variables named tvname for the tag type-strings and vvname for the tag
 value-strings.
 </itemize>
 
+<p><label id="scsettags">
 setTags:
 <itemize>
  <item>Synopsis: <tt/"setTags tags"/
@@ -5794,9 +5806,8 @@ and the tag value-strings from the list elements with odd index numbers.
 </itemize>
 
 <sect2>Manipulating NURBS Curves and Surfaces<label id="scinurbs">
-<p>
-
-clampNC:
+<p><label id="scclampnc">
+clampNC - clamp NURBS curve:
 <itemize>
  <item>Synopsis: <tt/"clampNC"/
  <item>Description: Clamp the knot vector of the selected NURBS curves
@@ -5806,7 +5817,8 @@ the knots will have o equal values at start and end (where o is the
 order of the curve).
 </itemize>
 
-elevateNC:
+<p><label id="scelevatenc">
+elevateNC - elevate NURBS curve:
 <itemize>
  <item>Synopsis: <tt/"elevateNC n"/
  <item>Description: Elevate the order of the selected NURBS curves
@@ -5814,7 +5826,8 @@ without changing the shape of the curves by n.
 The knot type of the elevated curves will be changed to <tt/"Custom"/.
 </itemize>
 
-insknNC - insert knot:
+<p><label id="scinsknnc">
+insknNC - insert knot into NURBS curve:
 <itemize>
  <item>Synopsis: <tt/"insknNC u r"/
  <item>Description: Insert a new knot at the position
@@ -5826,7 +5839,8 @@ The knot type of the curves will always be changed to custom but
 the shape of the curves will not change!
 </itemize>
 
-refineNC:
+<p><label id="screfinenc">
+refineNC - refine NURBS curve:
 <itemize>
  <item>Synopsis: <tt/"refineNC [{u1 u2 un}]"/
  <item>Description: Refine the knot vector of the selected NURBS curve
@@ -5836,13 +5850,15 @@ in the old knot vector.
 The knot type of the refined curve will be changed to <tt/"Custom"/.
 </itemize>
 
-revertNC:
+<p><label id="screvertnc">
+revertNC - revert NURBS curve:
 <itemize>
  <item>Synopsis: <tt/"revertNC"/
  <item>Description: Revert the direction of the selected NURBS curves.
 </itemize>
 
-rescaleKnNC:
+<p><label id="screscaleknnc">
+rescaleKnNC - rescale knots of NURBS curve:
 <itemize>
  <item>Synopsis: <tt/"rescaleKnNC [-r rmin rmax|-d mindist]"/
  <item>Description: Rescale the knot vector(s) of the selected NURBS curve(s)
@@ -5855,7 +5871,8 @@ bigger than mindist afterwards. The knot type of the curve has to be
 This operation does not change the shape of the curve.
 </itemize>
 
-splitNP:
+<p><label id="scsplitnp">
+splitNP - split NURBS patch:
 <itemize>
  <item>Synopsis: <tt/"splitNP (u|v)"/
  <item>Description: splits the selected NURBPatch into NURBS curves,
@@ -5863,7 +5880,8 @@ along parametric dimension u or v.
 See also section <ref id="splitt" name="The Split Tool">.
 </itemize>
 
-buildNP:
+<p><label id="scbuildnp">
+buildNP - build NURBS patch:
 <itemize>
  <item>Synopsis: <tt/"buildNPatch"/
  <item>Description: builds a NURBPatch from the selected NURBS curves.
@@ -5880,7 +5898,7 @@ Note that the exact arguments needed, depend on the
 type of the object, e.g. a NURBS curve requires just one
 index parameter (indexu), whereas a NURBS patch requires two
 (indexu and indexv).
-
+<p><label id="scgetpnt">
 getPnt:
 <itemize>
  <item>Synopsis: <tt/"getPnt [-trafo] indexu [indexv] varx vary varz [varw]"/
@@ -5891,17 +5909,17 @@ If the special argument <tt/"-trafo"/ is given, the coordinates
 will be transformed by the values given in the objects
 Transformation property.
 </itemize>
-
+<p><label id="scsetpnt">
 setPnt:
 <itemize>
- <item>Synopsis: <tt/"setNP indexu [indexv] x y z [w]"/
+ <item>Synopsis: <tt/"setPnt indexu [indexv] x y z [w]"/
  <item>Description: Set a control point of the
 currently selected object to the coordinates x, y, z, and w.
 </itemize>
 
 
 <sect2>Updating the GUI<label id="sciupd">
-<p>
+<p><label id="scrv">
 
 rV - redraw all views:
 <itemize>
@@ -5910,6 +5928,7 @@ rV - redraw all views:
 iconified views and views where automatic redraw has been turned off.
 </itemize>
 
+<p><label id="scus">
 uS - update select:
 <itemize>
  <item>Synopsis: <tt/"uS [update_prop maintain_selection]"/
@@ -5939,6 +5958,7 @@ the command <tt/"uCL cl"/ may be used instead of <tt/"uS"/.
  </itemize>
 </itemize>
 
+<p><label id="scucl">
 uCL - update current level:
 <itemize>
  <item>Synopsis: <tt/"uCL mode [args]"/
@@ -5948,6 +5968,7 @@ The parameter <tt/"mode"/ may be "cl" or "cs", where "cl" is the normal
 operation mode, and "cs" just clears the selection.
 </itemize>
 
+<p><label id="scucr">
 uCR - update current level after create:
 <itemize>
  <item>Synopsis: <tt/"uCR"/
@@ -5956,6 +5977,7 @@ or tree view after objects have been created and need to be added to
 the current level. See also the discussion of <tt/"uS"/ above.
 </itemize>
 
+<p><label id="scplb_update">
 plb_update - property listbox update:
 <itemize>
  <item>Synopsis: <tt/"plb_update"/
@@ -5968,7 +5990,7 @@ necessarily a property of the same type).
 </itemize>
 
 <sect2>Custom Objects<label id="scicust">
-<p>
+<p><label id="scio_lc">
 
 io_lc - load custom:
 <itemize>
@@ -5980,7 +6002,7 @@ io_lc - load custom:
 <p>
 There are two commands that help to apply arbitrary commands
 to a number of objects, forAll and forAllT.
-
+<p><label id="scforall">
 forAll:
 <itemize>
  <item>Synopsis: <tt>"forAll recursive command"</tt>
@@ -6008,6 +6030,7 @@ may just modify existing objects.
  </itemize>
 </itemize>
 
+<p><label id="scforallt">
 forAllT:
 <itemize>
  <item>Synopsis: <tt>"forAllT type recursive command"</tt>
@@ -6033,7 +6056,7 @@ may just modify existing objects.
 </itemize>
 
 <sect2>Scene IO<label id="scio">
-<p>
+<p><label id="scnewscene">
 
 newScene:
 <itemize>
@@ -6041,6 +6064,7 @@ newScene:
  <item>Description: clears the current scene.
 </itemize>
 
+<p><label id="screplacescene">
 replaceScene:
 <itemize>
  <item>Synopsis: <tt>"replaceScene filename"</tt>
@@ -6048,12 +6072,14 @@ replaceScene:
 from filename.
 </itemize>
 
+<p><label id="scinsertscene">
 insertScene:
 <itemize>
  <item>Synopsis: <tt>"insertScene filename"</tt>
  <item>Description: inserts a scene from filename.
 </itemize>
 
+<p><label id="scsavescene">
 saveScene:
 <itemize>
  <item>Synopsis: <tt>"saveScene filename"</tt>
@@ -6061,8 +6087,7 @@ saveScene:
 </itemize>
 
 <sect2>Reporting Errors<label id="scierr">
-<p>
-
+<p><label id="scayerror">
 ayError:
 <itemize>
  <item>Synopsis: <tt>"ayError code place detail"</tt>
@@ -6079,7 +6104,7 @@ Detail is the string to be output.
 
 
 <sect2>Miscellaneous<label id="scimisc">
-<p>
+<p><label id="scgettype">
 
 getType:
 <itemize>
@@ -6090,6 +6115,7 @@ the well known strings that are displayed in the hierarchy list box
 if the objects are not named (NPatch, NCurve, Sphere, etc.).
 </itemize>
 
+<p><label id="sctmpget">
 tmpGet:
 <itemize>
  <item>Synopsis: <tt>"tmpGet tmpdir varname"</tt>
@@ -6097,6 +6123,7 @@ tmpGet:
 file in tmpdir and puts the complete name into varname.
 </itemize>
 
+<p><label id="schaschild">
 hasChild:
 <itemize>
  <item>Synopsis: <tt>"hasChild"</tt>
@@ -6104,6 +6131,7 @@ hasChild:
 has no child objects, otherwise it returns 1.
 </itemize>
 
+<p><label id="scundo">
 undo:
 <itemize>
  <item>Synopsis: <tt>"undo [redo|save|clear]"</tt>
@@ -6119,6 +6147,7 @@ undo:
  </itemize>
 </itemize>
 
+<p><label id="scconvob">
 convOb:
 <itemize>
  <item>Synopsis: <tt>"convOb [-inplace]"</tt>
@@ -6127,6 +6156,7 @@ for the selected object(s). If the option <tt>"-inplace"</tt> is
 used the new object(s) will replace the old object(s).
 </itemize>
 
+<p><label id="scforcenot">
 forceNot:
 <itemize>
  <item>Synopsis: <tt>"forceNot"</tt>
