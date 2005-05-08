@@ -101,3 +101,18 @@ proc browser_urlOpen {url} {
  return;
 }
 # browser_urlOpen
+
+proc help { {command ""} } {
+    global ayprefs
+
+    if { $command == "" } {
+	puts "Usage: help <scripting interface command>"
+	return;
+    }
+
+    set lcommand [string tolower $command]
+    browser_urlOpen $ayprefs(Docs)ayam-6.html\#sc${lcommand}
+
+ return;
+}
+# help
