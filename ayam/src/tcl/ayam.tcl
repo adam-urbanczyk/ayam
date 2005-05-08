@@ -475,6 +475,9 @@ array set ay {
  ncircarc 360.0
  nsphereradius 1.0
  cbspnum 6
+ rmin 0.0
+ rmax 1.0
+ mindist 1.0e-04
  ts 0
  ul ""
  TreeUpdateSema 0
