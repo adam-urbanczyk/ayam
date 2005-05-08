@@ -34,7 +34,7 @@ set ay(filemenu) $m
 $m add command -label "New"\
 	-command {
     global ay ayprefs tcl_platform
-    if { ! [io_warnChanged] } { 
+    if { ! [io_warnChanged] } {
 	update; newScene; uS;
 	if { $ayprefs(NewLoadsEnv) == 1 } {
 	    viewCloseAll; cS; plb_update
@@ -101,7 +101,7 @@ $m add separator
 $m add command -label "Exit!" -command {
     global ayprefs AYENABLEFEXIT
 
-    if { ! [io_warnChanged] } { 
+    if { ! [io_warnChanged] } {
 
 	# remove all temporary files
 	catch [ tmp_clean 1 ]
@@ -109,7 +109,7 @@ $m add command -label "Exit!" -command {
 	if { $ayprefs(AutoSavePrefs) == 1 } {
 	    catch [ prefs_save ]
 	}
-    
+
 	puts "Good Bye!"
 	update
 	if { $AYENABLEFEXIT == 1 } {
@@ -172,7 +172,7 @@ if { ! $AYWITHAQUA } {
 set ay(createmenu) $m
 
 $m add command -label "NURBCurve" -command {
-    runTool ay(nclen) "Length:" "crtOb NCurve -length %0; uCR; sL; rV;"   
+    runTool ay(nclen) "Length:" "crtOb NCurve -length %0; uCR; sL; rV;"
 }
 $m add command -label "ICurve" -command {
     runTool ay(iclen) "Length:" "crtOb ICurve -length %0; uCR; sL; rV;"
@@ -294,7 +294,7 @@ menu $m.nct -tearoff 0
 $m.nct add command -label "Revert" -command { undo save Revert; revertNC;
                                               plb_update; rV }
 $m.nct add command -label "Concat" -command { concatNC; uCR; rV}
-$m.nct add command -label "Split" -command { 
+$m.nct add command -label "Split" -command {
 runTool ay(splitu) {"Split at:"} "undo save Split; splitNC %0; uCR; sL; rV" }
 $m.nct add command -label "Refine" -command { undo save Refine; refineNC;
                                               plb_update; rV }
@@ -319,6 +319,16 @@ $m.nct add command -label "To XY" -command {
     undo save ToXYNC; toXYNC;}
 $m.nct add command -label "Make Compatible" -command {
     undo save MakeCompNC; makeCompNC;}
+$m.nct add command -label "Rescale Knots to Range" -command {
+    undo save RescaleKnots;
+    runTool {ay(rmin) ay(rmax)} {"RangeMin:" "RangeMax:"}\
+	    "rescaleKnNC -r %0 %1; plb_update;"
+}
+$m.nct add command -label "Rescale Knots to Mindist" -command {
+    undo save RescaleKnots;
+    runTool ay(mindist) "MinDist:"\
+	    "rescaleKnNC -d %0; plb_update;"
+}
 $m.nct add separator
 $m.nct add command -label "Collapse Points" -command { collNC; rV; }
 $m.nct add command -label "Explode Points" -command { explNC; rV; }
@@ -328,7 +338,7 @@ $m add cascade -menu $m.npt -label "NURBPatch"
 menu $m.npt -tearoff 0
 $m.npt add command -label "Swap UV" -command {
     undo save SwapUV; swapUV; plb_update; rV}
-$m.npt add command -label "Elevate UV" -command { 
+$m.npt add command -label "Elevate UV" -command {
     runTool [list ay(elevnpu) ay(elevnpv)]\
 	    [list "Elevate U by:" "Elevate V by:"]\
 	    "undo save ElevateUV; elevateNPU %0; elevateNPV %1; plb_update; rV"
@@ -476,7 +486,7 @@ $m add command -label "Help on object" -command {
     global ayprefs
     set selected ""
     getSel selected
-    if { $selected == "" } { 
+    if { $selected == "" } {
 	ayError 2 "Help on object" "Please select an object!"
 	return;
     }
