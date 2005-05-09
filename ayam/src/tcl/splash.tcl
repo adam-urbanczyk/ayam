@@ -67,8 +67,10 @@ proc splash_open { } {
 }
 
 proc splash_close { } {
-    grab release .aysplash
-    destroy .aysplash
-    focus .
+    if { [winfo exists .aysplash] } {
+	grab release .aysplash
+	destroy .aysplash
+	focus -force .
+    }
  return;
 }
