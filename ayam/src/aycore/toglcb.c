@@ -101,11 +101,13 @@ ay_toglcb_create(struct Togl *togl)
 void
 ay_toglcb_destroy(struct Togl *togl)
 {
+ char fname[] = "toglcb_destroy";
  ay_object *root = ay_root, *o, *o2, *l;
  ay_list_object *clevel = ay_currentlevel, *sel = ay_selection, **lsel = NULL;
+ ay_list_object *tl;
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  int recreate_clevel = AY_FALSE;
-
+ int found;
 #ifdef AYENABLEPPREV
   if(view)
     {
@@ -166,7 +168,16 @@ ay_toglcb_destroy(struct Togl *togl)
 		  o = NULL;
 		}
 	      else
-		o = o->next;
+		{
+		  o = o->next;
+		} /* if */
+	    }
+	  else
+	    {
+	      /* view object not found in level beneath root! */
+	      o = NULL;
+	      ay_error(AY_ERROR, fname,
+	  "Could not find view object for removal, scene may be corrupt now!");
 	    } /* if */
 	} /* while */
     } /* if */
