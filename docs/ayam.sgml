@@ -2642,6 +2642,11 @@ A solid box, centered at the origin of the object coordinate system.
 This object will always be exported as solid primitive in RIBs;
 consisting of six bilinear patches.
 
+Since Ayam 1.8.2, a box object may be converted to three NURBS patches
+using the main menu entry <tt>"Tools/Convert"</tt>.
+
+The following parameters further control the shape of a box:
+
 <sect2>BoxAttrib Property<label id="bxp">
 <p>
 <itemize>
@@ -2669,6 +2674,12 @@ This object will be exported as solid primitive or as
 simple sphere (depending on the <tt/"Closed"/ parameter
 of the SphereAttrib property) in RIBs.
 
+Since Ayam 1.8.2, a sphere object may be converted to NURBS patches
+using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
+obeys all parameters of the sphere.
+
+The following parameters further control the shape of a sphere:
+
 <sect3>RiSphereAttr Property<label id="spattr">
 <p>
 <itemize>
@@ -2692,6 +2703,12 @@ place at Z.
 A disk, centered at the origin of the object coordinate system.
 This object will always be exported as simple disk in RIBs.
 
+Since Ayam 1.8.2, a disk object may be converted to a NURBS patch
+using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
+obeys all parameters of the disk.
+
+The following parameters further control the shape of a disk:
+
 <sect3>RiDiskAttr Property<label id="dkp">
 <p>
 <itemize>
@@ -2707,6 +2724,12 @@ with the base at the XY plane.
 This object will be exported as solid primitive or as
 simple cone (depending on the <tt/"Closed"/ parameter
 of the ConeAttrib property) in RIBs.
+
+Since Ayam 1.8.2, a cone object may be converted to NURBS patches
+using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
+obeys all parameters of the cone.
+
+The following parameters further control the shape of a cone:
 
 <sect3>RiConeAttr Property<label id="cnp">
 <p>
@@ -2734,6 +2757,12 @@ does not reflect the settings of the following parameters
 of the CylinderAttrib property: <tt/"Closed"/ and
 <tt/"ThetaMax"/.
 
+Since Ayam 1.8.2, a cylinder object may be converted to NURBS patches
+using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
+obeys all parameters of the cylinder.
+
+The following parameters further control the shape of a cylinder:
+
 <sect3>RiCylinderAttr Property<label id="cyp">
 <p>
 <itemize>
@@ -2759,6 +2788,12 @@ around the Z axis.
 This object will be exported as solid primitive or as
 simple torus (depending on the <tt/"Closed"/ parameter
 of the RiTorusAttr property) in RIBs.
+
+Since Ayam 1.8.2, a torus object may be converted to NURBS patches
+using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
+obeys all parameters of the torus.
+
+The following parameters further control the shape of a torus:
 
 <sect3>RiTorusAttr Property<label id="top">
 <p>
@@ -2788,6 +2823,12 @@ This object will be exported as solid primitive or as
 simple paraboloid (depending on the <tt/"Closed"/ parameter
 of the RiParaboloidAttr property) in RIBs.
 
+Since Ayam 1.8.2, a paraboloid object may be converted to NURBS patches
+using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
+obeys all parameters of the paraboloid.
+
+The following parameters further control the shape of a paraboloid:
+
 <sect3>RiParabAttr Property<label id="pap">
 <p>
 <itemize>
@@ -2814,6 +2855,12 @@ points in space around the Z axis.
 This object will be exported as solid primitive or as
 simple hyperboloid (depending on the <tt/"Closed"/ parameter
 of the RiHyperbAttr property) in RIBs.
+
+Since Ayam 1.8.2, a hyperboloid object may be converted to NURBS patches
+using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
+obeys all parameters of the hyperboloid.
+
+The following parameters further control the shape of a hyperboloid:
 
 <sect3>RiHyperbAttr Property<label id="hyp">
 <p>
