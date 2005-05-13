@@ -4675,7 +4675,7 @@ GUI of Ayam should be avoided. In particular, the following
 procedures and commands should not be used: uS, uCR, uCL, sL, selOb,
 plb_update, cutOb, copOb, delOb, undo.
 <p>
-Since Ayam1.8.2 script objects may also create their own property
+Since Ayam 1.8.2 script objects may also create their own property
 GUIs for e.g. script parameters. This is accomplished by adding
 tags of type <tt>"NP"</tt> with the name of the new property as
 value to the script object. The script itself is responsible for data
@@ -5482,6 +5482,16 @@ More documentation to come.
 
 <sect1>Index of Procedures and Commands
 <p>
+<sect2>Getting Help on Scripting Interface Commands<label id="schelp">
+<p>
+Since Ayam 1.8.2 a scripting interface command named <tt/"help"/ is available,
+that displays the help of scripting interface commands using a web
+browser (similar to the <tt/"Help on Object"/ feature):
+<itemize>
+ <item>Synopsis: <tt/"help command"/
+ <item>Description: Fire up a web browser and display the help for
+the designated Ayam scripting interface command.
+</itemize>
 
 <sect2>Creating Objects<label id="crtob">
 <p><label id="sccrtob">
@@ -7498,7 +7508,8 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <ref id="extrattr" name="Extrude attribute">,
 <ref id="vat" name="View attribute">,
 <ref id="textattr" name="Text attribute">
-<item>Help: <ref id="mmhelp" name="main menu entry">
+<item>Help: <ref id="mmhelp" name="main menu entry">,
+<ref id="schelp" name="scripting interface command">
 <item>Help on object: <ref id="mmhelp" name="main menu entry">
 <item>Hidden Preferences: <ref id="hidprefs" name="Hidden Preference Settings">
 <item>Hide: <ref id="mmtools" name="main menu entry">,
