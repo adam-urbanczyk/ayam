@@ -3241,16 +3241,22 @@ image will look wrong.
 
 <sect2>Using AreaLights<label id="alob">
 <p>
-A common idealized light source has no own geometry. This means
-shadows resulting from it have sharp borders. Soft shadows may
-be generated using AreaLights.<p>
-How do you create AreaLights?<p>
-You simply have to create a single object as child object of a
-custom light object that has the <tt>"arealight"</tt>
-shader attached. This child object determines the geometry of
-the lightsource. According to L. Gritz, Spheres and Cylinders
-work best as arealight geometry for BMRT,
-because of special sampling code.<p>
+The common idealized standard light sources <tt/"Point"/, <tt/"Distant"/
+and <tt/"Spot"/ have no own geometric extension in space.
+This means, shadows resulting from such light sources will have sharp
+borders which does not look too naturally.
+Good looking soft shadows may be generated using area lights.<p>
+Area lights may be created by simply placing a single object as child
+object of a <tt/"Custom"/ light object that has the <tt>"arealight"</tt>
+shader attached:
+<code>
++-AreaLight(Light)
+ \--AreaLightGeometry(Sphere)
+</code>
+<p>
+This child object determines the geometry of the lightsource.
+According to L. Gritz, Spheres and Cylinders work best as area light
+geometry for BMRT, because of special sampling code.<p>
 An example:
 <itemize>
 <item>Create a custom light object.
