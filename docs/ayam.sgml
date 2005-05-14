@@ -4467,10 +4467,12 @@ of the <tt/"CapAttr"/ property.
 
 <sect1>ICurve Object<label id="icurveobj">
 <p>
-The ICurve object creates an interpolating
-spline which is either a C2 cubic with n+2 control points
-or a curve with n points with arbitrary order
-from a set of control points.<p>
+The ICurve object creates an interpolating spline from
+n points in space.
+The curve is either a C2 cubic curve with n+2 control points
+or a global interpolating rational (Global4D) curve with n control points
+and with arbitrary order.
+<p>
 The global interpolation generates a bit smoother curves
 which look best with an order of 3, your mileage may vary however.<p>
 <figure loc="!ht">
@@ -4482,18 +4484,19 @@ which look best with an order of 3, your mileage may vary however.<p>
 The image above shows some interpolating curves, the left ones
 are C2 cubic, the right ones Global4D, the upper open, and the lower
 closed ones. The interpolation fidelity for the closed curves
-could be increased considerably adjusting <tt/"IParam"/, see below.
-
+could be increased considerably by adjusting the <tt/"IParam"/
+parameter, see below.
+<p>
 In both interpolation modes chord length parameterisation will be used
 to determine the knot vector of the interpolating curve.
-
+<p>
 This object makes use of the provide mechanism. It marks itself
 as providing a NURBCurve (it creates and uses NURBS curves
 internally anyway) and all other objects that work with
 the provide mechanism (e.g. revolve, sweep, extrude, and skin) are
 able to work with an ICurve object instead of an object
 of type NURBCurve.
-
+<p>
 You may convert the current ICurve to an ordinary NURBS curve
 using the main menu entry <tt>"Tools/Convert"</tt>.
 
@@ -7437,6 +7440,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Console: <ref id="cons" name="what is">
 <item>Convert: <ref id="mmtools" name="main menu entry">
 <item>convOb: <ref id="scimisc" name="scripting interface command">
+<item>Create: <ref id="mmcreate" name="create menu">
 <item>CreateMP: <ref id="ncattr" name="NURBCurve attribute">
 <item>Create ShadowMaps: <ref id="mmspecial" name="main menu entry">,
 <ref id="vmview" name="view menu entry">
@@ -7444,7 +7448,8 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>CSG: <ref id="levelobj" name="Level object">,
 <ref id="aycsg" name="AyCSG CSG preview plugin">
 <item>Curvature: <ref id="plotcurt" name="plot curvature tool">
-<item>Custom: <ref id="cul" name="light type">
+<item>Custom: <ref id="cul" name="light type">,
+<ref id="mmcustom" name="custom menu">
 <item>Custom Object: <ref id="customobj" name="what is">
 <item>Cut: <ref id="mmedit" name="main menu entry">
 <item>cutOb: <ref id="sciclip" name="scripting interface command">
@@ -7482,7 +7487,8 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 
 <label id="indexe">E
 <itemize>
-<item>Edit: <ref id="editac" name="edit points">
+<item>Edit: <ref id="editac" name="edit points">,
+<ref id="mmedit" name="edit menu">
 <item>Edit Local: <ref id="vmconf" name="view menu entry">,
 <ref id="editlocal" name ="Editing in Local Space">
 <item>EditSnaps: <ref id="prefmodel" name="preference setting">
@@ -7516,6 +7522,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <label id="indexf">F
 <itemize>
 <item>Far: <ref id="camp" name="camera property">
+<item>File: <ref id="mmfile" name="file menu">
 <item>FillGaps: <ref id="concatncp" name="ConcatNC attribute">
 <item>FilterFunc: <ref id="rio" name="RenderMan interface option">
 <item>FilterWidth: <ref id="rio" name="RenderMan interface option">
@@ -7894,6 +7901,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>SMRes: <ref id="lip" name="light attribute">
 <item>Snap3D: <ref id="prefmodel" name="preference setting">
 <item>SParam: <ref id="prefmisc" name="preference setting">
+<item>Special: <ref id="mmspecial" name="special menu">
 <item>Sphere: <ref id="sphereobj" name="object">,
 <ref id="nspt" name="NURBS sphere tool">
 <item>Split: <ref id="sptct" name="split to curves tool">
@@ -7951,6 +7959,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <ref id="npattr" name="NURBPatch attribute">
 <item>Tool: <ref id="toolb" name="tool box window">
 <item>ToolBoxTrans: <ref id="prefmisc" name="preference setting">
+<item>Tools: <ref id="mmtools" name="tools menu">
 <item>Top: <ref id="vmtype" name="view menu entry">
 <item>Torus: <ref id="torusobj" name="object">
 <item>To XY: <ref id="toxyt" name="To XY tool">
