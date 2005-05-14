@@ -1133,7 +1133,8 @@ ayam_loadscript objsel
 ayam_loadscript tc
 ayam_loadscript tgui
 
-# load scripts of statically linked additional modules
+# load scripts of statically linked additional modules (except for aycsg
+# which needs an open view window for initialisation)
 if { $AYIDRWRAPPED == 1 } {
     ayam_loadscript idr
 }
@@ -1145,6 +1146,10 @@ if { $AYMETAWRAPPED == 1 } {
 
 if { $AYRRIBWRAPPED == 1 } {
     ayam_loadscript rrib
+}
+
+if { $AYONIOWRAPPED == 1 } {
+    ayam_loadscript onio
 }
 
 # bind . <Configure> { if { "%W" == "." } { puts stderr "%w" } }
