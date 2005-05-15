@@ -70,6 +70,9 @@ install:
 	-$(INSTALL) plugins/aycsg.so $(LIBDIR)
 	-$(INSTALL) plugins/aycsg.tcl $(LIBDIR)
 	-$(INSTALL) plugins/loadaycsg.tcl $(LIBDIR)
+	-$(INSTALL) plugins/onio.so $(LIBDIR)
+	-$(INSTALL) plugins/onio.tcl $(LIBDIR)
+	-$(INSTALL) plugins/loadonio.tcl $(LIBDIR)
 	-$(INSTALL) Makefile $(LIBDIR)
 	$(MKDIR) $(DOCDIR)
 	$(INSTALL) $(DOCFILES) $(DOCDIR)
@@ -97,6 +100,7 @@ uninstall:
 	-rm -rf $(LIBDIR)/ayso.so $(LIBDIR)/loadayso.tcl
 	-rm -rf $(LIBDIR)/aysdr.so $(LIBDIR)/loadaysdr.tcl
 	-rm -rf $(LIBDIR)/aycsg.so $(LIBDIR)/aycsg.tcl $(LIBDIR)/loadaycsg.tcl
+	-rm -rf $(LIBDIR)/onio.so $(LIBDIR)/onio.tcl $(LIBDIR)/loadonio.tcl
 	-cd $(DOCDIR); rm -rf Setup.txt Changes.txt License.txt refcard.tcl\
 refcard.ps ayam.pdf html;
 	-rm -rf $(LIBDIR)/Makefile
