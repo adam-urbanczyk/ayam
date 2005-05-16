@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>12. Mar 2005
+<date>16. May 2005
 <abstract>
 This is the documentation of Ayam (1.8) - a free 3D modeling environment
 for the RenderMan interface.
@@ -6876,6 +6876,12 @@ not available.
 Since version 1.8.2 Ayam contains a plugin that may export to
 and import from the Rhino 3DM format using the OpenNURBS toolkit.
 <p>
+Start exporting to a Rhino 3DM file using the menu entry
+<tt>"Custom/OpenNURBS IO/Export"</tt>
+(if this menu entry is not available, you have to load the
+<tt>"onio"</tt> plugin using the menu entry
+<tt>"File/Load Custom"</tt> first).
+<p>
 The export functionality of the onio plugin currently covers
 export of all boxes, quadrics, NURBS, instances, clones, script
 objects (of type <tt/"Create"/ or <tt/"Modify"/) and objects that
@@ -6886,17 +6892,21 @@ patches is not supported. This is because of a missing feature
 (pushing up 2D trim curves to 3D curves for arbitrary NURBS
 surfaces) in the OpenNURBS toolkit.
 <p>
-The export options include
-<tt/"Accuracy"/: this option controls the tolerance of internal
+The export process is controlled by the following options:
+<itemize>
+<item> <tt/"Accuracy"/:
+The <tt/"Accuracy"/ option controls the tolerance of internal
 OpenNURBS operations (currently those are:
 pushing up 2D trim curves to 3D curves and
 checking NURBS surfaces for planarity).
-<tt/"WriteCurves"/: if this option is disabled, no curves
-will be written to the exported Rhino file.
-<tt/"QuadAsBRep"/: if this option is enabled spheres, cylinders,
-cones, and torii will not be exported as collection of NURBS
-surfaces (as converted by Ayam) but as BRep objects. However,
-not all features of the quadric objects will be translated.
+<item> <tt/"WriteCurves"/: If the <tt/"WriteCurves"/ option is disabled,
+no curves will be written to the exported Rhino file.
+<item> <tt/"QuadAsBRep"/: If the <tt/"QuadAsBRep"/ option is enabled
+spheres, cylinders, cones, and torii will not be exported as collection
+of NURBS surfaces (as converted by Ayam) but as BRep objects (converted
+by the OpenNURBS toolkit).
+However, not all features of the quadric objects will be translated in
+this case:
 The BRep sphere does not support ZMin, ZMax, and ThetaMax.
 The BRep cylinder does not support ThetaMax (base caps will
 be created if the cylinder is closed).
@@ -6904,7 +6914,8 @@ The BRep cone does not support ThetaMax (a base cap will be
 created, if the cone is closed).
 The BRep torus does not support PhiMin, PhiMax, and ThetaMax.
 The option has no effect on the export of disks, hyperboloids,
-and paraboloids.
+and paraboloids. Those will always be exported as NURBS surfaces.
+</itemize>
 <p>
 Since the Rhino 3DM format does not support hierarchy and
 transformation attributes per object, the hierarchy of the Ayam
@@ -6924,7 +6935,12 @@ objects. The object hierarchy:
 </code>
 for instance, leads to two objects named <tt>"Arm/MySphere"</tt>
 and <tt>"Arm/MyCylinder"</tt>.
-
+<p>
+Start importing from a Rhino 3DM file using the menu entry
+<tt>"Custom/OpenNURBS IO/Import"</tt>
+(if this menu entry is not available, you have to load the
+<tt>"onio"</tt> plugin using the menu entry
+<tt>"File/Load Custom"</tt> first).
 <p>
 The import functionality of the onio plugin currently covers
 import of all NURBS and BRep objects and objects that may
@@ -6933,18 +6949,25 @@ be converted to NURBS using the OpenNURBS toolkit
 CurveOnSurface, RevSurface, SumSurface, and PlaneSurface).
 References will be resolved.
 <p>
+The import process is controlled by the following options:
+<itemize>
+<item> <tt/"Accuracy"/:
 The <tt/"Accuracy"/ import option controls the tolerance
 of OpenNURBS internal operations, in this case the value is
 mostly used for conversion operations to the NURBS form.
-If the <tt/"ReadCurves"/ import option is switched off, no
-curves will be imported.
+<item> <tt/"Accuracy"/:
+If the <tt/"ReadCurves"/ import option is switched off, no curves will be
+imported.
+<item> <tt/"ReadLayers"/:
 By default, all objects from all layers will be imported.
 Using the <tt/"ReadLayers"/ import option, a single layer or a range
 of layers may be selected for import.
+<item> <tt/"IgnoreFirstTrim"/:
 Another import option is <tt/"IgnoreFirstTrim"/, this is useful
 if the first bounding trim loop of NURBS surfaces should be ignored.
 This trim loop is often not needed, because it encloses the whole
 surface that is not trimmed further in many cases.
+</itemize>
 
 <sect1>Shader Parsing Plugins<label id="spplugins">
 <p>
