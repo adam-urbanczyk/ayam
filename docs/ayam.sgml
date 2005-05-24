@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>16. May 2005
+<date>24. May 2005
 <abstract>
 This is the documentation of Ayam (1.8) - a free 3D modeling environment
 for the RenderMan interface.
@@ -5341,6 +5341,27 @@ are of the same order and defined on the same knot vector
 afterwards.
 </itemize>
 
+<sect1>The Rescale Knots to Range Tool<label id="resckrt">
+<p>
+<itemize>
+<item>Arguments: The rescale knots to range tool takes a number of
+NURBS curves from the selection and requests a range.
+<item>Operation: The knot vectors of the curves will be rescaled, so that
+their first and last values match the given range. This tool does not
+change the geometry of the curves.
+</itemize>
+
+
+<sect1>The Rescale Knots to Mindist<label id="resckmt">
+<p>
+<itemize>
+<item>Arguments: The rescale knots to mindist tool takes a number of
+NURBS curves from the selection and request a minimum distance value.
+<item>Operation: The knot vectors of the curves will be rescaled, so that
+no two knots have a distance smaller than the given minimum distance.
+This tool does not change the geometry of the curves.
+</itemize>
+
 <sect1>The Collapse Points Tool<label id="collt">
 <p>
 <itemize>
@@ -7818,6 +7839,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>RenderPT, RenderUI: <ref id="prefrib" name="preference setting">
 <item>Replace: <ref id="mmfile" name="main menu entry">
 <item>replaceScene: <ref id="scio" name="scripting interface command">
+<item>Rescale Knots to Mindist: <ref id="resckmt" name="NURBCurve tool">
+<item>Rescale Knots to Range: <ref id="resckrt" name="NURBCurve tool">
 <item>rescaleKnNC: <ref id="scinurbs" name="scripting interface command">
 <item>Reset: <ref id="propgui" name="reset property GUI">
 <item>ResetDM, ResetST: <ref id="impmops" name="Mops import option">
