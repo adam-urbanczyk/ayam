@@ -5352,7 +5352,7 @@ change the geometry of the curves.
 </itemize>
 
 
-<sect1>The Rescale Knots to Mindist<label id="resckmt">
+<sect1>The Rescale Knots to Mindist Tool<label id="resckmt">
 <p>
 <itemize>
 <item>Arguments: The rescale knots to mindist tool takes a number of
@@ -6689,6 +6689,30 @@ of the Netscape WWW browser (used to display the documentation URL)
 setting (used if no ayamrc file exists).
 </itemize>
 
+<sect1>Repair Ayam<label id="repayam">
+<p>
+Since Ayam1.8.2 an external Tcl script named "repairAyam.tcl" is
+provided that may be used to repair the application state of Ayam
+should it be stuck e.g. in an endless loop of Tcl error message.
+<p>
+On Unix systems repairAyam may be started from a shell by typing
+<tt>"repairAyam.tcl"</tt> (without the quotes); if it detects that
+it is running on Unix and not in Ayam it will send itself to the
+Tcl interpreter Ayam is running in using the send command. If this
+does not work as expected it may still be run as on Win32.
+<p>
+On Win32 you have to start repairAyam.tcl from the Ayam console using
+the command: <tt>"source scripts/repairAyam.tcl"</tt> or using the consoles
+context menu: <tt>"Console/Load File"</tt>.
+<p>
+The script repairAyam.tcl should be considered as a last resort, to
+help you save your modified objects.
+It will close all views, clean up the application state variables,
+reset the mouse cursor and the console prompt, and try to update important
+main window widgets. After running repairAyam.tcl you should save the
+scene (or just the important objects you were editing, possibly using
+<tt>"Special/Save Selected"</tt>) to a scratch file and restart Ayam.
+
 <sect1>Import of Mops Scenes<label id="impmops">
 <p>
 Mops scenes may be imported using the main menu entry:
@@ -7837,6 +7861,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Renderer: <ref id="mmspecial" name="select a different renderer">
 <item>RenderMode: <ref id="prefrib" name="preference setting">
 <item>RenderPT, RenderUI: <ref id="prefrib" name="preference setting">
+<item>Repair Ayam: <ref id="repayam" name="Tcl helper script">
 <item>Replace: <ref id="mmfile" name="main menu entry">
 <item>replaceScene: <ref id="scio" name="scripting interface command">
 <item>Rescale Knots to Mindist: <ref id="resckmt" name="NURBCurve tool">
