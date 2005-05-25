@@ -7388,6 +7388,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 
 <sect>Index
 <p>
+<ref id="index0" name=" 0 ">
 <ref id="indexa" name=" A ">
 <ref id="indexb" name=" B ">
 <ref id="indexc" name=" C ">
@@ -7416,6 +7417,12 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <ref id="indexz" name=" Z ">
 <p>
 
+<label id="index0">0
+<itemize>
+<item>3DM: <ref id="onioplugin" name="3DM (Rhino) ONIO plugin">
+<item>3DMF: <ref id="mfioplugin" name="3DMF (Apple) MFIO plugin">
+</itemize>
+
 <label id="indexa">A
 <itemize>
 <item>About: <ref id="mmhelp" name="main menu entry">
@@ -7429,6 +7436,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>applyTrafo: <ref id="scitrafo" name="scripting interface command">
 <item>Archives: <ref id="rio" name="RenderMan interface option">
 <item>Area Light: <ref id="alob" name="creation of">
+<item>Array: <ref id="cloneobj" name="object">
 <item>Atmosphere: <ref id="imager" name="property">
 <item>Attributes: <ref id="attrs" name="attributes property">,
 <ref id="riattrs" name="RenderMan/BMRT attributes property">
@@ -7479,7 +7487,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>clampNC: <ref id="scinurbs" name="scripting interface command">,
 <ref id="clat" name="clamp tool">
 <item>Clipboard: <ref id="sciclip" name="scripting interface commands">
-<item>Clone:<ref id="cloneobj" name="object">
+<item>Clone: <ref id="cloneobj" name="object">
 <item>Close: <ref id="treecontm" name="tree context menu entry">
 <item>Closed: <ref id="spattr" name="sphere attribute">,
 <ref id="cnp" name="cone attribute">,
@@ -7501,7 +7509,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Copy Property: <ref id="mmedit" name="main menu entry">,
 <ref id="propgui" name="copying properties">
 <item>Concat: <ref id="conct" name="Concat tool">
-<item>ConcatNC:<ref id="concatncobj" name="ConcatNC object">
+<item>ConcatNC: <ref id="concatncobj" name="ConcatNC object">
 <item>Cone: <ref id="mmcreate" name="main menu entry">,
 <ref id="coneobj" name="object">
 <item>ConeAngle, ConeDAngle: <ref id="lip" name="light attribute">
@@ -7581,7 +7589,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Export RIB: <ref id="mmfile" name="main menu entry">
 <item>Expression: <ref id="mcattr" name="MetaComp attribute">
 <item>Exterior: <ref id="matshader" name="shader">
-<item>ExtrNC:<ref id="extrncobj" name="ExtrNC object">,
+<item>ExtrNC: <ref id="extrncobj" name="ExtrNC object">,
 <ref id="extnct" name="Extract NC tool">
 <item>Extrude: <ref id="extrudeobj" name="object">,
 <ref id="extt" name="Extrude tool">
@@ -7744,7 +7752,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <ref id="mfioplugin" name="3DMF import export (MFIO) plugin">
 <item>MinorRad: <ref id="top" name="torus attribute">
 <item>MinSamples, MaxSamples: <ref id="rio" name="RenderMan interface option">
-<item>Mirror:<ref id="cloneattr" name="Clone attribute">
+<item>Mirror: <ref id="cloneattr" name="Clone attribute">
 <item>Mode: <ref id="icp" name="ICurve attribute">
 <item>Mops Import: <ref id="impmops" name="Import of Mops Scenes">
 <item>Move: <ref id="vwsc" name="view action">,
@@ -7808,7 +7816,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>PatchSamples: <ref id="rio" name="RenderMan interface option">
 <item>Perspective: <ref id="vmtype" name="view menu entry">
 <item>PhiMin, PhiMax: <ref id="top" name="torus attribute">
-<item>Pick:<ref id="objsel" name="pick objects within a view">
+<item>Pick: <ref id="objsel" name="pick objects within a view">
 <item>PickEpsilon: <ref id="prefmodel" name="preference setting">
 <item>Plot Curvature: <ref id="plotcurt" name="plot curvature tool">
 <item>Point: <ref id="pdsl" name="light type">
