@@ -546,14 +546,14 @@ return;
 #
 #
 #
-proc addFileB { w prop name help {def {}} } {
+proc addFileTB { w prop name ftypes help {def {}} } {
 
-    addFile $w $prop $name $def
+    addFileT $w $prop $name $ftypes $def
 
     balloon_set $w.f${name}.l "${name}:\n${help}"
 
 }
-# addFileB
+# addFileTB
 
 #
 #
@@ -575,6 +575,39 @@ proc addFileT { w prop name ftypes {def {}} } {
 
 }
 # addFileT
+
+#
+#
+#
+proc addSFileT { w prop name ftypes {def {}} } {
+
+    addFile $w $prop $name $def
+    set f $w.f${name}
+    $f.b configure -command "\
+	    global $prop;
+	    set filen \[$f.e get\];
+            set filen \[tk_getSaveFile -filetypes {$ftypes} -parent .\
+		    -title \"Set File:\"];
+	    if { \$filen != \"\" } {
+	    $f.e delete 0 end;
+	    $f.e insert 0 \$filen;
+	    set ${prop}($name) \$filen;
+	}"
+
+}
+# addSFileT
+
+#
+#
+#
+proc addFileB { w prop name help {def {}} } {
+
+    addFile $w $prop $name $def
+
+    balloon_set $w.f${name}.l "${name}:\n${help}"
+
+}
+# addFileB
 
 #
 #
