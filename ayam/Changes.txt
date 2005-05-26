@@ -1,10 +1,20 @@
-[13. May 2005] CVS-Head:
+[26. May 2005] CVS-Head:
+o bug fixes:
+  - 
+o improved import option dialogue of RRIB plugin (added FileName)
+o improved import and export option dialogues of ONIO plugin (added FileName)
+
+
+[15. May 2005] Ayam1.8.2:
 o bug fixes:
   - fixed provide callback (e.g. for Wavefront export) of transformed extrude
-    objects with caps and bevels (SF )
-  - fixed focus handling on startup with splash screen (SF )
+    objects with caps and bevels (SF 1207251)
+  - fixed focus handling on startup with splash screen (SF 1208722)
   - fixed endless loop for closing view windows with view objects not in
-    the root objects child level (SF )
+    the root objects child level (SF 1208726)
+  - fixed erroneous (superfluous) view redraws and point flashing of direct
+    point editing action when normal point editing and flashing of points was
+    enabled before direct point editing was invoked (SF 1207921)
 o added a helper script "repairAyam.tcl" that resets the state of Ayam
   should it be stuck in an endless recursion of Tcl errors
 o improved handling of CFLAGS and Tcl/Tk8.4 in ayamConf.tcl
@@ -22,7 +32,8 @@ o added support for script controlled property GUIs to the script object
   (see new script example "scripts/crtspiralgui.tcl")
 o added option to rescale knot vectors of NURBS curves to arbitrary ranges
   and to minimum distances to the "rescaleKnNC" scripting interface command
-o added flashing of editable points to tag, delete, and insert point actions
+o added flashing of editable points to direct point edit, tag, delete, and
+  insert point actions
 o added scripting interface command "help" that (similar to the
   "Help on Object" main menu entry) opens a web browser with the
   documentation of a scripting interface command
@@ -36,12 +47,12 @@ o bug fixes:
   - fixed Tcl errors for property listbox scrollbar on Win32 (SF 1104662)
   - fixed views sometimes getting wrong camera values (SF 1106832)
   - fixed tesselation gui not working with already present TP tags (SF 1110857)
-  - fixed memory leak in tesselation gui (SF )
-  - fixed OBJ export of Birail1, Birail2, and Text objects (SF )
-  - fixed 3DMF export of Birail1, Birail2, and Text objects (SF )
-  - fixed rendering of multiple CSG objects using the AyCSG plugin (SF )
+  - fixed memory leak in tesselation gui (SF 1202363)
+  - fixed OBJ export of Birail1, Birail2, and Text objects (SF 1203345)
+  - fixed 3DMF export of Birail1, Birail2, and Text objects (SF 1203343)
+  - fixed rendering of multiple CSG objects using the AyCSG plugin (SF 1205872)
   - fixed rendering of CSG hierarchies with multiple unions using the
-    AyCSG plugin (SF )
+    AyCSG plugin (SF 1205870)
 o added a new object type "Script", that executes small Tcl scripts to
   create complex objects, modify objects or do other things
 o added example scripts for the new Script object type to the new "scripts"
