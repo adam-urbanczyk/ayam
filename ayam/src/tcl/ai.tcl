@@ -1,6 +1,6 @@
 # Ayam, a free 3D modeler for the RenderMan interface.
 #
-# Ayam is copyrighted 1998-2001 by Randolf Schultz
+# Ayam is copyrighted 1998-2005 by Randolf Schultz
 # (rschultz@informatik.uni-rostock.de) and others.
 #
 # All rights reserved.
@@ -14,18 +14,22 @@ array set aiprefs {
     IgnoreMat 1
 }
 
+# ai_open:
+#  open the AI Options dialogue
+#
 proc ai_open { } {
     global ay aiprefs
 
     set w .aiw
     catch {destroy $w}
     toplevel $w -class ayam
-    wm title $w "Ayam AI"
+    wm title $w "AI Options"
     wm iconname $w "Ayam"
+    wm transient $w .
     
     set f [frame $w.fu -bd 2 -relief sunken]
 
-    addText $f e1 "AI Parameters:"
+    addText $f e1 "AI Options:"
     addCheck $f aiprefs IgnoreTags
     addCheck $f aiprefs IgnoreMat
 
@@ -55,9 +59,14 @@ proc ai_open { } {
     winCenter $w
 
     focus $f.bok
+
+ return;
 }
 # ai_open
 
+# ai_resolve:
+#  resolve all instances
+#
 proc ai_resolve { } {
     global ay
     ai_resolveInstances
@@ -68,5 +77,6 @@ proc ai_resolve { } {
     }
     set ay(sc) 1
     undo clear
+ return;
 }
 # ai_resolve
