@@ -29,7 +29,7 @@ proc updateParam { w prop name op } {
 
     set ${prop}(${name}) $newval
 
-return;
+ return;
 }
 # updateParam
 
@@ -42,6 +42,7 @@ proc addParamB { w prop name help {def {}} } {
 
     balloon_set $w.f${name}.l "${name}:\n${help}"
 
+ return;
 }
 # addParamB
 
@@ -114,6 +115,7 @@ proc addParamPair { w prop name {def {}} } {
     }
     addParam $w $prop ${name}_0 $fdef
     addParam $w $prop ${name}_1 $sdef
+ return;
 }
 # addParamPair
 
@@ -126,6 +128,7 @@ proc addMatrixB { w prop name help } {
 
     balloon_set $w.f${name}.l "${name}:\n${help}"
 
+ return;
 }
 # addMatrixB
 
@@ -202,7 +205,7 @@ proc updateColor { w prop name button } {
 	set $bname $b
     }
 
-return;
+ return;
 }
 # updateColor
 
@@ -237,7 +240,7 @@ proc updateColorFromE { w prop name button } {
     }
     $button configure -background $newcolor
 
-return;
+ return;
 }
 # proc updateColorFromE
 
@@ -250,6 +253,7 @@ proc addColorB { w prop name help {def {}}} {
 
     balloon_set $w.fl${name}.l "${name}:\n${help}"
 
+ return;
 }
 # addColorB
 
@@ -358,6 +362,7 @@ proc addCheckB { w prop name help } {
 
     balloon_set $w.f${name}.l "${name}:\n${help}"
 
+ return;
 }
 # addCheckB
 
@@ -407,7 +412,7 @@ proc addCheck { w prop name } {
 
     pack $f -in $w -side top -fill x
 
-return;
+ return;
 }
 # addCheck
 
@@ -418,6 +423,7 @@ return;
 proc updateMenu { m name1 name2 op } {
     global ${name1}
     $m invoke [subst \$${name1}($name2)]
+ return;
 }
 # updateMenu
 
@@ -431,6 +437,7 @@ proc addMenuB { w prop name help elist } {
 
     balloon_set $w.f${name}.l "${name}:\n${help}"
 
+ return;
 }
 # addMenuB
 
@@ -481,7 +488,7 @@ proc addMenu { w prop name elist } {
     pack $f.mb -in $f -side left -fill x -expand yes -pady 0
     pack $f -in $w -side top -fill x
 
-return;
+ return;
 }
 # addMenu
 
@@ -494,6 +501,7 @@ proc addStringB { w prop name help {def {}} } {
 
     balloon_set $w.f${name}.l "${name}:\n${help}"
 
+ return;
 }
 # addStringB
 
@@ -539,9 +547,28 @@ proc addString { w prop name  {def {}}} {
 
     pack $f -in $w -side top -fill x
 
-return;
+ return;
 }
 # addString
+
+#
+#
+#
+proc entryViewEnd { w } {
+    $w icursor end;
+    set c [$w index insert]
+    set left [$w index @0]
+    if {$left > $c} {
+	$w xview $c
+	return
+    }
+    set x [winfo width $w]
+    if {$c > [$w index @[winfo width $w]]} {
+	$w xview insert
+    }
+ return;
+}
+# entryViewEnd
 
 #
 #
@@ -552,6 +579,7 @@ proc addFileTB { w prop name ftypes help {def {}} } {
 
     balloon_set $w.f${name}.l "${name}:\n${help}"
 
+ return;
 }
 # addFileTB
 
@@ -562,17 +590,19 @@ proc addFileT { w prop name ftypes {def {}} } {
 
     addFile $w $prop $name $def
     set f $w.f${name}
-    $f.b configure -command "\
-	    global $prop;\
-	    set filen \[$f.e get\];\
+    $f.b configure -command "
+	    global $prop;
+	    set filen \[$f.e get\];
 	    set filen \[tk_getOpenFile -filetypes {$ftypes} -parent .\
-	    -title \"Set File:\"];\
-	    if { \$filen != \"\" } {\
-	    $f.e delete 0 end;\
-	    $f.e insert 0 \$filen;\
-	    set ${prop}($name) \$filen;\
-	}"
+	                -title \"Set File:\"];
+	    if { \$filen != \"\" } {
+		$f.e delete 0 end;
+		$f.e insert 0 \$filen;
+		entryViewEnd $f.e;
+		set ${prop}($name) \$filen;
+	    }"
 
+ return;
 }
 # addFileT
 
@@ -587,13 +617,15 @@ proc addSFileT { w prop name ftypes {def {}} } {
 	    global $prop;
 	    set filen \[$f.e get\];
             set filen \[tk_getSaveFile -filetypes {$ftypes} -parent .\
-		    -title \"Set File:\"];
+		        -title \"Set File:\"];
 	    if { \$filen != \"\" } {
-	    $f.e delete 0 end;
-	    $f.e insert 0 \$filen;
-	    set ${prop}($name) \$filen;
-	}"
+		$f.e delete 0 end;
+		$f.e insert 0 \$filen;
+		entryViewEnd $f.e;
+		set ${prop}($name) \$filen;
+	    }"
 
+ return;
 }
 # addSFileT
 
@@ -606,6 +638,7 @@ proc addFileB { w prop name help {def {}} } {
 
     balloon_set $w.f${name}.l "${name}:\n${help}"
 
+ return;
 }
 # addFileB
 
@@ -639,9 +672,9 @@ proc addFile { w prop name {def {}} } {
 	if { \$filen != \"\" } {
 	    $f.e delete 0 end;
 	    $f.e insert 0 \$filen;
+	    entryViewEnd $f.e;
 	    set ${prop}($name) \$filen;
-        }
-	"
+        }"
 
     set mb ""
     if { $def != {} } {
@@ -653,7 +686,8 @@ proc addFile { w prop name {def {}} } {
 	set m [menu $mb.m -tearoff 0]
 	foreach val $def {
 	    $m add command -label $val\
-		    -command "global $prop; $e delete 0 end; $e insert end \{$val\};"
+		    -command "global $prop; $e delete 0 end;
+	                      $e insert end \{$val\};"
 	}
 	# foreach
     }
@@ -673,7 +707,7 @@ proc addFile { w prop name {def {}} } {
 
     pack $f -in $w -side top -fill x
 
-return;
+ return;
 }
 # addFile
 
@@ -686,6 +720,7 @@ proc addMDirB { w prop name help } {
 
     balloon_set $w.f${name}.l "${name}:\n${help}"
 
+ return;
 }
 # addMDirB
 
@@ -726,6 +761,7 @@ proc addMDir { w prop name } {
 	  } else {
 	      set ${prop}($name) \[file dirname \$filen\];
 	  };
+	  entryViewEnd $f.e;
 	  update;
 	  eval balloon_setsplit $f.e \[list \$${prop}($name)\] 15;
 	};
@@ -748,6 +784,7 @@ proc addMFileB { w prop name help } {
 
     balloon_set $w.f${name}.l "${name}:\n${help}"
 
+ return;
 }
 # addMFileB
 
@@ -789,6 +826,7 @@ proc addMFile { w prop name } {
 	 } else {\
 	  set ${prop}($name) \$filen;\
          };\
+	 entryViewEnd $f.e;
 	 update;
          eval balloon_setsplit $f.e \[list \$${prop}($name)\] 15;
         };\
@@ -812,6 +850,7 @@ proc addCommandB { w name text command help } {
 
     balloon_set $w.f${name}.b "${text}:\n${help}"
 
+ return;
 }
 # addCommandB
 
@@ -862,6 +901,7 @@ proc addInfoB { w prop name help } {
 
     balloon_set $w.f${name}.l "${name}:\n${help}"
 
+ return;
 }
 # addInfoB
 
