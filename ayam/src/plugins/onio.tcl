@@ -14,6 +14,9 @@ uplevel #0 { array set onio_options {
     ReadCurves 1
     ReadLayers -1
     IgnoreFirstTrim 1
+    WriteSelected 0
+    ObeyNoExport 1
+    IgnoreHidden 1
     WriteCurves 1
     QuadAsBRep 1
     FileName "unnamed.3dm"
@@ -128,6 +131,9 @@ proc onio_export { } {
     addSFileT $f onio_options FileName $types
 
     addParam $f onio_options Accuracy
+    addCheck $f onio_options WriteSelected
+    addCheck $f onio_options ObeyNoExport
+    addCheck $f onio_options IgnoreHidden
     addCheck $f onio_options WriteCurves
     addCheck $f onio_options QuadAsBRep
 
@@ -139,7 +145,10 @@ proc onio_export { } {
 
 	onioWrite [file tail $onio_options(FileName)]\
 	    -c $onio_options(WriteCurves)\
-	    -q $onio_options(QuadAsBRep)
+	    -q $onio_options(QuadAsBRep)\
+	    -s $onio_options(WriteSelected)\
+	    -o $onio_options(ObeyNoExport)\
+	    -i $onio_options(IgnoreHidden)
 
 	cd $oldcd
 	goTop
