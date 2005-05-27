@@ -44,6 +44,9 @@ int onio_expsphereasbrep = AY_TRUE;
 int onio_expcylinderasbrep = AY_TRUE;
 int onio_expconeasbrep = AY_TRUE;
 int onio_exptorusasbrep = AY_TRUE;
+int onio_expselected = AY_FALSE;
+int onio_expobeynoexport = AY_TRUE;
+int onio_expignorehidden = AY_TRUE;
 
 double onio_accuracy = 1.0e-12;
 
@@ -571,9 +574,9 @@ onio_writenpconvertible(ay_object *o, ONX_Model *p_m, double *m)
 
 	      ay_status = onio_writeobject(t, p_m);
 
-	    } /* if */
+	    } // if
 	  t = t->next;
-	} /* while */
+	} // while
 
       ay_status = ay_object_deletemulti(p);
 
@@ -582,7 +585,7 @@ onio_writenpconvertible(ay_object *o, ONX_Model *p_m, double *m)
 	onio_writename(o, p_m->m_object_table[i]);
 
       return AY_OK;
-    } /* if */
+    } // if
 
  return ay_status;
 } // onio_writenpconvertible
@@ -663,9 +666,9 @@ onio_writencconvertible(ay_object *o, ONX_Model *p_m, double *m)
 
 	      ay_status = onio_writeobject(t, p_m);
 
-	    } /* if */
+	    } // if
 	  t = t->next;
-	} /* while */
+	} // while
 
       ay_status = ay_object_deletemulti(p);
 
@@ -674,7 +677,7 @@ onio_writencconvertible(ay_object *o, ONX_Model *p_m, double *m)
 	onio_writename(o, p_m->m_object_table[i]);
 
       return AY_OK;
-    } /* if */
+    } // if
 
  return ay_status;
 } // onio_writencconvertible
@@ -1172,9 +1175,29 @@ onio_writeobject(ay_object *o, ONX_Model *p_m)
  char err[255];
  onio_writecb *cb = NULL;
  double m1[16] = {0}, m2[16];
+ ay_tag_object *t = NULL;
 
   if(!o || !p_m)
     return AY_ENULL;
+
+  if(onio_expselected && !o->selected)
+    return AY_OK;
+
+  if(onio_expobeynoexport && o->tags)
+    {
+      t = o->tags;
+      while(t)
+	{
+	  if(t->type == ay_noexport_tagtype)
+	    {
+	      return AY_OK;
+	    } // if
+	  t = t->next;
+	} // while
+    } // if
+
+  if(onio_expignorehidden && o->hide)
+    return AY_OK;
 
   if((entry = Tcl_FindHashEntry(ht, (char *)(o->type))))
     {
@@ -1195,13 +1218,13 @@ onio_writeobject(ay_object *o, ONX_Model *p_m)
 	  else
 	    {
 	      ay_status = cb(o, p_m, tm);
-	    }
+	    } // if
 
 	  if(ay_status)
 	    {
 	      ay_error(AY_ERROR, fname, "Error exporting object.");
 	      ay_status = AY_OK;
-	    }
+	    } // if
 	} // if
     }
   else
@@ -1256,6 +1279,21 @@ onio_writetcmd(ClientData clientData, Tcl_Interp *interp,
 	  onio_expcylinderasbrep = t;
 	  onio_expconeasbrep = t;
 	  onio_exptorusasbrep = t;
+	}
+      else
+      if(!strcmp(argv[i], "-s"))
+	{
+	  sscanf(argv[i+1], "%d", &onio_expselected);
+	}
+      else
+      if(!strcmp(argv[i], "-o"))
+	{
+	  sscanf(argv[i+1], "%d", &onio_expobeynoexport);
+	}
+      else
+      if(!strcmp(argv[i], "-i"))
+	{
+	  sscanf(argv[i+1], "%d", &onio_expignorehidden);
 	}
       i+=2;
     } // while
@@ -1368,11 +1406,11 @@ onio_registerwritecb(char *name, onio_writecb *cb)
 
   if((entry = Tcl_FindHashEntry(ht, name)))
     {
-      return AY_ERROR; /* name already registered */
+      return AY_ERROR; // name already registered
     }
   else
     {
-      /* create new entry */
+      // create new entry
       entry = Tcl_CreateHashEntry(ht, name, &new_item);
       Tcl_SetHashValue(entry, (char*)cb);
     }
