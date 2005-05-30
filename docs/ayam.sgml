@@ -6919,7 +6919,8 @@ not available.
 <sect1>The OpenNURBS IO (onio) Plugin<label id="onioplugin">
 <p>
 Since version 1.8.2 Ayam contains a plugin that may export to
-and import from the Rhino 3DM format using the OpenNURBS toolkit.
+and import from the Rhino 3DM file format using the OpenNURBS toolkit
+from Robert McNeel & Associates.
 <p>
 Start exporting to a Rhino 3DM file using the menu entry
 <tt>"Custom/OpenNURBS IO/Export"</tt>
@@ -6948,7 +6949,7 @@ checking NURBS surfaces for planarity).
 no curves will be written to the exported Rhino file.
 <item> <tt/"QuadAsBRep"/: If the <tt/"QuadAsBRep"/ option is enabled
 spheres, cylinders, cones, and torii will not be exported as collection
-of NURBS surfaces (as converted by Ayam) but as BRep objects (converted
+of NURBS surfaces (as converted by Ayam) but as BRep objects (as converted
 by the OpenNURBS toolkit).
 However, not all features of the quadric objects will be translated in
 this case:
@@ -6962,7 +6963,7 @@ The option has no effect on the export of disks, hyperboloids,
 and paraboloids. Those will always be exported as NURBS surfaces.
 </itemize>
 <p>
-Since the Rhino 3DM format does not support hierarchy and
+Since the Rhino 3DM file format does not support hierarchy and
 transformation attributes per object, the hierarchy of the Ayam
 scene will be squashed and all transformation attributes will
 be applied to the control points of the objects for export.
@@ -6992,7 +6993,8 @@ import of all NURBS and BRep objects and objects that may
 be converted to NURBS using the OpenNURBS toolkit
 (those are: PolylineCurve, PolyCurve, LineCurve, ArcCurve,
 CurveOnSurface, RevSurface, SumSurface, and PlaneSurface).
-References will be resolved.
+References will be resolved. Names will be imported, but
+converted to an ASCII representation.
 <p>
 The import process is controlled by the following options:
 <itemize>
@@ -7011,7 +7013,8 @@ of layers may be selected for import.
 Another import option is <tt/"IgnoreFirstTrim"/, this is useful
 if the first bounding trim loop of NURBS surfaces should be ignored.
 This trim loop is often not needed, because it encloses the whole
-surface that is not trimmed further in many cases.
+surface that is not trimmed further in many cases. Importing this
+trim loop will often just make the Ayam scene more complex than needed.
 </itemize>
 
 <sect1>Shader Parsing Plugins<label id="spplugins">
