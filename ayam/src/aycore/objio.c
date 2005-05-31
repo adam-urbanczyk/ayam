@@ -13,7 +13,7 @@
 /* objio.c - Wavefront OBJ Input/Output module */
 
 #include "ayam.h"
-
+#include <ctype.h>
 
 /* types local to this module */
 
@@ -386,7 +386,7 @@ ay_objio_writetrimids(FILE *fileptr, ay_object *o)
 	      down = down->next;
 	    }
 	  fprintf(fileptr, "\n");
-	  
+
 	} /* if */
 
       o = o->next;
@@ -759,7 +759,7 @@ ay_objio_writepomesh(FILE *fileptr, ay_object *o, double *m)
 		  li->object = to;
 
 		  ay_object_defaults(to);
-		  
+
 		  to->type = AY_IDPOMESH;
 
 		  ay_status = ay_tess_pomeshf(po, i, q, r, AY_FALSE,
@@ -1124,6 +1124,746 @@ ay_objio_writescenetcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_objio_writescenetcmd */
 
 
+/****************************************************************/
+
+typedef struct objio_vertex_s {
+  struct objio_vertex_s *next;
+  struct objio_vertex_s *prev;
+
+  unsigned int index;
+
+  double v[4];
+
+} objio_vertex;
+
+objio_vertex *objio_gverts_head = NULL;
+objio_vertex *objio_gverts_tail = NULL;
+
+objio_vertex *objio_nverts_head = NULL;
+objio_vertex *objio_nverts_tail = NULL;
+
+objio_vertex *objio_pverts_head = NULL;
+objio_vertex *objio_pverts_tail = NULL;
+
+objio_vertex *objio_tverts_head = NULL;
+objio_vertex *objio_tverts_tail = NULL;
+
+/* ay_objio_addvertex:
+ *
+ */
+int
+ay_objio_addvertex(int type, double *v)
+{
+ objio_vertex *nv = NULL;
+
+  if(!v)
+    return AY_ENULL;
+
+  if(!(nv = calloc(1, sizeof(objio_vertex))))
+    return AY_EOMEM;
+  nv->index = 1;
+
+  switch(type)
+    {
+    case 1:
+      /* geometric vertex */
+      memcpy(nv->v, v, 4*sizeof(double));
+      if(objio_gverts_tail)
+	{
+	  nv->index = objio_gverts_tail->index + 1;
+	  nv->prev = objio_gverts_tail;
+	  objio_gverts_tail->next = nv;
+	}
+      objio_gverts_tail = nv;
+      if(!objio_gverts_head)
+	{
+	  objio_gverts_head = nv;
+	}
+      break;
+    case 2:
+      /* normal vertex */
+      memcpy(nv->v, v, 4*sizeof(double));
+      if(objio_nverts_tail)
+	{
+	  nv->index = objio_nverts_tail->index + 1;
+	  nv->prev = objio_nverts_tail;
+	  objio_nverts_tail->next = nv;
+	}
+      objio_nverts_tail = nv;
+      if(!objio_nverts_head)
+	{
+	  objio_nverts_head = nv;
+	}
+      break;
+    case 3:
+      /* parametric vertex */
+      memcpy(nv->v, v, 4*sizeof(double));
+      if(objio_pverts_tail)
+	{
+	  nv->index = objio_pverts_tail->index + 1;
+	  nv->prev = objio_pverts_tail;
+	  objio_pverts_tail->next = nv;
+	}
+      objio_pverts_tail = nv;
+      if(!objio_pverts_head)
+	{
+	  objio_pverts_head = nv;
+	}
+      break;
+    case 4:
+      /* texture vertex */
+      memcpy(nv->v, v, 4*sizeof(double));
+      if(objio_tverts_tail)
+	{
+	  nv->index = objio_tverts_tail->index + 1;
+	  nv->prev = objio_tverts_tail;
+	  objio_tverts_tail->next = nv;
+	}
+      objio_tverts_tail = nv;
+      if(!objio_tverts_head)
+	{
+	  objio_tverts_head = nv;
+	}
+      break;
+    default:
+      free(nv);
+      break;
+    } /* switch */
+
+ return AY_OK;
+} /* ay_objio_addvertex */
+
+
+/* ay_objio_getvertex:
+ *
+ */
+int
+ay_objio_getvertex(int type, unsigned int index, double **v)
+{
+ static objio_vertex *objio_gverts_cur = NULL;
+ static objio_vertex *objio_nverts_cur = NULL;
+ static objio_vertex *objio_pverts_cur = NULL;
+ static objio_vertex *objio_tverts_cur = NULL;
+ objio_vertex *l = NULL, **pl;
+ unsigned int i;
+
+  if(!v)
+    {
+      objio_gverts_cur = NULL;
+      objio_nverts_cur = NULL;
+      objio_pverts_cur = NULL;
+      objio_tverts_cur = NULL;
+      return AY_ENULL;
+    } /* if */
+
+  if(index == 0)
+    return AY_ERROR;
+
+  switch(type)
+    {
+    case 1:
+      /* vertex buffer empty? */
+      if(!objio_gverts_tail)
+	return AY_ERROR;
+
+      /* index out of range? */
+      if(index > objio_gverts_tail->index)
+	return AY_ERROR;
+
+      if(objio_gverts_cur)
+	l = objio_gverts_cur;
+      else
+	l = objio_gverts_tail;
+
+      pl = &objio_gverts_cur;
+      break;
+    case 2:
+      /* vertex buffer empty? */
+      if(!objio_nverts_tail)
+	return AY_ERROR;
+
+      /* index out of range? */
+      if(index > objio_nverts_tail->index)
+	return AY_ERROR;
+
+      if(objio_nverts_cur)
+	l = objio_nverts_cur;
+      else
+	l = objio_nverts_tail;
+
+      pl = &objio_nverts_cur;
+      break;
+    case 3:
+      /* vertex buffer empty? */
+      if(!objio_pverts_tail)
+	return AY_ERROR;
+
+      /* index out of range? */
+      if(index > objio_pverts_tail->index)
+	return AY_ERROR;
+
+      if(objio_pverts_cur)
+	l = objio_pverts_cur;
+      else
+	l = objio_pverts_tail;
+
+      pl = &objio_pverts_cur;
+      break;
+    case 4:
+      /* vertex buffer empty? */
+      if(!objio_tverts_tail)
+	return AY_ERROR;
+
+      /* index out of range? */
+      if(index > objio_tverts_tail->index)
+	return AY_ERROR;
+
+      if(objio_tverts_cur)
+	l = objio_tverts_cur;
+      else
+	l = objio_tverts_tail;
+
+      pl = &objio_tverts_cur;
+      break;
+    default:
+      break;
+    }
+
+  /* check, whether the same vertex was requested last time */
+  if(index == l->index)
+    {
+      /* Yes, we may immediately return the result. */
+      *v = &(l->v[0]);
+      return AY_OK;
+    }
+
+  if(index < l->index)
+    {
+      /* rewind... */
+      for(i = l->index; i > index; i--)
+	{
+	  l = l->prev;
+	}
+    }
+  else
+    {
+      /* forward... */
+      for(i = l->index; i < index; i++)
+	{
+	  l = l->next;
+	}
+    } /* if */
+
+  *pl = l;
+  *v = &(l->v[0]);
+
+ return AY_OK;
+} /* ay_objio_getvertex */
+
+
+/* ay_objio_freevertices:
+ *
+ */
+int
+ay_objio_freevertices(void)
+{
+ int ay_status = AY_OK;
+ objio_vertex *v = NULL, *vt = NULL;
+
+  if(objio_gverts_tail)
+    {
+      objio_gverts_head = NULL;
+      vt = objio_gverts_tail;
+      while(vt)
+	{
+	  v = vt->prev;
+	  free(vt);
+	  vt = v;
+	} /* while */
+      objio_gverts_tail = NULL;
+    } /* if */
+
+  if(objio_nverts_tail)
+    {
+      objio_nverts_head = NULL;
+      vt = objio_nverts_tail;
+      while(vt)
+	{
+	  v = vt->prev;
+	  free(vt);
+	  vt = v;
+	} /* while */
+      objio_nverts_tail = NULL;
+    } /* if */
+
+  if(objio_pverts_tail)
+    {
+      objio_pverts_head = NULL;
+      vt = objio_pverts_tail;
+      while(vt)
+	{
+	  v = vt->prev;
+	  free(vt);
+	  vt = v;
+	} /* while */
+      objio_pverts_tail = NULL;
+    } /* if */
+
+  if(objio_tverts_tail)
+    {
+      objio_tverts_head = NULL;
+      vt = objio_tverts_tail;
+      while(vt)
+	{
+	  v = vt->prev;
+	  free(vt);
+	  vt = v;
+	} /* while */
+      objio_tverts_tail = NULL;
+    } /* if */
+
+  /* clear cached "current" pointers in getvertex() */
+  ay_status = ay_objio_getvertex(0, 0, NULL);
+
+ return AY_OK;
+} /* ay_objio_freevertices */
+
+
+/* ay_objio_readvertex:
+ *
+ */
+int
+ay_objio_readvertex(char *str)
+{
+ int ay_status = AY_OK;
+ double v[4] = {0};
+
+
+  if(strlen(str) < 2)
+    return AY_ERROR;
+
+  if(str[1] == 'n')
+    {
+      sscanf(&(str[2])," %lg %lg %lg", &(v[0]), &(v[1]), &(v[2]));
+      ay_status = ay_objio_addvertex(2, v);
+    }
+  else
+  if(str[1] == 'p')
+    {
+      sscanf(&(str[2])," %lg %lg %lg", &(v[0]), &(v[1]), &(v[2]));
+      ay_status = ay_objio_addvertex(3, v);
+    }
+  else
+  if(str[1] == 't')
+    {
+      sscanf(&(str[2])," %lg %lg %lg", &(v[0]), &(v[1]), &(v[2]));
+      ay_status = ay_objio_addvertex(4, v);
+    }
+  else
+    {
+      if(sscanf(&(str[1])," %lg %lg %lg %lg",
+		&(v[0]), &(v[1]), &(v[2]), &(v[3])) < 4)
+	{
+	  v[3] = 1.0;
+	}
+      ay_status = ay_objio_addvertex(1, v);
+    } /* if */
+
+ return ay_status;
+} /* ay_objio_readvertex */
+
+
+/* ay_objio_readvindex:
+ *
+ */
+int
+ay_objio_readvindex(char *c, int *gvindex, int *tvindex, int *nvindex)
+{
+ int ay_status = AY_OK;
+
+  if(!c || !gvindex || !tvindex || !nvindex)
+    return AY_ENULL;
+
+  /* parse geometric vertex index */
+  sscanf(c, "%d", gvindex);
+  /* forward to next index, /, or end */
+  while((isdigit(*c) || (*c == '-')) && (*c != '\0'))
+    c++;
+  if(*c == '\0')
+    return AY_OK;
+
+  /* parse texture vertex index? */
+  if(*c == '/')
+    {
+      /* maybe; check if next char is not a / too (which would mean:
+	 no texture vertex index present) */
+      if(c[1] != '/')
+	{
+	  /* next char is not a /, parse texture vertex index */
+	  c++;
+	  if(*c == '\0')
+	    return AY_OK;
+	  sscanf(c, "%d", tvindex);
+	  /* forward to next index or / */
+	  while((isdigit(*c) || (*c == '-')) && (*c != '\0'))
+	    c++;
+	  if(*c == '\0')
+	    return AY_OK;
+	  if(*c == '/')
+	    c++;
+	  if(*c == '\0')
+	    return AY_OK;
+	}
+      else
+	{
+	  /* skip over // combination */
+	  c += 2;
+	  if(*c == '\0')
+	    return AY_OK;
+	} /* if */
+
+      /* parse normal vertex index */
+      if(isdigit(*c) || (*c == '-'))
+	{
+	  sscanf(c, "%d", nvindex);
+	} /* if */
+    } /* if */
+
+ return ay_status;
+} /* ay_objio_readvindex */
+
+
+/* ay_objio_readface:
+ *
+ */
+int
+ay_objio_readface(char *str)
+{
+ int ay_status = AY_OK;
+ char *c = NULL;
+ int gvindex = 0, tvindex = 0, nvindex = 0, stride = 0, i;
+ int last_stride = 0;
+ double *gv, *nv/*, *tv*/;
+ double *newcontrolv = NULL;
+ ay_pomesh_object po = {0};
+ ay_object t = {0}, *o = NULL;
+ unsigned int nloops = 1, nverts = 0;
+
+
+  if(!str)
+    return AY_ENULL;
+
+  if((str[0] == '\0') || (str[1] == '\0') || (str[2] == '\0'))
+    return AY_ERROR;
+
+  po.npolys = 1;
+  po.nloops = &nloops;
+
+  c = &(str[1]);
+
+  while(*c != '\0')
+    {
+      gvindex = 0; tvindex = 0; nvindex = 0;
+      ay_status = ay_objio_readvindex(c, &gvindex, &tvindex, &nvindex);
+
+      gv = NULL;
+      nv = NULL;
+      /*tv = NULL;*/
+
+      /* get geometric vertex data and add it to the pomesh */
+      if(gvindex < 0)
+	{
+	  if(objio_gverts_tail)
+	    {
+	      ay_status = ay_objio_getvertex(1,
+					   objio_gverts_tail->index + gvindex,
+					     &gv);
+	    }
+	  else
+	    {
+	      ay_status = AY_ENULL;
+	      goto cleanup;
+	    } /* if */
+	}
+      else
+	{
+	  ay_status = ay_objio_getvertex(1, gvindex, &gv);
+	} /* if */
+      if(ay_status)
+	goto cleanup;
+
+      if(nvindex != 0)
+	{
+	  /* get normal vertex data and add it to the pomesh */
+	  if(nvindex < 0)
+	    {
+	      if(objio_gverts_tail)
+		{
+		  ay_status = ay_objio_getvertex(2,
+					   objio_nverts_tail->index + nvindex,
+					     &nv);
+		}
+	      else
+		{
+		  ay_status = AY_ENULL;
+		  goto cleanup;
+		} /* if */
+	    }
+	  else
+	    {
+	      ay_status = ay_objio_getvertex(2, nvindex, &nv);
+	    } /* if */
+	  if(ay_status)
+	    goto cleanup;
+	} /* if */
+
+      if(tvindex != 0)
+	{
+	  /* get texture vertex data and add it to the pomesh */
+	  /* XXXX to be done */
+	}
+
+      stride = 3;
+      if(nv)
+	stride += 3;
+
+      /*if(tv)
+	stride += 2;*/
+
+      if((last_stride > 0) && (stride != last_stride))
+	{ay_status = AY_ERROR; goto cleanup;}
+
+      last_stride = stride;
+
+      newcontrolv = NULL;
+      if(!(newcontrolv = realloc(po.controlv, (nverts + 1) * stride *
+				 sizeof(double))))
+	{ay_status = AY_EOMEM; goto cleanup;}
+      po.controlv = newcontrolv;
+
+      i = nverts * stride;
+      if(gv)
+	memcpy(&(po.controlv[i]), gv, 3*sizeof(double));
+      if(nv)
+	memcpy(&(po.controlv[i+3]), nv, 3*sizeof(double));
+      /*if(tv)
+	memcpy(&(po.controlv[i+6]), tv, 2*sizeof(double));*/
+
+      nverts++;
+
+      /* skip to next vindex */
+      while((isspace(*c)) && (*c != '\0'))
+	c++;
+      if(*c == '\0')
+	break;
+      while(!(isspace(*c)) && (*c != '\0'))
+	c++;
+    } /* while */
+
+  if(nverts >= 3)
+    {
+      if(nvindex != 0)
+	{
+	  po.has_normals = AY_TRUE;
+	}
+
+      po.nverts = &nverts;
+      po.ncontrols = nverts;
+
+      if(!(po.verts = calloc(nverts, sizeof(unsigned int))))
+	{ ay_status = AY_EOMEM; goto cleanup; }
+
+      for(i = 0; i < nverts; i++)
+	{
+	  po.verts[i] = i;
+	}
+
+      ay_object_defaults(&t);
+      t.type = AY_IDPOMESH;
+      t.refine = (void*)(&po);
+
+      ay_status = ay_object_copy(&t, &o);
+      if(ay_status)
+	goto cleanup;
+
+      ay_status = ay_object_link(o);
+
+    } /* if */
+
+cleanup:
+  if(po.controlv)
+    free(po.controlv);
+
+  if(po.verts)
+    free(po.verts);
+
+ return ay_status;
+} /* ay_objio_readface */
+
+
+/* ay_objio_readend:
+ *
+ */
+int
+ay_objio_readend()
+{
+ int ay_status = AY_OK;
+
+
+ return ay_status;
+} /* ay_objio_readend */
+
+
+/* ay_objio_readline:
+ *
+ */
+int
+ay_objio_readline(FILE *fileptr)
+{
+ int ay_status = AY_OK;
+ int read;
+ char readchar, *str;
+ Tcl_DString ds;
+
+  Tcl_DStringInit(&ds);
+  read = getc(fileptr);
+
+  if(read == EOF)
+    {Tcl_DStringFree(&ds); return AY_EUEOF;}
+
+  if((char)read == '\n')
+    {Tcl_DStringFree(&ds); return AY_OK;}
+
+  while((char)read != '\n')
+    {
+      readchar = (char)read;
+
+      Tcl_DStringAppend(&ds, &readchar, 1);
+      read = getc(fileptr);
+
+      if(read == EOF)
+	{break;}
+
+    } /* while */
+
+
+  Tcl_DStringAppend(&ds, "\0", 1);
+
+  str = Tcl_DStringValue(&ds);
+
+  if(str[strlen(str)-1] == '\r')
+    {
+      str[strlen(str)-1] = '\0';
+    }
+
+  switch(str[0])
+    {
+    case '#':
+      break;
+    case 'v':
+      ay_status = ay_objio_readvertex(str);
+      break;
+    case 'f':
+      ay_status = ay_objio_readface(str);
+      break;
+    case 'e':
+      ay_status = ay_objio_readend();
+      break;
+    default:
+      break;
+    } /* switch */
+
+  Tcl_DStringFree(&ds);
+
+ return ay_status;
+} /* ay_objio_readline */
+
+
+/* ay_objio_readscene:
+ *
+ */
+int
+ay_objio_readscene(char *filename, int selected)
+{
+ int ay_status = AY_OK;
+ ay_object *o = ay_root->next;
+ FILE *fileptr = NULL;
+ char fname[] = "objio_readscene";
+
+  if(!o)
+    return AY_ENULL;
+
+  if(!filename)
+    return AY_ENULL;
+
+  if(!(fileptr = fopen(filename, "rb")))
+    {
+      ay_error(AY_EOPENFILE, fname, filename);
+      return AY_ERROR;
+    }
+
+  clearerr(fileptr);
+
+  while(!feof(fileptr))
+    {
+      if((ay_status = ay_objio_readline(fileptr)))
+	break;
+    } /* while */
+
+
+  if(ferror(fileptr) || (errno != 0))
+    {
+      ay_error(AY_ERROR, fname, strerror(errno));
+    }
+
+  if(fclose(fileptr))
+    {
+      ay_error(AY_ERROR, fname, strerror(errno));
+    }
+
+  /* clean up all vertex buffers */
+  ay_status = ay_objio_freevertices();
+
+ return ay_status;
+} /* ay_objio_readscene */
+
+
+/* ay_objio_readscenetcmd:
+ *
+ */
+int
+ay_objio_readscenetcmd(ClientData clientData, Tcl_Interp *interp,
+			int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ char fname[] = "ay_objio_read";
+ int selected = AY_FALSE;
+
+  /* check args */
+  if(argc < 2)
+    {
+      ay_error(AY_EARGS, fname, "filename [1|0] | [1|0] [1|0]");
+      return TCL_OK;
+    }
+
+  objio_tesspomesh = AY_FALSE;
+  objio_omitcurves = AY_FALSE;
+
+  if(argc > 2)
+    selected = atoi(argv[2]);
+
+  if(argc > 3)
+    objio_tesspomesh = atoi(argv[3]);
+
+  if(argc > 4)
+    objio_omitcurves = atoi(argv[4]);
+
+  ay_status = ay_objio_readscene(argv[1], selected);
+
+ return TCL_OK;
+} /* ay_objio_readscenetcmd */
+
+
 /* ay_objio_init:
  *
  */
@@ -1185,6 +1925,9 @@ ay_objio_init(Tcl_Interp *interp)
 				       ay_objio_writebox);
 
   Tcl_CreateCommand(interp, "ay_objio_write", ay_objio_writescenetcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "ay_objio_read", ay_objio_readscenetcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
  return TCL_OK;
