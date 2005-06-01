@@ -3090,6 +3090,10 @@ Mfio_Init(Tcl_Interp *interp)
 				       ay_mfio_writenpconvertible);
   ay_status = ay_mfio_registerwritecb((char *)(AY_IDTEXT),
 				       ay_mfio_writenpconvertible);
+  ay_status = ay_mfio_registerwritecb((char *)(AY_IDHYPERBOLOID),
+				       ay_mfio_writenpconvertible);
+  ay_status = ay_mfio_registerwritecb((char *)(AY_IDPARABOLOID),
+				       ay_mfio_writenpconvertible);
 
   ay_status = ay_mfio_registerwritecb((char *)(AY_IDPOMESH),
 				       ay_mfio_writepolymesh);
