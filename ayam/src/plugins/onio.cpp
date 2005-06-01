@@ -17,10 +17,6 @@
 #include "opennurbs.h"
 #include "opennurbs_extensions.h"
 
-#ifdef WIN32
-#define snprintf _snprintf
-#endif
-
 // local types
 
 typedef int (onio_writecb) (ay_object *o, ONX_Model *p_m, double *m);
@@ -1229,8 +1225,8 @@ onio_writeobject(ay_object *o, ONX_Model *p_m)
     }
   else
     {
-      snprintf(err, 254, "No callback registered for this type: %d.",
-	       o->type);
+      sprintf(err, "Cannot export objects of type: %s.",
+	      ay_object_gettypename(o->type));
       ay_error(AY_EWARN, fname, err);
     } // if
 
