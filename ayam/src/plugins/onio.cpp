@@ -2065,6 +2065,141 @@ onio_readreference(ONX_Model *p_m, ON_InstanceRef *p_r, double accuracy)
 } // onio_readreference
 
 
+// onio_readmesh:
+//
+int
+onio_readmesh(ON_Mesh *p_m, double accuracy)
+{
+ int ay_status = AY_OK;
+ char fname[] = "onio_readmesh";
+ unsigned int i, a, stride = 3, *nloops = NULL, *nverts = NULL, *verts = NULL;
+ unsigned int tnverts = 0;
+ double *controlv = NULL;
+ ay_pomesh_object *po = NULL;
+ ay_object *newo = NULL;
+
+  if(!p_m)
+    return AY_ENULL;
+
+  if(!(po = (ay_pomesh_object*)calloc(1, sizeof(ay_pomesh_object))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+
+  po->ncontrols = p_m->m_V.Capacity();
+
+  if(p_m->m_N.Capacity() != 0)
+    {
+      stride += 3;
+      po->has_normals = AY_TRUE;
+    }
+
+  if(!(controlv = (double*)calloc(po->ncontrols*stride, sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+
+  // copy control points (and normals)
+  a = 0;
+  for(i = 0; i < po->ncontrols; i++)
+    {
+      controlv[a]   = p_m->m_V[i].x;
+      controlv[a+1] = p_m->m_V[i].y;
+      controlv[a+2] = p_m->m_V[i].z;
+      if(stride > 3)
+	{
+	  controlv[a+3] = p_m->m_N[i].x;
+	  controlv[a+4] = p_m->m_N[i].y;
+	  controlv[a+5] = p_m->m_N[i].z;
+	} // if
+      a += stride;
+    } // for
+
+  po->controlv = controlv;
+
+  // copy faces
+  po->npolys = p_m->m_F.Capacity();
+
+  if(!(nloops = (unsigned int*)calloc(po->npolys, sizeof(unsigned int))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  po->nloops = nloops;
+  for(i = 0; i < po->npolys; i++)
+    nloops[i] = 1;
+
+  if(!(nverts = (unsigned int*)calloc(po->npolys, sizeof(unsigned int))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  po->nverts = nverts;
+  for(i = 0; i < po->npolys; i++)
+    {
+      if(p_m->m_F[i].IsTriangle())
+	{
+	  nverts[i] = 3;
+	  tnverts += 3;
+	}
+      else
+	{
+	  nverts[i] = 4;
+	  tnverts += 4;
+	} // if
+    } // for
+
+  if(!(verts = (unsigned int*)calloc(tnverts, sizeof(unsigned int))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  po->verts = verts;
+  a = 0;
+  for(i = 0; i < po->npolys; i++)
+    {
+      verts[a] = p_m->m_F[i].vi[0];
+      a++;
+      verts[a] = p_m->m_F[i].vi[1];
+      a++;
+      verts[a] = p_m->m_F[i].vi[2];
+      a++;
+      if(p_m->m_F[i].IsQuad())
+	{
+	  verts[a] = p_m->m_F[i].vi[3];
+	  a++;
+	} // if
+    } // for
+
+  // create object
+  if(!(newo = (ay_object*)calloc(1, sizeof(ay_object))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+
+  ay_status = ay_object_defaults(newo);
+
+  newo->type = AY_IDPOMESH;
+  newo->refine = po;
+
+  // link the new PolyMesh into the scene hierarchy
+  ay_status = ay_object_link(newo);
+
+  if(ay_status)
+    ay_status = ay_object_delete(newo);
+  else
+    onio_lrobject = newo;
+
+  po = NULL;
+  controlv = NULL;
+  newo = NULL;
+  nloops = NULL;
+  nverts = NULL;
+  verts = NULL;
+
+cleanup:
+  if(po)
+    free(po);
+  if(controlv)
+    free(controlv);
+  if(newo)
+    free(newo);
+  if(nloops)
+    free(nloops);
+  if(nverts)
+    free(nverts);
+  if(verts)
+    free(verts);
+
+ return ay_status;
+} // onio_readmesh
+
+
 // onio_readobject:
 //
 int
@@ -2198,6 +2333,9 @@ onio_readobject(ONX_Model *p_m, const ON_Object *p_o, double accuracy)
       break;
     case ON::instance_reference:
       ay_status = onio_readreference(p_m, (ON_InstanceRef *)p_o, accuracy);
+    case ON::mesh_object:
+      ay_status = onio_readmesh((ON_Mesh *)p_o, accuracy);
+      break;
     default:
       break;
     } // switch
