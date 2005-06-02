@@ -1176,3 +1176,67 @@ proc io_exportOBJ { selected } {
  return;
 }
 # io_exportOBJ
+
+
+# io_importOBJ:
+#  import scene from the Wavefront OBJ format
+#
+proc io_importOBJ { } {
+    global ay tcl_platform
+
+    set filename $ay(filename)
+
+    if { $filename == "" } {
+	set dirname [pwd]
+    } else {
+	set dirname [file dirname $filename]
+	if { $dirname == "." } { set dirname [pwd] }
+    }
+
+    set types {{"Wavefront OBJ" ".obj"} {"All files" *}}
+
+    if { $tcl_platform(os) != "Darwin" } {
+	set ifilename [tk_getOpenFile -filetypes $types -parent .\
+		-initialfile [file tail $filename] -initialdir $dirname\
+		-title "Select file to import:"]
+    } else {
+	set ifilename [tk_getOpenFile -filetypes $types -parent .\
+		-initialfile [file tail $filename]\
+		-title "Select file to import:"]
+    }
+    # if
+
+    if { $ifilename != "" } {
+	global ay_error
+	set ay_error ""
+
+	ay_objio_read $ifilename
+
+	if { $ay_error < 2 } {
+	    ayError 4 "importOBJ" "Done importing scene from:"
+	    ayError 4 "importOBJ" "$ifilename"
+	} else {
+	    ayError 2 "importOBJ"\
+		    "There were errors while importing scene from:"
+	    ayError 2 "importOBJ" "$ifilename"
+	}
+	
+	goTop
+	selOb
+	set ay(CurrentLevel) "root"
+	set ay(SelectedLevel) "root"
+	update
+
+	uS
+	rV
+	set ay(sc) 1
+
+	after idle viewMouseToCurrent
+
+    }
+    # if
+
+ return;
+}
+# io_importOBJ
+

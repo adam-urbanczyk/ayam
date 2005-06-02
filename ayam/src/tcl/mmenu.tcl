@@ -73,7 +73,10 @@ $m add separator
 $m add command -label "Save as" -command "io_saveScene ask 0"
 $m add command -label "Save" -command "io_saveScene dontask 0"
 $m add separator
-$m add command -label "Import Mops" -command "io_importMops"
+$m add cascade -menu $m.im -label "Import"
+menu $m.im -tearoff 0
+$m.im add command -label "Mops" -command "io_importMops"
+$m.im add command -label "Wavefront OBJ" -command "io_importOBJ"
 $m add separator
 $m add cascade -menu $m.ex -label "Export"
 menu $m.ex -tearoff 0
