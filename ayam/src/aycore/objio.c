@@ -1148,6 +1148,41 @@ objio_vertex *objio_pverts_tail = NULL;
 objio_vertex *objio_tverts_head = NULL;
 objio_vertex *objio_tverts_tail = NULL;
 
+int objio_cstype;
+int objio_csrat;
+int objio_degu;
+int objio_degv;
+
+double *objio_uknotv;
+double *objio_vknotv;
+
+int objio_curvtrimsurf; /* 0 - unset, 1 - curve, 2 - trim, 3 - surface */
+
+ay_nurbcurve_object objio_ncurve;
+ay_nurbpatch_object objio_npatch;
+
+int ay_objio_addvertex(int type, double *v);
+
+int ay_objio_getvertex(int type, unsigned int index, double **v);
+
+int ay_objio_freevertices(void);
+
+int ay_objio_readvertex(char *str);
+
+int ay_objio_readvindex(char *c, int *gvindex, int *tvindex, int *nvindex);
+
+int ay_objio_readface(char *str);
+
+int ay_objio_readend(void);
+
+int ay_objio_readline(FILE *fileptr);
+
+int ay_objio_readscene(char *filename, int selected);
+
+int ay_objio_readscenetcmd(ClientData clientData, Tcl_Interp *interp,
+			   int argc, char *argv[]);
+
+
 /* ay_objio_addvertex:
  *
  */
@@ -1533,6 +1568,31 @@ ay_objio_readvindex(char *c, int *gvindex, int *tvindex, int *nvindex)
 } /* ay_objio_readvindex */
 
 
+/* ay_objio_readskip:
+ *  skip over a number
+ */
+int
+ay_objio_readskip(char **b)
+{
+ char *c = *b;
+
+  if(!b)
+    return AY_ENULL;
+
+  while((isspace(*c)) && (*c != '\0'))
+    c++;
+  if(*c == '\0')
+    return AY_OK;
+  while(!(isspace(*c)) && (*c != '\0'))
+    c++;
+
+  /* return result */
+  *b = c;
+
+ return AY_OK;
+} /* ay_objio_readskip */
+
+
 /* ay_objio_readface:
  *
  */
@@ -1548,7 +1608,6 @@ ay_objio_readface(char *str)
  ay_pomesh_object po = {0};
  ay_object t = {0}, *o = NULL;
  unsigned int nloops = 1, nverts = 0;
-
 
   if(!str)
     return AY_ENULL;
@@ -1576,7 +1635,7 @@ ay_objio_readface(char *str)
 	  if(objio_gverts_tail)
 	    {
 	      ay_status = ay_objio_getvertex(1,
-					   objio_gverts_tail->index + gvindex,
+					objio_gverts_tail->index + gvindex + 1,
 					     &gv);
 	    }
 	  else
@@ -1652,12 +1711,7 @@ ay_objio_readface(char *str)
       nverts++;
 
       /* skip to next vindex */
-      while((isspace(*c)) && (*c != '\0'))
-	c++;
-      if(*c == '\0')
-	break;
-      while(!(isspace(*c)) && (*c != '\0'))
-	c++;
+      ay_status = ay_objio_readskip(&c);
     } /* while */
 
   if(nverts >= 3)
@@ -1701,14 +1755,284 @@ cleanup:
 } /* ay_objio_readface */
 
 
-/* ay_objio_readend:
+/* ay_objio_readcstype:
  *
  */
 int
-ay_objio_readend()
+ay_objio_readcstype(char *str)
 {
  int ay_status = AY_OK;
 
+  if(!str)
+    return AY_ENULL;
+
+  if(strstr(str, "rat"))
+    {
+      objio_csrat = AY_TRUE;
+    }
+  else
+    {
+      objio_csrat = AY_FALSE;
+    }
+
+  if(strstr(str, "bmatrix"))
+    {
+      objio_cstype = 0;
+    }
+
+  if(strstr(str, "bezier"))
+    {
+      objio_cstype = 1;
+    }
+
+  if(strstr(str, "bspline"))
+    {
+      objio_cstype = 2;
+    }
+
+  if(strstr(str, "cardinal"))
+    {
+      objio_cstype = 3;
+    }
+
+  if(strstr(str, "taylor"))
+    {
+      objio_cstype = 4;
+    }
+
+ return ay_status;
+} /* ay_objio_readcstype */
+
+
+/* ay_objio_readdeg:
+ *
+ */
+int
+ay_objio_readdeg(char *str)
+{
+ int ay_status = AY_OK;
+ char *c = str;
+
+  if(!str)
+    return AY_ENULL;
+
+  while(!(isspace(*c)) && (*c != '\0'))
+    c++;
+
+  sscanf(c," %d %d", &objio_degu, &objio_degv);
+
+ return ay_status;
+} /* ay_objio_readdeg */
+
+
+/* ay_objio_readcurv:
+ *
+ */
+int
+ay_objio_readcurv(char *str)
+{
+ int ay_status = AY_OK;
+ char *c = str;
+ double umin, umax;
+ int gvindex = 0, tvindex = 0, nvindex = 0, stride = 4;
+ double *gv, *controlv;
+
+  if(!str)
+    return AY_ENULL;
+
+  while(!(isspace(*c)) && (*c != '\0'))
+    c++;
+
+  /* read umin/umax */
+  sscanf(c, " %lg %lg", &umin, &umax);
+  ay_status = ay_objio_readskip(&c);
+  ay_status = ay_objio_readskip(&c);
+
+  /* read (and resolve) control point indices */
+  while(*c != '\0')
+    {
+      gvindex = 0; tvindex = 0; nvindex = 0;
+      ay_status = ay_objio_readvindex(c, &gvindex, &tvindex, &nvindex);
+      gv = NULL;
+
+      if(gvindex < 0)
+	{
+	  if(objio_gverts_tail)
+	    {
+	      ay_status = ay_objio_getvertex(1,
+					objio_gverts_tail->index + gvindex + 1,
+					     &gv);
+	    }
+	  else
+	    {
+	      ay_status = AY_ENULL;
+	      goto cleanup;
+	    } /* if */
+	}
+      else
+	{
+	  ay_status = ay_objio_getvertex(1, gvindex, &gv);
+	} /* if */
+
+      if(gv)
+	{
+	  if(!(controlv = realloc(objio_ncurve.controlv,
+			 (objio_ncurve.length + 1) * stride * sizeof(double))))
+	    { return AY_EOMEM; }
+	  objio_ncurve.controlv = controlv;
+	  memcpy(&(controlv[objio_ncurve.length * stride]), gv,
+		 stride * sizeof(double));
+	  objio_ncurve.length++;
+	} /* if */
+
+      /* skip to next vindex */
+      ay_status = ay_objio_readskip(&c);
+    } /* while */
+
+  objio_curvtrimsurf = 1;
+
+cleanup:
+
+ return ay_status;
+} /* ay_objio_readcurv */
+
+
+/* ay_objio_readparm:
+ *  read a knot vector
+ */
+int
+ay_objio_readparm(char *str)
+{
+ int ay_status = AY_OK;
+ double knot, *knotv = NULL, *t = NULL;
+ int readu = AY_FALSE, knots = 0;
+ char *c = str;
+
+  if(!str)
+    return AY_ENULL;
+
+  while(!(isspace(*c)) && (*c != '\0'))
+    c++;
+
+  if(c[1] == 'u')
+    {
+      readu = AY_TRUE;
+    }
+
+  ay_status = ay_objio_readskip(&c);
+
+  while(*c != '\0')
+    {
+      if(sscanf(c, "%lg", &knot))
+	{
+	  t = NULL;
+	  if(!(t = realloc(knotv, (knots + 1) * sizeof(double))))
+	    { if(knotv){free(knotv);} return AY_EOMEM; }
+	  knotv = t;
+	  knotv[knots] = knot;
+	  knots++;
+	} /* if */
+       
+      /* skip to next knot */
+      ay_status = ay_objio_readskip(&c);
+    } /* while */
+
+  if(readu)
+    {
+      if(objio_uknotv)
+	free(objio_uknotv);
+      objio_uknotv = knotv;
+    }
+  else
+    {
+      if(objio_vknotv)
+	free(objio_vknotv);
+      objio_vknotv = knotv;
+    } /* if */
+
+ return ay_status;
+} /* ay_objio_readparm */
+
+
+/* ay_objio_readend:
+ *  realise curve or surface
+ */
+int
+ay_objio_readend(void)
+{
+ int ay_status = AY_OK;
+ ay_object *newo = NULL, *o = NULL;
+
+  switch(objio_curvtrimsurf)
+    {
+    case 1:
+      /* read a normal 3D curve */
+      if(!(newo = calloc(1, sizeof(ay_object))))
+	return AY_EOMEM;
+      ay_object_defaults(newo);
+      newo->type = AY_IDNCURVE;
+      newo->refine = &objio_ncurve;
+      objio_ncurve.knotv = objio_uknotv;
+      objio_ncurve.order = objio_degu;
+      objio_ncurve.knot_type = AY_KTCUSTOM;
+      ay_status = ay_object_copy(newo, &o);
+      if(ay_status)
+	goto cleanup;
+      ay_status = ay_object_link(o);
+      free(objio_uknotv);
+      objio_uknotv = NULL;
+      free(objio_ncurve.controlv);
+      objio_ncurve.controlv = NULL;
+      break;
+    case 2:
+      /* read a 2D (trim) curve */
+      /* XXXX to be done */
+      free(objio_uknotv);
+      objio_uknotv = NULL;
+      free(objio_ncurve.controlv);
+      objio_ncurve.controlv = NULL;
+      break;
+    case 3:
+      /* read a surface */
+      if(!(newo = calloc(1, sizeof(ay_object))))
+	return AY_EOMEM;
+      ay_object_defaults(newo);
+      newo->type = AY_IDNPATCH;
+      newo->refine = &objio_npatch;
+      objio_npatch.uknotv = objio_uknotv;
+      objio_npatch.vknotv = objio_vknotv;
+      objio_npatch.uorder = objio_degu;
+      objio_npatch.vorder = objio_degv;
+      objio_npatch.uknot_type = AY_KTCUSTOM;
+      objio_npatch.vknot_type = AY_KTCUSTOM;
+      ay_status = ay_object_copy(newo, &o);
+      if(ay_status)
+	goto cleanup;
+      ay_status = ay_object_link(o);
+
+      free(objio_uknotv);
+      objio_uknotv = NULL;
+      free(objio_vknotv);
+      objio_vknotv = NULL;
+      free(objio_npatch.controlv);
+      objio_npatch.controlv = NULL;
+    default:
+      /* read a superfluous end? */
+      break;
+    }
+
+  switch(objio_cstype)
+    {
+    case 0:
+      break;
+    default:
+      break;
+    } /* switch */
+
+cleanup:
+
+  if(newo)
+    free(newo);
 
  return ay_status;
 } /* ay_objio_readend */
@@ -1760,6 +2084,15 @@ ay_objio_readline(FILE *fileptr)
     {
     case '#':
       break;
+    case 'c':
+      if(str[1] == 's')
+	ay_status = ay_objio_readcstype(str);
+      if(str[1] == 'u')
+	ay_status = ay_objio_readcurv(str);
+      break;
+    case 'd':
+      ay_status = ay_objio_readdeg(str);
+      break;
     case 'v':
       ay_status = ay_objio_readvertex(str);
       break;
@@ -1768,6 +2101,9 @@ ay_objio_readline(FILE *fileptr)
       break;
     case 'e':
       ay_status = ay_objio_readend();
+      break;
+    case 'p':
+      ay_status = ay_objio_readparm(str);
       break;
     default:
       break;
@@ -1804,6 +2140,18 @@ ay_objio_readscene(char *filename, int selected)
 
   clearerr(fileptr);
 
+  /* prepare a bunch of global variables */
+
+  objio_cstype = -1;
+  objio_csrat = AY_FALSE;
+  objio_degu = 0;
+  objio_degv = 0;
+  objio_uknotv = NULL;
+  objio_vknotv = NULL;
+  objio_curvtrimsurf = 0;
+  memset(&objio_ncurve, 0, sizeof(ay_nurbcurve_object));
+  memset(&objio_npatch, 0, sizeof(ay_nurbpatch_object));
+
   while(!feof(fileptr))
     {
       if((ay_status = ay_objio_readline(fileptr)))
@@ -1824,6 +2172,18 @@ ay_objio_readscene(char *filename, int selected)
   /* clean up all vertex buffers */
   ay_status = ay_objio_freevertices();
 
+  /* clean up */
+  if(objio_uknotv)
+    free(objio_uknotv);
+  if(objio_vknotv)
+    free(objio_vknotv);
+
+  if(objio_ncurve.controlv)
+    free(objio_ncurve.controlv);
+
+  if(objio_npatch.controlv)
+    free(objio_npatch.controlv);
+
  return ay_status;
 } /* ay_objio_readscene */
 
@@ -1833,7 +2193,7 @@ ay_objio_readscene(char *filename, int selected)
  */
 int
 ay_objio_readscenetcmd(ClientData clientData, Tcl_Interp *interp,
-			int argc, char *argv[])
+		       int argc, char *argv[])
 {
  int ay_status = AY_OK;
  char fname[] = "ay_objio_read";
