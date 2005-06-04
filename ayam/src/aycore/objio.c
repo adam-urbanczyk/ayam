@@ -1174,7 +1174,21 @@ int ay_objio_readvertex(char *str);
 
 int ay_objio_readvindex(char *c, int *gvindex, int *tvindex, int *nvindex);
 
+int ay_objio_readskip(char **b);
+
 int ay_objio_readface(char *str);
+
+int ay_objio_readcstype(char *str);
+
+int ay_objio_readdeg(char *str);
+
+int ay_objio_readcurv(char *str);
+
+int ay_objio_readsurf(char *str);
+
+int ay_objio_readparm(char *str);
+
+int ay_objio_fixnpatch(ay_nurbpatch_object *np);
 
 int ay_objio_readend(void);
 
@@ -1187,7 +1201,7 @@ int ay_objio_readscenetcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_objio_addvertex:
- *
+ *  add a vertex to a vertex buffer
  */
 int
 ay_objio_addvertex(int type, double *v)
@@ -1273,7 +1287,7 @@ ay_objio_addvertex(int type, double *v)
 
 
 /* ay_objio_getvertex:
- *
+ *  get a vertex from a vertex buffer
  */
 int
 ay_objio_getvertex(int type, unsigned int index, double **v)
@@ -1400,7 +1414,7 @@ ay_objio_getvertex(int type, unsigned int index, double **v)
 
 
 /* ay_objio_freevertices:
- *
+ *  free all vertex buffers
  */
 int
 ay_objio_freevertices(void)
@@ -1468,7 +1482,7 @@ ay_objio_freevertices(void)
 
 
 /* ay_objio_readvertex:
- *
+ *  read a single vertex and add it to the appropriate vertex buffer
  */
 int
 ay_objio_readvertex(char *str)
@@ -1512,7 +1526,9 @@ ay_objio_readvertex(char *str)
 
 
 /* ay_objio_readvindex:
- *
+ *  read a single vertex index of the form "g/t/n", where g is the
+ *  index of the geometric vertex, t the texture vertex and n the
+ *  corresponding normal returns results in gvindex, tvindex, and nvindex
  */
 int
 ay_objio_readvindex(char *c, int *gvindex, int *tvindex, int *nvindex)
@@ -1597,7 +1613,7 @@ ay_objio_readskip(char **b)
 
 
 /* ay_objio_readface:
- *
+ *  read a polygonal face
  */
 int
 ay_objio_readface(char *str)
@@ -1759,7 +1775,7 @@ cleanup:
 
 
 /* ay_objio_readcstype:
- *
+ *  read a cstype statement signifying the type of the next curve/surface
  */
 int
 ay_objio_readcstype(char *str)
@@ -1808,7 +1824,7 @@ ay_objio_readcstype(char *str)
 
 
 /* ay_objio_readdeg:
- *
+ *  read a deg (degree) statement
  */
 int
 ay_objio_readdeg(char *str)
@@ -1829,7 +1845,7 @@ ay_objio_readdeg(char *str)
 
 
 /* ay_objio_readcurv:
- *
+ *  read a curv (freeform curve) statement
  */
 int
 ay_objio_readcurv(char *str)
@@ -1901,7 +1917,7 @@ cleanup:
 
 
 /* ay_objio_readsurf:
- *
+ *  read a surf (freeform surface) statement
  */
 int
 ay_objio_readsurf(char *str)
@@ -2037,7 +2053,8 @@ ay_objio_readparm(char *str)
 
 
 /* ay_objio_fixnpatch:
- *  
+ *  fix row/column major order in np controlv (from Wavefront to Ayam)
+ *  additionally, multiply the weights in for rational vertices
  */
 int
 ay_objio_fixnpatch(ay_nurbpatch_object *np)
@@ -2156,14 +2173,6 @@ ay_objio_readend(void)
       goto cleanup;
       break;
     }
-
-  switch(objio_cstype)
-    {
-    case 0:
-      break;
-    default:
-      break;
-    } /* switch */
 
 cleanup:
 
