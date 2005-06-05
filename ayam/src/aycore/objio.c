@@ -1164,6 +1164,22 @@ int objio_curvtrimsurf; /* 0 - unset, 1 - curve, 2 - trim, 3 - surface */
 ay_nurbcurve_object objio_ncurve;
 ay_nurbpatch_object objio_npatch;
 
+typedef struct objio_trim_s {
+  struct objio_trim_s *next;
+  struct objio_trim_s *prev;
+
+  unsigned int index;
+
+  ay_object *c;
+
+} objio_trim;
+
+objio_trim *objio_trims_head = NULL;
+objio_trim *objio_trims_tail = NULL;
+
+ay_object *objio_trims;
+ay_object **objio_nexttrim;
+
 int ay_objio_addvertex(int type, double *v);
 
 int ay_objio_getvertex(int type, unsigned int index, double **v);
@@ -1187,6 +1203,14 @@ int ay_objio_readcurv(char *str);
 int ay_objio_readsurf(char *str);
 
 int ay_objio_readparm(char *str);
+
+int ay_objio_addtrim(ay_object *o);
+
+int ay_objio_gettrim(unsigned int index, ay_object **t);
+
+int ay_objio_freetrims(void);
+
+int ay_objio_readtrim(char *str, int hole);
 
 int ay_objio_fixnpatch(ay_nurbpatch_object *np);
 
@@ -1249,7 +1273,8 @@ ay_objio_addvertex(int type, double *v)
       break;
     case 3:
       /* parametric vertex */
-      memcpy(nv->v, v, 4*sizeof(double));
+      memcpy(nv->v, v, 2*sizeof(double));
+      nv->v[3] = v[2];
       if(objio_pverts_tail)
 	{
 	  nv->index = objio_pverts_tail->index + 1;
@@ -1675,7 +1700,7 @@ ay_objio_readface(char *str)
 	  /* get normal vertex data and add it to the pomesh */
 	  if(nvindex < 0)
 	    {
-	      if(objio_gverts_tail)
+	      if(objio_nverts_tail)
 		{
 		  ay_status = ay_objio_getvertex(2,
 					   objio_nverts_tail->index + nvindex,
@@ -1855,17 +1880,32 @@ ay_objio_readcurv(char *str)
  double umin, umax;
  int gvindex = 0, tvindex = 0, nvindex = 0, stride = 4;
  double *gv, *controlv;
+ int vtype = 0;
 
   if(!str)
     return AY_ENULL;
+
+  if(str[4] == '2' /*strstr(str, "curv2")*/)
+    {
+      objio_curvtrimsurf = 2;
+      vtype = 3; /* parametric vertex */
+    }
+  else
+    {
+      objio_curvtrimsurf = 1;
+      vtype = 1; /* geometric vertex */
+    } /* if */
 
   while(!(isspace(*c)) && (*c != '\0'))
     c++;
 
   /* read umin/umax */
-  sscanf(c, " %lg %lg", &umin, &umax);
-  ay_status = ay_objio_readskip(&c);
-  ay_status = ay_objio_readskip(&c);
+  if(vtype == 1)
+    {
+      sscanf(c, " %lg %lg", &umin, &umax);
+      ay_status = ay_objio_readskip(&c);
+      ay_status = ay_objio_readskip(&c);
+    }
 
   /* read (and resolve) control point indices */
   while(*c != '\0')
@@ -1876,21 +1916,39 @@ ay_objio_readcurv(char *str)
 
       if(gvindex < 0)
 	{
-	  if(objio_gverts_tail)
+	  if(vtype == 1)
 	    {
-	      ay_status = ay_objio_getvertex(1,
+	      if(objio_gverts_tail)
+		{
+		  ay_status = ay_objio_getvertex(vtype,
 					objio_gverts_tail->index + gvindex + 1,
-					     &gv);
+						 &gv);
+		}
+	      else
+		{
+		  ay_status = AY_ENULL;
+		  goto cleanup;
+		} /* if */
 	    }
 	  else
 	    {
-	      ay_status = AY_ENULL;
-	      goto cleanup;
+	      /* vtype == 3, get parametric vertex... */
+	      if(objio_pverts_tail)
+		{
+		  ay_status = ay_objio_getvertex(vtype,
+					objio_pverts_tail->index + gvindex + 1,
+						 &gv);
+		}
+	      else
+		{
+		  ay_status = AY_ENULL;
+		  goto cleanup;
+		} /* if */
 	    } /* if */
 	}
       else
 	{
-	  ay_status = ay_objio_getvertex(1, gvindex, &gv);
+	  ay_status = ay_objio_getvertex(vtype, gvindex, &gv);
 	} /* if */
 
       if(gv)
@@ -1907,8 +1965,6 @@ ay_objio_readcurv(char *str)
       /* skip to next vindex */
       ay_status = ay_objio_readskip(&c);
     } /* while */
-
-  objio_curvtrimsurf = 1;
 
 cleanup:
 
@@ -2052,6 +2108,229 @@ ay_objio_readparm(char *str)
 } /* ay_objio_readparm */
 
 
+/* ay_objio_addtrim:
+ *  add a vertex to a vertex buffer
+ */
+int
+ay_objio_addtrim(ay_object *o)
+{
+ objio_trim *nt = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  if(!(nt = calloc(1, sizeof(objio_trim))))
+    return AY_EOMEM;
+  nt->index = 1;
+
+  nt->c = o;
+
+  if(objio_trims_tail)
+    {
+      nt->index = objio_trims_tail->index + 1;
+      nt->prev = objio_trims_tail;
+      objio_trims_tail->next = nt;
+    }
+  objio_trims_tail = nt;
+  if(!objio_trims_head)
+    {
+      objio_trims_head = nt;
+    }
+ 
+ return AY_OK;
+} /* ay_objio_addtrim */
+
+
+/* ay_objio_gettrim:
+ *  
+ */
+int
+ay_objio_gettrim(unsigned int index, ay_object **t)
+{
+ static objio_trim *objio_trims_cur = NULL;
+ objio_trim *l = NULL, **pl;
+ unsigned int i;
+
+  if(!t)
+    {
+      objio_trims_cur = NULL;
+      return AY_ENULL;
+    } /* if */
+
+  if(index == 0)
+    return AY_ERROR;
+
+  /* trim buffer empty? */
+  if(!objio_trims_tail)
+    return AY_ERROR;
+  
+  /* index out of range? */
+  if(index > objio_trims_tail->index)
+    return AY_ERROR;
+
+  if(objio_trims_cur)
+    l = objio_trims_cur;
+  else
+    l = objio_trims_tail;
+
+  pl = &objio_trims_cur;
+
+  /* check, whether the same trim was requested last time */
+  if(index == l->index)
+    {
+      /* Yes, we may immediately return the result. */
+      *t = l->c;
+      return AY_OK;
+    }
+
+  if(index < l->index)
+    {
+      /* rewind... */
+      for(i = l->index; i > index; i--)
+	{
+	  l = l->prev;
+	}
+    }
+  else
+    {
+      /* forward... */
+      for(i = l->index; i < index; i++)
+	{
+	  l = l->next;
+	}
+    } /* if */
+
+  *pl = l;
+  *t = l->c;
+
+ return AY_OK;
+} /* ay_objio_gettrim */
+
+
+/* ay_objio_freetrims:
+ *  free trim buffer
+ */
+int
+ay_objio_freetrims(void)
+{
+ int ay_status = AY_OK;
+ objio_trim *t = NULL, *tt = NULL;
+
+  if(objio_trims_tail)
+    {
+      objio_trims_head = NULL;
+      tt = objio_trims_tail;
+      while(tt)
+	{
+	  t = tt->prev;
+	  ay_object_delete(tt->c);
+	  free(tt);
+	  tt = t;
+	} /* while */
+      objio_trims_tail = NULL;
+    } /* if */
+
+  /* clear cached "current" pointers in gettrim() */
+  ay_status = ay_objio_gettrim(0, NULL);
+
+ return AY_OK;
+} /* ay_objio_freetrims */
+
+
+/* ay_objio_readtrim:
+ *  read a trim specification
+ */
+int
+ay_objio_readtrim(char *str, int hole)
+{
+ int ay_status = AY_OK;
+ int tcount = 0, tindex = 0;
+ char *c = str;
+ double umin, umax;
+ ay_level_object *lev = NULL;
+ ay_object *t = NULL, *l = NULL, **orig_nexttrim = objio_nexttrim;
+
+  if(!str)
+    return AY_ENULL;
+
+  while(!(isspace(*c)) && (*c != '\0'))
+    c++;
+
+  while(*c != '\0')
+    {
+      /* read umin/umax */
+      sscanf(c, " %lg %lg", &umin, &umax);
+      ay_status = ay_objio_readskip(&c);
+      ay_status = ay_objio_readskip(&c);
+
+      tindex = 0;
+      if(sscanf(c, "%d", &tindex))
+	{
+	  t = NULL;
+	  if(tindex < 0)
+	    {
+	      if(objio_trims_tail)
+		{
+		  ay_status = ay_objio_gettrim(
+					objio_trims_tail->index + tindex + 1,
+					     &t);
+		}
+	      else
+		{
+		  ay_status = AY_ENULL;
+		  goto cleanup;
+		} /* if */
+	    }
+	  else
+	    {
+	      ay_status = ay_objio_gettrim(tindex, &t);
+	    } /* if */
+
+	  if(t)
+	    {
+	      if(tcount == 1)
+		{
+		  /* second trim => it is a loop => create level */
+		  if(!(lev = calloc(1, sizeof(ay_level_object))))
+		    { ay_status = AY_EOMEM; goto cleanup; }
+		  lev->type = AY_LTLEVEL;
+		  if(!(l = calloc(1, sizeof(ay_object))))
+		    { ay_status = AY_EOMEM; goto cleanup; }
+		  ay_object_defaults(l);
+		  l->type = AY_IDLEVEL;
+		  l->parent = AY_TRUE;
+		  l->refine = lev;
+		  l->down = *orig_nexttrim;
+		  *orig_nexttrim = l;
+		} /* if */
+
+	      ay_status = ay_object_copy(t, objio_nexttrim);
+	      if(ay_status)
+		goto cleanup;
+	      objio_nexttrim = &((*objio_nexttrim)->next);
+
+	      tcount++;
+	    } /* if */
+	} /* if */
+       
+      /* skip to next trim */
+      ay_status = ay_objio_readskip(&c);
+
+    } /* while */
+
+  /* repair nexttrim pointer? */
+  if(tcount > 1)
+    {
+      ay_object_crtendlevel(objio_nexttrim);
+      objio_nexttrim = &(l->next);
+    }
+
+cleanup:
+
+ return ay_status;
+} /* ay_objio_readtrim */
+
+
 /* ay_objio_fixnpatch:
  *  fix row/column major order in np controlv (from Wavefront to Ayam)
  *  additionally, multiply the weights in for rational vertices
@@ -2132,7 +2411,26 @@ ay_objio_readend(void)
       break;
     case 2:
       /* read a 2D (trim) curve */
-      /* XXXX to be done */
+
+      /* discard unspecified, bmatrix, cardinal, and taylor splines */
+      if((objio_cstype == -1) || (objio_cstype == 0) ||
+	 (objio_cstype == 3) || (objio_cstype == 4))
+	break;
+
+      if(!(newo = calloc(1, sizeof(ay_object))))
+	return AY_EOMEM;
+      ay_object_defaults(newo);
+      newo->type = AY_IDNCURVE;
+      newo->refine = &objio_ncurve;
+      objio_ncurve.knotv = objio_uknotv;
+      objio_ncurve.order = objio_degu + 1;
+      objio_ncurve.knot_type = AY_KTCUSTOM;
+
+      ay_status = ay_object_copy(newo, &o);
+      if(ay_status)
+	goto cleanup;
+
+      ay_status = ay_objio_addtrim(o);
 
       break;
     case 3:
@@ -2147,7 +2445,12 @@ ay_objio_readend(void)
 	return AY_EOMEM;
       ay_object_defaults(newo);
       newo->type = AY_IDNPATCH;
+      newo->parent = AY_TRUE;
+      newo->inherit_trafos = AY_FALSE;
+      newo->hide_children = AY_TRUE;
+
       newo->refine = &objio_npatch;
+
       objio_npatch.uknotv = objio_uknotv;
       objio_npatch.vknotv = objio_vknotv;
       objio_npatch.uorder = objio_degu + 1;
@@ -2164,6 +2467,22 @@ ay_objio_readend(void)
       ay_status = ay_object_copy(newo, &o);
       if(ay_status)
 	goto cleanup;
+
+      /* add trim curves */
+      if(objio_trims)
+	{
+	  ay_status = ay_object_crtendlevel(objio_nexttrim);
+	  if(ay_status)
+	    goto cleanup;
+	  o->down = objio_trims;
+	  objio_trims = NULL;
+	  objio_nexttrim = &(objio_trims);
+	}
+      else
+	{
+	  ay_status = ay_object_crtendlevel(&(o->down));
+	} /* if */
+
       ay_status = ay_object_link(o);
 
     default:
@@ -2172,7 +2491,7 @@ ay_objio_readend(void)
       /* just cleanup */
       goto cleanup;
       break;
-    }
+    } /* switch */
 
 cleanup:
 
@@ -2250,20 +2569,26 @@ ay_objio_readline(FILE *fileptr)
     case 'd':
       ay_status = ay_objio_readdeg(str);
       break;
-    case 'v':
-      ay_status = ay_objio_readvertex(str);
+    case 'e':
+      ay_status = ay_objio_readend();
       break;
     case 'f':
       ay_status = ay_objio_readface(str);
       break;
-    case 'e':
-      ay_status = ay_objio_readend();
+    case 'h':
+      ay_status = ay_objio_readtrim(str, AY_TRUE);
       break;
     case 'p':
       ay_status = ay_objio_readparm(str);
       break;
     case 's':
       ay_status = ay_objio_readsurf(str);
+      break;
+    case 't':
+      ay_status = ay_objio_readtrim(str, AY_FALSE);
+      break;
+    case 'v':
+      ay_status = ay_objio_readvertex(str);
       break;
     default:
       break;
@@ -2314,6 +2639,9 @@ ay_objio_readscene(char *filename, int selected)
   memset(&objio_ncurve, 0, sizeof(ay_nurbcurve_object));
   memset(&objio_npatch, 0, sizeof(ay_nurbpatch_object));
 
+  objio_trims = NULL;
+  objio_nexttrim = &(objio_trims);
+
   while(!feof(fileptr))
     {
       if((ay_status = ay_objio_readline(fileptr)))
@@ -2345,6 +2673,15 @@ ay_objio_readscene(char *filename, int selected)
 
   if(objio_npatch.controlv)
     free(objio_npatch.controlv);
+
+  if(objio_trims)
+    ay_object_deletemulti(objio_trims);
+
+  objio_trims = NULL;
+  objio_nexttrim = &(objio_trims);
+
+  /* clean up trims buffer */
+  ay_status = ay_objio_freetrims();
 
  return ay_status;
 } /* ay_objio_readscene */
