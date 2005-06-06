@@ -1180,6 +1180,8 @@ objio_trim *objio_trims_tail = NULL;
 ay_object *objio_trims;
 ay_object **objio_nexttrim;
 
+ay_object *objio_lastface;
+
 int ay_objio_addvertex(int type, double *v);
 
 int ay_objio_getvertex(int type, unsigned int index, double **v);
@@ -1192,7 +1194,7 @@ int ay_objio_readvindex(char *c, int *gvindex, int *tvindex, int *nvindex);
 
 int ay_objio_readskip(char **b);
 
-int ay_objio_readface(char *str);
+int ay_objio_readface(char *str, int lastlinewasface);
 
 int ay_objio_readcstype(char *str);
 
@@ -1641,7 +1643,7 @@ ay_objio_readskip(char **b)
  *  read a polygonal face
  */
 int
-ay_objio_readface(char *str)
+ay_objio_readface(char *str, int lastlinewasface)
 {
  int ay_status = AY_OK;
  char *c = NULL;
@@ -1649,8 +1651,9 @@ ay_objio_readface(char *str)
  int last_stride = 0;
  double *gv, *nv/*, *tv*/;
  double *newcontrolv = NULL;
- ay_pomesh_object po = {0};
- ay_object t = {0}, *o = NULL;
+ ay_pomesh_object po = {0}, *temppo;
+ ay_list_object l1 = {0}, l2 = {0}; 
+ ay_object t = {0}, *o = NULL, *m = NULL;
  unsigned int nloops = 1, nverts = 0;
 
   if(!str)
@@ -1780,12 +1783,32 @@ ay_objio_readface(char *str)
       t.type = AY_IDPOMESH;
       t.refine = (void*)(&po);
 
-      ay_status = ay_object_copy(&t, &o);
-      if(ay_status)
-	goto cleanup;
+      if(lastlinewasface && objio_lastface)
+	{
+	  /* merge new polymesh into old */
+	  l1.next = &l2;
+	  l1.object = objio_lastface;
+	  l2.object = &t;
+	  ay_status = ay_pomesht_merge(&l1, &m);
+	  if(ay_status)
+	    goto cleanup;
+	  /* replace objio_lastface with m */
+	  temppo = objio_lastface->refine;
+	  objio_lastface->refine = m->refine;
+	  m->refine = temppo;
+	  /* remove temporary object that now carries the old poly mesh*/
+	  ay_status = ay_object_delete(m);
+	}
+      else
+	{
+	  ay_status = ay_object_copy(&t, &o);
+	  if(ay_status)
+	    goto cleanup;
 
-      ay_status = ay_object_link(o);
+	  ay_status = ay_object_link(o);
 
+	  objio_lastface = o;
+	} /* if */
     } /* if */
 
 cleanup:
@@ -2334,6 +2357,7 @@ cleanup:
 /* ay_objio_fixnpatch:
  *  fix row/column major order in np controlv (from Wavefront to Ayam)
  *  additionally, multiply the weights in for rational vertices
+ *  XXXX to be done: improve the knot vector
  */
 int
 ay_objio_fixnpatch(ay_nurbpatch_object *np)
@@ -2375,6 +2399,38 @@ ay_objio_fixnpatch(ay_nurbpatch_object *np)
 } /* ay_objio_fixnpatch */
 
 
+/* ay_objio_fixncurve:
+ *  fix a Wavefront NURBS curve by
+ *  multiplying the weights in for rational vertices
+ *  XXXX to be done: improve the knot vector
+ */
+int
+ay_objio_fixncurve(ay_nurbcurve_object *nc)
+{
+ int ay_status = AY_OK;
+ int i, stride = 4;
+ double *p = NULL;
+
+  if(!nc)
+    return AY_ENULL;
+
+  p = nc->controlv;
+
+  for(i = 0; i < nc->length; i++)
+    {
+      if(p[3] != 1.0)
+	{
+	  p[0] *= p[3];
+	  p[1] *= p[3];
+	  p[2] *= p[3];
+	} /* if */
+      p += stride;
+    } /* for */
+
+ return ay_status;
+} /* ay_objio_fixncurve */
+
+
 /* ay_objio_readend:
  *  realise curve or surface
  */
@@ -2403,6 +2459,8 @@ ay_objio_readend(void)
       objio_ncurve.order = objio_degu + 1;
       objio_ncurve.knot_type = AY_KTCUSTOM;
 
+      ay_status = ay_objio_fixncurve(&objio_ncurve);
+
       ay_status = ay_object_copy(newo, &o);
       if(ay_status)
 	goto cleanup;
@@ -2425,6 +2483,8 @@ ay_objio_readend(void)
       objio_ncurve.knotv = objio_uknotv;
       objio_ncurve.order = objio_degu + 1;
       objio_ncurve.knot_type = AY_KTCUSTOM;
+
+      ay_status = ay_objio_fixncurve(&objio_ncurve);
 
       ay_status = ay_object_copy(newo, &o);
       if(ay_status)
@@ -2522,8 +2582,15 @@ ay_objio_readline(FILE *fileptr)
 {
  int ay_status = AY_OK;
  int read;
+ static int lastlinewasface = AY_FALSE;
  char readchar, *str;
  Tcl_DString ds;
+
+  if(!fileptr)
+    {
+      lastlinewasface = AY_FALSE;
+      return AY_ENULL;
+    }
 
   Tcl_DStringInit(&ds);
   read = getc(fileptr);
@@ -2565,32 +2632,42 @@ ay_objio_readline(FILE *fileptr)
 	ay_status = ay_objio_readcstype(str);
       if(str[1] == 'u')
 	ay_status = ay_objio_readcurv(str);
+      lastlinewasface = AY_FALSE;
       break;
     case 'd':
       ay_status = ay_objio_readdeg(str);
+      lastlinewasface = AY_FALSE;
       break;
     case 'e':
       ay_status = ay_objio_readend();
+      lastlinewasface = AY_FALSE;
       break;
     case 'f':
-      ay_status = ay_objio_readface(str);
+      ay_status = ay_objio_readface(str, lastlinewasface);
+      lastlinewasface = AY_TRUE;
       break;
     case 'h':
       ay_status = ay_objio_readtrim(str, AY_TRUE);
+      lastlinewasface = AY_FALSE;
       break;
     case 'p':
       ay_status = ay_objio_readparm(str);
+      lastlinewasface = AY_FALSE;
       break;
     case 's':
       ay_status = ay_objio_readsurf(str);
+      lastlinewasface = AY_FALSE;
       break;
     case 't':
       ay_status = ay_objio_readtrim(str, AY_FALSE);
+      lastlinewasface = AY_FALSE;
       break;
     case 'v':
       ay_status = ay_objio_readvertex(str);
+      lastlinewasface = AY_FALSE;
       break;
     default:
+      lastlinewasface = AY_FALSE;
       break;
     } /* switch */
 
@@ -2682,6 +2759,9 @@ ay_objio_readscene(char *filename, int selected)
 
   /* clean up trims buffer */
   ay_status = ay_objio_freetrims();
+
+  /* reset lastlinewasface state in readline() */
+  ay_objio_readline(NULL);
 
  return ay_status;
 } /* ay_objio_readscene */
