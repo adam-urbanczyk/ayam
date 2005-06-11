@@ -1087,7 +1087,9 @@ uplevel #0 { array set objio_options {
 Selected 0
 TessPoMesh 0
 OmitCurves 0
+MergeFaces 1
 filename ""
+FileName "unnamed.rib"
 }   }
 
 
@@ -1182,45 +1184,49 @@ proc io_exportOBJ { selected } {
 #  import scene from the Wavefront OBJ format
 #
 proc io_importOBJ { } {
-    global ay tcl_platform
+    global ay_error objio_options
+    set ay_error ""
 
-    set filename $ay(filename)
-
-    if { $filename == "" } {
-	set dirname [pwd]
+    if { $objio_options(filename) != "" } {
+	set objio_options(FileName) $objio_options(filename)
     } else {
-	set dirname [file dirname $filename]
-	if { $dirname == "." } { set dirname [pwd] }
+	set objio_options(FileName) "unnamed.obj"
     }
 
+    set w .objI
+    catch {destroy $w}
+    toplevel $w -class ayam
+    wm title $w "Import OBJ"
+    wm iconname $w "Ayam"
+    wm transient $w .
+
+    set f [frame $w.f1]
+    pack $f -in $w -side top -fill x
     set types {{"Wavefront OBJ" ".obj"} {"All files" *}}
+    addFileT $f objio_options FileName $types
+    addCheck $f objio_options MergeFaces
+    addCheck $f objio_options OmitCurves
 
-    if { $tcl_platform(os) != "Darwin" } {
-	set ifilename [tk_getOpenFile -filetypes $types -parent .\
-		-initialfile [file tail $filename] -initialdir $dirname\
-		-title "Select file to import:"]
-    } else {
-	set ifilename [tk_getOpenFile -filetypes $types -parent .\
-		-initialfile [file tail $filename]\
-		-title "Select file to import:"]
-    }
-    # if
+    set f [frame $w.f2]
+    button $f.bok -text "Ok" -width 5 -command {
+	global objio_options ay_error
 
-    if { $ifilename != "" } {
-	global ay_error
-	set ay_error ""
+	set oldcd [pwd]
+	cd [file dirname $objio_options(FileName)]
 
-	ay_objio_read $ifilename
-
+	ay_objio_read [file tail $objio_options(FileName)]
+	
 	if { $ay_error < 2 } {
 	    ayError 4 "importOBJ" "Done importing scene from:"
-	    ayError 4 "importOBJ" "$ifilename"
+	    ayError 4 "importOBJ" "$objio_options(FileName)"
 	} else {
 	    ayError 2 "importOBJ"\
 		    "There were errors while importing scene from:"
-	    ayError 2 "importOBJ" "$ifilename"
+	    ayError 2 "importOBJ" "$objio_options(FileName)"
 	}
-	
+
+	cd $oldcd
+
 	goTop
 	selOb
 	set ay(CurrentLevel) "root"
@@ -1229,12 +1235,31 @@ proc io_importOBJ { } {
 
 	uS
 	rV
+
 	set ay(sc) 1
 
-	after idle viewMouseToCurrent
+	grab release .objI
+	focus .
+	destroy .objI
 
+	after idle viewMouseToCurrent
     }
-    # if
+    # button
+
+    button $f.bca -text "Cancel" -width 5 -command "\
+		grab release .objI;\
+		focus .;\
+		destroy .objI"
+
+    pack $f.bok $f.bca -in $f -side left -fill x -expand yes
+    pack $f -in $w -side bottom -fill x
+
+    winCenter $w
+    grab $w
+    focus $w.f2.bok
+    tkwait window $w
+
+    after idle viewMouseToCurrent
 
  return;
 }
