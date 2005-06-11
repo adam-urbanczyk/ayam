@@ -1126,6 +1126,8 @@ ay_objio_writescenetcmd(ClientData clientData, Tcl_Interp *interp,
 
 /****************************************************************/
 
+int objio_mergecfaces;
+
 typedef struct objio_vertex_s {
   struct objio_vertex_s *next;
   struct objio_vertex_s *prev;
@@ -1216,11 +1218,13 @@ int ay_objio_readtrim(char *str, int hole);
 
 int ay_objio_fixnpatch(ay_nurbpatch_object *np);
 
+int ay_objio_fixncurve(ay_nurbcurve_object *nc);
+
 int ay_objio_readend(void);
 
 int ay_objio_readline(FILE *fileptr);
 
-int ay_objio_readscene(char *filename, int selected);
+int ay_objio_readscene(char *filenam);
 
 int ay_objio_readscenetcmd(ClientData clientData, Tcl_Interp *interp,
 			   int argc, char *argv[]);
@@ -1554,8 +1558,8 @@ ay_objio_readvertex(char *str)
 
 /* ay_objio_readvindex:
  *  read a single vertex index of the form "g/t/n", where g is the
- *  index of the geometric vertex, t the texture vertex and n the
- *  corresponding normal returns results in gvindex, tvindex, and nvindex
+ *  index of the geometric vertex, t the texture vertex, and n the
+ *  corresponding normal; returns results in gvindex, tvindex, and nvindex
  */
 int
 ay_objio_readvindex(char *c, int *gvindex, int *tvindex, int *nvindex)
@@ -1783,7 +1787,7 @@ ay_objio_readface(char *str, int lastlinewasface)
       t.type = AY_IDPOMESH;
       t.refine = (void*)(&po);
 
-      if(lastlinewasface && objio_lastface)
+      if(lastlinewasface && objio_lastface && objio_mergecfaces)
 	{
 	  /* merge new polymesh into old */
 	  l1.next = &l2;
@@ -1801,6 +1805,7 @@ ay_objio_readface(char *str, int lastlinewasface)
 	}
       else
 	{
+	  /* link new polymesh into the scene */
 	  ay_status = ay_object_copy(&t, &o);
 	  if(ay_status)
 	    goto cleanup;
@@ -2355,7 +2360,7 @@ cleanup:
 
 
 /* ay_objio_fixnpatch:
- *  fix row/column major order in np controlv (from Wavefront to Ayam)
+ *  fix row/column major order in np controlv (from Wavefront to Ayam);
  *  additionally, multiply the weights in for rational vertices
  *  XXXX to be done: improve the knot vector
  */
@@ -2444,6 +2449,8 @@ ay_objio_readend(void)
     {
     case 1:
       /* read a normal 3D curve */
+      if(objio_omitcurves)
+	goto cleanup;
 
       /* discard unspecified, bmatrix, cardinal, and taylor splines */
       if((objio_cstype == -1) || (objio_cstype == 0) ||
@@ -2681,7 +2688,7 @@ ay_objio_readline(FILE *fileptr)
  *
  */
 int
-ay_objio_readscene(char *filename, int selected)
+ay_objio_readscene(char *filename)
 {
  int ay_status = AY_OK;
  ay_object *o = ay_root->next;
@@ -2776,28 +2783,33 @@ ay_objio_readscenetcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int ay_status = AY_OK;
  char fname[] = "ay_objio_read";
- int selected = AY_FALSE;
+ int i;
 
   /* check args */
   if(argc < 2)
     {
-      ay_error(AY_EARGS, fname, "filename [1|0] | [1|0] [1|0]");
+      ay_error(AY_EARGS, fname, "filename");
       return TCL_OK;
     }
 
-  objio_tesspomesh = AY_FALSE;
+  objio_mergecfaces = AY_TRUE;
   objio_omitcurves = AY_FALSE;
 
-  if(argc > 2)
-    selected = atoi(argv[2]);
+  while(i+1 < argc)
+    {
+      if(!strcmp(argv[i], "-m"))
+	{
+	  sscanf(argv[i+1], "%d", &objio_mergecfaces);
+	}
+      else
+      if(!strcmp(argv[i], "-o"))
+	{
+	  sscanf(argv[i+1], "%d", &objio_omitcurves);
+	}
+      i += 2;
+    } /* while */
 
-  if(argc > 3)
-    objio_tesspomesh = atoi(argv[3]);
-
-  if(argc > 4)
-    objio_omitcurves = atoi(argv[4]);
-
-  ay_status = ay_objio_readscene(argv[1], selected);
+  ay_status = ay_objio_readscene(argv[1]);
 
  return TCL_OK;
 } /* ay_objio_readscenetcmd */
