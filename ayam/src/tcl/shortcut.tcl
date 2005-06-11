@@ -101,7 +101,7 @@ proc shortcut_main { w } {
     $m entryconfigure 21 -accelerator $aymainshortcuts(Quit)
 
 
-    bind $w <[repcont $aymainshortcuts(Apply)]> ".fu.fMain.fProp.fArg.fb.b1 invoke"
+    bind $w <[repcont $aymainshortcuts(Apply)]> "$ay(appb) invoke"
 
     set m $ay(editmenu)
     bind $w <[repcont $aymainshortcuts(Copy)]> "$m invoke 0"

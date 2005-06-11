@@ -252,6 +252,7 @@ array set aymainshortcuts {
     SProp88 "Key-KP_Up"
     SProp99 "Key-KP_Prior"
 
+    IApplyMod "Shift"
 }
 # array aymainshortcuts
 

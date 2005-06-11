@@ -202,6 +202,8 @@ button $f.b1 -text "Apply" -padx 10 -pady 0 -command {
     rV
 } -takefocus 0 -highlightthickness 0
 
+set ay(appb) $f.b1
+
 button $f.b2 -text "Reset" -padx 10 -pady 0 -command {
     global ay
     set lb $ay(plb)

@@ -82,6 +82,15 @@ if { $def != {} } {
     }
 }
 
+global aymainshortcuts
+bind $f.b1 <${aymainshortcuts(IApplyMod)}-ButtonRelease-1> "after idle {\
+	\$ay(appb) invoke}"
+bind $f.b2 <${aymainshortcuts(IApplyMod)}-ButtonRelease-1> "after idle {\
+	\$ay(appb) invoke}"
+bind $f.e <Key-Return> "+after idle {\
+	\$ay(appb) invoke}"
+
+
 global tcl_platform
 if { $tcl_platform(platform) == "windows" } {
     pack $f.l -in $f -side left
