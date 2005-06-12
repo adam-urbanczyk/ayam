@@ -282,6 +282,81 @@ ay_pv_filltokpar(ay_object *o, int declare, int start,
 } /* ay_pv_filltokpar */
 
 
+/* ay_pv_add:
+ *  add a PV tag to object <o>
+ */
+int
+ay_pv_add(ay_object *o, char *name, char *detail, int type,
+	  int datalen, void *data)
+{
+ ay_tag_object *tag = NULL, **nexttag;
+ Tcl_DString ds;
+ int i;
+ char tmp[255];
+
+  if(!o || !name || !detail || !data)
+    return AY_ENULL;
+
+  nexttag = &(o->tags);
+  tag = o->tags;
+  while(tag)
+    {
+      nexttag = &(tag->next);
+      tag = tag->next;
+    }
+  tag = NULL;
+  if(!(tag = calloc(1, sizeof(ay_tag_object))))
+    return AY_EOMEM;
+
+  if(!(tag->name = calloc(3, sizeof(char))))
+    return AY_EOMEM;
+  strcpy(tag->name, "PV");
+
+  Tcl_DStringInit(&ds);
+  Tcl_DStringAppend(&ds, name, -1);
+  Tcl_DStringAppend(&ds, ",", -1);
+  Tcl_DStringAppend(&ds, detail, -1);
+  Tcl_DStringAppend(&ds, ",", -1);
+
+  switch(type)
+    {
+    case 0:
+      Tcl_DStringAppend(&ds, "float", -1);
+    default:
+      break;
+    } /* switch */
+
+  sprintf(tmp, ",%d", datalen);
+  Tcl_DStringAppend(&ds, tmp, -1);
+
+  for(i = 0; i < datalen; i++)
+    {
+      Tcl_DStringAppend(&ds, ",", -1);
+
+      switch(type)
+	{
+	case 0:
+	  sprintf(tmp, "%f", (float)(((double*)data)[i]));
+	  /*snprintf(tmp, 254, "%f", (float)(((double*)data)[i]));*/
+	  Tcl_DStringAppend(&ds, tmp, -1);
+	default:
+	  break;
+	} /* switch */
+    } /* for */
+  
+  if(!(tag->val = calloc(strlen(Tcl_DStringValue(&ds))+1,
+			 sizeof(char))))
+    return AY_EOMEM;
+  strcpy(tag->val, Tcl_DStringValue(&ds));
+
+  Tcl_DStringFree(&ds);
+
+  *nexttag = tag;
+
+ return AY_OK;
+} /* ay_pv_add */
+
+
 /* ay_pv_count:
  *  count PV tags of object <o>
  */
