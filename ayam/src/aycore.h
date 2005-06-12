@@ -408,6 +408,9 @@ int ay_provide_object(ay_object *o, unsigned int type, ay_object **result);
 int ay_pv_filltokpar(ay_object *o, int declare, int start,
 		     int *added, RtToken tokens[], RtPointer parms[]);
 
+int ay_pv_add(ay_object *o, char *name, char *detail, int type,
+	      int datalen, void *data);
+
 int ay_pv_count(ay_object *o);
 
 void ay_pv_init(Tcl_Interp *interp);
