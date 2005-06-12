@@ -1166,6 +1166,11 @@ int objio_curvtrimsurf; /* 0 - unset, 1 - curve, 2 - trim, 3 - surface */
 ay_nurbcurve_object objio_ncurve;
 ay_nurbpatch_object objio_npatch;
 
+double *objio_texturesv;
+double *objio_texturetv;
+int objio_texturesvlen;
+int objio_texturetvlen;
+
 typedef struct objio_trim_s {
   struct objio_trim_s *next;
   struct objio_trim_s *prev;
@@ -1572,6 +1577,10 @@ ay_objio_readvindex(char *c, int *gvindex, int *tvindex, int *nvindex)
   /* parse geometric vertex index */
   sscanf(c, "%d", gvindex);
   /* forward to next index, /, or end */
+  while((isspace(*c)))
+    c++;
+  if(*c == '\0')
+    return AY_OK;
   while((isdigit(*c) || (*c == '-')) && (*c != '\0'))
     c++;
   if(*c == '\0')
@@ -1589,6 +1598,7 @@ ay_objio_readvindex(char *c, int *gvindex, int *tvindex, int *nvindex)
 	  if(*c == '\0')
 	    return AY_OK;
 	  sscanf(c, "%d", tvindex);
+
 	  /* forward to next index or / */
 	  while((isdigit(*c) || (*c == '-')) && (*c != '\0'))
 	    c++;
@@ -2009,8 +2019,9 @@ ay_objio_readsurf(char *str)
  int ay_status = AY_OK;
  char *c = str;
  double umin, umax, vmin, vmax;
- int gvindex = 0, tvindex = 0, nvindex = 0, stride = 4, length = 0;
- double *gv, *controlv;
+ int gvindex = 0, tvindex = 0, nvindex = 0, stride = 4;
+ int glength = 0, tlength = 0;
+ double *gv, *controlv = NULL, *tv, *texturesv = NULL, *texturetv = NULL;
 
   if(!str)
     return AY_ENULL;
@@ -2033,8 +2044,8 @@ ay_objio_readsurf(char *str)
     {
       gvindex = 0; tvindex = 0; nvindex = 0;
       ay_status = ay_objio_readvindex(c, &gvindex, &tvindex, &nvindex);
-      gv = NULL;
 
+      gv = NULL;
       if(gvindex < 0)
 	{
 	  if(objio_gverts_tail)
@@ -2057,12 +2068,51 @@ ay_objio_readsurf(char *str)
       if(gv)
 	{
 	  if(!(controlv = realloc(objio_npatch.controlv,
-			 (length + 1) * stride * sizeof(double))))
+			 (glength + 1) * stride * sizeof(double))))
 	    { return AY_EOMEM; }
 	  objio_npatch.controlv = controlv;
-	  memcpy(&(controlv[length * stride]), gv,
+	  memcpy(&(controlv[glength * stride]), gv,
 		 stride * sizeof(double));
-	  length++;
+	  glength++;
+	} /* if */
+
+      if(tvindex != 0)
+	{
+	  tv = NULL;
+	  if(tvindex < 0)
+	    {
+	      if(objio_tverts_tail)
+		{
+		  ay_status = ay_objio_getvertex(4,
+					objio_tverts_tail->index + tvindex + 1,
+						 &tv);
+		}
+	      else
+		{
+		  ay_status = AY_ENULL;
+		  goto cleanup;
+		} /* if */
+	    }
+	  else
+	    {
+	      ay_status = ay_objio_getvertex(4, tvindex, &tv);
+	    } /* if */
+
+	  if(tv)
+	    {
+	      
+	      if(!(texturesv = realloc(objio_texturesv,
+				       (tlength + 1) * sizeof(double))))
+		{ return AY_EOMEM; }
+	      objio_texturesv = texturesv;
+	      memcpy(&(texturesv[tlength]), tv, sizeof(double));
+	      if(!(texturetv = realloc(objio_texturetv,
+				       (tlength + 1) * sizeof(double))))
+		{ return AY_EOMEM; }
+	      objio_texturetv = texturetv;
+	      memcpy(&(texturetv[tlength]), &(tv[1]), sizeof(double));
+	      tlength++;
+	    } /* if */
 	} /* if */
 
       /* skip to next vindex */
@@ -2070,6 +2120,9 @@ ay_objio_readsurf(char *str)
     } /* while */
 
   objio_curvtrimsurf = 3;
+
+  objio_texturesvlen = tlength;
+  objio_texturetvlen = tlength;
 
 cleanup:
 
@@ -2550,6 +2603,19 @@ ay_objio_readend(void)
 	  ay_status = ay_object_crtendlevel(&(o->down));
 	} /* if */
 
+      /* add texture coordinates (as PV tags) */
+      if(objio_texturesv)
+	{
+	  ay_status = ay_pv_add(o, "mys", "varying", 0,
+				objio_texturesvlen, objio_texturesv);
+	}
+
+      if(objio_texturetv)
+	{
+	  ay_status = ay_pv_add(o, "myt", "varying", 0,
+				objio_texturetvlen, objio_texturetv);
+	}
+
       ay_status = ay_object_link(o);
 
     default:
@@ -2576,6 +2642,12 @@ cleanup:
   if(objio_npatch.controlv)
     free(objio_npatch.controlv);
   objio_npatch.controlv = NULL;
+  if(objio_texturesv)
+    free(objio_texturesv);
+  objio_texturesv = NULL;
+  if(objio_texturetv)
+    free(objio_texturetv);
+  objio_texturetv = NULL;
 
  return ay_status;
 } /* ay_objio_readend */
@@ -2722,6 +2794,10 @@ ay_objio_readscene(char *filename)
   objio_curvtrimsurf = 0;
   memset(&objio_ncurve, 0, sizeof(ay_nurbcurve_object));
   memset(&objio_npatch, 0, sizeof(ay_nurbpatch_object));
+  objio_texturesv = NULL;
+  objio_texturesvlen = 0;
+  objio_texturetv = NULL;
+  objio_texturetvlen = 0;
 
   objio_trims = NULL;
   objio_nexttrim = &(objio_trims);
@@ -2757,6 +2833,11 @@ ay_objio_readscene(char *filename)
 
   if(objio_npatch.controlv)
     free(objio_npatch.controlv);
+
+  if(objio_texturesv)
+    free(objio_texturesv);
+  if(objio_texturetv)
+    free(objio_texturetv);
 
   if(objio_trims)
     ay_object_deletemulti(objio_trims);
