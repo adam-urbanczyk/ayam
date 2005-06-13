@@ -1526,7 +1526,6 @@ ay_objio_readvertex(char *str)
  int ay_status = AY_OK;
  double v[4] = {0};
 
-
   if(strlen(str) < 2)
     return AY_ERROR;
 
@@ -1630,6 +1629,7 @@ ay_objio_readvindex(char *c, int *gvindex, int *tvindex, int *nvindex)
 
 /* ay_objio_readskip:
  *  skip over a number
+ *  !Modifies argument <b>!
  */
 int
 ay_objio_readskip(char **b)
@@ -1654,21 +1654,21 @@ ay_objio_readskip(char **b)
 
 
 /* ay_objio_readface:
- *  read a polygonal face
+ *  read a face statement (polygonal face)
  */
 int
 ay_objio_readface(char *str, int lastlinewasface)
 {
  int ay_status = AY_OK;
  char *c = NULL;
- int gvindex = 0, tvindex = 0, nvindex = 0, stride = 0, i;
+ int gvindex = 0, tvindex = 0, nvindex = 0, stride = 0;
  int last_stride = 0;
  double *gv, *nv/*, *tv*/;
  double *newcontrolv = NULL;
  ay_pomesh_object po = {0}, *temppo;
  ay_list_object l1 = {0}, l2 = {0}; 
  ay_object t = {0}, *o = NULL, *m = NULL;
- unsigned int nloops = 1, nverts = 0;
+ unsigned int nloops = 1, nverts = 0, i;
 
   if(!str)
     return AY_ENULL;
@@ -2190,7 +2190,7 @@ ay_objio_readparm(char *str)
 
 
 /* ay_objio_addtrim:
- *  add a vertex to a vertex buffer
+ *  add trim curve <o> to the trim curve buffer
  */
 int
 ay_objio_addtrim(ay_object *o)
@@ -2223,7 +2223,7 @@ ay_objio_addtrim(ay_object *o)
 
 
 /* ay_objio_gettrim:
- *  
+ *  get a trim curve object from the trim curve buffer
  */
 int
 ay_objio_gettrim(unsigned int index, ay_object **t)
@@ -2289,7 +2289,7 @@ ay_objio_gettrim(unsigned int index, ay_object **t)
 
 
 /* ay_objio_freetrims:
- *  free trim buffer
+ *  free trim curve buffer
  */
 int
 ay_objio_freetrims(void)
@@ -2319,7 +2319,10 @@ ay_objio_freetrims(void)
 
 
 /* ay_objio_readtrim:
- *  read a trim specification
+ *  read a trim statement (trim loop specification),
+ *  get the corresponding trim curves from the trim curve
+ *  buffer and copy them for connection to the surface
+ *  object later on
  */
 int
 ay_objio_readtrim(char *str, int hole)
@@ -2413,9 +2416,9 @@ cleanup:
 
 
 /* ay_objio_fixnpatch:
- *  fix row/column major order in np controlv (from Wavefront to Ayam);
+ *  fix row/column major order in np controlv (from Wavefront to Ayam style);
  *  additionally, multiply the weights in for rational vertices
- *  XXXX to be done: improve the knot vector
+ *  XXXX to be done: improve the knot vector (type, GLU compat)
  */
 int
 ay_objio_fixnpatch(ay_nurbpatch_object *np)
@@ -2460,7 +2463,7 @@ ay_objio_fixnpatch(ay_nurbpatch_object *np)
 /* ay_objio_fixncurve:
  *  fix a Wavefront NURBS curve by
  *  multiplying the weights in for rational vertices
- *  XXXX to be done: improve the knot vector
+ *  XXXX to be done: improve the knot vector (type, GLU compat)
  */
 int
 ay_objio_fixncurve(ay_nurbcurve_object *nc)
@@ -2490,7 +2493,7 @@ ay_objio_fixncurve(ay_nurbcurve_object *nc)
 
 
 /* ay_objio_readend:
- *  realise curve or surface
+ *  read an end statement (realise curve or surface)
  */
 int
 ay_objio_readend(void)
@@ -2654,7 +2657,7 @@ cleanup:
 
 
 /* ay_objio_readline:
- *
+ *  read a single line from a Wavefront OBJ file
  */
 int
 ay_objio_readline(FILE *fileptr)
@@ -2864,7 +2867,7 @@ ay_objio_readscenetcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int ay_status = AY_OK;
  char fname[] = "ay_objio_read";
- int i;
+ int i = 2;
 
   /* check args */
   if(argc < 2)
