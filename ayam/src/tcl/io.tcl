@@ -1088,6 +1088,7 @@ Selected 0
 TessPoMesh 0
 OmitCurves 0
 MergeFaces 1
+MergePVTags 1
 filename ""
 FileName "unnamed.rib"
 }   }
@@ -1205,6 +1206,7 @@ proc io_importOBJ { } {
     set types {{"Wavefront OBJ" ".obj"} {"All files" *}}
     addFileT $f objio_options FileName $types
     addCheck $f objio_options MergeFaces
+    addCheck $f objio_options MergePVTags
     addCheck $f objio_options OmitCurves
 
     set f [frame $w.f2]
@@ -1214,7 +1216,10 @@ proc io_importOBJ { } {
 	set oldcd [pwd]
 	cd [file dirname $objio_options(FileName)]
 
-	ay_objio_read [file tail $objio_options(FileName)]
+	ay_objio_read [file tail $objio_options(FileName)]\
+		-m $objio_options(MergeFaces)\
+		-o $objio_options(OmitCurves)\
+		-p $objio_options(MergePVTags)
 	
 	if { $ay_error < 2 } {
 	    ayError 4 "importOBJ" "Done importing scene from:"
