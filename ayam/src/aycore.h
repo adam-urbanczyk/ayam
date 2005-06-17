@@ -357,7 +357,8 @@ int ay_pact_wrtcb(struct Togl *togl, int argc, char *argv[]);
 /* pomesht.c */
 int ay_pomesht_tesselate(ay_pomesh_object *pomesh);
 
-int ay_pomesht_merge(ay_list_object *list, ay_object **result);
+int ay_pomesht_merge(int merge_pv_tags, ay_list_object *list,
+		     ay_object **result);
 
 int ay_pomesht_mergetcmd(ClientData clientData, Tcl_Interp * interp,
 			 int argc, char *argv[]);
@@ -410,6 +411,10 @@ int ay_pv_filltokpar(ay_object *o, int declare, int start,
 
 int ay_pv_add(ay_object *o, char *name, char *detail, int type,
 	      int datalen, void *data);
+
+int ay_pv_merge(ay_tag_object *t1, ay_tag_object *t2, ay_tag_object **mt);
+
+int ay_pv_cmpname(ay_tag_object *t1, ay_tag_object *t2);
 
 int ay_pv_count(ay_object *o);
 

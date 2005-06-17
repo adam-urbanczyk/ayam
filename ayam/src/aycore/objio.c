@@ -833,7 +833,7 @@ ay_objio_writepomesh(FILE *fileptr, ay_object *o, double *m)
   if(lihead && lihead->next)
     {
       to = NULL;
-      ay_status = ay_pomesht_merge(lihead, &to);
+      ay_status = ay_pomesht_merge(AY_FALSE, lihead, &to);
       if(to)
 	{
 	  ay_status = ay_pomesht_optimizecoords(to->refine, AY_FALSE);
@@ -1803,14 +1803,14 @@ ay_objio_readface(char *str, int lastlinewasface)
 	  l1.next = &l2;
 	  l1.object = objio_lastface;
 	  l2.object = &t;
-	  ay_status = ay_pomesht_merge(&l1, &m);
+	  ay_status = ay_pomesht_merge(AY_FALSE, &l1, &m);
 	  if(ay_status)
 	    goto cleanup;
 	  /* replace objio_lastface with m */
 	  temppo = objio_lastface->refine;
 	  objio_lastface->refine = m->refine;
 	  m->refine = temppo;
-	  /* remove temporary object that now carries the old poly mesh*/
+	  /* remove temporary object that now carries the old poly mesh */
 	  ay_status = ay_object_delete(m);
 	}
       else

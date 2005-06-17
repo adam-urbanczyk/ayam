@@ -203,7 +203,7 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
 		    } /* while */
 
 		  tmp = NULL;
-		  ay_status = ay_pomesht_merge(polist, &tmp);
+		  ay_status = ay_pomesht_merge(AY_FALSE, polist, &tmp);
 
 		  while(polist)
 		    {
