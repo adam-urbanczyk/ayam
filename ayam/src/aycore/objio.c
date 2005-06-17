@@ -1128,6 +1128,8 @@ ay_objio_writescenetcmd(ClientData clientData, Tcl_Interp *interp,
 
 int objio_mergecfaces;
 
+int objio_mergepvtags;
+
 typedef struct objio_vertex_s {
   struct objio_vertex_s *next;
   struct objio_vertex_s *prev;
@@ -1803,7 +1805,7 @@ ay_objio_readface(char *str, int lastlinewasface)
 	  l1.next = &l2;
 	  l1.object = objio_lastface;
 	  l2.object = &t;
-	  ay_status = ay_pomesht_merge(AY_FALSE, &l1, &m);
+	  ay_status = ay_pomesht_merge(objio_mergepvtags, &l1, &m);
 	  if(ay_status)
 	    goto cleanup;
 	  /* replace objio_lastface with m */
@@ -2877,6 +2879,7 @@ ay_objio_readscenetcmd(ClientData clientData, Tcl_Interp *interp,
     }
 
   objio_mergecfaces = AY_TRUE;
+  objio_mergepvtags = AY_TRUE;
   objio_omitcurves = AY_FALSE;
 
   while(i+1 < argc)
@@ -2889,6 +2892,11 @@ ay_objio_readscenetcmd(ClientData clientData, Tcl_Interp *interp,
       if(!strcmp(argv[i], "-o"))
 	{
 	  sscanf(argv[i+1], "%d", &objio_omitcurves);
+	}
+      else
+      if(!strcmp(argv[i], "-p"))
+	{
+	  sscanf(argv[i+1], "%d", &objio_mergepvtags);
 	}
       i += 2;
     } /* while */
