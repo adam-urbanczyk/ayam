@@ -357,6 +357,131 @@ ay_pv_add(ay_object *o, char *name, char *detail, int type,
 } /* ay_pv_add */
 
 
+/* ay_pv_merge:
+ *  merge two PV tags (<t1>, <t2>) into one (<mt>)
+ *  the elements in <t2> will be appended to the elements in <t1>
+ */
+int
+ay_pv_merge(ay_tag_object *t1, ay_tag_object *t2, ay_tag_object **mt)
+{
+ int ay_status = AY_OK;
+ char *comma1 = NULL, *comma2 = NULL, buf[128];
+ int i = 0;
+ unsigned int n1, n2;
+ ay_tag_object *nt = NULL;
+ Tcl_DString ds;
+
+  if(!t1 || !t2)
+    return AY_ENULL;
+
+  if(!(nt = calloc(1, sizeof(ay_tag_object))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+
+  if(!(nt->name = calloc(3, sizeof(char))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+
+  strcpy(nt->name, "PV");
+
+  nt->type = ay_pv_tagtype;
+
+  Tcl_DStringInit(&ds);
+
+  /* find the third comma in t1->val */
+  comma1 = t1->val;
+  while((i < 3) && (comma1 = strchr(comma1, ',')))
+    i++;
+  if(!comma1)
+    { ay_status = AY_ERROR; goto cleanup; }
+
+  /* copy "name,detail,type," */
+  Tcl_DStringAppend(&ds, t1->val, comma1-(t1->val));
+
+  sscanf(comma1, "%d", &n1);
+
+  /* find the third comma in t2->val */
+  comma2 = t2->val;
+  i = 0;
+  while((i < 3) && (comma2 = strchr(comma2, ',')))
+    i++;
+  if(!comma2)
+    { ay_status = AY_ERROR; goto cleanup; }
+
+  sscanf(comma2, "%d", &n2);
+
+  /* calculate and copy new ndata (number of data elements) */
+  sprintf(buf, "%d", n1+n2);
+  Tcl_DStringAppend(&ds, buf, -1);
+
+  /* copy data elements */
+  if(!(comma1 = strchr(comma1, ',')))
+    { ay_status = AY_ERROR; goto cleanup; }
+
+  if(!(comma2 = strchr(comma2, ',')))
+    { ay_status = AY_ERROR; goto cleanup; }
+
+  Tcl_DStringAppend(&ds, comma1, -1);
+  Tcl_DStringAppend(&ds, comma2, -1);
+
+  /* copy collected string to new tag */
+  if(!(nt->val = calloc(strlen(Tcl_DStringValue(&ds))+1,
+			 sizeof(char))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  strcpy(nt->val, Tcl_DStringValue(&ds));
+
+  /* return result */
+  *mt = nt;
+  nt = NULL;
+
+cleanup:
+
+  if(nt)
+    {
+      if(nt->name)
+	free(nt->name);
+      if(nt->val)
+	free(nt->val);
+    } /* if */
+
+  Tcl_DStringFree(&ds);
+
+ return ay_status;
+}  /* ay_pv_merge */
+
+
+/* ay_pv_cmpname:
+ *  compare the primitive variable names of PV tags <t1> and <t2>
+ *  returns AY_TRUE if they are equal, returns AY_FALSE else and on error
+ */
+int
+ay_pv_cmpname(ay_tag_object *t1, ay_tag_object *t2)
+{
+  char *c1 = NULL, *c2 = NULL;
+
+  if(!t1 || !t2)
+    return AY_FALSE;
+
+  if((t1->type != ay_pv_tagtype) || (t2->type != ay_pv_tagtype))
+    return AY_FALSE;
+
+  c1 = t1->val;
+  c2 = t2->val;
+
+  if(!c1 || !c2)
+    return AY_FALSE;
+
+  while((*c1 != '\0') && (*c2 != '\0') && (*c1 == *c2) &&
+	 (*c1 != ',') && (*c2 != ','))
+    {
+      c1++; c2++;
+    }
+
+  if((*c1 != '\0') && (*c2 != '\0') && (*c1 == *c2) && (*c1 == ','))
+    return AY_TRUE;
+
+ return AY_FALSE;
+} /* ay_pv_cmpname */
+
+
 /* ay_pv_count:
  *  count PV tags of object <o>
  */

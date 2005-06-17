@@ -355,7 +355,7 @@ ay_pomesht_tesselate(ay_pomesh_object *pomesh)
  *  new PolyMesh and return this new object in result
  */
 int
-ay_pomesht_merge(ay_list_object *list, ay_object **result)
+ay_pomesht_merge(int merge_pv_tags, ay_list_object *list, ay_object **result)
 {
  int ay_status = AY_OK;
  char fname[] = "mergePo";
@@ -370,6 +370,9 @@ ay_pomesht_merge(ay_list_object *list, ay_object **result)
    nextcontrols = 0, oldpmncontrols = 0;
  int has_normals = -1, stride = 0;
  double dummy[3] = {0};
+ int have_pv_tags = AY_TRUE;
+ ay_tag_object *tag1 = NULL, *tag2 = NULL, *mtag = NULL;
+ char *ct;
 
   while(lo)
     {
@@ -537,7 +540,59 @@ ay_pomesht_merge(ay_list_object *list, ay_object **result)
 	  nextverts    += pmverts;
 	  nextcontrols += (stride * pm->ncontrols);
 	  oldpmncontrols += pm->ncontrols;
+
+	  if(merge_pv_tags && have_pv_tags)
+	    {
+	      if(lo == list)
+		{
+		  have_pv_tags = AY_FALSE;
+		  if(o->tags)
+		    {
+		      tag1 = o->tags;
+		      while(tag1)
+			{
+			  if(tag1->type == ay_pv_tagtype)
+			    {
+			      have_pv_tags = AY_TRUE;
+			      break;
+			    }
+			  tag1 = tag1->next;
+			} /* while */
+		      ay_status = ay_tags_copyall(o, no);
+		    } /* if */
+		}
+	      else
+		{
+		  tag1 = no->tags;
+		  while(tag1)
+		    {
+		      if(tag1->type == ay_pv_tagtype)
+			{
+			  /* find matching PV tag to merge it in */
+			  tag2 = o->tags;
+			  while(tag2)
+			    {
+			      mtag = NULL;
+			      if((tag2->type == ay_pv_tagtype) &&
+				 ay_pv_cmpname(tag1, tag2));
+			      ay_status = ay_pv_merge(tag1, tag2, &mtag);
+			      if(mtag)
+				{
+				  /* swap value strings tag1<>mtag */
+				  ct = tag1->val;
+				  tag1->val = mtag->val;
+				  mtag->val = ct;
+				  ay_tags_free(mtag);
+				} /* if */
+			      tag2 = tag2->next;
+			    } /* while */
+			} /* if */
+		      tag1 = tag1->next;
+		    } /* while */
+		} /* if */
+	    } /* if */
 	} /* if */
+
       lo = lo->next;
     } /* while */
 
@@ -565,7 +620,7 @@ ay_pomesht_mergetcmd(ClientData clientData, Tcl_Interp * interp,
       return TCL_OK;
     }
 
-  ay_status = ay_pomesht_merge(ay_selection, &no);
+  ay_status = ay_pomesht_merge(AY_FALSE, ay_selection, &no);
 
   if(ay_status)
     { /* emit error message */
