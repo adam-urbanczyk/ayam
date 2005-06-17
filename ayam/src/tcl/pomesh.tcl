@@ -52,6 +52,7 @@ proc pomesh_merge { } {
 
     addCheck $f pomeshmerge_options RemoveMerged
     addCheck $f pomeshmerge_options OptimizeNew
+    addCheck $f pomeshmerge_options MergePVTags
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {
@@ -59,7 +60,7 @@ proc pomesh_merge { } {
 
 	set ay_error ""
 
-	mergePo
+	mergePo -p $pomeshmerge_options(MergePVTags)
 
 	if { $ay_error > 1 } {
 	    ayError 2 "Merge" "There were errors while merging!"

@@ -611,6 +611,7 @@ ay_pomesht_mergetcmd(ClientData clientData, Tcl_Interp * interp,
 		     int argc, char *argv[])
 {
  int ay_status = AY_OK;
+ int i = 1, mergepvtags = AY_FALSE;
  char fname[] = "mergePo";
  ay_object *no = NULL;
 
@@ -620,7 +621,16 @@ ay_pomesht_mergetcmd(ClientData clientData, Tcl_Interp * interp,
       return TCL_OK;
     }
 
-  ay_status = ay_pomesht_merge(AY_FALSE, ay_selection, &no);
+  while(i+1 < argc)
+    {
+      if(!strcmp(argv[i], "-p"))
+	{
+	  sscanf(argv[i+1], "%d", &mergepvtags);
+	}
+      i += 2;
+    }
+
+  ay_status = ay_pomesht_merge(mergepvtags, ay_selection, &no);
 
   if(ay_status)
     { /* emit error message */
