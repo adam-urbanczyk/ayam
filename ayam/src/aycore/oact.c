@@ -27,6 +27,7 @@ ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
  static double oldwinx = 0.0, oldwiny = 0.0;
  double winx = 0.0, winy = 0.0;
  double dx = 0, dy = 0, dz = 0;
+ double sdx = 0, sdy = 0, sdz = 0;
  double v1[3] = {0}, v2[3] = {0};
  double euler[3] = {0};
  GLdouble mm[16];
@@ -35,7 +36,7 @@ ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
  ay_object *o = NULL;
  char fname[] = "move_object";
 
- if(view->type == AY_VTPERSP)
+  if(view->type == AY_VTPERSP)
     {
       ay_error(AY_ERROR, fname, "Operation not allowed in perspective views.");
       return TCL_OK;
@@ -93,11 +94,11 @@ ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
 		  {
 		    ay_trafo_getallis(ay_currentlevel->next);
 		  }
-	      }
+	      } /* if */
 	    glGetDoublev(GL_MODELVIEW_MATRIX, m);
 	    glPopMatrix();
 
-	  }
+	  } /* if */
     }
   else
     {
@@ -121,35 +122,35 @@ ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
   dx = -(oldwinx - winx) * view->conv_x;
   dy = (oldwiny - winy) * view->conv_y;
 
-   if((view->type == AY_VTFRONT) || (view->type == AY_VTTRIM))
+  /* modify dx/dy/dz according to view type */
+  if((view->type == AY_VTFRONT) || (view->type == AY_VTTRIM))
     {
-      v2[0]=dx;
-      v2[1]=dy;
-      v2[2]=0.0;
-      AY_APTRAN3(v1,v2,m)
+      v2[0] = dx;
+      v2[1] = dy;
+      v2[2] = 0.0;
+      AY_APTRAN3(v1, v2, m)
       dx = v1[0];
       dy = v1[1];
       dz = v1[2];
     }
 
-
-  /* Side or Top view? */
   if(view->type == AY_VTSIDE)
     {
-      v2[0]=0.0;
-      v2[1]=dy;
-      v2[2]=-dx;
-      AY_APTRAN3(v1,v2,m)
+      v2[0] = 0.0;
+      v2[1] = dy;
+      v2[2] = -dx;
+      AY_APTRAN3(v1, v2, m)
       dx = v1[0];
       dy = v1[1];
       dz = v1[2];
     }
+
   if(view->type == AY_VTTOP)
     {
-      v2[0]=dx;
-      v2[1]=0.0;
-      v2[2]=-dy;
-      AY_APTRAN3(v1,v2,m)
+      v2[0] = dx;
+      v2[1] = 0.0;
+      v2[2] = -dy;
+      AY_APTRAN3(v1, v2, m)
       dx = v1[0];
       dy = v1[1];
       dz = v1[2];
@@ -167,7 +168,7 @@ ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
 	  return TCL_OK;
 	}
 
-      if(sel->object->selp)
+      if(o->selp)
 	{
 	  glMatrixMode(GL_MODELVIEW);
 	  glPushMatrix();
@@ -182,23 +183,23 @@ ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
 	   glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 	  glPopMatrix();
 
-	  v2[0]=dx;
-	  v2[1]=dy;
-	  v2[2]=dz;
-	  AY_APTRAN3(v1,v2,mm)
-	  dx = v1[0];
-	  dy = v1[1];
-	  dz = v1[2];
+	  v2[0] = dx;
+	  v2[1] = dy;
+	  v2[2] = dz;
+	  AY_APTRAN3(v1, v2, mm)
+	  sdx = v1[0];
+	  sdy = v1[1];
+	  sdz = v1[2];
 
 	  point = sel->object->selp;
 	  while(point)
 	    {
-	      point->point[0]+=dx;
-	      point->point[1]+=dy;
-	      point->point[2]+=dz;
+	      point->point[0] += sdx;
+	      point->point[1] += sdy;
+	      point->point[2] += sdz;
 
 	      point = point->next;
-	    }
+	    } /* while */
 
 	  o->modified = AY_TRUE;
 	  ay_notify_force(o);
