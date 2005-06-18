@@ -1,6 +1,6 @@
-[1. Jun 2005] CVS-Head:
+[18. Jun 2005] CVS-Head:
 o bug fixes:
-  - 
+  - fixed moving of tagged points of multiple selected objects (SF 1220972)
 o improved import option dialogue of "rrib" plugin (added FileName)
 o improved import and export option dialogues of "onio" plugin (added FileName)
 o file, multiple file, and multiple directory property GUI elements now
@@ -9,6 +9,8 @@ o file, multiple file, and multiple directory property GUI elements now
 o added Wavefront OBJ import
 o added support for Hyperboloid and Paraboloid objects to 3DMF export
 o improved error reporting of "onio" plugin
+o added support for importing polygonal meshes to the "onio" plugin
+o added option to merge PV tags of PolyMesh objects to merge PolyMesh tool
 
 
 [15. May 2005] Ayam1.8.2:
