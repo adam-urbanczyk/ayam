@@ -71,7 +71,8 @@ proc ai_resolve { } {
     global ay
     ai_resolveInstances
     if { [winfo exists $ay(tree)] } {
-	tree_reset
+	set ay(cl) $ay(CurrentLevel)
+	uS 1 1
     } else {
 	goTop; cS; uS; rV
     }
