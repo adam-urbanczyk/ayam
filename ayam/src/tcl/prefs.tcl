@@ -122,6 +122,7 @@ proc prefs_open {} {
 
     # PrefsGUIs
     # Main
+    set ay(iapplydisable) 1
     set fw [$nb insert end Main -text Main\
 	    -raisecmd "prefs_rsnb $nb Main"]
     addText $fw e0 "Shaders:"
@@ -239,6 +240,9 @@ proc prefs_open {} {
     addMenuB $fw ayprefse SMethod [ms ayprefse_SMethod]\
 	    $ay(smethods)
     addParamB $fw ayprefse SParam [ms ayprefse_SParam] { 10 0.5 1 30 }
+
+    # end of PrefsGUIs
+    set ay(iapplydisable) 0
 
     # select last selected preference section
     pack $nb -fill both -expand yes
