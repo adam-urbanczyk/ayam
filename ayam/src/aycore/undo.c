@@ -505,7 +505,8 @@ ay_undo_copy(ay_undo_object *uo)
  char view_setgridicon_cmd[] = "viewSetGridIcon .";
  char view_setdmodeicon_cmd[] = "viewSetDModeIcon .";
  Tcl_DString ds;
- int notify = AY_TRUE;
+ int notify = AY_TRUE, notify_parent = AY_FALSE;
+ ay_object *parent = NULL;
 
   if(!uo)
     return AY_OK;
@@ -686,10 +687,10 @@ ay_undo_copy(ay_undo_object *uo)
       o->hide = c->hide;
       o->hide_children = c->hide_children;
 
-      if((c->type != AY_IDVIEW) &&
-	 (c->type != AY_IDROOT) && notify)
+      if((c->type != AY_IDVIEW) && (c->type != AY_IDROOT) && notify)
 	{
-	  ay_notify_forceparent(o, AY_TRUE);
+	  notify_parent = AY_TRUE;
+	  parent = o;
 	  notify = AY_FALSE;
 	} /* if */
 
@@ -697,6 +698,8 @@ ay_undo_copy(ay_undo_object *uo)
       r = r->next;
     } /* while */
 
+  if(notify_parent)
+    ay_status = ay_notify_forceparent(parent, AY_TRUE);
 
  return AY_OK;
 } /* ay_undo_copy */
