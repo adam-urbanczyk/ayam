@@ -287,11 +287,14 @@ int
 ay_ai_resolveinstancestcmd(ClientData clientData, Tcl_Interp *interp,
 			   int argc, char *argv[])
 {
- char done_cmd[128];
+ char str[128], fname[] = "ai_resolve";
+ int numres = 0;
 
-  sprintf(done_cmd, "puts stdout \"ai: %d instances resolved.\"",
-	  ay_ai_resolveinstances(ay_currentlevel->object));
-  Tcl_Eval(interp, done_cmd);
+  numres = ay_ai_resolveinstances(ay_currentlevel->object);
+
+  sprintf(str, "%d instances resolved", numres);
+
+  ay_error(AY_EOUTPUT, fname, str);
 
  return TCL_OK;
 } /* ay_ai_resolveinstancestcmd */
@@ -326,7 +329,7 @@ ay_ai_makeinstancestcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char done_cmd[64];
+ char str[64], fname[] = "ai";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  int dummy = 0;
 
@@ -341,18 +344,20 @@ ay_ai_makeinstancestcmd(ClientData clientData, Tcl_Interp *interp,
   Tcl_GetIntFromObj(interp, to, &ay_ai_ignoremat);
 
 
-  sprintf(done_cmd, "puts stdout \"ai: %d Objects\"",
+  sprintf(str, "%d objects found",
   	  ay_ai_countobjects(ay_root));
-  Tcl_Eval(interp, done_cmd);
+  ay_error(AY_EOUTPUT, fname, str);
 
   dummy = ay_ai_resolveinstances(ay_currentlevel->object);
 
   comp_true = 0;
   comp_false = 0;
-  sprintf(done_cmd, "puts stdout \"ai: %d instances created.\"",
+  sprintf(str, "%d instances created",
 	  ay_ai_makeinstances(ay_currentlevel->object,
-			    ay_currentlevel->object));
-  Tcl_Eval(interp, done_cmd);
+			      ay_currentlevel->object));
+
+  ay_error(AY_EOUTPUT, fname, str);
+
   /*
   sprintf(done_cmd, "puts stdout \"%d * true, %d * false\"",
   	  comp_true, comp_false);
