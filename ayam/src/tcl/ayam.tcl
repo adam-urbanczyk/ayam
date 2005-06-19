@@ -521,6 +521,7 @@ array set ay {
  zoomr 0
  askedscriptdisable 0
  scriptdisable 0
+ iapplydisable 0
 }
 # array ay
 

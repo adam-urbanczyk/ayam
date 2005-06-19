@@ -50,7 +50,7 @@ proc addParamB { w prop name help {def {}} } {
 #
 #
 proc addParam { w prop name {def {}} } {
-global $prop ayprefs
+global $prop ayprefs ay
 
 set bw 1
 
@@ -82,14 +82,15 @@ if { $def != {} } {
     }
 }
 
-global aymainshortcuts
-bind $f.b1 <${aymainshortcuts(IApplyMod)}-ButtonRelease-1> "after idle {\
-	\$ay(appb) invoke}"
-bind $f.b2 <${aymainshortcuts(IApplyMod)}-ButtonRelease-1> "after idle {\
-	\$ay(appb) invoke}"
-bind $f.e <Key-Return> "+after idle {\
-	\$ay(appb) invoke}"
-
+if { ! $ay(iapplydisable) } {
+    global aymainshortcuts
+    bind $f.b1 <${aymainshortcuts(IApplyMod)}-ButtonRelease-1> "after idle {\
+	    \$ay(appb) invoke}"
+    bind $f.b2 <${aymainshortcuts(IApplyMod)}-ButtonRelease-1> "after idle {\
+	    \$ay(appb) invoke}"
+    bind $f.e <Key-Return> "+after idle {\
+	    \$ay(appb) invoke}"
+}
 
 global tcl_platform
 if { $tcl_platform(platform) == "windows" } {
