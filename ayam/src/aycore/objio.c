@@ -1665,8 +1665,9 @@ ay_objio_readface(char *str, int lastlinewasface)
  char *c = NULL;
  int gvindex = 0, tvindex = 0, nvindex = 0, stride = 0;
  int last_stride = 0;
- double *gv, *nv/*, *tv*/;
- double *newcontrolv = NULL;
+ double *gv, *nv, *tv;
+ double *newcontrolv = NULL, *texsv = NULL, *textv = NULL, *tmpv = NULL;
+ int texsvlen = 0, textvlen = 0;
  ay_pomesh_object po = {0}, *temppo;
  ay_list_object l1 = {0}, l2 = {0}; 
  ay_object t = {0}, *o = NULL, *m = NULL;
@@ -1690,7 +1691,7 @@ ay_objio_readface(char *str, int lastlinewasface)
 
       gv = NULL;
       nv = NULL;
-      /*tv = NULL;*/
+      tv = NULL;
 
       /* get geometric vertex data and add it to the pomesh */
       if(gvindex < 0)
@@ -1741,9 +1742,44 @@ ay_objio_readface(char *str, int lastlinewasface)
 
       if(tvindex != 0)
 	{
-	  /* get texture vertex data and add it to the pomesh */
-	  /* XXXX to be done */
-	}
+	  /* get texture vertex data and cach it in texsv/textv */
+	  
+	  tv = NULL;
+	  if(tvindex < 0)
+	    {
+	      if(objio_tverts_tail)
+		{
+		  ay_status = ay_objio_getvertex(4,
+					objio_tverts_tail->index + tvindex + 1,
+						 &tv);
+		}
+	      else
+		{
+		  ay_status = AY_ENULL;
+		  goto cleanup;
+		} /* if */
+	    }
+	  else
+	    {
+	      ay_status = ay_objio_getvertex(4, tvindex, &tv);
+	    } /* if */
+
+	  if(tv)
+	    {
+	      if(!(tmpv = realloc(texsv, (texsvlen + 1) * sizeof(double))))
+		{ ay_status = AY_EOMEM; goto cleanup; }
+	      texsv = tmpv;
+	      memcpy(&(texsv[texsvlen]), tv, sizeof(double));
+	      texsvlen++;
+
+	      if(!(tmpv = realloc(textv, (textvlen + 1) * sizeof(double))))
+		{ ay_status = AY_EOMEM; goto cleanup; }
+	      textv = tmpv;
+	      memcpy(&(textv[textvlen]), &(tv[1]), sizeof(double));
+	      textvlen++;
+	    } /* if */
+
+	} /* if */
 
       stride = 3;
       if(nv)
@@ -1753,7 +1789,7 @@ ay_objio_readface(char *str, int lastlinewasface)
 	stride += 2;*/
 
       if((last_stride > 0) && (stride != last_stride))
-	{ay_status = AY_ERROR; goto cleanup;}
+	{ ay_status = AY_ERROR; goto cleanup; }
 
       last_stride = stride;
 
@@ -1799,6 +1835,16 @@ ay_objio_readface(char *str, int lastlinewasface)
       t.type = AY_IDPOMESH;
       t.refine = (void*)(&po);
 
+      if(texsv)
+	{
+	  ay_status = ay_pv_add(&t, "mys", "varying", 0, texsvlen, texsv);
+	}
+
+      if(textv)
+	{
+	  ay_status = ay_pv_add(&t, "myt", "varying", 0, textvlen, textv);
+	}
+
       if(lastlinewasface && objio_lastface && objio_mergecfaces)
 	{
 	  /* merge new polymesh into old */
@@ -1834,6 +1880,15 @@ cleanup:
 
   if(po.verts)
     free(po.verts);
+
+  if(texsv)
+    free(texsv);
+
+  if(textv)
+    free(textv);
+
+  if(t.tags)
+    ay_status = ay_tags_delall(&t);
 
  return ay_status;
 } /* ay_objio_readface */
