@@ -1271,7 +1271,7 @@ ay_objio_addvertex(int type, double *v)
       break;
     case 2:
       /* normal vertex */
-      memcpy(nv->v, v, 4*sizeof(double));
+      memcpy(nv->v, v, 3*sizeof(double));
       if(objio_nverts_tail)
 	{
 	  nv->index = objio_nverts_tail->index + 1;
@@ -1286,8 +1286,7 @@ ay_objio_addvertex(int type, double *v)
       break;
     case 3:
       /* parametric vertex */
-      memcpy(nv->v, v, 2*sizeof(double));
-      nv->v[3] = v[2];
+      memcpy(nv->v, v, 4*sizeof(double));
       if(objio_pverts_tail)
 	{
 	  nv->index = objio_pverts_tail->index + 1;
@@ -1302,7 +1301,7 @@ ay_objio_addvertex(int type, double *v)
       break;
     case 4:
       /* texture vertex */
-      memcpy(nv->v, v, 4*sizeof(double));
+      memcpy(nv->v, v, 3*sizeof(double));
       if(objio_tverts_tail)
 	{
 	  nv->index = objio_tverts_tail->index + 1;
@@ -1540,7 +1539,10 @@ ay_objio_readvertex(char *str)
   else
   if(str[1] == 'p')
     {
-      sscanf(&(str[2])," %lg %lg %lg", &(v[0]), &(v[1]), &(v[2]));
+      if(sscanf(&(str[2])," %lg %lg %lg", &(v[0]), &(v[1]), &(v[3])) < 3)
+	{
+	  v[3] = 1.0;
+	}
       ay_status = ay_objio_addvertex(3, v);
     }
   else
