@@ -1091,6 +1091,8 @@ MergeFaces 1
 MergePVTags 1
 filename ""
 FileName "unnamed.rib"
+STagName "mys"
+TTagName "myt"
 }   }
 
 
@@ -1208,6 +1210,8 @@ proc io_importOBJ { } {
     addCheck $f objio_options MergeFaces
     addCheck $f objio_options MergePVTags
     addCheck $f objio_options OmitCurves
+    addString $f objio_options STagName
+    addString $f objio_options TTagName
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {
@@ -1219,7 +1223,8 @@ proc io_importOBJ { } {
 	ay_objio_read [file tail $objio_options(FileName)]\
 		-m $objio_options(MergeFaces)\
 		-o $objio_options(OmitCurves)\
-		-p $objio_options(MergePVTags)
+		-p $objio_options(MergePVTags)\
+		-t $objio_options(STagName) $objio_options(TTagName)
 	
 	if { $ay_error < 2 } {
 	    ayError 4 "importOBJ" "Done importing scene from:"
