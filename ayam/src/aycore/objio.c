@@ -1416,6 +1416,7 @@ ay_objio_getvertex(int type, unsigned int index, double **v)
       pl = &objio_tverts_cur;
       break;
     default:
+      return AY_ERROR;
       break;
     }
 
