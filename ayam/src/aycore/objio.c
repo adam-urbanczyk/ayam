@@ -1191,6 +1191,11 @@ ay_object **objio_nexttrim;
 
 ay_object *objio_lastface;
 
+char objio_stagnamedef[] = "mys";
+char *objio_stagname = objio_stagnamedef;
+char objio_ttagnamedef[] = "myt";
+char *objio_ttagname = objio_ttagnamedef;
+
 int ay_objio_addvertex(int type, double *v);
 
 int ay_objio_getvertex(int type, unsigned int index, double **v);
@@ -1444,7 +1449,10 @@ ay_objio_getvertex(int type, unsigned int index, double **v)
 	}
     } /* if */
 
+  /* remember pointer to vertex in static variable */
   *pl = l;
+
+  /* return result */
   *v = &(l->v[0]);
 
  return AY_OK;
@@ -1512,7 +1520,7 @@ ay_objio_freevertices(void)
       objio_tverts_tail = NULL;
     } /* if */
 
-  /* clear cached "current" pointers in getvertex() */
+  /* clear cached "current" pointers in ay_objio_getvertex() */
   ay_status = ay_objio_getvertex(0, 0, NULL);
 
  return AY_OK;
@@ -1840,12 +1848,14 @@ ay_objio_readface(char *str, int lastlinewasface)
 
       if(texsv)
 	{
-	  ay_status = ay_pv_add(&t, "mys", "varying", 0, texsvlen, texsv);
+	  ay_status = ay_pv_add(&t, objio_stagname, "varying", 0,
+				texsvlen, texsv);
 	}
 
       if(textv)
 	{
-	  ay_status = ay_pv_add(&t, "myt", "varying", 0, textvlen, textv);
+	  ay_status = ay_pv_add(&t, objio_ttagname, "varying", 0,
+				textvlen, textv);
 	}
 
       if(lastlinewasface && objio_lastface && objio_mergecfaces)
@@ -2371,7 +2381,7 @@ ay_objio_freetrims(void)
       objio_trims_tail = NULL;
     } /* if */
 
-  /* clear cached "current" pointers in gettrim() */
+  /* clear cached "current" pointers in ay_objio_gettrim() */
   ay_status = ay_objio_gettrim(0, NULL);
 
  return AY_OK;
@@ -2669,13 +2679,13 @@ ay_objio_readend(void)
       /* add texture coordinates (as PV tags) */
       if(objio_texturesv)
 	{
-	  ay_status = ay_pv_add(o, "mys", "varying", 0,
+	  ay_status = ay_pv_add(o, objio_stagname, "varying", 0,
 				objio_texturesvlen, objio_texturesv);
 	}
 
       if(objio_texturetv)
 	{
-	  ay_status = ay_pv_add(o, "myt", "varying", 0,
+	  ay_status = ay_pv_add(o, objio_ttagname, "varying", 0,
 				objio_texturetvlen, objio_texturetv);
 	}
 
@@ -2911,7 +2921,7 @@ ay_objio_readscene(char *filename)
   /* clean up trims buffer */
   ay_status = ay_objio_freetrims();
 
-  /* reset lastlinewasface state in readline() */
+  /* reset lastlinewasface state in ay_objio_readline() */
   ay_objio_readline(NULL);
 
  return ay_status;
@@ -2956,10 +2966,21 @@ ay_objio_readscenetcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  sscanf(argv[i+1], "%d", &objio_mergepvtags);
 	}
+      else
+      if(!strcmp(argv[i], "-t"))
+	{
+	  objio_stagname = argv[i+1];
+	  objio_ttagname = argv[i+2];
+	  i++;
+	}
+
       i += 2;
     } /* while */
 
   ay_status = ay_objio_readscene(argv[1]);
+
+  objio_stagname = objio_stagnamedef;
+  objio_ttagname = objio_ttagnamedef;
 
  return TCL_OK;
 } /* ay_objio_readscenetcmd */
