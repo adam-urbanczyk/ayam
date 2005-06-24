@@ -482,6 +482,68 @@ ay_pv_cmpname(ay_tag_object *t1, ay_tag_object *t2)
 } /* ay_pv_cmpname */
 
 
+/* ay_pv_convert:
+ *  
+ */
+int
+ay_pv_convert(ay_tag_object *tag, unsigned int *datalen, void **data)
+{
+ unsigned int count = 0, i = 0;
+ char *c1, *c2, *c3;
+ double *da = NULL;
+
+  if(!tag)
+    return AY_ENULL;
+  
+  if(tag->type != ay_pv_tagtype)
+    return AY_ERROR;
+
+  c1 = tag->val;
+
+  /* find the type */
+  c1 = strchr(c1, ',');
+  if(!c1)
+    return AY_ERROR;
+  c1++;
+
+  /* find the length */
+  c2 = strchr(c1, ',');
+  if(!c2)
+    return AY_ERROR;
+  c2++;
+  sscanf(c2, "%d", &count);
+
+  /* find the data */
+  c3 = strchr(c2, ',');
+  if(!c3)
+    return AY_ERROR;
+  c3++;
+  switch(*c1)
+    {
+    case 'f':
+      /* allocate memory */
+      if(!(da = calloc(count, sizeof(double))))
+	return AY_EOMEM;
+      /* parse data and fill memory */
+      do
+	{
+	  sscanf(c3, ",%lg", &(da[i]));
+	  i++;
+	}
+      while((c3 = strchr(c3, ',')));
+      /* prepare result */
+      *datalen = count;
+      *data = da;
+      break;
+    default:
+      return AY_ERROR;
+      break;
+    } /* switch */
+
+ return AY_OK;
+} /* ay_pv_convert */
+
+
 /* ay_pv_count:
  *  count PV tags of object <o>
  */

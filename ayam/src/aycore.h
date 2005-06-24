@@ -416,6 +416,8 @@ int ay_pv_merge(ay_tag_object *t1, ay_tag_object *t2, ay_tag_object **mt);
 
 int ay_pv_cmpname(ay_tag_object *t1, ay_tag_object *t2);
 
+int ay_pv_convert(ay_tag_object *tag, unsigned int *datalen, void **data);
+
 int ay_pv_count(ay_object *o);
 
 void ay_pv_init(Tcl_Interp *interp);
