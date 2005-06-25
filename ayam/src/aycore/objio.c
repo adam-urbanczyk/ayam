@@ -2964,6 +2964,8 @@ cleanup:
     free(objio_texturetv);
   objio_texturetv = NULL;
 
+  objio_curvtrimsurf = 0;
+
  return ay_status;
 } /* ay_objio_readend */
 
