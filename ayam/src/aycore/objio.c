@@ -445,7 +445,7 @@ ay_objio_writenpatch(FILE *fileptr, ay_object *o, double *m)
  int stride = 4, i, j;
  char mys[] = "mys,", myt[] = "myt,";
  int have_mys = AY_FALSE, have_myt = AY_FALSE;
- unsigned int myslen = 0, mytlen = 0, mystlen = 0;
+ unsigned int myslen = 0, mytlen = 0, mystlen = 0, ui, uj;
  double *mysarr = NULL, *mytarr = NULL, *mystarr = NULL;
  ay_tag_object mystag = {NULL, ay_pv_tagtype, mys};
  ay_tag_object myttag = {NULL, ay_pv_tagtype, myt};
@@ -529,14 +529,14 @@ ay_objio_writenpatch(FILE *fileptr, ay_object *o, double *m)
 	  return AY_EOMEM;
 	} /* if */
       /* i am C/C++ line 111111 in Ayam :) */
-      j = 0;
-      for(i = 0; i < mystlen; i++)
+      uj = 0;
+      for(ui = 0; ui < mystlen; ui++)
 	{
 	  if(have_mys)
-	    mystarr[j]   = mysarr[i];
+	    mystarr[uj]   = mysarr[ui];
 	  if(have_myt)
-	    mystarr[j+1] = mytarr[i];
-	  j += 2;
+	    mystarr[uj+1] = mytarr[ui];
+	  uj += 2;
 	} /* for */
 
       ay_objio_writetvertices(fileptr, mystlen, 2, mystarr);
@@ -789,6 +789,14 @@ ay_objio_writepomesh(FILE *fileptr, ay_object *o, double *m)
  double v[3], *p1;
  int stride;
  unsigned int i, j, k, p = 0, q = 0, r = 0;
+ char mys[] = "mys,", myt[] = "myt,";
+ int have_mys = AY_FALSE, have_myt = AY_FALSE;
+ unsigned int myslen = 0, mytlen = 0, mystlen = 0;
+ double *mysarr = NULL, *mytarr = NULL, *mystarr = NULL;
+ ay_tag_object mystag = {NULL, ay_pv_tagtype, mys};
+ ay_tag_object myttag = {NULL, ay_pv_tagtype, myt};
+ ay_tag_object *tag;
+
 
   if(!o)
    return AY_ENULL;
@@ -820,6 +828,68 @@ ay_objio_writepomesh(FILE *fileptr, ay_object *o, double *m)
 	}
     }
 
+  /* write texture coordinates from potentially present PV tags */
+  if(o->tags)
+    {
+      tag = o->tags;
+      while(tag)
+	{
+	  if((tag->type == ay_pv_tagtype) && ay_pv_cmpname(tag, &mystag))
+	    {
+	      have_mys = AY_TRUE;
+
+	      ay_status = ay_pv_convert(tag, &myslen, (void**)&mysarr);
+	    }
+	  if((tag->type == ay_pv_tagtype) && ay_pv_cmpname(tag, &myttag))
+	    {
+	      have_myt = AY_TRUE;
+
+	      ay_status = ay_pv_convert(tag, &mytlen, (void**)&mytarr);
+	    }
+	  tag = tag->next;
+	} /* while */
+    } /* if */
+
+  /* merge and write the texture vertices */
+  if(have_mys)
+    mystlen = 2*myslen;
+  else
+    if(have_myt)
+      mystlen = 2*mytlen;
+
+  if(mystlen > 0)
+    {
+      if(!(mystarr = calloc(mystlen, sizeof(double))))
+	{
+	  if(v)
+	    free(v);
+	  if(mysarr)
+	    free(mysarr);
+	  if(mytarr)
+	    free(mytarr);
+	  return AY_EOMEM;
+	} /* if */
+
+      j = 0;
+      for(i = 0; i < mystlen; i++)
+	{
+	  if(have_mys)
+	    mystarr[j]   = mysarr[i];
+	  if(have_myt)
+	    mystarr[j+1] = mytarr[i];
+	  j += 2;
+	} /* for */
+
+      ay_objio_writetvertices(fileptr, mystlen, 2, mystarr);
+
+      if(mysarr)
+	free(mysarr);
+      if(mytarr)
+	free(mytarr);
+      free(mystarr);
+      mystarr = NULL;
+    } /* if */
+
   /* write faces */
   for(i = 0; i < po->npolys; i++)
     {
@@ -840,20 +910,39 @@ ay_objio_writepomesh(FILE *fileptr, ay_object *o, double *m)
 		    {
 		      for(k = 0; k < po->nverts[q]; k++)
 			{
-			  fprintf(fileptr, " -%d//-%d",
-				  po->ncontrols-po->verts[r],
-				  po->ncontrols-po->verts[r]);
+			  if(have_mys || have_myt)
+			    {
+			      fprintf(fileptr, " -%d/-%d/-%d",
+				      po->ncontrols-po->verts[r],
+				      po->ncontrols-po->verts[r],
+				      po->ncontrols-po->verts[r]);
+			    }
+			  else
+			    {
+			      fprintf(fileptr, " -%d//-%d",
+				      po->ncontrols-po->verts[r],
+				      po->ncontrols-po->verts[r]);
+			    }
 			  r++;
-			}
+			} /* for */
 		    }
 		  else
 		    {
 		      for(k = 0; k < po->nverts[q]; k++)
 			{
-			  fprintf(fileptr, " -%d",
-				  po->ncontrols-po->verts[r]);
+			  if(have_mys || have_myt)
+			    {
+			      fprintf(fileptr, " -%d/-%d",
+				      po->ncontrols-po->verts[r],
+				      po->ncontrols-po->verts[r]);
+			    }
+			  else
+			    {
+			      fprintf(fileptr, " -%d",
+				      po->ncontrols-po->verts[r]);
+			    }
 			  r++;
-			}
+			} /* for */
 		    } /* if */
 
 		  fprintf(fileptr, "\n");
