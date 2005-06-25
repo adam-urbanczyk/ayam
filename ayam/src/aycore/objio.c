@@ -72,6 +72,12 @@ static int objio_tesspomesh = AY_FALSE;
 
 static int objio_omitcurves = AY_FALSE;
 
+char objio_stagnamedef[] = "mys";
+char *objio_stagname = objio_stagnamedef;
+char objio_ttagnamedef[] = "myt";
+char *objio_ttagname = objio_ttagnamedef;
+
+
 /* functions */
 
 /* ay_objio_registerwritecb:
@@ -443,12 +449,11 @@ ay_objio_writenpatch(FILE *fileptr, ay_object *o, double *m)
  ay_nurbpatch_object *np;
  double *v = NULL, *p1, *p2, pw[3];
  int stride = 4, i, j;
- char mys[] = "mys,", myt[] = "myt,";
  int have_mys = AY_FALSE, have_myt = AY_FALSE;
  unsigned int myslen = 0, mytlen = 0, mystlen = 0, ui, uj;
  double *mysarr = NULL, *mytarr = NULL, *mystarr = NULL;
- ay_tag_object mystag = {NULL, ay_pv_tagtype, mys};
- ay_tag_object myttag = {NULL, ay_pv_tagtype, myt};
+ ay_tag_object mystag = {NULL, ay_pv_tagtype, NULL};
+ ay_tag_object myttag = {NULL, ay_pv_tagtype, NULL};
  ay_tag_object *tag;
 
   if(!o)
@@ -490,6 +495,14 @@ ay_objio_writenpatch(FILE *fileptr, ay_object *o, double *m)
   /* write texture coordinates from potentially present PV tags */
   if(o->tags)
     {
+      if(!(mystag.val = calloc(strlen(objio_stagname)+2,sizeof(char))))
+	return AY_EOMEM;
+      if(!(myttag.val = calloc(strlen(objio_ttagname)+2,sizeof(char))))
+	return AY_EOMEM;
+      strcpy(mystag.val, objio_stagname);
+      mystag.val[strlen(objio_stagname)] = ',';
+      strcpy(myttag.val, objio_ttagname);
+      myttag.val[strlen(objio_ttagname)] = ',';
       tag = o->tags;
       while(tag)
 	{
@@ -507,6 +520,8 @@ ay_objio_writenpatch(FILE *fileptr, ay_object *o, double *m)
 	    }
 	  tag = tag->next;
 	} /* while */
+      free(mystag.val);
+      free(myttag.val);
     } /* if */
 
   /* merge and write the texture vertices */
@@ -789,14 +804,12 @@ ay_objio_writepomesh(FILE *fileptr, ay_object *o, double *m)
  double v[3], *p1;
  int stride;
  unsigned int i, j, k, p = 0, q = 0, r = 0;
- char mys[] = "mys,", myt[] = "myt,";
  int have_mys = AY_FALSE, have_myt = AY_FALSE;
  unsigned int myslen = 0, mytlen = 0, mystlen = 0;
  double *mysarr = NULL, *mytarr = NULL, *mystarr = NULL;
- ay_tag_object mystag = {NULL, ay_pv_tagtype, mys};
- ay_tag_object myttag = {NULL, ay_pv_tagtype, myt};
+ ay_tag_object mystag = {NULL, ay_pv_tagtype, objio_stagname};
+ ay_tag_object myttag = {NULL, ay_pv_tagtype, objio_ttagname};
  ay_tag_object *tag;
-
 
   if(!o)
    return AY_ENULL;
@@ -831,6 +844,14 @@ ay_objio_writepomesh(FILE *fileptr, ay_object *o, double *m)
   /* write texture coordinates from potentially present PV tags */
   if(o->tags)
     {
+      if(!(mystag.val = calloc(strlen(objio_stagname)+2,sizeof(char))))
+	return AY_EOMEM;
+      if(!(myttag.val = calloc(strlen(objio_ttagname)+2,sizeof(char))))
+	return AY_EOMEM;
+      strcpy(mystag.val, objio_stagname);
+      mystag.val[strlen(objio_stagname)] = ',';
+      strcpy(myttag.val, objio_ttagname);
+      myttag.val[strlen(objio_ttagname)] = ',';
       tag = o->tags;
       while(tag)
 	{
@@ -848,6 +869,8 @@ ay_objio_writepomesh(FILE *fileptr, ay_object *o, double *m)
 	    }
 	  tag = tag->next;
 	} /* while */
+      free(mystag.val);
+      free(myttag.val);
     } /* if */
 
   /* merge and write the texture vertices */
@@ -1050,7 +1073,7 @@ ay_objio_writepomesh(FILE *fileptr, ay_object *o, double *m)
     {
       if(lihead)
 	ay_objio_writepomesh(fileptr, lihead->object, m);
-    }
+    } /* if */
 
   while(lihead)
     {
@@ -1299,28 +1322,48 @@ ay_objio_writescenetcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int ay_status = AY_OK;
  char fname[] = "ay_objio_write";
- int selected = AY_FALSE;
+ int selected = AY_FALSE, i = 2;
 
   /* check args */
   if(argc < 2)
     {
-      ay_error(AY_EARGS, fname, "filename [1|0] | [1|0] [1|0]");
+      ay_error(AY_EARGS, fname, "filename");
       return TCL_OK;
     }
 
   objio_tesspomesh = AY_FALSE;
   objio_omitcurves = AY_FALSE;
 
-  if(argc > 2)
-    selected = atoi(argv[2]);
-
-  if(argc > 3)
-    objio_tesspomesh = atoi(argv[3]);
-
-  if(argc > 4)
-    objio_omitcurves = atoi(argv[4]);
+  while(i+1 < argc)
+    {
+      if(!strcmp(argv[i], "-o"))
+	{
+	  sscanf(argv[i+1], "%d", &objio_omitcurves);
+	}
+      else
+      if(!strcmp(argv[i], "-s"))
+	{
+	  sscanf(argv[i+1], "%d", &selected);
+	}
+      else
+      if(!strcmp(argv[i], "-p"))
+	{
+	  sscanf(argv[i+1], "%d", &objio_tesspomesh);
+	}
+      else
+      if(!strcmp(argv[i], "-t"))
+	{
+	  objio_stagname = argv[i+1];
+	  objio_ttagname = argv[i+2];
+	  i++;
+	}
+      i += 2;
+    } /* while */
 
   ay_status = ay_objio_writescene(argv[1], selected);
+
+  objio_stagname = objio_stagnamedef;
+  objio_ttagname = objio_ttagnamedef;
 
  return TCL_OK;
 } /* ay_objio_writescenetcmd */
@@ -1393,10 +1436,6 @@ ay_object **objio_nexttrim;
 
 ay_object *objio_lastface;
 
-char objio_stagnamedef[] = "mys";
-char *objio_stagname = objio_stagnamedef;
-char objio_ttagnamedef[] = "myt";
-char *objio_ttagname = objio_ttagnamedef;
 
 int ay_objio_addvertex(int type, double *v);
 
@@ -2914,6 +2953,7 @@ cleanup:
   if(objio_ncurve.controlv)
     free(objio_ncurve.controlv);
   objio_ncurve.controlv = NULL;
+  objio_ncurve.length = 0;
   if(objio_npatch.controlv)
     free(objio_npatch.controlv);
   objio_npatch.controlv = NULL;
