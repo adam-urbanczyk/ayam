@@ -27,6 +27,9 @@ int ay_objio_registerwritecb(char *name, ay_objio_writecb *cb);
 int ay_objio_writevertices(FILE *fileptr, unsigned int n, int stride,
 			   double *v);
 
+int ay_objio_writetvertices(FILE *fileptr, unsigned int n, int stride,
+			    double *v);
+
 int ay_objio_writencurve(FILE *fileptr, ay_object *o, double *m);
 
 int ay_objio_writetcurve(FILE *fileptr, ay_object *o, double *m);
@@ -101,7 +104,8 @@ ay_objio_registerwritecb(char *name, ay_objio_writecb *cb)
 
 
 /* ay_objio_writevertices:
- *  write <n> <stride>D-vertices from array <v[n*stride]> to file <fileptr>
+ *  write <n> <stride>D-texturevertices from array <v[n*stride]> to
+ *  file <fileptr>
  */
 int
 ay_objio_writevertices(FILE *fileptr, unsigned int n, int stride, double *v)
@@ -135,10 +139,43 @@ ay_objio_writevertices(FILE *fileptr, unsigned int n, int stride, double *v)
     default:
       return AY_ERROR;
       break;
-    }
+    } /* switch */
 
  return AY_OK;
 } /* ay_objio_writevertices */
+
+
+/* ay_objio_writetvertices:
+ *  write <n> <stride>D-vertices from array <v[n*stride]> to file <fileptr>
+ */
+int
+ay_objio_writetvertices(FILE *fileptr, unsigned int n, int stride, double *v)
+{
+ unsigned int i, j = 0;
+
+  switch(stride)
+    {
+    case 2:
+      for(i = 0; i < n; i++)
+	{
+	  fprintf(fileptr, "vt %g %g\n", v[j], v[j+1]);
+	  j += stride;
+	}
+      break;
+    case 3:
+      for(i = 0; i < n; i++)
+	{
+	  fprintf(fileptr, "vt %g %g %g\n", v[j], v[j+1], v[j+2]);
+	  j += stride;
+	}
+      break;
+    default:
+      return AY_ERROR;
+      break;
+    } /* switch */
+
+ return AY_OK;
+} /* ay_objio_writetvertices */
 
 
 /* ay_objio_writencurve:
@@ -406,6 +443,13 @@ ay_objio_writenpatch(FILE *fileptr, ay_object *o, double *m)
  ay_nurbpatch_object *np;
  double *v = NULL, *p1, *p2, pw[3];
  int stride = 4, i, j;
+ char mys[] = "mys,", myt[] = "myt,";
+ int have_mys = AY_FALSE, have_myt = AY_FALSE;
+ unsigned int myslen = 0, mytlen = 0, mystlen = 0;
+ double *mysarr = NULL, *mytarr = NULL, *mystarr = NULL;
+ ay_tag_object mystag = {NULL, ay_pv_tagtype, mys};
+ ay_tag_object myttag = {NULL, ay_pv_tagtype, myt};
+ ay_tag_object *tag;
 
   if(!o)
     return AY_ENULL;
@@ -443,6 +487,68 @@ ay_objio_writenpatch(FILE *fileptr, ay_object *o, double *m)
   ay_objio_writevertices(fileptr, (unsigned int)(np->width * np->height),
 			 stride, v);
 
+  /* write texture coordinates from potentially present PV tags */
+  if(o->tags)
+    {
+      tag = o->tags;
+      while(tag)
+	{
+	  if((tag->type == ay_pv_tagtype) && ay_pv_cmpname(tag, &mystag))
+	    {
+	      have_mys = AY_TRUE;
+
+	      ay_status = ay_pv_convert(tag, &myslen, (void**)&mysarr);
+	    }
+	  if((tag->type == ay_pv_tagtype) && ay_pv_cmpname(tag, &myttag))
+	    {
+	      have_myt = AY_TRUE;
+
+	      ay_status = ay_pv_convert(tag, &mytlen, (void**)&mytarr);
+	    }
+	  tag = tag->next;
+	} /* while */
+    } /* if */
+
+  /* merge and write the texture vertices */
+  if(have_mys)
+    mystlen = 2*myslen;
+  else
+    if(have_myt)
+      mystlen = 2*mytlen;
+
+  if(mystlen > 0)
+    {
+      if(!(mystarr = calloc(mystlen, sizeof(double))))
+	{
+	  if(v)
+	    free(v);
+	  if(mysarr)
+	    free(mysarr);
+	  if(mytarr)
+	    free(mytarr);
+	  return AY_EOMEM;
+	} /* if */
+      /* i am C/C++ line 111111 in Ayam :) */
+      j = 0;
+      for(i = 0; i < mystlen; i++)
+	{
+	  if(have_mys)
+	    mystarr[j]   = mysarr[i];
+	  if(have_myt)
+	    mystarr[j+1] = mytarr[i];
+	  j += 2;
+	} /* for */
+
+      ay_objio_writetvertices(fileptr, mystlen, 2, mystarr);
+
+      if(mysarr)
+	free(mysarr);
+      if(mytarr)
+	free(mytarr);
+      free(mystarr);
+      mystarr = NULL;
+    } /* if */
+
   /* write bspline surface */
   fprintf(fileptr, "cstype rat bspline\n");
   fprintf(fileptr, "deg %d %d\n", np->uorder-1, np->vorder-1);
@@ -452,8 +558,15 @@ ay_objio_writenpatch(FILE *fileptr, ay_object *o, double *m)
 
   for(i = np->width*np->height; i > 0; i--)
     {
-      fprintf(fileptr, " -%d", i);
-    }
+      if(have_mys || have_myt)
+	{
+	  fprintf(fileptr, " -%d/-%d", i, i);
+	}
+      else
+	{
+	  fprintf(fileptr, " -%d", i);
+	}
+    } /* for */
   fprintf(fileptr, "\n");
 
   /* write knot vector (u) */
