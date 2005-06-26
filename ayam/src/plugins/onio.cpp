@@ -46,6 +46,11 @@ int onio_expignorehidden = AY_TRUE;
 
 double onio_accuracy = 1.0e-12;
 
+char onio_stagnamedef[] = "mys";
+char *onio_stagname = onio_stagnamedef;
+char onio_ttagnamedef[] = "myt";
+char *onio_ttagname = onio_ttagnamedef;
+
 
 // prototypes of functions local to this module
 
@@ -74,6 +79,8 @@ int onio_writenpconvertible(ay_object *o, ONX_Model *p_m, double *m);
 int onio_writencurve(ay_object *o, ONX_Model *p_m, double *m);
 
 int onio_writencconvertible(ay_object *o, ONX_Model *p_m, double *m);
+
+int onio_writepomesh(ay_object *o, ONX_Model *p_m, double *m);
 
 int onio_writelevel(ay_object *o, ONX_Model *p_m, double *m);
 
@@ -224,7 +231,7 @@ onio_writename(ay_object *o, ONX_Model_Object& p_mo)
 
   if(!o->name || (strlen(o->name) == 0))
     return AY_OK;
-  
+
   ON_wString *p_name = new ON_wString(o->name);
   p_mo.m_attributes.m_name = *p_name;
   delete p_name;
@@ -241,7 +248,7 @@ onio_prependname(ay_object *o, ONX_Model_Object& p_mo)
 
   if(!o->name || (strlen(o->name) == 0))
     return AY_OK;
-  
+
   ON_wString *p_name = new ON_wString(o->name);
 
   if(p_mo.m_attributes.m_name.IsEmpty())
@@ -679,6 +686,241 @@ onio_writencconvertible(ay_object *o, ONX_Model *p_m, double *m)
 } // onio_writencconvertible
 
 
+// onio_writepomesh:
+//
+int
+onio_writepomesh(ay_object *o, ONX_Model *p_m, double *m)
+{
+ int ay_status = AY_OK;
+ ay_object *to = NULL;
+ ay_list_object *li = NULL, **nextli = NULL, *lihead = NULL;
+ ay_pomesh_object *pm;
+ int stride = 3, have_mys = AY_FALSE, have_myt = AY_FALSE;
+ unsigned int myslen = 0, mytlen = 0;
+ double *mysarr = NULL, *mytarr = NULL;
+ ay_tag_object mystag = {NULL, ay_pv_tagtype, onio_stagname};
+ ay_tag_object myttag = {NULL, ay_pv_tagtype, onio_ttagname};
+ ay_tag_object *tag;
+ ON_Mesh *p_mesh = NULL;
+ BOOL has_texcoords = false;
+ BOOL has_vnormals = false;
+ unsigned int a, f = 0, i, j, k, p = 0, q = 0, r = 0;
+
+  if(!o || !p_m || !m)
+    return AY_ENULL;
+
+  pm = (ay_pomesh_object *)(o->refine);
+
+  if(pm->has_normals)
+    has_vnormals = TRUE;
+
+  if(o->tags)
+    {
+      if(!(mystag.val = (char*)calloc(strlen(onio_stagname)+2,sizeof(char))))
+	return AY_EOMEM;
+      if(!(myttag.val = (char*)calloc(strlen(onio_ttagname)+2,sizeof(char))))
+	return AY_EOMEM;
+      strcpy(mystag.val, onio_stagname);
+      mystag.val[strlen(onio_stagname)] = ',';
+      strcpy(myttag.val, onio_ttagname);
+      myttag.val[strlen(onio_ttagname)] = ',';
+      tag = o->tags;
+      while(tag)
+	{
+	  if((tag->type == ay_pv_tagtype) && ay_pv_cmpname(tag, &mystag))
+	    {
+	      have_mys = AY_TRUE;
+
+	      ay_status = ay_pv_convert(tag, &myslen, (void**)&mysarr);
+	    }
+	  if((tag->type == ay_pv_tagtype) && ay_pv_cmpname(tag, &myttag))
+	    {
+	      have_myt = AY_TRUE;
+
+	      ay_status = ay_pv_convert(tag, &mytlen, (void**)&mytarr);
+	    }
+	  tag = tag->next;
+	} // while
+      free(mystag.val);
+      free(myttag.val);
+    } // if
+
+  p_mesh = new ON_Mesh(pm->npolys, pm->ncontrols, has_vnormals, has_texcoords);
+
+
+  // set vertex coordinates and normals
+  a = 0;
+  if(pm->has_normals)
+    stride += 3;
+  for(i = 0; i < pm->ncontrols; i++)
+    {
+      ON_3dPoint pt;
+      pt.x = pm->controlv[a];
+      pt.y = pm->controlv[a+1];
+      pt.z = pm->controlv[a+2];
+      p_mesh->SetVertex(i, pt);
+      if(pm->has_normals)
+	{
+	  ON_3dVector ve;
+	  ve.x = pm->controlv[a];
+	  ve.y = pm->controlv[a+1];
+	  ve.z = pm->controlv[a+2];
+	  p_mesh->SetVertexNormal(i, ve);
+	} // if
+      a += stride;
+    } // for
+
+  // set faces
+  for(i = 0; i < pm->npolys; i++)
+    {
+      if(pm->nloops[i] == 1)
+	{
+	  // this face has just one loop (no hole)
+	  // XXXX this "for" unneeded?
+	  for(j = 0; j < pm->nloops[p]; j++)
+	    {
+	      if(pm->nverts[q] == 3)
+		{
+		  // this is a triangle
+		  p_mesh->SetTriangle(f, pm->verts[r], pm->verts[r+1],
+				      pm->verts[r+2]);
+		  f++;
+		  r += 3;
+		} // if
+	      if(pm->nverts[q] == 4)
+		{
+		  // this is a quad
+		  p_mesh->SetQuad(f, pm->verts[r], pm->verts[r+1],
+				  pm->verts[r+2], pm->verts[r+3]);
+		  f++;
+		  r += 4;
+		} // if
+	      if(pm->nverts[q] > 4)
+		{
+		  // this is not a triangle or quad => tesselate it
+		  // create new object (for the tesselated face)
+		  li = NULL;
+		  if(!(li = (ay_list_object*)
+		       calloc(1, sizeof(ay_list_object))))
+		    return AY_EOMEM;
+		  to = NULL;
+		  if(!(to = (ay_object*)calloc(1, sizeof(ay_object))))
+		    return AY_EOMEM;
+		  li->object = to;
+
+		  ay_object_defaults(to);
+
+		  to->type = AY_IDPOMESH;
+
+		  ay_status = ay_tess_pomeshf(pm, i, q, r, AY_FALSE,
+					  (ay_pomesh_object **)&(to->refine));
+
+		  // temporarily save the tesselated face
+		  if(nextli)
+		    {
+		      *nextli = li;
+		    }
+		  else
+		    {
+		      lihead = li;
+		    }
+		  nextli = &(li->next);
+
+		  /* advance index r */
+		  for(k = 0; k < pm->nverts[q]; k++)
+		    {
+		      r++;
+		    }
+		}
+	      q++;
+	    } // for
+	}
+      else
+	{
+	  // this face has more than one loop (hole(s)) => tesselate it
+
+	  // create new object (for the tesselated face)
+	  li = NULL;
+	  if(!(li = (ay_list_object*)calloc(1, sizeof(ay_list_object))))
+	    return AY_EOMEM;
+	  to = NULL;
+	  if(!(to = (ay_object*)calloc(1, sizeof(ay_object))))
+	    return AY_EOMEM;
+	  li->object = to;
+
+	  ay_object_defaults(to);
+
+	  to->type = AY_IDPOMESH;
+
+	  ay_status = ay_tess_pomeshf(pm, i, q, r, AY_FALSE,
+				      (ay_pomesh_object **)&(to->refine));
+
+	  // temporarily save the tesselated face
+	  if(nextli)
+	    {
+	      *nextli = li;
+	    }
+	  else
+	    {
+	      lihead = li;
+	    }
+	  nextli = &(li->next);
+
+	  // advance indices r and q
+	  for(j = 0; j < pm->nloops[p]; j++)
+	    {
+	      for(k = 0; k < pm->nverts[q]; k++)
+		{
+		  r++;
+		}
+	      q++;
+	    } // for
+	} // if
+      p++;
+    } // for
+
+
+  // append p_mesh to object table
+  ONX_Model_Object& mo = p_m->m_object_table.AppendNew();
+  mo.m_object = p_mesh;
+  mo.m_bDeleteObject = true;
+
+  onio_writename(o, mo);
+
+  // write tesselated face(s)
+  if(lihead && lihead->next)
+    {
+      to = NULL;
+      ay_status = ay_pomesht_merge(AY_FALSE, lihead, &to);
+      if(to)
+	{
+	  ay_status = ay_pomesht_optimizecoords(
+				     (ay_pomesh_object*)to->refine, AY_FALSE);
+	  ay_object_defaults(to);
+	  to->type = AY_IDPOMESH;
+	  /*ay_trafo_copy(o, to);*/
+	  onio_writepomesh(lihead->object, p_m, m);
+	  ay_object_delete(to);
+	}
+    }
+  else
+    {
+      if(lihead)
+	onio_writepomesh(lihead->object, p_m, m);
+    } // if
+
+  while(lihead)
+    {
+      ay_object_delete(lihead->object);
+      li = lihead->next;
+      free(lihead);
+      lihead = li;
+    } // while
+
+ return ay_status;
+} // onio_writepomesh
+
+
 // onio_writelevel:
 //
 int
@@ -840,7 +1082,7 @@ onio_writesphere(ay_object *o, ONX_Model *p_m, double *m)
 	      ONX_Model_Object& mo = p_m->m_object_table.AppendNew();
 	      mo.m_object = p_su;
 	      mo.m_bDeleteObject = true;
-	      
+
 	      onio_writename(o, mo);
 
 	    } // if
@@ -992,7 +1234,7 @@ onio_writecone(ay_object *o, ONX_Model *p_m, double *m)
 	      onio_writename(o, mo);
 
 	    } // if
-	  */ 
+	  */
         }
       else
         {
@@ -2795,6 +3037,12 @@ Onio_Init(Tcl_Interp *interp)
 
   ay_status = onio_registerwritecb((char *)(AY_IDPARABOLOID),
 				   onio_writenpconvertible);
+
+  ay_status = onio_registerwritecb((char *)(AY_IDPARABOLOID),
+				   onio_writenpconvertible);
+
+  ay_status = onio_registerwritecb((char *)(AY_IDPOMESH),
+				   onio_writepomesh);
 
 
 #ifndef AYONIOWRAPPED
