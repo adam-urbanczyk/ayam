@@ -1,16 +1,23 @@
-[18. Jun 2005] CVS-Head:
+[26. Jun 2005] CVS-Head:
 o bug fixes:
   - fixed moving of tagged points of multiple selected objects (SF 1220972)
+  - fixed notification of multiple modified objects upon undo/redo (SF 1223494)
 o improved import option dialogue of "rrib" plugin (added FileName)
 o improved import and export option dialogues of "onio" plugin (added FileName)
 o file, multiple file, and multiple directory property GUI elements now
   automatically scroll to the end after a "Set" operation to show the more
   relevant part of the changed value
-o added Wavefront OBJ import
+o added Wavefront OBJ import (supporting trimmed NURBS and polygonal faces
+  with texture coordinates)
 o added support for Hyperboloid and Paraboloid objects to 3DMF export
 o improved error reporting of "onio" plugin
 o added support for importing polygonal meshes to the "onio" plugin
 o added option to merge PV tags of PolyMesh objects to merge PolyMesh tool
+o Main menu entry "Special/Resolve All Instances" no longer completely resets
+  the tree widget so that it is more clear, that it really just operates in
+  the current level (and below)
+o onio import now handles texture coordinates for polymesh objects
+o onio export now handles polymesh objects (with texture coordinates)
 
 
 [15. May 2005] Ayam1.8.2:
