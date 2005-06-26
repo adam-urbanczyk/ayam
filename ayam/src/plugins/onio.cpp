@@ -2072,9 +2072,10 @@ onio_readmesh(ON_Mesh *p_m, double accuracy)
 {
  int ay_status = AY_OK;
  char fname[] = "onio_readmesh";
+ int j;
  unsigned int i, a, stride = 3, *nloops = NULL, *nverts = NULL, *verts = NULL;
  unsigned int tnverts = 0;
- double *controlv = NULL;
+ double *controlv = NULL, *stexc = NULL, *ttexc = NULL;
  ay_pomesh_object *po = NULL;
  ay_object *newo = NULL;
 
@@ -2112,6 +2113,21 @@ onio_readmesh(ON_Mesh *p_m, double accuracy)
     } // for
 
   po->controlv = controlv;
+
+  // copy texture coordinates (if present)
+  if(p_m->m_T.Capacity() != 0)
+    {
+      if(!(stexc = (double*)calloc(p_m->m_T.Capacity(), sizeof(double))))
+	{ ay_status = AY_EOMEM; goto cleanup; }
+      if(!(ttexc = (double*)calloc(p_m->m_T.Capacity(), sizeof(double))))
+	{ ay_status = AY_EOMEM; goto cleanup; }
+
+      for(j = 0; j < p_m->m_T.Capacity(); j++)
+	{
+	  stexc[j] = p_m->m_T[j].x;
+	  ttexc[j] = p_m->m_T[j].y;
+	}
+    } // if
 
   // copy faces
   po->npolys = p_m->m_F.Capacity();
@@ -2167,6 +2183,15 @@ onio_readmesh(ON_Mesh *p_m, double accuracy)
   newo->type = AY_IDPOMESH;
   newo->refine = po;
 
+  // link texture coordinates as PV tags
+  if(stexc)
+    {
+      ay_status = ay_pv_add(newo, "mys", "varying", 0, p_m->m_T.Capacity(),
+			    (void*)stexc);
+      ay_status = ay_pv_add(newo, "mys", "varying", 0, p_m->m_T.Capacity(),
+			    (void*)stexc);
+    }
+
   // link the new PolyMesh into the scene hierarchy
   ay_status = ay_object_link(newo);
 
@@ -2187,6 +2212,10 @@ cleanup:
     free(po);
   if(controlv)
     free(controlv);
+  if(stexc)
+    free(stexc);
+  if(ttexc)
+    free(ttexc);
   if(newo)
     free(newo);
   if(nloops)
