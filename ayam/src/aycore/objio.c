@@ -3284,6 +3284,21 @@ ay_objio_init(Tcl_Interp *interp)
   ay_status = ay_objio_registerwritecb((char *)(AY_IDTEXT),
 				       ay_objio_writenpconvertible);
 
+  ay_status = ay_objio_registerwritecb((char *)(AY_IDSPHERE),
+				       ay_objio_writenpconvertible);
+  ay_status = ay_objio_registerwritecb((char *)(AY_IDDISK),
+				       ay_objio_writenpconvertible);
+  ay_status = ay_objio_registerwritecb((char *)(AY_IDCYLINDER),
+				       ay_objio_writenpconvertible);
+  ay_status = ay_objio_registerwritecb((char *)(AY_IDCONE),
+				       ay_objio_writenpconvertible);
+  ay_status = ay_objio_registerwritecb((char *)(AY_IDHYPERBOLOID),
+				       ay_objio_writenpconvertible);
+  ay_status = ay_objio_registerwritecb((char *)(AY_IDPARABOLOID),
+				       ay_objio_writenpconvertible);
+  ay_status = ay_objio_registerwritecb((char *)(AY_IDTORUS),
+				       ay_objio_writenpconvertible);
+
   ay_status = ay_objio_registerwritecb((char *)(AY_IDPOMESH),
 				       ay_objio_writepomesh);
 
