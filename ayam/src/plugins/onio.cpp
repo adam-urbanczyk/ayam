@@ -423,7 +423,7 @@ onio_isboundingloop(ay_object *o)
   if(!o)
     return false;
 
-  if(!o->type == AY_IDNCURVE)
+  if(!(o->type == AY_IDNCURVE))
     return false;
 
   nc = (ay_nurbcurve_object*)o->refine;
@@ -2342,14 +2342,16 @@ onio_readmesh(ON_Mesh *p_m, double accuracy)
   a = 0;
   for(i = 0; i < po->ncontrols; i++)
     {
-      controlv[a]   = p_m->m_V[i].x;
-      controlv[a+1] = p_m->m_V[i].y;
-      controlv[a+2] = p_m->m_V[i].z;
+      ON_3fPoint pt = p_m->m_V[(int)i];
+      controlv[a]   = pt.x;
+      controlv[a+1] = pt.y;
+      controlv[a+2] = pt.z;
       if(stride > 3)
 	{
-	  controlv[a+3] = p_m->m_N[i].x;
-	  controlv[a+4] = p_m->m_N[i].y;
-	  controlv[a+5] = p_m->m_N[i].z;
+	  ON_3fVector ve = p_m->m_N[(int)i];
+	  controlv[a+3] = ve.x;
+	  controlv[a+4] = ve.y;
+	  controlv[a+5] = ve.z;
 	} // if
       a += stride;
     } // for
@@ -2385,14 +2387,14 @@ onio_readmesh(ON_Mesh *p_m, double accuracy)
   po->nverts = nverts;
   for(i = 0; i < po->npolys; i++)
     {
-      if(p_m->m_F[i].IsTriangle())
+      if(p_m->m_F[(int)i].IsTriangle())
 	{
-	  nverts[i] = 3;
+	  nverts[(int)i] = 3;
 	  tnverts += 3;
 	}
       else
 	{
-	  nverts[i] = 4;
+	  nverts[(int)i] = 4;
 	  tnverts += 4;
 	} // if
     } // for
@@ -2403,15 +2405,15 @@ onio_readmesh(ON_Mesh *p_m, double accuracy)
   a = 0;
   for(i = 0; i < po->npolys; i++)
     {
-      verts[a] = p_m->m_F[i].vi[0];
+      verts[a] = p_m->m_F[(int)i].vi[0];
       a++;
-      verts[a] = p_m->m_F[i].vi[1];
+      verts[a] = p_m->m_F[(int)i].vi[1];
       a++;
-      verts[a] = p_m->m_F[i].vi[2];
+      verts[a] = p_m->m_F[(int)i].vi[2];
       a++;
-      if(p_m->m_F[i].IsQuad())
+      if(p_m->m_F[(int)i].IsQuad())
 	{
-	  verts[a] = p_m->m_F[i].vi[3];
+	  verts[a] = p_m->m_F[(int)i].vi[3];
 	  a++;
 	} // if
     } // for
