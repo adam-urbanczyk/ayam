@@ -26,9 +26,52 @@ proc updateParam { w prop name op } {
     } elseif { $op == "/2"} {
 	set newval [expr $oldval / 2]
     } elseif { $op == "+0.1" } {
-	set newval [expr $oldval + (round(ceil($oldval)*10.0) / 100.0)]
+
+	set ta $oldval
+	set tb 1.0
+	set done 0
+	while { ! $done } {
+	    if { [expr abs($oldval)] <= 1.0 } {
+		if { [expr abs(int($ta) - $ta)] == 0.0 } {
+		    set done 1
+		} else {
+		    set tb [expr $tb/10.0]
+		    set ta [expr $ta*10.0]
+		}
+	    } else {
+		if { [expr abs($ta)] < 100.0 } {
+		    set done 1
+		} else {
+		    set tb [expr $tb*10.0]
+		    set ta [expr $ta/10.0]
+		}
+	    }
+	}
+	set newval [expr $oldval + $tb]
+
     } elseif { $op == "-0.1" } {
-	set newval [expr $oldval - (round(ceil($oldval)*10.0) / 100.0)]
+
+	set ta $oldval
+	set tb 1.0
+	set done 0
+	while { ! $done } {
+	    if { [expr abs($oldval)] <= 1.0 } {
+		if { [expr abs(int($ta) - $ta)] == 0.0 } {
+		    set done 1
+		} else {
+		    set tb [expr $tb/10.0]
+		    set ta [expr $ta*10.0]
+		}
+	    } else {
+		if { [expr abs($ta)] < 100.0 } {
+		    set done 1
+		} else {
+		    set tb [expr $tb*10.0]
+		    set ta [expr $ta/10.0]
+		}
+	    }
+	}
+	set newval [expr $oldval - $tb]
     }
 
     set ${prop}(${name}) $newval
@@ -456,6 +499,7 @@ proc addCheck { w prop name } {
 	global aymainshortcuts
 	bind $cb <${aymainshortcuts(IApplyMod)}-ButtonRelease-1> "after idle {\
 	    \$ay(appb) invoke}"
+	bind $cb <Key-Return> "$ay(appb) invoke;break"
 	if { $tcl_platform(platform) == "windows" } {
 	    bind $ff <${aymainshortcuts(IApplyMod)}-ButtonRelease-1>\
 		"after idle {\$ay(appb) invoke}"
