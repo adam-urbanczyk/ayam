@@ -25,6 +25,10 @@ proc updateParam { w prop name op } {
 	set newval [expr $oldval * 2]
     } elseif { $op == "/2"} {
 	set newval [expr $oldval / 2]
+    } elseif { $op == "+0.1" } {
+	set newval [expr $oldval + (round(ceil($oldval)*10.0) / 100.0)]
+    } elseif { $op == "-0.1" } {
+	set newval [expr $oldval - (round(ceil($oldval)*10.0) / 100.0)]
     }
 
     set ${prop}(${name}) $newval
@@ -82,6 +86,9 @@ if { $def != {} } {
     }
 }
 
+bind $f.b1 <Control-ButtonPress-1> "updateParam $w $prop $name -0.1;break"
+bind $f.b2 <Control-ButtonPress-1> "updateParam $w $prop $name +0.1;break"
+
 if { ! $ay(iapplydisable) } {
     global aymainshortcuts
     bind $f.b1 <${aymainshortcuts(IApplyMod)}-ButtonRelease-1> "after idle {\
@@ -90,6 +97,10 @@ if { ! $ay(iapplydisable) } {
 	    \$ay(appb) invoke}"
     bind $f.e <Key-Return> "+after idle {\
 	    \$ay(appb) invoke}"
+    if { $mb != "" } {
+	bind $mb <${aymainshortcuts(IApplyMod)}-ButtonRelease-1>\
+	    "after idle {\$ay(appb) invoke}"
+    }
 }
 
 global tcl_platform
@@ -271,7 +282,7 @@ proc addColorB { w prop name help {def {}}} {
 #
 #
 proc addColor { w prop name {def {}}} {
-    global $prop ayprefs
+    global $prop ayprefs ay
 
     set bw 1
 
@@ -323,6 +334,7 @@ proc addColor { w prop name {def {}}} {
 		-bd $bw
     }
 
+
     eval [subst "bindtags $f.b1 \{$f.b1 Button all\}"]
     bind $f.b1 <Key-Escape> {resetFocus}
 
@@ -352,6 +364,25 @@ proc addColor { w prop name {def {}}} {
     }
     # if
 
+
+    if { ! $ay(iapplydisable) } {
+	global aymainshortcuts
+	bind $e1 <Key-Return> "+after idle {\$ay(appb) invoke;\
+                               updateColorFromE $w $prop $name $f.b1}"
+	bind $e2 <Key-Return> "+after idle {\$ay(appb) invoke;\
+                               updateColorFromE $w $prop $name $f.b1}"
+	bind $e3 <Key-Return> "+after idle {\$ay(appb) invoke;
+                               updateColorFromE $w $prop $name $f.b1}"
+	if { $mb != "" } {
+	    bind $mb <${aymainshortcuts(IApplyMod)}-ButtonRelease-1>\
+		"after idle {\$ay(appb) invoke}"
+	}
+
+	bind $f.b1 <${aymainshortcuts(IApplyMod)}-ButtonPress-1>\
+		"updateColor $w $prop $name $f.b1;\
+		 after idle {\$ay(appb) invoke};break;"
+    }
+
     pack $f.er $f.eg $f.eb $f.b1 -in $f -fill both -expand yes\
 	    -side left -padx 2
 
@@ -380,7 +411,7 @@ proc addCheckB { w prop name help } {
 #
 #
 proc addCheck { w prop name } {
-    global $prop ayprefs
+    global $prop ayprefs ay
 
     set bw 1
 
@@ -398,8 +429,8 @@ proc addCheck { w prop name } {
     if { $tcl_platform(platform) == "windows" } {
 	# damn windows
 	set ff [frame $f.fcb -highlightthickness 1]
-	checkbutton $ff.cb -image emptyimg -variable ${prop}(${name})\
-		-bd $bw -indicatoron 0 -selectcolor #b03060
+	set cb [checkbutton $ff.cb -image emptyimg -variable ${prop}(${name})\
+		    -bd $bw -indicatoron 0 -selectcolor #b03060]
 
 	bind $ff <Enter> { %W configure -background #ececec }
 	bind $ff <Leave> { %W configure -background SystemButtonFace }
@@ -412,12 +443,23 @@ proc addCheck { w prop name } {
 	eval [subst "bindtags $ff.cb \{$ff.cb Checkbutton all\}"]
 	bind $ff.cb <Key-Escape> {resetFocus}
     } else {
-	checkbutton $f.cb -variable ${prop}(${name}) -bd $bw -pady 1 -padx 30
+	set cb [checkbutton $f.cb -variable ${prop}(${name}) -bd $bw\
+		    -pady 1 -padx 30]
 	pack $f.l -in $f -side left
 	pack $f.cb -in $f -side left -fill x -expand yes
 
 	eval [subst "bindtags $f.cb \{$f.cb Checkbutton all\}"]
 	bind $f.cb <Key-Escape> {resetFocus}
+    }
+
+    if { ! $ay(iapplydisable) } {
+	global aymainshortcuts
+	bind $cb <${aymainshortcuts(IApplyMod)}-ButtonRelease-1> "after idle {\
+	    \$ay(appb) invoke}"
+	if { $tcl_platform(platform) == "windows" } {
+	    bind $ff <${aymainshortcuts(IApplyMod)}-ButtonRelease-1>\
+		"after idle {\$ay(appb) invoke}"
+	}
     }
 
     pack $f -in $w -side top -fill x
@@ -455,7 +497,7 @@ proc addMenuB { w prop name help elist } {
 #
 #
 proc addMenu { w prop name elist } {
-    global $prop ayprefs tcl_platform
+    global $prop ayprefs ay tcl_platform
 
     set bw 1
 
@@ -498,6 +540,12 @@ proc addMenu { w prop name elist } {
     pack $f.mb -in $f -side left -fill x -expand yes -pady 0
     pack $f -in $w -side top -fill x
 
+    if { ! $ay(iapplydisable) } {
+	global aymainshortcuts
+	bind $f.mb <${aymainshortcuts(IApplyMod)}-ButtonRelease-1>\
+	    "after idle {\$ay(appb) invoke}"
+    }
+
  return;
 }
 # addMenu
@@ -519,7 +567,7 @@ proc addStringB { w prop name help {def {}} } {
 #
 #
 proc addString { w prop name  {def {}}} {
-    global $prop ayprefs tcl_platform
+    global $prop ayprefs ay tcl_platform
  
     set bw 1
 
@@ -546,10 +594,20 @@ proc addString { w prop name  {def {}}} {
 	set m [menu $mb.m -tearoff 0]
 	foreach val $def {
 	    $m add command -label $val\
-		    -command "global $prop; $e delete 0 end; $e insert end \{$val\};"
+	      -command "global $prop; $e delete 0 end; $e insert end \{$val\};"
+	}
+
+	if { ! $ay(iapplydisable) } {
+	    global aymainshortcuts
+	    bind $mb <${aymainshortcuts(IApplyMod)}-ButtonRelease-1>\
+		"after idle {\$ay(appb) invoke}"
 	}
     }
 
+    if { ! $ay(iapplydisable) } {
+	global aymainshortcuts
+	bind $f.e <Key-Return> "+after idle {\$ay(appb) invoke}"
+    }
 
     pack $f.l -in $f -side left -fill x
     pack $f.e -in $f -side left -fill both -expand yes
