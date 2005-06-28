@@ -1143,6 +1143,8 @@ proc io_exportOBJ { selected } {
 	addCheckB $f objio_options Selected [ms objio_options_Selected]
 	addCheckB $f objio_options TessPoMesh [ms objio_options_TessPoMesh]
 	addCheckB $f objio_options OmitCurves [ms objio_options_OmitCurves]
+	addString $f objio_options STagName
+	addString $f objio_options TTagName
 
 	set f [frame $w.f2]
 	button $f.bok -text "Ok" -width 5 -command {
@@ -1151,7 +1153,8 @@ proc io_exportOBJ { selected } {
 	    set filename $objio_options(filename)
 
 	    ay_objio_write $filename $objio_options(Selected)\
-		    $objio_options(TessPoMesh) $objio_options(OmitCurves)
+		    $objio_options(TessPoMesh) $objio_options(OmitCurves)\
+		    -t $objio_options(STagName) $objio_options(TTagName)
 
 	    if { $ay_error < 2 } {
 		ayError 4 "exportOBJ" "Done exporting to: $filename"
