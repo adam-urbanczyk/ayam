@@ -483,8 +483,12 @@ will be read.
 <item><tt/Save/, saves the scene. If the scene has not been saved before
 (read, you have not given it a file name) you will be asked for
 a file name.
-<item><tt/Import Mops/, import a scene from The Mops,
+<item><tt>Import/Mops</tt>, import a scene from The Mops,
 see section <ref id="impmops" name="Import of Mops Scenes">
+for more information.
+<item><tt>Import/Wavefront OBJ</tt>, import a scene from the Wavefront OBJ
+format,
+see section <ref id="impwav" name="Wavefront OBJ import">
 for more information.
 <item><tt>Export/RenderMan RIB</tt>, exports the current scene to a RIB,
 asking which camera (which view) to use.
@@ -6826,6 +6830,45 @@ be promoted to general polygon meshes.
 Object-instances are resolved to normal objects while importing.
 Instances may be easily created again using Automatic Instancing
 (see section <ref id="ai" name="Automatic Instancing">).
+<sect1>Wavefront OBJ Import<label id="impwav">
+<p>
+Since Ayam 1.8.3 a Wavefront OBJ (version 3.0) import facility is available.
+The corresponding main menu entry is
+<tt>"File/Import/Wavefront OBJ"</tt>.
+<p>
+Wavefront OBJ import supports reading of polygonal faces with vertex normals
+and texture coordinates (read as primitive variable tags) and
+freeform curves and surfaces (NURBS) with trim curves and with
+texture coordinates (read as primitive variable tags).
+<p>
+Freeform curves and surfaces of basis type bmatrix, cardinal and taylor
+are currently not supported. Also, import of special curves and
+points (e.g. curve on surface) is currently not supported. Furthermore,
+trimming of freeform curves and surfaces by clamping their knot ranges
+is not supported. No material and grouping information will be imported.
+Unsupported statements will be silently ignored.
+<p>
+The following options further control the import process:
+<itemize>
+<item><tt>"Filename"</tt> is the name of the Wavefront OBJ file (version 3.0)
+<item><tt>"MergeFaces"</tt> controls, whether consecutive polygonal
+faces should be merged into a single PolyMesh object for import.
+<item><tt>"MergePVTags"</tt> controls, whether the PV tags of PolyMesh
+objects should be merged as well if they are subject to automatic
+merging (see above).
+<item><tt>"OmitCurves"</tt> if this is enabled, no freeform curves will
+be imported. This option does not prevent reading of trim curves!
+<item><tt>"STagName"</tt> controls the name of the PV tag to be used
+for the s component of the texture coordinates.
+<item><tt>"TTagName"</tt> controls the name of the PV tag to be used
+for the t component of the texture coordinates.
+</itemize>
+<p>
+Wavefront OBJ import expects the file to be syntactically correct.
+It is not very good in detecting and reporting errors. If the import
+fails, use third party tools first (e.g. a demo version of Okino
+Graphics PolyTrans(R)), to check whether the
+Wavefront OBJ file is valid at all.
 
 <sect1>Wavefront OBJ Export<label id="expwav">
 <p>
