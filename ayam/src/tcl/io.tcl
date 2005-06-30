@@ -1100,86 +1100,64 @@ TTagName "myt"
 #  export scene to Wavefront OBJ format
 #
 proc io_exportOBJ { selected } {
-    global ay tcl_platform
+    global ay_error objio_options
+    set ay_error ""
 
-    set tmp $ay(filename)
-
-    if { $tmp == "" } {
-	set filename "unnamed.obj"
-	set dirname [pwd]
+    if { $objio_options(filename) != "" } {
+	set objio_options(FileName) $objio_options(filename)
     } else {
-	set filename $ay(filename)
-	set dirname [file dirname $tmp]
-	if { $dirname == "." } { set dirname [pwd] }
+	set objio_options(FileName) "unnamed.obj"
     }
 
+    set w .objE
+    catch {destroy $w}
+    toplevel $w -class ayam
+    wm title $w "Export OBJ"
+    wm iconname $w "Ayam"
+    wm transient $w .
+
+
+    set f [frame $w.f1]
+    pack $f -in $w -side top -fill x
     set types {{"Wavefront OBJ" ".obj"} {"All files" *}}
+    addSFileT $f objio_options FileName $types
+    addCheckB $f objio_options Selected [ms objio_options_Selected]
+    addCheckB $f objio_options TessPoMesh [ms objio_options_TessPoMesh]
+    addCheckB $f objio_options OmitCurves [ms objio_options_OmitCurves]
+    addString $f objio_options STagName
+    addString $f objio_options TTagName
 
-    if { $tcl_platform(os) != "Darwin" } {
-	set filename [tk_getSaveFile -filetypes $types -parent .\
-		-initialfile [file rootname [file tail $filename]].obj\
-		-initialdir $dirname -title "Export to:"]
-    } else {
-	set filename [tk_getSaveFile -filetypes $types -parent .\
-		-initialfile [file rootname [file tail $filename]].obj\
-		-title "Export to:"]
-    }
+    set f [frame $w.f2]
+    button $f.bok -text "Ok" -width 5 -command {
+	global objio_options ay_error
 
-    if { $filename != "" } {
-	global ay_error objio_options
-	set ay_error ""
-	set objio_options(filename) $filename
+	set filename $objio_options(FileName)
 
-	set w .objE
-	catch {destroy $w}
-	toplevel $w -class ayam
-	wm title $w "Export Options"
-	wm iconname $w "Ayam"
-	wm transient $w .
+	ay_objio_write $filename -s $objio_options(Selected)\
+	    -p $objio_options(TessPoMesh) -o $objio_options(OmitCurves)\
+	    -t $objio_options(STagName) $objio_options(TTagName)
 
-	set f [frame $w.f1]
-	pack $f -in $w -side top -fill x
-
-	addCheckB $f objio_options Selected [ms objio_options_Selected]
-	addCheckB $f objio_options TessPoMesh [ms objio_options_TessPoMesh]
-	addCheckB $f objio_options OmitCurves [ms objio_options_OmitCurves]
-	addString $f objio_options STagName
-	addString $f objio_options TTagName
-
-	set f [frame $w.f2]
-	button $f.bok -text "Ok" -width 5 -command {
-	    global objio_options ay_error
-
-	    set filename $objio_options(filename)
-
-	    ay_objio_write $filename $objio_options(Selected)\
-		    $objio_options(TessPoMesh) $objio_options(OmitCurves)\
-		    -t $objio_options(STagName) $objio_options(TTagName)
-
-	    if { $ay_error < 2 } {
-		ayError 4 "exportOBJ" "Done exporting to: $filename"
-	    } else {
-		ayError 2 "exportOBJ" "There were errors while exporting to:"
-		ayError 2 "exportOBJ" "$filename"
-	    }
-
-	    destroy .objE
+	if { $ay_error < 2 } {
+	    ayError 4 "exportOBJ" "Done exporting to: $filename"
+	} else {
+	    ayError 2 "exportOBJ" "There were errors while exporting to:"
+	    ayError 2 "exportOBJ" "$filename"
 	}
-	# button
 
-	button $f.bca -text "Cancel" -width 5 -command "\
+	destroy .objE
+    }
+    # button
+
+    button $f.bca -text "Cancel" -width 5 -command "\
 		focus .;\
 		destroy .objE"
 
-	pack $f.bok $f.bca -in $f -side left -fill x -expand yes
-	pack $f -in $w -side bottom -fill x
+    pack $f.bok $f.bca -in $f -side left -fill x -expand yes
+    pack $f -in $w -side bottom -fill x
 
-	winCenter $w
+    winCenter $w
 
-	focus $w.f2.bok
-
-    }
-    # if
+    focus $w.f2.bok
 
  return;
 }
