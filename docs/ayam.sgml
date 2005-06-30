@@ -6850,7 +6850,7 @@ Unsupported statements will be silently ignored.
 <p>
 The following options further control the import process:
 <itemize>
-<item><tt>"Filename"</tt> is the name of the Wavefront OBJ file (version 3.0)
+<item><tt>"FileName"</tt> is the name of the Wavefront OBJ file (version 3.0)
 <item><tt>"MergeFaces"</tt> controls, whether consecutive polygonal
 faces should be merged into a single PolyMesh object for import.
 <item><tt>"MergePVTags"</tt> controls, whether the PV tags of PolyMesh
@@ -6883,7 +6883,8 @@ primitives:
 objects (ICurve, ConcatNC, ExtrNC)
 <item> NPatch (with trim curves) and objects that may be converted
 to NPatch objects (BPatch, PatchMesh, Revolve, Sweep, Extrude, Skin,
-Cap, Gordon, Birail1, Birail2, Text)
+Cap, Gordon, Birail1, Birail2, Text); since Ayam 1.8.3 also Quadrics
+will be automatically converted to NURBS surfaces and exported
 <item> PolyMesh and objects that may be converted to PolyMesh objects
 (MetaObj), faces with holes are not supported by the Wavefront OBJ
 format and will be tesselated to triangles for export automatically
@@ -6899,17 +6900,24 @@ Since the Wavefront OBJ format does not support separate transformation
 attributes, all transformation attributes will be used to transform the
 coordinate values (the control points) of the exported objects.
 
-The Wavefront OBJ export, currently, ignores all material information
-and possibly present primitive variable tags. Only the pure geometry
-information is written to the OBJ file.
+The Wavefront OBJ export, currently, ignores all material information.
+Only the pure geometry information is written to the OBJ file.
+Since Ayam 1.8.3, however, texture coordinates from primitive variable
+tags can be exported.
 
 The following parameters, additionally, control the Wavefront OBJ export:
-<tt>"Selected"</tt> - exports only the currently selected object(s);
-<tt>"TessPoMesh"</tt> - automatically tesselates all PolyMesh objects
+<itemize>
+<item><tt>"FileName"</tt> is the filename of the Wavefront OBJ file;
+<item><tt>"Selected"</tt> exports only the currently selected object(s);
+<item><tt>"TessPoMesh"</tt> automatically tesselates all PolyMesh objects
 to triangles for export;
-<tt>"OmitCurves"</tt> - omits all NURBS curves and NURBS curve providing
-objects from the exported file.
-
+<item><tt>"OmitCurves"</tt> omits all NURBS curves and NURBS curve providing
+objects from the exported file;
+<item><tt>"STagName"</tt> controls the name of the PV tag to be used
+for the s component of the texture coordinates, and
+<item><tt>"TTagName"</tt> controls the name of the PV tag to be used
+for the t component of the texture coordinates.
+</itemize>
 
 <sect1>3DMF Import Export (MFIO) Plugin<label id="mfioplugin">
 <p>
@@ -6979,7 +6987,8 @@ Even though export of planar cap surfaces of various
 tool objects is supported, the export of general trimmed NURBS
 patches is not supported. This is because of a missing feature
 (pushing up 2D trim curves to 3D curves for arbitrary NURBS
-surfaces) in the OpenNURBS toolkit.
+surfaces) in the OpenNURBS toolkit. Since Ayam 1.8.3, also PolyMesh
+objects may be exported.
 <p>
 The export process is controlled by the following options:
 <itemize>
@@ -6988,6 +6997,9 @@ The <tt/"Accuracy"/ option controls the tolerance of internal
 OpenNURBS operations (currently those are:
 pushing up 2D trim curves to 3D curves and
 checking NURBS surfaces for planarity).
+<item> <tt/"WriteSelected"/: exports only the selected objects. 
+<item> <tt/"ObeyNoExport"/: ignores all objects with <tt/"NoExport"/ tags. 
+<item> <tt/"IgnoreHidden"/: ignores all hidden objects. 
 <item> <tt/"WriteCurves"/: If the <tt/"WriteCurves"/ option is disabled,
 no curves will be written to the exported Rhino file.
 <item> <tt/"QuadAsBRep"/: If the <tt/"QuadAsBRep"/ option is enabled
@@ -7037,7 +7049,10 @@ be converted to NURBS using the OpenNURBS toolkit
 (those are: PolylineCurve, PolyCurve, LineCurve, ArcCurve,
 CurveOnSurface, RevSurface, SumSurface, and PlaneSurface).
 References will be resolved. Names will be imported, but
-converted to an ASCII representation.
+converted to an ASCII representation. Since Ayam 1.8.3
+Mesh objects will be imported to PolyMesh objects, texture
+coordinates will be read and appropriate PV tags will be
+created.
 <p>
 The import process is controlled by the following options:
 <itemize>
@@ -7829,7 +7844,8 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 
 <label id="indexo">O
 <itemize>
-<item>OBJ: <ref id="expwav" name="Wavefront OBJ export">
+<item>OBJ: <ref id="impwav" name="Wavefront OBJ import">,
+<ref id="expwav" name="Wavefront OBJ export">
 <item>Object: <ref id="prefdraw" name="preference setting">
 <item>Objectname: <ref id="attrs" name="attribute">
 <item>Objects: <ref id="obj" name="tree/listbox">,
@@ -8135,6 +8151,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 
 <label id="indexw">W
 <itemize>
+<item>Wavefront OBJ import: <ref id="impwav" name="Wavefront OBJ import">
 <item>Wavefront OBJ export: <ref id="expwav" name="Wavefront OBJ export">
 <item>Weight: <ref id="iac" name="single point weight editing">
 <item>Width: <ref id="rio" name="RenderMan interface option">,
