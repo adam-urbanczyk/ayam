@@ -7819,6 +7819,8 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Menu: <ref id="mm" name="main menu">,
 <ref id="vm" name="view menu">
 <item>Merge: <ref id="mmtools" name="Merge PolyMesh tool">
+<item>MergeFaces <ref id="impwav" name="Wavefront OBJ import option">
+<item>MergePVTags <ref id="impwav" name="Wavefront OBJ import option">
 <item>MetaObj, MetaComp: <ref id="metaobjobj" name="object">
 <item>MFIO Plugin:
 <ref id="mfioplugin" name="3DMF import export (MFIO) plugin">
@@ -7863,7 +7865,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Objects: <ref id="obj" name="tree/listbox">,
 <ref id="objsel" name="selection within a view">
 <item>OI: <ref id="oitt" name="tag type">
-<item>OmitCurves <ref id="expwav" name="Wavefront OBJ export option">
+<item>OmitCurves <ref id="impwav" name="Wavefront OBJ import/export option">
 <item>Open: <ref id="treecontm" name="tree context menu entry">
 <item>OpenNURBS: <ref id="onioplugin" name="ONIO plugin">
 <item>Optimize: <ref id="mmtools" name="Optimize PolyMesh tool">
@@ -8064,7 +8066,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Split Curve: <ref id="miscac" name="modeling action">
 <item>splitNPatch: <ref id="scinurbs" name="scripting interface command">
 <item>Spot: <ref id="pdsl" name="light type">
-<item>STagName: <ref id="onioplugin" name="ONIO plugin import/export option">
+<item>STagName: <ref id="onioplugin" name="ONIO plugin import/export option">,
+<ref id="impwav" name="Wavefront OBJ import/export option">
 <item>StartCap: <ref id="rep" name="revolve attribute">,
 <ref id="swp" name="sweep attribute">,
 <ref id="skp" name="skin attribute">,
@@ -8128,7 +8131,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Trim Curve: <ref id="trim" name="using trim curves">
 <item>TrimRect: <ref id="trrt" name="TrimRect tool">
 <item>TrueDisp: <ref id="attrs" name="RenderMan/BMRT attribute">
-<item>TTagName: <ref id="onioplugin" name="ONIO plugin import/export option">
+<item>TTagName: <ref id="onioplugin" name="ONIO plugin import/export option">,
+<ref id="impwav" name="Wavefront OBJ import/export option">
 <item>TwmCompat: <ref id="prefgui" name="preference setting">
 <item>Type: <ref id="levelobj" name="level attribute">,
 <ref id="lip" name="light attribute">,
