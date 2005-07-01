@@ -69,9 +69,9 @@ proc riattr_addp { } {
     }
 
     bind $f.li <ButtonRelease-1> {
-	global riattr
+	global ay riattr
 	set lb .addRiAttrw.f1.li
- 
+
 	# get matching attribute list entry
 	set attr [$lb get [$lb curselection]]
 
@@ -79,6 +79,9 @@ proc riattr_addp { } {
 	set attrpara [lindex $attr 1]
 
 	set list $riattr($attrname)
+
+	set ay(iapplydisable) 1
+
 	foreach param $list {
 	    if { $attrpara == [lindex $param 0] } {
 		# destroy old UI
@@ -95,10 +98,10 @@ proc riattr_addp { } {
 		set type [lindex $param 1]
 		set def {}
 		set def [lindex $param 2]
-		
+
 		switch $type {
 
-		    i { 
+		    i {
 			if { $def != {} } {
 			    set riattrval(Int) [lindex $def 0] } else {
 				set riattrval(Int) 0
@@ -110,11 +113,11 @@ proc riattr_addp { } {
 				set riattrval(Float) 0.0
 		      }
 			addParam .addRiAttrw.f2 riattrval Float $def}
-		    s { 
+		    s {
 			if { $def != {} } {
 			    set riattrval(String) [lindex $def 0] } else {
 				set riattrval(String) ""
-			} 
+			}
 			addString .addRiAttrw.f2 riattrval String $def
 		      }
 		    p { addParam .addRiAttrw.f2 riattrval Point_X
@@ -122,7 +125,7 @@ proc riattr_addp { } {
 		        addParam .addRiAttrw.f2 riattrval Point_Z
 			if { $def != "" } {
 			    addMenu .addRiAttrw.f2 riattrval DPoint $def
-			    
+
 			    set riattrval(def_Point) $def
 
 			    trace variable riattrval(DPoint) w {
@@ -136,8 +139,8 @@ proc riattr_addp { } {
 				}
 				return;
 			    }
-			    
-			    
+
+
 			}
 		    }
 		    c {
@@ -172,13 +175,19 @@ proc riattr_addp { } {
 			}
 			addParamPair .addRiAttrw.f2 riattrval FloatPair $def
 		    }
-		    
+
 		}
+		# switch
 	    }
+	    # if
 
 	}
+	# foreach
+
+	set ay(iapplydisable) 0
 
     }
+    # bind
 
     # entry
     set f [frame $w.f2]
@@ -186,11 +195,11 @@ proc riattr_addp { } {
 
     # buttons
     set f [frame $w.f3]
-    button $f.bok -text "Ok" -pady $ay(pady) -width 5 -command { 
+    button $f.bok -text "Ok" -pady $ay(pady) -width 5 -command {
 	global riattr riattrval
 
 	set lb .addRiAttrw.f1.li
- 
+
 	set sel [$lb curselection]
 	if { $sel != "" } {
 	    set attr [$lb get $sel]
@@ -203,9 +212,9 @@ proc riattr_addp { } {
 	    foreach param $list {
 		if { $attrpara == [lindex $param 0] } {
 		    catch {destroy [winfo children .addRiAttrw.f2]}
-		    set type [lindex $param 1]		
+		    set type [lindex $param 1]
 		    switch $type {
-			
+
 			i { set val $riattrval(Int) }
 			f { set val $riattrval(Float) }
 			s { set val $riattrval(String) }
@@ -217,7 +226,7 @@ proc riattr_addp { } {
 	"$riattrval(IntPair_0),$riattrval(IntPair_1)" }
                         g { set val \
 	"$riattrval(FloatPair_0),$riattrval(FloatPair_1)" }
-			
+
 		    }
 		}
 

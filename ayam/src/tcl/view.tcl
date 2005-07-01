@@ -17,7 +17,7 @@ proc viewSetType { w type } {
 
     undo save ViewType
     set togl $w.f3D.togl
-    
+
     set w [winfo toplevel $togl]
     $togl mc
     switch $type {
@@ -103,7 +103,7 @@ proc viewRender { w type } {
     } else {
         if { $ayprefs(RenderUI) == 1} { set renderui 1 }
     }
- 
+
     if { $renderui != 1} {
 	set command "exec "
 
@@ -118,7 +118,7 @@ proc viewRender { w type } {
 
 	eval [subst "$command"]
     } else {
-     
+
 	regsub -all {%s} $ayprefs(Render) $tmpfile command
 
 	runRenderer "$command" "$ayprefs(RenderPT)"
@@ -173,7 +173,7 @@ proc viewTitle { w type action } {
 
     set w [winfo toplevel $w]
 
-    set oldname [wm title $w] 
+    set oldname [wm title $w]
 
     set vname ""
     set oldtype ""
@@ -223,7 +223,10 @@ set f [frame $w.f1]
 pack $f -in $w -side top -fill x
 
 set ay(FOV) $ay(cVFOV)
+
+set ay(iapplydisable) 1
 addParam $f ay FOV
+set ay(iapplydisable) 0
 
 set f [frame $w.f2]
 button $f.bok -text "Ok" -pady $ay(pady) -width 5 -command "global ay;\
@@ -271,7 +274,9 @@ pack $f -in $w -side top -fill x
 
 set ay(GridSize) $ay(cVGridSize)
 
+set ay(iapplydisable) 1
 addParam $f ay GridSize
+set ay(iapplydisable) 0
 
 set f [frame $w.f2]
 button $f.bok -text "Ok" -pady $ay(pady) -width 5 -command "\
@@ -637,7 +642,7 @@ proc viewRepairTitle { w type } {
     set typename [lindex $ay(viewtypenames) $type]
 
     viewTitle .${w} $typename ""
-   
+
 }
 # viewRepairTitle
 
@@ -673,7 +678,7 @@ proc viewSetGridIcon { w gridsize } {
 			} else {
 			    eval "$conf -image ay_GridX_img"
 			}
-		    } 
+		    }
 		}
 	    }
 	}
@@ -741,12 +746,12 @@ proc viewSetMModeIcon { w mode } {
 #  set current view to the view that has the focus;
 #  used after startup and loading of scenes
 proc viewMouseToCurrent { } {
-    global ay 
+    global ay
 
     set focused [focus -displayof .]
- 
+
     if { $focused != "" } {
- 
+
  	foreach view $ay(views) {
  	    if { [string compare $view $focused] == 0 } {
  		${view}.f3D.togl mc
@@ -766,7 +771,7 @@ proc viewToggleDMode { w } {
     global ay
 
     set togl $w.f3D.togl
-    
+
     set w [winfo toplevel $togl]
 
     if { $ay(cVDMode) > 0 } {
@@ -789,7 +794,7 @@ proc viewToggleMMode { w } {
     global ay
 
     set togl $w.f3D.togl
-    
+
     set w [winfo toplevel $togl]
 
     if { $ay(cVMMode) > 0 } {

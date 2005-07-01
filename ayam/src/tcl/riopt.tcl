@@ -67,16 +67,20 @@ proc riopt_addp { } {
     }
 
     bind $f.li <ButtonRelease-1> {
-	global riopt
+	global ay riopt
 	set lb .addRiOptw.f1.li
- 
+
 	# get matching attribute list entry
 	set opt [$lb get [$lb curselection]]
 
 	set optname [lindex $opt 0]
 	set optpara [lindex $opt 1]
 
+
+	set ay(iapplydisable) 1
+
 	set list $riopt($optname)
+
 	foreach param $list {
 	    if { $optpara == [lindex $param 0] } {
 		# destroy old UI
@@ -96,12 +100,12 @@ proc riopt_addp { } {
 
 		switch $type {
 
-		    i { 
+		    i {
 			if { $def != {} } {
 			    set rioptval(Int) [lindex $def 0] } else {
 				set rioptval(Int) 0
 			}
-			addParam .addRiOptw.f2 rioptval Int $def 
+			addParam .addRiOptw.f2 rioptval Int $def
 		      }
 		    f {
 			if { $def != {} } {
@@ -110,7 +114,7 @@ proc riopt_addp { } {
 			}
 			addParam .addRiOptw.f2 rioptval Float $def
 		      }
-		    s { 
+		    s {
 			if { $def != {} } {
 			    set rioptval(String) [lindex $def 0] } else {
 				set rioptval(String) ""
@@ -124,7 +128,7 @@ proc riopt_addp { } {
 		        addParam .addRiOptw.f2 rioptval Point_Z
 			if { $def != "" } {
 			    addMenu .addRiOptw.f2 rioptval DPoint $def
-			    
+
 			    set rioptval(def_Point) $def
 
 			    trace variable rioptval(DPoint) w {
@@ -138,8 +142,8 @@ proc riopt_addp { } {
 				}
 				return;
 			    }
-			    
-			    
+
+
 			}
 		    }
 
@@ -155,7 +159,7 @@ proc riopt_addp { } {
 			}
 			addColor .addRiOptw.f2 rioptval Color $def
 		      }
-		      
+
 		    j {
 			if { $def != {} } {
 			    set rioptval(IntPair_0) [lindex [lindex $def 0] 0]
@@ -177,11 +181,16 @@ proc riopt_addp { } {
 			addParamPair .addRioptw.f2 rioptval FloatPair $def
 		    }
 		}
+		# switch
 	    }
-
+	    # if
 	}
+	# foreach
+
+	set ay(iapplydisable) 0
 
     }
+    # bind
 
     # entry
     set f [frame $w.f2]
@@ -189,12 +198,12 @@ proc riopt_addp { } {
 
     # buttons
     set f [frame $w.f3]
-    button $f.bok -text "Ok" -pady $ay(pady) -width 5 -command { 
+    button $f.bok -text "Ok" -pady $ay(pady) -width 5 -command {
 	global riopt rioptval
 
 
 	set lb .addRiOptw.f1.li
- 
+
 	set sel [$lb curselection]
 	if { $sel != "" } {
 	    set opt [$lb get $sel]
@@ -207,9 +216,9 @@ proc riopt_addp { } {
 	    foreach param $list {
 		if { $optpara == [lindex $param 0] } {
 		    catch {destroy [winfo children .addRiOptw.f2]}
-		    set type [lindex $param 1]		
+		    set type [lindex $param 1]
 		    switch $type {
-			
+
 			i { set val $rioptval(Int) }
 			f { set val $rioptval(Float) }
 			s { set val $rioptval(String) }
@@ -221,7 +230,7 @@ proc riopt_addp { } {
 	"$rioptval(IntPair_0),$rioptval(IntPair_1)" }
                         g { set val \
 	"$rioptval(FloatPair_0),$rioptval(FloatPair_1)" }
-			
+
 		    }
 		}
 

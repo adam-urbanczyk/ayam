@@ -42,6 +42,8 @@ proc onio_import { } {
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
 
+    set ay(iapplydisable) 1
+
     set types {{"3DM (Rhino) Files" ".3dm"} {"All files" *}}
     addFileT $f onio_options FileName $types
 
@@ -49,6 +51,8 @@ proc onio_import { } {
     addCheck $f onio_options ReadCurves
     addParam $f onio_options ReadLayers [list -1 1 1-10]
     addCheck $f onio_options IgnoreFirstTrim
+
+    set ay(iapplydisable) 0
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {
@@ -127,6 +131,8 @@ proc onio_export { } {
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
 
+    set ay(iapplydisable) 1
+
     set types {{"3DM (Rhino) Files" ".3dm"} {"All files" *}}
     addSFileT $f onio_options FileName $types
 
@@ -136,6 +142,8 @@ proc onio_export { } {
     addCheck $f onio_options IgnoreHidden
     addCheck $f onio_options WriteCurves
     addCheck $f onio_options QuadAsBRep
+
+    set ay(iapplydisable) 0
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {
