@@ -1533,7 +1533,14 @@ onio_writetcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  sscanf(argv[i+1], "%d", &onio_expignorehidden);
 	}
-      i+=2;
+      else
+      if(!strcmp(argv[i], "-t"))
+	{
+	  onio_stagname = argv[i+1];
+	  onio_ttagname = argv[i+2];
+	  i++;
+	}
+      i += 2;
     } // while
 
   // open the file for writing
@@ -1624,6 +1631,11 @@ onio_writetcmd(ClientData clientData, Tcl_Interp *interp,
 
 
   ON::CloseFile(fp);
+
+
+  onio_stagname = onio_stagnamedef;
+  onio_ttagname = onio_ttagnamedef;
+
 
  return TCL_OK;
 } // onio_writetcmd
@@ -2790,6 +2802,13 @@ onio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 	  sscanf(argv[i+1], "%d", &onio_ignorefirsttrim);
 	}
       else
+      if(!strcmp(argv[i], "-t"))
+	{
+	  onio_stagname = argv[i+1];
+	  onio_ttagname = argv[i+2];
+	  i++;
+	}
+      else
       if(!strcmp(argv[i], "-l"))
 	{
 	  if(argv[i+1])
@@ -2891,6 +2910,9 @@ onio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 
   // destroy this model
   model.Destroy();
+
+  onio_stagname = onio_stagnamedef;
+  onio_ttagname = onio_ttagnamedef;
 
  return TCL_OK;
 } // onio_readtcmd

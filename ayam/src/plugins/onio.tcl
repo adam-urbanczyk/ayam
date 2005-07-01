@@ -20,6 +20,8 @@ uplevel #0 { array set onio_options {
     WriteCurves 1
     QuadAsBRep 1
     FileName "unnamed.3dm"
+    STagName "mys"
+    TTagName "myt"
 }   }
 
 
@@ -51,6 +53,8 @@ proc onio_import { } {
     addCheck $f onio_options ReadCurves
     addParam $f onio_options ReadLayers [list -1 1 1-10]
     addCheck $f onio_options IgnoreFirstTrim
+    addString $f onio_options STagName
+    addString $f onio_options TTagName
 
     set ay(iapplydisable) 0
 
@@ -65,7 +69,8 @@ proc onio_import { } {
 	    -a $onio_options(Accuracy)\
 	    -c $onio_options(ReadCurves)\
 	    -l $onio_options(ReadLayers)\
-	    -i $onio_options(IgnoreFirstTrim)
+	    -i $onio_options(IgnoreFirstTrim)\
+	    -t $onio_options(STagName) $onio_options(TTagName)
 
 	cd $oldcd
 	goTop
@@ -142,6 +147,8 @@ proc onio_export { } {
     addCheck $f onio_options IgnoreHidden
     addCheck $f onio_options WriteCurves
     addCheck $f onio_options QuadAsBRep
+    addString $f onio_options STagName
+    addString $f onio_options TTagName
 
     set ay(iapplydisable) 0
 
@@ -156,7 +163,8 @@ proc onio_export { } {
 	    -q $onio_options(QuadAsBRep)\
 	    -s $onio_options(WriteSelected)\
 	    -o $onio_options(ObeyNoExport)\
-	    -i $onio_options(IgnoreHidden)
+	    -i $onio_options(IgnoreHidden)\
+	    -t $onio_options(STagName) $onio_options(TTagName)
 
 	cd $oldcd
 	goTop
