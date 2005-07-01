@@ -7016,6 +7016,10 @@ created, if the cone is closed).
 The BRep torus does not support PhiMin, PhiMax, and ThetaMax.
 The option has no effect on the export of disks, hyperboloids,
 and paraboloids. Those will always be exported as NURBS surfaces.
+<item><tt>"STagName"</tt> controls the name of the PV tag to be used
+for the s component of the texture coordinates, and
+<item><tt>"TTagName"</tt> controls the name of the PV tag to be used
+for the t component of the texture coordinates.
 </itemize>
 <p>
 Since the Rhino 3DM file format does not support hierarchy and
@@ -7073,6 +7077,10 @@ if the first bounding trim loop of NURBS surfaces should be ignored.
 This trim loop is often not needed, because it encloses the whole
 surface that is not trimmed further in many cases. Importing this
 trim loop will often just make the Ayam scene more complex than needed.
+<item><tt>"STagName"</tt> controls the name of the PV tag to be used
+for the s component of the texture coordinates, and
+<item><tt>"TTagName"</tt> controls the name of the PV tag to be used
+for the t component of the texture coordinates.
 </itemize>
 
 <sect1>Shader Parsing Plugins<label id="spplugins">
@@ -7489,6 +7497,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>About: <ref id="mmhelp" name="main menu entry">
 <item>Action: <ref id="iac" name="interactive actions">
 <item>Active: <ref id="scriptattr" name="script attribute">
+<item>Accuracy: <ref id="onioplugin" name="ONIO plugin import/export option">
 <item>Adaptive: <ref id="moattr" name="MetaObj attributes">
 <item>Algorithm: <ref id="aycsg" name="AyCSG plugin option">
 <item>Align to Parent: <ref id="vmconf" name="view menu entry">,
@@ -7724,6 +7733,8 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>IconGamma: <ref id="hidprefs" name="hidden preference setting">
 <item>ICurve: <ref id="icurveobj" name ="object">
 <item>IDR: <ref id="idr" name="IDR plugin">
+<item>IgnoreFirstTrim: <ref id="onioplugin" name="ONIO plugin import option">
+<item>IgnoreHidden: <ref id="onioplugin" name="ONIO plugin export option">
 <item>IgnoreNormals: <ref id="mmtools" name="Optimize PolyMesh tool option">
 <item>Image: <ref id="prefrib" name="preference setting">
 <item>Imager: <ref id="imager" name="property">
@@ -7844,6 +7855,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 
 <label id="indexo">O
 <itemize>
+<item>ObeyNoExport: <ref id="onioplugin" name="ONIO plugin export option">
 <item>OBJ: <ref id="impwav" name="Wavefront OBJ import">,
 <ref id="expwav" name="Wavefront OBJ export">
 <item>Object: <ref id="prefdraw" name="preference setting">
@@ -7896,6 +7908,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 
 <label id="indexq">Q
 <itemize>
+<item>QuadAsBRep: <ref id="onioplugin" name="ONIO plugin export option">
 <item>QRender: <ref id="prefrib" name="preference setting">
 <item>QRenderPT, QRenderUI: <ref id="prefrib" name="preference setting">
 <item>Quat: <ref id="trap" name="transformations property">
@@ -7910,8 +7923,10 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <ref id="cyp" name="cylinder attribute">,
 <ref id="mcattr" name="MetaComp attribute">
 <item>RadSteps: <ref id="rio" name="RenderMan interface option">
+<item>ReadCurves: <ref id="onioplugin" name="ONIO plugin import option">
 <item>ReadFrame, ReadCamera, ReadOptions, ReadLights, ReadMaterial,
 ReadPartial: <ref id="rribopt" name="RIB import option">
+<item>ReadLayers: <ref id="onioplugin" name="ONIO plugin import option">
 <item>Rebuild: <ref id="treecontm" name="tree context menu entry">
 <item>RedirectTcl: <ref id="prefmisc" name="preference setting">
 <item>Redo: <ref id="undos" name="The Undo System">,
@@ -8049,6 +8064,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Split Curve: <ref id="miscac" name="modeling action">
 <item>splitNPatch: <ref id="scinurbs" name="scripting interface command">
 <item>Spot: <ref id="pdsl" name="light type">
+<item>STagName: <ref id="onioplugin" name="ONIO plugin import/export option">
 <item>StartCap: <ref id="rep" name="revolve attribute">,
 <ref id="swp" name="sweep attribute">,
 <ref id="skp" name="skin attribute">,
@@ -8112,6 +8128,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Trim Curve: <ref id="trim" name="using trim curves">
 <item>TrimRect: <ref id="trrt" name="TrimRect tool">
 <item>TrueDisp: <ref id="attrs" name="RenderMan/BMRT attribute">
+<item>TTagName: <ref id="onioplugin" name="ONIO plugin import/export option">
 <item>TwmCompat: <ref id="prefgui" name="preference setting">
 <item>Type: <ref id="levelobj" name="level attribute">,
 <ref id="lip" name="light attribute">,
@@ -8160,7 +8177,9 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <ref id="pmattr" name="PatchMesh attribute">,
 <ref id="vat" name="view attribute">
 <item>withOb: <ref id="selob" name="scripting interface command">
+<item>WriteCurves: <ref id="onioplugin" name="ONIO plugin export option">
 <item>WriteIdent: <ref id="prefrib" name="preference setting">
+<item>WriteSelected: <ref id="onioplugin" name="ONIO plugin export option">
 </itemize>
 
 <label id="indexx">X
