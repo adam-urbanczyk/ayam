@@ -56,7 +56,7 @@ proc idr_open {} {
     toplevel $w
     wm title $w "Ayam IDR"
     wm iconname $w "Ayam"
-    
+
     set f [frame $w.fu -bd 2 -relief sunken]
     pack $f -in $w -side top -fill both -expand yes
 
@@ -65,7 +65,7 @@ proc idr_open {} {
     set f [frame $w.fu.fr -relief ridge -bd 2]
     pack $f -side right -fill y -expand yes
 
-
+    set ay(iapplydisable) 1
 
     # select view
     set f $w.fu.fl
@@ -94,7 +94,6 @@ proc idr_open {} {
 	    incr index
 	}
 
-
     }
 
     #    catch {eval [subst "$currentView getViewConfig"]}
@@ -105,7 +104,7 @@ proc idr_open {} {
     pack $f.sc -in $f -side right -fill y
     pack $l -side top
     pack $f -side top -fill x -expand yes
-#
+    #
 
 
     set f $w.fu.fr
@@ -186,7 +185,7 @@ proc idr_open {} {
 
 
     set f [frame $w.fl]
-    button $f.bgo -text "Render!" -width 6 -command { 
+    button $f.bgo -text "Render!" -width 6 -command {
 	set selection ""
 	set selection [.idrw.fu.fl.fview.lb curselection]
 	if { $selection != "" } {
@@ -196,7 +195,7 @@ proc idr_open {} {
 
 	}
     }
-    button $f.bca -text "Dismiss" -width 6 -command { 
+    button $f.bca -text "Dismiss" -width 6 -command {
 	destroy .idrw
     }
     pack $f.bgo $f.bca -in $f -side left -fill x -expand yes
@@ -206,10 +205,16 @@ proc idr_open {} {
 
     focus $f.bca
 
+    set ay(iapplydisable) 0
+
  return;
 }
 # idr_open
 
+
+#
+#
+#
 proc idr_run { view } {
     global idrprefs
 
@@ -223,7 +228,7 @@ proc idr_run { view } {
 	idr_open
 	return;
     }
-    
+
     set t [time {
 
 	.$view.f3D.togl mc
@@ -232,7 +237,7 @@ proc idr_run { view } {
 	while { $i < $idrprefs(QLevels) } {
 
 	    foreach file $idrprefs(Files${i}) {
-		
+
 		    set needrender 1
 
 		    if { ( $idrprefs(CacheParts) == 1 ) &&\
@@ -257,7 +262,7 @@ proc idr_run { view } {
 		    } else {
 			puts "Using cached image for $file"
 		    }
-		    
+
 		}
 		incr i
 	}
@@ -287,7 +292,7 @@ proc idr_run { view } {
 	pack $w.m.f -in $w.m -side left
 	menu $w.m.f.m
 	$w.m.f.m add command -label "Save as ..." -command {
-	    
+
 	    set types {{"Image" ".tif"} {"All files" *}}
 	    set newfilename [tk_getSaveFile -filetypes $types\
 		    -parent . -title "Choose destination file:"]

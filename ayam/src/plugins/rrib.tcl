@@ -41,6 +41,8 @@ proc rrib_import { } {
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
 
+    set ay(iapplydisable) 1
+
     set types {{"RIB Files" ".rib"} {"All files" *}}
     addFileT $f rrib_options FileName $types
 
@@ -51,6 +53,8 @@ proc rrib_import { } {
     addCheck $f rrib_options ReadMaterial
     addCheck $f rrib_options ReadPartial
     addMenu $f rrib_options ErrorLevel [list Silence Errors Warnings All]
+
+    set ay(iapplydisable) 0
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {
