@@ -1,4 +1,4 @@
-[26. Jun 2005] CVS-Head:
+[2. Jul 2005] CVS-Head:
 o bug fixes:
   - fixed moving of tagged points of multiple selected objects (SF 1220972)
   - fixed notification of multiple modified objects upon undo/redo (SF 1223494)
@@ -18,6 +18,11 @@ o Main menu entry "Special/Resolve All Instances" no longer completely resets
   the current level (and below)
 o onio import now handles texture coordinates for polymesh objects
 o onio export now handles polymesh objects (with texture coordinates)
+o Wavefront OBJ export now supports export of all quadrics as NURBS
+o added instant apply facility to all property GUI elements, holding
+  down the "Shift" button while interacting with buttons and menus and
+  pressing the "Enter" key in entries will cause an instant apply now
+o improved initial knot type of Skin objects (now NURBS instead of Bezier)
 
 
 [15. May 2005] Ayam1.8.2:
