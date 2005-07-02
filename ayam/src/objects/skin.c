@@ -31,6 +31,8 @@ ay_skin_createcb(int argc, char *argv[], ay_object *o)
       return AY_ERROR;
     }
 
+  new->uknot_type = AY_KTNURB;
+
   o->parent = AY_TRUE;
   o->refine = new;
 
