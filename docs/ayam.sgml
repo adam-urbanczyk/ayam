@@ -336,18 +336,22 @@ properties listbox to de-select the current property.
 
 What properties exactly will be shown, and how the GUIs look alike
 depends on the selected object and the selected property.
-This is documented in section
+This is documented comprehensively in section
 <ref id="obandprp" name="Ayam Objects and Properties">.
 
 Here are some general remarks:<p>
 The various things that may be changed using a property GUI
 will normally not be applied to the selected object until the
 <tt/"Apply"/-button is pressed!<p>
+Since Ayam 1.8.3 holding down the <tt/"Shift"/ button while
+interacting with the property GUI or pressing <tt/"Return"/
+when entry widgets have the keyboard input focus will lead
+to an instant apply.
 You can undo all changes to the arguments of a property that
-have been made after the last click on <tt/"Apply"/ with the
+have been made after the last <tt/"Apply"/ operation with the
 <tt/"Reset"/-button.
 This does, however, not use the undo mechanism of Ayam!<p>
-Note that property GUIs of custom objects may also offer interactive
+Note also that property GUIs of custom objects may offer interactive
 elements that do an instant "Apply" operation. Most GUIs of the
 core objects of Ayam do not change anything until the
 <tt/"Apply"/-button is used, however.<p>
@@ -7749,6 +7753,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Insert Knot: <ref id="insknt" name="insert knot tool">
 <item>insertScene: <ref id="scio" name="scripting interface command">
 <item>Instance: <ref id="instanceobj" name ="object">
+<item>Instant Apply: <ref id="propgui" name="instant apply facility">
 <item>Intensity: <ref id="lip" name="light attribute">
 <item>Interior: <ref id="matshader" name="shader">
 <item>Interpolation: <ref id="attrs" name="RenderMan/BMRT attribute">,
