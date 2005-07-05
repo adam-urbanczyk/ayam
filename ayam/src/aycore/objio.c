@@ -452,12 +452,15 @@ ay_objio_writenpatch(FILE *fileptr, ay_object *o, double *m)
  int have_mys = AY_FALSE, have_myt = AY_FALSE;
  unsigned int myslen = 0, mytlen = 0, mystlen = 0, ui, uj;
  double *mysarr = NULL, *mytarr = NULL, *mystarr = NULL;
- ay_tag_object mystag = {NULL, ay_pv_tagtype, NULL};
- ay_tag_object myttag = {NULL, ay_pv_tagtype, NULL};
+ ay_tag_object mystag = {NULL, 0, NULL};
+ ay_tag_object myttag = {NULL, 0, NULL};
  ay_tag_object *tag;
 
   if(!o)
     return AY_ENULL;
+
+  mystag.type = ay_pv_tagtype;
+  myttag.type = ay_pv_tagtype;
 
   /* first, check for and write the trim curves */
   if(o->down && o->down->next)
@@ -807,12 +810,17 @@ ay_objio_writepomesh(FILE *fileptr, ay_object *o, double *m)
  int have_mys = AY_FALSE, have_myt = AY_FALSE;
  unsigned int myslen = 0, mytlen = 0, mystlen = 0;
  double *mysarr = NULL, *mytarr = NULL, *mystarr = NULL;
- ay_tag_object mystag = {NULL, ay_pv_tagtype, objio_stagname};
- ay_tag_object myttag = {NULL, ay_pv_tagtype, objio_ttagname};
+ ay_tag_object mystag = {NULL, 0, NULL};
+ ay_tag_object myttag = {NULL, 0, NULL};
  ay_tag_object *tag;
 
   if(!o)
    return AY_ENULL;
+
+  mystag.type = ay_pv_tagtype;
+  mystag.name = objio_stagname;  
+  myttag.type = ay_pv_tagtype;
+  myttag.name = objio_ttagname;
 
   po = (ay_pomesh_object *)o->refine;
 
