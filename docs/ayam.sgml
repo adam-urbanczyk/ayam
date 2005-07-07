@@ -6828,7 +6828,8 @@ of Ayam (which is not redirected to the Ayam console).
 </itemize>
 
 Note that for NURBS patches and bicubic patch meshes, points of type
-"P" will be promoted to "Pw".
+"P" will be promoted to "Pw". Trimming of NURBS patches by clamping
+the knot ranges is not supported.
 Furthermore, objects of type (general) polygon and polygon mesh will
 be promoted to general polygon meshes.
 Object-instances are resolved to normal objects while importing.
@@ -6861,7 +6862,7 @@ faces should be merged into a single PolyMesh object for import.
 objects should be merged as well if they are subject to automatic
 merging (see above).
 <item><tt>"OmitCurves"</tt> if this is enabled, no freeform curves will
-be imported. This option does not prevent reading of trim curves!
+be imported. This option does not influence reading of trim curves!
 <item><tt>"STagName"</tt> controls the name of the PV tag to be used
 for the s component of the texture coordinates.
 <item><tt>"TTagName"</tt> controls the name of the PV tag to be used
@@ -6916,7 +6917,8 @@ The following parameters, additionally, control the Wavefront OBJ export:
 <item><tt>"TessPoMesh"</tt> automatically tesselates all PolyMesh objects
 to triangles for export;
 <item><tt>"OmitCurves"</tt> omits all NURBS curves and NURBS curve providing
-objects from the exported file;
+objects from the exported file (This option does
+not influence the export of trim curves.);
 <item><tt>"STagName"</tt> controls the name of the PV tag to be used
 for the s component of the texture coordinates, and
 <item><tt>"TTagName"</tt> controls the name of the PV tag to be used
@@ -7005,7 +7007,8 @@ checking NURBS surfaces for planarity).
 <item> <tt/"ObeyNoExport"/: ignores all objects with <tt/"NoExport"/ tags. 
 <item> <tt/"IgnoreHidden"/: ignores all hidden objects. 
 <item> <tt/"WriteCurves"/: If the <tt/"WriteCurves"/ option is disabled,
-no curves will be written to the exported Rhino file.
+no curves will be written to the exported Rhino file. This option does
+not influence the export of trim curves.
 <item> <tt/"QuadAsBRep"/: If the <tt/"QuadAsBRep"/ option is enabled
 spheres, cylinders, cones, and torii will not be exported as collection
 of NURBS surfaces (as converted by Ayam) but as BRep objects (as converted
@@ -7070,7 +7073,7 @@ of OpenNURBS internal operations, in this case the value is
 mostly used for conversion operations to the NURBS form.
 <item> <tt/"Accuracy"/:
 If the <tt/"ReadCurves"/ import option is switched off, no curves will be
-imported.
+imported. This option does not influence the import of trim curves.
 <item> <tt/"ReadLayers"/:
 By default, all objects from all layers will be imported.
 Using the <tt/"ReadLayers"/ import option, a single layer or a range
