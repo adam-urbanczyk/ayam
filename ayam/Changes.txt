@@ -1,4 +1,9 @@
-[2. Jul 2005] CVS-Head:
+[11. Jul 2005] CVS-Head:
+o improved OBJ import of files with trailing whitespace as e.g. written by
+  Blender
+
+
+[5. Jul 2005] Ayam 1.8.3:
 o bug fixes:
   - fixed moving of tagged points of multiple selected objects (SF 1220972)
   - fixed notification of multiple modified objects upon undo/redo (SF 1223494)
@@ -25,7 +30,7 @@ o added instant apply facility to all property GUI elements, holding
 o improved initial knot type of Skin objects (now NURBS instead of Bezier)
 
 
-[15. May 2005] Ayam1.8.2:
+[15. May 2005] Ayam 1.8.2:
 o bug fixes:
   - fixed provide callback (e.g. for Wavefront export) of transformed extrude
     objects with caps and bevels (SF 1207251)
@@ -60,7 +65,7 @@ o added scripting interface command "help" that (similar to the
 o added shortcut to scripting interface command pclip_copy: "copyProp"
 
 
-[14. Mar 2005] Ayam1.8.1:
+[14. Mar 2005] Ayam 1.8.1:
 o bug fixes:
   - fixed "setPnt/getPnt" scripting interface commands for NURBS patches
     with differing width and height (SF 1091407)
