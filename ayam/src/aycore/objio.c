@@ -1896,7 +1896,7 @@ ay_objio_readvindex(char *c, int *gvindex, int *tvindex, int *nvindex)
 int
 ay_objio_readskip(char **b)
 {
- char *c = *b;
+ char *c = *b, *d;
 
   if(!b)
     return AY_ENULL;
@@ -1907,6 +1907,19 @@ ay_objio_readskip(char **b)
     return AY_OK;
   while(!(isspace(*c)) && (*c != '\0'))
     c++;
+
+  /* skip over trailing whitespace */
+  if(*c != '\0')
+    {
+      d = c;
+      while((isspace(*d)) && (*d != '\0'))
+	d++;
+      if(*d == '\0')
+	{
+	  *b = d;
+	  return AY_OK;
+	} /* if */
+    } /* if */
 
   /* return result */
   *b = c;
