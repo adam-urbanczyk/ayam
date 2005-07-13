@@ -62,6 +62,13 @@ ay_script_deletecb(void *c)
   if(sc->cm_objects)
     ay_object_deletemulti(sc->cm_objects);
 
+  /* free compiled script */
+  if(sc->cscript)
+    {
+      Tcl_DecrRefCount(sc->cscript);
+      sc->cscript = NULL;
+    }
+
   free(sc);
 
  return AY_OK;
@@ -95,6 +102,8 @@ ay_script_copycb(void *src, void **dst)
     } /* if */
 
   scdst->cm_objects = NULL;
+
+  scdst->cscript = NULL;
 
   *dst = (void *)scdst;
 
@@ -270,6 +279,8 @@ ay_script_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+
+  sc->modified = AY_TRUE;
 
   ay_status = ay_notify_force(o);
 
@@ -581,10 +592,24 @@ ay_script_notifycb(ay_object *o)
       return AY_OK;
     } /* if */
 
+  /* prepare compiling the script? */
+  if(sc->modified || (!sc->cscript))
+    {
+      if(sc->cscript)
+	{
+	  Tcl_DecrRefCount(sc->cscript);
+	  sc->cscript = NULL;
+	}
+      sc->cscript = Tcl_NewStringObj(sc->script, -1);
+      Tcl_IncrRefCount(sc->cscript);
+      sc->modified = AY_FALSE;
+    }
+
   if(sc->type == 0)
     {
       /* Just Run */
-      result = Tcl_GlobalEval(ay_interp, sc->script);
+      result = Tcl_EvalObjEx(ay_interp, sc->cscript, TCL_EVAL_GLOBAL);
+      /*result = Tcl_GlobalEval(ay_interp, sc->script);*/
     } /* if */
 
   if(sc->type == 1)
@@ -612,7 +637,8 @@ ay_script_notifycb(ay_object *o)
       old_aynext = ay_next;
 
       /* evaluate (execute) script string */
-      result = Tcl_GlobalEval(ay_interp, sc->script);
+      result = Tcl_EvalObjEx(ay_interp, sc->cscript, TCL_EVAL_GLOBAL);
+      /*result = Tcl_GlobalEval(ay_interp, sc->script);*/
 
       /* move newly created objects to script object */
       if(old_aynext != ay_next)
@@ -673,7 +699,8 @@ ay_script_notifycb(ay_object *o)
 	    }
 
 	  Tk_RestrictEvents(ay_ns_restrictall, NULL, &old_restrictcd);
-	  result = Tcl_GlobalEval(ay_interp, sc->script);
+	  result = Tcl_EvalObjEx(ay_interp, sc->cscript, TCL_EVAL_GLOBAL);
+	  /*result = Tcl_GlobalEval(ay_interp, sc->script);*/
 	  Tk_RestrictEvents(NULL, NULL, &old_restrictcd);
 
 	  if(ay_currentview)
