@@ -708,6 +708,9 @@ typedef struct ay_script_object_s
   int active; /* 0 - Inactive, 1 - Active */
   int type; /* 0 - Run, 1 - Create, 2 -  Modify */
   ay_object *cm_objects; /* created or modified objects */
+
+  int modified;
+  Tcl_Obj *cscript; /* compiled script */
 } ay_script_object;
 
 
@@ -847,22 +850,22 @@ typedef struct ay_point_object_s
 typedef struct ay_mpoint_object_s
 {
   struct ay_mpoint_object_s *next;
- int multiplicity;
- double **points;
+  int multiplicity;
+  double **points;
 } ay_mpoint_object;
 
 typedef struct ay_tag_object_s
 {
- struct ay_tag_object_s *next;
- char *name;
- char *type;
- char *val;
+  struct ay_tag_object_s *next;
+  char *name;
+  char *type;
+  char *val;
 } ay_tag_object;
 
 typedef struct ay_table_s
 {
- unsigned int size;
- void **arr;
+  unsigned int size;
+  void **arr;
 } ay_table;
 
 
@@ -1181,7 +1184,7 @@ extern unsigned int ay_current_primlevel;
                             (fabs(P1[3]-P2[3]) < AY_EPSILON))
 
 /* Version Strings */
-#define AY_VERSIONSTR "1.8"
+#define AY_VERSIONSTR "1.9pre"
 #define AY_VERSIONSTRMI "0"
 
 #include "aycore.h"
