@@ -1942,6 +1942,7 @@ ay_objio_readface(char *str, int lastlinewasface)
  double *newcontrolv = NULL, *texsv = NULL, *textv = NULL, *tmpv = NULL;
  int texsvlen = 0, textvlen = 0;
  ay_pomesh_object po = {0}, *temppo;
+ ay_tag_object *temptags;
  ay_list_object l1 = {0}, l2 = {0}; 
  ay_object t = {0}, *o = NULL, *m = NULL;
  unsigned int nloops = 1, nverts = 0, i;
@@ -2133,6 +2134,11 @@ ay_objio_readface(char *str, int lastlinewasface)
 	  temppo = objio_lastface->refine;
 	  objio_lastface->refine = m->refine;
 	  m->refine = temppo;
+
+	  temptags = objio_lastface->tags;
+	  objio_lastface->tags = m->tags;
+	  m->tags = temptags;
+
 	  /* remove temporary object that now carries the old poly mesh */
 	  ay_status = ay_object_delete(m);
 	}

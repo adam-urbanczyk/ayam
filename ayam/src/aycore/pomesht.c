@@ -543,8 +543,10 @@ ay_pomesht_merge(int merge_pv_tags, ay_list_object *list, ay_object **result)
 
 	  if(merge_pv_tags && have_pv_tags)
 	    {
+	      /* first object? */
 	      if(lo == list)
 		{
+		  /* yes, just copy the tags */
 		  have_pv_tags = AY_FALSE;
 		  if(o->tags)
 		    {
@@ -563,6 +565,7 @@ ay_pomesht_merge(int merge_pv_tags, ay_list_object *list, ay_object **result)
 		}
 	      else
 		{
+		  /* not first object, merge tags */
 		  tag1 = no->tags;
 		  while(tag1)
 		    {
@@ -574,8 +577,8 @@ ay_pomesht_merge(int merge_pv_tags, ay_list_object *list, ay_object **result)
 			    {
 			      mtag = NULL;
 			      if((tag2->type == ay_pv_tagtype) &&
-				 ay_pv_cmpname(tag1, tag2));
-			      ay_status = ay_pv_merge(tag1, tag2, &mtag);
+				 ay_pv_cmpname(tag1, tag2))
+				ay_status = ay_pv_merge(tag1, tag2, &mtag);
 			      if(mtag)
 				{
 				  /* swap value strings tag1<>mtag */
