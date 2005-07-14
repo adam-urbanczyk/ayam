@@ -299,7 +299,12 @@ ay_read_tags(FILE *fileptr, ay_object *o)
  Tcl_HashEntry *entry = NULL;
  int tcount = 0, i = 0;
  char fname[] = "ay_read_tags";
- 
+ int deactivate = 0;
+ char script_disable_cmd[] = "script_disable";
+ Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char a1[] = "ay", n1[] = "scriptdisable";
+ char *tc = NULL;
+
   if(!o)
     return AY_ENULL;
 
@@ -340,6 +345,30 @@ ay_read_tags(FILE *fileptr, ay_object *o)
 	 last->next = tag;
        }
 
+     if(tag->type == ay_ns_tagtype)
+       {
+	 Tcl_Eval(ay_interp, script_disable_cmd);
+	 toa = Tcl_NewStringObj(a1, -1);
+	 ton = Tcl_NewStringObj(n1, -1);
+	 to = Tcl_ObjGetVar2(ay_interp, toa, ton,
+			     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	 Tcl_GetIntFromObj(ay_interp, to, &(deactivate));
+
+	 if(deactivate)
+	   {
+	     tag->type = ay_dns_tagtype;
+	     tc = NULL;
+	     tc = realloc(tag->name, strlen(ay_dns_tagname)+1*sizeof(char));
+	     if(tc)
+	       {
+		 tag->name = tc;
+		 strcpy(tag->name,ay_dns_tagname );
+	       }
+	   }
+
+	 Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
+	 Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+       }
      last = tag;
    } /* for */
 

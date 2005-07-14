@@ -121,6 +121,10 @@ char *ay_tp_tagtype;
 
 char *ay_ns_tagtype;
 
+char *ay_dns_tagtype;
+
+char *ay_dns_tagname = "DNS";
+
 static char *ay_log = "/tmp/ay.log";
 
 int ay_wrib_framenum = 0;

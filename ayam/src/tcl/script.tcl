@@ -101,7 +101,7 @@ proc script_disable { } {
 
     if { $ayprefs(AskScriptDisable) && !$ay(askedscriptdisable) } {
 	set t "Disable Scripts?"
-	set m "Scene contains Script objects, disable them?"
+	set m "Scene contains Script objects or tags, disable them?"
 	set answer [tk_messageBox -title $t -type yesno -icon warning -message $m]
 	if { $answer == "yes" } {
 	    set ay(scriptdisable) 1
