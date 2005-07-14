@@ -308,6 +308,8 @@ ay_pv_add(ay_object *o, char *name, char *detail, int type,
   if(!(tag = calloc(1, sizeof(ay_tag_object))))
     return AY_EOMEM;
 
+  tag->type = ay_pv_tagtype;
+
   if(!(tag->name = calloc(3, sizeof(char))))
     return AY_EOMEM;
   strcpy(tag->name, "PV");
@@ -389,7 +391,7 @@ ay_pv_merge(ay_tag_object *t1, ay_tag_object *t2, ay_tag_object **mt)
   /* find the third comma in t1->val */
   comma1 = t1->val;
   while((i < 3) && (comma1 = strchr(comma1, ',')))
-    i++;
+    { i++; comma1++; }
   if(!comma1)
     { ay_status = AY_ERROR; goto cleanup; }
 
@@ -402,7 +404,7 @@ ay_pv_merge(ay_tag_object *t1, ay_tag_object *t2, ay_tag_object **mt)
   comma2 = t2->val;
   i = 0;
   while((i < 3) && (comma2 = strchr(comma2, ',')))
-    i++;
+    { i++; comma2++; }
   if(!comma2)
     { ay_status = AY_ERROR; goto cleanup; }
 
@@ -423,8 +425,8 @@ ay_pv_merge(ay_tag_object *t1, ay_tag_object *t2, ay_tag_object **mt)
   Tcl_DStringAppend(&ds, comma2, -1);
 
   /* copy collected string to new tag */
-  if(!(nt->val = calloc(strlen(Tcl_DStringValue(&ds))+1,
-			 sizeof(char))))
+  if(!(nt->val = calloc(Tcl_DStringLength(&ds)+1,
+			sizeof(char))))
     { ay_status = AY_EOMEM; goto cleanup; }
   strcpy(nt->val, Tcl_DStringValue(&ds));
 
@@ -440,12 +442,13 @@ cleanup:
 	free(nt->name);
       if(nt->val)
 	free(nt->val);
+      free(nt);
     } /* if */
 
   Tcl_DStringFree(&ds);
 
  return ay_status;
-}  /* ay_pv_merge */
+} /* ay_pv_merge */
 
 
 /* ay_pv_cmpname:
@@ -470,7 +473,7 @@ ay_pv_cmpname(ay_tag_object *t1, ay_tag_object *t2)
     return AY_FALSE;
 
   while((*c1 != '\0') && (*c2 != '\0') && (*c1 == *c2) &&
-	 (*c1 != ',') && (*c2 != ','))
+	(*c1 != ',') && (*c2 != ','))
     {
       c1++; c2++;
     }
