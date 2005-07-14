@@ -89,7 +89,7 @@ ay_toglcb_create(struct Togl *togl)
   glEnable(GL_LIGHT0);
 
   /* glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, color); */
- 
+
  return;
 } /* ay_toglcb_create */
 
@@ -104,10 +104,9 @@ ay_toglcb_destroy(struct Togl *togl)
  char fname[] = "toglcb_destroy";
  ay_object *root = ay_root, *o, *o2, *l;
  ay_list_object *clevel = ay_currentlevel, *sel = ay_selection, **lsel = NULL;
- ay_list_object *tl;
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  int recreate_clevel = AY_FALSE;
- int found;
+
 #ifdef AYENABLEPPREV
   if(view)
     {
@@ -201,7 +200,7 @@ ay_toglcb_destroy(struct Togl *togl)
 
 
 /* ay_toglcb_reshape:
- *  Togl callback, called when view togl is 
+ *  Togl callback, called when view togl is
  *  exposed or reshaped
  */
 void
@@ -253,9 +252,9 @@ ay_toglcb_display(struct Togl *togl)
 	ay_shade_view(togl);
       else
 	ay_draw_view(togl, AY_FALSE);
- 
 
-      /* XXXX is this really necessary? */ 
+
+      /* XXXX is this really necessary? */
       /*  glFlush();*/
 
       Togl_SwapBuffers(togl);
