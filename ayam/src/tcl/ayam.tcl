@@ -145,6 +145,8 @@ array set ayprefs {
  FlashPoints 1
  AskScriptDisable 1
 
+ WarnUnknownTag 1
+
  Docs "http://ayam.sourceforge.net/docs/"
     DailyTips {
 {Always click on drawn pixels, when picking vertices.}
@@ -182,6 +184,7 @@ on its name, then press <Ctrl+Shift+i> (Copy Marked Prop).}
 {Drag light objects into a view to look through the light.}
 {Menu keyboard shortcuts do not work? Press <Esc> first!}
 {Check http://www.ayam3d.org/ for the latest hotfix!}
+{Hold down <Shift> in property GUIs for instant apply.}
 }
 }
 # array ayprefs
