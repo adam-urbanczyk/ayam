@@ -320,7 +320,8 @@ ay_read_tags(FILE *fileptr, ay_object *o)
 
      if(!(entry = Tcl_FindHashEntry(&ay_tagtypesht, tag->name)))
        {
-	 ay_error(AY_EWARN, fname, "Tag type is not registered!");
+	 if(ay_prefs.wutag)
+	   ay_error(AY_EWARN, fname, "Tag type is not registered!");
        }
 
      if(entry)

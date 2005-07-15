@@ -835,6 +835,9 @@ typedef struct ay_prefs_object_s
   int smethod;
   double sparam;
 
+  /* control warnings about unknown tag types */
+  int wutag;
+
   /* is a permanent preview window open? */
   int pprev_open;
   char *pprender;
