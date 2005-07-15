@@ -4427,6 +4427,14 @@ Idr_Init(Tcl_Interp *interp)
     }
 #endif
 
+  /* reconnect potentially present IDR tags */
+  ay_status = ay_tags_reconnect(ay_root, idr_idrtagtype, idr_idrtagname);
+  ay_status = ay_tags_reconnect(ay_root, idr_iidrtagtype, idr_iidrtagname);
+  ay_status = ay_tags_reconnect(ay_root, idr_ridrtagtype, idr_ridrtagname);
+  ay_status = ay_tags_reconnect(ay_root, idr_r3idrtagtype, idr_r3idrtagname);
+  ay_status = ay_tags_reconnect(ay_root, idr_cidrtagtype, idr_cidrtagname);
+  ay_status = ay_tags_reconnect(ay_root, idr_ccidrtagtype, idr_ccidrtagname);
+
   Tcl_Eval(interp, success_cmd);
 
  return TCL_OK;
