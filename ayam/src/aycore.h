@@ -578,6 +578,9 @@ int ay_tags_deletetcmd(ClientData clientData, Tcl_Interp * interp,
 int ay_tags_parseplist(char *str, int declare, RtInt *argc, RtToken **tokensr,
 		       RtPointer **valuesr);
 
+int ay_tags_reconnect(ay_object *o, char *tagtype, char *tagname);
+
+
 /* tc.c */
 int ay_tc_wrib(ay_object *o);
 

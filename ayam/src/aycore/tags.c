@@ -860,3 +860,47 @@ ay_tags_parseplist(char *str, int declare, RtInt *argc, RtToken **tokensr,
 
  return AY_OK;
 } /* ay_tags_parseplist */
+
+
+/* ay_tags_reconnect:
+ *
+ */
+int
+ay_tags_reconnect(ay_object *o, char *tagtype, char *tagname)
+{
+ int ay_status = AY_OK;
+ ay_tag_object *tag;
+
+  if(!tagtype || !tagname)
+    return AY_ENULL;
+
+  if(!o)
+    return AY_OK;
+
+  while(o)
+    {
+      if(o->down)
+	{
+	  ay_status = ay_tags_reconnect(o->down, tagtype, tagname);
+	}
+
+      tag = o->tags;
+      while(tag)
+	{
+	  if(tag->name)
+	    {
+	      if(!strcmp(tag->name, tagname))
+		{
+		  tag->type = tagtype;
+		}
+	    }
+	  tag = tag->next;
+	} /* while */
+
+      ay_notify_force(o);
+
+      o = o->next;
+    } /* while */
+
+ return AY_OK;
+} /* ay_tags_reconnect */
