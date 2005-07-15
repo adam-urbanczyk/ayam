@@ -1735,6 +1735,9 @@ Aycsg_Init(Tcl_Interp *interp)
   Togl_CreateCommand("rendercsg", aycsg_rendertcb);
   Togl_CreateCommand("togglecsg", aycsg_toggletcb);
 
+  // reconnect potentially present DC tags
+  ay_status = ay_tags_reconnect(ay_root, aycsg_dc_tagtype, "DC");
+
 #ifndef AYCSGWRAPPED
   ay_error(AY_EOUTPUT, fname, "Plugin 'aycsg' successfully loaded.");
 #endif
