@@ -125,6 +125,10 @@ char *ay_dns_tagtype;
 
 char *ay_dns_tagname = "DNS";
 
+char *ay_umm_tagtype;
+
+char *ay_vmm_tagtype;
+
 static char *ay_log = "/tmp/ay.log";
 
 int ay_wrib_framenum = 0;
@@ -403,6 +407,9 @@ ay_init(Tcl_Interp *interp)
 
   /* register NP (NewProperty) tag type */
   ay_tags_register(interp, "NP", &ay_np_tagtype);
+
+  /* initialize NURBS knots module */
+  ay_knots_init(interp);
 
   /* create root object */
   if((ay_status = ay_object_create(AY_IDROOT, &ay_root)))
