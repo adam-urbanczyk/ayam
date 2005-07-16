@@ -623,3 +623,97 @@ ay_knots_mergesurf(ay_nurbpatch_object *patch,
 
  return AY_OK;
 } /* ay_knots_mergesurf */
+
+
+/* ay_knots_getuminmax:
+ *  
+ */
+int
+ay_knots_getuminmax(ay_object *o, int order, int knots, double *knotv,
+		    double *umin, double *umax)
+{
+ ay_tag_object *tag = NULL;
+ int have_valid_umm_tag = AY_FALSE;
+
+  if(!o || !knotv || !umin || !umax)
+    return AY_ENULL;
+
+  if(o->tags)
+    {
+      tag = o->tags;
+      while(tag)
+	{
+	  if(tag->type == ay_umm_tagtype)
+	    {
+	      if(sscanf(tag->val, "%lg,%lg", umin, umax) == 2)
+		have_valid_umm_tag = AY_TRUE;
+	    }
+	  tag = tag->next;
+	} /* while */
+    } /* if */
+
+  if(!have_valid_umm_tag)
+    {
+      *umin = knotv[order-1];
+      *umax = knotv[knots-order];
+    }
+
+ return AY_OK;
+} /* ay_knots_getuminmax */
+
+
+/* ay_knots_getvminmax:
+ *  
+ */
+int
+ay_knots_getvminmax(ay_object *o, int order, int knots, double *knotv,
+		    double *vmin, double *vmax)
+{
+ ay_tag_object *tag = NULL;
+ int have_valid_vmm_tag = AY_FALSE;
+
+  if(!o || !knotv || !vmin || !vmax)
+    return AY_ENULL;
+
+  if(o->tags)
+    {
+      tag = o->tags;
+      while(tag)
+	{
+	  if(tag->type == ay_vmm_tagtype)
+	    {
+	      if(sscanf(tag->val, "%lg,%lg", vmin, vmax) == 2)
+		have_valid_vmm_tag = AY_TRUE;
+	    }
+	  tag = tag->next;
+	} /* while */
+    } /* if */
+
+  if(!have_valid_vmm_tag)
+    {
+      *vmin = knotv[order-1];
+      *vmax = knotv[knots-order];
+    }
+
+ return AY_OK;
+} /* ay_knots_getvminmax */
+
+
+/* ay_knots_init:
+ *  
+ */
+int
+ay_knots_init(Tcl_Interp *interp)
+{
+ int ay_status = AY_OK;
+
+ /* register UMM tag type */
+  ay_status = ay_tags_register(interp, "UMM", &ay_umm_tagtype);
+  if(ay_status)
+    return ay_status;
+
+ /* register VMM tag type */
+  ay_status = ay_tags_register(interp, "VMM", &ay_vmm_tagtype);
+
+ return ay_status;
+} /* ay_knots_init */

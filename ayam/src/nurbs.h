@@ -53,6 +53,14 @@ int ay_knots_merge(ay_nurbcurve_object *curve, double *Ubar, int Ubarlen);
 int ay_knots_mergesurf(ay_nurbpatch_object *patch,
 		       double *Ubar, int Ubarlen, double *Vbar, int Vbarlen);
 
+int ay_knots_getuminmax(ay_object *o, int order, int knots, double *knotv,
+			double *umin, double *umax);
+
+int ay_knots_getvminmax(ay_object *o, int order, int knots, double *knotv,
+			double *vmin, double *vmax);
+
+int ay_knots_init(Tcl_Interp *interp);
+
 /* nb.c */
 int ay_nb_LUDecompose(int n, double *A, int *pivot);
 

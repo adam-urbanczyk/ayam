@@ -1258,8 +1258,9 @@ ay_npatch_wribcb(char *file, ay_object *o)
 {
  int ay_status = AY_OK;
  ay_nurbpatch_object *patch = NULL;
+ double umind, umaxd, vmind, vmaxd;
  RtInt nu, nv, uorder, vorder;
- RtFloat *uknots = NULL, *vknots = NULL;
+ RtFloat *uknots = NULL, *vknots = NULL, umin, umax, vmin, vmax;
  RtFloat *controls = NULL;
  RtToken *tokens = NULL;
  RtPointer *parms = NULL;
@@ -1318,14 +1319,25 @@ ay_npatch_wribcb(char *file, ay_object *o)
 	}
     }
 
+  ay_knots_getuminmax(o, patch->uorder, patch->uorder + patch->width,
+		      patch->uknotv, &umind, &umaxd);
+  umin = (RtFloat)umind;
+  umax = (RtFloat)umaxd;
+  ay_knots_getvminmax(o, patch->vorder, patch->vorder + patch->height,
+		      patch->vknotv, &vmind, &vmaxd);
+  vmin = (RtFloat)vmind;
+  vmax = (RtFloat)vmaxd;
+
   /* Do we have any primitive variables? */
   if(!(pvc = ay_pv_count(o)))
     {
       /* No */
       RiNuPatch(nu, uorder, uknots,
-		(RtFloat)uknots[uorder-1], (RtFloat)uknots[nu],
+		/*(RtFloat)uknots[uorder-1], (RtFloat)uknots[nu],*/
+		umin, umax,
 		nv, vorder, vknots,
-		(RtFloat)vknots[vorder-1], (RtFloat)vknots[nv],
+		/*(RtFloat)vknots[vorder-1], (RtFloat)vknots[nv],*/
+		vmin, vmax,
 		"Pw", controls, NULL);
     }
   else
@@ -1344,10 +1356,12 @@ ay_npatch_wribcb(char *file, ay_object *o)
       ay_pv_filltokpar(o, AY_TRUE, 1, &n, tokens, parms);
 
       RiNuPatchV(nu, uorder, uknots,
-		(RtFloat)uknots[uorder-1], (RtFloat)uknots[nu],
-		nv, vorder, vknots,
-		(RtFloat)vknots[vorder-1], (RtFloat)vknots[nv],
-		(RtInt)n, tokens, parms);
+		 /*(RtFloat)uknots[uorder-1], (RtFloat)uknots[nu],*/
+		 umin, umax,
+		 nv, vorder, vknots,
+		 /*(RtFloat)vknots[vorder-1], (RtFloat)vknots[nv],*/
+		 vmin, vmax,
+		 (RtInt)n, tokens, parms);
 
       for(i = 1; i < n; i++)
 	{
