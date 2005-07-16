@@ -1,6 +1,14 @@
-[11. Jul 2005] CVS-Head:
+[16. Jul 2005] CVS-Head:
+o bug fixes:
+  - fixed automatic merging of PV tags (SF 1238692)
 o improved OBJ import of files with trailing whitespace as e.g. written by
   Blender
+o script objects now cache a compiled version of the script for faster
+  execution
+o added support for disabling NS (notify script) tags upon loading
+o added wizard preference option to control warnings about unknown tag types
+o added facility that allows plugins to correctly reconnect already present
+  tags of the types that are defined by the plugin upon intialization
 
 
 [5. Jul 2005] Ayam 1.8.3:
