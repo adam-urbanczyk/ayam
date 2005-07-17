@@ -883,6 +883,12 @@ ay_rrib_RiNuPatch(RtInt nu, RtInt uorder, RtFloat uknot[],
 
   ay_rrib_readpvs(n, tokens, parms, 2, hvars, &(ay_rrib_co.tags));
 
+  if((umin > np.uknotv[np.uorder]) || (umax < np.uknotv[np.width]))
+    ay_knots_setuminmax(&ay_rrib_co, umin, umax);
+
+  if((vmin > np.vknotv[np.vorder]) || (vmax < np.vknotv[np.height]))
+    ay_knots_setvminmax(&ay_rrib_co, vmin, vmax);
+
   ay_rrib_co.parent = AY_TRUE;
   ay_rrib_co.hide_children = AY_TRUE;
   ay_rrib_linkobject((void *)(&np), AY_IDNPATCH);
@@ -909,6 +915,7 @@ ay_rrib_RiTrimCurve(RtInt nloops, RtInt ncurves[], RtInt order[],
  int i = 0, j = 0, k = 0, l = 0;
  RtInt *orderptr = NULL, *nptr = NULL;
  RtFloat *knotptr = NULL, *uptr = NULL, *vptr = NULL, *wptr = NULL;
+ RtFloat *minptr = NULL, *maxptr = NULL;
  ay_nurbcurve_object *nc = NULL;
  ay_object *o = NULL, *level = NULL, **ncinloop = NULL;
  int ay_status = AY_OK;
@@ -919,6 +926,8 @@ ay_rrib_RiTrimCurve(RtInt nloops, RtInt ncurves[], RtInt order[],
   uptr = u;
   vptr = v;
   wptr = w;
+  minptr = min;
+  maxptr = max;
 
   for(i = 0; i < nloops; i++)
    {
@@ -980,12 +989,18 @@ ay_rrib_RiTrimCurve(RtInt nloops, RtInt ncurves[], RtInt order[],
 	     o->type = AY_IDNCURVE;
 	     o->refine = (void *)nc;
 
+	     if((*minptr > nc->knotv[nc->order]) ||
+		(*maxptr < nc->knotv[nc->length]))
+	       ay_knots_setuminmax(o, *minptr, *maxptr);
+
 	     o->next = *ncinloop;
 	     *ncinloop = o;
 	     ncinloop = &(o->next);
 
 	     orderptr++;
 	     nptr++;
+	     minptr++;
+	     maxptr++;
 	   } /* for */
 
 	 /* link level */
@@ -1032,12 +1047,19 @@ ay_rrib_RiTrimCurve(RtInt nloops, RtInt ncurves[], RtInt order[],
 	   return;
 	 ay_object_defaults(o);
 	 o->type = AY_IDNCURVE;
+
+	 if((*minptr > nc->knotv[nc->order]) ||
+	    (*maxptr < nc->knotv[nc->length]))
+	   ay_knots_setuminmax(o, *minptr, *maxptr);
+
 	 o->refine = (void *)nc;
 	 o->next = ay_rrib_cattributes->trimcurves;
 	 ay_rrib_cattributes->trimcurves = o;
 
 	 orderptr++;
 	 nptr++;
+	 minptr++;
+	 maxptr++;
        } /* if */
    } /* for */
 
