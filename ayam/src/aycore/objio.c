@@ -1436,6 +1436,11 @@ double *objio_texturetv;
 int objio_texturesvlen;
 int objio_texturetvlen;
 
+double objio_umin;
+double objio_umax;
+double objio_vmin;
+double objio_vmax;
+
 typedef struct objio_trim_s {
   struct objio_trim_s *next;
   struct objio_trim_s *prev;
@@ -2263,7 +2268,6 @@ ay_objio_readcurv(char *str)
 {
  int ay_status = AY_OK;
  char *c = str;
- double umin, umax;
  int gvindex = 0, tvindex = 0, nvindex = 0, stride = 4;
  double *gv, *controlv;
  int vtype = 0;
@@ -2288,7 +2292,7 @@ ay_objio_readcurv(char *str)
   /* read umin/umax */
   if(vtype == 1)
     {
-      sscanf(c, " %lg %lg", &umin, &umax);
+      sscanf(c, " %lg %lg", &objio_umin, &objio_umax);
       ay_status = ay_objio_readskip(&c);
       ay_status = ay_objio_readskip(&c);
     }
@@ -2366,7 +2370,6 @@ ay_objio_readsurf(char *str)
 {
  int ay_status = AY_OK;
  char *c = str;
- double umin, umax, vmin, vmax;
  int gvindex = 0, tvindex = 0, nvindex = 0, stride = 4;
  int glength = 0, tlength = 0;
  double *gv, *controlv = NULL, *tv, *texturesv = NULL, *texturetv = NULL;
@@ -2378,12 +2381,12 @@ ay_objio_readsurf(char *str)
     c++;
 
   /* read umin/umax */
-  sscanf(c, " %lg %lg", &umin, &umax);
+  sscanf(c, " %lg %lg", &objio_umin, &objio_umax);
   ay_status = ay_objio_readskip(&c);
   ay_status = ay_objio_readskip(&c);
 
   /* read vmin/vmax */
-  sscanf(c, " %lg %lg", &vmin, &vmax);
+  sscanf(c, " %lg %lg", &objio_vmin, &objio_vmax);
   ay_status = ay_objio_readskip(&c);
   ay_status = ay_objio_readskip(&c);
 
@@ -2678,9 +2681,9 @@ ay_objio_readtrim(char *str, int hole)
  int ay_status = AY_OK;
  int tcount = 0, tindex = 0;
  char *c = str;
- double umin, umax;
  ay_level_object *lev = NULL;
  ay_object *t = NULL, *l = NULL, **orig_nexttrim = objio_nexttrim;
+ ay_nurbcurve_object *nc = NULL;
 
   if(!str)
     return AY_ENULL;
@@ -2691,7 +2694,7 @@ ay_objio_readtrim(char *str, int hole)
   while(*c != '\0')
     {
       /* read umin/umax */
-      sscanf(c, " %lg %lg", &umin, &umax);
+      sscanf(c, " %lg %lg", &objio_umin, &objio_umax);
       ay_status = ay_objio_readskip(&c);
       ay_status = ay_objio_readskip(&c);
 
@@ -2739,6 +2742,13 @@ ay_objio_readtrim(char *str, int hole)
 	      ay_status = ay_object_copy(t, objio_nexttrim);
 	      if(ay_status)
 		goto cleanup;
+
+	      nc = (ay_nurbcurve_object *)((*objio_nexttrim)->refine);
+	      
+	      if((objio_umin > nc->knotv[nc->order]) ||
+		 (objio_umax < nc->knotv[nc->length]))
+		ay_knots_setuminmax(*objio_nexttrim, objio_umin, objio_umax);
+
 	      objio_nexttrim = &((*objio_nexttrim)->next);
 
 	      tcount++;
@@ -2875,6 +2885,11 @@ ay_objio_readend(void)
       ay_status = ay_object_copy(newo, &o);
       if(ay_status)
 	goto cleanup;
+
+      if((objio_umin > objio_uknotv[objio_degu+1]) ||
+	 (objio_umax < objio_uknotv[objio_ncurve.length]))
+	ay_knots_setuminmax(o, objio_umin, objio_umax);
+
       ay_status = ay_object_link(o);
 
       break;
@@ -2966,6 +2981,13 @@ ay_objio_readend(void)
 	  ay_status = ay_pv_add(o, objio_ttagname, "varying", 0,
 				objio_texturetvlen, objio_texturetv);
 	}
+      if((objio_umin > objio_uknotv[objio_degu+1]) ||
+	 (objio_umax < objio_uknotv[objio_npatch.width]))
+	ay_knots_setuminmax(o, objio_umin, objio_umax);
+
+      if((objio_vmin > objio_vknotv[objio_degv+1]) ||
+	 (objio_vmax < objio_vknotv[objio_npatch.height]))
+	ay_knots_setvminmax(o, objio_vmin, objio_vmax);
 
       ay_status = ay_object_link(o);
 
