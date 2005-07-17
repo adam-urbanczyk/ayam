@@ -59,6 +59,10 @@ int ay_knots_getuminmax(ay_object *o, int order, int knots, double *knotv,
 int ay_knots_getvminmax(ay_object *o, int order, int knots, double *knotv,
 			double *vmin, double *vmax);
 
+int ay_knots_setuminmax(ay_object *o, double umin, double umax);
+
+int ay_knots_setvminmax(ay_object *o, double vmin, double vmax);
+
 int ay_knots_init(Tcl_Interp *interp);
 
 /* nb.c */

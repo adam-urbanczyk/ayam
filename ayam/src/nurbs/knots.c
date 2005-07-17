@@ -626,7 +626,10 @@ ay_knots_mergesurf(ay_nurbpatch_object *patch,
 
 
 /* ay_knots_getuminmax:
- *  
+ *  get minimun/maximum u parametric values from knot vector <knotv>
+ *  of object <o> with order <order> and number of knots (encodes
+ *  size in u parametric dimension) <knots> from UMM tag (if present)
+ *  or directly from the knot vector (else)
  */
 int
 ay_knots_getuminmax(ay_object *o, int order, int knots, double *knotv,
@@ -663,7 +666,10 @@ ay_knots_getuminmax(ay_object *o, int order, int knots, double *knotv,
 
 
 /* ay_knots_getvminmax:
- *  
+ *  get minimun/maximum v parametric values from knot vector <knotv>
+ *  of object <o> with order <order> and number of knots (encodes
+ *  size in v parametric dimension) <knots> from UMM tag (if present)
+ *  or directly from the knot vector (else)
  */
 int
 ay_knots_getvminmax(ay_object *o, int order, int knots, double *knotv,
@@ -699,6 +705,112 @@ ay_knots_getvminmax(ay_object *o, int order, int knots, double *knotv,
 } /* ay_knots_getvminmax */
 
 
+/* ay_knots_setuminmax:
+ *  
+ */
+int
+ay_knots_setuminmax(ay_object *o, double umin, double umax)
+{
+ int ay_status = AY_OK;
+ ay_tag_object *tag = NULL, *nt = NULL;
+ char buf[128], *ct = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  sprintf(buf, "%g,%g", umin, umax);
+
+  if(!(ct = calloc(strlen(buf)+1, sizeof(char))))
+    return AY_EOMEM;
+
+  strcpy(ct, buf);
+
+  if(o->tags)
+    {
+      tag = o->tags;
+      while(tag)
+	{
+	  if(tag->type == ay_umm_tagtype)
+	    {
+	      if(tag->val)
+		free(tag->val);
+	      tag->val = ct;
+	      return AY_OK;
+	    }
+
+	  tag = tag->next;
+	} /* while */
+    } /* if */
+
+  if(!(nt = calloc(1, sizeof(ay_tag_object))))
+    {free(ct); return AY_EOMEM;}
+  nt->type = ay_umm_tagtype;
+  if(!(nt->name = calloc(4, sizeof(char))))
+    {free(ct); free(nt); return AY_EOMEM;}
+  strcpy(nt->name, "UMM");
+
+  nt->val = ct;
+
+  nt->next = o->tags;
+  o->tags = nt;
+
+ return ay_status;
+} /* ay_knots_setuminmax */
+
+
+/* ay_knots_setvminmax:
+ *  
+ */
+int
+ay_knots_setvminmax(ay_object *o, double vmin, double vmax)
+{
+ int ay_status = AY_OK;
+ ay_tag_object *tag = NULL, *nt = NULL;
+ char buf[128], *ct = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  sprintf(buf, "%g,%g", vmin, vmax);
+
+  if(!(ct = calloc(strlen(buf)+1, sizeof(char))))
+    return AY_EOMEM;
+
+  strcpy(ct, buf);
+
+  if(o->tags)
+    {
+      tag = o->tags;
+      while(tag)
+	{
+	  if(tag->type == ay_vmm_tagtype)
+	    {
+	      if(tag->val)
+		free(tag->val);
+	      tag->val = ct;
+	      return AY_OK;
+	    }
+
+	  tag = tag->next;
+	} /* while */
+    } /* if */
+
+  if(!(nt = calloc(1, sizeof(ay_tag_object))))
+    {free(ct); return AY_EOMEM;}
+  nt->type = ay_vmm_tagtype;
+  if(!(nt->name = calloc(4, sizeof(char))))
+    {free(ct); free(nt); return AY_EOMEM;}
+  strcpy(nt->name, "VMM");
+
+  nt->val = ct;
+
+  nt->next = o->tags;
+  o->tags = nt;
+
+ return ay_status;
+} /* ay_knots_setvminmax */
+
+
 /* ay_knots_init:
  *  
  */
@@ -707,12 +819,12 @@ ay_knots_init(Tcl_Interp *interp)
 {
  int ay_status = AY_OK;
 
- /* register UMM tag type */
+  /* register UMM tag type */
   ay_status = ay_tags_register(interp, "UMM", &ay_umm_tagtype);
   if(ay_status)
     return ay_status;
 
- /* register VMM tag type */
+  /* register VMM tag type */
   ay_status = ay_tags_register(interp, "VMM", &ay_vmm_tagtype);
 
  return ay_status;
