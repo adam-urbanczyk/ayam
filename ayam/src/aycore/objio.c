@@ -191,7 +191,7 @@ int
 ay_objio_writencurve(FILE *fileptr, ay_object *o, double *m)
 {
  ay_nurbcurve_object *nc;
- double *v = NULL, *p1, *p2, pw[3];
+ double *v = NULL, *p1, *p2, pw[3], umin, umax;
  int stride = 4, i;
 
   if(objio_omitcurves)
@@ -222,11 +222,13 @@ ay_objio_writencurve(FILE *fileptr, ay_object *o, double *m)
   /* write all vertices */
   ay_objio_writevertices(fileptr, (unsigned int)nc->length, stride, v);
 
+  ay_knots_getuminmax(o, nc->order, nc->length+nc->order, nc->knotv,
+		      &umin, &umax);
+
   /* write rational bspline curve */
   fprintf(fileptr, "cstype rat bspline\n");
   fprintf(fileptr, "deg %d\n", nc->order-1);
-  fprintf(fileptr, "curv %g %g", nc->knotv[0],
-	  nc->knotv[nc->length+nc->order-1]);
+  fprintf(fileptr, "curv %g %g", umin, umax);
 
   for(i = nc->length; i > 0; i--)
     {
@@ -392,8 +394,10 @@ ay_objio_writetrimids(FILE *fileptr, ay_object *o)
 	    hole = AY_TRUE;
 	  else
 	    hole = AY_FALSE;
-	  umin = nc->knotv[0];
-	  umax = nc->knotv[nc->length+nc->order-1];
+
+	  ay_knots_getuminmax(o, nc->order, nc->length+nc->order, nc->knotv,
+			      &umin, &umax);
+
 	  if(hole)
 	    fprintf(fileptr, "hole %g %g -%d\n", umin, umax, tc);
 	  else
@@ -419,8 +423,10 @@ ay_objio_writetrimids(FILE *fileptr, ay_object *o)
 	      if(down->type == AY_IDNCURVE)
 		{
 		  nc = (ay_nurbcurve_object *)down->refine;
-		  umin = nc->knotv[0];
-		  umax = nc->knotv[nc->length+nc->order-1];
+
+		  ay_knots_getuminmax(o, nc->order, nc->length+nc->order,
+				      nc->knotv,
+				      &umin, &umax);
 
 		  fprintf(fileptr, " %g %g -%d", umin, umax, tc);
 
@@ -448,6 +454,7 @@ ay_objio_writenpatch(FILE *fileptr, ay_object *o, double *m)
  int ay_status = AY_OK;
  ay_nurbpatch_object *np;
  double *v = NULL, *p1, *p2, pw[3];
+ double umin, umax, vmin, vmax;
  int stride = 4, i, j;
  int have_mys = AY_FALSE, have_myt = AY_FALSE;
  unsigned int myslen = 0, mytlen = 0, mystlen = 0, ui, uj;
@@ -567,12 +574,15 @@ ay_objio_writenpatch(FILE *fileptr, ay_object *o, double *m)
       mystarr = NULL;
     } /* if */
 
+  ay_knots_getuminmax(o, np->uorder, np->width+np->uorder, np->uknotv,
+		      &umin, &umax);
+  ay_knots_getvminmax(o, np->vorder, np->height+np->vorder, np->vknotv,
+		      &vmin, &vmax);
+
   /* write bspline surface */
   fprintf(fileptr, "cstype rat bspline\n");
   fprintf(fileptr, "deg %d %d\n", np->uorder-1, np->vorder-1);
-  fprintf(fileptr, "surf %g %g %g %g", np->uknotv[0],
-	  np->uknotv[np->width + np->uorder-1], np->vknotv[0],
-	  np->vknotv[np->height + np->vorder-1]);
+  fprintf(fileptr, "surf %g %g %g %g", umin, umax, vmin, vmax);
 
   for(i = np->width*np->height; i > 0; i--)
     {
