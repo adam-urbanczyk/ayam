@@ -185,7 +185,7 @@ onio_getnurbsurfobj(ay_object *o, ON_NurbsSurface **pp_n, double *m)
 {
  int ay_status = AY_OK;
  int i, j, a, stride = 4;
- double *cv;
+ double *cv, umin, umax, vmin, vmax;
  ay_nurbpatch_object *np = NULL;
  ON_NurbsSurface *p_n = NULL;
 
@@ -215,6 +215,22 @@ onio_getnurbsurfobj(ay_object *o, ON_NurbsSurface **pp_n, double *m)
 	  a += stride;
 	} // for
     } // for
+
+  ay_knots_getuminmax(o, np->uorder, np->width+np->uorder, np->uknotv,
+		      &umin, &umax);
+  if((umin > np->uknotv[np->uorder]) || (umax < np->uknotv[np->width]))
+    {
+      ON_Interval interval = ON_Interval(umin, umax);
+      p_n->Trim(0, interval);
+    }
+
+  ay_knots_getvminmax(o, np->vorder, np->height+np->vorder, np->vknotv,
+		      &vmin, &vmax);
+  if((vmin > np->vknotv[np->vorder]) || (vmax < np->vknotv[np->height]))
+    {
+      ON_Interval interval = ON_Interval(vmin, vmax);
+      p_n->Trim(1, interval);
+    }
 
   // return result
   *pp_n = p_n;
@@ -303,7 +319,7 @@ onio_get2dcurveobj(ay_object *o, ON_NurbsCurve **pp_c)
 {
  int ay_status = AY_OK;
  ay_nurbcurve_object *nc = NULL;
- double cv[4], m[16];
+ double cv[4], m[16], umin, umax;
  int i, a, stride = 4;
  ON_NurbsCurve *p_c = NULL;
 
@@ -330,6 +346,15 @@ onio_get2dcurveobj(ay_object *o, ON_NurbsCurve **pp_c)
       cv[2] = cv[3];
       p_c->SetCV(i, ON::homogeneous_rational, cv);
       a += stride;
+    }
+
+  ay_knots_getuminmax(o, nc->order, nc->length+nc->order, nc->knotv,
+		      &umin, &umax);
+
+  if((umin > nc->knotv[nc->order]) || (umax < nc->knotv[nc->length]))
+    {
+      ON_Interval interval = ON_Interval(umin, umax);
+      p_c->Trim(interval);
     }
 
   // return result
@@ -601,7 +626,7 @@ onio_writencurve(ay_object *o, ONX_Model *p_m, double *m)
 {
  int ay_status = AY_OK;
  int i, a, stride = 4;
- double *cv;
+ double *cv, umin, umax;
  ay_nurbcurve_object *nc = NULL;
  ON_NurbsCurve *p_c = NULL;
 
@@ -627,6 +652,15 @@ onio_writencurve(ay_object *o, ONX_Model *p_m, double *m)
       ay_trafo_apply4(cv, m);
       cv += 4;
       a += stride;
+    }
+
+  ay_knots_getuminmax(o, nc->order, nc->length+nc->order, nc->knotv,
+		      &umin, &umax);
+
+  if((umin > nc->knotv[nc->order]) || (umax < nc->knotv[nc->length]))
+    {
+      ON_Interval interval = ON_Interval(umin, umax);
+      p_c->Trim(interval);
     }
 
   ONX_Model_Object& mo = p_m->m_object_table.AppendNew();
