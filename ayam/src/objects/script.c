@@ -341,6 +341,9 @@ ay_script_readcb(FILE *fileptr, ay_object *o)
  char script_disable_cmd[] = "script_disable";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  char a1[] = "ay", n1[] = "scriptdisable";
+ char *arrname = NULL, *membername = NULL, *memberval = NULL;
+ int arrmembers = 0;
+ Tcl_Interp *interp = ay_interp;
 
   if(!o)
     return AY_ENULL;
@@ -369,6 +372,32 @@ ay_script_readcb(FILE *fileptr, ay_object *o)
 	} /* for */
     } /* if */
 
+  if(ay_read_version >= 8)
+    {
+      if(strstr(sc->script, "# Ayam, save array:"))
+	{
+	  arrname = strchr(sc->script, ':');
+	  if(arrname[1] == ' ')
+	    arrname++;
+
+	  fscanf(fileptr, "%d\n", &arrmembers);
+
+	  for(i = 0; i < arrmembers; i++)
+	    {
+	      ay_read_string(fileptr, &membername);
+	      ay_read_string(fileptr, &memberval);
+
+	      Tcl_SetVar2(interp, arrname, membername, memberval,
+			  TCL_GLOBAL_ONLY);
+
+	      free(membername);
+	      membername = NULL;
+	      free(memberval);
+	      memberval = NULL;
+	    } /* for */
+	} /* if */
+    } /* if */
+
   o->refine = sc;
 
   ay_trafo_defaults(o);
@@ -389,7 +418,7 @@ ay_script_readcb(FILE *fileptr, ay_object *o)
 
       Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
       Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
-    }
+    } /* if */
 
  return AY_OK;
 } /* ay_script_readcb */
@@ -399,6 +428,10 @@ int
 ay_script_writecb(FILE *fileptr, ay_object *o)
 {
  ay_script_object *sc = NULL;
+ char *arrname = NULL, *membername = NULL, *memberval = NULL;
+ Tcl_Obj *arrmemberlist = NULL, *arrmember;
+ int arrmembers = 0, i, slen;
+ Tcl_Interp *interp = ay_interp;
 
   if(!o)
     return AY_ENULL;
@@ -415,7 +448,39 @@ ay_script_writecb(FILE *fileptr, ay_object *o)
   else
     {
       fprintf(fileptr, "0\n");
-    }
+    } /* if */
+
+  if(strstr(sc->script, "# Ayam, save array:"))
+    {
+      arrname = strchr(sc->script, ':');
+      if(arrname[1] == ' ')
+	arrname++;
+      Tcl_VarEval(interp, "array names", arrname, (char*)NULL);
+      arrmemberlist = Tcl_GetObjResult(interp);
+
+      Tcl_ListObjLength(interp, arrmemberlist, &arrmembers);
+
+      fprintf(fileptr, "%d", arrmembers);
+
+      for(i = 0; i < arrmembers; i++)
+	{
+	  arrmember = NULL;
+	  Tcl_ListObjIndex(interp, arrmemberlist, i, &arrmember);
+	  if(arrmember)
+	    {
+	      membername = Tcl_GetStringFromObj(arrmember, &slen);
+	      if(membername)
+		{
+		  memberval = Tcl_GetVar2(interp, arrname, membername,
+					  TCL_GLOBAL_ONLY);
+		  if(memberval)
+		    {
+		      fprintf(fileptr, "%s\n%s\n", membername, memberval);
+		    } /* if */
+		} /* if */
+	    } /* if */
+	} /* for */
+    } /* if */
 
  return AY_OK;
 } /* ay_script_writecb */
