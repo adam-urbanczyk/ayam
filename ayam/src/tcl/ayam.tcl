@@ -146,7 +146,7 @@ array set ayprefs {
  AskScriptDisable 1
 
  WarnUnknownTag 1
-
+ FixX11Menu 1
  Docs "http://ayam.sourceforge.net/docs/"
     DailyTips {
 {Always click on drawn pixels, when picking vertices.}
@@ -1404,6 +1404,18 @@ proc bgerror { message } {
     }
 }
 # bgerror
+
+# add workaround for buggy Tk menus on X11 (that disappear too early if
+# displaced at the bottom of the screen)
+if { $ayprefs(FixX11Menu) } {
+    if { $tcl_platform(platform) != "windows" } {
+	bind Menubutton <Button-1> {+
+	    bind [winfo children %W] <ButtonRelease-1> {break}
+	    after 300 { bind [winfo children %W] <ButtonRelease-1> {} }
+	}
+    }
+}
+# if
 
 # now "activate" all views: establish mouse and key bindings
 foreach view $ay(views) { viewBind $view }
