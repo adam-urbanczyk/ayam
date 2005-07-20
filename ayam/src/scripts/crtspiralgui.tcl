@@ -1,3 +1,4 @@
+# Ayam, save array: SpiralAttrData
 # crtspiralgui.tcl: example script for Ayam Script object
 # this script wants Script Object Type "Create" and creates
 # a spiral NURBS curve; it also has a property GUI, just
