@@ -6639,6 +6639,14 @@ are 255 for the red, 128 for the green, and 0 for the blue component.
 <item><tt/"IconGamma"/: this setting may be used to adapt the contrast
 of all icons (in view menu and toolbox) to your display gamma. If you
 are on a SGI it is recommended to set this to about "0.7".
+<item><tt/"AddViewParams"/ allows to add custom parameters to the
+view OpenGL widget creation, like e.g. <tt/"-stereo true"/.
+<item><tt/"AskScriptDisable"/ controls the warning dialog that
+appears if scenes with script objects or tags are loaded.
+<item><tt/"WarnUnknownTag"/ controls the warning messages for
+unknown tag types.
+<item><tt/"FixX11Menu"/ enables a workaround for non-sticky menus
+on X11 (displaced menus do not stay open).
 </itemize>
 
 <sect2>RiOption and RiAttributes Database<label id="rioptdb">
@@ -7518,6 +7526,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Active: <ref id="scriptattr" name="script attribute">
 <item>Accuracy: <ref id="onioplugin" name="ONIO plugin import/export option">
 <item>Adaptive: <ref id="moattr" name="MetaObj attributes">
+<item>AddViewParams: <ref id="hidprefs" name="hidden preference setting">
 <item>Algorithm: <ref id="aycsg" name="AyCSG plugin option">
 <item>Align to Parent: <ref id="vmconf" name="view menu entry">,
 <ref id="vwsc" name="view action">
@@ -7526,6 +7535,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Archives: <ref id="rio" name="RenderMan interface option">
 <item>Area Light: <ref id="alob" name="creation of">
 <item>Array: <ref id="cloneobj" name="object">
+<item>AskScriptDisable: <ref id="hidprefs" name="hidden preference setting">
 <item>Atmosphere: <ref id="imager" name="property">
 <item>Attributes: <ref id="attrs" name="attributes property">,
 <ref id="riattrs" name="RenderMan/BMRT attributes property">
@@ -7692,6 +7702,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>FilterFunc: <ref id="rio" name="RenderMan interface option">
 <item>FilterWidth: <ref id="rio" name="RenderMan interface option">
 <item>FindU: <ref id="miscac" name="modeling action">
+<item>FixX11Menu: <ref id="hidprefs" name="hidden preference setting">
 <item>FlashPoints: <ref id="prefmodel" name="preference setting">
 <item>Flatness: <ref id="moattr" name="MetaObj attributes">
 <item>FontName: <ref id="textattr" name="Text attribute">
@@ -8194,6 +8205,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 
 <label id="indexw">W
 <itemize>
+<item>WarnUnknownTag: <ref id="hidprefs" name="hidden preference setting">
 <item>Wavefront OBJ import: <ref id="impwav" name="Wavefront OBJ import">
 <item>Wavefront OBJ export: <ref id="expwav" name="Wavefront OBJ export">
 <item>Weight: <ref id="iac" name="single point weight editing">
