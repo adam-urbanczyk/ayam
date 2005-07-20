@@ -429,6 +429,7 @@ ay_script_writecb(FILE *fileptr, ay_object *o)
 {
  ay_script_object *sc = NULL;
  char *arrname = NULL, *membername = NULL, *memberval = NULL;
+ char *arrnameend = NULL;
  Tcl_Obj *arrmemberlist = NULL, *arrmember;
  int arrmembers = 0, i, slen;
  Tcl_Interp *interp = ay_interp;
@@ -455,7 +456,10 @@ ay_script_writecb(FILE *fileptr, ay_object *o)
       arrname = strchr(sc->script, ':');
       if(arrname[1] == ' ')
 	arrname++;
+      arrnameend = strchr(arrname, '\n');
+      *arrnameend = '\0';
       Tcl_VarEval(interp, "array names", arrname, (char*)NULL);
+      *arrnameend = '\n';
       arrmemberlist = Tcl_GetObjResult(interp);
 
       Tcl_ListObjLength(interp, arrmemberlist, &arrmembers);
