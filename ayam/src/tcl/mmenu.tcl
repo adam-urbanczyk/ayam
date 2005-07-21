@@ -428,6 +428,8 @@ $m add cascade -menu $m.clp -label "Clipboard"
 set sm [menu $m.clp -tearoff 0]
 $sm add command -label "Paste (Move)" -command {cmovOb; cS;
 global ay; set ay(ul) $ay(CurrentLevel); uS; rV; set ay(sc) 1}
+$sm add command -label "Replace" -command {repOb; cS;
+global ay; set ay(ul) $ay(CurrentLevel); uS; rV; set ay(sc) 1}
 $sm add command -label "Paste Property to Selected" -command "pclip_pastetosel;forceNot;rV"
 
 $m add cascade -menu $m.pnt -label "Points"
