@@ -457,9 +457,11 @@ ay_script_writecb(FILE *fileptr, ay_object *o)
       if(arrname[1] == ' ')
 	arrname++;
       arrnameend = strchr(arrname, '\n');
-      *arrnameend = '\0';
+      if(arrnameend)
+	*arrnameend = '\0';
       Tcl_VarEval(interp, "array names", arrname, (char*)NULL);
-      *arrnameend = '\n';
+      if(arrnameend)
+	*arrnameend = '\n';
       arrmemberlist = Tcl_GetObjResult(interp);
 
       Tcl_ListObjLength(interp, arrmemberlist, &arrmembers);
