@@ -611,6 +611,9 @@ int ay_status = AY_OK;
   Tcl_CreateCommand(interp, "cmovOb", ay_clipb_movetcmd,
 		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  Tcl_CreateCommand(interp, "repOb", ay_clipb_replacetcmd,
+		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
   /* conv.c */
   Tcl_CreateCommand(interp, "convOb", ay_convert_forcetcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);

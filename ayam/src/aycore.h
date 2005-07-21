@@ -58,6 +58,9 @@ int ay_clipb_pastetcmd(ClientData clientData, Tcl_Interp *interp,
 int ay_clipb_movetcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
 
+int ay_clipb_replacetcmd(ClientData clientData, Tcl_Interp *interp,
+			 int argc, char *argv[]);
+
 /* comp.c */
 int ay_comp_strcase(char *s1, char *s2);
 

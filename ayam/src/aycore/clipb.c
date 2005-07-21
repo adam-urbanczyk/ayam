@@ -289,3 +289,103 @@ ay_clipb_movetcmd(ClientData clientData, Tcl_Interp *interp,
 
  return TCL_OK;
 } /* ay_clipb_movetcmd */
+
+
+/* ay_clipb_replacetcmd:
+ *  replace objects from the current selection with the clipboard content
+ */
+int
+ay_clipb_replacetcmd(ClientData clientData, Tcl_Interp *interp,
+		     int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ char fname[] = "repOb";
+ ay_object *clip = ay_clipboard, *clipend;
+ ay_object **presel, *selend;
+ int instanceerr = AY_FALSE;
+ ay_list_object *sel = ay_selection;
+ 
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, fname, NULL);
+      return TCL_OK;
+    }
+
+  if(sel->object == ay_root)
+    {
+      ay_error(AY_ERROR, fname, "Can not replace root object!");
+      return TCL_OK;
+    }
+
+  /* first, check whether we would be moving instances into their masters */
+  while(clip)
+    {
+      instanceerr = AY_FALSE;
+
+      instanceerr = ay_instt_check(clip, ay_currentlevel->object);
+
+      if(instanceerr)
+	{
+	  ay_error(AY_ERROR, fname, "Recursive instances would result!");
+	  return TCL_OK;
+	}
+
+      clipend = clip;
+      clip = clip->next;
+    } /* while */
+
+  /* find pointer to first selected object */
+  if(ay_currentlevel->next->object)
+    {
+      presel = &(ay_currentlevel->next->object->down);
+    }
+  else
+    {
+      presel = &(ay_root->next);
+    }
+
+  while((*presel) && ((*presel) != sel->object))
+    {
+      presel = &((*presel)->next);
+    }
+
+  if(!(*presel))
+    {
+      /* internal error, scene structure broken? */
+      ay_error(AY_ERROR, fname, NULL);
+      return TCL_OK;
+    }
+
+  /* find last object in first (contiguous) selected region of objects */
+  selend = sel->object;
+  while(selend->next && selend->next->selected)
+    {
+      selend = selend->next;
+    }
+
+  /* replace first (contiguous) region of selection with clipboard content */
+
+  /* head */
+  clip = *presel;
+  *presel = ay_clipboard;
+  ay_clipboard = clip;
+
+  /* tail */
+  clipend->next = selend->next;
+  selend->next = NULL;
+
+  /* clear selected flags of replaced objects */
+  clip = ay_clipboard;
+  while(clip)
+    {
+      clip->selected = AY_FALSE;
+      clip = clip->next;
+    } /* while */
+
+  /* free selection */
+  ay_status = ay_sel_free(AY_TRUE);
+
+  ay_notify_parent();
+
+ return TCL_OK;
+} /* ay_clipb_replacetcmd */
