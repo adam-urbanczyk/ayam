@@ -706,6 +706,11 @@ save views you have to use <tt>"File/Save"</tt> or
 <item><tt>Clipboard/Paste (move)</tt>, moves objects from the clipboard back
 to the scene (clearing the clipboard). This is the only way to
 get referenced objects out of the clipboard.
+<item><tt>Clipboard/Replace</tt>, replaces the currently selected
+object(s) with the object clipboard content, moving the replaced
+objects into the clipboard. If multiple objects are selected
+in non consecutive sequences, only the first consecutive sequence
+or single object is replaced.
 <item><tt>Clipboard/Paste Property to selected</tt> paste the property
 from the property clipboard to the currently selected
 property of the currently selected object. No type check of the
@@ -4735,7 +4740,7 @@ For security reasons, if scene files containing script objects are
 loaded, Ayam will raise a warning offering to disable all script
 objects that will be read.
 <p>
-The script will be run each time it is modified
+The script of a script object will be run each time it is modified
 and each time the notification callback of the object is called
 (e.g. because one of the children of the script object changed).
 As long as the script of a script object is executed, Ayam will
@@ -4752,7 +4757,14 @@ Since Ayam 1.8.2 script objects may also create their own property
 GUIs for e.g. script parameters. This is accomplished by adding
 tags of type <tt>"NP"</tt> with the name of the new property as
 value to the script object. The script itself is responsible for data
-management and property GUI creation.
+management and property GUI creation. Since Ayam 1.9 the parameters
+set via the property GUI may be comfortably saved with scene files by just
+adding the following comment as first line to the script:
+<code>
+# Ayam, save array: &lt;arrayname&gt;
+</code>
+where arrayname designates the name of the global Tcl array
+the property GUI elements operate with.
 <p>
 The binary and source distributions of Ayam contain several example
 scripts for script objects in the <tt>"ayam/bin/scripts"</tt> and
@@ -7918,6 +7930,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Parameter: <ref id="extrncp" name="ExtrNC attribute">
 <item>pasOb: <ref id="sciclip" name="scripting interface command">
 <item>Paste: <ref id="mmedit" name="main menu entry">
+<item>Paste (Move): <ref id="mmspecial" name="main menu entry">
 <item>Paste Property: <ref id="mmedit" name="main menu entry">
 <item>PatchMesh: <ref id="patchmeshobj" name="object">
 <item>PatchSamples: <ref id="rio" name="RenderMan interface option">
@@ -7980,7 +7993,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>RenderMode: <ref id="prefrib" name="preference setting">
 <item>RenderPT, RenderUI: <ref id="prefrib" name="preference setting">
 <item>Repair Ayam: <ref id="repayam" name="Tcl helper script">
-<item>Replace: <ref id="mmfile" name="main menu entry">
+<item>Replace: <ref id="mmfile" name="main menu entry">,
+<ref id="mmspecial" name="main menu entry">
 <item>replaceScene: <ref id="scio" name="scripting interface command">
 <item>Rescale Knots to Mindist: <ref id="resckmt" name="NURBCurve tool">
 <item>Rescale Knots to Range: <ref id="resckrt" name="NURBCurve tool">
