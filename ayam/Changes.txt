@@ -1,4 +1,4 @@
-[16. Jul 2005] CVS-Head:
+[23. Jul 2005] CVS-Head:
 o bug fixes:
   - fixed automatic merging of PV tags (SF 1238692)
 o improved OBJ import of files with trailing whitespace as e.g. written by
@@ -8,7 +8,15 @@ o script objects now cache a compiled version of the script for faster
 o added support for disabling NS (notify script) tags upon loading
 o added wizard preference option to control warnings about unknown tag types
 o added facility that allows plugins to correctly reconnect already present
-  tags of the types that are defined by the plugin upon intialization
+  tags of the types that are defined by the plugin upon initialization
+o added UMM/VMM tag types that may be used to trim the knot vectors of NURBS
+  curves and surfaces by specifying min/max values
+o added keyboard shortcut to close the toolbox window
+o added scripting interface command "repOb" and corresponding main menu
+  entry "Special/Clipboard/Replace" that replaces the currently selected
+  object(s) with the object clipboard content
+o added new object type "RiProc" for procedural objects (DelayedReadArchive,
+  RunProgram, and DynamicLoad)
 
 
 [5. Jul 2005] Ayam 1.8.3:
