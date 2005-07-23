@@ -449,12 +449,16 @@ RtVoid ay_rrib_RiPointsGeneralPolygons(RtInt npolys, RtInt nloops[],
 RtVoid ay_rrib_RiGeneralPolygon(RtInt nloops, RtInt nvertices[],
 				RtInt n, RtToken tokens[], RtPointer parms[]);
 
-RtVoid
-ay_rrib_RiPointsPolygons(RtInt npolys, RtInt nvertices[], RtInt vertices[],
-			 RtInt n, RtToken tokens[], RtPointer parms[]);
+RtVoid ay_rrib_RiPointsPolygons(RtInt npolys, RtInt nvertices[],
+				RtInt vertices[],
+				RtInt n, RtToken tokens[], RtPointer parms[]);
 
 RtVoid ay_rrib_RiPolygon(RtInt nvertices,
 			 RtInt n, RtToken tokens[], RtPointer parms[]);
+
+RtVoid ay_rrib_RiProcedural(RtPointer data, RtBound bound,
+			    RtVoid (*subdivfunc)(RtPointer, RtFloat),
+			    RtVoid (*freefunc)(RtPointer));
 
 RtVoid ay_rrib_RiProjection(RtToken name,
 			    RtInt n, RtToken tokens[], RtPointer parms[]);
@@ -2914,6 +2918,67 @@ ay_rrib_RiPolygon(RtInt nvertices,
 
 
 RtVoid
+ay_rrib_RiProcedural(RtPointer data, RtBound bound,
+		     RtVoid (*subdivfunc)(RtPointer, RtFloat),
+		     RtVoid (*freefunc)(RtPointer))
+{
+ ay_riproc_object riproc = {0};
+ int ndata = 1;
+
+  riproc.minx = bound[0];
+  riproc.maxx = bound[1];
+
+  riproc.miny = bound[2];
+  riproc.maxy = bound[3];
+
+  riproc.minz = bound[4];
+  riproc.maxz = bound[5];
+
+  if(!(riproc.file = calloc(strlen(*((char**)data))+1, sizeof(char))))
+    return;
+  strcpy(riproc.file, *((char**)data));
+
+  if((int)subdivfunc == kRIB_PROCDELAYEDREADARCHIVE)
+    {
+      riproc.type = AY_PRTDREADA;
+    }
+
+  if((int)subdivfunc == kRIB_PROCDYNAMICLOAD)
+    {
+      riproc.type = AY_PRTDYNLOAD;
+      ndata = 2;
+    }
+
+  if((int)subdivfunc == kRIB_PROCRUNPROGRAM)
+    {
+      riproc.type = AY_PRTRUNPROG;
+      ndata = 2;
+    }
+
+  if(ndata == 2)
+    {
+      if(!(riproc.data = calloc(strlen(((char**)data)[1])+1, sizeof(char))))
+	{
+	  if(riproc.file)
+	    free(riproc.file);
+	  return;
+	}
+      strcpy(riproc.data, ((char**)data)[1]);
+    }
+
+  ay_rrib_linkobject((void *)(&riproc), AY_IDRIPROC);
+
+  if(riproc.file)
+    free(riproc.file);
+
+  if(riproc.data)
+    free(riproc.data);
+
+ return;
+} /* ay_rrib_RiProcedural */
+
+
+RtVoid
 ay_rrib_RiProjection(RtToken name,
 		     RtInt n, RtToken tokens[], RtPointer parms[])
 {
@@ -3574,15 +3639,6 @@ ay_rrib_RiArchiveRecord(RtToken type, char *format, char *s)
 {
  return;
 } /* ay_rrib_RiArchiveRecord */
-
-
-RtVoid
-ay_rrib_RiProcedural(RtPointer data, RtBound bound,
-		     RtVoid (*subdivfunc)(RtPointer, RtFloat),
-		     RtVoid (*freefunc)(RtPointer))
-{
- return;
-} /* ay_rrib_RiProcedural */
 
 
 RtPoint*
@@ -4637,6 +4693,8 @@ ay_rrib_initgprims(void)
 
   gRibNopRITable[kRIB_OBJECTINSTANCE] = (PRIB_RIPROC)ay_rrib_RiObjectInstance;
 
+  gRibNopRITable[kRIB_PROCEDURAL] = (PRIB_RIPROC)ay_rrib_RiProcedural;
+
  return;
 } /* ay_rrib_initgprims */
 
@@ -4674,6 +4732,8 @@ ay_rrib_cleargprims(void)
   gRibNopRITable[kRIB_SOLIDEND] = (PRIB_RIPROC)RiNopSolidEnd;
 
   gRibNopRITable[kRIB_OBJECTINSTANCE] = (PRIB_RIPROC)RiNopObjectInstance;
+
+  gRibNopRITable[kRIB_PROCEDURAL] = (PRIB_RIPROC)RiNopProcedural;
 
  return;
 } /* ay_rrib_cleargprims */
