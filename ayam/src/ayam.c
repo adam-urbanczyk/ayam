@@ -352,6 +352,9 @@ ay_init(Tcl_Interp *interp)
   if((ay_status = ay_riinc_init(interp)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 
+  if((ay_status = ay_riproc_init(interp)))
+    { ay_error(ay_status, fname, NULL); return AY_ERROR; }
+
   if((ay_status = ay_material_init(interp)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 
