@@ -96,6 +96,9 @@ int ay_revolve_init(Tcl_Interp *interp);
 /* riinc.c */
 int ay_riinc_init(Tcl_Interp *interp);
 
+/* riproc.c */
+int ay_riproc_init(Tcl_Interp *interp);
+
 /* script.c */
 int ay_script_init(Tcl_Interp *interp);
 

@@ -576,6 +576,14 @@ typedef struct ay_riinc_object_s
   char *file;
 } ay_riinc_object;
 
+typedef struct ay_riproc_object_s
+{
+  int type;
+  double minx, miny, minz, maxx, maxy, maxz;
+  char *file;
+  char *data;
+} ay_riproc_object;
+
 typedef struct ay_revolve_object_s
 {
   ay_object *npatch;
@@ -1059,6 +1067,8 @@ extern unsigned int ay_current_primlevel;
 #define AY_IDBIRAIL2       33
 #define AY_IDEXTRNC        34
 #define AY_IDSCRIPT        35
+#define AY_IDRIPROC        36
+
 #define AY_IDLAST          50
 
 /* Level Object SubType Ids */
@@ -1130,6 +1140,12 @@ extern unsigned int ay_current_primlevel;
 #define AY_SDTCORNER  1
 #define AY_SDTCREASE  2
 #define AY_SDTIB      3
+
+
+/* Procedural Object Types */
+#define AY_PRTDREADA  0 /* Delayed Read Archive */
+#define AY_PRTRUNPROG 1 /* Run Program */
+#define AY_PRTDYNLOAD 2 /* Dynamic Load */
 
 
 /* size of arrows */
