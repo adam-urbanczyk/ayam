@@ -244,6 +244,8 @@ $m add command -label "Camera" \
 	-command "crtOb Camera; uCR; sL; rV;"
 $m add command -label "RiInc" \
 	-command "crtOb RiInc; uCR; sL; rV;"
+$m add command -label "RiProc" \
+	-command "crtOb RiProc; uCR; sL; rV;"
 $m add command -label "Script" \
 	-command "crtOb Script; uCR; sL; rV;"
 $m add command -label "Text" \
