@@ -115,5 +115,43 @@ return;
 }
 # script_disable
 
+# enable all script tags and objects
+proc script_enable { } {
+global ay ayprefs
+
+goTop
+selOb
+cS
+plb_update
+
+# activate all script object scripts
+forAllT script 1 {
+    getScriptp
+    set ::ScriptAttrData(Active) 1
+    setScriptp
+}
+
+# activate script tags by renaming all DNS tags to NS tags
+forAll 1 {
+    set tagnames ""; set tagvals ""
+    getTags tagnames tagvals
+    if { $tagnames != "" } {
+	set tagindex 0
+	foreach tagname $tagnames {
+	    if { $tagname == "DNS" } {
+		setTags -index $tagindex "NS" [lindex $tagvals $tagindex]
+	    }
+	    incr tagindex
+	}
+    }
+}
+
+goTop
+selOb
+forceNot
+
+return;
+}
+# script_enable
 
 return;
