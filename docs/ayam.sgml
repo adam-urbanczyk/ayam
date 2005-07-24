@@ -609,7 +609,13 @@ section <ref id="cameraobj" name="Camera Object">.
 <item><tt/RiInc/, create a new RIB-include object. Those objects
 may be used to include objects into your scenes
 that just exist as a piece of RIB, see
-also section <ref id="riincobj" name="RInc Object">.
+also section <ref id="riincobj" name="RiInc Object">.
+<item><tt/RiProc/, create a new procedural object, see
+also section <ref id="riprocobj" name="RiProc Object">.
+<item><tt/Script/, create a new script object, see
+also section <ref id="scriptobj" name="Script Object">.
+<item><tt/Text/, create a new text object, see
+also section <ref id="textobj" name="Text Object">.
 </itemize>
 
 <label id="mmtools">
@@ -4724,6 +4730,26 @@ the size of a box, that will be drawn as a geometric
 representation of the RIB.
 </itemize>
 
+<sect1>RiProc Object<label id="riprocobj">
+<p>
+RiProc objects may be used to include procedural objects or into your
+scenes.
+
+<sect2>RiProcAttr Property<label id="riprocp">
+<p>
+<itemize>
+<item><tt/"Type"/ defines the type of the procedural object which is
+one of <tt/"DelayedReadArchive"/, <tt/"RunProgram"/, or
+<tt/"DynamicLoad"/.
+<item>Using <tt/"File"/ you specify the filename of the RIB archive,
+program, or dynamic shared object (depending on the type of the
+procedural object).
+<item>Using <tt/"Data"/ additional arguments may be supplied to
+procedural objects of type <tt/"RunProgram"/ and <tt/"DynamicLoad"/.
+<item><tt/"MinX"/, <tt/"MaxX"/, <tt/"MinY"/, <tt/"MaxY"/, <tt/"MinZ"/,
+and <tt/"MaxZ"/ specify the size of the bounding box of the objects that
+the procedural will create.
+</itemize>
 
 <sect1>Script Object<label id="scriptobj">
 <p>
