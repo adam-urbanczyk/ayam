@@ -53,6 +53,8 @@ int ay_comp_camera(ay_object *o1, ay_object *o2);
 
 int ay_comp_riinc(ay_object *o1, ay_object *o2);
 
+int ay_comp_riproc(ay_object *o1, ay_object *o2);
+
 int ay_comp_light(ay_object *o1, ay_object *o2);
 
 int ay_comp_ncurve(ay_object *o1, ay_object *o2);
@@ -421,6 +423,43 @@ ay_comp_riinc(ay_object *o1, ay_object *o2)
 
   return AY_TRUE;
 } /* ay_comp_riinc */
+
+
+/* ay_comp_riproc:
+ *
+ */
+int
+ay_comp_riproc(ay_object *o1, ay_object *o2)
+{
+  ay_riproc_object *r1, *r2;
+
+  r1 = (ay_riproc_object *)o1->refine;
+  r2 = (ay_riproc_object *)o2->refine;
+
+  if((r1->minx != r2->minx) ||
+     (r1->maxx != r2->maxx) ||
+     (r1->miny != r2->miny) ||
+     (r1->maxy != r2->maxy) ||
+     (r1->minz != r2->minz) ||
+     (r1->maxz != r2->maxz) ||
+     (r1->type != r2->type))
+    return AY_FALSE;
+  
+  if(strcmp(r1->file, r2->file))
+    return AY_FALSE;
+
+  if(r1->data && r2->data)
+    {
+      if(strcmp(r1->data, r2->data))
+	return AY_FALSE;
+    }
+  else
+    {
+      return AY_FALSE;
+    }
+
+  return AY_TRUE;
+} /* ay_comp_riproc */
 
 
 /* ay_comp_light:
@@ -1207,6 +1246,7 @@ ay_comp_init()
   ay_status = ay_comp_register(ay_comp_npatch, AY_IDNPATCH);
 
   ay_status = ay_comp_register(ay_comp_riinc, AY_IDRIINC);
+  ay_status = ay_comp_register(ay_comp_riproc, AY_IDRIPROC);
   ay_status = ay_comp_register(ay_comp_level, AY_IDLEVEL);
 
   ay_status = ay_comp_register(ay_comp_light, AY_IDLIGHT);
