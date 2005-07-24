@@ -467,6 +467,8 @@ $sm add command -label "From Camera" -command "io_exportRIBfC"
 $sm add command -label "Selected Objects" -command "io_exportRIBSO"
 $sm add command -label "Create ShadowMaps" -command "io_RenderSM"
 $m add separator
+$m add command -label "Enable Scripts" -command "script_enable"
+$m add separator
 $m add command -label "Toggle Toolbox" -command "toolbox_toggle"
 $m add command -label "Toggle TreeView" -command "tree_toggle"
 $m add separator
