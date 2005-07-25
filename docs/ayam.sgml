@@ -696,6 +696,7 @@ to disk. Note that Ayam will not check, whether the objects are
 saved with their materials. It is also possible to save
 instance objects without their master objects. This will lead
 to errors while loading such a scene later on.
+
 <item><tt/Save Environment/, saves the root object and all
 views to a so called environment scene file, which is read
 on program startup and <tt>"File/New"</tt>.
@@ -709,14 +710,17 @@ and all views. If you want to include geometric objects in your
 environment or if you want to exclude the root object and just
 save views you have to use <tt>"File/Save"</tt> or
 <tt>"Special/Save Selected as"</tt> respectively.
+
 <item><tt>Clipboard/Paste (move)</tt>, moves objects from the clipboard back
 to the scene (clearing the clipboard). This is the only way to
 get referenced objects out of the clipboard.
+
 <item><tt>Clipboard/Replace</tt>, replaces the currently selected
 object(s) with the object clipboard content, moving the replaced
 objects into the clipboard. If multiple objects are selected
 in non consecutive sequences, only the first consecutive sequence
 or single object is replaced.
+
 <item><tt>Clipboard/Paste Property to selected</tt> paste the property
 from the property clipboard to the currently selected
 property of the currently selected object. No type check of the
@@ -725,38 +729,47 @@ displacement shader to a surface shader (as long as the copied arguments
 of both shaders have the same names and types).
 <item><tt>Points/Select All Points</tt>, selects all points of the currently
 selected object(s).
+
 <item><tt>Points/Invert Selection</tt>, selects all points of the currently
 selected object(s) that are not selected, and de-select all points that
 are currently selected.
+
 <item><tt>Points/Apply To All</tt>, applies the transformations encoded in the
 transformations property of the selected objects to all points of those
 objects.
 This will have the effect of resetting the transformations property
 to the default values without transforming the points.
+
 <item><tt>Points/Apply To Selected</tt>, applies the transformations
 encoded in the
 transformations property of the selected objects to the selected points.
 This will reset the transformations property without transforming the
 selected points. The points currently not selected will be transformed,
 however!
+
 <item><tt>Instances/Resolve all Instances</tt>, converts all instances
 of the current level (and its child objects) to normal objects.
+
 <item><tt>Instances/Automatic Instancing</tt>, pops up a small dialog box,
 where you may parameterize and start the automatic instantiation
 algorithm (that automatically creates instances from
 equal objects). See section <ref id="ai" name="Automatic Instancing">
 for more information regarding automatic instancing.
+
 <item><tt>Tags/Add RiOption</tt>, pops up a small dialog box, where you may
 select and parameterize a RiOption tag to add as tag to the Root object
 (see <ref id="riotag" name="RiOption Tag">). The Root object does
 not have to be selected, and the current selection will not be changed
 by this action.
+
 <item><tt>Tags/Add RiAttribute</tt>, pops up a small dialog box, where you may
 select and parameterize a RiAttribute tag to add as tag to the currently
 selected object(s)
 (see <ref id="riatag" name="RiAttribute Tag">).
+
 <item><tt>Tags/Edit TexCoords</tt>, opens the texture coordinates editor.
 (see also section <ref id="tctag" name="TC (TextureCoordinates) Tag">).
+
 <item><tt>Select Renderer</tt> opens a dialog where the renderer
 for direct rendering from a view may be choosen.
 The changes will have effect on all options that
@@ -795,14 +808,20 @@ included in other RIBs using e.g. ReadArchive.
 for the current scene.
 See also section <ref id="shadowmaps" name="Using ShadowMaps">.
 
+<item><tt/Enable Scripts/ enables all disabled script tags and
+objects. Objects and tags in the object clipboard are not
+affected!
+
 <item><tt/Toggle ToolBox/ closes or opens the toolbox window
 (see <ref id="toolb" name="The Tool Box Window">). From version 1.3 on,
 Ayam remembers the state of the toolbox in the saved preferences.
+
 <item><tt/Toggle TreeView/ toggles object tree view and object listbox.
 From version 1.3 on, Ayam remembers whether the tree view or the
 object listbox is open in the saved preferences
 (see also section <ref id="obj" name="Objects"> for more information
 about both representations).
+
 <item><tt>Zap Ayam</tt> iconifies all currently open windows of Ayam.
 If one of the iconified windows is de-iconified later, all other zapped
 windows will be de-iconified as well.
@@ -7708,6 +7727,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>elevateNC: <ref id="scinurbs" name="scripting interface command">,
 <ref id="elevt" name="elevate tool">
 <item>Elevate UV: <ref id="elevuvt" name="elevate uv tool">
+<item>Enable Scripts: <ref id="mmspecial" name="main menu entry">
 <item>EndCap: <ref id="rep" name="revolve attribute">,
 <ref id="swp" name="sweep attribute">,
 <ref id="skp" name="skin attribute">,
