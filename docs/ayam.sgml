@@ -7690,10 +7690,12 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 
 <label id="indexd">D
 <itemize>
+<item>Data: <ref id="riprocp" name="riproc attribute">
 <item>DC: <ref id="dctag" name="tag type">
 <item>DCSampling: <ref id="aycsg" name="AyCSG plugin option">
 <item>DefaultAction: <ref id="prefmodel" name="preference setting">
 <item>DefaultMat: <ref id="prefrib" name="preference setting">
+<item>DelayedReadArchive: <ref id="riprocp" name="riproc attribute">
 <item>delegTrafo: <ref id="scitrafo" name="scripting interface command">
 <item>Delete: <ref id="mmedit" name="main menu entry">,
 <ref id="insdelac" name="delete points">
@@ -7715,6 +7717,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Draw Level only: <ref id="vmconf" name="view menu entry">
 <item>Draw BGImage: <ref id="vmconf" name="view menu entry">
 <item>Draw Grid: <ref id="vmconf" name="view menu entry">
+<item>DynamicLoad: <ref id="riprocp" name="riproc attribute">
 </itemize>
 
 <label id="indexe">E
@@ -7755,7 +7758,9 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <label id="indexf">F
 <itemize>
 <item>Far: <ref id="camp" name="camera property">
-<item>File: <ref id="mmfile" name="file menu">
+<item>File: <ref id="mmfile" name="file menu">,
+<ref id="riincp" name="riinc attribute">,
+<ref id="riprocp" name="riproc attribute">
 <item>FillGaps: <ref id="concatncp" name="ConcatNC attribute">
 <item>FilterFunc: <ref id="rio" name="RenderMan interface option">
 <item>FilterWidth: <ref id="rio" name="RenderMan interface option">
@@ -7905,6 +7910,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <ref id="matprop" name="material property attribute">
 <item>MaxRayLevel: <ref id="rio" name="RenderMan interface option">
 <item>MaxTagLen: <ref id="hidprefs" name="Hidden Preference Settings">
+<item>MaxX, MaxY, MaxZ: <ref id="riprocp" name="riproc attribute">
 <item>Menu: <ref id="mm" name="main menu">,
 <ref id="vm" name="view menu">
 <item>Merge: <ref id="mmtools" name="Merge PolyMesh tool">
@@ -7915,6 +7921,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <ref id="mfioplugin" name="3DMF import export (MFIO) plugin">
 <item>MinorRad: <ref id="top" name="torus attribute">
 <item>MinSamples, MaxSamples: <ref id="rio" name="RenderMan interface option">
+<item>MinX, MinY, MinZ: <ref id="riprocp" name="riproc attribute">
 <item>Mirror: <ref id="cloneattr" name="Clone attribute">
 <item>Mode: <ref id="icp" name="ICurve attribute">
 <item>Mops Import: <ref id="impmops" name="Import of Mops Scenes">
@@ -8085,6 +8092,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <ref id="gimb" name="using the transformations property">
 <item>rotOb, rotSel: <ref id="scitrafo" name="scripting interface command">
 <item>Ruled surface: <ref id="skinobj" name="Skin object">,
+<item>RunProgram: <ref id="riprocp" name="riproc attribute">
 <item>rV: <ref id="sciupd" name="scripting interface command">
 </itemize>
 
@@ -8229,7 +8237,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <ref id="lip" name="light attribute">,
 <ref id="pmattr" name="patchmesh attribute">,
 <ref id="vat" name="view attribute">,
-<ref id="scriptattr" name="script attribute">
+<ref id="scriptattr" name="script attribute">,
+<ref id="riprocp" name="riproc attribute">
 </itemize>
 
 <label id="indexu">U
