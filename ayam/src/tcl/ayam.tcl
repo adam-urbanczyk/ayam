@@ -1288,14 +1288,31 @@ if { $ayprefs(mainGeom) != "" } {
 # load the working environment scene file
 if { ($ayprefs(LoadEnv) == 1) && ($ay(failsafe) == 0) } {
     viewCloseAll
-    puts stdout "Loading environment from $ayprefs(EnvFile)..."
-    set filename [file nativename $ayprefs(EnvFile)]
-    if { $tcl_platform(platform) == "windows" } {
-     regsub -all {\\} $filename {/} filename
+
+    set have_scenefile_argument 0
+    set i 0
+    while { $i < $argc } {
+	set arg [lindex $argv $i]
+	# .AY is delivered by Win98 file associations...
+	if { ([file extension $arg] == ".ay") || \
+		 ([file extension $arg] == ".AY") } {
+	    set have_scenefile_argument 1
+	}
+	incr i
     }
-    replaceScene $filename
-    uS
-    rV
+
+    if { !$have_scenefile_argument } {
+	puts stdout "Loading environment from $ayprefs(EnvFile)..."
+	set filename [file nativename $ayprefs(EnvFile)]
+	if { $tcl_platform(platform) == "windows" } {
+	    regsub -all {\\} $filename {/} filename
+	}
+	replaceScene $filename
+	uS
+	rV
+    } else {
+       puts stdout "Not loading environment because of scene file argument..."
+    }
 } else {
     uS
 }
