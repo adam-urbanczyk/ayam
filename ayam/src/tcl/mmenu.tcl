@@ -35,7 +35,7 @@ $m add command -label "New"\
 	-command {
     global ay ayprefs tcl_platform
     if { ! [io_warnChanged] } {
-	update; newScene; uS;
+	update; selOb; cS; plb_update; newScene; uS;
 	if { $ayprefs(NewLoadsEnv) == 1 } {
 	    viewCloseAll; cS; plb_update
 	    set filename [file nativename $ayprefs(EnvFile)]
@@ -49,16 +49,14 @@ $m add command -label "New"\
 	set ay(filename) ""
 	wm title . "Ayam - Main"
 	goTop
-	selOb
 	set ay(CurrentLevel) "root"
 	set ay(SelectedLevel) "root"
 	update
-	uS
-	rV
 	set ay(sc) 0
 	update
 	foreach view $ay(views) { viewBind $view }
 	update
+	rV
 	after idle viewMouseToCurrent
     }
 }
