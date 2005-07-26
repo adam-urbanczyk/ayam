@@ -582,6 +582,7 @@ proc io_mruLoad { index } {
 	viewCloseAll
 	cS; plb_update
 	set ay_error ""
+	set ay(askedscriptdisable) 0
 	set filename [lindex $ayprefs(mru) $index]
 
 	# swap MRU list menu entries?
