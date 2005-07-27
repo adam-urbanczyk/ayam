@@ -628,9 +628,9 @@ ay_script_notifycb(ay_object *o)
 {
  int ay_status = AY_OK, result = TCL_OK;
  char fname[] = "script_notifycb";
- ay_object *down = NULL, **nexto = NULL, **old_aynext;
+ ay_object *down = NULL, **nexto = NULL, **old_aynext, *ccm_objects;
  ay_list_object *l = NULL, *old_sel = NULL;
- ay_script_object *sc = NULL;
+ ay_script_object *sc = NULL, *csc = NULL;
  static int sema = 0;
  int old_rdmode;
  ClientData old_restrictcd;
@@ -756,9 +756,26 @@ ay_script_notifycb(ay_object *o)
 
 	  while(down && down->next)
 	    {
-	      ay_status = ay_object_copy(down, nexto);
-	      ay_sel_add(*nexto);
-	      nexto = &((*nexto)->next);
+	      if(down->type != AY_IDSCRIPT)
+		{
+		  ay_status = ay_object_copy(down, nexto);
+		  ay_notify_force(*nexto);
+		  ay_sel_add(*nexto);
+		  nexto = &((*nexto)->next);
+		}
+	      else
+		{
+		  csc = down->refine;
+		  ccm_objects = csc->cm_objects;
+		  while(ccm_objects)
+		    {
+		      ay_status = ay_object_copy(ccm_objects, nexto);
+		      ay_notify_force(*nexto);
+		      ay_sel_add(*nexto);
+		      nexto = &((*nexto)->next);
+		      ccm_objects = ccm_objects->next;
+		    } /* while */
+		} /* if */
 	      down = down->next;
 	    } /* while */
 
