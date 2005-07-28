@@ -1,6 +1,9 @@
-[23. Jul 2005] CVS-Head:
+[28. Jul 2005] CVS-Head:
 o bug fixes:
   - fixed automatic merging of PV tags (SF 1238692)
+  - fixed root object not drawn upon File/New (SF 1245221)
+  - fixed warning message to disable script tags and objects while loading
+    scenes via MRU menu entries (SF 1245225)
 o improved OBJ import of files with trailing whitespace as e.g. written by
   Blender
 o script objects now cache a compiled version of the script for faster
@@ -17,6 +20,11 @@ o added scripting interface command "repOb" and corresponding main menu
   object(s) with the object clipboard content
 o added new object type "RiProc" for procedural objects (DelayedReadArchive,
   RunProgram, and DynamicLoad)
+o added a mechanism to allow cascaded script objects
+o added proper error messages when no objects are selected upon creation
+  of NURBS tool objects (revolve, skin, etc.)
+o improved deleting of referenced objects
+
 
 
 [5. Jul 2005] Ayam 1.8.3:
