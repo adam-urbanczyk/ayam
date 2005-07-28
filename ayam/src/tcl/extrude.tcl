@@ -48,7 +48,7 @@ proc extrude_crt { } {
     global ay ay_error selected
     set selected ""
     getSel selected
-    if { $selected == "" } { return; }
+    if { $selected == "" } { ayError 20 "extrude_crt" ""; return; }
 
     # the next command sorts the selected objects
     eval "selOb $selected"

@@ -45,7 +45,7 @@ proc extrnc_crt { } {
     global ay ay_error selected
     set selected ""
     getSel selected
-    if { $selected == "" } { return; }
+    if { $selected == "" } { ayError 20 "extrnc_crt" ""; return; }
     set ay_error 0
     crtOb ExtrNC
     if { $ay_error } {  return; }
