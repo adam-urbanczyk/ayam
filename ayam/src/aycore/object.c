@@ -287,13 +287,15 @@ ay_object_deletetcmd(ClientData clientData, Tcl_Interp *interp,
  int ay_status = AY_OK;
  char fname[] = "delOb";
  ay_object *o = NULL;
- ay_list_object *sel = ay_selection;
-
+ ay_list_object *sel = ay_selection, *try_again = NULL, **next_try_again, *t;
+ 
   if(!sel)
     {
       ay_error(AY_ENOSEL, fname, NULL);
       return TCL_OK;
     }
+
+  next_try_again = &(try_again);
 
   while(sel)
     {
@@ -309,15 +311,37 @@ ay_object_deletetcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_status = ay_object_delete(o);
 	  if(ay_status)
 	    {
+	      /*
 	      ay_error(ay_status, fname, NULL);
 	      ay_object_link(o);
 	      return TCL_OK;
+	      */
+	      if(!(*next_try_again = calloc(1, sizeof(ay_list_object))))
+		{
+		  ay_error(AY_EOMEM, fname, NULL);
+		  return TCL_OK;
+		}
+	      (*next_try_again)->object = o;
+	      next_try_again = &((*next_try_again)->next);
 	    } /* if */
 
 	  ay_status = ay_undo_clearobj(o);
 
-	}
+	} /* if */
       sel = sel->next;
+    } /* while */
+
+  while(try_again)
+    {
+      ay_status = ay_object_delete(try_again->object);
+      if(ay_status)
+	{
+	  ay_error(ay_status, fname, NULL);
+	  ay_object_link(o);
+	}
+      t = try_again->next;
+      free(try_again);
+      try_again = t;
     } /* while */
 
   /* clear all cached pointers to scene hierarchy */
