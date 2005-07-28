@@ -44,7 +44,7 @@ proc birail1_crt { } {
     global ay ay_error selected
     set selected ""
     getSel selected
-    if { $selected == "" } { return; }
+    if { $selected == "" } { ayError 20 "birail1_crt" ""; return; }
     set ay_error 0
     crtOb Birail1
     if { $ay_error } {  return; }

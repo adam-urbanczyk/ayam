@@ -44,7 +44,7 @@ proc gordon_crt { } {
     global ay ay_error selected
     set selected ""
     getSel selected
-    if { $selected == "" } { return; }
+    if { $selected == "" } { ayError 20 "gordon_crt" ""; return; }
 
     # the next command sorts the selected objects
     eval "selOb $selected"
