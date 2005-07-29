@@ -332,6 +332,16 @@ $m.nct add command -label "Rescale Knots to Mindist" -command {
     runTool ay(mindist) "MinDist:"\
 	    "rescaleKnNC -d %0; plb_update;"
 }
+$m.nct add command -label "Reset Weights" -command {
+    if { $ay(views) != "" } {
+	undo save ResetWeights
+	[lindex $ay(views) 0].f3D.togl wrpac
+	rV
+    } else {
+	ayError 2 "Reset_Weights" "Need an open view!"
+    }
+}
+
 $m.nct add separator
 $m.nct add command -label "Collapse Points" -command { collNC; rV; }
 $m.nct add command -label "Explode Points" -command { explNC; rV; }
@@ -350,6 +360,15 @@ $m.npt add command -label "Revert U" -command {
     undo save RevertU; revertU; plb_update; rV}
 $m.npt add command -label "Revert V" -command {
     undo save RevertV; revertV; plb_update; rV}
+$m.nct add command -label "Reset Weights" -command {
+    if { $ay(views) != "" } {
+	undo save ResetWeights
+	[lindex $ay(views) 0].f3D.togl wrpac
+	rV
+    } else {
+	ayError 2 "Reset_Weights" "Need an open view!"
+    }
+}
 $m.npt add command -label "Extract NC" -command {extrnc_crt}
 $m.npt add command -label "Tesselate" -command tgui_open
 $m.npt add separator
