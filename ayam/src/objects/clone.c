@@ -870,11 +870,34 @@ ay_clone_providecb(ay_object *o, unsigned int type, ay_object **result)
   
   next = result;
 
+  if(cc->mirror != 0)
+    {
+      while(down)
+	{
+	  newo = NULL;
+	  if(down->type == type)
+	    {
+	      ay_status = ay_object_copy(down, &newo);
+	    } else {
+	      ay_status = ay_provide_object(down, type, &newo);
+	    } /* if */
+
+	  if(newo)
+	    {
+	      ay_trafo_add(o, newo);
+	      *next = newo;
+	      next = &(newo->next);
+	    } /* if */
+	  down = down->next;
+	} /* while */
+    } /* if */
+
+  down = o->down;
   clone = cc->clones;
   while(clone)
     {
       newo = NULL;
-
+      
       if(down->type == type)
 	{
 	  ay_status = ay_object_copy(down, &newo);
@@ -885,10 +908,24 @@ ay_clone_providecb(ay_object *o, unsigned int type, ay_object **result)
       if(newo)
 	{
 	  ay_trafo_copy(clone, newo);
-	  *next = newo;
-	  next = &(newo->next);
+	  ay_trafo_add(o, newo);
+	  /* link clones */
+	  if(cc->mirror == 0)
+	    {
+	      /* in order */
+	      *next = newo;
+	      next = &(newo->next);
+	    }
+	  else
+	    {
+	      /* in reverse order for mirrored clones */
+	      newo->next = *next;
+	      *next = newo;
+	    } /* if */
 	} /* if */
 
+      if(cc->mirror != 0)
+	down = down->next;
       clone = clone->next;
     } /* while */
 
