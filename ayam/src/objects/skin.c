@@ -437,6 +437,13 @@ ay_skin_notifycb(ay_object *o)
 	  else
 	    all_curves = c;
 
+	  /*if(skin->use_multiple_provided_objects)*/
+	  while(c->next)
+	    {
+	      count++;
+	      c = c->next;
+	    }
+
 	  last = c;
 
 	  count++;
