@@ -49,7 +49,7 @@ proc concatnc_crt { } {
     global ay ay_error selected
     set selected ""
     getSel selected
-    if { $selected == "" } { return; }
+    if { $selected == "" } { ayError 20 "revolve_crt" ""; return; }
     set ay_error 0
     crtOb ConcatNC
     if { $ay_error } {  return; }
