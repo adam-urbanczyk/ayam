@@ -853,6 +853,8 @@ ay_ncurve_readcb(FILE *fileptr, ay_object *o)
 
   ay_nct_recreatemp(ncurve);
 
+  ncurve->is_rat = ay_nct_israt(ncurve);
+
   o->refine = ncurve;
 
  return AY_OK;
