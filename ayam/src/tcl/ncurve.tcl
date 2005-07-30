@@ -21,15 +21,16 @@ w     fNCurveAttr
 }
 
 array set NCurveAttrData {
+Type 0
 Knot-Type 1
 DisplayMode 0
 }
 # create NCurveAttr-UI
 set w [frame $ay(pca).$NCurveAttr(w)]
 
+addMenu $w NCurveAttrData Type [list Open Closed Periodic]
 addParam $w NCurveAttrData Length
 addParam $w NCurveAttrData Order
-addCheck $w NCurveAttrData Closed
 addCheck $w NCurveAttrData CreateMP
 addMenu $w NCurveAttrData Knot-Type [list Bezier B-Spline NURB Custom]
 addString $w NCurveAttrData Knots

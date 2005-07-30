@@ -468,7 +468,7 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_nurbcurve_object *ncurve = NULL;
  ay_mpoint_object *mp = NULL;
- int new_order, new_length, new_knot_type, new_closed;
+ int new_order, new_length, new_knot_type, new_type;
  double *nknotv = NULL;
  int updateKnots = 0, updateMPs = AY_TRUE;
  int knotc, i;
@@ -494,9 +494,9 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &new_knot_type);
 
-  Tcl_SetStringObj(ton,"Closed",-1);
+  Tcl_SetStringObj(ton,"Type",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &new_closed);
+  Tcl_GetIntFromObj(interp,to, &new_type);
 
   Tcl_SetStringObj(ton,"CreateMP",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -627,7 +627,7 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	  free(nknotv);
 
 	  /* create new knots */
-	  ay_error(AY_EWARN,fname,
+	  ay_error(AY_EWARN, fname,
 			 "Falling back to knot type NURB!");
 	  ncurve->knot_type = AY_KTNURB;
 
@@ -640,40 +640,48 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	}
 
       Tcl_Free((char *) knotv);
-    }
+    } /* if */
 
   /* close curve? */
-  if(new_closed && !ncurve->closed)
+  if((new_type != AY_CTOPEN) && (new_type != ncurve->type))
     {
       /* close it */
       if(o->selp)
 	{
 	  ay_selp_clear(o);
 	}
+      ncurve->type = new_type;
       ay_status = ay_nct_close(ncurve);
       if(ay_status)
 	{
-	  ay_error(AY_ERROR,fname,"Could not close curve!");
+	  ay_error(AY_ERROR, fname, "Could not close curve!");
 	}
       else
 	{
-	  if((ncurve->knot_type == AY_KTNURB) ||
-	     (ncurve->knot_type == AY_KTBEZIER))
+	  if(ncurve->type == AY_CTPERIODIC)
 	    {
-	      ay_error(AY_EWARN, fname, "Changing knot type to B-Spline!");
-	      ncurve->knot_type = AY_KTBSPLINE;
-	      ay_status = ay_knots_createnc(ncurve);
+	      if((ncurve->knot_type == AY_KTNURB) ||
+		 (ncurve->knot_type == AY_KTBEZIER))
+		{
+		  ay_error(AY_EWARN, fname, "Changing knot type to B-Spline!");
+		  ncurve->knot_type = AY_KTBSPLINE;
+		  ay_status = ay_knots_createnc(ncurve);
 
-	      if(ay_status)
-		ay_error(ay_status, fname, "Error creating new knots!");
+		  if(ay_status)
+		    ay_error(ay_status, fname, "Error creating new knots!");
+		} /* if */
 	    }
-	}
-    }
+	  else
+	    {
+	      /* clamp knot vector */
+	    } /* if */
+	} /* if */
+    } /* if */
 
   /* break curve? */
-  if(!new_closed && ncurve->closed)
+  if((new_type == AY_CTOPEN) && (ncurve->type != AY_CTOPEN))
     {
-      ncurve->closed = AY_FALSE;
+      ncurve->type = AY_CTOPEN;
       /* we assume user wants the end cvs to be exploded */
       /* we clear all mpoints, user may re-create them easily */
       /* pressing apply another time */
@@ -684,9 +692,9 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	    free(ncurve->mpoints->points);
 	  free(ncurve->mpoints);
 	  ncurve->mpoints = mp;
-	}
+	} /* while */
       updateMPs = AY_FALSE;
-    }
+    } /* if */
 
   /*  if(ncurve->mpoints)*/
   if(updateMPs)
@@ -730,8 +738,8 @@ ay_ncurve_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Closed",-1);
-  to = Tcl_NewIntObj(ncurve->closed);
+  Tcl_SetStringObj(ton,"Type",-1);
+  to = Tcl_NewIntObj(ncurve->type);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
@@ -822,7 +830,7 @@ ay_ncurve_readcb(FILE *fileptr, ay_object *o)
       a+=4;
     }
 
-  fscanf(fileptr,"%d\n",&(ncurve->closed));
+  fscanf(fileptr,"%d\n",&(ncurve->type));
   fscanf(fileptr,"%lg\n",&(ncurve->glu_sampling_tolerance));
   fscanf(fileptr,"%d\n",&(ncurve->display_mode));
 
@@ -874,7 +882,7 @@ ay_ncurve_writecb(FILE *fileptr, ay_object *o)
       a+=4;
     }
 
-  fprintf(fileptr, "%d\n", ncurve->closed);
+  fprintf(fileptr, "%d\n", ncurve->type);
   fprintf(fileptr, "%g\n", ncurve->glu_sampling_tolerance);
   fprintf(fileptr, "%d\n", ncurve->display_mode);
   fprintf(fileptr, "%d\n", ncurve->createmp);
@@ -990,7 +998,7 @@ ay_ncurve_convertcb(ay_object *o, int in_place)
   new->refine = ic;
 
   ic->length = nc->length;
-  ic->closed = nc->closed;
+  ic->closed = nc->type>0?AY_TRUE:AY_FALSE;
   ic->glu_sampling_tolerance = nc->glu_sampling_tolerance;
   ic->display_mode = nc->display_mode;
   ic->iparam = 1.0/8.0;
