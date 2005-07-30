@@ -798,10 +798,10 @@ ay_pact_insertnc(ay_nurbcurve_object *curve,
       return AY_OK;
     }
 
-  if(curve->closed)
+  if(curve->type == AY_CTPERIODIC)
     {
       /*
-       * if the curve is closed we simply insert the new point
+       * if the curve is periodic we simply insert the new point
        * in the controlvector between the picked point and the
        * next different
        */
@@ -1303,7 +1303,7 @@ ay_pact_deletenc(ay_nurbcurve_object *curve,
       return TCL_OK;
     }
 
-  if((curve->closed) &&
+  if((curve->type) &&
      (index > (curve->length-curve->order)))
     {
       index = curve->order-(curve->length-index)-1;
@@ -1369,13 +1369,12 @@ ay_pact_deletenc(ay_nurbcurve_object *curve,
 
     } /* if */
 
-  if(curve->closed)
+  if(curve->type)
     {
       ay_status = ay_nct_close(curve);
       if(ay_status)
 	{
 	  ay_error(ay_status, fname, "cannot close this curve");
-	  curve->closed = AY_FALSE;
 	}
     }
 

@@ -391,7 +391,8 @@ ay_nct_resize(ay_nurbcurve_object *curve, int new_length)
 		 (cv[i*4+1] != cv[(i+1)*4+1]) ||
 		 (cv[i*4+2] != cv[(i+1)*4+2]))
 		{
-		  if(!(curve->closed && (i>(curve->length-curve->order))))
+		  if(!((curve->type == AY_CTPERIODIC) &&
+		       (i > (curve->length-curve->order))))
 		    if(new)
 		      {
 			(newpersec[i])++;
@@ -412,7 +413,8 @@ ay_nct_resize(ay_nurbcurve_object *curve, int new_length)
 	     (cv[i*4+1] != cv[(i+1)*4+1]) ||
 	     (cv[i*4+2] != cv[(i+1)*4+2]))
 	    {
-	      if(!(curve->closed && (i>(curve->length-curve->order))))
+	      if(!((curve->type == AY_CTPERIODIC) &&
+		   (i > (curve->length-curve->order))))
 	      for(j = 1; j <= newpersec[i]; j++)
 		{
 
@@ -448,7 +450,7 @@ ay_nct_resize(ay_nurbcurve_object *curve, int new_length)
 
   curve->length = new_length;
 
-  if(curve->closed)
+  if(curve->type)
     {
       ay_status = ay_nct_close(curve);
       if(ay_status)
@@ -460,7 +462,7 @@ ay_nct_resize(ay_nurbcurve_object *curve, int new_length)
 
 
 /* ay_nct_close:
- *  close a NURBS curve
+ *  close a NURBS curve, or make it periodic
  */
 int
 ay_nct_close(ay_nurbcurve_object *curve)
@@ -469,26 +471,34 @@ ay_nct_close(ay_nurbcurve_object *curve)
  double *controlv = NULL, *end = NULL;
  int i;
 
- /* close curve */
- if(curve->length >= ((curve->order-1)*2))
-   {
-     controlv = curve->controlv;
-     end = &(controlv[(curve->length-(curve->order-1))*4]);
+  /* close curve */
+  if(curve->type == AY_CTCLOSED)
+    {
+      end = &(curve->controlv[(curve->length*4)-4]);
+      memcpy(end, curve->controlv, 4*sizeof(double));
+    } /* if */
 
-     for(i = 0; i < (curve->order-1); i++)
-       {
-	 memcpy(end, controlv, 4*sizeof(double));
-	 controlv += 4;
-	 end += 4;
-       }
+  /* make curve periodic */
+  if(curve->type == AY_CTPERIODIC)
+    {
+      if(curve->length >= ((curve->order-1)*2))
+	{
+	  controlv = curve->controlv;
+	  end = &(controlv[(curve->length-(curve->order-1))*4]);
 
-     curve->closed = AY_TRUE;
-   }
- else
-   {
-     curve->closed = AY_FALSE;
-     return AY_ERROR;
-   }
+	  for(i = 0; i < (curve->order-1); i++)
+	    {
+	      memcpy(end, controlv, 4*sizeof(double));
+	      controlv += 4;
+	      end += 4;
+	    }
+	}
+      else
+	{
+	  curve->type = AY_CTOPEN;
+	  return AY_ERROR;
+	} /* if */
+    } /* if */
 
  return ay_status;
 } /* ay_nct_close */
@@ -635,9 +645,9 @@ ay_nct_refine(ay_nurbcurve_object *curve, double *newknotv, int newknotvlen)
       X = newknotv;
     }
 
-  if(curve->closed)
+  if(curve->type == AY_CTPERIODIC)
     {
-      /* special case: curves marked closed;
+      /* special case: curves marked periodic;
        * we keep the p multiple points at the ends
        * and add new points into the other sections
        * taking care of other multiple points...
@@ -780,7 +790,7 @@ ay_nct_refine(ay_nurbcurve_object *curve, double *newknotv, int newknotvlen)
 
       ay_nct_recreatemp(curve);
 
-    } /* if curve closed */
+    } /* if curve periodic */
 
  return AY_OK;
 } /* ay_nct_refine */
@@ -1829,7 +1839,7 @@ ay_nct_split(ay_object *src, double u)
      curve->knot_type = AY_KTCUSTOM;
      /* create two new curves */
      nc1 = curve;
-     nc1->closed = AY_FALSE;
+     nc1->type = AY_CTOPEN;
      ay_status = ay_object_copy(src, &new);
 
      ay_status = ay_object_link(new);
@@ -2118,6 +2128,7 @@ ay_nct_crtncircle(double radius, ay_nurbcurve_object **curve)
   new->order = 3;
   new->length = 9;
   new->knot_type = AY_KTCUSTOM;
+  new->type = AY_CTCLOSED;
 
   memcpy(controlv, controls, 9*4*sizeof(double));
   new->controlv = controlv;
@@ -2379,6 +2390,7 @@ ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
   curve->length = 5;
   curve->order = 2;
   curve->knot_type = AY_KTCUSTOM;
+  curve->type = AY_CTCLOSED;
 
   /* fill knotv */
   for(i=0;i<7;i++)
@@ -2445,7 +2457,7 @@ ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
   ay_nct_recreatemp(curve);
 
  return TCL_OK;
-} /* ay_nct_split */
+} /* ay_nct_crtrecttcmd */
 
 
 /* ay_nct_crtcircbsp:
@@ -2546,7 +2558,7 @@ ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
   angle = 360.0/num;
 
   ay_trafo_identitymatrix(m);
-  for(i=0;i<num+3;i++)
+  for(i = 0; i < num+3; i++)
     {
       a = i*4;
       controlv[a] = 1.0;
@@ -2559,7 +2571,7 @@ ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
 
   ay_status = ay_nct_create(4, num+3, AY_KTBSPLINE, controlv, NULL, &curve);
 
-  curve->closed = AY_TRUE;
+  curve->type = AY_CTPERIODIC;
   ay_nct_close(curve);
   o->refine = curve;
   o->type = AY_IDNCURVE;
@@ -2712,22 +2724,22 @@ ay_nct_isclosed(ay_nurbcurve_object *nc)
 {
  double u, P1[4], P2[4];
 
- u = nc->knotv[nc->order-1];
- ay_nb_CurvePoint4D(nc->length-1, nc->order-1,
-		    nc->knotv, nc->controlv,
-		    u, P1);
+  u = nc->knotv[nc->order-1];
+  ay_nb_CurvePoint4D(nc->length-1, nc->order-1,
+		     nc->knotv, nc->controlv,
+		     u, P1);
 
- u = nc->knotv[nc->length];
- ay_nb_CurvePoint4D(nc->length-1, nc->order-1,
-		    nc->knotv, nc->controlv,
-		    u, P2);
+  u = nc->knotv[nc->length];
+  ay_nb_CurvePoint4D(nc->length-1, nc->order-1,
+		     nc->knotv, nc->controlv,
+		     u, P2);
 
- if((fabs(P1[0]-P2[0]) < AY_EPSILON) &&
-    (fabs(P1[0]-P2[0]) < AY_EPSILON) &&
-    (fabs(P1[0]-P2[0]) < AY_EPSILON))
-   return AY_TRUE;
- else
-   return AY_FALSE;
+  if((fabs(P1[0]-P2[0]) < AY_EPSILON) &&
+     (fabs(P1[0]-P2[0]) < AY_EPSILON) &&
+     (fabs(P1[0]-P2[0]) < AY_EPSILON))
+    return AY_TRUE;
+  else
+    return AY_FALSE;
 
 } /* ay_nct_isclosed */
 

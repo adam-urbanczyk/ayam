@@ -280,11 +280,11 @@ typedef struct ay_root_object_s
 
 typedef struct ay_nurbcurve_object_s
 {
+  int type;
   int modified;
   int order; 
   int knot_type; /* bezier, bspline, nurb, custom */
   int length;
-  int closed;
   int createmp;
   double *controlv;
   double *knotv;
@@ -1114,6 +1114,11 @@ extern unsigned int ay_current_primlevel;
 #define AY_LITPOINT     1
 #define AY_LITDISTANT   2
 #define AY_LITSPOT      3
+
+/* NURBS Curve Types */
+#define AY_CTOPEN     0
+#define AY_CTCLOSED   1
+#define AY_CTPERIODIC 2
 
 /* Knot Vector Types */
 #define AY_KTBEZIER    0

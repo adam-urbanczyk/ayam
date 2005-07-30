@@ -4050,7 +4050,8 @@ ay_npt_bevel(int type, double radius, ay_object *o,
 	    }
 	  */
 
-	  ay_npt_gettangentfromcontrol(curve->closed, curve->length,
+	  ay_npt_gettangentfromcontrol((curve->type == AY_CTPERIODIC) ?
+				       AY_TRUE : AY_FALSE, curve->length,
 				       curve->order-1, 4, controlv, j,
 				       tangent);
 
@@ -4146,7 +4147,8 @@ ay_npt_bevel(int type, double radius, ay_object *o,
 		  tangent[1] = y-controlv[b+5];
 		}
 	      */
-	      ay_npt_gettangentfromcontrol(curve->closed, curve->length,
+	      ay_npt_gettangentfromcontrol((curve->type == AY_CTPERIODIC) ?
+					   AY_TRUE : AY_FALSE, curve->length,
 					   curve->order-1, 4, controlv, j,
 					   tangent);
 	      w = controlv[b+3];
@@ -4219,7 +4221,8 @@ ay_npt_bevel(int type, double radius, ay_object *o,
 	}
       */
 
-      ay_npt_gettangentfromcontrol(curve->closed, curve->length,
+      ay_npt_gettangentfromcontrol((curve->type == AY_CTPERIODIC) ?
+				   AY_TRUE : AY_FALSE, curve->length,
 				   curve->order-1, 4, controlv, j, tangent);
 
       x = controlv[b];

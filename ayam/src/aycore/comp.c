@@ -524,7 +524,7 @@ ay_comp_ncurve(ay_object *o1, ay_object *o2)
   if((n1->length != n2->length) ||
      (n1->order != n2->order) ||
      (n1->knot_type != n2->knot_type) ||
-     (n1->closed != n2->closed))
+     (n1->type != n2->type))
     return AY_FALSE;
 
   /* now compare the knots and control points */

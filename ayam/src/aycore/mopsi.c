@@ -1150,7 +1150,9 @@ ay_mopsi_nurbcurve(FILE *fileptr, ay_object *o)
 	}
     }
 
-  fscanf(fileptr,"%d\n",&(curve->closed));
+  fscanf(fileptr,"%d\n",&(curve->type));
+  if(curve->type == AY_CTCLOSED)
+    curve->type = AY_CTPERIODIC;
   fscanf(fileptr,"%d\n",&idummy);
   fscanf(fileptr,"%lg\n",&(curve->glu_sampling_tolerance));
   if(ay_prefs.mopsiresettolerance)
