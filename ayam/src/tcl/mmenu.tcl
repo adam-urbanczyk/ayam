@@ -236,6 +236,7 @@ $m add separator
 $m add command -label "Instance" \
 	-command "crtOb Instance; uCR; sL; rV;"
 $m add command -label "Clone" -command "clone_crt;"
+$m add command -label "Mirror" -command "mirror_crt;"
 $m add command -label "Material" \
 	-command "material_createp;"
 $m add command -label "Camera" \
