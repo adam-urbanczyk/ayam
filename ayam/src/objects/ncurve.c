@@ -673,7 +673,15 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	    }
 	  else
 	    {
-	      /* clamp knot vector */
+	      if(ncurve->knot_type == AY_KTBSPLINE)
+		{
+		  ay_error(AY_EWARN, fname, "Changing knot type to NURB!");
+		  ncurve->knot_type = AY_KTNURB;
+		  ay_status = ay_knots_createnc(ncurve);
+
+		  if(ay_status)
+		    ay_error(ay_status, fname, "Error creating new knots!");
+		} /* if */
 	    } /* if */
 	} /* if */
     } /* if */
