@@ -303,6 +303,9 @@ void ay_nct_findufrompoint(ay_nurbcurve_object *curve, double *point,
 			   double guess, int max_try, double e1, double e2,
 			   double *u);
 
+int ay_nct_israt(ay_nurbcurve_object *curve);
+
+
 /* npt.c */
 int ay_npt_create(int uorder, int vorder, int width, int height,
 		  int uknot_type, int vknot_type,

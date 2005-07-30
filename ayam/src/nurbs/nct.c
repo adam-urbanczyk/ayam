@@ -4640,3 +4640,27 @@ ay_nct_findufrompoint(ay_nurbcurve_object *curve, double *point,
   /* return;*/
 } /* ay_nct_findufrompoint */
 
+
+/*
+ * ay_nct_israt:
+ *
+ */
+int
+ay_nct_israt(ay_nurbcurve_object *curve)
+{
+ double *p;
+ int i;
+
+  if(!curve)
+    return AY_FALSE;
+
+  p = &(curve->controlv[3]);
+  for(i = 0; i < curve->length; i++)
+    {
+      if((fabs(*p) < (1.0-AY_EPSILON)) || (fabs(*p) > (1.0+AY_EPSILON)))
+	return AY_TRUE;
+      p += 4;
+    } /* for */
+
+ return AY_FALSE;
+} /* ay_nct_israt */

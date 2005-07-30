@@ -288,6 +288,7 @@ typedef struct ay_nurbcurve_object_s
   int createmp;
   double *controlv;
   double *knotv;
+  int is_rat;
   double glu_sampling_tolerance;
   int display_mode;
   GLUnurbsObj *no;

@@ -526,6 +526,7 @@ ay_pact_pedtcb(struct Togl *togl, int argc, char *argv[])
  static double **pe_coords = NULL;
  static int pe_coordslen = 0, pe_coordshom = AY_FALSE;
  static ay_object *pe_object = NULL;
+ ay_nurbcurve_object *nc = NULL;
 
   if(argc < 1)
     {
@@ -738,6 +739,11 @@ ay_pact_pedtcb(struct Togl *togl, int argc, char *argv[])
 	    } /* for */
 
 	  o->modified = AY_TRUE;
+	  if(o->type == AY_IDNCURVE)
+	    {
+	      nc = (ay_nurbcurve_object *)o->refine;
+	      nc->is_rat = ay_nct_israt(nc);
+	    }
 	  ay_notify_force(o);
 	  ay_status = ay_notify_forceparent(o, AY_FALSE);
 	  view->drawmarker = AY_FALSE;
@@ -1785,6 +1791,7 @@ ay_pact_wetcb(struct Togl *togl, int argc, char *argv[])
  static double olddx = 0.0;
  int i = 0, j, k = 0, notifyparent = AY_FALSE;
  ay_object *o = ay_point_edit_object;
+ ay_nurbcurve_object *nc = NULL;
 
   if(!o)
     return TCL_OK;
@@ -1842,7 +1849,14 @@ ay_pact_wetcb(struct Togl *togl, int argc, char *argv[])
 
       if(ay_pe_homcpo[j])
 	{
-	  ay_point_edit_object->modified = AY_TRUE;
+	  o->modified = AY_TRUE;
+	  if(o->type == AY_IDNCURVE)
+	    {
+	      nc = (ay_nurbcurve_object *)o->refine;
+	      if((fabs(new_weight) < (1.0-AY_EPSILON)) ||
+		 (fabs(new_weight) > (1.0+AY_EPSILON)))
+		nc->is_rat = AY_TRUE;
+	    }
 	  ay_notify_force(ay_selection->object);
 	  notifyparent = AY_TRUE;
 	} /* if */
@@ -1869,6 +1883,7 @@ ay_pact_wrtcb(struct Togl *togl, int argc, char *argv[])
  int i;
  ay_object *o = NULL;
  ay_list_object *sel = ay_selection;
+ ay_nurbcurve_object *nc = NULL;
 
   while(sel)
     {
@@ -1896,6 +1911,11 @@ ay_pact_wrtcb(struct Togl *togl, int argc, char *argv[])
 	    } /* for */
 
 	  o->modified = AY_TRUE;
+	  if(o->type == AY_IDNCURVE)
+	    {
+	      nc = (ay_nurbcurve_object *)o->refine;
+	      nc->is_rat = AY_FALSE;
+	    }
 	  ay_notify_force(o);
 	}
       else
