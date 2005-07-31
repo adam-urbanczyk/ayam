@@ -429,6 +429,7 @@ int ay_npt_extractnc(ay_object *npatch, int side, double param,
 		     int apply_trafo,
 		     ay_nurbcurve_object **result);
 
+int ay_npt_israt(ay_nurbpatch_object *patch);
 
 /* pmt.c */
 int ay_pmt_tonpatch(ay_pamesh_object *pamesh, ay_object **result);
