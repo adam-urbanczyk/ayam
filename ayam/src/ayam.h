@@ -280,21 +280,23 @@ typedef struct ay_root_object_s
 
 typedef struct ay_nurbcurve_object_s
 {
-  int type;
+  int type; /* AY_CTOPEN, AY_CTCLOSED, AY_CTPERIODIC */
   int modified;
   int order; 
   int knot_type; /* bezier, bspline, nurb, custom */
   int length;
   int createmp;
+  int is_rat;
   double *controlv;
   double *knotv;
-  int is_rat;
+
   double glu_sampling_tolerance;
   int display_mode;
+
   GLUnurbsObj *no;
 
   /* stess */
-  double *tesselation;
+  /*double *tesselation;*/
 
   /* multiple points */
   struct ay_mpoint_object_s *mpoints;
@@ -308,6 +310,7 @@ typedef struct ay_nurbpatch_object_s
   int closedu, closedv;
   int has_weights;
   int modified;
+  int is_rat;
 
   double *controlv, *uknotv, *vknotv;
   double *texv;
@@ -321,6 +324,7 @@ typedef struct ay_nurbpatch_object_s
   int glu_display_mode;
 
   /* stess */
+  /*double *tesselation;*/
 
   /* multiple points */
   struct ay_mpoint_object_s *mpoints;

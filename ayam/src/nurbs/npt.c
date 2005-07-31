@@ -5481,3 +5481,31 @@ cleanup:
 
  return ay_status;
 } /* ay_npt_extractnc */
+
+
+/* ay_npt_israt:
+ *
+ */
+int
+ay_npt_israt(ay_nurbpatch_object *patch)
+{
+ int i, j;
+ double *p;
+
+  if(!patch)
+    return AY_FALSE;
+
+  p = &(patch->controlv[3]);
+  for(i = 0; i < patch->width; i++)
+    {
+      for(j = 0; j < patch->height; j++)
+	{
+	  if((fabs(*p) < (1.0-AY_EPSILON)) || (fabs(*p) > (1.0+AY_EPSILON)))
+	    return AY_TRUE;
+	  p += 4;
+	} /* for */
+    } /* for */
+
+ return AY_FALSE;
+} /* ay_npt_israt */
+
