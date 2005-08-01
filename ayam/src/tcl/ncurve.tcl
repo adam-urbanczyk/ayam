@@ -34,6 +34,7 @@ addParam $w NCurveAttrData Order
 addCheck $w NCurveAttrData CreateMP
 addMenu $w NCurveAttrData Knot-Type [list Bezier B-Spline NURB Custom]
 addString $w NCurveAttrData Knots
+addInfo $w NCurveAttrData IsRat
 addParam $w NCurveAttrData Tolerance
 addMenu $w NCurveAttrData DisplayMode [list Global Curve CurveAndHull ControlHull]
 
