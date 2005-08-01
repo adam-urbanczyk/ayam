@@ -1200,6 +1200,8 @@ ay_npatch_readcb(FILE *fileptr, ay_object *o)
   fscanf(fileptr,"%lg\n",&(npatch->glu_sampling_tolerance));
   fscanf(fileptr,"%d\n",&(npatch->glu_display_mode));
 
+  npatch->is_rat = ay_npt_israt(npatch);
+
   o->refine = npatch;
 
  return AY_OK;
