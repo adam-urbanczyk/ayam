@@ -853,6 +853,10 @@ ay_ncurve_readcb(FILE *fileptr, ay_object *o)
 
   ay_nct_recreatemp(ncurve);
 
+  if(ay_read_version < 8)
+    if(ncurve->type == AY_CTCLOSED)
+      ncurve->type = AY_CTPERIODIC;
+
   ncurve->is_rat = ay_nct_israt(ncurve);
 
   o->refine = ncurve;
