@@ -396,12 +396,12 @@ ay_riproc_wribcb(char *file, ay_object *o)
   if(!riproc)
     return AY_ENULL;
 
-  bound[0] = riproc->minx;
-  bound[1] = riproc->maxx;
-  bound[2] = riproc->miny;
-  bound[3] = riproc->maxy;
-  bound[4] = riproc->minz;
-  bound[5] = riproc->maxz;
+  bound[0] = (RtFloat)riproc->minx;
+  bound[1] = (RtFloat)riproc->maxx;
+  bound[2] = (RtFloat)riproc->miny;
+  bound[3] = (RtFloat)riproc->maxy;
+  bound[4] = (RtFloat)riproc->minz;
+  bound[5] = (RtFloat)riproc->maxz;
 
   switch(riproc->type)
     {
