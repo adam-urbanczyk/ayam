@@ -61,6 +61,8 @@ ay_nct_create(int order, int length, int knot_type,
       curve->knotv = knotv;
     }
 
+  curve->is_rat = ay_nct_israt(curve);
+
   *curveptr = curve;
 
  return AY_OK;
@@ -166,7 +168,6 @@ ay_nct_recreatemp(ay_nurbcurve_object *c)
 
       a += 4;
     } /* for */
-
 
   free(tmp);
 
@@ -432,18 +433,18 @@ ay_nct_resize(ay_nurbcurve_object *curve, int new_length)
 		  ncontrolv[b+3] = 1.0;
 
 		  b+=4;
-		}
-	    }
+		} /* for */
+	    } /* if */
 
 	  a+=4;
-	}
+	} /* for */
       memcpy(&ncontrolv[(new_length-1)*4],
 	     &(curve->controlv[(curve->length-1)*4]),
 	     4*sizeof(double));
 
       free(newpersec);
 
-    }
+    } /* if */
 
   free(curve->controlv);
   curve->controlv = ncontrolv;
@@ -539,8 +540,8 @@ ay_nct_revert(ay_nurbcurve_object *curve)
       curve->controlv[j+3] = curve->controlv[i+3];
       curve->controlv[i+3] = dtemp;
 
-      i+=4;
-      j-=4;
+      i += 4;
+      j -= 4;
     } /* while */
 
   /* revert knots */
@@ -562,7 +563,7 @@ ay_nct_revert(ay_nurbcurve_object *curve)
 	}
       free(curve->knotv);
       curve->knotv = newknotv;
-    }
+    } /* if */
 
  return AY_OK;
 } /* ay_nct_revert */
@@ -638,7 +639,6 @@ ay_nct_refine(ay_nurbcurve_object *curve, double *newknotv, int newknotvlen)
  int count = 0, i, j;
  char fname[] = "nct_refine";
 
-
   knotv = curve->knotv;
   if(newknotv)
     {
@@ -700,10 +700,10 @@ ay_nct_refine(ay_nurbcurve_object *curve, double *newknotv, int newknotvlen)
 		    ((Q[(i+1)*4+3] - Q[i*4+3])/2.0);
 
 		  j++;
-		}
+		} /* if */
 
 	      j++;
-	    }
+	    } /* for */
 
 	  /* copy last p points */
 	  memcpy(&(Qw[(curve->length+count-(curve->order-1))*4]),
@@ -735,7 +735,7 @@ ay_nct_refine(ay_nurbcurve_object *curve, double *newknotv, int newknotvlen)
 	      ay_error(AY_EOMEM, fname, NULL);
 	      return TCL_OK;
 	    }
-	}
+	} /* if */
 
       if(!(Ubar = calloc((curve->length + curve->order + count),
 			 sizeof(double))))
@@ -763,12 +763,12 @@ ay_nct_refine(ay_nurbcurve_object *curve, double *newknotv, int newknotvlen)
 		  X[count] = knotv[i]+((knotv[i+1]-knotv[i])/2.0);
 		  count++;
 		}
-	    }
+	    } /* for */
 	}
       else
 	{
 	  count = newknotvlen;
-	}
+	} /* if */
 
       /* fill Ubar & Qw */
       ay_nb_RefineKnotVectCurve(4, curve->length-1, curve->order-1,
@@ -831,7 +831,7 @@ ay_nct_refinetcmd(ClientData clientData, Tcl_Interp *interp,
       count = aknotc;
 
       Tcl_Free((char *) aknotv);
-    }
+    } /* if */
 
 
   while(sel)
@@ -1018,7 +1018,6 @@ ay_nct_clamptcmd(ClientData clientData, Tcl_Interp *interp,
 		*/
 	      }
 
-
 	    ay_status = ay_nct_clamp(curve);
 
 	    if(ay_status)
@@ -1035,11 +1034,11 @@ ay_nct_clamptcmd(ClientData clientData, Tcl_Interp *interp,
 	else
 	  {
 	    ay_error(AY_ERROR, fname, "object is not a NURBCurve");
-	  }
-    }
+	  } /* if */
+      } /* if */
 
-  sel = sel->next;
-  }
+    sel = sel->next;
+  } /* while */
 
   ay_notify_parent();
 
@@ -1492,8 +1491,8 @@ ay_nct_explodetcmd(ClientData clientData, Tcl_Interp *interp,
 	    return TCL_OK;
 	  }
 
-   sel = sel->next;
-  } /* while */
+      sel = sel->next;
+    } /* while */
 
   ay_notify_parent();
 
@@ -1845,10 +1844,10 @@ ay_nct_split(ay_object *src, double u)
      ay_status = ay_object_link(new);
 
 
-       if(r != 0)
-	 nc1len = k - (nc1->order-1) + 1 + (curve->order-1-s+r-1)/2 + 1;
-       else
-	 nc1len = k - (nc1->order-1) + 1;
+     if(r != 0)
+       nc1len = k - (nc1->order-1) + 1 + (curve->order-1-s+r-1)/2 + 1;
+     else
+       nc1len = k - (nc1->order-1) + 1;
 
      nc2 = (ay_nurbcurve_object*)new->refine;
      nc2->length = (nc1->length+1) - nc1len;
@@ -1889,6 +1888,8 @@ ay_nct_split(ay_object *src, double u)
 
      ay_nct_recreatemp(nc1);
      ay_nct_recreatemp(nc2);
+
+     nc2->is_rat = nc1->is_rat;
 
      new->selected = AY_FALSE;
      new->modified = AY_TRUE;
@@ -2137,6 +2138,7 @@ ay_nct_crtncircle(double radius, ay_nurbcurve_object **curve)
   new->knotv = knotv;
 
   new->createmp = AY_TRUE;
+  new->is_rat = AY_TRUE;
 
   *curve = new;
 
@@ -2172,6 +2174,7 @@ ay_nct_crtncirclearc(double radius, double arc, ay_nurbcurve_object **curve)
 
   new->order = 3;
   new->knot_type = AY_KTCUSTOM;
+  new->is_rat = AY_TRUE;
 
   *curve = new;
 
@@ -2231,6 +2234,8 @@ ay_nct_crtnhcircle(double radius, ay_nurbcurve_object **curve)
 
   memcpy(knotv,knots,8*sizeof(double));
   new->knotv = knotv;
+
+  new->is_rat = AY_TRUE;
 
   *curve = new;
 
@@ -2393,7 +2398,7 @@ ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
   curve->type = AY_CTCLOSED;
 
   /* fill knotv */
-  for(i=0;i<7;i++)
+  for(i = 0; i < 7; i++)
     curve->knotv[i] = knots[i];
 
   /* fill controlv */
@@ -4257,7 +4262,7 @@ ay_nct_toxy(ay_object *c)
  double Z[3] = {0,0,1};
  double angle, len, m[16], quat[4], euler[3];
  int i, stride = 4, have_good_points = AY_FALSE, max_tries = 0;
- 
+
   if(!c)
     return AY_ENULL;
 
@@ -4336,7 +4341,7 @@ ay_nct_toxy(ay_object *c)
 	  AY_V3SUB(V1, tp2, tp1);
 	  len = AY_V3LEN(V1);
 	  AY_V3SCAL(V1,(1.0/len));
-	  
+
 	  AY_V3SUB(V2, tp3, tp1);
 	  len = AY_V3LEN(V2);
 	  AY_V3SCAL(V2, (1.0/len));
@@ -4409,7 +4414,7 @@ ay_nct_toxy(ay_object *c)
 
 
 /* ay_nct_toxytcmd:
- *  
+ *
  */
 int
 ay_nct_toxytcmd(ClientData clientData, Tcl_Interp *interp,
@@ -4453,7 +4458,7 @@ ay_nct_toxytcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_nct_makecomptcmd:
- *  
+ *
  */
 int
 ay_nct_makecomptcmd(ClientData clientData, Tcl_Interp *interp,
