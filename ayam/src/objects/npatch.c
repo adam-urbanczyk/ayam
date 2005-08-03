@@ -159,7 +159,7 @@ ay_npatch_drawglucb(struct Togl *togl, ay_object *o)
  int ay_status = AY_OK;
  ay_nurbpatch_object *npatch = NULL;
  int uorder = 0, vorder = 0, width = 0, height = 0;
- int uknot_count = 0, vknot_count = 0, i = 0, a = 0;
+ int uknot_count = 0, vknot_count = 0, i = 0, a = 0, b = 0;
  GLdouble sampling_tolerance = ay_prefs.glu_sampling_tolerance;
  static GLfloat *uknots = NULL, *vknots = NULL, *controls = NULL;
  ay_object *trim = NULL, *loop = NULL, *nc = NULL;
@@ -210,29 +210,40 @@ ay_npatch_drawglucb(struct Togl *togl, ay_object *o)
     return AY_EOMEM;
   if((vknots = calloc(vknot_count, sizeof(GLfloat))) == NULL)
     { free(uknots); uknots = NULL; return AY_EOMEM; }
-  if((controls = calloc(width*height*4, sizeof(GLfloat))) == NULL)
+  if((controls = calloc(width*height*(npatch->is_rat?4:3),
+			sizeof(GLfloat))) == NULL)
     {
       free(uknots); uknots = NULL; free(vknots); vknots = NULL;
       return AY_EOMEM;
     }
 
-  a=0;
-  for(i=0;i<uknot_count;i++)
+  a = 0;
+  for(i = 0; i < uknot_count; i++)
     {
       uknots[a] = (GLfloat)npatch->uknotv[a];
       a++;
     }
-  a=0;
-  for(i=0;i<vknot_count;i++)
+  a = 0;
+  for(i = 0; i < vknot_count; i++)
     {
       vknots[a] = (GLfloat)npatch->vknotv[a];
       a++;
     }
-  a=0;
-  for(i=0;i<width*height*4;i++)
+  a = 0;
+  for(i = 0; i < width*height; i++)
     {
-      controls[a] = (GLfloat)npatch->controlv[a];
-      a++;
+      controls[a] = (GLfloat)npatch->controlv[b];
+      a++; b++;
+      controls[a] = (GLfloat)npatch->controlv[b];
+      a++; b++;
+      controls[a] = (GLfloat)npatch->controlv[b];
+      a++; b++;
+      if(npatch->is_rat)
+	{
+	  controls[a] = (GLfloat)npatch->controlv[b];
+	  a++;
+	}
+      b++;
     }
 
   if(!npatch->no)
@@ -269,9 +280,11 @@ ay_npatch_drawglucb(struct Togl *togl, ay_object *o)
 
   gluNurbsSurface(npatch->no, (GLint)uknot_count, uknots,
 		  (GLint)vknot_count, vknots,
-		  (GLint)height*4, (GLint)4, controls,
+		  (GLint)height*(npatch->is_rat?4:3),
+		  (GLint)(npatch->is_rat?4:3),
+		  controls,
 		  (GLint)npatch->uorder, (GLint)npatch->vorder,
-		  GL_MAP2_VERTEX_4);
+		  (npatch->is_rat?GL_MAP2_VERTEX_4:GL_MAP2_VERTEX_3));
 
   /* propagate changes to trimcurve walking code also to:
      shadecb(), nurbs/npt.c/wribtrimcurves(),
@@ -433,7 +446,7 @@ ay_npatch_shadecb(struct Togl *togl, ay_object *o)
  int ay_status = AY_OK;
  ay_nurbpatch_object *npatch = NULL;
  int uorder = 0, vorder = 0, width = 0, height = 0;
- int uknot_count = 0, vknot_count = 0, i = 0, a = 0;
+ int uknot_count = 0, vknot_count = 0, i = 0, a = 0, b = 0;
  GLdouble sampling_tolerance = ay_prefs.glu_sampling_tolerance;
  static GLfloat *uknots = NULL, *vknots = NULL, *controls = NULL;
  ay_object *trim = NULL, *loop = NULL, *nc = NULL;
@@ -477,29 +490,40 @@ ay_npatch_shadecb(struct Togl *togl, ay_object *o)
     return AY_EOMEM;
   if((vknots = calloc(vknot_count, sizeof(GLfloat))) == NULL)
     { free(uknots); uknots = NULL; return AY_EOMEM; }
-  if((controls = calloc(width*height*4, sizeof(GLfloat))) == NULL)
+  if((controls = calloc(width*height*(npatch->is_rat?4:3),
+				      sizeof(GLfloat))) == NULL)
     {
       free(uknots); uknots = NULL; free(vknots); vknots = NULL;
       return AY_EOMEM;
     }
 
-  a=0;
-  for(i=0;i<uknot_count;i++)
+  a = 0;
+  for(i = 0; i < uknot_count; i++)
     {
       uknots[a] = (GLfloat)npatch->uknotv[a];
       a++;
     }
-  a=0;
-  for(i=0;i<vknot_count;i++)
+  a = 0;
+  for(i = 0; i < vknot_count; i++)
     {
       vknots[a] = (GLfloat)npatch->vknotv[a];
       a++;
     }
-  a=0;
-  for(i=0;i<width*height*4;i++)
+  a = 0;
+  for(i = 0; i < width*height; i++)
     {
-      controls[a] = (GLfloat)npatch->controlv[a];
-      a++;
+      controls[a] = (GLfloat)npatch->controlv[b];
+      a++; b++;
+      controls[a] = (GLfloat)npatch->controlv[b];
+      a++; b++;
+      controls[a] = (GLfloat)npatch->controlv[b];
+      a++; b++;
+      if(npatch->is_rat)
+	{
+	  controls[a] = (GLfloat)npatch->controlv[b];
+	  a++;
+	}
+      b++;
     }
 
   if(!npatch->no)
@@ -532,9 +556,11 @@ ay_npatch_shadecb(struct Togl *togl, ay_object *o)
 
   gluNurbsSurface(npatch->no, (GLint)uknot_count, uknots,
 		  (GLint)vknot_count, vknots,
-		  (GLint)height*4, (GLint)4, controls,
+		  (GLint)height*(npatch->is_rat?4:3),
+		  (GLint)(npatch->is_rat?4:3),
+		  controls,
 		  (GLint)npatch->uorder, (GLint)npatch->vorder,
-		  GL_MAP2_VERTEX_4);
+		  (npatch->is_rat?GL_MAP2_VERTEX_4:GL_MAP2_VERTEX_3));
 
   /* draw trimcurves */
   if(o->down && o->down->next)
