@@ -149,7 +149,7 @@ int
 ay_ncurve_drawglucb(struct Togl *togl, ay_object *o)
 {
  ay_nurbcurve_object *ncurve = NULL;
- int order = 0, length = 0, knot_count = 0, i = 0, a = 0;
+ int order = 0, length = 0, knot_count = 0, i = 0, a = 0, b = 0;
  GLdouble sampling_tolerance = ay_prefs.glu_sampling_tolerance;
  static GLfloat *knots = NULL, *controls = NULL;
  int mode = ay_prefs.nc_display_mode;
@@ -193,20 +193,31 @@ ay_ncurve_drawglucb(struct Togl *togl, ay_object *o)
 
       if((knots = calloc(knot_count, sizeof(GLfloat))) == NULL)
 	return AY_EOMEM;
-      if((controls = calloc(length*4, sizeof(GLfloat))) == NULL)
+      if((controls = calloc(length*(ncurve->is_rat?4:3),
+			    sizeof(GLfloat))) == NULL)
 	{ free(knots); knots = NULL; return AY_EOMEM; }
 
-      a=0;
-      for(i=0;i<knot_count;i++)
+      a = 0;
+      for(i = 0; i < knot_count; i++)
 	{
 	  knots[a] = (GLfloat)ncurve->knotv[a];
 	  a++;
 	}
-      a=0;
-      for(i=0;i<length*4;i++)
+      a = 0;
+      for(i = 0; i < length; i++)
 	{
-	  controls[a] = (GLfloat)ncurve->controlv[a]; 
-	  a++;
+	  controls[a] = (GLfloat)ncurve->controlv[b];
+	  a++; b++;
+	  controls[a] = (GLfloat)ncurve->controlv[b];
+	  a++; b++;
+	  controls[a] = (GLfloat)ncurve->controlv[b];
+	  a++; b++;
+	  if(ncurve->is_rat)
+	    {
+	      controls[a] = (GLfloat)ncurve->controlv[b];
+	      a++;
+	    }
+	  b++;
 	}
 
       if(!ncurve->no)
@@ -237,8 +248,10 @@ ay_ncurve_drawglucb(struct Togl *togl, ay_object *o)
 
       gluNurbsProperty(ncurve->no, GLU_CULLING, GL_TRUE);
 
-      gluNurbsCurve(ncurve->no, (GLint)knot_count, knots, (GLint)4, controls,
-		    (GLint)ncurve->order, GL_MAP1_VERTEX_4);
+      gluNurbsCurve(ncurve->no, (GLint)knot_count, knots,
+		    (GLint)(ncurve->is_rat?4:3), controls,
+		    (GLint)ncurve->order,
+		    (ncurve->is_rat?GL_MAP1_VERTEX_4:GL_MAP1_VERTEX_3));
 
       gluEndCurve(ncurve->no);
 
@@ -248,7 +261,7 @@ ay_ncurve_drawglucb(struct Togl *togl, ay_object *o)
     {
       a = 0;
       glBegin(GL_LINE_STRIP);
-      for(i=0; i<length;i++)
+      for(i = 0; i < length; i++)
 	{
 	  glVertex3dv((GLdouble *)&(ncurve->controlv[a]));
 	  a += 4;
