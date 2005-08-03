@@ -72,6 +72,8 @@ ay_npatch_createcb(int argc, char *argv[], ay_object *o)
 	}
     }
 
+  ((ay_nurbpatch_object*)(o->refine))->is_rat = AY_FALSE;
+
   o->parent = AY_TRUE;
   o->hide_children = AY_TRUE;
 
@@ -1295,27 +1297,27 @@ ay_npatch_wribcb(char *file, ay_object *o)
     return AY_EOMEM;
   if((vknots = calloc(nv+vorder, sizeof(RtFloat))) == NULL)
     return AY_EOMEM;
-  if((controls = calloc(nu*nv*4, sizeof(RtFloat))) == NULL)
+  if((controls = calloc(nu*nv*(patch->is_rat?4:3), sizeof(RtFloat))) == NULL)
     return AY_EOMEM;
 
-  a=0;
-  for(i=0;i<nu+uorder;i++)
+  a = 0;
+  for(i = 0; i < nu+uorder; i++)
     {
       uknots[a] = (RtFloat)patch->uknotv[a];
       a++;
     }
-  a=0;
-  for(i=0;i<nv+vorder;i++)
+  a = 0;
+  for(i = 0; i < nv+vorder; i++)
     {
       vknots[a] = (RtFloat)patch->vknotv[a];
       a++;
     }
-  a=0;
+  a = 0;
   /* RenderMan expects u-major order! */
-  for(i=0;i<nv;i++)
+  for(i = 0; i < nv; i++)
     {
       b = i*4;
-      for(j=0;j<nu;j++)
+      for(j = 0; j < nu; j++)
 	{
 	  controls[a] = (RtFloat)patch->controlv[b];
 	  a++;
@@ -1323,11 +1325,14 @@ ay_npatch_wribcb(char *file, ay_object *o)
 	  a++;
 	  controls[a] = (RtFloat)patch->controlv[b+2];
 	  a++;
-	  controls[a] = (RtFloat)patch->controlv[b+3];
-	  a++;
-	  b+=(nv*4);
-	}
-    }
+	  if(patch->is_rat)
+	    {
+	      controls[a] = (RtFloat)patch->controlv[b+3];
+	      a++;
+	    }
+	  b += (nv*4);
+	} /* for */
+    } /* for */
 
   ay_knots_getuminmax(o, patch->uorder, patch->uorder + patch->width,
 		      patch->uknotv, &umind, &umaxd);
@@ -1348,7 +1353,7 @@ ay_npatch_wribcb(char *file, ay_object *o)
 		nv, vorder, vknots,
 		/*(RtFloat)vknots[vorder-1], (RtFloat)vknots[nv],*/
 		vmin, vmax,
-		"Pw", controls, NULL);
+		patch->is_rat?"Pw":"P", controls, NULL);
     }
   else
     {
@@ -1359,7 +1364,10 @@ ay_npatch_wribcb(char *file, ay_object *o)
       if(!(parms = calloc(pvc+1, sizeof(RtPointer))))
 	return AY_EOMEM;
 
-      tokens[0] = "Pw";
+      if(patch->is_rat)
+	tokens[0] = "Pw";
+      else
+	tokens[0] = "P";
       parms[0] = (RtPointer)controls;
 
       n = 1;
