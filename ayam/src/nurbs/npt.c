@@ -269,37 +269,51 @@ ay_npt_drawtrimcurve(struct Togl *togl, ay_object *o, GLUnurbsObj *no)
 
   if((knots = calloc(knot_count, sizeof(GLfloat))) == NULL)
     return AY_EOMEM;
-  if((controls = calloc(length*3, sizeof(GLfloat))) == NULL)
+  if((controls = calloc(length*(curve->is_rat?3:2),
+			sizeof(GLfloat))) == NULL)
     { free(knots); knots = NULL; return AY_EOMEM; }
 
-  a=0;
-  for(i=0;i<knot_count;i++)
+  a = 0;
+  for(i = 0; i < knot_count; i++)
     {
       knots[a] = (GLfloat)curve->knotv[a];
       a++;
     }
-  a=0; b=0;
-  for(i=0;i<length;i++)
+  a = 0; b = 0;
+  for(i = 0; i < length; i++)
     {
-      x = (GLdouble)curve->controlv[b];b++;
-      y = (GLdouble)curve->controlv[b];b++;
+      x = (GLdouble)curve->controlv[b]; b++;
+      y = (GLdouble)curve->controlv[b]; b++;
 
+      b++; /* for z */
+
+      if(curve->is_rat)
+	{
+	  w = (GLdouble)curve->controlv[b];
+
+	  controls[a] = (GLfloat)(m[0]*x + m[4]*y + m[12]*w);
+	  controls[a+1] = (GLfloat)(m[1]*x + m[5]*y + m[13]*w);
+	  controls[a+2] = (GLfloat)(w /*m[3]*x + m[7]*y + m[15]*w*/);
+	  a += 3;
+	}
+      else
+	{
+	  controls[a] = (GLfloat)(m[0]*x + m[4]*y + m[12]);
+	  controls[a+1] = (GLfloat)(m[1]*x + m[5]*y + m[13]);
+	  a += 2;
+	}
       b++;
-      w = (GLdouble)curve->controlv[b];b++;
-
-      controls[a] = (GLfloat)(m[0]*x + m[4]*y + m[12]*w);
-      controls[a+1] = (GLfloat)(m[1]*x + m[5]*y + m[13]*w);
-      controls[a+2] = (GLfloat)(w /*m[3]*x + m[7]*y + m[15]*w*/);
-      a+=3;
     }
 
   if(curve->order != 2)
     gluNurbsCurve(no, (GLint)knot_count, knots,
-		  (GLint)3, controls,
-		  (GLint)curve->order, GLU_MAP1_TRIM_3);
+		  (GLint)(curve->is_rat?3:2), controls,
+		  (GLint)curve->order,
+		  (curve->is_rat?GLU_MAP1_TRIM_3:GLU_MAP1_TRIM_2));
   else
     gluPwlCurve(no, (GLint)curve->length, controls,
-		(GLint)3, GLU_MAP1_TRIM_3);
+		(GLint)(curve->is_rat?3:2),
+		(curve->is_rat?GLU_MAP1_TRIM_3:GLU_MAP1_TRIM_2));
 
  return AY_OK;
 } /* ay_npt_drawtrimcurve */
