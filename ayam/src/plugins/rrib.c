@@ -812,6 +812,7 @@ ay_rrib_RiNuPatch(RtInt nu, RtInt uorder, RtFloat uknot[],
   np.uorder = (int)uorder;
   np.height = (int)nv;
   np.vorder = (int)vorder;
+  np.is_rat = AY_FALSE;
 
   np.uknot_type = AY_KTCUSTOM;
   np.vknot_type = AY_KTCUSTOM;
@@ -838,6 +839,7 @@ ay_rrib_RiNuPatch(RtInt nu, RtInt uorder, RtFloat uknot[],
     {
       pw = (RtFloat*)tokensfound[PPWTBL_PW];
       stride = 4;
+      np.is_rat = AY_TRUE;
     }
   else
     {
@@ -985,6 +987,13 @@ ay_rrib_RiTrimCurve(RtInt nloops, RtInt ncurves[], RtInt order[],
 		 wptr++;
 	       } /* for */
 
+	     /* trim by knot vector? */
+	     if((*minptr > nc->knotv[nc->order]) ||
+		(*maxptr < nc->knotv[nc->length]))
+	       ay_knots_setuminmax(o, *minptr, *maxptr);
+
+	     nc->is_rat = ay_nct_israt(nc);
+
 	     /* link trimcurve */
 	     o = NULL;
 	     if(!(o = calloc(1, sizeof(ay_object))))
@@ -992,11 +1001,6 @@ ay_rrib_RiTrimCurve(RtInt nloops, RtInt ncurves[], RtInt order[],
 	     ay_object_defaults(o);
 	     o->type = AY_IDNCURVE;
 	     o->refine = (void *)nc;
-
-	     if((*minptr > nc->knotv[nc->order]) ||
-		(*maxptr < nc->knotv[nc->length]))
-	       ay_knots_setuminmax(o, *minptr, *maxptr);
-
 	     o->next = *ncinloop;
 	     *ncinloop = o;
 	     ncinloop = &(o->next);
@@ -1010,8 +1014,6 @@ ay_rrib_RiTrimCurve(RtInt nloops, RtInt ncurves[], RtInt order[],
 	 /* link level */
 	 level->next = ay_rrib_cattributes->trimcurves;
 	 ay_rrib_cattributes->trimcurves = level;
-
-
        }
      else
        { /* read single trimcurve */
@@ -1045,17 +1047,19 @@ ay_rrib_RiTrimCurve(RtInt nloops, RtInt ncurves[], RtInt order[],
 	     wptr++;
 	   } /* for */
 
+	 /* trim by knot vector? */
+	 if((*minptr > nc->knotv[nc->order]) ||
+	    (*maxptr < nc->knotv[nc->length]))
+	   ay_knots_setuminmax(o, *minptr, *maxptr);
+
+	 nc->is_rat = ay_nct_israt(nc);
+
 	 /* link trimcurve */
 	 o = NULL;
 	 if(!(o = calloc(1, sizeof(ay_object))))
 	   return;
 	 ay_object_defaults(o);
 	 o->type = AY_IDNCURVE;
-
-	 if((*minptr > nc->knotv[nc->order]) ||
-	    (*maxptr < nc->knotv[nc->length]))
-	   ay_knots_setuminmax(o, *minptr, *maxptr);
-
 	 o->refine = (void *)nc;
 	 o->next = ay_rrib_cattributes->trimcurves;
 	 ay_rrib_cattributes->trimcurves = o;

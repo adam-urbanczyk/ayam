@@ -203,31 +203,45 @@ ay_objio_writencurve(FILE *fileptr, ay_object *o, double *m)
   nc = (ay_nurbcurve_object *)o->refine;
 
   /* get all vertices and transform them to world space */
-  if(!(v = calloc(nc->length * stride, sizeof(double))))
+  if(!(v = calloc(nc->length * (nc->is_rat?4:3), sizeof(double))))
     return AY_EOMEM;
 
   p1 = v;
   p2 = nc->controlv;
   for(i = 0; i < nc->length; i++)
     {
-      pw[0] = p2[0]/p2[3];
-      pw[1] = p2[1]/p2[3];
-      pw[2] = p2[2]/p2[3];
-      AY_APTRAN3(p1,pw,m)
-      p1[3] = p2[3];
-      p1 += stride;
-      p2 += stride;
-    }
+      if(nc->is_rat)
+	{
+	  pw[0] = p2[0]/p2[3];
+	  pw[1] = p2[1]/p2[3];
+	  pw[2] = p2[2]/p2[3];
+	  AY_APTRAN3(p1,pw,m)
+	  p1[3] = p2[3];
+	  p1 += stride;
+	}
+      else
+	{
+	  AY_APTRAN3(p1,p2,m)
+	  p1 += 3;
+	} /* if */
+      p2 += 4;
+    } /* for */
 
   /* write all vertices */
-  ay_objio_writevertices(fileptr, (unsigned int)nc->length, stride, v);
+  ay_objio_writevertices(fileptr, (unsigned int)nc->length,
+			 nc->is_rat?4:3, v);
+
+  /* write bspline curve */
+  if(nc->is_rat)
+    fprintf(fileptr, "cstype rat bspline\n");
+  else
+    fprintf(fileptr, "cstype bspline\n");
+
+  fprintf(fileptr, "deg %d\n", nc->order-1);
 
   ay_knots_getuminmax(o, nc->order, nc->length+nc->order, nc->knotv,
 		      &umin, &umax);
 
-  /* write rational bspline curve */
-  fprintf(fileptr, "cstype rat bspline\n");
-  fprintf(fileptr, "deg %d\n", nc->order-1);
   fprintf(fileptr, "curv %g %g", umin, umax);
 
   for(i = nc->length; i > 0; i--)
@@ -275,16 +289,28 @@ ay_objio_writetcurve(FILE *fileptr, ay_object *o, double *m)
   p1 = nc->controlv;
   for(i = 0; i < nc->length; i++)
     {
-      pw[0] = p1[0]/p1[3];
-      pw[1] = p1[1]/p1[3];
-      AY_APTRAN3(v,pw,ma)
-      v[2] = p1[3];
-      fprintf(fileptr, "vp %g %g %g\n", v[0], v[1], v[2]);
+      if(nc->is_rat)
+	{
+	  pw[0] = p1[0]/p1[3];
+	  pw[1] = p1[1]/p1[3];
+	  AY_APTRAN3(v,pw,ma)
+	    v[2] = p1[3];
+	  fprintf(fileptr, "vp %g %g %g\n", v[0], v[1], v[2]);
+	}
+      else
+	{
+	  AY_APTRAN3(v,p1,ma)
+	  fprintf(fileptr, "vp %g %g\n", v[0], v[1]);
+	}
       p1 += stride;
     }
 
-  /* write 2D rational bspline curve */
-  fprintf(fileptr, "cstype rat bspline\n");
+  /* write 2D bspline curve */
+  if(nc->is_rat)
+    fprintf(fileptr, "cstype rat bspline\n");
+  else
+    fprintf(fileptr, "cstype bspline\n");
+
   fprintf(fileptr, "deg %d\n", nc->order-1);
   fprintf(fileptr, "curv2 ");
 
@@ -335,9 +361,9 @@ ay_objio_writetrim(FILE *fileptr, ay_object *o)
 		  ay_objio_writetcurve(fileptr, down, mi);
 		}
 	      down = down->next;
-	    }
+	    } /* while */
 	  ay_trafo_identitymatrix(mi);
-	}
+	} /* if */
 
       o = o->next;
     } /* while */
@@ -375,8 +401,8 @@ ay_objio_writetrimids(FILE *fileptr, ay_object *o)
 		  tc++;
 		}
 	      down = down->next;
-	    }
-	}
+	    } /* while */
+	} /* if */
 
       o = o->next;
     } /* while */
@@ -479,7 +505,7 @@ ay_objio_writenpatch(FILE *fileptr, ay_object *o, double *m)
 
   /* get all vertices and transform them to world space,
      also adapting row/column major order in the process */
-  if(!(v = calloc(np->width * np->height * stride, sizeof(double))))
+  if(!(v = calloc(np->width * np->height * (np->is_rat?4:3), sizeof(double))))
     return AY_EOMEM;
 
   p1 = v;
@@ -488,19 +514,27 @@ ay_objio_writenpatch(FILE *fileptr, ay_object *o, double *m)
       p2 = &(np->controlv[i*stride]);
       for(j = 0; j < np->width; j++)
 	{
-	  pw[0] = p2[0]/p2[3];
-	  pw[1] = p2[1]/p2[3];
-	  pw[2] = p2[2]/p2[3];
-	  AY_APTRAN3(p1,pw,m)
-	  p1[3] = p2[3];
-	  p1 += stride;
+	  if(np->is_rat)
+	    {
+	      pw[0] = p2[0]/p2[3];
+	      pw[1] = p2[1]/p2[3];
+	      pw[2] = p2[2]/p2[3];
+	      AY_APTRAN3(p1,pw,m)
+		p1[3] = p2[3];
+	      p1 += 4;
+	    }
+	  else
+	    {
+	      AY_APTRAN3(p1,p2,m)
+	      p1 += 3;
+	    } /* if */
 	  p2 += np->height*stride;
-	}
-    }
+	} /* for */
+    } /* for */
 
   /* write all vertices */
   ay_objio_writevertices(fileptr, (unsigned int)(np->width * np->height),
-			 stride, v);
+			 (np->is_rat?4:3), v);
 
   /* write texture coordinates from potentially present PV tags */
   if(o->tags)
@@ -574,14 +608,19 @@ ay_objio_writenpatch(FILE *fileptr, ay_object *o, double *m)
       mystarr = NULL;
     } /* if */
 
+  /* write bspline surface */
+  if(np->is_rat)
+    fprintf(fileptr, "cstype rat bspline\n");
+  else
+    fprintf(fileptr, "cstype bspline\n");
+
+  fprintf(fileptr, "deg %d %d\n", np->uorder-1, np->vorder-1);
+
   ay_knots_getuminmax(o, np->uorder, np->width+np->uorder, np->uknotv,
 		      &umin, &umax);
   ay_knots_getvminmax(o, np->vorder, np->height+np->vorder, np->vknotv,
 		      &vmin, &vmax);
 
-  /* write bspline surface */
-  fprintf(fileptr, "cstype rat bspline\n");
-  fprintf(fileptr, "deg %d %d\n", np->uorder-1, np->vorder-1);
   fprintf(fileptr, "surf %g %g %g %g", umin, umax, vmin, vmax);
 
   for(i = np->width*np->height; i > 0; i--)
@@ -2814,6 +2853,8 @@ ay_objio_fixnpatch(ay_nurbpatch_object *np)
   free(np->controlv);
   np->controlv = v;
 
+  np->is_rat = ay_npt_israt(np);
+
  return ay_status;
 } /* ay_objio_fixnpatch */
 
@@ -2845,6 +2886,8 @@ ay_objio_fixncurve(ay_nurbcurve_object *nc)
 	} /* if */
       p += stride;
     } /* for */
+
+  nc->is_rat = ay_nct_israt(nc);
 
  return ay_status;
 } /* ay_objio_fixncurve */
@@ -2981,6 +3024,8 @@ ay_objio_readend(void)
 	  ay_status = ay_pv_add(o, objio_ttagname, "varying", 0,
 				objio_texturetvlen, objio_texturetv);
 	}
+
+      /* add umin/umax/vmin/vmax tags */
       if((objio_umin > objio_uknotv[objio_degu+1]) ||
 	 (objio_umax < objio_uknotv[objio_npatch.width]))
 	ay_knots_setuminmax(o, objio_umin, objio_umax);

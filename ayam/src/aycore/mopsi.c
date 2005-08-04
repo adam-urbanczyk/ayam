@@ -1161,6 +1161,7 @@ ay_mopsi_nurbcurve(FILE *fileptr, ay_object *o)
 
   ay_nct_recreatemp(curve);
 
+  curve->is_rat = has_weights;
 
  return ay_status;
 }
@@ -1246,6 +1247,8 @@ ay_mopsi_nurbpatch(FILE *fileptr, ay_object *o)
   if(ay_prefs.mopsiresettolerance)
     patch->glu_sampling_tolerance = 0.0;
   fscanf(fileptr,"%lg\n",&ddummy);
+
+  patch->is_rat = has_weights;
 
  return ay_status;
 }

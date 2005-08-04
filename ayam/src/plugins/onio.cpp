@@ -193,7 +193,7 @@ onio_getnurbsurfobj(ay_object *o, ON_NurbsSurface **pp_n, double *m)
     return AY_ENULL;
 
   np = (ay_nurbpatch_object *)o->refine;
-  p_n = new ON_NurbsSurface(3, true, np->uorder, np->vorder,
+  p_n = new ON_NurbsSurface(3, np->is_rat?true:false, np->uorder, np->vorder,
 			    np->width, np->height);
 
   // copy knots, ignoring "superfluous"/"phantom" end knots
@@ -209,9 +209,18 @@ onio_getnurbsurfobj(ay_object *o, ON_NurbsSurface **pp_n, double *m)
     {
       for(j = 0; j < np->height; j++)
 	{
-	  p_n->SetCV(i, j, ON::homogeneous_rational, &(np->controlv[a]));
-	  ay_trafo_apply4(cv, m);
-	  cv += 4;
+	  if(np->is_rat)
+	    {
+	      p_n->SetCV(i, j, ON::homogeneous_rational, &(np->controlv[a]));
+	      ay_trafo_apply4(cv, m);
+	      cv += 4;
+	    }
+	  else
+	    {
+	      p_n->SetCV(i, j, ON::not_rational, &(np->controlv[a]));
+	      ay_trafo_apply3(cv, m);
+	      cv += 3;
+	    }
 	  a += stride;
 	} // for
     } // for
@@ -327,7 +336,7 @@ onio_get2dcurveobj(ay_object *o, ON_NurbsCurve **pp_c)
     return AY_ENULL;
 
   nc = (ay_nurbcurve_object *)o->refine;
-  p_c = new ON_NurbsCurve(2, true, nc->order, nc->length);
+  p_c = new ON_NurbsCurve(2, nc->is_rat?true:false, nc->order, nc->length);
 
   // copy knots, ignoring "superfluous"/"phantom" end knots
   for(i = 0; i < nc->order+nc->length-2; i++)
@@ -341,10 +350,17 @@ onio_get2dcurveobj(ay_object *o, ON_NurbsCurve **pp_c)
   a = 0;
   for(i = 0; i < nc->length; i++)
     {
-      memcpy(cv, &(nc->controlv[a]), stride*sizeof(double));
+      memcpy(cv, &(nc->controlv[a]), (nc->is_rat?4:3)*sizeof(double));
       ay_trafo_apply3(cv, m);
-      cv[2] = cv[3];
-      p_c->SetCV(i, ON::homogeneous_rational, cv);
+      if(nc->is_rat)
+	{
+	  cv[2] = cv[3];
+	  p_c->SetCV(i, ON::homogeneous_rational, cv);
+	}
+      else
+	{
+	  p_c->SetCV(i, ON::not_rational, cv);
+	}
       a += stride;
     }
 
@@ -637,7 +653,7 @@ onio_writencurve(ay_object *o, ONX_Model *p_m, double *m)
     return AY_OK;
 
   nc = (ay_nurbcurve_object *)o->refine;
-  p_c = new ON_NurbsCurve(3, true, nc->order, nc->length);
+  p_c = new ON_NurbsCurve(3, nc->is_rat?true:false, nc->order, nc->length);
 
   // copy knots, ignoring "superfluous"/"phantom" end knots
   for(i = 0; i < nc->order+nc->length-2; i++)
@@ -648,9 +664,18 @@ onio_writencurve(ay_object *o, ONX_Model *p_m, double *m)
   cv = p_c->m_cv;
   for(i = 0; i < nc->length; i++)
     {
-      p_c->SetCV(i, ON::homogeneous_rational, &(nc->controlv[a]));
-      ay_trafo_apply4(cv, m);
-      cv += 4;
+      if(nc->is_rat)
+	{
+	  p_c->SetCV(i, ON::homogeneous_rational, &(nc->controlv[a]));
+	  ay_trafo_apply4(cv, m);
+	  cv += 4;
+	}
+      else
+	{
+	  p_c->SetCV(i, ON::not_rational, &(nc->controlv[a]));
+	  ay_trafo_apply3(cv, m);
+	  cv += 3;
+	}
       a += stride;
     }
 
