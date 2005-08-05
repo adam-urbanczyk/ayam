@@ -22,7 +22,7 @@ uplevel #0 { array set tgui_tessparam {
 #  block user interactions in main and toolbox windows that could
 #  destroy objects
 proc tgui_block { } {
-    global ay
+    global ay ayprefs
 
     set blockMsg "User interaction is restricted by tesselation dialog!"
 
@@ -94,6 +94,12 @@ proc tgui_block { } {
     bind Console <Control-KeyPress> $sc
     bind Listbox <Control-KeyPress> $sc
 
+    # disable AutoFocus
+    if { $ayprefs(SafeAutoFocus) } {
+	set ay(oldAutoFocus) $ayprefs(AutoFocus)
+	set ayprefs(AutoFocus) 0
+    }
+
     # modify mouse cursor to a watch
     mouseWatch 1 {. .tbw}
 
@@ -106,7 +112,7 @@ proc tgui_block { } {
 #  unblock user interactions in main and toolbox windows that could
 #  destroy objects
 proc tgui_unblock { } {
-    global ay
+    global ay ayprefs
 
     bind Button <1> $ay(ButtonBinding)
     bind Menubutton <1> $ay(MenubuttonBinding)
@@ -140,6 +146,11 @@ proc tgui_unblock { } {
     bind Canvas <Control-KeyPress> ""
     bind Console <Control-KeyPress> ""
     bind Listbox <Control-KeyPress> ""
+
+    # reset AutoFocus
+    if { $ayprefs(SafeAutoFocus) } {
+	set ayprefs(AutoFocus) $ay(oldAutoFocus)
+    }
 
     # reset mouse cursor
     mouseWatch 0 {. .tbw}
