@@ -310,10 +310,10 @@ proc prefs_open {} {
     pack $f.bok $f.bap $f.bdef $f.bca -in $f -side left -fill x -expand yes
     pack $f -in $w -side bottom -fill x -expand no
 
-    #
-    global ayprefs
-    if { $ayprefs(AutoFocus) == 1 } {
-	bind $w <Enter> {
+    # 
+    bind $w <Enter> {
+	global ayprefs
+	if { $ayprefs(AutoFocus) == 1 } {
 	    if { "%W" == "[winfo toplevel %W]" } {
 		focus %W
 	    }
