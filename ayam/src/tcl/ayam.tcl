@@ -147,6 +147,8 @@ array set ayprefs {
 
  WarnUnknownTag 1
  FixX11Menu 1
+ SafeAutoFocus 0
+
  Docs "http://ayam.sourceforge.net/docs/"
     DailyTips {
 {Always click on drawn pixels, when picking vertices.}
@@ -185,6 +187,8 @@ on its name, then press <Ctrl+Shift+i> (Copy Marked Prop).}
 {Menu keyboard shortcuts do not work? Press <Esc> first!}
 {Check http://www.ayam3d.org/ for the latest hotfix!}
 {Hold down <Shift> in property GUIs for instant apply.}
+{Ayam is stuck in Tcl errors? Run "repairAyam.tcl".}
+{There is a FAQ on http://www.ayam3d.org/faq.html!}
 }
 }
 # array ayprefs
@@ -347,34 +351,32 @@ array set ayviewshortcuts {
 array set riattr {
     caustic { { maxpixeldist f {16} }
               { ngather i {75} }
-              { specularcolor c {{0 0 0}} }
-              { refractioncolor c {{0 0 0}} }
-              { refractionindex f {1.0} }
-            }
+              { specularcolor c {{0 0 0} } }
+              { refractioncolor c {{0 0 0} } }
+              { refractionindex f {1.0} } }
 
     dice { { minsubdivision i {2} }
-	   { maxsubdivision i {10} } }
+           { maxsubdivision i {10} } }
 
     indirect { { maxerror f {0.25 0.2 0.175 0.15 0.125 0.1} }
                { maxpixeldist f {20} }
-               { nsamples i {256} }
-	     }
-    light { { nphotons i {0 10000 25000 50000} }
-	  }
+               { nsamples i {256} } }
+
+    light { { nphotons i {0 10000 25000 50000} } }
+
     radiosity { { averagecolor c }
                 { emissioncolor c }
                 { patchsize f {4} }
 	        { elemsize f {2} }
                 { minsize f {1} }
-                { zonal s {none zonal_receives zonal_shoots fully_zonal} }
-              }
+                { zonal s {none zonal_receives zonal_shoots fully_zonal} } }
+
     render { { use_shadingrate i {1 0} }
              { patch_multiplier f {1.0} }
 	     { patch_maxlevel f {256} }
-             { patch_minlevel f {1} }
-           }
+             { patch_minlevel f {1} } }
 
-    trimcurve { {sense s {"inside" "outside"}} }
+    trimcurve { {sense s {"inside" "outside"} } }
 
 }
 # array riattr
@@ -384,18 +386,15 @@ array set riattr {
 array set riopt {
     hider { { jitter f {0.5} }
             { falsecolor i {0 1} }
-            { emit i {0 1} }
-	  }
+            { emit i {0 1} } }
 
     indirect { { savefile s {"indirect.dat"} }
-               { seedfile s {"indirect.dat"} }
-             }
+               { seedfile s {"indirect.dat"} } }
 
     io { { maskresolution i {0 1} }
          { maskprintf i {0 1} }
          { maskstats i {0 1} }
-         { maskprogress i {0 1} }
-       }
+         { maskprogress i {0 1} } }
 
     limits { { derivmemory i {2} }
              { eyesplits i {5 10 15} }
@@ -403,20 +402,17 @@ array set riopt {
 	     { texturememory i { 2000 } }
 	     { shadercache i { 1000 } }
 	     { hierarchydepth i { 40 } }
-	     { hierarchyobjects i { 10 } }
-           }
+	     { hierarchyobjects i { 10 } } }
 
     radiosity { { steps i {0 32 64 128} }
-                { minpatchsamples i {1 2 3 4} }
-              }
+                { minpatchsamples i {1 2 3 4} } }
 
     render { { minsamples i {8}}
              { maxsamples i {64}}
 	     { minshadowbias f {0.01 0.005 0.0025 0.001} }
 	     { max_raylevel i {4 2 8 16} }
 	     { prmanspecular i {0 1} }
-	     { useprmandspy i {0 1} }
-           }
+	     { useprmandspy i {0 1} } }
 
     runtime { { verbosity s { "silent" "normal" "stats" "debug" } } }
 
@@ -558,6 +554,8 @@ if { $tcl_platform(platform) == "windows" } {
     set ayprefs(ToolBoxTrans) 1
     set ayprefs(RGTrans) 1
     set ayprefs(AutoFocus) 1
+
+    set ayprefs(SafeAutoFocus) 1
 
     set ayprefs(BackupExt) ".bak"
 

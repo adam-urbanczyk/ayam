@@ -151,9 +151,9 @@ proc shortcut_main { w } {
     # bind function keys
     shortcut_fkeys $w
 
-    global ayprefs
-    if { $ayprefs(AutoFocus) == 1 } {
-	bind $w <Enter> {
+    bind $w <Enter> {
+	global ayprefs
+	if { $ayprefs(AutoFocus) == 1 } {
 	    if { "%W" == "[winfo toplevel %W]" } {
 		focus %W
 	    }
