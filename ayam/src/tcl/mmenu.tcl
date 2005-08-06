@@ -408,9 +408,13 @@ $m add command -label "Convert" -command {
     convOb; update; cS; set ay(ul) $ay(CurrentLevel); uS; rV
 }
 $m add command -label "Convert (In Place)" -command {
-    global ay;
+    global ay
     #undo save Convert;
-    convOb -inplace; update; set ay(ul) $ay(CurrentLevel); uS 1 1; rV
+    set ay(need_undo_clear) 0
+    forAll 0 { if { [hasChild] } { set ::ay(need_undo_clear) 1 } }
+    convOb -inplace; update
+    if { $ay(need_undo_clear) } { undo clear }
+    set ay(ul) $ay(CurrentLevel); uS 1 1; rV
 }
 $m add separator
 $m add command -label "Force Notification" -command "forceNot; rV"
