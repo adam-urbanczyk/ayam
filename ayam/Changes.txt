@@ -1,9 +1,11 @@
-[28. Jul 2005] CVS-Head:
+[6. Aug 2005] CVS-Head:
 o bug fixes:
   - fixed automatic merging of PV tags (SF 1238692)
   - fixed root object not drawn upon File/New (SF 1245221)
   - fixed warning message to disable script tags and objects while loading
     scenes via MRU menu entries (SF 1245225)
+  - fixed provided clone objects missing transformations (SF 1247844)
+  - fixed crash when using undo after in-place conversion (SF 1253036)
 o improved OBJ import of files with trailing whitespace as e.g. written by
   Blender
 o script objects now cache a compiled version of the script for faster
@@ -24,7 +26,11 @@ o added a mechanism to allow cascaded script objects
 o added proper error messages when no objects are selected upon creation
   of NURBS tool objects (revolve, skin, etc.)
 o improved deleting of referenced objects
-
+o skin objects now work with multiple provided objects
+o clone objects in mirror mode now provide all objects (normal and mirrored)
+  and reverse the order of the mirrored objects so that a single clone
+  in mirror mode with a NURBS curve as child can serve as parameter object
+  for a skin
 
 
 [5. Jul 2005] Ayam 1.8.3:
