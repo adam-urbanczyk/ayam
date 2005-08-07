@@ -1,6 +1,6 @@
 # Ayam, a free 3D modeler for the RenderMan interface.
 #
-# Ayam is copyrighted 1998-2001 by Randolf Schultz
+# Ayam is copyrighted 1998-2005 by Randolf Schultz
 # (rschultz@informatik.uni-rostock.de) and others.
 #
 # All rights reserved.
@@ -68,8 +68,8 @@ global ayprefs tcl_platform
     } else {
 	if { $nx == "" } {
 
-	    if { $nw != "" } { set width $nw } 
-	    if { $nh != "" } { set height $nh } 
+	    if { $nw != "" } { set width $nw }
+	    if { $nh != "" } { set height $nh }
 
 
 	    if { ($ayprefs(TwmCompat) == 0) &&
@@ -78,12 +78,12 @@ global ayprefs tcl_platform
 		set y [winfo rooty $w]
 		set newgeom "${width}x${height}"
 
-		if { $x >= 0 } { 
-		    append newgeom "+$x" 
-		} else { 
-		    append newgeom "-$x" 
+		if { $x >= 0 } {
+		    append newgeom "+$x"
+		} else {
+		    append newgeom "-$x"
 		}
-		if { $y >= 0 } { 
+		if { $y >= 0 } {
 		    append newgeom "+$y"
 		} else {
 		    append newgeom "-$y"
@@ -95,8 +95,8 @@ global ayprefs tcl_platform
 	} else {
 	    if { $nx != "" } { set x $nx }
 	    if { $ny != "" } { set y $ny }
-	    if { $nw != "" } { set width $nw } 
-	    if { $nh != "" } { set height $nh } 
+	    if { $nw != "" } { set width $nw }
+	    if { $nh != "" } { set height $nh }
 
 	    if { [expr abs($x)] >= [winfo screenwidth $w] } {
 		set x 0
@@ -111,12 +111,12 @@ global ayprefs tcl_platform
 	    }
 
 	    set newgeom "${width}x${height}"
-	    if { $x >= 0 } { 
-		append newgeom "+$x" 
-	    } else { 
-		append newgeom "-$x" 
+	    if { $x >= 0 } {
+		append newgeom "+$x"
+	    } else {
+		append newgeom "-$x"
 	    }
-	    if { $y >= 0 } { 
+	    if { $y >= 0 } {
 		append newgeom "+$y"
 	    } else {
 		append newgeom "-$y"
@@ -131,24 +131,26 @@ global ayprefs tcl_platform
 }
 # winMoveOrResize
 
+
 # winIconWindow:
 #  set icon window for window w
 proc winIconWindow { w img } {
 
 #image create photo icon_img -format GIF -file /home/randi/ayamsf/ayam/src/ayam-icon-t.gif
 
-if { ! [winfo exists .icon] } {
-    toplevel .icon
-    pack [label .icon.l -image $img ]
-}
+    if { ! [winfo exists .icon] } {
+	toplevel .icon
+	pack [label .icon.l -image $img ]
+    }
 
-wm iconwindow $w .icon 
-wm withdraw $w
-wm deiconify $w
+    wm iconwindow $w .icon
+    wm withdraw $w
+    wm deiconify $w
 
-
+ return;
 }
 # winIconWindow
+
 
 # winGetGeom:
 #  get geometry of window w ready to be fed into a call to wm geom
@@ -176,3 +178,30 @@ proc winGetGeom { w } {
 
 }
 # winGetGeom
+
+
+# winAutoFocusOff:
+#  disable AutoFocus
+proc winAutoFocusOff { } {
+    global ay ayprefs
+
+    if { $ayprefs(SafeAutoFocus) } {
+	set ay(oldAutoFocus) $ayprefs(AutoFocus)
+	set ayprefs(AutoFocus) 0
+    }
+
+ return;
+}
+# winAutoFocusOff
+
+# winAutoFocusOn:
+#  (re-)enable AutoFocus
+proc winAutoFocusOn { } {
+    global ay ayprefs
+
+    if { $ayprefs(SafeAutoFocus) } {
+	set ayprefs(AutoFocus) $ay(oldAutoFocus)
+    }
+ return;
+}
+# winAutoFocusOn
