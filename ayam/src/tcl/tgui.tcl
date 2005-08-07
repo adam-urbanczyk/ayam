@@ -94,11 +94,7 @@ proc tgui_block { } {
     bind Console <Control-KeyPress> $sc
     bind Listbox <Control-KeyPress> $sc
 
-    # disable AutoFocus
-    if { $ayprefs(SafeAutoFocus) } {
-	set ay(oldAutoFocus) $ayprefs(AutoFocus)
-	set ayprefs(AutoFocus) 0
-    }
+    winAutoFocusOff
 
     # modify mouse cursor to a watch
     mouseWatch 1 {. .tbw}
@@ -147,10 +143,7 @@ proc tgui_unblock { } {
     bind Console <Control-KeyPress> ""
     bind Listbox <Control-KeyPress> ""
 
-    # reset AutoFocus
-    if { $ayprefs(SafeAutoFocus) } {
-	set ayprefs(AutoFocus) $ay(oldAutoFocus)
-    }
+    winAutoFocusOn
 
     # reset mouse cursor
     mouseWatch 0 {. .tbw}
