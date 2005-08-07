@@ -15,6 +15,8 @@
 proc io_replaceScene { } {
     global ay tcl_platform
 
+    winAutoFocusOff
+
     set filename $ay(filename)
 
     if { $filename == "" } {
@@ -94,6 +96,8 @@ proc io_replaceScene { } {
 	after idle viewMouseToCurrent
     }
 
+    winAutoFocusOn
+
  return;
 }
 # io_replaceScene
@@ -104,6 +108,8 @@ proc io_replaceScene { } {
 #
 proc io_insertScene { } {
     global ay tcl_platform
+
+    winAutoFocusOff
 
     set filename $ay(filename)
 
@@ -162,6 +168,8 @@ proc io_insertScene { } {
 	after idle viewMouseToCurrent
     }
 
+    winAutoFocusOn
+
  return;
 }
 # io_insertScene
@@ -172,6 +180,8 @@ proc io_insertScene { } {
 #
 proc io_saveScene { ask selected } {
     global ay tcl_platform
+
+    winAutoFocusOff
 
     set tmp $ay(filename)
     set filename $ay(filename)
@@ -219,6 +229,8 @@ proc io_saveScene { ask selected } {
 
     }
 
+    winAutoFocusOn
+
  return;
 }
 # io_saveScene
@@ -229,6 +241,8 @@ proc io_saveScene { ask selected } {
 #
 proc io_exportRIB { {expview "" } } {
     global ay
+
+    winAutoFocusOff
 
     set w .exportRIBw
     catch {destroy $w}
@@ -327,6 +341,8 @@ proc io_exportRIB { {expview "" } } {
     focus $f.bok
     tkwait window $w
 
+    winAutoFocusOn
+
  return;
 }
 # io_exportRIB
@@ -394,6 +410,8 @@ proc io_lcAuto {  } {
 proc io_loadCustom { } {
     global ay ayprefs
 
+    winAutoFocusOff
+
     set pftype .$ay(soext)
 
     set filetypes [list [list "Custom Object" $pftype] {"All files" *}]
@@ -427,6 +445,8 @@ proc io_loadCustom { } {
 
     cd $oldcdir
 
+    winAutoFocusOn
+
  return;
 }
 # io_loadCustom
@@ -441,6 +461,8 @@ filename ""
 #  import a Mops scene file
 proc io_importMops { } {
     global ay ay_error mopsi_options tcl_platform
+
+    winAutoFocusOff
 
     if { $mopsi_options(filename) != "" } {
 	set mopsi_options(FileName) $mopsi_options(filename)
@@ -518,6 +540,8 @@ proc io_importMops { } {
     winCenter $w
 
     focus $w.f2.bok
+
+    winAutoFocusOn
 
  return;
 }
@@ -666,10 +690,17 @@ proc io_warnChanged {  } {
     if { $ayprefs(WarnChanged) == 1 } {
 
 	if { $ay(sc) == 1 } {
+
+	    winAutoFocusOff
+
 	    set t "Scene has changed!"
 	    set m "Select \"Ok\" to lose all changes.\nSelect \"Cancel\" to stop operation."
 set answer [tk_messageBox -title $t -type okcancel -icon warning -message $m]
+	    
+	    winAutoFocusOn
+
 	    if { $answer == "cancel" } {
+	    
 		return 1;
 	    } else {
 		return 0;
@@ -690,6 +721,8 @@ set answer [tk_messageBox -title $t -type okcancel -icon warning -message $m]
 #  save working environment scene file
 proc io_saveEnv {  } {
  global ay ayprefs ay_error tcl_platform
+
+ winAutoFocusOff
 
  set filename [file nativename $ayprefs(EnvFile)]
  if { $tcl_platform(platform) == "windows" } {
@@ -746,6 +779,7 @@ proc io_saveEnv {  } {
 			 -icon question -message $m]
 
 		 if { $answer == "cancel" } {
+		     winAutoFocusOn
 		     return;
 		 } else {
 		     set ayprefs(EnvFile) $savefilename
@@ -768,6 +802,8 @@ proc io_saveEnv {  } {
  }
  # if
 
+ winAutoFocusOn
+
  return;
 }
 # io_saveEnv
@@ -777,6 +813,8 @@ proc io_saveEnv {  } {
 #  derive a RIB file name for export
 proc io_getRIBName { } {
     global ay ayprefs
+
+    winAutoFocusOff
 
     set filename $ay(filename)
 
@@ -822,7 +860,9 @@ proc io_getRIBName { } {
 	}
     }
 
- return [list $ribname $imagename ]
+    winAutoFocusOn
+
+ return [list $ribname $imagename]
 }
 # io_getRIBName
 
@@ -873,18 +913,25 @@ proc io_RenderSM { } {
     global env ayprefs ay tcl_platform ay_error
 
     if { $ayprefs(ShadowMaps) != 2 } {
+
+	winAutoFocusOff
+
 	set t "ShadowMaps are not enabled!"
 	set m "ShadowMaps are not enabled\nin the preferences.\
-\nSelect \"Ok\" to enable them and continue.\
-\nSelect \"Cancel\" to stop operation."
-set answer [tk_messageBox -title $t -type okcancel -icon warning -message $m]
-	    if { $answer == "cancel" } {
-		return 1;
-	    } else {
-		set ayprefs(ShadowMaps) 2
-		set ayprefse(ShadowMaps) 2
-	    }
+		\nSelect \"Ok\" to enable them and continue.\
+		\nSelect \"Cancel\" to stop operation."
+	set answer [tk_messageBox -title $t -type okcancel -icon warning\
+		-message $m]
+
+	winAutoFocusOn
+
+	if { $answer == "cancel" } {
+	    return 1;
+	} else {
+	    set ayprefs(ShadowMaps) 2
+	    set ayprefse(ShadowMaps) 2
 	}
+    }
 
     set ribname [io_getRIBName]
     set efilename [lindex $ribname 0]
@@ -1090,6 +1137,8 @@ proc io_exportOBJ { selected } {
     global ay_error objio_options
     set ay_error ""
 
+    winAutoFocusOff
+
     if { $objio_options(filename) != "" } {
 	set objio_options(FileName) $objio_options(filename)
     } else {
@@ -1146,6 +1195,8 @@ proc io_exportOBJ { selected } {
 
     focus $w.f2.bok
 
+    winAutoFocusOn
+
  return;
 }
 # io_exportOBJ
@@ -1157,6 +1208,8 @@ proc io_exportOBJ { selected } {
 proc io_importOBJ { } {
     global ay_error objio_options
     set ay_error ""
+
+    winAutoFocusOff
 
     if { $objio_options(filename) != "" } {
 	set objio_options(FileName) $objio_options(filename)
@@ -1238,6 +1291,8 @@ proc io_importOBJ { } {
     tkwait window $w
 
     after idle viewMouseToCurrent
+
+    winAutoFocusOn
 
  return;
 }
