@@ -521,6 +521,7 @@ array set ay {
  askedscriptdisable 0
  scriptdisable 0
  iapplydisable 0
+ afdisabled 0
 }
 # array ay
 
