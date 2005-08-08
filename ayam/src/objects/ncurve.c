@@ -183,9 +183,10 @@ ay_ncurve_drawglucb(struct Togl *togl, ay_object *o)
   order = ncurve->order;
   length = ncurve->length;
 
-  if(mode < 2)
+  /* draw curve using GLU? */
+  if(mode > 0)
     {
-
+      /* yes */
       if(ncurve->glu_sampling_tolerance > 0.0)
 	sampling_tolerance = ncurve->glu_sampling_tolerance;
 
@@ -257,8 +258,10 @@ ay_ncurve_drawglucb(struct Togl *togl, ay_object *o)
 
     } /* if */
 
-  if(mode > 0)
+  /* draw control hull? */
+  if(mode < 2)
     {
+      /* yes */
       a = 0;
       glBegin(GL_LINE_STRIP);
       for(i = 0; i < length; i++)
@@ -523,7 +526,6 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(ncurve->display_mode));
 
-
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
@@ -541,7 +543,7 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       ay_status = ay_nct_resize(ncurve, new_length);
 
       if(ay_status)
-       ay_error(AY_ERROR,fname,"Could not resize curve!");
+       ay_error(AY_ERROR,fname, "Could not resize curve!");
 
       updateKnots = 1;
     }
