@@ -25,6 +25,8 @@
 # runTool splitCurveu {"Split at u:"} "splitCurve %0"
 proc runTool { argvars argstrings command } {
 global ay
+
+winAutoFocusOff
 set w .rtw
 catch {destroy $w}
 toplevel $w -class ayam
@@ -77,7 +79,7 @@ winCenter $w
 grab $w
 focus $f.bok
 tkwait window $w
-
+winAutoFocusOn
 return;
 }
 # runTool
@@ -171,6 +173,8 @@ proc runGetStdout { num cmd template channel } {
 proc runRenderer { cmd template } {
     global ay ayprefs
 
+    winAutoFocusOff
+
     if { $ayprefs(Kill) != "" } {
 	set kill $ayprefs(Kill)
     } else {
@@ -238,26 +242,27 @@ proc runRenderer { cmd template } {
     pack $f -in $w -side top -fill x
 
     button $w.bca -text "Cancel!" -width 16 -command "\
-	    set dontwait 0;\
-	    foreach i {$pids} {\
-	     if { \"$kill\" == \"w32kill\" } {\
-	      catch \{ w32kill \$i; \} result } else {\
-	      catch \{ exec $kill \$i \} result;\
-	     };\
-	     if { \$result != \"\" } {\
-	      puts stderr \"\$result\"; set dontwait 1\
-             };\
-            };\
+	    set dontwait 0;
+	    foreach i {$pids} {
+	     if { \"$kill\" == \"w32kill\" } {
+	      catch \{ w32kill \$i; \} result } else {
+	      catch \{ exec $kill \$i \} result;
+	     };
+	     if { \$result != \"\" } {
+	      puts stderr \"\$result\"; set dontwait 1;
+             };
+            };
 	    if { !\$dontwait } {
-	     foreach i {$pids} {\
-	      if { \"$wait\" != \"\" } {\
+	     foreach i {$pids} {
+	      if { \"$wait\" != \"\" } {
 	      catch \{ $wait \$i \};
-              };\
-             };\
-	    };\
-	    catch \{ fileevent $ioPipe readable \"\" \} ;\
-	    catch \{ fileevent $ioFid readable \"\" \} ;\
-	    focus .;\
+              };
+             };
+	    };
+	    catch \{ fileevent $ioPipe readable \"\" \};
+	    catch \{ fileevent $ioFid readable \"\" \};
+	    focus .;
+            winAutoFocusOn;
 	    destroy $w"
     pack $w.bca -in $w -side bottom -anchor s -fill x -expand yes
 

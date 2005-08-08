@@ -74,6 +74,8 @@ proc prefs_rsnb { nb page } {
 proc prefs_open {} {
     global ay ayprefs ayprefse tcl_platform aymainshortcuts
 
+    winAutoFocusOff
+
     # copy array ayprefs to ayprefse (we operate on this second array)
     set avnames [array names ayprefs]
     foreach j $avnames {
@@ -351,6 +353,8 @@ proc prefs_open {} {
 
     focus $f.bok
     tkwait window $w
+
+    winAutoFocusOn
 
  return;
 }

@@ -225,6 +225,8 @@ proc editTagshelper { index } {
 proc addTagp { {edit -1} } {
 global ay tagsPropData Tags
 
+winAutoFocusOff
+
 set w .addTag
 catch {destroy $w}
 toplevel $w -class ayam
@@ -293,6 +295,8 @@ winCenter $w
 grab $w
 focus .addTag.fu.e
 tkwait window $w
+
+winAutoFocusOn
 
  return;
 }

@@ -14,6 +14,9 @@
 #
 proc aboutAyam {} {
 global ay tcl_version tk_version tcl_patchLevel tk_patchLevel tcl_platform
+
+winAutoFocusOff
+
 set w .aboutw
 # there can only be one
 catch {destroy $w}
@@ -174,6 +177,7 @@ bind $w.ftext.text <ButtonPress-5>\
 "$w.ftext.text yview scroll 1 pages; break"
 
 button $w.fbutton.b -text "Dismiss" -pady $ay(pady) -command "destroy $w"
+
 pack $w.fbutton.b -in $w.fbutton
 
 bind $w.ftext.text <ButtonRelease-1> {
@@ -184,5 +188,10 @@ bind $w.ftext.text <ButtonRelease-1> {
 }
 # bind
 
+tkwait window $w
+
+winAutoFocusOn
+
+return;
 }
 # aboutAyam

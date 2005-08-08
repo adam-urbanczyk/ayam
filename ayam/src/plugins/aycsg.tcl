@@ -122,6 +122,8 @@ uplevel #0 {
 proc aycsgPreferences { } {
     global aycsg_options aycsg_options_save
 
+    winAutoFocusOff
+
     array set aycsg_options_save ""
     array set aycsg_options_save [array get aycsg_options]
 
@@ -188,6 +190,8 @@ proc aycsgPreferences { } {
     grab $w
     focus $w.f2.bok
     tkwait window $w
+
+    winAutoFocusOn
 
     after idle viewMouseToCurrent
 

@@ -36,6 +36,8 @@ proc reconsider { Selection } {
 	update
 	return
     }
+
+    winAutoFocusOff
     
     # Save current values
     set rArray(selection) $Selection
@@ -190,8 +192,12 @@ proc reconsider { Selection } {
 
     focus $f.bok
     tkwait window $w
+
+    winAutoFocusOn
+
     update
-    return;
+
+ return;
 }
 #reconsider
 

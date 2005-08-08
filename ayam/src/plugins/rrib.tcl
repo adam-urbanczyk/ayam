@@ -26,6 +26,8 @@ uplevel #0 { array set rrib_options {
 proc rrib_import { } {
     global ay ay_error rrib_options
 
+    winAutoFocusOff
+
     cS; plb_update
     update
 
@@ -110,6 +112,8 @@ proc rrib_import { } {
     grab $w
     focus $w.f2.bok
     tkwait window $w
+
+    winAutoFocusOn
 
     after idle viewMouseToCurrent
 

@@ -67,6 +67,8 @@ addCheck $w RiAttrData Shadow
 proc material_createp { } {
     global ay ay_error
 
+    winAutoFocusOff
+
     set w .createMw
     catch {destroy $w}
     toplevel $w -class ayam
@@ -109,6 +111,8 @@ proc material_createp { } {
     grab $w
     focus $w.f1.e
     tkwait window $w
+
+    winAutoFocusOn
 
  return;
 }
