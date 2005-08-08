@@ -13,6 +13,7 @@
 proc riopt_addp { } {
     global ay
 
+    winAutoFocusOff
     set w .addRiOptw
     catch {destroy $w}
     toplevel $w -class ayam
@@ -284,6 +285,7 @@ proc riopt_addp { } {
     grab $w
     focus $f.bok
     tkwait window $w
+    winAutoFocusOn
 
  return;
 }

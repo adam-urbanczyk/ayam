@@ -29,6 +29,8 @@ uplevel #0 { array set onio_options {
 proc onio_import { } {
     global ay ay_error onio_options
 
+    winAutoFocusOff
+
     cS; plb_update
     update
 
@@ -111,6 +113,8 @@ proc onio_import { } {
     focus $w.f2.bok
     tkwait window $w
 
+    winAutoFocusOn
+
     after idle viewMouseToCurrent
 
  return;
@@ -120,6 +124,8 @@ proc onio_import { } {
 
 proc onio_export { } {
     global ay ay_error onio_options
+
+    winAutoFocusOff
 
     cS; plb_update
     update
@@ -205,6 +211,8 @@ proc onio_export { } {
     grab $w
     focus $w.f2.bok
     tkwait window $w
+
+    winAutoFocusOn
 
     after idle viewMouseToCurrent
 

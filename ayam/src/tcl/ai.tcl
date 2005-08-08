@@ -20,6 +20,8 @@ array set aiprefs {
 proc ai_open { } {
     global ay aiprefs
 
+    winAutoFocusOff
+
     set w .aiw
     catch {destroy $w}
     toplevel $w -class ayam
@@ -47,11 +49,15 @@ proc ai_open { } {
 	}
 	set ay(sc) 1
 	undo clear
+
+        winAutoFocusOn
     }
 
     button $f.bca -text "Cancel" -pady $ay(pady) -width 6 -command { 
 	focus .
 	destroy .aiw
+
+        winAutoFocusOn
     }
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
     pack $f -in $w -side bottom -fill x

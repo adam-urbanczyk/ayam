@@ -1,6 +1,6 @@
 # Ayam, a free 3D modeler for the RenderMan interface.
 #
-# Ayam is copyrighted 1998-2001 by Randolf Schultz
+# Ayam is copyrighted 1998-2005 by Randolf Schultz
 # (rschultz@informatik.uni-rostock.de) and others.
 #
 # All rights reserved.
@@ -255,6 +255,8 @@ return;
 proc updateColor { w prop name button } {
     global $prop 
 
+    winAutoFocusOff
+
     set rname ${prop}(${name}_R)
     set gname ${prop}(${name}_G)
     set bname ${prop}(${name}_B)
@@ -268,6 +270,8 @@ proc updateColor { w prop name button } {
 	set $gname $g
 	set $bname $b
     }
+
+    winAutoFocusOn
 
  return;
 }
@@ -704,9 +708,11 @@ proc addFileT { w prop name ftypes {def {}} } {
     set f $w.f${name}
     $f.b configure -command "
 	    global $prop;
+            winAutoFocusOff;
 	    set filen \[$f.e get\];
 	    set filen \[tk_getOpenFile -filetypes {$ftypes} -parent .\
 	                -title \"Set File:\"];
+            winAutoFocusOn;
 	    if { \$filen != \"\" } {
 		$f.e delete 0 end;
 		$f.e insert 0 \$filen;
@@ -727,9 +733,11 @@ proc addSFileT { w prop name ftypes {def {}} } {
     set f $w.f${name}
     $f.b configure -command "\
 	    global $prop;
+            winAutoFocusOff;
 	    set filen \[$f.e get\];
             set filen \[tk_getSaveFile -filetypes {$ftypes} -parent .\
 		        -title \"Set File:\"];
+            winAutoFocusOn;
 	    if { \$filen != \"\" } {
 		$f.e delete 0 end;
 		$f.e insert 0 \$filen;
@@ -779,8 +787,10 @@ proc addFile { w prop name {def {}} } {
     button $f.b -text "Set" -width 4 -bd $bw -padx 0 -pady 0 -takefocus 0\
      -command "\
 	global $prop;
+        winAutoFocusOff;
 	set filen \[$f.e get\];
 	set filen \[tk_getOpenFile -parent . -title \"Set File:\"];
+        winAutoFocusOn;
 	if { \$filen != \"\" } {
 	    $f.e delete 0 end;
 	    $f.e insert 0 \$filen;
@@ -863,10 +873,12 @@ proc addMDir { w prop name } {
     button $f.b -text "Add" -width 4 -bd $bw -padx 0 -pady 0 -takefocus 0\
      -command "\
 	global $prop;
+        winAutoFocusOff;
 	set filen \[$f.e get\];
 	global ay;
 	set sep \$ay(separator);
 	set filen \[tk_getOpenFile -title \"Select File:\"\];
+        winAutoFocusOn;
 	if { \$filen != \"\" } {
 	  if { \$${prop}($name) != \"\" } {
 	      set ${prop}($name) \$${prop}($name)\$sep\[file dirname \$filen\];
@@ -926,23 +938,23 @@ proc addMFile { w prop name } {
 
     button $f.b -text "Add" -width 4 -bd $bw -padx 0 -pady 0 -takefocus 0\
      -command "\
-	global $prop;\
-	set filen \[$f.e get\];\
-	global ay;\
-	set sep \$ay(separator);\
-	set filen \[tk_getOpenFile\
-	-title \"Select File:\"\];\
-	if { \$filen != \"\" } {\
-	 if { \$${prop}($name) != \"\" } {\
-          set ${prop}($name) \$${prop}($name)\$sep\$filen;\
-	 } else {\
-	  set ${prop}($name) \$filen;\
-         };\
+	global $prop;
+        winAutoFocusOff;
+	set filen \[$f.e get\];
+	global ay;
+	set sep \$ay(separator);
+	set filen \[tk_getOpenFile -title \"Select File:\"\];
+        winAutoFocusOn;
+	if { \$filen != \"\" } {
+	 if { \$${prop}($name) != \"\" } {
+          set ${prop}($name) \$${prop}($name)\$sep\$filen;
+	 } else {
+	  set ${prop}($name) \$filen;
+         };
 	 entryViewEnd $f.e;
 	 update;
          eval balloon_setsplit $f.e \[list \$${prop}($name)\] 15;
-        };\
-	" 
+        };" 
 
     pack $f.l -in $f -side left -fill x
     pack $f.e -in $f -side left -fill both -expand yes

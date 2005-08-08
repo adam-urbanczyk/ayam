@@ -235,6 +235,8 @@ proc shader_setNew { win type stype } {
 	return;
     }
     # request a new shader
+
+    winAutoFocusOff
     set w .setShaderw
     catch {destroy $w}
     toplevel $w -class ayam
@@ -303,6 +305,7 @@ proc shader_setNew { win type stype } {
     grab $w
     focus $f.bok
     tkwait window $w
+    winAutoFocusOn
 
     # now we have the new shader
     global newshaderindex

@@ -40,6 +40,8 @@ uplevel #0 { array set pomeshmerge_options {
 proc pomesh_merge { } {
     global ay ay_error pomeshmerge_options
 
+    winAutoFocusOff
+
     set w .pomeshmerge
     catch {destroy $w}
     toplevel $w -class ayam
@@ -103,6 +105,8 @@ proc pomesh_merge { } {
     focus $w.f2.bok
     tkwait window $w
 
+    winAutoFocusOn
+
     after idle viewMouseToCurrent
 
  return;
@@ -121,6 +125,8 @@ uplevel #0 { array set pomeshopt_options {
 #
 proc pomesh_optimize { } {
     global ay ay_error pomeshopt_options
+
+    winAutoFocusOff
 
     set w .pomeshopt
     catch {destroy $w}
@@ -171,6 +177,8 @@ proc pomesh_optimize { } {
     grab $w
     focus $w.f2.bok
     tkwait window $w
+
+    winAutoFocusOn
 
     after idle viewMouseToCurrent
 

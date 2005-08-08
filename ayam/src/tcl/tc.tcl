@@ -211,6 +211,8 @@ proc tc_edit { } {
     # unset semaphore
     set tcumsema 0
 
+    winAutoFocusOff
+
     set w .tcEditw
     catch {destroy $w}
     toplevel $w -class ayam
@@ -414,7 +416,9 @@ proc tc_edit { } {
 
     # block application? (No! We want the user to be able to edit
     # BPatches while the requester is open!)
-    #tkwait window $w
+    tkwait window $w
+
+    winAutoFocusOn
 
  return;
 }

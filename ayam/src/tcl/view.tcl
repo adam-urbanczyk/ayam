@@ -212,6 +212,9 @@ return;
 #  set the Field Of View of a view
 proc viewSetFOV { view } {
 global ay
+
+winAutoFocusOff
+
 set w .setFov
 catch {destroy $w}
 toplevel $w -class ayam
@@ -253,6 +256,8 @@ grab $w
 focus $w.f1.fFOV.e
 tkwait window $w
 
+winAutoFocusOn
+
 return;
 }
 # viewSetFOV
@@ -262,6 +267,9 @@ return;
 # viewSetGrid:
 proc viewSetGrid { view } {
 global ay
+
+winAutoFocusOff
+
 set w .setGrid
 catch {destroy $w}
 toplevel $w -class ayam
@@ -306,6 +314,8 @@ winCenter $w
 grab $w
 focus $w.f1.fGridSize.e
 tkwait window $w
+
+winAutoFocusOn
 
 return;
 }
@@ -816,6 +826,9 @@ proc viewToggleMMode { w } {
 # viewSetBGImage:
 proc viewSetBGImage { view } {
 global ay
+
+winAutoFocusOff
+
 set w .setBGI
 catch {destroy $w}
 toplevel $w -class ayam
@@ -857,6 +870,8 @@ winCenter $w
 grab $w
 focus $w.f1.fImageFile.e
 tkwait window $w
+
+winAutoFocusOn
 
 return;
 }

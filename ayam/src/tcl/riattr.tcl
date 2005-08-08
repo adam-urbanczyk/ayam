@@ -13,6 +13,7 @@
 proc riattr_addp { } {
     global ay
 
+    winAutoFocusOff
     set w .addRiAttrw
     catch {destroy $w}
     toplevel $w -class ayam
@@ -259,6 +260,7 @@ proc riattr_addp { } {
     grab $w
     focus $f.bok
     tkwait window $w
+    winAutoFocusOn
 
  return;
 }

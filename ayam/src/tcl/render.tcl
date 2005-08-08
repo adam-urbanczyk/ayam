@@ -35,6 +35,8 @@ proc render { args } {
 proc render_select { } {
     global ay ayprefs
 
+    winAutoFocusOff
+
     set w .selRenw
     catch {destroy $w}
     toplevel $w -class ayam
@@ -292,6 +294,8 @@ proc render_select { } {
     grab $w
     focus $f.bok
     tkwait window $w
+
+    winAutoFocusOn
 
  return;
 }

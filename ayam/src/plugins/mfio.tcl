@@ -16,8 +16,9 @@ $m add command -label "Import" -command mfio_import
 $m add command -label "Export" -command mfio_export
 
 proc mfio_import { } {
-
     global ay
+
+    winAutoFocusOff
 
     set filename $ay(filename)
 
@@ -40,12 +41,15 @@ proc mfio_import { } {
 
     }
 
+    winAutoFocusOn
+
  return;
 }
 
 proc mfio_export { } {
-
     global ay
+
+    winAutoFocusOff
 
     set filename $ay(filename)
 
@@ -68,6 +72,8 @@ proc mfio_export { } {
 	uS
 	rV
     }
+
+    winAutoFocusOn
 
  return;
 }
