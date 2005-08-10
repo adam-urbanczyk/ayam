@@ -3798,7 +3798,17 @@ the trajectory curve.
 <item><tt/"Mirror"/ allows to choose between three different mirror
 modes. If mirroring is enabled, for each child of the Clone object,
 a mirrored counterpart will be created and all other parameters of
-the Clone object will be ignored.
+the Clone object will be ignored. Since Ayam 1.9, the original object(s)
+and their mirrored counterparts will be provided by the Clone object,
+and, additionally, the order of the mirrored objects will be reversed
+so that it is possible to use a single Clone object in mirror mode
+(with one or multiple NURBS curves as children) as parameter object
+of e.g. a Skin object:
+<code>
++-Skin
+ +-Mirror(Clone)
+  \-NCurve
+</code>
 <item><tt/"Translate_X"/, <tt/"Translate_Y"/, <tt/"Translate_Z"/,
 <tt/"Rotate_X"/, <tt/"Rotate_Y"/, <tt/"Rotate_Z"/,
 <tt/"Scale_X"/, <tt/"Scale_Y"/, <tt/"Scale_Z"/,
@@ -4284,6 +4294,9 @@ curves have to be refined using this new knot vector; interpolation
 adds another dimension of complexity... If you experience
 lags when editing the child curves of a skin object try to switch
 to lazy notification.
+Since Ayam 1.9, a skin object will also use all the curves of a
+tool object, that provides multiple curves, e.g. a clone object
+in mirror mode.
 <p>
 The direction of the parameter curves will be parallel to the v
 dimension (height) of the skinned surface. The number of the parameter
