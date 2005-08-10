@@ -3362,6 +3362,32 @@ NURBS curve using the attribute <tt/"CreateMP"/.
 The first section of the NCurveAttrib property contains curve specific
 settings:<p>
 <itemize>
+<item><tt/"Type"/: This attribute replaces the <tt/"Closed"/
+attribute since Ayam 1.9.
+<p>
+The type <tt/"Open"/ is for the standard open NURBS curve.
+<p>
+If the type is <tt/"Closed"/, the first and last control point of
+the curve will be made identical. This will close the curve but
+without any guaranteed continuity.
+Such a curve will e.g. be created by the NURBS circle tool.
+It is important to know, that the multiple points
+alone can not guarantee that the curve is closed if the knot vector
+is not clamped. If in doubt use the clamp tool or a knot vector
+of type NURB.
+<p>
+If the type is <tt/"Periodic"/, the last p control points of the curve
+will be made identical to the first p where p is the degree of the
+curve (read order-1). This will close the curve with guaranteed continuity.
+Note that for a cubic spline (order 4) you will need atleast 6 control
+points to close it. It is important to know, that the multiple points
+alone can not guarantee that the curve is closed if the knot type of
+the curve is Custom; if you really want a closed curve switch to type
+B-Spline.
+<p>
+You may want to enable the creation of multiple points using the
+<tt/"CreateMP"/ attribute (see below) for closed curves so that
+single point editing actions modify all multiple control points.
 <item><tt/"Length"/ is the number of control points of the curve.
 <item><tt/"Order"/ is the order of the curve.
 <item><tt/"Knot-Type"/: Using <tt/"Knot-Type"/ you may select from
@@ -3388,19 +3414,7 @@ and behaves like a B-Spline curve.
 <item><tt/"Knots"/ lets you enter your own custom knot sequences.
 Note that <tt/"Knots"/ are not in use if <tt/"Knot-Type"/ is of type
 NURB, B-Spline or Bezier!
-<item><tt/"Closed"/ toggles the closeness of the curve.
-If this is enabled, the last p control points of the curve will be
-made identical to the first p (where p is the degree of the curve,
-read order-1). All those points will be multiple points and
-single point editing actions will edit both points from now on.<p>
-Note that for a cubic spline (order 4) you will
-need atleast 6 control points to close it. It is important to know,
-that the multiple points alone can not guarantee that the curve
-is closed if the knot type of the curve is Custom, if you really
-want a closed curve switch to type B-Spline.<p>
-Also note that a NURBS circle as created by the NURBCircle tool
-is not a closed curve following this definition, it is nevertheless
-a closed curve.
+
 <item><tt/"CreateMP"/ toggles, whether multiple points should be
 created for this curve. See also the discussion in
 section <ref id="ncurvemp" name="Multiple Points">.
