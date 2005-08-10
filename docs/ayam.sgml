@@ -3418,6 +3418,8 @@ NURB, B-Spline or Bezier!
 <item><tt/"CreateMP"/ toggles, whether multiple points should be
 created for this curve. See also the discussion in
 section <ref id="ncurvemp" name="Multiple Points">.
+<item><tt/"IsRat"/ informs you since Ayam 1.9, whether the curve
+is rational (uses weight values different from 1.0).
 </itemize>
 
 The GLU-Parameters control the appearance of the curve when
@@ -3458,6 +3460,8 @@ settings:<p>
 <item><tt/"Knot-Type"/ and <tt/"Knots"/: For a discussion of the
 <tt/"Knot-Type"/ and <tt/"Knots"/ parameters,
 please see section <ref id="ncattr" name="NCurveAttrib">.
+<item><tt/"IsRat"/ informs you since Ayam 1.9, whether the patch
+is rational (uses weight values different from 1.0).
 </itemize>
 
 The next parameters control the appearance of the patch for display
