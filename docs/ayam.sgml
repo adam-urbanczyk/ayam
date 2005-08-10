@@ -6703,7 +6703,14 @@ appears if scenes with script objects or tags are loaded.
 <item><tt/"WarnUnknownTag"/ controls the warning messages for
 unknown tag types.
 <item><tt/"FixX11Menu"/ enables a workaround for non-sticky menus
-on X11 (displaced menus do not stay open).
+on X11 (displaced menus do not stay open). This option is enabled
+by default and not used on the Win32 platform.
+<item><tt/"SafeAutoFocus"/ disables AutoFocus
+(see section <ref id="prefgui" name="preference settings">)
+when certain dialog windows are open, so that they do not get
+shuffled under other windows by accidental mouse movements on systems
+where the window manager does only auto raise.
+This option is enabled by default on Win32.
 </itemize>
 
 <sect2>RiOption and RiAttributes Database<label id="rioptdb">
@@ -8098,6 +8105,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 
 <label id="indexs">S
 <itemize>
+<item>SafeAutoFocus: <ref id="hidprefs" name="hidden preference setting">
 <item>Samples: <ref id="lip" name="light attribute">
 <item>Samples_X: <ref id="rio" name="RenderMan interface option">
 <item>Samples_Y: <ref id="rio" name="RenderMan interface option">
