@@ -1123,6 +1123,7 @@ TessPoMesh 0
 OmitCurves 0
 MergeFaces 1
 MergePVTags 1
+RescaleKnots 0.0
 filename ""
 FileName "unnamed.rib"
 STagName "mys"
@@ -1231,6 +1232,7 @@ proc io_importOBJ { } {
     addCheck $f objio_options MergeFaces
     addCheck $f objio_options MergePVTags
     addCheck $f objio_options OmitCurves
+    addParam $f objio_options RescaleKnots [list 0.0 1.0e-4]
     addString $f objio_options STagName
     addString $f objio_options TTagName
 
@@ -1245,6 +1247,7 @@ proc io_importOBJ { } {
 		-m $objio_options(MergeFaces)\
 		-o $objio_options(OmitCurves)\
 		-p $objio_options(MergePVTags)\
+		-r $objio_options(RescaleKnots)\
 		-t $objio_options(STagName) $objio_options(TTagName)
 	
 	if { $ay_error < 2 } {
