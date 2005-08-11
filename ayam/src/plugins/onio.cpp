@@ -44,6 +44,8 @@ int onio_expselected = AY_FALSE;
 int onio_expobeynoexport = AY_TRUE;
 int onio_expignorehidden = AY_TRUE;
 
+double onio_rescaleknots = 0.0;
+
 double onio_accuracy = 1.0e-12;
 
 char onio_stagnamedef[] = "mys";
@@ -885,7 +887,7 @@ onio_writepomesh(ay_object *o, ONX_Model *p_m, double *m)
 		    }
 		  nextli = &(li->next);
 
-		  /* advance index r */
+		  // advance index r
 		  for(k = 0; k < pm->nverts[q]; k++)
 		    {
 		      r++;
@@ -957,7 +959,7 @@ onio_writepomesh(ay_object *o, ONX_Model *p_m, double *m)
 				     (ay_pomesh_object*)to->refine, AY_FALSE);
 	  ay_object_defaults(to);
 	  to->type = AY_IDPOMESH;
-	  /*ay_trafo_copy(o, to);*/
+	  // ay_trafo_copy(o, to);
 	  onio_writepomesh(lihead->object, p_m, m);
 	  ay_object_delete(to);
 	}
@@ -1877,6 +1879,16 @@ onio_readnurbssurface(ON_NurbsSurface *p_s)
   vknotv[0] = vknotv[1];
   vknotv[height+p_s->m_order[1]-1] = vknotv[height+p_s->m_order[1]-2];
 
+  // rescale knots to safe distance?
+  if(onio_rescaleknots != 0.0)
+    {
+      ay_knots_rescaletomindist(width+p_s->m_order[0], uknotv,
+				onio_rescaleknots);
+
+      ay_knots_rescaletomindist(height+p_s->m_order[1], vknotv,
+				onio_rescaleknots);
+    }
+
   // now create a NURBPatch object
   ay_status = ay_npt_create(p_s->m_order[0], p_s->m_order[1], width, height,
 			    AY_KTCUSTOM, AY_KTCUSTOM,
@@ -2000,6 +2012,11 @@ onio_readnurbscurve(ON_NurbsCurve *p_c)
     } // for
   knotv[0] = knotv[1];
   knotv[length+p_c->m_order-1] = knotv[length+p_c->m_order-2];
+
+  // rescale knots to safe distance?
+  if(onio_rescaleknots != 0.0)
+    ay_knots_rescaletomindist(length+p_c->m_order, knotv,
+			      onio_rescaleknots);
 
   // now create a NURBCurve object
   ay_status = ay_nct_create(p_c->m_order, length, AY_KTCUSTOM, controlv, knotv,
@@ -2833,6 +2850,7 @@ onio_readtcmd(ClientData clientData, Tcl_Interp *interp,
  double accuracy = 0.1;
 
   onio_importcurves = AY_TRUE;
+  onio_rescaleknots = 0.0;
 
   // check args
   if(argc < 2)
@@ -2859,6 +2877,11 @@ onio_readtcmd(ClientData clientData, Tcl_Interp *interp,
       if(!strcmp(argv[i], "-i"))
 	{
 	  sscanf(argv[i+1], "%d", &onio_ignorefirsttrim);
+	}
+      else
+      if(!strcmp(argv[i], "-r"))
+	{
+	  sscanf(argv[i+1], "%lg", &onio_rescaleknots);
 	}
       else
       if(!strcmp(argv[i], "-t"))

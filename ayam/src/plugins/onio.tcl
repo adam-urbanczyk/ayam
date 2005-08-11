@@ -19,6 +19,7 @@ uplevel #0 { array set onio_options {
     IgnoreHidden 1
     WriteCurves 1
     QuadAsBRep 1
+    RescaleKnots 0.0
     FileName "unnamed.3dm"
     STagName "mys"
     TTagName "myt"
@@ -55,6 +56,7 @@ proc onio_import { } {
     addCheck $f onio_options ReadCurves
     addParam $f onio_options ReadLayers [list -1 1 1-10]
     addCheck $f onio_options IgnoreFirstTrim
+    addParam $f onio_options RescaleKnots [list 0.0 1.0e-4]
     addString $f onio_options STagName
     addString $f onio_options TTagName
 
@@ -72,6 +74,7 @@ proc onio_import { } {
 	    -c $onio_options(ReadCurves)\
 	    -l $onio_options(ReadLayers)\
 	    -i $onio_options(IgnoreFirstTrim)\
+	    -r $onio_options(RescaleKnots)\
 	    -t $onio_options(STagName) $onio_options(TTagName)
 
 	cd $oldcd
