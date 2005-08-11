@@ -1432,6 +1432,8 @@ int objio_mergecfaces;
 
 int objio_mergepvtags;
 
+double objio_rescaleknots;
+
 typedef struct objio_vertex_s {
   struct objio_vertex_s *next;
   struct objio_vertex_s *prev;
@@ -2855,6 +2857,14 @@ ay_objio_fixnpatch(ay_nurbpatch_object *np)
 
   np->is_rat = ay_npt_israt(np);
 
+  if(objio_rescaleknots != 0.0)
+    {
+      ay_knots_rescaletomindist(np->width+np->uorder, np->uknotv,
+				objio_rescaleknots);
+      ay_knots_rescaletomindist(np->height+np->vorder, np->vknotv,
+				objio_rescaleknots);
+    }
+
  return ay_status;
 } /* ay_objio_fixnpatch */
 
@@ -2888,6 +2898,12 @@ ay_objio_fixncurve(ay_nurbcurve_object *nc)
     } /* for */
 
   nc->is_rat = ay_nct_israt(nc);
+
+  if(objio_rescaleknots != 0.0)
+    {
+      ay_knots_rescaletomindist(nc->length+nc->order, nc->knotv,
+				objio_rescaleknots);
+    }
 
  return ay_status;
 } /* ay_objio_fixncurve */
@@ -3297,6 +3313,7 @@ ay_objio_readscenetcmd(ClientData clientData, Tcl_Interp *interp,
   objio_mergecfaces = AY_TRUE;
   objio_mergepvtags = AY_TRUE;
   objio_omitcurves = AY_FALSE;
+  objio_rescaleknots = 0.0;
 
   while(i+1 < argc)
     {
@@ -3315,13 +3332,17 @@ ay_objio_readscenetcmd(ClientData clientData, Tcl_Interp *interp,
 	  sscanf(argv[i+1], "%d", &objio_mergepvtags);
 	}
       else
+      if(!strcmp(argv[i], "-r"))
+	{
+	  sscanf(argv[i+1], "%lg", &objio_rescaleknots);
+	}
+      else
       if(!strcmp(argv[i], "-t"))
 	{
 	  objio_stagname = argv[i+1];
 	  objio_ttagname = argv[i+2];
 	  i++;
 	}
-
       i += 2;
     } /* while */
 
