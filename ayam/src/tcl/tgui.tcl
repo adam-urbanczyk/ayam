@@ -372,6 +372,9 @@ proc tgui_open { } {
     label $f.lr -text "100"
     entry $f.e -width 5
 
+    set ::ay(need_undo_clear) 0
+    forAll 0 { if { [hasChild] } { set ::ay(need_undo_clear) 1 } }
+
     # read preferences from eventually present TP tag
     tgui_readtag
 
@@ -406,7 +409,8 @@ proc tgui_open { } {
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {
 	tguiCmd op; focus .; destroy .tguiw;
-	uCL cl; plb_update;
+	if { $::ay(need_undo_clear) } { undo clear }
+	set ay(ul) $ay(CurrentLevel); uS 0 1; plb_update;
     }
     # button
 
