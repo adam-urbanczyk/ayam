@@ -17,6 +17,7 @@ uplevel #0 { array set rrib_options {
   ReadMaterial 1
   ReadPartial 0
   ErrorLevel 1
+  RescaleKnots 0.0
   FileName "unnamed.rib"
 }   }
 
@@ -54,6 +55,7 @@ proc rrib_import { } {
     addCheck $f rrib_options ReadLights
     addCheck $f rrib_options ReadMaterial
     addCheck $f rrib_options ReadPartial
+    addParam $f rrib_options RescaleKnots [list 0.0 1.0e-4]
     addMenu $f rrib_options ErrorLevel [list Silence Errors Warnings All]
 
     set ay(iapplydisable) 0
@@ -71,6 +73,7 @@ proc rrib_import { } {
 	    -l $rrib_options(ReadLights)\
 	    -m $rrib_options(ReadMaterial)\
 	    -p $rrib_options(ReadPartial)\
+	    -r $rrib_options(RescaleKnots)\
 	    -e $rrib_options(ErrorLevel);
 
 	cd $oldcd

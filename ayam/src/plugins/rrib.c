@@ -192,6 +192,8 @@ int ay_rrib_readmaterial; /* read material and attributes */
 int ay_rrib_readmateriali; /* read material and attributes (internal) */
 int ay_rrib_readpartial; /* read partial RIB (e.g. without WorldBegin/End) */
 int ay_rrib_errorlevel; /* 0: silence, 1: errors, 2: warnings, 3: all */
+double rrib_rescaleknots; /* rescale knots to min dist: 0.0 no scaling */
+
 
 /* grib is used by Affine to specify the current RIB;
    ay_rrib_RiReadArchive() keeps a copy of it on the stack
@@ -889,11 +891,22 @@ ay_rrib_RiNuPatch(RtInt nu, RtInt uorder, RtFloat uknot[],
 
   ay_rrib_readpvs(n, tokens, parms, 2, hvars, &(ay_rrib_co.tags));
 
+  /* trim by knot vector? */
   if((umin > np.uknotv[np.uorder]) || (umax < np.uknotv[np.width]))
     ay_knots_setuminmax(&ay_rrib_co, umin, umax);
 
   if((vmin > np.vknotv[np.vorder]) || (vmax < np.vknotv[np.height]))
     ay_knots_setvminmax(&ay_rrib_co, vmin, vmax);
+
+  /* rescale knots to safe distance? */
+  if(rrib_rescaleknots != 0.0)
+    {
+      ay_knots_rescaletomindist(np.width + np.uorder, np.uknotv,
+				rrib_rescaleknots);
+
+      ay_knots_rescaletomindist(np.height + np.vorder, np.vknotv,
+				rrib_rescaleknots);
+    }
 
   ay_rrib_co.parent = AY_TRUE;
   ay_rrib_co.hide_children = AY_TRUE;
@@ -992,6 +1005,13 @@ ay_rrib_RiTrimCurve(RtInt nloops, RtInt ncurves[], RtInt order[],
 		(*maxptr < nc->knotv[nc->length]))
 	       ay_knots_setuminmax(o, *minptr, *maxptr);
 
+	     /* rescale knots to safe distance? */
+	     if(rrib_rescaleknots != 0.0)
+	       {
+		 ay_knots_rescaletomindist(nc->length + nc->order, nc->knotv,
+					   rrib_rescaleknots);
+	       }
+
 	     nc->is_rat = ay_nct_israt(nc);
 
 	     /* link trimcurve */
@@ -1051,6 +1071,13 @@ ay_rrib_RiTrimCurve(RtInt nloops, RtInt ncurves[], RtInt order[],
 	 if((*minptr > nc->knotv[nc->order]) ||
 	    (*maxptr < nc->knotv[nc->length]))
 	   ay_knots_setuminmax(o, *minptr, *maxptr);
+
+	 /* rescale knots to safe distance? */
+	 if(rrib_rescaleknots != 0.0)
+	   {
+	     ay_knots_rescaletomindist(nc->length + nc->order, nc->knotv,
+				       rrib_rescaleknots);
+	   }
 
 	 nc->is_rat = ay_nct_israt(nc);
 
@@ -5746,12 +5773,17 @@ ay_rrib_readribtcmd(ClientData clientData, Tcl_Interp *interp,
 	  sscanf(argv[i+1], "%d", &read_partial);
 	}
       else
+      if(!strcmp(argv[i], "-r"))
+	{
+	  sscanf(argv[i+1], "%lg", &rrib_rescaleknots);
+	}
+      else
       if(!strcmp(argv[i], "-e"))
 	{
 	  sscanf(argv[i+1], "%d", &error_level);
 	}
 
-	i+=2;
+      i+=2;
   } /* while */
 
   /* create Materials level, if it does not exist */
