@@ -6570,6 +6570,410 @@ set row [expr [lindex [grid size .tbw.f] 1] + 1]
 grid $f -row $row -column 0 -columnspan [lindex [grid size .tbw.f] 0]
 </code>
 
+<sect>Import and Export
+<p>
+<sect1>Mops Import<label id="impmops">
+<p>
+Mops scenes may be imported using the main menu entry:
+<tt>"File/Import Mops"</tt>.
+<p>
+Ayam is able to import most elements of a Mops scene except for
+RiAttributes attached to arbitrary geometric objects,
+because attributes and shaders are managed by material objects in Ayam.
+However, if a Mops object has a surface or displacement shader,
+a material object with the shaders from the Mops object
+and its RiAttributes will be automatically created and linked with
+the geometric object while importing. Only Mops objects
+with surface or displacement shaders are considered because
+otherwise a material object would have to be created for every
+imported Mops object.
+The material objects are named <tt/"mat0"/, <tt/"mat1"/ and so on.
+Make sure, that the current scene in Ayam does not contain material
+objects with those names, otherwise Mops import will not be able to
+create material objects for the scene to import.
+<p>
+The import options <tt>"ResetDM"</tt> and
+<tt>"ResetST"</tt> control, whether GLU display mode
+and tolerance settings (see sections
+<ref id="ncattr" name="NCurveAttrib">, and
+<ref id="npattr" name="NPatchAttrib"> for more information about
+tolerance and display mode)
+of NURBS primitives should be reset
+to using global preference values (the default in Ayam)
+instead of using the values from the Mops scene file.
+
+<sect1>RenderMan Interface Bytestream (RIB) Import<label id="imprib">
+<p>
+Using the RRIB (Read RIB) plugin you may import RenderMan Interface
+Bytestreams into Ayam.
+Start importing a RIB using the menu entry
+<tt>"Custom/RRIB/Import RIB"</tt>
+(if this menu entry is not available, you have to load the
+<tt>"rrib"</tt> plugin using the menu entry
+<tt>"File/Load Custom"</tt> first).
+<p>
+The RRIB plugin supports import of the following geometric
+primitives:
+<itemize>
+<item>Quadrics (Sphere, Disk, Cylinder, Cone, Paraboloid, Hyperboloid, Torus)
+<item>bilinear and bicubic patches and patch meshes
+<item>NURBS patches (with trim curves)
+<item>(general) polygons and (general) polygon meshes
+<item>subdivision meshes (with all tags)
+</itemize>
+
+Furthermore, the plugin supports reading of CSG, object-instances,
+archives, light sources (including area-lights), arbitrary linear
+transformations (except shear transformations!), arbitrary
+RiOptions and RiAttributes, shaders (except transformation
+shaders and without array arguments!), and (since Ayam 1.7)
+arbitrary primitive variables (e.g. varying or vertex).
+<p>
+The RRIB plugin does not support reading of curves, implicit surfaces
+(blobby models), procedural objects, delayed read archives, and other
+calls to the RenderMan Interface not that useful for a RIB import like
+e.g. RiMakeTexture.
+Unsupported geometric primitives and other calls to the RenderMan Interface
+are silently ignored.
+<p>
+The RIB import may be controlled via different options:<label id="rribopt">
+<itemize>
+<item><tt/"ReadFrame"/, specifies the number of the frame in the RIB
+to read. A value of -1 means, all frames are to be read. If you specify
+a frame number and this frame does not show up in the RIB as
+<tt/"FrameBegin &lt;yournumber&gt;"/ nothing will be
+imported!
+<item><tt/"ReadCamera"/: if this is switched on, a Camera object will
+be created when the RIB plugin encounters a <tt/"WorldBegin"/. You may drag
+this camera object onto a perspective View object in Ayam after import
+to see through the camera of the imported RIB.
+<item><tt/"ReadOptions"/, controls, whether RiOptions are
+to be imported from the RIB to the scene. Note that those
+RiOptions will overwrite the current global settings in the Ayam scene.
+<item><tt/"ReadLights"/, if this is enabled the lights from the
+RIB will be imported.
+<item><tt/"ReadMaterial"/, controls, whether material objects
+are to be created for the imported objects. All material objects
+are created in a special level named <tt/"Materials"/ in the top level
+of the scene. The plugin tries to keep the number of generated
+material objects as low as possible by comparing with already
+existing materials in this level. This also works with material
+objects that exist before the RRIB plugin is invoked (as long as
+they reside in this special level).
+<item><tt/"ReadPartial"/, this option is useful if you want to
+import partial RIBs (e.g. archives) that do not
+contain a <tt/"WorldBegin"/.
+Be careful with this option (i.e. use it only if reading of a RIB fails),
+as it switches reading of all types of objects on, regardless of
+the RIB structure.
+<item><tt/"RescaleKnots"/ allows to rescale the knot vectors of
+NURBS patches and trim curves so that the distances between different
+knots are not smaller than the given value. Using a value of 1.0e-04 leads
+to NURBS that may be safely drawn using GLU. The default value 0.0 means
+no scaling.
+<item><tt/"ErrorLevel"/, this option controls how many error messages
+should be printed to the Ayam console while reading the RIB. Available
+values are: <tt/"Silence"/ no output except for severe errors,
+<tt/"Errors"/ all error messages should be printed,
+<tt/"Warnings"/, all error and warning messages should be printed,
+and finally <tt/"All"/ all messages, even informative,
+should be printed.
+Note that in the case of serious syntactic errors of the RIB file
+more informative error messages are printed to the stderr channel
+of Ayam (which is not redirected to the Ayam console).
+</itemize>
+
+Note that for NURBS patches and bicubic patch meshes, points of type
+"P" will be promoted to "Pw". Trimming of NURBS patches by clamping
+the knot ranges is not supported (however, since Ayam 1.9 UMM/VMM
+tags will be created, that contain the new knot minimum and maximum
+values).
+Furthermore, objects of type (general) polygon and polygon mesh will
+be promoted to general polygon meshes.
+Object-instances are resolved to normal objects while importing.
+Instances may be easily created again using Automatic Instancing
+(see section <ref id="ai" name="Automatic Instancing">).
+
+<sect1>Wavefront OBJ Import<label id="impwav">
+<p>
+Since Ayam 1.8.3 a Wavefront OBJ (version 3.0) import facility is available.
+The corresponding main menu entry is
+<tt>"File/Import/Wavefront OBJ"</tt>.
+<p>
+Wavefront OBJ import supports reading of polygonal faces with vertex normals
+and texture coordinates (read as primitive variable tags) and
+freeform curves and surfaces (NURBS) with trim curves and with
+texture coordinates (read as primitive variable tags).
+<p>
+Freeform curves and surfaces of basis type bmatrix, cardinal and taylor
+are currently not supported. Also, import of special curves and
+points (e.g. curve on surface) is currently not supported. Furthermore,
+trimming of freeform curves and surfaces by clamping their knot ranges
+is not supported (however, since Ayam 1.9 UMM/VMM
+tags will be created, that contain the new knot minimum and maximum
+values). No material and grouping information will be imported.
+Unsupported statements will be silently ignored.
+<p>
+The following options further control the import process:
+<itemize>
+<item><tt>"FileName"</tt> is the name of the Wavefront OBJ file (version 3.0)
+<item><tt>"MergeFaces"</tt> controls, whether consecutive polygonal
+faces should be merged into a single PolyMesh object for import.
+<item><tt>"MergePVTags"</tt> controls, whether the PV tags of PolyMesh
+objects should be merged as well if they are subject to automatic
+merging (see above).
+<item><tt>"OmitCurves"</tt> if this is enabled, no freeform curves will
+be imported. This option does not influence reading of trim curves!
+<item><tt/"RescaleKnots"/ allows to rescale the knot vectors of
+NURBS curves, patches, and trim curves so that the distances between different
+knots are not smaller than the given value. Using a value of 1.0e-04 leads
+to NURBS that may be safely drawn using GLU. The default value 0.0 means
+no scaling.
+<item><tt>"STagName"</tt> controls the name of the PV tag to be used
+for the s component of the texture coordinates.
+<item><tt>"TTagName"</tt> controls the name of the PV tag to be used
+for the t component of the texture coordinates.
+</itemize>
+<p>
+Wavefront OBJ import expects the file to be syntactically correct.
+It is not very good in detecting and reporting errors. If the import
+fails, use third party tools first (e.g. a demo version of Okino
+Graphics PolyTrans(R)), to check whether the
+Wavefront OBJ file is valid at all.
+
+<sect1>Wavefront OBJ Export<label id="expwav">
+<p>
+Since Ayam 1.7, it is possible to export scenes or objects to
+the Wavefront OBJ format (version 3.0).
+The corresponding main menu entry is
+<tt>"File/Export/Wavefront OBJ"</tt>.
+The Wavefront export currently supports the following
+primitives:
+<itemize>
+<item> NCurve and objects that may be converted to NCurve
+objects (ICurve, ConcatNC, ExtrNC)
+<item> NPatch (with trim curves) and objects that may be converted
+to NPatch objects (BPatch, PatchMesh, Revolve, Sweep, Extrude, Skin,
+Cap, Gordon, Birail1, Birail2, Text); since Ayam 1.8.3 also Quadrics
+will be automatically converted to NURBS surfaces and exported
+<item> PolyMesh and objects that may be converted to PolyMesh objects
+(MetaObj), faces with holes are not supported by the Wavefront OBJ
+format and will be tesselated to triangles for export automatically
+<item> Box
+<item> Instance, Clone; both will be resolved to normal objects for export
+as Wavefront OBJ does not support referenced geometry
+<item> Level, CSG operations are not supported and will be written
+as normal Level objects, transformations will be delegated
+to the child objects
+</itemize>
+
+Since the Wavefront OBJ format does not support separate transformation
+attributes, all transformation attributes will be used to transform the
+coordinate values (the control points) of the exported objects.
+<p>
+The Wavefront OBJ export, currently, ignores all material information.
+Only the pure geometry information is written to the OBJ file.
+Since Ayam 1.8.3, however, texture coordinates from primitive variable
+tags can be exported.
+Since Ayam 1.9, UMM/VMM tags are used to trim the knot vectors of
+exported NURBS objects.
+<p>
+The following parameters, additionally, control the Wavefront OBJ export:
+<itemize>
+<item><tt>"FileName"</tt> is the filename of the Wavefront OBJ file;
+<item><tt>"Selected"</tt> exports only the currently selected object(s);
+<item><tt>"TessPoMesh"</tt> automatically tesselates all PolyMesh objects
+to triangles for export;
+<item><tt>"OmitCurves"</tt> omits all NURBS curves and NURBS curve providing
+objects from the exported file (This option does
+not influence the export of trim curves.);
+<item><tt>"STagName"</tt> controls the name of the PV tag to be used
+for the s component of the texture coordinates, and
+<item><tt>"TTagName"</tt> controls the name of the PV tag to be used
+for the t component of the texture coordinates.
+</itemize>
+
+<sect1>3DMF Import Export (MFIO) Plugin<label id="mfioplugin">
+<p>
+Using the MFIO plugin you may import and export scenes
+from (to) the 3DMF format (version 1.0 only!) from Apple.
+Start importing a 3DMF file using the menu entry
+<tt>"Custom/3DMF/Import"</tt>
+(if this menu entry is not available, you have to load the
+<tt>"mfio"</tt> plugin using the menu entry
+<tt>"File/Load Custom"</tt> first).
+<p>
+Import supports the following primitives:
+<itemize>
+<item> Polyline, Triangle, TriGrid, Polygon, general Polygon, Box,
+<item> NURBS curve, NURBS surface (with trim curves),
+<item> Ellipsoid, Cylinder, Cone, Disk, and Torus.
+</itemize>
+
+The following transformations are supported:
+<itemize>
+<item> Scale,
+<item> Translate,
+<item> Rotate, RotateQuaternion, RotateAxis (if axis is X, Y, or Z).
+</itemize>
+Furthermore, the import plugin reads the structure of the scene from Container
+objects. Reference objects will be resolved to normal objects while importing.
+Instances may be easily created again using Automatic Instancing
+(see section <ref id="ai" name="Automatic Instancing">).
+<p>
+The MFIO export supports the following primitives:
+<itemize>
+<item> NURBS curve and NURBS surface (with trim curves) including all
+NURBS curve/surface providing objects, such as ICurve, Skin etc.,
+<item> Sphere, Disk, Cone, Cylinder, Torus,
+<item> Box, and PolyMesh.
+</itemize>
+
+All transformations are supported and will be written as
+Translate, Rotate, and Scale transformations, respectively.
+All Instance objects will be resolved for export.
+Level objects (regardless of type) will be written as Container objects.
+If an object has a material, the color and opacity of the material
+will be written as DiffuseColor and TransparencyColor, if the red
+component has a value different from -1.
+<p>
+Support for import or export of lights, camera attributes as well as
+material attributes other than material color and opacity is currently
+not available.
+
+<sect1>3DM (Rhino) Import<label id="imprhino">
+<p>
+Since version 1.8.2 Ayam contains a plugin that may import scenes
+from the Rhino 3DM file format using the OpenNURBS toolkit
+(hence the name of the plugin onio - OpenNURBS IO)
+by Robert McNeel & Associates.
+<p>
+Start importing from a Rhino 3DM file using the menu entry
+<tt>"Custom/OpenNURBS IO/Import"</tt>
+(if this menu entry is not available, you have to load the
+<tt>"onio"</tt> plugin using the menu entry
+<tt>"File/Load Custom"</tt> first).
+<p>
+The import functionality of the onio plugin currently covers
+import of all NURBS and BRep objects and objects that may
+be converted to NURBS using the OpenNURBS toolkit
+(those are: PolylineCurve, PolyCurve, LineCurve, ArcCurve,
+CurveOnSurface, RevSurface, SumSurface, and PlaneSurface).
+References will be resolved. Names will be imported, but
+converted to an ASCII representation. Since Ayam 1.8.3
+Mesh objects will be imported to PolyMesh objects, texture
+coordinates will be read and appropriate PV tags will be
+created.
+<p>
+The import process is controlled by the following options:
+<itemize>
+<item> <tt/"Accuracy"/:
+The <tt/"Accuracy"/ import option controls the tolerance
+of OpenNURBS internal operations, in this case the value is
+mostly used for conversion operations to the NURBS form.
+<item> <tt/"Accuracy"/:
+If the <tt/"ReadCurves"/ import option is switched off, no curves will be
+imported. This option does not influence the import of trim curves.
+<item> <tt/"ReadLayers"/:
+By default, all objects from all layers will be imported.
+Using the <tt/"ReadLayers"/ import option, a single layer or a range
+of layers may be selected for import.
+<item> <tt/"IgnoreFirstTrim"/:
+Another import option is <tt/"IgnoreFirstTrim"/, this is useful
+if the first bounding trim loop of NURBS surfaces should be ignored.
+This trim loop is often not needed, because it encloses the whole
+surface that is not trimmed further in many cases. Importing this
+trim loop will often just make the Ayam scene more complex than needed.
+<item><tt/"RescaleKnots"/ allows to rescale the knot vectors of
+NURBS curves, patches, and trim curves so that the distances between different
+knots are not smaller than the given value. Using a value of 1.0e-04 leads
+to NURBS that may be safely drawn using GLU. The default value 0.0 means
+no scaling.
+<item><tt>"STagName"</tt> controls the name of the PV tag to be used
+for the s component of the texture coordinates, and
+<item><tt>"TTagName"</tt> controls the name of the PV tag to be used
+for the t component of the texture coordinates.
+</itemize>
+
+<sect1>3DM (Rhino) Export<label id="exprhino">
+<p>
+Since version 1.8.2 Ayam contains a plugin that may export scenes
+to the Rhino 3DM file format using the OpenNURBS toolkit
+(hence the name of the plugin onio - OpenNURBS IO)
+by Robert McNeel & Associates.
+<p>
+Start exporting to a Rhino 3DM file using the menu entry
+<tt>"Custom/OpenNURBS IO/Export"</tt>
+(if this menu entry is not available, you have to load the
+<tt>"onio"</tt> plugin using the menu entry
+<tt>"File/Load Custom"</tt> first).
+<p>
+The export functionality of the onio plugin currently covers
+export of all boxes, quadrics, NURBS, instances, clones, script
+objects (of type <tt/"Create"/ or <tt/"Modify"/) and objects that
+may be converted to NURBS curves or surfaces.
+Even though export of planar cap surfaces of various
+tool objects is supported, the export of general trimmed NURBS
+patches is not supported. This is because of a missing feature
+(pushing up 2D trim curves to 3D curves for arbitrary NURBS
+surfaces) in the OpenNURBS toolkit. Since Ayam 1.8.3, also PolyMesh
+objects may be exported.
+Since Ayam 1.9, UMM/VMM tags are used to trim the knot vectors of
+exported NURBS objects.
+<p>
+The export process is controlled by the following options:
+<itemize>
+<item> <tt/"Accuracy"/:
+The <tt/"Accuracy"/ option controls the tolerance of internal
+OpenNURBS operations (currently those are:
+pushing up 2D trim curves to 3D curves and
+checking NURBS surfaces for planarity).
+<item> <tt/"WriteSelected"/: exports only the selected objects. 
+<item> <tt/"ObeyNoExport"/: ignores all objects with <tt/"NoExport"/ tags. 
+<item> <tt/"IgnoreHidden"/: ignores all hidden objects. 
+<item> <tt/"WriteCurves"/: If the <tt/"WriteCurves"/ option is disabled,
+no curves will be written to the exported Rhino file. This option does
+not influence the export of trim curves.
+<item> <tt/"QuadAsBRep"/: If the <tt/"QuadAsBRep"/ option is enabled
+spheres, cylinders, cones, and torii will not be exported as collection
+of NURBS surfaces (as converted by Ayam) but as BRep objects (as converted
+by the OpenNURBS toolkit).
+However, not all features of the quadric objects will be translated in
+this case:
+The BRep sphere does not support ZMin, ZMax, and ThetaMax.
+The BRep cylinder does not support ThetaMax (base caps will
+be created if the cylinder is closed).
+The BRep cone does not support ThetaMax (a base cap will be
+created, if the cone is closed).
+The BRep torus does not support PhiMin, PhiMax, and ThetaMax.
+The option has no effect on the export of disks, hyperboloids,
+and paraboloids. Those will always be exported as NURBS surfaces.
+<item><tt>"STagName"</tt> controls the name of the PV tag to be used
+for the s component of the texture coordinates, and
+<item><tt>"TTagName"</tt> controls the name of the PV tag to be used
+for the t component of the texture coordinates.
+</itemize>
+<p>
+Since the Rhino 3DM file format does not support hierarchy and
+transformation attributes per object, the hierarchy of the Ayam
+scene will be squashed and all transformation attributes will
+be applied to the control points of the objects for export.
+CSG operations are fully ignored, all objects will be written
+as if combined by the union operator.
+Furthermore, all instance objects will be resolved to normal
+objects. All objects will be written to the first layer
+(the default layer). Object names will be written as well.
+Names of level objects will be prepended to the names of their child
+objects. The object hierarchy:
+<code>
++-Arm(Level)
+ |MySphere(Sphere)
+ \MyCylinder(Cylinder)
+</code>
+for instance, leads to two objects named <tt>"Arm/MySphere"</tt>
+and <tt>"Arm/MyCylinder"</tt>.
+<p>
+
 <sect>Miscellaneous
 <p>
 <sect1>The Undo System<label id="undos">
@@ -6832,375 +7236,6 @@ reset the mouse cursor and the console prompt, and try to update important
 main window widgets. After running <tt>"repairAyam.tcl"</tt> you should save
 the scene (or just the important objects you were editing, possibly using
 <tt>"Special/Save Selected"</tt>) to a scratch file and restart Ayam.
-
-<sect1>Import of Mops Scenes<label id="impmops">
-<p>
-Mops scenes may be imported using the main menu entry:
-<tt>"File/Import Mops"</tt>.
-<p>
-Ayam is able to import most elements of a Mops scene except for
-RiAttributes attached to arbitrary geometric objects,
-because attributes and shaders are managed by material objects in Ayam.
-However, if a Mops object has a surface or displacement shader,
-a material object with the shaders from the Mops object
-and its RiAttributes will be automatically created and linked with
-the geometric object while importing. Only Mops objects
-with surface or displacement shaders are considered because
-otherwise a material object would have to be created for every
-imported Mops object.
-The material objects are named <tt/"mat0"/, <tt/"mat1"/ and so on.
-Make sure, that the current scene in Ayam does not contain material
-objects with those names, otherwise Mops import will not be able to
-create material objects for the scene to import.
-<p>
-The import options <tt>"ResetDM"</tt> and
-<tt>"ResetST"</tt> control, whether GLU display mode
-and tolerance settings (see sections
-<ref id="ncattr" name="NCurveAttrib">, and
-<ref id="npattr" name="NPatchAttrib"> for more information about
-tolerance and display mode)
-of NURBS primitives should be reset
-to using global preference values (the default in Ayam)
-instead of using the values from the Mops scene file.
-
-<sect1>Import of RenderMan Interface Bytestreams (RIB)<label id="rrib">
-<p>
-Using the RRIB (Read RIB) plugin you may import RenderMan Interface
-Bytestreams into Ayam.
-Start importing a RIB using the menu entry
-<tt>"Custom/RRIB/Import RIB"</tt>
-(if this menu entry is not available, you have to load the
-<tt>"rrib"</tt> plugin using the menu entry
-<tt>"File/Load Custom"</tt> first).
-<p>
-The RRIB plugin supports import of the following geometric
-primitives:
-<itemize>
-<item>Quadrics (Sphere, Disk, Cylinder, Cone, Paraboloid, Hyperboloid, Torus)
-<item>bilinear and bicubic patches and patch meshes
-<item>NURBS patches (with trim curves)
-<item>(general) polygons and (general) polygon meshes
-<item>subdivision meshes (with all tags)
-</itemize>
-
-Furthermore, the plugin supports reading of CSG, object-instances,
-archives, light sources (including area-lights), arbitrary linear
-transformations (except shear transformations!), arbitrary
-RiOptions and RiAttributes, shaders (except transformation
-shaders and without array arguments!), and (since Ayam 1.7)
-arbitrary primitive variables (e.g. varying or vertex).
-<p>
-The RRIB plugin does not support reading of curves, implicit surfaces
-(blobby models), procedural objects, delayed read archives, and other
-calls to the RenderMan Interface not that useful for a RIB import like
-e.g. RiMakeTexture.
-Unsupported geometric primitives and other calls to the RenderMan Interface
-are silently ignored.
-<p>
-The RIB import may be controlled via different options:<label id="rribopt">
-<itemize>
-<item><tt/"ReadFrame"/, specifies the number of the frame in the RIB
-to read. A value of -1 means, all frames are to be read. If you specify
-a frame number and this frame does not show up in the RIB as
-<tt/"FrameBegin &lt;yournumber&gt;"/ nothing will be
-imported!
-<item><tt/"ReadCamera"/: if this is switched on, a Camera object will
-be created when the RIB plugin encounters a <tt/"WorldBegin"/. You may drag
-this camera object onto a perspective View object in Ayam after import
-to see through the camera of the imported RIB.
-<item><tt/"ReadOptions"/, controls, whether RiOptions are
-to be imported from the RIB to the scene. Note that those
-RiOptions will overwrite the current global settings in the Ayam scene.
-<item><tt/"ReadLights"/, if this is enabled the lights from the
-RIB will be imported.
-<item><tt/"ReadMaterial"/, controls, whether material objects
-are to be created for the imported objects. All material objects
-are created in a special level named <tt/"Materials"/ in the top level
-of the scene. The plugin tries to keep the number of generated
-material objects as low as possible by comparing with already
-existing materials in this level. This also works with material
-objects that exist before the RRIB plugin is invoked (as long as
-they reside in this special level).
-<item><tt/"ReadPartial"/, this option is useful if you want to
-import partial RIBs (e.g. archives) that do not
-contain a <tt/"WorldBegin"/.
-Be careful with this option (i.e. use it only if reading of a RIB fails),
-as it switches reading of all types of objects on, regardless of
-the RIB structure.
-<item><tt/"ErrorLevel"/, this option controls how many error messages
-should be printed to the Ayam console while reading the RIB. Available
-values are: <tt/"Silence"/ no output except for severe errors,
-<tt/"Errors"/ all error messages should be printed,
-<tt/"Warnings"/, all error and warning messages should be printed,
-and finally <tt/"All"/ all messages, even informative,
-should be printed.
-Note that in the case of serious syntactic errors of the RIB file
-more informative error messages are printed to the stderr channel
-of Ayam (which is not redirected to the Ayam console).
-</itemize>
-
-Note that for NURBS patches and bicubic patch meshes, points of type
-"P" will be promoted to "Pw". Trimming of NURBS patches by clamping
-the knot ranges is not supported.
-Furthermore, objects of type (general) polygon and polygon mesh will
-be promoted to general polygon meshes.
-Object-instances are resolved to normal objects while importing.
-Instances may be easily created again using Automatic Instancing
-(see section <ref id="ai" name="Automatic Instancing">).
-<sect1>Wavefront OBJ Import<label id="impwav">
-<p>
-Since Ayam 1.8.3 a Wavefront OBJ (version 3.0) import facility is available.
-The corresponding main menu entry is
-<tt>"File/Import/Wavefront OBJ"</tt>.
-<p>
-Wavefront OBJ import supports reading of polygonal faces with vertex normals
-and texture coordinates (read as primitive variable tags) and
-freeform curves and surfaces (NURBS) with trim curves and with
-texture coordinates (read as primitive variable tags).
-<p>
-Freeform curves and surfaces of basis type bmatrix, cardinal and taylor
-are currently not supported. Also, import of special curves and
-points (e.g. curve on surface) is currently not supported. Furthermore,
-trimming of freeform curves and surfaces by clamping their knot ranges
-is not supported. No material and grouping information will be imported.
-Unsupported statements will be silently ignored.
-<p>
-The following options further control the import process:
-<itemize>
-<item><tt>"FileName"</tt> is the name of the Wavefront OBJ file (version 3.0)
-<item><tt>"MergeFaces"</tt> controls, whether consecutive polygonal
-faces should be merged into a single PolyMesh object for import.
-<item><tt>"MergePVTags"</tt> controls, whether the PV tags of PolyMesh
-objects should be merged as well if they are subject to automatic
-merging (see above).
-<item><tt>"OmitCurves"</tt> if this is enabled, no freeform curves will
-be imported. This option does not influence reading of trim curves!
-<item><tt>"STagName"</tt> controls the name of the PV tag to be used
-for the s component of the texture coordinates.
-<item><tt>"TTagName"</tt> controls the name of the PV tag to be used
-for the t component of the texture coordinates.
-</itemize>
-<p>
-Wavefront OBJ import expects the file to be syntactically correct.
-It is not very good in detecting and reporting errors. If the import
-fails, use third party tools first (e.g. a demo version of Okino
-Graphics PolyTrans(R)), to check whether the
-Wavefront OBJ file is valid at all.
-
-<sect1>Wavefront OBJ Export<label id="expwav">
-<p>
-Since Ayam 1.7, it is possible to export scenes or objects to
-the Wavefront OBJ format (version 3.0).
-The corresponding main menu entry is
-<tt>"File/Export/Wavefront OBJ"</tt>.
-The Wavefront export currently supports the following
-primitives:
-<itemize>
-<item> NCurve and objects that may be converted to NCurve
-objects (ICurve, ConcatNC, ExtrNC)
-<item> NPatch (with trim curves) and objects that may be converted
-to NPatch objects (BPatch, PatchMesh, Revolve, Sweep, Extrude, Skin,
-Cap, Gordon, Birail1, Birail2, Text); since Ayam 1.8.3 also Quadrics
-will be automatically converted to NURBS surfaces and exported
-<item> PolyMesh and objects that may be converted to PolyMesh objects
-(MetaObj), faces with holes are not supported by the Wavefront OBJ
-format and will be tesselated to triangles for export automatically
-<item> Box
-<item> Instance, Clone; both will be resolved to normal objects for export
-as Wavefront OBJ does not support referenced geometry
-<item> Level, CSG operations are not supported and will be written
-as normal Level objects, transformations will be delegated
-to the child objects
-</itemize>
-
-Since the Wavefront OBJ format does not support separate transformation
-attributes, all transformation attributes will be used to transform the
-coordinate values (the control points) of the exported objects.
-
-The Wavefront OBJ export, currently, ignores all material information.
-Only the pure geometry information is written to the OBJ file.
-Since Ayam 1.8.3, however, texture coordinates from primitive variable
-tags can be exported.
-
-The following parameters, additionally, control the Wavefront OBJ export:
-<itemize>
-<item><tt>"FileName"</tt> is the filename of the Wavefront OBJ file;
-<item><tt>"Selected"</tt> exports only the currently selected object(s);
-<item><tt>"TessPoMesh"</tt> automatically tesselates all PolyMesh objects
-to triangles for export;
-<item><tt>"OmitCurves"</tt> omits all NURBS curves and NURBS curve providing
-objects from the exported file (This option does
-not influence the export of trim curves.);
-<item><tt>"STagName"</tt> controls the name of the PV tag to be used
-for the s component of the texture coordinates, and
-<item><tt>"TTagName"</tt> controls the name of the PV tag to be used
-for the t component of the texture coordinates.
-</itemize>
-
-<sect1>3DMF Import Export (MFIO) Plugin<label id="mfioplugin">
-<p>
-Using the MFIO plugin you may import and export scenes
-from (to) the 3DMF format (version 1.0 only!) from Apple.
-Start importing a 3DMF file using the menu entry
-<tt>"Custom/3DMF/Import"</tt>
-(if this menu entry is not available, you have to load the
-<tt>"mfio"</tt> plugin using the menu entry
-<tt>"File/Load Custom"</tt> first).
-<p>
-Import supports the following primitives:
-<itemize>
-<item> Polyline, Triangle, TriGrid, Polygon, general Polygon, Box,
-<item> NURBS curve, NURBS surface (with trim curves),
-<item> Ellipsoid, Cylinder, Cone, Disk, and Torus.
-</itemize>
-
-The following transformations are supported:
-<itemize>
-<item> Scale,
-<item> Translate,
-<item> Rotate, RotateQuaternion, RotateAxis (if axis is X, Y, or Z).
-</itemize>
-Furthermore, the import plugin reads the structure of the scene from Container
-objects. Reference objects will be resolved to normal objects while importing.
-Instances may be easily created again using Automatic Instancing
-(see section <ref id="ai" name="Automatic Instancing">).
-<p>
-The MFIO export supports the following primitives:
-<itemize>
-<item> NURBS curve and NURBS surface (with trim curves) including all
-NURBS curve/surface providing objects, such as ICurve, Skin etc.,
-<item> Sphere, Disk, Cone, Cylinder, Torus,
-<item> Box, and PolyMesh.
-</itemize>
-
-All transformations are supported and will be written as
-Translate, Rotate, and Scale transformations, respectively.
-All Instance objects will be resolved for export.
-Level objects (regardless of type) will be written as Container objects.
-If an object has a material, the color and opacity of the material
-will be written as DiffuseColor and TransparencyColor, if the red
-component has a value different from -1.
-<p>
-Support for import or export of lights, camera attributes as well as
-material attributes other than material color and opacity is currently
-not available.
-
-<sect1>The OpenNURBS IO (onio) Plugin<label id="onioplugin">
-<p>
-Since version 1.8.2 Ayam contains a plugin that may export to
-and import from the Rhino 3DM file format using the OpenNURBS toolkit
-from Robert McNeel & Associates.
-<p>
-Start exporting to a Rhino 3DM file using the menu entry
-<tt>"Custom/OpenNURBS IO/Export"</tt>
-(if this menu entry is not available, you have to load the
-<tt>"onio"</tt> plugin using the menu entry
-<tt>"File/Load Custom"</tt> first).
-<p>
-The export functionality of the onio plugin currently covers
-export of all boxes, quadrics, NURBS, instances, clones, script
-objects (of type <tt/"Create"/ or <tt/"Modify"/) and objects that
-may be converted to NURBS curves or surfaces.
-Even though export of planar cap surfaces of various
-tool objects is supported, the export of general trimmed NURBS
-patches is not supported. This is because of a missing feature
-(pushing up 2D trim curves to 3D curves for arbitrary NURBS
-surfaces) in the OpenNURBS toolkit. Since Ayam 1.8.3, also PolyMesh
-objects may be exported.
-<p>
-The export process is controlled by the following options:
-<itemize>
-<item> <tt/"Accuracy"/:
-The <tt/"Accuracy"/ option controls the tolerance of internal
-OpenNURBS operations (currently those are:
-pushing up 2D trim curves to 3D curves and
-checking NURBS surfaces for planarity).
-<item> <tt/"WriteSelected"/: exports only the selected objects. 
-<item> <tt/"ObeyNoExport"/: ignores all objects with <tt/"NoExport"/ tags. 
-<item> <tt/"IgnoreHidden"/: ignores all hidden objects. 
-<item> <tt/"WriteCurves"/: If the <tt/"WriteCurves"/ option is disabled,
-no curves will be written to the exported Rhino file. This option does
-not influence the export of trim curves.
-<item> <tt/"QuadAsBRep"/: If the <tt/"QuadAsBRep"/ option is enabled
-spheres, cylinders, cones, and torii will not be exported as collection
-of NURBS surfaces (as converted by Ayam) but as BRep objects (as converted
-by the OpenNURBS toolkit).
-However, not all features of the quadric objects will be translated in
-this case:
-The BRep sphere does not support ZMin, ZMax, and ThetaMax.
-The BRep cylinder does not support ThetaMax (base caps will
-be created if the cylinder is closed).
-The BRep cone does not support ThetaMax (a base cap will be
-created, if the cone is closed).
-The BRep torus does not support PhiMin, PhiMax, and ThetaMax.
-The option has no effect on the export of disks, hyperboloids,
-and paraboloids. Those will always be exported as NURBS surfaces.
-<item><tt>"STagName"</tt> controls the name of the PV tag to be used
-for the s component of the texture coordinates, and
-<item><tt>"TTagName"</tt> controls the name of the PV tag to be used
-for the t component of the texture coordinates.
-</itemize>
-<p>
-Since the Rhino 3DM file format does not support hierarchy and
-transformation attributes per object, the hierarchy of the Ayam
-scene will be squashed and all transformation attributes will
-be applied to the control points of the objects for export.
-CSG operations are fully ignored, all objects will be written
-as if combined by the union operator.
-Furthermore, all instance objects will be resolved to normal
-objects. All objects will be written to the first layer
-(the default layer). Object names will be written as well.
-Names of level objects will be prepended to the names of their child
-objects. The object hierarchy:
-<code>
-+-Arm(Level)
- |MySphere(Sphere)
- \MyCylinder(Cylinder)
-</code>
-for instance, leads to two objects named <tt>"Arm/MySphere"</tt>
-and <tt>"Arm/MyCylinder"</tt>.
-<p>
-Start importing from a Rhino 3DM file using the menu entry
-<tt>"Custom/OpenNURBS IO/Import"</tt>
-(if this menu entry is not available, you have to load the
-<tt>"onio"</tt> plugin using the menu entry
-<tt>"File/Load Custom"</tt> first).
-<p>
-The import functionality of the onio plugin currently covers
-import of all NURBS and BRep objects and objects that may
-be converted to NURBS using the OpenNURBS toolkit
-(those are: PolylineCurve, PolyCurve, LineCurve, ArcCurve,
-CurveOnSurface, RevSurface, SumSurface, and PlaneSurface).
-References will be resolved. Names will be imported, but
-converted to an ASCII representation. Since Ayam 1.8.3
-Mesh objects will be imported to PolyMesh objects, texture
-coordinates will be read and appropriate PV tags will be
-created.
-<p>
-The import process is controlled by the following options:
-<itemize>
-<item> <tt/"Accuracy"/:
-The <tt/"Accuracy"/ import option controls the tolerance
-of OpenNURBS internal operations, in this case the value is
-mostly used for conversion operations to the NURBS form.
-<item> <tt/"Accuracy"/:
-If the <tt/"ReadCurves"/ import option is switched off, no curves will be
-imported. This option does not influence the import of trim curves.
-<item> <tt/"ReadLayers"/:
-By default, all objects from all layers will be imported.
-Using the <tt/"ReadLayers"/ import option, a single layer or a range
-of layers may be selected for import.
-<item> <tt/"IgnoreFirstTrim"/:
-Another import option is <tt/"IgnoreFirstTrim"/, this is useful
-if the first bounding trim loop of NURBS surfaces should be ignored.
-This trim loop is often not needed, because it encloses the whole
-surface that is not trimmed further in many cases. Importing this
-trim loop will often just make the Ayam scene more complex than needed.
-<item><tt>"STagName"</tt> controls the name of the PV tag to be used
-for the s component of the texture coordinates, and
-<item><tt>"TTagName"</tt> controls the name of the PV tag to be used
-for the t component of the texture coordinates.
-</itemize>
 
 <sect1>Shader Parsing Plugins<label id="spplugins">
 <p>
@@ -7610,7 +7645,8 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 
 <label id="index0">0
 <itemize>
-<item>3DM: <ref id="onioplugin" name="3DM (Rhino) ONIO plugin">
+<item>3DM: <ref id="imprhino" name="3DM (Rhino) Import">,
+<ref id="exprhino" name="3DM (Rhino) Export">
 <item>3DMF: <ref id="mfioplugin" name="3DMF (Apple) MFIO plugin">
 </itemize>
 
@@ -7619,7 +7655,8 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>About: <ref id="mmhelp" name="main menu entry">
 <item>Action: <ref id="iac" name="interactive actions">
 <item>Active: <ref id="scriptattr" name="script attribute">
-<item>Accuracy: <ref id="onioplugin" name="ONIO plugin import/export option">
+<item>Accuracy: <ref id="imprhino" name="3DM (Rhino) import option">,
+<ref id="exprhino" name="3DM (Rhino) export option">
 <item>Adaptive: <ref id="moattr" name="MetaObj attributes">
 <item>AddViewParams: <ref id="hidprefs" name="hidden preference setting">
 <item>Algorithm: <ref id="aycsg" name="AyCSG plugin option">
@@ -7781,7 +7818,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Expand: <ref id="treecontm" name="tree context menu entry">
 <item>ExpGain, ExpGamma: <ref id="rio" name="RenderMan interface option">
 <item>Explode: <ref id="explt" name="Explode tool">
-<item>Export: <ref id="onioplugin" name="3DM (Rhino) ONIO plugin">,
+<item>Export: <ref id="exprhino" name="3DM (Rhino) export">,
 <ref id="mfioplugin" name="3DMF (Apple) MFIO plugin">,
 <ref id="expwav" name="OBJ (Wavefront) export">
 <item>Export RIB: <ref id="mmfile" name="main menu entry">
@@ -7864,15 +7901,16 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>IconGamma: <ref id="hidprefs" name="hidden preference setting">
 <item>ICurve: <ref id="icurveobj" name ="object">
 <item>IDR: <ref id="idr" name="IDR plugin">
-<item>IgnoreFirstTrim: <ref id="onioplugin" name="ONIO plugin import option">
-<item>IgnoreHidden: <ref id="onioplugin" name="ONIO plugin export option">
+<item>IgnoreFirstTrim: <ref id="imprhino" name="3DM (Rhino) import option">
+<item>IgnoreHidden: <ref id="exprhino" name="3DM (Rhino) export option">
 <item>IgnoreNormals: <ref id="mmtools" name="Optimize PolyMesh tool option">
 <item>Image: <ref id="prefrib" name="preference setting">
 <item>Imager: <ref id="imager" name="property">
-<item>Import: <ref id="onioplugin" name="3DM (Rhino) ONIO plugin">,
-<ref id="impmops" name="Mops Import">,
+<item>Import: <ref id="imprhino" name="3DM (Rhino) Import">,
 <ref id="mfioplugin" name="3DMF (Apple) MFIO plugin">,
-<ref id="rrib" name="RIB Import">
+<ref id="impmops" name="Mops Import">,
+<ref id="imprib" name="RIB Import">,
+<ref id="impwav" name="Wavefront OBJ Import">
 <item>Importance Driven Rendering: <ref id="idr" name="IDR plugin">
 <item>Insert: <ref id="mmfile" name="main menu entry">,
 <ref id="insdelac" name="insert points">
@@ -7893,7 +7931,8 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>IsLocal: <ref id="lip" name="light attribute">
 <item>IsoLevel: <ref id="moattr" name="MetaObj attribute">
 <item>IsOn: <ref id="lip" name="light attribute">
-
+<item>IsRat: <ref id="ncattr" name="NURBCurve attribute">,
+<ref id="npattr" name="NURBPatch attribute">
 </itemize>
 
 <label id="indexj">J
@@ -7991,7 +8030,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 
 <label id="indexo">O
 <itemize>
-<item>ObeyNoExport: <ref id="onioplugin" name="ONIO plugin export option">
+<item>ObeyNoExport: <ref id="exprhino" name="3DM (Rhino) export option">
 <item>OBJ: <ref id="impwav" name="Wavefront OBJ import">,
 <ref id="expwav" name="Wavefront OBJ export">
 <item>Object: <ref id="prefdraw" name="preference setting">
@@ -8001,7 +8040,8 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>OI: <ref id="oitt" name="tag type">
 <item>OmitCurves <ref id="impwav" name="Wavefront OBJ import/export option">
 <item>Open: <ref id="treecontm" name="tree context menu entry">
-<item>OpenNURBS: <ref id="onioplugin" name="ONIO plugin">
+<item>OpenNURBS: <ref id="imprhino" name="3DM (Rhino) Import">,
+<ref id="exprhino" name="3DM (Rhino) Export">
 <item>Optimize: <ref id="mmtools" name="Optimize PolyMesh tool">
 <item>OptimizeCoords: <ref id="mmtools" name="Optimize PolyMesh tool option">
 <item>OptimizeFaces: <ref id="mmtools" name="Optimize PolyMesh tool option">
@@ -8045,7 +8085,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 
 <label id="indexq">Q
 <itemize>
-<item>QuadAsBRep: <ref id="onioplugin" name="ONIO plugin export option">
+<item>QuadAsBRep: <ref id="exprhino" name="3DM (Rhino) export option">
 <item>QRender: <ref id="prefrib" name="preference setting">
 <item>QRenderPT, QRenderUI: <ref id="prefrib" name="preference setting">
 <item>Quat: <ref id="trap" name="transformations property">
@@ -8060,10 +8100,10 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <ref id="cyp" name="cylinder attribute">,
 <ref id="mcattr" name="MetaComp attribute">
 <item>RadSteps: <ref id="rio" name="RenderMan interface option">
-<item>ReadCurves: <ref id="onioplugin" name="ONIO plugin import option">
+<item>ReadCurves: <ref id="imprhino" name="3DM (Rhino) import option">
 <item>ReadFrame, ReadCamera, ReadOptions, ReadLights, ReadMaterial,
 ReadPartial: <ref id="rribopt" name="RIB import option">
-<item>ReadLayers: <ref id="onioplugin" name="ONIO plugin import option">
+<item>ReadLayers: <ref id="imprhino" name="3DM (Rhino) import option">
 <item>Rebuild: <ref id="treecontm" name="tree context menu entry">
 <item>RedirectTcl: <ref id="prefmisc" name="preference setting">
 <item>Redo: <ref id="undos" name="The Undo System">,
@@ -8090,6 +8130,9 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Rescale Knots to Mindist: <ref id="resckmt" name="NURBCurve tool">
 <item>Rescale Knots to Range: <ref id="resckrt" name="NURBCurve tool">
 <item>rescaleKnNC: <ref id="scinurbs" name="scripting interface command">
+<item>RescaleKnots: <ref id="imprhino" name="3DM (Rhino) import option">,
+<ref id="imprib" name="RIB import option">,
+<ref id="impwav" name="Wavefront OBJ import option">,
 <item>Reset: <ref id="propgui" name="reset property GUI">
 <item>ResetDM, ResetST: <ref id="impmops" name="Mops import option">
 <item>ResInstances: <ref id="prefrib" name="preference setting">
@@ -8106,11 +8149,12 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>RGBA_ONE, RGBA_MIN, RGBA_MAX, RGBA_Dither:
 <ref id="rio" name="RenderMan interface option">
 <item>RGTrans: <ref id="prefmisc" name="preference setting">
-<item>Rhino: <ref id="onioplugin" name="ONIO plugin">
+<item>Rhino: <ref id="imprhino" name="3DM (Rhino) Import">,
+<ref id="exprhino" name="3DM (Rhino) Export">
 <item>RiAttribute: <ref id="riattrs" name="property">,
 <ref id="riatag" name="tag type">,
 <ref id="rioptdb" name="RiOption and RiAttributes Database">
-<item>RIB import: <ref id="rrib" name="RIB Import">
+<item>RIB import: <ref id="imprib" name="RIB Import">
 <item>RIBFile: <ref id="prefrib" name="preference setting">
 <item>RiDisplay: <ref id="ridtag" name="tag type">
 <item>RiHider: <ref id="rihtag" name="tag type">
@@ -8204,8 +8248,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Split Curve: <ref id="miscac" name="modeling action">
 <item>splitNPatch: <ref id="scinurbs" name="scripting interface command">
 <item>Spot: <ref id="pdsl" name="light type">
-<item>STagName: <ref id="onioplugin" name="ONIO plugin import/export option">,
-<ref id="impwav" name="Wavefront OBJ import/export option">
+<item>STagName: <ref id="imprhino" name="3DM (Rhino) import option">,
+<ref id="impwav" name="Wavefront OBJ import option">
 <item>StartCap: <ref id="rep" name="revolve attribute">,
 <ref id="swp" name="sweep attribute">,
 <ref id="skp" name="skin attribute">,
@@ -8269,7 +8313,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Trim Curve: <ref id="trim" name="using trim curves">
 <item>TrimRect: <ref id="trrt" name="TrimRect tool">
 <item>TrueDisp: <ref id="attrs" name="RenderMan/BMRT attribute">
-<item>TTagName: <ref id="onioplugin" name="ONIO plugin import/export option">,
+<item>TTagName: <ref id="imprhino" name="3DM (Rhino) import option">,
 <ref id="impwav" name="Wavefront OBJ import/export option">
 <item>TwmCompat: <ref id="prefgui" name="preference setting">
 <item>Type: <ref id="levelobj" name="level attribute">,
@@ -8323,9 +8367,9 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <ref id="pmattr" name="PatchMesh attribute">,
 <ref id="vat" name="view attribute">
 <item>withOb: <ref id="selob" name="scripting interface command">
-<item>WriteCurves: <ref id="onioplugin" name="ONIO plugin export option">
+<item>WriteCurves: <ref id="exprhino" name="3DM (Rhino) export option">
 <item>WriteIdent: <ref id="prefrib" name="preference setting">
-<item>WriteSelected: <ref id="onioplugin" name="ONIO plugin export option">
+<item>WriteSelected: <ref id="exprhino" name="3DM (Rhino) export option">
 </itemize>
 
 <label id="indexx">X
