@@ -1,11 +1,11 @@
-[6. Aug 2005] CVS-Head:
+[13. Aug 2005] CVS-Head:
 o bug fixes:
   - fixed automatic merging of PV tags (SF 1238692)
   - fixed root object not drawn upon File/New (SF 1245221)
   - fixed warning message to disable script tags and objects while loading
     scenes via MRU menu entries (SF 1245225)
   - fixed provided clone objects missing transformations (SF 1247844)
-  - fixed crash when using undo after in-place conversion (SF 1253036)
+  - fixed crash when using undo after an in-place conversion (SF 1253036)
 o improved OBJ import of files with trailing whitespace as e.g. written by
   Blender
 o script objects now cache a compiled version of the script for faster
@@ -29,8 +29,22 @@ o improved deleting of referenced objects
 o skin objects now work with multiple provided objects
 o clone objects in mirror mode now provide all objects (normal and mirrored)
   and reverse the order of the mirrored objects so that a single clone
-  in mirror mode with a NURBS curve as child can serve as parameter object
-  for a skin
+  in mirror mode with a single NURBS curve as child can serve as parameter
+  object for a skin
+o changed the "Closed" attribute of NURBS curves to "Type", adding a
+  distinction between normal closed curves (e.g. the standard NURBS circle)
+  and periodic curves (e.g. circular B-Splines)
+o added "IsRat" (is rational) attribute to NURBS curves and patches and
+  changed all import/export modules to use this attribute to write properly
+  attributed and smaller files for non-rational curves and patches
+o improved AutoFocus on window systems that only do AutoRaise by switching
+  off AutoFocus temporarily when certain dialogs are open (so that they
+  do not get "shuffled under" by accidental mouse movements)
+o made order of NURBS curve drawing options more consistent (to the NURBS
+  patch drawing options)
+o added "RescaleKnots" option to Wavefront OBJ import, Rhino 3DM import,
+  and RIB import to allow immediate rescaling of knot vectors to safe
+  distances (e.g. for display with GLU)
 
 
 [5. Jul 2005] Ayam 1.8.3:
