@@ -18,6 +18,10 @@ if { [string first wish [file tail [info nameofexecutable]]] != -1 } {
     exit
 }
 
+# no more error dialogs
+set oldRedirectTcl $::ayprefs(RedirectTcl)
+set ::ayprefs(RedirectTcl) 1
+
 # close all view windows
 catch [viewCloseAll]
 
@@ -53,6 +57,19 @@ focus -force .
 
 # unzap (display all iconified windows)
 unzap
+
+# break potentially running endless loops
+global cancelled
+set cancelled 1
+update
+after 2000 {set cancelled 0}
+
+# clear console
+focus .fl.con.console
+event generate .fl.con.console <Control-l>
+focus -force .
+
+set ::ayprefs(RedirectTcl) $oldRedirectTcl
 
 # all done, hopefully it works again
 update
