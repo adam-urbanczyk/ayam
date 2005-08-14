@@ -6572,6 +6572,9 @@ grid $f -row $row -column 0 -columnspan [lindex [grid size .tbw.f] 0]
 
 <sect>Import and Export
 <p>
+This section contains the documentation of all import and export
+modules of Ayam.
+
 <sect1>Mops Import<label id="impmops">
 <p>
 Mops scenes may be imported using the main menu entry:
@@ -6793,14 +6796,12 @@ for the s component of the texture coordinates, and
 for the t component of the texture coordinates.
 </itemize>
 
-<sect1>3DMF Import Export (MFIO) Plugin<label id="mfioplugin">
+<sect1>3DMF (Apple) Import<label id="imp3dmf">
 <p>
-Using the MFIO plugin you may import and export scenes
-from (to) the 3DMF format (version 1.0 only!) from Apple.
-Start importing a 3DMF file using the menu entry
-<tt>"Custom/3DMF/Import"</tt>
-(if this menu entry is not available, you have to load the
-<tt>"mfio"</tt> plugin using the menu entry
+Using the MFIO plugin you may import scenes from the 3DMF format
+(version 1.0 only!) from Apple. Start importing a 3DMF file using the
+menu entry <tt>"Custom/3DMF/Import"</tt> (if this menu entry is not
+available, you have to load the <tt>"mfio"</tt> plugin using the menu entry
 <tt>"File/Load Custom"</tt> first).
 <p>
 Import supports the following primitives:
@@ -6820,6 +6821,17 @@ Furthermore, the import plugin reads the structure of the scene from Container
 objects. Reference objects will be resolved to normal objects while importing.
 Instances may be easily created again using Automatic Instancing
 (see section <ref id="ai" name="Automatic Instancing">).
+Support for import of lights, camera attributes as well as
+material attributes other than material color and opacity is currently
+not available.
+
+<sect1>3DMF (Apple) Export<label id="exp3dmf">
+<p>
+Using the MFIO plugin you may export scenes to the 3DMF format (version
+1.0 only!) from Apple. Start exporting to a 3DMF file using the menu entry
+<tt>"Custom/3DMF/Export"</tt> (if this menu entry is not available, you
+have to load the <tt>"mfio"</tt> plugin using the menu entry
+<tt>"File/Load Custom"</tt> first).
 <p>
 The MFIO export supports the following primitives:
 <itemize>
@@ -6837,7 +6849,7 @@ If an object has a material, the color and opacity of the material
 will be written as DiffuseColor and TransparencyColor, if the red
 component has a value different from -1.
 <p>
-Support for import or export of lights, camera attributes as well as
+Support for export of lights, camera attributes as well as
 material attributes other than material color and opacity is currently
 not available.
 
@@ -6871,7 +6883,7 @@ The import process is controlled by the following options:
 The <tt/"Accuracy"/ import option controls the tolerance
 of OpenNURBS internal operations, in this case the value is
 mostly used for conversion operations to the NURBS form.
-<item> <tt/"Accuracy"/:
+<item> <tt/"ReadCurves"/:
 If the <tt/"ReadCurves"/ import option is switched off, no curves will be
 imported. This option does not influence the import of trim curves.
 <item> <tt/"ReadLayers"/:
@@ -6970,8 +6982,8 @@ objects. The object hierarchy:
  |MySphere(Sphere)
  \MyCylinder(Cylinder)
 </code>
-for instance, leads to two objects named <tt>"Arm/MySphere"</tt>
-and <tt>"Arm/MyCylinder"</tt>.
+for instance, leads to two objects in the Rhino file
+named <tt>"Arm/MySphere"</tt> and <tt>"Arm/MyCylinder"</tt>.
 <p>
 
 <sect>Miscellaneous
@@ -7647,7 +7659,8 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <itemize>
 <item>3DM: <ref id="imprhino" name="3DM (Rhino) Import">,
 <ref id="exprhino" name="3DM (Rhino) Export">
-<item>3DMF: <ref id="mfioplugin" name="3DMF (Apple) MFIO plugin">
+<item>3DMF: <ref id="imp3dmf" name="3DMF (Apple) Import">,
+<ref id="exp3dmf" name="3DM (Apple) Export">
 </itemize>
 
 <label id="indexa">A
@@ -7819,7 +7832,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>ExpGain, ExpGamma: <ref id="rio" name="RenderMan interface option">
 <item>Explode: <ref id="explt" name="Explode tool">
 <item>Export: <ref id="exprhino" name="3DM (Rhino) export">,
-<ref id="mfioplugin" name="3DMF (Apple) MFIO plugin">,
+<ref id="exp3dmf" name="3DMF (Apple) export">,
 <ref id="expwav" name="OBJ (Wavefront) export">
 <item>Export RIB: <ref id="mmfile" name="main menu entry">
 <item>Expression: <ref id="mcattr" name="MetaComp attribute">
@@ -7907,7 +7920,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Image: <ref id="prefrib" name="preference setting">
 <item>Imager: <ref id="imager" name="property">
 <item>Import: <ref id="imprhino" name="3DM (Rhino) Import">,
-<ref id="mfioplugin" name="3DMF (Apple) MFIO plugin">,
+<ref id="imp3dmf" name="3DMF (Apple) import">,
 <ref id="impmops" name="Mops Import">,
 <ref id="imprib" name="RIB Import">,
 <ref id="impwav" name="Wavefront OBJ Import">
@@ -7995,7 +8008,8 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>MergePVTags <ref id="impwav" name="Wavefront OBJ import option">
 <item>MetaObj, MetaComp: <ref id="metaobjobj" name="object">
 <item>MFIO Plugin:
-<ref id="mfioplugin" name="3DMF import export (MFIO) plugin">
+<ref id="imp3dmf" name="3DMF (Apple) import">,
+<ref id="exp3dmf" name="3DMF (Apple) export">
 <item>MinorRad: <ref id="top" name="torus attribute">
 <item>MinSamples, MaxSamples: <ref id="rio" name="RenderMan interface option">
 <item>MinX, MinY, MinZ: <ref id="riprocp" name="riproc attribute">
