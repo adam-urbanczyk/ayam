@@ -4689,8 +4689,19 @@ shape may be preserved completely.
 <p>
 The ExtrNC object extracts a NURBS curve from a NURBS patch object,
 for use as parameter object for other tool objects, like e.g.
-Revolve.
-
+Revolve. It also works with NURBS patch providing objects, so that
+the following example hierarchy is valid:
+<code>
+--NPatch
++-Skin
+ +-ExtrNC
+ |\-Instance_of_NPatch(Instance)
+ \-NCurve
+</code>
+Depending on the parameters of the ExtrNC object, the skin will have
+one boundary in common with a boundary or an iso-curve of the NPatch
+object.
+<p>
 The extraction process is controlled by the following attributes:
 <sect2>ExtrNCAttr Property<label id="extrncp">
 <p>
@@ -4700,7 +4711,7 @@ Available values are <tt/"U0"/, <tt/"Un"/: extract boundary curve along
 width; <tt/"V0"/, <tt/"Vn"/: extract boundary curve along
 height;  <tt/"U"/, <tt/"V"/ extract curve along width and height
 respectively at specified parametric value (see below). The
-options <tt/"U"/, <tt/"V"/ are not implemented in Ayam 1.8!
+options <tt/"U"/, <tt/"V"/ are implemented since Ayam 1.8.1!
 <item><tt/"Parameter"/ controls the parametric value in u or v
 direction in the parameter space of the NURBS patch object where the
 curve should be extracted.
