@@ -43,6 +43,9 @@ int onio_exptorusasbrep = AY_TRUE;
 int onio_expselected = AY_FALSE;
 int onio_expobeynoexport = AY_TRUE;
 int onio_expignorehidden = AY_TRUE;
+int onio_exptoplevellayers = AY_TRUE;
+
+int onio_currentlayer = 0;
 
 double onio_rescaleknots = 0.0;
 
@@ -314,6 +317,8 @@ onio_writenpatch(ay_object *o, ONX_Model *p_m, double *m)
       ONX_Model_Object& mo = p_m->m_object_table.AppendNew();
       mo.m_object = p_n;
       mo.m_bDeleteObject = true;
+
+      mo.m_attributes.m_layer_index = onio_currentlayer;
 
       onio_writename(o, mo);
 
@@ -587,6 +592,8 @@ onio_writetrimmednpatch(ay_object *o, ONX_Model *p_m, double *m)
   mo.m_object = p_b;
   mo.m_bDeleteObject = true;
 
+  mo.m_attributes.m_layer_index = onio_currentlayer;
+
   onio_writename(o, mo);
 
  return ay_status;
@@ -693,6 +700,8 @@ onio_writencurve(ay_object *o, ONX_Model *p_m, double *m)
   ONX_Model_Object& mo = p_m->m_object_table.AppendNew();
   mo.m_object = p_c;
   mo.m_bDeleteObject = true;
+
+  mo.m_attributes.m_layer_index = onio_currentlayer;
 
   onio_writename(o, mo);
 
@@ -946,6 +955,8 @@ onio_writepomesh(ay_object *o, ONX_Model *p_m, double *m)
   mo.m_object = p_mesh;
   mo.m_bDeleteObject = true;
 
+  mo.m_attributes.m_layer_index = onio_currentlayer;
+
   onio_writename(o, mo);
 
   // write tesselated face(s)
@@ -1144,6 +1155,8 @@ onio_writesphere(ay_object *o, ONX_Model *p_m, double *m)
 	      mo.m_object = p_su;
 	      mo.m_bDeleteObject = true;
 
+	      mo.m_attributes.m_layer_index = onio_currentlayer;
+
 	      onio_writename(o, mo);
 
 	    } // if
@@ -1160,6 +1173,8 @@ onio_writesphere(ay_object *o, ONX_Model *p_m, double *m)
 	      ONX_Model_Object& mo = p_m->m_object_table.AppendNew();
 	      mo.m_object = p_b;
 	      mo.m_bDeleteObject = true;
+
+	      mo.m_attributes.m_layer_index = onio_currentlayer;
 
 	      onio_writename(o, mo);
 
@@ -1219,6 +1234,8 @@ onio_writecylinder(ay_object *o, ONX_Model *p_m, double *m)
               mo.m_object = p_su;
               mo.m_bDeleteObject = true;
 
+	      mo.m_attributes.m_layer_index = onio_currentlayer;
+
 	      onio_writename(o, mo);
 
 	    } // if
@@ -1236,6 +1253,8 @@ onio_writecylinder(ay_object *o, ONX_Model *p_m, double *m)
               ONX_Model_Object& mo = p_m->m_object_table.AppendNew();
               mo.m_object = p_b;
               mo.m_bDeleteObject = true;
+
+	      mo.m_attributes.m_layer_index = onio_currentlayer;
 
 	      onio_writename(o, mo);
 
@@ -1292,6 +1311,8 @@ onio_writecone(ay_object *o, ONX_Model *p_m, double *m)
               mo.m_object = p_su;
               mo.m_bDeleteObject = true;
 
+	      mo.m_attributes.m_layer_index = onio_currentlayer;
+
 	      onio_writename(o, mo);
 
 	    } // if
@@ -1308,6 +1329,8 @@ onio_writecone(ay_object *o, ONX_Model *p_m, double *m)
               ONX_Model_Object& mo = p_m->m_object_table.AppendNew();
               mo.m_object = p_b;
               mo.m_bDeleteObject = true;
+
+	      mo.m_attributes.m_layer_index = onio_currentlayer;
 
 	      onio_writename(o, mo);
 
@@ -1364,6 +1387,8 @@ onio_writetorus(ay_object *o, ONX_Model *p_m, double *m)
 	      mo.m_object = p_su;
 	      mo.m_bDeleteObject = true;
 
+	      mo.m_attributes.m_layer_index = onio_currentlayer;
+
 	      onio_writename(o, mo);
 
 	    } // if
@@ -1380,6 +1405,8 @@ onio_writetorus(ay_object *o, ONX_Model *p_m, double *m)
 	      ONX_Model_Object& mo = p_m->m_object_table.AppendNew();
 	      mo.m_object = p_b;
 	      mo.m_bDeleteObject = true;
+
+	      mo.m_attributes.m_layer_index = onio_currentlayer;
 
 	      onio_writename(o, mo);
 
@@ -1453,6 +1480,8 @@ onio_writebox(ay_object *o, ONX_Model *p_m, double *m)
       ONX_Model_Object& mo = p_m->m_object_table.AppendNew();
       mo.m_object = p_b;
       mo.m_bDeleteObject = true;
+
+      mo.m_attributes.m_layer_index = onio_currentlayer;
 
       onio_writename(o, mo);
 
@@ -1547,12 +1576,14 @@ onio_writetcmd(ClientData clientData, Tcl_Interp *interp,
  char fname[] = "onio_write";
  FILE *fp = NULL;
  const char *filename = NULL;
- int t, i = 2, version = 3;
- ay_object *o = ay_root;
+ int t, i = 2, version = 3, li;
+ ay_object *o;
  ONX_Model model;
  const ON_Layer *p_layer = NULL;
- ON_3dmObjectAttributes attribs;
+ //ON_3dmObjectAttributes attribs;
  //ON_TextLog& error_log;
+
+  // set default parameters
 
   // check args
   if(argc < 2)
@@ -1595,6 +1626,11 @@ onio_writetcmd(ClientData clientData, Tcl_Interp *interp,
 	  sscanf(argv[i+1], "%d", &onio_expignorehidden);
 	}
       else
+      if(!strcmp(argv[i], "-l"))
+	{
+	  sscanf(argv[i+1], "%d", &onio_exptoplevellayers);
+	}
+      else
       if(!strcmp(argv[i], "-t"))
 	{
 	  onio_stagname = argv[i+1];
@@ -1610,6 +1646,10 @@ onio_writetcmd(ClientData clientData, Tcl_Interp *interp,
   if(!fp)
     {
       ay_error(AY_EOPENFILE, fname, argv[1]);
+
+      onio_stagname = onio_stagnamedef;
+      onio_ttagname = onio_ttagnamedef;
+
       return TCL_OK;
     }
 
@@ -1622,8 +1662,10 @@ onio_writetcmd(ClientData clientData, Tcl_Interp *interp,
 
   // set application information
   model.m_properties.m_Application.m_application_name = "Ayam";
-  model.m_properties.m_Application.m_application_URL = "http://www.ayam3d.org/";
-  model.m_properties.m_Application.m_application_details = "onio (OpenNURBS) plugin";
+  model.m_properties.m_Application.m_application_URL =
+    "http://www.ayam3d.org/";
+  model.m_properties.m_Application.m_application_details =
+    "onio (OpenNURBS) plugin";
 
   /*
   if( 0 != settings)
@@ -1637,18 +1679,42 @@ onio_writetcmd(ClientData clientData, Tcl_Interp *interp,
   }
   */
   // layer table
-  {
-    // Each object in the object table (written below)
-    // should be on a defined layer.  There should be
-    // at least one layer with layer index 0 in every file.
+  // Each object in the object table (written below)
+  // should be on a defined layer.  There should be
+  // at least one layer with layer index 0 in every file.
 
-    // layer table indices begin at 0
-    ON_Layer default_layer;
-    default_layer.SetLayerIndex(0);
-    default_layer.SetLayerName("Default");
-    p_layer = &default_layer;
-    model.m_layer_table.Append(p_layer[0]);
-  }
+  // layer table indices begin at 0
+  ON_Layer default_layer;
+  default_layer.SetLayerIndex(0);
+  default_layer.SetLayerName("Default");
+  p_layer = &default_layer;
+  model.m_layer_table.Append(p_layer[0]);
+
+  // create layers from top level objects?
+  if(onio_exptoplevellayers)
+    {
+      li = 0;
+      o = ay_root->next;
+      while(o)
+	{
+	  if((o->type == AY_IDLEVEL) && o->next)
+	    {
+	      if(li >= 1)
+		{
+		  ON_Layer layer;
+		  layer.SetLayerIndex(li);
+		  if(o->name && strlen(o->name))
+		    layer.SetLayerName(o->name);
+		  else
+		    layer.SetLayerName("Unnamed_Layer");
+		  p_layer = new ON_Layer(layer);
+		  model.m_layer_table.Append(p_layer[0]);
+		}
+	      li++;
+	    } // if
+	  o = o->next;
+	} // while
+    } // if
 
   // light table
   /*
@@ -1665,9 +1731,19 @@ onio_writetcmd(ClientData clientData, Tcl_Interp *interp,
   */
 
   // fill object table
+  li = 0;
+  o = ay_root->next;
   while(o)
     {
       ay_trafo_identitymatrix(tm);
+
+      onio_currentlayer = 0;
+
+      if(onio_exptoplevellayers && (o->type == AY_IDLEVEL) && o->next)
+	{
+	  onio_currentlayer = li;
+	  li++;
+	}
 
       ay_status = onio_writeobject(o, &model);
 
@@ -1690,13 +1766,11 @@ onio_writetcmd(ClientData clientData, Tcl_Interp *interp,
       ay_error(AY_ERROR, fname, "Error writing file!");
     }
 
-
+  // close the file
   ON::CloseFile(fp);
-
 
   onio_stagname = onio_stagnamedef;
   onio_ttagname = onio_ttagnamedef;
-
 
  return TCL_OK;
 } // onio_writetcmd

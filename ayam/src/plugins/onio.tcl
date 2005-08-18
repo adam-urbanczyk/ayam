@@ -13,13 +13,14 @@ uplevel #0 { array set onio_options {
     Accuracy 1.0e-12
     ReadCurves 1
     ReadLayers -1
-    IgnoreFirstTrim 1
+    IgnoreFirstTrim 0
     WriteSelected 0
     ObeyNoExport 1
     IgnoreHidden 1
     WriteCurves 1
     QuadAsBRep 1
     RescaleKnots 0.0
+    TopLevelLayers 0
     FileName "unnamed.3dm"
     STagName "mys"
     TTagName "myt"
@@ -54,8 +55,8 @@ proc onio_import { } {
 
     addParam $f onio_options Accuracy [list 0.0 1.0e-12 0.1 1]
     addCheck $f onio_options ReadCurves
-    addParam $f onio_options ReadLayers [list -1 1 1-10]
     addCheck $f onio_options IgnoreFirstTrim
+    addParam $f onio_options ReadLayers [list -1 1 1-10]
     addParam $f onio_options RescaleKnots [list 0.0 1.0e-4]
     addString $f onio_options STagName
     addString $f onio_options TTagName
@@ -156,6 +157,7 @@ proc onio_export { } {
     addCheck $f onio_options IgnoreHidden
     addCheck $f onio_options WriteCurves
     addCheck $f onio_options QuadAsBRep
+    addCheck $f onio_options TopLevelLayers
     addString $f onio_options STagName
     addString $f onio_options TTagName
 
@@ -173,6 +175,7 @@ proc onio_export { } {
 	    -s $onio_options(WriteSelected)\
 	    -o $onio_options(ObeyNoExport)\
 	    -i $onio_options(IgnoreHidden)\
+	    -l $onio_options(TopLevelLayers)\
 	    -t $onio_options(STagName) $onio_options(TTagName)
 
 	cd $oldcd
