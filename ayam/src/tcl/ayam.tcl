@@ -522,6 +522,7 @@ array set ay {
  scriptdisable 0
  iapplydisable 0
  afdisabled 0
+ noview 0
 }
 # array ay
 
@@ -902,7 +903,8 @@ while { $i < $argc } {
          (! [ string compare "-help" $arg ]) } {
 	puts " -h:        Display this help"
 	puts " -nosplash: Do not display splash-image"
-	puts " -failsafe: Do not load preferences and do not open a view"
+	puts " -failsafe: Do not load preferences and environment"
+	puts " -noview:   Do not open a view"
 	puts " 1.ay 2.ay: Load 1.ay, insert 2.ay"
 	puts "\n Ayam - Reconstruct the World!"
 	update
@@ -913,6 +915,9 @@ while { $i < $argc } {
 	}
 	if { ! [ string compare "-nosplash" $arg ] } {
 	    set ay(showsplash) 0
+	}
+	if { ! [ string compare "-noview" $arg ] } {
+	    set ay(noview) 1
 	}
     }
  incr i
@@ -1285,7 +1290,8 @@ if { $ayprefs(mainGeom) != "" } {
 }
 
 # load the working environment scene file
-if { ($ayprefs(LoadEnv) == 1) && ($ay(failsafe) == 0) } {
+if { ($ayprefs(LoadEnv) == 1) && ($ay(failsafe) == 0) &&\
+	($ay(noview) != 1) } {
     viewCloseAll
 
     set have_scenefile_argument 0
@@ -1335,7 +1341,11 @@ while { $i < $argc } {
         regsub -all {\\} $arg {/} newfilename
 
 	if { $j == 0 } {
+	    # close all views
 	    viewCloseAll
+	    # and arrange that we do not open a view on our own later on
+	    set ay(noview) 1
+
 	    set filename $newfilename
 	    
 	    set ay_error ""
@@ -1434,8 +1444,15 @@ if { $ayprefs(FixX11Menu) } {
 }
 # if
 
+# if no view is open (first start ever, no ayamrc, or no environment),
+# open a first view now
+if { $ay(noview) != 1 && $ay(views) == "" } {
+    viewOpen 400 300
+}
+
 # now "activate" all views: establish mouse and key bindings
 foreach view $ay(views) { viewBind $view }
+
 # if there is a view window under the mouse pointer, make it current
 after idle viewMouseToCurrent
 
