@@ -478,9 +478,11 @@ The <tt/File/ menu deals with standard file operations:<label id="filem">
 <item><tt/New/, clears the current scene (deletes all objects) and reloads
 the working environment (if the preference setting
 <tt>"Main/NewLoadsEnv"</tt> is enabled).
-<item><tt/Replace/, clears the current scene and closes all views,
+<item><tt/Open/, clears the current scene and closes all views,
 then loads a new scene from disk. All objects from the file
-will be read.
+will be read. Depending on the setting of
+<tt>"Preferences/Main/BakOnReplace"</tt>
+a backup copy of the file that is read will be made before loading.
 <item><tt/Insert/, inserts the objects and views of a ayam file
 into the current scene. All objects from the file
 will be read.
@@ -500,7 +502,7 @@ asking which camera (which view) to use.
 <item><tt>Export/Wavefront OBJ</tt>, exports the current scene to a
 Wavefront OBJ file, see also section
 <ref id="expwav" name="Wavefront OBJ export">.
-<item><tt/Load Custom/, loads a file containing a custom object or a plugin.
+<item><tt/Load Plugin/, loads a file containing a custom object or a plugin.
 Depending on the platform Ayam is running on, these are files with the
 file name extension <tt/".so"/ or <tt/".dll"/.
 See section <ref id="customobj" name="Custom Objects">
@@ -1248,7 +1250,7 @@ in the tree view or object listbox.
 the preferences settings to the file ayamrc when the program quits.
 <item><tt/"BakOnReplace"/, if this is switched on, Ayam will make
 a backup copy of each scene file it loads via main menu
-<tt>"File/Replace"</tt> or via the most recently used list.
+<tt>"File/Open"</tt> or via the most recently used list.
 <item><tt/"LoadEnv"/, if this is switched on, Ayam will load
 the scene file specified by <tt/"EnvFile"/ on startup.
 <item><tt/"NewLoadsEnv"/, if this is switched on, Ayam will load
@@ -4948,7 +4950,7 @@ To start modelling you should first create a <tt>"MetaObj"</tt> object
 using the menu entry
 <tt>"Create/Custom Object/MetaObj"</tt> (if this menu entry is not
 available, you have to load the <tt>"metaobj"</tt> plugin using the menu entry
-<tt>"File/Load Custom"</tt> first).
+<tt>"File/Load Plugin"</tt> first).
 <tt>"Create/Custom Object/MetaObj"</tt> creates a so called meta world with a
 single meta component (a sphere) in it. The meta world is represented
 by a <tt>"MetaObj"</tt> object and the component by a <tt>"MetaComp"</tt>
@@ -6624,7 +6626,7 @@ Start importing a RIB using the menu entry
 <tt>"Custom/RRIB/Import RIB"</tt>
 (if this menu entry is not available, you have to load the
 <tt>"rrib"</tt> plugin using the menu entry
-<tt>"File/Load Custom"</tt> first).
+<tt>"File/Load Plugin"</tt> first).
 <p>
 The RRIB plugin supports import of the following geometric
 primitives:
@@ -6813,7 +6815,7 @@ Using the MFIO plugin you may import scenes from the 3DMF format
 (version 1.0 only!) from Apple. Start importing a 3DMF file using the
 menu entry <tt>"Custom/3DMF/Import"</tt> (if this menu entry is not
 available, you have to load the <tt>"mfio"</tt> plugin using the menu entry
-<tt>"File/Load Custom"</tt> first).
+<tt>"File/Load Plugin"</tt> first).
 <p>
 Import supports the following primitives:
 <itemize>
@@ -6842,7 +6844,7 @@ Using the MFIO plugin you may export scenes to the 3DMF format (version
 1.0 only!) from Apple. Start exporting to a 3DMF file using the menu entry
 <tt>"Custom/3DMF/Export"</tt> (if this menu entry is not available, you
 have to load the <tt>"mfio"</tt> plugin using the menu entry
-<tt>"File/Load Custom"</tt> first).
+<tt>"File/Load Plugin"</tt> first).
 <p>
 The MFIO export supports the following primitives:
 <itemize>
@@ -6875,7 +6877,7 @@ Start importing from a Rhino 3DM file using the menu entry
 <tt>"Custom/OpenNURBS IO/Import"</tt>
 (if this menu entry is not available, you have to load the
 <tt>"onio"</tt> plugin using the menu entry
-<tt>"File/Load Custom"</tt> first).
+<tt>"File/Load Plugin"</tt> first).
 <p>
 The import functionality of the onio plugin currently covers
 import of all NURBS and BRep objects and objects that may
@@ -6929,7 +6931,7 @@ Start exporting to a Rhino 3DM file using the menu entry
 <tt>"Custom/OpenNURBS IO/Export"</tt>
 (if this menu entry is not available, you have to load the
 <tt>"onio"</tt> plugin using the menu entry
-<tt>"File/Load Custom"</tt> first).
+<tt>"File/Load Plugin"</tt> first).
 <p>
 The export functionality of the onio plugin currently covers
 export of all boxes, quadrics, NURBS, instances, clones, script
@@ -7022,7 +7024,7 @@ You may step backward through the saved states using
 <p>
 Several actions will completely clear the undo buffer (no undo is
 possible after those actions):
-Delete Object, New Scene, Replace Scene, and Close View.
+Delete Object, New Scene, Open (Replace) Scene, and Close View.
 <p>
 Note that undo/redo will also modify objects that currently reside in the
 object clipboard if they have saved states in the undo buffer.
@@ -7378,7 +7380,7 @@ identical and hence need no re-rendering.
 To start using IDR:
 <enum>
 <item>load a scene (e.g. the cactus example scene),
-<item>load the IDR plugin (menu <tt>"File/Load Custom"</tt>),
+<item>load the IDR plugin (menu <tt>"File/Load Plugin"</tt>),
 <item>open the IDR control window using the main menu
 <tt>"Custom/Open IDR"</tt>,
 <item>set the assign mode to <tt>"Selection"</tt>,
@@ -7989,8 +7991,8 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>LightAttr: <ref id="lip" name="property">
 <item>LightShader: <ref id="lightobj" name="light">
 <item>ListTypes: <ref id="prefgui" name="preference setting">
-<item>Load Custom: <ref id="mmfile" name="main menu entry">
 <item>LoadEnv: <ref id="prefgui" name="preference setting">
+<item>Load Plugin: <ref id="mmfile" name="main menu entry">
 <item>Local: <ref id="vat" name="view attribute">,
 <ref id="editlocal" name ="Editing in Local Space">
 <item>Locale: <ref id="prefgui" name="preference setting">
@@ -8069,7 +8071,8 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <ref id="objsel" name="selection within a view">
 <item>OI: <ref id="oitt" name="tag type">
 <item>OmitCurves <ref id="impwav" name="Wavefront OBJ import/export option">
-<item>Open: <ref id="treecontm" name="tree context menu entry">
+<item>Open: <ref id="mmfile" name="main menu entry">,
+<ref id="treecontm" name="tree context menu entry">
 <item>OpenNURBS: <ref id="imprhino" name="3DM (Rhino) Import">,
 <ref id="exprhino" name="3DM (Rhino) Export">
 <item>Optimize: <ref id="mmtools" name="Optimize PolyMesh tool">
@@ -8154,8 +8157,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>RenderMode: <ref id="prefrib" name="preference setting">
 <item>RenderPT, RenderUI: <ref id="prefrib" name="preference setting">
 <item>Repair Ayam: <ref id="repayam" name="Tcl helper script">
-<item>Replace: <ref id="mmfile" name="main menu entry">,
-<ref id="mmspecial" name="main menu entry">
+<item>Replace: <ref id="mmspecial" name="main menu entry">
 <item>replaceScene: <ref id="scio" name="scripting interface command">
 <item>Rescale Knots to Mindist: <ref id="resckmt" name="NURBCurve tool">
 <item>Rescale Knots to Range: <ref id="resckrt" name="NURBCurve tool">
