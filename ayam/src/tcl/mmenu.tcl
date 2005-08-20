@@ -61,7 +61,7 @@ $m add command -label "New"\
     }
 }
 $m add separator
-$m add command -label "Replace" -command {
+$m add command -label "Open" -command {
     if { ! [io_warnChanged] } {
 	io_replaceScene
     }
@@ -81,7 +81,7 @@ menu $m.ex -tearoff 0
 $m.ex add command -label "RenderMan RIB" -command "io_exportRIB"
 $m.ex add command -label "Wavefront OBJ" -command "io_exportOBJ 0"
 $m add separator
-$m add command -label "Load Custom" -command "io_loadCustom"
+$m add command -label "Load Plugin" -command "io_loadCustom"
 $m add separator
 $m add command -label "Save Prefs" -command "prefs_save"
 $m add separator

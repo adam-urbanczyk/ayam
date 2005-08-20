@@ -414,7 +414,7 @@ proc io_loadCustom { } {
 
     set pftype .$ay(soext)
 
-    set filetypes [list [list "Custom Object" $pftype] {"All files" *}]
+    set filetypes [list [list "Plugin" $pftype] {"All files" *}]
 
     set idir ""
 
@@ -433,10 +433,10 @@ proc io_loadCustom { } {
 
     if { $idir == "" } {
 	set filename [tk_getOpenFile -filetypes $filetypes -parent .\
-		-title "Select Custom Object:"]
+		-title "Select Plugin:"]
     } else {
 	set filename [tk_getOpenFile -filetypes $filetypes -parent .\
-		-initialdir $idir -title "Select Custom Object:"]
+		-initialdir $idir -title "Select Plugin:"]
     }
 
     if { $filename != "" } {
