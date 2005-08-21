@@ -1,4 +1,4 @@
-[13. Aug 2005] CVS-Head:
+[21. Aug 2005] CVS-Head:
 o bug fixes:
   - fixed automatic merging of PV tags (SF 1238692)
   - fixed root object not drawn upon File/New (SF 1245221)
@@ -6,6 +6,8 @@ o bug fixes:
     scenes via MRU menu entries (SF 1245225)
   - fixed provided clone objects missing transformations (SF 1247844)
   - fixed crash when using undo after an in-place conversion (SF 1253036)
+  - fixed crash when using undo after tesselation GUI (SF 1258297)
+  - fixed tesselation GUI not updating the object tree properly (SF 1258299)
 o improved OBJ import of files with trailing whitespace as e.g. written by
   Blender
 o script objects now cache a compiled version of the script for faster
@@ -45,6 +47,14 @@ o made order of NURBS curve drawing options more consistent (to the NURBS
 o added "RescaleKnots" option to Wavefront OBJ import, Rhino 3DM import,
   and RIB import to allow immediate rescaling of knot vectors to safe
   distances (e.g. for display with GLU)
+o added "TopLevelLayers" option to onio plugin that converts the top level
+  level objects to layers for Rhino export
+o renamed main menu entries "File/Replace" and "File/Load Custom" to
+  "File/Open" and "File/Load Plugin" respectively
+o added command line option "-noview" that inhibits loading of the environment
+  and opening of a first view window upon startup
+o changed default behaviour of Ayam on the very first start (no ayamrc
+  file and no environment found): Ayam will now open a first view window
 
 
 [5. Jul 2005] Ayam 1.8.3:
