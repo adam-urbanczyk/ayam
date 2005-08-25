@@ -58,13 +58,15 @@ ay_ncurve_createcb(int argc, char *argv[], ay_object *o)
   cv = ((ay_nurbcurve_object*)(o->refine))->controlv;
 
 
-  for(i=0;i<(length);i++)
+  for(i = 0; i < (length); i++)
     {
       cv[i*4] = (double)i*dx;
       cv[i*4+3] = 1.0;
     }
 
   ((ay_nurbcurve_object*)(o->refine))->createmp = AY_TRUE;
+
+  ((ay_nurbcurve_object*)(o->refine))->is_rat = AY_FALSE;
 
  return AY_OK;
 } /* ay_ncurve_createcb */
@@ -94,6 +96,10 @@ ay_ncurve_deletecb(void *c)
   /* free gluNurbsRenderer */
   if(ncurve->no)
     gluDeleteNurbsRenderer(ncurve->no);
+
+  /* free (simple) tesselation */
+  if(ncurve->tessv)
+    free(ncurve->tessv);
 
   free(ncurve);
 
@@ -132,6 +138,15 @@ ay_ncurve_copycb(void *src, void **dst)
   memcpy(ncurve->controlv, ncurvesrc->controlv,
 	 4 * ncurve->length * sizeof(double)); 
 
+  /* copy tessv */
+  if(ncurvesrc->tessv)
+    {
+      if(!(ncurve->tessv = calloc(3 * ncurve->tesslen, sizeof(double))))
+	return AY_EOMEM;
+      memcpy(ncurve->tessv, ncurvesrc->tessv,
+	     3 * ncurve->tesslen * sizeof(double)); 
+    }
+
   /* copy mpoints */
   ncurve->mpoints = NULL;
   if(ncurvesrc->mpoints)
@@ -146,14 +161,13 @@ ay_ncurve_copycb(void *src, void **dst)
 
 
 int
-ay_ncurve_drawglucb(struct Togl *togl, ay_object *o)
+ay_ncurve_drawstesscb(struct Togl *togl, ay_object *o)
 {
+ int ay_status = AY_OK;
  ay_nurbcurve_object *ncurve = NULL;
- int order = 0, length = 0, knot_count = 0, i = 0, a = 0, b = 0;
- GLdouble sampling_tolerance = ay_prefs.glu_sampling_tolerance;
- static GLfloat *knots = NULL, *controls = NULL;
- int mode = ay_prefs.nc_display_mode;
-
+ int a = 0, i, tesslen, tstride;
+ double *tessv;
+ int qf = ay_prefs.stess_qf;
 
   if(!o)
     return AY_ENULL;
@@ -163,10 +177,67 @@ ay_ncurve_drawglucb(struct Togl *togl, ay_object *o)
   if(!ncurve)
     return AY_ENULL;
 
-  if(ncurve->display_mode != 0)
+  if(ncurve->order == 2)
     {
-      mode = ncurve->display_mode-1;
+      tstride = 4;
+      tessv = ncurve->controlv;
+      tesslen = ncurve->length;
     }
+  else
+    {
+      if(o->modified)
+	{
+	  if(ncurve->tessv)
+	    {
+	      free(ncurve->tessv);
+	      ncurve->tessv = NULL;
+	    }
+	  o->modified = AY_FALSE;
+	}
+
+      tesslen = 0;
+      if(!ncurve->tessv)
+	{
+	  ay_status = ay_stess_CurvePoints3D(ncurve->length, ncurve->order-1,
+		         ncurve->knotv, ncurve->controlv, ncurve->is_rat, qf,
+					   &ncurve->tesslen, &ncurve->tessv);
+	}
+      tstride = 3;
+      tessv = ncurve->tessv;
+      tesslen = ncurve->tesslen;
+    } /* if */
+
+  if(tesslen)
+    {
+      glBegin(GL_LINE_STRIP);
+      for(i = 0; i < tesslen; i++)
+	{
+	  glVertex3dv(&(tessv[a]));
+	  a += tstride;
+	}
+      glEnd();
+    } /* if */
+
+ return AY_OK;
+} /* ay_ncurve_drawstesscb */
+
+
+int
+ay_ncurve_drawglucb(struct Togl *togl, ay_object *o)
+{
+ ay_nurbcurve_object *ncurve = NULL;
+ int order = 0, length = 0, knot_count = 0, i = 0, a = 0, b = 0;
+ GLdouble sampling_tolerance = ay_prefs.glu_sampling_tolerance;
+ static GLfloat *knots = NULL, *controls = NULL;
+
+
+  if(!o)
+    return AY_ENULL;
+
+  ncurve = (ay_nurbcurve_object *)o->refine;
+
+  if(!ncurve)
+    return AY_ENULL;
 
   if(controls)
     {
@@ -183,98 +254,148 @@ ay_ncurve_drawglucb(struct Togl *togl, ay_object *o)
   order = ncurve->order;
   length = ncurve->length;
 
-  /* draw curve using GLU? */
-  if(mode > 0)
+  if(ncurve->glu_sampling_tolerance > 0.0)
+    sampling_tolerance = ncurve->glu_sampling_tolerance;
+
+  knot_count = length + order;
+
+  if((knots = calloc(knot_count, sizeof(GLfloat))) == NULL)
+    return AY_EOMEM;
+  if((controls = calloc(length*(ncurve->is_rat?4:3),
+			sizeof(GLfloat))) == NULL)
+    { free(knots); knots = NULL; return AY_EOMEM; }
+
+  a = 0;
+  for(i = 0; i < knot_count; i++)
     {
-      /* yes */
-      if(ncurve->glu_sampling_tolerance > 0.0)
-	sampling_tolerance = ncurve->glu_sampling_tolerance;
-
-      knot_count = length + order;
-
-      if((knots = calloc(knot_count, sizeof(GLfloat))) == NULL)
-	return AY_EOMEM;
-      if((controls = calloc(length*(ncurve->is_rat?4:3),
-			    sizeof(GLfloat))) == NULL)
-	{ free(knots); knots = NULL; return AY_EOMEM; }
-
-      a = 0;
-      for(i = 0; i < knot_count; i++)
+      knots[a] = (GLfloat)ncurve->knotv[a];
+      a++;
+    }
+  a = 0;
+  for(i = 0; i < length; i++)
+    {
+      controls[a] = (GLfloat)ncurve->controlv[b];
+      a++; b++;
+      controls[a] = (GLfloat)ncurve->controlv[b];
+      a++; b++;
+      controls[a] = (GLfloat)ncurve->controlv[b];
+      a++; b++;
+      if(ncurve->is_rat)
 	{
-	  knots[a] = (GLfloat)ncurve->knotv[a];
+	  controls[a] = (GLfloat)ncurve->controlv[b];
 	  a++;
 	}
-      a = 0;
-      for(i = 0; i < length; i++)
-	{
-	  controls[a] = (GLfloat)ncurve->controlv[b];
-	  a++; b++;
-	  controls[a] = (GLfloat)ncurve->controlv[b];
-	  a++; b++;
-	  controls[a] = (GLfloat)ncurve->controlv[b];
-	  a++; b++;
-	  if(ncurve->is_rat)
-	    {
-	      controls[a] = (GLfloat)ncurve->controlv[b];
-	      a++;
-	    }
-	  b++;
+      b++;
+    } /* for */
+
+  if(!ncurve->no)
+    {
+      ncurve->no = gluNewNurbsRenderer();
+      if(ncurve->no == NULL)
+	{ 
+	  free(knots); knots = NULL; 
+	  free(controls); controls = NULL; 
+	  return AY_EOMEM;
 	}
-
-      if(!ncurve->no)
-	{
-	  ncurve->no = gluNewNurbsRenderer();
-	  if(ncurve->no == NULL)
-	    { 
-	      free(knots); knots = NULL; 
-	      free(controls); controls = NULL; 
-	      return AY_EOMEM;
-	    }
-	}
-
-#if defined(WIN32) && !defined(AYUSESUPERGLU)
-      gluNurbsCallback(ncurve->no, GLU_ERROR, (GLUnurbsErrorProc)ay_error_glucb);
-#else
-      gluNurbsCallback(ncurve->no, GLU_ERROR, ay_error_glucb);
-#endif
-
-      gluBeginCurve(ncurve->no);
-
-#ifdef AYIRIXBUG
-      gluNurbsProperty(ncurve->no, GLU_NURBS_MODE_EXT, GLU_NURBS_RENDERER_EXT);
-#endif /* AYIRIXBUG */
-
-      gluNurbsProperty(ncurve->no, GLU_SAMPLING_TOLERANCE,
-		       (GLfloat)sampling_tolerance);
-
-      gluNurbsProperty(ncurve->no, GLU_CULLING, GL_TRUE);
-
-      gluNurbsCurve(ncurve->no, (GLint)knot_count, knots,
-		    (GLint)(ncurve->is_rat?4:3), controls,
-		    (GLint)ncurve->order,
-		    (ncurve->is_rat?GL_MAP1_VERTEX_4:GL_MAP1_VERTEX_3));
-
-      gluEndCurve(ncurve->no);
-
     } /* if */
 
-  /* draw control hull? */
-  if(mode < 2)
-    {
-      /* yes */
-      a = 0;
-      glBegin(GL_LINE_STRIP);
-      for(i = 0; i < length; i++)
-	{
-	  glVertex3dv((GLdouble *)&(ncurve->controlv[a]));
-	  a += 4;
-	}
-      glEnd();
-    }
+#if defined(WIN32) && !defined(AYUSESUPERGLU)
+  gluNurbsCallback(ncurve->no, GLU_ERROR, (GLUnurbsErrorProc)ay_error_glucb);
+#else
+  gluNurbsCallback(ncurve->no, GLU_ERROR, ay_error_glucb);
+#endif
 
+  gluBeginCurve(ncurve->no);
+
+#ifdef AYIRIXBUG
+   gluNurbsProperty(ncurve->no, GLU_NURBS_MODE_EXT, GLU_NURBS_RENDERER_EXT);
+#endif /* AYIRIXBUG */
+
+   gluNurbsProperty(ncurve->no, GLU_SAMPLING_TOLERANCE,
+		    (GLfloat)sampling_tolerance);
+
+   gluNurbsProperty(ncurve->no, GLU_CULLING, GL_TRUE);
+
+   gluNurbsCurve(ncurve->no, (GLint)knot_count, knots,
+		 (GLint)(ncurve->is_rat?4:3), controls,
+		 (GLint)ncurve->order,
+		 (ncurve->is_rat?GL_MAP1_VERTEX_4:GL_MAP1_VERTEX_3));
+
+  gluEndCurve(ncurve->no);
 
  return AY_OK;
 } /* ay_ncurve_drawglucb */
+
+
+int
+ay_ncurve_drawchcb(struct Togl *togl, ay_object *o)
+{
+ int a, i;  
+ ay_nurbcurve_object *ncurve = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  ncurve = (ay_nurbcurve_object *)o->refine;
+
+  if(!ncurve)
+    return AY_ENULL;
+
+  a = 0;
+  glBegin(GL_LINE_STRIP);
+  for(i = 0; i < ncurve->length; i++)
+    {
+      glVertex3dv((GLdouble *)&(ncurve->controlv[a]));
+      a += 4;
+    }
+  glEnd();
+
+ return AY_OK;
+} /* ay_ncurve_drawchcb */
+
+
+int
+ay_ncurve_drawcb(struct Togl *togl, ay_object *o)
+{
+ int display_mode = ay_prefs.nc_display_mode;
+ ay_nurbcurve_object *ncurve = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  ncurve = (ay_nurbcurve_object *)o->refine;
+
+  if(!ncurve)
+    return AY_ENULL;
+
+  if(ncurve->display_mode != 0)
+    {
+      display_mode = ncurve->display_mode-1;
+    }
+
+  switch(display_mode)
+    {
+    case 0: /* ControlHull */
+      ay_ncurve_drawchcb(togl, o);
+      break;
+    case 1: /* CurveAndHull (GLU) */
+      ay_ncurve_drawchcb(togl, o);
+      ay_ncurve_drawglucb(togl, o);
+      break;
+    case 2: /* Curve (GLU) */
+      ay_ncurve_drawglucb(togl, o);
+      break;
+    case 3: /* CurveAndHull (STESS) */
+      ay_ncurve_drawchcb(togl, o);
+      ay_ncurve_drawstesscb(togl, o);
+      break;
+    case 4: /* Curve (STESS) */
+      ay_ncurve_drawstesscb(togl, o);
+      break;
+    } /* switch */
+
+ return AY_OK;
+} /* ay_ncurve_drawcb */
 
 
 int
@@ -1077,7 +1198,7 @@ ay_ncurve_init(Tcl_Interp *interp)
 				    ay_ncurve_createcb,
 				    ay_ncurve_deletecb,
 				    ay_ncurve_copycb,
-				    ay_ncurve_drawglucb,
+				    ay_ncurve_drawcb,
 				    ay_ncurve_drawhcb,
 				    NULL, /* no shading */
 				    ay_ncurve_setpropcb,

@@ -31,11 +31,10 @@ set w [frame $ay(pca).$ExtrNCAttr(w)]
 
 addMenu $w ExtrNCAttrData Side [list U0 Un V0 Vn U V]
 addParam $w ExtrNCAttrData Parameter
-global ay
-set l $ay(npdisplaymodes)
-set l [linsert $l 0 Global]
-addMenu $w ExtrNCAttrData DisplayMode $l
+
 addParam $w ExtrNCAttrData Tolerance
+addMenu $w ExtrNCAttrData DisplayMode $ay(ncdisplaymodes)
+
 
 
 #extrnc_crt:

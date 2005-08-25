@@ -30,11 +30,8 @@ addCheck $w GordonAttrData WatchCurves
 addParam $w GordonAttrData Order_U
 addParam $w GordonAttrData Order_V
 
-global ay
-set l $ay(npdisplaymodes)
-set l [linsert $l 0 Global]
-addMenu $w GordonAttrData DisplayMode $l
 addParam $w GordonAttrData Tolerance
+addMenu $w GordonAttrData DisplayMode $ay(npdisplaymodes)
 
 
 #gordon_crt:

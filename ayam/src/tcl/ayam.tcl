@@ -455,8 +455,8 @@ array set ay {
  imagershaders ""
  volumeshaders ""
  transformationshaders ""
- npdisplaymodes { ControlHull OutlinePolygon OutlinePatch }
- ncdisplaymodes { ControlHull CurveAndHull Curve }
+ npdisplaymodes { "Global" "ControlHull" "OutlinePolygon (GLU)" "OutlinePatch (GLU)" "OutlinePatch (STESS)" }
+ ncdisplaymodes { "Global" "ControlHull" "CurveAndHull (GLU)" "Curve (GLU)" "CurveAndHull (STESS)" "Curve (STESS)" }
  prefssection Main
  GridSize 1.0
  FOV 45.0

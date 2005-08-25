@@ -34,11 +34,9 @@ addCheck $w ExtrudeAttrData UpperBevels
 addCheck $w ExtrudeAttrData LowerBevels
 addMenu $w ExtrudeAttrData BevelType [list Round Linear Ridge]
 addParam $w ExtrudeAttrData BevelRadius
-global ay
-set l $ay(npdisplaymodes)
-set l [linsert $l 0 Global]
-addMenu $w ExtrudeAttrData DisplayMode $l
+
 addParam $w ExtrudeAttrData Tolerance
+addMenu $w ExtrudeAttrData DisplayMode $ay(npdisplaymodes)
 
 
 #extrude_crt:

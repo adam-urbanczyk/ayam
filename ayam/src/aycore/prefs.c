@@ -244,7 +244,7 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
   /* char fname[] = "setPrefs";*/
  char *n1="ayprefs", *n2 = "ayprefse";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
- int itemp = 0, ay_status = AY_OK;
+ int itemp = 0, ay_status = AY_OK, qf = 0;
  double dtemp = 0.0;
  char fname[] = "set_prefs";
  char *str = NULL;
@@ -330,7 +330,7 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
 
       ay_prefs.undo_levels = itemp;
 
-    }
+    } /* if */
 
   Tcl_SetStringObj(ton, "Snap3D", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -339,6 +339,19 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
   Tcl_SetStringObj(ton, "Tolerance", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp, to, &ay_prefs.glu_sampling_tolerance);
+
+  qf = ay_stess_GetQF(ay_prefs.glu_sampling_tolerance);
+
+  if(qf < 1)
+    {
+      qf = 1;
+    }
+
+  if(qf != ay_prefs.stess_qf)
+    {
+      ay_prefs.stess_qf = qf;
+      ay_stess_Retess();
+    }
 
   Tcl_SetStringObj(ton, "DisplayMode", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);

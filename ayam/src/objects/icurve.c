@@ -101,14 +101,14 @@ ay_icurve_deletecb(void *c)
  ay_icurve_object *icurve = NULL;
 
   if(!c)
-    return AY_ENULL;    
+    return AY_ENULL;
 
   icurve = (ay_icurve_object *)(c);
 
   /* free controlv */
   if(icurve->controlv)
     free(icurve->controlv);
-  
+
   ay_object_delete(icurve->ncurve);
 
   free(icurve);
@@ -128,15 +128,15 @@ ay_icurve_copycb(void *src, void **dst)
   icurvesrc = (ay_icurve_object *)src;
 
   if(!(icurve = calloc(1, sizeof(ay_icurve_object))))
-    return AY_EOMEM; 
+    return AY_EOMEM;
 
-  memcpy(icurve, src, sizeof(ay_icurve_object)); 
+  memcpy(icurve, src, sizeof(ay_icurve_object));
 
   /* copy controlv */
   if(!(icurve->controlv = calloc(3 * icurve->length, sizeof(double))))
     return AY_EOMEM;
   memcpy(icurve->controlv, icurvesrc->controlv,
-	 3 * icurve->length * sizeof(double)); 
+	 3 * icurve->length * sizeof(double));
 
   /* copy ncurve */
   ay_object_copy(icurvesrc->ncurve, &(icurve->ncurve));
@@ -151,9 +151,9 @@ int
 ay_icurve_drawcb(struct Togl *togl, ay_object *o)
 {
  ay_icurve_object *icurve = NULL;
- int mode = ay_prefs.nc_display_mode;
- int length = 0, i = 0, a = 0;
-
+ ay_nurbcurve_object *ncurve = NULL;
+ int display_mode = ay_prefs.nc_display_mode;
+ int length = 0, i = 0, a = 0, drawch = AY_FALSE;
   if(!o)
     return AY_ENULL;
 
@@ -164,27 +164,62 @@ ay_icurve_drawcb(struct Togl *togl, ay_object *o)
 
   if(icurve->display_mode != 0)
     {
-      mode = icurve->display_mode-1;
+      display_mode = icurve->display_mode-1;
     }
 
-  if((mode < 2) && (icurve->ncurve))
+  switch(display_mode)
     {
-      ay_draw_object(togl, icurve->ncurve, AY_TRUE);
-    }
+    case 0: /* ControlHull */
+      drawch = AY_TRUE;
+      break;
+    case 1: /* CurveAndHull (GLU) */
+      drawch = AY_TRUE;
+      if(icurve->ncurve)
+	{
+	  ncurve = (ay_nurbcurve_object *)icurve->ncurve->refine;
+	  ncurve->display_mode = 3;
+	  ay_draw_object(togl, icurve->ncurve, AY_TRUE);
+	}
+      break;
+    case 2: /* Curve (GLU) */
+      if(icurve->ncurve)
+	{
+	  ncurve = (ay_nurbcurve_object *)icurve->ncurve->refine;
+	  ncurve->display_mode = 3;
+	  ay_draw_object(togl, icurve->ncurve, AY_TRUE);
+	}
+      break;
+    case 3: /* CurveAndHull (STESS) */
+      drawch = AY_TRUE;
+      if(icurve->ncurve)
+	{
+	  ncurve = (ay_nurbcurve_object *)icurve->ncurve->refine;
+	  ncurve->display_mode = 5;
+	  ay_draw_object(togl, icurve->ncurve, AY_TRUE);
+	}
+      break;
+    case 4: /* Curve (STESS) */
+      if(icurve->ncurve)
+	{
+	  ncurve = (ay_nurbcurve_object *)icurve->ncurve->refine;
+	  ncurve->display_mode = 5;
+	  ay_draw_object(togl, icurve->ncurve, AY_TRUE);
+	}
+      break;
+    } /* switch */
 
-  if((mode > 0) && (icurve->ncurve))
+  if(drawch)
     {
       length = icurve->length;
       a = 0;
       glBegin(GL_LINE_STRIP);
-      for(i=0; i<length;i++)
+      for(i = 0; i < length; i++)
 	{
 	  glVertex3dv((GLdouble *)&(icurve->controlv[a]));
 	  a += 3;
 	}
       glEnd();
-    }
-
+    } /* if */
 
  return AY_OK;
 } /* ay_icurve_drawcb */
@@ -214,15 +249,15 @@ ay_icurve_drawhcb(struct Togl *togl, ay_object *o)
   glPointSize((GLfloat)point_size);
 
   glBegin(GL_POINTS);
-  for(i=0; i<length; i++)
-    {
-      glVertex3dv((GLdouble *)&ver[a]);
-      a += 3;
-    }
+   for(i=0; i<length; i++)
+     {
+       glVertex3dv((GLdouble *)&ver[a]);
+       a += 3;
+     }
   glEnd();
 
   /* draw arrow */
-  ay_draw_arrow(togl, &(ver[curve->length*3-6]), &(ver[curve->length*3-3])); 
+  ay_draw_arrow(togl, &(ver[curve->length*3-6]), &(ver[curve->length*3-3]));
 
  return AY_OK;
 } /* ay_icurve_drawhcb */
@@ -298,7 +333,7 @@ ay_icurve_getpntcb(int mode, ay_object *o, double *p)
 
 	  ay_point_edit_coords[0] = pecoord;
 	  ay_point_edit_coords_number = 1;
-	    
+
 	}
       else
 	{ /* no */
@@ -312,16 +347,16 @@ ay_icurve_getpntcb(int mode, ay_object *o, double *p)
 	      c = &(control[j]);
 
 	      /* test point c against the four planes in p */
-	      if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) && 
-		 ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) && 
-		 ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) && 
+	      if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) &&
+		 ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) &&
+		 ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
 		 ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
 		{
 
 		  if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
 		    return AY_EOMEM;
 		  pecoords[a] = &(control[j]);
-		  a++;		  
+		  a++;
 		} /* if */
 
 	      j += 3;
@@ -357,7 +392,7 @@ ay_icurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     return AY_ENULL;
 
   icurve = (ay_icurve_object *)o->refine;
-  
+
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
 
@@ -567,7 +602,7 @@ ay_icurve_bbccb(ay_object *o, double *bbox, int *flags)
   if(!o || !bbox)
     return AY_ENULL;
 
-  icurve = (ay_icurve_object *)o->refine; 
+  icurve = (ay_icurve_object *)o->refine;
 
   controlv = icurve->controlv;
 
@@ -631,7 +666,7 @@ ay_icurve_notifycb(ay_object *o)
  int ay_status = AY_OK;
 
   if(!o)
-    return AY_ENULL;    
+    return AY_ENULL;
 
   icurve = (ay_icurve_object *)(o->refine);
 
@@ -660,7 +695,7 @@ ay_icurve_notifycb(ay_object *o)
 	    } /* for */
 	  ay_status = ay_object_deletemulti(o->down);
 	  o->down = NULL;
-	    
+
 	} /* if */
     } /* if */
 
@@ -702,10 +737,8 @@ ay_icurve_notifycb(ay_object *o)
   if(ay_status)
     return ay_status;
 
-  /* set display mode to "curve", to avoid the wrong control
-     hull being drawn */
   nc = (ay_nurbcurve_object *)ncurve->refine;
-  nc->display_mode = 1;
+  nc->display_mode = icurve->display_mode;
   nc->glu_sampling_tolerance = icurve->glu_sampling_tolerance;
 
   icurve->ncurve = ncurve;
@@ -746,9 +779,9 @@ ay_icurve_convertcb(ay_object *o, int in_place)
 	  else
 	    {
 	      ay_status = ay_object_replace(new, o);
-	    }
-	}
-    }
+	    } /* if */
+	} /* if */
+    } /* if */
 
  return ay_status;
 } /* ay_icurve_convertcb */
@@ -759,6 +792,7 @@ ay_icurve_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
  int ay_status = AY_OK;
  ay_icurve_object *ic = NULL;
+ ay_nurbcurve_object *nc = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -777,10 +811,15 @@ ay_icurve_providecb(ay_object *o, unsigned int type, ay_object **result)
     {
       if(ic->ncurve)
 	{
+	  nc = (ay_nurbcurve_object *)ic->ncurve->refine;
+	  nc->display_mode = ic->display_mode;
 	  ay_status = ay_object_copy(ic->ncurve, result);
-	  ay_trafo_copy(o, *result);
-	}
-    }
+	  if(*result)
+	    {
+	      ay_trafo_copy(o, *result);
+	    } /* if */
+	} /* if */
+    } /* if */
 
  return ay_status;
 } /* ay_icurve_providecb */
@@ -807,7 +846,7 @@ ay_icurve_init(Tcl_Interp *interp)
 				    ay_icurve_bbccb,
 				    AY_IDICURVE);
 
-  
+
   ay_status = ay_notify_register(ay_icurve_notifycb, AY_IDICURVE);
 
   ay_status = ay_convert_register(ay_icurve_convertcb, AY_IDICURVE);

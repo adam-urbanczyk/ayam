@@ -33,4 +33,4 @@ addParam $w ICurveAttrData Order
 addMenu $w ICurveAttrData Mode [list "C2-Cubic" "Global-4D" ]
 addParam $w ICurveAttrData IParam
 addParam $w ICurveAttrData Tolerance
-addMenu $w ICurveAttrData DisplayMode [list Global ControlHull CurveAndHull Curve]
+addMenu $w ICurveAttrData DisplayMode $ay(ncdisplaymodes)

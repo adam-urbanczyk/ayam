@@ -281,24 +281,25 @@ typedef struct ay_root_object_s
 typedef struct ay_nurbcurve_object_s
 {
   int type; /* AY_CTOPEN, AY_CTCLOSED, AY_CTPERIODIC */
-  int modified;
   int order; 
   int knot_type; /* bezier, bspline, nurb, custom */
   int length;
-  int createmp;
   int is_rat;
   double *controlv;
   double *knotv;
 
+  /* GLU */
   double glu_sampling_tolerance;
   int display_mode;
 
   GLUnurbsObj *no;
 
   /* stess */
-  /*double *tesselation;*/
+  int tesslen;
+  double *tessv;
 
   /* multiple points */
+  int createmp;
   struct ay_mpoint_object_s *mpoints;
 } ay_nurbcurve_object;
 
@@ -307,26 +308,24 @@ typedef struct ay_nurbpatch_object_s
   int width, height;
   int uorder, vorder;
   int uknot_type, vknot_type; /* bezier, bspline, nurb, custom */
-  int closedu, closedv;
-  int has_weights;
-  int modified;
+  int closedu, closedv; /* unused */
   int is_rat;
 
   double *controlv, *uknotv, *vknotv;
-  double *texv;
+  double *texv; /* unused */
 
-  /* cache float representation of controlv and knotv */
-  /*  float *fcontrolv, *fuknotv, *fvknotv;*/
-
+  /* GLU */
   GLUnurbsObj *no;
 
   double glu_sampling_tolerance;
   int glu_display_mode;
 
   /* stess */
-  /*double *tesselation;*/
+  int tessw, tessh;
+  double *tessv;
 
-  /* multiple points */
+  /* multiple points (unused) */
+  int createmp;
   struct ay_mpoint_object_s *mpoints;
 } ay_nurbpatch_object;
 
@@ -843,6 +842,8 @@ typedef struct ay_prefs_object_s
   int glu_display_mode;
   int nc_display_mode;
   int glu_cache_float;
+
+  int stess_qf;
 
   /* sampling mode/quality for NURBS -> PolyMesh conversion */
   int smethod;

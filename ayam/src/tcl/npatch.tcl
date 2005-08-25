@@ -41,8 +41,5 @@ addString $w NPatchAttrData Knots_V
 addInfo $w NPatchAttrData IsRat
 
 addParam $w NPatchAttrData Tolerance
-global ay
-set l $ay(npdisplaymodes)
-set l [linsert $l 0 Global]
-addMenu $w NPatchAttrData DisplayMode $l
+addMenu $w NPatchAttrData DisplayMode $ay(npdisplaymodes)
 

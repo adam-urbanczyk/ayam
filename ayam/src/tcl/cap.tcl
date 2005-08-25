@@ -28,10 +28,8 @@ DisplayMode 0
 set w [frame $ay(pca).$CapAttr(w)]
 
 addParam $w CapAttrData Tolerance
-global ay
-set l $ay(npdisplaymodes)
-set l [linsert $l 0 Global]
-addMenu $w CapAttrData DisplayMode $l
+
+addMenu $w CapAttrData DisplayMode $ay(npdisplaymodes)
 
 #cap_crt:
 #

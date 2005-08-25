@@ -33,12 +33,9 @@ addCheck $w RevolveAttrData UpperCap
 addCheck $w RevolveAttrData LowerCap
 addCheck $w RevolveAttrData StartCap
 addCheck $w RevolveAttrData EndCap
-global ay
-set l $ay(npdisplaymodes)
-set l [linsert $l 0 Global]
-addMenu $w RevolveAttrData DisplayMode $l
-addParam $w RevolveAttrData Tolerance
 
+addParam $w RevolveAttrData Tolerance
+addMenu $w RevolveAttrData DisplayMode $ay(npdisplaymodes)
 
 #revolve_crt:
 #

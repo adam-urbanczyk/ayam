@@ -39,8 +39,6 @@ addMenu $w TextAttrData BevelType [list Round Linear Ridge]
 addParam $w TextAttrData BevelRadius
 addCheck $w TextAttrData RevertBevels
 
-global ay
-set l $ay(npdisplaymodes)
-set l [linsert $l 0 Global]
-addMenu $w TextAttrData DisplayMode $l
 addParam $w TextAttrData Tolerance
+addMenu $w TextAttrData DisplayMode $ay(npdisplaymodes)
+
