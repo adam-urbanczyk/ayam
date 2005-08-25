@@ -445,11 +445,11 @@ ay_stess_SurfacePoints3D(int n, int m, int p, int q, double *U, double *V,
   if(!(Nv = calloc(q+1, sizeof(double))))
     return AY_EOMEM;
 
-  *Cn = (4+n)*qf;
-  ud = (U[n]-U[p])/((*Cn)-1);
+  *Cn = (4 + n) * qf;
+  ud = (U[n] - U[p]) / ((*Cn) - 1);
 
-  *Cm = (4+m)*qf;
-  vd = (V[n]-V[p])/((*Cm)-1);
+  *Cm = (4 + m) * qf;
+  vd = (V[m] - V[q]) / ((*Cm) - 1);
 
   if(!(Ct = calloc((*Cn)*(*Cm)*3, sizeof(double))))
     {
@@ -459,7 +459,7 @@ ay_stess_SurfacePoints3D(int n, int m, int p, int q, double *U, double *V,
   u = U[p];
   for(a = 0; a < (*Cn); a++)
     {
-      v = V[p];
+      v = V[q];
       for(b = 0; b < (*Cm); b++)
 	{
 
@@ -469,7 +469,7 @@ ay_stess_SurfacePoints3D(int n, int m, int p, int q, double *U, double *V,
 	  ay_nb_BasisFuns(spanv, v, q, V, Nv);
 
 	  indu = spanu - p;
-	  j = (a*(*Cn)+b)*3;
+	  /*j = (a*(*Cn)+b)*3;*/
 	  for(l = 0; l <= q; l++)
 	    {
 	      memset(temp, 0, 3*sizeof(double));
@@ -490,6 +490,7 @@ ay_stess_SurfacePoints3D(int n, int m, int p, int q, double *U, double *V,
 	      Ct[j+2] += Nv[l]*temp[2];
 	    } /* for */
 
+	  j += 3;
 	  v += vd;
 	} /* for */
 
@@ -513,30 +514,30 @@ ay_stess_SurfacePoints4D(int n, int m, int p, int q, double *U, double *V,
 			 double *Pw, int qf, int *Cn, int *Cm, double **C)
 {
  int spanu = 0, spanv = 0, indu = 0, indv = 0, l = 0, k = 0, i = 0, j = 0;
- int a, b;
+ int a, b, ti;
  double u, v, ud, vd, *Nu = NULL, *Nv = NULL;
- double Cw[4] = {0}, *Ct = NULL, temp[4] = {0};
+ double Cw[4] = {0}, *Ct = NULL, *temp = NULL;
 
   if(!(Nu = calloc(p+1, sizeof(double))))
     return AY_EOMEM;
   if(!(Nv = calloc(q+1, sizeof(double))))
-    return AY_EOMEM;
+    { free(Nu); return AY_EOMEM; }
+  if(!(temp = calloc((q+1)*4, sizeof(double))))
+    { free(Nu); free(Nv); return AY_EOMEM; }
 
   *Cn = (4 + n) * qf;
-  ud = (U[n]-U[p])/((*Cn)-1);
+  ud = (U[n] - U[p]) / ((*Cn) - 1);
 
   *Cm = (4 + m) * qf;
-  vd = (V[n]-V[p])/((*Cm)-1);
+  vd = (V[m] - V[q]) / ((*Cm) - 1);
 
   if(!(Ct = calloc((*Cn)*(*Cm)*3, sizeof(double))))
-    {
-      free(Nu); free(Nv); return AY_EOMEM;
-    }
+    { free(Nu); free(Nv); free(temp); return AY_EOMEM; }
 
   u = U[p];
   for(a = 0; a < (*Cn); a++)
     {
-      v = V[p];
+      v = V[q];
       for(b = 0; b < (*Cm); b++)
 	{
 
@@ -546,33 +547,42 @@ ay_stess_SurfacePoints4D(int n, int m, int p, int q, double *U, double *V,
 	  ay_nb_BasisFuns(spanv, v, q, V, Nv);
 
 	  indu = spanu - p;
+	  ti = 0;
 	  for(l = 0; l <= q; l++)
 	    {
-	      memset(temp, 0, 4*sizeof(double));
+	      memset(&(temp[l*4]), 0, 4*sizeof(double));
 	      indv = spanv - q + l;
-
 	      for(k = 0; k <= p; k++)
 		{
 		  /* was: temp = temp + Nu[k]*Pw[indu+k][indv]; */
 		  i = (((indu+k)*m)+indv)*4;
 
-		  temp[0] += Nu[k]*Pw[i];
-		  temp[1] += Nu[k]*Pw[i+1];
-		  temp[2] += Nu[k]*Pw[i+2];
-		  temp[3] += Nu[k]*Pw[i+3];
+		  temp[ti+0] += Nu[k]*Pw[i];
+		  temp[ti+1] += Nu[k]*Pw[i+1];
+		  temp[ti+2] += Nu[k]*Pw[i+2];
+		  temp[ti+3] += Nu[k]*Pw[i+3];
 		} /* for */
-	      /* was: Cw = Cw + Nv[l]*temp */
-	      Cw[0] += Nv[l]*temp[0];
-	      Cw[1] += Nv[l]*temp[1];
-	      Cw[2] += Nv[l]*temp[2];
-	      Cw[3] += Nv[l]*temp[3];
+	      ti += 4;
 	    } /* for */
 
-	  j = (a*(*Cn)+b)*3;
+	  memset(Cw, 0, 4*sizeof(double));
+	  ti = 0;
+	  for(l = 0; l <= q; l++)
+	    {
+	      /* was: Cw = Cw + Nv[l]*temp */
+	      Cw[0] += Nv[l]*temp[ti+0];
+	      Cw[1] += Nv[l]*temp[ti+1];
+	      Cw[2] += Nv[l]*temp[ti+2];
+	      Cw[3] += Nv[l]*temp[ti+3];
+	      ti += 4;
+	    }
+
+	  /*j = (a*(*Cn)+b)*3;*/
 	  Ct[j]   = Cw[0]/Cw[3];
 	  Ct[j+1] = Cw[1]/Cw[3];
 	  Ct[j+2] = Cw[2]/Cw[3];
 
+	  j += 3;
 	  v += vd;
 	} /* for */
 
@@ -583,6 +593,7 @@ ay_stess_SurfacePoints4D(int n, int m, int p, int q, double *U, double *V,
 
   free(Nu);
   free(Nv);
+  free(temp);
 
  return AY_OK;
 } /* ay_stess_SurfacePoints4D */
