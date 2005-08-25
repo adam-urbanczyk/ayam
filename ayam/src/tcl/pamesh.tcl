@@ -68,10 +68,7 @@ if { $PatchMeshAttrData(Type) == 1 } {
 }
 
 addParam $w PatchMeshAttrData Tolerance
-global ay
-set l $ay(npdisplaymodes)
-set l [linsert $l 0 Global]
-addMenu $w PatchMeshAttrData DisplayMode $l
+addMenu $w PatchMeshAttrData DisplayMode $ay(npdisplaymodes)
 
 $ay(pca) itemconfigure 1 -window $w
 

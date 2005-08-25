@@ -35,11 +35,9 @@ addParam $w SkinAttrData Order_U
 addMenu $w SkinAttrData Knot-Type_U [list Bezier B-Spline NURB Custom]
 addCheck $w SkinAttrData StartCap
 addCheck $w SkinAttrData EndCap
-global ay
-set l $ay(npdisplaymodes)
-set l [linsert $l 0 Global]
-addMenu $w SkinAttrData DisplayMode $l
+
 addParam $w SkinAttrData Tolerance
+addMenu $w SkinAttrData DisplayMode $ay(npdisplaymodes)
 
 
 #skin_crt:

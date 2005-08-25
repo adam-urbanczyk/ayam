@@ -30,11 +30,10 @@ set w [frame $ay(pca).$Birail1Attr(w)]
 addParam $w Birail1AttrData Sections
 addCheck $w Birail1AttrData StartCap
 addCheck $w Birail1AttrData EndCap
-global ay
-set l $ay(npdisplaymodes)
-set l [linsert $l 0 Global]
-addMenu $w Birail1AttrData DisplayMode $l
+
 addParam $w Birail1AttrData Tolerance
+addMenu $w Birail1AttrData DisplayMode $ay(npdisplaymodes)
+
 
 
 #birail1_crt:

@@ -154,6 +154,114 @@ ay_npatch_copycb(void *src, void **dst)
 
 
 int
+ay_npatch_drawstesscb(struct Togl *togl, ay_object *o)
+{
+ int ay_status = AY_OK;
+ char fname[] = "npatch_drawstesscb";
+ ay_nurbpatch_object *npatch = NULL;
+ int a, i, j, tessw, tessh;
+ double *tessv = NULL;
+ int qf = ay_prefs.stess_qf;
+
+  if(!o)
+    return AY_ENULL;
+
+  npatch = (ay_nurbpatch_object *)o->refine;
+
+  if(!npatch)
+    return AY_ENULL;
+
+  if(o->modified)
+    {
+      if(npatch->tessv)
+	{
+	  free(npatch->tessv);
+	  npatch->tessv = NULL;
+	}
+      /*
+      if(npatch->tesstv)
+	{
+
+	}
+      */
+      o->modified = AY_FALSE;
+    }
+  /* the next codeblock should be placed in stess module as
+   ay_stess_TessNP() */
+  if(o->down && o->down->next && !(!o->down->next->next /*&&
+				   ay_nct_isstrim(o->down->next)*/))
+    {
+      /* this is a nontrivially trimmed NURBS patch */
+      ay_error(AY_ERROR, fname, "can not stess trimmed patches");
+      /*
+      ay_status = ay_stess_TessTrimmedNPU();
+      ay_status = ay_stess_TessTrimmedNPV();
+      */
+    }
+  else
+    {
+      /* this is an untrimmed or trivially trimmed NURBS patch */
+
+  if(!npatch->tessv)
+    {
+      if(npatch->is_rat)
+	{
+	  ay_status = ay_stess_SurfacePoints4D(npatch->width, npatch->height,
+					   npatch->uorder-1, npatch->vorder-1,
+					   npatch->uknotv, npatch->vknotv,
+					   npatch->controlv, qf,
+					   &npatch->tessw, &npatch->tessh,
+					   &npatch->tessv);
+	}
+      else
+	{
+	  ay_status = ay_stess_SurfacePoints3D(npatch->width, npatch->height,
+					   npatch->uorder-1, npatch->vorder-1,
+					   npatch->uknotv, npatch->vknotv,
+					   npatch->controlv, qf,
+					   &npatch->tessw, &npatch->tessh,
+					   &npatch->tessv);
+	} /* if */
+
+    } /* if */
+
+  tessv = npatch->tessv;
+  tessw = npatch->tessw;
+  tessh = npatch->tessh;
+
+  if(tessv)
+    {
+      a = 0;
+      for(i = 0; i < tessw; i++)
+	{
+	  glBegin(GL_LINE_STRIP);
+	  for(j = 0;  j < tessh; j++)
+	    {
+	      glVertex3dv(&(tessv[a]));
+	      a += 3;
+	    } /* for */
+	  glEnd();
+	} /* for */
+
+      for(j = 0;  j < tessh; j++)
+	{
+	  a = j * 3;
+	  glBegin(GL_LINE_STRIP);
+	  for(i = 0; i < tessw; i++)
+	    {
+	      glVertex3dv(&(tessv[a]));
+	      a += (tessh*3);
+	    } /* for */
+	  glEnd();
+	} /* for */
+    } /* if */
+    }
+
+ return AY_OK;
+}  /* ay_npatch_drawstesscb */
+
+
+int
 ay_npatch_drawglucb(struct Togl *togl, ay_object *o)
 {
  int ay_status = AY_OK;
@@ -287,7 +395,7 @@ ay_npatch_drawglucb(struct Togl *togl, ay_object *o)
 		  (npatch->is_rat?GL_MAP2_VERTEX_4:GL_MAP2_VERTEX_3));
 
   /* propagate changes to trimcurve walking code also to:
-     shadecb(), nurbs/npt.c/wribtrimcurves(),
+     shadecb(), nurbs/npt.c/wribtrimcurves(), and
      nurbs/npt.c/ay_npt_topolymesh()! */
 
   /* draw trimcurves */
@@ -426,18 +534,42 @@ ay_npatch_drawcb(struct Togl *togl, ay_object *o)
       display_mode = npatch->glu_display_mode-1;
     }
 
-  if(display_mode == 0)
-    ay_npatch_drawchcb(togl, o);
+  switch(display_mode)
+    {
+    case 0: /* ControlHull */
+      ay_npatch_drawchcb(togl, o);
+      break;
+    case 1: /* OutlinePolygon (GLU) */
+      ay_npatch_drawglucb(togl, o);
+      break;
+    case 2: /* OutlinePatch (GLU) */
+      ay_npatch_drawglucb(togl, o);
+      break;
+    case 3: /* OutlinePatch (STESS) */
+      ay_npatch_drawstesscb(togl, o);
+      break;
+    } /* switch */
 
-  if(display_mode == 1)
-    ay_npatch_drawglucb(togl, o);
-
-  if(display_mode == 2)
-    ay_npatch_drawglucb(togl, o);
+ return AY_OK;
+} /* ay_npatch_drawcb */
 
 
-  return AY_OK;
-}
+int
+ay_npatch_shadestesscb(struct Togl *togl, ay_object *o)
+{
+ int ay_status = AY_OK;
+ ay_nurbpatch_object *npatch = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  npatch = (ay_nurbpatch_object *)o->refine;
+
+  if(!npatch)
+    return AY_ENULL;
+
+ return AY_OK;
+} /* ay_npatch_shadestesscb */
 
 
 int
@@ -458,6 +590,9 @@ ay_npatch_shadecb(struct Togl *togl, ay_object *o)
 
   if(!npatch)
     return AY_ENULL;
+
+  if(npatch->glu_display_mode > 2)
+    return(ay_npatch_shadestesscb(togl, o));
 
   if(controls)
     {
@@ -645,7 +780,7 @@ ay_npatch_drawhcb(struct Togl *togl, ay_object *o)
   glPointSize((GLfloat)point_size);
 
   glBegin(GL_POINTS);
-  for(i=0; i<(width*height); i++)
+  for(i = 0; i < (width * height); i++)
     {
       glVertex3dv((GLdouble *)&ver[a]);
       a += 4;
@@ -894,10 +1029,6 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       updateKnots = 1;
     }
 
-  /*
-    for all Pink's that do not know that a BezierPatch always has
-    order = length
-  */
   if(npatch->uknot_type == AY_KTBEZIER)
     {
       if(npatch->uorder != npatch->width)
@@ -906,6 +1037,7 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	  npatch->uorder = npatch->width;
 	}
     }
+
   if(npatch->vknot_type == AY_KTBEZIER)
     {
       if(npatch->vorder != npatch->height)

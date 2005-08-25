@@ -33,11 +33,9 @@ addCheck $w SweepAttrData Close
 addParam $w SweepAttrData Sections
 addCheck $w SweepAttrData StartCap
 addCheck $w SweepAttrData EndCap
-global ay
-set l $ay(npdisplaymodes)
-set l [linsert $l 0 Global]
-addMenu $w SweepAttrData DisplayMode $l
+
 addParam $w SweepAttrData Tolerance
+addMenu $w SweepAttrData DisplayMode $ay(npdisplaymodes)
 
 
 #sweep_crt:

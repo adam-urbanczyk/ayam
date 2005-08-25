@@ -445,6 +445,25 @@ int ay_pmt_revertu(ay_pamesh_object *pm);
 
 int ay_pmt_revertv(ay_pamesh_object *pm);
 
+
+/* stess.c */
+
+int ay_stess_GetQF(double gst);
+
+int ay_stess_CurvePoints2D(int n, int p, double *U, double *Pw, int is_rat,
+			   int qf, int *Clen, double **C);
+
+int ay_stess_CurvePoints3D(int n, int p, double *U, double *Pw, int is_rat,
+			   int qf, int *Clen, double **C);
+
+int ay_stess_SurfacePoints3D(int n, int m, int p, int q, double *U, double *V,
+			     double *P, int qf, int *Cn, int *Cm, double **C);
+
+int ay_stess_SurfacePoints4D(int n, int m, int p, int q, double *U, double *V,
+			     double *P, int qf, int *Cn, int *Cm, double **C);
+
+int ay_stess_Retess(void);
+
 /* tess.c */
 
 int ay_tess_npatch(ay_object *o, int smethod, double sparam,
