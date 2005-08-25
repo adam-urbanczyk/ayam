@@ -2418,6 +2418,7 @@ ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
       curve->controlv[15] = 1.0;
       curve->controlv[16] = patch->uknotv[0];
       curve->controlv[17] = patch->vknotv[0];
+      curve->controlv[19] = 1.0;
     }
   else
     {
