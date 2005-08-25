@@ -443,7 +443,7 @@ ay_stess_SurfacePoints3D(int n, int m, int p, int q, double *U, double *V,
   if(!(Nu = calloc(p+1, sizeof(double))))
     return AY_EOMEM;
   if(!(Nv = calloc(q+1, sizeof(double))))
-    return AY_EOMEM;
+    { free(Nu); return AY_EOMEM; }
 
   *Cn = (4 + n) * qf;
   ud = (U[n] - U[p]) / ((*Cn) - 1);
@@ -452,9 +452,7 @@ ay_stess_SurfacePoints3D(int n, int m, int p, int q, double *U, double *V,
   vd = (V[m] - V[q]) / ((*Cm) - 1);
 
   if(!(Ct = calloc((*Cn)*(*Cm)*3, sizeof(double))))
-    {
-      free(Nu); free(Nv); return AY_EOMEM;
-    }
+    { free(Nu); free(Nv); return AY_EOMEM; }
 
   u = U[p];
   for(a = 0; a < (*Cn); a++)
