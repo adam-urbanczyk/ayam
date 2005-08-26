@@ -5481,6 +5481,8 @@ ay_npt_extractnc(ay_object *npatch, int side, double param, int apply_trafo,
 	}
     }
 
+  nc->is_rat = ay_nct_israt(nc);
+
   /* return result */
   *result = nc;
   nc = NULL;
