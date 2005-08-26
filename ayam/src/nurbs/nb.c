@@ -1379,49 +1379,60 @@ ay_nb_CurvePoint3D(int n, int p, double *U, double *P, double u, double *C)
 
 int
 ay_nb_SurfacePoint4D(int n, int m, int p, int q, double *U, double *V,
-		       double *Pw, double u, double v, double *C)
+		     double *Pw, double u, double v, double *C)
 {
  int spanu = 0, spanv = 0, indu = 0, indv = 0, l = 0, k = 0, i = 0, j = 0;
- double *Nu = NULL, *Nv = NULL, Cw[4] = {0}, temp[4] = {0};
+ double *Nu = NULL, *Nv = NULL, Cw[4] = {0}, *temp = NULL;
 
-  if(!(Nu = calloc(p+1,sizeof(double))))
+  if(!(Nu = calloc(p+1, sizeof(double))))
     return AY_EOMEM;
-  if(!(Nv = calloc(q+1,sizeof(double))))
-    return AY_EOMEM;
+  if(!(Nv = calloc(q+1, sizeof(double))))
+    {free(Nu); return AY_EOMEM;}
+  if(!(temp = calloc(q+1, sizeof(double))))
+    {free(Nu); free(Nv); return AY_EOMEM;}
 
-  spanu = ay_nb_FindSpan(n,p,u,U);
-  ay_nb_BasisFuns(spanu,u,p,U,Nu);
-  spanv = ay_nb_FindSpan(m,q,v,V);
-  ay_nb_BasisFuns(spanv,v,q,V,Nv);
+  spanu = ay_nb_FindSpan(n, p, u, U);
+  ay_nb_BasisFuns(spanu, u, p, U, Nu);
+
+  spanv = ay_nb_FindSpan(m, q, v, V);
+  ay_nb_BasisFuns(spanv, v, q, V, Nv);
 
   indu = spanu - p;
-  for(l=0; l<=q; l++)
+  for(l = 0; l <= q; l++)
     {
       memset(temp, 0, 4*sizeof(double));
       indv = spanv - q + l;
 
-      for(k=0; k<=p; k++)
+      for(k = 0; k <= p; k++)
 	{
-	  /* was: temp = temp + Nu[k]*Pw[indu+k][indv]; */
+	  /* was: temp[l] = temp[l] + Nu[k]*Pw[indu+k][indv]; */
 	  i = (((indu+k)*(m+1))+indv)*4;
 
-	  temp[0] += Nu[k]*Pw[i];
-	  temp[1] += Nu[k]*Pw[i+1];
-	  temp[2] += Nu[k]*Pw[i+2];
-	  temp[3] += Nu[k]*Pw[i+3];
-	}
-      /* was: Cw = Cw + Nv[l]*temp */
-      Cw[0] += Nv[l]*temp[0];
-      Cw[1] += Nv[l]*temp[1];
-      Cw[2] += Nv[l]*temp[2];
-      Cw[3] += Nv[l]*temp[3];
-    }
+	  temp[j+0] += Nu[k]*Pw[i];
+	  temp[j+1] += Nu[k]*Pw[i+1];
+	  temp[j+2] += Nu[k]*Pw[i+2];
+	  temp[j+3] += Nu[k]*Pw[i+3];
+	} /* for */
+      j += 4;
+    } /* for */
+
+  j = 0;
+  for(l = 0; l <= q; l++)
+    {
+      /* was: Cw = Cw + Nv[l]*temp[l] */
+      Cw[0] += Nv[l]*temp[j+0];
+      Cw[1] += Nv[l]*temp[j+1];
+      Cw[2] += Nv[l]*temp[j+2];
+      Cw[3] += Nv[l]*temp[j+3];
+      j += 4;
+    } /* for */
 
   for(j = 0; j < 4; j++)
     C[j] = Cw[j]/Cw[3];
 
   free(Nu);
   free(Nv);
+  free(temp);
 
  return AY_OK;
 } /* ay_nb_SurfacePoint4D */
@@ -1437,12 +1448,12 @@ ay_nb_SurfacePoint3D(int n, int m, int p, int q, double *U, double *V,
   if(!(Nu = calloc(p+1,sizeof(double))))
     return AY_EOMEM;
   if(!(Nv = calloc(q+1,sizeof(double))))
-    return AY_EOMEM;
+    {free(Nu); return AY_EOMEM;}
 
-  spanu = ay_nb_FindSpan(n,p,u,U);
-  ay_nb_BasisFuns(spanu,u,p,U,Nu);
-  spanv = ay_nb_FindSpan(m,q,v,V);
-  ay_nb_BasisFuns(spanv,v,q,V,Nv);
+  spanu = ay_nb_FindSpan(n, p, u, U);
+  ay_nb_BasisFuns(spanu, u, p, U, Nu);
+  spanv = ay_nb_FindSpan(m, q, v, V);
+  ay_nb_BasisFuns(spanv, v, q, V, Nv);
 
   memset(C, 0, 3*sizeof(double));
   C[0] = 0.0;
@@ -1450,25 +1461,26 @@ ay_nb_SurfacePoint3D(int n, int m, int p, int q, double *U, double *V,
   C[2] = 0.0;
 
   indu = spanu - p;
-  for(l=0; l<=q; l++)
+  for(l = 0; l <= q; l++)
     {
       memset(temp, 0, 3*sizeof(double));
 
       indv = spanv - q + l;
 
-      for(k=0; k<=p; k++)
+      for(k =0 ; k <= p; k++)
 	{
 	  /* was: temp = temp + Nu[k]*P[indu+k][indv]; */
 	  i = (((indu+k)*(m+1))+indv)*3;
 	  temp[0] += Nu[k]*P[i];
 	  temp[1] += Nu[k]*P[i+1];
 	  temp[2] += Nu[k]*P[i+2];
-	}
+	} /* for */
+
       /* was: C = C + Nv[l]*temp */
       C[0] += Nv[l]*temp[0];
       C[1] += Nv[l]*temp[1];
       C[2] += Nv[l]*temp[2];
-    }
+    } /* for */
 
   free(Nu);
   free(Nv);
