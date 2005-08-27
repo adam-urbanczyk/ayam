@@ -10,10 +10,8 @@
 # mfio.tcl - 3DMF Import/Export
 
 global ay
-$ay(cm) add cascade -menu $ay(cm).foo -label "3DMF"
-set m [menu $ay(cm).foo]
-$m add command -label "Import" -command mfio_import
-$m add command -label "Export" -command mfio_export
+$ay(im) add command -label "Apple 3DMF" -command mfio_import
+$ay(em) add command -label "Apple 3DMF" -command mfio_export
 
 proc mfio_import { } {
     global ay

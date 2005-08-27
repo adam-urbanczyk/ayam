@@ -226,14 +226,10 @@ proc onio_export { } {
 }
 # onio_export
 
-# link procs onio_import and onio_export to Custom menu
+# link procs onio_import and onio_export to File/Import and File/Export menu
 # we need access to global array "ay"
 global ay
-# always create a cascaded sub-menu
-$ay(cm) add cascade -menu $ay(cm).onio -label "OpenNURBS IO"
-# create sub-menu
-set m [menu $ay(cm).onio]
-# create sub-menu entries
-$m add command -label "Import 3DM (Rhino)" -command onio_import
+# create menu entries
+$ay(im) add command -label "Rhino 3DM" -command onio_import
 
-$m add command -label "Export 3DM (Rhino)" -command onio_export
+$ay(em) add command -label "Rhino 3DM" -command onio_export
