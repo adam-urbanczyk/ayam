@@ -6623,7 +6623,7 @@ instead of using the values from the Mops scene file.
 Using the RRIB (Read RIB) plugin you may import RenderMan Interface
 Bytestreams into Ayam.
 Start importing a RIB using the menu entry
-<tt>"Custom/RRIB/Import RIB"</tt>
+<tt>"File/Import/RenderMan RIB"</tt>
 (if this menu entry is not available, you have to load the
 <tt>"rrib"</tt> plugin using the menu entry
 <tt>"File/Load Plugin"</tt> first).
@@ -6813,7 +6813,7 @@ for the t component of the texture coordinates.
 <p>
 Using the MFIO plugin you may import scenes from the 3DMF format
 (version 1.0 only!) from Apple. Start importing a 3DMF file using the
-menu entry <tt>"Custom/3DMF/Import"</tt> (if this menu entry is not
+menu entry <tt>"File/Import/Apple 3DMF"</tt> (if this menu entry is not
 available, you have to load the <tt>"mfio"</tt> plugin using the menu entry
 <tt>"File/Load Plugin"</tt> first).
 <p>
@@ -6842,7 +6842,7 @@ not available.
 <p>
 Using the MFIO plugin you may export scenes to the 3DMF format (version
 1.0 only!) from Apple. Start exporting to a 3DMF file using the menu entry
-<tt>"Custom/3DMF/Export"</tt> (if this menu entry is not available, you
+<tt>"File/Export/Apple 3DMF"</tt> (if this menu entry is not available, you
 have to load the <tt>"mfio"</tt> plugin using the menu entry
 <tt>"File/Load Plugin"</tt> first).
 <p>
@@ -6874,7 +6874,7 @@ from the Rhino 3DM file format using the OpenNURBS toolkit
 by Robert McNeel & Associates.
 <p>
 Start importing from a Rhino 3DM file using the menu entry
-<tt>"Custom/OpenNURBS IO/Import"</tt>
+<tt>"File/Import/Rhino 3DM"</tt>
 (if this menu entry is not available, you have to load the
 <tt>"onio"</tt> plugin using the menu entry
 <tt>"File/Load Plugin"</tt> first).
@@ -6928,7 +6928,7 @@ to the Rhino 3DM file format using the OpenNURBS toolkit
 by Robert McNeel & Associates.
 <p>
 Start exporting to a Rhino 3DM file using the menu entry
-<tt>"Custom/OpenNURBS IO/Export"</tt>
+<tt>"File/Export/Rhino 3DM"</tt>
 (if this menu entry is not available, you have to load the
 <tt>"onio"</tt> plugin using the menu entry
 <tt>"File/Load Plugin"</tt> first).
@@ -6973,6 +6973,10 @@ created, if the cone is closed).
 The BRep torus does not support PhiMin, PhiMax, and ThetaMax.
 The option has no effect on the export of disks, hyperboloids,
 and paraboloids. Those will always be exported as NURBS surfaces.
+<item><tt>"TopLevelLayers"</tt> controls whether the top level objects
+in the scene to be exported should be interpreted as layers.
+If this option is enabled, objects that are not in one of those levels
+will be written to the default layer.
 <item><tt>"STagName"</tt> controls the name of the PV tag to be used
 for the s component of the texture coordinates, and
 <item><tt>"TTagName"</tt> controls the name of the PV tag to be used
@@ -8335,6 +8339,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>ToolBoxTrans: <ref id="prefmisc" name="preference setting">
 <item>Tools: <ref id="mmtools" name="tools menu">
 <item>Top: <ref id="vmtype" name="view menu entry">
+<item>TopLevelLayers: <ref id="exprhino" name="3DM (Rhino) export option">
 <item>Torus: <ref id="torusobj" name="object">
 <item>To XY: <ref id="toxyt" name="To XY tool">
 <item>TP: <ref id="tptag" name="tag type">
