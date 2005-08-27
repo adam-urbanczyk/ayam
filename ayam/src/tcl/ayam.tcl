@@ -484,6 +484,8 @@ array set ay {
  ExtraTreeUpdate 0
  co ""
  cm ""
+ im ""
+ em ""
  rnum 0
  sc 0
  tblayoutsema 0

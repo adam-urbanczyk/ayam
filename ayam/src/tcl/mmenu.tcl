@@ -73,11 +73,13 @@ $m add command -label "Save" -command "io_saveScene dontask 0"
 $m add separator
 $m add cascade -menu $m.im -label "Import"
 menu $m.im -tearoff 0
+set ay(im) $m.im
 $m.im add command -label "Mops" -command "io_importMops"
 $m.im add command -label "Wavefront OBJ" -command "io_importOBJ"
 $m add separator
 $m add cascade -menu $m.ex -label "Export"
 menu $m.ex -tearoff 0
+set ay(em) $m.ex
 $m.ex add command -label "RenderMan RIB" -command "io_exportRIB"
 $m.ex add command -label "Wavefront OBJ" -command "io_exportOBJ 0"
 $m add separator
