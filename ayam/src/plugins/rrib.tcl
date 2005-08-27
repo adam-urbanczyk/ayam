@@ -125,12 +125,8 @@ proc rrib_import { } {
 # rrib_import
 
 
-# link proc rrib_import to Custom menu
+# link proc rrib_import to File/Import menu
 # we need access to global array "ay"
 global ay
-# always create a cascaded sub-menu
-$ay(cm) add cascade -menu $ay(cm).rrib -label "RRIB"
-# create sub-menu
-set m [menu $ay(cm).rrib]
-# create sub-menu entry
-$m add command -label "Import RIB" -command rrib_import
+# create menu entry
+$ay(im) add command -label "RenderMan RIB" -command rrib_import
