@@ -256,9 +256,12 @@ STRIP = strip
 #STRIP = touch
 
 # Dynamic Loading
-# Library for dynamic loading (contains dlopen())
-# Linux, IRIX, Solaris, (MacOSX: get libdl from Fink!):
-DL = -ldl
+# Library for dynamic loading (contains dlopen()) and library for
+# threads support, if third party libs (e.g. Mesa) require it
+# IRIX, Solaris, (MacOSX: get libdl from Fink!):
+#DL = -ldl
+# Linux:
+DL = -ldl -lpthread
 # NetBSD:
 #DL =
 
