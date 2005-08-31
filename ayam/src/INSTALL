@@ -1,4 +1,4 @@
-INSTALL [27. Apr 2004]
+INSTALL [31. Aug 2005]
 
 Compilation Instructions for Ayam
 ---------------------------------
@@ -30,7 +30,7 @@ The following requirements _must_ be met to compile a shared
 version of Ayam:
 
 - ANSI-C-compiler
-- Tcl/Tk sources ( atleast V8.0 )
+- Tcl/Tk sources ( atleast V8.2 )
   ftp://ftp.scriptics.com/pub/tcl/
   ( May move to SourceForge in the future, see:
     http://tcl.sourceforge.net/ ) 
@@ -115,6 +115,9 @@ two steps:
 - if you are done editing the Makefile manually or by using ayamConf.tcl
   just enter:
 >make
+
+If you got errors while compiling, maybe the Ayam FAQ helps, see:
+http://www.ayam3d.org/faq.html
 
 Now ayamsh should be compiled and ready for a test run.
 - try it:
@@ -239,8 +242,11 @@ You have all required software and installed/compiled it successfully?
 - issue a
 >make
 
+If you got errors while compiling, maybe the Ayam FAQ helps, see:
+http://www.ayam3d.org/faq.html
+
 Now Ayam should be compiled and ready for a test run.
--try it:
+- try it:
 >./ayam
 
 
@@ -271,6 +277,9 @@ that may be used to uninstall Ayam again, e.g. using:
 Independent from the build type of Ayam, the Makefiles contain
 additional targets to build plugins and manage the installation.
 
+If you get errors while compiling plugins, maybe the Ayam FAQ helps, see:
+http://www.ayam3d.org/faq.html
+
 3.1 MF3D Import/Export Plugin
 -----------------------------
 
@@ -281,8 +290,8 @@ and
 >make mfio.so
 ( to compile the plugin )
 
-Load the plugin via menu entry "File/Load Custom".
-Use it via menu entry "Custom/3DMF/Import" and "Custom/3DMF/Export"
+Load the plugin via menu entry "File/Load Plugin".
+Use it via menu entry "File/Import/Apple 3DMF" and "File/Export/Apple 3DMF"
 respectively.
 
 
@@ -302,7 +311,7 @@ This is done using
 
 If you are using Affine0008 you need to tune Affine to _not_
 use libz by editing "config.mak":
-remove "-DRIB_ZLIB" from COPTS and do not link with libz.
+o remove "-DRIB_ZLIB" from COPTS and do not link with libz.
 
 If you are using Affine0008 and gcc you, additionally, need to change
 "readrib/declare.c":
@@ -326,8 +335,8 @@ to the Ayam distribution.
 Now compile the plugin:
 >make rrib.so
 
-Load it via menu entry "File/Load Custom".
-Use it via menu entry "Custom/RRIB/Import RIB"
+Load it via menu entry "File/Load Plugin".
+Use it via menu entry "File/Import/RenderMan RIB"
 
 
 3.3 Importance Driven Rendering Plugin (IDR)
@@ -338,7 +347,7 @@ libtiff library and libtiff headers have to be installed.
 
 >make idr.so
 
-Load it via menu entry "File/Load Custom".
+Load it via menu entry "File/Load Plugin".
 Use it via menu entry "Custom/Open IDR".
 
 
@@ -370,9 +379,10 @@ then type:
 >make ayslx.so
 >make aysdr.so
 
-After loading of one of these plugins the internal shader scanning code
-of Ayam will be disabled, and Ayam will from that moment on just scan
-shaders of the type supported by the plugin loaded.
+After loading of one of these plugins (using the main menu entry
+"File/Load Plugin") the internal shader scanning code of Ayam will
+be disabled, and Ayam will from that moment on just scan shaders
+of the type that the plugin supports.
 
 
 3.5 AyCSG (CSG Preview) Plugin
@@ -399,7 +409,7 @@ OPENCSGDIR, GLEWDIR
 then type:
 >make aycsg.so
 
-Load it via menu entry "File/Load Custom".
+Load it via menu entry "File/Load Plugin".
 Use it via the new icon in the view menu bar.
 See also the AyCSG preferences in the main menu "Custom/AyCSG Preferences".
 
@@ -417,8 +427,9 @@ OPENNURBSDIR
 then type:
 >make onio.so
 
-Load it via menu entry "File/Load Custom".
-Use it via menu entry "Custom/OpenNURBS IO/Import 3DM"
+Load it via menu entry "File/Load Plugin".
+Use it via menu entry "File/Import/Rhino 3DM" and "File/Export/Rhino 3DM",
+respectively.
 
 
 3.7 Installing/Uninstalling Ayam
