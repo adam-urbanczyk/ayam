@@ -297,7 +297,11 @@ proc create_makefile {} {
 
     # DL
     if {$osval != "NetBSD"} {
-	set DL "-ldl"
+	if {$osval == "Linux"} {
+	    set DL "-ldl -lpthread"
+	} else {
+	    set DL "-ldl"
+	}
     } else {
 	set DL ""
     }
