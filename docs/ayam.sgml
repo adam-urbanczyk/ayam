@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>18. Jul 2005
+<date>1. Sep 2005
 <abstract>
 This is the documentation of Ayam (1.9) - a free 3D modeling environment
 for the RenderMan interface.
@@ -26,45 +26,45 @@ In addition, you can use the provided SGML-source to generate other formats.
 
 <sect>Introduction
 <p>
-What is Ayam?
+Ayam is a free 3D modeling environment for the RenderMan Interface.
+Ayam was formerly known as <tt>"The Mops"</tt>.
 <p>
-Ayam is a free 3D modeling environment for the RenderMan Interface
-(formerly known as <tt>"The Mops"</tt>).
-<p>
-On which platforms is Ayam available?
-<p>
-Ayam is primarily aimed at the Linux, IRIX, and Win32 platforms
+Ayam is primarily aimed at the Linux, IRIX, and Win32 platforms.
 On those platforms BMRT (Blue Moon Rendering Tools, a RenderMan
-compliant renderer by Larry Gritz (Exluna) and
-the recommended renderer for Ayam) is available. Despite of this, Ayam may
-be used on many more platforms with any RenderMan compliant renderer.
+compliant renderer by Larry Gritz) is available.
+Even though the distribution of BMRT is stopped it is still
+the recommended renderer for Ayam.
+Despite of this, Ayam may be used on many more platforms with any
+RenderMan compliant renderer.
 <p>
 For platforms where BMRT is not available (e.g. FreeBSD or NetBSD), Ayam
 may be compiled with code from the Affine Toolkit with limited
 functionality (see also the file INSTALL).
 In this case, no parsing of slc compiled shaders will be possible.
 Since Ayam 1.6 it is also possible to completely replace BMRT shader parsing
-and RIB writing by Aqsis, thus completely eliminating the need for BMRT.
+and RIB writing by code from the Aqsis project, thus completely
+eliminating the need for BMRT. Furthermore, shader parsing plugins are
+available for all major RenderMan compliant renderers allowing
+a tight integration of Ayam.
 <p>
-What are the features of Ayam?
-<p>
-Here is a short summary:
+Here is a short summary of the Ayam feature set:
 <itemize>
 <item>RIB (RenderMan Interface Bytestream) export and import.
 <item>Support for NURBS curves, interpolating curves, (trimmed)
 NURBS surfaces, bilinear and bicubic patches and patch meshes,
-Boxes, Quadrics (Sphere, Disk,
-Cylinder, Cone, Hyperboloid, Paraboloid and Torus), MetaBalls,
-polygonal meshes, subdivision meshes and more.
+Boxes, Quadrics (Sphere, Disk, Cylinder, Cone, Hyperboloid, Paraboloid
+and Torus), MetaBalls, polygonal meshes, subdivision meshes and more.
 <item>All primitives may be combined with the common
 CSG-operations: Intersection, Difference, and Union.
 <item>NURBS modeling includes extrude, revolve, sweep, birail, skin,
 and gordon operations (with caps, holes, and bevels) realized as
 Tool-Objects.
+<item>Wavefront OBJ export and import, Rhino 3DM export and import.
 <item>Custom objects that may freely implement their representations
 (using OpenGL and RIB) and even small GUIs to edit their type specific
 parameters may be written by the user and dynamically loaded at runtime.
 <item>Scripting interface: Tcl.
+<item>Script objects.
 <item>Misc: instancing, arbitrary number of modeling views,
 object clipboard, independent property clipboard, console,
 n level undo.
@@ -77,7 +77,7 @@ Win32 platform!
 <p>
 How should one read this manual?
 <p>
-Since this manual is intended to be a reference manual only, it is
+Since this manual is intended to be a reference manual, it is
 probably pointless to read it from the beginning to the end
 (except maybe for the next section, explaining the basics).
 Instead, just look up the documentation of the things you are interested
@@ -111,14 +111,14 @@ set riopt(runtime) { a b }
 <sect>The Ayam GUI
 <p>
 This section describes the user interface of Ayam.
-
-The user interface is split into three types of toplevel windows:
+<p>
+The user interface of Ayam is split into three types of toplevel windows:
 a main window, a toolbox and an arbitrary number of view windows.
 The main window displays the object hierarchy and lets you edit
 object properties, the toolbox window allows for easy creation of
-objects and starting of modelling actions. The modelling actions
-are then carried out in view windows, where the scene is displayed.
-
+objects and starting of modelling actions and tools. The modelling actions
+are then carried out in view windows, where also the scene is displayed.
+<p>
 The whole application with all windows may be iconified (zapped) using
 the shortcut <tt/&lt;Ctrl+Z&gt;/. If any of the windows
 iconified by zap is de-iconified, all other windows
@@ -139,10 +139,10 @@ The main window is split into three large areas:
 </figure>
 <p>
 The relative sizes of the three areas are managed by a so called paned
-window management. To change the relative size of the console,
+geometry management. To change the relative size of the console,
 you may move your mouse pointer to the upper border of the console until
 the pointer changes and then drag the border.
-The same goes for the right border of the objects section.<p>
+The same goes for the right border of the objects section.
 
 <sect2>Objects<label id="obj">
 <p>
@@ -151,20 +151,20 @@ The default representation of the object hierarchy is a tree view.
 The second available representation is a simple listbox (as known from
 <tt/"The Mops"/).
 The label <tt/"Objects"/ may be used to switch between the two
-representations of the object hierarchy (using a double click).
+representations of the object hierarchy quickly (using a double click).
 It is also possible to switch between both representations
 using the context menu.
-
+<p>
 The two representations have very different properties regarding
 speed, use of resources, and versatility. The tree is, due to the
 Drag-and-Drop operations, much more versatile but also slower.
-
+<p>
 Both representations manage a so called <tt/"current level"/.
 This level is the level that is displayed in the object listbox.
 In the tree view the current level is drawn in black while all
 other levels are grayed out. Selection of objects
 may only take place in the current level!
-
+<p>
 After the start-up of Ayam you will notice, that there is a first
 object called <tt/"Root"/ in the top level of the scene, even though the
 scene seems to be empty.
@@ -184,39 +184,44 @@ Note that you cannot delete or copy this object.
 The tree view is very complex and may be slow on slow machines
 (of the Pentium 90 class), especially when dealing with large (deep nested)
 scenes. This should not be a problem nowadays.
-
+<p>
 Objects may be selected using the left mouse button.
 Multiple selection of objects is possible by holding down the
 <tt/&lt;Shift&gt;/ or <tt/&lt;Ctrl&gt;/ key while clicking on objects.
-
+<p>
 Double clicking on objects with child objects toggles display of the
 child level.
 The same may be accomplished using single clicks on the well known
 plus/minus symbols in front of the name of those objects.
-
+<p>
 Drag-and-Drop operation is also possible to move objects in the
 hierarchy and to initiate special actions like connecting materials
 to objects. However, this last feature is documented in section
 <ref id="obandprp" name="Ayam Objects and Properties">
 as it is object type specific.
-
+<p>
 <label id="treecontm">
 The rightmost mouse button opens a context menu with
 basic tree and clipboard operations:
 <itemize>
 <item><tt>"Tree/Rebuild"</tt> completely removes the tree nodes, rebuilds the
 hierarchy, and selects the root object
+
 <item><tt>"Tree/Expand"</tt> opens all nodes with child nodes
+
 <item><tt>"Tree/Collapse"</tt> closes all nodes with child nodes
+
 <item><tt>"Switch to Listbox"</tt> removes the tree and replaces it
 with the object listbox (see below).
+
 <item><tt>"Deselect Object"</tt> deselects the currently selected
 object(s).
+
 <item><tt>"Copy Object", "Cut Object", "Paste Object", "Delete Object"</tt>
 are standard clipboard operations as documented in
 section <ref id="mmedit" name="main menu">.
 </itemize>
-
+<p>
 Since Ayam 1.6 the scene may be navigated and objects may be selected
 using the keyboard alone:
 <itemize>
@@ -224,13 +229,18 @@ using the keyboard alone:
 or next object, since Ayam 1.7 holding down the <tt/&lt;Shift&gt;/ key
 while pressing <tt/&lt;Up&gt;/ or <tt/&lt;Down&gt;/ will not move the
 selection, but rather extend it in the respective direction,
+
 <item><tt/&lt;Home&gt;/ and <tt/&lt;End&gt;/ select the first
 or last object in the current level,
+
 <item><tt/&lt;Right&gt;/ enters the (first) selected object,
+
 <item><tt/&lt;Left&gt;/ enters the parent level,
+
 <item><tt/&lt;Ctrl+a&gt;/ and <tt/&lt;Ctrl+n&gt;/ select or de-select
 all objects in the current level. If the current level is the root level,
 the Root object will not be selected by <tt/&lt;Ctrl+a&gt;/.
+
 <item><tt/&lt;Space&gt;/ toggles display of the child objects of the
 selected object(s).
 </itemize>
@@ -250,25 +260,28 @@ first (when a property GUI has the input focus) or <tt/&lt;Shift-Tab&gt;/
 
 The hierarchy listbox, displays the object hierarchy of the current scene.
 Using this listbox you may browse through the hierarchy of the scene
-with your mouse and you may select one or more objects.<p>
+with your mouse and you may select one or more objects.
+<p>
 Browsing and selecting should be very intuitively:
 Use a double click to enter a level (or an object with child objects),
 and a single click to select objects, multiple objects may be selected using
 click and drag, or holding down the <tt/&lt;Shift&gt;/ or <tt/&lt;Ctrl&gt;/
 key while clicking.
 Keyboard operation is also possible if the listbox has the
-input focus.<p>
+input focus.
+<p>
 A <tt/".."/ is displayed as the first element of the current level
 if you are "inside" a level or another object.
 A double click on the <tt/".."/ takes you to the parent level.
 The buttons below the listbox may be used to change the selection or
 to quickly jump through the hierarchy. They should be self explanatory.
-
+<p>
 <label id="lbcontm">
 The rightmost mouse button opens a small context menu:
 <itemize>
 <item><tt>"Switch to Tree"</tt> removes the listbox and replaces it
 with the tree view (see above).
+
 <item><tt>"Copy Object", "Cut Object", "Paste Object", "Delete Object"</tt>
 are standard clipboard operations as documented in
 section <ref id="mmedit" name="main menu">.
@@ -281,15 +294,19 @@ using the keyboard alone:
 or next object, since Ayam 1.7 holding down the <tt/&lt;Shift&gt;/ key
 while pressing <tt/&lt;Up&gt;/ or <tt/&lt;Down&gt;/ will not move the
 selection, but rather extend it in the respective direction,
+
 <item><tt/&lt;Home&gt;/ and <tt/&lt;End&gt;/ select the first
 or last object in the current level,
+
 <item><tt/&lt;Right&gt;/ enters the (first) selected object,
+
 <item><tt/&lt;Left&gt;/ enters the parent level,
+
 <item><tt/&lt;Ctrl+a&gt;/ and <tt/&lt;Ctrl+n&gt;/ select or de-select
 all object in the current level. If the current level is the root level,
 the Root object will not be selected by <tt/&lt;Ctrl+a&gt;/.
 </itemize>
-
+<p>
 If those shortcuts do not work you may need to press <tt/&lt;Esc&gt;/
 first (when a property GUI has the input focus) or <tt/&lt;Shift-Tab&gt;/
 (when the console has the input focus).
@@ -303,139 +320,154 @@ first (when a property GUI has the input focus) or <tt/&lt;Shift-Tab&gt;/
 </figure>
 <p>
 The listbox right next to the object hierarchy displays the properties
-of the currently selected object.<p>
+of the currently selected object.
+<p>
 If there are multiple selected objects, the properties listbox will
-display no properties at all.<p>
+display no properties at all.
+<p>
 Unlike the objects tree/listbox, where you can select multiple entries,
 only one property may be selected.
 If a property is selected, the associated GUI will be shown in the
-appropriate area (on the right hand side).<p>
+appropriate area (on the right hand side).
+<p>
 Since Ayam 1.8 the keyboard may be used to select properties,
 just press one of the <tt/&lt;0&gt;/-<tt/&lt;9&gt;/ keys (most comfortably
 using the numeric keypad). <tt/&lt;0&gt;/ always selects the last and
 often the only object type specific property, whereas <tt/&lt;1&gt;/
 selects the first property, which often contains the standard
-transformations.<p>
-All property GUIs use more or less standardized GUI elements
-that are organized in list form. The lists may be scrolled if they get
-too long to fit into the window.<p>
-If the elements of the property GUI do not fit into the screen
-space that is defined by the current window size, Ayam will automatically
-resize the main window when you select a property. You can toggle
+transformations.
+<p>
+All property GUIs use more or less standardized GUI elements that are
+organized in list form. The lists may be scrolled if they get too long
+to fit into the window.
+<p>
+If the elements of the property GUI do not fit into the screen space
+that is defined by the current window size, Ayam will automatically
+resize the main window when you select a property. You can control
 this behaviour using the preference setting
 <tt/"AutoResize"/ (see section <ref id="prefs" name="Preferences">).
-
+<p>
 If an object and a property are selected and a different object is selected,
-the property GUI that has the same index as the previously
-selected property in the properties listbox will be
-selected and shown. This is not necessarily a property
-of the same type.
-To avoid that or to clear the property
-GUI for fast browsing through the scene you may either double
-click on the "Properties" label or use the context menu of the
-properties listbox to de-select the current property.
-
+the property GUI that has the same index as the previously selected
+property in the properties listbox will be selected and shown. This is
+not necessarily a property of the same type!
+To avoid that or to clear the property GUI for fast browsing through the
+scene you may either double click on the "Properties" label or use the
+context menu of the properties listbox to de-select the current property.
+<p>
 What properties exactly will be shown, and how the GUIs look alike
 depends on the selected object and the selected property.
 This is documented comprehensively in section
 <ref id="obandprp" name="Ayam Objects and Properties">.
-
-Here are some general remarks:<p>
+<p>
+Here are some general remarks:
+<p>
 The various things that may be changed using a property GUI
 will normally not be applied to the selected object until the
-<tt/"Apply"/-button is pressed!<p>
+<tt/"Apply"/-button is pressed!
+<p>
 Since Ayam 1.8.3 holding down the <tt/"Shift"/ button while
 interacting with the property GUI or pressing <tt/"Return"/
 when entry widgets have the keyboard input focus will lead
 to an instant apply.
-You can undo all changes to the arguments of a property that
-have been made after the last <tt/"Apply"/ operation with the
-<tt/"Reset"/-button.
-This does, however, not use the undo mechanism of Ayam!<p>
+<p>
+You can undo all changes to the arguments of a property that have been
+made after the last <tt/"Apply"/ operation with the <tt/"Reset"/-button.
+This does, however, not use the undo mechanism of Ayam!
+<p>
 Note also that property GUIs of custom objects may offer interactive
-elements that do an instant "Apply" operation. Most GUIs of the
-core objects of Ayam do not change anything until the
-<tt/"Apply"/-button is used, however.<p>
-
+elements that do an instant "Apply" operation. Most GUIs of the core
+objects of Ayam do not change anything until the <tt/"Apply"/-button
+is used, however.
+<p>
 If a property GUI element has the keyboard input focus (it is then usually
 displayed with a black rim around it), all the keyboard shortcuts for
 the main menu and scene navigation will have no effect until the
 keyboard input focus is moved away from the property GUI. You may accomplish
-this easily using the <tt/&lt;Esc&gt;/ key.<p>
-
+this easily using the <tt/&lt;Esc&gt;/ key.
+<p>
 A property may be copied and pasted to another object, see the
 <tt/"Edit"/ menu. You can also paste properties to different types of
 properties (e.g. pasting parameters from a surface shader to the
 displacement shader) using <tt/"Paste to selected"/ in the
-<tt>"Special/Clipboard"</tt> sub-menu.<p>
+<tt>"Special/Clipboard"</tt> sub-menu.
+<p>
 Pasting a property to multiple selected objects does work too.
-This is a great way to apply e.g. a surface shader
-to a big number of material objects, without going the long way
-of setting a new shader and entering parameters for it
-for every object.<p>
+This is a great way to apply e.g. a surface shader to a big number
+of material objects, without going the long way of setting a new
+shader and entering parameters for it for every object.
+<p>
 Since you may not want to copy and paste whole properties all the time,
 you may mark single parameters with a double click on the
 labels of the parameters. The marked parameters will then be preceded
-by an exclamation mark (!).<p>
-If you now copy this property all marked parameters will be omitted.<p>
-It is also possible to copy just the parameters you marked
-using <tt/"Copy Marked Prop"/.<p>
-A simple example:<p>
+by an exclamation mark (!) in the property GUI.
+<p>
+If you now copy this property all marked parameters will be omitted.
+<p>
+It is also possible to copy just the parameters you marked using
+<tt/"Copy Marked Prop"/.
+<p>
+A simple example:
+<p>
 Our task is to give a big number of material objects the same color,
 but they already have different opacity settings. Copying the complete
-attribute property would destroy the opacity values. We can accomplish
+attribute property would destroy the opacity values. We can solve
 this by copying just the color attribute, but leave all other
-attributes as they are:<p>
+attributes as they are:
 <enum>
-<item>Change the color of a first material object using the <tt/"Attributes"/
-property GUI. (Do not forget the <tt/"Apply"/ button!)
+<item>Change the color of a first material object using the
+<tt/"Attributes"/ property GUI. (Do not forget the <tt/"Apply"/ button!)
+
 <item>Mark the color parameter as to be copied using a double click
 on the text <tt/"Color"/; it should read <tt/"!Color"/ now.
+
 <item>Copy just the color parameter to the property clipboard,
 using <tt/"Copy Marked Prop"/ in the <tt/"Edit"/ menu or the
 hot key <tt/&lt;Ctrl+I&gt;/.
+
 <item>Select all other material objects.
+
 <item>Paste the property using <tt/"Paste Property"/ or <tt/&lt;Ctrl+V&gt;/.
+
 <item>All done!
 </enum>
-
-Care must be taken when pasting incomplete properties
-to objects which do not have complete properties already.
-Do not paste an incomplete shader property to an object
-which does not already have the same shader!
+<p>
+Special care must be taken when pasting incomplete properties to objects
+which do not have complete properties already. Do not paste an incomplete
+shader property to an object which does not already have the same shader!
 
 <sect2>The Console<label id="cons">
 <p>
-The third part of the main window is the console.
-The console is mainly for text output (informative, warning and
-error messages). For this, the console captures the
-stderr and stdout channels of the Tcl-interpreter Ayam is
-running in. You can also redirect all Tcl error messages that would
+The third part of the main window is the console. The console is mainly
+for text output (informative, warning and error messages). For this,
+the console captures the stderr and stdout channels of the Tcl-interpreter
+Ayam is running in. You can also redirect all Tcl error messages that would
 normally cause a Tcl error requester to appear to the console using the
 preference setting <tt>"Misc/RedirectTcl"</tt>
-(see section <ref id="prefmisc" name="Miscellaneous Preferences">).<p>
-But you can also enter commands, new Tcl procedures and so on in the
+(see section <ref id="prefmisc" name="Miscellaneous Preferences">).
+<p>
+You can also enter commands, even new Tcl procedures and so on in the
 console. However, this is a feature for the advanced user that
 studied section <ref id="script" name="The Tcl Scripting Interface">.
-You need to explicitly click into the console to give it the
-input focus and thus enable input.
+You need to explicitly click into the console to give it the input
+focus and thus enable input.
 <p>
-An important thing to know is that the
-keyboard shortcuts for the various main menu entries do not
-work if the console has the input focus! Instead, other
-keyboard shortcuts (related to the console) are in effect!
+An important thing to know is that the keyboard shortcuts for the
+various main menu entries do not work if the console has the input
+focus! Instead, other keyboard shortcuts (related to the console)
+are in effect!
 How do you get out of this? Simply press <tt/&lt;Shift+Tab&gt;/ to move
 the focus away from the console and enable the main menu shortcuts again.
 <p>
-Note that the <tt/&lt;Tab&gt;/ key alone does not move the
-focus away from the console.
-<tt/&lt;Tab&gt;/ instead completes names of files, commands
-(procedures), variables and widgets.
+Note that the <tt/&lt;Tab&gt;/ key alone does not move the focus away
+from the console.
+<tt/&lt;Tab&gt;/ instead completes names of files, commands (procedures),
+variables and widgets.
 You may try this out by typing <tt/tip/ in the console,
 then press <tt/&lt;Tab&gt;/.
 The console automagically completes <tt/tip/ to <tt/tipoftheDay/
-(the procedure that prints out the tip of the day, just try it).<p>
-
+(the procedure that prints out the tip of the day, just try it).
+<p>
 Another simple demonstration of the consoles capabilities:
 <itemize>
 <item>Create ten boxes by clicking on the box icon ten times.
@@ -444,7 +476,7 @@ Another simple demonstration of the consoles capabilities:
 <item>Enter the following:
 <tt>forAll 0 &lcub;movOb &dollar;i 0 0; rotOb &lsqb;expr &dollar;i*10&rsqb; 0 0&rcub;</tt>
 </itemize>
-
+<p>
 This example uses three procedures:
 <itemize>
 <item><tt/forAll/: allows to execute
@@ -453,16 +485,18 @@ current level if no objects are selected.
 <item><tt/movOb/: moves the selected object(s).
 <item><tt/rotOb/: rotates the selected object(s).
 </itemize>
-
+<p>
 See section <ref id="script" name="The Tcl Scripting Interface"> for a
-listing of all the available commands.<p>
-Note that the example uses a side effect (the variable <tt/i/ that
+listing of all the available commands.
+<p>
+Note that the example uses a side effect (the variable <tt/"i"/ that
 holds the index of the currently processed object) to calculate
-the amount of the movement and rotation.<p>
-For more information regarding the console,
-please refer to the appropriate documentation by the original
-author Jeffrey Hobbs (see the console context menu, that you may
-open with your right mouse button).
+the amount of the movement and rotation.
+<p>
+For more information regarding the console, please refer to the
+appropriate documentation by the original author Jeffrey Hobbs
+(see the console context menu, that you may open with your right
+mouse button).
 
 <sect1>The Main Menu<label id="mm">
 <p>
@@ -471,210 +505,252 @@ far. This is the main menu bar. Note that many menu entries have keyboard
 shortcuts that are displayed in each entry. You can adapt the shortcuts
 using the file <tt>"ayamrc"</tt>
 (See section <ref id="ayamrc" name="Ayamrc File">).
-
+<p>
 <label id="mmfile">
-The <tt/File/ menu deals with standard file operations:<label id="filem">
+The <tt/"File"/ menu deals with standard file operations:<label id="filem">
 <itemize>
-<item><tt/New/, clears the current scene (deletes all objects) and reloads
+<item><tt/"New"/, clears the current scene (deletes all objects) and reloads
 the working environment (if the preference setting
 <tt>"Main/NewLoadsEnv"</tt> is enabled).
-<item><tt/Open/, clears the current scene and closes all views,
+
+<item><tt/"Open"/, clears the current scene and closes all views,
 then loads a new scene from disk. All objects from the file
 will be read. Depending on the setting of
 <tt>"Preferences/Main/BakOnReplace"</tt>
 a backup copy of the file that is read will be made before loading.
-<item><tt/Insert/, inserts the objects and views of a ayam file
+
+<item><tt/"Insert"/, inserts the objects and views of a ayam file
 into the current scene. All objects from the file
 will be read.
-<item><tt/Save as/, saves the current scene asking for a new file name.
-<item><tt/Save/, saves the scene. If the scene has not been saved before
+
+<item><tt/"Save as"/, saves the current scene asking for a new file name.
+
+<item><tt/"Save"/, saves the scene. If the scene has not been saved before
 (read, you have not given it a file name) you will be asked for
 a file name.
-<item><tt>Import/Mops</tt>, import a scene from The Mops,
+
+<item><tt>"Import/Mops"</tt>, import a scene from The Mops,
 see section <ref id="impmops" name="Import of Mops Scenes">
 for more information.
-<item><tt>Import/Wavefront OBJ</tt>, import a scene from the Wavefront OBJ
-format,
+
+<item><tt>"Import/Wavefront OBJ"</tt>, import a scene from the Wavefront
+OBJ format,
 see section <ref id="impwav" name="Wavefront OBJ import">
 for more information.
-<item><tt>Export/RenderMan RIB</tt>, exports the current scene to a RIB,
+
+<item><tt>"Export/RenderMan RIB"</tt>, exports the current scene to a RIB,
 asking which camera (which view) to use.
-<item><tt>Export/Wavefront OBJ</tt>, exports the current scene to a
+
+<item><tt>"Export/Wavefront OBJ"</tt>, exports the current scene to a
 Wavefront OBJ file, see also section
 <ref id="expwav" name="Wavefront OBJ export">.
-<item><tt/Load Plugin/, loads a file containing a custom object or a plugin.
+
+<item><tt/"Load Plugin"/, loads a file containing a custom object or a plugin.
 Depending on the platform Ayam is running on, these are files with the
 file name extension <tt/".so"/ or <tt/".dll"/.
 See section <ref id="customobj" name="Custom Objects">
 for more information about custom objects.
-<item><tt/Save Prefs/, save the current preference settings
+
+<item><tt/"Save Prefs"/, save the current preference settings
 to the ayamrc file after making a backup copy of this file (see section
 <ref id="ayamrc" name="Ayamrc File"> for more
 information about this file).
-<item><tt/1./,<tt/2./,<tt/3./,<tt/4./, immediately replace the
+
+<item><tt/"1."/,<tt/"2."/,<tt/"3."/,<tt/"4."/, immediately replace the
 current scene with the one in the menu entry. The menu entries
 are updated and rotated upon successful loading and saving of a scene.
-<item><tt/Exit!/, remove all temporary files, save preferences (if
+
+<item><tt/"Exit!"/, remove all temporary files, save preferences (if
 the preference setting <tt>"Main/AutoSavePrefs"</tt> is turned on)
 and quit the application.
 </itemize>
 
 <label id="mmedit">
-The <tt/Edit/ menu contains object and property clipboard
+The <tt/"Edit"/ menu contains object and property clipboard
 operations, undo actions, and lets you open the preferences editor:
 <itemize>
-<item><tt/Copy/, copies the currently selected object(s) into the clipboard.
-<item><tt/Cut/, moves the currently selected object(s) into the clipboard.
-<item><tt/Paste/, copies the object(s) from the clipboard to the current level
-of the scene.
-Note that the content of the clipboard remains intact after this
-operation, this means that you can paste multiple times!
-You can move objects
-out of the clipboard using the menu entry
-<tt>"Special/Clipboard/Paste (Move)"</tt>.
-<item><tt/Delete/, removes the selected object(s) from the scene.<p>
+<item><tt/"Copy"/, copies the currently selected object(s) into the clipboard.
 
-<item><tt/Copy Property/, copies the currently selected property of the
+<item><tt/"Cut"/, moves the currently selected object(s) into the clipboard.
+
+<item><tt/"Paste"/, copies the object(s) from the clipboard to the current
+level of the scene. Note that the content of the clipboard remains intact
+after this operation, this means that you can paste multiple times!
+You can move objects out of the clipboard using the menu entry
+<tt>"Special/Clipboard/Paste (Move)"</tt>.
+
+<item><tt/"Delete"/, removes the selected object(s) from the scene.
+This operation is not undoable!
+
+<item><tt/"Copy Property"/, copies the currently selected property of the
 currently selected object to the property clipboard (the property
 clipboard is completely independent from the normal object clipboard!).
 Marked parameters will be omitted!
-<item><tt/Copy Marked Prop/, copies the currently marked parameters
+
+<item><tt/"Copy Marked Prop"/, copies the currently marked parameters
 of the currently selected property of the
 currently selected object to the property clipboard (the property
 clipboard is completely independent from the normal object clipboard!).
-<item><tt/Paste Property/, copies a property from the property clipboard
-to the currently selected object(s).<p>
 
-<item><tt/Undo/, perform undo operation (see section
-<ref id="undos" name="The Undo System"> for more information)
-<item><tt/Redo/, perform redo operation (see section
-<ref id="undos" name="The Undo System"> for more information)<p>
+<item><tt/"Paste Property"/, copies a property from the property clipboard
+to the currently selected object(s).
 
-<item><tt/Material/, searches for the material object currently
+<item><tt/"Undo"/, perform undo operation (see section
+<ref id="undos" name="The Undo System"> for more information).
+
+<item><tt/"Redo"/, perform redo operation (see section
+<ref id="undos" name="The Undo System"> for more information).
+
+<item><tt/"Material"/, searches for the material object currently
 associated with the selected object and selects it for editing.
 If the selected object has no material yet, a new material
-will be created first.<p>
-<item><tt/Master/, searches for the master object of the
+will be created first.
+
+<item><tt/"Master"/, searches for the master object of the
 currently selected instance object and selects it for editing,
 see also section <ref id="instanceobj" name="Instance Object">.
 
-<item><tt/Preferences/, opens the preferences dialog (see section
+<item><tt/"Preferences"/, opens the preferences dialog (see section
 <ref id="prefs" name="Preferences"> for more information).
 </itemize>
 
 <label id="mmcreate">
-The <tt/Create/ menu entries let you create objects. In contrast
-to the object creation via the toolbox some menu entries
-present you with small requesters, where you may adjust
-parameters for the object to be created.
-Here are the entries of the <tt/Create/ menu:
+The <tt/"Create"/ menu entries let you create objects. In contrast
+to the object creation via the toolbox some menu entries present you
+with small requesters, where you may adjust parameters for the object
+to be created. Here are the entries of the <tt/Create/ menu:
 <itemize>
-<item><tt/NURBCurve/, create a new NURBS curve. A small dialog box will
+<item><tt/"NURBCurve"/, create a new NURBS curve. A small dialog box will
 pop up, where you may specify the length of the new curve. See
 also section <ref id="ncurveobj" name="NCurve Object">.
-<item><tt/ICurve/, create a new interpolating curve. A small dialog box will
+
+<item><tt/"ICurve"/, create a new interpolating curve. A small dialog box will
 pop up, where you may specify the length of the new curve. See
 also section <ref id="icurveobj" name="ICurve Object">.
-<item><tt/NURBPatch/, create a new NURBS patch. A small dialog box will
+
+<item><tt/"NURBPatch"/, create a new NURBS patch. A small dialog box will
 pop up, where you may specify the width and height of the new patch. See
 also section <ref id="npatchobj" name="NPatch Object">.
-<item><tt/BPatch/, create a new bilinear patch. See
+
+<item><tt/"BPatch"/, create a new bilinear patch. See
 also section <ref id="bpatchobj" name="BPatch Object">.
-<item><tt/PatchMesh/, create a new patch mesh. See
+
+<item><tt/"PatchMesh"/, create a new patch mesh. See
 also section <ref id="patchmeshobj" name="PatchMesh Object">.
-<item><tt/Solid/, create a new solid primitive object, for use in CSG.
-<tt/Box,/ <tt/Sphere/, <tt/Disk/, <tt/Cone/, <tt/Cylinder/, <tt/Torus/,
-<tt/Hyperboloid/ or <tt/Paraboloid/ may be selected.
+
+<item><tt/"Solid"/, create a new solid primitive object, for use in CSG.
+<tt/"Box"/, <tt/"Sphere"/, <tt/"Disk"/, <tt/"Cone"/, <tt/"Cylinder"/,
+<tt/"Torus"/, <tt/"Hyperboloid"/ or <tt/"Paraboloid"/ may be selected.
 See also section <ref id="qprim" name="Quadric Primitives">.
-<item><tt/Level/, creates a new hierarchy object. <tt/Level/
-just groups objects, <tt/Union/, <tt/Intersection/,
-<tt/Difference/, and <tt/Primitive/ are CSG operations. See
+
+<item><tt/"Level"/, creates a new hierarchy object. <tt/"Level"/
+just groups objects, <tt/"Union"/, <tt/"Intersection"/,
+<tt/"Difference"/, and <tt/"Primitive"/ are CSG operations. See
 also section <ref id="levelobj" name="Level Object">.
-<item><tt/Light/, create a new light source. See
+
+<item><tt/"Light"/, create a new light source. See
 also section <ref id="lightobj" name="Light Object">.
-<item><tt/Custom Object/, create a new custom object. If this sub-menu
+
+<item><tt/"Custom Object"/, create a new custom object. If this sub-menu
 is empty no custom object has been loaded yet. See
 also section <ref id="customobj" name="Custom Object">.
-<item><tt/Instance/, create an instance of the currently selected
+
+<item><tt/"Instance"/, create an instance of the currently selected
 object, see section <ref id="instanceobj" name="Instance Object">
 for more information regarding instances.
-<item><tt/Clone/, create a clone object, see
+
+<item><tt/"Clone"/, create a clone object, see
 section <ref id="cloneobj" name="Clone Object">
-<item><tt/View/, a new View window will be opened. See
+
+<item><tt/"View"/, a new View window will be opened. See
 also section <ref id="viewobj" name="View Object">.
-<item><tt/Material/, create a new material. A small dialog box will
+
+<item><tt/"Material"/, create a new material. A small dialog box will
 pop up, where you have to specify the name of the new material. See
 also section <ref id="materialobj" name="Material Object">.
-<item><tt/Camera/, create a new camera. Camera objects may be used
+
+<item><tt/"Camera"/, create a new camera. Camera objects may be used
 to temporarily save view camera settings, see
 section <ref id="cameraobj" name="Camera Object">.
-<item><tt/RiInc/, create a new RIB-include object. Those objects
+
+<item><tt/"RiInc"/, create a new RIB-include object. Those objects
 may be used to include objects into your scenes
 that just exist as a piece of RIB, see
 also section <ref id="riincobj" name="RiInc Object">.
-<item><tt/RiProc/, create a new procedural object, see
+
+<item><tt/"RiProc"/, create a new procedural object, see
 also section <ref id="riprocobj" name="RiProc Object">.
-<item><tt/Script/, create a new script object, see
+
+<item><tt/"Script"/, create a new script object, see
 also section <ref id="scriptobj" name="Script Object">.
-<item><tt/Text/, create a new text object, see
+
+<item><tt/"Text"/, create a new text object, see
 also section <ref id="textobj" name="Text Object">.
 </itemize>
 
 <label id="mmtools">
-The <tt/Tools/ menu:
+The <tt/"Tools"/ menu:
 <itemize>
-<item><tt/Create/, <tt/NURBCurve/, and
-<tt/NURBPatch/, are sub-menus with various NURBS based modeling
+<item><tt/"Create"/, <tt/"NURBCurve"/, and
+<tt/"NURBPatch"/, are sub-menus with various NURBS based modeling
 tools, that are explained in depth in section
 <ref id="nmtool" name="NURBS Modeling Tools">.
-<item><tt/PolyMesh/: sub-menu for polygonal mesh related tools:
+
+<item><tt/"PolyMesh"/: sub-menu for polygonal mesh related tools:
 <itemize>
-<item><tt/Merge/: merges all currently selected PolyMesh objects into
+<item><tt/"Merge"/: merges all currently selected PolyMesh objects into
 a single PolyMesh object, without checking for doubly used points,
 loops, or faces. Normally, the currently selected PolyMesh objects will not
 be changed by this tool. But you may let the merge-tool delete them
-immediately, if you enable the <tt/RemoveMerged/-option.
-If the <tt/OptimizeNew/-option is enabled, the <tt/Optimize/-tool
+immediately, if you enable the <tt/"RemoveMerged"/-option.
+If the <tt/OptimizeNew/-option is enabled, the <tt/"Optimize"/-tool
 (see below) will be started after the merge operation with the
 newly created merged object as argument.
-<item><tt/Optimize/: optimizes the selected PolyMesh object(s)
+
+<item><tt/"Optimize"/: optimizes the selected PolyMesh object(s)
 by removing all multiply used control points (if the option
-<tt/OptimizeCoords/ is enabled) or multiply used faces (not implemented yet).
-If the option <tt/IgnoreNormals/ is enabled, the optimize-tool will
+<tt/"OptimizeCoords"/ is enabled) or multiply used faces (not implemented
+yet). If the option <tt/"IgnoreNormals"/ is enabled, the optimize-tool will
 consider points with equal coordinates but differing normals
 to be equal (and optimize them).
-Removing multiply used control points using the <tt/Optimize/-tool
+Removing multiply used control points using the <tt/"Optimize"/-tool
 may decrease the memory consumption of the control points
 by a factor of about six, depending on the connectivity of the original
 mesh.
 </itemize>
-<item><tt/Show/, <tt/Hide/ set and unset the <tt/Hide/
+
+<item><tt/"Show"/, <tt/"Hide"/ set and unset the <tt/"Hide"/
 attribute of the selected object(s) thus making them invisible.
 Note that hidden objects may be excluded from RIB-Export, when
 the preference setting <tt>"RIB-Export/ExcludeHidden"</tt> is
 activated.
-<item><tt/Show All/ and <tt/Hide All/ set and unset the <tt/Hide/
+
+<item><tt/"Show All"/ and <tt/"Hide All"/ set and unset the <tt/"Hide"/
 attribute of all objects in the scene (including the root object
 and all views!) regardles of the currently selected objects (and
 without changing the current selection). These operations are
 not undoable.
-<item><tt/Convert/, starts the convert action that has been
+
+<item><tt/"Convert"/, starts the convert action that has been
 registered for the type of the selected object(s). The exact
 behaviour depends on the type of the selected object(s):
 a Revolve object will e.g. be converted to a level containing NURBS
 patches that make up the surface of revolution and the caps.
 This operation is not undoable, i.e. the newly created objects
 will not be removed by using the undo system.
-<item><tt/Convert (In Place)/, starts the convert action as
+
+<item><tt/"Convert (In Place)"/, starts the convert action as
 outlined above, but replaces the original objects with the
 new converted ones. This operation, in contrast to the simple
 conversion, is undoable.
-<item><tt/Force Notification/, force the notification callbacks of
+
+<item><tt/"Force Notification"/, force the notification callbacks of
 all selected objects (or all objects in the scene if no objects are selected)
 to be called. The notification callbacks are used by objects
 like e.g. Revolve to be informed about changes of their child
 objects to properly adapt to those changes.
-<item><tt/Highlight Material/, colours all objects of the same
+
+<item><tt/"Highlight Material"/, colours all objects of the same
 material in red color in the tree view. This tool expects a selected
 material object or a normal object that has a material attached.
 It will not work for material objects that are not registered or
@@ -687,92 +763,92 @@ in the object clipboard. You can clear the tree view again by pressing
 </itemize>
 
 <label id="mmcustom">
-The <tt/Custom/ menu is initially empty. Custom objects and plugins,
+The <tt/"Custom"/ menu is initially empty. Custom objects and plugins,
 may create entries here.
 
 <label id="mmspecial">
-The <tt/Special/ menu:
+The <tt/"Special"/ menu contains seldom used tools:
 <itemize>
-<item><tt/Save Selected as/, saves just the currently selected objects
-to disk. Note that Ayam will not check, whether the objects are
-saved with their materials. It is also possible to save
-instance objects without their master objects. This will lead
-to errors while loading such a scene later on.
+<item><tt/"Save Selected as"/, saves just the currently selected objects
+to disk. Note that Ayam will not check, whether the objects are saved
+with their materials. It is also possible to save instance objects
+without their master objects. This will lead to errors while loading
+such a scene later on.
 
-<item><tt/Save Environment/, saves the root object and all
+<item><tt/"Save Environment"/, saves the root object and all
 views to a so called environment scene file, which is read
 on program startup and <tt>"File/New"</tt>.
 Initially, the file requester that asks for the name
 of the new environment uses the value of the preference
 setting <tt>"Main/EnvFile"</tt>. Note that there will be no
 check whether loading of that environment on next start up is
-enabled in the preferences. Note also, that using <tt/Save Environment/
+enabled in the preferences. Note also, that using <tt/"Save Environment"/
 you can just save environment files that contain the root object
 and all views. If you want to include geometric objects in your
 environment or if you want to exclude the root object and just
 save views you have to use <tt>"File/Save"</tt> or
 <tt>"Special/Save Selected as"</tt> respectively.
 
-<item><tt>Clipboard/Paste (move)</tt>, moves objects from the clipboard back
-to the scene (clearing the clipboard). This is the only way to
+<item><tt>"Clipboard/Paste (move)"</tt>, moves objects from the clipboard
+back to the scene (clearing the clipboard). This is the only way to
 get referenced objects out of the clipboard.
 
-<item><tt>Clipboard/Replace</tt>, replaces the currently selected
+<item><tt>"Clipboard/Replace"</tt>, replaces the currently selected
 object(s) with the object clipboard content, moving the replaced
 objects into the clipboard. If multiple objects are selected
 in non consecutive sequences, only the first consecutive sequence
 or single object is replaced.
 
-<item><tt>Clipboard/Paste Property to selected</tt> paste the property
+<item><tt>"Clipboard/Paste Property to selected"</tt> paste the property
 from the property clipboard to the currently selected
 property of the currently selected object. No type check of the
 properties will take place! You may e.g. copy the settings from a
 displacement shader to a surface shader (as long as the copied arguments
 of both shaders have the same names and types).
-<item><tt>Points/Select All Points</tt>, selects all points of the currently
+
+<item><tt>"Points/Select All Points"</tt>, selects all points of the currently
 selected object(s).
 
-<item><tt>Points/Invert Selection</tt>, selects all points of the currently
+<item><tt>"Points/Invert Selection"</tt>, selects all points of the currently
 selected object(s) that are not selected, and de-select all points that
 are currently selected.
 
-<item><tt>Points/Apply To All</tt>, applies the transformations encoded in the
-transformations property of the selected objects to all points of those
+<item><tt>"Points/Apply To All"</tt>, applies the transformations encoded in
+the transformations property of the selected objects to all points of those
 objects.
 This will have the effect of resetting the transformations property
 to the default values without transforming the points.
 
-<item><tt>Points/Apply To Selected</tt>, applies the transformations
-encoded in the
-transformations property of the selected objects to the selected points.
+<item><tt>"Points/Apply To Selected"</tt>, applies the transformations
+encoded in the transformations property of the selected objects to the
+selected points.
 This will reset the transformations property without transforming the
 selected points. The points currently not selected will be transformed,
 however!
 
-<item><tt>Instances/Resolve all Instances</tt>, converts all instances
+<item><tt>"Instances/Resolve all Instances"</tt>, converts all instances
 of the current level (and its child objects) to normal objects.
 
-<item><tt>Instances/Automatic Instancing</tt>, pops up a small dialog box,
+<item><tt>"Instances/Automatic Instancing"</tt>, pops up a small dialog box,
 where you may parameterize and start the automatic instantiation
 algorithm (that automatically creates instances from
 equal objects). See section <ref id="ai" name="Automatic Instancing">
 for more information regarding automatic instancing.
 
-<item><tt>Tags/Add RiOption</tt>, pops up a small dialog box, where you may
+<item><tt>"Tags/Add RiOption"</tt>, pops up a small dialog box, where you may
 select and parameterize a RiOption tag to add as tag to the Root object
 (see <ref id="riotag" name="RiOption Tag">). The Root object does
 not have to be selected, and the current selection will not be changed
 by this action.
 
-<item><tt>Tags/Add RiAttribute</tt>, pops up a small dialog box, where you may
-select and parameterize a RiAttribute tag to add as tag to the currently
-selected object(s)
-(see <ref id="riatag" name="RiAttribute Tag">).
+<item><tt>"Tags/Add RiAttribute"</tt>, pops up a small dialog box, where
+you may select and parameterize a RiAttribute tag to add as tag to the
+currently selected object(s) (see <ref id="riatag" name="RiAttribute Tag">).
 
-<item><tt>Tags/Edit TexCoords</tt>, opens the texture coordinates editor.
+<item><tt>"Tags/Edit TexCoords"</tt>, opens the texture coordinates editor.
 (see also section <ref id="tctag" name="TC (TextureCoordinates) Tag">).
 
-<item><tt>Select Renderer</tt> opens a dialog where the renderer
+<item><tt>"Select Renderer"</tt> opens a dialog where the renderer
 for direct rendering from a view may be choosen.
 The changes will have effect on all options that
 control direct rendering from a view, except whether RenderGUIs should
@@ -786,67 +862,71 @@ properly you also have to set the <tt>"Main/Shaders"</tt> and
 <tt>"Main/Plugins"</tt> preference setting correctly
 (see also section <ref id="prefmain" name="The Main Preferences">).
 
-<item><tt>RIB-Export/From Camera</tt>, writes a complete RIB of
+<item><tt>"RIB-Export/From Camera"</tt>, writes a complete RIB of
 the current scene with the camera transformations taken from the
 currently selected camera object. The size of the rendered image will
 be taken from the RiOptions of the root object. If they are zero,
 default values of 400 pixels width and 300 pixels height will be used.
 The type of the projection written will be perspective.
 Otherwise the RIB looks exactly the same as if exported via
-main menu <tt>File/Export RIB</tt>.
+main menu <tt>"File/Export/RenderMan RIB"</tt>.
 
-<item><tt>RIB-Export/Selected Objects</tt>, exports only the
+<item><tt>"RIB-Export/Selected Objects"</tt>, exports only the
 selected objects to a RIB. Note that instances will always be resolved,
 hidden objects and objects with <tt>"NoExport"</tt> tags are treated
 as on normal export operations, and light objects are simply ignored.
-Note also that this RIB,
-since it e.g. lacks camera transformation and WorldBegin/End directives,
-may not be rendered directly by a RenderMan compliant renderer
-(unless the renderer is really forgiving about mis-structured RIBs).
+Note also that the created RIB, since it e.g. lacks camera transformation
+and WorldBegin/End directives, may not be rendered directly by a
+RenderMan compliant renderer (unless the renderer is really forgiving
+about mis-structured RIBs).
 The main use of this feature is to let you create RIBs that may be easily
-included in other RIBs using e.g. ReadArchive.
+included in other RIBs using e.g. the ReadArchive directive.
 
-<item><tt>RIB-Export/Create ShadowMaps</tt>, creates the shadow maps
+<item><tt>"RIB-Export/Create ShadowMaps"</tt>, creates the shadow maps
 for the current scene.
 See also section <ref id="shadowmaps" name="Using ShadowMaps">.
 
-<item><tt/Enable Scripts/ enables all disabled script tags and
+<item><tt/"Enable Scripts"/ enables all disabled script tags and
 objects. Objects and tags in the object clipboard are not
 affected!
 
-<item><tt/Toggle ToolBox/ closes or opens the toolbox window
+<item><tt/"Toggle ToolBox"/ closes or opens the toolbox window
 (see <ref id="toolb" name="The Tool Box Window">). From version 1.3 on,
 Ayam remembers the state of the toolbox in the saved preferences.
 
-<item><tt/Toggle TreeView/ toggles object tree view and object listbox.
+<item><tt/"Toggle TreeView"/ toggles object tree view and object listbox.
 From version 1.3 on, Ayam remembers whether the tree view or the
 object listbox is open in the saved preferences
 (see also section <ref id="obj" name="Objects"> for more information
 about both representations).
 
-<item><tt>Zap Ayam</tt> iconifies all currently open windows of Ayam.
+<item><tt>"Zap Ayam"</tt> iconifies all currently open windows of Ayam.
 If one of the iconified windows is de-iconified later, all other zapped
 windows will be de-iconified as well.
 </itemize>
 
 <label id="mmhelp">
-The <tt/Help/ menu:
+The <tt/"Help"/ menu:
 <itemize>
-<item><tt/Help/, opens a web browser and displays the documentation,
-the URL to display is taken from the <tt/Docs/ preference setting.
-<item><tt/Help on object/, opens a web browser and displays
+<item><tt/"Help"/, opens a web browser and displays the documentation,
+the URL to display is taken from the <tt/"Docs"/ preference setting.
+
+<item><tt/"Help on object"/, opens a web browser and displays
 documentation about the currently selected type of object,
-the URL to display is derived from the <tt/Docs/ preference setting,
+the URL to display is derived from the <tt/"Docs"/ preference setting,
 this feature will not work with frame redirects e.g.
-<tt>http://www.ayam3d.org/</tt>; use
-<tt>http://ayam.sourceforge.net/docs/</tt> or a <tt>file:</tt>-URL
-as base URL in the <tt/Docs/ preference setting instead!
-<item><tt/Show Shortcuts/, displays some important shortcuts for modeling
+<tt>"http://www.ayam3d.org/"</tt>; use
+<tt>"http://ayam.sourceforge.net/docs/"</tt> or a <tt>"file:"</tt>-URL
+as base URL in the <tt/"Docs"/ preference setting instead!
+
+<item><tt/"Show Shortcuts"/, displays some important shortcuts for modeling
 actions, you may leave this window open when doing your first
 steps in modeling with Ayam.
-<item><tt/About/, displays some version, copyright,
+
+<item><tt/"About"/, displays some version, copyright,
 and trademark information.
-<item><tt/Show Tooltips/, enables tool tips (balloon help)
+
+<item><tt/"Show Tooltips"/, enables tool tips (balloon help)
 for various user interface elements (including the tool box buttons).
 </itemize>
 
@@ -869,14 +949,15 @@ name, current type, and action of the view.
 <label id="vmview">
 Here are all meny entries of the <tt/"View"/ menu:
 <itemize>
-<item><tt/Quick Render/: the scene is exported to a RIB using the
+<item><tt/"Quick Render"/: the scene is exported to a RIB using the
 camera settings of the current view; then the <tt/"QRender"/ command
 (see the preferences) will be called. Note that the RIB export
 will override the RiOption settings for image size and use the current
 window size instead.
 Also note that the environment variable <tt/SHADERS/ will be adapted
 to the preference setting <tt/Shaders/ for rendering.
-<item><tt/Render/: the scene is exported to a RIB using the
+
+<item><tt/"Render"/: the scene is exported to a RIB using the
 camera settings of the current view; then the <tt/"Render"/ command
 (see the preferences) will be called. Note that the RIB export
 will override the RiOption settings for image size and use the current
@@ -884,12 +965,14 @@ window size instead.
 Also note that the environment variable <tt/SHADERS/ will be adapted
 to the preference setting <tt/Shaders/ for rendering.
 
-<item><tt/Redraw/: forces the OpenGL-widget to be drawn, this is
+<item><tt/"Redraw"/: forces the OpenGL-widget to be drawn, this is
 particularly useful if automatic redrawing of the view has been disabled.
-<item><tt/Export RIB/ exports the scene to a RIB. This does exactly the
-same as the main menu entry <tt/Export RIB/, except that the current view is
-already selected in the dialog box.
-<item><tt/Open PPrev/, <tt/Close PPrev/: those menu entries are just
+
+<item><tt/"Export RIB"/ exports the scene to a RIB. This does exactly the
+same as the main menu entry <tt/"File/Export/RenderMan RIB"/, except that
+the current view will already be selected in the dialog box.
+
+<item><tt/"Open PPrev"/, <tt/"Close PPrev"/: those menu entries are just
 available, if the compile time option <tt/AYENABLEPPREV/ has been set.
 This option is not set for the official Ayam binaries.
 Permanent preview (PPrev) continuously writes a RIB stream to
@@ -899,80 +982,103 @@ RenderMan renderer immediately displays all changes in the scene.
 This is a great way to test many different camera or light settings without
 the need to manually start a rendering process and close the preview window
 for each different setting.
-As the RIB client library usually is not able to handle more
-than one open RIB stream, RIB-Export and direct rendering from
-view windows is not available until the permanent view window is closed.
-<item><tt/Create ShadowMaps/: creates the shadow maps for the current scene.
+As the RIB client library usually is not able to handle more than one open
+RIB stream, RIB-Export and direct rendering from view windows are not
+available until the permanent view window is closed.
+
+<item><tt/"Create ShadowMaps"/: creates the shadow maps for the current scene.
 See also section <ref id="shadowmaps" name="Using ShadowMaps">.
-<item><tt/Close/: the View window will be removed.
+
+<item><tt/"Close"/: the View window will be removed.
 </itemize>
 
 <label id="vmtype">
 The <tt/"Type"/ menu entries:
 <itemize>
-<item><tt/Front/
-<item><tt/Side/
-<item><tt/Top/
-<item><tt/Perspective/
-<item><tt/Trim/
+<item><tt/"Front"/
+
+<item><tt/"Side"/
+
+<item><tt/"Top"/
+
+<item><tt/"Perspective"/
+
+<item><tt/"Trim"/
 </itemize>
-may be used to change the type of the view, which
-restrains the scope of certain modeling actions.
-See sections <ref id="viewobj" name="View Object"> and
+may be used to change the type of the view, which restrains the scope
+of certain modeling actions. See sections
+<ref id="viewobj" name="View Object"> and
 <ref id="vwsc" name="View Window Shortcuts and Actions">
 for more information.
 
 <label id="vmconf">
 The <tt/"Configure"/ menu may be used to change preferences of the view.
-Some preferences are outlined in greater detail in
-section <ref id="vat" name="ViewAttrib">.
+Some preferences are outlined in greater detail in section
+<ref id="vat" name="ViewAttrib">.
 <itemize>
-<item><tt/Automatic Redraw/, toggles whether the view should
+<item><tt/"Automatic Redraw"/, toggles whether the view should
 be redrawn, whenever the scene changes. If this is disabled,
-you can force a redraw using <tt>View/Redraw</tt>.
-<item><tt/Drawing Mode/ determines whether the view should draw a wireframe
+you can force a redraw using <tt>"View/Redraw"</tt>.
+
+<item><tt/"Drawing Mode"/ determines whether the view should draw a wireframe
 representation (<tt>Drawing Mode/Draw</tt>) or a shaded one
-(<tt>Drawing Mode/Shade</tt>) or, new in Ayam 1.6, a representation
+(<tt>"Drawing Mode/Shade"</tt>) or, new in Ayam 1.6, a representation
 where the curves of the draw mode are drawn over the shaded
-representation (<tt>Drawing Mode/ShadeAndDraw</tt>).
-<item><tt/Draw Selection only/, if this is enabled, just the
+representation (<tt>"Drawing Mode/ShadeAndDraw"</tt>).
+
+<item><tt/"Draw Selection only"/, if this is enabled, just the
 currently selected objects (and their children) will be drawn.
-<item><tt/Draw Level only/, if this is enabled, just the
+
+<item><tt/"Draw Level only"/, if this is enabled, just the
 objects of the current level (and their children) will be drawn.
-<item><tt/Draw BGImage/, if this is enabled, a background
+
+<item><tt/"Draw BGImage"/, if this is enabled, a background
 image will be drawn.
-<item><tt/Set BGImage/, may be used to set the current background
+
+<item><tt/"Set BGImage"/, may be used to set the current background
 image of the view, which should be a TIFF file.
 You can also set this image using the view attribute <tt/BGImage/.
-<item><tt/Draw Grid/, if this is enabled the grid will be drawn.
-<item><tt/Use Grid/, if this is enabled the grid will be used to
+
+<item><tt/"Draw Grid"/, if this is enabled the grid will be drawn.
+
+<item><tt/"Use Grid"/, if this is enabled the grid will be used to
 constrain modeling actions to grid coordinates.
-<item><tt/Set Gridsize/, may be used to change the size of the grid
+
+<item><tt/"Set Gridsize"/, may be used to change the size of the grid
 associated with this view. Another way to change the grid size is
 to use the grid menu on the rightmost side, see below.
-<item><tt/Half Size/, change width and height to the half of the
+
+<item><tt/"Half Size"/, change width and height to the half of the
 current values.
-<item><tt/Double Size/, change width and height to the double of the
+
+<item><tt/"Double Size"/, change width and height to the double of the
 current values.
-<item><tt/From Camera/, copy camera settings from the currently
+
+<item><tt/"From Camera"/, copy camera settings from the currently
 selected camera object to the view.
-<item><tt/To Camera/, copy camera settings to the currently
+
+<item><tt/"To Camera"/, copy camera settings to the currently
 selected camera object from the view.
-<item><tt/Set FOV/, lets you specify a field of view value
+
+<item><tt/"Set FOV"/, lets you specify a field of view value
 for the view, and adapts the zoom accordingly. This is just
 working for perspective views, of course.
-<item><tt/Zoom to Object/, adapt the camera settings, so that
+
+<item><tt/"Zoom to Object"/, adapt the camera settings, so that
 the currently selected objects are centered in the view.
-<item><tt/Align to Object/, align the view to the coordinate
+
+<item><tt/"Align to Object"/, align the view to the coordinate
 system of the currently selected object or to the parent
 object of the current level if no object is currently selected.
-<item><tt/Edit Local/, if this is enabled modelling will take place
+
+<item><tt/"Edit Local"/, if this is enabled modelling will take place
 in local object space and not in world space. The grid will be
 changed accordingly (interpreted as if defined in the local coordinate space).
 See also section <ref id="editlocal" name="Editing in Local Space">.
 </itemize>
 
-The <tt/"Grid"/ menu may be used to change the current grid size:<p>
+The <tt/"Grid"/ menu may be used to change the current grid size:
+<p>
 On the right hand side in the menu bar there is a little icon
 that displays the current grid size.
 You may click on the icon to display a menu with predefined
@@ -988,45 +1094,50 @@ menu instead.
 
 <sect2>View Window Shortcuts and Actions<label id="vwsc">
 <p>
-Important keyboard commands of a <tt/View/:
+Important keyboard commands of a view window are:
 <itemize>
 <item><tt/&lt;Left&gt;/, <tt/&lt;Up&gt;/, <tt/&lt;Right&gt;/,
 <tt/&lt;Down&gt;/ rotate viewer around origin.
+
 <item><tt/&lt;Add&gt;/, <tt/&lt;Sub&gt;/ (on the numeric keypad) zoom view.
 </itemize>
 
-Interactive actions modifying a view:
+Interactive actions modifying the camera, that is associated with the
+view window, are:
 <itemize>
 <item>Using <tt/&lt;v&gt;/ you may move the view with your mouse.
+
 <item>Using <tt/&lt;V&gt;/ you move the camera in the direction it is
 looking. Note that this affects both, from and to setting of the
 virtual camera. Furthermore, this movement will have no visible effect in
 parallel views.
+
 <item><tt/&lt;R&gt;/ (note the case!) starts rotating the virtual
 camera around the point it is looking to.
 <item>Rotating the view is also possible in any
 modeling mode, when holding down the <tt/&lt;Alt&gt;/-key.
+
 <item><tt/&lt;o&gt;/ starts zooming the view. Moving the mouse up
 zooms in and moving the mouse down zooms out.
+
 <item>Since Ayam 1.7 zooming the view into a rectangular region
 defined through a mouse drag is also possible in any
 modeling mode, when holding down the <tt/&lt;Shift&gt;/-key.
 </itemize>
-
+<p>
 You may also move the view by dragging with the rightmost mouse
 button and zoom the view with the middle mouse button.
-
+<p>
 If you have a wheel mouse and it is configured to send
 Mouse4 and Mouse5 button events, Ayam will zoom the view
 when you turn the wheel.
-
-Using the menu entry <tt/"Zoom to Object"/ or
-the shortcut <tt/&lt;Ctrl+o&gt;/ you can change the
-views from to and zoom settings so that the selected objects
-will be displayed centered in the view window.
-This is handy, if you are e.g. searching for objects or simply
-lost in space.
-
+<p>
+Using the menu entry <tt/"Zoom to Object"/ or the shortcut
+<tt/&lt;Ctrl+o&gt;/ you can change the views from to and zoom
+settings so that the selected objects will be displayed centered
+in the view window. This is handy, if you are e.g. searching for
+objects or simply lost in space.
+<p>
 Using the menu entry <tt/"Align to Parent"/ or
 the shortcut <tt/&lt;Ctrl+a&gt;/ you can change the
 views camera settings so that it is aligned to the
@@ -1038,8 +1149,8 @@ See also section <ref id="editlocal" name="Editing in Local Space">.
 
 <sect1>Selecting Objects within a View<label id="objsel">
 <p>
-When the views action is
-<tt/"Pick"/ you can pick objects that appear within a view.
+When the view windows action is <tt/"Pick"/ you can pick (select) objects
+that appear within this view.
 You can invoke this action by pressing <tt/&lt;Shift+p&gt;/
 or make this action the default action using the preference
 setting <tt>"Modeling/DefaultAction"</tt>.
@@ -1053,11 +1164,12 @@ standard methods. You will use the following two selection operations most
 frequently:
 
 <itemize>
-<item> To select a single object within a view, move the cursor to the object
+<item>To select a single object within a view, move the cursor to the object
 and click mouse button 1 (the leftmost one).
 Once you select an object, any objects previously
 selected are unselected automatically.
-<item> To select an additional object, move the cursor to the object and
+
+<item>To select an additional object, move the cursor to the object and
 <tt/&lt;Control&gt;/+Click (again with the leftmost mouse button).
 Previously selected objects remain selected, and
 the newly picked object is added to the selection. Notice that the picked item
@@ -1077,15 +1189,16 @@ can be picked within a drag-selection. If you want to select multiple objects
 that belong to another level you must change the current level by either
 selecting it in the tree/listbox or by picking one object from that level
 on a view.
-
 <p>
 The procedure for drag-selecting multiple objects also uses a standard method:
 
 <enum>
-<item> Imagine a rectangle that encloses only the objects you want to select.
-<item> Click at one corner of the rectangle and, while continuing to press the
+<item>Imagine a rectangle that encloses only the objects you want to select.
+
+<item>Click at one corner of the rectangle and, while continuing to press the
 mouse button, drag until you have enclosed all the objects.
-<item> Release the mouse button. All the valid objects inside or crossing the
+
+<item>Release the mouse button. All the valid objects inside or crossing the
 rectangle are selected and any objects previously selected are unselected
 automatically.
 </enum>
@@ -1107,6 +1220,7 @@ any other valid objects that fall inside this square are also considered to
 be possible selections. For example, if you select an item that is positioned
 very close to another one, Ayam may consider both items to be possible
 selections.
+
 <item>If your model is three-dimensional (which is likely to happen),
 imagine a line that is perpendicular to the screen and that passes through
 the cursor and into the model. When you pick an object, any objects that
@@ -1123,19 +1237,21 @@ intersect this line are considered to be possible candidates for selection.
 <p>
 If your selection is ambiguous Ayam displays a window that contains a list of
 the possible candidates for selection. When you click a name in the list,
-the corresponding object is highlighted. Click <tt/"OK"/ when you have
+the corresponding object is highlighted. Click <tt/"Ok"/ when you have
 determined which object to select or <tt/"Cancel"/ to close the list and keep
 the previous selection unchanged.
 
 <p>
 Notes:
 <itemize>
-<item> While the list of ambiguous candidates is opened you can not pick other
+<item>While the list of ambiguous candidates is opened you can not pick other
 objects within the views.
-<item> It is possible to use the <tt/"Zoom to Object"/ action (shortcut
+
+<item>It is possible to use the <tt/"Zoom to Object"/ action (shortcut
 <tt/&lt;Ctrl+o&gt;/) while the ambiguous select listbox is open to get
 a better view of the temporarily selected object.
-<item> The tolerance used to determine whether an object should be picked
+
+<item>The tolerance used to determine whether an object should be picked
 or not can be adjusted (see <tt/"PickTolerance"/ in <ref id="hidprefs"
 name="Hidden Preference Settings">).
 </itemize>
@@ -1149,19 +1265,20 @@ name="Hidden Preference Settings">).
 </figure>
 <p>
 The tool window displays some buttons that start interactive
-modeling actions or other modeling tools, or create objects.<p>
+modeling actions or other modeling tools, or create objects.
+<p>
 Note that in contrast to the keyboard shortcuts of the
 view windows the buttons switch to the modeling actions for
 all available views. For more information about the actions
-see section <ref id="iac" name="Interactive Actions">.<p>
-
+see section <ref id="iac" name="Interactive Actions">.
+<p>
 The tool window may be configured by the user using the
 preference setting toolBoxList in the ayamrc file.
 You may select from the groups and change the order in which
 they appear in the tool window. See section
 <ref id="hidprefs" name="Hidden Preference Settings"> for
-more information.<p>
-
+more information.
+<p>
 You may also resize the window to change from the vertical
 standard layout to a horizontal one, optimizing the
 use of precious screen space. After resizing, the tool box will
@@ -1189,12 +1306,15 @@ Use
 <itemize>
 <item><tt/"Ok"/ to close the preference editor and
 apply all changes,
+
 <item><tt/"Apply"/ to apply the changes, but
 leave the editor open,
+
 <item><tt/"Revert"/ to reset to the settings
 that have been loaded on program startup (these
 are not the factory defaults, to get back to the factory
 defaults, restart Ayam with the command line option <tt/"-failsafe"/!),
+
 <item><tt/"Cancel"/ to close the dialog without applying changes
 (done after the last press of <tt/"Apply"/).
 </itemize>
@@ -1215,6 +1335,7 @@ may contain just two <tt/"."/ at maximum.
 The environment variable SHADERS will be adapted to match the contents
 of this preference setting, so that renderers started by Ayam see
 exactly the same shaders as Ayam.
+
 <item><tt/"Scan for Shaders!"/ initiates a rebuild of the internal
 shaders database. All shaders in the directories specified by
 the <tt/"Shaders"/ entry will be scanned and entered in that database.
@@ -1229,39 +1350,50 @@ settings.<label id="prefgui">
 <item><tt/"Locale"/, sets a language for the balloon help texts,
 the default value menu shows all currently available locales.
 The value will have no effect until Ayam is restarted!
+
 <item><tt/"AutoResize"/ toggles, whether the main window
 should be resized horizontally according to the property GUI whenever
 a new GUI is displayed.
+
 <item><tt/"AutoFocus"/ controls whether Ayam should automatically
 move the focus to a view or the main window, when the mouse pointer
 enters it. Note that this may only work correctly, when a window
 of Ayam already has the focus. Notice also, that moving the focus
 to a window might also raise it (depending on your operating system
 or window manager).
+
 <item><tt/"TwmCompat"/ changes, how Ayam tells the window manager
 new geometries of windows. Might be useful, if you suffer from jumping
 windows.
+
 <item><tt/"ListTypes"/ determines, whether the type of an
 object should be displayed in brackets in the tree view or listbox.
+
 <item><tt/"MarkHidden"/ determines, whether hidden objects
 should be marked (using a preceding exclamation mark)
 in the tree view or object listbox.
+
 <item><tt/"AutoSavePrefs"/, if this is switched on, Ayam will write
 the preferences settings to the file ayamrc when the program quits.
+
 <item><tt/"BakOnReplace"/, if this is switched on, Ayam will make
 a backup copy of each scene file it loads via main menu
 <tt>"File/Open"</tt> or via the most recently used list.
+
 <item><tt/"LoadEnv"/, if this is switched on, Ayam will load
 the scene file specified by <tt/"EnvFile"/ on startup.
+
 <item><tt/"NewLoadsEnv"/, if this is switched on, Ayam will load
 the scene file specified by <tt/"EnvFile"/ also when the scene is
 cleared using the main menu entry <tt>"File/New"</tt>.
+
 <item><tt/"EnvFile"/; This file typically contains some view
 objects to create a standard 2-, 3-, or 4-view working environment
 and is automatically loaded upon startup of Ayam (if the preference option
 <tt/"LoadEnv"/, see above, is switched on) and upon clearing the scene
 using <tt>"File/New"</tt> (if the preference option
 <tt/"NewLoadsEnv"/, see above, is switched on).
+
 <item><tt/"Scripts"/ is a list of Tcl scripts that will
 be executed on startup. The scripts have to be specified with full
 path and filename. If non absolute paths are used they are relative
@@ -1269,6 +1401,7 @@ to the current directory of Ayam on application startup (which is typically
 the directory where the Ayam executable resides).
 Multiple entries have to be separated
 by a colon (:) on Unix and by a semicolon (;) on Win32.
+
 <item><tt/"Plugins"/ is a list of directories that contain custom
 objects or plugins. Those directories will e.g. be searched for
 custom objects when unknown object types are encountered while reading
@@ -1276,8 +1409,10 @@ Ayam scene files. If a matching custom object is found, it will be
 automatically loaded into Ayam, so that scene loading may proceed without
 an error. Multiple entries have to be separated
 by a colon (:) on Unix and by a semicolon (;) on Win32.
+
 <item><tt/"Docs"/ is an URL that points to the documentation in
 HTML format.
+
 <item><tt/"TmpDir"/ is the directory, where temporary RIBs are
 created, e.g. when rendering directly from view windows.
 </itemize>
@@ -1293,6 +1428,7 @@ A smaller <tt/"PickEpsilon"/ means more exact picking.
 The value of <tt/"PickEpsilon"/ should be positive. In older versions
 of Ayam (prior to 1.8), a value of 0.0 was allowed. This is no longer the
 case.
+
 <item><tt/"LazyNotify"/ determines whether notification shall
 occur on all mouse movements or just on release of the mouse button,
 for the interactive modeling actions.
@@ -1300,21 +1436,26 @@ Notification is the mechanism used to inform objects that rely
 on certain child objects (e.g. the Revolve custom
 object) about changes of their child objects, so that the parent can adapt
 to the child objects automagically.
+
 <item><tt/"EditSnaps"/ determines, whether points
 should be snapped to the grid when a grid is defined and
 in use for the single point modeling actions.
+
 <item><tt/"Snap3D"/ controls, whether points that are snapped to
 grid coordinates (in single point editing actions, when grids are active)
 should be influenced in all three dimensions, or just the two dimensions
 determined by the type of the view
+
 <item><tt/"FlashPoints"/ controls flashing of editable points in
 the single point modeling actions when they would be modified by
 a click and drag action.
 Note that a change of this preference option takes effect after the
 current modeling action has been switched off and the single point
 editing has been activated (again).
+
 <item><tt/"DefaultAction"/ determines the modelling action
 that should be active after a press of the <tt/&lt;Esc&gt;/ key.
+
 <item><tt/"UndoLevels"/ determines the number of modeling steps
 that should be saved in the undo buffer. Useful values range
 from 2 to 50 (depending on how much memory you like to spend).
@@ -1336,6 +1477,7 @@ Smaller tolerance settings lead to higher quality. Useful values
 range from 1 to 100.
 This setting has no effect for objects that override it
 using a local tolerance setting different from 0.
+
 <item><tt/"DisplayMode"/ sets the display mode for NURBS patches.
 Either the control hull (or control polygon) is drawn (ControlHull), or
 just the outlines of the polygons created by the tesselation
@@ -1343,15 +1485,18 @@ just the outlines of the polygons created by the tesselation
 Note that this setting just affects the drawing of patches if
 the view is not in shaded mode.
 Note also, that this setting has no effect for objects that override it
-using a local DisplayMode setting different from "Global".
+using a local DisplayMode setting different from <tt/"Global"/.
+
 <item><tt/"NCDisplayMode"/ sets the display mode for NURBS curves,
 The control hull (control polygon) or the curve or a
 combination of both may be displayed.
 Note that this setting has no effect for objects that override it
-using a local DisplayMode setting different from "Global".
+using a local DisplayMode setting different from <tt/"Global"/.
+
 <item><tt/"UseMatColor"/ determines, whether the shaded representation
 uses the color defined by the material of an object for
 rendering.
+
 <item><tt/"Background"/, <tt/"Object"/, <tt/"Selection"/, <tt/"Grid"/,
 <tt/"Tag"/, <tt/"Shade"/, and <tt/"Light"/ let you set colors that
 will be used when drawing or shading.
@@ -1364,8 +1509,8 @@ affect how RIBs are created.
 <itemize>
 <item><tt/"RIBFile"/ allows to set the file Ayam is exporting
 RenderMan Interface Bytestreams (RIBs) to. Note that some
-filenames have special meaning:<p>
-
+filenames have special meaning:
+<p>
 If you set <tt/"RIBFile"/ to <tt/"Scene"/ (this is the default)
 the RIB file name will be derived from the name of
 the currently loaded scene with the last extension replaced by
@@ -1374,15 +1519,15 @@ path will be stripped from the scene name additionally.
 Use <tt/"Scenefile"/, if you render with shadow maps.
 This way the scene will use relative paths to
 load the shadow maps and you may move
-the RIBs around more easily.<p>
-
+the RIBs around more easily.
+<p>
 <tt/"Ask"/ is another special setting, that allows
 to select a different filename each time you export a RIB file.
 A file selection dialog will pop up, after the selection of the
 view to export.
 The same effect may be achieved by leaving <tt/"RIBFile"/ totally
-empty!<p>
-
+empty!
+<p>
 If you set <tt/"RIBFile"/ to <tt/"rendrib"/,
 libribout.a does not create a RIB file at all, but immediately pipes the
 resulting byte stream into rendrib (the BMRT renderer) for rendering.
@@ -1406,6 +1551,7 @@ files that are named as the exported RIB file (with the last
 file extension replaced by <tt/".tif"/). Again, setting
 it to <tt/"Ask"/ will cause a dialog box to appear,
 each time you export to a RIB file.
+<p>
 Note that in contrast to the <tt/"RIBFile"/ option leaving the field
 totally empty is not equal to entering <tt/"Ask"/ but generates
 RIB files that will be set up to render to the display.
@@ -1430,6 +1576,7 @@ The setting <tt/"default"/ looks for a material object named
 <tt/"default"/ and writes it's complete shaders and attributes,
 if it does not find such a material it falls back to <tt/"matte"/.
 The setting <tt/"none"/ does not write any default material setting.
+
 <item><tt/"RIStandard"/ determines whether Ayam
 should omit all non standard RenderMan interface options and
 attributes on RIB export.
@@ -1509,8 +1656,10 @@ regexp -- {^.* - (\[0-9\]+)} string dummy percent
 <item><tt/"SMRender"/, renderer to use for the rendering of shadow maps
 using the view menu entry <tt>"View/Create ShadowMaps"</tt>,
 <tt>%s</tt> denotes the name of the RIB file.
+
 <item><tt/"SMRenderUI"/, enables the Rendering GUI for the rendering
 of shadow maps, see discussion of <tt/"RenderUI"/ above.
+
 <item><tt/"SMRenderPT"/, progress template for the rendering
 of shadow maps, see discussion of <tt/"RenderPT"/ above.
 
@@ -1534,10 +1683,12 @@ rather than be handled by Tcls sometimes annoying error
 handling dialog box. However, this dialog box with the built in
 stack trace can also become very handy, if you write and debug
 Tcl scripts.
+
 <item><tt/"Logging"/ determines, whether error messages should
 be written to the file specified by <tt/"LogFile"/.
 If this is enabled, you should clear the log manually from time
 to time, as Ayam will always append to <tt/"LogFile"/.
+
 <item><tt/"LogFile"/; see above.
 </itemize>
 
@@ -1547,21 +1698,26 @@ related preferences:
 <item><tt/"SaveAddsMRU"/; if this is switched on, saving to a file
 will add that file to the most recently used list in the main menu
 for quick access.
+
 <item><tt/"ToolBoxTrans"/; controls whether the tool box window
 should be declared as a transient window of the main window.
 It will then, depending on the window manager or its configuration,
 get a different or no decoration, no icon (or no entry in the
 task bar on Windows), and will always be iconified
 when the main window gets iconified.
+
 <item><tt/"ToolBoxShrink"/; controls whether the tool box window
 should automatically shrink-wrap around the calculated layout
 of the buttons after a resize operation.
+
 <item><tt/"RGTrans"/; controls whether the RenderUI-windows
 should be declared as a transient window of the main window.
 See the discussion of <tt/"ToolBoxTrans"/ above for more information
 about transient windows.
+
 <item><tt/"HideTmpTags"/ may be used to hide tags that are marked
 temporary (internal tag types do so) from the tag property GUI.
+
 <item><tt/"TclPrecision"/; this is the precision Tcl handles floating
 point numbers with. You may want to decrease this number to about 5
 if any numbers in the entry fields are represented in an exact, but also
@@ -1570,6 +1726,7 @@ Note that you may loose information in doing so. The default value used
 by Tcl is 12 and results in no loss of information. The default value
 used by Ayam is 6 and should result in a good balance between precision
 and readability.
+
 <item><tt/"SavePrefsGeom"/ controls when the geometry of the preferences
 editor should be remembered by Ayam, <tt/"Never"/: the window is always
 opened in standard size, centered on the screen; <tt/"WhileRunning"/:
@@ -1579,6 +1736,7 @@ in the saved preferences, thus, also surviving a restart of Ayam.
 Note that the height of the preferences window will always be adapted
 to the currently open preferences section, no matter how <tt/"SavePrefsGeom"/
 is set.
+
 <item><tt/"SMethod"/; is the sampling method used by the NURBS to PolyMesh
 (tesselation) facility (based on GLU V1.3+). Three methods are available:
 <tt/"DomainDistance"/ (the default) simply tesselates the NURBS into equally
@@ -1590,6 +1748,7 @@ the tesselation is longer than the value specified by <tt/"SParam"/;
 surface and the original surface is no point bigger than the value specified
 by <tt/"SParam"/. Note that <tt/"SParam"/ is expressed in object space
 units for the last two sampling methods.
+
 <item><tt/"SParam"/; is a parameter for the sampling method above.
 The default value for the sampling method <tt/"DomainDistance"/ is 10. Higher
 values lead to better quality and more tesselated polygons.
@@ -1597,51 +1756,50 @@ The default value for the sampling method <tt/"PathLength"/ is 30.
 Smaller values lead to better quality and more tesselated polygons.
 The default value for the sampling method <tt/"ParametricError"/ is 0.5.
 Smaller values lead to better quality and more tesselated polygons.
-
 </itemize>
 
 <sect>Interactive Actions (Modeling)<label id="iac">
 <p>
 Before invoking any modeling action you should select
-one or more objects using the main window or using the pick action!<p>
-
+one or more objects using the main window or using the pick action!
+<p>
 Every action can be started with a key press (a shortcut) when
 the focus is in a view window or by pressing the
 associated button in the tool window.
 Using a shortcut starts that action in the current view only,
 the other views are not affected. Starting an action from the
 tool window will cause the action to be started in all
-view windows simultaneously.<p>
-
+view windows simultaneously.
+<p>
 To break an action, the <tt/&lt;Esc&gt;/ key may be used.
-
+<p>
 The default action for all views, which is also in effect after
 use of the <tt/&lt;Esc&gt;/ key, is <tt/"None"/ or <tt/"Pick"/
-(depending on the preference setting <tt>"Modeling/DefaultAction"</tt>)
+(depending on the preference setting <tt>"Modeling/DefaultAction"</tt>).
 See section
 <ref id="objsel" name="Selecting Objects within a View">
 for more information about picking objects.
-
+<p>
 Note that the modeling actions
-are not available in perspective views.<p>
-
+are not available in perspective views.
+<p>
 If an action is in effect for a view, the views title will be changed
-appropriately.<p>
-
+appropriately.
+<p>
 A modelling action is performed by clicking into the
 view to mark a point in space or to pick a vertex, then dragging
-the mouse.<p>
-
+the mouse.
+<p>
 You may undo/redo the effects of an action using <tt/&lt;Ctrl+z&gt;/
 and <tt/&lt;Ctrl+y&gt;/ (see section
-<ref id="undos" name="The Undo System"> for more information).<p>
-
+<ref id="undos" name="The Undo System"> for more information).
+<p>
 Grids are available to restrict the modeling actions to certain
 points and help in exact modeling.
-
+<p>
 Also note that you may use the middle and rightmost mouse button
 to zoom and move the view while modeling actions are active.
-
+<p>
 For actions that modify the camera of a view
 please see section <ref id="vwsc" name="View Window Shortcuts and Actions">.
 
@@ -1649,8 +1807,8 @@ please see section <ref id="vwsc" name="View Window Shortcuts and Actions">.
 <p>
 Using the modeling action <tt/"Move"/ (shortcut: <tt/&lt;m&gt;/)
 you may move selected objects or the selected (tagged) points
-of the selected objects.<p>
-
+of the selected objects.
+<p>
 Note that the objects/points will be moved in the XY-plane for
 Front-views, the ZY-plane for Side-views, and the XZ-plane
 for Top-views only, no matter how the view is rotated.
@@ -1659,12 +1817,12 @@ for Top-views only, no matter how the view is rotated.
 <p>
 Using the modeling action <tt/"Rotate"/ (shortcut: <tt/&lt;r&gt;/)
 you may rotate objects or the selected (tagged) points
-of the selected objects.<p>
-
+of the selected objects.
+<p>
 Note that if multiple objects are selected, each object is rotated
 around the center of its own local coordinate system.
 The axis of rotation is always parallel to the Z-axis in Front-views, the
-Y-axis in Top-views, and the X-axis in Side-views.<p>
+Y-axis in Top-views, and the X-axis in Side-views.
 
 <sect1>Rotating Objects or Selected Points around a Point
 <p>
@@ -1691,32 +1849,31 @@ it is highly suggested to use grids with this action.
 <p>
 There are several different actions available to scale
 objects or the selected (tagged) points
-of the selected objects.<p>
-
+of the selected objects.
+<p>
 The modeling action <tt/"Scale 3D"/ (shortcut: <tt/&lt;S&gt;/, note the
 big S!) scales all three axes of the selected objects or
 the selected (tagged) points of the selected objects
-by the same factor.<p>
-
+by the same factor.
+<p>
 The modeling action <tt/"Scale 2D"/ (shortcut: <tt/&lt;s&gt;/)
 scales just two axes of the selected objects or
 the selected (tagged) points of the selected objects. Those axes are
-XY in a Front-view, ZY in a Side-view, and XZ in a Top-view.<p>
-
+XY in a Front-view, ZY in a Side-view, and XZ in a Top-view.
+<p>
 The modeling actions <tt/"Scale X"/ (shortcut: <tt/&lt;x&gt;/),
 <tt/"Scale Y"/ (shortcut: <tt/&lt;y&gt;/), and
 <tt/"Scale Z"/ (shortcut: <tt/&lt;z&gt;/) scale only one axis
 of the selected objects or
 the selected (tagged) points of the selected objects.
-
+<p>
 The modeling action <tt/"Stretch 2D"/ (shortcut: <tt/&lt;Alt+s&gt;/)
 works much like <tt/"Scale 2D"/ but the scale factor for each
 axis may be different. Never start this action by a click
 near one of the axes to be changed, as this will cause
 very big scale factors for the other axis. Try it first with
 a centered box by starting from one of the vertices,
-then try it once starting on the X-axis.<p>
-
+then try it once starting on the X-axis.
 
 <sect1>Selecting Points<label id="selac">
 <p>
@@ -1725,30 +1882,30 @@ The modeling action <tt/"Select Points"/
 may be applied to a NURBS curve, NURBS patch or objects
 that support single point editing only. Objects draw the
 selectable points using small rectangular handles.
-Selected points will be drawn in dark red.<p>
-
+Selected points will be drawn in dark red.
+<p>
 The selected points may be modified using the modeling actions
 Move, Rotate, and Scale as discussed above.
-Selected points always take precedence for those modeling actions.<p>
-
+Selected points always take precedence for those modeling actions.
+<p>
 After the pick (the selection of a point), the picked point
 will be added to the list of selected points for the selected object.
 If the selected point is already in that list
 it will be removed from the list instead. Note that the list
 of selected points will not be deleted from the object
-until a de-select is performed using the shortcut <tt/&lt;D&gt;/.<p>
-
+until a de-select is performed using the shortcut <tt/&lt;D&gt;/.
+<p>
 Note that the list of selected points is not copied, if the object is copied
 using the clipboard.
-Undo and redo will destroy the list of selected points too!<p>
-
+Undo and redo will destroy the list of selected points too!
+<p>
 However, it is perfectly legal to select some points, move them using
 the move action, then switch to single point editing, edit
 some other or even one of the selected points, switch back
 to the selection action, add other points to the selection or delete some
 points from the selection, switch to rotate, rotate the selected
-points and so on.<p>
-
+points and so on.
+<p>
 You may also add a bigger number of points
 to the selection using a click and drag operation. All points
 that are inside the rectangular region defined by the click and drag
@@ -1773,7 +1930,7 @@ objects, only the first selected object is considered.
 <p>
 If a NURBS curve has multiple points, this action modifies all
 points that make up the multiple point.
-<p>
+
 <item>The modeling action <tt/"Edit Weights"/ (shortcut: <tt/&lt;w&gt;/)
 changes the w coordinate of a single point by dragging the mouse left
 or right. The weights may be reset for all points
@@ -1783,7 +1940,7 @@ the first selected object is considered.
 <p>
 If a NURBS curve has multiple points, this action modifies all
 points that make up the multiple point.
-<p>
+
 <item>The modeling action <tt/"Direct Point Edit"/ (shortcut:
 <tt/&lt;p&gt;/)
 opens a small window where you may change the coordinates of the
@@ -1824,8 +1981,8 @@ middle between the selected point and the next point, changing
 the shape of the curve. (It is also possible to insert control
 points into certain types of NURBS curves without changing
 their shape using knot insertion;
-see the insert knot tool <ref id="insknt" name="The Insert Knot Tool">.)<p>
-
+see the insert knot tool <ref id="insknt" name="The Insert Knot Tool">.)
+<p>
 The modeling action <tt/"Delete Point"/ (shortcut: <tt/&lt;d&gt;/)
 may be applied to NURBS and interpolating curves (objects of type
 NCurve and ICurve) only.
@@ -1847,7 +2004,7 @@ is done, the appropriate value for u is calculated, stored
 in the global variable u, and additionally written to the console.
 A small cross is drawn at the position of the picked point.
 Remember to exactly pick a point on the curve or nearby, otherwise
-the calculation may fail and no value will be written to the console.<p>
+the calculation may fail and no value will be written to the console.
 
 <item>The modeling action <tt/"Split Curve"/ (shortcut <tt/&lt;c&gt;/)
 may be applied to NURBS curves (objects of type NCurve) only.
@@ -1906,6 +2063,7 @@ size of an object.
 <itemize>
 <item><tt/"Reset All!"/ immediately resets all transformation
 attributes to the default values.
+
 <item><tt/"Translation_X (_Y, _Z)"/ is the displacement of the
 object from the world origin in X (Y, Z) direction.
 
@@ -1980,8 +2138,10 @@ The attributes of an object contain currently:
 <itemize>
 <item><tt/"Objectname"/, the name of the object. It is also displayed
 in the object listbox or tree and may be written to RIB streams.
+
 <item><tt/"Hide"/, if this attribute is set this object is not drawn.
 It may also be excluded from RIB export.
+
 <item><tt/"Refcount"/, just displays how many objects
 point to this object. Objects with a reference count different
 from zero may not be deleted.
@@ -1996,11 +2156,13 @@ The material property GUI consist of the following elements:
 <itemize>
 <item><tt/"Clear Material!"/ immediately clears any connection
 of the current object to its material.
+
 <item><tt>"Add/Edit Material!"</tt> adds a material to the
 current object (if it has none) and immediately selects
 the new material object for editing. If the current object
 already has a material, this material object is searched for
 and selected for editing.
+
 <item><tt/"Materialname"/ is the name of the material of this object.
 If you change the name, the object will be disconnected from the
 old material and connected to the new material.
@@ -2130,8 +2292,10 @@ elements:
 <itemize>
 <item><tt/"Remove all Tags!"/ immediately removes all tags
 from the object.
+
 <item><tt/"Remove Tag!"/ is a menu, that allows you
 to remove a single tag from the object.
+
 <item><tt/"Add Tag!"/ opens a small dialog box, where you
 may enter a new tag type and value. Once you press the <tt/"Ok"/
 button, a new entry will be added to the tags property, displaying
@@ -2139,7 +2303,7 @@ the new tag. Just click on the entry to get back to the dialog,
 to remove the tag using <tt/"Clear"/ then <tt/"Ok"/, or to change
 the type or value of the tag.
 </itemize>
-
+<p>
 The next sub-sections describe the currently available tag types.
 Note that extensions and plugins may define their own types.
 
@@ -2228,10 +2392,10 @@ of the texture coordinates!
 <p>
 The texture coordinate editor may be opened using the
 main menu entry <tt>"Special/Tags/Edit TexCoords"</tt> and
-lets you edit texture coordinate
-tags in an intuitive way.<p>
-For that, the texture coordinates are displayed as a black
-polygon in a canvas with regard to the original values,
+lets you edit texture coordinate tags in an intuitive way.
+<p>
+For that, the current texture coordinates are displayed as a black
+polygon in a canvas with regard to the original (default) values,
 that are displayed in gray.
 Small arrows point to positive s and t direction respectively.
 
@@ -2244,7 +2408,7 @@ Small arrows point to positive s and t direction respectively.
 
 The <tt/"RotateR"/ and <tt/"RotateL"/ buttons shift the coordinate
 values between the four points. This results in a 90 degree
-rotation.
+rotation of the texture.
 <p>
 The <tt/"FlipS"/ and <tt/"FlipT"/ buttons flip the texture
 coordinate values in s and t direction respectively. This is
@@ -2258,31 +2422,35 @@ by a specific amount that is given in the first entry field.
 The <tt/"Load"/ and <tt/"Save"/ menu buttons allow you to:
 <itemize>
 <item>load the default values
+
 <item>load texture coordinates from a selected BPatch object:
 The xy coordinates of the four points of the selected BPatch
 will be interpreted as st coordinates.
 This allows for more complex transformations of the texture coordinates
 e.g. rotations about an angle of 45 degrees.
+
 <item>load TC tags from the selected object
+
 <item>save the texture coordinates to a BPatch object
+
 <item>save TC tags to a selected object; Note that it is not
 possible to save the TC tag to multiple selected objects.
 Use the property clipboard to achieve this.
 </itemize>
-Note that the tag numbers in the
-menu entries count TC tags only.
-
+Note that the tag numbers in the menu entries count TC tags only.
+<p>
 The texture coordinate dialog is modeless, it may stay open
-while you model.
-The <tt/"Dismiss"/ button closes the dialog.
+while you model. The <tt/"Dismiss"/ button closes the dialog.
 
 <sect2>PV (Primitive Variable) Tag<label id="pvtag">
 <p>
 The tag type <tt/"PV"/ can be used to attach arbitrary data
 to geometric primitives and even sub-primitives.
-When rendering, all data is handed over to the surface shader
-attached to the respective geometric primitive. Note that Ayam does
-not check, whether your shader actually uses this data.
+When rendering, all data defined in a <tt/"PV"/ tag is handed over
+to the surface shader attached to the respective geometric primitive
+using additional shader parameters.
+<p>
+Note that Ayam does not check, whether your shader actually uses this data.
 With the help of primitive variables you can e.g. attach your
 own texture coordinates to a NURBS patch primitive or attach distinct
 colors to the faces or even to single vertices of a polygonal mesh.
@@ -2291,24 +2459,25 @@ before it is handed over to the shader.
 <p>
 The syntax of the value string of a PV tag is as following:<p>
 <tt/&lt;name&gt;,&lt;detail&gt;,&lt;type&gt;,&lt;ndata&gt;,&lt;data&gt;/<p>
-where <tt/"&lt;name&gt;"/ is the name of the primitive variable;
+where
+<tt/"&lt;name&gt;"/ is the name of the primitive variable;
 <tt/"&lt;detail&gt;"/ or storage class should be
 <tt/"uniform"/, <tt/"varying"/, <tt/"vertex"/, or <tt/"constant"/;
 <tt/"&lt;type&gt;"/ is a single character describing the type of the
-data (see also
-the documentation of the <tt/"RiAttribute"/ tag above);
+data (see also the documentation of the <tt/"RiAttribute"/ tag above);
 <tt/"&lt;ndata&gt;"/ is an integer number describing how many data
 elements will follow; and
 <tt/"&lt;data&gt;"/ is a comma separated list
 consisting of a certain number of elements of type <tt/"&lt;type&gt;"/.
-
-Examples:<p>
-<tt>PV mycolor,constant,c,1,0,1,0</tt>
+<p>
+Examples:
+<p>
+<code>PV mycolor,constant,c,1,0,1,0</code>
 <p>
 adds a single color value (0,1,0), which is the same all over the primitive;
-<p>
-<tt>PV mys,varying,f,4,0.1,0.2,0.3,0.4</tt>
-<p>
+
+<code>PV mys,varying,f,4,0.1,0.2,0.3,0.4</code>
+
 could be used to add a distinct float value to each corner point of a
 standard NURBS patch (order, width, and height 4).
 <p>
@@ -2324,7 +2493,6 @@ omit the primitive variable if there are mismatches. Check your
 RIB for the presence of the primitive variable after export,
 especially, if you are adding or editing PV tags manually!
 
-
 <sect2>RiHider Tag<label id="rihtag">
 <p>
 The tag type <tt/"RiHider"/ can be used to choose and parameterize
@@ -2334,8 +2502,9 @@ The syntax of a RiHider tag is quite similar to a RiAttribute tag:
 <tt/"&lt;type&gt;,&lt;parameterlist&gt;"/
 where <tt/"&lt;parameterlist&gt;"/ is a comma separated list
 of triplets consisting of name, type, and value of a parameter.
-
+<p>
 An example for a RiHider tag could look like this:
+<p>
 <code>RiHider hidden,depthfilter,s,midpoint</code>
 
 <sect2>RiDisplay Tag<label id="ridtag">
@@ -2354,7 +2523,7 @@ and <tt/"&lt;parameterlist&gt;"/ is a comma separated list
 of triplets consisting of name, type, and value of a parameter.
 The name will be automatically changed to <tt/"+name"/ on RIB export
 if it does not already start with a plus.
-
+<p>
 An example for a RiDisplay tag could look like this:
 <code>RiDisplay imagez.tif,file,z</code>
 
@@ -2384,15 +2553,15 @@ main and toolbox window.
 <p>
 The tag type <tt/"TP"/ can be used to save tesselation parameters
 to objects of type <tt/"NPatch"/. Those tesselation parameters
-will be used when the NPatch object is tesselated
-for e.g. a conversion to a PolyMesh object.
-The syntax of the TP tag is:
+will be used when the NPatch object is tesselated for e.g. a
+conversion to a PolyMesh object. The syntax of the TP tag is:
 <tt>"&lt;tmethod&gt;,&lt;tparam&gt;"</tt>
 where <tt/"&lt;tmethod&gt;"/ is an integer value between 1 and 3, describing
 which tesselation method to use (1 - ParametricError,
 2 - PathLength, and 3 - DomainDistance) and <tt/"&lt;tparam&gt;"/ is a float
 value describing the respective parameter value for the chosen
-tesselation method.<p>
+tesselation method.
+<p>
 TP tags may be easily created using the tesselation GUI, that can
 be started with the main menu entry <tt>"Tools/NPatch/Tesselate"</tt>
 (see also section <ref id="tesst" name="The Tesselation Tool">).
@@ -2439,7 +2608,8 @@ by Ayam internally only.
 <p>
 This tag is used by the RIB exporter and the scene storage
 facility to establish links between instance objects and
-the original objects they are pointing to.<p>
+the original objects they are pointing to.
+<p>
 The tag type <tt/OI/ is not meant to be used by the end user.
 Furthermore, changing the IDs manually avails to nothing as the
 tags are rebuilt before every export/save operation.
@@ -2448,7 +2618,8 @@ tags are rebuilt before every export/save operation.
 <p>
 This tag is used by the RIB exporter and the scene storage
 facility to establish links between material objects and
-the objects they are assigned to.<p>
+the objects they are assigned to.
+<p>
 The tag type <tt/MI/ is not meant to be used by the end user.
 Furthermore, changing the IDs manually avails to nothing as the
 tags are rebuilt before every export/save operation.
@@ -2456,7 +2627,7 @@ tags are rebuilt before every export/save operation.
 <sect2>List of Known Tags
 <p>
 This section contains a comprehensive list of tag names, that are
-known in Ayam 1.8 and in the accompanying extensions.
+known in Ayam 1.9 and in the accompanying extensions.
 <p>
 <tt>"RiAttribute", "RiOption", "RiHider", "RiDisplay", "NoExport", "TC",
 "PV", "SaveMainGeom", "TP", "MI", "OI", "DC", "NP", "IDR", "IIDR", "RIDR",
@@ -2496,6 +2667,7 @@ dimension of the view window, but only for real RIB exports
 and not for the QuickRender and Render actions in view windows.
 QuickRender and Render will always use the dimensions of the view window
 instead.
+
 <item><tt/"StdDisplay"/, if this is enabled, a standard display
 statement will be written to the RIB, which looks like this:
 
@@ -2506,33 +2678,48 @@ RiDisplay tag to the root object (see also section
 <ref id="ridtag" name="RiDisplay Tag">), otherwise your RIB will
 not contain a Display statement. This option has no effect on
 RIBs created by the QuickRender and Render actions in view windows.
+
 <item><tt/"Variance"/, maximum allowed variance of two pixel values.
 The default 0.0 causes no setting in the RIB. If the variance is > 0.0
 no pixel samples setting will be written to the RIB. Various
 sources discourage the use of variance based sampling, because
 e.g. the number of samples actually taken (and therefore the rendering
 time) might not easily be predicted anymore.
+
 <item><tt/"Samples_X"/, <tt/"Samples_Y"/ number of samples taken per
 pixel.
+
 <item><tt/"FilterFunc"/, function used to filter final pixel values.
+
 <item><tt/"FilterWidth"/, <tt/"FilterWidth"/ size of the filter.
+
 <item><tt/"ExpGain"/, Exposure
+
 <item><tt/"ExpGamma"/, Exposure Gamma
+
 <item><tt/"RGBA_ONE"/, <tt/"RGBA_MIN"/, <tt/"RGBA_MAX"/,
 <tt/"RGBA_Dither"/, specify quantisation and dithering
+
 <item><tt/"MinSamples"/, <tt/"MaxSamples"/, minimum and maximum number
 of samples per pixels.
+
 <item><tt/"MaxRayLevel"/, maximum number of recursive rays.
+
 <item><tt/"ShadowBias"/, minimum distance that one object has to
 be in order to shadow another object.
+
 <item><tt/"PRManSpec"/, toggles behaviour of BMRT's specular() function
 between PRMan compatible (default) and RiStandard compatible.
+
 <item><tt/"RadSteps"/, number of radiosity steps, the default 0 leads
 to no radiosity calculations to be performed.
+
 <item><tt/"PatchSamples"/, minimum number of samples per patch to
 calculate the radiosity form factors for this patch.
+
 <item><tt/"Textures"/, <tt/"Shaders"/, <tt/"Archives"/ and <tt/"Procedurals"/
 are search paths for the renderer.
+
 <item><tt/"TextureMem"/ and <tt/"GeomMem"/ determine how much
 memory rendrib (from BMRT) should use at maximum to cache textures and
 tesselated geometry.
@@ -3514,7 +3701,9 @@ the first control point of the first curve of a loop must be identical
 to the last control point of the last curve of that loop.
 <item>To mark a set of curves to be a loop, they must be
 simply placed in a level. The order of the curves
-in this level is the order of the loop.
+in this level is the order of the loop. The transformation attributes
+of this level object are fully ignored for trimming.
+
 <item>Drawing trimmed NURBS patches with certain implementations of
 OpenGL may require a special trim curve (a piecewise linear
 curve that encloses the whole
@@ -3924,15 +4113,15 @@ right: Extrusion with Caps)</caption>
 </figure>
 <p>
 The extrude object forms an extrusion from
-a number of NURBS curves.<p>
-
+a number of NURBS curves.
+<p>
 The first curve determines the outline, and the other curves
 determine holes in the extrusion object. Holes may be
-used by objects that form e.g. letters.<p>
-
+used by objects that form e.g. letters.
+<p>
 The object has the generating NURBS curves as child objects
-and watches them and adapts to them automagically.<p>
-
+and watches them and adapts to them automagically.
+<p>
 Consequently, the object hierarchy of an Extrude object may look like this:
 <code>
 +-Extrude
@@ -3945,17 +4134,17 @@ The extrude object can generate caps, if the generating
 curves are closed. Cap generation may fail, if the outer
 curve has weights and the curve itself leaves the convex
 hull of the control polygon. Be careful when using curves
-with weights!<p>
-
-The sharp corners between caps and extrusion may be beveled.<p>
-
+with weights!
+<p>
+The sharp corners between caps and extrusion may be beveled.
+<p>
 The axis of the extrusion is always the Z axis of the coordinate
 system that is defined by the next higher
 level in the object hierarchy (the Z axis of the extrude
 object itself). The generating curves should lie in the XY plane of this
 coordinate system. If not, they will be squashed down
-to this plane!<p>
-
+to this plane!
+<p>
 You may convert the current surface of extrusion and the caps and bevels,
 if there are any, to ordinary NURBS patches using the main menu entry
 <tt>"Tools/Convert"</tt>.
@@ -3968,7 +4157,7 @@ the height of the bevels will not be taken into account here,
 if you have an extrusion with height 1.0 and you switch on
 beveling (upper and lower) with radius 0.1 you end up
 with an object that is 1.2 whatever big in Z direction.
-
+<p>
 The extrude object can automatically generate caps,
 that are trimmed NURBS patches. Using <tt/"UpperCap"/ and
 <tt/"LowerCap"/ you determine whether such caps should be
@@ -3979,7 +4168,7 @@ are used as trim curves for the caps. Warning, Ayam will not check whether
 your curves conform to this criteria. Ayam, however,
 detects the correct orientation of the curves
 (and reverts them if necessary).
-
+<p>
 Using <tt/"LowerBevel"/ and <tt/"UpperBevel"/ you determine
 whether bevels should be created to round the otherwise sharp
 corners of the extrusion with the cap. The bevels may be
@@ -3993,7 +4182,7 @@ The <tt/"BevelRadius"/ determines the size of the bevels. It is
 expressed in untransformed object coordinates of the generating curve,
 but the resulting radius of the bevel may differ a bit (depending
 on the shape of the curve).
-
+<p>
 See section <ref id="npattr" name="NPatchAttrib"> for a description
 of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 
@@ -4005,7 +4194,7 @@ the first curve (the outline curve). Additionally,
 they may not intersect each other or themself and
 you cannot have hole curves inside hole curves.
 Ayam will not check whether your curves conform to these criteria!
-
+<p>
 With the direction of the curve you decide the direction of the
 bevel as well (should it round outwards or inwards?).
 If the bevels of the holes look wrong try to
@@ -4664,13 +4853,16 @@ the concatenated curve. If <tt/"FillGaps"/ (below) is not enabled,
 the concatenated curve will be closed with the same algorithm
 that is also used by the close curve tool (possibly changing
 the shape again!).
+
 <item><tt/"FillGaps"/, creates fillet curves for all gaps between
 the child curves of the ConcatNC object. The fillet curves will be
 cubic Bezier curves. The direction of the tangents in the endpoints of
 the fillets and the gap enclosing curves will match, so that the
 transition should be G1 continuous.
+
 <item><tt/"Revert"/ the orientation of the concatenated curve will be
 reversed.
+
 <item><tt/"FTLength"/ determines a scale factor for the tangent vectors
 of the fillets. A value of 1.0 leads to vectors that are as long as
 the matching vectors in the control point arrays of the original curves.
@@ -4678,6 +4870,7 @@ A value of 0.3 is the default value. You may need to tweak this, if
 you experience discontinuities in the transitions between original
 curves and fillets, especially, if <tt/"Knot-Type"/ (see below) is set to
 <tt/"Custom"/.
+
 <item><tt/"Knot-Type"/ in fact toggles between two different modes
 of concatenation. If <tt/"Knot-Type"/ is <tt/"NURB"/ a simple knot vector
 with equidistant knots is generated, which leads to a concatenated curve,
@@ -4714,6 +4907,7 @@ width; <tt/"V0"/, <tt/"Vn"/: extract boundary curve along
 height;  <tt/"U"/, <tt/"V"/ extract curve along width and height
 respectively at specified parametric value (see below). The
 options <tt/"U"/, <tt/"V"/ are implemented since Ayam 1.8.1!
+
 <item><tt/"Parameter"/ controls the parametric value in u or v
 direction in the parameter space of the NURBS patch object where the
 curve should be extracted.
@@ -4754,15 +4948,19 @@ Those files usually have the file name extension <tt/".ttf"/.
 Only real TrueType font files, containing Bezier curve font descriptions,
 are supported. There are also rastered, bitmap containing TrueType
 font description files, those will not work.
+
 <item>Using <tt/"String"/ you specify the letters to be created.
 This entry (and the corresponding data structures) are Unicode clean.
 This means you can put any Unicode letters into this entry. You should
 of course make sure, that the letters are included in the selected font
 file.
+
 <item><tt/"Height"/ controls the height of the extruded object.
+
 <item><tt/"Revert"/ reverts the sense of inside-outside detection
 mechanism for the cap generation. Depending on the actual font description
 file (or even letter) you may need to toggle this to get caps.
+
 <item><tt/"UpperCap"/, <tt/"LowerCap"/, <tt/"UpperBevel"/, <tt/"LowerBevel"/,
 <tt/"BevelType"/, and <tt/"BevelRadius"/ work like for the Extrude object
 (see section <ref id="extrattr" name="ExtrudeAttr Property"> for a more
@@ -4771,6 +4969,7 @@ Just one note: for some fonts, the <tt/"BevelRadius"/ has to be set to really
 small values (about 0.0008) to get bevels and caps. This is because of
 sharp corners in some letters that lead to overlapping curves
 with high values for the <tt/"BevelRadius"/.
+
 <item><tt/"RevertBevels"/ can be turned on, if the extracted curves
 and therefore also the bevels are of wrong direction.
 </itemize>
@@ -4781,13 +4980,13 @@ of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 <sect1>RiInc Object<label id="riincobj">
 <p>
 RiInc objects may be used to include objects or whole scene parts into your
-scenes that, for some reason, are just available as
-a piece of RIB.
+scenes that, for some reason, are just available as a piece of RIB.
+<p>
+The following attributes control the inclusion:
 <sect2>RiIncAttr Property<label id="riincp">
 <p>
 <itemize>
-<item>Using <tt/"File"/ you specify the file of the
-RIB to be included.
+<item>Using <tt/"File"/ you specify the filename of the RIB to be included.
 <item><tt/"Width"/, <tt/"Height"/, and <tt/"Length"/ specify
 the size of a box, that will be drawn as a geometric
 representation of the RIB.
@@ -4795,9 +4994,10 @@ representation of the RIB.
 
 <sect1>RiProc Object<label id="riprocobj">
 <p>
-RiProc objects may be used to include procedural objects or into your
-scenes.
-
+RiProc objects may be used to include procedural objects or external
+archives into your scenes.
+<p>
+The following attributes control the RiProc object:
 <sect2>RiProcAttr Property<label id="riprocp">
 <p>
 <itemize>
@@ -4811,7 +5011,7 @@ procedural object).
 procedural objects of type <tt/"RunProgram"/ and <tt/"DynamicLoad"/.
 <item><tt/"MinX"/, <tt/"MaxX"/, <tt/"MinY"/, <tt/"MaxY"/, <tt/"MinZ"/,
 and <tt/"MaxZ"/ specify the size of the bounding box of the objects that
-the procedural will create.
+the procedural will create or the archive contains.
 </itemize>
 
 <sect1>Script Object<label id="scriptobj">
@@ -4843,7 +5043,7 @@ procedures and commands should not be used: uS, uCR, uCL, sL, selOb,
 plb_update, cutOb, copOb, delOb, undo.
 <p>
 Since Ayam 1.8.2 script objects may also create their own property
-GUIs for e.g. script parameters. This is accomplished by adding
+GUIs for e.g. script parameters. This may be accomplished by adding
 tags of type <tt>"NP"</tt> with the name of the new property as
 value to the script object. The script itself is responsible for data
 management and property GUI creation. Since Ayam 1.9 the parameters
@@ -4866,6 +5066,7 @@ additional controlling parameters.
 <p>
 <itemize>
 <item>If <tt/"Active"/ is disabled, the script will not be run.
+
 <item><tt/"Type"/ is the type of the script object.
 Three types of script objects are currently available:
 <itemize>
@@ -4911,6 +5112,7 @@ needs a NURBCurve, e.g. a Sweep:
  \ Path(NCurve)
 </code>
 </itemize>
+
 <item><tt/"Script"/ is the script code. The widget is a standard
 Tcl text widget that allows to directly edit the code. It is
 also possible to edit the code in an external editor and
@@ -4918,21 +5120,25 @@ copy it to the script object using the clipboard and the
 context menu entry <tt/"Paste (Replace)"/.
 </itemize>
 
-
 <sect1>Custom Objects<label id="customobj">
 <p>
 What is a custom object?
-
-Think of it as a plugin that extends Ayam's capabilities by
-defining totally new types of e.g. geometric objects.
-A simple example is the CSphere custom object, which implements
-a sphere and has a new property named <tt/"CSphereAttr"/.
+<p>
+Custom objects are plugins that extend the Ayam capabilities by
+defining totally new types of e.g. geometric objects. This may
+be done easily, because the Ayam core is written in a modelling
+paradigm independent way.
+<p>
+A simple example of a custom object is the CSphere, which implements
+a simple sphere and has a new property named <tt/"CSphereAttr"/.
 This property contains all parameters of a simple RenderMan Interface
-quadric sphere.
-
+quadric sphere. A more complex example would be the MetaObj custom
+object. It is possible, but not planned for now, to integrate
+the T-Spline modelling paradigm into Ayam this way.
+<p>
 Since a custom object has total control over properties and representations,
 you should refer to the documentation of the custom object for more
-information regarding it's properties.
+information regarding its properties.
 
 <sect1>Metaball Object<label id="metaobjobj"><label id="metacompobj">
 <p>
@@ -4986,9 +5192,11 @@ A higher number of samples results in better quality but more polygons
 are created and more CPU power and memory are needed. For modelling
 you should set this to a lower value of about 40. For final rendering
 you may increase this to about 160.
+
 <item><tt/"IsoLevel"/, defines the threshold value for that a polygonal
 representation of the implicit function should be created. Normally, you
 should not need to change this value.
+
 <item>To show the actual bounds of the meta world, you may enable
 the <tt>"ShowWorld"</tt> parameter.
 </itemize>
@@ -5008,7 +5216,7 @@ If <tt>"Adaptive"</tt> is set to <tt>"automatic"</tt>, Ayam will
 not use the adaptive calculation while a modelling action is in
 progress. This mode has been introduced, because the adaptive mode
 may consume a considerable amount of CPU ressources.
-
+<p>
 While modelling with meta balls you may add other <tt/"MetaComp"/ objects
 to the <tt/"MetaObj"/ object and parameterize them.
 A <tt/"MetaComp"/ object has the following properties.
@@ -5019,6 +5227,7 @@ A <tt/"MetaComp"/ object has the following properties.
 <item><tt/"Formula"/ specifies the type of the meta component.
 The following types are available: Metaball, Torus, Cube, Heart, and
 Custom. The latter gives you the possibility to use your own formulas.
+
 <item>With the parameter <tt/"Negative"/ you define a component with a
 negative effect on the implicit function value.
 Negative components are not visible on their own but they are useful
@@ -5426,6 +5635,11 @@ and by the specified height value. See also the image above.
 
 <sect1>The Shift Closed B-Spline Tool<label id="shiftclbspt">
 <p>
+<figure loc="ht">
+<eps file="pics/shiftclsbsp..ps" height="4cm">
+<img src="pics/shiftclsbsp.gif">
+<caption>Closed B-Spline curve (right), shifted version (left)</caption>
+</figure>
 <itemize>
 <item>Arguments: The shift closed B-Spline tool takes a number of
 NURBS curves, that should be closed B-Splines, from the selection and
@@ -5434,7 +5648,7 @@ requests one additional integer parameter.
 the second control point will be the first after this operation.
 The shifting process will be repeated according to the parameter value
 given. Eventually selected points will still be selected after this
-operation.
+operation. See also the image above.
 </itemize>
 
 <sect1>The To XY Tool<label id="toxyt">
