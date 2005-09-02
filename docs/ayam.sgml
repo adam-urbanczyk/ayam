@@ -2283,10 +2283,13 @@ property GUI and then use e.g. <tt>"Edit/Copy Marked Prop"</tt>
 
 <sect1>Tags Property<label id="tags">
 <p>
-Use this property to edit the tags of an object.<p>
-Tags provide an easy way to attach arbitrary information to
-objects. A tag consists of two strings, one defining the type
-and one defining the value of the tag.<p>
+Use this property to edit the tags of an object.
+<p>
+Tags provide an easy way to attach arbitrary information (e.g. additional
+RenderMan interface attributes, special attributes for plugins or even
+scripts) to objects. A tag consists of two strings, one defining the type
+and one defining the value of the tag.
+<p>
 The Tags property GUI consists of the following standard
 elements:
 <itemize>
@@ -2312,31 +2315,37 @@ Note that extensions and plugins may define their own types.
 The tag type <tt/"RiAttribute"/ can be used to attach
 arbitrary RenderMan interface attributes to objects.
 This is handy if you use a renderer with lots of RiAttributes
-that differ from the standard RiAttributes.<p>
+that differ from the standard RiAttributes.
+<p>
 <tt/"RiAttribute"/ tags attached to a geometric object override
 <tt/"RiAttribute"/ tags possibly attached to the material object of this
-geometric object.<p>
+geometric object.
+<p>
 In order to create a tag of type RiAttribute, the type string must be
-<tt/"RiAttribute"/. The syntax of the value string is as following:<p>
-<tt/attrname,paramname,paramtype,param/<p>
+<tt/"RiAttribute"/. The syntax of the value string is as following:
+<p>
+<tt/&lt;attrname&gt;,&lt;paramname&gt;,&lt;paramtype&gt;,&lt;param&gt;/
+<p>
 where attrname is the name of the attribute (e.g. "render") paramname
 is the name of the parameter (e.g. "displacementbound") paramtype is a
 single character defining the type of the parameter (it may be one of
 <tt/f/ - float, <tt/g/ - float pair, <tt/i/ - integer, <tt/j/ - integer
 pair, <tt/s/ - string, <tt/c/ - color, <tt/p/ - point) and finally
-param is the value of the parameter itself (e.g. a float: "1", a string: "on",
-a color: "1,1,1" or a point: "0.4,0.5,1.0").<p>
-
-Examples:<p>
-<tt>RiAttribute render,truedisplacement,i,1</tt><p>
-<tt>RiAttribute dice,numprobes,j,3,3</tt><p>
-<tt>RiAttribute radiosity,specularcolor,c,0.5,0.5,0.5</tt>
-
-Note that the RiAttribute tag handles just a single parameter at once.
-Also note that RiAttribute tags may be created much more easily
-using the menu entry <tt>Special/Tags/Add RiAttribute</tt>.
+param is the value of the parameter itself (e.g. a float: "1.2", an
+integer value: "3", a string: "on", a color: "1,1,1" or a point:
+"0.4,0.5,1.0").
+<p>
+Some examples for valid RiAttribute tags:
+<code>
+RiAttribute render,truedisplacement,i,1
+RiAttribute dice,numprobes,j,3,3
+RiAttribute radiosity,specularcolor,c,0.5,0.5,0.5
+</code>
+Note that the <tt/"RiAttribute"/ tag handles just a single parameter at once.
+Also note that <tt/"RiAttribute"/ tags may be created much more easily
+using the menu entry <tt>"Special/Tags/Add RiAttribute"</tt>.
 The database of RiAttributes for this GUI may be extended
-by the user using the ayamrc file, see section
+by editing the ayamrc file, see section
 <ref id="ayamrc" name="Ayamrc File">.
 
 <sect2>RiOption Tag<label id="riotag">
@@ -2350,43 +2359,50 @@ if they are attached to the <tt/"Root"/ object!
 The syntax is similar to the <tt/"RiAttribute"/ tag
 type, see above.
 Note that RiOption tags may be created easily
-using the menu entry <tt>Special/Tags/Add RiOption</tt>.
+using the menu entry <tt>"Special/Tags/Add RiOption"</tt>.
 Tags created with this GUI will always be added to
 the <tt/"Root"/ object. It does not
 have to be selected!
 Furthermore, the database of RiOptions for this GUI may be extended
-by the user using the ayamrc file, see section
+by editing the ayamrc file, see section
 <ref id="ayamrc" name="Ayamrc File">.
 
 <sect2>TC (TextureCoordinates) Tag<label id="tctag">
 <p>
-The tag type <tt/"TC"/ can be used to attach
-texture coordinates to objects or materials.
+The tag type <tt/"TC"/ can be used to attach texture coordinates to
+objects or materials.
+<p>
 <tt/"TC"/ tags attached to a geometric object override
 <tt/"TC"/ tags possibly attached to the material object of this
 geometric object.
+<p>
 The <tt/"TC"/ tag always contains a list of eight comma separated
-float values, that specify a mapping for four points (a quadrilateral) in
-texture space from the default values (0,0), (1,0), (0,1), and (1,1)
-to the new specified values.<p>
-
-Examples:<p>
-<tt>TC 0,0,10,0,0,10,10,10</tt><p>
+float values, that specify a mapping for four 2D points (a quadrilateral)
+in texture space from the default values (0,0), (1,0), (0,1), and (1,1)
+to the new specified values.
+<p>
+Examples:
+<code>TC 0,0,10,0,0,10,10,10</code>
 Changes the texture coordinate space so that more and smaller tiles
-of a texture would be displayed on a primitive.<p>
+of a texture would be displayed on a primitive.
 
-<tt>TC 0,0,0,1,1,0,1,1</tt><p>
+<code>TC 0,0,0,1,1,0,1,1</code>
 Flips the texture coordinate space over two corners.
 A shader normally generating vertical stripes will create
-horizontal stripes now.<p>
+horizontal stripes now.
 
-<tt>TC 0,1,0,0,1,1,1,0</tt><p>
+<code>TC 0,1,0,0,1,1,1,0</code>
 Turns the texture coordinate space by 90 degrees.
 A shader normally generating vertical stripes will create
-horizontal stripes now.<p>
-
-Note that the exact behaviour depends heavily on the shader and its use
-of the texture coordinates!
+horizontal stripes now.
+<p>
+Note that the exact behaviour of an object equipped with a TC tag
+depends heavily on the shader and its use of the texture coordinates!
+<p>
+Note also that using TC tags you change the texture coordinates
+of whole primitives only, if you want to change the texture coordinates
+of sub-primitives (e.g. of single control points of a NURBS patch)
+you would need to use a PV (Primitive Variable) tag instead.
 
 <sect3>Texture Coordinate Editor<label id="tce">
 <p>
@@ -2457,8 +2473,10 @@ colors to the faces or even to single vertices of a polygonal mesh.
 In the latter case, the data is properly interpolated by the renderer
 before it is handed over to the shader.
 <p>
-The syntax of the value string of a PV tag is as following:<p>
-<tt/&lt;name&gt;,&lt;detail&gt;,&lt;type&gt;,&lt;ndata&gt;,&lt;data&gt;/<p>
+The syntax of the value string of a PV tag is as following:
+<p>
+<tt/&lt;name&gt;,&lt;detail&gt;,&lt;type&gt;,&lt;ndata&gt;,&lt;data&gt;/
+<p>
 where
 <tt/"&lt;name&gt;"/ is the name of the primitive variable;
 <tt/"&lt;detail&gt;"/ or storage class should be
@@ -2471,13 +2489,9 @@ elements will follow; and
 consisting of a certain number of elements of type <tt/"&lt;type&gt;"/.
 <p>
 Examples:
-<p>
 <code>PV mycolor,constant,c,1,0,1,0</code>
-<p>
 adds a single color value (0,1,0), which is the same all over the primitive;
-
 <code>PV mys,varying,f,4,0.1,0.2,0.3,0.4</code>
-
 could be used to add a distinct float value to each corner point of a
 standard NURBS patch (order, width, and height 4).
 <p>
@@ -2592,6 +2606,12 @@ windows that make up the property GUI itself have to be present in
 the Tcl context of Ayam before the user clicks on the new property in the
 property list box.
 
+<sect2>NS Tag<label id="nstag">
+<p>
+The tag type <tt/"NS"/ (notify script) may be used to add scripts
+to object, that will be run after the notification callback of
+that fired (because e.g. one of the children of the object changed).
+
 <sect2>UMM/VMM Tag<label id="ummtag">
 <p>
 The tag types <tt/"UMM"/ (u min max) and <tt/"VMM"/ (v min max) may
@@ -2604,6 +2624,7 @@ An example for an UMM tag could look like this:
 <p>
 The following tags are of no general use. They are used
 by Ayam internally only.
+
 <sect3>OI - Object ID Tag<label id="oitt">
 <p>
 This tag is used by the RIB exporter and the scene storage
@@ -2630,11 +2651,10 @@ This section contains a comprehensive list of tag names, that are
 known in Ayam 1.9 and in the accompanying extensions.
 <p>
 <tt>"RiAttribute", "RiOption", "RiHider", "RiDisplay", "NoExport", "TC",
-"PV", "SaveMainGeom", "TP", "MI", "OI", "DC", "NP", "IDR", "IIDR", "RIDR",
-"R3IDR", "CIDR", "CCIDR"</tt>
+"PV", "SaveMainGeom", "TP", "MI", "OI", "DC", "NP", "NS", "IDR", "IIDR",
+"RIDR", "R3IDR", "CIDR", "CCIDR"</tt>
 <p>
 Documentation on those tags can be found in the sections above.
-
 
 <sect1>Root Object<label id="rootobj">
 <p>
