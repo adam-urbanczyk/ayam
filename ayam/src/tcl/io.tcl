@@ -1125,7 +1125,7 @@ MergeFaces 1
 MergePVTags 1
 RescaleKnots 0.0
 filename ""
-FileName "unnamed.rib"
+FileName "unnamed.obj"
 STagName "mys"
 TTagName "myt"
 }   }
@@ -1135,7 +1135,7 @@ TTagName "myt"
 #  export scene to Wavefront OBJ format
 #
 proc io_exportOBJ { selected } {
-    global ay_error objio_options
+    global ay ay_error objio_options
     set ay_error ""
 
     winAutoFocusOff
@@ -1143,7 +1143,10 @@ proc io_exportOBJ { selected } {
     if { $objio_options(filename) != "" } {
 	set objio_options(FileName) $objio_options(filename)
     } else {
-	set objio_options(FileName) "unnamed.obj"
+	if { $ay(filename) != "" &&\
+		$objio_options(FileName) == "unnamed.obj" } {
+	    set objio_options(FileName) [file rootname $ay(filename)].obj
+	}
     }
 
     set w .objE
