@@ -146,6 +146,11 @@ proc onio_export { } {
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
 
+    if { $ay(filename) != "" &&\
+	    $onio_options(FileName) == "unnamed.3dm" } {
+	set onio_options(FileName) [file rootname $ay(filename)].3dm
+    }
+
     set ay(iapplydisable) 1
 
     set types {{"3DM (Rhino) Files" ".3dm"} {"All files" *}}
