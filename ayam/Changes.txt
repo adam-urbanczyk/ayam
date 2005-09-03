@@ -8,6 +8,7 @@ o bug fixes:
   - fixed crash when using undo after an in-place conversion (SF 1253036)
   - fixed crash when using undo after tesselation GUI (SF 1258297)
   - fixed tesselation GUI not updating the object tree properly (SF 1258299)
+  - fixed create trimrect tool setting wrong weight values (SF 1269176)
 o improved OBJ import of files with trailing whitespace as e.g. written by
   Blender
 o script objects now cache a compiled version of the script for faster
@@ -55,6 +56,10 @@ o added command line option "-noview" that inhibits loading of the environment
   and opening of a first view window upon startup
 o changed default behaviour of Ayam on the very first start (no ayamrc
   file and no environment found): Ayam will now open a first view window
+o added new NURBS curve and surface drawing and tesselation modes not
+  based on GLU
+o added example/helper script "2lcons.tcl" that restricts the Ayam console
+  to display just two lines of text
 
 
 [5. Jul 2005] Ayam 1.8.3:
