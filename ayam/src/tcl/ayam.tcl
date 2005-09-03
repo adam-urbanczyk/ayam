@@ -1394,7 +1394,6 @@ grab release .fu
 
 puts stdout "The tip of the day is:"
 tipoftheDay
-puts stdout "Ayam-Startup-Sequence finished. Reconstruct the World!"
 
 # save preference settings for use with the "Def."-Button in the
 # preferences dialog
@@ -1457,5 +1456,7 @@ foreach view $ay(views) { viewBind $view }
 
 # if there is a view window under the mouse pointer, make it current
 after idle viewMouseToCurrent
+
+puts stdout "Ayam-Startup-Sequence finished. Reconstruct the World!"
 
 # Reconstruct the World!
