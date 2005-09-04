@@ -1737,17 +1737,6 @@ cleanup:
 
 #endif /*0*/
 
-/* ay_stess_Retess:
- *
- *
- */
-int
-ay_stess_Retess(void)
-{
-
- return AY_OK;
-} /* ay_stess_Retess */
-
 
 /* remove local preprocessor definitions */
 #undef AY_STESSEPSILON

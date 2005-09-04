@@ -185,7 +185,7 @@ ay_ncurve_drawstesscb(struct Togl *togl, ay_object *o)
     }
   else
     {
-      if(o->modified)
+      if(o->modified || (ncurve->tessqf != qf))
 	{
 	  if(ncurve->tessv)
 	    {
@@ -205,6 +205,7 @@ ay_ncurve_drawstesscb(struct Togl *togl, ay_object *o)
       tstride = 3;
       tessv = ncurve->tessv;
       tesslen = ncurve->tesslen;
+      ncurve->tessqf = qf;
     } /* if */
 
   if(tesslen)
