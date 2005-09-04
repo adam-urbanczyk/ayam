@@ -171,7 +171,7 @@ ay_npatch_drawstesscb(struct Togl *togl, ay_object *o)
   if(!npatch)
     return AY_ENULL;
 
-  if(o->modified)
+  if(o->modified || (npatch->tessqf != qf))
     {
       if(npatch->tessv)
 	{
@@ -222,7 +222,7 @@ ay_npatch_drawstesscb(struct Togl *togl, ay_object *o)
 					   &npatch->tessw, &npatch->tessh,
 					   &npatch->tessv);
 	} /* if */
-
+      npatch->tessqf = qf;
     } /* if */
 
   tessv = npatch->tessv;

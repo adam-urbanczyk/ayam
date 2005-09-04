@@ -346,12 +346,8 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
     {
       qf = 1;
     }
+  ay_prefs.stess_qf = qf;
 
-  if(qf != ay_prefs.stess_qf)
-    {
-      ay_prefs.stess_qf = qf;
-      ay_stess_Retess();
-    }
 
   Tcl_SetStringObj(ton, "DisplayMode", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);

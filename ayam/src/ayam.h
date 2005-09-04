@@ -297,6 +297,7 @@ typedef struct ay_nurbcurve_object_s
   /* stess */
   int tesslen;
   double *tessv;
+  int tessqf;
 
   /* multiple points */
   int createmp;
@@ -323,6 +324,7 @@ typedef struct ay_nurbpatch_object_s
   /* stess */
   int tessw, tessh;
   double *tessv;
+  int tessqf;
 
   /* multiple points (unused) */
   int createmp;
