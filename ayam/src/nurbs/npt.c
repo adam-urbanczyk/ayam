@@ -5535,3 +5535,49 @@ ay_npt_israt(ay_nurbpatch_object *patch)
  return AY_FALSE;
 } /* ay_npt_israt */
 
+
+/* ay_npt_istrimmed:
+ *  mode: 0 - check if non-trivially trimmed:
+ *        returns: AY_FALSE in error and if not non-trivially trimmed
+ *                 AY_TRUE if non-trivially trimmed
+ */
+int
+ay_npt_istrimmed(ay_object *o, int mode)
+{
+ ay_nurbpatch_object *npatch;
+ ay_nurbcurve_object *ncurve;
+
+  if(!o)
+    return AY_FALSE;
+
+  npatch = (ay_nurbpatch_object *)o->refine;
+
+  if(!npatch)
+    return AY_FALSE;
+  switch(mode)
+    {
+    case 0:
+      if(!o->down || (o->down && !o->down->next))
+	return AY_FALSE; /* no child or just one child (EndLevel) */
+
+      /* if we get here o has atleast one real child */
+      if(o->down->next->next)
+	return AY_TRUE; /* more than one real child -> non-trivially trimmed */
+
+      /* check the one real child */
+      if(o->down->type == AY_IDNCURVE)
+	{
+	  if(!(ncurve = (ay_nurbcurve_object*)o->down->refine))
+	    {
+	      return AY_FALSE;
+	    }
+	  if(ncurve->order == 2 && ncurve->length == 4)
+	    return AY_FALSE;
+	}
+      return AY_TRUE;
+    default:
+      break;
+    } /* switch */
+
+ return AY_FALSE;
+} /* ay_npt_istrimmed */
