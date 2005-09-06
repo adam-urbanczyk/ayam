@@ -431,6 +431,8 @@ int ay_npt_extractnc(ay_object *npatch, int side, double param,
 
 int ay_npt_israt(ay_nurbpatch_object *patch);
 
+int ay_npt_istrimmed(ay_object *o, int mode);
+
 /* pmt.c */
 int ay_pmt_tonpatch(ay_pamesh_object *pamesh, ay_object **result);
 
@@ -465,11 +467,12 @@ int ay_stess_SurfacePoints4D(int n, int m, int p, int q, double *U, double *V,
 
 /* tess.c */
 
-int ay_tess_npatch(ay_object *o, int smethod, double sparam,
-		   ay_object **pm);
+int ay_tess_npatch(ay_object *o, int smethod, double sparamu, double sparamv,
+	       ay_object **pm);
 
 int ay_tess_npatchtcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
+
 int ay_tess_pomeshf(ay_pomesh_object *pomesh,
 		    unsigned int f, unsigned int m, unsigned int n,
 		    int optimize,
