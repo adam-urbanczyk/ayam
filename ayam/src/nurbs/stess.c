@@ -1738,5 +1738,62 @@ cleanup:
 #endif /*0*/
 
 
+int
+ay_stess_TessNP(ay_object *o)
+{
+ char fname[] = "stess_TessNP";
+ int ay_status = AY_OK;
+ ay_nurbpatch_object *npatch;
+ int qf = ay_prefs.stess_qf;
+
+  if(!o)
+    return AY_ENULL;
+
+  npatch = (ay_nurbpatch_object *)o->refine;
+
+  if(!npatch)
+    return AY_ENULL;
+
+  if(ay_npt_istrimmed(o, 0))
+    {
+      /* this is a nontrivially trimmed NURBS patch */
+      ay_error(AY_ERROR, fname, "can not stess trimmed patches");
+      /*
+      ay_status = ay_stess_TessTrimmedNP();
+      */
+    }
+  else
+    {
+      /* this is an untrimmed or trivially trimmed NURBS patch,
+         we can safely ignore potentially present trim curves... */
+
+      if(npatch->is_rat)
+	{
+	  ay_status = ay_stess_SurfacePoints4D(
+					   npatch->width, npatch->height,
+					   npatch->uorder-1, npatch->vorder-1,
+					   npatch->uknotv, npatch->vknotv,
+					   npatch->controlv, qf,
+					   &npatch->tessw, &npatch->tessh,
+					   &npatch->tessv);
+	}
+      else
+	{
+	  ay_status = ay_stess_SurfacePoints3D(
+                                           npatch->width, npatch->height,
+					   npatch->uorder-1, npatch->vorder-1,
+					   npatch->uknotv, npatch->vknotv,
+					   npatch->controlv, qf,
+					   &npatch->tessw, &npatch->tessh,
+					   &npatch->tessv);
+	} /* if */
+
+      npatch->tessqf = qf;
+
+    } /* if */
+
+ return AY_OK;
+} /* ay_stess_TessNP */
+
 /* remove local preprocessor definitions */
 #undef AY_STESSEPSILON

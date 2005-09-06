@@ -185,45 +185,12 @@ ay_npatch_drawstesscb(struct Togl *togl, ay_object *o)
 	}
       */
       o->modified = AY_FALSE;
-    }
-  /* the next codeblock should be placed in stess module as
-   ay_stess_TessNP() */
-  if(o->down && o->down->next && !(!o->down->next->next /*&&
-				   ay_nct_isstrim(o->down->next)*/))
-    {
-      /* this is a nontrivially trimmed NURBS patch */
-      ay_error(AY_ERROR, fname, "can not stess trimmed patches");
-      /*
-      ay_status = ay_stess_TessTrimmedNPU();
-      ay_status = ay_stess_TessTrimmedNPV();
-      */
-    }
-  else
-    {
-      /* this is an untrimmed or trivially trimmed NURBS patch */
+    } /* if */
 
   if(!npatch->tessv)
     {
-      if(npatch->is_rat)
-	{
-	  ay_status = ay_stess_SurfacePoints4D(npatch->width, npatch->height,
-					   npatch->uorder-1, npatch->vorder-1,
-					   npatch->uknotv, npatch->vknotv,
-					   npatch->controlv, qf,
-					   &npatch->tessw, &npatch->tessh,
-					   &npatch->tessv);
-	}
-      else
-	{
-	  ay_status = ay_stess_SurfacePoints3D(npatch->width, npatch->height,
-					   npatch->uorder-1, npatch->vorder-1,
-					   npatch->uknotv, npatch->vknotv,
-					   npatch->controlv, qf,
-					   &npatch->tessw, &npatch->tessh,
-					   &npatch->tessv);
-	} /* if */
-      npatch->tessqf = qf;
-    } /* if */
+      ay_status = ay_stess_TessNP(o);
+    }
 
   tessv = npatch->tessv;
   tessw = npatch->tessw;
@@ -255,7 +222,6 @@ ay_npatch_drawstesscb(struct Togl *togl, ay_object *o)
 	  glEnd();
 	} /* for */
     } /* if */
-    }
 
  return AY_OK;
 }  /* ay_npatch_drawstesscb */
@@ -1632,7 +1598,7 @@ ay_npatch_providecb(ay_object *o, unsigned int type, ay_object **result)
  /*char fname[] = "npatch_providecb";*/
  ay_tag_object *tag = NULL;
  int smethod = ay_prefs.smethod;
- double sparam = ay_prefs.sparam;
+ double sparamu = ay_prefs.sparam, sparamv = ay_prefs.sparam;
 
   if(!o)
     return AY_ENULL;
@@ -1655,12 +1621,12 @@ ay_npatch_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  if(tag->type == ay_tp_tagtype)
 	    {
 	      if(tag->val)
-		sscanf(tag->val,"%d,%lg",&smethod, &sparam);
+		sscanf(tag->val,"%d,%lg,%lg",&smethod, &sparamu, &sparamv);
 	    }
 	  tag = tag->next;
 	} /* while */
 
-      ay_status = ay_tess_npatch(o, smethod, sparam, result);
+      ay_status = ay_tess_npatch(o, smethod, sparamu, sparamv, result);
     } /* if */
 
  return ay_status;
