@@ -124,17 +124,18 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
  ay_deletecb *cb = NULL;
  void **arr = NULL;
  int smethod = 0;
- double sparam = 0.0;
+ double sparamu = 0.0, sparamv = 0.0;
 
   /* get new tesselation parameters */
   if(argc < 3)
     {
-      ay_error(AY_EARGS, fname, "smethod sparam!");
+      ay_error(AY_EARGS, fname, "smethod sparamu sparamv!");
       return TCL_OK;
     }
 
   sscanf(argv[1], "%d", &smethod);
-  sscanf(argv[2], "%lg", &sparam);
+  sscanf(argv[2], "%lg", &sparamu);
+  sscanf(argv[3], "%lg", &sparamv);
 
   /* clear old tesselations */
   oref = ay_tgui_origrefs;
@@ -167,7 +168,7 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
 	  if(tag->type == ay_tp_tagtype)
 	    {
 	      if(tag->val)
-		sscanf(tag->val, "%d,%lg", &smethod, &sparam);
+		sscanf(tag->val, "%d,%lg,%lg", &smethod, &sparamu, &sparamv);
 	    }
 	  tag = tag->next;
 	} /* while */
@@ -175,7 +176,7 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
       if(o->type == AY_IDNPATCH)
 	{
 	  tmp = NULL;
-	  ay_status = ay_tess_npatch(o, smethod+1, sparam, &tmp);
+	  ay_status = ay_tess_npatch(o, smethod+1, sparamu, sparamv, &tmp);
 	}
       else
 	{
@@ -189,7 +190,8 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
 		  while(tmpnp)
 		    {
 		      tmp = NULL;
-		      ay_status = ay_tess_npatch(tmpnp, smethod+1, sparam,
+		      ay_status = ay_tess_npatch(tmpnp, smethod+1,
+						 sparamu, sparamv,
 						 &tmp);
 		      
 		      newl = NULL;
@@ -216,7 +218,8 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
 	      else
 		{
 		  tmp = NULL;
-		  ay_status = ay_tess_npatch(tmpnp, smethod+1, sparam, &tmp);
+		  ay_status = ay_tess_npatch(tmpnp, smethod+1,
+					     sparamu, sparamv, &tmp);
 		} /* if */
 	      ay_object_deletemulti(tmpnp);
 	    } /* if */

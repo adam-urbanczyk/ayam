@@ -506,7 +506,7 @@ array set ay {
  uc 0
  undoo none
  redoo none
- smethods { PathLength ParametricError DomainDistance }
+ smethods { PathLength ParametricError DomainDistance AdaptiveDomainDistance}
  prefsgeom ""
  defactions { None Pick }
  curvatp 100
