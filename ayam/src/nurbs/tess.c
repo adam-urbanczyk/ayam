@@ -701,10 +701,12 @@ cleanup:
  *   1: GLU_OBJECT_PARAMETRIC_ERROR
  *   2: GLU_OBJECT_PATH_LENGTH
  *   3: GLU_DOMAIN_DISTANCE
- *  smparam - sampling method parameter
+ *   4: AY_GLU_ADAPTIVE_DOMAIN_DISTANCE
+ *  sparamu/sparamv - sampling parameters (sparamv only used by
+ *  smethod 3 and 4)
  */
 int
-ay_tess_npatch(ay_object *o, int smethod, double sparam,
+ay_tess_npatch(ay_object *o, int smethod, double sparamu, double sparamv,
 	       ay_object **pm)
 {
 #ifndef GLU_VERSION_1_3
@@ -817,7 +819,7 @@ ay_tess_npatch(ay_object *o, int smethod, double sparam,
       gluNurbsProperty(npatch->no, GLU_SAMPLING_METHOD,
 		       GLU_OBJECT_PARAMETRIC_ERROR);
       gluNurbsProperty(npatch->no, GLU_PARAMETRIC_TOLERANCE,
-		       (GLfloat)sparam);
+		       (GLfloat)sparamu);
     }
 
   if(smethod == 2)
@@ -825,7 +827,7 @@ ay_tess_npatch(ay_object *o, int smethod, double sparam,
       gluNurbsProperty(npatch->no, GLU_SAMPLING_METHOD,
 		       GLU_OBJECT_PATH_LENGTH);
       gluNurbsProperty(npatch->no, GLU_SAMPLING_TOLERANCE,
-		       (GLfloat)sparam);
+		       (GLfloat)sparamu);
     }
 
   if(smethod == 3)
@@ -833,9 +835,21 @@ ay_tess_npatch(ay_object *o, int smethod, double sparam,
       gluNurbsProperty(npatch->no, GLU_SAMPLING_METHOD,
 		       GLU_DOMAIN_DISTANCE);
       gluNurbsProperty(npatch->no, GLU_U_STEP,
-		       (GLfloat)sparam);
+		       (GLfloat)sparamu);
       gluNurbsProperty(npatch->no, GLU_V_STEP,
-		       (GLfloat)sparam);
+		       (GLfloat)sparamv);
+    }
+
+  if(smethod == 4)
+    {
+      sparamu = /*1.0/*/((4+npatch->width)*sparamu);
+      sparamv = /*1.0/*/((4+npatch->height)*sparamv);
+      gluNurbsProperty(npatch->no, GLU_SAMPLING_METHOD,
+		       GLU_DOMAIN_DISTANCE);
+      gluNurbsProperty(npatch->no, GLU_U_STEP,
+		       (GLfloat)sparamu);
+      gluNurbsProperty(npatch->no, GLU_V_STEP,
+		       (GLfloat)sparamv);
     }
 
   /*
@@ -966,7 +980,7 @@ ay_tess_npatchtcmd(ClientData clientData, Tcl_Interp *interp,
  char fname[] = "tess_npatch";
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL, *new = NULL;
- double sparam = ay_prefs.sparam;
+ double sparamu = ay_prefs.sparam, sparamv = ay_prefs.sparam;
  int smethod = ay_prefs.smethod+1;
 
   if(argc > 1)
@@ -974,16 +988,27 @@ ay_tess_npatchtcmd(ClientData clientData, Tcl_Interp *interp,
       Tcl_GetInt(interp, argv[1], &smethod);
 
       if(smethod == 1)
-	sparam = 0.5;
+	{
+	  sparamu = 0.5;
+	  sparamv = 0.5;
+	}
 
       if(smethod == 2)
-	sparam = 50.0;
+	{
+	  sparamu = 50.0;
+	  sparamv = 50.0;
+	}
 
       if(argc > 2)
 	{
-	  Tcl_GetDouble(interp, argv[2], &sparam);
+	  Tcl_GetDouble(interp, argv[2], &sparamu);
 	}
-    }
+
+      if(argc > 3)
+	{
+	  Tcl_GetDouble(interp, argv[3], &sparamv);
+	}
+    } /* if */
 
   while(sel)
     {
@@ -992,21 +1017,21 @@ ay_tess_npatchtcmd(ClientData clientData, Tcl_Interp *interp,
       if(o->type == AY_IDNPATCH)
 	{
 	  new = NULL;
-	  ay_status = ay_tess_npatch(o, smethod, sparam, &new);
+	  ay_status = ay_tess_npatch(o, smethod, sparamu, sparamv, &new);
 	  if(!ay_status)
 	    {
 	      ay_object_link(new);
 	    }
 	  else
 	    {
-	      ay_error(AY_ERROR, fname, "Could not convert object!");
+	      ay_error(AY_ERROR, fname, "Could not tesselate object!");
 	      return TCL_OK;
-	    }
+	    } /* if */
 	}
       else
 	{
 	  ay_error(AY_ERROR, fname, "object is not a NPatch");
-	}
+	} /* if */
 
       sel = sel->next;
     } /* while */

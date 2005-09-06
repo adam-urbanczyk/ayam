@@ -11,7 +11,8 @@
 
 uplevel #0 { array set tgui_tessparam {
     SMethod 0
-    SParam 20
+    SParamU 20
+    SParamV 20
     MB1Down 0
     SaveToTag 0
     OldSMethod -1
@@ -161,39 +162,47 @@ proc tgui_update args {
 
     if { $ayprefs(LazyNotify) == 1 } {
 	if { $tgui_tessparam(MB1Down) == 0 } {
-	    tguiCmd up $tgui_tessparam(SMethod) $tgui_tessparam(SParam)
+	    tguiCmd up $tgui_tessparam(SMethod) $tgui_tessparam(SParamU)\
+		$tgui_tessparam(SParamV)
 	}
     } else {
-	tguiCmd up $tgui_tessparam(SMethod) $tgui_tessparam(SParam)
+	tguiCmd up $tgui_tessparam(SMethod) $tgui_tessparam(SParamU)\
+	    $tgui_tessparam(SParamV)
     }
 
-    .tguiw.f1.fSParam.e delete 0 end
-    .tguiw.f1.fSParam.e insert 0 $tgui_tessparam(SParam)
+    .tguiw.f1.fSParamU.e delete 0 end
+    .tguiw.f1.fSParamU.e insert 0 $tgui_tessparam(SParamU)
+    .tguiw.f1.fSParamV.e delete 0 end
+    .tguiw.f1.fSParamV.e insert 0 $tgui_tessparam(SParamV)
 
     if { $tgui_tessparam(SMethod) == 0 } {
-	.tguiw.f1.fSParam.ll conf -text "0"
-	.tguiw.f1.fSParam.lr conf -text "100"
-	.tguiw.f1.fSParam.s conf -from 0 -to 100
+	.tguiw.f1.fSParamU.ll conf -text "0"
+	.tguiw.f1.fSParamU.lr conf -text "100"
+	.tguiw.f1.fSParamU.s conf -from 0 -to 100
 	if { $tgui_tessparam(OldSMethod) != $tgui_tessparam(SMethod) } {
-	    .tguiw.f1.fSParam.s conf -resolution 1
+	    .tguiw.f1.fSParamU.s conf -resolution 1
 	}
     }
 
     if { $tgui_tessparam(SMethod) == 1 } {
-	.tguiw.f1.fSParam.ll conf -text "0"
-	.tguiw.f1.fSParam.lr conf -text "100"
-	.tguiw.f1.fSParam.s conf -from 0 -to 100
+	.tguiw.f1.fSParamU.ll conf -text "0"
+	.tguiw.f1.fSParamU.lr conf -text "100"
+	.tguiw.f1.fSParamU.s conf -from 0 -to 100
 	if { $tgui_tessparam(OldSMethod) != $tgui_tessparam(SMethod) } {
-	    .tguiw.f1.fSParam.s conf -resolution 1
+	    .tguiw.f1.fSParamU.s conf -resolution 1
 	}
     }
 
-    if { $tgui_tessparam(SMethod) == 2 } {
-	.tguiw.f1.fSParam.ll conf -text "1"
-	.tguiw.f1.fSParam.lr conf -text "20"
-	.tguiw.f1.fSParam.s conf -from 0 -to 20
+    if { ($tgui_tessparam(SMethod) == 2) || ($tgui_tessparam(SMethod) == 3) } {
+	.tguiw.f1.fSParamU.ll conf -text "1"
+	.tguiw.f1.fSParamU.lr conf -text "20"
+	.tguiw.f1.fSParamU.s conf -from 0 -to 20
+	.tguiw.f1.fSParamV.ll conf -text "1"
+	.tguiw.f1.fSParamV.lr conf -text "20"
+	.tguiw.f1.fSParamV.s conf -from 0 -to 20
 	if { $tgui_tessparam(OldSMethod) != $tgui_tessparam(SMethod) } {
-	    .tguiw.f1.fSParam.s conf -resolution 0.1
+	    .tguiw.f1.fSParamU.s conf -resolution 0.1
+	    .tguiw.f1.fSParamV.s conf -resolution 0.1
 	}
     }
 
@@ -207,10 +216,15 @@ proc tgui_update args {
 # tgui_recalcslider:
 #  re-calculate resolution of slider according to val
 #
-proc tgui_recalcslider { val } {
+proc tgui_recalcslider { slider val } {
 
-    set rmin [.tguiw.f1.fSParam.s cget -from]
-    set rmax [.tguiw.f1.fSParam.s cget -to]
+    if { $slider == 0 } {
+	set rmin [.tguiw.f1.fSParamU.s cget -from]
+	set rmax [.tguiw.f1.fSParamU.s cget -to]
+    } else {
+	set rmin [.tguiw.f1.fSParamV.s cget -from]
+	set rmax [.tguiw.f1.fSParamV.s cget -to]
+    }
 
     if { [expr (abs(int($val) - $val)) != 0.0] } {
 	set ta [expr abs(int($val) - $val)]
@@ -231,7 +245,11 @@ proc tgui_recalcslider { val } {
     }
     # if
 
-    .tguiw.f1.fSParam.s configure -resolution $tb
+    if { $slider == 0 } {
+	.tguiw.f1.fSParamU.s configure -resolution $tb
+    } else {
+	.tguiw.f1.fSParamV.s configure -resolution $tb
+    }
 
  return;
 }
@@ -250,8 +268,8 @@ proc tgui_addtag { } {
 
 	forAllT NPatch 0 {
 	    global tgui_tessparam
-	    set val [format "%d,%g" $tgui_tessparam(SMethod)\
-			 $tgui_tessparam(SParam)]
+	    set val [format "%d,%g,%g" $tgui_tessparam(SMethod)\
+			 $tgui_tessparam(SParamU) $tgui_tessparam(SParamV)]
 	    set tagnames ""
 	    set tagvals ""
 	    getTags tagnames tagvals
@@ -317,12 +335,13 @@ proc tgui_readtag { } {
 	set index [lsearch $tagnames "TP"]
 	if { $index != -1 } {
 	    set val [lindex $tagvals $index]
-	    scan $val "%d,%g" smethod sparam
+	    scan $val "%d,%g,%g" smethod sparamu sparamv
 
-	    tgui_recalcslider $sparam
+	    tgui_recalcslider $sparamu $sparamv
 
 	    set tgui_tessparam(OldSMethod) $smethod
-	    set tgui_tessparam(SParam) $sparam
+	    set tgui_tessparam(SParamU) $sparamu
+	    set tgui_tessparam(SParamV) $sparamv
 	    set tgui_tessparam(SMethod) $smethod
 	}
         # if
@@ -356,10 +375,13 @@ proc tgui_open { } {
 
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
+
+    # SMethod
     addMenu $f tgui_tessparam SMethod $ay(smethods)
 
-    set f [frame $f.fSParam -relief sunken -borderwidth 1]
-    label $f.l -text "SParam:" -width 14
+    # SParamU
+    set f [frame $f.fSParamU -relief sunken -borderwidth 1]
+    label $f.l -text "SParamU:" -width 14
 
     label $f.ll -text "0"
     scale $f.s -showvalue 0 -orient h -from 0 -to 100\
@@ -372,6 +394,39 @@ proc tgui_open { } {
     label $f.lr -text "100"
     entry $f.e -width 5
 
+    pack $f.l -in $f -side left -fill x -expand no
+    pack $f.ll -in $f -side left -expand no
+    pack $f.s -in $f -side left -fill x -expand yes
+    pack $f.lr -in $f -side left -expand no
+    pack $f.e -in $f -side right -fill x -expand yes -padx 2
+
+    pack $f -in $w.f1 -side top -fill x -expand yes
+
+    # SParamV
+    set f $w.f1
+    set f [frame $f.fSParamV -relief sunken -borderwidth 1]
+    label $f.l -text "SParamV:" -width 14
+
+    label $f.ll -text "0"
+    scale $f.s -showvalue 0 -orient h -from 0 -to 100\
+	-highlightthickness 0
+    if { $ayprefs(LazyNotify) == 1 } {
+	bind $f.s <ButtonPress-1> "set tgui_tessparam(MB1Down) 1"
+	bind $f.s <ButtonRelease-1> "set tgui_tessparam(MB1Down) 0;tgui_update"
+    }
+
+    label $f.lr -text "100"
+    entry $f.e -width 5
+
+    pack $f.l -in $f -side left -fill x -expand no
+    pack $f.ll -in $f -side left -expand no
+    pack $f.s -in $f -side left -fill x -expand yes
+    pack $f.lr -in $f -side left -expand no
+    pack $f.e -in $f -side right -fill x -expand yes -padx 2
+
+    pack $f -in $w.f1 -side top -fill x -expand yes
+
+    # set up undo system
     set ::ay(need_undo_clear) 0
     forAll 0 { if { [hasChild] } { set ::ay(need_undo_clear) 1 } }
 
@@ -391,14 +446,6 @@ proc tgui_open { } {
 	undo; focus .; destroy .tguiw;
 	return;
     }
-
-    pack $f.l -in $f -side left -fill x -expand no
-    pack $f.ll -in $f -side left -expand no
-    pack $f.s -in $f -side left -fill x -expand yes
-    pack $f.lr -in $f -side left -expand no
-    pack $f.e -in $f -side right -fill x -expand yes -padx 2
-
-    pack $f -in $w.f1 -side top -fill x -expand yes
 
     # create first tesselation
     #tgui_update
@@ -432,17 +479,28 @@ proc tgui_open { } {
     tgui_update
 
     # initiate update machinery
-    set f $w.f1.fSParam
-    $f.s conf -variable tgui_tessparam(SParam) -command tgui_update
-    trace variable tgui_tessparam(SMethod) w tgui_update
-    #trace variable tgui_tessparam(SParam) w tgui_update
-
     event add <<CommitTG>> <KeyPress-Return> <FocusOut>
-    bind $f.e <<CommitTG>> "if { \[$f.e get\] != \$tgui_tessparam(SParam) } { \
+    trace variable tgui_tessparam(SMethod) w tgui_update
+
+    set f $w.f1.fSParamU
+    $f.s conf -variable tgui_tessparam(SParamU) -command tgui_update
+    #trace variable tgui_tessparam(SParamU) w tgui_update
+    bind $f.e <<CommitTG>> "if { \[$f.e get\] != \$tgui_tessparam(SParamU) } {\
 	                         $f.s conf -command \"\"; \
-				 tgui_recalcslider \[$f.e get\]; \
+				 tgui_recalcslider 0 \[$f.e get\]; \
 				 $f.s set \[$f.e get\]; \
-				 set tgui_tessparam(SParam) \[$f.e get\]; \
+				 set tgui_tessparam(SParamU) \[$f.e get\]; \
+				 $f.s conf -command tgui_update; \
+			     }"
+
+    set f $w.f1.fSParamV
+    $f.s conf -variable tgui_tessparam(SParamV) -command tgui_update
+    #trace variable tgui_tessparam(SParamV) w tgui_update
+    bind $f.e <<CommitTG>> "if { \[$f.e get\] != \$tgui_tessparam(SParamV) } {\
+	                         $f.s conf -command \"\"; \
+				 tgui_recalcslider 1 \[$f.e get\]; \
+				 $f.s set \[$f.e get\]; \
+				 set tgui_tessparam(SParamV) \[$f.e get\]; \
 				 $f.s conf -command tgui_update; \
 			     }"
 
