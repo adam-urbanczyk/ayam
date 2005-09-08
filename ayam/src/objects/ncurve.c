@@ -185,6 +185,11 @@ ay_ncurve_drawstesscb(struct Togl *togl, ay_object *o)
     }
   else
     {
+      if(ncurve->glu_sampling_tolerance != 0.0)
+	{
+	  qf = ay_stess_GetQF(ncurve->glu_sampling_tolerance);
+	}
+
       if(o->modified || (ncurve->tessqf != qf))
 	{
 	  if(ncurve->tessv)

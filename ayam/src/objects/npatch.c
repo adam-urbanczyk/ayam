@@ -157,7 +157,7 @@ int
 ay_npatch_drawstesscb(struct Togl *togl, ay_object *o)
 {
  int ay_status = AY_OK;
- char fname[] = "npatch_drawstesscb";
+ /*char fname[] = "npatch_drawstesscb";*/
  ay_nurbpatch_object *npatch = NULL;
  int a, i, j, tessw, tessh;
  double *tessv = NULL;
@@ -170,6 +170,11 @@ ay_npatch_drawstesscb(struct Togl *togl, ay_object *o)
 
   if(!npatch)
     return AY_ENULL;
+
+  if(npatch->glu_sampling_tolerance != 0.0)
+    {
+      qf = ay_stess_GetQF(npatch->glu_sampling_tolerance);
+    }
 
   if(o->modified || (npatch->tessqf != qf))
     {
@@ -523,8 +528,9 @@ ay_npatch_drawcb(struct Togl *togl, ay_object *o)
 int
 ay_npatch_shadestesscb(struct Togl *togl, ay_object *o)
 {
- int ay_status = AY_OK;
+ /*int ay_status = AY_OK;*/
  ay_nurbpatch_object *npatch = NULL;
+ int qf = ay_prefs.glu_sampling_tolerance;
 
   if(!o)
     return AY_ENULL;
@@ -533,6 +539,11 @@ ay_npatch_shadestesscb(struct Togl *togl, ay_object *o)
 
   if(!npatch)
     return AY_ENULL;
+
+  if(npatch->glu_sampling_tolerance != 0.0)
+    {
+      qf = ay_stess_GetQF(npatch->glu_sampling_tolerance);
+    }
 
  return AY_OK;
 } /* ay_npatch_shadestesscb */
