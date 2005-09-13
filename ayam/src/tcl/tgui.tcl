@@ -182,6 +182,8 @@ proc tgui_update args {
 	if { $tgui_tessparam(OldSMethod) != $tgui_tessparam(SMethod) } {
 	    .tguiw.f1.fSParamU.s conf -resolution 1
 	}
+	pack forget .tguiw.f1.fSParamV
+
     }
 
     if { $tgui_tessparam(SMethod) == 1 } {
@@ -191,6 +193,7 @@ proc tgui_update args {
 	if { $tgui_tessparam(OldSMethod) != $tgui_tessparam(SMethod) } {
 	    .tguiw.f1.fSParamU.s conf -resolution 1
 	}
+	pack forget .tguiw.f1.fSParamV
     }
 
     if { ($tgui_tessparam(SMethod) == 2) || ($tgui_tessparam(SMethod) == 3) } {
@@ -204,6 +207,7 @@ proc tgui_update args {
 	    .tguiw.f1.fSParamU.s conf -resolution 0.1
 	    .tguiw.f1.fSParamV.s conf -resolution 0.1
 	}
+	pack .tguiw.f1.fSParamV -in .tguiw.f1 -side top
     }
 
     set tgui_tessparam(OldSMethod) $tgui_tessparam(SMethod)
@@ -376,6 +380,8 @@ proc tgui_open { } {
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
 
+    addCheck $f tgui_tessparam SaveToTag
+
     # SMethod
     addMenu $f tgui_tessparam SMethod $ay(smethods)
 
@@ -447,11 +453,6 @@ proc tgui_open { } {
 	return;
     }
 
-    # create first tesselation
-    #tgui_update
-
-    set f $w.f1
-    addCheck $f tgui_tessparam SaveToTag
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {
