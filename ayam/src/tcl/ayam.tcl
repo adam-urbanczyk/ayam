@@ -924,6 +924,7 @@ while { $i < $argc } {
     }
  incr i
 }
+# while
 
 # show splash screen
 ayam_loadscript win
@@ -1263,6 +1264,7 @@ if { $ayprefs(Scripts) != "" } {
 	}
     }
 }
+# if
 
 # scan for shaders
 shader_scanAll
@@ -1323,6 +1325,7 @@ if { ($ayprefs(LoadEnv) == 1) && ($ay(failsafe) == 0) &&\
 } else {
     uS
 }
+# if
 
 # now, a view is probably open and we may initialize aycsg (if wrapped in)
 if { $AYCSGWRAPPED == 1 } {
@@ -1383,13 +1386,13 @@ while { $i < $argc } {
 	    }
 
 	}
-        #if
+        # if
 	uS; rV
     }
-    #if
+    # if
  incr i
 }
-#while
+# while
 grab release .fu
 
 puts stdout "The tip of the day is:"
