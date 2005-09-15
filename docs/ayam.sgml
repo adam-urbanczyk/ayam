@@ -2400,7 +2400,7 @@ Note that the exact behaviour of an object equipped with a TC tag
 depends heavily on the shader and its use of the texture coordinates!
 <p>
 Note also that using TC tags you change the texture coordinates
-of whole primitives only, if you want to change the texture coordinates
+of entire primitives only, if you want to change the texture coordinates
 of sub-primitives (e.g. of single control points of a NURBS patch)
 you would need to use a PV (Primitive Variable) tag instead.
 
@@ -2517,7 +2517,9 @@ The syntax of a RiHider tag is quite similar to a RiAttribute tag:
 where <tt/"&lt;parameterlist&gt;"/ is a comma separated list
 of triplets consisting of name, type, and value of a parameter.
 <p>
-An example for a RiHider tag could look like this:
+Example
+<p>
+A RiHider tag could look like this:
 <p>
 <code>RiHider hidden,depthfilter,s,midpoint</code>
 
@@ -2538,7 +2540,9 @@ of triplets consisting of name, type, and value of a parameter.
 The name will be automatically changed to <tt/"+name"/ on RIB export
 if it does not already start with a plus.
 <p>
-An example for a RiDisplay tag could look like this:
+Example
+<p>
+A RiDisplay tag could look like this:
 <code>RiDisplay imagez.tif,file,z</code>
 
 <sect2>NoExport Tag<label id="noexporttag">
@@ -2569,19 +2573,25 @@ The tag type <tt/"TP"/ can be used to save tesselation parameters
 to objects of type <tt/"NPatch"/. Those tesselation parameters
 will be used when the NPatch object is tesselated for e.g. a
 conversion to a PolyMesh object. The syntax of the TP tag is:
-<tt>"&lt;tmethod&gt;,&lt;tparam&gt;"</tt>
+<tt>"&lt;tmethod&gt;,&lt;tparamu&gt;,,&lt;tparamv&gt;"</tt>
 where <tt/"&lt;tmethod&gt;"/ is an integer value between 1 and 3, describing
 which tesselation method to use (1 - ParametricError,
-2 - PathLength, and 3 - DomainDistance) and <tt/"&lt;tparam&gt;"/ is a float
-value describing the respective parameter value for the chosen
-tesselation method.
+2 - PathLength, and 3 - DomainDistance) and <tt/"&lt;tparamu&gt;"/ and
+<tt/"&lt;tparamu&gt;"/ are float values describing the respective parameter
+value for the chosen tesselation method. The second parameter value
+is ignored for the tesselation methods 1 and 2.
+<p>
+Note that the syntax of the <tt/"TP"/ tag changed in Ayam 1.9,
+the old syntax only allowed one parameter.
 <p>
 TP tags may be easily created using the tesselation GUI, that can
 be started with the main menu entry <tt>"Tools/NPatch/Tesselate"</tt>
 (see also section <ref id="tesst" name="The Tesselation Tool">).
 <p>
-An example for a TP tag could look like this:
-<code>TP 1,0.5</code>
+Example
+<p>
+A TP tag could look like this:
+<code>TP 1,0.5,0.6</code>
 
 <sect2>DC Tag<label id="dctag">
 <p>
@@ -2594,7 +2604,9 @@ depth complexity of the CSG primitive. See also section
 <ref id="aycsg" name="CSG preview using the AyCSG plugin">
 for more information regarding the depth complexity value.
 <p>
-An example for a DC tag (valid for e.g. a torus) could look like this:
+Example
+<p>
+A DC tag (valid for e.g. a torus) could look like this:
 <code>DC 2</code>
 
 <sect2>NP Tag<label id="nptag">
@@ -2609,15 +2621,23 @@ property list box.
 <sect2>NS Tag<label id="nstag">
 <p>
 The tag type <tt/"NS"/ (notify script) may be used to add scripts
-to object, that will be run after the notification callback of
-that fired (because e.g. one of the children of the object changed).
+to an object, that will be run after the notification callback of
+that object fired (because e.g. one of the children of the object changed).
+<p>
+Example
+<p>
+A simple NS tag could look like this:
+<code>NS puts "notify callback fired"</code>
 
 <sect2>UMM/VMM Tag<label id="ummtag">
 <p>
 The tag types <tt/"UMM"/ (u min max) and <tt/"VMM"/ (v min max) may
 be used to store additional parametric domain trimming values to
 NURBS curve and NURBS patch objects.
-An example for an UMM tag could look like this:
+<p>
+Example
+<p>
+An UMM tag could look like this:
 <code>UMM 0.4,0.6</code>
 
 <sect2>Internal Tags
@@ -8289,6 +8309,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>newScene: <ref id="scio" name="scripting interface command">
 <item>NoExport: <ref id="noexporttag" name="tag type">
 <item>NP: <ref id="nptag" name="tag type">
+<item>NS: <ref id="nstag" name="tag type">
 <item>NumClones: <ref id="cloneattr" name="Clone attribute">
 <item>NumSamples: <ref id="moattr" name="MetaObj attribute">
 <item>NURBCircle: <ref id="ncirct" name="NURBS circle tool">
