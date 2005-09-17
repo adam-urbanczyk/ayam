@@ -1,4 +1,4 @@
-[21. Aug 2005] CVS-Head:
+[17. Sep 2005] CVS-Head:
 o bug fixes:
   - fixed automatic merging of PV tags (SF 1238692)
   - fixed root object not drawn upon File/New (SF 1245221)
@@ -9,6 +9,9 @@ o bug fixes:
   - fixed crash when using undo after tesselation GUI (SF 1258297)
   - fixed tesselation GUI not updating the object tree properly (SF 1258299)
   - fixed create trimrect tool setting wrong weight values (SF 1269176)
+  - fixed tesselation GUI not working with multiple selected objects
+    (SF 1294013)
+  - fixed tesselation GUI not removing all TP tags (SF 1294023)
 o improved OBJ import of files with trailing whitespace as e.g. written by
   Blender
 o script objects now cache a compiled version of the script for faster
@@ -60,6 +63,9 @@ o added new NURBS curve and surface drawing and tesselation modes not
   based on GLU
 o added example/helper script "2lcons.tcl" that restricts the Ayam console
   to display just two lines of text
+o TP tags now handle a second parameter to allow to adjust the tesselation
+  differently in the U and V parametric dimensions
+o forAll and forAllT now maintain the selection for the object tree
 
 
 [5. Jul 2005] Ayam 1.8.3:
