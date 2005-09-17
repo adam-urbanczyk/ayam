@@ -160,6 +160,10 @@ proc tgui_unblock { } {
 proc tgui_update args {
     global ay ayprefs tgui_tessparam
 
+    trace vdelete tgui_tessparam(SMethod) w tgui_update
+    trace vdelete tgui_tessparam(SParamU) w tgui_update
+    trace vdelete tgui_tessparam(SParamV) w tgui_update
+
     if { $ayprefs(LazyNotify) == 1 } {
 	if { $tgui_tessparam(MB1Down) == 0 } {
 	    tguiCmd up $tgui_tessparam(SMethod) $tgui_tessparam(SParamU)\
@@ -211,6 +215,10 @@ proc tgui_update args {
     }
 
     set tgui_tessparam(OldSMethod) $tgui_tessparam(SMethod)
+
+    trace variable tgui_tessparam(SMethod) w tgui_update
+    trace variable tgui_tessparam(SParamU) w tgui_update
+    trace variable tgui_tessparam(SParamV) w tgui_update
 
  return;
 }
@@ -303,8 +311,7 @@ proc tgui_addtag { } {
 proc tgui_remtag { } {
     global tgui_tessparam
 
-    forAllT NPatch 0 {
-
+    forAll 0 {
 	set tagnames ""
 	set tagvals ""
 	getTags tagnames tagvals
@@ -319,7 +326,7 @@ proc tgui_remtag { } {
 	}
 	# if
     }
-    # forAllT
+    # forAll
 
  return;
 }
@@ -484,8 +491,9 @@ proc tgui_open { } {
     trace variable tgui_tessparam(SMethod) w tgui_update
 
     set f $w.f1.fSParamU
-    $f.s conf -variable tgui_tessparam(SParamU) -command tgui_update
-    #trace variable tgui_tessparam(SParamU) w tgui_update
+    $f.s conf -variable tgui_tessparam(SParamU)
+    # -command tgui_update
+    trace variable tgui_tessparam(SParamU) w tgui_update
     bind $f.e <<CommitTG>> "if { \[$f.e get\] != \$tgui_tessparam(SParamU) } {\
 	                         $f.s conf -command \"\"; \
 				 tgui_recalcslider 0 \[$f.e get\]; \
@@ -495,8 +503,9 @@ proc tgui_open { } {
 			     }"
 
     set f $w.f1.fSParamV
-    $f.s conf -variable tgui_tessparam(SParamV) -command tgui_update
-    #trace variable tgui_tessparam(SParamV) w tgui_update
+    $f.s conf -variable tgui_tessparam(SParamV)
+    # -command tgui_update
+    trace variable tgui_tessparam(SParamV) w tgui_update
     bind $f.e <<CommitTG>> "if { \[$f.e get\] != \$tgui_tessparam(SParamV) } {\
 	                         $f.s conf -command \"\"; \
 				 tgui_recalcslider 1 \[$f.e get\]; \
