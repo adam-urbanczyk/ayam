@@ -1749,13 +1749,15 @@ surface and the original surface is no point bigger than the value specified
 by <tt/"SParam"/. Note that <tt/"SParam"/ is expressed in object space
 units for the last two sampling methods.
 
-<item><tt/"SParam"/; is a parameter for the sampling method above.
+<item><tt/"SParamU"/; is a parameter for the sampling method above.
 The default value for the sampling method <tt/"DomainDistance"/ is 10. Higher
 values lead to better quality and more tesselated polygons.
 The default value for the sampling method <tt/"PathLength"/ is 30.
 Smaller values lead to better quality and more tesselated polygons.
 The default value for the sampling method <tt/"ParametricError"/ is 0.5.
 Smaller values lead to better quality and more tesselated polygons.
+<item><tt/"SParamV"/; is just available for the tesselation mode
+<tt/"DomainDistance"/
 </itemize>
 
 <sect>Interactive Actions (Modeling)<label id="iac">
@@ -5842,31 +5844,42 @@ original clipboard contents are lost when this tool finishes.
 <sect1>The Tesselation Tool<label id="tesst">
 <p>
 <itemize>
-<item>Arguments: The tesselation tool takes all NURBS patches from
-the selection.
+<item>Arguments: The tesselation tool takes all NURBS patches and
+NURBS patch providing objects from the selection.
 <item>Operation: A modal dialog box (see image above) will pop up,
 that allows to select a tesselation method via a drop-down menu
-and tune the corresponding tesselation parameter using a slider and
-an entry widget. The initial parameter values will be derived from
-the TP tag of the first of the selected objects (if it has such a tag).
-The selected NURBS patches will be tesselated with the chosen parameters.
+and tune the corresponding tesselation parameter(s) using a slider and
+an entry widget. The initial method and parameter values will be derived
+from the TP tag of the first of the selected objects (if it has such a tag).
+<p>
+The selected or provided NURBS patches will be tesselated with the
+chosen method and parameters.
 The PolyMesh objects created by the tesselation will immediately be
-displayed in all view windows instead of the original NURBS patches.
+displayed in all view windows instead of the original objects.
+<p>
 If the preference option <tt/"LazyNotify"/ is enabled, updates of the
 tesselation that normally occur while dragging the slider will be
 deferred until the mouse button is released.
+<p>
 If the <tt/"Ok"/ button is pressed to close the tesselation tool, all
-selected NURBS patch objects will be replaced by their tesselated
-counterparts;
-if <tt/"Cancel"/ is used, all NURBS patch objects remain unchanged.
+selected objects will be replaced by their tesselated
+counterparts; if <tt/"Cancel"/ is used, all selected objects remain
+unchanged.
+<p>
 If the check box <tt/"SaveToTag"/ is activated, closing the tesselation
 tool using <tt/"Cancel"/ will also add a <tt/"TP"/ tag containing
 the currently selected method and parameter value to all selected
 NURBS patch objects.
-<item>Note: The tesselation tool will block all other parts of Ayam
-while it is running.
+<item>Note: The tesselation tool will block most other parts of Ayam
+while it is running. It is, however, possible to adjust view parameters
+while the tesselation tool is open, to examine the tesselation more
+closely or from different viewing angles.
 </itemize>
 
+See section
+<ref id="prefmisc" name="Miscellaneous Preferences">
+for a more extensive discussion of the tesselation methods
+and their parameter(s).
 
 <sect>The Tcl Scripting Interface<label id="script">
 <p>
