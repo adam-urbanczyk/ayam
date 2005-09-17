@@ -69,6 +69,7 @@ proc forAll_tree { recursive command } {
 	}
     }
 
+
  return;
 }
 # forAll_tree
@@ -150,6 +151,7 @@ proc forAll { recursive command } {
 
     if { $ay(lb) == 0 } {
 	set tree $ay(tree)
+	getSel ay(selection)
 	# save current state of tree widget
 	set clevel $ay(CurrentLevel)
 	set slevel $ay(SelectedLevel)
@@ -161,6 +163,8 @@ proc forAll { recursive command } {
 	# recover state of tree widget
 	$tree selection set $sel
 	treeSelect $sel
+	eval [subst "selOb $ay(selection)"]
+
 	plb_update
 	set ay(CurrentLevel) $clevel
 	set ay(SelectedLevel) $slevel
@@ -329,6 +333,7 @@ proc forAllT { type recursive command } {
     if { $ay(lb) == 0 } {
 	set tree $ay(tree)
 	# save current state of tree widget
+	getSel ay(selection)
 	set clevel $ay(CurrentLevel)
 	set slevel $ay(SelectedLevel)
 	set sel [$tree selection get]
@@ -339,6 +344,7 @@ proc forAllT { type recursive command } {
 	# recover state of tree widget
 	$tree selection set $sel
 	treeSelect $sel
+	eval [subst "selOb $ay(selection)"]
 	plb_update
 	set ay(CurrentLevel) $clevel
 	set ay(SelectedLevel) $slevel
@@ -356,8 +362,8 @@ proc forAllT { type recursive command } {
 
 set cancelled 0
 
-bind .fl.con.console <Control-KeyPress-C> {set cancelled 1}
-bind .fl.con.console <Control-KeyRelease-C> {set cancelled 0}
+bind .fl.con.console <Control-KeyPress-C> {set cancelled 1;break}
+bind .fl.con.console <Control-KeyRelease-C> {set cancelled 0;break}
 
 #
 #
