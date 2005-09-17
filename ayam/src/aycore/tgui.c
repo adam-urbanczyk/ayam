@@ -327,18 +327,22 @@ ay_tgui_cancel(void)
  ay_deletecb *cb = NULL;
  void **arr = NULL;
 
+  arr = ay_deletecbt.arr;
+
   while(ay_tgui_origrefs)
     {
       o = ay_tgui_origs;
       oref = ay_tgui_origrefs;
 
-      arr = ay_deletecbt.arr;
-      cb = (ay_deletecb *)(arr[oref->object->type]);
-      if(cb)
-	ay_status = cb(oref->object->refine);
+      if(oref->object->type == AY_IDPOMESH)
+	{
+	  cb = (ay_deletecb *)(arr[oref->object->type]);
+	  if(cb)
+	    ay_status = cb(oref->object->refine);
 
-      if(ay_status)
-	return ay_status;
+	  if(ay_status)
+	    return ay_status;
+	}
 
       oref->object->type = o->type;
       oref->object->refine = o->refine;
