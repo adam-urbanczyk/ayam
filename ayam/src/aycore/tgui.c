@@ -85,7 +85,6 @@ ay_tgui_open(void)
 	}
       else
 	{
-
 	  ay_error(AY_EWARN, fname,
 		   "Omitting object of wrong type, need NPatch!");
 	} /* if */
@@ -141,7 +140,7 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
   oref = ay_tgui_origrefs;
   while(oref)
    {
-     if(oref->object->type == AY_IDPOMESH)
+     if((oref->object->type == AY_IDPOMESH) && oref->object->refine)
        {
 	 arr = ay_deletecbt.arr;
 	 cb = (ay_deletecb *)(arr[oref->object->type]);
@@ -234,7 +233,7 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
 	}
       oref->object->type = AY_IDPOMESH;
 
-      /* PolyMesh objects have no trim curves... */
+      /* PolyMesh objects have no children (trim curves)... */
       oref->object->down = NULL;
 
       oref = oref->next;
@@ -281,7 +280,7 @@ ay_tgui_ok(void)
 	  if(ay_status)
 	    {
 	      ay_error(AY_ERROR, fname,
-		"Could not remove trimcurves, maybe referenced objects?");
+		"Could not remove children, maybe referenced objects?");
 
 	      l = o->down;
 	      while(l->next)
@@ -292,7 +291,7 @@ ay_tgui_ok(void)
 	      l->next = ay_clipboard;
 	      ay_clipboard = o->down;
 	      o->down = NULL;
-	      ay_error(AY_ERROR, fname, "Moved trimcurves to clipboard!");
+	      ay_error(AY_ERROR, fname, "Moved children to clipboard!");
 
 	    } /* if */
 	  o->down = NULL;
@@ -343,7 +342,7 @@ ay_tgui_cancel(void)
 
       oref->object->type = o->type;
       oref->object->refine = o->refine;
-      /* move trim curves */
+      /* move children (trim curves) */
       oref->object->down = o->down;
 
       ay_tgui_origs = o->next;
