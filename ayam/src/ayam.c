@@ -473,7 +473,8 @@ ay_init(Tcl_Interp *interp)
   ay_prefs.mark_hidden = AY_TRUE;
 
   ay_prefs.smethod = 3;
-  ay_prefs.sparam = 10;
+  ay_prefs.sparamu = 5;
+  ay_prefs.sparamv = 5;
 
   ay_prefs.wutag = AY_TRUE;
 

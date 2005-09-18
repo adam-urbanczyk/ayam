@@ -1609,7 +1609,7 @@ ay_npatch_providecb(ay_object *o, unsigned int type, ay_object **result)
  /*char fname[] = "npatch_providecb";*/
  ay_tag_object *tag = NULL;
  int smethod = ay_prefs.smethod;
- double sparamu = ay_prefs.sparam, sparamv = ay_prefs.sparam;
+ double sparamu = ay_prefs.sparamu, sparamv = ay_prefs.sparamv;
 
   if(!o)
     return AY_ENULL;
