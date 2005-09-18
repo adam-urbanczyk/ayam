@@ -129,7 +129,8 @@ array set ayprefs {
  Prompt {}
 
  SMethod 3
- SParam 10
+ SParamU 10
+ SParamV 10
  SavePrefsGeom 1
  PrefsGeom ""
  PrefsSection "Main"
@@ -506,7 +507,7 @@ array set ay {
  uc 0
  undoo none
  redoo none
- smethods { PathLength ParametricError DomainDistance AdaptiveDomainDistance}
+ smethods { PathLength ParametricError DomainDistance NormalizedDomainDistance AdaptiveDomainDistance }
  prefsgeom ""
  defactions { None Pick }
  curvatp 100
