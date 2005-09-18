@@ -241,7 +241,8 @@ proc prefs_open {} {
     addText $fw e3 "Tesselation:"
     addMenuB $fw ayprefse SMethod [ms ayprefse_SMethod]\
 	    $ay(smethods)
-    addParamB $fw ayprefse SParam [ms ayprefse_SParam] { 10 0.5 1 30 }
+    addParamB $fw ayprefse SParamU [ms ayprefse_SParam] { 10 0.5 1 30 }
+    addParamB $fw ayprefse SParamV [ms ayprefse_SParam] { 10 0.5 1 30 }
 
     # end of PrefsGUIs
     set ay(iapplydisable) 0

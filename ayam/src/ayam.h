@@ -849,7 +849,8 @@ typedef struct ay_prefs_object_s
 
   /* sampling mode/quality for NURBS -> PolyMesh conversion */
   int smethod;
-  double sparam;
+  double sparamu;
+  double sparamv;
 
   /* control warnings about unknown tag types */
   int wutag;
