@@ -844,24 +844,13 @@ ay_tess_npatch(ay_object *o, int smethod, double sparamu, double sparamv,
 
   if(smethod == 4)
     {
-      
-      knotlen = npatch->uknotv[npatch->width + npatch->uorder - 1] -
-        npatch->uknotv[0];
-      /*
       knotlen = npatch->uknotv[npatch->width] -
-	npatch->uknotv[npatch->uorder];
-      */
+	npatch->uknotv[npatch->uorder - 1];
       sparamu = sparamu / knotlen;
-      
-      knotlen = npatch->vknotv[npatch->height + npatch->vorder - 1] -
-	npatch->vknotv[0];
-      /*
-      knotlen = npatch->vknotv[npatch->height] -
-	npatch->vknotv[npatch->vorder];
-      */
-      sparamv = sparamv / knotlen;
 
-      printf("Using sampling parameters: %g %g\n",sparamu,sparamv);
+      knotlen = npatch->vknotv[npatch->height] -
+	npatch->vknotv[npatch->vorder - 1];
+      sparamv = sparamv / knotlen;
 
       gluNurbsProperty(npatch->no, GLU_SAMPLING_METHOD,
 		       GLU_DOMAIN_DISTANCE);
@@ -873,11 +862,11 @@ ay_tess_npatch(ay_object *o, int smethod, double sparamu, double sparamv,
 
   if(smethod == 5)
     {
-      knotlen = npatch->uknotv[npatch->width + npatch->uorder - 1] -
-	npatch->uknotv[0];
+      knotlen = npatch->uknotv[npatch->width] -
+	npatch->uknotv[npatch->uorder - 1];
       sparamu = ((4 + npatch->width) * sparamu) / knotlen;
-      knotlen = npatch->vknotv[npatch->height + npatch->vorder - 1] -
-	npatch->vknotv[0];
+      knotlen = npatch->vknotv[npatch->height] -
+	npatch->vknotv[npatch->vorder -  1];
       sparamv = ((4 + npatch->height) * sparamv) / knotlen;
       gluNurbsProperty(npatch->no, GLU_SAMPLING_METHOD,
 		       GLU_DOMAIN_DISTANCE);
