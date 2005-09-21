@@ -625,33 +625,34 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
 
-  Tcl_SetStringObj(ton,"Length",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &new_length);
+  /* get new values from Tcl */
+  Tcl_SetStringObj(ton, "Length", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &new_length);
 
-  Tcl_SetStringObj(ton,"Order",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &new_order);
+  Tcl_SetStringObj(ton, "Order", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &new_order);
 
-  Tcl_SetStringObj(ton,"Knot-Type",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &new_knot_type);
+  Tcl_SetStringObj(ton, "Knot-Type", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &new_knot_type);
 
-  Tcl_SetStringObj(ton,"Type",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &new_type);
+  Tcl_SetStringObj(ton, "Type", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &new_type);
 
-  Tcl_SetStringObj(ton,"CreateMP",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(ncurve->createmp));
+  Tcl_SetStringObj(ton, "CreateMP", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(ncurve->createmp));
 
-  Tcl_SetStringObj(ton,"Tolerance",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &(ncurve->glu_sampling_tolerance));
+  Tcl_SetStringObj(ton, "Tolerance", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(ncurve->glu_sampling_tolerance));
 
-  Tcl_SetStringObj(ton,"DisplayMode",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(ncurve->display_mode));
+  Tcl_SetStringObj(ton, "DisplayMode", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &(ncurve->display_mode));
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
@@ -672,43 +673,43 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       if(ay_status)
        ay_error(AY_ERROR,fname, "Could not resize curve!");
 
-      updateKnots = 1;
+      updateKnots = AY_TRUE;
+      o->modified = AY_TRUE;
     }
 
   /* apply new order */
   if((ncurve->order != new_order) && (new_order > 1))
     {
       ncurve->order = new_order;
-      updateKnots = 1;
+      updateKnots = AY_TRUE;
+      o->modified = AY_TRUE;
     }
 
   /* change knot type */
   if((new_knot_type != ncurve->knot_type) || (updateKnots))
     {
       ncurve->knot_type = new_knot_type;
-      updateKnots = 1;
-
+      updateKnots = AY_TRUE;
+      o->modified = AY_TRUE;
     }
 
-  /*
-    for all Pink's that do not know that a BezierCurve always has
-    order = length
-  */
+  /* plausibility checks */
   if(ncurve->knot_type == AY_KTBEZIER)
     {
       if(ncurve->order != ncurve->length)
 	{
-	  ay_error(AY_EWARN,fname, "Changing order to match length!");
+	  ay_error(AY_EWARN, fname, "Changing order to match length!");
 	  ncurve->order = ncurve->length;
 	}
     }
 
   if(ncurve->length < ncurve->order)
     {
-      ay_error(AY_EWARN,fname, "Lowering order to match length!");
+      ay_error(AY_EWARN, fname, "Lowering order to match length!");
       ncurve->order = ncurve->length;
     }
 
+  /* create new knot vectors */
   if((updateKnots) && (ncurve->knot_type != AY_KTCUSTOM))
     ay_status = ay_knots_createnc(ncurve);
 
@@ -744,7 +745,6 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	      ncurve->knotv);
 	    }
 	  */
-
 	}
       else
 	{/* the knots are wrong */
@@ -763,8 +763,7 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	    case 4:
 	      ay_error(AY_ERROR,fname, "Knot sequence has decreasing knots!");
 	      break;
-
-	    }
+	    } /* switch */
 
 	  free(nknotv);
 
@@ -777,9 +776,10 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
 	  if(ay_status)
 	    ay_error(AY_ERROR, fname, "Error creating new knots!");
+	} /* if */
 
-
-	}
+      /* XXXX compare old and new knots before setting this flag */
+      o->modified = AY_TRUE;
 
       Tcl_Free((char *) knotv);
     } /* if */
@@ -792,6 +792,7 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	{
 	  ay_selp_clear(o);
 	}
+      o->modified = AY_TRUE;
       ncurve->type = new_type;
       ay_status = ay_nct_close(ncurve);
       if(ay_status)
@@ -832,9 +833,9 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if((new_type == AY_CTOPEN) && (ncurve->type != AY_CTOPEN))
     {
       ncurve->type = AY_CTOPEN;
-      /* we assume user wants the end cvs to be exploded */
-      /* we clear all mpoints, user may re-create them easily */
-      /* pressing apply another time */
+      /* we assume user wants the end cvs to be exploded
+	 we clear all mpoints, user may re-create them easily
+	 pressing apply another time */
       while(ncurve->mpoints)
 	{
 	  mp = ncurve->mpoints->next;
