@@ -868,7 +868,7 @@ ay_npatch_getpntcb(int mode, ay_object *o, double *p)
 		  if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
 		    return AY_EOMEM;
 		  pecoords[a] = &(control[j]);
-		  a++;		
+		  a++;
 		} /* if */
 
 	      j += 4;
@@ -900,7 +900,7 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  int new_uorder, new_width, new_uknot_type;
  int new_vorder, new_height, new_vknot_type;
  double *nknotv = NULL;
- int updateKnots = 0;
+ int updateKnots = AY_FALSE;
  int knotc, i;
  char **knotv;
 
@@ -912,6 +912,7 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
 
+  /* get new values from Tcl */
   Tcl_SetStringObj(ton,"Width",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &new_width);
@@ -963,8 +964,10 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       if(ay_status)
        ay_error(AY_ERROR,fname,"Could not resize patch!");
 
-      updateKnots = 1;
-    }
+      updateKnots = AY_TRUE;
+      o->modified = AY_TRUE;
+    } /* if */
+
   if(new_height != npatch->height && (new_height > 1))
     {
       if(o->selp)
@@ -977,35 +980,41 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       if(ay_status)
        ay_error(AY_ERROR,fname,"Could not resize patch!");
 
-      updateKnots = 1;
-    }
+      updateKnots = AY_TRUE;
+      o->modified = AY_TRUE;
+    } /* if */
 
   /* apply new order */
   if((npatch->uorder != new_uorder) && (new_uorder > 1))
     {
       npatch->uorder = new_uorder;
-      updateKnots = 1;
+      updateKnots = AY_TRUE;
+      o->modified = AY_TRUE;
     }
 
   if((npatch->vorder != new_vorder) && (new_vorder > 1))
     {
       npatch->vorder = new_vorder;
-      updateKnots = 1;
+      updateKnots = AY_TRUE;
+      o->modified = AY_TRUE;
     }
 
   /* change knot type */
   if((new_uknot_type != npatch->uknot_type) || (updateKnots))
     {
       npatch->uknot_type = new_uknot_type;
-      updateKnots = 1;
+      updateKnots = AY_TRUE;
+      o->modified = AY_TRUE;
     }
 
   if((new_vknot_type != npatch->vknot_type) || (updateKnots))
     {
       npatch->vknot_type = new_vknot_type;
-      updateKnots = 1;
+      updateKnots = AY_TRUE;
+      o->modified = AY_TRUE;
     }
 
+  /* plausibility checks */
   if(npatch->uknot_type == AY_KTBEZIER)
     {
       if(npatch->uorder != npatch->width)
@@ -1019,20 +1028,20 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     {
       if(npatch->vorder != npatch->height)
 	{
-	  ay_error(AY_EWARN,fname, "Changing vorder to match height!");
+	  ay_error(AY_EWARN, fname, "Changing vorder to match height!");
 	  npatch->vorder = npatch->height;
 	}
     }
 
   if(npatch->width < npatch->uorder)
     {
-      ay_error(AY_EWARN,fname, "Lowering uorder to match width!");
+      ay_error(AY_EWARN, fname, "Lowering uorder to match width!");
       npatch->uorder = npatch->width;
     }
 
   if(npatch->height < npatch->vorder)
     {
-      ay_error(AY_EWARN,fname, "Lowering vorder to match height!");
+      ay_error(AY_EWARN, fname, "Lowering vorder to match height!");
       npatch->vorder = npatch->height;
     }
 
@@ -1041,14 +1050,13 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       ay_status = ay_knots_createnp(npatch);
       if(ay_status)
 	ay_error(AY_ERROR, fname, "Error creating new knots!");
-
     }
 
   /* decompose uknot-list (create custom knot sequence) */
   if(npatch->uknot_type == AY_KTCUSTOM)
     {
-      Tcl_SplitList(interp,Tcl_GetVar2(interp, n1, "Knots_U",
-				       TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY),
+      Tcl_SplitList(interp, Tcl_GetVar2(interp, n1, "Knots_U",
+					TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY),
 		    &knotc, &knotv);
 
       if(!(nknotv = calloc(knotc, sizeof(double))))
@@ -1060,10 +1068,10 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
       for(i = 0; i < knotc; i++)
 	{
-	  Tcl_GetDouble(interp,knotv[i],&nknotv[i]);
+	  Tcl_GetDouble(interp, knotv[i], &nknotv[i]);
 	} /* for */
 
-      if(!(ay_status = ay_knots_check(new_width,new_uorder,knotc,nknotv)))
+      if(!(ay_status = ay_knots_check(new_width, new_uorder, knotc, nknotv)))
 	{/* the knots are ok */
 	  free(npatch->uknotv);
 	  npatch->uknotv = nknotv;
@@ -1074,19 +1082,19 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	  switch (ay_status)
 	    {
 	    case 1:
-	      ay_error(AY_ERROR,fname, "Knot sequence has too few knots!");
+	      ay_error(AY_ERROR, fname, "Knot sequence has too few knots!");
 	      break;
 	    case 2:
-	      ay_error(AY_ERROR,fname, "Knot sequence has too much knots!");
+	      ay_error(AY_ERROR, fname, "Knot sequence has too much knots!");
 	      break;
 	    case 3:
-	      ay_error(AY_ERROR,fname, "Knot multiplicity higher than order!");
+	      ay_error(AY_ERROR, fname,
+		       "Knot multiplicity higher than order!");
 	      break;
 	    case 4:
-	      ay_error(AY_ERROR,fname, "Knot sequence has decreasing knots!");
+	      ay_error(AY_ERROR, fname, "Knot sequence has decreasing knots!");
 	      break;
-
-	    }
+	    } /* switch */
 
 	  free(nknotv);
 
@@ -1099,12 +1107,13 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
 	  if(ay_status)
 	    ay_error(AY_ERROR, fname, "Error creating new knots!");
+	} /* if */
 
-
-	}
+      /* XXXX compare old and new knots before setting this flag */
+      o->modified = AY_TRUE;
 
       Tcl_Free((char *) knotv);
-    }
+    } /* if */
 
   /* decompose vknot-list (create custom knot sequence) */
   if(npatch->vknot_type == AY_KTCUSTOM)
@@ -1122,10 +1131,10 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
       for(i = 0; i < knotc; i++)
 	{
-	  Tcl_GetDouble(interp,knotv[i],&nknotv[i]);
+	  Tcl_GetDouble(interp, knotv[i], &nknotv[i]);
 	} /* for */
 
-      if(!(ay_status = ay_knots_check(new_height,new_vorder,knotc,nknotv)))
+      if(!(ay_status = ay_knots_check(new_height, new_vorder, knotc, nknotv)))
 	{/* the knots are ok */
 	  free(npatch->vknotv);
 	  npatch->vknotv = nknotv;
@@ -1136,19 +1145,19 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	  switch (ay_status)
 	    {
 	    case 1:
-	      ay_error(AY_ERROR,fname, "Knot sequence has too few knots!");
+	      ay_error(AY_ERROR, fname, "Knot sequence has too few knots!");
 	      break;
 	    case 2:
-	      ay_error(AY_ERROR,fname, "Knot sequence has too much knots!");
+	      ay_error(AY_ERROR, fname, "Knot sequence has too much knots!");
 	      break;
 	    case 3:
-	      ay_error(AY_ERROR,fname, "Knot multiplicity higher than order!");
+	      ay_error(AY_ERROR, fname,
+		       "Knot multiplicity higher than order!");
 	      break;
 	    case 4:
-	      ay_error(AY_ERROR,fname, "Knot sequence has decreasing knots!");
+	      ay_error(AY_ERROR, fname, "Knot sequence has decreasing knots!");
 	      break;
-
-	    }
+	    } /* switch */
 
 	  free(nknotv);
 
@@ -1161,12 +1170,13 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
 	  if(ay_status)
 	    ay_error(AY_ERROR, fname, "Error creating new knots!");
+	} /* if */
 
-
-	}
+      /* XXXX compare old and new knots before setting this flag */
+      o->modified = AY_TRUE;
 
       Tcl_Free((char *) knotv);
-    }
+    } /* if */
 
 
   ay_status = ay_notify_parent();
