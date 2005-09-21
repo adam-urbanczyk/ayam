@@ -263,7 +263,7 @@ ay_pamesh_drawcpcb(struct Togl *togl, ay_object *o)
 int
 ay_pamesh_drawcb(struct Togl *togl, ay_object *o)
 {
- int display_mode = ay_prefs.glu_display_mode;
+ int display_mode = ay_prefs.np_display_mode;
  ay_pamesh_object *pamesh = NULL;
  ay_object *p = NULL;
 

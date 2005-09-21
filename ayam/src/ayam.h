@@ -841,7 +841,7 @@ typedef struct ay_prefs_object_s
 
   /* rendering quality */
   double glu_sampling_tolerance;
-  int glu_display_mode;
+  int np_display_mode;
   int nc_display_mode;
   int glu_cache_float;
 

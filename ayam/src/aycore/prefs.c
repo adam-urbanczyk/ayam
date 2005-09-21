@@ -53,8 +53,8 @@ ay_prefs_gettcmd(ClientData clientData, Tcl_Interp *interp,
   to = Tcl_NewDoubleObj(ay_prefs.glu_sampling_tolerance);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "DisplayMode", -1);
-  to = Tcl_NewIntObj(ay_prefs.glu_display_mode);
+  Tcl_SetStringObj(ton, "NPDisplayMode", -1);
+  to = Tcl_NewIntObj(ay_prefs.np_display_mode);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   Tcl_SetStringObj(ton, "NCDisplayMode", -1);
@@ -353,9 +353,9 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
   ay_prefs.stess_qf = qf;
 
 
-  Tcl_SetStringObj(ton, "DisplayMode", -1);
+  Tcl_SetStringObj(ton, "NPDisplayMode", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &ay_prefs.glu_display_mode);
+  Tcl_GetIntFromObj(interp, to, &ay_prefs.np_display_mode);
 
   Tcl_SetStringObj(ton, "NCDisplayMode", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
