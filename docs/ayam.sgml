@@ -1478,7 +1478,7 @@ range from 1 to 100.
 This setting has no effect for objects that override it
 using a local tolerance setting different from 0.
 
-<item><tt/"DisplayMode"/ sets the display mode for NURBS patches.
+<item><tt/"NPDisplayMode"/ sets the display mode for NURBS patches.
 Either the control hull (or control polygon) is drawn (ControlHull), or
 just the outlines of the polygons created by the tesselation
 (OutlinePoly), or just the outlines of the patch (OutlinePatch).
@@ -3719,7 +3719,7 @@ hull is drawn (<tt/"ControlHull"/), or just the outlines of the polygons
 created by the tesselation (<tt/"OutlinePolygon"/), or just the
 outlines of the patch (<tt/"OutlinePatch"/). The default setting
 (<tt/"Global"/) means, that the value of the global preference setting
-<tt>"Drawing/DisplayMode"</tt> should be used instead.
+<tt>"Drawing/NPDisplayMode"</tt> should be used instead.
 </itemize>
 
 <sect1>Trim Curves<label id="trim">
@@ -8096,8 +8096,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Disk: <ref id="diskobj" name="object">
 <item>Displacement: <ref id="matshader" name="shader">
 <item>Display: <ref id="ridtag" name="RiDisplay tag type">
-<item>DisplayMode: <ref id="prefdraw" name="preference setting">,
-<ref id="npattr" name="NURBPatch attribute">,
+<item>DisplayMode: <ref id="npattr" name="NURBPatch attribute">,
 <ref id="pmattr" name="PatchMesh attribute">
 <item>Distant: <ref id="pdsl" name="light type">
 <item>Docs: <ref id="prefgui" name="preference setting">
@@ -8329,6 +8328,8 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <itemize>
 <item>NCDisplayMode: <ref id="prefdraw" name="preference setting">,
 <ref id="ncattr" name="NURBCurve attribute">
+<item>NPDisplayMode: <ref id="prefdraw" name="preference setting">,
+<ref id="npattr" name="NURBPatch attribute">
 <item>Near: <ref id="camp" name="camera property">
 <item>Negative: <ref id="mcattr" name="MetaComp attribute">
 <item>New: <ref id="mmfile" name="main menu entry">
