@@ -78,7 +78,7 @@ ay_ncurve_deletecb(void *c)
  ay_nurbcurve_object *ncurve = NULL;
 
   if(!c)
-    return AY_ENULL;    
+    return AY_ENULL;
 
   ncurve = (ay_nurbcurve_object *)(c);
 
@@ -120,9 +120,9 @@ ay_ncurve_copycb(void *src, void **dst)
   ncurvesrc = (ay_nurbcurve_object *)src;
 
   if(!(ncurve = calloc(1, sizeof(ay_nurbcurve_object))))
-    return AY_EOMEM; 
+    return AY_EOMEM;
 
-  memcpy(ncurve, src, sizeof(ay_nurbcurve_object)); 
+  memcpy(ncurve, src, sizeof(ay_nurbcurve_object));
 
   ncurve->no = NULL;
 
@@ -130,13 +130,13 @@ ay_ncurve_copycb(void *src, void **dst)
   kl = ncurve->order + ncurve->length;
   if(!(ncurve->knotv = calloc(kl, sizeof(double))))
     return AY_EOMEM;
-  memcpy(ncurve->knotv, ncurvesrc->knotv, kl * sizeof(double)); 
+  memcpy(ncurve->knotv, ncurvesrc->knotv, kl * sizeof(double));
 
   /* copy controlv */
   if(!(ncurve->controlv = calloc(4 * ncurve->length, sizeof(double))))
     return AY_EOMEM;
   memcpy(ncurve->controlv, ncurvesrc->controlv,
-	 4 * ncurve->length * sizeof(double)); 
+	 4 * ncurve->length * sizeof(double));
 
   /* copy tessv */
   if(ncurvesrc->tessv)
@@ -144,7 +144,7 @@ ay_ncurve_copycb(void *src, void **dst)
       if(!(ncurve->tessv = calloc(3 * ncurve->tesslen, sizeof(double))))
 	return AY_EOMEM;
       memcpy(ncurve->tessv, ncurvesrc->tessv,
-	     3 * ncurve->tesslen * sizeof(double)); 
+	     3 * ncurve->tesslen * sizeof(double));
     }
 
   /* copy mpoints */
@@ -298,9 +298,9 @@ ay_ncurve_drawglucb(struct Togl *togl, ay_object *o)
     {
       ncurve->no = gluNewNurbsRenderer();
       if(ncurve->no == NULL)
-	{ 
-	  free(knots); knots = NULL; 
-	  free(controls); controls = NULL; 
+	{
+	  free(knots); knots = NULL;
+	  free(controls); controls = NULL;
 	  return AY_EOMEM;
 	}
     } /* if */
@@ -336,7 +336,7 @@ ay_ncurve_drawglucb(struct Togl *togl, ay_object *o)
 int
 ay_ncurve_drawchcb(struct Togl *togl, ay_object *o)
 {
- int a, i;  
+ int a, i;
  ay_nurbcurve_object *ncurve = NULL;
 
   if(!o)
@@ -452,7 +452,7 @@ ay_ncurve_drawhcb(struct Togl *togl, ay_object *o)
     }
 
   /* draw arrow */
-  ay_draw_arrow(togl, &(ver[curve->length*4-8]), &(ver[curve->length*4-4])); 
+  ay_draw_arrow(togl, &(ver[curve->length*4-8]), &(ver[curve->length*4-4]));
 
  return AY_OK;
 } /* ay_ncurve_drawhcb */
@@ -466,7 +466,7 @@ ay_ncurve_getpntcb(int mode, ay_object *o, double *p)
  double min_dist = ay_prefs.pick_epsilon, dist = 0.0;
  double **pecoords = NULL, *pecoord = NULL, *control = NULL, *c;
  int i = 0, j = 0, a = 0, found = AY_FALSE;
- 
+
   if(!o || !p)
     return AY_ENULL;
 
@@ -509,7 +509,7 @@ ay_ncurve_getpntcb(int mode, ay_object *o, double *p)
 	      dist = AY_VLEN((p[0] - control[j]),
 			     (p[1] - control[j+1]),
 			     (p[2] - control[j+2]));
-	      
+
 	      if(dist < min_dist)
 		{
 		  pecoord = &(control[j]);
@@ -571,16 +571,16 @@ ay_ncurve_getpntcb(int mode, ay_object *o, double *p)
 	      c = &(control[j]);
 
 	      /* test point c against the four planes in p */
-	      if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) && 
-		 ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) && 
-		 ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) && 
+	      if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) &&
+		 ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) &&
+		 ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
 		 ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
 		{
 
 		  if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
 		    return AY_EOMEM;
 		  pecoords[a] = &(control[j]);
-		  a++;		  
+		  a++;
 		} /* if */
 
 	      j += 4;
@@ -613,7 +613,7 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  ay_mpoint_object *mp = NULL;
  int new_order, new_length, new_knot_type, new_type;
  double *nknotv = NULL;
- int updateKnots = 0, updateMPs = AY_TRUE;
+ int updateKnots = AY_FALSE, updateMPs = AY_TRUE;
  int knotc, i;
  char **knotv;
 
@@ -621,7 +621,7 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     return AY_ENULL;
 
   ncurve = (ay_nurbcurve_object *)o->refine;
-  
+
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
 
@@ -905,16 +905,16 @@ ay_ncurve_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 		 TCL_GLOBAL_ONLY);
 
   Tcl_SetVar2(interp,n1,"Knots","", TCL_LEAVE_ERR_MSG |
-	      TCL_GLOBAL_ONLY); 
+	      TCL_GLOBAL_ONLY);
   Tcl_SetStringObj(ton,"Knots",-1);
   for(i=0; i<ncurve->length+ncurve->order; i++)
     {
-      
+
       to = Tcl_NewDoubleObj((ncurve->knotv)[i]);
 
-      Tcl_ObjSetVar2(interp,toa,ton,to,TCL_APPEND_VALUE | 
+      Tcl_ObjSetVar2(interp,toa,ton,to,TCL_APPEND_VALUE |
 		     TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG |
-		     TCL_GLOBAL_ONLY);      
+		     TCL_GLOBAL_ONLY);
     }
 
   Tcl_SetStringObj(ton,"Tolerance",-1);
@@ -1082,7 +1082,7 @@ ay_ncurve_bbccb(ay_object *o, double *bbox, int *flags)
   if(!o || !bbox)
     return AY_ENULL;
 
-  ncurve = (ay_nurbcurve_object *)o->refine; 
+  ncurve = (ay_nurbcurve_object *)o->refine;
 
   controlv = ncurve->controlv;
 
@@ -1144,7 +1144,7 @@ ay_ncurve_convertcb(ay_object *o, int in_place)
  ay_nurbcurve_object *nc = NULL;
  ay_icurve_object *ic = NULL;
  ay_object *new = NULL;
- 
+
   if(!o)
     { return AY_ENULL; }
 
