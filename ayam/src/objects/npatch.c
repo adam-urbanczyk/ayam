@@ -242,7 +242,7 @@ ay_npatch_drawglucb(struct Togl *togl, ay_object *o)
  GLdouble sampling_tolerance = ay_prefs.glu_sampling_tolerance;
  static GLfloat *uknots = NULL, *vknots = NULL, *controls = NULL;
  ay_object *trim = NULL, *loop = NULL, *nc = NULL;
- int display_mode = ay_prefs.glu_display_mode;
+ int display_mode = ay_prefs.np_display_mode;
  /* int cache = ay_prefs.glu_cache_float;*/
 
   if(!o)
@@ -489,7 +489,7 @@ ay_npatch_drawchcb(struct Togl *togl, ay_object *o)
 int
 ay_npatch_drawcb(struct Togl *togl, ay_object *o)
 {
- int display_mode = ay_prefs.glu_display_mode;
+ int display_mode = ay_prefs.np_display_mode;
  ay_nurbpatch_object *npatch = NULL;
 
   if(!o)

@@ -92,7 +92,7 @@ ms_set en ayprefse_UndoLevels "Number of undoable modelling steps;\
 ms_set en ayprefse_Tolerance "Sampling tolerance used when tesselating\
 NURBS curves or surfaces.\nSmaller values lead to slower rendering but higher\
  quality.\nNURBS objects may override this setting locally."
-ms_set en ayprefse_DisplayMode "Determine how surfaces should be drawn\
+ms_set en ayprefse_NPDisplayMode "Determine how surfaces should be drawn\
 \nSurface objects may override this setting locally."
 ms_set en ayprefse_NCDisplayMode "Determine how curves should be drawn\
 \nCurve objects may override this setting locally."
@@ -249,7 +249,7 @@ ms_set de ayprefse_Tolerance "Bestimmt die Darstellungsqualität von NURBS\
 Kurven und Flächen.\nKleinere Werte führen zu höherer Qualität aber\
 langsamerer Darstellung.\nObjekte\
 können diesen Wert lokal anpassen."
-ms_set de ayprefse_DisplayMode "Darstellungsmodus von Flächen.\
+ms_set de ayprefse_NPDisplayMode "Darstellungsmodus von Flächen.\
 \nFlächen können den Darstellungsmodus lokal anpassen."
 ms_set de ayprefse_NCDisplayMode "Darstellungsmodus von Kurven.\
 \nKurven können den Darstellungsmodus lokal anpassen."
@@ -397,13 +397,13 @@ de modélisation;\n-1 correspond à la désactivation de l'historique."
 
 # Drawing
 ms_set fr ayprefse_Tolerance "Tolérance utilisée pour les courbes NURBS\
-ou les surface surfaces.\nLes petites valeurs induisent un rendu plus lent\
+ou les surfaces NURBS.\nLes petites valeurs induisent un rendu plus lent\
 mais une meilleure qualité.\nLes objets NURBS peuvent outrepasser\
 localement cette configuration."
-ms_set fr ayprefse_DisplayMode "Détermine comment les surfaces seront tracées\
-\nLes objets Surface objects peuvent outrepasser localement cette\
+ms_set fr ayprefse_NPDisplayMode "Détermine comment les surfaces seront\
+tracées\nLes objets Surface objects peuvent outrepasser localement cette\
 configuration."
-ms_set fr ayprefse_NCDisplayMode "Détermine comment les surfaces seront\
+ms_set fr ayprefse_NCDisplayMode "Détermine comment les courbes seront\
 tracées\nLes objets Courbe objects peuvent outrepasser localement\
 cette configuration."
 ms_set fr ayprefse_UseMatColor "Utiliser les couleurs du matériau pour\
