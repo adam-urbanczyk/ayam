@@ -30,13 +30,13 @@ proc balloon_set {w help} {
 
     regsub -all "%" $help "%%" help2
 
-    bind $w <Enter> "
+    bind $w <Enter> "+
     update;
      if { \$balloonwin == \"\" } {
       after \$balloontime {set balloonwin %W ; balloon_show %W [list $help2] };
      }"
 
-    bind $w <Leave> "
+    bind $w <Leave> "+
 	if { \$balloonwin != \"\" } {
 	    set balloontime 100;
 	    set balloonwin \"\";
