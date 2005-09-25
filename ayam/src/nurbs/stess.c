@@ -438,7 +438,7 @@ ay_stess_SurfacePoints3D(int n, int m, int p, int q, double *U, double *V,
  int spanu = 0, spanv = 0, indu = 0, indv = 0, l = 0, k = 0, i = 0, j = 0;
  int a, b;
  double u, v, ud, vd, *Nu = NULL, *Nv = NULL;
- double temp[3] = {0}, *Ct = NULL;
+ double temp[3] = {0}, *Ct = NULL, fder[12] = {0}, *fd1, *fd2;
 
   if(!(Nu = calloc(p+1, sizeof(double))))
     return AY_EOMEM;
@@ -451,7 +451,7 @@ ay_stess_SurfacePoints3D(int n, int m, int p, int q, double *U, double *V,
   *Cm = (4 + m) * qf;
   vd = (V[m] - V[q]) / ((*Cm) - 1);
 
-  if(!(Ct = calloc((*Cn)*(*Cm)*3, sizeof(double))))
+  if(!(Ct = calloc((*Cn)*(*Cm)*6, sizeof(double))))
     { free(Nu); free(Nv); return AY_EOMEM; }
 
   u = U[p];
@@ -488,7 +488,14 @@ ay_stess_SurfacePoints3D(int n, int m, int p, int q, double *U, double *V,
 	      Ct[j+2] += Nv[l]*temp[2];
 	    } /* for */
 
-	  j += 3;
+	  /* calculate normal */
+	  ay_nb_CompFirstDerSurf3D(n-1, m-1, p, q, U, V, P, u, v, fder);
+	  fd1 = &(fder[3]);
+	  fd2 = &(fder[6]);
+	  AY_V3CROSS(temp, fd2, fd1);
+	  memcpy(&(Ct[j+3]), temp, 3*sizeof(double));
+
+	  j += 6;
 	  v += vd;
 	} /* for */
 
@@ -514,7 +521,7 @@ ay_stess_SurfacePoints4D(int n, int m, int p, int q, double *U, double *V,
  int spanu = 0, spanv = 0, indu = 0, indv = 0, l = 0, k = 0, i = 0, j = 0;
  int a, b, ti;
  double u, v, ud, vd, *Nu = NULL, *Nv = NULL;
- double Cw[4] = {0}, *Ct = NULL, *temp = NULL;
+ double Cw[4] = {0}, *Ct = NULL, *temp = NULL, fder[12] = {0}, *fd1, *fd2;
 
   if(!(Nu = calloc(p+1, sizeof(double))))
     return AY_EOMEM;
@@ -529,7 +536,7 @@ ay_stess_SurfacePoints4D(int n, int m, int p, int q, double *U, double *V,
   *Cm = (4 + m) * qf;
   vd = (V[m] - V[q]) / ((*Cm) - 1);
 
-  if(!(Ct = calloc((*Cn)*(*Cm)*3, sizeof(double))))
+  if(!(Ct = calloc((*Cn)*(*Cm)*6, sizeof(double))))
     { free(Nu); free(Nv); free(temp); return AY_EOMEM; }
 
   u = U[p];
@@ -580,7 +587,14 @@ ay_stess_SurfacePoints4D(int n, int m, int p, int q, double *U, double *V,
 	  Ct[j+1] = Cw[1]/Cw[3];
 	  Ct[j+2] = Cw[2]/Cw[3];
 
-	  j += 3;
+	  /* calculate normal */
+	  ay_nb_CompFirstDerSurf4D(n-1, m-1, p, q, U, V, Pw, u, v, fder);
+	  fd1 = &(fder[3]);
+	  fd2 = &(fder[6]);
+	  AY_V3CROSS(temp, fd2, fd1);
+	  memcpy(&(Ct[j+3]), temp, 3*sizeof(double));
+
+	  j += 6;
 	  v += vd;
 	} /* for */
 
