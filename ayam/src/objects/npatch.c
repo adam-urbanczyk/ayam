@@ -210,19 +210,19 @@ ay_npatch_drawstesscb(struct Togl *togl, ay_object *o)
 	  for(j = 0;  j < tessh; j++)
 	    {
 	      glVertex3dv(&(tessv[a]));
-	      a += 3;
+	      a += 6;
 	    } /* for */
 	  glEnd();
 	} /* for */
 
       for(j = 0;  j < tessh; j++)
 	{
-	  a = j * 3;
+	  a = j * 6;
 	  glBegin(GL_LINE_STRIP);
 	  for(i = 0; i < tessw; i++)
 	    {
 	      glVertex3dv(&(tessv[a]));
-	      a += (tessh*3);
+	      a += (tessh*6);
 	    } /* for */
 	  glEnd();
 	} /* for */
@@ -528,9 +528,11 @@ ay_npatch_drawcb(struct Togl *togl, ay_object *o)
 int
 ay_npatch_shadestesscb(struct Togl *togl, ay_object *o)
 {
- /*int ay_status = AY_OK;*/
+ int ay_status = AY_OK;
  ay_nurbpatch_object *npatch = NULL;
- int qf = ay_prefs.glu_sampling_tolerance;
+ int qf = ay_prefs.stess_qf;
+ int a, b, i, j, tessw, tessh;
+ double *tessv = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -545,12 +547,57 @@ ay_npatch_shadestesscb(struct Togl *togl, ay_object *o)
       qf = ay_stess_GetQF(npatch->glu_sampling_tolerance);
     }
 
+  if(o->modified || (npatch->tessqf != qf))
+    {
+      if(npatch->tessv)
+	{
+	  free(npatch->tessv);
+	  npatch->tessv = NULL;
+	}
+      /*
+      if(npatch->tesstv)
+	{
+
+	}
+      */
+      o->modified = AY_FALSE;
+    } /* if */
+
+  if(!npatch->tessv)
+    {
+      ay_status = ay_stess_TessNP(o);
+    }
+
+  tessv = npatch->tessv;
+  tessw = npatch->tessw;
+  tessh = npatch->tessh;
+
+  if(tessv)
+    {
+      a = 0;
+      b = tessh*6;
+      for(i = 0; i < tessw-1; i++)
+	{
+	  glBegin(GL_QUAD_STRIP);
+	  for(j = 0;  j < tessh; j++)
+	    {
+	      glVertex3dv(&(tessv[a]));
+	      glNormal3dv(&(tessv[a+3]));
+	      glVertex3dv(&(tessv[b]));
+	      glNormal3dv(&(tessv[b+3]));
+	      a += 6;
+	      b += 6;
+	    } /* for */
+	  glEnd();
+	} /* for */
+    } /* if */
+
  return AY_OK;
 } /* ay_npatch_shadestesscb */
 
 
 int
-ay_npatch_shadecb(struct Togl *togl, ay_object *o)
+ay_npatch_shadeglucb(struct Togl *togl, ay_object *o)
 {
  int ay_status = AY_OK;
  ay_nurbpatch_object *npatch = NULL;
@@ -736,6 +783,38 @@ ay_npatch_shadecb(struct Togl *togl, ay_object *o)
     } /* if */
 
   gluEndSurface(npatch->no);
+
+ return AY_OK;
+} /* ay_npatch_shadeglucb */
+
+
+int
+ay_npatch_shadecb(struct Togl *togl, ay_object *o)
+{
+ int display_mode = ay_prefs.np_display_mode;
+ ay_nurbpatch_object *npatch = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  npatch = (ay_nurbpatch_object *)o->refine;
+
+  if(!npatch)
+    return AY_ENULL;
+
+  if(npatch->glu_display_mode != 0)
+    {
+      display_mode = npatch->glu_display_mode-1;
+    }
+
+  if(display_mode < 2)
+    {
+      ay_npatch_shadeglucb(togl, o);
+    }
+  else
+    {
+      ay_npatch_shadestesscb(togl, o);
+    } /* if */
 
  return AY_OK;
 } /* ay_npatch_shadecb */
