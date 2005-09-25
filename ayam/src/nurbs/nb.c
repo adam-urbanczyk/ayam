@@ -298,7 +298,7 @@ ay_nb_GlobalInterpolation4D(int n, double *Q, double *ub, double *Uc, int d)
  */
 int
 ay_nb_GlobalInterpolation4DD(int n, double *Q, double *ub, double *Uc, int d,
-			       double *D1, double *D2)
+			     double *D1, double *D2)
 {
  int ay_status = AY_OK;
  int i, j, k, span, ind, *pivot = NULL;
@@ -1812,10 +1812,10 @@ ay_nb_CompFirstDerSurf4D(int n, int m, int p, int q, double *U, double *V,
 
   ay_nb_Bin(2, 2, bin);
 
-  uspan = ay_nb_FindSpan(n,p,u,U);
-  ay_nb_DersBasisFuns(uspan,u,p,1,U,Nu);
-  vspan = ay_nb_FindSpan(m,q,v,V);
-  ay_nb_DersBasisFuns(vspan,v,q,1,V,Nv);
+  uspan = ay_nb_FindSpan(n, p, u, U);
+  ay_nb_DersBasisFuns(uspan, u, p, 1, U, Nu);
+  vspan = ay_nb_FindSpan(m, q, v, V);
+  ay_nb_DersBasisFuns(vspan, v, q, 1, V, Nv);
 
   Ct[0] = 0.0;
   Ct[1] = 0.0;
@@ -1917,7 +1917,6 @@ ay_nb_CompFirstDerSurf4D(int n, int m, int p, int q, double *U, double *V,
 
     } /* for */
 
-
   free(Nu);
   free(Nv);
   free(temp);
@@ -1945,20 +1944,21 @@ ay_nb_CompFirstDerSurf3D(int n, int m, int p, int q, double *U, double *V,
   if(!(temp = calloc((q+1)*3, sizeof(double))))
     return;
 
-  uspan = ay_nb_FindSpan(n,p,u,U);
-  ay_nb_DersBasisFuns(uspan,u,p,1,U,Nu);
-  vspan = ay_nb_FindSpan(m,q,v,V);
-  ay_nb_DersBasisFuns(vspan,v,q,1,V,Nv);
+  uspan = ay_nb_FindSpan(n, p, u, U);
+  ay_nb_DersBasisFuns(uspan, u, p, 1, U, Nu);
+  vspan = ay_nb_FindSpan(m, q, v, V);
+  ay_nb_DersBasisFuns(vspan, v, q, 1, V, Nv);
 
   /*
   fprintf(stderr,"%d\n", uspan);
   fprintf(stderr,"%g %g %g %g\n",Nu[0],Nu[1],Nu[2],Nu[3]);
   */
-
+  memset(C, 0, 12*sizeof(double));
+  /*
   C[0] = 0.0;
   C[1] = 0.0;
   C[2] = 0.0;
-
+  */
   for(k = 0; k <= 1; k++)
     {
       for(s = 0; s <= q; s++)
@@ -1970,7 +1970,7 @@ ay_nb_CompFirstDerSurf3D(int n, int m, int p, int q, double *U, double *V,
 	  for(r = 0; r <= p; r++)
 	    {
 	      /* was: temp[s] = temp[s] + Nu[k][r]*P[uspan-p+r][vspan-q+s]; */
-	      i = (((uspan-p+r)*(m+1))+(vspan-q+s))*3;
+	      i = (((uspan-p+r)*(m+1))+(vspan-q+s))*4;
 	      temp[s*3]   += Nu[(k*(p+1))+r]*P[i];
 	      temp[s*3+1] += Nu[(k*(p+1))+r]*P[i+1];
 	      temp[s*3+2] += Nu[(k*(p+1))+r]*P[i+2];
