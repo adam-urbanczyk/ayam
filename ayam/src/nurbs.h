@@ -464,7 +464,7 @@ int ay_stess_SurfacePoints3D(int n, int m, int p, int q, double *U, double *V,
 int ay_stess_SurfacePoints4D(int n, int m, int p, int q, double *U, double *V,
 			     double *P, int qf, int *Cn, int *Cm, double **C);
 
-int ay_stess_TessNP(ay_object *o);
+int ay_stess_TessNP(ay_object *o, int qf);
 
 
 /* tess.c */
