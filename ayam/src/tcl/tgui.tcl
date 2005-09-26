@@ -161,8 +161,8 @@ proc tgui_update args {
     global ay ayprefs tgui_tessparam
 
     trace vdelete tgui_tessparam(SMethod) w tgui_update
-    trace vdelete tgui_tessparam(SParamU) w tgui_update
-    trace vdelete tgui_tessparam(SParamV) w tgui_update
+    #trace vdelete tgui_tessparam(SParamU) w tgui_update
+    #trace vdelete tgui_tessparam(SParamV) w tgui_update
 
     if { $ayprefs(LazyNotify) == 1 } {
 	if { $tgui_tessparam(MB1Down) == 0 } {
@@ -180,34 +180,34 @@ proc tgui_update args {
     .tguiw.f1.fSParamV.e insert 0 $tgui_tessparam(SParamV)
 
     if { $tgui_tessparam(SMethod) == 0 } {
-	.tguiw.f1.fSParamU.ll conf -text "0"
-	.tguiw.f1.fSParamU.lr conf -text "100"
-	.tguiw.f1.fSParamU.s conf -from 0 -to 100
 	if { $tgui_tessparam(OldSMethod) != $tgui_tessparam(SMethod) } {
+	    .tguiw.f1.fSParamU.ll conf -text "0"
+	    .tguiw.f1.fSParamU.lr conf -text "100"
+	    .tguiw.f1.fSParamU.s conf -from 0 -to 100
 	    .tguiw.f1.fSParamU.s conf -resolution 1
 	}
 	pack forget .tguiw.f1.fSParamV
-
     }
 
     if { $tgui_tessparam(SMethod) == 1 } {
-	.tguiw.f1.fSParamU.ll conf -text "0"
-	.tguiw.f1.fSParamU.lr conf -text "100"
-	.tguiw.f1.fSParamU.s conf -from 0 -to 100
 	if { $tgui_tessparam(OldSMethod) != $tgui_tessparam(SMethod) } {
+	    .tguiw.f1.fSParamU.ll conf -text "0"
+	    .tguiw.f1.fSParamU.lr conf -text "100"
+	    .tguiw.f1.fSParamU.s conf -from 0 -to 100
 	    .tguiw.f1.fSParamU.s conf -resolution 1
 	}
 	pack forget .tguiw.f1.fSParamV
     }
 
     if { ($tgui_tessparam(SMethod) == 2) || ($tgui_tessparam(SMethod) == 3) } {
-	.tguiw.f1.fSParamU.ll conf -text "1"
-	.tguiw.f1.fSParamU.lr conf -text "20"
-	.tguiw.f1.fSParamU.s conf -from 0 -to 20
-	.tguiw.f1.fSParamV.ll conf -text "1"
-	.tguiw.f1.fSParamV.lr conf -text "20"
-	.tguiw.f1.fSParamV.s conf -from 0 -to 20
+
 	if { $tgui_tessparam(OldSMethod) != $tgui_tessparam(SMethod) } {
+	    .tguiw.f1.fSParamU.ll conf -text "1"
+	    .tguiw.f1.fSParamU.lr conf -text "20"
+	    .tguiw.f1.fSParamU.s conf -from 0 -to 20
+	    .tguiw.f1.fSParamV.ll conf -text "1"
+	    .tguiw.f1.fSParamV.lr conf -text "20"
+	    .tguiw.f1.fSParamV.s conf -from 0 -to 20
 	    .tguiw.f1.fSParamU.s conf -resolution 0.1
 	    .tguiw.f1.fSParamV.s conf -resolution 0.1
 	}
@@ -217,8 +217,8 @@ proc tgui_update args {
     set tgui_tessparam(OldSMethod) $tgui_tessparam(SMethod)
 
     trace variable tgui_tessparam(SMethod) w tgui_update
-    trace variable tgui_tessparam(SParamU) w tgui_update
-    trace variable tgui_tessparam(SParamV) w tgui_update
+    #trace variable tgui_tessparam(SParamU) w tgui_update
+    #trace variable tgui_tessparam(SParamV) w tgui_update
 
  return;
 }
@@ -232,10 +232,30 @@ proc tgui_recalcslider { slider val } {
 
     if { $slider == 0 } {
 	set rmin [.tguiw.f1.fSParamU.s cget -from]
+	if { $val < $rmin } {
+	    .tguiw.f1.fSParamU.s conf -from $val
+	    .tguiw.f1.fSParamU.ll conf -text $val
+	    set rmin $val
+	}
 	set rmax [.tguiw.f1.fSParamU.s cget -to]
+	if { $val > $rmax } {
+	    .tguiw.f1.fSParamU.s conf -to $val
+	    .tguiw.f1.fSParamU.lr conf -text $val
+	    set rmax $val
+	}
     } else {
 	set rmin [.tguiw.f1.fSParamV.s cget -from]
+	if { $val < $rmin } {
+	    .tguiw.f1.fSParamV.s conf -from $val
+	    .tguiw.f1.fSParamV.ll conf -text $val
+	    set rmin $val
+	}
 	set rmax [.tguiw.f1.fSParamV.s cget -to]
+	if { $val > $rmax } {
+	    .tguiw.f1.fSParamV.s conf -to $val
+	    .tguiw.f1.fSParamV.lr conf -text $val
+	    set rmax $val
+	}
     }
 
     if { [expr (abs(int($val) - $val)) != 0.0] } {
@@ -491,9 +511,8 @@ proc tgui_open { } {
     trace variable tgui_tessparam(SMethod) w tgui_update
 
     set f $w.f1.fSParamU
-    $f.s conf -variable tgui_tessparam(SParamU)
-    # -command tgui_update
-    trace variable tgui_tessparam(SParamU) w tgui_update
+    $f.s conf -variable tgui_tessparam(SParamU) -command tgui_update
+    #trace variable tgui_tessparam(SParamU) w tgui_update
     bind $f.e <<CommitTG>> "if { \[$f.e get\] != \$tgui_tessparam(SParamU) } {\
 	                         $f.s conf -command \"\"; \
 				 tgui_recalcslider 0 \[$f.e get\]; \
@@ -503,9 +522,8 @@ proc tgui_open { } {
 			     }"
 
     set f $w.f1.fSParamV
-    $f.s conf -variable tgui_tessparam(SParamV)
-    # -command tgui_update
-    trace variable tgui_tessparam(SParamV) w tgui_update
+    $f.s conf -variable tgui_tessparam(SParamV) -command tgui_update
+    #trace variable tgui_tessparam(SParamV) w tgui_update
     bind $f.e <<CommitTG>> "if { \[$f.e get\] != \$tgui_tessparam(SParamV) } {\
 	                         $f.s conf -command \"\"; \
 				 tgui_recalcslider 1 \[$f.e get\]; \
