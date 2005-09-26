@@ -1753,12 +1753,11 @@ cleanup:
 
 
 int
-ay_stess_TessNP(ay_object *o)
+ay_stess_TessNP(ay_object *o, int qf)
 {
  char fname[] = "stess_TessNP";
  int ay_status = AY_OK;
  ay_nurbpatch_object *npatch;
- int qf = ay_prefs.stess_qf;
 
   if(!o)
     return AY_ENULL;
