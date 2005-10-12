@@ -807,7 +807,7 @@ ay_npatch_shadecb(struct Togl *togl, ay_object *o)
       display_mode = npatch->glu_display_mode-1;
     }
 
-  if(display_mode < 2)
+  if(display_mode < 3)
     {
       ay_npatch_shadeglucb(togl, o);
     }
