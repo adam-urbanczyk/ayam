@@ -1032,6 +1032,9 @@ bind .fl.con.console $aymainshortcuts(SwCon) { focus [tk_focusNext %W] }
 
 # fix Shift-Tab binding
 if { ( $tcl_platform(platform) != "windows" ) && ( ! $AYWITHAQUA ) } {
+    if { $tcl_version > 8.3 } {
+	tk::unsupported::ExposePrivateCommand tkTabToWindow
+    }
     bind all <ISO_Left_Tab> { tkTabToWindow [tk_focusPrev %W] }
 }
 
