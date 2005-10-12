@@ -1,7 +1,8 @@
+
 /*
  * Ayam, a free 3D modeler for the RenderMan interface.
  *
- * Ayam is copyrighted 1998-2001 by Randolf Schultz
+ * Ayam is copyrighted 1998-2005 by Randolf Schultz
  * (rschultz@informatik.uni-rostock.de) and others.
  *
  * All rights reserved.
@@ -185,6 +186,10 @@ ay_undo_deletemulti(ay_object *o)
 	  /* now, free generic object */
 	  free(d);
 	  break;
+	case AY_IDLAST:
+	  /* just free generic object */
+	  free(d);
+	  break;
 	default:
 	  arr = ay_deletecbt.arr;
 	  dcb = (ay_deletecb*)(arr[d->type]);
@@ -313,7 +318,6 @@ ay_undo_copymat(ay_mat_object *src, ay_mat_object *dst)
       ay_status = ay_shader_copy(src->eshader, &(dst->eshader));
     }
 
-
  return AY_OK;
 }/* ay_undo_copymat */
 
@@ -408,7 +412,8 @@ ay_undo_copyroot(ay_root_object *src, ay_root_object *dst)
 	  dstriopt->procedurals = NULL;
 	}
       free(dst->riopt);
-    }
+    } /* if */
+
   dst->riopt = NULL;
   if(!(dst->riopt = calloc(1, sizeof(ay_riopt_object))))
     return AY_EOMEM;
@@ -481,16 +486,15 @@ ay_undo_copyselp(ay_object *src, ay_object *dst)
       last = &(n->next);
 
       p = p->next;
-    }
+    } /* while */
 
  return AY_OK;
 }/* ay_undo_copyselp */
 
 
 /* ay_undo_copy:
- *  copy objects from undo object uo
- *  back to scene (in-place) using references
- *  information
+ *  copy objects from undo object <uo> back to the scene
+ *  (in-place) using references information
  */
 int
 ay_undo_copy(ay_undo_object *uo)
@@ -515,9 +519,9 @@ ay_undo_copy(ay_undo_object *uo)
   c = uo->objects;
   while(r)
     {
-
       o = r->object;
 
+      /* skip over objects without references (e.g. AY_IDLAST separator) */
       if(!o)
 	{
 	  r = r->next;
@@ -528,7 +532,6 @@ ay_undo_copy(ay_undo_object *uo)
       /* copy name */
       if(o->type != AY_IDMATERIAL)
 	{
-
 	  if(o->name)
 	    {
 	      free(o->name);
@@ -540,8 +543,7 @@ ay_undo_copy(ay_undo_object *uo)
 		return AY_EOMEM;
 	      strcpy(o->name, c->name);
 	    }
-
-	}
+	} /* if */
 
       /* copy tags */
       if(o->tags)
@@ -904,18 +906,19 @@ ay_undo_save(void)
  ay_undo_object *uo = NULL, *uo2 = NULL;
  ay_list_object *sel = ay_selection, *r = NULL, *lastr = NULL, *lsr = NULL;
  ay_object **nexto = NULL, *view = NULL, *lso = NULL;
- int i;
+ ay_object *markprevsel = NULL, *saved = NULL;
+ int i, prevselmarked = AY_FALSE, alreadysaved = AY_FALSE;
 
-  /* we always save all views now */
   if((!sel) && (!ay_root->down->next))
     return AY_OK;
 
   /* check, whether we operate on top of undo buffer */
   if(undo_current+1 == undo_buffer_size)
     {
-      /* yes, we need to clear the oldest saved state */
-      /* and then shift all states, so that the top  */
-      /* of the undo buffer is empty again */
+      /* yes, we need to clear the oldest saved state
+       * and then shift all states, so that the top
+       * of the undo buffer is empty again
+       */
 
       /* clear */
       uo = &(undo_buffer[0]);
@@ -938,10 +941,10 @@ ay_undo_save(void)
     }
   else
     {
-      /* to avoid, that the user gets (after a undo/redo)
+      /* to avoid, that the user gets (after an undo/redo)
        * into an old sequence of changed states using
        * redo after a save, we clear the undo buffer
-       * now partially
+       * now partially from the current slot to the top
        */
       if((undo_last_op == 0) || (undo_last_op == 1))
 	{
@@ -1003,7 +1006,7 @@ ay_undo_save(void)
 	  else
 	    {
 	      uo->references = r;
-	    }
+	    } /* if */
 
 	  lastr = r;
 
@@ -1020,6 +1023,12 @@ ay_undo_save(void)
     } /* while */
 
   /* save all views */
+
+  /* omit view objects? */
+  /*
+   if(ay_prefs.undoviews)
+     {
+  */
   view = ay_root->down;
   while(view->next)
     {
@@ -1051,11 +1060,15 @@ ay_undo_save(void)
       nexto = &((*nexto)->next);
       view = view->next;
     } /* while */
+  /*
+   }
+  */
 
-  /* now, save all objects from last undo state _again_
-   * (XXXX if not saved in this state already); this is, because
-   * the user might have changed the selection after a modelling
-   * action...
+  /* now, save certain objects from previous undo state _again_
+   * (if not saved in this state already); this is, because the
+   * user might have changed the selection after a modelling
+   * action and those changed, but now not anymore selected
+   * objects, would be omitted otherwise
    */
   if(undo_current > 0)
     {
@@ -1064,10 +1077,63 @@ ay_undo_save(void)
       lsr = uo2->references;
       while(lso)
 	{
-	  if(lso->type == AY_IDVIEW)
+	  if(lso->type == AY_IDLAST)
 	    {
 	      break;
 	    }
+
+	  /* check, whether we already saved this object in the
+	     current undo slot */
+	  alreadysaved = AY_FALSE;
+	  saved = uo->objects;
+	  while(saved && (saved->type != AY_IDLAST))
+	    {
+	      if(saved == lso)
+		{
+		  alreadysaved == AY_TRUE;
+		  break;
+		}
+	      saved = saved->next;
+	    } /* while */
+
+	  if(alreadysaved)
+	    {
+	      lso = lso->next;
+	      lsr = lsr->next;
+	      break;
+	    }
+
+	  /* mark beginning of extra objects in undo buffer using
+	     a special object of type AY_IDLAST with empty reference */
+	  if(!prevselmarked)
+	    {
+	      r = NULL;
+	      if(!(r = calloc(1, sizeof(ay_list_object))))
+		{
+		  return AY_EOMEM;
+		}
+
+	      if(!(markprevsel = calloc(1, sizeof(ay_object))))
+		{
+		  free(r);
+		  return AY_EOMEM;
+		}
+
+	      if(uo->references)
+		{
+		  lastr->next = r;
+		}
+	      else
+		{
+		  uo->references = r;
+		} /* if */
+
+	      lastr = r;
+
+	      markprevsel->type = AY_IDLAST;
+	      *nexto = markprevsel;
+	      nexto = &((*nexto)->next);
+	    } /* if */
 
 	  /* copy reference */
 	  r = NULL;
@@ -1083,7 +1149,7 @@ ay_undo_save(void)
 	  else
 	    {
 	      uo->references = r;
-	    }
+	    } /* if */
 
 	  lastr = r;
 
@@ -1236,6 +1302,7 @@ ay_undo_undotcmd(ClientData clientData, Tcl_Interp *interp,
   switch(mode)
     {
     case 0:
+      /* perform undo */
       ay_status = ay_undo_undo();
       if(!ay_status)
 	{
@@ -1268,10 +1335,10 @@ ay_undo_undotcmd(ClientData clientData, Tcl_Interp *interp,
 		Tcl_SetVar2(interp, a, n4, vnull,
 			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 	    }
-	  
-	}
+	} /* if */
       break;
     case 1:
+      /* perform redo */
       ay_status = ay_undo_redo();
       if(!ay_status)
 	{
@@ -1302,10 +1369,10 @@ ay_undo_undotcmd(ClientData clientData, Tcl_Interp *interp,
 	      Tcl_SetVar2(interp, a, n4, vnone,
 			  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 	    }
-	  
-	}
+	} /* if */
       break;
     case 2:
+      /* perform save */
       /* save name of modelling operation in progress */
       if(argc > 2)
 	{
@@ -1324,7 +1391,7 @@ ay_undo_undotcmd(ClientData clientData, Tcl_Interp *interp,
 	    {
 	      strcpy(undo_saved_op, argv[2]);
 	    }
-	}
+	} /* if */
       ay_status = ay_undo_save();
       uc++;
       /* set scene changed flag */
@@ -1337,6 +1404,7 @@ ay_undo_undotcmd(ClientData clientData, Tcl_Interp *interp,
       undo_saved_op = NULL;
       break;
     case 3:
+      /* perform clear */
       ay_status = ay_undo_clear();
       uc = 0;
       /* re-set undo prompt */
