@@ -1,4 +1,4 @@
-[17. Sep 2005] CVS-Head:
+[13. Oct 2005] CVS-Head:
 o bug fixes:
   - fixed automatic merging of PV tags (SF 1238692)
   - fixed root object not drawn upon File/New (SF 1245221)
@@ -12,6 +12,9 @@ o bug fixes:
   - fixed tesselation GUI not working with multiple selected objects
     (SF 1294013)
   - fixed tesselation GUI not removing all TP tags (SF 1294023)
+  - fixed Shift+Tab bindings when Ayam is used with Tk8.4 (SF 1324656)
+  - fixed opening of the preferences editor leading to Tcl errors in
+    rare cases (SF 1325362)
 o improved OBJ import of files with trailing whitespace as e.g. written by
   Blender
 o script objects now cache a compiled version of the script for faster
@@ -66,6 +69,9 @@ o added example/helper script "2lcons.tcl" that restricts the Ayam console
 o TP tags now handle a second parameter to allow to adjust the tesselation
   differently in the U and V parametric dimensions
 o forAll and forAllT now maintain the selection for the object tree
+o improved memory consumption of undo system for view-less modelling
+o added "Load from file" context menu entry to script object, to allow
+  direct loading of scripts from Tcl files
 
 
 [5. Jul 2005] Ayam 1.8.3:
