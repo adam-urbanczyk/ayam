@@ -51,6 +51,27 @@ $m add command -label "Paste (Replace)" -command {
 	$t insert end $nt
     }
 }
+$m add command -label "Load from file" -command {
+    global ay ScriptAttr
+    set t $ay(pca).${ScriptAttr(w)}.tScript
+    set nt ""
+
+    set types {{"Tcl Script" ".tcl"} {"All files" *}}
+    set newfilename ""
+    set newfilename [tk_getOpenFile -filetypes $types -parent .\
+		-title "Select file to load:"]
+    if { $newfilename != "" } {
+	set scfile ""
+	set scfile [open $newfilename r]
+	if { $scfile != "" } {
+	    set nt [read $scfile]
+	    if { $nt != "" } {
+		$t delete 1.0 end
+		$t insert end $nt
+	    }
+	}
+    }
+}
 # bind popup menu
 bind $t <3> {
     set xy [winfo pointerxy .];
