@@ -37,6 +37,7 @@ proc prefs_rsnb { nb page } {
     }
 
     set oldwidth [expr [winfo width $nb] - 4]
+    if { $oldwidth < 50 } { set oldwidth 340 }
 
     wm geometry .prefsw {}
     $nb configure -height [winfo reqheight [$nb getframe $page]]
