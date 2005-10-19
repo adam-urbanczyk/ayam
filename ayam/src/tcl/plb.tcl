@@ -1,24 +1,37 @@
 # Ayam, a free 3D modeler for the RenderMan interface.
 #
-# Ayam is copyrighted 1998-2001 by Randolf Schultz
+# Ayam is copyrighted 1998-2005 by Randolf Schultz
 # (rschultz@informatik.uni-rostock.de) and others.
 #
 # All rights reserved.
 #
 # See the file License for details.
 
-# plb.tcl - the properties listbox
+# plb.tcl - procedures for managing the properties listbox and display
 
-proc plb_resizecanvas {win W H} {
+# Global Variables:
+
+set ay(PlbUpdateSema) 0
+
+# Procedures:
+
+# plb_resizecanvas:
+#
+#
+proc plb_resizecanvas { win W H } {
    $win itemconfigure all -width $W
    set bbox [$win bbox all]
    $win configure -scrollregion $bbox -yscrollincrement 0.1i
+ return;
 }
+# plb_resizecanvas
 
+
+# plb_open:
+#
 #
 proc plb_open { w } {
 global ay ayprefs
-
 
 label $w.la -text "Properties:" -padx 0 -pady 0
 pack $w.la -in $w -side top -fill x -expand no
@@ -111,7 +124,7 @@ bind $f.li <ButtonRelease-1> {
     }
 
 }
-#bind
+# bind
 
 bind $f.li <ButtonPress-4> {
     global ay
@@ -257,7 +270,7 @@ if { $tcl_platform(platform) == "windows" } {
 	    $ay(pca) yview scroll -1 pages 
 	}
     }
-    #bind
+    # bind
 
     bind all <MouseWheel> {
 	if { [focus] != ".fl.con.console" &&\
@@ -270,11 +283,11 @@ if { $tcl_platform(platform) == "windows" } {
 	    }
 	    break;
 	}
-	#if
+	# if
     }
-    #bind
+    # bind
 }
-#if
+# if
 
 pack $f.ca -in $f -side left -fill both -expand yes
 
@@ -286,21 +299,26 @@ pack $f.s -in $f -side left -fill y
 pack $w.fArg.fca -in $w.fArg -side top -fill both -expand yes
 pack $w.fArg -in $w -side top -fill both -expand yes
 update
+return;
 }
 # plb_open
 
 
+# plb_close:
 #
-proc pgui_close { w } {
+#
+proc plb_close { w } {
 destroy $w.la
 destroy $w.li
 destroy $w.s
 destroy $w.fArg
-
+return;
 }
 # plb_close
 
-set ay(PlbUpdateSema) 0
+
+# plb_update:
+#
 #
 proc plb_update { } {
 global ay ay_error curtypes pclip_omit pclip_omit_label
@@ -434,11 +452,11 @@ if { [llength $index] == 1 } {
 		}
 	    }
 	}
-	#if
+	# if
     }
-    #if
+    # if
 }
-#if
+# if
 
 set ay(PlbUpdateSema) 0
 
@@ -447,6 +465,8 @@ set ay(PlbUpdateSema) 0
 # plb_update
 
 
+# plb_resize:
+#
 #
 proc plb_resize { } {
     global ayprefs ay
@@ -485,7 +505,7 @@ proc plb_resize { } {
 # plb_focus:
 #  this proc is bound to the Tab-key and scrolls the property
 #  canvas to display the new item that gets the focus if it is
-#  outside the current visible region of the canvas
+#  outside the current visible region of the property canvas
 proc plb_focus { } {
     global ay
     set w [focus]
@@ -513,11 +533,13 @@ proc plb_focus { } {
 	
 	}
     }
+    # if
+ return;
 }
 # plb_focus
 
 
-#plb_showprop:
+# plb_showprop:
 #
 #
 proc plb_showprop { prop } {
