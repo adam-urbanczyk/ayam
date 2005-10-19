@@ -1,6 +1,6 @@
 # Ayam, a free 3D modeler for the RenderMan interface.
 #
-# Ayam is copyrighted 1998-2001 by Randolf Schultz
+# Ayam is copyrighted 1998-2005 by Randolf Schultz
 # (rschultz@informatik.uni-rostock.de) and others.
 #
 # All rights reserved.
@@ -9,18 +9,20 @@
 
 # prop.tcl - handle standard properties
 
+# Transformations property
+
 array set Transformations {
 arr   transfPropData
 sproc setTrafo
 gproc getTrafo
 w     fTrafoAttr
-
 }
+
 # create Transformations-UI
 set w [frame $ay(pca).$Transformations(w)]
 addCommand $w c1 "Reset All!" {
 global transfPropData
-undo save ResTrafo
+undo save ResetTrafos
 set transfPropData(Translate_X) 0.0
 set transfPropData(Translate_Y) 0.0
 set transfPropData(Translate_Z) 0.0
@@ -62,9 +64,8 @@ addParam $w transfPropData Quat1
 addParam $w transfPropData Quat2
 addParam $w transfPropData Quat3
 
-#
-#
-#
+
+# Attributes property
 
 proc setAttrp { } {
     global attrPropData
@@ -81,16 +82,15 @@ gproc getAttr
 w     fAttrAttr
 
 }
+
 # create Attributes-UI
 set w [frame $ay(pca).$Attributes(w)]
 addString $w attrPropData Objectname
 addCheck $w attrPropData Hide
 addInfo $w attrPropData RefCount
 
-#
-#
-#
 
+# Material property
 
 array set Material {
 arr   matPropData
@@ -117,9 +117,7 @@ addCommand $w c2 "Add/Edit Material!" {
 addString $w matPropData Materialname
 
 
-#
-#
-#
+# Tags property
 
 # getTagsp:
 #
@@ -181,6 +179,7 @@ plb_resize
 }
 # getTagsp
 
+
 # setTagsp:
 #
 proc setTagsp { } {
@@ -205,6 +204,7 @@ if { [llength $alltags] > 0 } {
 }
 # setTagsp
 
+
 # editTagshelper:
 #  used to edit tags
 proc editTagshelper { index } {
@@ -219,6 +219,7 @@ proc editTagshelper { index } {
  plb_update
 }
 #editTagshelper
+
 
 # addTagp:
 #  used to edit and add tags
@@ -313,3 +314,179 @@ w     fTagsAttr
 # create Tags-UI
 set w [frame $ay(pca).$Tags(w)]
 addCommand $w c1 "Remove all Tags" {delTags all;plb_update}
+
+
+# getProperty:
+#
+#
+proc getProperty { property varName } {
+upvar $varName vname
+global ay curtypes ay_error
+
+    # decode arrayname from property argument
+    set arrayname [string range $property 0 \
+		       [expr [string first "(" $property]-1]]
+
+    set propname [string range $property \
+		       [expr [string first "(" $property]+1] \
+		       [expr [string first ")" $property]-1]]
+
+    # check object selection, XXXX should we?
+    if { 0 } {
+    set index ""
+    if { $ay(lb) == 1 } {
+	set index [$ay(olb) curselection]
+    } else {
+	set index [$ay(tree) selection get]
+    }
+    if { [llength $index] != 1 } {
+	return;
+    }
+    }
+
+    # get object type
+    set type ""
+    if { $ay(lb) == 1 } {
+	set type [lindex $curtypes $index]
+    } else {
+	set oldayerror $ay_error
+	getType type
+	set ay_error $oldayerror
+    }
+    if { $type == "" || $type == ".." } {
+	ayError 2 "getProperty" "Could not get type of object."
+	return;
+    }
+
+    # get list of properties of selected object
+    global ${type}_props
+    eval [subst "set props {\$${type}_props}"]
+
+    # also get properties from NP tags
+    set tn ""
+    getTags tn tv
+    if { ($tn != "") && ([ string first NP $tn ] != -1) } {
+	set i 0
+	foreach tag $tn {
+	    if { [lindex $tn $i] == "NP" } {
+		lappend props [lindex $tv $i] 
+	    }
+	    incr i
+	}
+	# foreach
+    }
+    # if
+
+    # check presence of wanted property for selected object
+    set propindex ""
+    catch [set propindex [lsearch $props $arrayname]]
+    if { $propindex == -1 } {
+	ayError 2 "getProperty" "Object of wrong type selected."
+	return;
+    }
+    
+    # get property data
+    global $arrayname
+    set getprocp ""
+    eval [subst "set getprocp \$${arrayname}(gproc)"]
+    if { $getprocp != "" } { $getprocp } else { getProp }
+
+    # fill value to variable
+    eval [subst "set arr \$${arrayname}(arr)"]
+    global $arr
+    set pvarname ${arr}($propname)
+    eval [subst "set vname \$$pvarname"]
+
+ return;
+}
+# getProperty
+
+
+# setProperty:
+#
+#
+proc setProperty { property newValue } {
+global ay curtypes ay_error
+
+    # decode arrayname from property argument
+    set arrayname [string range $property 0 \
+		       [expr [string first "(" $property]-1]]
+
+    set propname [string range $property \
+		       [expr [string first "(" $property]+1] \
+		       [expr [string first ")" $property]-1]]
+
+    # check object selection, XXXX should we?
+    if { 0 } {
+    set index ""
+    if { $ay(lb) == 1 } {
+	set index [$ay(olb) curselection]
+    } else {
+	set index [$ay(tree) selection get]
+    }
+    if { [llength $index] != 1 } {
+	return;
+    }
+    }
+
+    # get object type
+    set type ""
+    if { $ay(lb) == 1 } {
+	set type [lindex $curtypes $index]
+    } else {
+	set oldayerror $ay_error
+	getType type
+	set ay_error $oldayerror
+    }
+    if { $type == "" || $type == ".." } {
+	ayError 2 "getProperty" "Could not get type of object."
+	return;
+    }
+
+    # get list of properties of selected object
+    global ${type}_props
+    eval [subst "set props {\$${type}_props}"]
+
+    # also get properties from NP tags
+    set tn ""
+    getTags tn tv
+    if { ($tn != "") && ([ string first NP $tn ] != -1) } {
+	set i 0
+	foreach tag $tn {
+	    if { [lindex $tn $i] == "NP" } {
+		lappend props [lindex $tv $i] 
+	    }
+	    incr i
+	}
+	# foreach
+    }
+    # if
+
+    # check presence of wanted property for selected object
+    set propindex ""
+    catch [set propindex [lsearch $props $arrayname]]
+    if { $propindex == -1 } {
+	ayError 2 "getProperty" "Object of wrong type selected."
+	return;
+    }
+
+    # get property data
+    global $arrayname
+    set getprocp ""
+    eval [subst "set getprocp \$${arrayname}(gproc)"]
+    if { $getprocp != "" } { $getprocp } else { getProp }
+
+    # modify property data
+    eval [subst "set arr \$${arrayname}(arr)"]
+    global $arr
+    set pvarname ${arr}($propname)
+    eval [subst "set $pvarname \$newValue"]
+
+    # set property data
+    set setprocp ""
+    eval [subst "set setprocp \$${arrayname}(sproc)"]
+    if { $setprocp != "" } { $setprocp } else { setProp }
+
+ return;
+}
+# setProperty
