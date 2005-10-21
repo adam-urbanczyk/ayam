@@ -72,6 +72,8 @@ o forAll and forAllT now maintain the selection for the object tree
 o improved memory consumption of undo system for view-less modelling
 o added "Load from file" context menu entry to script object, to allow
   direct loading of scripts from Tcl files
+o added scripting interface commands "setProperty" and "getProperty" to ease
+  management of property values
 
 
 [5. Jul 2005] Ayam 1.8.3:
