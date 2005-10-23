@@ -747,6 +747,9 @@ typedef struct ay_view_object_s
   int ppreview; /* create a permanent preview */
   /*#endif*/
 
+  /* draw object coordinate system? */
+  int drawobjectcs;
+
   /* camera */
   double from[3];
   double to[3];

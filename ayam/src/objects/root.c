@@ -1,7 +1,7 @@
 /*
  * Ayam, a free 3D modeler for the RenderMan interface.
  *
- * Ayam is copyrighted 1998-2001 by Randolf Schultz
+ * Ayam is copyrighted 1998-2005 by Randolf Schultz
  * (rschultz@informatik.uni-rostock.de) and others.
  *
  * All rights reserved.
@@ -129,95 +129,15 @@ ay_root_copycb(void *src, void **dst)
 int
 ay_root_drawcb(struct Togl *togl, ay_object *o)
 {
- GLdouble mvm[16], pm[16];
- GLdouble win1x, win1y, win1z, win2x, win2y, win2z, win3x, win3y, win3z;
- GLfloat color[4] = {0.0f,0.0f,0.0f,0.0f};
- GLint vp[4];
 
   if(!o)
     return AY_ENULL;
 
-  glGetFloatv(GL_CURRENT_COLOR, color);
-
-  /* ignore transformation */
+  /* ignore current transformation */
   glLoadIdentity();
 
-  /* draw */
-  glBegin(GL_LINES);
-   glColor3f((GLfloat)1.0, (GLfloat)0.0, (GLfloat)0.0);
-   glVertex3f((GLfloat)0.0, (GLfloat)0.0, (GLfloat)0.0);
-   glVertex3f((GLfloat)1.0, (GLfloat)0.0, (GLfloat)0.0);
-   glColor3f((GLfloat)0.0, (GLfloat)1.0, (GLfloat)0.0);
-   glVertex3f((GLfloat)0.0, (GLfloat)0.0, (GLfloat)0.0);
-   glVertex3f((GLfloat)0.0, (GLfloat)1.0, (GLfloat)0.0);
-   glColor3f((GLfloat)0.0, (GLfloat)0.0, (GLfloat)1.0);
-   glVertex3f((GLfloat)0.0, (GLfloat)0.0, (GLfloat)0.0);
-   glVertex3f((GLfloat)0.0, (GLfloat)0.0, (GLfloat)1.0);
-  glEnd();
-
-  glColor4fv(color);
-
-  glGetDoublev(GL_MODELVIEW_MATRIX, mvm);
-  glGetDoublev(GL_PROJECTION_MATRIX, pm);
-  glGetIntegerv(GL_VIEWPORT, vp);
-  gluProject((GLdouble)1.0, (GLdouble)0.0,
-	     (GLdouble)0.0, mvm, pm, vp,
-	     &win1x, &win1y, &win1z);
-  gluProject((GLdouble)0.0, (GLdouble)1.0,
-	     (GLdouble)0.0, mvm, pm, vp,
-	     &win2x, &win2y, &win2z);
-  gluProject((GLdouble)0.0, (GLdouble)0.0,
-	     (GLdouble)1.0, mvm, pm, vp,
-	     &win3x, &win3y, &win3z);
-
-  glMatrixMode(GL_PROJECTION);
-  glPushMatrix();
-   glLoadIdentity();
-   glOrtho(0, Togl_Width(togl), 0, Togl_Height(togl), -100.0, 100.0);
-
-   glMatrixMode(GL_MODELVIEW);
-   glPushMatrix();
-    glLoadIdentity();
-    glTranslated(((int)win1x)+6.0+0.375, ((int)win1y)+0.375, 0.0);
-    /* draw X */
-    glBegin(GL_LINE_STRIP);
-     glVertex3i(-3, -3, 0);
-     glVertex3i(0, 0, 0);
-     glVertex3i(-4, 4, 0);
-    glEnd();
-    glBegin(GL_LINE_STRIP);
-     glVertex3i(3, 3, 0);
-     glVertex3i(0, 0, 0);
-     glVertex3i(4, -4, 0);
-    glEnd();
-    glLoadIdentity();
-    glTranslated(((int)win2x)+6.0+0.375, ((int)win2y)+0.375, 0.0);
-    /* draw Y */
-    glBegin(GL_LINES);
-     glVertex3i(0, 0, 0);
-     glVertex3i(-4, 4, 0);
-     glVertex3i(0, 0, 0);
-     glVertex3i(4, 4, 0);
-     glVertex3i(0, 0, 0);
-     glVertex3i(-4, -4, 0);
-    glEnd();
-    glLoadIdentity();
-    glTranslated(((int)win3x)+6+0.375, ((int)win3y)+0.375, 0.0);
-    /* draw Z */
-    glBegin(GL_LINE_STRIP);
-     glVertex3i(0, 0, 0);
-     glVertex3i(-3, -3, 0);
-     glVertex3i(4, -3, 0);
-    glEnd();
-    glBegin(GL_LINE_STRIP);
-     glVertex3i(0, 0, 0);
-     glVertex3i(3, 3, 0);
-     glVertex3i(-4, 3, 0);
-    glEnd();
-    glPopMatrix();
-   glMatrixMode(GL_PROJECTION);
-   glPopMatrix();
-  glMatrixMode(GL_MODELVIEW);
+  /* draw coordinate system */
+  ay_draw_cs(togl);
 
  return AY_OK;
 } /* ay_root_drawcb */
@@ -238,6 +158,8 @@ ay_root_shadecb(struct Togl *togl, ay_object *o)
 {
   if(!o)
     return AY_ENULL;
+
+  /* XXXX draw no coordinate system in shaded views? */
 
  return AY_OK;
 } /* ay_root_shadecb */

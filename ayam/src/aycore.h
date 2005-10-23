@@ -1,9 +1,10 @@
+
 #ifndef __aycore_h__
 #define __aycore_h__
 /*
  * Ayam, a free 3D modeler for the RenderMan interface.
  *
- * Ayam is copyrighted 1998-2001 by Randolf Schultz
+ * Ayam is copyrighted 1998-2005 by Randolf Schultz
  * (rschultz@informatik.uni-rostock.de) and others.
  *
  * All rights reserved.
@@ -103,6 +104,9 @@ void ay_draw_trimview(void);
 void ay_draw_rectangle(int winwidth, int winheight,
 		       double xmin, double ymin,
 		       double xmax, double ymax);
+
+void ay_draw_cs(struct Togl *togl);
+
 
 /* error.c */
 void ay_error(int code, char *where, char *what);

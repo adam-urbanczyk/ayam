@@ -1,6 +1,7 @@
+
 # Ayam, a free 3D modeler for the RenderMan interface.
 #
-# Ayam is copyrighted 1998-2001 by Randolf Schultz
+# Ayam is copyrighted 1998-2005 by Randolf Schultz
 # (rschultz@informatik.uni-rostock.de) and others.
 #
 # All rights reserved.
@@ -378,22 +379,22 @@ proc shortcut_view { w } {
     #$w.$m entryconfigure 1 -accelerator $ayviewshortcuts(Shade)
     bind $w <[repcont $ayviewshortcuts(Shade)]> "viewToggleDMode $w"
 
-    bind $w <[repcont $ayviewshortcuts(DGrid)]> "$w.$m invoke 8"
-    $w.$m entryconfigure 8 -accelerator $ayviewshortcuts(DGrid)
-    bind $w <[repcont $ayviewshortcuts(UGrid)]> "$w.$m invoke 9"
-    $w.$m entryconfigure 9 -accelerator $ayviewshortcuts(UGrid)
-    bind $w <[repcont $ayviewshortcuts(SGrid)]> "$w.$m invoke 10"
-    $w.$m entryconfigure 10 -accelerator $ayviewshortcuts(SGrid)
+    bind $w <[repcont $ayviewshortcuts(DGrid)]> "$w.$m invoke 9"
+    $w.$m entryconfigure 9 -accelerator $ayviewshortcuts(DGrid)
+    bind $w <[repcont $ayviewshortcuts(UGrid)]> "$w.$m invoke 10"
+    $w.$m entryconfigure 10 -accelerator $ayviewshortcuts(UGrid)
+    bind $w <[repcont $ayviewshortcuts(SGrid)]> "$w.$m invoke 11"
+    $w.$m entryconfigure 11 -accelerator $ayviewshortcuts(SGrid)
 
-    bind $w <[repcont $ayviewshortcuts(Halve)]> "$w.$m invoke 12"
-    $w.$m entryconfigure 12 -accelerator $ayviewshortcuts(Halve)
-    bind $w <[repcont $ayviewshortcuts(Double)]> "$w.$m invoke 13"
-    $w.$m entryconfigure 13 -accelerator $ayviewshortcuts(Double)
+    bind $w <[repcont $ayviewshortcuts(Halve)]> "$w.$m invoke 13"
+    $w.$m entryconfigure 13 -accelerator $ayviewshortcuts(Halve)
+    bind $w <[repcont $ayviewshortcuts(Double)]> "$w.$m invoke 14"
+    $w.$m entryconfigure 14 -accelerator $ayviewshortcuts(Double)
 
-    $w.$m entryconfigure 19 -accelerator $ayviewshortcuts(ZoomTO)
-    bind $w <[repcont $ayviewshortcuts(ZoomTO)]> "$w.$m invoke 19"
-    $w.$m entryconfigure 20 -accelerator $ayviewshortcuts(Align)
-    bind $w <[repcont $ayviewshortcuts(Align)]> "$w.$m invoke 20"
+    $w.$m entryconfigure 20 -accelerator $ayviewshortcuts(ZoomTO)
+    bind $w <[repcont $ayviewshortcuts(ZoomTO)]> "$w.$m invoke 20"
+    $w.$m entryconfigure 21 -accelerator $ayviewshortcuts(Align)
+    bind $w <[repcont $ayviewshortcuts(Align)]> "$w.$m invoke 21"
 
     #set m $ay(mmodem)
     #$w.$m entryconfigure 1 -accelerator $ayviewshortcuts(Local)

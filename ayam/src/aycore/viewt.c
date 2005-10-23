@@ -1,7 +1,7 @@
 /*
  * Ayam, a free 3D modeler for the RenderMan interface.
  *
- * Ayam is copyrighted 1998-2001 by Randolf Schultz
+ * Ayam is copyrighted 1998-2005 by Randolf Schultz
  * (rschultz@informatik.uni-rostock.de) and others.
  *
  * All rights reserved.
@@ -643,6 +643,10 @@ ay_viewt_makecurtcb(struct Togl *togl, int argc, char *argv[])
   to = Tcl_NewIntObj(view->drawlevel);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton, "cVDrawOCS", -1);
+  to = Tcl_NewIntObj(view->drawobjectcs);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
   Tcl_SetStringObj(ton, "cVDrawBG", -1);
   to = Tcl_NewIntObj(view->drawbg);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -1041,6 +1045,11 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 	    {
 	      Tcl_GetInt(interp, argv[i+1], &argi);
 	      view->drawbg = argi;
+	    }
+	  if(!strcmp(argv[i], "-docs"))
+	    {
+	      Tcl_GetInt(interp, argv[i+1], &argi);
+	      view->drawobjectcs = argi;
 	    }
 	  if(!strcmp(argv[i], "-draw"))
 	    {
