@@ -1,7 +1,7 @@
 /*
  * Ayam, a free 3D modeler for the RenderMan interface.
  *
- * Ayam is copyrighted 1998-2001 by Randolf Schultz
+ * Ayam is copyrighted 1998-2005 by Randolf Schultz
  * (rschultz@informatik.uni-rostock.de) and others.
  *
  * All rights reserved.
@@ -256,6 +256,10 @@ ay_view_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &view->drawlevel);
 
+  Tcl_SetStringObj(ton, "DrawObjectCS", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &view->drawobjectcs);
+
   Tcl_SetStringObj(ton, "Grid", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp, to, &view->grid);
@@ -433,8 +437,8 @@ ay_view_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_NewIntObj(view->drawlevel);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "DrawLevel", -1);
-  to = Tcl_NewIntObj(view->drawlevel);
+  Tcl_SetStringObj(ton, "DrawObjectCS", -1);
+  to = Tcl_NewIntObj(view->drawobjectcs);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   Tcl_SetStringObj(ton, "Grid", -1);
@@ -659,6 +663,11 @@ ay_view_readcb(FILE *fileptr, ay_object *o)
       fscanf(fileptr,"%lg\n", &vtemp.farp);
     }
 
+  if(ay_read_version >= 8)
+    {
+      fscanf(fileptr,"%d\n", &vtemp.drawobjectcs);
+    }
+
   vtemp.drawhandles = AY_FALSE;
 
   /* open the view */
@@ -798,6 +807,8 @@ ay_view_writecb(FILE *fileptr, ay_object *o)
 
   fprintf(fileptr,"%g\n",view->nearp);
   fprintf(fileptr,"%g\n",view->farp);
+
+  fprintf(fileptr,"%d\n",view->drawobjectcs);
 
  return AY_OK;
 } /* ay_view_writecb */

@@ -943,6 +943,7 @@ addCheck $w ViewAttribData Redraw
 addMenu $w ViewAttribData Mode [list Draw Shade ShadeAndDraw]
 addCheck $w ViewAttribData DrawSel
 addCheck $w ViewAttribData DrawLevel
+addCheck $w ViewAttribData DrawObjectCS
 
 addText $w e3 "Grid:"
 addParam $w ViewAttribData Grid
