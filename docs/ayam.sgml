@@ -6019,7 +6019,45 @@ single object from a multiple selection designated by index.
 
 <sect2>Manipulating Properties<label id="sciprop">
 <p>
+Since Ayam 1.9 two new commands are implemented that ease
+the manipulation of property values:
 
+<p><label id="scgetproperty">
+getProperty - get single property value
+<itemize>
+ <item>Synopsis: <tt/"getProperty propname(elemname) varname"/
+ <item>Description: This command gets a single property element
+named elemname from the property named propname of the currently
+selected object and writes the result into the variable named varname.
+ <item>Notes: In contrast to many other helper commands, the variable
+varname does not have to be global.
+This command runs more slowly than accessing the data array
+that is associated with a property and calling the appropriate get-procedure
+directly. See below for more information regarding direct access of
+property values.
+ <item>Example: Given that a single Sphere object is selected, its
+radius may be retrieved in the variable <tt/"r"/ easily using the command
+<tt/"getProperty SphereAttr(Radius) r"/
+</itemize>
+
+<p><label id="scsetproperty">
+setProperty - set single property value
+<itemize>
+ <item>Synopsis: <tt/"setProperty propname(elemname) value"/
+ <item>Description: This command sets a single property element
+named elemname of the property named propname for the currently
+selected object to the new value given in value.
+ <item>Notes: This command runs more slowly than accessing the data array
+that is associated with a property and calling the appropriate set-procedure
+directly. See below for more information regarding direct access of
+property values.
+ <item>Example: Given that a single Sphere object is selected, its
+radius may be set to the new value <tt/"3.0"/ easily using the command
+<tt/"setProperty SphereAttr(Radius) 3.0"/
+</itemize>
+<p>
+Direct (fast) access of property values:
+<p>
 Every property has a corresponding global array, where the data
 of the property is saved.
 This global array only holds useful data when the respective
@@ -6038,10 +6076,10 @@ gproc getTagsp
 w     fTagsAttr
 }
 </code>
-
 If sproc or gproc are empty (<tt/""/), a standard callback
-named <tt/"setProp"/ or <tt/"getProp"/ should be used.
-
+named <tt/"setProp"/ or <tt/"getProp"/ should be used to get
+or set the property values.
+<p>
 The following global arrays and callbacks to get or set the data
 exist:
 <itemize>
@@ -8174,6 +8212,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <label id="indexg">G
 <itemize>
 <item>getPnt: <ref id="scipoints" name="scripting interface command">
+<item>getProperty: <ref id="scgetproperty" name="scripting interface command">
 <item>getType: <ref id="scimisc" name="scripting interface command">
 <item>Gimbal Lock: <ref id="gimb" name="avoiding Gimbal Locks">
 <item>goDown: <ref id="scihier" name="scripting interface command">
@@ -8527,13 +8566,14 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Selected Objects: <ref id="mmspecial" name="main menu entry">
 <item>Select Renderer: <ref id="mmspecial" name="main menu entry">
 <item>Selection: <ref id="prefdraw" name="preference setting">
-<item>selOb: <ref id="selob" name="scripting interface command">
+<item>selOb: <ref id="scselob" name="scripting interface command">
 <item>SelXOR_R, SelXOR_G, SelXOR_B:
 <ref id="hidprefs" name="hidden preference setting">
 <item>Set BGImage: <ref id="vmconf" name="view menu entry">
 <item>Set Gridsize: <ref id="vmconf" name="view menu entry">
 <item>Set FOV: <ref id="vmconf" name="view menu entry">
 <item>setPnt: <ref id="scipoints" name="scripting interface command">
+<item>setProperty: <ref id="scsetproperty" name="scripting interface command">
 <item>Shade: <ref id="prefdraw" name="preference setting">,
 <ref id="vmconf" name="view menu entry">
 <item>Shader: <ref id="shd" name="properties">
