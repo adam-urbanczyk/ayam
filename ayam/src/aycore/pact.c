@@ -1,7 +1,7 @@
 /*
  * Ayam, a free 3D modeler for the RenderMan interface.
  *
- * Ayam is copyrighted 1998-2004 by Randolf Schultz
+ * Ayam is copyrighted 1998-2005 by Randolf Schultz
  * (rschultz@informatik.uni-rostock.de) and others.
  *
  * All rights reserved.
@@ -71,12 +71,11 @@ ay_pact_seltcb(struct Togl *togl, int argc, char *argv[])
  Tcl_Interp *interp = Togl_Interp (togl);
  /*  ay_view_object *view = Togl_GetClientData(togl);*/
  double height = Togl_Height(togl);
- int i, have_it;
+ int i, have_it = AY_FALSE, multiple = AY_FALSE;
  double winX = 0.0, winY = 0.0, winX2 = 0.0, winY2 = 0.0, dtemp = 0.0;
  double obj[24] = {0}, pe[16] = {0};
  /*  double pickepsilon = ay_prefs.pick_epsilon;*/
  ay_point_object *newp = NULL, *point = NULL, *last = NULL;
- int multiple = AY_FALSE;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  GLfloat pixel[3] = {0.0f,0.0f,0.0f};
@@ -165,13 +164,13 @@ ay_pact_seltcb(struct Togl *togl, int argc, char *argv[])
 
       if(ay_point_edit_coords)
 	{
-	  have_it = 0;
+	  have_it = AY_FALSE;
 	  for(i = 0; i < ay_point_edit_coords_number; i++)
 	    {
 	      /* do we have that point selected already? */
 	      point = o->selp;
 	      last = NULL;
-	      have_it = 0;
+	      have_it = AY_FALSE;
 	      while(point)
 		{
 		  if(point->point == ay_point_edit_coords[i])
@@ -188,7 +187,7 @@ ay_pact_seltcb(struct Togl *togl, int argc, char *argv[])
 
 			  free(point);
 			} /* if */
-		      have_it = 1;
+		      have_it = AY_TRUE;
 		      point = NULL; /* break loop */
 		    } /* if */
 
@@ -211,8 +210,7 @@ ay_pact_seltcb(struct Togl *togl, int argc, char *argv[])
 		  o->selp = newp;
 		  newp->point = ay_point_edit_coords[i];
 		  newp->homogenous = ay_point_edit_coords_homogenous;
-		}
-
+		} /* if */
 	    } /* for */
 	} /* if */
 
@@ -233,7 +231,6 @@ ay_pact_deseltcb(struct Togl *togl, int argc, char *argv[])
 
   while(sel)
     {
-
       ay_selp_clear(sel->object);
 
       sel = sel->next;
@@ -257,8 +254,8 @@ ay_pact_flashpoint(int ignore_old)
  ay_object *o = ay_point_edit_object;
  double m[16];
 
- if(!o)
-   return AY_OK;
+  if(!o)
+    return AY_OK;
 
 #ifdef GL_VERSION_1_1
   cont = AY_FALSE;
@@ -463,7 +460,7 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
 
 	  ay_pe_objectslen++;
 
-	}
+	} /* if */
 
       sel = sel->next;
     } /* while */
@@ -792,8 +789,8 @@ ay_pact_insertnc(ay_nurbcurve_object *curve,
   for(i = 0; i < curve->length; i++)
     {
       distance = AY_VLEN((objX - curve->controlv[j]),
-			 (objY -  curve->controlv[j+1]),
-			 (objZ -  curve->controlv[j+2]));
+			 (objY - curve->controlv[j+1]),
+			 (objZ - curve->controlv[j+2]));
 
       if(distance < min_distance)
 	{
@@ -1078,8 +1075,8 @@ ay_pact_insertic(ay_icurve_object *curve,
  double *newcontrolv = NULL, *oldcontrolv = NULL;
  int inserted;
 
- if(!curve)
-   return AY_ENULL;
+  if(!curve)
+    return AY_ENULL;
 
   cv = curve->controlv;
 
@@ -1146,9 +1143,9 @@ ay_pact_insertic(ay_icurve_object *curve,
 	  free(curve->controlv);
 	  curve->controlv = newcontrolv;
 	  return ay_status; /* XXXX early exit */
-	}
+	} /* if */
+    } /* if */
 
-    }
   curve->length++;
   if(!(newcontrolv = calloc(curve->length*3, sizeof(double))))
     {
@@ -1190,7 +1187,7 @@ ay_pact_insertic(ay_icurve_object *curve,
 	{
 	  memcpy(&(newcontrolv[j*3]), &(oldcontrolv[i*3]),
 		 3*sizeof(double));
-	}
+	} /* if */
       j++;
     } /* for */
 
@@ -1234,10 +1231,9 @@ ay_pact_insertptcb(struct Togl *togl, int argc, char *argv[])
       Tcl_GetDouble(interp, argv[2], &winX);
       Tcl_GetDouble(interp, argv[3], &winY);
 
-
       ay_status = ay_viewt_wintoobj(togl, ay_selection->object,
 				    winX, winY,
-				    &objX,&objY,&objZ);
+				    &objX, &objY, &objZ);
 
       switch(ay_selection->object->type)
 	{
@@ -1265,7 +1261,9 @@ ay_pact_insertptcb(struct Togl *togl, int argc, char *argv[])
        ay_status = ay_notify_parent();
     }
   else
-    ay_error(AY_ENOSEL, fname, NULL);
+    {
+      ay_error(AY_ENOSEL, fname, NULL);
+    }
 
  return TCL_OK;
 } /* ay_pact_insertptcb */
@@ -1285,7 +1283,6 @@ ay_pact_deletenc(ay_nurbcurve_object *curve,
  double min_distance = ay_prefs.pick_epsilon, distance = 0.0;
  double *newcontrolv = NULL, *newknotv = NULL;
 
-
   if(!curve)
     return AY_ENULL;
   cv = curve->controlv;
@@ -1297,8 +1294,8 @@ ay_pact_deletenc(ay_nurbcurve_object *curve,
   for(i = 0; i < curve->length; i++)
     {
       distance = AY_VLEN((objX - cv[j]),
-			 (objY -  cv[j+1]),
-			 (objZ -  cv[j+2]));
+			 (objY - cv[j+1]),
+			 (objZ - cv[j+2]));
 
       if(distance < min_distance)
 	{
@@ -1331,7 +1328,7 @@ ay_pact_deletenc(ay_nurbcurve_object *curve,
       /* copy controlv */
       j = 0;
       k = 0;
-      for(i=0; i<=curve->length; i++)
+      for(i = 0; i <= curve->length; i++)
 	{
 	  if(i != index)
 	    {
@@ -1411,7 +1408,6 @@ ay_pact_deleteic(ay_icurve_object *icurve,
  double min_distance = ay_prefs.pick_epsilon, distance = 0.0;
  double *newcontrolv = NULL;
 
-
   if(!icurve)
     return AY_ENULL;
 
@@ -1424,8 +1420,8 @@ ay_pact_deleteic(ay_icurve_object *icurve,
   for(i = 0; i < icurve->length; i++)
     {
       distance = AY_VLEN((objX - cv[j]),
-			 (objY -  cv[j+1]),
-			 (objZ -  cv[j+2]));
+			 (objY - cv[j+1]),
+			 (objZ - cv[j+2]));
 
       if(distance < min_distance)
 	{
@@ -1494,10 +1490,9 @@ ay_pact_deleteptcb(struct Togl *togl, int argc, char *argv[])
       Tcl_GetDouble(interp, argv[2], &winX);
       Tcl_GetDouble(interp, argv[3], &winY);
 
-
       ay_status = ay_viewt_wintoobj(togl, ay_selection->object,
 				    winX, winY,
-				    &objX,&objY,&objZ);
+				    &objX, &objY, &objZ);
 
       switch(ay_selection->object->type)
 	{
@@ -1525,7 +1520,9 @@ ay_pact_deleteptcb(struct Togl *togl, int argc, char *argv[])
        ay_status = ay_notify_parent();
     }
   else
-    ay_error(AY_ENOSEL, fname, NULL);
+    {
+      ay_error(AY_ENOSEL, fname, NULL);
+    }
 
  return TCL_OK;
 } /* ay_pact_deleteptcb */
@@ -1806,10 +1803,10 @@ ay_pact_wetcb(struct Togl *togl, int argc, char *argv[])
   /* parse args */
   if(argc == 4)
     {
-      if(!strcmp(argv[2],"-winx"))
+      if(!strcmp(argv[2], "-winx"))
 	Tcl_GetDouble(interp, argv[3], &winx);
       else
-	if(!strcmp(argv[2],"-start"))
+	if(!strcmp(argv[2], "-start"))
 	  {
 	    Tcl_GetDouble(interp, argv[3], &winx);
 	    oldwinx = winx;
