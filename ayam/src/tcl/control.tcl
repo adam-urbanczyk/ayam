@@ -1,6 +1,6 @@
 # Ayam, a free 3D modeler for the RenderMan interface.
 #
-# Ayam is copyrighted 1998-2001 by Randolf Schultz
+# Ayam is copyrighted 1998-2005 by Randolf Schultz
 # (rschultz@informatik.uni-rostock.de) and others.
 #
 # All rights reserved.
@@ -526,6 +526,7 @@ proc selAdd { ud } {
 	    }
 	}
     }
+ return;
 }
 # selAdd
 
@@ -702,3 +703,31 @@ proc mouseWatch { onoff ws } {
  return;
 }
 # mouseWatch
+
+
+# addToProc:
+#  add code in <addition> to the code of procedure <procedure>
+#  replacing the last "return;"-statement in that procedure
+#  (which has to be present in order to make this work)
+proc addToProc { procedure addition } {
+    # get old proc code
+    set oldprocbody [info body $procedure]
+    # find last "return;"-statement
+    set index [string last "return;\n" $oldprocbody]
+    # remove last "return;"-statement
+    set newprocbody [string range $oldprocbody 0 [expr $index - 1]]
+    # add new code
+    append newprocbody "\n"
+    append newprocbody $addition
+    # add new trailing "return;"-statement
+    append newprocbody "\nreturn;\n"
+    # overwrite procedure
+    if { [info args $procedure] != "" } {
+	set newargs [list [info args $procedure]]
+    } else {
+	set newargs { }
+    }
+    proc $procedure $newargs $newprocbody
+ return;
+}
+# addToProc
