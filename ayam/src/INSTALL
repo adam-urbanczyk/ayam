@@ -1,4 +1,4 @@
-INSTALL [31. Aug 2005]
+INSTALL [31. Oct 2005]
 
 Compilation Instructions for Ayam
 ---------------------------------
@@ -311,7 +311,8 @@ This is done using
 
 If you are using Affine0008 you need to tune Affine to _not_
 use libz by editing "config.mak":
-o remove "-DRIB_ZLIB" from COPTS and do not link with libz.
+o remove "-lz" from the variable ZLIB
+o remove "-DRIB_ZLIB" from COPTS
 
 If you are using Affine0008 and gcc you, additionally, need to change
 "readrib/declare.c":
@@ -321,6 +322,10 @@ to compile other parts of Affine if -ansi is enabled )
 
 now compile Affine:
 >make World
+Ignore errors, unless you do not get "lib/librdr.a" or "lib/libribhash.a".
+In case you do not have "lib/libribnop.a" now, build it:
+>cd ributil
+>make ../lib/libribnop.a
 
 go back to Ayam:
 >cd ayam/src
