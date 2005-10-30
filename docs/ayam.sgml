@@ -6689,6 +6689,17 @@ callback for the selected object(s) and their parents, or if no object
 is selected for all objects of the scene.
 </itemize>
 
+<p><label id="scaddtoproc">
+addToProc:
+<itemize>
+ <item>Synopsis: <tt>"addToProc procedure addition"</tt>
+ <item>Description: This command adds the code from addition to
+the procedure procedure.
+ <item>Note: This command uses the introspection facilities of
+Tcl and works only correctly for procedures, that end with
+a single <tt>"return;"</tt> statement.
+</itemize>
+
 <sect1>Scripting Interface Examples
 <p>
 Here are some example scripts for the Ayam Tcl scripting interface.
@@ -8012,6 +8023,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Accuracy: <ref id="imprhino" name="3DM (Rhino) import option">,
 <ref id="exprhino" name="3DM (Rhino) export option">
 <item>Adaptive: <ref id="moattr" name="MetaObj attributes">
+<item>addToProc: <ref id="scaddtoproc" name="scripting interface command">
 <item>AddViewParams: <ref id="hidprefs" name="hidden preference setting">
 <item>Algorithm: <ref id="aycsg" name="AyCSG plugin option">
 <item>Align to Parent: <ref id="vmconf" name="view menu entry">,
@@ -8726,7 +8738,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <ref id="npattr" name="NURBPatch attribute">,
 <ref id="pmattr" name="PatchMesh attribute">,
 <ref id="vat" name="view attribute">
-<item>withOb: <ref id="selob" name="scripting interface command">
+<item>withOb: <ref id="scwithob" name="scripting interface command">
 <item>WriteCurves: <ref id="exprhino" name="3DM (Rhino) export option">
 <item>WriteIdent: <ref id="prefrib" name="preference setting">
 <item>WriteSelected: <ref id="exprhino" name="3DM (Rhino) export option">
