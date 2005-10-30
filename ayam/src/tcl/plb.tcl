@@ -60,6 +60,12 @@ bind $f.li <ButtonRelease-1> {
     set lb $ay(plb)
     if { [$lb size] < 1 } { return }
     set prop [$lb get [$lb curselection]]
+    if { ! [info exists ${prop}] } {
+	ayError 2 "Ayam" "Property '\${prop}' does not exist!"
+	$lb selection clear 0 end
+	plb_update
+	break
+    }
     eval [subst "set ww \$${prop}(w)"]
 
     set getprocp ""
