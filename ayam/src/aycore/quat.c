@@ -1,7 +1,7 @@
 /*
  * Ayam, a free 3D modeler for the RenderMan interface.
  *
- * Ayam is copyrighted 1998-2001 by Randolf Schultz
+ * Ayam is copyrighted 1998-2005 by Randolf Schultz
  * (rschultz@informatik.uni-rostock.de) and others.
  *
  * All rights reserved.
@@ -17,16 +17,16 @@
 /*
  * Quaternion code adapted from various articles
  * from news:c.g.a.opengl, from GLUT example code (trackball.c),
- * and from the Irrlicht Engine (quaternion.h)
+ * from the Irrlicht Engine (quaternion.h), and from the
+ * news:c.g.algorithms FAQ Wiki (http://cgafaq.info/wiki/Quaternion)
  */
 
 #define AY_QEPSILON (1.0e-05)
-#define AY_QRENORMCOUNT (11)
 
 /* ay_quat_axistoquat:
  *  This function computes a quaternion based on an axis (defined by
- *  the given vector) a and an angle phi in radians about which to rotate.
- *  The result is put into the third argument, q.
+ *  the given vector) <a> and an angle <phi> in radians about which to rotate.
+ *  The result is put into the third argument <q>.
  */
 void
 ay_quat_axistoquat(double a[3], double phi, double q[4])
@@ -50,40 +50,40 @@ ay_quat_axistoquat(double a[3], double phi, double q[4])
 
 
 /* ay_quat_norm:
+ *  Normalize the quaternion <q>, if needed.
  *  Quaternions always obey:  a^2 + b^2 + c^2 + d^2 = 1.0
  *  If they don't add up to 1.0, dividing by their magnitude will
  *  renormalize them.
- *
- *  Note: See the following for more information on quaternions:
- *
- *  - Shoemake, K., Animating rotation with quaternion curves, Computer
- *    Graphics 19, No 3 (Proc. SIGGRAPH'85), 245-254, 1985.
- *  - Pletinckx, D., Quaternion calculus as a basic tool in computer
- *    graphics, The Visual Computer 5, 2-13, 1989.
  */
 void
 ay_quat_norm(double q[4])
 {
  int i;
- double mag;
+ double norm;
 
-  mag = (q[0]*q[0] + q[1]*q[1] + q[2]*q[2] + q[3]*q[3]);
-  for(i = 0; i < 4; i++)
-    q[i] /= mag;
+  norm = (q[0]*q[0] + q[1]*q[1] + q[2]*q[2] + q[3]*q[3]);
+
+  if((norm > (1.0 + AY_EPSILON)) || (norm < (1.0 - AY_EPSILON)))
+    {
+      for(i = 0; i < 4; i++)
+	{
+	  // divide by magnitude (sqrt(norm))
+	  q[i] /= sqrt(norm);
+	}
+    }
 
  return;
 } /* ay_quat_norm */
 
 
 /* ay_quat_add:
- *  Given two rotations, q1 and q2, expressed as quaternion rotations,
- *  figure out the equivalent single rotation and stuff it into dest.
+ *  Given two rotations, <q1> and <q2>, expressed as quaternion rotations,
+ *  figure out the equivalent single rotation and stuff it into <dest>.
  *
- *  This routine also normalizes the result every AY_QRENORMCOUNT times
- *  it is called, to keep error from creeping in.
+ *  This routine also normalizes the result to keep error from creeping in.
  *
- *  NOTE: This routine is written so that q1 or q2 may be the same
- *  as dest (or each other).
+ *  NOTE: This routine is written so that <q1> or <q2> may be the same
+ *  as <dest> (or each other).
  */
 void
 ay_quat_add(double q1[4], double q2[4], double dest[4])
@@ -95,16 +95,16 @@ ay_quat_add(double q1[4], double q2[4], double dest[4])
   t1[0] = q1[0];
   t1[1] = q1[1];
   t1[2] = q1[2];
-  AY_V3SCAL(t1,q2[3]);
+  AY_V3SCAL(t1, q2[3]);
 
   t2[0] = q2[0];
   t2[1] = q2[1];
   t2[2] = q2[2];
-  AY_V3SCAL(t2,q1[3]);
+  AY_V3SCAL(t2, q1[3]);
 
-  AY_V3CROSS(t3,q2,q1);
-  AY_V3ADD(tf,t1,t2);
-  AY_V3ADD(tf,t3,tf);
+  AY_V3CROSS(t3, q2, q1);
+  AY_V3ADD(tf, t1, t2);
+  AY_V3ADD(tf, t3, tf);
 
   tf[3] = q1[3] * q2[3] - (AY_V3DOT(q1, q2));
 
@@ -113,11 +113,7 @@ ay_quat_add(double q1[4], double q2[4], double dest[4])
   dest[2] = tf[2];
   dest[3] = tf[3];
 
-  if(count++ > AY_QRENORMCOUNT)
-    {
-      count = 0;
-      ay_quat_norm(dest);
-    }
+  ay_quat_norm(dest);
 
  return;
 } /* ay_quat_add */
@@ -201,7 +197,7 @@ ay_quat_toeuler(double q[4], double euler[3])
 
       /* roll */
       euler[2] = atan2(R12, R22);
-    }
+    } /* if */
 
  return;
 } /* ay_quat_toeuler */
@@ -256,7 +252,7 @@ ay_quat_slerp(double time, double q1[4], double q2[4], double *r)
       q2[3] = q1[2];
       scale = sin(AY_PI * (0.5f - time));
       invscale = sin(AY_PI * time);
-    }
+    } /* if */
  
   /**this = (q1*scale) + (q2*invscale);*/
   r[0] = (q1[0]*scale) + (q2[0]*invscale);
@@ -269,7 +265,8 @@ ay_quat_slerp(double time, double q1[4], double q2[4], double *r)
 
 
 /* ay_quat_dot:
- *
+ *  calculate dot product of two quaternions <q1> and <q2> (q1.q2)
+ *  returns result
  */
 double
 ay_quat_dot(double q1[4], double q2[4])
@@ -277,3 +274,5 @@ ay_quat_dot(double q1[4], double q2[4])
   return((q1[0] * q2[0]) + (q1[1] * q2[1]) +
     (q1[2] * q2[2]) + (q1[3] * q2[3]));
 } /* ay_quat_dot */
+
+#undef AY_QEPSILON
