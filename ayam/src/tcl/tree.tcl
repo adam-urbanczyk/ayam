@@ -1,6 +1,6 @@
 # Ayam, a free 3D modeler for the RenderMan interface.
 #
-# Ayam is copyrighted 1998-2001 by Randolf Schultz
+# Ayam is copyrighted 1998-2005 by Randolf Schultz
 # (rschultz@informatik.uni-rostock.de) and others.
 #
 # All rights reserved.
@@ -329,7 +329,6 @@ proc tree_handleSelection { } {
 # tree_handleSelection
 
 
-
 #tree_drop:
 # user dropped object in the tree view
 proc tree_drop { tree from droppos currentoperation datatype data } {
@@ -585,37 +584,44 @@ proc tree_expand { } {
 #tree_collapse:
 proc tree_collapse { } {
  global ay
-    set nlist [$ay(tree) nodes root]
+    set tree $ay(tree)
+    set nlist [$tree nodes root]
     foreach n $nlist {
-	$ay(tree) closetree $n
+	$tree closetree $n
     }
+    # show selection or current level (again)
+    set sel ""
+    set sel [$tree selection get]
+
+    if { ($sel == "") && ($ay(CurrentLevel) != "root") } {
+	set sel ${ay(CurrentLevel)}:0
+    }
+
+    if { $sel != "" } {
+	set fsel [lindex $sel 0]
+	set index 5
+	set done 0
+	while { ! $done } {
+	    set index [string first : $fsel $index]
+	    if { $index == -1 ||
+		 ([string first : $fsel [expr $index]] == -1) } {
+		set done 1
+	    } else {
+		incr index -1
+		set item [string range $fsel 0 $index]
+		incr index 2
+		tree_openSub $tree 1 $item
+	    }
+	    # if
+	}
+	# while
+	$tree see $sel
+    }
+    # if
+
  return;
 }
 # tree_collapse
-
-
-# -----------------------------------------------------------------
-# Clipboard operations cut, paste and delete need an updateTree
-proc CutToClipboard { } {
- global ayHierarchyTree CurrentSelectedLevel
- 
-    cutOb
-    updateayTree $CurrentSelectedLevel
-}
-
-proc PasteFromClipboard { } {
- global ayHierarchyTree CurrentSelectedLevel
- 
-    pasOb
-    updateayTree $CurrentSelectedLevel
-}
-
-proc DeleteSelection { } {
- global ayHierarchyTree CurrentSelectedLevel
- 
-    delOb
-    updateayTree $CurrentSelectedLevel
-}
 
 
 # tree_open:
