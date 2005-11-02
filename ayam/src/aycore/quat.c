@@ -67,7 +67,7 @@ ay_quat_norm(double q[4])
     {
       for(i = 0; i < 4; i++)
 	{
-	  // divide by magnitude (sqrt(norm))
+	  /* divide by magnitude (sqrt(norm)) */
 	  q[i] /= sqrt(norm);
 	}
     }
@@ -88,7 +88,6 @@ ay_quat_norm(double q[4])
 void
 ay_quat_add(double q1[4], double q2[4], double dest[4])
 {
- static int count = 0;
  double t1[4], t2[4], t3[4];
  double tf[4];
 
