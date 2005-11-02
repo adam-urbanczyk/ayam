@@ -1090,7 +1090,7 @@ ay_undo_save(void)
 	    {
 	      if(saved == lso)
 		{
-		  alreadysaved == AY_TRUE;
+		  alreadysaved = AY_TRUE;
 		  break;
 		}
 	      saved = saved->next;
