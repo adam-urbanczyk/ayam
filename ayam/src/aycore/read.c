@@ -281,6 +281,8 @@ ay_read_attributes(FILE *fileptr, ay_object *o)
       fscanf(fileptr,"%lg\n",&o->scalx);
       fscanf(fileptr,"%lg\n",&o->scaly);
       fscanf(fileptr,"%lg\n",&o->scalz);
+
+      ay_quat_norm(o->quat);
     }
 
   fscanf(fileptr,"%d\n",&o->parent);
