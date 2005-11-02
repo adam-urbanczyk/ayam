@@ -300,7 +300,7 @@ ay_clipb_replacetcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int ay_status = AY_OK;
  char fname[] = "repOb";
- ay_object *clip = ay_clipboard, *clipend;
+ ay_object *clip = ay_clipboard, *clipend = NULL;
  ay_object **presel, *selend;
  int instanceerr = AY_FALSE;
  ay_list_object *sel = ay_selection;
@@ -314,6 +314,12 @@ ay_clipb_replacetcmd(ClientData clientData, Tcl_Interp *interp,
   if(sel->object == ay_root)
     {
       ay_error(AY_ERROR, fname, "Can not replace root object!");
+      return TCL_OK;
+    }
+
+  if(!clip)
+    {
+      ay_error(AY_ERROR, fname, "Clipboard is empty!");
       return TCL_OK;
     }
 
