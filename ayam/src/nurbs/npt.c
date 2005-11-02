@@ -1861,7 +1861,7 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
  int ay_status = AY_OK;
  ay_object *curve = NULL;
  ay_nurbpatch_object *new = NULL;
- ay_nurbcurve_object *tr, *cs, *sf;
+ ay_nurbcurve_object *tr, *cs, *sf = NULL;
  double *controlv = NULL;
  int i = 0, j = 0, a = 0, stride;
  double u, p1[4], p2[4], p3[4];
@@ -2595,7 +2595,7 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
  int ay_status = AY_OK;
  ay_object *curve = NULL;
  ay_nurbpatch_object *new = NULL;
- ay_nurbcurve_object *cs1, *cs2, *r1, *r2, *ic;
+ ay_nurbcurve_object *cs1, *cs2, *r1, *r2, *ic = NULL;
  double *controlv = NULL;
  int i = 0, j = 0, a = 0, stride, incompatible = AY_FALSE;
  double u, p1[4], p2[4], p5[4], p6[4], p7[4], p8[4], p9[4], p10[4];

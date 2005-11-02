@@ -238,7 +238,7 @@ ay_sel_hsltcmd(ClientData clientData, Tcl_Interp *interp,
  /*int ay_status = AY_OK;*/
  char fname[] = "hSL";
  ay_list_object *cl = ay_currentlevel;
- ay_object *l, *o;
+ ay_object *l, *o = NULL;
  int num = 1, tnum;
 
   if(argc > 1)
