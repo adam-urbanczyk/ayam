@@ -26,15 +26,165 @@
  #include <Winsock2.h>
 #endif
 
-#define step 0.15
+/* types and definitions local to this module */
+
+#define ONOROFF	0x01
+
+#define XSHORT	0x02
+#define YSHORT	0x04
+#define REPEAT	0x08
+#define XSAME	0x10
+#define YSAME	0x20
+
+#define ARG_1_AND_2_ARE_WORDS    0x0001
+#define ARGS_ARE_XY_VALUES       0x0002
+#define XY_BOUND_TO_GRID         0x0004
+#define WE_HAVE_A_SCALE          0x0008
+#define MORE_COMPONENTS          0x0020
+#define WE_HAVE_AN_X_AND_Y_SCALE 0x0040
+#define WE_HAVE_A_TWO_BY_TWO     0x0080
+#define WE_HAVE_INSTRUCTIONS     0x0100
+#define USE_MY_METRICS           0x0200
 
 #define read32bit(p) (((p[0]<<24)|(p[1]<<16)|(p[2]<<8)|p[3]))
 #define read16bit(p) (((p[0]<<8)|p[1]))
 
+/* limit the recursion level to avoid cycles */
+#define MAX_COMPOSITE_LEVEL 20
+
+/* #define step 0.15 */
+
+typedef struct ay_tti_glyf_s
+{
+  signed short numberOfContours;
+  signed short xMin, yMin, xMax, yMax;
+} ay_tti_glyf;
+
+typedef struct longhormetric_s
+{
+  unsigned short advanceWidth;
+  signed short lsb;
+} LONGHORMETRIC;
+
+typedef struct ttf_hhea_s
+{
+  unsigned char	version[4];
+  signed short ascender, descender, lineGap;
+  unsigned short advanceWidthMax;
+  signed short minLSB, minRSB, xMaxExtent;
+  signed short caretSlopeRise, caretSlopeRun;
+  signed short reserved[5];
+  signed short metricDataFormat;
+  unsigned short numberOfHMetrics;
+} TTF_HHEA;
+
+typedef struct ttf_cmap0_s
+{
+  unsigned short format;
+  unsigned short length;
+  unsigned short language;
+  unsigned char	glyphIndexArray[256];
+} TTF_CMAP0;
+
+typedef struct ttf_cmap4_s
+{
+  unsigned short format;
+  unsigned short length;
+  unsigned short version;
+  unsigned short segCountX2;
+  unsigned short searchRange;
+  unsigned short entrySelector;
+  unsigned short rangeShift;
+} TTF_CMAP4;
+
+typedef struct ttf_cmap_entry_s
+{
+  unsigned short platformID;
+  unsigned short encodingID;
+  unsigned int offset;
+} TTF_CMAP_ENTRY;
+
+typedef struct ttf_cmap_s
+{
+  unsigned short version;
+  unsigned short numberOfEncodingTables;
+  TTF_CMAP_ENTRY encodingTable[1];
+} TTF_CMAP ;
+
+typedef struct ttf_dir_entry_s
+{
+  unsigned char	tag[4];
+  unsigned int checksum;
+  unsigned int offset;
+  unsigned int length;
+} TTF_DIR_ENTRY;
+
+typedef struct ttf_directory_s
+{
+  unsigned int sfntVersion;
+  unsigned short numTables;
+  unsigned short searchRange;
+  unsigned short entrySelector;
+  unsigned short rangeShift;
+  TTF_DIR_ENTRY	list;
+} TTF_DIRECTORY;
+
+typedef struct ay_tti_font_s
+{
+  void *fontptr;
+  TTF_CMAP *cmap;
+  unsigned char	*loca;
+  unsigned char	*glyf;
+  LONGHORMETRIC *hmtx;
+  unsigned char	*buffer;
+  unsigned char	*dbuffer;
+  int numtable;
+  int size;
+  int flags;
+  int unitem;
+  int locformat;
+  short	ascent, descent;
+  int nglyf;
+  int soffset; /* start offset for outline in string */
+  int yoffset;
+  unsigned short numberOfHMetrics;
+  double scale;
+} ay_tti_font;
+
+
+/* prototypes of functions local to this module */
+
+void ay_tti_makearc(double x1, double y1,
+		    double x2, double y2,
+		    double x3, double y3,
+		    ay_tti_outline *out, double st);
+
+unsigned int ay_tti_isclockwise(signed short *x, signed short *y, int N);
+
+int ay_tti_handle_comp_glyf(ay_tti_font *ttfont, ay_tti_glyf *glyf,
+			    double *orgmatrix, int level, ay_tti_letter *vert);
+
 int ay_tti_handle_simple_glyf(ay_tti_font *ttfont, ay_tti_glyf *glyf,
 			      ay_tti_letter *vert, double *matrix);
 
+void ay_tti_read_head(ay_tti_font *ttfont);
 
+int ay_tti_searchtable(ay_tti_font *ttfont, char *tablename);
+
+int ay_tti_findglyf(TTF_CMAP4 *cm, int c);
+
+void ay_tti_getglyf(ay_tti_font *ttfont, int c, ay_tti_glyf **glyf);
+
+
+int ay_tti_getchar(ay_tti_font *ttfont, int c, ay_tti_letter *vert);
+
+int ay_tti_open(ay_tti_font *ttfont, char *font);
+
+void ay_tti_close(ay_tti_font *ttfont);
+
+void ay_tti_freeletter(ay_tti_letter *vert);
+
+/* functions */
 
 #if 0
 /*
@@ -42,10 +192,11 @@ int ay_tti_handle_simple_glyf(ay_tti_font *ttfont, ay_tti_glyf *glyf,
 **	make a bezier curve from 3 points
 **
 */
-void ay_tti_makearc(double x1, double y1,
-		    double x2, double y2,
-		    double x3, double y3,
-		    ay_tti_outline *out, double st)
+void
+ay_tti_makearc(double x1, double y1,
+	       double x2, double y2,
+	       double x3, double y3,
+	       ay_tti_outline *out, double st)
 {
   int i;
   double t;
@@ -135,15 +286,13 @@ ay_tti_isclockwise(signed short *x, signed short *y, int N)
 } /* ay_tti_isclockwise */
 
 
-static double f2dot14(short x)
+static double
+f2dot14(short x)
 {
  short y = ntohs(x);
  return (y >> 14) + ((y & 0x3fff) / 16384.0);
 } /* ay_tti_f2dot14 */
 
-
-/* limit the recursion level to avoid cycles */
-#define MAX_COMPOSITE_LEVEL 20
 
 int
 ay_tti_handle_comp_glyf(ay_tti_font *ttfont, ay_tti_glyf *glyf,
