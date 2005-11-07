@@ -632,7 +632,7 @@ ay_script_notifycb(ay_object *o)
  ay_list_object *l = NULL, *old_sel = NULL;
  ay_script_object *sc = NULL, *csc = NULL;
  static int sema = 0;
- int old_rdmode;
+ int old_rdmode = 0;
  ClientData old_restrictcd;
 
   /* this semaphor protects ourselves from running in an endless

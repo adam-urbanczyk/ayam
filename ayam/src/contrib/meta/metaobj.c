@@ -54,7 +54,7 @@ metaobj_createcb (int argc, char *argv[], ay_object * o)
        (double *) calloc (1, sizeof (double) * 3 * 3 * (w->maxpoly + 20))))
     {
       if (w)
-	free (w);
+	free(w);
 
       ay_error (AY_EOMEM, fname, NULL);
       return AY_ERROR;
@@ -65,7 +65,7 @@ metaobj_createcb (int argc, char *argv[], ay_object * o)
        (double *) calloc (1, sizeof (double) * 3 * 3 * (w->maxpoly + 20))))
     {
       if (w)
-	free (w);
+	free(w);
 
       ay_error (AY_EOMEM, fname, NULL);
       return AY_ERROR;
@@ -79,10 +79,10 @@ metaobj_createcb (int argc, char *argv[], ay_object * o)
        (short *) calloc (1, sizeof (short) * META_MAXCUBE * META_MAXCUBE * META_MAXCUBE)))
     {
       if (w->Vertex3d)
-	free (w->Vertex3d);
+	free(w->Vertex3d);
 
       if (w)
-	free (w);
+	free(w);
 
       ay_error (AY_EOMEM, fname, NULL);
       return AY_ERROR;
@@ -98,10 +98,10 @@ metaobj_createcb (int argc, char *argv[], ay_object * o)
        (GLuint *) calloc (1, sizeof (GLuint) * ((w->tablesize-1) + (w->tablesize/10 -1) + (w->tablesize/100 -1)))))
     {
       if (w->Vertex3d)
-	free (w->Vertex3d);
+	free(w->Vertex3d);
 
       if (w)
-	free (w);
+	free(w);
 
       if (w->mgrid)
 	 free(w->mgrid);
@@ -163,25 +163,25 @@ metaobj_deletecb (void *c)
   w = (meta_world *) (c);
 
   if (w->vertex)
-    free (w->vertex);
+    free(w->vertex);
 
   if (w->nvertex)
-    free (w->nvertex);
+    free(w->nvertex);
 
 
   if (w->mgrid)
-  free (w->mgrid);
+  free(w->mgrid);
 
   meta_freecubestack (w);
 
   if (w)
-    free (w);
+    free(w);
 
 #if META_USEVERTEXARRAY
   if ( w->vindex)
-  	free(w->vindex);
+    free(w->vindex);
   if (w->vhash)
-     free(w->vhash);
+    free(w->vhash);
 #endif
 
   return AY_OK;
@@ -209,7 +209,7 @@ metaobj_copycb (void *src, void **dst)
        (double *) calloc (1, sizeof (double) * 3 * 3 * (w->maxpoly + 20))))
     {
       if (w)
-	free (w);
+	free(w);
 
       return AY_ERROR;
     }
@@ -222,7 +222,7 @@ metaobj_copycb (void *src, void **dst)
        (double *) calloc (1, sizeof (double) * 3 * 3 * (w->maxpoly + 20))))
     {
       if (w)
-	free (w);
+	free(w);
 
       return AY_ERROR;
     }
@@ -238,8 +238,8 @@ metaobj_copycb (void *src, void **dst)
 			sizeof (short) * w->aktcubes * w->aktcubes *
 			w->aktcubes)))
     {
-      free (w->Vertex3d);
-      free (w);
+      free(w->Vertex3d);
+      free(w);
       return AY_EOMEM;
     }
 
@@ -251,10 +251,10 @@ metaobj_copycb (void *src, void **dst)
        (GLuint *) calloc (1, sizeof (GLuint) * ((w->tablesize-1) + (w->tablesize/10 -1) + (w->tablesize/100 -1)))))
     {
       if (w->Vertex3d)
-	free (w->Vertex3d);
+	free(w->Vertex3d);
 
       if (w)
-	free (w);
+	free(w);
 
       if (w->mgrid)
 	 free(w->mgrid);
@@ -423,7 +423,7 @@ metaobj_shadecb (struct Togl *togl, ay_object *o)
 	  nptr += 6;
 	  glVertex3dv ((GLdouble *) vptr);
 	  vptr += 6;
-	  
+
 	  memcpy(n, nptr, 3*sizeof(double));
 	  n[0] *= -1.0;
 	  n[1] *= -1.0;
@@ -532,7 +532,7 @@ metaobj_setpropcb (Tcl_Interp * interp, int argc, char *argv[], ay_object * o)
 
 
   if (w->mgrid)
-    free (w->mgrid);
+    free(w->mgrid);
 
   if (!
       (w->mgrid =
@@ -645,8 +645,8 @@ metaobj_readcb (FILE * fileptr, ay_object * o)
       (w->vertex =
        (double *) calloc (1, sizeof (double) * 3 * 3 * (10000 + 20))))
     {
-      if (w);
-      free (w);
+      if (w)
+	free(w);
       return AY_ERROR;
     }
 
@@ -654,8 +654,8 @@ metaobj_readcb (FILE * fileptr, ay_object * o)
       (w->nvertex =
        (double *) calloc (1, sizeof (double) * 3 * 3 * (10000 + 20))))
     {
-      if (w);
-      free (w);
+      if (w)
+	free(w);
       return AY_ERROR;
     }
 
@@ -665,9 +665,9 @@ metaobj_readcb (FILE * fileptr, ay_object * o)
 			sizeof (short) * w->aktcubes * w->aktcubes *
 			w->aktcubes)))
     {
-      free (w->vertex);
-      free (w->nvertex);
-      free (w);
+      free(w->vertex);
+      free(w->nvertex);
+      free(w);
       return AY_EOMEM;
     }
 
@@ -680,13 +680,13 @@ metaobj_readcb (FILE * fileptr, ay_object * o)
        (GLuint *) calloc (1, sizeof (GLuint) * ((w->tablesize-1) + (w->tablesize/10 -1) + (w->tablesize/100 -1)))))
     {
       if (w->Vertex3d)
-      free (w->Vertex3d);
+	free(w->Vertex3d);
 
       if (w)
-      free (w);
+	free(w);
 
       if (w->mgrid)
-	 free(w->mgrid);
+	free(w->mgrid);
 
       ay_error (AY_EOMEM, NULL, NULL);
       return AY_ERROR;
@@ -1127,7 +1127,7 @@ metacomp_deletecb (void *c)
     Tcl_DecrRefCount (b->expression);
 
   if (b)
-    free (b);
+    free(b);
 
  return AY_OK;
 } /* metacomp_deletecb */
