@@ -1789,7 +1789,7 @@ ay_pact_wetcb(struct Togl *togl, int argc, char *argv[])
  char fname[] = "weight_edit";
  Tcl_Interp *interp = Togl_Interp (togl);
  /*  ay_view_info *view = Togl_GetClientData(togl);*/
- double dx, winx = 0.0, new_weight, *coords;
+ double dx, winx = 0.0, new_weight = 0.0, *coords;
  static double oldwinx = 0.0;
  static double olddx = 0.0;
  int i = 0, j, k = 0, notifyparent = AY_FALSE;

@@ -218,14 +218,14 @@ ay_mfio_readnurbpatch(MF3DVoidObjPtr object)
     } /* for */
 
   a = 0;
-  for(i=0;i<width+o->uOrder;i++)
+  for(i=0;i<width+(signed)o->uOrder;i++)
     {
       uknotv[a] = (o->uKnots)[a];
       a++;
     } /* for */
 
   a = 0;
-  for(i=0;i<height+o->vOrder;i++)
+  for(i=0;i<height+(signed)o->vOrder;i++)
     {
       vknotv[a] = (o->vKnots)[a];
       a++;
@@ -299,7 +299,7 @@ ay_mfio_readnurbcurve(MF3DVoidObjPtr object)
     } /* for */
 
   a = 0;
-  for(i=0;i<length+o->order;i++)
+  for(i=0;i<length+(signed)o->order;i++)
     {
       knotv[a] = (o->knots)[a];
       a++;
