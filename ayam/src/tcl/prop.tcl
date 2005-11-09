@@ -490,3 +490,16 @@ global ay curtypes ay_error
  return;
 }
 # setProperty
+
+
+# markPropModified:
+#  this procedure is used by traces to property variables and sets
+#  the global variable <name1>(<name2>-Modified) to 1, where
+#  name1 is a property data array (like NCurveAttrData) and
+#  name2 is a single property in that array (like Knots)
+proc markPropModified { name1 name2 op } {
+    global $name1
+    set ${name1}(${name2}-Modified) 1
+}
+# markPropModified
+

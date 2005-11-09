@@ -1,7 +1,7 @@
 /*
  * Ayam, a free 3D modeler for the RenderMan interface.
  *
- * Ayam is copyrighted 1998-2001 by Randolf Schultz
+ * Ayam is copyrighted 1998-2005 by Randolf Schultz
  * (rschultz@informatik.uni-rostock.de) and others.
  *
  * All rights reserved.
@@ -611,7 +611,7 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_nurbcurve_object *ncurve = NULL;
  ay_mpoint_object *mp = NULL;
- int new_order, new_length, new_knot_type, new_type;
+ int new_order, new_length, new_knot_type, new_type, knots_modified = 0;
  double *nknotv = NULL;
  int updateKnots = AY_FALSE, updateMPs = AY_TRUE;
  int knotc, i;
@@ -654,6 +654,10 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &(ncurve->display_mode));
 
+  Tcl_SetStringObj(ton, "Knots-Modified", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &knots_modified);
+
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
@@ -671,7 +675,7 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       ay_status = ay_nct_resize(ncurve, new_length);
 
       if(ay_status)
-       ay_error(AY_ERROR,fname, "Could not resize curve!");
+       ay_error(AY_ERROR, fname, "Could not resize curve!");
 
       updateKnots = AY_TRUE;
       o->modified = AY_TRUE;
@@ -713,10 +717,10 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if((updateKnots) && (ncurve->knot_type != AY_KTCUSTOM))
     ay_status = ay_knots_createnc(ncurve);
 
-
   /* decompose knot-list (create custom knot sequence) */
-  if(ncurve->knot_type == AY_KTCUSTOM)
+  if((ncurve->knot_type == AY_KTCUSTOM) && knots_modified)
     {
+      ay_error(AY_EOUTPUT, fname, "Checking new knots...");
       Tcl_SplitList(interp,Tcl_GetVar2(interp, n1, "Knots",
 				       TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY),
 		    &knotc, &knotv);
@@ -725,7 +729,7 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	{
 	  ay_error(AY_EOMEM, fname, NULL);
 	  Tcl_Free((char *) knotv);
-	  return TCL_OK;
+	  return AY_ERROR;
 	}
 
       for(i = 0; i < knotc; i++)
@@ -932,6 +936,11 @@ ay_ncurve_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     to = Tcl_NewStringObj("yes", -1);
   else
     to = Tcl_NewStringObj("no", -1);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton,"Knots-Modified",-1);
+  to = Tcl_NewIntObj(0);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
