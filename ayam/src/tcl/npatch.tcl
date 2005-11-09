@@ -24,7 +24,12 @@ array set NPatchAttrData {
 Knot-Type_U 1
 Knot-Type_V 1
 DisplayMode 1
+Knots_U ""
+Knots_U-Modified 0
+Knots_V ""
+Knots_V-Modified 0
 }
+
 # create NPatchAttr-UI
 set w [frame $ay(pca).$NPatchAttr(w)]
 
@@ -42,4 +47,7 @@ addInfo $w NPatchAttrData IsRat
 
 addParam $w NPatchAttrData Tolerance
 addMenu $w NPatchAttrData DisplayMode $ay(npdisplaymodes)
+
+trace add variable NPatchAttrData(Knots_U) write markPropModified
+trace add variable NPatchAttrData(Knots_V) write markPropModified
 

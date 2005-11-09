@@ -1,7 +1,7 @@
 /*
  * Ayam, a free 3D modeler for the RenderMan interface.
  *
- * Ayam is copyrighted 1998-2001 by Randolf Schultz
+ * Ayam is copyrighted 1998-2005 by Randolf Schultz
  * (rschultz@informatik.uni-rostock.de) and others.
  *
  * All rights reserved.
@@ -229,7 +229,7 @@ ay_npatch_drawstesscb(struct Togl *togl, ay_object *o)
     } /* if */
 
  return AY_OK;
-}  /* ay_npatch_drawstesscb */
+} /* ay_npatch_drawstesscb */
 
 
 int
@@ -976,9 +976,9 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  char fname[] = "npatch_setpropcb";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_nurbpatch_object *npatch = NULL;
- int new_uorder, new_width, new_uknot_type;
- int new_vorder, new_height, new_vknot_type;
- double *nknotv = NULL;
+ int new_uorder, new_width, new_uknot_type, uknots_modified = 0;
+ int new_vorder, new_height, new_vknot_type, vknots_modified = 0;
+ double *nknotv = NULL, *olduknotv = NULL, *oldvknotv = NULL;
  int updateKnots = AY_FALSE;
  int knotc, i;
  char **knotv;
@@ -1023,6 +1023,14 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_SetStringObj(ton,"DisplayMode",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(npatch->glu_display_mode));
+
+  Tcl_SetStringObj(ton, "Knots_U-Modified", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &uknots_modified);
+
+  Tcl_SetStringObj(ton, "Knots_V-Modified", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &vknots_modified);
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
@@ -1126,14 +1134,42 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   if(updateKnots)
     {
+      if(npatch->uknot_type == AY_KTCUSTOM)
+	{
+	  olduknotv = npatch->uknotv;
+	  npatch->uknotv = NULL;
+	}
+      if(npatch->vknot_type == AY_KTCUSTOM)
+	{
+	  oldvknotv = npatch->vknotv;
+	  npatch->vknotv = NULL;
+	}
+
       ay_status = ay_knots_createnp(npatch);
+
+      if(olduknotv)
+	{
+	  if(npatch->uknotv)
+	    free(npatch->uknotv);
+	  npatch->uknotv = olduknotv;
+	}
+      if(oldvknotv)
+	{
+	  if(npatch->vknotv)
+	    free(npatch->vknotv);
+	  npatch->vknotv = oldvknotv;
+	}
       if(ay_status)
-	ay_error(AY_ERROR, fname, "Error creating new knots!");
-    }
+	{
+	  ay_error(AY_ERROR, fname, "Error creating new knots!");
+	  return AY_ERROR;
+	}
+    } /* if */
 
   /* decompose uknot-list (create custom knot sequence) */
-  if(npatch->uknot_type == AY_KTCUSTOM)
+  if((npatch->uknot_type == AY_KTCUSTOM) && uknots_modified)
     {
+      ay_error(AY_EOUTPUT, fname, "Checking new knots for U...");
       Tcl_SplitList(interp, Tcl_GetVar2(interp, n1, "Knots_U",
 					TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY),
 		    &knotc, &knotv);
@@ -1142,7 +1178,7 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	{
 	  ay_error(AY_EOMEM, fname, NULL);
 	  Tcl_Free((char *) knotv);
-	  return TCL_OK;
+	  return AY_ERROR;
 	}
 
       for(i = 0; i < knotc; i++)
@@ -1195,8 +1231,9 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     } /* if */
 
   /* decompose vknot-list (create custom knot sequence) */
-  if(npatch->vknot_type == AY_KTCUSTOM)
+  if((npatch->vknot_type == AY_KTCUSTOM) && vknots_modified)
     {
+      ay_error(AY_EOUTPUT, fname, "Checking new knots for V...");
       Tcl_SplitList(interp,Tcl_GetVar2(interp, n1, "Knots_V",
 				       TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY),
 		    &knotc, &knotv);
@@ -1205,7 +1242,7 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	{
 	  ay_error(AY_EOMEM, fname, NULL);
 	  Tcl_Free((char *) knotv);
-	  return TCL_OK;
+	  return AY_ERROR;
 	}
 
       for(i = 0; i < knotc; i++)
@@ -1352,6 +1389,16 @@ ay_npatch_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     to = Tcl_NewStringObj("yes", -1);
   else
     to = Tcl_NewStringObj("no", -1);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton,"Knots_U-Modified",-1);
+  to = Tcl_NewIntObj(0);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton,"Knots_V-Modified",-1);
+  to = Tcl_NewIntObj(0);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
