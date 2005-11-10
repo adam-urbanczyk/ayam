@@ -395,7 +395,7 @@ onio_addtrim(ay_object *o, ON_BrepLoop::TYPE ltype, ON_BrepTrim::TYPE ttype,
 {
  int ay_status = AY_OK;
  char fname[] = "onio_addtrim";
- ON_NurbsCurve c, c2, *p_c = NULL;
+ ON_NurbsCurve nc1, nc2, *p_nc = NULL;
  ON_Curve *p_curve = NULL;
  unsigned int c2i, c3i;
  double tolerance = onio_accuracy;
@@ -405,55 +405,157 @@ onio_addtrim(ay_object *o, ON_BrepLoop::TYPE ltype, ON_BrepTrim::TYPE ttype,
 
   if(o->type == AY_IDNCURVE)
     {
-      onio_get2dcurveobj(o, &p_c);
-      if(p_c)
+      onio_get2dcurveobj(o, &p_nc);
+      if(p_nc)
 	{
 	  c2i = p_b->m_C2.Count();
-	  p_b->m_C2.Append(p_c);
+	  p_b->m_C2.Append(p_nc);
 	  c3i = p_b->m_C3.Count();
-	  c = *p_c;
+	  nc1 = *p_nc;
 
-	  const ON_Surface *pSurface = p_f->SurfaceOf();
-	  p_curve = pSurface->Pushup(c, tolerance);
-	  if(p_curve == NULL)
+	  const ON_Surface *p_s = p_f->SurfaceOf();
+	  p_curve = p_s->Pushup(nc1, tolerance);
+	  if(p_curve)
 	    {
-	      ay_error(AY_ERROR, fname, "pushup failed");
-	      return AY_ERROR;
-	    }
+	      // pushup succeeded, add trim to BRep
+	      p_curve->GetNurbForm(nc2, tolerance, NULL);
+	      p_nc = new ON_NurbsCurve(nc2);
+	      p_b->m_C3.Append(p_nc);
 
-	  p_curve->GetNurbForm(c2, tolerance, NULL);
-	  p_c = new ON_NurbsCurve(c2);
-	  p_b->m_C3.Append(p_c);
+	      delete p_curve;
 
-	  delete p_curve;
+	      ON_BrepVertex& v1 = p_b->NewVertex(p_nc->PointAtStart());
+	      v1.m_tolerance = 0.0;
+	      // no need to create a second vertex for a closed curve...
+	      //ON_BrepVertex& v2 = p_b->NewVertex(p_c->PointAtEnd());
+	      //v2.m_tolerance = 0.0;
 
-	  ON_BrepVertex& v1 = p_b->NewVertex(p_c->PointAtStart());
-	  v1.m_tolerance = 0.0;
-	  // no need to create a second vertex for a closed curve...
-	  //ON_BrepVertex& v2 = p_b->NewVertex(p_c->PointAtEnd());
-	  //v2.m_tolerance = 0.0;
+	      ON_BrepEdge& edge = p_b->NewEdge(v1, v1, c3i);
+	      edge.m_tolerance = 0.0;
 
-	  ON_BrepEdge& edge = p_b->NewEdge(v1, v1, c3i);
-	  edge.m_tolerance = 0.0;
+	      ON_BrepLoop& loop = p_b->NewLoop(ltype);
+	      loop.m_fi = p_f->m_face_index;
+	      if(ON_BrepLoop::outer == ltype)
+		{
+		  // the index of the outer loop is always
+		  // in face.m_li[0]
+		  p_f->m_li.Insert(0, loop.m_loop_index);
+		}
+	      else
+		{
+		  p_f->m_li.Append(loop.m_loop_index);
+		}
 
-	  ON_BrepLoop& loop = p_b->NewLoop(ltype);
-	  loop.m_fi = p_f->m_face_index;
-	  if(ON_BrepLoop::outer == ltype)
-	    {
-	      // the index of the outer loop is always
-	      // in face.m_li[0]
-	      p_f->m_li.Insert(0,loop.m_loop_index);
+	      ON_BrepTrim& trim = p_b->NewTrim(edge, false, loop, c2i);
+	      trim.m_type = ttype;
+	      trim.m_tolerance[0] = 0.0;
+	      trim.m_tolerance[1] = 0.0;
 	    }
 	  else
 	    {
-	      p_f->m_li.Append(loop.m_loop_index);
-	    }
+	      // pushup failed, create a polygonal 3D representation
+	      // of the trim curve
+	      bool done = false;
+	      int i, j, evalhint = 0, evalhint2[2] = {0, 0}, qf = 5;
+	      double u, ud, *st = NULL, *stt = NULL, cv[3];
 
-	  ON_BrepTrim& trim = p_b->NewTrim(edge, false, loop, c2i);
-	  trim.m_type = ttype;
-	  trim.m_tolerance[0] = 0.0;
-	  trim.m_tolerance[1] = 0.0;
+	      while(!done)
+		{
+		  // set up array of sample points
+		  ud = (p_nc->m_knot[p_nc->m_cv_count-1] -
+			 p_nc->m_knot[p_nc->m_order-2]) /
+		       ((4+p_nc->m_cv_count)*qf);
+		  if(st)
+		    free(st);
+		  stt = NULL;
+		  i = 0;
+		  for(u = p_nc->m_knot[p_nc->m_order-2];
+		      u <= p_nc->m_knot[p_nc->m_cv_count-1];
+		      u += ud)
+		    {
+		      i++;
+		      if(!(stt = (double*)realloc(st, i*2*sizeof(double))))
+			{
+			  if(st)
+			    free(st);
+			  return AY_EOMEM;
+			}
+		      st = stt;
 
+		      p_nc->Evaluate(u, 0, 2, &(st[(i-1)*2]), 0, &evalhint);
+		    } // for
+		  qf += 1;
+		  done = true;
+		} // while
+
+	      // evaluate surface at sample points
+	      ON_NurbsSurface nsurf;
+	      p_s->GetNurbForm(nsurf, tolerance);
+
+	      ON_3dPointArray p3darr, *p_p3darr = new ON_3dPointArray();
+	      p_p3darr->Reserve(i);
+
+	      for(j = 0; j < i; j++)
+		{
+		  nsurf.Evaluate(st[j*2], st[j*2+1], 0, 3, cv, 0,
+				     evalhint2);
+		  ON_3dPoint pnt(cv);
+
+		  p_p3darr->Insert(j, pnt);
+
+		}
+	      p3darr = *p_p3darr;
+	      ON_Polyline *p_pl = new ON_Polyline(p3darr);
+	      delete p_p3darr;
+
+	      // get rid of double points
+	      p_pl->Clean(AY_EPSILON);
+
+	      // create a polylinecurve
+	      ON_PolylineCurve *p_plc = new ON_PolylineCurve();
+	      p_plc->m_dim = 3;
+	      p_plc->m_t.Reserve(p_pl->PointCount());
+	      // set parametric values of polylinecurve
+	      for(j = 0; j < p_pl->PointCount(); j++)
+		{		  
+		  p_plc->m_t[j] = (double)j;
+		}
+	      p_plc->m_pline = *p_pl;
+	      
+	      // add polylinecurve to brep
+	      p_b->m_C3.Append(p_plc);
+
+	      ON_BrepVertex& v1 = p_b->NewVertex(p_plc->PointAtStart());
+	      v1.m_tolerance = tolerance;
+	      // no need to create a second vertex for a closed curve...
+	      //ON_BrepVertex& v2 = p_b->NewVertex(p_c->PointAtEnd());
+	      //v2.m_tolerance = 0.0;
+
+	      ON_BrepEdge& edge = p_b->NewEdge(v1, v1, c3i);
+	      edge.m_tolerance = tolerance;
+
+	      ON_BrepLoop& loop = p_b->NewLoop(ltype);
+	      loop.m_fi = p_f->m_face_index;
+	      if(ON_BrepLoop::outer == ltype)
+		{
+		  // the index of the outer loop is always
+		  // in face.m_li[0]
+		  p_f->m_li.Insert(0, loop.m_loop_index);
+		}
+	      else
+		{
+		  p_f->m_li.Append(loop.m_loop_index);
+		}
+
+	      ON_BrepTrim& trim = p_b->NewTrim(edge, false, loop, c2i);
+	      trim.m_type = ttype;
+	      trim.m_tolerance[0] = tolerance;
+	      trim.m_tolerance[1] = tolerance;
+#if 0
+	      ay_error(AY_ERROR, fname, "pushup failed");
+	      return AY_ERROR;
+#endif
+	    } // if
 	} // if
     } // if
 
