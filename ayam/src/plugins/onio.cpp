@@ -399,9 +399,50 @@ onio_addtrim(ay_object *o, ON_BrepLoop::TYPE ltype, ON_BrepTrim::TYPE ttype,
  ON_Curve *p_curve = NULL;
  unsigned int c2i, c3i;
  double tolerance = onio_accuracy;
+ static int addtoloop = AY_FALSE, firstinloop = AY_FALSE,
+   lastinloop = AY_FALSE, firstloopvertex, prevloopvertex;
+ static ON_BrepLoop *p_loop = NULL;
 
-  if(!o || !p_b)
+  if(!o || !p_b || !p_f)
     return AY_ENULL;
+
+  if(o->type == AY_IDLEVEL)
+    {
+      // add a trim loop consisting of multiple consecutive trim curves
+      o = o->down;
+      addtoloop = AY_TRUE;
+      firstinloop = AY_TRUE;
+
+      ON_BrepLoop& loop = p_b->NewLoop(ltype);
+      p_loop = &loop;
+      loop.m_fi = p_f->m_face_index;
+      if(ON_BrepLoop::outer == ltype)
+	{
+	  // the index of the outer loop is always
+	  // in face.m_li[0]
+	  p_f->m_li.Insert(0, loop.m_loop_index);
+	}
+      else
+	{
+	  p_f->m_li.Append(loop.m_loop_index);
+	}
+	
+      while(o->next)
+	{
+	  if(o->next && !o->next->next)
+	    lastinloop = AY_TRUE;
+
+	  ay_status = onio_addtrim(o, ltype, ttype, p_b, p_f);
+
+	  firstinloop = AY_FALSE;
+	  lastinloop = AY_FALSE;
+
+	  o = o->next;
+	} // while
+	  
+      addtoloop = AY_FALSE;
+      return ay_status;
+    } // if
 
   if(o->type == AY_IDNCURVE)
     {
@@ -424,47 +465,85 @@ onio_addtrim(ay_object *o, ON_BrepLoop::TYPE ltype, ON_BrepTrim::TYPE ttype,
 
 	      delete p_curve;
 
-	      ON_BrepVertex& v1 = p_b->NewVertex(p_nc->PointAtStart());
-	      v1.m_tolerance = 0.0;
-	      // no need to create a second vertex for a closed curve...
-	      //ON_BrepVertex& v2 = p_b->NewVertex(p_c->PointAtEnd());
-	      //v2.m_tolerance = 0.0;
-
-	      ON_BrepEdge& edge = p_b->NewEdge(v1, v1, c3i);
-	      edge.m_tolerance = 0.0;
-
-	      ON_BrepLoop& loop = p_b->NewLoop(ltype);
-	      loop.m_fi = p_f->m_face_index;
-	      if(ON_BrepLoop::outer == ltype)
+	      if(!addtoloop)
 		{
-		  // the index of the outer loop is always
-		  // in face.m_li[0]
-		  p_f->m_li.Insert(0, loop.m_loop_index);
+		  // no need to create a second vertex for a closed curve...
+		  ON_BrepVertex& v1 = p_b->NewVertex(p_nc->PointAtStart());
+		  v1.m_tolerance = 0.0;
+
+		  ON_BrepEdge& edge = p_b->NewEdge(v1, v1, c3i);
+		  edge.m_tolerance = tolerance;
+
+		  ON_BrepLoop& loop = p_b->NewLoop(ltype);
+		  loop.m_fi = p_f->m_face_index;
+		  if(ON_BrepLoop::outer == ltype)
+		    {
+		      // the index of the outer loop is always
+		      // in face.m_li[0]
+		      p_f->m_li.Insert(0, loop.m_loop_index);
+		    }
+		  else
+		    {
+		      p_f->m_li.Append(loop.m_loop_index);
+		    }
+
+		  ON_BrepTrim& trim = p_b->NewTrim(edge, false, loop, c2i);
+		  trim.m_type = ttype;
+		  trim.m_tolerance[0] = 0.0;
+		  trim.m_tolerance[1] = 0.0;
 		}
 	      else
 		{
-		  p_f->m_li.Append(loop.m_loop_index);
-		}
+		  ON_BrepVertex *p_v1 = NULL, *p_v2 = NULL;
+		  if(!firstinloop)
+		    {
+		      // for all curves in the loop except for the first,
+		      // the first vertex is the last vertex of the
+		      // previous curve in the loop
+		      p_v1 = &(p_b->m_V[prevloopvertex]);
+		    }
+		  else
+		    {
+		      firstloopvertex = p_b->m_V.Count();
+		      p_v1 = &(p_b->NewVertex(p_nc->PointAtStart()));
+		      p_v1->m_tolerance = 0.0;
+		    }
+		  if(!lastinloop)
+		    {
+		      prevloopvertex = p_b->m_V.Count();
+		      p_v2 = &(p_b->NewVertex(p_nc->PointAtEnd()));
+		      p_v2->m_tolerance = 0.0;
+		    }
+		  else
+		    {
+		      p_v2 = &(p_b->m_V[firstloopvertex]);
+		    }
 
-	      ON_BrepTrim& trim = p_b->NewTrim(edge, false, loop, c2i);
-	      trim.m_type = ttype;
-	      trim.m_tolerance[0] = 0.0;
-	      trim.m_tolerance[1] = 0.0;
+		  ON_BrepEdge& edge = p_b->NewEdge(*p_v1, *p_v2, c3i);
+		  edge.m_tolerance = 0.0;
+
+		  ON_BrepTrim& trim = p_b->NewTrim(edge, false, *p_loop, c2i);
+		  trim.m_type = ttype;
+		  trim.m_tolerance[0] = 0.0;
+		  trim.m_tolerance[1] = 0.0;
+		} // if
 	    }
 	  else
 	    {
+	      //ay_error(AY_EWARN, fname, "pushup failed, creating polygonal representation of trimcurve...");
+
 	      // pushup failed, create a polygonal 3D representation
 	      // of the trim curve
 	      bool done = false;
-	      int i, j, evalhint = 0, evalhint2[2] = {0, 0}, qf = 5;
+	      int i, j, evalhint = 0, evalhint2[2] = {0, 0}, qf = 10;
 	      double u, ud, *st = NULL, *stt = NULL, cv[3];
 
 	      while(!done)
 		{
 		  // set up array of sample points
-		  ud = (p_nc->m_knot[p_nc->m_cv_count-1] -
+		  ud = (double)(p_nc->m_knot[p_nc->m_cv_count-1] -
 			 p_nc->m_knot[p_nc->m_order-2]) /
-		       ((4+p_nc->m_cv_count)*qf);
+		       (double)((4+p_nc->m_cv_count)*qf);
 		  if(st)
 		    free(st);
 		  stt = NULL;
@@ -502,11 +581,10 @@ onio_addtrim(ay_object *o, ON_BrepLoop::TYPE ltype, ON_BrepTrim::TYPE ttype,
 		  ON_3dPoint pnt(cv);
 
 		  p_p3darr->Insert(j, pnt);
-
 		}
 	      p3darr = *p_p3darr;
 	      ON_Polyline *p_pl = new ON_Polyline(p3darr);
-	      delete p_p3darr;
+	      //delete p_p3darr;
 
 	      // get rid of double points
 	      p_pl->Clean(AY_EPSILON);
@@ -515,6 +593,7 @@ onio_addtrim(ay_object *o, ON_BrepLoop::TYPE ltype, ON_BrepTrim::TYPE ttype,
 	      ON_PolylineCurve *p_plc = new ON_PolylineCurve();
 	      p_plc->m_dim = 3;
 	      p_plc->m_t.Reserve(p_pl->PointCount());
+	      p_plc->m_t.SetCount(p_pl->PointCount());
 	      // set parametric values of polylinecurve
 	      for(j = 0; j < p_pl->PointCount(); j++)
 		{		  
@@ -525,36 +604,67 @@ onio_addtrim(ay_object *o, ON_BrepLoop::TYPE ltype, ON_BrepTrim::TYPE ttype,
 	      // add polylinecurve to brep
 	      p_b->m_C3.Append(p_plc);
 
-	      ON_BrepVertex& v1 = p_b->NewVertex(p_plc->PointAtStart());
-	      v1.m_tolerance = tolerance;
-	      // no need to create a second vertex for a closed curve...
-	      //ON_BrepVertex& v2 = p_b->NewVertex(p_c->PointAtEnd());
-	      //v2.m_tolerance = 0.0;
-
-	      ON_BrepEdge& edge = p_b->NewEdge(v1, v1, c3i);
-	      edge.m_tolerance = tolerance;
-
-	      ON_BrepLoop& loop = p_b->NewLoop(ltype);
-	      loop.m_fi = p_f->m_face_index;
-	      if(ON_BrepLoop::outer == ltype)
+	      if(!addtoloop)
 		{
-		  // the index of the outer loop is always
-		  // in face.m_li[0]
-		  p_f->m_li.Insert(0, loop.m_loop_index);
+		  // no need to create a second vertex for a closed curve...
+		  ON_BrepVertex& v1 = p_b->NewVertex(p_plc->PointAtStart());
+		  v1.m_tolerance = 0.0;
+
+		  ON_BrepEdge& edge = p_b->NewEdge(v1, v1, c3i);
+		  edge.m_tolerance = 0.0;
+
+		  ON_BrepLoop& loop = p_b->NewLoop(ltype);
+		  loop.m_fi = p_f->m_face_index;
+		  if(ON_BrepLoop::outer == ltype)
+		    {
+		      // the index of the outer loop is always
+		      // in face.m_li[0]
+		      p_f->m_li.Insert(0, loop.m_loop_index);
+		    }
+		  else
+		    {
+		      p_f->m_li.Append(loop.m_loop_index);
+		    }
+		  
+		  ON_BrepTrim& trim = p_b->NewTrim(edge, false, loop, c2i);
+		  trim.m_type = ttype;
+		  trim.m_tolerance[0] = 0.0;
+		  trim.m_tolerance[1] = 0.0;
 		}
 	      else
 		{
-		  p_f->m_li.Append(loop.m_loop_index);
-		}
+		  ON_BrepVertex *p_v1 = NULL, *p_v2 = NULL;
+		  if(!firstinloop)
+		    {
+		      // for all curves in the loop except for the first,
+		      // the first vertex is the last vertex of the
+		      // previous curve in the loop
+		      p_v1 = &(p_b->m_V[prevloopvertex]);
+		    }
+		  else
+		    {
+		      firstloopvertex = p_b->m_V.Count();
+		      p_v1 = &(p_b->NewVertex(p_plc->PointAtStart()));
+		      p_v1->m_tolerance = 0.0;
+		    }
+		  if(!lastinloop)
+		    {
+		      prevloopvertex = p_b->m_V.Count();
+		      p_v2 = &(p_b->NewVertex(p_plc->PointAtEnd()));
+		      p_v2->m_tolerance = 0.0;
+		    }
+		  else
+		    {
+		      p_v2 = &(p_b->m_V[firstloopvertex]);
+		    }
+		  ON_BrepEdge& edge = p_b->NewEdge(*p_v1, *p_v2, c3i);
+		  edge.m_tolerance = 0.0;
 
-	      ON_BrepTrim& trim = p_b->NewTrim(edge, false, loop, c2i);
-	      trim.m_type = ttype;
-	      trim.m_tolerance[0] = tolerance;
-	      trim.m_tolerance[1] = tolerance;
-#if 0
-	      ay_error(AY_ERROR, fname, "pushup failed");
-	      return AY_ERROR;
-#endif
+		  ON_BrepTrim& trim = p_b->NewTrim(edge, false, *p_loop, c2i);
+		  trim.m_type = ttype;
+		  trim.m_tolerance[0] = 0.0;
+		  trim.m_tolerance[1] = 0.0;
+		} // if
 	    } // if
 	} // if
     } // if
