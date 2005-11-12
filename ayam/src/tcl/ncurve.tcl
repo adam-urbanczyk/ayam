@@ -28,7 +28,7 @@ Knots-Modified 0
 Knots ""
 }
 
-trace add variable NCurveAttrData(Knots) write markPropModified
+trace variable NCurveAttrData(Knots) write markPropModified
 
 # create NCurveAttr-UI
 set w [frame $ay(pca).$NCurveAttr(w)]
