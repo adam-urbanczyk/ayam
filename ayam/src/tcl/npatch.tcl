@@ -48,6 +48,6 @@ addInfo $w NPatchAttrData IsRat
 addParam $w NPatchAttrData Tolerance
 addMenu $w NPatchAttrData DisplayMode $ay(npdisplaymodes)
 
-trace variable NPatchAttrData(Knots_U) write markPropModified
-trace variable NPatchAttrData(Knots_V) write markPropModified
+trace variable NPatchAttrData(Knots_U) w markPropModified
+trace variable NPatchAttrData(Knots_V) w markPropModified
 
