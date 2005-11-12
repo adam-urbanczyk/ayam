@@ -1,4 +1,4 @@
-[13. Oct 2005] CVS-Head:
+[11. Nov 2005] CVS-Head:
 o bug fixes:
   - fixed automatic merging of PV tags (SF 1238692)
   - fixed root object not drawn upon File/New (SF 1245221)
@@ -19,12 +19,12 @@ o improved OBJ import of files with trailing whitespace as e.g. written by
   Blender
 o script objects now cache a compiled version of the script for faster
   execution
-o added support for disabling NS (notify script) tags upon loading
+o added support for disabling "NS" (notify script) tags upon loading
 o added wizard preference option to control warnings about unknown tag types
 o added facility that allows plugins to correctly reconnect already present
   tags of the types that are defined by the plugin upon initialization
-o added UMM/VMM tag types that may be used to trim the knot vectors of NURBS
-  curves and surfaces by specifying min/max values
+o added "UMM"/"VMM" tag types that may be used to trim the knot vectors of
+  NURBS curves and surfaces by specifying min/max values
 o added keyboard shortcut to close the toolbox window
 o added scripting interface command "repOb" and corresponding main menu
   entry "Special/Clipboard/Replace" that replaces the currently selected
@@ -63,17 +63,27 @@ o added command line option "-noview" that inhibits loading of the environment
 o changed default behaviour of Ayam on the very first start (no ayamrc
   file and no environment found): Ayam will now open a first view window
 o added new NURBS curve and surface drawing and tesselation modes not
-  based on GLU
+  based on GLU called "STESS" (for simple tesselation)
 o added example/helper script "2lcons.tcl" that restricts the Ayam console
   to display just two lines of text
-o TP tags now handle a second parameter to allow to adjust the tesselation
-  differently in the U and V parametric dimensions
-o forAll and forAllT now maintain the selection for the object tree
+o "TP" tags now handle a second parameter to allow adjusting the quality
+  of the tesselation independently in the U and V parametric dimensions
+o the "forAll" and "forAllT" scripting interface commands now maintain the
+  selection for the object tree
 o improved memory consumption of undo system for view-less modelling
 o added "Load from file" context menu entry to script object, to allow
   direct loading of scripts from Tcl files
 o added scripting interface commands "setProperty" and "getProperty" to ease
   management of property values
+o added view draw option to draw object coordinate systems
+o NURBS knot vectors are now protected from accidental modification via
+  apply operations in the property GUI
+o added "addToProc" command to scripting interface
+o Rhino 3DM: added support for exporting arbitrary trimmed NURBS patches
+  (using polyline approximations for trim curves that can not be pushed
+   up from 2D to 3D by OpenNURBS)
+o Rhino 3DM: added support for exporting trim loops consisting of multiple
+  trim curves
 
 
 [5. Jul 2005] Ayam 1.8.3:
