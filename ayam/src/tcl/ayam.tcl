@@ -1091,6 +1091,7 @@ ayam_loadscript run
 ayam_loadscript uie
 ayam_loadscript shortcut
 ayam_loadscript ms
+ayam_loadscript prop
 ayam_loadscript birail1
 ayam_loadscript birail2
 ayam_loadscript box
@@ -1127,7 +1128,6 @@ ayam_loadscript skin
 ayam_loadscript sweep
 ayam_loadscript text
 ayam_loadscript torus
-ayam_loadscript prop
 ayam_loadscript pclip
 ayam_loadscript control
 ayam_loadscript tmp
