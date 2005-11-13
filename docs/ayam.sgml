@@ -7198,7 +7198,7 @@ not available.
 
 <sect1>3DM (Rhino) Import<label id="imprhino">
 <p>
-Since version 1.8.2 Ayam contains a plugin that may import scenes
+Since version 1.8.2 Ayam contains a plugin named onio that may import scenes
 from the Rhino 3DM file format using the OpenNURBS toolkit
 (hence the name of the plugin onio - OpenNURBS IO)
 by Robert McNeel & Associates.
@@ -7252,7 +7252,7 @@ for the t component of the texture coordinates.
 
 <sect1>3DM (Rhino) Export<label id="exprhino">
 <p>
-Since version 1.8.2 Ayam contains a plugin that may export scenes
+Since version 1.8.2 Ayam contains a plugin named onio that may export scenes
 to the Rhino 3DM file format using the OpenNURBS toolkit
 (hence the name of the plugin onio - OpenNURBS IO)
 by Robert McNeel & Associates.
@@ -7269,10 +7269,14 @@ objects (of type <tt/"Create"/ or <tt/"Modify"/) and objects that
 may be converted to NURBS curves or surfaces.
 Even though export of planar cap surfaces of various
 tool objects is supported, the export of general trimmed NURBS
-patches is not supported. This is because of a missing feature
+patches is not well supported. This is because of a missing feature
 (pushing up 2D trim curves to 3D curves for arbitrary NURBS
-surfaces) in the OpenNURBS toolkit. Since Ayam 1.8.3, also PolyMesh
-objects may be exported.
+surfaces) in the OpenNURBS toolkit. Since Ayam 1.9, a coarse
+polygonal 3D representation of the 2D trim curves will be
+created automatically, so that now general trimmed NURBS patches
+may be exported, albeit with lower quality and bigger file size
+as would be necessary.
+Since Ayam 1.8.3, also PolyMesh objects may be exported.
 Since Ayam 1.9, UMM/VMM tags are used to trim the knot vectors of
 exported NURBS objects.
 <p>
@@ -8029,7 +8033,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Align to Parent: <ref id="vmconf" name="view menu entry">,
 <ref id="vwsc" name="view action">
 <item>Apply: <ref id="propgui" name="apply property GUI">
-<item>applyTrafo: <ref id="scitrafo" name="scripting interface command">
+<item>applyTrafo: <ref id="scapplytrafo" name="scripting interface command">
 <item>Archives: <ref id="rio" name="RenderMan interface option">
 <item>Area Light: <ref id="alob" name="creation of">
 <item>Array: <ref id="cloneobj" name="object">
@@ -8044,7 +8048,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>AutoSavePrefs: <ref id="prefgui" name="preference setting">
 <item>Attribute: <ref id="riatag" name="RiAttribute tag type">
 <item>ayamrc: <ref id="ayamrc" name="Ayamrc File">
-<item>ayError: <ref id="scierr" name="scripting interface command">
+<item>ayError: <ref id="scayerror" name="scripting interface command">
 </itemize>
 
 <label id="indexb">B
@@ -8069,7 +8073,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>BPatch: <ref id="bpatchobj" name="object">
 <item>BType_U, BType_V: <ref id="pmattr" name="PatchMesh attribute">
 <item>Build: <ref id="bfct" name="build from curves tool">
-<item>buildNP: <ref id="scinurbs" name="scripting interface command">
+<item>buildNP: <ref id="scbuildnp" name="scripting interface command">
 </itemize>
 
 <label id="indexc">C
@@ -8081,8 +8085,8 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>CastShadows: <ref id="riattrs" name="RenderMan/BMRT attribute">
 <item>CheckLights: <ref id="prefrib" name="preference setting">
 <item>Circle: <ref id="ncirct" name="NURBS circle tool">
-<item>clampNC: <ref id="scinurbs" name="scripting interface command">,
-<ref id="clat" name="clamp tool">
+<item>Clamp: <ref id="clat" name="clamp tool">
+<item>clampNC: <ref id="scclampnc" name="scripting interface command">
 <item>Clipboard: <ref id="sciclip" name="scripting interface commands">
 <item>Clone: <ref id="cloneobj" name="object">
 <item>Close: <ref id="treecontm" name="tree context menu entry">
@@ -8101,7 +8105,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <ref id="treecontm" name="tree context menu entry">
 <item>Color: <ref id="riattrs" name="RenderMan/BMRT attribute">,
 <ref id="lip" name="light attribute">
-<item>copOb: <ref id="sciclip" name="scripting interface command">
+<item>copOb: <ref id="sccopob" name="scripting interface command">
 <item>Copy: <ref id="mmedit" name="main menu entry">
 <item>Copy Property: <ref id="mmedit" name="main menu entry">,
 <ref id="propgui" name="copying properties">
@@ -8112,12 +8116,12 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>ConeAngle, ConeDAngle: <ref id="lip" name="light attribute">
 <item>Console: <ref id="cons" name="what is">
 <item>Convert: <ref id="mmtools" name="main menu entry">
-<item>convOb: <ref id="scimisc" name="scripting interface command">
+<item>convOb: <ref id="scconvob" name="scripting interface command">
 <item>Create: <ref id="mmcreate" name="create menu">
 <item>CreateMP: <ref id="ncattr" name="NURBCurve attribute">
 <item>Create ShadowMaps: <ref id="mmspecial" name="main menu entry">,
 <ref id="vmview" name="view menu entry">
-<item>crtOb: <ref id="crtob" name="scripting interface command">
+<item>crtOb: <ref id="sccrtob" name="scripting interface command">
 <item>CSG: <ref id="levelobj" name="Level object">,
 <ref id="aycsg" name="AyCSG CSG preview plugin">
 <item>Curvature: <ref id="plotcurt" name="plot curvature tool">
@@ -8125,7 +8129,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <ref id="mmcustom" name="custom menu">
 <item>Custom Object: <ref id="customobj" name="what is">
 <item>Cut: <ref id="mmedit" name="main menu entry">
-<item>cutOb: <ref id="sciclip" name="scripting interface command">
+<item>cutOb: <ref id="sccutob" name="scripting interface command">
 <item>Cylinder: <ref id="cylinderobj" name="object">
 </itemize>
 
@@ -8137,10 +8141,10 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>DefaultAction: <ref id="prefmodel" name="preference setting">
 <item>DefaultMat: <ref id="prefrib" name="preference setting">
 <item>DelayedReadArchive: <ref id="riprocp" name="riproc attribute">
-<item>delegTrafo: <ref id="scitrafo" name="scripting interface command">
+<item>delegTrafo: <ref id="scdelegtrafo" name="scripting interface command">
 <item>Delete: <ref id="mmedit" name="main menu entry">,
 <ref id="insdelac" name="delete points">
-<item>delOb: <ref id="sciclip" name="scripting interface command">
+<item>delOb: <ref id="scdelob" name="scripting interface command">
 <item>Difference: <ref id="levelobj" name="Level object">
 <item>Direct Editing: <ref id="editac" name="edit points">
 <item>Disk: <ref id="diskobj" name="object">
@@ -8167,8 +8171,8 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Edit Local: <ref id="vmconf" name="view menu entry">,
 <ref id="editlocal" name ="Editing in Local Space">
 <item>EditSnaps: <ref id="prefmodel" name="preference setting">
-<item>elevateNC: <ref id="scinurbs" name="scripting interface command">,
-<ref id="elevt" name="elevate tool">
+<item>Elevate: <ref id="elevt" name="elevate tool">
+<item>elevateNC: <ref id="scelevatenc" name="scripting interface command">
 <item>Elevate UV: <ref id="elevuvt" name="elevate uv tool">
 <item>Enable Scripts: <ref id="mmspecial" name="main menu entry">
 <item>EndCap: <ref id="rep" name="revolve attribute">,
@@ -8209,9 +8213,9 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>FlashPoints: <ref id="prefmodel" name="preference setting">
 <item>Flatness: <ref id="moattr" name="MetaObj attributes">
 <item>FontName: <ref id="textattr" name="Text attribute">
-<item>forAll, forAllT: <ref id="scifall" name="scripting interface command">
+<item>forAll, forAllT: <ref id="scforall" name="scripting interface command">
 <item>Force Notification: <ref id="mmtools" name="main menu entry">
-<item>forceNot: <ref id="scimisc" name="scripting interface command">
+<item>forceNot: <ref id="scforcenot" name="scripting interface command">
 <item>Formula: <ref id="mcattr" name="MetaComp attribute">
 <item>From: <ref id="camp" name="camera property">,
 <ref id="lip" name="light attribute">
@@ -8223,14 +8227,14 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 
 <label id="indexg">G
 <itemize>
-<item>getPnt: <ref id="scipoints" name="scripting interface command">
+<item>getPnt: <ref id="scgetpnt" name="scripting interface command">
 <item>getProperty: <ref id="scgetproperty" name="scripting interface command">
-<item>getType: <ref id="scimisc" name="scripting interface command">
+<item>getType: <ref id="scgettype" name="scripting interface command">
 <item>Gimbal Lock: <ref id="gimb" name="avoiding Gimbal Locks">
-<item>goDown: <ref id="scihier" name="scripting interface command">
-<item>goTop: <ref id="scihier" name="scripting interface command">
+<item>goDown: <ref id="scgodown" name="scripting interface command">
+<item>goTop: <ref id="scgotop" name="scripting interface command">
 <item>Gordon: <ref id="gordonobj" name="object">
-<item>goUp: <ref id="scihier" name="scripting interface command">
+<item>goUp: <ref id="scgoup" name="scripting interface command">
 <item>Grid: <ref id="vat" name="view attribute">
 <ref id="prefdraw" name="drawing preference setting">
 </itemize>
@@ -8239,7 +8243,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <itemize>
 <item>Half Size: <ref id="vmconf" name="view menu entry">
 <item>HandleSize: <ref id="prefmodel" name="preference setting">
-<item>hasChild: <ref id="scimisc" name="scripting interface command">
+<item>hasChild: <ref id="schaschild" name="scripting interface command">
 <item>Height: <ref id="rio" name="RenderMan interface option">,
 <ref id="bxp" name="Box attribute">,
 <ref id="cnp" name="Cone attribute">,
@@ -8280,9 +8284,9 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Importance Driven Rendering: <ref id="idr" name="IDR plugin">
 <item>Insert: <ref id="mmfile" name="main menu entry">,
 <ref id="insdelac" name="insert points">
-<item>insKn: <ref id="scinurbs" name="scripting interface command">
+<item>insKn: <ref id="scinskn" name="scripting interface command">
 <item>Insert Knot: <ref id="insknt" name="insert knot tool">
-<item>insertScene: <ref id="scio" name="scripting interface command">
+<item>insertScene: <ref id="scinsertscene" name="scripting interface command">
 <item>Instance: <ref id="instanceobj" name ="object">
 <item>Instant Apply: <ref id="propgui" name="instant apply facility">
 <item>Intensity: <ref id="lip" name="light attribute">
@@ -8371,7 +8375,8 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Mops Import: <ref id="impmops" name="Import of Mops Scenes">
 <item>Move: <ref id="vwsc" name="view action">,
 <ref id="iac" name="move object">
-<item>movOb, movSel: <ref id="scitrafo" name="scripting interface command">
+<item>movOb: <ref id="scmovob" name="scripting interface command">
+<item>movSel: <ref id="scmovsel" name="scripting interface command">
 <item>Multiple Point: <ref id="ncurvemp" name="Multiple Points">
 </itemize>
 
@@ -8385,7 +8390,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Negative: <ref id="mcattr" name="MetaComp attribute">
 <item>New: <ref id="mmfile" name="main menu entry">
 <item>NewLoadsEnv: <ref id="prefgui" name="preference setting">
-<item>newScene: <ref id="scio" name="scripting interface command">
+<item>newScene: <ref id="scnewscene" name="scripting interface command">
 <item>NoExport: <ref id="noexporttag" name="tag type">
 <item>NP: <ref id="nptag" name="tag type">
 <item>NS: <ref id="nstag" name="tag type">
@@ -8430,7 +8435,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>P1, P2: <ref id="hyp" name="hyperboloid attribute">
 <item>Paraboloid: <ref id="paraboloidobj" name="object">
 <item>Parameter: <ref id="extrncp" name="ExtrNC attribute">
-<item>pasOb: <ref id="sciclip" name="scripting interface command">
+<item>pasOb: <ref id="scpasob" name="scripting interface command">
 <item>Paste: <ref id="mmedit" name="main menu entry">
 <item>Paste (Move): <ref id="mmspecial" name="main menu entry">
 <item>Paste Property: <ref id="mmedit" name="main menu entry">
@@ -8486,7 +8491,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Reference Counter: <ref id="instanceobj" name="Instance Object">,
 <ref id="materialobj" name="Material Object">
 <item>References: <ref id="secref" name="references">
-<item>refineNC: <ref id="scinurbs" name="scripting interface command">,
+<item>refineNC: <ref id="screfinenc" name="scripting interface command">,
 <ref id="refit" name="refine tool">
 <item>RemoveMerged: <ref id="mmtools" name="Merge PolyMesh tool option">
 <item>Render: <ref id="vm" name="view menu entry">,
@@ -8496,10 +8501,10 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>RenderPT, RenderUI: <ref id="prefrib" name="preference setting">
 <item>Repair Ayam: <ref id="repayam" name="Tcl helper script">
 <item>Replace: <ref id="mmspecial" name="main menu entry">
-<item>replaceScene: <ref id="scio" name="scripting interface command">
+<item>replaceScene: <ref id="screplacescene" name="scripting interface command">
 <item>Rescale Knots to Mindist: <ref id="resckmt" name="NURBCurve tool">
 <item>Rescale Knots to Range: <ref id="resckrt" name="NURBCurve tool">
-<item>rescaleKnNC: <ref id="scinurbs" name="scripting interface command">
+<item>rescaleKnNC: <ref id="screscaleknnc" name="scripting interface command">
 <item>RescaleKnots: <ref id="imprhino" name="3DM (Rhino) import option">,
 <ref id="imprib" name="RIB import option">,
 <ref id="impwav" name="Wavefront OBJ import option">,
@@ -8511,7 +8516,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <ref id="concatncp" name="ConcatNC attribute">,
 <ref id="textattr" name="Text attribute">
 <item>RevertBevels: <ref id="textattr" name="Text attribute">
-<item>revertNC: <ref id="scinurbs" name="scripting interface command">
+<item>revertNC: <ref id="screvertnc" name="scripting interface command">
 <item>RevertU, RevertV: <ref id="revertut" name="Revert U tool">,
 <ref id="revertvt" name="Revert V tool">
 <item>Revolve: <ref id="revolveobj" name="object">,
@@ -8542,10 +8547,11 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <ref id="cloneattr" name="Clone attribute">
 <item>Rotation: <ref id="trap" name="transformations property">,
 <ref id="gimb" name="using the transformations property">
-<item>rotOb, rotSel: <ref id="scitrafo" name="scripting interface command">
+<item>rotOb: <ref id="scrotob" name="scripting interface command">
+<item>rotSel: <ref id="scrotsel" name="scripting interface command">
 <item>Ruled surface: <ref id="skinobj" name="Skin object">,
 <item>RunProgram: <ref id="riprocp" name="riproc attribute">
-<item>rV: <ref id="sciupd" name="scripting interface command">
+<item>rV: <ref id="scrv" name="scripting interface command">
 </itemize>
 
 <label id="indexs">S
@@ -8560,10 +8566,11 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>SaveAddsMRU: <ref id="prefmisc" name="preference setting">
 <item>SaveMainGeom: <ref id="savemaingeomtag" name="tag type">
 <item>SavePrefsGeom: <ref id="prefmisc" name="preference setting">
-<item>saveScene: <ref id="scio" name="scripting interface command">
+<item>saveScene: <ref id="scsavescene" name="scripting interface command">
 <item>Scale: <ref id="trap" name="transformations property">,
 <ref id="scalac" name="scale object">
-<item>scalOb, scalSel: <ref id="scitrafo" name="scripting interface command">
+<item>scalOb <ref id="scscalob" name="scripting interface command">
+<item>scalSel <ref id="scscalsel" name="scripting interface command">
 <item>Script: <ref id="scriptobj" name="object">
 <item>Scripts: <ref id="prefgui" name="preference setting">
 <item>SDMesh: <ref id="sdmeshobj" name="object">
@@ -8584,7 +8591,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Set BGImage: <ref id="vmconf" name="view menu entry">
 <item>Set Gridsize: <ref id="vmconf" name="view menu entry">
 <item>Set FOV: <ref id="vmconf" name="view menu entry">
-<item>setPnt: <ref id="scipoints" name="scripting interface command">
+<item>setPnt: <ref id="scsetpnt" name="scripting interface command">
 <item>setProperty: <ref id="scsetproperty" name="scripting interface command">
 <item>Shade: <ref id="prefdraw" name="preference setting">,
 <ref id="vmconf" name="view menu entry">
@@ -8617,7 +8624,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <ref id="nspt" name="NURBS sphere tool">
 <item>Split: <ref id="sptct" name="split to curves tool">
 <item>Split Curve: <ref id="miscac" name="modeling action">
-<item>splitNPatch: <ref id="scinurbs" name="scripting interface command">
+<item>splitNC: <ref id="scsplitnc" name="scripting interface command">
+<item>splitNP: <ref id="scsplitnp" name="scripting interface command">
 <item>Spot: <ref id="pdsl" name="light type">
 <item>STagName: <ref id="imprhino" name="3DM (Rhino) import option">,
 <ref id="impwav" name="Wavefront OBJ import option">
@@ -8698,11 +8706,12 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 
 <label id="indexu">U
 <itemize>
-<item>uCL, uCR: <ref id="sciupd" name="scripting interface command">
+<item>uCL: <ref id="sciucl" name="scripting interface command">
+<item>uCR: <ref id="sciucr" name="scripting interface command">
 <item>UMM: <ref id="ummtag" name="tag type">
 <item>Undo: <ref id="undos" name="The Undo System">,
 <ref id="mmedit" name="main menu entry">,
-<ref id="scimisc" name="scripting interface command">
+<ref id="scundo" name="scripting interface command">
 <item>UndoLevels: <ref id="prefmodel" name="preference setting">
 <item>Union: <ref id="levelobj" name="Level object">
 <item>UpperBevel: <ref id="extrattr" name="extrude attribute">,
@@ -8711,7 +8720,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <ref id="extrattr" name="extrude attribute">,
 <ref id="textattr" name="text attribute">
 <item>Up Vector: <ref id="camp" name="camera property">
-<item>uS: <ref id="sciupd" name="scripting interface command">
+<item>uS: <ref id="scius" name="scripting interface command">
 <item>UseGrid: <ref id="vat" name="view attribute">,
 <ref id="vmconf" name="view menu entry">
 <item>UseMatColor: <ref id="prefdraw" name="preference setting">
