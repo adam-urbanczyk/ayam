@@ -6610,6 +6610,27 @@ saveScene:
  <item>Description: saves the current scene to filename.
 </itemize>
 
+<p><label id="scwrib">
+wrib - RIB export:
+<itemize>
+ <item>Synopsis:
+<tt>"wrib -file filename [-image imagename] [-smonly|-selonly]"</tt>
+ <item>Description: exports the current scene to a RIB file designated
+by <tt/"filename"/. If the argument <tt/"-image"/ is given, the RIB file
+will create an image file named <tt/"imagename"/ upon rendering. The export
+will use the camera transformation from the currently selected Camera
+object. To use the camera transformations of the camera associated
+with a view window use the corresponding Togl callback for the view
+like this instead: <tt>.view1.f3D.togl wrib -file filename.rib</tt>.
+If the argument <tt/"-smonly"/ is provided, a RIB to render shadow maps
+will be created and the argument image will be ignored.
+If the argument <tt/"-selonly"/ is given, only the selected (geometric)
+objects will be exported, which will result in a RIB file not
+suitable for rendering (no setup, camera transformation, or lights
+are in it) but for inclusion into other scenes via RiArchive.
+</itemize>
+
+
 <sect2>Reporting Errors<label id="scierr">
 <p><label id="scayerror">
 ayError:
@@ -8748,6 +8769,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <ref id="pmattr" name="PatchMesh attribute">,
 <ref id="vat" name="view attribute">
 <item>withOb: <ref id="scwithob" name="scripting interface command">
+<item>wrib: <ref id="scwrib" name="scripting interface command">
 <item>WriteCurves: <ref id="exprhino" name="3DM (Rhino) export option">
 <item>WriteIdent: <ref id="prefrib" name="preference setting">
 <item>WriteSelected: <ref id="exprhino" name="3DM (Rhino) export option">
