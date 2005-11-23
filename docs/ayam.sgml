@@ -6922,16 +6922,15 @@ standard tool box layout of 4 by 12 buttons):
 # create a frame:
 set f [frame .tbw.f.fcollex]
 
-# create two buttons inside the frame:
-button $f.b1 -width 5 -text "Coll." -command { collNC; rV; }
-button $f.b2 -width 5 -text "Expl." -command { explNC; rV; }
-pack $f.b1 $f.b2 -side left -fill x -expand yes
-
 # calculate the row number below the last row:
 set row [expr [lindex [grid size .tbw.f] 1] + 1]
 
 # now display the frame at calculated row, spanning the whole window:
-grid $f -row $row -column 0 -columnspan [lindex [grid size .tbw.f] 0]
+grid $f -row $row -column 0 -columnspan [lindex [grid size .tbw.f] 0] -sticky we
+# create two buttons inside the frame:
+button $f.b1 -width 5 -text "Coll." -command { collNC; rV; }
+button $f.b2 -width 5 -text "Expl." -command { explNC; rV; }
+pack $f.b1 $f.b2 -side left -fill x -expand yes
 </code>
 
 <sect>Import and Export
@@ -8222,6 +8221,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 
 <label id="indexf">F
 <itemize>
+<item>FAQ: <ref id="secref" name="Ayam FAQ WWW reference">
 <item>Far: <ref id="camp" name="camera property">
 <item>File: <ref id="mmfile" name="file menu">,
 <ref id="riincp" name="riinc attribute">,
