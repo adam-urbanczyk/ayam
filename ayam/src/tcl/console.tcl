@@ -162,6 +162,16 @@ foreach pkg [info loaded {}] {
 }
 catch {unset file name version}
 
+# XXXX (Tk8.4)
+global tk_version
+if { $tk_version > 8.3 } {
+    proc tkTextSetCursor args { eval [subst "::tk::TextSetCursor $args"] }
+    proc tkTextTranspose args { eval [subst "::tk::TextTranspose $args"] }
+    proc tkTextUpDownLine args { eval [subst "::tk::TextUpDownLine $args"] }
+    proc tkTextScrollPages args { eval [subst "::tk::TextScrollPages $args"] }
+}
+# XXXX
+
 set Console(WWW) [expr [info exists embed_args] || [info exists browser_args]]
 
 #XXXX -setgrid 1
@@ -1793,6 +1803,7 @@ bind Console <Control-a> {
 	tkTextSetCursor %W {insert linestart}
     }
 }
+
 bind Console <Control-d> {
     if {[%W compare insert < limit]} break
     %W delete insert
@@ -1850,6 +1861,7 @@ catch {bind Console <Key-Page_Up>   { tkTextScrollPages %W -1 }}
 catch {bind Console <Key-Prior>     { tkTextScrollPages %W -1 }}
 catch {bind Console <Key-Page_Down> { tkTextScrollPages %W 1 }}
 catch {bind Console <Key-Next>      { tkTextScrollPages %W 1 }}
+
 bind Console <$META-d> {
     if {[%W compare insert >= limit]} {
 	%W delete insert {insert wordend}
@@ -1868,6 +1880,13 @@ bind Console <$META-Delete> {
 bind Console <ButtonRelease-2> {
     ## Try and get the default selection, then try and get the selection
     ## type TEXT, then try and get the clipboard if nothing else is available
+    # XXXX (Tk8.4)
+    global tk_version
+    if { $tk_version > 8.3 } {
+	upvar 0 ::tk::Priv tkPriv
+	set tkPriv(junk) ""
+    }
+    # XXXX
     if {
 	(!$tkPriv(mouseMoved) || $tk_strictMotif) &&
 	(![catch {selection get -displayof %W} tkPriv(junk)] ||
