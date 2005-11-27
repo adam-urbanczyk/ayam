@@ -1,4 +1,4 @@
-[11. Nov 2005] CVS-Head:
+[27. Nov 2005] CVS-Head:
 o bug fixes:
   - fixed automatic merging of PV tags (SF 1238692)
   - fixed root object not drawn upon File/New (SF 1245221)
@@ -84,6 +84,10 @@ o Rhino 3DM: added support for exporting arbitrary trimmed NURBS patches
    up from 2D to 3D by OpenNURBS)
 o Rhino 3DM: added support for exporting trim loops consisting of multiple
   trim curves
+o improved example script for adding toolbox buttons (did not span the
+  whole toolbox on Win32)
+o added work-arounds for console cut and paste and some keyboard shortcuts
+  not working anymore on Tk8.4
 
 
 [5. Jul 2005] Ayam 1.8.3:
