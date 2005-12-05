@@ -1,4 +1,4 @@
-[27. Nov 2005] CVS-Head:
+[5. Dec 2005] CVS-Head:
 o bug fixes:
   - fixed automatic merging of PV tags (SF 1238692)
   - fixed root object not drawn upon File/New (SF 1245221)
@@ -88,6 +88,8 @@ o improved example script for adding toolbox buttons (did not span the
   whole toolbox on Win32)
 o added work-arounds for console cut and paste and some keyboard shortcuts
   not working anymore on Tk8.4
+o added work-around to fix drawing/shading of NURBS curves/surfaces on
+  MacOSX/Aqua in multiple view configurations
 
 
 [5. Jul 2005] Ayam 1.8.3:
