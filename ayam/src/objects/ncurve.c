@@ -293,9 +293,10 @@ ay_ncurve_drawglucb(struct Togl *togl, ay_object *o)
 	}
       b++;
     } /* for */
-
+#ifndef AYWITHAQUA
   if(!ncurve->no)
-    {
+  {
+#endif /* !AYWITHAQUA */
       ncurve->no = gluNewNurbsRenderer();
       if(ncurve->no == NULL)
 	{
@@ -303,7 +304,9 @@ ay_ncurve_drawglucb(struct Togl *togl, ay_object *o)
 	  free(controls); controls = NULL;
 	  return AY_EOMEM;
 	}
-    } /* if */
+#ifndef AYWITHAQUA
+      } /* if */
+#endif /* !AYWITHAQUA */
 
 #if defined(WIN32) && !defined(AYUSESUPERGLU)
   gluNurbsCallback(ncurve->no, GLU_ERROR, (GLUnurbsErrorProc)ay_error_glucb);
@@ -328,6 +331,11 @@ ay_ncurve_drawglucb(struct Togl *togl, ay_object *o)
 		 (ncurve->is_rat?GL_MAP1_VERTEX_4:GL_MAP1_VERTEX_3));
 
   gluEndCurve(ncurve->no);
+
+#ifdef AYWITHAQUA
+  gluDeleteNurbsRenderer(ncurve->no);
+  ncurve->no = NULL;
+#endif /* AYWITHAQUA */
 
  return AY_OK;
 } /* ay_ncurve_drawglucb */
