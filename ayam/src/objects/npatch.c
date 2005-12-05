@@ -325,8 +325,10 @@ ay_npatch_drawglucb(struct Togl *togl, ay_object *o)
       b++;
     }
 
+#ifndef AYWITHAQUA
   if(!npatch->no)
     {
+#endif /* !AYWITHAQUA */
       npatch->no = gluNewNurbsRenderer();
       if(npatch->no == NULL)
 	{
@@ -335,7 +337,9 @@ ay_npatch_drawglucb(struct Togl *togl, ay_object *o)
 	  free(controls); controls = NULL;
 	  return AY_EOMEM;
 	}
+#ifndef AYWITHAQUA
     }
+#endif /* !AYWITHAQUA */
 
 #if defined(WIN32) && !defined(AYUSESUPERGLU)
   gluNurbsCallback(npatch->no, GLU_ERROR, (GLUnurbsErrorProc)ay_error_glucb);
@@ -431,6 +435,11 @@ ay_npatch_drawglucb(struct Togl *togl, ay_object *o)
     } /* if */
 
   gluEndSurface(npatch->no);
+
+#ifdef AYWITHAQUA
+  gluDeleteNurbsRenderer(npatch->no);
+  npatch->no = NULL;
+#endif /* AYWITHAQUA */
 
  return AY_OK;
 } /* ay_npatch_drawglucb */
@@ -615,8 +624,8 @@ ay_npatch_shadeglucb(struct Togl *togl, ay_object *o)
   if(!npatch)
     return AY_ENULL;
 
-  if(npatch->glu_display_mode > 2)
-    return(ay_npatch_shadestesscb(togl, o));
+  /*if(npatch->glu_display_mode > 2)
+    return(ay_npatch_shadestesscb(togl, o));*/
 
   if(controls)
     {
@@ -684,9 +693,10 @@ ay_npatch_shadeglucb(struct Togl *togl, ay_object *o)
 	}
       b++;
     }
-
+#ifndef AYWITHAQUA
   if(!npatch->no)
     {
+#endif /* !AYWITHAQUA */
       npatch->no = gluNewNurbsRenderer();
       if(npatch->no == NULL)
 	{
@@ -695,7 +705,9 @@ ay_npatch_shadeglucb(struct Togl *togl, ay_object *o)
 	  free(controls); controls = NULL;
 	  return AY_EOMEM;
 	}
-    }
+#ifndef AYWITHAQUA
+    } /* if */
+#endif /* !AYWITHAQUA */
 
 #if defined(WIN32) && !defined(AYUSESUPERGLU)
   gluNurbsCallback(npatch->no, GLU_ERROR, (GLUnurbsErrorProc)ay_error_glucb);
@@ -783,6 +795,11 @@ ay_npatch_shadeglucb(struct Togl *togl, ay_object *o)
     } /* if */
 
   gluEndSurface(npatch->no);
+
+#ifdef AYWITHAQUA
+  gluDeleteNurbsRenderer(npatch->no);
+  npatch->no = NULL;
+#endif /* AYWITHAQUA */
 
  return AY_OK;
 } /* ay_npatch_shadeglucb */
