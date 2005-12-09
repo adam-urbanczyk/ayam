@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile.wrapped [17. Mar 2005]
+# Makefile.wrapped [9. Dec 2005]
 # Makefile for Ayam (wrapped version)
 
 # Choose an installation prefix.
@@ -519,7 +519,7 @@ rewraprm:
 rewrap: rewraprm ayamwrap
 
 aycsg.so: $(AYCSGOBJS) $(OPENCSGOBJS)
-	$(LD) -shared $(AYCSGOBJS) -o plugins/aycsg.so $(AYCSGLIBS)
+	$(LD) $(SHLFLAGS) $(AYCSGOBJS) -o plugins/aycsg.so $(AYCSGLIBS)
 
 csphere.so: $(CSPHEREOBJS)
 	$(CC) $(SHLFLAGS) $(CSPHEREOBJS) -o plugins/csphere.so
