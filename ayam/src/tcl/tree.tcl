@@ -670,8 +670,8 @@ set ay(tree) $tree
 bind $tree <ButtonPress-4> "$tree yview scroll -1 pages; break"
 bind $tree <ButtonPress-5> "$tree yview scroll 1 pages; break"
 
-global tcl_platform
-if { $tcl_platform(platform) == "windows" } {
+global tcl_platform AYWITHAQUA
+if { ($tcl_platform(platform) == "windows") || $AYWITHAQUA } {
     bind $tree <MouseWheel> {
 	global ay
 	if { %D < 0.0 } {

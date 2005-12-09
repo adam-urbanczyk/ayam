@@ -1,6 +1,6 @@
 # Ayam, a free 3D modeler for the RenderMan interface.
 #
-# Ayam is copyrighted 1998-2001 by Randolf Schultz
+# Ayam is copyrighted 1998-2005 by Randolf Schultz
 # (rschultz@informatik.uni-rostock.de) and others.
 #
 # All rights reserved.
@@ -62,8 +62,8 @@ bind $f.li <ButtonPress-5> {
     break
 }
 
-global tcl_platform
-if { $tcl_platform(platform) == "windows" } {
+global tcl_platform AYWITHAQUA
+if { ($tcl_platform(platform) == "windows") || $AYWITHAQUA } {
     bind $f.li <MouseWheel> {
 	global ay
 	if { %D < 0.0 } {
