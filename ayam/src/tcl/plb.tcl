@@ -144,8 +144,8 @@ bind $f.li <ButtonPress-5> {
     break
 }
 
-global tcl_platform
-if { $tcl_platform(platform) == "windows" } {
+global tcl_platform AYWITHAQUA
+if { ($tcl_platform(platform) == "windows") || $AYWITHAQUA } {
     bind $f.li <MouseWheel> {
 	global ay
 	if { %D < 0.0 } {
@@ -266,8 +266,8 @@ bind . <ButtonPress-5> {
     $ay(pca) yview scroll 1 pages
 }
 
-global tcl_platform
-if { $tcl_platform(platform) == "windows" } {
+global tcl_platform AYWITHAQUA
+if { ($tcl_platform(platform) == "windows") || $AYWITHAQUA } {
     bind . <MouseWheel> {
 	global ay
 	if { %D < 0.0 } {

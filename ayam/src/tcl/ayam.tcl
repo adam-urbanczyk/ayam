@@ -1,3 +1,4 @@
+
 # Ayam, a free 3D modeler for the RenderMan interface.
 #
 # Ayam is copyrighted 1998-2005 by Randolf Schultz
@@ -150,8 +151,11 @@ array set ayprefs {
  FixX11Menu 1
  SafeAutoFocus 0
 
+ SwapMB 0
+ SwapMBSC { "ayviewshortcuts(MoveVButton)" "ayviewshortcuts(ZoomVButton)" }
+
  Docs "http://ayam.sourceforge.net/docs/"
-    DailyTips {
+ DailyTips {
 {Always click on drawn pixels, when picking vertices.}
 {There is a console-menu on the right mouse button.}        
 {Use <Shift+TAB> to move the focus away from the console.}
@@ -589,6 +593,25 @@ if { $tcl_platform(platform) == "windows" } {
     # UNIX specific settings:
     set ayprefs(Plugins) "[file dirname [info nameofexecutable]]/plugins"
     set ayprefs(Scripts) "plugins/loadrrib.tcl:plugins/loadmfio.tcl"
+    #
+    if {[catch [tk windowingsystem]] == "aqua" } {
+	# Aqua specific settings:
+	set ayprefs(SwapMB) 1
+
+	set ayviewshortcuts(ZoomI) "plus"
+	set ayviewshortcuts(ZoomO) "minus"
+
+	set aymainshortcuts(SProp00) "Key-0"
+	set aymainshortcuts(SProp11) "Key-1"
+	set aymainshortcuts(SProp22) "Key-2"
+	set aymainshortcuts(SProp33) "Key-3"
+	set aymainshortcuts(SProp44) "Key-4"
+	set aymainshortcuts(SProp55) "Key-5"
+	set aymainshortcuts(SProp66) "Key-6"
+	set aymainshortcuts(SProp77) "Key-7"
+	set aymainshortcuts(SProp88) "Key-8"
+	set aymainshortcuts(SProp99) "Key-9"
+    }
 }
 
 # are true color visuals available?
@@ -1273,6 +1296,9 @@ if { $ayprefs(Scripts) != "" } {
 # scan for shaders
 shader_scanAll
 
+# swap mouse buttons 2 and 3
+shortcut_swapmb
+
 # bind keyboard shortcuts to main menu
 puts stdout "Establishing key bindings..."
 shortcut_main .
@@ -1347,7 +1373,7 @@ while { $i < $argc } {
     if { ([file extension $arg] == ".ay") || \
          ([file extension $arg] == ".AY") } {
 
-        regsub -all {\\} $arg {/} newfilename
+        regsub -all {\\} $arg {/} filename
 
 	if { $j == 0 } {
 	    # close all views
@@ -1355,8 +1381,6 @@ while { $i < $argc } {
 	    # and arrange that we do not open a view on our own later on
 	    set ay(noview) 1
 
-	    set filename $newfilename
-	    
 	    set ay_error ""
 	    
 	    replaceScene $filename
@@ -1373,28 +1397,27 @@ while { $i < $argc } {
 		}
 		io_mruAdd $filename
 	    } else {
-		ayError 2 "Ayam" "There were errors while loading:"
-		ayError 2 "Ayam" "$filename"
+		ayError 2 "replaceScene" "There were errors while loading:"
+		ayError 2 "replaceScene" "$filename"
 	    }
 	    set j 1
 	} else {
-	    set ifilename $newfilename
 	    set ay_error ""
-	    insertScene $ifilename
+	    insertScene $filename
 	    if { $ay_error < 2 } {
 		ayError 4 "insertScene" "Done inserting scene from:"
-		ayError 4 "insertScene" "$ifilename"
+		ayError 4 "insertScene" "$filename"
 	    } else {
-		ayError 2 "Ayam" "There were errors while loading:"
-		ayError 2 "Ayam" "$ifilename"
+		ayError 2 "insertScene" "There were errors while loading:"
+		ayError 2 "insertScene" "$filename"
 	    }
-
+	    # if
 	}
         # if
 	uS; rV
     }
     # if
- incr i
+    incr i
 }
 # while
 grab release .fu

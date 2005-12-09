@@ -1,3 +1,4 @@
+
 # Ayam, a free 3D modeler for the RenderMan interface.
 #
 # Ayam is copyrighted 1998-2001 by Randolf Schultz

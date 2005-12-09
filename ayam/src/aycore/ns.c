@@ -11,9 +11,9 @@
  */
 
 #include "ayam.h"
-
+#ifndef AYWITHAQUA
 #include <X11/Xutil.h>
-
+#endif /* !AYWITHAQUA */
 
 /* ns.c - Notify Script tag helpers */
 
@@ -33,12 +33,13 @@ Tk_RestrictAction ay_ns_restrictall(ClientData clientData, XEvent *eventPtr);
  *  which leads to the global Tcl variable "cancelled"
  *  being set to 1, which in turn (hopefully) breaks
  *  out of the script (while/for commands check for this
- *  variable)
+ *  variable).
  */
 Tk_RestrictAction
 ay_ns_restrictall(ClientData clientData,
 		  XEvent *eventPtr)
 {
+#ifndef AYWITHAQUA
 #ifndef WIN32
  XKeyEvent *key_event = (XKeyEvent *) eventPtr;
  KeySym ks;
@@ -84,6 +85,7 @@ ay_ns_restrictall(ClientData clientData,
 	} /* if */
     } /* if */
 #endif /* WIN32 */
+#endif /* !AYWITHAQUA */
 
  return TK_DEFER_EVENT;
 } /* ay_ns_restrictall */

@@ -1,7 +1,7 @@
 
 # Ayam, a free 3D modeler for the RenderMan interface.
 #
-# Ayam is copyrighted 1998-2001 by Randolf Schultz
+# Ayam is copyrighted 1998-2005 by Randolf Schultz
 # (rschultz@informatik.uni-rostock.de) and others.
 #
 # All rights reserved.
@@ -410,6 +410,7 @@ proc prefs_save { } {
     puts $newfile "# See: http://www.ayam3d.org/\n"
     puts $newfile "# Edit, if you wish, but keep in mind:"
     puts $newfile "# _This file is parsed by Tcl!_\n"
+
     puts $newfile "# Preferences:"
 
     # write preferences
@@ -419,7 +420,10 @@ proc prefs_save { } {
 	puts $newfile "set ayprefs($pref) $val"
     }
 
-    # now write the hotkeys
+    # now write the hotkeys/shortcuts
+
+    shortcut_swapmb
+
     puts $newfile "# Hotkeys:"
 
     # hotkeys for main window

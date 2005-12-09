@@ -26,6 +26,24 @@ proc repkp { string } {
 }
 # repkp
 
+# shortcut_swapmb:
+#  swap mouse button numbers from Win32/X11 style to Aqua style
+#  in shortcuts designated by ayprefs(SwapMBSC)
+proc shortcut_swapmb { } {
+ global ayprefs
+
+    if { $ayprefs(SwapMB) } {
+	foreach shortcut $ayprefs(SwapMBSC) {
+	    eval [subst "set val \$::$shortcut"]
+	    set val [string map { 2 3 3 2 } $val]
+	    eval [subst "set ::$shortcut $val"]
+	}
+    }
+
+ return;
+}
+# shortcut_swapmb
+
 
 # shortcut_fkeys:
 #  Setup Function-Key-Bindings for window w
@@ -580,8 +598,8 @@ proc shortcut_viewactions { w } {
 	%W render
     }
 
-    global tcl_platform
-    if { $tcl_platform(platform) == "windows" } {
+    global tcl_platform AYWITHAQUA
+    if { ($tcl_platform(platform) == "windows") || $AYWITHAQUA } {
 	bind $w.f3D.togl <MouseWheel> {
 	    undo save ZoomView
 	    %W mc
