@@ -1,4 +1,4 @@
-INSTALL [31. Oct 2005]
+INSTALL [9. Dec 2005]
 
 Compilation Instructions for Ayam
 ---------------------------------
@@ -280,6 +280,7 @@ additional targets to build plugins and manage the installation.
 If you get errors while compiling plugins, maybe the Ayam FAQ helps, see:
 http://www.ayam3d.org/faq.html
 
+
 3.1 MF3D Import/Export Plugin
 -----------------------------
 
@@ -466,6 +467,22 @@ to remove all objects; this step is necessary if you switch build types
 >make mostlyclean
 to make clean but not remove the objects that never change,
 like Apples mf3d code and Affines sribw code.
+
+
+3.8 Creating an application bundle on MacOSX
+--------------------------------------------
+
+Since Ayam 1.9, the Ayam source distribution contains a skeleton
+for an application bundle in the bin directory and the Makefile
+contains a new target "Ayam.app" to fill the skeleton appropriately.
+
+After compilation of Ayam and plugins just use
+>make Ayam.app
+
+to fill the application bundle with the necessary files. After that
+you can start Ayam using a double click on the application bundle.
+You can also then "install" it easily by dragging it to your
+"Programs" folder.
 
 End of Compilation Instructions,
 -- 
