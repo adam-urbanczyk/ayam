@@ -82,7 +82,7 @@ CFLAGS = -O -DAYUSEAFFINE
 # simple configuration using BMRT
 #CFLAGS = -O -DAYUSESLCARGS -DAYUSEBMRTRIBOUT
 
-# IRIX (-DAYIRIXBUG is needed by ncurve.c to work around a bug in libGLU)::
+# IRIX (-DAYIRIXBUG is needed by ncurve.c to work around a bug in libGLU):
 #CFLAGS = -O -fullwarn -DAYIRIXBUG -DAYUSESLCARGS -DAYUSEBMRTRIBOUT
 # Linux:
 #CFLAGS = -g -Wall -DAYUSESLCARGS -DAYUSEBMRTRIBOUT -DAYENABLEWAIT
@@ -117,8 +117,10 @@ LDSWDYNAMIC = -Wl,-Bdynamic
 EXLDFLAGS = 
 # Linux:
 #EXLDFLAGS = -rdynamic
-# MacOSX:
+# MacOSX (X11):
 #EXLDFLAGS = -flat_namespace -undefined suppress
+# MacOSX (Aqua):
+#EXLDFLAGS = -flat_namespace
 
 # Togl
 # Path to "togl.h":
@@ -129,8 +131,12 @@ TOGLOBJECT = togl/togl.o
 
 # OpenGL
 GLINCDIR = /usr/X11R6/include/
+# MacOSX (Aqua):
+#GLINCDIR =
 # link options for linking with OpenGL libraries
 GLLIBS = -lGLU -lGL
+# MacOSX (Aqua):
+#GLLIBS = -framework AGL -framework OpenGL -framework ApplicationServices -framework Carbon
 
 # TIFF
 TIFFINCDIR = /usr/include/
@@ -144,6 +150,8 @@ TCLDIR = ../../tcl8.2.2
 
 # Tcl includes
 TCLINC = -I$(TCLDIR)/generic
+# MacOSX (Aqua):
+#TCLINC =
 
 # Tcl library
 # link options for linking with Tcl library
@@ -151,6 +159,8 @@ TCLLIB = -L$(TCLDIR)/unix -ltcl8.2
 #TCLLIB = -L$(TCLDIR)/unix -ltcl8.0
 # if you have an installed Tcl/Tk, you probably just want:
 #TCLLIB = -ltcl
+# MacOSX (Aqua):
+#TCLLIB = -framework Tcl
 
 # Tk sources directory
 # Note: You really need the Tk _sources_ in order to compile Ayam!
@@ -159,6 +169,8 @@ TKDIR = ../../tk8.2.2
 
 # Tk includes
 TKINC = -I$(TKDIR)/generic -I$(TKDIR)/unix
+# MacOSX (Aqua):
+#TKINC = -I$(TKDIR)/generic -I$(TKDIR)/macosx -I$(TKDIR)/xlib
 
 # Tk library
 # link options for linking with Tk library
@@ -166,12 +178,15 @@ TKLIB = -L$(TKDIR)/unix -ltk8.2
 #TKLIB = -L$(TKDIR)/unix -ltk8.0
 # if you have an installed Tcl/Tk, you probably just want:
 #TKLIB = -ltk
-
+# MacOSX (Aqua):
+#TKLIB = -framework Tk
 
 # X11-libs
 # link options for linking with X11
 X11LIBS = -L/usr/X11R6/lib -lXmu -lXext -lX11
 #X11LIBS = -L/usr/X11R6/lib -lXmu -lXext -lX11
+# MacOSX (Aqua):
+#X11LIBS =
 
 
 # Affine Toolkit
@@ -440,8 +455,12 @@ all: ayamsh csphere.so mfio.so metaobj.so
 ayamsh: $(AYAMOBJS) $(TOGLOBJECT) $(AFFINEOBJS)
 	$(LD) $(AYAMOBJS) $(TOGLOBJECT) $(EXLDFLAGS) -o ayamsh $(TKLIB) $(TCLLIB) $(GLLIBS) $(X11LIBS) $(RIBOUTLIB) $(AQSISRI2RIB) $(SLCARGSLIB) $(AFFINEOBJS) $(AQSISOBJS) $(TIFFLIB) -lm $(DL)
 
+Ayam.app: ayamsh
+	mv ayamsh ../bin/Ayam.app/Contents/MacOS/Ayam
+	cp -rf tcl ../bin/Ayam.app/Contents/Resources/Scripts
+
 aycsg.so: $(AYCSGOBJS) $(OPENCSGOBJS)
-	$(LD) -shared $(AYCSGOBJS) -o plugins/aycsg.so $(AYCSGLIBS)
+	$(LD) $(SHLFLAGS) $(AYCSGOBJS) -o plugins/aycsg.so $(AYCSGLIBS)
 
 csphere.so: $(CSPHEREOBJS)
 	$(CC) $(SHLFLAGS) $(CSPHEREOBJS) -o plugins/csphere.so
@@ -500,6 +519,8 @@ mostlyclean:
 	-rm -f contrib/meta/*.o
 	-rm -f contrib/meta/*.so
 	-rm -f ayamsh ayam
+	-rm -f ../bin/Ayam.app/Contents/MacOS/Ayam
+	-rm -rf ../bin/Ayam.app/Contents/Resources/Scripts/tcl
 
 clean: mostlyclean
 	-rm -f $(AFFINEOBJS)
