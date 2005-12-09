@@ -7,7 +7,7 @@
 #
 # See the file License for details.
 
-# riproc.tcl - riproc (RIB-Include) objects Tcl code
+# riproc.tcl - riproc (RiProcedural) objects Tcl code
 
 set RiProc_props { Transformations Attributes Material Tags RiProcAttr }
 
