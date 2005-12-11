@@ -18,6 +18,15 @@ if { [string first wish [file tail [info nameofexecutable]]] != -1 } {
     exit
 }
 
+# do we run in Wish Shell (on Mac OS X Aqua)?
+if { [string first Wish [file tail [info nameofexecutable]]] != -1 } {
+    # yes, send the script to Ayam (via AppleScript event)
+    set repairscript [info script]
+    set script [subst "tell application Ayam to\ndo script \{source \"$repairscript\"\}\nend tell"
+    exec osascript -e $script
+    exit
+}
+
 # no more error dialogs
 set oldRedirectTcl $::ayprefs(RedirectTcl)
 set ::ayprefs(RedirectTcl) 1
