@@ -11,18 +11,37 @@
 
 # repairAyam.tcl - repair Ayam if it is stuck; use only in emergency!
 
+
 # do we run in wish?
 if { [string first wish [file tail [info nameofexecutable]]] != -1 } {
-    # yes, send the script to Ayam
-    send ayam "source [info script]"
+    # yes, send the script to Ayam (via Tk send)
+
+    # get (complete) path to this script
+    if { [file pathtype [info script]] == "absolute" } {
+	set repairscript [info script]
+    } else {
+	set repairscript [file join [pwd] [info script]]
+    }
+
+    puts "Sending myself to Ayam..."
+    send ayam "source $repairscript"
     exit
 }
 
 # do we run in Wish Shell (on Mac OS X Aqua)?
 if { [string first Wish [file tail [info nameofexecutable]]] != -1 } {
     # yes, send the script to Ayam (via AppleScript event)
-    set repairscript [info script]
-    set script [subst "tell application Ayam to\ndo script \{source \"$repairscript\"\}\nend tell"
+
+
+    # get (complete) path to this script
+    if { [file pathtype [info script]] == "absolute" } {
+	set repairscript [info script]
+    } else {
+	set repairscript [file join [pwd] [info script]]
+    }
+
+    set script [subst "tell application \"Ayam\"\n  do script \"source \{$repairscript\}\"\nend tell"]
+    puts "Sending myself to Ayam..."
     exec osascript -e $script
     exit
 }
