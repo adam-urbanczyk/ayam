@@ -91,7 +91,7 @@ CFLAGS = -O -DAYUSEAFFINE
 # MacOSX with Aqua:
 #CFLAGS = -O -DAYWITHAQUA -DAYUSEAFFINE
 # MacOSX with X11:
-#CFLAGS = -O -DAYUSEAFFINE -DAYENABLEFEXIT
+#CFLAGS = -O -DAYUSEAFFINE -DAYENABLEFEXIT -DUSE_NON_CONST
 
 # ld flag to switch to static linking
 # IRIX:
@@ -124,22 +124,24 @@ EXLDFLAGS =
 
 # Togl
 # Path to "togl.h":
-TOGLINCDIR = togl
+TOGLINC = -Itogl
 
 # Path to "togl.o":
 TOGLOBJECT = togl/togl.o
 
 # OpenGL
-GLINCDIR = /usr/X11R6/include/
+# OpenGL includes
+GLINC = -I/usr/X11R6/include/
 # MacOSX (Aqua):
-#GLINCDIR =
+#GLINC =
 # link options for linking with OpenGL libraries
 GLLIBS = -lGLU -lGL
 # MacOSX (Aqua):
 #GLLIBS = -framework AGL -framework OpenGL -framework ApplicationServices -framework Carbon
 
 # TIFF
-TIFFINCDIR = /usr/include/
+# TIFF includes
+TIFFINC = -I/usr/include/
 # link options for linking with TIFF library
 TIFFLIB = -ltiff
 
@@ -181,7 +183,11 @@ TKLIB = -L$(TKDIR)/unix -ltk8.2
 # MacOSX (Aqua):
 #TKLIB = -framework Tk
 
-# X11-libs
+# X11
+# X11 includes
+X11INC = -I/usr/X11R6/include
+# MacOSX (Aqua):
+#X11INC =
 # link options for linking with X11
 X11LIBS = -L/usr/X11R6/lib -lXmu -lXext -lX11
 #X11LIBS = -L/usr/X11R6/lib -lXmu -lXext -lX11
@@ -190,8 +196,8 @@ X11LIBS = -L/usr/X11R6/lib -lXmu -lXext -lX11
 
 
 # Affine Toolkit
-# where is ributil.h?
-AFFINEINCDIR = ./affine/include
+# Affine includes (where is ributil.h?)
+AFFINEINC = -Iaffine/include
 # if you use Affine as BMRT libribout replacement
 # (also add -DAYUSEAFFINE to CFLAGS!):
 AFFINEOBJS = ./affine/src/write.o ./affine/src/constant.o
@@ -200,7 +206,7 @@ AFFINEOBJS = ./affine/src/write.o ./affine/src/constant.o
 
 # Aqsis
 AQSISDIR = /usr/local/aqsis
-AQSISINCDIR = $(AQSISDIR)/include
+AQSISINC = -I$(AQSISDIR)/include
 AQSISLIBDIR = $(AQSISDIR)/lib
 # if you do not use Aqsis libslxargs as libslcargs replacement:
 AQSISOBJS = 
@@ -218,7 +224,7 @@ AQSISRI2RIB =
 # libslcargs (leave SLCARGSLIB empty), as its functionality is already
 # present in libribout (in any case, keep -DAYUSESLCARGS set in CFLAGS above)!
 BMRTDIR = ../../BMRT2.5
-BMRTINCDIR = $(BMRTDIR)/include
+BMRTINC = -I$(BMRTDIR)/include
 BMRTLIBDIR = $(BMRTDIR)/lib
 # if you use BMRT libribout and not Affine:
 #RIBOUTLIB = -L$(BMRTLIBDIR) -lribout
@@ -237,7 +243,7 @@ SLCARGSLIB =
 #DL = -ldl
 # Linux:
 DL = -ldl -lpthread
-# NetBSD:
+# NetBSD/MacOSX (Aqua):
 #DL =
 
 
@@ -246,6 +252,8 @@ DL = -ldl -lpthread
 SHLFLAGS = -shared
 # MacOSX:
 #SHLFLAGS = -bundle -flat_namespace -undefined suppress
+# MacOSX (Aqua):
+#SHLFLAGS = -dynamiclib -flat_namespace -undefined suppress
 
 # RRIB Plugin Required Libraries
 # where is the complete Affine distribution?
@@ -445,10 +453,10 @@ RRIBOBJS = plugins/rrib.o
 
 
 .c.o: 
-	$(CC) -c $(CFLAGS) $*.c -o $@ -I. -IMF3D -Icontrib -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR) -I$(AQSISINCDIR) -I$(TIFFINCDIR)
+	$(CC) -c $(CFLAGS) $*.c -o $@ -I. -IMF3D -Icontrib $(TOGLINC) $(TCLINC) $(TKINC) $(BMRTINC) $(GLINC) $(AFFINEINC) $(AQSISINC) $(TIFFINC)
 
 .cpp.o:
-	$(CXX) -c $(CFLAGS) $*.cpp -o $@ -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR) -I$(AQSISINCDIR) -I$(OPENCSGINCDIR) -I$(GLEWINCDIR) -Iplugins
+	$(CXX) -c $(CFLAGS) $*.cpp -o $@ -I. -IMF3D $(TOGLINC) $(TCLINC) $(TKINC) $(BMRTINC) $(GLINC) $(AFFINEINC) $(AQSISINC) -I$(OPENCSGINCDIR) -I$(GLEWINCDIR) -Iplugins
 
 all: ayamsh csphere.so mfio.so metaobj.so
 
@@ -481,31 +489,31 @@ rrib.so: $(RRIBOBJS)
 	$(CC) $(SHLFLAGS) $(RRIBOBJS) -o plugins/rrib.so $(RRIBLIBS)
 
 ayslx.so:
-	$(CC) -c $(CFLAGS) plugins/ayslx.c -o plugins/ayslx.o -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR) -I$(AQSISINCDIR) -I$(TIFFINCDIR) -I$(AYSLXINCDIR)
+	$(CC) -c $(CFLAGS) plugins/ayslx.c -o plugins/ayslx.o -I. -IMF3D $(TOGLINC) $(TCLINC) $(TKINC) $(BMRTINC) $(GLINC) $(AFFINEINC) $(AQSISINC) $(TIFFINC) -I$(AYSLXINCDIR)
 	$(CC) $(SHLFLAGS) plugins/ayslx.o -o plugins/ayslx.so $(AYSLXLIBS)
 
 ayso.so:
-	$(CC) -c $(CFLAGS) plugins/ayso.c -o plugins/ayso.o -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR) -I$(AQSISINCDIR) -I$(TIFFINCDIR) -I$(AYSOINCDIR)
+	$(CC) -c $(CFLAGS) plugins/ayso.c -o plugins/ayso.o -I. -IMF3D $(TOGLINC) $(TCLINC) $(TKINC) $(BMRTINC) $(GLINC) $(AFFINEINC) $(AQSISINC) $(TIFFINC) -I$(AYSOINCDIR)
 	$(CC) $(SHLFLAGS) plugins/ayso.o -o plugins/ayso.so $(AYSOLIBS)
 
 ayslo.so:
-	$(CC) -c $(CFLAGS) plugins/ayslo.c -o plugins/ayslo.o -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR) -I$(AQSISINCDIR) -I$(TIFFINCDIR) -I$(AYSLOINCDIR)
+	$(CC) -c $(CFLAGS) plugins/ayslo.c -o plugins/ayslo.o -I. -IMF3D $(TOGLINC) $(TCLINC) $(TKINC) $(BMRTINC) $(GLINC) $(AFFINEINC) $(AQSISINC) $(TIFFINC) -I$(AYSLOINCDIR)
 	$(CC) $(SHLFLAGS) plugins/ayslo.o -o plugins/ayslo.so $(AYSLOLIBS)
 
 ayslo3d.so:
-	$(CC) -c $(CFLAGS) plugins/ayslo3d.c -o plugins/ayslo3d.o -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR) -I$(AQSISINCDIR) -I$(TIFFINCDIR) -I$(AYSLO3DINCDIR)
+	$(CC) -c $(CFLAGS) plugins/ayslo3d.c -o plugins/ayslo3d.o -I. -IMF3D $(TOGLINC) $(TCLINC) $(TKINC) $(BMRTINC) $(GLINC) $(AFFINEINC) $(AQSISINC) $(TIFFINC) -I$(AYSLO3DINCDIR)
 	$(CC) $(SHLFLAGS) plugins/ayslo3d.o -o plugins/ayslo3d.so $(AYSLO3DLIBS)
 
 ayslb.so:
-	$(CC) -c $(CFLAGS) plugins/ayslb.c -o plugins/ayslb.o -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR) -I$(AQSISINCDIR) -I$(TIFFINCDIR)
+	$(CC) -c $(CFLAGS) plugins/ayslb.c -o plugins/ayslb.o -I. -IMF3D $(TOGLINC) $(TCLINC) $(TKINC) $(BMRTINC) $(GLINC) $(AFFINEINC) $(AQSISINC) $(TIFFINC)
 	$(CC) $(SHLFLAGS) plugins/ayslb.o -o plugins/ayslb.so
 
 aysdr.so:
-	$(CC) -c $(CFLAGS) plugins/aysdr.c -o plugins/aysdr.o -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR) -I$(AQSISINCDIR) -I$(TIFFINCDIR) -I$(AYSDRINCDIR)
+	$(CC) -c $(CFLAGS) plugins/aysdr.c -o plugins/aysdr.o -I. -IMF3D $(TOGLINC) $(TCLINC) $(TKINC) $(BMRTINC) $(GLINC) $(AFFINEINC) $(AQSISINC) $(TIFFINC) -I$(AYSDRINCDIR)
 	$(CC) $(SHLFLAGS) plugins/aysdr.o -o plugins/aysdr.so $(LDSWSTATIC) $(AYSDRLIBS) $(LDSWDYNAMIC)
 
 onio.so:
-	$(CXX) -c $(CFLAGS) plugins/onio.cpp -o plugins/onio.o -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR) -I$(AQSISINCDIR) -I$(TIFFINCDIR) -I$(ONIOINCDIR)
+	$(CXX) -c $(CFLAGS) plugins/onio.cpp -o plugins/onio.o -I. -IMF3D $(TOGLINC) $(TCLINC) $(TKINC) $(BMRTINC) $(GLINC) $(AFFINEINC) $(AQSISINC) $(TIFFINC) -I$(ONIOINCDIR)
 	$(CXX) $(SHLFLAGS) plugins/onio.o -o plugins/onio.so -Wl,-Bstatic $(ONIOLIBS) -Wl,-Bdynamic
 
 mostlyclean:

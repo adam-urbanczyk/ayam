@@ -2,7 +2,7 @@
 
 # Ayam, a free 3D modeler for the RenderMan interface.
 #
-# Ayam is copyrighted 1998-2004 by Randolf Schultz
+# Ayam is copyrighted 1998-2005 by Randolf Schultz
 # (rschultz@informatik.uni-rostock.de) and others.
 #
 # All rights reserved.
@@ -49,7 +49,7 @@ proc create_makefile {} {
 
     global bmrtpath aqsispath
 
-    global cflags prefix tclpath tkpath localtcl localtk useaqua aqsis0719 aqsis090 bmrt25 preview
+    global cflags prefix tiffpath tclpath tkpath localtcl localtk useaqua aqsis0719 aqsis090 bmrt25 preview
 
     global tcl_version tk_version
 
@@ -98,7 +98,7 @@ proc create_makefile {} {
 
     if { ![file exists $tkpath] || !([file exist "$tkpath/generic/tkInt.h"] ||\
 	    [file exist "$tkpath/include/tkInt.h"]) } {
-	set err_str "$err_str - Tk-Path doesn't exist or invalid!\n"
+	set err_str "$err_str - Tk-Path doesn't exist or is invalid!\n"
 	set err 1
     }
 
@@ -116,13 +116,13 @@ proc create_makefile {} {
     if {$err} {
 	tk_messageBox -icon error -message $err_str -parent . -type ok
 	return
-    }   
+    }
 
     #
     # Assemble CFLAGS, LD, PREFIX, LDSWDYNAMIC, EXLDFLAGS, TCLDIR, TCLINC,
     # TCLLIB, TKDIR, TKINC, TKLIB, DL
-    # AQSISDIR, AQSISINCDIR, AQSISLIBDIR, AQSISOBJS, AQSISRI2RIB, BMRTDIR,
-    # BMRTINCDIR, BMRTLIBDIR, RIBOUTLIB, SLCARGSLIB
+    # AQSISDIR, AQSISINC, AQSISLIBDIR, AQSISOBJS, AQSISRI2RIB, BMRTDIR,
+    # BMRTINC, BMRTLIBDIR, RIBOUTLIB, SLCARGSLIB
     #
 
     # CFLAGS & LD
@@ -135,10 +135,11 @@ proc create_makefile {} {
     } elseif {[regexp "Solaris" $osval]} {
 	set CFLAGS "-DSOLARIS_BUG"
 	set LD "CC"
-    } elseif {[regexp "MacOS" $osval]} {
-	set CFLAGS "-DAYENABLEFEXIT"
+    } elseif {[regexp "Mac" $osval]} {
 	if {$useaqua} {
-	    set CFLAGS "$CFLAGS -DAYWITHAQUA"
+	    set CFLAGS "-DAYWITHAQUA -DAYENABLEFEXIT -DMAC_OSX_TK"
+	} else {
+	    set CFLAGS "-DAYENABLEFEXIT"
 	}
 	set LD "g++"
     } elseif {[regexp "NetBSD" $osval]} {
@@ -184,8 +185,12 @@ proc create_makefile {} {
     set CFLAGS "$CFLAGS $cflags"
 
     # SHLFLAGS
-    if {[regexp "MacOS" $osval]} {
-	set SHLFLAGS "-bundle -flat_namespace -undefined suppress"
+    if {[regexp "Mac" $osval]} {
+	if { $useaqua } {
+	    set SHLFLAGS "-dynamiclib -flat_namespace -undefined suppress"
+	} else {
+	    set SHLFLAGS "-bundle -flat_namespace -undefined suppress"
+	}
     } else {
 	set SHLFLAGS "-shared"
     }
@@ -200,12 +205,12 @@ proc create_makefile {} {
     }
 
     # EXLDFLAGS
-    switch {$osval} {
-	"IRIX" { set EXLDFLAGS "" }
-	"Solaris" { set EXLDFLAGS "" }
-	"MacOS" { set EXLDFLAGS "" }
-	"default" { set EXLDFLAGS "-rdynamic"}
+    set EXLDFLAGS "-rdynamic"
+    if { ($osval == "Mac OS X") || ($osval == "IRIX") ||
+         ($osval == "Solaris") } {
+	set EXLDFLAGS ""
     }
+
 
     # TCLDIR
     set TCLDIR $tclpath
@@ -229,8 +234,25 @@ proc create_makefile {} {
     # TKLIB
     if { $localtcl } {
 	set TKLIB "-ltk$tk_version"
-    } else {	
+    } else {
 	set TKLIB "-L$TKDIR/unix -ltk$tkver.$tksub"
+    }
+
+    # TIFFLIB
+    set TIFFLIB "-L$tiffpath/lib -ltiff"
+    set TIFFINC "-I$tiffpath/include"
+
+    if { $useaqua } {
+	set TCLLIB "-framework Tcl"
+	set TKINC "-I$tkpath/generic -I$tkpath/macosx -I$tkpath/xlib"
+	set TKLIB "-framework Tk"
+	set GLLIBS "-framework AGL -framework OpenGL -framework ApplicationServices -framework Carbon"
+	set GLINC ""
+	set X11LIBS ""
+    } else {
+	set GLLIBS "-lGLU -lGL"
+	set GLINC "-I/usr/X11R6/include"
+	set X11LIBS "-L/usr/X11R6/lib -lXmu -lXext -lX11"
     }
 
     # Affine
@@ -243,7 +265,7 @@ proc create_makefile {} {
     # Aqsis
     if {[string length $aqsispath]} {
 	set AQSISDIR $aqsispath
-	set AQSISINCDIR "$AQSISDIR/include"
+	set AQSISINC "$-IAQSISDIR/include"
 	set AQSISLIBDIR "$AQSISDIR/lib"
 
 	if {[regexp "libri2rib" $ribval]} {
@@ -265,7 +287,7 @@ proc create_makefile {} {
 	}
     } else {
 	set AQSISDIR ""
-	set AQSISINCDIR ""
+	set AQSISINC ""
 	set AQSISLIBDIR ""
 	set AQSISRI2RIB ""
 	set AQSISOBJS ""
@@ -274,7 +296,7 @@ proc create_makefile {} {
     # BMRT
     if {[string length $bmrtpath]} {
 	set BMRTDIR $bmrtpath
-	set BMRTINCDIR "$BMRTDIR/include"
+	set BMRTINC "-I$BMRTDIR/include"
 	set BMRTLIBDIR "$BMRTDIR/lib"
 	if {[regexp "libribout" $ribval]} {
 	    set RIBOUTLIB "-L$BMRTLIBDIR -lribout"
@@ -289,21 +311,25 @@ proc create_makefile {} {
 	}
     } else {
 	set BMRTDIR ""
-	set BMRTINCDIR ""
+	set BMRTINC ""
 	set BMRTLIBDIR ""
 	set RIBOUTLIB ""
 	set SLCARGSLIB ""
     }
 
     # DL
-    if {$osval != "NetBSD"} {
-	if {$osval == "Linux"} {
-	    set DL "-ldl -lpthread"
+    if {$osval == "NetBSD"} {
+	set DL ""
+    } elseif {$osval == "Linux"} {
+	set DL "-ldl -lpthread"
+    } elseif {$osval == "Mac OS X"} {
+	if { $useaqua } {
+	    set DL ""
 	} else {
 	    set DL "-ldl"
 	}
     } else {
-	set DL ""
+	set DL "-ldl"
     }
 
     #
@@ -345,15 +371,20 @@ proc create_makefile {} {
 		puts $dst "TKDIR=$TKDIR"
 		puts $dst "TKINC=$TKINC"
 		puts $dst "TKLIB=$TKLIB"
+		puts $dst "GLINC=$GLINC"
+		puts $dst "GLLIBS=$GLLIBS"
+		puts $dst "X11LIBS=$X11LIBS"
+		puts $dst "TIFFINC=$TIFFINC"
+		puts $dst "TIFFLIB=$TIFFLIB"
 		puts $dst "DL=$DL"
 		puts $dst "AFFINEOBJS=$AFFINEOBJS"
 		puts $dst "AQSISDIR=$AQSISDIR"
-		puts $dst "AQSISINCDIR=$AQSISINCDIR"
+		puts $dst "AQSISINC=$AQSISINC"
 		puts $dst "AQSISLIBDIR=$AQSISLIBDIR"
 		puts $dst "AQSISOBJS=$AQSISOBJS"
 		puts $dst "AQSISRI2RIB=$AQSISRI2RIB"
 		puts $dst "BMRTDIR=$BMRTDIR"
-		puts $dst "BMRTINCDIR=$BMRTINCDIR"
+		puts $dst "BMRTINC=$BMRTINC"
 		puts $dst "BMRTLIBDIR=$BMRTLIBDIR"
 		puts $dst "RIBOUTLIB=$RIBOUTLIB"
 		puts $dst "SLCARGSLIB=$SLCARGSLIB"
@@ -364,7 +395,7 @@ proc create_makefile {} {
 	}
 
 	close $src
-	close $dst	
+	close $dst
     } else {
 	tk_messageBox -icon error -message "Cannot read Makefile.shared!" -parent . -type ok
 	return
@@ -372,6 +403,7 @@ proc create_makefile {} {
 
     tk_messageBox -icon info -message "Makefile successfully created." -parent . -type ok
 }
+# create_makefile
 
 #
 # Build the GUI
@@ -386,18 +418,25 @@ lappend strs [list cflags -O2 CFLAGS: 0 normal]
 lappend strs [list prefix /usr/local Prefix: 1 normal]
 lappend strs [list tclpath ../../tcl$tcl_patchLevel Tcl-Path:  1 normal]
 lappend strs [list tkpath ../../tk$tk_patchLevel Tk-Path:  1 normal]
+lappend strs [list tiffpath /usr TIFF-Library:  1 normal]
 lappend strs [list bmrtpath "" BMRT-Path:  1 disabled]
 lappend strs [list aqsispath "" Aqsis-Path:  1 disabled]
 
 proc dirDialog {w ent} {
-    set dir [tk_chooseDirectory -parent $w -mustexist true -initialdir [$ent get]]
-
+    global tcl_platform
+    if {($tcl_platform(os) == "Darwin") && \
+	([string first Wish [info nameofexecutable]] != -1)} {
+	set dir [tk_chooseDirectory -parent $w -mustexist true]
+    } else {
+	set dir [tk_chooseDirectory -parent $w -mustexist true -initialdir [$ent get]]
+    }
     if [string compare $dir ""] {
 	$ent delete 0 end
 	$ent insert 0 $dir
 	$ent xview end
     }
 }
+# dirDialog
 
 set j 0
 foreach i $strs {
@@ -449,13 +488,14 @@ proc update_states {} {
 	.s.str.aqsispathReq config -state disabled
     }
 
-    if {[regexp "MacOS" $osval]} {
+    if {[regexp "Mac" $osval]} {
 	.s.opts.useaqua config -state normal
     } else {
 	.s.opts.useaqua config -state disabled
     }
 
 }
+# update_states
 
 set ribval $def_ribval
 tk_optionMenu .s.opts.rib ribval dummy
@@ -481,7 +521,7 @@ foreach i $o {
     .s.opts.os.menu add radio -label [lindex $i 0] -value [lindex $i 0] -variable osval -command "update_states"
 }
 
-lappend check [list useaqua "Use Aqua" 1 disabled]
+lappend check [list useaqua "Use Aqua" 0 disabled]
 lappend check [list localtcl "Use installed Tcl-library" 1 normal]
 lappend check [list localtk "Use installed Tk-library" 1 normal]
 lappend check [list bmrt25 "BMRT < 2.5" 0 disabled]
@@ -500,6 +540,7 @@ proc excl {i} {
 	set aqsis0719 0
     }
 }
+# excl
 
 foreach i $check {
     set [lindex $i 0] [lindex $i 2]
@@ -513,3 +554,4 @@ pack .buttons -side bottom -padx 2m -pady 2m -fill x
 button .buttons.create -text "Create Makefile" -command "create_makefile"
 button .buttons.exit -text "Exit" -command "exit"
 pack .buttons.create .buttons.exit -side left -expand 1
+
