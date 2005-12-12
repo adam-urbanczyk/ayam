@@ -652,5 +652,7 @@ refcard.ps ayam.pdf html;
 
 .SUFFIXES: .so .o .cpp
 
+.PHONY: mf3d
+
 .o.so: 
 	$(CC) $(SHLFLAGS) -o $@ $*.o
