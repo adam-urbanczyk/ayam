@@ -34,7 +34,11 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <GL/glu.h>
+#ifdef AYWITHAQUA
+  #include <OpenGL/glu.h>
+#else
+  #include <GL/glu.h>
+#endif /* AYUSEAQUA */
 
 /*
 #ifdef AYUSEORIGTOGL
