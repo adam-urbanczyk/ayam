@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile.shared [31. Aug 2005]
+# Makefile.shared [13. Dec 2005]
 # Makefile for Ayam (shared version)
 
 # Choose an installation prefix.
@@ -238,7 +238,9 @@ SLCARGSLIB =
 
 # Dynamic Loading
 # Library for dynamic loading (contains dlopen()) and library for
-# threads support, if third party libs (e.g. Mesa) require it
+# threads support, if third party libs (e.g. Mesa) require it;
+# additional wanted global libraries (like libz) may also go into
+# this variable
 # IRIX, Solaris, (MacOSX: get libdl from Fink!):
 #DL = -ldl
 # Linux:
