@@ -25,6 +25,7 @@
 
 #define pos(p) (w->mgrid[p.x * w->aktcubes * w->aktcubes + p.y * w->aktcubes + p.z])
 
+static unsigned int component_id;
 
 /* calculate the effect for all components in list */
 double
@@ -44,7 +45,7 @@ meta_calcall (double x1, double y1, double z1, meta_world * w)
   while (o->next != NULL)
     {
 
-	if(o->type == metacomp_id)
+	if(o->type == component_id)
 	{
 
       	tmp = (meta_blob *) o->refine;
@@ -649,7 +650,7 @@ meta_calceffect (meta_world * w)
     {
       n++;
 
-	if(o->type == metacomp_id)
+	if(o->type == component_id)
 	{
      	 b = (meta_blob *) o->refine;
 
@@ -768,9 +769,12 @@ meta_getnormal (meta_world * w, meta_xyz * p, meta_xyz * normal)
 }
 
 
+void
+metautils_init(unsigned int cid)
+{
 
+  component_id = cid;
 
-
-
-
+  return;
+} /* metautils_init */
 
