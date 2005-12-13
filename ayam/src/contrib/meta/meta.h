@@ -198,6 +198,6 @@ void meta_movefront (meta_gridcell * cube, meta_world * w);
 void meta_moveback (meta_gridcell * cube, meta_world * w);
 int meta_initcubestack (meta_world * w);
 int meta_freecubestack (meta_world * w);
-
+void metautils_init(unsigned int cid);
 
 #endif
