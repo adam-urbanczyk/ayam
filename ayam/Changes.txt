@@ -1,4 +1,4 @@
-[5. Dec 2005] CVS-Head:
+[14. Dec 2005] CVS-Head:
 o bug fixes:
   - fixed automatic merging of PV tags (SF 1238692)
   - fixed root object not drawn upon File/New (SF 1245221)
@@ -15,6 +15,7 @@ o bug fixes:
   - fixed Shift+Tab bindings when Ayam is used with Tk8.4 (SF 1324656)
   - fixed opening of the preferences editor leading to Tcl errors in
     rare cases (SF 1325362)
+  - fixed repairAyam.tcl not working on MacOSX
 o improved OBJ import of files with trailing whitespace as e.g. written by
   Blender
 o script objects now cache a compiled version of the script for faster
@@ -90,6 +91,12 @@ o added work-arounds for console cut and paste and some keyboard shortcuts
   not working anymore on Tk8.4
 o added work-around to fix drawing/shading of NURBS curves/surfaces on
   MacOSX/Aqua in multiple view configurations
+o added "Ayam.app" directory structure and resources for running on MacOSX
+o added hidden preference setting to swap mouse buttons 2 and 3 for running
+  on MacOSX/Aqua
+o added AppleScript port to Ayam so that now e.g. scene files may be dropped
+  onto the (docked) application icon
+o added fix for "blinking" tool tips on MacOSX/Aqua
 
 
 [5. Jul 2005] Ayam 1.8.3:
