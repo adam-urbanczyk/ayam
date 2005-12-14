@@ -1,13 +1,13 @@
 # Ayam, a free 3D modeler for the RenderMan interface.
 #
-# Ayam is copyrighted 1998-2001 by Randolf Schultz
+# Ayam is copyrighted 1998-2005 by Randolf Schultz
 # (rschultz@informatik.uni-rostock.de) and others.
 #
 # All rights reserved.
 #
 # See the file License for details.
 
-# balloon.tcl - code for displaying help balloons
+# balloon.tcl - code for displaying help balloons (tool tips)
 # original code taken from "The Tcl'ers Wiki" (Richard Suchenwirth)
 # Changes:
 # added browse balloons feature;
@@ -49,6 +49,7 @@ proc balloon_set {w help} {
 }
 # balloon_set
 
+
 #
 #
 #
@@ -64,7 +65,13 @@ proc balloon_show {w arg} {
     set top $w.balloon
     catch {destroy $top}
     toplevel $top -bd 1 -bg black
-    wm overrideredirect $top 1
+    set ws ""
+    catch [set ws [tk windowingsystem]]
+    if {[string equal $ws aqua]} {
+	::tk::unsupported::MacWindowStyle style $top help none
+    } else {
+	wm overrideredirect $top 1
+    }
     pack [message $top.txt -width 100c -fg black -bg lightyellow -text \
 	    [encoding convertfrom $arg]] 
 
@@ -86,6 +93,7 @@ proc balloon_show {w arg} {
 # balloon_show
 
 
+#
 #
 #
 proc balloon_setsplit { w s len } {
@@ -112,6 +120,7 @@ proc balloon_setsplit { w s len } {
  return;
 }
 # balloon_setsplit
+
 
 #
 #
