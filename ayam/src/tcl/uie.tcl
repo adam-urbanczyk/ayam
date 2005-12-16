@@ -490,13 +490,26 @@ proc addCheck { w prop name } {
 	eval [subst "bindtags $ff.cb \{$ff.cb Checkbutton all\}"]
 	bind $ff.cb <Key-Escape> {resetFocus}
     } else {
-	set cb [checkbutton $f.cb -variable ${prop}(${name}) -bd $bw\
+	set sw ""
+	catch [set ws [tk windowingsystem]]
+	if {$ws == "aqua" } {
+	    # also Aqua gets its "Extrawurst"
+	    set ff [frame $f.fcb -highlightthickness 1]
+	    set cb [checkbutton $ff.cb -variable ${prop}(${name}) -bd $bw]
+	    bind $ff <1> { %W.cb invoke }
+	    pack $f.l -in $f -side left
+	    pack $f.fcb -in $f -side left -expand yes -fill both
+	    pack $ff.cb -in $ff -side top -padx 30 -pady 0
+	} else {
+	    # generic (X11) implementation
+	    set cb [checkbutton $f.cb -variable ${prop}(${name}) -bd $bw\
 		    -pady 1 -padx 30]
-	pack $f.l -in $f -side left
-	pack $f.cb -in $f -side left -fill x -expand yes
+	    pack $f.l -in $f -side left
+	    pack $f.cb -in $f -side left -fill x -expand yes
 
-	eval [subst "bindtags $f.cb \{$f.cb Checkbutton all\}"]
-	bind $f.cb <Key-Escape> {resetFocus}
+	    eval [subst "bindtags $f.cb \{$f.cb Checkbutton all\}"]
+	    bind $f.cb <Key-Escape> {resetFocus}
+	}
     }
 
     if { ! $ay(iapplydisable) } {
@@ -567,6 +580,12 @@ proc addMenu { w prop name elist } {
     if { $tcl_platform(platform) == "windows" } {
 	$f.mb configure -pady 1
     }
+    set sw ""
+    catch [set ws [tk windowingsystem]]
+    if {$ws == "aqua" } {
+	$f.mb configure -pady 2
+    }
+
     set m [menu $f.mb.m -tearoff 0]
 
     set val 0
