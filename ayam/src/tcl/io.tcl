@@ -1304,3 +1304,97 @@ proc io_importOBJ { } {
 }
 # io_importOBJ
 
+
+if { $AYWITHAQUA } {
+# OpenDocument:
+#  some document(s) are dropped onto the application (on MacOSX-Aqua),
+#  load them (replace the first, insert the remaining)
+proc ::tk::mac::OpenDocument { args } {
+    grab .fu
+    set j 0
+    foreach arg $args {
+	if { ([file extension $arg] == ".ay") || \
+		 ([file extension $arg] == ".AY") } {
+
+	    regsub -all {\\} $arg {/} filename
+
+	    if { $j == 0 } {
+		# close all views
+		viewCloseAll
+
+		set ay_error ""
+		
+		replaceScene $filename
+		if { $ay_error < 2 } {
+		    set ay(filename) $filename
+		    set windowfilename [file tail [file rootname $newfilename]]
+		    wm title . "Ayam - Main - $windowfilename"
+		    ayError 4 "replaceScene" "Done reading scene from:"
+		    ayError 4 "replaceScene" "$filename"
+		    if { [file exists $filename] } {
+			set dirname [file dirname $filename]
+			cd $dirname
+			update_prompt ay uc w
+		    }
+		    io_mruAdd $filename
+		} else {
+		    ayError 2 "replaceScene" "There were errors while loading:"
+		    ayError 2 "replaceScene" "$filename"
+		}
+		set j 1
+	    } else {
+		set ay_error ""
+		insertScene $filename
+		if { $ay_error < 2 } {
+		    ayError 4 "insertScene" "Done inserting scene from:"
+		    ayError 4 "insertScene" "$filename"
+		} else {
+		    ayError 2 "insertScene" "There were errors while loading:"
+		    ayError 2 "insertScene" "$filename"
+		}
+		# if
+	    }
+	    # if
+	    uS; rV
+	}
+	# if
+    }
+    # foreach
+    grab release .fu
+ return;
+}
+# OpenDocument
+
+}
+# if
+
+
+#
+#
+#
+proc io_exit { } {
+    global ayprefs AYENABLEFEXIT
+
+    if { ! [io_warnChanged] } {
+
+        # remove all temporary files
+        catch [ tmp_clean 1 ]
+
+        if { $ayprefs(AutoSavePrefs) == 1 } {
+            catch [ prefs_save ]
+        }
+
+        puts "Good Bye!"
+        update
+        if { $AYENABLEFEXIT == 1 } {
+            fastExit
+        } else {
+	    if { [ info commands realexit ] != "" } {
+		realexit
+	    } else {
+		exit
+	    }
+        }
+    }
+}
+# io_exit
