@@ -606,6 +606,9 @@ if { $tcl_platform(platform) == "windows" } {
 
 	proc ::tk::mac::ShowPreferences { args } { prefs_open }
 
+	# make notebook tabs highlight in a nicer color
+	option add *activeBackground systemHighlight
+
 	set ayprefs(SwapMB) 1
 
 	# like on Win32, some keysyms are missing, so do not bind to them
