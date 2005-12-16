@@ -594,10 +594,21 @@ if { $tcl_platform(platform) == "windows" } {
     set ayprefs(Plugins) "[file dirname [info nameofexecutable]]/plugins"
     set ayprefs(Scripts) "plugins/loadrrib.tcl:plugins/loadmfio.tcl"
     #
-    if {[catch [tk windowingsystem]] == "aqua" } {
+    set ws ""
+    catch {set ws [tk windowingsystem]}
+    if {$ws == "aqua" } {
 	# Aqua specific settings:
+
+	# arrange for kAEQuitApplication events (e.g. menu: ayam/quit;
+	# not File/Exit!) to not exit immediately via "exit"
+	rename ::exit ::realexit
+	proc ::exit { } { io_exit }
+
+	proc ::tk::mac::ShowPreferences { args } { prefs_open }
+
 	set ayprefs(SwapMB) 1
 
+	# like on Win32, some keysyms are missing, so do not bind to them
 	set ayviewshortcuts(ZoomI) "plus"
 	set ayviewshortcuts(ZoomO) "minus"
 
@@ -611,6 +622,7 @@ if { $tcl_platform(platform) == "windows" } {
 	set aymainshortcuts(SProp77) "Key-7"
 	set aymainshortcuts(SProp88) "Key-8"
 	set aymainshortcuts(SProp99) "Key-9"
+
     }
 }
 

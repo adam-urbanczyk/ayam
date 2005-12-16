@@ -100,27 +100,7 @@ set label "4. [lindex $ayprefs(mru) 3]"
 $m add command -label $label -command { global ay
 if { ! [io_warnChanged] } {io_mruLoad 3}}
 $m add separator
-$m add command -label "Exit!" -command {
-    global ayprefs AYENABLEFEXIT
-
-    if { ! [io_warnChanged] } {
-
-	# remove all temporary files
-	catch [ tmp_clean 1 ]
-
-	if { $ayprefs(AutoSavePrefs) == 1 } {
-	    catch [ prefs_save ]
-	}
-
-	puts "Good Bye!"
-	update
-	if { $AYENABLEFEXIT == 1 } {
-	    fastExit
-	} else {
-	    exit
-	}
-    }
-}
+$m add command -label "Exit!" -command io_exit
 
 
 if { ! $AYWITHAQUA } {
