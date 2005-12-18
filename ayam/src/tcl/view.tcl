@@ -673,20 +673,26 @@ proc viewSetGridIcon { w gridsize } {
 
     if { $gridsize == 0.1 } {
 	eval "$conf -image ay_Grid01_img"
+	if {$AYWITHAQUA} { eval "$conf -image {} -label \"Grid 0.1\"" }
 	} else {
 	    if { $gridsize == 0.25 } {
 		eval "$conf -image ay_Grid025_img"
+	       if {$AYWITHAQUA} { eval "$conf -image {} -label \"Grid 0.25\"" }
 	    } else {
 		if { $gridsize == 0.5 } {
 		    eval "$conf -image ay_Grid05_img"
+		if {$AYWITHAQUA} { eval "$conf -image {} -label \"Grid 0.5\"" }
 		} else {
 		    if { $gridsize == 1.0 } {
 			eval "$conf -image ay_Grid10_img"
+		if {$AYWITHAQUA} { eval "$conf -image {} -label \"Grid 1.0\"" }
 		    } else {
 			if { $gridsize == 0.0 } {
 			    eval "$conf -image ay_Grid_img"
+		    if {$AYWITHAQUA} { eval "$conf -image {} -label \"No Grid\"" }
 			} else {
 			    eval "$conf -image ay_GridX_img"
+                  if {$AYWITHAQUA} { eval "$conf -image {} -label \"Grid X\"" }
 			}
 		    }
 		}
@@ -714,11 +720,14 @@ proc viewSetDModeIcon { w mode } {
 
     if { $mode == 0 } {
 	eval "$conf -image ay_DMDraw_img"
+	if {$AYWITHAQUA} { eval "$conf -image {} -label \"Draw\"" }
     } else {
 	if { $mode == 1 } {
 	    eval "$conf -image ay_DMShade_img"
+	    if {$AYWITHAQUA} { eval "$conf -image {} -label \"Shade\"" }
 	} else {
 	    eval "$conf -image ay_DMShadeDraw_img"
+	    if {$AYWITHAQUA} { eval "$conf -image {} -label \"Shade&Draw\"" }
 	}
     }
 
@@ -736,14 +745,20 @@ proc viewSetMModeIcon { w mode } {
     if { ! $AYWITHAQUA } {
 	set m fMenu.mm
 	set conf "$w.$m configure"
+
+	if { $mode == 0 } {
+	    eval "$conf -image ay_MMGlobLoc_img"
+	} else {
+	    eval "$conf -image ay_MMLocGlob_img"
+	}
     } else {
 	set conf "$w.menubar entryconfigure 3"
-    }
 
-    if { $mode == 0 } {
-	eval "$conf -image ay_MMGlobLoc_img"
-    } else {
-	eval "$conf -image ay_MMLocGlob_img"
+	if { $mode == 0 } {
+	    eval "$conf -label Local"
+	} else {
+	    eval "$conf -label Global"
+	}
     }
 
  return;
