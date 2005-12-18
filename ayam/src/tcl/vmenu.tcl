@@ -222,7 +222,7 @@ if { ! $AYWITHAQUA } {
     set ay(mmodem) fMenu.mm.m
 } else {
     set m [menu $mb.mm -tearoff 0]
-    $mb add cascade -image ay_MMGlobLoc_img -menu $m
+    $mb add cascade -label Local -menu $m
     set ay(mmodem) menubar.mm
 }
 
@@ -239,6 +239,11 @@ $m add command -image ay_MMLocGlob_img -hidemargin 1 -command "\
 	viewSetMModeIcon $w 1;\
 	\$ay(currentView) mc"
 
+if { $AYWITHAQUA } {
+    $m entryconfigure 0 -image {} -label Local
+    $m entryconfigure 1 -image {} -label Global
+}
+
 # Drawing Mode Menu
 if { ! $AYWITHAQUA } {
     menubutton $w.fMenu.dm -image ay_DMDraw_img -menu $w.fMenu.dm.m\
@@ -249,7 +254,7 @@ if { ! $AYWITHAQUA } {
     set ay(dmodem) fMenu.dm.m
 } else {
     set m [menu $mb.dm -tearoff 0]
-    $mb add cascade -image ay_DMDraw_img -menu $m
+    $mb add cascade -label Draw -menu $m
     set ay(dmodem) menubar.dm
 }
 
@@ -271,6 +276,11 @@ $m add command -image ay_DMShadeDraw_img -hidemargin 1 -command "\
 	viewSetDModeIcon $w 2;\
 	\$ay(currentView) mc"
 
+if { $AYWITHAQUA } {
+    $m entryconfigure 0 -image {} -label "Draw"
+    $m entryconfigure 1 -image {} -label "Shade"
+    $m entryconfigure 2 -image {} -label "Shade&Draw"
+}
 
 # Grid Menu
 if { ! $AYWITHAQUA } {
@@ -281,7 +291,7 @@ if { ! $AYWITHAQUA } {
     set ay(gridm) fMenu.g.m
 } else {
     set m [menu $mb.mgrid -tearoff 0]
-    $mb add cascade -image ay_Grid_img -menu $m
+    $mb add cascade -label Grid -menu $m
     set ay(gridm) menubar.gridm
 }
 
@@ -306,6 +316,16 @@ $m add command -image ay_Grid_img -hidemargin 1 -command "\
     $w.f3D.togl setconf -grid 0.0 -drawg 0 -ugrid 0;\
     $w.f3D.togl render;\
     viewSetGridIcon $w 0.0"
+
+
+if { $AYWITHAQUA } {
+    $m entryconfigure 0 -image {} -label "Grid 0.1"
+    $m entryconfigure 1 -image {} -label "Grid 0.25"
+    $m entryconfigure 2 -image {} -label "Grid 0.5"
+    $m entryconfigure 3 -image {} -label "Grid 1.0"
+    $m entryconfigure 4 -image {} -label "No Grid"
+}
+
 
 if { ! $AYWITHAQUA } {
     pack $w.fMenu.v $w.fMenu.t $w.fMenu.c -in $w.fMenu -side left
