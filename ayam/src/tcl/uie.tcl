@@ -265,6 +265,11 @@ proc updateColor { w prop name button } {
     if { $newcolor != "" } {
 	$button configure -background $newcolor
 
+	set label [string replace $button end-1 end l2]
+	if { [winfo exists $label] } {
+	    $label configure -background $newcolor
+	}
+
 	scan $newcolor "#%2x%2x%2x" r g b
 	set $rname $r
 	set $gname $g
@@ -307,6 +312,11 @@ proc updateColorFromE { w prop name button } {
 	set newcolor [format "#%02x%02x%02x" $red $green $blue]
     }
     $button configure -background $newcolor
+
+    set label [string replace $button end-1 end l2]
+    if { [winfo exists $label] } {
+	$label configure -background $newcolor
+    }
 
  return;
 }
@@ -369,18 +379,27 @@ proc addColor { w prop name {def {}}} {
     } else {
 	set bcolor "#000000"
     }
-    global tcl_platform
 
+    global tcl_platform
     if { $tcl_platform(platform) == "windows" } {
 	button $f.b1 -pady 1 -background $bcolor\
 		-command "updateColor $w $prop $name $f.b1"\
 		-bd $bw -width 3
     } else {
+	set sw ""
+	catch [set ws [tk windowingsystem]]
+	if {$ws == "aqua" } {
+	    label $f.l2 -background $bcolor -text "   "
+	    button $f.b1 -pady 1 -text Set\
+		-command "updateColor $w $prop $name $f.b1"\
+		-bd $bw
+	} else {
 	button $f.b1 -pady 1 -background $bcolor\
 		-command "updateColor $w $prop $name $f.b1"\
 		-bd $bw
+	}
     }
-
+    # if
 
     eval [subst "bindtags $f.b1 \{$f.b1 Button all\}"]
     bind $f.b1 <Key-Escape> {resetFocus}
@@ -430,8 +449,13 @@ proc addColor { w prop name {def {}}} {
 		 after idle {\$ay(appb) invoke};break;"
     }
 
-    pack $f.er $f.eg $f.eb $f.b1 -in $f -fill both -expand yes\
-	    -side left -padx 2
+    if { [winfo exists $f.l2] } {
+	pack $f.er $f.eg $f.eb $f.l2 $f.b1 -in $f -fill both -expand yes\
+		-side left -padx 2
+    } else {
+	pack $f.er $f.eg $f.eb $f.b1 -in $f -fill both -expand yes\
+		-side left -padx 2
+    }
 
     if { $mb != "" } { pack $mb -side left -fill both -expand yes}
 
@@ -500,6 +524,9 @@ proc addCheck { w prop name } {
 	    pack $f.l -in $f -side left
 	    pack $f.fcb -in $f -side left -expand yes -fill both
 	    pack $ff.cb -in $ff -side top -padx 30 -pady 0
+
+	    eval [subst "bindtags $ff.cb \{$ff.cb Checkbutton all\}"]
+	    bind $ff.cb <Key-Escape> {resetFocus}
 	} else {
 	    # generic (X11) implementation
 	    set cb [checkbutton $f.cb -variable ${prop}(${name}) -bd $bw\
