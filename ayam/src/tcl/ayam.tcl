@@ -1,4 +1,3 @@
-
 # Ayam, a free 3D modeler for the RenderMan interface.
 #
 # Ayam is copyrighted 1998-2005 by Randolf Schultz
@@ -1117,10 +1116,13 @@ update
 
 # establish paned window management for hierarchy
 set vwidth [expr [winfo rootx .fu.fMain.fProp]+5]
+if { $AYWITHAQUA } {
+    set vwidth [expr 5+[winfo rootx .fu]+([winfo width .fu]*0.25)]
+}
 pane .fu.fMain.fHier .fu.fMain.fProp
 pane_constrain . .fu.fMain.__h1 .fu.fMain.fHier .fu.fMain.fProp width x 1
 pane_motion $vwidth . .fu.fMain.__h1 width x 1
-if { $tcl_platform(platform) == "windows" } {
+if { $tcl_platform(platform) == "windows" || $AYWITHAQUA } {
     update
 }
 
