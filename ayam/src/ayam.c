@@ -561,7 +561,8 @@ int
 Tcl_AppInit(Tcl_Interp *interp)
 #endif /* AYWRAPPED */
 {
-int ay_status = AY_OK;
+ int ay_status = AY_OK;
+ /*char app_init_script[] = "source [file dirname $argv0]/tcl/ayam.tcl\n";*/
 
 #ifndef AYWRAPPED
   if(Tcl_Init(interp) == TCL_ERROR)
@@ -1087,6 +1088,14 @@ Tcl_SetVar(interp, "AYENABLEFEXIT", "1", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
       plus_bitmap = Tk_GetBitmap(interp, Tk_MainWindow(interp), "plus");
     }
 
+#if 0
+  /* if we run from an .app-Bundle, we know where "ayam.tcl" is and
+     may (and have to!) start it now automatically */
+#ifdef AYWITHAQUA
+  Tcl_Eval(interp, app_init_script);
+#endif /* AYWITHAQUA */
+#endif
+
  return TCL_OK;
 } /* Tcl_AppInit */
 
@@ -1096,7 +1105,7 @@ Tcl_SetVar(interp, "AYENABLEFEXIT", "1", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 /*main:                                     */
 /********************************************/
 int
-main (int argc, char **argv)
+main(int argc, char **argv)
 {
   Tk_Main (argc, argv, Tcl_AppInit);
   return 0;
