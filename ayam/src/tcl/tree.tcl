@@ -627,7 +627,7 @@ proc tree_collapse { } {
 # tree_open:
 # create object hierarchy tree widget
 proc tree_open { w } {
-global ay
+global ay AYWITHAQUA
 
 set ay(lb) 0
 # frame
@@ -714,7 +714,7 @@ $tree bindText  <Double-ButtonPress-1> "tree_toggleSub $sw.tree"
 bind $tree <Key-Tab> "focus .fl.con.console;break"
 
 
-# switch back to good old listbox
+# arrange for switching back to good old listbox
 bind $la <Double-ButtonPress-1> "\
 	global ayprefs; tree_close $w; olb_open $w;\
 	cS; olb_update; if \{ \$ay(need_redraw) == 1 \} \{rV\};\
@@ -724,9 +724,16 @@ balloon_set $la "Double click here\nto switch to listbox"
 # pack widgets
 pack $fr -side top -expand yes -fill both
 pack $la -side top -fill x -expand no
-pack $sw -side top -expand yes -fill both -pady 1
 
+if { $AYWITHAQUA } {
+    pack $sw -side top -expand yes -fill both -pady 0
+} else {
+    pack $sw -side top -expand yes -fill both -pady 1
+}
+
+# realize widgets
 update
+
 # add context-menu
 set m [menu $ay(tree).popup -tearoff 0]
 
