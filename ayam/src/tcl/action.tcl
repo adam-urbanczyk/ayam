@@ -554,7 +554,7 @@ proc updEditPointDarray { w } {
 # directly edit coordinates of points
 proc editPointDp { } {
     upvar #0 editPointDarray array
-    global ay tcl_platform
+    global ay tcl_platform AYWITHAQUA
 
     set w .editPointDw
 
@@ -569,7 +569,9 @@ proc editPointDp { } {
     toplevel $w -class ayam
     wm title $w "Edit_Point"
     wm iconname $w "Ayam"
-    wm transient $w .
+    if { ! $AYWITHAQUA } {
+	wm transient $w .
+    }
 
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
@@ -579,6 +581,9 @@ proc editPointDp { } {
 	    -padx 0 -pady 1
     if { $tcl_platform(platform) == "windows" } {
 	$f.mb configure -pady 1
+    }
+    if { $AYWITHAQUA } {
+	$f.mb configure -pady 2
     }
     set m [menu $f.mb.m -tearoff 0]
     $m add command -label "Local" -command {
