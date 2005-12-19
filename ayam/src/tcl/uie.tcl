@@ -10,14 +10,14 @@
 # User Interface Elements for Property GUIs and Preferences
 
 
-# 
+#
 #
 #
 proc updateParam { w prop name op } {
     global $prop
 
     set f $w.f${name}
-    
+
     set oldval [$f.e get]
     set newval $oldval
 
@@ -248,12 +248,11 @@ return;
 }
 # addMatrix
 
-
 #
 #
 #
 proc updateColor { w prop name button } {
-    global $prop 
+    global $prop
 
     winAutoFocusOff
 
@@ -261,7 +260,7 @@ proc updateColor { w prop name button } {
     set gname ${prop}(${name}_G)
     set bname ${prop}(${name}_B)
 
-    set newcolor [tk_chooseColor -initialcolor [$button cget -background]]   
+    set newcolor [tk_chooseColor -initialcolor [$button cget -background]]
     if { $newcolor != "" } {
 	$button configure -background $newcolor
 
@@ -282,12 +281,11 @@ proc updateColor { w prop name button } {
 }
 # updateColor
 
-
 #
 #
 #
 proc updateColorFromE { w prop name button } {
-    global $prop 
+    global $prop
 
     set rname ${prop}(${name}_R)
     set gname ${prop}(${name}_G)
@@ -345,7 +343,7 @@ proc addColor { w prop name {def {}}} {
 
     # first, we create a label on its own line
     set f [frame $w.fl${name} -relief sunken -bd $bw]
-    
+
     label $f.l -text $name
     bind $f.l <Double-ButtonPress-1> "pclip_toggleomit $f.l {${name}_R\
 	    ${name}_G ${name}_B }"
@@ -390,7 +388,7 @@ proc addColor { w prop name {def {}}} {
 	catch [set ws [tk windowingsystem]]
 	if {$ws == "aqua" } {
 	    label $f.l2 -background $bcolor -text "   "
-	    button $f.b1 -pady 1 -text Set\
+	    button $f.b1 -pady 1 -padx 6 -text Set\
 		-command "updateColor $w $prop $name $f.b1"\
 		-bd $bw
 	} else {
@@ -429,7 +427,6 @@ proc addColor { w prop name {def {}}} {
 	# foreach
     }
     # if
-
 
     if { ! $ay(iapplydisable) } {
 	global aymainshortcuts
@@ -556,7 +553,6 @@ proc addCheck { w prop name } {
 }
 # addCheck
 
-
 #
 #
 #
@@ -566,7 +562,6 @@ proc updateMenu { m name1 name2 op } {
  return;
 }
 # updateMenu
-
 
 #
 #
@@ -662,11 +657,11 @@ proc addStringB { w prop name help {def {}} } {
 #
 proc addString { w prop name  {def {}}} {
     global $prop ayprefs ay tcl_platform
- 
+
     set bw 1
 
     set f [frame $w.f${name} -relief sunken -bd $bw]
-    
+
     label $f.l -width 14 -text ${name}:
     bind $f.l <Double-ButtonPress-1> "pclip_toggleomit $f.l $name"
 
@@ -812,7 +807,7 @@ proc addFileB { w prop name help {def {}} } {
 #
 #
 proc addFile { w prop name {def {}} } {
-    global $prop ayprefs tcl_platform
+    global $prop ayprefs tcl_platform AYWITHAQUA
 
     set bw 1
 
@@ -829,7 +824,6 @@ proc addFile { w prop name {def {}} } {
     eval [subst "bindtags $f.e \{$f.e Entry all\}"]
     bind $f.e <Key-Escape> {resetFocus}
 
-
     button $f.b -text "Set" -width 4 -bd $bw -padx 0 -pady 0 -takefocus 0\
      -command "\
 	global $prop;
@@ -844,12 +838,19 @@ proc addFile { w prop name {def {}} } {
 	    set ${prop}($name) \$filen;
         }"
 
+    if { $AYWITHAQUA } {
+	$f.b configure -padx 6
+    }
+
     set mb ""
     if { $def != {} } {
 	set mb [menubutton $f.b3 -pady 1 -bd $bw -text "Def" -takefocus 0\
 		-highlightthickness 0 -relief raised -menu $f.b3.m]
 	if { $tcl_platform(platform) == "windows" } {
 	    $mb configure -pady 0
+	}
+	if { $AYWITHAQUA } {
+	    $f.b3 configure -pady 2
 	}
 	set m [menu $mb.m -tearoff 0]
 	foreach val $def {
@@ -865,7 +866,7 @@ proc addFile { w prop name {def {}} } {
     pack $f.e -in $f -side left -fill both -expand yes
     pack $f.b -in $f -side left -fill x -expand no
 
-    if { $mb != "" } { 
+    if { $mb != "" } {
 	if { $tcl_platform(platform) == "windows" } {
 	    pack $mb -side right -fill both -expand no
 	} else {
@@ -896,7 +897,7 @@ proc addMDirB { w prop name help } {
 #
 #
 proc addMDir { w prop name } {
-    global $prop ayprefs
+    global $prop ayprefs AYWITHAQUA
 
     set bw 1
 
@@ -934,8 +935,12 @@ proc addMDir { w prop name } {
 	  entryViewEnd $f.e;
 	  update;
 	  eval balloon_setsplit $f.e \[list \$${prop}($name)\] 15;
-	};
-	" 
+	};"
+
+    if { $AYWITHAQUA } {
+	$f.b configure -padx 6
+    }
+
     pack $f.l -in $f -side left -fill x -expand no
     pack $f.e -in $f -side left -fill both -expand yes
     pack $f.b -in $f -side left -fill x -expand no
@@ -962,7 +967,7 @@ proc addMFileB { w prop name help } {
 #
 #
 proc addMFile { w prop name } {
-    global $prop ayprefs
+    global $prop ayprefs AYWITHAQUA
 
     set bw 1
 
@@ -1000,7 +1005,12 @@ proc addMFile { w prop name } {
 	 entryViewEnd $f.e;
 	 update;
          eval balloon_setsplit $f.e \[list \$${prop}($name)\] 15;
-        };" 
+        };"
+
+
+    if { $AYWITHAQUA } {
+	$f.b configure -padx 6
+    }
 
     pack $f.l -in $f -side left -fill x
     pack $f.e -in $f -side left -fill both -expand yes
@@ -1044,7 +1054,6 @@ proc addCommand { w name text command } {
  return;
 }
 # addCommand
-
 
 #
 #
