@@ -226,6 +226,10 @@ ay_npatch_drawstesscb(struct Togl *togl, ay_object *o)
 	    } /* for */
 	  glEnd();
 	} /* for */
+    }
+  else
+    {
+      ay_npatch_drawglucb(togl, o);
     } /* if */
 
  return AY_OK;
@@ -599,6 +603,10 @@ ay_npatch_shadestesscb(struct Togl *togl, ay_object *o)
 	    } /* for */
 	  glEnd();
 	} /* for */
+    }
+  else
+    {
+      ay_npatch_shadeglucb(togl, o);
     } /* if */
 
  return AY_OK;
