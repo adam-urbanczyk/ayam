@@ -206,7 +206,7 @@ proc tc_updateMenu { } {
 #  open the texture coordinate tag editor
 #
 proc tc_edit { } {
-    global ay tc tcumsema
+    global ay tc tcumsema AYWITHAQUA
 
     # unset semaphore
     set tcumsema 0
@@ -218,7 +218,9 @@ proc tc_edit { } {
     toplevel $w -class ayam
     wm title $w "Edit Texture Coordinates"
     wm iconname $w "Ayam"
-    wm transient $w .
+    if { ! $AYWITHAQUA } {
+	wm transient $w .
+    }
 
     # default values
     set values [list 0.0 0.0 1.0 0.0 0.0 1.0 1.0 1.0]
