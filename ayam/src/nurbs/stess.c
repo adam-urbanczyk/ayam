@@ -1758,6 +1758,7 @@ ay_stess_TessNP(ay_object *o, int qf)
  char fname[] = "stess_TessNP";
  int ay_status = AY_OK;
  ay_nurbpatch_object *npatch;
+ static int warned = AY_FALSE;
 
   if(!o)
     return AY_ENULL;
@@ -1770,7 +1771,11 @@ ay_stess_TessNP(ay_object *o, int qf)
   if(ay_npt_istrimmed(o, 0))
     {
       /* this is a nontrivially trimmed NURBS patch */
-      ay_error(AY_ERROR, fname, "can not stess trimmed patches");
+      if(!warned)
+	{
+	  ay_error(AY_ERROR, fname, "can not stess trimmed patches");
+	  warned = AY_TRUE;
+	}
       /*
       ay_status = ay_stess_TessTrimmedNP();
       */
