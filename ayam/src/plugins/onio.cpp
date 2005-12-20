@@ -439,7 +439,7 @@ onio_addtrim(ay_object *o, ON_BrepLoop::TYPE ltype, ON_BrepTrim::TYPE ttype,
 
 	  o = o->next;
 	} // while
-	  
+
       addtoloop = AY_FALSE;
       return ay_status;
     } // if
@@ -535,10 +535,12 @@ onio_addtrim(ay_object *o, ON_BrepLoop::TYPE ltype, ON_BrepTrim::TYPE ttype,
 	      // pushup failed, create a polygonal 3D representation
 	      // of the trim curve
 	      bool done = false;
-	      int i, j, evalhint = 0, evalhint2[2] = {0, 0}, qf = 10;
+	      int i, j, evalhint = 0, evalhint2[2] = {0, 0}, qf = 2;
 	      double u, ud, *st = NULL, *stt = NULL, cv[3];
 
-	      while(!done)
+	      ON_3dPointArray *p_p3darr = new ON_3dPointArray();
+
+	      while((!done) || (qf == 100))
 		{
 		  // set up array of sample points
 		  ud = (double)(p_nc->m_knot[p_nc->m_cv_count-1] -
@@ -546,6 +548,7 @@ onio_addtrim(ay_object *o, ON_BrepLoop::TYPE ltype, ON_BrepTrim::TYPE ttype,
 		       (double)((4+p_nc->m_cv_count)*qf);
 		  if(st)
 		    free(st);
+		  st = NULL;
 		  stt = NULL;
 		  i = 0;
 		  for(u = p_nc->m_knot[p_nc->m_order-2];
@@ -553,6 +556,7 @@ onio_addtrim(ay_object *o, ON_BrepLoop::TYPE ltype, ON_BrepTrim::TYPE ttype,
 		      u += ud)
 		    {
 		      i++;
+		      stt = NULL;
 		      if(!(stt = (double*)realloc(st, i*2*sizeof(double))))
 			{
 			  if(st)
@@ -563,26 +567,53 @@ onio_addtrim(ay_object *o, ON_BrepLoop::TYPE ltype, ON_BrepTrim::TYPE ttype,
 
 		      p_nc->Evaluate(u, 0, 2, &(st[(i-1)*2]), 0, &evalhint);
 		    } // for
-		  qf += 1;
-		  done = true;
+
+		  // evaluate surface at sample points
+		  ON_NurbsSurface nsurf;
+		  p_s->GetNurbForm(nsurf, tolerance);
+
+		  p_p3darr->SetCapacity(i);
+
+		  for(j = 0; j < i; j++)
+		    {
+		      nsurf.Evaluate(st[j*2], st[j*2+1], 0, 3, cv, 0,
+				     evalhint2);
+		      ON_3dPoint pnt(cv);
+
+		      p_p3darr->Insert(j, pnt);
+		    }
+
+		  if(!addtoloop)
+		    {
+		      // check closedness of sample points array
+		      if(((*p_p3darr)[0]).DistanceTo((*p_p3darr)[j]) <
+			 tolerance)
+			{
+			  done = true;
+			}
+		      else
+			{
+			  done = false;
+			  qf++;
+			  //p_p3darr->Destroy();
+			} // if
+		    }
+		  else
+		    {
+		      // check how we attach to last trim
+		      if(qf<10)
+			{
+			  qf = 10;
+			  done = false;
+			}
+		      else
+			{
+			  done = true;
+			}
+		    } // if
 		} // while
 
-	      // evaluate surface at sample points
-	      ON_NurbsSurface nsurf;
-	      p_s->GetNurbForm(nsurf, tolerance);
-
-	      ON_3dPointArray p3darr, *p_p3darr = new ON_3dPointArray();
-	      p_p3darr->Reserve(i);
-
-	      for(j = 0; j < i; j++)
-		{
-		  nsurf.Evaluate(st[j*2], st[j*2+1], 0, 3, cv, 0,
-				     evalhint2);
-		  ON_3dPoint pnt(cv);
-
-		  p_p3darr->Insert(j, pnt);
-		}
-	      p3darr = *p_p3darr;
+	      ON_3dPointArray p3darr = *p_p3darr;
 	      ON_Polyline *p_pl = new ON_Polyline(p3darr);
 	      //delete p_p3darr;
 
@@ -596,11 +627,11 @@ onio_addtrim(ay_object *o, ON_BrepLoop::TYPE ltype, ON_BrepTrim::TYPE ttype,
 	      p_plc->m_t.SetCount(p_pl->PointCount());
 	      // set parametric values of polylinecurve
 	      for(j = 0; j < p_pl->PointCount(); j++)
-		{		  
+		{
 		  p_plc->m_t[j] = (double)j;
 		}
 	      p_plc->m_pline = *p_pl;
-	      
+
 	      // add polylinecurve to brep
 	      p_b->m_C3.Append(p_plc);
 
@@ -625,7 +656,7 @@ onio_addtrim(ay_object *o, ON_BrepLoop::TYPE ltype, ON_BrepTrim::TYPE ttype,
 		    {
 		      p_f->m_li.Append(loop.m_loop_index);
 		    }
-		  
+
 		  ON_BrepTrim& trim = p_b->NewTrim(edge, false, loop, c2i);
 		  trim.m_type = ttype;
 		  trim.m_tolerance[0] = 0.0;
