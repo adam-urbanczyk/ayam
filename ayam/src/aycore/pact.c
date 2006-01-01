@@ -316,6 +316,7 @@ ay_pact_flashpoint(int ignore_old)
       glPopMatrix();
       glEnable(GL_DEPTH_TEST);
       glDisable(GL_COLOR_LOGIC_OP);
+      glFlush();
       glDrawBuffer(GL_BACK);
     } /* if */
 #endif
