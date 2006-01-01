@@ -1244,8 +1244,8 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 
 
 	      glDisable(GL_COLOR_LOGIC_OP);
+	      glFlush();
 	      glDrawBuffer(GL_BACK);
-	      /* XXXX glFlush(); ? */
 #else
 	      ay_toglcb_display(togl);
 	      if(view->drawrect)
