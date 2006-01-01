@@ -7,7 +7,7 @@ There are two major ways to compile Ayam, "shared" and "wrapped standalone"
 ( using Wrap0.3 ).
 The binaries you get with the binary distribution of Ayam are "wrapped
 standalone". This means Tcl/Tk and the main Tcl-scripts of Ayam are all
-statically combined in the binary. This means no hassle with Tcl/Tk
+statically combined in the executable. This means no hassle with Tcl/Tk
 versions. You do not need an installed Tcl/Tk at all! However, the creation
 of "wrapped standalone" executables of Ayam is a bit tricky. Therefore,
 if you really want to or have to compile Ayam:
@@ -473,16 +473,22 @@ like Apples mf3d code and Affines sribw code.
 --------------------------------------------
 
 Since Ayam 1.9, the Ayam source distribution contains a skeleton
-for an application bundle in the bin directory and the Makefile
-contains a new target "Ayam.app" to fill the skeleton appropriately.
+directory structure for an application bundle in the "bin" directory
+and the Makefile for the shared version of Ayam contains a new target
+named "Ayam.app" to fill this skeleton appropriately.
 
-After compilation of Ayam and plugins just use
+After compilation of Ayam and plugins just type
 >make Ayam.app
 
 to fill the application bundle with the necessary files. After that
 you can start Ayam using a double click on the application bundle.
-You can also then "install" it easily by dragging it to your
-"Programs" folder.
+You can also then "install" Ayam easily by dragging the filled
+application bundle to your "Programs" folder in the finder.
+
+Note that the application bundle only works properly for the Aqua
+version of Ayam and that the Aqua version of Ayam will not respond
+to any MacOSX AppleScript application events unless started from
+the application bundle.
 
 End of Compilation Instructions,
 -- 
