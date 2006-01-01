@@ -499,11 +499,11 @@ proc prefs_toggleSurfaceWire { draw_surface } {
     global ayprefs ayprefse aymainshortcuts
 
     if { $draw_surface == 1 } {
-	if { $ayprefs(DisplayMode) != 2 || $ayprefs(NCDisplayMode) != 0 } {
+	if { $ayprefs(DisplayMode) != 2 || $ayprefs(NCDisplayMode) != 2 } {
 	    set ayprefse(DisplayMode) 2
 	    set ayprefs(DisplayMode) 2
-	    set ayprefse(NCDisplayMode) 0
-	    set ayprefs(NCDisplayMode) 0
+	    set ayprefse(NCDisplayMode) 2
+	    set ayprefs(NCDisplayMode) 2
 	    ayError 4  $aymainshortcuts(SwNURBS)\
 		    "Drawing of Curves/Surfaces turned on."
 	    setPrefs
@@ -511,11 +511,11 @@ proc prefs_toggleSurfaceWire { draw_surface } {
 	    rV
 	}
     } else {
-	if { $ayprefs(DisplayMode) != 0 || $ayprefs(NCDisplayMode) != 2 } {
+	if { $ayprefs(DisplayMode) != 0 || $ayprefs(NCDisplayMode) != 0 } {
 	    set ayprefse(DisplayMode) 0
 	    set ayprefs(DisplayMode) 0
-	    set ayprefse(NCDisplayMode) 2
-	    set ayprefs(NCDisplayMode) 2
+	    set ayprefse(NCDisplayMode) 0
+	    set ayprefs(NCDisplayMode) 0
 	    ayError 4 $aymainshortcuts(SwWire)\
 		    "Drawing of Wireframes turned on."
 	    setPrefs
