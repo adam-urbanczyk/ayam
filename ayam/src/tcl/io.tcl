@@ -28,14 +28,19 @@ proc io_replaceScene { } {
 
     set types {{"Ayam Scene" ".ay"} {"All files" *}}
 
-    if { $tcl_platform(os) != "Darwin" } {
+    if { $ay(ws) != "Aqua" } {
 	set newfilename [tk_getOpenFile -filetypes $types -parent .\
 		-initialfile [file tail $filename] -initialdir $dirname\
 		-title "Select file to load:"]
     } else {
-	set newfilename [tk_getOpenFile -filetypes $types -parent .\
-		-initialfile [file tail $filename]\
-		-title "Select file to load:"]
+	if { [file exists [file tail $filename] ] } {
+	    set newfilename [tk_getOpenFile -filetypes $types -parent .\
+				 -initialfile [file tail $filename]\
+				 -title "Select file to load:"]
+	} else {
+	    set newfilename [tk_getOpenFile -filetypes $types -parent .\
+				 -title "Select file to load:"]
+	}
     }
 
     if { $newfilename != "" } {
@@ -196,14 +201,19 @@ proc io_saveScene { ask selected } {
 	}
 	set types {{"Ayam Scene" ".ay"} {"All files" *}}
 
-	if { $tcl_platform(os) != "Darwin" } {
+    if { $ay(ws) != "Aqua" } {
 	    set filename [tk_getSaveFile -filetypes $types -parent .\
 		    -initialfile [file tail $filename]\
 		    -initialdir $dirname -title "Save scene to:"]
 	} else {
-	    set filename [tk_getSaveFile -filetypes $types -parent .\
-		    -initialfile [file tail $filename]\
-		    -title "Save scene to:"]
+	    if { [file exists [file tail $filename] ] } {
+		set filename [tk_getSaveFile -filetypes $types -parent .\
+				  -initialfile [file tail $filename]\
+				  -title "Save scene to:"]
+	    } else {
+		set filename [tk_getSaveFile -filetypes $types -parent .\
+				  -title "Save scene to:"]
+	    }
 	}
     }
 
@@ -740,14 +750,19 @@ proc io_saveEnv {  } {
 
  set types {{"Ayam Scene" ".ay"} {"All files" *}}
 
- if { $tcl_platform(os) != "Darwin" } {
+ if { $ay(ws) != "Aqua" } {
      set savefilename [tk_getSaveFile -filetypes $types -parent .\
-	     -initialfile [file tail $filename]\
-	     -initialdir $dirname -title "Save environment to:"]
+			   -initialfile [file tail $filename]\
+			   -initialdir $dirname -title "Save environment to:"]
  } else {
-     set savefilename [tk_getSaveFile -filetypes $types -parent .\
-	     -initialfile [file tail $filename]\
-	     -title "Save environment to:"]
+     if { [file exists [file tail $filename] ] } {
+	 set savefilename [tk_getSaveFile -filetypes $types -parent .\
+			       -initialfile [file tail $filename]\
+			       -title "Save environment to:"]
+     } else {
+	 set savefilename [tk_getSaveFile -filetypes $types -parent .\
+			       -title "Save environment to:"]	 
+     }
  }
 
  if { $savefilename != "" } {
@@ -993,7 +1008,7 @@ proc io_RenderSM { } {
 
  return;
 }
-#io_RenderSM
+# io_RenderSM
 
 
 # io_exportRIBSO:

@@ -529,6 +529,7 @@ array set ay {
  iapplydisable 0
  afdisabled 0
  noview 0
+ ws "X11"
 }
 # array ay
 
@@ -541,6 +542,7 @@ if { $tcl_platform(platform) == "windows" } {
     set ay(separator) ";"
     set ay(soext) "dll"
     set ay(pady) 0
+    set ay(ws) "Win32"
     set ayprefs(TmpDir) "$env(TEMP)"
     regsub -all {\\} $ayprefs(TmpDir) {/} ayprefs(TmpDir)
     set ayprefs(EnvFile) "~/2view.ay"
@@ -597,6 +599,8 @@ if { $tcl_platform(platform) == "windows" } {
     catch {set ws [tk windowingsystem]}
     if {$ws == "aqua" } {
 	# Aqua specific settings:
+
+	set ay(ws) "Aqua"
 
 	# arrange for kAEQuitApplication events (e.g. menu: ayam/quit;
 	# not File/Exit!) to not exit immediately via "exit"
@@ -1403,7 +1407,7 @@ while { $i < $argc } {
 	    replaceScene $filename
 	    if { $ay_error < 2 } {
 		set ay(filename) $filename
-		set windowfilename [file tail [file rootname $newfilename]]
+		set windowfilename [file tail [file rootname $filename]]
 		wm title . "Ayam - Main - $windowfilename"
 		ayError 4 "replaceScene" "Done reading scene from:"
 		ayError 4 "replaceScene" "$filename"
