@@ -384,7 +384,7 @@ proc addColor { w prop name {def {}}} {
 		-command "updateColor $w $prop $name $f.b1"\
 		-bd $bw -width 3
     } else {
-	set sw ""
+	set ws ""
 	catch [set ws [tk windowingsystem]]
 	if {$ws == "aqua" } {
 	    label $f.l2 -background $bcolor -text "   "
@@ -511,7 +511,7 @@ proc addCheck { w prop name } {
 	eval [subst "bindtags $ff.cb \{$ff.cb Checkbutton all\}"]
 	bind $ff.cb <Key-Escape> {resetFocus}
     } else {
-	set sw ""
+	set ws ""
 	catch [set ws [tk windowingsystem]]
 	if {$ws == "aqua" } {
 	    # also Aqua gets its "Extrawurst"
@@ -602,7 +602,7 @@ proc addMenu { w prop name elist } {
     if { $tcl_platform(platform) == "windows" } {
 	$f.mb configure -pady 1
     }
-    set sw ""
+    set ws ""
     catch [set ws [tk windowingsystem]]
     if {$ws == "aqua" } {
 	$f.mb configure -pady 2
