@@ -89,9 +89,9 @@ CFLAGS = -O -DAYUSEAFFINE
 # Solaris (-DSOLARIS_BUG is needed by togl.c to work around a bug in libXmu):
 #CFLAGS = -O -DSOLARIS_BUG -DAYUSESLCARGS -DAYUSEBMRTRIBOUT
 # MacOSX with Aqua:
-#CFLAGS = -O -DAYWITHAQUA -DAYUSEAFFINE
+#CFLAGS = -O -DAYWITHAQUA -DAYUSEAFFINE -DAYENABLEFEXIT -DUSE_NON_CONST
 # MacOSX with X11:
-#CFLAGS = -O -DAYUSEAFFINE -DAYENABLEFEXIT -DUSE_NON_CONST
+#CFLAGS = -O -DAYUSEAFFINE -DAYENABLEFEXIT -DUSE_NON_CONS
 
 # ld flag to switch to static linking
 # IRIX:
@@ -114,7 +114,7 @@ LDSWDYNAMIC = -Wl,-Bdynamic
 # extra ld flags needed to compile Ayam
 # (gcc needs -rdynamic to allow shared objects access to global symbols)
 # IRIX:
-EXLDFLAGS = 
+EXLDFLAGS =
 # Linux:
 #EXLDFLAGS = -rdynamic
 # MacOSX (X11):
@@ -202,14 +202,14 @@ AFFINEINC = -Iaffine/include
 # (also add -DAYUSEAFFINE to CFLAGS!):
 AFFINEOBJS = ./affine/src/write.o ./affine/src/constant.o
 # if you do not use Affine as BMRT libribout replacement:
-#AFFINEOBJS = 
+#AFFINEOBJS =
 
 # Aqsis
 AQSISDIR = /usr/local/aqsis
 AQSISINC = -I$(AQSISDIR)/include
 AQSISLIBDIR = $(AQSISDIR)/lib
 # if you do not use Aqsis libslxargs as libslcargs replacement:
-AQSISOBJS = 
+AQSISOBJS =
 # if you use Aqsis libslxargs (add -DAYUSESLXARGS to CFLAGS!):
 #AQSISOBJS = $(AQSISLIBDIR)/rcdummy.o $(AQSISLIBDIR)/libshadervm.so $(AQSISLIBDIR)/libshaderexecenv.so $(AQSISLIBDIR)/libslxargs.so $(AQSISLIBDIR)/libaqsistypes.so -L /usr/local/lib -llog4cpp
 
@@ -454,7 +454,7 @@ METAOBJS = contrib/meta/metaobj.o \
 RRIBOBJS = plugins/rrib.o
 
 
-.c.o: 
+.c.o:
 	$(CC) -c $(CFLAGS) $*.c -o $@ -I. -IMF3D -Icontrib $(TOGLINC) $(TCLINC) $(TKINC) $(BMRTINC) $(GLINC) $(AFFINEINC) $(AQSISINC) $(TIFFINC)
 
 .cpp.o:
@@ -522,7 +522,7 @@ mostlyclean:
 	-rm -f core
 	-rm -f *.o
 	-rm -f *.so
-	-rm -f $(AYAMOBJS) 
+	-rm -f $(AYAMOBJS)
 	-rm -f $(TOGLOBJECT)
 	-rm -f plugins/*.o
 	-rm -f plugins/*.so
@@ -614,5 +614,5 @@ refcard.ps ayam.pdf html;
 
 .PHONY: mf3d
 
-.o.so: 
+.o.so:
 	$(CC) $(SHLFLAGS) -o $@ $*.o
