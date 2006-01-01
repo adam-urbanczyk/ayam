@@ -2442,7 +2442,7 @@ rotation of the texture.
 <p>
 The <tt/"FlipS"/ and <tt/"FlipT"/ buttons flip the texture
 coordinate values in s and t direction respectively. This is
-useful, if you want to correct a texture mapping for
+useful, if you, for example, want to correct a texture mapping for
 an image that appears upside down.
 <p>
 The next buttons allow to move (using <tt/"MoveS"/ and <tt/"MoveT"/)
@@ -2451,7 +2451,7 @@ by a specific amount that is given in the first entry field.
 <p>
 The <tt/"Load"/ and <tt/"Save"/ menu buttons allow you to:
 <itemize>
-<item>load the default values
+<item>load the default texture coordinate values ((0,0), (1,0), (0,1), (1,1))
 
 <item>load texture coordinates from a selected BPatch object:
 The xy coordinates of the four points of the selected BPatch
@@ -2476,16 +2476,17 @@ while you model. The <tt/"Dismiss"/ button closes the dialog.
 <p>
 The tag type <tt/"PV"/ can be used to attach arbitrary data
 to geometric primitives and even sub-primitives.
-When rendering, all data defined in a <tt/"PV"/ tag is handed over
-to the surface shader attached to the respective geometric primitive
-using additional shader parameters.
-<p>
-Note that Ayam does not check, whether your shader actually uses this data.
 With the help of primitive variables you can e.g. attach your
 own texture coordinates to a NURBS patch primitive or attach distinct
 colors to the faces or even to single vertices of a polygonal mesh.
 In the latter case, the data is properly interpolated by the renderer
 before it is handed over to the shader.
+<p>
+When rendering, all data defined in a <tt/"PV"/ tag is handed over
+to the surface shader that is attached to the respective geometric primitive
+using additional shader parameters.
+<p>
+Note that Ayam does not check, whether your shader actually uses this data!
 <p>
 The syntax of the value string of a PV tag is as following:
 <p>
@@ -2587,11 +2588,11 @@ The tag type <tt/"TP"/ can be used to save tesselation parameters
 to objects of type <tt/"NPatch"/. Those tesselation parameters
 will be used when the NPatch object is tesselated for e.g. a
 conversion to a PolyMesh object. The syntax of the TP tag is:
-<tt>"&lt;tmethod&gt;,&lt;tparamu&gt;,,&lt;tparamv&gt;"</tt>
+<tt>"&lt;tmethod&gt;,&lt;tparamu&gt;"&lt;tparamv&gt;"</tt>
 where <tt/"&lt;tmethod&gt;"/ is an integer value between 1 and 3, describing
 which tesselation method to use (1 - ParametricError,
 2 - PathLength, and 3 - DomainDistance) and <tt/"&lt;tparamu&gt;"/ and
-<tt/"&lt;tparamu&gt;"/ are float values describing the respective parameter
+<tt/"&lt;tparamv&gt;"/ are float values describing the respective parameter
 value for the chosen tesselation method. The second parameter value
 is ignored for the tesselation methods 1 and 2.
 <p>
@@ -2647,7 +2648,8 @@ A simple NS tag could look like this:
 <p>
 The tag types <tt/"UMM"/ (u min max) and <tt/"VMM"/ (v min max) may
 be used to store additional parametric domain trimming values to
-NURBS curve and NURBS patch objects.
+NURBS curve and NURBS patch objects. Note that the GLU NURBS display
+modes do not honor those tags, but the RIB export does.
 <p>
 Example
 <p>
@@ -2685,8 +2687,8 @@ This section contains a comprehensive list of tag names, that are
 known in Ayam 1.9 and in the accompanying extensions.
 <p>
 <tt>"RiAttribute", "RiOption", "RiHider", "RiDisplay", "NoExport", "TC",
-"PV", "SaveMainGeom", "TP", "MI", "OI", "DC", "NP", "NS", "IDR", "IIDR",
-"RIDR", "R3IDR", "CIDR", "CCIDR"</tt>
+"PV", "SaveMainGeom", "TP", "MI", "OI", "DC", "NP", "NS", "UMM", "VMM",
+"IDR", "IIDR", "RIDR", "R3IDR", "CIDR", "CCIDR"</tt>
 <p>
 Documentation on those tags can be found in the sections above.
 
@@ -2695,18 +2697,18 @@ Documentation on those tags can be found in the sections above.
 There is always exactly one Root object in the scene.
 This object is something special in that it cannot be deleted
 or copied.
-It holds options global to the scene like RiOptions, atmosphere and
-imager shaders. Furthermore, all currently open view windows are child
-objects of the Root object.
+The Root object holds options global to the scene like RiOptions,
+atmosphere and imager shaders. Furthermore, all currently open
+view windows are child objects of the Root object.
 <p>
-If you hide the Root object the little red/green/blue coordinate system
+If you hide the Root object, the little red/green/blue coordinate system
 will not be drawn in any view.
 <p>
 The global scene options are documented in the following sections.
 
 <sect2>RiOptions Property<label id="rio">
 <p>
-This property carries RenderMan Interface options.
+The RiOptions property carries RenderMan Interface options.
 Both, standard and BMRT specific options may be set using this
 property. For the sake of brevity only a short description of
 the available options will be given here.
@@ -2717,10 +2719,10 @@ The RiOptions property consists of the following elements:
 <itemize>
 <item><tt/"Width"/, <tt/"Height"/, if greater than zero this value
 will be used for the image size instead of the corresponding
-dimension of the view window, but only for real RIB exports
-and not for the QuickRender and Render actions in view windows.
-QuickRender and Render will always use the dimensions of the view window
-instead.
+dimension of the view window, but only for real RIB export operations,
+not for the QuickRender and not for the Render actions in view windows.
+QuickRender and Render actions will always use the dimensions of the
+view window instead.
 
 <item><tt/"StdDisplay"/, if this is enabled, a standard display
 statement will be written to the RIB, which looks like this:
@@ -3613,19 +3615,19 @@ The type <tt/"Open"/ is for the standard open NURBS curve.
 If the type is <tt/"Closed"/, the first and last control point of
 the curve will be made identical. This will close the curve but
 without any guaranteed continuity.
-Such a curve will e.g. be created by the NURBS circle tool.
-It is important to know, that the multiple points
+Such a closed curve will e.g. be created by the NURBS circle tool.
+It is important to know, that identical start/end control points
 alone can not guarantee that the curve is closed if the knot vector
-is not clamped. If in doubt use the clamp tool or a knot vector
+is not clamped. If in doubt, use the clamp tool or a knot vector
 of type NURB.
 <p>
 If the type is <tt/"Periodic"/, the last p control points of the curve
 will be made identical to the first p where p is the degree of the
 curve (read order-1). This will close the curve with guaranteed continuity.
 Note that for a cubic spline (order 4) you will need atleast 6 control
-points to close it. It is important to know, that the multiple points
-alone can not guarantee that the curve is closed if the knot type of
-the curve is Custom; if you really want a closed curve switch to type
+points to close it. It is important to know, that the multiple control
+points alone can not guarantee that the curve is closed if the knot type
+of the curve is Custom; if you really want a closed curve switch to type
 B-Spline.
 <p>
 You may want to enable the creation of multiple points using the
@@ -3638,22 +3640,24 @@ NURB, Bezier, B-Spline and Custom knot sequences.
 If the knot type is not Custom, the next setting
 <tt/"Knots"/ will be ignored. Instead, knots of type NURB, Bezier or
 B-Spline will be generated.
+<p>
 How do the different knot types affect the curve?
-
+<p>
 The knot type NURBS will generate knot values from 0.0 to 1.0, where
 the multiplicity of the knots at the ends will be of order of the curve.
 This guarantees that the curve will touch the control points at the ends
 of the curve.
-
+<p>
 The knot type Bezier will generate just 0.0 and 1.0 values. Note that
 the order of the curve has to be equal to the length of the curve, if
 Bezier knots are generated. Otherwise, the generated knot sequence is
 illegal. The resulting curve looks and behaves exactly like a real
 Bezier curve, interpolating it's ends and so on.
-
+<p>
 The knot type B-Spline will generate values
 without any multiple knots. The resulting curve looks
 and behaves like a B-Spline curve.
+
 <item><tt/"Knots"/ lets you enter your own custom knot sequences.
 Note that <tt/"Knots"/ are not in use if <tt/"Knot-Type"/ is of type
 NURB, B-Spline or Bezier!
@@ -3661,16 +3665,18 @@ NURB, B-Spline or Bezier!
 <item><tt/"CreateMP"/ toggles, whether multiple points should be
 created for this curve. See also the discussion in
 section <ref id="ncurvemp" name="Multiple Points">.
+
 <item><tt/"IsRat"/ informs you since Ayam 1.9, whether the curve
 is rational (uses weight values different from 1.0).
 </itemize>
 
-The GLU-Parameters control the appearance of the curve when
+The GLU-parameters control the appearance of the curve when
 curve/surface display is enabled.
 <itemize>
 <item><tt/"Tolerance"/ is in fact GLU sampling tolerance, used to
 control the quality of the sampling when rendering a curve.
-Smaller tolerance settings lead to higher quality.
+Smaller tolerance settings lead to higher quality but also
+slower display.
 A setting of 0.0 means, that the global preference setting
 <tt>"Drawing/Tolerance"</tt> should be used.
 <item><tt/"DisplayMode"/ determines how the curve should
@@ -3712,6 +3718,8 @@ in Ayam:
 <itemize>
 <item><tt/"Tolerance"/ is in fact the GLU sampling tolerance used to
 control the quality of the sampling when rendering the patch.
+Smaller tolerance settings lead to higher quality but also
+slower display.
 A setting of 0.0 means, that the global preference setting
 <tt>"Drawing/Tolerance"</tt> should be used.
 <item><tt/"DisplayMode"/ sets the display mode, either the control
@@ -3746,34 +3754,39 @@ space of the NURBS patch (remember the rectangle in the <tt>Trim</tt> view).
 Note that this restriction does not apply to the control points,
 but the curves! It is ok to have control points outside the
 rectangle if the defined curve is inside the rectangle.
-<item>The last control point of a trim curve must be identical
-to the first control point.
+
+<item>The last point of a trim curve must be identical
+to the first point.
+
 <item>Trim loops (multiple trim curves that form loops) are possible too;
-the last control point of each curve in the loop must be identical
-to the first control point of the next curve in the loop and
-the first control point of the first curve of a loop must be identical
-to the last control point of the last curve of that loop.
-<item>To mark a set of curves to be a loop, they must be
-simply placed in a level. The order of the curves
-in this level is the order of the loop. The transformation attributes
-of this level object are fully ignored for trimming.
+the last point of each curve in the loop must be identical to the first
+point of the next curve in the loop and the first point of the first curve
+of a loop must be identical to the last point of the last curve of that
+loop.
+
+<item>To mark a set of curves to be a loop, they must be placed in a level
+object. The order of the curves in this level is the order of the loop.
+The transformation attributes of this level object are fully ignored for
+trimming.
 
 <item>Drawing trimmed NURBS patches with certain implementations of
-OpenGL may require a special trim curve (a piecewise linear
-curve that encloses the whole
-NURBS patch) to be present. Such a curve may be generated with
-the <tt/TrimRect/ tool. You can find this tool in the <tt>Tools/Create</tt>
-menu. This curve is needed if you want to cut out a hole with
-a single trim curve. This curve is generally not needed if you want
-to render the patch with BMRT but it should not hurt if it is present.
+OpenGL may require a special trim curve (a rectangular piecewise linear
+curve that encloses the whole NURBS patch) to be present. Such a curve
+may be generated with the <tt/TrimRect/ tool. You can find this tool in
+the <tt>Tools/Create</tt> menu. This curve is needed if you want to cut
+out a hole with a single trim curve. This curve is generally not needed
+if you want to render the patch with BMRT but it should not hurt if it
+is present.
+
 <item>If there are nested trim curves, their direction must alternate.
+
 <item>Trim curves may not intersect each other or themself.
 </itemize>
 Note that Ayam is not checking whether your trim curves
 follow these rules!
 
 Warning: Certain OpenGL implementations may be easily crashed
-with trimmed NURBS patches with curves that do not follow the
+drawing trimmed NURBS patches with trims that do not follow the
 aforementioned rules! When in doubt or while heavy modeling,
 switch to wireframe drawing and switch off shading temporarily
 and you will be on the safe side.
@@ -3783,8 +3796,9 @@ as trim curves.
 
 <sect1>BPatch Object<label id="bpatchobj">
 <p>
-A BPatch is a bilinear patch (as it is used to build
-box objects, see <ref id="boxobj" name="Box Object">).
+A BPatch is a simple bilinear patch composed from four control
+points. BPatch objects are e.g. used to build box objects, see
+<ref id="boxobj" name="Box Object">).
 
 <sect2>BPatchAttrib Property<label id=bpattr>
 <p>
@@ -4476,23 +4490,22 @@ Note that the cross section curves do not have to be two dimensional, and,
 in contrast to the normal Sweep object, they also do not have to be
 defined in a special plane. Furthermore, they do not have to be compatible
 in terms of length, order, and knots. Incompatible curves will be made
-compatible before birailing automatically, the height of the resulting
+compatible before birailing automatically; the height of the resulting
 surface, however, is not easily predictable anymore in this case.
-Also note that the precision with which the
-resulting surface will interpolate the rail curves depends on the
-number of sections choosen.
+Also note that the precision with which the resulting surface will
+interpolate the rail curves depends on the number of sections choosen.
 <p>
 If a fifth curve is present as parameter object, this curve will
 control the morphing (interpolation) process. The y coordinate
 of this curve at a specific point, which should have a value between
-0 and 1, will control the ratio of control of the first cross section
+0 and 1, determines the ratio of control of the first cross section
 (0) and the second cross section (1) over the interpolated curve.
 Thus, a straight line running from point (0,0) to (1,1) will mimic
 the standard linear interpolation that would be carried out if no
 interpolation control curve were present. Note, however, that the
 interpolation control curve has no influence on the first and last
 copy of the respective cross section curve. Those will always exactly
-match the parameter curves.
+match the parameter curves (CS1 and CS2).
 <p>
 The Birail2 object watches the child objects and adapts to them
 automatically via the notification mechanism.
@@ -4501,7 +4514,7 @@ You may convert the current birailed surface and the caps,
 if there are any, to ordinary NURBS patches using the main menu entry
 <tt>"Tools/Convert"</tt>.
 <p>
-The following parameters further control the birailing process:
+The following parameters control the birailing process:
 
 <sect2>Birail2Attr Property<label id="birail2p">
 <p>
@@ -4577,6 +4590,8 @@ and watches their changes and adapts to them automagically.
 You may convert the current skin and the caps, if there are any,
 to ordinary NURBS patches using the main menu entry
 <tt>"Tools/Convert"</tt>.
+<p>
+The following parameters control the skinning process:
 
 <sect2>SkinAttr Property<label id="skp">
 <p>
@@ -4585,33 +4600,32 @@ whether the inner curves should also be interpolated by the
 skinning surface.<p>
 The second parameter <tt/"Order_U"/ determines the order
 of the resulting surface in u direction (the order in v direction is
-determined by the curves). The order may not be lower than the
-number of curves used. If the specified value is lower than the number
+determined by the curves). The order may not be higher than the
+number of curves used. If the specified value is higher than the number
 of curves, the order of the generated surface will be silently
 set to the number of curves.
-If <tt/"Order_U"/ is 0, a default value
-of 4 will be used.<p>
+If <tt/"Order_U"/ is 0, a default value of 4 will be used.
+<p>
 Using the next parameter <tt/"Knot-Type_U"/, you can adapt the
 type of the knot vector that should be used in the u direction of the
-skin. Note that this setting will have no effect if interpolation
-is switched on because then a chord length parameterisation
+skinned surface. Note that this setting will have no effect if
+interpolation is switched on because then a chord length parameterisation
 will be used. If the knot type is Bezier and the specified
-order (see above) does not match the number of skinned curves,
+order (see above) does not exactly match the number of skinned curves,
 then the order will be silently adapted to the number of skinned curves.
 New in Ayam 1.7 is support for the knot type Custom, which creates
-a chord length parameterisation.
+a chord length parameterisation, even if interpolation is not enabled.
 <p>
 The attributes <tt/"StartCap"/ and <tt/"EndCap"/ may be used
-to automatically create cap surfaces to close the skin
+to automatically create cap surfaces to close the skinned surface
 on both ends.
-Note that this works only if the first (last) curve is
-closed and planar (defined in XY plane).
-Furthermore, if the skin is not interpolating the
-first (last) parameter curve (this may be the case
-if the <tt/"Knot-Type_U"/ parameter is set
-to <tt/"B-Spline"/) the cap(s) will not be created on the right
-place. The cap(s) will always be on the position of the
-first (last) parameter curve.
+Note that this works only if the respective curves are closed and
+planar (e.g. defined in the XY plane).
+Furthermore, if the skin is not interpolating the respective parameter
+curves (this may be the case if the <tt/"Knot-Type_U"/ parameter is set
+to <tt/"B-Spline"/) the cap(s) will not be created in the right place.
+The cap(s) will always be created in the position of the first (last)
+parameter curve.
 <p>
 See section <ref id="npattr" name="NPatchAttrib"> for a description
 of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
@@ -4628,7 +4642,7 @@ Surface)</caption>
 The Gordon object forms a surface defined by two sets of intersecting
 curves (a network of curves), where all curves will always be interpolated
 by the surface (see image above). The image below shows the simplest
-configuration of such a network consisting of four parameter curves.
+configuration of such a network, consisting of four parameter curves.
 Note the order and the direction of the curves.
 <p>
 <figure loc="ht">
@@ -4643,7 +4657,7 @@ of order 4 and length 4 and a third curve with order 3 and 5
 control points for the u parametric dimension. Note, however,
 that only non-rational curves can be used as parameter curves
 for a Gordon surface.
-If the parameter curves have weights, the weight information
+If the parameter curves are rational, the weight information
 of the curves will simply be ignored.
 <p>
 The Gordon object has the generating NURBS curves as child objects
@@ -4751,11 +4765,10 @@ of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 <caption>Cap Object (Curve, Resulting Cap Surface)</caption>
 </figure>
 <p>
-The cap object forms a surface that fills
-a closed planar NURBS curve. If multiple curves
-are present as child objects, the curves
-following the first curve define holes in
-the cap surface (see also section
+The cap object forms a surface that fills a closed planar NURBS curve.
+If multiple curves are present as child objects, the curves following
+the first curve define holes in the cap surface similar to the
+parameter curves of an extruded surface (see also section
 <ref id="handb" name="Using Holes and Bevels">).
 <p>
 Consequently, the template for the object hierarchy of a Cap object
@@ -4769,18 +4782,16 @@ looks like this:
   \ Part2(NCurve)]
 </code>
 <p>
-Note that the curves have to be planar
-and defined in the XY plane. Furthermore,
-cap generation may fail, if the control points of the
-first curve have weights and the curve leaves the convex
-hull of the control polygon. Be careful when using weights!
+Note that the curves have to be planar and defined in the XY plane.
+Furthermore, cap generation may fail, if the control points of the
+first curve have weights and the curve leaves the convex hull of the
+control polygon. Be careful when using weights!
 <p>
-The Cap object watches the child objects and adapts to them
-automatically via the notification mechanism.
+The Cap object watches the child objects and adapts to them automatically
+via the notification mechanism.
 <p>
-You may convert the current cap
-to an ordinary NURBS patch object using the main menu entry
-<tt>"Tools/Convert"</tt>.
+You may convert the current cap surface to an ordinary NURBS patch object
+using the main menu entry <tt>"Tools/Convert"</tt>.
 
 <sect2>CapAttr Property<label id="capp">
 <p>
@@ -4790,14 +4801,14 @@ of the <tt/"CapAttr"/ property.
 
 <sect1>ICurve Object<label id="icurveobj">
 <p>
-The ICurve object creates an interpolating spline from
-n points in space.
-The curve is either a C2 cubic curve with n+2 control points
-or a global interpolating rational (Global4D) curve with n control points
-and with arbitrary order.
+The ICurve object creates an interpolating spline curve from n points
+in space. The created curve is either a C2 cubic curve with n+2 control
+points or a global interpolating rational (Global4D) curve with n control
+points and with arbitrary order.
 <p>
-The global interpolation generates a bit smoother curves
-which look best with an order of 3, your mileage may vary however.<p>
+The global interpolation generates a bit smoother curves which look best
+with an order of 3, your mileage may vary however.
+<p>
 <figure loc="!ht">
 <eps file="pics/icurves.ps" height="7cm">
 <img src="pics/icurves.gif">
@@ -4822,6 +4833,8 @@ of type NURBCurve.
 <p>
 You may convert the current ICurve to an ordinary NURBS curve
 using the main menu entry <tt>"Tools/Convert"</tt>.
+<p>
+The following parameters control the interpolation process:
 
 <sect2>ICurveAttr Property<label id="icp">
 <p>
@@ -4861,17 +4874,16 @@ of the last attribute: <tt/"Tolerance"/.
 <caption>ConcatNC Object from a Linear Curve and 3 Instances (white)</caption>
 </figure>
 <p>
-The ConcatNC object concatenates all child objects
-(which should be NURBS curves or provide NURBS curves)
-to a single NURBS curve. Since the ConcatNC object also
-provides a NURBS curve, it is possible to use it as
-child object for another ConcatNC object (with possibly
-different parameters) or as a parameter object for a tool object
-that works with NURBS curves such as Revolve or Extrude.
+The ConcatNC object concatenates all child objects (which should be
+NURBS curves or provide NURBS curves) to a single NURBS curve. Since
+the ConcatNC object also provides a NURBS curve, it is possible to
+use it as child object for another ConcatNC object (with possibly
+different parameters) or as a parameter object for a tool object that
+works with NURBS curves such as Revolve or Extrude.
 <p>
 How does the concatenation process work?
-First, the orders of all child curves will be elevated to the maximum order of
-all the child curves (see section
+First, the orders of all child curves will be elevated to the maximum order
+of all the child curves (see section
 <ref id="elevt" name="elevate tool"> for more information on elevation)
 and all curves will be clamped (see section
 <ref id="clat" name="clamp tool"> for more information on clamping).
@@ -4882,8 +4894,8 @@ is created to close the curve.
 Then, the control points of all child curves and fillets are simply copied
 into a new big control point vector, without checking for double
 points.
-Attributes like display mode and tolerance
-for the new concatenated curve are taken from the first child object.
+Attributes like display mode and tolerance for the new concatenated curve
+are simply taken from the first child object.
 The knot sequence of the new concatenated curve will be of type
 <tt/"NURBS"/ or a custom knot vector will be computed (depending
 on the setting of <tt/"Knot-Type"/).
@@ -4895,8 +4907,8 @@ knot vector with non equidistant knots. If <tt/"Knot-Type"/ is
 You may convert the current ConcatNC object to an ordinary NURBS curve
 object using the main menu entry <tt>"Tools/Convert"</tt>.
 <p>
-The following attributes further control the
-concatenation process:
+The following parameters further control the concatenation process:
+
 <sect2>ConcatNCAttr Property<label id="concatncp">
 <p>
 <itemize>
@@ -4952,6 +4964,7 @@ one boundary in common with a boundary or an iso-curve of the NPatch
 object.
 <p>
 The extraction process is controlled by the following attributes:
+
 <sect2>ExtrNCAttr Property<label id="extrncp">
 <p>
 <itemize>
@@ -4985,15 +4998,15 @@ sort the curves, connect them properly and finally extrude them.
 As with the Extrude objects, caps and bevels may be created automatically.
 <p>
 Parsing of TrueType font descriptions is quite tricky. For the sake
-of brevity and ease of the implementation, Ayam does
-not support elaborate TrueType features like kerning tables, that control
-distances between certain letters (You are not going to typeset a book with
-Ayam, aren't you?). Therefore you might experience
-wrong letter distances from time to time. If this happens, just
-create a Text object for each letter, and arrange the objects
-as you like.
+of brevity and ease of the implementation, Ayam does not support elaborate
+TrueType features like kerning tables, that e.g. control distances between
+certain letters (You are not going to typeset a book with Ayam anyway,
+aren't you?). Therefore you might experience wrong letter distances
+from time to time. If this happens, just create a Text object for each
+letter, and arrange the objects as you like.
 <p>
 The following attributes control the creation of the text objects.
+
 <sect2>TextAttr Property<label id="textattr">
 <p>
 <itemize>
@@ -5006,8 +5019,8 @@ font description files, those will not work.
 <item>Using <tt/"String"/ you specify the letters to be created.
 This entry (and the corresponding data structures) are Unicode clean.
 This means you can put any Unicode letters into this entry. You should
-of course make sure, that the letters are included in the selected font
-file.
+of course make sure, that the specified letters are included in the
+selected font file.
 
 <item><tt/"Height"/ controls the height of the extruded object.
 
@@ -5025,7 +5038,7 @@ sharp corners in some letters that lead to overlapping curves
 with high values for the <tt/"BevelRadius"/.
 
 <item><tt/"RevertBevels"/ can be turned on, if the extracted curves
-and therefore also the bevels are of wrong direction.
+and therefore also the bevels are of wrong orientation.
 </itemize>
 
 See section <ref id="npattr" name="NPatchAttrib"> for a description
@@ -5042,8 +5055,8 @@ The following attributes control the inclusion:
 <itemize>
 <item>Using <tt/"File"/ you specify the filename of the RIB to be included.
 <item><tt/"Width"/, <tt/"Height"/, and <tt/"Length"/ specify
-the size of a box, that will be drawn as a geometric
-representation of the RIB.
+the size of a box, that will be drawn as a geometric representation of
+the RIB.
 </itemize>
 
 <sect1>RiProc Object<label id="riprocobj">
@@ -5080,8 +5093,8 @@ the Tcl scripting interface of Ayam (see also section
 certain script object types may impose special constraints.
 <p>
 For security reasons, if scene files containing script objects are
-loaded, Ayam will raise a warning offering to disable all script
-objects that will be read.
+loaded, Ayam will raise a warning offering to temporarily disable all
+script objects that will be read.
 <p>
 The script of a script object will be run each time it is modified
 and each time the notification callback of the object is called
@@ -5690,7 +5703,7 @@ and by the specified height value. See also the image above.
 <sect1>The Shift Closed B-Spline Tool<label id="shiftclbspt">
 <p>
 <figure loc="ht">
-<eps file="pics/shiftclsbsp..ps" height="4cm">
+<eps file="pics/shiftclsbsp.ps" height="4cm">
 <img src="pics/shiftclsbsp.gif">
 <caption>Closed B-Spline curve (right), shifted version (left)</caption>
 </figure>
@@ -5948,10 +5961,6 @@ so be careful when adding new entries.
 You can reset your <tt/"ayamrc"/ file anytime using the command line
 option <tt/"-failsafe"/.
 Use <tt/"parray ayprefs"/ in the console to see what is there.
-More documentation to come.
-
-
-
 More documentation to come.
 
 <sect1>Index of Procedures and Commands
@@ -6391,6 +6400,15 @@ distance ensures that all knots (except for multiple knots) have a distance
 bigger than mindist afterwards. The knot type of the curve has to be
 <tt/"Custom"/!
 This operation does not change the shape of the curve.
+</itemize>
+
+<p><label id="scsplitnc">
+splitNC - split NURBS curve
+<itemize>
+ <item>Synopsis: splitNC u
+ <item>Description: splits the selected NURBS curve at designated parametric
+value into two curves, creating one new curve and modifying the original
+one.
 </itemize>
 
 <p><label id="scsplitnp">
@@ -8305,7 +8323,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Importance Driven Rendering: <ref id="idr" name="IDR plugin">
 <item>Insert: <ref id="mmfile" name="main menu entry">,
 <ref id="insdelac" name="insert points">
-<item>insKn: <ref id="scinskn" name="scripting interface command">
+<item>insKn: <ref id="scinsknnc" name="scripting interface command">
 <item>Insert Knot: <ref id="insknt" name="insert knot tool">
 <item>insertScene: <ref id="scinsertscene" name="scripting interface command">
 <item>Instance: <ref id="instanceobj" name ="object">
@@ -8727,8 +8745,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 
 <label id="indexu">U
 <itemize>
-<item>uCL: <ref id="sciucl" name="scripting interface command">
-<item>uCR: <ref id="sciucr" name="scripting interface command">
+<item>uCL: <ref id="scucl" name="scripting interface command">
+<item>uCR: <ref id="scucr" name="scripting interface command">
 <item>UMM: <ref id="ummtag" name="tag type">
 <item>Undo: <ref id="undos" name="The Undo System">,
 <ref id="mmedit" name="main menu entry">,
@@ -8741,7 +8759,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <ref id="extrattr" name="extrude attribute">,
 <ref id="textattr" name="text attribute">
 <item>Up Vector: <ref id="camp" name="camera property">
-<item>uS: <ref id="scius" name="scripting interface command">
+<item>uS: <ref id="scus" name="scripting interface command">
 <item>UseGrid: <ref id="vat" name="view attribute">,
 <ref id="vmconf" name="view menu entry">
 <item>UseMatColor: <ref id="prefdraw" name="preference setting">
