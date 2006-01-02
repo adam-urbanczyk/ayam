@@ -7,24 +7,28 @@
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>
+			<key>CFBundleOSTypes</key>
+			<array>
+				<string>AYAM</string>
+			</array>
 			<key>CFBundleTypeExtensions</key>
 			<array>
-				<string>*</string>
+				<string>ay</string>
 			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>Ayam.icns</string>
 			<key>CFBundleTypeName</key>
-			<string>NSStringPboardType</string>
-			<key>CFBundleTypeOSTypes</key>
-			<array>
-				<string>TEXT</string>
-			</array>
+			<string>Ayam scene</string>
 			<key>CFBundleTypeRole</key>
-			<string>Viewer</string>
+			<string>Editor</string>
+			<key>NSDocumentClass</key>
+			<string>Document</string>
 		</dict>
 	</array>
 	<key>CFBundleExecutable</key>
 	<string>Ayam</string>
 	<key>CFBundleGetInfoString</key>
-	<string>Copyright (c) by Randolf Schultz 1997-2005</string>
+	<string>Copyright (c) by Randolf Schultz 1997-2006</string>
 	<key>CFBundleIconFile</key>
 	<string>Ayam.icns</string>
 	<key>CFBundleIdentifier</key>
