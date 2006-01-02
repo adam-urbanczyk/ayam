@@ -28,18 +28,18 @@ proc io_replaceScene { } {
 
     set types {{"Ayam Scene" ".ay"} {"All files" *}}
 
-    if { $ay(ws) != "Aqua" } {
+    if { $tcl_platform(os) != "Darwin" } {
 	set newfilename [tk_getOpenFile -filetypes $types -parent .\
 		-initialfile [file tail $filename] -initialdir $dirname\
 		-title "Select file to load:"]
     } else {
-	if { [file exists [file tail $filename] ] } {
+	if { [file exists [file tail $filename]] } {
 	    set newfilename [tk_getOpenFile -filetypes $types -parent .\
-				 -initialfile [file tail $filename]\
-				 -title "Select file to load:"]
+		    -initialfile [file tail $filename]\
+		    -title "Select file to load:"]
 	} else {
 	    set newfilename [tk_getOpenFile -filetypes $types -parent .\
-				 -title "Select file to load:"]
+		    -title "Select file to load:"]
 	}
     }
 
@@ -201,19 +201,14 @@ proc io_saveScene { ask selected } {
 	}
 	set types {{"Ayam Scene" ".ay"} {"All files" *}}
 
-    if { $ay(ws) != "Aqua" } {
+	if { $tcl_platform(os) != "Darwin" } {
 	    set filename [tk_getSaveFile -filetypes $types -parent .\
 		    -initialfile [file tail $filename]\
 		    -initialdir $dirname -title "Save scene to:"]
 	} else {
-	    if { [file exists [file tail $filename] ] } {
-		set filename [tk_getSaveFile -filetypes $types -parent .\
-				  -initialfile [file tail $filename]\
-				  -title "Save scene to:"]
-	    } else {
-		set filename [tk_getSaveFile -filetypes $types -parent .\
-				  -title "Save scene to:"]
-	    }
+	    set filename [tk_getSaveFile -filetypes $types -parent .\
+		    -initialfile [file tail $filename]\
+		    -title "Save scene to:"]
 	}
     }
 
@@ -750,19 +745,14 @@ proc io_saveEnv {  } {
 
  set types {{"Ayam Scene" ".ay"} {"All files" *}}
 
- if { $ay(ws) != "Aqua" } {
+ if { $tcl_platform(os) != "Darwin" } {
      set savefilename [tk_getSaveFile -filetypes $types -parent .\
-			   -initialfile [file tail $filename]\
-			   -initialdir $dirname -title "Save environment to:"]
+	     -initialfile [file tail $filename]\
+	     -initialdir $dirname -title "Save environment to:"]
  } else {
-     if { [file exists [file tail $filename] ] } {
-	 set savefilename [tk_getSaveFile -filetypes $types -parent .\
-			       -initialfile [file tail $filename]\
-			       -title "Save environment to:"]
-     } else {
-	 set savefilename [tk_getSaveFile -filetypes $types -parent .\
-			       -title "Save environment to:"]	 
-     }
+     set savefilename [tk_getSaveFile -filetypes $types -parent .\
+	     -initialfile [file tail $filename]\
+	     -title "Save environment to:"]
  }
 
  if { $savefilename != "" } {
@@ -1008,7 +998,7 @@ proc io_RenderSM { } {
 
  return;
 }
-# io_RenderSM
+#io_RenderSM
 
 
 # io_exportRIBSO:
@@ -1327,6 +1317,7 @@ if { $AYWITHAQUA } {
 proc ::tk::mac::OpenDocument { args } {
     grab .fu
     set j 0
+
     foreach arg $args {
 	if { ([file extension $arg] == ".ay") || \
 		 ([file extension $arg] == ".AY") } {
@@ -1342,7 +1333,7 @@ proc ::tk::mac::OpenDocument { args } {
 		replaceScene $filename
 		if { $ay_error < 2 } {
 		    set ay(filename) $filename
-		    set windowfilename [file tail [file rootname $newfilename]]
+		    set windowfilename [file tail [file rootname $filename]]
 		    wm title . "Ayam - Main - $windowfilename"
 		    ayError 4 "replaceScene" "Done reading scene from:"
 		    ayError 4 "replaceScene" "$filename"
@@ -1384,9 +1375,9 @@ proc ::tk::mac::OpenDocument { args } {
 # if
 
 
-#
-#
-#
+# io_exit
+#  arrange for preferences to be saved and temporary files to be removed;
+#  then exit the application
 proc io_exit { } {
     global ayprefs AYENABLEFEXIT
 
@@ -1413,3 +1404,4 @@ proc io_exit { } {
     }
 }
 # io_exit
+

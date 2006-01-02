@@ -602,6 +602,8 @@ if { $tcl_platform(platform) == "windows" } {
 
 	set ay(ws) "Aqua"
 
+	set ay(ayamrc) "~/Library/Preferences/.ayamrc"
+
 	# arrange for kAEQuitApplication events (e.g. menu: ayam/quit;
 	# not File/Exit!) to not exit immediately via "exit"
 	rename ::exit ::realexit
@@ -612,7 +614,11 @@ if { $tcl_platform(platform) == "windows" } {
 	# make notebook tabs highlight in a nicer color
 	option add *activeBackground systemHighlight
 
+	# swap middle and right mouse buttons
 	set ayprefs(SwapMB) 1
+
+	# Aqua is like TWM
+	set ayprefs(TwmCompat) 1
 
 	# like on Win32, some keysyms are missing, so do not bind to them
 	set ayviewshortcuts(ZoomI) "plus"
@@ -1361,7 +1367,7 @@ if { ($ayprefs(LoadEnv) == 1) && ($ay(failsafe) == 0) &&\
 	incr i
     }
 
-    if { !$have_scenefile_argument } {
+    if { !$have_scenefile_argument && ![info exists tk_mac_OpenDocuments] } {
 	puts stdout "Loading environment from $ayprefs(EnvFile)..."
 	set filename [file nativename $ayprefs(EnvFile)]
 	if { $tcl_platform(platform) == "windows" } {
@@ -1442,6 +1448,12 @@ while { $i < $argc } {
 }
 # while
 grab release .fu
+
+# are documents connected to Ayam.app double clicked on MacOSX/Aqua?
+if { [info exists tk_mac_OpenDocuments] } {
+    # yes, load them
+    eval [subst "::tk::mac::OpenDocument $tk_mac_OpenDocuments"]
+}
 
 puts stdout "The tip of the day is:"
 tipoftheDay
