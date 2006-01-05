@@ -22,8 +22,6 @@
 #include <time.h>
 #include "ayam.h"
 
-extern unsigned int metacomp_id;
-
 #define META_USEVERTEXARRAY 0
 
 #define META_ABS(a) (((a) < 0 ) ? -(a) : (a))
