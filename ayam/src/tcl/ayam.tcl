@@ -152,6 +152,7 @@ array set ayprefs {
 
  SwapMB 0
  SwapMBSC { "ayviewshortcuts(MoveVButton)" "ayviewshortcuts(ZoomVButton)" }
+ UseInternalFD 0
 
  Docs "http://ayam.sourceforge.net/docs/"
  DailyTips {
@@ -619,6 +620,9 @@ if { $tcl_platform(platform) == "windows" } {
 
 	# Aqua is like TWM
 	set ayprefs(TwmCompat) 1
+
+	# use internal file dialog to load plugins
+	set ayprefs(UseInternalFD) 1
 
 	# like on Win32, some keysyms are missing, so do not bind to them
 	set ayviewshortcuts(ZoomI) "plus"
