@@ -436,13 +436,27 @@ proc io_loadCustom { } {
 
     set oldcdir [pwd]
 
+
+
     if { $idir == "" } {
 	set filename [tk_getOpenFile -filetypes $filetypes -parent .\
 		-title "Select Plugin:"]
     } else {
-	set filename [tk_getOpenFile -filetypes $filetypes -parent .\
-		-initialdir $idir -title "Select Plugin:"]
+	if { $ay(ws) != "Aqua" } {
+	    set filename [tk_getOpenFile -filetypes $filetypes -parent .\
+		    -initialdir $idir -title "Select Plugin:"]
+	} else {
+	    if { !$ayprefs(UseInternalFD) } {
+		set filename [tk_getOpenFile -filetypes $filetypes -parent .\
+			-initialdir $idir -title "Select Plugin:"]
+	    } else {
+		set filename [::tk::dialog::file:: open -filetypes $filetypes\
+			-parent . -initialdir $idir -title "Select Plugin:"]
+	    }
+	}
     }
+
+
 
     if { $filename != "" } {
 	io_lc $filename
