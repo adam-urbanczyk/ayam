@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>1. Sep 2005
+<date>5. Jan 2005
 <abstract>
 This is the documentation of Ayam (1.9) - a free 3D modeling environment
 for the RenderMan interface.
@@ -26,7 +26,10 @@ In addition, you can use the provided SGML-source to generate other formats.
 
 <sect>Introduction
 <p>
+<sect1>About Ayam
+<p>
 Ayam is a free 3D modeling environment for the RenderMan Interface.
+<p>
 Ayam was formerly known as <tt>"The Mops"</tt>.
 <p>
 Ayam is primarily aimed at the Linux, IRIX, and Win32 platforms.
@@ -74,6 +77,8 @@ Due to limitations in the Win32 operating system(s)
 (no backlinking) and the current implementation of Ayam,
 dynamic loading of custom objects is currently not available on the
 Win32 platform!
+
+<sect1>About this manual
 <p>
 How should one read this manual?
 <p>
@@ -83,11 +88,13 @@ probably pointless to read it from the beginning to the end
 Instead, just look up the documentation of the things you are interested
 in via the table of contents or the index. Cross references will then
 guide you to other important parts of the documentation.
-Again: this manual has a rather large index, use it! 
+Again: this manual has a rather large index, please use it! 
 <p>
 In this manual, the following typographic conventions are used:
 <itemize>
-<item>keyboard shortcuts: <tt/&lt;Ctrl+c&gt;/
+<item>keyboard shortcuts: <tt/&lt;Ctrl+c&gt;/, for shortcuts like
+<tt/&lt;Ctrl+Shift+t&gt;/ an abbreviated version: <tt/&lt;Ctrl+T&gt;/
+will be used
 <item>names (of object types, menu entries, properties, or property elements):
 <tt/"A Name"/
 <item>Tcl code examples:
@@ -146,7 +153,6 @@ The same goes for the right border of the objects section.
 
 <sect2>Objects<label id="obj">
 <p>
-
 The default representation of the object hierarchy is a tree view.
 The second available representation is a simple listbox (as known from
 <tt/"The Mops"/).
@@ -982,9 +988,9 @@ RenderMan renderer immediately displays all changes in the scene.
 This is a great way to test many different camera or light settings without
 the need to manually start a rendering process and close the preview window
 for each different setting.
-As the RIB client library usually is not able to handle more than one open
-RIB stream, RIB-Export and direct rendering from view windows are not
-available until the permanent view window is closed.
+As the RIB client library usually is not able to handle multiple open
+RIB streams simultaneously, RIB-Export and direct rendering from view
+windows are not available until the permanent preview window is closed.
 
 <item><tt/"Create ShadowMaps"/: creates the shadow maps for the current scene.
 See also section <ref id="shadowmaps" name="Using ShadowMaps">.
@@ -5156,6 +5162,12 @@ e.g. a Sweep:
 The newly created object has to be selected by the script code
 for parameterisation and copying. The selection should be done
 using the new scripting interface command <tt/"hSL"/ (hidden select last).
+Consequently, the most simple example script for a script object
+of type <tt/"Create"/ looks like this:
+<code>
+crtOb NCurve
+hSL
+</code>
 
 <item><tt/"Modify"/, if the script object has child objects,
 these child objects will be copied into the internal data
@@ -5179,6 +5191,12 @@ needs a NURBCurve, e.g. a Sweep:
  \ Path(NCurve)
 </code>
 </itemize>
+A simple example script for a script object of type <tt/"Modify"/ that
+needs a single NURBS curve as child object may look
+like this:
+<code>
+revertNC
+</code>
 
 <item><tt/"Script"/ is the script code. The widget is a standard
 Tcl text widget that allows to directly edit the code. It is
@@ -7547,6 +7565,18 @@ when certain dialog windows are open, so that they do not get
 shuffled under other windows by accidental mouse movements on systems
 where the window manager does only auto raise.
 This option is enabled by default on Win32.
+<item><tt/"UseInternalFD"/ switches to an internal file dialog for loading
+of plugins. This option is only used on MacOSX/Aqua (not X11!), because
+there the normal file dialog will not enter application bundle directory
+structures. This option is enabled by default on MacOSX/Aqua.
+<item><tt/"SwapMB"/, <tt/"SwapMBSC"/ allow to swap mouse buttons 2 and 3
+on MacOSX/Aqua (not X11!) for specified mouse bindings (<tt/"SwapMBSC"/),
+because on MacOSX/Aqua, traditionally, the naming of the
+middle and rightmost mouse button is reversed to X11/Win32. This option is
+enabled by default on MacOSX/Aqua and allows to use the same set of mouse
+bindings (the same ayamrc file) for X11 and Aqua without sacrificing
+user experience. The middle mouse button, by default, zooms the view,
+and the right one moves the view.
 </itemize>
 
 <sect2>RiOption and RiAttributes Database<label id="rioptdb">
@@ -8680,6 +8710,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>String: <ref id="textattr" name="Text attribute">
 <item>Subdivision Mesh: <ref id="sdmeshobj" name="SDMesh object">
 <item>Surface: <ref id="matshader" name="shader">
+<item>SwapMB: <ref id="hidprefs" name="hidden preference setting">
 <item>Swap UV: <ref id="swapuvt" name="swap uv tool">
 <item>Sweep: <ref id="sweepobj" name="object">,
 <ref id="swpt" name="Sweep tool">
@@ -8762,6 +8793,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>uS: <ref id="scus" name="scripting interface command">
 <item>UseGrid: <ref id="vat" name="view attribute">,
 <ref id="vmconf" name="view menu entry">
+<item>UseInternalFD: <ref id="hidprefs" name="hidden preference setting">
 <item>UseMatColor: <ref id="prefdraw" name="preference setting">
 <item>UseSM: <ref id="lip" name="light attribute">
 </itemize>
