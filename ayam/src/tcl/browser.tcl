@@ -111,7 +111,14 @@ proc help { {command ""} } {
     }
 
     set lcommand [string tolower $command]
-    browser_urlOpen $ayprefs(Docs)ayam-6.html\#sc${lcommand}
+    if { [string first "file://" $ayprefs(Docs)] != -1 } {
+	set lslash [string last "/" $ayprefs(Docs)]
+	set url [string range $ayprefs(Docs) 0\
+		 $lslash]/ayam-6.html\#sc${lcommand}
+	browser_urlOpen $url
+    } else {
+	browser_urlOpen $ayprefs(Docs)ayam-6.html\#sc${lcommand}
+    }
 
  return;
 }

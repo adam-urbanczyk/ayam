@@ -504,7 +504,13 @@ $m add command -label "Help on object" -command {
     }
     getType type
     set type [string tolower $type]
-    browser_urlOpen $ayprefs(Docs)ayam-4.html\#${type}obj
+    if { [string first "file://" $ayprefs(Docs)] != -1 } {
+	set lslash [string last "/" $ayprefs(Docs)]
+	set url [string range $ayprefs(Docs) 0 $lslash]/ayam-4.html\#${type}obj
+	browser_urlOpen $url
+    } else {
+	browser_urlOpen $ayprefs(Docs)ayam-4.html\#${type}obj
+    }
 }
 
 $m add command -label "Show Shortcuts" -command "shortcut_show"

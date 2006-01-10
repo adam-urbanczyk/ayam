@@ -624,6 +624,11 @@ if { $tcl_platform(platform) == "windows" } {
 	# use internal file dialog to load plugins
 	set ayprefs(UseInternalFD) 1
 
+	# use documentation from app bundle
+	set t [file join [file dirname [info nameofexecutable]] \
+		../Resources/docs/html/ayam.html]
+	set ayprefs(Docs) "file://$t"
+
 	# like on Win32, some keysyms are missing, so do not bind to them
 	set ayviewshortcuts(ZoomI) "plus"
 	set ayviewshortcuts(ZoomO) "minus"
