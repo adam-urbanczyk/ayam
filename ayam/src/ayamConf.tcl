@@ -119,8 +119,8 @@ proc create_makefile {} {
     }
 
     #
-    # Assemble CFLAGS, LD, PREFIX, LDSWDYNAMIC, EXLDFLAGS, TCLDIR, TCLINC,
-    # TCLLIB, TKDIR, TKINC, TKLIB, DL
+    # Assemble CFLAGS, LD, PREFIX, LDSWDYNAMIC, LDSWSTATIC, EXLDFLAGS,
+    # TCLDIR, TCLINC, TCLLIB, TKDIR, TKINC, TKLIB, DL
     # AQSISDIR, AQSISINC, AQSISLIBDIR, AQSISOBJS, AQSISRI2RIB, BMRTDIR,
     # BMRTINC, BMRTLIBDIR, RIBOUTLIB, SLCARGSLIB
     #
@@ -199,9 +199,21 @@ proc create_makefile {} {
     set PREFIX $prefix
 
     # LDSWDYNAMIC
-    switch {$osval} {
-	"IRIX" { set LDSWDYNAMIC "-dynamic" }
-	"default" { set LDSWDYNAMIC "-Wl,-Bdynamic" }
+    if {$osval == "IRIX"} {
+	set LDSWDYNAMIC "-dynamic"
+    } elseif { [regexp "Mac" $osval] } {
+	set LDSWDYNAMIC "" 
+    } else {
+	set LDSWDYNAMIC "-Wl,-Bdynamic"
+    }
+
+    # LDSWSTATIC
+    if {$osval == "IRIX"} {
+	set LDSWSTATIC "-static"
+    } elseif { [regexp "Mac" $osval] } {
+	set LDSWSTATIC "" 
+    } else {
+	set LDSWSTATIC "-Wl,-Bstatic"
     }
 
     # EXLDFLAGS
@@ -210,7 +222,6 @@ proc create_makefile {} {
          ($osval == "Solaris") } {
 	set EXLDFLAGS ""
     }
-
 
     # TCLDIR
     set TCLDIR $tclpath
@@ -363,6 +374,7 @@ proc create_makefile {} {
 		puts $dst "LIBDIR=$PREFIX/lib"
 		puts $dst "DOCDIR=$PREFIX/doc"
 		puts $dst "LDSWDYNAMIC=$LDSWDYNAMIC"
+		puts $dst "LDSWSTATIC=$LDSWSTATIC"
 		puts $dst "EXLDFLAGS=$EXLDFLAGS"
 		puts $dst "SHLFLAGS=$SHLFLAGS"
 		puts $dst "TCLDIR=$TCLDIR"
