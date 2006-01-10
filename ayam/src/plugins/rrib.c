@@ -50,10 +50,10 @@ char ay_rrib_version_mi[] = AY_VERSIONSTRMI;
  * link object type specific data to it, then copy it
  * into the Ayam scene using ay_rrib_linkobject()
  */
-ay_object ay_rrib_co;
+static ay_object ay_rrib_co;
 
 /* current material object */
-ay_mat_object ay_rrib_cm;
+static ay_mat_object ay_rrib_cm;
 
 /* attribute state stack */
 typedef struct ay_rrib_attrstate_s {
@@ -123,7 +123,7 @@ typedef struct ay_rrib_attrstate_s {
 
 } ay_rrib_attrstate;
 
-ay_rrib_attrstate *ay_rrib_cattributes;
+static ay_rrib_attrstate *ay_rrib_cattributes;
 
 /* transformation stack */
 typedef struct ay_rrib_trafostate_s {
@@ -133,72 +133,74 @@ typedef struct ay_rrib_trafostate_s {
 
 } ay_rrib_trafostate;
 
-ay_rrib_trafostate *ay_rrib_ctrafos;
+static ay_rrib_trafostate *ay_rrib_ctrafos;
 
 
 /* current frame */
-int ay_rrib_cframe;
+static int ay_rrib_cframe;
 
 /* last read object */
-ay_object *ay_rrib_lrobject;
+static ay_object *ay_rrib_lrobject;
 
 /* light handle */
-int ay_rrib_clighthandle;
+static int ay_rrib_clighthandle;
 
 /* first read light */
-ay_object *ay_rrib_flobject;
+static ay_object *ay_rrib_flobject;
 
 /* object handle */
-int ay_rrib_cobjecthandle;
+static int ay_rrib_cobjecthandle;
 
 /* objects (with handles):
  * objects defined in the RIB with RiObject will be linked
  * to these pointers for later use with RiObjectInstance
  */
-ay_list_object *ay_rrib_objects;
-ay_list_object *ay_rrib_lastobject;
+static ay_list_object *ay_rrib_objects;
+static ay_list_object *ay_rrib_lastobject;
 
 /* temporary space for ay_next while reading objects between
    RiObjectBegin/End */
-ay_object **ay_rrib_aynext;
+static ay_object **ay_rrib_aynext;
 
 /* flag used by AreaLights to determine whether to continue
    reading geometric primitives after the AreaLight geometry */
-int ay_rrib_readinggprims;
+static int ay_rrib_readinggprims;
 
 /* flag to indicate, whether we are currently reading
    AreaLight geometry */
-int ay_rrib_rageom;
+static int ay_rrib_rageom;
 
 
 /* fov */
-double ay_rrib_fov;
+static double ay_rrib_fov;
 
 /* cliping planes */
-double ay_rrib_near, ay_rrib_far;
+static double ay_rrib_near, ay_rrib_far;
 
 /* image size */
-int width, height;
+static int width, height;
 
 /* material */
-int ay_rrib_lastmaterialnum;
+static int ay_rrib_lastmaterialnum;
 
 /* import options */
-int ay_rrib_readframe; /* number of frame to read */
-int ay_rrib_readoptions; /* read RiOptions */
-int ay_rrib_readcamera; /* read (create) the Camera */
-int ay_rrib_readlights; /* read lights */
-int ay_rrib_readmaterial; /* read material and attributes */
-int ay_rrib_readmateriali; /* read material and attributes (internal) */
-int ay_rrib_readpartial; /* read partial RIB (e.g. without WorldBegin/End) */
-int ay_rrib_errorlevel; /* 0: silence, 1: errors, 2: warnings, 3: all */
-double rrib_rescaleknots; /* rescale knots to min dist: 0.0 no scaling */
+static int ay_rrib_readframe; /* number of frame to read */
+static int ay_rrib_readoptions; /* read RiOptions */
+static int ay_rrib_readcamera; /* read (create) the Camera */
+static int ay_rrib_readlights; /* read lights */
+static int ay_rrib_readmaterial; /* read material and attributes */
+static int ay_rrib_readmateriali; /* read material and attributes (internal) */
+static int ay_rrib_readpartial; /* read partial RIB (e.g. without
+				   WorldBegin/End) */
+static int ay_rrib_errorlevel; /* 0: silence, 1: errors, 2: warnings, 3: all */
+static double rrib_rescaleknots; /* rescale knots to min dist:
+				    0.0 no scaling */
 
 
 /* grib is used by Affine to specify the current RIB;
    ay_rrib_RiReadArchive() keeps a copy of it on the stack
    when recursively descending into other RIBs */
-PRIB_INSTANCE grib;
+static PRIB_INSTANCE grib;
 
 /* the following tables are used by Affine to parse vectors of points */
 /* how to sort through the data */
