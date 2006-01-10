@@ -1,6 +1,7 @@
+
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile.shared [13. Dec 2005]
+# Makefile.shared [10. Jan 2006]
 # Makefile for Ayam (shared version)
 
 # Choose an installation prefix.
@@ -468,6 +469,13 @@ ayamsh: $(AYAMOBJS) $(TOGLOBJECT) $(AFFINEOBJS)
 Ayam.app: ayamsh
 	mv ayamsh ../bin/Ayam.app/Contents/MacOS/Ayam
 	cp -rf tcl ../bin/Ayam.app/Contents/Resources/Scripts
+	-cp plugins/*.so ../bin/Ayam.app/Contents/MacOS/Ayam/plugins
+	-cp plugins/*.tcl ../bin/Ayam.app/Contents/MacOS/Ayam/plugins
+	-cp contrib/meta/*.so ../bin/Ayam.app/Contents/MacOS/Ayam/plugins
+	-cp contrib/meta/*.tcl ../bin/Ayam.app/Contents/MacOS/Ayam/plugins
+	-cp ../../docs/html/*.html ../bin/Ayam.app/Contents/Resources/docs/
+	-mkdir ../bin/Ayam.app/Contents/Resources/docs/pics
+	-cp ../../docs/html/pics/*.gif ../bin/Ayam.app/Contents/Resources/docs/pics
 
 aycsg.so: $(AYCSGOBJS) $(OPENCSGOBJS)
 	$(LD) $(SHLFLAGS) $(AYCSGOBJS) -o plugins/aycsg.so $(AYCSGLIBS)
