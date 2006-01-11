@@ -1,4 +1,3 @@
-
 # Emacs, this is -*- Mode: makefile -*-
 #
 # Makefile.shared [10. Jan 2006]
@@ -469,10 +468,10 @@ ayamsh: $(AYAMOBJS) $(TOGLOBJECT) $(AFFINEOBJS)
 Ayam.app: ayamsh
 	mv ayamsh ../bin/Ayam.app/Contents/MacOS/Ayam
 	cp -rf tcl ../bin/Ayam.app/Contents/Resources/Scripts
-	-cp plugins/*.so ../bin/Ayam.app/Contents/MacOS/Ayam/plugins
-	-cp plugins/*.tcl ../bin/Ayam.app/Contents/MacOS/Ayam/plugins
-	-cp contrib/meta/*.so ../bin/Ayam.app/Contents/MacOS/Ayam/plugins
-	-cp contrib/meta/*.tcl ../bin/Ayam.app/Contents/MacOS/Ayam/plugins
+	-cp plugins/*.so ../bin/Ayam.app/Contents/MacOS/plugins
+	-cp plugins/*.tcl ../bin/Ayam.app/Contents/MacOS/plugins
+	-cp contrib/meta/*.so ../bin/Ayam.app/Contents/MacOS/plugins
+	-cp contrib/meta/*.tcl ../bin/Ayam.app/Contents/MacOS/plugins
 	-cp ../../docs/html/*.html ../bin/Ayam.app/Contents/Resources/docs/
 	-mkdir ../bin/Ayam.app/Contents/Resources/docs/pics
 	-cp ../../docs/html/pics/*.gif ../bin/Ayam.app/Contents/Resources/docs/pics
