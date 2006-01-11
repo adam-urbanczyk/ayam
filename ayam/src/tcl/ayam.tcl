@@ -626,8 +626,11 @@ if { $tcl_platform(platform) == "windows" } {
 
 	# use documentation from app bundle
 	set t [file join [file dirname [info nameofexecutable]] \
-		../Resources/docs/html/ayam.html]
+		../Resources/docs/ayam.html]
 	set ayprefs(Docs) "file://$t"
+
+	# when started via Finder/Dock we end up with cd /, correct this
+	cd $env(HOME)/Documents
 
 	# like on Win32, some keysyms are missing, so do not bind to them
 	set ayviewshortcuts(ZoomI) "plus"
