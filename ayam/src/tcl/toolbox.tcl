@@ -23,12 +23,16 @@ proc toolbox_open { } {
 	toplevel $w -class ayam
     }
 
+    if { $ay(ws) == "Aqua" } {
+	::tk::unsupported::MacWindowStyle style $w floating {closeBox resizable}
+    } else {
+	if { $ayprefs(ToolBoxTrans) == 1 } {
+	    wm transient $w .
+	}
+    }
+    
     wm title $w "Tools"
     wm iconname $w "Tools"
-
-    if { $ayprefs(ToolBoxTrans) == 1 } {
-	wm transient $w .
-    }
 
     set f [frame $w.f]
     set ay(toolbuttons) {}
