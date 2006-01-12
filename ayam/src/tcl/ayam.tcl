@@ -629,8 +629,6 @@ if { $tcl_platform(platform) == "windows" } {
 		../Resources/docs/ayam.html]
 	set ayprefs(Docs) "file://$t"
 
-	# when started via Finder/Dock we end up with cd /, correct this
-	cd $env(HOME)/Documents
 
 	# like on Win32, some keysyms are missing, so do not bind to them
 	set ayviewshortcuts(ZoomI) "plus"
@@ -1531,6 +1529,11 @@ foreach view $ay(views) { viewBind $view }
 
 # if there is a view window under the mouse pointer, make it current
 after idle viewMouseToCurrent
+
+if { $ay(ws) == "Aqua" } {
+    # when started via Finder/Dock we end up with cd /, correct this
+    cd $env(HOME)/Documents
+}
 
 puts stdout "Ayam-Startup-Sequence finished. Reconstruct the World!"
 
