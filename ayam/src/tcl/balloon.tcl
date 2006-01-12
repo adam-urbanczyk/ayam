@@ -68,7 +68,7 @@ proc balloon_show {w arg} {
     set ws ""
     catch [set ws [tk windowingsystem]]
     if {[string equal $ws aqua]} {
-	::tk::unsupported::MacWindowStyle style $top help none
+	::tk::unsupported::MacWindowStyle style $top help noActivates
     } else {
 	wm overrideredirect $top 1
     }
