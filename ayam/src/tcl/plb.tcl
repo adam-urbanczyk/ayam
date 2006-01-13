@@ -176,14 +176,10 @@ $m add command -label "Paste Property" -command {
     set ay(sc) 1
 }
 
-bind $f.li <ButtonPress-3> {
-    global ay
-
-    set xy [winfo pointerxy .]
-    set x [lindex $xy 0]
-    set y [lindex $xy 1]
-
-    tk_popup $ay(plb).popup $x $y
+if { $ay(ws) == "Aqua" && $ayprefs(SwapMB) } {
+    bind $f.li <ButtonPress-2> "tk_popup $m %X %Y"
+} else {
+    bind $f.li <ButtonPress-3> "tk_popup $m %X %Y"
 }
 
 # plb scrollbar
