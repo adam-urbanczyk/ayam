@@ -12,7 +12,7 @@
 
 #
 proc olb_open { w } {
-global ay
+global ay ayprefs
 
 set ay(lb) 1
 
@@ -113,15 +113,10 @@ $m add command -label "Paste Object" -command "$em invoke 2"
 $m add separator
 $m add command -label "Delete Object" -command "$em invoke 3"
 
-bind $ay(olb) <ButtonPress-3> {
-    global ay
-
-    set xy [winfo pointerxy .]
-    set x [lindex $xy 0]
-    set y [lindex $xy 1]
-
-    tk_popup $ay(olb).popup $x $y
-    
+if { $ay(ws) == "Aqua" && $ayprefs(SwapMB) } {
+    bind $f.li <ButtonPress-2> "tk_popup $m %X %Y"
+} else {
+    bind $f.li <ButtonPress-3> "tk_popup $m %X %Y"
 }
 
 

@@ -627,7 +627,7 @@ proc tree_collapse { } {
 # tree_open:
 # create object hierarchy tree widget
 proc tree_open { w } {
-global ay AYWITHAQUA
+global ay AYWITHAQUA ayprefs
 
 set ay(lb) 0
 # frame
@@ -772,7 +772,11 @@ $m add command -label "Paste Object" -command "$em invoke 2"
 $m add separator
 $m add command -label "Delete Object" -command "$em invoke 3"
 
-bind $ay(tree) <ButtonPress-3> "tree_popup $ay(tree)"
+if { $ay(ws) == "Aqua" && $ayprefs(SwapMB) } {
+    bind $ay(tree) <ButtonPress-2> "tree_popup $ay(tree)"
+} else {
+    bind $ay(tree) <ButtonPress-3> "tree_popup $ay(tree)"
+}
 
 # XXXX unfortunately, this does not work
 # because this steals all events otherwise
