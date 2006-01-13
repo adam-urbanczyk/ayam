@@ -598,8 +598,13 @@ interp alias {} console_dialog {} ConsoleDialog
 	return
     }
 
-#XXXX bind [winfo toplevel $w] <Button-3> "tk_popup $w.pop %X %Y"
-    bind $text <Button-3> "tk_popup $w.pop %X %Y"
+    #XXXX bind [winfo toplevel $w] <Button-3> "tk_popup $w.pop %X %Y"
+    global ay ayprefs
+    if { $ay(ws) == "Aqua" && $ayprefs(SwapMB) } {
+	bind $text <Button-2> "tk_popup $w.pop %X %Y;break"
+    } else {
+	bind $text <Button-3> "tk_popup $w.pop %X %Y"
+    }
 
     ## Console Menu
     ## FIX - get the attachment stuff working
@@ -1738,8 +1743,13 @@ catch {unset ev key}
 ##
 event delete <<Paste>> <Control-V>
 ConsoleClipboardKeysyms <Copy> <Cut> <Paste>
-
-bind Console <Insert> {catch {ConsoleInsert %W [selection get -displayof %W]}}
+#XXXX
+global ay ayprefs
+if { $ay(ws) == "Aqua" && $ayprefs(SwapMB) } {
+    bind Console <Button-3> {catch {ConsoleInsert %W [selection get -displayof %W]}}
+} else {
+    bind Console <Insert> {catch {ConsoleInsert %W [selection get -displayof %W]}}
+}
 
 bind Console <Triple-1> {+
 catch {
@@ -1877,7 +1887,14 @@ bind Console <$META-Delete> {
 	%W delete insert {insert wordend}
     }
 }
-bind Console <ButtonRelease-2> {
+# XXXX
+global ay ayprefs
+if { $ay(ws) == "Aqua" && $ayprefs(SwapMB) } {
+    set event <ButtonRelease-3>
+} else {
+    set event <ButtonRelease-2>
+}
+bind Console $event {
     ## Try and get the default selection, then try and get the selection
     ## type TEXT, then try and get the clipboard if nothing else is available
     # XXXX (Tk8.4)
