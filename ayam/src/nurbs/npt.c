@@ -2180,6 +2180,8 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 
     } /* for */
 
+  new->is_rat = ay_npt_israt(new);
+
   /* return result */
   *patch = new;
 
