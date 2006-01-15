@@ -1,4 +1,4 @@
-[Setup.txt, 8. Sep 2004]
+[Setup.txt, 15. Jan 2006]
 
 Setup instructions for Ayam (Unix only)
 ---------------------------------------
@@ -18,15 +18,12 @@ properly. The following things have to be done:
   5. Create and save a working environment
 
 
-Do not worry about any error messages in red color, that possibly
-appeared in the console on first startup.
-
-
 1. Determine where to save the preferences
 ------------------------------------------
 
 By default, the preference settings are automatically saved to the file:
-"~/.ayamrc" when you quit Ayam.
+"~/.ayamrc" ("~/Library/Preferences/.ayamrc" on MacOSX/Aqua) when you
+quit Ayam.
 
 You can change location and name of the preference file using the
 environment variable "AYAMRC".
@@ -44,6 +41,11 @@ You can switch off automatic saving of the preferences in the
 preference settings (Pref: "Main/AutoSavePrefs").
 If you switched off AutoSavePrefs, you can enforce saving of the
 preferences using the main menu entry "File/Save Prefs".
+
+On MacOSX/Aqua environment variables may be defined using
+the file "~/.MacOSX/environment.plist".
+See also:
+http://developer.apple.com/qa/qa2001/qa1067.html
 
 
 2. Determine the type of the window manager
@@ -64,6 +66,8 @@ then on "RiOptions" in the listbox to the right and watch
 your main window.
 If it jumps downward, you should set "TwmCompat" to "on" in the
 preferences!
+
+On MacOSX/Aqua the default setting ("on") does not need to be changed.
 
 
 3. Set up the shaders
@@ -98,20 +102,33 @@ setting.
 If you are ready, press the "Scan Shaders" button right below the "Shaders"
 entry field and watch the console for error messages.
 
+On MacOSX there is no BMRT; you have to download a different renderer like
+e.g. Pixie, 3Delight or Aqsis (all available on MacOSX) and load a shader
+parsing plugin, see below.
+
 
 4. Set up the plugins
 ---------------------
 
 The distribution of Ayam contains some plugins:
 RRIB: RIB Import
+ONIO: Rhino 3DM Import/Export
 MFIO: 3DMF Import/Export
 IDR: Importance Driven Rendering
 MetaObj: the MetaBalls custom object
 ayslx, ayslb, ayso, ayslo, ayslo3d, aysdr: shader parsing plugins
 
+All plugins reside in the "ayam/bin/plugins" directory (on MacOSX/Aqua
+they are located in the application bundle itself:
+"Ayam.app/Contents/MacOS/plugins").
+
 You may load the plugins
-a) manually if you need them (using the main menu "File/Load Custom") or
+a) manually if you need them (using the main menu "File/Load Plugin") or
 b) automatically on startup of Ayam.
+
+If manual loading of a plugin fails, please consult the FAQ:
+http://ayam.sourceforge.net/faq.html#q1.10
+.
 
 Add "<path>/load<pluginname>.tcl" to the preference setting
 "Main/Scripts" if you want the plugin to load automatically on
@@ -127,6 +144,9 @@ environment variable, otherwise loading of the plugin will fail.
 
 Note that on IRIX, you probably have to modify LD_LIBRARYN32_PATH
 instead of LD_LIBRARY_PATH.
+
+On MacOSX/Aqua you may have to modify the DYLD_LIBRARY_PATH instead
+of the LD_LIBRARY_PATH variable.
 
 
 5. Create and save a working environment
@@ -149,7 +169,8 @@ o Open and arrange as many views as you like using the
 o Save the environment using the main menu entry
   "Special/Save Environment". This will save the environment
   to the file given in the preference setting "Main/EnvFile".
-  The default setting is "~/.ayam2view.ay".
+  The default setting is "~/.ayam2view.ay"
+  ("~/Library/Preferences/.ayam2view.ay" on MacOSX/Aqua).
   The next dialog will ask you, whether you want to make the new
   environment the default, answer with "Ok".
   Do not switch off the preference setting "Main/LoadEnv",
