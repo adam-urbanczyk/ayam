@@ -629,6 +629,7 @@ if { $tcl_platform(platform) == "windows" } {
 		../Resources/docs/ayam.html]
 	set ayprefs(Docs) "file://$t"
 
+	set ayprefs(EnvFile) "~/Library/Preferences/.ayam2view.ay"
 
 	# like on Win32, some keysyms are missing, so do not bind to them
 	set ayviewshortcuts(ZoomI) "plus"
