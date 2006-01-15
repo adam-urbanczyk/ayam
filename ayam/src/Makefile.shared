@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile.shared [10. Jan 2006]
+# Makefile.shared [14. Jan 2006]
 # Makefile for Ayam (shared version)
 
 # Choose an installation prefix.
@@ -475,6 +475,17 @@ Ayam.app: ayamsh
 	-cp ../../docs/html/*.html ../bin/Ayam.app/Contents/Resources/docs/
 	-mkdir ../bin/Ayam.app/Contents/Resources/docs/pics
 	-cp ../../docs/html/pics/*.gif ../bin/Ayam.app/Contents/Resources/docs/pics
+
+Ayam.dmg:
+	cp -R ../bin/Ayam.app /Volumes/ayam
+	cp ../Changes.txt /Volumes/ayam
+	cp ../README.txt /Volumes/ayam
+	cp ../License.txt /Volumes/ayam
+	cp ../Setup.txt /Volumes/ayam
+	cp ../../docs/ayam.pdf /Volumes/ayam
+	cp -R ../scn /Volumes/ayam
+	cp scripts /Volumes/ayam
+	find /Volumes/ayam -name CVS -exec rm -rf "{}" ";"
 
 aycsg.so: $(AYCSGOBJS) $(OPENCSGOBJS)
 	$(LD) $(SHLFLAGS) $(AYCSGOBJS) -o plugins/aycsg.so $(AYCSGLIBS)
