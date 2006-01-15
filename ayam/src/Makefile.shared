@@ -484,8 +484,8 @@ Ayam.dmg:
 	cp ../Setup.txt /Volumes/ayam
 	cp ../../docs/ayam.pdf /Volumes/ayam
 	cp -R ../scn /Volumes/ayam
-	cp scripts /Volumes/ayam
-	find /Volumes/ayam -name CVS -exec rm -rf "{}" ";"
+	cp -R scripts /Volumes/ayam
+	-find /Volumes/ayam -name CVS -exec rm -rf "{}" ";"
 
 aycsg.so: $(AYCSGOBJS) $(OPENCSGOBJS)
 	$(LD) $(SHLFLAGS) $(AYCSGOBJS) -o plugins/aycsg.so $(AYCSGLIBS)
