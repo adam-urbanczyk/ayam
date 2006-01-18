@@ -153,6 +153,7 @@ array set ayprefs {
  SwapMB 0
  SwapMBSC { "ayviewshortcuts(MoveVButton)" "ayviewshortcuts(ZoomVButton)" }
  UseInternalFD 0
+ CursorEnd 1
 
  Docs "http://ayam.sourceforge.net/docs/"
  DailyTips {
