@@ -1920,6 +1920,23 @@ bind Console $event {
     }
 }
 
+#XXXX
+global ayprefs
+
+if { $ayprefs(CursorEnd) } {
+    bind Console <FocusIn> {
+	%W mark set insert end
+
+	if {[%W compare {limit linestart} == {insert linestart}]} {
+	    tkTextSetCursor %W limit
+	} else {
+	    tkTextSetCursor %W {insert linestart}
+	}
+    }
+    # bind
+}
+# if
+
 ##
 ## End Console bindings
 ##
