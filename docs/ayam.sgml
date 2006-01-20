@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>5. Jan 2005
+<date>20. Jan 2006
 <abstract>
 This is the documentation of Ayam (1.9) - a free 3D modeling environment
 for the RenderMan interface.
@@ -2594,7 +2594,7 @@ The tag type <tt/"TP"/ can be used to save tesselation parameters
 to objects of type <tt/"NPatch"/. Those tesselation parameters
 will be used when the NPatch object is tesselated for e.g. a
 conversion to a PolyMesh object. The syntax of the TP tag is:
-<tt>"&lt;tmethod&gt;,&lt;tparamu&gt;"&lt;tparamv&gt;"</tt>
+<tt>"&lt;tmethod&gt;,&lt;tparamu&gt;&lt;tparamv&gt;"</tt>
 where <tt/"&lt;tmethod&gt;"/ is an integer value between 1 and 3, describing
 which tesselation method to use (1 - ParametricError,
 2 - PathLength, and 3 - DomainDistance) and <tt/"&lt;tparamu&gt;"/ and
@@ -7434,6 +7434,9 @@ denotes the home directory of the current user.
 <item>On Win32 platforms (Windows95-2000) it is
 <tt>"&dollar;(HOME)/ayamrc"</tt> if the environment variable
 <tt>HOME</tt> exists, else <tt>"&dollar;(TEMP)/ayamrc"</tt>.<p>
+<item>On Mac OS X Aqua (not X11!) it is
+<tt>"&tilde;/Library/Preferences/.ayamrc"</tt>, where <tt>"&tilde;"</tt>
+denotes the home directory of the current user.
 </itemize>
 
 The ayamrc file is read on each start of Ayam and saved again
@@ -7450,13 +7453,11 @@ just occasional tweaking and are not reachable using the GUI preference editor)
 
 You may edit the file by hand, but keep in mind, that the
 file will be parsed by Tcl. Should you, for some reason,
-destroy your ayamrc so that Ayam does not start
-correctly anymore
+destroy your ayamrc so that Ayam does not start correctly anymore
 you may start Ayam with the command line option <tt>"-failsafe"</tt>.
 When the application is left the next time, or the main menu entry
-<tt>"Save Prefs"</tt> is invoked
-a correct ayamrc will be created again. All preference settings
-will be reset to factory defaults, however!<p>
+<tt>"Save Prefs"</tt> is invoked a correct ayamrc will be created again.
+All preference settings will be reset to factory defaults, however!<p>
 
 <sect2>Changing Keyboard Shortcuts
 <p>
@@ -7577,6 +7578,10 @@ enabled by default on MacOSX/Aqua and allows to use the same set of mouse
 bindings (the same ayamrc file) for X11 and Aqua without sacrificing
 user experience. The middle mouse button, by default, zooms the view,
 and the right one moves the view.
+<item><tt/"CursorEnd"/, this option is enabled by default. If switched
+on, the first click into the console will move the cursor to the input
+prompt, ready for command input, instead of moving the cursor to the
+point of the click.
 </itemize>
 
 <sect2>RiOption and RiAttributes Database<label id="rioptdb">
@@ -7651,19 +7656,23 @@ provided that may be used to repair the application state of Ayam
 should it be stuck e.g. in an endless loop of Tcl error message.
 <p>
 On Unix systems <tt>"repairAyam"</tt> may be started from any
-shell simply by typing <tt>"repairAyam.tcl"</tt> (without the quotes)
+shell simply by typing <tt>"./repairAyam.tcl"</tt> or
+<tt>"wish repairAyam.tcl"</tt> (without the quotes)
 on the command prompt; if the script detects that it is running on Unix
 and not in Ayam it will send itself to the Tcl interpreter Ayam is
-running in using the Tcl send command. If this does not work as expected
-it may still be run as on Win32.
+running in using the Tk send command. On Mac OS X Aqua (not X11!)
+AppleScript events will be used instead of the Tk send command.
+If this does not work as expected <tt>"repairAyam.tcl"</tt> may still
+be run via the Ayam console (as on Win32).
 <p>
 On Win32 you have to start <tt>"repairAyam.tcl"</tt> from the Ayam console
 using the command: <tt>"source scripts/repairAyam.tcl"</tt> or using
 the consoles context menu: <tt>"Console/Load File"</tt>.
 <p>
-The script <tt>"repairAyam.tcl"</tt> should be considered as a last resort,
-to help you save your modified objects.
-It will close all views, clean up the application state variables,
+The script <tt>"repairAyam.tcl"</tt> should be considered a last resort
+to help you save your modified objects!
+<p>
+The script will close all views, clean up the application state variables,
 reset the mouse cursor and the console prompt, and try to update important
 main window widgets. Since Ayam 1.9 it will also clear the console and
 try to break potential endless loops running e.g. in the console or
@@ -8192,6 +8201,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>crtOb: <ref id="sccrtob" name="scripting interface command">
 <item>CSG: <ref id="levelobj" name="Level object">,
 <ref id="aycsg" name="AyCSG CSG preview plugin">
+<item>CursorEnd: <ref id="hidprefs" name="hidden preference setting">
 <item>Curvature: <ref id="plotcurt" name="plot curvature tool">
 <item>Custom: <ref id="cul" name="light type">,
 <ref id="mmcustom" name="custom menu">
