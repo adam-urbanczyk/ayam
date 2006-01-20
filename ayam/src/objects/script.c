@@ -430,7 +430,7 @@ ay_script_writecb(FILE *fileptr, ay_object *o)
  ay_script_object *sc = NULL;
  char *arrname = NULL, *membername = NULL, *memberval = NULL;
  char *arrnameend = NULL;
- Tcl_Obj *arrmemberlist = NULL, *arrmember;
+ Tcl_Obj *arrmemberlist = NULL, *arrmember, *strobj, *toa;
  int arrmembers = 0, i, slen;
  Tcl_Interp *interp = ay_interp;
 
@@ -454,14 +454,18 @@ ay_script_writecb(FILE *fileptr, ay_object *o)
   if(strstr(sc->script, "# Ayam, save array:"))
     {
       arrname = strchr(sc->script, ':');
-      if(arrname[1] == ' ')
+      arrname++;
+      while(arrname[0] == ' ')
 	arrname++;
+
       arrnameend = strchr(arrname, '\n');
+
       if(arrnameend)
 	*arrnameend = '\0';
-      Tcl_VarEval(interp, "array names", arrname, (char*)NULL);
-      if(arrnameend)
-	*arrnameend = '\n';
+
+      Tcl_VarEval(interp, "global ", arrname, ";",
+		  "array names ", arrname, ";", (char*)NULL);
+
       arrmemberlist = Tcl_GetObjResult(interp);
 
       Tcl_ListObjLength(interp, arrmemberlist, &arrmembers);
@@ -486,6 +490,10 @@ ay_script_writecb(FILE *fileptr, ay_object *o)
 		} /* if */
 	    } /* if */
 	} /* for */
+
+      if(arrnameend)
+	*arrnameend = '\n';
+
     } /* if */
 
  return AY_OK;
