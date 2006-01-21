@@ -59,12 +59,18 @@ proc tgui_block { } {
 	set ay(oldlabelbinding) [bind .fu.fMain.fHier.ftr.la <Double-1>]
 	bind .fu.fMain.fHier.ftr.la <Double-1> $sc
 	set t $ay(tree)
+
 	set ay(oldtreeb1binding) [bind $t <1>]
 	bind $t <1> $sc
 	set ay(oldtreeb1rbinding) [bind $t <ButtonRelease-1>]
 	bind $t <ButtonRelease-1> $sc
+
+	set ay(oldtreeb2binding) [bind $t <2>]
+	bind $t <2> $sc
+
 	set ay(oldtreeb3binding) [bind $t <3>]
 	bind $t <3> $sc
+
 	$t bindText <ButtonRelease-1> ""
 	$t bindText <ButtonPress-1> ""
     } else {
@@ -116,12 +122,14 @@ proc tgui_unblock { } {
     bind Listbox <1> $ay(ListboxBinding)
     bind Listbox <ButtonRelease-1> $ay(ListboxRBinding)
 
-    # bind Objects label
     if { $ay(lb) == 0 } {
+	# bind Objects label
 	bind .fu.fMain.fHier.ftr.la <Double-1> $ay(oldlabelbinding)
+	# re-establish tree bindings
 	set t $ay(tree)
 	bind $t <1> $ay(oldtreeb1binding)
 	bind $t <ButtonRelease-1> $ay(oldtreeb1rbinding)
+	bind $t <2> $ay(oldtreeb2binding)
 	bind $t <3> $ay(oldtreeb3binding)
 	$t bindText <ButtonRelease-1> ""
 	$t bindText <ButtonPress-1> "tree_selectItem 1 $t"
