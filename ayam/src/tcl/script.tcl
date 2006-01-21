@@ -73,7 +73,11 @@ $m add command -label "Load from file" -command {
     }
 }
 # bind popup menu
-bind $t <3> {
+set mb 3
+if { $ay(ws) == "Aqua" && $ayprefs(SwapMB) } {
+    set mb 2
+}
+bind $t <$mb> {
     set xy [winfo pointerxy .];
     set x [lindex $xy 0]
     set y [lindex $xy 1]
