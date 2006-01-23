@@ -1,4 +1,4 @@
-[14. Jan 2006] CVS-Head:
+[23. Jan 2006] CVS-Head:
 o bug fixes:
   - fixed automatic merging of PV tags (SF 1238692)
   - fixed root object not drawn upon File/New (SF 1245221)
@@ -15,9 +15,9 @@ o bug fixes:
   - fixed Shift+Tab bindings when Ayam is used with Tk8.4 (SF 1324656)
   - fixed opening of the preferences editor leading to Tcl errors in
     rare cases (SF 1325362)
-  - fixed repairAyam.tcl not working on MacOSX
-  - fixed flashing of editable points on MacOSX (SF 1394823)
+  - fixed "repairAyam.tcl" not working on MacOSX (SF 1345611)
   - fixed drawing of selection rectangle on MacOSX (SF 1394822)
+  - fixed flashing of editable points on MacOSX (SF 1394823)
 o improved OBJ import of files with trailing whitespace as e.g. written by
   Blender
 o script objects now cache a compiled version of the script for faster
@@ -110,7 +110,16 @@ o added fixes for miscellaneous GUI look and feel glitches on MacOSX/Aqua:
   vertical alignment of menu property gui elements, starting size of object
   tree, window attributes of toolbox and direct point editing dialog, view
   menus (no icon images allowed)
+o default ayamrc filename on MacOSX/Aqua changed to
+  "~/Library/Preferences/.ayamrc" and environment file to
+  "~/Library/Preferences/.ayam2view.ay"
+o improved handling of local ("file://") documentation URLs
+o added hidden preference option "CursorEnd" that controls moving the console
+  cursor to the end (ready for entering text at the prompt) when the console
+  gets the focus (e.g. by clicking anywhere into the text widget)
 o added DMG (disk image) distribution method for MacOSX/Aqua
+o Win32 AyCSG executable is now compiled with the newest GLEW to make AyCSG
+  work with OpenGL 2.x drivers
 
 
 [5. Jul 2005] Ayam 1.8.3:
