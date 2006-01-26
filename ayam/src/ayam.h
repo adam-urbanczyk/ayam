@@ -1155,6 +1155,7 @@ extern unsigned int ay_current_primlevel;
 
 /* Subdivision Schemes */
 #define AY_SDSCATMULL    0
+#define AY_SDSLOOP       1
 
 /* Subdivision Tag Types */
 #define AY_SDTHOLE    0

@@ -53,7 +53,7 @@ char ay_rrib_version_mi[] = AY_VERSIONSTRMI;
 static ay_object ay_rrib_co;
 
 /* current material object */
-static ay_mat_object ay_rrib_cm;
+/* static ay_mat_object ay_rrib_cm; */
 
 /* attribute state stack */
 typedef struct ay_rrib_attrstate_s {
@@ -125,6 +125,7 @@ typedef struct ay_rrib_attrstate_s {
 
 static ay_rrib_attrstate *ay_rrib_cattributes;
 
+
 /* transformation stack */
 typedef struct ay_rrib_trafostate_s {
   struct ay_rrib_trafostate_s *next;
@@ -155,8 +156,8 @@ static int ay_rrib_cobjecthandle;
  * objects defined in the RIB with RiObject will be linked
  * to these pointers for later use with RiObjectInstance
  */
-static ay_list_object *ay_rrib_objects;
-static ay_list_object *ay_rrib_lastobject;
+static ay_list_object *ay_rrib_riobjects;
+static ay_list_object *ay_rrib_lastriobject;
 
 /* temporary space for ay_next while reading objects between
    RiObjectBegin/End */
@@ -178,7 +179,7 @@ static double ay_rrib_fov;
 static double ay_rrib_near, ay_rrib_far;
 
 /* image size */
-static int width, height;
+/* static int width, height; */
 
 /* material */
 static int ay_rrib_lastmaterialnum;
@@ -193,8 +194,8 @@ static int ay_rrib_readmateriali; /* read material and attributes (internal) */
 static int ay_rrib_readpartial; /* read partial RIB (e.g. without
 				   WorldBegin/End) */
 static int ay_rrib_errorlevel; /* 0: silence, 1: errors, 2: warnings, 3: all */
-static double rrib_rescaleknots; /* rescale knots to min dist:
-				    0.0 no scaling */
+static double rrib_rescaleknots; /* rescale knots to min dist,
+				    if <= 0.0: no scaling */
 
 
 /* grib is used by Affine to specify the current RIB;
@@ -233,8 +234,8 @@ enum {
  */
 char N[] = {
     0,  1 , 'N',
-    2,  2 ,'\0',  0,
-    0,  3 ,'n','\0',  1,
+    2,  2 , '\0',  NTBL_N,
+    0,  3 , 'n', '\0',  NTBL_Nn,
 };
 
 
@@ -627,6 +628,7 @@ int ay_rrib_readrib(char *filename, int frame, int read_camera,
 		    int read_lights, int read_material, int read_partial,
 		    int error_level);
 
+
 /* functions: */
 
 RtVoid
@@ -901,7 +903,7 @@ ay_rrib_RiNuPatch(RtInt nu, RtInt uorder, RtFloat uknot[],
     ay_knots_setvminmax(&ay_rrib_co, vmin, vmax);
 
   /* rescale knots to safe distance? */
-  if(rrib_rescaleknots != 0.0)
+  if(rrib_rescaleknots > 0.0)
     {
       ay_knots_rescaletomindist(np.width + np.uorder, np.uknotv,
 				rrib_rescaleknots);
@@ -1008,7 +1010,7 @@ ay_rrib_RiTrimCurve(RtInt nloops, RtInt ncurves[], RtInt order[],
 	       ay_knots_setuminmax(o, *minptr, *maxptr);
 
 	     /* rescale knots to safe distance? */
-	     if(rrib_rescaleknots != 0.0)
+	     if(rrib_rescaleknots > 0.0)
 	       {
 		 ay_knots_rescaletomindist(nc->length + nc->order, nc->knotv,
 					   rrib_rescaleknots);
@@ -1075,7 +1077,7 @@ ay_rrib_RiTrimCurve(RtInt nloops, RtInt ncurves[], RtInt order[],
 	   ay_knots_setuminmax(o, *minptr, *maxptr);
 
 	 /* rescale knots to safe distance? */
-	 if(rrib_rescaleknots != 0.0)
+	 if(rrib_rescaleknots > 0.0)
 	   {
 	     ay_knots_rescaletomindist(nc->length + nc->order, nc->knotv,
 				       rrib_rescaleknots);
@@ -1682,8 +1684,6 @@ ay_rrib_RiDetailRange(RtFloat minvisible, RtFloat lowertransition,
 } /* ay_rrib_RiDetailRange */
 
 
-
-
 RtVoid
 ay_rrib_RiDisplacement(RtToken name,
 		       RtInt n, RtToken tokens[], RtPointer parms[])
@@ -2156,16 +2156,16 @@ ay_rrib_RiObjectBegin(void)
       return((RtObjectHandle)(ay_rrib_cobjecthandle++));
     }
 
-  if(ay_rrib_lastobject)
+  if(ay_rrib_lastriobject)
     {
-      ay_rrib_lastobject->next = new;
+      ay_rrib_lastriobject->next = new;
     }
   else
     {
-      ay_rrib_objects = new;
+      ay_rrib_riobjects = new;
     }
 
-  ay_rrib_lastobject = new;
+  ay_rrib_lastriobject = new;
 
   ay_rrib_aynext = ay_next;
   ay_next = &(new->object);
@@ -2210,7 +2210,7 @@ ay_rrib_RiObjectInstance(RtObjectHandle handle)
       return;
     }
 
-  l = ay_rrib_objects;
+  l = ay_rrib_riobjects;
   while(l->next && (i < (int)handle))
     {
       i++;
@@ -2756,7 +2756,7 @@ ay_rrib_RiPointsGeneralPolygons(RtInt npolys, RtInt nloops[],
  RtPointer ntokensfound[NTBL_LAST];
  RtFloat *pp = NULL, *pw = NULL;
  double *normalv = NULL;
- char *hvars[3] = {"P","Pw","N"};
+ char *hvars[3] = {"P", "Pw", "N"};
 
   memset(&pm, '\0', sizeof(ay_pomesh_object));
   pm.npolys = npolys;
@@ -3351,12 +3351,16 @@ ay_rrib_RiSubdivisionMesh(RtToken scheme, RtInt nfaces,
  unsigned int nc_needed = 0;
  RtPointer tokensfound[PPWTBL_LAST];
  RtFloat *pp = NULL, *pw = NULL;
- RtToken ccscheme = "catmullclark";
- char *hvars[2] = {"P","Pw"};
+ RtToken ccscheme = "catmull-clark", lscheme = "loop";
+ char *hvars[2] = {"P", "Pw"};
 
   memset(&sm, '\0', sizeof(ay_sdmesh_object));
+
   if(!(strcmp(scheme, ccscheme)))
-    scheme = AY_SDSCATMULL;
+    sm.scheme = AY_SDSCATMULL;
+  if(!(strcmp(scheme, lscheme)))
+    sm.scheme = AY_SDSLOOP;
+
   sm.nfaces = nfaces;
 
   RibGetUserParameters(Ppw, PPWTBL_LAST, n, tokens, parms, tokensfound);
@@ -3987,25 +3991,24 @@ ay_rrib_readshader(char *sname, int stype,
 		      sarg->name = stemp;
 		      *nextsarg = sarg;
 		      nextsarg = &(sarg->next);
-		    }
+		    } /* if */
 		}
 	      else
 		{
 		  free(sarg);
-		}
+		} /* if */
 	    }
 	  else
 	    {
 	      ay_error(AY_ERROR, fname, "Skipping array parameter:");
 	      ay_error(AY_ERROR, fname, tokens[i]);
-	    }
+	    } /* if */
 	}
       else
 	{
 	  ay_error(AY_ERROR, fname, "Skipping undeclared token:");
 	  ay_error(AY_ERROR, fname, tokens[i]);
-	}
-
+	} /* if */
 
     } /* for */
 
@@ -4311,6 +4314,7 @@ ay_rrib_readtag(char *tagtype, char *tagname, char *name,
  return;
 } /* ay_rrib_readtag */
 
+
 /* ay_rrib_readpvs:
  *  read primitive variable(s) from tokens[] and parms[] omitting
  *  variables already handled (ahand[]), creating PV tag(s)
@@ -4535,8 +4539,10 @@ ay_rrib_readpvs(int n, RtToken tokens[], RtPointer parms[],
 } /* ay_rrib_readpvs */
 
 
-/* avoid names with spaces or other characters that may be
-   (mis)interpreted by Tcl */
+/* ay_rrib_fixname:
+ *  avoid names with spaces or other characters that may be
+ *  (mis)interpreted by Tcl
+ */
 void
 ay_rrib_fixname(char *name)
 {
@@ -5629,8 +5635,8 @@ ay_rrib_readrib(char *filename, int frame, int read_camera, int read_options,
   ay_rrib_clighthandle = 1;
   ay_rrib_flobject = NULL;
   ay_rrib_cobjecthandle = 1;
-  ay_rrib_objects = NULL;
-  ay_rrib_lastobject = NULL;
+  ay_rrib_riobjects = NULL;
+  ay_rrib_lastriobject = NULL;
   ay_rrib_lastmaterialnum = 0;
   ay_rrib_readmateriali = 0;
   ay_rrib_errorlevel = 1;
@@ -5695,12 +5701,12 @@ ay_rrib_readrib(char *filename, int frame, int read_camera, int read_options,
     }
 
   /* free temporary objects (if any) */
-  while(ay_rrib_objects)
+  while(ay_rrib_riobjects)
     {
-      tl = ay_rrib_objects->next;
-      ay_object_deletemulti(ay_rrib_objects->object);
-      free(ay_rrib_objects);
-      ay_rrib_objects = tl;
+      tl = ay_rrib_riobjects->next;
+      ay_object_deletemulti(ay_rrib_riobjects->object);
+      free(ay_rrib_riobjects);
+      ay_rrib_riobjects = tl;
     } /* while */
 
   /* free data from temporary object */
@@ -5793,7 +5799,7 @@ ay_rrib_readribtcmd(ClientData clientData, Tcl_Interp *interp,
     {
       o = ay_root->next;
 
-      if(o->type != AY_IDLEVEL || !o->name || strcmp(o->name,"Materials"))
+      if(o->type != AY_IDLEVEL || !o->name || strcmp(o->name, "Materials"))
 	{
 
 	  if(!(n = calloc(1, sizeof(ay_object))))
