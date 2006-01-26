@@ -616,7 +616,7 @@ ay_sdmesh_wribcb(char *file, ay_object *o)
 {
  int ay_status = AY_OK;
  ay_sdmesh_object *sdmesh = NULL;
- RtToken scheme = NULL, ccscheme = "catmull-clark";
+ RtToken scheme = NULL, ccscheme = "catmull-clark", lscheme = "loop";
  RtInt *nverts = NULL, *verts = NULL;
  RtPoint *controls = NULL;
  RtToken *tags = NULL;
@@ -639,6 +639,9 @@ ay_sdmesh_wribcb(char *file, ay_object *o)
     {
     case AY_SDSCATMULL:
       scheme = ccscheme;
+      break;
+    case AY_SDSLOOP:
+      scheme = lscheme;
       break;
     default:
       break;
