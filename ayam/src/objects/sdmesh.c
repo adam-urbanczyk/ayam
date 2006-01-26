@@ -457,7 +457,6 @@ ay_sdmesh_readcb(FILE *fileptr, ay_object *o)
   if(!(sdmesh = calloc(1, sizeof(ay_sdmesh_object))))
     { return AY_EOMEM; }
 
-
   fscanf(fileptr, "%d\n", &sdmesh->scheme);
   fscanf(fileptr, "%u\n", &sdmesh->nfaces);
 
@@ -773,7 +772,7 @@ ay_sdmesh_wribcb(char *file, ay_object *o)
       if(!(parms = calloc(pvc+1, sizeof(RtPointer))))
 	return AY_EOMEM;
       
-      tokens[0] = "Pw";
+      tokens[0] = "P";
       parms[0] = (RtPointer)controls;
 
       n = 1;
