@@ -2046,7 +2046,10 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 
 	  if(((fabs(fabs(T1[0])-fabs(T0[0])) > AY_EPSILON) ||
 	      (fabs(fabs(T1[1])-fabs(T0[1])) > AY_EPSILON) ||
-	      (fabs(fabs(T1[2])-fabs(T0[2])) > AY_EPSILON)))
+	      (fabs(fabs(T1[2])-fabs(T0[2])) > AY_EPSILON)) ||
+	     (T1[0] * T0[0] < 0) ||
+	     (T1[1] * T0[1] < 0) ||
+	     (T1[2] * T0[2] < 0))
 	    {
 	      AY_V3CROSS(A,T0,T1)
 	      len = AY_V3LEN(A);
