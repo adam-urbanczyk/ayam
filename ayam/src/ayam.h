@@ -714,6 +714,7 @@ typedef struct ay_extrnc_object_s
 {
   ay_object *ncurve;
   int side;
+  int pnum;
   double parameter;
   double glu_sampling_tolerance;
   int glu_display_mode;
