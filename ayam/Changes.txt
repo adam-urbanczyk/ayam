@@ -1,4 +1,4 @@
-[23. Jan 2006] CVS-Head:
+[31. Jan 2006] CVS-Head:
 o bug fixes:
   - fixed automatic merging of PV tags (SF 1238692)
   - fixed root object not drawn upon File/New (SF 1245221)
@@ -18,6 +18,9 @@ o bug fixes:
   - fixed "repairAyam.tcl" not working on MacOSX (SF 1345611)
   - fixed drawing of selection rectangle on MacOSX (SF 1394822)
   - fixed flashing of editable points on MacOSX (SF 1394823)
+  - fixed RIB export of SDMesh objects using "Pw" instead of "P" (SF 1415306)
+  - fixed sweeps of regular trajectories fail in rare cases with low
+    numbers of sections (SF 1418635)
 o improved OBJ import of files with trailing whitespace as e.g. written by
   Blender
 o script objects now cache a compiled version of the script for faster
@@ -120,6 +123,10 @@ o added hidden preference option "CursorEnd" that controls moving the console
 o added DMG (disk image) distribution method for MacOSX/Aqua
 o Win32 AyCSG executable is now compiled with the newest GLEW to make AyCSG
   work with OpenGL 2.x drivers
+o added support for "Loop" subdivision scheme to both RIB import and export
+o added "NumPatch" option to ExtrNC objects so that they may now select
+  a patch from a list of patches (may now extract a border curve of a bevel
+  from an Extrude object)
 
 
 [5. Jul 2005] Ayam 1.8.3:
