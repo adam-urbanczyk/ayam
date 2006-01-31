@@ -797,7 +797,8 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     } /* if */
 
   /* close curve? */
-  if((new_type != AY_CTOPEN) && (new_type != ncurve->type))
+  if(((new_type != AY_CTOPEN) && (new_type != ncurve->type)) ||
+     (o->modified))
     {
       /* close it */
       if(o->selp)
