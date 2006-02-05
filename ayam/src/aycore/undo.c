@@ -68,7 +68,9 @@ ay_undo_init(int buffer_size)
 {
 
   if(undo_buffer)
-    free(undo_buffer);
+    {
+      free(undo_buffer);
+    }
   undo_buffer = NULL;
 
   if(buffer_size <= 0)
@@ -78,7 +80,9 @@ ay_undo_init(int buffer_size)
     }
 
   if(!(undo_buffer = calloc(buffer_size, sizeof(ay_undo_object))))
-    return AY_EOMEM;
+    {
+      return AY_EOMEM;
+    }
 
   undo_current = -1;
   undo_buffer_size = buffer_size;
@@ -86,7 +90,9 @@ ay_undo_init(int buffer_size)
   undo_last_op = -1; /* no op */
 
   if(undo_saved_op)
-    free(undo_saved_op);
+    {
+      free(undo_saved_op);
+    }
   undo_saved_op = NULL;
 
  return AY_OK;
@@ -244,7 +250,9 @@ ay_undo_clearuo(ay_undo_object *uo)
   uo->objects = NULL;
 
   if(uo->operation)
-    free(uo->operation);
+    {
+      free(uo->operation);
+    }
   uo->operation = NULL;
 
  return AY_OK;
@@ -319,7 +327,7 @@ ay_undo_copymat(ay_mat_object *src, ay_mat_object *dst)
     }
 
  return AY_OK;
-}/* ay_undo_copymat */
+} /* ay_undo_copymat */
 
 
 /* ay_undo_copyview:
@@ -353,7 +361,7 @@ ay_undo_copyview(ay_view_object *src, ay_view_object *dst)
     }
 
  return AY_OK;
-}/* ay_undo_copyview */
+} /* ay_undo_copyview */
 
 
 /* ay_undo_copyroot:
@@ -458,7 +466,7 @@ ay_undo_copyroot(ay_root_object *src, ay_root_object *dst)
     }
 
  return AY_OK;
-}/* ay_undo_copyroot */
+} /* ay_undo_copyroot */
 
 
 /* ay_undo_copyselp:
@@ -489,7 +497,7 @@ ay_undo_copyselp(ay_object *src, ay_object *dst)
     } /* while */
 
  return AY_OK;
-}/* ay_undo_copyselp */
+} /* ay_undo_copyselp */
 
 
 /* ay_undo_copy:
@@ -971,58 +979,54 @@ ay_undo_save(void)
     } /* if */
 
   uo = &(undo_buffer[undo_current]);
+
   /* check, whether the current undo slot contains saved objects */
   if(uo->objects)
     { /* yes, free them */
       ay_status = ay_undo_clearuo(uo);
     }
 
-  /* finally, we may copy all currently selected objects
-   * and references to the original objects to the undo buffer
-   */
+  /* finally, we may copy objects (and save references to the original
+   * objects) to the undo buffer */
 
+  /* first we save all currently selected objects */
   sel = ay_selection;
   nexto = &(uo->objects);
   while(sel)
     {
-      /* XXXX remove this test, if copying of
-       * root objects (if only for undo)
-       * is implemented
-
-      if(sel->object->type != AY_IDROOT)
+      /* copy reference */
+      r = NULL;
+      if(!(r = calloc(1, sizeof(ay_list_object))))
 	{
-       */
-	  /* copy reference */
-	  r = NULL;
-	  if(!(r = calloc(1, sizeof(ay_list_object))))
-	    {
-	      return AY_EOMEM;
-	    }
+	  return AY_EOMEM;
+	}
 
-	  if(uo->references)
-	    {
-	      lastr->next = r;
-	    }
-	  else
-	    {
-	      uo->references = r;
-	    } /* if */
+      if(uo->references)
+	{
+	  lastr->next = r;
+	}
+      else
+	{
+	  uo->references = r;
+	} /* if */
 
-	  lastr = r;
+      lastr = r;
 
-	  r->object = sel->object;
+      r->object = sel->object;
 
-	  /* copy object */
-     	  ay_status = ay_undo_copysave(sel->object, nexto);
-	  if(ay_status)
-	    return ay_status;
+      /* copy object */
+      ay_status = ay_undo_copysave(sel->object, nexto);
+      if(ay_status)
+	{
+	  return ay_status;
+	}
 
-	  nexto = &((*nexto)->next);
-	  /*}*/
+      nexto = &((*nexto)->next);
+
       sel = sel->next;
     } /* while */
 
-  /* save all views */
+  /* now we save all views */
 
   /* omit view objects? */
   /*
@@ -1055,7 +1059,9 @@ ay_undo_save(void)
       /* copy object */
       ay_status = ay_undo_copysave(view, nexto);
       if(ay_status)
-	return ay_status;
+	{
+	  return ay_status;
+	}
 
       nexto = &((*nexto)->next);
       view = view->next;
@@ -1064,7 +1070,7 @@ ay_undo_save(void)
    }
   */
 
-  /* now, save certain objects from previous undo state _again_
+  /* now, we save certain objects from previous undo state _again_
    * (if not saved in this state already); this is, because the
    * user might have changed the selection after a modelling
    * action and those changed, but now not anymore selected
@@ -1158,7 +1164,9 @@ ay_undo_save(void)
 	  /* copy object */
 	  ay_status = ay_undo_copysave(lsr->object, nexto);
 	  if(ay_status)
-	    return ay_status;
+	    {
+	      return ay_status;
+	    }
 
 	  nexto = &((*nexto)->next);
 
@@ -1193,7 +1201,9 @@ ay_undo_clear(void)
   undo_last_op = -1; /* no op */
 
   if(undo_saved_op)
-    free(undo_saved_op);
+    {
+      free(undo_saved_op);
+    }
   undo_saved_op = NULL;
 
  return AY_OK;
