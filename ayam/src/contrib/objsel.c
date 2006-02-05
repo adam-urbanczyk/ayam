@@ -189,7 +189,7 @@ ay_objsel_process_hits (GLint hits, GLuint buffer[], char *var)
     } /* for */
 
   /* Remove the space at the end of 'node' */
-  if (node[strlen(node) - 1] == ' ')
+  if ((strlen(node) > 0) && (node[strlen(node) - 1] == ' '))
     node[strlen(node) - 1] = 0;
 
   /* Verify that 'tmp' is big enough to store the Tcl command */
