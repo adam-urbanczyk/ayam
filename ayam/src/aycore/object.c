@@ -861,6 +861,7 @@ ay_object_deleteinstances(ay_object **o)
 	{
 	  next = co->next;
 	  ay_status = ay_object_delete(co);
+	  ay_status = ay_undo_clearobj(co);
 	  (*last) = next;
 	  co = next;
 	}
