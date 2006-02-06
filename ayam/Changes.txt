@@ -1,4 +1,4 @@
-[31. Jan 2006] CVS-Head:
+[6. Feb 2006] CVS-Head:
 o bug fixes:
   - fixed automatic merging of PV tags (SF 1238692)
   - fixed root object not drawn upon File/New (SF 1245221)
@@ -19,8 +19,9 @@ o bug fixes:
   - fixed drawing of selection rectangle on MacOSX (SF 1394822)
   - fixed flashing of editable points on MacOSX (SF 1394823)
   - fixed RIB export of SDMesh objects using "Pw" instead of "P" (SF 1415306)
-  - fixed sweeps of regular trajectories fail in rare cases with low
+  - fixed sweeps of regular trajectories failing in rare cases with low
     numbers of sections (SF 1418635)
+  - fixed crash when instance objects get deleted from undo buffer (SF 1424580)
 o improved OBJ import of files with trailing whitespace as e.g. written by
   Blender
 o script objects now cache a compiled version of the script for faster
