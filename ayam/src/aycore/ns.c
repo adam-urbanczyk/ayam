@@ -149,7 +149,7 @@ ay_ns_execute(ay_object *o, char *script)
   sema = 0;
 
  return AY_OK;
-}/* ay_ns_execute */
+} /* ay_ns_execute */
 
 
 /* ay_ns_init:

@@ -428,7 +428,7 @@ ay_sm_wribsmcustom(char *file, char *objfile, ay_object *o,
 	      nlight.cone_delta_angle = sarg->val.scalar;
 	    } /* if */
 	  sarg = sarg->next;	      
-	}/* while */
+	} /* while */
 
       if(has_from)
 	nlight.type = AY_LITPOINT;

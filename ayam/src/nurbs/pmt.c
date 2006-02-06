@@ -281,9 +281,9 @@ ay_pmt_bicubiccltonpatch(ay_pamesh_object *pamesh, ay_object **result)
 	    }
 	  nexto = &(o->next);
 
-	}/* for */
+	} /* for */
 
-    }/* for */
+    } /* for */
 
   if(ncv)
     free(ncv);
@@ -457,8 +457,8 @@ ay_pmt_tonpatch(ay_pamesh_object *pamesh, ay_object **result)
 	      nexto = &(o->next);
 
 
-	    }/* for */
-	}/* for */
+	    } /* for */
+	} /* for */
 
     } /* if */
 

@@ -178,7 +178,7 @@ ay_light_drawcb(struct Togl *togl, ay_object *o)
 		  to[2] = sarg->val.point[2];
 		}
 	      sarg = sarg->next;	      
-	    }/* while */
+	    } /* while */
 	} /* if */
       break;
 
@@ -377,7 +377,7 @@ ay_light_drawhcb(struct Togl *togl, ay_object *o)
 		  to[2] = sarg->val.point[2];
 		}
 	      sarg = sarg->next;	      
-	    }/* while */
+	    } /* while */
 	} /* if */
     }
   else
@@ -489,7 +489,7 @@ ay_light_getpntcb(int mode, ay_object *o, double *p)
 		  light->tto[2] = sarg->val.point[2];
 		}
 	      sarg = sarg->next;	      
-	    }/* while */
+	    } /* while */
 	} /* if */
     }
   else
@@ -1008,7 +1008,7 @@ ay_light_bbccb(ay_object *o, double *bbox, int *flags)
 		  to[2] = sarg->val.point[2];
 		}
 	      sarg = sarg->next;	      
-	    }/* while */
+	    } /* while */
 	} /* if */
       break;
 
@@ -1126,7 +1126,7 @@ ay_light_notifycb(ay_object *o)
 		  sarg->val.point[2] = (float)light->tto[2];
 		}
 	      sarg = sarg->next;	      
-	    }/* while */
+	    } /* while */
 	} /* if */
     } /* if */
 
