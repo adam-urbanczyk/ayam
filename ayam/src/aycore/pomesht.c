@@ -727,7 +727,7 @@ ay_pomesht_addvertexhash(ay_pomesht_hash *phash, int ign, double *point)
 		  phash->index = chain->index;
 		  phash->found = AY_TRUE;
 		  break;
-		}/* if */
+		} /* if */
 	    }
 	  else
 	    {

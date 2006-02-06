@@ -738,7 +738,7 @@ ay_paraboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
 	      controlv[j] = controlv[j+height*3*stride];
 	      j += stride;
 	    }
-	}/* if */
+	} /* if */
 
       r = (r + 2*Sx)/3.0;
       if(paraboloid->thetamax < 0.0)
