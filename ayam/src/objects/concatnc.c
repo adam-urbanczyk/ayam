@@ -368,6 +368,11 @@ ay_concatnc_notifycb(ay_object *o)
       down = down->next;
     } /* while */
 
+  if(!curves)
+    {
+      return AY_OK;
+    }
+
   ncurve = curves;
   while(ncurve)
     {
