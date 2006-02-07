@@ -46,7 +46,7 @@ $m add command -label "New"\
 	    update
 	}
 	set ay(filename) ""
-	wm title . "Ayam - Main"
+	wm title . "Ayam - Main - : --"
 	goTop
 	set ay(CurrentLevel) "root"
 	set ay(SelectedLevel) "root"

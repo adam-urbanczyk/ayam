@@ -994,10 +994,10 @@ if { $ay(showsplash) == 1 } { splash_open }
 # create UI
 ayam_loadscript balloon
 set w .
-wm title $w "Ayam - Main"
+wm title $w "Ayam - Main - : --"
 wm iconname $w "Ayam"
 wm withdraw .
-# XXXX Does this meet ICCCM requirements?
+# XXXX Does this already meet ICCCM requirements?
 if { $AYWRAPPED == 1 } {
     wm command . "[info nameofexecutable] $argv"
 } else {
@@ -1401,6 +1401,28 @@ if { $AYCSGWRAPPED == 1 } {
     ayam_loadscript aycsg
 }
 
+proc setChangedIndicator { a1 a2 a3 } {
+    global ay
+    set s [wm title .]
+    set index 0
+    catch [set index [string last "--" $s]]
+    if { $index == -1 } {
+	catch [set index [string last "**" $s]]
+    }
+    if { $index } {
+	set s [string range $s 0 [expr $index - 2]]
+	if { $ay(sc) } {
+	    set s "$s **"
+	} else {
+	    set s "$s --"
+	}
+	wm title . $s
+    }
+}
+# setChangedIndicator
+
+trace variable ay(sc) w setChangedIndicator
+
 # process remaining arguments (load further scene(s))
 puts stdout "Processing remaining arguments..."
 set i 0
@@ -1426,7 +1448,7 @@ while { $i < $argc } {
 	    if { $ay_error < 2 } {
 		set ay(filename) $filename
 		set windowfilename [file tail [file rootname $filename]]
-		wm title . "Ayam - Main - $windowfilename"
+		wm title . "Ayam - Main - $windowfilename : --"
 		ayError 4 "replaceScene" "Done reading scene from:"
 		ayError 4 "replaceScene" "$filename"
 		if { [file exists $filename] } {

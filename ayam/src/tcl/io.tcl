@@ -65,7 +65,7 @@ proc io_replaceScene { } {
 
 	if { $ay_error < 2 } {
 	    set windowfilename [file tail [file rootname $filename]]
-	    wm title . "Ayam - Main - $windowfilename"
+	    wm title . "Ayam - Main - $windowfilename : --"
 	    set ay(filename) $filename
 	    ayError 4 "replaceScene" "Done reading scene from:"
 	    ayError 4 "replaceScene" "$filename"
@@ -221,7 +221,7 @@ proc io_saveScene { ask selected } {
 	saveScene $filename $selected
 	if { $ay_error < 2 } {
 	    set windowfilename [file tail [file rootname $filename]]
-	    wm title . "Ayam - Main - $windowfilename"
+	    wm title . "Ayam - Main - $windowfilename : --"
 	    set ay(filename) $filename
 	    ayError 4 "saveScene" "Done saving scene to:"
 	    ayError 4 "saveScene" "$filename"
@@ -636,7 +636,7 @@ proc io_mruLoad { index } {
 	if { $ay_error < 2 } {
 
 	    set windowfilename [file tail [file rootname $filename]]
-	    wm title . "Ayam - Main - $windowfilename"
+	    wm title . "Ayam - Main - $windowfilename : --"
 	    set ay(filename) $filename
 	    ayError 4 "replaceScene" "Done reading scene from:"
 	    ayError 4 "replaceScene" "$filename"
@@ -1348,7 +1348,7 @@ proc ::tk::mac::OpenDocument { args } {
 		if { $ay_error < 2 } {
 		    set ay(filename) $filename
 		    set windowfilename [file tail [file rootname $filename]]
-		    wm title . "Ayam - Main - $windowfilename"
+		    wm title . "Ayam - Main - $windowfilename : --"
 		    ayError 4 "replaceScene" "Done reading scene from:"
 		    ayError 4 "replaceScene" "$filename"
 		    if { [file exists $filename] } {
