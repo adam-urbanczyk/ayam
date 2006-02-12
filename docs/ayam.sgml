@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>20. Jan 2006
+<date>3. Feb 2006
 <abstract>
 This is the documentation of Ayam (1.9) - a free 3D modeling environment
 for the RenderMan interface.
@@ -975,7 +975,7 @@ to the preference setting <tt/Shaders/ for rendering.
 particularly useful if automatic redrawing of the view has been disabled.
 
 <item><tt/"Export RIB"/ exports the scene to a RIB. This does exactly the
-same as the main menu entry <tt/"File/Export/RenderMan RIB"/, except that
+same as the main menu entry <tt>"File/Export/RenderMan RIB"</tt>, except that
 the current view will already be selected in the dialog box.
 
 <item><tt/"Open PPrev"/, <tt/"Close PPrev"/: those menu entries are just
@@ -1027,7 +1027,7 @@ be redrawn, whenever the scene changes. If this is disabled,
 you can force a redraw using <tt>"View/Redraw"</tt>.
 
 <item><tt/"Drawing Mode"/ determines whether the view should draw a wireframe
-representation (<tt>Drawing Mode/Draw</tt>) or a shaded one
+representation (<tt>"Drawing Mode/Draw"</tt>) or a shaded one
 (<tt>"Drawing Mode/Shade"</tt>) or, new in Ayam 1.6, a representation
 where the curves of the draw mode are drawn over the shaded
 representation (<tt>"Drawing Mode/ShadeAndDraw"</tt>).
@@ -1291,7 +1291,7 @@ use of precious screen space. After resizing, the tool box will
 re-layout the buttons, warning you if the space is to small for all
 buttons to display, and if the window is too big for the desired layout
 shrink wrap the window to match the size occupied by the buttons.
-Furthermore, using the preference setting <tt>Misc/ToolBoxTrans</tt>
+Furthermore, using the preference setting <tt>"Misc/ToolBoxTrans"</tt>
 the tool box can be made transient.
 It will then (depending on the window manager or its configuration)
 get a different or no decoration, no icon, and will always be iconified
@@ -4984,6 +4984,13 @@ options <tt/"U"/, <tt/"V"/ are implemented since Ayam 1.8.1!
 <item><tt/"Parameter"/ controls the parametric value in u or v
 direction in the parameter space of the NURBS patch object where the
 curve should be extracted.
+
+<item><tt/"PatchNum"/ allows to select a patch from a list of
+patches delivered e.g. by a beveled extrude object as child
+of the ExtrNC object.
+This way it is possible to extract a curve from a bevel or cap
+surface.
+
 </itemize>
 <p>
 See section <ref id="npattr" name="NPatchAttrib"> for a description
@@ -7028,11 +7035,12 @@ Furthermore, the plugin supports reading of CSG, object-instances,
 archives, light sources (including area-lights), arbitrary linear
 transformations (except shear transformations!), arbitrary
 RiOptions and RiAttributes, shaders (except transformation
-shaders and without array arguments!), and (since Ayam 1.7)
-arbitrary primitive variables (e.g. varying or vertex).
+shaders and without array arguments!), (since Ayam 1.7)
+arbitrary primitive variables (e.g. varying or vertex), and
+(since Ayam 1.9) procedural objects and delayed read archives.
 <p>
 The RRIB plugin does not support reading of curves, implicit surfaces
-(blobby models), procedural objects, delayed read archives, and other
+(blobby models) and other
 calls to the RenderMan Interface not that useful for a RIB import like
 e.g. RiMakeTexture.
 Unsupported geometric primitives and other calls to the RenderMan Interface
@@ -7095,6 +7103,9 @@ be promoted to general polygon meshes.
 Object-instances are resolved to normal objects while importing.
 Instances may be easily created again using Automatic Instancing
 (see section <ref id="ai" name="Automatic Instancing">).
+Procedural objects will not be evaluated, instead, RiProc objects
+will be created, that carry all arguments and create the same
+sequence of RIB requests upon export as was read upon import.
 
 <sect1>Wavefront OBJ Import<label id="impwav">
 <p>
@@ -8519,6 +8530,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Paste (Move): <ref id="mmspecial" name="main menu entry">
 <item>Paste Property: <ref id="mmedit" name="main menu entry">
 <item>PatchMesh: <ref id="patchmeshobj" name="object">
+<item>PatchNum: <ref id="extrncp" name="ExtrNC attribute">
 <item>PatchSamples: <ref id="rio" name="RenderMan interface option">
 <item>Perspective: <ref id="vmtype" name="view menu entry">
 <item>PhiMin, PhiMax: <ref id="top" name="torus attribute">
