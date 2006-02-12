@@ -1,4 +1,4 @@
-[6. Feb 2006] CVS-Head:
+[12. Feb 2006] Ayam 1.9:
 o bug fixes:
   - fixed automatic merging of PV tags (SF 1238692)
   - fixed root object not drawn upon File/New (SF 1245221)
@@ -22,6 +22,8 @@ o bug fixes:
   - fixed sweeps of regular trajectories failing in rare cases with low
     numbers of sections (SF 1418635)
   - fixed crash when instance objects get deleted from undo buffer (SF 1424580)
+  - fixed crash when ConcatNC has no children and option FillGaps is enabled
+    (SF 1425749)
 o improved OBJ import of files with trailing whitespace as e.g. written by
   Blender
 o script objects now cache a compiled version of the script for faster
@@ -128,6 +130,7 @@ o added support for "Loop" subdivision scheme to both RIB import and export
 o added "NumPatch" option to ExtrNC objects so that they may now select
   a patch from a list of patches (may now extract a border curve of a bevel
   from an Extrude object)
+o added display of scene changed state in main window titlebar
 
 
 [5. Jul 2005] Ayam 1.8.3:
