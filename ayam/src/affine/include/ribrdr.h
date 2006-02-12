@@ -463,7 +463,7 @@ typedef struct _RIB_SAVEDOPTIONS {
 typedef RIB_SAVEDOPTIONS  *PRIB_SAVEDOPTIONS;
 
 typedef void         *RIB_HANDLE;  /* rib */
-typedef void*        (*PRIB_RIPROC)();
+typedef void*        (*PRIB_RIPROC)(void);
 typedef RtVoid       (*PRIB_SUBDIVFUNC)(RtPointer, RtFloat);
 typedef RtVoid       (*PRIB_FREEFUNC)(RtPointer);
 typedef PRIB_RIPROC  *PRIB_RITABLE;
