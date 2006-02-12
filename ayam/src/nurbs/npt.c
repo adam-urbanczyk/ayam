@@ -3941,11 +3941,15 @@ ay_npt_gettangentfromcontrol(int closed, int n, int p,
 
 
 /* ay_npt_bevel:
- *
- *
+ *  create a bevel in <patch> from a planar closed NURB curve <o>;
+ *  direction of curve defines, whether bevel rounds inwards or outwards;
+ *  type: 0 - round (quarter circle), 1 - linear, 2 - ridge
+ *  radius: radius of the bevel
+ *  align: AY_TRUE - curve is not defined in XY plane and needs to be
+ *  rotated accordingly first
  */
 int
-ay_npt_bevel(int type, double radius, ay_object *o,
+ay_npt_bevel(int type, double radius, int align, ay_object *o,
 	     ay_nurbpatch_object **patch)
 {
  int ay_status = AY_OK;
@@ -3955,14 +3959,15 @@ ay_npt_bevel(int type, double radius, ay_object *o,
  double uknots_linear[4] = {0.0, 0.0, 1.0, 1.0};
  double uknots_ridge[8] = {0.0, 0.0, 0.0, 0.25, 0.75, 1.0, 1.0, 1.0};
  /* vknots are taken from curve! */
- double *uknotv = NULL, *vknotv = NULL, *controlv = NULL;
- double x,y,z,w;
- double tangent[3]={0}, normal[3]={0}, zaxis[3]={0.0,0.0,-1.0};
+ double *uknotv = NULL, *vknotv = NULL, *controlv = NULL, *tccontrolv = NULL;
+ double x, y, z, w;
+ double tangent[3] = {0}, normal[3] = {0}, zaxis[3] = {0.0, 0.0, -1.0};
  double ww = sqrt(2.0)/2.0, displacex, displacey;
- int i=0, j=0, a=0, b=0, k = 0;
- double m[16], point[4] = {0};
+ int i = 0, j = 0, a = 0, b = 0, k = 0;
+ double m[16], mi[16], point[4] = {0};
+ double mx, my, mz;
 
- curve = (ay_nurbcurve_object *)o->refine;
+  curve = (ay_nurbcurve_object *)o->refine;
 
   /* calloc the new patch */
   if(!(new = calloc(1, sizeof(ay_nurbpatch_object))))
@@ -3973,7 +3978,7 @@ ay_npt_bevel(int type, double radius, ay_object *o,
 	{ free(new); return AY_EOMEM; }
       if(!(uknotv = calloc(6, sizeof(double))))
 	{ free(new); free(controlv); return AY_EOMEM; }
-      memcpy(uknotv,uknots_round,6*sizeof(double));
+      memcpy(uknotv, uknots_round, 6*sizeof(double));
       new->uorder = 3;
       new->width = 3;
       new->uknot_type = AY_KTNURB;
@@ -3985,7 +3990,7 @@ ay_npt_bevel(int type, double radius, ay_object *o,
 	{ free(new); return AY_EOMEM; }
       if(!(uknotv = calloc(4, sizeof(double))))
 	{ free(new); free(controlv); return AY_EOMEM; }
-      memcpy(uknotv,uknots_linear,4*sizeof(double));
+      memcpy(uknotv, uknots_linear, 4*sizeof(double));
       new->uorder = 2;
       new->width = 2;
       new->uknot_type = AY_KTNURB;
@@ -3997,7 +4002,7 @@ ay_npt_bevel(int type, double radius, ay_object *o,
 	{ free(new); return AY_EOMEM; }
       if(!(uknotv = calloc(8, sizeof(double))))
 	{ free(new); free(controlv); return AY_EOMEM; }
-      memcpy(uknotv,uknots_ridge,8*sizeof(double));
+      memcpy(uknotv, uknots_ridge, 8*sizeof(double));
       new->uorder = 3;
       new->width = 5;
       new->uknot_type = AY_KTCUSTOM;
@@ -4005,7 +4010,7 @@ ay_npt_bevel(int type, double radius, ay_object *o,
     }
 
   if(!(vknotv = calloc(curve->length+curve->order,sizeof(double))))
-    { free(new); free(controlv); free(vknotv); return AY_EOMEM; }
+    { free(new); free(controlv); free(uknotv); return AY_EOMEM; }
   memcpy(vknotv,curve->knotv,(curve->length+curve->order)*sizeof(double));
   new->vknotv = vknotv;
   new->uknotv = uknotv;
@@ -4014,25 +4019,47 @@ ay_npt_bevel(int type, double radius, ay_object *o,
   new->height = curve->length;
   new->glu_sampling_tolerance = curve->glu_sampling_tolerance;
 
-  ay_trafo_creatematrix(o, m);
-
   /* fill controlv */
   /* first loop */
-  b = 0;
-  for(i = 0; i < new->width; i++)
+  if(align)
     {
-      a = 0;
-      for(j = 0; j < curve->length; j++)
+      if(!(tccontrolv = calloc(curve->length*4, sizeof(double))))
 	{
-	  memcpy(&controlv[b],&curve->controlv[a],4*sizeof(double));
-	  ay_trafo_apply4(&controlv[b],m);
-	  a+=4;
-
-	  controlv[b+2]=0.0;
-
-	  b+=4;
+	  free(new); free(controlv); free(uknotv); free(vknotv);
+	  return AY_EOMEM;
 	}
+      memcpy(tccontrolv, curve->controlv, curve->length*4*sizeof(double));
+
+      /* adjust orientation of curve (next sections only work properly,
+	 when curve is planar in XY plane) */
+      ay_status = ay_nct_toxy(o);
+      a = 0;
+      for(i = 0; i < new->width; i++)
+	{
+	  memcpy(&(controlv[a]), curve->controlv,
+		 curve->length*4*sizeof(double));
+	  a += curve->length*4;
+	} /* for */
     }
+  else
+    {
+      ay_trafo_creatematrix(o, m);
+
+      b = 0;
+      for(i = 0; i < new->width; i++)
+	{
+	  a = 0;
+	  for(j = 0; j < curve->length; j++)
+	    {
+	      memcpy(&(controlv[b]), &(curve->controlv[a]), 4*sizeof(double));
+	      ay_trafo_apply4(&(controlv[b]), m);
+	      controlv[b+2] = 0.0;
+	      a += 4;
+	      b += 4;
+	    } /* for */
+	} /* for */
+    } /* if */
+
   b = curve->length*4;
   /* transform second loop */
   if(type == 0)
@@ -4100,15 +4127,15 @@ ay_npt_bevel(int type, double radius, ay_object *o,
 	  point[1] = m[1]*x + m[5]*y + m[9]*z + m[13]*1.0;
 	  point[2] = m[2]*x + m[6]*y + m[10]*z + m[14]*1.0;
 
-	  controlv[b] = point[0]*(w*ww);
+	  controlv[b]   = point[0]*(w*ww);
 	  controlv[b+1] = point[1]*(w*ww);
 	  controlv[b+2] = point[2]*(w*ww);
 
 	  controlv[b+3] = ww*w;
 
 	  b+=4;
-	}
-    }
+	} /* for */
+    } /* if */
 
   if(type == 2)
     {
@@ -4196,13 +4223,13 @@ ay_npt_bevel(int type, double radius, ay_object *o,
 	      point[1] = m[1]*x + m[5]*y + m[9]*z + m[13]*1.0;
 	      point[2] = m[2]*x + m[6]*y + m[10]*z + m[14]*1.0;
 
-	      controlv[b] = point[0]*ww;
+	      controlv[b]   = point[0]*ww;
 	      controlv[b+1] = point[1]*ww;
 	      controlv[b+2] = point[2]*ww;
 
 	      controlv[b+3] = w*ww;
 
-	      b+=4;
+	      b += 4;
 	    } /* for */
 	} /* for */
     } /* if */
@@ -4224,6 +4251,7 @@ ay_npt_bevel(int type, double radius, ay_object *o,
       w = controlv[(curve->length-2)*4+3];
     }
   */
+
   for(j = 0; j < curve->length; j++)
     {
       /* get displacement direction */
@@ -4257,7 +4285,7 @@ ay_npt_bevel(int type, double radius, ay_object *o,
       z = controlv[b+2];
       w = controlv[b+3];
 
-      AY_V3CROSS(normal,tangent,zaxis)
+      AY_V3CROSS(normal, tangent, zaxis)
       AY_V3SCAL(normal, radius)
 
       /* create transformation matrix */
@@ -4270,17 +4298,39 @@ ay_npt_bevel(int type, double radius, ay_object *o,
       point[2] = m[2]*x + m[6]*y + m[10]*z + m[14]*1.0;
       /*point[3] = m[3]*x + m[7]*y + m[11]*z + m[15]*1.0;*/
 
-      controlv[b] = point[0];
+      controlv[b]   = point[0];
       controlv[b+1] = point[1];
       controlv[b+2] = point[2];
       controlv[b+3] = w;
 
-      b+=4;
-    }
+      b += 4;
+    } /* for */
+
+  if(align)
+    {
+      /* overwrite first loop with original saved curve data (to avoid
+         losing precision due to double rotation) */
+      memcpy(controlv, tccontrolv, curve->length*4*sizeof(double));
+      /* rotate other loops into position */
+      ay_trafo_creatematrix(o, m);
+      b = curve->length*4;
+      for(i = 1; i < new->width; i++)
+	{
+	  for(j = 0; j < curve->length; j++)
+	    {
+	      ay_trafo_apply4(&(controlv[b]), m);
+	      b += 4;
+	    } /* for */
+	} /* for */
+    } /* if */
 
   new->controlv = controlv;
 
   *patch = new;
+
+  /* clean-up */
+  if(tccontrolv)
+    free(tccontrolv);
 
  return ay_status;
 } /* ay_npt_bevel */
