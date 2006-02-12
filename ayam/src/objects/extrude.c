@@ -580,6 +580,7 @@ ay_extrude_notifycb(ay_object *o)
 
 	      ay_status = ay_npt_bevel(ext->bevel_type,
 				       ext->bevel_radius,
+				       AY_FALSE,
 				       c,
 				    (ay_nurbpatch_object **)&(bevel->refine));
 
