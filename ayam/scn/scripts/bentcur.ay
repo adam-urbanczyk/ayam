@@ -1,0 +1,285 @@
+Ayam
+1.9
+0
+0
+1
+0
+1
+1
+0
+0
+
+0
+0
+2
+2
+0
+2
+2
+1
+1
+255
+0
+255
+0.5
+4
+64
+4
+0.01
+1
+0
+2
+
+
+
+10000
+40000
+0
+0
+0
+0
+1
+
+0
+7
+0
+0
+0
+1
+1
+0
+view1
+0
+400
+300
+1
+0.25
+0
+0
+1
+1
+1
+0
+0
+10
+0.744056
+3.08252
+-3.75079e-08
+0.744056
+3.08252
+0
+1
+0
+0
+5.31468
+0
+22
+0
+0
+0
+
+0
+0
+0
+0
+0
+7
+0
+0
+0
+1
+1
+0
+view2
+0
+400
+300
+3
+1
+0
+0
+1
+1
+0
+0
+0
+7.62053
+7.08431
+11.0901
+-1.56506
+-0.415692
+1.90448
+-0.353553
+0.866025
+-0.353553
+0
+0.402628
+400
+22
+-30
+45
+0
+
+0
+0
+0
+0
+0
+3
+0
+0
+1
+1
+0
+0
+
+0
+0
+0
+35
+1
+0
+1
+1
+0
+1
+
+0
+1
+2
+676
+# bendcur.tcl: example script for Ayam Script object
+# this script wants Script Object Type "Modify"
+# and deforms a curve based on the shape of a
+# second curve
+withOb 0 do {getProp}
+set length $NCurveAttrData(Length)
+withOb 1 do {getProp}
+set umin [lindex $NCurveAttrData(Knots)\
+    [expr $NCurveAttrData(Order) - 1]]
+set umax [lindex $NCurveAttrData(Knots)\
+    $NCurveAttrData(Length)]
+set ud [expr ($umax-$umin)/($length-1)]
+set u 0.0
+for {set i 0} {$i < $length} {incr i} {
+    withOb 1 do {getPnt -u $u sx sy sz sw}
+    withOb 0 do {getPnt $i x y z w}
+    set y [expr $y + $sy]
+    withOb 0 do {setPnt $i $x $y $z $w}
+    set u [expr $u + $ud]
+}
+# for
+
+# bendcur.tcl
+
+
+0
+35
+0
+0
+0
+1
+0
+1
+
+1
+NP
+SpiralAttr
+1
+1
+1213
+# Ayam, save array: SpiralAttrData
+# crtspiralgui.tcl: example script for Ayam Script object
+# this script wants Script Object Type "Create" and creates
+# a spiral NURBS curve; it also has a property GUI, just
+# add a tag "NP SpiralAttr" to the script object to see it
+if { ![info exists ::SpiralAttr] } {
+    array set ::SpiralAttrData {
+	Length 30
+	AngleD 0
+	Radius 3.0
+	ZDiff 0.25
+    }
+    set ::SpiralAttrData(AngleD)  [expr 90.0*3.141592654/180.0]
+}
+
+set length $::SpiralAttrData(Length)
+set angled $::SpiralAttrData(AngleD)
+set r $::SpiralAttrData(Radius)
+set zd $::SpiralAttrData(ZDiff)
+
+crtOb NCurve -length $length;hSL
+set angle 0.0
+set z 0.0
+for {set i 0} {$i < $length} {incr i} {
+    set x [expr $r*cos($angle)]
+    set y [expr $r*sin($angle)]
+
+    setPnt $i $x $y $z 1.0
+
+    set angle [expr $angle + $angled]
+    set z [expr $z + $zd]
+}
+# for
+
+if { ![info exists ::SpiralAttr] } {
+    array set ::SpiralAttr {
+	arr SpiralAttrData
+	sproc ""
+	gproc ""
+	w fSpiralAttr
+    }
+    global ay
+    set w [frame $ay(pca).fSpiralAttr]
+    addParam $w SpiralAttrData Length
+    addParam $w SpiralAttrData AngleD
+    addParam $w SpiralAttrData Radius
+    addParam $w SpiralAttrData ZDiff
+}
+
+# crtspiralgui.tcl
+
+
+4Radius
+3.0
+Length
+30
+ZDiff
+0.25
+AngleD
+1.5708
+0
+2
+0
+0
+0
+1
+0
+0
+
+0
+7
+4
+2
+0 0 0 1
+2.77556e-17 0 1.125 1
+5.55112e-17 1.5 2.25 1
+4.16334e-17 2.25 3.5 1
+2.77556e-17 1.5 5 1
+2.77556e-17 0 6 1
+2.77556e-17 0 7 1
+0
+0
+0
+1
+0
+3
+0
+0
+1
+1
+0
+0
+
+0
+0
