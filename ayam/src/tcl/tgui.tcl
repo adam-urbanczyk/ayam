@@ -308,7 +308,8 @@ proc tgui_addtag { } {
 
 	forAllT NPatch 0 {
 	    global tgui_tessparam
-	    set val [format "%d,%g,%g" $tgui_tessparam(SMethod)\
+	    set val [format "%d,%g,%g"\
+			 [expr $tgui_tessparam(SMethod) + 1]\
 			 $tgui_tessparam(SParamU) $tgui_tessparam(SParamV)]
 	    set tagnames ""
 	    set tagvals ""
@@ -375,6 +376,7 @@ proc tgui_readtag { } {
 	if { $index != -1 } {
 	    set val [lindex $tagvals $index]
 	    scan $val "%d,%g,%g" smethod sparamu sparamv
+	    set smethod [expr $smethod - 1]
 
 	    tgui_recalcslider $sparamu $sparamv
 
