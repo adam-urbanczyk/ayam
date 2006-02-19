@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>3. Feb 2006
+<date>15. Feb 2006
 <abstract>
 This is the documentation of Ayam (1.9) - a free 3D modeling environment
 for the RenderMan interface.
@@ -5893,6 +5893,11 @@ original clipboard contents are lost when this tool finishes.
 
 <sect1>The Tesselation Tool<label id="tesst">
 <p>
+<figure loc="ht">
+<eps file="pics/tgui.ps" height="3cm">
+<img src="pics/tgui.gif">
+<caption>GUI of Tesselation Tool</caption>
+</figure>
 <itemize>
 <item>Arguments: The tesselation tool takes all NURBS patches and
 NURBS patch providing objects from the selection.
@@ -5906,10 +5911,13 @@ The selected or provided NURBS patches will be tesselated with the
 chosen method and parameters.
 The PolyMesh objects created by the tesselation will immediately be
 displayed in all view windows instead of the original objects.
+Whenever tesselation method or parameters change the tesselation
+will be recomputed and displayed thus allowing an immediate estimation
+of the tesselation quality.
 <p>
-If the preference option <tt/"LazyNotify"/ is enabled, updates of the
-tesselation that normally occur while dragging the slider will be
-deferred until the mouse button is released.
+If the preference option <tt>"Modeling/LazyNotify"</tt> is enabled,
+updates of the tesselation that normally occur while dragging the
+slider(s) will be deferred until the mouse button is released.
 <p>
 If the <tt/"Ok"/ button is pressed to close the tesselation tool, all
 selected objects will be replaced by their tesselated
@@ -5919,11 +5927,15 @@ unchanged.
 If the check box <tt/"SaveToTag"/ is activated, closing the tesselation
 tool using <tt/"Cancel"/ will also add a <tt/"TP"/ tag containing
 the currently selected method and parameter value to all selected
-NURBS patch objects.
+NURBS patch objects. This tag will be evaluated later, when the respective
+objects will be converted to PolyMesh objects.
 <item>Note: The tesselation tool will block most other parts of Ayam
 while it is running. It is, however, possible to adjust view parameters
-while the tesselation tool is open, to examine the tesselation more
-closely or from different viewing angles.
+while the tesselation tool is open, to examine the tesselation result
+more closely or from different viewing angles. The initial values of the
+parameter slider bounds may be changed by simply entering values
+that are out of bounds into the entry widget, then pressing the
+<tt/&lt;Tab&gt;/ key.
 </itemize>
 
 See section
