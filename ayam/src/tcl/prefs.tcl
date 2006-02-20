@@ -150,7 +150,7 @@ proc prefs_open {} {
     addFileB $fw ayprefse EnvFile [ms ayprefse_EnvFile]
     addMFileB $fw ayprefse Scripts [ms ayprefse_Scripts]
     addMDirB $fw ayprefse Plugins [ms ayprefse_Plugins]
-    addStringB $fw ayprefse Docs [ms ayprefse_Docs]
+    addStringB $fw ayprefse Docs [ms ayprefse_Docs] {"http://ayam.sourceforge.net/docs/"}
     addStringB $fw ayprefse TmpDir [ms ayprefse_TmpDir]
 
     # Modeling
