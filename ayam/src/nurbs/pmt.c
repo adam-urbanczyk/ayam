@@ -626,30 +626,13 @@ int
 ay_pmt_swapuv(ay_pamesh_object *pm)
 {
  int ay_status = AY_OK;
- int stride = 4, i1 = 0, i2 = 0, i, j;
- double *dt, *ncontrolv = NULL;
+ int i;
+ double *dt;
 
   if(!pm)
     return AY_ENULL;
 
-  if(!(ncontrolv = calloc(pm->width*pm->height*stride, sizeof(double))))
-    return AY_EOMEM;
-
-  for(i = 0; i < pm->width; i++)
-    {
-      i2 = i*stride;
-      for(j = 0; j < pm->height; j++)
-	{
-	  memcpy(&(ncontrolv[i2]), &(pm->controlv[i1]),
-		 stride*sizeof(double));
-
-	  i1 += stride;
-	  i2 += (pm->width*stride);
-	} /* for */
-    } /* for */
-
-  free(pm->controlv);
-  pm->controlv = ncontrolv;
+  ay_status = ay_npt_swaparray(&(pm->controlv), 4, pm->width, pm->height);
 
   i = pm->width;
   pm->width = pm->height;
@@ -697,6 +680,7 @@ ay_pmt_revertu(ay_pamesh_object *pm)
 
  return ay_status;
 } /* ay_pmt_revertu */
+
 
 /* ay_pmt_revertv:
  *  
