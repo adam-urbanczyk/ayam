@@ -49,8 +49,7 @@ ay_npt_create(int uorder, int vorder, int width, int height,
 	}
 
       patch->controlv = newcontrolv;
-
-    }
+    } /* if */
 
   ay_status = ay_knots_createnp(patch);
   if(ay_status)
@@ -62,21 +61,21 @@ ay_npt_create(int uorder, int vorder, int width, int height,
 	}
       free(patch);
       return ay_status;
-    }
+    } /* if */
 
   if((uknot_type == AY_KTCUSTOM) && uknotv)
     {
       if(patch->uknotv)
 	free(patch->uknotv);
       patch->uknotv = uknotv;
-    }
+    } /* if */
 
   if((vknot_type == AY_KTCUSTOM) && vknotv)
     {
       if(patch->vknotv)
 	free(patch->vknotv);
       patch->vknotv = vknotv;
-    }
+    } /* if */
 
   patch->is_rat = ay_npt_israt(patch);
 
@@ -120,18 +119,20 @@ ay_npt_revolve(ay_object *o, double arc, int sections, int order,
     }
 
   if((sections == 0) || (order <= 1))
-    order = 3;
+    {
+      order = 3;
+    }
 
   /* calloc the new patch */
   if(!(new = calloc(1, sizeof(ay_nurbpatch_object))))
     return AY_EOMEM;
 
-  if(!(uknotv = calloc(curve->length+curve->order,sizeof(double))))
+  if(!(uknotv = calloc(curve->length+curve->order, sizeof(double))))
     {
       free(new); return AY_EOMEM;
     }
 
-  memcpy(uknotv,curve->knotv,(curve->length+curve->order)*sizeof(double));
+  memcpy(uknotv, curve->knotv, (curve->length+curve->order)*sizeof(double));
   new->uknotv = uknotv;
   new->uorder = curve->order;
   new->vorder = order;
@@ -166,10 +167,10 @@ ay_npt_revolve(ay_object *o, double arc, int sections, int order,
       new->vknotv = NULL;
       if(sections == 0)
 	{
-	  if(arc>0.0)
+	  if(arc > 0.0)
 	    {
 	      ay_status = ay_nb_CreateNurbsCircle(radius, 0.0, arc,
-						  &(new->height),&new->vknotv,
+						  &(new->height), &new->vknotv,
 						  &tcontrolv);
 	    }
 	  else
@@ -188,16 +189,28 @@ ay_npt_revolve(ay_object *o, double arc, int sections, int order,
 	      ay_status = ay_nct_crtcircbsp(sections, radius, 360.0, order,
 					    &tmpnc);
 	      if(!tmpnc)
-		return AY_ERROR;
+		{
+		  if(new->uknotv)
+		    free(new->uknotv);
+		  if(new->vknotv)
+		    free(new->vknotv);
+		  if(new->controlv)
+		    free(new->controlv);
+		  free(new);
+		  return AY_ERROR;
+		} /* if */
 
 	      tcontrolv = tmpnc->controlv;
 	      new->vknotv = tmpnc->knotv;
 	      new->height = tmpnc->length;
 	      free(tmpnc);
-
 	    }
 	  else
 	    {
+	      /* unsupported case, just bail out */
+	      if(new->uknotv)
+		free(new->uknotv);
+	      free(new);
 	      return AY_ERROR;
 	    } /* if */
 	} /* if */
@@ -212,16 +225,15 @@ ay_npt_revolve(ay_object *o, double arc, int sections, int order,
       /* copy to real controlv */
       b = 0;
       c = j*new->height*4;
-      for(i=0;i<new->height;i++)
+      for(i = 0; i < new->height; i++)
 	{
-	  new->controlv[c] = tcontrolv[b];
+	  new->controlv[c]   = tcontrolv[b];
 	  new->controlv[c+1] = point[1]*tcontrolv[b+3];
 	  new->controlv[c+2] = tcontrolv[b+1];
 	  new->controlv[c+3] = tcontrolv[b+3]*w;
-	  b+=4;
-	  c+=4;
+	  b += 4;
+	  c += 4;
 	} /* for */
-
 
 	a += 4;
     } /* for */
@@ -303,17 +315,21 @@ ay_npt_drawtrimcurve(struct Togl *togl, ay_object *o, GLUnurbsObj *no)
 	  a += 2;
 	}
       b++;
-    }
+    } /* for */
 
   if(curve->order != 2)
-    gluNurbsCurve(no, (GLint)knot_count, knots,
-		  (GLint)(curve->is_rat?3:2), controls,
-		  (GLint)curve->order,
-		  (curve->is_rat?GLU_MAP1_TRIM_3:GLU_MAP1_TRIM_2));
+    {
+      gluNurbsCurve(no, (GLint)knot_count, knots,
+		    (GLint)(curve->is_rat?3:2), controls,
+		    (GLint)curve->order,
+		    (curve->is_rat?GLU_MAP1_TRIM_3:GLU_MAP1_TRIM_2));
+    }
   else
-    gluPwlCurve(no, (GLint)curve->length, controls,
-		(GLint)(curve->is_rat?3:2),
-		(curve->is_rat?GLU_MAP1_TRIM_3:GLU_MAP1_TRIM_2));
+    {
+      gluPwlCurve(no, (GLint)curve->length, controls,
+		  (GLint)(curve->is_rat?3:2),
+		  (curve->is_rat?GLU_MAP1_TRIM_3:GLU_MAP1_TRIM_2));
+    }
 
  return AY_OK;
 } /* ay_npt_drawtrimcurve */
@@ -350,13 +366,12 @@ ay_npt_resizearrayw(double **controlvptr, int stride,
       a = 0; b = 0;
       for(i = 0; i < new_width; i++)
 	{
-	  memcpy(&(ncontrolv[b]),&(controlv[a]),
+	  memcpy(&(ncontrolv[b]), &(controlv[a]),
 		 height*stride*sizeof(double));
 
 	  a += (height*stride);
 	  b += (height*stride);
-	}
-
+	} /* for */
     }
   else
     {
@@ -367,21 +382,23 @@ ay_npt_resizearrayw(double **controlvptr, int stride,
 	return AY_EOMEM;
 
       while(new)
-	for(i = 0; i < (width-1); i++)
-	  {
-	    if(new)
-	      {
-		(newpersec[i])++;
-		new--;
-	      }
-	  }
+	{
+	  for(i = 0; i < (width-1); i++)
+	    {
+	      if(new)
+		{
+		  (newpersec[i])++;
+		  new--;
+		}
+	    } /* for */
+	} /* while */
 
       a = 0;
       b = 0;
       for(k = 0; k < (width-1); k++)
 	{
 
-	  memcpy(&(ncontrolv[b]),&(controlv[a]),
+	  memcpy(&(ncontrolv[b]), &(controlv[a]),
 		 height*stride*sizeof(double));
 
 	  b += (height*stride);
@@ -485,13 +502,12 @@ ay_npt_resizearrayh(double **controlvptr, int stride,
       a = 0; b = 0;
       for(i = 0; i < width; i++)
 	{
-	  memcpy(&(ncontrolv[b]),&(controlv[a]),
+	  memcpy(&(ncontrolv[b]), &(controlv[a]),
 		 new_height*stride*sizeof(double));
 
 	  a += (height*stride);
 	  b += (new_height*stride);
-	}
-
+	} /* for */
     }
   else
     {
@@ -502,14 +518,16 @@ ay_npt_resizearrayh(double **controlvptr, int stride,
 	return AY_EOMEM;
 
       while(new)
-	for(i = 0; i < (height-1); i++)
-	  {
-	    if(new)
-	      {
-		(newpersec[i])++;
-		new--;
-	      }
-	  }
+	{
+	  for(i = 0; i < (height-1); i++)
+	    {
+	      if(new)
+		{
+		  (newpersec[i])++;
+		  new--;
+		}
+	    } /* for */
+	} /* while */
 
       a = 0;
       b = 0;
@@ -556,7 +574,6 @@ ay_npt_resizearrayh(double **controlvptr, int stride,
 
     } /* if */
 
-
   free(controlv);
   *controlvptr = ncontrolv;
 
@@ -585,6 +602,42 @@ ay_npt_resizeh(ay_nurbpatch_object *patch, int new_height)
 } /* ay_npt_resizeh */
 
 
+/* ay_npt_swaparray:
+ *  swap u and v dimensions of a 2D control point array
+ */
+int
+ay_npt_swaparray(double **controlvptr, int stride,
+		 int width, int height)
+{
+ int i1 = 0, i2 = 0, i, j;
+ double *ncontrolv = NULL;
+
+  if(!controlvptr || !(*controlvptr))
+    return AY_ENULL;
+
+  if(!(ncontrolv = calloc(width*height*stride, sizeof(double))))
+    return AY_EOMEM;
+
+  for(i = 0; i < width; i++)
+    {
+      i2 = i*stride;
+      for(j = 0; j < height; j++)
+	{
+	  memcpy(&(ncontrolv[i2]), &((*controlvptr)[i1]),
+		 stride*sizeof(double));
+
+	  i1 += stride;
+	  i2 += (width*stride);
+	} /* for */
+    } /* for */
+
+  free(*controlvptr);
+  *controlvptr = ncontrolv;
+
+  return AY_OK;
+} /* ay_npt_swaparray */
+
+
 /* ay_npt_swapuv:
  *
  */
@@ -592,30 +645,13 @@ int
 ay_npt_swapuv(ay_nurbpatch_object *np)
 {
  int ay_status = AY_OK;
- int stride = 4, i1 = 0, i2 = 0, i, j;
- double *dt, *ncontrolv = NULL;
+ int i;
+ double *dt;
 
   if(!np)
     return AY_ENULL;
 
-  if(!(ncontrolv = calloc(np->width*np->height*stride, sizeof(double))))
-    return AY_EOMEM;
-
-  for(i = 0; i < np->width; i++)
-    {
-      i2 = i*stride;
-      for(j = 0; j < np->height; j++)
-	{
-	  memcpy(&(ncontrolv[i2]), &(np->controlv[i1]),
-		 stride*sizeof(double));
-
-	  i1 += stride;
-	  i2 += (np->width*stride);
-	} /* for */
-    } /* for */
-
-  free(np->controlv);
-  np->controlv = ncontrolv;
+  ay_status = ay_npt_swaparray(&(np->controlv), 4, np->width, np->height);
 
   i = np->width;
   np->width = np->height;
@@ -4720,7 +4756,7 @@ ay_npt_swapuvtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  pm = (ay_pamesh_object *)sel->object->refine;
 
-	  ay_status = ay_pmt_revertu(pm);
+	  ay_status = ay_pmt_swapuv(pm);
 	  break;
 	case AY_IDBPATCH:
 	  if(sel->object->selp)
