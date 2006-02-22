@@ -43,8 +43,7 @@ ay_nct_create(int order, int length, int knot_type,
 	}
 
       curve->controlv = newcontrolv;
-
-    }
+    } /* if */
 
   if(knot_type != AY_KTCUSTOM && knotv == NULL)
     { /* we need to create knots */
@@ -59,7 +58,7 @@ ay_nct_create(int order, int length, int knot_type,
   else /* user specified own knots */
     {
       curve->knotv = knotv;
-    }
+    } /* if */
 
   curve->is_rat = ay_nct_israt(curve);
 
@@ -89,7 +88,7 @@ ay_nct_clearmp(ay_nurbcurve_object *c)
 	free(p->points);
       free(p);
       p = next;
-    }
+    } /* while */
 
   c->mpoints = NULL;
 
@@ -136,7 +135,7 @@ ay_nct_recreatemp(ay_nurbcurve_object *c)
 	    }
 
 	  b += 4;
-	}
+	} /* for */
 
       /* create new mp, if it is not already there */
       if(count > 1)
@@ -149,20 +148,20 @@ ay_nct_recreatemp(ay_nurbcurve_object *c)
 		found = AY_TRUE;
 
 	      p = p->next;
-	    }
+	    } /* while */
 
 	  if(!found)
 	    {
 	      if(!(new = calloc(1, sizeof(ay_mpoint_object))))
-		return AY_EOMEM;
+		{ free(tmp); return AY_EOMEM; }
 	      if(!(new->points = calloc(count, sizeof(double *))))
-		return AY_EOMEM;
+		{ free(tmp); free(new); return AY_EOMEM; }
 	      new->multiplicity = count;
 	      memcpy(new->points, tmp, count*sizeof(double *));
 
 	      new->next = c->mpoints;
 	      c->mpoints = new;
-	    }
+	    } /* if */
 
 	} /* if */
 
@@ -192,7 +191,7 @@ ay_nct_collapseselp(ay_object *o)
   if(!o)
     return AY_OK;
 
-  if(!o->type == AY_IDNCURVE)
+  if(o->type != AY_IDNCURVE)
     return AY_ERROR;
 
   c = (ay_nurbcurve_object *)o->refine;
@@ -215,7 +214,7 @@ ay_nct_collapseselp(ay_object *o)
   if(!(new = calloc(1,sizeof(ay_mpoint_object))))
     return AY_EOMEM;
   if(!(new->points = calloc(count, sizeof(double *))))
-    return AY_EOMEM;
+    { free(new); return AY_EOMEM; }
 
   /* fill mpoint */
   selp = o->selp;
@@ -231,7 +230,7 @@ ay_nct_collapseselp(ay_object *o)
 	memcpy(selp->point, first, 3*sizeof(double));
 
       selp = selp->next;
-    }
+    } /* while */
   new->multiplicity = count;
 
   /* find and delete all mpoints eventually
@@ -291,7 +290,7 @@ ay_nct_explodemp(ay_object *o)
   if(!o)
     return AY_OK;
 
-  if(!o->type == AY_IDNCURVE)
+  if(o->type != AY_IDNCURVE)
     return AY_ERROR;
 
   c = (ay_nurbcurve_object *)o->refine;
@@ -315,8 +314,10 @@ ay_nct_explodemp(ay_object *o)
 	  for(i = 0; i < p->multiplicity; i++)
 	    {
 	      if(p->points[i] == selp->point)
-		found = AY_TRUE;
-	    }
+		{
+		  found = AY_TRUE;
+		}
+	    } /* for */
 
 	  if(found)
 	    {
@@ -408,7 +409,7 @@ ay_nct_resize(ay_nurbcurve_object *curve, int new_length)
       for(i = 0; i < (curve->length-1); i++)
 	{
 	  memcpy(&ncontrolv[b], &(curve->controlv[a]), 4*sizeof(double));
-	  b+=4;
+	  b += 4;
 
 	  if((cv[i*4] != cv[(i+1)*4]) ||
 	     (cv[i*4+1] != cv[(i+1)*4+1]) ||
@@ -436,7 +437,7 @@ ay_nct_resize(ay_nurbcurve_object *curve, int new_length)
 		} /* for */
 	    } /* if */
 
-	  a+=4;
+	  a += 4;
 	} /* for */
       memcpy(&ncontrolv[(new_length-1)*4],
 	     &(curve->controlv[(curve->length-1)*4]),
@@ -832,7 +833,6 @@ ay_nct_refinetcmd(ClientData clientData, Tcl_Interp *interp,
 
       Tcl_Free((char *) aknotv);
     } /* if */
-
 
   while(sel)
     {
@@ -1724,13 +1724,15 @@ int height = Togl_Height(togl);
 	}
     }
   else
-    return TCL_OK;
+    {
+      return TCL_OK;
+    }
 
   if(ay_selection)
     {
       if(ay_selection->object->type != AY_IDNCURVE)
 	{
-	  ay_error(AY_ERROR,fname,"Object is not a NURB curve!");
+	  ay_error(AY_ERROR, fname, "Object is not a NURB curve!");
 	  return TCL_OK;
 	}
       /*
@@ -1811,7 +1813,6 @@ ay_nct_split(ay_object *src, double u)
 
      r = curve->order-1-s;
 
-
      curve->length += r;
 
      if(r != 0)
@@ -1833,7 +1834,7 @@ ay_nct_split(ay_object *src, double u)
 
 	 free(curve->knotv);
 	 curve->knotv = newknotv;
-       }
+       } /* if */
 
      curve->knot_type = AY_KTCUSTOM;
      /* create two new curves */
@@ -2484,7 +2485,6 @@ ay_nct_crtcircbsp(int sections, double radius, double arc, int order,
   if(!result)
     return AY_ENULL;
 
-
   len = sections+(order-1);
 
   if(!(controlv = calloc(len*4, sizeof(double))))
@@ -2542,13 +2542,13 @@ ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(argc < 2)
     {
-      ay_error(AY_EARGS,fname,"numpoints");
+      ay_error(AY_EARGS, fname, "numpoints");
       return TCL_OK;
     }
 
-  Tcl_GetInt(interp,argv[1],&num);
+  Tcl_GetInt(interp, argv[1], &num);
 
-  if(num<=2)
+  if(num <= 2)
     {
       ay_error(AY_ERROR, fname, "numpoints must be >= 3");
       return TCL_OK;
