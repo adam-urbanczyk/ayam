@@ -86,7 +86,12 @@ ay_npt_create(int uorder, int vorder, int width, int height,
 
 
 /* ay_npt_revolve:
- *
+ *  create a surface of revolution from the NURBS curve in <o>
+ *  (that will be projected to the XY-plane for revolution)
+ *  with revolution angle <arc>, if <sections> is > 0, not a
+ *  standard NURBS circle geometry will be used for the surface
+ *  but a circular B-Spline with appropriate number of sections
+ *  and desired order <order>
  */
 int
 ay_npt_revolve(ay_object *o, double arc, int sections, int order,
@@ -113,7 +118,7 @@ ay_npt_revolve(ay_object *o, double arc, int sections, int order,
   /* get curves transformation-matrix */
   ay_trafo_creatematrix(o, m);
 
-  if(arc >= 360.0 || arc < -360.0 || arc == 0.0)
+  if((arc >= 360.0) || (arc < -360.0) || (arc == 0.0))
     {
       arc = 360.0;
     }
@@ -3900,7 +3905,7 @@ ay_npt_gettangentfromcontrol(int closed, int n, int p,
 	a = p;
       if(a > (n-p))
 	a -= (n-p);
-    }
+    } /* if */
 
   /* find a good point after P[a] */
   b = a+1;
@@ -3912,7 +3917,7 @@ ay_npt_gettangentfromcontrol(int closed, int n, int p,
 	    return AY_ERROR;
 	  wrapped = AY_TRUE;
 	  b = 0;
-	}
+	} /* if */
 
       i1 = a*stride;
       i2 = b*stride;
@@ -3923,9 +3928,8 @@ ay_npt_gettangentfromcontrol(int closed, int n, int p,
       else
 	{
 	  b++;
-	}
-
-    }
+	} /* if */
+    } /* while */
 
   after = b;
 
@@ -3941,7 +3945,7 @@ ay_npt_gettangentfromcontrol(int closed, int n, int p,
 	    return AY_ERROR;
 	  wrapped = AY_TRUE;
 	  b = (n-1);
-	}
+	} /* if */
 
       i1 = a*stride;
       i2 = b*stride;
@@ -3952,13 +3956,12 @@ ay_npt_gettangentfromcontrol(int closed, int n, int p,
       else
 	{
 	  b--;
-	}
-
-    }
+	} /* if */
+    } /* while */
 
   before = b;
 
-  /* now calc the tangent */
+  /* now calculate the tangent */
   t[0] = (P[after*stride]/P[after*stride+3]) -
     (P[before*stride]/P[before*stride+3]);
   t[1] = (P[(after*stride)+1]/P[(after*stride)+3]) -
@@ -3970,7 +3973,7 @@ ay_npt_gettangentfromcontrol(int closed, int n, int p,
     {
       t[0] /= l;
       t[1] /= l;
-    }
+    } /* if */
 
  return ay_status;
 } /* ay_npt_gettangentfromcontrol */
