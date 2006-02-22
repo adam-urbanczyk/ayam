@@ -1,3 +1,9 @@
+[22. Feb 2006] CVS-Head:
+o bug fixes:
+  - fixed TP tags created by tesselation GUI (SF 1431917)
+  - fixed broken SwapUV of PatchMesh objects (SF 1436463)
+
+
 [12. Feb 2006] Ayam 1.9:
 o bug fixes:
   - fixed automatic merging of PV tags (SF 1238692)
