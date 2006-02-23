@@ -2526,7 +2526,7 @@ ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
  ay_nurbcurve_object *curve = NULL;
  char fname[] = "create_closedbsp";
  double *controlv;
- int i = 0, num = 0, a = 0;
+ int i = 0, num = 0, a = 0, order = 4;
  double angle = 0.0;
  double m[16];
  ay_object *o = NULL;
@@ -2554,7 +2554,14 @@ ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  if(!(controlv = calloc((num+3)*4, sizeof(double))))
+  if(argc > 2)
+    {
+      Tcl_GetInt(interp, argv[2], &order);
+      if(order < 2)
+	order = 4;
+    }
+
+  if(!(controlv = calloc((num+(order-1))*4, sizeof(double))))
     {
       free(o);
       ay_error(AY_EOMEM, fname, NULL);
@@ -2564,7 +2571,7 @@ ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
   angle = 360.0/num;
 
   ay_trafo_identitymatrix(m);
-  for(i = 0; i < num+3; i++)
+  for(i = 0; i < num+(order-1); i++)
     {
       a = i*4;
       controlv[a] = 1.0;
@@ -2575,7 +2582,8 @@ ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
       ay_trafo_apply3(&(controlv[a]), m);
     }
 
-  ay_status = ay_nct_create(4, num+3, AY_KTBSPLINE, controlv, NULL, &curve);
+  ay_status = ay_nct_create(order, num+(order-1), AY_KTBSPLINE,
+			    controlv, NULL, &curve);
 
   curve->type = AY_CTPERIODIC;
   ay_nct_close(curve);

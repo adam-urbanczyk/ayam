@@ -461,7 +461,7 @@ proc toolbox_open { } {
 
 	    #####
 	    button $f.bnci -image ay_NCircle_img -padx 0 -pady 0 -command {
-		crtClosedBS $ay(cbspnum); uCR; sL; rV;
+		crtClosedBS $ay(cbspnum) $ay(cbsporder); uCR; sL; rV;
 	    }
 	    balloon_set $f.bnci "create circle"
 

@@ -248,7 +248,8 @@ set ay(toolsmenu) $m
 $m add cascade -menu $m.nc -label "Create"
 menu $m.nc -tearoff 0
 $m.nc add command -label "ClosedBSpline" -command {
-    runTool ay(cbspnum) "NumPoints:" "crtClosedBS %0; uCR; sL; rV;"
+    runTool {ay(cbspnum) ay(cbsporder)} {"NumPoints:" "Order:"}\
+	"crtClosedBS %0 %1; uCR; sL; rV;"
 }
 $m.nc add command -label "NURBCircle" -command {
     runTool {ay(ncircradius) ay(ncircarc)} {"Radius:" "Arc:"}\
