@@ -364,6 +364,9 @@ int ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 		 int rotate, int closed, ay_nurbpatch_object **patch,
 		 int has_start_cap, ay_object **start_cap,
 		 int has_end_cap, ay_object **end_cap);
+int ay_npt_closedsweep(ay_object *o1, ay_object *o2, ay_object *o3,
+		       int sections,
+		       int rotate, ay_nurbpatch_object **patch);
 
 int ay_npt_birail1(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 		   int closed, ay_nurbpatch_object **patch,
@@ -435,6 +438,8 @@ int ay_npt_extractnc(ay_object *npatch, int side, double param,
 int ay_npt_israt(ay_nurbpatch_object *patch);
 
 int ay_npt_istrimmed(ay_object *o, int mode);
+
+int ay_npt_closeu(ay_nurbpatch_object *np);
 
 /* pmt.c */
 int ay_pmt_tonpatch(ay_pamesh_object *pamesh, ay_object **result);
