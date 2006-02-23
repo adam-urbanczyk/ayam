@@ -21,15 +21,15 @@ w     fSweepAttr
 }
 
 array set SweepAttrData {
+Type 0
 DisplayMode 1
 }
 # create SweepAttr-UI
 set w [frame $ay(pca).$SweepAttr(w)]
 
-
+addMenu $w SweepAttrData Type [list Open Closed Periodic]
 addCheck $w SweepAttrData Rotate
 addCheck $w SweepAttrData Interpolate
-addCheck $w SweepAttrData Close
 addParam $w SweepAttrData Sections
 addCheck $w SweepAttrData StartCap
 addCheck $w SweepAttrData EndCap
