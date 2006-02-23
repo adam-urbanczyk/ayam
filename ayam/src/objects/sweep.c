@@ -194,7 +194,7 @@ ay_sweep_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(sweep->interpolate));
 
-  Tcl_SetStringObj(ton,"Close",-1);
+  Tcl_SetStringObj(ton,"Type",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(sweep->close));
 
@@ -257,7 +257,7 @@ ay_sweep_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Close",-1);
+  Tcl_SetStringObj(ton,"Type",-1);
   to = Tcl_NewIntObj(sweep->close);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
@@ -492,11 +492,22 @@ ay_sweep_notifycb(ay_object *o)
   ay_object_defaults(npatch);
   npatch->type = AY_IDNPATCH;
 
-  ay_status = ay_npt_sweep(curve1, curve2, curve3,
-			   sweep->sections, sweep->rotate, sweep->close,
-			   (ay_nurbpatch_object **)(&(npatch->refine)),
-			   sweep->has_start_cap, &(sweep->start_cap),
-			   sweep->has_end_cap, &(sweep->end_cap));
+  if(sweep->close < 2)
+    {
+      /* open or simple closed sweep */
+      ay_status = ay_npt_sweep(curve1, curve2, curve3,
+			       sweep->sections, sweep->rotate, sweep->close,
+			       (ay_nurbpatch_object **)(&(npatch->refine)),
+			       sweep->has_start_cap, &(sweep->start_cap),
+			       sweep->has_end_cap, &(sweep->end_cap));
+    }
+  else
+    {
+      /* periodic sweep */
+      ay_status = ay_npt_closedsweep(curve1, curve2, curve3,
+				     sweep->sections, sweep->rotate,
+				  (ay_nurbpatch_object **)(&(npatch->refine)));
+    }
 
   if(ay_status)
     return ay_status;
