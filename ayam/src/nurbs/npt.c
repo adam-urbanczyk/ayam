@@ -88,7 +88,7 @@ ay_npt_create(int uorder, int vorder, int width, int height,
 /* ay_npt_revolve:
  *  create a surface of revolution from the NURBS curve in <o>
  *  (that will be projected to the XY-plane for revolution)
- *  with revolution angle <arc>, if <sections> is > 0, not a
+ *  with revolution angle <arc>; if <sections> is > 0, not a
  *  standard NURBS circle geometry will be used for the surface
  *  but a circular B-Spline with appropriate number of sections
  *  and desired order <order>
@@ -2244,6 +2244,245 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 } /* ay_npt_sweep */
 
 
+/* ay_npt_closedsweep:
+ *  sweep cross section <o1> along path <o2> possibly rotating it,
+ *  so that it is always perpendicular to the path, possibly
+ *  scaling it by a factor derived from the difference of the
+ *  y coordinate of scaling curve <o3> to y value 1.0.
+ *  Rotation code derived from J. Bloomenthals "Reference Frames"
+ *  (Graphic Gems I).
+ */
+int
+ay_npt_closedsweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
+		   int rotate, ay_nurbpatch_object **patch)
+{
+ int ay_status = AY_OK;
+ ay_object *curve = NULL;
+ ay_nurbpatch_object *new = NULL;
+ ay_nurbcurve_object *tr, *cs, *sf = NULL;
+ double *controlv = NULL;
+ int i = 0, j = 0, a = 0, stride = 4;
+ double u, p1[4], p2[4], p3[4];
+ double T0[3] = {0.0,0.0,-1.0};
+ double T1[3] = {0.0,0.0,0.0};
+ double T2[3] = {0.0,0.0,0.0};
+ double A[3] = {0.0,0.0,0.0};
+ double len = 0.0, plen = 0.0, plensf = 0.0;
+ double m[16] = {0}, mi[16] = {0}, mcs[16], mtr[16];
+ double mr[16];
+ double quat[4] = {0};
+ double *cscv = NULL, *trcv = NULL, *sfcv = NULL, *rots = NULL;
+
+  if(!o1 || !o2 || !patch)
+    return AY_ENULL;
+
+  if((o1->type != AY_IDNCURVE) || (o2->type != AY_IDNCURVE) ||
+     (o3 && (o3->type != AY_IDNCURVE)))
+    return AY_ERROR;
+
+  cs = (ay_nurbcurve_object *)(o1->refine);
+  tr = (ay_nurbcurve_object *)(o2->refine);
+
+  /* apply scale and rotation to cross-section curves controlv */
+  if(!(cscv = calloc(cs->length * stride, sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  memcpy(cscv, cs->controlv, cs->length * stride * sizeof(double));
+
+  ay_quat_torotmatrix(o1->quat, mcs);
+  ay_trafo_scalematrix(o1->scalx, o1->scaly, o1->scalz, mcs);
+
+  a = 0;
+  for(i = 0; i < cs->length; i++)
+    {
+      ay_trafo_apply4(&(cscv[a]), mcs);
+      a += stride;
+    }
+
+  /* apply all transformations to trajectory curves controlv */
+  if(!(trcv = calloc(tr->length * stride, sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  memcpy(trcv, tr->controlv, tr->length * stride * sizeof(double));
+
+  ay_trafo_creatematrix(o2, mtr);
+  a = 0;
+  for(i = 0; i < tr->length; i++)
+    {
+      ay_trafo_apply4(&(trcv[a]), mtr);
+      a += stride;
+    }
+
+  /* apply all transformations to scaling curves controlv */
+  if(o3)
+    {
+      sf = (ay_nurbcurve_object *)(o3->refine);
+
+      if(!(sfcv = calloc(sf->length * stride, sizeof(double))))
+	{ ay_status = AY_EOMEM; goto cleanup; }
+      memcpy(sfcv, sf->controlv, sf->length * stride * sizeof(double));
+
+      ay_trafo_creatematrix(o3, mtr);
+      a = 0;
+      for(i = 0; i < sf->length; i++)
+	{
+	  ay_trafo_apply4(&(sfcv[a]), mtr);
+	  a += stride;
+	}
+    } /* if */
+
+  /* parameterize and calloc the new patch */
+  if(!(new = calloc(1, sizeof(ay_nurbpatch_object))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+
+  new->vorder = cs->order;
+  new->uorder = 4;
+
+  new->vknot_type = cs->knot_type;
+  new->uknot_type = AY_KTBSPLINE;
+  new->width = sections+new->uorder;
+  new->height = cs->length;
+
+  new->glu_sampling_tolerance = cs->glu_sampling_tolerance;
+
+  if(!(controlv = calloc(cs->length*new->width*stride, sizeof(double))))
+    { free(new); ay_status = AY_EOMEM; goto cleanup; }
+  new->controlv = controlv;
+
+  if(!(new->vknotv = calloc(cs->length+cs->order, sizeof(double))))
+    { free(new); free(controlv); ay_status = AY_EOMEM; goto cleanup; }
+  if(!(new->uknotv = calloc(sections+4, sizeof(double))))
+    {
+      free(new->vknotv); free(new); free(controlv);
+      ay_status = AY_EOMEM; goto cleanup;
+    }
+
+  ay_status = ay_knots_createnp(new);
+  if(ay_status)
+    {
+      free(new->uknotv); free(new->vknotv); free(new); free(controlv);
+      ay_status = AY_EOMEM; goto cleanup;
+    }
+
+  if(cs->knot_type == AY_KTCUSTOM)
+    {
+      memcpy(new->vknotv,cs->knotv,(cs->length+cs->order)*sizeof(double));
+    }
+
+  ay_nb_CurvePoint4D(tr->length-1, tr->order-1, tr->knotv, trcv,
+		     tr->knotv[tr->order-1], p1);
+
+  plen = fabs(tr->knotv[tr->length-1] - tr->knotv[tr->order-1]);
+  if(o3)
+    plensf = fabs(sf->knotv[sf->length-1] - sf->knotv[sf->order-1]);
+
+  T0[0] = 1.0;
+  T0[1] = 0.0;
+  T0[2] = 0.0;
+
+  ay_trafo_identitymatrix(mr);
+
+  if(!(rots = calloc(new->width*4, sizeof(double))))
+    {
+      free(new->uknotv); free(new->vknotv); free(new); free(controlv);
+      ay_status = AY_EOMEM; goto cleanup;
+    }
+
+  /* copy cross sections controlv section+1 times and sweep it */
+  for(i = 0; i <= sections; i++)
+    {
+      memcpy(&(controlv[i * stride * cs->length]), &(cscv[0]),
+	     cs->length * stride * sizeof(double));
+
+      /* create transformation matrix */
+      /* first, set it to identity */
+      ay_trafo_identitymatrix(m);
+
+      /* now, apply scaling function (if present) */
+      if(o3)
+	{
+	  u = sf->knotv[sf->order-1]+(((double)i/sections) * plensf);
+
+	  ay_nb_CurvePoint4D(sf->length-1, sf->order-1, sf->knotv,
+			     sfcv, u, p3);
+	  p3[1] = fabs(p3[1]);
+	  if(p3[1] > AY_EPSILON)
+	    ay_trafo_scalematrix(1.0/p3[1], 1.0/p3[1], 1.0/p3[1], m);
+	}
+
+      /* now, apply rotation (if requested) */
+      u = tr->knotv[tr->order-1]+(((double)i/sections)*plen);
+
+      if(rotate)
+	{
+	  ay_nb_ComputeFirstDer4D(tr->length-1, tr->order-1, tr->knotv,
+				  trcv, u, T1);
+
+	  len = AY_V3LEN(T1);
+	  AY_V3SCAL(T1,(1.0/len))
+
+	  if(((fabs(fabs(T1[0])-fabs(T0[0])) > AY_EPSILON) ||
+	      (fabs(fabs(T1[1])-fabs(T0[1])) > AY_EPSILON) ||
+	      (fabs(fabs(T1[2])-fabs(T0[2])) > AY_EPSILON)) ||
+	     (T1[0] * T0[0] < 0) ||
+	     (T1[1] * T0[1] < 0) ||
+	     (T1[2] * T0[2] < 0))
+	    {
+	      AY_V3CROSS(A,T0,T1)
+	      len = AY_V3LEN(A);
+	      AY_V3SCAL(A,(1.0/len))
+
+	      rots[i*4+0] = AY_R2D(acos(AY_V3DOT(T0,T1)));
+	      memcpy(&rots[i*4+1], A, 3*sizeof(double));
+
+	      if(fabs(rots[i*4]) > AY_EPSILON)
+		{
+		  ay_trafo_rotatematrix(-rots[i*4], rots[i*4+1],
+					rots[i*4+2], rots[i*4+3], mr);
+		}
+	    } /* if */
+
+	  memcpy(T0, T1, 3*sizeof(double));
+
+	  ay_trafo_multmatrix4(m, mr);
+	} /* if rotate */
+
+      /* now, add translation to current point on trajectory */
+      ay_nb_CurvePoint4D(tr->length-1, tr->order-1, tr->knotv,
+			 trcv, u, p2);
+
+      ay_trafo_translatematrix(-p2[0], -p2[1], -p2[2], m);
+
+      ay_trafo_invmatrix4(m, mi);
+
+      /* sweep profile */
+      for(j = 0; j < cs->length; j++)
+	{
+	  ay_trafo_apply4(&controlv[i*cs->length*stride+j*stride], mi);
+	} /* for */
+
+    } /* for */
+
+  new->is_rat = ay_npt_israt(new);
+
+  ay_status = ay_npt_closeu(new);
+
+  /* return result */
+  *patch = new;
+
+  /* clean up */
+ cleanup:
+  if(rots)
+    free(rots);
+  if(cscv)
+    free(cscv);
+  if(trcv)
+    free(trcv);
+  if(sfcv)
+    free(sfcv);
+
+ return ay_status;
+} /* ay_npt_closedsweep */
+
+
 /* ay_npt_birail1:
  *  sweep cross section o1 along rails o2 and o3;
  *  Rotation code derived from J. Bloomenthals "Reference Frames"
@@ -4006,6 +4245,12 @@ ay_npt_bevel(int type, double radius, int align, ay_object *o,
  double m[16], mi[16], point[4] = {0};
  double mx, my, mz;
 
+  if(!o || !patch)
+    return AY_ENULL;
+
+  if(!o->type == AY_IDNPATCH)
+    return AY_ERROR;
+
   curve = (ay_nurbcurve_object *)o->refine;
 
   /* calloc the new patch */
@@ -5674,4 +5919,31 @@ ay_npt_istrimmed(ay_object *o, int mode)
     } /* switch */
 
  return AY_FALSE;
+} /* ay_npt_istrimmed */
+
+
+int
+ay_npt_closeu(ay_nurbpatch_object *np)
+{
+ double *controlv, *end;
+ int i, stride = 4;
+
+  if(np->width >= ((np->uorder-1)*2))
+    {
+      controlv = np->controlv;
+      end = &(controlv[np->height*(np->width-(np->uorder-1))*stride]);
+      
+      for(i = 0; i < (np->uorder-1); i++)
+	{
+	  memcpy(end, controlv, np->height*stride*sizeof(double));
+	  controlv += np->height*stride;
+	  end += np->height*stride;
+	}
+    }
+  else
+    {
+      return AY_ERROR;
+    } /* if */
+
+ return AY_OK;
 } /* ay_npt_istrimmed */
