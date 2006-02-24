@@ -2370,9 +2370,18 @@ ay_npt_closedsweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
   ay_nb_CurvePoint4D(tr->length-1, tr->order-1, tr->knotv, trcv,
 		     tr->knotv[tr->order-1], p1);
 
-  plen = fabs(tr->knotv[tr->length-1] - tr->knotv[tr->order-1]);
+  if(tr->type == AY_CTOPEN /*|| tr->type == AY_CTCLOSED*/)
+    plen = fabs(tr->knotv[tr->length] - tr->knotv[tr->order-1]);
+  else
+    plen = fabs(tr->knotv[tr->length-1] - tr->knotv[tr->order-1]);
+
   if(o3)
-    plensf = fabs(sf->knotv[sf->length-1] - sf->knotv[sf->order-1]);
+    {
+      if(sf->type == AY_CTOPEN /*|| sf->type == AY_CTCLOSED*/)
+	plensf = fabs(sf->knotv[sf->length] - sf->knotv[sf->order-1]);
+      else
+	plensf = fabs(sf->knotv[sf->length-1] - sf->knotv[sf->order-1]);
+    }
 
   T0[0] = 1.0;
   T0[1] = 0.0;
