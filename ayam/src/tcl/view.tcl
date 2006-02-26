@@ -865,6 +865,10 @@ button $f.bok -text "Ok" -pady $ay(pady) -width 15 -command "\
 	global ay;\
 	$view mc;\
 	$view setconf -bgimage \$ay(ImageFile);\
+	if { \$ay(cVDrawBG) == 0 } {\
+	 set ay(cVDrawBG) 1;\
+	 $view setconf -dbg \$ay(cVDrawBG);\
+        };\
 	$view render;\
 	update;\
 	grab release .setBGI;\
