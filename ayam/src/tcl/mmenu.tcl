@@ -355,6 +355,9 @@ $m.nct add command -label "Reset Weights" -command {
 $m.npt add command -label "Extract NC" -command {extrnc_crt}
 $m.npt add command -label "Tesselate" -command tgui_open
 $m.npt add separator
+$m.npt add command -label "Collapse Points" -command { collMP; rV; }
+$m.npt add command -label "Explode Points" -command { explMP; rV; }
+$m.npt add separator
 $m.npt add command -label "Split to Curves (u)" -command {
     splitNP u; uS; sL; rV}
 $m.npt add command -label "Split to Curves (v)" -command {
