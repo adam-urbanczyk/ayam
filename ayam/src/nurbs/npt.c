@@ -1996,7 +1996,10 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
     }
 
   new->vorder = cs->order;
-  new->uorder = 4;
+  if(sections > 2)
+    new->uorder = 4;
+  else
+    new->uorder = sections+1;
   new->controlv = controlv;
 
   new->vknot_type = cs->knot_type;
