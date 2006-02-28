@@ -326,8 +326,8 @@ $m.nct add command -label "Reset Weights" -command {
 }
 
 $m.nct add separator
-$m.nct add command -label "Collapse Points" -command { collNC; rV; }
-$m.nct add command -label "Explode Points" -command { explNC; rV; }
+$m.nct add command -label "Collapse Points" -command { collMP; rV; }
+$m.nct add command -label "Explode Points" -command { explMP; rV; }
 
 $m add separator
 $m add cascade -menu $m.npt -label "NURBPatch"
