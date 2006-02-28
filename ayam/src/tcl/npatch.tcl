@@ -43,6 +43,8 @@ addString $w NPatchAttrData Knots_U
 addMenu $w NPatchAttrData Knot-Type_V [list Bezier B-Spline NURB Custom]
 addString $w NPatchAttrData Knots_V
 
+addCheck $w NPatchAttrData CreateMP
+
 addInfo $w NPatchAttrData IsRat
 
 addParam $w NPatchAttrData Tolerance

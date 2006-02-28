@@ -1500,7 +1500,6 @@ ay_nct_explodetcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_nct_explodetcmd */
 
 
-
 /* ay_nct_findu:
  *  transforms the window coordinates (winX, winY)
  *  to the corresponding parametric value u

@@ -441,6 +441,18 @@ int ay_npt_istrimmed(ay_object *o, int mode);
 
 int ay_npt_closeu(ay_nurbpatch_object *np);
 
+int ay_npt_closeutcmd(ClientData clientData, Tcl_Interp *interp,
+		      int argc, char *argv[]);
+
+void ay_npt_clearmp(ay_nurbpatch_object *np);
+
+int ay_npt_recreatemp(ay_nurbpatch_object *np);
+
+int ay_npt_collapseselp(ay_object *o);
+
+int ay_npt_explodemp(ay_object *o);
+
+
 /* pmt.c */
 int ay_pmt_tonpatch(ay_pamesh_object *pamesh, ay_object **result);
 
