@@ -1417,7 +1417,7 @@ ay_nct_collapsetcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
- char fname[] = "collNC";
+ char fname[] = "collMP";
 
   if(!sel)
     {
@@ -1427,23 +1427,42 @@ ay_nct_collapsetcmd(ClientData clientData, Tcl_Interp *interp,
 
   while(sel)
     {
-      if(sel->object->type == AY_IDNCURVE)
+      switch(sel->object->type)
 	{
-	  ay_status = ay_nct_collapseselp(sel->object);
-	  if(ay_status)
-	    {
-	      ay_error(ay_status, fname, "Collapse operation failed!");
-	    }
-
-	  if(sel->object->selp)
-	    {
-	      ay_selp_clear(sel->object);
-	    }
-	}
-      else
-	{
-	  ay_error(AY_ERROR, fname, "Object is not a NURBCurve!");
-	}
+	case AY_IDNCURVE:
+	  {
+	    ay_status = ay_nct_collapseselp(sel->object);
+	    if(ay_status)
+	      {
+		ay_error(ay_status, fname, "Collapse operation failed!");
+	      }
+	    
+	    if(sel->object->selp)
+	      {
+		ay_selp_clear(sel->object);
+	      }
+	  }
+	  break;
+	case AY_IDNPATCH:
+	  {
+	    ay_status = ay_npt_collapseselp(sel->object);
+	    if(ay_status)
+	      {
+		ay_error(ay_status, fname, "Collapse operation failed!");
+	      }
+	    
+	    if(sel->object->selp)
+	      {
+		ay_selp_clear(sel->object);
+	      }
+	  }
+	  break;
+	default:
+	  {
+	    ay_error(AY_ERROR, fname, "Unsupported object type!");
+	  }
+	  break;
+	} /* switch */
 
       sel = sel->next;
     } /* while */
@@ -1463,7 +1482,7 @@ ay_nct_explodetcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
- char fname[] = "explNC";
+ char fname[] = "explMP";
 
   if(!sel)
     {
@@ -1473,7 +1492,9 @@ ay_nct_explodetcmd(ClientData clientData, Tcl_Interp *interp,
 
   while(sel)
     {
-      if(sel->object->type == AY_IDNCURVE)
+      switch(sel->object->type)
+	{
+	case AY_IDNCURVE:
 	  {
 	    ay_status = ay_nct_explodemp(sel->object);
 	    if(ay_status)
@@ -1483,13 +1504,27 @@ ay_nct_explodetcmd(ClientData clientData, Tcl_Interp *interp,
 
  	    if(sel->object->selp)
 	      ay_selp_clear(sel->object);
-
 	  }
-	else
+	  break;
+	case AY_IDNPATCH:
 	  {
-	    ay_error(AY_ERROR, fname, "Object is not a NURBCurve!");
+	    ay_status = ay_npt_explodemp(sel->object);
+	    if(ay_status)
+	      {
+		ay_error(ay_status,fname,"Explode operation failed!");
+	      }
+
+ 	    if(sel->object->selp)
+	      ay_selp_clear(sel->object);
+	  }
+	  break;
+	default:
+	  {
+	    ay_error(AY_ERROR, fname, "Unsupported object type!");
 	    return TCL_OK;
 	  }
+	  break;
+	} /* switch */
 
       sel = sel->next;
     } /* while */
