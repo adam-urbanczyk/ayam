@@ -36,9 +36,11 @@ set w [frame $ay(pca).$NCurveAttr(w)]
 addMenu $w NCurveAttrData Type [list Open Closed Periodic]
 addParam $w NCurveAttrData Length
 addParam $w NCurveAttrData Order
-addCheck $w NCurveAttrData CreateMP
 addMenu $w NCurveAttrData Knot-Type [list Bezier B-Spline NURB Custom]
 addString $w NCurveAttrData Knots
+
+addCheck $w NCurveAttrData CreateMP
+
 addInfo $w NCurveAttrData IsRat
 addParam $w NCurveAttrData Tolerance
 addMenu $w NCurveAttrData DisplayMode $ay(ncdisplaymodes)

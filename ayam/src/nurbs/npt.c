@@ -674,6 +674,8 @@ ay_npt_swapuv(ay_nurbpatch_object *np)
   np->uknotv = np->vknotv;
   np->vknotv = dt;
 
+  ay_status = ay_npt_recreatemp(np);
+
  return ay_status;
 } /* ay_npt_swapuv */
 
@@ -699,7 +701,9 @@ ay_npt_revertu(ay_nurbpatch_object *patch)
 		 stride*sizeof(double));
 	  memcpy(&(patch->controlv[jj]), t, stride*sizeof(double));
 	}
-    }
+    } /* for */
+
+  ay_status = ay_npt_recreatemp(patch);
 
  return ay_status;
 } /* ay_npt_revertu */
@@ -788,7 +792,9 @@ ay_npt_revertv(ay_nurbpatch_object *patch)
 	  ii += stride;
 	  jj -= stride;
 	}
-    }
+    } /* for */
+
+  ay_status = ay_npt_recreatemp(patch);
 
  return ay_status;
 } /* ay_npt_revertv */
@@ -1871,6 +1877,8 @@ ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
       free(new); free(newvknotv); free(newcontrolv);
       return TCL_OK;
     }
+
+  ay_status = ay_npt_recreatemp((ay_nurbpatch_object *)new->refine);
 
   ay_status = ay_object_link(new);
 
@@ -4817,6 +4825,9 @@ ay_npt_elevateu(ay_nurbpatch_object *patch, int t)
 
   patch->width = nw;
 
+  if(patch->createmp)
+    ay_status = ay_npt_recreatemp(patch);
+
  return ay_status;
 } /* ay_npt_elevateu */
 
@@ -4935,6 +4946,9 @@ ay_npt_elevatev(ay_nurbpatch_object *patch, int t)
   patch->vorder += t;
 
   patch->height = nh;
+
+  if(patch->createmp)
+    ay_status = ay_npt_recreatemp(patch);
 
  return ay_status;
 } /* ay_npt_elevatev */
@@ -5931,6 +5945,9 @@ ay_npt_istrimmed(ay_object *o, int mode)
 } /* ay_npt_istrimmed */
 
 
+/* ay_npt_closeu:
+ *
+ */
 int
 ay_npt_closeu(ay_nurbpatch_object *np)
 {
@@ -5955,4 +5972,407 @@ ay_npt_closeu(ay_nurbpatch_object *np)
     } /* if */
 
  return AY_OK;
-} /* ay_npt_istrimmed */
+} /* ay_npt_closeu */
+
+
+/* ay_npt_closev:
+ *
+ */
+int
+ay_npt_closev(ay_nurbpatch_object *np)
+{
+ double *controlv, *end;
+ int i, stride = 4;
+
+  if(np->height >= ((np->vorder-1)*2))
+    {
+      controlv = np->controlv;
+      end = &(controlv[np->width*np->height-(np->vorder-1)*stride]);
+      
+      for(i = 0; i < (np->vorder-1); i++)
+	{
+	  memcpy(end, controlv, np->height*stride*sizeof(double));
+	  controlv += np->height*stride;
+	  end += np->height*stride;
+	}
+    }
+  else
+    {
+      return AY_ERROR;
+    } /* if */
+
+ return AY_OK;
+} /* ay_npt_closev */
+
+
+/* ay_npt_closeutcmd:
+ *
+ */
+int
+ay_npt_closeutcmd(ClientData clientData, Tcl_Interp *interp,
+		  int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ char fname[] = "closeNPU";
+ int stride = 4;
+ double *newcontrolv = NULL, *knotv = NULL, *tknotv;
+ ay_list_object *sel = ay_selection;
+ ay_nurbpatch_object *np = NULL;
+
+  while(sel)
+    {
+      if(!sel->object)
+	return TCL_OK;
+
+      switch(sel->object->type)
+	{
+	case AY_IDNPATCH:
+	  if(sel->object->selp)
+	    ay_selp_clear(sel->object);
+
+	  np = (ay_nurbpatch_object *)sel->object->refine;
+
+	  if(!(newcontrolv = calloc((np->width + (np->uorder-1)) *
+				    np->height * stride,
+				    sizeof(double))))
+	    {
+	      ay_error(AY_EOMEM, fname, NULL);
+	      return TCL_OK;
+	    }
+
+	  memcpy(newcontrolv, np->controlv, np->width * np->height * stride *
+		 sizeof(double));
+
+	  free(np->controlv);
+	  np->controlv = newcontrolv;
+
+	  np->width += (np->uorder-1);
+	  /*
+	  if(!(newknotv = calloc(np->width + np->uorder + (np->uorder-1),
+				 sizeof(double))))
+	    {
+	      ay_error(AY_EOMEM, fname, NULL);
+	      return TCL_OK;
+	    }
+
+	  memcpy(newknotv, np->uknotv, (np->width + np->uorder +
+					(np->uorder-1)) *
+		 sizeof(double));
+
+	  free(np->uknotv);
+	  np->uknotv = newknotv;
+	  */
+
+	  tknotv = np->vknotv;
+	  np->uknot_type = AY_KTBSPLINE;
+	  ay_status = ay_knots_createnp(np);
+	  free(np->vknotv);
+	  np->vknotv = tknotv;
+
+	  ay_status = ay_npt_closeu(np);
+
+	  if(ay_status)
+	    {
+	      ay_error(AY_ERROR, fname, "Error closing object!");
+	    }
+
+	  ay_status = ay_npt_recreatemp(np);
+
+	  break;
+	default:
+	  ay_error(AY_ERROR, fname, "Do not know how to close this object!");
+	  break;
+	} /* switch */
+      sel = sel->next;
+    } /* while */
+
+ return TCL_OK;
+} /* ay_npt_closeutcmd */
+
+
+/* ay_npt_clearmp:
+ *  delete all mpoints from patch <np>
+ */
+void
+ay_npt_clearmp(ay_nurbpatch_object *np)
+{
+  ay_mpoint_object *next = NULL, *mp = NULL;
+
+  if(!np)
+    return;
+
+  mp = np->mpoints;
+
+  while(mp)
+    {
+      next = mp->next;
+      if(mp->points)
+	free(mp->points);
+      free(mp);
+      mp = next;
+    } /* while */
+
+  np->mpoints = NULL;
+
+ return;
+} /* ay_npt_clearmp */
+
+
+/* ay_npt_recreatemp:
+ *  recreate mpoints from identical controlpoints for
+ *  patch <np>
+ */
+int
+ay_npt_recreatemp(ay_nurbpatch_object *np)
+{
+ int ay_status = AY_OK;
+ ay_mpoint_object *mp = NULL, *new = NULL;
+ double *ta, **tmp = NULL;
+ int found = AY_FALSE, a, b, i, j, ii, jj, count;
+
+  if(!np)
+    return AY_OK;
+
+  ay_npt_clearmp(np);
+
+  if(!np->createmp)
+    return AY_OK;
+
+  if(!(tmp = calloc(np->width*np->height, sizeof(double *))))
+    return AY_EOMEM;
+
+  a = 0;
+  for(ii = 0; ii < np->width; ii++)
+    {
+      for(jj = 0; jj < np->height; jj++)
+	{
+	  ta = &(np->controlv[a]);
+
+	  /* count identical points */
+	  count = 0;
+	  b = 0;
+	  for(i = 0; i < np->width; i++)
+	    {
+	      for(j = 0; j < np->height; j++)
+		{
+		  if(!memcmp(ta, &(np->controlv[b]), 4*sizeof(double)))
+		    {
+		      tmp[count] = &(np->controlv[b]);
+		      count++;
+		    }
+
+		  b += 4;
+		} /* for */
+	    } /* for */
+
+	  /* create new mp, if it is not already there */
+	  if(count > 1)
+	    {
+	      mp = np->mpoints;
+	      found = AY_FALSE;
+	      while(mp && !found)
+		{
+		  if(!memcmp(ta, mp->points[0], 4*sizeof(double)))
+		    {
+		      found = AY_TRUE;
+		    }
+
+		  mp = mp->next;
+		} /* while */
+
+	      if(!found)
+		{
+		  if(!(new = calloc(1, sizeof(ay_mpoint_object))))
+		    { free(tmp); return AY_EOMEM; }
+		  if(!(new->points = calloc(count, sizeof(double *))))
+		    { free(tmp); free(new); return AY_EOMEM; }
+		  new->multiplicity = count;
+		  memcpy(new->points, tmp, count*sizeof(double *));
+
+		  new->next = np->mpoints;
+		  np->mpoints = new;
+		} /* if */
+	    } /* if */
+
+	  a += 4;
+	} /* for */
+    } /* for */
+
+  free(tmp);
+
+ return ay_status;
+} /* ay_npt_recreatemp */
+
+
+/* ay_npt_collapseselp:
+ *  collapse selected points
+ */
+int
+ay_npt_collapseselp(ay_object *o)
+{
+ int ay_status = AY_OK;
+ ay_nurbpatch_object *np = NULL;
+ ay_mpoint_object *new = NULL, *p = NULL, *t = NULL, **last = NULL;
+ ay_point_object *selp = NULL;
+ double *first = NULL;
+ int count = 0, i, found = AY_FALSE;
+ char fname[] = "collapseselp";
+
+  if(!o)
+    return AY_OK;
+
+  if(o->type != AY_IDNPATCH)
+    return AY_ERROR;
+
+  np = (ay_nurbpatch_object *)o->refine;
+
+  selp = o->selp;
+
+  /* count points to collapse */
+  while(selp)
+    {
+      count++;
+      selp = selp->next;
+    }
+
+  if((!o->selp) || (count < 2))
+    {
+      ay_error(AY_ERROR, fname, "Select (<t>ag) atleast two points first!");
+      return AY_ERROR;
+    }
+
+  if(!(new = calloc(1, sizeof(ay_mpoint_object))))
+    return AY_EOMEM;
+  if(!(new->points = calloc(count, sizeof(double *))))
+    { free(new); return AY_EOMEM; }
+
+  /* fill mpoint */
+  selp = o->selp;
+  i = 0;
+  first = selp->point;
+  while(selp)
+    {
+      new->points[i] = selp->point;
+      i++;
+      if(selp->homogenous)
+	memcpy(selp->point, first, 4*sizeof(double));
+      else
+	memcpy(selp->point, first, 3*sizeof(double));
+
+      selp = selp->next;
+    } /* while */
+  new->multiplicity = count;
+
+  /* find and delete all mpoints eventually
+     containing a selected point */
+  selp = o->selp;
+  while(selp)
+    {
+      p = np->mpoints;
+      last = &(np->mpoints);
+      while(p)
+	{
+	  found = AY_FALSE;
+	  for(i = 0; i < p->multiplicity; i++)
+	    {
+	      if(p->points[i] == selp->point)
+		found = AY_TRUE;
+	    }
+
+	  if(found)
+	    {
+	      *last = p->next;
+	      t = p->next;
+	      free(p->points);
+	      free(p);
+	      p = t;
+	    }
+	  else
+	    {
+	      last = &(p->next);
+	      p = p->next;
+	    } /* if */
+	} /* while */
+      selp = selp->next;
+    } /* while */
+
+  /* link new mpoint */
+  new->next = np->mpoints;
+  np->mpoints = new;
+
+ return ay_status;
+} /* ay_npt_collapseselp */
+
+
+/* ay_npt_explodemp:
+ *  explode selected mpoints
+ */
+int
+ay_npt_explodemp(ay_object *o)
+{
+ int ay_status = AY_OK;
+ ay_nurbpatch_object *np = NULL;
+ ay_mpoint_object *p = NULL, *t = NULL, **last = NULL;
+ ay_point_object *selp = NULL;
+ int found = AY_FALSE, i, err = AY_TRUE;
+ char fname[] = "explodemp";
+
+  if(!o)
+    return AY_OK;
+
+  if(o->type != AY_IDNPATCH)
+    return AY_ERROR;
+
+  np = (ay_nurbpatch_object *)o->refine;
+
+  selp = o->selp;
+
+  if(!selp)
+    {
+      ay_error(AY_ERROR, fname, "Select (<t>ag) some multiple points first!");
+      return AY_ERROR;
+    }
+
+  /* we simply delete all mpoints, that contain a selected point */
+  while(selp)
+    {
+      p = np->mpoints;
+      last = &(np->mpoints);
+      while(p)
+	{
+	  found = AY_FALSE;
+	  for(i = 0; i < p->multiplicity; i++)
+	    {
+	      if(p->points[i] == selp->point)
+		{
+		  found = AY_TRUE;
+		}
+	    } /* for */
+
+	  if(found)
+	    {
+	      *last = p->next;
+	      t = p->next;
+	      free(p->points);
+	      free(p);
+	      p = t;
+	      err = AY_FALSE;
+	    }
+	  else
+	    {
+	      last = &(p->next);
+	      p = p->next;
+	    } /* if */
+	} /* while */
+      selp = selp->next;
+    } /* while */
+
+  if(err)
+    {
+      ay_error(AY_ERROR, fname, "Select (<t>ag) some multiple points first!");
+      ay_status = AY_ERROR;
+    }
+
+ return ay_status;
+} /* ay_npt_explodemp */
+
