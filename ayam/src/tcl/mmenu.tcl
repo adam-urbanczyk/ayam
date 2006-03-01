@@ -343,7 +343,9 @@ $m.npt add command -label "Revert U" -command {
     undo save RevertU; revertU; plb_update; rV}
 $m.npt add command -label "Revert V" -command {
     undo save RevertV; revertV; plb_update; rV}
-$m.nct add command -label "Reset Weights" -command {
+$m.npt add command -label "Close U" -command {
+    undo save closeNPU; closeNPU; plb_update; rV}
+$m.npt add command -label "Reset Weights" -command {
     if { $ay(views) != "" } {
 	undo save ResetWeights
 	[lindex $ay(views) 0].f3D.togl wrpac
