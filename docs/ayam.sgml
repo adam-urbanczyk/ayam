@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>15. Feb 2006
+<date>1. Mar 2006
 <abstract>
 This is the documentation of Ayam (1.9) - a free 3D modeling environment
 for the RenderMan interface.
@@ -518,22 +518,25 @@ The <tt/"File"/ menu deals with standard file operations:<label id="filem">
 <item><tt/"New"/, clears the current scene (deletes all objects) and reloads
 the working environment (if the preference setting
 <tt>"Main/NewLoadsEnv"</tt> is enabled).
+This operation is not undoable!
 
 <item><tt/"Open"/, clears the current scene and closes all views,
 then loads a new scene from disk. All objects from the file
 will be read. Depending on the setting of
 <tt>"Preferences/Main/BakOnReplace"</tt>
 a backup copy of the file that is read will be made before loading.
+This operation is not undoable!
 
-<item><tt/"Insert"/, inserts the objects and views of a ayam file
-into the current scene. All objects from the file
-will be read.
+<item><tt/"Insert"/, inserts the objects and views of an Ayam scene file
+into the current scene. All objects from the file will be read. The new
+objects will be created in the top level of the scene.
+This operation is not undoable!
 
 <item><tt/"Save as"/, saves the current scene asking for a new file name.
 
 <item><tt/"Save"/, saves the scene. If the scene has not been saved before
-(read, you have not given it a file name) you will be asked for
-a file name.
+(read, you have not given it a file name) you will be asked for a file
+name first.
 
 <item><tt>"Import/Mops"</tt>, import a scene from The Mops,
 see section <ref id="impmops" name="Import of Mops Scenes">
@@ -559,12 +562,13 @@ for more information about custom objects.
 
 <item><tt/"Save Prefs"/, save the current preference settings
 to the ayamrc file after making a backup copy of this file (see section
-<ref id="ayamrc" name="Ayamrc File"> for more
-information about this file).
+<ref id="ayamrc" name="Ayamrc File"> for more information about this file).
 
-<item><tt/"1."/,<tt/"2."/,<tt/"3."/,<tt/"4."/, immediately replace the
+<item><tt/"1."/, <tt/"2."/, <tt/"3."/, <tt/"4."/, immediately replace the
 current scene with the one in the menu entry. The menu entries
-are updated and rotated upon successful loading and saving of a scene.
+are updated and rotated upon successful loading and saving of a scene
+so that the first entry always contains the scene that was loaded
+(or saved) last.
 
 <item><tt/"Exit!"/, remove all temporary files, save preferences (if
 the preference setting <tt>"Main/AutoSavePrefs"</tt> is turned on)
@@ -576,14 +580,20 @@ The <tt/"Edit"/ menu contains object and property clipboard
 operations, undo actions, and lets you open the preferences editor:
 <itemize>
 <item><tt/"Copy"/, copies the currently selected object(s) into the clipboard.
+This operation is not undoable!
 
 <item><tt/"Cut"/, moves the currently selected object(s) into the clipboard.
+This operation is not undoable!
 
 <item><tt/"Paste"/, copies the object(s) from the clipboard to the current
 level of the scene. Note that the content of the clipboard remains intact
 after this operation, this means that you can paste multiple times!
-You can move objects out of the clipboard using the menu entry
+You can move objects out of the clipboard (clearing it) using the menu entry
 <tt>"Special/Clipboard/Paste (Move)"</tt>.
+Also note that referenced objects, when moved into the clipboard with
+<tt/"Cut"/, can not be moved out of it using a simple <tt/"Paste"/, use
+<tt>"Special/Clipboard/Paste (Move)"</tt> instead!
+This operation is not undoable!
 
 <item><tt/"Delete"/, removes the selected object(s) from the scene.
 This operation is not undoable!
@@ -661,6 +671,9 @@ also section <ref id="lightobj" name="Light Object">.
 is empty no custom object has been loaded yet. See
 also section <ref id="customobj" name="Custom Object">.
 
+<item><tt/"View"/, a new View window will be opened. See
+also section <ref id="viewobj" name="View Object">.
+
 <item><tt/"Instance"/, create an instance of the currently selected
 object, see section <ref id="instanceobj" name="Instance Object">
 for more information regarding instances.
@@ -668,8 +681,9 @@ for more information regarding instances.
 <item><tt/"Clone"/, create a clone object, see
 section <ref id="cloneobj" name="Clone Object">
 
-<item><tt/"View"/, a new View window will be opened. See
-also section <ref id="viewobj" name="View Object">.
+<item><tt/"Mirror"/, create a clone object, that is immediately
+configured as a mirror, see also
+section <ref id="cloneobj" name="Clone Object">
 
 <item><tt/"Material"/, create a new material. A small dialog box will
 pop up, where you have to specify the name of the new material. See
@@ -1037,6 +1051,10 @@ currently selected objects (and their children) will be drawn.
 
 <item><tt/"Draw Level only"/, if this is enabled, just the
 objects of the current level (and their children) will be drawn.
+
+<item><tt/"Draw Object CS"/, if this is enabled, small coordinate
+systems (three colored lines) will be drawn at the base of each
+objects coordinate system.
 
 <item><tt/"Draw BGImage"/, if this is enabled, a background
 image will be drawn.
@@ -8262,6 +8280,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Draw Level only: <ref id="vmconf" name="view menu entry">
 <item>Draw BGImage: <ref id="vmconf" name="view menu entry">
 <item>Draw Grid: <ref id="vmconf" name="view menu entry">
+<item>Draw Object CS: <ref id="vmconf" name="view menu entry">
 <item>DynamicLoad: <ref id="riprocp" name="riproc attribute">
 </itemize>
 
