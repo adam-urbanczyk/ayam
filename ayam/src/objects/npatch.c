@@ -101,6 +101,9 @@ ay_npatch_deletecb(void *c)
   if(npatch->controlv)
     free(npatch->controlv);
 
+  /* free mpoints */
+  ay_npt_clearmp(npatch);
+
   /* free gluNurbsRenderer */
   if(npatch->no)
     gluDeleteNurbsRenderer(npatch->no);
@@ -114,6 +117,7 @@ ay_npatch_deletecb(void *c)
 int
 ay_npatch_copycb(void *src, void **dst)
 {
+ int ay_status = AY_OK;
  ay_nurbpatch_object *npatch = NULL, *npatchsrc = NULL;
  int kl;
 
@@ -146,6 +150,13 @@ ay_npatch_copycb(void *src, void **dst)
     return AY_EOMEM;
   memcpy(npatch->controlv, npatchsrc->controlv,
 	 4 * npatch->width * npatch->height * sizeof(double));
+
+  /* copy mpoints */
+  npatch->mpoints = NULL;
+  if(npatchsrc->mpoints)
+    {
+      ay_status = ay_npt_recreatemp(npatch);
+    }
 
   *dst = (void *)npatch;
 
@@ -850,6 +861,7 @@ ay_npatch_drawhcb(struct Togl *togl, ay_object *o)
 {
  int width = 0, height = 0, i = 0, a = 0;
  ay_nurbpatch_object *patch = (ay_nurbpatch_object *) o->refine;
+ ay_mpoint_object *mp = NULL;
  GLdouble *ver = NULL;
  double point_size = ay_prefs.handle_size;
 
@@ -868,6 +880,21 @@ ay_npatch_drawhcb(struct Togl *togl, ay_object *o)
     }
   glEnd();
 
+  /* draw mpoints */
+  if(patch->mpoints)
+    {
+      glPointSize((GLfloat)(point_size*1.25));
+      glBegin(GL_POINTS);
+      mp = patch->mpoints;
+      while(mp)
+	{
+	  glVertex3dv((GLdouble *)(mp->points[0]));
+	  mp = mp->next;
+	}
+      glEnd();
+      glPointSize((GLfloat)point_size);
+    }
+
   /* draw arrows */
   ay_draw_arrow(togl, &(ver[width*height*4-8]), &(ver[width*height*4-4]));
 
@@ -879,6 +906,7 @@ int
 ay_npatch_getpntcb(int mode, ay_object *o, double *p)
 {
  ay_nurbpatch_object *npatch = NULL;
+ ay_mpoint_object *mp = NULL;
  double min_dist = ay_prefs.pick_epsilon, dist = 0.0;
  double *pecoord = NULL, **pecoords = NULL, *control = NULL, *c;
  int i = 0, j = 0, a = 0, found = AY_FALSE;
@@ -939,6 +967,30 @@ ay_npatch_getpntcb(int mode, ay_object *o, double *p)
 	    return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
 
 	  ay_point_edit_coords_homogenous = AY_TRUE;
+
+	  if(npatch->mpoints)
+	    {
+	      mp = npatch->mpoints;
+	      while(mp && !found)
+		{
+		  found = AY_FALSE;
+		  for(i = 0; i < mp->multiplicity; i++)
+		    {
+		      if(mp->points[i] == pecoord)
+			{
+			  found = AY_TRUE;
+			  ay_point_edit_coords_number = mp->multiplicity;
+			  if(!(ay_point_edit_coords = calloc(mp->multiplicity,
+							     sizeof(double*))))
+			    return AY_EOMEM;
+			  memcpy(ay_point_edit_coords, mp->points,
+				 mp->multiplicity * sizeof(double *));
+			} /* if */
+		    } /* for */
+
+		  mp = mp->next;
+		} /* while */
+	    } /* if */
 
 	  if(!found)
 	    {
@@ -1004,7 +1056,7 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  int new_uorder, new_width, new_uknot_type, uknots_modified = 0;
  int new_vorder, new_height, new_vknot_type, vknots_modified = 0;
  double *nknotv = NULL, *olduknotv = NULL, *oldvknotv = NULL;
- int updateKnots = AY_FALSE;
+ int updateKnots = AY_FALSE, updateMPs = AY_TRUE;
  int knotc, i;
  char **knotv;
 
@@ -1040,6 +1092,10 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_SetStringObj(ton,"Knot-Type_V",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &new_vknot_type);
+
+  Tcl_SetStringObj(ton,"CreateMP",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &(npatch->createmp));
 
   Tcl_SetStringObj(ton,"Tolerance",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -1319,6 +1375,12 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       Tcl_Free((char *) knotv);
     } /* if */
 
+  if(updateMPs)
+    {
+      ay_status = ay_npt_recreatemp(npatch);
+      if(ay_status)
+	ay_error(AY_ERROR, fname, "Error re-creating MPoints!");
+    }
 
   ay_status = ay_notify_parent();
 
@@ -1398,6 +1460,11 @@ ay_npatch_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 		     TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG |
 		     TCL_GLOBAL_ONLY);
     }
+
+  Tcl_SetStringObj(ton,"CreateMP",-1);
+  to = Tcl_NewIntObj(npatch->createmp);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
 
   Tcl_SetStringObj(ton,"Tolerance",-1);
   to = Tcl_NewDoubleObj(npatch->glu_sampling_tolerance);
@@ -1506,6 +1573,17 @@ ay_npatch_readcb(FILE *fileptr, ay_object *o)
   fscanf(fileptr,"%lg\n",&(npatch->glu_sampling_tolerance));
   fscanf(fileptr,"%d\n",&(npatch->glu_display_mode));
 
+  if(ay_read_version >= 9)
+    {
+      fscanf(fileptr,"%d\n",&(npatch->createmp));
+    }
+  else
+    {
+      npatch->createmp = AY_TRUE;
+    }
+
+  ay_npt_recreatemp(npatch);
+
   npatch->is_rat = ay_npt_israt(npatch);
 
   o->refine = npatch;
@@ -1556,6 +1634,8 @@ ay_npatch_writecb(FILE *fileptr, ay_object *o)
 
   fprintf(fileptr, "%g\n", npatch->glu_sampling_tolerance);
   fprintf(fileptr, "%d\n", npatch->glu_display_mode);
+
+  fprintf(fileptr, "%d\n", npatch->createmp);
 
  return AY_OK;
 } /* ay_npatch_writecb */
@@ -1804,6 +1884,7 @@ ay_npatch_providecb(ay_object *o, unsigned int type, ay_object **result)
  return ay_status;
 } /* ay_npatch_providecb */
 
+
 int
 ay_npatch_convertcb(ay_object *o, int in_place)
 {
@@ -1831,6 +1912,7 @@ ay_npatch_convertcb(ay_object *o, int in_place)
 
  return ay_status;
 } /* ay_npatch_convertcb */
+
 
 int
 ay_npatch_init(Tcl_Interp *interp)
