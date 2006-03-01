@@ -129,6 +129,8 @@ char *ay_umm_tagtype;
 
 char *ay_vmm_tagtype;
 
+char *ay_bp_tagtype;
+
 static char *ay_log = "/tmp/ay.log";
 
 int ay_wrib_framenum = 0;
@@ -413,6 +415,9 @@ ay_init(Tcl_Interp *interp)
 
   /* initialize NURBS knots module */
   ay_knots_init(interp);
+
+  /* register BP (Bevel Parameters) tag type */
+  ay_tags_register(interp, "BP", &ay_bp_tagtype);
 
   /* create root object */
   if((ay_status = ay_object_create(AY_IDROOT, &ay_root)))

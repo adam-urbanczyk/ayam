@@ -1013,7 +1013,7 @@ extern char *ay_dns_tagtype;
 extern char *ay_dns_tagname;
 extern char *ay_umm_tagtype;
 extern char *ay_vmm_tagtype;
-
+extern char *ay_bp_tagtype;
 
 extern unsigned int ay_current_glname;
 extern int ay_wrib_framenum;
