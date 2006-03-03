@@ -5984,36 +5984,6 @@ ay_npt_closeu(ay_nurbpatch_object *np)
 } /* ay_npt_closeu */
 
 
-/* ay_npt_closev:
- *
- */
-int
-ay_npt_closev(ay_nurbpatch_object *np)
-{
- double *controlv, *end;
- int i, stride = 4;
-
-  if(np->height >= ((np->vorder-1)*2))
-    {
-      controlv = np->controlv;
-      end = &(controlv[np->width*np->height-(np->vorder-1)*stride]);
-      
-      for(i = 0; i < (np->vorder-1); i++)
-	{
-	  memcpy(end, controlv, np->height*stride*sizeof(double));
-	  controlv += np->height*stride;
-	  end += np->height*stride;
-	}
-    }
-  else
-    {
-      return AY_ERROR;
-    } /* if */
-
- return AY_OK;
-} /* ay_npt_closev */
-
-
 /* ay_npt_closeutcmd:
  *
  */
@@ -6099,6 +6069,113 @@ ay_npt_closeutcmd(ClientData clientData, Tcl_Interp *interp,
  return TCL_OK;
 } /* ay_npt_closeutcmd */
 
+
+/* ay_npt_closev:
+ *
+ */
+int
+ay_npt_closev(ay_nurbpatch_object *np)
+{
+ double *controlv, *a, *b;
+ int ai, bi, i, j, stride = 4;
+
+  if(np->height >= ((np->vorder-1)*2))
+    {
+      controlv = np->controlv;
+      for(i = 0; i < np->width; i++)
+	{
+	  b = &(controlv[i*np->height*stride]);
+	  a = b+((np->height-(np->vorder-1))*stride);
+
+	  memcpy(a, b, (np->vorder-1)*stride*sizeof(double));
+
+	} /* for */
+    }
+  else
+    {
+      return AY_ERROR;
+    } /* if */
+
+ return AY_OK;
+} /* ay_npt_closev */
+
+
+/* ay_npt_closevtcmd:
+ *
+ */
+int
+ay_npt_closevtcmd(ClientData clientData, Tcl_Interp *interp,
+		  int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ char fname[] = "closeNPV";
+ int stride = 4, i;
+ double *a, *b;
+ double *newcontrolv = NULL, *knotv = NULL, *tknotv;
+ ay_list_object *sel = ay_selection;
+ ay_nurbpatch_object *np = NULL;
+
+  while(sel)
+    {
+      if(!sel->object)
+	return TCL_OK;
+
+      switch(sel->object->type)
+	{
+	case AY_IDNPATCH:
+	  if(sel->object->selp)
+	    ay_selp_clear(sel->object);
+
+	  np = (ay_nurbpatch_object *)sel->object->refine;
+
+	  if(!(newcontrolv = calloc(np->width *
+				    (np->height + (np->vorder-1)) * stride,
+				     sizeof(double))))
+	    {
+	      ay_error(AY_EOMEM, fname, NULL);
+	      return TCL_OK;
+	    }
+
+	  a = &(newcontrolv[0]);
+	  b = &(np->controlv[0]);
+	  for(i = 0; i < np->width; i++)
+	    {
+	      memcpy(a, b, np->height * stride * sizeof(double));
+	      a += (np->height + (np->vorder-1)) * stride;
+	      b += np->height * stride;
+	    }
+
+	  free(np->controlv);
+	  np->controlv = newcontrolv;
+
+	  np->height += (np->vorder-1);
+
+	  tknotv = np->uknotv;
+	  np->uknotv = NULL;
+	  np->vknot_type = AY_KTBSPLINE;
+	  ay_status = ay_knots_createnp(np);
+	  free(np->uknotv);
+	  np->uknotv = tknotv;
+
+	  ay_status = ay_npt_closev(np);
+
+	  if(ay_status)
+	    {
+	      ay_error(AY_ERROR, fname, "Error closing object!");
+	    }
+
+	  ay_status = ay_npt_recreatemp(np);
+
+	  break;
+	default:
+	  ay_error(AY_ERROR, fname, "Do not know how to close this object!");
+	  break;
+	} /* switch */
+      sel = sel->next;
+    } /* while */
+
+ return TCL_OK;
+} /* ay_npt_closevtcmd */
 
 /* ay_npt_clearmp:
  *  delete all mpoints from patch <np>

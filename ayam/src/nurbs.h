@@ -313,26 +313,26 @@ int ay_npt_create(int uorder, int vorder, int width, int height,
 		  ay_nurbpatch_object **patchptr);
 
 int ay_npt_revolve(ay_object *o, double arc, int sections, int order,
-		   ay_nurbpatch_object **patch);
+		   ay_nurbpatch_object **revolution);
 
 int ay_npt_drawtrimcurve(struct Togl *togl, ay_object *o, GLUnurbsObj *no);
 
 int ay_npt_resizearrayw(double **controlvptr, int stride,
 			int width, int height, int new_width);
 
-int ay_npt_resizew(ay_nurbpatch_object *patch, int new_width);
+int ay_npt_resizew(ay_nurbpatch_object *np, int new_width);
 
 int ay_npt_resizearrayh(double **controlvptr, int stride,
 			int width, int height, int new_height);
 
-int ay_npt_resizeh(ay_nurbpatch_object *patch, int new_height);
+int ay_npt_resizeh(ay_nurbpatch_object *np, int new_height);
 
-int ay_npt_revertu(ay_nurbpatch_object *patch);
+int ay_npt_revertu(ay_nurbpatch_object *np);
 
 int ay_npt_revertutcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
 
-int ay_npt_revertv(ay_nurbpatch_object *patch);
+int ay_npt_revertv(ay_nurbpatch_object *np);
 
 int ay_npt_revertvtcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
@@ -344,9 +344,9 @@ int ay_npt_swapuv(ay_nurbpatch_object *np);
 
 int ay_npt_wribtrimcurves(ay_object *o);
 
-int ay_npt_crtcobbsphere(ay_nurbpatch_object **patch);
+int ay_npt_crtcobbsphere(ay_nurbpatch_object **cobbsphere);
 
-int ay_npt_crtnsphere(double radius, ay_nurbpatch_object **patch);
+int ay_npt_crtnsphere(double radius, ay_nurbpatch_object **nsphere);
 
 int ay_npt_crtnspheretcmd(ClientData clientData, Tcl_Interp *interp,
 			  int argc, char *argv[]);
@@ -361,27 +361,28 @@ int ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
 			       int argc, char *argv[]);
 
 int ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
-		 int rotate, int closed, ay_nurbpatch_object **patch,
+		 int rotate, int closed, ay_nurbpatch_object **sweep,
 		 int has_start_cap, ay_object **start_cap,
 		 int has_end_cap, ay_object **end_cap);
+
 int ay_npt_closedsweep(ay_object *o1, ay_object *o2, ay_object *o3,
-		       int sections,
-		       int rotate, ay_nurbpatch_object **patch);
+		       int sections, int rotate,
+		       ay_nurbpatch_object **closedsweep);
 
 int ay_npt_birail1(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
-		   int closed, ay_nurbpatch_object **patch,
+		   int closed, ay_nurbpatch_object **birail1,
 		   int has_start_cap, ay_object **start_cap,
 		   int has_end_cap, ay_object **end_cap);
 
 int ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
 		   ay_object *o5,
-		   int sections, int closed, ay_nurbpatch_object **patch,
+		   int sections, int closed, ay_nurbpatch_object **birail2,
 		   int has_start_cap, ay_object **start_cap,
 		   int has_end_cap, ay_object **end_cap);
 
-int ay_npt_interpolateu(ay_nurbpatch_object *patch, int order);
+int ay_npt_interpolateu(ay_nurbpatch_object *np, int order);
 
-int ay_npt_interpolatev(ay_nurbpatch_object *patch, int order);
+int ay_npt_interpolatev(ay_nurbpatch_object *np, int order);
 
 int ay_npt_skinu(ay_object *curves, int order, int knot_type,
 		 int interpolate, ay_nurbpatch_object **skin);
@@ -390,13 +391,13 @@ int ay_npt_skinv(ay_object *curves, int order, int knot_type,
 		 int interpolate, ay_nurbpatch_object **skin);
 
 int ay_npt_extrude(double height, ay_object *o,
-		   ay_nurbpatch_object **patch);
+		   ay_nurbpatch_object **extrusion);
 
 int ay_npt_gettangentfromcontrol(int closed, int n, int p,
 				 int stride, double *P, int a, double *t);
 
 int ay_npt_bevel(int type, double radius, int align, ay_object *o,
-		 ay_nurbpatch_object **patch);
+		 ay_nurbpatch_object **bevel);
 
 int ay_npt_createcap(double z, ay_nurbcurve_object *curve,
 		     double *ominx, double *omaxx,
@@ -435,13 +436,18 @@ int ay_npt_extractnc(ay_object *npatch, int side, double param,
 		     int apply_trafo,
 		     ay_nurbcurve_object **result);
 
-int ay_npt_israt(ay_nurbpatch_object *patch);
+int ay_npt_israt(ay_nurbpatch_object *np);
 
 int ay_npt_istrimmed(ay_object *o, int mode);
 
 int ay_npt_closeu(ay_nurbpatch_object *np);
 
 int ay_npt_closeutcmd(ClientData clientData, Tcl_Interp *interp,
+		      int argc, char *argv[]);
+
+int ay_npt_closev(ay_nurbpatch_object *np);
+
+int ay_npt_closevtcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
 
 void ay_npt_clearmp(ay_nurbpatch_object *np);
