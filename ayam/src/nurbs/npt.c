@@ -95,7 +95,7 @@ ay_npt_create(int uorder, int vorder, int width, int height,
  */
 int
 ay_npt_revolve(ay_object *o, double arc, int sections, int order,
-	       ay_nurbpatch_object **patch)
+	       ay_nurbpatch_object **revolution)
 {
  int ay_status = AY_OK;
  ay_nurbpatch_object *new = NULL;
@@ -247,7 +247,7 @@ ay_npt_revolve(ay_object *o, double arc, int sections, int order,
     free(tcontrolv);
   tcontrolv = NULL;
 
-  *patch = new;
+  *revolution = new;
 
  return ay_status;
 } /* ay_npt_revolve */
@@ -341,7 +341,10 @@ ay_npt_drawtrimcurve(struct Togl *togl, ay_object *o, GLUnurbsObj *no)
 
 
 /* ay_npt_resizearrayw:
- *  change width of a 2D control point array
+ *  change width of a 2D control point array <controlvptr> with
+ *  stride <stride>, width <width>, and height <height> to new
+ *  width <new_width> inserting new control points obtained by
+ *  linear interpolation
  */
 int
 ay_npt_resizearrayw(double **controlvptr, int stride,
@@ -459,25 +462,28 @@ ay_npt_resizearrayw(double **controlvptr, int stride,
  *  change width of a NURBPatch
  */
 int
-ay_npt_resizew(ay_nurbpatch_object *patch, int new_width)
+ay_npt_resizew(ay_nurbpatch_object *np, int new_width)
 {
  int ay_status = AY_OK;
 
-  if(new_width == patch->width)
+  if(new_width == np->width)
     return ay_status;
 
-  ay_status = ay_npt_resizearrayw(&(patch->controlv), 4,
-				  patch->width, patch->height,
+  ay_status = ay_npt_resizearrayw(&(np->controlv), 4,
+				  np->width, np->height,
 				  new_width);
 
-  patch->width = new_width;
+  np->width = new_width;
 
  return ay_status;
 } /* ay_npt_resizew */
 
 
 /* ay_npt_resizearrayh:
- *  change height of a 2D control point array
+ *  change height of a 2D control point array <controlvptr> with
+ *  stride <stride>, width <width>, and height <height> to new
+ *  height <new_height> inserting new control points obtained by
+ *  linear interpolation
  */
 int
 ay_npt_resizearrayh(double **controlvptr, int stride,
@@ -590,18 +596,18 @@ ay_npt_resizearrayh(double **controlvptr, int stride,
  *  change height of a NURBPatch
  */
 int
-ay_npt_resizeh(ay_nurbpatch_object *patch, int new_height)
+ay_npt_resizeh(ay_nurbpatch_object *np, int new_height)
 {
  int ay_status = AY_OK;
 
-  if(new_height == patch->height)
+  if(new_height == np->height)
     return ay_status;
 
-  ay_status = ay_npt_resizearrayh(&(patch->controlv), 4,
-				  patch->width, patch->height,
+  ay_status = ay_npt_resizearrayh(&(np->controlv), 4,
+				  np->width, np->height,
 				  new_height);
 
-  patch->height = new_height;
+  np->height = new_height;
 
  return ay_status;
 } /* ay_npt_resizeh */
@@ -684,26 +690,26 @@ ay_npt_swapuv(ay_nurbpatch_object *np)
  *
  */
 int
-ay_npt_revertu(ay_nurbpatch_object *patch)
+ay_npt_revertu(ay_nurbpatch_object *np)
 {
  int ay_status = AY_OK;
  int i, j, ii, jj, stride = 4;
  double t[4];
 
-  for(i = 0; i < patch->height; i++)
+  for(i = 0; i < np->height; i++)
     {
-      for(j = 0; j < patch->width/2; j++)
+      for(j = 0; j < np->width/2; j++)
 	{
-	  ii = (j*patch->height+i)*stride;
-	  jj = ((patch->width-1-j)*patch->height+i)*stride;
-	  memcpy(t, &(patch->controlv[ii]), stride*sizeof(double));
-	  memcpy(&(patch->controlv[ii]), &(patch->controlv[jj]),
+	  ii = (j*np->height+i)*stride;
+	  jj = ((np->width-1-j)*np->height+i)*stride;
+	  memcpy(t, &(np->controlv[ii]), stride*sizeof(double));
+	  memcpy(&(np->controlv[ii]), &(np->controlv[jj]),
 		 stride*sizeof(double));
-	  memcpy(&(patch->controlv[jj]), t, stride*sizeof(double));
+	  memcpy(&(np->controlv[jj]), t, stride*sizeof(double));
 	}
     } /* for */
 
-  ay_status = ay_npt_recreatemp(patch);
+  ay_status = ay_npt_recreatemp(np);
 
  return ay_status;
 } /* ay_npt_revertu */
@@ -773,28 +779,28 @@ ay_npt_revertutcmd(ClientData clientData, Tcl_Interp *interp,
  *
  */
 int
-ay_npt_revertv(ay_nurbpatch_object *patch)
+ay_npt_revertv(ay_nurbpatch_object *np)
 {
  int ay_status = AY_OK;
  int i, j, ii, jj, stride = 4;
  double t[4];
 
-  for(i = 0; i < patch->width; i++)
+  for(i = 0; i < np->width; i++)
     {
-      ii = i*patch->height*stride;
-      jj = ii + ((patch->height-1)*stride);
-      for(j = 0; j < patch->height/2; j++)
+      ii = i*np->height*stride;
+      jj = ii + ((np->height-1)*stride);
+      for(j = 0; j < np->height/2; j++)
 	{
-	  memcpy(t, &(patch->controlv[ii]), stride*sizeof(double));
-	  memcpy(&(patch->controlv[ii]), &(patch->controlv[jj]),
+	  memcpy(t, &(np->controlv[ii]), stride*sizeof(double));
+	  memcpy(&(np->controlv[ii]), &(np->controlv[jj]),
 		 stride*sizeof(double));
-	  memcpy(&(patch->controlv[jj]), t, stride*sizeof(double));
+	  memcpy(&(np->controlv[jj]), t, stride*sizeof(double));
 	  ii += stride;
 	  jj -= stride;
 	}
     } /* for */
 
-  ay_status = ay_npt_recreatemp(patch);
+  ay_status = ay_npt_recreatemp(np);
 
  return ay_status;
 } /* ay_npt_revertv */
@@ -1229,7 +1235,7 @@ ay_npt_wribtrimcurves(ay_object *o)
  *  by G. Farin
  */
 int
-ay_npt_crtcobbsphere(ay_nurbpatch_object **patch)
+ay_npt_crtcobbsphere(ay_nurbpatch_object **cobbsphere)
 {
  int ay_status = AY_OK;
  ay_nurbpatch_object *new = NULL;
@@ -1376,7 +1382,7 @@ ay_npt_crtcobbsphere(ay_nurbpatch_object **patch)
       return ay_status;
     }
 
-  *patch = new;
+  *cobbsphere = new;
 
  return ay_status;
 } /* ay_npt_crtcobbsphere */
@@ -1386,13 +1392,13 @@ ay_npt_crtcobbsphere(ay_nurbpatch_object **patch)
  *  create a simple NURBS sphere by revolving a half circle
  */
 int
-ay_npt_crtnsphere(double radius, ay_nurbpatch_object **patch)
+ay_npt_crtnsphere(double radius, ay_nurbpatch_object **nsphere)
 {
  int ay_status = AY_OK;
  char fname[] = "crtnsphere";
  ay_object *newc = NULL;
 
-  if(!patch)
+  if(!nsphere)
     return AY_ENULL;
 
   if(!(newc = calloc(1, sizeof(ay_object))))
@@ -1414,7 +1420,7 @@ ay_npt_crtnsphere(double radius, ay_nurbpatch_object **patch)
     }
 
   /* second, we revolve the half circle around the Y axis */
-  ay_status = ay_npt_revolve(newc, 360.0, 0, 0, patch);
+  ay_status = ay_npt_revolve(newc, 360.0, 0, 0, nsphere);
 
   ay_object_delete(newc);
 
@@ -1586,11 +1592,11 @@ ay_npt_splittocurvestcmd(ClientData clientData, Tcl_Interp *interp,
   /* parse args */
   if(argc != 2)
     {
-      ay_error(AY_EARGS,fname,"u|v");
+      ay_error(AY_EARGS, fname, "u|v");
       return TCL_OK;
     }
 
-  if(!strcmp(argv[1],"u"))
+  if(!strcmp(argv[1], "u"))
     u = 1;
 
   src = sel->object;
@@ -1903,7 +1909,7 @@ ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
  */
 int
 ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
-	     int rotate, int closed, ay_nurbpatch_object **patch,
+	     int rotate, int closed, ay_nurbpatch_object **sweep,
 	     int has_start_cap, ay_object **start_cap,
 	     int has_end_cap, ay_object **end_cap)
 {
@@ -1924,7 +1930,7 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
  double quat[4] = {0};
  double *cscv = NULL, *trcv = NULL, *sfcv = NULL, *rots = NULL;
 
-  if(!o1 || !o2 || !patch)
+  if(!o1 || !o2 || !sweep)
     return AY_ENULL;
 
   if((o1->type != AY_IDNCURVE) || (o2->type != AY_IDNCURVE) ||
@@ -2238,7 +2244,7 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
   new->is_rat = ay_npt_israt(new);
 
   /* return result */
-  *patch = new;
+  *sweep = new;
 
   /* clean up */
  cleanup:
@@ -2265,7 +2271,7 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
  */
 int
 ay_npt_closedsweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
-		   int rotate, ay_nurbpatch_object **patch)
+		   int rotate, ay_nurbpatch_object **closedsweep)
 {
  int ay_status = AY_OK;
  ay_object *curve = NULL;
@@ -2284,7 +2290,7 @@ ay_npt_closedsweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
  double quat[4] = {0};
  double *cscv = NULL, *trcv = NULL, *sfcv = NULL, *rots = NULL;
 
-  if(!o1 || !o2 || !patch)
+  if(!o1 || !o2 || !closedsweep)
     return AY_ENULL;
 
   if((o1->type != AY_IDNCURVE) || (o2->type != AY_IDNCURVE) ||
@@ -2486,7 +2492,7 @@ ay_npt_closedsweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
   ay_status = ay_npt_closeu(new);
 
   /* return result */
-  *patch = new;
+  *closedsweep = new;
 
   /* clean up */
  cleanup:
@@ -2510,7 +2516,7 @@ ay_npt_closedsweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
  */
 int
 ay_npt_birail1(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
-	       int closed, ay_nurbpatch_object **patch,
+	       int closed, ay_nurbpatch_object **birail1,
 	       int has_start_cap, ay_object **start_cap,
 	       int has_end_cap, ay_object **end_cap)
 {
@@ -2531,7 +2537,7 @@ ay_npt_birail1(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
  double *cscv = NULL, *r1cv = NULL, *r2cv = NULL, *rots = NULL;
  double scalx, scaly, scalz;
 
-  if(!o1 || !o2 || !o3 || !patch ||
+  if(!o1 || !o2 || !o3 || !birail1 ||
      (has_start_cap && !start_cap) || (has_end_cap && !end_cap))
     return AY_ENULL;
 
@@ -2853,7 +2859,7 @@ ay_npt_birail1(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
     } /* if */
 
   /* return result */
-  *patch = new;
+  *birail1 = new;
 
   new = NULL;
   controlv = NULL;
@@ -2893,7 +2899,7 @@ cleanup:
 int
 ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
 	       ay_object *o5,
-	       int sections, int closed, ay_nurbpatch_object **patch,
+	       int sections, int closed, ay_nurbpatch_object **birail2,
 	       int has_start_cap, ay_object **start_cap,
 	       int has_end_cap, ay_object **end_cap)
 {
@@ -2919,7 +2925,7 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
 
   stride = 4;
 
-  if(!o1 || !o2 || !o3 || !o4 || !patch ||
+  if(!o1 || !o2 || !o3 || !o4 || !birail2 ||
      (has_start_cap && !start_cap) || (has_end_cap && !end_cap))
     return AY_ENULL;
 
@@ -3417,7 +3423,7 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
 
 
   /* return result */
-  *patch = new;
+  *birail2 = new;
 
   new = NULL;
   controlv = NULL;
@@ -3463,7 +3469,7 @@ cleanup:
  *
  */
 int
-ay_npt_interpolateu(ay_nurbpatch_object *patch, int order)
+ay_npt_interpolateu(ay_nurbpatch_object *np, int order)
 {
  int ay_status = AY_OK;
  char fname[] = "npt_interpolateu";
@@ -3471,10 +3477,10 @@ ay_npt_interpolateu(ay_nurbpatch_object *patch, int order)
  double *uk = NULL, *d = NULL, *Pw = NULL, v[3] = {0};
  double *U = NULL, *Q = NULL;
 
-  K = patch->width;
-  N = patch->height;
+  K = np->width;
+  N = np->height;
   stride = 4;
-  Pw = patch->controlv;
+  Pw = np->controlv;
   pu = order-1;
 
   if(!(uk = calloc(K, sizeof(double))))
@@ -3485,7 +3491,7 @@ ay_npt_interpolateu(ay_nurbpatch_object *patch, int order)
       free(uk); return AY_EOMEM;
     }
 
-  if(!(U = calloc(K+patch->uorder, sizeof(double))))
+  if(!(U = calloc(K+np->uorder, sizeof(double))))
     {
       free(uk); free(d); return AY_EOMEM;
     }
@@ -3582,10 +3588,10 @@ ay_npt_interpolateu(ay_nurbpatch_object *patch, int order)
 	}
     }
 
-  free(patch->uknotv);
-  patch->uknotv = U;
-  patch->uknot_type = AY_KTCUSTOM;
-  patch->uorder = pu+1;
+  free(np->uknotv);
+  np->uknotv = U;
+  np->uknot_type = AY_KTCUSTOM;
+  np->uorder = pu+1;
 
   free(uk);
   free(d);
@@ -3600,7 +3606,7 @@ ay_npt_interpolateu(ay_nurbpatch_object *patch, int order)
  *
  */
 int
-ay_npt_interpolatev(ay_nurbpatch_object *patch, int order)
+ay_npt_interpolatev(ay_nurbpatch_object *np, int order)
 {
  int ay_status = AY_OK;
  char fname[] = "npt_interpolatev";
@@ -3608,11 +3614,11 @@ ay_npt_interpolatev(ay_nurbpatch_object *patch, int order)
  double *vk = NULL, *d = NULL, *Pw = NULL, v[3] = {0};
  double *V = NULL;
 
-  K = patch->width;
-  N = patch->height;
+  K = np->width;
+  N = np->height;
   stride = 4;
-  Pw = patch->controlv;
-  pv = patch->vorder-1;
+  Pw = np->controlv;
+  pv = np->vorder-1;
 
   if(!(vk = calloc(N, sizeof(double))))
     return AY_EOMEM;
@@ -3622,7 +3628,7 @@ ay_npt_interpolatev(ay_nurbpatch_object *patch, int order)
       free(vk); return AY_EOMEM;
     }
 
-  if(!(V = calloc(N+patch->vorder, sizeof(double))))
+  if(!(V = calloc(N+np->vorder, sizeof(double))))
     {
       free(vk); free(d); return AY_EOMEM;
     }
@@ -3694,17 +3700,17 @@ ay_npt_interpolatev(ay_nurbpatch_object *patch, int order)
       ind = i*N*stride;
 
       ay_status = ay_nb_GlobalInterpolation4D(N-1,
-			&(patch->controlv[ind]), vk, V, pv);
+			&(np->controlv[ind]), vk, V, pv);
 
       if(ay_status)
 	{ free(d); free(vk); free(V); return ay_status; }
 
     } /* for */
 
-  free(patch->vknotv);
-  patch->vknotv = V;
-  patch->vknot_type = AY_KTCUSTOM;
-  patch->vorder = pv+1;
+  free(np->vknotv);
+  np->vknotv = V;
+  np->vknot_type = AY_KTCUSTOM;
+  np->vorder = pv+1;
 
   free(vk);
   free(d);
@@ -4051,7 +4057,7 @@ cleanup:
  *
  */
 int
-ay_npt_extrude(double height, ay_object *o, ay_nurbpatch_object **patch)
+ay_npt_extrude(double height, ay_object *o, ay_nurbpatch_object **extrusion)
 {
  int ay_status = AY_OK;
  ay_nurbpatch_object *new = NULL;
@@ -4062,7 +4068,7 @@ ay_npt_extrude(double height, ay_object *o, ay_nurbpatch_object **patch)
  int j = 0, a = 0, b = 0;
  double m[16], point[4] = {0};
 
-  if(!o)
+  if(!o || !extrusion)
     return AY_OK;
 
   if(o->type != AY_IDNCURVE)
@@ -4136,7 +4142,7 @@ ay_npt_extrude(double height, ay_object *o, ay_nurbpatch_object **patch)
 
   new->controlv = controlv;
 
-  *patch = new;
+  *extrusion = new;
 
  return ay_status;
 } /* ay_npt_extrude */
@@ -4239,7 +4245,7 @@ ay_npt_gettangentfromcontrol(int closed, int n, int p,
 
 
 /* ay_npt_bevel:
- *  create a bevel in <patch> from a planar closed NURB curve <o>;
+ *  create a bevel in <bevel> from a planar closed NURB curve <o>;
  *  direction of curve defines, whether bevel rounds inwards or outwards;
  *  type: 0 - round (quarter circle), 1 - linear, 2 - ridge
  *  radius: radius of the bevel
@@ -4248,7 +4254,7 @@ ay_npt_gettangentfromcontrol(int closed, int n, int p,
  */
 int
 ay_npt_bevel(int type, double radius, int align, ay_object *o,
-	     ay_nurbpatch_object **patch)
+	     ay_nurbpatch_object **bevel)
 {
  int ay_status = AY_OK;
  ay_nurbpatch_object *new = NULL;
@@ -4265,10 +4271,10 @@ ay_npt_bevel(int type, double radius, int align, ay_object *o,
  double m[16], mi[16], point[4] = {0};
  double mx, my, mz;
 
-  if(!o || !patch)
+  if(!o || !bevel)
     return AY_ENULL;
 
-  if(!o->type == AY_IDNPATCH)
+  if(o->type != AY_IDNPATCH)
     return AY_ERROR;
 
   curve = (ay_nurbcurve_object *)o->refine;
@@ -4630,7 +4636,7 @@ ay_npt_bevel(int type, double radius, int align, ay_object *o,
 
   new->controlv = controlv;
 
-  *patch = new;
+  *bevel = new;
 
   /* clean-up */
   if(tccontrolv)
@@ -5643,14 +5649,14 @@ ay_npt_gordonwc(ay_object *g)
 
 
 /* ay_npt_extractnc:
- *  extract a NURBS curve from the NURBS patch <npatch>
+ *  extract a NURBS curve from the NURBS patch <o>
  *  side: specifies extraction of a boundary curve (0-3) or of a curve at
  *   a specific parametric value (4 - along u dimension, 5 - along v dimension)
  *  param: parametric value at which curve is extracted; this parameter is
  *   ignored for the extraction of boundary curves
  */
 int
-ay_npt_extractnc(ay_object *npatch, int side, double param, int apply_trafo,
+ay_npt_extractnc(ay_object *o, int side, double param, int apply_trafo,
 		 ay_nurbcurve_object **result)
 {
  int ay_status = AY_OK;
@@ -5659,16 +5665,16 @@ ay_npt_extractnc(ay_object *npatch, int side, double param, int apply_trafo,
  double *cv, m[16], *Qw = NULL, *UVQ = NULL;
  int stride = 4, i, a, k = 0, s = 0, r = 0;
 
-  if(!npatch || !result)
+  if(!o || !result)
     return AY_ENULL;
 
-  if(!npatch->type == AY_IDNPATCH)
+  if(o->type != AY_IDNPATCH)
     return AY_ERROR;
 
   if(!(nc = calloc(1, sizeof(ay_nurbcurve_object))))
     return AY_EOMEM;
 
-  np = (ay_nurbpatch_object *)npatch->refine;
+  np = (ay_nurbpatch_object *)o->refine;
 
   switch(side)
     {
@@ -5699,7 +5705,7 @@ ay_npt_extractnc(ay_object *npatch, int side, double param, int apply_trafo,
       goto cleanup;
     } /* switch */
 
-  ay_trafo_creatematrix(npatch, m);
+  ay_trafo_creatematrix(o, m);
 
   if(!(nc->knotv = calloc(nc->length+nc->order, sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
@@ -5878,18 +5884,18 @@ cleanup:
  *
  */
 int
-ay_npt_israt(ay_nurbpatch_object *patch)
+ay_npt_israt(ay_nurbpatch_object *np)
 {
  int i, j;
  double *p;
 
-  if(!patch)
+  if(!np)
     return AY_FALSE;
 
-  p = &(patch->controlv[3]);
-  for(i = 0; i < patch->width; i++)
+  p = &(np->controlv[3]);
+  for(i = 0; i < np->width; i++)
     {
-      for(j = 0; j < patch->height; j++)
+      for(j = 0; j < np->height; j++)
 	{
 	  if((fabs(*p) < (1.0-AY_EPSILON)) || (fabs(*p) > (1.0+AY_EPSILON)))
 	    return AY_TRUE;
@@ -6067,6 +6073,7 @@ ay_npt_closeutcmd(ClientData clientData, Tcl_Interp *interp,
 	  */
 
 	  tknotv = np->vknotv;
+	  np->vknotv = NULL;
 	  np->uknot_type = AY_KTBSPLINE;
 	  ay_status = ay_knots_createnp(np);
 	  free(np->vknotv);
