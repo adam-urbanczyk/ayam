@@ -5808,9 +5808,9 @@ This tool does not change the geometry of the curves.
 <p>
 <itemize>
 <item>Arguments: The collapse tool expects a selected NURBS curve
-and a number of selected (tagged) control points (see section
-<ref id="selac" name="Selecting Points"> for information on how
-to select (tag) control points).
+or NURBS patch and a number of selected (tagged) control points
+(see section <ref id="selac" name="Selecting Points"> for information
+on how to select (tag) control points).
 <item>Operation: The selected control points will be made a
 single multiple point, all points will get the coordinate values
 of the last tagged point.
@@ -5820,16 +5820,19 @@ of the last tagged point.
 <p>
 <itemize>
 <item>Arguments: The explode tool expects a selected NURBS curve
-and a number of selected (tagged) multiple points (see section
-<ref id="selac" name="Selecting Points"> for information on how
-to select (tag) control points).
+or NURBS patch and a number of selected (tagged) multiple points
+(see section <ref id="selac" name="Selecting Points"> for information
+on how to select (tag) control points).
 <item>Operation: The points forming the selected multiple points will
 be made to simple points again and may be edited separately.
 <item>Note that even though you might have exploded some multiple points
 Ayam will re-create them on several occasions like reading
 of a scene, inserting/deleting points, and applying the NURBCurveAttrib
-property if they still have identical coordinate values. In other
-words, you should immediately edit the control points after exploding!
+or NURBPatchAttrib property if all single control points of the multiple
+point(s) still have identical coordinate values (and the <tt/"CreateMP"/
+option of the curve or patch object is activated). You should immediately
+edit the control points after exploding to avoid that they automatically
+collapse to a multiple point again!
 </itemize>
 
 <sect1>The Swap UV Tool<label id="swapuvt">
@@ -7001,8 +7004,8 @@ set row [expr [lindex [grid size .tbw.f] 1] + 1]
 # now display the frame at calculated row, spanning the whole window:
 grid $f -row $row -column 0 -columnspan [lindex [grid size .tbw.f] 0] -sticky we
 # create two buttons inside the frame:
-button $f.b1 -width 5 -text "Coll." -command { collNC; rV; }
-button $f.b2 -width 5 -text "Expl." -command { explNC; rV; }
+button $f.b1 -width 5 -text "Coll." -command { collMP; rV; }
+button $f.b2 -width 5 -text "Expl." -command { explMP; rV; }
 pack $f.b1 $f.b2 -side left -fill x -expand yes
 </code>
 
