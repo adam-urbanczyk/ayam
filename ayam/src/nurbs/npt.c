@@ -5967,13 +5967,16 @@ ay_npt_closeu(ay_nurbpatch_object *np)
     {
       controlv = np->controlv;
       end = &(controlv[np->height*(np->width-(np->uorder-1))*stride]);
-      
+
+      memcpy(end, controlv, (np->uorder-1)*np->height*stride*sizeof(double));
+      /*
       for(i = 0; i < (np->uorder-1); i++)
 	{
 	  memcpy(end, controlv, np->height*stride*sizeof(double));
 	  controlv += np->height*stride;
 	  end += np->height*stride;
 	}
+      */
     }
   else
     {
@@ -6176,6 +6179,7 @@ ay_npt_closevtcmd(ClientData clientData, Tcl_Interp *interp,
 
  return TCL_OK;
 } /* ay_npt_closevtcmd */
+
 
 /* ay_npt_clearmp:
  *  delete all mpoints from patch <np>
