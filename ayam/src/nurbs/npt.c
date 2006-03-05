@@ -6467,3 +6467,50 @@ ay_npt_explodemp(ay_object *o)
  return ay_status;
 } /* ay_npt_explodemp */
 
+
+/* ay_npt_getbeveltags:
+ *  
+ */
+int
+ay_npt_getbeveltags(ay_object *o,
+		    int *has_startb, int *startb_type,
+		    double *startb_radius, int *startb_sense,
+		    int *has_endb, int *endb_type,
+		    double *endb_radius, int *endb_sense)
+{
+ int ay_status = AY_OK;
+ ay_tag_object *tag = NULL;
+ int first = AY_TRUE, btype, bsense;
+ double bradius;
+
+ tag = o->tags;
+ while(tag)
+   {
+     if(tag->type == ay_bp_tagtype)
+       {
+	 if(tag->val)
+	   {
+	     sscanf(tag->val, "%d,%d,%lg,%d", &first, &btype,
+		    &bradius, &bsense);
+	     if(first)
+	       {
+		 *has_startb = AY_TRUE;
+		 *startb_type = btype;
+		 *startb_radius = bradius;
+		 *startb_sense = bsense;
+	       }
+	     else
+	       {
+		 *has_endb = AY_TRUE;
+		 *endb_type = btype;
+		 *endb_radius = bradius;
+		 *endb_sense = bsense;
+	       } /* if */
+	   } /* if */
+       } /* if */
+     tag = tag->next;
+   } /* while */
+
+ return ay_status;
+} /* ay_npt_getbeveltags */
+

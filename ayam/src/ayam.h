@@ -652,6 +652,9 @@ typedef struct ay_sweep_object_s
  int has_end_cap;
  ay_object *end_cap;
 
+ ay_object *start_bevels;
+ ay_object *end_bevels;
+
  double glu_sampling_tolerance;
  int glu_display_mode;
 } ay_sweep_object;
