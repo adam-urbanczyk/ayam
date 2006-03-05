@@ -60,6 +60,18 @@ ay_sweep_deletecb(void *c)
   if(sweep->end_cap)
     ay_object_delete(sweep->end_cap);
 
+  if(sweep->start_bevels)
+    {
+      ay_object_deletemulti(sweep->start_bevels);
+      sweep->start_bevels = NULL;
+    }
+
+  if(sweep->end_bevels)
+    {
+      ay_object_deletemulti(sweep->end_bevels);
+      sweep->end_bevels = NULL;
+    }
+
   free(sweep);
 
  return AY_OK;
@@ -91,6 +103,8 @@ ay_sweep_copycb(void *src, void **dst)
   /* copy end cap */
   ay_object_copy(sweepsrc->end_cap, &(sweep->end_cap));
 
+  sweep->start_bevels = NULL;
+  sweep->end_bevels = NULL;
 
   *dst = (void *)sweep;
 
@@ -102,6 +116,7 @@ int
 ay_sweep_drawcb(struct Togl *togl, ay_object *o)
 {
  ay_sweep_object *sweep = NULL;
+ ay_object *b;
 
   if(!o)
     return AY_ENULL;
@@ -120,6 +135,26 @@ ay_sweep_drawcb(struct Togl *togl, ay_object *o)
   if(sweep->end_cap)
     ay_draw_object(togl, sweep->end_cap, AY_TRUE);
 
+  if(sweep->start_bevels)
+    {
+      b = sweep->start_bevels;
+      while(b)
+	{
+	  ay_draw_object(togl, b, AY_TRUE);
+	  b = b->next;
+	}
+    }
+
+  if(sweep->end_bevels)
+    {
+      b = sweep->end_bevels;
+      while(b)
+	{
+	  ay_draw_object(togl, b, AY_TRUE);
+	  b = b->next;
+	}
+    }
+
  return AY_OK;
 } /* ay_sweep_drawcb */
 
@@ -128,6 +163,7 @@ int
 ay_sweep_shadecb(struct Togl *togl, ay_object *o)
 {
  ay_sweep_object *sweep = NULL;
+ ay_object *b;
 
   if(!o)
     return AY_ENULL;
@@ -145,6 +181,26 @@ ay_sweep_shadecb(struct Togl *togl, ay_object *o)
 
   if(sweep->end_cap)
     ay_shade_object(togl, sweep->end_cap, AY_FALSE);
+
+  if(sweep->start_bevels)
+    {
+      b = sweep->start_bevels;
+      while(b)
+	{
+	  ay_shade_object(togl, b, AY_TRUE);
+	  b = b->next;
+	}
+    }
+
+  if(sweep->end_bevels)
+    {
+      b = sweep->end_bevels;
+      while(b)
+	{
+	  ay_shade_object(togl, b, AY_TRUE);
+	  b = b->next;
+	}
+    }
 
  return AY_OK;
 } /* ay_sweep_shadecb */
@@ -405,6 +461,9 @@ ay_sweep_notifycb(ay_object *o)
  ay_nurbpatch_object *np = NULL;
  int ay_status = AY_OK;
  int got_c1 = AY_FALSE, got_c2 = AY_FALSE, got_c3 = AY_FALSE, mode = 0;
+ int has_startb = AY_FALSE, has_endb = AY_FALSE;
+ int startb_type, endb_type, startb_sense, endb_sense;
+ double startb_radius, endb_radius;
  double tolerance;
 
   if(!o)
@@ -427,6 +486,18 @@ ay_sweep_notifycb(ay_object *o)
   if(sweep->end_cap)
     ay_object_delete(sweep->end_cap);
   sweep->end_cap = NULL;
+
+  if(sweep->start_bevels)
+    {
+      ay_object_deletemulti(sweep->start_bevels);
+      sweep->start_bevels = NULL;
+    }
+
+  if(sweep->end_bevels)
+    {
+      ay_object_deletemulti(sweep->end_bevels);
+      sweep->end_bevels = NULL;
+    }
 
   /* get curves to sweep */
   if(!o->down)
@@ -482,6 +553,11 @@ ay_sweep_notifycb(ay_object *o)
 	    } /* if */
 	} /* if */
     } /* if */
+
+  /* get bevel parameters */
+  ay_npt_getbeveltags(o, &has_startb, &startb_type, &startb_radius,
+		      &startb_sense, &has_endb, &endb_type, &endb_radius,
+		      &endb_sense);
 
   /* sweep */
   if(!(npatch = calloc(1, sizeof(ay_object))))

@@ -458,6 +458,12 @@ int ay_npt_collapseselp(ay_object *o);
 
 int ay_npt_explodemp(ay_object *o);
 
+int ay_npt_getbeveltags(ay_object *o,
+		    int *has_startb, int *startb_type,
+		    double *startb_radius, int *startb_sense,
+		    int *has_endb, int *endb_type,
+		    double *endb_radius, int *endb_sense );
+
 
 /* pmt.c */
 int ay_pmt_tonpatch(ay_pamesh_object *pamesh, ay_object **result);
