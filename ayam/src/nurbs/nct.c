@@ -68,6 +68,26 @@ ay_nct_create(int order, int length, int knot_type,
 } /* ay_nct_create */
 
 
+/* ay_nct_destroy:
+ *   destroy a NURBS curve object
+ */
+int
+ay_nct_destroy(ay_nurbcurve_object *curve)
+{
+
+  if(!curve)
+    return AY_ENULL;
+
+  if(curve->controlv)
+    free(curve->controlv);
+  if(curve->knotv)
+    free(curve->knotv);
+  free(curve);
+
+  return AY_OK;
+} /* ay_nct_destroy */
+
+
 /* ay_nct_clearmp:
  *  delete all mpoints from curve c
  */

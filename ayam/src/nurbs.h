@@ -173,6 +173,8 @@ int ay_nct_create(int order, int length, int knot_type,
 		  double *controlv, double *knotv,
 		  ay_nurbcurve_object **curveptr);
 
+int ay_nct_destroy(ay_nurbcurve_object *curve);
+
 void ay_nct_clearmp(ay_nurbcurve_object *c);
 
 int ay_nct_recreatemp(ay_nurbcurve_object *c);
