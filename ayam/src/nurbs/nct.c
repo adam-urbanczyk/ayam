@@ -78,10 +78,15 @@ ay_nct_destroy(ay_nurbcurve_object *curve)
   if(!curve)
     return AY_ENULL;
 
+  if(curve->mpoints)
+    ay_nct_clearmp(curve);
+
   if(curve->controlv)
     free(curve->controlv);
+
   if(curve->knotv)
     free(curve->knotv);
+
   free(curve);
 
   return AY_OK;
