@@ -187,7 +187,7 @@ ay_sweep_shadecb(struct Togl *togl, ay_object *o)
       b = sweep->start_bevels;
       while(b)
 	{
-	  ay_shade_object(togl, b, AY_TRUE);
+	  ay_shade_object(togl, b, AY_FALSE);
 	  b = b->next;
 	}
     }
@@ -197,7 +197,7 @@ ay_sweep_shadecb(struct Togl *togl, ay_object *o)
       b = sweep->end_bevels;
       while(b)
 	{
-	  ay_shade_object(togl, b, AY_TRUE);
+	  ay_shade_object(togl, b, AY_FALSE);
 	  b = b->next;
 	}
     }
@@ -457,7 +457,8 @@ ay_sweep_notifycb(ay_object *o)
  ay_sweep_object *sweep = NULL;
  ay_object *curve1 = NULL, *curve2 = NULL, *pobject1 = NULL, *pobject2 = NULL;
  ay_object *curve3 = NULL, *pobject3 = NULL;
- ay_object *npatch = NULL;
+ ay_object curve4 = {0}, *curve5;
+ ay_object *npatch = NULL, *bevel = NULL;
  ay_nurbpatch_object *np = NULL;
  int ay_status = AY_OK;
  int got_c1 = AY_FALSE, got_c2 = AY_FALSE, got_c3 = AY_FALSE, mode = 0;
@@ -574,8 +575,10 @@ ay_sweep_notifycb(ay_object *o)
       ay_status = ay_npt_sweep(curve1, curve2, curve3,
 			       sweep->sections, sweep->rotate, sweep->close,
 			       (ay_nurbpatch_object **)(&(npatch->refine)),
-			       sweep->has_start_cap, &(sweep->start_cap),
-			       sweep->has_end_cap, &(sweep->end_cap));
+			       has_startb?AY_FALSE:sweep->has_start_cap,
+			       &(sweep->start_cap),
+			       has_endb?AY_FALSE:sweep->has_end_cap,
+			       &(sweep->end_cap));
     }
   else
     {
@@ -595,6 +598,136 @@ ay_sweep_notifycb(ay_object *o)
     tolerance;
   ((ay_nurbpatch_object *)npatch->refine)->glu_display_mode =
     mode;
+
+  /* create bevels and caps */
+  if(!sweep->close && has_startb)
+    {
+      ay_object_defaults(&curve4);
+      curve4.type = AY_IDNCURVE;
+      ay_status = ay_npt_extractnc(npatch, 2, 0.0, AY_FALSE,
+		    (ay_nurbcurve_object**)&(curve4.refine));
+
+      if(ay_status)
+	return ay_status;
+
+      ((ay_nurbcurve_object*)curve4.refine)->type =
+	((ay_nurbcurve_object*)curve1->refine)->type;
+
+      if(startb_sense)
+	{
+	  ay_nct_revert((ay_nurbcurve_object*)(curve4.refine));
+	}
+
+      bevel = NULL;
+      if(!(bevel = calloc(1, sizeof(ay_object))))
+	{
+	  return AY_EOMEM;
+	}
+
+      ay_object_defaults(bevel);
+      bevel->type = AY_IDNPATCH;
+      bevel->parent = AY_TRUE;
+      bevel->inherit_trafos = AY_FALSE;
+      ay_status = ay_npt_bevel(startb_type, startb_radius, AY_TRUE, &curve4,
+			       (ay_nurbpatch_object**)&(bevel->refine));
+
+      ay_nct_destroy((ay_nurbcurve_object*)curve4.refine);
+      curve4.refine = NULL;
+
+      if(ay_status)
+	return ay_status;
+
+      sweep->start_bevels = bevel;
+
+      /* create cap */
+      if(sweep->has_start_cap)
+	{
+	  if(!(curve5 = calloc(1, sizeof(ay_object))))
+	    {
+	      return AY_EOMEM;
+	    }
+
+	  ay_object_defaults(curve5);
+	  curve5->type = AY_IDNCURVE;
+
+	  ay_status = ay_npt_extractnc(bevel, 3, 0.0, AY_FALSE,
+				    (ay_nurbcurve_object**)&(curve5->refine));
+
+	  if(ay_status)
+	    return ay_status;
+
+	  ay_status = ay_capt_createfromcurve(curve5, &(sweep->start_cap));
+      
+	  if(ay_status)
+	    return ay_status;
+	} /* if */
+
+    } /* if */
+
+  if(!sweep->close && has_endb)
+    {
+      memset(&curve4, 0, sizeof(ay_object));
+      ay_object_defaults(&curve4);
+      curve4.type = AY_IDNCURVE;
+      ay_status = ay_npt_extractnc(npatch, 3, 0.0, AY_FALSE,
+		    (ay_nurbcurve_object**)&(curve4.refine));
+
+      if(ay_status)
+	return ay_status;
+
+      ((ay_nurbcurve_object*)curve4.refine)->type =
+	((ay_nurbcurve_object*)curve1->refine)->type;
+
+      if(!startb_sense)
+	{
+	  ay_nct_revert((ay_nurbcurve_object*)(curve4.refine));
+	}
+
+      bevel = NULL;
+      if(!(bevel = calloc(1, sizeof(ay_object))))
+	{
+	  return AY_EOMEM;
+	}
+
+      ay_object_defaults(bevel);
+      bevel->type = AY_IDNPATCH;
+      bevel->parent = AY_TRUE;
+      bevel->inherit_trafos = AY_FALSE;
+      ay_status = ay_npt_bevel(endb_type, endb_radius, AY_TRUE, &curve4,
+			       (ay_nurbpatch_object**)&(bevel->refine));
+
+      ay_nct_destroy((ay_nurbcurve_object*)curve4.refine);
+      curve4.refine = NULL;
+
+      if(ay_status)
+	return ay_status;
+
+      sweep->end_bevels = bevel;
+
+      /* create cap */
+      if(sweep->has_end_cap)
+	{
+	  curve5 = NULL;
+	  if(!(curve5 = calloc(1, sizeof(ay_object))))
+	    {
+	      return AY_EOMEM;
+	    }
+
+	  ay_object_defaults(curve5);
+	  curve5->type = AY_IDNCURVE;
+
+	  ay_status = ay_npt_extractnc(bevel, 3, 0.0, AY_FALSE,
+				    (ay_nurbcurve_object**)&(curve5->refine));
+
+	  if(ay_status)
+	    return ay_status;
+
+	  ay_status = ay_capt_createfromcurve(curve5, &(sweep->end_cap));
+      
+	  if(ay_status)
+	    return ay_status;
+	} /* if */
+    } /* if */
 
   if(sweep->start_cap)
     {
@@ -677,6 +810,35 @@ ay_sweep_providecb(ay_object *o, unsigned int type, ay_object **result)
       ay_trafo_copy(o, *t);
       t = &((*t)->next);
 
+      /* copy bevels */
+      p = s->start_bevels;
+      while(p)
+	{
+	  ay_status = ay_object_copy(p, t);
+	  if(ay_status)
+	    {
+	      ay_error(ay_status, fname, NULL);
+	      return AY_ERROR;
+	    }
+	  ay_trafo_add(o, *t);
+	  t = &((*t)->next);
+	  p = p->next;
+	} /* while */
+
+      p = s->end_bevels;
+      while(p)
+	{
+	  ay_status = ay_object_copy(p, t);
+	  if(ay_status)
+	    {
+	      ay_error(ay_status, fname, NULL);
+	      return AY_ERROR;
+	    }
+	  ay_trafo_add(o, *t);
+	  t = &((*t)->next);
+	  p = p->next;
+	} /* while */
+
       /* copy caps */
       p = s->start_cap;
       while(p)
@@ -727,7 +889,7 @@ ay_sweep_convertcb(ay_object *o, int in_place)
 
   r = (ay_sweep_object *) o->refine;
 
-  if((r->start_cap) || (r->end_cap))
+  if((r->start_cap) || (r->end_cap) || (r->start_bevels) || (r->end_bevels))
     {
       if(!(new = calloc(1, sizeof(ay_object))))
 	{ return AY_EOMEM; }
@@ -768,6 +930,24 @@ ay_sweep_convertcb(ay_object *o, int in_place)
       if(r->end_cap)
 	{
 	  ay_status = ay_object_copy(r->end_cap, next);
+	  if(*next)
+	    {
+	      next = &((*next)->next);
+	    }
+	}
+
+      if(r->start_bevels)
+	{
+	  ay_status = ay_object_copy(r->start_bevels, next);
+	  if(*next)
+	    {
+	      next = &((*next)->next);
+	    }
+	}
+
+      if(r->end_bevels)
+	{
+	  ay_status = ay_object_copy(r->end_bevels, next);
 	  if(*next)
 	    {
 	      next = &((*next)->next);
