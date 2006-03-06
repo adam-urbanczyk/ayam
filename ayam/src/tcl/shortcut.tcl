@@ -441,9 +441,15 @@ proc shortcut_view { w } {
 	    "invSelPoints; rV;"
 
     bind $w <[repcont $ayviewshortcuts(CollP)]>\
-	    "collNC; rV;"
+	    "collMP; rV;"
     bind $w <[repcont $ayviewshortcuts(ExplP)]>\
-	    "explNC; rV;"
+	    "explMP; rV;"
+
+    set m $ay(toolsmenu)
+    bind $w <[repcont $ayviewshortcuts(Hide)]>\
+	    "$m invoke 8"
+    bind $w <[repcont $ayviewshortcuts(Show)]>\
+	    "$m invoke 10"
 
 
     bind $w <[repcont $aymainshortcuts(Zap)]> zap

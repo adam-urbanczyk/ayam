@@ -349,6 +349,10 @@ array set ayviewshortcuts {
     InvSelP "I"
     CollP "C"
     ExplP "E"
+
+    Hide "h"
+    Show "H"
+
 }
 # array ayviewshortcuts
 
