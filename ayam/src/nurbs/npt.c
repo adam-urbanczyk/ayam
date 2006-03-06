@@ -4274,7 +4274,7 @@ ay_npt_bevel(int type, double radius, int align, ay_object *o,
   if(!o || !bevel)
     return AY_ENULL;
 
-  if(o->type != AY_IDNPATCH)
+  if(o->type != AY_IDNCURVE)
     return AY_ERROR;
 
   curve = (ay_nurbcurve_object *)o->refine;
@@ -4424,7 +4424,6 @@ ay_npt_bevel(int type, double radius, int align, ay_object *o,
 	  y = controlv[b+1]/w;
 	  z = controlv[b+2]/w;
 
-
 	  AY_V3CROSS(normal, tangent, zaxis)
 	  AY_V3SCAL(normal, radius-(radius*w))
 
@@ -4450,7 +4449,7 @@ ay_npt_bevel(int type, double radius, int align, ay_object *o,
   if(type == 2)
     {
       /* transform the middle 3 loops */
-      for(k=0;k<3;k++)
+      for(k = 0; k < 3; k++)
 	{
 	  if((k == 0) || (k == 2))
 	    {
@@ -4515,10 +4514,11 @@ ay_npt_bevel(int type, double radius, int align, ay_object *o,
 					   AY_TRUE : AY_FALSE, curve->length,
 					   curve->order-1, 4, controlv, j,
 					   tangent);
-	      w = controlv[b+3];
+
 	      x = controlv[b];
 	      y = controlv[b+1];
 	      z = controlv[b+2];
+	      w = controlv[b+3];
 
 	      AY_V3CROSS(normal, tangent, zaxis)
 	      AY_V3SCAL(normal,(radius*(1.0-displacex)))
@@ -6482,6 +6482,9 @@ ay_npt_getbeveltags(ay_object *o,
  ay_tag_object *tag = NULL;
  int first = AY_TRUE, btype, bsense;
  double bradius;
+
+ *has_startb = AY_FALSE;
+ *has_endb = AY_FALSE;
 
  tag = o->tags;
  while(tag)
