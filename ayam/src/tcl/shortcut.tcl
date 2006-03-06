@@ -732,6 +732,11 @@ if { [string first "IRIX" $tcl_platform(os)] != -1 } {
     set font 9x15
 }
 
+# Also MacOSX Aqua does not deliver a proper mono-spaced "fixed"...
+if { $ay(ws) == "Aqua"  } {
+    set font {Courier 12}
+}
+
 text $w.ftext.text -yscrollcommand "$w.ftext.sbar set" \
 	-setgrid 1 -font $font -height 20 -width 40
 # -tabs {32c left}
@@ -767,6 +772,9 @@ $w.ftext.text insert end "Modelling Actions (View Windows):
  Invert PointSel      $ayviewshortcuts(InvSelP)
  Collapse Selected    $ayviewshortcuts(CollP)
  Explode Selected     $ayviewshortcuts(ExplP)
+
+ Hide Objects         $ayviewshortcuts(Hide)
+ Show Objects         $ayviewshortcuts(Show)
 
  FindU                $ayviewshortcuts(FindU)
  Split Curve          $ayviewshortcuts(SplitNC)
