@@ -330,7 +330,7 @@ typedef struct ay_nurbpatch_object_s
   double *tessv;
   int tessqf;
 
-  /* multiple points (unused) */
+  /* multiple points */
   int createmp;
   struct ay_mpoint_object_s *mpoints;
 } ay_nurbpatch_object;
