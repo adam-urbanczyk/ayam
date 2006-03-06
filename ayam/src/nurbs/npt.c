@@ -85,6 +85,33 @@ ay_npt_create(int uorder, int vorder, int width, int height,
 } /* ay_npt_create */
 
 
+/* ay_npt_destroy:
+ *   destroy a NURBS patch object
+ */
+int
+ay_npt_destroy(ay_nurbpatch_object *patch)
+{
+
+  if(!patch)
+    return AY_ENULL;
+
+  if(patch->mpoints)
+    ay_npt_clearmp(patch);
+
+  if(patch->controlv)
+    free(patch->controlv);
+
+  if(patch->uknotv)
+    free(patch->uknotv);
+
+  if(patch->vknotv)
+    free(patch->vknotv);
+
+  free(patch);
+
+ return AY_OK;
+} /* ay_npt_destroy */
+
 /* ay_npt_revolve:
  *  create a surface of revolution from the NURBS curve in <o>
  *  (that will be projected to the XY-plane for revolution)
