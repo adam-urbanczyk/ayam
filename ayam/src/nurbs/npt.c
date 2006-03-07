@@ -4284,11 +4284,13 @@ ay_npt_bevel(int type, double radius, int align, ay_object *o,
 	     ay_nurbpatch_object **bevel)
 {
  int ay_status = AY_OK;
- ay_nurbpatch_object *new = NULL;
+ ay_nurbpatch_object *patch = NULL;
  ay_nurbcurve_object *curve = NULL;
  double uknots_round[6] = {0.0, 0.0, 0.0, 1.0, 1.0, 1.0};
  double uknots_linear[4] = {0.0, 0.0, 1.0, 1.0};
  double uknots_ridge[8] = {0.0, 0.0, 0.0, 0.25, 0.75, 1.0, 1.0, 1.0};
+ double uknots_round_cap[8] = {0.0, 0.0, 0.0, 1.0, 1.0, 1.5, 1.5, 1.5};
+ double uknots_linear_cap[5] = {0.0, 0.0, 1.5, 1.0, 1.0};
  /* vknots are taken from curve! */
  double *uknotv = NULL, *vknotv = NULL, *controlv = NULL, *tccontrolv = NULL;
  double x, y, z, w;
@@ -4307,54 +4309,89 @@ ay_npt_bevel(int type, double radius, int align, ay_object *o,
   curve = (ay_nurbcurve_object *)o->refine;
 
   /* calloc the new patch */
-  if(!(new = calloc(1, sizeof(ay_nurbpatch_object))))
+  if(!(patch = calloc(1, sizeof(ay_nurbpatch_object))))
     return AY_EOMEM;
-  if(type == 0)
+  switch(type)
     {
-      if(!(controlv = calloc(4*3*curve->length, sizeof(double))))
-	{ free(new); return AY_EOMEM; }
-      if(!(uknotv = calloc(6, sizeof(double))))
-	{ free(new); free(controlv); return AY_EOMEM; }
-      memcpy(uknotv, uknots_round, 6*sizeof(double));
-      new->uorder = 3;
-      new->width = 3;
-      new->uknot_type = AY_KTNURB;
-      new->is_rat = AY_TRUE;
-    }
-  if(type == 1)
-    {
-      if(!(controlv = calloc(4*2*curve->length, sizeof(double))))
-	{ free(new); return AY_EOMEM; }
-      if(!(uknotv = calloc(4, sizeof(double))))
-	{ free(new); free(controlv); return AY_EOMEM; }
-      memcpy(uknotv, uknots_linear, 4*sizeof(double));
-      new->uorder = 2;
-      new->width = 2;
-      new->uknot_type = AY_KTNURB;
-      new->is_rat = curve->is_rat;
-    }
-  if(type == 2)
-    {
-      if(!(controlv = calloc(4*5*curve->length, sizeof(double))))
-	{ free(new); return AY_EOMEM; }
-      if(!(uknotv = calloc(8, sizeof(double))))
-	{ free(new); free(controlv); return AY_EOMEM; }
-      memcpy(uknotv, uknots_ridge, 8*sizeof(double));
-      new->uorder = 3;
-      new->width = 5;
-      new->uknot_type = AY_KTCUSTOM;
-      new->is_rat = AY_TRUE;
-    }
+    case 0:
+      {
+	if(!(controlv = calloc(4*3*curve->length, sizeof(double))))
+	  { free(patch); return AY_EOMEM; }
+	if(!(uknotv = calloc(6, sizeof(double))))
+	  { free(patch); free(controlv); return AY_EOMEM; }
+	memcpy(uknotv, uknots_round, 6*sizeof(double));
+	patch->uorder = 3;
+	patch->width = 3;
+	patch->uknot_type = AY_KTNURB;
+	patch->is_rat = AY_TRUE;
+      }
+      break;
+    case 1:
+      {
+	if(!(controlv = calloc(4*2*curve->length, sizeof(double))))
+	  { free(patch); return AY_EOMEM; }
+	if(!(uknotv = calloc(4, sizeof(double))))
+	  { free(patch); free(controlv); return AY_EOMEM; }
+	memcpy(uknotv, uknots_linear, 4*sizeof(double));
+	patch->uorder = 2;
+	patch->width = 2;
+	patch->uknot_type = AY_KTNURB;
+	patch->is_rat = curve->is_rat;
+      }
+      break;
+    case 2:
+      {
+	if(!(controlv = calloc(4*5*curve->length, sizeof(double))))
+	  { free(patch); return AY_EOMEM; }
+	if(!(uknotv = calloc(8, sizeof(double))))
+	  { free(patch); free(controlv); return AY_EOMEM; }
+	memcpy(uknotv, uknots_ridge, 8*sizeof(double));
+	patch->uorder = 3;
+	patch->width = 5;
+	patch->uknot_type = AY_KTCUSTOM;
+	patch->is_rat = AY_TRUE;
+      }
+      break;
+    case 3:
+      {
+	if(!(controlv = calloc(5*4*curve->length, sizeof(double))))
+	  { free(patch); return AY_EOMEM; }
+	if(!(uknotv = calloc(8, sizeof(double))))
+	  { free(patch); free(controlv); return AY_EOMEM; }
+	memcpy(uknotv, uknots_round_cap, 8*sizeof(double));
+	patch->uorder = 3;
+	patch->width = 5;
+	patch->uknot_type = AY_KTCUSTOM;
+	patch->is_rat = AY_TRUE;
+      }
+      break;
+    case 4:
+      {
+	if(!(controlv = calloc(4*3*curve->length, sizeof(double))))
+	  { free(patch); return AY_EOMEM; }
+	if(!(uknotv = calloc(4, sizeof(double))))
+	  { free(patch); free(controlv); return AY_EOMEM; }
+	memcpy(uknotv, uknots_linear, 4*sizeof(double));
+	patch->uorder = 2;
+	patch->width = 3;
+	patch->uknot_type = AY_KTNURB;
+	patch->is_rat = curve->is_rat;
+      }
+      break;
+    default:
+      /* XXXX issue proper error message */
+      break;
+    } /* switch */
 
   if(!(vknotv = calloc(curve->length+curve->order,sizeof(double))))
-    { free(new); free(controlv); free(uknotv); return AY_EOMEM; }
+    { free(patch); free(controlv); free(uknotv); return AY_EOMEM; }
   memcpy(vknotv,curve->knotv,(curve->length+curve->order)*sizeof(double));
-  new->vknotv = vknotv;
-  new->uknotv = uknotv;
-  new->vorder = curve->order;
-  new->vknot_type = curve->knot_type;
-  new->height = curve->length;
-  new->glu_sampling_tolerance = curve->glu_sampling_tolerance;
+  patch->vknotv = vknotv;
+  patch->uknotv = uknotv;
+  patch->vorder = curve->order;
+  patch->vknot_type = curve->knot_type;
+  patch->height = curve->length;
+  patch->glu_sampling_tolerance = curve->glu_sampling_tolerance;
 
   /* fill controlv */
   /* first loop */
@@ -4362,7 +4399,7 @@ ay_npt_bevel(int type, double radius, int align, ay_object *o,
     {
       if(!(tccontrolv = calloc(curve->length*4, sizeof(double))))
 	{
-	  free(new); free(controlv); free(uknotv); free(vknotv);
+	  free(patch); free(controlv); free(uknotv); free(vknotv);
 	  return AY_EOMEM;
 	}
       memcpy(tccontrolv, curve->controlv, curve->length*4*sizeof(double));
@@ -4371,7 +4408,7 @@ ay_npt_bevel(int type, double radius, int align, ay_object *o,
 	 when curve is planar in XY plane) */
       ay_status = ay_nct_toxy(o);
       a = 0;
-      for(i = 0; i < new->width; i++)
+      for(i = 0; i < patch->width; i++)
 	{
 	  memcpy(&(controlv[a]), curve->controlv,
 		 curve->length*4*sizeof(double));
@@ -4383,7 +4420,7 @@ ay_npt_bevel(int type, double radius, int align, ay_object *o,
       ay_trafo_creatematrix(o, m);
 
       b = 0;
-      for(i = 0; i < new->width; i++)
+      for(i = 0; i < patch->width; i++)
 	{
 	  a = 0;
 	  for(j = 0; j < curve->length; j++)
@@ -4399,48 +4436,12 @@ ay_npt_bevel(int type, double radius, int align, ay_object *o,
 
   b = curve->length*4;
   /* transform second loop */
-  if(type == 0)
+  if((type == 0) || (type == 3))
     {
-      /*
-      if(curve->knot_type == AY_KTBSPLINE)
-	{
-	  x = controlv[(curve->length-curve->order)*4];
-	  y = controlv[(curve->length-curve->order)*4+1];
-	  z = controlv[(curve->length-curve->order)*4+2];
-	  w = controlv[(curve->length-curve->order)*4+3];
-	}
-      else
-	{
-	  x = controlv[(curve->length-2)*4];
-	  y = controlv[(curve->length-2)*4+1];
-	  z = controlv[(curve->length-2)*4+2];
-	  w = controlv[(curve->length-2)*4+3];
-	}
-      */
+ 
       for(j = 0; j < curve->length; j++)
 	{
 	  /* get displacement direction */
-	  /*
-	  if(j == (curve->length-1))
-	    {
-	      if(curve->knot_type == AY_KTBSPLINE)
-		{
-		  tangent[0] = x-controlv[(curve->order-1)*4];
-		  tangent[1] = y-controlv[(curve->order-1)*4+1];
-		}
-	      else
-		{
-		  tangent[0] = x-controlv[4];
-		  tangent[1] = y-controlv[5];
-		}
-	    }
-	  else
-	    {
-	      tangent[0] = x-controlv[b+4];
-	      tangent[1] = y-controlv[b+5];
-	    }
-	  */
-
 	  ay_npt_gettangentfromcontrol((curve->type == AY_CTPERIODIC) ?
 				       AY_TRUE : AY_FALSE, curve->length,
 				       curve->order-1, 4, controlv, j,
@@ -4469,7 +4470,7 @@ ay_npt_bevel(int type, double radius, int align, ay_object *o,
 
 	  controlv[b+3] = ww*w;
 
-	  b+=4;
+	  b += 4;
 	} /* for */
     } /* if */
 
@@ -4498,45 +4499,10 @@ ay_npt_bevel(int type, double radius, int align, ay_object *o,
 	      displacex = 0.5/ww;
 	      displacey = 0.5/ww;
 	    }
-	  /*
-	  if(curve->knot_type == AY_KTBSPLINE)
-	    {
-	      x = controlv[(curve->length-curve->order)*4];
-	      y = controlv[(curve->length-curve->order)*4+1];
-	      z = controlv[(curve->length-curve->order)*4+2];
-	      w = controlv[(curve->length-curve->order)*4+3];
-	    }
-	  else
-	    {
-	      x = controlv[(curve->length-2)*4];
-	      y = controlv[(curve->length-2)*4+1];
-	      z = controlv[(curve->length-2)*4+2];
-	      w = controlv[(curve->length-2)*4+3];
-	    }
-	  */
+
 	  for(j = 0; j < curve->length; j++)
 	    {
 	      /* get displacement direction */
-	      /*
-	      if(j == (curve->length-1))
-		{
-		  if(curve->knot_type == AY_KTBSPLINE)
-		    {
-		      tangent[0] = x-controlv[(curve->order-1)*4];
-		      tangent[1] = y-controlv[(curve->order-1)*4+1];
-		    }
-		  else
-		    {
-		      tangent[0] = x-controlv[4];
-		      tangent[1] = y-controlv[5];
-		    }
-		}
-	      else
-		{
-		  tangent[0] = x-controlv[b+4];
-		  tangent[1] = y-controlv[b+5];
-		}
-	      */
 	      ay_npt_gettangentfromcontrol((curve->type == AY_CTPERIODIC) ?
 					   AY_TRUE : AY_FALSE, curve->length,
 					   curve->order-1, 4, controlv, j,
@@ -4571,48 +4537,10 @@ ay_npt_bevel(int type, double radius, int align, ay_object *o,
 	} /* for */
     } /* if */
 
-  /* transform last loop */
-  /*
-  if(curve->knot_type == AY_KTBSPLINE)
-    {
-      x = controlv[(curve->length-curve->order)*4];
-      y = controlv[(curve->length-curve->order)*4+1];
-      z = controlv[(curve->length-curve->order)*4+2];
-      w = controlv[(curve->length-curve->order)*4+3];
-    }
-  else
-    {
-      x = controlv[(curve->length-2)*4];
-      y = controlv[(curve->length-2)*4+1];
-      z = controlv[(curve->length-2)*4+2];
-      w = controlv[(curve->length-2)*4+3];
-    }
-  */
-
+  /* transform last normal loop (before any cap loops) */
   for(j = 0; j < curve->length; j++)
     {
       /* get displacement direction */
-      /*
-      if(j == (curve->length-1))
-	{
-	  if(curve->knot_type == AY_KTBSPLINE)
-	    {
-	      tangent[0] = x-controlv[(curve->order-1)*4];
-	      tangent[1] = y-controlv[(curve->order-1)*4+1];
-	    }
-	  else
-	    {
-	      tangent[0] = x-controlv[4];
-	      tangent[1] = y-controlv[5];
-	    }
-	}
-      else
-	{
-	  tangent[0] = x-controlv[b+4];
-	  tangent[1] = y-controlv[b+5];
-	}
-      */
-
       ay_npt_gettangentfromcontrol((curve->type == AY_CTPERIODIC) ?
 				   AY_TRUE : AY_FALSE, curve->length,
 				   curve->order-1, 4, controlv, j, tangent);
@@ -4643,6 +4571,59 @@ ay_npt_bevel(int type, double radius, int align, ay_object *o,
       b += 4;
     } /* for */
 
+  /* transform cap loops */
+  if(type>2)
+    {
+      /* calculate middle point, curve->type tells how many control
+	 points should be considered */
+      i = curve->length;
+      if(curve->type == AY_CTCLOSED)
+	i--;
+      if(curve->type == AY_CTPERIODIC)
+	i -= (curve->order-1);
+      x = controlv[0]/i;
+      y = controlv[1]/i;
+      z = controlv[b-2];
+      a = 4;
+      for(k = 1; k < i; k++)
+	{
+	  x += (controlv[a]/i);
+	  y += (controlv[a+1]/i);
+	  a += 4;
+	}
+    } /* if */
+
+  if(type == 3)
+    {
+      memcpy(&(controlv[b]), &(controlv[b-(curve->length*4)]),
+	     curve->length*4*sizeof(double));
+      b += (curve->length*4);
+
+      /* now set complete last loop to middle point */
+      for(k = 0; k < curve->length; k++)
+	{
+	  controlv[b]   = x;
+	  controlv[b+1] = y;
+	  controlv[b+2] = z;
+	  controlv[b+3] = 1.0;
+	  b += 4;
+	}
+    } /* if */
+
+  if(type == 4)
+    {
+      /* now set complete last loop to middle point */
+      for(k = 0; k < curve->length; k++)
+	{
+	  controlv[b]   = x;
+	  controlv[b+1] = y;
+	  controlv[b+2] = z;
+	  controlv[b+3] = 1.0;
+	  b += 4;
+	}
+    } /* if */
+
+  /* re-process first loop? */
   if(align)
     {
       /* overwrite first loop with original saved curve data (to avoid
@@ -4651,7 +4632,7 @@ ay_npt_bevel(int type, double radius, int align, ay_object *o,
       /* rotate other loops into position */
       ay_trafo_creatematrix(o, m);
       b = curve->length*4;
-      for(i = 1; i < new->width; i++)
+      for(i = 1; i < patch->width; i++)
 	{
 	  for(j = 0; j < curve->length; j++)
 	    {
@@ -4661,9 +4642,9 @@ ay_npt_bevel(int type, double radius, int align, ay_object *o,
 	} /* for */
     } /* if */
 
-  new->controlv = controlv;
+  patch->controlv = controlv;
 
-  *bevel = new;
+  *bevel = patch;
 
   /* clean-up */
   if(tccontrolv)
@@ -4684,27 +4665,27 @@ ay_npt_createcap(double z, ay_nurbcurve_object *curve,
 		 ay_nurbpatch_object **cap)
 {
  int ay_status = AY_OK;
- ay_nurbpatch_object *new = NULL;
+ ay_nurbpatch_object *patch = NULL;
  double knotv[4] = {0.0,0.0,1.0,1.0};
  double minx, miny, maxx, maxy, angle;
  int i, stride;
 
   /* calloc the new patch */
-  if(!(new = calloc(1, sizeof(ay_nurbpatch_object))))
+  if(!(patch = calloc(1, sizeof(ay_nurbpatch_object))))
     return AY_EOMEM;
-  if(!(new->vknotv = calloc(4, sizeof(double))))
-    { free(new); return AY_EOMEM; }
-  if(!(new->uknotv = calloc(4, sizeof(double))))
-    { free(new); free(new->vknotv); return AY_EOMEM; }
-  if(!(new->controlv = calloc(4*4, sizeof(double))))
-    { free(new); free(new->vknotv); free(new->uknotv); return AY_EOMEM; }
+  if(!(patch->vknotv = calloc(4, sizeof(double))))
+    { free(patch); return AY_EOMEM; }
+  if(!(patch->uknotv = calloc(4, sizeof(double))))
+    { free(patch); free(patch->vknotv); return AY_EOMEM; }
+  if(!(patch->controlv = calloc(4*4, sizeof(double))))
+    { free(patch); free(patch->vknotv); free(patch->uknotv); return AY_EOMEM; }
 
-  new->width = 2;
-  new->height = 2;
-  new->uorder = 2;
-  new->vorder = 2;
-  memcpy(new->uknotv, knotv, 4*sizeof(double));
-  memcpy(new->vknotv, knotv, 4*sizeof(double));
+  patch->width = 2;
+  patch->height = 2;
+  patch->uorder = 2;
+  patch->vorder = 2;
+  memcpy(patch->uknotv, knotv, 4*sizeof(double));
+  memcpy(patch->vknotv, knotv, 4*sizeof(double));
 
   i = 0;
   minx = curve->controlv[0]; maxx = minx;
@@ -4736,22 +4717,22 @@ ay_npt_createcap(double z, ay_nurbcurve_object *curve,
       i += stride;
     } /* while */
 
-  new->controlv[0] = minx;
-  new->controlv[1] = miny;
+  patch->controlv[0] = minx;
+  patch->controlv[1] = miny;
 
-  new->controlv[4] = minx;
-  new->controlv[5] = maxy;
+  patch->controlv[4] = minx;
+  patch->controlv[5] = maxy;
 
-  new->controlv[8] = maxx;
-  new->controlv[9] = miny;
+  patch->controlv[8] = maxx;
+  patch->controlv[9] = miny;
 
-  new->controlv[12] = maxx;
-  new->controlv[13] = maxy;
+  patch->controlv[12] = maxx;
+  patch->controlv[13] = maxy;
 
   for(i = 2; i <= 15; i += 4)
     {
-      new->controlv[i] = z;
-      new->controlv[i+1] = 1.0;
+      patch->controlv[i] = z;
+      patch->controlv[i+1] = 1.0;
     }
 
   *ominx = minx;
@@ -4760,7 +4741,7 @@ ay_npt_createcap(double z, ay_nurbcurve_object *curve,
   *omaxy = maxy;
   *oangle = angle;
 
-  *cap = new;
+  *cap = patch;
 
  return ay_status;
 } /* ay_npt_createcap */
