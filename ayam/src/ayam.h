@@ -648,13 +648,10 @@ typedef struct ay_sweep_object_s
  int sections;
 
  int has_start_cap;
- ay_object *start_cap;
  int has_end_cap;
- ay_object *end_cap;
 
- ay_object *start_bevels;
- ay_object *end_bevels;
-
+ ay_object *caps_and_bevels;
+  
  double glu_sampling_tolerance;
  int glu_display_mode;
 } ay_sweep_object;
