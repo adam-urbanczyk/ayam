@@ -54,22 +54,10 @@ ay_sweep_deletecb(void *c)
   if(sweep->npatch)
     ay_object_delete(sweep->npatch);
 
-  if(sweep->start_cap)
-    ay_object_delete(sweep->start_cap);
-
-  if(sweep->end_cap)
-    ay_object_delete(sweep->end_cap);
-
-  if(sweep->start_bevels)
+  if(sweep->caps_and_bevels)
     {
-      ay_object_deletemulti(sweep->start_bevels);
-      sweep->start_bevels = NULL;
-    }
-
-  if(sweep->end_bevels)
-    {
-      ay_object_deletemulti(sweep->end_bevels);
-      sweep->end_bevels = NULL;
+      ay_object_deletemulti(sweep->caps_and_bevels);
+      sweep->caps_and_bevels = NULL;
     }
 
   free(sweep);
@@ -97,14 +85,7 @@ ay_sweep_copycb(void *src, void **dst)
   /* copy npatch */
   ay_object_copy(sweepsrc->npatch, &(sweep->npatch));
 
-  /* copy start cap */
-  ay_object_copy(sweepsrc->start_cap, &(sweep->start_cap));
-
-  /* copy end cap */
-  ay_object_copy(sweepsrc->end_cap, &(sweep->end_cap));
-
-  sweep->start_bevels = NULL;
-  sweep->end_bevels = NULL;
+  sweep->caps_and_bevels = NULL;
 
   *dst = (void *)sweep;
 
@@ -129,25 +110,9 @@ ay_sweep_drawcb(struct Togl *togl, ay_object *o)
   if(sweep->npatch)
     ay_draw_object(togl, sweep->npatch, AY_TRUE);
 
-  if(sweep->start_cap)
-    ay_draw_object(togl, sweep->start_cap, AY_TRUE);
-
-  if(sweep->end_cap)
-    ay_draw_object(togl, sweep->end_cap, AY_TRUE);
-
-  if(sweep->start_bevels)
+  if(sweep->caps_and_bevels)
     {
-      b = sweep->start_bevels;
-      while(b)
-	{
-	  ay_draw_object(togl, b, AY_TRUE);
-	  b = b->next;
-	}
-    }
-
-  if(sweep->end_bevels)
-    {
-      b = sweep->end_bevels;
+      b = sweep->caps_and_bevels;
       while(b)
 	{
 	  ay_draw_object(togl, b, AY_TRUE);
@@ -176,25 +141,9 @@ ay_sweep_shadecb(struct Togl *togl, ay_object *o)
   if(sweep->npatch)
     ay_shade_object(togl, sweep->npatch, AY_FALSE);
 
-  if(sweep->start_cap)
-    ay_shade_object(togl, sweep->start_cap, AY_FALSE);
-
-  if(sweep->end_cap)
-    ay_shade_object(togl, sweep->end_cap, AY_FALSE);
-
-  if(sweep->start_bevels)
+  if(sweep->caps_and_bevels)
     {
-      b = sweep->start_bevels;
-      while(b)
-	{
-	  ay_shade_object(togl, b, AY_FALSE);
-	  b = b->next;
-	}
-    }
-
-  if(sweep->end_bevels)
-    {
-      b = sweep->end_bevels;
+      b = sweep->caps_and_bevels;
       while(b)
 	{
 	  ay_shade_object(togl, b, AY_FALSE);
@@ -407,6 +356,7 @@ int
 ay_sweep_wribcb(char *file, ay_object *o)
 {
  ay_sweep_object *sweep = NULL;
+ ay_object *b;
 
   if(!o)
    return AY_ENULL;
@@ -416,11 +366,15 @@ ay_sweep_wribcb(char *file, ay_object *o)
   if(sweep->npatch)
     ay_wrib_object(file, sweep->npatch);
 
-  if(sweep->start_cap)
-    ay_wrib_object(file, sweep->start_cap);
-
-  if(sweep->end_cap)
-    ay_wrib_object(file, sweep->end_cap);
+  if(sweep->caps_and_bevels)
+    {
+      b = sweep->caps_and_bevels;
+      while(b)
+	{
+	  ay_wrib_object(file, b);
+	  b = b->next;
+	}
+    }
 
  return AY_OK;
 } /* ay_sweep_wribcb */
@@ -458,7 +412,8 @@ ay_sweep_notifycb(ay_object *o)
  ay_object *curve1 = NULL, *curve2 = NULL, *pobject1 = NULL, *pobject2 = NULL;
  ay_object *curve3 = NULL, *pobject3 = NULL;
  ay_object curve4 = {0}, *curve5;
- ay_object *npatch = NULL, *bevel = NULL;
+ ay_object *npatch = NULL, *bevel = NULL, *start_cap = NULL, *end_cap = NULL;
+ ay_object **nextcb;
  ay_nurbpatch_object *np = NULL;
  int ay_status = AY_OK;
  int got_c1 = AY_FALSE, got_c2 = AY_FALSE, got_c3 = AY_FALSE, mode = 0;
@@ -480,29 +435,18 @@ ay_sweep_notifycb(ay_object *o)
     ay_object_delete(sweep->npatch);
   sweep->npatch = NULL;
 
-  if(sweep->start_cap)
-    ay_object_delete(sweep->start_cap);
-  sweep->start_cap = NULL;
-
-  if(sweep->end_cap)
-    ay_object_delete(sweep->end_cap);
-  sweep->end_cap = NULL;
-
-  if(sweep->start_bevels)
+  if(sweep->caps_and_bevels)
     {
-      ay_object_deletemulti(sweep->start_bevels);
-      sweep->start_bevels = NULL;
+      ay_object_deletemulti(sweep->caps_and_bevels);
+      sweep->caps_and_bevels = NULL;
     }
 
-  if(sweep->end_bevels)
-    {
-      ay_object_deletemulti(sweep->end_bevels);
-      sweep->end_bevels = NULL;
-    }
+  nextcb = &(sweep->caps_and_bevels);
 
   /* get curves to sweep */
   if(!o->down)
     return AY_OK;
+
   curve1 = o->down;
   if(curve1->type != AY_IDNCURVE)
     {
@@ -515,8 +459,7 @@ ay_sweep_notifycb(ay_object *o)
 	{
 	  curve1 = pobject1;
 	  got_c1 = AY_TRUE;
-	}
-
+	} /* if */
     } /* if */
 
   if(!o->down->next)
@@ -533,8 +476,7 @@ ay_sweep_notifycb(ay_object *o)
 	{
 	  curve2 = pobject2;
 	  got_c2 = AY_TRUE;
-	}
-
+	} /* if */
     } /* if */
 
   if(o->down->next->next)
@@ -563,7 +505,8 @@ ay_sweep_notifycb(ay_object *o)
   /* sweep */
   if(!(npatch = calloc(1, sizeof(ay_object))))
     {
-      return AY_ERROR;
+      ay_status = AY_EOMEM;
+      goto cleanup;
     }
 
   ay_object_defaults(npatch);
@@ -576,9 +519,19 @@ ay_sweep_notifycb(ay_object *o)
 			       sweep->sections, sweep->rotate, sweep->close,
 			       (ay_nurbpatch_object **)(&(npatch->refine)),
 			       has_startb?AY_FALSE:sweep->has_start_cap,
-			       &(sweep->start_cap),
+			       &start_cap,
 			       has_endb?AY_FALSE:sweep->has_end_cap,
-			       &(sweep->end_cap));
+			       &end_cap);
+      if(start_cap)
+	{
+	  *nextcb = start_cap;
+	  nextcb = &(start_cap->next);
+	}
+      if(end_cap)
+	{
+	  *nextcb = end_cap;
+	  nextcb = &(end_cap->next);
+	}
     }
   else
     {
@@ -589,7 +542,7 @@ ay_sweep_notifycb(ay_object *o)
     }
 
   if(ay_status)
-    return ay_status;
+    goto cleanup;
 
   /* copy sampling tolerance/mode over to new objects */
   sweep->npatch = npatch;
@@ -608,7 +561,7 @@ ay_sweep_notifycb(ay_object *o)
 		    (ay_nurbcurve_object**)&(curve4.refine));
 
       if(ay_status)
-	return ay_status;
+	goto cleanup;
 
       ((ay_nurbcurve_object*)curve4.refine)->type =
 	((ay_nurbcurve_object*)curve1->refine)->type;
@@ -621,7 +574,8 @@ ay_sweep_notifycb(ay_object *o)
       bevel = NULL;
       if(!(bevel = calloc(1, sizeof(ay_object))))
 	{
-	  return AY_EOMEM;
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
 	}
 
       ay_object_defaults(bevel);
@@ -635,16 +589,18 @@ ay_sweep_notifycb(ay_object *o)
       curve4.refine = NULL;
 
       if(ay_status)
-	return ay_status;
+	goto cleanup;
 
-      sweep->start_bevels = bevel;
+      *nextcb = bevel;
+      nextcb = &(bevel->next);
 
       /* create cap */
       if(sweep->has_start_cap)
 	{
 	  if(!(curve5 = calloc(1, sizeof(ay_object))))
 	    {
-	      return AY_EOMEM;
+	      ay_status = AY_EOMEM;
+	      goto cleanup;
 	    }
 
 	  ay_object_defaults(curve5);
@@ -654,12 +610,14 @@ ay_sweep_notifycb(ay_object *o)
 				    (ay_nurbcurve_object**)&(curve5->refine));
 
 	  if(ay_status)
-	    return ay_status;
+	    goto cleanup;
 
-	  ay_status = ay_capt_createfromcurve(curve5, &(sweep->start_cap));
+	  ay_status = ay_capt_createfromcurve(curve5, nextcb);
       
 	  if(ay_status)
-	    return ay_status;
+	    goto cleanup;
+
+	  nextcb = &((*nextcb)->next);
 	} /* if */
 
     } /* if */
@@ -673,7 +631,7 @@ ay_sweep_notifycb(ay_object *o)
 		    (ay_nurbcurve_object**)&(curve4.refine));
 
       if(ay_status)
-	return ay_status;
+	goto cleanup;
 
       ((ay_nurbcurve_object*)curve4.refine)->type =
 	((ay_nurbcurve_object*)curve1->refine)->type;
@@ -686,7 +644,8 @@ ay_sweep_notifycb(ay_object *o)
       bevel = NULL;
       if(!(bevel = calloc(1, sizeof(ay_object))))
 	{
-	  return AY_EOMEM;
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
 	}
 
       ay_object_defaults(bevel);
@@ -700,9 +659,10 @@ ay_sweep_notifycb(ay_object *o)
       curve4.refine = NULL;
 
       if(ay_status)
-	return ay_status;
+	goto cleanup;
 
-      sweep->end_bevels = bevel;
+      *nextcb = bevel;
+      nextcb = &(bevel->next);
 
       /* create cap */
       if(sweep->has_end_cap)
@@ -710,7 +670,8 @@ ay_sweep_notifycb(ay_object *o)
 	  curve5 = NULL;
 	  if(!(curve5 = calloc(1, sizeof(ay_object))))
 	    {
-	      return AY_EOMEM;
+	      ay_status = AY_EOMEM;
+	      goto cleanup;
 	    }
 
 	  ay_object_defaults(curve5);
@@ -722,27 +683,26 @@ ay_sweep_notifycb(ay_object *o)
 	  if(ay_status)
 	    return ay_status;
 
-	  ay_status = ay_capt_createfromcurve(curve5, &(sweep->end_cap));
+	  ay_status = ay_capt_createfromcurve(curve5, nextcb);
       
 	  if(ay_status)
-	    return ay_status;
+	    goto cleanup;
+
+	  nextcb = &((*nextcb)->next);
 	} /* if */
     } /* if */
 
-  if(sweep->start_cap)
+  if(sweep->caps_and_bevels)
     {
-      ((ay_nurbpatch_object *)
-       (sweep->start_cap->refine))->glu_sampling_tolerance = tolerance;
-      ((ay_nurbpatch_object *)
-       (sweep->start_cap->refine))->glu_display_mode = mode;
-    }
-
-  if(sweep->end_cap)
-    {
-      ((ay_nurbpatch_object *)
-       (sweep->end_cap->refine))->glu_sampling_tolerance = tolerance;
-      ((ay_nurbpatch_object *)
-       (sweep->end_cap->refine))->glu_display_mode = mode;
+      bevel = sweep->caps_and_bevels;
+      while(bevel)
+	{
+	  ((ay_nurbpatch_object *)
+	   (bevel->refine))->glu_sampling_tolerance = tolerance;
+	  ((ay_nurbpatch_object *)
+	   (bevel->refine))->glu_display_mode = mode;
+	  bevel = bevel->next;
+	}
     }
 
   /* interpolate the swept surface */
@@ -754,8 +714,11 @@ ay_sweep_notifycb(ay_object *o)
 	  ay_status = ay_npt_interpolateu(np, np->uorder);
 	}
     }
+  
+  npatch = NULL;
 
   /* remove provided objects */
+cleanup:
   if(got_c1)
     {
       ay_object_delete(pobject1);
@@ -771,7 +734,12 @@ ay_sweep_notifycb(ay_object *o)
       ay_object_delete(pobject3);
     }
 
- return AY_OK;
+  if(npatch)
+    {
+      ay_object_delete(npatch);
+    }
+
+ return ay_status;
 } /* ay_sweep_notifycb */
 
 
@@ -810,51 +778,8 @@ ay_sweep_providecb(ay_object *o, unsigned int type, ay_object **result)
       ay_trafo_copy(o, *t);
       t = &((*t)->next);
 
-      /* copy bevels */
-      p = s->start_bevels;
-      while(p)
-	{
-	  ay_status = ay_object_copy(p, t);
-	  if(ay_status)
-	    {
-	      ay_error(ay_status, fname, NULL);
-	      return AY_ERROR;
-	    }
-	  ay_trafo_add(o, *t);
-	  t = &((*t)->next);
-	  p = p->next;
-	} /* while */
-
-      p = s->end_bevels;
-      while(p)
-	{
-	  ay_status = ay_object_copy(p, t);
-	  if(ay_status)
-	    {
-	      ay_error(ay_status, fname, NULL);
-	      return AY_ERROR;
-	    }
-	  ay_trafo_add(o, *t);
-	  t = &((*t)->next);
-	  p = p->next;
-	} /* while */
-
-      /* copy caps */
-      p = s->start_cap;
-      while(p)
-	{
-	  ay_status = ay_object_copy(p, t);
-	  if(ay_status)
-	    {
-	      ay_error(ay_status, fname, NULL);
-	      return AY_ERROR;
-	    }
-	  ay_trafo_add(o, *t);
-	  t = &((*t)->next);
-	  p = p->next;
-	} /* while */
-
-      p = s->end_cap;
+      /* copy caps and bevels */
+      p = s->caps_and_bevels;
       while(p)
 	{
 	  ay_status = ay_object_copy(p, t);
@@ -880,16 +805,18 @@ ay_sweep_convertcb(ay_object *o, int in_place)
 {
  int ay_status = AY_OK;
  ay_sweep_object *r = NULL;
- ay_object *new = NULL, **next = NULL;
+ ay_object *new = NULL, **next = NULL, *b;
 
   if(!o)
     return AY_ENULL;
 
   /* first, create new objects */
-
   r = (ay_sweep_object *) o->refine;
 
-  if((r->start_cap) || (r->end_cap) || (r->start_bevels) || (r->end_bevels))
+  if(!r->npatch)
+    return AY_OK;
+
+  if(r->caps_and_bevels)
     {
       if(!(new = calloc(1, sizeof(ay_object))))
 	{ return AY_EOMEM; }
@@ -918,41 +845,19 @@ ay_sweep_convertcb(ay_object *o, int in_place)
 	    }
 	}
 
-      if(r->start_cap)
+      if(r->caps_and_bevels)
 	{
-	  ay_status = ay_object_copy(r->start_cap, next);
-	  if(*next)
+	  b = r->caps_and_bevels;
+	  while(b)
 	    {
-	      next = &((*next)->next);
-	    }
-	}
-
-      if(r->end_cap)
-	{
-	  ay_status = ay_object_copy(r->end_cap, next);
-	  if(*next)
-	    {
-	      next = &((*next)->next);
-	    }
-	}
-
-      if(r->start_bevels)
-	{
-	  ay_status = ay_object_copy(r->start_bevels, next);
-	  if(*next)
-	    {
-	      next = &((*next)->next);
-	    }
-	}
-
-      if(r->end_bevels)
-	{
-	  ay_status = ay_object_copy(r->end_bevels, next);
-	  if(*next)
-	    {
-	      next = &((*next)->next);
-	    }
-	}
+	      ay_status = ay_object_copy(b, next);
+	      if(*next)
+		{
+		  next = &((*next)->next);
+		}
+	      b = b->next;
+	    } /* while */
+	} /* if */
 
       ay_object_crtendlevel(next);
     }
@@ -969,7 +874,6 @@ ay_sweep_convertcb(ay_object *o, int in_place)
     } /* if */
 
   /* second, link new objects, or replace old objects with them */
-
   if(new)
     {
       if(!in_place)
