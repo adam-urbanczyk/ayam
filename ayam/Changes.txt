@@ -1,7 +1,23 @@
-[22. Feb 2006] CVS-Head:
+[11. Mar 2006] CVS-Head:
 o bug fixes:
   - fixed TP tags created by tesselation GUI (SF 1431917)
   - fixed broken SwapUV of PatchMesh objects (SF 1436463)
+o improved font selection for keyboard shortcut display window on MacOSX/Aqua
+o added "BP" tag type to store bevel parameters
+o added periodic sweeps; "Closed" attribute renamed to "Type", for new type
+  "Periodic" a periodic trajectory will now be sampled in a way, that a
+  fully closed/periodic smooth sweeped surface is created
+o added support for one and two section sweeps (with consequently lower order)
+o added bevels to open sweeps, parameters stored in "BP" tags
+o added new bevel modes, that automatically create caps (for convex outlines
+  without holes)
+o added mechanism to close NURBS patches in either u or v parametric dimension
+o added multiple points support to NURBS patches
+o improved NURBS tools menus: Reset Weights now appears in correct sub menus,
+  collapse/explode points commands moved to NURBCurve and added to NURBPatch
+  sub menus respectively
+o added standard Docs URL to the preferences dialog
+o "Set BGimage" in the view menu now also enables drawing of the BGImage
 
 
 [12. Feb 2006] Ayam 1.9:
