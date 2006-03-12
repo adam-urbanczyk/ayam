@@ -6201,7 +6201,7 @@ ay_npt_isclosedu(ay_nurbpatch_object *np)
   int i, a, b;
   double u;
 
-  if(!np || !type_u || !type_v)
+  if(!np)
     return AY_ENULL;
 
   /* check closedness in U direction */
