@@ -253,7 +253,7 @@ void ay_nct_getorientation(ay_nurbcurve_object *curve, double *oangle);
 
 int ay_nct_isclosed(ay_nurbcurve_object *nc);
 
-int ay_nct_createfrompatch(ay_object *p, int where, ay_object **cu);
+int ay_nct_settype(ay_nurbcurve_object *nc);
 
 int ay_nct_applytrafo(ay_object *c);
 
@@ -286,7 +286,7 @@ int ay_nct_intersect(ay_nurbcurve_object *cu, ay_nurbcurve_object *cv,
 
 int ay_nct_intersectca(ay_object *cu, ay_object *cv, double *intersections);
 
-int ay_nct_makecompatible(ay_object *cu);
+int ay_nct_makecompatible(ay_object *curves);
 
 int ay_nct_shiftcbs(ay_nurbcurve_object *curve);
 

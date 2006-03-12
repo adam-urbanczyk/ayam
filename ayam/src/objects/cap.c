@@ -334,7 +334,8 @@ ay_cap_notifycb(ay_object *o)
 	      if(down->type == AY_IDNPATCH)
 		{
 		  /* get info which curve from tag */
-		  ay_status = ay_nct_createfrompatch(down, 3, nextcurve);
+		  ay_status = ay_nct_createfrompatch(down, 3, 0, AY_FALSE,
+						     nextcurve);
 		  if(nextcurve)
 		    {
 		      nextcurve = &((*nextcurve)->next);

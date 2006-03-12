@@ -112,6 +112,7 @@ ay_npt_destroy(ay_nurbpatch_object *patch)
  return AY_OK;
 } /* ay_npt_destroy */
 
+
 /* ay_npt_revolve:
  *  create a surface of revolution from the NURBS curve in <o>
  *  (that will be projected to the XY-plane for revolution)
@@ -5862,6 +5863,8 @@ ay_npt_extractnc(ay_object *o, int side, double param, int apply_trafo,
 
   nc->is_rat = ay_nct_israt(nc);
 
+  ay_nct_settype(nc);
+
   /* return result */
   *result = nc;
   nc = NULL;
@@ -6187,6 +6190,29 @@ ay_npt_closevtcmd(ClientData clientData, Tcl_Interp *interp,
 
  return TCL_OK;
 } /* ay_npt_closevtcmd */
+
+
+/* ay_npt_isclosedu:
+ *  <np>
+ */
+int
+ay_npt_isclosedu(ay_nurbpatch_object *np)
+{
+  int i, a, b;
+  double u;
+
+  if(!np || !type_u || !type_v)
+    return AY_ENULL;
+
+  /* check closedness in U direction */
+  for(i = 0; i < np->height; i++)
+    {
+      u = np->uknotv[np->uorder-1];
+
+    }
+
+ return AY_OK;
+} /* ay_npt_isclosedu */
 
 
 /* ay_npt_clearmp:
