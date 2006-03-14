@@ -11,11 +11,17 @@
  */
 
 // onio.cpp - Ayam OpenNURBS (Rhino 3DM) IO plugin
+#include <stdarg.h>
+#include <iostream>
 
 #include "ayam.h"
+#include <opennurbs.h>
+#include <opennurbs_extensions.h>
 
-#include "opennurbs.h"
-#include "opennurbs_extensions.h"
+
+
+
+
 
 // local types
 
