@@ -188,6 +188,8 @@ bind $w.ftext.text <ButtonRelease-1> {
 }
 # bind
 
+update idletasks
+
 tkwait window $w
 
 winAutoFocusOn
