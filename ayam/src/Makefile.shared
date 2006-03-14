@@ -468,13 +468,15 @@ ayamsh: $(AYAMOBJS) $(TOGLOBJECT) $(AFFINEOBJS)
 Ayam.app: ayamsh
 	mv ayamsh ../bin/Ayam.app/Contents/MacOS/Ayam
 	cp -rf tcl ../bin/Ayam.app/Contents/Resources/Scripts
+	-mkdir ../bin/Ayam.app/Contents/MacOS/plugins
 	-cp plugins/*.so ../bin/Ayam.app/Contents/MacOS/plugins
 	-cp plugins/*.tcl ../bin/Ayam.app/Contents/MacOS/plugins
 	-cp contrib/meta/*.so ../bin/Ayam.app/Contents/MacOS/plugins
 	-cp contrib/meta/*.tcl ../bin/Ayam.app/Contents/MacOS/plugins
-	-cp ../../docs/html/*.html ../bin/Ayam.app/Contents/Resources/docs/
+	-mkdir ../bin/Ayam.app/Contents/Resources/docs
+	-cp ../../doc/html/*.html ../bin/Ayam.app/Contents/Resources/docs/
 	-mkdir ../bin/Ayam.app/Contents/Resources/docs/pics
-	-cp ../../docs/html/pics/*.gif ../bin/Ayam.app/Contents/Resources/docs/pics
+	-cp ../../doc/html/pics/*.gif ../bin/Ayam.app/Contents/Resources/docs/pics
 
 Ayam.dmg:
 	cp -R ../bin/Ayam.app /Volumes/ayam
@@ -482,7 +484,7 @@ Ayam.dmg:
 	cp ../README.txt /Volumes/ayam
 	cp ../License.txt /Volumes/ayam
 	cp ../Setup.txt /Volumes/ayam
-	cp ../../docs/ayam.pdf /Volumes/ayam
+	cp ../../doc/ayam.pdf /Volumes/ayam
 	cp -R ../scn /Volumes/ayam
 	cp -R scripts /Volumes/ayam
 	-find /Volumes/ayam -name CVS -exec rm -rf "{}" ";"
