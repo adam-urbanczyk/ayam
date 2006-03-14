@@ -219,7 +219,7 @@ proc tgui_update args {
 	    .tguiw.f1.fSParamU.s conf -resolution 0.1
 	    .tguiw.f1.fSParamV.s conf -resolution 0.1
 	}
-	pack .tguiw.f1.fSParamV -in .tguiw.f1 -side top
+	pack .tguiw.f1.fSParamV -in .tguiw.f1 -side top -fill x -expand yes
     }
 
     set tgui_tessparam(OldSMethod) $tgui_tessparam(SMethod)
@@ -489,7 +489,6 @@ proc tgui_open { } {
 	undo; focus .; destroy .tguiw;
 	return;
     }
-
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {
