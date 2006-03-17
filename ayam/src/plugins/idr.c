@@ -57,22 +57,28 @@ typedef struct idr_picpart_s {
   uint32 *rgba_result;  /* resulting image data */
 } idr_picpart;
 
-idr_picpart *idr_partlist = NULL, **idr_partlist_next;
+static idr_picpart *idr_partlist = NULL, **idr_partlist_next;
 
-uint32 *idr_picture_buf = NULL;  /* the result picture is stored here */
+/* the result picture is stored here */
+static uint32 *idr_picture_buf = NULL;
 
-int idr_picture_width, idr_picture_height;  /* dimension of target picture */
+/* dimension of target picture */
+static int idr_picture_width, idr_picture_height; 
 
-int idr_qlevels; /* how many quality/importance levels are to be rendered? */
+/* how many quality/importance levels are to be rendered? */
+static int idr_qlevels;
 
-char *idr_base; /* basename for all idr related temporary files */
+/* basename for all idr related temporary files */
+static char *idr_base;
 
 static ay_drawcb *idr_root_drawcb = NULL;
 
-char idr_window_path[256];
+/* save Togl widget path for later access via Tcl */
+static char idr_window_path[256];
 
-int weight_r;  /* one start of rendrib costs as much time as
-		  rendering weight_r pixels; set via tcl-interface  */
+/* one start of rendrib costs as much time as
+   rendering weight_r pixels; set via tcl-interface  */
+static int weight_r; 
 
 typedef struct idr_param_s {
   double importance;
@@ -3686,44 +3692,45 @@ idr_combine_pics(uint32 *db, int dw, int dh, uint32 *sb, int sw, int sh,
  int x, y, z, a;
  unsigned char ra;
  unsigned char *pixel_src, *pixel_dst;
-  l+= dw/2;
-  b+= dh/2;
+
+  l += dw/2;
+  b += dh/2;
   for(y = 0; y < sh; y++)
     {
       for (x = 0; x < sw; x++)
         {
 	  if((x+l < dw) && (y+b < dh))
 	    {
-	      pixel_src = (char *)&sb[y*sw+x];
+	      pixel_src = (unsigned char *)&sb[y*sw+x];
 	      if(part_alpha)
 		{
-		  if(part_alpha>1)
+		  if(part_alpha > 1)
 		    {
-		      glReadPixels(x+l,y+b,1,1,GL_RED, GL_UNSIGNED_BYTE, &ra);
-		      if(ra!=127)
+		      glReadPixels(x+l, y+b, 1, 1, GL_RED, GL_UNSIGNED_BYTE,
+				   &ra);
+		      if(ra != 127)
 			a = 0;
 		      else
 			a = 255;
-		      /*printf("hier %d\n",ra);*/
 		    }
 		  else
 		    {
 		      a = 255;
-		    }
+		    } /* if */
 		}
 	      else
 		{
 		  a = pixel_src[3]; /* alpha value */
-		}
-	      pixel_dst = (char *)&db[(y+b)*dw+(x+l)];
+		} /* if */
+	      pixel_dst = (unsigned char *)&db[(y+b)*dw+(x+l)];
 	      for(z = 0; z < 4; z++)
 		{
 		  /*pixel_dst[z] = ((255-a)*pixel_dst[z]+a*pixel_src[z])/256;*/
 	          pixel_dst[z] = pixel_src[z]+(((255-a)*pixel_dst[z])/256);
-		}
-	    }
-        }
-    }
+		} /* for */
+	    } /* if */
+        } /* for */
+    } /* for */
 } /* idr_combine_pics */
 
 
