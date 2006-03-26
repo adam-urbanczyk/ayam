@@ -181,7 +181,6 @@ ay_sweep_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_sweep_object *sweep = NULL;
 
-
   if(!o)
     return AY_ENULL;
 
@@ -355,7 +354,7 @@ ay_sweep_writecb(FILE *fileptr, ay_object *o)
 int
 ay_sweep_wribcb(char *file, ay_object *o)
 {
- ay_sweep_object *sweep = NULL;
+ ay_sweep_object *sweep;
  ay_object *b;
 
   if(!o)
@@ -681,7 +680,7 @@ ay_sweep_notifycb(ay_object *o)
 				    (ay_nurbcurve_object**)&(curve5->refine));
 
 	  if(ay_status)
-	    return ay_status;
+	    goto cleanup;
 
 	  ay_status = ay_capt_createfromcurve(curve5, nextcb);
       
@@ -692,6 +691,7 @@ ay_sweep_notifycb(ay_object *o)
 	} /* if */
     } /* if */
 
+  /* copy sampling tolerance/mode attributes to caps and bevels */
   if(sweep->caps_and_bevels)
     {
       bevel = sweep->caps_and_bevels;

@@ -467,6 +467,7 @@ array set ay {
  transformationshaders ""
  npdisplaymodes { "Global" "ControlHull" "OutlinePolygon (GLU)" "OutlinePatch (GLU)" "OutlinePatch (STESS)" }
  ncdisplaymodes { "Global" "ControlHull" "CurveAndHull (GLU)" "Curve (GLU)" "CurveAndHull (STESS)" "Curve (STESS)" }
+ bevelmodes { "Round" "Linear" "Ridge" "RoundCapped" "LinearCapped" }
  prefssection Main
  GridSize 1.0
  FOV 45.0
@@ -1159,6 +1160,7 @@ ayam_loadscript uie
 ayam_loadscript shortcut
 ayam_loadscript ms
 ayam_loadscript prop
+ayam_loadscript bevel
 ayam_loadscript birail1
 ayam_loadscript birail2
 ayam_loadscript box

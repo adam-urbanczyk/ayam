@@ -53,11 +53,11 @@ ay_birail1_deletecb(void *c)
   if(birail1->npatch)
     ay_object_delete(birail1->npatch);
 
-  if(birail1->start_cap)
-    ay_object_delete(birail1->start_cap);
-
-  if(birail1->end_cap)
-    ay_object_delete(birail1->end_cap);
+  if(birail1->caps_and_bevels)
+    {
+      ay_object_deletemulti(birail1->caps_and_bevels);
+      birail1->caps_and_bevels = NULL;
+    }
 
   free(birail1);
 
@@ -80,16 +80,10 @@ ay_birail1_copycb(void *src, void **dst)
 
   memcpy(birail1, src, sizeof(ay_birail1_object)); 
 
-
   /* copy npatch */
   ay_object_copy(birail1src->npatch, &(birail1->npatch));
 
-  /* copy start cap */
-  ay_object_copy(birail1src->start_cap, &(birail1->start_cap));
-
-  /* copy end cap */
-  ay_object_copy(birail1src->end_cap, &(birail1->end_cap));
-
+  birail1->caps_and_bevels = NULL;
 
   *dst = (void *)birail1;
 
@@ -100,7 +94,8 @@ ay_birail1_copycb(void *src, void **dst)
 int
 ay_birail1_drawcb(struct Togl *togl, ay_object *o)
 {
- ay_birail1_object *birail1 = NULL;
+ ay_birail1_object *birail1;
+ ay_object *b;
 
   if(!o)
     return AY_ENULL;
@@ -113,11 +108,15 @@ ay_birail1_drawcb(struct Togl *togl, ay_object *o)
   if(birail1->npatch)
     ay_draw_object(togl, birail1->npatch, AY_TRUE);
 
-  if(birail1->start_cap)
-    ay_draw_object(togl, birail1->start_cap, AY_TRUE);
-
-  if(birail1->end_cap)
-    ay_draw_object(togl, birail1->end_cap, AY_TRUE);
+  if(birail1->caps_and_bevels)
+    {
+      b = birail1->caps_and_bevels;
+      while(b)
+	{
+	  ay_draw_object(togl, b, AY_TRUE);
+	  b = b->next;
+	}
+    }
 
  return AY_OK;
 } /* ay_birail1_drawcb */
@@ -126,7 +125,8 @@ ay_birail1_drawcb(struct Togl *togl, ay_object *o)
 int
 ay_birail1_shadecb(struct Togl *togl, ay_object *o)
 {
- ay_birail1_object *birail1 = NULL;
+ ay_birail1_object *birail1;
+ ay_object *b;
 
   if(!o)
     return AY_ENULL;
@@ -139,11 +139,15 @@ ay_birail1_shadecb(struct Togl *togl, ay_object *o)
   if(birail1->npatch)
     ay_shade_object(togl, birail1->npatch, AY_FALSE);
 
-  if(birail1->start_cap)
-    ay_shade_object(togl, birail1->start_cap, AY_FALSE);
-
-  if(birail1->end_cap)
-    ay_shade_object(togl, birail1->end_cap, AY_FALSE);
+  if(birail1->caps_and_bevels)
+    {
+      b = birail1->caps_and_bevels;
+      while(b)
+	{
+	  ay_shade_object(togl, b, AY_FALSE);
+	  b = b->next;
+	}
+    }
 
  return AY_OK;
 } /* ay_birail1_shadecb */
@@ -174,7 +178,6 @@ ay_birail1_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  /* char fname[] = "birail1_setpropcb";*/
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_birail1_object *birail1 = NULL;
-
 
   if(!o)
     return AY_ENULL;
@@ -321,7 +324,8 @@ ay_birail1_writecb(FILE *fileptr, ay_object *o)
 int
 ay_birail1_wribcb(char *file, ay_object *o)
 {
- ay_birail1_object *birail1 = NULL;
+ ay_birail1_object *birail1;
+ ay_object *b;
 
   if(!o)
    return AY_ENULL;
@@ -331,11 +335,15 @@ ay_birail1_wribcb(char *file, ay_object *o)
   if(birail1->npatch)
     ay_wrib_object(file, birail1->npatch);
 
-  if(birail1->start_cap)
-    ay_wrib_object(file, birail1->start_cap);
-
-  if(birail1->end_cap)
-    ay_wrib_object(file, birail1->end_cap);
+  if(birail1->caps_and_bevels)
+    {
+      b = birail1->caps_and_bevels;
+      while(b)
+	{
+	  ay_wrib_object(file, b);
+	  b = b->next;
+	}
+    }
 
  return AY_OK;
 } /* ay_birail1_wribcb */
@@ -372,10 +380,14 @@ ay_birail1_notifycb(ay_object *o)
  ay_birail1_object *birail1 = NULL;
  ay_object *curve1 = NULL, *curve2 = NULL, *pobject1 = NULL, *pobject2 = NULL;
  ay_object *curve3 = NULL, *pobject3 = NULL;
- ay_object *npatch = NULL;
+ ay_object curve4 = {0}, *curve5;
+ ay_object *npatch = NULL, **nextcb, *start_cap = NULL, *end_cap = NULL;
+ ay_object *bevel = NULL;
  int ay_status = AY_OK;
  int got_c1 = AY_FALSE, got_c2 = AY_FALSE, got_c3 = AY_FALSE, mode = 0;
- double tolerance;
+ int has_startb = AY_FALSE, has_endb = AY_FALSE;
+ int startb_type, endb_type, startb_sense, endb_sense;
+ double tolerance, startb_radius, endb_radius;
 
   if(!o)
     return AY_ENULL;    
@@ -385,18 +397,18 @@ ay_birail1_notifycb(ay_object *o)
   mode = birail1->glu_display_mode;
   tolerance = birail1->glu_sampling_tolerance;
 
+  nextcb = &(birail1->caps_and_bevels);
+
   /* remove old objects */
   if(birail1->npatch)
     ay_object_delete(birail1->npatch);
   birail1->npatch = NULL;
 
-  if(birail1->start_cap)
-    ay_object_delete(birail1->start_cap);
-  birail1->start_cap = NULL;
-
-  if(birail1->end_cap)
-    ay_object_delete(birail1->end_cap);
-  birail1->end_cap = NULL;
+  if(birail1->caps_and_bevels)
+    {
+      ay_object_deletemulti(birail1->caps_and_bevels);
+      birail1->caps_and_bevels = NULL;
+    }
 
   /* get curves to birail1 */
   if(!o->down)
@@ -452,6 +464,11 @@ ay_birail1_notifycb(ay_object *o)
 	} /* if */
     } /* if */
 
+  /* get bevel parameters */
+  ay_npt_getbeveltags(o, &has_startb, &startb_type, &startb_radius,
+		      &startb_sense, &has_endb, &endb_type, &endb_radius,
+		      &endb_sense);
+
   /* birail1 */
   if(!(npatch = calloc(1, sizeof(ay_object))))
     {
@@ -464,11 +481,24 @@ ay_birail1_notifycb(ay_object *o)
   ay_status = ay_npt_birail1(curve1, curve2, curve3,
 			   birail1->sections, AY_FALSE/*birail1->close*/,
 			   (ay_nurbpatch_object **)(&(npatch->refine)),
-			   birail1->has_start_cap, &(birail1->start_cap),
-			   birail1->has_end_cap, &(birail1->end_cap));
-
+			   has_startb?AY_FALSE:birail1->has_start_cap,
+			   &start_cap,
+			   has_endb?AY_FALSE:birail1->has_end_cap,
+			   &end_cap);
+    
   if(ay_status)
     goto cleanup;
+
+  if(start_cap)
+    {
+      *nextcb = start_cap;
+      nextcb = &(start_cap->next);
+    }
+  if(end_cap)
+    {
+      *nextcb = end_cap;
+      nextcb = &(end_cap->next);
+    }
 
   birail1->npatch = npatch;
 
@@ -480,21 +510,158 @@ ay_birail1_notifycb(ay_object *o)
   ((ay_nurbpatch_object *)birail1->npatch->refine)->glu_display_mode =
     mode;
 
-  /* copy sampling tolerance/mode attributes to caps */
-  if(birail1->start_cap)
+  /* create bevels and caps */
+  if(/*!birail1->close &&*/ has_startb)
     {
-      ((ay_nurbpatch_object *)
-       (birail1->start_cap->refine))->glu_sampling_tolerance = tolerance;
-      ((ay_nurbpatch_object *)
-       (birail1->start_cap->refine))->glu_display_mode = mode;
-    }
+      ay_object_defaults(&curve4);
+      curve4.type = AY_IDNCURVE;
+      ay_status = ay_npt_extractnc(npatch, 3, 0.0, AY_FALSE,
+		    (ay_nurbcurve_object**)&(curve4.refine));
 
-  if(birail1->end_cap)
+      if(ay_status)
+	goto cleanup;
+
+      ((ay_nurbcurve_object*)curve4.refine)->type =
+	((ay_nurbcurve_object*)curve1->refine)->type;
+
+      if(!startb_sense)
+	{
+	  ay_nct_revert((ay_nurbcurve_object*)(curve4.refine));
+	}
+
+      bevel = NULL;
+      if(!(bevel = calloc(1, sizeof(ay_object))))
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	}
+
+      ay_object_defaults(bevel);
+      bevel->type = AY_IDNPATCH;
+      bevel->parent = AY_TRUE;
+      bevel->inherit_trafos = AY_FALSE;
+      ay_status = ay_npt_bevel(startb_type, startb_radius, AY_TRUE, &curve4,
+			       (ay_nurbpatch_object**)&(bevel->refine));
+
+      ay_nct_destroy((ay_nurbcurve_object*)curve4.refine);
+      curve4.refine = NULL;
+
+      if(ay_status)
+	goto cleanup;
+
+      *nextcb = bevel;
+      nextcb = &(bevel->next);
+
+      /* create cap */
+      if(birail1->has_start_cap)
+	{
+	  if(!(curve5 = calloc(1, sizeof(ay_object))))
+	    {
+	      ay_status = AY_EOMEM;
+	      goto cleanup;
+	    }
+
+	  ay_object_defaults(curve5);
+	  curve5->type = AY_IDNCURVE;
+
+	  ay_status = ay_npt_extractnc(bevel, 3, 0.0, AY_FALSE,
+				    (ay_nurbcurve_object**)&(curve5->refine));
+
+	  if(ay_status)
+	    goto cleanup;
+
+	  ay_status = ay_capt_createfromcurve(curve5, nextcb);
+      
+	  if(ay_status)
+	    goto cleanup;
+
+	  nextcb = &((*nextcb)->next);
+	} /* if */
+
+    } /* if */
+
+  if(/*!birail1->close &&*/ has_endb)
     {
-      ((ay_nurbpatch_object *)
-       (birail1->end_cap->refine))->glu_sampling_tolerance = tolerance;
-      ((ay_nurbpatch_object *)
-       (birail1->end_cap->refine))->glu_display_mode = mode;
+      memset(&curve4, 0, sizeof(ay_object));
+      ay_object_defaults(&curve4);
+      curve4.type = AY_IDNCURVE;
+      ay_status = ay_npt_extractnc(npatch, 2, 0.0, AY_FALSE,
+		    (ay_nurbcurve_object**)&(curve4.refine));
+
+      if(ay_status)
+	goto cleanup;
+
+      ((ay_nurbcurve_object*)curve4.refine)->type =
+	((ay_nurbcurve_object*)curve1->refine)->type;
+
+      if(endb_sense)
+	{
+	  ay_nct_revert((ay_nurbcurve_object*)(curve4.refine));
+	}
+
+      bevel = NULL;
+      if(!(bevel = calloc(1, sizeof(ay_object))))
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	}
+
+      ay_object_defaults(bevel);
+      bevel->type = AY_IDNPATCH;
+      bevel->parent = AY_TRUE;
+      bevel->inherit_trafos = AY_FALSE;
+      ay_status = ay_npt_bevel(endb_type, endb_radius, AY_TRUE, &curve4,
+			       (ay_nurbpatch_object**)&(bevel->refine));
+
+      ay_nct_destroy((ay_nurbcurve_object*)curve4.refine);
+      curve4.refine = NULL;
+
+      if(ay_status)
+	goto cleanup;
+
+      *nextcb = bevel;
+      nextcb = &(bevel->next);
+
+      /* create cap */
+      if(birail1->has_end_cap)
+	{
+	  curve5 = NULL;
+	  if(!(curve5 = calloc(1, sizeof(ay_object))))
+	    {
+	      ay_status = AY_EOMEM;
+	      goto cleanup;
+	    }
+
+	  ay_object_defaults(curve5);
+	  curve5->type = AY_IDNCURVE;
+
+	  ay_status = ay_npt_extractnc(bevel, 3, 0.0, AY_FALSE,
+				    (ay_nurbcurve_object**)&(curve5->refine));
+
+	  if(ay_status)
+	    goto cleanup;
+
+	  ay_status = ay_capt_createfromcurve(curve5, nextcb);
+      
+	  if(ay_status)
+	    goto cleanup;
+
+	  nextcb = &((*nextcb)->next);
+	} /* if */
+    } /* if */
+
+  /* copy sampling tolerance/mode attributes to caps and bevels */
+  if(birail1->caps_and_bevels)
+    {
+      bevel = birail1->caps_and_bevels;
+      while(bevel)
+	{
+	  ((ay_nurbpatch_object *)
+	   (bevel->refine))->glu_sampling_tolerance = tolerance;
+	  ((ay_nurbpatch_object *)
+	   (bevel->refine))->glu_display_mode = mode;
+	  bevel = bevel->next;
+	}
     }
 
 cleanup:
@@ -556,22 +723,8 @@ ay_birail1_providecb(ay_object *o, unsigned int type, ay_object **result)
       ay_trafo_copy(o, *t);
       t = &((*t)->next);
 
-      /* copy caps */
-      p = s->start_cap;
-      while(p)
-	{
-	  ay_status = ay_object_copy(p, t);
-	  if(ay_status)
-	    {
-	      ay_error(ay_status, fname, NULL);
-	      return AY_ERROR;
-	    }
-	  ay_trafo_add(o, *t);
-	  t = &((*t)->next);
-	  p = p->next;
-	} /* while */
-
-      p = s->end_cap;
+      /* copy caps and bevels */
+      p = s->caps_and_bevels;
       while(p)
 	{
 	  ay_status = ay_object_copy(p, t);
@@ -596,17 +749,18 @@ int
 ay_birail1_convertcb(ay_object *o, int in_place)
 {
  int ay_status = AY_OK;
- ay_birail1_object *r = NULL;
+ ay_birail1_object *birail1 = NULL;
  ay_object *new = NULL, **next = NULL;
+ ay_object *b;
 
   if(!o)
     return AY_ENULL;
 
   /* first, create new objects */
 
-  r = (ay_birail1_object *) o->refine;
+  birail1 = (ay_birail1_object *) o->refine;
 
-  if((r->start_cap) || (r->end_cap))
+  if(birail1->caps_and_bevels)
     {
       if(!(new = calloc(1, sizeof(ay_object))))
 	{ return AY_EOMEM; }
@@ -624,9 +778,9 @@ ay_birail1_convertcb(ay_object *o, int in_place)
 
       next = &(new->down);
 
-      if(r->npatch)
+      if(birail1->npatch)
 	{
-	  ay_status = ay_object_copy(r->npatch, next);
+	  ay_status = ay_object_copy(birail1->npatch, next);
 	  if(*next)
 	    {
 	      (*next)->parent = AY_TRUE;
@@ -635,31 +789,27 @@ ay_birail1_convertcb(ay_object *o, int in_place)
 	    }
 	}
 
-      if(r->start_cap)
+      if(birail1->caps_and_bevels)
 	{
-	  ay_status = ay_object_copy(r->start_cap, next);
-	  if(*next)
+	  b = birail1->caps_and_bevels;
+	  while(b)
 	    {
-	      next = &((*next)->next);
-	    }
-	}
-
-      if(r->end_cap)
-	{
-	  ay_status = ay_object_copy(r->end_cap, next);
-	  if(*next)
-	    {
-	      next = &((*next)->next);
-	    }
-	}
+	      ay_status = ay_object_copy(b, next);
+	      if(*next)
+		{
+		  next = &((*next)->next);
+		}
+	      b = b->next;
+	    } /* while */
+	} /* if */
 
       ay_object_crtendlevel(next);
     }
   else
     {
-       if(r->npatch)
+       if(birail1->npatch)
 	{
-	  ay_status = ay_object_copy(r->npatch, &new);
+	  ay_status = ay_object_copy(birail1->npatch, &new);
 	  ay_trafo_copy(o, new);
 	  new->hide_children = AY_TRUE;
 	  new->parent = AY_TRUE;
