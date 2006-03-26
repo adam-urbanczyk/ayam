@@ -656,6 +656,7 @@ typedef struct ay_sweep_object_s
  int glu_display_mode;
 } ay_sweep_object;
 
+
 typedef struct ay_birail1_object_s
 {
  ay_object *npatch;
@@ -664,9 +665,9 @@ typedef struct ay_birail1_object_s
  int sections;
 
  int has_start_cap;
- ay_object *start_cap;
  int has_end_cap;
- ay_object *end_cap;
+
+ ay_object *caps_and_bevels;
 
  double glu_sampling_tolerance;
  int glu_display_mode;
@@ -681,9 +682,9 @@ typedef struct ay_birail2_object_s
  int sections;
 
  int has_start_cap;
- ay_object *start_cap;
  int has_end_cap;
- ay_object *end_cap;
+ 
+ ay_object *caps_and_bevels;
 
  double glu_sampling_tolerance;
  int glu_display_mode;
@@ -701,9 +702,9 @@ typedef struct ay_skin_object_s
  double uknotv;
 
  int has_start_cap;
- ay_object *start_cap;
  int has_end_cap;
- ay_object *end_cap;
+
+ ay_object *caps_and_bevels;
 
  double glu_sampling_tolerance;
  int glu_display_mode;
