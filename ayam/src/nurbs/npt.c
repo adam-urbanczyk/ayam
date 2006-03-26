@@ -4291,7 +4291,7 @@ ay_npt_bevel(int type, double radius, int align, ay_object *o,
  double uknots_linear[4] = {0.0, 0.0, 1.0, 1.0};
  double uknots_ridge[8] = {0.0, 0.0, 0.0, 0.25, 0.75, 1.0, 1.0, 1.0};
  double uknots_round_cap[8] = {0.0, 0.0, 0.0, 1.0, 1.0, 1.5, 1.5, 1.5};
- double uknots_linear_cap[5] = {0.0, 0.0, 1.5, 1.0, 1.0};
+ double uknots_linear_cap[5] = {0.0, 0.0, 0.75, 1.0, 1.0};
  /* vknots are taken from curve! */
  double *uknotv = NULL, *vknotv = NULL, *controlv = NULL, *tccontrolv = NULL;
  double x, y, z, w;
@@ -4370,9 +4370,9 @@ ay_npt_bevel(int type, double radius, int align, ay_object *o,
       {
 	if(!(controlv = calloc(4*3*curve->length, sizeof(double))))
 	  { free(patch); return AY_EOMEM; }
-	if(!(uknotv = calloc(4, sizeof(double))))
+	if(!(uknotv = calloc(5, sizeof(double))))
 	  { free(patch); free(controlv); return AY_EOMEM; }
-	memcpy(uknotv, uknots_linear, 4*sizeof(double));
+	memcpy(uknotv, uknots_linear_cap, 5*sizeof(double));
 	patch->uorder = 2;
 	patch->width = 3;
 	patch->uknot_type = AY_KTNURB;
