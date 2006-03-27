@@ -7,7 +7,7 @@
 #
 # See the file License for details.
 
-# extrude.tcl - interpolating curves objects Tcl code
+# extrude.tcl - Extrude objects Tcl code
 
 set Extrude_props { Transformations Attributes Material Tags ExtrudeAttr }
 
@@ -32,7 +32,7 @@ addCheck $w ExtrudeAttrData UpperCap
 addCheck $w ExtrudeAttrData LowerCap
 addCheck $w ExtrudeAttrData UpperBevels
 addCheck $w ExtrudeAttrData LowerBevels
-addMenu $w ExtrudeAttrData BevelType [list Round Linear Ridge]
+addMenu $w ExtrudeAttrData BevelType $ay(bevelmodes)
 addParam $w ExtrudeAttrData BevelRadius
 
 addParam $w ExtrudeAttrData Tolerance
@@ -53,7 +53,7 @@ proc extrude_crt { } {
 
     set ay_error 0
     crtOb Extrude
-    if { $ay_error } {  return; }
+    if { $ay_error } { return; }
 
     cutOb
     set ay(ul) $ay(CurrentLevel)
