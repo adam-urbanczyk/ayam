@@ -478,6 +478,10 @@ Ayam.app: ayamsh
 	-mkdir ../bin/Ayam.app/Contents/Resources/docs/pics
 	-cp ../../doc/html/pics/*.gif ../bin/Ayam.app/Contents/Resources/docs/pics
 
+Ayam.appfw: Ayam.app
+	install_name_tool -change /Library/Frameworks/Tcl.framework/Versions/8.4/Tcl @executable_path/../Frameworks/Tcl.framework/Tcl ../bin/Ayam.app/Contents/MacOS/Ayam
+	install_name_tool -change /Library/Frameworks/Tk.framework/Versions/8.4/Tk @executable_path/../Frameworks/Tk.framework/Tk ../bin/Ayam.app/Contents/MacOS/Ayam
+
 Ayam.dmg:
 	cp -R ../bin/Ayam.app /Volumes/ayam
 	cp ../Changes.txt /Volumes/ayam
