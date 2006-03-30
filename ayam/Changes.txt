@@ -1,4 +1,4 @@
-[11. Mar 2006] CVS-Head:
+[30. Mar 2006] CVS-Head:
 o bug fixes:
   - fixed TP tags created by tesselation GUI (SF 1431917)
   - fixed broken SwapUV of PatchMesh objects (SF 1436463)
@@ -18,12 +18,20 @@ o improved NURBS tools menus: Reset Weights now appears in correct sub menus,
   sub menus respectively
 o added standard Docs URL to the preferences dialog
 o "Set BGimage" in the view menu now also enables drawing of the BGImage
-
+o improved tesselation GUI layout of SMParamV on MacOSX/Aqua
+o fixed blocking about dialog on Tk 8.4.12 (MacOSX/Aqua)
+o added help menu entries on MacOSX/Aqua
+o added start/end bevels to sweep, skin, birail1, and birail2 objects
+o fixed compilation of onio plugin with recent SGI-CC versions
+o fixed compilation of IDR plugin on MacOSX/Aqua
+o fixed documentation paths in Ayam.app and Ayam.dmg compilation targets
+o added target to build an Ayam.app application bundle that contains
+  a local copy of the Tcl and Tk frameworks
 
 [12. Feb 2006] Ayam 1.9:
 o bug fixes:
   - fixed automatic merging of PV tags (SF 1238692)
-  - fixed root object not drawn upon File/New (SF 1245221)
+  - fixed root object not drawn upon "File/New" (SF 1245221)
   - fixed warning message to disable script tags and objects while loading
     scenes via MRU menu entries (SF 1245225)
   - fixed provided clone objects missing transformations (SF 1247844)
@@ -60,8 +68,8 @@ o added keyboard shortcut to close the toolbox window
 o added scripting interface command "repOb" and corresponding main menu
   entry "Special/Clipboard/Replace" that replaces the currently selected
   object(s) with the object clipboard content
-o added new object type "RiProc" for procedural objects (DelayedReadArchive,
-  RunProgram, and DynamicLoad)
+o added new object type "RiProc" for procedural objects (supporting
+  DelayedReadArchive, RunProgram, and DynamicLoad)
 o added a mechanism to allow cascaded script objects
 o added proper error messages when no objects are selected upon creation
   of NURBS tool objects (revolve, skin, etc.)
