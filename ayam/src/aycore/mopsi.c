@@ -1645,6 +1645,11 @@ ay_mopsi_extrude(FILE *fileptr, ay_object *o)
 {
  int ay_status = AY_OK;
  ay_extrude_object *ext = NULL;
+ int has_startb2 = AY_FALSE, has_endb2 = AY_FALSE;
+ int startb_type2;
+ double startb_radius2;
+ ay_tag_object tag = {0}, *stag = NULL, *etag = NULL;
+ char vbuf[128], nbuf[3] = "BP";
 
   if(!(ext = calloc(1, sizeof(ay_extrude_object))))
     { return AY_EOMEM; }
@@ -1655,7 +1660,6 @@ ay_mopsi_extrude(FILE *fileptr, ay_object *o)
 
   ext->height = 1.0;
   ext->glu_sampling_tolerance = 30.0;
-  ext->bevel_radius = 0.1;
 
   fscanf(fileptr,"%d\n",&ext->has_upper_cap);
   fscanf(fileptr,"%d\n",&ext->has_lower_cap);
@@ -1663,11 +1667,30 @@ ay_mopsi_extrude(FILE *fileptr, ay_object *o)
   if(ay_mopsi_version > 4)
     {
       fscanf(fileptr,"%lg\n",&ext->height);
-      fscanf(fileptr,"%d\n",&ext->has_upper_bevels);
-      fscanf(fileptr,"%d\n",&ext->has_lower_bevels);
-      fscanf(fileptr,"%lg\n",&ext->bevel_radius);
-      fscanf(fileptr,"%d\n",&ext->bevel_type);
+
+      fscanf(fileptr, "%d\n", &has_startb2);
+      fscanf(fileptr, "%d\n", &has_endb2);
+      fscanf(fileptr, "%lg\n" ,&startb_radius2);
+      fscanf(fileptr, "%d\n", &startb_type2);
+
       fscanf(fileptr,"%lg\n",&ext->glu_sampling_tolerance);
+
+      tag.name = nbuf;
+      tag.val = vbuf;
+      if(has_startb2)
+	{
+	  sprintf(vbuf, "0,%d,%g,0", startb_type2, startb_radius2);
+	  ay_tags_copy(&tag, &stag);
+	  ay_tags_append(o, stag);
+	}
+
+      if(has_endb2)
+	{
+	  sprintf(vbuf, "1,%d,%g,0", startb_type2, startb_radius2);
+	  ay_tags_copy(&tag, &etag);
+	  ay_tags_append(o, etag);
+	}
+
       if(ay_prefs.mopsiresettolerance)
 	ext->glu_sampling_tolerance = 0.0;
       fscanf(fileptr,"%d\n",&ext->glu_display_mode);

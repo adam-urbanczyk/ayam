@@ -30,7 +30,7 @@ ay_text_createcb(int argc, char *argv[], ay_object *o)
     }
 
   text->height = 0.5;
-  text->bevel_radius = 0.1;
+
   o->refine = text;
 
  return AY_OK;
@@ -219,10 +219,6 @@ ay_text_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(text->revert));
 
-  Tcl_SetStringObj(ton,"RevertBevels",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(text->revert_bevels));
-
   Tcl_SetStringObj(ton,"UpperCap",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(text->has_upper_cap));
@@ -230,23 +226,6 @@ ay_text_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_SetStringObj(ton,"LowerCap",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(text->has_lower_cap));
-
-  Tcl_SetStringObj(ton,"UpperBevels",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(text->has_upper_bevels));
-
-  Tcl_SetStringObj(ton,"LowerBevels",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(text->has_lower_bevels));
-
-  Tcl_SetStringObj(ton,"BevelRadius",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &(text->bevel_radius));
-
-  Tcl_SetStringObj(ton,"BevelType",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(text->bevel_type));
-
 
   Tcl_SetStringObj(ton,"DisplayMode",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -304,11 +283,6 @@ ay_text_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"RevertBevels",-1);
-  to = Tcl_NewIntObj(text->revert_bevels);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
   Tcl_SetStringObj(ton,"UpperCap",-1);
   to = Tcl_NewIntObj(text->has_upper_cap);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
@@ -316,26 +290,6 @@ ay_text_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   Tcl_SetStringObj(ton,"LowerCap",-1);
   to = Tcl_NewIntObj(text->has_lower_cap);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton,"UpperBevels",-1);
-  to = Tcl_NewIntObj(text->has_upper_bevels);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton,"LowerBevels",-1);
-  to = Tcl_NewIntObj(text->has_lower_bevels);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton,"BevelType",-1);
-  to = Tcl_NewIntObj(text->bevel_type);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton,"BevelRadius",-1);
-  to = Tcl_NewDoubleObj(text->bevel_radius);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
@@ -361,6 +315,12 @@ ay_text_readcb(FILE *fileptr, ay_object *o)
 {
  ay_text_object *text = NULL;
  int read = 0;
+ ay_tag_object tag = {0}, *stag = NULL, *etag = NULL;
+ char vbuf[128], nbuf[3] = "BP";
+ int has_startb = AY_FALSE, has_startb2 = AY_FALSE;
+ int has_endb = AY_FALSE, has_endb2 = AY_FALSE, startb_revert2;
+ int startb_type, startb_type2, endb_type, startb_sense, endb_sense;
+ double startb_radius, startb_radius2, endb_radius;
 
   if(!o)
    return AY_ENULL;
@@ -378,13 +338,36 @@ ay_text_readcb(FILE *fileptr, ay_object *o)
   fscanf(fileptr, "%d\n", &text->revert);
   fscanf(fileptr, "%d\n", &text->has_upper_cap);
   fscanf(fileptr, "%d\n", &text->has_lower_cap);
-  fscanf(fileptr, "%d\n", &text->has_upper_bevels);
-  fscanf(fileptr, "%d\n", &text->has_lower_bevels);
-  fscanf(fileptr, "%d\n", &text->bevel_type);
-  fscanf(fileptr, "%lg\n", &text->bevel_radius);
-  fscanf(fileptr, "%d\n", &text->revert_bevels);
+  fscanf(fileptr, "%d\n", &has_endb2);
+  fscanf(fileptr, "%d\n", &has_startb2);
+  fscanf(fileptr, "%d\n", &startb_type2);
+  fscanf(fileptr, "%lg\n", &startb_radius2);
+  fscanf(fileptr, "%d\n", &startb_revert2);
   fscanf(fileptr, "%d\n", &text->glu_display_mode);
   fscanf(fileptr, "%lg\n", &text->glu_sampling_tolerance);
+
+  /* get bevel parameters from potentially present BP tags */
+  ay_npt_getbeveltags(o, 0, &has_startb, &startb_type, &startb_radius,
+		      &startb_sense);
+  ay_npt_getbeveltags(o, 1, &has_endb, &endb_type, &endb_radius,
+		      &endb_sense);
+
+  tag.name = nbuf;
+  tag.type = ay_bp_tagtype;
+  tag.val = vbuf;
+  if(!has_startb && has_startb2)
+    {
+      sprintf(vbuf, "0,%d,%g,0", startb_type2, startb_radius2);
+      ay_tags_copy(&tag, &stag);
+      ay_tags_append(o, stag);
+    }
+
+  if(!has_endb && has_endb2)
+    {
+      sprintf(vbuf, "1,%d,%g,0", startb_type2, startb_radius2);
+      ay_tags_copy(&tag, &etag);
+      ay_tags_append(o, etag);
+    }
 
   o->refine = text;
 
@@ -397,11 +380,20 @@ ay_text_writecb(FILE *fileptr, ay_object *o)
 {
  ay_text_object *text = NULL;
  Tcl_UniChar *uc = NULL;
+ int has_startb = AY_FALSE, has_endb = AY_FALSE;
+ int startb_type, endb_type, startb_sense, endb_sense;
+ double startb_radius, endb_radius;
 
   if(!o)
     return AY_ENULL;
 
   text = (ay_text_object *)(o->refine);
+
+  /* get bevel parameters */
+  ay_npt_getbeveltags(o, 0, &has_startb, &startb_type, &startb_radius,
+		      &startb_sense);
+  ay_npt_getbeveltags(o, 1, &has_endb, &endb_type, &endb_radius,
+		      &endb_sense);
 
   fprintf(fileptr, "%g\n", text->height);
 
@@ -428,11 +420,12 @@ ay_text_writecb(FILE *fileptr, ay_object *o)
   fprintf(fileptr, "%d\n", text->revert);
   fprintf(fileptr, "%d\n", text->has_upper_cap);
   fprintf(fileptr, "%d\n", text->has_lower_cap);
-  fprintf(fileptr, "%d\n", text->has_upper_bevels);
-  fprintf(fileptr, "%d\n", text->has_lower_bevels);
-  fprintf(fileptr, "%d\n", text->bevel_type);
-  fprintf(fileptr, "%g\n", text->bevel_radius);
-  fprintf(fileptr, "%d\n", text->revert_bevels);
+
+  fprintf(fileptr, "%d\n", has_endb);
+  fprintf(fileptr, "%d\n", has_startb);
+  fprintf(fileptr, "%d\n", startb_type);
+  fprintf(fileptr, "%g\n", startb_radius);
+  fprintf(fileptr, "%d\n", startb_sense);
 
   fprintf(fileptr, "%d\n", text->glu_display_mode);
   fprintf(fileptr, "%g\n", text->glu_sampling_tolerance);
@@ -564,14 +557,15 @@ ay_text_notifycb(ay_object *o)
     return AY_OK;
 
   ext.type = AY_IDEXTRUDE;
+
+  ext.tags = o->tags;
+
   ext.refine = &extrude;
+
   extrude.height = text->height;
   extrude.has_lower_cap = text->has_lower_cap;
   extrude.has_upper_cap = text->has_upper_cap;
-  extrude.has_lower_bevels = text->has_lower_bevels;
-  extrude.has_upper_bevels = text->has_upper_bevels;
-  extrude.bevel_type = text->bevel_type;
-  extrude.bevel_radius = text->bevel_radius;
+
   extrude.glu_display_mode = text->glu_display_mode;
   extrude.glu_sampling_tolerance = text->glu_sampling_tolerance;
 
@@ -620,9 +614,6 @@ ay_text_notifycb(ay_object *o)
 		  continue;
 		}
 
-	      if(text->revert_bevels)
-		ay_nct_revert((ay_nurbcurve_object*)(newcurve->refine));
-
 	      newcurve->movx = xoffset;
 	      newcurve->movy = yoffset;
 
@@ -649,10 +640,7 @@ ay_text_notifycb(ay_object *o)
 			}
 		      ext.down = curve;
 		      extrude.npatch = NULL;
-		      extrude.upper_cap = NULL;
-		      extrude.lower_cap = NULL;
-		      extrude.upper_bevels = NULL;
-		      extrude.lower_bevels = NULL;
+		      extrude.caps_and_bevels = NULL;
 		      ay_notify_force(&ext);
 		      
 		      if(extrude.npatch)
@@ -666,33 +654,10 @@ ay_text_notifycb(ay_object *o)
 			    } /* while */
 			} /* if */
 
-		      if(extrude.upper_cap)
+		      if(extrude.caps_and_bevels)
 			{
-			  *nextnpatch = extrude.upper_cap;
-			  nextnpatch = &(extrude.upper_cap->next);
-			} /* if */
-
-		      if(extrude.lower_cap)
-			{
-			  *nextnpatch = extrude.lower_cap;
-			  nextnpatch = &(extrude.lower_cap->next);
-			} /* if */
-
-		      if(extrude.upper_bevels)
-			{
-			  *nextnpatch = extrude.upper_bevels;
-			  patch = extrude.upper_bevels;
-			  while(patch)
-			    {
-			      nextnpatch = &(patch->next);
-			      patch = patch->next;
-			    } /* while */
-			} /* if */
-
-		      if(extrude.lower_bevels)
-			{
-			  *nextnpatch = extrude.lower_bevels;
-			  patch = extrude.lower_bevels;
+			  *nextnpatch = extrude.caps_and_bevels;
+			  patch = extrude.caps_and_bevels;
 			  while(patch)
 			    {
 			      nextnpatch = &(patch->next);
@@ -741,10 +706,7 @@ ay_text_notifycb(ay_object *o)
 		    }
 		  ext.down = curve;
 		  extrude.npatch = NULL;
-		  extrude.upper_cap = NULL;
-		  extrude.lower_cap = NULL;
-		  extrude.upper_bevels = NULL;
-		  extrude.lower_bevels = NULL;
+		  extrude.caps_and_bevels = NULL;
 		  ay_notify_force(&ext);
 
 		  if(extrude.npatch)
@@ -758,33 +720,10 @@ ay_text_notifycb(ay_object *o)
 			} /* while */
 		    } /* if */
 
-		  if(extrude.upper_cap)
+		  if(extrude.caps_and_bevels)
 		    {
-		      *nextnpatch = extrude.upper_cap;
-		      nextnpatch = &(extrude.upper_cap->next);
-		    } /* if */
-
-		  if(extrude.lower_cap)
-		    {
-		      *nextnpatch = extrude.lower_cap;
-		      nextnpatch = &(extrude.lower_cap->next);
-		    } /* if */
-
-		  if(extrude.upper_bevels)
-		    {
-		      *nextnpatch = extrude.upper_bevels;
-		      patch = extrude.upper_bevels;
-		      while(patch)
-			{
-			  nextnpatch = &(patch->next);
-			  patch = patch->next;
-			} /* while */
-		    } /* if */
-
-		  if(extrude.lower_bevels)
-		    {
-		      *nextnpatch = extrude.lower_bevels;
-		      patch = extrude.lower_bevels;
+		      *nextnpatch = extrude.caps_and_bevels;
+		      patch = extrude.caps_and_bevels;
 		      while(patch)
 			{
 			  nextnpatch = &(patch->next);
@@ -872,7 +811,7 @@ ay_text_convertcb(ay_object *o, int in_place)
 	ay_object_crtendlevel(&(new->down));
       ay_object_link(new);
       npatch = npatch->next;
-    }
+    } /* while */
 
  return AY_OK;
 } /* ay_text_convertcb */

@@ -4266,7 +4266,7 @@ ay_nct_toxy(ay_object *c)
   ay_trafo_identitymatrix(m);
   ay_trafo_scalematrix(c->scalx, c->scaly, c->scalz, m);
 
-  /* apply scale matrix to all points */
+  /* apply scale/translate matrix to all points */
   p = nc->controlv;
   for(i = 0; i < nc->length; i++)
     {
@@ -4379,7 +4379,9 @@ ay_nct_toxy(ay_object *c)
     {
       /* calculate rotation matrix */
       ay_trafo_identitymatrix(m);
+      /*ay_trafo_translatematrix(-c->movx, -c->movy, -c->movz, m);*/
       ay_trafo_rotatematrix(angle, B[0], B[1], B[2], m);
+      /*ay_trafo_translatematrix(c->movx, c->movy, c->movz, m);*/
 
       /* apply rotation matrix to all points */
       p = nc->controlv;

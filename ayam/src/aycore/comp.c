@@ -607,11 +607,7 @@ ay_comp_extrude(ay_object *o1, ay_object *o2)
 
   if((e1->height != e2->height) ||
      (e1->has_upper_cap != e2->has_upper_cap) ||
-     (e1->has_lower_cap != e2->has_lower_cap) ||
-     (e1->has_upper_bevels != e2->has_upper_bevels) ||
-     (e1->has_lower_bevels != e2->has_lower_bevels) ||
-     (e1->bevel_type != e2->bevel_type) ||
-     (e1->bevel_radius != e2->bevel_radius))
+     (e1->has_lower_cap != e2->has_lower_cap))
     return AY_FALSE;
 
   return AY_TRUE;
@@ -1038,12 +1034,7 @@ ay_comp_text(ay_object *o1, ay_object *o2)
   if((s1->height != s2->height) ||
      (s1->revert != s2->revert) ||
      (s1->has_upper_cap != s2->has_upper_cap) ||
-     (s1->has_lower_cap != s2->has_lower_cap) ||
-     (s1->has_upper_bevels != s2->has_upper_bevels) ||
-     (s1->has_lower_bevels != s2->has_lower_bevels) ||
-     (s1->bevel_type != s2->bevel_type) ||
-     (s1->bevel_radius != s2->bevel_radius) ||
-     (s1->revert_bevels != s2->revert_bevels))
+     (s1->has_lower_cap != s2->has_lower_cap))
     return AY_FALSE;
 
   if(s1->fontname && s2->fontname)

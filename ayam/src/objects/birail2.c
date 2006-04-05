@@ -503,8 +503,9 @@ ay_birail2_notifycb(ay_object *o)
     } /* if */
 
   /* get bevel parameters */
-  ay_npt_getbeveltags(o, &has_startb, &startb_type, &startb_radius,
-		      &startb_sense, &has_endb, &endb_type, &endb_radius,
+  ay_npt_getbeveltags(o, 0, &has_startb, &startb_type, &startb_radius,
+		      &startb_sense);
+  ay_npt_getbeveltags(o, 1, &has_endb, &endb_type, &endb_radius,
 		      &endb_sense);
 
   /* birail2 */
@@ -539,7 +540,6 @@ ay_birail2_notifycb(ay_object *o)
     }
 
   birail2->npatch = npatch;
-  npatch = NULL;
 
   /* copy sampling tolerance/mode attributes over to birail */
   ((ay_nurbpatch_object *)birail2->npatch->refine)->glu_sampling_tolerance =
@@ -701,6 +701,8 @@ ay_birail2_notifycb(ay_object *o)
 	  bevel = bevel->next;
 	}
     }
+
+  npatch = NULL;
 
   /* remove provided objects */
 cleanup:

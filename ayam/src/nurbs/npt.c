@@ -113,6 +113,29 @@ ay_npt_destroy(ay_nurbpatch_object *patch)
 } /* ay_npt_destroy */
 
 
+int
+ay_npt_createnpatchobject(ay_object **result)
+{
+ ay_object *o = NULL;
+
+  if(!result)
+    return AY_ENULL;
+
+  o = calloc(1, sizeof(ay_object));
+  if(!o)
+    return AY_EOMEM;
+  ay_object_defaults(o);
+  o->type = AY_IDNPATCH;
+  o->parent = AY_TRUE;
+  o->hide_children = AY_TRUE;
+  o->inherit_trafos = AY_FALSE;
+
+  *result = o;
+
+ return AY_OK;
+} /* ay_npt_createnpatchobject */
+
+
 /* ay_npt_revolve:
  *  create a surface of revolution from the NURBS curve in <o>
  *  (that will be projected to the XY-plane for revolution)
@@ -2302,7 +2325,6 @@ ay_npt_closedsweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 		   int rotate, ay_nurbpatch_object **closedsweep)
 {
  int ay_status = AY_OK;
- ay_object *curve = NULL;
  ay_nurbpatch_object *new = NULL;
  ay_nurbcurve_object *tr, *cs, *sf = NULL;
  double *controlv = NULL;
@@ -2310,12 +2332,10 @@ ay_npt_closedsweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
  double u, p1[4], p2[4], p3[4];
  double T0[3] = {0.0,0.0,-1.0};
  double T1[3] = {0.0,0.0,0.0};
- double T2[3] = {0.0,0.0,0.0};
  double A[3] = {0.0,0.0,0.0};
  double len = 0.0, plen = 0.0, plensf = 0.0;
  double m[16] = {0}, mi[16] = {0}, mcs[16], mtr[16];
  double mr[16];
- double quat[4] = {0};
  double *cscv = NULL, *trcv = NULL, *sfcv = NULL, *rots = NULL;
 
   if(!o1 || !o2 || !closedsweep)
@@ -4298,8 +4318,7 @@ ay_npt_bevel(int type, double radius, int align, ay_object *o,
  double tangent[3] = {0}, normal[3] = {0}, zaxis[3] = {0.0, 0.0, -1.0};
  double ww = sqrt(2.0)/2.0, displacex, displacey;
  int i = 0, j = 0, a = 0, b = 0, k = 0;
- double m[16], mi[16], point[4] = {0};
- double mx, my, mz;
+ double m[16], point[4] = {0};
 
   if(!o || !bevel)
     return AY_ENULL;
@@ -5972,7 +5991,8 @@ int
 ay_npt_closeu(ay_nurbpatch_object *np)
 {
  double *controlv, *end;
- int i, stride = 4;
+ int stride = 4;
+ /* int i; */
 
   if(np->width >= ((np->uorder-1)*2))
     {
@@ -6008,7 +6028,7 @@ ay_npt_closeutcmd(ClientData clientData, Tcl_Interp *interp,
  int ay_status = AY_OK;
  char fname[] = "closeNPU";
  int stride = 4;
- double *newcontrolv = NULL, *knotv = NULL, *tknotv;
+ double *newcontrolv = NULL, *tknotv;
  ay_list_object *sel = ay_selection;
  ay_nurbpatch_object *np = NULL;
 
@@ -6091,7 +6111,7 @@ int
 ay_npt_closev(ay_nurbpatch_object *np)
 {
  double *controlv, *a, *b;
- int ai, bi, i, j, stride = 4;
+ int i, stride = 4;
 
   if(np->height >= ((np->vorder-1)*2))
     {
@@ -6125,7 +6145,7 @@ ay_npt_closevtcmd(ClientData clientData, Tcl_Interp *interp,
  char fname[] = "closeNPV";
  int stride = 4, i;
  double *a, *b;
- double *newcontrolv = NULL, *knotv = NULL, *tknotv;
+ double *newcontrolv = NULL, *tknotv;
  ay_list_object *sel = ay_selection;
  ay_nurbpatch_object *np = NULL;
 
@@ -6198,7 +6218,7 @@ ay_npt_closevtcmd(ClientData clientData, Tcl_Interp *interp,
 int
 ay_npt_isclosedu(ay_nurbpatch_object *np)
 {
-  int i, a, b;
+  int i;
   double u;
 
   if(!np)
@@ -6209,7 +6229,7 @@ ay_npt_isclosedu(ay_nurbpatch_object *np)
     {
       u = np->uknotv[np->uorder-1];
 
-    }
+    } /* for */
 
  return AY_OK;
 } /* ay_npt_isclosedu */
@@ -6506,19 +6526,14 @@ ay_npt_explodemp(ay_object *o)
  *  
  */
 int
-ay_npt_getbeveltags(ay_object *o,
-		    int *has_startb, int *startb_type,
-		    double *startb_radius, int *startb_sense,
-		    int *has_endb, int *endb_type,
-		    double *endb_radius, int *endb_sense)
+ay_npt_getbeveltags(ay_object *o, int place,
+		    int *has_bevel, int *type, double *radius, int *sense)
 {
  int ay_status = AY_OK;
  ay_tag_object *tag = NULL;
- int first = AY_TRUE, btype, bsense;
- double bradius;
+ int where;
 
- *has_startb = AY_FALSE;
- *has_endb = AY_FALSE;
+ *has_bevel = AY_FALSE;
 
  tag = o->tags;
  while(tag)
@@ -6527,22 +6542,13 @@ ay_npt_getbeveltags(ay_object *o,
        {
 	 if(tag->val)
 	   {
-	     sscanf(tag->val, "%d,%d,%lg,%d", &first, &btype,
-		    &bradius, &bsense);
-	     if(first)
+	     sscanf(tag->val, "%d,%d,%lg,%d", &where, type,
+		    radius, sense);
+	     if(where == place)
 	       {
-		 *has_startb = AY_TRUE;
-		 *startb_type = btype;
-		 *startb_radius = bradius;
-		 *startb_sense = bsense;
+		 *has_bevel = AY_TRUE;
+		 return AY_OK;
 	       }
-	     else
-	       {
-		 *has_endb = AY_TRUE;
-		 *endb_type = btype;
-		 *endb_radius = bradius;
-		 *endb_sense = bsense;
-	       } /* if */
 	   } /* if */
        } /* if */
      tag = tag->next;

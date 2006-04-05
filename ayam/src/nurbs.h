@@ -316,6 +316,8 @@ int ay_npt_create(int uorder, int vorder, int width, int height,
 
 int ay_npt_destroy(ay_nurbpatch_object *patch);
 
+int ay_npt_createnpatchobject(ay_object **result);
+
 int ay_npt_revolve(ay_object *o, double arc, int sections, int order,
 		   ay_nurbpatch_object **revolution);
 
@@ -462,11 +464,8 @@ int ay_npt_collapseselp(ay_object *o);
 
 int ay_npt_explodemp(ay_object *o);
 
-int ay_npt_getbeveltags(ay_object *o,
-		    int *has_startb, int *startb_type,
-		    double *startb_radius, int *startb_sense,
-		    int *has_endb, int *endb_type,
-		    double *endb_radius, int *endb_sense );
+int ay_npt_getbeveltags(ay_object *o, int place,
+			int *has_bevel, int *type, double *radius, int *sense);
 
 
 /* pmt.c */
