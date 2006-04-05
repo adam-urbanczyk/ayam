@@ -12,6 +12,9 @@
 
 /* objects.h - prototypes of core objects */
 
+/* bevel.c */
+int ay_bevel_init(Tcl_Interp *interp);
+
 /* birail1.c */
 int ay_birail1_init(Tcl_Interp *interp);
 
