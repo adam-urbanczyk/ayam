@@ -564,6 +564,14 @@ typedef struct ay_cap_object_s
 } ay_cap_object;
 
 
+typedef struct ay_bevel_object_s
+{
+  double glu_sampling_tolerance;
+  int glu_display_mode;
+  ay_object *npatch;
+} ay_bevel_object;
+
+
 typedef struct ay_custom_object_s
 {
   unsigned int type;
@@ -1089,6 +1097,7 @@ extern unsigned int ay_current_primlevel;
 #define AY_IDEXTRNC        34
 #define AY_IDSCRIPT        35
 #define AY_IDRIPROC        36
+#define AY_IDBEVEL         37
 
 #define AY_IDLAST          50
 

@@ -332,6 +332,7 @@ AYAMOBJS = aycore/bbc.o\
 	nurbs/pmt.o\
 	nurbs/stess.o\
 	nurbs/tess.o\
+	objects/bevel.o\
 	objects/birail1.o\
 	objects/birail2.o\
 	objects/box.o\

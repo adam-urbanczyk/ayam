@@ -7,7 +7,7 @@
 #
 # See the file License for details.
 
-# bevel.tcl - bevel tags processing Tcl code
+# bevel.tcl - bevel tags processing Tcl code and Bevel object code
 
 
 proc bevel_parseTags { tagnames tagvalues } {
@@ -20,7 +20,7 @@ proc bevel_parseTags { tagnames tagvalues } {
 	HasRightBevel 0
     }
 
-    if { [llength $tagnames] == 0 } { return }
+    if { [llength $tagnames] == 0 } { return; }
 
     set l [llength $tagnames]
     for {set i 0} {$i < $l} {incr i} {
@@ -182,3 +182,112 @@ proc bevel_rem { place } {
  return;
 }
 # bevel_rem
+
+
+set Bevel_props { Transformations Attributes Material Tags BevelAttr }
+
+proc bevel_getAttr { } {
+    global ay BevelAttr BevelAttrData BevelTags
+ 
+    # create BevelAttr-UI
+    catch {destroy $ay(pca).$BevelAttr(w)}
+    set w [frame $ay(pca).$BevelAttr(w)]
+    getProp
+
+    set tagnames ""
+    set tagvalues ""
+    getTags tagnames tagvalues
+    bevel_parseTags $tagnames $tagvalues
+
+    set BevelTags(BevelType) $BevelTags(SBType)
+    set BevelTags(BevelRadius) $BevelTags(SBRadius)
+    set BevelTags(BevelRevert) $BevelTags(SBRevert)
+
+    addMenu $w BevelTags BevelType $ay(bevelmodes)
+    addParam $w BevelTags BevelRadius
+    addCheck $w BevelTags BevelRevert
+
+    addParam $w BevelAttrData Tolerance
+    addMenu $w BevelAttrData DisplayMode $ay(npdisplaymodes)
+
+    $ay(pca) itemconfigure 1 -window $w
+    update
+    plb_resize
+
+    # adapt scrollregion
+    set width [expr [winfo reqwidth $w] + 10]
+    set height [expr [winfo reqheight $w] + 10]
+    $ay(pca) configure -scrollregion [list 0 5 $width $height]
+
+ return;
+}
+# bevel_getAttr
+
+
+proc bevel_setAttr { } {
+    global BevelTags
+
+    set BevelTags(SBType) $BevelTags(BevelType)
+    set BevelTags(SBRadius) $BevelTags(BevelRadius)
+    set BevelTags(SBRevert) $BevelTags(BevelRevert)
+
+    bevel_setTags
+    setProp
+
+ return;
+}
+# bevel_setAttr
+
+array set BevelAttr {
+    arr   BevelAttrData
+    sproc bevel_setAttr
+    gproc bevel_getAttr
+    w     fBevelAttr
+}
+
+array set BevelAttrData {
+    DisplayMode 1
+}
+
+
+#bevel_crt:
+#
+#
+proc bevel_crt { } {
+    global ay ay_error selected
+
+    set selected ""
+    getSel selected
+    if { $selected == "" } { return; }
+    cutOb
+
+    set ay_error 0
+    crtOb Bevel
+    if { $ay_error } {  return; }
+    set ay(ul) $ay(CurrentLevel)
+    uS
+    sL
+    global BevelTags
+
+    set BevelTags(HasStartBevel) 1
+    set BevelTags(HasEndBevel) 0
+    set BevelTags(HasLeftBevel) 0
+    set BevelTags(HasRightBevel) 0
+    set BevelTags(SBType) 0
+    set BevelTags(SBRadius) 0.1
+    set BevelTags(SBRevert) 0
+
+    bevel_setTags
+
+    getLevel a b
+    goDown [expr [llength $a]-1]
+    cmovOb
+    goUp
+    set ay(ul) $ay(CurrentLevel)
+    uS
+    sL
+    rV
+
+ return;
+}
+# bevel_crt
