@@ -32,7 +32,6 @@ ay_extrude_createcb(int argc, char *argv[], ay_object *o)
     }
 
   new->height = 1.0;
-  new->bevel_radius = 0.1;
 
   o->parent = AY_TRUE;
   o->refine = new;
@@ -54,17 +53,11 @@ ay_extrude_deletecb(void *c)
   if(extrude->npatch)
     ay_object_deletemulti(extrude->npatch);
 
-  if(extrude->upper_cap)
-    ay_object_delete(extrude->upper_cap);
-
-  if(extrude->lower_cap)
-    ay_object_delete(extrude->lower_cap);
-
-  if(extrude->upper_bevels)
-    ay_object_deletemulti(extrude->upper_bevels);
-
-  if(extrude->lower_bevels)
-    ay_object_deletemulti(extrude->lower_bevels);
+  if(extrude->caps_and_bevels)
+    {
+      ay_object_deletemulti(extrude->caps_and_bevels);
+      extrude->caps_and_bevels = NULL;
+    }
 
   free(extrude);
 
@@ -88,10 +81,8 @@ ay_extrude_copycb(void *src, void **dst)
   memcpy(extrude, src, sizeof(ay_extrude_object));
 
   extrude->npatch = NULL;
-  extrude->upper_cap = NULL;
-  extrude->lower_cap = NULL;
-  extrude->upper_bevels = NULL;
-  extrude->lower_bevels = NULL;
+
+  extrude->caps_and_bevels = NULL;
 
   *dst = (void *)extrude;
 
@@ -120,20 +111,7 @@ ay_extrude_drawcb(struct Togl *togl, ay_object *o)
       p = p->next;
     }
 
-  if(extrude->upper_cap)
-    ay_draw_object(togl, extrude->upper_cap, AY_TRUE);
-
-  if(extrude->lower_cap)
-    ay_draw_object(togl, extrude->lower_cap, AY_TRUE);
-
-  p = extrude->upper_bevels;
-  while(p)
-    {
-      ay_draw_object(togl, p, AY_TRUE);
-      p = p->next;
-    }
-
-  p = extrude->lower_bevels;
+  p = extrude->caps_and_bevels;
   while(p)
     {
       ay_draw_object(togl, p, AY_TRUE);
@@ -165,20 +143,7 @@ ay_extrude_shadecb(struct Togl *togl, ay_object *o)
       p = p->next;
     }
 
-  if(extrude->upper_cap)
-    ay_shade_object(togl, extrude->upper_cap, AY_FALSE);
-
-  if(extrude->lower_cap)
-    ay_shade_object(togl, extrude->lower_cap, AY_FALSE);
-
-  p = extrude->upper_bevels;
-  while(p)
-    {
-      ay_shade_object(togl, p, AY_FALSE);
-      p = p->next;
-    }
-
-  p = extrude->lower_bevels;
+  p = extrude->caps_and_bevels;
   while(p)
     {
       ay_shade_object(togl, p, AY_FALSE);
@@ -236,22 +201,6 @@ ay_extrude_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(extrude->has_lower_cap));
 
-  Tcl_SetStringObj(ton,"UpperBevels",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(extrude->has_upper_bevels));
-
-  Tcl_SetStringObj(ton,"LowerBevels",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(extrude->has_lower_bevels));
-
-  Tcl_SetStringObj(ton,"BevelType",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(extrude->bevel_type));
-
-  Tcl_SetStringObj(ton,"BevelRadius",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &(extrude->bevel_radius));
-
   Tcl_SetStringObj(ton,"DisplayMode",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(extrude->glu_display_mode));
@@ -303,26 +252,6 @@ ay_extrude_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"UpperBevels",-1);
-  to = Tcl_NewIntObj(extrude->has_upper_bevels);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton,"LowerBevels",-1);
-  to = Tcl_NewIntObj(extrude->has_lower_bevels);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton,"BevelType",-1);
-  to = Tcl_NewIntObj(extrude->bevel_type);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton,"BevelRadius",-1);
-  to = Tcl_NewDoubleObj(extrude->bevel_radius);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
   Tcl_SetStringObj(ton,"DisplayMode",-1);
   to = Tcl_NewIntObj(extrude->glu_display_mode);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
@@ -344,22 +273,51 @@ int
 ay_extrude_readcb(FILE *fileptr, ay_object *o)
 {
  ay_extrude_object *extrude = NULL;
-
- if(!o)
-   return AY_ENULL;
+ ay_tag_object tag = {0}, *stag = NULL, *etag = NULL;
+ char vbuf[128], nbuf[3] = "BP";
+ int has_startb = AY_FALSE, has_startb2 = AY_FALSE;
+ int has_endb = AY_FALSE, has_endb2 = AY_FALSE;
+ int startb_type, startb_type2, endb_type, startb_sense, endb_sense;
+ double startb_radius, startb_radius2, endb_radius;
+ 
+  if(!o)
+    return AY_ENULL;
 
   if(!(extrude = calloc(1, sizeof(ay_extrude_object))))
     { return AY_EOMEM; }
 
-  fscanf(fileptr,"%lg\n",&extrude->height);
-  fscanf(fileptr,"%d\n",&extrude->has_upper_cap);
-  fscanf(fileptr,"%d\n",&extrude->has_lower_cap);
-  fscanf(fileptr,"%d\n",&extrude->has_upper_bevels);
-  fscanf(fileptr,"%d\n",&extrude->has_lower_bevels);
-  fscanf(fileptr,"%d\n",&extrude->bevel_type);
-  fscanf(fileptr,"%lg\n",&extrude->bevel_radius);
-  fscanf(fileptr,"%d\n",&extrude->glu_display_mode);
-  fscanf(fileptr,"%lg\n",&extrude->glu_sampling_tolerance);
+  fscanf(fileptr, "%lg\n", &extrude->height);
+  fscanf(fileptr, "%d\n", &extrude->has_upper_cap);
+  fscanf(fileptr, "%d\n", &extrude->has_lower_cap);
+  fscanf(fileptr, "%d\n", &has_endb2);
+  fscanf(fileptr, "%d\n", &has_startb2);
+  fscanf(fileptr, "%d\n", &startb_type2);
+  fscanf(fileptr, "%lg\n", &startb_radius2);
+  fscanf(fileptr, "%d\n", &extrude->glu_display_mode);
+  fscanf(fileptr, "%lg\n", &extrude->glu_sampling_tolerance);
+
+  /* get bevel parameters from potentially present BP tags */
+  ay_npt_getbeveltags(o, 0, &has_startb, &startb_type, &startb_radius,
+		      &startb_sense);
+  ay_npt_getbeveltags(o, 1, &has_endb, &endb_type, &endb_radius,
+		      &endb_sense);
+
+  tag.name = nbuf;
+  tag.type = ay_bp_tagtype;
+  tag.val = vbuf;
+  if(!has_startb && has_startb2)
+    {
+      sprintf(vbuf, "0,%d,%g,0", startb_type2, startb_radius2);
+      ay_tags_copy(&tag, &stag);
+      ay_tags_append(o, stag);
+    }
+
+  if(!has_endb && has_endb2)
+    {
+      sprintf(vbuf, "1,%d,%g,0", startb_type2, startb_radius2);
+      ay_tags_copy(&tag, &etag);
+      ay_tags_append(o, etag);
+    }
 
   o->refine = extrude;
 
@@ -371,19 +329,28 @@ int
 ay_extrude_writecb(FILE *fileptr, ay_object *o)
 {
  ay_extrude_object *extrude = NULL;
+ int has_startb = AY_FALSE, has_endb = AY_FALSE;
+ int startb_type, endb_type, startb_sense, endb_sense;
+ double startb_radius, endb_radius;
 
   if(!o)
     return AY_ENULL;
 
   extrude = (ay_extrude_object *)(o->refine);
 
+  /* get bevel parameters */
+  ay_npt_getbeveltags(o, 0, &has_startb, &startb_type, &startb_radius,
+		      &startb_sense);
+  ay_npt_getbeveltags(o, 1, &has_endb, &endb_type, &endb_radius,
+		      &endb_sense);
+
   fprintf(fileptr, "%g\n", extrude->height);
   fprintf(fileptr, "%d\n", extrude->has_upper_cap);
   fprintf(fileptr, "%d\n", extrude->has_lower_cap);
-  fprintf(fileptr, "%d\n", extrude->has_upper_bevels);
-  fprintf(fileptr, "%d\n", extrude->has_lower_bevels);
-  fprintf(fileptr, "%d\n", extrude->bevel_type);
-  fprintf(fileptr, "%g\n", extrude->bevel_radius);
+  fprintf(fileptr, "%d\n", has_endb);
+  fprintf(fileptr, "%d\n", has_startb);
+  fprintf(fileptr, "%d\n", startb_type);
+  fprintf(fileptr, "%g\n", startb_radius);
   fprintf(fileptr, "%d\n", extrude->glu_display_mode);
   fprintf(fileptr, "%g\n", extrude->glu_sampling_tolerance);
 
@@ -409,20 +376,7 @@ ay_extrude_wribcb(char *file, ay_object *o)
       p = p->next;
     }
 
-  if(extrude->upper_cap)
-    ay_wrib_object(file, extrude->upper_cap);
-
-  if(extrude->lower_cap)
-    ay_wrib_object(file, extrude->lower_cap);
-
-  p = extrude->upper_bevels;
-  while(p)
-    {
-      ay_wrib_object(file, p);
-      p = p->next;
-    }
-
-  p = extrude->lower_bevels;
+  p = extrude->caps_and_bevels;
   while(p)
     {
       ay_wrib_object(file, p);
@@ -466,24 +420,28 @@ ay_extrude_bbccb(ay_object *o, double *bbox, int *flags)
 } /* ay_extrude_bbccb */
 
 
-
 int
 ay_extrude_notifycb(ay_object *o)
 {
  int ay_status = AY_OK;
  ay_extrude_object *ext = NULL;
  ay_object *down = NULL, *c = NULL, *cap = NULL, *trim = NULL;
- ay_object *bevel = NULL, *nb = NULL, *tloop = NULL;
+ ay_object *bevel = NULL, *startb = NULL, *endb = NULL, *tloop = NULL;
  ay_object *extrusion = NULL, *ne = NULL, *ot = NULL;
+ ay_object *upper_cap = NULL, *lower_cap = NULL;
+ ay_object **nextcb;
  ay_nurbcurve_object *curve = NULL;
  ay_nurbpatch_object *patch = NULL;
- double tolerance = 30.0;
  int display_mode = 0, got_object = AY_FALSE;
+ int has_startb = AY_FALSE, has_endb = AY_FALSE;
+ int startb_type, endb_type, startb_sense, endb_sense;
+ double startb_radius, endb_radius;
  double uminx, umaxx, uminy, umaxy;
  double lminx, lmaxx, lminy, lmaxy;
  double firstmovex = 0.0, firstmovey = 0.0;
  double trimmx = 0.0, trimmy = 0.0;
  double angle = 0.0, z = 0.0;
+ double tolerance = 0.0;
 
   if(!o)
     return AY_OK;
@@ -507,31 +465,13 @@ ay_extrude_notifycb(ay_object *o)
     }
   ext->npatch = NULL;
 
-  if(ext->upper_cap)
-    ay_object_delete(ext->upper_cap);
-  ext->upper_cap = NULL;
-
-  if(ext->lower_cap)
-    ay_object_delete(ext->lower_cap);
-  ext->lower_cap = NULL;
-
-  bevel = ext->upper_bevels;
-  while(bevel)
+  if(ext->caps_and_bevels)
     {
-      nb = bevel->next;
-      ay_object_delete(bevel);
-      bevel = nb;
+      ay_object_deletemulti(ext->caps_and_bevels); 
     }
-  ext->upper_bevels = NULL;
+  ext->caps_and_bevels = NULL;
 
-  bevel = ext->lower_bevels;
-  while(bevel)
-    {
-      nb = bevel->next;
-      ay_object_delete(bevel);
-      bevel = nb;
-    }
-  ext->lower_bevels = NULL;
+  nextcb = &(ext->caps_and_bevels);
 
   /* create new extrusions, caps and bevels */
   down = o->down;
@@ -556,69 +496,60 @@ ay_extrude_notifycb(ay_object *o)
 
       if(c)
 	{
+	  /* get bevel parameters from potentially present BP tags */
+	  ay_npt_getbeveltags(o, 0, &has_startb, &startb_type, &startb_radius,
+			      &startb_sense);
+	  ay_npt_getbeveltags(o, 1, &has_endb, &endb_type, &endb_radius,
+			      &endb_sense);
+
 	  extrusion = ext->npatch;
-	  if(!(ext->npatch = calloc(1, sizeof(ay_object))))
-	    return AY_EOMEM;
-	  ay_object_defaults(ext->npatch);
-	  /*	  ay_copy_attributes(o, ext->npatch);*/
-	  /*	  ay_default_attributes(ext->npatch);*/
+
+	  ay_status = ay_npt_createnpatchobject(&(ext->npatch));
+
 	  ay_npt_extrude(ext->height, c, (ay_nurbpatch_object **)
 			 &(ext->npatch->refine));
+
 	  ((ay_nurbpatch_object *)ext->npatch->refine)->
 	    glu_display_mode = display_mode;
 	  ((ay_nurbpatch_object *)ext->npatch->refine)->
 	    glu_sampling_tolerance = tolerance;
-	  ext->npatch->type = AY_IDNPATCH;
+
 	  ext->npatch->next = extrusion;
 
-	  /* create bevel */
-	  if(ext->has_upper_bevels || ext->has_lower_bevels)
-	    {
-	      bevel = calloc(1, sizeof(ay_object));
-	      bevel->type = AY_IDNPATCH;
-	      ay_object_defaults(bevel);
+	  /* create and link bevels */
 
-	      ay_status = ay_npt_bevel(ext->bevel_type,
-				       ext->bevel_radius,
+	  if(has_startb)
+	    {
+	      ay_status = ay_npt_createnpatchobject(&bevel);
+	    
+	      ay_status = ay_npt_bevel(startb_type,
+				       startb_radius,
 				       AY_FALSE,
 				       c,
 				    (ay_nurbpatch_object **)&(bevel->refine));
 
-	      ((ay_nurbpatch_object *)bevel->refine)->
-		glu_display_mode = display_mode;
-	      ((ay_nurbpatch_object *)bevel->refine)->
-		glu_sampling_tolerance = tolerance;
+	      bevel->scalz = -1;
+	      startb = bevel;
+	      *nextcb = bevel;
+	      nextcb = &(bevel->next);
 	    } /* if */
 
-	  /* link bevel */
-	  if(ext->has_upper_bevels)
+	  if(has_endb)
 	    {
-	      bevel->next = ext->upper_bevels;
-	      ext->upper_bevels = bevel;
+	      ay_status = ay_npt_createnpatchobject(&bevel);
+
+	      ay_status = ay_npt_bevel(endb_type,
+				       endb_radius,
+				       AY_FALSE,
+				       c,
+				    (ay_nurbpatch_object **)&(bevel->refine));
+
 	      bevel->movz = ext->height;
-
-	      if(ext->has_lower_bevels)
-		{
-		  nb = ext->lower_bevels;
-		  ay_status = ay_object_copy(bevel, &(ext->lower_bevels));
-		  ext->lower_bevels->movz = 0.0;
-
-		  ext->lower_bevels->scalz = -1;
-		  ext->lower_bevels->next = nb;
-		}
-	    }
-	  else
-	    {
-	      if(ext->has_lower_bevels)
-		{
-		  bevel->next = ext->lower_bevels;
-		  ext->lower_bevels = bevel;
-		  bevel->movz = 0.0;
-		  bevel->scalz = -1;
-
-		}
+	      endb = bevel;
+	      *nextcb = bevel;
+	      nextcb = &(bevel->next);
 	    } /* if */
-
+	    
 	  /* create caps */
 	  if(ext->has_upper_cap)
 	    {
@@ -632,7 +563,7 @@ ay_extrude_notifycb(ay_object *o)
 	      curve = (ay_nurbcurve_object *)trim->refine;
 
 	      /* first c? -> trimcurve must be clockwise */
-	      if(!ext->upper_cap)
+	      if(!upper_cap)
 		{
 		  firstmovex = trim->movx;
 		  firstmovey = trim->movy;
@@ -644,10 +575,9 @@ ay_extrude_notifycb(ay_object *o)
 		     this is the same vector as the vector from the
 		     curve, but displaced by bevel_radius...
 		   */
-		  if(ext->upper_bevels)
+		  if(has_endb)
 		    {
-		      bevel = ext->upper_bevels;
-		      patch = (ay_nurbpatch_object*)bevel->refine;
+		      patch = (ay_nurbpatch_object*)endb->refine;
 		      free(curve->controlv);
 		      curve->controlv = NULL;
 		      if(!(curve->controlv =
@@ -660,13 +590,7 @@ ay_extrude_notifycb(ay_object *o)
 		      ay_trafo_defaults(trim);
 		    }
 
-		  if(!(cap = calloc(1,sizeof(ay_object))))
-		    return AY_EOMEM;
-		  ay_object_defaults(cap);
-		  cap->type = AY_IDNPATCH;
-		  cap->hide_children = AY_TRUE;
-		  cap->parent = AY_TRUE;
-		  cap->inherit_trafos = AY_FALSE;
+		  ay_status = ay_npt_createnpatchobject(&cap);
 
 		  ay_npt_createcap(z,curve,&uminx,&umaxx,&uminy,&umaxy,&angle,
 				  (ay_nurbpatch_object **)&(cap->refine));
@@ -676,22 +600,19 @@ ay_extrude_notifycb(ay_object *o)
 		  umaxy *= trim->scaly;
 		  uminy *= trim->scaly;
 
-		  ((ay_nurbpatch_object *)cap->refine)->
-		    glu_display_mode = display_mode;
-		  ((ay_nurbpatch_object *)cap->refine)->
-		    glu_sampling_tolerance = tolerance;
-
-		  if(!ext->upper_bevels)
+		  if(!has_endb)
 		    {
 		      ay_trafo_copy(trim, cap);
 		    }
 
-		  ext->upper_cap = cap;
+		  *nextcb = cap;
+		  nextcb = &(cap->next);
+		  upper_cap = cap;
 
 		  ay_nct_getorientation((ay_nurbcurve_object *)
 					curve, &angle);
 
-		  if(angle<0.0)
+		  if(angle < 0.0)
 		    ay_nct_revert(trim->refine);
 
 		  trim->scalx /= fabs(umaxx-uminx);
@@ -706,10 +627,9 @@ ay_extrude_notifycb(ay_object *o)
 	      else
 		{ /* not first curve  */
 
-		  if(ext->upper_bevels)
+		  if(has_endb)
 		    {
-		      bevel = ext->upper_bevels;
-		      patch = (ay_nurbpatch_object*)bevel->refine;
+		      patch = (ay_nurbpatch_object*)endb->refine;
 		      free(curve->controlv);
 		      curve->controlv = NULL;
 		      if(!(curve->controlv =
@@ -727,7 +647,7 @@ ay_extrude_notifycb(ay_object *o)
 		  if(angle > 0.0)
 		    ay_nct_revert(trim->refine);
 
-		  if(!ext->upper_bevels)
+		  if(!has_endb)
 		    {
 		      trimmx = trim->movx-firstmovex;
 		      trimmy = trim->movy-firstmovey;
@@ -747,13 +667,13 @@ ay_extrude_notifycb(ay_object *o)
 		  trim->movx += 0.5+(trimmx/fabs(umaxx-uminx));
 		  trim->movy += 0.5+(trimmy/fabs(umaxy-uminy));
 
-		}
+		} /* if */
 
-	      ot = ext->upper_cap->down;
-	      ext->upper_cap->down = trim;
+	      ot = upper_cap->down;
+	      upper_cap->down = trim;
 	      trim->next = ot;
 
-	    }
+	    } /* if */
 
 	  if(ext->has_lower_cap)
 	    {
@@ -767,7 +687,7 @@ ay_extrude_notifycb(ay_object *o)
 	      curve = (ay_nurbcurve_object *)trim->refine;
 
 	      /* first c? -> trimcurve must be cw */
-	      if(!ext->lower_cap)
+	      if(!lower_cap)
 		{
 		  if(!ext->has_upper_cap)
 		    {
@@ -782,10 +702,9 @@ ay_extrude_notifycb(ay_object *o)
 		     this is the same vector as the vector from the
 		     curve, but displaced by bevel_radius...
 		   */
-		  if(ext->lower_bevels)
+		  if(has_startb)
 		    {
-		      bevel = ext->lower_bevels;
-		      patch = (ay_nurbpatch_object*)bevel->refine;
+		      patch = (ay_nurbpatch_object*)startb->refine;
 		      free(curve->controlv);
 		      curve->controlv = NULL;
 		      if(!(curve->controlv =
@@ -798,13 +717,7 @@ ay_extrude_notifycb(ay_object *o)
 		      ay_trafo_defaults(trim);
 		    }
 
-		  if(!(cap = calloc(1,sizeof(ay_object))))
-		    return AY_EOMEM;
-		  ay_object_defaults(cap);
-		  cap->type = AY_IDNPATCH;
-		  cap->hide_children = AY_TRUE;
-		  cap->parent = AY_TRUE;
-		  cap->inherit_trafos = AY_FALSE;
+		  ay_status = ay_npt_createnpatchobject(&cap);
 
 		  ay_npt_createcap(z,curve,&lminx,&lmaxx,&lminy,&lmaxy,&angle,
 				  (ay_nurbpatch_object **)&(cap->refine));
@@ -814,24 +727,21 @@ ay_extrude_notifycb(ay_object *o)
 		  lmaxy *= trim->scaly;
 		  lminy *= trim->scaly;
 
-		  ((ay_nurbpatch_object *)cap->refine)->
-		    glu_display_mode = display_mode;
-		  ((ay_nurbpatch_object *)cap->refine)->
-		    glu_sampling_tolerance = tolerance;
-
-		  if(!ext->lower_bevels)
+		  if(!has_startb)
 		    {
 		      ay_trafo_copy(trim, cap);
 		    }
 
 		  cap->scalz = -1.0;
 
-		  ext->lower_cap = cap;
+		  *nextcb = cap;
+		  nextcb = &(cap->next);
+		  lower_cap = cap;
 
 		  ay_nct_getorientation((ay_nurbcurve_object *)
 					  curve, &angle);
 
-		  if(angle<0.0)
+		  if(angle < 0.0)
 		    ay_nct_revert(trim->refine);
 
 		  trim->scalx /= fabs(lmaxx-lminx);
@@ -845,10 +755,9 @@ ay_extrude_notifycb(ay_object *o)
 		}
 	      else
 		{ /* not first curve  */
-		  if(ext->lower_bevels)
+		  if(has_startb)
 		    {
-		      bevel = ext->lower_bevels;
-		      patch = (ay_nurbpatch_object*)bevel->refine;
+		      patch = (ay_nurbpatch_object*)startb->refine;
 		      free(curve->controlv);
 		      curve->controlv = NULL;
 		      if(!(curve->controlv =
@@ -863,10 +772,10 @@ ay_extrude_notifycb(ay_object *o)
 		  ay_nct_getorientation((ay_nurbcurve_object *)
 					trim->refine, &angle);
 
-		  if(angle>0.0)
+		  if(angle > 0.0)
 		    ay_nct_revert(trim->refine);
 
-		  if(!ext->lower_bevels)
+		  if(!has_startb)
 		    {
 		      trimmx = trim->movx-firstmovex;
 		      trimmy = trim->movy-firstmovey;
@@ -888,8 +797,8 @@ ay_extrude_notifycb(ay_object *o)
 
 		} /* if */
 
-	      ot = ext->lower_cap->down;
-	      ext->lower_cap->down = trim;
+	      ot = lower_cap->down;
+	      lower_cap->down = trim;
 	      trim->next = ot;
 
 	    } /* if */
@@ -901,12 +810,13 @@ ay_extrude_notifycb(ay_object *o)
 
     } /* while down */
 
-  /* properly terminate level */
+  /* properly terminate all levels */
   if(ext)
     {
-      if(ext->upper_cap)
-	{
-	  tloop = ext->upper_cap->down;
+      bevel = ext->caps_and_bevels;
+      while(bevel)
+	{  
+	  tloop = bevel->down;
 	  if(tloop)
 	    {
 	      while(tloop->next)
@@ -917,44 +827,21 @@ ay_extrude_notifycb(ay_object *o)
 	    }
 	  else
 	    {
-	      ay_status = ay_object_crtendlevel(&(ext->upper_cap->down));
+	      ay_status = ay_object_crtendlevel(&(bevel->down));
 	    }
-	}  /* if */
 
-      if(ext->lower_cap)
-	{
-	  tloop = ext->lower_cap->down;
-	  if(tloop)
-	    {
-	      while(tloop->next)
-		{
-		  tloop = tloop->next;
-		}
-	      ay_status = ay_object_crtendlevel(&(tloop->next));
-	    }
-	  else
-	    {
-	      ay_status = ay_object_crtendlevel(&(ext->lower_cap->down));
-	    }
-	} /* if */
-
-      bevel = ext->upper_bevels;
-      while(bevel)
-	{
-	  ay_status = ay_npt_revertu((ay_nurbpatch_object*)(bevel->refine));
+	  ((ay_nurbpatch_object *)bevel->refine)->
+	    glu_display_mode = display_mode;
+	  ((ay_nurbpatch_object *)bevel->refine)->
+	    glu_sampling_tolerance = tolerance;
+	  /*
+	    ay_status = ay_npt_revertu((ay_nurbpatch_object*)(bevel->refine));
+	  */
 	  bevel = bevel->next;
-	}
-
-      bevel = ext->lower_bevels;
-      while(bevel)
-	{
-	  ay_status = ay_npt_revertu((ay_nurbpatch_object*)(bevel->refine));
-	  bevel = bevel->next;
-	}
-
+	} /* while */
     } /* if */
 
- return AY_OK;
+ return ay_status;
 } /* ay_extrude_notifycb */
 
 
@@ -963,11 +850,8 @@ ay_extrude_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
  int ay_status = AY_OK;
  char fname[] = "extrude_providecb";
- int stride = 4, i, j;
- double m[16], *cv;
  ay_extrude_object *e = NULL;
  ay_object *new = NULL, **t = NULL, *p = NULL;
- ay_nurbpatch_object *np = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -1001,8 +885,8 @@ ay_extrude_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  p = p->next;
 	} /* while */
 
-      /* copy caps */
-      p = e->upper_cap;
+      /* copy caps and bevels */
+      p = e->caps_and_bevels;
       while(p)
 	{
 	  ay_status = ay_object_copy(p, t);
@@ -1015,21 +899,7 @@ ay_extrude_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  t = &((*t)->next);
 	  p = p->next;
 	} /* while */
-
-      p = e->lower_cap;
-      while(p)
-	{
-	  ay_status = ay_object_copy(p, t);
-	  if(ay_status)
-	    {
-	      ay_error(ay_status, fname, NULL);
-	      return AY_ERROR;
-	    }
-	  ay_trafo_add(o, *t);
-	  t = &((*t)->next);
-	  p = p->next;
-	} /* while */
-
+#if 0
       /* copy bevels */
       p = e->upper_bevels;
       while(p)
@@ -1070,7 +940,7 @@ ay_extrude_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  t = &((*t)->next);
 	  p = p->next;
 	} /* while */
-
+#endif
       *result = new;
     } /* if */
 
@@ -1092,8 +962,7 @@ ay_extrude_convertcb(ay_object *o, int in_place)
 
   r = (ay_extrude_object *) o->refine;
 
-  if(r->upper_cap || r->lower_cap || r->upper_bevels || r->lower_bevels ||
-     (r->npatch && r->npatch->next))
+  if(r->caps_and_bevels || (r->npatch && r->npatch->next))
     {
       if(!(new = calloc(1, sizeof(ay_object))))
 	{ return AY_EOMEM; }
@@ -1133,58 +1002,15 @@ ay_extrude_convertcb(ay_object *o, int in_place)
 	    } /* while */
 	} /* if */
 
-      if(r->upper_cap)
+      if(r->caps_and_bevels)
 	{
-	  ay_status = ay_object_copy(r->upper_cap, next);
-	  if(*next)
-	    {
-	      /*ay_trafo_add(o, *next);*/
-	      next = &((*next)->next);
-	    }
-	} /* if */
-
-      if(r->lower_cap)
-	{
-	  ay_status = ay_object_copy(r->lower_cap, next);
-	  if(*next)
-	    {
-	      /*ay_trafo_add(o, *next);*/
-	      next = &((*next)->next);
-	    }
-	} /* if */
-
-      if(r->upper_bevels)
-	{
-	  p = r->upper_bevels;
+	  p = r->caps_and_bevels;
 	  while(p)
 	    {
 	      ay_status = ay_object_copy(p, next);
 	      if(*next)
-		{
-		  /*ay_trafo_add(o, *next);*/
-		  (*next)->hide_children = AY_TRUE;
-		  (*next)->parent = AY_TRUE;
-		  ay_object_crtendlevel(&(*next)->down);
-		  next = &((*next)->next);
-		}
-	      p = p->next;
-	    } /* while */
-	} /* if */
+		next = &((*next)->next);
 
-      if(r->lower_bevels)
-	{
-	  p = r->lower_bevels;
-	  while(p)
-	    {
-	      ay_status = ay_object_copy(p, next);
-	      if(*next)
-		{
-		  /*ay_trafo_add(o, *next);*/
-		  (*next)->hide_children = AY_TRUE;
-		  (*next)->parent = AY_TRUE;
-		  ay_object_crtendlevel(&(*next)->down);
-		  next = &((*next)->next);
-		}
 	      p = p->next;
 	    } /* while */
 	} /* if */

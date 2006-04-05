@@ -395,7 +395,7 @@ ay_skin_notifycb(ay_object *o)
  ay_nurbcurve_object *curve = NULL;
  ay_skin_object *skin = NULL;
  ay_object *down = NULL, *c = NULL, *last = NULL, *all_curves = NULL;
- ay_object *newo = NULL, **nextcb, *start_cap = NULL, *end_cap = NULL;
+ ay_object *newo = NULL, **nextcb;
  ay_object *bevel = NULL;
  int mode = 0, count = 0, i, a;
  int has_startb = AY_FALSE, has_endb = AY_FALSE;
@@ -481,8 +481,9 @@ ay_skin_notifycb(ay_object *o)
   newo->type = AY_IDNPATCH;
 
   /* get bevel parameters */
-  ay_npt_getbeveltags(o, &has_startb, &startb_type, &startb_radius,
-		      &startb_sense, &has_endb, &endb_type, &endb_radius,
+  ay_npt_getbeveltags(o, 0, &has_startb, &startb_type, &startb_radius,
+		      &startb_sense);
+  ay_npt_getbeveltags(o, 1, &has_endb, &endb_type, &endb_radius,
 		      &endb_sense);
 
   /* create caps */
@@ -502,9 +503,9 @@ ay_skin_notifycb(ay_object *o)
     {
       c = NULL;
       ay_status = ay_object_copy(all_curves, &c);
-      if(!startb_sense)
+      if(startb_sense)
 	{
-	  ay_nct_revert((ay_nurbcurve_object*)(c));
+	  ay_nct_revert((ay_nurbcurve_object*)(c->refine));
 	}
 
       bevel = NULL;
@@ -518,6 +519,7 @@ ay_skin_notifycb(ay_object *o)
       bevel->type = AY_IDNPATCH;
       bevel->parent = AY_TRUE;
       bevel->inherit_trafos = AY_FALSE;
+      ay_nct_applytrafo(c);
       ay_status = ay_npt_bevel(startb_type, startb_radius, AY_TRUE, c,
 			       (ay_nurbpatch_object**)&(bevel->refine));
 
@@ -576,7 +578,7 @@ ay_skin_notifycb(ay_object *o)
       ay_status = ay_object_copy(last, &c);
       if(!endb_sense)
 	{
-	  ay_nct_revert((ay_nurbcurve_object*)(c));
+	  ay_nct_revert((ay_nurbcurve_object*)(c->refine));
 	}
 
       bevel = NULL;
@@ -590,7 +592,8 @@ ay_skin_notifycb(ay_object *o)
       bevel->type = AY_IDNPATCH;
       bevel->parent = AY_TRUE;
       bevel->inherit_trafos = AY_FALSE;
-      ay_status = ay_npt_bevel(startb_type, startb_radius, AY_TRUE, c,
+      ay_nct_applytrafo(c);
+      ay_status = ay_npt_bevel(endb_type, endb_radius*-1.0, AY_TRUE, c,
 			       (ay_nurbpatch_object**)&(bevel->refine));
 
       ay_object_delete(c);
@@ -683,8 +686,8 @@ ay_skin_notifycb(ay_object *o)
 	}
     }
 
-  /* remove temporary curves */
 cleanup:
+  /* remove temporary curves */
   while(all_curves)
     {
       c = all_curves->next;

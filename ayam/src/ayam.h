@@ -157,6 +157,7 @@ typedef struct ay_shader_arg_s
   } val;
 } ay_shader_arg;
 
+
 typedef struct ay_shader_s
 {
   struct ay_shader_s *next;
@@ -308,6 +309,7 @@ typedef struct ay_nurbcurve_object_s
   struct ay_mpoint_object_s *mpoints;
 } ay_nurbcurve_object;
 
+
 typedef struct ay_nurbpatch_object_s
 {
   int width, height;
@@ -335,6 +337,7 @@ typedef struct ay_nurbpatch_object_s
   struct ay_mpoint_object_s *mpoints;
 } ay_nurbpatch_object;
 
+
 typedef struct ay_pamesh_object_s {
   int width, height;
   int close_u, close_v;
@@ -348,13 +351,13 @@ typedef struct ay_pamesh_object_s {
   double *ubasis; /* [16], only in use for btype_u == AY_BTCUSTOM */
   int vstep;
   double *vbasis; /* [16], only in use for btype_v == AY_BTCUSTOM */
-  double glu_sampling_tolerance;
-  int glu_display_mode;
 
   /* cache NURBS patch representation */
   ay_object *npatch;
-
+  double glu_sampling_tolerance;
+  int glu_display_mode;
 } ay_pamesh_object;
+
 
 typedef struct ay_pomesh_object_s {
   int type; /* currently unused */
@@ -369,8 +372,9 @@ typedef struct ay_pomesh_object_s {
   double *controlv; /* [ncontrols * stride] */
 } ay_pomesh_object;
 
+
 typedef struct ay_sdmesh_object_s {
-  int scheme; /* AY_SDCATMULL */
+  int scheme; /* AY_SDSCATMULL, AY_SDSLOOP */
 
   unsigned int nfaces; /* total number of faces */
   unsigned int *nverts; /* [nfaces] */
@@ -386,12 +390,13 @@ typedef struct ay_sdmesh_object_s {
   double *controlv; /* [ncontrols * 3] */
 } ay_sdmesh_object;
 
+
 typedef struct ay_gordon_object_s {
-  /* cache NURBS patch representation */
-  ay_object *npatch;
   int wcc; /* watch (and automatically correct parameter curves) */
   int uorder;
   int vorder;
+  /* cache NURBS patch representation */
+  ay_object *npatch;
   double glu_sampling_tolerance;
   int glu_display_mode;
 } ay_gordon_object;
@@ -405,12 +410,7 @@ typedef struct ay_text_object_s
   int revert;
   int has_upper_cap;
   int has_lower_cap;
-  int has_upper_bevels;
-  int has_lower_bevels;
-  int bevel_type;
-  double bevel_radius;
-  int revert_bevels;
-
+  /* cache NURBS patch representation */
   ay_object *npatch;
   double glu_sampling_tolerance;
   int glu_display_mode;
@@ -437,6 +437,7 @@ typedef struct ay_light_object_s
   double tto[3];
 } ay_light_object;
 
+
 typedef struct ay_level_object_s
 {
   int type;
@@ -447,6 +448,7 @@ typedef struct ay_box_object_s
   double width, length, height;
 } ay_box_object;
 
+
 typedef struct ay_bpatch_object_s
 {
   double p1[3];
@@ -454,6 +456,7 @@ typedef struct ay_bpatch_object_s
   double p3[3];
   double p4[3];
 } ay_bpatch_object;
+
 
 typedef struct ay_sphere_object_s
 {
@@ -464,6 +467,7 @@ typedef struct ay_sphere_object_s
   double thetamax;
 } ay_sphere_object;
 
+
 typedef struct ay_cone_object_s
 {
   char closed;
@@ -473,6 +477,7 @@ typedef struct ay_cone_object_s
   double thetamax;
 } ay_cone_object;
 
+
 typedef struct ay_disk_object_s
 {
   char is_simple;
@@ -480,6 +485,7 @@ typedef struct ay_disk_object_s
   double height;
   double thetamax;
 } ay_disk_object;
+
 
 typedef struct ay_cylinder_object_s
 {
@@ -490,6 +496,7 @@ typedef struct ay_cylinder_object_s
   double thetamax;
 } ay_cylinder_object;
 
+
 typedef struct ay_hyperboloid_s
 {
   char closed;
@@ -497,6 +504,7 @@ typedef struct ay_hyperboloid_s
   double p2[3];
   double thetamax;
 } ay_hyperboloid_object;
+
 
 typedef struct ay_paraboloid_object_s
 {
@@ -506,6 +514,7 @@ typedef struct ay_paraboloid_object_s
   double thetamax;
 } ay_paraboloid_object;
 
+
 typedef struct ay_torus_object_s
 {
   char closed;
@@ -513,6 +522,7 @@ typedef struct ay_torus_object_s
   double phimin, phimax;
   double thetamax;
 } ay_torus_object;
+
 
 typedef struct ay_icurve_object_s
 {
@@ -523,12 +533,12 @@ typedef struct ay_icurve_object_s
   double iparam;
   double *controlv;
 
-  double glu_sampling_tolerance;
-  int display_mode;
-
   /* cache NURBS curve representation */
   ay_object *ncurve;
+  double glu_sampling_tolerance;
+  int display_mode;
 } ay_icurve_object;
+
 
 typedef struct ay_concatnc_object_s
 {
@@ -538,12 +548,13 @@ typedef struct ay_concatnc_object_s
   int knot_type;
   double ftlength;
 
-  double glu_sampling_tolerance;
-  int display_mode;
-
   /* cache NURBS curve representation */
   ay_object *ncurve;
+
+  double glu_sampling_tolerance;
+  int display_mode;
 } ay_concatnc_object;
+
 
 typedef struct ay_cap_object_s
 {
@@ -552,11 +563,13 @@ typedef struct ay_cap_object_s
   ay_object *npatch;
 } ay_cap_object;
 
+
 typedef struct ay_custom_object_s
 {
   unsigned int type;
   void *object;
 } ay_custom_object;
+
 
 typedef struct ay_clone_object_s
 {
@@ -571,6 +584,7 @@ typedef struct ay_clone_object_s
   ay_object *clones;
 } ay_clone_object;
 
+
 typedef struct ay_camera_object_s
 {
   double from[3];
@@ -580,11 +594,13 @@ typedef struct ay_camera_object_s
   double nearp, farp; /* clipping planes */
 } ay_camera_object;
 
+
 typedef struct ay_riinc_object_s
 {
   double width, length, height;
   char *file;
 } ay_riinc_object;
+
 
 typedef struct ay_riproc_object_s
 {
@@ -594,15 +610,12 @@ typedef struct ay_riproc_object_s
   char *data;
 } ay_riproc_object;
 
+
 typedef struct ay_revolve_object_s
 {
-  ay_object *npatch;
-
   double thetamax;
-
   int sections;
   int order;
-
   int has_upper_cap;
   ay_object *upper_cap;
   int has_lower_cap;
@@ -611,47 +624,39 @@ typedef struct ay_revolve_object_s
   ay_object *start_cap;
   int has_end_cap;
   ay_object *end_cap;
-
+  /* cache NURBS patch representation */
+  ay_object *npatch;
   double glu_sampling_tolerance;
   int glu_display_mode;
 } ay_revolve_object;
 
+
 typedef struct ay_extrude_object_s
 {
- ay_object *npatch;
-
  double height;
-
  int has_upper_cap;
- ay_object *upper_cap;
  int has_lower_cap;
- ay_object *lower_cap;
- int has_upper_bevels;
- ay_object *upper_bevels;
- int has_lower_bevels;
- ay_object *lower_bevels;
 
- int bevel_type; /* 0 no, 1 round, 2 ridge */
- double bevel_radius;
-
+ ay_object *caps_and_bevels;
+ /* cache NURBS patch representation */
+ ay_object *npatch;
  double glu_sampling_tolerance;
  int glu_display_mode;
 } ay_extrude_object;
 
+
 typedef struct ay_sweep_object_s
 {
- ay_object *npatch;
-
  int rotate;
  int interpolate;
  int close;
  int sections;
-
  int has_start_cap;
  int has_end_cap;
 
  ay_object *caps_and_bevels;
-  
+ /* cache NURBS patch representation */
+ ay_object *npatch;
  double glu_sampling_tolerance;
  int glu_display_mode;
 } ay_sweep_object;
@@ -659,16 +664,14 @@ typedef struct ay_sweep_object_s
 
 typedef struct ay_birail1_object_s
 {
- ay_object *npatch;
-
  int close;
  int sections;
-
  int has_start_cap;
  int has_end_cap;
 
  ay_object *caps_and_bevels;
-
+ /* cache NURBS patch representation */
+ ay_object *npatch;
  double glu_sampling_tolerance;
  int glu_display_mode;
 } ay_birail1_object;
@@ -676,16 +679,14 @@ typedef struct ay_birail1_object_s
 
 typedef struct ay_birail2_object_s
 {
- ay_object *npatch;
-
  int close;
  int sections;
-
  int has_start_cap;
  int has_end_cap;
  
  ay_object *caps_and_bevels;
-
+ /* cache NURBS patch representation */
+ ay_object *npatch;
  double glu_sampling_tolerance;
  int glu_display_mode;
 } ay_birail2_object;
@@ -693,19 +694,16 @@ typedef struct ay_birail2_object_s
 
 typedef struct ay_skin_object_s
 {
- ay_object *npatch;
-
  int interpolate;
-
  int uorder;
  int uknot_type;
  double uknotv;
-
  int has_start_cap;
  int has_end_cap;
 
  ay_object *caps_and_bevels;
-
+ /* cache NURBS patch representation */
+ ay_object *npatch;
  double glu_sampling_tolerance;
  int glu_display_mode;
 } ay_skin_object;
@@ -713,10 +711,11 @@ typedef struct ay_skin_object_s
 
 typedef struct ay_extrnc_object_s
 {
-  ay_object *ncurve;
   int side;
   int pnum;
   double parameter;
+  /* cache NURBS curve representation */
+  ay_object *ncurve;
   double glu_sampling_tolerance;
   int glu_display_mode;
 } ay_extrnc_object;
@@ -730,7 +729,7 @@ typedef struct ay_script_object_s
   ay_object *cm_objects; /* created or modified objects */
 
   int modified;
-  Tcl_Obj *cscript; /* compiled script */
+  Tcl_Obj *cscript; /* cache compiled script */
 } ay_script_object;
 
 
@@ -869,12 +868,14 @@ typedef struct ay_prefs_object_s
   char *pprender;
 } ay_prefs_object;
 
+
 typedef struct ay_point_object_s
 {
   struct ay_point_object_s *next;
   int homogenous;
   double *point;
 } ay_point_object;
+
 
 typedef struct ay_mpoint_object_s
 {
@@ -883,6 +884,7 @@ typedef struct ay_mpoint_object_s
   double **points;
 } ay_mpoint_object;
 
+
 typedef struct ay_tag_object_s
 {
   struct ay_tag_object_s *next;
@@ -890,6 +892,7 @@ typedef struct ay_tag_object_s
   char *type;
   char *val;
 } ay_tag_object;
+
 
 typedef struct ay_table_s
 {
