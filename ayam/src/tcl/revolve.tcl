@@ -7,7 +7,7 @@
 #
 # See the file License for details.
 
-# revolve.tcl - interpolating curves objects Tcl code
+# revolve.tcl - Revolve objects Tcl code
 
 set Revolve_props { Transformations Attributes Material Tags RevolveAttr }
 
