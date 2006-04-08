@@ -48,6 +48,24 @@ if { $BevelTags(HasEndBevel) } {
     addCommand $w c2 "Add End Bevel!" "bevel_add 1"
 }
 
+if { $BevelTags(HasLeftBevel) } {
+    addCommand $w c3 "Remove Left Bevel!" "bevel_rem 2"
+    addMenu $w BevelTags LBType $ay(bevelmodes)
+    addParam $w BevelTags LBRadius
+    addCheck $w BevelTags LBRevert
+} else {
+    addCommand $w c3 "Add Left Bevel!" "bevel_add 2"
+}
+
+if { $BevelTags(HasRightBevel) } {
+    addCommand $w c4 "Remove Right Bevel!" "bevel_rem 3"
+    addMenu $w BevelTags RBType $ay(bevelmodes)
+    addParam $w BevelTags RBRadius
+    addCheck $w BevelTags RBRevert
+} else {
+    addCommand $w c4 "Add Right Bevel!" "bevel_add 3"
+}
+
 addParam $w GordonAttrData Tolerance
 addMenu $w GordonAttrData DisplayMode $ay(npdisplaymodes)
 
