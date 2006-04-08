@@ -116,13 +116,15 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
 {
  int ay_status = AY_OK;
  char fname[] = "tgui_update";
+ char *n1="tgui_tessparam";
+ Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_tag_object *tag = NULL;
  ay_list_object *oref = NULL;
  ay_list_object *newl = NULL, **lastl = NULL, *polist = NULL;
  ay_object *o = NULL, *tmp = NULL, *tmpnp = NULL;
  ay_deletecb *cb = NULL;
  void **arr = NULL;
- int smethod = 0;
+ int smethod = 0, numtriangles = 0;
  double sparamu = 0.0, sparamv = 0.0;
 
   /* get new tesselation parameters */
@@ -227,6 +229,7 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
       if(tmp)
 	{
 	  oref->object->refine = tmp->refine;
+	  numtriangles += ((ay_pomesh_object*)(tmp->refine))->npolys;
 	  /*ay_trafo_copy(tmp, oref->object);*/
 	  free(tmp);
 	  tmp = NULL;
@@ -252,6 +255,18 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
 	}
       o = o->next;
     } /* while */
+
+
+  toa = Tcl_NewStringObj(n1,-1);
+
+  ton = Tcl_NewStringObj(n1,-1);
+
+  Tcl_SetStringObj(ton,"NumTriangles",-1);
+  to = Tcl_NewIntObj(numtriangles);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
+  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
  return ay_status;
 } /* ay_tgui_update */

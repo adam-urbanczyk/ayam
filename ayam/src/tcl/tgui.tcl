@@ -16,6 +16,7 @@ uplevel #0 { array set tgui_tessparam {
     MB1Down 0
     SaveToTag 0
     OldSMethod -1
+    NumTriangles 0
 }
 }
 
@@ -207,8 +208,7 @@ proc tgui_update args {
 	pack forget .tguiw.f1.fSParamV
     }
 
-    if { ($tgui_tessparam(SMethod) == 2) || ($tgui_tessparam(SMethod) == 3) } {
-
+    if { ($tgui_tessparam(SMethod) > 1) } {
 	if { $tgui_tessparam(OldSMethod) != $tgui_tessparam(SMethod) } {
 	    .tguiw.f1.fSParamU.ll conf -text "1"
 	    .tguiw.f1.fSParamU.lr conf -text "20"
@@ -416,6 +416,8 @@ proc tgui_open { } {
 
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
+
+    addInfo $f tgui_tessparam NumTriangles
 
     addCheck $f tgui_tessparam SaveToTag
 
