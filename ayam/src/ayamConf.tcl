@@ -96,9 +96,15 @@ proc create_makefile {} {
 	set err 1
     }
 
-    if { ![file exists $tkpath] || !([file exist "$tkpath/generic/tkInt.h"] ||\
-	    [file exist "$tkpath/include/tkInt.h"]) } {
+    if { ![file exists $tkpath] || !([file exists "$tkpath/generic/tkInt.h"]\
+	    || [file exists "$tkpath/include/tkInt.h"]) } {
 	set err_str "$err_str - Tk-Path doesn't exist or is invalid!\n"
+	set err 1
+    }
+
+    if { ![file exists $tiffpath] ||\
+	 ![file exists "$tiffpath/include/tiffio.h"] } {
+	set err_str "$err_str - TIFF-Path doesn't exist or is invalid!\n"
 	set err 1
     }
 
