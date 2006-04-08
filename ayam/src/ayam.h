@@ -395,6 +395,8 @@ typedef struct ay_gordon_object_s {
   int wcc; /* watch (and automatically correct parameter curves) */
   int uorder;
   int vorder;
+
+  ay_object *caps_and_bevels;
   /* cache NURBS patch representation */
   ay_object *npatch;
   double glu_sampling_tolerance;
@@ -442,6 +444,7 @@ typedef struct ay_level_object_s
 {
   int type;
 } ay_level_object;
+
 
 typedef struct ay_box_object_s
 {

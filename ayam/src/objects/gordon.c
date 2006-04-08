@@ -55,6 +55,12 @@ ay_gordon_deletecb(void *c)
   if(gordon->npatch)
     ay_object_delete(gordon->npatch);
 
+  if(gordon->caps_and_bevels)
+    {
+      ay_object_deletemulti(gordon->caps_and_bevels);
+      gordon->caps_and_bevels = NULL;
+    }
+
   free(gordon);
 
  return AY_OK;
@@ -80,6 +86,8 @@ ay_gordon_copycb(void *src, void **dst)
   /* copy npatch */
   ay_object_copy(gordonsrc->npatch, &(gordon->npatch));
 
+  gordon->caps_and_bevels = NULL;
+
   *dst = (void *)gordon;
 
  return AY_OK;
@@ -90,6 +98,7 @@ int
 ay_gordon_drawcb(struct Togl *togl, ay_object *o)
 {
  ay_gordon_object *gordon = NULL;
+ ay_object *b;
 
   if(!o)
     return AY_ENULL;
@@ -102,6 +111,16 @@ ay_gordon_drawcb(struct Togl *togl, ay_object *o)
   if(gordon->npatch)
     ay_draw_object(togl, gordon->npatch, AY_TRUE);
 
+  if(gordon->caps_and_bevels)
+    {
+      b = gordon->caps_and_bevels;
+      while(b)
+	{
+	  ay_draw_object(togl, b, AY_TRUE);
+	  b = b->next;
+	}
+    }
+
  return AY_OK;
 } /* ay_gordon_drawcb */
 
@@ -110,6 +129,7 @@ int
 ay_gordon_shadecb(struct Togl *togl, ay_object *o)
 {
  ay_gordon_object *gordon = NULL;
+ ay_object *b;
 
   if(!o)
     return AY_ENULL;
@@ -121,6 +141,16 @@ ay_gordon_shadecb(struct Togl *togl, ay_object *o)
 
   if(gordon->npatch)
     ay_shade_object(togl, gordon->npatch, AY_FALSE);
+
+  if(gordon->caps_and_bevels)
+    {
+      b = gordon->caps_and_bevels;
+      while(b)
+	{
+	  ay_shade_object(togl, b, AY_FALSE);
+	  b = b->next;
+	}
+    }
 
  return AY_OK;
 } /* ay_gordon_shadecb */
@@ -335,6 +365,7 @@ int
 ay_gordon_wribcb(char *file, ay_object *o)
 {
  ay_gordon_object *gordon = NULL;
+ ay_object *b;
 
   if(!o)
    return AY_ENULL;
@@ -343,6 +374,16 @@ ay_gordon_wribcb(char *file, ay_object *o)
 
   if(gordon->npatch)
     ay_wrib_object(file, gordon->npatch);
+
+  if(gordon->caps_and_bevels)
+    {
+      b = gordon->caps_and_bevels;
+      while(b)
+	{
+	  ay_wrib_object(file, b);
+	  b = b->next;
+	}
+    }
 
  return AY_OK;
 } /* ay_gordon_wribcb */
@@ -382,10 +423,11 @@ ay_gordon_notifycb(ay_object *o)
  ay_gordon_object *gordon = NULL;
  ay_object *down = NULL, *c = NULL, *p = NULL, *last = NULL;
  ay_object *hcurves = NULL, *vcurves = NULL, *inpatch = NULL;
- ay_object *npatch = NULL;
+ ay_object *npatch = NULL, *bevel = NULL, bcurve = {0}, **nextcb;
  int getvcurves = AY_FALSE, getinpatch = AY_FALSE, hcount = 0, vcount = 0;
- int mode = 0, a, i;
- double tolerance, m[16] = {0};
+ int mode = 0, a, i, has_bevel, b_type, b_sense;
+ int b_extrncparams[4] = {0, 1, 2, 3};
+ double tolerance, m[16] = {0}, b_radius;
 
   if(!o)
     return AY_ENULL;    
@@ -399,6 +441,14 @@ ay_gordon_notifycb(ay_object *o)
   if(gordon->npatch)
     ay_object_delete(gordon->npatch);
   gordon->npatch = NULL;
+
+  if(gordon->caps_and_bevels)
+    {
+      ay_object_deletemulti(gordon->caps_and_bevels);
+      gordon->caps_and_bevels = NULL;
+    }
+
+  nextcb = &(gordon->caps_and_bevels);
 
   /* get parameter curves */
   if(!o->down)
@@ -554,6 +604,57 @@ ay_gordon_notifycb(ay_object *o)
   ((ay_nurbpatch_object *)npatch->refine)->glu_display_mode =
     mode;
 
+  /* create caps and bevels */
+  for(i = 0; i < 4; i++)
+    {
+      has_bevel = AY_FALSE;
+      ay_npt_getbeveltags(o, i, &has_bevel, &b_type, &b_radius, &b_sense);
+      if(has_bevel)
+	{
+	  ay_object_defaults(&bcurve);
+	  bcurve.type = AY_IDNCURVE;
+	  ay_status = ay_npt_extractnc(gordon->npatch, b_extrncparams[i],
+				       0.0, AY_FALSE,
+		    (ay_nurbcurve_object**)&(bcurve.refine));
+
+	  if(ay_status)
+	    goto cleanup;
+	  /*
+	    ((ay_nurbcurve_object*)bcurve.refine)->type =
+	    ((ay_nurbcurve_object*)curve1->refine)->type;
+	  */
+	  if(!b_sense)
+	    {
+	      ay_nct_revert((ay_nurbcurve_object*)(bcurve.refine));
+	    }
+
+	  bevel = NULL;
+	  if(!(bevel = calloc(1, sizeof(ay_object))))
+	    {
+	      ay_status = AY_EOMEM;
+	      goto cleanup;
+	    }
+
+	  ay_object_defaults(bevel);
+	  bevel->type = AY_IDNPATCH;
+	  bevel->parent = AY_TRUE;
+	  bevel->inherit_trafos = AY_FALSE;
+	  ay_status = ay_npt_bevel(b_type, b_radius, AY_TRUE,
+				   &bcurve,
+			       (ay_nurbpatch_object**)&(bevel->refine));
+
+	  ay_nct_destroy((ay_nurbcurve_object*)bcurve.refine);
+	  bcurve.refine = NULL;
+
+	  if(ay_status)
+	    goto cleanup;
+
+	  *nextcb = bevel;
+	  nextcb = &(bevel->next);
+
+	} /* if */
+    } /* for */
+
 cleanup:
   /* remove temporary curves and intersection patch */
   while(hcurves)
@@ -583,7 +684,7 @@ ay_gordon_providecb(ay_object *o, unsigned int type, ay_object **result)
  int ay_status = AY_OK;
  char fname[] = "gordon_providecb";
  ay_gordon_object *s = NULL;
- ay_object *new = NULL, **t = NULL;
+ ay_object *new = NULL, **t = NULL, *p = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -612,6 +713,21 @@ ay_gordon_providecb(ay_object *o, unsigned int type, ay_object **result)
       ay_trafo_copy(o, *t);
       t = &((*t)->next);
 
+      /* copy caps and bevels */
+      p = s->caps_and_bevels;
+      while(p)
+	{
+	  ay_status = ay_object_copy(p, t);
+	  if(ay_status)
+	    {
+	      ay_error(ay_status, fname, NULL);
+	      return AY_ERROR;
+	    }
+	  ay_trafo_add(o, *t);
+	  t = &((*t)->next);
+	  p = p->next;
+	} /* while */
+
       *result = new;
     } /* if */
 
@@ -624,7 +740,7 @@ ay_gordon_convertcb(ay_object *o, int in_place)
 {
  int ay_status = AY_OK;
  ay_gordon_object *r = NULL;
- ay_object *new = NULL;
+ ay_object *new = NULL, **next = NULL, *b;
 
   if(!o)
     return AY_ENULL;
@@ -632,14 +748,63 @@ ay_gordon_convertcb(ay_object *o, int in_place)
   /* first, create new objects */
 
   r = (ay_gordon_object *) o->refine;
-  if(r->npatch)
+
+  if(!r->npatch)
+    return AY_OK;
+
+  if(r->caps_and_bevels)
+    {
+      if(!(new = calloc(1, sizeof(ay_object))))
+	{ return AY_EOMEM; }
+
+      ay_object_defaults(new);
+      new->type = AY_IDLEVEL;
+      new->parent = AY_TRUE;
+      new->inherit_trafos = AY_TRUE;
+      ay_trafo_copy(o, new);
+
+      if(!(new->refine = calloc(1, sizeof(ay_level_object))))
+	{ free(new); return AY_EOMEM; }
+
+      ((ay_level_object *)(new->refine))->type = AY_LTLEVEL;
+
+      next = &(new->down);
+
+      if(r->npatch)
+	{
+	  ay_status = ay_object_copy(r->npatch, next);
+	  if(*next)
+	    {
+	      (*next)->parent = AY_TRUE;
+	      ay_object_crtendlevel(&(*next)->down);
+	      next = &((*next)->next);
+	    }
+	}
+
+      if(r->caps_and_bevels)
+	{
+	  b = r->caps_and_bevels;
+	  while(b)
+	    {
+	      ay_status = ay_object_copy(b, next);
+	      if(*next)
+		{
+		  next = &((*next)->next);
+		}
+	      b = b->next;
+	    } /* while */
+	} /* if */
+
+      ay_object_crtendlevel(next);
+    }
+  else
     {
       ay_status = ay_object_copy(r->npatch, &new);
       ay_trafo_copy(o, new);
       new->hide_children = AY_TRUE;
       new->parent = AY_TRUE;
       ay_object_crtendlevel(&(new->down));
-    }
+    } /* if */
 
   /* second, link new objects, or replace old objects with them */
 
