@@ -4662,3 +4662,144 @@ ay_nct_israt(ay_nurbcurve_object *curve)
 
  return AY_FALSE;
 } /* ay_nct_israt */
+
+
+/* ay_nct_center:
+ *  center a NURBS curve
+ *  mode - control in which dimensions centering shall occur
+ *   0: all dimensions
+ *   1: only x-y
+ *   2: only y-z
+ *   3: only x-z
+ */
+int
+ay_nct_center(int mode, ay_nurbcurve_object *curve)
+{
+ int ay_status = AY_OK;
+ double *controlv = NULL, *p1, *p2, x, y, z;
+ int a, i, k;
+
+  if(!curve)
+    return AY_ENULL;
+
+  controlv = curve->controlv;
+
+  /* calculate middle point, curve->type tells how many control
+     points should be considered */
+  i = curve->length;
+  if(curve->type == AY_CTCLOSED)
+    i--;
+  if(curve->type == AY_CTPERIODIC)
+    i -= (curve->order-1);
+  x = controlv[0]/i;
+  y = controlv[1]/i;
+  z = controlv[2]/i;
+  a = 4;
+  p1 = controlv;
+  for(k = 1; k < i; k++)
+    {
+      p2 = &(controlv[a]);
+      if(!AY_COMP3DP(p1,p2))
+	{
+	  x += (controlv[a]/i);
+	  y += (controlv[a+1]/i);
+	  z += (controlv[a+2]/i);
+	}
+      a += 4;
+      p1 = p2;
+    }
+  switch(mode)
+    {
+    case 0:
+      a = 0;
+      for(k = 0; k < curve->length; k++)
+	{
+	  controlv[a]   -= x;
+	  controlv[a+1] -= y;
+	  controlv[a+2] -= z;
+	  a += 4;
+	}
+      break;
+    case 1:
+      a = 0;
+      for(k = 0; k < curve->length; k++)
+	{
+	  controlv[a]   -= x;
+	  controlv[a+1] -= y;
+	  a += 4;
+	}
+      break;
+    case 2:
+      a = 0;
+      for(k = 0; k < curve->length; k++)
+	{
+	  controlv[a+1] -= y;
+	  controlv[a+2] -= z;
+	  a += 4;
+	}
+      break;
+    case 3:
+      a = 0;
+      for(k = 0; k < curve->length; k++)
+	{
+	  controlv[a]   -= x;
+	  controlv[a+2] -= z;
+	  a += 4;
+	}
+      break;
+    default:
+      break;
+    } /* switch */
+
+ return ay_status;
+} /* ay_nct_center */
+
+
+/* ay_nct_centertcmd:
+ *
+ */
+int
+ay_nct_centertcmd(ClientData clientData, Tcl_Interp *interp,
+		  int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ char fname[] = "centerNC";
+ ay_list_object *sel = ay_selection;
+ ay_object *c = NULL;
+ int mode = 0;
+
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, fname, NULL);
+      return TCL_OK;
+    }
+
+  if(argc > 1)
+    {
+      Tcl_GetInt(interp, argv[1], &mode);
+    }
+
+  while(sel)
+    {
+      c = sel->object;
+      if(c->type != AY_IDNCURVE)
+	{
+	  ay_error(AY_ERROR, fname, "Object is not a NURBCurve!");
+	}
+      else
+	{
+	  ay_status = ay_nct_center(mode, (ay_nurbcurve_object*)c->refine);
+	  if(ay_status)
+	    {
+	      ay_error(ay_status, fname,
+		       "Could not center object!");
+	    }
+	} /* if */
+
+      sel = sel->next;
+    } /* while */
+
+  ay_notify_parent();
+
+ return TCL_OK;
+} /* ay_nct_centertcmd */
