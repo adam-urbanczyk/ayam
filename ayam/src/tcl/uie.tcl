@@ -482,6 +482,7 @@ proc addCheck { w prop name } {
     global $prop ayprefs ay
 
     set bw 1
+    set ws ""
 
     set f [frame $w.f${name} -relief sunken -bd $bw]
 
@@ -511,9 +512,8 @@ proc addCheck { w prop name } {
 	eval [subst "bindtags $ff.cb \{$ff.cb Checkbutton all\}"]
 	bind $ff.cb <Key-Escape> {resetFocus}
     } else {
-	set ws ""
 	catch [set ws [tk windowingsystem]]
-	if {$ws == "aqua" } {
+	if { $ws == "aqua" } {
 	    # also Aqua gets its "Extrawurst"
 	    set ff [frame $f.fcb -highlightthickness 1]
 	    set cb [checkbutton $ff.cb -variable ${prop}(${name}) -bd $bw]
@@ -541,7 +541,8 @@ proc addCheck { w prop name } {
 	bind $cb <${aymainshortcuts(IApplyMod)}-ButtonRelease-1> "after idle {\
 	    \$ay(appb) invoke}"
 	bind $cb <Key-Return> "$ay(appb) invoke;break"
-	if { $tcl_platform(platform) == "windows" } {
+	if { $tcl_platform(platform) == "windows" ||
+             $ws == "aqua" } {
 	    bind $ff <${aymainshortcuts(IApplyMod)}-ButtonRelease-1>\
 		"after idle {\$ay(appb) invoke}"
 	}
@@ -1038,7 +1039,7 @@ proc addCommandB { w name text command help } {
 #
 #
 proc addCommand { w name text command } {
-    global ayprefs
+    global ay ayprefs
 
     set bw 1
 
@@ -1048,6 +1049,10 @@ proc addCommand { w name text command } {
     eval [subst "bindtags $f.b \{$f.b Button all\}"]
     bind $f.b <Key-Escape> {resetFocus}
 
+    if { ! $ay(iapplydisable) } {
+	bind $f.b <Shift-1> "global ay; set ay(shiftcommand) 1;"
+    }
+    
     pack $f.b -in $f -side left -fill x -expand yes
     pack $f -in $w -side top -fill x
 
