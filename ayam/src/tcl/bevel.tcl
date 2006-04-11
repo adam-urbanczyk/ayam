@@ -117,7 +117,7 @@ proc bevel_setTags { } {
 
 
 proc bevel_add { place } {
-    global BevelTags
+    global ay BevelTags
 
     # set up array
     if { $place == 0 } {
@@ -151,13 +151,20 @@ proc bevel_add { place } {
     # update property GUI
     plb_update
 
+    # apply changes to object?
+    if { $ay(shiftcommand) == 1 } {
+	set ay(shiftcommand) 0
+	update
+	$ay(appb) invoke
+    }
+
  return;
 }
 # bevel_add
 
 
 proc bevel_rem { place } {
-    global BevelTags
+    global ay BevelTags
 
     # set up array
     if { $place == 0 } {
@@ -178,6 +185,13 @@ proc bevel_rem { place } {
 
     # update property GUI
     plb_update
+
+    # apply changes to object?
+    if { $ay(shiftcommand) == 1 } {
+	set ay(shiftcommand) 0
+	update
+	$ay(appb) invoke
+    }
 
  return;
 }
