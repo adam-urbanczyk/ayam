@@ -538,6 +538,7 @@ array set ay {
  afdisabled 0
  noview 0
  ws "X11"
+ shiftcommand 0
 }
 # array ay
 
