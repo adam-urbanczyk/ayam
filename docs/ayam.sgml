@@ -4781,6 +4781,70 @@ of 4 will be used.
 See section <ref id="npattr" name="NPatchAttrib"> for a description
 of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 
+<sect1>Bevel Object<label id="bevelobj">
+<p>
+<figure loc="!ht">
+<eps file="pics/bevel.ps" height="6cm">
+<img src="pics/bevel.gif">
+<caption>Bevel Object (Curve, Resulting Bevelled Surface)</caption>
+</figure>
+<p>
+The bevel object forms a bevelled surface from a single parameter
+curve.
+<p>
+Consequently, the template for the object hierarchy of a Bevel object
+looks like this:
+<code>
++-Bevel
+ \-NCurve
+</code>
+<p>
+Bevels are also available as properties of different tool
+objects (e.g. Extrude or Sweep). The Bevel object uses the same
+creation algorithm but increases flexibility in terms of material
+settings.
+<p>
+Note that the parameter curve should be closed and planar to achieve
+best results. If the curve is closed or periodic, an appropriate
+curve type should be set, otherwise the bevelled surface may
+expose defects.
+<p>
+The Bevel object watches the child objects and adapts to them automatically
+via the notification mechanism.
+<p>
+You may convert the current bevelled surface to an ordinary NURBS patch object
+using the main menu entry <tt>"Tools/Convert"</tt>.
+<p>
+The following parameters of the Bevel object further control
+the creation of the bevelled surface:
+
+<sect2>BevelAttr Property<label id="bevelp">
+<p>
+<tt/"BevelType"/ lets you choose between different shapes of bevels:
+<itemize>
+<item><tt/"Round"/ a quarter circle,
+<item><tt/"Linear"/ a straight bevel,
+<item><tt/"Ridge"/ a more complex ridged surface,
+<item><tt/"RoundCapped"/ a quarter circle followed by a cap made by placing
+a single point in the center of the last bevel profile and extending the
+beveled surface to this point,
+<item><tt/"LinearCapped"/ a straight bevel followed by a cap made by placing
+a single point in the center of the last bevel profile and extending the
+beveled surface to this point.
+</itemize>
+
+<tt/"BevelRadius"/ controls the size of the bevelled surface when seen
+from the top of the parameter curve.
+<tt/"BevelRevert"/ allows to revert the sense of the bevelled surface,
+should it round inwards or outwards? The sense may also be controlled
+using the direction of the parameter curve and, additionally, the sense
+in a different dimension may also be affected by using negative values
+for the bevel radius.
+<p>
+See section <ref id="npattr" name="NPatchAttrib"> for a description
+of the two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/
+of the <tt/"BevelAttr"/ property.
+
 <sect1>Cap Object<label id="capobj">
 <p>
 <figure loc="!ht">
@@ -8180,7 +8244,8 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>BakOnReplace: <ref id="prefmain" name="preference setting">
 <item>Basis_U, Basis_V: <ref id="pmattr" name="PatchMesh attribute">
 <item>BeamDistrib: <ref id="lip" name="light attribute">
-<item>Bevel: <ref id="handb" name="using bevels">
+<item>Bevel: <ref id="bevelobj" name="object">,
+<ref id="handb" name="using bevels">
 <item>BevelRadius, BevelType: <ref id="extrattr" name="extrude attribute">,
 <ref id="textattr" name="text attribute">
 <item>BGImage: <ref id="vat" name="view attribute">
