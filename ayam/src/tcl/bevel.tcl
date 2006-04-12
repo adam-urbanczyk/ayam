@@ -208,6 +208,10 @@ proc bevel_getAttr { } {
     set w [frame $ay(pca).$BevelAttr(w)]
     getProp
 
+    set BevelTags(SBType) 0
+    set BevelTags(SBRadius) 0.1
+    set BevelTags(SBRevert) 0
+
     set tagnames ""
     set tagvalues ""
     getTags tagnames tagvalues
@@ -241,11 +245,13 @@ proc bevel_getAttr { } {
 proc bevel_setAttr { } {
     global BevelTags
 
+    set BevelTags(HasStartBevel) 1
     set BevelTags(SBType) $BevelTags(BevelType)
     set BevelTags(SBRadius) $BevelTags(BevelRadius)
     set BevelTags(SBRevert) $BevelTags(BevelRevert)
-
+    update
     bevel_setTags
+    update
     setProp
 
  return;
