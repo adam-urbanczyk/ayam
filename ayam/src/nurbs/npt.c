@@ -2947,7 +2947,8 @@ cleanup:
 int
 ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
 	       ay_object *o5,
-	       int sections, int closed, ay_nurbpatch_object **birail2,
+	       int sections, int closed, int fullinterpolctrl,
+	       ay_nurbpatch_object **birail2,
 	       int has_start_cap, ay_object **start_cap,
 	       int has_end_cap, ay_object **end_cap)
 {
@@ -3138,8 +3139,23 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
     }
 
   /* copy last section */
-  memcpy(&(controlv[sections * cs2->length * stride]), &(cs2cv[0]),
-	 cs2->length * stride * sizeof(double));
+  if(fullinterpolctrl && o5)
+    {
+      u = ic->knotv[ic->length];
+      ay_nb_CurvePoint4D(ic->length-1, ic->order-1, ic->knotv, iccv,
+			 u, p10);
+      ay_status = ay_interpol_1DA4D(p10[1], cs1->length,
+				    cs1cv, cs2cv, cs2cvi);
+      if(ay_status)
+	{ goto cleanup; }
+      memcpy(&(controlv[sections * cs2->length * stride]), &(cs2cvi[0]),
+	     cs2->length * stride * sizeof(double));
+    }
+  else
+    {
+      memcpy(&(controlv[sections * cs2->length * stride]), &(cs2cv[0]),
+	     cs2->length * stride * sizeof(double));
+    }
 
   /* calculate last point of rail1 and rail2 */
   ay_nb_CurvePoint4D(r1->length-1, r1->order-1, r1->knotv, r1cv,
@@ -3285,10 +3301,25 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
     }
 
   /* copy first section */
-  memcpy(&(controlv[0]), &(cs1cv[0]), cs1->length * stride * sizeof(double));
+  if(fullinterpolctrl && o5)
+    {
+      u = ic->knotv[ic->order-1];
+      ay_nb_CurvePoint4D(ic->length-1, ic->order-1, ic->knotv, iccv,
+			 u, p10);
+      ay_status = ay_interpol_1DA4D(p10[1], cs1->length,
+				    cs1cv, cs2cv, cs2cvi);
+      if(ay_status)
+	{ goto cleanup; }
+      memcpy(&(controlv[0]), cs2cvi, cs1->length * stride * sizeof(double));
+    }
+  else
+    {
+      memcpy(&(controlv[0]), &(cs1cv[0]),
+	     cs1->length * stride * sizeof(double));
+    }
 
-  /* copy cross sections controlv section times and sweep it along the rails */
-  for(i = 1; i < sections; i++)
+  /* copy cross sections controlv n times and sweep it along the rails */
+  for(i = 1; i < ((fullinterpolctrl && o5)?(sections+1):sections); i++)
     {
       if(o5)
 	{
