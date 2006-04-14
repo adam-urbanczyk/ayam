@@ -26,6 +26,7 @@ bevel_parseTags $tagnames $tagvalues
 
 #addCheck $w Birail2AttrData Close
 addParam $w Birail2AttrData Sections
+addCheck $w Birail2AttrData InterpolCtrl
 addCheck $w Birail2AttrData StartCap
 addCheck $w Birail2AttrData EndCap
 

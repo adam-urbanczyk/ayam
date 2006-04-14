@@ -692,6 +692,7 @@ typedef struct ay_birail2_object_s
 {
  int close;
  int sections;
+ int interpolctrl;
  int has_start_cap;
  int has_end_cap;
  

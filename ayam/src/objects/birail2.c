@@ -195,6 +195,10 @@ ay_birail2_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(birail2->sections));
 
+  Tcl_SetStringObj(ton,"InterpolCtrl",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &(birail2->interpolctrl));
+
   Tcl_SetStringObj(ton,"StartCap",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(birail2->has_start_cap));
@@ -249,6 +253,11 @@ ay_birail2_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton,"InterpolCtrl",-1);
+  to = Tcl_NewIntObj(birail2->interpolctrl);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
   Tcl_SetStringObj(ton,"StartCap",-1);
   to = Tcl_NewIntObj(birail2->has_start_cap);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
@@ -287,12 +296,17 @@ ay_birail2_readcb(FILE *fileptr, ay_object *o)
   if(!(birail2 = calloc(1, sizeof(ay_birail2_object))))
     { return AY_EOMEM; }
 
-  fscanf(fileptr,"%d\n",&birail2->close);
-  fscanf(fileptr,"%d\n",&birail2->sections);
-  fscanf(fileptr,"%d\n",&birail2->has_start_cap);
-  fscanf(fileptr,"%d\n",&birail2->has_end_cap);
-  fscanf(fileptr,"%d\n",&birail2->glu_display_mode);
-  fscanf(fileptr,"%lg\n",&birail2->glu_sampling_tolerance);
+  fscanf(fileptr, "%d\n", &birail2->close);
+  fscanf(fileptr, "%d\n", &birail2->sections);
+  fscanf(fileptr, "%d\n", &birail2->has_start_cap);
+  fscanf(fileptr, "%d\n", &birail2->has_end_cap);
+  fscanf(fileptr, "%d\n", &birail2->glu_display_mode);
+  fscanf(fileptr, "%lg\n", &birail2->glu_sampling_tolerance);
+
+  if(ay_read_version >= 9)
+    {
+      fscanf(fileptr, "%d\n", &birail2->interpolctrl);
+    }
 
   o->refine = birail2;
 
@@ -316,6 +330,7 @@ ay_birail2_writecb(FILE *fileptr, ay_object *o)
   fprintf(fileptr, "%d\n", birail2->has_end_cap);
   fprintf(fileptr, "%d\n", birail2->glu_display_mode);
   fprintf(fileptr, "%g\n", birail2->glu_sampling_tolerance);
+  fprintf(fileptr, "%d\n", birail2->interpolctrl);
 
  return AY_OK;
 } /* ay_birail2_writecb */
@@ -518,12 +533,13 @@ ay_birail2_notifycb(ay_object *o)
   npatch->type = AY_IDNPATCH;
 
   ay_status = ay_npt_birail2(curve1, curve2, curve3, curve4, curve5,
-			   birail2->sections, AY_FALSE/*birail2->close*/,
-			   (ay_nurbpatch_object **)(&(npatch->refine)),
-			   has_startb?AY_FALSE:birail2->has_start_cap,
-			   &start_cap,
-			   has_endb?AY_FALSE:birail2->has_end_cap,
-			   &end_cap);
+			     birail2->sections, AY_FALSE/*birail2->close*/,
+			     birail2->interpolctrl,
+			     (ay_nurbpatch_object **)(&(npatch->refine)),
+			     has_startb?AY_FALSE:birail2->has_start_cap,
+			     &start_cap,
+			     has_endb?AY_FALSE:birail2->has_end_cap,
+			     &end_cap);
 
   if(ay_status)
     goto cleanup;
