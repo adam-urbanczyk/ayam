@@ -4,7 +4,7 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>1. Mar 2006
+<date>14. Apr 2006
 <abstract>
 This is the documentation of Ayam (1.9) - a free 3D modeling environment
 for the RenderMan interface.
@@ -4528,8 +4528,10 @@ Thus, a straight line running from point (0,0) to (1,1) will mimic
 the standard linear interpolation that would be carried out if no
 interpolation control curve were present. Note, however, that the
 interpolation control curve has no influence on the first and last
-copy of the respective cross section curve. Those will always exactly
-match the parameter curves (CS1 and CS2).
+copy of the respective cross section curve, unless the <tt/"InterpolCtrl"/
+option is used (which is available since Ayam 1.10). If <tt/"InterpolCtrl"/
+is not enabled, the first and last border of the resulting surface
+will always exactly match the parameter curves (CS1 and CS2 respectively).
 <p>
 The Birail2 object watches the child objects and adapts to them
 automatically via the notification mechanism.
@@ -4784,14 +4786,13 @@ of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 <sect1>Bevel Object<label id="bevelobj">
 <p>
 <figure loc="!ht">
-<eps file="pics/bevel.ps" height="6cm">
+<eps file="pics/bevel.ps" height="5cm">
 <img src="pics/bevel.gif">
 <caption>Bevel Object (Curve, Resulting Bevelled Surface)</caption>
 </figure>
 <p>
 The bevel object forms a bevelled surface from a single parameter
 curve.
-<p>
 Consequently, the template for the object hierarchy of a Bevel object
 looks like this:
 <code>
@@ -4799,21 +4800,24 @@ looks like this:
  \-NCurve
 </code>
 <p>
-Bevels are also available as properties of different tool
-objects (e.g. Extrude or Sweep). The Bevel object uses the same
-creation algorithm but increases flexibility in terms of material
-settings.
+Bevels are also available as properties of different tool objects
+(e.g. Extrude or Sweep). In fact, Bevel objects use the same creation
+algorithm as bevel properties but increase flexibility in terms of
+material settings. Surfaces created from bevel properties always
+share the material settings of the tool object. In contrast, Bevel
+objects may have their own material settings. Bevel objects are
+available in Ayam since version 1.10.
 <p>
 Note that the parameter curve should be closed and planar to achieve
-best results. If the curve is closed or periodic, an appropriate
+best results. If the curve is closed or periodic, the appropriate
 curve type should be set, otherwise the bevelled surface may
 expose defects.
 <p>
-The Bevel object watches the child objects and adapts to them automatically
+The Bevel object watches the child object and adapts to it automatically
 via the notification mechanism.
 <p>
-You may convert the current bevelled surface to an ordinary NURBS patch object
-using the main menu entry <tt>"Tools/Convert"</tt>.
+You may convert the current bevelled surface to an ordinary NURBS patch
+object using the main menu entry <tt>"Tools/Convert"</tt>.
 <p>
 The following parameters of the Bevel object further control
 the creation of the bevelled surface:
@@ -8269,6 +8273,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <ref id="camp" name="view property">
 <item>Cap: <ref id="capobj" name="object">
 <item>CastShadows: <ref id="riattrs" name="RenderMan/BMRT attribute">
+<item>Chamfer: <ref id="bevelobj" name="Bevel object">,
 <item>CheckLights: <ref id="prefrib" name="preference setting">
 <item>Circle: <ref id="ncirct" name="NURBS circle tool">
 <item>Clamp: <ref id="clat" name="clamp tool">
@@ -8484,6 +8489,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <ref id="icurveobj" name="interpolating curve">,
 <ref id="swp" name="sweep attribute">,
 <ref id="skp" name="skin attribute">
+<item>InterpolCtrl: <ref id="birail2p" name="Birail2 attribute">
 <item>Intersection: <ref id="levelobj" name="Level object">
 <item>Invert Selection: <ref id="mmspecial" name="main menu entry">
 <item>IParam: <ref id="icp" name="ICurve attribute">
