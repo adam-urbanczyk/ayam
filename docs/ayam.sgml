@@ -2680,6 +2680,24 @@ Example
 An UMM tag could look like this:
 <code>UMM 0.4,0.6</code>
 
+<sect2>BP Tag<label id="bptag">
+<p>
+The tag type <tt/"BP"/ (bevel parameters) is used by all bevel
+supporting tool objects to store their bevel information.
+The syntax of the BP tag is:
+<tt>"&lt;side,type,radius,revert&gt;"</tt>
+where <tt/"&lt;side&gt;"/ is an integer value from 0 - 3
+defining the side of the surface, where the bevel should be applied
+to, <tt/"&lt;type&gt;"/ is an integer value from 0 - 4 defining
+the type of the bevel, <tt/"&lt;radius&gt;"/ is a floating point
+value defining the radius of the bevel, and <tt/"&lt;revert&gt;"/
+is either 0 or 1 and may be used to revert the bevel.
+<p>
+Example
+<p>
+A BP tag could look like this:
+<code>BP 0,0,0.1,0</code>
+
 <sect2>Internal Tags
 <p>
 The following tags are of no general use. They are used
@@ -2708,11 +2726,11 @@ tags are rebuilt before every export/save operation.
 <sect2>List of Known Tags
 <p>
 This section contains a comprehensive list of tag names, that are
-known in Ayam 1.9 and in the accompanying extensions.
+known in Ayam 1.10 and in the accompanying extensions (plugins).
 <p>
 <tt>"RiAttribute", "RiOption", "RiHider", "RiDisplay", "NoExport", "TC",
 "PV", "SaveMainGeom", "TP", "MI", "OI", "DC", "NP", "NS", "UMM", "VMM",
-"IDR", "IIDR", "RIDR", "R3IDR", "CIDR", "CCIDR"</tt>
+"BP", "IDR", "IIDR", "RIDR", "R3IDR", "CIDR", "CCIDR"</tt>
 <p>
 Documentation on those tags can be found in the sections above.
 
@@ -4880,11 +4898,15 @@ the creation of the bevelled surface:
 <item><tt/"BevelType"/ lets you choose between different shapes of bevels:
  <itemize>
  <item><tt/"Round"/ a quarter circle,
+
  <item><tt/"Linear"/ a straight bevel,
+
  <item><tt/"Ridge"/ a more complex ridged surface,
+
  <item><tt/"RoundCapped"/ a quarter circle followed by a cap made by placing
 a single point in the center of the last bevel profile and extending the
 beveled surface to this point,
+
  <item><tt/"LinearCapped"/ a straight bevel followed by a cap made by placing
 a single point in the center of the last bevel profile and extending the
 beveled surface to this point.
@@ -4892,6 +4914,7 @@ beveled surface to this point.
 
 <item><tt/"BevelRadius"/ controls the size of the bevelled surface when seen
 from the top of the parameter curve.
+
 <item><tt/"BevelRevert"/ allows to revert the sense of the bevelled surface,
 should it round inwards or outwards? The sense may also be controlled
 using the direction of the parameter curve and, additionally, the sense
@@ -4902,6 +4925,10 @@ for the bevel radius.
 See section <ref id="npattr" name="NPatchAttrib"> for a description
 of the two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/
 of the <tt/"BevelAttr"/ property.
+<p>
+Note that the bevel types <tt/"RoundCapped"/ and <tt/"LinearCapped"/
+lead to degenerated NURBS surfaces. If applied shaders or textures
+look wrong, consider creation of real cap surfaces instead.
 
 <sect1>Cap Object<label id="capobj">
 <p>
