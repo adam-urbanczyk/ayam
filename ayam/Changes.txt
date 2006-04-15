@@ -1,32 +1,39 @@
-[30. Mar 2006] CVS-Head:
+[15. Apr 2006] CVS-Head:
 o bug fixes:
   - fixed TP tags created by tesselation GUI (SF 1431917)
   - fixed broken SwapUV of PatchMesh objects (SF 1436463)
-o improved font selection for keyboard shortcut display window on MacOSX/Aqua
+  - fixed display of SParamV parameter in tesselation GUI (SF 1468212)
 o added "BP" tag type to store bevel parameters
+o changed bevel parameter storage mechanism and property GUI of Extrude
+  and Text objects to use BP tags
+o added new bevel modes, that automatically create caps (for convex outlines
+  without holes)
+o added start/end bevels to sweep, skin, birail1, and birail2 objects
+o added Bevel object type
 o added periodic sweeps; "Closed" attribute renamed to "Type", for new type
   "Periodic" a periodic trajectory will now be sampled in a way, that a
   fully closed/periodic smooth sweeped surface is created
 o added support for one and two section sweeps (with consequently lower order)
-o added bevels to open sweeps, parameters stored in "BP" tags
-o added new bevel modes, that automatically create caps (for convex outlines
-  without holes)
 o added mechanism to close NURBS patches in either u or v parametric dimension
 o added multiple points support to NURBS patches
-o improved NURBS tools menus: Reset Weights now appears in correct sub menus,
+o improved NURBS tools menus: "Reset Weights" now appears in correct sub menus,
   collapse/explode points commands moved to NURBCurve and added to NURBPatch
   sub menus respectively
+o added full interpolation control option to Birail2 object
+o added display of the number of created triangles to tesselation GUI
 o added standard Docs URL to the preferences dialog
 o "Set BGimage" in the view menu now also enables drawing of the BGImage
+o improved font selection for keyboard shortcut display window on MacOSX/Aqua
 o improved tesselation GUI layout of SMParamV on MacOSX/Aqua
-o fixed blocking about dialog on Tk 8.4.12 (MacOSX/Aqua)
-o added help menu entries on MacOSX/Aqua
-o added start/end bevels to sweep, skin, birail1, and birail2 objects
-o fixed compilation of onio plugin with recent SGI-CC versions
+o fixed blocking about dialog on Tk 8.4.12 on MacOSX/Aqua
+o added help menu entries to view window menus on MacOSX/Aqua
 o fixed compilation of IDR plugin on MacOSX/Aqua
 o fixed documentation paths in Ayam.app and Ayam.dmg compilation targets
 o added target to build an Ayam.app application bundle that contains
   a local copy of the Tcl and Tk frameworks
+o fixed compilation of onio plugin with recent SGI-CC versions
+o improved tifflib directory usability test in ayamConf.tcl
+
 
 [12. Feb 2006] Ayam 1.9:
 o bug fixes:
