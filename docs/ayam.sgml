@@ -4,9 +4,9 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>14. Apr 2006
+<date>15. Apr 2006
 <abstract>
-This is the documentation of Ayam (1.9) - a free 3D modeling environment
+This is the documentation of Ayam (1.10) - a free 3D modeling environment
 for the RenderMan interface.
 
 Please note, that this document is intended to be a reference manual,
@@ -3667,10 +3667,10 @@ B-Spline will be generated.
 <p>
 How do the different knot types affect the curve?
 <p>
-The knot type NURBS will generate knot values from 0.0 to 1.0, where
+The knot type NURB will generate knot values ranging from 0.0 to 1.0, where
 the multiplicity of the knots at the ends will be of order of the curve.
 This guarantees that the curve will touch the control points at the ends
-of the curve.
+of the curve. The curve is clamped.
 <p>
 The knot type Bezier will generate just 0.0 and 1.0 values. Note that
 the order of the curve has to be equal to the length of the curve, if
@@ -3678,8 +3678,8 @@ Bezier knots are generated. Otherwise, the generated knot sequence is
 illegal. The resulting curve looks and behaves exactly like a real
 Bezier curve, interpolating it's ends and so on.
 <p>
-The knot type B-Spline will generate values
-without any multiple knots. The resulting curve looks
+The knot type B-Spline will generate equidistant knot values
+(without any multiple knots). The resulting curve looks
 and behaves like a B-Spline curve.
 
 <item><tt/"Knots"/ lets you enter your own custom knot sequences.
@@ -3703,6 +3703,7 @@ Smaller tolerance settings lead to higher quality but also
 slower display.
 A setting of 0.0 means, that the global preference setting
 <tt>"Drawing/Tolerance"</tt> should be used.
+
 <item><tt/"DisplayMode"/ determines how the curve should
 be drawn. The control hull (control polygon) or the curve or a
 combination of both may be displayed. The setting <tt/"Global"/
@@ -3723,16 +3724,34 @@ Check the console for any messages!
 
 <sect1>NURBPatch Object<label id="npatchobj">
 <p>
+This object allows to model NURBS surfaces in a direct way, e.g. by
+modifying control points. Note that using NURBPatch objects should be
+seen as last resort, only to be used when the flexibility of all the NURBS
+surface creating tool objects is not high enough to achieve a certain shape.
+<p>
+Since Ayam 1.10, NURBPatch objects also support the concept
+of multiple points, see section
+<ref id="ncurvemp" name="Multiple Points">
+for more information regarding this.
+
 <sect2>NPatchAttrib Property<label id="npattr">
 <p>
 The first section of the NPatchAttrib property contains patch specific
 settings:<p>
 <itemize>
 <item><tt/"Width"/ and <tt/"Height"/ control the dimensions of the patch.
+
 <item><tt/"Order_U"/ and <tt/"Order_V"/ set the orders of the patch.
+
 <item><tt/"Knot-Type"/ and <tt/"Knots"/: For a discussion of the
 <tt/"Knot-Type"/ and <tt/"Knots"/ parameters,
 please see section <ref id="ncattr" name="NCurveAttrib">.
+
+<item><tt/"CreateMP"/ toggles, whether multiple points should be
+created for this surface. See also the discussion in
+section <ref id="ncurvemp" name="Multiple Points">.
+This option is available since Ayam 1.10.
+
 <item><tt/"IsRat"/ informs you since Ayam 1.9, whether the patch
 is rational (uses weight values different from 1.0).
 </itemize>
@@ -3746,6 +3765,7 @@ Smaller tolerance settings lead to higher quality but also
 slower display.
 A setting of 0.0 means, that the global preference setting
 <tt>"Drawing/Tolerance"</tt> should be used.
+
 <item><tt/"DisplayMode"/ sets the display mode, either the control
 hull is drawn (<tt/"ControlHull"/), or just the outlines of the polygons
 created by the tesselation (<tt/"OutlinePolygon"/), or just the
@@ -3808,19 +3828,19 @@ is present.
 </itemize>
 Note that Ayam is not checking whether your trim curves
 follow these rules!
-
+<p>
 Warning: Certain OpenGL implementations may be easily crashed
 drawing trimmed NURBS patches with trims that do not follow the
 aforementioned rules! When in doubt or while heavy modeling,
 switch to wireframe drawing and switch off shading temporarily
 and you will be on the safe side.
-
+<p>
 Since Ayam 1.5 also NURBS curve providing objects are supported
 as trim curves.
 
 <sect1>BPatch Object<label id="bpatchobj">
 <p>
-A BPatch is a simple bilinear patch composed from four control
+A BPatch is a simple bilinear patch defined by four control
 points. BPatch objects are e.g. used to build box objects, see
 <ref id="boxobj" name="Box Object">).
 
@@ -4261,22 +4281,22 @@ your curves conform to this criteria. Ayam, however,
 detects the correct orientation of the curves
 (and reverts them if necessary).
 <p>
-Using <tt/"LowerBevel"/ and <tt/"UpperBevel"/ you determine
-whether bevels should be created to round the otherwise sharp
-corners of the extrusion with the cap. The bevels may be
-controlled using <tt/"BevelType"/ and <tt/"BevelRadius"/.
-<tt/"BevelType"/ allows to choose from <tt/"Round"/ (a complete round bevel,
-built using a quarter circle), <tt/"Linear"/ (not round at all,
-but just a connecting linear patch) and <tt/"Ridge"/
-which forms a more complex beveling similar to some frames for
-(real world) images.
-The <tt/"BevelRadius"/ determines the size of the bevels. It is
-expressed in untransformed object coordinates of the generating curve,
-but the resulting radius of the bevel may differ a bit (depending
-on the shape of the curve).
+Since Ayam 1.10 the bevel parameters of the extrude object are saved
+in bevel parameter tags and the property GUI changed to conform to
+all other bevel supporting tool objects. The old options <tt/"LowerBevel"/,
+<tt/"UpperBevel"/, <tt/"BevelType"/, and <tt/"BevelRadius"/ are no
+longer available. They were replaced with new dynamic tag creating
+bevel property GUI sections that are accessible through the new
+command entries <tt/"Add Start Bevel!"/ and <tt/"Add End Bevel!"/
+respectively. If one of those entries is used, a bevel parameter tag
+is created and more options will be made available in the property
+GUI to adjust the bevel parameters or remove the tag again.
+A more thorough discussion of those options is available in
+section <ref id="bevelp" name="BevelAttr Property">.
 <p>
 See section <ref id="npattr" name="NPatchAttrib"> for a description
 of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
+
 
 <sect2>Using Holes and Bevels<label id="handb">
 <p>
@@ -4398,6 +4418,14 @@ Sweep on both ends.
 Note that this works properly only if the cross section
 curve is closed and planar (defined in the XY plane).
 <p>
+Since Ayam 1.10 bevels are available for sweeps.
+They are accessible through the new command entries <tt/"Add Start Bevel!"/
+and <tt/"Add End Bevel!"/ respectively. If one of those entries is used,
+a bevel parameter tag is created and more options will be made available
+in the property GUI to adjust the bevel parameters or remove the tag again.
+A more thorough discussion of those options is available in section
+<ref id="bevelp" name="BevelAttr Property">.
+<p>
 See section <ref id="npattr" name="NPatchAttrib"> for a description
 of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 
@@ -4465,6 +4493,14 @@ used to automatically create cap surfaces, that close the
 birailed surface on the respective end.
 Note that this only works properly if the cross section
 curve is closed and planar (e.g. defined in the XY plane).
+<p>
+Since Ayam 1.10 bevels are available for birails.
+They are accessible through the new command entries <tt/"Add Start Bevel!"/
+and <tt/"Add End Bevel!"/ respectively. If one of those entries is used,
+a bevel parameter tag is created and more options will be made available
+in the property GUI to adjust the bevel parameters or remove the tag again.
+A more thorough discussion of those options is available in section
+<ref id="bevelp" name="BevelAttr Property">.
 <p>
 See section <ref id="npattr" name="NPatchAttrib"> for a description
 of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
@@ -4554,6 +4590,14 @@ used to automatically create cap surfaces, that close the
 birailed surface on the respective end.
 Note that this only works properly if the cross section
 curve is closed and planar (e.g. defined in the XY plane).
+<p>
+Since Ayam 1.10 bevels are available for birails.
+They are accessible through the new command entries <tt/"Add Start Bevel!"/
+and <tt/"Add End Bevel!"/ respectively. If one of those entries is used,
+a bevel parameter tag is created and more options will be made available
+in the property GUI to adjust the bevel parameters or remove the tag again.
+A more thorough discussion of those options is available in section
+<ref id="bevelp" name="BevelAttr Property">.
 <p>
 See section <ref id="npattr" name="NPatchAttrib"> for a description
 of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
@@ -4652,6 +4696,14 @@ curves (this may be the case if the <tt/"Knot-Type_U"/ parameter is set
 to <tt/"B-Spline"/) the cap(s) will not be created in the right place.
 The cap(s) will always be created in the position of the first (last)
 parameter curve.
+<p>
+Since Ayam 1.10 bevels are available for birails.
+They are accessible through the new command entries <tt/"Add Start Bevel!"/
+and <tt/"Add End Bevel!"/ respectively. If one of those entries is used,
+a bevel parameter tag is created and more options will be made available
+in the property GUI to adjust the bevel parameters or remove the tag again.
+A more thorough discussion of those options is available in section
+<ref id="bevelp" name="BevelAttr Property">.
 <p>
 See section <ref id="npattr" name="NPatchAttrib"> for a description
 of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
@@ -4824,26 +4876,28 @@ the creation of the bevelled surface:
 
 <sect2>BevelAttr Property<label id="bevelp">
 <p>
-<tt/"BevelType"/ lets you choose between different shapes of bevels:
 <itemize>
-<item><tt/"Round"/ a quarter circle,
-<item><tt/"Linear"/ a straight bevel,
-<item><tt/"Ridge"/ a more complex ridged surface,
-<item><tt/"RoundCapped"/ a quarter circle followed by a cap made by placing
+<item><tt/"BevelType"/ lets you choose between different shapes of bevels:
+ <itemize>
+ <item><tt/"Round"/ a quarter circle,
+ <item><tt/"Linear"/ a straight bevel,
+ <item><tt/"Ridge"/ a more complex ridged surface,
+ <item><tt/"RoundCapped"/ a quarter circle followed by a cap made by placing
 a single point in the center of the last bevel profile and extending the
 beveled surface to this point,
-<item><tt/"LinearCapped"/ a straight bevel followed by a cap made by placing
+ <item><tt/"LinearCapped"/ a straight bevel followed by a cap made by placing
 a single point in the center of the last bevel profile and extending the
 beveled surface to this point.
-</itemize>
+ </itemize>
 
-<tt/"BevelRadius"/ controls the size of the bevelled surface when seen
+<item><tt/"BevelRadius"/ controls the size of the bevelled surface when seen
 from the top of the parameter curve.
-<tt/"BevelRevert"/ allows to revert the sense of the bevelled surface,
+<item><tt/"BevelRevert"/ allows to revert the sense of the bevelled surface,
 should it round inwards or outwards? The sense may also be controlled
 using the direction of the parameter curve and, additionally, the sense
 in a different dimension may also be affected by using negative values
 for the bevel radius.
+</itemize>
 <p>
 See section <ref id="npattr" name="NPatchAttrib"> for a description
 of the two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/
@@ -5127,17 +5181,30 @@ selected font file.
 mechanism for the cap generation. Depending on the actual font description
 file (or even letter) you may need to toggle this to get caps.
 
-<item><tt/"UpperCap"/, <tt/"LowerCap"/, <tt/"UpperBevel"/, <tt/"LowerBevel"/,
-<tt/"BevelType"/, and <tt/"BevelRadius"/ work like for the Extrude object
+<item><tt/"UpperCap"/, <tt/"LowerCap"/, work like for the Extrude object
 (see section <ref id="extrattr" name="ExtrudeAttr Property"> for a more
 exhaustive description of those parameters).
-Just one note: for some fonts, the <tt/"BevelRadius"/ has to be set to really
-small values (about 0.0008) to get bevels and caps. This is because of
-sharp corners in some letters that lead to overlapping curves
-with high values for the <tt/"BevelRadius"/.
 
-<item><tt/"RevertBevels"/ can be turned on, if the extracted curves
-and therefore also the bevels are of wrong orientation.
+<item><tt/"Add Start Bevel!"/, <tt/"Add End Bevel!"/:
+Since Ayam 1.10 the bevel parameters of the text object are saved
+in bevel parameter tags and the property GUI changed to conform to
+all other bevel supporting tool objects. The old options <tt/"LowerBevel"/,
+<tt/"UpperBevel"/, <tt/"BevelType"/, <tt/"BevelRadius"/, and
+<tt/"RevertBevels"/ are no longer available. They were replaced with
+new dynamic tag creating bevel property GUI sections that are accessible
+through the new command entries <tt/"Add Start Bevel!"/ and
+<tt/"Add End Bevel!"/
+respectively. If one of those entries is used, a bevel parameter tag
+is created and more options will be made available in the property
+GUI to adjust the bevel parameters or remove the tag again.
+A more thorough discussion of those options is available in
+section <ref id="bevelp" name="BevelAttr Property">.
+<p>
+Just one note: for some fonts, the bevel radius has to be set to really
+small values (about 0.0008) to get proper bevels and caps. This is
+because of sharp corners in some letters that lead to self overlapping
+borders of the bevel surfaces with high values for the bevel radius.
+
 </itemize>
 
 See section <ref id="npattr" name="NPatchAttrib"> for a description
@@ -8250,8 +8317,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>BeamDistrib: <ref id="lip" name="light attribute">
 <item>Bevel: <ref id="bevelobj" name="object">,
 <ref id="handb" name="using bevels">
-<item>BevelRadius, BevelType: <ref id="extrattr" name="extrude attribute">,
-<ref id="textattr" name="text attribute">
+<item>BevelRadius, BevelRevert, BevelType: <ref id="bevelp" name="bevel attribute">
 <item>BGImage: <ref id="vat" name="view attribute">
 <item>bicubic/bilinear PatchMesh:
 <ref id="patchmeshobj" name="PatchMesh object">
