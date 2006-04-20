@@ -41,11 +41,25 @@ ay_notify_parent(void)
 {
  int ay_status = AY_OK;
  char fname[] = "notify_parent";
- ay_list_object *lev = ay_currentlevel;
+ ay_list_object *lev = ay_currentlevel, *sel = ay_selection;
  ay_object *o = NULL;
  void **arr = NULL;
  ay_notifycb *cb = NULL;
  ay_tag_object *tag = NULL;
+
+  if(ay_prefs.completenotify == 1)
+    {
+      while(sel)
+	{
+	  o = sel->object;
+	  if(o && o->modified)
+	    {
+	      ay_status = ay_notify_complete(o);
+	    }
+	  sel = sel->next;
+	}
+      return ay_status;
+    } /* while */
 
   while(lev)
     {
@@ -217,6 +231,7 @@ ay_notify_forcetcmd(ClientData clientData, Tcl_Interp * interp,
     }
   else
     {
+      
       while(sel)
 	{
 	  ay_status = ay_notify_force(sel->object);
@@ -225,12 +240,154 @@ ay_notify_forcetcmd(ClientData clientData, Tcl_Interp * interp,
 	      ay_error(AY_ERROR, fname, NULL);
 	      return TCL_OK;
 	    } /* if */
+	  if(ay_prefs.completenotify)
+	    {
+	      ay_status = ay_notify_complete(sel->object);
+	      if(ay_status)
+		{
+		  ay_error(AY_ERROR, fname, NULL);
+		  return TCL_OK;
+		} /* if */
+	    } /* if */
 	  sel = sel->next;
 	} /* while */
 
-      ay_notify_parent();
+      if(!ay_prefs.completenotify)
+	{
+	  ay_notify_parent();
+	}
 
     } /* if */
 
  return TCL_OK;
 } /* ay_notify_forcetcmd */
+
+
+/* ay_notify_findparents:
+ *
+ */
+int
+ay_notify_findparents(ay_object *o, ay_object *r, ay_list_object **parents)
+{
+ ay_object *down;
+ ay_list_object *newl = NULL;
+ int found = 0;
+
+  if(!o || !r || !parents)
+    return 0;
+
+  if(o->down)
+    {
+      down = o->down;
+
+      if(down->down && down->down->next)
+	found = ay_notify_findparents(down, r, parents);
+
+      while(!found && down && down->next)
+	{
+	  if((down == r) || (down->refine == r))
+	    {
+	      found = 1;
+	    }
+	  down = down->next;
+	} /* while */
+
+      if(found)
+	{
+	  if(!(newl = calloc(1, sizeof(ay_list_object))))
+	    {
+	      return 0;
+	    }
+	  newl->object = o;
+	  newl->next = *parents;
+	  *parents = newl;
+	} /* if */
+    } /* if */
+
+ return found;
+} /* ay_notify_findparents */
+
+
+/* ay_notify_complete:
+ *
+ */
+int
+ay_notify_complete(ay_object *r)
+{
+ int propagate = AY_TRUE;
+ ay_object *o;
+ ay_list_object *l = NULL, *s, *t, *u;
+
+  if(!r)
+   return AY_ENULL;
+
+  o = ay_root->next;
+
+  while(o)
+    {
+      ay_notify_findparents(o, r, &l);
+      o = o->next;
+    } /* while */
+
+  u = NULL;
+  while(propagate)
+    {
+      propagate = AY_FALSE;
+      t = l;
+      s = l;
+      while(s && (s != u))
+	{
+	  if(s->object && (s->object->refcount > 0))
+	    {
+	      o = ay_root->next;
+	      while(o)
+		{
+		  ay_notify_findparents(o, s->object, &l);
+		  o = o->next;
+		} /* while */
+	    } /* if */
+	  s = s->next;
+	} /* while */
+
+      if(l != t)
+	{
+	  /* added some objects, need to continue propagating... */
+	  propagate = AY_TRUE;
+	}
+      /* for consecutive iterations, arrange to stop at old list, because
+	 we processed that already */
+      u = t;
+
+    } /* while */
+
+  s = NULL;
+  while(l)
+    {
+      t = l;
+      l = l->next;
+      o = t->object;
+      if(o)
+	{
+	  o->modified = AY_FALSE;
+	}
+      t->next = s;
+      s = t;
+    } /* while */
+
+  while(s)
+    {
+      o = s->object;
+      if(o)
+	{
+	  if(!o->modified)
+	    {
+	      ay_notify_force(o);
+	    }
+	}
+      t = s->next;
+      free(s);
+      s = t;
+    } /* while */
+
+ return AY_OK;
+} /* ay_notify_complete */

@@ -816,6 +816,7 @@ typedef struct ay_prefs_object_s
   int edit_snaps_to_grid;
   double pick_epsilon;
   int lazynotify;
+  int completenotify;
   int undo_levels;
   int snap3d;
 

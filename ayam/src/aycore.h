@@ -190,6 +190,11 @@ int ay_notify_forceparent(ay_object *o, int silent);
 int ay_notify_forcetcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
 
+int ay_notify_findparents(ay_object *o, ay_object *r,
+			  ay_list_object **parents);
+
+int ay_notify_complete(ay_object *r);
+
 
 /* ns.c */
 Tk_RestrictAction ay_ns_restrictall(ClientData clientData,
