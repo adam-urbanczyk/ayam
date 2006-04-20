@@ -28,6 +28,7 @@ array set ayprefs {
  UseMatColor 0
  HandleSize 6
  LazyNotify 0
+ CompleteNotify 1
  EditSnaps 1
  Snap3D 0
 

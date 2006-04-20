@@ -78,6 +78,8 @@ to editable point;\n0.0 means nearest point wins."
 ms_set en ayprefse_HandleSize "Size of the handles of editable points."
 ms_set en ayprefse_LazyNotify "Notify parent objects about changes just on\
 mouse up?"
+ms_set en ayprefse_CompleteNotify "When shall a complete notification be\
+carried out?"
 ms_set en ayprefse_EditSnaps "Snap coordinates of edited points to grid\
 coordinates?"
 ms_set en ayprefse_Snap3D "Snap coordinate values in all three dimensions?"
@@ -233,6 +235,8 @@ ms_set de ayprefse_PickEpsilon "Größte erlaubte Entfernung zwischen\
 ms_set de ayprefse_HandleSize "Größe der editierbaren Punkte."
 ms_set de ayprefse_LazyNotify "Sollen Elternobjekte über Änderungen an den\
 \nKindobjekten nur am Ende einer Modellieraktion\nbenachrichtigt werden?"
+ms_set de ayprefse_CompleteNotify "Wann sollen alle Objekte über Änderungen\
+\nan Kindobjekten (inkl. Referenzen) benachrichtigt werden?"
 ms_set de ayprefse_EditSnaps "Sollen editierte Punkte zunächst zu den\
 \nGitter-Koordinaten bewegt werden?"
 ms_set de ayprefse_Snap3D "Soll das Bewegen von Punkten zu Gitter-Koordinaten\

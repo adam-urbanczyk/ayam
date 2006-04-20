@@ -159,6 +159,8 @@ proc prefs_open {} {
     addParamB $fw ayprefse PickEpsilon [ms ayprefse_PickEpsilon] {0.01 0.1 0.2}
     addParamB $fw ayprefse HandleSize [ms ayprefse_HandleSize] { 4 5 6 8 }
     addCheckB $fw ayprefse LazyNotify [ms ayprefse_LazyNotify]
+    addMenuB $fw ayprefse CompleteNotify [ms ayprefse_CompleteNotify]\
+	{"Never" "Always" "Lazy"}
     addCheckB $fw ayprefse EditSnaps [ms ayprefse_EditSnaps]
     addCheckB $fw ayprefse Snap3D [ms ayprefse_Snap3D]
     addCheckB $fw ayprefse FlashPoints [ms ayprefse_FlashPoints]
