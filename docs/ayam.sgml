@@ -1461,6 +1461,18 @@ on certain child objects (e.g. the Revolve custom
 object) about changes of their child objects, so that the parent can adapt
 to the child objects automagically.
 
+<item><tt/"CompleteNotify"/ determines when notification of all objects
+depending on references of changed objects takes place.
+<itemize>
+<item><tt/"Never"/ for manual control of complete notification,
+<item><tt/"Always"/ complete notification is done whenever the
+normal notification would be run,
+<item><tt/"Lazy"/ complete notification runs
+only after a modelling action finished.
+</itemize>
+Note that complete notify also updates objects that depend on
+updated objects.
+
 <item><tt/"EditSnaps"/ determines, whether points
 should be snapped to the grid when a grid is defined and
 in use for the single point modeling actions.
@@ -8389,6 +8401,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <ref id="treecontm" name="tree context menu entry">
 <item>Color: <ref id="riattrs" name="RenderMan/BMRT attribute">,
 <ref id="lip" name="light attribute">
+<item>CompleteNotify: <ref id="prefmodel" name="preference setting">
 <item>copOb: <ref id="sccopob" name="scripting interface command">
 <item>Copy: <ref id="mmedit" name="main menu entry">
 <item>Copy Property: <ref id="mmedit" name="main menu entry">,
