@@ -282,7 +282,7 @@ ay_notify_findparents(ay_object *o, ay_object *r, ay_list_object **parents)
 
       while(down && down->next)
 	{
-
+	  dfound = AY_FALSE;
 	  if(down->down && down->down->next)
 	    {
 	      dfound = ay_notify_findparents(down, r, parents);
