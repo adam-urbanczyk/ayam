@@ -271,7 +271,7 @@ ay_notify_findparents(ay_object *o, ay_object *r, ay_list_object **parents)
 {
  ay_object *down;
  ay_list_object *newl = NULL;
- int found = 0;
+ int dfound = AY_FALSE, found = AY_FALSE;
 
   if(!o || !r || !parents)
     return 0;
@@ -280,14 +280,20 @@ ay_notify_findparents(ay_object *o, ay_object *r, ay_list_object **parents)
     {
       down = o->down;
 
-      if(down->down && down->down->next)
-	found = ay_notify_findparents(down, r, parents);
-
-      while(!found && down && down->next)
+      while(down && down->next)
 	{
+
+	  if(down->down && down->down->next)
+	    {
+	      dfound = ay_notify_findparents(down, r, parents);
+	    }
+	  if(dfound)
+	    {
+	      found = AY_TRUE;
+	    }
 	  if((down == r) || (down->refine == r))
 	    {
-	      found = 1;
+	      found = AY_TRUE;
 	    }
 	  down = down->next;
 	} /* while */
