@@ -305,6 +305,7 @@ ay_notify_findparents(ay_object *o, ay_object *r, ay_list_object **parents)
 	      return 0;
 	    }
 	  newl->object = o;
+	  o->modified = AY_FALSE;
 	  newl->next = *parents;
 	  *parents = newl;
 	} /* if */
@@ -366,6 +367,7 @@ ay_notify_complete(ay_object *r)
 
     } /* while */
 
+  /* revert list */
   s = NULL;
   while(l)
     {
@@ -374,7 +376,7 @@ ay_notify_complete(ay_object *r)
       o = t->object;
       if(o)
 	{
-	  o->modified = AY_FALSE;
+	  o->modified++;
 	}
       t->next = s;
       s = t;
@@ -385,7 +387,8 @@ ay_notify_complete(ay_object *r)
       o = s->object;
       if(o)
 	{
-	  if(!o->modified)
+	  o->modified--;
+	  if(o->modified == 0)
 	    {
 	      ay_notify_force(o);
 	    }
