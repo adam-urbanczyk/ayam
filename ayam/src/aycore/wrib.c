@@ -570,18 +570,15 @@ ay_wrib_object(char *file, ay_object *o)
 	      ay_status = ay_riattr_wrib(o);
 	      ay_status = ay_tc_wrib(o);
 	    } /* if */
-
 	}  /* if */
-
-
     } /* if */
 
   /* write child objects, but do not descend into light sources as
      the arealight geometry has been written long ago in the lights
-     section of the RIB */
-  if(o->down && o->down->next && (o->type != AY_IDLIGHT))
+     section of the RIB;  */
+  if(o->down && o->down->next && (o->type != AY_IDLIGHT) &&
+     !o->hide_children)
     {
-
       /* first, if the current object is a level object,
 	 write appropriate SolidBegin statements */
       down = o->down;

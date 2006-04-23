@@ -87,6 +87,7 @@ w     fAttrAttr
 set w [frame $ay(pca).$Attributes(w)]
 addString $w attrPropData Objectname
 addCheck $w attrPropData Hide
+addCheck $w attrPropData HideChildren
 addInfo $w attrPropData RefCount
 
 

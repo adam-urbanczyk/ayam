@@ -334,6 +334,10 @@ ay_prop_getattrtcmd(ClientData clientData, Tcl_Interp *interp,
   to = Tcl_NewIntObj(o->hide);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton, "HideChildren", -1);
+  to = Tcl_NewIntObj(o->hide_children);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
   Tcl_SetStringObj(ton, "RefCount", -1);
   to = Tcl_NewIntObj(o->refcount);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -392,9 +396,14 @@ ay_prop_setattrtcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       strcpy(o->name, string);
     }
+
   Tcl_SetStringObj(ton, "Hide", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &o->hide);
+
+  Tcl_SetStringObj(ton, "HideChildren", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &o->hide_children);
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
