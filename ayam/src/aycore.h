@@ -195,6 +195,8 @@ int ay_notify_findparents(ay_object *o, ay_object *r,
 
 int ay_notify_complete(ay_object *r);
 
+int ay_notify_init(Tcl_Interp *interp);
+
 
 /* ns.c */
 Tk_RestrictAction ay_ns_restrictall(ClientData clientData,
@@ -366,6 +368,9 @@ int ay_pact_wetcb(struct Togl *togl, int argc, char *argv[]);
 
 int ay_pact_wrtcb(struct Togl *togl, int argc, char *argv[]);
 
+int ay_pact_centertcmd(ClientData clientData, Tcl_Interp *interp,
+		       int argc, char *argv[]);
+
 /* pomesht.c */
 int ay_pomesht_tesselate(ay_pomesh_object *pomesh);
 
@@ -517,10 +522,14 @@ int ay_selp_invert(ay_object *o);
 int ay_selp_inverttcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
 
+int ay_selp_center(ay_object *o, int mode);
+
+
 /* shade.c */
 int ay_shade_object(struct Togl *togl, ay_object *o, int push_name);
 
 int ay_shade_view(struct Togl *togl);
+
 
 /* shader.c */
 #ifdef AYUSESLCARGS

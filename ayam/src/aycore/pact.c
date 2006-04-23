@@ -1948,3 +1948,66 @@ ay_pact_wrtcb(struct Togl *togl, int argc, char *argv[])
 
  return TCL_OK;
 } /* ay_pact_wrtcb */
+
+
+/* ay_pact_centertcmd:
+ *  centerPnts command that moves all points of an object so that their
+ *  center is identical to the object coordinate systems center
+ */
+int
+ay_pact_centertcmd(ClientData clientData, Tcl_Interp *interp,
+		   int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ char fname[] = "centerPnts";
+ ay_list_object *sel = ay_selection;
+ ay_object *c = NULL;
+ int mode = 0;
+
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, fname, NULL);
+      return TCL_OK;
+    }
+
+  if(argc > 1)
+    {
+      Tcl_GetInt(interp, argv[1], &mode);
+    }
+
+  while(sel)
+    {
+      c = sel->object;
+      if(c)
+	{
+	  switch(c->type)
+	    {
+	    case AY_IDNCURVE:
+	      ay_status = ay_nct_center(mode, (ay_nurbcurve_object*)c->refine);
+	      break;
+	    default:
+	      ay_status = ay_selp_selall(c);
+	      if(!ay_status)
+		{
+		  ay_status = ay_selp_center(c, mode);
+		}
+	      break;
+	    } /* switch */
+
+	  if(ay_status)
+	    {
+	      ay_error(ay_status, fname, "Could not center object!");
+	    }
+	  else
+	    {
+	      ay_notify_force(c);
+	    }
+
+	} /* if */
+      sel = sel->next;
+    } /* while */
+
+  ay_notify_parent();
+
+ return TCL_OK;
+} /* ay_pact_centertcmd */

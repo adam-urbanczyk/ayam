@@ -281,6 +281,10 @@ ay_init(Tcl_Interp *interp)
   if((ay_status = ay_ai_init(interp)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 
+  /* initialize notification module */
+  if((ay_status = ay_notify_init(interp)))
+    { ay_error(ay_status, fname, NULL); return AY_ERROR; }
+
   /* fill tables (init object types) */
   if((ay_status = ay_root_init(interp)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
@@ -857,6 +861,10 @@ Tcl_AppInit(Tcl_Interp *interp)
   Togl_CreateCommand("wepac", ay_pact_wetcb);
 
   Togl_CreateCommand("wrpac", ay_pact_wrtcb);
+
+  Tcl_CreateCommand(interp, "centerPnts", ay_pact_centertcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
 
   /* selp.c */
   Tcl_CreateCommand(interp, "selPoints", ay_selp_selalltcmd,
