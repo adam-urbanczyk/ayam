@@ -456,6 +456,18 @@ $sm add command -label "Apply Trafo To All Points"\
 $sm add command -label "Apply Trafo To Selected Points"\
 	-command "undo save ApplyTr; applyTrafo sel;\
 	plb_update;forceNot;rV"
+$sm add command -label "Center All Points (3D)"\
+	-command "undo save CenterPnts; centerPnts;\
+	plb_update;rV"
+$sm add command -label "Center All Points (2D-XY)"\
+	-command "undo save CenterPntsXY; centerPnts 1;\
+	plb_update;rV"
+$sm add command -label "Center All Points (2D-ZY)"\
+	-command "undo save CenterPntsZY; centerPnts 2;\
+	plb_update;rV"
+$sm add command -label "Center All Points (2D-XZ)"\
+	-command "undo save CenterPntsXZ; centerPnts 3;\
+	plb_update;rV"
 
 $m add cascade -menu $m.ins -label "Instances"
 set sm [menu $m.ins -tearoff 0]
