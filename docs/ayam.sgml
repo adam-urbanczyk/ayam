@@ -846,6 +846,15 @@ This will reset the transformations property without transforming the
 selected points. The points currently not selected will be transformed,
 however!
 
+<item><tt>"Points/Center All Points (3D)"</tt>, moves all points so
+that their common center is the center of the objects coordinate
+system.
+
+<item><tt>"Points/Center All Points (2D-XY)"</tt>,
+<tt>"Points/Center All Points (2D-YZ)"</tt>,
+<tt>"Points/Center All Points (2D-XZ)"</tt>: works like the center
+3D tool but justs centers in the designated plane.
+
 <item><tt>"Instances/Resolve all Instances"</tt>, converts all instances
 of the current level (and its child objects) to normal objects.
 
@@ -2741,7 +2750,7 @@ This section contains a comprehensive list of tag names, that are
 known in Ayam 1.10 and in the accompanying extensions (plugins).
 <p>
 <tt>"RiAttribute", "RiOption", "RiHider", "RiDisplay", "NoExport", "TC",
-"PV", "SaveMainGeom", "TP", "MI", "OI", "DC", "NP", "NS", "UMM", "VMM",
+"PV", "SaveMainGeom", "TP", "MI", "OI", "DC", "TM", "NP", "NS", "UMM", "VMM",
 "BP", "IDR", "IIDR", "RIDR", "R3IDR", "CIDR", "CCIDR"</tt>
 <p>
 Documentation on those tags can be found in the sections above.
@@ -8380,6 +8389,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>CastShadows: <ref id="riattrs" name="RenderMan/BMRT attribute">
 <item>Chamfer: <ref id="bevelobj" name="Bevel object">,
 <item>CheckLights: <ref id="prefrib" name="preference setting">
+<item>Center All Points: <ref id="mmspecial" name="main menu entry">
 <item>Circle: <ref id="ncirct" name="NURBS circle tool">
 <item>Clamp: <ref id="clat" name="clamp tool">
 <item>clampNC: <ref id="scclampnc" name="scripting interface command">
