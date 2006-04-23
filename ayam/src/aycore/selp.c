@@ -285,3 +285,104 @@ ay_selp_inverttcmd(ClientData clientData, Tcl_Interp *interp,
 
  return TCL_OK;
 } /* ay_selp_inverttcmd */
+
+
+/* ay_selp_center:
+ *  center all selected points
+ *  mode - control in which dimensions centering shall occur
+ *   0: all dimensions
+ *   1: only x-y
+ *   2: only y-z
+ *   3: only x-z
+ */
+int
+ay_selp_center(ay_object *o, int mode)
+{
+ int ay_status = AY_OK;
+ double *p1, *p2, x, y, z;
+ int a, i = 0, k;
+ ay_point_object *po = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  po = o->selp;
+  if(!po)
+    return AY_OK;
+
+  /* count selected points */
+  while(po)
+    {
+      i++;
+      po = po->next;
+    }
+
+  /* compute weighted sum of all coordinate values (points)
+     to be considered, omitting consecutive equal points */
+  po = o->selp;
+  x = po->point[0]/i;
+  y = po->point[1]/i;
+  z = po->point[2]/i;
+  p1 = po->point;
+  po = po->next;
+  for(k = 1; k < i; k++)
+    {
+      p2 = po->point;
+
+      /* XXXX What about other multiple points? Should we not rather
+	 build a list of unique points and iterate over that? */
+      if(!AY_COMP3DP(p1,p2))
+	{
+	  x += (p2[0]/i);
+	  y += (p2[1]/i);
+	  z += (p2[2]/i);
+	}      
+      p1 = p2;
+      po = po->next;
+    } /* for */
+
+  /* center points, by translating them */
+  po = o->selp;
+  switch(mode)
+    {
+    case 0:
+      while(po)
+	{
+	  po->point[0] -= x;
+	  po->point[1] -= y;
+	  po->point[2] -= z;
+	  po = po->next;
+	}
+      break;
+    case 1:
+      while(po)
+	{
+	  po->point[0] -= x;
+	  po->point[1] -= y;
+	  po = po->next;
+	}
+      break;
+    case 2:
+      while(po)
+	{
+	  po->point[1] -= y;
+	  po->point[2] -= z;
+	  po = po->next;
+	}
+      break;
+    case 3:
+      while(po)
+	{
+	  po->point[0] -= x;
+	  po->point[2] -= z;
+	  po = po->next;
+	}
+      break;
+    default:
+      break;
+    } /* switch */
+
+ return ay_status;
+} /* ay_selp_center */
+
+

@@ -14,6 +14,14 @@
 
 /* notify.c - functions for object notification */
 
+
+/* global variables for this module: */
+static char *ay_nc_tagtype = NULL;
+
+static char* ay_nc_tagname = "NC";
+
+/* functions: */
+
 /* ay_notify_register:
  *  register the notification callback notcb for
  *  objects of type type_id
@@ -270,6 +278,7 @@ int
 ay_notify_findparents(ay_object *o, ay_object *r, ay_list_object **parents)
 {
  ay_object *down;
+ ay_tag_object *newt = NULL;
  ay_list_object *newl = NULL;
  int dfound = AY_FALSE, found = AY_FALSE;
 
@@ -304,10 +313,19 @@ ay_notify_findparents(ay_object *o, ay_object *r, ay_list_object **parents)
 	    {
 	      return 0;
 	    }
+	  if(!(newt = calloc(1, sizeof(ay_tag_object))))
+	    {
+	      return 0;
+	    }
 	  newl->object = o;
 	  o->modified = AY_FALSE;
 	  newl->next = *parents;
 	  *parents = newl;
+
+	  newt->next = o->tags;
+	  newt->type = ay_nc_tagtype;
+	  o->tags = newt;
+
 	} /* if */
     } /* if */
 
@@ -323,6 +341,7 @@ ay_notify_complete(ay_object *r)
 {
  int propagate = AY_TRUE;
  ay_object *o;
+ ay_tag_object *tag;
  ay_list_object *l = NULL, *s, *t, *u;
 
   if(!r)
@@ -374,9 +393,9 @@ ay_notify_complete(ay_object *r)
       t = l;
       l = l->next;
       o = t->object;
-      if(o)
+      if(o && o->tags && (o->tags->type == ay_nc_tagtype))
 	{
-	  o->modified++;
+	  ((int)o->tags->val)++;
 	}
       t->next = s;
       s = t;
@@ -385,12 +404,15 @@ ay_notify_complete(ay_object *r)
   while(s)
     {
       o = s->object;
-      if(o)
+      if(o && o->tags && (o->tags->type == ay_nc_tagtype))
 	{
-	  o->modified--;
-	  if(o->modified == 0)
+	  ((int)o->tags->val)--;
+	  if(o->tags->val == 0)
 	    {
 	      ay_notify_force(o);
+	      tag = o->tags;
+	      o->tags = tag->next;
+	      free(tag);
 	    }
 	}
       t = s->next;
@@ -400,3 +422,17 @@ ay_notify_complete(ay_object *r)
 
  return AY_OK;
 } /* ay_notify_complete */
+
+
+int
+ay_notify_init(Tcl_Interp *interp)
+{
+ int ay_status = AY_OK;
+
+  /* register NC tag type */
+  ay_status = ay_tags_register(interp, ay_nc_tagname, &ay_nc_tagtype);
+  if(ay_status)
+    return ay_status;
+
+  return AY_OK;
+} /* ay_notify_init */
