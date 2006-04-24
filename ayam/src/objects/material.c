@@ -22,7 +22,7 @@ ay_material_createcb(int argc, char *argv[], ay_object *o)
  ay_mat_object *material = NULL;
  char fname[] = "crtmaterial";
  int ay_status = AY_OK;
- int stringlen = 0;
+ size_t stringlen = 0;
 
   if(!o)
     return AY_ENULL;

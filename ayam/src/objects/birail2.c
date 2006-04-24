@@ -416,6 +416,8 @@ ay_birail2_notifycb(ay_object *o)
   mode = birail2->glu_display_mode;
   tolerance = birail2->glu_sampling_tolerance;
 
+  nextcb = &(birail2->caps_and_bevels);
+
   /* remove old objects */
   if(birail2->npatch)
     ay_object_delete(birail2->npatch);
