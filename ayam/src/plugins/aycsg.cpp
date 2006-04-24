@@ -39,11 +39,13 @@ ay_object *aycsg_root; // the root of the local copy of the object tree
 // parents (CSG operation objects) to their children (e.g. primitives);
 // note that the TM tags are used here in a quite unusual way:
 // <tag->name> is used to denote coordinate system flips caused by an
-// odd number of negative scale factors (it is not a pointer!) and
+// odd number of negative scale factors (it is not used as a pointer!) and
 // <tag->val> points to an array of doubles (the transformation matrix
 // itself) instead to a string;
 // we can do this safely, because no TM tag will escape this module ever
 char *aycsg_tm_tagtype;
+char *aycsg_tm_tagname = "TM";
+
 typedef struct aycsg_taglistelem_s {
   struct aycsg_taglistelem_s *next;
   ay_tag_object *tag;
@@ -54,6 +56,7 @@ aycsg_taglistelem *aycsg_tmtags;
 
 // DC tags are used to store the depth complexity of a primitive
 char *aycsg_dc_tagtype;
+char *aycsg_dc_tagname = "DC";
 
 char aycsg_version_ma[] = AY_VERSIONSTR;
 char aycsg_version_mi[] = AY_VERSIONSTRMI;
@@ -1696,14 +1699,14 @@ Aycsg_Init(Tcl_Interp *interp)
   aycsg_root = NULL;
 
   // register TM tag type
-  ay_status = ay_tags_register(interp, "TM", &aycsg_tm_tagtype);
+  ay_status = ay_tags_register(interp, aycsg_tm_tagname, &aycsg_tm_tagtype);
   if(ay_status)
     return TCL_OK;
 
   aycsg_tmtags = NULL;
 
   // register DC tag type
-  ay_status = ay_tags_register(interp, "DC", &aycsg_dc_tagtype);
+  ay_status = ay_tags_register(interp, aycsg_dc_tagname, &aycsg_dc_tagtype);
   if(ay_status)
     return TCL_OK;
 
