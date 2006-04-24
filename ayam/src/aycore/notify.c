@@ -16,6 +16,16 @@
 
 
 /* global variables for this module: */
+
+
+/*
+  NC tags are used to store a counter value per candidate
+  parent object that has to be notified. The counter is
+  used to update parents only when all children are updated.
+  The tag object is used in quite unusual way:
+  <tag->name> is always NULL (we solely use the tag->type for identification)
+  <tag->val> is used as counter value and not as pointer to a string
+*/
 static char *ay_nc_tagtype = NULL;
 
 static char* ay_nc_tagname = "NC";
@@ -395,7 +405,7 @@ ay_notify_complete(ay_object *r)
       o = t->object;
       if(o && o->tags && (o->tags->type == ay_nc_tagtype))
 	{
-	  ((int)o->tags->val)++;
+	  o->tags->val++;
 	}
       t->next = s;
       s = t;
@@ -406,7 +416,7 @@ ay_notify_complete(ay_object *r)
       o = s->object;
       if(o && o->tags && (o->tags->type == ay_nc_tagtype))
 	{
-	  ((int)o->tags->val)--;
+	  o->tags->val--;
 	  if(o->tags->val == 0)
 	    {
 	      ay_notify_force(o);
