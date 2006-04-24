@@ -396,7 +396,7 @@ ay_pv_merge(ay_tag_object *t1, ay_tag_object *t2, ay_tag_object **mt)
     { ay_status = AY_ERROR; goto cleanup; }
 
   /* copy "name,detail,type," */
-  Tcl_DStringAppend(&ds, t1->val, comma1-(t1->val));
+  Tcl_DStringAppend(&ds, t1->val, (int)(comma1-(t1->val)));
 
   sscanf(comma1, "%d", &n1);
 

@@ -300,7 +300,7 @@ ay_selp_center(ay_object *o, int mode)
 {
  int ay_status = AY_OK;
  double *p1, *p2, x, y, z;
- int a, i = 0, k;
+ int i = 0, k;
  ay_point_object *po = NULL;
 
   if(!o)
