@@ -177,25 +177,11 @@ ay_sdmesht_tesselate(ay_sdmesh_object *sdmesh)
 	  if(!(tess = gluNewTess()))
 	    return AY_EOMEM;
 
-#if defined(WIN32) && !defined(AYUSESUPERGLU)
-	  gluTessCallback(tess, GLU_TESS_ERROR,
-			  (GLUtessErrorProc)ay_error_glucb);
-	  gluTessCallback(tess, GLU_TESS_BEGIN,
-			  (GLUtessBeginProc)ay_sdmesht_tcbBegin);
-	  gluTessCallback(tess, GLU_TESS_VERTEX,
-			      (GLUtessVertexProc)ay_sdmesht_tcbVertex);
-	  gluTessCallback(tess, GLU_TESS_END,
-			  (GLUtessEndProc)ay_sdmesht_tcbEnd);
-	  gluTessCallback(tess, GLU_TESS_COMBINE,
-			  (GLUtessCombineProc)ay_sdmesht_tcbCombine);
-
-#else
-	  gluTessCallback(tess, GLU_TESS_ERROR, ay_error_glucb);
-	  gluTessCallback(tess, GLU_TESS_BEGIN, ay_sdmesht_tcbBegin);
-	  gluTessCallback(tess, GLU_TESS_VERTEX, ay_sdmesht_tcbVertex);
-	  gluTessCallback(tess, GLU_TESS_END, ay_sdmesht_tcbEnd);
-	  gluTessCallback(tess, GLU_TESS_COMBINE, ay_sdmesht_tcbCombine);
-#endif
+	  gluTessCallback(tess, GLU_TESS_ERROR, AYGLUCBTYPE ay_error_glucb);
+	  gluTessCallback(tess, GLU_TESS_BEGIN, AYGLUCBTYPE ay_sdmesht_tcbBegin);
+	  gluTessCallback(tess, GLU_TESS_VERTEX, AYGLUCBTYPE ay_sdmesht_tcbVertex);
+	  gluTessCallback(tess, GLU_TESS_END, AYGLUCBTYPE ay_sdmesht_tcbEnd);
+	  gluTessCallback(tess, GLU_TESS_COMBINE, AYGLUCBTYPE ay_sdmesht_tcbCombine);
 
 	  /* GLU 1.2 only: */
 	  /*gluTessBeginPolygon(tess, NULL);*/
