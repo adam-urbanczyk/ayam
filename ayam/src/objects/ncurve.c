@@ -308,12 +308,7 @@ ay_ncurve_drawglucb(struct Togl *togl, ay_object *o)
       } /* if */
 #endif /* !AYWITHAQUA */
 
-#if defined(WIN32) && !defined(AYUSESUPERGLU)
-  gluNurbsCallback(ncurve->no, GLU_ERROR, (GLUnurbsErrorProc)ay_error_glucb);
-#else
-  gluNurbsCallback(ncurve->no, GLU_ERROR, ay_error_glucb);
-#endif
-
+	gluNurbsCallback(ncurve->no, GLU_ERROR, AYGLUCBTYPE ay_error_glucb);
   gluBeginCurve(ncurve->no);
 
 #ifdef AYIRIXBUG

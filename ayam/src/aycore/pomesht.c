@@ -270,48 +270,22 @@ ay_pomesht_tesselate(ay_pomesh_object *pomesh)
 	  if(!(tess = gluNewTess()))
 	    return AY_EOMEM;
 
-#if defined(WIN32) && !defined(AYUSESUPERGLU)
-	  gluTessCallback(tess, GLU_TESS_ERROR,
-			  (GLUtessErrorProc)ay_error_glucb);
-	  gluTessCallback(tess, GLU_TESS_BEGIN,
-			  (GLUtessBeginProc)ay_pomesht_tcbBegin);
-#else
-	  gluTessCallback(tess, GLU_TESS_ERROR, ay_error_glucb);
-	  gluTessCallback(tess, GLU_TESS_BEGIN, ay_pomesht_tcbBegin);
-#endif
+	  gluTessCallback(tess, GLU_TESS_ERROR, AYGLUCBTYPE ay_error_glucb);
+	  gluTessCallback(tess, GLU_TESS_BEGIN, AYGLUCBTYPE ay_pomesht_tcbBegin);
+
 
 	  if(!pomesh->has_normals)
 	    {
-#if defined(WIN32) && !defined(AYUSESUPERGLU)
-	      gluTessCallback(tess, GLU_TESS_VERTEX,
-			      (GLUtessVertexProc)ay_pomesht_tcbVertex);
-	      gluTessCallback(tess, GLU_TESS_COMBINE,
-			      (GLUtessCombineProc)ay_pomesht_tcbCombine);
-#else
-	      gluTessCallback(tess, GLU_TESS_VERTEX, ay_pomesht_tcbVertex);
-	      gluTessCallback(tess, GLU_TESS_COMBINE, ay_pomesht_tcbCombine);
-#endif
+	      gluTessCallback(tess, GLU_TESS_VERTEX, AYGLUCBTYPE ay_pomesht_tcbVertex);
+	      gluTessCallback(tess, GLU_TESS_COMBINE, AYGLUCBTYPE ay_pomesht_tcbCombine);
 	    }
 	  else
 	    {
-#if defined(WIN32) && !defined(AYUSESUPERGLU)
-	      gluTessCallback(tess, GLU_TESS_VERTEX,
-			      (GLUtessVertexProc)ay_pomesht_tcbVertexN);
-	      gluTessCallback(tess, GLU_TESS_COMBINE,
-			      (GLUtessCombineProc)ay_pomesht_tcbCombineN);
-#else
-	      gluTessCallback(tess, GLU_TESS_VERTEX, ay_pomesht_tcbVertexN);
-	      gluTessCallback(tess, GLU_TESS_COMBINE, ay_pomesht_tcbCombineN);
-#endif
+	      gluTessCallback(tess, GLU_TESS_VERTEX, AYGLUCBTYPE ay_pomesht_tcbVertexN);
+	      gluTessCallback(tess, GLU_TESS_COMBINE, AYGLUCBTYPE ay_pomesht_tcbCombineN);
 	    } /* if */
 
-#if defined(WIN32) && !defined(AYUSESUPERGLU)
-	  gluTessCallback(tess, GLU_TESS_END,
-			  (GLUtessEndProc)ay_pomesht_tcbEnd);
-
-#else
-	  gluTessCallback(tess, GLU_TESS_END, ay_pomesht_tcbEnd);
-#endif
+	  gluTessCallback(tess, GLU_TESS_END, AYGLUCBTYPE ay_pomesht_tcbEnd);
 
 	  /* GLU 1.2 only: */
 	  /*gluTessBeginPolygon(tess, NULL);*/

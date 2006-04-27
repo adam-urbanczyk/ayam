@@ -82,6 +82,22 @@ extern "C" {
 #include <slx.h>
 #endif /* AYUSESLXARGS */
 
+#define AYGLUCBTYPE
+
+#ifdef WIN32
+ #undef AYGLUCBTYPE
+ #define AYGLUCBTYPE (GLUnurbsErrorProc)
+ #ifdef AYMESASGIGLU
+  #undef AYGLUCBTYPE
+  #define AYGLUCBTYPE (_GLUfuncptr)
+ #endif
+ #ifdef AYUSESUPERGLU
+  #undef AYGLUCBTYPE
+  #define AYGLUCBTYPE
+ #endif
+#endif
+
+
 /* Ayam Object Structure */ 
 
 typedef struct ay_object_s {

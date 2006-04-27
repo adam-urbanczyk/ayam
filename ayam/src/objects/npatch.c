@@ -360,11 +360,9 @@ ay_npatch_drawglucb(struct Togl *togl, ay_object *o)
     }
 #endif /* !AYWITHAQUA */
 
-#if defined(WIN32) && !defined(AYUSESUPERGLU)
-  gluNurbsCallback(npatch->no, GLU_ERROR, (GLUnurbsErrorProc)ay_error_glucb);
-#else
-  gluNurbsCallback(npatch->no, GLU_ERROR, ay_error_glucb);
-#endif
+
+  gluNurbsCallback(npatch->no, GLU_ERROR, AYGLUCBTYPE ay_error_glucb);
+
 
   gluBeginSurface(npatch->no);
 
@@ -732,11 +730,7 @@ ay_npatch_shadeglucb(struct Togl *togl, ay_object *o)
     } /* if */
 #endif /* !AYWITHAQUA */
 
-#if defined(WIN32) && !defined(AYUSESUPERGLU)
-  gluNurbsCallback(npatch->no, GLU_ERROR, (GLUnurbsErrorProc)ay_error_glucb);
-#else
-  gluNurbsCallback(npatch->no, GLU_ERROR, ay_error_glucb);
-#endif
+  gluNurbsCallback(npatch->no, GLU_ERROR, AYGLUCBTYPE ay_error_glucb);
 
   gluBeginSurface(npatch->no);
 

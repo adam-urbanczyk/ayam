@@ -805,11 +805,7 @@ ay_tess_npatch(ay_object *o, int smethod, double sparamu, double sparamv,
     }
 
   /* register error handling callback */
-#if defined(WIN32) && !defined(AYUSESUPERGLU)
-  gluNurbsCallback(npatch->no, GLU_ERROR, (GLUnurbsErrorProc)ay_error_glucb);
-#else
-  gluNurbsCallback(npatch->no, GLU_ERROR, ay_error_glucb);
-#endif
+  gluNurbsCallback(npatch->no, GLU_ERROR, AYGLUCBTYPE ay_error_glucb);
 
   /* set properties */
   gluNurbsProperty(npatch->no, GLU_NURBS_MODE, GLU_NURBS_TESSELLATOR);
@@ -882,10 +878,10 @@ ay_tess_npatch(ay_object *o, int smethod, double sparamu, double sparamv,
 
   /* register callbacks to get tesselated data back from GLU */
   gluNurbsCallbackData(npatch->no, (void *)(&to));
-  gluNurbsCallback(npatch->no, GLU_NURBS_BEGIN_DATA, ay_tess_begindata);
-  gluNurbsCallback(npatch->no, GLU_NURBS_VERTEX_DATA, ay_tess_vertexdata);
-  gluNurbsCallback(npatch->no, GLU_NURBS_NORMAL_DATA, ay_tess_normaldata);
-  gluNurbsCallback(npatch->no, GLU_NURBS_END_DATA, ay_tess_enddata);
+  gluNurbsCallback(npatch->no, GLU_NURBS_BEGIN_DATA, AYGLUCBTYPE ay_tess_begindata);
+  gluNurbsCallback(npatch->no, GLU_NURBS_VERTEX_DATA, AYGLUCBTYPE ay_tess_vertexdata);
+  gluNurbsCallback(npatch->no, GLU_NURBS_NORMAL_DATA, AYGLUCBTYPE ay_tess_normaldata);
+  gluNurbsCallback(npatch->no, GLU_NURBS_END_DATA, AYGLUCBTYPE ay_tess_enddata);
 
   /* tesselate the patch */
   gluBeginSurface(npatch->no);
@@ -1147,27 +1143,12 @@ ay_tess_pomeshf(ay_pomesh_object *pomesh,
   to.nextpd = &(to.p1);
   to.nextnd = &(to.n1);
 
-#if defined(WIN32) && !defined(AYUSESUPERGLU)
-  gluTessCallback(tess, GLU_TESS_ERROR,
-		  (GLUtessErrorProc)ay_error_glucb);
-  gluTessCallback(tess, GLU_TESS_BEGIN_DATA,
-		  (GLUtessBeginProc)ay_tess_begindata);
-  gluTessCallback(tess, GLU_TESS_VERTEX_DATA,
-		  (GLUtessVertexProc)ay_tess_vertexdata);
-  /*  gluTessCallback(tess, GLU_TESS_NORMAL_DATA,
-      (GLUtessVertexProc)ay_tess_normaldata);*/
-  gluTessCallback(tess, GLU_TESS_END_DATA,
-		  (GLUtessEndProc)ay_tess_enddata);
-  gluTessCallback(tess, GLU_TESS_COMBINE_DATA,
-		  (GLUtessCombineProc)ay_tess_combinedata);
-#else
-  gluTessCallback(tess, GLU_TESS_ERROR, ay_error_glucb);
-  gluTessCallback(tess, GLU_TESS_BEGIN_DATA, ay_tess_begindata);
-  gluTessCallback(tess, GLU_TESS_VERTEX_DATA, ay_tess_vertexdata);
-  /*  gluTessCallback(tess, GLU_TESS_NORMAL_DATA, ay_tess_normaldata);*/
-  gluTessCallback(tess, GLU_TESS_END_DATA, ay_tess_enddata);
-  gluTessCallback(tess, GLU_TESS_COMBINE_DATA, ay_tess_combinedata);
-#endif
+  gluTessCallback(tess, GLU_TESS_ERROR, AYGLUCBTYPE ay_error_glucb);
+  gluTessCallback(tess, GLU_TESS_BEGIN_DATA, AYGLUCBTYPE ay_tess_begindata);
+  gluTessCallback(tess, GLU_TESS_VERTEX_DATA, AYGLUCBTYPE ay_tess_vertexdata);
+  /*  gluTessCallback(tess, GLU_TESS_NORMAL_DATA, AYGLUCBTYPE ay_tess_normaldata);*/
+  gluTessCallback(tess, GLU_TESS_END_DATA, AYGLUCBTYPE ay_tess_enddata);
+  gluTessCallback(tess, GLU_TESS_COMBINE_DATA, AYGLUCBTYPE ay_tess_combinedata);
 
   gluTessBeginPolygon(tess, (GLvoid*)(&to));
    for(j = 0; j < pomesh->nloops[f]; j++)
@@ -1281,27 +1262,12 @@ ay_tess_pomesh(ay_pomesh_object *pomesh, int optimize,
   to.nextpd = &(to.p1);
   to.nextnd = &(to.n1);
 
-#if defined(WIN32) && !defined(AYUSESUPERGLU)
-  gluTessCallback(tess, GLU_TESS_ERROR,
-		  (GLUtessErrorProc)ay_error_glucb);
-  gluTessCallback(tess, GLU_TESS_BEGIN_DATA,
-		  (GLUtessBeginProc)ay_tess_begindata);
-  gluTessCallback(tess, GLU_TESS_VERTEX_DATA,
-		  (GLUtessVertexProc)ay_tess_vertexdata);
-  /*  gluTessCallback(tess, GLU_TESS_NORMAL_DATA,
-      (GLUtessVertexProc)ay_tess_normaldata);*/
-  gluTessCallback(tess, GLU_TESS_END_DATA,
-		  (GLUtessEndProc)ay_tess_enddata);
-  gluTessCallback(tess, GLU_TESS_COMBINE_DATA,
-		  (GLUtessCombineProc)ay_tess_combinedata);
-#else
-  gluTessCallback(tess, GLU_TESS_ERROR, ay_error_glucb);
-  gluTessCallback(tess, GLU_TESS_BEGIN_DATA, ay_tess_begindata);
-  gluTessCallback(tess, GLU_TESS_VERTEX_DATA, ay_tess_vertexdata);
-  /*  gluTessCallback(tess, GLU_TESS_NORMAL_DATA, ay_tess_normaldata);*/
-  gluTessCallback(tess, GLU_TESS_END_DATA, ay_tess_enddata);
-  gluTessCallback(tess, GLU_TESS_COMBINE_DATA, ay_tess_combinedata);
-#endif
+  gluTessCallback(tess, GLU_TESS_ERROR, AYGLUCBTYPE ay_error_glucb);
+  gluTessCallback(tess, GLU_TESS_BEGIN_DATA, AYGLUCBTYPE ay_tess_begindata);
+  gluTessCallback(tess, GLU_TESS_VERTEX_DATA, AYGLUCBTYPE ay_tess_vertexdata);
+  /*  gluTessCallback(tess, GLU_TESS_NORMAL_DATA, AYGLUCBTYPE ay_tess_normaldata);*/
+  gluTessCallback(tess, GLU_TESS_END_DATA, AYGLUCBTYPE ay_tess_enddata);
+  gluTessCallback(tess, GLU_TESS_COMBINE_DATA, AYGLUCBTYPE ay_tess_combinedata);
 
   for(i = 0; i < pomesh->npolys; i++)
     {
