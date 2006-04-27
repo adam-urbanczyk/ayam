@@ -16,6 +16,10 @@
 
 static char *ay_npatch_name = "NPatch";
 
+int ay_npatch_drawglucb(struct Togl *togl, ay_object *o);
+
+int ay_npatch_shadeglucb(struct Togl *togl, ay_object *o);
+
 int
 ay_npatch_createcb(int argc, char *argv[], ay_object *o)
 {
