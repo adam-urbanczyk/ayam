@@ -1154,7 +1154,7 @@ ay_wrib_lights(char *file, ay_object *o)
  /* shadowmap names */
  char *shadowptr = NULL, *pxptr = NULL, *nxptr = NULL;
  char *pyptr = NULL, *nyptr = NULL, *pzptr = NULL, *nzptr = NULL;
- int filenlen = 0;
+ size_t filenlen = 0;
  RtLightHandle light_handle;
 
 
@@ -1475,7 +1475,7 @@ ay_wrib_scene(char *file, char *image, int temp, double *from, double *to,
  RtFloat aspect = (RtFloat)1.0, swleft, swright, swtop, swbot;
  RtFloat fov = (RtFloat)90.0, rinearp, rifarp;
  char *objfile = NULL, *pos = NULL, fnum[30];
- int filenlen = 0;
+ size_t filenlen = 0;
 
   ay_current_primlevel = 0;
  
@@ -1728,7 +1728,7 @@ ay_wrib_sm(char *file, char *image, int width, int height)
  int ay_status = AY_OK;
  ay_object *o = ay_root;
  char *objfile = NULL, *pos = NULL;
- int filenlen = 0;
+ size_t filenlen = 0;
 
   filenlen = strlen(file);
 
