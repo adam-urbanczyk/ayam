@@ -464,7 +464,8 @@ ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
  char *zname = NULL, *shdname = NULL;
  /*double xmin = DBL_MAX, ymin = DBL_MAX, xmax = -DBL_MAX, ymax = -DBL_MAX;*/
  double px, py, pz;
- int width, height, filelen = 0;
+ int width, height;
+ size_t filelen = 0;
  static int countsm = 0;
 
   if(!o)
