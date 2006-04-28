@@ -1961,6 +1961,7 @@ ay_pact_centertcmd(ClientData clientData, Tcl_Interp *interp,
  int ay_status = AY_OK;
  char fname[] = "centerPnts";
  ay_list_object *sel = ay_selection;
+ ay_point_object *oldpointsel = NULL;
  ay_object *c = NULL;
  int mode = 0;
 
@@ -1980,6 +1981,11 @@ ay_pact_centertcmd(ClientData clientData, Tcl_Interp *interp,
       c = sel->object;
       if(c)
 	{
+	  /* save old point selection */
+	  oldpointsel = c->selp;
+	  c->selp = NULL;
+
+	  /* center all points */
 	  switch(c->type)
 	    {
 	    case AY_IDNCURVE:
@@ -1993,6 +1999,10 @@ ay_pact_centertcmd(ClientData clientData, Tcl_Interp *interp,
 		}
 	      break;
 	    } /* switch */
+
+	  /* recover point selection */
+	  ay_selp_clear(c);
+	  c->selp = oldpointsel;
 
 	  if(ay_status)
 	    {
