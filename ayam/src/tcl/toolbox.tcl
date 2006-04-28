@@ -449,26 +449,26 @@ proc toolbox_open { } {
 	    lappend ay(toolbuttons) bnc bic bnci bnp
 
 	    button $f.bnc -image ay_NCurve_img -padx 0 -pady 0 -command {
-		crtOb NCurve -length $ay(nclen); uCR; sL; rV;
+		crtOb NCurve -length $ay(nclen); uCR; sL; forceNot; rV;
 	    }
 	    balloon_set $f.bnc "create NCurve"
 
 	    #####
 	    button $f.bic -image ay_ICurve_img -padx 0 -pady 0 -command {
-		crtOb ICurve -length $ay(iclen); uCR; sL; rV;
+		crtOb ICurve -length $ay(iclen); uCR; sL; forceNot; rV;
 	    }
 	    balloon_set $f.bic "create ICurve"
 
 	    #####
 	    button $f.bnci -image ay_NCircle_img -padx 0 -pady 0 -command {
-		crtClosedBS $ay(cbspnum) $ay(cbsporder); uCR; sL; rV;
+		crtClosedBS $ay(cbspnum) $ay(cbsporder); uCR; sL; forceNot; rV;
 	    }
 	    balloon_set $f.bnci "create circle"
 
 	    #####
 	    button $f.bnp -image ay_NPatch_img -padx 0 -pady 0 -command {
 		crtOb NPatch -width $ay(npwidth) -height $ay(npheight);
-		uCR; sL; rV;
+		uCR; sL; forceNot; rV;
 	    }
 	    balloon_set $f.bnp "create NPatch"
 

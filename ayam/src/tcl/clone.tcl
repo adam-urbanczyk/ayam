@@ -66,6 +66,10 @@ proc clone_crt { } {
     set selected ""
     getSel selected
     if { $selected == "" } { ayError 20 "clone_crt" ""; return; }
+
+    # the next command sorts the selected objects
+    eval "selOb $selected"
+
     set ay_error 0
     crtOb Clone
     if { $ay_error } {  return; }
@@ -79,9 +83,7 @@ proc clone_crt { } {
     cmovOb
     goUp
     set ay(ul) $ay(CurrentLevel)
-    uS
-    sL
-    rV
+    uS; sL; forceNot; rV;
 
  return;
 }
@@ -96,6 +98,10 @@ proc mirror_crt { } {
     set selected ""
     getSel selected
     if { $selected == "" } { ayError 20 "mirror_crt" ""; return; }
+
+    # the next command sorts the selected objects
+    eval "selOb $selected"
+
     set ay_error 0
     crtOb Clone -mirror 1
     if { $ay_error } {  return; }
@@ -109,9 +115,7 @@ proc mirror_crt { } {
     cmovOb
     goUp
     set ay(ul) $ay(CurrentLevel)
-    uS
-    sL
-    rV
+    uS; sL; forceNot; rV;
 
  return;
 }

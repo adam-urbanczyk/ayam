@@ -278,7 +278,11 @@ proc bevel_crt { } {
 
     set selected ""
     getSel selected
-    if { $selected == "" } { return; }
+    if { $selected == "" } { ayError 20 "concatnc_crt" ""; return; }
+
+    # the next command sorts the selected objects
+    eval "selOb $selected"
+
     cutOb
 
     set ay_error 0
