@@ -1,4 +1,4 @@
-[15. Apr 2006] CVS-Head:
+[28. Apr 2006] CVS-Head:
 o bug fixes:
   - fixed TP tags created by tesselation GUI (SF 1431917)
   - fixed broken SwapUV of PatchMesh objects (SF 1436463)
@@ -20,6 +20,7 @@ o improved NURBS tools menus: "Reset Weights" now appears in correct sub menus,
   collapse/explode points commands moved to NURBCurve and added to NURBPatch
   sub menus respectively
 o added full interpolation control option to Birail2 object
+o ExtrNC now checks and sets a correct curve type
 o added display of the number of created triangles to tesselation GUI
 o added standard Docs URL to the preferences dialog
 o "Set BGimage" in the view menu now also enables drawing of the BGImage
@@ -33,6 +34,17 @@ o added target to build an Ayam.app application bundle that contains
   a local copy of the Tcl and Tk frameworks
 o fixed compilation of onio plugin with recent SGI-CC versions
 o improved tifflib directory usability test in ayamConf.tcl
+o added complete notification feature (in scenes with references, this
+  makes sure all tool objects depending on references are notified about
+  changes of the master object)
+o added centerPnts scripting interface object and corresponding entries
+  in the "Special/Points" menu to center all points of an object
+o made HideChildren attribute accessible in object Attributes property GUI
+o RIB-Export now obeys the HideChildren attribute
+o initiate notification upon creation of tool objects
+o sort parameter objects upon creation of tool objects
+o fixed compilation with current SGI-GLU and VC2005E
+o added VC2005E workspace for compilation on Win32
 
 
 [12. Feb 2006] Ayam 1.9:
@@ -1129,10 +1141,10 @@ o Mops Import much improved
     be reset to global settings while importing
 o added "Automatic Instancing"
 o added RIB Export preference setting "ExcludeHidden"
-o Tree Widget blocks the GUI now on long update operations
-o internal Tcl/Tk Errors are now redirected to the console
+o tree widget blocks the GUI now on long update operations
+o internal Tcl/Tk errors are now redirected to the console
 o added some example scenes
-o added Setup.txt, Changes
+o added Setup.txt, Changes.txt
 
 
 [12. Jun 2001] Ayam 1.0 beta2:
