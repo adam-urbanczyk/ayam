@@ -111,9 +111,7 @@ proc extrude_crt { } {
     cmovOb
     goUp
     set ay(ul) $ay(CurrentLevel)
-    uS
-    sL
-    rV
+    uS; sL; forceNot; rV
 
  return;
 }

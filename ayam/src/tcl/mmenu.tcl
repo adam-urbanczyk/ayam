@@ -154,58 +154,60 @@ if { ! $AYWITHAQUA } {
 set ay(createmenu) $m
 
 $m add command -label "NURBCurve" -command {
-    runTool ay(nclen) "Length:" "crtOb NCurve -length %0; uCR; sL; rV;"
+    runTool ay(nclen) "Length:" \
+	"crtOb NCurve -length %0; uCR; sL; forceNot; rV;"
 }
 $m add command -label "ICurve" -command {
-    runTool ay(iclen) "Length:" "crtOb ICurve -length %0; uCR; sL; rV;"
+    runTool ay(iclen) "Length:" \
+	"crtOb ICurve -length %0; uCR; sL; forceNot; rV;"
 }
 $m add command -label "NURBPatch" -command {
-    runTool {ay(npwidth) ay(npheight)} {"Width:" "Height:"}\
-	    "crtOb NPatch -width %0 -height %1; uCR; sL; rV;"
+    runTool {ay(npwidth) ay(npheight)} {"Width:" "Height:"} \
+	"crtOb NPatch -width %0 -height %1; uCR; sL; forceNot; rV;"
 }
 $m add command -label "BPatch" -command {
-    crtOb BPatch; uCR; sL; rV;
+    crtOb BPatch; uCR; sL; forceNot; rV;
 }
 $m add command -label "PatchMesh" -command {
     runTool {ay(pmwidth) ay(pmheight)} {"Width:" "Height:"}\
-	    "crtOb PatchMesh -width %0 -height %1; uCR; sL; rV;"
+	"crtOb PatchMesh -width %0 -height %1; uCR; sL; forceNot; rV;"
 }
 $m add separator
 $m add cascade -menu $m.sl -label "Solid"
 menu $m.sl -tearoff 0
 $m.sl add command -label "Box"\
--command "crtOb Box; uCR; sL; rV;"
+    -command "crtOb Box; uCR; sL; forceNot; rV;"
 $m.sl add command -label "Sphere"\
--command "crtOb Sphere; uCR; sL; rV;"
+-command "crtOb Sphere; uCR; sL; forceNot; rV;"
 $m.sl add command -label "Disk"\
--command "crtOb Disk; uCR; sL; rV;"
+-command "crtOb Disk; uCR; sL; forceNot; rV;"
 $m.sl add command -label "Cone"\
--command "crtOb Cone; uCR; sL; rV;"
+-command "crtOb Cone; uCR; sL; forceNot; rV;"
 $m.sl add command -label "Cylinder"\
--command "crtOb Cylinder; uCR; sL; rV;"
+-command "crtOb Cylinder; uCR; sL; forceNot; rV;"
 $m.sl add command -label "Torus"\
--command "crtOb Torus; uCR; sL; rV;"
+-command "crtOb Torus; uCR; sL; forceNot; rV;"
 $m.sl add command -label "Hyperboloid"\
--command "crtOb Hyperboloid; uCR; sL; rV;"
+-command "crtOb Hyperboloid; uCR; sL; forceNot; rV;"
 $m.sl add command -label "Paraboloid"\
--command "crtOb Paraboloid;  uCR; sL; rV;"
+-command "crtOb Paraboloid;  uCR; sL; forceNot; rV;"
 
 $m add cascade -menu $m.csg -label "Level"
 menu $m.csg -tearoff 0
 $m.csg add command -label "Level"\
--command "crtOb Level 1; uCR; sL; rV;"
+-command "crtOb Level 1; uCR; sL; forceNot; rV;"
 $m.csg add separator
 $m.csg add command -label "Union"\
--command "crtOb Level 2; uCR; sL; rV;"
+-command "crtOb Level 2; uCR; sL; forceNot; rV;"
 $m.csg add command -label "Intersection"\
--command "crtOb Level 4; uCR; sL; rV;"
+-command "crtOb Level 4; uCR; sL; forceNot; rV;"
 $m.csg add command -label "Difference"\
--command "crtOb Level 3; uCR; sL; rV;"
+-command "crtOb Level 3; uCR; sL; forceNot; rV;"
 $m.csg add separator
 $m.csg add command -label "Primitive"\
--command "crtOb Level 5; uCR; sL; rV;"
+-command "crtOb Level 5; uCR; sL; forceNot; rV;"
 
-$m add command -label "Light" -command "crtOb Light; uCR; sL; rV;"
+$m add command -label "Light" -command "crtOb Light; uCR; sL; forceNot; rV;"
 $m add separator
 $m add cascade -menu $m.cus -label "Custom Object"
 menu $m.cus -tearoff 0
@@ -215,21 +217,21 @@ $m add command -label "View" \
 	-command "viewOpen 400 300; global ay; set ay(ul) root:0; uS 0 1; rV;"
 $m add separator
 $m add command -label "Instance" \
-	-command "crtOb Instance; uCR; sL; rV;"
+	-command "crtOb Instance; uCR; sL; forceNot; rV;"
 $m add command -label "Clone" -command "clone_crt;"
 $m add command -label "Mirror" -command "mirror_crt;"
 $m add command -label "Material" \
 	-command "material_createp;"
 $m add command -label "Camera" \
-	-command "crtOb Camera; uCR; sL; rV;"
+	-command "crtOb Camera; uCR; sL; forceNot; rV;"
 $m add command -label "RiInc" \
-	-command "crtOb RiInc; uCR; sL; rV;"
+	-command "crtOb RiInc; uCR; sL; forceNot; rV;"
 $m add command -label "RiProc" \
-	-command "crtOb RiProc; uCR; sL; rV;"
+	-command "crtOb RiProc; uCR; sL; forceNot; rV;"
 $m add command -label "Script" \
-	-command "crtOb Script; uCR; sL; rV;"
+	-command "crtOb Script; uCR; sL; forceNot; rV;"
 $m add command -label "Text" \
-	-command "crtOb Text; uCR; sL; rV;"
+	-command "crtOb Text; uCR; sL; forceNot; rV;"
 
 if { ! $AYWITHAQUA } {
     pack .fu.fMenu.cr -in .fu.fMenu -side left
@@ -249,20 +251,21 @@ $m add cascade -menu $m.nc -label "Create"
 menu $m.nc -tearoff 0
 $m.nc add command -label "ClosedBSpline" -command {
     runTool {ay(cbspnum) ay(cbsporder)} {"NumPoints:" "Order:"}\
-	"crtClosedBS %0 %1; uCR; sL; rV;"
+	"crtClosedBS %0 %1; uCR; sL; forceNot; rV;"
 }
 $m.nc add command -label "NURBCircle" -command {
     runTool {ay(ncircradius) ay(ncircarc)} {"Radius:" "Arc:"}\
-	    "crtNCircle -r %0 -a %1; uCR; sL; rV;"
+	    "crtNCircle -r %0 -a %1; uCR; sL; forceNot; rV;"
 }
 $m.nc add command -label "TrimRect" -command {
     crtNRect; set ay(ul) $ay(CurrentLevel); uS 0 1; rV}
 $m.nc add separator
 $m.nc add command -label "NURBSphere" -command {
-    runTool ay(nsphereradius) "Radius:" "crtNSphere -r %0; uCR; sL; rV;"
+    runTool ay(nsphereradius) "Radius:" \
+	"crtNSphere -r %0; uCR; sL; forceNot; rV;"
     }
 $m.nc add command -label "NURBSphere2" -command {
-    crtNSphere2; uCR; sL; rV}
+    crtNSphere2; uCR; sL; forceNot; rV}
 $m.nc add separator
 $m.nc add command -label "Revolve" -command "revolve_crt;"
 $m.nc add command -label "Extrude" -command "extrude_crt;"
@@ -357,7 +360,7 @@ $m.npt add command -label "Reset Weights" -command {
 	ayError 2 "Reset_Weights" "Need an open view!"
     }
 }
-$m.npt add command -label "Extract NC" -command {extrnc_crt}
+$m.npt add command -label "Extract NC" -command extrnc_crt
 $m.npt add command -label "Tesselate" -command tgui_open
 $m.npt add separator
 $m.npt add command -label "Collapse Points" -command { collMP; rV; }

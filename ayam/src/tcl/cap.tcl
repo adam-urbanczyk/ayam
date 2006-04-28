@@ -39,6 +39,10 @@ proc cap_crt { } {
     set selected ""
     getSel selected
     if { $selected == "" } { ayError 20 "cap_crt" ""; return; }
+
+    # the next command sorts the selected objects
+    eval "selOb $selected"
+
     set ay_error 0
     crtOb Cap
     if { $ay_error } {  return; }
@@ -52,7 +56,7 @@ proc cap_crt { } {
     cmovOb
     goUp
     set ay(ul) $ay(CurrentLevel)
-    uS; sL; rV;
+    uS; sL; forceNot; rV;
 
  return;
 }
