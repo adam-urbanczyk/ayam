@@ -2689,6 +2689,13 @@ Example
 A simple NS tag could look like this:
 <code>NS puts "notify callback fired"</code>
 
+For security reasons, Ayam offers to disable all script tags when they
+are found upon reading of scene files. To disable a tag, Ayam simply
+changes its type from <tt/"NS"/ to <tt/"DNS"/ (disabled notify script).
+It will not be executed then.
+Disabled notify scripts may be enabled after careful inspection using
+the main menu entry <tt>"Special/Enable Scripts"</tt>.
+
 <sect2>UMM/VMM Tag<label id="ummtag">
 <p>
 The tag types <tt/"UMM"/ (u min max) and <tt/"VMM"/ (v min max) may
@@ -2750,8 +2757,8 @@ This section contains a comprehensive list of tag names, that are
 known in Ayam 1.10 and in the accompanying extensions (plugins).
 <p>
 <tt>"RiAttribute", "RiOption", "RiHider", "RiDisplay", "NoExport", "TC",
-"PV", "SaveMainGeom", "TP", "MI", "OI", "DC", "TM", "NP", "NS", "UMM", "VMM",
-"BP", "IDR", "IIDR", "RIDR", "R3IDR", "CIDR", "CCIDR"</tt>
+"PV", "SaveMainGeom", "TP", "MI", "OI", "DC", "TM", "NP", "NS", "DNS",
+"UMM", "VMM", "BP", "IDR", "IIDR", "RIDR", "R3IDR", "CIDR", "CCIDR"</tt>
 <p>
 Documentation on those tags can be found in the sections above.
 
@@ -6938,7 +6945,7 @@ has no child objects, otherwise it returns 1.
 <p><label id="scundo">
 undo:
 <itemize>
- <item>Synopsis: <tt>"undo [redo|save|clear]"</tt>
+ <item>Synopsis: <tt>"undo [redo|save opname|clear]"</tt>
  <item>Description:
  <itemize>
   <item>If called without arguments, this command performs the undo
@@ -6946,7 +6953,10 @@ undo:
   <item>If the argument is <tt/"redo"/, this command performs the redo
   operation.
   <item>If the argument is <tt/"save"/, the currently selected objects
-  are saved to the undo buffer for future undo operations.
+  are saved to the undo buffer for future undo operations. The name
+of the following operation has to be provided in a second argument.
+It will be displayed in the default console prompt, to inform the user
+about which operation would be undone/redone, if undo/redo would be used.
   <item>If the argument is <tt/"clear"/, the undo buffer is cleared.
  </itemize>
 </itemize>
@@ -8461,6 +8471,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>DisplayMode: <ref id="npattr" name="NURBPatch attribute">,
 <ref id="pmattr" name="PatchMesh attribute">
 <item>Distant: <ref id="pdsl" name="light type">
+<item>DNS: <ref id="nstag" name="tag type">
 <item>Docs: <ref id="prefgui" name="preference setting">
 <item>Double Size: <ref id="vmconf" name="view menu entry">
 <item>DrawGrid, DrawLevel, DrawSel, DrawBG:
