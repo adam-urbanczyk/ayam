@@ -1042,6 +1042,10 @@ Metaobj_Init (Tcl_Interp * interp)
 
   ay_status = ay_convert_register(metaobj_convertcb, metaobj_id);
 
+  /* first Metacomp init */
+  Metacomp_Init (interp);
+
+#ifndef AYMETAWRAPPED 
   /* source metaobj.tcl, it contains a Tcl-code to build
      the metaobj-Attributes Property GUI */
   if ((Tcl_EvalFile (interp, "metaobj.tcl")) != TCL_OK)
@@ -1051,14 +1055,7 @@ Metaobj_Init (Tcl_Interp * interp)
     }
 
   Tcl_Eval (interp, success_cmd);
-
-  /* first Metacomp init */
-  ay_status = Metacomp_Init (interp);
-  if (ay_status)
-    {
-      ay_error (AY_ERROR, fname, "Error registering MetaComp object!");
-      return TCL_OK;
-    }
+#endif
 
  return TCL_OK;
 } /* Metaobj_Init */
@@ -1511,8 +1508,9 @@ Metacomp_Init (Tcl_Interp * interp)
 
   ay_status = ay_notify_register (metacomp_notifycb, metacomp_id);
 
+  metautils_init(metacomp_id);
 
-
+#ifndef AYMETAWRAPPED
   /* source metacomp.tcl, it contains a Tcl-code to build
      the metaobj-Attributes Property GUI */
   if ((Tcl_EvalFile (interp, "metacomp.tcl")) != TCL_OK)
@@ -1523,6 +1521,7 @@ Metacomp_Init (Tcl_Interp * interp)
     }
 
   Tcl_Eval (interp, success_cmd);
+#endif
 
  return TCL_OK;
 } /* Metacomp_Init */
