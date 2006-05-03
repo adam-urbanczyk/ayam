@@ -480,8 +480,10 @@ Ayam.app: ayamsh
 	-cp ../../doc/html/pics/*.gif ../bin/Ayam.app/Contents/Resources/docs/pics
 
 Ayam.appfw: Ayam.app
-	install_name_tool -change /Library/Frameworks/Tcl.framework/Versions/8.4/Tcl @executable_path/../Frameworks/Tcl.framework/Tcl ../bin/Ayam.app/Contents/MacOS/Ayam
-	install_name_tool -change /Library/Frameworks/Tk.framework/Versions/8.4/Tk @executable_path/../Frameworks/Tk.framework/Tk ../bin/Ayam.app/Contents/MacOS/Ayam
+	install_name_tool -id @executable_path/../Tcl.framework/Versions/8.4/Tcl ../bin/Ayam.app/Contents/Tcl.framework/Versions/8.4/Tcl
+	install_name_tool -change /System/Library/Frameworks/Tcl.framework/Versions/8.4/Tcl @executable_path/../Tcl.framework/Versions/8.4/Tcl ../bin/Ayam.app/Contents/MacOS/Ayam
+	install_name_tool -id @executable_path/../Tk.framework/Versions/8.4/Tk ../bin/Ayam.app/Contents/Tk.framework/Versions/8.4/Tk
+	install_name_tool -change /System/Library/Frameworks/Tk.framework/Versions/8.4/Tk @executable_path/../Tk.framework/Versions/8.4/Tk ../bin/Ayam.app/Contents/MacOS/Ayam
 
 Ayam.dmg:
 	cp -R ../bin/Ayam.app /Volumes/ayam
