@@ -2863,7 +2863,7 @@ ay_nct_settype(ay_nurbcurve_object *nc)
     }
   else
     {
-      if(!memcmp(nc->controlv, &(nc->controlv[nc->length*stride]),
+      if(!memcmp(nc->controlv, &(nc->controlv[(nc->length-1)*stride]),
 		 stride*sizeof(double)))
 	nc->type = AY_CTCLOSED;
       else
@@ -4699,6 +4699,10 @@ ay_nct_center(int mode, ay_nurbcurve_object *curve)
   for(k = 1; k < i; k++)
     {
       p2 = &(controlv[a]);
+      /* compute weighted sum of all coordinate values (points)
+	 to be considered, omitting consecutive equal points */
+      /* XXXX What about other multiple points? Should we not rather
+	 build a list of unique points and iterate over that? */
       if(!AY_COMP3DP(p1,p2))
 	{
 	  x += (controlv[a]/i);
@@ -4756,7 +4760,7 @@ ay_nct_center(int mode, ay_nurbcurve_object *curve)
 
 
 /* ay_nct_centertcmd:
- *
+ *  Tcl interface for NURBS curve center tool
  */
 int
 ay_nct_centertcmd(ClientData clientData, Tcl_Interp *interp,
