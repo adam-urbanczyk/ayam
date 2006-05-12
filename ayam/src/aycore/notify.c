@@ -438,11 +438,14 @@ int
 ay_notify_init(Tcl_Interp *interp)
 {
  int ay_status = AY_OK;
+ int dummy;
 
   /* register NC tag type */
   ay_status = ay_tags_register(interp, ay_nc_tagname, &ay_nc_tagtype);
   if(ay_status)
     return ay_status;
+
+  ay_status = ay_tags_temp(interp, ay_nc_tagname, 1, &dummy);
 
   return AY_OK;
 } /* ay_notify_init */
