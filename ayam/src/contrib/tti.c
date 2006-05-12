@@ -779,10 +779,17 @@ ay_tti_handle_simple_glyf(ay_tti_font *ttfont, ay_tti_glyf *glyf,
 		      vert->outlines[co].points[i+2].y = y3;
 		      vert->outlines[co].numpoints += 3;
 
-		      if(flags[k+2] & ONOROFF)
-			k += 1;
+		      if(k+1 == last_point)
+			{
+			  k += 1;
+			}
 		      else
-			k += 2;
+			{
+			  if(flags[k+2] & ONOROFF)
+			    k += 1;
+			  else
+			    k += 2;
+			}
 
 		      x1 = x3;
 		      y1 = y3;
