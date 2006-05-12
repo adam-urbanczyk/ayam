@@ -428,7 +428,7 @@ ay_ncurve_drawhcb(struct Togl *togl, ay_object *o)
 
   ver = curve->controlv;
 
-  glPointSize((GLfloat)point_size);
+  /*glPointSize((GLfloat)point_size);*/
 
   glBegin(GL_POINTS);
   for(i=0; i<length; i++)
