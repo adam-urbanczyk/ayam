@@ -868,7 +868,7 @@ ay_npatch_drawhcb(struct Togl *togl, ay_object *o)
 
   ver = patch->controlv;
 
-  glPointSize((GLfloat)point_size);
+  /*glPointSize((GLfloat)point_size);*/
 
   glBegin(GL_POINTS);
   for(i = 0; i < (width * height); i++)
