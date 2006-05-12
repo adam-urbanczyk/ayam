@@ -86,7 +86,6 @@ ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
 		  {
 		    ay_trafo_getallisr(ay_currentlevel->next);
 		  }
-	      
 	      }
 	    else
 	      {
@@ -105,7 +104,7 @@ ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
       ay_error(AY_EARGS, fname,
 		 "\\[-start winx winy|-winxy winx winy\\]");
       return TCL_OK;
-    }
+    } /* if */
 
 
   if(!ay_selection)
@@ -210,10 +209,12 @@ ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
 	  o = sel->object;
 	  if(o)
 	    {
-	      o->movx += dx; 
-	      o->movy += dy; 
-	      o->movz += dz; 
+	      o->movx += dx;
+	      o->movy += dy;
+	      o->movz += dz;
+	      o->modified = AY_TRUE;
 	    } /* if */
+
 	} /* if */
 
       sel = sel->next;
@@ -265,7 +266,7 @@ ay_oact_rottcb(struct Togl *togl, int argc, char *argv[])
  ay_object *o = NULL;
  ay_point_object *point = NULL;
  char fname[] = "rotate_object";
- 
+
  if(view->type == AY_VTPERSP)
     {
       ay_error(AY_ERROR, fname, "Operation not allowed in perspective views.");
@@ -340,9 +341,9 @@ ay_oact_rottcb(struct Togl *togl, int argc, char *argv[])
 	   glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 	  glPopMatrix();
 	  gluProject(0.0,0.0,0.0,mm,mp,vp,&owinx,&owiny,&owinz);
-    
+
 	  owiny = height-owiny;
-	    
+
 	  v1[0] = oldwinx-owinx;
 	  v1[1] = oldwiny-owiny;
 
@@ -351,7 +352,7 @@ ay_oact_rottcb(struct Togl *togl, int argc, char *argv[])
 	  alpha = AY_R2D(acos(v1[0]/AY_V2LEN(v1)));
 	  if(v1[1]<0.0)
 	    alpha = 360.0-alpha;
-	     
+
 	  v2[0] = winx-owinx;
 	  v2[1] = winy-owiny;
 	  if((v2[0]==0.0)&&(v2[1]==0.0))
@@ -391,7 +392,7 @@ ay_oact_rottcb(struct Togl *togl, int argc, char *argv[])
 	      glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 
 	      glPopMatrix();
-	      
+
 	      while(point)
 		{
 		  AY_APTRAN3(tpoint,point->point,mm);
@@ -405,45 +406,48 @@ ay_oact_rottcb(struct Togl *togl, int argc, char *argv[])
 
 	    }
 	  else
-	    switch(view->type)
-	      {
-	      case AY_VTSIDE:
-		/* rotate about x */
+	    {
+	      switch(view->type)
+		{
+		case AY_VTSIDE:
+		  /* rotate about x */
 
-		o->rotx += angle;
-		if(o->rotx >= 360.0) o->rotx -= 360.0;
-		if(o->rotx <= -360.0) o->rotx += 360.0;
+		  o->rotx += angle;
+		  if(o->rotx >= 360.0) o->rotx -= 360.0;
+		  if(o->rotx <= -360.0) o->rotx += 360.0;
 
-		ay_quat_axistoquat(xaxis, AY_D2R(angle), quat);
-		ay_quat_add(quat, o->quat, o->quat);
-		break;
-	      case AY_VTFRONT:
-	      case AY_VTTRIM:
-		/* rotate about z */
+		  ay_quat_axistoquat(xaxis, AY_D2R(angle), quat);
+		  ay_quat_add(quat, o->quat, o->quat);
+		  break;
+		case AY_VTFRONT:
+		case AY_VTTRIM:
+		  /* rotate about z */
 
-		o->rotz += angle;
-		if(o->rotz >= 360.0) o->rotz -= 360.0;
-		if(o->rotz <= -360.0) o->rotz += 360.0;
+		  o->rotz += angle;
+		  if(o->rotz >= 360.0) o->rotz -= 360.0;
+		  if(o->rotz <= -360.0) o->rotz += 360.0;
 
-		ay_quat_axistoquat(zaxis, AY_D2R(angle), quat);
-		ay_quat_add(quat, o->quat, o->quat);
-		break;
-	      case AY_VTTOP:
-		/* rotate about y */
+		  ay_quat_axistoquat(zaxis, AY_D2R(angle), quat);
+		  ay_quat_add(quat, o->quat, o->quat);
+		  break;
+		case AY_VTTOP:
+		  /* rotate about y */
 
-		o->roty -= angle;
-		if(o->roty >= 360.0) o->roty -= 360.0;
-		if(o->roty <= -360.0) o->roty += 360.0;
+		  o->roty -= angle;
+		  if(o->roty >= 360.0) o->roty -= 360.0;
+		  if(o->roty <= -360.0) o->roty += 360.0;
 
-		ay_quat_axistoquat(yaxis, AY_D2R(angle), quat);
-		ay_quat_add(quat, o->quat, o->quat);
-		break;
-	      default:
-		break;
-	      } /* switch */
+		  ay_quat_axistoquat(yaxis, AY_D2R(angle), quat);
+		  ay_quat_add(quat, o->quat, o->quat);
+		  break;
+		default:
+		  break;
+		} /* switch */
+	      o->modified = AY_TRUE;
+	    } /* if */
 
 	} /* if */
-      
+
       sel = sel->next;
     } /* while */
 
@@ -531,7 +535,7 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
       else
 	if(!strcmp(argv[2],"-start"))
 	  {
-	    
+
 	    if(!ay_selection)
 	      {
 		ay_error(AY_ENOSEL, fname, NULL);
@@ -555,7 +559,7 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 
 	    oldwinx = winx;
 	    oldwiny = winy;
-	    
+
 	  }
     }
   else
@@ -619,7 +623,7 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 	  alpha = AY_R2D(acos(v1[0]/AY_V2LEN(v1)));
 	  if(v1[1]<0.0)
 	    alpha = 360.0-alpha;
-	     
+
 	  v2[0] = winx-owinx;
 	  v2[1] = winy-owiny;
 	  if((v2[0]==0.0)&&(v2[1]==0.0))
@@ -653,7 +657,7 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 	      if(ay_currentlevel->next)
 		ay_trafo_getall(ay_currentlevel->next);
 	      glTranslated(o->movx, o->movy, o->movz);
-	      
+
 	      glRotated(xangle, 1.0, 0.0, 0.0);
 
 	      /*	      glScaled (o->scalx, o->scaly, o->scalz);*/
@@ -663,7 +667,7 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 	      gluProject(0.0,0.0,0.0,mm,mp,vp,&owinx,&owiny,&owinz);
 	      */
 	      ay = height-ay;
-	      
+
 	      gluUnProject(ax,ay,owinz,mm,mp,vp,&dummy,&ayo,&axo);
 
 	      glPushMatrix();
@@ -707,7 +711,7 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 	      if(ay_currentlevel->next)
 		ay_trafo_getall(ay_currentlevel->next);
 	      glTranslated(o->movx, o->movy, o->movz);
-	      
+
 	      glRotated(zangle, 0.0, 0.0, 1.0);
 
 	      /*	      glScaled (o->scalx, o->scaly, o->scalz);*/
@@ -717,7 +721,7 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 	      gluProject(0.0,0.0,0.0,mm,mp,vp,&owinx,&owiny,&owinz);
 	      */
 	      ay = height-ay;
-	      
+
 	      gluUnProject(ax,ay,owinz,mm,mp,vp,&axo,&ayo,&dummy);
 
 	      glPushMatrix();
@@ -760,7 +764,7 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 	      if(ay_currentlevel->next)
 		ay_trafo_getall(ay_currentlevel->next);
 	      glTranslated(o->movx, o->movy, o->movz);
-	      
+
 	      glRotated(yangle, 0.0, 1.0, 0.0);
 
 	      /*	      glScaled (o->scalx, o->scaly, o->scalz);*/
@@ -770,7 +774,7 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 	      gluProject(0.0,0.0,0.0,mm,mp,vp,&owinx,&owiny,&owinz);
 	      */
 	      ay = height-ay;
-	      
+
 	      gluUnProject(ax,ay,owinz,mm,mp,vp,&axo,&dummy,&ayo);
 
 	      glPushMatrix();
@@ -809,7 +813,7 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 		  /* rotate about x */
 		  glRotated(-angle,1.0,0.0,0.0);
 		  glTranslated(0.0,-v2[1],-v2[2]);
-		  
+
 		  break;
 		case AY_VTFRONT:
 		case AY_VTTRIM:
@@ -822,7 +826,7 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 		  /* rotate about y */
 		  glRotated(-angle,0.0,1.0,0.0);
 		  glTranslated(-v2[0],0.0,-v2[2]);
-	      
+
 		  break;
 		default:
 		  break;
@@ -850,10 +854,10 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 		case AY_VTSIDE:
 		  /* rotate about x */
 
-	      
+
 		  o->movz -= v2[2];
 		  o->movy -= v2[1];
-	
+
 		  o->rotx += angle;
 		  if(o->rotx >= 360.0) o->rotx -= 360.0;
 		  if(o->rotx <= -360.0) o->rotx += 360.0;
@@ -867,7 +871,7 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 
 		  o->movx -= v2[0];
 		  o->movy -= v2[1];
-	      
+
 		  o->rotz += angle;
 		  if(o->rotz >= 360.0) o->rotz -= 360.0;
 		  if(o->rotz <= -360.0) o->rotz += 360.0;
@@ -878,7 +882,7 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 		  break;
 		case AY_VTTOP:
 		  /* rotate about y */
-	    
+
 		  o->movx -= v2[0];
 		  o->movz -= v2[2];
 
@@ -892,11 +896,11 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 		default:
 		  break;
 		} /* switch */
-
+	      o->modified = AY_TRUE;
 	    } /* else */
 
 	} /* if */
-      
+
       sel = sel->next;
     } /* while */
 
@@ -955,7 +959,7 @@ ay_oact_sc1DXcb(struct Togl *togl, int argc, char *argv[])
       else
 	if(!strcmp(argv[2],"-start"))
 	  {
-	    
+
 	    if(!ay_selection)
 	      {
 		ay_error(AY_ENOSEL, fname, NULL);
@@ -964,12 +968,12 @@ ay_oact_sc1DXcb(struct Togl *togl, int argc, char *argv[])
 
 	    Tcl_GetDouble(interp, argv[3], &winx);
 	    Tcl_GetDouble(interp, argv[4], &winy);
-	    
+
 	    if(view->usegrid)
 	      {
 		ay_viewt_griddify(togl,&winx,&winy);
 	      }
-	    
+
 	    oldwinx = winx;
 	    oldwiny = winy;
 
@@ -1012,7 +1016,7 @@ ay_oact_sc1DXcb(struct Togl *togl, int argc, char *argv[])
 	   ay_quat_torotmatrix(o->quat, m);
 	   glMultMatrixd(m);
 	   glScaled (o->scalx, o->scaly, o->scalz);
-	    
+
 	   glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 	  glPopMatrix();
 	  gluProject(0.0,0.0,0.0,mm,mp,vp,&owinx,&owiny,&owinz);
@@ -1036,7 +1040,7 @@ ay_oact_sc1DXcb(struct Togl *togl, int argc, char *argv[])
 
 	      v2[0] = (winx-owinx);
  	      v2[1] = (winy-owiny);
-	      
+
 	      beta = AY_R2D(acos(v1[0]/AY_V2LEN(v1)));
 	      if(v1[1]<0.0)
 		beta = 360.0-beta;
@@ -1055,11 +1059,11 @@ ay_oact_sc1DXcb(struct Togl *togl, int argc, char *argv[])
 	    }
 	  else
 	    dscalx = 1.0;
-	      
+
 	  if(o->selp)
 	    {
 	      point = o->selp;
-	      
+
 	      glPushMatrix();
 	       glLoadIdentity();
 
@@ -1082,24 +1086,24 @@ ay_oact_sc1DXcb(struct Togl *togl, int argc, char *argv[])
 		  point = point->next;
 		}
 
-	      o->modified = AY_TRUE;	      
+	      o->modified = AY_TRUE;
 	      ay_notify_force(o);
 
 	    }
 	  else
 	    {
 	      o->scalx *= dscalx;
-	    }
+	      o->modified = AY_TRUE;
+	    } /* if */
 
+	} /* if */
 
-	}
-      
       sel = sel->next;
-    }
+    } /* while */
 
   oldwinx = winx;
   oldwiny = winy;
-  
+
   if(!ay_prefs.lazynotify)
     ay_notify_parent();
 
@@ -1146,12 +1150,12 @@ ay_oact_sc1DYcb(struct Togl *togl, int argc, char *argv[])
 	if(view->usegrid)
 	  {
 	    ay_viewt_griddify(togl,&winx,&winy);
-	  }	
+	  }
       }
       else
 	if(!strcmp(argv[2],"-start"))
 	  {
-	    
+
 	    if(!ay_selection)
 	      {
 		ay_error(AY_ENOSEL, fname, NULL);
@@ -1209,7 +1213,7 @@ ay_oact_sc1DYcb(struct Togl *togl, int argc, char *argv[])
 
 	  vy[1] = height - vy[1];
 	  owiny = height - owiny;
-	 
+
 	  vy[0] -= owinx;
 	  vy[1] -= owiny;
 
@@ -1224,7 +1228,7 @@ ay_oact_sc1DYcb(struct Togl *togl, int argc, char *argv[])
 
 	      v2[0] = (winx-owinx);
 	      v2[1] = (winy-owiny);
-	      
+
 	      beta = AY_R2D(acos(v1[0]/AY_V2LEN(v1)));
 	      if(v1[1]<0.0)
 		beta = 360.0-beta;
@@ -1243,11 +1247,11 @@ ay_oact_sc1DYcb(struct Togl *togl, int argc, char *argv[])
 	    }
 	  else
 	    dscaly = 1.0;
-	      
+
 	  if(o->selp)
 	    {
 	      point = o->selp;
-	      
+
 	      glPushMatrix();
 	       glLoadIdentity();
 
@@ -1270,18 +1274,20 @@ ay_oact_sc1DYcb(struct Togl *togl, int argc, char *argv[])
 		  point = point->next;
 		}
 
-	      o->modified = AY_TRUE;	
+	      o->modified = AY_TRUE;
 	      ay_notify_force(o);
 
 	    }
 	  else
 	    {
 	      o->scaly *= dscaly;
-	    }
-	}
-      
+	      o->modified = AY_TRUE;
+	    } /* if */
+
+	} /* if */
+
       sel = sel->next;
-    }
+    } /* while */
 
   oldwinx = winx;
   oldwiny = winy;
@@ -1333,12 +1339,12 @@ ay_oact_sc1DZcb(struct Togl *togl, int argc, char *argv[])
 	if(view->usegrid)
 	  {
 	    ay_viewt_griddify(togl,&winx,&winy);
-	  }	
+	  }
       }
       else
 	if(!strcmp(argv[2],"-start"))
 	  {
-	    
+
 	    if(!ay_selection)
 	      {
 		ay_error(AY_ENOSEL, fname, NULL);
@@ -1397,7 +1403,7 @@ ay_oact_sc1DZcb(struct Togl *togl, int argc, char *argv[])
 
 	  vz[1] = height - vz[1];
 	  owiny = height - owiny;
-	 
+
 	  vz[0] -= owinx;
 	  vz[1] -= owiny;
 
@@ -1412,7 +1418,7 @@ ay_oact_sc1DZcb(struct Togl *togl, int argc, char *argv[])
 
 	      v2[0] = (winx-owinx);
 	      v2[1] = (winy-owiny);
-	      
+
 	      beta = AY_R2D(acos(v1[0]/AY_V2LEN(v1)));
 	      if(v1[1]<0.0)
 		beta = 360.0-beta;
@@ -1431,11 +1437,11 @@ ay_oact_sc1DZcb(struct Togl *togl, int argc, char *argv[])
 	    }
 	  else
 	    dscalz = 1.0;
-	      
+
 	  if(o->selp)
 	    {
 	      point = o->selp;
-	      
+
 	      glPushMatrix();
 	       glLoadIdentity();
 
@@ -1465,11 +1471,13 @@ ay_oact_sc1DZcb(struct Togl *togl, int argc, char *argv[])
 	  else
 	    {
 	      o->scalz *= dscalz;
-	    }
-	}
-      
+	      o->modified = AY_TRUE;
+	    } /* if */
+
+	} /* if */
+
       sel = sel->next;
-    }
+    } /* while */
 
   oldwinx = winx;
   oldwiny = winy;
@@ -1517,12 +1525,12 @@ ay_oact_sc1DXWcb(struct Togl *togl, int argc, char *argv[])
 	if(view->grid != 0.0)
 	  {
 	    ay_viewt_griddify(togl,&winx,&winy);
-	  }	
+	  }
       }
       else
 	if(!strcmp(argv[2],"-start"))
 	  {
-	    
+
 	    if(!ay_selection)
 	      {
 		ay_error(AY_ENOSEL, fname, NULL);
@@ -1592,14 +1600,14 @@ ay_oact_sc1DXWcb(struct Togl *togl, int argc, char *argv[])
 		  dscalx = 1.0;
 		}
 	    }
-	 
+
 	  point = o->selp;
-	      
+
 	  glPushMatrix();
 	   glLoadIdentity();
 
 	   ay_trafo_getallisr(ay_currentlevel->next);
-	   
+
 	   ay_quat_to_euler(o->quat,euler);
 	   glRotatef(AY_R2D(euler[0]), 0.0, 0.0, 1.0);
 	   glRotatef(AY_R2D(euler[1]), 0.0, 1.0, 0.0);
@@ -1622,11 +1630,11 @@ ay_oact_sc1DXWcb(struct Togl *togl, int argc, char *argv[])
 	    }
 
 	  o->modified = AY_TRUE;
-	  
-	}
-     
+
+	} /* if */
+
       sel = sel->next;
-    }
+    } /* while */
 
   oldwinx = winx;
   oldwiny = winy;
@@ -1675,12 +1683,12 @@ ay_oact_sc1DYWcb(struct Togl *togl, int argc, char *argv[])
 	if(view->grid != 0.0)
 	  {
 	    ay_viewt_griddify(togl,&winx,&winy);
-	  }	
+	  }
       }
       else
 	if(!strcmp(argv[2],"-start"))
 	  {
-	    
+
 	    if(!ay_selection)
 	      {
 		ay_error(AY_ENOSEL, fname, NULL);
@@ -1752,9 +1760,9 @@ ay_oact_sc1DYWcb(struct Togl *togl, int argc, char *argv[])
 		  dscaly = 1.0;
 		}
 	    }
-	 
+
 	  point = o->selp;
-	      
+
 	  glPushMatrix();
 	   glLoadIdentity();
 
@@ -1783,10 +1791,10 @@ ay_oact_sc1DYWcb(struct Togl *togl, int argc, char *argv[])
 
 	  o->modified = AY_TRUE;
 
-	}
+	} /* if */
 
       sel = sel->next;
-    }
+    } /* while */
 
   oldwinx = winx;
   oldwiny = winy;
@@ -1835,12 +1843,12 @@ ay_oact_sc1DZWcb(struct Togl *togl, int argc, char *argv[])
 	if(view->grid != 0.0)
 	  {
 	    ay_viewt_griddify(togl,&winx,&winy);
-	  }	
+	  }
       }
       else
 	if(!strcmp(argv[2],"-start"))
 	  {
-	    
+
 	    if(!ay_selection)
 	      {
 		ay_error(AY_ENOSEL, fname, NULL);
@@ -1927,7 +1935,7 @@ ay_oact_sc1DZWcb(struct Togl *togl, int argc, char *argv[])
 	    }
 
 	  point = o->selp;
-	      
+
 	  glPushMatrix();
 	   glLoadIdentity();
 
@@ -1942,7 +1950,7 @@ ay_oact_sc1DZWcb(struct Togl *togl, int argc, char *argv[])
 	   glRotatef(AY_R2D(-euler[1]), 0.0, 1.0, 0.0);
 	   glRotatef(AY_R2D(-euler[0]), 0.0, 0.0, 1.0);
 	   ay_trafo_getallsr(ay_currentlevel->next);
-	   
+
 	   glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 	  glPopMatrix();
 
@@ -1955,11 +1963,11 @@ ay_oact_sc1DZWcb(struct Togl *togl, int argc, char *argv[])
 	    }
 
 	  o->modified = AY_TRUE;
-	  
-	}
+
+	} /* if */
 
       sel = sel->next;
-    }
+    } /* while */
 
   oldwinx = winx;
   oldwiny = winy;
@@ -2009,7 +2017,7 @@ ay_oact_sc2Dcb(struct Togl *togl, int argc, char *argv[])
 	if(view->usegrid)
 	  {
 	    ay_viewt_griddify(togl,&winx,&winy);
-	  }	
+	  }
       }
       else
 	if(!strcmp(argv[2],"-start"))
@@ -2070,13 +2078,13 @@ ay_oact_sc2Dcb(struct Togl *togl, int argc, char *argv[])
 	  gluProject(0.0,0.0,0.0,mm,mp,vp,&owinx,&owiny,&owinz);
 
 	  owiny = height - owiny;
-	 
+
 	  v1[0] = (oldwinx-owinx);
 	  v1[1] = (oldwiny-owiny);
 
 	  v2[0] = (winx-owinx);
 	  v2[1] = (winy-owiny);
-	      
+
 	  t1 = AY_V2LEN(v1);
 	  t2 = AY_V2LEN(v2);
 
@@ -2084,11 +2092,11 @@ ay_oact_sc2Dcb(struct Togl *togl, int argc, char *argv[])
 	    dscal = t2/t1;
 	  else
 	    dscal = 1.0;
-	      
+
 	  if(o->selp)
 	    {
 	      point = o->selp;
-	      
+
 	      glPushMatrix();
 	       glLoadIdentity();
 
@@ -2149,12 +2157,13 @@ ay_oact_sc2Dcb(struct Togl *togl, int argc, char *argv[])
 		 default:
 		   break;
 		 }
+	      o->modified = AY_TRUE;
+	    } /* if */
 
-	    }
-	}
-      
+	} /* if */
+
       sel = sel->next;
-    }
+    } /* while */
 
   oldwinx = winx;
   oldwiny = winy;
@@ -2204,7 +2213,7 @@ ay_oact_sc3Dcb(struct Togl *togl, int argc, char *argv[])
 	if(view->usegrid)
 	  {
 	    ay_viewt_griddify(togl,&winx,&winy);
-	  }	
+	  }
       }
       else
 	if(!strcmp(argv[2],"-start"))
@@ -2265,13 +2274,13 @@ ay_oact_sc3Dcb(struct Togl *togl, int argc, char *argv[])
 	  gluProject(0.0,0.0,0.0,mm,mp,vp,&owinx,&owiny,&owinz);
 
 	  owiny = height - owiny;
-	 
+
 	  v1[0] = (oldwinx-owinx);
 	  v1[1] = (oldwiny-owiny);
 
 	  v2[0] = (winx-owinx);
 	  v2[1] = (winy-owiny);
-	      
+
 	  t1 = AY_V2LEN(v1);
 	  t2 = AY_V2LEN(v2);
 
@@ -2279,11 +2288,11 @@ ay_oact_sc3Dcb(struct Togl *togl, int argc, char *argv[])
 	    dscal = t2/t1;
 	  else
 	    dscal = 1.0;
-	      
+
 	  if(o->selp)
 	    {
 	      point = o->selp;
-	      
+
 	      glPushMatrix();
 	       glLoadIdentity();
 
@@ -2315,11 +2324,13 @@ ay_oact_sc3Dcb(struct Togl *togl, int argc, char *argv[])
 	      o->scalx *= dscal;
 	      o->scaly *= dscal;
 	      o->scalz *= dscal;
-	    }
-	}
-      
+	      o->modified = AY_TRUE;
+	    } /* if */
+
+	} /* if */
+
       sel = sel->next;
-    }
+    } /* while */
 
   oldwinx = winx;
   oldwiny = winy;
@@ -2340,6 +2351,13 @@ int
 ay_oact_str2Dcb(struct Togl *togl, int argc, char *argv[])
 {
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
+ char fname[] = "stretch_object";
+
+  if(view->type == AY_VTPERSP)
+    {
+      ay_error(AY_ERROR, fname, "Operation not allowed in perspective views.");
+      return TCL_OK;
+    }
 
  switch(view->type)
    {
@@ -2356,10 +2374,11 @@ ay_oact_str2Dcb(struct Togl *togl, int argc, char *argv[])
      ay_oact_sc1DXcb(togl, argc, argv);
      ay_oact_sc1DZcb(togl, argc, argv);
      break;
-
+   default:
+     break;
    }
 
  return TCL_OK;
-} /* ay_oact_sc3Dcb */
+} /* ay_oact_str2Dcb */
 
 
