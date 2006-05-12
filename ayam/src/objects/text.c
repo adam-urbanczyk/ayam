@@ -381,8 +381,8 @@ ay_text_writecb(FILE *fileptr, ay_object *o)
  ay_text_object *text = NULL;
  Tcl_UniChar *uc = NULL;
  int has_startb = AY_FALSE, has_endb = AY_FALSE;
- int startb_type, endb_type, startb_sense, endb_sense;
- double startb_radius, endb_radius;
+ int startb_type = 0, endb_type = 0, startb_sense = 0, endb_sense = 0;
+ double startb_radius = 0.0, endb_radius = 0.0;
 
   if(!o)
     return AY_ENULL;
