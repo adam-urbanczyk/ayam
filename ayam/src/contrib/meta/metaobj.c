@@ -27,8 +27,8 @@ static unsigned int metaobj_id;
 static char *metacomp_name = "MetaComp";
 static unsigned int metacomp_id;
 
-int Metacomp_Init (Tcl_Interp * interp);
-int metaobj_notifycb (ay_object * o);
+int Metacomp_Init (Tcl_Interp *interp);
+int metaobj_notifycb (ay_object *o);
 
 #define META_VERSION 3
 
@@ -775,7 +775,7 @@ metaobj_wribcb (char *file, ay_object * o)
 
 
 int
-metaobj_bbccb (ay_object * o, double *bbox, int *flags)
+metaobj_bbccb (ay_object *o, double *bbox, int *flags)
 {
 
   return AY_OK;
@@ -783,7 +783,7 @@ metaobj_bbccb (ay_object * o, double *bbox, int *flags)
 
 
 int
-metaobj_notifycb (ay_object * o)
+metaobj_notifycb (ay_object *o)
 {
  GLdouble m[16];
  double eu[3];
@@ -1066,12 +1066,6 @@ Metaobj_Init (Tcl_Interp * interp)
  *************************************************************************/
 
 int
-metacomp_notifycb (ay_object * o)
-{
- return 0;
-}
-
-int
 metacomp_createcb (int argc, char *argv[], ay_object * o)
 {
  meta_blob *b = NULL;
@@ -1161,7 +1155,7 @@ metacomp_drawcb (struct Togl *togl, ay_object * o)
 
   glBegin (GL_POINTS);
 
-  glVertex3d (b->p.x, b->p.y, b->p.z);
+    glVertex3d (b->p.x, b->p.y, b->p.z);
 
   glEnd ();
 
@@ -1488,8 +1482,8 @@ Metacomp_Init (Tcl_Interp * interp)
 				 metacomp_createcb,
 				 metacomp_deletecb,
 				 metacomp_copycb,
+				 NULL,
 				 metacomp_drawcb,
-				 NULL,	/* no points to edit */
 				 NULL,	/* metacomp_shadecb, */
 				 metacomp_setpropcb,
 				 metacomp_getpropcb,
@@ -1505,8 +1499,6 @@ Metacomp_Init (Tcl_Interp * interp)
       ay_error (AY_ERROR, fname, "Error registering custom object!");
       return TCL_OK;
     }
-
-  ay_status = ay_notify_register (metacomp_notifycb, metacomp_id);
 
   metautils_init(metacomp_id);
 
