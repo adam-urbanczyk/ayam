@@ -64,7 +64,7 @@ ms_set en ayprefse_TwmCompat "Is your window manager TWM compatible?"
 ms_set en ayprefse_ListTypes "Show object types in the tree/list view?"
 ms_set en ayprefse_MarkHidden "Mark hidden objects in the tree view?"
 ms_set en ayprefse_AutoSavePrefs "Save preferences on exit?"
-ms_set en ayprefse_BakOnReplace "Make backup copy of scene files on \"replace\"?"
+ms_set en ayprefse_BakOnReplace "Make backup copies of loaded scene files?"
 ms_set en ayprefse_LoadEnv "Load environment on startup?"
 ms_set en ayprefse_NewLoadsEnv "Load environment on File/New?"
 ms_set en ayprefse_EnvFile "Path and name of the environment."
@@ -214,8 +214,8 @@ ms_set de ayprefse_Locale "Sprache für Hilfetexte.\
 \nÄnderungen werden erst nach Neustart von Ayam wirksam!"
 ms_set de ayprefse_AutoSavePrefs "Sollen die Voreinstellungen beim Beenden\
 gespeichert werden?"
-ms_set de ayprefse_BakOnReplace "Sollen Sicherheitskopien von mit \"replace\"\
-\ngeladenen Szenen angefertigt werden?"
+ms_set de ayprefse_BakOnReplace "Sollen Sicherheitskopien von geladenen\
+\nSzenen angefertigt werden?"
 ms_set de ayprefse_LoadEnv "Soll die Arbeitsumgebung beim Start geladen\
 werden?"
 ms_set de ayprefse_NewLoadsEnv "Soll die Arbeitsumgebung beim Erstellen\
@@ -224,7 +224,7 @@ ms_set de ayprefse_EnvFile "Vollständiger Dateiname der Arbeitsumgebung."
 ms_set de ayprefse_Scripts "Eine Liste von Skripten, die beim Starten\
 ausgeführt werden sollen."
 ms_set de ayprefse_Plugins "Eine Liste von Verzeichnissen, in denen sich\
-Plug-Ins befinden."
+Plugins befinden."
 ms_set de ayprefse_Docs "Eine URL, die auf die Dokumentation verweist."
 ms_set de ayprefse_TmpDir "Verzeichnis für temporäre Dateien."
 
@@ -374,11 +374,16 @@ ms_set fr ayprefse_Locale "Langue des bulles d'aide.\
 \nLe changement prendra effet après le redémarrage d'Ayam!"
 ms_set fr ayprefse_AutoResize "Redéfinir la taille de la fenêtre principale\
 selon les propriétés par défaut."
+#XXXX add french translation:
+#ms_set fr ayprefse_AutoFocus "Move focus to window with mouse cursor?"
+
 ms_set fr ayprefse_TwmCompat "Votre gestionnaire de fenêtre est-il\
 compatible TWM?"
 ms_set fr ayprefse_ListTypes "Montrer les types d'objets dans la vue en\
 arbre/liste?"
+#ms_set fr ayprefse_MarkHidden "Mark hidden objects in the tree view?"
 ms_set fr ayprefse_AutoSavePrefs "Sauvegarder les paramètres en quittant?"
+#ms_set fr ayprefse_BakOnReplace "Make backup copies of loaded scene files?"
 ms_set fr ayprefse_LoadEnv "Charger l'environnement au démarrage?"
 ms_set fr ayprefse_NewLoadsEnv "Charger l'environnement lors de\
 l'ouverture/la création d'un fichier?"
@@ -394,8 +399,15 @@ sélectionné vers le point éditable;\n0.0 signifie le point le plus proche."
 ms_set fr ayprefse_HandleSize "Taille des pognées des points éditables."
 ms_set fr ayprefse_LazyNotify "Notifier les objets parent à propos des\
 changement simplement au survol de souris?"
+#ms_set fr ayprefse_CompleteNotify "When shall a complete notification be\
+#carried out?"
 ms_set fr ayprefse_EditSnaps "Faire correspondre les coordonnées des points\
 édités avec celles de la grille?"
+#ms_set fr ayprefse_Snap3D "Snap coordinate values in all three dimensions?"
+#ms_set fr ayprefse_FlashPoints "Flash editable points in single point\
+#editing modes?"
+#ms_set fr ayprefse_DefaultAction "Modelling action invoked, when <Esc> key\
+#is pressed."
 ms_set fr ayprefse_UndoLevels "Nombre de pas d'annulation dans l'historique\
 de modélisation;\n-1 correspond à la désactivation de l'historique."
 
@@ -483,8 +495,9 @@ ms_set fr ayprefse_RGTrans "Rendre toutes les interface utilisateur transient?"
 ms_set fr ayprefse_HideTmpTags "Cacher tous les étiquette marquées\
 temporaires\ndans les propriétés de l'interface graphique?"
 ms_set fr ayprefse_TclPrecision "Precision des mathématiques Tcl."
+#ms_set fr ayprefse_SavePrefsGeom "Save geometry of preferences window for\
+#next invocation?"
 
-#XXXX add french translation:
 #ms_set fr ayprefse_SMethod "Sampling method to be used for NURBS\nto PolyMesh\
 #conversions."
 #ms_set fr ayprefse_SParam "Sampling method parameter."
