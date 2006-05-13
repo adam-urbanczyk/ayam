@@ -4798,6 +4798,43 @@ ay_npt_createcap(double z, ay_nurbcurve_object *curve,
 } /* ay_npt_createcap */
 
 
+/* ay_npt_applytrafo:
+ *
+ */
+int
+ay_npt_applytrafo(ay_object *p)
+{
+ int i, stride;
+ double m[16];
+ ay_nurbpatch_object *np = NULL;
+
+  if(!p)
+    return AY_ENULL;
+
+  if(!p->type == AY_IDNPATCH)
+    return AY_ERROR;
+
+  np = (ay_nurbpatch_object *)(p->refine);
+
+  /* get curves transformation-matrix */
+  ay_trafo_creatematrix(p, m);
+
+  stride = 4;
+  i = 0;
+  while(i < np->width*np->height*stride)
+    {
+      ay_trafo_apply4(&(np->controlv[i]), m);
+
+      i += stride;
+    } /* while */
+
+  /* reset surfaces transformation attributes */
+  ay_trafo_defaults(p);
+
+ return AY_OK;
+} /* ay_npt_applytrafo */
+
+
 /* ay_npt_getpntfromindex:
  *
  *

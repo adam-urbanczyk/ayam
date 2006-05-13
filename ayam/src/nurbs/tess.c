@@ -791,6 +791,10 @@ ay_tess_npatch(ay_object *o, int smethod, double sparamu, double sparamv,
       a++;
     }
 
+#ifdef AYGLUATTRIBBUG
+  glPushAttrib((GLbitfield) GL_EVAL_BIT);
+#endif
+
   if(npatch->no)
     {
       gluDeleteNurbsRenderer(npatch->no);
@@ -956,6 +960,10 @@ ay_tess_npatch(ay_object *o, int smethod, double sparamu, double sparamv,
 
   gluDeleteNurbsRenderer(npatch->no);
   npatch->no = NULL;
+
+#ifdef AYGLUATTRIBBUG
+  glPopAttrib();
+#endif
 
   /* the tess_object should now contain lots of triangles;
      copy them to the PolyMesh object */
