@@ -1,4 +1,4 @@
-INSTALL [9. Dec 2005]
+INSTALL [8. May 2006]
 
 Compilation Instructions for Ayam
 ---------------------------------
@@ -477,18 +477,34 @@ directory structure for an application bundle in the "bin" directory
 and the Makefile for the shared version of Ayam contains a new target
 named "Ayam.app" to fill this skeleton appropriately.
 
-After compilation of Ayam and plugins just type
+After compilation of Ayam and plugins just type:
 >make Ayam.app
 
 to fill the application bundle with the necessary files. After that
-you can start Ayam using a double click on the application bundle.
+you can start Ayam using a double click on the application bundle in
+the finder.
 You can also then "install" Ayam easily by dragging the filled
 application bundle to your "Programs" folder in the finder.
 
-Note that the application bundle only works properly for the Aqua
-version of Ayam and that the Aqua version of Ayam will not respond
-to any MacOSX AppleScript application events unless started from
-the application bundle.
+Since Ayam 1.10, there is a second target "Ayam.appfw" to build an
+application bundle, that, additionally, contains the Tcl/Tk frameworks.
+The application bundles built with the Ayam.appfw target will only use
+the Tcl/Tk frameworks from the bundle, regardless what is installed in the
+system.
+To use this target download and compile your own Tcl/Tk frameworks, then
+copy them _manually_ to the application bundle skeleton like this:
+>cp -R build/tcl/Tcl.framework ayam/bin/Ayam.app/Contents
+>cp -R build/tk/Tk.framework ayam/bin/Ayam.app/Contents
+
+now you can
+>make Ayam.appfw
+
+to mate the frameworks and the Ayam executable in the application bundle.
+
+Note that the application bundle targets only work properly for the Aqua
+version of Ayam and that the Aqua version of Ayam will not respond to any
+MacOSX AppleScript application events unless started from the application
+bundle.
 
 End of Compilation Instructions,
 -- 
