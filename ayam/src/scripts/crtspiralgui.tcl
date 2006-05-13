@@ -10,7 +10,7 @@ if { ![info exists ::SpiralAttr] } {
 	Radius 3.0
 	ZDiff 0.25
     }
-    set ::SpiralAttrData(AngleD)  [expr 90.0*3.141592654/180.0]
+    set ::SpiralAttrData(AngleD)  [expr {90.0*3.141592654/180.0}]
 }
 
 set length $::SpiralAttrData(Length)
@@ -22,13 +22,13 @@ crtOb NCurve -length $length;hSL
 set angle 0.0
 set z 0.0
 for {set i 0} {$i < $length} {incr i} {
-    set x [expr $r*cos($angle)]
-    set y [expr $r*sin($angle)]
+    set x [expr {$r*cos($angle)}]
+    set y [expr {$r*sin($angle)}]
 
     setPnt $i $x $y $z 1.0
 
-    set angle [expr $angle + $angled]
-    set z [expr $z + $zd]
+    set angle [expr {$angle + $angled}]
+    set z [expr {$z + $zd}]
 }
 # for
 
