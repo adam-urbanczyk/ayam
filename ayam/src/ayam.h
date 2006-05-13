@@ -119,7 +119,7 @@ typedef struct ay_object_s {
   /* is this object currently selected? */
   int selected;
   
-  /* is this object modified by single point editing actions? */
+  /* is this object modified by an editing action? */
   int modified;
 
   /* does this object allow children? */
@@ -147,7 +147,7 @@ typedef struct ay_object_s {
   struct ay_mat_object_s *mat; /* material of this object */
 
 
-  void *refine; /* type specific object */
+  void *refine; /* type specific object (e.g. ay_sphere_object) */
 } ay_object;
 
 
@@ -931,7 +931,6 @@ typedef struct ay_table_s
 
 
 /* Callbacks */
-
 typedef int (ay_createcb) (int argc, char *argv[], ay_object *o);
 
 typedef int (ay_deletecb) (void *c);
@@ -964,8 +963,8 @@ typedef int (ay_providecb) (ay_object *o, unsigned int type,
 
 typedef int (ay_bbccb) (ay_object *o, double *bbox, int *flags);
 
-
 typedef int (ay_mopsicb) (FILE *fileptr, ay_object *o);
+
 
 /* Globals */
 extern Tcl_Interp *ay_interp;
@@ -1264,10 +1263,16 @@ extern unsigned int ay_current_primlevel;
                             (fabs(P1[2]-P2[2]) < AY_EPSILON) &&\
                             (fabs(P1[3]-P2[3]) < AY_EPSILON))
 
-/* Version Strings */
+/* Version Strings and Numbers */
 #define AY_VERSIONSTR "1.10pre"
 #define AY_VERSIONSTRMI "0"
 
+#define AY_VERSIONMA 1
+#define AY_VERSION   10
+#define AY_VERSIONMI 0
+
+
+/* Ayam API */
 #include "aycore.h"
 #include "nurbs.h"
 #include "objects.h"
