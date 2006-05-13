@@ -619,7 +619,8 @@ if { $tcl_platform(platform) == "windows" } {
 	rename ::exit ::realexit
 	proc ::exit { } { io_exit }
 
-	proc ::tk::mac::ShowPreferences { args } { prefs_open }
+	# open preferences on <Apple-,>
+	proc ::tk::mac::ShowPreferences { args } { after idle { prefs_open } }
 
 	# make notebook tabs highlight in a nicer color
 	option add *activeBackground systemHighlight
