@@ -193,11 +193,11 @@ ay_extrude_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp,to, &(extrude->height));
 
-  Tcl_SetStringObj(ton,"UpperCap",-1);
+  Tcl_SetStringObj(ton,"EndCap",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(extrude->has_upper_cap));
 
-  Tcl_SetStringObj(ton,"LowerCap",-1);
+  Tcl_SetStringObj(ton,"StartCap",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(extrude->has_lower_cap));
 
@@ -242,12 +242,12 @@ ay_extrude_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_NewDoubleObj(extrude->height);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"UpperCap",-1);
+  Tcl_SetStringObj(ton,"EndCap",-1);
   to = Tcl_NewIntObj(extrude->has_upper_cap);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"LowerCap",-1);
+  Tcl_SetStringObj(ton,"StartCap",-1);
   to = Tcl_NewIntObj(extrude->has_lower_cap);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
