@@ -1264,7 +1264,7 @@ extern unsigned int ay_current_primlevel;
                             (fabs(P1[3]-P2[3]) < AY_EPSILON))
 
 /* Version Strings and Numbers */
-#define AY_VERSIONSTR "1.10pre"
+#define AY_VERSIONSTR "1.10"
 #define AY_VERSIONSTRMI "0"
 
 #define AY_VERSIONMA 1
