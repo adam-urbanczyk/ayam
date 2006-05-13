@@ -785,17 +785,13 @@ metaobj_bbccb (ay_object *o, double *bbox, int *flags)
 int
 metaobj_notifycb (ay_object *o)
 {
- GLdouble m[16];
- double eu[3];
+ meta_world *w;
  meta_blob *b;
  ay_object *down;
- double p[3] = { 0 };
- meta_world *w;
  char *adapt;
  char vname[] = "ay";
  char vname1[] = "action";
-
-  glMatrixMode (GL_MODELVIEW);
+ double euler[3] = {0};
 
   down = o->down;
 
@@ -805,41 +801,25 @@ metaobj_notifycb (ay_object *o)
 	{
 	  b = (meta_blob *) down->refine;
 
-	  glPushMatrix ();
-
-	  glLoadIdentity ();
-	  glTranslated (down->movx, down->movy, down->movz);
-	  glGetDoublev (GL_MODELVIEW_MATRIX, m);
-
-	  glLoadIdentity ();
-
-	  glTranslated (down->movx, down->movy, down->movz);
-	  ay_quat_toeuler(down->quat, eu);
-	  glRotated(eu[2]*180/AY_PI,1,0,0);
-	  glRotated(eu[1]*180/AY_PI,0,1,0);
-	  glRotated(eu[0]*180/AY_PI,0,0,1);
-
-	  glTranslated (-down->movx, -down->movy, -down->movz);
-	  glGetDoublev (GL_MODELVIEW_MATRIX, b->rm);
-
-	  glPopMatrix ();
-
-	  p[0] = m[0] * b->p.x + m[4] * b->p.y + m[8] * b->p.z + m[12] * 1.0;
-	  p[1] = m[1] * b->p.x + m[5] * b->p.y + m[9] * b->p.z + m[13] * 1.0;
-	  p[2] = m[2] * b->p.x + m[6] * b->p.y + m[10] * b->p.z + m[14] * 1.0;
-
-	  b->cp.x = p[0];
-	  b->cp.y = p[1];
-	  b->cp.z = p[2];
+	  ay_trafo_identitymatrix(b->rm);
+	  ay_trafo_translatematrix(down->movx, down->movy, down->movz, b->rm);
+	  ay_quat_toeuler(down->quat, euler);
+	  ay_trafo_rotatematrix(AY_R2D(euler[2]), 1, 0, 0, b->rm);
+	  ay_trafo_rotatematrix(AY_R2D(euler[1]), 0, 1, 0, b->rm);
+	  ay_trafo_rotatematrix(AY_R2D(euler[0]), 0, 0, 1, b->rm);
+	  ay_trafo_translatematrix(-down->movx, -down->movy, -down->movz,
+				   b->rm);
+	  b->cp.x = b->p.x + down->movx;
+	  b->cp.y = b->p.y + down->movy;
+	  b->cp.z = b->p.z + down->movz;
 
 	  b->scalex = 1 / (down->scalx < 0.00001 ? 0.00001 : down->scalx);
 	  b->scaley = 1 / (down->scaly < 0.00001 ? 0.00001 : down->scaly);
 	  b->scalez = 1 / (down->scalz < 0.00001 ? 0.00001 : down->scalz);
-
-	}
+	} /* if */
 
       down = down->next;
-    }
+    } /* while */
 
   w = (meta_world *) o->refine;
 
@@ -1388,7 +1368,7 @@ metacomp_readcb (FILE * fileptr, ay_object * o)
 {
  meta_blob *b;
  int read;
- char *expr;
+ char *expr = NULL;
 
   if (!o)
     return AY_ENULL;
