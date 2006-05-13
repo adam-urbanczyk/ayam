@@ -10,7 +10,7 @@
 # splash.tcl - view the splash screen
 
 proc splash_open { } {
-    global AYWRAPPED ayprefs ay
+    global AYWRAPPED AYWITHAQUA ayprefs ay
 
     # first, create image
     if { $AYWRAPPED == 1 } {
@@ -55,8 +55,13 @@ proc splash_open { } {
     bind $w <ButtonRelease-1> "grab release $w; after 50 destroy $w; focus ."
 
     wm overrideredirect $w 1
+
     # center the window
-    winCenter $w
+    if { ! $AYWITHAQUA } {
+	winCenter $w
+    } else {
+	after idle "winCenter $w"
+    }
 
     grab $w
 
