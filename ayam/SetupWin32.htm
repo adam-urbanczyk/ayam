@@ -8,15 +8,17 @@
 <H1>Ayam Win32 Setup</H1>
 
 This document describes how to set up Ayam on the Win32 platform.
-<p>
-The executable of Ayam is located in the directory named <code>"bin"</code>
-.<br>
+
+<H2>0. Installation, Starting the Application</H2>
+
+The executable of Ayam ("Ayam.exe") is located in the directory
+named <code>"bin"</code>.<br>
 You do not need to install Ayam in the system, you can start it
 directly with a double click from where you unpacked the archive.
 <p>
-To start Ayam easily, you can add an icon to your desktop by double
+To start Ayam more easily, you can add an icon to your desktop by double
 clicking on the <code>"make_shortcut.vbs"</code> script.<br>
-Since Ayam1.8 there are also two more scripts named
+Since Ayam 1.8 there are also two more scripts named
 <code>"make_ftassoc.vbs"</code> and <code>"remove_ftassoc.vbs"</code>
 that add and remove a file type association with Ayam scene files
 (extension .ay) to/from your desktop.
@@ -25,14 +27,6 @@ If you get error messages about input or output file handles
 when trying to render directly from Ayam, please use the
 accompanying batch file <code>"ayam.bat"</code> to start Ayam
 instead of directly using <code>"ayam.exe"</code>.
-<p>
-Before you start modelling with Ayam, the following three things have
-to be done:
-<OL>
- <LI> Saving Preferences
- <LI> Setting up Shaders
- <LI> Creating and Saving a Working Environment (View Windows)
-</OL>
 
 
 <H2>1. Saving Preferences</H2>
@@ -125,16 +119,10 @@ Remember: NEVER use backslashes (\) in any path or filename you enter to Ayam.
 What are shaders? For the moment, we can safely assume that
 shaders are small files that carry material descriptions.
 Some example shaders come with your RenderMan compatible renderer
-(e.g. BMRT), but you may also create your own.<br>
-Unless you load a shader parsing plugin (see below),
-Ayam can only work with shaders that have been compiled with <code>"slc"</code>
-from BMRT, so you may want to get and install BMRT first.
-Unfortunately, NVIDIA/Exluna stopped the official distribution of BMRT,
-but it can be found using the obvious search terms with your favourite
-search engine.<br>
-After the installation of BMRT you need to point Ayam to the directories
-where your slc-compiled shaders reside in order to use them with the material
-objects in Ayam.<br>
+(e.g. Aqsis), but you may also create your own.<br>
+After the additional download and installation of a RenderMan compliant
+renderer you need to point Ayam to the directories where your compiled
+shaders reside in order to use them with the material objects in Ayam.<br>
 This is done using the preference setting <code>"Main/Shaders"</code>.
 Just open the preferences using the main menu entry
 <code>"Edit/Preferences"</code> and
@@ -142,7 +130,7 @@ enter the appropriate paths (separated by semicolons <code>";"</code>)
 into the string entry labeled <code>"Shaders"</code>.<br>
 An example string could look like this:<br>
 <samp>
-D:/BMRT2.6/shaders/;D:/Ayam/scn/shaders/
+C:/Program Files/Aqsis/shaders/;D:/Ayam/scn/shaders/
 </samp>
 <br>
 Now press the <code>"Scan Shaders"</code> button below and watch the
@@ -150,14 +138,14 @@ console for error messages.
 <p>
 Remember: NEVER use backslashes (\) in any path or filename you enter to Ayam.
 <p>
-If you do not want to use BMRT, you need to load a shader parsing plugin.
-In the directory <code>ayam/bin/plugins</code> there are the following
+
+In the directory <code>"ayam/bin/plugins"</code> there are the following
 shader parsing plugins:
 aysdr.dll for Pixie, ayslb.dll for Air, ayslo3d.dll for 3Delight,
-ayslo.dll for PRMan, ayso.dll for RenderDotC, and ayslx.dll for Aqsis.
+ayslo.dll for PRMan, and ayso.dll for RenderDotC.
 <p>
 The plugins may be loaded manually (using the main menu entry:
-"File/Load Custom") or automatically on startup.
+"File/Load Custom") or automatically on startup of Ayam.
 In order to load a plugin automatically on startup of Ayam, just add the
 complete path and filename of the corresponding Tcl script
 (e.g. loadaysdr.tcl) to the "Scripts" preference setting and restart
@@ -173,11 +161,7 @@ ayam/bin/plugins/loadayslb.tcl<br>
 ayam/bin/plugins/...
 </code>
 <p>
-Note that the plugins are not able to check the Ayam version they
-get loaded into. Please, do not try to load them into any other version
-of Ayam as 1.8; otherwise you may experience an immediate crash of Ayam.
-<p>
-Also note that some plugins require additional DLL files to be present in the
+Note that some plugins require additional DLL files to be present in the
 DLL search path. Depending on the flavour of your Win32 you may need to
 adapt the PATH environment variable to include the directories with those
 DLL files. You can also just copy them to the directory where "ayam.exe"
@@ -203,8 +187,6 @@ ayso.dll: RenderDotC 3.3.5, depends on "soargs.dll"<br>
 Since RenderDotC compiles all shaders as shared native code (into DLL files),
 all paths of the "Shaders" preference setting should also be present in the
 DLL search path.
-<p>
-ayslx.dll: Aqsis 0.9.0, does not depend on other DLL files
 <p>
 ayslo.dll: Photorealistic RenderMan 11.5, does not depend on other DLL files
 <p>
@@ -260,7 +242,7 @@ and the
 asked questions (FAQ)</A>.
 
 <HR>
-<i>Randolf Schultz, 29. Oct 2004<BR>
+<i>Randolf Schultz, 13. May 2006<BR>
 <A HREF="http://www.ayam3d.org/">
 http://www.ayam3d.org/</A>&nbsp;&nbsp;&nbsp;&nbsp;Reconstruct the World!
 </i>

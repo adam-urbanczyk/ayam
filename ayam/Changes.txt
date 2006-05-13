@@ -1,8 +1,11 @@
-[28. Apr 2006] CVS-Head:
+[13. May 2006] Ayam1.10:
 o bug fixes:
   - fixed TP tags created by tesselation GUI (SF 1431917)
   - fixed broken SwapUV of PatchMesh objects (SF 1436463)
   - fixed display of SParamV parameter in tesselation GUI (SF 1468212)
+  - fixed initial point size when drawing meta object components (SF 1486208)
+  - fixed initial notification of meta objects for reading from scene
+    files without views (no OpenGL context) (SF 1487787)
 o added "BP" tag type to store bevel parameters
 o changed bevel parameter storage mechanism and property GUI of Extrude
   and Text objects to use BP tags
@@ -20,7 +23,7 @@ o improved NURBS tools menus: "Reset Weights" now appears in correct sub menus,
   collapse/explode points commands moved to NURBCurve and added to NURBPatch
   sub menus respectively
 o added full interpolation control option to Birail2 object
-o ExtrNC now checks and sets a correct curve type
+o ExtrNC now checks for and sets a correct curve type
 o added display of the number of created triangles to tesselation GUI
 o added standard Docs URL to the preferences dialog
 o "Set BGimage" in the view menu now also enables drawing of the BGImage
@@ -29,22 +32,30 @@ o improved tesselation GUI layout of SMParamV on MacOSX/Aqua
 o fixed blocking about dialog on Tk 8.4.12 on MacOSX/Aqua
 o added help menu entries to view window menus on MacOSX/Aqua
 o fixed compilation of IDR plugin on MacOSX/Aqua
+o fixed blocking help menu entries for Tk 8.4.13 on MacOSX/Aqua
+o fixed blocking show preferences application menu entry for Tk 8.4.13
+  on MacOSX/Aqua
+o fixed display of splash screen on MacOSX/Aqua
 o fixed documentation paths in Ayam.app and Ayam.dmg compilation targets
 o added target to build an Ayam.app application bundle that contains
   a local copy of the Tcl and Tk frameworks
-o fixed compilation of onio plugin with recent SGI-CC versions
+o fixed compilation of onio plugin with recent SGI-CC versions and with
+  MS VC++2005E
 o improved tifflib directory usability test in ayamConf.tcl
-o added complete notification feature (in scenes with references, this
-  makes sure all tool objects depending on references are notified about
-  changes of the master object)
-o added centerPnts scripting interface object and corresponding entries
+o added complete notification feature; in scenes with references, this
+  makes sure all tool objects depending on references (directly or indirectly)
+  are notified about changes of the master object; this feature is controlled
+  via the new preference setting "Modeling/CompleteNotify"
+o added "centerPnts" scripting interface object and corresponding entries
   in the "Special/Points" menu to center all points of an object
-o made HideChildren attribute accessible in object Attributes property GUI
-o RIB-Export now obeys the HideChildren attribute
+o made "HideChildren" attribute accessible in object Attributes property GUI
+o RIB-Export now obeys the "HideChildren" attribute
 o initiate notification upon creation of tool objects
 o sort parameter objects upon creation of tool objects
-o fixed compilation with current SGI-GLU and VC2005E
-o added VC2005E workspace for compilation on Win32
+o fixed compilation of Ayam with current SGI-GLU (Mesa 6.5) and MS VC++2005E
+o added MS VC++2005E workspace for compilation on Win32
+o added workaround for broken GLU implementations (views stop to draw NURBS
+  after the tesselation facility was in use)
 
 
 [12. Feb 2006] Ayam 1.9:
