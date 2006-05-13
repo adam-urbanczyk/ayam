@@ -26,8 +26,8 @@ getTags tagnames tagvalues
 bevel_parseTags $tagnames $tagvalues
 
 addParam $w ExtrudeAttrData Height
-addCheck $w ExtrudeAttrData UpperCap
-addCheck $w ExtrudeAttrData LowerCap
+addCheck $w ExtrudeAttrData StartCap
+addCheck $w ExtrudeAttrData EndCap
 
 if { $BevelTags(HasStartBevel) } {
     addCommand $w c1 "Remove Start Bevel!" "bevel_rem 0"
