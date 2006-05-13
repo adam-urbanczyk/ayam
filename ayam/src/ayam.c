@@ -145,7 +145,6 @@ unsigned int ay_current_primlevel = 0;
 
 #ifdef AYMETAWRAPPED
   int Metaobj_Init(Tcl_Interp *interp);
-  int Metacomp_Init(Tcl_Interp *interp);
 #endif
 
 #ifdef AYRRIBWRAPPED
@@ -518,8 +517,6 @@ ay_init(Tcl_Interp *interp)
 
 #ifdef AYMETAWRAPPED
   if((ay_status = Metaobj_Init(interp)))
-    { ay_error(ay_status, fname, NULL); return AY_ERROR; }
-  if((ay_status = Metacomp_Init(interp)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
   Tcl_SetVar(interp, "AYMETAWRAPPED", "1", TCL_LEAVE_ERR_MSG |
 	     TCL_GLOBAL_ONLY);
