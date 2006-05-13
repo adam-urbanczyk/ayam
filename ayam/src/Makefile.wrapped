@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile.wrapped [13. Dec 2005]
+# Makefile.wrapped [13. May 2006]
 # Makefile for Ayam (wrapped version)
 
 # Choose an installation prefix.
@@ -79,6 +79,9 @@ LD = $(CXX)
 #   switched off and rotating views via keyboard will fill up the undo buffer
 # o add -DAYOLDSLX if you compile with an Aqsis libslxargs prior to 0.7.19
 # o add -DUSE_NON_CONST if you compile with Tcl/Tk 8.4.x
+# o add -DAYGLUATTRIBBUG if you compile with a GLU library that confuses
+#   the OpenGL attribute state when tesselating NURBS (no NURBS display
+#   after tesselation was in use)
 
 CFLAGS = -O2 -DAYWRAPPED -DAYUSESLCARGS -DAYUSEBMRTRIBOUT -DAYENABLEWAIT
 # IRIX (-DAYIRIXBUG is needed by ncurve.c to work around a bug in libGLU):
