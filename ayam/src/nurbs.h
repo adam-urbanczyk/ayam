@@ -416,6 +416,8 @@ int ay_npt_createcap(double z, ay_nurbcurve_object *curve,
 		     double *ominy, double *omaxy, double *oangle,
 		     ay_nurbpatch_object **cap);
 
+int ay_npt_applytrafo(ay_object *p);
+
 int ay_npt_getpntfromindex(ay_nurbpatch_object *patch, int indexu, int indexv,
 			   double **p);
 
