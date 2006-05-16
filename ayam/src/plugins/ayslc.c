@@ -10,7 +10,7 @@
  *
  */
 
-/* ayslc.c - Plug-In to scan shaders compiled with shader (PRMan)
+/* ayslc.c - Plug-In to scan shaders compiled with slc (BMRT)
    using libslcargs  */
 
 #include "ayam.h"

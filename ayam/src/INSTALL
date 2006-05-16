@@ -361,17 +361,17 @@ Use it via menu entry "Custom/Open IDR".
 --------------------------
 
 Ayam supports the following shader parsing plugins:
-"ayslb" for Air, "ayso" for RDC, "ayslo" for PRMan, "ayslx" for Aqsis,
-"ayslo3d" for 3Delight, and "aysdr" for Pixie.
+"ayslb" for Air, "ayslc" for BMRT, "ayso" for RDC, "ayslo" for PRMan,
+"ayslx" for Aqsis, "ayslo3d" for 3Delight, and "aysdr" for Pixie.
 Additional prerequisites:
 The respective renderer has to be installed to compile a shader parsing
 plugin. To compile "aysdr", the Pixie renderer source tree has to be
 available, configured and compiled.
 
-
-In order to compile those plugins, adapt the following variables
+In order to compile a shader parsing plugin, adapt the following variables
 in the Makefile:
 for Aqsis: AQSISDIR, AYSLXINCDIR, AYSLXLIBS,
+for BMRT: BMRTDIR, AYSLCINCDIR, AYSLCLIBS,
 for RenderDotC: RDCDIR, AYSOINCDIR, AYSOLIBS,
 for PRMan: PRMANDIR, AYSLOINCDIR, AYSLOLIBS,
 for 3Delight: 3DLDIR, AYSLO3DINCDIR, AYSLO3DLIBS,
@@ -379,6 +379,7 @@ for Pixie: SDRDIR, AYSDRINCDIR, PIXIESRC, AYSDRLIBS
 
 then type:
 >make ayslb.so
+>make ayslc.so
 >make ayslo.so
 >make ayslo3d.so
 >make ayso.so
@@ -388,7 +389,7 @@ then type:
 After loading of one of these plugins (using the main menu entry
 "File/Load Plugin") the internal shader scanning code of Ayam will
 be disabled, and Ayam will from that moment on just scan shaders
-of the type that the plugin supports.
+of the renderer that the plugin supports.
 
 
 3.5 AyCSG (CSG Preview) Plugin
@@ -403,7 +404,7 @@ RenderTexture (RenderTexture is included in OpenCSG, otherwise get it from
 
 Your OpenGL subsystem has to support the PBuffers extension.
  ( Check with "glxinfo". If you have no GLX PBuffers you can compile Ayam
-   with Mesa without hardware acceleration to get PBuffers. )
+   with Mesa without hardware acceleration to get PBuffers support. )
 
 Download and compile all prerequisites. Compile the example application
 of OpenCSG and try it to check whether your OpenGL subsystem is compatible.
@@ -425,8 +426,11 @@ See also the AyCSG preferences in the main menu "Custom/AyCSG Preferences".
 
 Additional prerequisites to compile the onio plugin are:
 OpenNURBS ( get it from http://www.opennurbs.com/ ).
+Build opennurbs.a and opennurbs_extensions.o like this:
+>make
+>make opennurbs_extensions.o
 
-In order to compile the plugin, adapt the following variables
+In order to compile the plugin, adapt the following variable
 in the Ayam Makefile:
 OPENNURBSDIR
 
@@ -489,14 +493,22 @@ application bundle to your "Programs" folder in the finder.
 Since Ayam 1.10, there is a second target "Ayam.appfw" to build an
 application bundle, that, additionally, contains the Tcl/Tk frameworks.
 The application bundles built with the Ayam.appfw target will only use
-the Tcl/Tk frameworks from the bundle, regardless what is installed in the
-system.
+the Tcl/Tk frameworks from the bundle, regardless what is installed in
+the system.
 To use this target download and compile your own Tcl/Tk frameworks, then
 copy them _manually_ to the application bundle skeleton like this:
+
 >cp -R build/tcl/Tcl.framework ayam/bin/Ayam.app/Contents
 >cp -R build/tk/Tk.framework ayam/bin/Ayam.app/Contents
 
-now you can
+maybe you need to do:
+
+>chmod u+w ayam/bin/Ayam.app/Contents/Tcl.framework/Versions/Current/Tcl
+>chmod u+w ayam/bin/Ayam.app/Contents/Tk.framework/Versions/Current/Tk
+
+now; then you can
+
+>cd ayam/src
 >make Ayam.appfw
 
 to mate the frameworks and the Ayam executable in the application bundle.
