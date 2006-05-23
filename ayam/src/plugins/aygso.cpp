@@ -12,8 +12,12 @@
 
 /* aygso.cpp - Plugin to scan Gelato shaders */
 
-
-#include "tcl.h"
+#ifdef AYWIN32PLUGIN
+  #include "tcl.h"
+  #include "errcode.h"
+#else
+  #include "ayam.h"
+#endif // AYWIN32PLUGIN
 
 #include "gsoargs.h"
 
@@ -24,7 +28,7 @@ char ayglo_version_ma[] = AY_VERSIONSTR;
 char ayglo_version_mi[] = AY_VERSIONSTRMI;
 #endif // AYWIN32PLUGIN
 
-/* prototypes of functions local to this module */
+/* prototypes: */
 int aygso_scangsosarg(const Gelato::GsoArgs::Parameter *p, Tcl_DString *ds);
 
 int aygso_scangsotcmd(ClientData clientData, Tcl_Interp *interp,
@@ -33,15 +37,12 @@ int aygso_scangsotcmd(ClientData clientData, Tcl_Interp *interp,
 extern "C" {
 
 #ifdef AYWIN32PLUGIN
-
-#include "errcode.h"
-
-extern Tcl_Interp *ay_plugin_interp;
-Tcl_Interp *ay_plugin_interp;
-extern void ay_error(int code, char *where, char *what);
-__declspec( dllexport ) int Aygso_Init(Tcl_Interp *interp);
+  extern Tcl_Interp *ay_plugin_interp;
+  Tcl_Interp *ay_plugin_interp;
+  extern void ay_error(int code, char *where, char *what);
+  __declspec( dllexport ) int Aygso_Init(Tcl_Interp *interp);
 #else
-int Aygso_Init(Tcl_Interp *interp);
+  int Aygso_Init(Tcl_Interp *interp);
 #endif // AYWIN32PLUGIN
 
 } // extern "C"
@@ -78,7 +79,7 @@ aygso_scangsosarg(const Gelato::GsoArgs::Parameter *p, Tcl_DString *ds)
     {
 #endif
 
-	switch(p->type.basetype)
+  switch(p->type.basetype)
     {
     case Gelato::PT_POINT:
     case Gelato::PT_COLOR:
@@ -116,8 +117,11 @@ aygso_scangsosarg(const Gelato::GsoArgs::Parameter *p, Tcl_DString *ds)
     case Gelato::PT_FLOAT:
     case Gelato::PT_HALF:
     case Gelato::PT_DOUBLE:
-      sprintf(buffer, "%g ", (double)(p->fdefault[0]));
-      Tcl_DStringAppend(ds, buffer, -1);
+      if(p->valid)
+	{
+	  sprintf(buffer, "%g ", (double)(p->fdefault[0]));
+	  Tcl_DStringAppend(ds, buffer, -1);
+	}
       break;
     case Gelato::PT_STRING:
       if(p->valid)
@@ -152,10 +156,11 @@ aygso_scangsotcmd(ClientData clientData, Tcl_Interp *interp,
  char fname[] = "shaderScanGSO";
  Gelato::GsoArgs argparser;
  const Gelato::GsoArgs::Parameter *p = NULL;
- Tcl_DString ds;
+ Tcl_DString ds, dsp;
  bool result;
  char vname[] = "ayprefs(Shaders)";
  int i = 0, numargs = 0;
+ char *c = NULL;
 
   if(argc < 3)
     {
@@ -168,8 +173,18 @@ aygso_scangsotcmd(ClientData clientData, Tcl_Interp *interp,
   Tcl_DStringAppend(&ds, ".gso", -1);
 
 #ifdef AYWIN32PLUGIN
-  result = argparser.open(argv[1], Tcl_GetVar(ay_plugin_interp, vname,
-				    TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG));
+  Tcl_DStringInit(&dsp);
+  Tcl_DStringAppend(&dsp,
+       Tcl_GetVar(ay_plugin_interp, vname,
+		  TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG), -1);
+  c = strchr(Tcl_DStringValue(&dsp), ';');
+  while(c)
+    {
+      *c = ':';
+      c = strchr(c, ';');
+    }
+  result = argparser.open(Tcl_DStringValue(&ds), Tcl_DStringValue(&dsp));
+  Tcl_DStringFree(&dsp);
 #else
   result = argparser.open(argv[1], Tcl_GetVar(ay_interp, vname,
 			            TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG));
@@ -181,6 +196,12 @@ aygso_scangsotcmd(ClientData clientData, Tcl_Interp *interp,
     {
       ay_error(AY_ERROR, fname, "Could not open shader:");
       ay_error(AY_ERROR, fname, argv[1]);
+      return TCL_OK;
+    }
+
+  if(!strcmp(argparser.shadertype(), "generic"))
+    {
+      ay_error(AY_ERROR, fname, "Skipping unsupported generic shader...");
       return TCL_OK;
     }
 
@@ -253,6 +274,8 @@ aygso_scangsotcmd(ClientData clientData, Tcl_Interp *interp,
 		  Tcl_DStringAppend(&ds, "unknown ", -1);
 		  break;
 		} /* switch */
+
+	      Tcl_DStringAppend(&ds, " 0 ", -1 );
 
 	      aygso_scangsosarg(p, &ds);
 	      Tcl_DStringAppend(&ds, "} ", -1);
