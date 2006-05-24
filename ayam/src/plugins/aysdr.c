@@ -18,7 +18,7 @@
 #include "tcl.h"
 #include "errcode.h"
 #include "sdr.h"
-
+#include <string.h>
 
 /* prototypes: */
 
@@ -137,6 +137,7 @@ aysdr_scansdrtcmd(ClientData clientData, Tcl_Interp *interp,
  ESdrShaderType stype;
  Tcl_DString ds, dsp;
  char vname[] = "ayprefs(Shaders)";
+ char *c = NULL;
 
   if(argc < 3)
     {
