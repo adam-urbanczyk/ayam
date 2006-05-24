@@ -136,7 +136,8 @@ aysdr_scansdrtcmd(ClientData clientData, Tcl_Interp *interp,
  int arraylen;
  ESdrShaderType stype;
  Tcl_DString ds, dsp;
- char vname[] = "ayprefs(Shaders)";
+ char vname[] = "ayprefs(Shaders)", vnamewin[] = "ay(PixieShaders)";
+ char command[] = "aysdr_rewritepath";
  char *c = NULL;
 
   if(argc < 3)
@@ -145,21 +146,27 @@ aysdr_scansdrtcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  /*
-  Sdr_SetPath(Tcl_GetVar(ay_interp, vname, TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG));
-  */
-
-  /* change all ; to : in shader search path */
   Tcl_DStringInit(&dsp);
-  Tcl_DStringAppend(&dsp,
-       Tcl_GetVar(ay_plugin_interp, vname,
-		  TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG), -1);
+
+#ifdef WIN32
+  /* change '...;C:/bla...' to '...;//C/bla...' */
+  Tcl_Eval(interp, command);
+  Tcl_DStringAppend(&dsp, Tcl_GetVar(interp, vnamewin,
+				     TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG), -1);
+#else
+  Tcl_DStringAppend(&dsp, Tcl_GetVar(interp, vname,
+				     TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG), -1);
+#endif
+
+#ifdef WIN32
+  /* change all ; to : in shader search path */
   c = strchr(Tcl_DStringValue(&dsp), ';');
   while(c)
     {
       *c = ':';
       c = strchr(c, ';');
     }
+#endif
 
   shader = sdrGet(argv[1], Tcl_DStringValue(&dsp));
   Tcl_DStringFree(&dsp);
@@ -326,6 +333,14 @@ Aysdr_Init(Tcl_Interp *interp)
 
   Tcl_CreateCommand(interp, "shaderScan", aysdr_scansdrtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  /* source aysdr.tcl, it contains Tcl-code for path rewriting */
+  if((Tcl_EvalFile(interp, "aysdr.tcl")) != TCL_OK)
+     {
+       ay_error(AY_ERROR, fname,
+		  "Error while sourcing \\\"aysdr.tcl\\\"!");
+       return TCL_OK;
+     }
 
   ay_error(AY_EOUTPUT, fname,
 	   "Plugin 'aysdr' loaded.");
