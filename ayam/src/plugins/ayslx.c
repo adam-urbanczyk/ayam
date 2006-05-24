@@ -14,6 +14,7 @@
    using libslxargs  */
 
 /* includes: */
+#include <string.h>
 #include "tcl.h"
 #include "errcode.h"
 #include "slx.h"
@@ -125,6 +126,7 @@ ayslx_scanslxtcmd(ClientData clientData, Tcl_Interp *interp,
  int arraylen;
  Tcl_DString ds;
  char vname[] = "ayprefs(Shaders)";
+ char *c = NULL;
 
   if(argc < 3)
     {
@@ -140,7 +142,7 @@ ayslx_scanslxtcmd(ClientData clientData, Tcl_Interp *interp,
   c = strchr(Tcl_DStringValue(&ds), ';');
   while(c)
     {
-      *c = ',';
+      *c = ':';
       c = strchr(c, ';');
     }
   SLX_SetPath(Tcl_DStringValue(&ds));
@@ -292,7 +294,7 @@ ayslx_scanslxtcmd(ClientData clientData, Tcl_Interp *interp,
 /* note: this function _must_ be capitalized exactly this way
  * regardless of the filename of the shared object (see: man n load)!
  */
-#ifdef AYWIN32PLUGIN
+#ifdef WIN32
 __declspec( dllexport ) int
 Ayslx_Init(Tcl_Interp *interp)
 #else
@@ -303,29 +305,11 @@ Ayslx_Init(Tcl_Interp *interp)
  char fname[] = "ayslx_init";
  char vname[] = "ay(sext)", vval[] = ".slx";
 
-#ifdef AYWIN32PLUGIN
   ay_plugin_interp = interp;
   if(Tcl_InitStubs(interp, "8.2", 0) == NULL)
     {
       return TCL_ERROR;
     }
-#else
-  /* first, check versions */
-  if(strcmp(ay_version_ma, ayslx_version_ma))
-    {
-      ay_error(AY_ERROR, fname,
-	       "Plugin has been compiled for a different Ayam version!");
-      ay_error(AY_ERROR, fname, "It is unsafe to continue! Bailing out...");
-      return TCL_OK;
-    }
-
-  if(strcmp(ay_version_mi, ayslx_version_mi))
-    {
-      ay_error(AY_ERROR, fname,
-	       "Plugin has been compiled for a different Ayam version!");
-      ay_error(AY_ERROR, fname, "However, it is probably safe to continue...");
-    }
-#endif
 
   Tcl_SetVar(interp, vname, vval, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
