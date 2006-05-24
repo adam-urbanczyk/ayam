@@ -17,7 +17,7 @@
 #include "tcl.h"
 #include "errcode.h"
 #include "so.h"
-
+#include <string.h>
 
 /* prototypes: */
 int ayso_scansosarg(SO_VISSYMDEF *symbol, Tcl_DString *ds);
@@ -113,6 +113,7 @@ ayso_scansotcmd(ClientData clientData, Tcl_Interp *interp,
  int arraylen;
  Tcl_DString ds;
  char vname[] = "ayprefs(Shaders)";
+ char *c = NULL;
 
   if(argc < 3)
     {
@@ -120,8 +121,19 @@ ayso_scansotcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  So_SetPath(Tcl_GetVar(ay_plugin_interp, vname,
-			TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG));
+  /* change all ; to , in shader search path */
+  Tcl_DStringInit(&ds);
+  Tcl_DStringAppend(&ds,
+	     Tcl_GetVar(ay_plugin_interp, vname,
+			TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG), -1);
+  c = strchr(Tcl_DStringValue(&ds), ';');
+  while(c)
+    {
+      *c = ':';
+      c = strchr(c, ';');
+    }
+  So_SetPath(Tcl_DStringValue(&ds));
+  Tcl_DStringFree(&ds);
 
   if((So_SetShader(argv[1])) == -1)
     {
