@@ -209,8 +209,11 @@ ay_error(int code, char *where, char *what)
       /* last messages were identical, just count and exit */
       count++;
       Tcl_DStringFree(&ds);
+      /*      
       Tcl_SetVar(interp, "ay_error", "1", TCL_GLOBAL_ONLY | TCL_LEAVE_ERR_MSG);
       return;
+      */
+      goto set_ay_error;
     }
   else
     {
@@ -251,6 +254,7 @@ ay_error(int code, char *where, char *what)
 
   Tcl_DStringFree(&ds);
 
+set_ay_error:
   if(code != AY_EOUTPUT)
     {
       ton = Tcl_NewStringObj("ay_error", -1);
