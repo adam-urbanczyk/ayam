@@ -19,6 +19,12 @@
 /* prototypes: */
 void ay_error(int code, char *where, char *what);
 
+void ay_error_init(Tcl_Interp *interp);
+
+
+/* global variables: */
+static Tcl_Interp *ay_error_interp = NULL;
+
 
 /* functions: */
 
@@ -32,7 +38,6 @@ ay_error(int code, char *where, char *what)
 {
  Tcl_DString ds;
  char ayerrcmdstr[] = "ayError ", codestr[64];
- extern Tcl_Interp *ay_plugin_interp;
 
   Tcl_DStringInit(&ds);
 
@@ -56,10 +61,19 @@ ay_error(int code, char *where, char *what)
 	}
     }
 
-  Tcl_Eval(ay_plugin_interp, Tcl_DStringValue(&ds));
+  Tcl_Eval(ay_error_interp, Tcl_DStringValue(&ds));
 
   Tcl_DStringFree(&ds);
 
  return;
 } /* ay_error */
 
+
+/* ay_error_init:
+ */
+void
+ay_error_init(Tcl_Interp *interp)
+{
+   ay_error_interp = interp;
+  return;
+} /* ay_error_init */

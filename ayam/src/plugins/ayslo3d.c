@@ -27,14 +27,13 @@ int ayslo3d_scanslo3dtcmd(ClientData clientData, Tcl_Interp *interp,
 
 extern void ay_error(int code, char *where, char *what);
 
+extern void ay_error_init(Tcl_Interp *interp);
+
 #ifdef WIN32
 __declspec( dllexport ) int Ayslo_Init(Tcl_Interp *interp);
 #else
 int Ayslo_Init(Tcl_Interp *interp);
 #endif
-
-extern Tcl_Interp *ay_plugin_interp;
-Tcl_Interp *ay_plugin_interp;
 
 
 /* functions: */
@@ -135,7 +134,7 @@ ayslo3d_scanslo3dtcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  Slo_SetPath(Tcl_GetVar(ay_plugin_interp, vname,
+  Slo_SetPath(Tcl_GetVar(interp, vname,
 			 TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG));
 
   if((Slo_SetShader(argv[1])) == -1)
@@ -173,6 +172,13 @@ ayslo3d_scanslo3dtcmd(ClientData clientData, Tcl_Interp *interp,
      Tcl_DStringAppend(&ds, " transformation ", -1);
      break;
    default:
+     ay_error(AY_ERROR, fname, "skipping shader of unknown type");
+    
+     Slo_EndShader();
+
+     Tcl_DStringFree(&ds);
+
+     return TCL_OK;
      break;
    }
 
@@ -297,7 +303,8 @@ Ayslo_Init(Tcl_Interp *interp)
  char fname[] = "ayslo3d_init";
  char vname[] = "ay(sext)", vval[] = ".sdl";
 
-  ay_plugin_interp = interp;
+  ay_error_init(interp);
+
   if(Tcl_InitStubs(interp, "8.2", 0) == NULL)
     {
       return TCL_ERROR;
