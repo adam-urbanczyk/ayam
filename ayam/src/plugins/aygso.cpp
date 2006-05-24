@@ -12,21 +12,10 @@
 
 /* aygso.cpp - Plugin to scan Gelato shaders */
 
-#ifdef AYWIN32PLUGIN
-  #include "tcl.h"
-  #include "errcode.h"
-#else
-  #include "ayam.h"
-#endif // AYWIN32PLUGIN
-
+/* includes: */
+#include "tcl.h"
+#include "errcode.h"
 #include "gsoargs.h"
-
-/* global variables */
-
-#ifndef AYWIN32PLUGIN
-char ayglo_version_ma[] = AY_VERSIONSTR;
-char ayglo_version_mi[] = AY_VERSIONSTRMI;
-#endif // AYWIN32PLUGIN
 
 /* prototypes: */
 int aygso_scangsosarg(const Gelato::GsoArgs::Parameter *p, Tcl_DString *ds);
@@ -36,14 +25,14 @@ int aygso_scangsotcmd(ClientData clientData, Tcl_Interp *interp,
 
 extern "C" {
 
-#ifdef AYWIN32PLUGIN
   extern Tcl_Interp *ay_plugin_interp;
   Tcl_Interp *ay_plugin_interp;
   extern void ay_error(int code, char *where, char *what);
+#ifdef WIN32
   __declspec( dllexport ) int Aygso_Init(Tcl_Interp *interp);
 #else
   int Aygso_Init(Tcl_Interp *interp);
-#endif // AYWIN32PLUGIN
+#endif
 
 } // extern "C"
 
@@ -168,28 +157,26 @@ aygso_scangsotcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
+  /* append .gso suffix to shader name */
   Tcl_DStringInit(&ds);
   Tcl_DStringAppend(&ds, argv[1], -1);
   Tcl_DStringAppend(&ds, ".gso", -1);
 
-#ifdef AYWIN32PLUGIN
+  /* change all ; to : in shader search path */
   Tcl_DStringInit(&dsp);
-  Tcl_DStringAppend(&dsp,
-       Tcl_GetVar(ay_plugin_interp, vname,
-		  TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG), -1);
+  Tcl_DStringAppend(&dsp, Tcl_GetVar(ay_plugin_interp, vname,
+				     TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG), -1);
   c = strchr(Tcl_DStringValue(&dsp), ';');
   while(c)
     {
       *c = ':';
       c = strchr(c, ';');
     }
-  result = argparser.open(Tcl_DStringValue(&ds), Tcl_DStringValue(&dsp));
-  Tcl_DStringFree(&dsp);
-#else
-  result = argparser.open(argv[1], Tcl_GetVar(ay_interp, vname,
-			            TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG));
-#endif // AYWIN32PLUGIN
 
+  /* open the shader file for parsing */
+  result = argparser.open(Tcl_DStringValue(&ds), Tcl_DStringValue(&dsp));
+
+  Tcl_DStringFree(&dsp);
   Tcl_DStringFree(&ds);
 
   if(result == false)
@@ -306,40 +293,22 @@ extern "C" {
 /* note: this function _must_ be capitalized exactly this way
  * regardless of the filename of the shared object (see: man n load)!
  */
-#ifdef AYWIN32PLUGIN
+#ifdef WIN32
 __declspec( dllexport ) int
 Aygso_Init(Tcl_Interp *interp)
 #else
 int
 Aygso_Init(Tcl_Interp *interp)
-#endif // AYWIN32PLUGIN
+#endif // WIN32
 {
  char fname[] = "aygso_init";
  char vname[] = "ay(sext)", vval[] = ".gso";
 
-#ifdef AYWIN32PLUGIN
   ay_plugin_interp = interp;
   if(Tcl_InitStubs(interp, "8.2", 0) == NULL)
     {
       return TCL_ERROR;
     }
-#else
-  /* first, check versions */
-  if(strcmp(ay_version_ma, aygso_version_ma))
-    {
-      ay_error(AY_ERROR, fname,
-	       "Plugin has been compiled for a different Ayam version!");
-      ay_error(AY_ERROR, fname, "It is unsafe to continue! Bailing out...");
-      return TCL_OK;
-    }
-
-  if(strcmp(ay_version_mi, aygso_version_mi))
-    {
-      ay_error(AY_ERROR, fname,
-	       "Plugin has been compiled for a different Ayam version!");
-      ay_error(AY_ERROR, fname, "However, it is probably safe to continue...");
-    }
-#endif // AYWIN32PLUGIN
 
   Tcl_SetVar(interp, vname, vval, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
@@ -347,7 +316,7 @@ Aygso_Init(Tcl_Interp *interp)
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   ay_error(AY_EOUTPUT, fname,
-	   "Plug-In 'aygso' loaded.");
+	   "Plugin 'aygso' loaded.");
   ay_error(AY_EOUTPUT, fname,
 	   "Ayam will now scan for .gso-shaders only!");
 

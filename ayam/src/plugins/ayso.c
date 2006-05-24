@@ -1,7 +1,7 @@
 /*
  * Ayam, a free 3D modeler for the RenderMan interface.
  *
- * Ayam is copyrighted 1998-2003 by Randolf Schultz
+ * Ayam is copyrighted 1998-2006 by Randolf Schultz
  * (rschultz@informatik.uni-rostock.de) and others.
  *
  * All rights reserved.
@@ -10,36 +10,32 @@
  *
  */
 
-/* ayso.c - Plug-In to scan shaders compiled with shaderdc (RenderDotC)
+/* ayso.c - Plugin to scan shaders compiled with shaderdc (RenderDotC)
    using libsoargs */
 
-/* force ayam.h to not include BMRT/slc.h as this would clash with RDC/so.h
-   due to a double defined SO_H */
-#ifdef AYUSESLCARGS
-#undef AYUSESLCARGS
-#endif
-
-#include "ayam.h"
-
+/* includes: */
+#include "tcl.h"
+#include "errcode.h"
 #include "so.h"
 
-/* global variables */
-char ayso_version_ma[] = AY_VERSIONSTR;
-char ayso_version_mi[] = AY_VERSIONSTRMI;
 
-/* prototypes of functions local to this module */
+/* prototypes: */
 int ayso_scansosarg(SO_VISSYMDEF *symbol, Tcl_DString *ds);
 
 int ayso_scansotcmd(ClientData clientData, Tcl_Interp *interp,
 			    int argc, char *argv[]);
 
+extern void ay_error(int code, char *where, char *what);
+
 #ifdef WIN32
-extern Tcl_Interp *ay_plugin_interp;
-Tcl_Interp *ay_plugin_interp;
 __declspec( dllexport ) int Ayso_Init(Tcl_Interp *interp);
 #else
 int Ayso_Init(Tcl_Interp *interp);
 #endif
+
+extern Tcl_Interp *ay_plugin_interp;
+Tcl_Interp *ay_plugin_interp;
+
 
 /* functions: */
 
@@ -124,13 +120,8 @@ ayso_scansotcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-#ifdef WIN32
   So_SetPath(Tcl_GetVar(ay_plugin_interp, vname,
 			TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG));
-#else
-  So_SetPath(Tcl_GetVar(ay_interp, vname,
-			TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG));
-#endif
 
   if((So_SetShader(argv[1])) == -1)
     {
@@ -264,7 +255,6 @@ ayso_scansotcmd(ClientData clientData, Tcl_Interp *interp,
     } /* for */
   Tcl_DStringAppend(&ds, "} ", -1);
 
-
   So_EndShader();
 
   Tcl_SetVar(interp, argv[2], Tcl_DStringValue(&ds), TCL_LEAVE_ERR_MSG);
@@ -290,32 +280,16 @@ Ayso_Init(Tcl_Interp *interp)
 #ifdef WIN32
  char vname[] = "ay(sext)", vval[] = ".dll";
 #else
+ /* XXXX HPUX - dylib, AIX? */
  char vname[] = "ay(sext)", vval[] = ".so";
 #endif
 
-#ifdef WIN32
+
   ay_plugin_interp = interp;
   if(Tcl_InitStubs(interp, "8.2", 0) == NULL)
     {
       return TCL_ERROR;
     }
-#else
-  /* first, check versions */
-  if(strcmp(ay_version_ma, ayso_version_ma))
-    {
-      ay_error(AY_ERROR, fname,
-	       "Plugin has been compiled for a different Ayam version!");
-      ay_error(AY_ERROR, fname, "It is unsafe to continue! Bailing out...");
-      return TCL_OK;
-    }
-
-  if(strcmp(ay_version_mi, ayso_version_mi))
-    {
-      ay_error(AY_ERROR, fname,
-	       "Plugin has been compiled for a different Ayam version!");
-      ay_error(AY_ERROR, fname, "However, it is probably safe to continue...");
-    }
-#endif
 
   Tcl_SetVar(interp, vname, vval, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
@@ -323,7 +297,7 @@ Ayso_Init(Tcl_Interp *interp)
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   ay_error(AY_EOUTPUT, fname,
-	   "Plug-In 'ayso' successfully loaded.");
+	   "Plugin 'ayso' successfully loaded.");
 #ifdef WIN32
   ay_error(AY_EOUTPUT, fname,
 	   "Ayam will now scan for .dll-shaders only!");

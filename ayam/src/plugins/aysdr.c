@@ -1,7 +1,7 @@
 /*
  * Ayam, a free 3D modeler for the RenderMan interface.
  *
- * Ayam is copyrighted 1998-2005 by Randolf Schultz
+ * Ayam is copyrighted 1998-2006 by Randolf Schultz
  * (rschultz@informatik.uni-rostock.de) and others.
  *
  * All rights reserved.
@@ -10,39 +10,34 @@
  *
  */
 
-/* aysdr.c - Plug-In to scan shaders compiled with sdrc (Pixie)
-   using libsdr  */
+/* aysdr.c - Plugin to scan shaders compiled with sdrc (Pixie)
+   using libsdr */
 
-/* force ayam.h to not include BMRT/slc.h as this would clash with Pixie/sdr.h
-   due to doubly defined enums like POINT... */
-#ifdef AYUSESLCARGS
-#undef AYUSESLCARGS
-#endif
+/* includes: */
 
-#include "ayam.h"
-
-#include <sdr.h>
-
-/* global variables: */
-
-char aysdr_version_ma[] = AY_VERSIONSTR;
-char aysdr_version_mi[] = AY_VERSIONSTRMI;
+#include "tcl.h"
+#include "errcode.h"
+#include "sdr.h"
 
 
-/* prototypes of functions local to this module: */
+/* prototypes: */
 
 int aysdr_scansdrsarg(TSdrParameter *param, Tcl_DString *ds);
 
 int aysdr_scansdrtcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
 
+extern void ay_error(int code, char *where, char *what);
+
 #ifdef WIN32
+  __declspec( dllexport ) int Aysdr_Init(Tcl_Interp *interp);
+#else
+  int Aysdr_Init(Tcl_Interp *interp);
+#endif
+
 extern Tcl_Interp *ay_plugin_interp;
 Tcl_Interp *ay_plugin_interp;
-__declspec( dllexport ) int Aysdr_Init(Tcl_Interp *interp);
-#else
-int Aysdr_Init(Tcl_Interp *interp);
-#endif
+
 
 /* functions: */
 
@@ -140,7 +135,7 @@ aysdr_scansdrtcmd(ClientData clientData, Tcl_Interp *interp,
  char buffer[255];
  int arraylen;
  ESdrShaderType stype;
- Tcl_DString ds;
+ Tcl_DString ds, dsp;
  char vname[] = "ayprefs(Shaders)";
 
   if(argc < 3)
@@ -148,17 +143,26 @@ aysdr_scansdrtcmd(ClientData clientData, Tcl_Interp *interp,
       ay_error(AY_EARGS, fname, "shaderpath varname");
       return TCL_OK;
     }
+
   /*
   Sdr_SetPath(Tcl_GetVar(ay_interp, vname, TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG));
   */
-  if(!(shader = sdrGet(argv[1],
-#ifdef WIN32
-		       Tcl_GetVar(ay_plugin_interp,
-#else
-		       Tcl_GetVar(ay_interp,
-#endif
-				  vname,
-				  TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG))))
+
+  /* change all ; to : in shader search path */
+  Tcl_DStringInit(&dsp);
+  Tcl_DStringAppend(&dsp,
+       Tcl_GetVar(ay_plugin_interp, vname,
+		  TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG), -1);
+  c = strchr(Tcl_DStringValue(&dsp), ';');
+  while(c)
+    {
+      *c = ':';
+      c = strchr(c, ';');
+    }
+
+  shader = sdrGet(argv[1], Tcl_DStringValue(&dsp));
+  Tcl_DStringFree(&dsp);
+  if(!shader)
     {
       ay_error(AY_ERROR, fname, "sdrGet failed for:");
       ay_error(AY_ERROR, fname, argv[1]);
@@ -287,7 +291,6 @@ aysdr_scansdrtcmd(ClientData clientData, Tcl_Interp *interp,
     } /* while */
   Tcl_DStringAppend(&ds, "} ", -1);
 
-
   sdrDelete(shader);
 
   Tcl_SetVar(interp, argv[2], Tcl_DStringValue(&ds), TCL_LEAVE_ERR_MSG);
@@ -312,29 +315,11 @@ Aysdr_Init(Tcl_Interp *interp)
  char fname[] = "aysdr_init";
  char vname[] = "ay(sext)", vval[] = ".sdr";
 
-#ifdef WIN32
   ay_plugin_interp = interp;
   if(Tcl_InitStubs(interp, "8.2", 0) == NULL)
     {
       return TCL_ERROR;
     }
-#else
-  /* first, check versions */
-  if(strcmp(ay_version_ma, aysdr_version_ma))
-    {
-      ay_error(AY_ERROR, fname,
-	       "Plugin has been compiled for a different Ayam version!");
-      ay_error(AY_ERROR, fname, "It is unsafe to continue! Bailing out...");
-      return TCL_OK;
-    }
-
-  if(strcmp(ay_version_mi, aysdr_version_mi))
-    {
-      ay_error(AY_ERROR, fname,
-	       "Plugin has been compiled for a different Ayam version!");
-      ay_error(AY_ERROR, fname, "However, it is probably safe to continue...");
-    }
-#endif
 
   Tcl_SetVar(interp, vname, vval, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
@@ -342,7 +327,7 @@ Aysdr_Init(Tcl_Interp *interp)
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   ay_error(AY_EOUTPUT, fname,
-	   "Plug-In 'aysdr' loaded.");
+	   "Plugin 'aysdr' loaded.");
   ay_error(AY_EOUTPUT, fname,
 	   "Ayam will now scan for .sdr-shaders only!");
 

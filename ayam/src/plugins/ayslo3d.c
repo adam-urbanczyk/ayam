@@ -1,7 +1,7 @@
 /*
  * Ayam, a free 3D modeler for the RenderMan interface.
  *
- * Ayam is copyrighted 1998-2001 by Randolf Schultz
+ * Ayam is copyrighted 1998-2006 by Randolf Schultz
  * (rschultz@informatik.uni-rostock.de) and others.
  *
  * All rights reserved.
@@ -10,30 +10,32 @@
  *
  */
 
-#include "ayam.h"
-
-#include <slo.h>
-
-/* ayslo3d.c - Plug-In to scan shaders compiled with shaderdl (3Delight)
+/* ayslo3d.c - Plugin to scan shaders compiled with shaderdl (3Delight)
    using lib3delight  */
 
-/* global variables */
-char ayslo3d_version_ma[] = AY_VERSIONSTR;
-char ayslo3d_version_mi[] = AY_VERSIONSTRMI;
+/* includes: */
+#include "tcl.h"
+#include "errcode.h"
+#include "slo.h"
 
-/* prototypes of functions local to this module */
+
+/* prototypes: */
 int ayslo3d_scanslo3dsarg(SLO_VISSYMDEF *symbol, Tcl_DString *ds);
 
 int ayslo3d_scanslo3dtcmd(ClientData clientData, Tcl_Interp *interp,
 			  int argc, char *argv[]);
 
+extern void ay_error(int code, char *where, char *what);
+
 #ifdef WIN32
-extern Tcl_Interp *ay_plugin_interp;
-Tcl_Interp *ay_plugin_interp;
 __declspec( dllexport ) int Ayslo_Init(Tcl_Interp *interp);
 #else
 int Ayslo_Init(Tcl_Interp *interp);
 #endif
+
+extern Tcl_Interp *ay_plugin_interp;
+Tcl_Interp *ay_plugin_interp;
+
 
 /* functions: */
 
@@ -133,13 +135,8 @@ ayslo3d_scanslo3dtcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-#ifdef WIN32
   Slo_SetPath(Tcl_GetVar(ay_plugin_interp, vname,
 			 TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG));
-#else
-  Slo_SetPath(Tcl_GetVar(ay_interp, vname,
-			 TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG));
-#endif
 
   if((Slo_SetShader(argv[1])) == -1)
     {
@@ -300,29 +297,11 @@ Ayslo_Init(Tcl_Interp *interp)
  char fname[] = "ayslo3d_init";
  char vname[] = "ay(sext)", vval[] = ".sdl";
 
-#ifdef WIN32
   ay_plugin_interp = interp;
   if(Tcl_InitStubs(interp, "8.2", 0) == NULL)
     {
       return TCL_ERROR;
     }
-#else
-  /* first, check versions */
-  if(strcmp(ay_version_ma, ayslo3d_version_ma))
-    {
-      ay_error(AY_ERROR, fname,
-	       "Plugin has been compiled for a different Ayam version!");
-      ay_error(AY_ERROR, fname, "It is unsafe to continue! Bailing out...");
-      return TCL_OK;
-    }
-
-  if(strcmp(ay_version_mi, ayslo3d_version_mi))
-    {
-      ay_error(AY_ERROR, fname,
-	       "Plugin has been compiled for a different Ayam version!");
-      ay_error(AY_ERROR, fname, "However, it is probably safe to continue...");
-    }
-#endif
 
   Tcl_SetVar(interp, vname, vval, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
@@ -330,7 +309,7 @@ Ayslo_Init(Tcl_Interp *interp)
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   ay_error(AY_EOUTPUT, fname,
-	   "Plug-In 'ayslo3d' loaded.");
+	   "Plugin 'ayslo3d' loaded.");
   ay_error(AY_EOUTPUT, fname,
 	   "Ayam will now scan for .sdl-shaders only!");
 

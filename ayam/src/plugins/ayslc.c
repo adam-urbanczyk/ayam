@@ -10,31 +10,32 @@
  *
  */
 
-/* ayslc.c - Plug-In to scan shaders compiled with slc (BMRT)
+/* ayslc.c - Plugin to scan shaders compiled with slc (BMRT)
    using libslcargs  */
 
-#include "ayam.h"
+/* includes: */
+#include "tcl.h"
+#include "errcode.h"
+#include "slc.h"
 
-#include <slc.h>
 
-/* global variables */
-char ayslc_version_ma[] = AY_VERSIONSTR;
-char ayslc_version_mi[] = AY_VERSIONSTRMI;
-
-/* prototypes of functions local to this module */
+/* prototypes: */
 int ayslc_scanslcsarg(SLC_VISSYMDEF *symbol, Tcl_DString *ds);
 
 int ayslc_scanslctcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
 
+extern void ay_error(int code, char *where, char *what);
 
 #ifdef WIN32
-extern Tcl_Interp *ay_plugin_interp;
-Tcl_Interp *ay_plugin_interp;
 __declspec( dllexport ) int Ayslc_Init(Tcl_Interp *interp);
 #else
 int Ayslc_Init(Tcl_Interp *interp);
 #endif
+
+extern Tcl_Interp *ay_plugin_interp;
+Tcl_Interp *ay_plugin_interp;
+
 
 /* functions: */
 
@@ -119,13 +120,8 @@ ayslc_scanslctcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-#ifdef WIN32
   SLC_SetPath(Tcl_GetVar(ay_plugin_interp, vname,
 			 TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG));
-#else
-  SLC_SetPath(Tcl_GetVar(ay_interp, vname,
-			 TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG));
-#endif
 
   if((SLC_SetShader(argv[1])) == -1)
     {
@@ -285,29 +281,11 @@ Ayslc_Init(Tcl_Interp *interp)
  char fname[] = "ayslc_init";
  char vname[] = "ay(sext)", vval[] = ".slc";
 
-#ifdef WIN32
   ay_plugin_interp = interp;
   if(Tcl_InitStubs(interp, "8.2", 0) == NULL)
     {
       return TCL_ERROR;
     }
-#else
-  /* first, check versions */
-  if(strcmp(ay_version_ma, ayslc_version_ma))
-    {
-      ay_error(AY_ERROR, fname,
-	       "Plugin has been compiled for a different Ayam version!");
-      ay_error(AY_ERROR, fname, "It is unsafe to continue! Bailing out...");
-      return TCL_OK;
-    }
-
-  if(strcmp(ay_version_mi, ayslc_version_mi))
-    {
-      ay_error(AY_ERROR, fname,
-	       "Plugin has been compiled for a different Ayam version!");
-      ay_error(AY_ERROR, fname, "However, it is probably safe to continue...");
-    }
-#endif
 
   Tcl_SetVar(interp, vname, vval, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
@@ -315,7 +293,7 @@ Ayslc_Init(Tcl_Interp *interp)
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   ay_error(AY_EOUTPUT, fname,
-	   "Plug-In 'ayslc' loaded.");
+	   "Plugin 'ayslc' loaded.");
   ay_error(AY_EOUTPUT, fname,
 	   "Ayam will now scan for .slc-shaders only!");
 
