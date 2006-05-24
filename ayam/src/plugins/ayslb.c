@@ -1,7 +1,7 @@
 /*
  * Ayam, a free 3D modeler for the RenderMan interface.
  *
- * Ayam is copyrighted 1998-2003 by Randolf Schultz
+ * Ayam is copyrighted 1998-2006 by Randolf Schultz
  * (rschultz@informatik.uni-rostock.de) and others.
  *
  * All rights reserved.
@@ -9,8 +9,6 @@
  * See the file License for details.
  *
  */
-
-#include "ayam.h"
 
 /* ayslb.c - plugin to scan shaders compiled with shaded (Air)
    using code kindly provided by Scott Iverson (SiTex Graphics) */
@@ -26,23 +24,26 @@
  
 */
 
-/* global variables */
-char ayslb_version_ma[] = AY_VERSIONSTR;
-char ayslb_version_mi[] = AY_VERSIONSTRMI;
+/* includes: */
+#include "tcl.h"
+#include "errcode.h"
 
-/* prototypes of functions local to this module: */
+/* prototypes: */
 int ayslb_scanshader(char *fname, Tcl_DString *ds);
 
 int ayslb_scanslbtcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
-#ifdef WIN32
+
 extern Tcl_Interp *ay_plugin_interp;
 Tcl_Interp *ay_plugin_interp;
+#ifdef WIN32
 __declspec( dllexport ) int Ayslb_Init(Tcl_Interp *interp);
 #else
 int Ayslb_Init(Tcl_Interp *interp);
 #endif
 
+
+/* definitions and types: */
 #define MAXSHADERLENGTH 160000
 #define MAXNSHADERARGS 4000
 #define MAXNSHADERTOKENS (MAXNSHADERARGS*2+3)
@@ -99,10 +100,12 @@ typedef struct {
   short magic,size;
 } MagicHeader;
 
+
 /* functions: */
-/* ayslb_scanshader: Returns a fully qualified shader
- *  declaration of the shader in file "fname" in the Tcl_DString
- *  pointed to by "ds"
+
+/* ayslb_scanshader:
+ *  Returns a fully qualified shader declaration of the shader in
+ *  file "fname" in the Tcl_DString pointed to by "ds"
  */
 int
 ayslb_scanshader(char *fname, Tcl_DString *ds)
@@ -386,29 +389,11 @@ Ayslb_Init(Tcl_Interp *interp)
  char fname[] = "ayslb_init";
  char vname[] = "ay(sext)", vval[] = ".slb";
 
-#ifdef WIN32
   ay_plugin_interp = interp;
   if(Tcl_InitStubs(interp, "8.2", 0) == NULL)
     {
       return TCL_ERROR;
     }
-#else
-  /* first, check versions */
-  if(strcmp(ay_version_ma, ayslb_version_ma))
-    {
-      ay_error(AY_ERROR, fname,
-	       "Plugin has been compiled for a different Ayam version!");
-      ay_error(AY_ERROR, fname, "It is unsafe to continue! Bailing out...");
-      return TCL_OK;
-    }
-
-  if(strcmp(ay_version_mi, ayslb_version_mi))
-    {
-      ay_error(AY_ERROR, fname,
-	       "Plugin has been compiled for a different Ayam version!");
-      ay_error(AY_ERROR, fname, "However, it is probably safe to continue...");
-    }
-#endif
 
   Tcl_SetVar(interp, vname, vval, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
@@ -416,7 +401,7 @@ Ayslb_Init(Tcl_Interp *interp)
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   ay_error(AY_EOUTPUT, fname,
-	   "Plug-In 'ayslb' successfully loaded.");
+	   "Plugin 'ayslb' successfully loaded.");
   ay_error(AY_EOUTPUT, fname,
 	   "Ayam will now scan for .slb-shaders only!");
 

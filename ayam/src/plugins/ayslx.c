@@ -1,7 +1,7 @@
 /*
  * Ayam, a free 3D modeler for the RenderMan interface.
  *
- * Ayam is copyrighted 1998-2003 by Randolf Schultz
+ * Ayam is copyrighted 1998-2006 by Randolf Schultz
  * (rschultz@informatik.uni-rostock.de) and others.
  *
  * All rights reserved.
@@ -10,30 +10,32 @@
  *
  */
 
-#include "ayam.h"
-
-#include <slx.h>
-
-/* ayslx.c - Plug-In to scan shaders compiled with aqsl (Aqsis)
+/* ayslx.c - Plugin to scan shaders compiled with aqsl (Aqsis)
    using libslxargs  */
 
-/* global variables: */
-char ayslx_version_ma[] = AY_VERSIONSTR;
-char ayslx_version_mi[] = AY_VERSIONSTRMI;
+/* includes: */
+#include "tcl.h"
+#include "errcode.h"
+#include "slx.h"
 
-/* prototypes of functions local to this module: */
+
+/* prototypes: */
 int ayslx_scanslxsarg(SLX_VISSYMDEF *symbol, Tcl_DString *ds);
 
 int ayslx_scanslxtcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
 
+extern void ay_error(int code, char *where, char *what);
+
 #ifdef WIN32
+  __declspec( dllexport ) int Ayslx_Init(Tcl_Interp *interp);
+#else
+  int Ayslx_Init(Tcl_Interp *interp);
+#endif
+
 extern Tcl_Interp *ay_plugin_interp;
 Tcl_Interp *ay_plugin_interp;
-__declspec( dllexport ) int Ayslx_Init(Tcl_Interp *interp);
-#else
-int Ayslx_Init(Tcl_Interp *interp);
-#endif
+
 
 /* functions: */
 
@@ -130,13 +132,19 @@ ayslx_scanslxtcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-#ifdef WIN32
-  SLX_SetPath(Tcl_GetVar(ay_plugin_interp, vname,
-			 TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG));
-#else
-  SLX_SetPath(Tcl_GetVar(ay_interp, vname,
-			 TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG));
-#endif
+  /* change all ; to , in shader search path */
+  Tcl_DStringInit(&ds);
+  Tcl_DStringAppend(&ds,
+	     Tcl_GetVar(ay_plugin_interp, vname,
+			TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG), -1);
+  c = strchr(Tcl_DStringValue(&ds), ';');
+  while(c)
+    {
+      *c = ',';
+      c = strchr(c, ';');
+    }
+  SLX_SetPath(Tcl_DStringValue(&ds));
+  Tcl_DStringFree(&ds);
 
   if((SLX_SetShader(argv[1])) == -1)
     {
@@ -271,7 +279,6 @@ ayslx_scanslxtcmd(ClientData clientData, Tcl_Interp *interp,
     } /* for */
   Tcl_DStringAppend(&ds, "} ", -1);
 
-
   SLX_EndShader();
 
   Tcl_SetVar(interp, argv[2], Tcl_DStringValue(&ds), TCL_LEAVE_ERR_MSG);
@@ -285,7 +292,7 @@ ayslx_scanslxtcmd(ClientData clientData, Tcl_Interp *interp,
 /* note: this function _must_ be capitalized exactly this way
  * regardless of the filename of the shared object (see: man n load)!
  */
-#ifdef WIN32
+#ifdef AYWIN32PLUGIN
 __declspec( dllexport ) int
 Ayslx_Init(Tcl_Interp *interp)
 #else
@@ -296,7 +303,7 @@ Ayslx_Init(Tcl_Interp *interp)
  char fname[] = "ayslx_init";
  char vname[] = "ay(sext)", vval[] = ".slx";
 
-#ifdef WIN32
+#ifdef AYWIN32PLUGIN
   ay_plugin_interp = interp;
   if(Tcl_InitStubs(interp, "8.2", 0) == NULL)
     {
