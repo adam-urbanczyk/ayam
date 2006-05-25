@@ -34,8 +34,10 @@ int ayslb_scanshader(char *fname, Tcl_DString *ds);
 int ayslb_scanslbtcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
 
-extern Tcl_Interp *ay_plugin_interp;
-Tcl_Interp *ay_plugin_interp;
+extern void ay_error(int code, char *where, char *what);
+
+extern void ay_error_init(Tcl_Interp *interp);
+
 #ifdef WIN32
 __declspec( dllexport ) int Ayslb_Init(Tcl_Interp *interp);
 #else
@@ -389,7 +391,8 @@ Ayslb_Init(Tcl_Interp *interp)
  char fname[] = "ayslb_init";
  char vname[] = "ay(sext)", vval[] = ".slb";
 
-  ay_plugin_interp = interp;
+  ay_error_init(interp);
+
   if(Tcl_InitStubs(interp, "8.2", 0) == NULL)
     {
       return TCL_ERROR;

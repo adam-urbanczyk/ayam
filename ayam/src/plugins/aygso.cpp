@@ -25,9 +25,10 @@ int aygso_scangsotcmd(ClientData clientData, Tcl_Interp *interp,
 
 extern "C" {
 
-  extern Tcl_Interp *ay_plugin_interp;
-  Tcl_Interp *ay_plugin_interp;
   extern void ay_error(int code, char *where, char *what);
+
+  extern void ay_error_init(Tcl_Interp *interp);
+
 #ifdef WIN32
   __declspec( dllexport ) int Aygso_Init(Tcl_Interp *interp);
 #else
@@ -164,8 +165,8 @@ aygso_scangsotcmd(ClientData clientData, Tcl_Interp *interp,
 
   /* change all ; to : in shader search path */
   Tcl_DStringInit(&dsp);
-  Tcl_DStringAppend(&dsp, Tcl_GetVar(ay_plugin_interp, vname,
-				     TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG), -1);
+  Tcl_DStringAppend(&dsp,
+             Tcl_GetVar(interp, vname, TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG), -1);
   c = strchr(Tcl_DStringValue(&dsp), ';');
   while(c)
     {
@@ -304,7 +305,8 @@ Aygso_Init(Tcl_Interp *interp)
  char fname[] = "aygso_init";
  char vname[] = "ay(sext)", vval[] = ".gso";
 
-  ay_plugin_interp = interp;
+  ay_error_init(interp);
+
   if(Tcl_InitStubs(interp, "8.2", 0) == NULL)
     {
       return TCL_ERROR;

@@ -27,15 +27,13 @@ int ayslc_scanslctcmd(ClientData clientData, Tcl_Interp *interp,
 
 extern void ay_error(int code, char *where, char *what);
 
+extern void ay_error_init(Tcl_Interp *interp);
+
 #ifdef WIN32
 __declspec( dllexport ) int Ayslc_Init(Tcl_Interp *interp);
 #else
 int Ayslc_Init(Tcl_Interp *interp);
 #endif
-
-extern Tcl_Interp *ay_plugin_interp;
-Tcl_Interp *ay_plugin_interp;
-
 
 /* functions: */
 
@@ -120,8 +118,7 @@ ayslc_scanslctcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  SLC_SetPath(Tcl_GetVar(ay_plugin_interp, vname,
-			 TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG));
+  SLC_SetPath(Tcl_GetVar(interp, vname, TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG));
 
   if((SLC_SetShader(argv[1])) == -1)
     {
@@ -281,7 +278,8 @@ Ayslc_Init(Tcl_Interp *interp)
  char fname[] = "ayslc_init";
  char vname[] = "ay(sext)", vval[] = ".slc";
 
-  ay_plugin_interp = interp;
+  ay_error_init(interp);
+
   if(Tcl_InitStubs(interp, "8.2", 0) == NULL)
     {
       return TCL_ERROR;
