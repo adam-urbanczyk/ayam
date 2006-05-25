@@ -547,37 +547,40 @@ metaobj.so: $(METAOBJS)
 rrib.so: $(RRIBOBJS)
 	$(CC) $(SHLFLAGS) $(RRIBOBJS) -o plugins/rrib.so $(RRIBLIBS)
 
-ayslx.so:
-	$(CC) -c $(CFLAGS) plugins/ayslx.c -o plugins/ayslx.o -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR) -I$(AQSISINCDIR) -I$(TIFFINCDIR) -I$(AYSLXINCDIR)
-	$(CC) $(SHLFLAGS) plugins/ayslx.o -o plugins/ayslx.so $(AYSLXLIBS)
+ayslx.so: plugins/ayerror.o
+	$(CC) -c $(CFLAGS) plugins/ayslx.c -o plugins/ayslx.o -Iplugins $(TCLINC) -I$(AYSLXINCDIR)
+	$(CC) $(SHLFLAGS) plugins/ayerror.o plugins/ayslx.o -o plugins/ayslx.so $(AYSLXLIBS)
 
-ayso.so:
-	$(CC) -c $(CFLAGS) plugins/ayso.c -o plugins/ayso.o -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR) -I$(AQSISINCDIR) -I$(TIFFINCDIR) -I$(AYSOINCDIR)
-	$(CC) $(SHLFLAGS) plugins/ayso.o -o plugins/ayso.so $(AYSOLIBS)
+ayso.so: plugins/ayerror.o
+	$(CC) -c $(CFLAGS) plugins/ayso.c -o plugins/ayso.o -Iplugins $(TCLINC) -I$(AYSOINCDIR)
+	$(CC) $(SHLFLAGS) plugins/ayerror.o plugins/ayso.o -o plugins/ayso.so $(AYSOLIBS)
 
-ayslo.so:
-	$(CC) -c $(CFLAGS) plugins/ayslo.c -o plugins/ayslo.o -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR) -I$(AQSISINCDIR) -I$(TIFFINCDIR) -I$(AYSLOINCDIR)
-	$(CC) $(SHLFLAGS) plugins/ayslo.o -o plugins/ayslo.so $(AYSLOLIBS)
+ayslo.so: plugins/ayerror.o
+	$(CC) -c $(CFLAGS) plugins/ayslo.c -o plugins/ayslo.o -Iplugins $(TCLINC) -I$(AYSLOINCDIR)
+	$(CC) $(SHLFLAGS) plugins/ayerror.o plugins/ayslo.o -o plugins/ayslo.so $(AYSLOLIBS)
 
-ayslo3d.so:
-	$(CC) -c $(CFLAGS) plugins/ayslo3d.c -o plugins/ayslo3d.o -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR) -I$(AQSISINCDIR) -I$(TIFFINCDIR) -I$(AYSLO3DINCDIR)
-	$(CC) $(SHLFLAGS) plugins/ayslo3d.o -o plugins/ayslo3d.so $(AYSLO3DLIBS)
+ayslo3d.so: plugins/ayerror.o
+	$(CC) -c $(CFLAGS) plugins/ayslo3d.c -o plugins/ayslo3d.o -Iplugins $(TCLINC) -I$(AYSLO3DINCDIR)
+	$(CC) $(SHLFLAGS) plugins/ayerror.o plugins/ayslo3d.o -o plugins/ayslo3d.so $(AYSLO3DLIBS)
 
-ayslb.so:
-	$(CC) -c $(CFLAGS) plugins/ayslb.c -o plugins/ayslb.o -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR) -I$(AQSISINCDIR) -I$(TIFFINCDIR)
-	$(CC) $(SHLFLAGS) plugins/ayslb.o -o plugins/ayslb.so
+ayslb.so: plugins/ayerror.o
+	$(CC) -c $(CFLAGS) plugins/ayslb.c -o plugins/ayslb.o -Iplugins $(TCLINC)
+	$(CC) $(SHLFLAGS) plugins/ayerror.o plugins/ayslb.o -o plugins/ayslb.so
 
-ayslc.so:
-	$(CC) -c $(CFLAGS) plugins/ayslc.c -o plugins/ayslc.o -I. -IMF3D $(TOGLINC) $(TCLINC) $(TKINC) $(BMRTINC) $(GLINC) $(AFFINEINC) $(AQSISINC) $(TIFFINC) -I$(AYSLCINCDIR)
-	$(CC) $(SHLFLAGS) plugins/ayslc.o -L$(AYSLCLIBS) -o plugins/ayslc.so
+ayslc.so: plugins/ayerror.o
+	$(CC) -c $(CFLAGS) plugins/ayslc.c -o plugins/ayslc.o -Iplugins $(TCLINC) -I$(AYSLCINCDIR)
+	$(CC) $(SHLFLAGS) plugins/ayerror.o plugins/ayslc.o $(AYSLCLIBS) -o plugins/ayslc.so
 
-aysdr.so:
-	$(CC) -c $(CFLAGS) plugins/aysdr.c -o plugins/aysdr.o -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR) -I$(AQSISINCDIR) -I$(TIFFINCDIR) -I$(AYSDRINCDIR)
-	$(CC) $(SHLFLAGS) plugins/aysdr.o -o plugins/aysdr.so $(LDSWSTATIC) $(AYSDRLIBS) $(LDSWDYNAMIC)
+aysdr.so: plugins/ayerror.o
+	$(CC) -c $(CFLAGS) plugins/aysdr.c -o plugins/aysdr.o -Iplugins $(TCLINC) -I$(AYSDRINCDIR)
+	$(CC) $(SHLFLAGS) plugins/ayerror.o plugins/aysdr.o -o plugins/aysdr.so $(LDSWSTATIC) $(AYSDRLIBS) $(LDSWDYNAMIC)
 
 onio.so:
 	$(CXX) -c $(CFLAGS) plugins/onio.cpp -o plugins/onio.o -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR) -I$(AQSISINCDIR) -I$(TIFFINCDIR) -I$(ONIOINCDIR)
 	$(CXX) $(SHLFLAGS) plugins/onio.o -o plugins/onio.so -Wl,-Bstatic $(ONIOLIBS) -Wl,-Bdynamic
+
+plugins/ayerror.o:
+	$(CC) -c $(CFLAGS) plugins/ayerror.c -o plugins/ayerror.o $(TCLINC)
 
 mostlyclean:
 	-rm -f core
