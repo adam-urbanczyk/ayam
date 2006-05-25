@@ -331,6 +331,7 @@ ay_shader_scanslxtcmd(ClientData clientData, Tcl_Interp *interp,
  int arraylen;
  Tcl_DString ds;
  char vname[] = "ayprefs(Shaders)";
+ char *c = NULL;
 
   if(argc < 3)
     {
@@ -338,7 +339,21 @@ ay_shader_scanslxtcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
+#ifndef WIN32
   SLX_SetPath(Tcl_GetVar(ay_interp, vname, TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG));
+#else
+  Tcl_DStringInit(&ds);
+  Tcl_DStringAppend(&ds,
+       Tcl_GetVar(ay_interp, vname, TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG), -1);
+  c = strchr(Tcl_DStringValue(&ds), ';');
+  while(c)
+    {
+      *c = ':';
+      c = strchr(c, ';');
+    }
+  SLX_SetPath(Tcl_DStringValue(&ds));
+  Tcl_DStringFree(&ds);
+#endif /* WIN32 */
 
   if((SLX_SetShader(argv[1])) == -1)
     {
