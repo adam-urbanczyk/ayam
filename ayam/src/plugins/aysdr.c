@@ -29,15 +29,13 @@ int aysdr_scansdrtcmd(ClientData clientData, Tcl_Interp *interp,
 
 extern void ay_error(int code, char *where, char *what);
 
+extern void ay_error_init(Tcl_Interp *interp);
+
 #ifdef WIN32
   __declspec( dllexport ) int Aysdr_Init(Tcl_Interp *interp);
 #else
   int Aysdr_Init(Tcl_Interp *interp);
 #endif
-
-extern Tcl_Interp *ay_plugin_interp;
-Tcl_Interp *ay_plugin_interp;
-
 
 /* functions: */
 
@@ -323,7 +321,8 @@ Aysdr_Init(Tcl_Interp *interp)
  char fname[] = "aysdr_init";
  char vname[] = "ay(sext)", vval[] = ".sdr";
 
-  ay_plugin_interp = interp;
+  ay_error_init(interp);
+
   if(Tcl_InitStubs(interp, "8.2", 0) == NULL)
     {
       return TCL_ERROR;

@@ -28,15 +28,13 @@ int ayslx_scanslxtcmd(ClientData clientData, Tcl_Interp *interp,
 
 extern void ay_error(int code, char *where, char *what);
 
+extern void ay_error_init(Tcl_Interp *interp);
+
 #ifdef WIN32
   __declspec( dllexport ) int Ayslx_Init(Tcl_Interp *interp);
 #else
   int Ayslx_Init(Tcl_Interp *interp);
 #endif
-
-extern Tcl_Interp *ay_plugin_interp;
-Tcl_Interp *ay_plugin_interp;
-
 
 /* functions: */
 
@@ -137,8 +135,7 @@ ayslx_scanslxtcmd(ClientData clientData, Tcl_Interp *interp,
   /* change all ; to , in shader search path */
   Tcl_DStringInit(&ds);
   Tcl_DStringAppend(&ds,
-	     Tcl_GetVar(ay_plugin_interp, vname,
-			TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG), -1);
+	     Tcl_GetVar(interp, vname, TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG), -1);
   c = strchr(Tcl_DStringValue(&ds), ';');
   while(c)
     {
@@ -305,7 +302,8 @@ Ayslx_Init(Tcl_Interp *interp)
  char fname[] = "ayslx_init";
  char vname[] = "ay(sext)", vval[] = ".slx";
 
-  ay_plugin_interp = interp;
+  ay_error_init(interp);
+
   if(Tcl_InitStubs(interp, "8.2", 0) == NULL)
     {
       return TCL_ERROR;
