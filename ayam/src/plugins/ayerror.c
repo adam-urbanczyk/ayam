@@ -37,15 +37,17 @@ void
 ay_error(int code, char *where, char *what)
 {
  Tcl_DString ds;
- char ayerrcmdstr[] = "ayError ", codestr[64];
+ char ayerrcmdstr[] = "ayError ", vname[] = "ay_error", codestr[64];
 
   Tcl_DStringInit(&ds);
 
   Tcl_DStringAppend(&ds, ayerrcmdstr, -1);
 
-  sprintf(codestr, "%d ", code);
+  sprintf(codestr, "%d", code);
 
   Tcl_DStringAppend(&ds, codestr, -1);
+
+  Tcl_DStringAppend(&ds, " ", -1);
 
   if(where)
     {
@@ -64,6 +66,13 @@ ay_error(int code, char *where, char *what)
   Tcl_Eval(ay_error_interp, Tcl_DStringValue(&ds));
 
   Tcl_DStringFree(&ds);
+
+  if(code>1)
+    {
+      
+      Tcl_SetVar(ay_error_interp, vname, codestr,
+		 TCL_LEAVE_ERR_MSG|TCL_GLOBAL_ONLY);
+    }
 
  return;
 } /* ay_error */
