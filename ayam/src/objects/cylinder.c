@@ -728,15 +728,15 @@ ay_cylinder_providecb(ay_object *o, unsigned int type, ay_object **result)
     {
       if(cylinder->thetamax < 0.0)
 	{
-	  ay_status = ay_nb_CreateNurbsCircle(cylinder->radius,
-					      cylinder->thetamax, 0.0,
-					      &height, &vk, &cv);
+	  ay_status = ay_nb_CreateNurbsCircleArc(cylinder->radius,
+						 cylinder->thetamax, 0.0,
+						 &height, &vk, &cv);
 	}
       else
 	{
-	  ay_status = ay_nb_CreateNurbsCircle(cylinder->radius,
-					      0.0, cylinder->thetamax,
-					      &height, &vk, &cv);
+	  ay_status = ay_nb_CreateNurbsCircleArc(cylinder->radius,
+						 0.0, cylinder->thetamax,
+						 &height, &vk, &cv);
 	} /* if */
 
       if(ay_status)

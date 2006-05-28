@@ -644,9 +644,9 @@ ay_torus_providecb(ay_object *o, unsigned int type, ay_object **result)
       phimax = torus->phimax;
       thetamax = torus->thetamax;
 
-      ay_status = ay_nb_CreateNurbsCircle(minorrad,
-					  phimin, phimax,
-					  &height, &kn, &cv);
+      ay_status = ay_nb_CreateNurbsCircleArc(minorrad,
+					     phimin, phimax,
+					     &height, &kn, &cv);
 
       if(ay_status)
 	goto cleanup;
@@ -741,15 +741,15 @@ ay_torus_providecb(ay_object *o, unsigned int type, ay_object **result)
 	      cv = NULL;
 	      if(torus->thetamax < 0.0)
 		{
-		  ay_status = ay_nb_CreateNurbsCircle(majorrad,
-						      0, thetamax,
-						      &height, &kn, &cv);
+		  ay_status = ay_nb_CreateNurbsCircleArc(majorrad,
+							 0, thetamax,
+							 &height, &kn, &cv);
 		}
 	      else
 		{
-		  ay_status = ay_nb_CreateNurbsCircle(majorrad,
-						      thetamax, 0,
-						      &height, &kn, &cv);
+		  ay_status = ay_nb_CreateNurbsCircleArc(majorrad,
+							 thetamax, 0,
+							 &height, &kn, &cv);
 		}
 	      if(ay_status)
 		goto cleanup;

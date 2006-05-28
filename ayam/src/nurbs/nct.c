@@ -2239,13 +2239,13 @@ ay_nct_crtncirclearc(double radius, double arc, ay_nurbcurve_object **curve)
 
   if(arc < 0.0)
     {
-      ay_status = ay_nb_CreateNurbsCircle(radius, arc, 0.0, &(new->length),
-					      &new->knotv, &new->controlv);
+      ay_status = ay_nb_CreateNurbsCircleArc(radius, arc, 0.0, &(new->length),
+					     &new->knotv, &new->controlv);
     }
   else
     {
-      ay_status = ay_nb_CreateNurbsCircle(radius, 0.0, arc, &(new->length),
-					      &new->knotv, &new->controlv);
+      ay_status = ay_nb_CreateNurbsCircleArc(radius, 0.0, arc, &(new->length),
+					     &new->knotv, &new->controlv);
     }
 
   if(ay_status)

@@ -639,15 +639,15 @@ ay_cone_providecb(ay_object *o, unsigned int type, ay_object **result)
     {
       if(cone->thetamax < 0.0)
 	{
-	  ay_status = ay_nb_CreateNurbsCircle(cone->radius,
-					      cone->thetamax, 0.0,
-					      &height, &vk, &cv);
+	  ay_status = ay_nb_CreateNurbsCircleArc(cone->radius,
+						 cone->thetamax, 0.0,
+						 &height, &vk, &cv);
 	}
       else
 	{
-	  ay_status = ay_nb_CreateNurbsCircle(cone->radius,
-					      0.0, cone->thetamax,
-					      &height, &vk, &cv);
+	  ay_status = ay_nb_CreateNurbsCircleArc(cone->radius,
+						 0.0, cone->thetamax,
+						 &height, &vk, &cv);
 	} /* if */
 
       if(ay_status)

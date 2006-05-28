@@ -2051,21 +2051,26 @@ ay_nb_CompFirstDerSurf3D(int n, int m, int p, int q, double *U, double *V,
 
 
 /*
-   To make things easier the following assumptions
-   have been made:
-   O = {0.0,0.0,0.0};
-   X = {1.0,0.0,0.0};
-   Y = {0.0,1.0,0.0};
+ * ay_nb_CreateNurbsCircleArc:
+ *  create a NURBS circle arc with radius <r> and angle <the>-<ths>
+ *  in the XY plane, centered at origin; uses standard algorithm that
+ *  creates rational control points for a quadric curve;
+ *  outputs number of control points created in <length>, a knot vector
+ *  in <knotv>, and the control points in <controlv>
+ *  (To make things easier, the following assumptions have been made:
+ *  O = {0.0,0.0,0.0};
+ *  X = {1.0,0.0,0.0};
+ *  Y = {0.0,1.0,0.0};)
 */
 int
-ay_nb_CreateNurbsCircle(double r, double ths, double the,
-			int *length, double **knotv, double **controlv)
+ay_nb_CreateNurbsCircleArc(double r, double ths, double the,
+			   int *length, double **knotv, double **controlv)
 {
  double theta = 0.0, dtheta = 0.0, angle = 0.0, w1 = 0.0;
  double *Pw = NULL, *U = NULL;
  int i, j, index = 0, narcs = 0, n = 0;
  double P0[4] = {0}, P1[4] = {0}, P2[4] = {0};
- double T0[4] = {0}, T2[4] = {0};
+ double T0[2] = {0}, T2[2] = {0};
 
   if(the < ths)
     the = 360 - the;
@@ -2084,7 +2089,7 @@ ay_nb_CreateNurbsCircle(double r, double ths, double the,
 	narcs = 4;
 
   dtheta = theta/narcs;
-  n = 2 * narcs;                  /* n+1 control points */
+  n = 2 * narcs; /* n+1 control points */
   w1 = cos(AY_D2R(dtheta/2.0)); /* dtheta/2 == base angle */
 
   /* alloc mem for Pw and U */
@@ -2102,32 +2107,32 @@ ay_nb_CreateNurbsCircle(double r, double ths, double the,
   Pw[0] = P0[0];
   Pw[1] = P0[1];
   Pw[3] = 1.0;
-  index=0; angle = ths;
-  for(i=1; i<=narcs; i++)
+  index = 0; angle = ths;
+  for(i = 1; i <= narcs; i++)
     {
       angle += dtheta;
+
       P2[0] = r * cos(AY_D2R(angle));
       P2[1] = r * sin(AY_D2R(angle));
       P2[3] = 1.0;
-
-      memcpy(&Pw[(index+2)*4],P2,4*sizeof(double));
-
       T2[0] = -sin(AY_D2R(angle));
       T2[1] = cos(AY_D2R(angle));
 
-      ay_geom_intersectlines3D(P0,T0,P2,T2,P1);
+      ay_geom_intersectlines2D(P0, T0, P2, T2, P1);
 
-      Pw[(index+1)*4]   = w1*P1[0];
+      Pw[(index+1)*4]     = w1*P1[0];
       Pw[((index+1)*4)+1] = w1*P1[1];
       Pw[((index+1)*4)+3] = w1;
 
+      memcpy(&Pw[(index+2)*4], P2, 4*sizeof(double));
+
       index += 2;
-      if(i<index)
+      if(i < index)
 	{
-	  memcpy(P0,P2,4*sizeof(double));
-	  memcpy(T0,T2,2*sizeof(double));
+	  memcpy(P0, P2, 4*sizeof(double));
+	  memcpy(T0, T2, 2*sizeof(double));
 	}
-    }
+    } /* for */
 
   j = 2*narcs+1;
   for(i=0; i<3; i++)
@@ -2157,14 +2162,14 @@ ay_nb_CreateNurbsCircle(double r, double ths, double the,
       U[7] = 0.75;
       U[8] = 0.75;
       break;
-    }
+    } /* switch */
 
   *knotv = U;
   *controlv = Pw;
   *length = n+1;
 
  return AY_OK;
-} /* ay_nb_CreateNurbsCircle */
+} /* ay_nb_CreateNurbsCircleArc */
 
 
 /*
