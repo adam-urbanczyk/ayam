@@ -41,6 +41,35 @@ ay_geom_intersectlines3D(double *p1, double *t1,
 } /* ay_geom_intersectlines3D */
 
 
+int
+ay_geom_intersectlines2D(double *p1, double *t1,
+			 double *p2, double *t2,
+			 double *p)
+{
+  double ua, ub, den, nomua, nomub;
+
+  den = t2[1]*t1[0] - t2[0]*t1[1];
+
+  if(fabs(den) < AY_EPSILON)
+    return 0;
+
+  nomua = (t2[0]*(p1[1]-p2[1]) - t2[1]*(p1[0]-p2[0]));
+  nomub = (t1[0]*(p1[1]-p2[1]) - t1[1]*(p1[0]-p2[0]));
+
+  if((fabs(den) < AY_EPSILON) &&
+     (fabs(nomua) < AY_EPSILON) &&
+     (fabs(nomub) < AY_EPSILON))
+    return 0;
+
+  ua = nomua/den;
+  ub = nomub/den;
+
+  p[0] = p1[0] + ua*t1[0];
+  p[1] = p1[1] + ua*t1[1];
+
+ return 1;
+} /* ay_geom_intersectlines2D */
+
 void
 ay_geom_calcnfrom3(double *p1, double *p2, double *p3, double *n)
 {

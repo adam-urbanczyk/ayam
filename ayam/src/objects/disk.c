@@ -399,15 +399,15 @@ ay_disk_providecb(ay_object *o, unsigned int type, ay_object **result)
     {
       if(disk->thetamax < 0.0)
 	{
-	  ay_status = ay_nb_CreateNurbsCircle(disk->radius,
-					      disk->thetamax, 0.0,
-					      &height, &vk, &cv);
+	  ay_status = ay_nb_CreateNurbsCircleArc(disk->radius,
+						 disk->thetamax, 0.0,
+						 &height, &vk, &cv);
 	}
       else
 	{
-	  ay_status = ay_nb_CreateNurbsCircle(disk->radius,
-					      0.0, disk->thetamax,
-					      &height, &vk, &cv);
+	  ay_status = ay_nb_CreateNurbsCircleArc(disk->radius,
+						 0.0, disk->thetamax,
+						 &height, &vk, &cv);
 	} /* if */
 
       if(ay_status)

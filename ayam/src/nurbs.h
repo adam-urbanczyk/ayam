@@ -133,8 +133,8 @@ void ay_nb_CompFirstDerSurf4D(int n, int m, int p, int q, double *U, double *V,
 void ay_nb_CompFirstDerSurf3D(int n, int m, int p, int q, double *U, double *V,
 			      double *P, double u, double v, double *C);
 
-int ay_nb_CreateNurbsCircle(double r, double ths, double the,
-			int *length, double **knotv, double **controlv);
+int ay_nb_CreateNurbsCircleArc(double r, double ths, double the,
+			       int *length, double **knotv, double **controlv);
 
 void ay_nb_RefineKnotVectCurve(int stride, int n, int p, double *U, double *Pw,
 			       double *X, int r, double *Ubar, double *Qw);

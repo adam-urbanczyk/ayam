@@ -225,13 +225,13 @@ ay_npt_revolve(ay_object *o, double arc, int sections, int order,
 	{
 	  if(arc > 0.0)
 	    {
-	      ay_status = ay_nb_CreateNurbsCircle(radius, 0.0, arc,
+	      ay_status = ay_nb_CreateNurbsCircleArc(radius, 0.0, arc,
 						  &(new->height), &new->vknotv,
 						  &tcontrolv);
 	    }
 	  else
 	    {
-	      ay_status = ay_nb_CreateNurbsCircle(radius, arc, 0.0,
+	      ay_status = ay_nb_CreateNurbsCircleArc(radius, arc, 0.0,
 						  &(new->height), &new->vknotv,
 						  &tcontrolv);
 	    } /* if */

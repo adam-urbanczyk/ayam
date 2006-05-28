@@ -640,13 +640,13 @@ ay_hyperboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
 
       if(hyperboloid->thetamax < 0.0)
 	{
-	  ay_status = ay_nb_CreateNurbsCircle(rmin, the, ths,
-					      &height, &vk, &cv);
+	  ay_status = ay_nb_CreateNurbsCircleArc(rmin, the, ths,
+						 &height, &vk, &cv);
 	}
       else
 	{
-	  ay_status = ay_nb_CreateNurbsCircle(rmin, ths, the,
-					      &height, &vk, &cv);
+	  ay_status = ay_nb_CreateNurbsCircleArc(rmin, ths, the,
+						 &height, &vk, &cv);
 	} /* if */
 
       if(ay_status)
@@ -673,13 +673,13 @@ ay_hyperboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
 
       if(hyperboloid->thetamax < 0.0)
 	{
-	  ay_status = ay_nb_CreateNurbsCircle(rmax, the, ths,
-					      &height, &vk, &cv);
+	  ay_status = ay_nb_CreateNurbsCircleArc(rmax, the, ths,
+						 &height, &vk, &cv);
 	}
       else
 	{
-	  ay_status = ay_nb_CreateNurbsCircle(rmax, ths, the,
-					      &height, &vk, &cv);
+	  ay_status = ay_nb_CreateNurbsCircleArc(rmax, ths, the,
+						 &height, &vk, &cv);
 	} /* if */
 
       if(ay_status)

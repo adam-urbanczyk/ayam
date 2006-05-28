@@ -668,15 +668,15 @@ ay_paraboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
       
       if(paraboloid->thetamax < 0.0)
 	{
-	  ay_status = ay_nb_CreateNurbsCircle(paraboloid->rmax,
-					      paraboloid->thetamax, 0.0,
-					      &height, &vk, &cv);
+	  ay_status = ay_nb_CreateNurbsCircleArc(paraboloid->rmax,
+						 paraboloid->thetamax, 0.0,
+						 &height, &vk, &cv);
 	}
       else
 	{
-	  ay_status = ay_nb_CreateNurbsCircle(paraboloid->rmax,
-					      0.0, paraboloid->thetamax,
-					      &height, &vk, &cv);
+	  ay_status = ay_nb_CreateNurbsCircleArc(paraboloid->rmax,
+						 0.0, paraboloid->thetamax,
+						 &height, &vk, &cv);
 	} /* if */
 	  
       if(ay_status)
@@ -704,15 +704,15 @@ ay_paraboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
 	{
 	  if(paraboloid->thetamax < 0.0)
 	    {
-	      ay_status = ay_nb_CreateNurbsCircle(r,
-						  paraboloid->thetamax, 0.0,
-						  &height, &vk, &cv);
+	      ay_status = ay_nb_CreateNurbsCircleArc(r,
+						     paraboloid->thetamax, 0.0,
+						     &height, &vk, &cv);
 	    }
 	  else
 	    {
-	      ay_status = ay_nb_CreateNurbsCircle(r,
-						  0.0, paraboloid->thetamax,
-						  &height, &vk, &cv);
+	      ay_status = ay_nb_CreateNurbsCircleArc(r,
+						     0.0, paraboloid->thetamax,
+						     &height, &vk, &cv);
 	    } /* if */
 	  
 	  if(ay_status)
@@ -743,15 +743,15 @@ ay_paraboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
       r = (r + 2*Sx)/3.0;
       if(paraboloid->thetamax < 0.0)
 	{
-	  ay_status = ay_nb_CreateNurbsCircle(r,
-					      paraboloid->thetamax, 0.0,
-					      &height, &vk, &cv);
+	  ay_status = ay_nb_CreateNurbsCircleArc(r,
+						 paraboloid->thetamax, 0.0,
+						 &height, &vk, &cv);
 	}
       else
 	{
-	  ay_status = ay_nb_CreateNurbsCircle(r,
-					      0.0, paraboloid->thetamax,
-					      &height, &vk, &cv);
+	  ay_status = ay_nb_CreateNurbsCircleArc(r,
+						 0.0, paraboloid->thetamax,
+						 &height, &vk, &cv);
 	} /* if */
 	  
       if(ay_status)
@@ -771,15 +771,15 @@ ay_paraboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
       r = (paraboloid->rmax + 2*Sx)/3.0;
       if(paraboloid->thetamax < 0.0)
 	{
-	  ay_status = ay_nb_CreateNurbsCircle(r,
-					      paraboloid->thetamax, 0.0,
-					      &height, &vk, &cv);
+	  ay_status = ay_nb_CreateNurbsCircleArc(r,
+						 paraboloid->thetamax, 0.0,
+						 &height, &vk, &cv);
 	}
       else
 	{
-	  ay_status = ay_nb_CreateNurbsCircle(r,
-					      0.0, paraboloid->thetamax,
-					      &height, &vk, &cv);
+	  ay_status = ay_nb_CreateNurbsCircleArc(r,
+						 0.0, paraboloid->thetamax,
+						 &height, &vk, &cv);
 	} /* if */
 	  
       if(ay_status)

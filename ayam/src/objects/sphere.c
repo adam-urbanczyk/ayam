@@ -914,7 +914,7 @@ ay_sphere_providecb(ay_object *o, unsigned int type, ay_object **result)
 
 	  phi = fabs(phimax) + fabs(phimin);
 
-	  ay_status = ay_nb_CreateNurbsCircle(sphere->radius,
+	  ay_status = ay_nb_CreateNurbsCircleArc(sphere->radius,
 					      AY_R2D(phimin), AY_R2D(phimax),
 					      &height, &kn, &cv);
 

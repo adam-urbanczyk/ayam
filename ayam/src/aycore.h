@@ -121,6 +121,10 @@ int ay_geom_intersectlines3D(double *p1, double *t1,
 			     double *p2, double *t2,
 			     double *p);
 
+int ay_geom_intersectlines2D(double *p1, double *t1,
+			     double *p2, double *t2,
+			     double *p);
+
 void ay_geom_calcnfrom3(double *p1, double *p2, double *p3, double *n);
 
 /* instt.c */
