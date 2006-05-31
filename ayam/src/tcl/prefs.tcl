@@ -1,4 +1,3 @@
-
 # Ayam, a free 3D modeler for the RenderMan interface.
 #
 # Ayam is copyrighted 1998-2005 by Randolf Schultz
@@ -75,13 +74,13 @@ proc prefs_rsnb { nb page } {
 proc prefs_open {} {
     global ay ayprefs ayprefse tcl_platform aymainshortcuts
 
-    winAutoFocusOff
-
     # copy array ayprefs to ayprefse (we operate on this second array)
     set avnames [array names ayprefs]
     foreach j $avnames {
 	set ayprefse($j) $ayprefs($j)
     }
+
+    winAutoFocusOff
 
     set w .prefsw
     catch {destroy $w}
@@ -260,6 +259,8 @@ proc prefs_open {} {
 
 	prefs_warnNeedRestart
 
+	winAutoFocusOn
+
 	# copy array ayprefse to ayprefs
 	set avnames [array names ayprefs]
 	foreach j $avnames {
@@ -311,6 +312,7 @@ proc prefs_open {} {
 	}
 	focus .
 	destroy .prefsw
+	winAutoFocusOn
     }
 
     pack $f.bok $f.bap $f.bdef $f.bca -in $f -side left -fill x -expand yes
@@ -357,8 +359,6 @@ proc prefs_open {} {
 
     focus $f.bok
     tkwait window $w
-
-    winAutoFocusOn
 
  return;
 }
