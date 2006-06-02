@@ -62,7 +62,7 @@ proc render_select { } {
 
     pack $f -in $w -side top -fill x
 
-    set names [list BMRT2.5 BMRT2.6 Aqsis0.8.0 Aqsis0.9.0 Air Angel 3Delight Pixie RDC PRMan]
+    set names [list BMRT2.5 BMRT2.6 Aqsis0.8.0 Aqsis>=0.9.0 Air Angel 3Delight Pixie RDC PRMan Gelato]
     foreach name $names {
 	$f.li insert end "$name"
     }
@@ -95,6 +95,7 @@ proc render_select { } {
 		set ayprefs(SMRender) "rendrib %s"
 		set ayprefs(SMRenderPT) "Done computing %d"
 		set ayprefs(RenderMode) 0
+
 		if { $ay(ScanShaders) == 1 } {
 		    set ay(sext) ""
 		}
@@ -110,6 +111,7 @@ proc render_select { } {
 		set ayprefs(SMRender) "rendrib -Progress %s"
 		set ayprefs(SMRenderPT) "R90000 %d"
 		set ayprefs(RenderMode) 0
+
 		if { $ay(ScanShaders) == 1 } {
 		    set ay(sext) ""
 		}
@@ -125,6 +127,7 @@ proc render_select { } {
 		set ayprefs(SMRender) "aqsis -progress %s"
 		set ayprefs(SMRenderPT) "Done Computing %d"
 		set ayprefs(RenderMode) 0
+
 		global AYUSESLXARGS
 		if { $AYUSESLXARGS != 1 } {
 		    set splugin "ayslx"
@@ -145,6 +148,7 @@ proc render_select { } {
 		set ayprefs(SMRender) "aqsis -Progress %s"
 		set ayprefs(SMRenderPT) "R90000%d"
 		set ayprefs(RenderMode) 0
+
 		global AYUSESLXARGS
 		if { $AYUSESLXARGS != 1 } {
 		    set splugin "ayslx"
@@ -152,7 +156,7 @@ proc render_select { } {
 		if { $ay(ScanShaders) == 1 } {
 		    set ay(sext) ".slx"
 		}
-		set newr "Aqsis0.9.0"
+		set newr "Aqsis>=0.9.0"
 	    }
 
 	    4 { 
@@ -164,6 +168,7 @@ proc render_select { } {
 		set ayprefs(SMRender) "air -Progress %s"
 		set ayprefs(SMRenderPT) "R90000 %d"
 		set ayprefs(RenderMode) 0
+
 		set splugin "ayslb"
 		if { $ay(ScanShaders) == 1 } {
 		    set ay(sext) ".slb"
@@ -180,6 +185,7 @@ proc render_select { } {
 		set ayprefs(SMRender) "angel %s"
 		set ayprefs(SMRenderPT) "%d"
 		set ayprefs(RenderMode) 1
+
 		if { $ay(ScanShaders) == 1 } {
 		    set ay(sext) ""
 		}
@@ -195,6 +201,7 @@ proc render_select { } {
 		set ayprefs(SMRender) "renderdl %s"
 		set ayprefs(SMRenderPT) ""
 		set ayprefs(RenderMode) 0
+
 		set splugin "ayslo3d"
 		if { $ay(ScanShaders) == 1 } {
 		    set ay(sext) ".sdl"
@@ -211,6 +218,7 @@ proc render_select { } {
 		set ayprefs(SMRender) "rndr -progress %s"
 		set ayprefs(SMRenderPT) "regexp -- {^.* - (\\\[0-9\\\]+)} string dummy percent"
 		set ayprefs(RenderMode) 1
+
 		set splugin "aysdr"
 		if { $ay(ScanShaders) == 1 } {
 		    set ay(sext) ".sdr"
@@ -227,6 +235,7 @@ proc render_select { } {
 		set ayprefs(SMRender) "renderdc %s"
 		set ayprefs(SMRenderPT) ""
 		set ayprefs(RenderMode) 1
+
 		set splugin "ayso"
 		if { $ay(ScanShaders) == 1 } {
 		    set ay(sext) ".so"
@@ -243,6 +252,7 @@ proc render_select { } {
 		set ayprefs(SMRender) "render -progress %s"
 		set ayprefs(SMRenderPT) " %d"
 		set ayprefs(RenderMode) 1
+
 		set splugin "ayslo"
 		if { $ay(ScanShaders) == 1 } {
 		    set ay(sext) ".slo"
@@ -250,11 +260,39 @@ proc render_select { } {
 		set newr "PRMan"
 	    }
 
+	    10 {
+		# Gelato
+		set ayprefs(QRender) "gelato -preview 0.25 -iv %s"
+		set ayprefs(QRenderPT) ""
+		set ayprefs(Render) "gelato -iv %s"
+		set ayprefs(RenderPT) ""
+		set ayprefs(SMRender) " %s"
+		set ayprefs(SMRenderPT) ""
+		set ayprefs(RenderMode) 1
+
+		set splugin "aygso"
+		if { $ay(ScanShaders) == 1 } {
+		    set ay(sext) ".gso"
+		}
+		set newr "Gelato"
+	    }
+
 	    default { puts Whoops? }
 	}
 	# switch
 
-	if { ($sel > 0) && ($sel < 9) } {
+	# Gelato specific settings
+	if { $sel == 10 } {
+	    set ayprefs(SMChangeShaders) 0
+	    set ayprefs(SMFileFormat) "shadow"
+	} else {
+	    set ayprefs(SMChangeShaders) 1
+	    set ayprefs(SMFileFormat) "zfile"
+	    set ayprefs(SMFileType) "z"
+	}
+
+
+	if { ($sel > 0) && ($sel < 11) } {
 	    set ayprefse(QRender) $ayprefs(QRender)
 	    set ayprefse(QRenderPT) $ayprefs(QRenderPT)
 	    set ayprefse(Render) $ayprefs(Render)
