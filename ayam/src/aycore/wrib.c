@@ -1156,10 +1156,17 @@ ay_wrib_lights(char *file, ay_object *o)
  char *pyptr = NULL, *nyptr = NULL, *pzptr = NULL, *nzptr = NULL;
  size_t filenlen = 0;
  RtLightHandle light_handle;
-
+ char arrname[] = "ayprefs", ccvarname[] = "SMChangeShaders";
+ const char *vstr = NULL;
+ int changeshaders = AY_TRUE;
 
   if(!o || !file)
     return ay_status;
+
+  vstr = Tcl_GetVar2(ay_interp, arrname, ccvarname,
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  if(vstr)
+    Tcl_GetInt(ay_interp, vstr, &changeshaders);
 
   filenlen = strlen(file);
 
@@ -1280,7 +1287,7 @@ ay_wrib_lights(char *file, ay_object *o)
 	      RiDeclare("from","point");
 
 	      /* use shadowmap? */
-	      if((ay_prefs.use_sm > 0) && light->use_sm)
+	      if((ay_prefs.use_sm > 0) && light->use_sm && changeshaders)
 		{ /* yes */
 		  RiDeclare("sfpx", "uniform string");
 		  RiDeclare("sfnx", "uniform string");
@@ -1331,7 +1338,7 @@ ay_wrib_lights(char *file, ay_object *o)
 	      beamdistribution = (RtFloat)light->beam_distribution;
 
 	      /* use shadowmap? */
-	      if((ay_prefs.use_sm > 0) && light->use_sm)
+	      if((ay_prefs.use_sm > 0) && light->use_sm && changeshaders)
 		{ /* yes */
 		 RiDeclare("shadowname", "uniform string");
 		  sprintf(shadowptr, "%s.spot%d.shd", file, countsm);
@@ -1366,7 +1373,7 @@ ay_wrib_lights(char *file, ay_object *o)
 	      RiDeclare("from","point");
 	      RiDeclare("to","point");
 	      /* use shadowmap? */
-	      if((ay_prefs.use_sm > 0) && light->use_sm)
+	      if((ay_prefs.use_sm > 0) && light->use_sm && changeshaders)
 		{ /* yes */
 		  RiDeclare("shadowname", "uniform string");
 		  sprintf(shadowptr, "%s.dist%d.shd", file, countsm);
