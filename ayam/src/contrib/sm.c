@@ -467,7 +467,10 @@ ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
  int width, height;
  size_t filelen = 0;
  static int countsm = 0;
-
+ char arrname[] = "ayprefs";
+ char ffvarname[] = "SMFileFormat", ftvarname[] = "SMFileType";
+ char *smfileformat = NULL, *smfiletype = NULL;
+ 
   if(!o)
     return;
 
@@ -490,6 +493,12 @@ ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
       free(zname); free(shdname);
       return;
     }
+
+  smfiletype = Tcl_GetVar2(ay_interp, arrname, ftvarname,
+			   TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  smfileformat = Tcl_GetVar2(ay_interp, arrname, ffvarname,
+			     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   newtrafo->next = trafo;
   trafo = newtrafo;
@@ -550,7 +559,7 @@ ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
 		  */
 		  sprintf(zname, "%s.point%d_z+.z", file, countsm);
 		  sprintf(shdname, "%s.point%d_z+.shd", file, countsm);
-		  RiDisplay(zname, "zfile", "z", RI_NULL);
+		  RiDisplay(zname, smfileformat, smfiletype, RI_NULL);
 		  RiFormat(width, height, (RtFloat)-1.0);
 		  RiProjection("perspective", "fov", &fov, RI_NULL);
 		  /* looking along positive z axis */
@@ -576,7 +585,7 @@ ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
 
 		  sprintf(zname, "%s.point%d_x+.z", file, countsm);
 		  sprintf(shdname, "%s.point%d_x+.shd", file, countsm);
-		  RiDisplay(zname, "zfile", "z", RI_NULL);
+		  RiDisplay(zname, smfileformat, smfiletype, RI_NULL);
 		  RiFormat(width, height, (RtFloat)-1.0);
 		  RiProjection("perspective", "fov", &fov, RI_NULL);
 		  /* transform lightsource to origin */
@@ -602,7 +611,7 @@ ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
 
 		  sprintf(zname, "%s.point%d_z-.z", file, countsm);
 		  sprintf(shdname, "%s.point%d_z-.shd", file, countsm);
-		  RiDisplay(zname, "zfile", "z", RI_NULL);
+		  RiDisplay(zname, smfileformat, smfiletype, RI_NULL);
 		  RiFormat(width, height, (RtFloat)-1.0);
 		  RiProjection("perspective", "fov", &fov, RI_NULL);
 		  /* transform lightsource to origin */
@@ -628,7 +637,7 @@ ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
 
 		  sprintf(zname, "%s.point%d_x-.z", file, countsm);
 		  sprintf(shdname, "%s.point%d_x-.shd", file, countsm);
-		  RiDisplay(zname, "zfile", "z", RI_NULL);
+		  RiDisplay(zname, smfileformat, smfiletype, RI_NULL);
 		  RiFormat(width, height, (RtFloat)-1.0);
 		  RiProjection("perspective", "fov", &fov, RI_NULL);
 		  /* transform lightsource to origin */
@@ -654,7 +663,7 @@ ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
 
 		  sprintf(zname, "%s.point%d_y+.z", file, countsm);
 		  sprintf(shdname, "%s.point%d_y+.shd", file, countsm);
-		  RiDisplay(zname, "zfile", "z", RI_NULL);
+		  RiDisplay(zname, smfileformat, smfiletype, RI_NULL);
 		  RiFormat(width, height, (RtFloat)-1.0);
 		  RiProjection("perspective", "fov", &fov, RI_NULL);
 		  /* transform lightsource to origin */
@@ -680,7 +689,7 @@ ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
 
 		  sprintf(zname, "%s.point%d_y-.z", file, countsm);
 		  sprintf(shdname, "%s.point%d_y-.shd", file, countsm);
-		  RiDisplay(zname, "zfile", "z", RI_NULL);
+		  RiDisplay(zname, smfileformat, smfiletype, RI_NULL);
 		  RiFormat(width, height, (RtFloat)-1.0);
 		  RiProjection("perspective", "fov", &fov, RI_NULL);
 		  /* transform lightsource to origin */
@@ -711,7 +720,7 @@ ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
 		  sprintf(zname, "%s.spot%d.z", file, countsm);
 		  sprintf(shdname, "%s.spot%d.shd", file, countsm);
 		  RiFrameBegin((RtInt)ay_wrib_framenum++);
-		   RiDisplay(zname, "zfile", "z", RI_NULL);
+		   RiDisplay(zname, smfileformat, smfiletype, RI_NULL);
 		   /* Camera! */
 		   /*
 		   ay_sm_getresolution(light->sm_resolution,
@@ -760,7 +769,7 @@ ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
 		    sprintf(zname, "%s.dist%d.z", file, countsm);
 		    sprintf(shdname, "%s.dist%d.shd", file, countsm);
 		    RiFrameBegin((RtInt)ay_wrib_framenum++);
-		     RiDisplay(zname, "zfile", "z", RI_NULL);
+		     RiDisplay(zname, smfileformat, smfiletype, RI_NULL);
 		     /* Camera! */
 		     /*
 		       ay_sm_getresolution(light->sm_resolution,

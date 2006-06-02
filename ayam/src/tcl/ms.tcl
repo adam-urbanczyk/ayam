@@ -157,6 +157,15 @@ ms_set en ayprefse_SMRenderUI "Enable user interface for shadow map rendering."
 ms_set en ayprefse_SMRenderPT "A template that helps to pick the progress\
 from the output of the shadow map renderer.\n\\\"%d\\\" denotes the position\
 of the progress number in the output."
+ms_set en ayprefse_SMFileFormat "File format of shadow map.\n\\
+RenderMan: zfile\nGelato: shadow"
+ms_set en ayprefse_SMFileType "Type of shadow map.\n
+z: normal shadow map (RenderMan, Gelato)\n\\
+avgz: Woo shadow map (Gelato only!)\n\\
+volz: volume shadow map (Gelato only!)"
+ms_set en ayprefse_SMChangeShaders "Change shader names (prepend\\
+ \"shadow\")\nwhen rendering with shadow maps?"
+
 ms_set en ayprefse_PPRender "Renderer to use for the permanent preview feature."
 
 # Misc

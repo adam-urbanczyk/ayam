@@ -86,6 +86,10 @@ array set ayprefs {
  SMRender "rendrib -Progress %s"
  SMRenderUI 1
  SMRenderPT "R90000 %d"
+ SMFileFormat "filez"
+ SMFileType "z"
+ SMChangeShaders 1
+
  PPRender "rgl"
  RenderMode 0
  TclPrecision 6

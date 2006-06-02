@@ -966,7 +966,7 @@ proc io_RenderSM { } {
 		ayError 4 "Create SM" "$efilename"
 		set render 1
 	    } else {
-		ayError 2 "exportRIB" "Could not export scene!"
+		ayError 2 "Create SM" "Could not export scene!"
 		set render 0
 	    }
 	} else {
@@ -976,7 +976,7 @@ proc io_RenderSM { } {
 		ayError 4 "Create SM" "$efilename"
 		set render 1
 	    } else {
-		ayError 2 "exportRIB" "Could not export scene!"
+		ayError 2 "Create SM" "Could not export scene!"
 		set render 0
 	    }
 	}
@@ -1004,6 +1004,8 @@ proc io_RenderSM { } {
 
 	}
 	# if
+
+	ayError 4 "Create SM" "Done rendering all shadow maps!"
     }
     # if
 
