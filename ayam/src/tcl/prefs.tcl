@@ -589,8 +589,7 @@ proc prefs_setSamplingTolerance { plus } {
 proc prefs_warnNeedRestart {} {
     global env ay ayprefs ayprefse
 
-    if { $ayprefs(AutoFocus) != $ayprefse(AutoFocus) ||
-         $ayprefs(Locale) != $ayprefse(Locale) } {
+    if { $ayprefs(Locale) != $ayprefse(Locale) } {
 	    set t "Need Restart!"
 	    set m "Some of your changes need a restart of Ayam to take effect!"
 	set answer [tk_messageBox -title $t -type ok -icon warning -message $m]
