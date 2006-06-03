@@ -132,7 +132,7 @@ ayslx_scanslxtcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  /* change all ; to , in shader search path */
+  /* change all ; to : in shader search path */
   Tcl_DStringInit(&ds);
   Tcl_DStringAppend(&ds,
 	     Tcl_GetVar(interp, vname, TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG), -1);

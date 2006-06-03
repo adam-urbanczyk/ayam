@@ -342,6 +342,7 @@ ay_shader_scanslxtcmd(ClientData clientData, Tcl_Interp *interp,
 #ifndef WIN32
   SLX_SetPath(Tcl_GetVar(ay_interp, vname, TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG));
 #else
+  /* change all ; to : in shader search path */
   Tcl_DStringInit(&ds);
   Tcl_DStringAppend(&ds,
        Tcl_GetVar(ay_interp, vname, TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG), -1);
