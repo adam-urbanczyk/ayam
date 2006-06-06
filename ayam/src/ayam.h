@@ -1207,7 +1207,7 @@ extern unsigned int ay_current_primlevel;
 /* size of arrows */
 #define AY_POINTER 8
 
-/* avoid direct comparison of doubles with 0.0 */
+/* to avoid direct comparison of doubles with 0.0 */
 #define AY_EPSILON 1.0e-06
 
 /* Basic Vector Arithmetic */
@@ -1238,9 +1238,13 @@ extern unsigned int ay_current_primlevel;
 
 #define AY_V2DOT(v1,v2) (v1[0]*v2[0] + v1[1]*v2[1])
 
-#define AY_PI 3.1415926535897932384626433
-
-#define AY_HALFPI (3.1415926535897932384626433/2.0)
+#ifdef M_PI
+ #define AY_PI M_PI
+ #define AY_HALFPI (M_PI/2.0)
+#else
+ #define AY_PI 3.1415926535897932384626433
+ #define AY_HALFPI (3.1415926535897932384626433/2.0)
+#endif
 
 #define AY_D2R(x) ((x)*AY_PI/180.0)
 
@@ -1262,6 +1266,7 @@ extern unsigned int ay_current_primlevel;
                             (fabs(P1[1]-P2[1]) < AY_EPSILON) &&\
                             (fabs(P1[2]-P2[2]) < AY_EPSILON) &&\
                             (fabs(P1[3]-P2[3]) < AY_EPSILON))
+
 
 /* Version Strings and Numbers */
 #define AY_VERSIONSTR "1.10"
