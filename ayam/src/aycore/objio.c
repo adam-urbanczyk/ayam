@@ -66,6 +66,8 @@ int ay_objio_writescenetcmd(ClientData clientData, Tcl_Interp *interp,
 
 static double tm[16] = {0}; /* current transformation matrix */
 
+static double objio_scalefactor = 1.0;
+
 static Tcl_HashTable ay_objio_write_ht; /* write callbacks */
 
 static int objio_tesspomesh = AY_FALSE;
@@ -1332,6 +1334,13 @@ ay_objio_writescene(char *filename, int selected)
 
   ay_trafo_identitymatrix(tm);
 
+  if(objio_scalefactor != 1.0)
+    {
+      tm[0]  *= objio_scalefactor;
+      tm[5]  *= objio_scalefactor;
+      tm[10] *= objio_scalefactor;
+    }
+
   /* write header information */
   /*  ay_objio_writeheader(fileptr);*/
 
@@ -1354,7 +1363,7 @@ ay_objio_writescene(char *filename, int selected)
 	{ fclose(fileptr); return ay_status; }
 
       o = o->next;
-    }
+    } /* while */
 
   if(ferror(fileptr) || errno != 0)
     {
@@ -1414,6 +1423,11 @@ ay_objio_writescenetcmd(ClientData clientData, Tcl_Interp *interp,
 	  objio_ttagname = argv[i+2];
 	  i++;
 	}
+      else
+      if(!strcmp(argv[i], "-f"))
+	{
+	  sscanf(argv[i+1], "%lg", &objio_scalefactor);
+	}
       i += 2;
     } /* while */
 
@@ -1421,6 +1435,8 @@ ay_objio_writescenetcmd(ClientData clientData, Tcl_Interp *interp,
 
   objio_stagname = objio_stagnamedef;
   objio_ttagname = objio_ttagnamedef;
+
+  objio_scalefactor = 1.0;
 
  return TCL_OK;
 } /* ay_objio_writescenetcmd */
@@ -1871,6 +1887,8 @@ ay_objio_readvertex(char *str)
 	{
 	  v[3] = 1.0;
 	}
+      if(objio_scalefactor != 1.0)
+	AY_V3SCAL(v, objio_scalefactor)
       ay_status = ay_objio_addvertex(1, v);
     } /* if */
 
@@ -3343,6 +3361,11 @@ ay_objio_readscenetcmd(ClientData clientData, Tcl_Interp *interp,
 	  objio_ttagname = argv[i+2];
 	  i++;
 	}
+      else
+      if(!strcmp(argv[i], "-f"))
+	{
+	  sscanf(argv[i+1], "%lg", &objio_scalefactor);
+	}
       i += 2;
     } /* while */
 
@@ -3350,6 +3373,8 @@ ay_objio_readscenetcmd(ClientData clientData, Tcl_Interp *interp,
 
   objio_stagname = objio_stagnamedef;
   objio_ttagname = objio_ttagnamedef;
+
+  objio_scalefactor = 1.0;
 
  return TCL_OK;
 } /* ay_objio_readscenetcmd */
