@@ -17,12 +17,13 @@
 
 /* prototypes of functions local to this module: */
 
-int ay_wrib_sm(char *file, char *image, int width, int height);
+int ay_wrib_sm(char *file, char *image, int width, int height,
+	       int selonly, ay_object *selo);
 
 void ay_wrib_getup(double *dir, double *up, double *roll);
 
-/* functions: */
 
+/* functions: */
 
 /* ay_wrib_noexport:
  *  check for presence of NoExport tag for object o;
@@ -75,7 +76,7 @@ ay_wrib_aimz(RtPoint direction)
  RtFloat xzlen = (RtFloat)0.0, yzlen = (RtFloat)0.0, xrot = (RtFloat)0.0,
    yrot = (RtFloat)0.0;
  RtFloat tmp;
- 
+
   if((direction[0] == 0.0) && (direction[1] == 0.0) && (direction[2] == 0.0))
     return;
 
@@ -96,7 +97,7 @@ ay_wrib_aimz(RtPoint direction)
 	}
       yrot = (RtFloat)AY_R2D(acos((fabs(tmp)<=1.0?tmp:(tmp<-1.0?-1.0:1.0))));
     }
- 
+
   yzlen = (RtFloat)(sqrt(direction[1]*direction[1] + xzlen*xzlen));
   if(yzlen != 0.0)
     {
@@ -247,7 +248,7 @@ FrameCamera(double zoom, double framewidth, double frameheight)
 
   focallength = (0.5 * (framewidth<frameheight)?framewidth:frameheight)*
     cot(45.0);
-  
+
   fprintf(stderr,"focallength:%g\n",focallength);
 
   fov = 2.0 * atan((((framewidth<frameheight)?framewidth:frameheight)
@@ -329,7 +330,7 @@ ay_wrib_rioptions(void)
     RiDeclare((RtToken)"maxsamples", "integer");
     RiOption((RtToken)"render", (RtToken)"maxsamples",
 	     (RtPointer)(&rtitemp), RI_NULL);
-    
+
     rtitemp = riopt->MaxRayLevel;
     RiDeclare((RtToken)"max_raylevel", "integer");
     RiOption((RtToken)"render", (RtToken)"max_raylevel",
@@ -398,7 +399,7 @@ ay_wrib_rioptions(void)
 	     &rtitemp, RI_NULL);
   }
 
-  
+
  return ay_status;
 } /* ay_wrib_rioptions */
 
@@ -516,7 +517,7 @@ ay_wrib_object(char *file, ay_object *o)
   if((!ay_prefs.resolveinstances) && (o->type != AY_IDMATERIAL) &&
      (o->refcount) && (cb))
     {
-      
+
       ay_status = ay_wrib_refobject(file, o);
 
       return AY_OK; /* XXXX early exit */
@@ -534,7 +535,7 @@ ay_wrib_object(char *file, ay_object *o)
 		  RiDeclare(parname, "string");
 		  RiAttribute("identifier", parname,
 			      (RtPointer)&o->name, RI_NULL);
-		  
+
 		}
 	      else
 		{
@@ -821,7 +822,7 @@ ay_wrib_displaytags(void)
 		  free(name); free(type); free(mode);
 		  return;
 		}
-	  
+
 	      /* get proper type */
 	      if( ! ay_comp_strcase(type, "framebuffer"))
 		{
@@ -957,7 +958,7 @@ ay_wrib_hidertags(void)
 		  free(type);
 		  return;
 		}
-	  
+
 	      /* get proper type */
 	      if( ! ay_comp_strcase(type, "hidden"))
 		{
@@ -1225,7 +1226,7 @@ ay_wrib_lights(char *file, ay_object *o)
 	  for(i=0;i<4;i++)
 	    for(j=0;j<4;j++)
 	      rim[i][j] = (RtFloat)m[i*4+j];
-	  
+
 	  RiConcatTransform(rim);
 
 	  from[0] = (RtFloat)light->tfrom[0];
@@ -1255,7 +1256,7 @@ ay_wrib_lights(char *file, ay_object *o)
 	    case AY_LITCUSTOM:
 	      if(light->lshader)
 		{
-		  
+
 		  if(o->down && o->down->next)
 		    { /* this is an AreaLight */
 		      RiAttributeBegin();
@@ -1308,7 +1309,7 @@ ay_wrib_lights(char *file, ay_object *o)
 					"from", (RtPointer)&from,
 					"sfpx", (RtPointer)&pxptr,
 			                "sfnx", (RtPointer)&nxptr,
-			                "sfpy", (RtPointer)&pyptr, 
+			                "sfpy", (RtPointer)&pyptr,
 			                "sfny", (RtPointer)&nyptr,
 			                "sfpz", (RtPointer)&pzptr,
 			                "sfnz", (RtPointer)&nzptr,
@@ -1316,7 +1317,7 @@ ay_wrib_lights(char *file, ay_object *o)
 		  countsm++;
 		}
 	      else
-		{ /* no, write normal lightsource */ 
+		{ /* no, write normal lightsource */
 		  light_handle = RiLightSource("pointlight",
 					"intensity", (RtPointer)&intensity,
 			                "lightcolor", (RtPointer)&color,
@@ -1345,22 +1346,22 @@ ay_wrib_lights(char *file, ay_object *o)
 		  light_handle = RiLightSource("shadowspot",
 			"intensity",(RtPointer)&intensity,
 			"lightcolor",(RtPointer)&color,
-			"from",(RtPointer)&from, 
-			"to",(RtPointer)&to, 
+			"from",(RtPointer)&from,
+			"to",(RtPointer)&to,
 			"coneangle",(RtPointer)&coneangle,
 			"conedeltaangle",(RtPointer)&conedeltaangle,
 			"beamdistribution",(RtPointer)&beamdistribution,
 			"shadowname", (RtPointer)&shadowptr,
 			RI_NULL);
-		  countsm++; 
+		  countsm++;
 		}
 	      else
-		{ /* no, write normal lightsource */	  
+		{ /* no, write normal lightsource */
 		  light_handle = RiLightSource("spotlight",
 			"intensity",(RtPointer)&intensity,
 			"lightcolor",(RtPointer)&color,
-			"from",(RtPointer)&from, 
-			"to",(RtPointer)&to, 
+			"from",(RtPointer)&from,
+			"to",(RtPointer)&to,
 			"coneangle",(RtPointer)&coneangle,
 			"conedeltaangle",(RtPointer)&conedeltaangle,
 			"beamdistribution",(RtPointer)&beamdistribution,
@@ -1380,7 +1381,7 @@ ay_wrib_lights(char *file, ay_object *o)
 		  light_handle = RiLightSource("shadowdistant",
 					"intensity", (RtPointer)&intensity,
 					"lightcolor", (RtPointer)&color,
-					"from", (RtPointer)&from, 
+					"from", (RtPointer)&from,
 					"to", (RtPointer)&to,
 					"shadowname", (RtPointer)&shadowptr,
 					RI_NULL);
@@ -1391,7 +1392,7 @@ ay_wrib_lights(char *file, ay_object *o)
 		  light_handle = RiLightSource("distantlight",
 					"intensity", (RtPointer)&intensity,
 					"lightcolor", (RtPointer)&color,
-			                "from", (RtPointer)&from, 
+			                "from", (RtPointer)&from,
 			                "to", (RtPointer)&to,
 					RI_NULL);
 		} /* if */
@@ -1485,7 +1486,7 @@ ay_wrib_scene(char *file, char *image, int temp, double *from, double *to,
  size_t filenlen = 0;
 
   ay_current_primlevel = 0;
- 
+
   /* create obj-file name (for use with ShadowMaps) */
   if(ay_prefs.use_sm >= 1)
     {
@@ -1566,7 +1567,8 @@ ay_wrib_scene(char *file, char *image, int temp, double *from, double *to,
       /* write root RiOption tags (possibly containing shadow bias) */
       ay_status = ay_riopt_wrib(ay_root);
 
-      ay_sm_wriballsm(file, objfile, ay_root->next, NULL, width, height);
+      ay_sm_wriballsm(file, objfile, ay_root->next, NULL, width, height,
+		      AY_FALSE, NULL);
 
       ay_prefs.wrib_sm = AY_FALSE;
     }
@@ -1730,7 +1732,8 @@ ay_wrib_scene(char *file, char *image, int temp, double *from, double *to,
  *
  */
 int
-ay_wrib_sm(char *file, char *image, int width, int height)
+ay_wrib_sm(char *file, char *image, int width, int height, int selonly,
+	   ay_object *selo)
 {
  int ay_status = AY_OK;
  ay_object *o = ay_root;
@@ -1786,7 +1789,8 @@ ay_wrib_sm(char *file, char *image, int width, int height)
   ay_status = ay_riopt_wrib(ay_root);
 
   /* actually write the shadow maps */
-  ay_sm_wriballsm(file, objfile, ay_root->next, NULL, width, height);
+  ay_sm_wriballsm(file, objfile, ay_root->next, NULL, width, height,
+		  selonly, selo);
 
   /* inform other code that we do not write shadow maps anymore */
   ay_prefs.wrib_sm = AY_FALSE;
@@ -1796,7 +1800,7 @@ ay_wrib_sm(char *file, char *image, int width, int height)
 
   /* if shadowmaps are in use, write second RIB containing objects */
   RiBegin(objfile);
-      
+
   o = ay_root->next;
   while(o->next)
     {
@@ -1909,7 +1913,7 @@ ay_wrib_tcmd(ClientData clientData, Tcl_Interp * interp,
  int old_resinstances = ay_prefs.resolveinstances;
  int width = 400;
  int height = 300;
- int i, selonly = 0, smonly = 0;
+ int i, selonly = AY_FALSE, smonly = AY_FALSE;
  char *file = NULL, *image = NULL;
  char fname[] = "wrib";
  double addroll = 0.0, dir[3];
@@ -1928,25 +1932,38 @@ ay_wrib_tcmd(ClientData clientData, Tcl_Interp * interp,
   while((i+1) <= argc)
     {
       if(!strcmp(argv[i], "-file"))
-	file = argv[i+1];
+	{
+	  file = argv[i+1];
+	  i++;
+	}
       else
 	if(!strcmp(argv[i], "-image"))
-	  image = argv[i+1];
+	  {
+	    image = argv[i+1];
+	    i++;
+	  }
 	else
 	  if(!strcmp(argv[i], "-smonly"))
-	    smonly = 1;
+	    smonly = AY_TRUE;
 	  else
 	    if(!strcmp(argv[i], "-selonly"))
-	      selonly = 1;
+	      selonly = AY_TRUE;
 
-      i += 2;
-    }
+      i++;
+    } /* while */
 
-  if((!(smonly || selonly)) && (!sel || (sel->object->type != AY_IDCAMERA)))
+  if((!(smonly || selonly)) && (!sel ||
+				(sel && sel->object->type != AY_IDCAMERA)))
    {
      ay_error(AY_ERROR, fname, "Please select a camera object!");
      return TCL_OK;
    }
+
+  if(smonly && selonly && (!(sel && (sel->object->type == AY_IDLIGHT))))
+    {
+      ay_error(AY_ERROR, fname, "Please select a light object!");
+      return TCL_OK;
+    }
 
   if(selonly && (!sel))
    {
@@ -1989,7 +2006,7 @@ ay_wrib_tcmd(ClientData clientData, Tcl_Interp * interp,
 
   if(!(smonly || selonly))
     {
-
+      /* normal RIB export (no shadow maps, all files) */
       dir[0] = (cam->to[0] - cam->from[0]);
       dir[1] = (cam->to[1] - cam->from[1]);
       dir[2] = (cam->to[2] - cam->from[2]);
@@ -2005,7 +2022,9 @@ ay_wrib_tcmd(ClientData clientData, Tcl_Interp * interp,
     {
       if(smonly)
 	{
-	  ay_status = ay_wrib_sm(file, image, width, height);
+	  /* export for rendering shadow maps */
+	  ay_status = ay_wrib_sm(file, image, width, height, selonly,
+				 sel?sel->object:NULL);
 	}
       else
 	{
@@ -2232,7 +2251,7 @@ ay_wrib_pprevopen(ay_view_object *view)
   ay_status = ay_wrib_pprevdraw(view);
 
   ay_prefs.pprev_open = AY_TRUE;
-  
+
  return ay_status;
 } /* ay_wrib_pprevopen */
 
@@ -2250,7 +2269,7 @@ ay_wrib_pprevclose()
  while(o)
    {
      if(o->type == AY_IDVIEW)
-       { 
+       {
 	 v = (ay_view_object *)o->refine;
 
 	 if(v->ppreview)

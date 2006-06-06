@@ -45,7 +45,8 @@ void ay_sm_aimz(double *direction);
 void ay_sm_placecamera(double *position, double *direction, double roll);
 void ay_sm_wribsmcustom(char *file, char *objfile, ay_object *o,
 			ay_sm_trafostack *trafo,
-			int rwidth, int rheight);
+			int rwidth, int rheight,
+			int selonly, ay_object *selo);
 
 /* functions */
 
@@ -57,7 +58,7 @@ ay_sm_aimz(double *direction)
 {
  double xzlen = 0.0, yzlen = 0.0, xrot = 0.0,yrot = 0.0;
  double tmp;
- 
+
   if((direction[0] == 0.0) && (direction[1] == 0.0) && (direction[2] == 0.0))
     return;
 
@@ -380,7 +381,8 @@ ay_sm_getresolution(int index, int *width, int *height,
 void
 ay_sm_wribsmcustom(char *file, char *objfile, ay_object *o,
 		   ay_sm_trafostack *trafo,
-		   int rwidth, int rheight)
+		   int rwidth, int rheight,
+		   int selonly, ay_object *selo)
 {
  ay_object lo = {0};
  ay_light_object *light = NULL, nlight = {0};
@@ -439,7 +441,8 @@ ay_sm_wribsmcustom(char *file, char *objfile, ay_object *o,
 
       if(nlight.type != -1)
 	{
-	  ay_sm_wriballsm(file, objfile, &lo, trafo, rwidth, rheight);
+	  ay_sm_wriballsm(file, objfile, &lo, trafo, rwidth, rheight,
+			  selonly, selo);
 	}
     } /* if */
 
@@ -454,7 +457,8 @@ ay_sm_wribsmcustom(char *file, char *objfile, ay_object *o,
 void
 ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
 		ay_sm_trafostack *trafo,
-		int rwidth, int rheight)
+		int rwidth, int rheight,
+		int selonly, ay_object *selo)
 {
  ay_light_object *light = NULL;
  ay_sm_trafostack *newtrafo;
@@ -517,11 +521,14 @@ ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
       
       if(o->down)
 	{
-	  ay_sm_wriballsm(file, objfile, o->down, trafo, rwidth, rheight);
+	  ay_sm_wriballsm(file, objfile, o->down, trafo, rwidth, rheight,
+			  selonly, selo);
 	}
 
       if((o->type == AY_IDLIGHT) && (!(ay_wrib_noexport(o))))
 	{
+	  if(selonly && (o != selo))
+	    break;
 	  light = (ay_light_object *)o->refine;
 	  if((light->on) && /*(light->type != AY_LITCUSTOM) &&*/
 	     (light->use_sm))
@@ -790,7 +797,7 @@ ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
 
 		  case AY_LITCUSTOM:
 		    ay_sm_wribsmcustom(file, objfile, o, trafo,
-				       rwidth, rheight);
+				       rwidth, rheight, selonly, selo);
 		    break;
 		  } /* switch */
 	       } /* if */

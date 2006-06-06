@@ -260,7 +260,7 @@ ay_view_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &view->drawobjectcs);
 
-  Tcl_SetStringObj(ton, "Grid", -1);
+  Tcl_SetStringObj(ton, "GridSize", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp, to, &view->grid);
 
@@ -441,7 +441,7 @@ ay_view_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_NewIntObj(view->drawobjectcs);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "Grid", -1);
+  Tcl_SetStringObj(ton, "GridSize", -1);
   to = Tcl_NewDoubleObj(view->grid);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
