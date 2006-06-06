@@ -1,6 +1,6 @@
 # Ayam, a free 3D modeler for the RenderMan interface.
 #
-# Ayam is copyrighted 1998-2001 by Randolf Schultz
+# Ayam is copyrighted 1998-2006 by Randolf Schultz
 # (rschultz@informatik.uni-rostock.de) and others.
 #
 # All rights reserved.
@@ -85,6 +85,7 @@ proc shader_scanAll {} {
 	    lappend allshaders $s
 	}
     }
+    # foreach
 
     foreach s $allshaders {
 
@@ -111,20 +112,24 @@ proc shader_scanAll {} {
 		shaderScanSLX "$dummy" shaderarguments
 	    }
 	}
+	# if
 
 	if { $ay_error < 2 } {
 
 	    set shadertype [lindex $shaderarguments 1]
+	    if { $shadertype != "" } {
+		set shadernamelistname ay(${shadertype}shaders)
+		eval set shadernamelist \$$shadernamelistname
 
-	    set shadernamelistname ay(${shadertype}shaders)
-	    eval set shadernamelist \$$shadernamelistname
-
-	    if {[string first " $dummy " $shadernamelist ] == -1} {
-		lappend $shadernamelistname [lindex $shaderarguments 0]
+		if {[string first " $dummy " $shadernamelist ] == -1} {
+		    lappend $shadernamelistname [lindex $shaderarguments 0]
+		}
 	    }
+	    # if
 	}
-
+	# if
     }
+    # foreach
 
     # sort all lists
     foreach i [list surface displacement imager light volume transformation] {
@@ -132,6 +137,7 @@ proc shader_scanAll {} {
 	eval set list \$$shadernamelistname
 	set $shadernamelistname [lsort -dictionary $list]
     }
+    # foreach
 
     # luniq (remove multiple entries)
     foreach i [list surface displacement imager light volume transformation] {
@@ -147,7 +153,9 @@ proc shader_scanAll {} {
 	    incr j -1
 	    incr k
 	}
+	# while
     }
+    # foreach
 
     set n 0
     foreach i [list surface displacement imager light volume transformation] {
@@ -155,6 +163,7 @@ proc shader_scanAll {} {
 	eval set list \$$shadernamelistname
 	set n [expr ($n + [llength $list])]
     }
+    # foreach
 
     if { $n > 0} {
 	set out [format "%d unique shaders found." $n]
@@ -164,6 +173,7 @@ proc shader_scanAll {} {
 	ayError 4 scanAllShaders\
 "Please check the setting of the Shaders preference setting."
     }
+    # if
 
  return;
 }
