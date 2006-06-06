@@ -61,7 +61,8 @@ if { $AYENABLEPPREV == 1 } {
     }
 }
 $m add separator
-$m add command -label "Create ShadowMaps" -command "io_RenderSM"
+$m add command -label "Create All ShadowMaps" -command "io_RenderSM 1"
+$m add command -label "Create ShadowMap" -command "io_RenderSM 0"
 
 $m add separator
 

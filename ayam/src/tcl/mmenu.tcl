@@ -447,7 +447,8 @@ $sm add command -label "Paste (Move)" -command {cmovOb; cS;
 global ay; set ay(ul) $ay(CurrentLevel); uS; rV; set ay(sc) 1}
 $sm add command -label "Replace" -command {repOb; cS;
 global ay; set ay(ul) $ay(CurrentLevel); uS; rV; set ay(sc) 1}
-$sm add command -label "Paste Property to Selected" -command "pclip_pastetosel;forceNot;rV"
+$sm add command -label "Paste Property to Selected"\
+    -command "pclip_pastetosel; forceNot; rV"
 
 $m add cascade -menu $m.pnt -label "Points"
 set sm [menu $m.pnt -tearoff 0]
@@ -455,22 +456,22 @@ $sm add command -label "Select All Points" -command "selPoints;rV"
 $sm add command -label "Invert Selection" -command "invSelPoints;rV"
 $sm add command -label "Apply Trafo To All Points"\
 	-command "undo save ApplyTr; applyTrafo all;\
-	plb_update;forceNot;rV"
+	plb_update; forceNot; rV"
 $sm add command -label "Apply Trafo To Selected Points"\
 	-command "undo save ApplyTr; applyTrafo sel;\
-	plb_update;forceNot;rV"
+	plb_update; forceNot; rV"
 $sm add command -label "Center All Points (3D)"\
 	-command "undo save CenterPnts; centerPnts;\
-	plb_update;rV"
+	plb_update; rV"
 $sm add command -label "Center All Points (2D-XY)"\
 	-command "undo save CenterPntsXY; centerPnts 1;\
-	plb_update;rV"
+	plb_update; rV"
 $sm add command -label "Center All Points (2D-ZY)"\
 	-command "undo save CenterPntsZY; centerPnts 2;\
-	plb_update;rV"
+	plb_update; rV"
 $sm add command -label "Center All Points (2D-XZ)"\
 	-command "undo save CenterPntsXZ; centerPnts 3;\
-	plb_update;rV"
+	plb_update; rV"
 
 $m add cascade -menu $m.ins -label "Instances"
 set sm [menu $m.ins -tearoff 0]
@@ -486,13 +487,14 @@ $sm add command -label "Edit TexCoords" -command "tc_edit"
 $m add separator
 #$m add command -label "Create ShadowMaps" -command "riopt_addp"
 $m add command -label "Select Renderer" -command "render_select"
-
+$m add command -label "Scan Shaders" -command "shader_scanAll"
 $m add separator
 $m add cascade -menu $m.rib -label "RIB-Export"
 set sm [menu $m.rib -tearoff 0]
 $sm add command -label "From Camera" -command "io_exportRIBfC"
 $sm add command -label "Selected Objects" -command "io_exportRIBSO"
-$sm add command -label "Create ShadowMaps" -command "io_RenderSM"
+$sm add command -label "Create All ShadowMaps" -command "io_RenderSM 1"
+$sm add command -label "Create ShadowMap" -command "io_RenderSM 0"
 $m add separator
 $m add command -label "Enable Scripts" -command "script_enable"
 $m add separator
@@ -566,7 +568,7 @@ proc mmenu_addcustom { name command } {
 #    set m .fu.fMenu.cr.m.cus
     $m add command -label $name -command $command
 
- return
+ return;
 }
 # mmenu_addcustom
 

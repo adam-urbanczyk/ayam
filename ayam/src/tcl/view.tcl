@@ -283,7 +283,7 @@ pack $f -in $w -side top -fill x
 set ay(GridSize) $ay(cVGridSize)
 
 set ay(iapplydisable) 1
-addParam $f ay GridSize
+addParam $f ay GridSize [list 0.001 0.01 0.1 0.25 0.5 1 10]
 set ay(iapplydisable) 0
 
 set f [frame $w.f2]
@@ -633,7 +633,7 @@ proc setViewAttr { } {
 	viewTitle .${o} $typename Pick
     }
 
-    viewSetGridIcon .${o} $ViewAttribData(Grid)
+    viewSetGridIcon .${o} $ViewAttribData(GridSize)
 
     setProp
 
@@ -965,7 +965,7 @@ addCheck $w ViewAttribData DrawLevel
 addCheck $w ViewAttribData DrawObjectCS
 
 addText $w e3 "Grid:"
-addParam $w ViewAttribData Grid
+addParam $w ViewAttribData GridSize
 addCheck $w ViewAttribData DrawGrid
 addCheck $w ViewAttribData UseGrid
 addCheck $w ViewAttribData Local
