@@ -928,7 +928,7 @@ proc io_exportRIBfC { } {
 
 # io_RenderSM:
 #  export shadow map RIB and render all shadow maps
-proc io_RenderSM { } {
+proc io_RenderSM { all } {
     global env ayprefs ay tcl_platform ay_error
 
     if { $ayprefs(ShadowMaps) != 2 } {
@@ -960,7 +960,11 @@ proc io_RenderSM { } {
 
     if { $efilename != ""} {
 	if { $imagename != "" } {
-	    wrib -file $efilename -image $imagename -smonly
+	    if { $all == 1 } {
+		wrib -file $efilename -image $imagename -smonly
+	    } else {
+		wrib -file $efilename -image $imagename -smonly -selonly
+	    }
 	    if { $ay_error < 2 } {
 		ayError 4 "Create SM" "Done exporting scene to:"
 		ayError 4 "Create SM" "$efilename"
@@ -970,7 +974,11 @@ proc io_RenderSM { } {
 		set render 0
 	    }
 	} else {
-	    wrib -file $efilename -image $imagename -smonly
+	    if { $all == 1 } {
+		wrib -file $efilename -image $imagename -smonly
+	    } else {
+		wrib -file $efilename -image $imagename -smonly -selonly
+	    }
 	    if { $ay_error < 2 } {
 		ayError 4 "Create SM" "Done exporting scene to:"
 		ayError 4 "Create SM" "$efilename"
@@ -985,7 +993,7 @@ proc io_RenderSM { } {
     # if
 
     if { $render } {
-	ayError 4 "Create SM" "Now rendering all shadow maps..."
+	ayError 4 "Create SM" "Now rendering shadow maps..."
 
 	if { $ayprefs(SMRenderUI) != 1} {
 	    set command "exec "
@@ -1005,7 +1013,7 @@ proc io_RenderSM { } {
 	}
 	# if
 
-	ayError 4 "Create SM" "Done rendering all shadow maps!"
+	ayError 4 "Create SM" "Done rendering shadow maps!"
     }
     # if
 
@@ -1144,6 +1152,7 @@ TessPoMesh 0
 OmitCurves 0
 MergeFaces 1
 MergePVTags 1
+ScaleFactor 1.0
 RescaleKnots 0.0
 filename ""
 FileName "unnamed.obj"
@@ -1185,6 +1194,7 @@ proc io_exportOBJ { selected } {
     addCheckB $f objio_options Selected [ms objio_options_Selected]
     addCheckB $f objio_options TessPoMesh [ms objio_options_TessPoMesh]
     addCheckB $f objio_options OmitCurves [ms objio_options_OmitCurves]
+    addParam $f objio_options ScaleFactor [list 0.01 0.1 1.0 10.0 100.0]
     addString $f objio_options STagName
     addString $f objio_options TTagName
 
@@ -1196,6 +1206,7 @@ proc io_exportOBJ { selected } {
 
 	ay_objio_write $filename -s $objio_options(Selected)\
 	    -p $objio_options(TessPoMesh) -o $objio_options(OmitCurves)\
+	    -f $objio_options(ScaleFactor)\	    
 	    -t $objio_options(STagName) $objio_options(TTagName)
 
 	if { $ay_error < 2 } {
@@ -1257,6 +1268,7 @@ proc io_importOBJ { } {
     addCheck $f objio_options MergePVTags
     addCheck $f objio_options OmitCurves
     addParam $f objio_options RescaleKnots [list 0.0 1.0e-4]
+    addParam $f objio_options ScaleFactor  [list 0.01 0.1 1.0 10.0 100.0]
     addString $f objio_options STagName
     addString $f objio_options TTagName
 
@@ -1272,6 +1284,7 @@ proc io_importOBJ { } {
 		-o $objio_options(OmitCurves)\
 		-p $objio_options(MergePVTags)\
 		-r $objio_options(RescaleKnots)\
+	        -f $objio_options(ScaleFactor)\
 		-t $objio_options(STagName) $objio_options(TTagName)
 	
 	if { $ay_error < 2 } {
