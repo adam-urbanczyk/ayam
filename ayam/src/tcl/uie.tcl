@@ -1109,3 +1109,42 @@ proc addInfo { w prop name } {
  return;
 }
 # addInfo
+
+#
+#
+#
+proc updateProgress { w val n1 n2 op } {
+    SetProgress $w $val
+ return;
+}
+# updateProgress
+
+#
+#
+#
+proc addProgress { w prop name } {
+    global $prop
+
+    set bw 1
+    set f [frame $w.f${name} -relief sunken -bd $bw]
+
+    label $f.l1 -width 14 -text ${name}:
+    if {[string length ${name}] > 12} {
+	balloon_set $f.l1 ${name}
+    }
+
+    Progress $f.p
+
+    set tracecommand "updateProgress $f.p \$${prop}(${name})"
+
+    trace variable ${prop}(${name}) w $tracecommand
+
+    bind $f.p <Destroy> "trace vdelete ${prop}(${name}) w {$tracecommand}"
+
+    pack $f.l1 -in $f -side left -fill x -expand no
+    pack $f.p -in $f -side left -fill x -expand yes
+    pack $f -in $w -side top -fill x
+
+ return;
+}
+# addProgress

@@ -1,7 +1,7 @@
 /*
  * Ayam, a free 3D modeler for the RenderMan interface.
  *
- * Ayam is copyrighted 1998-2002 by Randolf Schultz
+ * Ayam is copyrighted 1998-2006 by Randolf Schultz
  * (rschultz@informatik.uni-rostock.de) and others.
  *
  * All rights reserved.
@@ -869,7 +869,7 @@ ay_objio_writepomesh(FILE *fileptr, ay_object *o, double *m)
    return AY_ENULL;
 
   mystag.type = ay_pv_tagtype;
-  mystag.name = objio_stagname;  
+  mystag.name = objio_stagname;
   myttag.type = ay_pv_tagtype;
   myttag.name = objio_ttagname;
 
@@ -2017,12 +2017,48 @@ ay_objio_readface(char *str, int lastlinewasface)
  int texsvlen = 0, textvlen = 0;
  ay_pomesh_object po = {0}, *temppo;
  ay_tag_object *temptags;
- ay_list_object l1 = {0}, l2 = {0}; 
  ay_object t = {0}, *o = NULL, *m = NULL;
  unsigned int nloops = 1, nverts = 0, i;
+ static ay_list_object *storedfaces = NULL, **laststoredface = &storedfaces;
+ static unsigned int nfaces = 0;
+ ay_list_object *tl = NULL;
 
-  if(!str)
+  if(!str && (lastlinewasface != -1))
     return AY_ENULL;
+
+  if(lastlinewasface == -1)
+    {
+      /* merge */
+      /*printf("Merging %d faces...\n",nfaces);*/
+      ay_status = ay_pomesht_merge(objio_mergepvtags, storedfaces, &m);
+      /*printf("Done merging faces...\n");*/
+      if(ay_status)
+	goto cleanup;
+      nfaces = 0;
+      /* replace objio_lastface with m */
+      temppo = objio_lastface->refine;
+      objio_lastface->refine = m->refine;
+      m->refine = temppo;
+
+      temptags = objio_lastface->tags;
+      objio_lastface->tags = m->tags;
+      m->tags = temptags;
+
+      /* remove temporary object that now carries the old poly mesh */
+      ay_status = ay_object_delete(m);
+
+      /* clean up */
+      while(storedfaces)
+	{
+	  tl = storedfaces->next;
+	  ay_object_delete(storedfaces->object);
+	  free(storedfaces);
+	  storedfaces = tl;
+	} /* while */
+	      
+      laststoredface = &storedfaces;
+      return AY_OK;
+    } /* if */
 
   if((str[0] == '\0') || (str[1] == '\0') || (str[2] == '\0'))
     return AY_ERROR;
@@ -2091,7 +2127,7 @@ ay_objio_readface(char *str, int lastlinewasface)
       if(tvindex != 0)
 	{
 	  /* get texture vertex data and cach it in texsv/textv */
-	  
+
 	  tv = NULL;
 	  if(tvindex < 0)
 	    {
@@ -2195,28 +2231,7 @@ ay_objio_readface(char *str, int lastlinewasface)
 				textvlen, textv);
 	}
 
-      if(lastlinewasface && objio_lastface && objio_mergecfaces)
-	{
-	  /* merge new polymesh into old */
-	  l1.next = &l2;
-	  l1.object = objio_lastface;
-	  l2.object = &t;
-	  ay_status = ay_pomesht_merge(objio_mergepvtags, &l1, &m);
-	  if(ay_status)
-	    goto cleanup;
-	  /* replace objio_lastface with m */
-	  temppo = objio_lastface->refine;
-	  objio_lastface->refine = m->refine;
-	  m->refine = temppo;
-
-	  temptags = objio_lastface->tags;
-	  objio_lastface->tags = m->tags;
-	  m->tags = temptags;
-
-	  /* remove temporary object that now carries the old poly mesh */
-	  ay_status = ay_object_delete(m);
-	}
-      else
+      if(!objio_mergecfaces || !lastlinewasface)
 	{
 	  /* link new polymesh into the scene */
 	  ay_status = ay_object_copy(&t, &o);
@@ -2226,6 +2241,15 @@ ay_objio_readface(char *str, int lastlinewasface)
 	  ay_status = ay_object_link(o);
 
 	  objio_lastface = o;
+	}
+      else
+	{
+	  /* store */
+	  if(!(*laststoredface = calloc(1, sizeof(ay_list_object))))
+	    { ay_status = AY_EOMEM; goto cleanup; }
+	  ay_status = ay_object_copy(&t, &((*laststoredface)->object));
+	  laststoredface = &((*laststoredface)->next);
+	  nfaces++;
 	} /* if */
     } /* if */
 
@@ -2510,7 +2534,7 @@ ay_objio_readsurf(char *str)
 
 	  if(tv)
 	    {
-	      
+
 	      if(!(texturesv = realloc(objio_texturesv,
 				       (tlength + 1) * sizeof(double))))
 		{ return AY_EOMEM; }
@@ -2575,7 +2599,7 @@ ay_objio_readparm(char *str)
 	  knotv[knots] = knot;
 	  knots++;
 	} /* if */
-       
+
       /* skip to next knot */
       ay_status = ay_objio_readskip(&c);
     } /* while */
@@ -2627,7 +2651,7 @@ ay_objio_addtrim(ay_object *o)
     {
       objio_trims_head = nt;
     }
- 
+
  return AY_OK;
 } /* ay_objio_addtrim */
 
@@ -2654,7 +2678,7 @@ ay_objio_gettrim(unsigned int index, ay_object **t)
   /* trim buffer empty? */
   if(!objio_trims_tail)
     return AY_ERROR;
-  
+
   /* index out of range? */
   if(index > objio_trims_tail->index)
     return AY_ERROR;
@@ -2803,7 +2827,7 @@ ay_objio_readtrim(char *str, int hole)
 		goto cleanup;
 
 	      nc = (ay_nurbcurve_object *)((*objio_nexttrim)->refine);
-	      
+
 	      if((objio_umin > nc->knotv[nc->order]) ||
 		 (objio_umax < nc->knotv[nc->length]))
 		ay_knots_setuminmax(*objio_nexttrim, objio_umin, objio_umax);
@@ -2813,7 +2837,7 @@ ay_objio_readtrim(char *str, int hole)
 	      tcount++;
 	    } /* if */
 	} /* if */
-       
+
       /* skip to next trim */
       ay_status = ay_objio_readskip(&c);
 
@@ -2857,14 +2881,14 @@ ay_objio_fixnpatch(ay_nurbpatch_object *np)
       for(j = 0; j < np->height; j++)
 	{
 	  memcpy(p1, p2, stride * sizeof(double));
-	  
+
 	  if(p1[3] != 1.0)
 	    {
 	      p1[0] *= p1[3];
 	      p1[1] *= p1[3];
 	      p1[2] *= p1[3];
 	    }
-	  
+
 	  p1 += stride;
 	  p2 += np->width*stride;
 	} /* for */
@@ -3122,6 +3146,8 @@ ay_objio_readline(FILE *fileptr)
 
   if(!fileptr)
     {
+      if(lastlinewasface)
+	ay_status = ay_objio_readface(NULL, -1);
       lastlinewasface = AY_FALSE;
       return AY_ENULL;
     }
@@ -3166,44 +3192,45 @@ ay_objio_readline(FILE *fileptr)
 	ay_status = ay_objio_readcstype(str);
       if(str[1] == 'u')
 	ay_status = ay_objio_readcurv(str);
-      lastlinewasface = AY_FALSE;
       break;
     case 'd':
       ay_status = ay_objio_readdeg(str);
-      lastlinewasface = AY_FALSE;
       break;
     case 'e':
       ay_status = ay_objio_readend();
-      lastlinewasface = AY_FALSE;
       break;
     case 'f':
       ay_status = ay_objio_readface(str, lastlinewasface);
-      lastlinewasface = AY_TRUE;
       break;
     case 'h':
       ay_status = ay_objio_readtrim(str, AY_TRUE);
-      lastlinewasface = AY_FALSE;
       break;
     case 'p':
       ay_status = ay_objio_readparm(str);
-      lastlinewasface = AY_FALSE;
       break;
     case 's':
       ay_status = ay_objio_readsurf(str);
-      lastlinewasface = AY_FALSE;
       break;
     case 't':
       ay_status = ay_objio_readtrim(str, AY_FALSE);
-      lastlinewasface = AY_FALSE;
       break;
     case 'v':
       ay_status = ay_objio_readvertex(str);
-      lastlinewasface = AY_FALSE;
       break;
     default:
-      lastlinewasface = AY_FALSE;
       break;
     } /* switch */
+
+  if(str[0] == 'f')
+    {
+      lastlinewasface = AY_TRUE;
+    }
+  else
+    {
+      if(lastlinewasface)
+	ay_status = ay_objio_readface(NULL, -1);
+      lastlinewasface = AY_FALSE;
+    }
 
   Tcl_DStringFree(&ds);
 
@@ -3221,6 +3248,11 @@ ay_objio_readscene(char *filename)
  ay_object *o = ay_root->next;
  FILE *fileptr = NULL;
  char fname[] = "objio_readscene";
+ char aname[] = "objio_options", vname[] = "Progress";
+ char pbuffer[64];
+ int lastprog = 0, curprog = 0;
+ long fsize;
+ unsigned int lineno = 0, lines = 0;
 
   if(!o)
     return AY_ENULL;
@@ -3257,12 +3289,39 @@ ay_objio_readscene(char *filename)
   objio_trims = NULL;
   objio_nexttrim = &(objio_trims);
 
+  fseek(fileptr, 0L, SEEK_END);
+  fsize = ftell(fileptr);
+  if(fsize < 0)
+    fsize = LONG_MAX;
+  rewind(fileptr);
+
+  /* estimate number of lines (the average Wavefront OBJ line has 34 bytes) */
+  lines = fsize/34;
+
   while(!feof(fileptr))
     {
       if((ay_status = ay_objio_readline(fileptr)))
 	break;
-    } /* while */
 
+      lineno++;
+
+      /* calculate new progress value in percent */
+      curprog = (int)(lineno*100.0/lines);
+
+      if(curprog > lastprog)
+	{
+	  sprintf(pbuffer, "%d", curprog);
+	  Tcl_SetVar2(ay_interp, aname, vname, pbuffer,
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	  lastprog = curprog;
+	}
+
+      /* process all events (update the GUI) every 500 lines */
+      if(!fmod(lineno, 500.0))
+	{
+	  while(Tcl_DoOneEvent(TCL_DONT_WAIT)){};
+	}
+    } /* while */
 
   if(ferror(fileptr) || (errno != 0))
     {
