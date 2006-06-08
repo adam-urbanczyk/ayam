@@ -1158,6 +1158,7 @@ filename ""
 FileName "unnamed.obj"
 STagName "mys"
 TTagName "myt"
+Progress 0
 }   }
 
 
@@ -1271,6 +1272,8 @@ proc io_importOBJ { } {
     addParam $f objio_options ScaleFactor  [list 0.01 0.1 1.0 10.0 100.0]
     addString $f objio_options STagName
     addString $f objio_options TTagName
+    set objio_options(Progress) 0
+    addProgress $f objio_options Progress
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {
