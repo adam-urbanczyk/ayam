@@ -1,7 +1,7 @@
 /*
  * Ayam, a free 3D modeler for the RenderMan interface.
  *
- * Ayam is copyrighted 1998-2001 by Randolf Schultz
+ * Ayam is copyrighted 1998-2006 by Randolf Schultz
  * (rschultz@informatik.uni-rostock.de) and others.
  *
  * All rights reserved.
@@ -722,7 +722,7 @@ ay_pomesh_wribcb(char *file, ay_object *o)
 	  if(!(parms = calloc(pvc+2, sizeof(RtPointer))))
 	    return AY_EOMEM;
 
-	  tokens[0] = "Pw";
+	  tokens[0] = "P";
 	  parms[0] = (RtPointer)controls;
 	  tokens[1] = "N";
 	  parms[1] = (RtPointer)normals;
@@ -738,7 +738,7 @@ ay_pomesh_wribcb(char *file, ay_object *o)
 	  if(!(parms = calloc(pvc+1, sizeof(RtPointer))))
 	    return AY_EOMEM;
 
-	  tokens[0] = "Pw";
+	  tokens[0] = "P";
 	  parms[0] = (RtPointer)controls;
 
 	  n = 1;
