@@ -1159,6 +1159,7 @@ FileName "unnamed.obj"
 STagName "mys"
 TTagName "myt"
 Progress 0
+CheckDegen 1
 }   }
 
 
@@ -1270,6 +1271,7 @@ proc io_importOBJ { } {
     addCheck $f objio_options OmitCurves
     addParam $f objio_options RescaleKnots [list 0.0 1.0e-4]
     addParam $f objio_options ScaleFactor  [list 0.01 0.1 1.0 10.0 100.0]
+    addCheck $f objio_options CheckDegen
     addString $f objio_options STagName
     addString $f objio_options TTagName
     set objio_options(Progress) 0
@@ -1288,6 +1290,7 @@ proc io_importOBJ { } {
 		-p $objio_options(MergePVTags)\
 		-r $objio_options(RescaleKnots)\
 	        -f $objio_options(ScaleFactor)\
+	        -d $objio_options(CheckDegen)\
 		-t $objio_options(STagName) $objio_options(TTagName)
 	
 	if { $ay_error < 2 } {
