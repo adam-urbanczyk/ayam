@@ -1450,6 +1450,8 @@ int objio_mergepvtags;
 
 double objio_rescaleknots;
 
+int objio_checkdegen;
+
 typedef struct objio_vertex_s {
   struct objio_vertex_s *next;
   struct objio_vertex_s *prev;
@@ -2009,10 +2011,11 @@ int
 ay_objio_readface(char *str, int lastlinewasface)
 {
  int ay_status = AY_OK;
+ char fname[] = "objio_readface";
  char *c = NULL;
  int gvindex = 0, tvindex = 0, nvindex = 0, stride = 0;
  int last_stride = 0;
- double *gv, *nv, *tv;
+ double *gv, *nv, *tv, *oldpnt;
  double *newcontrolv = NULL, *texsv = NULL, *textv = NULL, *tmpv = NULL;
  int texsvlen = 0, textvlen = 0;
  ay_pomesh_object po = {0}, *temppo;
@@ -2028,24 +2031,33 @@ ay_objio_readface(char *str, int lastlinewasface)
 
   if(lastlinewasface == -1)
     {
-      /* merge */
       /*printf("Merging %d faces...\n",nfaces);*/
-      ay_status = ay_pomesht_merge(objio_mergepvtags, storedfaces, &m);
+
+      /* merge */
+      m = NULL;
+      if(storedfaces && storedfaces->next)
+	ay_status = ay_pomesht_merge(objio_mergepvtags, storedfaces, &m);
+
       /*printf("Done merging faces...\n");*/
+
       if(ay_status)
 	goto cleanup;
+
       nfaces = 0;
-      /* replace objio_lastface with m */
-      temppo = objio_lastface->refine;
-      objio_lastface->refine = m->refine;
-      m->refine = temppo;
+      if(m)
+	{
+	  /* replace objio_lastface with m */
+	  temppo = objio_lastface->refine;
+	  objio_lastface->refine = m->refine;
+	  m->refine = temppo;
 
-      temptags = objio_lastface->tags;
-      objio_lastface->tags = m->tags;
-      m->tags = temptags;
+	  temptags = objio_lastface->tags;
+	  objio_lastface->tags = m->tags;
+	  m->tags = temptags;
 
-      /* remove temporary object that now carries the old poly mesh */
-      ay_status = ay_object_delete(m);
+	  /* remove temporary object that now carries the old poly mesh */
+	  ay_status = ay_object_delete(m);
+	} /* if */
 
       /* clean up */
       while(storedfaces)
@@ -2177,6 +2189,21 @@ ay_objio_readface(char *str, int lastlinewasface)
 
       last_stride = stride;
 
+      /* check for degenerated faces */
+      if(objio_checkdegen)
+	{
+	  for(i = 0; i < nverts; i++)
+	    {
+	      oldpnt = &(po.controlv[i*stride]);
+	      if(AY_COMP3DP(oldpnt,gv))
+		{
+		  ay_error(AY_EWARN, fname, "Skipping degenerated face!");
+		  goto cleanup;
+		}
+	    }
+	}
+
+      /* add vertex to PolyMesh object */
       newcontrolv = NULL;
       if(!(newcontrolv = realloc(po.controlv, (nverts + 1) * stride *
 				 sizeof(double))))
@@ -2231,6 +2258,16 @@ ay_objio_readface(char *str, int lastlinewasface)
 				textvlen, textv);
 	}
 
+      if(objio_mergecfaces)
+	{
+	  /* store */
+	  if(!(*laststoredface = calloc(1, sizeof(ay_list_object))))
+	    { ay_status = AY_EOMEM; goto cleanup; }
+	  ay_status = ay_object_copy(&t, &((*laststoredface)->object));
+	  laststoredface = &((*laststoredface)->next);
+	  nfaces++;
+	} /* if */
+
       if(!objio_mergecfaces || !lastlinewasface)
 	{
 	  /* link new polymesh into the scene */
@@ -2241,15 +2278,6 @@ ay_objio_readface(char *str, int lastlinewasface)
 	  ay_status = ay_object_link(o);
 
 	  objio_lastface = o;
-	}
-      else
-	{
-	  /* store */
-	  if(!(*laststoredface = calloc(1, sizeof(ay_list_object))))
-	    { ay_status = AY_EOMEM; goto cleanup; }
-	  ay_status = ay_object_copy(&t, &((*laststoredface)->object));
-	  laststoredface = &((*laststoredface)->next);
-	  nfaces++;
 	} /* if */
     } /* if */
 
@@ -3391,6 +3419,7 @@ ay_objio_readscenetcmd(ClientData clientData, Tcl_Interp *interp,
   objio_mergepvtags = AY_TRUE;
   objio_omitcurves = AY_FALSE;
   objio_rescaleknots = 0.0;
+  objio_checkdegen = AY_TRUE;
 
   while(i+1 < argc)
     {
@@ -3425,6 +3454,12 @@ ay_objio_readscenetcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  sscanf(argv[i+1], "%lg", &objio_scalefactor);
 	}
+      else
+      if(!strcmp(argv[i], "-d"))
+	{
+	  sscanf(argv[i+1], "%d", &objio_checkdegen);
+	}
+
       i += 2;
     } /* while */
 
