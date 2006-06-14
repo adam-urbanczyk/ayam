@@ -1,6 +1,7 @@
-[3. Jun 2006] CVS-Head:
+[14. Jun 2006] CVS-Head:
 o bug fixes:
   - fixed not changeable preference setting "AutoFocus" (SF 1497964)
+  - fixed export of PolyMesh objects with PV tags using "Pw" (SF 1504284)
 o added shader parsing plugin for Gelato
 o added renderer profile for Gelato to "Select Renderer" dialog
 o added shadow map generation preference options to improve Gelato support:
@@ -8,6 +9,11 @@ o added shadow map generation preference options to improve Gelato support:
 o added scan shaders option to main menu ("Special/Scan Shaders")
 o added shader parsing plugin projects to VC2005 workspace
 o made all shader parsing plugins Ayam version independent
+o added support to render just one shadow map from the selected light
+o added default values to "Set GridSize" dialog and object property
+o added scale factor to Wavefront OBJ import and export
+o added progress display to Wavefront OBJ import
+o added support to detect and fix degenerate faces to Wavefront OBJ import
 
 
 [13. May 2006] Ayam1.10:
