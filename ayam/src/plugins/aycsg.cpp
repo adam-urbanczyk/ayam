@@ -559,7 +559,8 @@ aycsg_flatten(ay_object *t, struct Togl *togl, int parent_csgtype,
 	  double minx, miny, minz, maxx, maxy, maxz;
 	  OpenCSG::Primitive *p = primitives.back();
 	  aycsg_getNDCBB(t, togl, &minx, &miny, &minz, &maxx, &maxy, &maxz);
-	  p->setBoundingBox(minx, miny, minz, maxx, maxy, maxz);
+	  p->setBoundingBox((float)minx, (float)miny, (float)minz,
+			    (float)maxx, (float)maxy, (float)maxz);
 	} // if
 
     }

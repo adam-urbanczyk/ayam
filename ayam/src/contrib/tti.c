@@ -573,7 +573,7 @@ ay_tti_handle_simple_glyf(ay_tti_font *ttfont, ay_tti_glyf *glyf,
 	{
 	  if(flags[k] & XSAME)
 	    {
-	      xrel[k] = 0.0;
+	      xrel[k] = 0;
 	    }
 	  else
 	    {
@@ -639,16 +639,16 @@ ay_tti_handle_simple_glyf(ay_tti_font *ttfont, ay_tti_glyf *glyf,
 	{
 	  tx = xabs[i];
 	  ty = yabs[i];
-	  xabs[i] = scale_factor*(matrix[0] * tx + matrix[2] * ty + matrix[4]);
-	  yabs[i] = scale_factor*(matrix[1] * tx + matrix[3] * ty + matrix[5]);
+	  xabs[i] = (short)(scale_factor*(matrix[0] * tx + matrix[2] * ty + matrix[4]));
+	  yabs[i] = (short)(scale_factor*(matrix[1] * tx + matrix[3] * ty + matrix[5]));
 	} /* for */
     }
   else
     {
       for(i = 0; i <= last_point; i++)
 	{
-	  xabs[i] = scale_factor*(xabs[i]);
-	  yabs[i] = scale_factor*(yabs[i]);
+	  xabs[i] = (short)(scale_factor*(xabs[i]));
+	  yabs[i] = (short)(scale_factor*(yabs[i]));
 	}
     }
 
