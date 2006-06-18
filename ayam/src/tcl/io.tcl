@@ -1283,7 +1283,8 @@ proc io_importOBJ { } {
 
 	set oldcd [pwd]
 	cd [file dirname $objio_options(FileName)]
-
+	grab .objI
+	update
 	ay_objio_read [file tail $objio_options(FileName)]\
 		-m $objio_options(MergeFaces)\
 		-o $objio_options(OmitCurves)\
@@ -1292,7 +1293,7 @@ proc io_importOBJ { } {
 	        -f $objio_options(ScaleFactor)\
 	        -d $objio_options(CheckDegen)\
 		-t $objio_options(STagName) $objio_options(TTagName)
-	
+	grab release .objI
 	if { $ay_error < 2 } {
 	    ayError 4 "importOBJ" "Done importing scene from:"
 	    ayError 4 "importOBJ" "$objio_options(FileName)"
