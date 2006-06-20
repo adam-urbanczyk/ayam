@@ -188,6 +188,12 @@ proc tree_paintLevel { node } {
 proc tree_selectItem { redraw tree node } {
   global ay
 
+    if { $ay(treeselectsema) == 1 } {
+	return;
+    } else {
+	set ay(treeselectsema) 1
+    }
+
     set ay(ts) 1; 
     set nlist [$tree selection get]
     $ay(tree) selection clear
@@ -202,14 +208,16 @@ proc tree_selectItem { redraw tree node } {
     tree_handleSelection
     $tree bindText  <ButtonRelease-1> ""
     $tree bindText  <ButtonPress-1> "tree_selectItem 1 $tree"
-
+    update
+    plb_update
+    update idletasks
     if { $redraw == 1 } {
 	if { $ay(need_redraw) == 1 } {
 	    rV
 	}
     }
 
-    plb_update
+    set ay(treeselectsema) 0
 
  return;
 }
@@ -220,6 +228,12 @@ proc tree_selectItem { redraw tree node } {
 # multiple selection via ctrl-key; only allowed within on level
 proc tree_toggleSelection { tree node } {
  global ay
+
+    if { $ay(treeselectsema) == 1 } {
+	return;
+    } else {
+	set ay(treeselectsema) 1
+    }
 
     set ay(ts) 1;
     set SelectedLevel $ay(SelectedLevel)
@@ -251,10 +265,14 @@ proc tree_toggleSelection { tree node } {
     $tree bindText  <ButtonRelease-1> "tree_selectItem 1 $tree"
 
     tree_handleSelection
+
     plb_update
+
     if { $ay(need_redraw) == 1 } {
 	rV
     }
+
+    set ay(treeselectsema) 0
 
  return;
 }
@@ -265,6 +283,12 @@ proc tree_toggleSelection { tree node } {
 # multiple selection via shift-key; only allowed within one level
 proc tree_multipleSelection { tree node } {
  global ay
+
+    if { $ay(treeselectsema) == 1 } {
+	return;
+    } else {
+	set ay(treeselectsema) 1
+    }
 
     set ay(ts) 1;
     set SelectedLevel $ay(SelectedLevel)
@@ -297,7 +321,9 @@ proc tree_multipleSelection { tree node } {
     }
 
     eval [subst "$tree selection set $selnodes"]
+
     tree_handleSelection
+
     plb_update
 
     if { $ay(need_redraw) == 1 } {
@@ -308,9 +334,35 @@ proc tree_multipleSelection { tree node } {
     $tree bindText  <ButtonRelease-1> "tree_selectItem 1 $tree"
 
 
+    set ay(treeselectsema) 0
+
  return;
 }
 # tree_multipleSelection
+
+
+#tree_selectLast
+# select last object of current level in tree
+proc tree_selectLast { } {
+    global ay
+
+    if { $ay(treeselectsema) == 1 } {
+	return;
+    } else {
+	set ay(treeselectsema) 1
+    }
+
+    if { $ay(ts) == 0 } {
+	sL
+	if { $ay(need_redraw) == 1 } { rV }
+    }
+    set ay(ts) 0
+
+    set ay(treeselectsema) 0
+
+ return;
+}
+# tree_selectLast
 
 
 #tree_handleSelection:
@@ -688,8 +740,7 @@ if { ($tcl_platform(platform) == "windows") || $AYWITHAQUA } {
 # occurs in the tree, if not (ay(ts) is 0) we
 # select the last element of the current level
 bind $tree <ButtonRelease-1> "+\
- after 10 { global ay;if { \$ay(ts) == 0 } { sL;\
-            if { \$ay(need_redraw) == 1 } { rV } }; set ay(ts) 0 };\
+ after 10 { tree_selectLast };\
  focus \$ay(tree)"
 
 # multiple selection
