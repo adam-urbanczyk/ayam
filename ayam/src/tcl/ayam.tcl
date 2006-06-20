@@ -498,6 +498,7 @@ array set ay {
  ts 0
  ul ""
  TreeUpdateSema 0
+ treeselectsema 0
  ExtraTreeUpdate 0
  co ""
  cm ""
