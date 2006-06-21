@@ -297,17 +297,20 @@ proc tree_multipleSelection { tree node } {
 
     if { [llength $nlist] != "1" } {
 	ayError 1 "multipleSelection" "Select a single object first!"
+	set ay(treeselectsema) 0
 	return;
     }
 
     if { [lsearch $nlist $node] != -1 } {
 	ayError 1 "multipleSelection" "Select a different object!"
+	set ay(treeselectsema) 0
 	return;
     }
 
     set parent [$tree parent $node]
     if { $parent != $SelectedLevel } {
 	ayError 1 "multipleSelection" "Can not select from different levels!"
+	set ay(treeselectsema) 0
 	return;
     }
 
@@ -352,6 +355,9 @@ proc tree_selectLast { } {
 	set ay(treeselectsema) 1
     }
 
+    # ay(ts) is triggered, whenever a true selection
+    # occurs in the tree, if not (ay(ts) is 0) we
+    # select the last element of the current level
     if { $ay(ts) == 0 } {
 	sL
 	if { $ay(need_redraw) == 1 } { rV }
@@ -518,9 +524,9 @@ proc tree_toggleSub { tree node } {
 # tree_toggleSub
 
 
-#tree_popup:
-# tree context menu
-proc tree_popup { tree } {
+#tree_openPopup:
+# display the tree context menu
+proc tree_openPopup { tree } {
     global ay
 
     set xy [winfo pointerxy .]
@@ -530,10 +536,11 @@ proc tree_popup { tree } {
     tk_popup $tree.popup $x $y
     return;
 }
-# tree_popup
+# tree_openPopup
 
 
 #tree_move:
+#
 proc tree_move { } {
  global ay
     set old_selection [$ay(tree) selection get]
@@ -736,18 +743,24 @@ if { ($tcl_platform(platform) == "windows") || $AYWITHAQUA } {
     #bind
 }
 
-# ay(ts) is triggered, whenever a true selection
-# occurs in the tree, if not (ay(ts) is 0) we
-# select the last element of the current level
+bind $tree <Key-Page_Up> "$tree yview scroll -1 pages; break"
+bind $tree <Key-Page_Down> "$tree yview scroll 1 pages; break"
+
+# select last object, when clicking somewhere in the widget
+# and not on a node
 bind $tree <ButtonRelease-1> "+\
- after 10 { tree_selectLast };\
+ global ay;\
+ if { \$ay(treeselectsema) == 0 } {\
+ after 10 { tree_selectLast }; };\
  focus \$ay(tree)"
 
-# multiple selection
+# toggle selection without affecting selection of other objects
 $tree bindText  <Control-ButtonPress-1> "tree_toggleSelection $sw.tree"
 $tree bindText  <Control-Double-ButtonPress-1> "tree_toggleSelection $sw.tree"
 
+# multiple selection (regions)
 $tree bindText  <Shift-ButtonPress-1> "tree_multipleSelection $sw.tree"
+
 # the next bindings consume unwanted events that would
 # make the tree_selectItem-Binding fire, because tree_toggleSelection
 # and tree_multipleSelection _change_ the binding for tree_selectItem
@@ -762,7 +775,7 @@ $tree bindText  <ButtonPress-1> "tree_selectItem 1 $sw.tree"
 # open sub tree
 $tree bindText  <Double-ButtonPress-1> "tree_toggleSub $sw.tree"
 
-bind $tree <Key-Tab> "focus .fl.con.console;break"
+bind $tree <Key-Tab> "focus .fl.con.console; break"
 
 
 # arrange for switching back to good old listbox
@@ -824,9 +837,9 @@ $m add separator
 $m add command -label "Delete Object" -command "$em invoke 3"
 
 if { $ay(ws) == "Aqua" && $ayprefs(SwapMB) } {
-    bind $ay(tree) <ButtonPress-2> "tree_popup $ay(tree)"
+    bind $ay(tree) <ButtonPress-2> "tree_openPopup $ay(tree)"
 } else {
-    bind $ay(tree) <ButtonPress-3> "tree_popup $ay(tree)"
+    bind $ay(tree) <ButtonPress-3> "tree_openPopup $ay(tree)"
 }
 
 # XXXX unfortunately, this does not work
