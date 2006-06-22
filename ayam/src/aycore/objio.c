@@ -2013,7 +2013,7 @@ ay_objio_readface(char *str, int lastlinewasface)
  int ay_status = AY_OK;
  char fname[] = "objio_readface";
  char *c = NULL;
- int gvindex = 0, tvindex = 0, nvindex = 0, stride = 0;
+ int gvindex = 0, tvindex = 0, nvindex = 0, stride = 0, degen = AY_FALSE;
  int last_stride = 0;
  double *gv, *nv, *tv, *oldpnt;
  double *newcontrolv = NULL, *texsv = NULL, *textv = NULL, *tmpv = NULL;
@@ -2025,6 +2025,7 @@ ay_objio_readface(char *str, int lastlinewasface)
  static ay_list_object *storedfaces = NULL, **laststoredface = &storedfaces;
  static unsigned int nfaces = 0;
  ay_list_object *tl = NULL;
+ double angle, v1[3] = {0}, v2[3] = {0}, *v;
 
   if(!str && (lastlinewasface != -1))
     return AY_ENULL;
@@ -2119,7 +2120,7 @@ ay_objio_readface(char *str, int lastlinewasface)
 	      if(objio_nverts_tail)
 		{
 		  ay_status = ay_objio_getvertex(2,
-					   objio_nverts_tail->index + nvindex,
+				        objio_nverts_tail->index + nvindex + 1,
 					     &nv);
 		}
 	      else
@@ -2192,16 +2193,25 @@ ay_objio_readface(char *str, int lastlinewasface)
       /* check for degenerated faces */
       if(objio_checkdegen)
 	{
+	  degen = AY_FALSE;
 	  for(i = 0; i < nverts; i++)
 	    {
 	      oldpnt = &(po.controlv[i*stride]);
 	      if(AY_COMP3DP(oldpnt,gv))
 		{
-		  ay_error(AY_EWARN, fname, "Skipping degenerated face!");
-		  goto cleanup;
+		  ay_error(AY_EWARN, fname, "Degenerated face encountered!");
+		  /*ay_error(AY_EOUTPUT, fname, str);*/
+		  degen = AY_TRUE;
+		  break;
 		}
-	    }
-	}
+	    } /* for */
+	  if(degen)
+	    {
+	      /* skip to next vindex */
+	      ay_status = ay_objio_readskip(&c);
+	      break;
+	    } /* if */
+	} /* if */
 
       /* add vertex to PolyMesh object */
       newcontrolv = NULL;
@@ -2230,6 +2240,54 @@ ay_objio_readface(char *str, int lastlinewasface)
 	{
 	  po.has_normals = AY_TRUE;
 	}
+
+      if(nverts == 4)
+	{
+	  v = po.controlv;
+	  v1[0] = v[stride] - v[0];
+	  v1[1] = v[stride+1] - v[1];
+	  v1[2] = v[stride+2] - v[2];
+	  v2[0] = v[3*stride] - v[0];
+	  v2[1] = v[3*stride+1] - v[1];
+	  v2[2] = v[3*stride+2] - v[2];
+	  angle = acos(AY_V3DOT(v1,v2)/(AY_V3LEN(v1)*AY_V3LEN(v2)));
+	  
+	  v1[0] = v[2*stride] - v[stride];
+	  v1[1] = v[2*stride+1] - v[stride+1];
+	  v1[2] = v[2*stride+2] - v[stride+2];
+	  v2[0] = v[0] - v[stride];
+	  v2[1] = v[1] - v[stride+1];
+	  v2[2] = v[2] - v[stride+2];
+
+	  angle += acos(AY_V3DOT(v1,v2)/(AY_V3LEN(v1)*AY_V3LEN(v2)));
+
+	  v1[0] = v[3*stride] - v[2*stride];
+	  v1[1] = v[3*stride+1] - v[2*stride+1];
+	  v1[2] = v[3*stride+2] - v[2*stride+2];
+	  v2[0] = v[stride] - v[2*stride];
+	  v2[1] = v[stride+1] - v[2*stride+1];
+	  v2[2] = v[stride+2] - v[2*stride+2];
+
+	  angle += acos(AY_V3DOT(v1,v2)/(AY_V3LEN(v1)*AY_V3LEN(v2)));
+
+	  v1[0] = v[0] - v[3*stride];
+	  v1[1] = v[1] - v[3*stride+1];
+	  v1[2] = v[2] - v[3*stride+2];
+	  v2[0] = v[2*stride] - v[3*stride];
+	  v2[1] = v[2*stride+1] - v[3*stride+1];
+	  v2[2] = v[2*stride+2] - v[3*stride+2];
+
+	  angle += acos(AY_V3DOT(v1,v2)/(AY_V3LEN(v1)*AY_V3LEN(v2)));
+	  if(fabs(AY_R2D(angle) - 360.0)>179)
+	    {
+	      printf("%g\n",AY_R2D(angle));
+	      memcpy(v1, v, stride*sizeof(double));
+	      memcpy(v, &(v[stride]), stride*sizeof(double));
+	      memcpy(&(v[stride]), v1, stride*sizeof(double));
+	    }
+	  
+	}
+
 
       po.nverts = &nverts;
       po.ncontrols = nverts;
@@ -2297,6 +2355,13 @@ cleanup:
   if(t.tags)
     ay_status = ay_tags_delall(&t);
 
+  /*
+  if(degen)
+    {
+      ay_objio_readface(NULL, -1);
+      return AY_ERROR;
+    }
+  */
  return ay_status;
 } /* ay_objio_readface */
 
@@ -3276,7 +3341,8 @@ ay_objio_readscene(char *filename)
  ay_object *o = ay_root->next;
  FILE *fileptr = NULL;
  char fname[] = "objio_readscene";
- char aname[] = "objio_options", vname[] = "Progress";
+ char aname[] = "objio_options", vname1[] = "Progress";
+ char vname2[] = "Cancel", *val = NULL;
  char pbuffer[64];
  int lastprog = 0, curprog = 0;
  long fsize;
@@ -3339,7 +3405,7 @@ ay_objio_readscene(char *filename)
       if(curprog > lastprog)
 	{
 	  sprintf(pbuffer, "%d", curprog);
-	  Tcl_SetVar2(ay_interp, aname, vname, pbuffer,
+	  Tcl_SetVar2(ay_interp, aname, vname1, pbuffer,
 		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 	  lastprog = curprog;
 	}
@@ -3348,7 +3414,18 @@ ay_objio_readscene(char *filename)
       if(!fmod(lineno, 500.0))
 	{
 	  while(Tcl_DoOneEvent(TCL_DONT_WAIT)){};
+
+	  /* also, check for cancel button */
+	  val = Tcl_GetVar2(ay_interp, aname, vname2,
+			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	  if(val && val[0] == '1')
+	    {
+	      ay_error(AY_EWARN, fname,
+	             "Import cancelled! Not all objects may have been read!");
+	      break;
+	    }
 	}
+
     } /* while */
 
   if(ferror(fileptr) || (errno != 0))

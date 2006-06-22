@@ -1284,6 +1284,7 @@ proc io_importOBJ { } {
 	set oldcd [pwd]
 	cd [file dirname $objio_options(FileName)]
 	grab .objI
+	set objio_options(Cancel) 0
 	update
 	ay_objio_read [file tail $objio_options(FileName)]\
 		-m $objio_options(MergeFaces)\
@@ -1325,6 +1326,8 @@ proc io_importOBJ { } {
     # button
 
     button $f.bca -text "Cancel" -width 5 -command "\
+                global objio_options;\
+                set objio_options(Cancel) 1;\
 		grab release .objI;\
 		focus .;\
 		destroy .objI"
