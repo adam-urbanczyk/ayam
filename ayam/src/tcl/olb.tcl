@@ -294,6 +294,12 @@ proc olb_update { } {
 proc olb_select { } {
     global ay
 
+    if { $ay(listselectsema) == 1 } {
+	bell; return;
+    } else {
+	set ay(listselectsema) 1
+    }
+
     set lb $ay(olb)
     set selection [$lb curselection]
     
@@ -304,6 +310,8 @@ proc olb_select { } {
     if { $ay(need_redraw) == 1 } {
 	rV
     }
+
+    set ay(listselectsema) 0
 
  return;
 }
