@@ -445,6 +445,13 @@ proc unrenameWhileFor { } {
 proc selAdd { ud } {
     global ay
     if { $ay(lb) == 0 } {
+	
+	if { $ay(treeselectsema) == 1 } {
+	    bell; return;
+	} else {
+	    set ay(treeselectsema) 1
+	}
+
 	set tree $ay(tree)
 	set cl $ay(CurrentLevel)
 	set sel [$tree selection get]
@@ -491,6 +498,9 @@ proc selAdd { ud } {
 		rV
 	    }
 	}
+
+	set ay(treeselectsema) 0
+
     } else {
 	#if { [focus -displayof .] == $ay(olb) } { return; }
 	set lb $ay(olb)
@@ -534,6 +544,12 @@ proc selAdd { ud } {
 proc selNPFL { npfl } {
     global ay
     if { $ay(lb) == 0 } {
+	if { $ay(treeselectsema) == 1 } {
+	    bell; return;
+	} else {
+	    set ay(treeselectsema) 1
+	}
+
 	set tree $ay(tree)
 	set cl $ay(CurrentLevel)
 
@@ -593,6 +609,8 @@ proc selNPFL { npfl } {
 		rV
 	    }
 	}
+
+	set ay(treeselectsema) 0
 
     } else {
 	#if { [focus -displayof .] == $ay(olb) } { return; }

@@ -189,7 +189,7 @@ proc tree_selectItem { redraw tree node } {
   global ay
 
     if { $ay(treeselectsema) == 1 } {
-	return;
+	bell; return;
     } else {
 	set ay(treeselectsema) 1
     }
@@ -230,7 +230,7 @@ proc tree_toggleSelection { tree node } {
  global ay
 
     if { $ay(treeselectsema) == 1 } {
-	return;
+	bell; return;
     } else {
 	set ay(treeselectsema) 1
     }
@@ -285,7 +285,7 @@ proc tree_multipleSelection { tree node } {
  global ay
 
     if { $ay(treeselectsema) == 1 } {
-	return;
+	bell; return;
     } else {
 	set ay(treeselectsema) 1
     }
@@ -350,7 +350,7 @@ proc tree_selectLast { } {
     global ay
 
     if { $ay(treeselectsema) == 1 } {
-	return;
+	bell; return;
     } else {
 	set ay(treeselectsema) 1
     }
