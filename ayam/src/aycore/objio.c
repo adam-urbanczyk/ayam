@@ -2240,7 +2240,7 @@ ay_objio_readface(char *str, int lastlinewasface)
 	{
 	  po.has_normals = AY_TRUE;
 	}
-
+      /*
       if(nverts == 4)
 	{
 	  v = po.controlv;
@@ -2285,9 +2285,9 @@ ay_objio_readface(char *str, int lastlinewasface)
 	      memcpy(v, &(v[stride]), stride*sizeof(double));
 	      memcpy(&(v[stride]), v1, stride*sizeof(double));
 	    }
-	  
-	}
 
+	}
+      */
 
       po.nverts = &nverts;
       po.ncontrols = nverts;
