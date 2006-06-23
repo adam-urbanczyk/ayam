@@ -503,6 +503,13 @@ proc selAdd { ud } {
 
     } else {
 	#if { [focus -displayof .] == $ay(olb) } { return; }
+	
+	if { $ay(listselectsema) == 1 } {
+	    bell; return;
+	} else {
+	    set ay(listselectsema) 1
+	}
+
 	set lb $ay(olb)
 	set sel ""
 	set sel [$lb curselection]
@@ -535,6 +542,9 @@ proc selAdd { ud } {
 		}
 	    }
 	}
+
+	set ay(listselectsema) 0
+
     }
  return;
 }
@@ -613,6 +623,13 @@ proc selNPFL { npfl } {
 	set ay(treeselectsema) 0
 
     } else {
+
+	if { $ay(listselectsema) == 1 } {
+	    bell; return;
+	} else {
+	    set ay(listselectsema) 1
+	}
+
 	#if { [focus -displayof .] == $ay(olb) } { return; }
 	set lb $ay(olb)
 	set sel ""
@@ -679,6 +696,7 @@ proc selNPFL { npfl } {
 	    # if
 	}
 	# if
+	set ay(listselectsema) 0
     }
     # if
 
