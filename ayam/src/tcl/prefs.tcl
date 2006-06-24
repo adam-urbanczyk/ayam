@@ -149,7 +149,15 @@ proc prefs_open {} {
     addFileB $fw ayprefse EnvFile [ms ayprefse_EnvFile]
     addMFileB $fw ayprefse Scripts [ms ayprefse_Scripts]
     addMDirB $fw ayprefse Plugins [ms ayprefse_Plugins]
-    addStringB $fw ayprefse Docs [ms ayprefse_Docs] {"http://ayam.sourceforge.net/docs/"}
+
+    set docdefs  {"http://ayam.sourceforge.net/docs/"}
+    global AYWITHAQUA
+    if { $AYWITHAQUA == 1 } {
+	lappend docdefs [file join [file dirname [info nameofexecutable]] \
+		../Resources/docs/ayam.html]
+    }
+
+    addStringB $fw ayprefse Docs [ms ayprefse_Docs] $docdefs
     addStringB $fw ayprefse TmpDir [ms ayprefse_TmpDir]
 
     # Modeling
