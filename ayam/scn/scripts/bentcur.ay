@@ -1,5 +1,5 @@
 Ayam
-1.9
+1.10
 0
 0
 1
@@ -64,7 +64,7 @@ view1
 10
 0.744056
 3.08252
--3.75079e-08
+-3.75079e-008
 0.744056
 3.08252
 0
@@ -147,7 +147,7 @@ view2
 0
 1
 2
-676
+685
 # bendcur.tcl: example script for Ayam Script object
 # this script wants Script Object Type "Modify"
 # and deforms a curve based on the shape of a
@@ -156,21 +156,22 @@ withOb 0 do {getProp}
 set length $NCurveAttrData(Length)
 withOb 1 do {getProp}
 set umin [lindex $NCurveAttrData(Knots)\
-    [expr $NCurveAttrData(Order) - 1]]
+    [expr {$NCurveAttrData(Order) - 1}]]
 set umax [lindex $NCurveAttrData(Knots)\
     $NCurveAttrData(Length)]
-set ud [expr ($umax-$umin)/($length-1)]
+set ud [expr {($umax-$umin)/($length-1)}]
 set u 0.0
 for {set i 0} {$i < $length} {incr i} {
     withOb 1 do {getPnt -u $u sx sy sz sw}
     withOb 0 do {getPnt $i x y z w}
-    set y [expr $y + $sy]
+    set y [expr {$y + $sy}]
     withOb 0 do {setPnt $i $x $y $z $w}
-    set u [expr $u + $ud]
+    set u [expr {$u + $ud}]
 }
 # for
 
 # bendcur.tcl
+
 
 
 0
@@ -187,7 +188,7 @@ NP
 SpiralAttr
 1
 1
-1213
+1222
 # Ayam, save array: SpiralAttrData
 # crtspiralgui.tcl: example script for Ayam Script object
 # this script wants Script Object Type "Create" and creates
@@ -212,13 +213,13 @@ crtOb NCurve -length $length;hSL
 set angle 0.0
 set z 0.0
 for {set i 0} {$i < $length} {incr i} {
-    set x [expr $r*cos($angle)]
-    set y [expr $r*sin($angle)]
+    set x [expr {$r*cos($angle)}]
+    set y [expr {$r*sin($angle)}]
 
     setPnt $i $x $y $z 1.0
 
-    set angle [expr $angle + $angled]
-    set z [expr $z + $zd]
+    set angle [expr {$angle + $angled}]
+    set z [expr {$z + $zd}]
 }
 # for
 
@@ -238,6 +239,7 @@ if { ![info exists ::SpiralAttr] } {
 }
 
 # crtspiralgui.tcl
+
 
 
 4Radius
@@ -262,12 +264,12 @@ AngleD
 4
 2
 0 0 0 1
-2.77556e-17 0 1.125 1
-5.55112e-17 1.5 2.25 1
-4.16334e-17 2.25 3.5 1
-2.77556e-17 1.5 5 1
-2.77556e-17 0 6 1
-2.77556e-17 0 7 1
+2.77556e-017 0 1.125 1
+5.55112e-017 1.5 2.25 1
+4.16334e-017 2.25 3.5 1
+2.77556e-017 1.5 5 1
+2.77556e-017 0 6 1
+2.77556e-017 0 7 1
 0
 0
 0
@@ -276,7 +278,7 @@ AngleD
 3
 0
 0
-1
+0
 1
 0
 0
