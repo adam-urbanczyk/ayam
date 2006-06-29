@@ -344,6 +344,10 @@ ay_npatch_drawglucb(struct Togl *togl, ay_object *o)
       b++;
     }
 
+#ifdef AYWITHAQUA
+  glPushAttrib((GLbitfield) GL_POLYGON_BIT);
+#endif /* AYWITHAQUA */
+
 #ifndef AYWITHAQUA
   if(!npatch->no)
     {
@@ -456,6 +460,8 @@ ay_npatch_drawglucb(struct Togl *togl, ay_object *o)
 #ifdef AYWITHAQUA
   gluDeleteNurbsRenderer(npatch->no);
   npatch->no = NULL;
+
+  glPopAttrib();
 #endif /* AYWITHAQUA */
 
  return AY_OK;
@@ -714,6 +720,7 @@ ay_npatch_shadeglucb(struct Togl *togl, ay_object *o)
 	}
       b++;
     }
+
 #ifndef AYWITHAQUA
   if(!npatch->no)
     {
