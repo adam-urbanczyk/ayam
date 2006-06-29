@@ -21,6 +21,7 @@ uplevel #0 { array set onio_options {
     QuadAsBRep 1
     RescaleKnots 0.0
     TopLevelLayers 0
+    ScaleFactor 1.0
     FileName "unnamed.3dm"
     STagName "mys"
     TTagName "myt"
@@ -53,6 +54,8 @@ proc onio_import { } {
     set types {{"3DM (Rhino) Files" ".3dm"} {"All files" *}}
     addFileT $f onio_options FileName $types
 
+    addParam $f onio_options ScaleFactor [list 0.01 0.1 1.0 10.0 100.0]
+
     addParam $f onio_options Accuracy [list 0.0 1.0e-12 0.1 1]
     addCheck $f onio_options ReadCurves
     addCheck $f onio_options IgnoreFirstTrim
@@ -76,6 +79,7 @@ proc onio_import { } {
 	    -l $onio_options(ReadLayers)\
 	    -i $onio_options(IgnoreFirstTrim)\
 	    -r $onio_options(RescaleKnots)\
+	    -f $onio_options(ScaleFactor)\
 	    -t $onio_options(STagName) $onio_options(TTagName)
 
 	cd $oldcd
@@ -156,6 +160,8 @@ proc onio_export { } {
     set types {{"3DM (Rhino) Files" ".3dm"} {"All files" *}}
     addSFileT $f onio_options FileName $types
 
+    addParam $f onio_options ScaleFactor [list 0.01 0.1 1.0 10.0 100.0]
+
     addParam $f onio_options Accuracy
     addCheck $f onio_options WriteSelected
     addCheck $f onio_options ObeyNoExport
@@ -181,6 +187,7 @@ proc onio_export { } {
 	    -o $onio_options(ObeyNoExport)\
 	    -i $onio_options(IgnoreHidden)\
 	    -l $onio_options(TopLevelLayers)\
+	    -f $onio_options(ScaleFactor)\
 	    -t $onio_options(STagName) $onio_options(TTagName)
 
 	cd $oldcd

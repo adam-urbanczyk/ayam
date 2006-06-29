@@ -11,16 +11,13 @@
  */
 
 // onio.cpp - Ayam OpenNURBS (Rhino 3DM) IO plugin
+
 #include <stdarg.h>
 #include <iostream>
 
 #include "ayam.h"
 #include <opennurbs.h>
 #include <opennurbs_extensions.h>
-
-
-
-
 
 
 // local types
@@ -56,6 +53,8 @@ int onio_currentlayer = 0;
 double onio_rescaleknots = 0.0;
 
 double onio_accuracy = 1.0e-12;
+
+double onio_scalefactor = 1.0;
 
 char onio_stagnamedef[] = "mys";
 char *onio_stagname = onio_stagnamedef;
@@ -327,7 +326,6 @@ onio_writenpatch(ay_object *o, ONX_Model *p_m, double *m)
       mo.m_attributes.m_layer_index = onio_currentlayer;
 
       onio_writename(o, mo);
-
     } // if
 
  return ay_status;
@@ -375,7 +373,7 @@ onio_get2dcurveobj(ay_object *o, ON_NurbsCurve **pp_c)
 	  p_c->SetCV(i, ON::not_rational, cv);
 	}
       a += stride;
-    }
+    } // for
 
   ay_knots_getuminmax(o, nc->order, nc->length+nc->order, nc->knotv,
 		      &umin, &umax);
@@ -432,7 +430,7 @@ onio_addtrim(ay_object *o, ON_BrepLoop::TYPE ltype, ON_BrepTrim::TYPE ttype,
 	{
 	  p_f->m_li.Append(loop.m_loop_index);
 	}
-	
+
       while(o->next)
 	{
 	  if(o->next && !o->next->next)
@@ -820,7 +818,7 @@ onio_writetrimmednpatch(ay_object *o, ONX_Model *p_m, double *m)
       p_b->DeleteLoop(p_b->m_L[0], true);
       p_b->Compact();
       ltype = ON_BrepLoop::outer;
-    }
+    } // if
 
   while(down && down->next)
     {
@@ -935,7 +933,7 @@ onio_writencurve(ay_object *o, ONX_Model *p_m, double *m)
 	  cv += 3;
 	}
       a += stride;
-    }
+    } // for
 
   ay_knots_getuminmax(o, nc->order, nc->length+nc->order, nc->knotv,
 		      &umin, &umax);
@@ -1833,6 +1831,7 @@ onio_writetcmd(ClientData clientData, Tcl_Interp *interp,
  //ON_TextLog& error_log;
 
   // set default parameters
+  onio_scalefactor = 1.0;
 
   // check args
   if(argc < 2)
@@ -1878,6 +1877,11 @@ onio_writetcmd(ClientData clientData, Tcl_Interp *interp,
       if(!strcmp(argv[i], "-l"))
 	{
 	  sscanf(argv[i+1], "%d", &onio_exptoplevellayers);
+	}
+      else
+      if(!strcmp(argv[i], "-f"))
+	{
+	  sscanf(argv[i+1], "%lg", &onio_scalefactor);
 	}
       else
       if(!strcmp(argv[i], "-t"))
@@ -1985,6 +1989,10 @@ onio_writetcmd(ClientData clientData, Tcl_Interp *interp,
   while(o)
     {
       ay_trafo_identitymatrix(tm);
+
+      if(onio_scalefactor != 1.0)
+	ay_trafo_scalematrix(onio_scalefactor, onio_scalefactor,
+			     onio_scalefactor, tm);
 
       onio_currentlayer = 0;
 
@@ -2462,14 +2470,37 @@ onio_readbrep(ON_Brep *p_b, double accuracy)
  int i;
  ON_NurbsSurface s;
  const ON_Surface* p_s = NULL;
- ay_object *lo = NULL, *o, *lf;
+ ay_object *olo = NULL, *lo = NULL, *o, *lf;
  ay_level_object *level = NULL;
 
+  if(p_b->m_F.Count() > 1)
+    {
+      if(!(level = (ay_level_object *)calloc(1, sizeof(ay_level_object))))
+	{
+	  return AY_EOMEM;
+	}
+
+      level->type = AY_LTLEVEL;
+
+      if(!(olo = (ay_object *) calloc(1, sizeof(ay_object))))
+	{
+	  free(level); return AY_EOMEM;
+	}
+      ay_object_defaults(olo);
+      olo->type = AY_IDLEVEL;
+      olo->refine = level;
+      olo->parent = AY_TRUE;
+      olo->inherit_trafos = AY_TRUE;
+     
+      ay_status = ay_object_crtendlevel(&(olo->down));
+     
+      ay_status = ay_object_link(olo);
+
+      ay_next = &(olo->down);
+    } // if
 
   for(i = 0; i < p_b->m_F.Count(); ++i)
     {
-      // XXXX should put multiple faces in one level to apply transformations
-      // more easily!
       const ON_BrepFace& face = p_b->m_F[i];
 
       if(face.m_si < 0 || face.m_si >= p_b->m_S.Count())
@@ -2539,7 +2570,7 @@ onio_readbrep(ON_Brep *p_b, double accuracy)
 		{
 		  return AY_EOMEM;
 		}
-
+	      ay_object_defaults(lo);
 	      lo->type = AY_IDLEVEL;
 	      lo->refine = level;
 	      lo->parent = AY_TRUE;
@@ -2673,18 +2704,24 @@ onio_readbrep(ON_Brep *p_b, double accuracy)
 	      ay_next = &(lo->next);
 	    } // if
 	} // for
+
+      if(onio_lrobject && onio_lrobject->down)
+	{
+	  o = onio_lrobject->down;
+
+	  while(o->next)
+	    o = o->next;
+	} // if
+
       ay_next = &(lf->next);
+      onio_lrobject = lf;
     } // for
 
-  if(onio_lrobject && onio_lrobject->down)
+  if(p_b->m_F.Count() > 1)
     {
-      o = onio_lrobject->down;
-
-      while(o->next)
-	o = o->next;
-
-      ay_status = ay_object_crtendlevel(&(o->next));
-    } // if
+      ay_next = &(olo->next);
+      onio_lrobject = olo;
+    }
 
  return ay_status;
 } // onio_readbrep
@@ -3105,11 +3142,20 @@ onio_readlayer(ONX_Model &model, int li, double accuracy)
 		  ay_error(ay_status, fname, NULL);
 		  ay_error(AY_ERROR, fname,
 		       "Failed to read/convert object; continuing with next!");
-		} // if
-
-	      // read object name
-	      ay_status = onio_readname(onio_lrobject,
+		}
+	      else
+		{
+		  // read object name
+		  ay_status = onio_readname(onio_lrobject,
 			           &((model.m_object_table[i]).m_attributes));
+		  // apply scale factor
+		  if(onio_scalefactor != 1.0)
+		    {
+		      onio_lrobject->scalx *= onio_scalefactor;
+		      onio_lrobject->scaly *= onio_scalefactor;
+		      onio_lrobject->scalz *= onio_scalefactor;
+		    }
+		} // if
 	    } // if
 	} // if
     } // for
@@ -3174,6 +3220,7 @@ onio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 
   onio_importcurves = AY_TRUE;
   onio_rescaleknots = 0.0;
+  onio_scalefactor = 1.0;
 
   // check args
   if(argc < 2)
@@ -3205,6 +3252,11 @@ onio_readtcmd(ClientData clientData, Tcl_Interp *interp,
       if(!strcmp(argv[i], "-r"))
 	{
 	  sscanf(argv[i+1], "%lg", &onio_rescaleknots);
+	}
+      else
+      if(!strcmp(argv[i], "-f"))
+	{
+	  sscanf(argv[i+1], "%lg", &onio_scalefactor);
 	}
       else
       if(!strcmp(argv[i], "-t"))
@@ -3288,12 +3340,20 @@ onio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 		  ay_error(ay_status, fname, NULL);
 		  ay_error(AY_ERROR, fname,
 		      "Failed to read/convert object; continuing with next!");
-		} // if
-
-	      // read object name
-	      ay_status = onio_readname(onio_lrobject,
+		}
+	      else
+		{
+		  // read object name
+		  ay_status = onio_readname(onio_lrobject,
 			           &((model.m_object_table[i]).m_attributes));
-
+		  // apply scale factor
+		  if(onio_scalefactor != 1.0)
+		    {
+		      onio_lrobject->scalx *= onio_scalefactor;
+		      onio_lrobject->scaly *= onio_scalefactor;
+		      onio_lrobject->scalz *= onio_scalefactor;
+		    } // if
+		} // if
 	    } // if
 	} // for
     }
@@ -3418,7 +3478,6 @@ Onio_Init(Tcl_Interp *interp)
   ay_status = onio_registerwritecb((char *)(AY_IDTEXT),
 				   onio_writenpconvertible);
 
-
   ay_status = onio_registerwritecb((char *)(AY_IDNCURVE),
 				   onio_writencurve);
 
@@ -3462,9 +3521,6 @@ Onio_Init(Tcl_Interp *interp)
 				   onio_writenpconvertible);
 
   ay_status = onio_registerwritecb((char *)(AY_IDHYPERBOLOID),
-				   onio_writenpconvertible);
-
-  ay_status = onio_registerwritecb((char *)(AY_IDPARABOLOID),
 				   onio_writenpconvertible);
 
   ay_status = onio_registerwritecb((char *)(AY_IDPARABOLOID),
