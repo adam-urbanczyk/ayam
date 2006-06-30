@@ -484,9 +484,9 @@ Ayam.app: ayamsh
 	-cp contrib/meta/*.so ../bin/Ayam.app/Contents/MacOS/plugins
 	-cp contrib/meta/*.tcl ../bin/Ayam.app/Contents/MacOS/plugins
 	-mkdir ../bin/Ayam.app/Contents/Resources/docs
-	-cp ../../doc/html/*.html ../bin/Ayam.app/Contents/Resources/docs/
+	-cp ../doc/html/*.html ../bin/Ayam.app/Contents/Resources/docs/
 	-mkdir ../bin/Ayam.app/Contents/Resources/docs/pics
-	-cp ../../doc/html/pics/*.gif ../bin/Ayam.app/Contents/Resources/docs/pics
+	-cp ../doc/html/pics/*.gif ../bin/Ayam.app/Contents/Resources/docs/pics
 
 Ayam.appfw: Ayam.app
 	install_name_tool -id @executable_path/../Tcl.framework/Versions/8.4/Tcl ../bin/Ayam.app/Contents/Tcl.framework/Versions/8.4/Tcl
