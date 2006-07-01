@@ -37,27 +37,33 @@ proc splash_open { } {
 
     # create toplevel window
     set w .aysplash
-
+    catch {destroy $w}
     set visuals [winfo visualsavailable .]
     if { [lsearch $visuals truecolor*] != -1 } {
-	toplevel $w -visual truecolor
+	toplevel $w -class ayam -visual truecolor
     } else {
-	toplevel $w
+	toplevel $w -class ayam
     }
 
-    bind $w <Visibility> "raise $w"
-    wm resizable $w 0 0 
+    if { $AYWITHAQUA } {
+	::tk::unsupported::MacWindowStyle style $w floating {closeBox}
+    } else {
+	if { $ayprefs(ToolBoxTrans) == 1 } {
+	    wm transient $w .
+	}
+	bind $w <Visibility> "raise $w"
+	wm resizable $w 0 0
+    }
+
     wm title $w "Ayam"
-    wm transient $w .
 
     label $w.image -image ayam-splash
     pack $w.image  -side left
     bind $w <ButtonRelease-1> "grab release $w; after 50 destroy $w; focus ."
 
-    wm overrideredirect $w 1
-
     # center the window
     if { ! $AYWITHAQUA } {
+	wm overrideredirect $w 1
 	winCenter $w
     } else {
 	after idle "winCenter $w"
