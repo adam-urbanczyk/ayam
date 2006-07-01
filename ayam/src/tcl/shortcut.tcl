@@ -32,7 +32,7 @@ proc repkp { string } {
 proc shortcut_swapmb { } {
  global ayprefs
 
-    if { $ayprefs(SwapMB) } {
+    if { $ayprefs(SwapMB) == 1 } {
 	foreach shortcut $ayprefs(SwapMBSC) {
 	    eval [subst "set val \$::$shortcut"]
 	    set val [string map { 2 3 3 2 } $val]
