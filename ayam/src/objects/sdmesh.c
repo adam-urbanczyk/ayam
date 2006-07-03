@@ -901,11 +901,35 @@ ay_sdmesh_convertcb(ay_object *o, int in_place)
 {
  int ay_status = AY_OK;
  ay_sdmesh_object *sdmesh = NULL;
+ ay_object *new = NULL;
 
   if(!o)
     return AY_ENULL;
 
   sdmesh = (ay_sdmesh_object *) o->refine;
+
+  /* first, create new object(s) */
+  if(!(new = calloc(1, sizeof(ay_object))))
+    { return AY_EOMEM; }
+
+  ay_object_defaults(new);
+  new->type = AY_IDPOMESH;
+  
+  ay_status = ay_sdmesht_topolymesh(sdmesh,
+				    ((ay_pomesh_object**)&(new->refine)));
+
+  /* second, link new object(s), or replace old object with it/them */
+  if(new && new->refine)
+    {
+      if(!in_place)
+	{
+	  ay_status = ay_object_link(new);
+	}
+      else
+	{
+	  ay_object_replace(new, o);
+	} /* if */
+    } /* if */
 
  return ay_status;
 } /* ay_sdmesh_convertcb */
@@ -934,9 +958,10 @@ ay_sdmesh_init(Tcl_Interp *interp)
 
   /*
     ay_status = ay_notify_register(ay_sdmesh_notifycb, AY_IDSDMESH);
+  */
 
     ay_status = ay_convert_register(ay_sdmesh_convertcb, AY_IDSDMESH);
-  */
+  
 
  return ay_status;
 } /* ay_sdmesh_init */
