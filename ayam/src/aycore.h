@@ -499,6 +499,8 @@ void ay_riopt_init(Tcl_Interp *interp);
 /* sdmesht.c */
 int ay_sdmesht_tesselate(ay_sdmesh_object *sdmesh);
 
+int ay_sdmesht_topolymesh(ay_sdmesh_object *sdmesh, ay_pomesh_object **pomesh);
+
 /* sel.c */
 int ay_sel_free(int clear_selflag);
 

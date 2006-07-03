@@ -212,3 +212,78 @@ ay_sdmesht_tesselate(ay_sdmesh_object *sdmesh)
 
  return AY_OK;
 } /* ay_sdmesht_tesselate */
+
+
+/* ay_sdmesht_topolymesh:
+ *  convert SDMesh object <sdmesh> to a PolyMesh object, return result
+ *  in <pomesh>
+ */
+int
+ay_sdmesht_topolymesh(ay_sdmesh_object *sdmesh, ay_pomesh_object **pomesh)
+{
+ int ay_status = AY_OK;
+ double *ncontrolv  = NULL;
+ unsigned int *nverts = NULL, *verts = NULL, *nloops = NULL;
+ unsigned int i, totalverts = 0;
+ ay_pomesh_object *npomesh = NULL;
+
+  if(!sdmesh || !pomesh)
+    return AY_ENULL;
+
+  if(!(npomesh = calloc(1, sizeof(ay_pomesh_object))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+
+  /* copy control points */
+  if(!(ncontrolv = calloc(sdmesh->ncontrols, 3*sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+
+  npomesh->controlv = ncontrolv;
+  npomesh->ncontrols = sdmesh->ncontrols;
+
+  memcpy(ncontrolv, sdmesh->controlv, sdmesh->ncontrols*3*sizeof(double));
+
+  /* copy faces */
+  if(!(nloops = calloc(sdmesh->nfaces, sizeof(unsigned int))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  if(!(nverts = calloc(sdmesh->nfaces, sizeof(unsigned int))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+
+  for(i = 0; i < sdmesh->nfaces; i++)
+    {
+      nloops[i] = 1;
+      nverts[i] = sdmesh->nverts[i];
+      totalverts += sdmesh->nverts[i];
+    }
+
+  if(!(verts = calloc(totalverts, sizeof(unsigned int))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+
+  for(i = 0; i < totalverts; i++)
+    {
+      verts[i] = sdmesh->verts[i];
+    }
+
+  npomesh->npolys = sdmesh->nfaces;
+  npomesh->nloops = nloops;
+  npomesh->nverts = nverts;
+  npomesh->verts = verts;
+
+  /* return result */
+  *pomesh = npomesh;
+  npomesh = NULL;
+
+cleanup:
+
+ if(npomesh)
+   {
+     free(npomesh);
+     if(ncontrolv)
+       free(ncontrolv);
+     if(nverts)
+       free(nverts);
+     if(verts)
+       free(verts);
+   } /* if */
+
+ return ay_status;
+} /* ay_sdmesht_topolymesh */
