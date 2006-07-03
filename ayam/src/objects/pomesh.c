@@ -873,9 +873,7 @@ ay_pomesh_convertcb(ay_object *o, int in_place)
   ay_status = ay_pomesht_tosdmesh(pomesh,
 				  ((ay_sdmesh_object**)&(new->refine)));
 
-
   /* second, link new object(s), or replace old object with it/them */
-
   if(new && new->refine)
     {
       if(!in_place)
