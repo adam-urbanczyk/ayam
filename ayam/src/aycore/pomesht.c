@@ -909,3 +909,111 @@ ay_pomesht_optimizetcmd(ClientData clientData, Tcl_Interp * interp,
 
  return TCL_OK;
 } /* ay_pomesht_optimizetcmd */
+
+
+/* ay_pomesht_tosdmesh:
+ *  convert PolyMesh object <pomesh> to a SDMesh object, return result
+ *  in <sdmesh>
+ *  Note: faces with more than one loop (holes) are ignored, if these are
+ *  encountered, not all control points in the resulting SDMesh object
+ *  may end up being used
+ */
+int
+ay_pomesht_tosdmesh(ay_pomesh_object *pomesh, ay_sdmesh_object **sdmesh)
+{
+ int ay_status = AY_OK;
+ double *ncontrolv  = NULL;
+ unsigned int *nverts = NULL, *verts = NULL, *t = NULL;
+ unsigned int i, j, k, l = 0, m = 0, n = 0, totalverts = 0;
+ ay_sdmesh_object *nsdmesh = NULL;
+
+  if(!pomesh || !sdmesh)
+    return AY_ENULL;
+
+  if(!(nsdmesh = calloc(1, sizeof(ay_sdmesh_object))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+
+  /* copy control points */
+  if(!(ncontrolv = calloc(pomesh->ncontrols, 3*sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+
+  nsdmesh->controlv = ncontrolv;
+  nsdmesh->ncontrols = pomesh->ncontrols;
+
+  if(!pomesh->has_normals)
+    {
+      memcpy(ncontrolv, pomesh->controlv, pomesh->ncontrols*3*sizeof(double));
+    }
+  else
+    {
+      for(i = 0; i < pomesh->ncontrols; i++)
+	{
+	  memcpy(&(ncontrolv[i*3]), &(pomesh->controlv[i*6]),
+		 3*sizeof(double));
+	} /* for */
+    } /* if */
+
+  /* copy faces */
+  for(i = 0; i < pomesh->npolys; i++)
+    {
+      if(pomesh->nloops[i] < 2)
+	{
+	  t = NULL;
+	  if(!(t = realloc(nverts, (nsdmesh->nfaces+1)*sizeof(unsigned int))))
+	    { ay_status = AY_EOMEM; goto cleanup; }
+	  nverts = t;
+	  nverts[nsdmesh->nfaces] = pomesh->nverts[m];
+
+	  t = NULL;
+	  if(!(t = realloc(verts, (totalverts+pomesh->nverts[m])*
+			   sizeof(unsigned int))))
+	    { ay_status = AY_EOMEM; goto cleanup; }
+	  verts = t;
+	  for(k = 0; k < pomesh->nverts[m]; k++)
+	    {
+	      verts[totalverts+k] = pomesh->verts[n];
+	      n++;
+	    } /* for */
+
+	  totalverts += pomesh->nverts[m];
+	  m++;
+	  nsdmesh->nfaces++;
+	}
+      else
+	{
+	  /* just advance pointers m/n correctly (while ignoring
+	     faces with holes) */
+	  for(j = 0; j < pomesh->nloops[l]; j++)
+	    {
+	      for(k = 0; k < pomesh->nverts[m]; k++)
+		{
+		  n++;
+		} /* for */
+	      m++;
+	    } /* for */
+	} /* if */
+      l++;
+    } /* for */
+
+  nsdmesh->nverts = nverts;
+  nsdmesh->verts = verts;
+
+  /* return result */
+  *sdmesh = nsdmesh;
+  nsdmesh = NULL;
+
+cleanup:
+
+ if(nsdmesh)
+   {
+     free(nsdmesh);
+     if(ncontrolv)
+       free(ncontrolv);
+     if(nverts)
+       free(nverts);
+     if(verts)
+       free(verts);
+   } /* if */
+
+ return ay_status;
+} /* ay_pomesht_tosdmesh */
