@@ -3320,9 +3320,18 @@ ay_objio_readline(FILE *fileptr)
     }
   else
     {
-      if(lastlinewasface)
-	ay_status = ay_objio_readface(NULL, -1);
-      lastlinewasface = AY_FALSE;
+      if(str[0] == 'u')
+	{
+	  /* handle ignored usemtl statements */
+	  if(lastlinewasface)
+	    lastlinewasface = AY_TRUE;
+	}
+      else
+	{
+	  if(lastlinewasface)
+	    ay_status = ay_objio_readface(NULL, -1);
+	  lastlinewasface = AY_FALSE;
+	}
     }
 
   Tcl_DStringFree(&ds);
