@@ -1,9 +1,20 @@
-[29. Jun 2006] CVS-Head:
-o bug fixes:
+[3. Jul 2006] CVS-Head:
+o Bug Fixes:
   - fixed not changeable preference setting "AutoFocus" (SF 1497964)
   - fixed export of PolyMesh objects with PV tags using "Pw" (SF 1504284)
   - fixed selection of objects in large slow drawing scenes leading to
     de-synchronized property display (SF 1510329)
+  - fixed Rhino 3DM (OpenNURBS) import of complex scenes with multiple
+    BRep objects (SF 1514799)
+
+GUI:
+o added default values to "Set GridSize" dialog and object property
+
+Modelling:
+o added converter from PolyMesh objects to SDMesh objects
+o added converter from SDMesh objects to PolyMesh objects
+
+Renderer Support:
 o added shader parsing plugin for Gelato
 o added renderer profile for Gelato to "Select Renderer" dialog
 o added shadow map generation preference options to improve Gelato support:
@@ -12,16 +23,25 @@ o added scan shaders option to main menu ("Special/Scan Shaders")
 o added shader parsing plugin projects to VC2005 workspace
 o made all shader parsing plugins Ayam version independent
 o added support to render just one shadow map from the selected light
-o added default values to "Set GridSize" dialog and object property
-o added scale factor option to Wavefront OBJ import and export
+
+Platform Support:
+o added workaround for Apple GLU bug that prevents drawing&shading of
+  Box objects and NURBS patches in one scene
+o added default value to "Docs" preference setting, that points to the
+  HTML documentation in the application bundle
+
+Import/Export:
 o added progress display to Wavefront OBJ import
-o added support to detect and fix degenerate faces to Wavefront OBJ import
 o made cancel button work properly for Wavefront OBJ import
+o added scale factor option to Wavefront OBJ import and export
+o added scale factor option to Rhino 3DM (OpenNURBS) import and export
+o added support to detect and fix degenerate faces to Wavefront OBJ import
 o improved detection of consecutive faces for Wavefront OBJ import: now
   intermediate "usemtl"-lines do not lead to isolated faces anymore
 
 
 [13. May 2006] Ayam1.10:
+========================
 o bug fixes:
   - fixed TP tags created by tesselation GUI (SF 1431917)
   - fixed broken SwapUV of PatchMesh objects (SF 1436463)
