@@ -68,10 +68,8 @@ proc shortcut_fkeys { w } {
 
 # shortcut_main:
 #  Setup Keybindings for the Main Window
-# 
-#
 proc shortcut_main { w } {
-    global ay aymainshortcuts
+    global ay aymainshortcuts AYWITHAQUA
 
     if { [winfo exists .fl.con] == 1 } {
 	bind .fl.con.console <[repcont $aymainshortcuts(SwCon)]> {
@@ -85,7 +83,6 @@ proc shortcut_main { w } {
 	.fl.con.console yview scroll 1 pages
         break
 	}
-
     }
 
     set m $ay(filemenu)
@@ -328,6 +325,10 @@ proc shortcut_main { w } {
     bind $w <[repcont $aymainshortcuts(SProp88)]> "plb_showprop 8"
     bind $w <[repcont $aymainshortcuts(SProp99)]> "plb_showprop 9"
 
+    if { $AYWITHAQUA == 1 } {
+	bind $w <Command-q> exit
+    }
+
  return;
 }
 # shortcut_main
@@ -350,7 +351,7 @@ proc shortcut_toolbox { w } {
 # shortcut_view:
 # Setup menu- and main-keybindings for a 3D-View.
 proc shortcut_view { w } {
-    global ay ayviewshortcuts aymainshortcuts
+    global ay ayviewshortcuts aymainshortcuts AYWITHAQUA
 
     # some main window shortcuts
     set m $ay(editmenu)
@@ -457,6 +458,10 @@ proc shortcut_view { w } {
 
     # bind function keys
     shortcut_fkeys $w
+
+    if { $AYWITHAQUA == 1 } {
+	bind $w <Command-q> exit
+    }
 
  return;
 }
