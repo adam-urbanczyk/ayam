@@ -125,7 +125,6 @@ typedef struct ay_rrib_attrstate_s {
 
 static ay_rrib_attrstate *ay_rrib_cattributes;
 
-
 /* transformation stack */
 typedef struct ay_rrib_trafostate_s {
   struct ay_rrib_trafostate_s *next;
@@ -135,7 +134,6 @@ typedef struct ay_rrib_trafostate_s {
 } ay_rrib_trafostate;
 
 static ay_rrib_trafostate *ay_rrib_ctrafos;
-
 
 /* current frame */
 static int ay_rrib_cframe;
@@ -171,6 +169,10 @@ static int ay_rrib_readinggprims;
    AreaLight geometry */
 static int ay_rrib_rageom;
 
+/* counter of current level (used by global scaling to not scale the
+   level object of a CSG operation _and_ the children (primitives))
+   or better: to just scale global objects */
+static int ay_rrib_level;
 
 /* fov */
 static double ay_rrib_fov;
@@ -196,7 +198,7 @@ static int ay_rrib_readpartial; /* read partial RIB (e.g. without
 static int ay_rrib_errorlevel; /* 0: silence, 1: errors, 2: warnings, 3: all */
 static double rrib_rescaleknots; /* rescale knots to min dist,
 				    if <= 0.0: no scaling */
-
+static double rrib_scalefactor; /* global scale factor */
 
 /* grib is used by Affine to specify the current RIB;
    ay_rrib_RiReadArchive() keeps a copy of it on the stack
@@ -1219,6 +1221,13 @@ ay_rrib_RiLightSource(RtToken name,
   ay_rrib_co.type = AY_IDLIGHT;
 
   ay_rrib_trafotoobject(&ay_rrib_co, ay_rrib_ctrafos->m);
+
+  if(rrib_scalefactor != 1.0)
+    {
+      ay_rrib_co.scalx *= rrib_scalefactor;
+      ay_rrib_co.scaly *= rrib_scalefactor;
+      ay_rrib_co.scalz *= rrib_scalefactor;
+    } /* if */
 
   ay_status = ay_object_copy(&ay_rrib_co, &o);
 
@@ -3302,6 +3311,8 @@ ay_rrib_RiSolidBegin(RtToken operation)
   ay_rrib_pushtrafos();
   ay_rrib_RiIdentity();
 
+  ay_rrib_level++;
+
  return;
 } /* ay_rrib_RiSolidBegin */
 
@@ -3315,6 +3326,8 @@ ay_rrib_RiSolidEnd(void)
   ay_clevel_del();
 
   ay_rrib_poptrafos();
+
+  ay_rrib_level--;
 
  return;
 } /* ay_rrib_RiSolidEnd */
@@ -3603,7 +3616,6 @@ ay_rrib_RiWorldBegin(void)
 	  ay_rrib_RiIdentity();
 	  return;
 	}
-
 
       ay_trafo_apply3(c.from, mi);
       ay_trafo_apply3(c.to, mi);
@@ -5536,6 +5548,16 @@ ay_rrib_linkobject(void *object, int type)
 	} /* if */
     } /* if */
 
+  if(!ay_rrib_level)
+    {
+      if(rrib_scalefactor != 1.0)
+	{
+	  ay_rrib_co.scalx *= rrib_scalefactor;
+	  ay_rrib_co.scaly *= rrib_scalefactor;
+	  ay_rrib_co.scalz *= rrib_scalefactor;
+	} /* if */
+    } /* if */
+
   ay_status = ay_object_copy(&ay_rrib_co, &o);
   ay_status = ay_object_link(o);
 
@@ -5748,6 +5770,9 @@ ay_rrib_readribtcmd(ClientData clientData, Tcl_Interp *interp,
     }
 
   frame = -1;
+  rrib_rescaleknots = 0.0;
+  rrib_scalefactor = 1.0;
+  ay_rrib_level = 0;
 
   while(i+1 < argc)
     {
@@ -5784,6 +5809,11 @@ ay_rrib_readribtcmd(ClientData clientData, Tcl_Interp *interp,
       if(!strcmp(argv[i], "-r"))
 	{
 	  sscanf(argv[i+1], "%lg", &rrib_rescaleknots);
+	}
+      else
+      if(!strcmp(argv[i], "-s"))
+	{
+	  sscanf(argv[i+1], "%lg", &rrib_scalefactor);
 	}
       else
       if(!strcmp(argv[i], "-e"))

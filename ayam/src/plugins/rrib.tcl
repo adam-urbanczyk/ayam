@@ -18,6 +18,7 @@ uplevel #0 { array set rrib_options {
   ReadPartial 0
   ErrorLevel 1
   RescaleKnots 0.0
+  ScaleFactor 1.0
   FileName "unnamed.rib"
 }   }
 
@@ -49,6 +50,8 @@ proc rrib_import { } {
     set types {{"RIB Files" ".rib"} {"All files" *}}
     addFileT $f rrib_options FileName $types
 
+    addParam $f rrib_options ScaleFactor [list 0.01 0.1 1.0 10.0 100.0]
+
     addParam $f rrib_options ReadFrame
     addCheck $f rrib_options ReadCamera
     addCheck $f rrib_options ReadOptions
@@ -74,6 +77,7 @@ proc rrib_import { } {
 	    -m $rrib_options(ReadMaterial)\
 	    -p $rrib_options(ReadPartial)\
 	    -r $rrib_options(RescaleKnots)\
+	    -s $rrib_options(ScaleFactor)\
 	    -e $rrib_options(ErrorLevel);
 
 	cd $oldcd
