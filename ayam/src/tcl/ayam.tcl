@@ -647,6 +647,9 @@ if { $tcl_platform(platform) == "windows" } {
 
 	set ayprefs(EnvFile) "~/Library/Preferences/.ayam2view.ay"
 
+	# no need to attempt fixing X11 menu interaction
+	set ayprefs(FixX11Menu) 0
+
 	# like on Win32, some keysyms are missing, so do not bind to them
 	set ayviewshortcuts(ZoomI) "plus"
 	set ayviewshortcuts(ZoomO) "minus"
@@ -1551,8 +1554,8 @@ proc bgerror { message } {
 if { $ayprefs(FixX11Menu) } {
     if { $tcl_platform(platform) != "windows" } {
 	bind Menubutton <Button-1> {+
-	    bind [winfo children %W] <ButtonRelease-1> {break}
-	    after 300 { bind [winfo children %W] <ButtonRelease-1> {} }
+	    bind [lindex [winfo children %W] 0] <ButtonRelease-1> {break}
+        after 300 { bind [lindex [winfo children %W] 0] <ButtonRelease-1> {} }
 	}
     }
 }
