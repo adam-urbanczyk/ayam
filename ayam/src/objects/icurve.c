@@ -439,6 +439,8 @@ ay_icurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	}
     }
 
+  o->modified = AY_TRUE;
+
   ay_status = ay_notify_force(o);
 
   ay_status = ay_notify_parent();

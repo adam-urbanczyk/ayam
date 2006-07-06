@@ -73,6 +73,7 @@ ay_notify_parent(void)
 	  if(o && o->modified)
 	    {
 	      ay_status = ay_notify_complete(o);
+	      o->modified = AY_FALSE;
 	    }
 	  sel = sel->next;
 	}
@@ -140,11 +141,14 @@ ay_notify_force(ay_object *o)
  ay_tag_object *tag = NULL;
 
   /* call notification callbacks of children first */
-  od = o->down;
-  while(od)
+  if(o->down && o->down->next)
     {
-      ay_status = ay_notify_force(od);
-      od = od->next;
+      od = o->down;
+      while(od->next)
+	{
+	  ay_status = ay_notify_force(od);
+	  od = od->next;
+	}
     }
 
   /* call the notification callback */
