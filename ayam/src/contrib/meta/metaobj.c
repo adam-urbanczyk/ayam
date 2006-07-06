@@ -1148,6 +1148,7 @@ int
 metacomp_setpropcb (Tcl_Interp * interp, int argc, char *argv[],
 		    ay_object * o)
 {
+ int ay_status = AY_OK;
  char *n1 = "MetaCompAttrData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  meta_blob *b = NULL;
@@ -1230,7 +1231,9 @@ metacomp_setpropcb (Tcl_Interp * interp, int argc, char *argv[],
   Tcl_IncrRefCount (ton);
   Tcl_DecrRefCount (ton);
 
-  ay_notify_parent ();
+  o->modified = AY_TRUE;
+
+  ay_status = ay_notify_parent();
 
  return AY_OK;
 } /* metacomp_setpropcb */
@@ -1445,7 +1448,6 @@ metacomp_writecb (FILE * fileptr, ay_object * o)
 
  return AY_OK;
 } /* metacomp_writecb */
-
 
 /* note: this function _must_ be capitalized exactly this way
  * regardless of filename (see: man n load)!

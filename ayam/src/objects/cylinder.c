@@ -357,6 +357,7 @@ ay_cylinder_shadecb(struct Togl *togl, ay_object *o)
 int
 ay_cylinder_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
+ int ay_status = AY_OK;
  char *n1 = "CylinderAttrData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_cylinder_object *cylinder = NULL;
@@ -402,6 +403,9 @@ ay_cylinder_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+
+  o->modified = AY_TRUE;
+  ay_status = ay_notify_parent();
 
  return AY_OK;
 } /* ay_cylinder_setpropcb */

@@ -192,6 +192,7 @@ ay_riproc_shadecb(struct Togl *togl, ay_object *o)
 int
 ay_riproc_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
+ int ay_status = AY_OK;
  char fname[] = "riproc_setprop";
  char *n1 = "RiProcAttrData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
@@ -258,6 +259,9 @@ ay_riproc_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+
+  o->modified = AY_TRUE;
+  ay_status = ay_notify_parent();
 
  return AY_OK;
 } /* ay_riproc_setpropcb */

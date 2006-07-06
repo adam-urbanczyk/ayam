@@ -557,8 +557,6 @@ ay_pamesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       Tcl_GetIntFromObj(interp,to, &(new_step_u));
       if(new_step_u <= 0)
 	pamesh->ustep = 1;
-
-
     }
   else
     {
@@ -651,6 +649,8 @@ ay_pamesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       else
 	pamesh->height = new_height;
     } /* if */
+
+  o->modified = AY_TRUE;
 
   if(update)
     ay_notify_force(o);

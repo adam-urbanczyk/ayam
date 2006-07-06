@@ -160,6 +160,7 @@ ay_riinc_shadecb(struct Togl *togl, ay_object *o)
 int
 ay_riinc_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
+ int ay_status = AY_OK;
  char fname[] = "riinc_setprop";
  char *n1 = "RiIncAttrData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
@@ -205,6 +206,9 @@ ay_riinc_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+
+  o->modified = AY_TRUE;
+  ay_status = ay_notify_parent();
 
  return AY_OK;
 } /* ay_riinc_setpropcb */
