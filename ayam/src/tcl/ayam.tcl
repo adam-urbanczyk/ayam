@@ -920,7 +920,7 @@ proc rV { {w ""} } {
 	    if { [winfo ismapped $view] } {
 		set view ${view}.f3D.togl
 		if { ($w != "") && ($w == $view) } {
-		    break;
+		    continue;
 		}
 		$view mc
 		$view reshape
