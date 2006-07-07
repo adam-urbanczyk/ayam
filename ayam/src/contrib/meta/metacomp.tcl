@@ -58,7 +58,10 @@ if { $MetaCompAttrData(Formula) == 3 } {
 }
 
 if { $MetaCompAttrData(Formula) == 4 } {
-    addString $w MetaCompAttrData Expression { { set f [expr {pow($x,4)+pow($y,4)+pow($z,4)}] } { set f [expr {pow($x,2)+pow($y,2)}] } }
+    addString $w MetaCompAttrData Expression {
+	{ set f [expr {pow($x,4)+pow($y,4)+pow($z,4)}] }
+	{ set f [expr {sqrt(pow($y,2)+pow($z,2))}] }
+	{ set r 1.0;set f [expr {sqrt(pow($y,2)+pow($z,2))}];if {$x < -$r} {set f [expr {sqrt(pow(($x+$r),2)+pow($y,2)+pow($z,2))}]}; if {$x > $r} {set f [expr {sqrt(pow(($x-$r),2)+pow($y,2)+pow($z,2))}]} } }
 }
 
 $ay(pca) itemconfigure 1 -window $w

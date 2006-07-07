@@ -22,7 +22,7 @@ proc metaobj_getAttr { } {
     getProp
 
     addParam $w MetaObjAttrData NumSamples {20 40 60 80 120 140 160 180 200}
-    addParam $w MetaObjAttrData IsoLevel 0.6
+    addParam $w MetaObjAttrData IsoLevel {0.1 0.6 1.0}
     addCheck $w MetaObjAttrData "ShowWorld"
     #addCheck $w MetaObjAttrData Adaptive
     addMenu $w MetaObjAttrData Adaptive {Never Always Automatic}
