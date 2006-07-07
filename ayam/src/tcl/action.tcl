@@ -19,7 +19,7 @@ proc upAc { n1 n2 op } {
     global ay
 
     if { $ay(action) == 0 } {
-	forceNot
+	forceNot mod
      }
 
  return;
@@ -36,12 +36,11 @@ proc stdReleaseBind { w } {
     bind $w <ButtonRelease-1> {
 	set ay(action) 0
 	update
-	if { $ayprefs(LazyNotify) == 1 } { forceNot }
-	rV
+	if { $ayprefs(LazyNotify) == 1 } { forceNot mod }
+	rV %W
 	plb_update
 	focus %W
     }
-
  return;
 }
 # stdReleaseBind
@@ -219,6 +218,7 @@ proc actionRotOb { w } {
 }
 # actionRotOb
 
+
 proc actionRotObabindp { w x y } {
 
     viewTitle $w "" "Rotate_around_Point"
@@ -234,6 +234,7 @@ proc actionRotObabindp { w x y } {
  return;
 }
 # actionRotObabindp
+
 
 proc actionRotObA { w } {
 
@@ -285,6 +286,7 @@ proc actionSc1DXOb { w } {
 }
 # actionSc1DXOb
 
+
 #
 proc actionSc1DYOb { w } {
 
@@ -313,6 +315,7 @@ proc actionSc1DYOb { w } {
 }
 # actionSc1DYOb
 
+
 #
 proc actionSc1DZOb { w } {
 
@@ -340,6 +343,7 @@ proc actionSc1DZOb { w } {
  return;
 }
 # actionSc1DZOb
+
 
 #
 proc actionSc2DOb { w } {
@@ -445,7 +449,7 @@ proc actionTagP { w } {
 	    %W selpac %x %y
 	}
 	%W setconf -rect $oldx $oldy %x %y 0
-	rV
+	rV %W
 	update
     }
 

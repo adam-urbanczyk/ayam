@@ -909,20 +909,23 @@ proc cS { } {
 # cS
 
 
-# rV - redraw all Views
-proc rV { } {
+# rV - redraw all Views (except the one given via w)
+proc rV { {w ""} } {
     global ay
 
     set tmp $ay(currentView)
 
     if { $ay(views) != "" } {
 	foreach view $ay(views) {
-	  	if { [winfo ismapped $view] } {
-	    set view ${view}.f3D.togl
-	    $view mc
-	    $view reshape
-	    $view render
-	}  
+	    if { [winfo ismapped $view] } {
+		set view ${view}.f3D.togl
+		if { ($w != "") && ($w == $view) } {
+		    break;
+		}
+		$view mc
+		$view reshape
+		$view render
+	    }  
 	}
     }
 

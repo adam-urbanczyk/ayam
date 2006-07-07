@@ -238,47 +238,117 @@ ay_notify_forcetcmd(ClientData clientData, Tcl_Interp * interp,
 {
  int ay_status = AY_OK;
  char fname[] = "forceNot";
+ int modified = AY_FALSE, all = AY_FALSE, inform_parent = AY_FALSE;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
 
+  if(argc > 1)
+    {
+      if(!strcmp(argv[1], "mod"))
+	modified = AY_TRUE;
+      if(!strcmp(argv[1], "all"))
+	all = AY_TRUE;
+    }
 
-  if((!sel) || (argc >= 2))
+  if((!sel) || (all))
     {
       o = ay_root->next;
       while(o)
 	{
-	  ay_status = ay_notify_force(o);
-	  o = o->next;
-	} /* while */
-    }
-  else
-    {
-      
-      while(sel)
-	{
-	  ay_status = ay_notify_force(sel->object);
-	  if(ay_status)
+	  if(modified)
 	    {
-	      ay_error(AY_ERROR, fname, NULL);
-	      return TCL_OK;
-	    } /* if */
-	  if(ay_prefs.completenotify)
+	      if(o->modified)
+		{
+		  ay_status = ay_notify_force(o);
+
+		  if(ay_status)
+		    {
+		      ay_error(AY_ERROR, fname, NULL);
+		    } /* if */
+
+		  inform_parent = AY_TRUE;
+		}
+	      o->modified = AY_FALSE;
+	    }
+	  else
 	    {
-	      ay_status = ay_notify_complete(sel->object);
+	      ay_status = ay_notify_force(o);
+
 	      if(ay_status)
 		{
 		  ay_error(AY_ERROR, fname, NULL);
-		  return TCL_OK;
 		} /* if */
-	    } /* if */
-	  sel = sel->next;
+
+	      inform_parent = AY_TRUE;
+	    }
+	  o = o->next;
 	} /* while */
 
-      if(!ay_prefs.completenotify)
+      if(inform_parent)
 	{
 	  ay_notify_parent();
 	}
+    }
+  else
+    {
+      while(sel)
+	{
+	  if(modified)
+	    {
+	      if(sel->object->modified)
+		{
+		  ay_status = ay_notify_force(sel->object);
 
+		  if(ay_status)
+		    {
+		      ay_error(AY_ERROR, fname, NULL);
+		    } /* if */
+
+		  if(ay_prefs.completenotify)
+		    {
+		      ay_status = ay_notify_complete(sel->object);
+		      if(ay_status)
+			{
+			  ay_error(AY_ERROR, fname, NULL);
+			} /* if */
+		    }
+		  else
+		    {
+		      inform_parent = AY_TRUE;
+		    } /* if */
+		} /* if */
+	      sel->object->modified = AY_FALSE;
+	    }
+	  else
+	    {
+	      ay_status = ay_notify_force(sel->object);
+
+	      if(ay_status)
+		{
+		  ay_error(AY_ERROR, fname, NULL);
+		} /* if */
+
+	      if(ay_prefs.completenotify)
+		{
+		  ay_status = ay_notify_complete(sel->object);
+		  if(ay_status)
+		    {
+		      ay_error(AY_ERROR, fname, NULL);
+		    } /* if */
+		}
+	      else
+		{
+		  inform_parent = AY_TRUE;
+		} /* if */
+	    } /* if */
+
+	  sel = sel->next;
+	} /* while */
+
+      if(!ay_prefs.completenotify && inform_parent)
+	{
+	  ay_notify_parent();
+	}
     } /* if */
 
  return TCL_OK;
