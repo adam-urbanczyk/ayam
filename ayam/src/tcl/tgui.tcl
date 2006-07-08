@@ -306,7 +306,7 @@ proc tgui_addtag { } {
 
 	undo save AddTPTag
 
-	forAllT NPatch 0 {
+	forAll 0 {
 	    global tgui_tessparam
 	    set val [format "%d,%g,%g"\
 			 [expr $tgui_tessparam(SMethod) + 1]\
