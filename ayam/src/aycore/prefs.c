@@ -222,7 +222,7 @@ ay_prefs_gettcmd(ClientData clientData, Tcl_Interp *interp,
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   Tcl_SetStringObj(ton, "SMethod", -1);
-  to = Tcl_NewIntObj(ay_prefs.smethod);
+  to = Tcl_NewIntObj(ay_prefs.smethod - 1);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   Tcl_SetStringObj(ton, "SParamU", -1);
@@ -624,6 +624,8 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
   Tcl_SetStringObj(ton, "SMethod", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &ay_prefs.smethod);
+
+  ay_prefs.smethod++;
 
   Tcl_SetStringObj(ton, "SParamU", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
