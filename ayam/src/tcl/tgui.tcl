@@ -13,6 +13,27 @@ uplevel #0 { array set tgui_tessparam {
     SMethod 0
     SParamU 20
     SParamV 20
+
+    FT1 1
+    SParamU1 10
+    SParamV1 10
+
+    FT2 1
+    SParamU2 0.5
+    SParamV2 0.5
+
+    FT3 1
+    SParamU3 1
+    SParamV3 1
+
+    FT4 1
+    SParamU4 1
+    SParamV4 1
+
+    FT5 1
+    SParamU5 1
+    SParamV5 1
+
     MB1Down 0
     SaveToTag 0
     OldSMethod -1
@@ -31,29 +52,29 @@ proc tgui_block { } {
     set ay(ButtonBinding) [bind Button <1>]
     set sc "if { (\[winfo toplevel %W\] == \".\") || \
 	    (\[winfo toplevel %W\] == \".tbw\") } {\
-	    ayError 2 Ayam \"$blockMsg\";\
+	    ayError 2 Ayam \"$blockMsg\"; bell;\
 	    break } else { eval {$ay(ButtonBinding)} }"
     bind Button <1> $sc
 
     set ay(MenubuttonBinding) [bind Menubutton <1>]
     set sc "if { \[winfo toplevel %W\] == \".\" } {\
-	    ayError 2 Ayam \"$blockMsg\";\
+	    ayError 2 Ayam \"$blockMsg\"; bell;\
 	    break } else { eval {$ay(MenubuttonBinding)} }"
     bind Menubutton <1> $sc
 
     set ay(ListboxBinding) [bind Listbox <1>]
     set sc "if { \[winfo toplevel %W\] == \".\" } {\
-	    ayError 2 Ayam \"$blockMsg\";\
+	    ayError 2 Ayam \"$blockMsg\"; bell;\
 	    break } else { eval {$ay(ListboxBinding)} }"
     bind Listbox <1> $sc
 
     set ay(ListboxRBinding) [bind Listbox <ButtonRelease-1>]
     set sc "if { \[winfo toplevel %W\] == \".\" } {\
-	    ayError 2 Ayam \"$blockMsg\";\
+	    ayError 2 Ayam \"$blockMsg\"; bell;\
 	    break } else { eval {$ay(ListboxRBinding)} }"
     bind Listbox <ButtonRelease-1> $sc
 
-    set sc "ayError 2 Ayam \"$blockMsg\"; break"
+    set sc "ayError 2 Ayam \"$blockMsg\"; bell; break"
 
     # unbind Objects label and object tree or object listbox
     if { $ay(lb) == 0 } {
@@ -94,7 +115,7 @@ proc tgui_block { } {
     bindtags . {tguinone . Ayam all}
 
     set sc "if { \[winfo toplevel %W\] == \".\" } {\
-	    ayError 2 Ayam \"$blockMsg\";\
+	    ayError 2 Ayam \"$blockMsg\"; bell;\
 	    break } else { continue }"
 
     bind Frame <Control-KeyPress> $sc
@@ -173,16 +194,6 @@ proc tgui_update args {
     #trace vdelete tgui_tessparam(SParamU) w tgui_update
     #trace vdelete tgui_tessparam(SParamV) w tgui_update
 
-    if { $ayprefs(LazyNotify) == 1 } {
-	if { $tgui_tessparam(MB1Down) == 0 } {
-	    tguiCmd up $tgui_tessparam(SMethod) $tgui_tessparam(SParamU)\
-		$tgui_tessparam(SParamV)
-	}
-    } else {
-	tguiCmd up $tgui_tessparam(SMethod) $tgui_tessparam(SParamU)\
-	    $tgui_tessparam(SParamV)
-    }
-
     .tguiw.f1.fSParamU.e delete 0 end
     .tguiw.f1.fSParamU.e insert 0 $tgui_tessparam(SParamU)
     .tguiw.f1.fSParamV.e delete 0 end
@@ -190,6 +201,11 @@ proc tgui_update args {
 
     if { $tgui_tessparam(SMethod) == 0 } {
 	if { $tgui_tessparam(OldSMethod) != $tgui_tessparam(SMethod) } {
+	    if { $tgui_tessparam(FT1) == 1 } {
+		set tgui_tessparam(SParamU) $tgui_tessparam(SParamU1)
+		set tgui_tessparam(SParamV) $tgui_tessparam(SParamV1)
+		set tgui_tessparam(FT1) 0
+	    }
 	    .tguiw.f1.fSParamU.ll conf -text "0"
 	    .tguiw.f1.fSParamU.lr conf -text "100"
 	    .tguiw.f1.fSParamU.s conf -from 0 -to 100
@@ -200,6 +216,11 @@ proc tgui_update args {
 
     if { $tgui_tessparam(SMethod) == 1 } {
 	if { $tgui_tessparam(OldSMethod) != $tgui_tessparam(SMethod) } {
+	    if { $tgui_tessparam(FT2) == 1 } {
+		set tgui_tessparam(SParamU) $tgui_tessparam(SParamU2)
+		set tgui_tessparam(SParamV) $tgui_tessparam(SParamV2)
+		set tgui_tessparam(FT2) 0
+	    }
 	    .tguiw.f1.fSParamU.ll conf -text "0"
 	    .tguiw.f1.fSParamU.lr conf -text "100"
 	    .tguiw.f1.fSParamU.s conf -from 0 -to 100
@@ -210,10 +231,28 @@ proc tgui_update args {
 
     if { ($tgui_tessparam(SMethod) > 1) } {
 	if { $tgui_tessparam(OldSMethod) != $tgui_tessparam(SMethod) } {
-	    .tguiw.f1.fSParamU.ll conf -text "1"
+	    if { ($tgui_tessparam(SMethod) == 2) &&
+		 ($tgui_tessparam(FT3) == 1 ) } {
+		set tgui_tessparam(SParamU) $tgui_tessparam(SParamU3)
+		set tgui_tessparam(SParamV) $tgui_tessparam(SParamV3)
+		set tgui_tessparam(FT3) 0
+	    }
+	    if { ($tgui_tessparam(SMethod) == 3) &&
+		 ($tgui_tessparam(FT4) == 1 ) } {
+		set tgui_tessparam(SParamU) $tgui_tessparam(SParamU4)
+		set tgui_tessparam(SParamV) $tgui_tessparam(SParamV4)
+		set tgui_tessparam(FT4) 0
+	    }
+	    if { ($tgui_tessparam(SMethod) == 4) &&
+		 ($tgui_tessparam(FT5) == 1 ) } {
+		set tgui_tessparam(SParamU) $tgui_tessparam(SParamU5)
+		set tgui_tessparam(SParamV) $tgui_tessparam(SParamV5)
+		set tgui_tessparam(FT5) 0
+	    }
+	    .tguiw.f1.fSParamU.ll conf -text "0"
 	    .tguiw.f1.fSParamU.lr conf -text "20"
 	    .tguiw.f1.fSParamU.s conf -from 0 -to 20
-	    .tguiw.f1.fSParamV.ll conf -text "1"
+	    .tguiw.f1.fSParamV.ll conf -text "0"
 	    .tguiw.f1.fSParamV.lr conf -text "20"
 	    .tguiw.f1.fSParamV.s conf -from 0 -to 20
 	    .tguiw.f1.fSParamU.s conf -resolution 0.1
@@ -223,6 +262,16 @@ proc tgui_update args {
     }
 
     set tgui_tessparam(OldSMethod) $tgui_tessparam(SMethod)
+
+    if { $ayprefs(LazyNotify) == 1 } {
+	if { $tgui_tessparam(MB1Down) == 0 } {
+	    tguiCmd up $tgui_tessparam(SMethod) $tgui_tessparam(SParamU)\
+		$tgui_tessparam(SParamV)
+	}
+    } else {
+	tguiCmd up $tgui_tessparam(SMethod) $tgui_tessparam(SParamU)\
+	    $tgui_tessparam(SParamV)
+    }
 
     trace variable tgui_tessparam(SMethod) w tgui_update
     #trace variable tgui_tessparam(SParamU) w tgui_update
@@ -376,6 +425,9 @@ proc tgui_readtag { } {
 	if { $index != -1 } {
 	    set val [lindex $tagvals $index]
 	    scan $val "%d,%g,%g" smethod sparamu sparamv
+
+	    set tgui_tessparam(FT${smethod}) 0
+
 	    set smethod [expr $smethod - 1]
 
 	    tgui_recalcslider $sparamu $sparamv
@@ -513,6 +565,9 @@ proc tgui_open { } {
 
     winCenter $w
     focus $w.f2.bok
+
+    tgui_recalcslider 0 $tgui_tessparam(SParamU)
+    tgui_recalcslider 1 $tgui_tessparam(SParamV)
 
     # create first tesselation
     tgui_update
