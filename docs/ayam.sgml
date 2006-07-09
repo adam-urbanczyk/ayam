@@ -1710,6 +1710,18 @@ of shadow maps, see discussion of <tt/"RenderUI"/ above.
 <item><tt/"SMRenderPT"/, progress template for the rendering
 of shadow maps, see discussion of <tt/"RenderPT"/ above.
 
+<item><tt/"SMFileFormat"/, designates the file format of the shadow maps,
+use <tt/"zfile"/ for RenderMan and <tt/"shadow"/ for Gelato.
+
+<item><tt/"SMFileType"/, type of shadow maps to be created, currently
+available types are <tt/"z"/ - normal shadow maps (for RenderMan
+renderers and Gelato), <tt/"avgz"/ - Woo shadow maps (for Gelato only!),
+and <tt/"volz"/ - volume shadow maps (for Gelato only!).
+
+<item><tt/"SMChangeShaders"/, toggles, whether Ayam should automatically
+prepend a "shader" to light shader names for lights that use shadow maps
+upon RIB export. Not changing the shader names is necessary for Gelato.
+
 <item><tt/"PPRender"/ is the name of the renderer to use for the
 permanent preview feature (see also section <ref id="vm" name="View Menu">).
 This setting is just available, if the compile
@@ -7276,6 +7288,8 @@ are silently ignored.
 <p>
 The RIB import may be controlled via different options:<label id="rribopt">
 <itemize>
+<item><tt/"ScaleFactor"/, determines a global scale factor to be applied
+to all imported objects.
 <item><tt/"ReadFrame"/, specifies the number of the frame in the RIB
 to read. A value of -1 means, all frames are to be read. If you specify
 a frame number and this frame does not show up in the RIB as
@@ -8911,7 +8925,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>ScaleFactor: <ref id="imprhino" name="3DM (Rhino) import option">,
 <ref id="exprhino" name="3DM (Rhino) export option">,
 <ref id="impwav" name="Wavefront OBJ import option">,
-<ref id="expwav" name="Wavefront OBJ export option">
+<ref id="expwav" name="Wavefront OBJ export option">,
+<ref id="rribopt" name="RIB import option">
 <item>scalOb <ref id="scscalob" name="scripting interface command">
 <item>scalSel <ref id="scscalsel" name="scripting interface command">
 <item>Script: <ref id="scriptobj" name="object">
@@ -8958,7 +8973,12 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <ref id="extrncp" name="ExtrNC attribute">
 <item>Skin: <ref id="skinobj" name="object">,
 <ref id="skit" name="Skin tool">
+<item>SMChangeShaders: <ref id="prefrib" name="preference setting">
 <item>SMethod: <ref id="prefmisc" name="preference setting">
+<item>SMFileFormat: <ref id="prefrib" name="preference setting">
+<item>SMFileType: <ref id="prefrib" name="preference setting">
+<item>SMethod: <ref id="prefmisc" name="preference setting">
+<item>SMRender, SMRenderUI, SMRenderPT: <ref id="prefrib" name="preference setting">
 <item>SMRes: <ref id="lip" name="light attribute">
 <item>Snap3D: <ref id="prefmodel" name="preference setting">
 <item>SParam: <ref id="prefmisc" name="preference setting">
