@@ -157,12 +157,12 @@ ms_set en ayprefse_SMRenderUI "Enable user interface for shadow map rendering."
 ms_set en ayprefse_SMRenderPT "A template that helps to pick the progress\
 from the output of the shadow map renderer.\n\\\"%d\\\" denotes the position\
 of the progress number in the output."
-ms_set en ayprefse_SMFileFormat "File format of shadow map.\n\\
-RenderMan: zfile\nGelato: shadow"
-ms_set en ayprefse_SMFileType "Type of shadow map.\n
-z: normal shadow map (RenderMan, Gelato)\n\\
-avgz: Woo shadow map (Gelato only!)\n\\
-volz: volume shadow map (Gelato only!)"
+ms_set en ayprefse_SMFileFormat "File format of shadow map.\
+\nRenderMan: zfile\nGelato: shadow"
+ms_set en ayprefse_SMFileType "Type of shadow map.\
+\nz: normal shadow map (RenderMan, Gelato)\
+\navgz: Woo shadow map (Gelato only!)\
+\nshadowvol: volume shadow map (Gelato only!)"
 ms_set en ayprefse_SMChangeShaders "Change shader names (prepend\\
  \"shadow\")\nwhen rendering with shadow maps?"
 
@@ -303,35 +303,44 @@ ms_set de ayprefse_ExcludeHidden "Sollen alle versteckten Objekte beim
 RIB-Export ausgelassen werden?"
 ms_set de ayprefse_RenderMode "Wie soll der Renderer zum Rendern auf den\
 Bildschirm gezwungen werden?"
-ms_set de ayprefse_QRender "Name und Aufrufparameter des Renderers,
-der für schnelle Voransicht verwendet werden soll.\n\\\"%s\\\" wird
+ms_set de ayprefse_QRender "Name und Aufrufparameter des Renderers,\
+der für\n schnelle Vorschaubilder verwendet werden soll.\n\\\"%s\\\" wird\
 durch den Dateinamen des RIBs ersetzt."
-ms_set de ayprefse_QRenderUI "Soll das Render-Fenster für schnelle\
-Voransichten aktiviert werden?"
+ms_set de ayprefse_QRenderUI "Soll das Render-Fenster für die schnelle Vorschau
+aktiviert werden?"
 ms_set de ayprefse_QRenderPT "Beschreibung der Ausgabe des\
 Rendering-Fortschritts durch den Renderer\
-\n\\\"%d\\\" beschreibt die Position des prozentualen Fortschrittswertes,
-der dann im Rendering-Fenster angezeigt wird."
-ms_set de ayprefse_Render "Name und Aufrufparameter des Renderers,
-der für Voransichten verwendet werden soll.\n\\\"%s\\\" wird
+\n\\\"%d\\\" ist die Position des prozentualen Fortschrittswertes,\
+\nder dann im Rendering-Fenster angezeigt wird."
+ms_set de ayprefse_Render "Name und Aufrufparameter des Renderers,\
+der für die Vorschau verwendet werden soll.\n\\\"%s\\\" wird\
 durch den Dateinamen des RIBs ersetzt."
-ms_set de ayprefse_RenderUI "Soll das Render-Fenster für Voransichten\
+ms_set de ayprefse_RenderUI "Soll das Render-Fenster für die Vorschau\
 aktiviert werden?"
 ms_set de ayprefse_RenderPT "Beschreibung der Ausgabe des\
 Rendering-Fortschritts durch den Renderer\
-\n\\\"%d\\\" beschreibt die Position des prozentualen Fortschrittswertes,
-der dann im Rendering-Fenster angezeigt wird."
-ms_set de ayprefse_SMRender "Name und Aufrufparameter des Renderers,
+\n\\\"%d\\\" ist die Position des prozentualen Fortschrittswertes,\
+\nder dann im Rendering-Fenster angezeigt wird."
+ms_set de ayprefse_SMRender "Name und Aufrufparameter des Renderers,\
 der für ShadowMaps verwendet werden soll.\n\\\"%s\\\" wird\
 durch den Dateinamen des RIBs ersetzt."
 ms_set de ayprefse_SMRenderUI "Soll das Render-Fenster für ShadowMaps\
 aktiviert werden?"
 ms_set de ayprefse_SMRenderPT "Beschreibung der Ausgabe des\
 Rendering-Fortschritts durch den ShadowMap-Renderer\
-\n\\\"%d\\\" beschreibt die Position des prozentualen Fortschrittswertes,
-der dann im Rendering-Fenster angezeigt wird."
-ms_set de ayprefse_PPRender "Renderer, der für die permanente Voransicht\
+\n\\\"%d\\\" ist die Position des prozentualen Fortschrittswertes,\
+\nder dann im Rendering-Fenster angezeigt wird."
+ms_set de ayprefse_PPRender "Renderer, der für die permanente Vorschau\
 verwendet werden soll."
+
+ms_set de ayprefse_SMFileFormat "Dateiformat der ShadowMaps.\
+\nRenderMan: zfile\nGelato: shadow"
+ms_set de ayprefse_SMFileType "Typ von ShadowMaps.\
+\nz: normale ShadowMap (RenderMan, Gelato)\
+\navgz: Woo ShadowMap (nur Gelato!)\
+\nvolz: Volumen ShadowMap (nur Gelato!)"
+ms_set de ayprefse_SMChangeShaders "Sollen Shadernamen angepasst werden\
+\nwenn ShadowMaps benutzt werden?"
 
 # Misc
 ms_set de ayprefse_RedirectTcl "Sollen alle Fehlermeldungen von Tcl auf\
