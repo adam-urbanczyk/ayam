@@ -402,6 +402,9 @@ ay_cap_convertcb(ay_object *o, int in_place)
     {
       ay_status = ay_object_copy(cap->npatch, &new);
 
+      /* copy eventually present TP tags */
+      ay_npt_copytptag(o, new);
+
       if(new)
 	{
 	  ay_trafo_add(o, new);

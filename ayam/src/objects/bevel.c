@@ -465,7 +465,10 @@ ay_bevel_convertcb(ay_object *o, int in_place)
       new->hide_children = AY_TRUE;
       new->parent = AY_TRUE;
       ay_object_crtendlevel(&(new->down));
-    } /* if */
+
+      /* copy eventually present TP tags */
+      ay_npt_copytptag(o, new); 
+   } /* if */
 
   /* second, link new objects, or replace old objects with them */
   if(new)
