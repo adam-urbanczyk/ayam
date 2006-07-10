@@ -842,6 +842,9 @@ ay_cylinder_providecb(ay_object *o, unsigned int type, ay_object **result)
 	    } /* if */
 	} /* if */
 
+      /* copy eventually present TP tags */
+      ay_npt_copytptag(o, new);
+
       /* return result */
       *result = new;
 

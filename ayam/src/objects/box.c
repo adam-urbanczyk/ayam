@@ -518,6 +518,9 @@ ay_box_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  n = &((*n)->next);
 	}
 
+      /* copy eventually present TP tags */
+      ay_npt_copytptag(o, new);
+
       /* return result */
       *result = new;
 

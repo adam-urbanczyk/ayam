@@ -447,6 +447,9 @@ ay_cap_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  if(*result)
 	    {
 	      ay_trafo_add(o, *result);
+
+	      /* copy eventually present TP tags */
+	      ay_npt_copytptag(o, *result);
 	    } /* if */
 	} /* if */
     } /* if */
