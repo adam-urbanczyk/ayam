@@ -435,6 +435,9 @@ ay_bevel_providecb(ay_object *o, unsigned int type, ay_object **result)
       ay_trafo_copy(o, *t);
       t = &((*t)->next);
 
+      /* copy eventually present TP tags */
+      ay_npt_copytptag(o, new);
+
       *result = new;
     } /* if */
 

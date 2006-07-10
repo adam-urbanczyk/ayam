@@ -863,6 +863,10 @@ ay_text_providecb(ay_object *o, unsigned int type, ay_object **result)
 	} /* while */
     } /* if */
 
+
+  /* copy eventually present TP tags */
+  ay_npt_copytptag(o, tmp);
+
   *result = tmp;
 
  return AY_OK;

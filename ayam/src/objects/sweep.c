@@ -796,6 +796,9 @@ ay_sweep_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  p = p->next;
 	} /* while */
 
+      /* copy eventually present TP tags */
+      ay_npt_copytptag(o, new);
+
       *result = new;
     } /* if */
 

@@ -461,6 +461,9 @@ ay_disk_providecb(ay_object *o, unsigned int type, ay_object **result)
       ay_trafo_copy(o, new);
       new->refine = np;
 
+      /* copy eventually present TP tags */
+      ay_npt_copytptag(o, new);
+
       /* return result */
       *result = new;
 
