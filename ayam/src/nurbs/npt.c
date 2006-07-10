@@ -6625,3 +6625,41 @@ ay_npt_getbeveltags(ay_object *o, int place,
  return ay_status;
 } /* ay_npt_getbeveltags */
 
+
+/* ay_npt_copytptag:
+ *  
+ */
+int
+ay_npt_copytptag(ay_object *src, ay_object *dst)
+{
+ int ay_status = AY_OK;
+ ay_object *o = NULL;
+ ay_tag_object *t = NULL, *s = NULL;
+
+  if(!src || !dst)
+    return AY_ENULL;
+
+  if(!src->tags)
+    return AY_OK;
+
+  t = src->tags;
+
+  while(t)
+    {
+      if(t->type == ay_tp_tagtype)
+	{
+	  o = dst;
+	  while(o)
+	    {
+	      s = o->tags;
+	      ay_tags_copy(t, &(o->tags));
+	      o->tags->next = s;
+	      o = o->next;
+	    } /* while */
+	  break;
+	} /* if */
+      t = t->next;
+    } /* while */
+
+ return ay_status;
+} /* ay_npt_copytptag */

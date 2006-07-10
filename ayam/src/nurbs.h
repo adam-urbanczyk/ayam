@@ -475,6 +475,7 @@ int ay_npt_explodemp(ay_object *o);
 int ay_npt_getbeveltags(ay_object *o, int place,
 			int *has_bevel, int *type, double *radius, int *sense);
 
+int ay_npt_copytptag(ay_object *src, ay_object *dst);
 
 /* pmt.c */
 int ay_pmt_tonpatch(ay_pamesh_object *pamesh, ay_object **result);
