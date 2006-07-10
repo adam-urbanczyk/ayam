@@ -792,27 +792,77 @@ ay_text_convertcb(ay_object *o, int in_place)
 {
  int ay_status = AY_OK;
  ay_text_object *t = NULL;
- ay_object *npatch, *new = NULL;
+ ay_level_object *level = NULL;
+ ay_object *l = NULL, *npatch, *new = NULL, **next = NULL;
 
   if(!o)
     return AY_ENULL;
 
-  /* first, create new objects */
-
   t = (ay_text_object *) o->refine;
 
   npatch = t->npatch;
-  while(npatch)
+  if(!in_place)
     {
-      ay_status = ay_object_copy(npatch, &new);
-      ay_trafo_copy(o, new);
-      new->hide_children = AY_TRUE;
-      new->parent = AY_TRUE;
-      if(!new->down)
-	ay_object_crtendlevel(&(new->down));
-      ay_object_link(new);
-      npatch = npatch->next;
-    } /* while */
+      while(npatch)
+	{
+	  new = NULL;
+	  ay_status = ay_object_copy(npatch, &new);
+	  if(new)
+	    {
+	      ay_trafo_copy(o, new);
+
+	      /* copy eventually present TP tags */
+	      ay_npt_copytptag(o, new); 
+
+	      new->hide_children = AY_TRUE;
+	      new->parent = AY_TRUE;
+	      if(!new->down)
+		ay_object_crtendlevel(&(new->down));
+
+	      ay_object_link(new);
+	    } /* if */
+	  npatch = npatch->next;
+	} /* while */
+    }
+  else
+    {
+      ay_object_crtendlevel(&l);
+      l->parent = AY_TRUE;
+      level = (ay_level_object *)(l->refine);
+      level->type = AY_LTLEVEL;
+      next = &(l->down);
+      while(npatch)
+	{
+	  new = NULL;
+	  ay_status = ay_object_copy(npatch, &new);
+	  if(new)
+	    {
+	      ay_trafo_copy(o, new);
+
+	      /* copy eventually present TP tags */
+	      ay_npt_copytptag(o, new); 
+
+	      new->hide_children = AY_TRUE;
+	      new->parent = AY_TRUE;
+	      if(!new->down)
+		ay_object_crtendlevel(&(new->down));
+
+	      *next = new;
+	      next = &(new->next);
+	    } /* if */
+	  npatch = npatch->next;
+	} /* while */
+
+      if(new)
+	{
+	  ay_object_crtendlevel(next);
+	  ay_object_replace(l, o);
+	}
+      else
+	{
+	  ay_object_delete(l);
+	} /* if */
+    } /* if */
 
  return AY_OK;
 } /* ay_text_convertcb */
@@ -849,7 +899,7 @@ ay_text_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  if(new)
 	    {
 	      ay_trafo_copy(o, new);
-	      /*ist das notwendig, oder sind die attribute schon ok?*/
+
 	      new->hide_children = AY_TRUE;
 	      new->parent = AY_TRUE;
 	      if(!new->down)
@@ -862,7 +912,6 @@ ay_text_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  p = p->next;
 	} /* while */
     } /* if */
-
 
   /* copy eventually present TP tags */
   ay_npt_copytptag(o, tmp);

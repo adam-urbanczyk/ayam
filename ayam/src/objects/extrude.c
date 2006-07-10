@@ -1020,6 +1020,9 @@ ay_extrude_convertcb(ay_object *o, int in_place)
 	    } /* while */
 	} /* if */
 
+      /* copy eventually present TP tags */
+      ay_npt_copytptag(o, new->down);
+
       ay_object_crtendlevel(next);
     }
   else
@@ -1031,7 +1034,10 @@ ay_extrude_convertcb(ay_object *o, int in_place)
 	  new->hide_children = AY_TRUE;
 	  new->parent = AY_TRUE;
 	  ay_object_crtendlevel(&(new->down));
-	}
+
+	  /* copy eventually present TP tags */
+	  ay_npt_copytptag(o, new);
+	} /* if */
     } /* if */
 
   /* second, link new objects, or replace old objects with them */

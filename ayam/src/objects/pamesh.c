@@ -1254,6 +1254,10 @@ ay_pamesh_convertcb(ay_object *o, int in_place)
 	  if(new)
 	    {
 	      ay_trafo_copy(o, new);
+
+	      /* copy eventually present TP tags */
+	      ay_npt_copytptag(o, new);
+
 	      ay_status = ay_object_link(new);
 	    } /* if */
 	  p = p->next;
@@ -1273,6 +1277,10 @@ ay_pamesh_convertcb(ay_object *o, int in_place)
 	  if(new)
 	    {
 	      ay_trafo_copy(o, new);
+
+	      /* copy eventually present TP tags */
+	      ay_npt_copytptag(o, new);
+
 	      *next = new;
 	      next = &(new->next);
 	    } /* if */
