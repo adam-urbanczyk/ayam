@@ -328,7 +328,7 @@ ay_cap_notifycb(ay_object *o)
       if(down->type != AY_IDNCURVE)
 	{
 	  ay_status = ay_provide_object(down, AY_IDNCURVE, nextcurve);
-	  if(!nextcurve)
+	  if(!(*nextcurve))
 	    {
 	      /* XXXX convert NPatch to curve here later */
 #if 0
@@ -482,7 +482,7 @@ ay_cap_init(Tcl_Interp *interp)
 				    ay_cap_bbccb,
 				    AY_IDCAP);
 
-  
+
   ay_status = ay_notify_register(ay_cap_notifycb, AY_IDCAP);
 
   ay_status = ay_convert_register(ay_cap_convertcb, AY_IDCAP);
