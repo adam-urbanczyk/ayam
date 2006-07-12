@@ -159,6 +159,8 @@ array set ayprefs {
  SwapMBSC { "ayviewshortcuts(MoveVButton)" "ayviewshortcuts(ZoomVButton)" }
  UseInternalFD 0
  CursorEnd 1
+ 
+ PrepDiaCap 0
 
  Docs "http://ayam.sourceforge.net/docs/"
  DailyTips {
@@ -639,6 +641,9 @@ if { $tcl_platform(platform) == "windows" } {
 
 	# use internal file dialog to load plugins
 	set ayprefs(UseInternalFD) 1
+
+	# prepend dialog/messagebox titles to message
+	set ayprefs(PrepDiaCap) 1
 
 	# use documentation from app bundle
 	set t [file join [file dirname [info nameofexecutable]] \

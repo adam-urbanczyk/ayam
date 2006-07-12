@@ -598,11 +598,15 @@ proc prefs_warnNeedRestart {} {
     global env ay ayprefs ayprefse
 
     if { $ayprefs(Locale) != $ayprefse(Locale) } {
-	    set t "Need Restart!"
-	    set m "Some of your changes need a restart of Ayam to take effect!"
+	set t "Need Restart!"
+	set m "Some of your changes need a restart of Ayam to take effect!"
+	
+	if { $ayprefs(PrepDiaCap) == 1 } {
+	    set m "$t\n\n$m"
+	}
+
 	set answer [tk_messageBox -title $t -type ok -icon warning -message $m]
     }
-
 
  return;
 }

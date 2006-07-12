@@ -156,9 +156,15 @@ proc pclip_pastetosel { } {
     global pclip_prop ayprefs ay
 
     if { $ayprefs(Wpclip_pastetosel) == 1 } {
-	
-	set c [tk_messageBox -title "Warning!" -type okcancel -icon warning\
--message "This operation may destroy the current property. Proceed if you know what you are doing!"]
+	set t "Warning!"
+	set m "This operation may destroy the current property. Proceed if you know what you are doing!"
+
+	if { $ayprefs(PrepDiaCap) == 1 } {
+	    set m "$t\n\n$m"
+	}
+
+	set c [tk_messageBox -title $t -type okcancel -icon warning\
+		-message $m]
 
      if { $c == "cancel" } { return; }
 
