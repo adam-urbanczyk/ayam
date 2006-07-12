@@ -714,6 +714,11 @@ proc io_warnChanged {  } {
 
 	    set t "Scene has changed!"
 	    set m "Select \"Ok\" to lose all changes.\nSelect \"Cancel\" to stop operation."
+	    
+	    if { $ayprefs(PrepDiaCap) == 1 } {
+		set m "$t\n\n$m"
+	    }
+
 set answer [tk_messageBox -title $t -type okcancel -icon warning -message $m]
 	    
 	    winAutoFocusOn
@@ -789,12 +794,18 @@ proc io_saveEnv {  } {
 
 	     if { $ayprefs(EnvFile) != $savefilename } {
 
+		 set t "Make Default?"\
+
 		 set m "Select \"Ok\" to make the\
 \nnewly written environment\
 \nyour default environment."
 
+                 if { $ayprefs(PrepDiaCap) == 1 } {
+		     set m "$t\n\n$m"
+		 }
+
                  set answer [tk_messageBox -type okcancel\
-			 -title "Make Default?"\
+			 -title $t\
 			 -icon question -message $m]
 
 		 if { $answer == "cancel" } {
@@ -939,6 +950,11 @@ proc io_RenderSM { all } {
 	set m "ShadowMaps are not enabled\nin the preferences.\
 		\nSelect \"Ok\" to enable them and continue.\
 		\nSelect \"Cancel\" to stop operation."
+
+	if { $ayprefs(PrepDiaCap) == 1 } {
+	    set m "$t\n\n$m"
+	}
+
 	set answer [tk_messageBox -title $t -type okcancel -icon warning\
 		-message $m]
 
