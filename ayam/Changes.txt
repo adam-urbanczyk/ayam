@@ -1,4 +1,4 @@
-[3. Jul 2006] CVS-Head:
+[13. Jul 2006] CVS-Head:
 o Bug Fixes:
   - fixed not changeable preference setting "AutoFocus" (SF 1497964)
   - fixed export of PolyMesh objects with PV tags using "Pw" (SF 1504284)
@@ -6,6 +6,9 @@ o Bug Fixes:
     de-synchronized property display (SF 1510329)
   - fixed Rhino 3DM (OpenNURBS) import of complex scenes with multiple
     BRep objects (SF 1514799)
+  - fixed usage of tesselation method set via preferences (SF 1519105)
+  - fixed conversion of Text objects ignoring the in_place option (SF )
+  - fixed crashing Cap object when NPatch and NCurve are used as child (SF )
 
 GUI:
 o added default values to "Set GridSize" dialog and object property
@@ -13,6 +16,11 @@ o added default values to "Set GridSize" dialog and object property
 Modelling:
 o added converter from PolyMesh objects to SDMesh objects
 o added converter from SDMesh objects to PolyMesh objects
+o reduced number of notification operations and view redraws after
+  a modelling operation
+o the tesselation tool now adds TP tags to all types of objects
+o object conversion from tool objects (e.g. Revolve) to NPatch objects now
+  maintains eventually present TP tags
 
 Renderer Support:
 o added shader parsing plugin for Gelato
@@ -25,10 +33,15 @@ o made all shader parsing plugins Ayam version independent
 o added support to render just one shadow map from the selected light
 
 Platform Support:
+Apple Mac OS X (Aqua):
 o added workaround for Apple GLU bug that prevents drawing&shading of
   Box objects and NURBS patches in one scene
 o added default value to "Docs" preference setting, that points to the
   HTML documentation in the application bundle
+o added a workaround to make the standard application exit keyboard
+  shortcut <Command-q> work
+o added hidden preference setting "PrepDiaCap" that prepends message box
+  titles to their message as the titles are not displayed on every system
 
 Import/Export:
 o added progress display to Wavefront OBJ import
@@ -38,6 +51,9 @@ o added scale factor option to Rhino 3DM (OpenNURBS) import and export
 o added support to detect and fix degenerate faces to Wavefront OBJ import
 o improved detection of consecutive faces for Wavefront OBJ import: now
   intermediate "usemtl"-lines do not lead to isolated faces anymore
+o added scale factor option to RIB import
+
+Examples/Scripts:
 
 
 [13. May 2006] Ayam1.10:
