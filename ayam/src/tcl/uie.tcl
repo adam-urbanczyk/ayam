@@ -140,6 +140,8 @@ if { ! $ay(iapplydisable) } {
 	    \$ay(appb) invoke}"
     bind $f.e <Key-Return> "+after idle {\
 	    \$ay(appb) invoke}"
+    catch {bind $f.e <Key-KP_Enter> "+after idle {\
+           \$ay(appb) invoke}"}
     if { $mb != "" } {
 	bind $mb <${aymainshortcuts(IApplyMod)}-ButtonRelease-1>\
 	    "after idle {\$ay(appb) invoke}"
@@ -432,10 +434,17 @@ proc addColor { w prop name {def {}}} {
 	global aymainshortcuts
 	bind $e1 <Key-Return> "+after idle {\$ay(appb) invoke;\
                                updateColorFromE $w $prop $name $f.b1}"
+	catch {bind $e1 <Key-KP_Enter> "+after idle {\$ay(appb) invoke;\
+                               updateColorFromE $w $prop $name $f.b1}"}
 	bind $e2 <Key-Return> "+after idle {\$ay(appb) invoke;\
                                updateColorFromE $w $prop $name $f.b1}"
+	catch {bind $e2 <Key-KP_Enter> "+after idle {\$ay(appb) invoke;\
+                               updateColorFromE $w $prop $name $f.b1}"}
 	bind $e3 <Key-Return> "+after idle {\$ay(appb) invoke;
                                updateColorFromE $w $prop $name $f.b1}"
+	catch {bind $e3 <Key-KP_Enter> "+after idle {\$ay(appb) invoke;\
+                               updateColorFromE $w $prop $name $f.b1}"}
+
 	if { $mb != "" } {
 	    bind $mb <${aymainshortcuts(IApplyMod)}-ButtonRelease-1>\
 		"after idle {\$ay(appb) invoke}"
@@ -541,6 +550,8 @@ proc addCheck { w prop name } {
 	bind $cb <${aymainshortcuts(IApplyMod)}-ButtonRelease-1> "after idle {\
 	    \$ay(appb) invoke}"
 	bind $cb <Key-Return> "$ay(appb) invoke;break"
+	catch {bind $cb <Key-KP_Enter> "$ay(appb) invoke;break"}
+
 	if { $tcl_platform(platform) == "windows" ||
              $ws == "aqua" } {
 	    bind $ff <${aymainshortcuts(IApplyMod)}-ButtonRelease-1>\
@@ -697,6 +708,7 @@ proc addString { w prop name  {def {}}} {
     if { ! $ay(iapplydisable) } {
 	global aymainshortcuts
 	bind $f.e <Key-Return> "+after idle {\$ay(appb) invoke}"
+	catch {bind $f.e <Key-KP_Enter> "+after idle {\$ay(appb) invoke}"}
     }
 
     pack $f.l -in $f -side left -fill x
