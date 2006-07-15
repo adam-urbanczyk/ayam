@@ -96,7 +96,18 @@ proc tc_updateMenu { } {
     # get tc tags from currently selected object
     set names ""
     set values ""
-    getTags names values
+
+    set index ""
+    if { $ay(lb) == 1 } {
+	set index [$ay(olb) curselection]
+    } else {
+	set index [$ay(tree) selection get]
+    }
+
+    if { $index != "" } {
+	getTags names values
+    }
+
     set tclist {}
     set tcindex {dummy}
     if { $names != "" } {
