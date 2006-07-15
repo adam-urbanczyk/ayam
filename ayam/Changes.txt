@@ -1,4 +1,4 @@
-[13. Jul 2006] CVS-Head:
+[15. Jul 2006] CVS-Head:
 o Bug Fixes:
   - fixed not changeable preference setting "AutoFocus" (SF 1497964)
   - fixed export of PolyMesh objects with PV tags using "Pw" (SF 1504284)
@@ -7,11 +7,16 @@ o Bug Fixes:
   - fixed Rhino 3DM (OpenNURBS) import of complex scenes with multiple
     BRep objects (SF 1514799)
   - fixed usage of tesselation method set via preferences (SF 1519105)
-  - fixed conversion of Text objects ignoring the in_place option (SF )
-  - fixed crashing Cap object when NPatch and NCurve are used as child (SF )
+  - fixed conversion of Text objects ignoring the in_place option (SF 1522335)
+  - fixed crashing Cap object when NPatch and NCurve are used as child
+    (SF 1522337)
 
 GUI:
 o added default values to "Set GridSize" dialog and object property
+o added keyboard shortcuts to apply property changes using <Enter> (on
+  the numeric keypad)
+o texture coordinate editor now produces less error messages when called
+  without selected object
 
 Modelling:
 o added converter from PolyMesh objects to SDMesh objects
@@ -31,6 +36,7 @@ o added scan shaders option to main menu ("Special/Scan Shaders")
 o added shader parsing plugin projects to VC2005 workspace
 o made all shader parsing plugins Ayam version independent
 o added support to render just one shadow map from the selected light
+o removed support for Aqsis0.8.0 from renderer selection dialog
 
 Platform Support:
 Apple Mac OS X (Aqua):
