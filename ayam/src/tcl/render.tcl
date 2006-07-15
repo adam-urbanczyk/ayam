@@ -45,11 +45,11 @@ proc render_select { } {
     wm transient $w .
 
     set f [frame $w.flb]
- 
+
     label $f.l -text "Select Renderer:"
     pack $f.l -in $f -side top
 
- 
+
     # scrollbar
     scrollbar $f.sc -command "$f.li yview" -takefocus 0
     pack $f.sc -in $f -side right -fill y -expand no
@@ -62,7 +62,7 @@ proc render_select { } {
 
     pack $f -in $w -side top -fill x
 
-    set names [list BMRT2.5 BMRT2.6 Aqsis0.8.0 Aqsis>=0.9.0 Air Angel 3Delight Pixie RDC PRMan Gelato]
+    set names [list BMRT2.5 BMRT2.6 Aqsis Air Angel 3Delight Pixie RDC PRMan Gelato]
     foreach name $names {
 	$f.li insert end "$name"
     }
@@ -75,7 +75,7 @@ proc render_select { } {
     set f [frame $w.fch]
     addCheck $f ay ScanShaders
     pack $f -in $w -side top -fill x
-    
+
     # ok/cancel buttons
     set f [frame $w.fb1]
     button $f.bok -text "Ok" -pady $ay(pady) -width 5 -command {
@@ -119,27 +119,7 @@ proc render_select { } {
 	    }
 
 	    2 {
-		# Aqsis 0.8.0
-		set ayprefs(QRender) "aqsis -progress -fb %s"
-		set ayprefs(QRenderPT) "Done Computing %d"
-		set ayprefs(Render) "aqsis -progress -fb %s"
-		set ayprefs(RenderPT) "Done Computing %d"
-		set ayprefs(SMRender) "aqsis -progress %s"
-		set ayprefs(SMRenderPT) "Done Computing %d"
-		set ayprefs(RenderMode) 0
-
-		global AYUSESLXARGS
-		if { $AYUSESLXARGS != 1 } {
-		    set splugin "ayslx"
-		}
-		if { $ay(ScanShaders) == 1 } {
-		    set ay(sext) ".slx"
-		}
-		set newr "Aqsis0.8.0"
-	    }
-
-	    3 {
-		# Aqsis 0.9.0
+		# Aqsis
 		set ayprefs(QRender)\
 			"aqsis -Progress -fb  %s"
 		set ayprefs(QRenderPT) "R90000%d"
@@ -156,10 +136,10 @@ proc render_select { } {
 		if { $ay(ScanShaders) == 1 } {
 		    set ay(sext) ".slx"
 		}
-		set newr "Aqsis>=0.9.0"
+		set newr "Aqsis"
 	    }
 
-	    4 { 
+	    3 {
 		# Air
 		set ayprefs(QRender) "air -samples 1 1 -d 4 -Progress %s"
 		set ayprefs(QRenderPT) "R90000 %d"
@@ -176,7 +156,7 @@ proc render_select { } {
 		set newr "Air"
 	    }
 
-	    5 { 
+	    4 {
 		# Angel
 		set ayprefs(QRender) "angel %s"
 		set ayprefs(QRenderPT) "%d"
@@ -192,7 +172,7 @@ proc render_select { } {
 		set newr "Angel"
 	    }
 
-	    6 {
+	    5 {
 		# 3Delight
 		set ayprefs(QRender) "renderdl -d %s"
 		set ayprefs(QRenderPT) ""
@@ -209,7 +189,7 @@ proc render_select { } {
 		set newr "3Delight"
 	    }
 
-	    7 {
+	    6 {
 		# Pixie
 		set ayprefs(QRender) "rndr %s"
 		set ayprefs(QRenderPT) "regexp -- {^.* - (\\\[0-9\\\]+)} string dummy percent"
@@ -226,7 +206,7 @@ proc render_select { } {
 		set newr "Pixie"
 	    }
 
-	    8 {
+	    7 {
 		# RDC
 		set ayprefs(QRender) "renderdc %s"
 		set ayprefs(QRenderPT) ""
@@ -243,7 +223,7 @@ proc render_select { } {
 		set newr "RDC"
 	    }
 
-	    9 {
+	    8 {
 		# PRMan
 		set ayprefs(QRender) "render -vector %s"
 		set ayprefs(QRenderPT) ""
@@ -260,7 +240,7 @@ proc render_select { } {
 		set newr "PRMan"
 	    }
 
-	    10 {
+	    9 {
 		# Gelato
 		set ayprefs(QRender) "gelato -preview 0.25 -iv %s"
 		set ayprefs(QRenderPT) ""
@@ -282,7 +262,7 @@ proc render_select { } {
 	# switch
 
 	# Gelato specific settings
-	if { $sel == 10 } {
+	if { $sel == 9 } {
 	    set ayprefs(SMChangeShaders) 0
 	    set ayprefs(SMFileFormat) "shadow"
 	} else {
@@ -292,7 +272,7 @@ proc render_select { } {
 	}
 
 
-	if { ($sel > 0) && ($sel < 11) } {
+	if { ($sel > 0) && ($sel < 10) } {
 	    set ayprefse(QRender) $ayprefs(QRender)
 	    set ayprefse(QRenderPT) $ayprefs(QRenderPT)
 	    set ayprefse(Render) $ayprefs(Render)
