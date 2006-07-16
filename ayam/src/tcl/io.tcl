@@ -714,17 +714,17 @@ proc io_warnChanged {  } {
 
 	    set t "Scene has changed!"
 	    set m "Select \"Ok\" to lose all changes.\nSelect \"Cancel\" to stop operation."
-	    
+
 	    if { $ayprefs(PrepDiaCap) == 1 } {
 		set m "$t\n\n$m"
 	    }
 
 set answer [tk_messageBox -title $t -type okcancel -icon warning -message $m]
-	    
+
 	    winAutoFocusOn
 
 	    if { $answer == "cancel" } {
-	    
+
 		return 1;
 	    } else {
 		return 0;
@@ -1220,18 +1220,26 @@ proc io_exportOBJ { selected } {
     button $f.bok -text "Ok" -width 5 -command {
 	global objio_options ay_error
 
-	set filename $objio_options(FileName)
+	set objio_options(filename) $objio_options(FileName)
+	set oldcd [pwd]
+	cd [file dirname $objio_options(FileName)]
+
+	set filename [file tail $objio_options(FileName)]
 
 	ay_objio_write $filename -s $objio_options(Selected)\
-	    -p $objio_options(TessPoMesh) -c $objio_options(WriteCurves)\
-	    -f $objio_options(ScaleFactor)\	    
+	    -p $objio_options(TessPoMesh)\
+	    -c $objio_options(WriteCurves)\
+	    -f $objio_options(ScaleFactor)\
 	    -t $objio_options(STagName) $objio_options(TTagName)
 
+	cd $oldcd
+
 	if { $ay_error < 2 } {
-	    ayError 4 "exportOBJ" "Done exporting to: $filename"
+	    ayError 4 "exportOBJ" "Done exporting to:"
+	    ayError 4 "exportOBJ" "$objio_options(FileName)"
 	} else {
 	    ayError 2 "exportOBJ" "There were errors while exporting to:"
-	    ayError 2 "exportOBJ" "$filename"
+	    ayError 2 "exportOBJ" "$objio_options(FileName)"
 	}
 
 	destroy .objE
@@ -1250,6 +1258,8 @@ proc io_exportOBJ { selected } {
     focus $w.f2.bok
 
     winAutoFocusOn
+
+    after idle viewMouseToCurrent
 
  return;
 }
@@ -1297,6 +1307,7 @@ proc io_importOBJ { } {
     button $f.bok -text "Ok" -width 5 -command {
 	global objio_options ay_error
 
+	set objio_options(filename) $objio_options(FileName)
 	set oldcd [pwd]
 	cd [file dirname $objio_options(FileName)]
 	grab .objI
@@ -1336,8 +1347,6 @@ proc io_importOBJ { } {
 	grab release .objI
 	focus .
 	destroy .objI
-
-	after idle viewMouseToCurrent
     }
     # button
 
@@ -1384,7 +1393,7 @@ proc ::tk::mac::OpenDocument { args } {
 		viewCloseAll
 
 		set ay_error ""
-		
+
 		replaceScene $filename
 		if { $ay_error < 2 } {
 		    set ay(filename) $filename
