@@ -1,6 +1,6 @@
 # Ayam, a free 3D modeler for the RenderMan interface.
 #
-# Ayam is copyrighted 1998-2004 by Randolf Schultz
+# Ayam is copyrighted 1998-2006 by Randolf Schultz
 # (rschultz@informatik.uni-rostock.de) and others.
 #
 # All rights reserved.
@@ -199,7 +199,7 @@ imported\nobjects to \\\"0.0\\\"?"
 ms_set en objio_options_Selected "Export only selected object(s)."
 ms_set en objio_options_TessPoMesh "Tesselate all PolyMesh objects to\
 triangles."
-ms_set en objio_options_OmitCurves "Omit all NURBS curves from exported file."
+ms_set en objio_options_WriteCurves "Write NURBS curves to exported file?"
 
 #
 # fill "de"-locale
@@ -379,7 +379,7 @@ importierten\nObjekten auf \\\"0.0\\\" zurückgesetzt werden?"
 ms_set de objio_options_Selected "Exportiert nur ausgewählte Objekte."
 ms_set de objio_options_TessPoMesh "Wandelt alle PolyMesh-Objekte zu\
 Dreiecksnetzen."
-ms_set de objio_options_OmitCurves "Verhindert das Exportieren von Kurven."
+ms_set de objio_options_WriteCurves "Sollen NURBS Kurven exportiert werden?"
 
 #
 # fill "fr"-locale...
@@ -531,4 +531,4 @@ Mops?"
 #ms_set fr objio_options_Selected "Export only selected object(s)."
 #ms_set fr objio_options_TessPoMesh "Tesselate all PolyMesh objects to\
 #triangles."
-#ms_set fr objio_options_OmitCurves "Omit all NURBS curves from exported file."
+#ms_set fr objio_options_WriteCurves "Write NURBS curves to exported file?"

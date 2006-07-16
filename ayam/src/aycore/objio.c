@@ -72,7 +72,7 @@ static Tcl_HashTable ay_objio_write_ht; /* write callbacks */
 
 static int objio_tesspomesh = AY_FALSE;
 
-static int objio_omitcurves = AY_FALSE;
+static int objio_writecurves = AY_TRUE;
 
 char objio_stagnamedef[] = "mys";
 char *objio_stagname = objio_stagnamedef;
@@ -196,7 +196,7 @@ ay_objio_writencurve(FILE *fileptr, ay_object *o, double *m)
  double *v = NULL, *p1, *p2, pw[3], umin, umax;
  int stride = 4, i;
 
-  if(objio_omitcurves)
+  if(!objio_writecurves)
     return AY_OK;
 
   if(!o)
@@ -707,7 +707,7 @@ ay_objio_writencconvertible(FILE *fileptr, ay_object *o, double *m)
  int ay_status = AY_OK;
  ay_object *c = NULL, *t;
 
-  if(objio_omitcurves)
+  if(!objio_writecurves)
     return AY_OK;
 
   if(!o)
@@ -1398,13 +1398,13 @@ ay_objio_writescenetcmd(ClientData clientData, Tcl_Interp *interp,
     }
 
   objio_tesspomesh = AY_FALSE;
-  objio_omitcurves = AY_FALSE;
+  objio_writecurves = AY_TRUE;
 
   while(i+1 < argc)
     {
-      if(!strcmp(argv[i], "-o"))
+      if(!strcmp(argv[i], "-c"))
 	{
-	  sscanf(argv[i+1], "%d", &objio_omitcurves);
+	  sscanf(argv[i+1], "%d", &objio_writecurves);
 	}
       else
       if(!strcmp(argv[i], "-s"))
@@ -1444,13 +1444,15 @@ ay_objio_writescenetcmd(ClientData clientData, Tcl_Interp *interp,
 
 /****************************************************************/
 
-int objio_mergecfaces;
+static int objio_readcurves;
 
-int objio_mergepvtags;
+static int objio_mergecfaces;
 
-double objio_rescaleknots;
+static int objio_mergepvtags;
 
-int objio_checkdegen;
+static double objio_rescaleknots;
+
+static int objio_checkdegen;
 
 typedef struct objio_vertex_s {
   struct objio_vertex_s *next;
@@ -3057,7 +3059,7 @@ ay_objio_readend(void)
     {
     case 1:
       /* read a normal 3D curve */
-      if(objio_omitcurves)
+      if(!objio_readcurves)
 	goto cleanup;
 
       /* discard unspecified, bmatrix, cardinal, and taylor splines */
@@ -3503,7 +3505,7 @@ ay_objio_readscenetcmd(ClientData clientData, Tcl_Interp *interp,
 
   objio_mergecfaces = AY_TRUE;
   objio_mergepvtags = AY_TRUE;
-  objio_omitcurves = AY_FALSE;
+  objio_readcurves = AY_TRUE;
   objio_rescaleknots = 0.0;
   objio_checkdegen = AY_TRUE;
 
@@ -3514,9 +3516,9 @@ ay_objio_readscenetcmd(ClientData clientData, Tcl_Interp *interp,
 	  sscanf(argv[i+1], "%d", &objio_mergecfaces);
 	}
       else
-      if(!strcmp(argv[i], "-o"))
+      if(!strcmp(argv[i], "-c"))
 	{
-	  sscanf(argv[i+1], "%d", &objio_omitcurves);
+	  sscanf(argv[i+1], "%d", &objio_readcurves);
 	}
       else
       if(!strcmp(argv[i], "-p"))
