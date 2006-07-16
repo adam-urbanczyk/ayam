@@ -449,7 +449,7 @@ proc actionTagP { w } {
 	    %W selpac %x %y
 	}
 	%W setconf -rect $oldx $oldy %x %y 0
-	rV %W
+	rV
 	update
     }
 
