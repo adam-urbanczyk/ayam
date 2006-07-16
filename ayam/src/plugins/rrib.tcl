@@ -19,6 +19,7 @@ uplevel #0 { array set rrib_options {
   ErrorLevel 1
   RescaleKnots 0.0
   ScaleFactor 1.0
+  filename ""
   FileName "unnamed.rib"
 }   }
 
@@ -29,6 +30,12 @@ proc rrib_import { } {
     global ay ay_error rrib_options
 
     winAutoFocusOff
+
+    if { $rrib_options(filename) != "" } {
+	set rrib_options(FileName) $rrib_options(filename)
+    } else {
+	set rrib_options(FileName) "unnamed.rib"
+    }
 
     cS; plb_update
     update
@@ -66,6 +73,8 @@ proc rrib_import { } {
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {
 	global rrib_options
+
+	set rrib_options(filename) $rrib_options(FileName)
 	set oldcd [pwd]
 	cd [file dirname $rrib_options(FileName)]
 
@@ -100,9 +109,8 @@ proc rrib_import { } {
 	    ayError 2 "rrib_import" "$rrib_options(FileName)"
 	}
 
-
-	grab release .ribI;
-	focus .;
+	grab release .ribI
+	focus .
 	destroy .ribI
     }
     # button

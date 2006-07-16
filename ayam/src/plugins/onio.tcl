@@ -22,6 +22,7 @@ uplevel #0 { array set onio_options {
     RescaleKnots 0.0
     TopLevelLayers 0
     ScaleFactor 1.0
+    filename ""
     FileName "unnamed.3dm"
     STagName "mys"
     TTagName "myt"
@@ -33,6 +34,12 @@ proc onio_import { } {
     global ay ay_error onio_options
 
     winAutoFocusOff
+
+    if { $onio_options(filename) != "" } {
+	set onio_options(FileName) $onio_options(filename)
+    } else {
+	set onio_options(FileName) "unnamed.3dm"
+    }
 
     cS; plb_update
     update
@@ -70,6 +77,7 @@ proc onio_import { } {
     button $f.bok -text "Ok" -width 5 -command {
 	global onio_options
 
+	set onio_options(filename) $onio_options(FileName)
 	set oldcd [pwd]
 	cd [file dirname $onio_options(FileName)]
 
@@ -102,8 +110,8 @@ proc onio_import { } {
 	    ayError 2 "onio_import" "$onio_options(FileName)"
 	}
 
-	grab release .onio;
-	focus .;
+	grab release .onio
+	focus .
 	destroy .onio
     }
     # button
@@ -177,6 +185,8 @@ proc onio_export { } {
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {
 	global onio_options;
+
+	set onio_options(filename) $onio_options(FileName)
 	set oldcd [pwd]
 	cd [file dirname $onio_options(FileName)]
 
@@ -199,8 +209,6 @@ proc onio_export { } {
 
 	uS
 	rV
-
-	set ay(sc) 1
 
 	if { $ay_error < 2 } {
 	    ayError 4 "onio_export" "Done exporting to:"
