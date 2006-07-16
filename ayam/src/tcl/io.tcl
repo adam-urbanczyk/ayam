@@ -1,6 +1,6 @@
 # Ayam, a free 3D modeler for the RenderMan interface.
 #
-# Ayam is copyrighted 1998-2001 by Randolf Schultz
+# Ayam is copyrighted 1998-2006 by Randolf Schultz
 # (rschultz@informatik.uni-rostock.de) and others.
 #
 # All rights reserved.
@@ -1165,7 +1165,7 @@ proc io_readMainGeom { } {
 uplevel #0 { array set objio_options {
 Selected 0
 TessPoMesh 0
-OmitCurves 0
+WriteCurves 1
 MergeFaces 1
 MergePVTags 1
 ScaleFactor 1.0
@@ -1211,7 +1211,7 @@ proc io_exportOBJ { selected } {
     addSFileT $f objio_options FileName $types
     addCheckB $f objio_options Selected [ms objio_options_Selected]
     addCheckB $f objio_options TessPoMesh [ms objio_options_TessPoMesh]
-    addCheckB $f objio_options OmitCurves [ms objio_options_OmitCurves]
+    addCheckB $f objio_options WriteCurves [ms objio_options_WriteCurves]
     addParam $f objio_options ScaleFactor [list 0.01 0.1 1.0 10.0 100.0]
     addString $f objio_options STagName
     addString $f objio_options TTagName
@@ -1223,7 +1223,7 @@ proc io_exportOBJ { selected } {
 	set filename $objio_options(FileName)
 
 	ay_objio_write $filename -s $objio_options(Selected)\
-	    -p $objio_options(TessPoMesh) -o $objio_options(OmitCurves)\
+	    -p $objio_options(TessPoMesh) -c $objio_options(WriteCurves)\
 	    -f $objio_options(ScaleFactor)\	    
 	    -t $objio_options(STagName) $objio_options(TTagName)
 
@@ -1284,7 +1284,7 @@ proc io_importOBJ { } {
     addFileT $f objio_options FileName $types
     addCheck $f objio_options MergeFaces
     addCheck $f objio_options MergePVTags
-    addCheck $f objio_options OmitCurves
+    addCheck $f objio_options ReadCurves
     addParam $f objio_options RescaleKnots [list 0.0 1.0e-4]
     addParam $f objio_options ScaleFactor  [list 0.01 0.1 1.0 10.0 100.0]
     addCheck $f objio_options CheckDegen
@@ -1304,7 +1304,7 @@ proc io_importOBJ { } {
 	update
 	ay_objio_read [file tail $objio_options(FileName)]\
 		-m $objio_options(MergeFaces)\
-		-o $objio_options(OmitCurves)\
+		-c $objio_options(ReadCurves)\
 		-p $objio_options(MergePVTags)\
 		-r $objio_options(RescaleKnots)\
 	        -f $objio_options(ScaleFactor)\
