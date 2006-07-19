@@ -56,7 +56,7 @@ int ay_objio_writeinstance(FILE *fileptr, ay_object *o, double *m);
 
 int ay_objio_writescript(FILE *fileptr, ay_object *o, double *m);
 
-int ay_objio_writeobject(FILE *fileptr, ay_object *o, int writeend);
+int ay_objio_writeobject(FILE *fileptr, ay_object *o, int writeend, int count);
 
 int ay_objio_writescenetcmd(ClientData clientData, Tcl_Interp *interp,
 			    int argc, char *argv[]);
@@ -73,6 +73,9 @@ static Tcl_HashTable ay_objio_write_ht; /* write callbacks */
 static int objio_tesspomesh = AY_FALSE;
 
 static int objio_writecurves = AY_TRUE;
+
+static unsigned int objio_allobjcnt = 0;
+static unsigned int objio_curobjcnt = 0;
 
 char objio_stagnamedef[] = "mys";
 char *objio_stagname = objio_stagnamedef;
@@ -688,7 +691,7 @@ ay_objio_writelevel(FILE *fileptr, ay_object *o, double *m)
       down = o->down;
       while(down->next)
 	{
-	  ay_status = ay_objio_writeobject(fileptr, down, AY_TRUE);
+	  ay_status = ay_objio_writeobject(fileptr, down, AY_TRUE, AY_TRUE);
 	  down = down->next;
 	}
       memcpy(tm, m1, 16*sizeof(double));
@@ -719,7 +722,7 @@ ay_objio_writencconvertible(FILE *fileptr, ay_object *o, double *m)
     {
       if(t->type == AY_IDNCURVE)
 	{
-	  ay_status = ay_objio_writeobject(fileptr, t, AY_TRUE);
+	  ay_status = ay_objio_writeobject(fileptr, t, AY_TRUE, AY_FALSE);
 	}
 
       t = t->next;
@@ -727,7 +730,7 @@ ay_objio_writencconvertible(FILE *fileptr, ay_object *o, double *m)
 
   if(t->type == AY_IDNCURVE)
     {
-      ay_status = ay_objio_writeobject(fileptr, t, AY_FALSE);
+      ay_status = ay_objio_writeobject(fileptr, t, AY_FALSE, AY_FALSE);
     }
 
   ay_status = ay_object_deletemulti(c);
@@ -754,7 +757,7 @@ ay_objio_writenpconvertible(FILE *fileptr, ay_object *o, double *m)
     {
       if(t->type == AY_IDNPATCH)
 	{
-	  ay_status = ay_objio_writeobject(fileptr, t, AY_TRUE);
+	  ay_status = ay_objio_writeobject(fileptr, t, AY_TRUE, AY_FALSE);
 	}
 
       t = t->next;
@@ -762,7 +765,7 @@ ay_objio_writenpconvertible(FILE *fileptr, ay_object *o, double *m)
 
   if(t->type == AY_IDNPATCH)
     {
-      ay_status = ay_objio_writeobject(fileptr, t, AY_FALSE);
+      ay_status = ay_objio_writeobject(fileptr, t, AY_FALSE, AY_FALSE);
     }
 
   ay_status = ay_object_deletemulti(p);
@@ -1165,7 +1168,7 @@ ay_objio_writeclone(FILE *fileptr, ay_object *o, double *m)
 
   while(clone)
     {
-      ay_status = ay_objio_writeobject(fileptr, clone, AY_TRUE);
+      ay_status = ay_objio_writeobject(fileptr, clone, AY_TRUE, AY_FALSE);
 
       clone = clone->next;
     }
@@ -1190,7 +1193,7 @@ ay_objio_writeinstance(FILE *fileptr, ay_object *o, double *m)
 
   ay_trafo_copy(orig, &tmp);
   ay_trafo_copy(o, orig);
-  ay_status = ay_objio_writeobject(fileptr, orig, AY_FALSE);
+  ay_status = ay_objio_writeobject(fileptr, orig, AY_FALSE, AY_FALSE);
   ay_trafo_copy(&tmp, orig);
 
  return ay_status;
@@ -1218,7 +1221,7 @@ ay_objio_writescript(FILE *fileptr, ay_object *o, double *m)
       cmo = sc->cm_objects;
       while(cmo)
 	{
-	  ay_status = ay_objio_writeobject(fileptr, cmo, AY_TRUE);
+	  ay_status = ay_objio_writeobject(fileptr, cmo, AY_TRUE, AY_FALSE);
 	  cmo = cmo->next;
 	}
     } /* if */
@@ -1244,7 +1247,7 @@ ay_objio_writencurve(FILE *fileptr, ay_object *o, double *m)
  *
  */
 int
-ay_objio_writeobject(FILE *fileptr, ay_object *o, int writeend)
+ay_objio_writeobject(FILE *fileptr, ay_object *o, int writeend, int count)
 {
  int ay_status = AY_OK;
  char fname[] = "objio_writeobject";
@@ -1253,6 +1256,10 @@ ay_objio_writeobject(FILE *fileptr, ay_object *o, int writeend)
  double m1[16] = {0}, m2[16];
  char err[255];
  ay_objio_writecb *cb = NULL;
+ int lastprog = 0, curprog = 0;
+ char aname[] = "objio_options", vname1[] = "Progress";
+ char vname2[] = "Cancel", *val = NULL;
+ char pbuffer[64];
 
   if(!o)
     return AY_ENULL;
@@ -1287,6 +1294,41 @@ ay_objio_writeobject(FILE *fileptr, ay_object *o, int writeend)
 	      ay_error(AY_ERROR, fname, "Error exporting object.");
 	      ay_status = AY_OK;
 	    }
+
+	  if(count)
+	    {
+	      objio_curobjcnt++;
+	      
+	      /* calculate new progress value in percent */
+	      curprog = (int)(objio_curobjcnt*100.0/objio_allobjcnt);
+
+	      if(curprog > lastprog)
+		{
+		  sprintf(pbuffer, "%d", curprog);
+		  Tcl_SetVar2(ay_interp, aname, vname1, pbuffer,
+			      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+		  lastprog = curprog;
+		}
+	      /* process all events (update the GUI) every 5 objects */
+	      /*
+		if(!fmod(objio_curobjcnt, 5.0))
+		{
+	      */
+	      while(Tcl_DoOneEvent(TCL_DONT_WAIT)){};
+
+	      /* also, check for cancel button */
+	      val = Tcl_GetVar2(ay_interp, aname, vname2,
+				TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	      if(val && val[0] == '1')
+		{
+		  ay_error(AY_EWARN, fname,
+		   "Export cancelled! Not all objects may have been written!");
+		  return AY_EDONOTLINK;
+		}
+	      /*
+		}
+	      */
+	    }
 	  if(writeend)
 	    fprintf(fileptr, "end\n");
 	}
@@ -1310,6 +1352,7 @@ ay_objio_writescene(char *filename, int selected)
 {
  int ay_status = AY_OK;
  ay_object *o = ay_root->next;
+ ay_list_object *sel = NULL;
  FILE *fileptr = NULL;
  char fname[] = "objio_writescene";
 
@@ -1341,6 +1384,24 @@ ay_objio_writescene(char *filename, int selected)
       tm[10] *= objio_scalefactor;
     }
 
+  /* count objects to be exported */
+  if(!selected)
+    {
+      objio_allobjcnt = ay_object_count(ay_root->next);
+    }
+  else
+    {
+      sel = ay_selection;
+      while(sel)
+	{
+	  objio_allobjcnt++;
+	  if(sel->object->down && sel->object->down->next)
+	    objio_allobjcnt += ay_object_count(sel->object->down);
+	  sel = sel->next;
+	}
+    } /* if */
+  objio_curobjcnt = 0;
+
   /* write header information */
   /*  ay_objio_writeheader(fileptr);*/
 
@@ -1351,16 +1412,22 @@ ay_objio_writescene(char *filename, int selected)
 	{
 	  if(o->selected)
 	    {
-	      ay_status = ay_objio_writeobject(fileptr, o, AY_TRUE);
+	      ay_status = ay_objio_writeobject(fileptr, o, AY_TRUE, AY_TRUE);
 	    }
 	}
       else
 	{
-	  ay_status = ay_objio_writeobject(fileptr, o, AY_TRUE);
+	  ay_status = ay_objio_writeobject(fileptr, o, AY_TRUE, AY_FALSE);
 	}
 
       if(ay_status)
-	{ fclose(fileptr); return ay_status; }
+	{
+	  /* user cancelled export? */
+	  if(ay_status == AY_EDONOTLINK)
+	    ay_status = AY_OK;
+	  fclose(fileptr);
+	  return ay_status;
+	}
 
       o = o->next;
     } /* while */
