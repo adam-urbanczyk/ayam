@@ -280,6 +280,8 @@ int ay_object_replace(ay_object *src, ay_object *dst);
 
 int ay_object_ccp(ay_object *o);
 
+unsigned int ay_object_count(ay_object *o);
+
 /* objio.c */
 int ay_objio_writescene(char *filename, int selected);
 

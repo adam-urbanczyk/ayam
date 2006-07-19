@@ -952,3 +952,27 @@ ay_object_ccp(ay_object *o)
 
  return ay_status;
 } /* ay_object_ccp */
+
+
+/* ay_object_count:
+ *  this function counts all objects pointed to by o (including all siblings
+ *  and all children of o and its siblings) in a recursive manner
+ */
+unsigned int
+ay_object_count(ay_object *o)
+{
+  unsigned int lcount = 1;
+  
+  if(!o)
+    return 0;
+
+  while(o->next)
+    {
+      if(o->down && o->down->next)
+	lcount += ay_object_count(o->down);
+      lcount++;
+      o = o->next;
+    }
+
+ return lcount;
+} /* ay_object_count */
