@@ -1215,6 +1215,8 @@ proc io_exportOBJ { selected } {
     addParam $f objio_options ScaleFactor [list 0.01 0.1 1.0 10.0 100.0]
     addString $f objio_options STagName
     addString $f objio_options TTagName
+    set objio_options(Progress) 0
+    addProgress $f objio_options Progress
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {
@@ -1226,12 +1228,17 @@ proc io_exportOBJ { selected } {
 
 	set filename [file tail $objio_options(FileName)]
 
+	grab .objE
+	set objio_options(Cancel) 0
+	update
+
 	ay_objio_write $filename -s $objio_options(Selected)\
 	    -p $objio_options(TessPoMesh)\
 	    -c $objio_options(WriteCurves)\
 	    -f $objio_options(ScaleFactor)\
 	    -t $objio_options(STagName) $objio_options(TTagName)
 
+	grab release .objE
 	cd $oldcd
 
 	if { $ay_error < 2 } {
@@ -1247,7 +1254,10 @@ proc io_exportOBJ { selected } {
     # button
 
     button $f.bca -text "Cancel" -width 5 -command "\
-		focus .;\
+		global objio_options;\
+                set objio_options(Cancel) 1;\
+		grab release .objE;\
+                focus .;\
 		destroy .objE"
 
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
