@@ -222,7 +222,12 @@ ay_draw_view(struct Togl *togl, int draw_offset)
       if(!draw_offset)
 	{
 	  glDisable(GL_DEPTH_TEST);
+	}
+      else
+	{
+	  glDepthFunc(GL_LEQUAL);
 	} /* if */
+
        while(sel)
 	 {
 	   ay_status = ay_draw_object(togl, sel->object, AY_TRUE);
@@ -231,6 +236,10 @@ ay_draw_view(struct Togl *togl, int draw_offset)
       if(!draw_offset)
 	{
 	  glEnable(GL_DEPTH_TEST);
+	}
+      else
+	{
+	  glDepthFunc(GL_LESS);
 	} /* if */
 
       /* draw handles of selected objects */
