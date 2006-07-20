@@ -961,7 +961,7 @@ ay_object_ccp(ay_object *o)
 unsigned int
 ay_object_count(ay_object *o)
 {
-  unsigned int lcount = 1;
+ unsigned int lcount = 0;
   
   if(!o)
     return 0;
