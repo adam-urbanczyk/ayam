@@ -22,6 +22,8 @@ typedef int (ay_objio_writecb) (FILE *fileptr, ay_object *o, double *m);
 
 /* prototypes of functions local to this module */
 
+unsigned int ay_objio_count(ay_object *o);
+
 int ay_objio_registerwritecb(char *name, ay_objio_writecb *cb);
 
 int ay_objio_writevertices(FILE *fileptr, unsigned int n, int stride,
@@ -84,6 +86,47 @@ char *objio_ttagname = objio_ttagnamedef;
 
 
 /* functions */
+
+unsigned int
+ay_objio_count(ay_object *o)
+{
+ unsigned int lcount = 0;
+ int lasttype = -1;
+ Tcl_HashTable *ht = &ay_objio_write_ht;
+ Tcl_HashEntry *entry = NULL;
+ ay_objio_writecb *cb = NULL;
+
+  if(!o)
+    return 0;
+
+  while(o->next)
+    {
+      if(lasttype != o->type)
+	{
+	  entry = NULL;
+	  if((entry = Tcl_FindHashEntry(ht, (char *)(o->type))))
+	    {
+	      cb = (ay_objio_writecb*)Tcl_GetHashValue(entry);
+	    }
+	  else
+	    {
+	      cb = NULL;
+	    }
+	  lasttype = o->type;
+	} /* if */
+
+      if(o->down && o->down->next && (cb != ay_objio_writenpconvertible))
+	lcount += ay_objio_count(o->down);
+
+      if(cb != NULL)
+	lcount++;
+
+      o = o->next;
+    } /* while */
+
+ return lcount;
+} /* ay_objio_count */
+
 
 /* ay_objio_registerwritecb:
  *
@@ -717,6 +760,8 @@ ay_objio_writencconvertible(FILE *fileptr, ay_object *o, double *m)
    return AY_ENULL;
 
   ay_status = ay_provide_object(o, AY_IDNCURVE, &c);
+  if(!c)
+    return AY_ERROR;
   t = c;
   while(t->next)
     {
@@ -752,6 +797,8 @@ ay_objio_writenpconvertible(FILE *fileptr, ay_object *o, double *m)
    return AY_ENULL;
 
   ay_status = ay_provide_object(o, AY_IDNPATCH, &p);
+  if(!p)
+    return AY_ERROR;
   t = p;
   while(t->next)
     {
@@ -1256,7 +1303,7 @@ ay_objio_writeobject(FILE *fileptr, ay_object *o, int writeend, int count)
  double m1[16] = {0}, m2[16];
  char err[255];
  ay_objio_writecb *cb = NULL;
- int lastprog = 0, curprog = 0;
+ int curprog = 0;
  char aname[] = "objio_options", vname1[] = "Progress";
  char vname2[] = "Cancel", *val = NULL;
  char pbuffer[64];
@@ -1302,14 +1349,11 @@ ay_objio_writeobject(FILE *fileptr, ay_object *o, int writeend, int count)
 	      /* calculate new progress value in percent */
 	      curprog = (int)(objio_curobjcnt*100.0/objio_allobjcnt);
 
-	      if(curprog > lastprog)
-		{
-		  sprintf(pbuffer, "%d", curprog);
-		  Tcl_SetVar2(ay_interp, aname, vname1, pbuffer,
-			      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-		  lastprog = curprog;
-		}
-	      /* process all events (update the GUI) every 5 objects */
+	      sprintf(pbuffer, "%d", curprog);
+	      Tcl_SetVar2(ay_interp, aname, vname1, pbuffer,
+			  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+	      /* process all events (update the GUI) for every object */
 	      /*
 		if(!fmod(objio_curobjcnt, 5.0))
 		{
@@ -1328,10 +1372,11 @@ ay_objio_writeobject(FILE *fileptr, ay_object *o, int writeend, int count)
 	      /*
 		}
 	      */
-	    }
+	    } /* if count */
+
 	  if(writeend)
 	    fprintf(fileptr, "end\n");
-	}
+	} /* if cb */
     }
   else
     {
@@ -1387,7 +1432,7 @@ ay_objio_writescene(char *filename, int selected)
   /* count objects to be exported */
   if(!selected)
     {
-      objio_allobjcnt = ay_object_count(ay_root->next);
+      objio_allobjcnt = ay_objio_count(ay_root->next);
     }
   else
     {
@@ -1396,7 +1441,7 @@ ay_objio_writescene(char *filename, int selected)
 	{
 	  objio_allobjcnt++;
 	  if(sel->object->down && sel->object->down->next)
-	    objio_allobjcnt += ay_object_count(sel->object->down);
+	    objio_allobjcnt += ay_objio_count(sel->object->down);
 	  sel = sel->next;
 	}
     } /* if */
@@ -1417,7 +1462,7 @@ ay_objio_writescene(char *filename, int selected)
 	}
       else
 	{
-	  ay_status = ay_objio_writeobject(fileptr, o, AY_TRUE, AY_FALSE);
+	  ay_status = ay_objio_writeobject(fileptr, o, AY_TRUE, AY_TRUE);
 	}
 
       if(ay_status)
