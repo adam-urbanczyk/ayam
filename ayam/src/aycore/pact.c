@@ -1583,8 +1583,8 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
  /*ay_list_object *sel = ay_selection;*/
  static double oldwinx = 0.0, oldwiny = 0.0;
  double winx = 0.0, winy = 0.0;
- double movX, movY, movZ, dx=0.0, dy=0.0, dz=0.0, *coords;
- double euler[3] = {0};
+ double movX, movY, movZ, dx = 0.0, dy = 0.0, dz = 0.0, *coords = NULL;
+ double euler[3] = {0}, uccoords[3] = {0};
  int i = 0, j, k = 0, redraw = AY_FALSE;
  static GLdouble m[16] = {0};
  /*GLdouble mo[16] = {0};*/
@@ -1658,11 +1658,14 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
 			  for(i = 0; i < ay_pe_numcpo[j]; i++)
 			    {
 			      coords = ay_point_edit_coords[k];
-			      k++;
 			      if(!view->local)
 				{
 				  ay_trafo_applyall(ay_currentlevel->next, o,
 						    coords);
+				} /* if */
+			      if(i == 0)
+				{
+				  memcpy(uccoords, coords, 3*sizeof(double));
 				} /* if */
 			      if(ay_prefs.snap3d)
 				{
@@ -1697,15 +1700,29 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
 				      break;
 				    } /* switch */
 				} /* if */
+			      if(i == 0)
+				{
+				  if(memcmp(uccoords, coords,
+					    3*sizeof(double)))
+				    {
+				      o->modified = AY_TRUE;
+				    }
+				} /* if */
 			      if(!view->local)
 				{
 				  ay_trafo_applyalli(ay_currentlevel->next, o,
 						     coords);
 				} /* if */
+			      k++;
 			    } /* for */
-			  /* XXXX this redraw is only necessary if coords are
+			  /* notify&redraw are only necessary if coords are
 			     really changed by the snap to grid operation */
-			  ay_toglcb_display(togl);
+			  if(o->modified)
+			    {
+			      ay_notify_force(o);
+			      ay_notify_parent();
+			      ay_toglcb_display(togl);
+			    } /* if */
 			} /* if */
 		    } /* if */
 		  return TCL_OK;
