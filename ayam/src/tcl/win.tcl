@@ -10,6 +10,25 @@
 # win.tcl - (top level) window management
 
 
+# winToMouse:
+# place window w on screen near the mouse pointer
+proc winToMouse { w } {
+
+    wm withdraw $w
+    update idletasks
+
+    set x [expr [winfo pointerx $w] + 20]
+    set y [expr [winfo pointery $w] + 20]
+
+    winMoveOrResize $w "+${x}+${y}"
+
+    wm deiconify $w
+
+ return;
+}
+# winToMouse
+
+
 # winCenter:
 # center window w on screen
 proc winCenter { w } {
