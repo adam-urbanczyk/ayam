@@ -153,7 +153,7 @@ proc reconsider { Selection } {
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
     pack $f -in $w -side bottom -fill x
     
-    bind $rArray(lb) <ButtonRelease-1> {
+    bind $rArray(lb) <<ListboxSelect>> {
 	# Get the node selected by the user
 	set node [lindex $rArray(selection) [$rArray(lb) curselection]]
 	# Go to the corresponding level
@@ -169,9 +169,11 @@ proc reconsider { Selection } {
 	# Put the item in the selection then update the views
 	selOb
 	selOb $item
-	rV
+	after idle {rV}
     }
-    
+    bind $rArray(lb) <Double-1> {
+	after 100 {.reconsider.f2.bok invoke}
+    }
     # Get the default node (i.e. the first in the list)
     set node [lindex $Selection 0]
     # Go to the corresponding level
@@ -302,6 +304,7 @@ proc singleObjSel { node } {
 
 	# If the user has picked several objects then reconsider...
 	if {[llength $ay(LastSelection)] > 1} {
+	    set rArray(result) ""
 	    reconsider $ay(LastSelection)
 	    if { $rArray(result) != "" } {
 		set Selection $rArray(result)
