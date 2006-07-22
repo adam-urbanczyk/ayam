@@ -50,8 +50,7 @@ proc reconsider { Selection } {
     wm title $w "Ambiguous Pick"
     wm iconname $w "Ayam"
     wm transient $w .
-    winCenter $w
-    
+
     # Create a frame where to place the listbox and the scrollbar
     set f [frame $w.f1]
     pack $f -in $w -side top -fill both -expand yes
@@ -191,6 +190,9 @@ proc reconsider { Selection } {
     rV
 
     focus $f.bok
+
+    winToMouse $w
+    
     tkwait window $w
 
     winAutoFocusOn
