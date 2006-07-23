@@ -377,6 +377,8 @@ int ay_pact_wrtcb(struct Togl *togl, int argc, char *argv[]);
 int ay_pact_centertcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
 
+int ay_pact_snaptogridcb(struct Togl *togl, int argc, char *argv[]);
+
 /* pomesht.c */
 int ay_pomesht_tesselate(ay_pomesh_object *pomesh);
 

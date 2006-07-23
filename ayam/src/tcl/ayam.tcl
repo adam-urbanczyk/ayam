@@ -357,6 +357,9 @@ array set ayviewshortcuts {
     CollP "C"
     ExplP "E"
 
+    SnapGrid2D "g"
+    SnapGrid3D "G"
+
     Hide "h"
     Show "H"
 

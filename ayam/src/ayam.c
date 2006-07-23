@@ -862,6 +862,8 @@ Tcl_AppInit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "centerPnts", ay_pact_centertcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  Togl_CreateCommand("snapac", ay_pact_snaptogridcb);
+
 
   /* selp.c */
   Tcl_CreateCommand(interp, "selPoints", ay_selp_selalltcmd,

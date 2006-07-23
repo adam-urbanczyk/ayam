@@ -813,6 +813,7 @@ proc actionEditWP { w } {
 }
 # actionEditWP
 
+
 #
 proc actionResetWP { w } {
     undo save ResetWeight
@@ -1006,6 +1007,27 @@ proc actionPick { w } {
  return;
 }
 #actionPick
+
+
+#
+proc actionSnapToGrid3D { w } {
+    undo save SnapToGrid3D
+    $w snapac
+    rV
+ return;
+}
+# actionSnapToGrid3D
+
+
+#
+proc actionSnapToGrid2D { w } {
+    undo save SnapToGrid2D
+    $w snapac 1
+    rV
+ return;
+}
+# actionSnapToGrid2D
+
 
 #actionClear:
 # not really an action, clears all bindings, establishes picking bindings
