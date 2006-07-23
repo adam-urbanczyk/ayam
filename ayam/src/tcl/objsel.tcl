@@ -51,6 +51,15 @@ proc reconsider { Selection } {
     wm iconname $w "Ayam"
     wm transient $w .
 
+    #
+    bind $w <Visibility> {
+	if { ("%s" == "VisibilityPartiallyObscured") ||\
+	     ("%s" == "VisibilityFullyObscured") } {
+	    bind %W <Visibility> {}
+	    after 500 {.reconsider.f2.bca invoke}
+	}
+    }
+
     # Create a frame where to place the listbox and the scrollbar
     set f [frame $w.f1]
     pack $f -in $w -side top -fill both -expand yes
@@ -172,7 +181,7 @@ proc reconsider { Selection } {
 	after idle {rV}
     }
     bind $rArray(lb) <Double-1> {
-	after 100 {.reconsider.f2.bok invoke}
+	after 200 {.reconsider.f2.bok invoke}
     }
     # Get the default node (i.e. the first in the list)
     set node [lindex $Selection 0]
