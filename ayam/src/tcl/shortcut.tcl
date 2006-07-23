@@ -446,6 +446,11 @@ proc shortcut_view { w } {
     bind $w <[repcont $ayviewshortcuts(ExplP)]>\
 	    "explMP; rV;"
 
+    bind $w <[repcont $ayviewshortcuts(SnapGrid2D)]>\
+	    "actionSnapToGrid2D $w.f3D.togl"
+    bind $w <[repcont $ayviewshortcuts(SnapGrid3D)]>\
+	    "actionSnapToGrid3D $w.f3D.togl"
+
     set m $ay(toolsmenu)
     bind $w <[repcont $ayviewshortcuts(Hide)]>\
 	    "$m invoke 8"

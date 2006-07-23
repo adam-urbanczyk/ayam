@@ -2038,3 +2038,129 @@ ay_pact_centertcmd(ClientData clientData, Tcl_Interp *interp,
 
  return TCL_OK;
 } /* ay_pact_centertcmd */
+
+
+/* ay_pact_snaptogridcb:
+ *  this action callback resets all weights
+ */
+int
+ay_pact_snaptogridcb(struct Togl *togl, int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ char fname[] = "snap_to_grid";
+ Tcl_Interp *interp = Togl_Interp (togl);
+ ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
+ double p[3], *coords;
+ int mode = 0, i;
+ ay_object *o = NULL;
+ ay_list_object *sel = ay_selection;
+ ay_point_object *pnt = NULL;
+
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, fname, NULL);
+      return TCL_OK;
+    }
+
+  if(argc > 2)
+    {
+      Tcl_GetInt(interp, argv[2], &mode);
+    }
+
+  while(sel)
+    {
+      o = sel->object;
+
+      if(!o->selp)
+	{
+	  ay_status = ay_pact_getpoint(0, o, p);
+
+	  if(ay_status)
+	    {
+	      ay_error(AY_ERROR, fname, NULL);
+	    }
+	  else
+	    {
+	      for(i = 0; i < ay_point_edit_coords_number; i++)
+		{
+		  coords = ay_point_edit_coords[i];
+		  if(mode == 0)
+		    {
+		      ay_pact_griddify(&(coords[0]), view->grid);
+		      ay_pact_griddify(&(coords[1]), view->grid);
+		      ay_pact_griddify(&(coords[2]), view->grid);
+		    }
+		  else
+		    {
+		      switch(view->type)
+			{
+			case AY_VTFRONT:
+			case AY_VTTRIM:
+			  ay_pact_griddify(&(coords[0]), view->grid);
+			  ay_pact_griddify(&(coords[1]), view->grid);
+			  break;
+			case AY_VTSIDE:
+			  ay_pact_griddify(&(coords[1]), view->grid);
+			  ay_pact_griddify(&(coords[2]), view->grid);
+			  break;
+			case AY_VTTOP:
+			  ay_pact_griddify(&(coords[0]), view->grid);
+			  ay_pact_griddify(&(coords[2]), view->grid);
+			  break;
+			default:
+			  /* XXXX output proper error message */
+			  break;
+			} /* switch */
+		    } /* if */
+		} /* for */
+	    } /* if */
+	}
+      else
+	{
+	  pnt = o->selp;
+	  while(pnt)
+	    {
+	      coords = pnt->point;
+	      if(mode == 0)
+		{
+		  ay_pact_griddify(&(coords[0]), view->grid);
+		  ay_pact_griddify(&(coords[1]), view->grid);
+		  ay_pact_griddify(&(coords[2]), view->grid);
+		}
+	      else
+		{
+		  switch(view->type)
+		    {
+		    case AY_VTFRONT:
+		    case AY_VTTRIM:
+		      ay_pact_griddify(&(coords[0]), view->grid);
+		      ay_pact_griddify(&(coords[1]), view->grid);
+		      break;
+		    case AY_VTSIDE:
+		      ay_pact_griddify(&(coords[1]), view->grid);
+		      ay_pact_griddify(&(coords[2]), view->grid);
+		      break;
+		    case AY_VTTOP:
+		      ay_pact_griddify(&(coords[0]), view->grid);
+		      ay_pact_griddify(&(coords[2]), view->grid);
+		      break;
+		    default:
+		      /* XXXX output proper error message */
+		      break;
+		    } /* switch */
+		} /* if */
+	      pnt = pnt->next;
+	    } /* while */
+	} /* if */
+
+      o->modified = AY_TRUE;
+
+      ay_notify_force(o);
+
+      sel = sel->next;
+   } /* while */
+
+  ay_status = ay_notify_parent();
+
+ return TCL_OK;
+} /* ay_pact_snaptogridcb */
