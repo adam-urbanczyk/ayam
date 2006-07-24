@@ -22,6 +22,7 @@ uplevel #0 { array set onio_options {
     RescaleKnots 0.0
     TopLevelLayers 0
     ScaleFactor 1.0
+    Progress 0.0
     filename ""
     FileName "unnamed.3dm"
     STagName "mys"
@@ -70,6 +71,7 @@ proc onio_import { } {
     addParam $f onio_options RescaleKnots [list 0.0 1.0e-4]
     addString $f onio_options STagName
     addString $f onio_options TTagName
+    addProgress $f onio_options Progress
 
     set ay(iapplydisable) 0
 
@@ -179,6 +181,7 @@ proc onio_export { } {
     addCheck $f onio_options TopLevelLayers
     addString $f onio_options STagName
     addString $f onio_options TTagName
+    addProgress $f onio_options Progress
 
     set ay(iapplydisable) 0
 
@@ -201,14 +204,7 @@ proc onio_export { } {
 	    -t $onio_options(STagName) $onio_options(TTagName)
 
 	cd $oldcd
-	goTop
-	selOb
-	set ay(CurrentLevel) "root"
-	set ay(SelectedLevel) "root"
 	update
-
-	uS
-	rV
 
 	if { $ay_error < 2 } {
 	    ayError 4 "onio_export" "Done exporting to:"
