@@ -2139,7 +2139,7 @@ ay_objio_readface(char *str, int lastlinewasface)
  static ay_list_object *storedfaces = NULL, **laststoredface = &storedfaces;
  static unsigned int nfaces = 0;
  ay_list_object *tl = NULL;
- double angle, v1[3] = {0}, v2[3] = {0}, *v;
+ /*double angle, v1[3] = {0}, v2[3] = {0}, *v;*/
 
   if(!str && (lastlinewasface != -1))
     return AY_ENULL;
@@ -2354,7 +2354,7 @@ ay_objio_readface(char *str, int lastlinewasface)
 	{
 	  po.has_normals = AY_TRUE;
 	}
-      /*
+      /* XXXX replace with working degeneracy test
       if(nverts == 4)
 	{
 	  v = po.controlv;
