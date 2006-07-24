@@ -1163,7 +1163,7 @@ proc io_readMainGeom { } {
 
 
 uplevel #0 { array set objio_options {
-Selected 0
+WriteSelected 0
 TessPoMesh 0
 WriteCurves 1
 MergeFaces 1
@@ -1209,9 +1209,9 @@ proc io_exportOBJ { selected } {
     pack $f -in $w -side top -fill x
     set types {{"Wavefront OBJ" ".obj"} {"All files" *}}
     addSFileT $f objio_options FileName $types
-    addCheckB $f objio_options Selected [ms objio_options_Selected]
-    addCheckB $f objio_options TessPoMesh [ms objio_options_TessPoMesh]
+    addCheckB $f objio_options WriteSelected [ms objio_options_Selected]
     addCheckB $f objio_options WriteCurves [ms objio_options_WriteCurves]
+    addCheckB $f objio_options TessPoMesh [ms objio_options_TessPoMesh]
     addParam $f objio_options ScaleFactor [list 0.01 0.1 1.0 10.0 100.0]
     addString $f objio_options STagName
     addString $f objio_options TTagName
@@ -1232,7 +1232,7 @@ proc io_exportOBJ { selected } {
 	set objio_options(Cancel) 0
 	update
 
-	ay_objio_write $filename -s $objio_options(Selected)\
+	ay_objio_write $filename -s $objio_options(WriteSelected)\
 	    -p $objio_options(TessPoMesh)\
 	    -c $objio_options(WriteCurves)\
 	    -f $objio_options(ScaleFactor)\
