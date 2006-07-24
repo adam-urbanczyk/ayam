@@ -64,6 +64,8 @@ char *onio_ttagname = onio_ttagnamedef;
 
 // prototypes of functions local to this module
 
+unsigned int onio_count(ay_object *o);
+
 int onio_transposetm(double *m1, double *m2);
 
 int onio_getnurbsurfobj(ay_object *o, ON_NurbsSurface **pp_n, double *m);
@@ -153,6 +155,51 @@ int Onio_Init(Tcl_Interp *interp);
 
 
 // functions
+
+
+// count objects to be exported
+//
+//
+unsigned int
+onio_count(ay_object *o)
+{
+ unsigned int lcount = 0;
+ int lasttype = -1;
+ Tcl_HashTable *ht = &onio_write_ht;
+ Tcl_HashEntry *entry = NULL;
+ onio_writecb *cb = NULL;
+
+  if(!o)
+    return 0;
+
+  while(o->next)
+    {
+      if(lasttype != (int)o->type)
+	{
+	  entry = NULL;
+	  if((entry = Tcl_FindHashEntry(ht, (char *)(o->type))))
+	    {
+	      cb = (onio_writecb*)Tcl_GetHashValue(entry);
+	    }
+	  else
+	    {
+	      cb = NULL;
+	    }
+	  lasttype = o->type;
+	} // if
+
+      if(o->down && o->down->next && (cb != onio_writenpconvertible))
+	lcount += onio_count(o->down);
+
+      if(cb != NULL)
+	lcount++;
+
+      o = o->next;
+    } // while
+
+ return lcount;
+} // onio_count
+
 
 // onio_transposetm:
 //  transpose 4x4 transformation matrix in <m1> from Ayam style to OpenNURBS
@@ -1825,6 +1872,7 @@ onio_writetcmd(ClientData clientData, Tcl_Interp *interp,
  const char *filename = NULL;
  int t, i = 2, version = 3, li;
  ay_object *o;
+ char aname[] = "onio_options", vname1[] = "Progress";
  ONX_Model model;
  const ON_Layer *p_layer = NULL;
  //ON_3dmObjectAttributes attribs;
@@ -2013,6 +2061,11 @@ onio_writetcmd(ClientData clientData, Tcl_Interp *interp,
   // set uuid's, indices, etc.
   model.Polish();
 
+  // set progress
+  Tcl_SetVar2(ay_interp, aname, vname1, "50",
+	      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  while(Tcl_DoOneEvent(TCL_DONT_WAIT)){};
+
   // write model to archive
   bool ok = model.Write(archive,
                         version,
@@ -2025,6 +2078,11 @@ onio_writetcmd(ClientData clientData, Tcl_Interp *interp,
 
   // close the file
   ON::CloseFile(fp);
+
+  // set progress
+  Tcl_SetVar2(ay_interp, aname, vname1, "100",
+	      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  while(Tcl_DoOneEvent(TCL_DONT_WAIT)){};
 
   onio_stagname = onio_stagnamedef;
   onio_ttagname = onio_ttagnamedef;
@@ -3217,6 +3275,7 @@ onio_readtcmd(ClientData clientData, Tcl_Interp *interp,
  char *minus;
  int i = 2, sframe = -1, eframe = -1;
  double accuracy = 0.1;
+ char aname[] = "onio_options", vname1[] = "Progress";
 
   onio_importcurves = AY_TRUE;
   onio_rescaleknots = 0.0;
@@ -3325,6 +3384,11 @@ onio_readtcmd(ClientData clientData, Tcl_Interp *interp,
       ay_error(AY_ERROR, fname, "Model is not valid!");
     }
 
+  // set progress
+  Tcl_SetVar2(ay_interp, aname, vname1, "50",
+	      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  while(Tcl_DoOneEvent(TCL_DONT_WAIT)){};
+
   onio_lrobject = NULL;
   if(sframe == -1)
     {
@@ -3375,6 +3439,11 @@ onio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 
   // destroy this model
   model.Destroy();
+
+  // set progress
+  Tcl_SetVar2(ay_interp, aname, vname1, "100",
+	      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  while(Tcl_DoOneEvent(TCL_DONT_WAIT)){};
 
   onio_stagname = onio_stagnamedef;
   onio_ttagname = onio_ttagnamedef;
