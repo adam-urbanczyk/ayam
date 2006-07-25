@@ -20,12 +20,12 @@ w     fSDMeshAttr
 }
 
 array set SDMeshAttrData {
-Type 0
+Scheme 0
 }
 # create SDMeshAttr-UI
 set w [frame $ay(pca).$SDMeshAttr(w)]
 
-addInfo $w SDMeshAttrData Scheme
+addMenu $w SDMeshAttrData Scheme {Catmull-Clark Loop}
 addInfo $w SDMeshAttrData NFaces
 addInfo $w SDMeshAttrData NControls
 
