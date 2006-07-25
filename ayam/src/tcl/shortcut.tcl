@@ -782,6 +782,8 @@ $w.ftext.text insert end "Modelling Actions (View Windows):
  Invert PointSel      $ayviewshortcuts(InvSelP)
  Collapse Selected    $ayviewshortcuts(CollP)
  Explode Selected     $ayviewshortcuts(ExplP)
+ Snap to Grid 2D      $ayviewshortcuts(SnapGrid2D)
+ Snap to Grid 3D      $ayviewshortcuts(SnapGrid3D)
 
  Hide Objects         $ayviewshortcuts(Hide)
  Show Objects         $ayviewshortcuts(Show)
