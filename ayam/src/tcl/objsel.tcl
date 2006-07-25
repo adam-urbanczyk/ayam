@@ -49,7 +49,12 @@ proc reconsider { Selection } {
     toplevel $w -class ayam
     wm title $w "Ambiguous Pick"
     wm iconname $w "Ayam"
-    wm transient $w .
+    if { $ay(currentView) != "" } {
+	wm transient $w [winfo toplevel $ay(currentView)]
+    } else {
+	wm transient $w .
+    }
+
 
     #
     bind $w <Visibility> {
