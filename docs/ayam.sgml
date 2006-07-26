@@ -2043,6 +2043,20 @@ values in the direct point editing dialog. This modelling action also
 may only be applied to a single selected object.
 </itemize>
 
+<sect1>Snapping Points to the Grid<label id="snapac">
+<p>
+Since Ayam 1.11 there are two actions available that let
+you snap points to the current grid of a view.
+The actions are initiated using the shortcuts <tt/&lt;g&gt;/
+and <tt/&lt;G&gt;/. If an object has selected (tagged)
+points, only those points will be snapped to the grid,
+otherwise all points of the object will be snapped to the grid.
+If <tt/&lt;g&gt;/ is used, the snapping only occurs in
+the modelling plane associated with the view (i.e. in 2D).
+To snap all three coordinate values to the grid use <tt/&lt;G&gt;/.
+Note that the snapping occurs also, if the view has the preference
+option <tt/"Use Grid"/ turned off.
+
 <sect1>Inserting or Deleting Points<label id="insdelac">
 <p>
 The modeling action <tt/"Insert Point"/ (shortcut: <tt/&lt;i&gt;/)
@@ -4045,7 +4059,8 @@ shaded views is the original polygonal mesh.
 The SDMeshAttr GUI just displays some information about the
 SDMesh object:
 <itemize>
-<item><tt/"Scheme"/, subdivision scheme, currently only 0 (Catmull-Clark).
+<item><tt/"Scheme"/, subdivision scheme, since Ayam 1.11 you
+may choose between Catmull-Clark and Loop.
 <item><tt/"NFaces"/, the number of faces.
 <item><tt/"NControls"/, the total number of control points
 defined.
@@ -7377,7 +7392,7 @@ faces should be merged into a single PolyMesh object for import.
 <item><tt>"MergePVTags"</tt> controls, whether the PV tags of PolyMesh
 objects should be merged as well if they are subject to automatic
 merging (see above).
-<item><tt>"OmitCurves"</tt> if this is enabled, no freeform curves will
+<item><tt>"ReadCurves"</tt> if this is disabled, no freeform curves will
 be imported. This option does not influence reading of trim curves!
 <item><tt/"RescaleKnots"/ allows to rescale the knot vectors of
 NURBS curves, patches, and trim curves so that the distances between different
@@ -7395,8 +7410,11 @@ for the t component of the texture coordinates.
 Wavefront OBJ import expects the file to be syntactically correct.
 It is not very good in detecting and reporting errors. If the import
 fails, use third party tools first (e.g. a demo version of Okino
-Graphics PolyTrans(R)), to check whether the
-Wavefront OBJ file is valid at all.
+Graphics PolyTrans(R)), to check whether the Wavefront OBJ file is
+valid at all.
+<p>
+Furthermore, note that Ayam supports Wavefront version 3.0 syntax only,
+files that use older syntax will not be imported correctly.
 
 <sect1>Wavefront OBJ Export<label id="expwav">
 <p>
@@ -7405,7 +7423,7 @@ the Wavefront OBJ format (version 3.0).
 The corresponding main menu entry is
 <tt>"File/Export/Wavefront OBJ"</tt>.
 The Wavefront export currently supports the following
-primitives:
+objects:
 <itemize>
 <item> NCurve and objects that may be converted to NCurve
 objects (ICurve, ConcatNC, ExtrNC)
@@ -7438,11 +7456,11 @@ exported NURBS objects.
 The following parameters, additionally, control the Wavefront OBJ export:
 <itemize>
 <item><tt>"FileName"</tt> is the filename of the Wavefront OBJ file;
-<item><tt>"Selected"</tt> exports only the currently selected object(s);
+<item><tt>"WriteSelected"</tt> exports only the currently selected object(s);
 <item><tt>"TessPoMesh"</tt> automatically tesselates all PolyMesh objects
 to triangles for export;
-<item><tt>"OmitCurves"</tt> omits all NURBS curves and NURBS curve providing
-objects from the exported file (This option does
+<item><tt>"WriteCurves"</tt> writes all NURBS curves and NURBS curve providing
+objects to the exported file (This option does
 not influence the export of trim curves.);
 <item><tt/"ScaleFactor"/ allows to apply a scaling factor to all
 exported objects;
@@ -7531,7 +7549,7 @@ References will be resolved. Names will be imported, but
 converted to an ASCII representation. Since Ayam 1.8.3
 Mesh objects will be imported to PolyMesh objects, texture
 coordinates will be read and appropriate PV tags will be
-created.
+created for them.
 <p>
 The import process is controlled by the following options:
 <itemize>
@@ -7592,9 +7610,9 @@ polygonal 3D representation of the 2D trim curves will be
 created automatically, so that now general trimmed NURBS patches
 may be exported, albeit with lower quality and bigger file size
 as would be necessary.
-Since Ayam 1.8.3, also PolyMesh objects may be exported.
 Since Ayam 1.9, UMM/VMM tags are used to trim the knot vectors of
 exported NURBS objects.
+Since Ayam 1.8.3, also PolyMesh objects may be exported.
 <p>
 The export process is controlled by the following options:
 <itemize>
@@ -7660,8 +7678,7 @@ named <tt>"Arm/MySphere"</tt> and <tt>"Arm/MyCylinder"</tt>.
 <p>
 <sect1>The Undo System<label id="undos">
 <p>
-Using the undo system you may correct mistakes you made
-while modeling.
+Using the undo system you may correct mistakes you made while modeling.
 However, it is currently not possible to undo any changes to the object
 hierarchy, including clipboard and Drag-and-Drop operations.
 If you delete an object, it is gone! If you, accidentally, move
@@ -7674,7 +7691,7 @@ with a view).
 The undo system works by storing copies of the different
 states of changed objects in an undo buffer. The storage space occupied by
 the undo buffer may be adjusted using the preferences
-(Prefs/Modeling/UndoLevels). Note that a value of -1 for UndoLevels
+(<tt>Prefs/Modeling/UndoLevels</tt>). Note that a value of -1 for UndoLevels
 completely disables the undo system.
 You may step backward through the saved states using
 <tt/&lt;Ctrl+z&gt;/ (undo) but also forward using <tt/&lt;Ctrl+y&gt;/ (redo).
@@ -7724,9 +7741,8 @@ All preference settings will be reset to factory defaults, however!<p>
 
 <sect2>Changing Keyboard Shortcuts
 <p>
-You may adapt the shortcuts used in the GUI to
-your special needs using the ayamrc file.
-Note that if you do that the GUI (the menu entries)
+You may adapt the shortcuts used in the GUI to your special needs using
+the ayamrc file. Note that if you do that the GUI (the menu entries)
 will adapt to your changes but certainly neither this documentation nor
 the tutorials!
 Ayam does not check for clashes! This means, the last set binding
@@ -7801,7 +7817,7 @@ If you want to display the value of a
 variable in the prompt (e.g. designating the current level in
 the scene hierarchy) you need to bind a write-trace to that variable,
 that calls the procedure <tt/"update_prompt"/. This write-trace
-may e.g. be established using a small script:
+may e.g. be established using a small script like this:
 <tt/"trace variable &lt;vname&gt; update_prompt"/.
 <item><tt/"BackupExt"/: is the file name extension to be used for backup
 files. Default values are <tt>"&tilde;"</tt> for Unix and
@@ -7836,15 +7852,21 @@ structures. This option is enabled by default on MacOSX/Aqua.
 <item><tt/"SwapMB"/, <tt/"SwapMBSC"/ allow to swap mouse buttons 2 and 3
 on MacOSX/Aqua (not X11!) for specified mouse bindings (<tt/"SwapMBSC"/),
 because on MacOSX/Aqua, traditionally, the naming of the
-middle and rightmost mouse button is reversed to X11/Win32. This option is
-enabled by default on MacOSX/Aqua and allows to use the same set of mouse
-bindings (the same ayamrc file) for X11 and Aqua without sacrificing
-user experience. The middle mouse button, by default, zooms the view,
-and the right one moves the view.
+middle and rightmost mouse button is reversed compared to X11/Win32.
+This option is enabled by default on MacOSX/Aqua and allows to use
+the same set of mouse bindings (the same ayamrc file) for X11 and
+Aqua without sacrificing user experience. The middle mouse button,
+by default, zooms the view, and the right one moves the view.
 <item><tt/"CursorEnd"/, this option is enabled by default. If switched
 on, the first click into the console will move the cursor to the input
 prompt, ready for command input, instead of moving the cursor to the
 point of the click.
+<item><tt/"PrepDiaCap"/, this option prepends the titel of a message box
+that is normally displayed in the window frame of the message box to the
+message in the box. This is necessary because on some systems the titel
+might be displayed in an unreadable font or not at all.
+On Mac OS X Aqua (not X11!) this option is enabled by default.
+On all other systems this option is disabled by default. 
 </itemize>
 
 <sect2>RiOption and RiAttributes Database<label id="rioptdb">
@@ -7902,8 +7924,9 @@ This section documents the environment variables used by Ayam.
 <item><tt>"HOME"</tt>: path to the ayamrc file (used on Win32 if
 <tt>"AYAMRC"</tt> is not set).
 <item><tt>"TEMP"</tt>: path to the ayamrc file (used on Win32 if
-<tt>"AYAMRC"</tt> and <tt>"HOME"</tt> are not set); initial value of the
-<tt>"TmpDir"</tt> preference setting (used on Win32 if no ayamrc file exists).
+<tt>"AYAMRC"</tt> and <tt>"HOME"</tt> are not set); also initial value of the
+<tt>"TmpDir"</tt> preference setting (used on Win32 if no ayamrc file exists,
+that specifies <tt>"TmpDir"</tt>).
 <item><tt>"BROWSER"</tt>: filename of the preferred WWW browser (used to
 display the documentation URL)
 <item><tt>"NETSCAPE"</tt>: (if <tt>"BROWSER"</tt> does not exist) filename
@@ -8230,8 +8253,8 @@ however, will be Shareware!
 You can help by implementing more different high level custom objects like
 Trees, Landscape, Sky, XSplines or whatever you can think of.
 Note that the license of Ayam does not prevent you from implementing your
-custom object as shareware or even commercial software. However, freeware is
-preferred for obvious reasons.
+custom object as shareware or even commercial software. However, free
+software is preferred for obvious reasons.
 
 But please do me a favour and do not implement objects like
 simple triangles or polygons. This would be something that really is
@@ -8285,6 +8308,7 @@ Bernd, without your help I surely would not be that far, thanks!
 
 Furthermore, I would like to thank the following people:
 <itemize>
+<item>Hynek Schlawack: Ayam Makefile configuration GUI
 <item>Florian Kirsch: OpenCSG
 <item>Bertrand Coconnier: implementation of object picking
 <item>Hermann Birkholz: initial implementation of the tree widget, shadow map
@@ -8765,7 +8789,6 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Objects: <ref id="obj" name="tree/listbox">,
 <ref id="objsel" name="selection within a view">
 <item>OI: <ref id="oitt" name="tag type">
-<item>OmitCurves <ref id="impwav" name="Wavefront OBJ import/export option">
 <item>Open: <ref id="mmfile" name="main menu entry">,
 <ref id="treecontm" name="tree context menu entry">
 <item>OpenNURBS: <ref id="imprhino" name="3DM (Rhino) Import">,
@@ -8804,6 +8827,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>PPRender: <ref id="prefrib" name="preference setting">
 <item>Preferences: <ref id="prefs" name="Preferences">,
 <ref id="hidprefs" name="Hidden Preference Settings">
+<item>PrepDiaCap: <ref id="hidprefs" name="hidden preference setting">
 <item>Procedurals: <ref id="rio" name="RenderMan interface option">
 <item>Prompt: <ref id="hidprefs" name="hidden preference setting">
 <item>Properties: <ref id="propgui" name="property GUI">
@@ -8829,7 +8853,8 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <ref id="cyp" name="cylinder attribute">,
 <ref id="mcattr" name="MetaComp attribute">
 <item>RadSteps: <ref id="rio" name="RenderMan interface option">
-<item>ReadCurves: <ref id="imprhino" name="3DM (Rhino) import option">
+<item>ReadCurves: <ref id="impwav" name="Wavefront OBJ import/export option">,
+<ref id="imprhino" name="3DM (Rhino) import option">
 <item>ReadFrame, ReadCamera, ReadOptions, ReadLights, ReadMaterial,
 ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>ReadLayers: <ref id="imprhino" name="3DM (Rhino) import option">
@@ -8939,7 +8964,6 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Select: <ref id="obj" name="select objects with the tree/listbox">,
 <ref id="objsel" name="select objects within a view">,
 <ref id="selac" name="select points">
-<item>Selected <ref id="expwav" name="Wavefront OBJ export option">
 <item>Selected Objects: <ref id="mmspecial" name="main menu entry">
 <item>Select Renderer: <ref id="mmspecial" name="main menu entry">
 <item>Selection: <ref id="prefdraw" name="preference setting">
@@ -8980,6 +9004,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>SMethod: <ref id="prefmisc" name="preference setting">
 <item>SMRender, SMRenderUI, SMRenderPT: <ref id="prefrib" name="preference setting">
 <item>SMRes: <ref id="lip" name="light attribute">
+<item>Snap Points to Grid: <ref id="snapac" name="modeling action">
 <item>Snap3D: <ref id="prefmodel" name="preference setting">
 <item>SParam: <ref id="prefmisc" name="preference setting">
 <item>Special: <ref id="mmspecial" name="special menu">
@@ -9114,9 +9139,11 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <ref id="vat" name="view attribute">
 <item>withOb: <ref id="scwithob" name="scripting interface command">
 <item>wrib: <ref id="scwrib" name="scripting interface command">
-<item>WriteCurves: <ref id="exprhino" name="3DM (Rhino) export option">
+<item>WriteCurves: <ref id="impwav" name="Wavefront OBJ import/export option">,
+<ref id="exprhino" name="3DM (Rhino) export option">
 <item>WriteIdent: <ref id="prefrib" name="preference setting">
-<item>WriteSelected: <ref id="exprhino" name="3DM (Rhino) export option">
+<item>WriteSelected: <ref id="exprhino" name="3DM (Rhino) export option">,
+<ref id="expwav" name="Wavefront OBJ export option">
 </itemize>
 
 <label id="indexx">X
