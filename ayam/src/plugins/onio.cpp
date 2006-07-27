@@ -3334,7 +3334,7 @@ onio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 		  sscanf(argv[i+1], "%d", &sframe);
 		  eframe = sframe;
 		  if((strlen(argv[i+1]) > 3) &&
-		     (minus = strchr((const char*)(&(argv[i+1][1])), '-')))
+		     (minus = strchr(/*(const char*)*/(&(argv[i+1][1])), '-')))
 		    {
 		      minus++;
 		      if(*minus != '\0')
