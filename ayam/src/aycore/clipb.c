@@ -112,12 +112,23 @@ ay_clipb_cuttcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  /* do not cut root object! */
-  if(sel->object == ay_root)
+  /* do not cut root object or views! */
+  while(sel)
     {
-      ay_error(AY_EWARN, fname, "Can not cut root object!");
+      if(sel->object == ay_root)
+	{
+	  ay_error(AY_ERROR, fname, "Can not cut root object!");
+	  return TCL_OK;
+	}
+      if(sel->object->type == AY_IDVIEW)
+	{
+	  ay_error(AY_ERROR, fname, "Can not cut view object!");
+	  return TCL_OK;
+	}
       sel = sel->next;
-    }
+    } /* while */
+
+  sel = ay_selection;
 
   /* clear all cached pointers to scene hierarchy */
   ay_object_ccp(NULL);
@@ -311,11 +322,23 @@ ay_clipb_replacetcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  if(sel->object == ay_root)
+  /* do not replace root object or views! */
+  while(sel)
     {
-      ay_error(AY_ERROR, fname, "Can not replace root object!");
-      return TCL_OK;
-    }
+      if(sel->object == ay_root)
+	{
+	  ay_error(AY_ERROR, fname, "Can not replace root object!");
+	  return TCL_OK;
+	}
+      if(sel->object->type == AY_IDVIEW)
+	{
+	  ay_error(AY_ERROR, fname, "Can not replace view object!");
+	  return TCL_OK;
+	}
+      sel = sel->next;
+    } /* while */
+
+  sel = ay_selection;
 
   if(!clip)
     {
