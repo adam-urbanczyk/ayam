@@ -662,6 +662,8 @@ if { $tcl_platform(platform) == "windows" } {
 	set ayviewshortcuts(RotMod) "Option"
 	set ayviewshortcuts(RotModKey) "Meta_L"
 
+	set ayviewshortcuts(Stretch) "Option-s"
+
 	# like on Win32, some keysyms are missing, so do not bind to them
 	set ayviewshortcuts(ZoomI) "plus"
 	set ayviewshortcuts(ZoomO) "minus"
