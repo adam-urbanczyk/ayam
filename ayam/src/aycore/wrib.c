@@ -1158,7 +1158,7 @@ ay_wrib_lights(char *file, ay_object *o)
  size_t filenlen = 0;
  RtLightHandle light_handle;
  char arrname[] = "ayprefs", ccvarname[] = "SMChangeShaders";
- const char *vstr = NULL;
+ char *vstr = NULL;
  int changeshaders = AY_TRUE;
 
   if(!o || !file)
