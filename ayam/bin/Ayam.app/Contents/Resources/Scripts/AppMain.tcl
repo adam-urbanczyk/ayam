@@ -13,6 +13,6 @@ proc ::tk::mac::OpenDocument { args } {
 # OpenDocument
 
 if {[string first "-psn" [lindex $argv 0]] == 0} { set argv [lrange $argv 1 end]}
-console show
+catch {console show}
 #tkwait window .
 if [catch {source [file dirname [info script]]/tcl/ayam.tcl}] { puts $errorInfo}
