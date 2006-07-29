@@ -611,3 +611,38 @@ proc prefs_warnNeedRestart {} {
  return;
 }
 # prefs_warnNeedRestart
+
+
+
+# prefs_reset:
+#  remove current preferences file and set preferences so that
+#  no new preferences file will be created when exiting
+proc prefs_reset {} {
+    global ay ayprefs
+
+    # only do something when preferences file really exists
+    if { [file exists $ay(ayamrc)] } {
+	set t "Reset Preferences?"
+	set m "Ready to remove file:\n\"$ay(ayamrc)\"?"
+	
+	if { $ayprefs(PrepDiaCap) == 1 } {
+	    set m "$t\n\n$m"
+	}
+	set answer [tk_messageBox -title $t -type okcancel -icon warning\
+			-message $m]
+
+	if { $answer == "ok" } {
+	    if [catch {file delete $ay(ayamrc)} errmsg ] {
+		ayError 1 prefs_reset $errmsg
+	    } else {
+		set ayprefs(AutoSavePrefs) 0
+		set m "Preferences file removed!\nPlease restart Ayam now."
+		tk_messageBox -title "Info" -type ok -icon info -message $m
+	    }
+	}
+    }
+
+ return;
+}
+# prefs_reset
+

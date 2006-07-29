@@ -484,11 +484,9 @@ set sm [menu $m.tag -tearoff 0]
 $sm add command -label "Add RiOption" -command "riopt_addp"
 $sm add command -label "Add RiAttribute" -command "riattr_addp"
 $sm add command -label "Edit TexCoords" -command "tc_edit"
-$m add separator
+
 #$m add command -label "Create ShadowMaps" -command "riopt_addp"
-$m add command -label "Select Renderer" -command "render_select"
-$m add command -label "Scan Shaders" -command "shader_scanAll"
-$m add separator
+
 $m add cascade -menu $m.rib -label "RIB-Export"
 set sm [menu $m.rib -tearoff 0]
 $sm add command -label "From Camera" -command "io_exportRIBfC"
@@ -497,6 +495,9 @@ $sm add command -label "Create All ShadowMaps" -command "io_RenderSM 1"
 $sm add command -label "Create ShadowMap" -command "io_RenderSM 0"
 $m add separator
 $m add command -label "Enable Scripts" -command "script_enable"
+$m add command -label "Select Renderer" -command "render_select"
+$m add command -label "Scan Shaders" -command "shader_scanAll"
+$m add command -label "Reset Preferences" -command "prefs_reset"
 $m add separator
 $m add command -label "Toggle Toolbox" -command "toolbox_toggle"
 $m add command -label "Toggle TreeView" -command "tree_toggle"
