@@ -1,3 +1,4 @@
+
 # Ayam, a free 3D modeler for the RenderMan interface.
 #
 # Ayam is copyrighted 1998-2005 by Randolf Schultz
@@ -202,6 +203,7 @@ on its name, then press <Ctrl+Shift+i> (Copy Marked Prop).}
 {Hold down <Shift> in property GUIs for instant apply.}
 {Ayam is stuck in Tcl errors? Run "repairAyam.tcl".}
 {There is a FAQ on http://www.ayam3d.org/faq.html!}
+{Tree updates slowly? Always work in sub-levels!}
 }
 }
 # array ayprefs
@@ -1020,6 +1022,14 @@ while { $i < $argc } {
  incr i
 }
 # while
+
+# to disable the splash screen on systems where no command line
+# parameters may be used (Mac OS X Aqua application bundle)
+if { [info exists env(AYNOSPLASH)] } {
+    if { $env(AYNOSPLASH) == 1 } {
+	set ay(showsplash) 0
+    }
+}
 
 # show splash screen
 ayam_loadscript win
