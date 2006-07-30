@@ -278,6 +278,7 @@ $m.nc add command -label "Gordon" -command "gordon_crt;"
 $m.nc add command -label "Skin" -command "skin_crt;"
 
 $m add separator
+
 $m add cascade -menu $m.nct -label "NURBCurve"
 menu $m.nct -tearoff 0
 
@@ -334,6 +335,7 @@ $m.nct add command -label "Collapse Points" -command { collMP; rV; }
 $m.nct add command -label "Explode Points" -command { explMP; rV; }
 
 $m add separator
+
 $m add cascade -menu $m.npt -label "NURBPatch"
 menu $m.npt -tearoff 0
 $m.npt add command -label "Swap UV" -command {
@@ -372,6 +374,7 @@ $m.npt add command -label "Split to Curves (v)" -command {
     splitNP v; uS; sL; rV}
 $m.npt add command -label "Build from Curves" -command {
     buildNP; uCR; sL; rV}
+
 $m add separator
 
 $m add cascade -menu $m.pm -label "PolyMesh"
@@ -380,7 +383,34 @@ $m.pm add command -label "Merge" -command {
     pomesh_merge
 }
 $m.pm add command -label "Optimize" -command { pomesh_optimize }
+
 $m add separator
+
+$m add cascade -menu $m.pnt -label "Points"
+set sm [menu $m.pnt -tearoff 0]
+$sm add command -label "Select All Points" -command "selPoints;rV"
+$sm add command -label "Invert Selection" -command "invSelPoints;rV"
+$sm add command -label "Apply Trafo To All Points"\
+	-command "undo save ApplyTr; applyTrafo all;\
+	plb_update; forceNot; rV"
+$sm add command -label "Apply Trafo To Selected Points"\
+	-command "undo save ApplyTr; applyTrafo sel;\
+	plb_update; forceNot; rV"
+$sm add command -label "Center All Points (3D)"\
+	-command "undo save CenterPnts; centerPnts;\
+	plb_update; rV"
+$sm add command -label "Center All Points (2D-XY)"\
+	-command "undo save CenterPntsXY; centerPnts 1;\
+	plb_update; rV"
+$sm add command -label "Center All Points (2D-ZY)"\
+	-command "undo save CenterPntsZY; centerPnts 2;\
+	plb_update; rV"
+$sm add command -label "Center All Points (2D-XZ)"\
+	-command "undo save CenterPntsXZ; centerPnts 3;\
+	plb_update; rV"
+
+$m add separator
+
 $m add command -label "Hide" -command {
     global ay
     undo save Hide
@@ -449,29 +479,6 @@ $sm add command -label "Replace" -command {repOb; cS;
 global ay; set ay(ul) $ay(CurrentLevel); uS; rV; set ay(sc) 1}
 $sm add command -label "Paste Property to Selected"\
     -command "pclip_pastetosel; forceNot; rV"
-
-$m add cascade -menu $m.pnt -label "Points"
-set sm [menu $m.pnt -tearoff 0]
-$sm add command -label "Select All Points" -command "selPoints;rV"
-$sm add command -label "Invert Selection" -command "invSelPoints;rV"
-$sm add command -label "Apply Trafo To All Points"\
-	-command "undo save ApplyTr; applyTrafo all;\
-	plb_update; forceNot; rV"
-$sm add command -label "Apply Trafo To Selected Points"\
-	-command "undo save ApplyTr; applyTrafo sel;\
-	plb_update; forceNot; rV"
-$sm add command -label "Center All Points (3D)"\
-	-command "undo save CenterPnts; centerPnts;\
-	plb_update; rV"
-$sm add command -label "Center All Points (2D-XY)"\
-	-command "undo save CenterPntsXY; centerPnts 1;\
-	plb_update; rV"
-$sm add command -label "Center All Points (2D-ZY)"\
-	-command "undo save CenterPntsZY; centerPnts 2;\
-	plb_update; rV"
-$sm add command -label "Center All Points (2D-XZ)"\
-	-command "undo save CenterPntsXZ; centerPnts 3;\
-	plb_update; rV"
 
 $m add cascade -menu $m.ins -label "Instances"
 set sm [menu $m.ins -tearoff 0]
