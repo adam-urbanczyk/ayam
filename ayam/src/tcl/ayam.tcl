@@ -163,6 +163,8 @@ array set ayprefs {
  
  PrepDiaCap 0
 
+ AddExtensions 0
+
  Docs "http://ayam.sourceforge.net/docs/"
  DailyTips {
 {Always click on drawn pixels, when picking vertices.}
@@ -204,6 +206,7 @@ on its name, then press <Ctrl+Shift+i> (Copy Marked Prop).}
 {Ayam is stuck in Tcl errors? Run "repairAyam.tcl".}
 {There is a FAQ on http://www.ayam3d.org/faq.html!}
 {Tree updates slowly? Always work in sub-levels!}
+{Tired of the splash screen? Set env. variable AYNOSPLASH.}
 }
 }
 # array ayprefs
@@ -571,6 +574,9 @@ if { $tcl_platform(platform) == "windows" } {
     set ayprefs(EnvFile) "~/2view.ay"
     set ayprefs(PickEpsilon) 0.0
 
+    # Windows users surely expect this
+    set ayprefs(AddExtensions) 1
+
     set sc ""
     set scdir ""
     set sc [ info nameofexecutable ]
@@ -637,6 +643,9 @@ if { $tcl_platform(platform) == "windows" } {
 
 	# make notebook tabs highlight in a nicer color
 	option add *activeBackground systemHighlight
+
+	# Apple users probably expect this
+	set ayprefs(AddExtensions) 1
 
 	# swap middle and right mouse buttons
 	set ayprefs(SwapMB) 1
