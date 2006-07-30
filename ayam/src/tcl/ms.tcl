@@ -64,6 +64,7 @@ ms_set en ayprefse_TwmCompat "Is your window manager TWM compatible?"
 ms_set en ayprefse_ListTypes "Show object types in the tree/list view?"
 ms_set en ayprefse_MarkHidden "Mark hidden objects in the tree view?"
 ms_set en ayprefse_AutoSavePrefs "Save preferences on exit?"
+ms_set en ayprefse_AddExtensions "Automatically add file name extensions?"
 ms_set en ayprefse_BakOnReplace "Make backup copies of loaded scene files?"
 ms_set en ayprefse_LoadEnv "Load environment on startup?"
 ms_set en ayprefse_NewLoadsEnv "Load environment on File/New?"
@@ -223,6 +224,8 @@ ms_set de ayprefse_Locale "Sprache für Hilfetexte.\
 \nÄnderungen werden erst nach Neustart von Ayam wirksam!"
 ms_set de ayprefse_AutoSavePrefs "Sollen die Voreinstellungen beim Beenden\
 gespeichert werden?"
+ms_set de ayprefse_AddExtensions "Sollen Dateinamenserweiterungen automatisch\
+\nangehängt werden?"
 ms_set de ayprefse_BakOnReplace "Sollen Sicherheitskopien von geladenen\
 \nSzenen angefertigt werden?"
 ms_set de ayprefse_LoadEnv "Soll die Arbeitsumgebung beim Start geladen\

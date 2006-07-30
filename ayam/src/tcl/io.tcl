@@ -213,6 +213,9 @@ proc io_saveScene { ask selected } {
     }
 
     if { $filename != "" } {
+	# append extension
+	set newfilename [io_appext $filename ".ay"]
+
 	# fix window positions
 	viewUPos
 	io_saveMainGeom
@@ -1222,6 +1225,9 @@ proc io_exportOBJ { selected } {
     button $f.bok -text "Ok" -width 5 -command {
 	global objio_options ay_error
 
+	# append extension
+	set objio_options(FileName) [io_appext $objio_options(FileName) ".obj"]
+
 	set objio_options(filename) $objio_options(FileName)
 	set oldcd [pwd]
 	cd [file dirname $objio_options(FileName)]
@@ -1479,3 +1485,21 @@ proc io_exit { } {
 }
 # io_exit
 
+proc io_appext { filename extension } {
+    global ayprefs
+
+    set newfilename $filename
+
+    if { $ayprefs(AddExtensions) } {
+
+	if { ![string equal -nocase [file extension $filename] $extension] } {
+
+	    append newfilename $extension
+
+	}
+
+    }
+
+    return $newfilename
+}
+# io_appext

@@ -66,6 +66,9 @@ proc mfio_export { } {
 
     if { $newfilename != "" } {
 
+	# append extension
+	set newfilename [io_appext $newfilename ".3dmf"]
+
 	ay_mfio_export $newfilename
 	uS
 	rV

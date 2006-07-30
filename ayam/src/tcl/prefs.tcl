@@ -144,6 +144,7 @@ proc prefs_open {} {
     addCheckB $fw ayprefse MarkHidden [ms ayprefse_MarkHidden]
     addCheckB $fw ayprefse AutoSavePrefs [ms ayprefse_AutoSavePrefs]
     addCheckB $fw ayprefse BakOnReplace [ms ayprefse_BakOnReplace]
+    addCheckB $fw ayprefse AddExtensions [ms ayprefse_AddExtensions]
     addCheckB $fw ayprefse LoadEnv [ms ayprefse_LoadEnv]
     addCheckB $fw ayprefse NewLoadsEnv [ms ayprefse_NewLoadsEnv]
     addFileB $fw ayprefse EnvFile [ms ayprefse_EnvFile]

@@ -189,6 +189,9 @@ proc onio_export { } {
     button $f.bok -text "Ok" -width 5 -command {
 	global onio_options;
 
+	# append extension
+	set onio_options(FileName) [io_appext $onio_options(FileName) ".3dm"]
+
 	set onio_options(filename) $onio_options(FileName)
 	set oldcd [pwd]
 	cd [file dirname $onio_options(FileName)]
