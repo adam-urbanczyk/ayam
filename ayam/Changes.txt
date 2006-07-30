@@ -1,4 +1,4 @@
-[15. Jul 2006] CVS-Head:
+[30. Jul 2006] CVS-Head:
 o Bug Fixes:
   - fixed not changeable preference setting "AutoFocus" (SF 1497964)
   - fixed export of PolyMesh objects with PV tags using "Pw" (SF 1504284)
@@ -10,6 +10,10 @@ o Bug Fixes:
   - fixed conversion of Text objects ignoring the in_place option (SF 1522335)
   - fixed crashing Cap object when NPatch and NCurve are used as child
     (SF 1522337)
+  - fixed OpenNURBS export setting scene changed state (SF 1526206)
+  - fixed edit points modeling action not issuing a notification upon
+    snapping of points to the grid (SF 1528712)
+  - fixed command line parameter parsing on Win32/VC++2005E (SF )
 
 GUI:
 o added default values to "Set GridSize" dialog and object property
@@ -17,6 +21,13 @@ o added keyboard shortcuts to apply property changes using <Enter> (on
   the numeric keypad)
 o texture coordinate editor now produces less error messages when called
   without selected object
+o the picking dialog now appears near the mouse pointer; in addition,
+  a double click on any listbox item now selects it and closes the dialog
+o added preference setting "AddExtensions" that controls whether Ayam
+  should automatically add file name extensions
+o moved "Points" sub-menu from "Special" to "Tools" menu
+o added "Reset Preferences" facility to make resetting the preferences to
+  factory defaults more easy
 
 Modelling:
 o added converter from PolyMesh objects to SDMesh objects
@@ -26,6 +37,10 @@ o reduced number of notification operations and view redraws after
 o the tesselation tool now adds TP tags to all types of objects
 o object conversion from tool objects (e.g. Revolve) to NPatch objects now
   maintains eventually present TP tags
+o improved drawing of selected curves in Shade&Draw drawing mode
+o added snap-to-grid modelling actions for points, new view shortcuts
+  for that are <g> (2D) and <G> (3D)
+o made SDMesh scheme property element a menu (and thus changeable)
 
 Renderer Support:
 o added shader parsing plugin for Gelato
@@ -48,15 +63,20 @@ o added a workaround to make the standard application exit keyboard
   shortcut <Command-q> work
 o added hidden preference setting "PrepDiaCap" that prepends message box
   titles to their message as the titles are not displayed on every system
+o default keyboard bindings for the Alt-Rotate view action and the stretch
+  modeling action now use the correct keysyms
+o primarily for running from an application bundle, Ayam now allows to turn
+  off the splash screen via environment variable "AYNOSPLASH"
 
 Import/Export:
-o added progress display to Wavefront OBJ import
-o made cancel button work properly for Wavefront OBJ import
+o added progress display to Wavefront OBJ import and export
+o made cancel button work properly for Wavefront OBJ import and export
 o added scale factor option to Wavefront OBJ import and export
-o added scale factor option to Rhino 3DM (OpenNURBS) import and export
 o added support to detect and fix degenerate faces to Wavefront OBJ import
 o improved detection of consecutive faces for Wavefront OBJ import: now
   intermediate "usemtl"-lines do not lead to isolated faces anymore
+o added scale factor option to Rhino 3DM (OpenNURBS) import and export
+o added progress display to Rhino 3DM (OpenNURBS) import and export
 o added scale factor option to RIB import
 
 Examples/Scripts:
