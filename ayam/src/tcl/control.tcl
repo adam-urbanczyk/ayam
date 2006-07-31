@@ -457,7 +457,7 @@ proc selAdd { ud } {
 	set sel [$tree selection get]
 	if { [llength $sel] == 0 } { return; }
 	if { $ud == 0 } {
-	    # Up -> extend to previous
+	    # -> extend to previous
 	    set node [lindex $sel 0]
 	    set i [string last ":" $node]
 	    set j [string range $node [expr $i+1] end]
@@ -470,8 +470,10 @@ proc selAdd { ud } {
 	    } else {
 		set newsel 0
 	    }
-	} else {
-	    # Down -> extend to next
+	}
+	# if
+	if { $ud == 1 } {
+	    # -> extend to next
 	    set node [lindex $sel end]
 	    set i [string last ":" $node]
 	    set j [string range $node [expr $i+1] end]
@@ -489,6 +491,41 @@ proc selAdd { ud } {
 		set newsel 0
 	    }
 	}
+	# if
+	if { $ud == 3 } {
+	    # -> extend to upper end
+	    set node [lindex $sel 0]
+	    set i [string last ":" $node]
+	    set j [string range $node [expr $i+1] end]
+	    set k 1
+	    while { $j > $k } {
+		set newnode [string range $node 0 $i]
+		append newnode $k
+		set sel [linsert $sel 0 $newnode]
+		set newsel 1
+		incr k
+	    }
+	}
+	# if
+	if { $ud == 4 } {
+	    # -> extend to lower end
+	    set node [lindex $sel end]
+	    set i [string last ":" $node]
+	    set j [string range $node [expr $i+1] end]
+	    set lastn [lindex [$tree nodes $cl] end]
+	    set i [string last ":" $lastn]
+	    set last [string range $lastn [expr $i+1] end]
+	    set k [expr {$j + 1}]
+	    while { $k <= $last } {
+		set newnode [string range $node 0 $i]
+		append newnode $k
+		set sel [linsert $sel 0 $newnode]
+		set newsel 1
+		incr k
+	    }
+	}
+	# if
+
 	if { $newsel == 1 } {
 	    eval [subst "$tree selection set $sel"]
 	    $tree see $sel
@@ -519,7 +556,7 @@ proc selAdd { ud } {
 	    set first [lindex $sel 0]
 	    if { $first > 0 } {
 		set sel [linsert $sel 0 [expr $first-1]]
-		$lb selection set  [lindex $sel 0] [lindex $sel end]
+		$lb selection set [lindex $sel 0] [lindex $sel end]
 		$lb see [lindex $sel 0]
 		eval [subst "selOb $sel"]
 		plb_update
@@ -528,12 +565,14 @@ proc selAdd { ud } {
 		}
 		# if
 	    }
-	} else {
+	}
+	# if
+	if { $ud == 1 } {
 	    # Down -> extend to next
 	    set last [lindex $sel end]
 	    if { $last < [$lb index end] } {
 		lappend sel [expr $last+1]
-		$lb selection set  [lindex $sel 0] [lindex $sel end]
+		$lb selection set [lindex $sel 0] [lindex $sel end]
 		$lb see [lindex $sel end]
 		eval [subst "selOb $sel"]
 		plb_update
@@ -542,10 +581,54 @@ proc selAdd { ud } {
 		}
 	    }
 	}
+	# if
+	if { $ud == 3 } {
+	    # -> extend to first
+	    set first [lindex $sel 0]
+	    if { $first > 0 } {
+		set k 1
+		while { $k < $first } {
+		    set sel [linsert $sel 0 $k]
+		    incr k
+		}
+		$lb selection set 1 [lindex $sel end]
+		$lb see 1
+		eval [subst "selOb $sel"]
+		plb_update
+		if { $ay(need_redraw) == 1 } {
+		    rV
+		}
+		# if
+
+	    }
+	    # if
+	}
+	# if
+	if { $ud == 4 } {
+	    # -> extend to last
+	    set last [lindex $sel end]
+	    if { $last < [$lb index end] } {
+		set k $last
+		while { $k <= [$lb index end] } {
+		    lappend sel $k
+		    incr k
+		}
+		$lb selection set [lindex $sel 0] [lindex $sel end]
+		$lb see [lindex $sel end]
+		eval [subst "selOb $sel"]
+		plb_update
+		if { $ay(need_redraw) == 1 } {
+		    rV
+		}
+	    }
+	}
+	# if
 
 	set ay(listselectsema) 0
 
     }
+    # if tree or lb
+
  return;
 }
 # selAdd
