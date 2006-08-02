@@ -291,9 +291,9 @@ int
 ay_bevel_notifycb(ay_object *o)
 {
  int ay_status = AY_OK;
- int c1provided = AY_FALSE, mode = 0;
+ int mode = 0;
  ay_bevel_object *bevel = NULL;
- ay_object *npatch = NULL, *curve1, *rcurve = NULL, *pobject1 = NULL;
+ ay_object *npatch = NULL, *curve, *t = NULL, *pobject1 = NULL;
  int has_b = AY_FALSE;
  int b_type, b_sense;
  double b_radius, tolerance;
@@ -315,22 +315,29 @@ ay_bevel_notifycb(ay_object *o)
   if(!o->down)
     return AY_OK;
 
-  curve1 = o->down;
-  if(curve1->type != AY_IDNCURVE)
+  curve = o->down;
+  if(curve->type != AY_IDNCURVE)
     {
-      ay_status = ay_provide_object(curve1, AY_IDNCURVE, &pobject1);
+      ay_status = ay_provide_object(curve, AY_IDNCURVE, &pobject1);
       if(!pobject1)
 	{
 	  return AY_OK;
 	}
       else
 	{
-	  curve1 = pobject1;
-	  c1provided = AY_TRUE;
+	  curve = pobject1;
 	} /* if */
+    }
+  else
+    {
+      ay_status = ay_object_copy(curve, &t);
+      if(!t)
+	goto cleanup;
+
+      curve = t;
     } /* if */
 
-  if(!curve1)
+  if(!curve)
     {
       ay_status = AY_OK;
       goto cleanup;
@@ -346,15 +353,7 @@ ay_bevel_notifycb(ay_object *o)
 
   if(b_sense)
     {
-      if(!c1provided)
-	{
-	  ay_status = ay_object_copy(curve1, &rcurve);
-	  if(!rcurve)
-	    goto cleanup;
-
-	  curve1 = rcurve;
-	}
-      ay_nct_revert((ay_nurbcurve_object*)curve1->refine);
+      ay_nct_revert((ay_nurbcurve_object*)curve->refine);
     } /* if */
 
   /* create bevel */
@@ -368,7 +367,7 @@ ay_bevel_notifycb(ay_object *o)
   npatch->type = AY_IDNPATCH;
   npatch->parent = AY_TRUE;
   npatch->inherit_trafos = AY_FALSE;
-  ay_status = ay_npt_bevel(b_type, b_radius, AY_TRUE, curve1,
+  ay_status = ay_npt_bevel(b_type, b_radius, AY_TRUE, curve,
 			   (ay_nurbpatch_object**)&(npatch->refine));
 
   if(ay_status)
@@ -386,7 +385,7 @@ ay_bevel_notifycb(ay_object *o)
 
 cleanup:
   /* remove provided object */
-  if(c1provided && pobject1)
+  if(pobject1)
     {
       ay_object_delete(pobject1);
     }
