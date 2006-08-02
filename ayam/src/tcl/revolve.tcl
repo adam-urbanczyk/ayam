@@ -47,7 +47,7 @@ proc revolve_crt { } {
     if { $selected == "" } { ayError 20 "revolve_crt" ""; return; }
     set ay_error 0
     crtOb Revolve
-    if { $ay_error } {  return; }
+    if { $ay_error } { return; }
 
     cutOb
     set ay(ul) $ay(CurrentLevel)

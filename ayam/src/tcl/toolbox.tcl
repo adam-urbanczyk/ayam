@@ -12,7 +12,7 @@
 
 # toolbox_open:
 proc toolbox_open { } {
-    global ay ayprefs ayviewshortcuts aymainshortcuts tcl_platform 
+    global ay ayprefs ayviewshortcuts aymainshortcuts tcl_platform
 
     set w .tbw
 
@@ -30,7 +30,7 @@ proc toolbox_open { } {
 	    wm transient $w .
 	}
     }
-    
+
     wm title $w "Tools"
     wm iconname $w "Tools"
 
@@ -479,7 +479,7 @@ proc toolbox_open { } {
 	    lappend ay(toolbuttons) brevo bex bswp bcap
 
 	    button $f.brevo -image ay_Revolve_img -padx 0 -pady 0 -command {
-		revolve_crt; 
+		revolve_crt;
 	    }
 	    balloon_set $f.brevo "create Revolve"
 

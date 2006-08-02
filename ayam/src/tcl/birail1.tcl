@@ -96,7 +96,7 @@ proc birail1_crt { } {
     if { $selected == "" } { ayError 20 "birail1_crt" ""; return; }
     set ay_error 0
     crtOb Birail1
-    if { $ay_error } {  return; }
+    if { $ay_error } { return; }
 
     cutOb
     set ay(ul) $ay(CurrentLevel)

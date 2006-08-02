@@ -56,7 +56,7 @@ proc concatnc_crt { } {
 
     set ay_error 0
     crtOb ConcatNC
-    if { $ay_error } {  return; }
+    if { $ay_error } { return; }
 
     cutOb
     set ay(ul) $ay(CurrentLevel)

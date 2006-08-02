@@ -45,7 +45,7 @@ proc cap_crt { } {
 
     set ay_error 0
     crtOb Cap
-    if { $ay_error } {  return; }
+    if { $ay_error } { return; }
 
     cutOb
     set ay(ul) $ay(CurrentLevel)

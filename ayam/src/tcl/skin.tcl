@@ -108,7 +108,7 @@ proc skin_crt { } {
 
     set ay_error 0
     crtOb Skin
-    if { $ay_error } {  return; }
+    if { $ay_error } { return; }
 
     cutOb
     set ay(ul) $ay(CurrentLevel)

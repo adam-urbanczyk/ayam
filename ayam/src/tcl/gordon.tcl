@@ -117,7 +117,7 @@ proc gordon_crt { } {
 
     set ay_error 0
     crtOb Gordon
-    if { $ay_error } {  return; }
+    if { $ay_error } { return; }
 
     cutOb
     set ay(ul) $ay(CurrentLevel)
