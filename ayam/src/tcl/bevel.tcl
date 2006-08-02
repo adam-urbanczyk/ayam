@@ -278,7 +278,7 @@ proc bevel_crt { } {
 
     set selected ""
     getSel selected
-    if { $selected == "" } { ayError 20 "concatnc_crt" ""; return; }
+    if { $selected == "" } { ayError 20 "bevel_crt" ""; return; }
 
     # the next command sorts the selected objects
     eval "selOb $selected"
@@ -287,7 +287,7 @@ proc bevel_crt { } {
 
     set ay_error 0
     crtOb Bevel
-    if { $ay_error } {  return; }
+    if { $ay_error } { return; }
     set ay(ul) $ay(CurrentLevel)
     uS
     sL
@@ -308,9 +308,7 @@ proc bevel_crt { } {
     cmovOb
     goUp
     set ay(ul) $ay(CurrentLevel)
-    uS
-    sL
-    rV
+    uS; sL; forceNot; rV;
 
  return;
 }
