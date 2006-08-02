@@ -72,7 +72,7 @@ proc clone_crt { } {
 
     set ay_error 0
     crtOb Clone
-    if { $ay_error } {  return; }
+    if { $ay_error } { return; }
 
     cutOb
     set ay(ul) $ay(CurrentLevel)
@@ -104,7 +104,7 @@ proc mirror_crt { } {
 
     set ay_error 0
     crtOb Clone -mirror 1
-    if { $ay_error } {  return; }
+    if { $ay_error } { return; }
 
     cutOb
     set ay(ul) $ay(CurrentLevel)
