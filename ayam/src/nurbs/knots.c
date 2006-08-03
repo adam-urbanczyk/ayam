@@ -91,6 +91,8 @@ ay_knots_createnp(ay_nurbpatch_object *patch)
     case AY_KTCUSTOM:
       /* user specified own knot vertices */
       break;
+    default:
+      break;
     } /* switch */
 
   switch(patch->vknot_type)
@@ -127,6 +129,8 @@ ay_knots_createnp(ay_nurbpatch_object *patch)
 
     case AY_KTCUSTOM:
       /* user specified own knot vertices */
+      break;
+    default:
       break;
     } /* switch */
 
@@ -202,6 +206,8 @@ ay_knots_createnc(ay_nurbcurve_object *curve)
 
     case AY_KTCUSTOM:
       /* user specified own knot vertices */
+      break;
+    default:
       break;
     } /* switch */
 

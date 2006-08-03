@@ -48,7 +48,9 @@ ay_tcmd_reverttcmd(ClientData clientData, Tcl_Interp * interp,
 	    {
 	      ay_error(ay_status, fname, "Could not revert ICurve!");
 	    }
-	  
+
+	  o->modified = AY_TRUE;
+
 	  break;
 	case AY_IDNCURVE:
 
@@ -64,6 +66,9 @@ ay_tcmd_reverttcmd(ClientData clientData, Tcl_Interp * interp,
 	    {
 	      ay_error(ay_status, fname, "Could not revert NCurve!");
 	    }
+
+	  o->modified = AY_TRUE;
+
 	  break;
 	default:
 	  break;
@@ -273,6 +278,7 @@ ay_tcmd_getvertcmd(ClientData clientData, Tcl_Interp * interp,
 
  return TCL_OK;
 } /* ay_tcmd_getvertcmd */
+
 
 /* ay_tcmd_getbppntfromindex:
  *  
@@ -695,6 +701,8 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	      Tcl_GetDouble(interp, argv[i+3], &dtemp);
 	      p[3] = dtemp;
 	    } /* if */
+
+	  src->modified = AY_TRUE;
 	} /* if */
 
       sel = sel->next;
