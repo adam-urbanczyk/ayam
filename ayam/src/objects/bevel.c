@@ -294,7 +294,7 @@ ay_bevel_notifycb(ay_object *o)
  int mode = 0;
  ay_bevel_object *bevel = NULL;
  ay_object *npatch = NULL, *curve, *t = NULL, *pobject1 = NULL;
- int has_b = AY_FALSE;
+ int align = AY_FALSE, has_b = AY_FALSE;
  int b_type, b_sense;
  double b_radius, tolerance;
 
@@ -311,7 +311,7 @@ ay_bevel_notifycb(ay_object *o)
     ay_object_delete(bevel->npatch);
   bevel->npatch = NULL;
 
-  /* get curves to bevel */
+  /* get curve to bevel */
   if(!o->down)
     return AY_OK;
 
@@ -343,6 +343,15 @@ ay_bevel_notifycb(ay_object *o)
       goto cleanup;
     }
 
+  /* check curves rotation attributes; only allow align operation,
+     if curve is not rotated, because otherwise the transformations
+     would not be treated correctly in ay_npt_bevel() */
+  if((curve->quat[0] == 0.0) &&(curve->quat[1] == 0.0) &&
+     (curve->quat[2] == 0.0) &&(curve->quat[3] == 1.0))
+    {
+      align = AY_TRUE;
+    }
+
   /* get bevel parameters */
   ay_npt_getbeveltags(o, 0, &has_b, &b_type, &b_radius, &b_sense);
   if(!has_b)
@@ -367,7 +376,7 @@ ay_bevel_notifycb(ay_object *o)
   npatch->type = AY_IDNPATCH;
   npatch->parent = AY_TRUE;
   npatch->inherit_trafos = AY_FALSE;
-  ay_status = ay_npt_bevel(b_type, b_radius, AY_TRUE, curve,
+  ay_status = ay_npt_bevel(b_type, b_radius, align, curve,
 			   (ay_nurbpatch_object**)&(npatch->refine));
 
   if(ay_status)
@@ -379,9 +388,14 @@ ay_bevel_notifycb(ay_object *o)
   ((ay_nurbpatch_object *)npatch->refine)->glu_display_mode =
     mode;
 
+  /* copy transformations, if align was not used */
+  if(!align)
+    {
+      ay_trafo_copy(curve, npatch);
+    }
+
   bevel->npatch = npatch;
   npatch = NULL;
-
 
 cleanup:
   /* remove provided object */
