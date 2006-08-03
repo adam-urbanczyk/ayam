@@ -643,6 +643,8 @@ ay_nct_reverttcmd(ClientData clientData, Tcl_Interp *interp,
 	      ay_error(ay_status, fname, "Could not revert NCurve!");
 	    }
 
+	  src->modified = AY_TRUE;
+
 	  ay_status = ay_nct_recreatemp(curve);
 	  if(ay_status)
 	    {
@@ -883,6 +885,7 @@ ay_nct_refinetcmd(ClientData clientData, Tcl_Interp *interp,
 	    {
 	      ay_error(AY_ERROR, fname, "refine operation failed");
 	    }
+	  o->modified = AY_TRUE;
 	}
       else
 	{
@@ -1061,6 +1064,8 @@ ay_nct_clamptcmd(ClientData clientData, Tcl_Interp *interp,
 		ay_error(ay_status, fname, "clamp operation failed");
 		return TCL_OK;
 	      }
+
+	    sel->object->modified = AY_TRUE;
 
 	    curve->knot_type = AY_KTCUSTOM;
 
@@ -1333,6 +1338,7 @@ ay_nct_elevatetcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  ay_nct_recreatemp(curve);
 
+	  sel->object->modified = AY_TRUE;
 	}
       else
 	{
@@ -1436,6 +1442,7 @@ ay_nct_insertkntcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  ay_nct_recreatemp(curve);
 
+	  src->modified = AY_TRUE;
 	} /* if */
 
       sel = sel->next;
@@ -1480,6 +1487,7 @@ ay_nct_collapsetcmd(ClientData clientData, Tcl_Interp *interp,
 	      {
 		ay_selp_clear(sel->object);
 	      }
+	    sel->object->modified = AY_TRUE;
 	  }
 	  break;
 	case AY_IDNPATCH:
@@ -1494,6 +1502,7 @@ ay_nct_collapsetcmd(ClientData clientData, Tcl_Interp *interp,
 	      {
 		ay_selp_clear(sel->object);
 	      }
+	    sel->object->modified = AY_TRUE;
 	  }
 	  break;
 	default:
@@ -1542,7 +1551,10 @@ ay_nct_explodetcmd(ClientData clientData, Tcl_Interp *interp,
 	      }
 
  	    if(sel->object->selp)
-	      ay_selp_clear(sel->object);
+	      {
+		ay_selp_clear(sel->object);
+	      }
+	    sel->object->modified = AY_TRUE;
 	  }
 	  break;
 	case AY_IDNPATCH:
@@ -1554,7 +1566,10 @@ ay_nct_explodetcmd(ClientData clientData, Tcl_Interp *interp,
 	      }
 
  	    if(sel->object->selp)
-	      ay_selp_clear(sel->object);
+	      {
+		ay_selp_clear(sel->object);
+	      }
+	    sel->object->modified = AY_TRUE;
 	  }
 	  break;
 	default:
@@ -2018,6 +2033,7 @@ ay_nct_splittcmd(ClientData clientData, Tcl_Interp *interp,
 		  ay_error(ay_status, fname, NULL);
 		  return TCL_OK;
 		} /* if */
+	      sel->object->modified = AY_TRUE;
 	    }
 	  else
 	    {
@@ -2139,6 +2155,10 @@ ay_nct_concattcmd(ClientData clientData, Tcl_Interp *interp,
   ay_object_link(o);
 
   ay_nct_recreatemp((ay_nurbcurve_object *)o->refine);
+
+  o->modified = AY_TRUE;
+
+  ay_notify_parent();
 
  return TCL_OK;
 } /* ay_nct_concattcmd */
@@ -2384,12 +2404,11 @@ ay_nct_crtncircletcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_status = ay_nct_crtncirclearc(radius, arc,
 					(ay_nurbcurve_object **)&(o->refine));
 	}
-
-    }
+    } /* if */
 
   if(ay_status)
     {
-      ay_error(ay_status,fname,NULL);
+      ay_error(ay_status, fname, NULL);
       return TCL_OK;
     }
 
@@ -3600,6 +3619,7 @@ ay_nct_rescaleknvnctcmd(ClientData clientData, Tcl_Interp *interp,
 		{
 		  ay_error(ay_status, fname, "Could not rescale knots!");
 		}
+	      src->modified = AY_TRUE;
 	    }
 	  else
 	    {
@@ -4192,7 +4212,9 @@ ay_nct_shiftcbstcmd(ClientData clientData, Tcl_Interp *interp,
  int i, times = 1;
 
   if(argc > 1)
-   Tcl_GetInt(interp, argv[1], &times);
+    {
+      Tcl_GetInt(interp, argv[1], &times);
+    }
 
   if(times < 1)
     {
@@ -4224,7 +4246,7 @@ ay_nct_shiftcbstcmd(ClientData clientData, Tcl_Interp *interp,
 		  ay_error(ay_status, fname, "Could not shift NCurve!");
 		}
 	    } /* for */
-
+	  src->modified = AY_TRUE;
 	} /* if */
 
       sel = sel->next;
@@ -4437,6 +4459,7 @@ ay_nct_toxytcmd(ClientData clientData, Tcl_Interp *interp,
 	      ay_error(ay_status, fname,
 		       "Could not align object to XY plane!");
 	    }
+	  src->modified = AY_TRUE;
 	} /* if */
 
       sel = sel->next;
@@ -4512,6 +4535,7 @@ ay_nct_makecomptcmd(ClientData clientData, Tcl_Interp *interp,
 	      p->refine = nc;
 	      ay_selp_clear(o);
 	      ay_object_ccp(o);
+	      o->modified = AY_TRUE;
 	      p = p->next;
 	    } /* if */
 	  sel = sel->next;
@@ -4798,6 +4822,8 @@ ay_nct_centertcmd(ClientData clientData, Tcl_Interp *interp,
 	      ay_error(ay_status, fname,
 		       "Could not center object!");
 	    }
+
+	  c->modified = AY_TRUE;
 	} /* if */
 
       sel = sel->next;

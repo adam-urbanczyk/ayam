@@ -841,8 +841,7 @@ ay_ict_reverttcmd(ClientData clientData, Tcl_Interp *interp,
 	    {
 	      ay_error(ay_status, fname, "Could not revert ICurve!");
 	    }
-
-
+	  src->modified = AY_TRUE;
 	} /* if */
 
       sel = sel->next;

@@ -792,6 +792,8 @@ ay_npt_revertutcmd(ClientData clientData, Tcl_Interp *interp,
 	  np = (ay_nurbpatch_object *)sel->object->refine;
 
 	  ay_status = ay_npt_revertu(np);
+	  
+	  sel->object->modified = AY_TRUE;
 	  break;
 	case AY_IDPAMESH:
 	  if(sel->object->selp)
@@ -800,6 +802,8 @@ ay_npt_revertutcmd(ClientData clientData, Tcl_Interp *interp,
 	  pm = (ay_pamesh_object *)sel->object->refine;
 
 	  ay_status = ay_pmt_revertu(pm);
+
+	  sel->object->modified = AY_TRUE;
 	  break;
 	case AY_IDBPATCH:
 	  if(sel->object->selp)
@@ -813,6 +817,8 @@ ay_npt_revertutcmd(ClientData clientData, Tcl_Interp *interp,
 	  memcpy(pt, bp->p3, 3*sizeof(double));
 	  memcpy(bp->p3, bp->p4, 3*sizeof(double));
 	  memcpy(bp->p4, pt, 3*sizeof(double));
+
+	  sel->object->modified = AY_TRUE;
 	  break;
 	default:
 	  ay_error(AY_ERROR, fname, "Do not know how to revert this object!");
@@ -821,6 +827,8 @@ ay_npt_revertutcmd(ClientData clientData, Tcl_Interp *interp,
 
       sel = sel->next;
     } /* while */
+
+  ay_notify_parent();
 
  return TCL_OK;
 } /* ay_npt_revertutcmd */
@@ -883,6 +891,8 @@ ay_npt_revertvtcmd(ClientData clientData, Tcl_Interp *interp,
 	  np = (ay_nurbpatch_object *)sel->object->refine;
 
 	  ay_status = ay_npt_revertv(np);
+
+	  sel->object->modified = AY_TRUE;
 	  break;
 	case AY_IDPAMESH:
 	  if(sel->object->selp)
@@ -891,6 +901,8 @@ ay_npt_revertvtcmd(ClientData clientData, Tcl_Interp *interp,
 	  pm = (ay_pamesh_object *)sel->object->refine;
 
 	  ay_status = ay_pmt_revertv(pm);
+
+	  sel->object->modified = AY_TRUE;
 	  break;
 	case AY_IDBPATCH:
 	  if(sel->object->selp)
@@ -904,6 +916,8 @@ ay_npt_revertvtcmd(ClientData clientData, Tcl_Interp *interp,
 	  memcpy(pt, bp->p2, 3*sizeof(double));
 	  memcpy(bp->p2, bp->p3, 3*sizeof(double));
 	  memcpy(bp->p3, pt, 3*sizeof(double));
+
+	  sel->object->modified = AY_TRUE;
 	  break;
 	default:
 	  ay_error(AY_ERROR, fname, "Do not know how to revert this object!");
@@ -912,6 +926,8 @@ ay_npt_revertvtcmd(ClientData clientData, Tcl_Interp *interp,
 
       sel = sel->next;
     } /* while */
+
+  ay_notify_parent();
 
  return TCL_OK;
 } /* ay_npt_revertvtcmd */
@@ -4468,7 +4484,7 @@ ay_npt_bevel(int type, double radius, int align, ay_object *o,
     }
   else
     {
-      ay_trafo_creatematrix(o, m);
+      /*ay_trafo_creatematrix(o, m);*/
 
       b = 0;
       for(i = 0; i < patch->width; i++)
@@ -4477,7 +4493,7 @@ ay_npt_bevel(int type, double radius, int align, ay_object *o,
 	  for(j = 0; j < curve->length; j++)
 	    {
 	      memcpy(&(controlv[b]), &(curve->controlv[a]), 4*sizeof(double));
-	      ay_trafo_apply4(&(controlv[b]), m);
+	      /*ay_trafo_apply4(&(controlv[b]), m);*/
 	      controlv[b+2] = 0.0;
 	      a += 4;
 	      b += 4;
@@ -4962,6 +4978,7 @@ ay_npt_elevateutcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  patch = (ay_nurbpatch_object *)sel->object->refine;
 	  ay_status = ay_npt_elevateu(patch, t);
+	  sel->object->modified = AY_TRUE;
 	}
       else
 	{
@@ -5084,6 +5101,7 @@ ay_npt_elevatevtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  patch = (ay_nurbpatch_object *)sel->object->refine;
 	  ay_status = ay_npt_elevatev(patch, t);
+	  sel->object->modified = AY_TRUE;
 	}
       else
 	{
@@ -5125,6 +5143,8 @@ ay_npt_swapuvtcmd(ClientData clientData, Tcl_Interp *interp,
 	  np = (ay_nurbpatch_object *)sel->object->refine;
 
 	  ay_status = ay_npt_swapuv(np);
+
+	  sel->object->modified = AY_TRUE;
 	  break;
 	case AY_IDPAMESH:
 	  if(sel->object->selp)
@@ -5133,6 +5153,8 @@ ay_npt_swapuvtcmd(ClientData clientData, Tcl_Interp *interp,
 	  pm = (ay_pamesh_object *)sel->object->refine;
 
 	  ay_status = ay_pmt_swapuv(pm);
+
+	  sel->object->modified = AY_TRUE;
 	  break;
 	case AY_IDBPATCH:
 	  if(sel->object->selp)
@@ -5146,6 +5168,8 @@ ay_npt_swapuvtcmd(ClientData clientData, Tcl_Interp *interp,
 	  memcpy(pt, bp->p2, 3*sizeof(double));
 	  memcpy(bp->p2, bp->p3, 3*sizeof(double));
 	  memcpy(bp->p3, pt, 3*sizeof(double));
+
+	  sel->object->modified = AY_TRUE;
 	  break;
 	default:
 	  ay_error(AY_ERROR, fname, "Do not know how to revert this object!");
@@ -5153,6 +5177,8 @@ ay_npt_swapuvtcmd(ClientData clientData, Tcl_Interp *interp,
 	} /* switch */
       sel = sel->next;
     } /* while */
+
+  ay_notify_parent();
 
  return TCL_OK;
 } /* ay_npt_swapuvtcmd */
@@ -6160,6 +6186,7 @@ ay_npt_closeutcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  ay_status = ay_npt_recreatemp(np);
 
+	  sel->object->modified = AY_TRUE;
 	  break;
 	default:
 	  ay_error(AY_ERROR, fname, "Do not know how to close this object!");
@@ -6167,6 +6194,8 @@ ay_npt_closeutcmd(ClientData clientData, Tcl_Interp *interp,
 	} /* switch */
       sel = sel->next;
     } /* while */
+
+  ay_notify_parent();
 
  return TCL_OK;
 } /* ay_npt_closeutcmd */
@@ -6268,6 +6297,7 @@ ay_npt_closevtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  ay_status = ay_npt_recreatemp(np);
 
+	  sel->object->modified = AY_TRUE;
 	  break;
 	default:
 	  ay_error(AY_ERROR, fname, "Do not know how to close this object!");
@@ -6275,6 +6305,8 @@ ay_npt_closevtcmd(ClientData clientData, Tcl_Interp *interp,
 	} /* switch */
       sel = sel->next;
     } /* while */
+
+  ay_notify_parent();
 
  return TCL_OK;
 } /* ay_npt_closevtcmd */
