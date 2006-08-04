@@ -4,7 +4,9 @@
 
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
-<date>2. July 2006
+
+<date>4. August 2006
+
 <abstract>
 This is the documentation of Ayam 1.11 - a free 3D modeling environment
 for the RenderMan interface.
@@ -19,7 +21,6 @@ There are HTML and PDF versions of this document
 prepared for you.
 
 In addition, you can use the provided SGML-source to generate other formats.
-
 </abstract>
 
 <toc>
@@ -739,6 +740,38 @@ by a factor of about six, depending on the connectivity of the original
 mesh.
 </itemize>
 
+<item><tt/"Points"/: sub-menu for tools that work on points:
+<itemize>
+<item><tt>"Select All Points"</tt>, selects all points of the currently
+selected object(s).
+
+<item><tt>"Invert Selection"</tt>, selects all points of the currently
+selected object(s) that are not selected, and de-select all points that
+are currently selected.
+
+<item><tt>"Apply To All"</tt>, applies the transformations encoded in
+the transformations property of the selected objects to all points of those
+objects.
+This will have the effect of resetting the transformations property
+to the default values without transforming the points.
+
+<item><tt>"Apply To Selected"</tt>, applies the transformations
+encoded in the transformations property of the selected objects to the
+selected points.
+This will reset the transformations property without transforming the
+selected points. The points currently not selected will be transformed,
+however!
+
+<item><tt>"Center All Points (3D)"</tt>, moves all points so
+that their common center is the center of the objects coordinate
+system.
+
+<item><tt>"Center All Points (2D-XY)"</tt>,
+<tt>"Points/Center All Points (2D-YZ)"</tt>,
+<tt>"Points/Center All Points (2D-XZ)"</tt>: works like the center
+3D tool but justs centers in the designated plane.
+</itemize>
+
 <item><tt/"Show"/, <tt/"Hide"/ set and unset the <tt/"Hide"/
 attribute of the selected object(s) thus making them invisible.
 Note that hidden objects may be excluded from RIB-Export, when
@@ -826,35 +859,6 @@ properties will take place! You may e.g. copy the settings from a
 displacement shader to a surface shader (as long as the copied arguments
 of both shaders have the same names and types).
 
-<item><tt>"Points/Select All Points"</tt>, selects all points of the currently
-selected object(s).
-
-<item><tt>"Points/Invert Selection"</tt>, selects all points of the currently
-selected object(s) that are not selected, and de-select all points that
-are currently selected.
-
-<item><tt>"Points/Apply To All"</tt>, applies the transformations encoded in
-the transformations property of the selected objects to all points of those
-objects.
-This will have the effect of resetting the transformations property
-to the default values without transforming the points.
-
-<item><tt>"Points/Apply To Selected"</tt>, applies the transformations
-encoded in the transformations property of the selected objects to the
-selected points.
-This will reset the transformations property without transforming the
-selected points. The points currently not selected will be transformed,
-however!
-
-<item><tt>"Points/Center All Points (3D)"</tt>, moves all points so
-that their common center is the center of the objects coordinate
-system.
-
-<item><tt>"Points/Center All Points (2D-XY)"</tt>,
-<tt>"Points/Center All Points (2D-YZ)"</tt>,
-<tt>"Points/Center All Points (2D-XZ)"</tt>: works like the center
-3D tool but justs centers in the designated plane.
-
 <item><tt>"Instances/Resolve all Instances"</tt>, converts all instances
 of the current level (and its child objects) to normal objects.
 
@@ -876,20 +880,6 @@ currently selected object(s) (see <ref id="riatag" name="RiAttribute Tag">).
 
 <item><tt>"Tags/Edit TexCoords"</tt>, opens the texture coordinates editor.
 (see also section <ref id="tctag" name="TC (TextureCoordinates) Tag">).
-
-<item><tt>"Select Renderer"</tt> opens a dialog where the renderer
-for direct rendering from a view may be choosen.
-The changes will have effect on all options that
-control direct rendering from a view, except whether RenderGUIs should
-be used.
-If the <tt>"ScanShaders"</tt> checkmark is activated, Ayam will
-additionally try to load the corresponding shader parsing plugin
-(see also section <ref id="spplugins" name="Shader Parsing Plugins">))
-and rescan for compiled shaders. Note that in order for the
-<tt>"ScanShaders"</tt> feature to work
-properly you also have to set the <tt>"Main/Shaders"</tt> and
-<tt>"Main/Plugins"</tt> preference setting correctly
-(see also section <ref id="prefmain" name="The Main Preferences">).
 
 <item><tt>"RIB-Export/From Camera"</tt>, writes a complete RIB of
 the current scene with the camera transformations taken from the
@@ -918,6 +908,28 @@ See also section <ref id="shadowmaps" name="Using ShadowMaps">.
 <item><tt/"Enable Scripts"/ enables all disabled script tags and
 objects. Objects and tags in the object clipboard are not
 affected!
+
+<item><tt>"Select Renderer"</tt> opens a dialog where the renderer
+for direct rendering from a view may be choosen.
+The changes will have effect on all options that
+control direct rendering from a view, except whether RenderGUIs should
+be used.
+If the <tt>"ScanShaders"</tt> checkmark is activated, Ayam will
+additionally try to load the corresponding shader parsing plugin
+(see also section <ref id="spplugins" name="Shader Parsing Plugins">))
+and rescan for compiled shaders. Note that in order for the
+<tt>"ScanShaders"</tt> feature to work
+properly you also have to set the <tt>"Main/Shaders"</tt> and
+<tt>"Main/Plugins"</tt> preference setting correctly
+(see also section <ref id="prefmain" name="The Main Preferences">).
+
+<item><tt>"Scan Shaders"</tt> initiates the shader scanning.
+
+<item><tt>"Reset Preferences"</tt> removes the current ayamrc file
+where the preferences are saved, after a restart of Ayam, all
+preferences will be reset to factory defaults. See also
+section <ref id="ayamrc" name="Ayamrc File"> for more information
+about the ayamrc file.
 
 <item><tt/"Toggle Toolbox"/ closes or opens the toolbox window
 (see <ref id="toolb" name="The Tool Box Window">). From version 1.3 on,
@@ -1414,6 +1426,10 @@ the preferences settings to the file ayamrc when the program quits.
 <item><tt/"BakOnReplace"/, if this is switched on, Ayam will make
 a backup copy of each scene file it loads via main menu
 <tt>"File/Open"</tt> or via the most recently used list.
+
+<item><tt/"AddExtensions"/, this option may be used to let Ayam
+automatically add file name extensions to saved files (if they
+do not have already a proper extension).
 
 <item><tt/"LoadEnv"/, if this is switched on, Ayam will load
 the scene file specified by <tt/"EnvFile"/ on startup.
@@ -2330,7 +2346,7 @@ to deliver the default values for a matrix (but not for an array!).
 If Ayam has been compiled without a shader parsing library
 (e.g. without libslcargs), Ayam will parse XML files created
 by <tt/"sl2xml"/ from the K-3D project
-(see <tt>"http://www.k-3d.com/"</tt>)
+(see <tt>"http://www.k-3d.org/"</tt>)
 instead of compiled shaders.
 The <tt/"Set new shader."/-button will in this case always
 open a file requester, allowing you to select a XML file,
@@ -4537,7 +4553,7 @@ cross section curve and the number of sections, respectively.
 </figure>
 <p>
 The image above shows a valid configuration of parameter curves for
-the Birail1 object. Mind the direction of the rail curves (R1 and R1)
+the Birail1 object. Mind the direction of the rail curves (R1 and R2)
 with regard to the cross section curve (CS) and the fact that the
 cross section curve touches the starting points of the rail curves.
 <p>
@@ -4617,7 +4633,7 @@ cross section curves and the number of sections, respectively.
 </figure>
 <p>
 The image above shows a valid configuration of parameter curves for
-the Birail2 object. Mind the direction of the rail curves (R1 and R1)
+the Birail2 object. Mind the direction of the rail curves (R1 and R2)
 with regard to the two cross section curves (CS1 and CS2) and the
 fact, that all curves touch at their respective end points.
 <p>
@@ -4847,7 +4863,7 @@ all intersection points (by its control points).
 If present, this intersection patch always takes precedence over the
 intersection points calculated internally.
 You may want to add a <tt>"NoExport"</tt> tag to this patch. The object
-hierarchy of a Gordon object using such a patch, consequently looks
+hierarchy of a Gordon object using such a patch may look
 like this:
 <code>
 +-Gordon
@@ -4861,7 +4877,7 @@ like this:
 </code>
 <p>
 The complete template for the Gordon object hierarchy, consequently,
-looks like this:
+is as follows:
 <code>
 +-Gordon
  | U1(NCurve)
@@ -4929,16 +4945,16 @@ looks like this:
 <p>
 Bevels are also available as properties of different tool objects
 (e.g. Extrude or Sweep). In fact, Bevel objects use the same creation
-algorithm as bevel properties but increase flexibility in terms of
-material settings. Surfaces created from bevel properties always
+algorithm as bevel properties but offer increased flexibility in terms of
+e.g. material settings. Surfaces created from bevel properties always
 share the material settings of the tool object. In contrast, Bevel
 objects may have their own material settings. Bevel objects are
 available in Ayam since version 1.10.
 <p>
-Note that the parameter curve should be closed and planar to achieve
-best results. If the curve is closed or periodic, the appropriate
-curve type should be set, otherwise the bevelled surface may
-expose defects.
+Note that the parameter curve of a Bevel object should be closed and
+planar to achieve best results. If the curve is closed or periodic,
+the appropriate curve type should be set, otherwise the bevelled
+surface may expose defects.
 <p>
 The Bevel object watches the child object and adapts to it automatically
 via the notification mechanism.
@@ -5386,11 +5402,11 @@ additional controlling parameters.
 
 <item><tt/"Type"/ is the type of the script object.
 Three types of script objects are currently available:
-<itemize>
-<item><tt/"Run"/, the script will be run and no special action will
+ <itemize>
+ <item><tt/"Run"/, the script will be run and no special action will
 take place.
 
-<item><tt/"Create"/, the script will be run and will create and
+ <item><tt/"Create"/, the script will be run and will create and
 parameterise a single new object. After running the script, the new
 created object will automatically be copied into the internal data
 structure of the script object. The script object will look like
@@ -5413,7 +5429,7 @@ crtOb NCurve
 hSL
 </code>
 
-<item><tt/"Modify"/, if the script object has child objects,
+ <item><tt/"Modify"/, if the script object has child objects,
 these child objects will be copied into the internal data
 structure of the script object. A selection of the copied objects
 will be established, then the script will be run. Usually, the
@@ -5434,19 +5450,19 @@ needs a NURBCurve, e.g. a Sweep:
  | \ NCurve
  \ Path(NCurve)
 </code>
-</itemize>
 A simple example script for a script object of type <tt/"Modify"/ that
 needs a single NURBS curve as child object may look
 like this:
 <code>
-revertNC
+revert
 </code>
+</itemize>
 
 <item><tt/"Script"/ is the script code. The widget is a standard
 Tcl text widget that allows to directly edit the code. It is
 also possible to edit the code in an external editor and
 copy it to the script object using the clipboard and the
-context menu entry <tt/"Paste (Replace)"/.
+context menu entry of the text widget <tt/"Paste (Replace)"/.
 </itemize>
 
 <sect1>Custom Objects<label id="customobj">
@@ -6658,11 +6674,12 @@ in the old knot vector.
 The knot type of the refined curve will be changed to <tt/"Custom"/.
 </itemize>
 
-<p><label id="screvertnc">
-revertNC - revert NURBS curve:
+<p><label id="screvert">
+revert - revert curves:
 <itemize>
- <item>Synopsis: <tt/"revertNC"/
- <item>Description: Revert the direction of the selected NURBS curves.
+ <item>Synopsis: <tt/"revert"/
+ <item>Description: Revert the direction of the selected NURBS curves
+and interpolating curves.
 </itemize>
 
 <p><label id="screscaleknnc">
@@ -7927,6 +7944,8 @@ This section documents the environment variables used by Ayam.
 <tt>"AYAMRC"</tt> and <tt>"HOME"</tt> are not set); also initial value of the
 <tt>"TmpDir"</tt> preference setting (used on Win32 if no ayamrc file exists,
 that specifies <tt>"TmpDir"</tt>).
+<item><tt>"AYNOSPLASH"</tt>: if this variable is set to 1, the splash
+screen will not be shown
 <item><tt>"BROWSER"</tt>: filename of the preferred WWW browser (used to
 display the documentation URL)
 <item><tt>"NETSCAPE"</tt>: (if <tt>"BROWSER"</tt> does not exist) filename
@@ -7994,15 +8013,22 @@ Additionally, those scripts may be further adapted to
 set a different <tt/"Shaders"/ preference setting or to immediately
 scan for shaders after loading of the plugin. For that, just remove
 the leading hash-marks (&num;) from the corresponding lines in the script.
-However, the standard behavior while loading of
-such a plugin requires you to adapt
-the shaders search path manually and to scan manually for shaders too.
-Both actions may be carried out using the preferences editor.
-<p>
-This is, however, not necessary if you load the shader parsing plugin
+Changing the scripts is not necessary if you load the shader parsing plugin
 automatically on startup of Ayam, as the loading of the scripts will
-happen before the startup sequence executes the initial shader scanning
+happen before the Ayam startup sequence executes the initial shader scanning
 pass.
+<p>
+However, the standard behavior of the loading script while manually
+loading of such a plugin requires you to adapt the shaders search path
+manually and to scan manually for shaders too.
+Both actions may be carried out using the preferences editor. Scanning
+for shaders may also be started using the main menu:
+<tt>"Special/Scan Shaders"</tt>.
+<p>
+To better accomodate the fast changing world of RenderMan renderers,
+since Ayam 1.11 all shader parsing plugins are Ayam version independent.
+This allows to distribute updated shader parsing plugins without
+updating Ayam too and thus in a higher frequency.
 
 <sect1>Automatic Instancing<label id="ai">
 <p>
@@ -8395,6 +8421,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Accuracy: <ref id="imprhino" name="3DM (Rhino) import option">,
 <ref id="exprhino" name="3DM (Rhino) export option">
 <item>Adaptive: <ref id="moattr" name="MetaObj attributes">
+<item>AddExtensions: <ref id="prefgui" name="preference setting">
 <item>addToProc: <ref id="scaddtoproc" name="scripting interface command">
 <item>AddViewParams: <ref id="hidprefs" name="hidden preference setting">
 <item>Algorithm: <ref id="aycsg" name="AyCSG plugin option">
@@ -8888,13 +8915,14 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <ref id="impwav" name="Wavefront OBJ import option">,
 <item>Reset: <ref id="propgui" name="reset property GUI">
 <item>ResetDM, ResetST: <ref id="impmops" name="Mops import option">
+<item>Reset Preferences: <ref id="mmspecial" name="main menu entry">
 <item>ResInstances: <ref id="prefrib" name="preference setting">
 <item>Resolve all Instances: <ref id="mmspecial" name="main menu entry">
 <item>Revert: <ref id="revertt" name="Revert tool">,
 <ref id="concatncp" name="ConcatNC attribute">,
-<ref id="textattr" name="Text attribute">
+<ref id="textattr" name="Text attribute">,
+<ref id="screvert" name="scripting interface command">
 <item>RevertBevels: <ref id="textattr" name="Text attribute">
-<item>revertNC: <ref id="screvertnc" name="scripting interface command">
 <item>RevertU, RevertV: <ref id="revertut" name="Revert U tool">,
 <ref id="revertvt" name="Revert V tool">
 <item>Revolve: <ref id="revolveobj" name="object">,
@@ -8954,6 +8982,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <ref id="rribopt" name="RIB import option">
 <item>scalOb <ref id="scscalob" name="scripting interface command">
 <item>scalSel <ref id="scscalsel" name="scripting interface command">
+<item>Scan Shaders: <ref id="mmspecial" name="main menu entry">
 <item>Script: <ref id="scriptobj" name="object">
 <item>Scripts: <ref id="prefgui" name="preference setting">
 <item>SDMesh: <ref id="sdmeshobj" name="object">
