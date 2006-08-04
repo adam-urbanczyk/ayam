@@ -29,9 +29,6 @@ int ay_ict_resize(ay_icurve_object *curve, int new_length);
 
 int ay_ict_revert(ay_icurve_object *curve);
 
-int ay_ict_reverttcmd(ClientData clientData, Tcl_Interp *interp,
-		      int argc, char *argv[]);
-
 int ay_ict_getpntfromindex(ay_icurve_object *curve, int index, double **p);
 
 /* knots.c */
@@ -188,9 +185,6 @@ int ay_nct_resize(ay_nurbcurve_object *curve, int new_length);
 int ay_nct_close(ay_nurbcurve_object *curve);
 
 int ay_nct_revert(ay_nurbcurve_object *curve);
-
-int ay_nct_reverttcmd(ClientData clientData, Tcl_Interp *interp,
-		      int argc, char *argv[]);
 
 int ay_nct_refine(ay_nurbcurve_object *curve, double *newknotv,
 		  int newknotvlen);
