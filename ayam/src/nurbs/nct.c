@@ -602,66 +602,6 @@ ay_nct_revert(ay_nurbcurve_object *curve)
 } /* ay_nct_revert */
 
 
-/* ay_nct_reverttcmd:
- *  revert a NURBS curve
- */
-int
-ay_nct_reverttcmd(ClientData clientData, Tcl_Interp *interp,
-		  int argc, char *argv[])
-{
- int ay_status;
- ay_list_object *sel = ay_selection;
- ay_object *src = NULL;
- ay_nurbcurve_object *curve = NULL;
- char fname[] = "revert_ncurve";
-
-  if(!sel)
-    {
-      ay_error(AY_ENOSEL, fname, NULL);
-      return TCL_OK;
-    }
-
-  while(sel)
-    {
-      src = sel->object;
-      if(src->type != AY_IDNCURVE)
-	{
-	  ay_error(AY_ERROR, fname, "Object is not a NURBCurve!");
-	}
-      else
-	{
-	  if(src->selp)
-	    {
-	      ay_selp_clear(src);
-	    }
-
-	  curve = (ay_nurbcurve_object*)src->refine;
-
-	  ay_status = ay_nct_revert(curve);
-	  if(ay_status)
-	    {
-	      ay_error(ay_status, fname, "Could not revert NCurve!");
-	    }
-
-	  src->modified = AY_TRUE;
-
-	  ay_status = ay_nct_recreatemp(curve);
-	  if(ay_status)
-	    {
-	      ay_error(AY_ERROR, fname, "Error re-creating MPoints!");
-	    }
-
-	} /* if */
-
-      sel = sel->next;
-    } /* while */
-
-  ay_notify_parent();
-
- return TCL_OK;
-} /* ay_nct_reverttcmd */
-
-
 /* ay_nct_refine:
  *  refine a NURBS curve by inserting knots at the right places,
  *  thus not changing the shape of the curve, but changing the

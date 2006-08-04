@@ -801,58 +801,6 @@ ay_ict_revert(ay_icurve_object *curve)
 } /* ay_ict_revert */
 
 
-/* ay_ict_reverttcmd:
- *  revert an interpolating curve
- */
-int
-ay_ict_reverttcmd(ClientData clientData, Tcl_Interp *interp,
-		  int argc, char *argv[])
-{
- int ay_status;
- ay_list_object *sel = ay_selection;
- ay_object *src = NULL;
- ay_icurve_object *curve = NULL;
- char fname[] = "revert_icurve";
-
-  if(!sel)
-    {
-      ay_error(AY_ENOSEL, fname, NULL);
-      return TCL_OK;
-    }
-
-  while(sel)
-    {
-      src = sel->object;
-      if(src->type != AY_IDICURVE)
-	{
-	  ay_error(AY_ERROR, fname, "Object is not an ICurve!");
-	}
-      else
-	{
-	  if(src->selp)
-	    {
-	      ay_selp_clear(src);
-	    }
-
-	  curve = (ay_icurve_object*)src->refine;
-
-	  ay_status = ay_ict_revert(curve);
-	  if(ay_status)
-	    {
-	      ay_error(ay_status, fname, "Could not revert ICurve!");
-	    }
-	  src->modified = AY_TRUE;
-	} /* if */
-
-      sel = sel->next;
-    } /* while */
-
-  ay_notify_parent();
-
- return TCL_OK;
-} /* ay_ict_reverttcmd */
-
-
 /* ay_ict_getpntfromindex:
  *
  *

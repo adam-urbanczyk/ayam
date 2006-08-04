@@ -302,9 +302,9 @@ typedef struct ay_root_object_s
 typedef struct ay_nurbcurve_object_s
 {
   int type; /* AY_CTOPEN, AY_CTCLOSED, AY_CTPERIODIC */
-  int order; 
-  int knot_type; /* bezier, bspline, nurb, custom */
   int length;
+  int order; 
+  int knot_type; /* AY_KTBEZIER, AY_KTBSPLINE, AY_KTNURB, AY_KTCUSTOM */
   int is_rat;
   double *controlv;
   double *knotv;
@@ -330,12 +330,13 @@ typedef struct ay_nurbpatch_object_s
 {
   int width, height;
   int uorder, vorder;
-  int uknot_type, vknot_type; /* bezier, bspline, nurb, custom */
-  int closedu, closedv; /* unused */
+  int uknot_type; /* AY_KTBEZIER, AY_KTBSPLINE, AY_KTNURB, AY_KTCUSTOM */
+  int vknot_type; /* AY_KTBEZIER, AY_KTBSPLINE, AY_KTNURB, AY_KTCUSTOM */
+  /*int closedu, closedv;*/ /* unused */
   int is_rat;
 
   double *controlv, *uknotv, *vknotv;
-  double *texv; /* unused */
+  /*double *texv;*/ /* unused */
 
   /* GLU */
   GLUnurbsObj *no;
@@ -409,8 +410,8 @@ typedef struct ay_sdmesh_object_s {
 
 typedef struct ay_gordon_object_s {
   int wcc; /* watch (and automatically correct parameter curves) */
-  int uorder;
-  int vorder;
+  int uorder; /* desired order for u dimension */
+  int vorder; /* desired order for v dimension */
 
   ay_object *caps_and_bevels;
   /* cache NURBS patch representation */
@@ -569,7 +570,6 @@ typedef struct ay_concatnc_object_s
 
   /* cache NURBS curve representation */
   ay_object *ncurve;
-
   double glu_sampling_tolerance;
   int display_mode;
 } ay_concatnc_object;
@@ -577,17 +577,20 @@ typedef struct ay_concatnc_object_s
 
 typedef struct ay_cap_object_s
 {
+  /* cache NURBS patch representation */
+  ay_object *npatch;
   double glu_sampling_tolerance;
   int glu_display_mode;
-  ay_object *npatch;
 } ay_cap_object;
 
 
 typedef struct ay_bevel_object_s
 {
+  int has_cap;
+  /* cache NURBS patch representation */
+  ay_object *npatch;
   double glu_sampling_tolerance;
   int glu_display_mode;
-  ay_object *npatch;
 } ay_bevel_object;
 
 
@@ -603,7 +606,7 @@ typedef struct ay_clone_object_s
   int numclones;
   int rotate;
   int mirror;
-  /* Transformations */
+  /* transformations */
   double movx, movy, movz;
   double rotx, roty, rotz;
   double scalx, scaly, scalz;
@@ -651,6 +654,7 @@ typedef struct ay_revolve_object_s
   ay_object *start_cap;
   int has_end_cap;
   ay_object *end_cap;
+
   /* cache NURBS patch representation */
   ay_object *npatch;
   double glu_sampling_tolerance;
@@ -751,7 +755,7 @@ typedef struct ay_extrnc_object_s
 
 typedef struct ay_script_object_s
 {
-  char *script;
+  char *script; /* the script text (Tcl) */
   int active; /* 0 - Inactive, 1 - Active */
   int type; /* 0 - Run, 1 - Create, 2 -  Modify */
   ay_object *cm_objects; /* created or modified objects */

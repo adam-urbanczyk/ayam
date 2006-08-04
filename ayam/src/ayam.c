@@ -927,13 +927,8 @@ Tcl_AppInit(Tcl_Interp *interp)
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   /* NURBS */
-  /* nurbs/ict.c */
-  Tcl_CreateCommand(interp, "revertIC", ay_ict_reverttcmd,
-		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
-  /* nurbs/nct.c */
-  Tcl_CreateCommand(interp, "revertNC", ay_nct_reverttcmd,
-		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  /* nurbs/nct.c */
   Tcl_CreateCommand(interp, "refineNC", ay_nct_refinetcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
