@@ -101,7 +101,7 @@ ay_nct_destroy(ay_nurbcurve_object *curve)
 void
 ay_nct_clearmp(ay_nurbcurve_object *c)
 {
-  ay_mpoint_object *next = NULL, *p = NULL;
+  ay_mpoint *next = NULL, *p = NULL;
 
   if(!c)
     return;
@@ -130,7 +130,7 @@ int
 ay_nct_recreatemp(ay_nurbcurve_object *c)
 {
  int ay_status = AY_OK;
- ay_mpoint_object *p = NULL, *new = NULL;
+ ay_mpoint *p = NULL, *new = NULL;
  double *ta, **tmp = NULL;
  int found = AY_FALSE, a, b, i, j, count;
 
@@ -179,7 +179,7 @@ ay_nct_recreatemp(ay_nurbcurve_object *c)
 
 	  if(!found)
 	    {
-	      if(!(new = calloc(1, sizeof(ay_mpoint_object))))
+	      if(!(new = calloc(1, sizeof(ay_mpoint))))
 		{ free(tmp); return AY_EOMEM; }
 	      if(!(new->points = calloc(count, sizeof(double *))))
 		{ free(tmp); free(new); return AY_EOMEM; }
@@ -209,8 +209,8 @@ ay_nct_collapseselp(ay_object *o)
 {
  int ay_status = AY_OK;
  ay_nurbcurve_object *c = NULL;
- ay_mpoint_object *new = NULL, *p = NULL, *t = NULL, **last = NULL;
- ay_point_object *selp = NULL;
+ ay_mpoint *new = NULL, *p = NULL, *t = NULL, **last = NULL;
+ ay_point *selp = NULL;
  double *first = NULL;
  int count = 0, i, found = AY_FALSE;
  char fname[] = "collapseselp";
@@ -238,7 +238,7 @@ ay_nct_collapseselp(ay_object *o)
       return AY_ERROR;
     }
 
-  if(!(new = calloc(1,sizeof(ay_mpoint_object))))
+  if(!(new = calloc(1,sizeof(ay_mpoint))))
     return AY_EOMEM;
   if(!(new->points = calloc(count, sizeof(double *))))
     { free(new); return AY_EOMEM; }
@@ -309,8 +309,8 @@ ay_nct_explodemp(ay_object *o)
 {
  int ay_status = AY_OK;
  ay_nurbcurve_object *c = NULL;
- ay_mpoint_object *p = NULL, *t = NULL, **last = NULL;
- ay_point_object *selp = NULL;
+ ay_mpoint *p = NULL, *t = NULL, **last = NULL;
+ ay_point *selp = NULL;
  int found = AY_FALSE, i, err = AY_TRUE;
  char fname[] = "explodemp";
 

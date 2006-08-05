@@ -94,7 +94,7 @@ int
 ay_write_tags(FILE *fileptr, ay_object *o)
 {
  int ay_status = AY_OK;
- ay_tag_object *tag = NULL;
+ ay_tag *tag = NULL;
  int tcount = 0;
  int temp = 0;
 

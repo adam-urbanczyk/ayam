@@ -63,7 +63,7 @@ ay_notify_parent(void)
  ay_object *o = NULL;
  void **arr = NULL;
  ay_notifycb *cb = NULL;
- ay_tag_object *tag = NULL;
+ ay_tag *tag = NULL;
 
   if(ay_prefs.completenotify == 1)
     {
@@ -138,7 +138,7 @@ ay_notify_force(ay_object *o)
  ay_object *od = NULL;
  void **arr = NULL;
  ay_notifycb *cb = NULL;
- ay_tag_object *tag = NULL;
+ ay_tag *tag = NULL;
 
   /* call notification callbacks of children first */
   if(o->down && o->down->next)
@@ -362,7 +362,7 @@ int
 ay_notify_findparents(ay_object *o, ay_object *r, ay_list_object **parents)
 {
  ay_object *down;
- ay_tag_object *newt = NULL;
+ ay_tag *newt = NULL;
  ay_list_object *newl = NULL;
  int dfound = AY_FALSE, found = AY_FALSE;
 
@@ -397,7 +397,7 @@ ay_notify_findparents(ay_object *o, ay_object *r, ay_list_object **parents)
 	    {
 	      return 0;
 	    }
-	  if(!(newt = calloc(1, sizeof(ay_tag_object))))
+	  if(!(newt = calloc(1, sizeof(ay_tag))))
 	    {
 	      return 0;
 	    }
@@ -425,7 +425,7 @@ ay_notify_complete(ay_object *r)
 {
  int propagate = AY_TRUE;
  ay_object *o;
- ay_tag_object *tag;
+ ay_tag *tag;
  ay_list_object *l = NULL, *s, *t, *u;
 
   if(!r)

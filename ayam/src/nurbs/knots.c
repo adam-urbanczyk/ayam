@@ -641,7 +641,7 @@ int
 ay_knots_getuminmax(ay_object *o, int order, int knots, double *knotv,
 		    double *umin, double *umax)
 {
- ay_tag_object *tag = NULL;
+ ay_tag *tag = NULL;
  int have_valid_umm_tag = AY_FALSE;
 
   if(!o || !knotv || !umin || !umax)
@@ -681,7 +681,7 @@ int
 ay_knots_getvminmax(ay_object *o, int order, int knots, double *knotv,
 		    double *vmin, double *vmax)
 {
- ay_tag_object *tag = NULL;
+ ay_tag *tag = NULL;
  int have_valid_vmm_tag = AY_FALSE;
 
   if(!o || !knotv || !vmin || !vmax)
@@ -718,7 +718,7 @@ int
 ay_knots_setuminmax(ay_object *o, double umin, double umax)
 {
  int ay_status = AY_OK;
- ay_tag_object *tag = NULL, *nt = NULL;
+ ay_tag *tag = NULL, *nt = NULL;
  char buf[128], *ct = NULL;
 
   if(!o)
@@ -748,7 +748,7 @@ ay_knots_setuminmax(ay_object *o, double umin, double umax)
 	} /* while */
     } /* if */
 
-  if(!(nt = calloc(1, sizeof(ay_tag_object))))
+  if(!(nt = calloc(1, sizeof(ay_tag))))
     {free(ct); return AY_EOMEM;}
   nt->type = ay_umm_tagtype;
   if(!(nt->name = calloc(4, sizeof(char))))
@@ -771,7 +771,7 @@ int
 ay_knots_setvminmax(ay_object *o, double vmin, double vmax)
 {
  int ay_status = AY_OK;
- ay_tag_object *tag = NULL, *nt = NULL;
+ ay_tag *tag = NULL, *nt = NULL;
  char buf[128], *ct = NULL;
 
   if(!o)
@@ -801,7 +801,7 @@ ay_knots_setvminmax(ay_object *o, double vmin, double vmax)
 	} /* while */
     } /* if */
 
-  if(!(nt = calloc(1, sizeof(ay_tag_object))))
+  if(!(nt = calloc(1, sizeof(ay_tag))))
     {free(ct); return AY_EOMEM;}
   nt->type = ay_vmm_tagtype;
   if(!(nt->name = calloc(4, sizeof(char))))

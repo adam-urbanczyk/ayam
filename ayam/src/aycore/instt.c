@@ -27,7 +27,7 @@ ay_instt_createoidht(ay_object *o)
  int new_item = 0;
  int found = AY_FALSE;
  Tcl_HashEntry *entry = NULL;
- ay_tag_object *tag = NULL;
+ ay_tag *tag = NULL;
  Tcl_HashTable *ht = &ay_instt_oidptr_ht;
 
  if(!o)
@@ -89,7 +89,7 @@ ay_instt_connect(ay_object *o, ay_object **last)
  char fname[] = "instt_connect";
  int found = AY_FALSE, removed = AY_FALSE;
  Tcl_HashEntry *entry = NULL;
- ay_tag_object *tag = NULL;
+ ay_tag *tag = NULL;
  ay_object *target = NULL;
  Tcl_HashTable *ht = &ay_instt_oidptr_ht;
 
@@ -196,7 +196,7 @@ ay_instt_createorigids(ay_object *o)
  int ay_status = AY_OK;
  char *tname = NULL, *tval = NULL;
  int found = AY_FALSE;
- ay_tag_object *tag = NULL, *newtag = NULL;
+ ay_tag *tag = NULL, *newtag = NULL;
 
   while(o)
     {
@@ -229,7 +229,7 @@ ay_instt_createorigids(ay_object *o)
 		return AY_EOMEM;
 
 	      strcpy(tname,"OI");
-	      if(!(newtag = calloc(1,sizeof(ay_tag_object))))
+	      if(!(newtag = calloc(1,sizeof(ay_tag))))
 		return AY_EOMEM;
 
 	      newtag->name = tname;
@@ -262,7 +262,7 @@ ay_instt_createinstanceids(ay_object *o)
 {
  int ay_status = AY_OK;
  int found = AY_FALSE;
- ay_tag_object *tag = NULL, *origtag = NULL; 
+ ay_tag *tag = NULL, *origtag = NULL; 
  ay_object *orig = NULL;
 
   while(o)
@@ -336,7 +336,7 @@ ay_instt_wribiarchives(char *file, ay_object *o)
  int ay_status = AY_OK;
  int found = AY_FALSE;
  ay_object *down = NULL;
- ay_tag_object *tag = NULL;
+ ay_tag *tag = NULL;
  char *iafilename = NULL;
  void **arr = NULL;
  ay_wribcb *cb = NULL;
@@ -568,7 +568,7 @@ int
 ay_instt_clearoidtags(ay_object *o)
 {
  int ay_status = AY_OK;
- ay_tag_object *tag = NULL, **last = NULL;
+ ay_tag *tag = NULL, **last = NULL;
 
   if(!o)
     return AY_OK;

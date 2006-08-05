@@ -420,7 +420,7 @@ ay_ncurve_drawhcb(struct Togl *togl, ay_object *o)
 {
  int length = 0, i = 0, a = 0;
  ay_nurbcurve_object *curve = (ay_nurbcurve_object *) o->refine;
- ay_mpoint_object *mp = NULL;
+ ay_mpoint *mp = NULL;
  GLdouble *ver = NULL;
  double point_size = ay_prefs.handle_size;
 
@@ -465,7 +465,7 @@ int
 ay_ncurve_getpntcb(int mode, ay_object *o, double *p)
 {
  ay_nurbcurve_object *ncurve = NULL;
- ay_mpoint_object *mp = NULL;
+ ay_mpoint *mp = NULL;
  double min_dist = ay_prefs.pick_epsilon, dist = 0.0;
  double **pecoords = NULL, *pecoord = NULL, *control = NULL, *c;
  int i = 0, j = 0, a = 0, found = AY_FALSE;
@@ -613,7 +613,7 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  char fname[] = "ncurve_setpropcb";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_nurbcurve_object *ncurve = NULL;
- ay_mpoint_object *mp = NULL;
+ ay_mpoint *mp = NULL;
  int new_order, new_length, new_knot_type, new_type, knots_modified = 0;
  double *nknotv = NULL;
  int updateKnots = AY_FALSE, updateMPs = AY_TRUE;

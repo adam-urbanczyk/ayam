@@ -118,7 +118,7 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
  char fname[] = "tgui_update";
  char *n1="tgui_tessparam";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
- ay_tag_object *tag = NULL;
+ ay_tag *tag = NULL;
  ay_list_object *oref = NULL;
  ay_list_object *newl = NULL, **lastl = NULL, *polist = NULL;
  ay_object *o = NULL, *tmp = NULL, *tmpnp = NULL;

@@ -20,7 +20,7 @@
 int
 ay_tc_wrib(ay_object *o)
 {
- ay_tag_object *tag = NULL;
+ ay_tag *tag = NULL;
  RtFloat s1, s2, s3, s4, t1, t2, t3, t4;
 
   if(!o)
@@ -52,7 +52,7 @@ ay_tc_wrib(ay_object *o)
 int
 ay_tc_wribindex(ay_object *o, int index)
 {
- ay_tag_object *tag = NULL;
+ ay_tag *tag = NULL;
  RtFloat s1, s2, s3, s4, t1, t2, t3, t4;
  int i = 0;
 
@@ -89,7 +89,7 @@ ay_tc_wribindex(ay_object *o, int index)
 int
 ay_tc_count(ay_object *o)
 {
- ay_tag_object *tag = NULL;
+ ay_tag *tag = NULL;
  int count = 0;
 
   if(!o)

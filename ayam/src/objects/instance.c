@@ -250,7 +250,7 @@ ay_instance_wribcb(char *file, ay_object *o)
  char *iafilename = NULL;
  int found = AY_FALSE;
  ay_object *orig = NULL, *down = NULL;
- ay_tag_object *tag = NULL;
+ ay_tag *tag = NULL;
  void **arr = NULL;
  ay_wribcb *cb = NULL;
  ay_level_object *l = NULL, *ld = NULL;

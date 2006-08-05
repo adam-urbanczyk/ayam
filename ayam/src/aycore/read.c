@@ -309,7 +309,7 @@ int
 ay_read_tags(FILE *fileptr, ay_object *o)
 {
  int ay_status = AY_OK;
- ay_tag_object *tag = NULL, *last = NULL;
+ ay_tag *tag = NULL, *last = NULL;
  Tcl_HashEntry *entry = NULL;
  int tcount = 0, i = 0;
  char fname[] = "ay_read_tags";
@@ -327,7 +327,7 @@ ay_read_tags(FILE *fileptr, ay_object *o)
  for(i=0;i<tcount;i++)
    {
      tag = NULL;
-     if(!(tag = calloc(1, sizeof(ay_tag_object))))
+     if(!(tag = calloc(1, sizeof(ay_tag))))
        return AY_EOMEM;
 
      ay_read_string(fileptr,&(tag->name));

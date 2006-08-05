@@ -21,7 +21,7 @@ ay_root_createcb(int argc, char *argv[], ay_object *o)
 {
  ay_root_object *root = NULL;
  char fname[] = "crtroot";
- ay_riopt_object *riopt = NULL;
+ ay_riopt *riopt = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -32,7 +32,7 @@ ay_root_createcb(int argc, char *argv[], ay_object *o)
       return AY_ERROR;
     }
 
-  if(!(root->riopt = calloc(1, sizeof(ay_riopt_object))))
+  if(!(root->riopt = calloc(1, sizeof(ay_riopt))))
     {
       ay_error(AY_EOMEM, fname, NULL);
       free(root);
@@ -80,7 +80,7 @@ int
 ay_root_deletecb(void *c)
 {
  ay_root_object *root = NULL;
- ay_riopt_object *riopt = NULL;
+ ay_riopt *riopt = NULL;
 
   if(!c)
     return AY_ENULL;
@@ -183,7 +183,7 @@ ay_root_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  char *n1 = "RiOptData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_root_object *root = NULL;
- ay_riopt_object *riopt = NULL;
+ ay_riopt *riopt = NULL;
  double dtemp = 0.0;
  int itemp = 0;
  char *result;
@@ -374,7 +374,7 @@ ay_root_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  char *n1="RiOptData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_root_object *root = NULL;
- ay_riopt_object *riopt = NULL;
+ ay_riopt *riopt = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -514,7 +514,7 @@ ay_root_readcb(FILE *fileptr, ay_object *o)
  int ay_status = AY_OK;
  ay_root_object *root = NULL;
  int read, itemp = 0, has_atmosphere = 0, has_imager = 0;
- ay_riopt_object *riopt = NULL;
+ ay_riopt *riopt = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -551,7 +551,7 @@ ay_root_readcb(FILE *fileptr, ay_object *o)
   riopt = NULL;
 
   /* read RiOptions */
-  if(!(riopt = calloc(1, sizeof(ay_riopt_object))))
+  if(!(riopt = calloc(1, sizeof(ay_riopt))))
     { return AY_EOMEM; }
 
   fscanf(fileptr,"%lg\n",&riopt->Variance);
@@ -659,7 +659,7 @@ int
 ay_root_writecb(FILE *fileptr, ay_object *o)
 {
  ay_root_object *root = NULL;
- ay_riopt_object *riopt = NULL;
+ ay_riopt *riopt = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -749,7 +749,7 @@ int
 ay_root_wribcb(char *file, ay_object *o)
 {
  ay_root_object *root = NULL;
- ay_riopt_object *riopt = NULL;
+ ay_riopt *riopt = NULL;
  RtInt fw = 0, fh = 0;
  RtFloat rtftemp = 0.0f;
  RtInt rtitemp = 0;

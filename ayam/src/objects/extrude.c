@@ -274,7 +274,7 @@ int
 ay_extrude_readcb(FILE *fileptr, ay_object *o)
 {
  ay_extrude_object *extrude = NULL;
- ay_tag_object tag = {0}, *stag = NULL, *etag = NULL;
+ ay_tag tag = {0}, *stag = NULL, *etag = NULL;
  char vbuf[128], nbuf[3] = "BP";
  int has_startb = AY_FALSE, has_startb2 = AY_FALSE;
  int has_endb = AY_FALSE, has_endb2 = AY_FALSE;

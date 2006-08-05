@@ -20,7 +20,7 @@
 void
 ay_selp_clear(ay_object *o)
 {
- ay_point_object *next = NULL, *p = NULL;
+ ay_point *next = NULL, *p = NULL;
 
   if(!o)
     return;
@@ -50,7 +50,7 @@ ay_selp_selall(ay_object *o)
  int ay_status = AY_OK;
  double p[3] = {DBL_MIN, DBL_MIN, DBL_MIN};
  int i = 0;
- ay_point_object *newp = NULL;
+ ay_point *newp = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -61,7 +61,7 @@ ay_selp_selall(ay_object *o)
   for(i = 0; i < ay_point_edit_coords_number; i++)
     {
       newp = NULL;
-      if(!(newp = calloc(1, sizeof(ay_point_object))))
+      if(!(newp = calloc(1, sizeof(ay_point))))
 	{
 	  ay_error(AY_EOMEM, fname, NULL);
 	  return AY_ERROR;
@@ -120,7 +120,7 @@ ay_selp_applytrafotcmd(ClientData clientData, Tcl_Interp *interp,
  int ay_status = AY_OK;
  ay_object *o = NULL;
  ay_list_object *sel = ay_selection;
- ay_point_object *bak = NULL, *p = NULL;
+ ay_point *bak = NULL, *p = NULL;
  int all = AY_FALSE;
  double m[16];
 
@@ -205,7 +205,7 @@ int
 ay_selp_invert(ay_object *o)
 {
  int ay_status = AY_OK;
- ay_point_object *t = NULL, *p = NULL, **last2 = NULL, *p2 = NULL;
+ ay_point *t = NULL, *p = NULL, **last2 = NULL, *p2 = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -301,7 +301,7 @@ ay_selp_center(ay_object *o, int mode)
  int ay_status = AY_OK;
  double *p1, *p2, x, y, z;
  int i = 0, k;
- ay_point_object *po = NULL;
+ ay_point *po = NULL;
 
   if(!o)
     return AY_ENULL;

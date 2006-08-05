@@ -32,7 +32,7 @@ void ay_wrib_getup(double *dir, double *up, double *roll);
 int
 ay_wrib_noexport(ay_object *o)
 {
- ay_tag_object *tag = NULL;
+ ay_tag *tag = NULL;
 
   if(o)
     {
@@ -270,7 +270,7 @@ int
 ay_wrib_rioptions(void)
 {
  int ay_status = AY_OK;
- ay_riopt_object *riopt = NULL;
+ ay_riopt *riopt = NULL;
  ay_root_object *root = NULL;
  RtInt fw = 0, fh = 0;
  RtFloat rtftemp = (RtFloat)0.0;
@@ -451,7 +451,7 @@ ay_wrib_refobject(char *file, ay_object *o)
  int ay_status = AY_OK;
  char *iafilename = NULL;
  int found = AY_FALSE;
- ay_tag_object *tag = NULL;
+ ay_tag *tag = NULL;
 
   tag = o->tags;
   while(tag && !found)
@@ -748,7 +748,7 @@ ay_wrib_displaytags(void)
 {
  char fname[] = "wrib_displaytags";
  ay_object *root = NULL;
- ay_tag_object *tag = NULL;
+ ay_tag *tag = NULL;
  int i = 0, j = 0;
  char *val = NULL, *name = NULL, *type = NULL, *mode = NULL;
  size_t len;
@@ -914,7 +914,7 @@ ay_wrib_hidertags(void)
 {
  char fname[] = "wrib_hidertags";
  ay_object *root = NULL;
- ay_tag_object *tag = NULL;
+ ay_tag *tag = NULL;
  int i = 0;
  char *val = NULL, *type = NULL;
  size_t len;
@@ -1478,7 +1478,7 @@ ay_wrib_scene(char *file, char *image, int temp, double *from, double *to,
  int ay_status = AY_OK;
  ay_object *o = ay_root;
  ay_root_object *root = NULL;
- ay_riopt_object *riopt = NULL;
+ ay_riopt *riopt = NULL;
  RtPoint f, t, d;
  RtFloat aspect = (RtFloat)1.0, swleft, swright, swtop, swbot;
  RtFloat fov = (RtFloat)90.0, rinearp, rifarp;
@@ -1826,7 +1826,7 @@ ay_wrib_cb(struct Togl *togl, int argc, char *argv[])
  int ay_status = AY_OK;
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  ay_root_object *root = NULL;
- ay_riopt_object *riopt = NULL;
+ ay_riopt *riopt = NULL;
  int width = Togl_Width (togl);
  int height = Togl_Height (togl);
  int i, temp = 0;
@@ -1909,7 +1909,7 @@ ay_wrib_tcmd(ClientData clientData, Tcl_Interp * interp,
  ay_list_object *sel = ay_selection;
  ay_camera_object *cam = NULL;
  ay_root_object *root = NULL;
- ay_riopt_object *riopt = NULL;
+ ay_riopt *riopt = NULL;
  int old_resinstances = ay_prefs.resolveinstances;
  int width = 400;
  int height = 300;

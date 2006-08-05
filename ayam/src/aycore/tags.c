@@ -19,7 +19,7 @@
  *  free tag <tag>
  */
 int
-ay_tags_free(ay_tag_object *tag)
+ay_tags_free(ay_tag *tag)
 {
  int ay_status = AY_OK;
 
@@ -44,7 +44,7 @@ ay_tags_free(ay_tag_object *tag)
 int
 ay_tags_delall(ay_object *o)
 {
- ay_tag_object *t = NULL, *nt = NULL;
+ ay_tag *t = NULL, *nt = NULL;
 
   if(!o)
     return AY_OK;
@@ -67,16 +67,16 @@ ay_tags_delall(ay_object *o)
  *  copy a tag from <source> to <dest>
  */
 int
-ay_tags_copy(ay_tag_object *source,
-	     ay_tag_object **dest)
+ay_tags_copy(ay_tag *source,
+	     ay_tag **dest)
 {
  int ay_status = AY_OK;
- ay_tag_object *new = NULL;
+ ay_tag *new = NULL;
 
-  if(!(new = calloc(1,sizeof(ay_tag_object))))
+  if(!(new = calloc(1,sizeof(ay_tag))))
     return AY_EOMEM; 
 
-  memcpy(new, source, sizeof(ay_tag_object)); 
+  memcpy(new, source, sizeof(ay_tag)); 
   /* danger! links point to original hierachy */
 
   new->next = NULL;
@@ -104,7 +104,7 @@ int
 ay_tags_copyall(ay_object *src, ay_object *dst)
 {
  int ay_status = AY_OK;
- ay_tag_object *tag = NULL, **newtagptr = NULL;
+ ay_tag *tag = NULL, **newtagptr = NULL;
 
   tag = src->tags;
   newtagptr = &(dst->tags);
@@ -128,11 +128,11 @@ ay_tags_copyall(ay_object *src, ay_object *dst)
  *  between calls, or has to call ay_tags_append(NULL, NULL).
  */
 int
-ay_tags_append(ay_object *o, ay_tag_object *tag)
+ay_tags_append(ay_object *o, ay_tag *tag)
 {
  int ay_status = AY_OK;
  static ay_object *last_object = NULL;
- static ay_tag_object **next_tag = NULL;
+ static ay_tag **next_tag = NULL;
 
   if(!o)
     {
@@ -270,7 +270,7 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp * interp,
 {
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
- ay_tag_object *new = NULL, **next = NULL;
+ ay_tag *new = NULL, **next = NULL;
  Tcl_HashEntry *entry = NULL;
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  int index = 0, i, pasteProp = AY_FALSE;
@@ -424,7 +424,7 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp * interp,
 	  if(strcmp(argv[index], ""))
 	    {
 
-	      if(!(new = calloc(1, sizeof(ay_tag_object))))
+	      if(!(new = calloc(1, sizeof(ay_tag))))
 		{
 		  ay_error(AY_EOMEM, fname, NULL);
 		  return TCL_OK;
@@ -477,7 +477,7 @@ ay_tags_addtcmd(ClientData clientData, Tcl_Interp * interp,
 {
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
- ay_tag_object *new = NULL, *t = NULL;
+ ay_tag *new = NULL, *t = NULL;
  Tcl_HashEntry *entry = NULL;
  char fname[] = "addTag";
 
@@ -507,7 +507,7 @@ ay_tags_addtcmd(ClientData clientData, Tcl_Interp * interp,
 	  if(ay_prefs.wutag)
 	    ay_error(AY_EWARN, fname, "Tag type is not registered!");
 	}
-      if(!(new = calloc(1, sizeof(ay_tag_object))))
+      if(!(new = calloc(1, sizeof(ay_tag))))
 	{
 	  ay_error(AY_EOMEM, fname, NULL);
 	  return TCL_OK;
@@ -557,7 +557,7 @@ ay_tags_gettcmd(ClientData clientData, Tcl_Interp * interp,
 {
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
- ay_tag_object *tag = NULL;
+ ay_tag *tag = NULL;
  char fname[] = "getTags";
 
   if(argc < 3)
@@ -604,7 +604,7 @@ ay_tags_deletetcmd(ClientData clientData, Tcl_Interp * interp,
  int ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
- ay_tag_object *tag = NULL, **last = NULL;
+ ay_tag *tag = NULL, **last = NULL;
  char fname[] = "delTags";
  int mode = 0; /* 0 delall, 1 type */
 
@@ -872,7 +872,7 @@ int
 ay_tags_reconnect(ay_object *o, char *tagtype, char *tagname)
 {
  int ay_status = AY_OK;
- ay_tag_object *tag;
+ ay_tag *tag;
 
   if(!tagtype || !tagname)
     return AY_ENULL;

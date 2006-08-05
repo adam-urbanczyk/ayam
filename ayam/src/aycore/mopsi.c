@@ -263,7 +263,7 @@ ay_mopsi_rioptions(FILE *fileptr, int insert)
  int itemp = 0;
  int read;
  ay_root_object *root = NULL;
- ay_riopt_object *riopt = NULL;
+ ay_riopt *riopt = NULL;
 
   root = (ay_root_object *)(ay_root->refine);
 
@@ -271,7 +271,7 @@ ay_mopsi_rioptions(FILE *fileptr, int insert)
     return AY_ENULL;
 
   /* read RiOptions */
-  if(!(riopt = calloc(1, sizeof(ay_riopt_object))))
+  if(!(riopt = calloc(1, sizeof(ay_riopt))))
     { return AY_EOMEM; }
 
 
@@ -1047,7 +1047,7 @@ ay_mopsi_tags(FILE *fileptr)
 {
  int ay_status = AY_OK;
  ay_object *o = ay_mopsi_lastread;
- ay_tag_object *tag = NULL;
+ ay_tag *tag = NULL;
  Tcl_HashEntry *entry = NULL;
  int tcount = 0, i = 0;
 
@@ -1059,7 +1059,7 @@ ay_mopsi_tags(FILE *fileptr)
  for(i=0;i<tcount;i++)
    {
      tag = NULL;
-     if(!(tag = calloc(1, sizeof(ay_tag_object))))
+     if(!(tag = calloc(1, sizeof(ay_tag))))
        return AY_EOMEM;
 
      ay_mopsi_string(fileptr,&(tag->name));
@@ -1648,7 +1648,7 @@ ay_mopsi_extrude(FILE *fileptr, ay_object *o)
  int has_startb2 = AY_FALSE, has_endb2 = AY_FALSE;
  int startb_type2;
  double startb_radius2;
- ay_tag_object tag = {0}, *stag = NULL, *etag = NULL;
+ ay_tag tag = {0}, *stag = NULL, *etag = NULL;
  char vbuf[128], nbuf[3] = "BP";
 
   if(!(ext = calloc(1, sizeof(ay_extrude_object))))

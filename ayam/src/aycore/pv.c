@@ -28,7 +28,7 @@ int
 ay_pv_filltokpar(ay_object *o, int declare, int start,
 		 int *added, RtToken tokens[], RtPointer parms[])
 {
- ay_tag_object *tag = NULL;
+ ay_tag *tag = NULL;
  char *tagvaltmp = NULL, *pvname, *pvstorage, *pvtype, *pvvalue, *numvals;
  char tok[] = ",";
  unsigned int i, n;
@@ -289,7 +289,7 @@ int
 ay_pv_add(ay_object *o, char *name, char *detail, int type,
 	  int datalen, void *data)
 {
- ay_tag_object *tag = NULL, **nexttag;
+ ay_tag *tag = NULL, **nexttag;
  Tcl_DString ds;
  int i;
  char tmp[255];
@@ -305,7 +305,7 @@ ay_pv_add(ay_object *o, char *name, char *detail, int type,
       tag = tag->next;
     }
   tag = NULL;
-  if(!(tag = calloc(1, sizeof(ay_tag_object))))
+  if(!(tag = calloc(1, sizeof(ay_tag))))
     return AY_EOMEM;
 
   tag->type = ay_pv_tagtype;
@@ -364,19 +364,19 @@ ay_pv_add(ay_object *o, char *name, char *detail, int type,
  *  the elements in <t2> will be appended to the elements in <t1>
  */
 int
-ay_pv_merge(ay_tag_object *t1, ay_tag_object *t2, ay_tag_object **mt)
+ay_pv_merge(ay_tag *t1, ay_tag *t2, ay_tag **mt)
 {
  int ay_status = AY_OK;
  char *comma1 = NULL, *comma2 = NULL, buf[128];
  int i = 0;
  unsigned int n1, n2;
- ay_tag_object *nt = NULL;
+ ay_tag *nt = NULL;
  Tcl_DString ds;
 
   if(!t1 || !t2)
     return AY_ENULL;
 
-  if(!(nt = calloc(1, sizeof(ay_tag_object))))
+  if(!(nt = calloc(1, sizeof(ay_tag))))
     { ay_status = AY_EOMEM; goto cleanup; }
 
   if(!(nt->name = calloc(3, sizeof(char))))
@@ -456,7 +456,7 @@ cleanup:
  *  returns AY_TRUE if they are equal, returns AY_FALSE else and on error
  */
 int
-ay_pv_cmpname(ay_tag_object *t1, ay_tag_object *t2)
+ay_pv_cmpname(ay_tag *t1, ay_tag *t2)
 {
   char *c1 = NULL, *c2 = NULL;
 
@@ -489,7 +489,7 @@ ay_pv_cmpname(ay_tag_object *t1, ay_tag_object *t2)
  *  
  */
 int
-ay_pv_convert(ay_tag_object *tag, unsigned int *datalen, void **data)
+ay_pv_convert(ay_tag *tag, unsigned int *datalen, void **data)
 {
  unsigned int count = 0, i = 0;
  char *c1, *c2, *c3;
@@ -553,7 +553,7 @@ ay_pv_convert(ay_tag_object *tag, unsigned int *datalen, void **data)
 int
 ay_pv_count(ay_object *o)
 {
- ay_tag_object *tag = NULL;
+ ay_tag *tag = NULL;
  int count = 0;
 
   if(!o)

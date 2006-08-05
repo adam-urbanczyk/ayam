@@ -22,7 +22,7 @@ unsigned int ay_current_glname = 0;
 void
 ay_draw_selp(ay_object *o)
 {
- ay_point_object *point = NULL;
+ ay_point *point = NULL;
 
   if(o->selp)
     {

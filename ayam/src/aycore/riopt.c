@@ -20,7 +20,7 @@
 int
 ay_riopt_wrib(ay_object *o)
 {
- ay_tag_object *tag = NULL;
+ ay_tag *tag = NULL;
  RtColor color = {0.0f,0.0f,0.0f};
  char *tagvaltmp = NULL, *attrname = NULL, *parname = NULL,
    *partype = NULL, *parval = NULL, *parval2 = NULL;

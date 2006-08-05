@@ -6341,7 +6341,7 @@ ay_npt_isclosedu(ay_nurbpatch_object *np)
 void
 ay_npt_clearmp(ay_nurbpatch_object *np)
 {
-  ay_mpoint_object *next = NULL, *mp = NULL;
+  ay_mpoint *next = NULL, *mp = NULL;
 
   if(!np)
     return;
@@ -6371,7 +6371,7 @@ int
 ay_npt_recreatemp(ay_nurbpatch_object *np)
 {
  int ay_status = AY_OK;
- ay_mpoint_object *mp = NULL, *new = NULL;
+ ay_mpoint *mp = NULL, *new = NULL;
  double *ta, **tmp = NULL;
  int found = AY_FALSE, a, b, i, j, ii, jj, count;
 
@@ -6427,7 +6427,7 @@ ay_npt_recreatemp(ay_nurbpatch_object *np)
 
 	      if(!found)
 		{
-		  if(!(new = calloc(1, sizeof(ay_mpoint_object))))
+		  if(!(new = calloc(1, sizeof(ay_mpoint))))
 		    { free(tmp); return AY_EOMEM; }
 		  if(!(new->points = calloc(count, sizeof(double *))))
 		    { free(tmp); free(new); return AY_EOMEM; }
@@ -6457,8 +6457,8 @@ ay_npt_collapseselp(ay_object *o)
 {
  int ay_status = AY_OK;
  ay_nurbpatch_object *np = NULL;
- ay_mpoint_object *new = NULL, *p = NULL, *t = NULL, **last = NULL;
- ay_point_object *selp = NULL;
+ ay_mpoint *new = NULL, *p = NULL, *t = NULL, **last = NULL;
+ ay_point *selp = NULL;
  double *first = NULL;
  int count = 0, i, found = AY_FALSE;
  char fname[] = "collapseselp";
@@ -6486,7 +6486,7 @@ ay_npt_collapseselp(ay_object *o)
       return AY_ERROR;
     }
 
-  if(!(new = calloc(1, sizeof(ay_mpoint_object))))
+  if(!(new = calloc(1, sizeof(ay_mpoint))))
     return AY_EOMEM;
   if(!(new->points = calloc(count, sizeof(double *))))
     { free(new); return AY_EOMEM; }
@@ -6557,8 +6557,8 @@ ay_npt_explodemp(ay_object *o)
 {
  int ay_status = AY_OK;
  ay_nurbpatch_object *np = NULL;
- ay_mpoint_object *p = NULL, *t = NULL, **last = NULL;
- ay_point_object *selp = NULL;
+ ay_mpoint *p = NULL, *t = NULL, **last = NULL;
+ ay_point *selp = NULL;
  int found = AY_FALSE, i, err = AY_TRUE;
  char fname[] = "explodemp";
 
@@ -6630,7 +6630,7 @@ ay_npt_getbeveltags(ay_object *o, int place,
 		    int *has_bevel, int *type, double *radius, int *sense)
 {
  int ay_status = AY_OK;
- ay_tag_object *tag = NULL;
+ ay_tag *tag = NULL;
  int where;
 
  *has_bevel = AY_FALSE;
@@ -6666,7 +6666,7 @@ ay_npt_copytptag(ay_object *src, ay_object *dst)
 {
  int ay_status = AY_OK;
  ay_object *o = NULL;
- ay_tag_object *t = NULL, *s = NULL;
+ ay_tag *t = NULL, *s = NULL;
 
   if(!src || !dst)
     return AY_ENULL;

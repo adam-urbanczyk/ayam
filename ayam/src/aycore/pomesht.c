@@ -345,7 +345,7 @@ ay_pomesht_merge(int merge_pv_tags, ay_list_object *list, ay_object **result)
  int has_normals = -1, stride = 0;
  double dummy[3] = {0};
  int have_pv_tags = AY_TRUE;
- ay_tag_object *tag1 = NULL, *tag2 = NULL, *mtag = NULL;
+ ay_tag *tag1 = NULL, *tag2 = NULL, *mtag = NULL;
  char *ct;
 
   while(lo)

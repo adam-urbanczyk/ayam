@@ -831,7 +831,7 @@ int
 ay_script_convertcb(ay_object *o, int in_place)
 {
  int ay_status = AY_OK;
- ay_tag_object *tag = NULL;
+ ay_tag *tag = NULL;
  ay_script_object *sc = NULL;
  ay_level_object *newl = NULL;
  ay_object *cmo = NULL, *new = NULL;
