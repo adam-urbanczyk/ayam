@@ -111,7 +111,7 @@ typedef struct ay_rrib_attrstate_s {
    int shadow; /* yes, no */
 
   /* all other RiAttributes */
-  ay_tag_object *tags;
+  ay_tag *tags;
 
   int btype_u, btype_v;
   RtBasis *ubasisptr;
@@ -587,10 +587,10 @@ void ay_rrib_readparams(int n, RtToken tokens[], RtPointer parms[],
 
 void ay_rrib_readtag(char *tagtype, char *tagname, char *name,
 		     int i, RtToken tokens[], RtPointer parms[],
-		     ay_tag_object **destination);
+		     ay_tag **destination);
 
 void ay_rrib_readpvs(int n, RtToken tokens[], RtPointer parms[],
-		     int ahandlen, char **ahand, ay_tag_object **dest);
+		     int ahandlen, char **ahand, ay_tag **dest);
 
 void ay_rrib_fixname(char *name);
 
@@ -1715,11 +1715,11 @@ ay_rrib_RiDisplay(char *name, RtToken type, RtToken mode,
 		  RtInt n, RtToken tokens[], RtPointer parms[])
 {
  int ay_status = AY_OK;
- ay_tag_object *nt = NULL;
+ ay_tag *nt = NULL;
  char tname[] = "RiDisplay";
  Tcl_DString ds;
 
-  if(!(nt = calloc(1, sizeof(ay_tag_object))))
+  if(!(nt = calloc(1, sizeof(ay_tag))))
     {
       return;
     }
@@ -1775,7 +1775,7 @@ ay_rrib_RiErrorHandler(RtErrorHandler handler)
 RtVoid
 ay_rrib_RiExposure(RtFloat gain, RtFloat gamma)
 {
- ay_riopt_object *riopt = NULL;
+ ay_riopt *riopt = NULL;
  ay_root_object *root = NULL;
 
   root = (ay_root_object *)ay_root->refine;
@@ -1808,7 +1808,7 @@ ay_rrib_RiExterior(RtToken name,
 RtVoid
 ay_rrib_RiFormat(RtInt xres, RtInt yres, RtFloat aspect)
 {
- ay_riopt_object *riopt = NULL;
+ ay_riopt *riopt = NULL;
  ay_root_object *root = NULL;
 
   root = (ay_root_object *)ay_root->refine;
@@ -1902,11 +1902,11 @@ ay_rrib_RiHider(RtToken type,
 		RtInt n, RtToken tokens[], RtPointer parms[])
 {
  int ay_status = AY_OK;
- ay_tag_object *nt = NULL;
+ ay_tag *nt = NULL;
  char tname[] = "RiHider";
  Tcl_DString ds;
 
-  if(!(nt = calloc(1, sizeof(ay_tag_object))))
+  if(!(nt = calloc(1, sizeof(ay_tag))))
     {
       return;
     }
@@ -2319,7 +2319,7 @@ ay_rrib_RiOption(RtToken name,
 {
  int i, option_handled = AY_FALSE;
  char fname[] = "ay_rrib_RiOption";
- ay_riopt_object *riopt = NULL;
+ ay_riopt *riopt = NULL;
  ay_root_object *root = NULL;
  char *stemp;
 
@@ -2700,7 +2700,7 @@ RtVoid
 ay_rrib_RiPixelFilter(RtFilterFunc filterfunc,
 		      RtFloat xwidth, RtFloat ywidth)
 {
- ay_riopt_object *riopt = NULL;
+ ay_riopt *riopt = NULL;
  ay_root_object *root = NULL;
 
   root = (ay_root_object *)ay_root->refine;
@@ -2716,7 +2716,7 @@ ay_rrib_RiPixelFilter(RtFilterFunc filterfunc,
 RtVoid
 ay_rrib_RiPixelSamples(RtFloat xsamples, RtFloat ysamples)
 {
- ay_riopt_object *riopt = NULL;
+ ay_riopt *riopt = NULL;
  ay_root_object *root = NULL;
 
   root = (ay_root_object *)ay_root->refine;
@@ -2732,7 +2732,7 @@ ay_rrib_RiPixelSamples(RtFloat xsamples, RtFloat ysamples)
 RtVoid
 ay_rrib_RiPixelVariance(RtFloat variation)
 {
- ay_riopt_object *riopt = NULL;
+ ay_riopt *riopt = NULL;
  ay_root_object *root = NULL;
 
   root = (ay_root_object *)ay_root->refine;
@@ -3053,7 +3053,7 @@ RtVoid
 ay_rrib_RiQuantize(RtToken type, RtInt one,
 		   RtInt min, RtInt max, RtFloat ampl)
 {
- ay_riopt_object *riopt = NULL;
+ ay_riopt *riopt = NULL;
  ay_root_object *root = NULL;
 
   root = (ay_root_object *)ay_root->refine;
@@ -3732,7 +3732,7 @@ RtFloat
 ay_rrib_RiBoxFilter(RtFloat x, RtFloat y,
 		    RtFloat xwidth, RtFloat ywidth)
 {
- ay_riopt_object *riopt = NULL;
+ ay_riopt *riopt = NULL;
  ay_root_object *root = NULL;
 
   root = (ay_root_object *)ay_root->refine;
@@ -3750,7 +3750,7 @@ RtFloat
 ay_rrib_RiTriangleFilter(RtFloat x, RtFloat y,
 			 RtFloat xwidth, RtFloat ywidth)
 {
- ay_riopt_object *riopt = NULL;
+ ay_riopt *riopt = NULL;
  ay_root_object *root = NULL;
 
   root = (ay_root_object *)ay_root->refine;
@@ -3768,7 +3768,7 @@ RtFloat
 ay_rrib_RiCatmullRomFilter(RtFloat x, RtFloat y,
 			   RtFloat xwidth, RtFloat ywidth)
 {
- ay_riopt_object *riopt = NULL;
+ ay_riopt *riopt = NULL;
  ay_root_object *root = NULL;
 
   root = (ay_root_object *)ay_root->refine;
@@ -3786,7 +3786,7 @@ RtFloat
 ay_rrib_RiGaussianFilter(RtFloat x, RtFloat y,
 			 RtFloat xwidth, RtFloat ywidth)
 {
- ay_riopt_object *riopt = NULL;
+ ay_riopt *riopt = NULL;
  ay_root_object *root = NULL;
 
   root = (ay_root_object *)ay_root->refine;
@@ -3804,7 +3804,7 @@ RtFloat
 ay_rrib_RiSincFilter(RtFloat x, RtFloat y,
 		     RtFloat xwidth, RtFloat ywidth)
 {
- ay_riopt_object *riopt = NULL;
+ ay_riopt *riopt = NULL;
  ay_root_object *root = NULL;
 
   root = (ay_root_object *)ay_root->refine;
@@ -4148,10 +4148,10 @@ ay_rrib_readparams(int n, RtToken tokens[], RtPointer parms[],
 void
 ay_rrib_readtag(char *tagtype, char *tagname, char *name,
 		int i, RtToken tokens[], RtPointer parms[],
-		ay_tag_object **destination)
+		ay_tag **destination)
 {
  int type, found = AY_FALSE;
- ay_tag_object *n = NULL, *ot;
+ ay_tag *n = NULL, *ot;
  Tcl_DString ds;
  RIB_HASHHND ht = NULL;
  PRIB_HASHATOM  p = NULL;
@@ -4166,7 +4166,7 @@ ay_rrib_readtag(char *tagtype, char *tagname, char *name,
   if(!destination)
    return;
 
-  if(!(n = calloc(1, sizeof(ay_tag_object))))
+  if(!(n = calloc(1, sizeof(ay_tag))))
     {
       return;
     }
@@ -4333,7 +4333,7 @@ ay_rrib_readtag(char *tagtype, char *tagname, char *name,
  */
 void
 ay_rrib_readpvs(int n, RtToken tokens[], RtPointer parms[],
-		int ahandlen, char **ahand, ay_tag_object **dest)
+		int ahandlen, char **ahand, ay_tag **dest)
 {
  char fname[] = "ay_rrib_readpv";
  int i, j, already_handled, numitems;
@@ -4345,7 +4345,7 @@ ay_rrib_readpvs(int n, RtToken tokens[], RtPointer parms[],
  RtColor *colors, *col;
  RtPoint *points, *pnt;
  int type, class;
- ay_tag_object *nt = NULL;
+ ay_tag *nt = NULL;
  Tcl_DString ds;
  RIB_HASHHND ht = NULL;
  PRIB_HASHATOM p = NULL;
@@ -4378,7 +4378,7 @@ ay_rrib_readpvs(int n, RtToken tokens[], RtPointer parms[],
       if(!already_handled)
 	{
 	  nt = NULL;
-	  if(!(nt = calloc(1, sizeof(ay_tag_object))))
+	  if(!(nt = calloc(1, sizeof(ay_tag))))
 	    {
 	      ay_error(AY_EOMEM, fname, NULL);
 	      return;
@@ -4885,7 +4885,7 @@ void
 ay_rrib_popattribs(void)
 {
  ay_rrib_attrstate *nextstate = NULL;
- ay_tag_object *tag = NULL;
+ ay_tag *tag = NULL;
  char fname[] = "ay_rrib_popattribs";
 
   if(!ay_rrib_cattributes)
@@ -5204,7 +5204,7 @@ ay_rrib_trafotoobject(ay_object *o, double *transform)
 int
 ay_rrib_comptags(ay_object *o1, ay_object *o2)
 {
- ay_tag_object *t1, *t2, *t, *tc;
+ ay_tag *t1, *t2, *t, *tc;
  int i = 0, j = 0, found = AY_FALSE;
 
   t1 = o1->tags;
@@ -5458,7 +5458,7 @@ ay_rrib_linkmaterial(ay_object *o)
 void
 ay_rrib_linktexcoord(ay_object *o)
 {
- ay_tag_object *nt = NULL;
+ ay_tag *nt = NULL;
  char buf[255], tagname[] = "TC";
 
   if((AY_EPSILON > fabs(ay_rrib_cattributes->s1)) &&
@@ -5471,7 +5471,7 @@ ay_rrib_linktexcoord(ay_object *o)
      (AY_EPSILON > fabs(ay_rrib_cattributes->t4-1.0f)))
     return;
 
-  if(!(nt = calloc(1, sizeof(ay_tag_object))))
+  if(!(nt = calloc(1, sizeof(ay_tag))))
     return;
 
   nt->type = ay_tc_tagtype;

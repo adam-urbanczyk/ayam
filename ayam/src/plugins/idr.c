@@ -207,7 +207,7 @@ int Idr_Init(Tcl_Interp *interp);
 int
 idr_propagate_material(ay_object *from, ay_object *to)
 {
- ay_tag_object *next = NULL;
+ ay_tag *next = NULL;
  ay_mat_object *mat;
 
   mat = (ay_mat_object *)(from->refine);
@@ -287,7 +287,7 @@ int
 idr_propagate_parent(ay_object *from, double threshhold)
 {
  ay_list_object *clevel = NULL;
- ay_tag_object *next = NULL;
+ ay_tag *next = NULL;
  ay_object *o = NULL;
 
   clevel = ay_currentlevel->next;
@@ -339,7 +339,7 @@ idr_propagate_dist(double *p1, ay_object *from, ay_object *cur,
  int ay_status = AY_OK;
  GLdouble mm[16];
  double p2[3];
- ay_tag_object *next = NULL;
+ ay_tag *next = NULL;
 
  o = cur;
 
@@ -417,7 +417,7 @@ idr_propagate_disttcmd(ClientData clientData, Tcl_Interp *interp,
  GLdouble mm[16];
  double threshhold = 0.0;
  int mode = 0;
- ay_tag_object *next = NULL;
+ ay_tag *next = NULL;
 
  if(argc>1)
    {
@@ -527,7 +527,7 @@ int
 idr_save_selected()
 {
  ay_list_object *sel = ay_selection;
- ay_tag_object *t = NULL, *tccidr = NULL;
+ ay_tag *t = NULL, *tccidr = NULL;
  ay_object *o = NULL, *n = NULL, **p = NULL;
  int i = 0;
  int ay_status = AY_OK;
@@ -582,7 +582,7 @@ idr_save_selected()
 		{
 		  t = NULL;
 		  /* create new tag */
-		  if(!(t = calloc(1, sizeof(ay_tag_object))))
+		  if(!(t = calloc(1, sizeof(ay_tag))))
 		    return AY_EOMEM;
 
 		  /* fill new tag */
@@ -621,7 +621,7 @@ int
 idr_assign_impsel(void)
 {
  ay_list_object *sel = ay_selection;
- ay_tag_object *t = NULL, *told = NULL, *tnew = NULL;
+ ay_tag *t = NULL, *told = NULL, *tnew = NULL;
  ay_object *o = NULL;
 
   while(sel)
@@ -660,7 +660,7 @@ idr_assign_impsel(void)
       else
 	{
 	  /* create new tag */
-	  if(!(tnew = calloc(1, sizeof(ay_tag_object))))
+	  if(!(tnew = calloc(1, sizeof(ay_tag))))
 	    return AY_EOMEM;
 
 	  /* fill new tag */
@@ -694,7 +694,7 @@ idr_clear_changed(ay_object *o)
 {
  int ay_status = AY_OK;
  ay_object *down = NULL;
- ay_tag_object *t = NULL, **tprev = NULL;
+ ay_tag *t = NULL, **tprev = NULL;
 
  if(o)
    {
@@ -747,7 +747,7 @@ idr_clear_changed(ay_object *o)
 int
 idr_assign_impchanged(void)
 {
- ay_tag_object *t = NULL, *told = NULL, *tnew = NULL;
+ ay_tag *t = NULL, *told = NULL, *tnew = NULL;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL, *s = NULL;
  int changed = AY_FALSE;
@@ -852,7 +852,7 @@ idr_assign_impchanged(void)
 	  else
 	    {
 	      /* create new tag */
-	      if(!(tnew = calloc(1, sizeof(ay_tag_object))))
+	      if(!(tnew = calloc(1, sizeof(ay_tag))))
 		return AY_EOMEM;
 
 	      /* fill new tag */
@@ -895,7 +895,7 @@ idr_3dreg_topart(ay_object *o, ay_view_object *view, idr_picpart **partlist)
 {
  int ay_status = AY_OK;
  double bb[24] = {0};
- ay_tag_object *t = NULL;
+ ay_tag *t = NULL;
  int left, top, right, bottom;
  idr_picpart *part = NULL;
  double i = 0.0;
@@ -1092,7 +1092,7 @@ idr_clear_importance(ay_object *o)
 {
  int ay_status = AY_OK;
  ay_object *down = NULL;
- ay_tag_object *t = NULL, **tprev = NULL;
+ ay_tag *t = NULL, **tprev = NULL;
 
  if(o)
    {
@@ -1148,8 +1148,8 @@ idr_copy_importance(ay_object *o, char *from_type)
  int ay_status = AY_OK;
  double dtemp = 0.0;
  ay_object *down = NULL;
- ay_tag_object *t = NULL;
- ay_tag_object *tidr = NULL, *tiidr = NULL;
+ ay_tag *t = NULL;
+ ay_tag *tidr = NULL, *tiidr = NULL;
 
  if(o)
    {
@@ -1198,7 +1198,7 @@ idr_copy_importance(ay_object *o, char *from_type)
 	 if(!tiidr)
 	   { /* create new iidrt tag */
 
-	     if(!(tiidr = calloc(1, sizeof(ay_tag_object))))
+	     if(!(tiidr = calloc(1, sizeof(ay_tag))))
 	       return AY_EOMEM;
 
 	     /* fill new tag */
@@ -1253,7 +1253,7 @@ int
 idr_show_parts(struct Togl *togl, idr_picpart *partlist)
 {
   /* int ay_status = AY_OK;*/
- ay_tag_object *t = NULL;
+ ay_tag *t = NULL;
  idr_picpart *part = NULL;
  char buf[255];
  ay_object *v = NULL;
@@ -1279,7 +1279,7 @@ idr_show_parts(struct Togl *togl, idr_picpart *partlist)
  while(part)
    {
      /* create new ridrt tag */
-     if(!(t = calloc(1, sizeof(ay_tag_object))))
+     if(!(t = calloc(1, sizeof(ay_tag))))
        return AY_EOMEM;
 
      /* fill new tag */
@@ -1333,7 +1333,7 @@ idr_wrib_object(ay_object *o, char *file, double importance, int exclude,
  ay_wribcb *cb = NULL;
  ay_level_object *l = NULL;
  char *parname = "name";
- ay_tag_object *tag = NULL;
+ ay_tag *tag = NULL;
  double oimportance = -1.0;
 
   if(!o)
@@ -2727,7 +2727,7 @@ idr_get2dbbclist(idr_picpart **partlist, double importance,
 		 int width, int height, ay_object *o)
 {
  int ay_status = AY_OK;
- ay_tag_object *t = NULL;
+ ay_tag *t = NULL;
  double i = 0.0;
  int left, top, right, bottom;
  idr_picpart *part = NULL;
@@ -2807,7 +2807,7 @@ idr_getpartsfromimpreg(idr_picpart **partlist, struct Togl *togl,
 		       double importance, int width, int height)
 {
  int ay_status = AY_OK;
- ay_tag_object *t = NULL, *told = NULL, *tnew = NULL;
+ ay_tag *t = NULL, *told = NULL, *tnew = NULL;
  int left, top, right, bottom;
  idr_picpart *part = NULL;
  ay_object *v = NULL;
@@ -2939,7 +2939,7 @@ idr_getpartsfromimpreg(idr_picpart **partlist, struct Togl *togl,
 	  else
 	    {
 	      /* create new tag */
-	      if(!(tnew = calloc(1, sizeof(ay_tag_object))))
+	      if(!(tnew = calloc(1, sizeof(ay_tag))))
 		return AY_EOMEM;
 
 	      /* fill new tag */
@@ -2975,7 +2975,7 @@ idr_getpartsfrom3dimpreg(idr_picpart **partlist, struct Togl *togl,
 		       double importance, int width, int height)
 {
  int ay_status = AY_OK;
- ay_tag_object *t = NULL, *told = NULL, *tnew = NULL;
+ ay_tag *t = NULL, *told = NULL, *tnew = NULL;
  ay_view_object *view = NULL;
  ay_object *o = NULL;
 
@@ -3048,7 +3048,7 @@ idr_getpartsfrom3dimpreg(idr_picpart **partlist, struct Togl *togl,
 	  else
 	    {
 	      /* create new tag */
-	      if(!(tnew = calloc(1, sizeof(ay_tag_object))))
+	      if(!(tnew = calloc(1, sizeof(ay_tag))))
 		return AY_EOMEM;
 
 	      /* fill new tag */
@@ -4038,7 +4038,7 @@ int
 idr_delregion(char *vname)
 {
   /* char fname[] = "idr_delregion";*/
- ay_tag_object *t = NULL, **tlast = NULL;
+ ay_tag *t = NULL, **tlast = NULL;
  double X1, Y1, X2, Y2, imp;
  char tvname[255];
 
@@ -4101,7 +4101,7 @@ idr_defregion_tcb(struct Togl *togl, int argc, char *argv[])
  */
  double winX, winY, winX2, winY2, dtemp, imp;
  char buffer[255], *vname;
- ay_tag_object *tnew = NULL;
+ ay_tag *tnew = NULL;
  ay_object *o = ay_root, *v = NULL;
  int del = AY_FALSE;
 
@@ -4165,7 +4165,7 @@ idr_defregion_tcb(struct Togl *togl, int argc, char *argv[])
 
 
   /* create new tag */
-  if(!(tnew = calloc(1, sizeof(ay_tag_object))))
+  if(!(tnew = calloc(1, sizeof(ay_tag))))
     {
       ay_error(AY_EOMEM, fname, NULL);
       return TCL_OK;
@@ -4212,7 +4212,7 @@ int
 idr_drawroot_cb(struct Togl *togl, ay_object *o)
 {
  ay_view_object *v1 = NULL;
- ay_tag_object *t = NULL;
+ ay_tag *t = NULL;
  ay_object *v = NULL;
  double X1, Y1, X2, Y2, imp;
  char vname[255], *rvname = NULL;

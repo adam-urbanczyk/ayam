@@ -1062,9 +1062,9 @@ onio_writepomesh(ay_object *o, ONX_Model *p_m, double *m)
  int stride = 3, have_mys = AY_FALSE, have_myt = AY_FALSE;
  unsigned int myslen = 0, mytlen = 0;
  double *mysarr = NULL, *mytarr = NULL;
- ay_tag_object mystag = {NULL, ay_pv_tagtype, onio_stagname};
- ay_tag_object myttag = {NULL, ay_pv_tagtype, onio_ttagname};
- ay_tag_object *tag;
+ ay_tag mystag = {NULL, ay_pv_tagtype, onio_stagname};
+ ay_tag myttag = {NULL, ay_pv_tagtype, onio_ttagname};
+ ay_tag *tag;
  ON_Mesh *p_mesh = NULL;
  BOOL has_texcoords = false;
  BOOL has_vnormals = false;
@@ -1797,7 +1797,7 @@ onio_writeobject(ay_object *o, ONX_Model *p_m)
  char err[255];
  onio_writecb *cb = NULL;
  double m1[16] = {0}, m2[16];
- ay_tag_object *t = NULL;
+ ay_tag *t = NULL;
 
   if(!o || !p_m)
     return AY_ENULL;
