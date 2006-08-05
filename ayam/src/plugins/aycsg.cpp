@@ -48,7 +48,7 @@ char *aycsg_tm_tagname = "TM";
 
 typedef struct aycsg_taglistelem_s {
   struct aycsg_taglistelem_s *next;
-  ay_tag_object *tag;
+  ay_tag *tag;
 } aycsg_taglistelem;
 
 // all TM tags created by aycsg are managed using this list
@@ -504,7 +504,7 @@ aycsg_flatten(ay_object *t, struct Togl *togl, int parent_csgtype,
 	      int calc_bbs)
 {
  int ay_status = AY_OK;
- ay_tag_object *tag = NULL;
+ ay_tag *tag = NULL;
  int dc = 1;
 
   // is t a primitive?
@@ -1180,7 +1180,7 @@ aycsg_delegatetrafo(ay_object *o)
 {
  int ay_status = AY_OK;
  ay_object *down = NULL;
- ay_tag_object *tag = NULL;
+ ay_tag *tag = NULL;
  aycsg_taglistelem *tle = NULL;
  double tm[16] = {0};
 
@@ -1231,7 +1231,7 @@ aycsg_delegatetrafo(ay_object *o)
 		{
 		  // no, create, fill, and link a new tag
 		  tag = NULL;
-		  if(!(tag = (ay_tag_object*)calloc(1, sizeof(ay_tag_object))))
+		  if(!(tag = (ay_tag*)calloc(1, sizeof(ay_tag))))
 		    return AY_EOMEM;
 		  tag->type = aycsg_tm_tagtype;
 		  if(!(tag->val = (char*)calloc(16, sizeof(double))))
@@ -1277,7 +1277,7 @@ aycsg_delegatetrafo(ay_object *o)
 	    {
 	      // no, create, fill, and link a new tag
 	      tag = NULL;
-	      if(!(tag = (ay_tag_object*)calloc(1, sizeof(ay_tag_object))))
+	      if(!(tag = (ay_tag*)calloc(1, sizeof(ay_tag))))
 		return AY_EOMEM;
 	      tag->type = aycsg_tm_tagtype;
 	      if(!(tag->val = (char*)calloc(16, sizeof(double))))
