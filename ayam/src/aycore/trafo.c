@@ -687,7 +687,7 @@ ay_trafo_movseltcmd(ClientData clientData, Tcl_Interp * interp,
  double dx = 0, dy = 0, dz = 0;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
- ay_point_object *point = NULL;
+ ay_point *point = NULL;
  GLdouble mm[16];
  char fname[] = "movSel";
  double tpoint[4] = {0};
@@ -791,7 +791,7 @@ ay_trafo_scalseltcmd(ClientData clientData, Tcl_Interp * interp,
  double dx = 0, dy = 0, dz = 0;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
- ay_point_object *point = NULL;
+ ay_point *point = NULL;
  GLdouble mm[16];
  char fname[] = "scalSel";
  double tpoint[4] = {0};
@@ -915,7 +915,7 @@ ay_trafo_rotseltcmd(ClientData clientData, Tcl_Interp * interp,
  double dx = 0, dy = 0, dz = 0;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
- ay_point_object *point = NULL;
+ ay_point *point = NULL;
  GLdouble mm[16];
  char fname[] = "rotSel";
  double tpoint[4] = {0};

@@ -533,9 +533,9 @@ ay_objio_writenpatch(FILE *fileptr, ay_object *o, double *m)
  int have_mys = AY_FALSE, have_myt = AY_FALSE;
  unsigned int myslen = 0, mytlen = 0, mystlen = 0, ui, uj;
  double *mysarr = NULL, *mytarr = NULL, *mystarr = NULL;
- ay_tag_object mystag = {NULL, 0, NULL};
- ay_tag_object myttag = {NULL, 0, NULL};
- ay_tag_object *tag;
+ ay_tag mystag = {NULL, 0, NULL};
+ ay_tag myttag = {NULL, 0, NULL};
+ ay_tag *tag;
 
   if(!o)
     return AY_ENULL;
@@ -911,9 +911,9 @@ ay_objio_writepomesh(FILE *fileptr, ay_object *o, double *m)
  int have_mys = AY_FALSE, have_myt = AY_FALSE;
  unsigned int myslen = 0, mytlen = 0, mystlen = 0;
  double *mysarr = NULL, *mytarr = NULL, *mystarr = NULL;
- ay_tag_object mystag = {NULL, 0, NULL};
- ay_tag_object myttag = {NULL, 0, NULL};
- ay_tag_object *tag;
+ ay_tag mystag = {NULL, 0, NULL};
+ ay_tag myttag = {NULL, 0, NULL};
+ ay_tag *tag;
 
   if(!o)
    return AY_ENULL;
@@ -2133,7 +2133,7 @@ ay_objio_readface(char *str, int lastlinewasface)
  double *newcontrolv = NULL, *texsv = NULL, *textv = NULL, *tmpv = NULL;
  int texsvlen = 0, textvlen = 0;
  ay_pomesh_object po = {0}, *temppo;
- ay_tag_object *temptags;
+ ay_tag *temptags;
  ay_object t = {0}, *o = NULL, *m = NULL;
  unsigned int nloops = 1, nverts = 0, i;
  static ay_list_object *storedfaces = NULL, **laststoredface = &storedfaces;

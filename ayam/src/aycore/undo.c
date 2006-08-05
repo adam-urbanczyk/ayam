@@ -370,7 +370,7 @@ int
 ay_undo_copyroot(ay_root_object *src, ay_root_object *dst)
 {
  int ay_status = AY_OK;
- ay_riopt_object *srcriopt = NULL, *dstriopt = NULL;
+ ay_riopt *srcriopt = NULL, *dstriopt = NULL;
 
   if(dst->imager)
     {
@@ -423,10 +423,10 @@ ay_undo_copyroot(ay_root_object *src, ay_root_object *dst)
     } /* if */
 
   dst->riopt = NULL;
-  if(!(dst->riopt = calloc(1, sizeof(ay_riopt_object))))
+  if(!(dst->riopt = calloc(1, sizeof(ay_riopt))))
     return AY_EOMEM;
 
-  memcpy(dst->riopt, src->riopt, sizeof(ay_riopt_object));
+  memcpy(dst->riopt, src->riopt, sizeof(ay_riopt));
   dstriopt = dst->riopt;
 
   if(srcriopt->textures)
@@ -474,7 +474,7 @@ ay_undo_copyroot(ay_root_object *src, ay_root_object *dst)
 int
 ay_undo_copyselp(ay_object *src, ay_object *dst)
 {
- ay_point_object *p = NULL, *n = NULL, **last = NULL;
+ ay_point *p = NULL, *n = NULL, **last = NULL;
 
   if(dst->selp)
     {
@@ -486,10 +486,10 @@ ay_undo_copyselp(ay_object *src, ay_object *dst)
   while(p)
     {
       n = NULL;
-      if(!(n = calloc(1, sizeof(ay_point_object))))
+      if(!(n = calloc(1, sizeof(ay_point))))
 	return AY_EOMEM;
 
-      memcpy(n, p, sizeof(ay_point_object));
+      memcpy(n, p, sizeof(ay_point));
       *last = n;
       last = &(n->next);
 

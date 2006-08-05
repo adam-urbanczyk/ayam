@@ -75,7 +75,7 @@ ay_pact_seltcb(struct Togl *togl, int argc, char *argv[])
  double winX = 0.0, winY = 0.0, winX2 = 0.0, winY2 = 0.0, dtemp = 0.0;
  double obj[24] = {0}, pe[16] = {0};
  /*  double pickepsilon = ay_prefs.pick_epsilon;*/
- ay_point_object *newp = NULL, *point = NULL, *last = NULL;
+ ay_point *newp = NULL, *point = NULL, *last = NULL;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  GLfloat pixel[3] = {0.0f,0.0f,0.0f};
@@ -200,7 +200,7 @@ ay_pact_seltcb(struct Togl *togl, int argc, char *argv[])
 		{
 		  /* create new point object */
 		  newp = NULL;
-		  if(!(newp = calloc(1, sizeof(ay_point_object))))
+		  if(!(newp = calloc(1, sizeof(ay_point))))
 		    {
 		      ay_error(AY_EOMEM, fname, NULL);
 		      return TCL_OK;
@@ -1978,7 +1978,7 @@ ay_pact_centertcmd(ClientData clientData, Tcl_Interp *interp,
  int ay_status = AY_OK;
  char fname[] = "centerPnts";
  ay_list_object *sel = ay_selection;
- ay_point_object *oldpointsel = NULL;
+ ay_point *oldpointsel = NULL;
  ay_object *c = NULL;
  int mode = 0;
 
@@ -2041,7 +2041,8 @@ ay_pact_centertcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_pact_snaptogridcb:
- *  this action callback resets all weights
+ *  this action callback snaps all selected points to grid coordinates
+ *  if no points are selected, all selectable points are snapped
  */
 int
 ay_pact_snaptogridcb(struct Togl *togl, int argc, char *argv[])
@@ -2054,7 +2055,7 @@ ay_pact_snaptogridcb(struct Togl *togl, int argc, char *argv[])
  int mode = 0, i;
  ay_object *o = NULL;
  ay_list_object *sel = ay_selection;
- ay_point_object *pnt = NULL;
+ ay_point *pnt = NULL;
 
   if(!sel)
     {

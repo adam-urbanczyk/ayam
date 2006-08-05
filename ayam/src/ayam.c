@@ -15,7 +15,7 @@
 /* ayam.c - the main Ayam module - initialization and global symbols */
 
 /* global symbols */
-ay_prefs_object ay_prefs = {0};
+ay_preferences ay_prefs = {0};
 
 Tcl_Interp *ay_interp;
 ay_object *ay_root;

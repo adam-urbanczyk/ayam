@@ -866,7 +866,7 @@ ay_npatch_drawhcb(struct Togl *togl, ay_object *o)
 {
  int width = 0, height = 0, i = 0, a = 0;
  ay_nurbpatch_object *patch = (ay_nurbpatch_object *) o->refine;
- ay_mpoint_object *mp = NULL;
+ ay_mpoint *mp = NULL;
  GLdouble *ver = NULL;
  double point_size = ay_prefs.handle_size;
 
@@ -911,7 +911,7 @@ int
 ay_npatch_getpntcb(int mode, ay_object *o, double *p)
 {
  ay_nurbpatch_object *npatch = NULL;
- ay_mpoint_object *mp = NULL;
+ ay_mpoint *mp = NULL;
  double min_dist = ay_prefs.pick_epsilon, dist = 0.0;
  double *pecoord = NULL, **pecoords = NULL, *control = NULL, *c;
  int i = 0, j = 0, a = 0, found = AY_FALSE;
@@ -1853,7 +1853,7 @@ ay_npatch_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
  int ay_status = AY_OK;
  /*char fname[] = "npatch_providecb";*/
- ay_tag_object *tag = NULL;
+ ay_tag *tag = NULL;
  int smethod = ay_prefs.smethod;
  double sparamu = ay_prefs.sparamu, sparamv = ay_prefs.sparamv;
 

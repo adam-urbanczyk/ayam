@@ -23,7 +23,7 @@ ay_table ay_comparecbt;
 
 /* prototypes of functions local to this module: */
 
-int ay_comp_tag(ay_tag_object *t1, ay_tag_object *t2);
+int ay_comp_tag(ay_tag *t1, ay_tag *t2);
 
 int ay_comp_sarg(ay_shader_arg *a1, ay_shader_arg *a2);
 
@@ -152,7 +152,7 @@ ay_comp_trafos(ay_object *o1, ay_object *o2)
  *
  */
 int
-ay_comp_tag(ay_tag_object *t1, ay_tag_object *t2)
+ay_comp_tag(ay_tag *t1, ay_tag *t2)
 {
   if(((t1->name != t2->name) && ((t1->name != NULL) || (t2->name != NULL)) &&
       (strcmp(t1->name, t2->name))))
@@ -174,7 +174,7 @@ ay_comp_tag(ay_tag_object *t1, ay_tag_object *t2)
 int
 ay_comp_tags(ay_object *o1, ay_object *o2)
 {
-  ay_tag_object *t1, *t2;
+  ay_tag *t1, *t2;
 
   t1 = o1->tags;
   t2 = o2->tags;

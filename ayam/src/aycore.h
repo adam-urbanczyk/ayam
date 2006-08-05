@@ -440,11 +440,11 @@ int ay_pv_filltokpar(ay_object *o, int declare, int start,
 int ay_pv_add(ay_object *o, char *name, char *detail, int type,
 	      int datalen, void *data);
 
-int ay_pv_merge(ay_tag_object *t1, ay_tag_object *t2, ay_tag_object **mt);
+int ay_pv_merge(ay_tag *t1, ay_tag *t2, ay_tag **mt);
 
-int ay_pv_cmpname(ay_tag_object *t1, ay_tag_object *t2);
+int ay_pv_cmpname(ay_tag *t1, ay_tag *t2);
 
-int ay_pv_convert(ay_tag_object *tag, unsigned int *datalen, void **data);
+int ay_pv_convert(ay_tag *tag, unsigned int *datalen, void **data);
 
 int ay_pv_count(ay_object *o);
 
@@ -582,9 +582,9 @@ int ay_table_additem(ay_table *table, void *newitem,
 /* tags.c */
 int ay_tags_delall(ay_object *o);
 
-int ay_tags_free(ay_tag_object *tag);
+int ay_tags_free(ay_tag *tag);
 
-int ay_tags_copy(ay_tag_object *source, ay_tag_object **dest);
+int ay_tags_copy(ay_tag *source, ay_tag **dest);
 
 int ay_tags_copyall(ay_object *src, ay_object *dst);
 
@@ -593,7 +593,7 @@ int ay_tags_temp(Tcl_Interp *interp, char *name, int set, int *result);
 int ay_tags_istemptcmd(ClientData clientData, Tcl_Interp * interp,
 		       int argc, char *argv[]);
 
-int ay_tags_append(ay_object *o, ay_tag_object *tag);
+int ay_tags_append(ay_object *o, ay_tag *tag);
 
 int ay_tags_register(Tcl_Interp *interp, char *name, char **result);
 

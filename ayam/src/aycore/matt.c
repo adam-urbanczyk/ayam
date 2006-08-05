@@ -254,7 +254,7 @@ ay_matt_connect(ay_object *o)
  int ay_status = AY_OK;
  int found = AY_FALSE;
  Tcl_HashEntry *entry = NULL;
- ay_tag_object *tag = NULL;
+ ay_tag *tag = NULL;
  ay_mat_object *mat = NULL;
  Tcl_HashTable *ht = &ay_matt_ptr_ht;
  unsigned int *refcountptr = NULL;
@@ -307,7 +307,7 @@ int
 ay_matt_creatematerialids(ay_object *o)
 {
  int ay_status = AY_OK;
- ay_tag_object *newtag = NULL; 
+ ay_tag *newtag = NULL; 
  ay_mat_object *mat = NULL;
  char *mname = NULL, *tname = NULL;;
 
@@ -322,7 +322,7 @@ ay_matt_creatematerialids(ay_object *o)
 
 	  strcpy(tname, "MI");
 
-	  if(!(newtag = calloc(1, sizeof(ay_tag_object))))
+	  if(!(newtag = calloc(1, sizeof(ay_tag))))
 	    return AY_EOMEM;
 
 	  newtag->name = tname;
@@ -356,7 +356,7 @@ int
 ay_matt_clearmaterialids(ay_object *o)
 {
  int ay_status = AY_OK;
- ay_tag_object *tag = NULL, **last = NULL;
+ ay_tag *tag = NULL, **last = NULL;
 
   if(!o)
     return AY_OK;

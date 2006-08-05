@@ -140,9 +140,9 @@ typedef struct ay_object_s {
   double scalx, scaly, scalz;
   double quat[4]; /* quaternion */
 
-  struct ay_point_object_s *selp; /* selected points of this object */
+  struct ay_point_s *selp; /* selected points of this object */
 
-  struct ay_tag_object_s *tags; /* tags of this object */
+  struct ay_tag_s *tags; /* tags of this object */
 
   struct ay_mat_object_s *mat; /* material of this object */
 
@@ -253,7 +253,7 @@ typedef struct ay_mat_object_s {
 } ay_mat_object;
 
 
-typedef struct ay_riopt_object_s
+typedef struct ay_riopt_s
 {
   double Variance;
   double Samples_X;
@@ -288,12 +288,12 @@ typedef struct ay_riopt_object_s
   int height;
 
   int use_std_display;
-} ay_riopt_object;
+} ay_riopt;
 
 
 typedef struct ay_root_object_s
 {
-  ay_riopt_object *riopt;
+  ay_riopt  *riopt;
   ay_shader *imager;
   ay_shader *atmosphere;
 } ay_root_object;
@@ -322,7 +322,7 @@ typedef struct ay_nurbcurve_object_s
 
   /* multiple points */
   int createmp;
-  struct ay_mpoint_object_s *mpoints;
+  struct ay_mpoint_s *mpoints;
 } ay_nurbcurve_object;
 
 
@@ -351,7 +351,7 @@ typedef struct ay_nurbpatch_object_s
 
   /* multiple points */
   int createmp;
-  struct ay_mpoint_object_s *mpoints;
+  struct ay_mpoint_s *mpoints;
 } ay_nurbpatch_object;
 
 
@@ -827,7 +827,7 @@ typedef struct ay_view_object_s
 } ay_view_object;
 
 
-typedef struct ay_prefs_object_s
+typedef struct ay_preferences_s
 {
   int list_types;
   int mark_hidden;
@@ -899,32 +899,32 @@ typedef struct ay_prefs_object_s
   /* is a permanent preview window open? */
   int pprev_open;
   char *pprender;
-} ay_prefs_object;
+} ay_preferences;
 
 
-typedef struct ay_point_object_s
+typedef struct ay_point_s
 {
-  struct ay_point_object_s *next;
-  int homogenous;
+  struct ay_point_s *next;
+  int homogenous; /* AY_TRUE, AY_FALSE */
   double *point;
-} ay_point_object;
+} ay_point;
 
 
-typedef struct ay_mpoint_object_s
+typedef struct ay_mpoint_s
 {
-  struct ay_mpoint_object_s *next;
+  struct ay_mpoint_s *next;
   int multiplicity;
   double **points;
-} ay_mpoint_object;
+} ay_mpoint;
 
 
-typedef struct ay_tag_object_s
+typedef struct ay_tag_s
 {
-  struct ay_tag_object_s *next;
+  struct ay_tag_s *next;
   char *name;
   char *type;
   char *val;
-} ay_tag_object;
+} ay_tag;
 
 
 typedef struct ay_table_s
@@ -972,7 +972,7 @@ typedef int (ay_mopsicb) (FILE *fileptr, ay_object *o);
 
 /* Globals */
 extern Tcl_Interp *ay_interp;
-extern ay_prefs_object ay_prefs;
+extern ay_preferences ay_prefs;
 extern ay_object *ay_root;
 extern ay_object **ay_next;
 

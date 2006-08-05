@@ -23,7 +23,7 @@ ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
  int ay_status = AY_OK;
  Tcl_Interp *interp = Togl_Interp(togl);
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
- ay_point_object *point = NULL;
+ ay_point *point = NULL;
  static double oldwinx = 0.0, oldwiny = 0.0;
  double winx = 0.0, winy = 0.0;
  double dx = 0, dy = 0, dz = 0;
@@ -264,7 +264,7 @@ ay_oact_rottcb(struct Togl *togl, int argc, char *argv[])
  GLint vp[4];
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
- ay_point_object *point = NULL;
+ ay_point *point = NULL;
  char fname[] = "rotate_object";
 
  if(view->type == AY_VTPERSP)
@@ -489,7 +489,7 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
  GLint vp[4];
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
- ay_point_object *point = NULL;
+ ay_point *point = NULL;
  char fname[] = "rotate_object_about";
 
 
@@ -934,7 +934,7 @@ ay_oact_sc1DXcb(struct Togl *togl, int argc, char *argv[])
  GLint vp[4];
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
- ay_point_object *point = NULL;
+ ay_point *point = NULL;
  char fname[] = "scale1DX_object";
 
  if(view->type == AY_VTPERSP)
@@ -1131,7 +1131,7 @@ ay_oact_sc1DYcb(struct Togl *togl, int argc, char *argv[])
  GLint vp[4];
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
- ay_point_object *point = NULL;
+ ay_point *point = NULL;
  char fname[] = "scale1DY_object";
 
  if(view->type == AY_VTPERSP)
@@ -1319,7 +1319,7 @@ ay_oact_sc1DZcb(struct Togl *togl, int argc, char *argv[])
  GLint vp[4];
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
- ay_point_object *point = NULL;
+ ay_point *point = NULL;
  char fname[] = "scale1DZ_object";
 
  if(view->type == AY_VTPERSP)
@@ -1505,7 +1505,7 @@ ay_oact_sc1DXWcb(struct Togl *togl, int argc, char *argv[])
  GLint vp[4];
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
- ay_point_object *point = NULL;
+ ay_point *point = NULL;
  char fname[] = "scale1DX_world";
  double euler[3] = {0};
 
@@ -1663,7 +1663,7 @@ ay_oact_sc1DYWcb(struct Togl *togl, int argc, char *argv[])
  GLint vp[4];
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
- ay_point_object *point = NULL;
+ ay_point *point = NULL;
  char fname[] = "scale1DY_world";
  double euler[3] = {0};
 
@@ -1823,7 +1823,7 @@ ay_oact_sc1DZWcb(struct Togl *togl, int argc, char *argv[])
  GLint vp[4];
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
- ay_point_object *point = NULL;
+ ay_point *point = NULL;
  char fname[] = "scale1DZ_world";
  double euler[3] = {0};
 
@@ -1998,7 +1998,7 @@ ay_oact_sc2Dcb(struct Togl *togl, int argc, char *argv[])
  GLint vp[4];
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
- ay_point_object *point = NULL;
+ ay_point *point = NULL;
  char fname[] = "scale2D_object";
 
   if(view->type == AY_VTPERSP)
@@ -2194,7 +2194,7 @@ ay_oact_sc3Dcb(struct Togl *togl, int argc, char *argv[])
  GLint vp[4];
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
- ay_point_object *point = NULL;
+ ay_point *point = NULL;
  char fname[] = "scale3D_object";
 
   if(view->type == AY_VTPERSP)
