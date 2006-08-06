@@ -3626,7 +3626,7 @@ ay_nct_curvplottcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *o, *po = NULL;
  ay_nurbcurve_object *c, *c2 = NULL;
  char fname[] = "curvPlot";
- double width = 5.0, scale = 1.0, t, dt, *controlv;
+ double width = 5.0, scale = 1.0, t, dt, *controlv, umin = 0.0, umax = 0.0;
  int a = 0, b = 0, samples = 100, freepo;
  char *cname;
  Tcl_DString ds;
@@ -3679,10 +3679,13 @@ ay_nct_curvplottcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_object_defaults(o);
 	  o->type = AY_IDNCURVE;
 
-	  dt = (c->knotv[c->length+c->order-1]-c->knotv[0])/((double)samples);
+	  umin = c->knotv[c->order-1];
+	  umax = c->knotv[c->length];
+
+	  dt = (umax-umin)/((double)samples);
 	  a = 0;
 	  b = 0;
-	  for(t = c->knotv[0]; t < c->knotv[c->length+c->order-1]; t += dt)
+	  for(t = umin; t < umax; t += dt)
 	    {
 	      controlv[a] = (double)b*width/samples;
 	      controlv[a+1] = ay_nct_getcurvature(c, t)*scale;
