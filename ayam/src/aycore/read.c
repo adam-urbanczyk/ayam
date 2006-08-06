@@ -65,6 +65,7 @@ ay_read_string(FILE *fileptr, char **result)
  return ay_status;
 } /* ay_read_string */
 
+
 /* ay_read_unistring:
  *
  */
@@ -120,7 +121,6 @@ ay_read_unistring(FILE *fileptr, Tcl_UniChar **result)
 
  return ay_status;
 } /* ay_read_unistring */
-
 
 
 /* ay_read_skip:
@@ -238,6 +238,12 @@ ay_read_header(FILE *fileptr)
     }
 
   if(!strcmp(version,"1.10"))
+    {
+      ay_read_version = 9;
+      version_unknown = AY_FALSE;
+    }
+
+  if(!strcmp(version,"1.11"))
     {
       ay_read_version = 9;
       version_unknown = AY_FALSE;
