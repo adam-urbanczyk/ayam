@@ -52,6 +52,9 @@ if { $BevelTags(HasEndBevel) } {
 addParam $w SweepAttrData Tolerance
 addMenu $w SweepAttrData DisplayMode $ay(npdisplaymodes)
 
+addText $w Birail2AttrData "Created NURBS Patch:"
+addInfo $w Birail2AttrData NPInfo
+
 $ay(pca) itemconfigure 1 -window $w
 update
 plb_resize

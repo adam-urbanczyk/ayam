@@ -55,6 +55,9 @@ if { $BevelTags(HasEndBevel) } {
 addParam $w SkinAttrData Tolerance
 addMenu $w SkinAttrData DisplayMode $ay(npdisplaymodes)
 
+addText $w SkinAttrData "Created NURBS Patch:"
+addInfo $w SkinAttrData NPInfo
+
 $ay(pca) itemconfigure 1 -window $w
 update
 plb_resize

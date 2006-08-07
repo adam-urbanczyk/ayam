@@ -1077,7 +1077,7 @@ proc addCommand { w name text command } {
 #
 proc addText { w name text} {
 
-    set f [frame $w.${name}]
+    set f [frame $w.f${name}]
 
     label $f.l -text $text
 

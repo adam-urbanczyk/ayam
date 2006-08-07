@@ -543,3 +543,42 @@ ay_prop_setmattcmd(ClientData clientData, Tcl_Interp *interp,
  return TCL_OK;
 } /* ay_prop_setmattcmd */
 
+
+int
+ay_prop_getnpinfo(Tcl_Interp *interp, char *n1, ay_object *o)
+{
+ Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char buffer[256];
+ ay_nurbpatch_object *np = NULL;
+
+  if(!interp || !n1)
+    return AY_ENULL;
+
+  toa = Tcl_NewStringObj(n1, -1);
+
+  ton = Tcl_NewStringObj("NPInfo", -1);
+
+  if(o && o->type == AY_IDNPATCH)
+    {
+      np = (ay_nurbpatch_object *)(o->refine);
+      /*"40 x 20, 4, 4, NURB, NURB"*/
+      snprintf(buffer, sizeof(char)*256, "%d x %d, %d, %d, %d, %d",
+	       np->width, np->height, np->uorder, np->vorder,
+	       np->uknot_type, np->vknot_type);
+
+      to = Tcl_NewStringObj(buffer, -1);
+    }
+  else
+    {
+      to = Tcl_NewStringObj("n/a", -1);
+    } /* if */
+
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
+  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
+  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+
+ return AY_OK;
+} /* ay_prop_getnpinfo */
+

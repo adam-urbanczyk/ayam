@@ -428,6 +428,8 @@ int ay_prop_getmattcmd(ClientData clientData, Tcl_Interp *interp,
 int ay_prop_setmattcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
 
+int ay_prop_getnpinfo(Tcl_Interp *interp, char *n1, ay_object *o);
+
 /* provide.c */
 int ay_provide_register(ay_providecb  *provcb, unsigned int type_id);
 
