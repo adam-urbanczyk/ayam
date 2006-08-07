@@ -69,6 +69,9 @@ if { $BevelTags(HasRightBevel) } {
 addParam $w GordonAttrData Tolerance
 addMenu $w GordonAttrData DisplayMode $ay(npdisplaymodes)
 
+addText $w GordonAttrData "Created NURBS Patch:"
+addInfo $w GordonAttrData NPInfo
+
 $ay(pca) itemconfigure 1 -window $w
 update
 plb_resize
