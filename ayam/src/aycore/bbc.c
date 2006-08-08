@@ -47,10 +47,10 @@ ay_bbc_get(ay_object *o, double *bbox)
    glLoadIdentity();
 
    glTranslated(o->movx, o->movy, o->movz);
-	
+
    ay_quat_torotmatrix(o->quat, mr);
    glMultMatrixd(mr);
-  
+
    glScaled (o->scalx, o->scaly, o->scalz);
    glGetDoublev(GL_MODELVIEW_MATRIX, (GLdouble *)m);
   glPopMatrix();
@@ -58,7 +58,7 @@ ay_bbc_get(ay_object *o, double *bbox)
   /* get bounding boxes of children */
   if(o->down)
     {
-      d = o->down;  
+      d = o->down;
       while(d->next)
 	{
 	  ay_status = ay_bbc_get(d, bbt);
@@ -84,7 +84,7 @@ ay_bbc_get(ay_object *o, double *bbox)
 		    xmax = bbt[a];
 		  a += 3;
 		}
-	  
+
 	      a = 1;
 	      for(i = 0; i < 8; i++)
 		{
@@ -130,7 +130,7 @@ ay_bbc_get(ay_object *o, double *bbox)
       xmin = DBL_MAX; xmax = -DBL_MAX; ymin = DBL_MAX;
       ymax = -DBL_MAX; zmin = DBL_MAX; zmax = -DBL_MAX;
     }
-  
+
   if(flags != 2)
     { /* bounding box of object o is not marked invalid/non-existent */
       /* thus, merge bounding box of object o with child(ren) bounding box */

@@ -55,7 +55,7 @@ ay_matt_registermaterial(char *name, ay_mat_object *mat)
       mat->registered = AY_TRUE;
       /* create new entry */
       entry = Tcl_CreateHashEntry(ht, name, &new_item);
-      Tcl_SetHashValue(entry, (char*)mat); 
+      Tcl_SetHashValue(entry, (char*)mat);
     }
 
  return ay_status;
@@ -106,14 +106,14 @@ ay_matt_deregister(char *name)
     {
       Tcl_DeleteHashEntry(entry);
     }
-  
+
 
  return ay_status;
 } /* ay_matt_deregister */
 
 
 /* ay_matt_getmaterial:
- *  
+ *
  */
 int
 ay_matt_getmaterial(char *name, ay_mat_object **material)
@@ -175,7 +175,7 @@ ay_matt_removeallrefs(ay_object *o)
 
 
 /* ay_matt_removerefs:
- *  
+ *
  */
 int
 ay_matt_removerefs(ay_object *o, ay_mat_object *material)
@@ -307,7 +307,7 @@ int
 ay_matt_creatematerialids(ay_object *o)
 {
  int ay_status = AY_OK;
- ay_tag *newtag = NULL; 
+ ay_tag *newtag = NULL;
  ay_mat_object *mat = NULL;
  char *mname = NULL, *tname = NULL;;
 
@@ -316,7 +316,7 @@ ay_matt_creatematerialids(ay_object *o)
       if(o->mat)
 	{
 	  mat =  o->mat;
-	  
+
 	  if(!(tname = calloc(3, sizeof(char))))
 	    return AY_EOMEM;
 
@@ -382,7 +382,7 @@ ay_matt_clearmaterialids(ay_object *o)
 		  tag = tag->next;
 		} /* if */
 	    } /* while */
-	
+
 	} /* if */
 
       if(o->down)
@@ -465,7 +465,7 @@ ay_matt_wrib(char *file, ay_mat_object *m)
 	case 2:
 	  str = camstr;
 	  break;
-	      
+
 	}
 
       dbound = (RtFloat)m->dbound_val;
@@ -548,9 +548,9 @@ ay_matt_nomaterial(unsigned int type)
  Tcl_HashEntry *entry = NULL;
  Tcl_HashTable *ht = &ay_matt_blacklist_ht;
  int new_item = 0;
-  
+
  entry = Tcl_CreateHashEntry(ht, (char*)type, &new_item);
- Tcl_SetHashValue(entry, (char*)NULL); 
+ Tcl_SetHashValue(entry, (char*)NULL);
 
  return;
 } /* ay_matt_nomaterial */

@@ -32,7 +32,7 @@ ay_write_header(FILE *fileptr)
 /* ay_write_attributes:
  *
  */
-int 
+int
 ay_write_attributes(FILE *fileptr, ay_object *o)
 {
  int ay_status = AY_OK;
@@ -43,7 +43,7 @@ ay_write_attributes(FILE *fileptr, ay_object *o)
   if((o->movx != 0.0) || (o->movy != 0.0) || (o->movz != 0.0) ||
      (o->rotx != 0.0) || (o->roty != 0.0) || (o->rotz != 0.0) ||
      (o->scalx != 1.0) || (o->scaly != 1.0) || (o->scalz != 1.0) ||
-     (o->quat[0] != 0.0) || (o->quat[1] != 0.0) || (o->quat[2] != 0.0) || 
+     (o->quat[0] != 0.0) || (o->quat[1] != 0.0) || (o->quat[2] != 0.0) ||
      (o->quat[3] != 1.0))
     {
       fprintf(fileptr,"1\n");
@@ -133,7 +133,7 @@ ay_write_tags(FILE *fileptr, ay_object *o)
 /* ay_write_shader:
  *
  */
-int 
+int
 ay_write_shader(FILE *fileptr, ay_shader *shader)
 {
  int ay_status = AY_OK;
@@ -296,7 +296,7 @@ ay_write_scene(char *fname, int selected)
 
   if(selected)
     {
-      o = ay_currentlevel->object; 
+      o = ay_currentlevel->object;
     }
 
   if(!o)
@@ -326,7 +326,7 @@ ay_write_scene(char *fname, int selected)
   ay_status = ay_matt_clearmaterialids(ay_root);
   /* create new Material ID tags */
   ay_status = ay_matt_creatematerialids(ay_root);
-  
+
   /* write header information */
   ay_write_header(fileptr);
 

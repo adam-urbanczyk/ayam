@@ -124,7 +124,7 @@ ay_quat_add(double q1[4], double q2[4], double dest[4])
 void
 ay_quat_torotmatrix(double q[4], double m[16])
 {
- 
+
   m[0] = 1.0 - 2.0 * (q[1] * q[1] + q[2] * q[2]);
   m[1] = 2.0 * (q[0] * q[1] - q[2] * q[3]);
   m[2] = 2.0 * (q[2] * q[0] + q[1] * q[3]);
@@ -215,8 +215,8 @@ ay_quat_slerp(double time, double q1[4], double q2[4], double *r)
     return AY_ENULL;
 
   angle =  ay_quat_dot(q1, q2);
- 
-  if(angle < 0.0f) 
+
+  if(angle < 0.0f)
     {
       q1[0] *= -1.0f;
       q1[1] *= -1.0f;
@@ -224,8 +224,8 @@ ay_quat_slerp(double time, double q1[4], double q2[4], double *r)
       q1[3] *= -1.0f;
       angle *= -1.0f;
     }
- 
-  if((angle + 1.0f) > 0.05f) 
+
+  if((angle + 1.0f) > 0.05f)
     {
       if((1.0f - angle) >= 0.05f)
 	{
@@ -242,7 +242,7 @@ ay_quat_slerp(double time, double q1[4], double q2[4], double *r)
 	  invscale = time;
 	}
     }
-  else 
+  else
     {
       /*q2 = quaternion(-q1.Y, q1.X, -q1.W, q1.Z);*/
       q2[0] = -q1[1];
@@ -252,7 +252,7 @@ ay_quat_slerp(double time, double q1[4], double q2[4], double *r)
       scale = sin(AY_PI * (0.5f - time));
       invscale = sin(AY_PI * time);
     } /* if */
- 
+
   /**this = (q1*scale) + (q2*invscale);*/
   r[0] = (q1[0]*scale) + (q2[0]*invscale);
   r[1] = (q1[1]*scale) + (q2[1]*invscale);

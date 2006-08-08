@@ -59,7 +59,7 @@ ay_convert_force(ay_object *o, int in_place)
     }
   else
     {
-     ay_error(AY_ERROR, fname, "No converter available!"); 
+     ay_error(AY_ERROR, fname, "No converter available!");
     }
 
  return AY_OK;

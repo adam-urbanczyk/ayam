@@ -26,7 +26,7 @@ ay_clipb_copytcmd(ClientData clientData, Tcl_Interp *interp,
  char fname[] = "copOb";
  ay_object *clip = NULL, *o = NULL, *t = NULL;
  ay_list_object *sel = ay_selection;
- 
+
   if(!sel)
     {
       ay_error(AY_ENOSEL, fname, NULL);
@@ -104,6 +104,7 @@ ay_clipb_cuttcmd(ClientData clientData, Tcl_Interp *interp,
  int ay_status = AY_OK;
  char fname[] = "cutOb";
  ay_list_object *sel = ay_selection;
+ ay_list_object *lev = ay_currentlevel;
  ay_object *o = NULL, *clip = NULL, *t = NULL;
 
   if(!sel)
@@ -146,7 +147,7 @@ ay_clipb_cuttcmd(ClientData clientData, Tcl_Interp *interp,
       o = clip;
       clip = clip->next;
       ay_clipboard = clip;
-      ay_status = ay_object_delete(o);	  
+      ay_status = ay_object_delete(o);
       if(ay_status)
 	{
 	  ay_clipboard = t;
@@ -189,6 +190,11 @@ ay_clipb_cuttcmd(ClientData clientData, Tcl_Interp *interp,
   /* free selection */
   ay_status = ay_sel_free(AY_TRUE);
 
+  /* notify parent object about changes */
+  if(lev->next && lev->next->object)
+    {
+      lev->next->object->modified = AY_TRUE;
+    }
   ay_notify_parent();
 
  return TCL_OK;
@@ -204,6 +210,7 @@ ay_clipb_pastetcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int ay_status = AY_OK;
  char fname[] = "pasOb";
+ ay_list_object *lev = ay_currentlevel;
  ay_object *ins = NULL, *clip = ay_clipboard;
  int instanceerr = AY_FALSE;
 
@@ -241,10 +248,15 @@ ay_clipb_pastetcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_status = ay_object_delete(ins);
 	  return TCL_OK;
 	} /* if */
-	    
+
       clip = clip->next;
     } /* while */
 
+  /* notify parent object about changes */
+  if(lev->next && lev->next->object)
+    {
+      lev->next->object->modified = AY_TRUE;
+    }
   ay_notify_parent();
 
  return TCL_OK;
@@ -260,6 +272,7 @@ ay_clipb_movetcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int ay_status = AY_OK;
  char fname[] = "cmovOb";
+ ay_list_object *lev = ay_currentlevel;
  ay_object *next = NULL, *clip = ay_clipboard;
  int instanceerr = AY_FALSE;
 
@@ -275,7 +288,6 @@ ay_clipb_movetcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_error(AY_ERROR, fname, "Recursive instances would result!");
 	  return TCL_OK;
 	}
-
       clip = clip->next;
     } /* while */
 
@@ -290,12 +302,16 @@ ay_clipb_movetcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_error(ay_status, fname, NULL);
 	  return TCL_OK;
 	}
-	    
       clip = next;
     } /* while */
 
   ay_clipboard = NULL;
 
+  /* notify parent object about changes */
+  if(lev->next && lev->next->object)
+    {
+      lev->next->object->modified = AY_TRUE;
+    }
   ay_notify_parent();
 
  return TCL_OK;
@@ -315,7 +331,8 @@ ay_clipb_replacetcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object **presel, *selend;
  int instanceerr = AY_FALSE;
  ay_list_object *sel = ay_selection;
- 
+ ay_list_object *lev = ay_currentlevel;
+
   if(!sel)
     {
       ay_error(AY_ENOSEL, fname, NULL);
@@ -414,6 +431,11 @@ ay_clipb_replacetcmd(ClientData clientData, Tcl_Interp *interp,
   /* free selection */
   ay_status = ay_sel_free(AY_TRUE);
 
+  /* notify parent object about changes */
+  if(lev->next && lev->next->object)
+    {
+      lev->next->object->modified = AY_TRUE;
+    }
   ay_notify_parent();
 
  return TCL_OK;

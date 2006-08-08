@@ -1345,7 +1345,7 @@ ay_objio_writeobject(FILE *fileptr, ay_object *o, int writeend, int count)
 	  if(count)
 	    {
 	      objio_curobjcnt++;
-	      
+
 	      /* calculate new progress value in percent */
 	      curprog = (int)(objio_curobjcnt*100.0/objio_allobjcnt);
 
@@ -2182,7 +2182,7 @@ ay_objio_readface(char *str, int lastlinewasface)
 	  free(storedfaces);
 	  storedfaces = tl;
 	} /* while */
-	      
+
       laststoredface = &storedfaces;
       return AY_OK;
     } /* if */
@@ -2365,7 +2365,7 @@ ay_objio_readface(char *str, int lastlinewasface)
 	  v2[1] = v[3*stride+1] - v[1];
 	  v2[2] = v[3*stride+2] - v[2];
 	  angle = acos(AY_V3DOT(v1,v2)/(AY_V3LEN(v1)*AY_V3LEN(v2)));
-	  
+
 	  v1[0] = v[2*stride] - v[stride];
 	  v1[1] = v[2*stride+1] - v[stride+1];
 	  v1[2] = v[2*stride+2] - v[stride+2];

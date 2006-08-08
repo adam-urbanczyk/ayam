@@ -220,7 +220,7 @@ ay_shader_scanslctcmd(ClientData clientData, Tcl_Interp *interp,
 	} /* if */
       Tcl_DStringAppend(&ds, "} ", -1);
 
-	} 
+	}
       else
 	{
 	  ay_error(AY_EWARN,fname,"Skipping array argument!");
@@ -479,7 +479,7 @@ ay_shader_scanslxtcmd(ClientData clientData, Tcl_Interp *interp,
 	} /* if */
       Tcl_DStringAppend(&ds, "} ", -1);
 
-	} 
+	}
       else
 	{
 	  ay_error(AY_EWARN,fname,"Skipping array argument!");
@@ -560,9 +560,9 @@ ay_shader_copyarg(ay_shader_arg *source, ay_shader_arg **dest)
  char *newval;
 
   if(!(newp = calloc(1, sizeof(ay_shader_arg))))
-    return AY_EOMEM; 
+    return AY_EOMEM;
 
-  memcpy(newp, source, sizeof(ay_shader_arg)); 
+  memcpy(newp, source, sizeof(ay_shader_arg));
   /* danger! links point to original hierachy */
 
   /* copy name */
@@ -599,9 +599,9 @@ ay_shader_copy(ay_shader *source, ay_shader **dest)
  char *newval = NULL;
 
   if(!(news = calloc(1,sizeof(ay_shader))))
-    return AY_EOMEM; 
+    return AY_EOMEM;
 
-  memcpy(news, source, sizeof(ay_shader)); 
+  memcpy(news, source, sizeof(ay_shader));
   /* danger! links point to original hierachy */
 
   /* copy name */
@@ -624,7 +624,7 @@ ay_shader_copy(ay_shader *source, ay_shader **dest)
 	      ay_shader_free(news);
 	      return ay_status;
 	    }
-  
+
 	  (*newp)->next = NULL;
 	  newp = &((*newp)->next);
 	  p = p->next;
@@ -707,7 +707,7 @@ ay_shader_wrib(ay_shader *shader, int type, RtLightHandle *light_handle)
 	    }
 
 	  tokens[count] = sarg->name;
-	  
+
 	  count++;
 	  sarg = sarg->next;
 	}
@@ -940,7 +940,7 @@ ay_shader_gettcmd(ClientData clientData, Tcl_Interp * interp,
   while(arg)
     {
       Tcl_SetVar2(interp,n1,"ArgNames",arg->name, TCL_LEAVE_ERR_MSG |
-		  TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT);     
+		  TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT);
 
       switch(arg->type)
 	{

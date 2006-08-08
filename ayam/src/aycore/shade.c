@@ -133,7 +133,7 @@ ay_shade_object(struct Togl *togl, ay_object *o, int push_name)
      }
 
   glPopMatrix();
-  
+
   if(toggled_normals)
     {
       if(cw)
@@ -161,7 +161,7 @@ ay_shade_object(struct Togl *togl, ay_object *o, int push_name)
     {
       glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, oldcolor);
     }
-  
+
  return AY_OK;
 } /* ay_shade_object */
 
@@ -218,13 +218,13 @@ ay_shade_view(struct Togl *togl)
   glEnable(GL_LIGHTING);
   glLightModelf(GL_LIGHT_MODEL_TWO_SIDE, (GLfloat)1.0);
   glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);
-  
+
   color[0] = (GLfloat)ay_prefs.shr;
   color[1] = (GLfloat)ay_prefs.shg;
   color[2] = (GLfloat)ay_prefs.shb;
   color[3] = (GLfloat)1.0;
 
-  glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, color);  
+  glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, color);
   glMatrixMode(GL_MODELVIEW);
 
   if(view->drawlevel)
@@ -279,7 +279,7 @@ ay_shade_view(struct Togl *togl)
 	  /* set color for selected objects */
 	  glColor3d((GLdouble)ay_prefs.ser, (GLdouble)ay_prefs.seg,
 		    (GLdouble)ay_prefs.seb);
-	  
+
 	  arr = ay_drawhcbt.arr;
 	  sel = ay_selection;
 
@@ -297,7 +297,7 @@ ay_shade_view(struct Togl *togl)
 		  glMultMatrixd((GLdouble*)m);
 		  glScaled((GLdouble)o->scalx, (GLdouble)o->scaly,
 			   (GLdouble)o->scalz);
-  
+
 		  cb = (ay_drawcb *)(arr[o->type]);
 
 		  if(cb)

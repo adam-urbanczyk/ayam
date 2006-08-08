@@ -75,7 +75,7 @@ ay_provide_object(ay_object *o, unsigned int type, ay_object **result)
         /*
 	  else
 	  {
-	  ay_error(AY_ERROR, fname, "No provide callback registered!"); 
+	  ay_error(AY_ERROR, fname, "No provide callback registered!");
 	  }
 	*/
     } /* if */

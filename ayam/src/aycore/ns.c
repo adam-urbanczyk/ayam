@@ -93,7 +93,7 @@ ay_ns_restrictall(ClientData clientData,
 
 
 /* ay_ns_execute:
- *  
+ *
  */
 int
 ay_ns_execute(ay_object *o, char *script)

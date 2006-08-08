@@ -65,7 +65,7 @@ ay_riattr_wrib(ay_object *o)
 	      /* get type */
 	      if(parname)
 		partype = strtok(NULL,tok);
-	      else 
+	      else
 		partype = NULL;
 
 	      if(partype)
@@ -84,7 +84,7 @@ ay_riattr_wrib(ay_object *o)
 			  break;
 			case 'j':
 			  RiDeclare(parname, "integer[2]");
-			  
+
 			  sscanf(parval, "%d", &(i2temp[0]));
 			  parval2 = strtok(NULL, tok);
 			  if(parval2)
@@ -107,7 +107,7 @@ ay_riattr_wrib(ay_object *o)
 			  break;
 			case 'g':
 			  RiDeclare(parname, "float[2]");
-			  
+
 			  sscanf(parval, "%f", &(f2temp[0]));
 			  parval2 = strtok(NULL, tok);
 			  if(parval2)

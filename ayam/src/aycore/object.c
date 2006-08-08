@@ -288,7 +288,7 @@ ay_object_deletetcmd(ClientData clientData, Tcl_Interp *interp,
  char fname[] = "delOb";
  ay_object *o = NULL;
  ay_list_object *sel = ay_selection, *try_again = NULL, **next_try_again, *t;
- 
+
   if(!sel)
     {
       ay_error(AY_ENOSEL, fname, NULL);
@@ -962,7 +962,7 @@ unsigned int
 ay_object_count(ay_object *o)
 {
  unsigned int lcount = 0;
-  
+
   if(!o)
     return 0;
 

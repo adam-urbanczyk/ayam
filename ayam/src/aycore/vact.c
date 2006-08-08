@@ -64,7 +64,7 @@ ay_vact_movetcb(struct Togl *togl, int argc, char *argv[])
       view->markx -= (oldwinx - winx);
       view->marky -= (oldwiny - winy);
     }
-  
+
   dxw = (oldwinx - winx) * view->conv_x;
   dyw = -(oldwiny - winy) * view->conv_y;
   oldwinx = winx;
@@ -96,13 +96,13 @@ ay_vact_movetcb(struct Togl *togl, int argc, char *argv[])
 
        if(fabs(view->roll) > AY_EPSILON)
 	 glRotated(-view->roll, 0.0, 1.0, 0.0);
-       
+
        glRotated(roty, 0.0, 1.0, 0.0);
-       
+
        glTranslated(dxw, 0.0, -dyw);
-       
+
        glRotated(-roty, 0.0, 1.0, 0.0);
-       
+
        if(fabs(view->roll) > AY_EPSILON)
 	 glRotated(view->roll, 0.0, 1.0, 0.0);
      }
@@ -258,7 +258,7 @@ ay_vact_moveztcb(struct Togl *togl, int argc, char *argv[])
   view->from[1] += v[1];
   view->to[1] += v[1];
   view->from[2] += v[2];
-  view->to[2] += v[2];    
+  view->to[2] += v[2];
 
   oldwiny = winy;
 

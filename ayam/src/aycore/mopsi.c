@@ -78,7 +78,7 @@ int ay_mopsi_object(FILE *fileptr);
 int ay_mopsi_scene(Tcl_Interp *interp, char *filename, int insert);
 
 
-/* global variables */ 
+/* global variables */
 static int ay_mopsi_version;
 
 static ay_object *ay_mopsi_lastread;
@@ -212,12 +212,12 @@ ay_mopsi_skip(FILE *fileptr)
 }
 
 
-int 
+int
 ay_mopsi_header(FILE *fileptr)
 {
  int ay_status = AY_OK;
  char *version = NULL, *nbuffer = NULL /*nbuffer[7]*/;
- 
+
 
  /*
    fgets(nbuffer,7,fileptr);
@@ -256,7 +256,7 @@ ay_mopsi_header(FILE *fileptr)
 }
 
 
-int 
+int
 ay_mopsi_rioptions(FILE *fileptr, int insert)
 {
  int ay_status = AY_OK;
@@ -338,7 +338,7 @@ ay_mopsi_rioptions(FILE *fileptr, int insert)
 }
 
 
-int 
+int
 ay_mopsi_views(Tcl_Interp *interp, FILE *fileptr, int insert)
 {
  int ay_status = AY_OK;
@@ -425,7 +425,7 @@ ay_mopsi_views(Tcl_Interp *interp, FILE *fileptr, int insert)
       sprintf(command, "viewOpen %d %d 0\n", width, height);
       Tcl_Eval(interp, command);
       Tcl_Eval(interp, update_cmd);
-      
+
       /* configure it */
       o = root->down;
       if(o->next)
@@ -473,7 +473,7 @@ ay_mopsi_views(Tcl_Interp *interp, FILE *fileptr, int insert)
 }
 
 
-int 
+int
 ay_mopsi_root(Tcl_Interp *interp, FILE *fileptr, int insert)
 {
  int ay_status = AY_OK;
@@ -494,7 +494,7 @@ ay_mopsi_root(Tcl_Interp *interp, FILE *fileptr, int insert)
 }
 
 
-int 
+int
 ay_mopsi_level(FILE *fileptr, ay_object **optr)
 {
  int ay_status = AY_OK;
@@ -612,7 +612,7 @@ ay_mopsi_level(FILE *fileptr, ay_object **optr)
 }
 
 
-int 
+int
 ay_mopsi_attributes(FILE *fileptr)
 {
  int ay_status = AY_OK;
@@ -715,7 +715,7 @@ ay_mopsi_attributes(FILE *fileptr)
 	o->hide = AY_TRUE;
     }
 
-  /* 
+  /*
      fscanf(fileptr,"%d\n",&o->colr);
      fscanf(fileptr,"%d\n",&o->colg);
      fscanf(fileptr,"%d\n",&o->colb);
@@ -777,7 +777,7 @@ ay_mopsi_attributes(FILE *fileptr)
   return ay_status;
 }
 
-int 
+int
 ay_mopsi_trafos(FILE *fileptr)
 {
  int ay_status = AY_OK;
@@ -801,14 +801,14 @@ ay_mopsi_trafos(FILE *fileptr)
 
   fscanf(fileptr,"%lg\n",&o->scalx);
   fscanf(fileptr,"%lg\n",&o->scaly);
-  fscanf(fileptr,"%lg\n",&o->scalz); 
+  fscanf(fileptr,"%lg\n",&o->scalz);
 
  return ay_status;
 }
 
 
 /* XXXX leaks memory in low-mem situation */
-int 
+int
 ay_mopsi_shaders(FILE *fileptr)
 {
  int ay_status = AY_OK;
@@ -826,7 +826,7 @@ ay_mopsi_shaders(FILE *fileptr)
  ay_root_object *root = NULL;
  ay_mat_object *m = NULL;
  char buffer[128], *argv[3];
- 
+
  if(!o)
    return AY_OK;
 
@@ -854,7 +854,7 @@ ay_mopsi_shaders(FILE *fileptr)
      for(j=0; j < argcount; j++)
        {
 	 if(!(sarg = calloc(1, sizeof(ay_shader_arg))))
-	   return AY_EOMEM; 
+	   return AY_EOMEM;
 
 	 ay_mopsi_string(fileptr, &(sarg->name));
 	 fscanf(fileptr,"%d", &(sargtype));
@@ -894,7 +894,7 @@ ay_mopsi_shaders(FILE *fileptr)
 	       }
 	     break;
 	   } /* switch */
-	  
+
 	 *prevargptr = sarg;
 	 prevargptr = &(sarg->next);
 
@@ -1016,10 +1016,10 @@ ay_mopsi_shaders(FILE *fileptr)
      m->avr = ay_mopsi_readattr.avr;
      m->avg = ay_mopsi_readattr.avg;
      m->avb = ay_mopsi_readattr.avb;
-     
+
      m->emr = ay_mopsi_readattr.emr;
      m->emg = ay_mopsi_readattr.emg;
-     m->emb = ay_mopsi_readattr.emb;     
+     m->emb = ay_mopsi_readattr.emb;
 
      m->spr = ay_mopsi_readattr.spr;
      m->spg = ay_mopsi_readattr.spg;
@@ -1042,7 +1042,7 @@ ay_mopsi_shaders(FILE *fileptr)
 }
 
 
-int 
+int
 ay_mopsi_tags(FILE *fileptr)
 {
  int ay_status = AY_OK;
@@ -1066,7 +1066,7 @@ ay_mopsi_tags(FILE *fileptr)
 
      if(!(entry = Tcl_FindHashEntry(&ay_tagtypesht, tag->name)))
        {
-	 /* 
+	 /*
 	    return AY_HASH;
 	    XXXX warn the user?
 	 */
@@ -1086,7 +1086,7 @@ ay_mopsi_tags(FILE *fileptr)
 }
 
 
-int 
+int
 ay_mopsi_nurbcurve(FILE *fileptr, ay_object *o)
 {
  int ay_status = AY_OK;
@@ -1167,7 +1167,7 @@ ay_mopsi_nurbcurve(FILE *fileptr, ay_object *o)
 }
 
 
-int 
+int
 ay_mopsi_nurbpatch(FILE *fileptr, ay_object *o)
 {
  int ay_status = AY_OK;
@@ -1192,7 +1192,7 @@ ay_mopsi_nurbpatch(FILE *fileptr, ay_object *o)
   fscanf(fileptr,"%d\n",&patch->vorder);
   fscanf(fileptr,"%d\n",&patch->uknot_type);
   fscanf(fileptr,"%d\n",&patch->vknot_type);
-  
+
   ay_status = ay_knots_createnp(patch);
   if(ay_status)
     { free(patch); return ay_status; }
@@ -1254,7 +1254,7 @@ ay_mopsi_nurbpatch(FILE *fileptr, ay_object *o)
 }
 
 
-int 
+int
 ay_mopsi_box(FILE *fileptr, ay_object *o)
 {
  int ay_status = AY_OK;
@@ -1277,7 +1277,7 @@ ay_mopsi_box(FILE *fileptr, ay_object *o)
 }
 
 
-int 
+int
 ay_mopsi_sphere(FILE *fileptr, ay_object *o)
 {
  int ay_status = AY_OK;
@@ -1304,7 +1304,7 @@ ay_mopsi_sphere(FILE *fileptr, ay_object *o)
 }
 
 
-int 
+int
 ay_mopsi_cone(FILE *fileptr, ay_object *o)
 {
  int ay_status = AY_OK;
@@ -1330,7 +1330,7 @@ ay_mopsi_cone(FILE *fileptr, ay_object *o)
 }
 
 
-int 
+int
 ay_mopsi_disk(FILE *fileptr, ay_object *o)
 {
  int ay_status = AY_OK;
@@ -1353,7 +1353,7 @@ ay_mopsi_disk(FILE *fileptr, ay_object *o)
 }
 
 
-int 
+int
 ay_mopsi_cylinder(FILE *fileptr, ay_object *o)
 {
  int ay_status = AY_OK;
@@ -1380,7 +1380,7 @@ ay_mopsi_cylinder(FILE *fileptr, ay_object *o)
 }
 
 
-int 
+int
 ay_mopsi_hyperboloid(FILE *fileptr, ay_object *o)
 {
  int ay_status = AY_OK;
@@ -1413,7 +1413,7 @@ ay_mopsi_hyperboloid(FILE *fileptr, ay_object *o)
 }
 
 
-int 
+int
 ay_mopsi_paraboloid(FILE *fileptr, ay_object *o)
 {
  int ay_status = AY_OK;
@@ -1440,7 +1440,7 @@ ay_mopsi_paraboloid(FILE *fileptr, ay_object *o)
 }
 
 
-int 
+int
 ay_mopsi_torus(FILE *fileptr, ay_object *o)
 {
  int ay_status = AY_OK;
@@ -1468,7 +1468,7 @@ ay_mopsi_torus(FILE *fileptr, ay_object *o)
 }
 
 
-int 
+int
 ay_mopsi_instance(FILE *fileptr, ay_object *o)
 {
  int ay_status = AY_OK;
@@ -1483,7 +1483,7 @@ ay_mopsi_instance(FILE *fileptr, ay_object *o)
 }
 
 
-int 
+int
 ay_mopsi_light(FILE *fileptr, ay_object *o)
 {
  int ay_status = AY_OK;
@@ -1559,7 +1559,7 @@ ay_mopsi_light(FILE *fileptr, ay_object *o)
  return ay_status;
 }
 
-int 
+int
 ay_mopsi_custom(FILE *fileptr, ay_object *o)
 {
  int ay_status = AY_OK;
@@ -1616,7 +1616,7 @@ ay_mopsi_revolve(FILE *fileptr, ay_object *o)
   o->type = AY_IDREVOLVE;
   o->parent = AY_TRUE;
 
-  
+
   fscanf(fileptr,"%d\n",&r->has_upper_cap);
   fscanf(fileptr,"%d\n",&r->has_lower_cap);
   r->thetamax = 360.0;
@@ -1792,7 +1792,7 @@ ay_mopsi_icurve(FILE *fileptr, ay_object *o)
 
       if(!(controlv = calloc(dlen*3, sizeof(double))))
 	return AY_EOMEM;
-      
+
       a = 0;
       for(i = 0; i < dlen; i++)
 	{
@@ -1828,7 +1828,7 @@ ay_mopsi_icurve(FILE *fileptr, ay_object *o)
 }
 
 
-int 
+int
 ay_mopsi_object(FILE *fileptr)
 {
  int ay_status = AY_OK;
@@ -1928,7 +1928,7 @@ ay_mopsi_object(FILE *fileptr)
      free(o); o=NULL;
      return ay_status;
    }
- 
+
  switch(type)
    {
    case MOPS_OTATTRIB:
@@ -1961,7 +1961,7 @@ ay_mopsi_object(FILE *fileptr)
 }
 
 
-int 
+int
 ay_mopsi_scene(Tcl_Interp *interp, char *filename, int insert)
 {
  int ay_status = AY_OK;

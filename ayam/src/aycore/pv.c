@@ -81,7 +81,7 @@ ay_pv_filltokpar(ay_object *o, int declare, int start,
 		  pvtype = strtok(NULL, tok);
 		}
 	      else
-		{ 
+		{
 		  pvtype = NULL;
 		}
 	      if(pvtype)
@@ -263,7 +263,7 @@ ay_pv_filltokpar(ay_object *o, int declare, int start,
 			} /* if(pvvalue */
 
 		    } /* if(n > 0 */
-		  
+
 		} /* if(pvtype */
 
 	    } /* if(pvname */
@@ -345,7 +345,7 @@ ay_pv_add(ay_object *o, char *name, char *detail, int type,
 	  break;
 	} /* switch */
     } /* for */
-  
+
   if(!(tag->val = calloc(strlen(Tcl_DStringValue(&ds))+1,
 			 sizeof(char))))
     return AY_EOMEM;
@@ -486,7 +486,7 @@ ay_pv_cmpname(ay_tag *t1, ay_tag *t2)
 
 
 /* ay_pv_convert:
- *  
+ *
  */
 int
 ay_pv_convert(ay_tag *tag, unsigned int *datalen, void **data)
@@ -497,7 +497,7 @@ ay_pv_convert(ay_tag *tag, unsigned int *datalen, void **data)
 
   if(!tag)
     return AY_ENULL;
-  
+
   if(tag->type != ay_pv_tagtype)
     return AY_ERROR;
 

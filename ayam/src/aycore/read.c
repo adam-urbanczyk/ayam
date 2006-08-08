@@ -153,9 +153,9 @@ ay_read_skip(FILE *fileptr)
 
 
 /* ay_read_header:
- *  
+ *
  */
-int 
+int
 ay_read_header(FILE *fileptr)
 {
  int ay_status = AY_OK;
@@ -262,9 +262,9 @@ ay_read_header(FILE *fileptr)
 
 
 /* ay_read_attributes:
- *  
+ *
  */
-int 
+int
 ay_read_attributes(FILE *fileptr, ay_object *o)
 {
  int ay_status = AY_OK;
@@ -309,7 +309,7 @@ ay_read_attributes(FILE *fileptr, ay_object *o)
 
 
 /* ay_read_tags:
- *  
+ *
  */
 int
 ay_read_tags(FILE *fileptr, ay_object *o)
@@ -400,7 +400,7 @@ ay_read_tags(FILE *fileptr, ay_object *o)
 /* ay_read_shader:
  *  XXXX leaks memory in low-mem situation
  */
-int 
+int
 ay_read_shader(FILE *fileptr, ay_shader **result)
 {
  int ay_status = AY_OK;
@@ -426,7 +426,7 @@ ay_read_shader(FILE *fileptr, ay_shader **result)
   for(j=0; j < argcount; j++)
     {
       if(!(sarg = calloc(1, sizeof(ay_shader_arg))))
-	return AY_EOMEM; 
+	return AY_EOMEM;
 
       ay_read_string(fileptr, &(sarg->name));
       fscanf(fileptr,"%d", &(sarg->type));
@@ -464,7 +464,7 @@ ay_read_shader(FILE *fileptr, ay_shader **result)
 	  fscanf(fileptr,"%g\n", &((sarg->val).matrix[15]));
 	  break;
 	} /* switch */
-	  
+
       *prevargptr = sarg;
       prevargptr = &(sarg->next);
 
@@ -477,9 +477,9 @@ ay_read_shader(FILE *fileptr, ay_shader **result)
 
 
 /* ay_read_object:
- *  
+ *
  */
-int 
+int
 ay_read_object(FILE *fileptr)
 {
  char fname[] = "read_object";
@@ -623,9 +623,9 @@ ay_read_object(FILE *fileptr)
 
 
 /* ay_read_scene:
- *  
+ *
  */
-int 
+int
 ay_read_scene(Tcl_Interp *interp, char *filename, int insert)
 {
  int ay_status = AY_OK;
@@ -645,7 +645,7 @@ ay_read_scene(Tcl_Interp *interp, char *filename, int insert)
   ay_status = ay_read_header(fileptr);
 
   if(ay_status)
-    { 
+    {
       fclose(fileptr);
       ay_error(ay_status, fname, filename);
       return AY_ERROR;
@@ -700,7 +700,7 @@ ay_read_scene(Tcl_Interp *interp, char *filename, int insert)
 
 
 /* ay_read_replacetcmd:
- *  
+ *
  */
 int
 ay_read_replacetcmd(ClientData clientData, Tcl_Interp * interp,
@@ -726,7 +726,7 @@ ay_read_replacetcmd(ClientData clientData, Tcl_Interp * interp,
 
   /* then, we read the new scene */
   ay_status = ay_read_scene(interp, argv[1], AY_FALSE);
-  
+
   if(ay_status)
     {
       ay_error(ay_status, fname, "Error reading file!");
@@ -738,7 +738,7 @@ ay_read_replacetcmd(ClientData clientData, Tcl_Interp * interp,
 
 
 /* ay_read_inserttcmd:
- *  
+ *
  */
 int
 ay_read_inserttcmd(ClientData clientData, Tcl_Interp * interp,

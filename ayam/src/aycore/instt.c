@@ -41,7 +41,7 @@ ay_instt_createoidht(ay_object *o)
     {
       if(o->type != AY_IDINSTANCE)
 	{
-	  
+
 	  found = AY_FALSE;
 	  tag = o->tags;
 	  while(tag && !found)
@@ -53,7 +53,7 @@ ay_instt_createoidht(ay_object *o)
 
 		  entry = Tcl_CreateHashEntry(ht,
 					      tag->val, &new_item);
-		  Tcl_SetHashValue(entry, (char*)o); 
+		  Tcl_SetHashValue(entry, (char*)o);
 
 		  found = AY_TRUE;
 		}
@@ -262,7 +262,7 @@ ay_instt_createinstanceids(ay_object *o)
 {
  int ay_status = AY_OK;
  int found = AY_FALSE;
- ay_tag *tag = NULL, *origtag = NULL; 
+ ay_tag *tag = NULL, *origtag = NULL;
  ay_object *orig = NULL;
 
   while(o)
@@ -292,7 +292,7 @@ ay_instt_createinstanceids(ay_object *o)
 	  while(tag && !found)
 	    {
 	      if(tag->type == ay_instt_oitagtype)
-		{ 
+		{
 		  /* copy val from origtag to oitag of instance object */
 		  free(tag->val);
 		  if(!(tag->val=calloc(strlen(origtag->val)+1,sizeof(char))))
@@ -348,7 +348,7 @@ ay_instt_wribiarchives(char *file, ay_object *o)
 
       arr = ay_wribcbt.arr;
       cb = (ay_wribcb *)(arr[o->type]);
-		  
+
       if((o->refcount) && (o->type != AY_IDMATERIAL) && (cb))
 	{
 	  found = AY_FALSE;
@@ -412,7 +412,7 @@ ay_instt_wribiarchives(char *file, ay_object *o)
 			      RiArchiveRecord(RI_COMMENT, o->name);
 			    } /* if */
 			} /* if */
-	
+
 		      ay_status = cb(file, o);
 		    } /* if */
 
@@ -421,7 +421,7 @@ ay_instt_wribiarchives(char *file, ay_object *o)
 		  if(o->down && o->down->next)
 		    {
 		      down = o->down;
-		      
+
 		      if(o->type == AY_IDLEVEL)
 			{
 			  l = (ay_level_object*)o->refine;
@@ -594,7 +594,7 @@ ay_instt_clearoidtags(ay_object *o)
 		  tag = tag->next;
 		} /* if */
 	    } /* while */
-	
+
 	} /* if */
 
       if(o->down)
@@ -613,7 +613,7 @@ ay_instt_clearoidtags(ay_object *o)
 /* ay_instt_findinstance:
  *  check objects pointed to by "o" for instance objects that
  *  are instances of object "r"; returns AY_ERROR imediately
- *  if a single instance has been found 
+ *  if a single instance has been found
  */
 int
 ay_instt_findinstance(ay_object *r, ay_object *o)
@@ -914,7 +914,7 @@ ay_instt_check(ay_object *o, ay_object *target)
 	} /* while */
     } /* if */
 
- 
+
   if(o->type == AY_IDINSTANCE)
     {
       res = ay_instt_checkinstance(ay_root, target, o, &check);
@@ -942,7 +942,7 @@ ay_instt_getmaster(ay_object *o, ay_object *i, ay_object **r)
       if(o->down)
 	{
 	  result = ay_instt_getmaster(o->down, i, r);
-	  
+
 	  if(result == AY_TRUE)
 	    {
 	      ay_clevel_add(o);
@@ -1013,7 +1013,7 @@ ay_instt_getmastertcmd(ClientData clientData, Tcl_Interp *interp,
     ay_clevel_del();
 
   ay_tree_crtnodename(ay_root, ay_currentlevel, &ds);
-  
+
   Tcl_SetVar(interp, argv[1], Tcl_DStringValue(&ds), TCL_LEAVE_ERR_MSG);
 
   Tcl_DStringFree(&ds);
@@ -1022,7 +1022,7 @@ ay_instt_getmastertcmd(ClientData clientData, Tcl_Interp *interp,
     {
       lev = ay_currentlevel->next;
       free(ay_currentlevel);
-      ay_currentlevel = lev; 
+      ay_currentlevel = lev;
     }
 
   ay_currentlevel = clevel;

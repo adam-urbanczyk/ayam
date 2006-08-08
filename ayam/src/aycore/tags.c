@@ -74,9 +74,9 @@ ay_tags_copy(ay_tag *source,
  ay_tag *new = NULL;
 
   if(!(new = calloc(1,sizeof(ay_tag))))
-    return AY_EOMEM; 
+    return AY_EOMEM;
 
-  memcpy(new, source, sizeof(ay_tag)); 
+  memcpy(new, source, sizeof(ay_tag));
   /* danger! links point to original hierachy */
 
   new->next = NULL;
@@ -250,7 +250,7 @@ ay_tags_istemptcmd(ClientData clientData, Tcl_Interp * interp,
 
   if(temp)
     {
-      Tcl_SetResult(interp, yes, TCL_VOLATILE);     
+      Tcl_SetResult(interp, yes, TCL_VOLATILE);
     }
   else
     {
@@ -353,7 +353,7 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp * interp,
 	      return TCL_OK;
 	    }
 	  strcpy(new->val, argv[4]);
-	  
+
 	} /* if */
 
       return TCL_OK; /* early exit! */
@@ -463,7 +463,7 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp * interp,
 
       sel = sel->next;
     } /* while */
- 
+
  return TCL_OK;
 } /* ay_tags_settcmd */
 
@@ -486,7 +486,7 @@ ay_tags_addtcmd(ClientData clientData, Tcl_Interp * interp,
        ay_error(AY_EARGS, fname, "type value");
        return TCL_OK;
      }
- 
+
   if(!sel)
     {
       ay_error(AY_ENOSEL, fname, NULL);
@@ -543,13 +543,13 @@ ay_tags_addtcmd(ClientData clientData, Tcl_Interp * interp,
 
       sel = sel->next;
     } /* while */
- 
+
  return TCL_OK;
 } /* ay_tags_addtcmd */
 
 
 /* ay_tags_gettcmd:
- *  return all tags of the (first) selected object 
+ *  return all tags of the (first) selected object
  */
 int
 ay_tags_gettcmd(ClientData clientData, Tcl_Interp * interp,
@@ -589,7 +589,7 @@ ay_tags_gettcmd(ClientData clientData, Tcl_Interp * interp,
 	  tag = tag->next;
 	} /* while */
     } /* if */
- 
+
   return TCL_OK;
 } /* ay_tags_gettcmd */
 
@@ -653,7 +653,7 @@ ay_tags_deletetcmd(ClientData clientData, Tcl_Interp * interp,
 	} /* if */
       sel = sel->next;
     } /* while */
- 
+
   return TCL_OK;
 } /* ay_tags_deletetcmd */
 
@@ -845,7 +845,7 @@ ay_tags_parseplist(char *str, int declare, RtInt *argc, RtToken **tokensr,
 		default:
 		  break;
 		} /* switch */
-	      	      
+
 	      *argc = *argc+1;
 
 	    } /* if(parval */
