@@ -280,7 +280,7 @@ ay_extrude_readcb(FILE *fileptr, ay_object *o)
  int has_endb = AY_FALSE, has_endb2 = AY_FALSE;
  int startb_type, startb_type2, endb_type, startb_sense, endb_sense;
  double startb_radius, startb_radius2, endb_radius;
- 
+
   if(!o)
     return AY_ENULL;
 
@@ -468,7 +468,7 @@ ay_extrude_notifycb(ay_object *o)
 
   if(ext->caps_and_bevels)
     {
-      ay_object_deletemulti(ext->caps_and_bevels); 
+      ay_object_deletemulti(ext->caps_and_bevels);
     }
   ext->caps_and_bevels = NULL;
 
@@ -522,7 +522,7 @@ ay_extrude_notifycb(ay_object *o)
 	  if(has_startb)
 	    {
 	      ay_status = ay_npt_createnpatchobject(&bevel);
-	    
+
 	      ay_status = ay_npt_bevel(startb_type,
 				       startb_radius,
 				       AY_FALSE,
@@ -550,7 +550,7 @@ ay_extrude_notifycb(ay_object *o)
 	      *nextcb = bevel;
 	      nextcb = &(bevel->next);
 	    } /* if */
-	    
+
 	  /* create caps */
 	  if(ext->has_upper_cap)
 	    {
@@ -816,7 +816,7 @@ ay_extrude_notifycb(ay_object *o)
     {
       bevel = ext->caps_and_bevels;
       while(bevel)
-	{  
+	{
 	  tloop = bevel->down;
 	  if(tloop)
 	    {

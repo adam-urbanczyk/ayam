@@ -43,7 +43,7 @@ ay_text_deletecb(void *c)
  ay_text_object *text = NULL;
 
   if(!c)
-    return AY_ENULL; 
+    return AY_ENULL;
 
   text = (ay_text_object *)(c);
 
@@ -71,9 +71,9 @@ ay_text_copycb(void *src, void **dst)
   tdst = (ay_text_object *)dst;
 
   if(!(tdst = calloc(1, sizeof(ay_text_object))))
-    return AY_EOMEM; 
+    return AY_EOMEM;
 
-  memcpy(tdst, tsrc, sizeof(ay_text_object)); 
+  memcpy(tdst, tsrc, sizeof(ay_text_object));
 
   tdst->npatch = NULL;
   tdst->fontname = NULL;
@@ -104,7 +104,7 @@ ay_text_copycb(void *src, void **dst)
 	     Tcl_UniCharLen(tsrc->unistring)*sizeof(Tcl_UniChar));
 
     }
-  
+
   *dst = tdst;
 
  return AY_OK;
@@ -118,16 +118,16 @@ ay_text_drawcb(struct Togl *togl, ay_object *o)
  ay_object *npatch;
 
   if(!o)
-    return AY_ENULL; 
+    return AY_ENULL;
 
   text = (ay_text_object *)(o->refine);
-  
+
   npatch = text->npatch;
 
   while(npatch)
     {
       ay_draw_object(togl, npatch, AY_TRUE);
-      npatch = npatch->next; 
+      npatch = npatch->next;
     }
 
  return AY_OK;
@@ -141,16 +141,16 @@ ay_text_shadecb(struct Togl *togl, ay_object *o)
  ay_object *npatch;
 
   if(!o)
-    return AY_ENULL; 
+    return AY_ENULL;
 
   text = (ay_text_object *)(o->refine);
-  
+
   npatch = text->npatch;
 
   while(npatch)
     {
       ay_shade_object(togl, npatch, AY_TRUE);
-      npatch = npatch->next; 
+      npatch = npatch->next;
     }
 
  return AY_OK;
@@ -189,7 +189,7 @@ ay_text_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       return TCL_OK;
     }
   strcpy(text->fontname, result);
-  
+
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
 
@@ -469,7 +469,7 @@ ay_text_bbccb(ay_object *o, double *bbox, int *flags)
   if(!o || !bbox)
     return AY_ENULL;
 
-  text = (ay_text_object *)o->refine; 
+  text = (ay_text_object *)o->refine;
   if(text->npatch)
     {
       p = text->npatch;
@@ -643,7 +643,7 @@ ay_text_notifycb(ay_object *o)
 		      extrude.npatch = NULL;
 		      extrude.caps_and_bevels = NULL;
 		      ay_notify_force(&ext);
-		      
+
 		      if(extrude.npatch)
 			{
 			  *nextnpatch = extrude.npatch;
@@ -677,7 +677,7 @@ ay_text_notifycb(ay_object *o)
 			}
 		      ay_object_delete(curve);
 		    } /* if(curve */
-		  
+
 		  curve = newcurve;
 
 		}
@@ -812,7 +812,7 @@ ay_text_convertcb(ay_object *o, int in_place)
 	      ay_trafo_copy(o, new);
 
 	      /* copy eventually present TP tags */
-	      ay_npt_copytptag(o, new); 
+	      ay_npt_copytptag(o, new);
 
 	      new->hide_children = AY_TRUE;
 	      new->parent = AY_TRUE;
@@ -840,7 +840,7 @@ ay_text_convertcb(ay_object *o, int in_place)
 	      ay_trafo_copy(o, new);
 
 	      /* copy eventually present TP tags */
-	      ay_npt_copytptag(o, new); 
+	      ay_npt_copytptag(o, new);
 
 	      new->hide_children = AY_TRUE;
 	      new->parent = AY_TRUE;

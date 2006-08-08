@@ -44,7 +44,7 @@ ay_cap_deletecb(void *c)
  ay_cap_object *cap = NULL;
 
   if(!c)
-    return AY_ENULL;    
+    return AY_ENULL;
 
   cap = (ay_cap_object *)(c);
 
@@ -67,9 +67,9 @@ ay_cap_copycb(void *src, void **dst)
   capsrc = (ay_cap_object *)src;
 
   if(!(cap = calloc(1, sizeof(ay_cap_object))))
-    return AY_EOMEM; 
+    return AY_EOMEM;
 
-  memcpy(cap, src, sizeof(ay_cap_object)); 
+  memcpy(cap, src, sizeof(ay_cap_object));
 
   cap->npatch = NULL;
 
@@ -153,7 +153,7 @@ ay_cap_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     return AY_ENULL;
 
   cap = (ay_cap_object *)o->refine;
-  
+
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
 
@@ -282,7 +282,7 @@ ay_cap_bbccb(ay_object *o, double *bbox, int *flags)
   if(!o || !bbox)
     return AY_ENULL;
 
-  cap = (ay_cap_object *)o->refine; 
+  cap = (ay_cap_object *)o->refine;
   if(cap)
     {
       ay_status = ay_bbc_get(cap->npatch, bbox);
@@ -308,7 +308,7 @@ ay_cap_notifycb(ay_object *o)
  int ay_status = AY_OK;
 
   if(!o)
-    return AY_ENULL;    
+    return AY_ENULL;
 
   cap = (ay_cap_object *)(o->refine);
 
@@ -342,7 +342,7 @@ ay_cap_notifycb(ay_object *o)
 		      nextcurve = &((*nextcurve)->next);
 		    } /* if */
 		} /* if */
-#endif	  
+#endif
 	    }
 	  else
 	    {

@@ -867,7 +867,7 @@ ay_nb_SolveTridiagonal(int n, double *Q, double *U, double *P)
 /*
  * ay_nb_CurveInsertKnot4D:
  *  insert knot u into rational curve (np, p, UP[], Pw[])
- *  r times; k: knot span, s: already present knot multiplicity (np >= r+s!) 
+ *  r times; k: knot span, s: already present knot multiplicity (np >= r+s!)
  *  nq: new order, UQ: new knots, Qw: new controls (both allocated outside!)
  */
 int
@@ -968,7 +968,7 @@ ay_nb_CurveInsertKnot4D(int np, int p, double *UP, double *Pw, double u,
 /*
  * ay_nb_CurveInsertKnot3D:
  *  insert knot u into non-rational curve (np, p, UP[], P[])
- *  r times; k: knot span, s: already present knot multiplicity (np >= r+s!) 
+ *  r times; k: knot span, s: already present knot multiplicity (np >= r+s!)
  *  nq: new order, UQ: new knots, Q: new controls (both allocated outside!)
  */
 int

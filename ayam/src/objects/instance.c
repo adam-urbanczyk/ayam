@@ -109,7 +109,7 @@ ay_instance_drawcb(struct Togl *togl, ay_object *o)
    if(ay_status)
      {
        ay_error(AY_ERROR, fname, "draw callback failed");
-       
+
        glPopMatrix();
        return AY_ERROR;
      }
@@ -168,7 +168,7 @@ ay_instance_shadecb(struct Togl *togl, ay_object *o)
    if(ay_status)
      {
        ay_error(AY_ERROR, fname, "draw callback failed");
-       
+
        glPopMatrix();
        return AY_ERROR;
      }
@@ -302,7 +302,7 @@ ay_instance_wribcb(char *file, ay_object *o)
 	  ay_status = cb(file, orig);
 	}
     } /* if(cb) */
-  
+
   if(orig->down && orig->down->next)
     {
       down = orig->down;
@@ -429,7 +429,7 @@ ay_instance_bbccb(ay_object *o, double *bbox, int *flags)
   if(t->down)
     {
 
-      d = t->down;  
+      d = t->down;
       while(d->next)
 	{
 	  ay_status = ay_bbc_get(d, bbt);
@@ -437,7 +437,7 @@ ay_instance_bbccb(ay_object *o, double *bbox, int *flags)
 	    {
 	      return ay_status;
 	    }
-	  
+
 	  /* apply transformations */
 	  if(t->inherit_trafos)
 	    {
@@ -458,7 +458,7 @@ ay_instance_bbccb(ay_object *o, double *bbox, int *flags)
 		xmax = bbt[a];
 	      a += 3;
 	    }
-	  
+
 	  a = 1;
 	  for(i = 0; i < 8; i++)
 	    {
@@ -715,7 +715,7 @@ ay_instance_providecb(ay_object *o, unsigned int type, ay_object **result)
 	from the instanced object instead
       */
       ay_status = ay_provide_object(i, type, result);
-      
+
       if(*result)
 	{
 	  /*

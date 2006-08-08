@@ -50,7 +50,7 @@ ay_sphere_deletecb(void *c)
  ay_sphere_object *sphere = NULL;
 
   if(!c)
-    return AY_ENULL;    
+    return AY_ENULL;
 
   sphere = (ay_sphere_object *)(c);
 
@@ -69,9 +69,9 @@ ay_sphere_copycb(void *src, void **dst)
     return AY_ENULL;
 
   if(!(sphere = calloc(1, sizeof(ay_sphere_object))))
-    return AY_EOMEM; 
+    return AY_EOMEM;
 
-  memcpy(sphere, src, sizeof(ay_sphere_object)); 
+  memcpy(sphere, src, sizeof(ay_sphere_object));
 
   *dst = (void *)sphere;
 
@@ -327,7 +327,7 @@ ay_sphere_shadecb(struct Togl *togl, ay_object *o)
     {
       memcpy(&(P2[i*3*5]), P1, 5*3*sizeof(double));
       k = i*3*5;
-      
+
       for(j = 0; j <= 4; j++)
 	{
 
@@ -386,7 +386,7 @@ ay_sphere_shadecb(struct Togl *togl, ay_object *o)
 	   glVertex3d(0.0,  0.0, zmin);
 	   glVertex3d(rmax, 0.0, zmax);
 	   glVertex3d(0.0,  0.0, zmax);
-	  glEnd();	  
+	  glEnd();
 
 	  glPopMatrix();
 
@@ -456,7 +456,7 @@ ay_sphere_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     return AY_ENULL;
 
   sphere = (ay_sphere_object *)o->refine;
-  
+
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
 
@@ -640,7 +640,7 @@ ay_sphere_wribcb(char *file, ay_object *o)
     zmin = (RtFloat)sphere->zmin;
     zmax = (RtFloat)sphere->zmax;
     thetamax = (RtFloat)sphere->thetamax;
-    
+
 
     if(radius == 0.0)
       return AY_OK;
@@ -654,14 +654,14 @@ ay_sphere_wribcb(char *file, ay_object *o)
 	}
     }
 
-    RiSphere(radius, zmin, zmax, thetamax, NULL); 
+    RiSphere(radius, zmin, zmax, thetamax, NULL);
 
     /* Top if needed. */
     if(fabs(zmax) < radius)
       {
 	/* Refer to [UPST90]. */
 	rmax = (RtFloat)(sqrt(radius*radius-zmax*zmax));
-	RiDisk(zmax, rmax, thetamax, NULL); 
+	RiDisk(zmax, rmax, thetamax, NULL);
 
 	phimax = (RtFloat)(asin(zmax/radius));
       }
@@ -678,7 +678,7 @@ ay_sphere_wribcb(char *file, ay_object *o)
 	 RiReverseOrientation();
 	 /* Refer to [UPST90]. */
 	 rmin = (RtFloat)(sqrt(radius*radius-zmin*zmin));
-	 RiDisk(zmin, rmin, thetamax, NULL); 
+	 RiDisk(zmin, rmin, thetamax, NULL);
 	RiAttributeEnd();
 
 	phimin = (RtFloat)(asin(zmin/radius));
@@ -713,7 +713,7 @@ ay_sphere_wribcb(char *file, ay_object *o)
 	P1[15][X] = xmid;
 	P1[13][X] = (RtFloat)(P1[15][X]/3.0);
 	P1[14][X] = (RtFloat)(2.0*P1[13][X]);
-   
+
 	angle = (RtFloat)(phimin + AY_HALFPI);
 	circle = (RtFloat)((UNITCIRCLE/AY_PI)*radius*phidiff);
 
@@ -745,12 +745,12 @@ ay_sphere_wribcb(char *file, ay_object *o)
 	P2[15][X] = rmax; /* Radius at zmax. */
 	P2[13][X] = (RtFloat)(P2[15][X]/3.0);
 	P2[14][X] = (RtFloat)(2.0*P2[13][X]);
-   
+
 	angle = (RtFloat)(phimin + phidiff/2.0 + AY_HALFPI);
 	circle = (RtFloat)((UNITCIRCLE/AY_PI)*radius*phidiff);
 
 	P2[4][Z] = P2[5][Z] = P2[6][Z] = P2[7][Z] =
-	  (RtFloat)(zmid + circle*sin(angle)); 
+	  (RtFloat)(zmid + circle*sin(angle));
 	P2[4][X] = (RtFloat)0.0;
 	P2[7][X] = (RtFloat)(xmid + circle*cos(angle));
 	P2[5][X] = (RtFloat)(P2[7][X]/3.0);
@@ -764,7 +764,7 @@ ay_sphere_wribcb(char *file, ay_object *o)
 	P2[9][X]  = (RtFloat)(P2[11][X]/3.0);
 	P2[10][X] = (RtFloat)(2.0*P2[9][X]);
 
-	RiPatch(RI_BICUBIC, RI_P, (RtPointer)P1, NULL); 
+	RiPatch(RI_BICUBIC, RI_P, (RtPointer)P1, NULL);
 	RiPatch(RI_BICUBIC, RI_P, (RtPointer)P2, NULL);
 
 	RiAttributeBegin();
@@ -804,7 +804,7 @@ ay_sphere_bbccb(ay_object *o, double *bbox, int *flags)
   if(!o || !bbox)
     return AY_ENULL;
 
-  sphere = (ay_sphere_object *)o->refine; 
+  sphere = (ay_sphere_object *)o->refine;
 
   r = sphere->radius;
   zmi = sphere->zmin;
@@ -931,7 +931,7 @@ ay_sphere_providecb(ay_object *o, unsigned int type, ay_object **result)
 	    }
 	  newc->type = AY_IDNCURVE;
 	  ay_status = ay_object_defaults(newc);
-	  
+
 	  ay_status = ay_nct_create(3, height, AY_KTCUSTOM, cv, kn,
 				    (ay_nurbcurve_object **)&(newc->refine));
 

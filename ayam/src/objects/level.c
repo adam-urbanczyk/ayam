@@ -64,9 +64,9 @@ ay_level_copycb(void *src, void **dst)
  ay_level_object *level = NULL;
 
   if(!(level = calloc(1, sizeof(ay_level_object))))
-    return AY_EOMEM; 
+    return AY_EOMEM;
 
-  memcpy(level, src, sizeof(ay_level_object)); 
+  memcpy(level, src, sizeof(ay_level_object));
 
   *dst = level;
 
@@ -126,7 +126,7 @@ ay_level_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     return AY_ENULL;
 
   level = (ay_level_object *)o->refine;
-  
+
   toa = Tcl_NewStringObj(n1,-1);
 
   ton = Tcl_NewStringObj("Type",-1);
@@ -205,7 +205,7 @@ ay_level_writecb(FILE *fileptr, ay_object *o)
     return AY_ENULL;
 
   level = (ay_level_object *)(o->refine);
- 
+
   fprintf(fileptr, "%d\n", level->type);
 
  return AY_OK;

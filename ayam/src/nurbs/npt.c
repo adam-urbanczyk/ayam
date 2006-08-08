@@ -792,7 +792,7 @@ ay_npt_revertutcmd(ClientData clientData, Tcl_Interp *interp,
 	  np = (ay_nurbpatch_object *)sel->object->refine;
 
 	  ay_status = ay_npt_revertu(np);
-	  
+
 	  sel->object->modified = AY_TRUE;
 	  break;
 	case AY_IDPAMESH:
@@ -4505,7 +4505,7 @@ ay_npt_bevel(int type, double radius, int align, ay_object *o,
   /* transform second loop */
   if((type == 0) || (type == 3))
     {
- 
+
       for(j = 0; j < curve->length; j++)
 	{
 	  /* get displacement direction */
@@ -6623,7 +6623,7 @@ ay_npt_explodemp(ay_object *o)
 
 
 /* ay_npt_getbeveltags:
- *  
+ *
  */
 int
 ay_npt_getbeveltags(ay_object *o, int place,
@@ -6659,7 +6659,7 @@ ay_npt_getbeveltags(ay_object *o, int place,
 
 
 /* ay_npt_copytptag:
- *  
+ *
  */
 int
 ay_npt_copytptag(ay_object *src, ay_object *dst)

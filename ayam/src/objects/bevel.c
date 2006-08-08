@@ -44,7 +44,7 @@ ay_bevel_deletecb(void *c)
  ay_bevel_object *bevel = NULL;
 
   if(!c)
-    return AY_ENULL;    
+    return AY_ENULL;
 
   bevel = (ay_bevel_object *)(c);
 
@@ -68,9 +68,9 @@ ay_bevel_copycb(void *src, void **dst)
   bevelsrc = (ay_bevel_object *)src;
 
   if(!(bevel = calloc(1, sizeof(ay_bevel_object))))
-    return AY_EOMEM; 
+    return AY_EOMEM;
 
-  memcpy(bevel, src, sizeof(ay_bevel_object)); 
+  memcpy(bevel, src, sizeof(ay_bevel_object));
 
   bevel->npatch = NULL;
 
@@ -150,7 +150,7 @@ ay_bevel_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     return AY_ENULL;
 
   bevel = (ay_bevel_object *)o->refine;
-  
+
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
 
@@ -270,7 +270,7 @@ ay_bevel_bbccb(ay_object *o, double *bbox, int *flags)
   if(!o || !bbox)
     return AY_ENULL;
 
-  bevel = (ay_bevel_object *)o->refine; 
+  bevel = (ay_bevel_object *)o->refine;
 
   if(bevel->npatch)
     {
@@ -299,7 +299,7 @@ ay_bevel_notifycb(ay_object *o)
  double b_radius, tolerance;
 
   if(!o)
-    return AY_ENULL;    
+    return AY_ENULL;
 
   bevel = (ay_bevel_object *)(o->refine);
 
@@ -480,7 +480,7 @@ ay_bevel_convertcb(ay_object *o, int in_place)
       ay_object_crtendlevel(&(new->down));
 
       /* copy eventually present TP tags */
-      ay_npt_copytptag(o, new); 
+      ay_npt_copytptag(o, new);
    } /* if */
 
   /* second, link new objects, or replace old objects with them */
@@ -521,7 +521,7 @@ ay_bevel_init(Tcl_Interp *interp)
 				    ay_bevel_bbccb,
 				    AY_IDBEVEL);
 
-  
+
   ay_status = ay_notify_register(ay_bevel_notifycb, AY_IDBEVEL);
 
   ay_status = ay_convert_register(ay_bevel_convertcb, AY_IDBEVEL);

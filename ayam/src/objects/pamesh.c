@@ -67,7 +67,7 @@ ay_pamesh_createcb(int argc, char *argv[], ay_object *o)
       free(p);
       return AY_EOMEM;
     }
-  
+
   k = 0;
   for(i=0;i<(width);i++)
     {
@@ -97,7 +97,7 @@ ay_pamesh_deletecb(void *c)
  ay_pamesh_object *pamesh = NULL;
 
   if(!c)
-    return AY_ENULL;    
+    return AY_ENULL;
 
   pamesh = (ay_pamesh_object *)(c);
 
@@ -134,9 +134,9 @@ ay_pamesh_copycb(void *src, void **dst)
   pameshsrc = (ay_pamesh_object *)src;
 
   if(!(pamesh = calloc(1, sizeof(ay_pamesh_object))))
-    return AY_EOMEM; 
+    return AY_EOMEM;
 
-  memcpy(pamesh, src, sizeof(ay_pamesh_object)); 
+  memcpy(pamesh, src, sizeof(ay_pamesh_object));
 
   pamesh->controlv = NULL;
   pamesh->ubasis = NULL;
@@ -341,7 +341,7 @@ ay_pamesh_drawhcb(struct Togl *togl, ay_object *o)
   glEnd();
 
   /* draw arrows */
-  ay_draw_arrow(togl, &(ver[width*height*4-8]), &(ver[width*height*4-4])); 
+  ay_draw_arrow(togl, &(ver[width*height*4-8]), &(ver[width*height*4-4]));
 
  return AY_OK;
 } /* ay_pamesh_drawhcb */
@@ -435,16 +435,16 @@ ay_pamesh_getpntcb(int mode, ay_object *o, double *p)
 	      c = &(control[j]);
 
 	      /* test point c against the four planes in p */
-	      if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) && 
-		 ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) && 
-		 ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) && 
+	      if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) &&
+		 ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) &&
+		 ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
 		 ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
 		{
 
 		  if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
 		    return AY_EOMEM;
 		  pecoords[a] = &(control[j]);
-		  a++;		  
+		  a++;
 		} /* if */
 
 	      j += 4;
@@ -483,7 +483,7 @@ ay_pamesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     return AY_ENULL;
 
   pamesh = (ay_pamesh_object *)o->refine;
-  
+
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
 
@@ -526,7 +526,7 @@ ay_pamesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   pamesh->type = new_type;
   pamesh->btype_u = new_btype_u;
   pamesh->btype_v = new_btype_v;
-  
+
   pamesh->close_u = new_close_u;
   pamesh->close_v = new_close_v;
 
@@ -950,13 +950,13 @@ ay_pamesh_wribcb(char *file, ay_object *o)
       b = i*4;
       for(j=0;j<nu;j++)
 	{
-	  controls[a] = (RtFloat)patch->controlv[b]; 
+	  controls[a] = (RtFloat)patch->controlv[b];
 	  a++;
-	  controls[a] = (RtFloat)patch->controlv[b+1]; 
+	  controls[a] = (RtFloat)patch->controlv[b+1];
 	  a++;
-	  controls[a] = (RtFloat)patch->controlv[b+2]; 
+	  controls[a] = (RtFloat)patch->controlv[b+2];
 	  a++;
-	  controls[a] = (RtFloat)patch->controlv[b+3]; 
+	  controls[a] = (RtFloat)patch->controlv[b+3];
 	  a++;
 	  b+=(nv*4);
 	}
@@ -1087,7 +1087,7 @@ ay_pamesh_bbccb(ay_object *o, double *bbox, int *flags)
   if(!o || !bbox)
     return AY_ENULL;
 
-  pamesh = (ay_pamesh_object *)o->refine; 
+  pamesh = (ay_pamesh_object *)o->refine;
 
   controlv = pamesh->controlv;
 
@@ -1153,7 +1153,7 @@ ay_pamesh_notifycb(ay_object *o)
   if(!o)
     return AY_ENULL;
 
-  pamesh = (ay_pamesh_object *)o->refine; 
+  pamesh = (ay_pamesh_object *)o->refine;
 
   if(pamesh->npatch)
     {
@@ -1240,7 +1240,7 @@ ay_pamesh_convertcb(ay_object *o, int in_place)
  ay_pamesh_object *pamesh = NULL;
  ay_level_object *level = NULL;
  ay_object *l = NULL, *p = NULL, *new = NULL, **next = NULL;
- 
+
   if(!o)
     return AY_ENULL;
 

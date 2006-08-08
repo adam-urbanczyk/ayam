@@ -945,7 +945,6 @@ ay_script_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  cmo = sc->cm_objects;
 	  while(cmo)
 	    {
-	      
 	      if(cmo->type != type)
 		{
 		  ay_provide_object(cmo, type, npo);

@@ -69,7 +69,7 @@ ay_error(int code, char *where, char *what)
 
   if(code>1)
     {
-      
+
       Tcl_SetVar(ay_error_interp, vname, codestr,
 		 TCL_LEAVE_ERR_MSG|TCL_GLOBAL_ONLY);
     }

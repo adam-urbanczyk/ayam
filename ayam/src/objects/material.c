@@ -51,7 +51,7 @@ ay_material_createcb(int argc, char *argv[], ay_object *o)
 	  return AY_ERROR;
 	}
 
-  
+
       if(!(o->name = calloc(stringlen+1, sizeof(char))))
 	{
 	  ay_error(AY_EOMEM, fname, NULL);
@@ -97,7 +97,7 @@ ay_material_deletecb(void *c)
  char *name = NULL;
 
   if(!c)
-    return AY_ENULL;    
+    return AY_ENULL;
 
   material = (ay_mat_object *)(c);
 
@@ -154,9 +154,9 @@ ay_material_copycb(void *src, void **dst)
     return AY_ENULL;
 
   if(!(material = calloc(1, sizeof(ay_mat_object))))
-    return AY_EOMEM; 
+    return AY_EOMEM;
 
-  memcpy(material, src, sizeof(ay_mat_object)); 
+  memcpy(material, src, sizeof(ay_mat_object));
   /* Warning! Links point to original object! */
 
   material->nameptr = NULL;
@@ -257,7 +257,7 @@ ay_material_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     return AY_ENULL;
 
   material = (ay_mat_object *)o->refine;
-  
+
   toa = Tcl_NewStringObj(n1,-1);
 
   ton = Tcl_NewStringObj("Color_R",-1);
@@ -309,20 +309,20 @@ ay_material_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   /* shadows */
   Tcl_SetStringObj(ton,"CastShadows",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &(material->cast_shadows)); 
+  Tcl_GetIntFromObj(interp, to, &(material->cast_shadows));
 
   /* visibility */
   Tcl_SetStringObj(ton,"Camera",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &(material->camera)); 
+  Tcl_GetIntFromObj(interp, to, &(material->camera));
 
   Tcl_SetStringObj(ton,"Reflection",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &(material->reflection)); 
+  Tcl_GetIntFromObj(interp, to, &(material->reflection));
 
   Tcl_SetStringObj(ton,"Shadow",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &(material->shadow)); 
+  Tcl_GetIntFromObj(interp, to, &(material->shadow));
 
   /* get new name */
   Tcl_SetStringObj(toa, n2, -1);

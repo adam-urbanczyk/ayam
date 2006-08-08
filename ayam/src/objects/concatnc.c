@@ -30,7 +30,7 @@ ay_concatnc_createcb(int argc, char *argv[], ay_object *o)
       ay_error(AY_EOMEM, fname, NULL);
       return AY_ERROR;
     }
- 
+
   new->ftlength = 0.3;
 
   o->parent = AY_TRUE;
@@ -47,7 +47,7 @@ ay_concatnc_deletecb(void *c)
  ay_concatnc_object *concatnc = NULL;
 
   if(!c)
-    return AY_ENULL;    
+    return AY_ENULL;
 
   concatnc = (ay_concatnc_object *)(c);
 
@@ -70,9 +70,9 @@ ay_concatnc_copycb(void *src, void **dst)
   concatncsrc = (ay_concatnc_object *)src;
 
   if(!(concatnc = calloc(1, sizeof(ay_concatnc_object))))
-    return AY_EOMEM; 
+    return AY_EOMEM;
 
-  memcpy(concatnc, src, sizeof(ay_concatnc_object)); 
+  memcpy(concatnc, src, sizeof(ay_concatnc_object));
 
   /* copy ncurve */
   ay_object_copy(concatncsrc->ncurve, &(concatnc->ncurve));
@@ -140,7 +140,7 @@ ay_concatnc_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     return AY_ENULL;
 
   concatnc = (ay_concatnc_object *)o->refine;
-  
+
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
 
@@ -226,7 +226,7 @@ ay_concatnc_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       nc = (ay_nurbcurve_object *)(concatnc->ncurve->refine);
       len = nc->length;
       order = nc->order;
-    }  
+    }
 
   Tcl_SetStringObj(ton,"Length",-1);
   to = Tcl_NewIntObj(len);
@@ -333,7 +333,7 @@ ay_concatnc_notifycb(ay_object *o)
  int numcurves = 0, order = 0, highest_order = 0;
 
   if(!o)
-    return AY_ENULL;    
+    return AY_ENULL;
 
   concatnc = (ay_concatnc_object *)(o->refine);
   if(concatnc->ncurve)
@@ -433,7 +433,7 @@ ay_concatnc_notifycb(ay_object *o)
 
   if(numcurves > 1)
     {
-      
+
       ay_status = ay_nct_concatmultiple(concatnc->closed, concatnc->knot_type,
 					concatnc->fillgaps, curves,
 					&concatnc->ncurve);
@@ -571,7 +571,7 @@ ay_concatnc_init(Tcl_Interp *interp)
 				    ay_concatnc_bbccb,
 				    AY_IDCONCATNC);
 
-  
+
   ay_status = ay_notify_register(ay_concatnc_notifycb, AY_IDCONCATNC);
 
   ay_status = ay_convert_register(ay_concatnc_convertcb, AY_IDCONCATNC);

@@ -38,7 +38,7 @@ ay_sdmesh_deletecb(void *c)
  ay_sdmesh_object *sdmesh = NULL;
 
   if(!c)
-    return AY_ENULL;    
+    return AY_ENULL;
 
   sdmesh = (ay_sdmesh_object *)(c);
 
@@ -82,9 +82,9 @@ ay_sdmesh_copycb(void *src, void **dst)
   sdmeshsrc = (ay_sdmesh_object *)src;
 
   if(!(sdmesh = calloc(1, sizeof(ay_sdmesh_object))))
-    return AY_EOMEM; 
+    return AY_EOMEM;
 
-  memcpy(sdmesh, src, sizeof(ay_sdmesh_object)); 
+  memcpy(sdmesh, src, sizeof(ay_sdmesh_object));
 
   sdmesh->nverts = NULL;
   sdmesh->verts = NULL;
@@ -342,16 +342,16 @@ ay_sdmesh_getpntcb(int mode, ay_object *o, double *p)
 	      c = &(control[j]);
 
 	      /* test point c against the four planes in p */
-	      if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) && 
-		 ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) && 
-		 ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) && 
+	      if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) &&
+		 ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) &&
+		 ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
 		 ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
 		{
 
 		  if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
 		    return AY_EOMEM;
 		  pecoords[a] = &(control[j]);
-		  a++;		  
+		  a++;
 		} /* if */
 	      j += 3;
 	    } /* for */
@@ -385,7 +385,7 @@ ay_sdmesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     return AY_ENULL;
 
   sdmesh = (ay_sdmesh_object *)o->refine;
-  
+
   toa = Tcl_NewStringObj(n1, -1);
   ton = Tcl_NewStringObj(n1, -1);
 
@@ -669,7 +669,7 @@ ay_sdmesh_wribcb(char *file, ay_object *o)
       nverts[i] = (RtInt)(sdmesh->nverts[i]);
       total_verts += sdmesh->nverts[i];
     } /* for */
-  
+
   if(!(verts = calloc(total_verts, sizeof(RtInt))))
     {
       free(controls); free(nverts); return AY_EOMEM;
@@ -720,7 +720,7 @@ ay_sdmesh_wribcb(char *file, ay_object *o)
       for(i = 0; i < (2 * sdmesh->ntags); i += 2)
 	{
 	  total_intargs += sdmesh->nargs[i];
-	  total_floatargs += sdmesh->nargs[i+1]; 
+	  total_floatargs += sdmesh->nargs[i+1];
 	}
 
       if(!(intargs = calloc(total_intargs, sizeof(RtInt))))
@@ -743,7 +743,7 @@ ay_sdmesh_wribcb(char *file, ay_object *o)
 	  floatargs[i] = (RtFloat)(sdmesh->floatargs[i]);
 	}
     }
-  
+
   /* Do we have any primitive variables? */
   if(!(pvc = ay_pv_count(o)))
     {
@@ -772,7 +772,7 @@ ay_sdmesh_wribcb(char *file, ay_object *o)
 
       if(!(parms = calloc(pvc+1, sizeof(RtPointer))))
 	return AY_EOMEM;
-      
+
       tokens[0] = "P";
       parms[0] = (RtPointer)controls;
 
@@ -834,7 +834,7 @@ ay_sdmesh_bbccb(ay_object *o, double *bbox, int *flags)
   if(!o || !bbox)
     return AY_ENULL;
 
-  sdmesh = (ay_sdmesh_object *)o->refine; 
+  sdmesh = (ay_sdmesh_object *)o->refine;
 
   controlv = sdmesh->controlv;
 
@@ -915,7 +915,7 @@ ay_sdmesh_convertcb(ay_object *o, int in_place)
 
   ay_object_defaults(new);
   new->type = AY_IDPOMESH;
-  
+
   ay_status = ay_sdmesht_topolymesh(sdmesh,
 				    ((ay_pomesh_object**)&(new->refine)));
 
@@ -962,7 +962,7 @@ ay_sdmesh_init(Tcl_Interp *interp)
   */
 
     ay_status = ay_convert_register(ay_sdmesh_convertcb, AY_IDSDMESH);
-  
+
 
  return ay_status;
 } /* ay_sdmesh_init */

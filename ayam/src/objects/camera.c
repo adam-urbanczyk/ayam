@@ -54,7 +54,7 @@ ay_camera_deletecb(void *c)
 
   camera = (ay_camera_object *)(c);
   if(!camera)
-    return AY_ENULL;    
+    return AY_ENULL;
 
   free(camera);
 
@@ -68,9 +68,9 @@ ay_camera_copycb(void *src, void **dst)
  ay_camera_object *camera = NULL;
 
   if(!(camera = calloc(1, sizeof(ay_camera_object))))
-    return AY_EOMEM; 
+    return AY_EOMEM;
 
-  memcpy(camera, src, sizeof(ay_camera_object)); 
+  memcpy(camera, src, sizeof(ay_camera_object));
 
   *dst = camera;
 
@@ -366,7 +366,7 @@ ay_camera_getpntcb(int mode, ay_object *o, double *p)
 	    {
 	      pecoord = camera->to;
 	      min_dist = dist;
-	    
+
 	    }
 
 	  if(!pecoord)
@@ -387,30 +387,30 @@ ay_camera_getpntcb(int mode, ay_object *o, double *p)
 	  c = camera->from;
 	  a = 0;
 	  /* test point c against the four planes in p */
-	  if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) && 
-	     ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) && 
-	     ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) && 
+	  if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) &&
+	     ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) &&
+	     ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
 	     ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
 	    {
 
 	      if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
 		return AY_EOMEM;
 	      pecoords[a] = c;
-	      a++;		  
+	      a++;
 	    } /* if */
 
 	  c = camera->to;
 	  /* test point c against the four planes in p */
-	  if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) && 
-	     ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) && 
-	     ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) && 
+	  if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) &&
+	     ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) &&
+	     ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
 	     ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
 	    {
 
 	      if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
 		return AY_EOMEM;
 	      pecoords[a] = c;
-	      a++;		  
+	      a++;
 	    } /* if */
 
 	  if(!pecoords)
@@ -467,7 +467,7 @@ ay_camera_writecb(FILE *fileptr, ay_object *o)
  ay_camera_object *camera = NULL;
 
   camera = (ay_camera_object *)(o->refine);
- 
+
   if(!camera)
     return AY_ENULL;
 
@@ -608,7 +608,7 @@ ay_camera_dropcb(ay_object *o)
 
   while(sel)
     {
-      s = sel->object; 
+      s = sel->object;
 
       if(s->type == AY_IDVIEW)
 	{

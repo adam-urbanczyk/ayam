@@ -47,7 +47,7 @@ ay_riinc_deletecb(void *c)
  ay_riinc_object *riinc = NULL;
 
   if(!c)
-    return AY_ENULL;    
+    return AY_ENULL;
 
   riinc = (ay_riinc_object *)(c);
 
@@ -71,9 +71,9 @@ ay_riinc_copycb(void *src, void **dst)
   srcr = (ay_riinc_object*) src;
 
   if(!(riinc = calloc(1, sizeof(ay_riinc_object))))
-    return AY_EOMEM; 
+    return AY_EOMEM;
 
-  memcpy(riinc, src, sizeof(ay_riinc_object)); 
+  memcpy(riinc, src, sizeof(ay_riinc_object));
   riinc->file = NULL;
 
   /* copy file name */
@@ -327,7 +327,7 @@ ay_riinc_bbccb(ay_object *o, double *bbox, int *flags)
   if(!o || !bbox)
     return AY_ENULL;
 
-  riinc = (ay_riinc_object *)o->refine; 
+  riinc = (ay_riinc_object *)o->refine;
 
   wh = riinc->width  * 0.5;
   lh = riinc->length * 0.5;

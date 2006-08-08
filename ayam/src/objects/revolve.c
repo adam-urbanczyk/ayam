@@ -46,7 +46,7 @@ ay_revolve_deletecb(void *c)
  ay_revolve_object *revolve = NULL;
 
   if(!c)
-    return AY_ENULL;    
+    return AY_ENULL;
 
   revolve = (ay_revolve_object *)(c);
 
@@ -82,9 +82,9 @@ ay_revolve_copycb(void *src, void **dst)
   revolvesrc = (ay_revolve_object *)src;
 
   if(!(revolve = calloc(1, sizeof(ay_revolve_object))))
-    return AY_EOMEM; 
+    return AY_EOMEM;
 
-  memcpy(revolve, src, sizeof(ay_revolve_object)); 
+  memcpy(revolve, src, sizeof(ay_revolve_object));
 
 
   /* copy npatch */
@@ -204,7 +204,7 @@ ay_revolve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     return AY_ENULL;
 
   revolve = (ay_revolve_object *)o->refine;
-  
+
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
 
@@ -414,7 +414,7 @@ ay_revolve_bbccb(ay_object *o, double *bbox, int *flags)
   if(!o || !bbox)
     return AY_ENULL;
 
-  revolve = (ay_revolve_object *)o->refine; 
+  revolve = (ay_revolve_object *)o->refine;
 
   if(revolve->npatch)
     {
@@ -457,7 +457,7 @@ ay_revolve_crtcap(ay_revolve_object *revolve, ay_object *curve,
 		     u, P1);
 
   /* apply transform */
-  AY_APTRAN3(P2,P1,m)	    
+  AY_APTRAN3(P2,P1,m)
 
   if(!(cap = calloc(1, sizeof(ay_object))))
     {return AY_EOMEM;}
@@ -535,9 +535,9 @@ ay_revolve_crtcap(ay_revolve_object *revolve, ay_object *curve,
   trim->scaly = 0.5;
   trim->movx = 0.5;
   trim->movy = 0.5;
-  
+
   ay_nct_revert((ay_nurbcurve_object *)trim->refine);
-  
+
   cap->down = trim;
 
   ay_status = ay_object_crtendlevel(&(trim->next));
@@ -564,7 +564,7 @@ ay_revolve_crtcap(ay_revolve_object *revolve, ay_object *curve,
 	{return AY_EOMEM;}
 
       nc = tloop->down->refine;
-      
+
       ay_nb_CurvePoint4D(nc->length-1, nc->order-1,
 		     nc->knotv, nc->controlv,
 		     nc->knotv[nc->length], P1);
@@ -657,14 +657,14 @@ ay_revolve_crtside(ay_revolve_object *revolve, ay_object *curve, double th,
   ay_nb_CurvePoint4D(nc->length-1, nc->order-1,
 		     nc->knotv, nc->controlv,
 		     nc->knotv[nc->order - 1], P1);
-  
+
   /* apply transform */
   AY_APTRAN3(PS,P1,m)
-  
+
   ay_nb_CurvePoint4D(nc->length-1, nc->order-1,
 		     nc->knotv, nc->controlv,
 		     nc->knotv[nc->length], P1);
-  
+
   /* apply transform */
   AY_APTRAN3(PE,P1,m)
 
@@ -788,13 +788,13 @@ ay_revolve_crtside(ay_revolve_object *revolve, ay_object *curve, double th,
       trim->scaly /= (maxy-miny);
       trim->movx = -(minx + (fabs(maxx-minx)/2.0))*trim->scalx;
       trim->movy = -(miny + (fabs(maxy-miny)/2.0))*trim->scaly;
-	    
+
       trim->movx += 0.5;
       trim->movy += 0.5;
 
       ay_nct_getorientation((ay_nurbcurve_object *)
 			    trim->refine, &angle);
-		    
+
       if(angle<0.0)
 	ay_nct_revert(trim->refine);
 
@@ -824,7 +824,7 @@ ay_revolve_crtside(ay_revolve_object *revolve, ay_object *curve, double th,
 	{return AY_EOMEM;}
 
       nc = tloop->down->refine;
-      
+
       /* P1 {PS.x, PS.y, 0} */
       memcpy(controlv, PS, 2*sizeof(double));
       controlv[3] = 1.0;
@@ -863,7 +863,7 @@ ay_revolve_crtside(ay_revolve_object *revolve, ay_object *curve, double th,
 	{
 	  trim->movy = -fabs(miny)*trim->scaly;
 	}
-      
+
       ay_nct_revert((ay_nurbcurve_object *)(trim->refine));
 
       trim->next = tloop->down->next;
@@ -904,7 +904,7 @@ ay_revolve_notifycb(ay_object *o)
  double tolerance;
 
   if(!o)
-    return AY_ENULL;    
+    return AY_ENULL;
 
   revolve = (ay_revolve_object *)(o->refine);
 
@@ -965,7 +965,7 @@ ay_revolve_notifycb(ay_object *o)
 
   if(ay_status)
     return ay_status;
-  
+
   revolve->npatch = npatch;
 
   ((ay_nurbpatch_object *)npatch->refine)->glu_sampling_tolerance =
@@ -981,7 +981,7 @@ ay_revolve_notifycb(ay_object *o)
       ay_status = ay_revolve_crtcap(revolve, curve,
 				    nc->knotv[nc->length], AY_TRUE,
 				    &(revolve->upper_cap));
-  
+
     } /* if */
 
   if(revolve->has_lower_cap)
@@ -997,14 +997,14 @@ ay_revolve_notifycb(ay_object *o)
 				     &(revolve->start_cap));
       if(revolve->start_cap)
 	revolve->start_cap->scalz *= -1.0;
-  
+
     } /* if */
 
   if(revolve->has_end_cap)
     {
       ay_status = ay_revolve_crtside(revolve, curve, revolve->thetamax,
 				    &(revolve->end_cap));
-  
+
     } /* if */
 
   /* remove provided object */
@@ -1256,7 +1256,7 @@ ay_revolve_init(Tcl_Interp *interp)
 				    ay_revolve_bbccb,
 				    AY_IDREVOLVE);
 
-  
+
   ay_status = ay_notify_register(ay_revolve_notifycb, AY_IDREVOLVE);
 
   ay_status = ay_convert_register(ay_revolve_convertcb, AY_IDREVOLVE);

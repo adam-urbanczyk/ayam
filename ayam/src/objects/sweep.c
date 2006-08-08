@@ -47,7 +47,7 @@ ay_sweep_deletecb(void *c)
  ay_sweep_object *sweep = NULL;
 
   if(!c)
-    return AY_ENULL;    
+    return AY_ENULL;
 
   sweep = (ay_sweep_object *)(c);
 
@@ -77,9 +77,9 @@ ay_sweep_copycb(void *src, void **dst)
   sweepsrc = (ay_sweep_object *)src;
 
   if(!(sweep = calloc(1, sizeof(ay_sweep_object))))
-    return AY_EOMEM; 
+    return AY_EOMEM;
 
-  memcpy(sweep, src, sizeof(ay_sweep_object)); 
+  memcpy(sweep, src, sizeof(ay_sweep_object));
 
 
   /* copy npatch */
@@ -185,7 +185,7 @@ ay_sweep_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     return AY_ENULL;
 
   sweep = (ay_sweep_object *)o->refine;
-  
+
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
 
@@ -390,7 +390,7 @@ ay_sweep_bbccb(ay_object *o, double *bbox, int *flags)
   if(!o || !bbox)
     return AY_ENULL;
 
-  sweep = (ay_sweep_object *)o->refine; 
+  sweep = (ay_sweep_object *)o->refine;
 
   if(sweep->npatch)
     {
@@ -425,7 +425,7 @@ ay_sweep_notifycb(ay_object *o)
  double tolerance;
 
   if(!o)
-    return AY_ENULL;    
+    return AY_ENULL;
 
   sweep = (ay_sweep_object *)(o->refine);
 
@@ -616,7 +616,7 @@ ay_sweep_notifycb(ay_object *o)
 	    goto cleanup;
 
 	  ay_status = ay_capt_createfromcurve(curve5, nextcb);
-      
+
 	  if(ay_status)
 	    goto cleanup;
 
@@ -687,7 +687,7 @@ ay_sweep_notifycb(ay_object *o)
 	    goto cleanup;
 
 	  ay_status = ay_capt_createfromcurve(curve5, nextcb);
-      
+
 	  if(ay_status)
 	    goto cleanup;
 
@@ -925,7 +925,7 @@ ay_sweep_init(Tcl_Interp *interp)
 				    ay_sweep_bbccb,
 				    AY_IDSWEEP);
 
-  
+
   ay_status = ay_notify_register(ay_sweep_notifycb, AY_IDSWEEP);
 
   ay_status = ay_convert_register(ay_sweep_convertcb, AY_IDSWEEP);

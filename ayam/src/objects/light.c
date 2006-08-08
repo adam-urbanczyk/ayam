@@ -32,7 +32,7 @@ ay_light_createcb(int argc, char *argv[], ay_object *o)
       return AY_ERROR;
     }
 
-  light->type = AY_LITCUSTOM;  
+  light->type = AY_LITCUSTOM;
   light->on = AY_TRUE;
   light->samples = 1;
 
@@ -61,7 +61,7 @@ ay_light_deletecb(void *c)
  ay_light_object *light = NULL;
 
   if(!c)
-    return AY_ENULL;    
+    return AY_ENULL;
 
   light = (ay_light_object *)(c);
 
@@ -84,9 +84,9 @@ ay_light_copycb(void *src, void **dst)
     return AY_ENULL;
 
   if(!(light = calloc(1, sizeof(ay_light_object))))
-    return AY_EOMEM; 
+    return AY_EOMEM;
 
-  memcpy(light, src, sizeof(ay_light_object)); 
+  memcpy(light, src, sizeof(ay_light_object));
   /* warning links point to original object*/
 
   if(((ay_light_object*)src)->lshader)
@@ -135,7 +135,7 @@ ay_light_drawcb(struct Togl *togl, ay_object *o)
       glColor3d((GLdouble)ay_prefs.lir, (GLdouble)ay_prefs.lig,
 		(GLdouble)ay_prefs.lib);
     }
-  
+
     switch(light->type)
     {
     case AY_LITPOINT:
@@ -177,7 +177,7 @@ ay_light_drawcb(struct Togl *togl, ay_object *o)
 		  to[1] = sarg->val.point[1];
 		  to[2] = sarg->val.point[2];
 		}
-	      sarg = sarg->next;	      
+	      sarg = sarg->next;
 	    } /* while */
 	} /* if */
       break;
@@ -376,7 +376,7 @@ ay_light_drawhcb(struct Togl *togl, ay_object *o)
 		  to[1] = sarg->val.point[1];
 		  to[2] = sarg->val.point[2];
 		}
-	      sarg = sarg->next;	      
+	      sarg = sarg->next;
 	    } /* while */
 	} /* if */
     }
@@ -488,7 +488,7 @@ ay_light_getpntcb(int mode, ay_object *o, double *p)
 		  light->tto[1] = sarg->val.point[1];
 		  light->tto[2] = sarg->val.point[2];
 		}
-	      sarg = sarg->next;	      
+	      sarg = sarg->next;
 	    } /* while */
 	} /* if */
     }
@@ -589,16 +589,16 @@ ay_light_getpntcb(int mode, ay_object *o, double *p)
 	    {
 	      c = light->tfrom;
 	      /* test point c against the four planes in p */
-	      if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) && 
-		 ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) && 
-		 ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) && 
+	      if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) &&
+		 ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) &&
+		 ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
 		 ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
 		{
 
 		  if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
 		    return AY_EOMEM;
 		  pecoords[a] = c;
-		  a++;		  
+		  a++;
 		} /* if */
 	    } /* if */
 
@@ -606,16 +606,16 @@ ay_light_getpntcb(int mode, ay_object *o, double *p)
 	    {
 	      c = light->tto;
 	      /* test point c against the four planes in p */
-	      if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) && 
-		 ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) && 
-		 ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) && 
+	      if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) &&
+		 ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) &&
+		 ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
 		 ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
 		{
 
 		  if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
 		    return AY_EOMEM;
 		  pecoords[a] = c;
-		  a++;		  
+		  a++;
 		} /* if */
 	    } /* if */
 
@@ -909,7 +909,7 @@ ay_light_writecb(FILE *fileptr, ay_object *o)
   fprintf(fileptr, "%d\n", light->colr);
   fprintf(fileptr, "%d\n", light->colg);
   fprintf(fileptr, "%d\n", light->colb);
-  
+
   fprintf(fileptr, "%g\n", light->cone_angle);
   fprintf(fileptr, "%g\n", light->cone_delta_angle);
   fprintf(fileptr, "%g\n", light->beam_distribution);
@@ -968,7 +968,7 @@ ay_light_bbccb(ay_object *o, double *bbox, int *flags)
   if(!o || !bbox)
     return AY_ENULL;
 
-  light = (ay_light_object *)o->refine; 
+  light = (ay_light_object *)o->refine;
 
   switch(light->type)
     {
@@ -1011,7 +1011,7 @@ ay_light_bbccb(ay_object *o, double *bbox, int *flags)
 		  to[1] = sarg->val.point[1];
 		  to[2] = sarg->val.point[2];
 		}
-	      sarg = sarg->next;	      
+	      sarg = sarg->next;
 	    } /* while */
 	} /* if */
       break;
@@ -1088,7 +1088,7 @@ ay_light_notifycb(ay_object *o)
  ay_shader_arg *sarg = NULL;
 
   if(!o)
-    return AY_ENULL;    
+    return AY_ENULL;
 
   light = (ay_light_object *)(o->refine);
 
@@ -1129,7 +1129,7 @@ ay_light_notifycb(ay_object *o)
 		  sarg->val.point[1] = (float)light->tto[1];
 		  sarg->val.point[2] = (float)light->tto[2];
 		}
-	      sarg = sarg->next;	      
+	      sarg = sarg->next;
 	    } /* while */
 	} /* if */
     } /* if */
@@ -1159,7 +1159,7 @@ ay_light_init(Tcl_Interp *interp)
 				    ay_light_bbccb,
 				    AY_IDLIGHT);
 
-  ay_status = ay_notify_register(ay_light_notifycb, AY_IDLIGHT); 
+  ay_status = ay_notify_register(ay_light_notifycb, AY_IDLIGHT);
 
   ay_matt_nomaterial(AY_IDLIGHT);
 

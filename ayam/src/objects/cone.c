@@ -49,7 +49,7 @@ ay_cone_deletecb(void *c)
  ay_cone_object *cone = NULL;
 
   if(!c)
-    return AY_ENULL;    
+    return AY_ENULL;
 
   cone = (ay_cone_object *)(c);
 
@@ -68,9 +68,9 @@ ay_cone_copycb(void *src, void **dst)
     return AY_ENULL;
 
   if(!(cone = calloc(1, sizeof(ay_cone_object))))
-    return AY_EOMEM; 
+    return AY_EOMEM;
 
-  memcpy(cone, src, sizeof(ay_cone_object)); 
+  memcpy(cone, src, sizeof(ay_cone_object));
 
   *dst = (void *)cone;
 
@@ -219,7 +219,7 @@ ay_cone_shadecb(struct Togl *togl, ay_object *o)
       gluCylinder(qobj, radius, 0.0, height, 8, 1);
 
       gluDeleteQuadric(qobj);
-      
+
       if(cone->closed)
 	{
 	  if(!(qobj = gluNewQuadric()))
@@ -228,7 +228,7 @@ ay_cone_shadecb(struct Togl *togl, ay_object *o)
 	  gluDisk(qobj, 0.0, radius, 8, 1);
 	  gluDeleteQuadric(qobj);
 	}
-      
+
       return AY_OK;
     }
 
@@ -310,7 +310,7 @@ ay_cone_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     return AY_ENULL;
 
   cone = (ay_cone_object *)o->refine;
-  
+
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
 
@@ -585,7 +585,7 @@ ay_cone_bbccb(ay_object *o, double *bbox, int *flags)
   if(!o || !bbox)
     return AY_ENULL;
 
-  cone = (ay_cone_object *)o->refine; 
+  cone = (ay_cone_object *)o->refine;
 
   r = cone->radius;
   h = cone->height;
@@ -669,7 +669,7 @@ ay_cone_providecb(ay_object *o, unsigned int type, ay_object **result)
       for(i = 0; i < height; i++)
 	{
 	  controlv[j] = cone->height * controlv[j+1-(height*stride)];
-	  controlv[j+1] = controlv[j+1-(height*stride)]; 
+	  controlv[j+1] = controlv[j+1-(height*stride)];
 	  j += stride;
 	}
 

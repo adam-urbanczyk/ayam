@@ -46,7 +46,7 @@ ay_birail2_deletecb(void *c)
  ay_birail2_object *birail2 = NULL;
 
   if(!c)
-    return AY_ENULL;    
+    return AY_ENULL;
 
   birail2 = (ay_birail2_object *)(c);
 
@@ -76,9 +76,9 @@ ay_birail2_copycb(void *src, void **dst)
   birail2src = (ay_birail2_object *)src;
 
   if(!(birail2 = calloc(1, sizeof(ay_birail2_object))))
-    return AY_EOMEM; 
+    return AY_EOMEM;
 
-  memcpy(birail2, src, sizeof(ay_birail2_object)); 
+  memcpy(birail2, src, sizeof(ay_birail2_object));
 
   /* copy npatch */
   ay_object_copy(birail2src->npatch, &(birail2->npatch));
@@ -183,7 +183,7 @@ ay_birail2_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     return AY_ENULL;
 
   birail2 = (ay_birail2_object *)o->refine;
-  
+
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
 
@@ -375,7 +375,7 @@ ay_birail2_bbccb(ay_object *o, double *bbox, int *flags)
   if(!o || !bbox)
     return AY_ENULL;
 
-  birail2 = (ay_birail2_object *)o->refine; 
+  birail2 = (ay_birail2_object *)o->refine;
 
   if(birail2->npatch)
     {
@@ -412,7 +412,7 @@ ay_birail2_notifycb(ay_object *o)
  double tolerance, startb_radius, endb_radius;
 
   if(!o)
-    return AY_ENULL;    
+    return AY_ENULL;
 
   birail2 = (ay_birail2_object *)(o->refine);
 
@@ -630,7 +630,7 @@ ay_birail2_notifycb(ay_object *o)
 	    goto cleanup;
 
 	  ay_status = ay_capt_createfromcurve(curve5, nextcb);
-      
+
 	  if(ay_status)
 	    goto cleanup;
 
@@ -701,7 +701,7 @@ ay_birail2_notifycb(ay_object *o)
 	    goto cleanup;
 
 	  ay_status = ay_capt_createfromcurve(curve5, nextcb);
-      
+
 	  if(ay_status)
 	    goto cleanup;
 
@@ -936,7 +936,7 @@ ay_birail2_init(Tcl_Interp *interp)
 				    ay_birail2_bbccb,
 				    AY_IDBIRAIL2);
 
-  
+
   ay_status = ay_notify_register(ay_birail2_notifycb, AY_IDBIRAIL2);
 
   ay_status = ay_convert_register(ay_birail2_convertcb, AY_IDBIRAIL2);

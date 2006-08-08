@@ -228,11 +228,11 @@ ay_knots_check(int length, int order, int knot_count, double *knotv)
 {
  int i, mult_count = 1;
 
-  if(knot_count < (length+order)) 
-    return 1; 
+  if(knot_count < (length+order))
+    return 1;
 
-  if(knot_count > (length+order)) 
-    return 2; 
+  if(knot_count > (length+order))
+    return 2;
 
   for(i = 0; i < (knot_count-1); i++)
     {
@@ -278,7 +278,7 @@ ay_knots_rescaletorange(int n, double *knotv, double rmin, double rmax)
     {
       if(knotv[i] > max)
 	max = knotv[i];
-     
+
       if(knotv[i] < min)
 	min = knotv[i];
     } /* for */
@@ -318,7 +318,7 @@ ay_knots_rescaletomindist(int n, double *knotv, double mindist /*1.0e-04*/)
 {
  double knotv_mindist = DBL_MAX, sf = 0.0;
  int i;
- 
+
   if(!knotv)
     return AY_ENULL;
 
@@ -406,7 +406,7 @@ ay_knots_unify(double *Ua, int Ualen, double *Ub, int Ublen,
   memcpy(*Ubar, U, i*sizeof(double));
 
   free(U);
-  
+
   *Ubarlen = i;
 
  return AY_OK;
@@ -426,7 +426,7 @@ ay_knots_merge(ay_nurbcurve_object *curve, double *Ubar, int Ubarlen)
    {
      return AY_EOMEM;
    }
-  
+
   U = curve->knotv;
 
   /* find knots to insert */
@@ -450,19 +450,19 @@ ay_knots_merge(ay_nurbcurve_object *curve, double *Ubar, int Ubarlen)
       done = ((ia >= (curve->length+curve->order)) || (ib >= Ubarlen));
     }
 
-  
+
   if(r == 0)
     {
       free(X); return AY_OK;
     }
 
-  if(!(Ufoo = calloc((curve->length + curve->order + r), 
+  if(!(Ufoo = calloc((curve->length + curve->order + r),
 		     sizeof(double))))
     {
       free(X); return AY_EOMEM;
     }
 
-  if(!(Qw = calloc((curve->length + r+2)*4, 
+  if(!(Qw = calloc((curve->length + r+2)*4,
 		   sizeof(double))))
     {
       free(X); free(Ufoo); return AY_EOMEM;
@@ -474,12 +474,12 @@ ay_knots_merge(ay_nurbcurve_object *curve, double *Ubar, int Ubarlen)
 
   free(curve->knotv);
   curve->knotv = Ufoo;
-  
+
   free(curve->controlv);
   curve->controlv = Qw;
 
   free(X);
-	  
+
   curve->length += r;
 
  return AY_OK;
@@ -503,7 +503,7 @@ ay_knots_mergesurf(ay_nurbpatch_object *patch,
        {
 	 return AY_EOMEM;
        }
-  
+
      U = patch->uknotv;
 
      /* find knots to insert */
@@ -526,20 +526,20 @@ ay_knots_mergesurf(ay_nurbpatch_object *patch,
 	   }
 	 done = ((ia >= (patch->width+patch->uorder)) || (ib >= Ubarlen));
        }
-  
+
      if(r == 0)
        {
 	 free(X);
        }
      else
        {
-	 if(!(Ufoo = calloc((patch->width + patch->uorder + r), 
+	 if(!(Ufoo = calloc((patch->width + patch->uorder + r),
 			    sizeof(double))))
 	   {
 	     free(X); return AY_EOMEM;
 	   }
 
-	 if(!(Qw = calloc((patch->width + r)*patch->height*4, 
+	 if(!(Qw = calloc((patch->width + r)*patch->height*4,
 			  sizeof(double))))
 	   {
 	     free(X); free(Ufoo); return AY_EOMEM;
@@ -552,7 +552,7 @@ ay_knots_mergesurf(ay_nurbpatch_object *patch,
 
 	 free(patch->uknotv);
 	 patch->uknotv = Ufoo;
-  
+
 	 free(patch->controlv);
 	 patch->controlv = Qw;
 
@@ -571,7 +571,7 @@ ay_knots_mergesurf(ay_nurbpatch_object *patch,
        {
 	 return AY_EOMEM;
        }
-  
+
      V = patch->vknotv;
 
      /* find knots to insert */
@@ -594,19 +594,19 @@ ay_knots_mergesurf(ay_nurbpatch_object *patch,
 	   }
 	 done = ((ia >= (patch->height+patch->vorder)) || (ib >= Vbarlen));
        }
-  
+
      if(r == 0)
        {
 	 free(X); return AY_OK;
        }
 
-     if(!(Vfoo = calloc((patch->height + patch->vorder + r), 
+     if(!(Vfoo = calloc((patch->height + patch->vorder + r),
 			sizeof(double))))
        {
 	 free(X); return AY_EOMEM;
        }
 
-     if(!(Qw = calloc(patch->width*(patch->height + r)*4, 
+     if(!(Qw = calloc(patch->width*(patch->height + r)*4,
 		      sizeof(double))))
        {
 	 free(X); free(Vfoo); return AY_EOMEM;
@@ -618,12 +618,12 @@ ay_knots_mergesurf(ay_nurbpatch_object *patch,
 
      free(patch->vknotv);
      patch->vknotv = Vfoo;
-  
+
      free(patch->controlv);
      patch->controlv = Qw;
 
      free(X);
-	  
+
      patch->height += r;
    } /* if */
 
@@ -712,7 +712,7 @@ ay_knots_getvminmax(ay_object *o, int order, int knots, double *knotv,
 
 
 /* ay_knots_setuminmax:
- *  
+ *
  */
 int
 ay_knots_setuminmax(ay_object *o, double umin, double umax)
@@ -765,7 +765,7 @@ ay_knots_setuminmax(ay_object *o, double umin, double umax)
 
 
 /* ay_knots_setvminmax:
- *  
+ *
  */
 int
 ay_knots_setvminmax(ay_object *o, double vmin, double vmax)
@@ -818,7 +818,7 @@ ay_knots_setvminmax(ay_object *o, double vmin, double vmax)
 
 
 /* ay_knots_init:
- *  
+ *
  */
 int
 ay_knots_init(Tcl_Interp *interp)

@@ -1422,7 +1422,7 @@ ay_nct_collapsetcmd(ClientData clientData, Tcl_Interp *interp,
 	      {
 		ay_error(ay_status, fname, "Collapse operation failed!");
 	      }
-	    
+
 	    if(sel->object->selp)
 	      {
 		ay_selp_clear(sel->object);
@@ -1437,7 +1437,7 @@ ay_nct_collapsetcmd(ClientData clientData, Tcl_Interp *interp,
 	      {
 		ay_error(ay_status, fname, "Collapse operation failed!");
 	      }
-	    
+
 	    if(sel->object->selp)
 	      {
 		ay_selp_clear(sel->object);

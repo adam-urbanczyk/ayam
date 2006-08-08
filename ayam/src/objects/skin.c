@@ -46,7 +46,7 @@ ay_skin_deletecb(void *c)
  ay_skin_object *skin = NULL;
 
   if(!c)
-    return AY_ENULL;    
+    return AY_ENULL;
 
   skin = (ay_skin_object *)(c);
 
@@ -76,9 +76,9 @@ ay_skin_copycb(void *src, void **dst)
   skinsrc = (ay_skin_object *)src;
 
   if(!(skin = calloc(1, sizeof(ay_skin_object))))
-    return AY_EOMEM; 
+    return AY_EOMEM;
 
-  memcpy(skin, src, sizeof(ay_skin_object)); 
+  memcpy(skin, src, sizeof(ay_skin_object));
 
 
   /* copy npatch */
@@ -184,7 +184,7 @@ ay_skin_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     return AY_ENULL;
 
   skin = (ay_skin_object *)o->refine;
-  
+
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
 
@@ -374,7 +374,7 @@ ay_skin_bbccb(ay_object *o, double *bbox, int *flags)
   if(!o || !bbox)
     return AY_ENULL;
 
-  skin = (ay_skin_object *)o->refine; 
+  skin = (ay_skin_object *)o->refine;
 
   if(skin->npatch)
     {
@@ -406,7 +406,7 @@ ay_skin_notifycb(ay_object *o)
  double startb_radius, endb_radius, m[16] = {0}, tolerance;
 
   if(!o)
-    return AY_ENULL;    
+    return AY_ENULL;
 
   skin = (ay_skin_object *)(o->refine);
 
@@ -554,7 +554,7 @@ ay_skin_notifycb(ay_object *o)
 	    goto cleanup;
 
 	  ay_status = ay_capt_createfromcurve(c, nextcb);
-      
+
 	  if(ay_status)
 	    goto cleanup;
 
@@ -627,7 +627,7 @@ ay_skin_notifycb(ay_object *o)
 	    goto cleanup;
 
 	  ay_status = ay_capt_createfromcurve(c, nextcb);
-      
+
 	  if(ay_status)
 	    goto cleanup;
 
@@ -884,7 +884,7 @@ ay_skin_init(Tcl_Interp *interp)
 				    ay_skin_bbccb,
 				    AY_IDSKIN);
 
-  
+
   ay_status = ay_notify_register(ay_skin_notifycb, AY_IDSKIN);
 
   ay_status = ay_convert_register(ay_skin_convertcb, AY_IDSKIN);

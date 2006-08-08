@@ -47,7 +47,7 @@ ay_box_deletecb(void *c)
  ay_box_object *box = NULL;
 
   if(!c)
-    return AY_ENULL;    
+    return AY_ENULL;
 
   box = (ay_box_object *)(c);
 
@@ -66,9 +66,9 @@ ay_box_copycb(void *src, void **dst)
     return AY_ENULL;
 
   if(!(box = calloc(1, sizeof(ay_box_object))))
-    return AY_EOMEM; 
+    return AY_EOMEM;
 
-  memcpy(box, src, sizeof(ay_box_object)); 
+  memcpy(box, src, sizeof(ay_box_object));
 
   *dst = (void *)box;
 
@@ -196,7 +196,7 @@ ay_box_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     return AY_ENULL;
 
   box = (ay_box_object *)o->refine;
-  
+
   toa = Tcl_NewStringObj(n1,-1);
 
   ton = Tcl_NewStringObj("Width",-1);
@@ -360,7 +360,7 @@ ay_box_bbccb(ay_object *o, double *bbox, int *flags)
   if(!o || !bbox)
     return AY_ENULL;
 
-  box = (ay_box_object *)o->refine; 
+  box = (ay_box_object *)o->refine;
 
   wh = box->width  * 0.5;
   lh = box->length * 0.5;
