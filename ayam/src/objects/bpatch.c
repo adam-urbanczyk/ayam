@@ -52,10 +52,10 @@ ay_bpatch_deletecb(void *c)
  ay_bpatch_object *bpatch = NULL;
 
   if(!c)
-    return AY_ENULL; 
+    return AY_ENULL;
 
   bpatch = (ay_bpatch_object *)(c);
-   
+
   free(bpatch);
 
  return AY_OK;
@@ -68,9 +68,9 @@ ay_bpatch_copycb(void *src, void **dst)
  ay_bpatch_object *bpatch = NULL;
 
   if(!(bpatch = calloc(1, sizeof(ay_bpatch_object))))
-    return AY_EOMEM; 
+    return AY_EOMEM;
 
-  memcpy(bpatch, src, sizeof(ay_bpatch_object)); 
+  memcpy(bpatch, src, sizeof(ay_bpatch_object));
 
   *dst = bpatch;
 
@@ -284,7 +284,7 @@ ay_bpatch_getpntcb(int mode, ay_object *o, double *p)
       /* selection based on a single point? */
       if(mode == 1)
 	{ /* yes */
-    
+
 	  dist = AY_VLEN((p[0] - bpatch->p1[0]),
 			 (p[1] - bpatch->p1[1]),
 			 (p[2] - bpatch->p1[2]));
@@ -353,16 +353,16 @@ ay_bpatch_getpntcb(int mode, ay_object *o, double *p)
 		c = bpatch->p4;
 
 	      /* test point c against the four planes in p */
-	      if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) && 
-		 ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) && 
-		 ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) && 
+	      if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) &&
+		 ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) &&
+		 ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
 		 ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
 		{
 
 		  if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
 		    return AY_EOMEM;
 		  pecoords[a] = &(c[0]);
-		  a++;		  
+		  a++;
 		} /* if */
 
 	      j += 4;
@@ -395,7 +395,7 @@ ay_bpatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     return AY_ENULL;
 
   bpatch = (ay_bpatch_object *)o->refine;
-  
+
   toa = Tcl_NewStringObj(n1,-1);
 
   ton = Tcl_NewStringObj("P1_X",-1);
@@ -654,7 +654,7 @@ ay_bpatch_bbccb(ay_object *o, double *bbox, int *flags)
   if(!o || !bbox || !flags)
     return AY_ENULL;
 
-  b = (ay_bpatch_object *)o->refine; 
+  b = (ay_bpatch_object *)o->refine;
 
   memcpy(&(cv[0]), b->p1, 3*sizeof(double));
   memcpy(&(cv[3]), b->p2, 3*sizeof(double));
@@ -711,7 +711,7 @@ ay_bpatch_convertcb(ay_object *o, int in_place)
 
   if(!o)
     return AY_ENULL;
-  
+
   ay_status = ay_provide_object(o, AY_IDNPATCH, &new);
 
   if(new)
@@ -771,7 +771,7 @@ ay_bpatch_providecb(ay_object *o, unsigned int type, ay_object **result)
 	} /* if */
 
       cv = ((ay_nurbpatch_object*)(new->refine))->controlv;
-      
+
       memcpy(&(cv[0]), bp->p1, 3*sizeof(double));
       cv[3] = 1.0;
       memcpy(&(cv[4]), bp->p4, 3*sizeof(double));

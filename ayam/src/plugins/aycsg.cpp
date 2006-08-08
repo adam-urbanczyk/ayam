@@ -241,7 +241,7 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &calc_bbs);
 
- 
+
   view = (ay_view_object *)Togl_GetClientData(togl);
 
   // tell shade callbacks we are rendering CSG
@@ -257,9 +257,9 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
 			     &is_csg, &aycsg_root);
 
   ay_status = aycsg_delegateall(aycsg_root);
-  
+
   ay_status = aycsg_removetlu(aycsg_root, &aycsg_root);
-  
+
   o = aycsg_root;
   while(o)
     {
@@ -286,7 +286,7 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
 
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
-  
+
   if(view->drawsel || view->drawlevel)
     {
       glPushMatrix();
@@ -339,7 +339,7 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
     } // while
 
   // now draw non-CSG top level primitives
- 
+
   ay_status = aycsg_drawtoplevelprim(togl);
 
   if(view->drawsel || view->drawlevel)
@@ -420,7 +420,7 @@ void aycsg_getNDCBB(ay_object *t, struct Togl *togl,
  ay_view_object *view = NULL;
  int width = Togl_Width(togl);
  int height = Togl_Height(togl);
- double aspect = ((double)width) / ((double)height);  
+ double aspect = ((double)width) / ((double)height);
 
   if(!t || !togl)
     return;
@@ -511,7 +511,7 @@ aycsg_flatten(ay_object *t, struct Togl *togl, int parent_csgtype,
   if((t->CSGTYPE == AY_LTPRIM) && (parent_csgtype != AY_LTUNION))
     {
       // yes
-     
+
       // get depth complexity
       dc = 1;
       if(t->tags)
@@ -1195,7 +1195,7 @@ aycsg_delegatetrafo(ay_object *o)
   if((o->movx != 0.0) || (o->movy != 0.0) || (o->movz != 0.0) ||
      (o->rotx != 0.0) || (o->roty != 0.0) || (o->rotz != 0.0) ||
      (o->scalx != 1.0) || (o->scaly != 1.0) || (o->scalz != 1.0) ||
-     (o->quat[0] != 0.0) || (o->quat[1] != 0.0) || (o->quat[2] != 0.0) || 
+     (o->quat[0] != 0.0) || (o->quat[1] != 0.0) || (o->quat[2] != 0.0) ||
      (o->quat[3] != 1.0) || (o->tags && (o->tags->type == aycsg_tm_tagtype)))
     {
 
@@ -1253,7 +1253,7 @@ aycsg_delegatetrafo(ay_object *o)
 		  down->tags = tag;
 		} // if
 	    } // if
-	  
+
 	  // has <down> already a TM tag?
 	  if(down->tags && (down->tags->type == aycsg_tm_tagtype))
 	    {
@@ -1310,7 +1310,7 @@ aycsg_delegatetrafo(ay_object *o)
 		  down->mat = o->mat;
 		} // if
 	    } // if
-	  
+
 	  down = down->next;
 	} // while
 
@@ -1597,7 +1597,7 @@ aycsg_cleartree(ay_object *t)
 
 
 // aycsg_cleartmtags:
-//  
+//
 void
 aycsg_cleartmtags()
 {
@@ -1606,7 +1606,7 @@ aycsg_cleartmtags()
   while(aycsg_tmtags)
     {
       tle = aycsg_tmtags->next;
-      
+
       if(aycsg_tmtags->tag)
 	{
 	  if(aycsg_tmtags->tag->val)

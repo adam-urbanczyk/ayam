@@ -46,7 +46,7 @@ ay_birail1_deletecb(void *c)
  ay_birail1_object *birail1 = NULL;
 
   if(!c)
-    return AY_ENULL;    
+    return AY_ENULL;
 
   birail1 = (ay_birail1_object *)(c);
 
@@ -76,9 +76,9 @@ ay_birail1_copycb(void *src, void **dst)
   birail1src = (ay_birail1_object *)src;
 
   if(!(birail1 = calloc(1, sizeof(ay_birail1_object))))
-    return AY_EOMEM; 
+    return AY_EOMEM;
 
-  memcpy(birail1, src, sizeof(ay_birail1_object)); 
+  memcpy(birail1, src, sizeof(ay_birail1_object));
 
   /* copy npatch */
   ay_object_copy(birail1src->npatch, &(birail1->npatch));
@@ -183,7 +183,7 @@ ay_birail1_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     return AY_ENULL;
 
   birail1 = (ay_birail1_object *)o->refine;
-  
+
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
 
@@ -360,7 +360,7 @@ ay_birail1_bbccb(ay_object *o, double *bbox, int *flags)
   if(!o || !bbox)
     return AY_ENULL;
 
-  birail1 = (ay_birail1_object *)o->refine; 
+  birail1 = (ay_birail1_object *)o->refine;
 
   if(birail1->npatch)
     {
@@ -393,7 +393,7 @@ ay_birail1_notifycb(ay_object *o)
  double tolerance, startb_radius, endb_radius;
 
   if(!o)
-    return AY_ENULL;    
+    return AY_ENULL;
 
   birail1 = (ay_birail1_object *)(o->refine);
 
@@ -489,7 +489,7 @@ ay_birail1_notifycb(ay_object *o)
 			   &start_cap,
 			   has_endb?AY_FALSE:birail1->has_end_cap,
 			   &end_cap);
-    
+
   if(ay_status)
     goto cleanup;
 
@@ -573,7 +573,7 @@ ay_birail1_notifycb(ay_object *o)
 	    goto cleanup;
 
 	  ay_status = ay_capt_createfromcurve(curve5, nextcb);
-      
+
 	  if(ay_status)
 	    goto cleanup;
 
@@ -644,7 +644,7 @@ ay_birail1_notifycb(ay_object *o)
 	    goto cleanup;
 
 	  ay_status = ay_capt_createfromcurve(curve5, nextcb);
-      
+
 	  if(ay_status)
 	    goto cleanup;
 
@@ -809,7 +809,7 @@ ay_birail1_convertcb(ay_object *o, int in_place)
 	      b = b->next;
 	    } /* while */
 	} /* if */
-      
+
       /* copy eventually present TP tags */
       ay_npt_copytptag(o, new->down);
 
@@ -869,7 +869,7 @@ ay_birail1_init(Tcl_Interp *interp)
 				    ay_birail1_bbccb,
 				    AY_IDBIRAIL1);
 
-  
+
   ay_status = ay_notify_register(ay_birail1_notifycb, AY_IDBIRAIL1);
 
   ay_status = ay_convert_register(ay_birail1_convertcb, AY_IDBIRAIL1);

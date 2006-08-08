@@ -48,7 +48,7 @@ ay_gordon_deletecb(void *c)
  ay_gordon_object *gordon = NULL;
 
   if(!c)
-    return AY_ENULL;    
+    return AY_ENULL;
 
   gordon = (ay_gordon_object *)(c);
 
@@ -78,9 +78,9 @@ ay_gordon_copycb(void *src, void **dst)
   gordonsrc = (ay_gordon_object *)src;
 
   if(!(gordon = calloc(1, sizeof(ay_gordon_object))))
-    return AY_EOMEM; 
+    return AY_EOMEM;
 
-  memcpy(gordon, src, sizeof(ay_gordon_object)); 
+  memcpy(gordon, src, sizeof(ay_gordon_object));
 
 
   /* copy npatch */
@@ -191,7 +191,7 @@ ay_gordon_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     return AY_ENULL;
 
   gordon = (ay_gordon_object *)o->refine;
-  
+
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
 
@@ -260,7 +260,7 @@ ay_gordon_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       ay_selection = oldsel;
     }
   gordon->wcc = new_wcc;
-    
+
   ay_status = ay_notify_force(o);
 
   o->modified = AY_TRUE;
@@ -400,7 +400,7 @@ ay_gordon_bbccb(ay_object *o, double *bbox, int *flags)
   if(!o || !bbox)
     return AY_ENULL;
 
-  gordon = (ay_gordon_object *)o->refine; 
+  gordon = (ay_gordon_object *)o->refine;
 
   if(gordon->npatch)
     {
@@ -433,7 +433,7 @@ ay_gordon_notifycb(ay_object *o)
  double tolerance, m[16] = {0}, b_radius;
 
   if(!o)
-    return AY_ENULL;    
+    return AY_ENULL;
 
   gordon = (ay_gordon_object *)(o->refine);
 
@@ -473,7 +473,7 @@ ay_gordon_notifycb(ay_object *o)
 	    }
 	  else
 	    {
-	      getinpatch = AY_TRUE; 
+	      getinpatch = AY_TRUE;
 	    }
 	  last = NULL;
 	  down = down->next;
@@ -813,7 +813,7 @@ ay_gordon_convertcb(ay_object *o, int in_place)
       new->hide_children = AY_TRUE;
       new->parent = AY_TRUE;
       ay_object_crtendlevel(&(new->down));
- 
+
       /* copy eventually present TP tags */
       ay_npt_copytptag(o, new);
    } /* if */
@@ -857,7 +857,7 @@ ay_gordon_init(Tcl_Interp *interp)
 				    ay_gordon_bbccb,
 				    AY_IDGORDON);
 
-  
+
   ay_status = ay_notify_register(ay_gordon_notifycb, AY_IDGORDON);
 
   ay_status = ay_convert_register(ay_gordon_convertcb, AY_IDGORDON);

@@ -683,7 +683,7 @@ ay_pmt_revertu(ay_pamesh_object *pm)
 
 
 /* ay_pmt_revertv:
- *  
+ *
  */
 int
 ay_pmt_revertv(ay_pamesh_object *pm)

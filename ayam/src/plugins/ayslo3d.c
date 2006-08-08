@@ -173,7 +173,7 @@ ayslo3d_scanslo3dtcmd(ClientData clientData, Tcl_Interp *interp,
      break;
    default:
      ay_error(AY_ERROR, fname, "skipping shader of unknown type");
-    
+
      Slo_EndShader();
 
      Tcl_DStringFree(&ds);

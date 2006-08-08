@@ -50,7 +50,7 @@ ay_riproc_deletecb(void *c)
  ay_riproc_object *riproc = NULL;
 
   if(!c)
-    return AY_ENULL;    
+    return AY_ENULL;
 
   riproc = (ay_riproc_object *)(c);
 
@@ -77,9 +77,9 @@ ay_riproc_copycb(void *src, void **dst)
   srcr = (ay_riproc_object*) src;
 
   if(!(riproc = calloc(1, sizeof(ay_riproc_object))))
-    return AY_EOMEM; 
+    return AY_EOMEM;
 
-  memcpy(riproc, src, sizeof(ay_riproc_object)); 
+  memcpy(riproc, src, sizeof(ay_riproc_object));
   riproc->file = NULL;
   riproc->data = NULL;
 
@@ -457,7 +457,7 @@ ay_riproc_bbccb(ay_object *o, double *bbox, int *flags)
   if(!o || !bbox)
     return AY_ENULL;
 
-  riproc = (ay_riproc_object *)o->refine; 
+  riproc = (ay_riproc_object *)o->refine;
 
   /* P1 */
   bbox[0] = riproc->minx; bbox[1] = riproc->maxy; bbox[2] = riproc->maxz;

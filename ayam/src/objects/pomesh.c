@@ -38,7 +38,7 @@ ay_pomesh_deletecb(void *c)
  ay_pomesh_object *pomesh = NULL;
 
   if(!c)
-    return AY_ENULL;    
+    return AY_ENULL;
 
   pomesh = (ay_pomesh_object *)(c);
 
@@ -82,9 +82,9 @@ ay_pomesh_copycb(void *src, void **dst)
     stride = 3;
 
   if(!(pomesh = calloc(1, sizeof(ay_pomesh_object))))
-    return AY_EOMEM; 
+    return AY_EOMEM;
 
-  memcpy(pomesh, src, sizeof(ay_pomesh_object)); 
+  memcpy(pomesh, src, sizeof(ay_pomesh_object));
 
   pomesh->nloops = NULL;
   pomesh->nverts = NULL;
@@ -104,7 +104,7 @@ ay_pomesh_copycb(void *src, void **dst)
     {
       total_loops += pomeshsrc->nloops[i];
     } /* for */
-  
+
   /* copy nverts */
   if(pomeshsrc->nverts)
     {
@@ -200,7 +200,7 @@ ay_pomesh_shadecb(struct Togl *togl, ay_object *o)
     {
       ay_status = ay_pomesht_tesselate(pomesh);
     }
- 
+
  return AY_OK;
 } /* ay_pomesh_shadecb */
 
@@ -350,16 +350,16 @@ ay_pomesh_getpntcb(int mode, ay_object *o, double *p)
 	      c = &(control[j]);
 
 	      /* test point c against the four planes in p */
-	      if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) && 
-		 ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) && 
-		 ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) && 
+	      if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) &&
+		 ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) &&
+		 ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
 		 ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
 		{
 
 		  if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
 		    return AY_EOMEM;
 		  pecoords[a] = &(control[j]);
-		  a++;		  
+		  a++;
 		} /* if */
 	      j += stride;
 	    } /* for */
@@ -393,7 +393,7 @@ ay_pomesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     return AY_ENULL;
 
   pomesh = (ay_pomesh_object *)o->refine;
-  
+
   toa = Tcl_NewStringObj(n1, -1);
   ton = Tcl_NewStringObj(n1, -1);
 
@@ -660,7 +660,7 @@ ay_pomesh_wribcb(char *file, ay_object *o)
 
   if(!(nloops = calloc(pomesh->npolys, sizeof(RtInt))))
     {
-      free(controls); 
+      free(controls);
       if(normals)
 	free(normals);
       return AY_EOMEM;
@@ -671,10 +671,10 @@ ay_pomesh_wribcb(char *file, ay_object *o)
       nloops[i] = (RtInt)(pomesh->nloops[i]);
       total_loops += pomesh->nloops[i];
     } /* for */
-  
+
   if(!(nverts = calloc(total_loops, sizeof(RtInt))))
     {
-      free(controls); 
+      free(controls);
       if(normals)
 	free(normals);
       free(nloops);
@@ -784,7 +784,7 @@ ay_pomesh_bbccb(ay_object *o, double *bbox, int *flags)
   if(!o || !bbox)
     return AY_ENULL;
 
-  pomesh = (ay_pomesh_object *)o->refine; 
+  pomesh = (ay_pomesh_object *)o->refine;
 
   if(pomesh->has_normals)
     stride = 6;
@@ -870,7 +870,7 @@ ay_pomesh_convertcb(ay_object *o, int in_place)
 
   ay_object_defaults(new);
   new->type = AY_IDSDMESH;
-  
+
   ay_status = ay_pomesht_tosdmesh(pomesh,
 				  ((ay_sdmesh_object**)&(new->refine)));
 
@@ -916,7 +916,7 @@ ay_pomesh_init(Tcl_Interp *interp)
     ay_status = ay_notify_register(ay_pomesh_notifycb, AY_IDPOMESH);
   */
     ay_status = ay_convert_register(ay_pomesh_convertcb, AY_IDPOMESH);
- 
+
 
  return ay_status;
 } /* ay_pomesh_init */

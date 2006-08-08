@@ -381,7 +381,7 @@ ay_root_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   root = (ay_root_object *)o->refine;
   riopt = root->riopt;
-  
+
   toa = Tcl_NewStringObj(n1, -1);
 
   ton = Tcl_NewStringObj("Variance", -1);
@@ -665,7 +665,7 @@ ay_root_writecb(FILE *fileptr, ay_object *o)
     return AY_ENULL;
 
   root = (ay_root_object*)(o->refine);
-  
+
 
   /* write RiOptions */
   riopt = root->riopt;
@@ -811,7 +811,7 @@ ay_root_wribcb(char *file, ay_object *o)
     rtitemp = riopt->MaxSamples;
     RiOption((RtToken)"render", (RtToken)"maxsamples",
 	     (RtPointer)(&rtitemp), RI_NULL);
-    
+
     rtitemp = riopt->MaxRayLevel;
     RiOption((RtToken)"render", (RtToken)"max_raylevel",
 	     (RtPointer)(&rtitemp), RI_NULL);

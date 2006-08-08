@@ -669,7 +669,7 @@ ay_paraboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
       K  = (2 * paraboloid->zmax) / K;
       Sx = (B3 - B0) / (K * (r - paraboloid->rmax));
       Sy = (K * r * Sx + B0);
-      
+
       if(paraboloid->thetamax < 0.0)
 	{
 	  ay_status = ay_nb_CreateNurbsCircleArc(paraboloid->rmax,
@@ -682,7 +682,7 @@ ay_paraboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
 						 0.0, paraboloid->thetamax,
 						 &height, &vk, &cv);
 	} /* if */
-	  
+
       if(ay_status)
 	goto cleanup;
 
@@ -718,7 +718,7 @@ ay_paraboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
 						     0.0, paraboloid->thetamax,
 						     &height, &vk, &cv);
 	    } /* if */
-	  
+
 	  if(ay_status)
 	    goto cleanup;
 
@@ -757,7 +757,7 @@ ay_paraboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
 						 0.0, paraboloid->thetamax,
 						 &height, &vk, &cv);
 	} /* if */
-	  
+
       if(ay_status)
 	goto cleanup;
 
@@ -785,7 +785,7 @@ ay_paraboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
 						 0.0, paraboloid->thetamax,
 						 &height, &vk, &cv);
 	} /* if */
-	  
+
       if(ay_status)
 	goto cleanup;
 

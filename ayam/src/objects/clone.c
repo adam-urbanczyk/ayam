@@ -60,7 +60,7 @@ ay_clone_deletecb(void *c)
  ay_object *t = NULL;
 
   if(!c)
-    return AY_ENULL;    
+    return AY_ENULL;
 
   clone = (ay_clone_object *)(c);
 
@@ -88,9 +88,9 @@ ay_clone_copycb(void *src, void **dst)
   clonesrc = (ay_clone_object *)src;
 
   if(!(clone = calloc(1, sizeof(ay_clone_object))))
-    return AY_EOMEM; 
+    return AY_EOMEM;
 
-  memcpy(clone, src, sizeof(ay_clone_object)); 
+  memcpy(clone, src, sizeof(ay_clone_object));
 
   clone->clones = NULL;
 
@@ -110,7 +110,7 @@ ay_clone_drawcb(struct Togl *togl, ay_object *o)
     return AY_ENULL;
 
   cc = (ay_clone_object *)o->refine;
-  
+
   c = cc->clones;
   while(c)
     {
@@ -132,7 +132,7 @@ ay_clone_shadecb(struct Togl *togl, ay_object *o)
     return AY_ENULL;
 
   cc = (ay_clone_object *)o->refine;
-  
+
   c = cc->clones;
   while(c)
     {
@@ -180,7 +180,7 @@ ay_clone_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     return AY_ENULL;
 
   clone = (ay_clone_object *)o->refine;
-  
+
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
 
@@ -246,7 +246,7 @@ ay_clone_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(clone->roty != dtemp)
     {
       if(!pasteProp)
-	{     
+	{
 	  drot = (clone->roty - dtemp);
 	  ay_quat_axistoquat(yaxis, AY_D2R(drot), quat);
 	  ay_quat_add(quat, clone->quat, clone->quat);
@@ -484,7 +484,7 @@ ay_clone_wribcb(char *file, ay_object *o)
   cc = (ay_clone_object *)o->refine;
   old_resinstances = ay_prefs.resolveinstances;
   ay_prefs.resolveinstances = AY_TRUE;
-  
+
   c = cc->clones;
   while(c)
     {
@@ -513,7 +513,7 @@ ay_clone_bbccb(ay_object *o, double *bbox, int *flags)
     return AY_ENULL;
 
   cc = (ay_clone_object *)o->refine;
-  
+
   c = cc->clones;
   if(!c)
     {  /* use the bounding boxes of the child(s) */
@@ -593,7 +593,7 @@ ay_clone_notifycb(ay_object *o)
  double euler[3];
 
   if(!o)
-    return AY_ENULL;    
+    return AY_ENULL;
 
   clone = (ay_clone_object *)(o->refine);
   while(clone->clones)
@@ -603,7 +603,7 @@ ay_clone_notifycb(ay_object *o)
       free(tr);
     }
   tr = NULL;
-  
+
   /* get (first) child object */
   down = o->down;
 
@@ -830,7 +830,7 @@ ay_clone_convertcb(ay_object *o, int in_place)
       next = &((*next)->next);
       clone = clone->next;
     } /* while */
-  
+
   ay_status = ay_object_crtendlevel(next);
 
 
@@ -868,7 +868,7 @@ ay_clone_providecb(ay_object *o, unsigned int type, ay_object **result)
   down = o->down;
   if(!down || !down->next)
     return AY_OK;
-  
+
   next = result;
 
   if(cc->mirror != 0)
@@ -898,7 +898,7 @@ ay_clone_providecb(ay_object *o, unsigned int type, ay_object **result)
   while(clone)
     {
       newo = NULL;
-      
+
       if(down->type == type)
 	{
 	  ay_status = ay_object_copy(down, &newo);

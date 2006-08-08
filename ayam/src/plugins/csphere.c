@@ -61,7 +61,7 @@ csphere_deletecb(void *c)
  csphere_object *csphere = NULL;
 
   if(!c)
-    return AY_ENULL;    
+    return AY_ENULL;
 
   csphere = (csphere_object *)(c);
 
@@ -80,9 +80,9 @@ csphere_copycb(void *src, void **dst)
     return AY_ENULL;
 
   if(!(csphere = calloc(1, sizeof(csphere_object))))
-    return AY_EOMEM; 
+    return AY_EOMEM;
 
-  memcpy(csphere, src, sizeof(csphere_object)); 
+  memcpy(csphere, src, sizeof(csphere_object));
 
   *dst = (void *)csphere;
 
@@ -338,7 +338,7 @@ csphere_shadecb(struct Togl *togl, ay_object *o)
     {
       memcpy(&(P2[i*3*5]), P1, 5*3*sizeof(double));
       k = i*3*5;
-      
+
       for(j = 0; j <= 4; j++)
 	{
 
@@ -397,7 +397,7 @@ csphere_shadecb(struct Togl *togl, ay_object *o)
 	   glVertex3d(0.0,  0.0, zmin);
 	   glVertex3d(rmax, 0.0, zmax);
 	   glVertex3d(0.0,  0.0, zmax);
-	  glEnd();	  
+	  glEnd();
 
 	  glPopMatrix();
 
@@ -466,7 +466,7 @@ csphere_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     return AY_ENULL;
 
   csphere = (csphere_object *)o->refine;
-  
+
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
 
@@ -647,19 +647,19 @@ csphere_wribcb(char *file, ay_object *o)
     zmin = (RtFloat)csphere->zmin;
     zmax = (RtFloat)csphere->zmax;
     thetamax = (RtFloat)csphere->thetamax;
-    
+
 
     if(radius == 0.0)
       return AY_OK;
 
-    RiSphere( radius, zmin, zmax, thetamax, NULL ); 
+    RiSphere( radius, zmin, zmax, thetamax, NULL );
 
     /* Top if needed. */
     if ( fabs(zmax) < radius )
       {
 	/* Refer to [UPST90]. */
 	rmax = sqrt(radius*radius-zmax*zmax);
-	RiDisk( zmax, rmax, thetamax, NULL ); 
+	RiDisk( zmax, rmax, thetamax, NULL );
 
 	phimax = asin(zmax/radius);
       }
@@ -676,7 +676,7 @@ csphere_wribcb(char *file, ay_object *o)
 	 RiReverseOrientation();
 	 /* Refer to [UPST90]. */
 	 rmin = sqrt(radius*radius-zmin*zmin);
-	 RiDisk( zmin, rmin, thetamax, NULL); 
+	 RiDisk( zmin, rmin, thetamax, NULL);
 	RiAttributeEnd();
 
 	phimin = asin(zmin/radius);
@@ -711,8 +711,8 @@ csphere_wribcb(char *file, ay_object *o)
 	P1[15][X] = xmid;
 	P1[13][X] = P1[15][X]/3.0;
 	P1[14][X] = 2*P1[13][X];
-   
-	angle = phimin + AY_HALFPI;                    
+
+	angle = phimin + AY_HALFPI;
 	circle = (UNITCIRCLE/AY_PI)*radius*phidiff;
 
 	P1[4][Z] = P1[5][Z] = P1[6][Z] = P1[7][Z] = zmin + circle*sin(angle);
@@ -721,7 +721,7 @@ csphere_wribcb(char *file, ay_object *o)
 	P1[5][X] = P1[7][X]/3.0;
 	P1[6][X] = 2*P1[5][X];
 
-	angle = phimin + phidiff/2.0 - AY_HALFPI;                      
+	angle = phimin + phidiff/2.0 - AY_HALFPI;
 	P1[8][Z]  = P1[9][Z] = P1[10][Z] = P1[11][Z] = zmid +
 	  circle*sin(angle);
 	P1[8][X]  = 0.0;
@@ -742,17 +742,17 @@ csphere_wribcb(char *file, ay_object *o)
 	P2[15][X] = rmax; /* Radius at zmax. */
 	P2[13][X] = P2[15][X]/3.0;
 	P2[14][X] = 2*P2[13][X];
-   
-	angle = phimin + phidiff/2.0 + AY_HALFPI;                      
+
+	angle = phimin + phidiff/2.0 + AY_HALFPI;
 	circle = (UNITCIRCLE/AY_PI)*radius*phidiff;
 
-	P2[4][Z] = P2[5][Z] = P2[6][Z] = P2[7][Z] = zmid + circle*sin(angle); 
+	P2[4][Z] = P2[5][Z] = P2[6][Z] = P2[7][Z] = zmid + circle*sin(angle);
 	P2[4][X] = 0.0;
 	P2[7][X]  = xmid + circle*cos(angle);
 	P2[5][X] = P2[7][X]/3.0;
 	P2[6][X] = 2*P2[5][X];
 
-	angle = phimin + phidiff - AY_HALFPI;                  
+	angle = phimin + phidiff - AY_HALFPI;
 	P2[8][Z]  = P2[9][Z] = P2[10][Z] = P2[11][Z] = zmax +
 	  circle*sin(angle);
 	P2[8][X]  = 0.0;
@@ -760,7 +760,7 @@ csphere_wribcb(char *file, ay_object *o)
 	P2[9][X]  = P2[11][X]/3.0;
 	P2[10][X] = 2*P2[9][X];
 
-	RiPatch( RI_BICUBIC, RI_P, (RtPointer)P1, NULL ); 
+	RiPatch( RI_BICUBIC, RI_P, (RtPointer)P1, NULL );
 	RiPatch( RI_BICUBIC, RI_P, (RtPointer)P2, NULL );
 
 	RiAttributeBegin();
@@ -790,7 +790,7 @@ csphere_bbccb(ay_object *o, double *bbox, int *flags)
   if(!o || !bbox)
     return AY_ENULL;
 
-  csphere = (csphere_object *)o->refine; 
+  csphere = (csphere_object *)o->refine;
 
   r = csphere->radius;
   zmi = csphere->zmin;
@@ -852,7 +852,7 @@ Csphere_Init(Tcl_Interp *interp)
       return TCL_OK;
     }
 
-  
+
   /* source csphere.tcl, it contains Tcl-code to build
      the CSphere-Attributes Property GUI */
   if((Tcl_EvalFile(interp, "csphere.tcl")) != TCL_OK)

@@ -63,7 +63,7 @@ static idr_picpart *idr_partlist = NULL, **idr_partlist_next;
 static uint32 *idr_picture_buf = NULL;
 
 /* dimension of target picture */
-static int idr_picture_width, idr_picture_height; 
+static int idr_picture_width, idr_picture_height;
 
 /* how many quality/importance levels are to be rendered? */
 static int idr_qlevels;
@@ -78,7 +78,7 @@ static char idr_window_path[256];
 
 /* one start of rendrib costs as much time as
    rendering weight_r pixels; set via tcl-interface  */
-static int weight_r; 
+static int weight_r;
 
 typedef struct idr_param_s {
   double importance;

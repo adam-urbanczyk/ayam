@@ -2549,9 +2549,9 @@ onio_readbrep(ON_Brep *p_b, double accuracy)
       olo->refine = level;
       olo->parent = AY_TRUE;
       olo->inherit_trafos = AY_TRUE;
-     
+
       ay_status = ay_object_crtendlevel(&(olo->down));
-     
+
       ay_status = ay_object_link(olo);
 
       ay_next = &(olo->down);

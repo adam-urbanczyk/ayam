@@ -14,14 +14,14 @@
    using code kindly provided by Scott Iverson (SiTex Graphics) */
 
 /*
- 
+
     Routines for obtaining the parameters for
     shaders compiled to .slb files for AIR
- 
+
     (c) 2000 SiTex Graphics.  All rights reserved.
- 
+
     Last Modified:  July 14, 2000
- 
+
 */
 
 /* includes: */
@@ -296,7 +296,7 @@ ayslb_scanshader(char *fname, Tcl_DString *ds)
 			  Tcl_DStringAppend(ds, "} ", -1);
 			}
 		      Tcl_DStringAppend(ds, "} ", -1);
-		    } 
+		    }
 		  else
 		    {
 		      ay_error(AY_EWARN, h.parm[i].pname,
@@ -326,7 +326,7 @@ int
 ayslb_scanslbtcmd(ClientData clientData, Tcl_Interp *interp,
 		  int argc, char *argv[])
 {
- int ay_status = AY_OK; 
+ int ay_status = AY_OK;
  char fname[] = "shaderScanSLB";
  Tcl_DString ds;
  char buf[255];

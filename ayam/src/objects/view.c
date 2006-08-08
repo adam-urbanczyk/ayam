@@ -20,7 +20,7 @@ static char *ay_view_name = "View";
 
 /* ay_view_createcb:
  *  this callback does nothing,
- *  the real work of correctly creating a view object is done 
+ *  the real work of correctly creating a view object is done
  *  in the Togl callback: ay_toglcb_create()
  */
 int
@@ -36,7 +36,7 @@ ay_view_createcb(int argc, char *argv[], ay_object *o)
 
 /* ay_view_deletecb:
  *  this callback does nothing,
- *  the real work of correctly deleting a view object is done 
+ *  the real work of correctly deleting a view object is done
  *  in the Togl callback: ay_toglcb_destroy()
  */
 int
@@ -47,7 +47,7 @@ ay_view_deletecb(void *c)
 
   view = (ay_view_object *)(c);
   if(!view)
-    return AY_ENULL;    
+    return AY_ENULL;
 
   ay_error(AY_ERROR, fname, "cannot delete a view this way, use View/Close");
 
@@ -120,7 +120,7 @@ ay_view_drawhcb(struct Togl *togl, ay_object *o)
 
   /* never draw in own view */
   if(view->togl != togl)
-    { 
+    {
       /* ignore transformation */
       glLoadIdentity();
 
@@ -533,7 +533,7 @@ ay_view_getpntcb(int mode, ay_object *o, double *p)
 	    {
 	      pecoord = view->to;
 	      min_dist = dist;
-	    
+
 	    }
 
 	  if(!pecoord)
@@ -553,30 +553,30 @@ ay_view_getpntcb(int mode, ay_object *o, double *p)
 	  c = view->from;
 	  a = 0;
 	  /* test point c against the four planes in p */
-	  if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) && 
-	     ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) && 
-	     ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) && 
+	  if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) &&
+	     ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) &&
+	     ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
 	     ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
 	    {
 
 	      if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
 		return AY_EOMEM;
 	      pecoords[a] = c;
-	      a++;		  
+	      a++;
 	    } /* if */
 
 	  c = view->to;
 	  /* test point c against the four planes in p */
-	  if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) && 
-	     ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) && 
-	     ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) && 
+	  if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) &&
+	     ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) &&
+	     ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
 	     ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
 	    {
 
 	      if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
 		return AY_EOMEM;
 	      pecoords[a] = c;
-	      a++;		  
+	      a++;
 	    } /* if */
 
 	  if(!pecoords)
@@ -674,7 +674,7 @@ ay_view_readcb(FILE *fileptr, ay_object *o)
   sprintf(command,"viewOpen %d %d 0\n", width, height);
   Tcl_Eval(ay_interp, command);
   Tcl_Eval(ay_interp, update_cmd);
-      
+
   /* configure it */
   down = root->down;
   last = root->down;
@@ -721,7 +721,7 @@ ay_view_readcb(FILE *fileptr, ay_object *o)
   Tcl_Eval(ay_interp, command);
 
   /* position window */
-  
+
   sprintf(command,
 	  "global ay;winMoveOrResize [lindex $ay(views) end] \"+%d+%d\"\n",
 	  vtemp.pos_x, vtemp.pos_y);
@@ -747,7 +747,7 @@ ay_view_readcb(FILE *fileptr, ay_object *o)
   Tcl_Eval(ay_interp, command);
 
   Tcl_Eval(ay_interp, update_cmd);
-  
+
  return AY_EDONOTLINK;
 } /* ay_view_readcb */
 
@@ -759,7 +759,7 @@ ay_view_writecb(FILE *fileptr, ay_object *o)
  struct Togl *togl = NULL;
 
   view = (ay_view_object *)(o->refine);
- 
+
   if(!view)
     return AY_ENULL;
 
@@ -915,7 +915,7 @@ ay_view_notifycb(ay_object *o)
  GLint result;
 
   if(!o)
-    return AY_ENULL;    
+    return AY_ENULL;
 
   view = (ay_view_object *)(o->refine);
 
@@ -1068,7 +1068,7 @@ ay_view_dropcb(ay_object *o)
 
   while(sel)
     {
-      s = sel->object; 
+      s = sel->object;
       switch(s->type)
 	{
 	case AY_IDLIGHT:
@@ -1099,10 +1099,10 @@ ay_view_dropcb(ay_object *o)
 	       glMultMatrixd(mr);
 
 	       glScaled(s->scalx, s->scaly, s->scalz);
-	       
+
 	       glGetDoublev(GL_MODELVIEW_MATRIX, m);
 	      glPopMatrix();
-	      
+
 	      ay_trafo_apply3(from, m);
 	      ay_trafo_apply3(to, m);
 
@@ -1140,13 +1140,13 @@ ay_view_dropcb(ay_object *o)
 	  argv[1] = arg1;
 	  argv[2] = arg2;
 	  ay_status = ay_undo_undotcmd(NULL, ay_interp, 3, argv);
-	  
+
 	  memcpy(view->from, camera->from, 3*sizeof(double));
 	  memcpy(view->to, camera->to, 3*sizeof(double));
 	  memcpy(view->up, camera->up, 3*sizeof(double));
 	  view->roll = camera->roll;
 	  view->zoom = camera->zoom;
-	  
+
 	  ay_toglcb_reshape(view->togl);
 	  ay_toglcb_display(view->togl);
 	  ay_viewt_uprop(view);

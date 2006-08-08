@@ -780,7 +780,7 @@ ay_torus_providecb(ay_object *o, unsigned int type, ay_object **result)
 	      newp->inherit_trafos = AY_FALSE;
 	      newp->parent = AY_TRUE;
 	      newp->hide_children = AY_TRUE;
-	  
+
 	      if((ay_status = ay_object_crtendlevel(&(newp->down))))
 		goto cleanup;
 

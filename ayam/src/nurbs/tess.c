@@ -581,7 +581,6 @@ ay_tess_tristopomesh(ay_tess_tri *tris, int has_vn, ay_object **result)
     }
   po = (ay_pomesh_object*)new->refine;
 
-  
   /* first, count the triangles */
   tri = tris;
   while(tri)
