@@ -221,6 +221,7 @@ ay_notify_forceparent(ay_object *o, int silent)
   oldclevel = ay_currentlevel;
 
   ay_currentlevel = NULL;
+  ay_clevel_add(NULL);
   ay_clevel_add(ay_root);
 
   ay_status = ay_clevel_find(ay_root->next, o, &found);
@@ -233,6 +234,9 @@ ay_notify_forceparent(ay_object *o, int silent)
 	} /* if */
       return AY_OK; /* XXXX early exit! */
     } /* if */
+
+  if(ay_currentlevel->next && ay_currentlevel->next->object)
+    ay_currentlevel->next->object->modified = AY_TRUE;
 
   ay_status = ay_notify_parent();
 

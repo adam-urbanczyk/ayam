@@ -691,7 +691,7 @@ ay_undo_copy(ay_undo_object *uo)
       /* copy all other attributes */
       o->type = c->type;
       /*o->selected = c->selected;*/
-      o->modified = c->modified;
+      o->modified = AY_TRUE; /*c->modified;*/
       o->parent = c->parent;
       o->inherit_trafos = c->inherit_trafos;
       o->hide = c->hide;
