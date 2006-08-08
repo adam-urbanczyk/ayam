@@ -84,7 +84,7 @@ ay_tcmd_reverttcmd(ClientData clientData, Tcl_Interp * interp,
 
 
 /* ay_tcmd_showall:
- *  
+ *
  */
 void
 ay_tcmd_showall(ay_object *o)
@@ -107,7 +107,7 @@ ay_tcmd_showall(ay_object *o)
 } /* ay_tcmd_showall */
 
 /* ay_tcmd_showtcmd:
- *  
+ *
  */
 int
 ay_tcmd_showtcmd(ClientData clientData, Tcl_Interp * interp,
@@ -149,7 +149,7 @@ ay_tcmd_showtcmd(ClientData clientData, Tcl_Interp * interp,
 
 
 /* ay_tcmd_hideall:
- *  
+ *
  */
 void
 ay_tcmd_hideall(ay_object *o)
@@ -173,13 +173,13 @@ ay_tcmd_hideall(ay_object *o)
 
 
 /* ay_tcmd_hidetcmd:
- *  
+ *
  */
 int
 ay_tcmd_hidetcmd(ClientData clientData, Tcl_Interp * interp,
 		  int argc, char *argv[])
 {
-  /*  
+  /*
  int ay_status = AY_OK;
  char fname[] = "hide";
   */
@@ -281,8 +281,8 @@ ay_tcmd_getvertcmd(ClientData clientData, Tcl_Interp * interp,
 
 
 /* ay_tcmd_getbppntfromindex:
- *  
- *  
+ *
+ *
  */
 int
 ay_tcmd_getbppntfromindex(ay_bpatch_object *patch, int index,
@@ -320,8 +320,8 @@ ay_tcmd_getbppntfromindex(ay_bpatch_object *patch, int index,
 
 
 /* ay_tcmd_getpointtcmd:
- *  
- *  
+ *
+ *
  */
 int
 ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
@@ -494,7 +494,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 		} /* if */
 	    } /* if */
 
-	  
+
 	  if(argc2 == 7)
 	    {
 	      po = NULL;
@@ -511,7 +511,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 		  freepo = AY_TRUE;
 		} /* if */
 	    } /* if */
-	  
+
 
 	  if(!handled)
 	    ay_error(AY_EWARN, fname,
@@ -543,7 +543,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	    { /* No! */
 	      tp = p;
 	    }
-	    
+
 	  ton = Tcl_NewStringObj(argv[j], -1);
 	  to = Tcl_NewDoubleObj(tp[0]);
 	  Tcl_ObjSetVar2(interp, ton, NULL, to, TCL_LEAVE_ERR_MSG |
@@ -584,8 +584,8 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_tcmd_setpointtcmd:
- *  
- *  
+ *
+ *
  */
 int
 ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
@@ -715,8 +715,8 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_tcmd_getglerrortcmd:
- *  
- *  
+ *
+ *
  */
 int
 ay_tcmd_getglerrortcmd(ClientData clientData, Tcl_Interp *interp,
@@ -763,7 +763,7 @@ ay_tcmd_waitpidtcmd(ClientData clientData, Tcl_Interp *interp,
 	  return TCL_OK;
 	}
     } /* while */
-  
+
  return TCL_OK;
 } /* ay_tcmd_waitpidtcmd */
 

@@ -64,9 +64,15 @@ ay_notify_parent(void)
  void **arr = NULL;
  ay_notifycb *cb = NULL;
  ay_tag *tag = NULL;
+ int did_notify = AY_FALSE;
 
+  /* always do complete notify? */
   if(ay_prefs.completenotify == 1)
     {
+      /* Yes.*/
+
+      /* loop through selected objects and check for changed ones;
+         do complete notify for all of them */
       while(sel)
 	{
 	  o = sel->object;
@@ -74,11 +80,26 @@ ay_notify_parent(void)
 	    {
 	      ay_status = ay_notify_complete(o);
 	      o->modified = AY_FALSE;
+	      did_notify = AY_TRUE;
 	    }
 	  sel = sel->next;
-	}
+	} /* while */
+
+      /* in case we did not call any notification callbacks up to now,
+         maybe the structure of the current level changed using e.g.
+         clipboard operations, check for that and call notification */
+      if(!did_notify)
+	{
+	  if(lev->next && lev->next->object && lev->next->object->modified)
+	    {
+	      ay_notify_force(lev->next->object);
+	      ay_status = ay_notify_complete(lev->next->object);
+	      lev->next->object->modified = AY_FALSE;
+	    }
+	} /* if */
+
       return ay_status;
-    } /* while */
+    } /* if */
 
   while(lev)
     {
@@ -191,7 +212,7 @@ ay_notify_forceparent(ay_object *o, int silent)
     {
       return AY_ENULL;
     }
-  
+
   if(!ay_root->next)
     {
       return AY_OK;

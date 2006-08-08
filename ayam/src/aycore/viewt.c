@@ -32,7 +32,7 @@ ay_viewt_setupprojection(struct Togl *togl)
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  int width = Togl_Width(togl);
  int height = Togl_Height(togl);
- GLdouble aspect = ((GLdouble)width) / ((GLdouble)height);  
+ GLdouble aspect = ((GLdouble)width) / ((GLdouble)height);
  GLfloat light_posf[4] = { 0.0f,  0.0f, 1000.0f, 1.0f};
  GLfloat light_poss[4] = {1000.0f,  0.0f,  0.0f, 1.0f};
  GLfloat light_post[4] = { 0.0f, 1000.0f,  0.0f, 1.0f};
@@ -129,14 +129,14 @@ ay_viewt_rotate(ay_view_object *view, double rotx, double roty, double rotz)
        glRotated(rotx, 1.0, 0.0, 0.0);
        glRotated(-view->roty, 0.0, 1.0, 0.0);
      }
-  
+
    if(rotz != 0.0)
      {
        glRotated(view->roty, 0.0, 1.0, 0.0);
        glRotated(rotz, 0.0, 0.0, 1.0);
        glRotated(-view->roty, 0.0, 1.0, 0.0);
      }
-  
+
    if(roty != 0.0)
      glRotated(roty, 0.0, 1.0, 0.0);
 
@@ -165,7 +165,7 @@ ay_viewt_rotate(ay_view_object *view, double rotx, double roty, double rotz)
 
 
 /* ay_viewt_wintoobj:
- * transforms the window coordinates winX winY, 
+ * transforms the window coordinates winX winY,
  * to object coordinates for the given object *o
  * Assumes the standard transformations are
  * in use!
@@ -224,7 +224,7 @@ ay_viewt_wintoobj(struct Togl *togl, ay_object *o,
 
 /* ay_viewt_winrecttoobj:
  * transforms the rectangle formed by the window coordinates
- * winX, winY, winX2, winY2, 
+ * winX, winY, winX2, winY2,
  * to object coordinates (obj[24]!) for the given object *o
  * Assumes the standard transformations are
  * in use!
@@ -344,8 +344,8 @@ ay_viewt_wintoworld(struct Togl *togl, double winX, double winY,
 
 
 /* ay_viewt_zoomtoobj:
- *  
- *  
+ *
+ *
  */
 int
 ay_viewt_zoomtoobj(struct Togl *togl, int argc, char *argv[])
@@ -379,7 +379,7 @@ ay_viewt_zoomtoobj(struct Togl *togl, int argc, char *argv[])
 		    xmax = bb[a];
 		  a += 3;
 		}
-	      
+
 	      a = 1;
 	      for(i = 0; i < 8; i++)
 		{
@@ -450,15 +450,15 @@ ay_viewt_zoomtoobj(struct Togl *togl, int argc, char *argv[])
       dt2[1] = ymax;
       dt2[2] = zmax;
 
-      
+
       ay_trafo_apply3(dt, mt);
       ay_trafo_apply3(dt2, mt);
-      
+
 
       lx = fabs(dt[0]-dt2[0]);
       ly = fabs(dt[1]-dt2[1]);
       lz = fabs(dt[2]-dt2[2]);
-      
+
       if(ly>lx)
 	l = ly;
       else
@@ -473,7 +473,7 @@ ay_viewt_zoomtoobj(struct Togl *togl, int argc, char *argv[])
 
       if(view->type == AY_VTPERSP)
 	{
-	  view->zoom /= 12; 
+	  view->zoom /= 12;
 	  /* normalize */
 	  /*
 	  dt[0] = view->from[0] - view->to[0];
@@ -489,7 +489,7 @@ ay_viewt_zoomtoobj(struct Togl *togl, int argc, char *argv[])
       ay_toglcb_reshape(togl);
       if(argc)
 	ay_toglcb_display(togl);
-      
+
       ay_viewt_uprop(view);
       view->drawmarker = AY_FALSE;
     } /* if (sel) */
@@ -499,7 +499,7 @@ ay_viewt_zoomtoobj(struct Togl *togl, int argc, char *argv[])
 
 
 /* ay_viewt_align:
- *  
+ *
  */
 int
 ay_viewt_align(struct Togl *togl, int argc, char *argv[])
@@ -566,7 +566,7 @@ ay_viewt_align(struct Togl *togl, int argc, char *argv[])
 
   ay_toglcb_reshape(togl);
   ay_toglcb_display(togl);
-      
+
   ay_viewt_uprop(view);
   view->drawmarker = AY_FALSE;
 
@@ -575,7 +575,7 @@ ay_viewt_align(struct Togl *togl, int argc, char *argv[])
 
 
 /* ay_viewt_alignlocal:
- *  
+ *
  */
 void
 ay_viewt_alignlocal(void)
@@ -585,7 +585,7 @@ ay_viewt_alignlocal(void)
  int status;
 
   o = o->down;
-  
+
   if(!o)
     return;
 
@@ -783,7 +783,7 @@ ay_viewt_changetype(ay_view_object *view, int type)
 
 
 /* ay_viewt_reshapetcb:
- *  
+ *
  */
 int
 ay_viewt_reshapetcb(struct Togl *togl, int argc, char *argv[])
@@ -821,7 +821,7 @@ ay_viewt_redrawtcb(struct Togl *togl, int argc, char *argv[])
       else
 	ay_draw_view(togl, AY_FALSE);
 
-      /* XXXX is this really necessary? */ 
+      /* XXXX is this really necessary? */
       /*glFlush();*/
 
       Togl_SwapBuffers(togl);
@@ -838,7 +838,7 @@ ay_viewt_redrawtcb(struct Togl *togl, int argc, char *argv[])
 
 
 /* ay_viewt_setconftcb:
- *  
+ *
  */
 int
 ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
@@ -1202,12 +1202,12 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 	      Tcl_GetDouble(interp, argv[i+2], &view->rect_ymin);
 	      Tcl_GetDouble(interp, argv[i+3], &view->rect_xmax);
 	      Tcl_GetDouble(interp, argv[i+4], &view->rect_ymax);
-	      
+
 	      Tcl_GetInt(interp, argv[i+5], &view->drawrect);
 	      need_redraw = AY_FALSE;
 	      /*XXXX DBG*/
 /*#undef GL_VERSION_1_1*/
-#ifdef GL_VERSION_1_1	      
+#ifdef GL_VERSION_1_1
 	      glDrawBuffer(GL_FRONT);
 	      glEnable(GL_COLOR_LOGIC_OP);
 	      glLogicOp(GL_XOR);
@@ -1221,11 +1221,11 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 	       if((old_rect_xmin != 0.0) && (old_rect_ymin != 0.0) &&
 		  (old_rect_xmax != 0.0) && (old_rect_ymax != 0.0))
 		 {
-		   
+
 		   ay_draw_rectangle(width, height,
 				     old_rect_xmin, old_rect_ymin,
 				     old_rect_xmax, old_rect_ymax);
-		   
+
 		 }
 
 	       if(view->drawrect)
@@ -1414,7 +1414,7 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 		   /* no, this (hopefully just) happens with Top views, that
 		      are Y-Axis aligned and express a useful angle in
 		      view->up */
-		   
+
 		   /* XXXX this currently only works for real Y-aligned
 		      Top views */
 		   t[0] = -view->up[0];
@@ -1424,13 +1424,13 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 
 		   if(fabs(view->roll) > AY_EPSILON)
 		     glRotated(-view->roll, 0.0, 1.0, 0.0);
-       
+
 		   glRotated(roty, 0.0, 1.0, 0.0);
-       
+
 		   glTranslated(dxw, 0.0, -dyw);
-       
+
 		   glRotated(-roty, 0.0, 1.0, 0.0);
-       
+
 		   if(fabs(view->roll) > AY_EPSILON)
 		     glRotated(view->roll, 0.0, 1.0, 0.0);
 		 }
@@ -1636,7 +1636,7 @@ ay_viewt_griddify(struct Togl *togl, double *winx, double *winy)
 
   if(view->grid != 0.0)
     {
-      
+
       if(!view->local)
 	{
 	  /* get reference point in window coords */
@@ -1674,7 +1674,7 @@ ay_viewt_griddify(struct Togl *togl, double *winx, double *winy)
 			    (GLdouble)o->movz);
 	       ay_quat_torotmatrix(o->quat, m);
 	       glMultMatrixd((GLdouble*)m);
-	  
+
 	       glScaled((GLdouble)o->scalx, (GLdouble)o->scaly,
 			(GLdouble)o->scalz);
 	     } /* if */
@@ -1704,7 +1704,7 @@ ay_viewt_griddify(struct Togl *togl, double *winx, double *winy)
 
 	  gridx = gridx-refx;
 	  gridy = -(gridy-refy);
-	  
+
 	  ghx = gridx/2.0;
 	  ghy = gridy/2.0;
 	} /* if */

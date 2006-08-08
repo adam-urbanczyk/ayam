@@ -177,7 +177,7 @@ ay_otype_registercore(char *name,
  /* char fname[] = "ay_otype_registercore";*/
  int new_item = 0;
  Tcl_HashEntry *entry = NULL;
- 
+
   /* check, whether type is already registered */
   /* this should not happen, btw. ... */
   if((entry = Tcl_FindHashEntry(&ay_otypesht, name)))

@@ -71,7 +71,7 @@ ay_clevel_add(ay_object *o)
   if(ay_currentlevel)
     lev->next = ay_currentlevel;
 
-  ay_currentlevel = lev;  
+  ay_currentlevel = lev;
 
  return AY_OK;
 } /* ay_clevel_add */
@@ -181,7 +181,7 @@ ay_clevel_gouptcmd(ClientData clientData, Tcl_Interp *interp,
 
   /* Get ay(CurrentLevel) value */
   string = Tcl_GetStringFromObj(to, &length);
-  
+
   /* Duplicate the value ay(CurrentLevel) since the original string
      must not be modified */
   tmp = malloc(length * sizeof(char));
@@ -203,14 +203,14 @@ ay_clevel_gouptcmd(ClientData clientData, Tcl_Interp *interp,
     {
       tmp[length] = 0;
     }
-  
+
   /* Replace the old value */
   /*  Tcl_SetStringObj(to, tmp, -1);*/
-  
+
   no = Tcl_NewStringObj(tmp, -1);
   Tcl_ObjSetVar2(interp, toa, ton, no,
 		 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  
+
   if(tmp)
     free(tmp);
 
@@ -291,7 +291,7 @@ ay_clevel_godowntcmd(ClientData clientData, Tcl_Interp *interp,
 		}
 	      else
 		{
-		  o = o->down;	      
+		  o = o->down;
 		  while(o->next)
 		    {
 		      ay_next = &(o->next);
@@ -331,7 +331,7 @@ ay_clevel_godowntcmd(ClientData clientData, Tcl_Interp *interp,
       j++;
       o = o->next;
     } /* while */
-    
+
  return TCL_OK;
 } /* ay_clevel_godowntcmd */
 
@@ -404,7 +404,7 @@ ay_clevel_gettcmd(ClientData clientData, Tcl_Interp *interp,
 		      Tcl_SetVar(interp, argv[1], Tcl_DStringValue(&ds),
 				 TCL_APPEND_VALUE | TCL_LIST_ELEMENT |
 				 TCL_LEAVE_ERR_MSG);
-		      
+
 		      Tcl_DStringFree(&ds);
 		    }
 		  else
@@ -424,7 +424,7 @@ ay_clevel_gettcmd(ClientData clientData, Tcl_Interp *interp,
 		  Tcl_SetVar(interp, argv[1], Tcl_DStringValue(&ds),
 			     TCL_APPEND_VALUE | TCL_LIST_ELEMENT |
 			     TCL_LEAVE_ERR_MSG);
-		      
+
 		  Tcl_DStringFree(&ds);
 		}
 	      else
@@ -453,8 +453,8 @@ ay_clevel_gettcmd(ClientData clientData, Tcl_Interp *interp,
 	  return TCL_OK;
 	}
 
-      o = o->next;  
-    }
+      o = o->next;
+    } /* while */
 
 
  return TCL_OK;

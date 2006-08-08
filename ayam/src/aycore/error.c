@@ -209,7 +209,7 @@ ay_error(int code, char *where, char *what)
       /* last messages were identical, just count and exit */
       count++;
       Tcl_DStringFree(&ds);
-      /*      
+      /*
       Tcl_SetVar(interp, "ay_error", "1", TCL_GLOBAL_ONLY | TCL_LEAVE_ERR_MSG);
       return;
       */

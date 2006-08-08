@@ -25,7 +25,7 @@ ay_w32t_w32killtcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int ay_status = AY_OK;
  char fname[] = "w32kill";
- HANDLE proc; 
+ HANDLE proc;
 
   if(argc < 2)
     {
@@ -34,13 +34,13 @@ ay_w32t_w32killtcmd(ClientData clientData, Tcl_Interp *interp,
     }
 
   /* Open process to be killed. */
-  proc = OpenProcess(PROCESS_ALL_ACCESS,TRUE,(unsigned long)atol(argv[1])); 
-  
-  /* Kill process. */ 
-  TerminateProcess(proc, 0); 
-  
-  /* Close process. */ 
-  CloseHandle(proc); 
+  proc = OpenProcess(PROCESS_ALL_ACCESS,TRUE,(unsigned long)atol(argv[1]));
+
+  /* Kill process. */
+  TerminateProcess(proc, 0);
+
+  /* Close process. */
+  CloseHandle(proc);
 
  return TCL_OK;
 } /* ay_w32t_w32killtcmd */

@@ -275,7 +275,7 @@ ay_comp_level(ay_object *o1, ay_object *o2)
 /* ay_comp_disk:
  *
  */
-int 
+int
 ay_comp_disk(ay_object *o1, ay_object *o2)
 {
   if(memcmp(o1->refine, o2->refine, sizeof(ay_disk_object)))
@@ -417,7 +417,7 @@ ay_comp_riinc(ay_object *o1, ay_object *o2)
      (r1->length != r2->length) ||
      (r1->height != r2->height))
     return AY_FALSE;
-  
+
   if(strcmp(r1->file, r2->file))
     return AY_FALSE;
 
@@ -444,7 +444,7 @@ ay_comp_riproc(ay_object *o1, ay_object *o2)
      (r1->maxz != r2->maxz) ||
      (r1->type != r2->type))
     return AY_FALSE;
-  
+
   if(strcmp(r1->file, r2->file))
     return AY_FALSE;
 
@@ -513,7 +513,7 @@ ay_comp_light(ay_object *o1, ay_object *o2)
  *
  */
 int
-ay_comp_ncurve(ay_object *o1, ay_object *o2) 
+ay_comp_ncurve(ay_object *o1, ay_object *o2)
 {
  ay_nurbcurve_object *n1, *n2;
 
@@ -532,7 +532,7 @@ ay_comp_ncurve(ay_object *o1, ay_object *o2)
     return AY_FALSE;
   if(memcmp(n1->controlv, n2->controlv, 4*n1->length*sizeof(double)))
     return AY_FALSE;
-      
+
   return AY_TRUE;
 } /* ay_comp_ncurve */
 
@@ -541,7 +541,7 @@ ay_comp_ncurve(ay_object *o1, ay_object *o2)
  *
  */
 int
-ay_comp_icurve(ay_object *o1, ay_object *o2) 
+ay_comp_icurve(ay_object *o1, ay_object *o2)
 {
  ay_icurve_object *i1, *i2;
 
@@ -558,7 +558,7 @@ ay_comp_icurve(ay_object *o1, ay_object *o2)
 
   if(memcmp(i1->controlv, i2->controlv, 3*i1->length*sizeof(double)))
     return AY_FALSE;
-      
+
   return AY_TRUE;
 } /* ay_comp_icurve */
 
@@ -570,7 +570,7 @@ int
 ay_comp_npatch(ay_object *o1, ay_object *o2)
 {
  ay_nurbpatch_object *n1, *n2;
- 
+
   n1 = (ay_nurbpatch_object *)o1->refine;
   n2 = (ay_nurbpatch_object *)o2->refine;
 
@@ -589,7 +589,7 @@ ay_comp_npatch(ay_object *o1, ay_object *o2)
     return AY_FALSE;
   if(memcmp(n1->controlv, n2->controlv,4*n1->width*n1->height*sizeof(double)))
     return AY_FALSE;
- 
+
  return AY_TRUE;
 } /* ay_comp_npatch */
 
@@ -597,7 +597,7 @@ ay_comp_npatch(ay_object *o1, ay_object *o2)
 /* ay_comp_extrude:
  *
  */
-int 
+int
 ay_comp_extrude(ay_object *o1, ay_object *o2)
 {
   ay_extrude_object *e1, *e2;
@@ -655,7 +655,7 @@ ay_comp_sweep(ay_object *o1, ay_object *o2)
      (s1->close != s2->close) ||
      (s1->sections != s2->sections) ||
      (s1->has_start_cap != s2->has_start_cap) ||
-     (s1->has_end_cap != s2->has_end_cap) 
+     (s1->has_end_cap != s2->has_end_cap)
      )
     return AY_FALSE;
 
@@ -952,7 +952,7 @@ ay_comp_pomesh(ay_object *o1, ay_object *o2)
     {
       total_verts += p1->nverts[i];
     } /* for */
-  
+
   if(!memcmp(p1->verts, p2->verts, sizeof(total_verts*sizeof(unsigned int))))
     return AY_FALSE;
 
@@ -991,7 +991,7 @@ ay_comp_sdmesh(ay_object *o1, ay_object *o2)
     {
       total_verts += p1->nverts[i];
     } /* for */
-  
+
   if(!memcmp(p1->verts, p2->verts,
 	     sizeof(total_verts * sizeof(unsigned int))))
     return AY_FALSE;
@@ -1200,7 +1200,7 @@ ay_comp_objects(ay_object *o1, ay_object *o2)
   /*
     else
     {
-    ay_error(AY_EWARN, fname, "No compare callback registered!"); 
+    ay_error(AY_EWARN, fname, "No compare callback registered!");
     }
   */
 

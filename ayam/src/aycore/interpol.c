@@ -38,9 +38,9 @@ ay_interpol_1DA4D(double p, int len, double *st, double *en, double *ta)
 	 (fabs(V1[2]) > AY_EPSILON))
 	{
 	  AY_V3SCAL(V1,p);
-	  V1[0] += st[i]; 
-	  V1[1] += st[i+1]; 
-	  V1[2] += st[i+2]; 
+	  V1[0] += st[i];
+	  V1[1] += st[i+1];
+	  V1[2] += st[i+2];
 	  memcpy(&(ta[i]),V1,3*sizeof(double));
 	}
       else
@@ -152,7 +152,7 @@ ay_interpol_ncurves(double p, ay_object *c1, ay_object *c2, ay_object **ta)
 
   if(!(newknotv = calloc(nc1->length+nc1->order, sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
- 
+
   if(!(newcontrolv = calloc(nc1->length*stride, sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
 

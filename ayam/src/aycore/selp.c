@@ -336,7 +336,7 @@ ay_selp_center(ay_object *o, int mode)
 	  x += (p2[0]/i);
 	  y += (p2[1]/i);
 	  z += (p2[2]/i);
-	}      
+	}
       p1 = p2;
       po = po->next;
     } /* for */

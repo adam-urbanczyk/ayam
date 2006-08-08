@@ -155,7 +155,6 @@ ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
       dz = v1[2];
     }
 
- 
   /* move the objects / selected points */
 
   while(sel)
