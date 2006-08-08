@@ -562,7 +562,7 @@ ay_prop_getnpinfo(Tcl_Interp *interp, char *n1, ay_object *o)
     {
       np = (ay_nurbpatch_object *)(o->refine);
       /*"40 x 20, 4, 4, NURB, NURB"*/
-      snprintf(buffer, sizeof(char)*256, "%d x %d, %d, %d, %d, %d",
+      sprintf(buffer/*, sizeof(buffer)*/, "%d x %d, %d, %d, %d, %d",
 	       np->width, np->height, np->uorder, np->vorder,
 	       np->uknot_type, np->vknot_type);
 
@@ -601,7 +601,7 @@ ay_prop_getncinfo(Tcl_Interp *interp, char *n1, ay_object *o)
     {
       nc = (ay_nurbcurve_object *)(o->refine);
       /*"40, 4, NURB"*/
-      snprintf(buffer, sizeof(char)*256, "%d, %d, %d",
+      sprintf(buffer/*, sizeof(buffer)*/, "%d, %d, %d",
 	       nc->length, nc->order, nc->knot_type);
 
       to = Tcl_NewStringObj(buffer, -1);
