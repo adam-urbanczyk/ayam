@@ -36,6 +36,8 @@ addParam $w ExtrNCAttrData PatchNum
 addParam $w ExtrNCAttrData Tolerance
 addMenu $w ExtrNCAttrData DisplayMode $ay(ncdisplaymodes)
 
+addText $w ExtrNCAttrData "Extracted NURBS Curve:"
+addInfo $w ExtrNCAttrData NCInfo
 
 
 #extrnc_crt:

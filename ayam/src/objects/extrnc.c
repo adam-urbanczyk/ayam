@@ -74,10 +74,11 @@ ay_extrnc_copycb(void *src, void **dst)
 
   memcpy(extrnc, src, sizeof(ay_extrnc_object));
 
-
   /* copy ncurve */
-  ay_object_copy(extrncsrc->ncurve, &(extrnc->ncurve));
-
+  if(extrncsrc->ncurve)
+    {
+      ay_object_copy(extrncsrc->ncurve, &(extrnc->ncurve));
+    }
 
   *dst = (void *)extrnc;
 
@@ -223,6 +224,8 @@ ay_extrnc_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
+  ay_prop_getncinfo(interp, n1, extrnc->ncurve);
+
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
@@ -338,6 +341,9 @@ ay_extrnc_notifycb(ay_object *o)
   /* get patch to extract the ncurve from */
   if(!o->down)
     return AY_OK;
+  if(!o->down->next)
+    return AY_OK;
+
   npatch = o->down;
   if(npatch->type != AY_IDNPATCH)
     {
