@@ -1,4 +1,4 @@
-INSTALL [8. May 2006]
+INSTALL [8. Aug 2006]
 
 Compilation Instructions for Ayam
 ---------------------------------
@@ -18,7 +18,7 @@ Contents:
 1. Compiling a Shared Version of Ayam
 2. Compiling a Wrapped Standalone Version of Ayam
 3. Additional Targets (Compiling Plugins)
-
+4. Compile Time Configuration Options
 
 1. Compiling a Shared Version of Ayam
 -------------------------------------
@@ -376,6 +376,7 @@ for RenderDotC: RDCDIR, AYSOINCDIR, AYSOLIBS,
 for PRMan: PRMANDIR, AYSLOINCDIR, AYSLOLIBS,
 for 3Delight: 3DLDIR, AYSLO3DINCDIR, AYSLO3DLIBS,
 for Pixie: SDRDIR, AYSDRINCDIR, PIXIESRC, AYSDRLIBS
+for Gelato: GELDIR, AYGSOINCDIR, AYGSOLIBS
 
 then type:
 >make ayslb.so
@@ -385,6 +386,7 @@ then type:
 >make ayso.so
 >make ayslx.so
 >make aysdr.so
+>make aygso.so
 
 After loading of one of these plugins (using the main menu entry
 "File/Load Plugin") the internal shader scanning code of Ayam will
@@ -416,8 +418,8 @@ OPENCSGDIR, GLEWDIR
 then type:
 >make aycsg.so
 
-Load it via menu entry "File/Load Plugin".
-Use it via the new icon in the view menu bar.
+Load the plugin via menu entry "File/Load Plugin".
+Use the plugin via the new icon in the view menu bar.
 See also the AyCSG preferences in the main menu "Custom/AyCSG Preferences".
 
 
@@ -517,6 +519,50 @@ Note that the application bundle targets only work properly for the Aqua
 version of Ayam and that the Aqua version of Ayam will not respond to any
 MacOSX AppleScript application events unless started from the application
 bundle.
+
+
+4. Compile Time Configuration Options
+-------------------------------------
+
+All compile time configuration options are controlled via preprocessor
+symbols that have to be defined at compile time. The value of the
+respective definition is irrelevant. Or, in other words, if the value
+of a definition is 0, the corresponding option is _not_ turned off!
+All that counts is the presence of the definition. You can add a
+definition easily using the -D command line option of your C/C++ compiler.
+You do this by adding elements like "-DAYWITHAQUA" to the CFLAGS variable
+in the Makefile.
+
+Here is a complete list of all compile time configuration options
+supported by Ayam:
+
+Platform support:
+AYWITHAQUA - set if you compile for Mac OS X Aqua (also enables work-arounds
+ for bugs in Apples OpenGL)
+AYIRIXBUG - enable workaround for SGI GLU bug
+SOLARIS_BUG - enable workaround for Solaris Xmu bug
+AYENABLEWAIT - enable bugfix to avoid zombie processes upon rendering (Linux)
+AYENABLEFEXIT - enable fast exit procedure (Mac OS X)
+AYNOUNISTDH - set if your system has no unistd.h header file, if you set
+ this option the rotation of views with cursor keys held down will quickly
+ fill up the undo buffer
+AYNOTEMPNAM - set if your system has no tempnam() function, if you set
+ this option the TmpDir preference setting will be ignored for the creation
+ of temporary RIB files (i.e. for rendering from a view) and the RIB files
+ will end up in a place determined by your system
+AYGLUATTRIBBUG - enable workaround for a GLU bug (no NURBS display
+ after NURBS tesselation was in use)
+
+Plugins:
+AYIDRWRAPPED - IDR plugin is wrapped into the main executable
+AYMETAWRAPPED - MetaObj plugin is wrapped into the main executable
+AYRRIBWRAPPED - rrib plugin is wrapped into the main executable
+AYCSGWRAPPED - aycsg plugin is wrapped into the main executable
+AYONIOWRAPPED - onio plugin is wrapped into the main executable
+
+Additional features:
+AYENABLEPPREV - enable permanent preview feature
+
 
 End of Compilation Instructions,
 -- 

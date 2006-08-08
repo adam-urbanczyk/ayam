@@ -448,6 +448,10 @@ AYSDRINCDIR = $(SDRDIR)/include
 PIXIESRC = /home/user/Pixie/src
 AYSDRLIBS = $(PIXIESRC)/common/os.o $(PIXIESRC)/common/memoryman.o -L$(SDRDIR)/lib -lsdr
 
+# Aygso Plugin (Gelato)
+GELDIR = /usr/local/gelato
+AYGSOINCDIR = $(GELDIR)/include
+AYGSOLIBS = -L$(GELDIR)/lib -lgsoargs -lgelato
 
 # Aycsg Plugin
 # OpenCSG
@@ -574,6 +578,10 @@ ayslc.so: plugins/ayerror.o
 aysdr.so: plugins/ayerror.o
 	$(CC) -c $(CFLAGS) plugins/aysdr.c -o plugins/aysdr.o -Iplugins $(TCLINC) -I$(AYSDRINCDIR)
 	$(CC) $(SHLFLAGS) plugins/ayerror.o plugins/aysdr.o -o plugins/aysdr.so $(LDSWSTATIC) $(AYSDRLIBS) $(LDSWDYNAMIC)
+
+aygso.so: plugins/ayerror.o
+	$(CC) -c $(CFLAGS) plugins/aygso.c -o plugins/aygso.o -Iplugins $(TCLINC) -I$(AYGSOINCDIR)
+	$(CC) $(SHLFLAGS) plugins/ayerror.o plugins/aygso.o -o plugins/aygso.so $(AYGSOLIBS)
 
 onio.so:
 	$(CXX) -c $(CFLAGS) plugins/onio.cpp -o plugins/onio.o -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR) -I$(AQSISINCDIR) -I$(TIFFINCDIR) -I$(ONIOINCDIR)
