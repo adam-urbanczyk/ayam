@@ -78,7 +78,7 @@ int ay_nb_RemoveKnot(int stride, int n, int p, double *U, double *Pw,
 
 void ay_nb_Bin(int maxn, int maxk, double *bin);
 
-int ay_nb_DegreeElevateCurve(int stride, int n, int p, double *U, double *Pw, 
+int ay_nb_DegreeElevateCurve(int stride, int n, int p, double *U, double *Pw,
 			     int t, int *nh, double *Uh, double *Qw);
 
 int ay_nb_SolveTridiagonal(int n, double *Q, double *U, double *P);

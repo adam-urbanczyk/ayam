@@ -15,7 +15,7 @@
 /* ayam.h - the main Ayam header */
 
 
-/* Includes */ 
+/* Includes */
 #include <limits.h>
 #include <float.h>
 #include <math.h>
@@ -98,7 +98,7 @@ extern "C" {
 #endif
 
 
-/* Ayam Object Structure */ 
+/* Ayam Object Structure */
 
 typedef struct ay_object_s {
   struct ay_object_s *next;  /* next in same hierarchie-level */
@@ -118,7 +118,7 @@ typedef struct ay_object_s {
 
   /* is this object currently selected? */
   int selected;
-  
+
   /* is this object modified by an editing action? */
   int modified;
 
@@ -145,7 +145,6 @@ typedef struct ay_object_s {
   struct ay_tag_s *tags; /* tags of this object */
 
   struct ay_mat_object_s *mat; /* material of this object */
-
 
   void *refine; /* type specific object (e.g. ay_sphere_object) */
 } ay_object;
@@ -195,10 +194,10 @@ typedef struct ay_mat_object_s {
   /* RiStandard (3.1) Attributes */
 
   /* Color */
-  int colr, colg, colb; 
+  int colr, colg, colb;
 
   /* Opacity */
-  int opr, opg, opb; 
+  int opr, opg, opb;
 
   /* Matte */
   int matte; /* no, yes */
@@ -303,7 +302,7 @@ typedef struct ay_nurbcurve_object_s
 {
   int type; /* AY_CTOPEN, AY_CTCLOSED, AY_CTPERIODIC */
   int length;
-  int order; 
+  int order;
   int knot_type; /* AY_KTBEZIER, AY_KTBSPLINE, AY_KTNURB, AY_KTCUSTOM */
   int is_rat;
   double *controlv;
@@ -715,7 +714,7 @@ typedef struct ay_birail2_object_s
  int interpolctrl;
  int has_start_cap;
  int has_end_cap;
- 
+
  ay_object *caps_and_bevels;
  /* cache NURBS patch representation */
  ay_object *npatch;
@@ -1062,7 +1061,7 @@ extern unsigned int ay_current_primlevel;
 #define AY_FALSE     0
 
 /* Return/Error Codes */
-#define AY_OK          0 /* everything all right */  
+#define AY_OK          0 /* everything all right */
 #define AY_EWARN       1 /* warning */
 #define AY_ERROR       2 /* unspecified error */
 #define AY_EFLUSH      3 /* flush error messages */
@@ -1273,11 +1272,11 @@ extern unsigned int ay_current_primlevel;
 
 
 /* Version Strings and Numbers */
-#define AY_VERSIONSTR "1.10"
+#define AY_VERSIONSTR "1.11"
 #define AY_VERSIONSTRMI "0"
 
 #define AY_VERSIONMA 1
-#define AY_VERSION   10
+#define AY_VERSION   11
 #define AY_VERSIONMI 0
 
 
