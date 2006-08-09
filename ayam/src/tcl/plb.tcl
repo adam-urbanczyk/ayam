@@ -46,7 +46,7 @@ balloon_set $w.la "Double click here\nto deselect property"
 # the properties listbox
 set f $w
 listbox $f.li -width 14 -height 12 -yscrollcommand {global ay; $ay(pss) set}\
-	-selectmode single -exportselection 0 -takefocus 0
+	-selectmode single -exportselection 0 -takefocus 0 -selectborderwidth 0
 
 set ay(plb) $f.li
 
