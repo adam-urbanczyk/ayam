@@ -29,27 +29,10 @@ In addition, you can use the provided SGML-source to generate other formats.
 <p>
 <sect1>About Ayam
 <p>
-Ayam is a free 3D modeling environment for the RenderMan Interface.
+Ayam is a free 3D modeling environment for the RenderMan Interface,
+distributed under the BSD licence.
 <p>
 Ayam was formerly known as <tt>"The Mops"</tt>.
-<p>
-Ayam is primarily aimed at the Linux, IRIX, and Win32 platforms.
-On those platforms BMRT (Blue Moon Rendering Tools, a RenderMan
-compliant renderer by Larry Gritz) is available.
-Even though the distribution of BMRT is stopped it is still
-the recommended renderer for Ayam.
-Despite of this, Ayam may be used on many more platforms with any
-RenderMan compliant renderer.
-<p>
-For platforms where BMRT is not available (e.g. FreeBSD or NetBSD), Ayam
-may be compiled with code from the Affine Toolkit with limited
-functionality (see also the file INSTALL).
-In this case, no parsing of slc compiled shaders will be possible.
-Since Ayam 1.6 it is also possible to completely replace BMRT shader parsing
-and RIB writing by code from the Aqsis project, thus completely
-eliminating the need for BMRT. Furthermore, shader parsing plugins are
-available for all major RenderMan compliant renderers allowing
-a tight integration of Ayam with those renderers.
 <p>
 Here is a short summary of the Ayam feature set:
 <itemize>
@@ -69,15 +52,33 @@ Tool-Objects.
 parameters may be written by the user and dynamically loaded at runtime.
 <item>Scripting interface: Tcl.
 <item>Script objects.
-<item>Misc: instancing, arbitrary number of modeling views,
-object clipboard, independent property clipboard, console,
-n level undo.
+<item>Miscellaneous: (automatic) instancing, arbitrary number of modeling
+views, object clipboard, independent property clipboard, console,
+n-level undo.
 </itemize>
-
+<p>
 Due to limitations in the Win32 operating system(s)
 (no backlinking) and the current implementation of Ayam,
-dynamic loading of custom objects is currently not available on the
-Win32 platform!
+dynamic loading of custom objects and certain plugins
+are currently not available on that platform!
+<p>
+Ayam is primarily aimed at the Linux, IRIX, and Win32 platforms.
+On those platforms BMRT (Blue Moon Rendering Tools, a RenderMan
+compliant renderer by Larry Gritz) is available.
+Even though the distribution of BMRT is stopped it is still
+the recommended renderer for Ayam.
+Despite of this, Ayam may be used on many more platforms with any
+RenderMan compliant renderer.
+<p>
+For platforms where BMRT is not available (e.g. FreeBSD or NetBSD), Ayam
+may be compiled with code from the Affine Toolkit with limited
+functionality (see also the file INSTALL).
+In this case, no parsing of slc compiled shaders will be possible.
+Since Ayam 1.6 it is also possible to completely replace BMRT shader parsing
+and RIB writing by code from the Aqsis project, thus completely
+eliminating the need for BMRT. Furthermore, shader parsing plugins are
+available for all major RenderMan compliant renderers allowing
+a tight integration of Ayam with those renderers.
 
 <sect1>About this manual
 <p>
@@ -89,7 +90,8 @@ probably pointless to read it from the beginning to the end
 Instead, just look up the documentation of the things you are interested
 in via the table of contents or the index. Cross references will then
 guide you to other important parts of the documentation.
-Again: this manual has a rather large index, please use it! 
+Again: this manual has a rather large index, please use it
+(see <ref id="index" name="Index">)! 
 <p>
 In this manual, the following typographic conventions are used:
 <itemize>
@@ -189,10 +191,13 @@ Note that you cannot delete or copy this object.
 <p>
 
 The tree view is very complex and may be slow on slow machines
-(of the Pentium 90 class), especially when dealing with large (deep nested)
-scenes. This should not be a problem nowadays.
+(of the Pentium 90 class), especially when dealing with scenes
+that contain many objects. This should not be a problem nowadays.
+Nevertheless, Ayam tries to keep tree update delays as low as possible,
+but this only works if the scene uses the hierarchy and changes
+happen in sub levels (not the root level).
 <p>
-Objects may be selected using the left mouse button.
+In the tree view, objects may be selected using the left mouse button.
 Multiple selection of objects is possible by holding down the
 <tt/&lt;Shift&gt;/ or <tt/&lt;Ctrl&gt;/ key while clicking on objects.
 <p>
@@ -250,6 +255,11 @@ the Root object will not be selected by <tt/&lt;Ctrl+a&gt;/.
 
 <item><tt/&lt;Space&gt;/ toggles display of the child objects of the
 selected object(s).
+
+<item><tt/&lt;Shift-Home&gt;/ and <tt/&lt;Shift-End&gt;/ are available
+since Ayam 1.11 and extend the selection up to the first
+or last object in the current level respectively.
+
 </itemize>
 
 If those shortcuts do not work you may need to press <tt/&lt;Esc&gt;/
@@ -312,6 +322,11 @@ or last object in the current level,
 <item><tt/&lt;Ctrl+a&gt;/ and <tt/&lt;Ctrl+n&gt;/ select or de-select
 all object in the current level. If the current level is the root level,
 the Root object will not be selected by <tt/&lt;Ctrl+a&gt;/.
+
+<item><tt/&lt;Shift-Home&gt;/ and <tt/&lt;Shift-End&gt;/ are available
+since Ayam 1.11 and extend the selection up to the first
+or last object in the current level respectively.
+
 </itemize>
 <p>
 If those shortcuts do not work you may need to press <tt/&lt;Esc&gt;/
@@ -753,23 +768,25 @@ are currently selected.
 the transformations property of the selected objects to all points of those
 objects.
 This will have the effect of resetting the transformations property
-to the default values without transforming the points.
+to the default values without (visibly) changing the points of the
+selected objects.
 
 <item><tt>"Apply To Selected"</tt>, applies the transformations
 encoded in the transformations property of the selected objects to the
 selected points.
-This will reset the transformations property without transforming the
-selected points. The points currently not selected will be transformed,
-however!
+This will reset the transformations property without (visibly)
+changing the selected points. The points currently not selected
+will be transformed, however!
 
-<item><tt>"Center All Points (3D)"</tt>, moves all points so
-that their common center is the center of the objects coordinate
-system.
-
+<item><tt>"Center All Points (3D)"</tt>, moves all points of the
+selected objects so that their common center (the center of gravity)
+is the center of the respective objects coordinate system.
+Note that, currently, this works on each of the selected objects
+separately!
 <item><tt>"Center All Points (2D-XY)"</tt>,
 <tt>"Points/Center All Points (2D-YZ)"</tt>,
-<tt>"Points/Center All Points (2D-XZ)"</tt>: works like the center
-3D tool but justs centers in the designated plane.
+<tt>"Points/Center All Points (2D-XZ)"</tt>: work like the center
+3D tool but just center in the designated plane.
 </itemize>
 
 <item><tt/"Show"/, <tt/"Hide"/ set and unset the <tt/"Hide"/
@@ -932,7 +949,7 @@ section <ref id="ayamrc" name="Ayamrc File"> for more information
 about the ayamrc file.
 
 <item><tt/"Toggle Toolbox"/ closes or opens the toolbox window
-(see <ref id="toolb" name="The Tool Box Window">). From version 1.3 on,
+(see <ref id="toolb" name="The Toolbox Window">). From version 1.3 on,
 Ayam remembers the state of the toolbox in the saved preferences.
 
 <item><tt/"Toggle TreeView"/ toggles object tree view and object listbox.
@@ -968,7 +985,7 @@ steps in modeling with Ayam.
 and trademark information.
 
 <item><tt/"Show Tooltips"/, enables tool tips (balloon help)
-for various user interface elements (including the tool box buttons).
+for various user interface elements (including the toolbox buttons).
 </itemize>
 
 
@@ -1285,7 +1302,8 @@ the possible candidates for selection. When you click a name in the list,
 the corresponding object is highlighted. Click <tt/"Ok"/ when you have
 determined which object to select or <tt/"Cancel"/ to close the list and keep
 the previous selection unchanged.
-
+Since Ayam 1.11 you can also use a double click in the list of selection
+candidates to select an object and close the dialog.
 <p>
 Notes:
 <itemize>
@@ -1301,39 +1319,40 @@ or not can be adjusted (see <tt/"PickTolerance"/ in <ref id="hidprefs"
 name="Hidden Preference Settings">).
 </itemize>
 
-<sect1>The Tool Box Window<label id="toolb">
+<sect1>The Toolbox Window<label id="toolb">
 <p>
 <figure loc="ht">
 <eps file="pics/tools.ps" height="8cm">
 <img src="pics/tools.gif">
-<caption>The Tool Box</caption>
+<caption>The Toolbox</caption>
 </figure>
 <p>
-The tool window displays some buttons that start interactive
+The toolbox window displays some buttons that start interactive
 modeling actions or other modeling tools, or create objects.
 You can open or close it using the main menu entry
 <tt>"Special/Toggle Toolbox"</tt>.
 <p>
 Note that in contrast to the keyboard shortcuts of the
-view windows the buttons switch to the modeling actions for
-all available views. For more information about the actions
-see section <ref id="iac" name="Interactive Actions">.
+view windows the buttons in the toolbox switch to the modeling
+actions for all available views. For more information about
+the actions see section <ref id="iac" name="Interactive Actions">.
 <p>
-The tool window may be configured by the user using the
-preference setting toolBoxList in the ayamrc file.
-You may select from the groups and change the order in which
-they appear in the tool window. See section
-<ref id="hidprefs" name="Hidden Preference Settings"> for
+The toolbox window may be configured by the user using the
+hidden preference setting toolBoxList in the ayamrc file.
+Using this setting you may select from certain groups of buttons
+and change the order in which they appear in the tool window.
+See section <ref id="hidprefs" name="Hidden Preference Settings"> for
 more information.
 <p>
-You may also resize the window to change from the vertical
-standard layout to a horizontal one, optimizing the
-use of precious screen space. After resizing, the tool box will
-re-layout the buttons, warning you if the space is to small for all
-buttons to display, and if the window is too big for the desired layout
-shrink wrap the window to match the size occupied by the buttons.
+You may also resize the window to change from the vertical standard
+layout to a horizontal one, optimizing the use of precious screen
+space. After resizing, the toolbox will re-layout the buttons,
+warning you if the space is to small for all buttons to display,
+and if the window is too big for the desired layout (and the
+preference setting <tt>"Misc/ToolBoxShrink"</tt>) shrink wrap
+the window to match the size occupied by the buttons.
 Furthermore, using the preference setting <tt>"Misc/ToolBoxTrans"</tt>
-the tool box can be made transient.
+the toolbox windoe can be made transient.
 It will then (depending on the window manager or its configuration)
 get a different or no decoration, no icon, and will always be iconified
 when the main window gets iconified.
@@ -1771,17 +1790,17 @@ The last sub-section contains miscellaneous user interface
 related preferences:
 <itemize>
 <item><tt/"SaveAddsMRU"/; if this is switched on, saving to a file
-will add that file to the most recently used list in the main menu
-for quick access.
+will add that file to the most recently used files list in the
+main menu for quick access.
 
-<item><tt/"ToolBoxTrans"/; controls whether the tool box window
+<item><tt/"ToolBoxTrans"/; controls whether the toolbox window
 should be declared as a transient window of the main window.
 It will then, depending on the window manager or its configuration,
 get a different or no decoration, no icon (or no entry in the
 task bar on Windows), and will always be iconified
 when the main window gets iconified.
 
-<item><tt/"ToolBoxShrink"/; controls whether the tool box window
+<item><tt/"ToolBoxShrink"/; controls whether the toolbox window
 should automatically shrink-wrap around the calculated layout
 of the buttons after a resize operation.
 
@@ -7006,6 +7025,7 @@ about which operation would be undone/redone, if undo/redo would be used.
   <item>If the argument is <tt/"clear"/, the undo buffer is cleared.
  </itemize>
 </itemize>
+See also section <ref id="undos" name="The Undo System">.
 
 <p><label id="scconvob">
 convOb:
@@ -7187,10 +7207,10 @@ After running the above script you should have a new menu
 entry <tt>Custom/Easy Sweep</tt> that calls the <tt>easySweep</tt>
 procedure.
 
-<sect2>Tool Box Buttons<label id="scextoolbox">
+<sect2>Toolbox Buttons<label id="scextoolbox">
 <p>
 Here is another example that shows how you may add buttons
-to the tool box.
+to the toolbox.
 myImage should be an image created e.g. from a GIF file of
 the size 25 by 25 pixels.
 <code>
@@ -7214,7 +7234,7 @@ if { ![winfo exists $b] } {
 
   # display the button:
   # from now on, it will be under the
-  # automatic tool box layout management
+  # automatic toolbox layout management
   toolbox_layout
 }
 </code>
@@ -7223,7 +7243,7 @@ This example shows that a) buttons have to be created in the
 frame <tt/".tbw.f"/
 b) Ayam manages a list of all buttons in the global array ay
 in <tt/"ay(toolbuttons)"/, the order in that list is the order
-in which buttons appear in the tool box c) automatic layout
+in which buttons appear in the toolbox c) automatic layout
 management is carried out by the procedure <tt/"toolbox_layout"/.
 <p>
 Adding buttons with just text is a little bit more involved,
@@ -7231,8 +7251,8 @@ as the sizes of the new buttons often do not fit well in the
 icon button scheme with its constant button size.
 <p>
 Here is an example that adds two buttons to the bottom of the
-tool box spanning the whole window (this works best with the
-standard tool box layout of 4 by 12 buttons):
+toolbox spanning the whole window (this works best with the
+standard toolbox layout of 4 by 12 buttons):
 <code>
 # create a frame:
 set f [frame .tbw.f.fcollex]
@@ -7743,7 +7763,7 @@ The ayamrc file contains:
 <enum>
 <item>preference settings (including some hidden settings that require
 just occasional tweaking and are not reachable using the GUI preference editor)
-<item>position and size of the main window and the tool box window
+<item>position and size of the main window and the toolbox window
 <item>keyboard shortcuts to menu entries and modeling actions
 <item>RiOption and RiAttribute databases
 </enum>
@@ -7788,10 +7808,10 @@ preference settings:
 (default: 1500 - 1.5s)
 <item><tt/"EFlush"/: time in ms between two flushes of the error message buffer
 (default: 2000 - 2s)
-<item><tt/"toolBoxList"/: a list of sections describing the appearance of the
-tool box window (default; using all available sections: <tt>{trafo
-trafo2 solids misco nurbs toolobjs points nctools1 nctools2 camera
-misc}</tt>)
+<item><tt/"toolBoxList"/: a list of sections or groups of buttons
+describing the appearance of the toolbox window (default, using all
+available sections: <tt>{trafo trafo2 solids misco nurbs toolobjs points
+nctools1 nctools2 camera misc}</tt>)
 <item><tt/"Kill"/: name of a program that kills other processes and accepts
 a process id as argument (used by the Rendering GUI)
 (default: <tt>"kill"</tt>) (a setting of <tt>"kill"</tt> will be
@@ -8404,7 +8424,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <ref id="indexy" name=" Y ">
 <ref id="indexz" name=" Z ">
 <p>
-
+<label id="index">
 <label id="index0">0
 <itemize>
 <item>3DM: <ref id="imprhino" name="3DM (Rhino) Import">,
@@ -9035,7 +9055,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>SMRes: <ref id="lip" name="light attribute">
 <item>Snap Points to Grid: <ref id="snapac" name="modeling action">
 <item>Snap3D: <ref id="prefmodel" name="preference setting">
-<item>SParam: <ref id="prefmisc" name="preference setting">
+<item>SParamU, SParamV: <ref id="prefmisc" name="preference setting">
 <item>Special: <ref id="mmspecial" name="special menu">
 <item>Sphere: <ref id="sphereobj" name="object">,
 <ref id="nspt" name="NURBS sphere tool">
@@ -9097,7 +9117,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <ref id="pmattr" name="PatchMesh attribute">,
 <ref id="ncattr" name="NURBCurve attribute">,
 <ref id="npattr" name="NURBPatch attribute">
-<item>Toolbox: <ref id="toolb" name="tool box window">
+<item>Toolbox: <ref id="toolb" name="toolbox window">
+<item>ToolBoxShrink: <ref id="prefmisc" name="preference setting">
 <item>ToolBoxTrans: <ref id="prefmisc" name="preference setting">
 <item>Tools: <ref id="mmtools" name="tools menu">
 <item>Top: <ref id="vmtype" name="view menu entry">

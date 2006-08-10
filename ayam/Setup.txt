@@ -1,21 +1,26 @@
-[Setup.txt, 15. Jan 2006]
+[Setup.txt, 9. Aug 2006]
 
-Setup instructions for Ayam (Unix only)
----------------------------------------
+Setup instructions for Ayam on UNIX (e.g. Linux/IRIX/MacOSX)
+------------------------------------------------------------
 
 The executable of Ayam is located in the directory named "bin".
 You can use Ayam directly from where you unpacked, or install it
-into your system. If you want to install, just follow the instructions
-in the file "bin/INSTALL" first.
+into your system. If you want to install, just follow the
+instructions in the file "bin/INSTALL" first.
+
+On MacOSX/Aqua, the installation is being done by simply dragging
+the application to the applications directory, as suggested by
+the disk image.
 
 Before you start modelling with Ayam, you should set it up
 properly. The following things have to be done:
 
   1. Determine where to save the preferences
   2. Determine the type of the window manager
-  3. Set up the shaders
-  4. Set up the plugins
-  5. Create and save a working environment
+  3. Set up the renderer
+  4. Set up the shaders
+  5. Set up the plugins
+  6. Create and save a working environment
 
 
 1. Determine where to save the preferences
@@ -64,13 +69,21 @@ of the "Root" object, your WM is "twm-compatible".
 To check this, just start Ayam, click on "Root" in the tree view
 then on "RiOptions" in the listbox to the right and watch
 your main window.
-If it jumps downward, you should set "TwmCompat" to "on" in the
+If it jumps downward, you should set "Main/TwmCompat" to "on" in the
 preferences!
 
 On MacOSX/Aqua the default setting ("on") does not need to be changed.
 
 
-3. Set up the shaders
+3. Set up the renderer
+----------------------
+
+Open the Ayam main menu "Special/Select Renderer" then choose
+the renderer you want to work with. Do not use the "ScanShaders"
+option as the shaders are not set up properly yet.
+
+
+4. Set up the shaders
 ---------------------
 
 What are shaders? For the moment, we can safely assume that
@@ -88,11 +101,13 @@ where your slc-compiled shaders reside in order to use them with the
 material objects in Ayam.
 This is done using the preference setting "Main/Shaders".
 Just open the preferences (main menu: "Edit/Preferences") and enter the
-appropriate paths (separated by ":") into the string entry labeled "Shaders".
+appropriate paths (separated by ":") into the string entry labeled
+"Shaders".
 If you installed BMRT before your first start of Ayam, the preference
 setting "Main/Shaders" probably already contains the right path setting
-(it will be fetched from the SHADERS environment variable, that has been set
-while installing BMRT, if the Shaders preference setting is unconfigured).
+(it will be fetched from the SHADERS environment variable, that has been
+set while installing BMRT, if the Ayam "Main/Shaders" preference setting
+is unconfigured).
 
 Example:
 If you installed BMRT2.6 into "/usr/local/BMRT2.6" you will want
@@ -107,7 +122,7 @@ e.g. Pixie, 3Delight or Aqsis (all available on MacOSX) and load a shader
 parsing plugin, see below.
 
 
-4. Set up the plugins
+5. Set up the plugins
 ---------------------
 
 The distribution of Ayam contains some plugins:
@@ -116,7 +131,7 @@ ONIO: Rhino 3DM Import/Export
 MFIO: 3DMF Import/Export
 IDR: Importance Driven Rendering
 MetaObj: the MetaBalls custom object
-ayslx, ayslb, ayso, ayslo, ayslo3d, aysdr: shader parsing plugins
+ayslx, ayslb, ayso, ayslo, ayslo3d, aysdr, aygso: shader parsing plugins
 
 All plugins reside in the "ayam/bin/plugins" directory (on MacOSX/Aqua
 they are located in the application bundle itself:
@@ -142,14 +157,18 @@ Be sure to add the path to the respective shared object (file with
 the file name extension ".so") _or_ "." to your LD_LIBRARY_PATH
 environment variable, otherwise loading of the plugin will fail.
 
-Note that on IRIX, you probably have to modify LD_LIBRARYN32_PATH
+Note that only one of the shader parsing plugins may be loaded
+at a time. If you load more than one, the plugin loaded last will
+take over shader parsing.
+
+Furthermore, on IRIX, you probably have to modify LD_LIBRARYN32_PATH
 instead of LD_LIBRARY_PATH.
 
-On MacOSX/Aqua you may have to modify the DYLD_LIBRARY_PATH instead
+On MacOSX you may have to modify the DYLD_LIBRARY_PATH instead
 of the LD_LIBRARY_PATH variable.
 
 
-5. Create and save a working environment
+6. Create and save a working environment
 ----------------------------------------
 
 The working environment is simply an almost empty Ayam scene file.
