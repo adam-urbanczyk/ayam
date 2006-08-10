@@ -1,4 +1,3 @@
-
 # Ayam, a free 3D modeler for the RenderMan interface.
 #
 # Ayam is copyrighted 1998-2005 by Randolf Schultz
@@ -202,10 +201,11 @@ on its name, then press <Ctrl+Shift+i> (Copy Marked Prop).}
 {Drag light objects into a view to look through the light.}
 {Menu keyboard shortcuts do not work? Press <Esc> first!}
 {Check http://www.ayam3d.org/ for the latest hotfix!}
-{Hold down <Shift> in property GUIs for instant apply.}
+{Hold down <Shift> while clicking in property GUIs for instant apply.}
 {Ayam is stuck in Tcl errors? Run "repairAyam.tcl".}
 {There is a FAQ on http://www.ayam3d.org/faq.html!}
 {Tree updates slowly? Always work in sub-levels!}
+{The <Return> key in property GUIs now does an instant apply.}
 {Tired of the splash screen? Set env. variable AYNOSPLASH.}
 }
 }
