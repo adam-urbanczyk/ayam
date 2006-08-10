@@ -1,4 +1,5 @@
-[30. Jul 2006] CVS-Head:
+[10. Aug 2006] Ayam 1.11:
+=========================
 o Bug Fixes:
   - fixed not changeable preference setting "AutoFocus" (SF 1497964)
   - fixed export of PolyMesh objects with PV tags using "Pw" (SF 1504284)
@@ -13,7 +14,12 @@ o Bug Fixes:
   - fixed OpenNURBS export setting scene changed state (SF 1526206)
   - fixed edit points modeling action not issuing a notification upon
     snapping of points to the grid (SF 1528712)
-  - fixed command line parameter parsing on Win32/VC++2005E (SF )
+  - fixed command line parameter parsing on Win32/VC++2005E (SF 1531467)
+  - fixed bevel object changing the child object (SF 1534989)
+  - fixed curvature plots of closed BSplines (SF 1537380)
+  - fixed undo, clipboard operations, and modeling tools not doing
+    notify when preference setting CompleteNotify is set to "Always"
+    (SF 1537385, 1537107, 1537105)
 
 GUI:
 o added default values to "Set GridSize" dialog and object property
@@ -28,6 +34,9 @@ o added preference setting "AddExtensions" that controls whether Ayam
 o moved "Points" sub-menu from "Special" to "Tools" menu
 o added "Reset Preferences" facility to make resetting the preferences to
   factory defaults more easy
+o added keyboard shortcuts to the tree view and object list that extend
+  the current selection to the first and last object of the current level
+  respectively (<Shift-Home> and <Shift-End>)
 
 Modelling:
 o added converter from PolyMesh objects to SDMesh objects
@@ -41,6 +50,7 @@ o improved drawing of selected curves in Shade&Draw drawing mode
 o added snap-to-grid modelling actions for points, new view shortcuts
   for that are <g> (2D) and <G> (3D)
 o made SDMesh scheme property element a menu (and thus changeable)
+o improved bevelling of rotated curves using the Bevel object
 
 Renderer Support:
 o added shader parsing plugin for Gelato
@@ -79,7 +89,8 @@ o added scale factor option to Rhino 3DM (OpenNURBS) import and export
 o added progress display to Rhino 3DM (OpenNURBS) import and export
 o added scale factor option to RIB import
 
-Examples/Scripts:
+Scripts/Scripting Interface:
+o removed superfluous commands "revertNC" and "revertIC", use "revert" instead
 
 
 [13. May 2006] Ayam1.10:
