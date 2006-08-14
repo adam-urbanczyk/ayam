@@ -28,7 +28,7 @@
 	<key>CFBundleExecutable</key>
 	<string>Ayam</string>
 	<key>CFBundleGetInfoString</key>
-	<string>Copyright (c) by Randolf Schultz 1997-2006</string>
+	<string>1.11, Ayam is Copyright (c) by Randolf Schultz 1997-2006</string>
 	<key>CFBundleIconFile</key>
 	<string>Ayam.icns</string>
 	<key>CFBundleIdentifier</key>
@@ -40,11 +40,16 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.10</string>
+	<string>1.11</string>
 	<key>CFBundleSignature</key>
 	<string>AYAM</string>
 	<key>CFBundleVersion</key>
-	<string>1.10</string>
+	<string>1.11</string>
+	<key>LSEnvironment</key>
+	<dict>
+		<key>AYNOSPLASH</key>
+		<string>0</string>
+	</dict>
 	<key>NSAppleScriptEnabled</key>
 	<string>yes</string>
 </dict>
