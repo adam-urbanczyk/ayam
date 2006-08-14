@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile [24. Mar 2004]
+# Makefile [14. Aug 2006]
 # Makefile for the installation of Ayam (precompiled wrapped version)
 
 # Choose an installation prefix.
@@ -66,7 +66,10 @@ install:
 	-$(INSTALL) plugins/ayso.so $(LIBDIR)
 	-$(INSTALL) plugins/loadayso.tcl $(LIBDIR)
 	-$(INSTALL) plugins/aysdr.so $(LIBDIR)
+	-$(INSTALL) plugins/aysdr.tcl $(LIBDIR)
 	-$(INSTALL) plugins/loadaysdr.tcl $(LIBDIR)
+	-$(INSTALL) plugins/aygso.so $(LIBDIR)
+	-$(INSTALL) plugins/loadaygso.tcl $(LIBDIR)
 	-$(INSTALL) plugins/aycsg.so $(LIBDIR)
 	-$(INSTALL) plugins/aycsg.tcl $(LIBDIR)
 	-$(INSTALL) plugins/loadaycsg.tcl $(LIBDIR)
@@ -98,7 +101,8 @@ uninstall:
 	-rm -rf $(LIBDIR)/ayslo3d.so $(LIBDIR)/loadayslo3d.tcl
 	-rm -rf $(LIBDIR)/ayslx.so $(LIBDIR)/loadayslx.tcl
 	-rm -rf $(LIBDIR)/ayso.so $(LIBDIR)/loadayso.tcl
-	-rm -rf $(LIBDIR)/aysdr.so $(LIBDIR)/loadaysdr.tcl
+	-rm -rf $(LIBDIR)/aysdr.so $(LIBDIR)/loadaysdr.tcl $(LIBDIR)/aysdr.tcl
+	-rm -rf $(LIBDIR)/aygso.so $(LIBDIR)/loadaygso.tcl
 	-rm -rf $(LIBDIR)/aycsg.so $(LIBDIR)/aycsg.tcl $(LIBDIR)/loadaycsg.tcl
 	-rm -rf $(LIBDIR)/onio.so $(LIBDIR)/onio.tcl $(LIBDIR)/loadonio.tcl
 	-cd $(DOCDIR); rm -rf Setup.txt Changes.txt License.txt refcard.tcl\
