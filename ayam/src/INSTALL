@@ -1,4 +1,4 @@
-INSTALL [8. Aug 2006]
+INSTALL [14. Aug 2006]
 
 Compilation Instructions for Ayam
 ---------------------------------
@@ -8,9 +8,9 @@ There are two major ways to compile Ayam, "shared" and "wrapped standalone"
 The binaries you get with the binary distribution of Ayam are "wrapped
 standalone". This means Tcl/Tk and the main Tcl-scripts of Ayam are all
 statically combined in the executable. This means no hassle with Tcl/Tk
-versions. You do not need an installed Tcl/Tk at all! However, the creation
-of "wrapped standalone" executables of Ayam is a bit tricky. Therefore,
-if you really want to or have to compile Ayam:
+versions. You do not need an installed Tcl/Tk at all to run Ayam!
+However, the creation of "wrapped standalone" executables of Ayam is a
+bit tricky. Therefore, if you really want to or have to compile Ayam:
 _Please compile a "shared" version of Ayam!_
 
 
@@ -149,6 +149,11 @@ that calls "ayamsh" the right way, so that after installation you can
 start Ayam by typing:
 >ayam
 
+To check what installing/uninstalling will do to your system use
+>make -n install
+or
+>make -n -f /usr/local/ayam/lib/Makefile uninstall
+first.
 
 
 2. Compiling a Wrapped Standalone Version of Ayam
@@ -269,6 +274,12 @@ environment variable, otherwise Ayam might not be able to load the plugins.
 The installation procedure will also install the current Makefile,
 that may be used to uninstall Ayam again, e.g. using:
 >make -f /usr/local/ayam/lib/Makefile uninstall
+
+To check what installing/uninstalling will do to your system use
+>make -n install
+or
+>make -n -f /usr/local/ayam/lib/Makefile uninstall
+first.
 
 
 3. Additional Targets (Compiling Plugins)
@@ -465,6 +476,12 @@ The installation procedure will also install the current Makefile,
 that may be used to uninstall Ayam again, e.g. using:
 >make -f /usr/local/ayam/lib/Makefile uninstall
 
+To check what installing/uninstalling will do to your system use
+>make -n install
+or
+>make -n -f /usr/local/ayam/lib/Makefile uninstall
+first.
+
 Use
 >make clean
 to remove all objects; this step is necessary if you switch build types
@@ -538,9 +555,9 @@ supported by Ayam:
 
 Platform support:
 AYWITHAQUA - set if you compile for Mac OS X Aqua (also enables work-arounds
- for bugs in Apples OpenGL)
+ for bugs in Apple OpenGL)
 AYIRIXBUG - enable workaround for SGI GLU bug
-SOLARIS_BUG - enable workaround for Solaris Xmu bug
+SOLARIS_BUG - enable workaround for Solaris Xmu bug in Togl
 AYENABLEWAIT - enable bugfix to avoid zombie processes upon rendering (Linux)
 AYENABLEFEXIT - enable fast exit procedure (Mac OS X)
 AYNOUNISTDH - set if your system has no unistd.h header file, if you set
