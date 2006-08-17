@@ -851,6 +851,7 @@ proc io_getRIBName { } {
 
     set filename $ay(filename)
 
+    # first, create RIB file name
     if { $ayprefs(RIBFile) == "Ask" || $ayprefs(RIBFile) == "" } {
 	set filetypes {{"RIB" ".rib"} {"All files" *}}
 	set ribname [tk_getSaveFile -filetypes $filetypes -parent .\
@@ -879,7 +880,7 @@ proc io_getRIBName { } {
     }
     # if
 
-
+    # second, create image file name
     if { $ayprefs(Image) == "Ask" } {
 	set filetypes {{"TIF" ".tif"} {"TIFF" ".tiff"} {"All files" *}}
 	set imagename "[tk_getSaveFile -filetypes $filetypes -parent .\
@@ -892,6 +893,7 @@ proc io_getRIBName { } {
 	    set imagename $ayprefs(Image)
 	}
     }
+    # if
 
     winAutoFocusOn
 
@@ -949,8 +951,8 @@ proc io_RenderSM { all } {
 
 	winAutoFocusOff
 
-	set t "ShadowMaps are not enabled!"
-	set m "ShadowMaps are not enabled\nin the preferences.\
+	set t "Need manual ShadowMaps!"
+	set m "ShadowMaps are not enabled properly!\n
 		\nSelect \"Ok\" to enable them and continue.\
 		\nSelect \"Cancel\" to stop operation."
 
