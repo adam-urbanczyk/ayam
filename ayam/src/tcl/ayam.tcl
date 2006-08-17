@@ -582,7 +582,8 @@ if { $tcl_platform(platform) == "windows" } {
     set sc [ info nameofexecutable ]
     if { $sc != "" } { set scdir [ file dirname $scdir ] }	
     if { $scdir != "" } {
-	set ayprefs(Cat) [file join $scdir "cat.exe"]
+	#set ayprefs(Cat) [file join $scdir "cat.exe"]
+	set ayprefs(Cat) "cat.exe"
     }
 
     set ayprefs(Kill) "w32kill"
