@@ -1471,7 +1471,8 @@ ay_wrib_lights(char *file, ay_object *o)
  *  propagate changes to this function also to ay_wrib_pprevdraw()!
  */
 int
-ay_wrib_scene(char *file, char *image, int temp, double *from, double *to,
+ay_wrib_scene(char *file, char *image, int temp, int rtf,
+	      double *from, double *to,
 	      double roll, double zoom, double nearp, double farp,
 	      int width, int height, int type)
 {
@@ -1513,24 +1514,24 @@ ay_wrib_scene(char *file, char *image, int temp, double *from, double *to,
 	}
     } /* if */
 
- if(!ay_prefs.resolveinstances)
-  {
-    /* reset oid counter */
-    ay_instt_createoid(NULL);
-    /* create OI tags for all original (referenced) objects */
-    ay_status = ay_instt_createorigids(o);
-    /* create OI tags for all instance (referencing) objects */
-    /*ay_status = ay_instt_createinstanceids(o);*/
-    /* write archive files for all original (referenced) objects */
-    if(ay_prefs.use_sm >= 1)
-      {
-	ay_status = ay_instt_wribiarchives(objfile, o);
-      }
-    else
-      {
-	ay_status = ay_instt_wribiarchives(file, o);
-      }
-  }
+  if(!ay_prefs.resolveinstances)
+    {
+      /* reset oid counter */
+      ay_instt_createoid(NULL);
+      /* create OI tags for all original (referenced) objects */
+      ay_status = ay_instt_createorigids(o);
+      /* create OI tags for all instance (referencing) objects */
+      /*ay_status = ay_instt_createinstanceids(o);*/
+      /* write archive files for all original (referenced) objects */
+      if(ay_prefs.use_sm >= 1)
+	{
+	  ay_status = ay_instt_wribiarchives(objfile, o);
+	}
+      else
+	{
+	  ay_status = ay_instt_wribiarchives(file, o);
+	}
+    } /* if */
 
   ay_wrib_framenum = 1;
 
@@ -1585,7 +1586,7 @@ ay_wrib_scene(char *file, char *image, int temp, double *from, double *to,
      { /* image file */
        root = (ay_root_object*)(ay_root->refine);
        riopt = root->riopt;
-       if(riopt->use_std_display || temp)
+       if(riopt->use_std_display || temp || rtf)
 	 {
 	   RiDisplay(image, RI_FILE, RI_RGBA, RI_NULL);
 	 }
@@ -1608,7 +1609,7 @@ ay_wrib_scene(char *file, char *image, int temp, double *from, double *to,
    RiFrameAspectRatio((RtFloat)aspect);
 
    swleft = (RtFloat)-aspect;
-   swright =  (RtFloat)aspect;
+   swright = (RtFloat)aspect;
    swbot = (RtFloat)-1.0;
    swtop = (RtFloat)1.0;
 
@@ -1816,7 +1817,6 @@ ay_wrib_sm(char *file, char *image, int width, int height, int selonly,
 } /* ay_wrib_sm */
 
 
-
 /* ay_wrib_cb:
  *
  */
@@ -1829,7 +1829,7 @@ ay_wrib_cb(struct Togl *togl, int argc, char *argv[])
  ay_riopt *riopt = NULL;
  int width = Togl_Width (togl);
  int height = Togl_Height (togl);
- int i, temp = 0;
+ int i, temp = AY_FALSE, rtf = AY_FALSE;
  char *file = NULL, *image = NULL;
  char fname[] = "write_rib";
  double addroll = 0.0, dir[3];
@@ -1848,16 +1848,28 @@ ay_wrib_cb(struct Togl *togl, int argc, char *argv[])
   while((i+1) <= argc)
     {
       if(!strcmp(argv[i], "-file"))
-	file = argv[i+1];
-      else
-	if(!strcmp(argv[i], "-image"))
-	  image = argv[i+1];
-      else
-	if(!strcmp(argv[i], "-temp"))
-	  temp = 1;
+	{
+	  file = argv[i+1];
+	  i++;
+	}
 
-      i += 2;
-    }
+      if(!strcmp(argv[i], "-image"))
+	{
+	  image = argv[i+1];
+	  i++;
+	}
+
+      if(!strcmp(argv[i], "-temp"))
+	{
+	  temp = AY_TRUE;
+	}
+
+      if(!strcmp(argv[i], "-rtf"))
+	{
+	  rtf = AY_TRUE;
+	}
+      i++;
+    } /* while */
 
   root = (ay_root_object*)(ay_root->refine);
   riopt = root->riopt;
@@ -1884,7 +1896,7 @@ ay_wrib_cb(struct Togl *togl, int argc, char *argv[])
 
   ay_wrib_getup(dir, view->up, &addroll);
 
-  ay_status = ay_wrib_scene(file, image, temp, view->from, view->to,
+  ay_status = ay_wrib_scene(file, image, temp, rtf, view->from, view->to,
 			    view->roll+addroll, view->zoom, view->nearp,
 			    view->farp,
 			    width, height, view->type);
@@ -2013,7 +2025,7 @@ ay_wrib_tcmd(ClientData clientData, Tcl_Interp * interp,
 
       ay_wrib_getup(dir, cam->up, &addroll);
 
-      ay_status = ay_wrib_scene(file, image, AY_FALSE,
+      ay_status = ay_wrib_scene(file, image, AY_FALSE, AY_FALSE,
 				cam->from, cam->to, cam->roll+addroll,
 				cam->zoom, cam->nearp, cam->farp,
 				width, height, AY_VTPERSP);

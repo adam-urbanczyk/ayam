@@ -852,7 +852,8 @@ int ay_wrib_object(char *file, ay_object *o);
 
 int ay_wrib_refobject(char *file, ay_object *o);
 
-int ay_wrib_scene(char *file, char *image, int temp, double *from, double *to,
+int ay_wrib_scene(char *file, char *image, int temp, int rtf,
+		  double *from, double *to,
 		  double roll, double zoom, double nearp, double farp,
 		  int width, int height, int type);
 
