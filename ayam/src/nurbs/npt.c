@@ -757,7 +757,7 @@ ay_npt_revertu(ay_nurbpatch_object *np)
 	  memcpy(&(np->controlv[ii]), &(np->controlv[jj]),
 		 stride*sizeof(double));
 	  memcpy(&(np->controlv[jj]), t, stride*sizeof(double));
-	}
+	} /* for */
     } /* for */
 
   ay_status = ay_npt_recreatemp(np);
@@ -856,7 +856,7 @@ ay_npt_revertv(ay_nurbpatch_object *np)
 	  memcpy(&(np->controlv[jj]), t, stride*sizeof(double));
 	  ii += stride;
 	  jj -= stride;
-	}
+	} /* for */
     } /* for */
 
   ay_status = ay_npt_recreatemp(np);
@@ -1079,7 +1079,7 @@ ay_npt_wribtrimcurves(ay_object *o)
 	      curvecount = 0;
 	      nloops++;
 	      ay_object_delete(nc);
-	    }
+	    } /* if */
 	  break;
 	} /* switch */
       trim = trim->next;
@@ -1207,15 +1207,15 @@ ay_npt_wribtrimcurves(ay_object *o)
 			    (m[1]*x + m[5]*y + m[9]*z + m[13]*w2);
 			  w[b] = (RtFloat)w2;
 
-			b++;
-			}
+			  b++;
+			} /* for */
 
 		      /* copy knots */
 		      for(k = 0; k < curve->length + curve->order; k++)
 			{
 			  knot[c] = (RtFloat)curve->knotv[k];
 			  c++;
-			}
+			} /* for */
 		    } /* if */
 
 		  if(nc)
@@ -1265,7 +1265,7 @@ ay_npt_wribtrimcurves(ay_object *o)
 		{
 		  knot[c] = (RtFloat)curve->knotv[k];
 		  c++;
-		}
+		} /* for */
 	      ay_object_delete(nc);
 	    } /* if */
 	  break;
@@ -1440,8 +1440,8 @@ ay_npt_crtcobbsphere(ay_nurbpatch_object **cobbsphere)
   controls[98] = 4.0*(1.0-t);
   controls[99] = 4.0*(3.0-t);
 
-  ay_status = ay_npt_create(5, 5, 5, 5,
-			    AY_KTNURB, AY_KTNURB, controls, NULL, NULL, &new);
+  ay_status = ay_npt_create(5, 5, 5, 5, AY_KTNURB, AY_KTNURB,
+			    controls, NULL, NULL, &new);
 
   if(ay_status)
     {
@@ -1579,7 +1579,7 @@ ay_npt_crtnsphere2tcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *new = NULL;
  char fname[] = "create_cobbsphere";
 
-  for(i=0;i<6;i++)
+  for(i = 0; i < 6; i++)
     {
       if(!(new = calloc(1,sizeof(ay_object))))
 	{
@@ -1684,7 +1684,7 @@ ay_npt_splittocurvestcmd(ClientData clientData, Tcl_Interp *interp,
       knots = dstlen+patch->uorder;
       stride = 4;
 
-      for(i=0; i<patch->height; i++)
+      for(i = 0; i < patch->height; i++)
 	{
 	  new = NULL;
 	  if(!(new = calloc(1, sizeof(ay_object))))
@@ -1712,15 +1712,13 @@ ay_npt_splittocurvestcmd(ClientData clientData, Tcl_Interp *interp,
 	      return TCL_OK;
 	    }
 
-	  for(j=0;j<dstlen;j++)
+	  for(j = 0; j < dstlen; j++)
 	    {
 	      memcpy(&(controlv[j*stride]),
 		     &(patch->controlv[(i+(j*patch->height))*stride]),
 		     (size_t)(stride*sizeof(double)));
 
-
 	      ay_trafo_apply4(&(controlv[j*stride]),m);
-
 	    }
 
 	  ay_status = ay_nct_create(patch->uorder, dstlen, patch->uknot_type,
@@ -1754,7 +1752,7 @@ ay_npt_splittocurvestcmd(ClientData clientData, Tcl_Interp *interp,
       knots = dstlen + patch->vorder;
       stride = 4 * dstlen;
 
-      for(i=0; i<patch->width; i++)
+      for(i = 0; i < patch->width; i++)
 	{
 	  new = NULL;
 	  if(!(new = calloc(1, sizeof(ay_object))))
@@ -1785,7 +1783,7 @@ ay_npt_splittocurvestcmd(ClientData clientData, Tcl_Interp *interp,
 	  memcpy(controlv, &(patch->controlv[i*stride]),
 		 (size_t)(stride*sizeof(double)));
 
-	  for(j=0;j<dstlen;j++)
+	  for(j = 0; j < dstlen; j++)
 	    {
 	      ay_trafo_apply4(&(controlv[j*4]),m);
 	    }
@@ -2305,8 +2303,7 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 		} /* if */
 	    } /* if */
 	} /* if */
-
-    } /* for */
+    } /* for i = 0; i <= sections; i++ */
 
   new->is_rat = ay_npt_israt(new);
 
@@ -3634,11 +3631,11 @@ ay_npt_interpolateu(ay_nurbpatch_object *np, int order)
 	  uk[k] += (AY_V3LEN(v)/d[i]);
 	  ind += stride;
 	  ind2 += stride;
-	}
+	} /* for */
 
       uk[k] /= N;
       uk[k] += uk[k-1];
-    }
+    } /* for */
   uk[K-1] = 1.0;
 
 
@@ -3649,10 +3646,10 @@ ay_npt_interpolateu(ay_nurbpatch_object *np, int order)
       for(k = i; k < (i+pu); k++)
 	{
 	  U[i+pu] += uk[k];
-	}
+	} /* for */
 
       U[i+pu] /= pu;
-    }
+    } /* for */
   for(i = 0; i <= pu; i++)
     U[i] = 0.0;
   for(i = (K/*-pu-1*/); i < (K+pu+1); i++)
@@ -3668,7 +3665,7 @@ ay_npt_interpolateu(ay_nurbpatch_object *np, int order)
 	  if(stride != 4)
 	    Q[k*4+3] = 1.0;
 	  ind += N*stride;
-	}
+	} /* for */
 
       ay_status = ay_nb_GlobalInterpolation4D(K-1, Q, uk, U, pu);
 
@@ -3680,8 +3677,8 @@ ay_npt_interpolateu(ay_nurbpatch_object *np, int order)
 	{
 	  memcpy(&(Pw[ind]), &(Q[k*4]), stride*sizeof(double));
 	  ind += N*stride;
-	}
-    }
+	} /* for */
+    } /* for */
 
   free(np->uknotv);
   np->uknotv = U;
@@ -3765,11 +3762,11 @@ ay_npt_interpolatev(ay_nurbpatch_object *np, int order)
 	  vk[k] += (AY_V3LEN(v)/d[i]);
 	  ind += N*stride;
 	  ind2 += N*stride;
-	}
+	} /* for */
 
       vk[k] /= K;
       vk[k] += vk[k-1];
-    }
+    } /* for */
   vk[N-1] = 1.0;
 
 
@@ -3783,7 +3780,7 @@ ay_npt_interpolatev(ay_nurbpatch_object *np, int order)
 	}
 
       V[i+pv] /= pv;
-    }
+    } /* for */
   for(i = 0; i <= pv; i++)
     V[i] = 0.0;
   for(i = (N/*-pu-1*/); i < (N+pv+1); i++)
@@ -4111,7 +4108,7 @@ ay_npt_skinv(ay_object *curves, int order, int knot_type,
 	  memcpy(&(skc[b]), &(curve->controlv[a]), stride*sizeof(double));
 	  b += K*stride;
 	  a += stride;
-	}
+	} /* for */
       c++;
       o = o->next;
     } /* while */
@@ -6522,8 +6519,7 @@ ay_npt_collapseselp(ay_object *o)
 	    {
 	      if(p->points[i] == selp->point)
 		found = AY_TRUE;
-	    }
-
+	    } /* for */
 	  if(found)
 	    {
 	      *last = p->next;
@@ -6593,7 +6589,6 @@ ay_npt_explodemp(ay_object *o)
 		  found = AY_TRUE;
 		}
 	    } /* for */
-
 	  if(found)
 	    {
 	      *last = p->next;
@@ -6633,26 +6628,26 @@ ay_npt_getbeveltags(ay_object *o, int place,
  ay_tag *tag = NULL;
  int where;
 
- *has_bevel = AY_FALSE;
+  *has_bevel = AY_FALSE;
 
- tag = o->tags;
- while(tag)
-   {
-     if(tag->type == ay_bp_tagtype)
-       {
-	 if(tag->val)
-	   {
-	     sscanf(tag->val, "%d,%d,%lg,%d", &where, type,
-		    radius, sense);
-	     if(where == place)
-	       {
-		 *has_bevel = AY_TRUE;
-		 return AY_OK;
-	       }
-	   } /* if */
-       } /* if */
-     tag = tag->next;
-   } /* while */
+  tag = o->tags;
+  while(tag)
+    {
+      if(tag->type == ay_bp_tagtype)
+	{
+	  if(tag->val)
+	    {
+	      sscanf(tag->val, "%d,%d,%lg,%d", &where, type,
+		     radius, sense);
+	      if(where == place)
+		{
+		  *has_bevel = AY_TRUE;
+		  return AY_OK;
+		}
+	    } /* if */
+	} /* if */
+      tag = tag->next;
+    } /* while */
 
  return ay_status;
 } /* ay_npt_getbeveltags */

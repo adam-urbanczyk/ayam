@@ -95,8 +95,8 @@ proc viewRender { w type } {
 	    $togl wrib -file $tmpfile -temp
 	}
     }
+    # if
 
-    # $tcl_platform(platform) == "windows" ||
     set renderui 0
     if { $type == 1 } {
         if { $ayprefs(QRenderUI) == 1} { set renderui 1 }
@@ -118,11 +118,12 @@ proc viewRender { w type } {
 
 	eval [subst "$command"]
     } else {
-
-	regsub -all {%s} $ayprefs(Render) $tmpfile command
-
+	if { $type == 1 } {
+	    regsub -all {%s} $ayprefs(QRender) $tmpfile command
+	} else {
+	    regsub -all {%s} $ayprefs(Render) $tmpfile command
+	}
 	runRenderer "$command" "$ayprefs(RenderPT)"
-
     }
     # if
 
