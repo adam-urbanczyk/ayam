@@ -38,12 +38,13 @@ proc ms_init { lang } {
 #  return language specific string for GUI element <name>
 proc ms { name } {
     global ayprefs
+    # Do we have a balloon text in the current locale?
     if { ![info exists ms::$ayprefs(Locale)($name)] } {
 	# no, return english string
-	return [eval subst "\$ms::en($name)"]
+	return [subst "Translation missing!\n\$ms::en($name)"]
     } else {
 	# yes, return language specific string
-	return [eval subst "\$ms::$ayprefs(Locale)($name)"]
+	return [subst "\$ms::$ayprefs(Locale)($name)"]
     }
 }
 # ms
@@ -338,7 +339,7 @@ verwendet werden soll."
 
 ms_set de ayprefse_SMFileFormat "Dateiformat der ShadowMaps.\
 \nRenderMan: zfile\nGelato: shadow"
-ms_set de ayprefse_SMFileType "Typ von ShadowMaps.\
+ms_set de ayprefse_SMFileType "Typ der ShadowMaps.\
 \nz: normale ShadowMap (RenderMan, Gelato)\
 \navgz: Woo ShadowMap (nur Gelato!)\
 \nvolz: Volumen ShadowMap (nur Gelato!)"
