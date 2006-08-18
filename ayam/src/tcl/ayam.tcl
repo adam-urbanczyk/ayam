@@ -78,11 +78,14 @@ array set ayprefs {
  ShadowMaps 0
  ExcludeHidden 1
  QRender "rgl -rd 4 %s"
+ QRenderUI 0
+ QRenderPT ""
  Render "rendrib -d 4 -Progress %s"
  RenderUI 1
- QRenderUI 0
  RenderPT "R90000 %d"
- QRenderPT ""
+ FRender "rendrib -Progress %s"
+ FRenderUI 1
+ FRenderPT "R90000 %d"
  SMRender "rendrib -Progress %s"
  SMRenderUI 1
  SMRenderPT "R90000 %d"

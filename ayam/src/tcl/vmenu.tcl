@@ -32,6 +32,9 @@ $m add command -label "Quick Render" -command "viewRender $w 1;\
 $m add command -label "Render" -command "viewRender $w 0;\
 	\$ay(currentView) mc"
 
+$m add command -label "Render To File" -command "viewRender $w 2;\
+	\$ay(currentView) mc"
+
 $m add command -label "Redraw" -command "\
 	global ay;\
 	$w.f3D.togl mc;\
