@@ -76,54 +76,58 @@ proc viewRender { w type } {
 	    # Windows sucks big time!
 	    regsub -all {\\} $tmpfile {/} tmpfile
 	}
-
-	if { $ayprefs(RenderMode) == 0 } {
-	    $togl wrib -file $tmpfile -image ${tmpfile}.tif -temp
+	set imagename ${tmpfile}.tif
+	if { $type < 2 } {
+	    if { $ayprefs(RenderMode) == 0 } {
+		$togl wrib -file $tmpfile -image $imagename -temp
+	    } else {
+		$togl wrib -file $tmpfile -temp
+	    }
 	} else {
-	    $togl wrib -file $tmpfile -temp
+	    $togl wrib -file $tmpfile -image $imagename -temp -rtf
 	}
 
 	lappend ay(tmpfiles) [list $tmpfile]
     } else {
-
 	set ribname [io_getRIBName]
 	set tmpfile [lindex $ribname 0]
 	set imagename [lindex $ribname 1]
-	if { $ayprefs(RenderMode) == 0 } {
-	    $togl wrib -file $tmpfile -image $imagename -temp
+	if { $type < 2 } {
+	    if { $ayprefs(RenderMode) == 0 } {
+		$togl wrib -file $tmpfile -image $imagename -temp
+	    } else {
+		$togl wrib -file $tmpfile -temp
+	    }
 	} else {
-	    $togl wrib -file $tmpfile -temp
+	    $togl wrib -file $tmpfile -image $imagename -temp -rtf
 	}
     }
     # if
 
     set renderui 0
+    if { $type == 0 } {
+        if { $ayprefs(RenderUI) == 1 } { set renderui 1 }
+	regsub -all {%s} $ayprefs(Render) $tmpfile command
+	set pt $ayprefs(RenderPT)
+    }
     if { $type == 1 } {
-        if { $ayprefs(QRenderUI) == 1} { set renderui 1 }
-    } else {
-        if { $ayprefs(RenderUI) == 1} { set renderui 1 }
+        if { $ayprefs(QRenderUI) == 1 } { set renderui 1 }
+	regsub -all {%s} $ayprefs(QRender) $tmpfile command
+	set pt $ayprefs(QRenderPT)
+    }
+    if { $type == 2 } {
+        if { $ayprefs(FRenderUI) == 1 } { set renderui 1 }
+	regsub -all {%s} $ayprefs(FRender) $tmpfile command
+	set pt $ayprefs(FRenderPT)
     }
 
     if { $renderui != 1} {
-	set command "exec "
-
-	if { $type == 1 } {
-	    regsub -all {%s} $ayprefs(QRender) $tmpfile command2
-	} else {
-	    regsub -all {%s} $ayprefs(Render) $tmpfile command2
-	}
-
-	append command $command2
-	append command " &"
-
-	eval [subst "$command"]
+	set command2 "exec "
+	append command2 $command
+	append command2 " &"
+	eval [subst "$command2"]
     } else {
-	if { $type == 1 } {
-	    regsub -all {%s} $ayprefs(QRender) $tmpfile command
-	} else {
-	    regsub -all {%s} $ayprefs(Render) $tmpfile command
-	}
-	runRenderer "$command" "$ayprefs(RenderPT)"
+	runRenderer "$command" "$pt"
     }
     # if
 

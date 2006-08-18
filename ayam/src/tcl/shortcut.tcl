@@ -369,13 +369,13 @@ proc shortcut_view { w } {
     $w.$m entryconfigure 0 -accelerator $ayviewshortcuts(QRender)
     bind $w <[repcont $ayviewshortcuts(Render)]> "$w.$m invoke 1"
     $w.$m entryconfigure 1 -accelerator $ayviewshortcuts(Render)
-    bind $w <[repcont $ayviewshortcuts(Redraw)]> "$w.$m invoke 2"
-    $w.$m entryconfigure 2 -accelerator $ayviewshortcuts(Redraw)
+    bind $w <[repcont $ayviewshortcuts(Redraw)]> "$w.$m invoke 3"
+    $w.$m entryconfigure 3 -accelerator $ayviewshortcuts(Redraw)
 
-    bind $w <[repcont $aymainshortcuts(ExportRIB)]> "$w.$m invoke 3"
-    $w.$m entryconfigure 3 -accelerator $aymainshortcuts(ExportRIB)
+    bind $w <[repcont $aymainshortcuts(ExportRIB)]> "$w.$m invoke 4"
+    $w.$m entryconfigure 4 -accelerator $aymainshortcuts(ExportRIB)
     global AYENABLEPPREV
-    if { $AYENABLEPPREV == 1 } { set tmp 11 } else { set tmp 8 } 
+    if { $AYENABLEPPREV == 1 } { set tmp 12 } else { set tmp 9 } 
     bind $w <[repcont $ayviewshortcuts(Close)]> "$w.$m invoke $tmp"
     $w.$m entryconfigure $tmp -accelerator $ayviewshortcuts(Close)
 

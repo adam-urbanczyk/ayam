@@ -152,6 +152,13 @@ ms_set en ayprefse_RenderUI "Enable user interface for rendering."
 ms_set en ayprefse_RenderPT "A template that helps to pick the progress\
 from the output of the renderer.\n\\\"%d\\\" denotes the position of\
 the progress number in the output."
+ms_set en ayprefse_FRender "Name and parameters of the renderer to use for\
+rendering to a file.\n\\\"%s\\\" will be replaced by the filename\
+of the RIB."
+ms_set en ayprefse_FRenderUI "Enable user interface for rendering to a file."
+ms_set en ayprefse_FRenderPT "A template that helps to pick the progress\
+from the output of the renderer.\n\\\"%d\\\" denotes the position of\
+the progress number in the output."
 ms_set en ayprefse_SMRender "Name and parameters of the renderer to use for\
 shadow maps.\n\\\"%s\\\" will be replaced by the filename\
 of the RIB."
@@ -322,6 +329,14 @@ durch den Dateinamen des RIBs ersetzt."
 ms_set de ayprefse_RenderUI "Soll das Render-Fenster für die Vorschau\
 aktiviert werden?"
 ms_set de ayprefse_RenderPT "Beschreibung der Ausgabe des\
+Rendering-Fortschritts durch den Renderer\
+\n\\\"%d\\\" ist die Position des prozentualen Fortschrittswertes,\
+\nder dann im Rendering-Fenster angezeigt wird."
+ms_set de ayprefse_FRender "Name und Aufrufparameter des Renderers,\
+der zum Rendern in eine Datei verwendet werden soll.\n\\\"%s\\\" wird\
+durch den Dateinamen des RIBs ersetzt."
+ms_set de ayprefse_FRenderUI "Soll das Render-Fenster aktiviert werden?"
+ms_set de ayprefse_FRenderPT "Beschreibung der Ausgabe des\
 Rendering-Fortschritts durch den Renderer\
 \n\\\"%d\\\" ist die Position des prozentualen Fortschrittswertes,\
 \nder dann im Rendering-Fenster angezeigt wird."

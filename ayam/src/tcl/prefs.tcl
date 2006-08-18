@@ -212,16 +212,25 @@ proc prefs_open {} {
     addCheckB $fw ayprefse ExcludeHidden [ms ayprefse_ExcludeHidden]
     addMenuB $fw ayprefse RenderMode [ms ayprefse_RenderMode]\
 	    [list CommandLineArg RiDisplay]
+
     addStringB $fw ayprefse QRender [ms ayprefse_QRender]\
 	    [list "rgl %s" "rgl -rd 10 %s"]
     addCheckB $fw ayprefse QRenderUI [ms ayprefse_QRenderUI]
     addStringB $fw ayprefse QRenderPT [ms ayprefse_QRenderPT]\
 	    [list "R90000 %d" "Done computing %d" "%d"]
+
     addStringB $fw ayprefse Render [ms ayprefse_Render]\
 	    [list "rendrib -d 4 -Progress %s" "rendrib -d 4 %s" "aqsis -fb %s"]
     addCheckB $fw ayprefse RenderUI [ms ayprefse_RenderUI]
     addStringB $fw ayprefse RenderPT [ms ayprefse_RenderPT]\
 	    [list "R90000 %d" "Done computing %d" "%d"]
+
+    addStringB $fw ayprefse FRender [ms ayprefse_FRender]\
+	    [list "rendrib -Progress %s" "rendrib %s" "aqsis %s"]
+    addCheckB $fw ayprefse FRenderUI [ms ayprefse_FRenderUI]
+    addStringB $fw ayprefse FRenderPT [ms ayprefse_FRenderPT]\
+	    [list "R90000 %d" "Done computing %d" "%d"]
+
     addStringB $fw ayprefse SMRender [ms ayprefse_SMRender]\
 	    [list "rendrib -Progress %s" "rendrib %s" "aqsis %s"]
     addCheckB $fw ayprefse SMRenderUI [ms ayprefse_SMRenderUI]
