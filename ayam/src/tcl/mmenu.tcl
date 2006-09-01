@@ -530,11 +530,6 @@ $m add command -label "Help" -command {
 	browser_urlOpen $ayprefs(Docs)
     }
 }
-$m add command -label "Helpblock" -command {
-    
-	global ayprefs
-	browser_urlOpen $ayprefs(Docs)
-}
 
 $m add command -label "Help on object" -command {
     after idle {
