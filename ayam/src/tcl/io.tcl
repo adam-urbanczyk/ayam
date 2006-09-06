@@ -218,7 +218,13 @@ proc io_saveScene { ask selected } {
 
 	# fix window positions
 	viewUPos
-	io_saveMainGeom
+
+	# save main window geometry to tag
+	if { ( $ay(lb) == 0 ) || ( ! $selected ) } {
+	    io_saveMainGeom
+	}
+
+	# save scene to disk
 	global ay_error
 	set ay_error ""
 	saveScene $filename $selected
@@ -1107,8 +1113,10 @@ proc io_saveMainGeom { } {
     if { $ay(lb) == 0 } {
 	$tree selection set $sel
 	treeSelect $sel
+	eval [subst "$tree selection set $sel"]
+	eval [subst "treeSelect $sel"]
     } else {
-	#selOb $sel
+	eval [subst "selOb $sel"]
     }
 
  return;
