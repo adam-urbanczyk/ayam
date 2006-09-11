@@ -64,6 +64,8 @@ ay_ncurve_createcb(int argc, char *argv[], ay_object *o)
       cv[i*4+3] = 1.0;
     }
 
+  ay_nct_settype((ay_nurbcurve_object*)(o->refine));
+
   ((ay_nurbcurve_object*)(o->refine))->createmp = AY_TRUE;
 
   ((ay_nurbcurve_object*)(o->refine))->is_rat = AY_FALSE;
@@ -792,8 +794,7 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     } /* if */
 
   /* close curve? */
-  if(((new_type != AY_CTOPEN) && (new_type != ncurve->type)) ||
-     (o->modified))
+  if((new_type != AY_CTOPEN) && (new_type != ncurve->type))
     {
       /* close it */
       if(o->selp)
@@ -837,13 +838,14 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	} /* if */
     } /* if */
 
-  /* break curve? */
+  /* open curve? */
   if((new_type == AY_CTOPEN) && (ncurve->type != AY_CTOPEN))
     {
+      /* open it */
       ncurve->type = AY_CTOPEN;
-      /* we assume user wants the end cvs to be exploded
-	 we clear all mpoints, user may re-create them easily
-	 pressing apply another time */
+      /* we assume user wants the end cvs to be exploded;
+	 thus, we clear all mpoints, user may re-create them easily
+	 pressing apply another time (should CreateMP be enabled) */
       while(ncurve->mpoints)
 	{
 	  mp = ncurve->mpoints->next;
