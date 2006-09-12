@@ -616,7 +616,8 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_nurbcurve_object *ncurve = NULL;
  ay_mpoint *mp = NULL;
- int new_order, new_length, new_knot_type, new_type, knots_modified = 0;
+ int new_order, new_length, new_knot_type, new_type;
+ int order_modified = AY_FALSE, knots_modified = AY_FALSE;
  double *nknotv = NULL;
  int updateKnots = AY_FALSE, updateMPs = AY_TRUE;
  int knotc, i;
@@ -691,6 +692,7 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     {
       ncurve->order = new_order;
       updateKnots = AY_TRUE;
+      order_modified = AY_TRUE;
       o->modified = AY_TRUE;
     }
 
@@ -709,6 +711,7 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	{
 	  ay_error(AY_EWARN, fname, "Changing order to match length!");
 	  ncurve->order = ncurve->length;
+	  order_modified = AY_TRUE;
 	}
     }
 
@@ -743,7 +746,8 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	} /* for */
 
       if(!(ay_status = ay_knots_check(new_length,new_order,knotc,nknotv)))
-	{/* the knots are ok */
+	{
+	  /* the knots are ok */
 	  free(ncurve->knotv);
 	  ncurve->knotv = nknotv;
 	  /*
@@ -794,7 +798,8 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     } /* if */
 
   /* close curve? */
-  if((new_type != AY_CTOPEN) && (new_type != ncurve->type))
+  if(((new_type != AY_CTOPEN) && (new_type != ncurve->type)) ||
+     order_modified)
     {
       /* close it */
       if(o->selp)
@@ -823,7 +828,7 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 		    ay_error(ay_status, fname, "Error creating new knots!");
 		} /* if */
 	    }
-	  else
+	  if(ncurve->type == AY_CTCLOSED)
 	    {
 	      if(ncurve->knot_type == AY_KTBSPLINE)
 		{
