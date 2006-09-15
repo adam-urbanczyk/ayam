@@ -295,6 +295,8 @@ ay_prop_settrafotcmd(ClientData clientData, Tcl_Interp *interp,
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
+  o->modified = AY_TRUE;
+
   ay_notify_parent();
 
  return TCL_OK;
