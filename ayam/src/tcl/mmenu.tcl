@@ -20,10 +20,17 @@ if { ! $AYWITHAQUA } {
     menu .fu.fMenu.fil.m -tearoff 0
     set m .fu.fMenu.fil.m
 } else {
+
     #frame .fu.fMenu
     #pack .fu.fMenu -side top -fill x
     set mb [menu .fu.menubar -tearoff 0 -type menubar]
     . configure -menu $mb
+
+    # correct application menu (about entry)
+    menu .fu.menubar.apple
+    .fu.menubar add cascade -menu .fu.menubar.apple
+    .fu.menubar.apple add command -label "About Ayam" -command "aboutAyam"
+
     # File
     set m [menu $mb.mfil -tearoff 0]
     $mb add cascade -label "File" -menu $m
