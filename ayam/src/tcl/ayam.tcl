@@ -180,7 +180,7 @@ array set ayprefs {
 {Tired of that "ever-auto-resizing" main window? See Prefs!}
 {Copy a single parameter of a property by doubleclicking
 on its name, then press <Ctrl+Shift+i> (Copy Marked Prop).}
-{All views appear as childs of the Root-object!}
+{All views appear as children of the Root-object!}
 {Have I mentioned the documentation lately?}
 {Drop geometric objects on to materials to connect them.}
 {Drop lights on to views to check where they are lighting to.}
