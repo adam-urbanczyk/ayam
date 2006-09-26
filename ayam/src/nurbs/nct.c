@@ -4159,9 +4159,9 @@ ay_nct_shiftcbstcmd(ClientData clientData, Tcl_Interp *interp,
       Tcl_GetInt(interp, argv[1], &times);
     }
 
-  if(times < 1)
+  if(times == 0)
     {
-      ay_error(AY_ERROR, fname, "Parameter must be higher than 1.");
+      ay_error(AY_ERROR, fname, "Parameter must be different from 0.");
       return TCL_OK;
     }
 
@@ -4181,12 +4181,24 @@ ay_nct_shiftcbstcmd(ClientData clientData, Tcl_Interp *interp,
       else
 	{
 	  curve = (ay_nurbcurve_object*)src->refine;
+
+	  if(times < 1)
+	    {
+	      times = (curve->length-curve->order+1)-abs(times);
+	      if(times <= 1)
+		{
+		  ay_error(AY_ERROR, fname,
+			   "Parameter out of range. Could not shift curve!");
+		  continue;
+		}
+	    }
+
 	  for(i = 0; i < times; i++)
 	    {
 	      ay_status = ay_nct_shiftcbs(curve);
 	      if(ay_status)
 		{
-		  ay_error(ay_status, fname, "Could not shift NCurve!");
+		  ay_error(ay_status, fname, "Could not shift curve!");
 		}
 	    } /* for */
 	  src->modified = AY_TRUE;
