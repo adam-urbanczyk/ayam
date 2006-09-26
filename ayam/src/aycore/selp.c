@@ -145,13 +145,7 @@ ay_selp_applytrafotcmd(ClientData clientData, Tcl_Interp *interp,
 	}
 
       /* create trafo */
-      glPushMatrix();
-       glTranslated((GLdouble)o->movx, (GLdouble)o->movy, (GLdouble)o->movz);
-       ay_quat_torotmatrix(o->quat, m);
-       glMultMatrixd((GLdouble*)m);
-       glScaled((GLdouble)o->scalx, (GLdouble)o->scaly, (GLdouble)o->scalz);
-       glGetDoublev(GL_MODELVIEW_MATRIX, (GLdouble*)m);
-      glPopMatrix();
+      ay_trafo_creatematrix(o, m);
 
       /* transform points */
       p = o->selp;
