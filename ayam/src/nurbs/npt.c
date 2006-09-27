@@ -2179,7 +2179,7 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 	      AY_V3SCAL(A,(1.0/len))
 
 	      rots[i*4+0] = AY_R2D(acos(AY_V3DOT(T0,T1)));
-	      memcpy(&rots[i*4+1], A, 3*sizeof(double));
+	      memcpy(&(rots[i*4+1]), A, 3*sizeof(double));
 
 	      if(fabs(rots[i*4]) > AY_EPSILON)
 		{
@@ -2210,7 +2210,7 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
       /* sweep profile */
       for(j = 0; j < cs->length; j++)
 	{
-	  ay_trafo_apply4(&controlv[i*cs->length*stride+j*stride], mi);
+	  ay_trafo_apply4(&(controlv[i*cs->length*stride+j*stride]), mi);
 	} /* for */
 
 
@@ -2416,7 +2416,7 @@ ay_npt_closedsweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 
   new->vknot_type = cs->knot_type;
   new->uknot_type = AY_KTBSPLINE;
-  new->width = sections+new->uorder;
+  new->width = sections+new->uorder-1;
   new->height = cs->length;
 
   new->glu_sampling_tolerance = cs->glu_sampling_tolerance;
@@ -2426,7 +2426,10 @@ ay_npt_closedsweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
   new->controlv = controlv;
 
   if(!(new->vknotv = calloc(cs->length+cs->order, sizeof(double))))
-    { free(new); free(controlv); ay_status = AY_EOMEM; goto cleanup; }
+    {
+      free(new); free(controlv);
+      ay_status = AY_EOMEM; goto cleanup;
+    }
   if(!(new->uknotv = calloc(sections+4, sizeof(double))))
     {
       free(new->vknotv); free(new); free(controlv);
@@ -2446,19 +2449,13 @@ ay_npt_closedsweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
     }
 
   ay_nb_CurvePoint4D(tr->length-1, tr->order-1, tr->knotv, trcv,
-		     tr->knotv[tr->order-1], p1);
+		     tr->knotv[0], p1);
 
-  if(tr->type == AY_CTOPEN /*|| tr->type == AY_CTCLOSED*/)
-    plen = fabs(tr->knotv[tr->length] - tr->knotv[tr->order-1]);
-  else
-    plen = fabs(tr->knotv[tr->length-1] - tr->knotv[tr->order-1]);
+  plen = fabs(tr->knotv[tr->length] - tr->knotv[tr->order-1]);
 
   if(o3)
     {
-      if(sf->type == AY_CTOPEN /*|| sf->type == AY_CTCLOSED*/)
-	plensf = fabs(sf->knotv[sf->length] - sf->knotv[sf->order-1]);
-      else
-	plensf = fabs(sf->knotv[sf->length-1] - sf->knotv[sf->order-1]);
+      plensf = fabs(sf->knotv[sf->length] - sf->knotv[sf->order-1]);
     }
 
   T0[0] = 1.0;
@@ -2473,8 +2470,8 @@ ay_npt_closedsweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
       ay_status = AY_EOMEM; goto cleanup;
     }
 
-  /* copy cross sections controlv section+1 times and sweep it */
-  for(i = 0; i <= sections; i++)
+  /* copy cross sections controlv section times and sweep it */
+  for(i = 0; i < sections; i++)
     {
       memcpy(&(controlv[i * stride * cs->length]), &(cscv[0]),
 	     cs->length * stride * sizeof(double));
@@ -2518,7 +2515,7 @@ ay_npt_closedsweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 	      AY_V3SCAL(A,(1.0/len))
 
 	      rots[i*4+0] = AY_R2D(acos(AY_V3DOT(T0,T1)));
-	      memcpy(&rots[i*4+1], A, 3*sizeof(double));
+	      memcpy(&(rots[i*4+1]), A, 3*sizeof(double));
 
 	      if(fabs(rots[i*4]) > AY_EPSILON)
 		{
@@ -2543,7 +2540,7 @@ ay_npt_closedsweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
       /* sweep profile */
       for(j = 0; j < cs->length; j++)
 	{
-	  ay_trafo_apply4(&controlv[i*cs->length*stride+j*stride], mi);
+	  ay_trafo_apply4(&(controlv[i*cs->length*stride+j*stride]), mi);
 	} /* for */
 
     } /* for */
