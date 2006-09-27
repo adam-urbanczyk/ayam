@@ -66,6 +66,7 @@ ay_knots_createnp(ay_nurbpatch_object *patch)
       break;
 
     case AY_KTBSPLINE:
+      /*
       j=0;
       start = (int)(floor(uknot_count/2));
       for(i=-start; i<start; i++)
@@ -75,6 +76,11 @@ ay_knots_createnp(ay_nurbpatch_object *patch)
 	}
       if(fmod(uknot_count,2.0) > 0.0)
 	(patch->uknotv)[j] = i/fabs((double)(uknot_count-(uorder-1)));
+      */
+      for(i = 1; i <= uknot_count; i++)
+	{
+	  (patch->uknotv)[i] = (double)i/(uknot_count-1);
+	}
       break;
 
     case AY_KTNURB:
@@ -105,6 +111,7 @@ ay_knots_createnp(ay_nurbpatch_object *patch)
       break;
 
     case AY_KTBSPLINE:
+      /*
       j=0;
       start = (int)(floor(vknot_count/2));
       for(i=-start; i<start; i++)
@@ -114,6 +121,11 @@ ay_knots_createnp(ay_nurbpatch_object *patch)
 	}
       if(fmod(vknot_count,2.0) > 0.0)
 	(patch->vknotv)[j] = i/fabs((double)(vknot_count-(vorder-1)));
+      */
+      for(i = 1; i <= vknot_count; i++)
+	{
+	  (patch->vknotv)[i] = (double)i/(vknot_count-1);
+	}
       break;
 
     case AY_KTNURB:
@@ -175,8 +187,8 @@ ay_knots_createnc(ay_nurbcurve_object *curve)
       break;
 
     case AY_KTBSPLINE:
-      j=0;
       /*
+      j=0;
       start = floor(knot_count/2);
       for(i=-start; i<start; i++)
 	{
@@ -186,10 +198,9 @@ ay_knots_createnc(ay_nurbcurve_object *curve)
       if(fmod(knot_count,2.0) > 0.0)
 	(curve->knotv)[j] = i/fabs((double)(knot_count-(order-1)));
       */
-      for(i = 0; i < knot_count; i++)
+      for(i = 1; i <= knot_count; i++)
 	{
-	  (curve->knotv)[i] = (double)i/knot_count;
-
+	  (curve->knotv)[i] = (double)i/(knot_count-1);
 	}
       break;
 
