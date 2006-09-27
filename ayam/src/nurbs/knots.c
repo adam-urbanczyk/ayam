@@ -267,7 +267,7 @@ ay_knots_check(int length, int order, int knot_count, double *knotv)
 
 
 /* ay_knots_rescaletorange:
- *  rescale knot vector n, knotv to the new range [rmin, rmax] (rmin < rmax)
+ *  rescale knot vector knotv[n] to the new range [rmin, rmax] (rmin < rmax)
  */
 int
 ay_knots_rescaletorange(int n, double *knotv, double rmin, double rmax)
@@ -361,7 +361,9 @@ ay_knots_rescaletomindist(int n, double *knotv, double mindist /*1.0e-04*/)
 
 
 /* ay_knots_unify:
- *
+ *  unify knot vectors Ua[Ualen] and Ub[Ublen] (add to Ua[] all knots
+ *  from Ub[], that are not already in Ua[]), returns result
+ *  in newly allocated Ubar[Ubarlen]
  */
 int
 ay_knots_unify(double *Ua, int Ualen, double *Ub, int Ublen,
@@ -425,7 +427,7 @@ ay_knots_unify(double *Ua, int Ualen, double *Ub, int Ublen,
 
 
 /* ay_knots_merge:
- *
+ *  merge knots from Ubar[Ubarlen] into the knot vector of curve
  */
 int
 ay_knots_merge(ay_nurbcurve_object *curve, double *Ubar, int Ubarlen)
@@ -498,7 +500,8 @@ ay_knots_merge(ay_nurbcurve_object *curve, double *Ubar, int Ubarlen)
 
 
 /* ay_knots_mergesurf:
- *
+ *  merge knots from Ubar[Ubarlen] and Vbar[Vbarlen] into the
+ *  knot vectors of patch
  */
 int
 ay_knots_mergesurf(ay_nurbpatch_object *patch,
@@ -723,7 +726,7 @@ ay_knots_getvminmax(ay_object *o, int order, int knots, double *knotv,
 
 
 /* ay_knots_setuminmax:
- *
+ *  add UMM tag with values from umin, umax to object o
  */
 int
 ay_knots_setuminmax(ay_object *o, double umin, double umax)
@@ -776,7 +779,7 @@ ay_knots_setuminmax(ay_object *o, double umin, double umax)
 
 
 /* ay_knots_setvminmax:
- *
+ *  add VMM tag with values from vmin, vmax to object o
  */
 int
 ay_knots_setvminmax(ay_object *o, double vmin, double vmax)
@@ -829,7 +832,7 @@ ay_knots_setvminmax(ay_object *o, double vmin, double vmax)
 
 
 /* ay_knots_init:
- *
+ *  initialize the knots module
  */
 int
 ay_knots_init(Tcl_Interp *interp)
