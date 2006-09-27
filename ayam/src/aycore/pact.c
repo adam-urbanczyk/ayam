@@ -1244,6 +1244,7 @@ ay_pact_insertptcb(struct Togl *togl, int argc, char *argv[])
 				       objX, objY, objZ);
 	  if(ay_status)
 	    ay_error(ay_status, fname, "Error while inserting point!");
+	  ay_selection->object->modified = AY_TRUE;
 	  break;
 	case AY_IDICURVE:
 	  ay_status = ay_pact_insertic((ay_icurve_object *)
@@ -1253,13 +1254,15 @@ ay_pact_insertptcb(struct Togl *togl, int argc, char *argv[])
 	    ay_error(ay_status, fname, "Error while inserting point!");
 
 	  ay_status = ay_notify_force(ay_selection->object);
-
+	  ay_selection->object->modified = AY_TRUE;
 	  break;
 	default:
 	  break;
 	}
 
        ay_status = ay_notify_parent();
+
+       ay_toglcb_display(togl);
     }
   else
     {
@@ -1503,6 +1506,7 @@ ay_pact_deleteptcb(struct Togl *togl, int argc, char *argv[])
 				       objX, objY, objZ);
 	  if(ay_status)
 	    ay_error(ay_status, fname, "Error while deleting point!");
+	  ay_selection->object->modified = AY_TRUE;
 	  break;
 	case AY_IDICURVE:
 	  ay_status = ay_pact_deleteic((ay_icurve_object *)
@@ -1512,13 +1516,15 @@ ay_pact_deleteptcb(struct Togl *togl, int argc, char *argv[])
 	    ay_error(ay_status, fname, "Error while deleting point!");
 
 	  ay_status = ay_notify_force(ay_selection->object);
-
+	  ay_selection->object->modified = AY_TRUE;
 	  break;
 	default:
 	  break;
 	}
 
        ay_status = ay_notify_parent();
+
+       ay_toglcb_display(togl);
     }
   else
     {
