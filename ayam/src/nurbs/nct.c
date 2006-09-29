@@ -614,7 +614,7 @@ ay_nct_refine(ay_nurbcurve_object *curve, double *newknotv, int newknotvlen)
  int count = 0, i, j;
  char fname[] = "nct_refine";
 
-  if(!curve || !newknotv)
+  if(!curve)
     return AY_ENULL;
 
   knotv = curve->knotv;
