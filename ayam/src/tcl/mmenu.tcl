@@ -289,7 +289,7 @@ $m add separator
 $m add cascade -menu $m.nct -label "NURBCurve"
 menu $m.nct -tearoff 0
 
-$m.nct add command -label "Revert" -command { undo save Revert; revertNC;
+$m.nct add command -label "Revert" -command { undo save Revert; revert;
                                               plb_update; rV }
 $m.nct add command -label "Concat" -command { concatNC; uCR; rV}
 $m.nct add command -label "Split" -command {
