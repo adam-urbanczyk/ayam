@@ -314,9 +314,9 @@ $m.nct add command -label "Shift BSpline" -command {
 runTool ay(shiftcbsp) {"Times:"}\
 	    "undo save ShiftClosedBS; shiftClosedBS %0; rV" }
 $m.nct add command -label "To XY" -command {
-    undo save ToXYNC; toXYNC;}
+    undo save ToXYNC; toXYNC; rV; }
 $m.nct add command -label "Make Compatible" -command {
-    undo save MakeCompNC; makeCompNC;}
+    undo save MakeCompNC; makeCompNC; rV; }
 $m.nct add command -label "Rescale Knots to Range" -command {
     undo save RescaleKnots;
     runTool {ay(rmin) ay(rmax)} {"RangeMin:" "RangeMax:"}\
