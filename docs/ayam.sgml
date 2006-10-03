@@ -5,10 +5,10 @@
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
 
-<date>4. August 2006
+<date>13. Sep 2006
 
 <abstract>
-This is the documentation of Ayam 1.11 - a free 3D modeling environment
+This is the documentation of Ayam 1.11 - a free 3D modelling environment
 for the RenderMan interface.
 
 Please note, that this document is intended to be a reference manual,
@@ -29,7 +29,7 @@ In addition, you can use the provided SGML-source to generate other formats.
 <p>
 <sect1>About Ayam
 <p>
-Ayam is a free 3D modeling environment for the RenderMan Interface,
+Ayam is a free 3D modelling environment for the RenderMan Interface,
 distributed under the BSD licence.
 <p>
 Ayam was formerly known as <tt>"The Mops"</tt>.
@@ -43,7 +43,7 @@ Boxes, Quadrics (Sphere, Disk, Cylinder, Cone, Hyperboloid, Paraboloid
 and Torus), MetaBalls, polygonal meshes, subdivision meshes and more.
 <item>All primitives may be combined with the common
 CSG-operations: Intersection, Difference, and Union.
-<item>NURBS modeling includes extrude, revolve, sweep, birail, skin,
+<item>NURBS modelling includes extrude, revolve, sweep, birail, skin,
 and gordon operations (with caps, holes, and bevels) realized as
 Tool-Objects.
 <item>Wavefront OBJ export and import, Rhino 3DM export and import.
@@ -52,7 +52,7 @@ Tool-Objects.
 parameters may be written by the user and dynamically loaded at runtime.
 <item>Scripting interface: Tcl.
 <item>Script objects.
-<item>Miscellaneous: (automatic) instancing, arbitrary number of modeling
+<item>Miscellaneous: (automatic) instancing, arbitrary number of modelling
 views, object clipboard, independent property clipboard, console,
 n-level undo.
 </itemize>
@@ -124,8 +124,8 @@ This section describes the user interface of Ayam.
 <p>
 The user interface of Ayam is split into three types of toplevel windows:
 a main window, a toolbox and an arbitrary number of view windows.
-The main window displays the object hierarchy and lets you edit
-object properties, the toolbox window allows for easy creation of
+The main window displays the object hierarchy and allows to edit
+object properties. The toolbox window is for easy creation of
 objects and starting of modelling actions and tools. The modelling actions
 are then carried out in view windows, where also the scene is displayed.
 <p>
@@ -721,6 +721,7 @@ also section <ref id="riprocobj" name="RiProc Object">.
 also section <ref id="scriptobj" name="Script Object">.
 
 <item><tt/"Text"/, create a new text object, see
+
 also section <ref id="textobj" name="Text Object">.
 </itemize>
 
@@ -728,9 +729,9 @@ also section <ref id="textobj" name="Text Object">.
 The <tt/"Tools"/ menu:
 <itemize>
 <item><tt/"Create"/, <tt/"NURBCurve"/, and
-<tt/"NURBPatch"/, are sub-menus with various NURBS based modeling
+<tt/"NURBPatch"/, are sub-menus with various NURBS based modelling
 tools, that are explained in depth in section
-<ref id="nmtool" name="NURBS Modeling Tools">.
+<ref id="nmtool" name="NURBS Modelling Tools">.
 
 <item><tt/"PolyMesh"/: sub-menu for polygonal mesh related tools:
 <itemize>
@@ -977,9 +978,9 @@ this feature will not work with frame redirects e.g.
 <tt>"http://ayam.sourceforge.net/docs/"</tt> or a <tt>"file:"</tt>-URL
 as base URL in the <tt/"Docs"/ preference setting instead!
 
-<item><tt/"Show Shortcuts"/, displays some important shortcuts for modeling
+<item><tt/"Show Shortcuts"/, displays some important shortcuts for modelling
 actions, you may leave this window open when doing your first
-steps in modeling with Ayam.
+steps in modelling with Ayam.
 
 <item><tt/"About"/, displays some version, copyright,
 and trademark information.
@@ -1064,7 +1065,7 @@ The <tt/"Type"/ menu entries:
 <item><tt/"Trim"/
 </itemize>
 may be used to change the type of the view, which restrains the scope
-of certain modeling actions. See sections
+of certain modelling actions. See sections
 <ref id="viewobj" name="View Object"> and
 <ref id="vwsc" name="View Window Shortcuts and Actions">
 for more information.
@@ -1104,7 +1105,7 @@ You can also set this image using the view attribute <tt/BGImage/.
 <item><tt/"Draw Grid"/, if this is enabled the grid will be drawn.
 
 <item><tt/"Use Grid"/, if this is enabled the grid will be used to
-constrain modeling actions to grid coordinates.
+constrain modelling actions to grid coordinates.
 
 <item><tt/"Set Gridsize"/, may be used to change the size of the grid
 associated with this view. Another way to change the grid size is
@@ -1177,14 +1178,14 @@ parallel views.
 <item><tt/&lt;R&gt;/ (note the case!) starts rotating the virtual
 camera around the point it is looking to.
 <item>Rotating the view is also possible in any
-modeling mode, when holding down the <tt/&lt;Alt&gt;/-key.
+modelling mode, when holding down the <tt/&lt;Alt&gt;/-key.
 
 <item><tt/&lt;o&gt;/ starts zooming the view. Moving the mouse up
 zooms in and moving the mouse down zooms out.
 
 <item>Since Ayam 1.7 zooming the view into a rectangular region
 defined through a mouse drag is also possible in any
-modeling mode, when holding down the <tt/&lt;Shift&gt;/-key.
+modelling mode, when holding down the <tt/&lt;Shift&gt;/-key.
 </itemize>
 <p>
 You may also move the view by dragging with the rightmost mouse
@@ -1204,7 +1205,7 @@ Using the menu entry <tt/"Align to Parent"/ or
 the shortcut <tt/&lt;Ctrl+a&gt;/ you can change the
 views camera settings so that it is aligned to the
 coordinate system of the currently selected object.
-This is handy for modeling in local coordinate systems
+This is handy for modelling in local coordinate systems
 (e.g. editing the points of a 2D curve defined in the
 XY-plane that has been rotated around the Y-axis).
 See also section <ref id="editlocal" name="Editing in Local Space">.
@@ -1215,7 +1216,7 @@ When the view windows action is <tt/"Pick"/ you can pick (select) objects
 that appear within this view.
 You can invoke this action by pressing <tt/&lt;Shift+p&gt;/
 or make this action the default action using the preference
-setting <tt>"Modeling/DefaultAction"</tt>.
+setting <tt>"Modelling/DefaultAction"</tt>.
 This section describes techniques that you can use for selecting
 one or more objects within a view.
 
@@ -1328,19 +1329,19 @@ name="Hidden Preference Settings">).
 </figure>
 <p>
 The toolbox window displays some buttons that start interactive
-modeling actions or other modeling tools, or create objects.
+modelling actions or other modelling tools, or create objects.
 You can open or close it using the main menu entry
 <tt>"Special/Toggle Toolbox"</tt>.
 <p>
 Note that in contrast to the keyboard shortcuts of the
-view windows the buttons in the toolbox switch to the modeling
+view windows the buttons in the toolbox switch to the modelling
 actions for all available views. For more information about
 the actions see section <ref id="iac" name="Interactive Actions">.
 <p>
 The toolbox window may be configured by the user using the
 hidden preference setting toolBoxList in the ayamrc file.
 Using this setting you may select from certain groups of buttons
-and change the order in which they appear in the tool window.
+and change the order in which they appear in the toolbox window.
 See section <ref id="hidprefs" name="Hidden Preference Settings"> for
 more information.
 <p>
@@ -1352,7 +1353,7 @@ and if the window is too big for the desired layout (and the
 preference setting <tt>"Misc/ToolBoxShrink"</tt>) shrink wrap
 the window to match the size occupied by the buttons.
 Furthermore, using the preference setting <tt>"Misc/ToolBoxTrans"</tt>
-the toolbox windoe can be made transient.
+the toolbox window can be made transient.
 It will then (depending on the window manager or its configuration)
 get a different or no decoration, no icon, and will always be iconified
 when the main window gets iconified.
@@ -1469,8 +1470,8 @@ be executed on startup. The scripts have to be specified with full
 path and filename. If non absolute paths are used they are relative
 to the current directory of Ayam on application startup (which is typically
 the directory where the Ayam executable resides).
-Multiple entries have to be separated
-by a colon (:) on Unix and by a semicolon (;) on Win32.
+Multiple entries have to be separated by a colon (:) on Unix and by
+a semicolon (;) on Win32.
 
 <item><tt/"Plugins"/ is a list of directories that contain custom
 objects or plugins. Those directories will e.g. be searched for
@@ -1487,10 +1488,10 @@ HTML format.
 created, e.g. when rendering directly from view windows.
 </itemize>
 
-<sect2>Modeling Preferences<label id="prefmodel">
+<sect2>Modelling Preferences<label id="prefmodel">
 <p>
-The next section of the preferences, <tt/"Modeling"/,
-contains modeling related settings:
+The next section of the preferences, <tt/"Modelling"/,
+contains modelling related settings:
 <itemize>
 <item><tt/"PickEpsilon"/ is used by the single point editing actions
 to determine which point (vertice) of an object has been selected.
@@ -1501,10 +1502,10 @@ case.
 
 <item><tt/"LazyNotify"/ determines whether notification shall
 occur on all mouse movements or just on release of the mouse button,
-for the interactive modeling actions.
+for the interactive modelling actions.
 Notification is the mechanism used to inform objects that rely
-on certain child objects (e.g. the Revolve custom
-object) about changes of their child objects, so that the parent can adapt
+on certain child objects (e.g. the Revolve custom object) about
+changes of their child objects, so that the parent can adapt
 to the child objects automagically.
 
 <item><tt/"CompleteNotify"/ determines when notification of all objects
@@ -1521,7 +1522,7 @@ updated objects.
 
 <item><tt/"EditSnaps"/ determines, whether points
 should be snapped to the grid when a grid is defined and
-in use for the single point modeling actions.
+in use for the single point modelling actions.
 
 <item><tt/"Snap3D"/ controls, whether points that are snapped to
 grid coordinates (in single point editing actions, when grids are active)
@@ -1529,16 +1530,16 @@ should be influenced in all three dimensions, or just the two dimensions
 determined by the type of the view
 
 <item><tt/"FlashPoints"/ controls flashing of editable points in
-the single point modeling actions when they would be modified by
+the single point modelling actions when they would be modified by
 a click and drag action.
 Note that a change of this preference option takes effect after the
-current modeling action has been switched off and the single point
+current modelling action has been switched off and the single point
 editing has been activated (again).
 
 <item><tt/"DefaultAction"/ determines the modelling action
 that should be active after a press of the <tt/&lt;Esc&gt;/ key.
 
-<item><tt/"UndoLevels"/ determines the number of modeling steps
+<item><tt/"UndoLevels"/ determines the number of modelling steps
 that should be saved in the undo buffer. Useful values range
 from 2 to 50 (depending on how much memory you like to spend).
 If you set <tt/"UndoLevels"/ to -1, the undo system will be disabled
@@ -1615,7 +1616,7 @@ libribout.a does not create a RIB file at all, but immediately pipes the
 resulting byte stream into rendrib (the BMRT renderer) for rendering.
 The same goes for <tt/"rgl"/.
 Moreover, filenames that start with a pipe symbol <tt/"|"/ will
-cause the program behind the symbol to be started by libribout
+cause the program behind the pipe symbol to be started by libribout
 and the written RIB to be piped into. This works e.g.
 with Photorealistic RenderMan, try it out with <tt/"|render"/.
 In the latter cases of direct rendering, you will probably want to set
@@ -1764,6 +1765,12 @@ time option <tt/AYENABLEPPREV/ has been set.
 This option is not set for the official Ayam binaries.
 </itemize>
 
+Note that you can set many renderer related preferences at once using the
+select renderer tool via the main menu <tt>Special/Select Renderer</tt>
+(see also section <ref id="mmspecial" name="Special Menu">). In fact,
+using <tt>Special/Select Renderer</tt> first, then fine tuning your
+renderer setup using the preferences editor is the suggested way.
+
 <sect2>Miscellaneous Preferences<label id="prefmisc">
 <p>
 The (<tt/"Misc"/) section of the preferences contains the dreaded
@@ -1866,14 +1873,14 @@ Smaller values lead to better quality and more tesselated polygons.
 <tt/"AdaptiveDomainDistance"/.
 </itemize>
 
-<sect>Interactive Actions (Modeling)<label id="iac">
+<sect>Interactive Actions (Modelling)<label id="iac">
 <p>
-Before invoking any modeling action you should select
+Before invoking any modelling action you should select
 one or more objects using the main window or using the pick action!
 <p>
 Every action can be started with a key press (a shortcut) when
-the focus is in a view window or by pressing the
-associated button in the tool window.
+the focus is in a view window or by pressing the associated button
+in the tool window.
 Using a shortcut starts that action in the current view only,
 the other views are not affected. Starting an action from the
 tool window will cause the action to be started in all
@@ -1883,37 +1890,37 @@ To break an action, the <tt/&lt;Esc&gt;/ key may be used.
 <p>
 The default action for all views, which is also in effect after
 use of the <tt/&lt;Esc&gt;/ key, is <tt/"None"/ or <tt/"Pick"/
-(depending on the preference setting <tt>"Modeling/DefaultAction"</tt>).
+(depending on the preference setting <tt>"Modelling/DefaultAction"</tt>).
 See section
 <ref id="objsel" name="Selecting Objects within a View">
 for more information about picking objects.
 <p>
-Note that the modeling actions
+Note that the modelling actions
 are not available in perspective views.
 <p>
 If an action is in effect for a view, the views title will be changed
 appropriately.
 <p>
-A modelling action is performed by clicking into the
-view to mark a point in space or to pick a vertex, then dragging
-the mouse.
+A modelling action is performed by clicking into the view with the
+leftmost mouse button to mark a point in space or to pick a vertex
+and then by dragging the mouse.
 <p>
-You may undo/redo the effects of an action using <tt/&lt;Ctrl+z&gt;/
+You may undo/redo the effects of a modelling action using <tt/&lt;Ctrl+z&gt;/
 and <tt/&lt;Ctrl+y&gt;/ (see section
 <ref id="undos" name="The Undo System"> for more information).
 <p>
-Grids are available to restrict the modeling actions to certain
-points and help in exact modeling.
+Grids are available to restrict the modelling actions to certain
+points and help in exact modelling.
 <p>
 Also note that you may use the middle and rightmost mouse button
-to zoom and move the view while modeling actions are active.
+to zoom and move the view while modelling actions are active.
 <p>
 For actions that modify the camera of a view
 please see section <ref id="vwsc" name="View Window Shortcuts and Actions">.
 
 <sect1>Moving Objects or Selected Points
 <p>
-Using the modeling action <tt/"Move"/ (shortcut: <tt/&lt;m&gt;/)
+Using the modelling action <tt/"Move"/ (shortcut: <tt/&lt;m&gt;/)
 you may move selected objects or the selected (tagged) points
 of the selected objects.
 <p>
@@ -1923,7 +1930,7 @@ for Top-views only, no matter how the view is rotated.
 
 <sect1>Rotating Objects or Selected Points<label id="rotac">
 <p>
-Using the modeling action <tt/"Rotate"/ (shortcut: <tt/&lt;r&gt;/)
+Using the modelling action <tt/"Rotate"/ (shortcut: <tt/&lt;r&gt;/)
 you may rotate objects or the selected (tagged) points
 of the selected objects.
 <p>
@@ -1934,7 +1941,7 @@ Y-axis in Top-views, and the X-axis in Side-views.
 
 <sect1>Rotating Objects or Selected Points around a Point
 <p>
-Using the modeling action <tt/"Rotate about"/ (shortcut: <tt/&lt;a&gt;/)
+Using the modelling action <tt/"Rotate about"/ (shortcut: <tt/&lt;a&gt;/)
 you may rotate objects or the selected (tagged) points
 of the selected objects around a specified point in space.
 The action requires a point to be specified using a single
@@ -1959,23 +1966,23 @@ There are several different actions available to scale
 objects or the selected (tagged) points
 of the selected objects.
 <p>
-The modeling action <tt/"Scale 3D"/ (shortcut: <tt/&lt;S&gt;/, note the
+The modelling action <tt/"Scale 3D"/ (shortcut: <tt/&lt;S&gt;/, note the
 big S!) scales all three axes of the selected objects or
 the selected (tagged) points of the selected objects
 by the same factor.
 <p>
-The modeling action <tt/"Scale 2D"/ (shortcut: <tt/&lt;s&gt;/)
+The modelling action <tt/"Scale 2D"/ (shortcut: <tt/&lt;s&gt;/)
 scales just two axes of the selected objects or
 the selected (tagged) points of the selected objects. Those axes are
 XY in a Front-view, ZY in a Side-view, and XZ in a Top-view.
 <p>
-The modeling actions <tt/"Scale X"/ (shortcut: <tt/&lt;x&gt;/),
+The modelling actions <tt/"Scale X"/ (shortcut: <tt/&lt;x&gt;/),
 <tt/"Scale Y"/ (shortcut: <tt/&lt;y&gt;/), and
 <tt/"Scale Z"/ (shortcut: <tt/&lt;z&gt;/) scale only one axis
 of the selected objects or
 the selected (tagged) points of the selected objects.
 <p>
-The modeling action <tt/"Stretch 2D"/ (shortcut: <tt/&lt;Alt+s&gt;/)
+The modelling action <tt/"Stretch 2D"/ (shortcut: <tt/&lt;Alt+s&gt;/)
 works much like <tt/"Scale 2D"/ but the scale factor for each
 axis may be different. Never start this action by a click
 near one of the axes to be changed, as this will cause
@@ -1985,16 +1992,16 @@ then try it once starting on the X-axis.
 
 <sect1>Selecting Points<label id="selac">
 <p>
-The modeling action <tt/"Select Points"/
+The modelling action <tt/"Select Points"/
 (shortcut: <tt/&lt;t&gt;/; tag points)
 may be applied to a NURBS curve, NURBS patch or objects
 that support single point editing only. Objects draw the
 selectable points using small rectangular handles.
 Selected points will be drawn in dark red.
 <p>
-The selected points may be modified using the modeling actions
+The selected points may be modified using the modelling actions
 Move, Rotate, and Scale as discussed above.
-Selected points always take precedence for those modeling actions.
+Selected points always take precedence for those modelling actions.
 <p>
 After the pick (the selection of a point), the picked point
 will be added to the list of selected points for the selected object.
@@ -2029,7 +2036,7 @@ Objects mark themselves editable by drawing the editable points using
 small rectangular handles if one of the single point editing action is
 activated and the object is selected.
 <itemize>
-<item>The modeling action <tt/"Edit"/ (shortcut: <tt/&lt;e&gt;/)
+<item>The modelling action <tt/"Edit"/ (shortcut: <tt/&lt;e&gt;/)
 works much like the move action, but it moves
 single points instead of objects. In contrast to the move action,
 you need to pick on the handle of the point you want to move.
@@ -2039,7 +2046,7 @@ objects, only the first selected object is considered.
 If a NURBS curve has multiple points, this action modifies all
 points that make up the multiple point.
 
-<item>The modeling action <tt/"Edit Weights"/ (shortcut: <tt/&lt;w&gt;/)
+<item>The modelling action <tt/"Edit Weights"/ (shortcut: <tt/&lt;w&gt;/)
 changes the w coordinate of a single point by dragging the mouse left
 or right. The weights may be reset for all points
 using the shortcut: <tt/&lt;W&gt;/. Furthermore, it is
@@ -2049,7 +2056,7 @@ the first selected object is considered.
 If a NURBS curve has multiple points, this action modifies all
 points that make up the multiple point.
 
-<item>The modeling action <tt/"Direct Point Edit"/ (shortcut:
+<item>The modelling action <tt/"Direct Point Edit"/ (shortcut:
 <tt/&lt;p&gt;/)
 opens a small window where you may change the coordinates of the
 selected point directly by entering numbers.
@@ -2071,7 +2078,7 @@ However, certain actions like deleting objects, will also delete the
 reference to the selected points. In this case you will have to select
 the object and then a point to edit again. Furthermore notice that
 the coordinate values displayed in the direct point editing window
-will not update when the point is modified by another modeling
+will not update when the point is modified by another modelling
 action. Simply click on the point again in a view where the
 direct point editing action is active, to update the coordinate
 values in the direct point editing dialog. This modelling action also
@@ -2094,7 +2101,7 @@ option <tt/"Use Grid"/ turned off.
 
 <sect1>Inserting or Deleting Points<label id="insdelac">
 <p>
-The modeling action <tt/"Insert Point"/ (shortcut: <tt/&lt;i&gt;/)
+The modelling action <tt/"Insert Point"/ (shortcut: <tt/&lt;i&gt;/)
 may be applied to NURBS and interpolating curves (objects of type
 NCurve and ICurve) only.
 A new control point will be inserted in the curve right
@@ -2105,7 +2112,7 @@ points into certain types of NURBS curves without changing
 their shape using knot insertion;
 see the insert knot tool <ref id="insknt" name="The Insert Knot Tool">.)
 <p>
-The modeling action <tt/"Delete Point"/ (shortcut: <tt/&lt;d&gt;/)
+The modelling action <tt/"Delete Point"/ (shortcut: <tt/&lt;d&gt;/)
 may be applied to NURBS and interpolating curves (objects of type
 NCurve and ICurve) only.
 The selected control point will be deleted from the curve.
@@ -2115,9 +2122,9 @@ check and correct the new sequence manually.
 
 <sect1>Miscellaneous Actions<label id="miscac">
 <p>
-This section documents some special modeling actions.
+This section documents some special modelling actions.
 <itemize>
-<item>The modeling action <tt/"FindU"/ (shortcut: <tt/&lt;u&gt;/)
+<item>The modelling action <tt/"FindU"/ (shortcut: <tt/&lt;u&gt;/)
 may be applied to NURBS curves (objects of type NCurve) only.
 This action may be used to get the corresponding parametric
 value u from a point on a curve. Pick a point on the curve
@@ -2128,7 +2135,7 @@ A small cross is drawn at the position of the picked point.
 Remember to exactly pick a point on the curve or nearby, otherwise
 the calculation may fail and no value will be written to the console.
 
-<item>The modeling action <tt/"Split Curve"/ (shortcut <tt/&lt;c&gt;/)
+<item>The modelling action <tt/"Split Curve"/ (shortcut <tt/&lt;c&gt;/)
 may be applied to NURBS curves (objects of type NCurve) only.
 Using this action you may split a NURBS curve into two new curves
 at a point on the curve that may be specified by picking a point
@@ -2293,7 +2300,7 @@ drop the geometric objects onto the material object using Drag-and-Drop
 in the tree view.
 </itemize>
 
-<sect1>Shaders Properties<label id="shd">
+<sect1>Shader Properties<label id="shd">
 <p>
 Shader properties are used to attach shaders of a certain type to objects.
 The name of the property contains the type of the shader, e.g.
@@ -2355,12 +2362,11 @@ change this to
 <p>
 <tt>"matrix a_matrix_parameter"</tt>.
 <p>
-Note that these changes of the shader argument
-definitions probably also require changes of the code that uses those
-arguments.
-Ayam is able to deal with matrices because
-of their fixed size of 16 float values, and because libslcargs is able
-to deliver the default values for a matrix (but not for an array!).
+Note that these changes of the shader argument definitions probably
+also require changes of the shader source code that uses those arguments.
+Ayam is able to deal with matrices because of their fixed size of 16
+float values, and because libslcargs is able to deliver the default
+values for a matrix (but not for an array!).
 <p>
 If Ayam has been compiled without a shader parsing library
 (e.g. without libslcargs), Ayam will parse XML files created
@@ -2379,8 +2385,8 @@ of shaders compiled with different shader compilers, see also section
 
 <sect2>Working with Shaders<label id="workshd">
 <p>
-The <tt/"Default Values."/-button resets all arguments
-of the shader to the default values.
+The <tt/"Default Values."/-button resets all arguments of the shader
+to the default values.
 For that, the compiled shader will be parsed again.
 Therefore, this button is quite handy if you have to deal with
 changing shaders: just edit the shader, recompile it, then back
@@ -2918,7 +2924,7 @@ tesselated geometry.
 <p>
 The Imager and Atmosphere properties let you define shaders for the
 Root object, please refer to section
-<ref id="shd" name="Shaders Properties">
+<ref id="shd" name="Shader Properties">
 for information on how to deal with shader property GUIs.
 <p>
 Imager shaders are executed once for every rendered pixel,
@@ -2945,13 +2951,13 @@ The type of the view determines the Up-vector of that camera.
 If the type is "Top" the Up-vector corresponds to the world
 Z-axis, else the world Y-axis.
 The type of the view, additionally, determines the so called input plane
-of the view. Interactive modeling actions in a view are limited to that
-input plane (unless the view is switched to local modeling; available since
+of the view. Interactive modelling actions in a view are limited to that
+input plane (unless the view is switched to local modelling; available since
 Ayam 1.4; see also section <ref id="editlocal" name="Editing in Local Space">).
 The standard input planes are as following: Front - XY-plane,
 Side - ZY-plane, Top - XZ-plane, Trim - XY-plane.
 <p>
-In perspective views no interactive modeling actions are possible,
+In perspective views no interactive modelling actions are possible,
 but you may position the camera and pick objects.
 <p>
 Views of type <tt/"Trim"/ are very special. They are used to edit
@@ -3033,7 +3039,7 @@ level will be drawn.
 <item><tt/"Grid"/ is the grid size, 0.0 means no grid.
 <item><tt/"DrawGrid"/ toggles drawing of the current grid.
 <item><tt/"UseGrid"/ toggles, whether the current grid should be
-used by the interactive modeling actions.
+used by the interactive modelling actions.
 <item><tt/"Local"/ enables editing in local object space.
 See also section <ref id="editlocal" name ="Editing in Local Space">.
 
@@ -3311,15 +3317,15 @@ default is (1, 0, 0.5).
 
 <sect1>Level Object<label id="levelobj">
 <p>
-Level objects may be
-used to build object hierarchies and perform CSG
+Level objects may be used to build object hierarchies and perform CSG
 operations.
 Note that child objects of a level inherit the levels transformations
 attributes and shaders. Inheritance of e.g. transformations means:
 If you have a NURBS patch in a level that is translated to 10,0,0,
 the origin of the local coordinate system of the NURBS patch
 will be situated at 10,0,0. If you decide to move the patch by a value
-of 5 in X direction, you will finally arrive at 15,0,0.<p>
+of 5 in X direction, you will finally arrive at 15,0,0 in world
+coordinates.<p>
 
 <sect2>LevelAttr Property<label id="lep">
 <p>
@@ -3327,31 +3333,56 @@ Levels do not have many object type specific properties, you may just
 modify the type of the level using the attribute <tt/"Type"/.
 
 Levels of type <tt/"Level"/ just group objects and inherit attributes.
+Ayam does not offer a layer concept, but using levels and the
+hide/show tools, layer functionality may be emulated.
+Organizing the scene and working in levels also increases the speed
+of object tree updates as only the current level and its sub-levels
+are subject to a tree update if the hierarchy changes.
 
 Levels of type <tt/"Union"/, <tt/"Intersection"/, and <tt/"Difference"/
-are used to build CSG hierarchies. Additionally, they
-inherit attributes. Note that Ayam is currently not able to correctly
-display the results of CSG operations, all objects are always drawn
-completely, even though a CSG operation cut parts away.
-Since Ayam 1.8 there is a plugin available, that is able to preview
-the CSG operations, see also section
+are used to build CSG hierarchies. Additionally, they inherit attributes.
+Note that Ayam is currently not able to correctly display the results
+of CSG operations, all objects are always drawn completely, even though
+a CSG operation cut parts away.
+However, since Ayam 1.8 there is a plugin available that is able to
+preview the results of CSG operations, see also section
 <ref id="aycsg" name="CSG preview using the AyCSG plugin">.
+
+The object hierarchy to cut away a part of a box using a sphere
+looks like this:
+<code>
++-Level_of_Type_Difference(Level)
+ | Box
+ \ Sphere
+</code>
+
+In contrast to the RenderMan interface, more than two objects
+may be arguments of a CSG operation:
+<code>
++-Level_of_Type_Difference(Level)
+ | Box
+ | Sphere
+ \ Sphere
+</code>
+In this example, the two spheres would cut away parts of the box.
 
 New solid primitives may be created with levels of type <tt/"Primitive"/.
 Note that Ayam is not able to check, whether your new primitive obeys
-the rule of total closeness.
+the rule of total closeness. Furthermore, it is not necessary to
+enclose normal child objects of CSG levels in primitive levels for
+RIB export. This is done by Ayam automatically where needed.
 
 <sect1>Material Object<label id="materialobj">
 <p>
-Material objects are used to attach RiAttributes and
-shaders to geometric objects.
+Material objects are used to attach RiAttributes and shaders to
+geometric objects.
 
-When geometric objects are dropped onto a material object
-using Drag-and-Drop in the tree view
-they will be connected to this object.
+When geometric objects are dropped onto a material object using
+Drag-and-Drop in the tree view they will be connected to this
+material object.
 
-When geometric objects are connected to a material
-object this material object may not be deleted.
+When geometric objects are connected to a material object this material
+object may not be deleted.
 
 <sect2>RiAttributes Property<label id="riattrs">
 <p>
@@ -3392,7 +3423,7 @@ visibility attributes.
 <p>
 These properties let you define shaders for the
 material object, please refer to section
-<ref id="shd" name="Shaders Properties">
+<ref id="shd" name="Shader Properties">
 for information on how to deal with shader property GUIs.<p>
 Surface shaders may be used to procedurally encode
 lighting models and textures. Displacement shaders
@@ -3697,10 +3728,12 @@ There is an example scene named <tt>"arealight.ay"</tt> distributed with Ayam.
 
 <sect1>NURBCurve Object<label id="ncurveobj">
 <p>
-NURBS curves are used to build more complex smoothly shaped
-objects using operations like extrude, revolve, sweep or skin.
-They can be closed and used to emulate Bezier and
-B-Spline curves easily.<p>
+The NURBCurve object is the most used basic object for NURBS modelling
+in Ayam because NURBS curves are used to build more complex smoothly shaped
+surfaces using operations like extrude, revolve, sweep or skin.
+NURBS curves can be open or closed and used to emulate Bezier and
+B-Spline curves easily. In addition, for easier modelling, they
+support multiple points.<p>
 
 <sect2>Multiple Points<label id="ncurvemp">
 <p>
@@ -3713,25 +3746,24 @@ B-Spline curves easily.<p>
 The NURBS curves of Ayam support so called multiple points.
 A multiple point is made of a number of different control points that have
 the same coordinates.
-Modeling actions will always modify all the control points that
+Modelling actions will always modify all the control points that
 make up a multiple point.
-Multiple points will be drawn with a bigger
-handle than normal points (see image above).
-They may e.g. be used to create closed curves.
-Note that the control points that make up a multiple point
-do not have to be consecutive (in the control point vector of the
-NURBS curve).
+Multiple points will be drawn with a bigger handle than normal points
+(see image above).
+They may e.g. be used to create closed curves. Note that the control
+points that make up a multiple point do not have to be consecutive
+(in the control point vector of the NURBS curve).
 Multiple points may be created using the collapse tool,
 and split up again using the explode tool (see sections
 <ref id="collt" name="The Collapse Tool"> and
 <ref id="explt" name="The Explode Tool"> for more information regarding
 those tools).
 Note that even though you might have exploded some multiple points
-Ayam will re-create them on several occasions like reading
+Ayam will re-create them automatically on several occasions like reading
 of a scene, inserting/deleting points, and applying the NURBCurveAttrib
 property if they still have identical coordinate values.
 In other words, you should immediately edit the control
-points after exploding!
+points (move them apart) after exploding!
 You may also totally inhibit creation of multiple points for a
 NURBS curve using the attribute <tt/"CreateMP"/.
 
@@ -3758,13 +3790,13 @@ If the type is <tt/"Periodic"/, the last p control points of the curve
 will be made identical to the first p where p is the degree of the
 curve (read order-1). This will close the curve with guaranteed continuity.
 Note that for a cubic spline (order 4) you will need atleast 6 control
-points to close it. It is important to know, that the multiple control
+points to make it periodic. It is important to know, that the multiple control
 points alone can not guarantee that the curve is closed if the knot type
-of the curve is Custom; if you really want a closed curve switch to type
+of the curve is Custom; if you really want a closed curve switch to knot type
 B-Spline.
 <p>
 You may want to enable the creation of multiple points using the
-<tt/"CreateMP"/ attribute (see below) for closed curves so that
+<tt/"CreateMP"/ attribute (see below) for closed and periodic curves so that
 single point editing actions modify all multiple control points.
 <item><tt/"Length"/ is the number of control points of the curve.
 <item><tt/"Order"/ is the order of the curve.
@@ -3772,7 +3804,7 @@ single point editing actions modify all multiple control points.
 NURB, Bezier, B-Spline and Custom knot sequences.
 If the knot type is not Custom, the next setting
 <tt/"Knots"/ will be ignored. Instead, knots of type NURB, Bezier or
-B-Spline will be generated.
+B-Spline will be generated automatically.
 <p>
 How do the different knot types affect the curve?
 <p>
@@ -3826,10 +3858,25 @@ applied in the order of the values in the property. The
 sum of the changed values should describe a valid NURBS curve.
 It is perfectly legal to change the length of the curve,
 it's order, and switch to a custom knot vector (be sure to actually
-enter a valid new knot vector) at once.
-Ayam will check your changes and fall back to certain
-default values if e.g. your knot sequence is wrong.
-Check the console for any messages!
+enter a valid new knot vector) at once. Ayam will check your changes
+and fall back to certain default values if e.g. your knot sequence is wrong.
+Check the console for any messages after pressing the <tt/"Apply"/ button!
+<p>
+When the curve type is changed using the NCurveAttrib property
+Ayam may also have to change the position of some control points
+as follows:
+<itemize>
+<item>When the type is changed from open to closed, the last control
+point is moved to be identical to the first one. In addition, if the
+current knot type of the curve is B-Spline, it will be reset to knot type
+NURB.
+<item>When the type is changed from open or closed to periodic, the last
+p control points will be moved to be identical to the first p, where
+p is the degree of the curve (order-1). For a cubic curve (order 4),
+consequently, the last three control points will be moved. In addition,
+if the current knot type of the curve is NURB or Bezier it will be changed
+to B-Spline automatically.
+</itemize>
 
 <sect1>NURBPatch Object<label id="npatchobj">
 <p>
@@ -3940,7 +3987,7 @@ follow these rules!
 <p>
 Warning: Certain OpenGL implementations may be easily crashed
 drawing trimmed NURBS patches with trims that do not follow the
-aforementioned rules! When in doubt or while heavy modeling,
+aforementioned rules! When in doubt or while heavy modelling,
 switch to wireframe drawing and switch off shading temporarily
 and you will be on the safe side.
 <p>
@@ -4018,10 +4065,10 @@ outlines of the patch (OutlinePatch). The default setting
 <sect1>PolyMesh Object<label id="polymeshobj">
 <p>
 The PolyMesh object may be used to include objects that
-have been modeled using the polygonal modeling paradigm
+have been modeled using the polygonal modelling paradigm
 in Ayam scenes.
 <p>
-There are no special modeling actions for this type of object, but
+There are no special modelling actions for this type of object, but
 you may select and modify single points as you can do it with other
 object types, e.g. curves.
 <p>
@@ -4046,6 +4093,9 @@ Note that storing a bunch of triangles each in its own PolyMesh
 object will lead to a real waste of memory. You may use the
 merge tool (main menu <tt>"Tools/PolyMesh/Merge"</tt>) to merge
 many PolyMesh objects into a single PolyMesh object.
+<p>
+Since Ayam 1.11, PolyMesh objects may be converted to SDMesh
+objects.
 
 <sect2>PolyMeshAttr Property<label id="pomattr">
 <p>
@@ -4062,10 +4112,10 @@ else it is 0.
 <sect1>SDMesh Object<label id="sdmeshobj">
 <p>
 The SDMesh object may be used to include objects that
-have been modeled using the subdivision modeling paradigm
+have been modeled using the subdivision modelling paradigm
 in Ayam scenes.
 <p>
-There are no special modeling actions for this type of object, but
+There are no special modelling actions for this type of object, but
 you may select and modify single points as you can do it with other
 object types, e.g. curves.
 <p>
@@ -4088,6 +4138,10 @@ but they may currently not be changed by the user.
 Furthermore, Ayam is currently not able to do the subdivision and
 show the resulting smooth surface. All that is shown in wireframe and
 shaded views is the original polygonal mesh.
+<p>
+Since Ayam 1.11, SDMesh objects may be converted to PolyMesh
+objects. Note however that only the original unrefined control
+polygon will be converted.
 
 <sect2>SDMeshAttr Property<label id="sdmattr">
 <p>
@@ -5236,7 +5290,7 @@ The extraction process is controlled by the following attributes:
 <item><tt/"Side"/ controls, which curve should be extracted.
 Available values are <tt/"U0"/, <tt/"Un"/: extract boundary curve along
 width; <tt/"V0"/, <tt/"Vn"/: extract boundary curve along
-height;  <tt/"U"/, <tt/"V"/ extract curve along width and height
+height; <tt/"U"/, <tt/"V"/ extract curve along width and height
 respectively at specified parametric value (see below). The
 options <tt/"U"/, <tt/"V"/ are implemented since Ayam 1.8.1!
 
@@ -5379,7 +5433,10 @@ certain script object types may impose special constraints.
 <p>
 For security reasons, if scene files containing script objects are
 loaded, Ayam will raise a warning offering to temporarily disable all
-script objects that will be read.
+script objects that will be read. The script objects will be disabled
+using the <tt/"Active"/ script object property and may be enabled
+after inspection of the script code manually or using the main menu
+entry <tt>"Special/Enable Scripts"</tt>.
 <p>
 The script of a script object will be run each time it is modified
 and each time the notification callback of the object is called
@@ -5392,15 +5449,17 @@ Calling commands and procedures that lead to the processing of
 events or that are slow because they manipulate or update the
 GUI of Ayam should be avoided. In particular, the following
 procedures and commands should not be used: uS, uCR, uCL, sL, selOb,
-plb_update, cutOb, copOb, delOb, undo.
+plb_update, cutOb, copOb, delOb, undo!
 <p>
 Since Ayam 1.8.2 script objects may also create their own property
 GUIs for e.g. script parameters. This may be accomplished by adding
 tags of type <tt>"NP"</tt> with the name of the new property as
 value to the script object. The script itself is responsible for data
-management and property GUI creation. Since Ayam 1.9 the parameters
-set via the property GUI may be comfortably saved with scene files by just
-adding the following comment as first line to the script:
+management and property GUI creation.
+<p>
+Since Ayam 1.9 the parameters set via the property GUI may be
+comfortably saved with scene files by just adding the following
+comment as first line to the script:
 <code>
 # Ayam, save array: &lt;arrayname&gt;
 </code>
@@ -5477,11 +5536,17 @@ revert
 </code>
 </itemize>
 
-<item><tt/"Script"/ is the script code. The widget is a standard
-Tcl text widget that allows to directly edit the code. It is
-also possible to edit the code in an external editor and
-copy it to the script object using the clipboard and the
-context menu entry of the text widget <tt/"Paste (Replace)"/.
+<item><tt/"Script"/ is the script code. The corresponding widget
+is a standard Tcl text widget that allows to directly edit the code.
+It is also possible to edit the code in an external editor and
+copy it to the script object using the operating system clipboard
+and the <tt/"Paste (Replace)"/ context menu entry of the text widget.
+If the first line of the script is a comment like
+<code>
+# Ayam, save array: &lt;arrayname&gt;
+</code>
+then the global Tcl array <tt>&lt;arrayname&gt;</tt> will be saved with
+the script object to Ayam scene files.
 </itemize>
 
 <sect1>Custom Objects<label id="customobj">
@@ -5621,7 +5686,7 @@ If you change them, be careful.
 <sect2>Cube<label id="mucp">
 <p>
 <itemize>
-<item><tt/"EdgeX"/, <tt/"EdgeY"/, and <tt/"EdgeZ"/,  let you define the
+<item><tt/"EdgeX"/, <tt/"EdgeY"/, and <tt/"EdgeZ"/, let you define the
 sharpness of the edges of the cube
 </itemize>
 
@@ -5645,9 +5710,9 @@ You should use any tricks (like the curly braces
 in the expr-statement above) to speed up the expression.
 </itemize>
 
-<sect>NURBS Modeling Tools<label id="nmtool">
+<sect>NURBS Modelling Tools<label id="nmtool">
 <p>
-This section describes NURBS curve and surface related modeling
+This section describes NURBS curve and surface related modelling
 tools, which you can find in the <tt/"Tools"/ menu of the main window.
 
 <sect1>The Closed BSpline Tool<label id="cbspt">
@@ -6002,7 +6067,7 @@ and by the specified height value. See also the image above.
 <figure loc="ht">
 <eps file="pics/shiftclsbsp.ps" height="4cm">
 <img src="pics/shiftclsbsp.gif">
-<caption>Closed B-Spline curve (right), shifted version (left)</caption>
+<caption>Closed B-Spline curve (left), shifted version (right)</caption>
 </figure>
 <itemize>
 <item>Arguments: The shift closed B-Spline tool takes a number of
@@ -6017,6 +6082,11 @@ operation. See also the image above.
 
 <sect1>The To XY Tool<label id="toxyt">
 <p>
+<figure loc="ht">
+<eps file="pics/toxy.ps" height="5cm">
+<img src="pics/toxy.gif">
+<caption>To XY Tool, original curve (left), modified curve (right)</caption>
+</figure>
 <itemize>
 <item>Arguments: The To XY tool takes a number of
 NURBS curves from the selection. The NURBS curves should be planar.
@@ -6025,16 +6095,30 @@ so that they are in the XY plane of the respective object space defined by
 the NURBS curve object(s). Additionally, the rotation attributes of
 the NURBS curve object(s) will be changed so that the curve does not
 change its orientation with regard to other objects or the world space.
+See also the image above, where the left curve, planar but not defined
+in the XY plane will be changed, so that it is defined in the XY plane
+(mind the two different object coordinate systems in conjunction with
+the world coordinate system in the middle).
+A reverse operation, apart from undo, would be to apply the current
+transformation attributes to the control points of the curves.
 </itemize>
 
 <sect1>The Make Compatible Tool<label id="makecompt">
 <p>
+<figure loc="ht">
+<eps file="pics/makecomp.ps" height="4cm">
+<img src="pics/makecomp.gif">
+<caption>Make Compatible Tool, original curves (left), compatible curves (right)</caption>
+</figure>
 <itemize>
 <item>Arguments: The Make Compatible tool takes a number of
 NURBS curves from the selection.
 <item>Operation: The curves will be made compatible, so that they
-are of the same order and defined on the same knot vector
-afterwards.
+are of the same order and defined on the same knot vector.
+This tool does not change the geometry of the curves. However,
+since clamping, degree elevation, and knot insertion may be
+used on the curves, their order, knot vectors, and control points
+may be changed.
 </itemize>
 
 <sect1>The Rescale Knots to Range Tool<label id="resckrt">
@@ -6042,18 +6126,17 @@ afterwards.
 <itemize>
 <item>Arguments: The rescale knots to range tool takes a number of
 NURBS curves from the selection and requests a range.
-<item>Operation: The knot vectors of the curves will be rescaled, so that
+<item>Operation: The knot vectors of the curves will be scaled, so that
 their first and last values match the given range. This tool does not
 change the geometry of the curves.
 </itemize>
-
 
 <sect1>The Rescale Knots to Mindist Tool<label id="resckmt">
 <p>
 <itemize>
 <item>Arguments: The rescale knots to mindist tool takes a number of
 NURBS curves from the selection and request a minimum distance value.
-<item>Operation: The knot vectors of the curves will be rescaled, so that
+<item>Operation: The knot vectors of the curves will be scaled, so that
 no two knots have a distance smaller than the given minimum distance.
 This tool does not change the geometry of the curves.
 </itemize>
@@ -6092,8 +6175,8 @@ collapse to a multiple point again!
 <sect1>The Swap UV Tool<label id="swapuvt">
 <p>
 <itemize>
-<item>Arguments: The swap uv tool takes a number of NURBS patches
-or BPatch or PatchMesh objects from the selection.
+<item>Arguments: The swap uv tool takes a number of NURBS patches,
+BPatch, or PatchMesh objects from the selection.
 <item>Operation: The u and v dimension of the selected objects will
 be swapped without changing the shape of the patches.
 </itemize>
@@ -6148,8 +6231,13 @@ the selection.
 that are of equal length or longer than the first selected curve
 will be used to form a new NURBS patch of the following dimensions:
 Width: length of the first selected curve,
-Height: number of used curves. Other parameters (Knot-Type_U, Knots_U
-etc.) are taken from the first curve.
+Height: number of used curves.
+The order in u direction (Order_U) will be equal to the number of used curves
+for numbers of two to four and four for bigger numbers of used curves.
+The knot type in u direction (Knot-Type_U) will always be NURB.
+Other parameters (Order_V, Knot-Type_V, Knots_V) are taken from
+the first curve.
+
 <item>Note: The NURBS curves are not deleted afterwards.
 </itemize>
 
@@ -6190,7 +6278,7 @@ Whenever tesselation method or parameters change the tesselation
 will be recomputed and displayed thus allowing an immediate estimation
 of the tesselation quality.
 <p>
-If the preference option <tt>"Modeling/LazyNotify"</tt> is enabled,
+If the preference option <tt>"Modelling/LazyNotify"</tt> is enabled,
 updates of the tesselation that normally occur while dragging the
 slider(s) will be deferred until the mouse button is released.
 <p>
@@ -6239,8 +6327,8 @@ on startup using the preference setting <tt>"Main/Scripts"</tt>.
 
 Note that most of the listed commands work in background,
 without changing anything to the Ayam GUI and Ayam view windows,
-for execution speed. If you want your changes to become visible
-you have to update the various parts of the GUI explicitly
+for the sake of execution speed. If you want your changes to become
+visible you have to update the various parts of the GUI explicitly
 (see also section <ref id="sciupd" name="Updating the GUI">).<p>
 
 From scripts it may be necessary to check wether an error occured
@@ -6249,7 +6337,17 @@ TCL_OK in any case so checking their return value avails to nothing,
 but they set the global Tcl variable <tt>ay_error</tt> to a value
 higher than 1 if an error occured. You need to set it to zero before
 and check it after the operation in question to see whether the
-operation performed successfully.
+operation performed successfully:
+<code>
+proc myProc { } {
+  set ::ay_error 0
+  copOb
+  if { $::ay_error > 1 } {
+    ayError 2 "myProc" "Error copying object!"
+  }
+}
+</code>
+
 
 <sect1>Global Variables
 <p>
@@ -6319,8 +6417,8 @@ argument giving the name of the new material. Example:
 
 <sect2>Manipulating the Selection<label id="selob">
 <p>
-This command is probably the most important one, because
-a lot of the other commands operate on selected objects only.
+These commands are probably the most important ones, because many other
+scripting interface commands operate on selected objects only:
 <p><label id="scselob">
 selOb - select object(s):
 <itemize>
@@ -6336,6 +6434,32 @@ withOb - work on certain selected object(s):
  <item>Synopsis: <tt/"withOb index command"/
  <item>Description: Use this command to execute command on a
 single object from a multiple selection designated by index.
+</itemize>
+
+<p><label id="scsl">
+sL - select last object:
+<itemize>
+ <item>Synopsis: <tt/"sL"/
+ <item>Description: Select the last object in the current level
+and update the GUI. This command is often called in a sequence
+after creating new objects like this:
+<code>
+# create object
+crtOb NCurve
+# update tree
+uCR
+# select new object
+sL
+</code>
+</itemize>
+
+<p><label id="schsl">
+hSL - hidden select last object:
+<itemize>
+ <item>Synopsis: <tt/"hSL"/
+ <item>Description: Select the last object in the current level
+but do not update the GUI. This command is mainly for use in script
+objects script code.
 </itemize>
 
 <sect2>Manipulating Properties<label id="sciprop">
@@ -6388,7 +6512,7 @@ The data may be transferred back to the selected object using
 the so called set-property callback.
 The names of the array and the callbacks may be inferred from another global
 array that is named like the property itself, e.g. for the tags
-property the following global array is defined:
+property the following global array <tt/"Tags"/ is defined:
 <code>
 array set Tags {
 arr   tagsPropData
@@ -6397,9 +6521,11 @@ gproc getTagsp
 w     fTagsAttr
 }
 </code>
+The entry arr designates the name of the global property data array.
 If sproc or gproc are empty (<tt/""/), a standard callback
 named <tt/"setProp"/ or <tt/"getProp"/ should be used to get
-or set the property values.
+or set the property values. Otherwise sproc and gproc designate
+the set-property and get-property callbacks respectively.
 <p>
 The following global arrays and callbacks to get or set the data
 exist:
@@ -6455,8 +6581,8 @@ which is totally independent from the object clipboard.
 <p><label id="scpclip_copy"><label id="sccopyprop">
 pclip_copy/copyProp - copy a property to the property clipboard
 <itemize>
- <item>Synopsis: <tt/"pclip_copy mode"/
- <item>Description:  Copy the currently selected
+ <item>Synopsis: <tt/"pclip_copy mode"/ or <tt/"copyProp mode"/
+ <item>Description: Copy the currently selected
 property from the currently selected
 object to the property clipboard.
 If mode is 0, omit all marked entries, if mode is 1 copy just
@@ -6468,7 +6594,7 @@ Note that you may call this procedure also using the shortcut
 <p><label id="scpclip_paste"><label id="scpasteprop">
 pclip_paste/pasteProp - paste a property
 <itemize>
- <item>Synopsis: <tt/"pclip_paste"/
+ <item>Synopsis: <tt/"pclip_paste"/ or <tt/"pasteProp"/
  <item>Description: Copy the property from the property clipboard
 to the currently selected object.
 Note that you may call this procedure also using the shortcut
@@ -6477,7 +6603,7 @@ Note that you may call this procedure also using the shortcut
 
 <sect2>Hierarchy Operations<label id="scihier">
 <p>
-These commands manipulate the current level of Ayam.
+These commands manipulate the current level of Ayam:
 <p><label id="scgodown">
 goDown:
 <itemize>
@@ -6502,6 +6628,8 @@ goTop:
 </itemize>
 
 <sect2>Transformations<label id="scitrafo">
+<p>
+These commands transform objects or selected points of objects:
 <p><label id="scmovob">
 movOb - move objects:
 <itemize>
@@ -6585,6 +6713,8 @@ be reset to the default values.
 </itemize>
 
 <sect2>Manipulating Shaders<label id="scishaders">
+<p>
+These commands operate the shader properties:
 <p><label id="scshaderset">
 shaderSet:
 <itemize>
@@ -6601,13 +6731,15 @@ shaderGet:
 <itemize>
  <item>Synopsis: <tt/"shaderGet shadertype varname"/
  <item>Description: Get the shader of type shadertype for the selected
-object, . Type may be one of <tt/"surface"/, <tt/"displacement"/,
+object. Type may be one of <tt/"surface"/, <tt/"displacement"/,
 <tt/"light"/, <tt/"imager"/, <tt/"atmosphere"/, <tt/"exterior"/
 or <tt/"interior"/. The shader will be written to an array
 pointed to by varname.
 </itemize>
 
 <sect2>Manipulating Tags<label id="scitags">
+<p>
+These commands may be used to modify the tags of an object:
 <p><label id="scaddtag">
 addTag:
 <itemize>
@@ -6649,6 +6781,9 @@ and the tag value-strings from the list elements with odd index numbers.
 </itemize>
 
 <sect2>Manipulating NURBS Curves and Surfaces<label id="scinurbs">
+<p>
+These are more specialized commands to change NURBS curve and surface
+properties:
 <p><label id="scclampnc">
 clampNC - clamp NURBS curve:
 <itemize>
@@ -6718,7 +6853,7 @@ This operation does not change the shape of the curve.
 <p><label id="scsplitnc">
 splitNC - split NURBS curve
 <itemize>
- <item>Synopsis: splitNC u
+ <item>Synopsis: <tt/"splitNC u"/
  <item>Description: splits the selected NURBS curve at designated parametric
 value into two curves, creating one new curve and modifying the original
 one.
@@ -6744,7 +6879,6 @@ See also section <ref id="bfct" name="The Build from Curves Tool">.
 
 <sect2>Manipulating Points<label id="scipoints">
 <p>
-
 Use these two commands to read or manipulate single
 points of arbitrary objects.
 Note that the exact arguments needed, depend on the
@@ -6772,8 +6906,9 @@ currently selected object to the coordinates x, y, z, and w.
 
 
 <sect2>Updating the GUI<label id="sciupd">
+<p>
+These commands update various parts of the Ayam user interface:
 <p><label id="scrv">
-
 rV - redraw all views:
 <itemize>
  <item>Synopsis: <tt/"rV"/
@@ -6843,18 +6978,21 @@ necessarily a property of the same type).
 </itemize>
 
 <sect2>Custom Objects<label id="scicust">
+<p>
+This command manages custom objects (plugins):
 <p><label id="scio_lc">
-
 io_lc - load custom:
 <itemize>
  <item>Synopsis: <tt/"io_lc filename"/
- <item>Description: Load the custom object from file filename.
+ <item>Description: Load the custom object (plugin) from file filename.
+Note that it is currently not possible to unload a custom object from
+Ayam.
 </itemize>
 
 <sect2>Applying Commands to a Number of Objects<label id="scifall">
 <p>
 There are two commands that help to apply arbitrary commands
-to a number of objects, forAll and forAllT.
+to a number of objects, forAll and forAllT:
 <p><label id="scforall">
 forAll:
 <itemize>
@@ -6911,8 +7049,10 @@ correctly maintains the current selection.
 </itemize>
 
 <sect2>Scene IO<label id="scio">
+<p>
+These commands help to load scenes from and save them to Ayam scene
+files:
 <p><label id="scnewscene">
-
 newScene:
 <itemize>
  <item>Synopsis: <tt>"newScene"</tt>
@@ -6941,6 +7081,11 @@ saveScene:
  <item>Description: saves the current scene to filename.
 </itemize>
 
+<sect2>RIB Export<label id="scribex">
+<p>
+This command allows to export the current scene to a RenderMan
+Interface Bytestream (RIB):
+
 <p><label id="scwrib">
 wrib - RIB export:
 <itemize>
@@ -6961,8 +7106,10 @@ suitable for rendering (no setup, camera transformation, or lights
 are in it) but for inclusion into other scenes via RiArchive.
 </itemize>
 
-
 <sect2>Reporting Errors<label id="scierr">
+<p>
+This command is for error reporting from scripts:
+
 <p><label id="scayerror">
 ayError:
 <itemize>
@@ -6978,10 +7125,11 @@ Place should describe the procedure where the error occured.
 Detail is the string to be output.
 </itemize>
 
-
 <sect2>Miscellaneous<label id="scimisc">
-<p><label id="scgettype">
+<p>
+Miscellaneous commands:
 
+<p><label id="scgettype">
 getType:
 <itemize>
  <item>Synopsis: <tt>"getType varname"</tt>
@@ -7332,9 +7480,8 @@ arbitrary primitive variables (e.g. varying or vertex), and
 (since Ayam 1.9) procedural objects and delayed read archives.
 <p>
 The RRIB plugin does not support reading of curves, implicit surfaces
-(blobby models) and other
-calls to the RenderMan Interface not that useful for a RIB import like
-e.g. RiMakeTexture.
+(blobby models) and other calls to the RenderMan Interface that are not
+so much useful for a RIB import like e.g. RiMakeTexture.
 Unsupported geometric primitives and other calls to the RenderMan Interface
 are silently ignored.
 <p>
@@ -7445,8 +7592,8 @@ for the t component of the texture coordinates.
 </itemize>
 <p>
 Wavefront OBJ import expects the file to be syntactically correct.
-It is not very good in detecting and reporting errors. If the import
-fails, use third party tools first (e.g. a demo version of Okino
+The plugin is not very good in detecting and reporting errors. If the
+import fails, use third party tools first (e.g. a demo version of Okino
 Graphics PolyTrans(R)), to check whether the Wavefront OBJ file is
 valid at all.
 <p>
@@ -7704,8 +7851,8 @@ Names of level objects will be prepended to the names of their child
 objects. The object hierarchy:
 <code>
 +-Arm(Level)
- |MySphere(Sphere)
- \MyCylinder(Cylinder)
+ | MySphere(Sphere)
+ \ MyCylinder(Cylinder)
 </code>
 for instance, leads to two objects in the Rhino file
 named <tt>"Arm/MySphere"</tt> and <tt>"Arm/MyCylinder"</tt>.
@@ -7715,20 +7862,20 @@ named <tt>"Arm/MySphere"</tt> and <tt>"Arm/MyCylinder"</tt>.
 <p>
 <sect1>The Undo System<label id="undos">
 <p>
-Using the undo system you may correct mistakes you made while modeling.
+Using the undo system you may correct mistakes you made while modelling.
 However, it is currently not possible to undo any changes to the object
 hierarchy, including clipboard and Drag-and-Drop operations.
 If you delete an object, it is gone! If you, accidentally, move
 an object using Drag-and-Drop, undo will not help!
 Only changes to objects are undoable. This includes changes
-made by modeling actions, changes made using property GUIs, but also changes
+made by modelling actions, changes made using property GUIs, but also changes
 to views (type changes or changes to the camera settings associated
 with a view).
 <p>
 The undo system works by storing copies of the different
 states of changed objects in an undo buffer. The storage space occupied by
 the undo buffer may be adjusted using the preferences
-(<tt>Prefs/Modeling/UndoLevels</tt>). Note that a value of -1 for UndoLevels
+(<tt>Prefs/Modelling/UndoLevels</tt>). Note that a value of -1 for UndoLevels
 completely disables the undo system.
 You may step backward through the saved states using
 <tt/&lt;Ctrl+z&gt;/ (undo) but also forward using <tt/&lt;Ctrl+y&gt;/ (redo).
@@ -7764,7 +7911,7 @@ The ayamrc file contains:
 <item>preference settings (including some hidden settings that require
 just occasional tweaking and are not reachable using the GUI preference editor)
 <item>position and size of the main window and the toolbox window
-<item>keyboard shortcuts to menu entries and modeling actions
+<item>keyboard shortcuts to menu entries and modelling actions
 <item>RiOption and RiAttribute databases
 </enum>
 
@@ -7788,6 +7935,14 @@ On Unix, the output of the program <tt/xev/ and the
 manual page for the <tt/bind/ command of Tk provide helpful
 information about which strings may be used to describe
 key presses.
+You can also use the Ayam console for this, just enter:
+<code>
+toplevel .keytest
+bind .keytest <Key> {puts %K}
+</code>
+Now you can activate the new toplevel window and type on your keyboard
+while the Ayam console prints the names of the keys.
+
 For your convenience, the special string <tt/"Ctrl"/ will be replaced by
 <tt/"Control"/ before a shortcut is handed to the <tt/bind/ command.
 
@@ -7978,7 +8133,7 @@ setting (used if no ayamrc file exists).
 <p>
 Since Ayam 1.8.2 an external Tcl script named <tt>"repairAyam.tcl"</tt> is
 provided that may be used to repair the application state of Ayam
-should it be stuck e.g. in an endless loop of Tcl error message.
+should it be stuck e.g. in an endless loop of Tcl error messages.
 <p>
 On Unix systems <tt>"repairAyam"</tt> may be started from any
 shell simply by typing <tt>"./repairAyam.tcl"</tt> or
@@ -8115,7 +8270,7 @@ geometric object).
 <p>
 Parameterisation of the two rendering passes currently includes selection of
 a different renderer and the possibility to reduce rendering resolution and
-shading rate. To further reduce rendering times for Raytracing
+shading rate. To further reduce rendering times for raytracing
 renderers, the size of the region to render may be automatically adapted to
 the elements of the current importance value (including an optimisation
 run that balances renderer startup times and times needed to render
@@ -8264,7 +8419,7 @@ using <tt/"Hide"/ in the <tt/"Tools"/ menu.
 ControlHull display modes.
 <item>If you need to see curves/surfaces, try to increase the
 (GLU) sampling tolerance of the objects (use a value of about 60.0).
-<item>Switch the primary modeling view to draw just the selected
+<item>Switch the primary modelling view to draw just the selected
 object(s) or the current level.
 <item>Iconify views you do not need, they will not be redrawn then.
 <item>Switch off automatic redrawing of slow redrawing (e.g. shaded)
@@ -8329,7 +8484,7 @@ Tony Apodaca and Larry Gritz (Morgan-Kaufmann, 1999)
 <item>The RenderMan Companion: A Programmer's Guide
 to Realistic Computer Graphics by Steve Upstill (Addison-Wesley,
 1989)
-<item>Textures and Modeling: A Procedural Approach by Ebert,
+<item>Textures and Modelling: A Procedural Approach by Ebert,
 Musgrave, Peachey, Perlin, and Worley (Academic Press, 1994)
 </itemize>
 
@@ -8631,7 +8786,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>FillGaps: <ref id="concatncp" name="ConcatNC attribute">
 <item>FilterFunc: <ref id="rio" name="RenderMan interface option">
 <item>FilterWidth: <ref id="rio" name="RenderMan interface option">
-<item>FindU: <ref id="miscac" name="modeling action">
+<item>FindU: <ref id="miscac" name="modelling action">
 <item>FixX11Menu: <ref id="hidprefs" name="hidden preference setting">
 <item>FlashPoints: <ref id="prefmodel" name="preference setting">
 <item>Flatness: <ref id="moattr" name="MetaObj attributes">
@@ -8686,6 +8841,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>HideTmpTags: <ref id="prefmisc" name="preference setting">
 <item>Highlight Material: <ref id="mmtools" name="main menu entry">
 <item>Hole: <ref id="handb" name="using holes">
+<item>hSL: <ref id="schsl" name="scripting interface command">
 <item>Hyperboloid: <ref id="hyperboloidobj" name="object">
 </itemize>
 
@@ -9046,6 +9202,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <ref id="extrncp" name="ExtrNC attribute">
 <item>Skin: <ref id="skinobj" name="object">,
 <ref id="skit" name="Skin tool">
+<item>sL: <ref id="scsl" name="scripting interface command">
 <item>SMChangeShaders: <ref id="prefrib" name="preference setting">
 <item>SMethod: <ref id="prefmisc" name="preference setting">
 <item>SMFileFormat: <ref id="prefrib" name="preference setting">
@@ -9053,14 +9210,14 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>SMethod: <ref id="prefmisc" name="preference setting">
 <item>SMRender, SMRenderUI, SMRenderPT: <ref id="prefrib" name="preference setting">
 <item>SMRes: <ref id="lip" name="light attribute">
-<item>Snap Points to Grid: <ref id="snapac" name="modeling action">
+<item>Snap Points to Grid: <ref id="snapac" name="modelling action">
 <item>Snap3D: <ref id="prefmodel" name="preference setting">
 <item>SParamU, SParamV: <ref id="prefmisc" name="preference setting">
 <item>Special: <ref id="mmspecial" name="special menu">
 <item>Sphere: <ref id="sphereobj" name="object">,
 <ref id="nspt" name="NURBS sphere tool">
 <item>Split: <ref id="sptct" name="split to curves tool">
-<item>Split Curve: <ref id="miscac" name="modeling action">
+<item>Split Curve: <ref id="miscac" name="modelling action">
 <item>splitNC: <ref id="scsplitnc" name="scripting interface command">
 <item>splitNP: <ref id="scsplitnp" name="scripting interface command">
 <item>Spot: <ref id="pdsl" name="light type">
