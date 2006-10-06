@@ -396,7 +396,7 @@ global ay curtypes ay_error
     eval [subst "set arr \$${arrayname}(arr)"]
     global $arr
     set pvarname ${arr}($propname)
-    eval [subst "set vname \$$pvarname"]
+    eval [subst "set vname \{\$$pvarname\}"]
 
  return;
 }
