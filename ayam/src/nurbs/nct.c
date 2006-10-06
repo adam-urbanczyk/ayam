@@ -746,6 +746,19 @@ ay_nct_refine(ay_nurbcurve_object *curve, double *newknotv, int newknotvlen)
       else
 	{
 	  count = newknotvlen;
+
+	  if(!(Ubar = calloc((curve->length + curve->order + count),
+			     sizeof(double))))
+	    {
+	      ay_error(AY_EOMEM, fname, NULL);
+	      return TCL_OK;
+	    }
+	  if(!(Qw = calloc((curve->length + count+2)*4, sizeof(double))))
+	    {
+	      free(Ubar);
+	      ay_error(AY_EOMEM, fname, NULL);
+	      return TCL_OK;
+	    }
 	} /* if */
 
       /* fill Ubar & Qw */
