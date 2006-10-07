@@ -316,6 +316,9 @@ $m add command -image ay_Grid10_img -hidemargin 1 -command "\
     $w.f3D.togl setconf -grid 1.0 -drawg 1 -ugrid 1;\
     $w.f3D.togl render;\
     viewSetGridIcon $w 1.0"
+$m add command -image ay_GridX_img -hidemargin 1 -command "
+    after idle \{$w.$ay(confm) invoke 11\}"
+
 $m add command -image ay_Grid_img -hidemargin 1 -command "\
     $w.f3D.togl setconf -grid 0.0 -drawg 0 -ugrid 0;\
     $w.f3D.togl render;\
@@ -327,7 +330,8 @@ if { $AYWITHAQUA } {
     $m entryconfigure 1 -image {} -label "Grid 0.25"
     $m entryconfigure 2 -image {} -label "Grid 0.5"
     $m entryconfigure 3 -image {} -label "Grid 1.0"
-    $m entryconfigure 4 -image {} -label "No Grid"
+    $m entryconfigure 4 -image {} -label "Set Grid"
+    $m entryconfigure 5 -image {} -label "No Grid"
 }
 
 # Help menu (just for MacOSX/Aqua!)
