@@ -296,7 +296,11 @@ button $f.bok -text "Ok" -pady $ay(pady) -width 5 -command "\
 	global ay;\
 	$view mc;\
 	undo save SetGrid;\
-	$view setconf -grid \$ay(GridSize);\
+        if \{ \$ay(GridSize) != 0.0 \} \{\ 
+	  $view setconf -drawg 1 -ugrid 1 -grid \$ay(GridSize);\
+        \} else \{
+	  $view setconf -grid \$ay(GridSize);\
+        \}
 	$view render;\
 	viewSetGridIcon [winfo toplevel $view] \$ay(GridSize);\
 	update;\
