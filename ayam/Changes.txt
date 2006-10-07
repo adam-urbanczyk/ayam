@@ -1,3 +1,27 @@
+[7. Oct 2006] CVS-Head:
+o Bug Fixes:
+  - extra help menu entry Helpblock (SF 1549831)
+  - RenderGUI feature can not find cat.exe on Win32 (SF 1549833)
+  - File/Save Selected As only writes one object (SF 1553274)
+  - NURBS curves show wrong type after creation (SF 1556881)
+  - NURBS curves knot type not changeable (SF 1556882)
+  - Apply of Transformations property notification error (SF 1560022)
+  - Revolve in B-Spline mode from certain curves fails (SF 1565889)
+  - insert/delete point actions do not redraw and notify (SF 1566337)
+  - refine tool does not work (SF 1568723)
+  - calling revert tool from main menu error (SF 1568725)
+  - getting list based property values with getProperty fails (SF 1572216)
+  - using refineNC with parameters may lead to crash (SF 1572217)
+
+GUI:
+o added set grid entry to view window grid menu
+o when a grid size is set for the first time, the grid will now automatically
+  be activated also
+
+Modelling:
+o shift closed B-Spline tool now accepts negative parameters
+
+
 [10. Aug 2006] Ayam 1.11:
 =========================
 o Bug Fixes:
