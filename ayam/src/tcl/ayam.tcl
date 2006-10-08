@@ -1464,9 +1464,9 @@ proc setChangedIndicator { a1 a2 a3 } {
     global ay
     set s [wm title .]
     set index 0
-    catch [set index [string last "--" $s]]
+    catch {set index [string last "--" $s]}
     if { $index == -1 } {
-	catch [set index [string last "**" $s]]
+	catch {set index [string last "**" $s]}
     }
     if { $index } {
 	set s [string range $s 0 [expr $index - 2]]

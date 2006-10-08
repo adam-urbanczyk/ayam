@@ -1474,10 +1474,10 @@ proc io_exit { } {
     if { ! [io_warnChanged] } {
 
         # remove all temporary files
-        catch [ tmp_clean 1 ]
+        catch { tmp_clean 1 }
 
         if { $ayprefs(AutoSavePrefs) == 1 } {
-            catch [ prefs_save ]
+            catch { prefs_save }
         }
 
         puts "Good Bye!"

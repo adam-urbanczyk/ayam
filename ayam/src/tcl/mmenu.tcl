@@ -49,7 +49,7 @@ $m add command -label "New"\
 	    if { $tcl_platform(platform) == "windows" } {
 		regsub -all {\\} $filename {/} filename
 	    }
-	    catch [replaceScene $filename]
+	    catch {replaceScene $filename}
 	    update
 	}
 	set ay(filename) ""
