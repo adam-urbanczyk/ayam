@@ -730,7 +730,7 @@ bind $tree <ButtonPress-4> "$tree yview scroll -1 pages; break"
 bind $tree <ButtonPress-5> "$tree yview scroll 1 pages; break"
 
 global tcl_platform AYWITHAQUA
-if { ($tcl_platform(platform) == "windows") || $AYWITHAQUA } {
+if { ($tcl_platform(platform) == "windows") } {
     bind $tree <MouseWheel> {
 	global ay
 	if { %D < 0.0 } {
@@ -740,8 +740,23 @@ if { ($tcl_platform(platform) == "windows") || $AYWITHAQUA } {
 	}
 	break
     }
-    #bind
+    # bind
 }
+# if
+
+if { $AYWITHAQUA } {
+    bind $tree <MouseWheel> {
+	global ay
+	if { %D < 0.0 } {
+	    $ay(tree) yview scroll 3 units
+	} else {
+	    $ay(tree) yview scroll -3 units 
+	}
+	break
+    }
+    # bind
+}
+# if
 
 catch {bind $tree <Key-Page_Up> "$tree yview scroll -1 pages; break"}
 catch {bind $tree <Key-Page_Down> "$tree yview scroll 1 pages; break"}

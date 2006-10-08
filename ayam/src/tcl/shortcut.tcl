@@ -1,4 +1,3 @@
-
 # Ayam, a free 3D modeler for the RenderMan interface.
 #
 # Ayam is copyrighted 1998-2005 by Randolf Schultz
@@ -617,7 +616,7 @@ proc shortcut_viewactions { w } {
     }
 
     global tcl_platform AYWITHAQUA
-    if { ($tcl_platform(platform) == "windows") || $AYWITHAQUA } {
+    if { ($tcl_platform(platform) == "windows") } {
 	bind $w.f3D.togl <MouseWheel> {
 	    undo save ZoomView
 	    %W mc
@@ -631,7 +630,23 @@ proc shortcut_viewactions { w } {
 	    %W render
 	}
     }
+    # if
 
+    if { $AYWITHAQUA } {
+	bind $w.f3D.togl <MouseWheel> {
+	    undo save ZoomView
+	    %W mc
+	    if { %D < 0.0 } {
+		%W setconf -dzoom 1.6
+	    } else {
+		%W setconf -dzoom 0.625
+	    }
+	    update
+	    %W reshape
+	    %W render
+	}
+    }
+    # if
 
     bind $w <$ayviewshortcuts(Break)> "actionClear $w.f3D.togl"
     bind $w <$ayviewshortcuts(MoveV)> "actionMoveView $w.f3D.togl"

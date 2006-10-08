@@ -255,15 +255,17 @@ $ay(pca) configure -width $width
 bind . <ButtonPress-4> {
     global ay
     $ay(pca) yview scroll -1 pages
+    break;
 }
 
 bind . <ButtonPress-5> {
     global ay
     $ay(pca) yview scroll 1 pages
+    break;
 }
 
 global tcl_platform AYWITHAQUA
-if { ($tcl_platform(platform) == "windows") || $AYWITHAQUA } {
+if { ($tcl_platform(platform) == "windows") } {
     bind . <MouseWheel> {
 	global ay
 	if { %D < 0.0 } {
@@ -271,6 +273,7 @@ if { ($tcl_platform(platform) == "windows") || $AYWITHAQUA } {
 	} else {
 	    $ay(pca) yview scroll -1 pages 
 	}
+	break;
     }
     # bind
 
@@ -281,7 +284,7 @@ if { ($tcl_platform(platform) == "windows") || $AYWITHAQUA } {
 	    if { %D < 0.0 } {
 		$ay(pca) yview scroll 1 pages
 	    } else {
-		$ay(pca) yview scroll -1 pages 
+		$ay(pca) yview scroll -1 pages
 	    }
 	    break;
 	}
@@ -290,6 +293,36 @@ if { ($tcl_platform(platform) == "windows") || $AYWITHAQUA } {
     # bind
 }
 # if
+
+if { $AYWITHAQUA } {
+    bind . <MouseWheel> {
+	global ay
+	if { %D < 0.0 } {
+	    $ay(pca) yview scroll 3 units
+	} else {
+	    $ay(pca) yview scroll -3 units 
+	}
+	break;
+    }
+    # bind
+
+    bind all <MouseWheel> {
+	if { [focus] != ".fl.con.console" &&\
+		[winfo toplevel [focus]] == "." } {
+	    global ay
+	    if { %D < 0.0 } {
+		$ay(pca) yview scroll 3 units
+	    } else {
+		$ay(pca) yview scroll -3 units
+	    }
+	    break;
+	}
+	# if
+    }
+    # bind
+}
+# if
+
 
 pack $f.ca -in $f -side left -fill both -expand yes
 
