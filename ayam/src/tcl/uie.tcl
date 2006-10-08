@@ -386,9 +386,7 @@ proc addColor { w prop name {def {}}} {
 		-command "updateColor $w $prop $name $f.b1"\
 		-bd $bw -width 3
     } else {
-	set ws ""
-	catch [set ws [tk windowingsystem]]
-	if {$ws == "aqua" } {
+	if { $ay(ws) == "Aqua" } {
 	    label $f.l2 -background $bcolor -text "   "
 	    button $f.b1 -pady 1 -padx 6 -text Set\
 		-command "updateColor $w $prop $name $f.b1"\
@@ -521,8 +519,7 @@ proc addCheck { w prop name } {
 	eval [subst "bindtags $ff.cb \{$ff.cb Checkbutton all\}"]
 	bind $ff.cb <Key-Escape> {resetFocus}
     } else {
-	catch [set ws [tk windowingsystem]]
-	if { $ws == "aqua" } {
+	if { $ay(ws) == "Aqua" } {
 	    # also Aqua gets its "Extrawurst"
 	    set ff [frame $f.fcb -highlightthickness 1]
 	    set cb [checkbutton $ff.cb -variable ${prop}(${name}) -bd $bw]
@@ -553,7 +550,7 @@ proc addCheck { w prop name } {
 	catch {bind $cb <Key-KP_Enter> "$ay(appb) invoke;break"}
 
 	if { $tcl_platform(platform) == "windows" ||
-             $ws == "aqua" } {
+             $ay(ws) == "Aqua" } {
 	    bind $ff <${aymainshortcuts(IApplyMod)}-ButtonRelease-1>\
 		"after idle {\$ay(appb) invoke}"
 	}
@@ -614,9 +611,8 @@ proc addMenu { w prop name elist } {
     if { $tcl_platform(platform) == "windows" } {
 	$f.mb configure -pady 1
     }
-    set ws ""
-    catch [set ws [tk windowingsystem]]
-    if {$ws == "aqua" } {
+    
+    if {$ay(ws) == "Aqua" } {
 	$f.mb configure -pady 2
     }
 
@@ -1019,7 +1015,6 @@ proc addMFile { w prop name } {
 	 update;
          eval balloon_setsplit $f.e \[list \$${prop}($name)\] 15;
         };"
-
 
     if { $AYWITHAQUA } {
 	$f.b configure -padx 6

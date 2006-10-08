@@ -380,7 +380,7 @@ global ay curtypes ay_error
 
     # check presence of wanted property for selected object
     set propindex ""
-    catch [set propindex [lsearch $props $arrayname]]
+    catch {set propindex [lsearch $props $arrayname]}
     if { $propindex == -1 } {
 	ayError 2 "getProperty" "Object of wrong type selected."
 	return;
@@ -465,7 +465,7 @@ global ay curtypes ay_error
 
     # check presence of wanted property for selected object
     set propindex ""
-    catch [set propindex [lsearch $props $arrayname]]
+    catch {set propindex [lsearch $props $arrayname]}
     if { $propindex == -1 } {
 	ayError 2 "getProperty" "Object of wrong type selected."
 	return;

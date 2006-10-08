@@ -54,7 +54,7 @@ proc balloon_set {w help} {
 #
 #
 proc balloon_show {w arg} {
-    global ayprefs
+    global ayprefs ay
 
     if { $ayprefs(showtt) == 0 } { return; }
 
@@ -65,9 +65,7 @@ proc balloon_show {w arg} {
     set top $w.balloon
     catch {destroy $top}
     toplevel $top -bd 1 -bg black
-    set ws ""
-    catch [set ws [tk windowingsystem]]
-    if {[string equal $ws aqua]} {
+    if { $ay(ws) == "Aqua" } {
 	::tk::unsupported::MacWindowStyle style $top help noActivates
     } else {
 	wm overrideredirect $top 1

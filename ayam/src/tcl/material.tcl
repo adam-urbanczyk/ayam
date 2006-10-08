@@ -393,7 +393,7 @@ proc material_highlight { } {
     plb_update
 
     mouseWatch 0 {. .tbw}
-    catch [after cancel $aid]
+    catch {after cancel $aid}
 
  return;
 }

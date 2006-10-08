@@ -33,7 +33,7 @@ proc tmp_clean { all } {
 		set oldcd [pwd]
 		cd [file dirname $i]
 		set files [glob -nocomplain [file tail $i]*]
-		foreach j $files { catch [file delete $j] }
+		foreach j $files { catch {file delete $j} }
 		cd $oldcd
 	    } else {
 		lappend new_tempfiles $i
