@@ -50,16 +50,16 @@ proc viewSetType { w type } {
 	    viewTitle $w Trim ""
 	}
     }
-    #switch
+    # switch
 
     $togl render
     $ay(currentView) mc
     update
-    #actionClear $w
+    # actionClear $w
 
  return;
 }
-#viewSetType
+# viewSetType
 
 
 ##############################
@@ -136,7 +136,7 @@ proc viewRender { w type } {
 
  return;
 }
-#viewRender
+# viewRender
 
 
 ##############################
@@ -163,6 +163,7 @@ proc viewUPos { } {
 	$w.f3D.togl setconf -pos $x $y
 	$ay(currentView) mc
     }
+    # foreach
 
  return;
 }
@@ -200,8 +201,8 @@ proc viewTitle { w type action } {
 	    $w.$m entryconfigure 16 -state disabled
 	    $w.$m entryconfigure 17 -state disabled
 	}
-
     }
+    # if
     if { $action != "" } { set oldaction $action }
     set newname [format "%s - %s - %s" $newvname $oldtype $oldaction]
     wm title $w $newname
@@ -304,7 +305,7 @@ button $f.bok -text "Ok" -pady $ay(pady) -width 5 -command "\
 	$view render;\
 	viewSetGridIcon [winfo toplevel $view] \$ay(GridSize);\
 	update;\
-	catch \[grab release .setGrid\];\
+	catch \{grab release .setGrid\};\
 	focus $view;\
 	destroy .setGrid"
 
@@ -312,7 +313,7 @@ button $f.bok -text "Ok" -pady $ay(pady) -width 5 -command "\
 button $f.bca -text "Cancel" -pady $ay(pady) -width 5 -command "\
 	global ay;\
 	set ay(GridSize) $ay(GridSize);\
-	grab release .setGrid;\
+	catch \{grab release .setGrid\};\
 	focus $view;\
 	destroy $w"
 
@@ -846,7 +847,6 @@ proc viewToggleMMode { w } {
 
 }
 # viewToggleMMode
-
 
 
 ##############################
