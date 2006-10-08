@@ -298,19 +298,19 @@ button $f.bok -text "Ok" -pady $ay(pady) -width 5 -command "\
 	undo save SetGrid;\
         if \{ \$ay(GridSize) != 0.0 \} \{\ 
 	  $view setconf -drawg 1 -ugrid 1 -grid \$ay(GridSize);\
-        \} else \{
+        \} else \{\
 	  $view setconf -grid \$ay(GridSize);\
-        \}
+        \};\
 	$view render;\
 	viewSetGridIcon [winfo toplevel $view] \$ay(GridSize);\
 	update;\
-	grab release .setGrid;\
+	catch \[grab release .setGrid\];\
 	focus $view;\
 	destroy .setGrid"
 
 
 button $f.bca -text "Cancel" -pady $ay(pady) -width 5 -command "\
-	global ay;
+	global ay;\
 	set ay(GridSize) $ay(GridSize);\
 	grab release .setGrid;\
 	focus $view;\
@@ -320,7 +320,10 @@ pack $f.bok $f.bca -in $f -side left -fill x -expand yes
 pack $f -in $w -side bottom -fill x
 
 winCenter $w
-grab $w
+global ay
+if { $ay(ws) != "Aqua" } {
+    grab $w
+}
 focus $w.f1.fGridSize.e
 tkwait window $w
 
