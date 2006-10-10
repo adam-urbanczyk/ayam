@@ -481,7 +481,7 @@ global ay curtypes ay_error
     eval [subst "set arr \$${arrayname}(arr)"]
     global $arr
     set pvarname ${arr}($propname)
-    eval [subst "set $pvarname \$newValue"]
+    eval [subst "set $pvarname \{\$newValue\}"]
 
     # set property data
     set setprocp ""
