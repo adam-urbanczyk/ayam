@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: src/affine
+Disallow: src/MF3D
+Disallow: src/tcl/BWidget-1.2.1
+
