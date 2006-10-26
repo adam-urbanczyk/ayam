@@ -1,4 +1,4 @@
-[7. Oct 2006] CVS-Head:
+[26. Oct 2006] CVS-Head:
 o Bug Fixes:
   - extra help menu entry Helpblock (SF 1549831)
   - RenderGUI feature can not find cat.exe on Win32 (SF 1549833)
@@ -12,14 +12,22 @@ o Bug Fixes:
   - calling revert tool from main menu error (SF 1568725)
   - getting list based property values with getProperty fails (SF 1572216)
   - using refineNC with parameters may lead to crash (SF 1572217)
+  - set gridsize ok button not working properly on Aqua (SF 1573133)
+  - setting list based property values with setProperty fails (SF 1575072)
 
 GUI:
 o added set grid entry to view window grid menu
 o when a grid size is set for the first time, the grid will now automatically
-  be activated also
+  be drawn and activated also
 
 Modelling:
 o shift closed B-Spline tool now accepts negative parameters
+
+Platform Support:
+Apple Mac OS X (Aqua):
+o added proper (application specific) about menu
+o switched to Tcl/Tk 8.4.14 for official binary that allows to build
+  Ayam as universal binary and with support for older Mac OS X versions
 
 
 [10. Aug 2006] Ayam 1.11:
