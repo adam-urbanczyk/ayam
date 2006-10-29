@@ -32,6 +32,11 @@ proc render { args } {
 }
 # render
 
+
+# render_select
+#  open dialog to select a new major RenderMan renderer for Ayam,
+#  then overwrite the appropriate "RIB-Export" preferences
+#  also allow to load and execute a shader parsing plugin
 proc render_select { } {
     global ay ayprefs
 
@@ -94,6 +99,9 @@ proc render_select { } {
 		set ayprefs(RenderPT) "Done computing %d"
 		set ayprefs(SMRender) "rendrib %s"
 		set ayprefs(SMRenderPT) "Done computing %d"
+		set ayprefs(FRender) "rendrib %s"
+		set ayprefs(FRenderPT) "Done computing %d"
+
 		set ayprefs(RenderMode) 0
 
 		if { $ay(ScanShaders) == 1 } {
@@ -110,6 +118,9 @@ proc render_select { } {
 		set ayprefs(RenderPT) "R90000 %d"
 		set ayprefs(SMRender) "rendrib -Progress %s"
 		set ayprefs(SMRenderPT) "R90000 %d"
+		set ayprefs(FRender) "rendrib -Progress %s"
+		set ayprefs(FRenderPT) "R90000 %d"
+
 		set ayprefs(RenderMode) 0
 
 		if { $ay(ScanShaders) == 1 } {
@@ -127,6 +138,9 @@ proc render_select { } {
 		set ayprefs(RenderPT) "R90000%d"
 		set ayprefs(SMRender) "aqsis -Progress %s"
 		set ayprefs(SMRenderPT) "R90000%d"
+		set ayprefs(Render) "aqsis -Progress %s"
+		set ayprefs(RenderPT) "R90000%d"
+
 		set ayprefs(RenderMode) 0
 
 		global AYUSESLXARGS
@@ -147,6 +161,9 @@ proc render_select { } {
 		set ayprefs(RenderPT) "R90000 %d"
 		set ayprefs(SMRender) "air -Progress %s"
 		set ayprefs(SMRenderPT) "R90000 %d"
+		set ayprefs(FRender) "air -Progress %s"
+		set ayprefs(FRenderPT) "R90000 %d"
+
 		set ayprefs(RenderMode) 0
 
 		set splugin "ayslb"
@@ -164,6 +181,9 @@ proc render_select { } {
 		set ayprefs(RenderPT) "%d"
 		set ayprefs(SMRender) "angel %s"
 		set ayprefs(SMRenderPT) "%d"
+		set ayprefs(FRender) "angel %s"
+		set ayprefs(FRenderPT) "%d"
+
 		set ayprefs(RenderMode) 1
 
 		if { $ay(ScanShaders) == 1 } {
@@ -180,6 +200,8 @@ proc render_select { } {
 		set ayprefs(RenderPT) ""
 		set ayprefs(SMRender) "renderdl %s"
 		set ayprefs(SMRenderPT) ""
+		set ayprefs(FRender) "renderdl %s"
+		set ayprefs(FRenderPT) ""
 		set ayprefs(RenderMode) 0
 
 		set splugin "ayslo3d"
@@ -197,6 +219,9 @@ proc render_select { } {
 		set ayprefs(RenderPT) "regexp -- {^.* - (\\\[0-9\\\]+)} string dummy percent"
 		set ayprefs(SMRender) "rndr -progress %s"
 		set ayprefs(SMRenderPT) "regexp -- {^.* - (\\\[0-9\\\]+)} string dummy percent"
+		set ayprefs(FRender) "rndr -progress %s"
+		set ayprefs(FRenderPT) "regexp -- {^.* - (\\\[0-9\\\]+)} string dummy percent"
+
 		set ayprefs(RenderMode) 1
 
 		set splugin "aysdr"
@@ -214,6 +239,9 @@ proc render_select { } {
 		set ayprefs(RenderPT) ""
 		set ayprefs(SMRender) "renderdc %s"
 		set ayprefs(SMRenderPT) ""
+		set ayprefs(FRender) "renderdc %s"
+		set ayprefs(FRenderPT) ""
+
 		set ayprefs(RenderMode) 1
 
 		set splugin "ayso"
@@ -231,6 +259,9 @@ proc render_select { } {
 		set ayprefs(RenderPT) " %d"
 		set ayprefs(SMRender) "render -progress %s"
 		set ayprefs(SMRenderPT) " %d"
+		set ayprefs(FRender) "render -progress %s"
+		set ayprefs(FRenderPT) " %d"
+
 		set ayprefs(RenderMode) 1
 
 		set splugin "ayslo"
@@ -248,6 +279,9 @@ proc render_select { } {
 		set ayprefs(RenderPT) ""
 		set ayprefs(SMRender) " %s"
 		set ayprefs(SMRenderPT) ""
+		set ayprefs(FRender) "gelato %s"
+		set ayprefs(FRenderPT) ""
+
 		set ayprefs(RenderMode) 1
 
 		set splugin "aygso"
@@ -271,7 +305,7 @@ proc render_select { } {
 	    set ayprefs(SMFileType) "z"
 	}
 
-
+	# if preference editor is also open, take precedence
 	if { ($sel > 0) && ($sel < 10) } {
 	    set ayprefse(QRender) $ayprefs(QRender)
 	    set ayprefse(QRenderPT) $ayprefs(QRenderPT)
@@ -279,6 +313,8 @@ proc render_select { } {
 	    set ayprefse(RenderPT) $ayprefs(RenderPT)
 	    set ayprefse(SMRender) $ayprefs(SMRender)
 	    set ayprefse(SMRenderPT) $ayprefs(SMRenderPT)
+	    set ayprefse(FRender) $ayprefs(FRender)
+	    set ayprefse(FRenderPT) $ayprefs(FRenderPT)
 	    set ayprefse(RenderMode) $ayprefs(RenderMode)
 	}
 
