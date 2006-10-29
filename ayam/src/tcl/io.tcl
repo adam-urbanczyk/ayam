@@ -7,7 +7,7 @@
 #
 # See the file License for details.
 
-# io.tcl - scene io helper procs
+# io.tcl - scene io helper procedures
 
 # io_replaceScene:
 # clear scene, then read new scene file
@@ -409,10 +409,10 @@ proc io_lcAuto {  } {
 	foreach o $ay(co) {
 	    if { $o == $ay(autoload) } { return; }
 	}
-	#foreach
+	# foreach
 
     }
-    #foreach
+    # foreach
 
  return;
 }
@@ -445,8 +445,6 @@ proc io_loadCustom { } {
 
     set oldcdir [pwd]
 
-
-
     if { $idir == "" } {
 	set filename [tk_getOpenFile -filetypes $filetypes -parent .\
 		-title "Select Plugin:"]
@@ -462,10 +460,11 @@ proc io_loadCustom { } {
 		set filename [::tk::dialog::file:: open -filetypes $filetypes\
 			-parent . -initialdir $idir -title "Select Plugin:"]
 	    }
+	    # if
 	}
+	# if
     }
-
-
+    # if
 
     if { $filename != "" } {
 	io_lc $filename
@@ -849,7 +848,8 @@ proc io_saveEnv {  } {
 
 
 # io_getRIBName:
-#  derive a RIB file name for export
+#  derive a RIB file name for export and image file name for rendering the RIB
+#
 proc io_getRIBName { } {
     global ay ayprefs
 
@@ -950,6 +950,7 @@ proc io_exportRIBfC { } {
 
 # io_RenderSM:
 #  export shadow map RIB and render all shadow maps
+#
 proc io_RenderSM { all } {
     global env ayprefs ay tcl_platform ay_error
 
@@ -1049,7 +1050,7 @@ proc io_RenderSM { all } {
 
  return;
 }
-#io_RenderSM
+# io_RenderSM
 
 
 # io_exportRIBSO:
@@ -1456,7 +1457,9 @@ proc ::tk::mac::OpenDocument { args } {
 	# if
     }
     # foreach
+
     grab release .fu
+
  return;
 }
 # OpenDocument
@@ -1491,10 +1494,19 @@ proc io_exit { } {
 		exit
 	    }
         }
+	# if
     }
+    # if
+
+ return;
 }
 # io_exit
 
+
+# io_appext:
+#  helper procedure to append extension <extension> to <filename> if
+#  <filename> not already has the proper extension
+#  (case insensitive match!)
 proc io_appext { filename extension } {
     global ayprefs
 
@@ -1510,6 +1522,6 @@ proc io_appext { filename extension } {
 
     }
 
-    return $newfilename
+ return $newfilename
 }
 # io_appext
