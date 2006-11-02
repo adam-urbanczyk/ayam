@@ -24,6 +24,11 @@ if { ! $AYWITHAQUA } {
     set m [menu $mb.mview -tearoff 0]
     $mb add cascade -label "View" -menu $m
     set ay(viewm) menubar.mview
+
+    # correct application menu (about entry)
+    menu $w.menubar.apple
+    $w.menubar add cascade -menu $w.menubar.apple
+    $w.menubar.apple add command -label "About Ayam" -command "aboutAyam"
 }
 
 $m add command -label "Quick Render" -command "viewRender $w 1;\
