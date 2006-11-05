@@ -1,4 +1,4 @@
-[26. Oct 2006] CVS-Head:
+[5. Nov 2006] CVS-Head:
 o Bug Fixes:
   - extra help menu entry Helpblock (SF 1549831)
   - RenderGUI feature can not find cat.exe on Win32 (SF 1549833)
@@ -14,14 +14,21 @@ o Bug Fixes:
   - using refineNC with parameters may lead to crash (SF 1572217)
   - set gridsize ok button not working properly on Aqua (SF 1573133)
   - setting list based property values with setProperty fails (SF 1575072)
+  - wrong error messages of setProperty (SF 1590901)
 
 GUI:
 o added set grid entry to view window grid menu
 o when a grid size is set for the first time, the grid will now automatically
   be drawn and activated also
+o added NURBS curve open/close/make periodic manipulation tools to main menu
+  (previously only available through the property GUI)
 
 Modelling:
 o shift closed B-Spline tool now accepts negative parameters
+
+Renderer Support:
+o added render to file feature: new view menu entry "View/Render To File",
+  new "RIB-Export" preference settings: "FRender", "FRenderUI", and "FRenderPT"
 
 Platform Support:
 Apple Mac OS X (Aqua):
