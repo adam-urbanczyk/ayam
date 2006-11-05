@@ -382,7 +382,7 @@ global ay curtypes ay_error
     set propindex ""
     catch {set propindex [lsearch $props $arrayname]}
     if { $propindex == -1 } {
-	ayError 2 "getProperty" "Object of wrong type selected."
+	ayError 2 "getProperty" "Could not find property: $arrayname."
 	return;
     }
     
@@ -440,7 +440,7 @@ global ay curtypes ay_error
 	set ay_error $oldayerror
     }
     if { $type == "" || $type == ".." } {
-	ayError 2 "getProperty" "Could not get type of object."
+	ayError 2 "setProperty" "Could not get type of object."
 	return;
     }
 
@@ -467,7 +467,7 @@ global ay curtypes ay_error
     set propindex ""
     catch {set propindex [lsearch $props $arrayname]}
     if { $propindex == -1 } {
-	ayError 2 "getProperty" "Object of wrong type selected."
+	ayError 2 "setProperty" "Could not find property: $arrayname."
 	return;
     }
 
