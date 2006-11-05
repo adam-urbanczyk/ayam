@@ -45,3 +45,29 @@ addInfo $w NCurveAttrData IsRat
 addParam $w NCurveAttrData Tolerance
 addMenu $w NCurveAttrData DisplayMode $ay(ncdisplaymodes)
 
+proc ncurve_open {} {
+    forAllT ncurve 0 {
+	getProperty NCurveAttr(Type) oldtype
+	setProperty NCurveAttr(Type) 0
+    }
+ return;
+}
+# ncurve_open
+
+proc ncurve_close {} {
+    forAllT ncurve 0 {
+	getProperty NCurveAttr(Type) oldtype
+	setProperty NCurveAttr(Type) 1
+    }
+ return;
+}
+# ncurve_close
+
+proc ncurve_makeperiodic {} {
+    forAllT ncurve 0 {
+	getProperty NCurveAttr(Type) oldtype
+	setProperty NCurveAttr(Type) 2
+    }
+ return;
+}
+# ncurve_makeperiodic

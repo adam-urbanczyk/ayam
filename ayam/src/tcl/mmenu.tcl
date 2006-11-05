@@ -289,8 +289,19 @@ $m add separator
 $m add cascade -menu $m.nct -label "NURBCurve"
 menu $m.nct -tearoff 0
 
+
+
 $m.nct add command -label "Revert" -command { undo save Revert; revert;
                                               plb_update; rV }
+$m.nct add command -label "Open" -command { undo save Open;
+                                            ncurve_open;
+                                            plb_update; rV }
+$m.nct add command -label "Close" -command { undo save Close;
+                                            ncurve_close;
+                                            plb_update; rV }
+$m.nct add command -label "Make Periodic" -command { undo save "Make Periodic";
+                                            ncurve_makeperiodic;
+                                            plb_update; rV }
 $m.nct add command -label "Concat" -command { concatNC; uCR; rV}
 $m.nct add command -label "Split" -command {
 runTool ay(splitu) {"Split at:"} "undo save Split; splitNC %0; uCR; sL; rV" }
