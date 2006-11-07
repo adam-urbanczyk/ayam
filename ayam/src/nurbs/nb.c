@@ -20,7 +20,7 @@
  * to the original NURBS-Book code from) the NURBS++-Library
  * by Philippe Lavoie.
  *
- * in contrast to the rest of Ayam, the interfaces in this module
+ * In contrast to the rest of Ayam, the interfaces in this module
  * follow the NURBS book more closely (to ease debugging of core
  * NURBS algorithms), which means that:
  * n is curve->length-1 or patch->width-1, m is is patch->height-1;
@@ -776,8 +776,7 @@ ay_nb_DegreeElevateCurve(int stride, int n, int p, double *U, double *Pw,
 
 /*
  * ay_nb_SolveTridiagonal:
- * solve tridiagonal equation system for
- * interpolating C2 cubic splines
+ * solve tridiagonal equation system for interpolating C2 cubic splines
  * n, Q[]: points to interpolate
  * U: knot vector
  * P: controls for the spline, of size n+2!
@@ -810,7 +809,7 @@ ay_nb_SolveTridiagonal(int n, double *Q, double *U, double *P)
       a += 3;
     }
 
-  ay_nb_BasisFuns(4,U[4],3,U, abc);
+  ay_nb_BasisFuns(4, U[4], 3, U, abc);
 
   den = abc[1];
 
@@ -897,7 +896,7 @@ ay_nb_CurveInsertKnot4D(int np, int p, double *UP, double *Pw, double u,
       Qw[i1+1] = Pw[i1+1];
       Qw[i1+2] = Pw[i1+2];
       Qw[i1+3] = Pw[i1+3];
-    }
+    } /* for */
 
   for(i = (k-s); i <= np; i++)
     {
@@ -907,7 +906,7 @@ ay_nb_CurveInsertKnot4D(int np, int p, double *UP, double *Pw, double u,
       Qw[i1+1] = Pw[i2+1];
       Qw[i1+2] = Pw[i2+2];
       Qw[i1+3] = Pw[i2+3];
-    }
+    } /* for */
 
   for(i = 0; i <= (p-s); i++)
     {
@@ -917,7 +916,7 @@ ay_nb_CurveInsertKnot4D(int np, int p, double *UP, double *Pw, double u,
       Rw[i1+1] = Pw[i2+1];
       Rw[i1+2] = Pw[i2+2];
       Rw[i1+3] = Pw[i2+3];
-    }
+    } /* for */
 
   for(j = 1; j <= r; j++)
     {
@@ -932,7 +931,7 @@ ay_nb_CurveInsertKnot4D(int np, int p, double *UP, double *Pw, double u,
 	  Rw[i2+1] = alpha*Rw[i1+1] + (1.0-alpha)*Rw[i2+1];
 	  Rw[i2+2] = alpha*Rw[i1+2] + (1.0-alpha)*Rw[i2+2];
 	  Rw[i2+3] = alpha*Rw[i1+3] + (1.0-alpha)*Rw[i2+3];
-	}
+	} /* for */
 
       i1 = L*4;
       Qw[i1] = Rw[0];
@@ -946,8 +945,7 @@ ay_nb_CurveInsertKnot4D(int np, int p, double *UP, double *Pw, double u,
       Qw[i1+1] = Rw[i2+1];
       Qw[i1+2] = Rw[i2+2];
       Qw[i1+3] = Rw[i2+3];
-
-    }
+    } /* for */
 
   for(i=L+1; i<k-s; i++)
     {
@@ -957,7 +955,7 @@ ay_nb_CurveInsertKnot4D(int np, int p, double *UP, double *Pw, double u,
       Qw[i1+1] = Rw[i2+1];
       Qw[i1+2] = Rw[i2+2];
       Qw[i1+3] = Rw[i2+3];
-    }
+    } /* for */
 
   free(Rw);
 
@@ -997,7 +995,7 @@ ay_nb_CurveInsertKnot3D(int np, int p, double *UP, double *P, double u,
       Q[i1] = P[i1];
       Q[i1+1] = P[i1+1];
       Q[i1+2] = P[i1+2];
-    }
+    } /* for */
 
   for(i=(k-s); i<=np; i++)
     {
@@ -1006,7 +1004,7 @@ ay_nb_CurveInsertKnot3D(int np, int p, double *UP, double *P, double u,
       Q[i1] = P[i2];
       Q[i1+1] = P[i2+1];
       Q[i1+2] = P[i2+2];
-    }
+    } /* for */
 
   for(i=0; i<=(p-s); i++)
     {
@@ -1015,7 +1013,7 @@ ay_nb_CurveInsertKnot3D(int np, int p, double *UP, double *P, double u,
       R[i1] = P[i2];
       R[i1+1] = P[i2+1];
       R[i1+2] = P[i2+2];
-    }
+    } /* for */
 
   for(j=1; j<=r; j++)
     {
@@ -1029,7 +1027,8 @@ ay_nb_CurveInsertKnot3D(int np, int p, double *UP, double *P, double u,
 	  R[i2] = alpha*R[i1] + (1.0-alpha)*R[i2];
 	  R[i2+1] = alpha*R[i1+1] + (1.0-alpha)*R[i2+1];
 	  R[i2+2] = alpha*R[i1+2] + (1.0-alpha)*R[i2+2];
-	}
+	} /* for */
+
       i1 = L*3;
       Q[i1] = R[0];
       Q[i1+1] = R[1];
@@ -1040,7 +1039,7 @@ ay_nb_CurveInsertKnot3D(int np, int p, double *UP, double *P, double u,
       Q[i1] = R[i2];
       Q[i1+1] = R[i2+1];
       Q[i1+2] = R[i2+2];
-    }
+    } /* for */
 
   for(i=L+1; i<k-s; i++)
     {
@@ -1049,7 +1048,7 @@ ay_nb_CurveInsertKnot3D(int np, int p, double *UP, double *P, double u,
       Q[i1] = R[i2];
       Q[i1+1] = R[i2+1];
       Q[i1+2] = R[i2+2];
-    }
+    } /* for */
 
   free(R);
 
@@ -1058,15 +1057,15 @@ ay_nb_CurveInsertKnot3D(int np, int p, double *UP, double *P, double u,
 
 
 /*
- * ay_nb_RemoveKnot: (NURBS++)
+ * ay_nb_CurveRemoveKnot4D: (NURBS++)
  * remove knot r (with multiplicity s) num times from curve
- * (stride, n, p, U, Pw)
+ * (n, p, U, Pw)
  * result: new controls Qw and knots Ubar (allocated outside!)
  * does not check for curve changes!
  */
 int
-ay_nb_RemoveKnot(int stride, int n, int p, double *U, double *Pw,
-		 int r, int s, int num, double *Ubar, double *Qw)
+ay_nb_CurveRemoveKnot4D(int n, int p, double *U, double *Pw,
+			int r, int s, int num, double *Ubar, double *Qw)
 {
  int i, j, k, ii, jj, off, t;
  int m, ord, fout, last, first;
@@ -1082,7 +1081,7 @@ ay_nb_RemoveKnot(int stride, int n, int p, double *U, double *Pw,
   if(num < 1)
     return AY_ERROR;
 
-  if(!(temp = calloc(stride*(2*p+1), sizeof(double))))
+  if(!(temp = calloc(4*(2*p+1), sizeof(double))))
     return AY_EOMEM;
 
   u = U[r];
@@ -1091,10 +1090,10 @@ ay_nb_RemoveKnot(int stride, int n, int p, double *U, double *Pw,
     {
       off = first-1;
       /* temp[0] = Pw[off]; */
-      memcpy(&(temp[0]), &(Pw[off*stride]), stride*sizeof(double));
+      memcpy(&(temp[0]), &(Pw[off*4]), 4*sizeof(double));
       /* temp[last+1-off] = Pw[last+1]; */
-      memcpy(&(temp[(last+1-off)*stride]), &(Pw[(last+1)*stride]),
-	     stride*sizeof(double));
+      memcpy(&(temp[(last+1-off)*4]), &(Pw[(last+1)*4]),
+	     4*sizeof(double));
       i = first;
       j = last;
       ii = 1;
@@ -1105,23 +1104,21 @@ ay_nb_RemoveKnot(int stride, int n, int p, double *U, double *Pw,
 	  alfj = (u - U[j-t]) / (U[j+ord] - U[j-t]);
 
 	  /* temp[ii] = (Pw[i] - (1.0 - alfi) * temp[ii-1]) / alfi; */
-	  ti = ii*stride;
-	  tj = i*stride;
-	  tk = (ii-1)*stride;
+	  ti = ii*4;
+	  tj = i*4;
+	  tk = (ii-1)*4;
 	  temp[ti]   = (Pw[tj]   - (1.0 - alfi) * temp[tk])   / alfi;
 	  temp[ti+1] = (Pw[tj+1] - (1.0 - alfi) * temp[tk+1]) / alfi;
 	  temp[ti+2] = (Pw[tj+2] - (1.0 - alfi) * temp[tk+2]) / alfi;
-	  if(stride == 4)
-	    temp[ti+3] = 1.0;
+	  temp[ti+3] = (Pw[tj+3] - (1.0 - alfi) * temp[tk+3]) / alfi;
 	  /* temp[jj] = (Pw[j] - alfj * temp[jj+1]) / (1.0-alfj); */
-	  ti = jj*stride;
-	  tj = j*stride;
-	  tk = (jj+1)*stride;
+	  ti = jj*4;
+	  tj = j*4;
+	  tk = (jj+1)*4;
 	  temp[ti]   = (Pw[tj]   - alfj * temp[tk])   / (1.0-alfj);
 	  temp[ti+1] = (Pw[tj+1] - alfj * temp[tk+1]) / (1.0-alfj);
 	  temp[ti+2] = (Pw[tj+2] - alfj * temp[tk+2]) / (1.0-alfj);
-	  if(stride == 4)
-	    temp[ti+3] = 1.0;
+	  temp[ti+3] = (Pw[tj+3] - alfj * temp[tk+3]) / (1.0-alfj);
 
 	  i++;
 	  ii++;
@@ -1135,16 +1132,14 @@ ay_nb_RemoveKnot(int stride, int n, int p, double *U, double *Pw,
       while((j-i) > t)
 	{
 	  /* Pw[i] = temp[i-off]; */
-	  memcpy(&(Pw[i*stride]), &(temp[(i-off)*stride]),
-		 stride*sizeof(double));
+	  memcpy(&(Pw[i*4]), &(temp[(i-off)*4]), 4*sizeof(double));
 
 	  /* Pw[j] = temp[j-off]; */
-	  memcpy(&(Pw[j*stride]), &(temp[(j-off)*stride]),
-		 stride*sizeof(double));
+	  memcpy(&(Pw[j*4]), &(temp[(j-off)*4]), 4*sizeof(double));
 
 	  i++;
 	  j--;
-	}
+	} /* while */
 
       first--;
       last++;
@@ -1163,7 +1158,7 @@ ay_nb_RemoveKnot(int stride, int n, int p, double *U, double *Pw,
 
   for(k = 1; k < t; k++)
     {
-      if((k%2) == 1)
+      if((k % 2) == 1)
 	{
 	  i++;
 	}
@@ -1171,23 +1166,23 @@ ay_nb_RemoveKnot(int stride, int n, int p, double *U, double *Pw,
 	{
 	  j--;
 	}
-    }
+    } /* for */
 
   for(k = (i+1); k < (n+1); k++) /* Shift */
     {
       /* Pw[j++] = Pw[k]; */
-      memcpy(&(Pw[j*stride]), &(Pw[k*stride]), stride*sizeof(double));
+      memcpy(&(Pw[j*4]), &(Pw[k*4]), 4*sizeof(double));
       j++;
     }
 
   /* copy results */
   memcpy(Ubar, U, ((n+p+2)-t)*sizeof(double));
-  memcpy(Qw, Pw, ((n+1)-t)*stride*sizeof(double));
+  memcpy(Qw, Pw, ((n+1)-t)*4*sizeof(double));
 
   free(temp);
 
  return AY_OK;
-} /* ay_nb_RemoveKnot */
+} /* ay_nb_CurveRemoveKnot4D */
 
 
 /*
@@ -1739,7 +1734,6 @@ ay_nb_ComputeFirstDer4D(int n, int p, double *U, double *Pw, double u,
   C1[1] /= wder0;
   C1[2] /= wder0;
 
-
   if(nders)
     free(nders);
 
@@ -2247,7 +2241,6 @@ ay_nb_RefineKnotVectCurve(int stride, int n, int p, double *U, double *Pw,
 	      /* Qw[ind-1] = Qw[ind]; */
 	      memcpy(&(Qw[(ind-1)*stride]), &(Qw[ind*stride]),
 		     stride*sizeof(double));
-
 	    }
 	  else
 	    {
@@ -2265,8 +2258,9 @@ ay_nb_RefineKnotVectCurve(int stride, int n, int p, double *U, double *Pw,
 	      Qw[ti+1] = alfa * Qw[ti+1] + (1.0 - alfa) * Qw[tj+1];
 	      Qw[ti+2] = alfa * Qw[ti+2] + (1.0 - alfa) * Qw[tj+2];
 	      if(stride == 4)
-		Qw[ti+3] = 1.0;
-
+		{
+		  Qw[ti+3] = alfa * Qw[ti+3] + (1.0 - alfa) * Qw[tj+3];
+		} /* if */
 	    } /* if */
 	} /* for */
 
