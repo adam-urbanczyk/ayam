@@ -932,6 +932,9 @@ Tcl_AppInit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "refineNC", ay_nct_refinetcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  Tcl_CreateCommand(interp, "coarsenNC", ay_nct_coarsentcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
   Tcl_CreateCommand(interp, "clampNC", ay_nct_clamptcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 

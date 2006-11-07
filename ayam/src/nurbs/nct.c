@@ -4801,3 +4801,78 @@ ay_nct_centertcmd(ClientData clientData, Tcl_Interp *interp,
 
  return TCL_OK;
 } /* ay_nct_centertcmd */
+
+
+/* ay_nct_coarsen:
+ *
+ */
+int
+ay_nct_coarsen(ay_nurbcurve_object *curve)
+{
+ double *newcontrolv = NULL, *newknotv = NULL;
+ int i;
+
+  if(!curve)
+    return AY_FALSE;
+
+  newcontrolv = calloc(curve->length,4*sizeof(double));
+  newknotv = calloc(curve->length+curve->order,sizeof(double));
+
+  ay_nb_CurveRemoveKnot4D(curve->length-1, curve->order-1,
+			  curve->knotv, curve->controlv,
+			  4, 1, 1,
+			  newknotv, newcontrolv);
+
+  curve->length--;
+  curve->controlv = newcontrolv;
+  curve->knotv = newknotv;
+
+ return AY_FALSE;
+} /* ay_nct_coarsen */
+
+
+/* ay_nct_coarsentcmd:
+ *  Tcl interface for NURBS curve coarsen tool
+ */
+int
+ay_nct_coarsentcmd(ClientData clientData, Tcl_Interp *interp,
+		   int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ char fname[] = "coarsenNC";
+ ay_list_object *sel = ay_selection;
+ ay_object *c = NULL;
+
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, fname, NULL);
+      return TCL_OK;
+    }
+
+  while(sel)
+    {
+      c = sel->object;
+      if(c->type != AY_IDNCURVE)
+	{
+	  ay_error(AY_ERROR, fname, "Object is not a NURBCurve!");
+	}
+      else
+	{
+	  ay_status = ay_nct_coarsen((ay_nurbcurve_object*)c->refine);
+	  if(ay_status)
+	    {
+	      ay_error(ay_status, fname,
+		       "Could not coarsen object!");
+	    }
+
+	  c->modified = AY_TRUE;
+	} /* if */
+
+      sel = sel->next;
+    } /* while */
+
+  ay_notify_parent();
+
+ return TCL_OK;
+} /* ay_nct_coarsentcmd */
+

@@ -73,8 +73,8 @@ int ay_nb_GlobalInterpolation4D(int n, double *Q, double *ub, double *Uc,
 int ay_nb_GlobalInterpolation4DD(int n, double *Q, double *ub, double *Uc,
 				 int d, double *D1, double *D2);
 
-int ay_nb_RemoveKnot(int stride, int n, int p, double *U, double *Pw,
-		     int r, int s, int num, double *Ubar, double *Qw);
+int ay_nb_CurveRemoveKnot4D(int n, int p, double *U, double *Pw,
+			    int r, int s, int num, double *Ubar, double *Qw);
 
 void ay_nb_Bin(int maxn, int maxk, double *bin);
 
@@ -305,7 +305,10 @@ int ay_nct_center(int mode, ay_nurbcurve_object *curve);
 
 int ay_nct_centertcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
+int ay_nct_coarsen(ay_nurbcurve_object *curve);
 
+int ay_nct_coarsentcmd(ClientData clientData, Tcl_Interp *interp,
+		       int argc, char *argv[]);
 
 /* npt.c */
 int ay_npt_create(int uorder, int vorder, int width, int height,
