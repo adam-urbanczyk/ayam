@@ -1091,8 +1091,7 @@ proc io_saveMainGeom { } {
 	treeSelect root:0
     } else {
 	set lb $ay(olb)
-
-	set selection [$lb curselection]
+	set sel [$lb curselection]
 	goTop
 	selOb 0
     }
@@ -1117,7 +1116,10 @@ proc io_saveMainGeom { } {
 	eval [subst "$tree selection set $sel"]
 	eval [subst "treeSelect $sel"]
     } else {
-	eval [subst "selOb -lb $sel"]
+	# we can not do this at the moment, level changed...
+	#eval [subst "selOb -lb $sel"]
+	# so instead we do
+	uS
     }
 
  return;
@@ -1137,7 +1139,7 @@ proc io_readMainGeom { } {
 	treeSelect root:0
     } else {
 	set lb $ay(olb)
-	set selection [$lb curselection]
+	set sel [$lb curselection]
 	goTop
 	selOb 0
     }
@@ -1168,7 +1170,7 @@ proc io_readMainGeom { } {
 	treeSelect $sel
     } else {
 	$ay(olb) selection set $sel	
-	selOb -lb $selection
+	selOb -lb $sel
     }
 
  return;
