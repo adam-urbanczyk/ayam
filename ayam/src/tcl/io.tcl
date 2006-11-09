@@ -1165,12 +1165,14 @@ proc io_readMainGeom { } {
 	incr i
     }
 
-    if { $ay(lb) == 0 } {
-	$tree selection set $sel
-	treeSelect $sel
-    } else {
-	$ay(olb) selection set $sel	
-	selOb -lb $sel
+    if { $sel != "" } {
+	if { $ay(lb) == 0 } {
+	    $tree selection set $sel
+	    treeSelect $sel
+	} else {
+	    $ay(olb) selection set $sel	
+	    selOb -lb $sel
+	}
     }
 
  return;
