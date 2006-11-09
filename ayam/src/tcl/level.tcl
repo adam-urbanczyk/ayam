@@ -28,7 +28,7 @@ Type 0
 set w [frame $ay(pca).$LevelAttr(w)]
 addMenu $w LevelAttrData Type {Level Union Difference Intersection Primitive }
 
-#level_crt:
+# level_crt:
 #
 #
 proc level_crt { } {
@@ -38,7 +38,11 @@ proc level_crt { } {
     if { $selected == "" } { ayError 20 "level_crt" ""; return; }
 
     # the next command sorts the selected objects
-    eval "selOb $selected"
+    if { $ay(lb) == 1 } {
+	eval "selOb $selected"
+    } else {
+	eval "treeSelect $selected"
+    }
 
     set ay_error 0
     crtOb Level

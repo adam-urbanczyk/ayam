@@ -247,7 +247,7 @@ proc riopt_addp { } {
 		    selOb 0
 		    undo save AddRiOpt
 		    addTag RiOption "$optname,$optpara,$type,$val"
-		    selOb $sel
+		    selOb -lb $sel
 
 		} else {
 		    set t $ay(tree)

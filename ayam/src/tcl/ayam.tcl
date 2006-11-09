@@ -815,7 +815,7 @@ proc uS { {update_prop "" } {maintain_selection "" } } {
     if { $maintain_selection == "" } { set maintain_selection 0 }
 
     if { $ay(lb) == 1 } {
-	# plain ListBox is active
+	# ListBox is active
 	global curlevel curtypes
 
 	set lb $ay(olb)
@@ -832,7 +832,7 @@ proc uS { {update_prop "" } {maintain_selection "" } } {
 
 	if { $maintain_selection && ($sel != "") } {
 	    $lb selection set $sel
-	    selOb $sel
+	    selOb -lb $sel
 	}
 
 	if { $update_prop == 1 } {
@@ -892,12 +892,12 @@ proc sL { } {
     global ay
 
     if { $ay(lb) == 1 } {
-	# plain ListBox is active
+	# ListBox is active
 	set lb $ay(olb)
 	$lb selection clear 0 end
 	selOb
 	$lb selection set end
-	selOb [expr [$lb index end] - 1]
+	selOb -lb [expr [$lb index end] - 1]
 	plb_update
 	$lb see end
     } else {

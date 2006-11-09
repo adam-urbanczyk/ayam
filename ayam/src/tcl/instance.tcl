@@ -82,7 +82,7 @@ proc instance_edit { } {
 	    update
 	} else {
 	    uS
-	    selOb [expr $o + 1]
+	    selOb -lb [expr $o + 1]
 	    $ay(olb) selection set [expr $o + 1]
 	}
 	# if

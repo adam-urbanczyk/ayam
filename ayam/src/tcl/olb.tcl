@@ -152,7 +152,7 @@ frame $w.fb -highlightthickness 1
 set f $w.fb
 frame $f.f1
 set f $f.f1
-button $f.bnon -text "None"  -padx 0 -pady 0 -command {
+button $f.bnon -text "None" -padx 0 -pady 0 -command {
     global ay
     cS
     plb_update
@@ -179,14 +179,14 @@ set f $w.fb
 frame $f.f2
 set f $f.f2
 
-button $f.ball -text "All"   -padx 0 -pady 0 -command {
+button $f.ball -text "All" -padx 0 -pady 0 -command {
     global ay
     set lb $ay(olb)
     if { [$lb index end] > 1 } {
 	$lb selection clear 0 end
 	$lb selection set 1 end
 	set selection [$lb curselection]
-	eval [subst "selOb $selection"]
+	eval [subst "selOb -lb $selection"]
 	olb_update
     }
     if { $ay(need_redraw) == 1 } {
@@ -210,7 +210,7 @@ set f $w.fb
 frame $f.f3
 set f $f.f3
 
-button $f.binv -text "Inv"  -padx 0 -pady 0 -command {
+button $f.binv -text "Inv" -padx 0 -pady 0 -command {
     global ay
     
     set selected [$ay(olb) curselection]
@@ -304,8 +304,8 @@ proc olb_select { } {
 
     set lb $ay(olb)
     set selection [$lb curselection]
-    
-    eval [subst "selOb $selection"]
+  
+    eval "selOb -lb $selection"
 
     plb_update
 
