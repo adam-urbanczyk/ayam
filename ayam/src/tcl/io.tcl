@@ -1085,6 +1085,7 @@ proc io_exportRIBSO { } {
 proc io_saveMainGeom { } {
     global ay tagnames tagvals
 
+    set sel ""
     if { $ay(lb) == 0 } {
 	set tree $ay(tree)
 	set sel [$tree selection get]
@@ -1109,17 +1110,18 @@ proc io_saveMainGeom { } {
 	}
 	incr i
     }
-
-    if { $ay(lb) == 0 } {
-	$tree selection set $sel
-	treeSelect $sel
-	eval [subst "$tree selection set $sel"]
-	eval [subst "treeSelect $sel"]
-    } else {
-	# we can not do this at the moment, level changed...
-	#eval [subst "selOb -lb $sel"]
-	# so instead we do
-	uS
+    if { $sel != "" } {
+	if { $ay(lb) == 0 } {
+	    $tree selection set $sel
+	    treeSelect $sel
+	    eval [subst "$tree selection set $sel"]
+	    eval [subst "treeSelect $sel"]
+	} else {
+	    # we can not do this at the moment, level changed
+	    # eval "selOb -lb $sel"
+	    # so instead we just do
+	    uS
+	}
     }
 
  return;
@@ -1133,6 +1135,7 @@ proc io_saveMainGeom { } {
 proc io_readMainGeom { } {
     global ay tagnames tagvals
 
+    set sel ""
     if { $ay(lb) == 0 } {
 	set tree $ay(tree)
 	set sel [$tree selection get]
