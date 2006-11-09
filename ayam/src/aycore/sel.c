@@ -119,7 +119,6 @@ ay_sel_setfromlbtcmd(ClientData clientData, Tcl_Interp *interp,
 		  ay_error(ay_status, fname, NULL);
 		  return TCL_OK;
 		}
-	      j++;
 	    }
 	  start++;
 	}
