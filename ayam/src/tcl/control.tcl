@@ -97,7 +97,7 @@ proc forAll_lb { recursive command } {
 	incr i
 	$lb selection clear 0 end
 	$lb selection set $sel
-	selOb $sel
+	selOb -lb $sel
 	plb_update
 	
 	# go down?
@@ -119,7 +119,7 @@ proc forAll_lb { recursive command } {
 		goUp
 		uS
 		$lb selection set $sel
-		selOb $sel
+		selOb -lb $sel
 		plb_update
 		set ay(CurrentLevel) $templevel
 	    }
@@ -127,7 +127,7 @@ proc forAll_lb { recursive command } {
 
 	$lb selection clear 0 end
 	$lb selection set $sel
-	selOb $sel
+	selOb -lb $sel
 	plb_update
 	catch {eval $command} retCode
 	if { $retCode == -1 } {
@@ -271,7 +271,7 @@ proc forAllT_lb { type recursive command } {
 	incr i
 	$lb selection clear 0 end
 	$lb selection set $sel
-	selOb $sel
+	selOb -lb $sel
 	plb_update
 	
 	# go down?
@@ -294,7 +294,7 @@ proc forAllT_lb { type recursive command } {
 		goUp
 		uS
 		$lb selection set $sel
-		selOb $sel
+		selOb -lb $sel
 		plb_update
 		set ay(CurrentLevel) $templevel
 	    }
@@ -302,7 +302,7 @@ proc forAllT_lb { type recursive command } {
 
 	$lb selection clear 0 end
 	$lb selection set $sel
-	selOb $sel
+	selOb -lb $sel
 	plb_update
 
 	global otype
@@ -558,7 +558,7 @@ proc selAdd { ud } {
 		set sel [linsert $sel 0 [expr $first-1]]
 		$lb selection set [lindex $sel 0] [lindex $sel end]
 		$lb see [lindex $sel 0]
-		eval [subst "selOb $sel"]
+		eval [subst "selOb -lb $sel"]
 		plb_update
 		if { $ay(need_redraw) == 1 } {
 		    rV
@@ -574,7 +574,7 @@ proc selAdd { ud } {
 		lappend sel [expr $last+1]
 		$lb selection set [lindex $sel 0] [lindex $sel end]
 		$lb see [lindex $sel end]
-		eval [subst "selOb $sel"]
+		eval [subst "selOb -lb $sel"]
 		plb_update
 		if { $ay(need_redraw) == 1 } {
 		    rV
@@ -593,7 +593,7 @@ proc selAdd { ud } {
 		}
 		$lb selection set 1 [lindex $sel end]
 		$lb see 1
-		eval [subst "selOb $sel"]
+		eval [subst "selOb -lb $sel"]
 		plb_update
 		if { $ay(need_redraw) == 1 } {
 		    rV
@@ -615,7 +615,7 @@ proc selAdd { ud } {
 		}
 		$lb selection set [lindex $sel 0] [lindex $sel end]
 		$lb see [lindex $sel end]
-		eval [subst "selOb $sel"]
+		eval [subst "selOb -lb $sel"]
 		plb_update
 		if { $ay(need_redraw) == 1 } {
 		    rV
@@ -706,6 +706,7 @@ proc selNPFL { npfl } {
 	set ay(treeselectsema) 0
 
     } else {
+	# ListBox is active
 
 	if { $ay(listselectsema) == 1 } {
 	    bell; return;
@@ -771,7 +772,7 @@ proc selNPFL { npfl } {
 	    $lb selection clear 0 end
 	    $lb selection set $sel
 	    $lb see [lindex $sel 0]
-	    eval [subst "selOb $sel"]
+	    eval [subst "selOb -lb $sel"]
 	    plb_update
 	    if { $ay(need_redraw) == 1 } {
 		rV
