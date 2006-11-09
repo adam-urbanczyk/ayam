@@ -132,22 +132,7 @@ proc material_edit { } {
 	return;
     }
 
-    if { $ay(lb) == 1 } { 
-
-	if { [$ay(olb) get 0] == ".." } {
-	    set sel [expr [lindex $sel 0] + 1]
-	} else {
-	    set sel [lindex $sel 0]
-	}
-
-    } else {
-
-	if { $ay(CurrentLevel) != "root" } {
-	    set sel [expr [lindex $sel 0] + 1]
-	} else {
-	    set sel [lindex $sel 0]
-	}
-    }
+    set sel [lindex $sel 0]
 
     # we only work with one object
     selOb $sel
@@ -236,18 +221,14 @@ proc material_edit { } {
 	    # if
 
 	    if { $ay(lb) == 0 } {
-		if { $matlevel != "root" } {
-		    selOb [expr $matobject + 1]
-		} else {
-		    selOb [expr $matobject]
-		}
+		selOb $matobject
 		$ay(tree) selection set ${matlevel}:$matobject
 		$ay(tree) see ${matlevel}:$matobject
 		tree_paintLevel ${matlevel}
 		update
 	    } else {
 		uS
-		selOb [expr $matobject + 1]
+		selOb $matobject
 		$ay(olb) selection set [expr $matobject + 1]
 	    }
 	    # if
