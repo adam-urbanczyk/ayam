@@ -78,9 +78,10 @@ ay_sel_setfromlbtcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int ay_status = AY_OK;
  char fname[] = "selOb";
+ int lbmode = AY_FALSE;
  ay_list_object *oldsel, *newsel, *t;
  ay_object *o = ay_currentlevel->object;
- int i = 0, j = 1, argvi = 0, start = 1, need_redraw = AY_TRUE;
+ int i = 0, j = 0, argvi = 0, start = 1, need_redraw = AY_TRUE;
  char vname[] = "ay(need_redraw)", yes[] = "1", no[] = "0";
 
   /* clear selected flags from currently selected objects */
@@ -95,15 +96,21 @@ ay_sel_setfromlbtcmd(ClientData clientData, Tcl_Interp *interp,
   oldsel = ay_selection;
   ay_selection = NULL;
 
-  /* nothing selected? -> bail out */
+  /* establish new selection from arguments */
   if(argc > 1)
     {
-      /* first item in clevel selected? (this is root or "..") */
-      if(atoi(argv[1]) == 0)
+      /* work with listbox indices? */
+      if(!strcmp(argv[1],"-lb"))
 	{
+	  if(argc < 3)
+	    goto cleanup;
+	  lbmode = AY_TRUE;
 	  start++;
+	  j++;
+	}
 
-	  /* root selected? */
+      if(lbmode && (atoi(argv[start]) == 0))
+	{
 	  if(o == ay_root)
 	    {
 	      ay_status = ay_sel_add(o);
@@ -112,14 +119,14 @@ ay_sel_setfromlbtcmd(ClientData clientData, Tcl_Interp *interp,
 		  ay_error(ay_status, fname, NULL);
 		  return TCL_OK;
 		}
-
-	      if(o->next)
-		o = o->next;
+	      j++;
 	    }
+	  start++;
 	}
 
-      if(o == ay_root)
-	o = o->next;
+      if(lbmode && (o == ay_root))
+	if(o->next)
+	  o = o->next;
 
       /* iterate through arguments and select appropriate objects */
       for(i = start; i < argc; i++)
@@ -134,14 +141,14 @@ ay_sel_setfromlbtcmd(ClientData clientData, Tcl_Interp *interp,
 		o = o->next;
 
 	      if(!o)
-		break;
+		goto cleanup;
 
 	      /* no reset of o for next iteration, because we believe
 		 that the arguments are sorted! */
 	    } /* while */
 
 	  /* found a selected object -> add to the list */
-	  if(o)
+	  if(o && o->next)
 	    {
 	      ay_status = ay_sel_add(o);
 	      if(ay_status)
@@ -154,6 +161,7 @@ ay_sel_setfromlbtcmd(ClientData clientData, Tcl_Interp *interp,
 	} /* for */
     } /* if */
 
+cleanup:
   newsel = ay_selection;
   /* do we need a complete redraw ? */
   ay_draw_needredraw(oldsel, newsel, &need_redraw);
