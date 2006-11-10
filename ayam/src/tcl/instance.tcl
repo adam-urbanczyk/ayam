@@ -34,7 +34,6 @@ proc instance_edit { } {
 	return;
     }
 
-
     if { $ay(lb) == 1 } {
 	set ay(CurrentLevel) "root"
     }
@@ -54,7 +53,7 @@ proc instance_edit { } {
 	    set mo1 [lrange $mo 0 [expr $len - 2]]
 	    set first 1
 	    foreach l $mo1 {
-		if { $first == 1 || $ay(lb) == 1 } {
+		if { $first == 1 } {
 		    set first 0
 		    goDown $l
 		} else {
@@ -71,19 +70,19 @@ proc instance_edit { } {
 	# if
 	set o [lindex $mo end]
 	if { $ay(lb) == 0 } {
-	    if { $len > 1 } {
-		selOb [expr $o + 1]
-	    } else {
-		selOb $o
-	    }
+	    selOb $o
 	    $ay(tree) selection set ${node}:$o
 	    $ay(tree) see ${node}:$o
 	    tree_paintLevel ${node}
 	    update
 	} else {
 	    uS
-	    selOb -lb [expr $o + 1]
-	    $ay(olb) selection set [expr $o + 1]
+	    selOb $o
+	    if { $len > 1 } {
+		$ay(olb) selection set [expr $o + 1]
+	    } else {
+		$ay(olb) selection set $o
+	    }
 	}
 	# if
 	plb_update
