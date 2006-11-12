@@ -1321,7 +1321,7 @@ ay_nct_insertkntcmd(ClientData clientData, Tcl_Interp *interp,
  ay_nurbcurve_object *curve = NULL;
  double u, *knots = NULL, *newcontrolv = NULL, *newknotv = NULL;
  int stride = 4, i, k = 0, s = 0, r = 0, nq = 0;
- char fname[] = "insertkn";
+ char fname[] = "insknNC";
 
   if(argc < 3)
     {
@@ -2029,7 +2029,7 @@ ay_nct_concattcmd(ClientData clientData, Tcl_Interp *interp,
     }
   if(!sel->next)
     {
-      ay_error(AY_ERROR,fname,"select two NURB curves!");
+      ay_error(AY_ERROR, fname, "select two NURB curves!");
       return TCL_OK;
     }
   if((sel->object->type != AY_IDNCURVE) ||
@@ -4787,8 +4787,7 @@ ay_nct_centertcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_status = ay_nct_center(mode, (ay_nurbcurve_object*)c->refine);
 	  if(ay_status)
 	    {
-	      ay_error(ay_status, fname,
-		       "Could not center object!");
+	      ay_error(ay_status, fname, "Could not center object!");
 	    }
 
 	  c->modified = AY_TRUE;
@@ -4809,25 +4808,68 @@ ay_nct_centertcmd(ClientData clientData, Tcl_Interp *interp,
 int
 ay_nct_coarsen(ay_nurbcurve_object *curve)
 {
- double *newcontrolv = NULL, *newknotv = NULL;
- int i;
+ int ay_status = AY_OK;
+ char fname[] = "ay_nct_coarsen";
+ double *newcontrolv = NULL, *newcontrolv2 = NULL;
+ double *newknotv2 = NULL, *newknotv = NULL;
+ int i, j, s, done = AY_FALSE;
 
   if(!curve)
-    return AY_FALSE;
+    return AY_ENULL;
 
-  newcontrolv = calloc(curve->length,4*sizeof(double));
-  newknotv = calloc(curve->length+curve->order,sizeof(double));
+  /* nothing to do? */
+  if(curve->order == curve->length)
+    return AY_OK;
 
-  ay_nb_CurveRemoveKnot4D(curve->length-1, curve->order-1,
-			  curve->knotv, curve->controlv,
-			  4, 1, 1,
-			  newknotv, newcontrolv);
+  newcontrolv = calloc(curve->length*4, sizeof(double));
+  newcontrolv2 = calloc(curve->length*4, sizeof(double));
+  newknotv = calloc(curve->length+curve->order, sizeof(double));
+  newknotv2 = calloc(curve->length+curve->order, sizeof(double));
 
-  curve->length--;
+  memcpy(newcontrolv2, curve->controlv, curve->length*4*sizeof(double));
+  memcpy(newknotv2, curve->knotv, curve->length+curve->order*sizeof(double));
+
+  i = curve->order;
+  j = 0;
+  while(!done)
+    {
+      s = 1;
+      while(curve->knotv[i] == curve->knotv[i+s])
+	s++;
+
+      ay_status = ay_nb_CurveRemoveKnot4D(curve->length-1-j, curve->order-1,
+					  newknotv2, newcontrolv2,
+					  i, s, 1,
+					  newknotv, newcontrolv);
+
+      if(ay_status)
+	{
+	  ay_error(AY_ERROR, fname, "knot removal failed");
+	}
+
+      memcpy(newcontrolv2, newcontrolv, curve->length*4*sizeof(double));
+      memcpy(newknotv2, newknotv, curve->length+curve->order*sizeof(double));
+
+      j++;
+
+      i += s;
+
+      if(i > (curve->length-j))
+	done = AY_TRUE;
+    } /* while */
+
+  curve->length -= j;
+  curve->knot_type = AY_KTCUSTOM;
+
+  free(curve->controlv);
   curve->controlv = newcontrolv;
+  free(curve->knotv);
   curve->knotv = newknotv;
 
- return AY_FALSE;
+  free(newcontrolv2);
+  free(newknotv2);
+
+ return AY_OK;
 } /* ay_nct_coarsen */
 
 
@@ -4861,8 +4903,7 @@ ay_nct_coarsentcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_status = ay_nct_coarsen((ay_nurbcurve_object*)c->refine);
 	  if(ay_status)
 	    {
-	      ay_error(ay_status, fname,
-		       "Could not coarsen object!");
+	      ay_error(ay_status, fname, "Could not coarsen object!");
 	    }
 
 	  c->modified = AY_TRUE;
@@ -4875,4 +4916,104 @@ ay_nct_coarsentcmd(ClientData clientData, Tcl_Interp *interp,
 
  return TCL_OK;
 } /* ay_nct_coarsentcmd */
+
+
+/* ay_nct_remkntcmd:
+ *
+ */
+int
+ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
+		    int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ char fname[] = "remknNC";
+ int i, s, r;
+ double u, *newknotv = NULL, *newcontrolv = NULL;
+ ay_nurbcurve_object *curve;
+ ay_list_object *sel = ay_selection;
+ ay_object *o = NULL;
+
+  if(argc < 3)
+    {
+      ay_error(AY_EARGS, fname, "u r");
+      return TCL_OK;
+    }
+
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, fname, NULL);
+      return TCL_OK;
+    }
+
+  while(sel)
+    {
+      o = sel->object;
+      if(o->type != AY_IDNCURVE)
+	{
+	  ay_error(AY_ERROR, fname, "Object is not a NURBCurve!");
+	}
+      else
+	{
+	  curve = (ay_nurbcurve_object *)o->refine;
+	  
+	  /* find knot to remove */
+	  while((i<(curve->length+curve->order)) &&
+		(fabs(curve->knotv[i]-u) > AY_EPSILON))
+	    {
+	      i++;
+	    }
+
+	  if(fabs(curve->knotv[i]-u) >= AY_EPSILON)
+	    {
+	      ay_error(AY_ERROR, fname, "could not find knot to remove");
+	      break;
+	    }
+
+	  /* calculate knot multiplicity */
+	  s = 1;
+	  while(curve->knotv[i] == curve->knotv[i+s])
+	    s++;
+
+	  newcontrolv = calloc(curve->length*4, sizeof(double));
+	  newknotv = calloc(curve->length+curve->order, sizeof(double));
+
+	  /* remove the knot */
+	  ay_status = ay_nb_CurveRemoveKnot4D(curve->length-1, curve->order-1,
+					      curve->knotv, curve->controlv,
+					      i, s, r,
+					      newknotv, newcontrolv);
+
+	  if(ay_status)
+	    {
+	      ay_error(AY_ERROR, fname, "knot removal failed");
+	      free(newcontrolv);
+	      newcontrolv = NULL;
+	      free(newknotv);
+	      newknotv = NULL;
+	      break;
+	    }
+
+	  /* save results */
+	  curve->length -= r;
+	  memcpy(curve->controlv, newcontrolv, curve->length*4*sizeof(double));
+	  memcpy(curve->knotv, newknotv,
+		 curve->length+curve->order*sizeof(double));
+
+	  free(newcontrolv);
+	  newcontrolv = NULL;
+	  free(newknotv);
+	  newknotv = NULL;
+
+	  ay_status = ay_nct_recreatemp(curve);
+
+	  o->modified = AY_TRUE;
+	} /* if */
+
+      sel = sel->next;
+    } /* while */
+
+  ay_notify_parent();
+
+ return TCL_OK;
+} /* ay_nct_removekntcmd */
 

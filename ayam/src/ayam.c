@@ -944,6 +944,9 @@ Tcl_AppInit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "insknNC", ay_nct_insertkntcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  Tcl_CreateCommand(interp, "remknNC", ay_nct_removekntcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
   Tcl_CreateCommand(interp, "collMP", ay_nct_collapsetcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 

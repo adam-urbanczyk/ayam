@@ -305,10 +305,14 @@ int ay_nct_center(int mode, ay_nurbcurve_object *curve);
 
 int ay_nct_centertcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
+
 int ay_nct_coarsen(ay_nurbcurve_object *curve);
 
 int ay_nct_coarsentcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
+
+int ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
+			int argc, char *argv[]);
 
 /* npt.c */
 int ay_npt_create(int uorder, int vorder, int width, int height,
