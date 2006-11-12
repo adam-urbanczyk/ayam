@@ -24,7 +24,7 @@ ay_knots_createnp(ay_nurbpatch_object *patch)
  int uorder = 0, vorder = 0, width = 0, height = 0;
  int uknot_count = 0, vknot_count = 0;
  int i = 0, j = 0, kts = 0;
- int start = 0;
+ /*int start = 0;*/
  double *newuknotv = NULL, *newvknotv = NULL;
 
   if(!patch)
