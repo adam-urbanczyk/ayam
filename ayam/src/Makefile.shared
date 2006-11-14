@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile.shared [13. May 2006]
+# Makefile.shared [14. Nov 2006]
 # Makefile for Ayam (shared version)
 
 # Choose an installation prefix.
@@ -93,6 +93,8 @@ CFLAGS = -O -DAYUSEAFFINE
 #CFLAGS = -O -DSOLARIS_BUG -DAYUSESLCARGS -DAYUSEBMRTRIBOUT
 # MacOSX with Aqua:
 #CFLAGS = -O -DAYWITHAQUA -DAYUSEAFFINE -DAYENABLEFEXIT -DUSE_NON_CONST
+# MacOSX with Aqua (universal binary, support for older MacOSX):
+CFLAGS = -O -DAYWITHAQUA -DAYUSEAFFINE -DAYENABLEFEXIT -DUSE_NON_CONST -arch ppc -arch i386 -isysroot /Developer/SDKs/MacOSX10.4u.sdk -mmacosx-version-min=10.2
 # MacOSX with X11:
 #CFLAGS = -O -DAYUSEAFFINE -DAYENABLEFEXIT -DUSE_NON_CONST
 
@@ -124,6 +126,8 @@ EXLDFLAGS =
 #EXLDFLAGS = -flat_namespace -undefined suppress
 # MacOSX (Aqua):
 #EXLDFLAGS = -flat_namespace
+# MacOSX (Aqua) universal binary, support for older MacOSX:
+EXLDFLAGS = -arch ppc -arch i386 -isysroot /Developer/SDKs/MacOSX10.4u.sdk -mmacosx-version-min=10.2 -headerpad_max_install_names
 
 # Togl
 # Path to "togl.h":
@@ -259,6 +263,8 @@ SHLFLAGS = -shared
 #SHLFLAGS = -bundle -flat_namespace -undefined suppress
 # MacOSX (Aqua):
 #SHLFLAGS = -dynamiclib -flat_namespace -undefined suppress
+# MacOSX (Aqua), universal binary, support for older MacOSX:
+#SHLFLAGS = -dynamiclib -flat_namespace -undefined suppress -arch ppc -arch i386 -isysroot /Developer/SDKs/MacOSX10.4u.sdk -mmacosx-version-min=10.2
 
 # RRIB Plugin Required Libraries
 # where is the complete Affine distribution?
