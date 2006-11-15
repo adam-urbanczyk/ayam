@@ -1262,7 +1262,6 @@ ay_objio_writescript(FILE *fileptr, ay_object *o, double *m)
 
   sc = (ay_script_object *)o->refine;
 
-
   if(((sc->type == 1) || (sc->type == 2)) && (sc->cm_objects))
     {
       cmo = sc->cm_objects;
@@ -3697,6 +3696,8 @@ ay_objio_init(Tcl_Interp *interp)
 				       ay_objio_writeclone);
   ay_status = ay_objio_registerwritecb((char *)(AY_IDINSTANCE),
 				       ay_objio_writeinstance);
+  ay_status = ay_objio_registerwritecb((char *)(AY_IDSCRIPT),
+				       ay_objio_writescript);
 
   ay_status = ay_objio_registerwritecb((char *)(AY_IDICURVE),
 				       ay_objio_writencconvertible);
