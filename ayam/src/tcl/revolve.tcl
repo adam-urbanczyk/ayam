@@ -37,6 +37,9 @@ addCheck $w RevolveAttrData EndCap
 addParam $w RevolveAttrData Tolerance
 addMenu $w RevolveAttrData DisplayMode $ay(npdisplaymodes)
 
+addText $w RevolveAttrData "Created NURBS Patch:"
+addInfo $w RevolveAttrData NPInfo
+
 #revolve_crt:
 #
 #
