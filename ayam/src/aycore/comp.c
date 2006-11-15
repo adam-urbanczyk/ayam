@@ -97,6 +97,8 @@ int ay_comp_extrnc(ay_object *o1, ay_object *o2);
 
 int ay_comp_script(ay_object *o1, ay_object *o2);
 
+int ay_comp_bevel(ay_object *o1, ay_object *o2);
+
 
 /* functions */
 
@@ -1137,6 +1139,24 @@ ay_comp_script(ay_object *o1, ay_object *o2)
 } /* ay_comp_script */
 
 
+/* ay_comp_bevel:
+ *
+ */
+int
+ay_comp_bevel(ay_object *o1, ay_object *o2)
+{
+ ay_bevel_object *s1, *s2;
+
+  s1 = (ay_bevel_object *)o1->refine;
+  s2 = (ay_bevel_object *)o2->refine;
+
+  if((s1->has_cap != s2->has_cap))
+    return AY_FALSE;
+
+ return AY_TRUE;
+} /* ay_comp_bevel */
+
+
 /* ay_comp_extrnc:
  *
  */
@@ -1260,6 +1280,7 @@ ay_comp_init()
   ay_status = ay_comp_register(ay_comp_birail2, AY_IDBIRAIL2);
   ay_status = ay_comp_register(ay_comp_extrnc, AY_IDEXTRNC);
   ay_status = ay_comp_register(ay_comp_script, AY_IDSCRIPT);
+  ay_status = ay_comp_register(ay_comp_bevel, AY_IDBEVEL);
 
  return ay_status;
 } /* ay_comp_init */
