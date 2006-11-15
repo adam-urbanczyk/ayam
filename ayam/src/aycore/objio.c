@@ -1213,11 +1213,16 @@ ay_objio_writeclone(FILE *fileptr, ay_object *o, double *m)
 
   clone = cl->clones;
 
-  while(clone)
+  while(clone && clone->next)
     {
       ay_status = ay_objio_writeobject(fileptr, clone, AY_TRUE, AY_FALSE);
 
       clone = clone->next;
+    }
+
+  if(clone)
+    {
+      ay_status = ay_objio_writeobject(fileptr, clone, AY_FALSE, AY_FALSE);
     }
 
  return ay_status;
@@ -1265,10 +1270,14 @@ ay_objio_writescript(FILE *fileptr, ay_object *o, double *m)
   if(((sc->type == 1) || (sc->type == 2)) && (sc->cm_objects))
     {
       cmo = sc->cm_objects;
-      while(cmo)
+      while(cmo && cmo->next)
 	{
 	  ay_status = ay_objio_writeobject(fileptr, cmo, AY_TRUE, AY_FALSE);
 	  cmo = cmo->next;
+	}
+      if(cmo)
+	{
+	  ay_status = ay_objio_writeobject(fileptr, cmo, AY_FALSE, AY_FALSE);
 	}
     } /* if */
 
