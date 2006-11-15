@@ -3727,6 +3727,8 @@ ay_objio_init(Tcl_Interp *interp)
 				       ay_objio_writenpconvertible);
   ay_status = ay_objio_registerwritecb((char *)(AY_IDTEXT),
 				       ay_objio_writenpconvertible);
+  ay_status = ay_objio_registerwritecb((char *)(AY_IDBEVEL),
+				       ay_objio_writenpconvertible);
 
   ay_status = ay_objio_registerwritecb((char *)(AY_IDSPHERE),
 				       ay_objio_writenpconvertible);
