@@ -732,13 +732,19 @@ ay_objio_writelevel(FILE *fileptr, ay_object *o, double *m)
       memcpy(m1, tm, 16*sizeof(double));
       memcpy(tm, m, 16*sizeof(double));
       down = o->down;
-      while(down->next)
+      while(down->next && down->next->next)
 	{
 	  ay_status = ay_objio_writeobject(fileptr, down, AY_TRUE, AY_TRUE);
 	  down = down->next;
 	}
+
+      if(down)
+	{
+	  ay_status = ay_objio_writeobject(fileptr, down, AY_FALSE, AY_TRUE);
+	}
+
       memcpy(tm, m1, 16*sizeof(double));
-    }
+    } /* if */
 
  return AY_OK;
 } /* ay_objio_writelevel */
