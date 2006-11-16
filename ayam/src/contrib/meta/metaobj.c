@@ -1022,6 +1022,8 @@ Metaobj_Init (Tcl_Interp * interp)
 
   ay_status = ay_convert_register(metaobj_convertcb, metaobj_id);
 
+  ay_status = ay_provide_register(metaobj_providecb, metaobj_id);
+
   /* first Metacomp init */
   Metacomp_Init (interp);
 
