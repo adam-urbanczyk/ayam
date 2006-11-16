@@ -1317,10 +1317,12 @@ ay_objio_writeobject(FILE *fileptr, ay_object *o, int writeend, int count)
  double m1[16] = {0}, m2[16];
  char err[255];
  ay_objio_writecb *cb = NULL;
+ ay_object *t, *c = NULL;
  int curprog = 0;
  char aname[] = "objio_options", vname1[] = "Progress";
  char vname2[] = "Cancel", *val = NULL;
  char pbuffer[64];
+ int i, numconvs = 3, conversions[3] = {AY_IDNPATCH, AY_IDNCURVE, AY_IDPOMESH};
 
   if(!o)
     return AY_ENULL;
@@ -1328,6 +1330,7 @@ ay_objio_writeobject(FILE *fileptr, ay_object *o, int writeend, int count)
   if((entry = Tcl_FindHashEntry(ht, (char *)(o->type))))
     {
       cb = (ay_objio_writecb*)Tcl_GetHashValue(entry);
+
       if(cb)
 	{
 	  if(o->name && (strlen(o->name)>1))
@@ -1394,9 +1397,32 @@ ay_objio_writeobject(FILE *fileptr, ay_object *o, int writeend, int count)
     }
   else
     {
-      sprintf(err, "Cannot export objects of type: %s.",
-	      ay_object_gettypename(o->type));
-      ay_error(AY_EWARN, fname, err);
+      /* can not export directly => try to convert object */
+      for(i = 0; i < numconvs; i++)
+	{
+	  c = NULL;
+	  ay_status = ay_provide_object(o, conversions[i], &c);
+	  t = c;
+	  while(t)
+	    {
+	      ay_status = ay_objio_writeobject(fileptr, t, AY_TRUE, AY_FALSE);
+	      t = t->next;
+	    }
+
+	  if(c)
+	    {
+	      ay_object_deletemulti(c);
+	      i = -1;
+	      break;
+	    }
+	} /* for */
+
+      if(i == -1)
+	{
+	  sprintf(err, "Cannot export objects of type: %s.",
+		  ay_object_gettypename(o->type));
+	  ay_error(AY_EWARN, fname, err);
+	}
     } /* if */
 
  return AY_OK;
