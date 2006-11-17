@@ -2573,6 +2573,8 @@ ay_mfio_writeobject(MF3D_FilePtr fileptr, ay_object *object)
  Tcl_HashEntry *entry = NULL;
  char err[255];
  ay_mfio_writecb *cb = NULL;
+ ay_object *t, *c = NULL;
+ int i, numconvs = 3, conversions[3] = {AY_IDNPATCH, AY_IDNCURVE, AY_IDPOMESH};
 
   if((entry = Tcl_FindHashEntry(ht, (char *)(object->type))))
     {
@@ -2589,9 +2591,32 @@ ay_mfio_writeobject(MF3D_FilePtr fileptr, ay_object *object)
     }
   else
     {
-      sprintf(err,"No callback registered for this type: %d.",
-	      object->type);
-      ay_error(AY_EWARN, fname, err);
+      /* can not export directly => try to convert object */
+      for(i = 0; i < numconvs; i++)
+	{
+	  c = NULL;
+	  ay_status = ay_provide_object(object, conversions[i], &c);
+	  t = c;
+	  while(t)
+	    {
+	      ay_status = ay_mfio_writeobject(fileptr, t);
+	      t = t->next;
+	    }
+
+	  if(c)
+	    {
+	      ay_object_deletemulti(c);
+	      i = -1;
+	      break;
+	    }
+	} /* for */
+
+      if(i == -1)
+	{
+	  sprintf(err,"No callback registered for this type: %d.",
+		  object->type);
+	  ay_error(AY_EWARN, fname, err);
+	}
     } /* if */
 
  return ay_status;
@@ -3077,6 +3102,8 @@ Mfio_Init(Tcl_Interp *interp)
   ay_status = ay_mfio_registerwritecb((char *)(AY_IDSKIN),
 				       ay_mfio_writenpconvertible);
   ay_status = ay_mfio_registerwritecb((char *)(AY_IDCAP),
+				       ay_mfio_writenpconvertible);
+  ay_status = ay_mfio_registerwritecb((char *)(AY_IDBEVEL),
 				       ay_mfio_writenpconvertible);
   ay_status = ay_mfio_registerwritecb((char *)(AY_IDPAMESH),
 				       ay_mfio_writenpconvertible);
