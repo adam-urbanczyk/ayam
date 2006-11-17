@@ -1798,6 +1798,8 @@ onio_writeobject(ay_object *o, ONX_Model *p_m)
  onio_writecb *cb = NULL;
  double m1[16] = {0}, m2[16];
  ay_tag *t = NULL;
+ ay_object *c = NULL, *to = NULL;
+ int i, numconvs = 3, conversions[3] = {AY_IDNPATCH, AY_IDNCURVE, AY_IDPOMESH};
 
   if(!o || !p_m)
     return AY_ENULL;
@@ -1851,9 +1853,31 @@ onio_writeobject(ay_object *o, ONX_Model *p_m)
     }
   else
     {
-      sprintf(err, "Cannot export objects of type: %s.",
-	      ay_object_gettypename(o->type));
-      ay_error(AY_EWARN, fname, err);
+      // can not export directly => try to convert object
+      for(i = 0; i < numconvs; i++)
+	{
+	  to = NULL;
+	  ay_status = ay_provide_object(o, conversions[i], &to);
+	  to = c;
+	  while(to)
+	    {
+	      ay_status = onio_writeobject(to, p_m);
+	      to = to->next;
+	    }
+
+	  if(c)
+	    {
+	      ay_object_deletemulti(c);
+	      i = -1;
+	      break;
+	    }
+	} // for
+      if(i == -1)
+	{
+	  sprintf(err, "Cannot export objects of type: %s.",
+		  ay_object_gettypename(o->type));
+	  ay_error(AY_EWARN, fname, err);
+	}
     } // if
 
  return ay_status;
@@ -3536,6 +3560,9 @@ Onio_Init(Tcl_Interp *interp)
 				   onio_writenpconvertible);
 
   ay_status = onio_registerwritecb((char *)(AY_IDCAP),
+				   onio_writenpconvertible);
+
+  ay_status = onio_registerwritecb((char *)(AY_IDBEVEL),
 				   onio_writenpconvertible);
 
   ay_status = onio_registerwritecb((char *)(AY_IDBPATCH),
