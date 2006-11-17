@@ -1,4 +1,4 @@
-[5. Nov 2006] CVS-Head:
+[17. Nov 2006] CVS-Head:
 o Bug Fixes:
   - extra help menu entry Helpblock (SF 1549831)
   - RenderGUI feature can not find cat.exe on Win32 (SF 1549833)
@@ -15,6 +15,13 @@ o Bug Fixes:
   - set gridsize ok button not working properly on Aqua (SF 1573133)
   - setting list based property values with setProperty fails (SF 1575072)
   - wrong error messages of setProperty (SF 1590901)
+  - skins of rational curves not interpolating their bounds (SF 1592471)
+  - creating tool objects and level objects moving wrong objects (SF 1594359)
+  - Wavefront OBJ export ignores Bevel objects (SF 1597251)
+  - automatic instancing ignores Bevel objects (SF 1597994)
+  - Wavefront OBJ export of Level objects leading to multiple end statements
+    (SF 1597995)
+
 
 GUI:
 o added set grid entry to view window grid menu
@@ -25,10 +32,16 @@ o added NURBS curve open/close/make periodic manipulation tools to main menu
 
 Modelling:
 o shift closed B-Spline tool now accepts negative parameters
+o added remove knot from NURBS curve tool
 
 Renderer Support:
 o added render to file feature: new view menu entry "View/Render To File",
   new "RIB-Export" preference settings: "FRender", "FRenderUI", and "FRenderPT"
+
+Import/Export:
+o added support for convertable custom objects to Wavefront OBJ, Rhino 3DM,
+  and Apple 3DMF export (this allows direct export of e.g. MetaObj objects)
+o added support for Script objects to Wavefront OBJ export
 
 Platform Support:
 Apple Mac OS X (Aqua):
