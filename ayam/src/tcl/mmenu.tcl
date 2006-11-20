@@ -289,8 +289,6 @@ $m add separator
 $m add cascade -menu $m.nct -label "NURBCurve"
 menu $m.nct -tearoff 0
 
-
-
 $m.nct add command -label "Revert" -command { undo save Revert; revert;
                                               plb_update; rV }
 $m.nct add command -label "Open" -command { undo save Open;
@@ -307,7 +305,7 @@ $m.nct add command -label "Split" -command {
 runTool ay(splitu) {"Split at:"} "undo save Split; splitNC %0; uCR; sL; rV" }
 $m.nct add command -label "Refine" -command { undo save Refine; refineNC;
                                               plb_update; rV }
-#$m.nct add command -label "Refine with" -command { runTool ay(refinekn) {"New Knots:"} "refineNC \{%0\}; plb_update; rV" }
+$m.nct add command -label "Refine with" -command { runTool ay(refinekn) {"New Knots:"} "undo save Refine; refineNC \{%0\}; plb_update; rV" }
 $m.nct add command -label "Clamp" -command { undo save Clamp; clampNC;
                                              plb_update; rV }
 $m.nct add command -label "Elevate" -command {
