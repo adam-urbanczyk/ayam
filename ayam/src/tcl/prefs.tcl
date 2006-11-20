@@ -154,8 +154,9 @@ proc prefs_open {} {
     set docdefs  {"http://ayam.sourceforge.net/docs/"}
     global AYWITHAQUA
     if { $AYWITHAQUA == 1 } {
-	lappend docdefs [file join [file dirname [info nameofexecutable]] \
-		../Resources/docs/ayam.html]
+	set t [file join [file dirname [info nameofexecutable]] \
+		   ../Resources/docs/ayam.html]
+	lappend docdefs "file://$t"
     }
 
     addStringB $fw ayprefse Docs [ms ayprefse_Docs] $docdefs
