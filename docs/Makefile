@@ -68,3 +68,4 @@ pdf5: pdf4
 clean:
 	rm -rf html ayam.tex ayam.dvi ayam.txt ayam.pdf ayam.ps
 	rm -rf ayaml.sgml ayaml.tex ayaml.dvi ayaml.pdf ayaml.ps
+	rm -rf ayam.out ayam.aux ayam.toc
