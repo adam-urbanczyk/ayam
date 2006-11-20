@@ -778,7 +778,8 @@ ay_nct_refine(ay_nurbcurve_object *curve, double *newknotv, int newknotvlen)
 	}
 
       curve->length += count;
-
+      if(newknotvlen > 0)
+	curve->knot_type = AY_KTCUSTOM;
       ay_nct_recreatemp(curve);
 
     } /* if curve periodic */
