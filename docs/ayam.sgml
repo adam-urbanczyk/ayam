@@ -1879,12 +1879,22 @@ Before invoking any modelling action you should select
 one or more objects using the main window or using the pick action!
 <p>
 Every action can be started with a key press (a shortcut) when
-the focus is in a view window or by pressing the associated button
-in the tool window.
-Using a shortcut starts that action in the current view only,
+the keyboard focus is in a view window or by clicking on the associated
+button in the toolbox window.
+Using a keyboard shortcut starts that action in the current view only,
 the other views are not affected. Starting an action from the
-tool window will cause the action to be started in all
-view windows simultaneously.
+toolbox window will cause the action to be started in all
+view windows that are currently open simultaneously.
+<p>
+It is perfectly ok to start and work with many different actions at
+the same time in different views: you can have e.g. a view, where you move
+objects, a second where you rotate objects and a third, where you pick
+objects. The layout, drawing style, and grids may also differ between
+the different views. Together with the feature, that you may change
+the selection while actions are active and even pan and zoom views
+(using the rightmost and middle mouse buttons respectively) while
+actions are active and without breaking them, this is the key to
+unsurpassed flexibility in modelling using Ayam.
 <p>
 To break an action, the <tt/&lt;Esc&gt;/ key may be used.
 <p>
@@ -4095,7 +4105,10 @@ merge tool (main menu <tt>"Tools/PolyMesh/Merge"</tt>) to merge
 many PolyMesh objects into a single PolyMesh object.
 <p>
 Since Ayam 1.11, PolyMesh objects may be converted to SDMesh
-objects.
+objects. Note that no verification of the usability of the
+mesh as base mesh for a subdivision surface is carried out.
+Usually, such meshes have to be manifold and may not contain
+T-junctions.
 
 <sect2>PolyMeshAttr Property<label id="pomattr">
 <p>
@@ -4235,8 +4248,11 @@ instance, then use the main menu entry: <tt>"Edit/Master"</tt>.
 The Clone object allows you to easily create and control a number
 of instances of a single object.
 The instances will be created internally and transformed,
-each by a certain amount.
-The original object is the first child object of the Clone object.
+each by a certain amount. The Clone object may also be used for
+symmetric (mirror) modelling.
+<p>
+The original object, the object to be cloned, should be the first
+child object of the Clone object.
 If a second object is present as child of the Clone object
 it is treated as trajectory (or path) curve, similar to the Sweep object
 (see section <ref id="sweepobj" name="Sweep Object">).
@@ -7563,18 +7579,21 @@ sequence of RIB requests upon export as was read upon import.
 
 <sect1>RenderMan Interface Bytestream (RIB) Export<label id="exprib">
 <p>
-RIB export is the most important export module of Ayam and in fact
-justifies its existence. All features of the Ayam object and scene
-structure are supported (hierarchy, CSG, instances, materials, lights).
+RenderMan Interface Bytestream (RIB) export is the most important export
+module of Ayam and in fact justifies its existence. All features of the
+Ayam object and scene structure are supported (hierarchy, CSG, instances,
+materials, lights).
 Furthermore, Ayam also supports rendering in multiple passes for
-shadow maps.
+shadow maps and permanent previews (where a RenderMan renderer is directly
+coupled to an Ayam view window).
 
 The documentation on RIB export is spread over the Ayam documentation,
 this section gives some general information and otherwise just points
 to the real documentation sections.
 
 RIB export is always available, it does not need a plugin to be loaded.
-The corresponding main menu entry is <tt>"File/Export/RenderMan RIB"</tt>.
+The corresponding main menu entry is <tt>"File/Export/RenderMan RIB"</tt>
+and the keyboard shortcut is <tt/&lt;Ctrl+E&gt;/.
 To control the RIB export and rendering, many options exist that are
 documented in section <ref id="prefrib" name="RIB export preferences">.
 
