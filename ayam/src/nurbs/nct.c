@@ -623,7 +623,7 @@ ay_nct_refine(ay_nurbcurve_object *curve, double *newknotv, int newknotvlen)
       X = newknotv;
     }
 
-  if(curve->type == AY_CTPERIODIC)
+  if((curve->type == AY_CTPERIODIC) && (X == NULL))
     {
       /* special case: curves marked periodic;
        * we keep the p multiple points at the ends
@@ -729,7 +729,7 @@ ay_nct_refine(ay_nurbcurve_object *curve, double *newknotv, int newknotvlen)
 	  return TCL_OK;
 	}
 
-      if( newknotv == NULL )
+      if(newknotv == NULL)
 	{
 	  /* fill X (contains just the new u values) */
 	  count = 0;
@@ -850,7 +850,9 @@ ay_nct_refinetcmd(ClientData clientData, Tcl_Interp *interp,
     } /* while */
 
   if(X)
-    free(X);
+    {
+      free(X);
+    }
 
   ay_notify_parent();
 
@@ -4919,7 +4921,7 @@ ay_nct_coarsentcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_nct_coarsentcmd */
 
 
-/* ay_nct_remkntcmd:
+/* ay_nct_removekntcmd:
  *
  */
 int
