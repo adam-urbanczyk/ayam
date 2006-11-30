@@ -2195,7 +2195,7 @@ The following sections describe the standard properties
 <tt/"Transformations"/, <tt/"Attributes"/, <tt/"Material"/, <tt/"Shaders"/,
  and <tt/"Tags"/.
 
-<sect1>Transformations Property<label id="trap">
+<sect1>Transformations Property<label id="trap"><label id="transformationsprop">
 <p>
 Use this property to edit the location, orientation, and
 size of an object.
@@ -2271,7 +2271,7 @@ If you want to copy the orientation of an object to other objects
 using the property clipboard, make sure that you select all Rotation and
 Quat property elements.
 
-<sect1>Attributes Property<label id="attrs">
+<sect1>Attributes Property<label id="attrs"><label id="attributesprop">
 <p>
 The attributes of an object contain currently:
 <itemize>
@@ -2286,7 +2286,7 @@ point to this object. Objects with a reference count different
 from zero may not be deleted.
 </itemize>
 
-<sect1>Material Property<label id="matprop">
+<sect1>Material Property<label id="matprop"><label id="materialprop">
 <p>
 The material property allows you to connect geometric objects
 to material objects (see also section
@@ -2310,7 +2310,9 @@ drop the geometric objects onto the material object using Drag-and-Drop
 in the tree view.
 </itemize>
 
-<sect1>Shader Properties<label id="shd">
+<sect1>Shader Properties<label id="shd"><label id="atmosphereprop">
+<label id="imagerprop"><label id="surfaceprop"><label id="displacementprop">
+<label id="interiorprop"><label id="exteriorprop"><label id="lightshaderprop">
 <p>
 Shader properties are used to attach shaders of a certain type to objects.
 The name of the property contains the type of the shader, e.g.
@@ -2419,7 +2421,7 @@ property GUI and then use e.g. <tt>"Edit/Copy Marked Prop"</tt>
 (see also the description of the property clipboard in section
 <ref id="propgui" name="Properties">).
 
-<sect1>Tags Property<label id="tags">
+<sect1>Tags Property<label id="tags"><label id="tagsprop">
 <p>
 Use this property to edit the tags of an object.
 <p>
@@ -2833,7 +2835,7 @@ tags are rebuilt before every export/save operation.
 <sect2>List of Known Tags
 <p>
 This section contains a comprehensive list of tag names, that are
-known in Ayam 1.10 and in the accompanying extensions (plugins).
+known since Ayam 1.10 and in the accompanying extensions (plugins).
 <p>
 <tt>"RiAttribute", "RiOption", "RiHider", "RiDisplay", "NoExport", "TC",
 "PV", "SaveMainGeom", "TP", "MI", "OI", "DC", "TM", "NP", "NS", "DNS",
@@ -2855,7 +2857,7 @@ will not be drawn in any view.
 <p>
 The global scene options are documented in the following sections.
 
-<sect2>RiOptions Property<label id="rio">
+<sect2>RiOptions Property<label id="rio"><label id="rioptionsprop">
 <p>
 The RiOptions property carries RenderMan Interface options.
 Both, standard and BMRT specific options may be set using this
@@ -2999,7 +3001,7 @@ performs a zoom to object operation, for cameras and light sources
 the views camera will be changed accordingly (see the description
 of Drag-and-Drop with view objects above).
 
-<sect2>Camera Property<label id="camp">
+<sect2>Camera Property<label id="camp"><label id="cameraprop">
 <p>
 This section describes all elements of the <tt/"Camera"/ property:
 <itemize>
@@ -3023,7 +3025,7 @@ Note that the up vector is not checked for erroneous values
 (e.g. pointing in the direction of from-to) when applying the changes
 of the <tt/"Camera"/ property.
 
-<sect2>ViewAttrib Property<label id="vat">
+<sect2>ViewAttrib Property<label id="vat"><label id="viewattribprop">
 <p>
 This section describes the elements of the <tt/"ViewAttrib"/ property:
 <itemize>
@@ -3088,7 +3090,7 @@ using the main menu entry <tt>"Tools/Convert"</tt>.
 
 The following parameters further control the shape of a box:
 
-<sect2>BoxAttrib Property<label id="bxp">
+<sect2>BoxAttrib Property<label id="bxp"><label id="boxattribprop">
 <p>
 <itemize>
 <item><tt/"Width"/ is the width of the box (size of the box in
@@ -3121,7 +3123,7 @@ obeys all parameters of the sphere.
 
 The following parameters further control the shape of a sphere:
 
-<sect3>RiSphereAttr Property<label id="spattr">
+<sect3>SphereAttr Property<label id="spattr"><label id="sphereattrprop">
 <p>
 <itemize>
 <item><tt/"Closed"/ toggles whether the object should
@@ -3150,7 +3152,7 @@ obeys all parameters of the disk.
 
 The following parameters further control the shape of a disk:
 
-<sect3>RiDiskAttr Property<label id="dkp">
+<sect3>DiskAttr Property<label id="dkp"><label id="diskattrprop">
 <p>
 <itemize>
 <item><tt/"Radius"/ is the radius of the disk, default is 1.
@@ -3172,7 +3174,7 @@ obeys all parameters of the cone.
 
 The following parameters further control the shape of a cone:
 
-<sect3>RiConeAttr Property<label id="cnp">
+<sect3>ConeAttr Property<label id="cnp"><label id="coneattrprop">
 <p>
 <itemize>
 <item><tt/"Closed"/ toggles whether the object should
@@ -3204,7 +3206,7 @@ obeys all parameters of the cylinder.
 
 The following parameters further control the shape of a cylinder:
 
-<sect3>RiCylinderAttr Property<label id="cyp">
+<sect3>CylinderAttr Property<label id="cyp"><label id="cylinderattrprop">
 <p>
 <itemize>
 <item><tt/"Closed"/ toggles whether the object should
@@ -3236,7 +3238,7 @@ obeys all parameters of the torus.
 
 The following parameters further control the shape of a torus:
 
-<sect3>RiTorusAttr Property<label id="top">
+<sect3>TorusAttr Property<label id="top"><label id="torusattrprop">
 <p>
 <itemize>
 <item><tt/"Closed"/ toggles whether the object should
@@ -3270,7 +3272,7 @@ obeys all parameters of the paraboloid.
 
 The following parameters further control the shape of a paraboloid:
 
-<sect3>RiParabAttr Property<label id="pap">
+<sect3>ParaboloidAttr Property<label id="pap"><label id="paraboloidattrprop">
 <p>
 <itemize>
 <item><tt/"Closed"/ toggles whether the object should
@@ -3303,7 +3305,7 @@ obeys all parameters of the hyperboloid.
 
 The following parameters further control the shape of a hyperboloid:
 
-<sect3>RiHyperbAttr Property<label id="hyp">
+<sect3>HyperboloidAttr Property<label id="hyp"><label id="hyperboloidattrprop">
 <p>
 <itemize>
 <item><tt/"Closed"/ toggles whether the object should
@@ -3337,7 +3339,7 @@ will be situated at 10,0,0. If you decide to move the patch by a value
 of 5 in X direction, you will finally arrive at 15,0,0 in world
 coordinates.<p>
 
-<sect2>LevelAttr Property<label id="lep">
+<sect2>LevelAttr Property<label id="lep"><label id="levelattrprop">
 <p>
 Levels do not have many object type specific properties, you may just
 modify the type of the level using the attribute <tt/"Type"/.
@@ -3394,7 +3396,7 @@ material object.
 When geometric objects are connected to a material object this material
 object may not be deleted.
 
-<sect2>RiAttributes Property<label id="riattrs">
+<sect2>RiAttributes Property<label id="riattrs"><label id="riattributesprop">
 <p>
 Using this property standard and BMRT specific attributes may be set.
 Please refer to the documentation of the RenderMan interface
@@ -3443,7 +3445,7 @@ shaders that may be used to capture
 special optical effects, encoding how
 light is affected while passing through an object.
 
-<sect2>MaterialAttr Property<label id="matattr">
+<sect2>MaterialAttr Property<label id="matattr"><label id="materialattrprop">
 <p>
 The MaterialAttr property contains attributes related to the
 management of material objects:
@@ -3492,7 +3494,7 @@ Please refer to the RenderMan documentation for more information
 about the standard light sources
 (see section <ref id="secref" name="references">).
 
-<sect2>LightAttr Property<label id="lip">
+<sect2>LightAttr Property<label id="lip"><label id="lightattrprop">
 <p>
 Depending on the type of the light source, the light attribute
 property contains different parameters. Parameters that
@@ -3736,7 +3738,7 @@ and size of the object determines the position and size of the lightsource!
 
 There is an example scene named <tt>"arealight.ay"</tt> distributed with Ayam.
 
-<sect1>NURBCurve Object<label id="ncurveobj">
+<sect1>NCurve (NURBS Curve) Object<label id="ncurveobj">
 <p>
 The NURBCurve object is the most used basic object for NURBS modelling
 in Ayam because NURBS curves are used to build more complex smoothly shaped
@@ -3777,9 +3779,9 @@ points (move them apart) after exploding!
 You may also totally inhibit creation of multiple points for a
 NURBS curve using the attribute <tt/"CreateMP"/.
 
-<sect2>NCurveAttrib Property<label id="ncattr">
+<sect2>NCurveAttr Property<label id="ncattr"><label id="ncurveattrprop">
 <p>
-The first section of the NCurveAttrib property contains curve specific
+The first section of the NCurveAttr property contains curve specific
 settings:<p>
 <itemize>
 <item><tt/"Type"/: This attribute replaces the <tt/"Closed"/
@@ -3872,7 +3874,7 @@ enter a valid new knot vector) at once. Ayam will check your changes
 and fall back to certain default values if e.g. your knot sequence is wrong.
 Check the console for any messages after pressing the <tt/"Apply"/ button!
 <p>
-When the curve type is changed using the NCurveAttrib property
+When the curve type is changed using the NCurveAttr property
 Ayam may also have to change the position of some control points
 as follows:
 <itemize>
@@ -3888,7 +3890,7 @@ if the current knot type of the curve is NURB or Bezier it will be changed
 to B-Spline automatically.
 </itemize>
 
-<sect1>NURBPatch Object<label id="npatchobj">
+<sect1>NPatch (NURBS Patch) Object<label id="npatchobj">
 <p>
 This object allows to model NURBS surfaces in a direct way, e.g. by
 modifying control points. Note that using NURBPatch objects should be
@@ -3900,9 +3902,9 @@ of multiple points, see section
 <ref id="ncurvemp" name="Multiple Points">
 for more information regarding this.
 
-<sect2>NPatchAttrib Property<label id="npattr">
+<sect2>NPatchAttr Property<label id="npattr"><label id="npatchattrprop">
 <p>
-The first section of the NPatchAttrib property contains patch specific
+The first section of the NPatchAttr property contains patch specific
 settings:<p>
 <itemize>
 <item><tt/"Width"/ and <tt/"Height"/ control the dimensions of the patch.
@@ -3911,7 +3913,7 @@ settings:<p>
 
 <item><tt/"Knot-Type"/ and <tt/"Knots"/: For a discussion of the
 <tt/"Knot-Type"/ and <tt/"Knots"/ parameters,
-please see section <ref id="ncattr" name="NCurveAttrib">.
+please see section <ref id="ncattr" name="NCurveAttr">.
 
 <item><tt/"CreateMP"/ toggles, whether multiple points should be
 created for this surface. See also the discussion in
@@ -4004,15 +4006,15 @@ and you will be on the safe side.
 Since Ayam 1.5 also NURBS curve providing objects are supported
 as trim curves.
 
-<sect1>BPatch Object<label id="bpatchobj">
+<sect1>BPatch (Bilinear Patch) Object<label id="bpatchobj">
 <p>
 A BPatch is a simple bilinear patch defined by four control
 points. BPatch objects are e.g. used to build box objects, see
 <ref id="boxobj" name="Box Object">).
 
-<sect2>BPatchAttrib Property<label id=bpattr>
+<sect2>BPatchAttr Property<label id=bpattr><label id="bpatchattrprop">
 <p>
-The BPatchAttrib property allows you to set the
+The BPatchAttr property allows you to set the
 four points defining the geometry of the patch:<p>
 <itemize>
 <item><tt/"P1_X"/, <tt/"P1_Y"/, <tt/"P1_Z"/, first point.
@@ -4035,7 +4037,7 @@ and when shading the patch mesh.
 Consequently, there is currently no shaded representation of
 patch meshes of basis type Catmull-Rom, Hermite or Custom.
 
-<sect2>PatchMeshAttr Property<label id="pmattr">
+<sect2>PatchMeshAttr Property<label id="pmattr"><label id="patchmeshattrprop">
 <p>
 The first section of the PatchMeshAttr property contains patch specific
 settings:<p>
@@ -4110,7 +4112,7 @@ mesh as base mesh for a subdivision surface is carried out.
 Usually, such meshes have to be manifold and may not contain
 T-junctions.
 
-<sect2>PolyMeshAttr Property<label id="pomattr">
+<sect2>PolyMeshAttr Property<label id="pomattr"><label id="polymeshattrprop">
 <p>
 The PolyMeshAttr GUI just displays some information about the
 PolyMesh object:
@@ -4156,7 +4158,7 @@ Since Ayam 1.11, SDMesh objects may be converted to PolyMesh
 objects. Note however that only the original unrefined control
 polygon will be converted.
 
-<sect2>SDMeshAttr Property<label id="sdmattr">
+<sect2>SDMeshAttr Property<label id="sdmattr"><label id="sdmeshattrprop">
 <p>
 The SDMeshAttr GUI just displays some information about the
 SDMesh object:
@@ -4294,7 +4296,8 @@ level object (as you can not add tags to instance objects):
 </code>
 <p>
 The following attributes further control the clone process:
-<sect2>CloneAttr Property<label id="cloneattr">
+
+<sect2>CloneAttr Property<label id="cloneattr"><label id="cloneattrprop">
 <p>
 <itemize>
 <item><tt/"NumClones"/ the number of clones to create.
@@ -4365,7 +4368,7 @@ You may convert the current surface of revolution and the caps,
 if there are any, to ordinary NURBS patches using the main menu entry
 <tt>"Tools/Convert"</tt>.
 
-<sect2>RevolveAttr Property<label id="rep">
+<sect2>RevolveAttr Property<label id="rep"><label id="revolveattrprop">
 <p>
 Using the parameter <tt/"ThetaMax"/ you can specify the
 sweeping angle of the revolution just like with an ordinary
@@ -4398,7 +4401,7 @@ curve are not created correctly, (GLU
 complains about "intersecting or misoriented trimcurves"),
 try to revert the revolved curve.
 
-See section <ref id="npattr" name="NPatchAttrib"> for a description
+See section <ref id="npattr" name="NPatchAttr"> for a description
 of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 
 <sect1>Extrude Object<label id="extrudeobj">
@@ -4447,7 +4450,7 @@ You may convert the current surface of extrusion and the caps and bevels,
 if there are any, to ordinary NURBS patches using the main menu entry
 <tt>"Tools/Convert"</tt>.
 
-<sect2>ExtrudeAttr Property<label id="extrattr">
+<sect2>ExtrudeAttr Property<label id="extrattr"><label id="extrudeattrprop">
 <p>
 Using the parameter <tt/"Height"/ you determine how
 big in Z direction the extrusion should be. Note that
@@ -4480,7 +4483,7 @@ GUI to adjust the bevel parameters or remove the tag again.
 A more thorough discussion of those options is available in
 section <ref id="bevelp" name="BevelAttr Property">.
 <p>
-See section <ref id="npattr" name="NPatchAttrib"> for a description
+See section <ref id="npattr" name="NPatchAttr"> for a description
 of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 
 
@@ -4584,7 +4587,7 @@ You may convert the current sweep and the caps, if there are any,
 to ordinary NURBS patches using the main menu entry
 <tt>"Tools/Convert"</tt>.
 
-<sect2>SweepAttr Property<label id="swp">
+<sect2>SweepAttr Property<label id="swp"><label id="sweepattrprop">
 <p>
 If <tt/"Interpolation"/ is enabled, all section curves
 will be interpolated by the swept surface.
@@ -4612,7 +4615,7 @@ in the property GUI to adjust the bevel parameters or remove the tag again.
 A more thorough discussion of those options is available in section
 <ref id="bevelp" name="BevelAttr Property">.
 <p>
-See section <ref id="npattr" name="NPatchAttrib"> for a description
+See section <ref id="npattr" name="NPatchAttr"> for a description
 of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 
 <sect1>Birail1 Object<label id="birail1obj">
@@ -4667,7 +4670,7 @@ if there are any, to ordinary NURBS patches using the main menu entry
 <p>
 The following parameters further control the birailing process:
 
-<sect2>Birail1Attr Property<label id="birail1p">
+<sect2>Birail1Attr Property<label id="birail1p"><label id="birail1attrprop">
 <p>
 The parameter <tt/"Sections"/ determines how many
 sections (in u direction) should be used, when generating the
@@ -4688,7 +4691,7 @@ in the property GUI to adjust the bevel parameters or remove the tag again.
 A more thorough discussion of those options is available in section
 <ref id="bevelp" name="BevelAttr Property">.
 <p>
-See section <ref id="npattr" name="NPatchAttrib"> for a description
+See section <ref id="npattr" name="NPatchAttr"> for a description
 of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 
 <sect1>Birail2 Object<label id="birail2obj">
@@ -4764,7 +4767,7 @@ if there are any, to ordinary NURBS patches using the main menu entry
 <p>
 The following parameters control the birailing process:
 
-<sect2>Birail2Attr Property<label id="birail2p">
+<sect2>Birail2Attr Property<label id="birail2p"><label id="birail2attrprop">
 <p>
 The parameter <tt/"Sections"/ determines how many
 sections (in u direction) should be used, when generating the
@@ -4785,7 +4788,7 @@ in the property GUI to adjust the bevel parameters or remove the tag again.
 A more thorough discussion of those options is available in section
 <ref id="bevelp" name="BevelAttr Property">.
 <p>
-See section <ref id="npattr" name="NPatchAttrib"> for a description
+See section <ref id="npattr" name="NPatchAttr"> for a description
 of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 
 <sect1>Skin Object<label id="skinobj">
@@ -4849,7 +4852,7 @@ to ordinary NURBS patches using the main menu entry
 <p>
 The following parameters control the skinning process:
 
-<sect2>SkinAttr Property<label id="skp">
+<sect2>SkinAttr Property<label id="skp"><label id="skinattrprop">
 <p>
 The first parameter <tt/"Interpolation"/ controls,
 whether the inner curves should also be interpolated by the
@@ -4891,7 +4894,7 @@ in the property GUI to adjust the bevel parameters or remove the tag again.
 A more thorough discussion of those options is available in section
 <ref id="bevelp" name="BevelAttr Property">.
 <p>
-See section <ref id="npattr" name="NPatchAttrib"> for a description
+See section <ref id="npattr" name="NPatchAttr"> for a description
 of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 
 <sect1>Gordon Object<label id="gordonobj">
@@ -4997,7 +5000,7 @@ patch using the main menu entry <tt>"Tools/Convert"</tt>.
 The following parameters of the Gordon object further control
 the creation of the Gordon surface:
 
-<sect2>GordonAttr Property<label id="gop">
+<sect2>GordonAttr Property<label id="gop"><label id="gordonattrprop">
 <p>
 If the parameter <tt/"WatchCurves"/ is switched on, Ayam will
 check for all four outer parameter curves, whether they touch in their
@@ -5018,7 +5021,7 @@ surface of the desired order.
 If <tt/"Order_U"/ or <tt/"Order_V"/ are 0, a default value
 of 4 will be used.
 <p>
-See section <ref id="npattr" name="NPatchAttrib"> for a description
+See section <ref id="npattr" name="NPatchAttr"> for a description
 of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 
 <sect1>Bevel Object<label id="bevelobj">
@@ -5060,7 +5063,7 @@ object using the main menu entry <tt>"Tools/Convert"</tt>.
 The following parameters of the Bevel object further control
 the creation of the bevelled surface:
 
-<sect2>BevelAttr Property<label id="bevelp">
+<sect2>BevelAttr Property<label id="bevelp"><label id="bevelattrprop">
 <p>
 <itemize>
 <item><tt/"BevelType"/ lets you choose between different shapes of bevels:
@@ -5090,7 +5093,7 @@ in a different dimension may also be affected by using negative values
 for the bevel radius.
 </itemize>
 <p>
-See section <ref id="npattr" name="NPatchAttrib"> for a description
+See section <ref id="npattr" name="NPatchAttr"> for a description
 of the two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/
 of the <tt/"BevelAttr"/ property.
 <p>
@@ -5134,13 +5137,13 @@ via the notification mechanism.
 You may convert the current cap surface to an ordinary NURBS patch object
 using the main menu entry <tt>"Tools/Convert"</tt>.
 
-<sect2>CapAttr Property<label id="capp">
+<sect2>CapAttr Property<label id="capp"><label id="capattrprop">
 <p>
-See section <ref id="npattr" name="NPatchAttrib"> for a description
+See section <ref id="npattr" name="NPatchAttr"> for a description
 of the two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/
 of the <tt/"CapAttr"/ property.
 
-<sect1>ICurve Object<label id="icurveobj">
+<sect1>ICurve (Interpolating Curve) Object<label id="icurveobj">
 <p>
 The ICurve object creates an interpolating spline curve from n points
 in space. The created curve is either a C2 cubic curve with n+2 control
@@ -5177,7 +5180,7 @@ using the main menu entry <tt>"Tools/Convert"</tt>.
 <p>
 The following parameters control the interpolation process:
 
-<sect2>ICurveAttr Property<label id="icp">
+<sect2>ICurveAttr Property<label id="icp"><label id="icurveattrprop">
 <p>
 <itemize>
 <item>Using <tt/"Length"/ you determine the number of points to interpolate.
@@ -5203,11 +5206,11 @@ You can try to change (decrease) this value, if you are not satisfied
 with the shape of the curve near the first or last interpolated point.
 This parameter has no effect on open curves when the mode is Global4D.
 
-<item>See section <ref id="ncattr" name="NCurveAttrib"> for a description
+<item>See section <ref id="ncattr" name="NCurveAttr"> for a description
 of the last attribute: <tt/"Tolerance"/.
 </itemize>
 
-<sect1>ConcatNC Object<label id="concatncobj">
+<sect1>ConcatNC (Concatenate NURBS Curves) Object<label id="concatncobj">
 <p>
 <figure loc="ht">
 <eps file="pics/concatnc.ps" height="5cm">
@@ -5255,7 +5258,7 @@ object using the main menu entry <tt>"Tools/Convert"</tt>.
 <p>
 The following parameters further control the concatenation process:
 
-<sect2>ConcatNCAttr Property<label id="concatncp">
+<sect2>ConcatNCAttr Property<label id="concatncp"><label id="concatncattrprop">
 <p>
 <itemize>
 <item>Using <tt/"Closed"/ you may create a closed concatenated curve.
@@ -5292,7 +5295,7 @@ the knot vectors of the original curves, and thus, their
 shape may be preserved completely.
 </itemize>
 
-<sect1>ExtrNC Object<label id="extrncobj">
+<sect1>ExtrNC (Extract NURBS Curve) Object<label id="extrncobj">
 <p>
 The ExtrNC object extracts a NURBS curve from a NURBS patch object,
 for use as parameter object for other tool objects, like e.g.
@@ -5311,7 +5314,7 @@ object.
 <p>
 The extraction process is controlled by the following attributes:
 
-<sect2>ExtrNCAttr Property<label id="extrncp">
+<sect2>ExtrNCAttr Property<label id="extrncp"><label id="extrncattrprop">
 <p>
 <itemize>
 <item><tt/"Side"/ controls, which curve should be extracted.
@@ -5333,7 +5336,7 @@ surface.
 
 </itemize>
 <p>
-See section <ref id="npattr" name="NPatchAttrib"> for a description
+See section <ref id="npattr" name="NPatchAttr"> for a description
 of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 
 <sect1>Text Object<label id="textobj">
@@ -5363,7 +5366,7 @@ using the main menu entry <tt>"Tools/Convert"</tt>.
 <p>
 The following attributes control the creation of the text objects.
 
-<sect2>TextAttr Property<label id="textattr">
+<sect2>TextAttr Property<label id="textattr"><label id="textattrprop">
 <p>
 <itemize>
 <item>Using <tt/"FontName"/ you specify a TrueType font description file.
@@ -5409,7 +5412,7 @@ because of sharp corners in some letters that lead to self overlapping
 borders of the bevel surfaces with high values for the bevel radius.
 </itemize>
 
-See section <ref id="npattr" name="NPatchAttrib"> for a description
+See section <ref id="npattr" name="NPatchAttr"> for a description
 of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 
 <sect1>RiInc Object<label id="riincobj">
@@ -5418,7 +5421,8 @@ RiInc objects may be used to include objects or whole scene parts into your
 scenes that, for some reason, are just available as a piece of RIB.
 <p>
 The following attributes control the inclusion:
-<sect2>RiIncAttr Property<label id="riincp">
+
+<sect2>RiIncAttr Property<label id="riincp"><label id="riincattrprop">
 <p>
 <itemize>
 <item>Using <tt/"File"/ you specify the filename of the RIB to be included.
@@ -5433,7 +5437,8 @@ RiProc objects may be used to include procedural objects or external
 archives into your scenes.
 <p>
 The following attributes control the RiProc object:
-<sect2>RiProcAttr Property<label id="riprocp">
+
+<sect2>RiProcAttr Property<label id="riprocp"><label id="riprocattrprop">
 <p>
 <itemize>
 <item><tt/"Type"/ defines the type of the procedural object which is
@@ -5502,7 +5507,7 @@ scripts for script objects in the <tt>"ayam/bin/scripts"</tt> and
 The next section discusses the available script object types and
 additional controlling parameters.
 
-<sect2>ScriptAttr Property<label id="scriptattr">
+<sect2>ScriptAttr Property<label id="scriptattr"><label id="scriptattrprop">
 <p>
 <itemize>
 <item>If <tt/"Active"/ is disabled, the script will not be run.
@@ -5640,7 +5645,8 @@ representation for a specific function value (the so called threshold value).
 <p>
 This process may be further parameterized using the <tt/"MetaObjAttr"/
 property:
-<sect2>MetaObjAttr Property<label id="moattr">
+
+<sect2>MetaObjAttr Property<label id="moattr"><label id="metaobjattrprop">
 <p>
 <itemize>
 <item>With the parameter <tt/"NumSamples"/ you specify the resolution of the
@@ -5679,7 +5685,7 @@ While modelling with meta balls you may add other <tt/"MetaComp"/ objects
 to the <tt/"MetaObj"/ object and parameterize them.
 A <tt/"MetaComp"/ object has the following properties.
 
-<sect2>MetaCompAttr Property<label id="mcattr">
+<sect2>MetaCompAttr Property<label id="mcattr"><label id="metacompattrprop">
 <p>
 <itemize>
 <item><tt/"Formula"/ specifies the type of the meta component.
@@ -7473,10 +7479,9 @@ create material objects for the scene to import.
 The import options <tt>"ResetDM"</tt> and
 <tt>"ResetST"</tt> control, whether GLU display mode
 and tolerance settings (see sections
-<ref id="ncattr" name="NCurveAttrib">, and
-<ref id="npattr" name="NPatchAttrib"> for more information about
-tolerance and display mode)
-of NURBS primitives should be reset
+<ref id="ncattr" name="NCurveAttr">, and
+<ref id="npattr" name="NPatchAttr"> for more information about
+display mode and tolerance) of NURBS primitives should be reset
 to using global preference values (the default in Ayam)
 instead of using the values from the Mops scene file.
 
