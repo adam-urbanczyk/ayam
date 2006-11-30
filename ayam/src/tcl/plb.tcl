@@ -175,6 +175,12 @@ $m add command -label "Paste Property" -command {
     pclip_paste
     set ay(sc) 1
 }
+$m add separator
+$m add command -label "Help on Property" -command {
+    global ay
+    set hm $ay(helpmenu)
+    $hm invoke 2
+}
 
 if { $ay(ws) == "Aqua" && $ayprefs(SwapMB) } {
     bind $f.li <ButtonPress-2> "tk_popup $m %X %Y"

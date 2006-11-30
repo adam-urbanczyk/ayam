@@ -569,6 +569,38 @@ $m add command -label "Help on object" -command {
     }
 }
 
+$m add command -label "Help on property" -command {
+    after idle {
+	global ay ayprefs
+	set selected ""
+	getSel selected
+	if { $selected == "" } {
+	    ayError 2 "Help on property" "Please select an object!"
+	    return;
+	}
+
+	set lb $ay(plb)
+	set index [$lb curselection]
+    
+	if { $index == "" } {
+	    puts stderr "Help on property: No property selected!"
+	    return;
+	}
+
+	set type [$lb get $index]
+
+	set type [string tolower $type]
+	if { [string first "file://" $ayprefs(Docs)] != -1 } {
+	    set lslash [string last "/" $ayprefs(Docs)]
+	    set url [string range
+		     $ayprefs(Docs) 0 $lslash]/ayam-4.html\#${type}prop
+	    browser_urlOpen $url
+	} else {
+	    browser_urlOpen $ayprefs(Docs)ayam-4.html\#${type}prop
+	}
+    }
+}
+
 $m add command -label "Show Shortcuts" -command "shortcut_show"
 $m add command -label "About" -command "aboutAyam"
 $m add checkbutton -label "Show Tooltips" -variable ayprefs(showtt)
