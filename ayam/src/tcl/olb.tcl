@@ -114,6 +114,9 @@ $m add command -label "Paste Object" -command "$em invoke 2"
 #$m add command -label "Paste (Move)" -command "cmovOb;uS;rV"
 $m add separator
 $m add command -label "Delete Object" -command "$em invoke 3"
+set hm $ay(helpmenu)
+$m add separator
+$m add command -label "Help on Object" -command "$hm invoke 1"
 
 if { $ay(ws) == "Aqua" && $ayprefs(SwapMB) } {
     bind $f.li <ButtonPress-2> "tk_popup $m %X %Y"
