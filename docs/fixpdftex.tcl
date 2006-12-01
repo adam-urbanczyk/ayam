@@ -7,7 +7,8 @@
 # to the original sgml-tools package) is completely beyond my understanding.
 #
 # Additionally, this script arranges for the section Index to be
-# formatted in two columns and set in a smaller font.
+# formatted in two columns and set in a smaller font and for all
+# sections to start on a new page.
 set infile [ open [lindex $argv 0] r ]
 set outfile [ open [lindex $argv 1] w ]
 set height 0
@@ -25,9 +26,18 @@ while { ![eof $infile] } {
 	set buf3 "${buf2}png,height=${height}cm\}\}\\fi"
 	puts $outfile $buf3
     } else {
-	set index [ string first "section\{Index\}" $buf ]
+	set index [ string first "\\section\{" $buf ]
 	if { $index > -1 } {
-	    puts $outfile "\\twocolumn \\section\{Index\} \{ \\footnotesize "
+	    set index [ string first "section\{Index\}" $buf ]
+	    if { $index > -1 } {
+	     puts $outfile "\\twocolumn \\section\{Index\} \{ \\footnotesize "
+	    } else {
+		puts $outfile "\\newpage \\section\{"
+		set index [ string first "\{" $buf ]
+		incr index
+		set out2 [ string range $buf $index end ]
+		puts $outfile $out2
+	    }
 	    set rewriteItemize 1
 	} else {
 	    set index [ string first "end\{document" $buf ]
