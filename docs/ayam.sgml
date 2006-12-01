@@ -5,7 +5,7 @@
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
 
-<date>13. Sep 2006
+<date>1. Dec 2006
 
 <abstract>
 This is the documentation of Ayam 1.11 - a free 3D modelling environment
@@ -27,6 +27,8 @@ In addition, you can use the provided SGML-source to generate other formats.
 
 <sect>Introduction
 <p>
+This section contains general information about Ayam and this document.
+
 <sect1>About Ayam
 <p>
 Ayam is a free 3D modelling environment for the RenderMan Interface,
@@ -143,7 +145,7 @@ The main window is split into three large areas:
 <item>and a text widget (the so called "Console")
 </enum>
 <figure loc="ht">
-<eps file="pics/main.ps" height="7cm">
+<eps file="pics/main.ps" height="8cm">
 <img src="pics/main.gif">
 <caption>The Main Window</caption>
 </figure>
@@ -184,7 +186,7 @@ Note that you cannot delete or copy this object.
 <bf/Tree View:/<label id="treeview">
 <p>
 <figure loc="ht">
-<eps file="pics/treeview.ps" height="4cm">
+<eps file="pics/treeview.ps" height="6cm">
 <img src="pics/treeview.gif">
 <caption>Tree View</caption>
 </figure>
@@ -232,6 +234,9 @@ object(s).
 <item><tt>"Copy Object", "Cut Object", "Paste Object", "Delete Object"</tt>
 are standard clipboard operations as documented in
 section <ref id="mmedit" name="main menu">.
+
+<item><tt>"Help on Object"</tt> displays the help of the selected
+object.
 </itemize>
 <p>
 Since Ayam 1.6 the scene may be navigated and objects may be selected
@@ -269,7 +274,7 @@ first (when a property GUI has the input focus) or <tt/&lt;Shift-Tab&gt;/
 <bf/Listbox:/<label id="listbox">
 <p>
 <figure loc="ht">
-<eps file="pics/listbox.ps" height="4cm">
+<eps file="pics/listbox.ps" height="6cm">
 <img src="pics/listbox.gif">
 <caption>Listbox</caption>
 </figure>
@@ -302,6 +307,9 @@ with the tree view (see above).
 <item><tt>"Copy Object", "Cut Object", "Paste Object", "Delete Object"</tt>
 are standard clipboard operations as documented in
 section <ref id="mmedit" name="main menu">.
+
+<item><tt>"Help on Object"</tt> displays the help of the selected
+object.
 </itemize>
 
 Since Ayam 1.6 the scene may be navigated and objects may be selected
@@ -336,7 +344,7 @@ first (when a property GUI has the input focus) or <tt/&lt;Shift-Tab&gt;/
 <sect2>Properties<label id="propgui">
 <p>
 <figure loc="ht">
-<eps file="pics/propgui.ps" height="4cm">
+<eps file="pics/propgui.ps" height="6cm">
 <img src="pics/propgui.gif">
 <caption>Properties</caption>
 </figure>
@@ -1362,7 +1370,7 @@ when the main window gets iconified.
 <p>
 
 <figure loc="ht">
-<eps file="pics/prefs.ps" height="6cm">
+<eps file="pics/prefs.ps" height="8cm">
 <img src="pics/prefs.gif">
 <caption>Preferences Dialog</caption>
 </figure><p>
@@ -1380,7 +1388,8 @@ leave the editor open,
 <item><tt/"Revert"/ to reset to the settings
 that have been loaded on program startup (these
 are not the factory defaults, to get back to the factory
-defaults, restart Ayam with the command line option <tt/"-failsafe"/!),
+defaults, restart Ayam with the command line option <tt/"-failsafe"/
+or use the main menu entry <tt>"Special/Reset Preferences"</tt>!),
 
 <item><tt/"Cancel"/ to close the dialog without applying changes
 (done after the last press of <tt/"Apply"/).
@@ -3740,12 +3749,12 @@ There is an example scene named <tt>"arealight.ay"</tt> distributed with Ayam.
 
 <sect1>NCurve (NURBS Curve) Object<label id="ncurveobj">
 <p>
-The NURBCurve object is the most used basic object for NURBS modelling
-in Ayam because NURBS curves are used to build more complex smoothly shaped
-surfaces using operations like extrude, revolve, sweep or skin.
+The NCurve object is the most used basic object for NURBS modelling
+in Ayam because NURBS curves are used to build more complex smoothly
+shaped surfaces using operations like extrude, revolve, sweep or skin.
 NURBS curves can be open or closed and used to emulate Bezier and
 B-Spline curves easily. In addition, for easier modelling, they
-support multiple points.<p>
+support multiple points as explained in the next section.
 
 <sect2>Multiple Points<label id="ncurvemp">
 <p>
@@ -3772,10 +3781,11 @@ and split up again using the explode tool (see sections
 those tools).
 Note that even though you might have exploded some multiple points
 Ayam will re-create them automatically on several occasions like reading
-of a scene, inserting/deleting points, and applying the NURBCurveAttrib
+of a scene, inserting/deleting points, and applying the NCurveAttr
 property if they still have identical coordinate values.
 In other words, you should immediately edit the control
-points (move them apart) after exploding!
+points (move them apart) after exploding to avoid that
+they automatically collapse to a multiple point again!
 You may also totally inhibit creation of multiple points for a
 NURBS curve using the attribute <tt/"CreateMP"/.
 
@@ -3892,12 +3902,12 @@ to B-Spline automatically.
 
 <sect1>NPatch (NURBS Patch) Object<label id="npatchobj">
 <p>
-This object allows to model NURBS surfaces in a direct way, e.g. by
-modifying control points. Note that using NURBPatch objects should be
-seen as last resort, only to be used when the flexibility of all the NURBS
+The NPatch object allows to model NURBS surfaces in a direct way, e.g. by
+modifying control points. Note that using NPatch objects should be seen as
+last resort, only to be used when the flexibility of all the NURBS
 surface creating tool objects is not high enough to achieve a certain shape.
 <p>
-Since Ayam 1.10, NURBPatch objects also support the concept
+Since Ayam 1.10, NPatch objects also support the concept
 of multiple points, see section
 <ref id="ncurvemp" name="Multiple Points">
 for more information regarding this.
@@ -5051,8 +5061,8 @@ available in Ayam since version 1.10.
 <p>
 Note that the parameter curve of a Bevel object should be closed and
 planar to achieve best results. If the curve is closed or periodic,
-the appropriate curve type should be set, otherwise the bevelled
-surface may expose defects.
+the appropriate curve type should be set in the curve object,
+otherwise the bevelled surface may expose defects.
 <p>
 The Bevel object watches the child object and adapts to it automatically
 via the notification mechanism.
@@ -6199,12 +6209,12 @@ on how to select (tag) control points).
 be made to simple points again and may be edited separately.
 <item>Note that even though you might have exploded some multiple points
 Ayam will re-create them on several occasions like reading
-of a scene, inserting/deleting points, and applying the NURBCurveAttrib
-or NURBPatchAttrib property if all single control points of the multiple
+of a scene, inserting/deleting points, and applying the NCurveAttr
+or NPatchAttr property if all single control points of the multiple
 point(s) still have identical coordinate values (and the <tt/"CreateMP"/
 option of the curve or patch object is activated). You should immediately
-edit the control points after exploding to avoid that they automatically
-collapse to a multiple point again!
+edit the control points (move them apart) after exploding to avoid that
+they automatically collapse to a multiple point again!
 </itemize>
 
 <sect1>The Swap UV Tool<label id="swapuvt">
