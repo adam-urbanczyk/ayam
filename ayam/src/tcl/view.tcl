@@ -681,7 +681,7 @@ proc viewSetGridIcon { w gridsize } {
 	set conf "$w.$m configure"
     } else {
 	set m menubar.mgrid
-	set conf "$w.menubar entryconfigure 5"
+	set conf "$w.menubar entryconfigure 6"
     }
 
     if { $gridsize == 0.1 } {
@@ -728,7 +728,7 @@ proc viewSetDModeIcon { w mode } {
 	set conf "$w.$m configure"
     } else {
 	set m menubar.dm
-	set conf "$w.menubar entryconfigure 4"
+	set conf "$w.menubar entryconfigure 5"
     }
 
     if { $mode == 0 } {
@@ -765,7 +765,7 @@ proc viewSetMModeIcon { w mode } {
 	    eval "$conf -image ay_MMLocGlob_img"
 	}
     } else {
-	set conf "$w.menubar entryconfigure 3"
+	set conf "$w.menubar entryconfigure 4"
 
 	if { $mode == 0 } {
 	    eval "$conf -label Local"
@@ -881,6 +881,7 @@ button $f.bok -text "Ok" -pady $ay(pady) -width 15 -command "\
 	 set ay(cVDrawBG) 1;\
 	 $view setconf -dbg \$ay(cVDrawBG);\
         };\
+        set ay(sc) 1;\
 	$view render;\
 	update;\
 	grab release .setBGI;\
