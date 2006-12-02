@@ -1,4 +1,4 @@
-[17. Nov 2006] CVS-Head:
+[2. Dec 2006] CVS-Head:
 o Bug Fixes:
   - extra help menu entry Helpblock (SF 1549831)
   - RenderGUI feature can not find cat.exe on Win32 (SF 1549833)
@@ -21,18 +21,26 @@ o Bug Fixes:
   - automatic instancing ignores Bevel objects (SF 1597994)
   - Wavefront OBJ export of Level objects leading to multiple end statements
     (SF 1597995)
-
+  - Rhino 3DM export ignores Bevel objects (SF 1598573)
+  - Apple 3DMF  export ignores Bevel objects (SF 1598574)
+  - default documentation URL offered in preferences on Aqua (SF 1599917)
+  - refineNC with new knot vector not setting correct knot type (SF 1599950)
+  - changing background image does not set scene change state (SF 1607354)
 
 GUI:
-o added set grid entry to view window grid menu
+o added "set arbitrary grid size" entry to view window grid menu
 o when a grid size is set for the first time, the grid will now automatically
-  be drawn and activated also
+  be drawn and also activated immediately
 o added NURBS curve open/close/make periodic manipulation tools to main menu
   (previously only available through the property GUI)
+o added help on object to object tree and object listbox context menu
+o added help on property feature (new property listbox context menu entry:
+  "Help on Property" and new main menu entry "Help/Help on Property")
 
 Modelling:
 o shift closed B-Spline tool now accepts negative parameters
 o added remove knot from NURBS curve tool
+o added coarsen tool for NURBS curves
 
 Renderer Support:
 o added render to file feature: new view menu entry "View/Render To File",
