@@ -4813,64 +4813,46 @@ ay_nct_coarsen(ay_nurbcurve_object *curve)
 {
  int ay_status = AY_OK;
  char fname[] = "ay_nct_coarsen";
- double *newcontrolv = NULL, *newcontrolv2 = NULL;
- double *newknotv2 = NULL, *newknotv = NULL;
- int i, j, s, done = AY_FALSE;
+ double *newcontrolv = NULL;
+ int i, a, b, stride = 4;
 
   if(!curve)
     return AY_ENULL;
 
   /* nothing to do? */
-  if(curve->order == curve->length)
+  if(((curve->length/2) < curve->order) || (curve->knot_type == AY_KTCUSTOM))
     return AY_OK;
 
-  newcontrolv = calloc(curve->length*4, sizeof(double));
-  newcontrolv2 = calloc(curve->length*4, sizeof(double));
-  newknotv = calloc(curve->length+curve->order, sizeof(double));
-  newknotv2 = calloc(curve->length+curve->order, sizeof(double));
-
-  memcpy(newcontrolv2, curve->controlv, curve->length*4*sizeof(double));
-  memcpy(newknotv2, curve->knotv, curve->length+curve->order*sizeof(double));
-
-  i = curve->order;
-  j = 0;
-  while(!done)
+  newcontrolv = calloc((curve->length/2)*4, sizeof(double));
+  a = 0;
+  b = 0;
+  for(i = 0; i < curve->length/2; i++)
     {
-      s = 1;
-      while(curve->knotv[i] == curve->knotv[i+s])
-	s++;
+      memcpy(&(newcontrolv[a]), &(curve->controlv[b]), stride*sizeof(double));
+      a += stride;
+      b += 2*stride;
+    }
 
-      ay_status = ay_nb_CurveRemoveKnot4D(curve->length-1-j, curve->order-1,
-					  newknotv2, newcontrolv2,
-					  i, s, 1,
-					  newknotv, newcontrolv);
-
-      if(ay_status)
-	{
-	  ay_error(AY_ERROR, fname, "knot removal failed");
-	}
-
-      memcpy(newcontrolv2, newcontrolv, curve->length*4*sizeof(double));
-      memcpy(newknotv2, newknotv, curve->length+curve->order*sizeof(double));
-
-      j++;
-
-      i += s;
-
-      if(i > (curve->length-j))
-	done = AY_TRUE;
-    } /* while */
-
-  curve->length -= j;
-  curve->knot_type = AY_KTCUSTOM;
+  curve->length = curve->length/2;
 
   free(curve->controlv);
   curve->controlv = newcontrolv;
-  free(curve->knotv);
-  curve->knotv = newknotv;
 
-  free(newcontrolv2);
-  free(newknotv2);
+  free(curve->knotv);
+  curve->knotv = NULL;
+
+  ay_status = ay_knots_createnc(curve);
+  if(ay_status)
+    ay_error(AY_ERROR, fname, "Could not create knots!");
+
+  if(curve->type)
+    {
+      ay_status = ay_nct_close(curve);
+      if(ay_status)
+	ay_error(AY_ERROR, fname, "Could not close curve!");
+    }
+
+  ay_nct_recreatemp(curve);
 
  return AY_OK;
 } /* ay_nct_coarsen */
