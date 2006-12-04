@@ -4912,8 +4912,8 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int ay_status = AY_OK;
  char fname[] = "remknNC";
- int i, s, r;
- double u, *newknotv = NULL, *newcontrolv = NULL;
+ int i = 0, s = 0, r = 0;
+ double u = 0.0, *newknotv = NULL, *newcontrolv = NULL;
  ay_nurbcurve_object *curve;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
@@ -4929,6 +4929,9 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
       ay_error(AY_ENOSEL, fname, NULL);
       return TCL_OK;
     }
+
+  Tcl_GetDouble(interp, argv[2], &u);
+  Tcl_GetInt(interp, argv[3], &r);
 
   while(sel)
     {
