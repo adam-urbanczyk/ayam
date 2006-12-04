@@ -101,7 +101,7 @@ ay_objio_count(ay_object *o)
 
   while(o->next)
     {
-      if(lasttype != o->type)
+      if(lasttype != (int)o->type)
 	{
 	  entry = NULL;
 	  if((entry = Tcl_FindHashEntry(ht, (char *)(o->type))))
