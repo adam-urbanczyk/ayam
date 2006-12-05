@@ -1,4 +1,4 @@
-[INSTALL, 28. Oct 2004]
+[INSTALL, 5. Dec 2006]
 
 Installation Instructions for Ayam (Unix only).
 
@@ -7,7 +7,8 @@ Contents:
 1. General Installation Instructions
 2. Linux Specific Information
 3. IRIX Specific Information
-4. Mac OS X Specific Information
+4. Mac OS X (X11) Specific Information
+5. Mac OS X (Aqua) Specific Information
 
 
 1. General Installation Instructions
@@ -64,8 +65,8 @@ o The shader parsing plugins in this release were compiled with the
   ayslo: PRMan 3.8.0.6 MIPS3
 
 
-4. Mac OS X Specific Information
---------------------------------
+4. Mac OS X (X11) Specific Information
+--------------------------------------
 
 o The Mac OS X binary of Ayam was compiled on the SourceForge compile farm
   on Mac OS X 10.1 using X11. Therefore, you need X11 to run this binary.
@@ -79,6 +80,15 @@ o At the moment, the only shader parsing plugins available on Mac OS X are
   provided by George Harker.
 o On Mac OS X there is currently no aycsg plug-in. You may safely ignore the
   warnings about a missing aycsg.so file, that occur during the installation.
+
+
+5. Mac OS X (Aqua) Specific Information
+---------------------------------------
+
+On Mac OS X (Aqua), the installation is being done by simply dragging
+the Ayam.app application bundle to the system or user applications
+directory using the Finder.
+
 
 End of Installation Instructions,
 -- 
