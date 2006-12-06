@@ -162,7 +162,7 @@ array set ayprefs {
  SwapMBSC { "ayviewshortcuts(MoveVButton)" "ayviewshortcuts(ZoomVButton)" }
  UseInternalFD 0
  CursorEnd 1
- 
+
  PrepDiaCap 0
 
  AddExtensions 0
@@ -170,7 +170,7 @@ array set ayprefs {
  Docs "http://ayam.sourceforge.net/docs/"
  DailyTips {
 {Always click on drawn pixels, when picking vertices.}
-{There is a console-menu on the right mouse button.}        
+{There is a console-menu on the right mouse button.}
 {Use <Shift+TAB> to move the focus away from the console.}
 {Documentation is available in the doc subdirectory.}
 {Drag the borderline above the console to adjust it's height.}
@@ -302,7 +302,7 @@ array set ayviewshortcuts {
     Double "Ctrl-D"
 
     Local "Ctrl-l"
-    
+
     RotL "Left"
     RotR "Right"
     RotU "Up"
@@ -310,7 +310,7 @@ array set ayviewshortcuts {
 
     ZoomI "KP_Add"
     ZoomO "KP_Subtract"
-    
+
     Auto "Ctrl-A"
     Shade "Ctrl-S"
     DGrid "Ctrl-g"
@@ -583,7 +583,7 @@ if { $tcl_platform(platform) == "windows" } {
     set sc ""
     set scdir ""
     set sc [ info nameofexecutable ]
-    if { $sc != "" } { set scdir [ file dirname $scdir ] }	
+    if { $sc != "" } { set scdir [ file dirname $scdir ] }
     if { $scdir != "" } {
 	#set ayprefs(Cat) [file join $scdir "cat.exe"]
 	set ayprefs(Cat) "cat.exe"
@@ -843,7 +843,7 @@ proc uS { {update_prop "" } {maintain_selection "" } } {
 	update
 	# TreeView is active
 	set t $ay(tree)
-	
+
 	if { $maintain_selection } { set sel [$t selection get] }
 
 	if { $ay(ul) == "" } {
@@ -955,7 +955,7 @@ proc rV { {w ""} } {
 		$view mc
 		$view reshape
 		$view render
-	    }  
+	    }
 	}
     }
 
@@ -994,7 +994,7 @@ proc ayam_loadscript { file } {
 	    uplevel #0 wrap::source ${file}.tcl
 	}
     } else {
-	set oldcd [ pwd ] 
+	set oldcd [ pwd ]
 	set scdir [ info script ]
 	if { $scdir != "" } { cd [ file dirname $scdir ] }
 	if { [ file exists ${file}.tcl ] } { uplevel #0 source ${file}.tcl }
@@ -1319,9 +1319,7 @@ if { $ay(failsafe) == 0 } {
 	    puts stderr "Oops? ayamrc returned something?"
 	}
     } else {
-
 	puts stderr "Not found. Please save preferences."
-	
     }
 }
 
@@ -1337,8 +1335,7 @@ if { $ayprefs(SavePrefsGeom) > 1 } {
 # convert ayamrc from older Ayam versions
 if { $ayprefs(Version) == 0 } {
     # ayamrc contains no version information => pre Ayam1.7 ayamrc
-    # (or no ayamrc read) => add proper version information
-    set ayprefs(Version) $ay(ay_version)
+    # (or no ayamrc read) =>
     # overwrite old toolbox content, so that users see all the new
     # icons in any case
     set ayprefs(toolBoxList) {trafo trafo2 solids misco nurbs toolobjs\
@@ -1351,6 +1348,9 @@ if { ([string first pre $ayprefs(Version)] == -1) } {
 		toolobjs2 nptools1 points nctools1 nctools2 camera misc}
     }
 }
+
+# set proper version information
+set ayprefs(Version) $ay(ay_version)
 
 # update_prompt - print a first prompt after configuration change
 proc update_prompt {n1 n2 op} {
@@ -1461,6 +1461,7 @@ if { $AYCSGWRAPPED == 1 } {
     ayam_loadscript aycsg
 }
 
+# setChangedIndicator - manage scene changed indicator in main titlebar
 proc setChangedIndicator { a1 a2 a3 } {
     global ay
     set s [wm title .]
@@ -1503,7 +1504,7 @@ while { $i < $argc } {
 	    set ay(noview) 1
 
 	    set ay_error ""
-	    
+
 	    replaceScene $filename
 	    if { $ay_error < 2 } {
 		set ay(filename) $filename
@@ -1602,7 +1603,7 @@ if { $ayprefs(FixX11Menu) } {
 }
 # if
 
-# if no view is open (first start ever, no ayamrc, or no environment),
+# if no view is open (first start ever, no ayamrc, or no working environment),
 # open a first view now
 if { $ay(noview) != 1 && $ay(views) == "" } {
     viewOpen 400 300
@@ -1611,9 +1612,10 @@ if { $ay(noview) != 1 && $ay(views) == "" } {
 # now "activate" all views: establish mouse and key bindings
 foreach view $ay(views) { viewBind $view }
 
-# if there is a view window under the mouse pointer, make it current
+# arrange to make the view window under the mouse pointer current
 after idle viewMouseToCurrent
 
+# correct current directory
 if { $ay(ws) == "Aqua" } {
     # when started via Finder/Dock we end up with cd /, correct this
     cd $env(HOME)/Documents
