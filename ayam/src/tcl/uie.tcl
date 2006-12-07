@@ -613,7 +613,7 @@ proc addMenu { w prop name elist } {
     }
     
     if {$ay(ws) == "Aqua" } {
-	$f.mb configure -pady 2
+	$f.mb configure -pady 2 -width 12
     }
 
     set m [menu $f.mb.m -tearoff 0]
