@@ -4814,7 +4814,7 @@ ay_nct_coarsen(ay_nurbcurve_object *curve)
  int ay_status = AY_OK;
  char fname[] = "ay_nct_coarsen";
  double *newcontrolv = NULL;
- int i, a, b, stride = 4;
+ int i, a, b, stride = 4, newlength = 0, p;
 
   if(!curve)
     return AY_ENULL;
@@ -4823,17 +4823,53 @@ ay_nct_coarsen(ay_nurbcurve_object *curve)
   if(((curve->length/2) < curve->order) || (curve->knot_type == AY_KTCUSTOM))
     return AY_OK;
 
-  newcontrolv = calloc((curve->length/2)*4, sizeof(double));
-  a = 0;
-  b = 0;
-  for(i = 0; i < curve->length/2; i++)
+ if(curve->type == AY_CTPERIODIC)
     {
-      memcpy(&(newcontrolv[a]), &(curve->controlv[b]), stride*sizeof(double));
-      a += stride;
-      b += 2*stride;
-    }
+      /* special case: curves marked periodic;
+       * we keep the p multiple points at the ends
+       * and remove points just from the other sections
+       */
 
-  curve->length = curve->length/2;
+      /* check again, nothing to do? */
+      p = curve->order-1;
+      if((curve->length - p*2) < 2)
+	return AY_OK;
+
+      newlength = curve->length-((curve->length-(p*2))/2);
+      newcontrolv = calloc(newlength*4, sizeof(double));
+      /* copy first p points */
+      memcpy(&(newcontrolv[0]), &(curve->controlv[0]),
+	     p*stride*sizeof(double));
+      a = p*stride;
+      b = a;
+      for(i = p; i < curve->length-p-1; i++)
+       {
+	 memcpy(&(newcontrolv[a]), &(curve->controlv[b]),
+		stride*sizeof(double));
+	 a += stride;
+	 b += 2*stride;
+       }
+      /* copy last p points */
+      memcpy(&(newcontrolv[a]), &(curve->controlv[b]),
+	     p*stride*sizeof(double));
+
+      curve->length = newlength;
+    }
+ else
+   {
+     newcontrolv = calloc((curve->length/2)*4, sizeof(double));
+     a = 0;
+     b = 0;
+     for(i = 0; i < curve->length/2; i++)
+       {
+	 memcpy(&(newcontrolv[a]), &(curve->controlv[b]),
+		stride*sizeof(double));
+	 a += stride;
+	 b += 2*stride;
+       }
+
+     curve->length = curve->length/2;
+   } /* if */
 
   free(curve->controlv);
   curve->controlv = newcontrolv;
@@ -4845,7 +4881,7 @@ ay_nct_coarsen(ay_nurbcurve_object *curve)
   if(ay_status)
     ay_error(AY_ERROR, fname, "Could not create knots!");
 
-  if(curve->type)
+  if(curve->type == AY_CTCLOSED)
     {
       ay_status = ay_nct_close(curve);
       if(ay_status)
