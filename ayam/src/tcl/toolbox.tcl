@@ -402,8 +402,10 @@ proc toolbox_open { } {
 	    button $f.bref -image ay_Refine_img -padx 0 -pady 0 -command {
 		undo save Refine; refineNC; plb_update; rV
 	    }
-	    balloon_set $f.bref "refine curve"
-
+	    balloon_set $f.bref "refine curve\nShift: coarsen curve"
+	    bind $f.bref <Shift-ButtonPress-1> {
+		undo save Coarsen; coarsenNC; plb_update; rV
+	    }
 
 	}
 	##################

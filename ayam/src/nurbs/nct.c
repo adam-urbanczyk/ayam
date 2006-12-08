@@ -4835,14 +4835,15 @@ ay_nct_coarsen(ay_nurbcurve_object *curve)
       if((curve->length - p*2) < 2)
 	return AY_OK;
 
-      newlength = curve->length-((curve->length-(p*2))/2);
+      newlength = curve->length-((curve->length-(p*2))/2)+
+	(curve->length%2?0:1);
       newcontrolv = calloc(newlength*4, sizeof(double));
       /* copy first p points */
       memcpy(&(newcontrolv[0]), &(curve->controlv[0]),
 	     p*stride*sizeof(double));
       a = p*stride;
       b = a;
-      for(i = p; i < curve->length-p-1; i++)
+      for(i = p; i < newlength-p-(curve->length%2?1:2); i++)
        {
 	 memcpy(&(newcontrolv[a]), &(curve->controlv[b]),
 		stride*sizeof(double));
@@ -4851,7 +4852,7 @@ ay_nct_coarsen(ay_nurbcurve_object *curve)
        }
       /* copy last p points */
       memcpy(&(newcontrolv[a]), &(curve->controlv[b]),
-	     p*stride*sizeof(double));
+	     (p+(curve->length%2?1:2))*stride*sizeof(double));
 
       curve->length = newlength;
     }
