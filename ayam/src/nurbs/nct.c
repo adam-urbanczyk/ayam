@@ -4814,7 +4814,7 @@ ay_nct_coarsen(ay_nurbcurve_object *curve)
  int ay_status = AY_OK;
  char fname[] = "ay_nct_coarsen";
  double *newcontrolv = NULL;
- int i, a, b, stride = 4, newlength = 0, p;
+ int i, a, b, stride = 4, newlength = 0, p, t;
 
   if(!curve)
     return AY_ENULL;
@@ -4835,24 +4835,33 @@ ay_nct_coarsen(ay_nurbcurve_object *curve)
       if((curve->length - p*2) < 2)
 	return AY_OK;
 
-      newlength = curve->length-((curve->length-(p*2))/2)+
-	(curve->length%2?0:1);
+      /* number of points to remove */
+      t = (curve->length-(p*2))/2+(curve->length-(p*2))%2;
+      newlength = curve->length-t;
+
       newcontrolv = calloc(newlength*4, sizeof(double));
+
       /* copy first p points */
       memcpy(&(newcontrolv[0]), &(curve->controlv[0]),
 	     p*stride*sizeof(double));
+
+      /* copy middle points omitting every second */
       a = p*stride;
-      b = a;
-      for(i = p; i < newlength-p-(curve->length%2?1:2); i++)
+      /* omit first point after the p'th */
+      b = a+stride;
+      for(i = 0; i < t; i++)
        {
 	 memcpy(&(newcontrolv[a]), &(curve->controlv[b]),
 		stride*sizeof(double));
 	 a += stride;
 	 b += 2*stride;
        }
+
       /* copy last p points */
+      a = (newlength-p)*stride;
+      b = (curve->length-p)*stride;
       memcpy(&(newcontrolv[a]), &(curve->controlv[b]),
-	     (p+(curve->length%2?1:2))*stride*sizeof(double));
+	     p*stride*sizeof(double));
 
       curve->length = newlength;
     }
