@@ -13,6 +13,8 @@ However, the creation of "wrapped standalone" executables of Ayam is a
 bit tricky. Therefore, if you really want to or have to compile Ayam:
 _Please compile a "shared" version of Ayam!_
 
+Note: To compile on Win32 using Visual Studio 2005 Express use the provided
+workspace instead.
 
 Contents:
 1. Compiling a Shared Version of Ayam
