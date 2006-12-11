@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile.shared [14. Nov 2006]
+# Makefile.shared [11. Dec 2006]
 # Makefile for Ayam (shared version)
 
 # Choose an installation prefix.
@@ -63,7 +63,7 @@ LD = $(CXX)
 #   add -DAYUSESLXARGS if you use libslxargs from Aqsis
 # o add -DAYNOTEMPNAM if your system has no tempnam();
 #   (unlikely, but tempnam() is not ANSI)
-#   Note, that the preference setting TmpDir will always be ignored then!
+#   Note that the preference setting TmpDir will always be ignored then!
 # o add -DAYENABLEPPREV to enable the permanent preview feature
 # o add -DAYENABLEWAIT to enable the waitPid command (Unix/Linux only)
 # o add -DAYENABLEFEXIT to enable the fast exit procedure (MacOSX)
@@ -96,7 +96,7 @@ CFLAGS = -O -DAYUSEAFFINE
 # MacOSX with Aqua (universal binary, support for older MacOSX):
 CFLAGS = -O -DAYWITHAQUA -DAYUSEAFFINE -DAYENABLEFEXIT -DUSE_NON_CONST -arch ppc -arch i386 -isysroot /Developer/SDKs/MacOSX10.4u.sdk -mmacosx-version-min=10.2
 # MacOSX with X11:
-#CFLAGS = -O -DAYUSEAFFINE -DAYENABLEFEXIT -DUSE_NON_CONST
+#CFLAGS = -O -DAYUSEAFFINE -DAYENABLEFEXIT
 
 # ld flag to switch to static linking
 # IRIX:
@@ -127,7 +127,7 @@ EXLDFLAGS =
 # MacOSX (Aqua):
 #EXLDFLAGS = -flat_namespace
 # MacOSX (Aqua) universal binary, support for older MacOSX:
-EXLDFLAGS = -arch ppc -arch i386 -isysroot /Developer/SDKs/MacOSX10.4u.sdk -mmacosx-version-min=10.2 -headerpad_max_install_names
+#EXLDFLAGS = -arch ppc -arch i386 -isysroot /Developer/SDKs/MacOSX10.4u.sdk -mmacosx-version-min=10.2 -headerpad_max_install_names
 
 # Togl
 # Path to "togl.h":
@@ -259,7 +259,7 @@ DL = -ldl -lpthread
 # linker flags to produce shared modules:
 # Linux, Solaris, IRIX:
 SHLFLAGS = -shared
-# MacOSX:
+# MacOSX (X11):
 #SHLFLAGS = -bundle -flat_namespace -undefined suppress
 # MacOSX (Aqua):
 #SHLFLAGS = -dynamiclib -flat_namespace -undefined suppress

@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile.wrapped [13. May 2006]
+# Makefile.wrapped [11. Dec 2006]
 # Makefile for Ayam (wrapped version)
 
 # Choose an installation prefix.
@@ -64,7 +64,7 @@ LD = $(CXX)
 #   add -DAYUSESLXARGS if you use libslxargs from Aqsis
 # o add -DAYNOTEMPNAM if your system has no tempnam();
 #   (unlikely, but tempnam() is not ANSI)
-#   Note, that the preference setting TmpDir will always be ignored then!
+#   Note that the preference setting TmpDir will always be ignored then!
 # o always use -DAYWRAPPED to create a wrapped binary
 # o to link one of the provided plugins into the binary you may specify
 #   -DAYIDRWRAPPED, -DMETAWRAPPED, or -DRRIBWRAPPED
@@ -73,7 +73,6 @@ LD = $(CXX)
 # o add -DAYENABLEPPREV to enable the permanent preview feature
 # o add -DAYENABLEWAIT to enable the waitPid command (Unix/Linux only)
 # o add -DAYENABLEFEXIT to enable the fast exit procedure (MacOSX)
-# o add -DAYWITHAQUA if you use a Tcl/Tk for Aqua (not X11)
 # o add -DAYNOUNISTDH if your system has no "unistd.h" (no "times()" system
 #   call); if you add this option, the detection of held down keys will be
 #   switched off and rotating views via keyboard will fill up the undo buffer
@@ -90,9 +89,7 @@ CFLAGS = -O2 -DAYWRAPPED -DAYUSESLCARGS -DAYUSEBMRTRIBOUT -DAYENABLEWAIT
 #CFLAGS = -O2 -Wall -DAYWRAPPED -DAYUSESLCARGS -DAYUSEBMRTRIBOUT -DAYENABLEWAIT
 # Solaris (-DSOLARIS_BUG is needed by togl.c to work around a bug in libXmu):
 #CFLAGS = -O -DSOLARIS_BUG -DAYWRAPPED -DAYUSESLCARGS -DAYUSEBMRTRIBOUT
-# MacOSX with Aqua:
-#CFLAGS = -O -DAYWITHAQUA -DAYWRAPPED -DAYUSEAFFINE
-# MacOSX with X11:
+# MacOSX (X11):
 #CFLAGS = -O -DAYWRAPPED -DAYUSEAFFINE -DAYENABLEFEXIT
 
 # ld flag to switch to static linking
@@ -254,7 +251,7 @@ UPX = touch
 # do you want to strip the executable?
 # yes:
 STRIP = strip
-# MacOSX:
+# MacOSX (X11):
 # no:
 #STRIP = touch
 
@@ -271,7 +268,7 @@ DL = -ldl -lpthread
 # linker flags to produce shared modules:
 # Linux, Solaris, IRIX:
 SHLFLAGS = -shared
-# MacOSX:
+# MacOSX (X11):
 #SHLFLAGS = -bundle -flat_namespace -undefined suppress
 
 # RRIB Plugin Required Libraries
