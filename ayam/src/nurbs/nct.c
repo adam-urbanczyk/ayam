@@ -4820,7 +4820,7 @@ ay_nct_coarsen(ay_nurbcurve_object *curve)
     return AY_ENULL;
 
   /* nothing to do? */
-  if(((curve->length/2) < curve->order) || (curve->knot_type == AY_KTCUSTOM))
+  if(curve->knot_type == AY_KTCUSTOM)
     return AY_OK;
 
  if(curve->type == AY_CTPERIODIC)
@@ -4830,12 +4830,12 @@ ay_nct_coarsen(ay_nurbcurve_object *curve)
        * and remove points just from the other sections
        */
 
-      /* check again, nothing to do? */
+      /* no control points to remove? */
       p = curve->order-1;
       if((curve->length - p*2) < 2)
 	return AY_OK;
 
-      /* number of points to remove */
+      /* calc number of points to remove */
       t = (curve->length-(p*2))/2+(curve->length-(p*2)) % 2;
       newlength = curve->length-t;
 
@@ -4867,22 +4867,35 @@ ay_nct_coarsen(ay_nurbcurve_object *curve)
     }
  else
    {
-     newlength = curve->length/2;
+      /* calc number of points to remove */
+     t = (curve->length-2)/2;
+     newlength = curve->length-t;
 
-     /* properly handle closed curves (do not remove last point) */
-     if((curve->type == AY_CTCLOSED) && (curve->length % 2))
-       newlength++;
+      /* no control points to remove? */
+     if(newlength < curve->order)
+       return AY_OK;
      
      newcontrolv = calloc(newlength*stride, sizeof(double));
-     a = 0;
-     b = 0;
-     for(i = 0; i < newlength; i++)
+
+     /* copy first point */
+     memcpy(newcontrolv, curve->controlv, stride*sizeof(double));
+
+     /* copy middle points omitting every second */
+     a = stride;
+     b = a+stride;
+     for(i = 0; i < t; i++)
        {
 	 memcpy(&(newcontrolv[a]), &(curve->controlv[b]),
 		stride*sizeof(double));
 	 a += stride;
 	 b += 2*stride;
        }
+
+     /* copy last point */
+     a = (newlength-1)*stride;
+     b = (curve->length-1)*stride;
+     memcpy(&(newcontrolv[a]), &(curve->controlv[b]),
+	    stride*sizeof(double));
 
      curve->length = newlength;
    } /* if */
