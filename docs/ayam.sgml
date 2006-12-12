@@ -6052,6 +6052,30 @@ If you want to refine a curve with new control points and not
 change the position of existing control points, use the NCAttribute
 property GUI instead (simply increase the length of the curve
 by oldlength-1).
+Also note that for periodic curves the refine tool just inserts
+control points into all control point intervals except for the
+first (last) p intervals (where p is the degree of the curve).
+The shape of the curve will be changed in this case.
+</itemize>
+
+<sect1>The Coarsen Tool<label id="coart">
+<p>
+<figure loc="ht">
+<eps file="pics/coarsen.ps" height="4cm">
+<img src="pics/coarsen.gif">
+<caption>Successive Application of Coarsen Tool</caption>
+</figure>
+<itemize>
+<item>Arguments: The coarsen tool takes a number of NURBS curves from
+the selection.
+<item>Operation: Every second control point in the control vectors of
+the selected NURBS curves will be deleted.
+<item>Note: For periodic curves the coarsen tool will not remove
+control points from the first (last) p intervals (where p is the degree
+of the curve).
+For closed curves, the coarsen tool will not remove the last point.
+The coarsen tool, currently, does not work for curves with custom
+knot vectors.
 </itemize>
 
 <sect1>The Clamp Tool<label id="clat">
@@ -6871,6 +6895,16 @@ without changing the shape of the curve with n new knots {u1 u2 un}.
 Or, if no list of new knots is given, add a new knot into each interval
 in the old knot vector.
 The knot type of the refined curve will be changed to <tt/"Custom"/.
+See also section <ref id="refit" name="Refine Tool">.
+</itemize>
+
+<p><label id="sccoarsennc">
+coarsenNC - coarsen NURBS curve:
+<itemize>
+ <item>Synopsis: <tt/"coarsenNC"/
+ <item>Description: Remove every second control point from the
+selected NURBS curves.
+See also section <ref id="coart" name="Coarsen Tool">.
 </itemize>
 
 <p><label id="screvert">
@@ -8747,6 +8781,8 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <ref id="concatncp" name="ConcatNC attribute">
 <item>Closed BSpline: <ref id="cbspt" name="closed BSpline tool">
 <item>Close_U, Close_V: <ref id="pmattr" name="PatchMesh attribute">
+<item>coarsenNC: <ref id="sccoarsennc" name="scripting interface command">,
+<ref id="coart" name="coarsen tool">
 <item>Collapse: <ref id="collt" name="Collapse tool">,
 <ref id="treecontm" name="tree context menu entry">
 <item>Color: <ref id="riattrs" name="RenderMan/BMRT attribute">,
