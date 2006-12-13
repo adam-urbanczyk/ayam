@@ -60,6 +60,9 @@ int ay_knots_setuminmax(ay_object *o, double umin, double umax);
 
 int ay_knots_setvminmax(ay_object *o, double vmin, double vmax);
 
+int ay_knots_coarsen(int order, int knotvlen, double *knotv, int count,
+		     double **newknotv);
+
 int ay_knots_init(Tcl_Interp *interp);
 
 /* nb.c */
