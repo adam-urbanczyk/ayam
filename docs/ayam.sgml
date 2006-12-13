@@ -5781,7 +5781,7 @@ However, you can use the NURBCircle tool (see below) to create a true
 circle instead.
 <item>Note: i must be atleast 3. The first three control
 points of the new curve will be identical to the last three.
-Additionally, the curve will be marked as closed, and the generation
+Additionally, the curve will be marked as periodic and the generation
 of multiple points will be enabled, so that point
 edit actions know that they may need to move two points.
 See also section <ref id="ncurvemp" name="Multiple Points">.
@@ -5808,6 +5808,10 @@ You can use this circle to easily create a NURBS-torus by moving
 the circle along X and then revolving it. The amount of movement
 determines the radius of the torus, whereas the radius of the circle
 determines the thickness.
+Additionally, the created curve will be marked as closed and the generation
+of multiple points will be enabled, so that point edit actions know that
+they may need to move two points.
+See also section <ref id="ncurvemp" name="Multiple Points">.
 </itemize>
 
 <sect1>The NURBCircleArc Tool<label id="ncircat">
@@ -5836,9 +5840,13 @@ inside the NURBS patch.
 If no NURBS patch object is selected and the current level is not inside
 a NURBS patch, a curve with the coordinates (-1,-1), (-1,1), (1,1),
 and (1,-1) will be created instead.
+Additionally, the created curve will be marked as closed and the generation
+of multiple points will be enabled, so that point edit actions know that
+they may need to move two points.
+See also section <ref id="ncurvemp" name="Multiple Points">.
 See section <ref id="trim" name="Trim Curves"> for a more
-detailed discussion of trim curves and how to use this rectangular
-curve.
+detailed discussion of trim curves and how to use the rectangular
+curve created by the TrimRect tool.
 </itemize>
 
 <sect1>The NURBSphere Tool<label id="nspt">
@@ -6074,8 +6082,8 @@ the selected NURBS curves will be deleted.
 control points from the first (last) p intervals (where p is the degree
 of the curve).
 For closed curves, the coarsen tool will not remove the last point.
-The coarsen tool, currently, does not work for curves with custom
-knot vectors.
+The coarsen tool will also remove knot values from curves with
+custom knot vectors.
 </itemize>
 
 <sect1>The Clamp Tool<label id="clat">
