@@ -2453,6 +2453,7 @@ ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
   curve->order = 2;
   curve->knot_type = AY_KTCUSTOM;
   curve->type = AY_CTCLOSED;
+  curve->createmp = AY_TRUE;
 
   /* fill knotv */
   for(i = 0; i < 7; i++)
@@ -2485,6 +2486,8 @@ ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
   o->type = AY_IDNCURVE;
   o->refine = curve;
 
+  ay_nct_recreatemp(curve);
+
   if(!patch)
     {
       ay_object_link(o);
@@ -2516,8 +2519,6 @@ ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
 	    } /* if */
 	} /* if */
     } /* if */
-
-  ay_nct_recreatemp(curve);
 
  return TCL_OK;
 } /* ay_nct_crtrecttcmd */
@@ -4813,15 +4814,11 @@ ay_nct_coarsen(ay_nurbcurve_object *curve)
 {
  int ay_status = AY_OK;
  char fname[] = "ay_nct_coarsen";
- double *newcontrolv = NULL;
+ double *newcontrolv = NULL, *newknotv = NULL;
  int i, a, b, stride = 4, newlength, p, t;
 
   if(!curve)
     return AY_ENULL;
-
-  /* nothing to do? */
-  if(curve->knot_type == AY_KTCUSTOM)
-    return AY_OK;
 
  if(curve->type == AY_CTPERIODIC)
     {
@@ -4839,7 +4836,22 @@ ay_nct_coarsen(ay_nurbcurve_object *curve)
       t = (curve->length-(p*2))/2+(curve->length-(p*2)) % 2;
       newlength = curve->length-t;
 
-      newcontrolv = calloc(newlength*stride, sizeof(double));
+      /* coarsen (custom-) knots */
+      if(curve->knot_type == AY_KTCUSTOM)
+       {
+	 ay_status = ay_knots_coarsen(curve->order, curve->length+curve->order,
+				      curve->knotv, t, &newknotv);
+	 if(ay_status)
+	   {
+	     ay_error(AY_ERROR, fname, "Could not coarsen knots!");
+	     return ay_status;
+	   }
+       }
+
+      /* coarsen control points */
+
+      if(!(newcontrolv = calloc(newlength*stride, sizeof(double))))
+	return AY_EOMEM;
 
       /* copy first p points */
       memcpy(&(newcontrolv[0]), &(curve->controlv[0]),
@@ -4874,8 +4886,23 @@ ay_nct_coarsen(ay_nurbcurve_object *curve)
       /* no control points to remove? */
      if(newlength < curve->order)
        return AY_OK;
+
+      /* coarsen (custom-) knots */
+     if(curve->knot_type == AY_KTCUSTOM)
+       {
+	 ay_status = ay_knots_coarsen(curve->order, curve->length+curve->order,
+				      curve->knotv, t, &newknotv);
+	 if(ay_status)
+	   {
+	     ay_error(AY_ERROR, fname, "Could not coarsen knots!");
+	     return ay_status;
+	   }
+       }
      
-     newcontrolv = calloc(newlength*stride, sizeof(double));
+     /* coarsen control points */
+
+     if(!(newcontrolv = calloc(newlength*stride, sizeof(double))))
+       return AY_EOMEM;
 
      /* copy first point */
      memcpy(newcontrolv, curve->controlv, stride*sizeof(double));
@@ -4903,12 +4930,20 @@ ay_nct_coarsen(ay_nurbcurve_object *curve)
   free(curve->controlv);
   curve->controlv = newcontrolv;
 
-  free(curve->knotv);
-  curve->knotv = NULL;
+  if(!newknotv)
+    {
+      free(curve->knotv);
+      curve->knotv = NULL;
 
-  ay_status = ay_knots_createnc(curve);
-  if(ay_status)
-    ay_error(AY_ERROR, fname, "Could not create knots!");
+      ay_status = ay_knots_createnc(curve);
+      if(ay_status)
+	ay_error(AY_ERROR, fname, "Could not create knots!");
+    }
+  else
+    {
+      free(curve->knotv);
+      curve->knotv = newknotv;
+    }
 
   if(curve->type == AY_CTCLOSED)
     {
@@ -4919,7 +4954,7 @@ ay_nct_coarsen(ay_nurbcurve_object *curve)
 
   ay_nct_recreatemp(curve);
 
- return AY_OK;
+ return ay_status;
 } /* ay_nct_coarsen */
 
 
