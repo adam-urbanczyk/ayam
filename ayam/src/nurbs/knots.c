@@ -834,6 +834,40 @@ ay_knots_setvminmax(ay_object *o, double vmin, double vmax)
 } /* ay_knots_setvminmax */
 
 
+/* ay_knots_coarsen:
+ *  
+ */
+int
+ay_knots_coarsen(int order, int knotvlen, double *knotv, int count,
+		 double **newknotv)
+{
+ int ay_status = AY_OK;
+ double *nknotv = NULL;
+ int i, a;
+ /*
+ if(count >= (knotvlen-2*order)/2)
+    return AY_ERROR;
+ */
+  if(!(nknotv = calloc(knotvlen-count, sizeof(double))))
+    return AY_EOMEM;
+
+  memcpy(nknotv, knotv, order*sizeof(double));
+  a = order;
+  for(i = order; i < (knotvlen-order-count); i++)
+    {
+      nknotv[i] = knotv[a];
+      a += 2;
+    }
+
+  memcpy(&(nknotv[knotvlen-count-order]),
+	 &(knotv[knotvlen-order]), order*sizeof(double));
+
+  *newknotv = nknotv;
+
+ return ay_status;
+} /* ay_knots_coarsen */
+
+
 /* ay_knots_init:
  *  initialize the knots module
  */
