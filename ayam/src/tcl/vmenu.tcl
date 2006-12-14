@@ -68,7 +68,10 @@ if { $AYENABLEPPREV == 1 } {
 	$togl setconf -pprev 0
     }
 }
+# if
+
 $m add separator
+
 $m add command -label "Create All ShadowMaps" -command "io_RenderSM 1"
 $m add command -label "Create ShadowMap" -command "io_RenderSM 0"
 
@@ -152,6 +155,7 @@ $m add check -label "Draw BGImage" -variable ay(cVDrawBG) -command "\
 	global ay;\
 	$w.f3D.togl setconf -dbg \$ay(cVDrawBG);\
 	\$ay(currentView) mc"
+
 $m add command -label "Set BGImage" -command "viewSetBGImage $w.f3D.togl"
 
 $m add separator
@@ -214,7 +218,7 @@ $m add command -label "Align to Object" -command "\
 	$w.f3D.togl mc; $w.f3D.togl align; \$ay(currentView) mc"
 
 # XXXX This could be just a label or a menu displaying current action
-# or even allowing to start modeling actions, but which actions?
+# or even allowing to start modeling actions, but which actions, all?
 #menubutton $w.fMenu.a -image ay_Move_img -menu $w.fMenu.a.m -padx 3
 #menu $w.fMenu.a.m -tearoff 0
 #$w.fMenu.a.m add command\
@@ -234,7 +238,6 @@ if { ! $AYWITHAQUA } {
     $mb add cascade -label Local -menu $m
     set ay(mmodem) menubar.mm
 }
-
 
 $m add command -image ay_MMGlobLoc_img -hidemargin 1 -command "\
         global ay; set ay(cVMMode) 0;\
@@ -266,7 +269,6 @@ if { ! $AYWITHAQUA } {
     $mb add cascade -label Draw -menu $m
     set ay(dmodem) menubar.dm
 }
-
 
 $m add command -image ay_DMDraw_img -hidemargin 1 -command "\
         global ay; set ay(cVDMode) 0;\
@@ -303,7 +305,7 @@ if { ! $AYWITHAQUA } {
     $mb add cascade -label Grid -menu $m
     set ay(gridm) menubar.gridm
 }
-
+# if
 
 $m add command -image ay_Grid01_img -hidemargin 1 -command "\
     $w.f3D.togl setconf -grid 0.1 -drawg 1 -ugrid 1;\
@@ -328,7 +330,6 @@ $m add command -image ay_Grid_img -hidemargin 1 -command "\
     $w.f3D.togl setconf -grid 0.0 -drawg 0 -ugrid 0;\
     $w.f3D.togl render;\
     viewSetGridIcon $w 0.0"
-
 
 if { $AYWITHAQUA } {
     $m entryconfigure 0 -image {} -label "Grid 0.1"
@@ -371,6 +372,7 @@ $m add command -label "Help on object" -command {
 	}
     }
 }
+# -command
 
 $m add command -label "Show Shortcuts" -command "shortcut_show"
 $m add command -label "About" -command "aboutAyam"
@@ -399,6 +401,7 @@ if { ! $AYWITHAQUA } {
 	}
     }
 }
+# if
 
 return;
 }
