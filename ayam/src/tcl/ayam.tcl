@@ -652,7 +652,9 @@ if { $tcl_platform(platform) == "windows" } {
 	set ayprefs(AddExtensions) 1
 
 	# swap middle and right mouse buttons
-	set ayprefs(SwapMB) 1
+	if { $tcl_patchLevel < "8.4.14" } {
+	    set ayprefs(SwapMB) 1
+	}
 
 	# Aqua is like TWM
 	set ayprefs(TwmCompat) 1
