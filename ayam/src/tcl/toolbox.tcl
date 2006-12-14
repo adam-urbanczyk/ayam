@@ -404,7 +404,10 @@ proc toolbox_open { } {
 	    }
 	    balloon_set $f.bref "refine curve\nShift: coarsen curve"
 	    bind $f.bref <Shift-ButtonPress-1> {
+		%W configure -relief sunken
 		undo save Coarsen; coarsenNC; plb_update; rV
+		after 100 "%W configure -relief raised"
+		break;
 	    }
 
 	}
