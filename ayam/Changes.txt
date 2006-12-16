@@ -1,4 +1,4 @@
-[2. Dec 2006] CVS-Head:
+[16. Dec 2006] CVS-Head:
 o Bug Fixes:
   - extra help menu entry Helpblock (SF 1549831)
   - RenderGUI feature can not find cat.exe on Win32 (SF 1549833)
@@ -36,11 +36,13 @@ o added NURBS curve open/close/make periodic manipulation tools to main menu
 o added help on object to object tree and object listbox context menu
 o added help on property feature (new property listbox context menu entry:
   "Help on Property" and new main menu entry "Help/Help on Property")
+o added explaining balloon info to NPInfo property elements
 
 Modelling:
 o shift closed B-Spline tool now accepts negative parameters
 o added remove knot from NURBS curve tool
 o added coarsen tool for NURBS curves
+o create trimrect now creates curves with multiple points
 
 Renderer Support:
 o added render to file feature: new view menu entry "View/Render To File",
@@ -56,6 +58,7 @@ Apple Mac OS X (Aqua):
 o added proper (application specific) about menu
 o switched to Tcl/Tk 8.4.14 for official binary that allows to build
   Ayam as universal binary and with support for older Mac OS X versions
+o improved layout of single menu elements (LevelAttr property)
 
 
 [10. Aug 2006] Ayam 1.11:
