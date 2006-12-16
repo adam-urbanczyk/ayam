@@ -22,6 +22,7 @@ w     fRevolveAttr
 
 array set RevolveAttrData {
 DisplayMode 1
+NPInfoBall "n/a"
 }
 # create RevolveAttr-UI
 set w [frame $ay(pca).$RevolveAttr(w)]

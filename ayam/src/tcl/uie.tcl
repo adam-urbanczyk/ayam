@@ -1099,6 +1099,17 @@ proc addInfoB { w prop name help } {
 #
 #
 #
+proc updateInfoBalloon { f name1 name2 op } {
+    global ${name1}
+    set newtext [subst \$${name1}($name2)]
+    balloon_set $f.l2 "$newtext"
+ return;
+}
+# updateInfoBalloon
+
+#
+#
+#
 proc addInfo { w prop name } {
     set bw 1
     set f [frame $w.f${name} -relief sunken -bd $bw]
@@ -1112,7 +1123,13 @@ proc addInfo { w prop name } {
     pack $f.l1 -in $f -side left -fill x -expand no
     pack $f.l2 -in $f -side left -fill x -expand yes
     pack $f -in $w -side top -fill x
-
+    global $prop
+    if { [ info exists "${prop}(${name}Ball)" ] } {
+	global $prop
+	set balltext [subst \$${prop}(${name}Ball)]
+	balloon_set $f.l2 "$balltext"
+	trace variable ${prop}(${name}Ball) w "updateInfoBalloon $f"
+    }
  return;
 }
 # addInfo

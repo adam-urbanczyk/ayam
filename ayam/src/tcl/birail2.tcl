@@ -87,7 +87,9 @@ w     fBirail2Attr
 
 array set Birail2AttrData {
 DisplayMode 1
+NPInfoBall "n/a"
 }
+
 # create Birail2Attr-UI
 set w [frame $ay(pca).$Birail2Attr(w)]
 
