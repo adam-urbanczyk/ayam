@@ -549,8 +549,8 @@ ay_prop_setmattcmd(ClientData clientData, Tcl_Interp *interp,
 int
 ay_prop_getnpinfo(Tcl_Interp *interp, char *n1, ay_object *o)
 {
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
- char buffer[256];
+  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL, *to2 = NULL;
+ char buffer[128], buffer2[128], buffer3[64], buffer4[64];
  ay_nurbpatch_object *np = NULL;
 
   if(!interp || !n1)
@@ -563,7 +563,7 @@ ay_prop_getnpinfo(Tcl_Interp *interp, char *n1, ay_object *o)
   if(o && o->type == AY_IDNPATCH)
     {
       np = (ay_nurbpatch_object *)(o->refine);
-      /*"40 x 20, 4, 4, NURB, NURB"*/
+      /*"40 x 20, 4, 4, 3 (NURB), 3 (NURB)"*/
       sprintf(buffer/*, sizeof(buffer)*/, "%d x %d, %d, %d, %d, %d",
 	       np->width, np->height, np->uorder, np->vorder,
 	       np->uknot_type, np->vknot_type);
@@ -576,6 +576,65 @@ ay_prop_getnpinfo(Tcl_Interp *interp, char *n1, ay_object *o)
     } /* if */
 
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
+  /* set Balloon info text */
+  Tcl_SetStringObj(ton, "NPInfoBall", -1);
+  if(o && o->type == AY_IDNPATCH)
+    {
+      np = (ay_nurbpatch_object *)(o->refine);
+
+      sprintf(buffer2/*, sizeof(buffer)*/,
+	      "Width: %d\nHeight: %d\nOrder_U: %d\nOrder_V: %d\n",
+	      np->width, np->height, np->uorder, np->vorder);
+
+      to2 = Tcl_NewStringObj(buffer2, -1);
+
+      sprintf(buffer3/*, sizeof(buffer)*/, "Knot-Type_U: ");
+      switch(np->uknot_type)
+	{
+	case AY_KTBEZIER:
+	  sprintf(&(buffer3[13])/*, sizeof(buffer)*/, "Bezier\n");
+	  break;
+	case AY_KTBSPLINE:
+	  sprintf(&(buffer3[13])/*, sizeof(buffer)*/, "B-Spline\n");
+	  break;
+	case AY_KTNURB:
+	  sprintf(&(buffer3[13])/*, sizeof(buffer)*/, "NURB\n");
+	  break;
+	case AY_KTCUSTOM:
+	  sprintf(&(buffer3[13])/*, sizeof(buffer)*/, "CUSTOM\n");
+	  break;	  
+	}
+
+      Tcl_AppendToObj(to2, buffer3, -1);
+
+      sprintf(buffer4/*, sizeof(buffer)*/, "Knot-Type_V: ");
+      switch(np->vknot_type)
+	{
+	case AY_KTBEZIER:
+	  sprintf(&(buffer4[13])/*, sizeof(buffer)*/, "Bezier");
+	  break;
+	case AY_KTBSPLINE:
+	  sprintf(&(buffer4[13])/*, sizeof(buffer)*/, "B-Spline");
+	  break;
+	case AY_KTNURB:
+	  sprintf(&(buffer4[13])/*, sizeof(buffer)*/, "NURB");
+	  break;
+	case AY_KTCUSTOM:
+	  sprintf(&(buffer4[13])/*, sizeof(buffer)*/, "CUSTOM");
+	  break;	  
+	}
+
+      Tcl_AppendToObj(to2, buffer4, -1);
+
+    }
+  else
+    {
+      to2 = Tcl_NewStringObj("n/a", -1);
+    } /* if */
+
+  Tcl_ObjSetVar2(interp,toa,ton,to2,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);

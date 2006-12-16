@@ -88,8 +88,8 @@ w     fSweepAttr
 array set SweepAttrData {
 Type 0
 DisplayMode 1
+NPInfoBall "n/a"
 }
-
 
 
 #sweep_crt:

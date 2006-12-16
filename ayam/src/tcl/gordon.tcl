@@ -103,6 +103,7 @@ array set GordonAttr {
 
 array set GordonAttrData {
 DisplayMode 1
+NPInfoBall "n/a"
 }
 
 

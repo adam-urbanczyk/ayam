@@ -87,6 +87,7 @@ w     fBirail1Attr
 
 array set Birail1AttrData {
 DisplayMode 1
+NPInfoBall "n/a"
 }
 
 #birail1_crt:
