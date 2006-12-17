@@ -74,22 +74,24 @@ proc pomesh_merge { } {
 	    focus .
 	    destroy .pomeshmerge
 	} else {
-	    
+
 	   if { $pomeshmerge_options(RemoveMerged) == 1 } {
 	       catch {delOb}; uS; sL; rV
 	    } else {
 		uS; sL; rV
 	    }
 
-	    grab release .pomeshmerge
-	    focus .
-	    destroy .pomeshmerge
+	   set ay(sc) 1
 
-	    if { $pomeshmerge_options(OptimizeNew) == 1 } {
-		pomesh_optimize
-	    }
-	}
-	
+	   grab release .pomeshmerge
+	   focus .
+	   destroy .pomeshmerge
+
+	   if { $pomeshmerge_options(OptimizeNew) == 1 } {
+	       pomesh_optimize
+	   }
+       }
+
     }
 
     button $f.bca -text "Cancel" -width 5 -command "\

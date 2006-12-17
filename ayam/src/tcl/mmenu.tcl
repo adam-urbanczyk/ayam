@@ -349,8 +349,8 @@ $m.nct add command -label "Reset Weights" -command {
 }
 
 $m.nct add separator
-$m.nct add command -label "Collapse Points" -command { collMP; rV; }
-$m.nct add command -label "Explode Points" -command { explMP; rV; }
+$m.nct add command -label "Collapse Points" -command {collMP; rV; set ay(sc) 1}
+$m.nct add command -label "Explode Points" -command {explMP; rV; set ay(sc) 1}
 
 $m add separator
 
@@ -383,23 +383,21 @@ $m.npt add command -label "Reset Weights" -command {
 $m.npt add command -label "Extract NC" -command extrnc_crt
 $m.npt add command -label "Tesselate" -command tgui_open
 $m.npt add separator
-$m.npt add command -label "Collapse Points" -command { collMP; rV; }
-$m.npt add command -label "Explode Points" -command { explMP; rV; }
+$m.npt add command -label "Collapse Points" -command {collMP; rV; set ay(sc) 1}
+$m.npt add command -label "Explode Points" -command {explMP; rV; set ay(sc) 1}
 $m.npt add separator
 $m.npt add command -label "Split to Curves (u)" -command {
-    splitNP u; uS; sL; rV}
+    splitNP u; uS; sL; rV; set ay(sc) 1}
 $m.npt add command -label "Split to Curves (v)" -command {
-    splitNP v; uS; sL; rV}
+    splitNP v; uS; sL; rV; set ay(sc) 1}
 $m.npt add command -label "Build from Curves" -command {
-    buildNP; uCR; sL; rV}
+    buildNP; uCR; sL; rV; set ay(sc) 1}
 
 $m add separator
 
 $m add cascade -menu $m.pm -label "PolyMesh"
 menu $m.pm -tearoff 0
-$m.pm add command -label "Merge" -command {
-    pomesh_merge
-}
+$m.pm add command -label "Merge" -command { pomesh_merge }
 $m.pm add command -label "Optimize" -command { pomesh_optimize }
 
 $m add separator
@@ -446,7 +444,7 @@ $m add command -label "Show All" -command "show -all; uS 1 1; rV"
 $m add separator
 $m add command -label "Convert" -command {
     global ay
-    convOb; update; cS; set ay(ul) $ay(CurrentLevel); uS; rV
+    convOb; update; cS; set ay(ul) $ay(CurrentLevel); uS; rV; set ay(sc) 1
 }
 $m add command -label "Convert (In Place)" -command {
     global ay
