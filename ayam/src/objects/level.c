@@ -252,7 +252,7 @@ int
 ay_level_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
  int ay_status = AY_OK;
- ay_object *t = NULL;
+ ay_object *t = NULL, *d, **last;
  ay_level_object *l = NULL;
 
   if(!o)
@@ -270,39 +270,56 @@ ay_level_providecb(ay_object *o, unsigned int type, ay_object **result)
   if(!result)
     {
       /* can we deliver atleast one object of right type? */
-      /* XXXX test broken; should walk through all child objects! */
-      if(type == o->down->type)
+      d = o->down;
+      while(d->next)
 	{
-	  return AY_OK;
+	  if(type == d->type)
+	    {
+	      return AY_OK;
+	    }
+	  else
+	    {
+	      if(type == ay_provide_object(d, type, NULL))
+		{
+		  return AY_OK;
+		}
+	    }
+	  d = d->next;
+	} /* while */
+      return AY_FALSE;
+    } /* if */
+
+  d = o->down;
+  last = result;
+  while(d->next)
+    {
+      if(type == d->type)
+	{
+	  ay_status = ay_object_copy(d, last);
+	  if(*last)
+	    {
+	      ay_trafo_add(o, *last);
+	    }
+	  last = &((*last)->next);
 	}
       else
 	{
-	  return(ay_provide_object(o->down, type, NULL));
-	}
-    } /* if */
+	  ay_status = ay_provide_object(d, type, last);
 
-  /* XXXX this is broken too; should process all child objects! */
-  if(type == o->down->type)
-    {
-      ay_status = ay_object_copy(o->down, result);
-      if(*result)
-	ay_trafo_add(o, *result);
-    }
-  else
-    {
-      ay_status = ay_provide_object(o->down, type, result);
-
-      if(*result)
-	{
-	  t = *result;
-	  while(t)
+	  if(*last)
 	    {
-	      ay_trafo_add(o, t);
+	      t = *last;
+	      while(t)
+		{
+		  ay_trafo_add(o, t);
 
-	      t = t->next;
-	    } /* while */
+		  t = t->next;
+		} /* while */
+	      last = &((*last)->next);
+	    } /* if */
 	} /* if */
-    } /* if */
+      d = d->next;
+    } /* while */
 
  return ay_status;
 } /* ay_level_providecb */
