@@ -431,7 +431,7 @@ ay_skin_notifycb(ay_object *o)
     return AY_OK;
   down = o->down;
 
-  while(down)
+  while(down->next)
     {
       c = NULL;
 
