@@ -5,7 +5,7 @@
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
 
-<date>1. Dec 2006
+<date>18. Dec 2006
 
 <abstract>
 This is the documentation of Ayam 1.11 - a free 3D modelling environment
@@ -2371,11 +2371,9 @@ clamped to the range 0-255.
 Many shaders use array arguments to define transformation matrices.
 If this is the case and you have access to the shader source code
 you may want to modify those shaders to enable working with the
-transformation matrix carrying shader arguments.
-To do this, just change all definitions of transformation matrix
-carrying floating
-point arrays to real matrices.
-If the shader contains a
+transformation matrix carrying shader arguments. To do this, just
+change all definitions of transformation matrix carrying floating
+point arrays to real matrices. If the shader contains a
 <p>
 <tt>"float a_matrix_parameter[16]"</tt>
 <p>
@@ -2400,15 +2398,17 @@ that has been created by sl2xml.
 Furthermore, the <tt/"Default Values."/-button will not be available;
 you have to use <tt/"Set new shader."/ instead.
 <p>
-From version 1.3 on, Ayam also supports shader parsing plugins to allow parsing
-of shaders compiled with different shader compilers, see also section
-<ref id="spplugins" name="Shader Parsing Plugins">.
+From version 1.3 on, Ayam also supports shader parsing plugins to allow
+parsing of shaders compiled with different shader compilers, see also
+section <ref id="spplugins" name="Shader Parsing Plugins">.
 
 <sect2>Working with Shaders<label id="workshd">
 <p>
 The <tt/"Default Values."/-button resets all arguments of the shader
 to the default values.
-For that, the compiled shader will be parsed again.
+Additionally, the compiled shader will be parsed again and the property GUI
+will be adapted (new shader arguments will appear, removed shader arguments
+will disappear).
 Therefore, this button is quite handy if you have to deal with
 changing shaders: just edit the shader, recompile it, then back
 in Ayam just hit the <tt/"Default Values."/-button. Note that
@@ -2420,13 +2420,14 @@ changes, simply copy the shader property using the property clipboard
 you load the new default values and paste the property
 back using <tt>"Edit/Paste Property"</tt> after loading of the
 new default values.
-Note that this works only properly, if you do not change
-the type of existing shader arguments and if no shader arguments
-are removed in the new version of the shader!
+Beware! This works properly only, if you do not change the type of
+existing shader arguments and if no shader arguments are removed in
+the new version of the shader!
 <p>
-You can also just copy certain parameter values by selecting
-them using double-clicks on the parameter names in the shader
-property GUI and then use e.g. <tt>"Edit/Copy Marked Prop"</tt>
+You can also just copy certain parameter values (shader arguments
+whose types do not change) by selecting them using double-clicks
+on the parameter names in the shader property GUI and then use e.g.
+<tt>"Edit/Copy Marked Prop"</tt>
 (see also the description of the property clipboard in section
 <ref id="propgui" name="Properties">).
 
@@ -2499,19 +2500,16 @@ by editing the ayamrc file, see section
 
 <sect2>RiOption Tag<label id="riotag">
 <p>
-The tag type <tt/"RiOption"/ can be used to attach
-arbitrary RenderMan interface options to objects.
-This is handy if you use a renderer with lots of RiOptions
-that differ from the standard RiOptions.
-However, they will be only used by the RIB exporter
-if they are attached to the <tt/"Root"/ object!
-The syntax is similar to the <tt/"RiAttribute"/ tag
-type, see above.
-Note that RiOption tags may be created easily
-using the menu entry <tt>"Special/Tags/Add RiOption"</tt>.
-Tags created with this GUI will always be added to
-the <tt/"Root"/ object. It does not
-have to be selected!
+The tag type <tt/"RiOption"/ can be used to attach arbitrary RenderMan
+interface options to objects. This is handy if you use a renderer with
+lots of RiOptions that differ from the standard RiOptions.
+However, they will be only used by the RIB exporter if they are attached
+to the <tt/"Root"/ object!
+The syntax is similar to the <tt/"RiAttribute"/ tag type, see above.
+Note that RiOption tags may be created easily using the menu entry
+<tt>"Special/Tags/Add RiOption"</tt>.
+Tags created with this GUI will always be added to the <tt/"Root"/ object.
+It does not have to be selected when the GUI is used.
 Furthermore, the database of RiOptions for this GUI may be extended
 by editing the ayamrc file, see section
 <ref id="ayamrc" name="Ayamrc File">.
@@ -2552,6 +2550,8 @@ Note also that using TC tags you change the texture coordinates
 of entire primitives only, if you want to change the texture coordinates
 of sub-primitives (e.g. of single control points of a NURBS patch)
 you would need to use a PV (Primitive Variable) tag instead.
+<p>
+To ease setting of TC tag values Ayam provides a special editor.
 
 <sect3>Texture Coordinate Editor<label id="tce">
 <p>
@@ -2573,7 +2573,7 @@ Small arrows point to positive s and t direction respectively.
 
 The <tt/"RotateR"/ and <tt/"RotateL"/ buttons shift the coordinate
 values between the four points. This results in a 90 degree
-rotation of the texture.
+rotation of the texture space.
 <p>
 The <tt/"FlipS"/ and <tt/"FlipT"/ buttons flip the texture
 coordinate values in s and t direction respectively. This is
@@ -2586,21 +2586,23 @@ by a specific amount that is given in the first entry field.
 <p>
 The <tt/"Load"/ and <tt/"Save"/ menu buttons allow you to:
 <itemize>
-<item>load the default texture coordinate values ((0,0), (1,0), (0,1), (1,1))
+<item>load the default texture coordinate values ((0,0), (1,0), (0,1), (1,1)),
 
 <item>load texture coordinates from a selected BPatch object:
 The xy coordinates of the four points of the selected BPatch
 will be interpreted as st coordinates.
 This allows for more complex transformations of the texture coordinates
-e.g. rotations about an angle of 45 degrees.
+e.g. rotations about an angle of 45 degrees. For that just create a
+BPatch object, rotate it accordingly, then load the coordinates into
+the texture coordinate editor.
 
-<item>load TC tags from the selected object
+<item>load TC tags from the selected object,
 
-<item>save the texture coordinates to a BPatch object
+<item>save the texture coordinates to a BPatch object,
 
-<item>save TC tags to a selected object; Note that it is not
-possible to save the TC tag to multiple selected objects.
-Use the property clipboard to achieve this.
+<item>save TC tags to a selected object. Note that it is not
+possible to directly save the TC tag to multiple selected objects.
+But you can use the property clipboard to copy the tag.
 </itemize>
 Note that the tag numbers in the menu entries count TC tags only.
 <p>
@@ -3340,26 +3342,48 @@ default is (1, 0, 0.5).
 <p>
 Level objects may be used to build object hierarchies and perform CSG
 operations.
+<p>
+Ayam does not offer a layer concept, but by grouping objects using
+levels and the hide/show tools, layer functionality may be emulated
+to a certain extent.
+<p>
+Organizing the scene and working in levels also increases the speed
+of object tree updates, as only the current level and its sub-levels
+are subject to a tree update if the object hierarchy changes.
+<p>
 Note that child objects of a level inherit the levels transformations
 attributes and shaders. Inheritance of e.g. transformations means:
-If you have a NURBS patch in a level that is translated to 10,0,0,
+If you have a NURBS patch in a level that is translated to (10,0,0),
 the origin of the local coordinate system of the NURBS patch
-will be situated at 10,0,0. If you decide to move the patch by a value
-of 5 in X direction, you will finally arrive at 15,0,0 in world
-coordinates.<p>
+will be situated at (10,0,0). If you decide to move the patch by a
+value of 5 in X direction by setting a corresponding value in the
+Transformations property of the patch object, the local coordinate
+system of the patch will be placed at (15,0,0) in world coordinates.
+<p>
+Note also that since Ayam 1.12, Level objects provide their child
+objects to their parent objects as a list. This means the following
+hierarchy is now valid:
+<code>
++-Skin
+ +-Level
+  | NCurve
+  | NCurve
+  | ICurve
+  \ NCurve 
+</code>
+All NURBS curves and objects that may be converted to NURBS curves
+(in this example: the ICurve) will be provided to the Skin by the
+Level object. Transformation attributes of the Level will be added
+to the provided objects. Objects that do not provide the wanted
+type will be silently ignored.
 
 <sect2>LevelAttr Property<label id="lep"><label id="levelattrprop">
 <p>
 Levels do not have many object type specific properties, you may just
 modify the type of the level using the attribute <tt/"Type"/.
-
+<p>
 Levels of type <tt/"Level"/ just group objects and inherit attributes.
-Ayam does not offer a layer concept, but using levels and the
-hide/show tools, layer functionality may be emulated.
-Organizing the scene and working in levels also increases the speed
-of object tree updates as only the current level and its sub-levels
-are subject to a tree update if the hierarchy changes.
-
+<p>
 Levels of type <tt/"Union"/, <tt/"Intersection"/, and <tt/"Difference"/
 are used to build CSG hierarchies. Additionally, they inherit attributes.
 Note that Ayam is currently not able to correctly display the results
@@ -3368,7 +3392,7 @@ a CSG operation cut parts away.
 However, since Ayam 1.8 there is a plugin available that is able to
 preview the results of CSG operations, see also section
 <ref id="aycsg" name="CSG preview using the AyCSG plugin">.
-
+<p>
 The object hierarchy to cut away a part of a box using a sphere
 looks like this:
 <code>
@@ -3376,7 +3400,6 @@ looks like this:
  | Box
  \ Sphere
 </code>
-
 In contrast to the RenderMan interface, more than two objects
 may be arguments of a CSG operation:
 <code>
@@ -3386,7 +3409,7 @@ may be arguments of a CSG operation:
  \ Sphere
 </code>
 In this example, the two spheres would cut away parts of the box.
-
+<p>
 New solid primitives may be created with levels of type <tt/"Primitive"/.
 Note that Ayam is not able to check, whether your new primitive obeys
 the rule of total closeness. Furthermore, it is not necessary to
@@ -3397,11 +3420,11 @@ RIB export. This is done by Ayam automatically where needed.
 <p>
 Material objects are used to attach RiAttributes and shaders to
 geometric objects.
-
+<p>
 When geometric objects are dropped onto a material object using
 Drag-and-Drop in the tree view they will be connected to this
 material object.
-
+<p>
 When geometric objects are connected to a material object this material
 object may not be deleted.
 
@@ -3442,17 +3465,15 @@ visibility attributes.
 
 <sect2>Surface, Displacement, Interior, Exterior Property<label id="matshader">
 <p>
-These properties let you define shaders for the
-material object, please refer to section
-<ref id="shd" name="Shader Properties">
-for information on how to deal with shader property GUIs.<p>
-Surface shaders may be used to procedurally encode
-lighting models and textures. Displacement shaders
-may procedurally deform the object while rendering.
-Interior and Exterior shaders are so called volume
-shaders that may be used to capture
-special optical effects, encoding how
-light is affected while passing through an object.
+These properties let you define shaders for the material object, please
+refer to section <ref id="shd" name="Shader Properties">
+for information on how to deal with shader property GUIs.
+<p>
+Surface shaders may be used to procedurally encode lighting models and
+textures. Displacement shaders may procedurally deform the object while
+rendering. Interior and Exterior shaders are so called volume shaders
+that may be used to capture special optical effects, encoding how light
+is affected while passing through an object.
 
 <sect2>MaterialAttr Property<label id="matattr"><label id="materialattrprop">
 <p>
@@ -3464,11 +3485,10 @@ that material names have to be unique in a scene. If two
 materials with the same name exist, only the first material
 created with this name is "registered" and thus
 may be connected to geometric objects.
-<item><tt/"Refcount"/ shows how many geometric objects
-are connected to (are of) this material.
-Note that connected or referring geometric objects not necessarily
-have to live in the scene, they may as well temporarily reside in
-the object clipboard.
+<item><tt/"Refcount"/ shows how many geometric objects are connected to
+(are of) this material. Note that connected or referring geometric objects
+not necessarily have to live in the scene, they may as well temporarily
+reside in the object clipboard.
 <item><tt/"Registered"/ displays whether this material may be
 connected to geometric objects, see the discussion about material names above.
 </itemize>
