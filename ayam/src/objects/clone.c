@@ -792,6 +792,7 @@ ay_clone_convertcb(ay_object *o, int in_place)
  int ay_status = AY_OK;
  ay_clone_object *cc = NULL;
  ay_object *clone = NULL, *new = NULL, *down = NULL, **next = NULL;
+ ay_object *newo = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -820,19 +821,61 @@ ay_clone_convertcb(ay_object *o, int in_place)
   ((ay_level_object *)(new->refine))->type = AY_LTLEVEL;
 
   next = &(new->down);
+
+  /* copy parameter object(s) */
   ay_status = ay_object_copy(down, next);
-  next = &((*next)->next);
+  down = down->next;
+  if(*next)
+    {
+      next = &((*next)->next);
+    }
+  if(cc->mirror)
+    {
+      while(down->next)
+	{
+	  ay_status = ay_object_copy(down, next);
+	  down = down->next;
+	  if(*next)
+	    {
+	      next = &((*next)->next);
+	    }
+	} /* while */
+    } /* if */
+
+  /* copy clone(s) */
+  down = o->down;
   clone = cc->clones;
   while(clone)
     {
-      ay_status = ay_object_copy(down, next);
-      ay_trafo_copy(clone, *next);
-      next = &((*next)->next);
+      newo = NULL;
+      ay_status = ay_object_copy(down, &newo);
+      if(newo)
+	{
+	  ay_trafo_copy(clone, newo);
+	  /* link clones */
+	  if(cc->mirror == 0)
+	    {
+	      /* in order */
+	      *next = newo;
+	      next = &(newo->next);
+	    }
+	  else
+	    {
+	      /* in reverse order for mirrored clones */
+	      newo->next = *next;
+	      *next = newo;
+	    } /* if */
+	} /* if */
+
+      if(cc->mirror != 0)
+	down = down->next;
       clone = clone->next;
     } /* while */
 
-  ay_status = ay_object_crtendlevel(next);
+  while(*next)
+    next = &((*next)->next);
 
+  ay_status = ay_object_crtendlevel(next);
 
   /* second, link new objects, or replace old objects with them */
 
