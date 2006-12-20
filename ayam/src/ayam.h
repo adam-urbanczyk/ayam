@@ -31,7 +31,7 @@
 #endif /* WIN32 */
 
 #ifdef __cplusplus
-extern "C" {
+ extern "C" {
 #endif /* __cplusplus */
 
 #ifdef AYWITHAQUA
