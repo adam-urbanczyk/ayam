@@ -2155,11 +2155,15 @@ static int onio_w2c_size( int w_count, const wchar_t* w )
   // returns number of bytes used in wide conversion.  Does not
   // include NULL terminator.
   int rc = 0;
-  if ( w ) {
-	  rc = on_WideCharToMultiByte(w, w_count, NULL, 0);
-    if ( rc < 0 )
-      rc = 0;
-  }
+  if( w )
+    {
+      rc = on_WideCharToMultiByte(w, w_count, NULL, 0);
+      if( rc < 0 )
+	{
+	  rc = 0;
+	}
+    }
+
   return rc;
 } // onio_w2c_size
 
@@ -2177,18 +2181,23 @@ static int onio_w2c( int w_count,
   if ( c )
     c[0] = 0;
   // returns length of converted c[]
-  if ( c_count > 0 && c ) {
-    c[0] = 0;
-    if ( w ) {
-	    rc = on_WideCharToMultiByte(w, w_count, c, c_count);
-      if ( rc > 0 && rc <= c_count )
-        c[rc] = 0;
-      else {
-        c[c_count] = 0;
-        rc = 0;
-      }
-    }
-  }
+  if( c_count > 0 && c )
+    {
+      c[0] = 0;
+      if( w )
+	{
+	  rc = on_WideCharToMultiByte(w, w_count, c, c_count);
+	  if( rc > 0 && rc <= c_count )
+	    {
+	      c[rc] = 0;
+	    }
+	  else
+	    {
+	      c[c_count] = 0;
+	      rc = 0;
+	    } // if
+	} // if
+    } // if
   return rc;
 } // onio_w2c
 
@@ -3491,6 +3500,13 @@ Onio_Init(Tcl_Interp *interp)
  // int ay_status = AY_OK;
 
 #ifndef AYONIOWRAPPED
+#ifdef WIN32
+  if(Tcl_InitStubs(interp, "8.2", 0) == NULL)
+    {
+      return TCL_ERROR;
+    }
+#endif // WIN32
+
   // first, check versions
   if(strcmp(ay_version_ma, onio_version_ma))
     {
@@ -3631,6 +3647,6 @@ Onio_Init(Tcl_Interp *interp)
 #endif // !AYONIOWRAPPED
 
  return TCL_OK;
-} // Aycsg_Init | onio_inittcmd
+} // Onio_Init | onio_inittcmd
 
 } // extern "C"
