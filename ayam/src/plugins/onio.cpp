@@ -448,7 +448,7 @@ onio_addtrim(ay_object *o, ON_BrepLoop::TYPE ltype, ON_BrepTrim::TYPE ttype,
 	     ON_Brep *p_b, ON_BrepFace *p_f)
 {
  int ay_status = AY_OK;
- char fname[] = "onio_addtrim";
+ /*char fname[] = "onio_addtrim";*/
  ON_NurbsCurve nc1, nc2, *p_nc = NULL;
  ON_Curve *p_curve = NULL;
  unsigned int c2i, c3i;
@@ -2855,7 +2855,7 @@ int
 onio_readmesh(ON_Mesh *p_m, double accuracy)
 {
  int ay_status = AY_OK;
- char fname[] = "onio_readmesh";
+ /* char fname[] = "onio_readmesh";*/
  int j;
  unsigned int i, a, stride = 3, *nloops = NULL, *nverts = NULL, *verts = NULL;
  unsigned int tnverts = 0;
