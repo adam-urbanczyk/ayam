@@ -27,6 +27,12 @@ typedef struct csphere_object_s
   double thetamax;
 } csphere_object;
 
+
+#ifdef WIN32
+  __declspec (dllexport)
+#endif // WIN32
+int Csphere_Init(Tcl_Interp *interp);
+
 int
 csphere_createcb(int argc, char *argv[], ay_object *o)
 {
@@ -823,11 +829,21 @@ csphere_bbccb(ay_object *o, double *bbox, int *flags)
 /* note: this function _must_ be capitalized exactly this way
  * regardless of filename (see: man n load)!
  */
+#ifdef WIN32
+  __declspec (dllexport)
+#endif // WIN32
 int
 Csphere_Init(Tcl_Interp *interp)
 {
  int ay_status = AY_OK;
  char fname[] = "csphere_init";
+
+#ifdef WIN32
+  if(Tcl_InitStubs(interp, "8.2", 0) == NULL)
+    {
+      return TCL_ERROR;
+    }
+#endif // WIN32
 
   ay_status = ay_otype_register(csphere_name,
 				csphere_createcb,

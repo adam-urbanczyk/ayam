@@ -148,9 +148,12 @@ int onio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 		  int argc, char *argv[]);
 
 extern "C" {
-
+#ifndef AYONIOWRAPPED
+#ifdef WIN32
+  __declspec (dllexport)
+#endif // WIN32
+#endif // !AYONIOWRAPPED
 int Onio_Init(Tcl_Interp *interp);
-
 } // extern "C"
 
 
@@ -3491,6 +3494,11 @@ extern "C" {
 //  initialize onio module
 //  note: this function _must_ be capitalized exactly this way
 //  regardless of the filename of the shared object (see: man n load)!
+#ifndef AYONIOWRAPPED
+#ifdef WIN32
+  __declspec (dllexport)
+#endif // WIN32
+#endif // !AYONIOWRAPPED
 int
 Onio_Init(Tcl_Interp *interp)
 {

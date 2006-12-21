@@ -144,6 +144,9 @@ int ay_mfio_exportscenetcmd(ClientData clientData, Tcl_Interp *interp,
 
 void ay_mfio_printerr(MF3DErr errcode);
 
+#ifdef WIN32
+  __declspec (dllexport)
+#endif // WIN32
 int Mfio_Init(Tcl_Interp *interp);
 
 
@@ -2973,12 +2976,22 @@ ay_mfio_printerr(MF3DErr errcode)
 /* Mfio_Init:
  *
  */
+
+#ifdef WIN32
+  __declspec (dllexport)
+#endif // WIN32
 int
 Mfio_Init(Tcl_Interp *interp)
 {
  char fname[] = "mfio_init";
  int ay_status = AY_OK;
 
+#ifdef WIN32
+  if(Tcl_InitStubs(interp, "8.2", 0) == NULL)
+    {
+      return TCL_ERROR;
+    }
+#endif // WIN32
 
   /* first, check versions */
   if(strcmp(ay_version_ma, ay_mfio_version_ma))
