@@ -195,6 +195,11 @@ int idr_drawroot_cb(struct Togl *togl, ay_object *o);
 int idr_tree_selecttcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
 
+#ifndef AYIDRWRAPPED
+#ifdef WIN32
+  __declspec (dllexport)
+#endif // WIN32
+#endif
 int Idr_Init(Tcl_Interp *interp);
 
 
@@ -4321,6 +4326,14 @@ Idr_Init(Tcl_Interp *interp)
    "puts stdout \"Importance Driven Rendering available now ...\"";
  void **arr = NULL;
 
+#ifndef AYIDRWRAPPED
+#ifdef WIN32
+  if(Tcl_InitStubs(interp, "8.2", 0) == NULL)
+    {
+      return TCL_ERROR;
+    }
+#endif // WIN32
+
   /* first check versions */
   if(strcmp(ay_version_ma, idr_ay_version_ma))
     {
@@ -4336,6 +4349,7 @@ Idr_Init(Tcl_Interp *interp)
 	       "Plugin has been compiled for a different Ayam version!");
       ay_error(AY_ERROR, fname, "However, it is probably safe to continue...");
     }
+#endif /* !AYIDRWRAPPED */
 
   /* Create Togl commands */
   Togl_CreateCommand("idr_wrib", idr_wrib_tcb);

@@ -630,6 +630,13 @@ int ay_rrib_readrib(char *filename, int frame, int read_camera,
 		    int read_lights, int read_material, int read_partial,
 		    int error_level);
 
+#ifndef AYRRIBWRAPPED
+#ifdef WIN32
+  __declspec (dllexport)
+#endif // WIN32
+#endif /* !AYRRIBWRAPPED */
+int Rrib_Init(Tcl_Interp *interp);
+
 
 /* functions: */
 
@@ -5891,11 +5898,24 @@ ay_rrib_readribtcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_rrib_readribtcmd */
 
 
+#ifndef AYRRIBWRAPPED
+#ifdef WIN32
+  __declspec (dllexport)
+#endif // WIN32
+#endif /* !AYRRIBWRAPPED */
 int
 Rrib_Init(Tcl_Interp *interp)
 {
  char fname[] = "rrib_init";
  /* int ay_status = AY_OK;*/
+
+#ifndef AYRRIBWRAPPED
+#ifdef WIN32
+  if(Tcl_InitStubs(interp, "8.2", 0) == NULL)
+    {
+      return TCL_ERROR;
+    }
+#endif // WIN32
 
   /* first, check versions */
   if(strcmp(ay_version_ma, ay_rrib_version_ma))
@@ -5912,6 +5932,7 @@ Rrib_Init(Tcl_Interp *interp)
 	       "Plugin has been compiled for a different Ayam version!");
       ay_error(AY_ERROR, fname, "However, it is probably safe to continue...");
     }
+#endif /* !AYRRIBWRAPPED */
 
   /* register some C-functions as Tcl-Commands */
   Tcl_CreateCommand (interp, "rrib",
@@ -5926,7 +5947,7 @@ Rrib_Init(Tcl_Interp *interp)
 		  "Error while sourcing \\\"rrib.tcl\\\"!");
        return TCL_OK;
      }
-#endif
+#endif /* !AYRRIBWRAPPED */
 
   ay_error(AY_EOUTPUT, fname, "RIB import plugin successfully loaded.");
 

@@ -106,6 +106,11 @@ extern "C" {
 
 void aycsg_display(struct Togl *togl);
 
+#ifndef AYCSGWRAPPED
+#ifdef WIN32
+  __declspec (dllexport)
+#endif // WIN32
+#endif // !AYCSGWRAPPED
 int Aycsg_Init(Tcl_Interp *interp);
 
 }
@@ -1671,6 +1676,9 @@ int
 aycsg_inittcmd(ClientData clientData, Tcl_Interp *interp,
 	       int argc, char *argv[])
 #else
+#ifdef WIN32
+  __declspec (dllexport)
+#endif // WIN32
 int
 Aycsg_Init(Tcl_Interp *interp)
 #endif
@@ -1680,6 +1688,13 @@ Aycsg_Init(Tcl_Interp *interp)
  int ay_status = AY_OK;
 
 #ifndef AYCSGWRAPPED
+#ifdef WIN32
+  if(Tcl_InitStubs(interp, "8.2", 0) == NULL)
+    {
+      return TCL_ERROR;
+    }
+#endif // WIN32
+
   // first, check versions
   if(strcmp(ay_version_ma, aycsg_version_ma))
     {
