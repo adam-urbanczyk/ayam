@@ -30,7 +30,7 @@ typedef struct csphere_object_s
 
 #ifdef WIN32
   __declspec (dllexport)
-#endif // WIN32
+#endif /* WIN32 */
 int Csphere_Init(Tcl_Interp *interp);
 
 int
@@ -831,7 +831,7 @@ csphere_bbccb(ay_object *o, double *bbox, int *flags)
  */
 #ifdef WIN32
   __declspec (dllexport)
-#endif // WIN32
+#endif /* WIN32 */
 int
 Csphere_Init(Tcl_Interp *interp)
 {
@@ -843,7 +843,7 @@ Csphere_Init(Tcl_Interp *interp)
     {
       return TCL_ERROR;
     }
-#endif // WIN32
+#endif /* WIN32 */
 
   ay_status = ay_otype_register(csphere_name,
 				csphere_createcb,
