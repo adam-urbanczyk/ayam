@@ -115,6 +115,24 @@ ay_ncircle_shadecb(struct Togl *togl, ay_object *o)
 int
 ay_ncircle_drawhcb(struct Togl *togl, ay_object *o)
 {
+ ay_ncircle_object *ncircle = NULL;
+ ay_nurbcurve_object *nc = NULL;
+ double *p1, *p2;
+
+  if(!o)
+    return AY_ENULL;
+
+  ncircle = (ay_ncircle_object *)o->refine;
+
+  if(ncircle && ncircle->ncurve)
+    {
+      /* get NURBS curve and its last control points */
+      nc = (ay_nurbcurve_object *)ncircle->ncurve->refine;
+      p1 = &(nc->controlv[nc->length*4-8]);
+      p2 = p1+4;
+      /* draw arrow */
+      ay_draw_arrow(togl, p1, p2);
+    }
 
  return AY_OK;
 } /* ay_ncircle_drawhcb */
@@ -447,7 +465,7 @@ ay_ncircle_init(Tcl_Interp *interp)
 				    ay_ncircle_deletecb,
 				    ay_ncircle_copycb,
 				    ay_ncircle_drawcb,
-				    NULL, /* no editable points */
+				    ay_ncircle_drawhcb,
 				    NULL, /* no shading */
 				    ay_ncircle_setpropcb,
 				    ay_ncircle_getpropcb,
