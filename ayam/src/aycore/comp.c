@@ -95,6 +95,8 @@ int ay_comp_birail2(ay_object *o1, ay_object *o2);
 
 int ay_comp_extrnc(ay_object *o1, ay_object *o2);
 
+int ay_comp_ncircle(ay_object *o1, ay_object *o2);
+
 int ay_comp_script(ay_object *o1, ay_object *o2);
 
 int ay_comp_bevel(ay_object *o1, ay_object *o2);
@@ -1176,6 +1178,26 @@ ay_comp_extrnc(ay_object *o1, ay_object *o2)
 } /* ay_comp_extrnc */
 
 
+/* ay_comp_ncircle:
+ *
+ */
+int
+ay_comp_ncircle(ay_object *o1, ay_object *o2)
+{
+ ay_ncircle_object *s1, *s2;
+
+  s1 = (ay_ncircle_object *)o1->refine;
+  s2 = (ay_ncircle_object *)o2->refine;
+
+  if((s1->radius != s2->radius) ||
+     (s1->tmin != s2->tmin) ||
+     (s1->tmax != s2->tmax))
+    return AY_FALSE;
+
+ return AY_TRUE;
+} /* ay_comp_ncircle */
+
+
 /* ay_comp_register:
  *  register the compare callback compcb for
  *  objects of type type_id
@@ -1279,6 +1301,7 @@ ay_comp_init()
   ay_status = ay_comp_register(ay_comp_birail1, AY_IDBIRAIL1);
   ay_status = ay_comp_register(ay_comp_birail2, AY_IDBIRAIL2);
   ay_status = ay_comp_register(ay_comp_extrnc, AY_IDEXTRNC);
+  ay_status = ay_comp_register(ay_comp_ncircle, AY_IDNCIRCLE);
   ay_status = ay_comp_register(ay_comp_script, AY_IDSCRIPT);
   ay_status = ay_comp_register(ay_comp_bevel, AY_IDBEVEL);
 

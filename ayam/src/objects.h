@@ -75,6 +75,9 @@ int ay_light_init(Tcl_Interp *interp);
 /* material.c */
 int ay_material_init(Tcl_Interp *interp);
 
+/* ncircle.c */
+int ay_ncircle_init(Tcl_Interp *interp);
+
 /* ncurve.c */
 int ay_ncurve_init(Tcl_Interp *interp);
 

@@ -168,6 +168,9 @@ $m add command -label "ICurve" -command {
     runTool ay(iclen) "Length:" \
 	"crtOb ICurve -length %0; uCR; sL; forceNot; rV;"
 }
+$m add command -label "NCircle" -command {
+    crtOb NCircle; uCR; sL; forceNot; rV;
+}
 $m add command -label "NURBPatch" -command {
     runTool {ay(npwidth) ay(npheight)} {"Width:" "Height:"} \
 	"crtOb NPatch -width %0 -height %1; uCR; sL; forceNot; rV;"

@@ -3610,6 +3610,9 @@ Onio_Init(Tcl_Interp *interp)
   ay_status = onio_registerwritecb((char *)(AY_IDEXTRNC),
 				   onio_writencconvertible);
 
+  ay_status = onio_registerwritecb((char *)(AY_IDNCIRCLE),
+				   onio_writencconvertible);
+
   ay_status = onio_registerwritecb((char *)(AY_IDLEVEL),
 				   onio_writelevel);
 

@@ -752,6 +752,18 @@ typedef struct ay_extrnc_object_s
 } ay_extrnc_object;
 
 
+typedef struct ay_ncircle_object_s
+{
+  double radius;
+  double tmin;
+  double tmax;
+  /* cache NURBS curve representation */
+  ay_object *ncurve;
+  double glu_sampling_tolerance;
+  int glu_display_mode;
+} ay_ncircle_object;
+
+
 typedef struct ay_script_object_s
 {
   char *script; /* the script text (Tcl) */
@@ -1121,6 +1133,7 @@ extern unsigned int ay_current_primlevel;
 #define AY_IDSCRIPT        35
 #define AY_IDRIPROC        36
 #define AY_IDBEVEL         37
+#define AY_IDNCIRCLE       38
 
 #define AY_IDLAST          50
 

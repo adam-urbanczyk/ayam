@@ -421,6 +421,7 @@ AYAMOBJS = aycore/bbc.o\
 	objects/level.o\
 	objects/light.o\
 	objects/material.o\
+	objects/ncircle.o\
 	objects/ncurve.o\
 	objects/npatch.o\
 	objects/pamesh.o\
