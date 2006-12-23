@@ -198,8 +198,8 @@ int idr_tree_selecttcmd(ClientData clientData, Tcl_Interp *interp,
 #ifndef AYIDRWRAPPED
 #ifdef WIN32
   __declspec (dllexport)
-#endif // WIN32
-#endif
+#endif /* WIN32 */
+#endif /* !AYIDRWRAPPED */
 int Idr_Init(Tcl_Interp *interp);
 
 
@@ -4332,7 +4332,7 @@ Idr_Init(Tcl_Interp *interp)
     {
       return TCL_ERROR;
     }
-#endif // WIN32
+#endif /* WIN32 */
 
   /* first check versions */
   if(strcmp(ay_version_ma, idr_ay_version_ma))
