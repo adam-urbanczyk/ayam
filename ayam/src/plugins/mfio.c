@@ -146,7 +146,7 @@ void ay_mfio_printerr(MF3DErr errcode);
 
 #ifdef WIN32
   __declspec (dllexport)
-#endif // WIN32
+#endif /* WIN32 */
 int Mfio_Init(Tcl_Interp *interp);
 
 
@@ -2979,7 +2979,7 @@ ay_mfio_printerr(MF3DErr errcode)
 
 #ifdef WIN32
   __declspec (dllexport)
-#endif // WIN32
+#endif /* WIN32 */
 int
 Mfio_Init(Tcl_Interp *interp)
 {
@@ -2991,7 +2991,7 @@ Mfio_Init(Tcl_Interp *interp)
     {
       return TCL_ERROR;
     }
-#endif // WIN32
+#endif /* WIN32 */
 
   /* first, check versions */
   if(strcmp(ay_version_ma, ay_mfio_version_ma))

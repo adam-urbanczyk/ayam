@@ -633,7 +633,7 @@ int ay_rrib_readrib(char *filename, int frame, int read_camera,
 #ifndef AYRRIBWRAPPED
 #ifdef WIN32
   __declspec (dllexport)
-#endif // WIN32
+#endif /* WIN32 */
 #endif /* !AYRRIBWRAPPED */
 int Rrib_Init(Tcl_Interp *interp);
 
@@ -5901,7 +5901,7 @@ ay_rrib_readribtcmd(ClientData clientData, Tcl_Interp *interp,
 #ifndef AYRRIBWRAPPED
 #ifdef WIN32
   __declspec (dllexport)
-#endif // WIN32
+#endif /* WIN32 */
 #endif /* !AYRRIBWRAPPED */
 int
 Rrib_Init(Tcl_Interp *interp)
@@ -5915,7 +5915,7 @@ Rrib_Init(Tcl_Interp *interp)
     {
       return TCL_ERROR;
     }
-#endif // WIN32
+#endif /* WIN32 */
 
   /* first, check versions */
   if(strcmp(ay_version_ma, ay_rrib_version_ma))
