@@ -468,7 +468,15 @@ proc toolbox_open { } {
 	    button $f.bnci -image ay_NCircle_img -padx 0 -pady 0 -command {
 		crtClosedBS $ay(cbspnum) $ay(cbsporder); uCR; sL; forceNot; rV;
 	    }
-	    balloon_set $f.bnci "create circle"
+	    bind $f.bnci <Shift-ButtonPress-1> {
+		global  ay
+		%W configure -relief sunken
+		crtOb NCircle; uCR; sL; forceNot; rV;
+		after 100 "%W configure -relief raised"
+		break;
+	    }
+	    balloon_set $f.bnci \
+		"create circular B-Spline\nShift: create NCircle object"
 
 	    #####
 	    button $f.bnp -image ay_NPatch_img -padx 0 -pady 0 -command {
