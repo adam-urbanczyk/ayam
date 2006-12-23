@@ -1,4 +1,4 @@
-[16. Dec 2006] CVS-Head:
+[23. Dec 2006] CVS-Head:
 o Bug Fixes:
   - extra help menu entry Helpblock (SF 1549831)
   - RenderGUI feature can not find cat.exe on Win32 (SF 1549833)
@@ -26,6 +26,7 @@ o Bug Fixes:
   - default documentation URL offered in preferences on Aqua (SF 1599917)
   - refineNC with new knot vector not setting correct knot type (SF 1599950)
   - changing background image does not set scene change state (SF 1607354)
+  - fixed conversion of clone objects in mirror mode (SF 1620358)
 
 GUI:
 o added "set arbitrary grid size" entry to view window grid menu
@@ -37,12 +38,15 @@ o added help on object to object tree and object listbox context menu
 o added help on property feature (new property listbox context menu entry:
   "Help on Property" and new main menu entry "Help/Help on Property")
 o added explaining balloon info to NPInfo property elements
+o fixed various tools not setting the scene changed state: split to curves,
+  build from curves, merge PolyMesh, create TrimRect, conversion
 
 Modelling:
 o shift closed B-Spline tool now accepts negative parameters
 o added remove knot from NURBS curve tool
 o added coarsen tool for NURBS curves
 o create trimrect now creates curves with multiple points
+o added new object type NCircle
 
 Renderer Support:
 o added render to file feature: new view menu entry "View/Render To File",
@@ -58,7 +62,7 @@ Apple Mac OS X (Aqua):
 o added proper (application specific) about menu
 o switched to Tcl/Tk 8.4.14 for official binary that allows to build
   Ayam as universal binary and with support for older Mac OS X versions
-o improved layout of single menu elements (LevelAttr property)
+o improved layout of single menu elements (e.g. LevelAttr property)
 
 
 [10. Aug 2006] Ayam 1.11:
