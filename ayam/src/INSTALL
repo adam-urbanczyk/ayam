@@ -1,4 +1,4 @@
-INSTALL [14. Aug 2006]
+INSTALL [26. Dec 2006]
 
 Compilation Instructions for Ayam
 ---------------------------------
@@ -14,7 +14,7 @@ bit tricky. Therefore, if you really want to or have to compile Ayam:
 _Please compile a "shared" version of Ayam!_
 
 Note: To compile on Win32 using Visual Studio 2005 Express use the provided
-workspace instead.
+workspace Ayam-*-VC2005.zip instead.
 
 Contents:
 1. Compiling a Shared Version of Ayam
@@ -68,7 +68,14 @@ version of Ayam:
   compile Ayam with the Affine Toolkit with reduced functionality,
   read: no parsing of slc-compiled shaders.
   You can also use libslxargs from Aqsis ( http://www.aqsis.com/ )
-  as libslcargs replacement.
+  as libslcargs replacement and libri2rib from Aqsis as libribout
+  replacement.
+- Togl ( togl.h, togl.c )
+  For most systems a working Togl is already included in the Ayam
+  source distribution, see subdir togl. No download necessary!
+  For MacOSX/Aqua you need to download atleast Togl-1.7 from
+  http://sourceforge.net/projects/togl/
+  and copy all its contents over to "ayam/src/togl".
 - TIFF ( tiffio.h, libtiff.so )
   http://www.libtiff.org/
 - The Affine Toolkit
@@ -209,7 +216,8 @@ version of Ayam:
   compile Ayam with the Affine Toolkit with reduced functionality,
   read: no parsing of slc-compiled shaders.
   You can also use libslxargs from Aqsis ( http://www.aqsis.com/ )
-  as libslcargs replacement.
+  as libslcargs replacement and libri2rib from Aqsis as libribout
+  replacement.
 - TIFF ( tiffio.h, libtiff.so )
   http://www.libtiff.org/
 - The Affine Toolkit

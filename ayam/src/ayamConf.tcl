@@ -118,6 +118,29 @@ proc create_makefile {} {
 	set err 1
     }
 
+    if {$useaqua} {
+	set toglhpath "togl/togl.h"
+	if {![file exists $toglhpath]} {
+	    set err_str "$err_str - Couldn't find togl.h!\n"
+	    set err 1
+	} else {
+	    set infile [ open $toglhpath r ]
+	    set found 0
+	    while { ![eof $infile] } {
+		gets $infile in
+		if { [string first "OpenGL/gl.h" $in] > -1 } {
+		    set found 1;
+		    break;
+		}
+	    }
+	    # while
+	    if { ! $found } {
+		set err_str "$err_str - Togl not useable on Aqua, get 1.7!\n"
+		set err 1
+	    }
+	    close $infile
+	}
+    }
 
     if {$err} {
 	tk_messageBox -icon error -message $err_str -parent . -type ok
@@ -259,6 +282,7 @@ proc create_makefile {} {
     set TIFFLIB "-L$tiffpath/lib -ltiff"
     set TIFFINC "-I$tiffpath/include"
 
+    # OpenGL and Aqua specific Tcl/Tk
     if { $useaqua } {
 	set TCLLIB "-framework Tcl"
 	set TKINC "-I$tkpath/generic -I$tkpath/macosx -I$tkpath/xlib"
