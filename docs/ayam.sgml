@@ -5,10 +5,10 @@
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
 
-<date>18. Dec 2006
+<date>25. Dec 2006
 
 <abstract>
-This is the documentation of Ayam 1.11 - a free 3D modelling environment
+This is the documentation of Ayam 1.12 - a free 3D modelling environment
 for the RenderMan interface.
 
 Please note, that this document is intended to be a reference manual,
@@ -5363,7 +5363,28 @@ patches delivered e.g. by a beveled extrude object as child
 of the ExtrNC object.
 This way it is possible to extract a curve from a bevel or cap
 surface.
+</itemize>
+<p>
+See section <ref id="npattr" name="NPatchAttr"> for a description
+of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 
+<sect1>NCircle (NURBS Circle) Object<label id="ncircleobj">
+<p>
+The NCircle object is available since Ayam 1.12 and creates a
+circular NURBS curve or a circular arc in the XY plane with
+designated radius and start/end angles.
+<p>
+The following section describes the parameters of the circle or
+arc.
+
+<sect2>NCircleAttr Property<label id="ncircleattrprop">
+<p>
+<itemize>
+<item><tt/"Radius"/ is the radius of the circle.
+<item><tt/"TMin"/ controls the starting angle of the circle
+or arc to be created. Negative values are allowed.
+<item><tt/"TMax"/ controls the end angle of the circle
+or arc to be created. Negative values are allowed.
 </itemize>
 <p>
 See section <ref id="npattr" name="NPatchAttr"> for a description
