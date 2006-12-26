@@ -1,4 +1,4 @@
-/* $Id: togl.h,v 1.1 2001/10/10 16:15:37 randolf Exp $ */
+/* $Id: togl.h,v 1.2 2006/12/26 19:43:12 randolf Exp $ */
 
 /*
  * Togl - a Tk OpenGL widget
@@ -10,8 +10,11 @@
 
 /*
  * $Log: togl.h,v $
- * Revision 1.1  2001/10/10 16:15:37  randolf
- * Initial revision
+ * Revision 1.2  2006/12/26 19:43:12  randolf
+ * allow plugins on Win32 access
+ *
+ * Revision 1.1.1.1  2001/10/10 16:15:37  randolf
+ * Initial revision based on Ayam1.0b4.
  *
  * Revision 1.17  1997/11/15 04:14:37  brianp
  * changed version to 1.5
@@ -81,6 +84,9 @@
 #include <winnt.h>
 #endif /*WIN32*/
 
+#ifndef TOGL_EXTERN
+#define TOGL_EXTERN extern
+#endif /*!TOGL_EXTERN*/
 
 #include <tcl.h>
 #include <tk.h>
@@ -140,7 +146,7 @@ typedef int  (Togl_CmdProc) (struct Togl *togl, int argc, char *argv[]);
 
 
 
-extern int Togl_Init( Tcl_Interp *interp );
+TOGL_EXTERN int Togl_Init( Tcl_Interp *interp );
 
 
 
@@ -148,74 +154,74 @@ extern int Togl_Init( Tcl_Interp *interp );
  * Callback setup functions
  */
 
-extern void Togl_CreateFunc( Togl_Callback *proc );
+TOGL_EXTERN void Togl_CreateFunc( Togl_Callback *proc );
 
-extern void Togl_DisplayFunc( Togl_Callback *proc );
+TOGL_EXTERN void Togl_DisplayFunc( Togl_Callback *proc );
 
-extern void Togl_ReshapeFunc( Togl_Callback *proc );
+TOGL_EXTERN void Togl_ReshapeFunc( Togl_Callback *proc );
 
-extern void Togl_DestroyFunc( Togl_Callback *proc );
+TOGL_EXTERN void Togl_DestroyFunc( Togl_Callback *proc );
 
-extern void Togl_TimerFunc( Togl_Callback *proc );
+TOGL_EXTERN void Togl_TimerFunc( Togl_Callback *proc );
 
-extern void Togl_ResetDefaultCallbacks( void );
+TOGL_EXTERN void Togl_ResetDefaultCallbacks( void );
 
 
 /*
  * Change callbacks for existing widget
  */
 
-extern void Togl_SetCreateFunc( struct Togl *togl, Togl_Callback *proc );
+TOGL_EXTERN void Togl_SetCreateFunc( struct Togl *togl, Togl_Callback *proc );
 
-extern void Togl_SetDisplayFunc( struct Togl *togl, Togl_Callback *proc );
+TOGL_EXTERN void Togl_SetDisplayFunc( struct Togl *togl, Togl_Callback *proc );
 
-extern void Togl_SetReshapeFunc( struct Togl *togl, Togl_Callback *proc );
+TOGL_EXTERN void Togl_SetReshapeFunc( struct Togl *togl, Togl_Callback *proc );
 
-extern void Togl_SetDestroyFunc( struct Togl *togl, Togl_Callback *proc );
+TOGL_EXTERN void Togl_SetDestroyFunc( struct Togl *togl, Togl_Callback *proc );
 
 
 /*
  * Miscellaneous
  */
 
-extern int Togl_Configure( Tcl_Interp *interp, struct Togl *togl, 
+TOGL_EXTERN int Togl_Configure( Tcl_Interp *interp, struct Togl *togl, 
                            int argc, char *argv[], int flags );
 
-extern void Togl_MakeCurrent( const struct Togl *togl );
+TOGL_EXTERN void Togl_MakeCurrent( const struct Togl *togl );
 
-extern void Togl_CreateCommand( char *cmd_name,
+TOGL_EXTERN void Togl_CreateCommand( char *cmd_name,
                                 Togl_CmdProc *cmd_proc );
 
-extern void Togl_PostRedisplay( struct Togl *togl );
+TOGL_EXTERN void Togl_PostRedisplay( struct Togl *togl );
 
-extern void Togl_SwapBuffers( const struct Togl *togl );
+TOGL_EXTERN void Togl_SwapBuffers( const struct Togl *togl );
 
 
 /*
  * Query functions
  */
 
-extern char *Togl_Ident( const struct Togl *togl );
+TOGL_EXTERN char *Togl_Ident( const struct Togl *togl );
 
-extern int Togl_Width( const struct Togl *togl );
+TOGL_EXTERN int Togl_Width( const struct Togl *togl );
 
-extern int Togl_Height( const struct Togl *togl );
+TOGL_EXTERN int Togl_Height( const struct Togl *togl );
 
-extern Tcl_Interp *Togl_Interp( const struct Togl *togl );
+TOGL_EXTERN Tcl_Interp *Togl_Interp( const struct Togl *togl );
 
-extern Tk_Window Togl_TkWin( const struct Togl *togl );
+TOGL_EXTERN Tk_Window Togl_TkWin( const struct Togl *togl );
 
 
 /*
  * Color Index mode
  */
 
-extern unsigned long Togl_AllocColor( const struct Togl *togl,
+TOGL_EXTERN unsigned long Togl_AllocColor( const struct Togl *togl,
                                       float red, float green, float blue );
 
-extern void Togl_FreeColor( const struct Togl *togl, unsigned long index );
+TOGL_EXTERN void Togl_FreeColor( const struct Togl *togl, unsigned long index );
 
-extern void Togl_SetColor( const struct Togl *togl, unsigned long index,
+TOGL_EXTERN void Togl_SetColor( const struct Togl *togl, unsigned long index,
                            float red, float green, float blue );
 
 
@@ -223,48 +229,48 @@ extern void Togl_SetColor( const struct Togl *togl, unsigned long index,
  * Bitmap fonts
  */
 
-extern GLuint Togl_LoadBitmapFont( const struct Togl *togl,
+TOGL_EXTERN GLuint Togl_LoadBitmapFont( const struct Togl *togl,
                                    const char *fontname );
 
-extern void Togl_UnloadBitmapFont( const struct Togl *togl, GLuint fontbase );
+TOGL_EXTERN void Togl_UnloadBitmapFont( const struct Togl *togl, GLuint fontbase );
 
 
 /*
  * Overlay functions
  */
 
-extern void Togl_UseLayer( struct Togl *togl, int layer );
+TOGL_EXTERN void Togl_UseLayer( struct Togl *togl, int layer );
 
-extern void Togl_ShowOverlay( struct Togl *togl );
+TOGL_EXTERN void Togl_ShowOverlay( struct Togl *togl );
 
-extern void Togl_HideOverlay( struct Togl *togl );
+TOGL_EXTERN void Togl_HideOverlay( struct Togl *togl );
 
-extern void Togl_PostOverlayRedisplay( struct Togl *togl );
+TOGL_EXTERN void Togl_PostOverlayRedisplay( struct Togl *togl );
 
-extern void Togl_OverlayDisplayFunc( Togl_Callback *proc );
+TOGL_EXTERN void Togl_OverlayDisplayFunc( Togl_Callback *proc );
 
-extern int Togl_ExistsOverlay( const struct Togl *togl );
+TOGL_EXTERN int Togl_ExistsOverlay( const struct Togl *togl );
 
-extern int Togl_GetOverlayTransparentValue( const struct Togl *togl );
+TOGL_EXTERN int Togl_GetOverlayTransparentValue( const struct Togl *togl );
 
-extern int Togl_IsMappedOverlay( const struct Togl *togl );
+TOGL_EXTERN int Togl_IsMappedOverlay( const struct Togl *togl );
 
-extern unsigned long Togl_AllocColorOverlay( const struct Togl *togl,
+TOGL_EXTERN unsigned long Togl_AllocColorOverlay( const struct Togl *togl,
                                              float red, float green, 
                                              float blue );
 
-extern void Togl_FreeColorOverlay( const struct Togl *togl, 
+TOGL_EXTERN void Togl_FreeColorOverlay( const struct Togl *togl, 
                                    unsigned long index );
 
 /*
  * User client data
  */
 
-extern void Togl_ClientData( ClientData clientData );
+TOGL_EXTERN void Togl_ClientData( ClientData clientData );
 
-extern ClientData Togl_GetClientData( const struct Togl *togl );
+TOGL_EXTERN ClientData Togl_GetClientData( const struct Togl *togl );
 
-extern void Togl_SetClientData( struct Togl *togl, ClientData clientData );
+TOGL_EXTERN void Togl_SetClientData( struct Togl *togl, ClientData clientData );
 
 
 /*
@@ -273,10 +279,10 @@ extern void Togl_SetClientData( struct Togl *togl, ClientData clientData );
  */
 
 #ifdef TOGL_X11
-extern Display *Togl_Display( const struct Togl *togl );
-extern Screen *Togl_Screen( const struct Togl *togl );
-extern int Togl_ScreenNumber( const struct Togl *togl );
-extern Colormap Togl_Colormap( const struct Togl *togl );
+TOGL_EXTERN Display *Togl_Display( const struct Togl *togl );
+TOGL_EXTERN Screen *Togl_Screen( const struct Togl *togl );
+TOGL_EXTERN int Togl_ScreenNumber( const struct Togl *togl );
+TOGL_EXTERN Colormap Togl_Colormap( const struct Togl *togl );
 #endif
 
 
@@ -286,12 +292,12 @@ extern Colormap Togl_Colormap( const struct Togl *togl );
  */
 
 #ifdef __sgi
-extern void Togl_StereoDrawBuffer( GLenum mode );
-extern void Togl_StereoFrustum( GLfloat left, GLfloat right,
+TOGL_EXTERN void Togl_StereoDrawBuffer( GLenum mode );
+TOGL_EXTERN void Togl_StereoFrustum( GLfloat left, GLfloat right,
                                 GLfloat bottom, GLfloat top,
                                 GLfloat near, GLfloat far,
                                 GLfloat eyeDist, GLfloat eyeOffset );
-extern void Togl_StereoClear( GLbitfield mask );
+TOGL_EXTERN void Togl_StereoClear( GLbitfield mask );
 #endif
 
 
@@ -300,7 +306,7 @@ extern void Togl_StereoClear( GLbitfield mask );
  * Contributed by Miguel A. De Riera Pasenau (miguel@DALILA.UPC.ES)
  */
 
-extern int Togl_DumpToEpsFile( const struct Togl *togl,
+TOGL_EXTERN int Togl_DumpToEpsFile( const struct Togl *togl,
                                const char *filename,
                                int inColor,
                                void (*user_redraw)(const struct Togl *) );
