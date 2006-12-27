@@ -98,6 +98,10 @@ proc birail1_crt { } {
     set selected ""
     getSel selected
     if { $selected == "" } { ayError 20 "birail1_crt" ""; return; }
+
+    # the next command sorts the selected objects
+    eval "selOb $selected"
+
     set ay_error 0
     crtOb Birail1
     if { $ay_error } { return; }

@@ -48,6 +48,10 @@ proc extrnc_crt { } {
     set selected ""
     getSel selected
     if { $selected == "" } { ayError 20 "extrnc_crt" ""; return; }
+
+    # the next command sorts the selected objects
+    eval "selOb $selected"
+
     set ay_error 0
     crtOb ExtrNC
     if { $ay_error } { return; }
