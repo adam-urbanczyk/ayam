@@ -38,11 +38,7 @@ proc level_crt { } {
     if { $selected == "" } { ayError 20 "level_crt" ""; return; }
 
     # the next command sorts the selected objects
-    if { $ay(lb) == 1 } {
-	eval "selOb $selected"
-    } else {
-	eval "treeSelect $selected"
-    }
+    eval "selOb $selected"
 
     set ay_error 0
     crtOb Level

@@ -283,11 +283,11 @@ proc bevel_crt { } {
     # the next command sorts the selected objects
     eval "selOb $selected"
 
-    cutOb
-
     set ay_error 0
     crtOb Bevel
     if { $ay_error } { return; }
+
+    cutOb
     set ay(ul) $ay(CurrentLevel)
     uS
     sL

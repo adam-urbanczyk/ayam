@@ -42,7 +42,7 @@ addText $w  e0 "Resulting Curve:"
 addInfo $w ConcatNCAttrData Length
 addInfo $w ConcatNCAttrData Order
 
-#concatnc_crt:
+# concatnc_crt:
 #
 #
 proc concatnc_crt { } {

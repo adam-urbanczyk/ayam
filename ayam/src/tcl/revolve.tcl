@@ -50,6 +50,10 @@ proc revolve_crt { } {
     getSel selected
     if { $selected == "" } { ayError 20 "revolve_crt" ""; return; }
     set ay_error 0
+
+    # the next command sorts the selected objects
+    eval "selOb $selected"
+
     crtOb Revolve
     if { $ay_error } { return; }
 
