@@ -5,7 +5,7 @@
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
 
-<date>25. Dec 2006
+<date>27. Dec 2006
 
 <abstract>
 This is the documentation of Ayam 1.12 - a free 3D modelling environment
@@ -59,10 +59,9 @@ views, object clipboard, independent property clipboard, console,
 n-level undo.
 </itemize>
 <p>
-Due to limitations in the Win32 operating system(s)
-(no backlinking) and the current implementation of Ayam,
-dynamic loading of custom objects and certain plugins
-are currently not available on that platform!
+Since Ayam 1.12, dynamic loading of custom objects and certain plugins
+are also available on the Win32 platform (they were not available
+before)!
 <p>
 Ayam is primarily aimed at the Linux, IRIX, and Win32 platforms.
 On those platforms BMRT (Blue Moon Rendering Tools, a RenderMan
@@ -667,6 +666,9 @@ also section <ref id="ncurveobj" name="NCurve Object">.
 <item><tt/"ICurve"/, create a new interpolating curve. A small dialog box will
 pop up, where you may specify the length of the new curve. See
 also section <ref id="icurveobj" name="ICurve Object">.
+
+<item><tt/"NCircle"/, create a new NURBS circle. See
+also section <ref id="ncircleobj" name="NCircle Object">.
 
 <item><tt/"NURBPatch"/, create a new NURBS patch. A small dialog box will
 pop up, where you may specify the width and height of the new patch. See
@@ -2551,7 +2553,8 @@ of entire primitives only, if you want to change the texture coordinates
 of sub-primitives (e.g. of single control points of a NURBS patch)
 you would need to use a PV (Primitive Variable) tag instead.
 <p>
-To ease setting of TC tag values Ayam provides a special editor.
+To ease setting of TC tag values Ayam provides a special editor
+as outlined in the next section.
 
 <sect3>Texture Coordinate Editor<label id="tce">
 <p>
@@ -4382,7 +4385,7 @@ statements more clear, during all steps watch the movements
 of the revolution:<p>
 <itemize>
 <item>Create a NURBCurve. Select it.
-<item>Create a Revolve custom object using the menu entry
+<item>Create a Revolve tool object using the menu entry
 (<tt>Tools/NURBCurve/Revolve</tt>).
 <item>Select the Revolve object, and rotate it around Z. (The axis
 of the revolution changes. The generating NURBS curve, as child object,
@@ -5636,8 +5639,6 @@ the script object to Ayam scene files.
 
 <sect1>Custom Objects<label id="customobj">
 <p>
-What is a custom object?
-<p>
 Custom objects are plugins that extend the Ayam capabilities by
 defining totally new types of e.g. geometric objects. This may
 be done easily, because the Ayam core is written in a modelling
@@ -5651,8 +5652,11 @@ object. It is possible, but not planned for now, to integrate
 the T-Spline modelling paradigm into Ayam this way.
 <p>
 Since a custom object has total control over properties and representations,
-you should refer to the documentation of the custom object for more
-information regarding its properties.
+you should refer to the documentation of the respective custom object for
+more information regarding its properties.
+<p>
+One custom object is already distributed with Ayam. This Metaball
+custom object is documented in the next section:
 
 <sect1>Metaball Object<label id="metaobjobj"><label id="metacompobj">
 <p>
@@ -9124,6 +9128,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <itemize>
 <item>NCDisplayMode: <ref id="prefdraw" name="preference setting">,
 <ref id="ncattr" name="NURBCurve attribute">
+<item>NCircle: <ref id="ncircleobj" name="object">
 <item>NPDisplayMode: <ref id="prefdraw" name="preference setting">,
 <ref id="npattr" name="NURBPatch attribute">
 <item>Near: <ref id="camp" name="camera property">
