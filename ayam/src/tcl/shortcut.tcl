@@ -29,9 +29,9 @@ proc repkp { string } {
 #  swap mouse button numbers from Win32/X11 style to Aqua style
 #  in shortcuts designated by ayprefs(SwapMBSC)
 proc shortcut_swapmb { } {
- global ayprefs
+ global ay ayprefs
 
-    if { $ayprefs(SwapMB) == 1 } {
+    if { ($ayprefs(SwapMB) == 1) && ($ayprefs(WindowSystem) != $ay(ws)) } {
 	foreach shortcut $ayprefs(SwapMBSC) {
 	    eval [subst "set val \$::$shortcut"]
 	    set val [string map { 2 3 3 2 } $val]

@@ -431,6 +431,9 @@ proc prefs_save { } {
 	set ayprefs(PrefsSection) "Main"
     }
 
+    # remember from which window system we write this ayamrc
+    set ayprefs(WindowSystem) $ay(ws)
+
     # write header
     puts $newfile "# Emacs, this is -*- Mode: Tcl -*-\n"
     puts $newfile "# These are the saved preference settings for Ayam, a free"

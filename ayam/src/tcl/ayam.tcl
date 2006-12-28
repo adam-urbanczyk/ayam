@@ -167,6 +167,8 @@ array set ayprefs {
 
  AddExtensions 0
 
+ WindowSystem "unknown"
+
  Docs "http://ayam.sourceforge.net/docs/"
  DailyTips {
 {Always click on drawn pixels, when picking vertices.}
@@ -572,6 +574,7 @@ if { $tcl_platform(platform) == "windows" } {
     set ay(soext) "dll"
     set ay(pady) 0
     set ay(ws) "Win32"
+
     set ayprefs(TmpDir) "$env(TEMP)"
     regsub -all {\\} $ayprefs(TmpDir) {/} ayprefs(TmpDir)
     set ayprefs(EnvFile) "~/2view.ay"
@@ -652,9 +655,7 @@ if { $tcl_platform(platform) == "windows" } {
 	set ayprefs(AddExtensions) 1
 
 	# swap middle and right mouse buttons
-	if { $tcl_patchLevel < "8.4.14" } {
-	    set ayprefs(SwapMB) 1
-	}
+	set ayprefs(SwapMB) 1
 
 	# Aqua is like TWM
 	set ayprefs(TwmCompat) 1
