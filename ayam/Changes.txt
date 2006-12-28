@@ -1,4 +1,4 @@
-[23. Dec 2006] CVS-Head:
+[28. Dec 2006] CVS-Head:
 o Bug Fixes:
   - extra help menu entry Helpblock (SF 1549831)
   - RenderGUI feature can not find cat.exe on Win32 (SF 1549833)
@@ -26,7 +26,8 @@ o Bug Fixes:
   - default documentation URL offered in preferences on Aqua (SF 1599917)
   - refineNC with new knot vector not setting correct knot type (SF 1599950)
   - changing background image does not set scene change state (SF 1607354)
-  - fixed conversion of clone objects in mirror mode (SF 1620358)
+  - conversion of clone objects in mirror mode (SF 1620358)
+  - swapping of mouse buttons on Aqua (SF 1623735)
 
 GUI:
 o added "set arbitrary grid size" entry to view window grid menu
@@ -63,6 +64,10 @@ o added proper (application specific) about menu
 o switched to Tcl/Tk 8.4.14 for official binary that allows to build
   Ayam as universal binary and with support for older Mac OS X versions
 o improved layout of single menu elements (e.g. LevelAttr property)
+Win32:
+o added complete plugin support (including dynamic loading of custom objects)
+o the official binary distribution now contains just one executable and the
+  onio (Rhino 3DM I/O), rrib (RIB import), and aycsg (CSG preview) plugins
 
 
 [10. Aug 2006] Ayam 1.11:
