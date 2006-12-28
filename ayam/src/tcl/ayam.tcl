@@ -677,8 +677,8 @@ if { $tcl_platform(platform) == "windows" } {
 	set ayprefs(FixX11Menu) 0
 
 	# on Mac OS X Aqua we have to use this for the Alt key
+	set ayviewshortcuts(RotMod) "Option"
 	if { $tcl_patchLevel < "8.4.14" } {
-	    set ayviewshortcuts(RotMod) "Option"
 	    set ayviewshortcuts(RotModKey) "Meta_L"
 	}
 	set ayviewshortcuts(Stretch) "Option-s"
