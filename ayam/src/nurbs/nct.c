@@ -5030,8 +5030,8 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  Tcl_GetDouble(interp, argv[2], &u);
-  Tcl_GetInt(interp, argv[3], &r);
+  Tcl_GetDouble(interp, argv[1], &u);
+  Tcl_GetInt(interp, argv[2], &r);
 
   while(sel)
     {
