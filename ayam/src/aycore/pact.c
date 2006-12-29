@@ -473,7 +473,7 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
     free(ay_point_edit_coords);
   ay_point_edit_coords = pecoords;
 
-  if(argc > 4)
+  if(ay_selection &&(argc > 4))
     {
       if(argc > 5)
 	ay_status = ay_pact_flashpoint(AY_TRUE);
