@@ -44,6 +44,7 @@ ay_clipb_copytcmd(ClientData clientData, Tcl_Interp *interp,
       o = clip;
       clip = clip->next;
       ay_clipboard = clip;
+      ay_status = ay_undo_clearobj(o);
       ay_status = ay_object_delete(o);
       if(ay_status)
 	{
@@ -55,7 +56,6 @@ ay_clipb_copytcmd(ClientData clientData, Tcl_Interp *interp,
 		   "Use menu: \\\"Special/Clipboard/Paste (Move)\\\" first!");
 	  return TCL_OK;
 	}
-      ay_status = ay_undo_clearobj(o);
     }
   ay_clipboard = NULL;
 
@@ -104,7 +104,6 @@ ay_clipb_cuttcmd(ClientData clientData, Tcl_Interp *interp,
  int ay_status = AY_OK;
  char fname[] = "cutOb";
  ay_list_object *sel = ay_selection;
- ay_list_object *lev = ay_currentlevel;
  ay_object *o = NULL, *clip = NULL, *t = NULL;
 
   if(!sel)
@@ -147,6 +146,7 @@ ay_clipb_cuttcmd(ClientData clientData, Tcl_Interp *interp,
       o = clip;
       clip = clip->next;
       ay_clipboard = clip;
+      ay_status = ay_undo_clearobj(o);
       ay_status = ay_object_delete(o);
       if(ay_status)
 	{
@@ -158,7 +158,6 @@ ay_clipb_cuttcmd(ClientData clientData, Tcl_Interp *interp,
 		   "Use menu: \\\"Special/Paste (Move)\\\" first!");
 	  return TCL_OK;
 	} /* if */
-      ay_status = ay_undo_clearobj(o);
     } /* while */
   ay_clipboard = NULL;
 
@@ -191,9 +190,9 @@ ay_clipb_cuttcmd(ClientData clientData, Tcl_Interp *interp,
   ay_status = ay_sel_free(AY_TRUE);
 
   /* notify parent object about changes */
-  if(lev->next && lev->next->object)
+  if(ay_currentlevel->next && ay_currentlevel->next->object)
     {
-      lev->next->object->modified = AY_TRUE;
+      ay_currentlevel->next->object->modified = AY_TRUE;
     }
   ay_notify_parent();
 
@@ -210,7 +209,6 @@ ay_clipb_pastetcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int ay_status = AY_OK;
  char fname[] = "pasOb";
- ay_list_object *lev = ay_currentlevel;
  ay_object *ins = NULL, *clip = ay_clipboard;
  int instanceerr = AY_FALSE;
 
@@ -253,9 +251,9 @@ ay_clipb_pastetcmd(ClientData clientData, Tcl_Interp *interp,
     } /* while */
 
   /* notify parent object about changes */
-  if(lev->next && lev->next->object)
+  if(ay_currentlevel->next && ay_currentlevel->next->object)
     {
-      lev->next->object->modified = AY_TRUE;
+      ay_currentlevel->next->object->modified = AY_TRUE;
     }
   ay_notify_parent();
 
@@ -272,7 +270,6 @@ ay_clipb_movetcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int ay_status = AY_OK;
  char fname[] = "cmovOb";
- ay_list_object *lev = ay_currentlevel;
  ay_object *next = NULL, *clip = ay_clipboard;
  int instanceerr = AY_FALSE;
 
@@ -308,9 +305,9 @@ ay_clipb_movetcmd(ClientData clientData, Tcl_Interp *interp,
   ay_clipboard = NULL;
 
   /* notify parent object about changes */
-  if(lev->next && lev->next->object)
+  if(ay_currentlevel->next && ay_currentlevel->next->object)
     {
-      lev->next->object->modified = AY_TRUE;
+      ay_currentlevel->next->object->modified = AY_TRUE;
     }
   ay_notify_parent();
 
@@ -331,7 +328,6 @@ ay_clipb_replacetcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object **presel, *selend;
  int instanceerr = AY_FALSE;
  ay_list_object *sel = ay_selection;
- ay_list_object *lev = ay_currentlevel;
 
   if(!sel)
     {
@@ -432,9 +428,9 @@ ay_clipb_replacetcmd(ClientData clientData, Tcl_Interp *interp,
   ay_status = ay_sel_free(AY_TRUE);
 
   /* notify parent object about changes */
-  if(lev->next && lev->next->object)
+  if(ay_currentlevel->next && ay_currentlevel->next->object)
     {
-      lev->next->object->modified = AY_TRUE;
+      ay_currentlevel->next->object->modified = AY_TRUE;
     }
   ay_notify_parent();
 
