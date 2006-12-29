@@ -70,6 +70,8 @@ install:
 	-$(INSTALL) plugins/loadaysdr.tcl $(LIBDIR)
 	-$(INSTALL) plugins/aygso.so $(LIBDIR)
 	-$(INSTALL) plugins/loadaygso.tcl $(LIBDIR)
+	-$(INSTALL) plugins/ayslc.so $(LIBDIR)
+	-$(INSTALL) plugins/loadayslc.tcl $(LIBDIR)
 	-$(INSTALL) plugins/aycsg.so $(LIBDIR)
 	-$(INSTALL) plugins/aycsg.tcl $(LIBDIR)
 	-$(INSTALL) plugins/loadaycsg.tcl $(LIBDIR)
