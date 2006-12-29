@@ -404,6 +404,11 @@ cleanup:
       ay_object_delete(pobject1);
     }
 
+  if(t)
+    {
+      ay_object_delete(t);
+    }
+
   if(npatch)
     {
       ay_object_delete(npatch);
