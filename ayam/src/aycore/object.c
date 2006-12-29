@@ -306,7 +306,9 @@ ay_object_deletetcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
-	  ay_object_unlink(o);
+	  ay_status = ay_object_unlink(o);
+
+	  ay_status = ay_undo_clearobj(o);
 
 	  ay_status = ay_object_delete(o);
 	  if(ay_status)
@@ -324,8 +326,6 @@ ay_object_deletetcmd(ClientData clientData, Tcl_Interp *interp,
 	      (*next_try_again)->object = o;
 	      next_try_again = &((*next_try_again)->next);
 	    } /* if */
-
-	  ay_status = ay_undo_clearobj(o);
 
 	} /* if */
       sel = sel->next;
@@ -860,8 +860,8 @@ ay_object_deleteinstances(ay_object **o)
       if(co->type == AY_IDINSTANCE)
 	{
 	  next = co->next;
-	  ay_status = ay_object_delete(co);
 	  ay_status = ay_undo_clearobj(co);
+	  ay_status = ay_object_delete(co);
 	  (*last) = next;
 	  co = next;
 	}

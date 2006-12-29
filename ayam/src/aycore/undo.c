@@ -1219,7 +1219,7 @@ ay_undo_clearobj(ay_object *o)
  int ay_status = AY_OK;
  int i = 0;
  ay_undo_object *uo = NULL;
- ay_object **lu = NULL, *u = NULL;
+ ay_object **lu = NULL, *u = NULL, *down;
  ay_list_object **lr = NULL, *r = NULL;
 
   for(i = 0; i < undo_buffer_size-1; i++)
@@ -1250,6 +1250,13 @@ ay_undo_clearobj(ay_object *o)
 	    } /* if */
 	} /* while */
     } /* for */
+
+  down = o->down;
+  while(down)
+    {
+      ay_undo_clearobj(down);
+      down = down->next;
+    }
 
  return AY_OK;
 } /* ay_undo_clearobj */
