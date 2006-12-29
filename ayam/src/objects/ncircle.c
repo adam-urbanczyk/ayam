@@ -54,6 +54,8 @@ ay_ncircle_deletecb(void *c)
   if(ncircle->ncurve)
     ay_object_delete(ncircle->ncurve);
 
+  ncircle->ncurve = NULL;
+
   free(ncircle);
 
  return AY_OK;
@@ -342,6 +344,11 @@ ay_ncircle_notifycb(ay_object *o)
     return AY_ENULL;
 
   ncircle = (ay_ncircle_object *)(o->refine);
+
+  if(ncircle->ncurve)
+    ay_object_delete(ncircle->ncurve);
+
+  ncircle->ncurve = NULL;
 
   if(!(nc = calloc(1, sizeof(ay_nurbcurve_object))))
     return AY_EOMEM;
