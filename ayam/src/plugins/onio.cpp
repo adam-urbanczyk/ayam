@@ -449,6 +449,7 @@ onio_addtrim(ay_object *o, ON_BrepLoop::TYPE ltype, ON_BrepTrim::TYPE ttype,
 {
  int ay_status = AY_OK;
  /*char fname[] = "onio_addtrim";*/
+ ay_object *pnc = NULL;
  ON_NurbsCurve nc1, nc2, *p_nc = NULL;
  ON_Curve *p_curve = NULL;
  unsigned int c2i, c3i;
@@ -495,12 +496,18 @@ onio_addtrim(ay_object *o, ON_BrepLoop::TYPE ltype, ON_BrepTrim::TYPE ttype,
 	} // while
 
       addtoloop = AY_FALSE;
-      return ay_status;
+      return ay_status; // XXXX early exit!
     } // if
 
-  if(o->type == AY_IDNCURVE)
+  if(o->type != AY_IDNCURVE)
     {
-      onio_get2dcurveobj(o, &p_nc);
+      pnc = NULL;
+      ay_status = ay_provide_object(o, AY_IDNCURVE, &pnc);
+    }
+
+  if(o->type == AY_IDNCURVE || pnc)
+    {
+      onio_get2dcurveobj((o->type == AY_IDNCURVE)?o:pnc, &p_nc);
       if(p_nc)
 	{
 	  c2i = p_b->m_C2.Count();
@@ -517,7 +524,7 @@ onio_addtrim(ay_object *o, ON_BrepLoop::TYPE ltype, ON_BrepTrim::TYPE ttype,
 	      p_nc = new ON_NurbsCurve(nc2);
 	      p_b->m_C3.Append(p_nc);
 
-	      delete p_curve;
+	      //delete p_curve;
 
 	      if(!addtoloop)
 		{
@@ -548,32 +555,31 @@ onio_addtrim(ay_object *o, ON_BrepLoop::TYPE ltype, ON_BrepTrim::TYPE ttype,
 		}
 	      else
 		{
-		  ON_BrepVertex *p_v1 = NULL, *p_v2 = NULL;
+		  ON_BrepVertex v1, v2;
+
 		  if(!firstinloop)
 		    {
-		      // for all curves in the loop except for the first,
-		      // the first vertex is the last vertex of the
-		      // previous curve in the loop
-		      p_v1 = &(p_b->m_V[prevloopvertex]);
+		      // for all curves in the loop, except for the first,
+		      // the first vertex is the last vertex of the previous
+		      // curve in the loop...
+		      v1 = p_b->m_V[prevloopvertex];
 		    }
 		  else
 		    {
 		      firstloopvertex = p_b->m_V.Count();
-		      p_v1 = &(p_b->NewVertex(p_nc->PointAtStart()));
-		      p_v1->m_tolerance = 0.0;
+		      v1 = p_b->NewVertex(p_nc->PointAtStart(), 0.0);
 		    }
 		  if(!lastinloop)
 		    {
 		      prevloopvertex = p_b->m_V.Count();
-		      p_v2 = &(p_b->NewVertex(p_nc->PointAtEnd()));
-		      p_v2->m_tolerance = 0.0;
+		      v2 = p_b->NewVertex(p_nc->PointAtEnd(), 0.0);
 		    }
 		  else
 		    {
-		      p_v2 = &(p_b->m_V[firstloopvertex]);
+		      v2 = p_b->m_V[firstloopvertex];
 		    }
 
-		  ON_BrepEdge& edge = p_b->NewEdge(*p_v1, *p_v2, c3i);
+		  ON_BrepEdge& edge = p_b->NewEdge(v1, v2, c3i);
 		  edge.m_tolerance = 0.0;
 
 		  ON_BrepTrim& trim = p_b->NewTrim(edge, false, *p_loop, c2i);
@@ -581,6 +587,7 @@ onio_addtrim(ay_object *o, ON_BrepLoop::TYPE ltype, ON_BrepTrim::TYPE ttype,
 		  trim.m_tolerance[0] = 0.0;
 		  trim.m_tolerance[1] = 0.0;
 		} // if
+	      delete p_curve;
 	    }
 	  else
 	    {
@@ -718,31 +725,29 @@ onio_addtrim(ay_object *o, ON_BrepLoop::TYPE ltype, ON_BrepTrim::TYPE ttype,
 		}
 	      else
 		{
-		  ON_BrepVertex *p_v1 = NULL, *p_v2 = NULL;
+		  ON_BrepVertex v1, v2;
 		  if(!firstinloop)
 		    {
-		      // for all curves in the loop except for the first,
-		      // the first vertex is the last vertex of the
-		      // previous curve in the loop
-		      p_v1 = &(p_b->m_V[prevloopvertex]);
+		      // for all curves in the loop, except for the first,
+		      // the first vertex is the last vertex of the previous
+		      // curve in the loop...
+		      v1 = p_b->m_V[prevloopvertex];
 		    }
 		  else
 		    {
 		      firstloopvertex = p_b->m_V.Count();
-		      p_v1 = &(p_b->NewVertex(p_plc->PointAtStart()));
-		      p_v1->m_tolerance = 0.0;
+		      v1 = p_b->NewVertex(p_plc->PointAtStart(), 0.0);
 		    }
 		  if(!lastinloop)
 		    {
 		      prevloopvertex = p_b->m_V.Count();
-		      p_v2 = &(p_b->NewVertex(p_plc->PointAtEnd()));
-		      p_v2->m_tolerance = 0.0;
+		      v2 = p_b->NewVertex(p_plc->PointAtEnd(), 0.0);
 		    }
 		  else
 		    {
-		      p_v2 = &(p_b->m_V[firstloopvertex]);
+		      v2 = p_b->m_V[firstloopvertex];
 		    }
-		  ON_BrepEdge& edge = p_b->NewEdge(*p_v1, *p_v2, c3i);
+		  ON_BrepEdge& edge = p_b->NewEdge(v1, v2, c3i);
 		  edge.m_tolerance = 0.0;
 
 		  ON_BrepTrim& trim = p_b->NewTrim(edge, false, *p_loop, c2i);
@@ -752,7 +757,11 @@ onio_addtrim(ay_object *o, ON_BrepLoop::TYPE ltype, ON_BrepTrim::TYPE ttype,
 		} // if
 	    } // if
 	} // if
-    } // if
+    } // if (o->type == AY_IDNCURVE || pnc)...
+
+  // cleanup
+  if(pnc)
+    ay_object_delete(pnc);
 
  return ay_status;
 } // onio_addtrim
