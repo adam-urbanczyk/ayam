@@ -500,6 +500,8 @@ array set ay {
  elevd 1
  insknu 0.5
  insknr 1
+ remknu 0.5
+ remknr 1
  refinekn 0.5
  splitu 0.5
  ncircradius 1.0
