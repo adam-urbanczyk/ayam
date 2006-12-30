@@ -246,7 +246,7 @@ int ay_nct_crtcircbsp(int sections, double radius, double arc, int order,
 int ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
 			    int argc, char *argv[]);
 
-void ay_nct_getorientation(ay_nurbcurve_object *curve, double *oangle);
+int ay_nct_getorientation(ay_nurbcurve_object *curve, double *oangle);
 
 int ay_nct_isclosed(ay_nurbcurve_object *nc);
 
