@@ -386,32 +386,50 @@ ay_objio_writetcurve(FILE *fileptr, ay_object *o, double *m)
 int
 ay_objio_writetrim(FILE *fileptr, ay_object *o)
 {
+ int ay_status = AY_OK;
  double mi[16] = {0};
- ay_object *down = NULL;
+ ay_object *down = NULL, *pnc = NULL;
 
   ay_trafo_identitymatrix(mi);
 
   while(o->next)
     {
-      if(o->type == AY_IDNCURVE)
+      switch(o->type)
 	{
+	case AY_IDNCURVE:
 	  ay_objio_writetcurve(fileptr, o, mi);
-	}
-
-      if((o->type == AY_IDLEVEL) && (o->down) && (o->down->next))
-	{
-	  ay_trafo_creatematrix(o, mi);
-	  down = o->down;
-	  while(down->next)
+	  break;
+	case AY_IDLEVEL:
+	  if((o->down) && (o->down->next))
 	    {
-	      if(down->type == AY_IDNCURVE)
+	      ay_trafo_creatematrix(o, mi);
+	      down = o->down;
+	      while(down->next)
 		{
-		  ay_objio_writetcurve(fileptr, down, mi);
-		}
+		  if(down->type == AY_IDNCURVE)
+		    {
+		      ay_objio_writetcurve(fileptr, down, mi);
+		    }
+		  down = down->next;
+		} /* while */
+	      ay_trafo_identitymatrix(mi);
+	    } /* if */
+	  break;
+	default:
+	  pnc = NULL;
+	  ay_status = ay_provide_object(o, AY_IDNCURVE, &pnc);
+	  down = pnc;
+	  while(down)
+	    {
+	      ay_objio_writetcurve(fileptr, pnc, mi);
 	      down = down->next;
-	    } /* while */
-	  ay_trafo_identitymatrix(mi);
-	} /* if */
+	    }
+	  if(pnc)
+	    {
+	      ay_object_deletemulti(pnc);
+	    }
+	  break;
+	} /* switch */
 
       o = o->next;
     } /* while */
@@ -426,7 +444,8 @@ ay_objio_writetrim(FILE *fileptr, ay_object *o)
 int
 ay_objio_writetrimids(FILE *fileptr, ay_object *o)
 {
- ay_object *o2 = o, *down = NULL;
+ int ay_status = AY_OK;
+ ay_object *o2 = o, *down = NULL, *pnc = NULL, *cnc = NULL;
  ay_nurbcurve_object *nc = NULL;
  double umin, umax, orient;
  int tc = 0, hole;
@@ -434,23 +453,39 @@ ay_objio_writetrimids(FILE *fileptr, ay_object *o)
   /* first, count trim curves */
   while(o->next)
     {
-      if(o->type == AY_IDNCURVE)
+      switch(o->type)
 	{
+	case AY_IDNCURVE:
 	  tc++;
-	}
-
-      if((o->type == AY_IDLEVEL) && (o->down) && (o->down->next))
-	{
-	  down = o->down;
-	  while(down->next)
+	  break;
+	case AY_IDLEVEL:
+	  if((o->down) && (o->down->next))
 	    {
-	      if(down->type == AY_IDNCURVE)
+	      down = o->down;
+	      while(down->next)
 		{
-		  tc++;
-		}
+		  if(down->type == AY_IDNCURVE)
+		    {
+		      tc++;
+		    }
+		  down = down->next;
+		} /* while */
+	    } /* if */
+	default:
+	  pnc = NULL;
+	  ay_status = ay_provide_object(o, AY_IDNCURVE, &pnc);
+	  down = pnc;
+	  while(down)
+	    {
+	      tc++;
 	      down = down->next;
-	    } /* while */
-	} /* if */
+	    }
+	  if(pnc)
+	    {
+	      ay_object_deletemulti(pnc);
+	    }
+	  break;
+	} /* switch */
 
       o = o->next;
     } /* while */
@@ -459,11 +494,11 @@ ay_objio_writetrimids(FILE *fileptr, ay_object *o)
   o = o2;
   while(o->next)
     {
-      if(o->type == AY_IDNCURVE)
+      switch(o->type)
 	{
-
+	case AY_IDNCURVE:
 	  nc = (ay_nurbcurve_object *)o->refine;
-	  ay_nct_getorientation(nc, &orient);
+	  ay_status = ay_nct_getorientation(nc, &orient);
 	  if(orient < 0.0)
 	    hole = AY_TRUE;
 	  else
@@ -477,41 +512,109 @@ ay_objio_writetrimids(FILE *fileptr, ay_object *o)
 	  else
 	    fprintf(fileptr, "trim %g %g -%d\n", umin, umax, tc);
 	  tc--;
-	}
+	  break;
+	case AY_IDLEVEL:
+	  if((o->down) && (o->down->next))
+	    {
+	      down = o->down;
+	      if(down->type == AY_IDNCURVE)
+		{
+		  nc = (ay_nurbcurve_object *)down->refine;
+		  ay_status = ay_nct_getorientation(nc, &orient);
+		  if(ay_status)
+		    {
+		      /* failed to detect orientation, maybe the curve
+		       * is too simple, concat all curves and retry... */
+		      ay_status = ay_nct_concatmultiple(AY_FALSE, 0, AY_FALSE,
+							o->down, &cnc);
+		      if(cnc)
+			{
+			  nc = (ay_nurbcurve_object *)cnc->refine;
+			  ay_status = ay_nct_getorientation(nc, &orient);
+			  ay_object_delete(cnc);
+			  cnc = NULL;
+			}
+		    } /* if */
 
-      if((o->type == AY_IDLEVEL) && (o->down) && (o->down->next))
-	{
-	  down = o->down;
+		  if(orient < 0.0)
+		    fprintf(fileptr, "hole ");
+		  else
+		    fprintf(fileptr, "trim ");
+		} /* if */
+
+	      while(down->next)
+		{
+		  if(down->type == AY_IDNCURVE)
+		    {
+		      nc = (ay_nurbcurve_object *)down->refine;
+		      
+		      ay_knots_getuminmax(o, nc->order, nc->length+nc->order,
+					  nc->knotv,
+					  &umin, &umax);
+
+		      fprintf(fileptr, " %g %g -%d", umin, umax, tc);
+
+		      tc--;
+		    }
+		  down = down->next;
+		} /* while */
+	      fprintf(fileptr, "\n");
+	    } /* if */
+	  break;
+	default:
+	  pnc = NULL;
+	  ay_status = ay_provide_object(o, AY_IDNCURVE, &pnc);
+	  down = pnc;
+
 	  if(down->type == AY_IDNCURVE)
 	    {
 	      nc = (ay_nurbcurve_object *)down->refine;
-	      ay_nct_getorientation(nc, &orient);
+	      ay_status = ay_nct_getorientation(nc, &orient);
+	      if(ay_status)
+		{
+		  /* failed to detect orientation, maybe the curve
+		   * is too simple, concat all curves and retry... */
+		  ay_status = ay_nct_concatmultiple(AY_FALSE, 0, AY_FALSE,
+						    down, &cnc);
+		  if(cnc)
+		    {
+		      nc = (ay_nurbcurve_object *)cnc->refine;
+		      ay_status = ay_nct_getorientation(nc, &orient);
+		      ay_object_delete(cnc);
+		      cnc = NULL;
+		    }
+		} /* if */
+
 	      if(orient < 0.0)
 		fprintf(fileptr, "hole ");
 	      else
 		fprintf(fileptr, "trim ");
-	    }
+	    } /* if */
 
 	  while(down->next)
 	    {
 	      if(down->type == AY_IDNCURVE)
 		{
 		  nc = (ay_nurbcurve_object *)down->refine;
-
+		      
 		  ay_knots_getuminmax(o, nc->order, nc->length+nc->order,
 				      nc->knotv,
 				      &umin, &umax);
-
+		  
 		  fprintf(fileptr, " %g %g -%d", umin, umax, tc);
 
 		  tc--;
-		}
+		} /* if */
 	      down = down->next;
-	    }
+	    } /* while */
 	  fprintf(fileptr, "\n");
 
-	} /* if */
-
+	  if(pnc)
+	    {
+	      ay_object_deletemulti(pnc);
+	    }
+	  break;
+	} /* switch */
       o = o->next;
     } /* while */
 

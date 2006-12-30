@@ -794,8 +794,8 @@ ay_revolve_crtside(ay_revolve_object *revolve, ay_object *curve, double th,
       trim->movx += 0.5;
       trim->movy += 0.5;
 
-      ay_nct_getorientation((ay_nurbcurve_object *)
-			    trim->refine, &angle);
+      ay_status = ay_nct_getorientation((ay_nurbcurve_object *)
+					trim->refine, &angle);
 
       if(angle<0.0)
 	ay_nct_revert(trim->refine);

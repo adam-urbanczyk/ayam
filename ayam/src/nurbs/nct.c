@@ -2663,7 +2663,7 @@ ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
  *  code from Joseph O'Rourke from:
  *  ftp://cs.smith.edu/pub/code/polyorient.C
  */
-void
+int
 ay_nct_getorientation(ay_nurbcurve_object *curve, double *orient)
 {
  double minx, miny;
@@ -2672,14 +2672,14 @@ ay_nct_getorientation(ay_nurbcurve_object *curve, double *orient)
  char fname[] = "nct_getorientation";
 
   if(!curve || !orient)
-    return;
+    return AY_ENULL;
 
   cv = curve->controlv;
   n = curve->length;
   if(n <= 2)
     {
-      ay_error(AY_ERROR, fname, "Need more than 2 control points!\n");
-      return;
+      ay_error(AY_EWARN, fname, "Need more than 2 control points!");
+      return AY_ERROR;
     }
 
   minx = cv[0];
@@ -2734,7 +2734,7 @@ ay_nct_getorientation(ay_nurbcurve_object *curve, double *orient)
     }
   else
     {
-      ay_error(AY_ERROR, fname, "Could not determine 3 different points!\n");
+      ay_error(AY_ERROR, fname, "Could not determine 3 different points!");
       return;
     }
 
@@ -2769,8 +2769,8 @@ ay_nct_getorientation(ay_nurbcurve_object *curve, double *orient)
     }
   else
     {
-      ay_error(AY_ERROR, fname, "Could not determine 3 different points!\n");
-      return;
+      ay_error(AY_ERROR, fname, "Could not determine 3 different points!");
+      return AY_ERROR;
     }
 
   b[0] = cv[m*stride];
@@ -2786,7 +2786,7 @@ ay_nct_getorientation(ay_nurbcurve_object *curve, double *orient)
 	 a[0], a[1], b[0], b[1], c[0], c[1], *orient);
   */
 
- return;
+ return AY_OK;
 } /* ay_nct_getorientation */
 
 
@@ -2954,10 +2954,13 @@ ay_nct_concatmultiple(int closed, int knot_type, int fillgaps,
   o = curves;
   while(o)
     {
-      nc = (ay_nurbcurve_object *)o->refine;
+      if(o->type == AY_IDNCURVE)
+	{
+	  nc = (ay_nurbcurve_object *)o->refine;
 
-      length += nc->length;
-      numcurves++;
+	  length += nc->length;
+	  numcurves++;
+	}
       o = o->next;
     } /* while */
 
@@ -2995,29 +2998,36 @@ ay_nct_concatmultiple(int closed, int knot_type, int fillgaps,
       o = curves;
       while(o)
 	{
-	  nc = (ay_nurbcurve_object *)o->refine;
-
-	  for(i = k; i < nc->length+nc->order; i++)
+	  if(o->type == AY_IDNCURVE)
 	    {
-	      newknotv[a] = nc->knotv[i]+j;
-	      a++;
+	      nc = (ay_nurbcurve_object *)o->refine;
+
+	      for(i = k; i < nc->length+nc->order; i++)
+		{
+		  newknotv[a] = nc->knotv[i]+j;
+		  a++;
+		}
+
+	      o = o->next;
+	      if(o)
+		{
+		  if(o->name && !(strcmp(o->name, "Fillet")))
+		    {
+		      o = o->next;
+		      j += 2;
+		      k = 0;
+		    }
+		  else
+		    {
+		      nc = (ay_nurbcurve_object *)o->refine;
+		      k = nc->order;
+		      j++;
+		    }
+		}
 	    }
-
-	  o = o->next;
-	  if(o)
+	  else
 	    {
-	      if(o->name && !(strcmp(o->name, "Fillet")))
-		{
-		  o = o->next;
-		  j += 2;
-		  k = 0;
-		}
-	      else
-		{
-		  nc = (ay_nurbcurve_object *)o->refine;
-		  k = nc->order;
-		  j++;
-		}
+	      o = o->next;
 	    }
 	} /* while */
 
@@ -3045,9 +3055,12 @@ ay_nct_concatmultiple(int closed, int knot_type, int fillgaps,
   o = curves;
   while(o)
     {
-      nc = (ay_nurbcurve_object *)o->refine;
-      memcpy(ncv, nc->controlv, nc->length * 4 * sizeof(double));
-      ncv += (nc->length * 4);
+      if(o->type == AY_IDNCURVE)
+	{
+	  nc = (ay_nurbcurve_object *)o->refine;
+	  memcpy(ncv, nc->controlv, nc->length * 4 * sizeof(double));
+	  ncv += (nc->length * 4);
+	}
       o = o->next;
     } /* while */
 

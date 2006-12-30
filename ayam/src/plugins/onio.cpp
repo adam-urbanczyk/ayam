@@ -761,7 +761,7 @@ onio_addtrim(ay_object *o, ON_BrepLoop::TYPE ltype, ON_BrepTrim::TYPE ttype,
 
   // cleanup
   if(pnc)
-    ay_object_delete(pnc);
+    ay_object_deletemulti(pnc);
 
  return ay_status;
 } // onio_addtrim

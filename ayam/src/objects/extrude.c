@@ -610,8 +610,8 @@ ay_extrude_notifycb(ay_object *o)
 		  nextcb = &(cap->next);
 		  upper_cap = cap;
 
-		  ay_nct_getorientation((ay_nurbcurve_object *)
-					curve, &angle);
+		  ay_status = ay_nct_getorientation((ay_nurbcurve_object *)
+						    curve, &angle);
 
 		  if(angle < 0.0)
 		    ay_nct_revert(trim->refine);
@@ -642,8 +642,8 @@ ay_extrude_notifycb(ay_object *o)
 		      ay_object_defaults(trim);
 		    }
 
-		  ay_nct_getorientation((ay_nurbcurve_object *)
-					trim->refine, &angle);
+		  ay_status = ay_nct_getorientation((ay_nurbcurve_object *)
+						    trim->refine, &angle);
 
 		  if(angle > 0.0)
 		    ay_nct_revert(trim->refine);
@@ -739,8 +739,8 @@ ay_extrude_notifycb(ay_object *o)
 		  nextcb = &(cap->next);
 		  lower_cap = cap;
 
-		  ay_nct_getorientation((ay_nurbcurve_object *)
-					  curve, &angle);
+		  ay_status = ay_nct_getorientation((ay_nurbcurve_object *)
+						    curve, &angle);
 
 		  if(angle < 0.0)
 		    ay_nct_revert(trim->refine);
@@ -770,8 +770,8 @@ ay_extrude_notifycb(ay_object *o)
 		      ay_object_defaults(trim);
 		    }
 
-		  ay_nct_getorientation((ay_nurbcurve_object *)
-					trim->refine, &angle);
+		  ay_status = ay_nct_getorientation((ay_nurbcurve_object *)
+						    trim->refine, &angle);
 
 		  if(angle > 0.0)
 		    ay_nct_revert(trim->refine);
