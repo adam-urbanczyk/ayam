@@ -5,7 +5,7 @@
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
 
-<date>27. Dec 2006
+<date>30. Dec 2006
 
 <abstract>
 This is the documentation of Ayam 1.12 - a free 3D modelling environment
@@ -6166,6 +6166,23 @@ shape of the curve(s).
 The knot type of the curve will be changed to custom.
 </itemize>
 
+<sect1>The Remove Knot Tool<label id="remknt">
+<p>
+<figure loc="ht">
+<eps file="pics/remkn.ps" height="4cm">
+<img src="pics/remkn.gif">
+<caption>Left: original curve, Right: the knot at t=0.5 has been removed 1 time</caption>
+</figure>
+<itemize>
+<item>Arguments: The remove knot tool takes a number of NURBS curves from
+the selection and requests two additional values, a parametric value t
+and an integer value i.
+<item>Operation: The specified knot (t) will be removed i
+times from the knot vector of the selected curves. The tool tries
+to work without changing the shape of the curve(s), however, this is
+not guaranteed.
+</itemize>
+
 <sect1>The Plot Curvature Tool<label id="plotcurt">
 <p>
 <figure loc="ht">
@@ -6431,28 +6448,35 @@ and their parameter(s).
 <sect>The Tcl Scripting Interface<label id="script">
 <p>
 The scripting interface is mainly a bunch of Tcl procedures
-and Tcl commands that a big part of Ayam uses internally.<p>
+and Tcl commands that a big part of Ayam uses internally.
+<p>
 Using Tcl, you could directly modify the code Ayam consists
 of. This is, however, not recommended for good reasons.
 So watch out for already existing procedures and commands when
-implementing your own!<p>
+implementing your own!
 Using procedures and commands not listed in this documentation
 is dangerous too. Implementation and interfaces of that
 commands may change in future versions.
-
+<p>
 The scripting interface may be used directly from the console
 of Ayam. You can, of course, also write procedures in your own
 Tcl script files, that may be loaded at any time into Ayam using
-the console and the Tcl command <tt/"source"/.<p>
+the console and the Tcl command <tt/"source"/.
 You can also arrange for a script to be executed automatically
 on startup using the preference setting <tt>"Main/Scripts"</tt>.
-
-Note that most of the listed commands work in background,
-without changing anything to the Ayam GUI and Ayam view windows,
-for the sake of execution speed. If you want your changes to become
-visible you have to update the various parts of the GUI explicitly
-(see also section <ref id="sciupd" name="Updating the GUI">).<p>
-
+<p>
+Note that most of the scripting interface commands listed in this
+documentation work in the background, without changing anything to
+the Ayam GUI and Ayam view windows, for the sake of execution speed.
+If you want your changes to become visible you have to update the
+various parts of the GUI explicitly
+(see also section <ref id="sciupd" name="Updating the GUI">).
+<p>
+If you want your changes to be undoable, you have to arrange for
+this manually too
+(see the documentation of the undo command:
+<ref id="scundo" name="Undo">).
+<p>
 From scripts it may be necessary to check wether an error occured
 during the execution of a command. All commands return
 TCL_OK in any case so checking their return value avails to nothing,
@@ -6469,7 +6493,6 @@ proc myProc { } {
   }
 }
 </code>
-
 
 <sect1>Global Variables
 <p>
@@ -6497,6 +6520,10 @@ More documentation to come.
 
 <sect1>Index of Procedures and Commands
 <p>
+This section provides documentation on the most important
+scripting interface commands and procedures of Ayam sorted
+by category.
+
 <sect2>Getting Help on Scripting Interface Commands<label id="schelp">
 <p>
 Since Ayam 1.8.2 a scripting interface command named <tt/"help"/ is available,
@@ -6535,6 +6562,8 @@ argument giving the name of the new material. Example:
  <item><tt/"Instance"/: creates an instance of the selected object.
  <item>...
  </itemize>
+ <item>Examples: Create a sphere and update the GUI:
+<tt/"crtOb Sphere;uS;rV"/.
 </itemize>
 
 <sect2>Manipulating the Selection<label id="selob">
@@ -6915,6 +6944,7 @@ without changing the shape of the curves.
 The knot type of the clamped curve will be changed to <tt/"Custom"/ and
 the knots will have o equal values at start and end (where o is the
 order of the curve).
+See also section <ref id="clat" name="The Clamp Tool">.
 </itemize>
 
 <p><label id="scelevatenc">
@@ -6924,6 +6954,7 @@ elevateNC - elevate NURBS curve:
  <item>Description: Elevate the order of the selected NURBS curves
 without changing the shape of the curves by n.
 The knot type of the elevated curves will be changed to <tt/"Custom"/.
+See also section <ref id="elevt" name="The Elevate Tool">.
 </itemize>
 
 <p><label id="scinsknnc">
@@ -6937,6 +6968,18 @@ the current knot vector U as follows: <tt/U[p] <= u <= U[n]/, where
 p is the degree (order-1) of the curve and n is the length of the curve.
 The knot type of the curves will always be changed to custom but
 the shape of the curves will not change!
+See also section <ref id="insknt" name="The Insert Knot Tool">.
+</itemize>
+
+<p><label id="scremknnc">
+remknNC - remove knot from NURBS curve:
+<itemize>
+ <item>Synopsis: <tt/"remknNC u r"/
+ <item>Description: Remove a knot at the position
+specified by u (u must be in the valid range of the knot vector
+of the selected curves) r times from the curve. Note that the
+shape of the curve may be changed by this tool.
+See also section <ref id="remknt" name="The Remove Knot Tool">.
 </itemize>
 
 <p><label id="screfinenc">
@@ -6948,7 +6991,7 @@ without changing the shape of the curve with n new knots {u1 u2 un}.
 Or, if no list of new knots is given, add a new knot into each interval
 in the old knot vector.
 The knot type of the refined curve will be changed to <tt/"Custom"/.
-See also section <ref id="refit" name="Refine Tool">.
+See also section <ref id="refit" name="The Refine Tool">.
 </itemize>
 
 <p><label id="sccoarsennc">
@@ -6957,7 +7000,7 @@ coarsenNC - coarsen NURBS curve:
  <item>Synopsis: <tt/"coarsenNC"/
  <item>Description: Remove every second control point from the
 selected NURBS curves.
-See also section <ref id="coart" name="Coarsen Tool">.
+See also section <ref id="coart" name="The Coarsen Tool">.
 </itemize>
 
 <p><label id="screvert">
@@ -7338,8 +7381,8 @@ a single <tt>"return;"</tt> statement.
 
 <sect1>Scripting Interface Examples
 <p>
-Here are some example scripts for the Ayam Tcl scripting interface.
-
+Here are some complete example scripts for the Ayam Tcl scripting interface.
+<p>
 You may copy and paste all examples directly from the documentation
 into the console of Ayam.
 
@@ -9028,7 +9071,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Importance Driven Rendering: <ref id="idr" name="IDR plugin">
 <item>Insert: <ref id="mmfile" name="main menu entry">,
 <ref id="insdelac" name="insert points">
-<item>insKn: <ref id="scinsknnc" name="scripting interface command">
+<item>insKnNC: <ref id="scinsknnc" name="scripting interface command">
 <item>Insert Knot: <ref id="insknt" name="insert knot tool">
 <item>insertScene: <ref id="scinsertscene" name="scripting interface command">
 <item>Instance: <ref id="instanceobj" name ="object">
@@ -9240,6 +9283,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>References: <ref id="secref" name="references">
 <item>refineNC: <ref id="screfinenc" name="scripting interface command">,
 <ref id="refit" name="refine tool">
+<item>remKnNC: <ref id="scremknnc" name="scripting interface command">
+<item>Remove Knot: <ref id="remknt" name="remove knot tool">
 <item>RemoveMerged: <ref id="mmtools" name="Merge PolyMesh tool option">
 <item>Render: <ref id="vm" name="view menu entry">,
 <ref id="prefrib" name="preference setting">
