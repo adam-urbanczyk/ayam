@@ -6533,6 +6533,7 @@ browser (similar to the <tt/"Help on Object"/ feature):
  <item>Synopsis: <tt/"help command"/
  <item>Description: Fire up a web browser and display the help for
 the designated Ayam scripting interface command.
+ <item>Example: <tt/"help help"/ displays the help of the help command.
 </itemize>
 
 <sect2>Creating Objects<label id="crtob">
@@ -6562,8 +6563,8 @@ argument giving the name of the new material. Example:
  <item><tt/"Instance"/: creates an instance of the selected object.
  <item>...
  </itemize>
- <item>Examples: Create a sphere and update the GUI:
-<tt/"crtOb Sphere;uS;rV"/.
+ <item>Example: Create a sphere and update the GUI:
+<tt/"crtOb Sphere; uS; rV"/.
 </itemize>
 
 <sect2>Manipulating the Selection<label id="selob">
@@ -6577,6 +6578,9 @@ selOb - select object(s):
  <item>Description: Use this command to set or clear the current
 selection, index may be an ordered list of indizes, a single index or empty.
 If no index is given, the current selection will be cleared.
+ <item>Examples: <tt/"selOb"/ clears the current selection, <tt/"selOb 0"/
+selects the first object in the current level, <tt/"selOb 0 1"/ selects
+the first two objects in the current level.
 </itemize>
 
 <p><label id="scwithob">
