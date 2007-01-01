@@ -1,4 +1,5 @@
-[28. Dec 2006] CVS-Head:
+[1. Jan 2007] Ayam 1.12:
+========================
 o Bug Fixes:
   - extra help menu entry Helpblock (SF 1549831)
   - RenderGUI feature can not find cat.exe on Win32 (SF 1549833)
@@ -57,6 +58,8 @@ Import/Export:
 o added support for convertable custom objects to Wavefront OBJ, Rhino 3DM,
   and Apple 3DMF export (this allows direct export of e.g. MetaObj objects)
 o added support for Script objects to Wavefront OBJ export
+o added support for NURBS curve providing trim objects to Wavefront OBJ export
+  and Rhino 3DM export
 
 Platform Support:
 Apple Mac OS X (Aqua):
