@@ -189,6 +189,11 @@ ay_toglcb_destroy(struct Togl *togl)
       free(view);
     }
 
+  if(ay_currentview == view)
+    {
+      ay_currentview = NULL;
+    }
+
   if(recreate_clevel)
     {
       clevel->object = root->down;
