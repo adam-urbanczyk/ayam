@@ -716,9 +716,17 @@ ay_script_notifycb(ay_object *o)
 
       old_aynext = ay_next;
 
+      if(ay_currentview)
+	{
+	  old_rdmode = ay_currentview->redraw;
+	  ay_currentview->redraw = AY_FALSE;
+	}
+
       /* evaluate (execute) script string */
+      Tk_RestrictEvents(ay_ns_restrictall, NULL, &old_restrictcd);
       result = Tcl_EvalObjEx(ay_interp, sc->cscript, TCL_EVAL_GLOBAL);
       /*result = Tcl_GlobalEval(ay_interp, sc->script);*/
+      Tk_RestrictEvents(NULL, NULL, &old_restrictcd);
 
       /* move newly created objects to script object */
       if(old_aynext != ay_next)
@@ -727,6 +735,11 @@ ay_script_notifycb(ay_object *o)
 	  *old_aynext = *ay_next;
 	  *ay_next = NULL;
 	  ay_next = old_aynext;
+	}
+
+      if(ay_currentview)
+	{
+	  ay_currentview->redraw = old_rdmode;
 	}
 
       /* restore old selection */
