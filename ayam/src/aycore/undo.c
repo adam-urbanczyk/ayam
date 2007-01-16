@@ -1222,7 +1222,7 @@ ay_undo_clearobj(ay_object *o)
  ay_object **lu = NULL, *u = NULL, *down;
  ay_list_object **lr = NULL, *r = NULL;
 
-  for(i = 0; i < undo_buffer_size-1; i++)
+  for(i = 0; i <= undo_buffer_size-1; i++)
     {
       uo = &(undo_buffer[i]);
       lu = &(uo->objects);
