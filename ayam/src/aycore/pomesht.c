@@ -758,6 +758,7 @@ ay_pomesht_optimizecoords(ay_pomesh_object *pomesh, int ignore_normals)
  unsigned int i, total_loops = 0, total_verts = 0;
  unsigned int p, dp, t;
  int stride;
+ double *tmp = NULL;
 
   if(!(new = (ay_pomesh_object *) calloc(1, sizeof(ay_pomesh_object))))
     return AY_EOMEM;
@@ -837,7 +838,15 @@ ay_pomesht_optimizecoords(ay_pomesh_object *pomesh, int ignore_normals)
   pomesh->verts = new->verts;
   pomesh->controlv = new->controlv;
   pomesh->ncontrols = new->ncontrols;
-  realloc(pomesh->controlv, new->ncontrols * stride * sizeof(double));
+  if(!(tmp = realloc(pomesh->controlv, new->ncontrols * stride *
+		     sizeof(double))))
+    {
+      ay_status = AY_EOMEM;
+    }
+  else
+    {
+      pomesh->controlv = tmp;
+    }
   free(new);
 
   return ay_status;
