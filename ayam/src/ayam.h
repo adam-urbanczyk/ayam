@@ -791,6 +791,8 @@ typedef struct ay_view_object_s
   int drawgrid; /* draw grid */
   int usegrid; /* use (snap to) grid */
   int shade; /* shade view */
+  int antialiaslines; /* use antialiasing for line drawing */
+
   /*#ifdef AY_ENABLEPPREV*/
   int ppreview; /* create a permanent preview */
   /*#endif*/

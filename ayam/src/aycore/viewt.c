@@ -647,6 +647,10 @@ ay_viewt_makecurtcb(struct Togl *togl, int argc, char *argv[])
   to = Tcl_NewIntObj(view->drawobjectcs);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton, "cVAALines", -1);
+  to = Tcl_NewIntObj(view->antialiaslines);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
   Tcl_SetStringObj(ton, "cVDrawBG", -1);
   to = Tcl_NewIntObj(view->drawbg);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -1050,6 +1054,11 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 	    {
 	      Tcl_GetInt(interp, argv[i+1], &argi);
 	      view->drawobjectcs = argi;
+	    }
+	  if(!strcmp(argv[i], "-doaal"))
+	    {
+	      Tcl_GetInt(interp, argv[i+1], &argi);
+	      view->antialiaslines = argi;
 	    }
 	  if(!strcmp(argv[i], "-draw"))
 	    {

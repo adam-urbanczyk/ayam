@@ -150,6 +150,11 @@ $m add check -label "Draw Object CS" -variable ay(cVDrawOCS) -command "\
 	$w.f3D.togl setconf -docs \$ay(cVDrawOCS);\
 	\$ay(currentView) mc"
 
+$m add check -label "AntiAlias Lines" -variable ay(cVAALines) -command "\
+	global ay;\
+	$w.f3D.togl setconf -doaal \$ay(cVAALines);\
+	\$ay(currentView) mc"
+
 $m add separator
 $m add check -label "Draw BGImage" -variable ay(cVDrawBG) -command "\
 	global ay;\
