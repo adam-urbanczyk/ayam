@@ -187,6 +187,14 @@ ay_draw_view(struct Togl *togl, int draw_offset)
       ay_draw_trimview();
     }
 
+  /* enable anti-aliasing for lines */
+  if(view->antialiaslines)
+    {
+      glEnable(GL_BLEND);
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      glEnable(GL_LINE_SMOOTH);
+    }
+
   if(view->drawlevel || view->type == AY_VTTRIM)
     {
       o = ay_currentlevel->object;
@@ -322,6 +330,12 @@ ay_draw_view(struct Togl *togl, int draw_offset)
     {
       glMatrixMode(GL_MODELVIEW);
       glPopMatrix();
+    }
+
+  if(view->antialiaslines)
+    {
+      glDisable(GL_BLEND);
+      glDisable(GL_LINE_SMOOTH);
     }
 
  return AY_OK;

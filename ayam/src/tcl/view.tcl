@@ -201,11 +201,11 @@ proc viewTitle { w type action } {
 	set oldtype $type
 	set m $ay(confm)
 	if { $type == "Persp" } {
-	    $w.$m entryconfigure 16 -state normal
 	    $w.$m entryconfigure 17 -state normal
+	    $w.$m entryconfigure 18 -state normal
 	} else {
-	    $w.$m entryconfigure 16 -state disabled
 	    $w.$m entryconfigure 17 -state disabled
+	    $w.$m entryconfigure 18 -state disabled
 	}
     }
     # if
@@ -982,12 +982,14 @@ addMenu $w ViewAttribData Mode [list Draw Shade ShadeAndDraw]
 addCheck $w ViewAttribData DrawSel
 addCheck $w ViewAttribData DrawLevel
 addCheck $w ViewAttribData DrawObjectCS
+addCheck $w ViewAttribData AALines
 
 addText $w e3 "Grid:"
 addParam $w ViewAttribData GridSize
 addCheck $w ViewAttribData DrawGrid
 addCheck $w ViewAttribData UseGrid
 addCheck $w ViewAttribData Local
+
 addText $w e4 "Background:"
 addCheck $w ViewAttribData DrawBG
 addFile $w ViewAttribData BGImage
