@@ -260,6 +260,10 @@ ay_view_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &view->drawobjectcs);
 
+  Tcl_SetStringObj(ton, "AALines", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &view->antialiaslines);
+
   Tcl_SetStringObj(ton, "GridSize", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp, to, &view->grid);
@@ -439,6 +443,10 @@ ay_view_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   Tcl_SetStringObj(ton, "DrawObjectCS", -1);
   to = Tcl_NewIntObj(view->drawobjectcs);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton, "AALines", -1);
+  to = Tcl_NewIntObj(view->antialiaslines);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   Tcl_SetStringObj(ton, "GridSize", -1);
@@ -667,7 +675,12 @@ ay_view_readcb(FILE *fileptr, ay_object *o)
     {
       fscanf(fileptr,"%d\n", &vtemp.drawobjectcs);
     }
-
+  /*
+  if(ay_read_version >= 10)
+    {
+      fscanf(fileptr,"%d\n", &vtemp.antialiaslines);
+    }
+  */
   vtemp.drawhandles = AY_FALSE;
 
   /* open the view */
@@ -809,7 +822,9 @@ ay_view_writecb(FILE *fileptr, ay_object *o)
   fprintf(fileptr,"%g\n",view->farp);
 
   fprintf(fileptr,"%d\n",view->drawobjectcs);
-
+  /*
+  fprintf(fileptr,"%d\n",view->antialiaslines);
+  */
  return AY_OK;
 } /* ay_view_writecb */
 
