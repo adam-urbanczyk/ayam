@@ -1883,7 +1883,15 @@ ay_npatch_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  tag = tag->next;
 	} /* while */
 
+      /* tesselate */
       ay_status = ay_tess_npatch(o, smethod, sparamu, sparamv, result);
+
+      /* copy transformation attributes */
+      if(*result)
+	{
+	  ay_trafo_copy(o, *result);
+	}
+
     } /* if */
 
  return ay_status;
