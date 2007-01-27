@@ -133,9 +133,14 @@ proc io_insertScene { } {
 		-initialfile [file tail $filename] -initialdir $dirname\
 		-title "Select file to load:"]
     } else {
-	set ifilename [tk_getOpenFile -filetypes $types -parent .\
-		-initialfile [file tail $filename]\
-		-title "Select file to load:"]
+	if { [file exists [file tail $filename]] } {
+	    set ifilename [tk_getOpenFile -filetypes $types -parent .\
+		    -initialfile [file tail $filename]\
+		    -title "Select file to load:"]
+	} else {
+	    set ifilename [tk_getOpenFile -filetypes $types -parent .\
+		    -title "Select file to load:"]
+	}
     }
 
     if { $ifilename != "" } {
