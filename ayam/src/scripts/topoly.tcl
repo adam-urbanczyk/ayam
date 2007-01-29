@@ -28,6 +28,8 @@ proc toPoly { } {
     }
     # if
 
+    ayError 4 "toPoly" "Starting conversion. Please wait."
+
     mouseWatch 1 {. .tbw}
 
     # do a "toNPatch"
