@@ -28,6 +28,8 @@ proc toPoly { } {
     }
     # if
 
+    mouseWatch 1 {. .tbw}
+
     # do a "toNPatch"
     set types { Box Sphere Cylinder Cone Disk Hyperboloid Torus Paraboloid \
 		BPatch PatchMesh Revolve Extrude Sweep Birail1 Birail2 Skin \
@@ -42,6 +44,14 @@ proc toPoly { } {
     # now convert to PolyMesh
     forAllT NPatch 1 { convOb -inplace }
 
+    # now convert MetaBalls to PolyMeshes
+    forAllT MetaObj 1 { convOb -inplace }
+
+    mouseWatch 0 {. .tbw}
+
+    ayError 4 "toPoly" "Done converting everything to polygons."
+
+    return;
 }
 # toPoly
 
@@ -62,7 +72,11 @@ if { ![winfo exists .tbw.f.ftopoly] } {
     # now display the frame at calculated row, spanning the whole window:
     grid $f -row $row -column 0 -columnspan [lindex [grid size .tbw.f] 0]\
 	-sticky we
+
     # create a button inside the frame:
     button $f.b1 -width 10 -text "ToPolyMesh" -command { toPoly; uS; rV; }
+
+    # display the button
     pack $f.b1 -side left -fill x -expand yes
 }
+# if
