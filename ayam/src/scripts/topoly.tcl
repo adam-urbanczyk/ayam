@@ -63,7 +63,7 @@ $ay(cm) add command -label "Convert All to PolyMesh" -command {
     toPoly; uS; rV; }
 
 # attach to tool window
-if { ![winfo exists .tbw.f.ftopoly] } {
+if { [winfo exists .tbw] && ![winfo exists .tbw.f.ftopoly] } {
 
     # create a frame:
     set f [frame .tbw.f.ftopoly]
