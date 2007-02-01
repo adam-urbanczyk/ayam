@@ -1191,7 +1191,7 @@ ay_undo_clear(void)
  int i = 0;
  ay_undo_object *uo = NULL;
 
-  for(i = 0; i < undo_buffer_size-1; i++)
+  for(i = 0; i < undo_buffer_size; i++)
     {
       uo = &(undo_buffer[i]);
       ay_status = ay_undo_clearuo(uo);
@@ -1222,7 +1222,7 @@ ay_undo_clearobj(ay_object *o)
  ay_object **lu = NULL, *u = NULL, *down;
  ay_list_object **lr = NULL, *r = NULL;
 
-  for(i = 0; i <= undo_buffer_size-1; i++)
+  for(i = 0; i < undo_buffer_size; i++)
     {
       uo = &(undo_buffer[i]);
       lu = &(uo->objects);
