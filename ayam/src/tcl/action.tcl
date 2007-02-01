@@ -36,8 +36,12 @@ proc stdReleaseBind { w } {
     bind $w <ButtonRelease-1> {
 	set ay(action) 0
 	update
-	if { $ayprefs(LazyNotify) == 1 } { forceNot mod }
-	rV %W
+	if { $ayprefs(LazyNotify) == 1 } {
+	    forceNot mod
+	    rV
+	} else {
+	    rV %W
+	}
 	plb_update
 	focus %W
     }
