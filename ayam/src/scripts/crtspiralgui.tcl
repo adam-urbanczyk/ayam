@@ -3,7 +3,7 @@
 # this script wants Script Object Type "Create" and creates
 # a spiral NURBS curve; it also has a property GUI, just
 # add a tag "NP SpiralAttr" to the script object to see it
-if { ![info exists ::SpiralAttr] } {
+if { ![info exists ::SpiralAttrData] } {
     array set ::SpiralAttrData {
 	Length 30
 	AngleD 0
