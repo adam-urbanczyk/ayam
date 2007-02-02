@@ -343,6 +343,7 @@ ay_script_readcb(FILE *fileptr, ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  char a1[] = "ay", n1[] = "scriptdisable";
  char *arrname = NULL, *membername = NULL, *memberval = NULL;
+ char *eolarrname = NULL;
  int arrmembers = 0;
  Tcl_Interp *interp = ay_interp;
 
@@ -377,9 +378,15 @@ ay_script_readcb(FILE *fileptr, ay_object *o)
     {
       if(strstr(sc->script, "# Ayam, save array:"))
 	{
-	  arrname = strchr(sc->script, ':');
-	  if(arrname[1] == ' ')
+	  arrname = strchr(sc->script, ':')+1;
+	  while(arrname[0] == ' ')
 	    arrname++;
+
+	  eolarrname = strchr(sc->script, '\n');
+	  if(eolarrname)
+	    {
+	      *eolarrname = '\0';
+	    }
 
 	  fscanf(fileptr, "%d\n", &arrmembers);
 
@@ -396,6 +403,11 @@ ay_script_readcb(FILE *fileptr, ay_object *o)
 	      free(memberval);
 	      memberval = NULL;
 	    } /* for */
+
+	  if(eolarrname)
+	    {
+	      *eolarrname = '\n';
+	    }
 	} /* if */
     } /* if */
 
