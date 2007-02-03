@@ -1,3 +1,30 @@
+[3. Feb 2007] CVS-Head:
+=======================
+o Bug Fixes:
+  - crash after deleting of objects (SF 1637735)
+  - crash after applying ScriptAttr property (SF 1637748)
+  - crash using STESS drawing mode for curves (SF 1641883)
+  - conversion of NPatch objects misses transformations (SF 1646153)
+  - crash after copying/cutting objects using clipboard (SF 1646155)
+  - insert scene fails with Tcl error on Mac OS X (SF 1648924)
+  - script objects with saved data arrays fail to load params (SF 1650836)
+  - no redraw in modelling view for LazyNotify (SF 1650838)
+  - crtspiralgui example script fails to load parameters (SF 1651366)
+
+GUI:
+o fixed select background color when changed via X resources (backported
+  appropriate BWidgets bug-fix)
+
+Drawing/Shading:
+o added antialiasing drawing option for lines
+
+Scripts/Scripting Interface:
+o added example script "toPoly" that allows to easily convert the whole
+  scene to PolyMesh objects
+o added example script "zap" that shows how to create buttons in the
+  Ayam toolbox
+
+
 [1. Jan 2007] Ayam 1.12:
 ========================
 o Bug Fixes:
@@ -49,6 +76,8 @@ o added remove knot from NURBS curve tool
 o added coarsen tool for NURBS curves
 o create trimrect now creates curves with multiple points
 o added new object type NCircle
+o Level objects now provide all child objects of requested type to a
+  potential parent object
 
 Renderer Support:
 o added render to file feature: new view menu entry "View/Render To File",
