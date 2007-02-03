@@ -329,7 +329,7 @@ $m add command -image ay_Grid10_img -hidemargin 1 -command "\
     $w.f3D.togl render;\
     viewSetGridIcon $w 1.0"
 $m add command -image ay_GridX_img -hidemargin 1 -command "
-    after idle \{$w.$ay(confm) invoke 11\}"
+    after idle \{$w.$ay(confm) invoke 12\}"
 
 $m add command -image ay_Grid_img -hidemargin 1 -command "\
     $w.f3D.togl setconf -grid 0.0 -drawg 0 -ugrid 0;\
