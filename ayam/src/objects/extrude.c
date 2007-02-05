@@ -331,8 +331,8 @@ ay_extrude_writecb(FILE *fileptr, ay_object *o)
 {
  ay_extrude_object *extrude = NULL;
  int has_startb = AY_FALSE, has_endb = AY_FALSE;
- int startb_type = 0, endb_type = 0, startb_sense = 0, endb_sense = 0;
- double startb_radius = 0.0, endb_radius = 0.0;
+ int startb_type, endb_type, startb_sense, endb_sense;
+ double startb_radius, endb_radius;
 
   if(!o)
     return AY_ENULL;
@@ -474,6 +474,12 @@ ay_extrude_notifycb(ay_object *o)
 
   nextcb = &(ext->caps_and_bevels);
 
+  /* get bevel parameters from potentially present BP tags */
+  ay_npt_getbeveltags(o, 0, &has_startb, &startb_type, &startb_radius,
+		      &startb_sense);
+  ay_npt_getbeveltags(o, 1, &has_endb, &endb_type, &endb_radius,
+		      &endb_sense);
+
   /* create new extrusions, caps and bevels */
   down = o->down;
   while(down)
@@ -497,12 +503,7 @@ ay_extrude_notifycb(ay_object *o)
 
       if(c)
 	{
-	  /* get bevel parameters from potentially present BP tags */
-	  ay_npt_getbeveltags(o, 0, &has_startb, &startb_type, &startb_radius,
-			      &startb_sense);
-	  ay_npt_getbeveltags(o, 1, &has_endb, &endb_type, &endb_radius,
-			      &endb_sense);
-
+	  /* create and link the extrusion for curve c */
 	  extrusion = ext->npatch;
 
 	  ay_status = ay_npt_createnpatchobject(&(ext->npatch));
@@ -518,40 +519,49 @@ ay_extrude_notifycb(ay_object *o)
 	  ext->npatch->next = extrusion;
 
 	  /* create and link bevels */
-
 	  if(has_startb)
 	    {
+	      bevel = NULL;
 	      ay_status = ay_npt_createnpatchobject(&bevel);
-
-	      ay_status = ay_npt_bevel(startb_type,
-				       startb_radius,
-				       AY_FALSE,
-				       c,
+	      if(bevel)
+		{
+		  ay_status = ay_npt_bevel(startb_type,
+					   startb_radius,
+					   AY_FALSE,
+					   c,
 				    (ay_nurbpatch_object **)&(bevel->refine));
-
-	      bevel->scalz = -1;
-	      startb = bevel;
-	      *nextcb = bevel;
-	      nextcb = &(bevel->next);
+		  ay_trafo_copy(c, bevel);
+		  bevel->scalz *= -1;
+		  /* remember pointer to bevel for cap creation */
+		  startb = bevel;
+		  /* link bevel */
+		  *nextcb = bevel;
+		  nextcb = &(bevel->next);
+		} /* if */
 	    } /* if */
 
 	  if(has_endb)
 	    {
+	      bevel = NULL;
 	      ay_status = ay_npt_createnpatchobject(&bevel);
-
-	      ay_status = ay_npt_bevel(endb_type,
-				       endb_radius,
-				       AY_FALSE,
-				       c,
+	      if(bevel)
+		{
+		  ay_status = ay_npt_bevel(endb_type,
+					   endb_radius,
+					   AY_FALSE,
+					   c,
 				    (ay_nurbpatch_object **)&(bevel->refine));
-
-	      bevel->movz = ext->height;
-	      endb = bevel;
-	      *nextcb = bevel;
-	      nextcb = &(bevel->next);
+		  ay_trafo_copy(c, bevel);
+		  bevel->movz += ext->height;
+		  /* remember pointer to bevel for cap creation */
+		  endb = bevel;
+		  /* link bevel */
+		  *nextcb = bevel;
+		  nextcb = &(bevel->next);
+		} /* if */
 	    } /* if */
 
-	  /* create caps */
+	  /* create and link caps */
 	  if(ext->has_upper_cap)
 	    {
 	      ay_status = ay_object_copy(c, &trim);
@@ -588,8 +598,9 @@ ay_extrude_notifycb(ay_object *o)
 				(patch->width-1)*4*patch->height]),
 			     4*curve->length*sizeof(double));
 		      z += curve->controlv[2];
-		      ay_trafo_defaults(trim);
-		    }
+		      ay_trafo_copy(endb, trim);
+		      ay_nct_applytrafo(trim);
+		    } /* if */
 
 		  ay_status = ay_npt_createnpatchobject(&cap);
 
@@ -639,8 +650,9 @@ ay_extrude_notifycb(ay_object *o)
 		      memcpy(curve->controlv,&(patch->controlv[
 					(patch->width-1)*4*patch->height]),
 			     4*curve->length*sizeof(double));
-		      ay_object_defaults(trim);
-		    }
+		      ay_trafo_copy(endb, trim);
+		      ay_nct_applytrafo(trim);
+		    } /* if */
 
 		  ay_status = ay_nct_getorientation((ay_nurbcurve_object *)
 						    trim->refine, &angle);
@@ -715,8 +727,9 @@ ay_extrude_notifycb(ay_object *o)
 					(patch->width-1)*4*patch->height]),
 			     4*curve->length*sizeof(double));
 		      z += curve->controlv[2];
-		      ay_trafo_defaults(trim);
-		    }
+		      ay_trafo_copy(startb, trim);
+		      ay_nct_applytrafo(trim);
+		    } /* if */
 
 		  ay_status = ay_npt_createnpatchobject(&cap);
 
@@ -767,8 +780,9 @@ ay_extrude_notifycb(ay_object *o)
 		      memcpy(curve->controlv,&(patch->controlv[
 					(patch->width-1)*4*patch->height]),
 			     4*curve->length*sizeof(double));
-		      ay_object_defaults(trim);
-		    }
+		      ay_trafo_copy(startb, trim);
+		      ay_nct_applytrafo(trim);
+		    } /* if */
 
 		  ay_status = ay_nct_getorientation((ay_nurbcurve_object *)
 						    trim->refine, &angle);
