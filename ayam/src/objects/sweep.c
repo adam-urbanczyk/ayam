@@ -609,7 +609,7 @@ ay_sweep_notifycb(ay_object *o)
 	  ay_object_defaults(curve5);
 	  curve5->type = AY_IDNCURVE;
 
-	  ay_status = ay_npt_extractnc(bevel, 2, 0.0, AY_FALSE,
+	  ay_status = ay_npt_extractnc(bevel, 3, 0.0, AY_FALSE,
 				    (ay_nurbcurve_object**)&(curve5->refine));
 
 	  if(ay_status)
