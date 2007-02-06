@@ -673,6 +673,40 @@ ay_clone_notifycb(ay_object *o)
 
 	  ay_status = ay_nct_arrange(clone->clones, tr, clone->rotate);
 
+	  /* apply trafo */
+	  if((clone->movx != 0.0) || (clone->movy != 0.0) ||
+	     (clone->movz != 0.0) || (clone->rotx != 0.0) ||
+	     (clone->roty != 0.0) || (clone->rotz != 0.0) ||
+	     (clone->scalx != 1.0) || (clone->scaly != 1.0) ||
+	     (clone->scalz != 1.0) || (clone->quat[0] != 0.0) ||
+	     (clone->quat[1] != 0.0) || (clone->quat[2] != 0.0) ||
+	     (clone->quat[3] != 1.0))
+	    {
+	      ay_trafo_defaults(&trafo);
+	      newo = clone->clones;
+	      while(newo)
+		{
+		  trafo.movx += clone->movx;
+		  trafo.movy += clone->movy;
+		  trafo.movz += clone->movz;
+
+		  trafo.scalx *= clone->scalx;
+		  trafo.scaly *= clone->scaly;
+		  trafo.scalz *= clone->scalz;
+
+		  ay_quat_add(trafo.quat, clone->quat, trafo.quat);
+		  ay_quat_toeuler(trafo.quat, euler);
+
+		  trafo.rotx = AY_R2D(euler[0]);
+		  trafo.roty = AY_R2D(euler[1]);
+		  trafo.rotz = AY_R2D(euler[2]);
+
+		  ay_trafo_add(&trafo, newo);
+
+		  newo = newo->next;
+		} /* while */
+	    } /* if */
+
 	  if(tr_iscopy)
 	    {
 	      ay_object_delete(tr);
