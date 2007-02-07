@@ -5,7 +5,7 @@
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
 
-<date>30. Dec 2006
+<date>3. Feb 2007
 
 <abstract>
 This is the documentation of Ayam 1.12 - a free 3D modelling environment
@@ -1401,7 +1401,8 @@ The preferences are divided into five sections.
 
 <sect2>The Main Preferences<label id="prefmain">
 <p>
-The <tt/"Main"/ section contains the most used preference settings:
+The <tt/"Main"/ section contains the most important application setup related
+preference settings:
 <itemize>
 <item><tt/"Shaders"/ contains a number of paths (separated by <tt/":"/
 on Unix and <tt/";"/ on Win32) where Ayam looks for compiled
@@ -4284,7 +4285,7 @@ The Clone object allows you to easily create and control a number
 of instances of a single object.
 The instances will be created internally and transformed,
 each by a certain amount. The Clone object may also be used for
-symmetric (mirror) modelling.
+symmetric (mirrored) modelling.
 <p>
 The original object, the object to be cloned, should be the first
 child object of the Clone object.
@@ -4354,9 +4355,16 @@ of e.g. a Skin object:
 <item><tt/"Translate_X"/, <tt/"Translate_Y"/, <tt/"Translate_Z"/,
 <tt/"Rotate_X"/, <tt/"Rotate_Y"/, <tt/"Rotate_Z"/,
 <tt/"Scale_X"/, <tt/"Scale_Y"/, <tt/"Scale_Z"/,
-those attributes control the transformation of the
-instances. They are not used, if a trajectory curve is present
-or if the mirror mode is in use.
+those attributes control the transformation of the instances created by
+the Clone object. Note that the attributes specify difference values
+between two instances: a clone is offset by <tt/"Translate_X"/,
+<tt/"Translate_Y"/, and <tt/"Translate_Z"/ from the previous. It is also
+rotated by <tt/"Rotate_X"/, <tt/"Rotate_Y"/, and <tt/"Rotate_Z"/ and scaled
+by <tt/"Scale_X"/, <tt/"Scale_Y"/, <tt/"Scale_Z"/ in comparison
+to the previous clone. However, those attributes never affect the first
+clone.
+Since Ayam 1.13 the transformation attributes are also used if a trajectory
+curve is present. They are not in use when the mirror mode is activated.
 </itemize>
 
 <sect1>Revolve Object<label id="revolveobj">
@@ -5556,7 +5564,9 @@ the property GUI elements operate with.
 <p>
 The binary and source distributions of Ayam contain several example
 scripts for script objects in the <tt>"ayam/bin/scripts"</tt> and
-<tt>"ayam/src/scripts"</tt> directories, respectively.
+<tt>"ayam/src/scripts"</tt> directories, respectively. In addition,
+there are example scene files using script objects in the
+<tt>"ayam/scn/scripts"</tt> directory.
 <p>
 The next section discusses the available script object types and
 additional controlling parameters.
