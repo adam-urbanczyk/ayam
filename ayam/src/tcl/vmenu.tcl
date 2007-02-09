@@ -240,7 +240,7 @@ if { ! $AYWITHAQUA } {
     set ay(mmodem) fMenu.mm.m
 } else {
     set m [menu $mb.mm -tearoff 0]
-    $mb add cascade -label Local -menu $m
+    $mb add cascade -label Global -menu $m
     set ay(mmodem) menubar.mm
 }
 
@@ -257,8 +257,8 @@ $m add command -image ay_MMLocGlob_img -hidemargin 1 -command "\
 	\$ay(currentView) mc"
 
 if { $AYWITHAQUA } {
-    $m entryconfigure 0 -image {} -label Local
-    $m entryconfigure 1 -image {} -label Global
+    $m entryconfigure 0 -image {} -label Global
+    $m entryconfigure 1 -image {} -label Local
 }
 
 # Drawing Mode Menu

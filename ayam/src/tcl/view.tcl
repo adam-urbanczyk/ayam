@@ -774,9 +774,9 @@ proc viewSetMModeIcon { w mode } {
 	set conf "$w.menubar entryconfigure 4"
 
 	if { $mode == 0 } {
-	    eval "$conf -label Local"
-	} else {
 	    eval "$conf -label Global"
+	} else {
+	    eval "$conf -label Local"
 	}
     }
 
