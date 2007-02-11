@@ -2983,8 +2983,11 @@ onio_readmesh(ON_Mesh *p_m, double accuracy)
     {
       ay_status = ay_pv_add(newo, "mys", "varying", 0, p_m->m_T.Capacity(),
 			    (void*)stexc);
-      ay_status = ay_pv_add(newo, "mys", "varying", 0, p_m->m_T.Capacity(),
-			    (void*)stexc);
+    }
+  if(ttexc)
+    {
+      ay_status = ay_pv_add(newo, "myt", "varying", 0, p_m->m_T.Capacity(),
+			    (void*)ttexc);
     }
 
   // link the new PolyMesh into the scene hierarchy
@@ -3318,7 +3321,7 @@ onio_readtcmd(ClientData clientData, Tcl_Interp *interp,
  char fname[] = "onio_read";
  ONX_Model model;
  char *minus;
- int i = 2, sframe = -1, eframe = -1;
+ int i = 2, slayer = -1, elayer = -1;
  double accuracy = 0.1;
  char aname[] = "onio_options", vname1[] = "Progress";
 
@@ -3376,15 +3379,15 @@ onio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 	    {
 	      if(*argv[i+1] != '-')
 		{
-		  sscanf(argv[i+1], "%d", &sframe);
-		  eframe = sframe;
+		  sscanf(argv[i+1], "%d", &slayer);
+		  elayer = slayer;
 		  if((strlen(argv[i+1]) > 3) &&
 		     (minus = strchr(/*(const char*)*/(&(argv[i+1][1])), '-')))
 		    {
 		      minus++;
 		      if(*minus != '\0')
 			{
-			  sscanf(minus, "%d", &eframe);
+			  sscanf(minus, "%d", &elayer);
 			}
 		      else
 			{
@@ -3435,7 +3438,7 @@ onio_readtcmd(ClientData clientData, Tcl_Interp *interp,
   while(Tcl_DoOneEvent(TCL_DONT_WAIT)){};
 
   onio_lrobject = NULL;
-  if(sframe == -1)
+  if(slayer == -1)
     {
       for(i = 0; i < model.m_object_table.Capacity(); ++i)
 	{
@@ -3468,16 +3471,16 @@ onio_readtcmd(ClientData clientData, Tcl_Interp *interp,
     }
   else
     {
-      if(eframe != -1)
+      if(elayer != -1)
 	{
-	  for(i = sframe; i <= eframe; i++)
+	  for(i = slayer; i <= elayer; i++)
 	    {
 	      ay_status = onio_readlayer(model, i, accuracy);
 	    } // for
 	}
       else
 	{
-	  ay_status = onio_readlayer(model, sframe, accuracy);
+	  ay_status = onio_readlayer(model, slayer, accuracy);
 	} // if
     } // if
 
