@@ -895,7 +895,7 @@ ay_extrude_providecb(ay_object *o, unsigned int type, ay_object **result)
 	      ay_error(ay_status, fname, NULL);
 	      return AY_ERROR;
 	    }
-	  ay_trafo_copy(o, *t);
+	  ay_object_crtendlevel(&(*t)->down);
 	  t = &((*t)->next);
 	  p = p->next;
 	} /* while */
@@ -910,52 +910,9 @@ ay_extrude_providecb(ay_object *o, unsigned int type, ay_object **result)
 	      ay_error(ay_status, fname, NULL);
 	      return AY_ERROR;
 	    }
-	  ay_trafo_add(o, *t);
 	  t = &((*t)->next);
 	  p = p->next;
 	} /* while */
-#if 0
-      /* copy bevels */
-      p = e->upper_bevels;
-      while(p)
-	{
-	  ay_status = ay_object_copy(p, t);
-	  if(ay_status)
-	    {
-	      ay_error(ay_status, fname, NULL);
-	      return AY_ERROR;
-	    }
-	  ay_trafo_creatematrix(*t, m);
-	  np = (ay_nurbpatch_object *)(*t)->refine;
-	  cv = np->controlv;
-	  for(i = 0; i < np->width; i++)
-	    {
-	      for(j = 0; j < np->height; j++)
-		{
-		  ay_trafo_apply4(cv, m);
-		  cv += stride;
-		}
-	    }
-	  ay_trafo_defaults(*t);
-	  ay_trafo_copy(o, *t);
-	  t = &((*t)->next);
-	  p = p->next;
-	} /* while */
-
-      p = e->lower_bevels;
-      while(p)
-	{
-	  ay_status = ay_object_copy(p, t);
-	  if(ay_status)
-	    {
-	      ay_error(ay_status, fname, NULL);
-	      return AY_ERROR;
-	    }
-	  ay_trafo_add(o, *t);
-	  t = &((*t)->next);
-	  p = p->next;
-	} /* while */
-#endif
 
       /* copy eventually present TP tags */
       ay_npt_copytptag(o, new);
@@ -1005,6 +962,7 @@ ay_extrude_convertcb(ay_object *o, int in_place)
 
 	  if(*next)
 	    {
+	      ay_object_crtendlevel(&(*next)->down);
 	      next = &((*next)->next);
 	    }
 
@@ -1029,8 +987,9 @@ ay_extrude_convertcb(ay_object *o, int in_place)
 	    {
 	      ay_status = ay_object_copy(p, next);
 	      if(*next)
-		next = &((*next)->next);
-
+		{
+		  next = &((*next)->next);
+		}
 	      p = p->next;
 	    } /* while */
 	} /* if */
