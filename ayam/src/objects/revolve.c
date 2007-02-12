@@ -1054,7 +1054,6 @@ ay_revolve_providecb(ay_object *o, unsigned int type, ay_object **result)
 	      ay_error(ay_status, fname, NULL);
 	      return AY_ERROR;
 	    }
-	  ay_trafo_copy(o, *t);
 
 	  t = &((*t)->next);
 	  p = p->next;
@@ -1070,7 +1069,6 @@ ay_revolve_providecb(ay_object *o, unsigned int type, ay_object **result)
 	      ay_error(ay_status, fname, NULL);
 	      return AY_ERROR;
 	    }
-	  ay_trafo_add(o, *t);
 	  t = &((*t)->next);
 	  p = p->next;
 	} /* while */
@@ -1084,7 +1082,6 @@ ay_revolve_providecb(ay_object *o, unsigned int type, ay_object **result)
 	      ay_error(ay_status, fname, NULL);
 	      return AY_ERROR;
 	    }
-	  ay_trafo_add(o, *t);
 	  t = &((*t)->next);
 	  p = p->next;
 	} /* while */
@@ -1098,7 +1095,6 @@ ay_revolve_providecb(ay_object *o, unsigned int type, ay_object **result)
 	      ay_error(ay_status, fname, NULL);
 	      return AY_ERROR;
 	    }
-	  ay_trafo_add(o, *t);
 	  t = &((*t)->next);
 	  p = p->next;
 	} /* while */
@@ -1112,7 +1108,6 @@ ay_revolve_providecb(ay_object *o, unsigned int type, ay_object **result)
 	      ay_error(ay_status, fname, NULL);
 	      return AY_ERROR;
 	    }
-	  ay_trafo_add(o, *t);
 	  t = &((*t)->next);
 	  p = p->next;
 	} /* while */
@@ -1168,8 +1163,7 @@ ay_revolve_convertcb(ay_object *o, int in_place)
 	      ay_object_crtendlevel(&(*next)->down);
 	      next = &((*next)->next);
 	    }
-
-	}
+	} /* if */
 
       if(r->upper_cap)
 	{

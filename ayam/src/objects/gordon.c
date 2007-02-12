@@ -713,7 +713,6 @@ ay_gordon_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  ay_error(ay_status, fname, NULL);
 	  return AY_ERROR;
 	}
-      ay_trafo_copy(o, *t);
       t = &((*t)->next);
 
       /* copy caps and bevels */
@@ -726,7 +725,6 @@ ay_gordon_providecb(ay_object *o, unsigned int type, ay_object **result)
 	      ay_error(ay_status, fname, NULL);
 	      return AY_ERROR;
 	    }
-	  ay_trafo_add(o, *t);
 	  t = &((*t)->next);
 	  p = p->next;
 	} /* while */

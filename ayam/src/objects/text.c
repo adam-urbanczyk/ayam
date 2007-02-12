@@ -898,7 +898,7 @@ ay_text_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  ay_status = ay_object_copy(p, &new);
 	  if(new)
 	    {
-	      ay_trafo_copy(o, new);
+	      /*ay_trafo_copy(o, new);*/
 
 	      new->hide_children = AY_TRUE;
 	      new->parent = AY_TRUE;
