@@ -1,4 +1,4 @@
-[3. Feb 2007] CVS-Head:
+[12. Feb 2007] CVS-Head:
 =======================
 o Bug Fixes:
   - crash after deleting of objects (SF 1637735)
@@ -10,6 +10,11 @@ o Bug Fixes:
   - script objects with saved data arrays fail to load params (SF 1650836)
   - no redraw in modelling view for LazyNotify (SF 1650838)
   - crtspiralgui example script fails to load parameters (SF 1651366)
+  - wrong start cap of Sweeps with bevels (SF 1652653)
+  - wrong caps of extrusions with transformed parameter curves (SF 1652655)
+  - reversed ModelMode menu (Global/Local) on Aqua (SF 1656876)
+  - import of texture coordinates for polymesh objects (SF 1658182)
+  - provide/convert of transformed objects with caps (SF 1658185)
 
 GUI:
 o fixed select background color when changed via X resources (backported
