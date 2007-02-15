@@ -2735,7 +2735,7 @@ ay_nct_getorientation(ay_nurbcurve_object *curve, double *orient)
   else
     {
       ay_error(AY_ERROR, fname, "Could not determine 3 different points!");
-      return;
+      return AY_ERROR;
     }
 
   found = AY_FALSE;
