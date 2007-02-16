@@ -936,8 +936,21 @@ ay_clone_providecb(ay_object *o, unsigned int type, ay_object **result)
  ay_clone_object *cc = NULL;
  ay_object *clone = NULL, *down = NULL, *newo = NULL, **next = NULL;
 
-  if(!o || !result)
+  if(!o)
     return AY_ENULL;
+
+  if(!result)
+    {
+      if(o->down)
+	{
+	  if(o->down->type == type)
+	    return AY_OK;
+	  else
+	    return ay_provide_object(o->down, type, NULL); 
+	}
+      else
+	return AY_ERROR;
+    }
 
   cc = (ay_clone_object *) o->refine;
 
