@@ -258,6 +258,26 @@ ay_level_providecb(ay_object *o, unsigned int type, ay_object **result)
   if(!o)
     return AY_ENULL;
 
+  if(!result)
+    {
+      /* can we deliver atleast one object of right type? */
+      d = o->down;
+      while(d && d->next)
+	{
+	  if(type == d->type)
+	    {
+	      return AY_OK;
+	    }
+	  else
+	    {
+	      if(AY_OK == ay_provide_object(d, type, NULL))
+		return AY_OK;
+	    }
+	  d = d->next;
+	} /* while */
+      return AY_ERROR;
+    } /* if */
+
   l = (ay_level_object *)o->refine;
 
   if(l->type == AY_LTEND)
@@ -267,56 +287,30 @@ ay_level_providecb(ay_object *o, unsigned int type, ay_object **result)
   if(!o->down || (o->down && !o->down->next))
     return AY_ERROR;
 
-  if(!result)
-    {
-      /* can we deliver atleast one object of right type? */
-      d = o->down;
-      while(d->next)
-	{
-	  if(type == d->type)
-	    {
-	      return AY_OK;
-	    }
-	  else
-	    {
-	      if(type == ay_provide_object(d, type, NULL))
-		{
-		  return AY_OK;
-		}
-	    }
-	  d = d->next;
-	} /* while */
-      return AY_FALSE;
-    } /* if */
-
   d = o->down;
   last = result;
   while(d->next)
     {
+      *last = NULL;
       if(type == d->type)
 	{
 	  ay_status = ay_object_copy(d, last);
 	  if(*last)
 	    {
 	      ay_trafo_add(o, *last);
+	      last = &((*last)->next);
 	    }
-	  last = &((*last)->next);
 	}
       else
 	{
 	  ay_status = ay_provide_object(d, type, last);
-
-	  if(*last)
+	  t = *last;
+	  while(t)
 	    {
-	      t = *last;
-	      while(t)
-		{
-		  ay_trafo_add(o, t);
-
-		  t = t->next;
-		} /* while */
-	      last = &((*last)->next);
-	    } /* if */
+	      ay_trafo_add(o, t);
+	      last = &(t->next);
+	      t = t->next;
+	    } /* while */
 	} /* if */
       d = d->next;
     } /* while */
