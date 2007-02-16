@@ -21,8 +21,6 @@
 
 /* prototypes of functions local to this module: */
 
-void ay_tree_dellist(ay_list_object *list);
-
 void ay_tree_crttreestring(Tcl_Interp *interp, ay_object *o, Tcl_DString *ds);
 
 int ay_tree_crtstringfromobj(ay_object *level, ay_object *o,
@@ -39,8 +37,8 @@ int ay_tree_dndtcmd(ClientData clientData, Tcl_Interp *interp,
 /* functions: */
 
 /* ay_tree_registerdrop:
- *  register the tree drop callback cb for
- *  objects of type type_id
+ *  register the tree drop callback <cb> for
+ *  objects of type <type_id>
  */
 int
 ay_tree_registerdrop(ay_treedropcb *cb, unsigned int type_id)
@@ -56,24 +54,6 @@ ay_tree_registerdrop(ay_treedropcb *cb, unsigned int type_id)
 } /* ay_tree_registerdrop */
 
 
-/* ay_tree_dellist:
- *  frees a ay_list_object-list
- */
-void
-ay_tree_dellist(ay_list_object *list)
-{
- ay_list_object *next;
-
-  while (list) {
-      next = list->next;
-      free(list);
-      list = next;
-  }
-
- return;
-} /* ay_tree_dellist */
-
-
 /* ay_tree_getclevel:
  *  recreate clevel list from the given node
  */
@@ -86,7 +66,7 @@ ay_tree_getclevel(char *node)
 
   ay_status = ay_clevel_delall();
 
-  if (memcmp(node, "root:", 5))
+  if(memcmp(node, "root:", 5))
     {
       if(o)
 	{
@@ -131,13 +111,11 @@ ay_tree_getclevel(char *node)
 	    {
 	      return;
 	    } /* if */
-
 	}
       else
 	{
 	  i = p;
 	} /* if */
-
     } /* while */
 
   if(o)
@@ -237,7 +215,7 @@ ay_tree_crtnodename(ay_object *parent, ay_list_object *list, Tcl_DString *ds)
 	  return AY_ENULL;
 	}
 
-      if ((ay_status = ay_tree_crtnodename(list->object->down,list->next, ds)))
+      if((ay_status = ay_tree_crtnodename(list->object->down,list->next, ds)))
 	return ay_status;
     }
 
@@ -329,7 +307,6 @@ ay_tree_crtstringfromobj(ay_object *level, ay_object *o, ay_list_object *list,
 {
  int ay_status = AY_OK;
  ay_list_object *new = NULL, *tmp = NULL, *last = NULL;
-
 
   if(!level)
     return AY_ENULL;
@@ -451,7 +428,7 @@ ay_tree_selecttcmd(ClientData clientData, Tcl_Interp *interp,
  /* char fname[] = "treeSelect"; */
  ay_list_object *oldsel, *newsel, *t;
  ay_object *o;
- int i, need_redraw = AY_TRUE;
+ int i = 1, need_redraw = AY_TRUE;
  char vname[] = "ay(need_redraw)", yes[] = "1", no[] = "0";
 
   /* clear selected flags from currently selected objects */
@@ -469,10 +446,19 @@ ay_tree_selecttcmd(ClientData clientData, Tcl_Interp *interp,
   /* update current level */
   if(argc > 1)
     {
-      ay_tree_getclevel(argv[1]);
 
-      /* now, add selected objects */
-      i = 1;
+      if(!strcmp(argv[1], "-temp"))
+	{
+	  need_redraw = AY_FALSE;
+	  i++;
+	}
+
+      if(i != argc)
+	{
+	  ay_tree_getclevel(argv[i]);
+	}
+
+      /* add selected objects */
       while(i != argc)
 	{
 	  o = ay_tree_getobject(argv[i]);
@@ -485,19 +471,23 @@ ay_tree_selecttcmd(ClientData clientData, Tcl_Interp *interp,
     } /* if */
 
   newsel = ay_selection;
-  /* do we need a complete redraw ? */
-  ay_draw_needredraw(oldsel, newsel, &need_redraw);
 
+  /* do we need a complete redraw? */
   if(need_redraw)
     {
-      Tcl_SetVar(interp, vname, yes, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-    }
-  else
-    {
-      Tcl_SetVar(interp, vname, no, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-    }
+      ay_draw_needredraw(oldsel, newsel, &need_redraw);
 
-  /* now, free old selection */
+      if(need_redraw)
+	{
+	  Tcl_SetVar(interp, vname, yes, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	}
+      else
+	{
+	  Tcl_SetVar(interp, vname, no, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	} /* if */
+    } /* if */
+
+  /* free old selection */
   ay_selection = oldsel;
   while(ay_selection)
     {
@@ -507,6 +497,7 @@ ay_tree_selecttcmd(ClientData clientData, Tcl_Interp *interp,
     }
   ay_selection = newsel;
 
+  /* align local views */
   if(need_redraw)
     {
       ay_viewt_alignlocal();
@@ -581,16 +572,16 @@ int aytree_CreateDndObject_tcmd(ClientData clientData, Tcl_Interp * interp,
 
 
   /* allocate memory for the new object */
-  if (!(n = calloc(1, sizeof(ay_object)))) {
+  if(!(n = calloc(1, sizeof(ay_object)))) {
       ay_error(interp, AY_OUTOFMEM, fname, NULL);
       return TCL_OK;
   }
 
 
   entry = Tcl_FindHashEntry(&ay_creatednd_ht, argv[1]);
-  if (entry) {
+  if(entry) {
       create = (ayext_create *)Tcl_GetHashValue(entry);
-      if (create(n, argv[4]) != AY_OK) {
+      if(create(n, argv[4]) != AY_OK) {
 	  free(n);
 	  return TCL_OK;
       }
@@ -604,9 +595,9 @@ int aytree_CreateDndObject_tcmd(ClientData clientData, Tcl_Interp * interp,
   i = 0;  /* position where the object was inserted */
   failure = AY_TRUE;
 
-  if (parent) {
-      if (parent->down) {
-	  if (p == 0) {
+  if(parent) {
+      if(parent->down) {
+	  if(p == 0) {
 	      /* insert object as the first child of parent */
 	      n->next = parent->down;
 	      parent->down = n;
@@ -615,7 +606,7 @@ int aytree_CreateDndObject_tcmd(ClientData clientData, Tcl_Interp * interp,
 	  else {
 	      /* determine the position of the new object */
 	      o = parent->down;
-              if (p != -1) {
+              if(p != -1) {
 		  p--;
 		  while ((p) && (o)) {
 	              o = o->next;
@@ -632,7 +623,7 @@ int aytree_CreateDndObject_tcmd(ClientData clientData, Tcl_Interp * interp,
 		  i++;
 	      }
 
-              if (o) {
+              if(o) {
 		  /* insert child after o */
 		  n->next = o->next;
 		  o->next = n;
@@ -641,7 +632,7 @@ int aytree_CreateDndObject_tcmd(ClientData clientData, Tcl_Interp * interp,
 	  }
       }
       else {
-	  if (p == 0) {
+	  if(p == 0) {
               /* insert object as the first child of parent */
 	      parent->down = n;
 	      failure = AY_FALSE;
@@ -649,7 +640,7 @@ int aytree_CreateDndObject_tcmd(ClientData clientData, Tcl_Interp * interp,
       }
   }
   else {
-      if (p == 0) {
+      if(p == 0) {
 	  /* should never happen */
 	  n->next = ay_root;
 	  ay_root = n;
@@ -658,7 +649,7 @@ int aytree_CreateDndObject_tcmd(ClientData clientData, Tcl_Interp * interp,
       else {
 	  /* determine the position of the new object */
 	  o = ay_root;
-          if (p != -1) {
+          if(p != -1) {
 	      p--;
 	      while ((p) && (o)) {
 	          o = o->next;
@@ -675,7 +666,7 @@ int aytree_CreateDndObject_tcmd(ClientData clientData, Tcl_Interp * interp,
 	      i++;
 	  }
 
-          if (o) {
+          if(o) {
 	      /* insert child after o */
 	      n->next = o->next;
 	      o->next = n;
@@ -684,7 +675,7 @@ int aytree_CreateDndObject_tcmd(ClientData clientData, Tcl_Interp * interp,
       }
   }
 
-  if (failure) {
+  if(failure) {
       free(n);
       ay_error(interp, AY_ARGS, fname, "varname");
       return TCL_OK;
@@ -803,7 +794,6 @@ ay_tree_dndtcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
-
 	  if(p)
 	    {
 	      p = p->down;
@@ -899,8 +889,7 @@ ay_tree_dndtcmd(ClientData clientData, Tcl_Interp *interp,
  *  initialize this module
  */
 int
-ay_tree_inittcmd(ClientData clientData, Tcl_Interp *interp,
-		 int argc, char *argv[])
+ay_tree_init(Tcl_Interp *interp)
 {
   /*
  char fname[] = "treeInit";
@@ -909,19 +898,19 @@ ay_tree_inittcmd(ClientData clientData, Tcl_Interp *interp,
   */
 
   /* create new Tcl commands */
-  Tcl_CreateCommand (interp, "treeGetString", ay_tree_gettreetcmd,
-		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+  Tcl_CreateCommand(interp, "treeGetString", ay_tree_gettreetcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand (interp, "treeSelect", ay_tree_selecttcmd,
-		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+  Tcl_CreateCommand(interp, "treeSelect", ay_tree_selecttcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   /*
-  Tcl_CreateCommand (interp, "CreateDndObject", aytree_CreateDndObject_tcmd,
-		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+  Tcl_CreateCommand(interp, "CreateDndObject", aytree_CreateDndObject_tcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
   */
 
-  Tcl_CreateCommand (interp, "treeDnd", ay_tree_dndtcmd,
-		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+  Tcl_CreateCommand(interp, "treeDnd", ay_tree_dndtcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
 
 
@@ -934,12 +923,13 @@ ay_tree_inittcmd(ClientData clientData, Tcl_Interp *interp,
   Tcl_SetHashValue(entry, ayext_createsphere);
 
 
-  if ((Tcl_EvalFile(interp, "ayext.tcl")) != TCL_OK) {
-      ay_error(interp, AY_ERROR, fname, "Error while sourcing \\\"ayext.tcl\\\"!");
+  if((Tcl_EvalFile(ay_interp, "ayext.tcl")) != TCL_OK) {
+      ay_error(interp, AY_ERROR, fname,
+               "Error while sourcing \\\"ayext.tcl\\\"!");
        return AY_ERROR;
   }
 
   */
 
- return TCL_OK;
+ return AY_OK;
 } /* ay_tree_inittcmd */

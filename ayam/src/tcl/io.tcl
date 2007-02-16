@@ -1094,7 +1094,7 @@ proc io_saveMainGeom { } {
     if { $ay(lb) == 0 } {
 	set tree $ay(tree)
 	set sel [$tree selection get]
-	treeSelect root:0
+	treeSelect -temp root:0
     } else {
 	set lb $ay(olb)
 	set sel [$lb curselection]
@@ -1117,10 +1117,7 @@ proc io_saveMainGeom { } {
     }
     if { $sel != "" } {
 	if { $ay(lb) == 0 } {
-	    $tree selection set $sel
-	    treeSelect $sel
-	    eval [subst "$tree selection set $sel"]
-	    eval [subst "treeSelect $sel"]
+	    eval [subst "treeSelect -temp $sel"]
 	} else {
 	    # we can not do this at the moment, level changed
 	    # eval "selOb -lb $sel"

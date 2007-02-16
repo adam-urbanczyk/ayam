@@ -47,8 +47,7 @@ int ay_tree_registerdrop(ay_treedropcb  *cb, unsigned int type_id);
 int ay_tree_selecttcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[]);
 
-int ay_tree_inittcmd(ClientData clientData, Tcl_Interp *interp,
-		     int argc, char *argv[]);
+int ay_tree_init(Tcl_Interp *interp);
 
 /* objsel.c */
 int ay_objsel_processcb(struct Togl *togl, int argc, char *argv[]);
