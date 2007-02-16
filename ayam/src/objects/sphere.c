@@ -942,7 +942,6 @@ ay_sphere_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  ay_quat_axistoquat(xaxis, -AY_D2R(90.0), quat);
 	  new->rotx += 90.0;
 	  ay_quat_add(new->quat, quat, new->quat);
-	  ay_trafo_add(o, new);
 
 	  kn = NULL;
 	  cv = NULL;
@@ -963,7 +962,6 @@ ay_sphere_providecb(ay_object *o, unsigned int type, ay_object **result)
 		  ay_provide_object(&d, AY_IDNPATCH, n);
 		  if(*n)
 		    {
-		      ay_trafo_add(o, *n);
 		      n = &((*n)->next);
 		    }
 		} /* if */
@@ -979,7 +977,6 @@ ay_sphere_providecb(ay_object *o, unsigned int type, ay_object **result)
 		  ay_provide_object(&d, AY_IDNPATCH, n);
 		  if(*n)
 		    {
-		      ay_trafo_add(o, *n);
 		      n = &((*n)->next);
 		    }
 		} /* if */
@@ -1056,7 +1053,6 @@ ay_sphere_providecb(ay_object *o, unsigned int type, ay_object **result)
 
 		  np = NULL;
 		  cv = NULL;
-
 		} /* if */
 	    } /* if */
 	} /* if */
@@ -1117,6 +1113,7 @@ ay_sphere_convertcb(ay_object *o, int in_place)
       new->type = AY_IDLEVEL;
       new->parent = AY_TRUE;
       new->inherit_trafos = AY_TRUE;
+      ay_trafo_copy(o, new);
 
       if(!(new->refine = calloc(1, sizeof(ay_level_object))))
 	{ free(new); return AY_EOMEM; }
