@@ -788,7 +788,6 @@ ay_cylinder_providecb(ay_object *o, unsigned int type, ay_object **result)
       if(ay_status)
 	goto cleanup;
 
-      ay_trafo_copy(o, new);
       new->refine = np;
 
       if(cylinder->closed)
@@ -804,13 +803,11 @@ ay_cylinder_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  ay_provide_object(&d, AY_IDNPATCH, n);
 	  if(*n)
 	    {
-	      ay_trafo_copy(o, *n);
 	      n = &((*n)->next);
 	      disk.height = cylinder->zmax;
 	      ay_provide_object(&d, AY_IDNPATCH, n);
 	      if(*n)
 		{
-		  ay_trafo_copy(o, *n);
 		  n = &((*n)->next);
 		} /* if */
 	    } /* if */
@@ -827,17 +824,12 @@ ay_cylinder_providecb(ay_object *o, unsigned int type, ay_object **result)
 	      ay_provide_object(&d, AY_IDNPATCH, n);
 	      if(*n)
 		{
-		  ay_trafo_copy(o, *n);
 		  n = &((*n)->next);
 		  memcpy(bpatch.p1, &(controlv[height*stride-stride]),
 			 3*sizeof(double));
 		  memcpy(bpatch.p2, &(controlv[height*2*stride-stride]),
 			 3*sizeof(double));
 		  ay_provide_object(&d, AY_IDNPATCH, n);
-		  if(*n)
-		    {
-		      ay_trafo_copy(o, *n);
-		    } /* if */
 		} /* if */
 	    } /* if */
 	} /* if */
@@ -849,9 +841,7 @@ ay_cylinder_providecb(ay_object *o, unsigned int type, ay_object **result)
       *result = new;
 
       vk = NULL; controlv = NULL; np = NULL; new = NULL;
-
     } /* if */
-
 
 cleanup:
 
@@ -899,6 +889,7 @@ ay_cylinder_convertcb(ay_object *o, int in_place)
       new->type = AY_IDLEVEL;
       new->parent = AY_TRUE;
       new->inherit_trafos = AY_TRUE;
+      ay_trafo_copy(o, new);
 
       if(!(new->refine = calloc(1, sizeof(ay_level_object))))
 	{ free(new); return AY_EOMEM; }

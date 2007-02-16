@@ -822,7 +822,6 @@ ay_paraboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
       if(ay_status)
 	goto cleanup;
 
-      ay_trafo_copy(o, new);
       new->refine = np;
 
       if(paraboloid->closed)
@@ -842,7 +841,6 @@ ay_paraboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
 
 	  if(*n)
 	    {
-	      ay_trafo_copy(o, *n);
 	      n = &((*n)->next);
 	    } /* if */
 
@@ -851,10 +849,8 @@ ay_paraboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  ay_provide_object(&d, AY_IDNPATCH, n);
 	  if(*n)
 	    {
-	      ay_trafo_copy(o, *n);
 	      n = &((*n)->next);
 	    } /* if */
-
 
 	  if(fabs(paraboloid->thetamax) != 360.0)
 	    {
@@ -915,7 +911,6 @@ ay_paraboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
 	      newp->refine = np;
 
 	      *n = newp;
-	      ay_trafo_copy(o, *n);
 	      n = &((*n)->next);
 
 	      ay_status = ay_object_copy(newp, n);
@@ -929,7 +924,6 @@ ay_paraboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
 	      ay_quat_axistoquat(zaxis, -AY_D2R(paraboloid->thetamax), quat);
 	      (*n)->rotz += paraboloid->thetamax;
 	      ay_quat_add((*n)->quat, quat, (*n)->quat);
-	      ay_trafo_add(o, *n);
 
 	      newp = NULL;
 	    } /* if */
@@ -942,9 +936,7 @@ ay_paraboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
       *result = new;
 
       vk = NULL; controlv = NULL; np = NULL; new = NULL;
-
     } /* if */
-
 
 cleanup:
 
@@ -997,6 +989,7 @@ ay_paraboloid_convertcb(ay_object *o, int in_place)
       new->type = AY_IDLEVEL;
       new->parent = AY_TRUE;
       new->inherit_trafos = AY_TRUE;
+      ay_trafo_copy(o, new);
 
       if(!(new->refine = calloc(1, sizeof(ay_level_object))))
 	{ free(new); return AY_EOMEM; }
