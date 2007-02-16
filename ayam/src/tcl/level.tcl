@@ -41,7 +41,7 @@ proc level_crt { } {
     eval "selOb $selected"
 
     set ay_error 0
-    crtOb Level
+    crtOb Level 1
     if { $ay_error } { return; }
 
     cutOb
