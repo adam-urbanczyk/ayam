@@ -169,6 +169,9 @@ array set ayprefs {
 
  WindowSystem "unknown"
 
+ ALFileTypes { ".rib" ".3dm" ".obj" ".3dmf" ".mop" }
+ ALPlugins { "rrib" "onio" "objio" "mfio" "mopsi" }
+
  Docs "http://ayam.sourceforge.net/docs/"
  DailyTips {
 {Always click on drawn pixels, when picking vertices.}
@@ -1093,7 +1096,6 @@ wm protocol . WM_DELETE_WINDOW {
 frame .fu.fMain.fHier
 
 # create the tree widget
-treeInit
 if { $AYWRAPPED == 1 } {
     set env(BWIDGET_LIBRARY) "."
     ayam_loadscript bwlangrc
