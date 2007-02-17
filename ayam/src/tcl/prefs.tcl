@@ -296,6 +296,7 @@ proc prefs_open {} {
 	    unset ayprefse($j)
 	}
 	prefs_set
+	rV
 	focus .
 	destroy .prefsw
     }
@@ -326,7 +327,8 @@ proc prefs_open {} {
 	foreach c {Background Object Selection Grid Tag Shade Light} {
 	    updateColorFromE $w ayprefse $c $w.f${c}.b1
 	}
-
+	prefs_set
+	rV
     }
 
     button $f.bca -text "Cancel" -width 8 -command {
