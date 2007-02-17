@@ -946,7 +946,6 @@ ay_sphere_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  kn = NULL;
 	  cv = NULL;
 
-
 	  /* create caps */
 	  if(sphere->closed)
 	    {
@@ -994,7 +993,7 @@ ay_sphere_providecb(ay_object *o, unsigned int type, ay_object **result)
 		  for(i = 0; i < height; i++)
 		    {
 		      memcpy(&(cv2[j]), &(cv[k]), stride*sizeof(double));
-		      j += stride; k += np->width*stride;
+		      j += stride; k += np->height*stride;
 		    }
 		  cv = NULL;
 		  j = height*stride+1; k = 1;
@@ -1048,7 +1047,7 @@ ay_sphere_providecb(ay_object *o, unsigned int type, ay_object **result)
 		  for(i = 0; i < height; i++)
 		    {
 		      memcpy(&(cv2[j]), &(cv[k]), stride*sizeof(double));
-		      j += stride; k += np->width*stride;
+		      j += stride; k += np->height*stride;
 		    }
 
 		  np = NULL;
