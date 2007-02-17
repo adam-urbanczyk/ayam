@@ -272,6 +272,9 @@ ay_init(Tcl_Interp *interp)
   /* initialize wrib module */
   ay_wrib_init(interp);
 
+  /* initialize tree module */
+  ay_tree_init(interp);
+
   /* initialize object comparison helper module */
   if((ay_status = ay_comp_init()))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
@@ -926,9 +929,10 @@ Tcl_AppInit(Tcl_Interp *interp)
 
 
   /* contrib/tree.c */
+  /*
   Tcl_CreateCommand(interp, "treeInit", ay_tree_inittcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
-
+  */
   /* NURBS */
 
   /* nurbs/nct.c */
