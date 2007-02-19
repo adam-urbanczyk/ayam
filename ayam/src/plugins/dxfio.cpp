@@ -22,7 +22,13 @@
 #include <dime/Model.h>
 #include <dime/State.h>
 #include <dime/entities/Entity.h>
+#include <dime/entities/Arc.h>
+#include <dime/entities/Block.h>
 #include <dime/entities/Circle.h>
+#include <dime/entities/Ellipse.h>
+#include <dime/entities/Line.h>
+#include <dime/entities/UnknownEntity.h>
+#include <dime/util/Linear.h>
 #include <stdio.h>
 
 // local types
@@ -60,10 +66,25 @@ char dxfio_ttagnamedef[] = "myt";
 char *dxfio_ttagname = dxfio_ttagnamedef;
 
 // prototypes of functions local to this module
+int dxfio_readarc(const class dimeState *state,
+		  class dimeArc *arc,
+		  void *clientdata);
+
+int dxfio_readblock(const class dimeState *state,
+		    class dimeBlock *block,
+		    void *clientdata);
 
 int dxfio_readcircle(const class dimeState *state,
 		     class dimeCircle *circle,
 		     void *clientdata);
+
+int dxfio_readellipse(const class dimeState *state,
+		      class dimeEllipse *ellipse,
+		      void *clientdata);
+
+int dxfio_readline(const class dimeState *state,
+		   class dimeLine *line,
+		   void *clientdata);
 
 int dxfio_readprogressdcb(float progress, void *clientdata);
 
@@ -75,7 +96,6 @@ int dxfio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[]);
 
 extern "C" {
-
 #ifdef WIN32
   __declspec( dllexport )
 #endif
@@ -84,6 +104,77 @@ extern "C" {
 
 // implementation of functions
 
+// dxfio_readarc:
+//
+int
+dxfio_readarc(const class dimeState *state,
+		 class dimeArc *arc,
+		 void *clientdata)
+{
+ int ay_status = AY_OK;
+ ay_object *newo = NULL;
+ ay_ncircle_object *newc = NULL;
+ dimeVec3f center;
+
+  if(!(newo = (ay_object*)calloc(1, sizeof(ay_object))))
+    { return AY_EOMEM; }
+
+  if(!(newc = (ay_ncircle_object*)calloc(1, sizeof(ay_ncircle_object))))
+    { free(newo); return AY_EOMEM; }
+
+  newc->radius = arc->getRadius();
+  newc->tmin = arc->getStartAngle();
+  newc->tmax = arc->getEndAngle();
+
+  ay_status = ay_object_defaults(newo);
+
+  newo->type = AY_IDNCIRCLE;
+  newo->refine = newc;
+  arc->getCenter(center);
+  newo->movx = center[0];
+  newo->movy = center[1];
+  newo->movz = center[2];
+
+  ay_status = ay_notify_force(newo);
+
+  // link the new arc into the scene hierarchy
+  ay_status = ay_object_link(newo);
+
+ return ay_status;
+} // dxfio_readarc
+
+
+// dxfio_readblock:
+//
+int
+dxfio_readblock(const class dimeState *state,
+		class dimeBlock *block,
+		void *clientdata)
+{
+ int ay_status = AY_OK;
+ ay_object *newo = NULL;
+ ay_level_object *newl = NULL;
+
+  if(!(newo = (ay_object*)calloc(1, sizeof(ay_object))))
+    { return AY_EOMEM; }
+
+  if(!(newl = (ay_level_object*)calloc(1, sizeof(ay_level_object))))
+    { free(newo); return AY_EOMEM; }
+
+  ay_status = ay_object_defaults(newo);
+
+  newo->type = AY_IDLEVEL;
+  newo->refine = newl;
+
+  // link the new block into the scene hierarchy
+  ay_status = ay_object_link(newo);
+
+ return ay_status;
+} // dxfio_readblock
+
+
+// dxfio_readcircle:
+//
 int
 dxfio_readcircle(const class dimeState *state,
 		 class dimeCircle *circle,
@@ -118,6 +209,112 @@ dxfio_readcircle(const class dimeState *state,
  return ay_status;
 } // dxfio_readcircle
 
+
+// dxfio_readellipse:
+//
+int
+dxfio_readellipse(const class dimeState *state,
+		 class dimeEllipse *ellipse,
+		 void *clientdata)
+{
+ int ay_status = AY_OK;
+ double zaxis[3] = {0.0, 0.0, 1.0}, maja[2];
+ ay_object *newo = NULL;
+ ay_ncircle_object *newc = NULL;
+
+  if(!(newo = (ay_object*)calloc(1, sizeof(ay_object))))
+    { return AY_EOMEM; }
+
+  if(!(newc = (ay_ncircle_object*)calloc(1, sizeof(ay_ncircle_object))))
+    { free(newo); return AY_EOMEM; }
+
+  maja[0] = ellipse->getMajorAxisEndpoint()[0];
+  maja[1] = ellipse->getMajorAxisEndpoint()[1];
+
+  newc->radius = AY_V2LEN(maja);
+  newc->tmin = AY_R2D(ellipse->getStartParam());
+  newc->tmax = AY_R2D(ellipse->getEndParam());
+
+  ay_status = ay_object_defaults(newo);
+
+  newo->type = AY_IDNCIRCLE;
+  newo->refine = newc;
+
+  newo->movx = ellipse->getCenter()[0];
+  newo->movy = ellipse->getCenter()[1];
+  newo->movz = ellipse->getCenter()[2];
+
+  newo->scalx = ellipse->getMinorMajorRatio();
+
+  if(fabs(maja[0]) > AY_EPSILON)
+    {
+      newo->rotz = AY_R2D(atan(maja[1]/maja[0]));
+      ay_quat_axistoquat(zaxis, atan(maja[1]/maja[0]), newo->quat);
+    }
+  else
+    {
+      if(maja[1] < 0.0)
+	{
+	  newo->rotz = 90.0;
+	  ay_quat_axistoquat(zaxis, AY_HALFPI, newo->quat);
+	}
+      else
+	{
+	  newo->rotz = 270.0;
+	  ay_quat_axistoquat(zaxis, AY_PI+AY_HALFPI, newo->quat);
+	}
+    } // if
+
+  ay_status = ay_notify_force(newo);
+
+  // link the new circle/ellipse into the scene hierarchy
+  ay_status = ay_object_link(newo);
+
+ return ay_status;
+} // dxfio_readellipse
+
+
+// dxfio_readline:
+//
+int
+dxfio_readline(const class dimeState *state,
+	       class dimeLine *line,
+	       void *clientdata)
+{
+ int ay_status = AY_OK;
+ double *newcv = NULL;
+ ay_object *newo = NULL;
+ 
+  if(!(newo = (ay_object*)calloc(1, sizeof(ay_object))))
+    { return AY_EOMEM; }
+
+  if(!(newcv = (double*)calloc(2*4, sizeof(double))))
+    { free(newo); return AY_EOMEM; }
+
+  newcv[0] = (line->getCoords(0))[0];
+  newcv[1] = (line->getCoords(0))[1];
+  newcv[2] = (line->getCoords(0))[2];
+  newcv[3] = 1.0;
+
+  newcv[4] = (line->getCoords(1))[0];
+  newcv[5] = (line->getCoords(1))[1];
+  newcv[6] = (line->getCoords(1))[2];
+  newcv[7] = 1.0;
+
+  ay_nct_create(2, 2, AY_KTNURB, newcv, NULL,
+		(ay_nurbcurve_object**)&(newo->refine));
+
+  ay_status = ay_object_defaults(newo);
+
+  newo->type = AY_IDNCURVE;
+
+  // link the new curve/line into the scene hierarchy
+  ay_status = ay_object_link(newo);
+
+ return ay_status;
+} // dxfio_readline
+
+
 // dxfio_readentitydcb:
 //  Dime entity traversal callback
 bool
@@ -125,6 +322,7 @@ dxfio_readentitydcb(const class dimeState *state,
 		    class dimeEntity *entity,
 		    void *clientdata)
 {
+ char fname[] = "dxfio_readentity";
 
   if(!state || ! entity)
     return true;
@@ -133,12 +331,25 @@ dxfio_readentitydcb(const class dimeState *state,
     {
     case dimeBase::dime3DFaceType:
       break;
+    case dimeBase::dimeArcType:
+      dxfio_readarc(state, (dimeArc*)entity, clientdata);
+      break;
     case dimeBase::dimeCircleType:
       dxfio_readcircle(state, (dimeCircle*)entity, clientdata);
       break;
+    case dimeBase::dimeEllipseType:
+      dxfio_readellipse(state, (dimeEllipse*)entity, clientdata);
+      break;
+    case dimeBase::dimeLineType:
+      dxfio_readline(state, (dimeLine*)entity, clientdata);
+      break;
+    case dimeBase::dimeUnknownEntityType:
+      //if(dxfio_errorlevel > 1)
+      ay_error(AY_EWARN, fname, "Skipping entity of unknown type.");
+      break;
     default:
       break;
-    }
+    } // switch
 
  return true;
 } // dxfio_readentitydcb
@@ -150,8 +361,8 @@ int
 dxfio_readprogressdcb(float progress, void *clientdata)
 {
  static float oldprogress = 0.0f;
- char progressstr[30];
- char aname[] = "dxfio_options", vname1[] = "Progress";
+ char progressstr[32];
+ char arrname[] = "dxfio_options", varname[] = "Progress";
 
   if(clientdata != NULL)
     {
@@ -161,14 +372,14 @@ dxfio_readprogressdcb(float progress, void *clientdata)
 
   if(progress-oldprogress > 0.05)
     {
-      sprintf(progressstr, "%f", progress*50.0f);
+      sprintf(progressstr, "%d", (int)(progress*50.0f));
 
-      Tcl_SetVar2(ay_interp, aname, vname1, progressstr,
+      Tcl_SetVar2(ay_interp, arrname, varname, progressstr,
 		  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
       while(Tcl_DoOneEvent(TCL_DONT_WAIT)){};
 
       oldprogress = progress;
-    }
+    } // if
 
   return 1;
 } // dxfio_readprogressdcb
@@ -182,16 +393,16 @@ dxfio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int ay_status = AY_OK;
  char fname[] = "dxfio_read";
- char *minus;
+ char *minus, lineerrstr[64];
  int i = 2, sframe = -1, eframe = -1;
  double accuracy = 0.1;
- char aname[] = "dxfio_options", vname1[] = "Progress";
+ char arrname[] = "dxfio_options", varname[] = "Progress";
 
   dxfio_importcurves = AY_TRUE;
   dxfio_rescaleknots = 0.0;
   dxfio_scalefactor = 1.0;
   // reset internal progress counter
-  dxfio_readprogressdcb(0.0f, 1);
+  dxfio_readprogressdcb(0.0f, (void*)1);
 
   // check args
   if(argc < 2)
@@ -265,7 +476,7 @@ dxfio_readtcmd(ClientData clientData, Tcl_Interp *interp,
   // open file for reading
   dimeInput in;
 
-  if (!in.setFile(filename))
+  if(!in.setFile(filename))
     {
       ay_error(AY_EOPENFILE, fname, argv[1]);
       return TCL_OK;
@@ -276,15 +487,16 @@ dxfio_readtcmd(ClientData clientData, Tcl_Interp *interp,
   // try reading the file
   dimeModel model;
 
-  if (!model.read(&in))
+  if(!model.read(&in))
     {
       int line = in.getFilePosition();
-      ay_error(AY_ERROR, fname, "DXF read error in line...");
+      sprintf(lineerrstr, "DXF read error in line: %d", line);
+      ay_error(AY_ERROR, fname, lineerrstr);
       return TCL_OK;
     }
 
   // set progress
-  Tcl_SetVar2(ay_interp, aname, vname1, "50",
+  Tcl_SetVar2(ay_interp, arrname, varname, "50",
 	      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   while(Tcl_DoOneEvent(TCL_DONT_WAIT)){};
 
@@ -294,7 +506,7 @@ dxfio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 			 false, true, false);
 
   // set progress
-  Tcl_SetVar2(ay_interp, aname, vname1, "100",
+  Tcl_SetVar2(ay_interp, arrname, varname, "100",
 	      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   while(Tcl_DoOneEvent(TCL_DONT_WAIT)){};
 
@@ -351,9 +563,6 @@ Dxfio_Init(Tcl_Interp *interp)
        return TCL_OK;
      }
 #endif // !AYDXFIOWRAPPED
-
-  // initialize Dime
-  //ON::Begin();
 
   // create new Tcl commands to interface with the plugin
   Tcl_CreateCommand(interp, "dxfioRead", dxfio_readtcmd,
