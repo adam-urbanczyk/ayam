@@ -22,11 +22,15 @@
 #include <dime/Model.h>
 #include <dime/State.h>
 #include <dime/entities/Entity.h>
+#include <dime/entities/3DFace.h>
 #include <dime/entities/Arc.h>
 #include <dime/entities/Block.h>
 #include <dime/entities/Circle.h>
 #include <dime/entities/Ellipse.h>
 #include <dime/entities/Line.h>
+#include <dime/entities/LWPolyline.h>
+#include <dime/entities/Solid.h>
+#include <dime/entities/Trace.h>
 #include <dime/entities/UnknownEntity.h>
 #include <dime/util/Linear.h>
 #include <stdio.h>
@@ -66,6 +70,10 @@ char dxfio_ttagnamedef[] = "myt";
 char *dxfio_ttagname = dxfio_ttagnamedef;
 
 // prototypes of functions local to this module
+int dxfio_read3dface(const class dimeState *state,
+		     class dime3DFace *tdface,
+		     void *clientdata);
+
 int dxfio_readarc(const class dimeState *state,
 		  class dimeArc *arc,
 		  void *clientdata);
@@ -86,6 +94,14 @@ int dxfio_readline(const class dimeState *state,
 		   class dimeLine *line,
 		   void *clientdata);
 
+int dxfio_readsolid(const class dimeState *state,
+		    class dimeSolid *solid,
+		    void *clientdata);
+
+int dxfio_readtrace(const class dimeState *state,
+		    class dimeTrace *trace,
+		    void *clientdata);
+
 int dxfio_readprogressdcb(float progress, void *clientdata);
 
 bool dxfio_readentitydcb(const class dimeState *state,
@@ -103,6 +119,54 @@ extern "C" {
 } // extern "C"
 
 // implementation of functions
+
+// dxfio_read3dface:
+//
+int
+dxfio_read3dface(const class dimeState *state,
+		 class dime3DFace *tdface,
+		 void *clientdata)
+{
+ int ay_status = AY_OK;
+ ay_object *newo = NULL;
+ ay_bpatch_object *newbp = NULL;
+ dimeVec3f v0, v1, v2, v3;
+
+  if(!(newo = (ay_object*)calloc(1, sizeof(ay_object))))
+    { return AY_EOMEM; }
+
+  if(!(newbp = (ay_bpatch_object*)calloc(1, sizeof(ay_bpatch_object))))
+    { free(newo); return AY_EOMEM; }
+
+  tdface->getVertices(v0, v1, v2, v3);
+
+  newbp->p1[0] = v0[0];
+  newbp->p1[1] = v0[1];
+  newbp->p1[2] = v0[2];
+
+  newbp->p2[0] = v1[0];
+  newbp->p2[1] = v1[1];
+  newbp->p2[2] = v1[2];
+
+  newbp->p3[0] = v2[0];
+  newbp->p3[1] = v2[1];
+  newbp->p3[2] = v2[2];
+
+  newbp->p4[0] = v3[0];
+  newbp->p4[1] = v3[1];
+  newbp->p4[2] = v3[2];
+
+  ay_status = ay_object_defaults(newo);
+
+  newo->type = AY_IDBPATCH;
+  newo->refine = newbp;
+
+  // link the new bpatch/3dface into the scene hierarchy
+  ay_status = ay_object_link(newo);
+
+ return ay_status;
+} // dxfio_read3dface
+
 
 // dxfio_readarc:
 //
@@ -315,6 +379,157 @@ dxfio_readline(const class dimeState *state,
 } // dxfio_readline
 
 
+// dxfio_readlwpolyline:
+//
+int
+dxfio_readlwpolyline(const class dimeState *state,
+		     class dimeLWPolyline *lwpolyline,
+		     void *clientdata)
+{
+ int ay_status = AY_OK;
+ int len = 0, i = 0, a = 0, stride = 4;
+ double *newcv = NULL;
+ const dxfdouble *xverts, *yverts;
+ ay_object *newo = NULL;
+ 
+  if(!(newo = (ay_object*)calloc(1, sizeof(ay_object))))
+    { return AY_EOMEM; }
+
+  len = lwpolyline->getNumVertices();
+
+  if(!(newcv = (double*)calloc(len*stride, sizeof(double))))
+    { free(newo); return AY_EOMEM; }
+
+  xverts = lwpolyline->getXCoords();
+  yverts = lwpolyline->getYCoords();
+
+  for(i = 0; i < len; i++)
+    {
+      newcv[a]   = xverts[i];
+      newcv[a+1] = yverts[i];
+      newcv[a+2] = lwpolyline->getElevation();
+      newcv[a+3] = 1.0;
+      a += stride;
+    } // for
+
+  ay_nct_create(2, len, AY_KTNURB, newcv, NULL,
+		(ay_nurbcurve_object**)&(newo->refine));
+
+  ay_status = ay_object_defaults(newo);
+
+  newo->type = AY_IDNCURVE;
+
+  // XXXX process bulges
+
+
+
+  // link the new curve/lwpolyline into the scene hierarchy
+  ay_status = ay_object_link(newo);
+
+ return ay_status;
+} // dxfio_readlwpolyline
+
+
+// dxfio_readsolid:
+//
+int
+dxfio_readsolid(const class dimeState *state,
+		 class dimeSolid *solid,
+		 void *clientdata)
+{
+ int ay_status = AY_OK;
+ ay_object *newo = NULL;
+ ay_bpatch_object *newbp = NULL;
+ dimeVec3f v0, v1, v2, v3;
+
+  if(!(newo = (ay_object*)calloc(1, sizeof(ay_object))))
+    { return AY_EOMEM; }
+
+  if(!(newbp = (ay_bpatch_object*)calloc(1, sizeof(ay_bpatch_object))))
+    { free(newo); return AY_EOMEM; }
+
+  solid->getVertices(v0, v1, v2, v3);
+  
+  newbp->p1[0] = v0[0];
+  newbp->p1[1] = v0[1];
+  newbp->p1[2] = v0[2];
+
+  newbp->p2[0] = v1[0];
+  newbp->p2[1] = v1[1];
+  newbp->p2[2] = v1[2];
+
+  newbp->p3[0] = v2[0];
+  newbp->p3[1] = v2[1];
+  newbp->p3[2] = v2[2];
+
+  newbp->p4[0] = v3[0];
+  newbp->p4[1] = v3[1];
+  newbp->p4[2] = v3[2];
+
+  ay_status = ay_object_defaults(newo);
+
+  newo->type = AY_IDBPATCH;
+  newo->refine = newbp;
+
+  // link the new bpatch/solid into the scene hierarchy
+  ay_status = ay_object_link(newo);
+
+  // XXXX extrude solid
+
+ return ay_status;
+} // dxfio_readsolid
+
+
+// dxfio_readtrace:
+//
+int
+dxfio_readtrace(const class dimeState *state,
+		 class dimeTrace *trace,
+		 void *clientdata)
+{
+ int ay_status = AY_OK;
+ ay_object *newo = NULL;
+ ay_bpatch_object *newbp = NULL;
+ dimeVec3f v0, v1, v2, v3;
+
+  if(!(newo = (ay_object*)calloc(1, sizeof(ay_object))))
+    { return AY_EOMEM; }
+
+  if(!(newbp = (ay_bpatch_object*)calloc(1, sizeof(ay_bpatch_object))))
+    { free(newo); return AY_EOMEM; }
+
+  trace->getVertices(v0, v1, v2, v3);
+
+  newbp->p1[0] = v0[0];
+  newbp->p1[1] = v0[1];
+  newbp->p1[2] = v0[2];
+
+  newbp->p2[0] = v1[0];
+  newbp->p2[1] = v1[1];
+  newbp->p2[2] = v1[2];
+
+  newbp->p3[0] = v2[0];
+  newbp->p3[1] = v2[1];
+  newbp->p3[2] = v2[2];
+
+  newbp->p4[0] = v3[0];
+  newbp->p4[1] = v3[1];
+  newbp->p4[2] = v3[2];
+
+  ay_status = ay_object_defaults(newo);
+
+  newo->type = AY_IDBPATCH;
+  newo->refine = newbp;
+
+  // link the new bpatch/trace into the scene hierarchy
+  ay_status = ay_object_link(newo);
+
+  // XXXX extrude trace
+
+ return ay_status;
+} // dxfio_readtrace
+
+
 // dxfio_readentitydcb:
 //  Dime entity traversal callback
 bool
@@ -330,6 +545,7 @@ dxfio_readentitydcb(const class dimeState *state,
   switch(entity->typeId())
     {
     case dimeBase::dime3DFaceType:
+      dxfio_read3dface(state, (dime3DFace*)entity, clientdata);
       break;
     case dimeBase::dimeArcType:
       dxfio_readarc(state, (dimeArc*)entity, clientdata);
@@ -342,6 +558,15 @@ dxfio_readentitydcb(const class dimeState *state,
       break;
     case dimeBase::dimeLineType:
       dxfio_readline(state, (dimeLine*)entity, clientdata);
+      break;
+    case dimeBase::dimeLWPolylineType:
+      dxfio_readlwpolyline(state, (dimeLWPolyline*)entity, clientdata);
+      break;
+    case dimeBase::dimeSolidType:
+      dxfio_readsolid(state, (dimeSolid*)entity, clientdata);
+      break;
+    case dimeBase::dimeTraceType:
+      dxfio_readtrace(state, (dimeTrace*)entity, clientdata);
       break;
     case dimeBase::dimeUnknownEntityType:
       //if(dxfio_errorlevel > 1)
