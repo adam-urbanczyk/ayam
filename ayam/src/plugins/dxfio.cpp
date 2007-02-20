@@ -30,6 +30,7 @@
 #include <dime/entities/Line.h>
 #include <dime/entities/LWPolyline.h>
 #include <dime/entities/Solid.h>
+#include <dime/entities/Spline.h>
 #include <dime/entities/Trace.h>
 #include <dime/entities/UnknownEntity.h>
 #include <dime/util/Linear.h>
@@ -93,6 +94,10 @@ int dxfio_readellipse(const class dimeState *state,
 int dxfio_readline(const class dimeState *state,
 		   class dimeLine *line,
 		   void *clientdata);
+
+int dxfio_readlwpolyline(const class dimeState *state,
+			 class dimeLWPolyline *lwpolyline,
+			 void *clientdata);
 
 int dxfio_readsolid(const class dimeState *state,
 		    class dimeSolid *solid,
@@ -480,6 +485,89 @@ dxfio_readsolid(const class dimeState *state,
 } // dxfio_readsolid
 
 
+// dxfio_readspline:
+//
+int
+dxfio_readspline(const class dimeState *state,
+		 class dimeSpline *spline,
+		 void *clientdata)
+{
+ int ay_status = AY_OK;
+ int len = 0, order = 0, i = 0, a = 0, stride = 4;
+ double *newcv = NULL, *newkv = NULL;
+ dimeVec3f cv;
+ ay_object *newo = NULL;
+ 
+  if(!(newo = (ay_object*)calloc(1, sizeof(ay_object))))
+    { return AY_EOMEM; }
+
+  len = spline->getNumControlPoints();
+  order = spline->getDegree() + 1;
+
+  if(!(newcv = (double*)calloc(len*stride, sizeof(double))))
+    { free(newo); return AY_EOMEM; }
+
+  if(!(newkv = (double*)calloc(len+order, sizeof(double))))
+    { free(newcv); free(newo); return AY_EOMEM; }
+
+  // copy control points
+  for(i = 0; i < len; i++)
+    {
+      cv = spline->getControlPoint(i);
+      newcv[a]   = cv[0];
+      newcv[a+1] = cv[1];
+      newcv[a+2] = cv[2];
+      a += stride;
+    } // for
+
+  // copy/create weights
+  a = 3;
+  if(spline->hasWeights() && (spline->getNumWeights() > 0))
+    {
+      for(i = 0; i < len; i++)
+	{
+	  newcv[a] = spline->getWeight(i);
+	  if(fabs(newcv[a]) < AY_EPSILON)
+	    newcv[a] = 1.0;
+	  a += stride;
+	}
+    }
+  else
+    {
+      for(i = 0; i < len; i++)
+	{
+	  newcv[a] = 1.0;
+	  a += stride;
+	}
+    } // if
+
+  // copy knots
+  for(i = 0; i < len+order; i++)
+    {
+      newkv[i] = spline->getKnotValue(i);
+    }
+
+  // rescale knots to safe distance?
+  if(dxfio_rescaleknots != 0.0)
+    {
+      ay_knots_rescaletomindist(len+order, newkv, dxfio_rescaleknots);
+    }
+
+  // now create a NURBCurve object
+  ay_nct_create(order, len, AY_KTCUSTOM, newcv, newkv,
+		(ay_nurbcurve_object**)&(newo->refine));
+
+  ay_status = ay_object_defaults(newo);
+
+  newo->type = AY_IDNCURVE;
+
+  // link the new curve/spline into the scene hierarchy
+  ay_status = ay_object_link(newo);
+
+ return ay_status;
+} // dxfio_readspline
+
+
 // dxfio_readtrace:
 //
 int
@@ -565,6 +653,9 @@ dxfio_readentitydcb(const class dimeState *state,
     case dimeBase::dimeSolidType:
       dxfio_readsolid(state, (dimeSolid*)entity, clientdata);
       break;
+    case dimeBase::dimeSplineType:
+      dxfio_readspline(state, (dimeSpline*)entity, clientdata);
+      break;
     case dimeBase::dimeTraceType:
       dxfio_readtrace(state, (dimeTrace*)entity, clientdata);
       break;
@@ -616,7 +707,7 @@ int
 dxfio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 	       int argc, char *argv[])
 {
- int ay_status = AY_OK;
+  //int ay_status = AY_OK;
  char fname[] = "dxfio_read";
  char *minus, lineerrstr[64];
  int i = 2, sframe = -1, eframe = -1;
