@@ -29,10 +29,12 @@
 #include <dime/entities/Ellipse.h>
 #include <dime/entities/Line.h>
 #include <dime/entities/LWPolyline.h>
+#include <dime/entities/Polyline.h>
 #include <dime/entities/Solid.h>
 #include <dime/entities/Spline.h>
 #include <dime/entities/Trace.h>
 #include <dime/entities/UnknownEntity.h>
+#include <dime/entities/Vertex.h>
 #include <dime/util/Linear.h>
 #include <stdio.h>
 
@@ -71,6 +73,22 @@ char dxfio_ttagnamedef[] = "myt";
 char *dxfio_ttagname = dxfio_ttagnamedef;
 
 // prototypes of functions local to this module
+int dxfio_getpolyfacemesh(const class dimeState *state,
+			  class dimePolyline *polyline,
+			  void *clientdata, ay_object *newo);
+
+int dxfio_getpolyline(const class dimeState *state,
+		      class dimePolyline *polyline,
+		      void *clientdata, ay_object *newo);
+
+int dxfio_getpolymesh(const class dimeState *state,
+		      class dimePolyline *polyline,
+		      void *clientdata, ay_object *newo);
+
+int dxfio_getsmoothsurface(const class dimeState *state,
+			   class dimePolyline *polyline,
+			   void *clientdata, ay_object *newo);
+
 int dxfio_read3dface(const class dimeState *state,
 		     class dime3DFace *tdface,
 		     void *clientdata);
@@ -99,9 +117,17 @@ int dxfio_readlwpolyline(const class dimeState *state,
 			 class dimeLWPolyline *lwpolyline,
 			 void *clientdata);
 
+int dxfio_readpolyline(const class dimeState *state,
+		       class dimePolyline *polyline,
+		       void *clientdata);
+
 int dxfio_readsolid(const class dimeState *state,
 		    class dimeSolid *solid,
 		    void *clientdata);
+
+int dxfio_readspline(const class dimeState *state,
+		     class dimeSpline *spline,
+		     void *clientdata);
 
 int dxfio_readtrace(const class dimeState *state,
 		    class dimeTrace *trace,
@@ -435,6 +461,336 @@ dxfio_readlwpolyline(const class dimeState *state,
 } // dxfio_readlwpolyline
 
 
+// dxfio_getpolyline:
+//
+int
+dxfio_getpolyline(const class dimeState *state,
+		   class dimePolyline *polyline,
+		   void *clientdata, ay_object *newo)
+{
+ int ay_status = AY_OK;
+
+ 
+ int len = 0, i = 0, a = 0, stride = 4;
+ double *newcv = NULL;
+ dimeVertex *vert = NULL;
+ dimeVec3f cv;
+
+  len = polyline->getNumCoordVertices();
+
+  if(len == 0)
+    return AY_ERROR;
+
+  if(!(newcv = (double*)calloc(len*stride, sizeof(double))))
+    { free(newo); return AY_EOMEM; }
+
+  for(i = 0; i < len; i++)
+    {
+      vert = NULL;
+      vert = polyline->getCoordVertex(i);
+      if(vert /* && (getFlags() & dimeVertex::POLYLINE_3D_VERTEX)*/)
+	{
+	  cv = vert->getCoords();
+	  newcv[a]   = cv[0];
+	  newcv[a+1] = cv[1];
+	  if(polyline->getFlags() & dimePolyline::IS_POLYLINE_3D)
+	    {
+	      newcv[a+2] = cv[2];
+	    }
+	  else
+	    {
+	      cv = polyline->getElevation();
+	      newcv[a+2] = cv[2];
+	    }
+	} // if
+      newcv[a+3] = 1.0;
+      a += stride;
+    } // for
+
+  ay_nct_create(2, len, AY_KTNURB, newcv, NULL,
+		(ay_nurbcurve_object**)&(newo->refine));
+  newo->type = AY_IDNCURVE;
+  // XXXX process bulges?
+
+ return ay_status;
+} // dxfio_getpolyline
+
+
+// dxfio_getpolymesh:
+//
+int
+dxfio_getpolymesh(const class dimeState *state,
+		       class dimePolyline *polyline,
+		       void *clientdata, ay_object *newo)
+{
+ int ay_status = AY_OK;
+ unsigned int a, i, j, numfaces = 0, numverts = 0,m,n;
+ ay_pomesh_object *pomesh = NULL;
+ dimeVertex *v;
+ dimeVec3f cv;
+
+  if(polyline->getSurfaceType() > 0)
+    {
+      return dxfio_getsmoothsurface(state, polyline, clientdata, newo);
+    }
+
+  if(!(pomesh = (ay_pomesh_object*)calloc(1, sizeof(ay_pomesh_object))))
+    { return AY_EOMEM; }
+
+  m = polyline->getPolymeshCountM();
+  n = polyline->getPolymeshCountN();
+
+  numverts = polyline->getNumCoordVertices();
+
+  // sanity check
+  if(m*n != numverts)
+    { ay_status = AY_ERROR; goto cleanup; }
+
+
+  // copy/create face/loop/vertex info
+  numfaces = (m-1)*(n-1);
+
+  // XXXX add faces for closed meshes
+  /*
+  if(polyline->getFlags & POLYMESH_CLOSED_M)
+    numfaces += n;
+  if(polyline->getFlags & POLYMESH_CLOSED_N)
+    numfaces += m;
+  pomesh->npolys = numfaces;
+  */
+  if(!(pomesh->nloops = (unsigned int*)calloc(numfaces, sizeof(unsigned int))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  if(!(pomesh->nverts = (unsigned int*)calloc(numfaces, sizeof(unsigned int))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  a = 0;
+  j = 0;
+  for(i = 0; i < numfaces; i++)
+    {
+      // every polyfacemesh polygon/face has just one loop (no holes)
+      pomesh->nloops[i] = 1;
+      // all faces are quads
+      pomesh->nverts[i] = 4;
+      // generate indices
+      pomesh->verts[a]   = i;
+      pomesh->verts[a+1] = i+1;
+      pomesh->verts[a+2] = i+m;
+      pomesh->verts[a+3] = i+m+1;
+      a += 4;
+    } // for
+
+  // XXXX add faces for closed meshes
+
+
+  // copy coordinate values
+  pomesh->ncontrols = polyline->getNumCoordVertices();
+  // since there are no normals, every control point is 3 doubles
+  if(!(pomesh->controlv = (double*)calloc(pomesh->ncontrols*3,
+					  sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  a = 0;
+  for(i = 0; i < pomesh->ncontrols; i++)
+    {
+      v = polyline->getCoordVertex((int)i);
+      cv = v->getCoords();
+      pomesh->controlv[a]   = cv[0];
+      pomesh->controlv[a+1] = cv[1];
+      pomesh->controlv[a+2] = cv[2];
+      a += 3;
+    } // for
+
+  // return result
+  newo->refine = pomesh;
+  newo->type = AY_IDPOMESH;
+  pomesh = NULL;
+
+cleanup:
+
+  if(pomesh)
+    {
+      if(pomesh->nloops)
+	free(pomesh->nloops);
+
+      if(pomesh->nverts)
+	free(pomesh->nverts);
+
+      if(pomesh->verts)
+	free(pomesh->verts);
+
+      if(pomesh->controlv)
+	free(pomesh->controlv);
+
+      free(pomesh);
+    } // if
+
+ return ay_status;
+} // dxfio_getpolymesh
+
+
+// dxfio_getsmoothsurface:
+//
+int
+dxfio_getsmoothsurface(const class dimeState *state,
+		       class dimePolyline *polyline,
+		       void *clientdata, ay_object *newo)
+{
+ int ay_status = AY_OK;
+ /*
+ int w, h;
+ ay_pamesh_object *pamesh = NULL;
+
+ 
+  newo->type = AY_IDPAMESH;
+  newo->refine = pamesh;
+ 
+ */
+
+ return ay_status;
+} // dxfio_getsmoothsurface
+
+
+// dxfio_getpolyfacemesh:
+//
+int
+dxfio_getpolyfacemesh(const class dimeState *state,
+		       class dimePolyline *polyline,
+		       void *clientdata, ay_object *newo)
+{
+ int ay_status = AY_OK;
+ unsigned int a, i, j, numfaces = 0, numverts = 0;
+ ay_pomesh_object *pomesh = NULL;
+ dimeVertex *v;
+ dimeVec3f cv;
+
+  if(!(pomesh = (ay_pomesh_object*)calloc(1, sizeof(ay_pomesh_object))))
+    { return AY_EOMEM; }
+
+  // copy/create face/loop info
+  numfaces = polyline->getNumIndexVertices();
+  if(numfaces == 0)
+    { ay_status = AY_ERROR; goto cleanup; }
+
+  pomesh->npolys = numfaces;
+
+  if(!(pomesh->nloops = (unsigned int*)calloc(numfaces, sizeof(unsigned int))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  if(!(pomesh->nverts = (unsigned int*)calloc(numfaces, sizeof(unsigned int))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+
+  for(i = 0; i < numfaces; i++)
+    {
+      // every polyfacemesh polygon/face has just one loop (no holes)
+      pomesh->nloops[i] = 1;
+      // but is it a quad or triangle?
+      v = polyline->getIndexVertex((int)i);
+      pomesh->nverts[i] = v->numIndices();
+      numverts += pomesh->nverts[i];
+    } // for
+
+  // copy vertice indices
+  if(!(pomesh->verts = (unsigned int*)calloc(numverts, sizeof(unsigned int))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  a = 0;
+  for(i = 0; i < numfaces; i++)
+    {
+      v = polyline->getIndexVertex((int)i);
+      for(j = 0; j < v->numIndices(); j++)
+	{
+	  pomesh->verts[a] = v->getIndex((int)j);
+	  a++;
+	}
+    } // for
+
+  // copy coordinate values
+  pomesh->ncontrols = polyline->getNumCoordVertices();
+  // since there are no normals, every control point is 3 doubles
+  if(!(pomesh->controlv = (double*)calloc(pomesh->ncontrols*3,
+					  sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  a = 0;
+  for(i = 0; i < pomesh->ncontrols; i++)
+    {
+      v = polyline->getCoordVertex((int)i);
+      cv = v->getCoords();
+      pomesh->controlv[a]   = cv[0];
+      pomesh->controlv[a+1] = cv[1];
+      pomesh->controlv[a+2] = cv[2];
+      a += 3;
+    } // for
+
+  // return result
+  newo->refine = pomesh;
+  newo->type = AY_IDPOMESH;
+  pomesh = NULL;
+
+cleanup:
+
+  if(pomesh)
+    {
+      if(pomesh->nloops)
+	free(pomesh->nloops);
+
+      if(pomesh->nverts)
+	free(pomesh->nverts);
+
+      if(pomesh->verts)
+	free(pomesh->verts);
+
+      if(pomesh->controlv)
+	free(pomesh->controlv);
+
+      free(pomesh);
+    } // if
+
+ return ay_status;
+} // dxfio_getpolyfacemesh
+
+
+// dxfio_readpolyline:
+//
+int
+dxfio_readpolyline(const class dimeState *state,
+		   class dimePolyline *polyline,
+		   void *clientdata)
+{
+ int ay_status = AY_OK;
+ ay_object *newo = NULL;
+
+  if(!(newo = (ay_object*)calloc(1, sizeof(ay_object))))
+    { return AY_EOMEM; }
+
+  ay_object_defaults(newo);
+
+  switch(polyline->getType())
+    {
+    case dimePolyline::POLYLINE:
+      ay_status = dxfio_getpolyline(state, polyline, clientdata, newo);
+      break;
+    case dimePolyline::POLYFACE_MESH:
+      ay_status = dxfio_getpolyfacemesh(state, polyline, clientdata, newo);
+      break;
+    case dimePolyline::POLYGON_MESH:
+      ay_status = dxfio_getpolymesh(state, polyline, clientdata, newo);
+      break;
+    default:
+      break;
+    } // switch
+
+  // link the new curve/polyline into the scene hierarchy
+  if(newo && newo->refine)
+    {
+      ay_status = ay_object_link(newo);
+      newo = NULL;
+    }
+  /*
+cleanup:
+  */
+  if(newo)
+    free(newo);
+
+ return ay_status;
+} // dxfio_readpolyline
+
+
 // dxfio_readsolid:
 //
 int
@@ -649,6 +1005,9 @@ dxfio_readentitydcb(const class dimeState *state,
       break;
     case dimeBase::dimeLWPolylineType:
       dxfio_readlwpolyline(state, (dimeLWPolyline*)entity, clientdata);
+      break;
+    case dimeBase::dimePolylineType:
+      dxfio_readpolyline(state, (dimePolyline*)entity, clientdata);
       break;
     case dimeBase::dimeSolidType:
       dxfio_readsolid(state, (dimeSolid*)entity, clientdata);
