@@ -552,9 +552,9 @@ dxfio_getpolymesh(const class dimeState *state,
 
   // XXXX add faces for closed meshes
   /*
-  if(polyline->getFlags & POLYMESH_CLOSED_M)
+  if(polyline->getFlags & dimePolyline::POLYMESH_CLOSED_M)
     numfaces += n;
-  if(polyline->getFlags & POLYMESH_CLOSED_N)
+  if(polyline->getFlags & dimePolyline::POLYMESH_CLOSED_N)
     numfaces += m;
   pomesh->npolys = numfaces;
   */
@@ -573,6 +573,7 @@ dxfio_getpolymesh(const class dimeState *state,
       // generate indices
       pomesh->verts[a]   = i;
       pomesh->verts[a+1] = i+1;
+      // coordinates are ordered width-first, so we get to the next row by +m?
       pomesh->verts[a+2] = i+m;
       pomesh->verts[a+3] = i+m+1;
       a += 4;
@@ -594,7 +595,15 @@ dxfio_getpolymesh(const class dimeState *state,
       cv = v->getCoords();
       pomesh->controlv[a]   = cv[0];
       pomesh->controlv[a+1] = cv[1];
-      pomesh->controlv[a+2] = cv[2];
+      if(polyline->getFlags() & dimePolyline::IS_POLYMESH_3D)
+	{
+	  pomesh->controlv[a+2] = cv[2];
+	}
+      else
+	{
+	  cv = polyline->getElevation();
+	  pomesh->controlv[a+2] = cv[2];
+	}
       a += 3;
     } // for
 
@@ -634,15 +643,123 @@ dxfio_getsmoothsurface(const class dimeState *state,
 		       void *clientdata, ay_object *newo)
 {
  int ay_status = AY_OK;
- /*
- int w, h;
- ay_pamesh_object *pamesh = NULL;
+ int w, h, uorder, vorder, uknott, vknott, numcv;
+ int i, j, a, b, c;
+ double *controlv = NULL;
+ bool closem = false, closen = false, reseta = false;
+ dimeVertex *v;
+ dimeVec3f cv;
 
- 
-  newo->type = AY_IDPAMESH;
-  newo->refine = pamesh;
- 
- */
+  // get NURBS surface parameters
+  w = polyline->getPolymeshCountM();
+  h = polyline->getPolymeshCountN();
+
+  switch(polyline->getSurfaceType())
+    {
+    case dimePolyline::QUADRIC_BSPLINE:
+      uorder = 3;
+      vorder = 3;
+      uknott = AY_KTBSPLINE;
+      vknott = AY_KTBSPLINE;
+      break;
+    case dimePolyline::CUBIC_BSPLINE:
+      uorder = 4;
+      vorder = 4;
+      uknott = AY_KTBSPLINE;
+      vknott = AY_KTBSPLINE;
+      break;
+    case dimePolyline::BEZIER:
+      uorder = w;
+      vorder = h;
+      uknott = AY_KTBEZIER;
+      vknott = AY_KTBEZIER;
+      break;
+    default:
+      break;
+    } // switch
+
+  // correct parameters for closed cases
+  if(polyline->getFlags() & dimePolyline::POLYMESH_CLOSED_M)
+    {
+      if(polyline->getSurfaceType() != dimePolyline::BEZIER)
+	{
+	  w += (uorder-1);
+	}
+      else
+	{
+	  w++;
+	  uorder++;
+	}
+      closem = true;
+    }
+  if(polyline->getFlags() & dimePolyline::POLYMESH_CLOSED_N)
+    {
+      if(polyline->getSurfaceType() != dimePolyline::BEZIER)
+	{
+	  h += (vorder-1);
+	}
+      else
+	{
+	  h++;
+	  vorder++;
+	}
+      closen = true;
+    }
+
+  // copy coordinate values
+  numcv = w*h;
+  if(!(controlv = (double*)calloc(numcv*4, sizeof(double))))
+    { return AY_EOMEM; }
+
+  a = 0;
+  b = 0;
+  c = 0;
+  for(i = 0; i < w; i++)
+    {
+      if(i >= polyline->getPolymeshCountM())
+	{
+	  // if we get here, the surface is closed in N/V direction
+	  // and we need to reset a to wrap around
+	  a = c * polyline->getPolymeshCountN();
+	  c ++;
+	}
+      else
+	{
+	  a = i * polyline->getPolymeshCountN();
+	}
+      for(j = 0; j < h; j++)
+	{
+	  if(j == polyline->getPolymeshCountN())
+	    {
+	      // if we get here, the surface is closed in M/U direction
+	      // and we need to reset a to wrap around
+	      a -= polyline->getPolymeshCountN();
+	    }
+	  v = polyline->getSplineFrameControlPoint(a);
+	  cv = v->getCoords();
+	  controlv[b]   = cv[0];
+	  controlv[b+1] = cv[1];
+	  controlv[b+2] = cv[2];
+	  controlv[b+3] = 1.0;
+	  b+=4;
+	  a++;
+	} // for
+
+    } // for
+
+  ay_npt_create(uorder, vorder, w, h, uknott, vknott,
+		controlv, NULL, NULL,
+		(ay_nurbpatch_object**)&(newo->refine));
+
+  /*
+  if(closem)
+    ((ay_nurbpatch_object*)newo->refine)->closedu = AY_TRUE;
+  if(closen)
+    ((ay_nurbpatch_object*)newo->refine)->closedv = AY_TRUE;
+  */
+
+  // return result
+  newo->type = AY_IDNPATCH;
 
  return ay_status;
 } // dxfio_getsmoothsurface
