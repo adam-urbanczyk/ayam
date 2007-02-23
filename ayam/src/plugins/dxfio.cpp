@@ -22,6 +22,7 @@
 #include <dime/Model.h>
 #include <dime/State.h>
 #include <dime/entities/Entity.h>
+#include <dime/entities/ExtrusionEntity.h>
 #include <dime/entities/3DFace.h>
 #include <dime/entities/Arc.h>
 #include <dime/entities/Block.h>
@@ -73,6 +74,8 @@ char dxfio_ttagnamedef[] = "myt";
 char *dxfio_ttagname = dxfio_ttagnamedef;
 
 // prototypes of functions local to this module
+int dxfio_extrudebpatch(class dimeExtrusionEntity *entity, ay_object *o);
+
 int dxfio_getpolyfacemesh(const class dimeState *state,
 			  class dimePolyline *polyline,
 			  void *clientdata, ay_object *newo);
@@ -151,6 +154,69 @@ extern "C" {
 
 // implementation of functions
 
+// dxfio_extrudebpatch:
+//
+int
+dxfio_extrudebpatch(class dimeExtrusionEntity *entity, ay_object *o)
+{
+ int ay_status = AY_OK;
+ int i, j, n = 4;
+ double v[12], *p1, *p2;
+ ay_object *newo = NULL;
+ ay_bpatch_object *bp = NULL;
+ dimeVec3f ex;
+ dxfdouble th;
+
+ //entity->getExtrusionDir(ex);
+ //th = entity->getThickness();
+
+  if(th <= 0.0)
+    return AY_OK;
+
+  bp = (ay_bpatch_object *)o->refine;
+
+
+  // get number of unique points
+  for(i = 0; i < 4; i++)
+    {
+      if(i == 0)
+	memcpy(&(v[0]), bp->p1, 3*sizeof(double));
+      if(i == 1)
+	memcpy(&(v[3]), bp->p2, 3*sizeof(double));
+      if(i == 2)
+	memcpy(&(v[6]), bp->p3, 3*sizeof(double));
+      if(i == 3)
+	memcpy(&(v[9]), bp->p4, 3*sizeof(double));
+    }
+  for(i = 0; i < 4; i++)
+    {
+      for(j = i; j < 4; j++)
+	{
+	  if(i != j)
+	    {
+	      p1 = &(v[i*3]);
+	      p2 = &(v[j*3]);
+	      if(AY_COMP3DP(p1, p2))
+		{
+		  n--;
+		}
+	    }
+	} // for
+    } // for
+
+  // create new object(s)
+  switch(n)
+    {
+    case 0:
+      break;
+    default:
+      break;
+    }
+
+ return ay_status;
+} // dxfio_extrudebpatch
+
+
 // dxfio_read3dface:
 //
 int
@@ -203,8 +269,8 @@ dxfio_read3dface(const class dimeState *state,
 //
 int
 dxfio_readarc(const class dimeState *state,
-		 class dimeArc *arc,
-		 void *clientdata)
+	      class dimeArc *arc,
+	      void *clientdata)
 {
  int ay_status = AY_OK;
  ay_object *newo = NULL;
@@ -309,8 +375,8 @@ dxfio_readcircle(const class dimeState *state,
 //
 int
 dxfio_readellipse(const class dimeState *state,
-		 class dimeEllipse *ellipse,
-		 void *clientdata)
+		  class dimeEllipse *ellipse,
+		  void *clientdata)
 {
  int ay_status = AY_OK;
  double zaxis[3] = {0.0, 0.0, 1.0}, maja[2];
@@ -465,8 +531,8 @@ dxfio_readlwpolyline(const class dimeState *state,
 //
 int
 dxfio_getpolyline(const class dimeState *state,
-		   class dimePolyline *polyline,
-		   void *clientdata, ay_object *newo)
+		  class dimePolyline *polyline,
+		  void *clientdata, ay_object *newo)
 {
  int ay_status = AY_OK;
 
@@ -520,8 +586,8 @@ dxfio_getpolyline(const class dimeState *state,
 //
 int
 dxfio_getpolymesh(const class dimeState *state,
-		       class dimePolyline *polyline,
-		       void *clientdata, ay_object *newo)
+		  class dimePolyline *polyline,
+		  void *clientdata, ay_object *newo)
 {
  int ay_status = AY_OK;
  unsigned int a, i, j, numfaces = 0, numverts = 0,m,n;
@@ -566,7 +632,7 @@ dxfio_getpolymesh(const class dimeState *state,
   j = 0;
   for(i = 0; i < numfaces; i++)
     {
-      // every polyfacemesh polygon/face has just one loop (no holes)
+      // every polymesh polygon/face has just one loop (no holes)
       pomesh->nloops[i] = 1;
       // all faces are quads
       pomesh->nverts[i] = 4;
@@ -574,8 +640,8 @@ dxfio_getpolymesh(const class dimeState *state,
       pomesh->verts[a]   = i;
       pomesh->verts[a+1] = i+1;
       // coordinates are ordered width-first, so we get to the next row by +m?
-      pomesh->verts[a+2] = i+m;
-      pomesh->verts[a+3] = i+m+1;
+      pomesh->verts[a+2] = i+n;
+      pomesh->verts[a+3] = i+n+1;
       a += 4;
     } // for
 
@@ -595,15 +661,17 @@ dxfio_getpolymesh(const class dimeState *state,
       cv = v->getCoords();
       pomesh->controlv[a]   = cv[0];
       pomesh->controlv[a+1] = cv[1];
+      /*
       if(polyline->getFlags() & dimePolyline::IS_POLYMESH_3D)
-	{
+      {*/
 	  pomesh->controlv[a+2] = cv[2];
+	  /*
 	}
       else
 	{
 	  cv = polyline->getElevation();
 	  pomesh->controlv[a+2] = cv[2];
-	}
+	  }*/
       a += 3;
     } // for
 
@@ -646,7 +714,7 @@ dxfio_getsmoothsurface(const class dimeState *state,
  int w, h, uorder, vorder, uknott, vknott, numcv;
  int i, j, a, b, c;
  double *controlv = NULL;
- bool closem = false, closen = false, reseta = false;
+ bool closem = false, closen = false;
  dimeVertex *v;
  dimeVec3f cv;
 
@@ -683,10 +751,12 @@ dxfio_getsmoothsurface(const class dimeState *state,
     {
       if(polyline->getSurfaceType() != dimePolyline::BEZIER)
 	{
+	  // B-Spline
 	  w += (uorder-1);
 	}
       else
 	{
+	  // Bezier
 	  w++;
 	  uorder++;
 	}
@@ -696,10 +766,12 @@ dxfio_getsmoothsurface(const class dimeState *state,
     {
       if(polyline->getSurfaceType() != dimePolyline::BEZIER)
 	{
+	  // B-Spline
 	  h += (vorder-1);
 	}
       else
 	{
+	  // Bezier
 	  h++;
 	  vorder++;
 	}
@@ -718,21 +790,26 @@ dxfio_getsmoothsurface(const class dimeState *state,
     {
       if(i >= polyline->getPolymeshCountM())
 	{
-	  // if we get here, the surface is closed in N/V direction
-	  // and we need to reset a to wrap around
+	  // if we get here, the surface is closed in M/U direction
+	  // and we need to reset <a> to the start of the patch
+	  // (wrap around)
 	  a = c * polyline->getPolymeshCountN();
-	  c ++;
+	  c++;
 	}
       else
 	{
+	  // note well: we need to _set_ <a> here for every iteration
+	  // because the inner loop may reset <a> to the start of the
+	  // patch, detecting a closed surface (then a++ is not correct)
 	  a = i * polyline->getPolymeshCountN();
 	}
       for(j = 0; j < h; j++)
 	{
 	  if(j == polyline->getPolymeshCountN())
 	    {
-	      // if we get here, the surface is closed in M/U direction
-	      // and we need to reset a to wrap around
+	      // if we get here, the surface is closed in N/V direction
+	      // and we need to reset <a> to the start of the patch
+	      // (wrap around)
 	      a -= polyline->getPolymeshCountN();
 	    }
 	  v = polyline->getSplineFrameControlPoint(a);
@@ -741,10 +818,9 @@ dxfio_getsmoothsurface(const class dimeState *state,
 	  controlv[b+1] = cv[1];
 	  controlv[b+2] = cv[2];
 	  controlv[b+3] = 1.0;
-	  b+=4;
+	  b += 4;
 	  a++;
 	} // for
-
     } // for
 
   ay_npt_create(uorder, vorder, w, h, uknott, vknott,
@@ -769,8 +845,8 @@ dxfio_getsmoothsurface(const class dimeState *state,
 //
 int
 dxfio_getpolyfacemesh(const class dimeState *state,
-		       class dimePolyline *polyline,
-		       void *clientdata, ay_object *newo)
+		      class dimePolyline *polyline,
+		      void *clientdata, ay_object *newo)
 {
  int ay_status = AY_OK;
  unsigned int a, i, j, numfaces = 0, numverts = 0;
@@ -812,9 +888,18 @@ dxfio_getpolyfacemesh(const class dimeState *state,
       v = polyline->getIndexVertex((int)i);
       for(j = 0; j < v->numIndices(); j++)
 	{
-	  pomesh->verts[a] = v->getIndex((int)j);
+	  if(v->getIndex((int)j) >= 0)
+	    {
+	      pomesh->verts[a] = v->getIndex((int)j);
+	    }
+	  else
+	    {
+	      // negative indizes mean hidden edges, just remove the sign...
+	      pomesh->verts[a] = -v->getIndex((int)j);
+	    }
+	  pomesh->verts[a] -= 1;
 	  a++;
-	}
+	} // for
     } // for
 
   // copy coordinate values
@@ -912,8 +997,8 @@ cleanup:
 //
 int
 dxfio_readsolid(const class dimeState *state,
-		 class dimeSolid *solid,
-		 void *clientdata)
+		class dimeSolid *solid,
+		void *clientdata)
 {
  int ay_status = AY_OK;
  ay_object *newo = NULL;
@@ -953,6 +1038,8 @@ dxfio_readsolid(const class dimeState *state,
   ay_status = ay_object_link(newo);
 
   // XXXX extrude solid
+
+  //dxfio_extrudebpatch(solid, newo);
 
  return ay_status;
 } // dxfio_readsolid
@@ -1045,8 +1132,8 @@ dxfio_readspline(const class dimeState *state,
 //
 int
 dxfio_readtrace(const class dimeState *state,
-		 class dimeTrace *trace,
-		 void *clientdata)
+		class dimeTrace *trace,
+		void *clientdata)
 {
  int ay_status = AY_OK;
  ay_object *newo = NULL;
