@@ -92,6 +92,8 @@ int dxfio_getsmoothsurface(const class dimeState *state,
 			   class dimePolyline *polyline,
 			   void *clientdata, ay_object *newo);
 
+int dxfio_linkobject(ay_object *o);
+
 int dxfio_read3dface(const class dimeState *state,
 		     class dime3DFace *tdface,
 		     void *clientdata);
@@ -259,7 +261,7 @@ dxfio_read3dface(const class dimeState *state,
   newo->refine = newbp;
 
   // link the new bpatch/3dface into the scene hierarchy
-  ay_status = ay_object_link(newo);
+  ay_status = dxfio_linkobject(newo);
 
  return ay_status;
 } // dxfio_read3dface
@@ -299,7 +301,7 @@ dxfio_readarc(const class dimeState *state,
   ay_status = ay_notify_force(newo);
 
   // link the new arc into the scene hierarchy
-  ay_status = ay_object_link(newo);
+  ay_status = dxfio_linkobject(newo);
 
  return ay_status;
 } // dxfio_readarc
@@ -328,7 +330,7 @@ dxfio_readblock(const class dimeState *state,
   newo->refine = newl;
 
   // link the new block into the scene hierarchy
-  ay_status = ay_object_link(newo);
+  ay_status = dxfio_linkobject(newo);
 
  return ay_status;
 } // dxfio_readblock
@@ -365,7 +367,7 @@ dxfio_readcircle(const class dimeState *state,
   ay_status = ay_notify_force(newo);
 
   // link the new circle into the scene hierarchy
-  ay_status = ay_object_link(newo);
+  ay_status = dxfio_linkobject(newo);
 
  return ay_status;
 } // dxfio_readcircle
@@ -429,7 +431,7 @@ dxfio_readellipse(const class dimeState *state,
   ay_status = ay_notify_force(newo);
 
   // link the new circle/ellipse into the scene hierarchy
-  ay_status = ay_object_link(newo);
+  ay_status = dxfio_linkobject(newo);
 
  return ay_status;
 } // dxfio_readellipse
@@ -470,7 +472,7 @@ dxfio_readline(const class dimeState *state,
   newo->type = AY_IDNCURVE;
 
   // link the new curve/line into the scene hierarchy
-  ay_status = ay_object_link(newo);
+  ay_status = dxfio_linkobject(newo);
 
  return ay_status;
 } // dxfio_readline
@@ -521,7 +523,7 @@ dxfio_readlwpolyline(const class dimeState *state,
 
 
   // link the new curve/lwpolyline into the scene hierarchy
-  ay_status = ay_object_link(newo);
+  ay_status = dxfio_linkobject(newo);
 
  return ay_status;
 } // dxfio_readlwpolyline
@@ -662,7 +664,7 @@ dxfio_getpolymesh(const class dimeState *state,
       pomesh->controlv[a]   = cv[0];
       pomesh->controlv[a+1] = cv[1];
       if(polyline->getFlags() & dimePolyline::IS_POLYMESH_3D)
-      {
+	{
 	  pomesh->controlv[a+2] = cv[2];
 	}
       else
@@ -978,7 +980,7 @@ dxfio_readpolyline(const class dimeState *state,
   // link the new curve/polyline into the scene hierarchy
   if(newo && newo->refine)
     {
-      ay_status = ay_object_link(newo);
+      ay_status = dxfio_linkobject(newo);
       newo = NULL;
     }
   /*
@@ -1033,7 +1035,7 @@ dxfio_readsolid(const class dimeState *state,
   newo->refine = newbp;
 
   // link the new bpatch/solid into the scene hierarchy
-  ay_status = ay_object_link(newo);
+  ay_status = dxfio_linkobject(newo);
 
   // XXXX extrude solid
 
@@ -1120,7 +1122,7 @@ dxfio_readspline(const class dimeState *state,
   newo->type = AY_IDNCURVE;
 
   // link the new curve/spline into the scene hierarchy
-  ay_status = ay_object_link(newo);
+  ay_status = dxfio_linkobject(newo);
 
  return ay_status;
 } // dxfio_readspline
@@ -1168,12 +1170,32 @@ dxfio_readtrace(const class dimeState *state,
   newo->refine = newbp;
 
   // link the new bpatch/trace into the scene hierarchy
-  ay_status = ay_object_link(newo);
+  ay_status = dxfio_linkobject(newo);
 
   // XXXX extrude trace
 
  return ay_status;
 } // dxfio_readtrace
+
+
+// dxfio_linkobject
+//  apply global scale factor, then link object <o> to the scene
+int
+dxfio_linkobject(ay_object *o)
+{
+  if(!o)
+    return AY_ENULL;
+
+  // apply global scale factor
+  if(dxfio_scalefactor != 1.0)
+    {
+      o->scalx *= dxfio_scalefactor;
+      o->scaly *= dxfio_scalefactor;
+      o->scalz *= dxfio_scalefactor;
+    }
+
+  return ay_object_link(o);
+} // dxfio_linkobject
 
 
 // dxfio_readentitydcb:
