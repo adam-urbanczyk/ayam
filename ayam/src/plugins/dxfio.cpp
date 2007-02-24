@@ -640,8 +640,8 @@ dxfio_getpolymesh(const class dimeState *state,
       pomesh->verts[a]   = i;
       pomesh->verts[a+1] = i+1;
       // coordinates are ordered width-first, so we get to the next row by +m?
-      pomesh->verts[a+2] = i+n;
-      pomesh->verts[a+3] = i+n+1;
+      pomesh->verts[a+2] = i+m;
+      pomesh->verts[a+3] = i+m+1;
       a += 4;
     } // for
 
@@ -661,17 +661,15 @@ dxfio_getpolymesh(const class dimeState *state,
       cv = v->getCoords();
       pomesh->controlv[a]   = cv[0];
       pomesh->controlv[a+1] = cv[1];
-      /*
       if(polyline->getFlags() & dimePolyline::IS_POLYMESH_3D)
-      {*/
+      {
 	  pomesh->controlv[a+2] = cv[2];
-	  /*
 	}
       else
 	{
 	  cv = polyline->getElevation();
 	  pomesh->controlv[a+2] = cv[2];
-	  }*/
+	  }
       a += 3;
     } // for
 
