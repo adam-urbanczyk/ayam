@@ -36,6 +36,7 @@
 #include <dime/entities/Trace.h>
 #include <dime/entities/UnknownEntity.h>
 #include <dime/entities/Vertex.h>
+#include <dime/sections/EntitiesSection.h>
 #include <dime/util/Linear.h>
 #include <stdio.h>
 
@@ -52,6 +53,8 @@ static Tcl_HashTable dxfio_write_ht;
 ay_object *dxfio_lrobject = NULL;
 
 static double tm[16] = {0}; // current transformation matrix
+
+int dxfio_totalents = 0;
 
 int dxfio_importcurves = AY_TRUE;
 int dxfio_exportcurves = AY_TRUE;
@@ -1206,9 +1209,18 @@ dxfio_readentitydcb(const class dimeState *state,
 		    void *clientdata)
 {
  char fname[] = "dxfio_readentity";
+ static float oldprogress = 0.0f;
+ float progress;
+ static int entitynum = 0;
+ char progressstr[32];
+ char arrname[] = "dxfio_options", varname[] = "Progress";
 
   if(!state || ! entity)
-    return true;
+    {
+      oldprogress = 0.0f;
+      entitynum = 0;
+      return true;
+    }
 
   switch(entity->typeId())
     {
@@ -1249,6 +1261,23 @@ dxfio_readentitydcb(const class dimeState *state,
     default:
       break;
     } // switch
+  
+  // calculate/set progress
+  if(entity->typeId() != dimeBase::dimeVertexType)
+    {
+      entitynum++;
+      progress = (float)entitynum/(float)dxfio_totalents;
+
+      if(progress-oldprogress > 0.05)
+	{
+	  sprintf(progressstr, "%d", (int)(50.0+progress*50.0f));
+	  Tcl_SetVar2(ay_interp, arrname, varname, progressstr,
+		      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	  while(Tcl_DoOneEvent(TCL_DONT_WAIT)){};
+
+	  oldprogress = progress;
+	} // if
+    } // if
 
  return true;
 } // dxfio_readentitydcb
@@ -1282,6 +1311,42 @@ dxfio_readprogressdcb(float progress, void *clientdata)
 
   return 1;
 } // dxfio_readprogressdcb
+
+
+// dxfio_countentities:
+//
+int
+dxfio_countentities(dimeModel *model)
+{
+ int i;
+ const dimeSection *section;
+ dimeEntitiesSection *esection = NULL;
+ dimeEntity *entity = NULL;
+
+  if(!model)
+    return AY_ENULL;
+
+  dxfio_totalents = 0;
+  
+  section = model->findSection("ENTITIES");
+
+  if(section)
+    {
+      esection = (dimeEntitiesSection*)section;
+      for(i = 0; i < esection->getNumEntities(); i++)
+	{
+	  entity = esection->getEntity(i);
+	  if(!(entity->typeId() == dimeBase::dimeVertexType))
+	    {
+	      dxfio_totalents++;
+	    }
+	} // for
+    } // if
+
+  //  printf("entities to convert %d\n", dxfio_totalents);
+
+ return AY_OK;
+} // dxfio_countentities
 
 
 // dxfio_readtcmd:
@@ -1399,7 +1464,10 @@ dxfio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 	      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   while(Tcl_DoOneEvent(TCL_DONT_WAIT)){};
 
-  // get all entities
+  // count convertable entities
+  dxfio_countentities(&model);
+
+  // convert all entities to Ayam objects
   dxfio_lrobject = NULL;
   model.traverseEntities(&dxfio_readentitydcb, NULL,
 			 false, true, false);
@@ -1408,6 +1476,9 @@ dxfio_readtcmd(ClientData clientData, Tcl_Interp *interp,
   Tcl_SetVar2(ay_interp, arrname, varname, "100",
 	      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   while(Tcl_DoOneEvent(TCL_DONT_WAIT)){};
+
+  // clean up
+  dxfio_readentitydcb(NULL, NULL, NULL);
 
   dxfio_stagname = dxfio_stagnamedef;
   dxfio_ttagname = dxfio_ttagnamedef;
