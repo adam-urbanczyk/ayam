@@ -28,6 +28,7 @@
 #include <dime/entities/Block.h>
 #include <dime/entities/Circle.h>
 #include <dime/entities/Ellipse.h>
+#include <dime/entities/Insert.h>
 #include <dime/entities/Line.h>
 #include <dime/entities/LWPolyline.h>
 #include <dime/entities/Polyline.h>
@@ -42,6 +43,11 @@
 
 // local types
 
+typedef struct dxfio_block_s {
+  struct dxfio_block_s *next;
+  dimeBlock *block;
+  ay_object *object;
+} dxfio_block;
 
 // global variables
 
@@ -51,6 +57,8 @@ char dxfio_version_mi[] = AY_VERSIONSTRMI;
 static Tcl_HashTable dxfio_write_ht;
 
 ay_object *dxfio_lrobject = NULL;
+
+dxfio_block *dxfio_blocks = NULL;
 
 static double tm[16] = {0}; // current transformation matrix
 
@@ -116,6 +124,10 @@ int dxfio_readcircle(const class dimeState *state,
 int dxfio_readellipse(const class dimeState *state,
 		      class dimeEllipse *ellipse,
 		      void *clientdata);
+
+int dxfio_readinsert(const class dimeState *state,
+		   class dimeInsert *line,
+		   void *clientdata);
 
 int dxfio_readline(const class dimeState *state,
 		   class dimeLine *line,
@@ -438,6 +450,86 @@ dxfio_readellipse(const class dimeState *state,
 
  return ay_status;
 } // dxfio_readellipse
+
+
+// dxfio_readinsert:
+//
+int
+dxfio_readinsert(const class dimeState *state,
+		 class dimeInsert *insert,
+		 void *clientdata)
+{
+ int ay_status = AY_OK;
+ char fname[] = "dxfio_readinsert";
+ ay_object *newo = NULL, *master = NULL;
+ dimeVec3f v;
+ double angle = 0.0, zaxis[3] = {0.0, 0.0, 1.0};
+ dxfio_block *block;
+
+  if(!(newo = (ay_object*)calloc(1, sizeof(ay_object))))
+    { return AY_EOMEM; }
+
+  ay_status = ay_object_defaults(newo);
+
+  // move instance
+  v = insert->getInsertionPoint();
+  newo->movx = v[0];
+  newo->movy = v[1];
+  newo->movz = v[2];
+
+  // scale instance
+  v = insert->getScale();
+  newo->scalx = v[0];
+  newo->scaly = v[1];
+  newo->scalz = v[2];
+  // sanity checks...
+  if(fabs(newo->scalx) < AY_EPSILON)
+    newo->scalx = 1.0;
+  if(fabs(newo->scaly) < AY_EPSILON)
+    newo->scaly = 1.0;
+  if(fabs(newo->scalz) < AY_EPSILON)
+    newo->scalz = 1.0;
+
+  // rotate instance
+  angle = insert->getRotAngle();
+  newo->rotz = angle;
+  if(fabs(angle) > AY_EPSILON)
+    ay_quat_axistoquat(zaxis, AY_D2R(angle), newo->quat);
+
+  newo->type = AY_IDINSTANCE;
+
+  // get master object
+  block = dxfio_blocks;
+  while(block)
+    {
+      if(block->block == insert->getBlock())
+	{
+	  master = block->object;
+	  block = NULL;
+	}
+      else
+	{
+	  block = block->next;
+	}
+    } // while
+
+  if(master)
+    {
+      master->refcount++;
+      newo->refine = master;
+    }
+  else
+    {
+      ay_error(AY_ERROR, fname, "Could not find Block/Master.");
+      free(newo);
+      return AY_ERROR;
+    } // if
+
+  // link the new instance/insert into the scene hierarchy
+  ay_status = dxfio_linkobject(newo);
+
+ return ay_status;
+} // dxfio_readinsert
 
 
 // dxfio_readline:
@@ -1213,7 +1305,8 @@ dxfio_readentitydcb(const class dimeState *state,
  float progress;
  static int entitynum = 0;
  char progressstr[32];
- char arrname[] = "dxfio_options", varname[] = "Progress";
+ char arrname[] = "dxfio_options", varname1[] = "Progress";
+ char varname2[] = "Cancel", *val = NULL;
 
   if(!state || ! entity)
     {
@@ -1235,6 +1328,9 @@ dxfio_readentitydcb(const class dimeState *state,
       break;
     case dimeBase::dimeEllipseType:
       dxfio_readellipse(state, (dimeEllipse*)entity, clientdata);
+      break;
+    case dimeBase::dimeInsertType:
+      dxfio_readinsert(state, (dimeInsert*)entity, clientdata);
       break;
     case dimeBase::dimeLineType:
       dxfio_readline(state, (dimeLine*)entity, clientdata);
@@ -1271,12 +1367,23 @@ dxfio_readentitydcb(const class dimeState *state,
       if(progress-oldprogress > 0.05)
 	{
 	  sprintf(progressstr, "%d", (int)(50.0+progress*50.0f));
-	  Tcl_SetVar2(ay_interp, arrname, varname, progressstr,
+	  Tcl_SetVar2(ay_interp, arrname, varname1, progressstr,
 		      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 	  while(Tcl_DoOneEvent(TCL_DONT_WAIT)){};
 
 	  oldprogress = progress;
 	} // if
+
+      // also, check for cancel button
+      val = Tcl_GetVar2(ay_interp, arrname, varname2,
+			TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      if(val && val[0] == '1')
+	{
+	  ay_error(AY_EWARN, fname,
+		   "Import cancelled! Not all objects may have been read!");
+	  return false;
+	}
+
     } // if
 
  return true;
@@ -1290,7 +1397,9 @@ dxfio_readprogressdcb(float progress, void *clientdata)
 {
  static float oldprogress = 0.0f;
  char progressstr[32];
- char arrname[] = "dxfio_options", varname[] = "Progress";
+ char fname[] = "dxfio_readfile";
+ char arrname[] = "dxfio_options", varname1[] = "Progress";
+ char varname2[] = "Cancel", *val = NULL;
 
   if(clientdata != NULL)
     {
@@ -1298,15 +1407,29 @@ dxfio_readprogressdcb(float progress, void *clientdata)
       return 1;
     }
 
+  // set progress counter in the GUI
   if(progress-oldprogress > 0.05)
     {
       sprintf(progressstr, "%d", (int)(progress*50.0f));
 
-      Tcl_SetVar2(ay_interp, arrname, varname, progressstr,
+      Tcl_SetVar2(ay_interp, arrname, varname1, progressstr,
 		  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
       while(Tcl_DoOneEvent(TCL_DONT_WAIT)){};
 
       oldprogress = progress;
+    } // if
+
+  // also, check for cancel button (at a somewhat higher frequency)
+  if(progress-oldprogress > 0.01)
+    {
+      val = Tcl_GetVar2(ay_interp, arrname, varname2,
+			TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      if(val && val[0] == '1')
+	{
+	  ay_error(AY_EWARN, fname,
+		   "Import cancelled! Not all objects may have been read!");
+	  return 0;
+	}
     } // if
 
   return 1;

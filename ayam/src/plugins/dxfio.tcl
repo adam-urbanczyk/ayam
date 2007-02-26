@@ -11,6 +11,7 @@
 
 uplevel #0 { array set dxfio_options {
     Accuracy 1.0e-12
+    Cancel 0
     ReadCurves 1
     ReadLayers -1
     IgnoreFirstTrim 0
@@ -119,12 +120,15 @@ proc dxfio_import { } {
     # button
 
     button $f.bca -text "Cancel" -width 5 -command "\
+                set ::dxfio_options(Cancel) 1;\
 		grab release .dxfio;\
 		focus .;\
 		destroy .dxfio"
 
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
     pack $f -in $w -side bottom -fill x
+
+    set ::dxfio_options(Cancel) 0
 
     winCenter $w
     grab $w
