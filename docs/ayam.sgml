@@ -7639,6 +7639,46 @@ display mode and tolerance) of NURBS primitives should be reset
 to using global preference values (the default in Ayam)
 instead of using the values from the Mops scene file.
 
+<sect1>AutoCAD DXF Import<label id="impdxf">
+<p>
+The dxfio plugin allows to import AutoCAD DXF (drawing exchange format)
+files into Ayam with the help of the Dime library (from Systems in Motion, AS).
+Start importing a DXF file using the main menu entry
+<tt>"File/Import/AutoCAD DXF"</tt>
+(if this menu entry is not available, you have to load the
+<tt>"dxfio"</tt> plugin using the menu entry
+<tt>"File/Load Plugin"</tt> first).
+<p>
+The DXF import supports reading of the following entities:
+3DFACE, ARC, CIRCLE, ELLIPSE, LINE, SOLID, TRACE, BLOCK, INSERT,
+POLYLINE, LWPOLYLINE, SPLINE.
+<p>
+3DFACE entities are imported as BPatch objects.
+<p>
+ARC, CIRCLE and ELLIPSE entities will be read as NCircle objects with
+corresponding <tt/"TMin"/, <tt/"TMax"/ parameters (arcs, ellipses) and scale
+transformation values (ellipses) set.
+<p>
+POLYLINE entities are completely supported: Polylines will be imported as
+NURBCurve objects; PolyMeshes and PolyFaceMeshes
+will be imported as PolyMesh objects; B-Spline and Bezier surfaces
+will be imported as NURBPatch objects.
+<p>
+LINE, LWPOLYLINE and SPLINE entities will be imported as NURBCurve objects.
+<p>
+SOLID and TRACE entities are imported as BPatch objects.
+<p>
+BLOCK and INSERT entities will be converted to appropriate master (referenced)
+and instance objects (references).
+<p>
+Bulges and extrusions are not supported.
+<p>
+The DXF import may be controlled via different options:<label id="impdxfopt">
+<itemize>
+<item><tt/"ScaleFactor"/ allows to apply a scaling factor to all
+imported objects.
+</itemize>
+
 <sect1>RenderMan Interface Bytestream (RIB) Import<label id="imprib">
 <p>
 Using the RRIB (Read RIB) plugin you may import RenderMan Interface
@@ -8767,6 +8807,15 @@ TIFF Software is
 Copyright (c) 1988-1997 Sam Leffler
 Copyright (c) 1991-1997 Silicon Graphics, Inc.
 
+Dime is
+Copyright (c) 1998-1999 Systems In Motion, SA
+All rights reserved.
+
+AutoCAD (R)  is a registered trademark of Autodesk, Inc.
+
+DXF (R) is a registered trademark of Autodesk, Inc.
+
+
 <sect>Index
 <p>
 <ref id="index0" name=" 0 ">
@@ -8957,6 +9006,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <item>Draw BGImage: <ref id="vmconf" name="view menu entry">
 <item>Draw Grid: <ref id="vmconf" name="view menu entry">
 <item>Draw Object CS: <ref id="vmconf" name="view menu entry">
+<item>DXF: <ref id="impdxf" name="DXF import plugin">
 <item>DynamicLoad: <ref id="riprocp" name="riproc attribute">
 </itemize>
 
@@ -9277,6 +9327,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 <ref id="dkp" name="disk attribute">,
 <ref id="cnp" name="cone attribute">,
 <ref id="cyp" name="cylinder attribute">,
+<ref id="ncircleattrprop" name="NCircle attribute">,
 <ref id="mcattr" name="MetaComp attribute">
 <item>RadSteps: <ref id="rio" name="RenderMan interface option">
 <item>ReadCurves: <ref id="impwav" name="Wavefront OBJ import/export option">,
@@ -9489,6 +9540,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <ref id="hyp" name="hyperboloid attribute">,
 <ref id="rep" name="revolve attribute">
 <item>Threshold: <ref id="moattr" name="MetaObj attributes">
+<item>TMin, TMax: <ref id="ncircleattrprop" name="NCircle attribute">
 <item>TmpDir: <ref id="prefgui" name="preference setting">
 <item>To: <ref id="camp" name="camera property">,
 <ref id="lip" name="light attribute">
