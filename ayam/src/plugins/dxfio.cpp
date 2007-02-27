@@ -37,6 +37,7 @@
 #include <dime/entities/Trace.h>
 #include <dime/entities/UnknownEntity.h>
 #include <dime/entities/Vertex.h>
+#include <dime/sections/BlocksSection.h>
 #include <dime/sections/EntitiesSection.h>
 #include <dime/util/Linear.h>
 #include <stdio.h>
@@ -85,6 +86,10 @@ char dxfio_ttagnamedef[] = "myt";
 char *dxfio_ttagname = dxfio_ttagnamedef;
 
 // prototypes of functions local to this module
+int dxfio_countsubentities(dimeInsert *entity);
+
+int dxfio_countentities(dimeModel *model);
+
 int dxfio_extrudebpatch(class dimeExtrusionEntity *entity, ay_object *o);
 
 int dxfio_getpolyfacemesh(const class dimeState *state,
@@ -112,10 +117,6 @@ int dxfio_read3dface(const class dimeState *state,
 int dxfio_readarc(const class dimeState *state,
 		  class dimeArc *arc,
 		  void *clientdata);
-
-int dxfio_readblock(const class dimeState *state,
-		    class dimeBlock *block,
-		    void *clientdata);
 
 int dxfio_readcircle(const class dimeState *state,
 		     class dimeCircle *circle,
@@ -460,11 +461,17 @@ dxfio_readinsert(const class dimeState *state,
 		 void *clientdata)
 {
  int ay_status = AY_OK;
- char fname[] = "dxfio_readinsert";
- ay_object *newo = NULL, *master = NULL;
+ //char fname[] = "dxfio_readinsert";
+ ay_object *newo = NULL, *master = NULL, **old_aynext = NULL;
+ ay_level_object *newl = NULL;
+ int i;
  dimeVec3f v;
  double angle = 0.0, zaxis[3] = {0.0, 0.0, 1.0};
  dxfio_block *block;
+ bool inserted = false;
+ dimeBlock *dblock;
+ dimeEntity *entity = NULL;
+ dxfio_block *newb = NULL;
 
   if(!(newo = (ay_object*)calloc(1, sizeof(ay_object))))
     { return AY_EOMEM; }
@@ -498,35 +505,75 @@ dxfio_readinsert(const class dimeState *state,
 
   newo->type = AY_IDINSTANCE;
 
-  // get master object
+
   block = dxfio_blocks;
   while(block)
     {
       if(block->block == insert->getBlock())
 	{
 	  master = block->object;
-	  block = NULL;
+	  inserted = true;
 	}
-      else
-	{
-	  block = block->next;
-	}
+      block = block->next;
     } // while
 
-  if(master)
+  if(inserted)
     {
+      // block has been inserted already, just create an instance
       master->refcount++;
       newo->refine = master;
     }
   else
     {
-      ay_error(AY_ERROR, fname, "Could not find Block/Master.");
-      free(newo);
-      return AY_ERROR;
+      // block has not been inserted before, create master
+      dblock = insert->getBlock();
+      if(dblock && dblock->getNumEntities() > 0)
+	{
+	  if(!(newb = (dxfio_block*)calloc(1, sizeof(dxfio_block))))
+	    { return AY_EOMEM; }
+	  newb->next = dxfio_blocks;
+	  dxfio_blocks = newb;
+	  newb->block = dblock;
+
+	  if(dblock->getNumEntities() > 1)
+	    {
+	      if(!(newl = (ay_level_object*)calloc(1,
+					      sizeof(ay_level_object))))
+		{ free(newo); return AY_EOMEM; }
+
+	      //ay_status = ay_object_defaults(newo);
+
+	      newo->type = AY_IDLEVEL;
+	      newo->refine = newl;
+
+	      old_aynext = ay_next;
+	      ay_next = &(newo->down);
+	      for(i = 0; i < dblock->getNumEntities(); i++)
+		{
+		  entity = dblock->getEntity(i);
+		  ay_status = dxfio_readentitydcb(state, entity, clientdata);
+		} // for
+	      // terminate level hierarchy
+	      ay_object_crtendlevel(ay_next);
+	      // reset ay_next
+	      ay_next = old_aynext;
+	      newb->object = newo;
+	    }
+	  else
+	    {
+	      entity = dblock->getEntity(0);
+	      ay_status = dxfio_readentitydcb(state, entity, clientdata);
+	      newb->object = dxfio_lrobject;
+	      ay_trafo_copy(newo, dxfio_lrobject);
+	      free(newo);
+	      newo = NULL;
+	    } // if
+	} // if
     } // if
 
-  // link the new instance/insert into the scene hierarchy
-  ay_status = dxfio_linkobject(newo);
+  // link the new instance/master into the scene hierarchy
+  if(newo)
+    ay_status = dxfio_linkobject(newo);
 
  return ay_status;
 } // dxfio_readinsert
@@ -1289,6 +1336,8 @@ dxfio_linkobject(ay_object *o)
       o->scalz *= dxfio_scalefactor;
     }
 
+  dxfio_lrobject = o;
+
   return ay_object_link(o);
 } // dxfio_linkobject
 
@@ -1308,7 +1357,7 @@ dxfio_readentitydcb(const class dimeState *state,
  char arrname[] = "dxfio_options", varname1[] = "Progress";
  char varname2[] = "Cancel", *val = NULL;
 
-  if(!state || ! entity)
+  if(! entity)
     {
       oldprogress = 0.0f;
       entitynum = 0;
@@ -1439,6 +1488,33 @@ dxfio_readprogressdcb(float progress, void *clientdata)
 // dxfio_countentities:
 //
 int
+dxfio_countsubentities(dimeInsert *insert)
+{
+ dimeBlock *block = insert->getBlock();
+
+  if(block)
+    {
+      for(int i = 0; i < block->getNumEntities(); i++)
+	{
+	  dimeEntity *entity = block->getEntity(i);
+	  if(entity)
+	    {
+	      dxfio_totalents++;
+	      if(entity->typeId() == dimeBase::dimeInsertType)
+		{
+		  dxfio_countsubentities((dimeInsert*)entity);
+		}
+	    } // if
+	} // for
+    } // if
+
+ return AY_OK;
+} // dxfio_countsubentities
+
+
+// dxfio_countentities:
+//
+int
 dxfio_countentities(dimeModel *model)
 {
  int i;
@@ -1449,8 +1525,6 @@ dxfio_countentities(dimeModel *model)
   if(!model)
     return AY_ENULL;
 
-  dxfio_totalents = 0;
-  
   section = model->findSection("ENTITIES");
 
   if(section)
@@ -1462,6 +1536,10 @@ dxfio_countentities(dimeModel *model)
 	  if(!(entity->typeId() == dimeBase::dimeVertexType))
 	    {
 	      dxfio_totalents++;
+	      if(entity->typeId() == dimeBase::dimeInsertType)
+		{
+		  dxfio_countsubentities((dimeInsert*)entity);
+		}
 	    }
 	} // for
     } // if
@@ -1588,12 +1666,13 @@ dxfio_readtcmd(ClientData clientData, Tcl_Interp *interp,
   while(Tcl_DoOneEvent(TCL_DONT_WAIT)){};
 
   // count convertable entities
+  dxfio_totalents = 0;
   dxfio_countentities(&model);
 
   // convert all entities to Ayam objects
   dxfio_lrobject = NULL;
   model.traverseEntities(&dxfio_readentitydcb, NULL,
-			 false, true, false);
+			 false, false, false);
 
   // set progress
   Tcl_SetVar2(ay_interp, arrname, varname, "100",
@@ -1602,6 +1681,13 @@ dxfio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 
   // clean up
   dxfio_readentitydcb(NULL, NULL, NULL);
+
+  while(dxfio_blocks)
+    {
+      dxfio_block *t = dxfio_blocks->next;
+      free(dxfio_blocks);
+      dxfio_blocks = t;
+    }
 
   dxfio_stagname = dxfio_stagnamedef;
   dxfio_ttagname = dxfio_ttagnamedef;
