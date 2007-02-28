@@ -5764,19 +5764,90 @@ ay_npt_gordonwc(ay_object *g)
 } /* ay_npt_gordonwc */
 
 
+/* ay_npt_extractboundary:
+ *  extract boundary NURBS curve from the NURBS patch <o>
+ *  apply_trafo: this parameter controls whether trafos of <o> should be
+ *   copied to the curve, or applied to the control points of the curve
+ */
+int
+ay_npt_extractboundary(ay_object *o, int apply_trafo,
+		       ay_nurbcurve_object **result)
+{
+ int ay_status = AY_OK;
+ ay_nurbcurve_object *u0 = NULL, *un = NULL, *v0 = NULL, *vn = NULL;
+ ay_object o0 = {0}, o1 = {0}, o2 = {0}, o3 = {0}, *c;
+
+  if(!o || !result)
+    return AY_ENULL;
+
+  if(o->type != AY_IDNPATCH)
+    return AY_ERROR;
+
+  ay_status = ay_npt_extractnc(o, 0, 0.0, apply_trafo, &u0);
+  ay_status = ay_npt_extractnc(o, 1, 0.0, apply_trafo, &un);
+  ay_status = ay_npt_extractnc(o, 2, 0.0, apply_trafo, &v0);
+  ay_status = ay_npt_extractnc(o, 3, 0.0, apply_trafo, &vn);
+  
+  ay_nct_revert(un);
+  ay_nct_revert(v0);
+
+  ay_object_defaults(&o0);
+  ay_object_defaults(&o1);
+  ay_object_defaults(&o2);
+  ay_object_defaults(&o3);
+
+  o0.refine = u0;
+  o0.type = AY_IDNCURVE;
+  o1.refine = vn;
+  o1.type = AY_IDNCURVE;
+  o2.refine = un;
+  o2.type = AY_IDNCURVE;
+  o3.refine = v0;
+  o3.type = AY_IDNCURVE;
+
+  o0.next = &o1;
+  o1.next = &o2;
+  o2.next = &o3;
+
+  ay_status = ay_nct_concatmultiple(AY_TRUE, 1, AY_FALSE, &o0, &c);
+  if(!c)
+    {ay_status = AY_ERROR; goto cleanup;}
+
+  if(apply_trafo)
+    {
+      ay_trafo_copy(o, c);
+      ay_nct_applytrafo(c);
+    }
+
+  /* return result */
+  *result = (ay_nurbcurve_object*)c->refine;
+
+cleanup:
+  ay_nct_destroy(u0);
+  ay_nct_destroy(un);
+  ay_nct_destroy(v0);
+  ay_nct_destroy(vn);
+
+ return ay_status;
+} /* ay_npt_extractboundary */
+
+
 /* ay_npt_extractnc:
  *  extract a NURBS curve from the NURBS patch <o>
- *  side: specifies extraction of a boundary curve (0-3) or of a curve at
- *   a specific parametric value (4 - along u dimension, 5 - along v dimension)
+ *  side: specifies extraction of a boundary curve (0-3), of a curve at a
+ *   specific parametric value (4 - along u dimension, 5 - along v dimension),
+ *   or the complete boundary curve (6)
  *  param: parametric value at which curve is extracted; this parameter is
  *   ignored for the extraction of boundary curves
+ *  apply_trafo: this parameter controls whether trafos of <o> should be
+ *   copied to the curve, or applied to the control points of the curve
  */
 int
 ay_npt_extractnc(ay_object *o, int side, double param, int apply_trafo,
 		 ay_nurbcurve_object **result)
 {
  int ay_status = AY_OK;
- ay_nurbpatch_object *np  = NULL;
+ ay_nurbpatch_object *np = NULL;
  ay_nurbcurve_object *nc = NULL;
  double *cv, m[16], *Qw = NULL, *UVQ = NULL;
  int stride = 4, i, a, k = 0, s = 0, r = 0;
@@ -5786,6 +5857,11 @@ ay_npt_extractnc(ay_object *o, int side, double param, int apply_trafo,
 
   if(o->type != AY_IDNPATCH)
     return AY_ERROR;
+
+  if(side == 6)
+    {
+      return ay_npt_extractboundary(o, apply_trafo, result);
+    }
 
   if(!(nc = calloc(1, sizeof(ay_nurbcurve_object))))
     return AY_EOMEM;
@@ -5950,6 +6026,8 @@ ay_npt_extractnc(ay_object *o, int side, double param, int apply_trafo,
 	Qw = NULL;
 
       memcpy(nc->knotv, np->vknotv, (nc->length+nc->order)*sizeof(double));
+      break;
+    case 6:
       break;
     default:
       ay_status = AY_ERROR;

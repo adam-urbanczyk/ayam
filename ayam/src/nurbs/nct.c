@@ -2735,7 +2735,7 @@ ay_nct_getorientation(ay_nurbcurve_object *curve, double *orient)
   else
     {
       ay_error(AY_ERROR, fname, "Could not determine 3 different points!");
-      return AY_ERROR;
+      return;
     }
 
   found = AY_FALSE;
@@ -5118,3 +5118,26 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
  return TCL_OK;
 } /* ay_nct_removekntcmd */
 
+
+/* ay_nct_isdegen:
+ *
+ */
+int
+ay_nct_isdegen(ay_nurbcurve_object *curve)
+{
+ int i, stride = 4;
+ double *p1, *p2;
+
+  if(!curve)
+    return AY_FALSE;
+
+  for(i = 0; i < curve->length-1; i++)
+    {
+      p1 = &(curve->controlv[i*stride]);
+      p2 = &(curve->controlv[(i+1)*stride]);
+      if(!AY_COMP3DP(p1, p2))
+	return AY_FALSE;
+    } /* for */
+
+ return AY_TRUE;
+} /* ay_nct_isdegen */
