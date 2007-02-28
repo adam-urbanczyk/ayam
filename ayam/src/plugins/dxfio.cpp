@@ -73,6 +73,8 @@ int dxfio_expignorehidden = AY_TRUE;
 int dxfio_exptoplevellayers = AY_TRUE;
 
 int dxfio_currentlayer = 0;
+int dxfio_slayer = -1;
+int dxfio_elayer = -1;
 
 double dxfio_rescaleknots = 0.0;
 
@@ -562,9 +564,14 @@ dxfio_readinsert(const class dimeState *state,
 	  else
 	    {
 	      entity = dblock->getEntity(0);
+	      dxfio_lrobject = NULL;
 	      ay_status = dxfio_readentitydcb(state, entity, clientdata);
-	      newb->object = dxfio_lrobject;
-	      ay_trafo_copy(newo, dxfio_lrobject);
+	      // did we actually read/convert an entity (layer check)?
+	      if(dxfio_lrobject)
+		{
+		  newb->object = dxfio_lrobject;
+		  ay_trafo_copy(newo, dxfio_lrobject);
+		}
 	      free(newo);
 	      newo = NULL;
 	    } // if
@@ -1357,12 +1364,22 @@ dxfio_readentitydcb(const class dimeState *state,
  char arrname[] = "dxfio_options", varname1[] = "Progress";
  char varname2[] = "Cancel", *val = NULL;
 
-  if(! entity)
+  if(!state || !entity)
     {
       oldprogress = 0.0f;
       entitynum = 0;
       return true;
     }
+
+  // check layer
+  if(dxfio_slayer != -1)
+    {
+      const dimeLayer *layer = entity->getLayer();
+      if(layer && (layer->getLayerNum() < dxfio_slayer ||
+		   layer->getLayerNum() > dxfio_elayer))
+	return true;
+    }
+
 
   switch(entity->typeId())
     {
@@ -1485,7 +1502,7 @@ dxfio_readprogressdcb(float progress, void *clientdata)
 } // dxfio_readprogressdcb
 
 
-// dxfio_countentities:
+// dxfio_countsubentities:
 //
 int
 dxfio_countsubentities(dimeInsert *insert)
@@ -1559,13 +1576,16 @@ dxfio_readtcmd(ClientData clientData, Tcl_Interp *interp,
   //int ay_status = AY_OK;
  char fname[] = "dxfio_read";
  char *minus, lineerrstr[64];
- int i = 2, sframe = -1, eframe = -1;
+ int i = 2;
  double accuracy = 0.1;
  char arrname[] = "dxfio_options", varname[] = "Progress";
 
   dxfio_importcurves = AY_TRUE;
   dxfio_rescaleknots = 0.0;
   dxfio_scalefactor = 1.0;
+  dxfio_slayer = -1;
+  dxfio_elayer = -1;
+
   // reset internal progress counter
   dxfio_readprogressdcb(0.0f, (void*)1);
 
@@ -1614,15 +1634,15 @@ dxfio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 	    {
 	      if(*argv[i+1] != '-')
 		{
-		  sscanf(argv[i+1], "%d", &sframe);
-		  eframe = sframe;
+		  sscanf(argv[i+1], "%d", &dxfio_slayer);
+		  dxfio_elayer = dxfio_slayer;
 		  if((strlen(argv[i+1]) > 3) &&
 		     (minus = strchr(/*(const char*)*/(&(argv[i+1][1])), '-')))
 		    {
 		      minus++;
 		      if(*minus != '\0')
 			{
-			  sscanf(minus, "%d", &eframe);
+			  sscanf(minus, "%d", &dxfio_elayer);
 			}
 		      else
 			{
