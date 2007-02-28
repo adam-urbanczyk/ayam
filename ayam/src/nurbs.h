@@ -317,6 +317,8 @@ int ay_nct_coarsentcmd(ClientData clientData, Tcl_Interp *interp,
 int ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
 
+int ay_nct_isdegen(ay_nurbcurve_object *curve);
+
 /* npt.c */
 int ay_npt_create(int uorder, int vorder, int width, int height,
 		  int uknot_type, int vknot_type,
@@ -449,6 +451,9 @@ int ay_npt_gordoncc(ay_object *o1, ay_object *o2, int stride,
 		    double *m1, double *m2);
 
 int ay_npt_gordonwc(ay_object *g);
+
+int ay_npt_extractboundary(ay_object *o, int apply_trafo,
+			   ay_nurbcurve_object **result);
 
 int ay_npt_extractnc(ay_object *npatch, int side, double param,
 		     int apply_trafo,
