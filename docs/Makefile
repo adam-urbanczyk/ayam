@@ -41,14 +41,14 @@ pdf2:
 	/bin/sh -c "sed -f sedsrc2 ayaml.tex > ayam.tex"
 	/bin/sh -c "sed -f sedsrc3 ayam.tex > ayaml.tex"
 	mv ayaml.tex ayam.tex
-	pdflatex ayam.tex
+	pdflatex ayam.tex > scratch
 	rm -f ayaml.sgml
 
 
 pdf3: pdf2
+	pdflatex ayam.tex > scratch
 	pdflatex ayam.tex
-	pdflatex ayam.tex
-	rm ayam.tex ayam.toc ayam.log ayam.aux
+	rm ayam.tex ayam.toc ayam.log ayam.aux scratch
 
 
 pdf4:
@@ -57,15 +57,15 @@ pdf4:
 	/bin/sh -c "sed -f sedsrc3 ayaml.tex > ayam.tex"
 	/usr/bin/tclsh fixpdftex.tcl ayam.tex ayaml.tex
 	mv ayaml.tex ayam.tex
-	pdflatex ayam.tex
+	pdflatex ayam.tex > scratch
 	rm -f ayaml.sgml ayaml.tex
 
 pdf5: pdf4
+	pdflatex ayam.tex > scratch
 	pdflatex ayam.tex
-	pdflatex ayam.tex
-	rm ayam.tex ayam.toc ayam.log ayam.aux
+	rm ayam.tex ayam.toc ayam.log ayam.aux scratch
 
 clean:
 	rm -rf html ayam.tex ayam.dvi ayam.txt ayam.pdf ayam.ps
 	rm -rf ayaml.sgml ayaml.tex ayaml.dvi ayaml.pdf ayaml.ps
-	rm -rf ayam.out ayam.aux ayam.toc
+	rm -rf ayam.out ayam.aux ayam.toc scratch
