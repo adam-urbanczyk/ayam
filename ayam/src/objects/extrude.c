@@ -525,11 +525,15 @@ ay_extrude_notifycb(ay_object *o)
 	      ay_status = ay_npt_createnpatchobject(&bevel);
 	      if(bevel)
 		{
+		  if(startb_sense)
+		    ay_nct_revert((ay_nurbcurve_object *)(c->refine));
 		  ay_status = ay_npt_bevel(startb_type,
 					   startb_radius,
 					   AY_FALSE,
 					   c,
 				    (ay_nurbpatch_object **)&(bevel->refine));
+		  if(startb_sense)
+		    ay_nct_revert((ay_nurbcurve_object *)(c->refine));
 		  ay_trafo_copy(c, bevel);
 		  bevel->scalz *= -1;
 		  /* remember pointer to bevel for cap creation */
@@ -546,11 +550,15 @@ ay_extrude_notifycb(ay_object *o)
 	      ay_status = ay_npt_createnpatchobject(&bevel);
 	      if(bevel)
 		{
+		  if(endb_sense)
+		    ay_nct_revert((ay_nurbcurve_object *)(c->refine));
 		  ay_status = ay_npt_bevel(endb_type,
 					   endb_radius,
 					   AY_FALSE,
 					   c,
 				    (ay_nurbpatch_object **)&(bevel->refine));
+		  if(endb_sense)
+		    ay_nct_revert((ay_nurbcurve_object *)(c->refine));
 		  ay_trafo_copy(c, bevel);
 		  bevel->movz += ext->height;
 		  /* remember pointer to bevel for cap creation */
