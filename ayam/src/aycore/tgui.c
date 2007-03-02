@@ -61,7 +61,11 @@ ay_tgui_open(void)
   lastl = &(ay_tgui_origrefs);
   while(sel)
     {
-
+      if(sel->object && (sel->object->type == AY_IDINSTANCE))
+	{
+	  sel = sel->next;	  
+	  continue;
+	}
       if(sel->object && ((sel->object->type == AY_IDNPATCH) ||
 		       (!ay_provide_object(sel->object, AY_IDNPATCH, NULL))))
 	{
