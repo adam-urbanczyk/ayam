@@ -72,15 +72,15 @@ int dxfio_expobeynoexport = AY_TRUE;
 int dxfio_expignorehidden = AY_TRUE;
 int dxfio_exptoplevellayers = AY_TRUE;
 
-int dxfio_currentlayer = 0;
-int dxfio_slayer = -1;
-int dxfio_elayer = -1;
+int dxfio_slayer = -1; /* first layer to read; -1: read all layers */
+int dxfio_elayer = -1; /* last layer to read; elayer=slayer: read one or all */
 
-double dxfio_rescaleknots = 0.0;
+int dxfio_errorlevel = 1; /* 0: silence, 1: errors, 2: warnings, 3: all */
 
-double dxfio_accuracy = 1.0e-12;
+double dxfio_rescaleknots = 0.0;  /* rescale knots to min dist,
+				     if <= 0.0: no scaling */
 
-double dxfio_scalefactor = 1.0;
+double dxfio_scalefactor = 1.0; /* global scale factor */
 
 char dxfio_stagnamedef[] = "mys";
 char *dxfio_stagname = dxfio_stagnamedef;
@@ -325,35 +325,6 @@ dxfio_readarc(const class dimeState *state,
 } // dxfio_readarc
 
 
-// dxfio_readblock:
-//
-int
-dxfio_readblock(const class dimeState *state,
-		class dimeBlock *block,
-		void *clientdata)
-{
- int ay_status = AY_OK;
- ay_object *newo = NULL;
- ay_level_object *newl = NULL;
-
-  if(!(newo = (ay_object*)calloc(1, sizeof(ay_object))))
-    { return AY_EOMEM; }
-
-  if(!(newl = (ay_level_object*)calloc(1, sizeof(ay_level_object))))
-    { free(newo); return AY_EOMEM; }
-
-  ay_status = ay_object_defaults(newo);
-
-  newo->type = AY_IDLEVEL;
-  newo->refine = newl;
-
-  // link the new block into the scene hierarchy
-  ay_status = dxfio_linkobject(newo);
-
- return ay_status;
-} // dxfio_readblock
-
-
 // dxfio_readcircle:
 //
 int
@@ -506,7 +477,6 @@ dxfio_readinsert(const class dimeState *state,
     ay_quat_axistoquat(zaxis, AY_D2R(angle), newo->quat);
 
   newo->type = AY_IDINSTANCE;
-
 
   block = dxfio_blocks;
   while(block)
@@ -1343,6 +1313,15 @@ dxfio_linkobject(ay_object *o)
       o->scalz *= dxfio_scalefactor;
     }
 
+  if(dxfio_importcurves == AY_FALSE)
+    {
+      if(o->type == AY_IDNCURVE || o->type == AY_IDNCIRCLE)
+	{
+	  ay_object_delete(o);
+	  return AY_OK;
+	}
+    }
+
   dxfio_lrobject = o;
 
   return ay_object_link(o);
@@ -1356,6 +1335,7 @@ dxfio_readentitydcb(const class dimeState *state,
 		    class dimeEntity *entity,
 		    void *clientdata)
 {
+ int ay_status = AY_OK;
  char fname[] = "dxfio_readentity";
  static float oldprogress = 0.0f;
  float progress;
@@ -1384,46 +1364,54 @@ dxfio_readentitydcb(const class dimeState *state,
   switch(entity->typeId())
     {
     case dimeBase::dime3DFaceType:
-      dxfio_read3dface(state, (dime3DFace*)entity, clientdata);
+      ay_status = dxfio_read3dface(state, (dime3DFace*)entity, clientdata);
       break;
     case dimeBase::dimeArcType:
-      dxfio_readarc(state, (dimeArc*)entity, clientdata);
+      ay_status = dxfio_readarc(state, (dimeArc*)entity, clientdata);
       break;
     case dimeBase::dimeCircleType:
-      dxfio_readcircle(state, (dimeCircle*)entity, clientdata);
+      ay_status = dxfio_readcircle(state, (dimeCircle*)entity, clientdata);
       break;
     case dimeBase::dimeEllipseType:
-      dxfio_readellipse(state, (dimeEllipse*)entity, clientdata);
+      ay_status = dxfio_readellipse(state, (dimeEllipse*)entity, clientdata);
       break;
     case dimeBase::dimeInsertType:
-      dxfio_readinsert(state, (dimeInsert*)entity, clientdata);
+      ay_status = dxfio_readinsert(state, (dimeInsert*)entity, clientdata);
       break;
     case dimeBase::dimeLineType:
-      dxfio_readline(state, (dimeLine*)entity, clientdata);
+      ay_status = dxfio_readline(state, (dimeLine*)entity, clientdata);
       break;
     case dimeBase::dimeLWPolylineType:
-      dxfio_readlwpolyline(state, (dimeLWPolyline*)entity, clientdata);
+      ay_status = dxfio_readlwpolyline(state, (dimeLWPolyline*)entity,
+				       clientdata);
       break;
     case dimeBase::dimePolylineType:
-      dxfio_readpolyline(state, (dimePolyline*)entity, clientdata);
+      ay_status = dxfio_readpolyline(state, (dimePolyline*)entity, clientdata);
       break;
     case dimeBase::dimeSolidType:
-      dxfio_readsolid(state, (dimeSolid*)entity, clientdata);
+      ay_status = dxfio_readsolid(state, (dimeSolid*)entity, clientdata);
       break;
     case dimeBase::dimeSplineType:
-      dxfio_readspline(state, (dimeSpline*)entity, clientdata);
+      ay_status = dxfio_readspline(state, (dimeSpline*)entity, clientdata);
       break;
     case dimeBase::dimeTraceType:
-      dxfio_readtrace(state, (dimeTrace*)entity, clientdata);
+      ay_status = dxfio_readtrace(state, (dimeTrace*)entity, clientdata);
       break;
     case dimeBase::dimeUnknownEntityType:
-      //if(dxfio_errorlevel > 1)
-      ay_error(AY_EWARN, fname, "Skipping entity of unknown type.");
+      if(dxfio_errorlevel > 1)
+	{
+	  ay_error(AY_EWARN, fname, "Skipping entity of unknown type.");
+	}
       break;
     default:
       break;
     } // switch
   
+  if(ay_status && (dxfio_errorlevel > 0))
+    {
+      ay_error(AY_ERROR, fname, "Error converting entity.");
+    }
+
   // calculate/set progress
   if(entity->typeId() != dimeBase::dimeVertexType)
     {
@@ -1445,7 +1433,8 @@ dxfio_readentitydcb(const class dimeState *state,
 			TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
       if(val && val[0] == '1')
 	{
-	  ay_error(AY_EWARN, fname,
+	  if(dxfio_errorlevel > 1)
+	    ay_error(AY_EWARN, fname,
 		   "Import cancelled! Not all objects may have been read!");
 	  return false;
 	}
@@ -1492,7 +1481,8 @@ dxfio_readprogressdcb(float progress, void *clientdata)
 			TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
       if(val && val[0] == '1')
 	{
-	  ay_error(AY_EWARN, fname,
+	  if(dxfio_errorlevel > 1)
+	    ay_error(AY_EWARN, fname,
 		   "Import cancelled! Not all objects may have been read!");
 	  return 0;
 	}
@@ -1556,12 +1546,18 @@ dxfio_countentities(dimeModel *model)
 	      if(entity->typeId() == dimeBase::dimeInsertType)
 		{
 		  dxfio_countsubentities((dimeInsert*)entity);
-		}
-	    }
+		} // if
+	    } // if
 	} // for
     } // if
-
-  //  printf("entities to convert %d\n", dxfio_totalents);
+  
+  if(dxfio_errorlevel > 2)
+    {
+      char fname[] = "dxfio_countentities";
+      char message[64];
+      sprintf(message, "%d entities to convert.\n", dxfio_totalents);
+      ay_error(AY_EOUTPUT, fname, message);
+    } // if
 
  return AY_OK;
 } // dxfio_countentities
@@ -1609,6 +1605,11 @@ dxfio_readtcmd(ClientData clientData, Tcl_Interp *interp,
       if(!strcmp(argv[i], "-c"))
 	{
 	  sscanf(argv[i+1], "%d", &dxfio_importcurves);
+	}
+      else
+      if(!strcmp(argv[i], "-e"))
+	{
+	  sscanf(argv[i+1], "%d", &dxfio_errorlevel);
 	}
       else
       if(!strcmp(argv[i], "-r"))
@@ -1676,7 +1677,8 @@ dxfio_readtcmd(ClientData clientData, Tcl_Interp *interp,
     {
       int line = in.getFilePosition();
       sprintf(lineerrstr, "DXF read error in line: %d", line);
-      ay_error(AY_ERROR, fname, lineerrstr);
+      if(dxfio_errorlevel > 0)
+	ay_error(AY_ERROR, fname, lineerrstr);
       return TCL_OK;
     }
 
