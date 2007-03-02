@@ -5,7 +5,7 @@
 <title>Ayam
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
 
-<date>3. Feb 2007
+<date>27. Feb 2007
 
 <abstract>
 This is the documentation of Ayam 1.12 - a free 3D modelling environment
@@ -731,7 +731,6 @@ also section <ref id="riprocobj" name="RiProc Object">.
 also section <ref id="scriptobj" name="Script Object">.
 
 <item><tt/"Text"/, create a new text object, see
-
 also section <ref id="textobj" name="Text Object">.
 </itemize>
 
@@ -1339,8 +1338,8 @@ name="Hidden Preference Settings">).
 </figure>
 <p>
 The toolbox window displays some buttons that start interactive
-modelling actions or other modelling tools, or create objects.
-You can open or close it using the main menu entry
+modelling actions, modelling tools, or create objects.
+You can open and close it using the main menu entry
 <tt>"Special/Toggle Toolbox"</tt>.
 <p>
 Note that in contrast to the keyboard shortcuts of the
@@ -1355,13 +1354,18 @@ and change the order in which they appear in the toolbox window.
 See section <ref id="hidprefs" name="Hidden Preference Settings"> for
 more information.
 <p>
+The toolbox is also open for extension by scripts, see section
+<ref id="scextoolbox" name="Script Examples (Toolbox Buttons)"> for
+examples.
+<p>
 You may also resize the window to change from the vertical standard
 layout to a horizontal one, optimizing the use of precious screen
 space. After resizing, the toolbox will re-layout the buttons,
-warning you if the space is to small for all buttons to display,
-and if the window is too big for the desired layout (and the
-preference setting <tt>"Misc/ToolBoxShrink"</tt>) shrink wrap
-the window to match the size occupied by the buttons.
+warning you if the space is too small for all buttons to display.
+If the window is too big for the desired layout and the
+preference setting <tt>"Misc/ToolBoxShrink"</tt> is switched on, the
+toolbox will shrink wrap the window to match the space occupied by
+the buttons.
 Furthermore, using the preference setting <tt>"Misc/ToolBoxTrans"</tt>
 the toolbox window can be made transient.
 It will then (depending on the window manager or its configuration)
@@ -2988,10 +2992,10 @@ In perspective views no interactive modelling actions are possible,
 but you may position the camera and pick objects.
 <p>
 Views of type <tt/"Trim"/ are very special. They are used to edit
-trimcurves of NURBPatch objects only. They display that trimcurves as
+trim curves of NURBPatch objects only. They display that trim curves as
 normal NURBCurves when the current level is inside a NURBPatch.
 The extensions of the patch in parameter-space are drawn as a rectangle.
-The trimcurves should completely lie inside this rectangle.
+The trim curves should completely lie inside this rectangle.
 Note that picking of objects currently does not work in views of type
 <tt/"Trim"/.
 <p>
@@ -4439,7 +4443,7 @@ generated, default is off (no caps).
 
 If the side caps of a surface of revolution of an open
 curve are not created correctly, (GLU
-complains about "intersecting or misoriented trimcurves"),
+complains about "intersecting or misoriented trim curves"),
 try to revert the revolved curve.
 
 See section <ref id="npattr" name="NPatchAttr"> for a description
@@ -4454,15 +4458,14 @@ of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 right: Extrusion with Caps)</caption>
 </figure>
 <p>
-The extrude object forms an extrusion from
-a number of NURBS curves.
+The extrude object forms an extrusion from a number of NURBS curves.
 <p>
-The first curve determines the outline, and the other curves
-determine holes in the extrusion object. Holes may be
-used by objects that form e.g. letters.
+The first curve determines the outline and the other curves determine
+holes in the extrusion object. Holes may be used by objects that form
+e.g. letters.
 <p>
-The object has the generating NURBS curves as child objects
-and watches them and adapts to them automagically.
+The object has the generating NURBS curves as child objects,
+watches them and adapts to them automagically.
 <p>
 Consequently, the object hierarchy of an Extrude object may look like this:
 <code>
@@ -4484,8 +4487,7 @@ The axis of the extrusion is always the Z axis of the coordinate
 system that is defined by the next higher
 level in the object hierarchy (the Z axis of the extrude
 object itself). The generating curves should lie in the XY plane of this
-coordinate system. If not, they will be squashed down
-to this plane!
+coordinate system. If not, they will be squashed down to this plane!
 <p>
 You may convert the current surface of extrusion and the caps and bevels,
 if there are any, to ordinary NURBS patches using the main menu entry
@@ -4498,18 +4500,18 @@ big in Z direction the extrusion should be. Note that
 the height of the bevels will not be taken into account here,
 if you have an extrusion with height 1.0 and you switch on
 beveling (upper and lower) with radius 0.1 you end up
-with an object that is 1.2 whatever big in Z direction.
+with an object that extends 1.2 units in Z direction.
 <p>
 The extrude object can automatically generate caps,
 that are trimmed NURBS patches. Using <tt/"StartCap"/ and
-<tt/"EndCap"/ you determine whether such caps should be
-generated, default is off (no caps). Note that this feature
-does only work properly, if the generating NURBS curves are closed
-and not self intersecting, this is because the generating curves themselves
-are used as trim curves for the caps. Warning, Ayam will not check whether
-your curves conform to this criteria. Ayam, however,
-detects the correct orientation of the curves
-(and reverts them if necessary).
+<tt/"EndCap"/ you determine whether such caps should be generated,
+default is off (no caps). Note that this feature does only work
+properly, if the generating NURBS curves are closed and not self
+intersecting, this is because the generating curves themselves are
+used as trim curves for the caps. Warning, Ayam will not check whether
+your curves conform to this criteria. Ayam, however, automatically
+detects the correct orientation of the curves (and reverts them if
+necessary).
 <p>
 Since Ayam 1.10 the bevel parameters of the extrude object are saved
 in bevel parameter tags and the property GUI changed to conform to
@@ -4530,23 +4532,30 @@ of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 
 <sect2>Using Holes and Bevels<label id="handb">
 <p>
-All curves forming holes in the extruded object
-must be defined inside (geometrically)
-the first curve (the outline curve). Additionally,
-they may not intersect each other or themself and
-you cannot have hole curves inside hole curves.
+All curves forming holes in the extruded object must be defined inside
+(geometrically) the first curve (the outline curve). Additionally,
+they may not intersect each other or themself and you cannot have hole
+curves inside hole curves. If there are bevels and caps, allow extra
+spacing between the curves (for the bevels).
 Ayam will not check whether your curves conform to these criteria!
 <p>
 With the direction of the curve you decide the direction of the
 bevel as well (should it round outwards or inwards?).
-If the bevels of the holes look wrong try to
-revert the generating curves of the holes.
-Note that beveling does not work well with open curves.
-You should always use closed curves for beveling!
-Beveling may lead to self intersecting trimcurves in sharp
-corners of an extrusion. Decrease the bevel radius or round
-the corners of the extruded curve (using insertion of additional
-control points) if cap generation fails due to self intersecting bevels.
+If the bevels of the holes look wrong try to revert the generating
+curves of the holes.
+Note that beveling does not work well with open curves. You should always
+use closed curves for beveling!
+Beveling may lead to self intersecting trim curves in sharp corners of an
+extrusion. Decrease the bevel radius or round the corners of the extruded
+curve (using insertion of additional control points) if cap generation
+fails due to self intersecting bevels.
+<p>
+Another special issue shall be noted: If there are holes, the
+corresponding bevels will be scaled with the hole curve object
+transformation values. Thus, to achieve equally sized bevels for outline
+and holes, possible scale transformations should be carried out on the
+hole curve control points, rather than on the hole curve object
+transformation attributes.
 
 <sect1>Sweep Object<label id="sweepobj">
 <p>
@@ -5125,7 +5134,10 @@ beveled surface to this point.
  </itemize>
 
 <item><tt/"BevelRadius"/ controls the size of the bevelled surface when seen
-from the top of the parameter curve.
+from the top of the parameter curve. Note that the size of the bevel is
+expressed in units defined by the object coordinate system of the
+controlling object. Scale values of the controlling object affect the
+bevel size.
 
 <item><tt/"BevelRevert"/ allows to revert the sense of the bevelled surface,
 should it round inwards or outwards? The sense may also be controlled
@@ -5632,7 +5644,14 @@ like this:
 <code>
 revert
 </code>
+Note: In order to make this work for objects providing NURBS curves
+(interpolating curves or instances of NURBS curves) the code has to
+look like this:
+<code>
+convOb -inplace; revert
+</code>
 </itemize>
+
 
 <item><tt/"Script"/ is the script code. The corresponding widget
 is a standard Tcl text widget that allows to directly edit the code.
@@ -6991,7 +7010,7 @@ remknNC - remove knot from NURBS curve:
  <item>Synopsis: <tt/"remknNC u r"/
  <item>Description: Remove a knot at the position
 specified by u (u must be in the valid range of the knot vector
-of the selected curves) r times from the curve. Note that the
+of the selected curve) r times from the curve. Note that the
 shape of the curve may be changed by this tool.
 See also section <ref id="remknt" name="The Remove Knot Tool">.
 </itemize>
@@ -7002,9 +7021,9 @@ refineNC - refine NURBS curve:
  <item>Synopsis: <tt/"refineNC [{u1 u2 un}]"/
  <item>Description: Refine the knot vector of the selected NURBS curve
 without changing the shape of the curve with n new knots {u1 u2 un}.
-Or, if no list of new knots is given, add a new knot into each interval
+Or, if no list of new knots is given: add a new knot into each interval
 in the old knot vector.
-The knot type of the refined curve will be changed to <tt/"Custom"/.
+The knot type of the refined curve may be changed to <tt/"Custom"/.
 See also section <ref id="refit" name="The Refine Tool">.
 </itemize>
 
@@ -8615,9 +8634,10 @@ completely empty.
 <p>
 The AyCSG rendering obeys the <tt>"Draw Selection only"</tt> and
 <tt>"Draw Level only"</tt> view options as well as the hide attribute
-of objects. If the CSG rendering fails, you might still get a
-preview of the important CSG using objects by selecting them
-and enabling the <tt>"Draw Selection only"</tt> view option.
+of objects. If the CSG rendering fails for complete complex scenes,
+you might still get a preview of the important CSG using objects by
+selecting them and enabling the <tt>"Draw Selection only"</tt> view
+option.
 <p>
 Also note that CSG rendering requires fast graphics hardware
 (the more fillrate, the better). Furthermore, your OpenGL subsystem
@@ -8645,7 +8665,7 @@ of the algorithms based on whether concave primitives (depth complexity
 <item><tt/"DCSampling"/ determines a depth complexity sampling
 strategy. Quoting from the OpenCSG documentation, the following options
 are available:
-<p><p>
+<p>
 <tt/"NoDCSampling"/: Does not employ the depth complexity. This essentially
 makes the algorithm O(n&sup2;), but with low constant costs.
 <p>
@@ -8664,6 +8684,11 @@ layered Goldfeather algorithm.
 <item><tt/"CalcBBS"/ determines whether bounding boxes should be
 calculated and used for speed up (not working at the moment).
 </itemize>
+
+See also:
+<it>Kirsch F. and Doellner J.: "Rendering Techniques for Hardware-Accelerated
+Image-Based CSG", in: Skala V. (ed.): Journal of WSCG'04, 221-228,
+ISSN 1213-6972</it>
 
 <sect1>Increasing drawing speed<label id="incds">
 <p>
@@ -8793,12 +8818,14 @@ OpenGL (R) is a registered trademark of Silicon Graphics, Inc.
 
 The RenderMan (R) Interface Procedures and Protocol are:
 Copyright 1988, 1989, 2000 Pixar
+
 All Rights Reserved
 
 RenderMan (R) is a registered trademark of Pixar
 
 The Affine Libraries and Tools are
 Copyright (c) 1995, 1996, 1997, 1998 Thomas E. Burge
+
 All rights reserved.
 
 Affine (R) is a registered trademark of Thomas E. Burge.
@@ -8809,6 +8836,7 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 
 Dime is
 Copyright (c) 1998-1999 Systems In Motion, SA
+
 All rights reserved.
 
 AutoCAD (R)  is a registered trademark of Autodesk, Inc.
