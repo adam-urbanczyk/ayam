@@ -1,4 +1,4 @@
-[23. Feb 2007] CVS-Head:
+[4. Mar 2007] CVS-Head:
 =======================
 o Bug Fixes:
   - crash after deleting of objects (SF 1637735)
@@ -19,11 +19,16 @@ o Bug Fixes:
   - newly created level objects may get wrong type (SF 1661732)
   - provided NURBS patches of non-simple spheres (SF 1665915)
   - closing preferences with Ok does not redraw (SF 1665917)
+  - extrude ignoring bevel parameter revert (SF 1673532)
 
 GUI:
 o fixed select background color when changed via X resources (backported
   appropriate BWidgets bug-fix)
 o fixed local views redrawing upon scene saving
+
+Modelling:
+o added "Revert" parameter to ExtrNC object
+o ExtrNC objects now draw a direction arrow (like NCurve objects)
 
 Drawing/Shading:
 o added antialiasing drawing option for lines
