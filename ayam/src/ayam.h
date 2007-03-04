@@ -744,6 +744,7 @@ typedef struct ay_extrnc_object_s
 {
   int side;
   int pnum;
+  int revert;
   double parameter;
   /* cache NURBS curve representation */
   ay_object *ncurve;

@@ -161,6 +161,10 @@ ay_extrnc_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(extrnc->pnum));
 
+  Tcl_SetStringObj(ton,"Revert",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &(extrnc->revert));
+
   Tcl_SetStringObj(ton,"DisplayMode",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(extrnc->glu_display_mode));
@@ -214,6 +218,11 @@ ay_extrnc_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton,"Revert",-1);
+  to = Tcl_NewIntObj(extrnc->revert);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
   Tcl_SetStringObj(ton,"DisplayMode",-1);
   to = Tcl_NewIntObj(extrnc->glu_display_mode);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
@@ -244,14 +253,19 @@ ay_extrnc_readcb(FILE *fileptr, ay_object *o)
   if(!(extrnc = calloc(1, sizeof(ay_extrnc_object))))
     { return AY_EOMEM; }
 
-  fscanf(fileptr,"%d\n",&extrnc->side);
-  fscanf(fileptr,"%lg\n",&extrnc->parameter);
-  fscanf(fileptr,"%d\n",&extrnc->glu_display_mode);
-  fscanf(fileptr,"%lg\n",&extrnc->glu_sampling_tolerance);
+  fscanf(fileptr, "%d\n", &extrnc->side);
+  fscanf(fileptr, "%lg\n", &extrnc->parameter);
+  fscanf(fileptr, "%d\n", &extrnc->glu_display_mode);
+  fscanf(fileptr, "%lg\n", &extrnc->glu_sampling_tolerance);
 
   if(ay_read_version >= 8)
     {
-      fscanf(fileptr,"%d\n",&extrnc->pnum);
+      fscanf(fileptr, "%d\n", &extrnc->pnum);
+    }
+
+  if(ay_read_version >= 10)
+    {
+      fscanf(fileptr, "%d\n", &extrnc->revert);
     }
 
   o->refine = extrnc;
@@ -276,7 +290,9 @@ ay_extrnc_writecb(FILE *fileptr, ay_object *o)
   fprintf(fileptr, "%g\n", extrnc->glu_sampling_tolerance);
 
   fprintf(fileptr, "%d\n", extrnc->pnum);
-
+  /*
+  fprintf(fileptr, "%d\n", extrnc->revert);
+  */
  return AY_OK;
 } /* ay_extrnc_writecb */
 
@@ -393,6 +409,11 @@ ay_extrnc_notifycb(ay_object *o)
 
   if(ay_status || !ncurve->refine)
     return ay_status;
+
+  if(extrnc->revert)
+    {
+      ay_status = ay_nct_revert((ay_nurbcurve_object *)(ncurve->refine));
+    }
 
   extrnc->ncurve = ncurve;
 
