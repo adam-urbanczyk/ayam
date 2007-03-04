@@ -117,6 +117,24 @@ ay_extrnc_shadecb(struct Togl *togl, ay_object *o)
 int
 ay_extrnc_drawhcb(struct Togl *togl, ay_object *o)
 {
+ ay_extrnc_object *extrnc = NULL;
+ ay_nurbcurve_object *nc = NULL;
+ double *p1, *p2;
+
+  if(!o)
+    return AY_ENULL;
+
+  extrnc = (ay_extrnc_object *)o->refine;
+
+  if(extrnc && extrnc->ncurve)
+    {
+      /* get NURBS curve and its last control points */
+      nc = (ay_nurbcurve_object *)extrnc->ncurve->refine;
+      p1 = &(nc->controlv[nc->length*4-8]);
+      p2 = p1+4;
+      /* draw arrow */
+      ay_draw_arrow(togl, p1, p2);
+    }
 
  return AY_OK;
 } /* ay_extrnc_drawhcb */
@@ -524,8 +542,8 @@ ay_extrnc_init(Tcl_Interp *interp)
 				    ay_extrnc_deletecb,
 				    ay_extrnc_copycb,
 				    ay_extrnc_drawcb,
-				    NULL, /* no handles */
-				    ay_extrnc_shadecb,
+				    ay_extrnc_drawhcb,
+				    NULL/*ay_extrnc_shadecb*/,
 				    ay_extrnc_setpropcb,
 				    ay_extrnc_getpropcb,
 				    ay_extrnc_getpntcb,
