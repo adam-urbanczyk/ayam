@@ -32,6 +32,7 @@ ay_concatnc_createcb(int argc, char *argv[], ay_object *o)
     }
 
   new->ftlength = 0.3;
+  new->knot_type = 1;
 
   o->parent = AY_TRUE;
 
