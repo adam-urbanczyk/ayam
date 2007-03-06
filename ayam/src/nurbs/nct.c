@@ -1816,10 +1816,11 @@ int height = Togl_Height(togl);
 
 
 /* ay_nct_split:
- *
+ *  split NURBCurve object <src> at parametric value <u> into two;
+ *  modifies <src>, returns second curve in <result>.
  */
 int
-ay_nct_split(ay_object *src, double u)
+ay_nct_split(ay_object *src, double u, ay_object **result)
 {
  int ay_status = AY_OK;
  ay_object *new = NULL;
@@ -1830,7 +1831,7 @@ ay_nct_split(ay_object *src, double u)
  char fname[] = "split";
 
 
-  if(!src)
+  if(!src || !result)
     return AY_ENULL;
 
   if(src->type != AY_IDNCURVE)
@@ -1937,7 +1938,8 @@ ay_nct_split(ay_object *src, double u)
       new->modified = AY_TRUE;
       src->modified = AY_TRUE;
 
-      ay_status = ay_object_link(new);
+      /* return result */
+      *result = new;
 
     } /* if */
 
@@ -1954,6 +1956,7 @@ ay_nct_splittcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
+ ay_object *new = NULL;
  double u = 0.0;
  char fname[] = "split";
 
@@ -1982,13 +1985,18 @@ ay_nct_splittcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  if(sel->object->type == AY_IDNCURVE)
 	    {
-	      ay_status = ay_nct_split(sel->object, u);
+	      new = NULL;
+
+	      ay_status = ay_nct_split(sel->object, u, &new);
 
 	      if(ay_status)
 		{
 		  ay_error(ay_status, fname, NULL);
 		  return TCL_OK;
 		} /* if */
+
+	      ay_status = ay_object_link(new);
+
 	      sel->object->modified = AY_TRUE;
 	    }
 	  else

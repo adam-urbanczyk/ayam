@@ -22,7 +22,7 @@
  *  if c already lives in the scene hierarchy!
  */
 int
-ay_capt_createfromcurve(ay_object *c, ay_object **ca)
+ay_capt_createfromcurve(ay_object *c, ay_object **cap)
 {
  int ay_status = AY_OK;
  ay_object *npatch = NULL;
@@ -34,7 +34,7 @@ ay_capt_createfromcurve(ay_object *c, ay_object **ca)
  int first = AY_TRUE, i = 0, stride = 4;
  double z;
 
-  if(!c || !ca)
+  if(!c || !cap)
     return AY_ENULL;
 
   while(c)
@@ -185,8 +185,55 @@ ay_capt_createfromcurve(ay_object *c, ay_object **ca)
       first = AY_FALSE;
     } /* while */
 
-  *ca = npatch;
+  *cap = npatch;
 
  return ay_status;
 } /* ay_capt_createfromcurve */
 
+
+/* ay_capt_createfromnpcurve:
+ *  create a cap from a single non-planar NURBS curve c
+ */
+int
+ay_capt_createfromnpcurve(ay_object *c, ay_object **cap)
+{
+ int ay_status = AY_OK;
+ ay_object *c1 = NULL, *c2 = NULL, *c3 = NULL, *c4 = NULL, *new = NULL;
+ ay_nurbcurve_object *curve = NULL;
+ double ulen = 0.0, u14, u12, u34;
+
+  if(c->type != AY_IDNCURVE)
+    return AY_ERROR;
+
+  ay_status = ay_npt_createnpatchobject(&new);
+
+  curve = (ay_nurbcurve_object*)c->refine;
+
+  ulen = curve->knotv[curve->length+curve->order-2];
+
+  ay_status = ay_object_copy(c, &c1);
+
+  u12 = ulen/2.0;
+  u14 = ulen/4.0;
+  u34 = ulen/2.0+ulen/4.0;
+
+  ay_status = ay_nct_split(c1, u12, &c3);
+
+  ay_status = ay_nct_split(c1, u14, &c2);
+
+  ay_status = ay_nct_split(c3, u34, &c4);
+
+  ay_status = ay_nct_revert((ay_nurbcurve_object*)c3->refine);
+  ay_status = ay_nct_revert((ay_nurbcurve_object*)c4->refine);
+
+  c1->next = c3;
+  c4->next = c2;
+
+  ay_status = ay_npt_gordon(c1, c4, NULL, 4/*curve->order*/, 4,
+			    (ay_nurbpatch_object**)&(new->refine));
+
+  /* return result */
+  *cap = new;
+
+ return ay_status;
+} /* ay_capt_createfromnpcurve */
