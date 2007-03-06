@@ -576,6 +576,7 @@ typedef struct ay_concatnc_object_s
 
 typedef struct ay_cap_object_s
 {
+  int type;
   /* cache NURBS patch representation */
   ay_object *npatch;
   double glu_sampling_tolerance;

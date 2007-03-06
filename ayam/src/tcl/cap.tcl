@@ -21,15 +21,16 @@ w     fCapAttr
 }
 
 array set CapAttrData {
-Mode 1
+Type 1
 DisplayMode 0
 }
 # create CapAttr-UI
 set w [frame $ay(pca).$CapAttr(w)]
 
+addMenu $w CapAttrData Type {Trim Gordon}
 addParam $w CapAttrData Tolerance
-
 addMenu $w CapAttrData DisplayMode $ay(npdisplaymodes)
+
 
 #cap_crt:
 #
