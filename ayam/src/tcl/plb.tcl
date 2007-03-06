@@ -412,10 +412,34 @@ if { [llength $index] == 1 } {
     if { $type != ".." } {
 	global ${type}_props
 	eval [subst "set props {\$${type}_props}"]
-	eval [subst "$lb insert end $props"]
-	# insert properties from NP tags
+	# remove properties from RP tags
 	set tn ""
 	getTags tn tv
+	if { ($tn != "") && ([ string first RP $tn ] != -1) } {
+	    set i 0
+	    foreach tag $tn {
+		if { [lindex $tn $i] == "RP" } {
+		    set val [lindex $tv $i]
+		    set j 0
+		    set nprops ""
+		    foreach prop $props {
+			if { $prop != $val } {
+			    lappend nprops $prop
+			}
+			incr j
+		    }
+		    set props $nprops
+		}
+		incr i
+	    }
+	    # foreach
+	}
+	# if
+
+	if { [llength $props] > 0 } {
+	    eval [subst "$lb insert end $props"]
+	}
+	# insert properties from NP tags
 	if { ($tn != "") && ([ string first NP $tn ] != -1) } {
 	    set i 0
 	    foreach tag $tn {
