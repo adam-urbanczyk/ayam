@@ -2454,7 +2454,7 @@ elements:
 from the object.
 
 <item><tt/"Remove Tag!"/ is a menu, that allows you
-to remove a single tag from the object.
+to select and remove a single tag from the object.
 
 <item><tt/"Add Tag!"/ opens a small dialog box, where you
 may enter a new tag type and value. Once you press the <tt/"Ok"/
@@ -2464,7 +2464,8 @@ to remove the tag using <tt/"Clear"/ then <tt/"Ok"/, or to change
 the type or value of the tag.
 </itemize>
 <p>
-The next sub-sections describe the currently available tag types.
+The next sub-sections describe the tag types currently available in Ayam
+and the plugins distributed with Ayam.
 Note that extensions and plugins may define their own types.
 
 <sect2>RiAttribute Tag<label id="riatag">
@@ -2610,7 +2611,8 @@ the texture coordinate editor.
 
 <item>save TC tags to a selected object. Note that it is not
 possible to directly save the TC tag to multiple selected objects.
-But you can use the property clipboard to copy the tag.
+But you can use the property clipboard to copy the tag after saving
+to a single object.
 </itemize>
 Note that the tag numbers in the menu entries count TC tags only.
 <p>
@@ -4458,7 +4460,7 @@ of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 right: Extrusion with Caps)</caption>
 </figure>
 <p>
-The extrude object forms an extrusion from a number of NURBS curves.
+The extrude object forms an extrusion from a number of planar NURBS curves.
 <p>
 The first curve determines the outline and the other curves determine
 holes in the extrusion object. Holes may be used by objects that form
@@ -4488,6 +4490,9 @@ system that is defined by the next higher
 level in the object hierarchy (the Z axis of the extrude
 object itself). The generating curves should lie in the XY plane of this
 coordinate system. If not, they will be squashed down to this plane!
+See section
+<ref id="toxyt" name="The To XY Tool"> for information on
+how to easily achieve curves in the XY plane.
 <p>
 You may convert the current surface of extrusion and the caps and bevels,
 if there are any, to ordinary NURBS patches using the main menu entry
@@ -4568,7 +4573,9 @@ transformation attributes.
 The sweep object forms a surface that results from
 moving a NURBS curve (cross section or profile) along a second NURBS curve
 (trajectory or path). The cross section may be scaled while sweeping
-using a third curve, the scaling function.
+using a third curve, the scaling function. Sweeped surfaces may be closed in
+the direction of the trajectory and, since Ayam 1.10, they may even be
+periodic.
 <p>
 The sweep object has the generating NURBS curves as child objects
 and watches their movements and adapts to them automagically.
@@ -4601,7 +4608,7 @@ the Sweep object itself is transformed somehow).
 The scaling function is sampled for each section and the Y-component
 of the coordinates of the current curve point will be used as
 scale factor, that is applied to the cross section in Y- and Z-direction.
-This implies, that a scaling function that does nothing should e.g. be
+This implies, that e.g. a scaling function that does nothing should be
 linear from (0,1,0) to (1,1,0).
 <p>
 <figure loc="ht">
@@ -4612,9 +4619,9 @@ linear from (0,1,0) to (1,1,0).
 <p>
 Here is a short example for the creation of a sweep:
 <itemize>
-<item>Create a circular BSpline using the toolbox. (This will be our
+<item>Create a circular B-Spline curve using the toolbox. (This will be our
 cross section.)
-<item>Rotate it by 90 degrees around the Y-axis. (Use the
+<item>Rotate the curve by 90 degrees around the Y-axis. (Use the
 <tt/"Transformations"/ property for that.)
 <item>Create a simple NURBS curve using the toolbox. (This will be our
 trajectory.)
@@ -4639,13 +4646,18 @@ to ordinary NURBS patches using the main menu entry
 
 <sect2>SweepAttr Property<label id="swp"><label id="sweepattrprop">
 <p>
+Since Ayam 1.10 the <tt/"Type"/ attribute controls, whether the
+sweeped surface should be open, closed, or periodic in the direction
+of the trajectory curve.
+<p>
 If <tt/"Interpolation"/ is enabled, all section curves
 will be interpolated by the swept surface.
 <p>
-The second parameter <tt/"Sections"/ determines how many
+The third parameter, <tt/"Sections"/, determines how many
 sections (in u direction) should be used, when generating the
-sweep NURBS patch. The NURBS patch always has sections+1 control
-points in u direction.
+sweep NURBS patch. The sweep NURBS patch has sections+1 control
+points in u direction for open and closed types, and sections+3
+control points for periodic types.
 <p>
 If <tt/"Rotate"/ is enabled, the cross sections will be
 rotated so that they are always perpendicular to the trajectory,
@@ -4804,9 +4816,7 @@ the standard linear interpolation that would be carried out if no
 interpolation control curve were present. Note, however, that the
 interpolation control curve has no influence on the first and last
 copy of the respective cross section curve, unless the <tt/"InterpolCtrl"/
-option is used (which is available since Ayam 1.10). If <tt/"InterpolCtrl"/
-is not enabled, the first and last border of the resulting surface
-will always exactly match the parameter curves (CS1 and CS2 respectively).
+option is used (which is available since Ayam 1.10).
 <p>
 The Birail2 object watches the child objects and adapts to them
 automatically via the notification mechanism.
@@ -4819,10 +4829,15 @@ The following parameters control the birailing process:
 
 <sect2>Birail2Attr Property<label id="birail2p"><label id="birail2attrprop">
 <p>
-The parameter <tt/"Sections"/ determines how many
-sections (in u direction) should be used, when generating the
-birailed NURBS patch. The birailed NURBS patch always has sections+1 control
-points in u direction.
+The parameter <tt/"Sections"/ determines how many sections (in u direction)
+should be used, when generating the birailed NURBS patch. The birailed
+NURBS patch always has sections+1 control points in u direction.
+<p>
+The parameter <tt/"InterpolCtrl"/ allows the interpolation controlling
+curve full influence on the birailed surface.
+If <tt/"InterpolCtrl"/ is not enabled, the first and last border of the
+resulting surface will always exactly match the parameter curves (CS1 and
+CS2 respectively), regardless of the interpolation control curve.
 <p>
 The attributes <tt/"StartCap"/ and <tt/"EndCap"/ may be
 used to automatically create cap surfaces, that close the
@@ -5100,7 +5115,10 @@ objects may have their own material settings. Bevel objects are
 available in Ayam since version 1.10.
 <p>
 Note that the parameter curve of a Bevel object should be closed and
-planar to achieve best results. If the curve is closed or periodic,
+planar to achieve best results;
+see section
+<ref id="toxyt" name="The To XY Tool"> for information on
+how to easily achieve this. If the curve is closed or periodic,
 the appropriate curve type should be set in the curve object,
 otherwise the bevelled surface may expose defects.
 <p>
@@ -5179,7 +5197,10 @@ looks like this:
   \ Part2(NCurve)]
 </code>
 <p>
-Note that the curves have to be planar and defined in the XY plane.
+Note that the curves have to be planar and defined in the XY plane;
+see section
+<ref id="toxyt" name="The To XY Tool"> for information on
+how to easily achieve this.
 Furthermore, cap generation may fail, if the control points of the
 first curve have weights and the curve leaves the convex hull of the
 control polygon. Be careful when using weights!
@@ -5722,10 +5743,10 @@ Meta components live only in a meta world, therefore it makes no sense
 to create <tt>"MetaComp"</tt> objects in other places except as a
 child of a <tt>"MetaObj"</tt> object. Type, parameters, and
 transformation attributes of the meta components define the function
-of an implicit surface. The <tt>"MetaObj"</tt> object, that represents the
-meta world, evaluates this function on a regular three-dimensional
-grid and creates a polygonal
-representation for a specific function value (the so called threshold value).
+of an implicit surface. The <tt>"MetaObj"</tt> object, that represents
+the meta world, evaluates this function on a regular three-dimensional
+grid and creates a polygonal representation for a specific function
+value (the so called threshold value).
 <p>
 This process may be further parameterized using the <tt/"MetaObjAttr"/
 property:
@@ -5763,7 +5784,7 @@ You may control the adaptation process using three parameters:
 If <tt>"Adaptive"</tt> is set to <tt>"automatic"</tt>, Ayam will
 not use the adaptive calculation while a modelling action is in
 progress. This mode has been introduced, because the adaptive mode
-may consume a considerable amount of CPU ressources.
+may consume a considerable amount of CPU resources.
 <p>
 While modelling with meta balls you may add other <tt/"MetaComp"/ objects
 to the <tt/"MetaObj"/ object and parameterize them.
@@ -7517,7 +7538,7 @@ proc easySweep { } {
  goDown [expr [llength $a]-1]
  uS
 
- # now, we create a new curve (a closed BSpline suitable as cross section)
+ # now, we create a new curve (a closed B-Spline suitable as cross section)
  crtClosedBS 8
  uS
 
