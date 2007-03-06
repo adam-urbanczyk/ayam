@@ -13,7 +13,9 @@
 /* nurbs.h - nurbs prototypes */
 
 /* capt.c */
-int ay_capt_createfromcurve(ay_object *c, ay_object **ca);
+int ay_capt_createfromcurve(ay_object *c, ay_object **cap);
+
+int ay_capt_createfromnpcurve(ay_object *c, ay_object **cap);
 
 /* ict.c */
 int ay_ict_interpolateC2C(double iparam, int closed, int length,
@@ -219,7 +221,7 @@ int ay_nct_findu(struct Togl *togl, ay_object *o,
 
 int ay_nct_finducb(struct Togl *togl, int argc, char *argv[]);
 
-int ay_nct_split(ay_object *src, double u);
+int ay_nct_split(ay_object *src, double u, ay_object **result);
 
 int ay_nct_splittcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[]);
