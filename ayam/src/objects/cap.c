@@ -157,6 +157,10 @@ ay_cap_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
 
+  Tcl_SetStringObj(ton,"Type",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &(cap->type));
+
   Tcl_SetStringObj(ton,"Tolerance",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp,to, &(cap->glu_sampling_tolerance));
@@ -176,7 +180,7 @@ ay_cap_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	cap->glu_display_mode;
     }
 
-  /*ay_status = ay_notify_force(o);*/
+  ay_status = ay_notify_force(o);
 
   o->modified = AY_TRUE;
   ay_status = ay_notify_parent();
@@ -201,6 +205,11 @@ ay_cap_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   toa = Tcl_NewStringObj(n1,-1);
 
   ton = Tcl_NewStringObj(n1,-1);
+
+  Tcl_SetStringObj(ton,"Type",-1);
+  to = Tcl_NewIntObj(cap->type);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
 
   Tcl_SetStringObj(ton,"Tolerance",-1);
   to = Tcl_NewDoubleObj(cap->glu_sampling_tolerance);
@@ -233,6 +242,11 @@ ay_cap_readcb(FILE *fileptr, ay_object *o)
   fscanf(fileptr,"%lg\n",&cap->glu_sampling_tolerance);
   fscanf(fileptr,"%d\n",&cap->glu_display_mode);
 
+  if(ay_read_version >= 10)
+    {
+      fscanf(fileptr,"%d\n",&cap->type);
+    }
+
   o->refine = cap;
 
  return AY_OK;
@@ -251,7 +265,9 @@ ay_cap_writecb(FILE *fileptr, ay_object *o)
 
   fprintf(fileptr, "%g\n", cap->glu_sampling_tolerance);
   fprintf(fileptr, "%d\n", cap->glu_display_mode);
-
+  /*
+  fprintf(fileptr, "%d\n", cap->type);
+  */
  return AY_OK;
 } /* ay_cap_writecb */
 
@@ -365,8 +381,10 @@ ay_cap_notifycb(ay_object *o)
 
   /* the pobject points now to copies of the curves for which
      the cap should be created (and we may mess with it) */
-
-  ay_status = ay_capt_createfromcurve(pobject, &(cap->npatch));
+  if(cap->type == 0)
+    ay_status = ay_capt_createfromcurve(pobject, &(cap->npatch));
+  else
+    ay_status = ay_capt_createfromnpcurve(pobject, &(cap->npatch));
 
   if(ay_status)
     {
