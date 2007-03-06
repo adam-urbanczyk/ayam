@@ -117,6 +117,8 @@ char *ay_savegeom_tagtype;
 
 char *ay_np_tagtype;
 
+char *ay_rp_tagtype;
+
 char *ay_tp_tagtype;
 
 char *ay_ns_tagtype;
@@ -424,6 +426,9 @@ ay_init(Tcl_Interp *interp)
 
   /* register NP (NewProperty) tag type */
   ay_tags_register(interp, "NP", &ay_np_tagtype);
+
+  /* register RP (RemoveProperty) tag type */
+  ay_tags_register(interp, "RP", &ay_rp_tagtype);
 
   /* initialize NURBS knots module */
   ay_knots_init(interp);
