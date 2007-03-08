@@ -1247,7 +1247,8 @@ ay_nb_FindSpanMult(int n, int p, double u, double *U, int *s)
 	}
       else
 	{
-	  low = p;
+	  /* XXXX was: low = p; */
+	  low = 0;
 	  high = n+1;
 	  mid = (low+high)/2;
 
