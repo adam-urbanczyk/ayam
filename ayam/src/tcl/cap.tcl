@@ -23,6 +23,7 @@ w     fCapAttr
 array set CapAttrData {
 Type 1
 DisplayMode 0
+NPInfoBall "n/a"
 }
 # create CapAttr-UI
 set w [frame $ay(pca).$CapAttr(w)]
@@ -30,6 +31,9 @@ set w [frame $ay(pca).$CapAttr(w)]
 addMenu $w CapAttrData Type {Trim Gordon}
 addParam $w CapAttrData Tolerance
 addMenu $w CapAttrData DisplayMode $ay(npdisplaymodes)
+
+addText $w CapAttrData "Created NURBS Patch:"
+addInfo $w CapAttrData NPInfo
 
 
 #cap_crt:
