@@ -248,5 +248,12 @@ ay_capt_createfromnpcurve(ay_object *c, ay_object **cap)
   /* return result */
   *cap = new;
 
+  /* clean up */
+
+  /* c1 deleted outside... */
+  ay_object_delete(c2);
+  ay_object_delete(c3);
+  ay_object_delete(c4);
+
  return ay_status;
 } /* ay_capt_createfromnpcurve */
