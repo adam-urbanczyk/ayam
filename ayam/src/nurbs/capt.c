@@ -16,10 +16,10 @@
 
 
 /* ay_capt_createfromcurve:
- *  create a cap from a single NURBS curve c
- *  the curve object c will be used as trim curve
+ *  create a cap from a single NURBS curve <c>
+ *  the curve object <c> will be used as trim curve
  *  so copy it before calling this function,
- *  if c already lives in the scene hierarchy!
+ *  if <c> already lives in the scene hierarchy!
  */
 int
 ay_capt_createfromcurve(ay_object *c, ay_object **cap)
@@ -192,7 +192,13 @@ ay_capt_createfromcurve(ay_object *c, ay_object **cap)
 
 
 /* ay_capt_createfromnpcurve:
- *  create a cap from a single non-planar NURBS curve c
+ *  create a cap from a single non-planar NURBS curve <c>
+ *  by splitting the outline into four pieces, arranging the
+ *  pieces and building a Gordon surface from them (thanks to
+ *  "the reverse" for inspiration);
+ *  <c> will be split, so copy it before calling this function,
+ *  if <c> already lives in the scene hierarchy!
+ *  XXXX allow parameterisation of split points and desired surface orders
  */
 int
 ay_capt_createfromnpcurve(ay_object *c, ay_object **cap)
@@ -200,36 +206,43 @@ ay_capt_createfromnpcurve(ay_object *c, ay_object **cap)
  int ay_status = AY_OK;
  ay_object *c1 = NULL, *c2 = NULL, *c3 = NULL, *c4 = NULL, *new = NULL;
  ay_nurbcurve_object *curve = NULL;
- double ulen = 0.0, u14, u12, u34;
+ /*double u12, u14, u34;*/
 
-  if(c->type != AY_IDNCURVE)
+  c1 = c;
+
+  if(c1->type != AY_IDNCURVE)
     return AY_ERROR;
 
   ay_status = ay_npt_createnpatchobject(&new);
 
-  curve = (ay_nurbcurve_object*)c->refine;
+  curve = (ay_nurbcurve_object*)c1->refine;
 
-  ulen = curve->knotv[curve->length+curve->order-2];
+  /* split curve in half */
+  ay_status = ay_knots_rescaletorange(curve->length+curve->order, curve->knotv,
+				      0.0, 1.0);
+  ay_status = ay_nct_split(c1, 0.5, &c3);
 
-  ay_status = ay_object_copy(c, &c1);
+  /* split first half in first and second quarter */
+  ay_status = ay_knots_rescaletorange(curve->length+curve->order, curve->knotv,
+				      0.0, 1.0);
+  ay_status = ay_nct_split(c1, 0.5, &c2);
 
-  u12 = ulen/2.0;
-  u14 = ulen/4.0;
-  u34 = ulen/2.0+ulen/4.0;
+  /* split second half in third and fourth quarter */
+  curve = (ay_nurbcurve_object*)c3->refine;
+  ay_status = ay_knots_rescaletorange(curve->length+curve->order, curve->knotv,
+				      0.0, 1.0);
+  ay_status = ay_nct_split(c3, 0.5, &c4);
 
-  ay_status = ay_nct_split(c1, u12, &c3);
-
-  ay_status = ay_nct_split(c1, u14, &c2);
-
-  ay_status = ay_nct_split(c3, u34, &c4);
-
+  /* arrange quarters */
   ay_status = ay_nct_revert((ay_nurbcurve_object*)c3->refine);
   ay_status = ay_nct_revert((ay_nurbcurve_object*)c4->refine);
 
   c1->next = c3;
   c4->next = c2;
 
-  ay_status = ay_npt_gordon(c1, c4, NULL, 4/*curve->order*/, 4,
+  /* create Gordon surface */
+  ay_status = ay_npt_gordon(c1, c4, NULL,
+			    4/*curve->order?*/, 4/*curve->order?*/,
 			    (ay_nurbpatch_object**)&(new->refine));
 
   /* return result */
