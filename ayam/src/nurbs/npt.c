@@ -5256,17 +5256,21 @@ ay_npt_gordon(ay_object *cu, ay_object *cv, ay_object *in,
       i = 0;
       ay_nb_CurvePoint4D(nc->length-1, nc->order-1, nc->knotv, nc->controlv,
 			 nc->knotv[nc->order-1], &(intersections[i]));
+      intersections[i+3] = 1.0;
       i = (numcv-1)*numcu*4;
       ay_nb_CurvePoint4D(nc->length-1, nc->order-1, nc->knotv, nc->controlv,
 			 nc->knotv[nc->length], &(intersections[i]));
+      intersections[i+3] = 1.0;
 
       nc = (ay_nurbcurve_object *)lcu->refine;
       i = (numcu-1)*4;
       ay_nb_CurvePoint4D(nc->length-1, nc->order-1, nc->knotv, nc->controlv,
 			 nc->knotv[nc->order-1], &(intersections[i]));
+      intersections[i+3] = 1.0;
       i = (numcu*numcv-1)*4;
       ay_nb_CurvePoint4D(nc->length-1, nc->order-1, nc->knotv, nc->controlv,
 			 nc->knotv[nc->length], &(intersections[i]));
+      intersections[i+3] = 1.0;
 
       /* first, check for some easy cases */
       if((numcu == 2) && (numcv == 2))
@@ -5387,6 +5391,7 @@ ay_npt_gordon(ay_object *cu, ay_object *cv, ay_object *in,
   if(!skinv)
     goto cleanup;
 
+  /* get highest uorder */
   if(skinu->uorder > uo)
     uo = skinu->uorder;
   if(skinv->uorder > uo)
@@ -5394,6 +5399,7 @@ ay_npt_gordon(ay_object *cu, ay_object *cv, ay_object *in,
   if(interpatch->uorder > uo)
     uo = interpatch->uorder;
 
+  /* get highest vorder */
   if(skinu->vorder > vo)
     vo = skinu->vorder;
   if(skinv->vorder > vo)
@@ -5401,6 +5407,7 @@ ay_npt_gordon(ay_object *cu, ay_object *cv, ay_object *in,
   if(interpatch->vorder > vo)
     vo = interpatch->vorder;
 
+  /* elevate surfaces to highest uorder/vorder */
   if(skinu->uorder < uo)
     ay_status = ay_npt_elevateu(skinu, uo-skinu->uorder);
 
@@ -5419,7 +5426,7 @@ ay_npt_gordon(ay_object *cu, ay_object *cv, ay_object *in,
   if(interpatch->vorder < vo)
     ay_status = ay_npt_elevatev(interpatch, vo-interpatch->vorder);
 
-
+  /* make surfaces compatible (defined on the same knot vector) */
   ay_status = ay_knots_unify(skinu->uknotv, skinu->width+skinu->uorder,
 			     skinv->uknotv, skinv->width+skinu->uorder,
 			     &unifiedU, &uUlen);
@@ -5442,6 +5449,7 @@ ay_npt_gordon(ay_object *cu, ay_object *cv, ay_object *in,
 
   ay_status = ay_knots_mergesurf(interpatch, unifiedU, uUlen, unifiedV, uVlen);
 
+  /* combine surfaces */
   for(i = 0; i < skinu->width; i++)
     {
       for(j = 0; j < skinu->height; j++)
@@ -5455,11 +5463,17 @@ ay_npt_gordon(ay_object *cu, ay_object *cv, ay_object *in,
 
 	  skinu->controlv[k+2] += skinv->controlv[k+2];
 	  skinu->controlv[k+2] -= interpatch->controlv[k+2];
-	  /*
-	  skinu->controlv[k+3] += skinv->controlv[k+3];
-	  skinu->controlv[k+3] -= interpatch->controlv[k+3];
-	  */
-	  skinu->controlv[k+3] = 1.0;
+
+	  /* handle special case Coons patch (curves may be rational) */
+	  if((numcu == 2) && (numcv == 2))
+	    {
+	      skinu->controlv[k+3] += skinv->controlv[k+3];
+	      skinu->controlv[k+3] -= interpatch->controlv[k+3];
+	    }
+	  else
+	    {
+	      skinu->controlv[k+3] = 1.0;
+	    }
 	} /* for */
     } /* for */
 

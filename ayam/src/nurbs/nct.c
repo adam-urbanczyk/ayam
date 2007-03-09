@@ -1827,7 +1827,7 @@ ay_nct_split(ay_object *src, double u, ay_object **result)
  ay_nurbcurve_object *curve = NULL;
  ay_nurbcurve_object *nc1 = NULL, *nc2 = NULL;
  double *knots = NULL, *newcontrolv = NULL, *newknotv = NULL;
- int stride = 3, k = 0, r = 0, s = 0, nq = 0, nc1len = 0;
+ int stride = 4, k = 0, r = 0, s = 0, nq = 0, nc1len = 0;
  char fname[] = "split";
 
 

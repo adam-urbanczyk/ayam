@@ -1377,7 +1377,7 @@ ay_nb_CurvePoint3D(int n, int p, double *U, double *P, double u, double *C)
   C[2] = 0.0;
   for(j = 0; j <= p; j++)
     {
-      k = (span-p+j)*3;
+      k = (span-p+j)*4;
       C[0] = C[0] + N[j]*P[k];
       C[1] = C[1] + N[j]*P[k+1];
       C[2] = C[2] + N[j]*P[k+2];
