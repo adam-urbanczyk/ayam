@@ -483,7 +483,7 @@ RRIBOBJS = plugins/rrib.o
 .cpp.o:
 	$(CXX) -c $(CFLAGS) $*.cpp -o $@ -I. -IMF3D $(TOGLINC) $(TCLINC) $(TKINC) $(BMRTINC) $(GLINC) $(AFFINEINC) $(AQSISINC) -I$(OPENCSGINCDIR) -I$(GLEWINCDIR) -Iplugins
 
-all: ayamsh csphere.so mfio.so metaobj.so
+all: ayamsh csphere.so mfio.so metaobj.so mopsi.so
 
 ayamsh: $(AYAMOBJS) $(TOGLOBJECT) $(AFFINEOBJS)
 	$(LD) $(AYAMOBJS) $(TOGLOBJECT) $(EXLDFLAGS) -o ayamsh $(TKLIB) $(TCLLIB) $(GLLIBS) $(X11LIBS) $(RIBOUTLIB) $(AQSISRI2RIB) $(SLCARGSLIB) $(AFFINEOBJS) $(AQSISOBJS) $(TIFFLIB) -lm $(DL)
@@ -537,6 +537,9 @@ mfio.so: plugins/mfio.o mf3d
 
 metaobj.so: $(METAOBJS)
 	$(CC) $(SHLFLAGS) $(METAOBJS) -o contrib/meta/metaobj.so
+
+mopsi.so: plugins/mopsi.o
+	$(CC) $(SHLFLAGS) plugins/mopsi.o -o plugins/mopsi.so
 
 rrib.so: $(RRIBOBJS)
 	$(CC) $(SHLFLAGS) $(RRIBOBJS) -o plugins/rrib.so $(RRIBLIBS)
