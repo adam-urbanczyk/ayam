@@ -173,15 +173,6 @@ int ay_interpol_trafos(double p, ay_object *o1, ay_object *o2, ay_object *ta);
 int ay_interpol_ncurves(double p, ay_object *c1, ay_object *c2,
 			ay_object **ta);
 
-/* mopsi.c */
-int ay_mopsi_tcmd(ClientData clientData, Tcl_Interp * interp,
-		  int argc, char *argv[]);
-
-int ay_mopsi_register(char *tname, ay_mopsicb *cb);
-
-int ay_mopsi_init(void);
-
-
 /* notify.c */
 int ay_notify_register(ay_notifycb *notcb, unsigned int type_id);
 
@@ -281,11 +272,6 @@ int ay_object_replace(ay_object *src, ay_object *dst);
 int ay_object_ccp(ay_object *o);
 
 unsigned int ay_object_count(ay_object *o);
-
-/* objio.c */
-int ay_objio_writescene(char *filename, int selected);
-
-int ay_objio_init(Tcl_Interp *interp);
 
 /* otype.c */
 int ay_otype_register(char *name,
