@@ -18,7 +18,7 @@
 
 #ifdef WIN32
   __declspec (dllexport)
-#endif // WIN32
+#endif /* WIN32 */
 int Objio_Init(Tcl_Interp *interp);
 
 
@@ -3837,7 +3837,7 @@ objio_readscenetcmd(ClientData clientData, Tcl_Interp *interp,
  */
 #ifdef WIN32
   __declspec (dllexport)
-#endif // WIN32
+#endif /* WIN32 */
 int
 Objio_Init(Tcl_Interp *interp)
 {
