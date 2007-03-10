@@ -360,12 +360,10 @@ AYAMOBJS = aycore/bbc.o\
 	aycore/geom.o\
 	aycore/instt.o\
 	aycore/interpol.o\
-	aycore/mopsi.o\
 	aycore/notify.o\
 	aycore/ns.o\
 	aycore/oact.o\
 	aycore/object.o\
-	aycore/objio.o\
 	aycore/otype.o\
 	aycore/matt.o\
 	aycore/pact.o\

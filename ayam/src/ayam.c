@@ -411,13 +411,6 @@ ay_init(Tcl_Interp *interp)
   if((ay_status = ay_undo_init(10)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 
-  /* initialize mops import module */
-    if((ay_status = ay_mopsi_init()))
-    { ay_error(ay_status, fname, NULL); return AY_ERROR; }
-
-  /* initialize Wavefront OBJ IO module */
-  ay_objio_init(interp);
-
   /* initialize Tesselation GUI module */
   ay_tgui_init(interp);
 
@@ -655,10 +648,6 @@ Tcl_AppInit(Tcl_Interp *interp)
 
   Tcl_CreateCommand(interp, "getMaster", ay_instt_getmastertcmd,
 		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
-
-  /* mopsi.c */
-  Tcl_CreateCommand(interp, "importMops", ay_mopsi_tcmd,
-		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   /* notify.c */
   Tcl_CreateCommand(interp, "forceNot", ay_notify_forcetcmd,
