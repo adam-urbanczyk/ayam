@@ -16,59 +16,64 @@
 #include <ctype.h>
 
 
+#ifdef WIN32
+  __declspec (dllexport)
+#endif // WIN32
+int Objio_Init(Tcl_Interp *interp);
+
 
 /* objio.c */
-int ay_objio_writescene(char *filename, int selected);
+int objio_writescene(char *filename, int selected);
 
-int ay_objio_init(Tcl_Interp *interp);
+int objio_init(Tcl_Interp *interp);
 
 
 /* types local to this module */
 
-typedef int (ay_objio_writecb) (FILE *fileptr, ay_object *o, double *m);
+typedef int (objio_writecb) (FILE *fileptr, ay_object *o, double *m);
 
 
 /* prototypes of functions local to this module */
 
-unsigned int ay_objio_count(ay_object *o);
+unsigned int objio_count(ay_object *o);
 
-int ay_objio_registerwritecb(char *name, ay_objio_writecb *cb);
+int objio_registerwritecb(char *name, objio_writecb *cb);
 
-int ay_objio_writevertices(FILE *fileptr, unsigned int n, int stride,
+int objio_writevertices(FILE *fileptr, unsigned int n, int stride,
 			   double *v);
 
-int ay_objio_writetvertices(FILE *fileptr, unsigned int n, int stride,
+int objio_writetvertices(FILE *fileptr, unsigned int n, int stride,
 			    double *v);
 
-int ay_objio_writencurve(FILE *fileptr, ay_object *o, double *m);
+int objio_writencurve(FILE *fileptr, ay_object *o, double *m);
 
-int ay_objio_writetcurve(FILE *fileptr, ay_object *o, double *m);
+int objio_writetcurve(FILE *fileptr, ay_object *o, double *m);
 
-int ay_objio_writetrim(FILE *fileptr, ay_object *o);
+int objio_writetrim(FILE *fileptr, ay_object *o);
 
-int ay_objio_writetrimids(FILE *fileptr, ay_object *o);
+int objio_writetrimids(FILE *fileptr, ay_object *o);
 
-int ay_objio_writenpatch(FILE *fileptr, ay_object *o, double *m);
+int objio_writenpatch(FILE *fileptr, ay_object *o, double *m);
 
-int ay_objio_writelevel(FILE *fileptr, ay_object *o, double *m);
+int objio_writelevel(FILE *fileptr, ay_object *o, double *m);
 
-int ay_objio_writencconvertible(FILE *fileptr, ay_object *o, double *m);
+int objio_writencconvertible(FILE *fileptr, ay_object *o, double *m);
 
-int ay_objio_writenpconvertible(FILE *fileptr, ay_object *o, double *m);
+int objio_writenpconvertible(FILE *fileptr, ay_object *o, double *m);
 
-int ay_objio_writebox(FILE *fileptr, ay_object *o, double *m);
+int objio_writebox(FILE *fileptr, ay_object *o, double *m);
 
-int ay_objio_writepomesh(FILE *fileptr, ay_object *o, double *m);
+int objio_writepomesh(FILE *fileptr, ay_object *o, double *m);
 
-int ay_objio_writeclone(FILE *fileptr, ay_object *o, double *m);
+int objio_writeclone(FILE *fileptr, ay_object *o, double *m);
 
-int ay_objio_writeinstance(FILE *fileptr, ay_object *o, double *m);
+int objio_writeinstance(FILE *fileptr, ay_object *o, double *m);
 
-int ay_objio_writescript(FILE *fileptr, ay_object *o, double *m);
+int objio_writescript(FILE *fileptr, ay_object *o, double *m);
 
-int ay_objio_writeobject(FILE *fileptr, ay_object *o, int writeend, int count);
+int objio_writeobject(FILE *fileptr, ay_object *o, int writeend, int count);
 
-int ay_objio_writescenetcmd(ClientData clientData, Tcl_Interp *interp,
+int objio_writescenetcmd(ClientData clientData, Tcl_Interp *interp,
 			    int argc, char *argv[]);
 
 
@@ -78,7 +83,7 @@ static double tm[16] = {0}; /* current transformation matrix */
 
 static double objio_scalefactor = 1.0;
 
-static Tcl_HashTable ay_objio_write_ht; /* write callbacks */
+static Tcl_HashTable objio_write_ht; /* write callbacks */
 
 static int objio_tesspomesh = AY_FALSE;
 
@@ -96,13 +101,13 @@ char *objio_ttagname = objio_ttagnamedef;
 /* functions */
 
 unsigned int
-ay_objio_count(ay_object *o)
+objio_count(ay_object *o)
 {
  unsigned int lcount = 0;
  int lasttype = -1;
- Tcl_HashTable *ht = &ay_objio_write_ht;
+ Tcl_HashTable *ht = &objio_write_ht;
  Tcl_HashEntry *entry = NULL;
- ay_objio_writecb *cb = NULL;
+ objio_writecb *cb = NULL;
 
   if(!o)
     return 0;
@@ -114,7 +119,7 @@ ay_objio_count(ay_object *o)
 	  entry = NULL;
 	  if((entry = Tcl_FindHashEntry(ht, (char *)(o->type))))
 	    {
-	      cb = (ay_objio_writecb*)Tcl_GetHashValue(entry);
+	      cb = (objio_writecb*)Tcl_GetHashValue(entry);
 	    }
 	  else
 	    {
@@ -123,8 +128,8 @@ ay_objio_count(ay_object *o)
 	  lasttype = o->type;
 	} /* if */
 
-      if(o->down && o->down->next && (cb != ay_objio_writenpconvertible))
-	lcount += ay_objio_count(o->down);
+      if(o->down && o->down->next && (cb != objio_writenpconvertible))
+	lcount += objio_count(o->down);
 
       if(cb != NULL)
 	lcount++;
@@ -133,19 +138,19 @@ ay_objio_count(ay_object *o)
     } /* while */
 
  return lcount;
-} /* ay_objio_count */
+} /* objio_count */
 
 
-/* ay_objio_registerwritecb:
+/* objio_registerwritecb:
  *
  */
 int
-ay_objio_registerwritecb(char *name, ay_objio_writecb *cb)
+objio_registerwritecb(char *name, objio_writecb *cb)
 {
  int ay_status = AY_OK;
  int new_item = 0;
  Tcl_HashEntry *entry = NULL;
- Tcl_HashTable *ht = &ay_objio_write_ht;
+ Tcl_HashTable *ht = &objio_write_ht;
 
   if(!cb)
     return AY_ENULL;
@@ -162,15 +167,15 @@ ay_objio_registerwritecb(char *name, ay_objio_writecb *cb)
     }
 
  return ay_status;
-} /* ay_objio_registerwritecb */
+} /* objio_registerwritecb */
 
 
-/* ay_objio_writevertices:
+/* objio_writevertices:
  *  write <n> <stride>D-texturevertices from array <v[n*stride]> to
  *  file <fileptr>
  */
 int
-ay_objio_writevertices(FILE *fileptr, unsigned int n, int stride, double *v)
+objio_writevertices(FILE *fileptr, unsigned int n, int stride, double *v)
 {
  unsigned int i, j = 0;
 
@@ -204,14 +209,14 @@ ay_objio_writevertices(FILE *fileptr, unsigned int n, int stride, double *v)
     } /* switch */
 
  return AY_OK;
-} /* ay_objio_writevertices */
+} /* objio_writevertices */
 
 
-/* ay_objio_writetvertices:
+/* objio_writetvertices:
  *  write <n> <stride>D-vertices from array <v[n*stride]> to file <fileptr>
  */
 int
-ay_objio_writetvertices(FILE *fileptr, unsigned int n, int stride, double *v)
+objio_writetvertices(FILE *fileptr, unsigned int n, int stride, double *v)
 {
  unsigned int i, j = 0;
 
@@ -237,14 +242,14 @@ ay_objio_writetvertices(FILE *fileptr, unsigned int n, int stride, double *v)
     } /* switch */
 
  return AY_OK;
-} /* ay_objio_writetvertices */
+} /* objio_writetvertices */
 
 
-/* ay_objio_writencurve:
+/* objio_writencurve:
  *
  */
 int
-ay_objio_writencurve(FILE *fileptr, ay_object *o, double *m)
+objio_writencurve(FILE *fileptr, ay_object *o, double *m)
 {
  ay_nurbcurve_object *nc;
  double *v = NULL, *p1, *p2, pw[3], umin, umax;
@@ -284,7 +289,7 @@ ay_objio_writencurve(FILE *fileptr, ay_object *o, double *m)
     } /* for */
 
   /* write all vertices */
-  ay_objio_writevertices(fileptr, (unsigned int)nc->length,
+  objio_writevertices(fileptr, (unsigned int)nc->length,
 			 nc->is_rat?4:3, v);
 
   /* write bspline curve */
@@ -317,14 +322,14 @@ ay_objio_writencurve(FILE *fileptr, ay_object *o, double *m)
   free(v);
 
  return AY_OK;
-} /* ay_objio_writencurve */
+} /* objio_writencurve */
 
 
-/* ay_objio_writetcurve:
+/* objio_writetcurve:
  *  write a single trim curve
  */
 int
-ay_objio_writetcurve(FILE *fileptr, ay_object *o, double *m)
+objio_writetcurve(FILE *fileptr, ay_object *o, double *m)
 {
  ay_nurbcurve_object *nc;
  double v[3] = {0}, *p1, pw[3] = {0}, ma[16] = {0}, mn[16] = {0};
@@ -385,14 +390,14 @@ ay_objio_writetcurve(FILE *fileptr, ay_object *o, double *m)
   fprintf(fileptr, "\nend\n");
 
  return AY_OK;
-} /* ay_objio_writetcurve */
+} /* objio_writetcurve */
 
 
-/* ay_objio_writetrim:
+/* objio_writetrim:
  *  write all trim curves pointed to by <o>
  */
 int
-ay_objio_writetrim(FILE *fileptr, ay_object *o)
+objio_writetrim(FILE *fileptr, ay_object *o)
 {
  int ay_status = AY_OK;
  double mi[16] = {0};
@@ -405,7 +410,7 @@ ay_objio_writetrim(FILE *fileptr, ay_object *o)
       switch(o->type)
 	{
 	case AY_IDNCURVE:
-	  ay_objio_writetcurve(fileptr, o, mi);
+	  objio_writetcurve(fileptr, o, mi);
 	  break;
 	case AY_IDLEVEL:
 	  if((o->down) && (o->down->next))
@@ -416,7 +421,7 @@ ay_objio_writetrim(FILE *fileptr, ay_object *o)
 		{
 		  if(down->type == AY_IDNCURVE)
 		    {
-		      ay_objio_writetcurve(fileptr, down, mi);
+		      objio_writetcurve(fileptr, down, mi);
 		    }
 		  down = down->next;
 		} /* while */
@@ -429,7 +434,7 @@ ay_objio_writetrim(FILE *fileptr, ay_object *o)
 	  down = pnc;
 	  while(down)
 	    {
-	      ay_objio_writetcurve(fileptr, pnc, mi);
+	      objio_writetcurve(fileptr, pnc, mi);
 	      down = down->next;
 	    }
 	  if(pnc)
@@ -443,14 +448,14 @@ ay_objio_writetrim(FILE *fileptr, ay_object *o)
     } /* while */
 
  return AY_OK;
-} /* ay_objio_writetrim */
+} /* objio_writetrim */
 
 
-/* ay_objio_writetrimids:
+/* objio_writetrimids:
  *  write ids of all trim curves pointed to by <o>
  */
 int
-ay_objio_writetrimids(FILE *fileptr, ay_object *o)
+objio_writetrimids(FILE *fileptr, ay_object *o)
 {
  int ay_status = AY_OK;
  ay_object *o2 = o, *down = NULL, *pnc = NULL, *cnc = NULL;
@@ -627,14 +632,14 @@ ay_objio_writetrimids(FILE *fileptr, ay_object *o)
     } /* while */
 
  return AY_OK;
-} /* ay_objio_writetrimids */
+} /* objio_writetrimids */
 
 
-/* ay_objio_writenpatch:
+/* objio_writenpatch:
  *
  */
 int
-ay_objio_writenpatch(FILE *fileptr, ay_object *o, double *m)
+objio_writenpatch(FILE *fileptr, ay_object *o, double *m)
 {
  int ay_status = AY_OK;
  ay_nurbpatch_object *np;
@@ -657,7 +662,7 @@ ay_objio_writenpatch(FILE *fileptr, ay_object *o, double *m)
   /* first, check for and write the trim curves */
   if(o->down && o->down->next)
     {
-      ay_status = ay_objio_writetrim(fileptr, o->down);
+      ay_status = objio_writetrim(fileptr, o->down);
     }
 
   np = (ay_nurbpatch_object *)o->refine;
@@ -692,7 +697,7 @@ ay_objio_writenpatch(FILE *fileptr, ay_object *o, double *m)
     } /* for */
 
   /* write all vertices */
-  ay_objio_writevertices(fileptr, (unsigned int)(np->width * np->height),
+  objio_writevertices(fileptr, (unsigned int)(np->width * np->height),
 			 (np->is_rat?4:3), v);
 
   /* write texture coordinates from potentially present PV tags */
@@ -757,7 +762,7 @@ ay_objio_writenpatch(FILE *fileptr, ay_object *o, double *m)
 	  uj += 2;
 	} /* for */
 
-      ay_objio_writetvertices(fileptr, mystlen, 2, mystarr);
+      objio_writetvertices(fileptr, mystlen, 2, mystarr);
 
       if(mysarr)
 	free(mysarr);
@@ -814,20 +819,20 @@ ay_objio_writenpatch(FILE *fileptr, ay_object *o, double *m)
   /* write pointers to trim curves (if any) */
   if(o->down && o->down->next)
     {
-      ay_objio_writetrimids(fileptr, o->down);
+      objio_writetrimids(fileptr, o->down);
     } /* if */
 
   free(v);
 
  return AY_OK;
-} /* ay_objio_writenpatch */
+} /* objio_writenpatch */
 
 
-/* ay_objio_writelevel:
+/* objio_writelevel:
  *
  */
 int
-ay_objio_writelevel(FILE *fileptr, ay_object *o, double *m)
+objio_writelevel(FILE *fileptr, ay_object *o, double *m)
 {
  int ay_status = AY_OK;
  ay_object *down = NULL;
@@ -845,27 +850,27 @@ ay_objio_writelevel(FILE *fileptr, ay_object *o, double *m)
       down = o->down;
       while(down->next && down->next->next)
 	{
-	  ay_status = ay_objio_writeobject(fileptr, down, AY_TRUE, AY_TRUE);
+	  ay_status = objio_writeobject(fileptr, down, AY_TRUE, AY_TRUE);
 	  down = down->next;
 	}
 
       if(down)
 	{
-	  ay_status = ay_objio_writeobject(fileptr, down, AY_FALSE, AY_TRUE);
+	  ay_status = objio_writeobject(fileptr, down, AY_FALSE, AY_TRUE);
 	}
 
       memcpy(tm, m1, 16*sizeof(double));
     } /* if */
 
  return AY_OK;
-} /* ay_objio_writelevel */
+} /* objio_writelevel */
 
 
-/* ay_objio_writencconvertible:
+/* objio_writencconvertible:
  *
  */
 int
-ay_objio_writencconvertible(FILE *fileptr, ay_object *o, double *m)
+objio_writencconvertible(FILE *fileptr, ay_object *o, double *m)
 {
  int ay_status = AY_OK;
  ay_object *c = NULL, *t;
@@ -884,7 +889,7 @@ ay_objio_writencconvertible(FILE *fileptr, ay_object *o, double *m)
     {
       if(t->type == AY_IDNCURVE)
 	{
-	  ay_status = ay_objio_writeobject(fileptr, t, AY_TRUE, AY_FALSE);
+	  ay_status = objio_writeobject(fileptr, t, AY_TRUE, AY_FALSE);
 	}
 
       t = t->next;
@@ -892,20 +897,20 @@ ay_objio_writencconvertible(FILE *fileptr, ay_object *o, double *m)
 
   if(t->type == AY_IDNCURVE)
     {
-      ay_status = ay_objio_writeobject(fileptr, t, AY_FALSE, AY_FALSE);
+      ay_status = objio_writeobject(fileptr, t, AY_FALSE, AY_FALSE);
     }
 
   ay_status = ay_object_deletemulti(c);
 
  return ay_status;
-} /* ay_objio_writencconvertible */
+} /* objio_writencconvertible */
 
 
-/* ay_objio_writenpconvertible:
+/* objio_writenpconvertible:
  *
  */
 int
-ay_objio_writenpconvertible(FILE *fileptr, ay_object *o, double *m)
+objio_writenpconvertible(FILE *fileptr, ay_object *o, double *m)
 {
  int ay_status = AY_OK;
  ay_object *p = NULL, *t;
@@ -921,7 +926,7 @@ ay_objio_writenpconvertible(FILE *fileptr, ay_object *o, double *m)
     {
       if(t->type == AY_IDNPATCH)
 	{
-	  ay_status = ay_objio_writeobject(fileptr, t, AY_TRUE, AY_FALSE);
+	  ay_status = objio_writeobject(fileptr, t, AY_TRUE, AY_FALSE);
 	}
 
       t = t->next;
@@ -929,20 +934,20 @@ ay_objio_writenpconvertible(FILE *fileptr, ay_object *o, double *m)
 
   if(t->type == AY_IDNPATCH)
     {
-      ay_status = ay_objio_writeobject(fileptr, t, AY_FALSE, AY_FALSE);
+      ay_status = objio_writeobject(fileptr, t, AY_FALSE, AY_FALSE);
     }
 
   ay_status = ay_object_deletemulti(p);
 
  return ay_status;
-} /* ay_objio_writenpconvertible */
+} /* objio_writenpconvertible */
 
 
-/* ay_objio_writebox:
+/* objio_writebox:
  *
  */
 int
-ay_objio_writebox(FILE *fileptr, ay_object *o, double *m)
+objio_writebox(FILE *fileptr, ay_object *o, double *m)
 {
  ay_box_object *box;
  double v[24] = {0}, wh, hh, lh;
@@ -997,7 +1002,7 @@ ay_objio_writebox(FILE *fileptr, ay_object *o, double *m)
     }
 
   /* write all vertices */
-  ay_objio_writevertices(fileptr, 8, 3, v);
+  objio_writevertices(fileptr, 8, 3, v);
 
   /* write faces */
   fprintf(fileptr,"f -8 -7 -6 -5\n");
@@ -1008,14 +1013,14 @@ ay_objio_writebox(FILE *fileptr, ay_object *o, double *m)
   fprintf(fileptr,"f -7 -5 -3 -1\n");
 
  return AY_OK;
-} /* ay_objio_writebox */
+} /* objio_writebox */
 
 
-/* ay_objio_writepomesh:
+/* objio_writepomesh:
  *
  */
 int
-ay_objio_writepomesh(FILE *fileptr, ay_object *o, double *m)
+objio_writepomesh(FILE *fileptr, ay_object *o, double *m)
 {
  int ay_status = AY_OK;
  /*char fname[] = "objio_writepomesh";*/
@@ -1129,7 +1134,7 @@ ay_objio_writepomesh(FILE *fileptr, ay_object *o, double *m)
 	  j += 2;
 	} /* for */
 
-      ay_objio_writetvertices(fileptr, mystlen, 2, mystarr);
+      objio_writetvertices(fileptr, mystlen, 2, mystarr);
 
       if(mysarr)
 	free(mysarr);
@@ -1291,14 +1296,14 @@ ay_objio_writepomesh(FILE *fileptr, ay_object *o, double *m)
 	  ay_object_defaults(to);
 	  to->type = AY_IDPOMESH;
 	  /*ay_trafo_copy(o, to);*/
-	  ay_objio_writepomesh(fileptr, to, m);
+	  objio_writepomesh(fileptr, to, m);
 	  ay_object_delete(to);
 	}
     }
   else
     {
       if(lihead)
-	ay_objio_writepomesh(fileptr, lihead->object, m);
+	objio_writepomesh(fileptr, lihead->object, m);
     } /* if */
 
   while(lihead)
@@ -1310,14 +1315,14 @@ ay_objio_writepomesh(FILE *fileptr, ay_object *o, double *m)
     } /* while */
 
  return AY_OK;
-} /* ay_objio_writepomesh */
+} /* objio_writepomesh */
 
 
-/* ay_objio_writeclone:
+/* objio_writeclone:
  *
  */
 int
-ay_objio_writeclone(FILE *fileptr, ay_object *o, double *m)
+objio_writeclone(FILE *fileptr, ay_object *o, double *m)
 {
  int ay_status = AY_OK;
  ay_clone_object *cl;
@@ -1332,25 +1337,25 @@ ay_objio_writeclone(FILE *fileptr, ay_object *o, double *m)
 
   while(clone && clone->next)
     {
-      ay_status = ay_objio_writeobject(fileptr, clone, AY_TRUE, AY_FALSE);
+      ay_status = objio_writeobject(fileptr, clone, AY_TRUE, AY_FALSE);
 
       clone = clone->next;
     }
 
   if(clone)
     {
-      ay_status = ay_objio_writeobject(fileptr, clone, AY_FALSE, AY_FALSE);
+      ay_status = objio_writeobject(fileptr, clone, AY_FALSE, AY_FALSE);
     }
 
  return ay_status;
-} /* ay_objio_writeclone */
+} /* objio_writeclone */
 
 
-/* ay_objio_writeinstance:
+/* objio_writeinstance:
  *
  */
 int
-ay_objio_writeinstance(FILE *fileptr, ay_object *o, double *m)
+objio_writeinstance(FILE *fileptr, ay_object *o, double *m)
 {
  int ay_status = AY_OK;
  ay_object *orig, tmp = {0};
@@ -1362,18 +1367,18 @@ ay_objio_writeinstance(FILE *fileptr, ay_object *o, double *m)
 
   ay_trafo_copy(orig, &tmp);
   ay_trafo_copy(o, orig);
-  ay_status = ay_objio_writeobject(fileptr, orig, AY_FALSE, AY_FALSE);
+  ay_status = objio_writeobject(fileptr, orig, AY_FALSE, AY_FALSE);
   ay_trafo_copy(&tmp, orig);
 
  return ay_status;
-} /* ay_objio_writeinstance */
+} /* objio_writeinstance */
 
 
-/* ay_objio_writescript:
+/* objio_writescript:
  *
  */
 int
-ay_objio_writescript(FILE *fileptr, ay_object *o, double *m)
+objio_writescript(FILE *fileptr, ay_object *o, double *m)
 {
  int ay_status = AY_OK;
  ay_object *cmo = NULL;
@@ -1389,45 +1394,45 @@ ay_objio_writescript(FILE *fileptr, ay_object *o, double *m)
       cmo = sc->cm_objects;
       while(cmo && cmo->next)
 	{
-	  ay_status = ay_objio_writeobject(fileptr, cmo, AY_TRUE, AY_FALSE);
+	  ay_status = objio_writeobject(fileptr, cmo, AY_TRUE, AY_FALSE);
 	  cmo = cmo->next;
 	}
       if(cmo)
 	{
-	  ay_status = ay_objio_writeobject(fileptr, cmo, AY_FALSE, AY_FALSE);
+	  ay_status = objio_writeobject(fileptr, cmo, AY_FALSE, AY_FALSE);
 	}
     } /* if */
 
  return ay_status;
-} /* ay_objio_writescript */
+} /* objio_writescript */
 
 
 #if 0
-/* ay_objio_writencurve:
+/* objio_writencurve:
  *
  */
 int
-ay_objio_writencurve(FILE *fileptr, ay_object *o, double *m)
+objio_writencurve(FILE *fileptr, ay_object *o, double *m)
 {
  ay_nurbcurve_object *nc;
  return AY_OK;
-} /* ay_objio_writencurve */
+} /* objio_writencurve */
 #endif
 
 
-/* ay_objio_writeobject:
+/* objio_writeobject:
  *
  */
 int
-ay_objio_writeobject(FILE *fileptr, ay_object *o, int writeend, int count)
+objio_writeobject(FILE *fileptr, ay_object *o, int writeend, int count)
 {
  int ay_status = AY_OK;
  char fname[] = "objio_writeobject";
- Tcl_HashTable *ht = &ay_objio_write_ht;
+ Tcl_HashTable *ht = &objio_write_ht;
  Tcl_HashEntry *entry = NULL;
  double m1[16] = {0}, m2[16];
  char err[255];
- ay_objio_writecb *cb = NULL;
+ objio_writecb *cb = NULL;
  ay_object *t, *c = NULL;
  int curprog = 0;
  char aname[] = "objio_options", vname1[] = "Progress";
@@ -1440,7 +1445,7 @@ ay_objio_writeobject(FILE *fileptr, ay_object *o, int writeend, int count)
 
   if((entry = Tcl_FindHashEntry(ht, (char *)(o->type))))
     {
-      cb = (ay_objio_writecb*)Tcl_GetHashValue(entry);
+      cb = (objio_writecb*)Tcl_GetHashValue(entry);
 
       if(cb)
 	{
@@ -1516,7 +1521,7 @@ ay_objio_writeobject(FILE *fileptr, ay_object *o, int writeend, int count)
 	  t = c;
 	  while(t)
 	    {
-	      ay_status = ay_objio_writeobject(fileptr, t, AY_TRUE, AY_FALSE);
+	      ay_status = objio_writeobject(fileptr, t, AY_TRUE, AY_FALSE);
 	      t = t->next;
 	    }
 
@@ -1537,14 +1542,14 @@ ay_objio_writeobject(FILE *fileptr, ay_object *o, int writeend, int count)
     } /* if */
 
  return AY_OK;
-} /* ay_objio_writeobject */
+} /* objio_writeobject */
 
 
-/* ay_objio_writescene:
+/* objio_writescene:
  *
  */
 int
-ay_objio_writescene(char *filename, int selected)
+objio_writescene(char *filename, int selected)
 {
  int ay_status = AY_OK;
  ay_object *o = ay_root->next;
@@ -1583,7 +1588,7 @@ ay_objio_writescene(char *filename, int selected)
   /* count objects to be exported */
   if(!selected)
     {
-      objio_allobjcnt = ay_objio_count(ay_root->next);
+      objio_allobjcnt = objio_count(ay_root->next);
     }
   else
     {
@@ -1592,14 +1597,14 @@ ay_objio_writescene(char *filename, int selected)
 	{
 	  objio_allobjcnt++;
 	  if(sel->object->down && sel->object->down->next)
-	    objio_allobjcnt += ay_objio_count(sel->object->down);
+	    objio_allobjcnt += objio_count(sel->object->down);
 	  sel = sel->next;
 	}
     } /* if */
   objio_curobjcnt = 0;
 
   /* write header information */
-  /*  ay_objio_writeheader(fileptr);*/
+  /*  objio_writeheader(fileptr);*/
 
   /* omit EndLevel-object in top level! */
   while(o->next)
@@ -1608,12 +1613,12 @@ ay_objio_writescene(char *filename, int selected)
 	{
 	  if(o->selected)
 	    {
-	      ay_status = ay_objio_writeobject(fileptr, o, AY_TRUE, AY_TRUE);
+	      ay_status = objio_writeobject(fileptr, o, AY_TRUE, AY_TRUE);
 	    }
 	}
       else
 	{
-	  ay_status = ay_objio_writeobject(fileptr, o, AY_TRUE, AY_TRUE);
+	  ay_status = objio_writeobject(fileptr, o, AY_TRUE, AY_TRUE);
 	}
 
       if(ay_status)
@@ -1639,18 +1644,18 @@ ay_objio_writescene(char *filename, int selected)
     }
 
  return ay_status;
-} /* ay_objio_writescene */
+} /* objio_writescene */
 
 
-/* ay_objio_writescenetcmd:
+/* objio_writescenetcmd:
  *
  */
 int
-ay_objio_writescenetcmd(ClientData clientData, Tcl_Interp *interp,
+objio_writescenetcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "ay_objio_write";
+ char fname[] = "objio_write";
  int selected = AY_FALSE, i = 2;
 
   /* check args */
@@ -1694,7 +1699,7 @@ ay_objio_writescenetcmd(ClientData clientData, Tcl_Interp *interp,
       i += 2;
     } /* while */
 
-  ay_status = ay_objio_writescene(argv[1], selected);
+  ay_status = objio_writescene(argv[1], selected);
 
   objio_stagname = objio_stagnamedef;
   objio_ttagname = objio_ttagnamedef;
@@ -1702,7 +1707,7 @@ ay_objio_writescenetcmd(ClientData clientData, Tcl_Interp *interp,
   objio_scalefactor = 1.0;
 
  return TCL_OK;
-} /* ay_objio_writescenetcmd */
+} /* objio_writescenetcmd */
 
 
 /****************************************************************/
@@ -1727,43 +1732,43 @@ typedef struct objio_vertex_s {
 
 } objio_vertex;
 
-objio_vertex *objio_gverts_head = NULL;
-objio_vertex *objio_gverts_tail = NULL;
+static objio_vertex *objio_gverts_head = NULL;
+static objio_vertex *objio_gverts_tail = NULL;
 
-objio_vertex *objio_nverts_head = NULL;
-objio_vertex *objio_nverts_tail = NULL;
+static objio_vertex *objio_nverts_head = NULL;
+static objio_vertex *objio_nverts_tail = NULL;
 
-objio_vertex *objio_pverts_head = NULL;
-objio_vertex *objio_pverts_tail = NULL;
+static objio_vertex *objio_pverts_head = NULL;
+static objio_vertex *objio_pverts_tail = NULL;
 
-objio_vertex *objio_tverts_head = NULL;
-objio_vertex *objio_tverts_tail = NULL;
+static objio_vertex *objio_tverts_head = NULL;
+static objio_vertex *objio_tverts_tail = NULL;
 
-int objio_cstype; /* -1 - unset, 0 - bmatrix, 1 - bezier, 2 - bspline,
-		     3 - cardinal, 4 - taylor */
-int objio_csrat;
-int objio_degu;
-int objio_degv;
+static int objio_cstype; /* -1 - unset, 0 - bmatrix, 1 - bezier, 2 - bspline,
+			    3 - cardinal, 4 - taylor */
+static int objio_csrat;
+static int objio_degu;
+static int objio_degv;
 
-double *objio_uknotv;
-int objio_uknotvlen;
-double *objio_vknotv;
-int objio_vknotvlen;
+static double *objio_uknotv;
+static int objio_uknotvlen;
+static double *objio_vknotv;
+static int objio_vknotvlen;
 
-int objio_curvtrimsurf; /* 0 - unset, 1 - curve, 2 - trim, 3 - surface */
+static int objio_curvtrimsurf; /* 0 - unset, 1 - curve, 2 - trim, 3 - surface */
 
-ay_nurbcurve_object objio_ncurve;
-ay_nurbpatch_object objio_npatch;
+static ay_nurbcurve_object objio_ncurve;
+static ay_nurbpatch_object objio_npatch;
 
-double *objio_texturesv;
-double *objio_texturetv;
-int objio_texturesvlen;
-int objio_texturetvlen;
+static double *objio_texturesv;
+static double *objio_texturetv;
+static int objio_texturesvlen;
+static int objio_texturetvlen;
 
-double objio_umin;
-double objio_umax;
-double objio_vmin;
-double objio_vmax;
+static double objio_umin;
+static double objio_umax;
+static double objio_vmin;
+static double objio_vmax;
 
 typedef struct objio_trim_s {
   struct objio_trim_s *next;
@@ -1775,66 +1780,66 @@ typedef struct objio_trim_s {
 
 } objio_trim;
 
-objio_trim *objio_trims_head = NULL;
-objio_trim *objio_trims_tail = NULL;
+static objio_trim *objio_trims_head = NULL;
+static objio_trim *objio_trims_tail = NULL;
 
-ay_object *objio_trims;
-ay_object **objio_nexttrim;
+static ay_object *objio_trims;
+static ay_object **objio_nexttrim;
 
-ay_object *objio_lastface;
+static ay_object *objio_lastface;
 
 
-int ay_objio_addvertex(int type, double *v);
+int objio_addvertex(int type, double *v);
 
-int ay_objio_getvertex(int type, unsigned int index, double **v);
+int objio_getvertex(int type, unsigned int index, double **v);
 
-int ay_objio_freevertices(void);
+int objio_freevertices(void);
 
-int ay_objio_readvertex(char *str);
+int objio_readvertex(char *str);
 
-int ay_objio_readvindex(char *c, int *gvindex, int *tvindex, int *nvindex);
+int objio_readvindex(char *c, int *gvindex, int *tvindex, int *nvindex);
 
-int ay_objio_readskip(char **b);
+int objio_readskip(char **b);
 
-int ay_objio_readface(char *str, int lastlinewasface);
+int objio_readface(char *str, int lastlinewasface);
 
-int ay_objio_readcstype(char *str);
+int objio_readcstype(char *str);
 
-int ay_objio_readdeg(char *str);
+int objio_readdeg(char *str);
 
-int ay_objio_readcurv(char *str);
+int objio_readcurv(char *str);
 
-int ay_objio_readsurf(char *str);
+int objio_readsurf(char *str);
 
-int ay_objio_readparm(char *str);
+int objio_readparm(char *str);
 
-int ay_objio_addtrim(ay_object *o);
+int objio_addtrim(ay_object *o);
 
-int ay_objio_gettrim(unsigned int index, ay_object **t);
+int objio_gettrim(unsigned int index, ay_object **t);
 
-int ay_objio_freetrims(void);
+int objio_freetrims(void);
 
-int ay_objio_readtrim(char *str, int hole);
+int objio_readtrim(char *str, int hole);
 
-int ay_objio_fixnpatch(ay_nurbpatch_object *np);
+int objio_fixnpatch(ay_nurbpatch_object *np);
 
-int ay_objio_fixncurve(ay_nurbcurve_object *nc);
+int objio_fixncurve(ay_nurbcurve_object *nc);
 
-int ay_objio_readend(void);
+int objio_readend(void);
 
-int ay_objio_readline(FILE *fileptr);
+int objio_readline(FILE *fileptr);
 
-int ay_objio_readscene(char *filenam);
+int objio_readscene(char *filenam);
 
-int ay_objio_readscenetcmd(ClientData clientData, Tcl_Interp *interp,
+int objio_readscenetcmd(ClientData clientData, Tcl_Interp *interp,
 			   int argc, char *argv[]);
 
 
-/* ay_objio_addvertex:
+/* objio_addvertex:
  *  add a vertex to a vertex buffer
  */
 int
-ay_objio_addvertex(int type, double *v)
+objio_addvertex(int type, double *v)
 {
  objio_vertex *nv = NULL;
 
@@ -1913,14 +1918,14 @@ ay_objio_addvertex(int type, double *v)
     } /* switch */
 
  return AY_OK;
-} /* ay_objio_addvertex */
+} /* objio_addvertex */
 
 
-/* ay_objio_getvertex:
+/* objio_getvertex:
  *  get a vertex from a vertex buffer
  */
 int
-ay_objio_getvertex(int type, unsigned int index, double **v)
+objio_getvertex(int type, unsigned int index, double **v)
 {
  static objio_vertex *objio_gverts_cur = NULL;
  static objio_vertex *objio_nverts_cur = NULL;
@@ -2044,14 +2049,14 @@ ay_objio_getvertex(int type, unsigned int index, double **v)
   *v = &(l->v[0]);
 
  return AY_OK;
-} /* ay_objio_getvertex */
+} /* objio_getvertex */
 
 
-/* ay_objio_freevertices:
+/* objio_freevertices:
  *  free all vertex buffers
  */
 int
-ay_objio_freevertices(void)
+objio_freevertices(void)
 {
  int ay_status = AY_OK;
  objio_vertex *v = NULL, *vt = NULL;
@@ -2108,18 +2113,18 @@ ay_objio_freevertices(void)
       objio_tverts_tail = NULL;
     } /* if */
 
-  /* clear cached "current" pointers in ay_objio_getvertex() */
-  ay_status = ay_objio_getvertex(0, 0, NULL);
+  /* clear cached "current" pointers in objio_getvertex() */
+  ay_status = objio_getvertex(0, 0, NULL);
 
  return AY_OK;
-} /* ay_objio_freevertices */
+} /* objio_freevertices */
 
 
-/* ay_objio_readvertex:
+/* objio_readvertex:
  *  read a single vertex and add it to the appropriate vertex buffer
  */
 int
-ay_objio_readvertex(char *str)
+objio_readvertex(char *str)
 {
  int ay_status = AY_OK;
  double v[4] = {0};
@@ -2130,7 +2135,7 @@ ay_objio_readvertex(char *str)
   if(str[1] == 'n')
     {
       sscanf(&(str[2])," %lg %lg %lg", &(v[0]), &(v[1]), &(v[2]));
-      ay_status = ay_objio_addvertex(2, v);
+      ay_status = objio_addvertex(2, v);
     }
   else
   if(str[1] == 'p')
@@ -2139,13 +2144,13 @@ ay_objio_readvertex(char *str)
 	{
 	  v[3] = 1.0;
 	}
-      ay_status = ay_objio_addvertex(3, v);
+      ay_status = objio_addvertex(3, v);
     }
   else
   if(str[1] == 't')
     {
       sscanf(&(str[2])," %lg %lg %lg", &(v[0]), &(v[1]), &(v[2]));
-      ay_status = ay_objio_addvertex(4, v);
+      ay_status = objio_addvertex(4, v);
     }
   else
     {
@@ -2156,20 +2161,20 @@ ay_objio_readvertex(char *str)
 	}
       if(objio_scalefactor != 1.0)
 	AY_V3SCAL(v, objio_scalefactor)
-      ay_status = ay_objio_addvertex(1, v);
+      ay_status = objio_addvertex(1, v);
     } /* if */
 
  return ay_status;
-} /* ay_objio_readvertex */
+} /* objio_readvertex */
 
 
-/* ay_objio_readvindex:
+/* objio_readvindex:
  *  read a single vertex index of the form "g/t/n", where g is the
  *  index of the geometric vertex, t the texture vertex, and n the
  *  corresponding normal; returns results in gvindex, tvindex, and nvindex
  */
 int
-ay_objio_readvindex(char *c, int *gvindex, int *tvindex, int *nvindex)
+objio_readvindex(char *c, int *gvindex, int *tvindex, int *nvindex)
 {
  int ay_status = AY_OK;
 
@@ -2227,15 +2232,15 @@ ay_objio_readvindex(char *c, int *gvindex, int *tvindex, int *nvindex)
     } /* if */
 
  return ay_status;
-} /* ay_objio_readvindex */
+} /* objio_readvindex */
 
 
-/* ay_objio_readskip:
+/* objio_readskip:
  *  skip over a number
  *  !Modifies argument <b>!
  */
 int
-ay_objio_readskip(char **b)
+objio_readskip(char **b)
 {
  char *c = *b, *d;
 
@@ -2266,14 +2271,14 @@ ay_objio_readskip(char **b)
   *b = c;
 
  return AY_OK;
-} /* ay_objio_readskip */
+} /* objio_readskip */
 
 
-/* ay_objio_readface:
+/* objio_readface:
  *  read a face statement (polygonal face)
  */
 int
-ay_objio_readface(char *str, int lastlinewasface)
+objio_readface(char *str, int lastlinewasface)
 {
  int ay_status = AY_OK;
  char fname[] = "objio_readface";
@@ -2349,7 +2354,7 @@ ay_objio_readface(char *str, int lastlinewasface)
   while(*c != '\0')
     {
       gvindex = 0; tvindex = 0; nvindex = 0;
-      ay_status = ay_objio_readvindex(c, &gvindex, &tvindex, &nvindex);
+      ay_status = objio_readvindex(c, &gvindex, &tvindex, &nvindex);
 
       gv = NULL;
       nv = NULL;
@@ -2360,7 +2365,7 @@ ay_objio_readface(char *str, int lastlinewasface)
 	{
 	  if(objio_gverts_tail)
 	    {
-	      ay_status = ay_objio_getvertex(1,
+	      ay_status = objio_getvertex(1,
 					objio_gverts_tail->index + gvindex + 1,
 					     &gv);
 	    }
@@ -2372,7 +2377,7 @@ ay_objio_readface(char *str, int lastlinewasface)
 	}
       else
 	{
-	  ay_status = ay_objio_getvertex(1, gvindex, &gv);
+	  ay_status = objio_getvertex(1, gvindex, &gv);
 	} /* if */
       if(ay_status)
 	goto cleanup;
@@ -2384,7 +2389,7 @@ ay_objio_readface(char *str, int lastlinewasface)
 	    {
 	      if(objio_nverts_tail)
 		{
-		  ay_status = ay_objio_getvertex(2,
+		  ay_status = objio_getvertex(2,
 				        objio_nverts_tail->index + nvindex + 1,
 					     &nv);
 		}
@@ -2396,7 +2401,7 @@ ay_objio_readface(char *str, int lastlinewasface)
 	    }
 	  else
 	    {
-	      ay_status = ay_objio_getvertex(2, nvindex, &nv);
+	      ay_status = objio_getvertex(2, nvindex, &nv);
 	    } /* if */
 	  if(ay_status)
 	    goto cleanup;
@@ -2411,7 +2416,7 @@ ay_objio_readface(char *str, int lastlinewasface)
 	    {
 	      if(objio_tverts_tail)
 		{
-		  ay_status = ay_objio_getvertex(4,
+		  ay_status = objio_getvertex(4,
 					objio_tverts_tail->index + tvindex + 1,
 						 &tv);
 		}
@@ -2423,7 +2428,7 @@ ay_objio_readface(char *str, int lastlinewasface)
 	    }
 	  else
 	    {
-	      ay_status = ay_objio_getvertex(4, tvindex, &tv);
+	      ay_status = objio_getvertex(4, tvindex, &tv);
 	    } /* if */
 
 	  if(tv)
@@ -2473,7 +2478,7 @@ ay_objio_readface(char *str, int lastlinewasface)
 	  if(degen)
 	    {
 	      /* skip to next vindex */
-	      ay_status = ay_objio_readskip(&c);
+	      ay_status = objio_readskip(&c);
 	      break;
 	    } /* if */
 	} /* if */
@@ -2496,7 +2501,7 @@ ay_objio_readface(char *str, int lastlinewasface)
       nverts++;
 
       /* skip to next vindex */
-      ay_status = ay_objio_readskip(&c);
+      ay_status = objio_readskip(&c);
     } /* while */
 
   if(nverts >= 3)
@@ -2623,19 +2628,19 @@ cleanup:
   /*
   if(degen)
     {
-      ay_objio_readface(NULL, -1);
+      objio_readface(NULL, -1);
       return AY_ERROR;
     }
   */
  return ay_status;
-} /* ay_objio_readface */
+} /* objio_readface */
 
 
-/* ay_objio_readcstype:
+/* objio_readcstype:
  *  read a cstype statement signifying the type of the next curve/surface
  */
 int
-ay_objio_readcstype(char *str)
+objio_readcstype(char *str)
 {
  int ay_status = AY_OK;
 
@@ -2677,14 +2682,14 @@ ay_objio_readcstype(char *str)
     }
 
  return ay_status;
-} /* ay_objio_readcstype */
+} /* objio_readcstype */
 
 
-/* ay_objio_readdeg:
+/* objio_readdeg:
  *  read a deg (degree) statement
  */
 int
-ay_objio_readdeg(char *str)
+objio_readdeg(char *str)
 {
  int ay_status = AY_OK;
  char *c = str;
@@ -2698,14 +2703,14 @@ ay_objio_readdeg(char *str)
   sscanf(c," %d %d", &objio_degu, &objio_degv);
 
  return ay_status;
-} /* ay_objio_readdeg */
+} /* objio_readdeg */
 
 
-/* ay_objio_readcurv:
+/* objio_readcurv:
  *  read a curv (freeform curve) statement
  */
 int
-ay_objio_readcurv(char *str)
+objio_readcurv(char *str)
 {
  int ay_status = AY_OK;
  char *c = str;
@@ -2734,15 +2739,15 @@ ay_objio_readcurv(char *str)
   if(vtype == 1)
     {
       sscanf(c, " %lg %lg", &objio_umin, &objio_umax);
-      ay_status = ay_objio_readskip(&c);
-      ay_status = ay_objio_readskip(&c);
+      ay_status = objio_readskip(&c);
+      ay_status = objio_readskip(&c);
     }
 
   /* read (and resolve) control point indices */
   while(*c != '\0')
     {
       gvindex = 0; tvindex = 0; nvindex = 0;
-      ay_status = ay_objio_readvindex(c, &gvindex, &tvindex, &nvindex);
+      ay_status = objio_readvindex(c, &gvindex, &tvindex, &nvindex);
       gv = NULL;
 
       if(gvindex < 0)
@@ -2751,7 +2756,7 @@ ay_objio_readcurv(char *str)
 	    {
 	      if(objio_gverts_tail)
 		{
-		  ay_status = ay_objio_getvertex(vtype,
+		  ay_status = objio_getvertex(vtype,
 					objio_gverts_tail->index + gvindex + 1,
 						 &gv);
 		}
@@ -2766,7 +2771,7 @@ ay_objio_readcurv(char *str)
 	      /* vtype == 3, get parametric vertex... */
 	      if(objio_pverts_tail)
 		{
-		  ay_status = ay_objio_getvertex(vtype,
+		  ay_status = objio_getvertex(vtype,
 					objio_pverts_tail->index + gvindex + 1,
 						 &gv);
 		}
@@ -2779,7 +2784,7 @@ ay_objio_readcurv(char *str)
 	}
       else
 	{
-	  ay_status = ay_objio_getvertex(vtype, gvindex, &gv);
+	  ay_status = objio_getvertex(vtype, gvindex, &gv);
 	} /* if */
 
       if(gv)
@@ -2794,20 +2799,20 @@ ay_objio_readcurv(char *str)
 	} /* if */
 
       /* skip to next vindex */
-      ay_status = ay_objio_readskip(&c);
+      ay_status = objio_readskip(&c);
     } /* while */
 
 cleanup:
 
  return ay_status;
-} /* ay_objio_readcurv */
+} /* objio_readcurv */
 
 
-/* ay_objio_readsurf:
+/* objio_readsurf:
  *  read a surf (freeform surface) statement
  */
 int
-ay_objio_readsurf(char *str)
+objio_readsurf(char *str)
 {
  int ay_status = AY_OK;
  char *c = str;
@@ -2823,26 +2828,26 @@ ay_objio_readsurf(char *str)
 
   /* read umin/umax */
   sscanf(c, " %lg %lg", &objio_umin, &objio_umax);
-  ay_status = ay_objio_readskip(&c);
-  ay_status = ay_objio_readskip(&c);
+  ay_status = objio_readskip(&c);
+  ay_status = objio_readskip(&c);
 
   /* read vmin/vmax */
   sscanf(c, " %lg %lg", &objio_vmin, &objio_vmax);
-  ay_status = ay_objio_readskip(&c);
-  ay_status = ay_objio_readskip(&c);
+  ay_status = objio_readskip(&c);
+  ay_status = objio_readskip(&c);
 
   /* read (and resolve) control point indices */
   while(*c != '\0')
     {
       gvindex = 0; tvindex = 0; nvindex = 0;
-      ay_status = ay_objio_readvindex(c, &gvindex, &tvindex, &nvindex);
+      ay_status = objio_readvindex(c, &gvindex, &tvindex, &nvindex);
 
       gv = NULL;
       if(gvindex < 0)
 	{
 	  if(objio_gverts_tail)
 	    {
-	      ay_status = ay_objio_getvertex(1,
+	      ay_status = objio_getvertex(1,
 					objio_gverts_tail->index + gvindex + 1,
 					     &gv);
 	    }
@@ -2854,7 +2859,7 @@ ay_objio_readsurf(char *str)
 	}
       else
 	{
-	  ay_status = ay_objio_getvertex(1, gvindex, &gv);
+	  ay_status = objio_getvertex(1, gvindex, &gv);
 	} /* if */
 
       if(gv)
@@ -2875,7 +2880,7 @@ ay_objio_readsurf(char *str)
 	    {
 	      if(objio_tverts_tail)
 		{
-		  ay_status = ay_objio_getvertex(4,
+		  ay_status = objio_getvertex(4,
 					objio_tverts_tail->index + tvindex + 1,
 						 &tv);
 		}
@@ -2887,7 +2892,7 @@ ay_objio_readsurf(char *str)
 	    }
 	  else
 	    {
-	      ay_status = ay_objio_getvertex(4, tvindex, &tv);
+	      ay_status = objio_getvertex(4, tvindex, &tv);
 	    } /* if */
 
 	  if(tv)
@@ -2908,7 +2913,7 @@ ay_objio_readsurf(char *str)
 	} /* if */
 
       /* skip to next vindex */
-      ay_status = ay_objio_readskip(&c);
+      ay_status = objio_readskip(&c);
     } /* while */
 
   objio_curvtrimsurf = 3;
@@ -2919,14 +2924,14 @@ ay_objio_readsurf(char *str)
 cleanup:
 
  return ay_status;
-} /* ay_objio_readsurf */
+} /* objio_readsurf */
 
 
-/* ay_objio_readparm:
+/* objio_readparm:
  *  read a knot vector
  */
 int
-ay_objio_readparm(char *str)
+objio_readparm(char *str)
 {
  int ay_status = AY_OK;
  double knot, *knotv = NULL, *t = NULL;
@@ -2944,7 +2949,7 @@ ay_objio_readparm(char *str)
       readu = AY_TRUE;
     }
 
-  ay_status = ay_objio_readskip(&c);
+  ay_status = objio_readskip(&c);
 
   while(*c != '\0')
     {
@@ -2959,7 +2964,7 @@ ay_objio_readparm(char *str)
 	} /* if */
 
       /* skip to next knot */
-      ay_status = ay_objio_readskip(&c);
+      ay_status = objio_readskip(&c);
     } /* while */
 
   if(readu)
@@ -2978,14 +2983,14 @@ ay_objio_readparm(char *str)
     } /* if */
 
  return ay_status;
-} /* ay_objio_readparm */
+} /* objio_readparm */
 
 
-/* ay_objio_addtrim:
+/* objio_addtrim:
  *  add trim curve <o> to the trim curve buffer
  */
 int
-ay_objio_addtrim(ay_object *o)
+objio_addtrim(ay_object *o)
 {
  objio_trim *nt = NULL;
 
@@ -3011,14 +3016,14 @@ ay_objio_addtrim(ay_object *o)
     }
 
  return AY_OK;
-} /* ay_objio_addtrim */
+} /* objio_addtrim */
 
 
-/* ay_objio_gettrim:
+/* objio_gettrim:
  *  get a trim curve object from the trim curve buffer
  */
 int
-ay_objio_gettrim(unsigned int index, ay_object **t)
+objio_gettrim(unsigned int index, ay_object **t)
 {
  static objio_trim *objio_trims_cur = NULL;
  objio_trim *l = NULL, **pl;
@@ -3077,14 +3082,14 @@ ay_objio_gettrim(unsigned int index, ay_object **t)
   *t = l->c;
 
  return AY_OK;
-} /* ay_objio_gettrim */
+} /* objio_gettrim */
 
 
-/* ay_objio_freetrims:
+/* objio_freetrims:
  *  free trim curve buffer
  */
 int
-ay_objio_freetrims(void)
+objio_freetrims(void)
 {
  int ay_status = AY_OK;
  objio_trim *t = NULL, *tt = NULL;
@@ -3103,21 +3108,21 @@ ay_objio_freetrims(void)
       objio_trims_tail = NULL;
     } /* if */
 
-  /* clear cached "current" pointers in ay_objio_gettrim() */
-  ay_status = ay_objio_gettrim(0, NULL);
+  /* clear cached "current" pointers in objio_gettrim() */
+  ay_status = objio_gettrim(0, NULL);
 
  return AY_OK;
-} /* ay_objio_freetrims */
+} /* objio_freetrims */
 
 
-/* ay_objio_readtrim:
+/* objio_readtrim:
  *  read a trim statement (trim loop specification),
  *  get the corresponding trim curves from the trim curve
  *  buffer and copy them for connection to the surface
  *  object later on
  */
 int
-ay_objio_readtrim(char *str, int hole)
+objio_readtrim(char *str, int hole)
 {
  int ay_status = AY_OK;
  int tcount = 0, tindex = 0;
@@ -3136,8 +3141,8 @@ ay_objio_readtrim(char *str, int hole)
     {
       /* read umin/umax */
       sscanf(c, " %lg %lg", &objio_umin, &objio_umax);
-      ay_status = ay_objio_readskip(&c);
-      ay_status = ay_objio_readskip(&c);
+      ay_status = objio_readskip(&c);
+      ay_status = objio_readskip(&c);
 
       tindex = 0;
       if(sscanf(c, "%d", &tindex))
@@ -3147,7 +3152,7 @@ ay_objio_readtrim(char *str, int hole)
 	    {
 	      if(objio_trims_tail)
 		{
-		  ay_status = ay_objio_gettrim(
+		  ay_status = objio_gettrim(
 					objio_trims_tail->index + tindex + 1,
 					     &t);
 		}
@@ -3159,7 +3164,7 @@ ay_objio_readtrim(char *str, int hole)
 	    }
 	  else
 	    {
-	      ay_status = ay_objio_gettrim(tindex, &t);
+	      ay_status = objio_gettrim(tindex, &t);
 	    } /* if */
 
 	  if(t)
@@ -3197,7 +3202,7 @@ ay_objio_readtrim(char *str, int hole)
 	} /* if */
 
       /* skip to next trim */
-      ay_status = ay_objio_readskip(&c);
+      ay_status = objio_readskip(&c);
 
     } /* while */
 
@@ -3211,16 +3216,16 @@ ay_objio_readtrim(char *str, int hole)
 cleanup:
 
  return ay_status;
-} /* ay_objio_readtrim */
+} /* objio_readtrim */
 
 
-/* ay_objio_fixnpatch:
+/* objio_fixnpatch:
  *  fix row/column major order in np controlv (from Wavefront to Ayam style);
  *  additionally, multiply the weights in for rational vertices
  *  XXXX to be done: improve the knot vector (type, GLU compat)
  */
 int
-ay_objio_fixnpatch(ay_nurbpatch_object *np)
+objio_fixnpatch(ay_nurbpatch_object *np)
 {
  int ay_status = AY_OK;
  int i, j, stride = 4;
@@ -3266,16 +3271,16 @@ ay_objio_fixnpatch(ay_nurbpatch_object *np)
     }
 
  return ay_status;
-} /* ay_objio_fixnpatch */
+} /* objio_fixnpatch */
 
 
-/* ay_objio_fixncurve:
+/* objio_fixncurve:
  *  fix a Wavefront NURBS curve by
  *  multiplying the weights in for rational vertices
  *  XXXX to be done: improve the knot vector (type, GLU compat)
  */
 int
-ay_objio_fixncurve(ay_nurbcurve_object *nc)
+objio_fixncurve(ay_nurbcurve_object *nc)
 {
  int ay_status = AY_OK;
  int i, stride = 4;
@@ -3306,14 +3311,14 @@ ay_objio_fixncurve(ay_nurbcurve_object *nc)
     }
 
  return ay_status;
-} /* ay_objio_fixncurve */
+} /* objio_fixncurve */
 
 
-/* ay_objio_readend:
+/* objio_readend:
  *  read an end statement (realise curve or surface)
  */
 int
-ay_objio_readend(void)
+objio_readend(void)
 {
  int ay_status = AY_OK;
  ay_object *newo = NULL, *o = NULL;
@@ -3339,7 +3344,7 @@ ay_objio_readend(void)
       objio_ncurve.order = objio_degu + 1;
       objio_ncurve.knot_type = AY_KTCUSTOM;
 
-      ay_status = ay_objio_fixncurve(&objio_ncurve);
+      ay_status = objio_fixncurve(&objio_ncurve);
 
       ay_status = ay_object_copy(newo, &o);
       if(ay_status)
@@ -3369,13 +3374,13 @@ ay_objio_readend(void)
       objio_ncurve.order = objio_degu + 1;
       objio_ncurve.knot_type = AY_KTCUSTOM;
 
-      ay_status = ay_objio_fixncurve(&objio_ncurve);
+      ay_status = objio_fixncurve(&objio_ncurve);
 
       ay_status = ay_object_copy(newo, &o);
       if(ay_status)
 	goto cleanup;
 
-      ay_status = ay_objio_addtrim(o);
+      ay_status = objio_addtrim(o);
 
       break;
     case 3:
@@ -3407,7 +3412,7 @@ ay_objio_readend(void)
       objio_npatch.uknot_type = AY_KTCUSTOM;
       objio_npatch.vknot_type = AY_KTCUSTOM;
 
-      ay_status = ay_objio_fixnpatch(&objio_npatch);
+      ay_status = objio_fixnpatch(&objio_npatch);
 
       ay_status = ay_object_copy(newo, &o);
       if(ay_status)
@@ -3487,14 +3492,14 @@ cleanup:
   objio_curvtrimsurf = 0;
 
  return ay_status;
-} /* ay_objio_readend */
+} /* objio_readend */
 
 
-/* ay_objio_readline:
+/* objio_readline:
  *  read a single line from a Wavefront OBJ file
  */
 int
-ay_objio_readline(FILE *fileptr)
+objio_readline(FILE *fileptr)
 {
  int ay_status = AY_OK;
  int read;
@@ -3505,7 +3510,7 @@ ay_objio_readline(FILE *fileptr)
   if(!fileptr)
     {
       if(lastlinewasface)
-	ay_status = ay_objio_readface(NULL, -1);
+	ay_status = objio_readface(NULL, -1);
       lastlinewasface = AY_FALSE;
       return AY_ENULL;
     }
@@ -3547,33 +3552,33 @@ ay_objio_readline(FILE *fileptr)
       break;
     case 'c':
       if(str[1] == 's')
-	ay_status = ay_objio_readcstype(str);
+	ay_status = objio_readcstype(str);
       if(str[1] == 'u')
-	ay_status = ay_objio_readcurv(str);
+	ay_status = objio_readcurv(str);
       break;
     case 'd':
-      ay_status = ay_objio_readdeg(str);
+      ay_status = objio_readdeg(str);
       break;
     case 'e':
-      ay_status = ay_objio_readend();
+      ay_status = objio_readend();
       break;
     case 'f':
-      ay_status = ay_objio_readface(str, lastlinewasface);
+      ay_status = objio_readface(str, lastlinewasface);
       break;
     case 'h':
-      ay_status = ay_objio_readtrim(str, AY_TRUE);
+      ay_status = objio_readtrim(str, AY_TRUE);
       break;
     case 'p':
-      ay_status = ay_objio_readparm(str);
+      ay_status = objio_readparm(str);
       break;
     case 's':
-      ay_status = ay_objio_readsurf(str);
+      ay_status = objio_readsurf(str);
       break;
     case 't':
-      ay_status = ay_objio_readtrim(str, AY_FALSE);
+      ay_status = objio_readtrim(str, AY_FALSE);
       break;
     case 'v':
-      ay_status = ay_objio_readvertex(str);
+      ay_status = objio_readvertex(str);
       break;
     default:
       break;
@@ -3594,7 +3599,7 @@ ay_objio_readline(FILE *fileptr)
       else
 	{
 	  if(lastlinewasface)
-	    ay_status = ay_objio_readface(NULL, -1);
+	    ay_status = objio_readface(NULL, -1);
 	  lastlinewasface = AY_FALSE;
 	}
     }
@@ -3602,14 +3607,14 @@ ay_objio_readline(FILE *fileptr)
   Tcl_DStringFree(&ds);
 
  return ay_status;
-} /* ay_objio_readline */
+} /* objio_readline */
 
 
-/* ay_objio_readscene:
+/* objio_readscene:
  *
  */
 int
-ay_objio_readscene(char *filename)
+objio_readscene(char *filename)
 {
  int ay_status = AY_OK;
  ay_object *o = ay_root->next;
@@ -3668,7 +3673,7 @@ ay_objio_readscene(char *filename)
 
   while(!feof(fileptr))
     {
-      if((ay_status = ay_objio_readline(fileptr)))
+      if((ay_status = objio_readline(fileptr)))
 	break;
 
       lineno++;
@@ -3713,7 +3718,7 @@ ay_objio_readscene(char *filename)
     }
 
   /* clean up all vertex buffers */
-  ay_status = ay_objio_freevertices();
+  ay_status = objio_freevertices();
 
   /* clean up */
   if(objio_uknotv)
@@ -3739,24 +3744,24 @@ ay_objio_readscene(char *filename)
   objio_nexttrim = &(objio_trims);
 
   /* clean up trims buffer */
-  ay_status = ay_objio_freetrims();
+  ay_status = objio_freetrims();
 
-  /* reset lastlinewasface state in ay_objio_readline() */
-  ay_objio_readline(NULL);
+  /* reset lastlinewasface state in objio_readline() */
+  objio_readline(NULL);
 
  return ay_status;
-} /* ay_objio_readscene */
+} /* objio_readscene */
 
 
-/* ay_objio_readscenetcmd:
+/* objio_readscenetcmd:
  *
  */
 int
-ay_objio_readscenetcmd(ClientData clientData, Tcl_Interp *interp,
+objio_readscenetcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "ay_objio_read";
+ char fname[] = "objio_read";
  int i = 2;
 
   /* check args */
@@ -3814,7 +3819,7 @@ ay_objio_readscenetcmd(ClientData clientData, Tcl_Interp *interp,
       i += 2;
     } /* while */
 
-  ay_status = ay_objio_readscene(argv[1]);
+  ay_status = objio_readscene(argv[1]);
 
   objio_stagname = objio_stagnamedef;
   objio_ttagname = objio_ttagnamedef;
@@ -3822,95 +3827,110 @@ ay_objio_readscenetcmd(ClientData clientData, Tcl_Interp *interp,
   objio_scalefactor = 1.0;
 
  return TCL_OK;
-} /* ay_objio_readscenetcmd */
+} /* objio_readscenetcmd */
 
 
-/* ay_objio_init:
- *
+/* Objio_Init:
+ *  initialize Wavefront OBJ Import/Export plugin
+ *  note: this function _must_ be capitalized exactly this way
+ *  regardless of the filename of the shared object (see: man n load)!
  */
+#ifdef WIN32
+  __declspec (dllexport)
+#endif // WIN32
 int
-ay_objio_init(Tcl_Interp *interp)
+Objio_Init(Tcl_Interp *interp)
 {
  int ay_status = AY_OK;
- /*char fname[] = "objio_init";*/
+ char fname[] = "objio_init";
 
   /* init hash table for write callbacks */
-  Tcl_InitHashTable(&ay_objio_write_ht, TCL_ONE_WORD_KEYS);
+  Tcl_InitHashTable(&objio_write_ht, TCL_ONE_WORD_KEYS);
 
   /* fill hash table */
-  ay_status = ay_objio_registerwritecb((char *)(AY_IDNPATCH),
-				       ay_objio_writenpatch);
-  ay_status = ay_objio_registerwritecb((char *)(AY_IDNCURVE),
-				       ay_objio_writencurve);
-  ay_status = ay_objio_registerwritecb((char *)(AY_IDLEVEL),
-				       ay_objio_writelevel);
-  ay_status = ay_objio_registerwritecb((char *)(AY_IDCLONE),
-				       ay_objio_writeclone);
-  ay_status = ay_objio_registerwritecb((char *)(AY_IDINSTANCE),
-				       ay_objio_writeinstance);
-  ay_status = ay_objio_registerwritecb((char *)(AY_IDSCRIPT),
-				       ay_objio_writescript);
+  ay_status = objio_registerwritecb((char *)(AY_IDNPATCH),
+				       objio_writenpatch);
+  ay_status = objio_registerwritecb((char *)(AY_IDNCURVE),
+				       objio_writencurve);
+  ay_status = objio_registerwritecb((char *)(AY_IDLEVEL),
+				       objio_writelevel);
+  ay_status = objio_registerwritecb((char *)(AY_IDCLONE),
+				       objio_writeclone);
+  ay_status = objio_registerwritecb((char *)(AY_IDINSTANCE),
+				       objio_writeinstance);
+  ay_status = objio_registerwritecb((char *)(AY_IDSCRIPT),
+				       objio_writescript);
 
-  ay_status = ay_objio_registerwritecb((char *)(AY_IDICURVE),
-				       ay_objio_writencconvertible);
-  ay_status = ay_objio_registerwritecb((char *)(AY_IDCONCATNC),
-				       ay_objio_writencconvertible);
-  ay_status = ay_objio_registerwritecb((char *)(AY_IDEXTRNC),
-				       ay_objio_writencconvertible);
-  ay_status = ay_objio_registerwritecb((char *)(AY_IDNCIRCLE),
-				       ay_objio_writencconvertible);
+  ay_status = objio_registerwritecb((char *)(AY_IDICURVE),
+				       objio_writencconvertible);
+  ay_status = objio_registerwritecb((char *)(AY_IDCONCATNC),
+				       objio_writencconvertible);
+  ay_status = objio_registerwritecb((char *)(AY_IDEXTRNC),
+				       objio_writencconvertible);
+  ay_status = objio_registerwritecb((char *)(AY_IDNCIRCLE),
+				       objio_writencconvertible);
 
-  ay_status = ay_objio_registerwritecb((char *)(AY_IDEXTRUDE),
-				       ay_objio_writenpconvertible);
-  ay_status = ay_objio_registerwritecb((char *)(AY_IDREVOLVE),
-				       ay_objio_writenpconvertible);
-  ay_status = ay_objio_registerwritecb((char *)(AY_IDSWEEP),
-				       ay_objio_writenpconvertible);
-  ay_status = ay_objio_registerwritecb((char *)(AY_IDSKIN),
-				       ay_objio_writenpconvertible);
-  ay_status = ay_objio_registerwritecb((char *)(AY_IDCAP),
-				       ay_objio_writenpconvertible);
-  ay_status = ay_objio_registerwritecb((char *)(AY_IDPAMESH),
-				       ay_objio_writenpconvertible);
-  ay_status = ay_objio_registerwritecb((char *)(AY_IDBPATCH),
-				       ay_objio_writenpconvertible);
-  ay_status = ay_objio_registerwritecb((char *)(AY_IDGORDON),
-				       ay_objio_writenpconvertible);
-  ay_status = ay_objio_registerwritecb((char *)(AY_IDBIRAIL1),
-				       ay_objio_writenpconvertible);
-  ay_status = ay_objio_registerwritecb((char *)(AY_IDBIRAIL2),
-				       ay_objio_writenpconvertible);
-  ay_status = ay_objio_registerwritecb((char *)(AY_IDTEXT),
-				       ay_objio_writenpconvertible);
-  ay_status = ay_objio_registerwritecb((char *)(AY_IDBEVEL),
-				       ay_objio_writenpconvertible);
+  ay_status = objio_registerwritecb((char *)(AY_IDEXTRUDE),
+				       objio_writenpconvertible);
+  ay_status = objio_registerwritecb((char *)(AY_IDREVOLVE),
+				       objio_writenpconvertible);
+  ay_status = objio_registerwritecb((char *)(AY_IDSWEEP),
+				       objio_writenpconvertible);
+  ay_status = objio_registerwritecb((char *)(AY_IDSKIN),
+				       objio_writenpconvertible);
+  ay_status = objio_registerwritecb((char *)(AY_IDCAP),
+				       objio_writenpconvertible);
+  ay_status = objio_registerwritecb((char *)(AY_IDPAMESH),
+				       objio_writenpconvertible);
+  ay_status = objio_registerwritecb((char *)(AY_IDBPATCH),
+				       objio_writenpconvertible);
+  ay_status = objio_registerwritecb((char *)(AY_IDGORDON),
+				       objio_writenpconvertible);
+  ay_status = objio_registerwritecb((char *)(AY_IDBIRAIL1),
+				       objio_writenpconvertible);
+  ay_status = objio_registerwritecb((char *)(AY_IDBIRAIL2),
+				       objio_writenpconvertible);
+  ay_status = objio_registerwritecb((char *)(AY_IDTEXT),
+				       objio_writenpconvertible);
+  ay_status = objio_registerwritecb((char *)(AY_IDBEVEL),
+				       objio_writenpconvertible);
 
-  ay_status = ay_objio_registerwritecb((char *)(AY_IDSPHERE),
-				       ay_objio_writenpconvertible);
-  ay_status = ay_objio_registerwritecb((char *)(AY_IDDISK),
-				       ay_objio_writenpconvertible);
-  ay_status = ay_objio_registerwritecb((char *)(AY_IDCYLINDER),
-				       ay_objio_writenpconvertible);
-  ay_status = ay_objio_registerwritecb((char *)(AY_IDCONE),
-				       ay_objio_writenpconvertible);
-  ay_status = ay_objio_registerwritecb((char *)(AY_IDHYPERBOLOID),
-				       ay_objio_writenpconvertible);
-  ay_status = ay_objio_registerwritecb((char *)(AY_IDPARABOLOID),
-				       ay_objio_writenpconvertible);
-  ay_status = ay_objio_registerwritecb((char *)(AY_IDTORUS),
-				       ay_objio_writenpconvertible);
+  ay_status = objio_registerwritecb((char *)(AY_IDSPHERE),
+				       objio_writenpconvertible);
+  ay_status = objio_registerwritecb((char *)(AY_IDDISK),
+				       objio_writenpconvertible);
+  ay_status = objio_registerwritecb((char *)(AY_IDCYLINDER),
+				       objio_writenpconvertible);
+  ay_status = objio_registerwritecb((char *)(AY_IDCONE),
+				       objio_writenpconvertible);
+  ay_status = objio_registerwritecb((char *)(AY_IDHYPERBOLOID),
+				       objio_writenpconvertible);
+  ay_status = objio_registerwritecb((char *)(AY_IDPARABOLOID),
+				       objio_writenpconvertible);
+  ay_status = objio_registerwritecb((char *)(AY_IDTORUS),
+				       objio_writenpconvertible);
 
-  ay_status = ay_objio_registerwritecb((char *)(AY_IDPOMESH),
-				       ay_objio_writepomesh);
+  ay_status = objio_registerwritecb((char *)(AY_IDPOMESH),
+				       objio_writepomesh);
 
-  ay_status = ay_objio_registerwritecb((char *)(AY_IDBOX),
-				       ay_objio_writebox);
+  ay_status = objio_registerwritecb((char *)(AY_IDBOX),
+				       objio_writebox);
 
-  Tcl_CreateCommand(interp, "ay_objio_write", ay_objio_writescenetcmd,
+  Tcl_CreateCommand(interp, "objio_write", objio_writescenetcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "ay_objio_read", ay_objio_readscenetcmd,
+  Tcl_CreateCommand(interp, "objio_read", objio_readscenetcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  /* source objio.tcl, it contains vital Tcl-code */
+  if((Tcl_EvalFile(interp, "objio.tcl")) != TCL_OK)
+     {
+       ay_error(AY_ERROR, fname,
+		  "Error while sourcing \\\"objio.tcl\\\"!");
+       return TCL_OK;
+     }
+
+  ay_error(AY_EOUTPUT, fname, "Plugin 'objio' successfully loaded.");
 
  return TCL_OK;
-} /* ay_objio_init */
+} /* Objio_Init */

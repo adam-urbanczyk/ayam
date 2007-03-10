@@ -982,8 +982,6 @@ typedef int (ay_providecb) (ay_object *o, unsigned int type,
 
 typedef int (ay_bbccb) (ay_object *o, double *bbox, int *flags);
 
-typedef int (ay_mopsicb) (FILE *fileptr, ay_object *o);
-
 
 /* Globals */
 extern Tcl_Interp *ay_interp;
