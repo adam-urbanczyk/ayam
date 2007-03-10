@@ -49,6 +49,12 @@ install:
 	-$(INSTALL) plugins/mfio.so $(LIBDIR)
 	-$(INSTALL) plugins/mfio.tcl $(LIBDIR)
 	-$(INSTALL) plugins/loadmfio.tcl $(LIBDIR)
+	-$(INSTALL) plugins/mopsi.so $(LIBDIR)
+	-$(INSTALL) plugins/mopsi.tcl $(LIBDIR)
+	-$(INSTALL) plugins/loadmopsi.tcl $(LIBDIR)
+	-$(INSTALL) plugins/objio.so $(LIBDIR)
+	-$(INSTALL) plugins/objio.tcl $(LIBDIR)
+	-$(INSTALL) plugins/loadobjio.tcl $(LIBDIR)
 	-$(INSTALL) plugins/idr.so $(LIBDIR)
 	-$(INSTALL) plugins/idr.tcl $(LIBDIR)
 	-$(INSTALL) plugins/loadidr.tcl $(LIBDIR)
@@ -95,6 +101,8 @@ uninstall:
 	-rm -rf $(LIBDIR)/metaobj.so
 	-rm -rf $(LIBDIR)/metaobj.tcl $(LIBDIR)/metacomp.tcl
 	-rm -rf $(LIBDIR)/mfio.so $(LIBDIR)/mfio.tcl $(LIBDIR)/loadmfio.tcl
+	-rm -rf $(LIBDIR)/mopsi.so $(LIBDIR)/mopsi.tcl $(LIBDIR)/loadmopsi.tcl
+	-rm -rf $(LIBDIR)/objio.so $(LIBDIR)/objio.tcl $(LIBDIR)/loadobjio.tcl
 	-rm -rf $(LIBDIR)/idr.so $(LIBDIR)/idr.tcl
 	-rm -rf $(LIBDIR)/rrib.so $(LIBDIR)/rrib.tcl
 	-rm -rf $(LIBDIR)/loadrrib.tcl $(LIBDIR)/loadidr.tcl
