@@ -35,10 +35,10 @@ char ay_mfio_version_mi[] = AY_VERSIONSTRMI;
 typedef int (ay_mfio_readcb) (MF3DVoidObjPtr object);
 
 typedef int (ay_mfio_writecb) (MF3D_FilePtr fileptr, ay_object *o);
-
+/*
 static int export_curves;
 static int export_colors;
-
+*/
 /* prototypes of functions local to this module: */
 int ay_mfio_registerreadcb(char *type, ay_mfio_readcb *cb);
 

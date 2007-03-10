@@ -2101,7 +2101,7 @@ mopsi_register(char *tname, mopsicb *cb)
 int
 Mopsi_Init(Tcl_Interp *interp)
 {
- int ay_status = AY_OK;
+  /*int ay_status = AY_OK;*/
  char fname[] = "Mopsi_Init";
  int new_item = 0;
  Tcl_HashEntry *entry = NULL;
