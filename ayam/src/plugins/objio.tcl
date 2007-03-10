@@ -82,7 +82,7 @@ proc objio_export { } {
 	set objio_options(Cancel) 0
 	update
 
-	ay_objio_write $filename -s $objio_options(WriteSelected)\
+	objio_write $filename -s $objio_options(WriteSelected)\
 	    -p $objio_options(TessPoMesh)\
 	    -c $objio_options(WriteCurves)\
 	    -f $objio_options(ScaleFactor)\
@@ -173,7 +173,7 @@ proc objio_import { } {
 	grab .objI
 	set objio_options(Cancel) 0
 	update
-	ay_objio_read [file tail $objio_options(FileName)]\
+	objio_read [file tail $objio_options(FileName)]\
 		-m $objio_options(MergeFaces)\
 		-c $objio_options(ReadCurves)\
 		-p $objio_options(MergePVTags)\
@@ -237,4 +237,4 @@ proc objio_import { } {
 global ay
 
 $ay(im) add command -label "Wavefront OBJ" -command "objio_import"
-$ay(ex) add command -label "Wavefront OBJ" -command "objio_export"
+$ay(em) add command -label "Wavefront OBJ" -command "objio_export"
