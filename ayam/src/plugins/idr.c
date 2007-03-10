@@ -66,10 +66,10 @@ static uint32 *idr_picture_buf = NULL;
 static int idr_picture_width, idr_picture_height;
 
 /* how many quality/importance levels are to be rendered? */
-static int idr_qlevels;
+/*static int idr_qlevels;*/
 
 /* basename for all idr related temporary files */
-static char *idr_base;
+/*static char *idr_base;*/
 
 static ay_drawcb *idr_root_drawcb = NULL;
 
@@ -2737,7 +2737,7 @@ idr_get2dbbclist(idr_picpart **partlist, double importance,
  double i = 0.0;
  int left, top, right, bottom;
  idr_picpart *part = NULL;
- double bb[24] = {0};
+ /*double bb[24] = {0};*/
 
   while(o->next)
     {

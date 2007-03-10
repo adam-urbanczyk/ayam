@@ -27,6 +27,7 @@
 /* includes: */
 #include "tcl.h"
 #include "errcode.h"
+#include <string.h>
 
 /* prototypes: */
 int ayslb_scanshader(char *fname, Tcl_DString *ds);
