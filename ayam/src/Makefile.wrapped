@@ -496,7 +496,7 @@ DXFIOLIBS = -L$(DIMEDIR)/src/.libs -ldime
 .cpp.o:
 	$(CXX) -c $(CFLAGS) $*.cpp -o $@ -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR) -I$(AQSISINCDIR) -I$(OPENCSGINCDIR) -I$(GLEWINCDIR) -Iplugins
 
-all: wrappedayam csphere.so mfio.so metaobj.so
+all: wrappedayam csphere.so mfio.so metaobj.so mopsi.so
 
 wrapMain.o: wrapMain.c
 	$(CC) -c $(CFLAGS) wrapMain.c -I$(WRAPDIR) -I$(WRAPDIR)/libz $(TCLINC) $(TKINC)
@@ -548,6 +548,9 @@ mfio.so: plugins/mfio.o mf3d
 
 metaobj.so: $(METAOBJS)
 	$(CC) $(SHLFLAGS) $(METAOBJS) -o contrib/meta/metaobj.so
+
+mopsi.so: plugins/mopsi.o
+	$(CC) $(SHLFLAGS) plugins/mopsi.o -o plugins/mopsi.so
 
 rrib.so: $(RRIBOBJS)
 	$(CC) $(SHLFLAGS) $(RRIBOBJS) -o plugins/rrib.so $(RRIBLIBS)
