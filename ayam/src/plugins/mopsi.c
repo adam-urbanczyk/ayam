@@ -87,7 +87,7 @@ int mopsi_tcmd(ClientData clientData, Tcl_Interp * interp,
 
 #ifdef WIN32
   __declspec (dllexport)
-#endif // WIN32
+#endif /* WIN32 */
 int Mopsi_Init(Tcl_Interp *interp);
 
 
@@ -2097,7 +2097,7 @@ mopsi_register(char *tname, mopsicb *cb)
  */
 #ifdef WIN32
   __declspec (dllexport)
-#endif // WIN32
+#endif /* WIN32 */
 int
 Mopsi_Init(Tcl_Interp *interp)
 {
