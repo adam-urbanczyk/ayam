@@ -1,4 +1,4 @@
-INSTALL [26. Dec 2006]
+INSTALL [11. Mar 2007]
 
 Compilation Instructions for Ayam
 ---------------------------------
@@ -13,8 +13,9 @@ However, the creation of "wrapped standalone" executables of Ayam is a
 bit tricky. Therefore, if you really want to or have to compile Ayam:
 _Please compile a "shared" version of Ayam!_
 
-Note: To compile on Win32 using Visual Studio 2005 Express use the provided
-workspace Ayam-*-VC2005.zip instead.
+Note: To compile Ayam on Win32 using Visual Studio 2005 Express,
+use the provided workspace Ayam-*-VC2005.zip instead of the normal
+source distribution.
 
 Contents:
 1. Compiling a Shared Version of Ayam
@@ -465,8 +466,53 @@ Use it via menu entry "File/Import/Rhino 3DM" and "File/Export/Rhino 3DM",
 respectively.
 
 
-3.7 Installing/Uninstalling Ayam
---------------------------------
+3.7 DXFIO (AutoCad DXF IO) Plugin
+---------------------------------
+
+Additional prerequisites to compile the dxfio plugin are:
+Dime ( get it from http://www.sim.no/ ).
+
+In order to compile the plugin, adapt the following variable
+in the Ayam Makefile:
+DIMEDIR
+
+then type:
+>make dxfio.so
+
+Load it via menu entry "File/Load Plugin".
+Use it via menu entry "File/Import/AutoCad DXF" and "File/Export/AutoCad DXF",
+respectively.
+
+
+3.8 OBJIO (Wavefront OBJ IO) Plugin
+-----------------------------------
+
+There are no additional prerequisites to compile the objio plugin.
+Just type:
+>make objio.so
+
+to compile the plugin.
+
+Load it via menu entry "File/Load Plugin".
+Use it via menu entry "File/Import/Wavefront OBJ" and
+"File/Export/Wavefront OBJ", respectively.
+
+
+3.9 MOPSI (Mops Import) Plugin
+------------------------------
+
+There are no additional prerequisites to compile the mopsi plugin.
+Just type:
+>make mopsi.so
+
+to compile the plugin.
+
+Load it via menu entry "File/Load Plugin".
+Use it via menu entry "File/Import/Mops".
+
+
+3.10 Installing/Uninstalling Ayam
+---------------------------------
 
 Use
 >make install
@@ -502,8 +548,8 @@ to make clean but not remove the objects that never change,
 like Apples mf3d code and Affines sribw code.
 
 
-3.8 Creating an application bundle on MacOSX
---------------------------------------------
+3.11 Creating an application bundle on MacOSX
+---------------------------------------------
 
 Since Ayam 1.9, the Ayam source distribution contains a skeleton
 directory structure for an application bundle in the "bin" directory
