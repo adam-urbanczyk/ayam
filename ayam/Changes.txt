@@ -1,4 +1,4 @@
-[4. Mar 2007] CVS-Head:
+[11. Mar 2007] CVS-Head:
 =======================
 o Bug Fixes:
   - crash after deleting of objects (SF 1637735)
@@ -20,21 +20,29 @@ o Bug Fixes:
   - provided NURBS patches of non-simple spheres (SF 1665915)
   - closing preferences with Ok does not redraw (SF 1665917)
   - extrude ignoring bevel parameter revert (SF 1673532)
+  - tesselation GUI crashing when instance objects are selected (SF 1676787)
 
 GUI:
 o fixed select background color when changed via X resources (backported
   appropriate BWidgets bug-fix)
 o fixed local views redrawing upon scene saving
+o added tag type "RP" to block access to certain properties of an object
+  via the property GUI
 
 Modelling:
 o added "Revert" parameter to ExtrNC object
 o ExtrNC objects now draw a direction arrow (like NCurve objects)
+o the standard ConcatNC knot type is now "Custom"
+o Cap objects can now also create caps from non-planar curves (by splitting
+  the curve into four pieces and building a Gordon surface)
 
 Drawing/Shading:
 o added antialiasing drawing option for lines
 
 Import/Export:
 o added DXF import plugin dxfio
+o Mops import is now a plugin
+o Wavefront OBJ import/export is now a plugin
 
 Scripts/Scripting Interface:
 o added example script "toPoly" that allows to easily convert the whole
