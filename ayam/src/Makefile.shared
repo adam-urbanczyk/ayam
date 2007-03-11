@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile.shared [11. Dec 2006]
+# Makefile.shared [11. Mar 2007]
 # Makefile for Ayam (shared version)
 
 # Choose an installation prefix.
@@ -663,6 +663,7 @@ install:
 	-$(INSTALL) plugins/loadonio.tcl $(LIBDIR)
 	-$(INSTALL) plugins/dxfio.so $(LIBDIR)
 	-$(INSTALL) plugins/dxfio.tcl $(LIBDIR)
+	-$(INSTALL) plugins/loaddxfio.tcl $(LIBDIR)
 	-$(INSTALL) Makefile $(LIBDIR)
 	$(MKDIR) $(DOCDIR)
 	$(INSTALL) $(DOCFILES) $(DOCDIR)
@@ -696,7 +697,7 @@ uninstall:
 	-rm -rf $(LIBDIR)/aygso.so $(LIBDIR)/loadaygso.tcl
 	-rm -rf $(LIBDIR)/aycsg.so $(LIBDIR)/aycsg.tcl $(LIBDIR)/loadaycsg.tcl
 	-rm -rf $(LIBDIR)/onio.so $(LIBDIR)/onio.tcl $(LIBDIR)/loadonio.tcl
-	-rm -rf $(LIBDIR)/dxfio.so $(LIBDIR)/dxfio.tcl
+	-rm -rf $(LIBDIR)/dxfio.so $(LIBDIR)/dxfio.tcl $(LIBDIR)/loaddxfio.tcl
 	-cd $(DOCDIR); rm -rf Setup.txt Changes.txt License.txt refcard.tcl\
 refcard.ps ayam.pdf html;
 	-rm -rf $(LIBDIR)/Makefile
