@@ -173,12 +173,9 @@ proc reconsider { Selection } {
 	# Go to the corresponding level
 	goLevObjSel $node
 	
-	# Convert 'tree format' node name into 'listbox format' node name
+	# Get the selected item
 	set object [split $node :]
 	set item [lindex $object end]
-	if { [llength $object] > 2 } {
-	    set item [expr $item + 1]
-	}
 	
 	# Put the item in the selection then update the views
 	selOb
@@ -193,12 +190,9 @@ proc reconsider { Selection } {
     # Go to the corresponding level
     goLevObjSel $node
 	
-    # Convert 'tree format' node name into 'listbox format' node name
+    # Get the selected item
     set object [split $node :]
     set item [lindex $object end]
-    if { [llength $object] > 2 } {
-	set item [expr $item + 1]
-    }
 	
     # Put the item in the selection then update the views
     selOb
@@ -233,7 +227,7 @@ proc cleanObjSel { Selection } {
 	# For each item picked by the user :
 	foreach i $ay(LastSelection) {
 	    set hierarchy [split $i :]
-	# Is the item in the current level ?
+	    # Is the item in the current level ?
 	    if { [join [lrange $hierarchy 0 end-1] :] == $ay(CurrentLevel)} {
 		set item [lindex $hierarchy end]
 		# Because of the '..' in the list we have to increment
@@ -252,9 +246,9 @@ proc cleanObjSel { Selection } {
     
 	# For each item picked by the user :
 	foreach i $ay(LastSelection) {
-	# Is the item already stored in the current selection ?
+	    # Is the item already stored in the current selection ?
 	    if { [lsearch $Selection $i] == -1} {
-	# Is the item in the current level ?
+		# Is the item in the current level ?
 		if { $ay(SelectedLevel) == [$ay(tree) parent $i] } {
 		    lappend cleanedSelect $i
 		}
@@ -263,6 +257,8 @@ proc cleanObjSel { Selection } {
     }
     
     set ay(LastSelection) $cleanedSelect
+
+ return;
 }
 #cleanObjSel
 
