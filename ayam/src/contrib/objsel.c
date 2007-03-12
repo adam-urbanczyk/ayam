@@ -17,6 +17,8 @@
 
 /* prototypes of functions local to this module: */
 
+void ay_objsel_pushzeros(ay_list_object *lo);
+
 void ay_objsel_pushlnames(ay_list_object *lo);
 
 void ay_objsel_poplnames(ay_list_object *lo);
@@ -26,6 +28,51 @@ void ay_objsel_process_hits (GLint hits, GLuint buffer[], char *var);
 
 /* functions: */
 
+/* ay_objsel_pushzeros:
+ *  Recursively set all glnames of objects from the current level
+ *  on upwards to the ay_root to zero. This is needed when views in
+ *  draw-level-only mode are used for picking.
+ *  If we do not set it to zero, ay_objsel_process_hits() may select
+ *  old selections again (because the glnames were never reset).
+ */
+void
+ay_objsel_pushzeros(ay_list_object *lo)
+{
+ ay_object *o = NULL;
+
+  if(!lo)
+    return;
+
+  if(lo->next)
+    {
+      o = lo->next->object;
+      if(o == ay_root)
+	{
+	  o = o->next;
+	}
+      while(o)
+	{
+	  o->glname = 0;
+	  o = o->next;
+	}
+    } /* if */
+  
+  if(lo->next)
+    {
+      ay_objsel_pushzeros(lo->next->next);
+    }
+
+  return;
+} /* ay_objsel_pushzeros */
+
+
+/* ay_objsel_pushlnames:
+ *  Recursively set all glnames of objects from ay_root on downwards
+ *  to the current level. This is needed when views in draw-level-only
+ *  mode are used for picking.
+ *  This, effectively, lays a "trail of breadcrumbs" for the function
+ *  ay_objsel_process_hits() from the ay_root to the current level.
+ */
 void
 ay_objsel_pushlnames(ay_list_object *lo)
 {
@@ -33,7 +80,7 @@ ay_objsel_pushlnames(ay_list_object *lo)
 
   if(!lo)
     return;
-  
+
   if(lo->next)
     ay_objsel_pushlnames(lo->next->next);
 
@@ -47,6 +94,11 @@ ay_objsel_pushlnames(ay_list_object *lo)
  return;
 } /* ay_objsel_pushlnames */
 
+
+/* ay_objsel_poplnames:
+ *  remove all names pushed onto the stack by
+ *  ay_objsel_pushlnames() above
+ */
 void
 ay_objsel_poplnames(ay_list_object *lo)
 {
@@ -314,6 +366,7 @@ ay_objsel_processcb (struct Togl *togl, int argc, char *argv[])
       glPushMatrix();
       glLoadIdentity();
       ay_trafo_getall(ay_currentlevel->next);
+      ay_objsel_pushzeros(ay_currentlevel->next);
       ay_objsel_pushlnames(ay_currentlevel->next);
     }
 
