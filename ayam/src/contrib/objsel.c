@@ -285,6 +285,7 @@ ay_objsel_processcb (struct Togl *togl, int argc, char *argv[])
  Tcl_Interp *interp = ay_interp;
  double x1 = 0.0, y1 = 0.0, x2 = 0.0, y2 = 0.0;
  double x = 0.0, y = 0.0, boxw = 0.0, boxh = 0.0;
+ double glu_sampling_tolerance = 0.0;
  GLuint selectBuf[1024];
  GLint hits;
  GLint viewport[4];
@@ -357,6 +358,11 @@ ay_objsel_processcb (struct Togl *togl, int argc, char *argv[])
 
   glMatrixMode (GL_MODELVIEW);
 
+  /* set the sampling tolerance to a value that should cause
+     fast display */
+  glu_sampling_tolerance = ay_prefs.glu_sampling_tolerance;
+  ay_prefs.glu_sampling_tolerance = 120.0;
+
   ay_current_glname = 1;
   ay_root->glname = 1;
 
@@ -422,6 +428,9 @@ ay_objsel_processcb (struct Togl *togl, int argc, char *argv[])
   glPopMatrix ();
   glPopName();
   glFinish ();
+
+  /* reset the sampling tolerance */
+  ay_prefs.glu_sampling_tolerance = glu_sampling_tolerance;
 
   hits = glRenderMode (GL_RENDER);
 
