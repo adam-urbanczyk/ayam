@@ -2106,6 +2106,11 @@ Mopsi_Init(Tcl_Interp *interp)
  int new_item = 0;
  Tcl_HashEntry *entry = NULL;
 
+  if(Tcl_InitStubs(interp, "8.2", 0) == NULL)
+    {
+      return TCL_ERROR;
+    }
+
   Tcl_InitHashTable(&mopsiht, TCL_STRING_KEYS);
 
   entry = Tcl_CreateHashEntry(&mopsiht, "Revolve", &new_item);

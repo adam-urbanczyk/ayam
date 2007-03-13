@@ -3844,6 +3844,11 @@ Objio_Init(Tcl_Interp *interp)
  int ay_status = AY_OK;
  char fname[] = "objio_init";
 
+  if(Tcl_InitStubs(interp, "8.2", 0) == NULL)
+    {
+      return TCL_ERROR;
+    }
+
   /* init hash table for write callbacks */
   Tcl_InitHashTable(&objio_write_ht, TCL_ONE_WORD_KEYS);
 
