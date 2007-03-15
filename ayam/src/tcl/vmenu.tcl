@@ -357,7 +357,7 @@ $m add command -label "Help" -command {
 }
 
 $m add command -label "Help on object" -command {
-    after idle {
+    after idle { catch {
 	global ayprefs
 	set selected ""
 	getSel selected
@@ -369,13 +369,13 @@ $m add command -label "Help on object" -command {
 	set type [string tolower $type]
 	if { [string first "file://" $ayprefs(Docs)] != -1 } {
 	    set lslash [string last "/" $ayprefs(Docs)]
-	    set url [string range
+	    set url [string range \
 		     $ayprefs(Docs) 0 $lslash]/ayam-4.html\#${type}obj
 	    browser_urlOpen $url
 	} else {
 	    browser_urlOpen $ayprefs(Docs)ayam-4.html\#${type}obj
 	}
-    }
+    }  }
 }
 # -command
 
