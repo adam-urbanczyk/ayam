@@ -55,10 +55,10 @@ bind $f.li <ButtonRelease-1> {
 
     set sel ""
     getSel sel
-    if { $sel == "" } { break }
+    if { ($sel == "") || ([llength $sel] > 1) } { break }
 
     set lb $ay(plb)
-    if { [$lb size] < 1 } { return }
+    if { [$lb size] < 1 } { break }
     set prop [$lb get [$lb curselection]]
     if { ! [info exists ${prop}] } {
 	ayError 2 "Ayam" "Property '\${prop}' does not exist!"
