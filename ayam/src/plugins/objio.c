@@ -560,7 +560,7 @@ objio_writetrimids(FILE *fileptr, ay_object *o)
 		  if(down->type == AY_IDNCURVE)
 		    {
 		      nc = (ay_nurbcurve_object *)down->refine;
-		      
+
 		      ay_knots_getuminmax(o, nc->order, nc->length+nc->order,
 					  nc->knotv,
 					  &umin, &umax);
@@ -609,11 +609,11 @@ objio_writetrimids(FILE *fileptr, ay_object *o)
 	      if(down->type == AY_IDNCURVE)
 		{
 		  nc = (ay_nurbcurve_object *)down->refine;
-		      
+
 		  ay_knots_getuminmax(o, nc->order, nc->length+nc->order,
 				      nc->knotv,
 				      &umin, &umax);
-		  
+
 		  fprintf(fileptr, " %g %g -%d", umin, umax, tc);
 
 		  tc--;

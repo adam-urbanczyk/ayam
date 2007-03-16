@@ -946,7 +946,7 @@ ay_clone_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  if(o->down->type == type)
 	    return AY_OK;
 	  else
-	    return ay_provide_object(o->down, type, NULL); 
+	    return ay_provide_object(o->down, type, NULL);
 	}
       else
 	return AY_ERROR;

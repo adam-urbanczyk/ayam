@@ -5801,7 +5801,7 @@ ay_npt_extractboundary(ay_object *o, int apply_trafo,
   ay_status = ay_npt_extractnc(o, 1, 0.0, apply_trafo, &un);
   ay_status = ay_npt_extractnc(o, 2, 0.0, apply_trafo, &v0);
   ay_status = ay_npt_extractnc(o, 3, 0.0, apply_trafo, &vn);
-  
+
   ay_nct_revert(un);
   ay_nct_revert(v0);
 

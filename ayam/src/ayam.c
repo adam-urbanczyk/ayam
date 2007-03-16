@@ -839,7 +839,7 @@ Tcl_AppInit(Tcl_Interp *interp)
 
   Tcl_CreateCommand(interp, "getNameFromNode", ay_objsel_getnmfrmndtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
-  
+
   /* pact.c */
   Togl_CreateCommand("selpac", ay_pact_seltcb);
 

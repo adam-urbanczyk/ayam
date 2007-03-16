@@ -85,7 +85,7 @@ ay_ppoh_prtrafos(ay_object *o, FILE *fileptr, char *prefix)
      (o->scalx == 1.0) &&
      (o->scaly == 1.0) &&
      (o->scalz == 1.0) &&
-     (o->quat[0] == 0.0) && 
+     (o->quat[0] == 0.0) &&
      (o->quat[1] == 0.0) &&
      (o->quat[2] == 0.0) &&
      (o->quat[3] == 1.0))
@@ -140,7 +140,7 @@ ay_ppoh_prflags(ay_object *o, FILE *fileptr, char *prefix)
 
   if(o->modified)
     fprintf(fileptr, ", Modified");
-  
+
   if(o->parent)
     fprintf(fileptr, ", Parent");
 
