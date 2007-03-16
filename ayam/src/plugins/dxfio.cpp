@@ -12,6 +12,7 @@
 
 // dxfio.cpp - Ayam DXF Import/Export Plugin
 
+// includes:
 #include "ayam.h"
 
 // Dime includes
@@ -40,9 +41,10 @@
 #include <dime/sections/BlocksSection.h>
 #include <dime/sections/EntitiesSection.h>
 #include <dime/util/Linear.h>
+
 #include <stdio.h>
 
-// local types
+// local types:
 
 typedef struct dxfio_block_s {
   struct dxfio_block_s *next;
@@ -50,21 +52,25 @@ typedef struct dxfio_block_s {
   ay_object *object;
 } dxfio_block;
 
-// global variables
+// global variables:
 
 char dxfio_version_ma[] = AY_VERSIONSTR;
 char dxfio_version_mi[] = AY_VERSIONSTRMI;
 
 static Tcl_HashTable dxfio_write_ht;
 
+// last read object
 ay_object *dxfio_lrobject = NULL;
-
+// all blocks defined in the DXF file
 dxfio_block *dxfio_blocks = NULL;
 
-static double tm[16] = {0}; // current transformation matrix
+// current transformation matrix
+static double tm[16] = {0};
 
+// total number of entities in DXF file
 int dxfio_totalents = 0;
 
+// import/export options:
 int dxfio_importcurves = AY_TRUE;
 int dxfio_exportcurves = AY_TRUE;
 int dxfio_expselected = AY_FALSE;
@@ -72,22 +78,27 @@ int dxfio_expobeynoexport = AY_TRUE;
 int dxfio_expignorehidden = AY_TRUE;
 int dxfio_exptoplevellayers = AY_TRUE;
 
-int dxfio_slayer = -1; /* first layer to read; -1: read all layers */
-int dxfio_elayer = -1; /* last layer to read; elayer=slayer: read one or all */
+// first layer to read; -1: read all layers
+int dxfio_slayer = -1;
+// last layer to read; elayer==slayer: read one or all
+int dxfio_elayer = -1;
 
-int dxfio_errorlevel = 1; /* 0: silence, 1: errors, 2: warnings, 3: all */
+// 0: silence, 1: errors, 2: warnings, 3: all
+int dxfio_errorlevel = 1;
 
-double dxfio_rescaleknots = 0.0;  /* rescale knots to min dist,
-				     if <= 0.0: no scaling */
+// rescale knots to min dist, if <= 0.0: no scaling
+double dxfio_rescaleknots = 0.0;
 
-double dxfio_scalefactor = 1.0; /* global scale factor */
+// global scale factor
+double dxfio_scalefactor = 1.0;
 
 char dxfio_stagnamedef[] = "mys";
 char *dxfio_stagname = dxfio_stagnamedef;
 char dxfio_ttagnamedef[] = "myt";
 char *dxfio_ttagname = dxfio_ttagnamedef;
 
-// prototypes of functions local to this module
+// prototypes of functions local to this module:
+
 int dxfio_countsubentities(dimeInsert *entity);
 
 int dxfio_countentities(dimeModel *model);
@@ -172,7 +183,7 @@ extern "C" {
   int Dxfio_Init(Tcl_Interp *interp);
 } // extern "C"
 
-// implementation of functions
+// implementation of functions:
 
 // dxfio_extrudebpatch:
 //
@@ -566,7 +577,7 @@ dxfio_readline(const class dimeState *state,
  int ay_status = AY_OK;
  double *newcv = NULL;
  ay_object *newo = NULL;
- 
+
   if(!(newo = (ay_object*)calloc(1, sizeof(ay_object))))
     { return AY_EOMEM; }
 
@@ -609,7 +620,7 @@ dxfio_readlwpolyline(const class dimeState *state,
  double *newcv = NULL;
  const dxfdouble *xverts, *yverts;
  ay_object *newo = NULL;
- 
+
   if(!(newo = (ay_object*)calloc(1, sizeof(ay_object))))
     { return AY_EOMEM; }
 
@@ -657,7 +668,7 @@ dxfio_getpolyline(const class dimeState *state,
 {
  int ay_status = AY_OK;
 
- 
+
  int len = 0, i = 0, a = 0, stride = 4;
  double *newcv = NULL;
  dimeVertex *vert = NULL;
@@ -1131,7 +1142,7 @@ dxfio_readsolid(const class dimeState *state,
     { free(newo); return AY_EOMEM; }
 
   solid->getVertices(v0, v1, v2, v3);
-  
+
   newbp->p1[0] = v0[0];
   newbp->p1[1] = v0[1];
   newbp->p1[2] = v0[2];
@@ -1176,7 +1187,7 @@ dxfio_readspline(const class dimeState *state,
  double *newcv = NULL, *newkv = NULL;
  dimeVec3f cv;
  ay_object *newo = NULL;
- 
+
   if(!(newo = (ay_object*)calloc(1, sizeof(ay_object))))
     { return AY_EOMEM; }
 
@@ -1406,7 +1417,7 @@ dxfio_readentitydcb(const class dimeState *state,
     default:
       break;
     } // switch
-  
+
   if(ay_status && (dxfio_errorlevel > 0))
     {
       ay_error(AY_ERROR, fname, "Error converting entity.");
@@ -1550,7 +1561,7 @@ dxfio_countentities(dimeModel *model)
 	    } // if
 	} // for
     } // if
-  
+
   if(dxfio_errorlevel > 2)
     {
       char fname[] = "dxfio_countentities";

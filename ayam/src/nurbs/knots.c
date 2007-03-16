@@ -835,7 +835,7 @@ ay_knots_setvminmax(ay_object *o, double vmin, double vmax)
 
 
 /* ay_knots_coarsen:
- *  
+ *
  */
 int
 ay_knots_coarsen(int order, int knotvlen, double *knotv, int count,

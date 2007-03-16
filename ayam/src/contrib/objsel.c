@@ -56,7 +56,7 @@ ay_objsel_pushzeros(ay_list_object *lo)
 	  o = o->next;
 	}
     } /* if */
-  
+
   if(lo->next)
     {
       ay_objsel_pushzeros(lo->next->next);
@@ -105,7 +105,7 @@ ay_objsel_poplnames(ay_list_object *lo)
 
   if(!lo)
     return;
-  
+
   if(lo->next)
     ay_objsel_poplnames(lo->next->next);
 
@@ -150,7 +150,7 @@ ay_objsel_process_hits (GLint hits, GLuint buffer[], char *var)
     }
   size = 256;
   node[0] = 0;
-  
+
   for (i = 0; i < hits; i++)
     {
       ay_object *o = NULL;
@@ -227,7 +227,7 @@ ay_objsel_process_hits (GLint hits, GLuint buffer[], char *var)
 	} /* for */
 
       strncat(node, " ", (size_t)size);
-      
+
       /* If OpenGL found that the grid or the coordinate system are in the
        * selection then a stand-alone "root " (i.e. an empty node) is generated
        * because the grid and the coord. system are not AYAM objects. When this
@@ -292,12 +292,12 @@ ay_objsel_processcb (struct Togl *togl, int argc, char *argv[])
 
   Tcl_GetDouble (interp, argv[3], &x1);
   Tcl_GetDouble (interp, argv[4], &y1);
-  
+
   if (argc == 7)
     {
       Tcl_GetDouble (interp, argv[5], &x2);
       Tcl_GetDouble (interp, argv[6], &y2);
-      
+
       x = (x1 + x2) / 2.0;
       y = (y1 + y2) / 2.0;
       boxh = abs((int)(y2 - y1));
@@ -308,7 +308,7 @@ ay_objsel_processcb (struct Togl *togl, int argc, char *argv[])
      Tcl_Obj *toa = NULL, *ton = NULL, *to = NULL;
      char *part1 = "ayprefs", *part2 = "PickTolerance";
      double tolerance = 0.0;
-      
+
       toa = Tcl_NewStringObj(part1, -1);
       ton = Tcl_NewStringObj(part2, -1);
       to = Tcl_ObjGetVar2(interp, toa, ton,
@@ -319,7 +319,7 @@ ay_objsel_processcb (struct Togl *togl, int argc, char *argv[])
       y = y1;
       boxh = tolerance;
       boxw = tolerance;
-      
+
       Tcl_IncrRefCount(toa); Tcl_DecrRefCount(toa);
       Tcl_IncrRefCount(ton); Tcl_DecrRefCount(ton);
     }
@@ -416,7 +416,7 @@ ay_objsel_processcb (struct Togl *togl, int argc, char *argv[])
 	}
       glEnable(GL_LIGHTING);
     }
-    
+
   if(view->drawlevel || view->type == AY_VTTRIM)
     {
       glMatrixMode(GL_MODELVIEW);
@@ -450,18 +450,18 @@ ay_objsel_getnmfrmndtcmd(ClientData clientData, Tcl_Interp *interp,
  char fname[] = "objsel_getnmfrmnd";
  ay_object *o = NULL;
  Tcl_DString ds;
- 
+
   if (argc != 3)
     {
       ay_error(AY_EARGS, fname, "varname string");
       return TCL_OK;
     }
-  
+
   o = ay_tree_getobject(argv[2]);
-  
+
   Tcl_DStringInit(&ds);
   Tcl_DStringAppend(&ds, ay_object_getname(o), -1);
-  
+
   if ((o->name) || (o->type == AY_IDINSTANCE))
     {
       if (ay_prefs.list_types)
@@ -471,7 +471,7 @@ ay_objsel_getnmfrmndtcmd(ClientData clientData, Tcl_Interp *interp,
 	  Tcl_DStringAppend(&ds, ")", -1);
 	}
     }
-  
+
   Tcl_SetVar(interp, argv[1], Tcl_DStringValue(&ds), TCL_LEAVE_ERR_MSG);
   Tcl_DStringFree(&ds);
 

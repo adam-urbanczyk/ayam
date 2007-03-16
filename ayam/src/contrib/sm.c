@@ -78,7 +78,7 @@ ay_sm_aimz(double *direction)
 	}
       yrot = AY_R2D(acos((fabs(tmp)<=1.0?tmp:(tmp<-1.0?-1.0:1.0))));
     }
- 
+
   yzlen = sqrt(direction[1]*direction[1] + xzlen*xzlen);
   if(yzlen != 0.0)
     {
@@ -402,7 +402,7 @@ ay_sm_wribsmcustom(char *file, char *objfile, ay_object *o,
       memcpy(&nlight, light, sizeof(ay_light_object));
       nlight.lshader = NULL;
       nlight.type = -1;
-      
+
       sarg = shader->arg;
       while(sarg)
 	{
@@ -429,7 +429,7 @@ ay_sm_wribsmcustom(char *file, char *objfile, ay_object *o,
 	    {
 	      nlight.cone_delta_angle = sarg->val.scalar;
 	    } /* if */
-	  sarg = sarg->next;	      
+	  sarg = sarg->next;
 	} /* while */
 
       if(has_from)
@@ -474,7 +474,7 @@ ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
  char arrname[] = "ayprefs";
  char ffvarname[] = "SMFileFormat", ftvarname[] = "SMFileType";
  char *smfileformat = NULL, *smfiletype = NULL;
- 
+
   if(!o)
     return;
 
@@ -488,7 +488,7 @@ ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
       free(zname);
       return;
     }
-    
+
   if(!trafo)
     countsm = 0;
 
@@ -518,7 +518,7 @@ ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
       trafo->scalx = o->scalx;
       trafo->scaly = o->scaly;
       trafo->scalz = o->scalz;
-      
+
       if(o->down)
 	{
 	  ay_sm_wriballsm(file, objfile, o->down, trafo, rwidth, rheight,
@@ -580,7 +580,7 @@ ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
 		    /* place the objects relative to the centered light */
 		    RiReadArchive(objfile, (RtVoid*)RI_NULL, RI_NULL);
 		    /* was:
-		       d = ay_root->next; 
+		       d = ay_root->next;
 		       while (d) {
 		       ay_wrib_object(file, d);
 		       d = d->next;
@@ -606,7 +606,7 @@ ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
 		    /* place the objects relative to the centered light */
 		    RiReadArchive(objfile, (RtVoid*)RI_NULL, RI_NULL);
 		    /* was:
-		       d = ay_root->next; 
+		       d = ay_root->next;
 		       while (d) {
 		       ay_wrib_object(file, d);
 		       d = d->next;
@@ -632,7 +632,7 @@ ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
 		    /* place the objects relative to the centered light */
 		    RiReadArchive(objfile, (RtVoid*)RI_NULL, RI_NULL);
 		    /* was:
-		       d = ay_root->next; 
+		       d = ay_root->next;
 		       while (d) {
 		       ay_wrib_object(file, d);
 		       d = d->next;
@@ -658,7 +658,7 @@ ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
 		    /* place the objects relative to the centered light */
 		    RiReadArchive(objfile, (RtVoid*)RI_NULL, RI_NULL);
 		    /* was:
-		       d = ay_root->next; 
+		       d = ay_root->next;
 		       while (d) {
 		       ay_wrib_object(file, d);
 		       d = d->next;
@@ -684,7 +684,7 @@ ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
 		    /* place the objects relative to the centered light */
 		    RiReadArchive(objfile, (RtVoid*)RI_NULL, RI_NULL);
 		    /* was:
-		       d = ay_root->next; 
+		       d = ay_root->next;
 		       while (d) {
 		       ay_wrib_object(file, d);
 		       d = d->next;
@@ -711,7 +711,7 @@ ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
 		    /* place the objects relative to the centered light */
 		    RiReadArchive(objfile, (RtVoid*)RI_NULL, RI_NULL);
 		    /* was:
-		       d = ay_root->next; 
+		       d = ay_root->next;
 		       while (d) {
 		       ay_wrib_object(file, d);
 		       d = d->next;

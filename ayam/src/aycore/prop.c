@@ -604,7 +604,7 @@ ay_prop_getnpinfo(Tcl_Interp *interp, char *n1, ay_object *o)
 	  break;
 	case AY_KTCUSTOM:
 	  sprintf(&(buffer3[13])/*, sizeof(buffer)*/, "CUSTOM\n");
-	  break;	  
+	  break;
 	}
 
       Tcl_AppendToObj(to2, buffer3, -1);
@@ -623,7 +623,7 @@ ay_prop_getnpinfo(Tcl_Interp *interp, char *n1, ay_object *o)
 	  break;
 	case AY_KTCUSTOM:
 	  sprintf(&(buffer4[13])/*, sizeof(buffer)*/, "CUSTOM");
-	  break;	  
+	  break;
 	}
 
       Tcl_AppendToObj(to2, buffer4, -1);

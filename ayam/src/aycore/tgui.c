@@ -63,7 +63,7 @@ ay_tgui_open(void)
     {
       if(sel->object && (sel->object->type == AY_IDINSTANCE))
 	{
-	  sel = sel->next;	  
+	  sel = sel->next;
 	  continue;
 	}
       if(sel->object && ((sel->object->type == AY_IDNPATCH) ||
@@ -200,14 +200,14 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
 		      ay_status = ay_tess_npatch(tmpnp, smethod+1,
 						 sparamu, sparamv,
 						 &tmp);
-		      
+
 		      newl = NULL;
 		      if(!(newl = calloc(1, sizeof(ay_list_object))))
 			return AY_EOMEM;
 		      newl->object = tmp;
 		      *lastl = newl;
 		      lastl = &(newl->next);
-		      
+
 		      tmpnp = tmpnp->next;
 		    } /* while */
 

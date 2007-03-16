@@ -512,7 +512,7 @@ ay_tti_handle_simple_glyf(ay_tti_font *ttfont, ay_tti_glyf *glyf,
 
   oldcontour = vert->numoutlines;
   vert->numoutlines += ncontours;
-  
+
   if(vert->outlines)
     {
       tmpptr = realloc(vert->outlines, sizeof(ay_tti_outline) *
@@ -683,7 +683,7 @@ ay_tti_handle_simple_glyf(ay_tti_font *ttfont, ay_tti_glyf *glyf,
 	{
 	  if(flags[k] & ONOROFF)
 	    {
-	      
+
 	      x1 = (xabs[k] - lsb + startx) * scale_factor;
 	      y1 = (yabs[k] - ttfont->descent + yoffset) * scale_factor;
 
@@ -697,11 +697,11 @@ ay_tti_handle_simple_glyf(ay_tti_font *ttfont, ay_tti_glyf *glyf,
 
 		  x2 = vert->outlines[co].points[0].x;
 		  y2 = vert->outlines[co].points[0].y;
-		  
+
 		  vert->outlines[co].points[i+1].x = (x1+x2)/2;
 		  vert->outlines[co].points[i+1].y = (y1+y2)/2;
 		  vert->outlines[co].numpoints++;
- 		  
+
 		  vert->outlines[co].points[i+2].x = vert->outlines[co].points[0].x;
 		  vert->outlines[co].points[i+2].y = vert->outlines[co].points[0].y;
 		  vert->outlines[co].numpoints++;
@@ -714,7 +714,7 @@ ay_tti_handle_simple_glyf(ay_tti_font *ttfont, ay_tti_glyf *glyf,
 		  vert->outlines[co].points[i].x = x1;
 		  vert->outlines[co].points[i].y = y1;
 		  vert->outlines[co].numpoints++;
-		
+
 		  /* create a bezier curve for a line */
 		  x2 = (xabs[k+1] - lsb + startx) * scale_factor;
 	      y2 = (yabs[k+1] - ttfont->descent + yoffset) * scale_factor;
@@ -1178,10 +1178,10 @@ ay_tti_getchar(ay_tti_font *ttfont, int c, ay_tti_letter *vert)
   /*	printf("Outlines %d\n",out); */
 
   /* store number of outlines */
-  
+
  /* vert->numoutlines = out; */
   vert->numoutlines = 0;
-  
+
   /*	vert->outlines = (ay_tti_outline *)TExecAlloc0(TExecBase, 0,
 	sizeof(ay_tti_outline)*out); */
 
@@ -1421,7 +1421,7 @@ ay_tti_outlinetoncurve(ay_tti_outline *outline, ay_object **result)
 
   length = outline->numpoints;
   order = 3;
-  
+
   if(!(controlv = calloc(length * stride, sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
 
@@ -1437,7 +1437,7 @@ ay_tti_outlinetoncurve(ay_tti_outline *outline, ay_object **result)
 
   if(!(knotv = calloc(length + order, sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
-  
+
   a = 0;
   for(i = 0; i < (length + order)/3; i++)
     {

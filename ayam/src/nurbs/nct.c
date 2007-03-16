@@ -4919,7 +4919,7 @@ ay_nct_coarsen(ay_nurbcurve_object *curve)
 	     return ay_status;
 	   }
        }
-     
+
      /* coarsen control points */
 
      if(!(newcontrolv = calloc(newlength*stride, sizeof(double))))
@@ -5064,7 +5064,7 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
       else
 	{
 	  curve = (ay_nurbcurve_object *)o->refine;
-	  
+
 	  /* find knot to remove */
 	  while((i<(curve->length+curve->order)) &&
 		(fabs(curve->knotv[i]-u) > AY_EPSILON))
