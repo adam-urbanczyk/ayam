@@ -481,6 +481,9 @@ ay_init(Tcl_Interp *interp)
   ay_prefs.shg = 0.75;
   ay_prefs.shb = 0.65;
 
+  ay_prefs.linewidth = 1.0;
+  ay_prefs.sellinewidth = 1.0;
+
   ay_prefs.use_sm = AY_FALSE;
   ay_prefs.edit_snaps_to_grid = AY_TRUE;
 

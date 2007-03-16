@@ -882,6 +882,9 @@ typedef struct ay_preferences_s
 
   int use_materialcolor;
 
+  double linewidth;
+  double sellinewidth;
+
   /* error handling */
   char onerror; /* 0 stop, 1 continue */
   int writelog;

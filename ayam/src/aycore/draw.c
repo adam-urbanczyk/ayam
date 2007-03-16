@@ -206,6 +206,10 @@ ay_draw_view(struct Togl *togl, int draw_offset)
   glColor3d((GLdouble)ay_prefs.obr, (GLdouble)ay_prefs.obg,
 	    (GLdouble)ay_prefs.obb);
 
+  if(ay_prefs.linewidth != 1.0)
+    glLineWidth(ay_prefs.linewidth);
+
+  /* draw unselected objects */
   if(!view->drawsel)
     {
       while(o->next)
@@ -222,6 +226,9 @@ ay_draw_view(struct Togl *togl, int draw_offset)
       glColor3d((GLdouble)ay_prefs.ser, (GLdouble)ay_prefs.seg,
 		(GLdouble)ay_prefs.seb);
 
+      if(ay_prefs.sellinewidth != 1.0)
+	glLineWidth(ay_prefs.sellinewidth/*1.6*/);
+
       glPushMatrix();
       if(!view->drawlevel)
 	ay_trafo_getall(ay_currentlevel->next);
@@ -233,6 +240,7 @@ ay_draw_view(struct Togl *togl, int draw_offset)
 	}
       else
 	{
+	  glDepthRange (0.0, 0.9999);
 	  glDepthFunc(GL_LEQUAL);
 	} /* if */
 
@@ -247,8 +255,11 @@ ay_draw_view(struct Togl *togl, int draw_offset)
 	}
       else
 	{
+	  glDepthRange (0.0, 1.0);
 	  glDepthFunc(GL_LESS);
 	} /* if */
+
+      glLineWidth(ay_prefs.linewidth/*1.0*/);
 
       /* draw handles of selected objects */
       if(view->drawhandles)
@@ -325,6 +336,9 @@ ay_draw_view(struct Togl *togl, int draw_offset)
 	  glEnable(GL_DEPTH_TEST);
 	} /* if */
     } /* if */
+
+  if(draw_offset)
+    glDepthRange (0.0, 1.0);
 
   if(view->drawlevel || view->type == AY_VTTRIM)
     {
