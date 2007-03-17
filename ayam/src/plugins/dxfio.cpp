@@ -257,40 +257,152 @@ dxfio_read3dface(const class dimeState *state,
 {
  int ay_status = AY_OK;
  ay_object *newo = NULL;
+ ay_pomesh_object *pomesh = NULL;
  ay_bpatch_object *newbp = NULL;
  dimeVec3f v0, v1, v2, v3;
+ dimeVec3f d1, d2, n;
+ double d, dp;
 
   if(!(newo = (ay_object*)calloc(1, sizeof(ay_object))))
     { return AY_EOMEM; }
-
-  if(!(newbp = (ay_bpatch_object*)calloc(1, sizeof(ay_bpatch_object))))
-    { free(newo); return AY_EOMEM; }
+  
+  ay_status = ay_object_defaults(newo);
 
   tdface->getVertices(v0, v1, v2, v3);
 
-  newbp->p1[0] = v0[0];
-  newbp->p1[1] = v0[1];
-  newbp->p1[2] = v0[2];
+  // is this face a triangle?
+  if(AY_COMP3DP(v2,v3))
+    {
+      // yes it is a triangle
+      if(!(pomesh = (ay_pomesh_object*)calloc(1, sizeof(ay_pomesh_object))))
+	{ return AY_EOMEM; }
 
-  newbp->p2[0] = v1[0];
-  newbp->p2[1] = v1[1];
-  newbp->p2[2] = v1[2];
+      pomesh->npolys = 1;
 
-  newbp->p3[0] = v2[0];
-  newbp->p3[1] = v2[1];
-  newbp->p3[2] = v2[2];
+      if(!(pomesh->nloops = (unsigned int*)calloc(1, sizeof(unsigned int))))
+	{ ay_status = AY_EOMEM; goto cleanup; }
+      pomesh->nloops[0] = 1;
 
-  newbp->p4[0] = v3[0];
-  newbp->p4[1] = v3[1];
-  newbp->p4[2] = v3[2];
+      if(!(pomesh->nverts = (unsigned int*)calloc(1, sizeof(unsigned int))))
+	{ ay_status = AY_EOMEM; goto cleanup; }
+      pomesh->nverts[0] = 3;
 
-  ay_status = ay_object_defaults(newo);
+      if(!(pomesh->verts = (unsigned int*)calloc(3, sizeof(unsigned int))))
+	{ ay_status = AY_EOMEM; goto cleanup; }
+      pomesh->verts[0] = 0;
+      pomesh->verts[1] = 1;
+      pomesh->verts[2] = 2;
 
-  newo->type = AY_IDBPATCH;
-  newo->refine = newbp;
+      pomesh->ncontrols = 3;
+      if(!(pomesh->controlv = (double*)calloc(pomesh->ncontrols*3,
+					      sizeof(double))))
+	{ ay_status = AY_EOMEM; goto cleanup; }
+      pomesh->controlv[0] = v0[0];
+      pomesh->controlv[1] = v0[1];
+      pomesh->controlv[2] = v0[2];
 
-  // link the new bpatch/3dface into the scene hierarchy
+      pomesh->controlv[3] = v1[0];
+      pomesh->controlv[4] = v1[1];
+      pomesh->controlv[5] = v1[2];
+
+      pomesh->controlv[6] = v2[0];
+      pomesh->controlv[7] = v2[1];
+      pomesh->controlv[8] = v2[2];
+
+      newo->type = AY_IDPOMESH;
+      newo->refine = pomesh;
+    }
+  else
+    {
+      // no it is a quad
+
+      // is this quad planar?
+
+      // get plane equation from first three points
+      AY_V3SUB(d1,v1,v0);
+      AY_V3SUB(d2,v2,v0);
+      AY_V3CROSS(n,d1,d2);
+      d = AY_V3DOT(n,v0);
+      // insert fourth point into plane equation
+      dp = n[0]*v3[0]+n[1]*v3[1]+n[2]*v3[2]+d;
+
+      if(dp < AY_EPSILON)
+	{
+	  // quad is planar
+	  if(!(pomesh = (ay_pomesh_object*)calloc(1, sizeof(ay_pomesh_object))))
+	    { return AY_EOMEM; }
+
+	  pomesh->npolys = 1;
+
+	  if(!(pomesh->nloops = (unsigned int*)calloc(1, sizeof(unsigned int))))
+	    { ay_status = AY_EOMEM; goto cleanup; }
+	  pomesh->nloops[0] = 1;
+
+	  if(!(pomesh->nverts = (unsigned int*)calloc(1, sizeof(unsigned int))))
+	    { ay_status = AY_EOMEM; goto cleanup; }
+	  pomesh->nverts[0] = 4;
+
+	  if(!(pomesh->verts = (unsigned int*)calloc(4, sizeof(unsigned int))))
+	    { ay_status = AY_EOMEM; goto cleanup; }
+	  pomesh->verts[0] = 0;
+	  pomesh->verts[1] = 1;
+	  pomesh->verts[2] = 2;
+	  pomesh->verts[2] = 3;
+
+	  pomesh->ncontrols = 4;
+	  if(!(pomesh->controlv = (double*)calloc(pomesh->ncontrols*3,
+						  sizeof(double))))
+	    { ay_status = AY_EOMEM; goto cleanup; }
+	  pomesh->controlv[0] = v0[0];
+	  pomesh->controlv[1] = v0[1];
+	  pomesh->controlv[2] = v0[2];
+
+	  pomesh->controlv[3] = v1[0];
+	  pomesh->controlv[4] = v1[1];
+	  pomesh->controlv[5] = v1[2];
+
+	  pomesh->controlv[6] = v2[0];
+	  pomesh->controlv[7] = v2[1];
+	  pomesh->controlv[8] = v2[2];
+
+	  pomesh->controlv[9]  = v3[0];
+	  pomesh->controlv[10] = v3[1];
+	  pomesh->controlv[11] = v3[2];
+
+	  newo->type = AY_IDPOMESH;
+	  newo->refine = pomesh;
+	}
+      else
+	{
+	  // quad is not planar
+	  if(!(newbp = (ay_bpatch_object*)calloc(1, sizeof(ay_bpatch_object))))
+	    { free(newo); return AY_EOMEM; }
+
+	  newbp->p1[0] = v0[0];
+	  newbp->p1[1] = v0[1];
+	  newbp->p1[2] = v0[2];
+
+	  newbp->p2[0] = v1[0];
+	  newbp->p2[1] = v1[1];
+	  newbp->p2[2] = v1[2];
+
+	  newbp->p3[0] = v2[0];
+	  newbp->p3[1] = v2[1];
+	  newbp->p3[2] = v2[2];
+
+	  newbp->p4[0] = v3[0];
+	  newbp->p4[1] = v3[1];
+	  newbp->p4[2] = v3[2];
+
+	  newo->type = AY_IDBPATCH;
+	  newo->refine = newbp;
+	}
+    }
+
+  // link the new 3dface into the scene hierarchy
   ay_status = dxfio_linkobject(newo);
+
+cleanup:
 
  return ay_status;
 } // dxfio_read3dface
