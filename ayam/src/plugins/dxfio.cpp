@@ -311,6 +311,7 @@ dxfio_read3dface(const class dimeState *state,
 
       newo->type = AY_IDPOMESH;
       newo->refine = pomesh;
+      pomesh = NULL;
     }
   else
     {
@@ -324,7 +325,7 @@ dxfio_read3dface(const class dimeState *state,
       AY_V3CROSS(n,d1,d2);
       d = AY_V3DOT(n,v0);
       // insert fourth point into plane equation
-      dp = n[0]*v3[0]+n[1]*v3[1]+n[2]*v3[2]+d;
+      dp = n[0]*v3[0]+n[1]*v3[1]+n[2]*v3[2]-d;
 
       if(dp < AY_EPSILON)
 	{
@@ -371,6 +372,7 @@ dxfio_read3dface(const class dimeState *state,
 
 	  newo->type = AY_IDPOMESH;
 	  newo->refine = pomesh;
+	  pomesh = NULL;
 	}
       else
 	{
@@ -396,13 +398,30 @@ dxfio_read3dface(const class dimeState *state,
 
 	  newo->type = AY_IDBPATCH;
 	  newo->refine = newbp;
-	}
-    }
+	  newbp = NULL;
+	} // if
+    } // if
 
   // link the new 3dface into the scene hierarchy
   ay_status = dxfio_linkobject(newo);
 
 cleanup:
+
+  if(pomesh)
+    {
+      if(pomesh->nloops)
+	free(pomesh->nloops);
+      if(pomesh->nverts)
+	free(pomesh->nverts);
+      if(pomesh->verts)
+	free(pomesh->verts);
+      if(pomesh->controlv)
+	free(pomesh->controlv);
+      free(pomesh);
+    }
+
+  if(newbp)
+    free(newbp);
 
  return ay_status;
 } // dxfio_read3dface
