@@ -1232,13 +1232,13 @@ extern unsigned int ay_current_primlevel;
 #define AY_EPSILON 1.0e-06
 
 /* Basic Vector Arithmetic */
-#define AY_VLEN(x, y, z) sqrt((x*x)+(y*y)+(z*z))
+#define AY_VLEN(x,y,z) sqrt((x*x)+(y*y)+(z*z))
 
 #define AY_V3LEN(v) sqrt((v[0]*v[0])+(v[1]*v[1])+(v[2]*v[2]))
 
 #define AY_V2LEN(v) sqrt((v[0]*v[0])+(v[1]*v[1]))
 
-#define AY_V3ZERO(v) {v[0]=0.0; v[1] = 0.0; v[2]=0.0}
+#define AY_V3ZERO(v) {v[0]=0.0; v[1]=0.0; v[2]=0.0;}
 
 #define AY_V3SUB(r,v1,v2) {r[0]=v1[0]-v2[0];r[1]=v1[1]-v2[1];r[2]=v1[2]-v2[2];}
 
@@ -1258,6 +1258,13 @@ extern unsigned int ay_current_primlevel;
 #define AY_V3DOT(v1,v2) (v1[0]*v2[0] + v1[1]*v2[1] + v1[2]*v2[2])
 
 #define AY_V2DOT(v1,v2) (v1[0]*v2[0] + v1[1]*v2[1])
+
+#define AY_V3COMP(v1, v2) ((fabs(v1[0]-v2[0]) < AY_EPSILON) && \
+			   (fabs(v1[1]-v2[1]) < AY_EPSILON) && \
+			   (fabs(v1[2]-v2[2]) < AY_EPSILON))
+
+#define AY_V2COMP(v1, v2) ((fabs(v1[0]-v2[0]) < AY_EPSILON) && \
+			   (fabs(v1[1]-v2[1]) < AY_EPSILON))
 
 #ifdef M_PI
  #define AY_PI M_PI
