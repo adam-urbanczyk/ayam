@@ -12,7 +12,7 @@
 
 #include "ayam.h"
 
-/* pomesht.c -  PolyMesh object tools */
+/* pomesht.c - PolyMesh object tools */
 
 
 /* types local to this module */
@@ -1026,3 +1026,192 @@ cleanup:
 
  return ay_status;
 } /* ay_pomesht_tosdmesh */
+
+
+/* ay_pomesht_splitface:
+ */
+int
+ay_pomesht_splitface(ay_pomesh_object *pomesh, unsigned int f,
+		     ay_pomesh_object *target)
+{
+ int ay_status = AY_OK;
+ int stride;
+ unsigned int i, j, k, l, m, n, *tmp;
+ unsigned int oldtotalloops = 0, oldtotalverts = 0;
+ double *dtmp;
+
+  if(!pomesh || !target)
+    return AY_ENULL;
+
+  if(f > pomesh->npolys)
+    return AY_ERROR;
+  
+  if(pomesh->has_normals)
+    stride = 6;
+  else
+    stride = 3;
+
+  /* fast forward m to face to split off, also keep l for later use
+     as loop index (points to the loops of the face to split off) */
+  for(i = 0; i < f; i++)
+    {
+      for(j = 0; j < pomesh->nloops[i]; j++)
+	{
+	  l++;
+	  m += pomesh->nverts[j];
+	}
+    }
+
+  /* count number of old loops and vertices (in target) */
+  for(k = 0; k < target->npolys; k++)
+    {
+      oldtotalloops = target->nloops[k];
+      for(l = 0; l < target->nloops[k]; l++)
+	{
+	  oldtotalverts += target->nverts[n];
+	  n++;
+	}
+    }
+
+  /* increase targets number of faces counter */
+  target->npolys++;
+
+  /* for the new face in target, set the number of loops */
+  tmp = NULL;
+  if(!(tmp = realloc(target->nloops, target->npolys*sizeof(unsigned int))))
+    {
+      return AY_EOMEM;
+    }
+  target->nloops = tmp;
+  target->nloops[target->npolys] = pomesh->nloops[f];
+
+  /* for all new loops in target, set the number of vertices */
+  tmp = NULL;
+  if(!(tmp = realloc(target->nverts, (oldtotalloops + pomesh->nloops[f]) *
+		     sizeof(unsigned int))))
+    {
+      return AY_EOMEM;
+    }
+  target->nverts = tmp;
+  for(k = oldtotalloops; k < pomesh->nloops[f]; k++)
+    {
+      /* l is the loop index (in pomesh) */
+      target->nverts[k] = pomesh->nverts[l];
+
+      /* also create new vertice info and copy control points */
+      tmp = NULL;
+      if(!(tmp = realloc(target->verts, (oldtotalverts + pomesh->nverts[l]) *
+			 sizeof(unsigned int))))
+	{
+	  return AY_EOMEM;
+	}
+      dtmp = NULL;
+      if(!(dtmp = realloc(target->controlv, (target->ncontrols +
+					     pomesh->nverts[l]) * stride *
+			  sizeof(double))))
+	{
+	  return AY_EOMEM;
+	}
+      target->controlv = dtmp;
+      for(n = 0; n < pomesh->nverts[l]; n++)
+	{
+	  target->verts[oldtotalverts + n] = target->ncontrols + n;
+	  memcpy(&(target->controlv[(target->ncontrols + n)*stride]),
+		 &(pomesh->controlv[(pomesh->verts[m + n])*stride]),
+		 stride*sizeof(double));
+	} /* for */
+     target->ncontrols += pomesh->nverts[l];
+  
+      /* increase all index variables used */
+      m += pomesh->nverts[l];
+      oldtotalverts += pomesh->nverts[l];
+      l++;
+    } /* for */
+
+ return ay_status;
+} /* ay_pomesht_splitface */
+
+
+/* ay_pomesht_split:
+ *  split polymesh <pomesh> into two, based on selected points in <pnts>
+ *  returns resulting new polymesh in <result>
+ */
+int
+ay_pomesht_split(ay_pomesh_object *pomesh, ay_point *pnts,
+		 ay_pomesh_object **result)
+{
+ int ay_status = AY_OK;
+ ay_point *pnt = NULL;
+ unsigned int i, j, k, m = 0;
+ int foundpnt, splitoffthisface;
+ double *v0, *v1;
+ ay_pomesh_object *pomesh0 = NULL, *pomesh1 = NULL;
+
+  if(!pomesh || !pnts || !result)
+    return AY_ENULL;
+
+  if(!(pomesh0 = calloc(1, sizeof(ay_pomesh_object))))
+    {
+      return AY_EOMEM;
+    }
+  if(!(pomesh1 = calloc(1, sizeof(ay_pomesh_object))))
+    {
+      free(pomesh0); return AY_EOMEM;
+    }
+
+  for(i = 0; i < pomesh->npolys; i++)
+    {
+      splitoffthisface = AY_TRUE;
+      for(j = 0; j < pomesh->nloops[i]; j++)
+	{
+	  for(k = 0; k < pomesh->nverts[j]; k++)
+	    {
+	      /* if we still believe we split off this face we continue
+		 checking its vertices, otherwise just increase m */
+	      if(splitoffthisface)
+		{
+		  foundpnt = AY_FALSE;
+		  pnt = pnts;
+		  while(pnt)
+		    {
+		      v0 = &(pomesh->controlv[pomesh->verts[m]*3]);
+		      v1 = pnt->point;
+		      if(AY_V3COMP(v0,v1))
+			{
+			  foundpnt = AY_TRUE;
+			  break;
+			}
+		      pnt = pnt->next;
+		    } /* while */
+		  if(!foundpnt)
+		    {
+		      /* a face vertex was _not_ found in the list of
+			 selected points => do not split off this face */
+		      splitoffthisface = AY_FALSE;
+		      /* increase m as if we continued looping */
+		      m += (pomesh->nverts[j]-k);
+		      /* now we may break the inner for() and return
+			 to the pnt comparison only for the next face
+			 (when splitoffthisface is AY_TRUE again) */
+		      break;
+		    } /* if */
+		} /* if */
+	      m++;
+	    } /* for */
+	} /* for */
+
+      /* if all vertices of this face were to be found in <pnts>... */
+      if(splitoffthisface == AY_TRUE)
+	{
+	  /* ...split off this face (<i>) */
+	  ay_status = ay_pomesht_splitface(pomesh, i, pomesh1);
+	}
+      else
+	{
+	  ay_status = ay_pomesht_splitface(pomesh, i, pomesh0);
+	} /* if */
+
+    } /* for */
+
+ return ay_status;
+} /* ay_pomesht_split */
