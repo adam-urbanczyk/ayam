@@ -1051,22 +1051,27 @@ ay_pomesht_splitface(ay_pomesh_object *pomesh, unsigned int f,
   else
     stride = 3;
 
+  target->has_normals = pomesh->has_normals;
+
   /* fast forward m to face to split off, also keep l for later use
      as loop index (points to the loops of the face to split off) */
+  l = 0;
+  m = 0;
   for(i = 0; i < f; i++)
     {
       for(j = 0; j < pomesh->nloops[i]; j++)
 	{
+	  m += pomesh->nverts[l];
 	  l++;
-	  m += pomesh->nverts[j];
 	}
     }
 
   /* count number of old loops and vertices (in target) */
-  for(k = 0; k < target->npolys; k++)
+  n = 0;
+  for(i = 0; i < target->npolys; i++)
     {
-      oldtotalloops = target->nloops[k];
-      for(l = 0; l < target->nloops[k]; l++)
+      oldtotalloops += target->nloops[i];
+      for(j = 0; j < target->nloops[i]; j++)
 	{
 	  oldtotalverts += target->nverts[n];
 	  n++;
@@ -1083,7 +1088,7 @@ ay_pomesht_splitface(ay_pomesh_object *pomesh, unsigned int f,
       return AY_EOMEM;
     }
   target->nloops = tmp;
-  target->nloops[target->npolys] = pomesh->nloops[f];
+  target->nloops[target->npolys-1] = pomesh->nloops[f];
 
   /* for all new loops in target, set the number of vertices */
   tmp = NULL;
@@ -1093,7 +1098,7 @@ ay_pomesht_splitface(ay_pomesh_object *pomesh, unsigned int f,
       return AY_EOMEM;
     }
   target->nverts = tmp;
-  for(k = oldtotalloops; k < pomesh->nloops[f]; k++)
+  for(k = oldtotalloops; k < oldtotalloops + pomesh->nloops[f]; k++)
     {
       /* l is the loop index (in pomesh) */
       target->nverts[k] = pomesh->nverts[l];
@@ -1105,6 +1110,7 @@ ay_pomesht_splitface(ay_pomesh_object *pomesh, unsigned int f,
 	{
 	  return AY_EOMEM;
 	}
+      target->verts = tmp;
       dtmp = NULL;
       if(!(dtmp = realloc(target->controlv, (target->ncontrols +
 					     pomesh->nverts[l]) * stride *
@@ -1116,11 +1122,13 @@ ay_pomesht_splitface(ay_pomesh_object *pomesh, unsigned int f,
       for(n = 0; n < pomesh->nverts[l]; n++)
 	{
 	  target->verts[oldtotalverts + n] = target->ncontrols + n;
+	  if(pomesh->verts[m + n]>pomesh->ncontrols)
+	    printf("gotcha!\n");	    
 	  memcpy(&(target->controlv[(target->ncontrols + n)*stride]),
 		 &(pomesh->controlv[(pomesh->verts[m + n])*stride]),
 		 stride*sizeof(double));
 	} /* for */
-     target->ncontrols += pomesh->nverts[l];
+      target->ncontrols += pomesh->nverts[l];
   
       /* increase all index variables used */
       m += pomesh->nverts[l];
@@ -1142,7 +1150,8 @@ ay_pomesht_split(ay_pomesh_object *pomesh, ay_point *pnts,
 {
  int ay_status = AY_OK;
  ay_point *pnt = NULL;
- unsigned int i, j, k, m = 0;
+ unsigned int i, j, k, m, n;
+ int stride = 3;
  int foundpnt, splitoffthisface;
  double *v0, *v1;
  ay_pomesh_object *pomesh0 = NULL, *pomesh1 = NULL;
@@ -1159,45 +1168,61 @@ ay_pomesht_split(ay_pomesh_object *pomesh, ay_point *pnts,
       free(pomesh0); return AY_EOMEM;
     }
 
+  if(pomesh->has_normals)
+    stride = 6;
+
+  m = 0;
+  n = 0;
   for(i = 0; i < pomesh->npolys; i++)
     {
       splitoffthisface = AY_TRUE;
+
       for(j = 0; j < pomesh->nloops[i]; j++)
 	{
-	  for(k = 0; k < pomesh->nverts[j]; k++)
+	  /* if we still believe we split off this face we continue
+	     checking its vertices, otherwise just increase m */
+	  if(splitoffthisface)
 	    {
-	      /* if we still believe we split off this face we continue
-		 checking its vertices, otherwise just increase m */
-	      if(splitoffthisface)
+	      for(k = 0; k < pomesh->nverts[n]; k++)
 		{
-		  foundpnt = AY_FALSE;
-		  pnt = pnts;
-		  while(pnt)
+		  /* if we still believe we split off this face we continue
+		     checking its vertices, otherwise just increase m */
+		  if(splitoffthisface)
 		    {
-		      v0 = &(pomesh->controlv[pomesh->verts[m]*3]);
-		      v1 = pnt->point;
-		      if(AY_V3COMP(v0,v1))
+		      foundpnt = AY_FALSE;
+		      pnt = pnts;
+		      while(pnt)
 			{
-			  foundpnt = AY_TRUE;
+			  v0 = &(pomesh->controlv[pomesh->verts[m]*stride]);
+			  v1 = pnt->point;
+			  if(AY_V3COMP(v0,v1))
+			    {
+			      foundpnt = AY_TRUE;
+			      break;
+			    }
+			  pnt = pnt->next;
+			} /* while */
+		      if(!foundpnt)
+			{
+			  /* a face vertex was _not_ found in the list of
+			     selected points => do not split off this face */
+			  splitoffthisface = AY_FALSE;
+			  /* increase m as if we continued looping */
+			  m += (pomesh->nverts[n]-k);
+			  /* now we may break the inner for() and return
+			     to the pnt comparison only for the next face
+			     (when splitoffthisface is AY_TRUE again) */
 			  break;
-			}
-		      pnt = pnt->next;
-		    } /* while */
-		  if(!foundpnt)
-		    {
-		      /* a face vertex was _not_ found in the list of
-			 selected points => do not split off this face */
-		      splitoffthisface = AY_FALSE;
-		      /* increase m as if we continued looping */
-		      m += (pomesh->nverts[j]-k);
-		      /* now we may break the inner for() and return
-			 to the pnt comparison only for the next face
-			 (when splitoffthisface is AY_TRUE again) */
-		      break;
+			} /* if */
 		    } /* if */
-		} /* if */
-	      m++;
-	    } /* for */
+		  m++;
+		} /* for */
+	    }
+	  else
+	    {
+	      m += pomesh->nverts[n];
+	    } /* if */
+	  n++;
 	} /* for */
 
       /* if all vertices of this face were to be found in <pnts>... */
@@ -1213,5 +1238,65 @@ ay_pomesht_split(ay_pomesh_object *pomesh, ay_point *pnts,
 
     } /* for */
 
+  /* return result */
+  *result = pomesh1;
+
+  /* XXXX copy arrays from pomesh0 to original pomesh */
+
  return ay_status;
 } /* ay_pomesht_split */
+
+
+int
+ay_pomesht_splittcmd(ClientData clientData, Tcl_Interp *interp,
+		     int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ char fname[] = "splitPo";
+ ay_object *o = NULL, *newo;
+ ay_list_object *sel = ay_selection;
+
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, fname, NULL);
+      return TCL_OK;
+    }
+
+  while(sel)
+    {
+      o = ay_selection->object;
+
+      if(o->type == AY_IDPOMESH)
+	{
+	  if(o->selp)
+	    {
+	      newo = NULL;
+	      if(!(newo = calloc(1, sizeof(ay_object))))
+		{
+		  ay_error(AY_EOMEM, fname, NULL);
+		  return TCL_OK;
+		}
+	      ay_status = ay_pomesht_split((ay_pomesh_object*)o->refine,
+					   o->selp,
+					(ay_pomesh_object**)&(newo->refine));
+
+	      if(newo->refine)
+		{
+		  ay_object_defaults(newo);
+		  ay_trafo_copy(o, newo);
+		  newo->type = AY_IDPOMESH;
+		  ay_object_link(newo);
+		}
+	      else
+		{
+		  ay_error(AY_ERROR, fname, "Split failed.");
+		  free(newo);
+		}
+	    } /* if */
+	} /* if */
+      sel = sel->next;
+    } /* while */
+
+
+ return TCL_OK;
+}
