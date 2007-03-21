@@ -3,6 +3,7 @@
 <article>
 
 <title>Ayam
+
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
 
 <date>27. Feb 2007
@@ -17,8 +18,7 @@ given in the tutorials.
 
 This document has been written using the SGML-Tools formatting
 system to generate files in a variety of text formats from one source file.
-There are HTML and PDF versions of this document
-prepared for you.
+There are HTML and PDF versions of this document prepared for you.
 
 In addition, you can use the provided SGML-source to generate other formats.
 </abstract>
@@ -1989,8 +1989,7 @@ it is highly suggested to use grids with this action.
 <sect1>Scaling Objects or Selected Points<label id="scalac">
 <p>
 There are several different actions available to scale
-objects or the selected (tagged) points
-of the selected objects.
+objects or the selected (tagged) points of the selected objects:
 <p>
 The modelling action <tt/"Scale 3D"/ (shortcut: <tt/&lt;S&gt;/, note the
 big S!) scales all three axes of the selected objects or
@@ -2036,8 +2035,8 @@ it will be removed from the list instead. Note that the list
 of selected points will not be deleted from the object
 until a de-select is performed using the shortcut <tt/&lt;D&gt;/.
 <p>
-Note that the list of selected points is not copied, if the object is copied
-using the clipboard.
+Note that the list of selected points is not copied, if the object
+is copied using the clipboard.
 Undo and redo will destroy the list of selected points too!
 <p>
 However, it is perfectly legal to select some points, move them using
@@ -2655,7 +2654,7 @@ Examples:
 adds a single color value (0,1,0), which is the same all over the primitive;
 <code>PV mys,varying,f,4,0.1,0.2,0.3,0.4</code>
 could be used to add a distinct float value to each corner point of a
-standard NURBS patch (order, width, and height 4).
+four point NURBS patch (of order, width, and height 2).
 <p>
 Note that not all geometric objects currently honour PV tags
 on RIB export. The geometric objects currently supporting PV tags
@@ -3493,8 +3492,8 @@ management of material objects:
 <item><tt/"Materialname"/ denotes the name of the material. Note
 that material names have to be unique in a scene. If two
 materials with the same name exist, only the first material
-created with this name is "registered" and thus
-may be connected to geometric objects.
+created with this name is "registered" and thus may be connected
+to geometric objects.
 <item><tt/"Refcount"/ shows how many geometric objects are connected to
 (are of) this material. Note that connected or referring geometric objects
 not necessarily have to live in the scene, they may as well temporarily
@@ -3505,91 +3504,101 @@ connected to geometric objects, see the discussion about material names above.
 
 <sect1>Light Object<label id="lightobj">
 <p>
+Light objects let you bring light into your scenes.
+<p>
 In contrast to the light sources as defined in the RenderMan
-interface, Ayam light sources are always global. This means,
-regardless of the place of a light source in the scene
+interface, normal Ayam light sources are always global. This
+means, regardless of the place of a light source in the scene
 hierarchy, it will always light all other objects.
-
+<p>
+Note that you cannot preview the effect of a light source in
+shaded Ayam views, currently. However it is possible to estimate
+the effect of a spot light source by simply dropping it into
+a perspective view window, the view will then show you the objects
+lighted by the spot.
+<p>
 The behaviour of a light source object depends heavily on the type
 of the light source.
-There are four different types available:
+There are four different light types available in Ayam:
 <tt/"custom"/, <tt/"point"/, <tt/"distant"/ and <tt/"spot"/.
-
+<p>
 Custom Lights:<label id="cul">
 <p>
 Light sources of type custom use the attached light shader.
-
+<p>
 Note that Ayam is trying to guess from the names of the light shader
 arguments to draw the light.
-The names <tt/"from"/ and <tt/"to"/ denote location and
-destination of the lightsource. You should not use these names for other
-things in your light shaders!
-
+The names <tt/"from"/ and <tt/"to"/ denote location and destination
+of the lightsource. You should not use these names for other things
+in your light shaders!
+<p>
 Point-, Distant-, and Spotlights:<label id="pdsl">
 <p>
 These (standard) light sources have well defined parameters that
 will be displayed in the <tt/"LightAttr"/ property.
 Please refer to the RenderMan documentation for more information
-about the standard light sources
-(see section <ref id="secref" name="references">).
+about the standard light sources (see section
+<ref id="secref" name="references">).
 
 <sect2>LightAttr Property<label id="lip"><label id="lightattrprop">
 <p>
 Depending on the type of the light source, the light attribute
 property contains different parameters. Parameters that
-are not displayed will not be used on RIB export, consequently.<p>
-
+are not displayed will not be used on RIB export, consequently.
+<p>
 Using <tt/"Type"/ you can change the type of the light source.
-When you change the type of a light source,
-the property GUI will be adapted but only after you use the
-<tt/"Apply"/-button.
-
+When you change the type of a light source, the property GUI will
+be adapted to show only the options available for the new light
+source type, but only after you used the <tt/"Apply"/-button.
+<p>
 <tt/"IsOn"/ allows you to switch the light off or on. The default
-value is on.<p>
-
+value is on.
+<p>
 <tt/"IsLocal"/ controls whether the light source should light
 just local objects (objects, that are defined in the same level
-in the scene hierarchy as the
-light source object or below) or all objects in the scene.
+in the scene hierarchy as the light source object or below it) or
+all objects in the scene.
 The default is off, all objects in the scene are lighted!
 The <tt/"IsLocal"/ attribute is ignored for lights that are
-defined in the root level of the scene. Note that shadow maps
+defined in the root level of the scene. Mind also that shadow maps
 will always contain shadows from all objects in the scene,
-regardless of local lights.<p>
-
+regardless of local lights.
+<p>
 Using the light attribute <tt/"Shadows"/ you may determine
 whether the lightsource should cast shadows.
-The default is off, no shadows!<p>
-
+The default is off, no shadows! Note that this option will not
+magically enable shadows on renderers that create shadows by
+shadow maps. It will merely be interpreted by raytracing
+renderers like BMRT.
+<p>
 The attribute <tt/"Samples"/ determines the number of times to sample
-an area light source, independent of pixel samples, the default value is 1.
-This attribute is available for custom lights only!<p>
-
+an area light source, independent of pixel samples, the default value
+is 1. This attribute is available for custom lights only!
+<p>
 <tt/"UseSM"/ determines, whether shadow maps should be created
 and used for this light source. The resolution of the
-shadow map may be determined by <tt/"SMRes"/. If
+shadow map may be determined by the attribute <tt/"SMRes"/. If
 <tt/"SMRes"/ is 0, a default of 256 by 256 pixels will be used.
 These options are for renderers that do not support raytraced
 shadows like PRMan or Aqsis only.
-
+<p>
 For lights of type <tt/"Distant"/ the <tt/"Scale"/ attributes
 of the <tt/"Transformations"/ property of the light
 object may be used to scale the camera transformation
 used for the creation of the corresponding shadow map.
 Values of 1 for <tt/"Scale_X"/ and <tt/"Scale_Y"/ create
 a shadow map that is sized 1 by 1 units in world space.
-
+<p>
 All other parameters that may appear in the <tt/"LightAttr"/
-property are the standard parameters
-for the standard RenderMan light sources: distant, point, and
-spot:
+property are the standard parameters for the standard RenderMan
+light sources: distant, point, and spot:
 <itemize>
 <item><tt/"From"/ and <tt/"To"/ denote position and target of the light
 source as point in space. You may edit both points using standard
 point editing actions (see also section
 <ref id="iac" name="interactive actions">).
-<item><tt/"Color"/ is the color of the light, emitted by the light source.
-<item><tt/"Intensity"/ is the intensity of the light, emitted by the
+<item><tt/"Color"/ is the color of the light emitted by the light source.
+<item><tt/"Intensity"/ is the intensity of the light emitted by the
 light source. Note that the standard point and spot lights have
 a quadratic falloff (with distance), that requires the intensity
 to be set to quite high values in order to achieve some
@@ -3598,17 +3607,15 @@ illumination effect (e.g. around 30 for the standard distance of
 <item><tt/"ConeAngle"/ is the angle of the beam of a spot light.
 <item><tt/"ConeDAngle"/ (cone delta angle) is the angle that determines a
 falloff area at the edge of the beam of a spot light.
-<item><tt/"BeamDistrib"/ (beam distribution) determines, how the light falls
-off in the beam of the spot light. Larger values result in narrower
-light sources.
+<item><tt/"BeamDistrib"/ (beam distribution) determines, how the light
+falls off in the beam of the spot light. Larger values result in narrower
+lighted areas.
 </itemize>
 
-In order to ease the parameterisation of spot lights,
-you may drop the light source object on to a view object
-(preferably one with a perspective viewing transformation and with
-equal width and height)
-to see what objects of the scene are actually lighted by
-the light object.
+In order to ease the parameterisation of spot lights, you may drop the
+light source object on to a view object (preferably one with a perspective
+viewing transformation and with equal width and height) to see what objects
+of the scene are actually lighted by the light object.
 
 <sect2>Using ShadowMaps<label id="shadowmaps">
 <p>
@@ -3653,8 +3660,8 @@ The manual approach has the advantage,
 that the shadow maps will not be re-created each time you render
 the scene.
 <p>
-Ayam supports three different methods for the creation
-of shadow maps for certain types of light sources: point, distant, and spot:
+Ayam supports three different methods for the creation of shadow maps
+for certain types of light sources: point, distant, and spot:
 <p>
 The point method is used with
 lights of type <tt>"Point"</tt> and custom lights that have a light
@@ -3688,8 +3695,8 @@ angle, if present) argument to determine the size of the shadow map
 in world space.
 <p>
 If a light object of type <tt>"Spot"</tt>, <tt>"Distant"</tt> or
-<tt>"Point"</tt> is used, Ayam automatically changes the name of the exported
-light shader to <tt>"shadowspot"</tt>, <tt>"shadowdistant"</tt>,
+<tt>"Point"</tt> is used, Ayam automatically changes the name of the
+exported light shader to <tt>"shadowspot"</tt>, <tt>"shadowdistant"</tt>,
 and <tt>"shadowpoint"</tt> respectively. Additionally, the shader
 will be parameterized to use the created shadow maps.
 If the light source is of type <tt>"Custom"</tt>, no automatic renaming
@@ -3697,13 +3704,13 @@ and adjusting of the shader takes place. This means, you have
 to make sure that the shader really uses the shadow maps, by
 selecting the right shader and parameterizing it accordingly.
 See the discussion above for the names of the shadow map files.
-Those file names, probably, will have to be entered as parameter
+Those file names, most probably, will have to be entered as parameter
 to the light shader.
 <p>
-For example, you will not get any shadows if you use a light source of type
-<tt/"Custom"/ with a <tt/"distantlight"/ shader attached, even though
-Ayam is able to create the necessary shadow maps. The <tt/"distantlight"/
-shader just makes no use of them.
+For example, you will not get any shadows if you use a light source of
+type <tt/"Custom"/ with the normal <tt/"distantlight"/ shader attached,
+even though Ayam is able to create the necessary shadow maps. The
+normal <tt/"distantlight"/ shader just makes no use of the shadow maps.
 You have to manually switch to a shader that
 makes use of the shadow maps (<tt/"shadowdistant"/ in this case) to get
 shadows.
@@ -3734,17 +3741,21 @@ shadow maps, e.g. Photorealistic RenderMan (prman) or Aqsis.
 
 This scene is distributed with Ayam as an example scene named
 <tt>"shadowmaps.ay"</tt>.
-
+<p>
 Note that for Aqsis you should add a RiHider hidden,depthfilter,s,midpoint
 tag to your root object if shadow maps are in use. Other renderers might
 require additional tweaking using shadow bias RiOption tags.
-
-Do not render directly from a view window if your renderer
-does not write image files when the command line option
-to render directly to the display (-d for rendrib, or -fb for Aqsis)
-is in use. This command line
-option may inhibit writing of the shadow maps, so that the resulting
-image will look wrong.
+Please consult the documentation of your renderer on how to achieve
+the best results using shadow maps.
+<p>
+Do not render directly from a view window to the display when the
+<tt/"ShadowMaps"/ <tt/"RIB-Export"/ preference option is set to
+<tt>"Automatic"</tt>.
+Your renderer may not write image files when the command line option
+to render directly to the display (-d for rendrib, or -fb for Aqsis) is
+in use. Consequently, this may also inhibit writing of the shadow maps,
+so that the resulting image will look wrong, or the renderer will render
+the shadow map to the display and simply stop.
 
 <sect2>Using AreaLights<label id="alob">
 <p>
@@ -3752,26 +3763,27 @@ The common idealized standard light sources <tt/"Point"/, <tt/"Distant"/
 and <tt/"Spot"/ have no own geometric extension in space.
 This means, shadows resulting from such light sources will have sharp
 borders which does not look too naturally.
-Good looking soft shadows may be generated using area lights.<p>
+Good looking soft shadows may be generated using area lights.
+<p>
 Area lights may be created by simply placing a single object as child
 object of a <tt/"Custom"/ light object that has the <tt>"arealight"</tt>
 shader attached:
 <code>
 +-AreaLight(Light)
- \--AreaLightGeometry(Sphere)
+ \ AreaLightGeometry(Sphere)
 </code>
-<p>
 This child object determines the geometry of the lightsource.
 According to L. Gritz, Spheres and Cylinders work best as area light
-geometry for BMRT, because of special sampling code.<p>
+geometry for BMRT, because of special sampling code.
+<p>
 An example:
 <itemize>
 <item>Create a custom light object.
 <item>Assign the arealight light shader to it.
-<item>Create a Sphere.
-<item>Drag-and-Drop the Sphere onto the Light object so that it becomes
+<item>Create a sphere.
+<item>Drag-and-Drop the sphere onto the Light object so that it becomes
 a child of the light object.
-<item>Transform the object to your hearts content; the position
+<item>Transform the sphere object to your hearts content; the position
 and size of the object determines the position and size of the lightsource!
 </itemize>
 
@@ -4331,7 +4343,7 @@ level object (as you can not add tags to instance objects):
 <code>
 +-Clone
  +-Level with NoExport tag
- |\-Instance
+ |\ Instance
  \ Trajectory(NCurve)
 </code>
 <p>
@@ -4356,7 +4368,7 @@ of e.g. a Skin object:
 <code>
 +-Skin
  +-Mirror(Clone)
-  \-NCurve
+  \ NCurve
 </code>
 <item><tt/"Translate_X"/, <tt/"Translate_Y"/, <tt/"Translate_Z"/,
 <tt/"Rotate_X"/, <tt/"Rotate_Y"/, <tt/"Rotate_Z"/,
@@ -4381,8 +4393,7 @@ curve is present. They are not in use when the mirror mode is activated.
 <caption>Revolve Object (left: Curve, right: Surface of Revolution)</caption>
 </figure>
 <p>
-The Revolve object forms a surface of revolution from
-a NURBS curve.
+The Revolve object forms a surface of revolution from a NURBS curve.
 <p>
 The Revolve object has the generating NURBS curve as child object
 and watches its changes and adapts to it automagically.
@@ -4391,8 +4402,7 @@ The axis of revolution is always the Y axis of the coordinate
 system that is defined by the next higher
 level in the object hierarchy (the Y axis of the revolve
 object itself). The generating curve should lie in the XY plane of this
-coordinate system. If not, it will be squashed down
-to this plane!
+coordinate system. If not, it will be squashed down to this plane!
 <p>
 The following simple experiment should make the last
 statements more clear, during all steps watch the movements
@@ -4411,7 +4421,7 @@ edit the control points (Note how the Revolution changes).
 direction only (Revolution does not change!).
 </itemize>
 
-You may convert the current surface of revolution and the caps,
+You may convert the current surface of revolution, the bevels, and the caps,
 if there are any, to ordinary NURBS patches using the main menu entry
 <tt>"Tools/Convert"</tt>.
 
@@ -4494,7 +4504,7 @@ See section
 <ref id="toxyt" name="The To XY Tool"> for information on
 how to easily achieve curves in the XY plane.
 <p>
-You may convert the current surface of extrusion and the caps and bevels,
+You may convert the current surface of extrusion, the caps, and bevels,
 if there are any, to ordinary NURBS patches using the main menu entry
 <tt>"Tools/Convert"</tt>.
 
@@ -4533,7 +4543,6 @@ section <ref id="bevelp" name="BevelAttr Property">.
 <p>
 See section <ref id="npattr" name="NPatchAttr"> for a description
 of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
-
 
 <sect2>Using Holes and Bevels<label id="handb">
 <p>
@@ -4640,8 +4649,8 @@ Section <ref id="scexsweep" name="Easy Sweep"> has an example
 script that automates creation and parameterisation of
 a suitable cross section curve.
 <p>
-You may convert the current sweep and the caps, if there are any,
-to ordinary NURBS patches using the main menu entry
+You may convert the current sweep, the bevels, and the caps, if there
+are any, to ordinary NURBS patches using the main menu entry
 <tt>"Tools/Convert"</tt>.
 
 <sect2>SweepAttr Property<label id="swp"><label id="sweepattrprop">
@@ -4726,7 +4735,7 @@ number of sections choosen.
 The Birail1 object watches the child objects and adapts to them
 automatically via the notification mechanism.
 <p>
-You may convert the current birailed surface and the caps,
+You may convert the current birailed surface, the bevels, and the caps,
 if there are any, to ordinary NURBS patches using the main menu entry
 <tt>"Tools/Convert"</tt>.
 <p>
@@ -4821,7 +4830,7 @@ option is used (which is available since Ayam 1.10).
 The Birail2 object watches the child objects and adapts to them
 automatically via the notification mechanism.
 <p>
-You may convert the current birailed surface and the caps,
+You may convert the current birailed surface, the bevels, and the caps,
 if there are any, to ordinary NURBS patches using the main menu entry
 <tt>"Tools/Convert"</tt>.
 <p>
@@ -4903,16 +4912,17 @@ dimension (height) of the skinned surface. The number of the parameter
 curves will define the u dimension (width) of the skinned surface.
 <p>
 Also note that the resulting patch may be quite complex, even though
-the curves are not, if the orders or knot vectors of the curves do not match.
-A skinned patch from two curves of length 4 but one with
+the curves are not, if the orders or knot vectors of the curves do not
+match.
+For example, a skinned patch from two curves of length 4 but one with
 order 4 and the other with order 2 will result in a patch with
 a width of 2 and a height of 10!
 <p>
 The skin object has the generating NURBS curves as child objects
 and watches their changes and adapts to them automagically.
 <p>
-You may convert the current skin and the caps, if there are any,
-to ordinary NURBS patches using the main menu entry
+You may convert the current skinned surface, the bevels, and the caps,
+if there are any, to ordinary NURBS patches using the main menu entry
 <tt>"Tools/Convert"</tt>.
 <p>
 The following parameters control the skinning process:
@@ -4951,7 +4961,7 @@ to <tt/"B-Spline"/) the cap(s) will not be created in the right place.
 The cap(s) will always be created in the position of the first (last)
 parameter curve.
 <p>
-Since Ayam 1.10 bevels are available for birails.
+Since Ayam 1.10 bevels are available for skins.
 They are accessible through the new command entries <tt/"Add Start Bevel!"/
 and <tt/"Add End Bevel!"/ respectively. If one of those entries is used,
 a bevel parameter tag is created and more options will be made available
@@ -4975,7 +4985,8 @@ The Gordon object forms a surface defined by two sets of intersecting
 curves (a network of curves), where all curves will always be interpolated
 by the surface (see image above). The image below shows the simplest
 configuration of such a network, consisting of four parameter curves.
-Note the order and the direction of the curves.
+Note the arrangement and the direction of the curves.
+Also note that this configuration is in fact equivalent to a Coons patch.
 <p>
 <figure loc="ht">
 <eps file="pics/sgordon.ps" height="6cm">
@@ -4987,10 +4998,15 @@ The curves may be of arbitrary length and order. You may e.g.
 use a curve of order 2 and length 6 with a second curve
 of order 4 and length 4 and a third curve with order 3 and 5
 control points for the u parametric dimension. Note, however,
-that only non-rational curves can be used as parameter curves
-for a Gordon surface.
+that in the general case only non-rational curves can be used
+as parameter curves for a Gordon surface.
 If the parameter curves are rational, the weight information
 of the curves will simply be ignored.
+However, since Ayam 1.13 there is a special case allowed: if
+exactly four parameter curves are present, their weight
+information will be used properly. Mind that for a correct
+surface interpolation the curves weights have to match in the
+respective end points.
 <p>
 The Gordon object has the generating NURBS curves as child objects
 and watches their changes and adapts to them automagically.
@@ -5103,7 +5119,7 @@ Consequently, the template for the object hierarchy of a Bevel object
 looks like this:
 <code>
 +-Bevel
- \-NCurve
+ \ NCurve
 </code>
 <p>
 Bevels are also available as properties of different tool objects
@@ -5186,6 +5202,13 @@ the first curve define holes in the cap surface similar to the
 parameter curves of an extruded surface (see also section
 <ref id="handb" name="Using Holes and Bevels">).
 <p>
+Since Ayam 1.13 the cap object also supports the so called Gordon mode.
+Here, only a single parameter curve may be present but, in contrast
+to the standard mode of operation (Trim), in the Gordon mode the parameter
+curve may be non-planar. Internally the cap object will split the
+parameter curve into four sections and build a Gordon surface from
+the four sections.
+<p>
 Consequently, the template for the object hierarchy of a Cap object
 looks like this:
 <code>
@@ -5210,8 +5233,15 @@ via the notification mechanism.
 <p>
 You may convert the current cap surface to an ordinary NURBS patch object
 using the main menu entry <tt>"Tools/Convert"</tt>.
+<p>
+The following parameters control the cap creation process:
 
 <sect2>CapAttr Property<label id="capp"><label id="capattrprop">
+<p>
+The attribute <tt/"Type"/ determines whether a trimmed NURBS surface
+should be created (type <tt/"Trim"/), or an untrimmed Gordon surface
+(type <tt/"Gordon"/), see also the general discussion about the cap
+object above.
 <p>
 See section <ref id="npattr" name="NPatchAttr"> for a description
 of the two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/
@@ -5379,8 +5409,8 @@ the following example hierarchy is valid:
 --NPatch
 +-Skin
  +-ExtrNC
- |\-Instance_of_NPatch(Instance)
- \-NCurve
+ |\ Instance_of_NPatch(Instance)
+ \ NCurve
 </code>
 Depending on the parameters of the ExtrNC object, the skin will have
 one boundary in common with a boundary or an iso-curve of the NPatch
@@ -7717,6 +7747,10 @@ The DXF import may be controlled via different options:<label id="impdxfopt">
 <itemize>
 <item><tt/"ScaleFactor"/ allows to apply a scaling factor to all
 imported objects.
+<item> <tt/"ReadLayers"/:
+By default, all entities from all layers will be imported.
+Using the <tt/"ReadLayers"/ import option, a single layer or a range
+of layers may be selected for import.
 </itemize>
 
 <sect1>RenderMan Interface Bytestream (RIB) Import<label id="imprib">
@@ -7852,8 +7886,8 @@ Since Ayam 1.8.3 a Wavefront OBJ (version 3.0) import facility is available.
 The corresponding main menu entry is
 <tt>"File/Import/Wavefront OBJ"</tt>.
 <p>
-Wavefront OBJ import supports reading of polygonal faces with vertex normals
-and texture coordinates (read as primitive variable tags) and
+Wavefront OBJ import supports reading of polygonal faces with vertex
+normals and texture coordinates (read as primitive variable tags) and
 freeform curves and surfaces (NURBS) with trim curves and with
 texture coordinates (read as primitive variable tags).
 <p>
@@ -7861,7 +7895,7 @@ Freeform curves and surfaces of basis type bmatrix, cardinal and taylor
 are currently not supported. Also, import of special curves and
 points (e.g. curve on surface) is currently not supported. Furthermore,
 trimming of freeform curves and surfaces by clamping their knot ranges
-is not supported (however, since Ayam 1.9 UMM/VMM
+is not supported (however, since Ayam 1.9, UMM/VMM
 tags will be created, that contain the new knot minimum and maximum
 values). No material and grouping information will be imported.
 Unsupported statements will be silently ignored.
@@ -7927,6 +7961,10 @@ to the child objects
 Since the Wavefront OBJ format does not support separate transformation
 attributes, all transformation attributes will be used to transform the
 coordinate values (the control points) of the exported objects.
+The hierarchy of the Ayam scene will be squashed.
+CSG operations are fully ignored, all objects will be written
+as if combined by the union operator.
+
 <p>
 The Wavefront OBJ export, currently, ignores all material information.
 Only the pure geometry information is written to the OBJ file.
@@ -8124,8 +8162,9 @@ be created if the cylinder is closed).
 The BRep cone does not support ThetaMax (a base cap will be
 created, if the cone is closed).
 The BRep torus does not support PhiMin, PhiMax, and ThetaMax.
-The option has no effect on the export of disks, hyperboloids,
-and paraboloids. Those will always be exported as NURBS surfaces.
+The <tt/"QuadAsBRep"/ option has no effect on the export of disks,
+hyperboloids, and paraboloids. Those will always be exported as NURBS
+surfaces.
 <item><tt>"TopLevelLayers"</tt> controls whether the top level objects
 in the scene to be exported should be interpreted as layers.
 If this option is enabled, objects that are not in one of those levels
@@ -8839,14 +8878,12 @@ OpenGL (R) is a registered trademark of Silicon Graphics, Inc.
 
 The RenderMan (R) Interface Procedures and Protocol are:
 Copyright 1988, 1989, 2000 Pixar
-
 All Rights Reserved
 
 RenderMan (R) is a registered trademark of Pixar
 
 The Affine Libraries and Tools are
 Copyright (c) 1995, 1996, 1997, 1998 Thomas E. Burge
-
 All rights reserved.
 
 Affine (R) is a registered trademark of Thomas E. Burge.
@@ -8857,7 +8894,6 @@ Copyright (c) 1991-1997 Silicon Graphics, Inc.
 
 Dime is
 Copyright (c) 1998-1999 Systems In Motion, SA
-
 All rights reserved.
 
 AutoCAD (R)  is a registered trademark of Autodesk, Inc.
@@ -9008,6 +9044,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>Console: <ref id="cons" name="what is">
 <item>Convert: <ref id="mmtools" name="main menu entry">
 <item>convOb: <ref id="scconvob" name="scripting interface command">
+<item>Coons Patch: <ref id="gordonobj" name="Gordon object">
 <item>Create: <ref id="mmcreate" name="create menu">
 <item>CreateMP: <ref id="ncattr" name="NURBCurve attribute">
 <item>Create ShadowMaps: <ref id="mmspecial" name="main menu entry">,
@@ -9624,7 +9661,9 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <ref id="pmattr" name="patchmesh attribute">,
 <ref id="vat" name="view attribute">,
 <ref id="scriptattr" name="script attribute">,
-<ref id="riprocp" name="riproc attribute">
+<ref id="riprocp" name="riproc attribute">,
+<ref id="capattrprop" name="cap attribute">,
+<ref id="ncurveattrprop" name="ncurve attribute">
 </itemize>
 
 <label id="indexu">U
