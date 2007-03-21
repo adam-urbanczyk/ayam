@@ -680,6 +680,8 @@ Tcl_AppInit(Tcl_Interp *interp)
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
   Tcl_CreateCommand(interp, "optiPo", ay_pomesht_optimizetcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+  Tcl_CreateCommand(interp, "splitPo", ay_pomesht_splittcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   /* prop.c */
   Tcl_CreateCommand(interp, "setProp", ay_prop_settcmd,

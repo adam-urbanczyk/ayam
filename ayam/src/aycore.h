@@ -381,6 +381,14 @@ int ay_pomesht_optimizetcmd(ClientData clientData, Tcl_Interp * interp,
 
 int ay_pomesht_tosdmesh(ay_pomesh_object *pomesh, ay_sdmesh_object **sdmesh);
 
+int ay_pomesht_splitface(ay_pomesh_object *pomesh, unsigned int f,
+			 ay_pomesh_object *target);
+
+int ay_pomesht_split(ay_pomesh_object *pomesh, ay_point *pnts,
+		     ay_pomesh_object **result);
+
+int ay_pomesht_splittcmd(ClientData clientData, Tcl_Interp *interp,
+			 int argc, char *argv[]);
 
 /* prefs.c */
 int ay_prefs_gettcmd(ClientData clientData, Tcl_Interp *interp,
