@@ -61,7 +61,7 @@ static Tcl_HashTable dxfio_write_ht;
 
 // last read object
 ay_object *dxfio_lrobject = NULL;
-// all blocks defined in the DXF file
+// list of master objects of inserted blocks from the DXF file
 dxfio_block *dxfio_blocks = NULL;
 
 // current transformation matrix
@@ -258,7 +258,7 @@ dxfio_read3dface(const class dimeState *state,
  int ay_status = AY_OK;
  ay_object *newo = NULL;
  ay_pomesh_object *pomesh = NULL;
- ay_bpatch_object *newbp = NULL;
+ ay_bpatch_object *bpatch = NULL;
  dimeVec3f v0, v1, v2, v3;
  dimeVec3f d1, d2, n;
  double d, dp;
@@ -377,28 +377,28 @@ dxfio_read3dface(const class dimeState *state,
       else
 	{
 	  // quad is not planar
-	  if(!(newbp = (ay_bpatch_object*)calloc(1, sizeof(ay_bpatch_object))))
+	  if(!(bpatch = (ay_bpatch_object*)calloc(1, sizeof(ay_bpatch_object))))
 	    { free(newo); return AY_EOMEM; }
 
-	  newbp->p1[0] = v0[0];
-	  newbp->p1[1] = v0[1];
-	  newbp->p1[2] = v0[2];
+	  bpatch->p1[0] = v0[0];
+	  bpatch->p1[1] = v0[1];
+	  bpatch->p1[2] = v0[2];
 
-	  newbp->p2[0] = v1[0];
-	  newbp->p2[1] = v1[1];
-	  newbp->p2[2] = v1[2];
+	  bpatch->p2[0] = v1[0];
+	  bpatch->p2[1] = v1[1];
+	  bpatch->p2[2] = v1[2];
 
-	  newbp->p3[0] = v2[0];
-	  newbp->p3[1] = v2[1];
-	  newbp->p3[2] = v2[2];
+	  bpatch->p3[0] = v2[0];
+	  bpatch->p3[1] = v2[1];
+	  bpatch->p3[2] = v2[2];
 
-	  newbp->p4[0] = v3[0];
-	  newbp->p4[1] = v3[1];
-	  newbp->p4[2] = v3[2];
+	  bpatch->p4[0] = v3[0];
+	  bpatch->p4[1] = v3[1];
+	  bpatch->p4[2] = v3[2];
 
 	  newo->type = AY_IDBPATCH;
-	  newo->refine = newbp;
-	  newbp = NULL;
+	  newo->refine = bpatch;
+	  bpatch = NULL;
 	} // if
     } // if
 
@@ -420,8 +420,8 @@ cleanup:
       free(pomesh);
     }
 
-  if(newbp)
-    free(newbp);
+  if(bpatch)
+    free(bpatch);
 
  return ay_status;
 } // dxfio_read3dface
@@ -782,7 +782,6 @@ dxfio_readlwpolyline(const class dimeState *state,
   // XXXX process bulges
 
 
-
   // link the new curve/lwpolyline into the scene hierarchy
   ay_status = dxfio_linkobject(newo);
 
@@ -839,6 +838,7 @@ dxfio_getpolyline(const class dimeState *state,
   ay_nct_create(2, len, AY_KTNURB, newcv, NULL,
 		(ay_nurbcurve_object**)&(newo->refine));
   newo->type = AY_IDNCURVE;
+
   // XXXX process bulges?
 
  return ay_status;
@@ -932,7 +932,7 @@ dxfio_getpolymesh(const class dimeState *state,
 	{
 	  cv = polyline->getElevation();
 	  pomesh->controlv[a+2] = cv[2];
-	  }
+	}
       a += 3;
     } // for
 
@@ -1244,9 +1244,8 @@ dxfio_readpolyline(const class dimeState *state,
       ay_status = dxfio_linkobject(newo);
       newo = NULL;
     }
-  /*
-cleanup:
-  */
+
+  // cleanup
   if(newo)
     free(newo);
 

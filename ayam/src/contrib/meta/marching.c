@@ -97,15 +97,15 @@ meta_polygonise (meta_world * w, meta_gridcell * grid, double isolevel)
   /* Adaptive */
 
   w->scale = 1.0;
-  
-  if(w->adaptflag)   
+
+  if(w->adaptflag)
   {
      meta_boxscan(w,grid);
      return (cubeindex);
   }
 
- 
- 
+
+
   /* Find the vertices where the surface intersects the cube */
   if (edgeindex & 1)
     {
@@ -193,20 +193,20 @@ meta_polygonise (meta_world * w, meta_gridcell * grid, double isolevel)
 	{
 #if 0
 	  int ix,iy,iz;
-#endif	  
+#endif
 	  ti = triTable[cubeindex][i + j];
 
 #if 0
 	  ix = (vertlist[ti].x+2) * 40000;
 	  iy = (vertlist[ti].y+2) * 40000;
 	  iz = (vertlist[ti].z+2) * 40000;
-	  
+
 	  hash = ix%w->tablesize + iy%w->h1 + iz%w->h2;
 
-	  printf("hash: %d w->actindex %d\n",w->vhash[hash],w->indexnum);	
+	  printf("hash: %d w->actindex %d\n",w->vhash[hash],w->indexnum);
 
 
-	  if (((w->vhash[hash]==0)&&(w->actindex!=0))||(w->actindex==0))	
+	  if (((w->vhash[hash]==0)&&(w->actindex!=0))||(w->actindex==0))
 	  {
 #endif
 
@@ -238,7 +238,7 @@ meta_polygonise (meta_world * w, meta_gridcell * grid, double isolevel)
 #endif
 	  w->indexnum++;
 
-	  
+
 	}
 
       w->currentnumpoly++;
@@ -246,6 +246,6 @@ meta_polygonise (meta_world * w, meta_gridcell * grid, double isolevel)
 
     }
 
-	
+
   return (cubeindex);
 }
