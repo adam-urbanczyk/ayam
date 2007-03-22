@@ -72,6 +72,28 @@ int ay_pomesht_addvertexhash(ay_pomesht_hash *phash, int ign, double *point);
 
 /* functions */
 
+ /* ay_pomesht_destroy:
+  */
+int
+ay_pomesht_destroy(ay_pomesh_object *pomesh)
+{
+
+  if(!pomesh)
+    return AY_ENULL;
+
+  if(pomesh->nloops)
+    free(pomesh->nloops);
+  if(pomesh->nverts)
+    free(pomesh->nverts);
+  if(pomesh->verts)
+    free(pomesh->verts);
+  if(pomesh->controlv)
+    free(pomesh->controlv);
+  free(pomesh);
+
+ return AY_OK;
+} /* ay_pomesht_destroy */
+
 /* tesselation callbacks needed by GLU */
 void
 ay_pomesht_tcbBegin(GLenum prim)
@@ -1029,6 +1051,9 @@ cleanup:
 
 
 /* ay_pomesht_splitface:
+ *  split face <f> off of polymesh <pomesh> and add it to the
+ *  polymesh <target>
+ *  <pomesh> remains unchanged
  */
 int
 ay_pomesht_splitface(ay_pomesh_object *pomesh, unsigned int f,
@@ -1149,6 +1174,7 @@ ay_pomesht_split(ay_pomesh_object *pomesh, ay_point *pnts,
 		 ay_pomesh_object **result)
 {
  int ay_status = AY_OK;
+ char fname[] = "pomesht_split";
  ay_point *pnt = NULL;
  unsigned int i, j, k, m, n;
  int stride = 3;
@@ -1238,15 +1264,40 @@ ay_pomesht_split(ay_pomesh_object *pomesh, ay_point *pnts,
 
     } /* for */
 
-  /* return result */
+  /* check and return result */
+  if(pomesh1->npolys == pomesh->npolys)
+    {
+      /* oops, all faces from the original polymesh are in pomesh1
+	 => do nothing */
+      ay_pomesht_destroy(pomesh0);
+      ay_pomesht_destroy(pomesh1);
+      ay_error(AY_ERROR, fname, "All faces would be split off!");
+      return AY_ERROR;
+    } /* if */
+
   *result = pomesh1;
 
-  /* XXXX copy arrays from pomesh0 to original pomesh */
+  /* copy arrays from pomesh0 to original pomesh */
+  pomesh->npolys = pomesh0->npolys;
+  free(pomesh->nloops);
+  pomesh->nloops = pomesh0->nloops;
+  free(pomesh->nverts);
+  pomesh->nverts = pomesh0->nverts;
+  free(pomesh->verts);
+  pomesh->verts = pomesh0->verts;
+  free(pomesh->controlv);
+  pomesh->controlv = pomesh0->controlv;
+  pomesh->ncontrols = pomesh0->ncontrols;
+  free(pomesh0);
 
  return ay_status;
 } /* ay_pomesht_split */
 
 
+/* ay_pomesht_splittcmd:
+ *  split selectedpolymesh objects into two, based on their
+ *  selected points
+ */
 int
 ay_pomesht_splittcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[])
@@ -1291,12 +1342,21 @@ ay_pomesht_splittcmd(ClientData clientData, Tcl_Interp *interp,
 		{
 		  ay_error(AY_ERROR, fname, "Split failed.");
 		  free(newo);
-		}
+		} /* if */
+	    }
+	  else
+	    {
+	      ay_error(AY_ERROR, fname, "No point selection.");
 	    } /* if */
+	}
+      else
+	{
+	  ay_error(AY_EWTYPE, fname, "PolyMesh");
 	} /* if */
+
       sel = sel->next;
     } /* while */
 
 
  return TCL_OK;
-}
+} /* ay_pomesht_splittcmd */
