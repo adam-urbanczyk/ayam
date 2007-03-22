@@ -366,6 +366,8 @@ int ay_pact_centertcmd(ClientData clientData, Tcl_Interp *interp,
 int ay_pact_snaptogridcb(struct Togl *togl, int argc, char *argv[]);
 
 /* pomesht.c */
+int ay_pomesht_destroy(ay_pomesh_object *pomesh);
+
 int ay_pomesht_tesselate(ay_pomesh_object *pomesh);
 
 int ay_pomesht_merge(int merge_pv_tags, ay_list_object *list,

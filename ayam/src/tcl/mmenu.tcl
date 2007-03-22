@@ -402,6 +402,7 @@ $m add separator
 $m add cascade -menu $m.pm -label "PolyMesh"
 menu $m.pm -tearoff 0
 $m.pm add command -label "Merge" -command { pomesh_merge }
+$m.pm add command -label "Split" -command { splitPo }
 $m.pm add command -label "Optimize" -command { pomesh_optimize }
 
 $m add separator
