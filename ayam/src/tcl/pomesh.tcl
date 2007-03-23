@@ -187,3 +187,74 @@ proc pomesh_optimize { } {
  return;
 }
 # pomesh_optimize
+
+
+uplevel #0 { array set pomeshspl_options {
+    Optimize 1
+}   }
+
+# pomesh_split:
+#
+#
+proc pomesh_split { } {
+    global ay ay_error pomeshspl_options
+
+    winAutoFocusOff
+
+    set w .pomeshspl
+    catch {destroy $w}
+    toplevel $w -class ayam
+    wm title $w "Split PolyMesh"
+    wm iconname $w "Ayam"
+    wm transient $w .
+
+    set f [frame $w.f1]
+    pack $f -in $w -side top -fill x
+
+    addCheck $f pomeshspl_options Optimize
+
+    set f [frame $w.f2]
+    button $f.bok -text "Ok" -width 5 -command {
+	global ay_error pomeshspl_options
+
+	set ay_error ""
+
+	undo save SplPoMesh
+
+	splitPo
+
+	uS; sL; rV
+
+	if { $ay_error > 1 } {
+	    ayError 2 "Split" "There were errors while splitting!"
+	} else {
+	    if { $pomeshspl_options(Optimize) } {
+		pomesh_optimize
+	    }
+	}
+
+	grab release .pomeshspl
+	focus .
+	destroy .pomeshspl
+    }
+
+    button $f.bca -text "Cancel" -width 5 -command "\
+	    grab release .pomeshspl;\
+	    focus .;\
+	    destroy .pomeshspl"
+
+    pack $f.bok $f.bca -in $f -side left -fill x -expand yes
+    pack $f -in $w -side bottom -fill x
+
+    winCenter $w
+    grab $w
+    focus $w.f2.bok
+    tkwait window $w
+
+    winAutoFocusOn
+
+    after idle viewMouseToCurrent
+
+ return;
+}
+# pomesh_split

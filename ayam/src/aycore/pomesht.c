@@ -73,6 +73,8 @@ int ay_pomesht_addvertexhash(ay_pomesht_hash *phash, int ign, double *point);
 /* functions */
 
  /* ay_pomesht_destroy:
+  *  free all memory associated with the polymesh object <pomesh>
+  *  _and_ pomesh itself in a tolerant fashion
   */
 int
 ay_pomesht_destroy(ay_pomesh_object *pomesh)
@@ -93,6 +95,7 @@ ay_pomesht_destroy(ay_pomesh_object *pomesh)
 
  return AY_OK;
 } /* ay_pomesht_destroy */
+
 
 /* tesselation callbacks needed by GLU */
 void
@@ -1265,6 +1268,16 @@ ay_pomesht_split(ay_pomesh_object *pomesh, ay_point *pnts,
     } /* for */
 
   /* check and return result */
+
+  if(pomesh1->npolys == 0)
+    {
+      /* oops, no faces were split off */
+      ay_pomesht_destroy(pomesh0);
+      ay_pomesht_destroy(pomesh1);
+      ay_error(AY_ERROR, fname, "No faces were split off, check the point selection!");
+      return AY_ERROR;
+    }
+
   if(pomesh1->npolys == pomesh->npolys)
     {
       /* oops, all faces from the original polymesh are in pomesh1
@@ -1327,8 +1340,9 @@ ay_pomesht_splittcmd(ClientData clientData, Tcl_Interp *interp,
 		  ay_error(AY_EOMEM, fname, NULL);
 		  return TCL_OK;
 		}
+
 	      ay_status = ay_pomesht_split((ay_pomesh_object*)o->refine,
-					   o->selp,
+					o->selp,
 					(ay_pomesh_object**)&(newo->refine));
 
 	      if(newo->refine)
