@@ -1347,6 +1347,7 @@ ay_pomesht_splittcmd(ClientData clientData, Tcl_Interp *interp,
 
 	      if(newo->refine)
 		{
+		  ay_selp_clear(o);
 		  ay_object_defaults(newo);
 		  ay_trafo_copy(o, newo);
 		  newo->type = AY_IDPOMESH;
