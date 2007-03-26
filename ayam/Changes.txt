@@ -1,4 +1,4 @@
-[11. Mar 2007] CVS-Head:
+[26. Mar 2007] CVS-Head:
 =======================
 o Bug Fixes:
   - crash after deleting of objects (SF 1637735)
@@ -21,6 +21,11 @@ o Bug Fixes:
   - closing preferences with Ok does not redraw (SF 1665917)
   - extrude ignoring bevel parameter revert (SF 1673532)
   - tesselation GUI crashing when instance objects are selected (SF 1676787)
+  - object picking fails in draw level only views (SF 1680998)
+  - object picking reconsider dialog selection is off-by-one (SF 1681000)
+  - Tcl error when clicking into the (empty) property list for
+    multiple selected objects (SF 1682820)
+  - Tcl error for "Help on property" if no properties are present (SF 1682822)
 
 GUI:
 o fixed select background color when changed via X resources (backported
@@ -35,9 +40,16 @@ o ExtrNC objects now draw a direction arrow (like NCurve objects)
 o the standard ConcatNC knot type is now "Custom"
 o Cap objects can now also create caps from non-planar curves (by splitting
   the curve into four pieces and building a Gordon surface)
+o in direct connection with the above, Gordon surfaces now support rational
+  curves for the special case of a Coons patch configuration (four curves)
+o improved speed of object picking in shaded views
+o added Split PolyMesh modelling tool
 
 Drawing/Shading:
 o added antialiasing drawing option for lines
+o added hidden/wizard preference options for line width:
+  "LineWidth" and "SelLineWidth" (set via ayamrc file)
+o improved drawing of selected curves in Shade&Draw views
 
 Import/Export:
 o added DXF import plugin dxfio
@@ -142,12 +154,12 @@ o Bug Fixes:
   - fixed crashing Cap object when NPatch and NCurve are used as child
     (SF 1522337)
   - fixed OpenNURBS export setting scene changed state (SF 1526206)
-  - fixed edit points modeling action not issuing a notification upon
+  - fixed edit points modelling action not issuing a notification upon
     snapping of points to the grid (SF 1528712)
   - fixed command line parameter parsing on Win32/VC++2005E (SF 1531467)
   - fixed bevel object changing the child object (SF 1534989)
   - fixed curvature plots of closed BSplines (SF 1537380)
-  - fixed undo, clipboard operations, and modeling tools not doing
+  - fixed undo, clipboard operations, and modelling tools not doing
     notify when preference setting CompleteNotify is set to "Always"
     (SF 1537385, 1537107, 1537105)
 
@@ -204,7 +216,7 @@ o added a workaround to make the standard application exit keyboard
 o added hidden preference setting "PrepDiaCap" that prepends message box
   titles to their message as the titles are not displayed on every system
 o default keyboard bindings for the Alt-Rotate view action and the stretch
-  modeling action now use the correct keysyms
+  modelling action now use the correct keysyms
 o primarily for running from an application bundle, Ayam now allows to turn
   off the splash screen via environment variable "AYNOSPLASH"
 
@@ -1196,7 +1208,7 @@ o bug fixes:
   - fixed grid menu button not updating when switching a view to perspective
   - fixed writing of preferences and deleting of temporary files when the
     main window is closed to quit Ayam
-  - fixed rotate about modeling action not redrawing all views
+  - fixed rotate about modelling action not redrawing all views
   - fixed direct point editing action crashing when the selection is
     changed or some points are selected (tagged), while the coordinate
     requester is open.
@@ -1266,7 +1278,7 @@ o bug fixes:
   - fixed focus handling for set_gridsize and set_fov dialogues
   - fixed unnecessary saving of undo states
   - fixed broken sweep (does not twist wildly for complex paths anymore)
-  - fixed unnecessary notification for various modeling actions in
+  - fixed unnecessary notification for various modelling actions in
     conjunction with grids
   - fixed undo/redo not calling notification callbacks
   - fixed weight edit crashing when applied to objects without editable points
