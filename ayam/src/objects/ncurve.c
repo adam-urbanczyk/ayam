@@ -1215,6 +1215,48 @@ ay_ncurve_convertcb(ay_object *o, int in_place)
 } /* ay_ncurve_convertcb */
 
 
+int
+ay_ncurve_notifycb(ay_object *o)
+{
+ int ay_status = AY_OK;
+ ay_nurbcurve_object *ncurve = NULL;
+ int display_mode = ay_prefs.nc_display_mode;
+ int qf = ay_prefs.stess_qf;
+
+  if(!o)
+    return AY_ENULL;
+
+  ncurve = (ay_nurbcurve_object *)(o->refine);
+
+  if(ncurve->display_mode != 0)
+    {
+      display_mode = ncurve->display_mode-1;
+    }
+
+  if(display_mode < 3)
+    return AY_OK;
+
+  if(ncurve->order != 2)
+    {
+      if(ncurve->glu_sampling_tolerance != 0.0)
+	{
+	  qf = ay_stess_GetQF(ncurve->glu_sampling_tolerance);
+	}
+      if(ncurve->tessv)
+	{
+	  free(ncurve->tessv);
+	  ncurve->tessv = NULL;
+	}
+
+      ay_status = ay_stess_CurvePoints3D(ncurve->length, ncurve->order-1,
+			 ncurve->knotv, ncurve->controlv, ncurve->is_rat, qf,
+		         &ncurve->tesslen, &ncurve->tessv);
+      ncurve->tessqf = qf;
+    } /* if */
+
+ return AY_OK;
+} /* ay_ncurve_notifycb */
+
 
 int
 ay_ncurve_init(Tcl_Interp *interp)
@@ -1238,6 +1280,8 @@ ay_ncurve_init(Tcl_Interp *interp)
 				    AY_IDNCURVE);
 
   ay_status = ay_convert_register(ay_ncurve_convertcb, AY_IDNCURVE);
+
+  ay_status = ay_notify_register(ay_ncurve_notifycb, AY_IDNCURVE);
 
   ay_matt_nomaterial(AY_IDNCURVE);
 
