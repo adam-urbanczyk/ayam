@@ -560,6 +560,8 @@ ay_extrnc_init(Tcl_Interp *interp)
 
   ay_status = ay_provide_register(ay_extrnc_providecb, AY_IDEXTRNC);
 
+  ay_matt_nomaterial(AY_IDEXTRNC);
+
  return ay_status;
 } /* ay_extrnc_init */
 
