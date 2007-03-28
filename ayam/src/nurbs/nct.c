@@ -840,6 +840,9 @@ ay_nct_refinetcmd(ClientData clientData, Tcl_Interp *interp,
 	      ay_error(AY_ERROR, fname, "refine operation failed");
 	    }
 	  o->modified = AY_TRUE;
+
+	  /* re-create tesselation of curve */
+	  ay_notify_force(sel->object);
 	}
       else
 	{
@@ -1027,6 +1030,8 @@ ay_nct_clamptcmd(ClientData clientData, Tcl_Interp *interp,
 
 	    ay_status = ay_nct_recreatemp(curve);
 
+	    /* re-create tesselation of curve */
+	    ay_notify_force(sel->object);
 	  }
 	else
 	  {
@@ -1295,6 +1300,9 @@ ay_nct_elevatetcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_nct_recreatemp(curve);
 
 	  sel->object->modified = AY_TRUE;
+
+	  /* re-create tesselation of curve */
+	  ay_notify_force(sel->object);
 	}
       else
 	{
@@ -1399,6 +1407,9 @@ ay_nct_insertkntcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_nct_recreatemp(curve);
 
 	  src->modified = AY_TRUE;
+
+	  /* re-create tesselation of curve */
+	  ay_notify_force(sel->object);
 	} /* if */
 
       sel = sel->next;
@@ -1444,6 +1455,9 @@ ay_nct_collapsetcmd(ClientData clientData, Tcl_Interp *interp,
 		ay_selp_clear(sel->object);
 	      }
 	    sel->object->modified = AY_TRUE;
+
+	    /* re-create tesselation of curve */
+	    ay_notify_force(sel->object);
 	  }
 	  break;
 	case AY_IDNPATCH:
@@ -1511,6 +1525,8 @@ ay_nct_explodetcmd(ClientData clientData, Tcl_Interp *interp,
 		ay_selp_clear(sel->object);
 	      }
 	    sel->object->modified = AY_TRUE;
+	    /* re-create tesselation of curve */
+	    ay_notify_force(sel->object);
 	  }
 	  break;
 	case AY_IDNPATCH:
@@ -1978,6 +1994,7 @@ ay_nct_splittcmd(ClientData clientData, Tcl_Interp *interp,
     {
       if(sel->object)
 	{
+	  /* remove all selected points */
 	  if(sel->object->selp)
 	    {
 	      ay_selp_clear(sel->object);
@@ -1998,6 +2015,9 @@ ay_nct_splittcmd(ClientData clientData, Tcl_Interp *interp,
 	      ay_status = ay_object_link(new);
 
 	      sel->object->modified = AY_TRUE;
+
+	      /* re-create tesselation of original curve */
+	      ay_notify_force(sel->object);
 	    }
 	  else
 	    {
@@ -4816,6 +4836,9 @@ ay_nct_centertcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 
 	  c->modified = AY_TRUE;
+
+	  /* re-create tesselation of curve */
+	  ay_notify_force(sel->object);
 	} /* if */
 
       sel = sel->next;
@@ -5013,6 +5036,9 @@ ay_nct_coarsentcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 
 	  c->modified = AY_TRUE;
+
+	  /* re-create tesselation of curve */
+	  ay_notify_force(sel->object);
 	} /* if */
 
       sel = sel->next;
@@ -5116,6 +5142,9 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_status = ay_nct_recreatemp(curve);
 
 	  o->modified = AY_TRUE;
+
+	  /* re-create tesselation of curve */
+	  ay_notify_force(sel->object);
 	} /* if */
 
       sel = sel->next;
