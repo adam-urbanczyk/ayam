@@ -870,6 +870,9 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	ay_error(AY_ERROR, fname, "Error re-creating MPoints!");
     }
 
+  /* re-create stess tesselation */
+  ay_status = ay_notify_force(o);
+
   ay_status = ay_notify_parent();
 
  return AY_OK;
