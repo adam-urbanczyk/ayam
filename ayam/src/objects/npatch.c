@@ -613,10 +613,10 @@ ay_npatch_shadestesscb(struct Togl *togl, ay_object *o)
 	  glBegin(GL_QUAD_STRIP);
 	  for(j = 0;  j < tessh; j++)
 	    {
-	      glVertex3dv(&(tessv[a]));
 	      glNormal3dv(&(tessv[a+3]));
-	      glVertex3dv(&(tessv[b]));
+	      glVertex3dv(&(tessv[a]));
 	      glNormal3dv(&(tessv[b+3]));
+	      glVertex3dv(&(tessv[b]));
 	      a += 6;
 	      b += 6;
 	    } /* for */
