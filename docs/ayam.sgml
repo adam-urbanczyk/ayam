@@ -92,7 +92,7 @@ Instead, just look up the documentation of the things you are interested
 in via the table of contents or the index. Cross references will then
 guide you to other important parts of the documentation.
 Again: this manual has a rather large index, please use it
-(see <ref id="index" name="Index">)! 
+(see section <ref id="index" name="Index">)! 
 <p>
 In this manual, the following typographic conventions are used:
 <itemize>
@@ -748,10 +748,20 @@ tools, that are explained in depth in section
 a single PolyMesh object, without checking for doubly used points,
 loops, or faces. Normally, the currently selected PolyMesh objects will not
 be changed by this tool. But you may let the merge-tool delete them
-immediately, if you enable the <tt/"RemoveMerged"/-option.
-If the <tt/OptimizeNew/-option is enabled, the <tt/"Optimize"/-tool
+immediately after the merging operation, by enabling the
+<tt/"RemoveMerged"/-option.
+If the <tt/"OptimizeNew"/-option is enabled, the <tt/"Optimize"/-tool
 (see below) will be started after the merge operation with the
 newly created merged object as argument.
+
+<item><tt/"Split"/: splits the faces from the selected PolyMesh objects
+into a second PolyMesh object. The faces to be split off are selected
+by selecting all their control points with the select points modelling
+action (see also section <ref id="selac" name="Selecting Points">).
+The original selected PolyMesh objects will be changed. The changes to
+the original objects are undoable. Since the split operation does not
+create optimized new objects, the <tt/"Optimize"/-tool (see below) may
+be started immediately after splitting using the <tt/"OptimizeNew"/-option.
 
 <item><tt/"Optimize"/: optimizes the selected PolyMesh object(s)
 by removing all multiply used control points (if the option
@@ -4144,7 +4154,7 @@ of inner loops that describe holes in the polygon. The loops use a point
 indexing scheme to efficiently reuse coordinate values.
 This general approach requires a so called tesselation to be carried
 out, in order for the PolyMesh object to be shaded.
-For that, Ayam uses the tesselation routines of the GLU library.
+For the tesselation, Ayam uses routines of the GLU library.
 <p>
 Ayam is able to automatically create face normals for PolyMeshes.
 They will be calculated while tesselating the PolyMesh and be
@@ -6485,7 +6495,7 @@ original clipboard contents are lost when this tool finishes.
 NURBS patch providing objects from the selection.
 <item>Operation: A modal dialog box (see image above) will pop up,
 that allows to select a tesselation method via a drop-down menu
-and tune the corresponding tesselation parameter(s) using a slider and
+and to tune the corresponding tesselation parameter(s) using a slider and
 an entry widget. The initial method and parameter values will be derived
 from the TP tag of the first of the selected objects (if it has such a tag).
 <p>
@@ -6493,8 +6503,8 @@ The selected or provided NURBS patches will be tesselated with the
 chosen method and parameters.
 The PolyMesh objects created by the tesselation will immediately be
 displayed in all view windows instead of the original objects.
-Whenever tesselation method or parameters change the tesselation
-will be recomputed and displayed thus allowing an immediate estimation
+Whenever tesselation method or parameters are changed, the tesselation
+will be recomputed and displayed, thus, allowing an immediate estimation
 of the tesselation quality.
 <p>
 If the preference option <tt>"Modelling/LazyNotify"</tt> is enabled,
@@ -6509,15 +6519,19 @@ unchanged.
 If the check box <tt/"SaveToTag"/ is activated, closing the tesselation
 tool using <tt/"Cancel"/ will also add a <tt/"TP"/ tag containing
 the currently selected method and parameter value to all selected
-NURBS patch objects. This tag will be evaluated later, when the respective
-objects will be converted to PolyMesh objects.
+objects. This tag will be evaluated later, when the respective
+objects will be converted to PolyMesh objects. Since Ayam 1.11 the
+conversion mechanism of objects keeps the <tt/"TP"/ tags, so that you
+may e.g. save tesselation parameters for a sphere or a revolve object.
 <item>Note: The tesselation tool will block most other parts of Ayam
 while it is running. It is, however, possible to adjust view parameters
 while the tesselation tool is open, to examine the tesselation result
 more closely or from different viewing angles. The initial values of the
 parameter slider bounds may be changed by simply entering values
 that are out of bounds into the entry widget, then pressing the
-<tt/&lt;Tab&gt;/ key.
+<tt/&lt;Tab&gt;/ key. The resolution of the slider is calculated
+automatically from the resolution of the value entered in the entry
+widget.
 </itemize>
 
 See section
@@ -6664,11 +6678,14 @@ the first two objects in the current level.
 </itemize>
 
 <p><label id="scwithob">
-withOb - work on certain selected object(s):
+withOb - execute a command on certain selected object(s):
 <itemize>
- <item>Synopsis: <tt/"withOb index command"/
+ <item>Synopsis: <tt/"withOb index [do] command"/
  <item>Description: Use this command to execute command on a
-single object from a multiple selection designated by index.
+single object (designated by index) from a multiple selection
+without changing the selection state of any objects.
+ <item>Example: <tt>"withOb 2 {movOb 0 1 0}"</tt> moves the third
+object from multiple selected objects. All objects stay selected.
 </itemize>
 
 <p><label id="scsl">
@@ -6677,7 +6694,7 @@ sL - select last object:
  <item>Synopsis: <tt/"sL"/
  <item>Description: Select the last object in the current level
 and update the GUI. This command is often called in a sequence
-after creating new objects like this:
+after creating a new object like this:
 <code>
 # create object
 crtOb NCurve
@@ -7747,10 +7764,13 @@ The DXF import may be controlled via different options:<label id="impdxfopt">
 <itemize>
 <item><tt/"ScaleFactor"/ allows to apply a scaling factor to all
 imported objects.
-<item> <tt/"ReadLayers"/:
+<item><tt/"ReadLayers"/:
 By default, all entities from all layers will be imported.
 Using the <tt/"ReadLayers"/ import option, a single layer or a range
 of layers may be selected for import.
+<item><tt/"Progress"/: displays the progress of the import;
+from 0 to 50 percent, Dime is reading the DXF file; from 50 to 100 percent,
+the dxfio plugin is converting the DXF entities to Ayam objects.
 </itemize>
 
 <sect1>RenderMan Interface Bytestream (RIB) Import<label id="imprib">
@@ -8296,42 +8316,54 @@ See the ayamrc file itself for a complete listing of available shortcuts.
 The ayamrc file currently contains the following adjustable hidden
 preference settings:
 <itemize>
+
 <item><tt/"Balloon"/: time in ms until the tooltip window appears
 (default: 1500 - 1.5s)
+
 <item><tt/"EFlush"/: time in ms between two flushes of the error message buffer
 (default: 2000 - 2s)
+
 <item><tt/"toolBoxList"/: a list of sections or groups of buttons
 describing the appearance of the toolbox window (default, using all
 available sections: <tt>{trafo trafo2 solids misco nurbs toolobjs points
 nctools1 nctools2 camera misc}</tt>)
+
 <item><tt/"Kill"/: name of a program that kills other processes and accepts
 a process id as argument (used by the Rendering GUI)
 (default: <tt>"kill"</tt>) (a setting of <tt>"kill"</tt> will be
 automatically replaced by <tt>"kill.exe"</tt> on Win32)
 On the Win32 platform you may also use an internal kill command
 <tt>"w32kill"</tt> that has been introduced in Ayam 1.4.
+
 <item><tt/"Cat"/: name of a program that can read from and write to
 a pipe (used by the Rendering GUI) (default: <tt>"cat"</tt>)
 (a setting of <tt>"cat"</tt> will be
 automatically replaced by <tt>"cat.exe"</tt> on Win32)
+
 <item><tt/"KeepNTmpFiles"/: how many
 incarnations of the scene in RIB form (which actually may be split
 in more than one file due to e.g. instances) created by Direct
 Rendering should be kept on disk (default: 5)
+
 <item><tt/"Wpclip_pastetosel"/: should
 <tt>"Special/Clipboard/Paste Property to Selected"</tt> raise a warning
 requester? (default: 1 - yes)
+
 <item><tt/"DailyTips"/: a list of strings that appear as tips
 on startup in the console
+
 <item><tt/"PickTolerance"/: the tolerance used to determine whether an object
 should be picked or not (default: 5); this setting determines the size
 of a rectangular area around the picked point in pixels, all objects that
 are inside or touch this area are considered picked
+
 <item><tt/"MaxTagLen"/: the maximum number of characters to be displayed
 in the buttons in the Tag Property GUI (default: 30)
+
 <item><tt/"Wait"/: set this to <tt/"waitPid"/ if you want to enable
 the work around for zombie processes created by the Rendering GUI.
 This is e.g. necessary for the Linux platform.
+
 <item><tt/"Prompt"/: controls the prompt for the console. If
 set to an empty string a default of
 <code>
@@ -8351,33 +8383,42 @@ may e.g. be established using a small script like this:
 <item><tt/"BackupExt"/: is the file name extension to be used for backup
 files. Default values are <tt>"&tilde;"</tt> for Unix and
 <tt>".bak"</tt> for Win32.
+
 <item><tt/"SelXOR_R"/, <tt/"SelXOR_G"/, <tt/"SelXOR_B"/: determine
 a color value that is used for drag selection rectangles.
 Note that the color is not used directly but combined with the
 color value of already drawn pixels by XOR. The default values
 are 255 for the red, 128 for the green, and 0 for the blue component.
+
 <item><tt/"IconGamma"/: this setting may be used to adapt the contrast
 of all icons (in view menu and toolbox) to your display gamma. If you
 are on a SGI it is recommended to set this to about "0.7".
+
 <item><tt/"AddViewParams"/ allows to add custom parameters to the
 view OpenGL widget creation, like e.g. <tt/"-stereo true"/.
+
 <item><tt/"AskScriptDisable"/ controls the warning dialog that
 appears if scenes with script objects or tags are loaded.
+
 <item><tt/"WarnUnknownTag"/ controls the warning messages for
 unknown tag types.
+
 <item><tt/"FixX11Menu"/ enables a workaround for non-sticky menus
 on X11 (displaced menus do not stay open). This option is enabled
 by default and not used on the Win32 platform.
+
 <item><tt/"SafeAutoFocus"/ disables AutoFocus
 (see section <ref id="prefgui" name="preference settings">)
 when certain dialog windows are open, so that they do not get
 shuffled under other windows by accidental mouse movements on systems
 where the window manager does only auto raise.
 This option is enabled by default on Win32.
+
 <item><tt/"UseInternalFD"/ switches to an internal file dialog for loading
 of plugins. This option is only used on MacOSX/Aqua (not X11!), because
 there the normal file dialog will not enter application bundle directory
 structures. This option is enabled by default on MacOSX/Aqua.
+
 <item><tt/"SwapMB"/, <tt/"SwapMBSC"/ allow to swap mouse buttons 2 and 3
 on MacOSX/Aqua (not X11!) for specified mouse bindings (<tt/"SwapMBSC"/),
 because on MacOSX/Aqua, traditionally, the naming of the
@@ -8386,16 +8427,29 @@ This option is enabled by default on MacOSX/Aqua and allows to use
 the same set of mouse bindings (the same ayamrc file) for X11 and
 Aqua without sacrificing user experience. The middle mouse button,
 by default, zooms the view, and the right one moves the view.
+
 <item><tt/"CursorEnd"/, this option is enabled by default. If switched
 on, the first click into the console will move the cursor to the input
 prompt, ready for command input, instead of moving the cursor to the
 point of the click.
-<item><tt/"PrepDiaCap"/, this option prepends the titel of a message box
+
+<item><tt/"PrepDiaCap"/, this option prepends the title of a message box
 that is normally displayed in the window frame of the message box to the
-message in the box. This is necessary because on some systems the titel
-might be displayed in an unreadable font or not at all.
+message in the box. This may be necessary because on some systems the title
+string might be displayed in an unreadable font or not at all.
 On Mac OS X Aqua (not X11!) this option is enabled by default.
-On all other systems this option is disabled by default. 
+On all other systems this option is disabled by default.
+
+<item><tt/"LineWidth"/, line width used for drawing the lines of
+unselected objects (blue lines in standard color configuration).
+The default value is 1.0. Ayam is not checking, whether the specified
+value is supported by the OpenGL implementation used.
+
+<item><tt/"SelLineWidth"/, line width used for drawing the lines of
+selected objects (white lines in standard color configuration).
+The default value is 1.0. Ayam is not checking, whether the specified
+value is supported by the OpenGL implementation used.
+
 </itemize>
 
 <sect2>RiOption and RiAttributes Database<label id="rioptdb">
@@ -9578,7 +9632,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Special: <ref id="mmspecial" name="special menu">
 <item>Sphere: <ref id="sphereobj" name="object">,
 <ref id="nspt" name="NURBS sphere tool">
-<item>Split: <ref id="sptct" name="split to curves tool">
+<item>Split: <ref id="sptct" name="split to curves tool">,
+<ref id="mmtools" name="Split PolyMesh tool">
 <item>Split Curve: <ref id="miscac" name="modelling action">
 <item>splitNC: <ref id="scsplitnc" name="scripting interface command">
 <item>splitNP: <ref id="scsplitnp" name="scripting interface command">
