@@ -1517,7 +1517,7 @@ void
 ay_nb_DersBasisFuns(int i, double u, int p, int n, double *U, double *ders)
 {
  double *left = NULL, *right = NULL, *ndu = NULL, *a = NULL, saved, temp, d;
- int j,j1,j2,r,k,rk,pk,s1,s2;
+ int j, j1, j2, r, k, rk, pk, s1, s2;
 
   if(!(left = calloc(p+1, sizeof(double))))
     return;
@@ -1543,10 +1543,12 @@ ay_nb_DersBasisFuns(int i, double u, int p, int n, double *U, double *ders)
 	  saved = left[j-r] * temp;
 	}
       ndu[j*(p+1)+j] = saved;
-    }
+    } /* for */
 
   for(j = 0; j <= p; j++)
-    ders[j] = ndu[j*(p+1) + p];
+    {
+      ders[j] = ndu[j*(p+1) + p];
+    }
 
   for(r = 0; r <= p; r++)
     {
@@ -1574,26 +1576,27 @@ ay_nb_DersBasisFuns(int i, double u, int p, int n, double *U, double *ders)
 
 	  for(j = j1; j <= j2; j++)
 	    {
-	      a[s2*(p+1)+j] = (a[s1*(p+1) + j]-a[s1*(p+1)+(j-1)])/
+	      a[s2*(p+1)+j] = (a[s1*(p+1) + j]-a[s1*(p+1) + (j-1)])/
 		ndu[(pk+1)*(p+1) + (rk+j)];
-	      d += a[s2*(p+1)+j] * ndu[(rk+j)*(p+1)+pk];
+	      d += a[s2*(p+1) + j] * ndu[(rk+j)*(p+1) + pk];
 	    }
 
 	  if(r <= pk)
 	    {
-	      a[s2*(p+1)+k] = -a[s1*(p+1)+(k-1)] / ndu[(pk+1)*(p+1)+r];
-	      d += a[s2*(p+1)+k] * ndu[r*(p+1)+pk];
+	      a[s2*(p+1) + k] = -a[s1*(p+1) + (k-1)] / ndu[(pk+1)*(p+1) + r];
+	      d += a[s2*(p+1) + k] * ndu[r*(p+1) + pk];
 	    }
 	  ders[k*(p+1)+r] = d;
 	  j = s1; s1 = s2; s2 = j;
-	}
-    }
+	} /* for */
+    } /* for */
   r = p;
   for(k = 1; k <= n; k++)
     {
       for(j = 0; j <= p; j++)
-	ders[k*(p+1)+j] *= r;
-
+	{
+	  ders[k*(p+1)+j] *= r;
+	}
       r *= (p-k);
     }
 
@@ -1854,6 +1857,8 @@ ay_nb_CompFirstDerSurf4D(int n, int m, int p, int q, double *U, double *V,
   if(!(bin = calloc(4, sizeof(double))))
     {free(Nu); free(Nv); free(temp); free(Ct); return;}
 
+  memset(C, 0, 12*sizeof(double));
+
   ay_nb_Bin(2, 2, bin);
 
   uspan = ay_nb_FindSpan(n, p, u, U);
@@ -1989,7 +1994,7 @@ ay_nb_CompFirstDerSurf3D(int n, int m, int p, int q, double *U, double *V,
 
   if(!(Nu = calloc((p+1) * (p+1), sizeof(double))))
     return;
-  if(!(Nv = calloc((q+1)*(q+1), sizeof(double))))
+  if(!(Nv = calloc((q+1) * (q+1), sizeof(double))))
     {free(Nu); return;}
   if(!(temp = calloc((q+1)*3, sizeof(double))))
     {free(Nu); free(Nv); return;}
