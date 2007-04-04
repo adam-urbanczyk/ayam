@@ -172,8 +172,8 @@ array set ayprefs {
 
  WindowSystem "unknown"
 
- ALFileTypes { ".rib" ".3dm" ".obj" ".3dmf" ".mop" }
- ALPlugins { "rrib" "onio" "objio" "mfio" "mopsi" }
+ ALFileTypes { ".rib" ".3dm" ".obj" ".3dmf" ".mop" ".dxf" }
+ ALPlugins { "rrib" "onio" "objio" "mfio" "mopsi" "dxfio" }
 
  Docs "http://ayam.sourceforge.net/docs/"
  DailyTips {
