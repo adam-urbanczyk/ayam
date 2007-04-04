@@ -54,6 +54,14 @@ proc io_replaceScene { } {
 	set ay_error ""
 	update
 
+	# see, if this is an Ayam scene file
+	set ext [file extension $filename ]
+	if { ($ext != "") && ([string compare -nocase $ext ".ay"]) } {
+	    # no, try to import it
+	    io_importScene $filename
+	    return;
+	}
+
 	# make backup copy
 	if { $ayprefs(BakOnReplace) == 1 } {
 	    set err [ catch {
@@ -149,6 +157,14 @@ proc io_insertScene { } {
 	update
 	global ay ay_error
 	set ay_error ""
+
+	# see, if this is an Ayam scene file
+	set ext [file extension $ifilename ]
+	if { ($ext != "") && ([string compare -nocase $ext ".ay"]) } {
+	    # no, try to import it
+	    io_importScene $ifilename
+	    return;
+	}
 
 	foreach view $ay(views) { viewUnBind $view }
 	update
@@ -1214,3 +1230,57 @@ proc io_appext { filename extension } {
  return $newfilename
 }
 # io_appext
+
+
+# io_importScene:
+#  import a scene, automatically loading the corresponding plugin
+#
+proc io_importScene { filename } {
+    global ay ayprefs
+
+    if { $filename == "" } {
+	return;
+    }
+
+    set ext [file extension $filename ]
+    set i 0
+    set imported 0
+    foreach alext $ayprefs(ALFileTypes) {
+	# look for matching supported file name extension
+	if { ! [string compare -nocase $ext $alext] } {
+	    # get the name of the plugin that supports $ext files
+	    set plugin [lindex $ayprefs(ALPlugins) $i]
+	    # XXXX import procedure name
+	    set import_proc "${plugin}_import"
+	    # 
+	    if { ! [info exists $import_proc] } {
+		set ay(autoload) $plugin
+		io_lcAuto
+	    }
+	    # XXXX import options array
+	    set option_array "${plugin}_options"
+	    global $option_array
+	    # set file name to import in the import options GUI
+	    set ${option_array}(filename) $filename
+	    update
+	    set body ""
+	    catch { set body [ info body $import_proc ] }
+	    if { $body != "" } {
+		set imported 1
+		# now, call the import procedure
+		$import_proc
+	    } else {
+		ayError 2 "io_importScene" "Failed to load plugin: $plugin"
+	    }
+	}
+	# if
+	if { $imported } {
+	    break
+	}
+	incr i
+    }
+    # foreach
+
+ return;
+}
+# io_importScene
