@@ -7375,7 +7375,7 @@ object. To use the camera transformations of the camera associated
 with a view window use the corresponding Togl callback for the view
 like this instead: <tt>.view1.f3D.togl wrib -file filename.rib</tt>.
 If the argument <tt/"-smonly"/ is provided, a RIB to render shadow maps
-will be created and the argument image will be ignored.
+will be created and the argument of <tt/"-image"/ will be ignored.
 If the argument <tt/"-selonly"/ is given, only the selected (geometric)
 objects will be exported, which will result in a RIB file not
 suitable for rendering (no setup, camera transformation, or lights
@@ -7941,6 +7941,9 @@ imported objects.
 for the s component of the texture coordinates.
 <item><tt>"TTagName"</tt> controls the name of the PV tag to be used
 for the t component of the texture coordinates.
+<item><tt/"Progress"/: displays the progress of the import;
+from 0 to 100 percent, the objio plugin is reading lines from the
+Wavefront OBJ file and creating Ayam objects.
 </itemize>
 <p>
 Wavefront OBJ import expects the file to be syntactically correct.
@@ -7984,7 +7987,6 @@ coordinate values (the control points) of the exported objects.
 The hierarchy of the Ayam scene will be squashed.
 CSG operations are fully ignored, all objects will be written
 as if combined by the union operator.
-
 <p>
 The Wavefront OBJ export, currently, ignores all material information.
 Only the pure geometry information is written to the OBJ file.
@@ -8008,6 +8010,9 @@ exported objects;
 for the s component of the texture coordinates, and
 <item><tt>"TTagName"</tt> controls the name of the PV tag to be used
 for the t component of the texture coordinates.
+<item><tt/"Progress"/: displays the progress of the export;
+from 0 to 100 percent, the objio plugin is writing the Ayam objects
+to the Wavefront OBJ file.
 </itemize>
 
 <sect1>3DMF (Apple) Import<label id="imp3dmf">
@@ -8069,8 +8074,8 @@ not available.
 
 <sect1>3DM (Rhino) Import<label id="imprhino">
 <p>
-Since version 1.8.2 Ayam contains a plugin named onio that may import scenes
-from the Rhino 3DM file format using the OpenNURBS toolkit
+Since version 1.8.2 Ayam contains a plugin named onio that may import
+scenes from the Rhino 3DM file format using the OpenNURBS toolkit
 (hence the name of the plugin onio - OpenNURBS IO)
 by Robert McNeel & Associates.
 <p>
@@ -8122,6 +8127,10 @@ no scaling.
 for the s component of the texture coordinates, and
 <item><tt>"TTagName"</tt> controls the name of the PV tag to be used
 for the t component of the texture coordinates.
+<item><tt/"Progress"/: displays the progress of the import;
+from 0 to 50 percent, OpenNURBS is reading the 3DM file into memory;
+from 50 to 100 percent, the onio plugin is converting the 3DM objects
+to Ayam objects.
 </itemize>
 
 <sect1>3DM (Rhino) Export<label id="exprhino">
@@ -8186,26 +8195,29 @@ The <tt/"QuadAsBRep"/ option has no effect on the export of disks,
 hyperboloids, and paraboloids. Those will always be exported as NURBS
 surfaces.
 <item><tt>"TopLevelLayers"</tt> controls whether the top level objects
-in the scene to be exported should be interpreted as layers.
+in the Ayam scene to be exported should be interpreted as layers.
 If this option is enabled, objects that are not in one of those levels
-will be written to the default layer.
+will be written to the default layer. Furthermore, top level object names
+will become layer names.
 <item><tt>"STagName"</tt> controls the name of the PV tag to be used
 for the s component of the texture coordinates, and
 <item><tt>"TTagName"</tt> controls the name of the PV tag to be used
 for the t component of the texture coordinates.
+<item><tt/"Progress"/: displays the progress of the export;
+from 0 to 50 percent, the onio plugin is converting the Ayam objects
+to 3DM objects; from 50 to 100 percent OpenNURBS is writing the 3DM file.
 </itemize>
 <p>
 Since the Rhino 3DM file format does not support hierarchy and
-transformation attributes per object, the hierarchy of the Ayam
-scene will be squashed and all transformation attributes will
-be applied to the control points of the objects for export.
-CSG operations are fully ignored, all objects will be written
-as if combined by the union operator.
-Furthermore, all instance objects will be resolved to normal
-objects. All objects will be written to the first layer
-(the default layer). Object names will be written as well.
-Names of level objects will be prepended to the names of their child
-objects. The object hierarchy:
+transformation attributes per object, the hierarchy of the Ayam scene
+will be squashed and all transformation attributes will be applied to
+the control points of the objects for export. CSG operations are fully
+ignored, all objects will be written as if combined by the union operator.
+Furthermore, all instance objects will be resolved to normal objects. All
+objects will be written to the first layer, the default layer (unless the
+<tt>"TopLevelLayers"</tt> option is used). Object names will be written
+as well. Names of level objects will be prepended to the names of their
+child objects. The object hierarchy:
 <code>
 +-Arm(Level)
  | MySphere(Sphere)
