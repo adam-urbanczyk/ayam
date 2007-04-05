@@ -413,14 +413,19 @@ proc io_lcAuto {  } {
 
     set paths [split "$ayprefs(Plugins)" $ay(separator)]
 
+    set origwd [pwd]
+
+    cd [file dirname [info nameofexecutable]]
+
     foreach path $paths {
 	set filename [file join $path $name]
+	puts $filename
 	set sopath [file dirname $filename]
-	if { "$sopath" != "" } {
-	    set oldcdir [pwd]
+	if { ("$sopath" != "") && [file exists $sopath] } {
+	    set oldwd [pwd]
 	    cd $sopath
-	    catch {load $filename}
-	    cd $oldcdir
+	    catch {load $name}
+	    cd $oldwd
 	} else {
 	    catch {load $filename}
 	}
@@ -434,6 +439,8 @@ proc io_lcAuto {  } {
 
     }
     # foreach
+
+    cd $origwd
 
  return;
 }
@@ -1105,7 +1112,6 @@ proc io_readMainGeom { } {
 # io_readMainGeom
 
 
-
 if { $AYWITHAQUA } {
 # OpenDocument:
 #  some document(s) are dropped onto the application (on MacOSX-Aqua),
@@ -1158,6 +1164,12 @@ proc ::tk::mac::OpenDocument { args } {
 	    }
 	    # if
 	    uS; rV
+	} else {
+	    if { [file extension $filename] != "" } {
+		# try to import the file
+		io_importScene $filename
+		return;
+	    }
 	}
 	# if
     }
