@@ -204,15 +204,18 @@ proc winGetGeom { w } {
 proc winAutoFocusOff { } {
     global ay ayprefs
 
-    if { !$ay(afdisabled) && $ayprefs(SafeAutoFocus) } {
-	set ay(oldAutoFocus) $ayprefs(AutoFocus)
-	set ayprefs(AutoFocus) 0
-	set ay(afdisabled) 1
+    if { $ayprefs(SafeAutoFocus) } {
+	if { !$ay(afdisabled) } {
+	    set ay(oldAutoFocus) $ayprefs(AutoFocus)
+	    set ayprefs(AutoFocus) 0
+	}
+	incr ay(afdisabled)
     }
 
  return;
 }
 # winAutoFocusOff
+
 
 # winAutoFocusOn:
 #  (re-)enable AutoFocus
@@ -220,8 +223,11 @@ proc winAutoFocusOn { } {
     global ay ayprefs
 
     if { $ayprefs(SafeAutoFocus) } {
-	set ayprefs(AutoFocus) $ay(oldAutoFocus)
-	set ay(afdisabled) 0
+	# decr ay(afdisabled)
+	incr ay(afdisabled) -1
+	if { $ay(afdisabled) == 0 } {
+	    set ayprefs(AutoFocus) $ay(oldAutoFocus)
+	}
     }
 
  return;
