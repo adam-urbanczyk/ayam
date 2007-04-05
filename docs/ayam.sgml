@@ -549,11 +549,22 @@ will be read. Depending on the setting of
 <tt>"Preferences/Main/BakOnReplace"</tt>
 a backup copy of the file that is read will be made before loading.
 This operation is not undoable!
+<p>
+Since Ayam 1.13, also files supported by any of the import plugins
+may be imported using this route. Note that this only works if the
+selected file has a file name extension. The appropriate plugin will
+be loaded automatically (from the list of plugin directories in the
+preferences) if needed and the import options dialog of the plugin
+will be opened, with the <tt/"FileName"/ already set.
+Mind that in this case, no backup copy of the file will be made.
 
 <item><tt/"Insert"/, inserts the objects and views of an Ayam scene file
 into the current scene. All objects from the file will be read. The new
 objects will be created in the top level of the scene.
 This operation is not undoable!
+<p>
+Since Ayam 1.13, also files supported by any of the import plugins
+may be imported using this route. See above.
 
 <item><tt/"Save as"/, saves the current scene asking for a new file name.
 
@@ -566,8 +577,7 @@ see section <ref id="impmops" name="Import of Mops Scenes">
 for more information.
 
 <item><tt>"Import/Wavefront OBJ"</tt>, import a scene from the Wavefront
-OBJ format,
-see section <ref id="impwav" name="Wavefront OBJ import">
+OBJ format, see section <ref id="impwav" name="Wavefront OBJ import">
 for more information.
 
 <item><tt>"Export/RenderMan RIB"</tt>, exports the current scene to a RIB,
@@ -1411,6 +1421,10 @@ or use the main menu entry <tt>"Special/Reset Preferences"</tt>!),
 (done after the last press of <tt/"Apply"/).
 </itemize>
 
+Note that while the preference editor is open, AutoFocus is temporarily
+turned off and changes to the  <tt/"AutoFocus"/ preference setting will
+only be realized after the editor is closed.
+<p>
 The preferences are divided into five sections.
 
 <sect2>The Main Preferences<label id="prefmain">
@@ -1454,6 +1468,10 @@ enters it. Note that this may only work correctly, when a window
 of Ayam already has the focus. Notice also, that moving the focus
 to a window might also raise it (depending on your operating system
 or window manager).
+
+Note that while the preference editor is open, AutoFocus is temporarily
+turned off and changes to the <tt/"AutoFocus"/ preference setting will
+only be realized after the editor is closed.
 
 <item><tt/"TwmCompat"/ changes, how Ayam tells the window manager
 new geometries of windows. Might be useful, if you suffer from jumping
