@@ -1617,7 +1617,7 @@ if { $ayprefs(FixX11Menu) } {
 # if no view is open (first start ever, no ayamrc, or no working environment),
 # open a first view now
 if { $ay(noview) != 1 && $ay(views) == "" } {
-    viewOpen 400 300
+    viewOpen 400 300; uS
 }
 
 # now "activate" all views: establish mouse and key bindings
