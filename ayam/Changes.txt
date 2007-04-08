@@ -1,4 +1,4 @@
-[26. Mar 2007] CVS-Head:
+[8. Apr 2007] CVS-Head:
 =======================
 o Bug Fixes:
   - crash after deleting of objects (SF 1637735)
@@ -26,6 +26,8 @@ o Bug Fixes:
   - Tcl error when clicking into the (empty) property list for
     multiple selected objects (SF 1682820)
   - Tcl error for "Help on property" if no properties are present (SF 1682822)
+  - STESS tesselation after certain NURBS curve modelling tools (SF 1690799)
+  - first view does not appear in the tree view (SF 1695151)
 
 GUI:
 o fixed select background color when changed via X resources (backported
@@ -33,10 +35,13 @@ o fixed select background color when changed via X resources (backported
 o fixed local views redrawing upon scene saving
 o added tag type "RP" to block access to certain properties of an object
   via the property GUI
+o ExtrNC may no longer, erroneously, be associated with materials
+o improved handling of AutoFocus in various dialogs
 
 Modelling:
 o added "Revert" parameter to ExtrNC object
 o ExtrNC objects now draw a direction arrow (like NCurve objects)
+o ExtrNC objects may now extract the complete surface boundary
 o the standard ConcatNC knot type is now "Custom"
 o Cap objects can now also create caps from non-planar curves (by splitting
   the curve into four pieces and building a Gordon surface)
@@ -50,17 +55,22 @@ o added antialiasing drawing option for lines
 o added hidden/wizard preference options for line width:
   "LineWidth" and "SelLineWidth" (set via ayamrc file)
 o improved drawing of selected curves in Shade&Draw views
+o improved shading quality of NURBS surfaces in STESS mode
 
 Import/Export:
 o added DXF import plugin dxfio
 o Mops import is now a plugin
 o Wavefront OBJ import/export is now a plugin
+o files may now be imported using the normal "File/Open" and "File/Insert"
+  menu entries (Ayam will load the right plugin automatically and open the
+  corresponding import options dialog, pre-seeded with the right filename)
 
 Scripts/Scripting Interface:
 o added example script "toPoly" that allows to easily convert the whole
   scene to PolyMesh objects
 o added example script "zap" that shows how to create buttons in the
   Ayam toolbox
+o improved error detection and reporting of "withOb" command
 
 
 [1. Jan 2007] Ayam 1.12:
