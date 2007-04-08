@@ -815,27 +815,49 @@ ay_tcmd_withobtcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(commandindex >= argc)
     {
+      ay_error(AY_EARGS, fname, "index \\[do\\] command");
       return TCL_OK;
     }
 
   Tcl_GetInt(interp, argv[1], &index);
+
+  if(index < 0)
+    {
+      ay_error(AY_ERROR, fname, "index must be positive");
+      return TCL_OK;
+    }
 
   l = oldsel;
   while(l)
     {
       if(i == index)
 	{
+	  /* found the object with right index =>
+	     fake a single object selection */
 	  ay_selection = NULL;
 	  ay_sel_add(l->object);
+	  /* execute the command */
 	  if(argv[commandindex])
-	    result = Tcl_Eval(interp, argv[commandindex]);
+	    {
+	      result = Tcl_Eval(interp, argv[commandindex]);
+	    }
+	  /* restore original selection */
 	  ay_status = ay_sel_free(AY_FALSE);
 	  ay_selection = oldsel;
+	  /* remember, that we found the object */
+	  index = -1;
+	  /* break the while loop */
 	  break;
 	} /* if */
       i++;
       l = l->next;
     } /* while */
+
+  /* if index is here not -1, we did not find the object */
+  if(index >= 0)
+    {
+      ay_error(AY_ERROR, fname, "object not found in selection");
+    }
 
  return TCL_OK;
 } /* ay_tcmd_withobtcmd */
