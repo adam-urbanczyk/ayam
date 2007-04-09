@@ -1303,6 +1303,10 @@ proc io_importScene { filename } {
     }
     # foreach
 
+    if { ! $imported } {
+	ayError 2 "io_importScene" "Unknown extension: $ext"
+    }
+
  return;
 }
 # io_importScene
@@ -1356,6 +1360,10 @@ proc io_exportScene { filename } {
 	incr i
     }
     # foreach
+
+    if { ! $exported } {
+	ayError 2 "io_exportScene" "Unknown extension: $ext"
+    }
 
  return;
 }
