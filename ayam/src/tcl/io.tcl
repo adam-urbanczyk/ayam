@@ -13,7 +13,7 @@
 # clear scene, then read new scene file
 #
 proc io_replaceScene { } {
-    global ay tcl_platform
+    global ay ayprefs tcl_platform
 
     winAutoFocusOff
 
@@ -26,7 +26,7 @@ proc io_replaceScene { } {
 	if { $dirname == "." } { set dirname [pwd] }
     }
 
-    set types {{"Ayam Scene" ".ay"} {"All files" *}}
+    set types [subst {{"Ayam Scene" ".ay"} {"Supported Files" {$ayprefs(ALFileTypes)}} {"All files" *}}]
 
     if { $tcl_platform(os) != "Darwin" } {
 	set newfilename [tk_getOpenFile -filetypes $types -parent .\
@@ -126,15 +126,14 @@ proc io_insertScene { } {
 
     set filename $ay(filename)
 
-    set types {{"Ayam Scene" ".ay"} {"All files" *}}
-
     if { $filename == "" } {
 	set dirname [pwd]
     } else {
 	set dirname [file dirname $filename]
 	if { $dirname == "." } { set dirname [pwd] }
     }
-    set types {{"Ayam Scene" ".ay"} {"All files" *}}
+
+    set types [subst {{"Ayam Scene" ".ay"} {"Supported Files" {$ayprefs(ALFileTypes)}} {"All files" *}}]
 
     if { $tcl_platform(os) != "Darwin" } {
 	set ifilename [tk_getOpenFile -filetypes $types -parent .\
@@ -205,7 +204,7 @@ proc io_insertScene { } {
 #  save a scene file
 #
 proc io_saveScene { ask selected } {
-    global ay tcl_platform
+    global ay ayprefs tcl_platform
 
     winAutoFocusOff
 
@@ -220,7 +219,8 @@ proc io_saveScene { ask selected } {
 	    set dirname [file dirname $filename]
 	    if { $dirname == "." } { set dirname [pwd] }
 	}
-	set types {{"Ayam Scene" ".ay"} {"All files" *}}
+
+	set types [subst {{"Ayam Scene" ".ay"} {"Supported Files" {$ayprefs(ALFileTypes)}} {"All files" *}}]
 
 	if { $tcl_platform(os) != "Darwin" } {
 	    set filename [tk_getSaveFile -filetypes $types -parent .\
@@ -231,6 +231,15 @@ proc io_saveScene { ask selected } {
 		    -initialfile [file tail $filename]\
 		    -title "Save scene to:"]
 	}
+
+	# see, if the user wants to save to an Ayam scene file
+	set ext [file extension $filename ]
+	if { ($ext != "") && ([string compare -nocase $ext ".ay"]) } {
+	    # no, try to export the scene...
+	    io_exportScene $filename
+	    return;
+	}
+
     }
 
     if { $filename != "" } {
@@ -1165,6 +1174,7 @@ proc ::tk::mac::OpenDocument { args } {
 	    # if
 	    uS; rV
 	} else {
+	    # extension is not .ay
 	    if { [file extension $filename] != "" } {
 		# try to import the file
 		io_importScene $filename
@@ -1296,3 +1306,57 @@ proc io_importScene { filename } {
  return;
 }
 # io_importScene
+
+
+# io_exportScene:
+#  export a scene, automatically loading the corresponding plugin
+#
+proc io_exportScene { filename } {
+    global ay ayprefs
+
+    if { $filename == "" } {
+	return;
+    }
+
+    set ext [file extension $filename ]
+    set i 0
+    set exported 0
+    foreach alext $ayprefs(ALFileTypes) {
+	# look for matching supported file name extension
+	if { ! [string compare -nocase $ext $alext] } {
+	    # get the name of the plugin that supports $ext files
+	    set plugin [lindex $ayprefs(ALPlugins) $i]
+	    # XXXX export procedure name
+	    set export_proc "${plugin}_export"
+	    # 
+	    if { ! [info exists $export_proc] } {
+		set ay(autoload) $plugin
+		io_lcAuto
+	    }
+	    # XXXX export options array
+	    set option_array "${plugin}_options"
+	    global $option_array
+	    # set file name to export in the export options GUI
+	    set ${option_array}(filename) $filename
+	    update
+	    set body ""
+	    catch { set body [ info body $export_proc ] }
+	    if { $body != "" } {
+		set exported 1
+		# now, call the export procedure
+		$export_proc
+	    } else {
+		ayError 2 "io_exportScene" "Failed to load plugin: $plugin"
+	    }
+	}
+	# if
+	if { $exported } {
+	    break
+	}
+	incr i
+    }
+    # foreach
+
+ return;
+}
+# io_exportScene
