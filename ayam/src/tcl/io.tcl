@@ -120,7 +120,7 @@ proc io_replaceScene { } {
 #  insert a scene
 #
 proc io_insertScene { } {
-    global ay tcl_platform
+    global ay ayprefs tcl_platform
 
     winAutoFocusOff
 
