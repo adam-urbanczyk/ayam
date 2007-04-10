@@ -5225,7 +5225,7 @@ look wrong, consider creation of real cap surfaces instead.
 <figure loc="!ht">
 <eps file="pics/cap.ps" height="6cm">
 <img src="pics/cap.gif">
-<caption>Cap Object (Curve, Resulting Cap Surface)</caption>
+<caption>Cap Object (left: Curve, right Resulting Cap Surface)</caption>
 </figure>
 <p>
 The cap object forms a surface that fills a closed planar NURBS curve.
@@ -5234,12 +5234,18 @@ the first curve define holes in the cap surface similar to the
 parameter curves of an extruded surface (see also section
 <ref id="handb" name="Using Holes and Bevels">).
 <p>
+<figure loc="!ht">
+<eps file="pics/gordoncap.ps" height="5cm">
+<img src="pics/gordoncap.gif">
+<caption>Cap from Non-Planar Curve (Curve, Resulting Cap Surface)</caption>
+</figure>
+<p>
 Since Ayam 1.13 the cap object also supports the so called Gordon mode.
 Here, only a single parameter curve may be present but, in contrast
 to the standard mode of operation (Trim), in the Gordon mode the parameter
 curve may be non-planar. Internally the cap object will split the
 parameter curve into four sections and build a Gordon surface from
-the four sections.
+the four sections (see the image above for an example).
 <p>
 Consequently, the template for the object hierarchy of a Cap object
 looks like this:
@@ -5252,8 +5258,8 @@ looks like this:
   \ Part2(NCurve)]
 </code>
 <p>
-Note that the curves have to be planar and defined in the XY plane;
-see section
+Note that, in Trim mode, the curves have to be planar and defined in
+the XY plane; see section
 <ref id="toxyt" name="The To XY Tool"> for information on
 how to easily achieve this.
 Furthermore, cap generation may fail, if the control points of the
