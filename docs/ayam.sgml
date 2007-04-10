@@ -555,8 +555,9 @@ may be imported using this route. Note that this only works if the
 selected file has a file name extension. The appropriate plugin will
 be loaded automatically (from the list of plugin directories in the
 preferences) if needed and the import options dialog of the plugin
-will be opened, with the <tt/"FileName"/ already set.
+will be opened, with the <tt/"FileName"/ option already set.
 Mind that in this case, no backup copy of the file will be made.
+See also section <ref id="impex" name="Import and Export">.
 
 <item><tt/"Insert"/, inserts the objects and views of an Ayam scene file
 into the current scene. All objects from the file will be read. The new
@@ -564,9 +565,12 @@ objects will be created in the top level of the scene.
 This operation is not undoable!
 <p>
 Since Ayam 1.13, also files supported by any of the import plugins
-may be imported using this route. See above.
+may be imported using this route. See above (<tt/"Open"/).
 
 <item><tt/"Save as"/, saves the current scene asking for a new file name.
+<p>
+Since Ayam 1.13, also files supported by any of the export plugins
+may be exported using this route. See above (<tt/"Open"/).
 
 <item><tt/"Save"/, saves the scene. If the scene has not been saved before
 (read, you have not given it a file name) you will be asked for a file
@@ -7710,15 +7714,24 @@ button $f.b2 -width 5 -text "Expl." -command { explMP; rV; }
 pack $f.b1 $f.b2 -side left -fill x -expand yes
 </code>
 
-<sect>Import and Export
+<sect>Import and Export<label id="impex">
 <p>
 This section contains the documentation of all import and export
 modules of Ayam.
+<p>
+Note that manual loading of an import or export plugin is no longer
+necessary since Ayam 1.13. Simply use the main menu entries
+<tt>"File/Open"</tt> and <tt>"File/Save as"</tt> (or the corresponding
+keyboard shortcuts) and specify a filename with the appropriate
+extension. Ayam will automatically load the appropriate plugin and
+open the import (or export) options dialog.
 
 <sect1>Mops Import<label id="impmops">
 <p>
-Mops scenes may be imported using the main menu entry:
-<tt>"File/Import Mops"</tt>.
+In older versions of Ayam, Mops scenes could be imported using the main
+menu entry: <tt>"File/Import Mops"</tt>. Since Ayam 1.13 Mops import is
+a plugin (mopsi). After loading the plugin, Mops scenes may be imported
+using the main menu entry <tt>"File/Import/Mops"</tt>.
 <p>
 Ayam is able to import most elements of a Mops scene except for
 RiAttributes attached to arbitrary geometric objects,
@@ -7920,7 +7933,9 @@ can be found in section <ref id="vmview" name="The View Menu">.
 
 <sect1>Wavefront OBJ Import<label id="impwav">
 <p>
-Since Ayam 1.8.3 a Wavefront OBJ (version 3.0) import facility is available.
+Since Ayam 1.8.3 a Wavefront OBJ (version 3.0) import facility is available
+and since Ayam 1.13 it is a plugin (objio) that needs to be loaded
+before import.
 The corresponding main menu entry is
 <tt>"File/Import/Wavefront OBJ"</tt>.
 <p>
@@ -7975,8 +7990,9 @@ files that use older syntax will not be imported correctly.
 
 <sect1>Wavefront OBJ Export<label id="expwav">
 <p>
-Since Ayam 1.7, it is possible to export scenes or objects to
-the Wavefront OBJ format (version 3.0).
+Since Ayam 1.7, it is possible to export scenes or objects to the Wavefront
+OBJ format (version 3.0). Since Ayam 1.13, Wavefront OBJ export is a plugin
+(objio) that needs to be loaded before export.
 The corresponding main menu entry is
 <tt>"File/Export/Wavefront OBJ"</tt>.
 The Wavefront export currently supports the following
