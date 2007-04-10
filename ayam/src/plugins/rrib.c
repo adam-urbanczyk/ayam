@@ -1234,6 +1234,10 @@ ay_rrib_RiLightSource(RtToken name,
       ay_rrib_co.scalx *= rrib_scalefactor;
       ay_rrib_co.scaly *= rrib_scalefactor;
       ay_rrib_co.scalz *= rrib_scalefactor;
+
+      ay_rrib_co.movx *= rrib_scalefactor;
+      ay_rrib_co.movy *= rrib_scalefactor;
+      ay_rrib_co.movz *= rrib_scalefactor;
     } /* if */
 
   ay_status = ay_object_copy(&ay_rrib_co, &o);
@@ -5562,6 +5566,10 @@ ay_rrib_linkobject(void *object, int type)
 	  ay_rrib_co.scalx *= rrib_scalefactor;
 	  ay_rrib_co.scaly *= rrib_scalefactor;
 	  ay_rrib_co.scalz *= rrib_scalefactor;
+
+	  ay_rrib_co.movx *= rrib_scalefactor;
+	  ay_rrib_co.movy *= rrib_scalefactor;
+	  ay_rrib_co.movz *= rrib_scalefactor;
 	} /* if */
     } /* if */
 
