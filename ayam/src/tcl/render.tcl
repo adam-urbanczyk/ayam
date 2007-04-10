@@ -131,15 +131,14 @@ proc render_select { } {
 
 	    2 {
 		# Aqsis
-		set ayprefs(QRender)\
-			"aqsis -Progress -fb  %s"
+		set ayprefs(QRender) "aqsis -Progress -fb  %s"
 		set ayprefs(QRenderPT) "R90000%d"
 		set ayprefs(Render) "aqsis -Progress -fb %s"
 		set ayprefs(RenderPT) "R90000%d"
 		set ayprefs(SMRender) "aqsis -Progress %s"
 		set ayprefs(SMRenderPT) "R90000%d"
-		set ayprefs(Render) "aqsis -Progress %s"
-		set ayprefs(RenderPT) "R90000%d"
+		set ayprefs(FRender) "aqsis -Progress %s"
+		set ayprefs(FRenderPT) "R90000%d"
 
 		set ayprefs(RenderMode) 0
 
@@ -202,6 +201,7 @@ proc render_select { } {
 		set ayprefs(SMRenderPT) ""
 		set ayprefs(FRender) "renderdl %s"
 		set ayprefs(FRenderPT) ""
+
 		set ayprefs(RenderMode) 0
 
 		set splugin "ayslo3d"
