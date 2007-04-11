@@ -1404,7 +1404,7 @@ ay_nb_SurfacePoint4D(int n, int m, int p, int q, double *U, double *V,
     return AY_EOMEM;
   if(!(Nv = calloc(q+1, sizeof(double))))
     {free(Nu); return AY_EOMEM;}
-  if(!(temp = calloc(q+1, sizeof(double))))
+  if(!(temp = calloc((q+1)*4, sizeof(double))))
     {free(Nu); free(Nv); return AY_EOMEM;}
 
   spanu = ay_nb_FindSpan(n, p, u, U);
@@ -1416,7 +1416,6 @@ ay_nb_SurfacePoint4D(int n, int m, int p, int q, double *U, double *V,
   indu = spanu - p;
   for(l = 0; l <= q; l++)
     {
-      memset(temp, 0, 4*sizeof(double));
       indv = spanv - q + l;
 
       for(k = 0; k <= p; k++)
@@ -1487,7 +1486,7 @@ ay_nb_SurfacePoint3D(int n, int m, int p, int q, double *U, double *V,
 
       indv = spanv - q + l;
 
-      for(k =0 ; k <= p; k++)
+      for(k = 0 ; k <= p; k++)
 	{
 	  /* was: temp = temp + Nu[k]*P[indu+k][indv]; */
 	  i = (((indu+k)*(m+1))+indv)*3;
