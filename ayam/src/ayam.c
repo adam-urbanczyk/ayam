@@ -1031,6 +1031,12 @@ Tcl_AppInit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "closeNPV", ay_npt_closevtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  Tcl_CreateCommand(interp, "clampNPU", ay_npt_clamputcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "clampNPV", ay_npt_clampvtcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
 /* inform Tcl-context about compile time configuration: */
 
 #ifndef AYWRAPPED

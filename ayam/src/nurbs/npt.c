@@ -113,6 +113,10 @@ ay_npt_destroy(ay_nurbpatch_object *patch)
 } /* ay_npt_destroy */
 
 
+/* ay_npt_createnpatchobject:
+ *   properly create and set up an ay_object structure to be used
+ *   as NURBS patch object
+ */
 int
 ay_npt_createnpatchobject(ay_object **result)
 {
@@ -6091,7 +6095,8 @@ cleanup:
 
 
 /* ay_npt_israt:
- *
+ *  check whether any control point of NURBS patch <np>
+ *  uses a weight value (!= 1.0)
  */
 int
 ay_npt_israt(ay_nurbpatch_object *np)
@@ -6165,7 +6170,11 @@ ay_npt_istrimmed(ay_object *o, int mode)
 
 
 /* ay_npt_closeu:
- *
+ *  close NURBS patch <np> by copying the first p control point
+ *  lines (in v direction) over to the last p control point lines
+ *  (where p is the degree of the NURBS surface in u direction
+ *  Note: this does not guarantee a closed surface unless the u knot
+ *  vector is e.g. of type AY_KTBSPLINE
  */
 int
 ay_npt_closeu(ay_nurbpatch_object *np)
@@ -6288,7 +6297,11 @@ ay_npt_closeutcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_npt_closev:
- *
+ *  close NURBS patch <np> by copying the first q control point
+ *  lines (in u direction) over to the last q control point lines
+ *  (where q is the degree of the NURBS surface in v direction
+ *  Note: this does not guarantee a closed surface unless the v knot
+ *  vector is e.g. of type AY_KTBSPLINE
  */
 int
 ay_npt_closev(ay_nurbpatch_object *np)
@@ -6305,7 +6318,6 @@ ay_npt_closev(ay_nurbpatch_object *np)
 	  a = b+((np->height-(np->vorder-1))*stride);
 
 	  memcpy(a, b, (np->vorder-1)*stride*sizeof(double));
-
 	} /* for */
     }
   else
@@ -6399,7 +6411,8 @@ ay_npt_closevtcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_npt_isclosedu:
- *  <np>
+ *  check whether NURBS patch <np> is closed in u direction
+ *  XXXX unfinished
  */
 int
 ay_npt_isclosedu(ay_nurbpatch_object *np)
@@ -6779,3 +6792,293 @@ ay_npt_copytptag(ay_object *src, ay_object *dst)
 
  return ay_status;
 } /* ay_npt_copytptag */
+
+
+/* ay_npt_clampu:
+ *
+ */
+int
+ay_npt_clampu(ay_nurbpatch_object *np)
+{
+ int ay_status = AY_OK;
+ double *newcontrolv = NULL, *newuknotv = NULL;
+ double u;
+ int stride, r, k, s;
+
+  if(!np)
+    return AY_ENULL;
+
+  stride = 4;
+
+  /* clamp start */
+  k = np->uorder - 1;
+  u = np->uknotv[k];
+  s = 0;
+  r = np->uorder - 1;
+  np->width += r;
+
+  newcontrolv = NULL;
+  if(!(newcontrolv = calloc(np->width*np->height*stride, sizeof(double))))
+    return AY_EOMEM;
+
+  newuknotv = NULL;
+  if(!(newuknotv = calloc(np->width+np->uorder, sizeof(double))))
+    { free(newcontrolv); return AY_EOMEM; }
+
+  ay_status = ay_nb_InsertKnotSurfU(stride, np->width-r-1, np->height,
+		np->uorder-1, np->uknotv, np->controlv, u, k,
+		s, r, newuknotv, newcontrolv);
+
+  free(np->controlv);
+  np->controlv = newcontrolv;
+
+  free(np->uknotv);
+  np->uknotv = newuknotv;
+
+  /* clamp end */
+  k = np->width;
+  u = np->uknotv[k];
+  k--;
+  s = 0;
+  r = np->uorder - 1;
+  np->width += r;
+
+  newcontrolv = NULL;
+  if(!(newcontrolv = calloc(np->width*np->height*stride, sizeof(double))))
+    return AY_EOMEM;
+
+  newuknotv = NULL;
+  if(!(newuknotv = calloc(np->width+np->uorder, sizeof(double))))
+    { free(newcontrolv); return AY_EOMEM; }
+
+  ay_status = ay_nb_InsertKnotSurfU(stride, np->width-r-1, np->height,
+		       np->uorder-1, np->uknotv, np->controlv, u, k,
+		       s, r, newuknotv, newcontrolv);
+
+  free(np->controlv);
+  np->controlv = newcontrolv;
+
+  free(np->uknotv);
+  np->uknotv = newuknotv;
+
+  /* create new controlv, uknotv, discarding the first p and last p knots */
+  np->width -= (np->uorder-1)*2;
+  newcontrolv = NULL;
+  if(!(newcontrolv = calloc(np->width*np->height*stride, sizeof(double))))
+    return AY_EOMEM;
+
+  newuknotv = NULL;
+  if(!(newuknotv = calloc(np->width+np->uorder, sizeof(double))))
+    { free(newcontrolv); return AY_EOMEM; }
+
+  memcpy(newcontrolv, &(np->controlv[(np->uorder-1)*np->height*stride]),
+	 np->width*np->height*stride*sizeof(double));
+
+  memcpy(newuknotv, &(np->uknotv[np->uorder-1]),
+	 (np->width+np->uorder)*sizeof(double));
+
+  free(np->controlv);
+  np->controlv = newcontrolv;
+
+  free(np->uknotv);
+  np->uknotv = newuknotv;
+
+ return AY_OK;
+} /* ay_npt_clampu */
+
+
+/* ay_npt_clampv:
+ *
+ */
+int
+ay_npt_clampv(ay_nurbpatch_object *np)
+{
+ int ay_status = AY_OK;
+ double *newcontrolv = NULL, *newvknotv = NULL;
+ double v;
+ int stride, r, k, s;
+ int i, a, b, oldheight;
+
+  if(!np)
+    return AY_ENULL;
+
+  stride = 4;
+
+  /* clamp start */
+  k = np->vorder - 1;
+  v = np->vknotv[k];
+  s = 0;
+  r = np->vorder - 1;
+  np->height += r;
+
+  newcontrolv = NULL;
+  if(!(newcontrolv = calloc(np->width*np->height*stride, sizeof(double))))
+    return AY_EOMEM;
+
+  newvknotv = NULL;
+  if(!(newvknotv = calloc(np->width+np->vorder, sizeof(double))))
+    { free(newcontrolv); return AY_EOMEM; }
+
+  ay_status = ay_nb_InsertKnotSurfV(stride, np->width, np->height-r-1,
+		np->vorder-1, np->vknotv, np->controlv, v, k,
+		s, r, newvknotv, newcontrolv);
+
+  free(np->controlv);
+  np->controlv = newcontrolv;
+
+  free(np->vknotv);
+  np->vknotv = newvknotv;
+
+  /* clamp end */
+  k = np->height;
+  v = np->vknotv[k];
+  k--;
+  s = 0;
+  r = np->vorder - 1;
+  np->height += r;
+
+  newcontrolv = NULL;
+  if(!(newcontrolv = calloc(np->width*np->height*stride, sizeof(double))))
+    return AY_EOMEM;
+
+  newvknotv = NULL;
+  if(!(newvknotv = calloc(np->width+np->vorder, sizeof(double))))
+    { free(newcontrolv); return AY_EOMEM; }
+
+  ay_status = ay_nb_InsertKnotSurfV(stride, np->width, np->height-r-1,
+		       np->vorder-1, np->vknotv, np->controlv, v, k,
+		       s, r, newvknotv, newcontrolv);
+
+  free(np->controlv);
+  np->controlv = newcontrolv;
+
+  free(np->vknotv);
+  np->vknotv = newvknotv;
+
+  /* create new controlv, vknotv, discarding the first p and last p knots */
+  oldheight = np->height;
+  np->height -= (np->vorder-1)*2;
+  newcontrolv = NULL;
+  if(!(newcontrolv = calloc(np->width*np->height*stride, sizeof(double))))
+    return AY_EOMEM;
+
+  newvknotv = NULL;
+  if(!(newvknotv = calloc(np->width+np->vorder, sizeof(double))))
+    { free(newcontrolv); return AY_EOMEM; }
+
+  for(i = 0; i < np->width; i++)
+    {
+      a = i*np->height*stride;
+      b = (i*oldheight+(np->vorder-1))*stride;
+      memcpy(&(newcontrolv[a]), &(np->controlv[b]),
+	     np->height*stride*sizeof(double));
+    } /* for*/
+
+  memcpy(newcontrolv, &(np->controlv[(np->vorder-1)*np->height*stride]),
+	 np->width*np->height*stride*sizeof(double));
+
+  memcpy(newvknotv, &(np->vknotv[np->vorder-1]),
+	 (np->width+np->vorder)*sizeof(double));
+
+  free(np->controlv);
+  np->controlv = newcontrolv;
+
+  free(np->vknotv);
+  np->vknotv = newvknotv;
+
+ return AY_OK;
+} /* ay_npt_clampv */
+
+
+/* ay_npt_clamputcmd:
+ *
+ */
+int
+ay_npt_clamputcmd(ClientData clientData, Tcl_Interp *interp,
+		  int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ char fname[] = "clampNPU";
+ ay_list_object *sel = ay_selection;
+ ay_nurbpatch_object *np = NULL;
+
+  while(sel)
+    {
+      if(!sel->object)
+	return TCL_OK;
+
+      if(sel->object->type == AY_IDNPATCH)
+	{
+	  if(sel->object->selp)
+	    ay_selp_clear(sel->object);
+
+	  ay_status = ay_npt_clampu(np);
+
+	  if(ay_status)
+	    {
+	      ay_error(AY_ERROR, fname, "Error clamping object!");
+	    }
+
+	  ay_status = ay_npt_recreatemp(np);
+
+	  sel->object->modified = AY_TRUE;
+	}
+      else
+	{
+	  ay_error(AY_ERROR, fname, "Do not know how to clamp this object!");
+	} /* if */
+      sel = sel->next;
+    } /* while */
+
+  ay_notify_parent();
+
+ return TCL_OK;
+} /* ay_npt_clamputcmd */
+
+
+
+/* ay_npt_clampvtcmd:
+ *
+ */
+int
+ay_npt_clampvtcmd(ClientData clientData, Tcl_Interp *interp,
+		  int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ char fname[] = "clampNPV";
+ ay_list_object *sel = ay_selection;
+ ay_nurbpatch_object *np = NULL;
+
+  while(sel)
+    {
+      if(!sel->object)
+	return TCL_OK;
+
+      if(sel->object->type == AY_IDNPATCH)
+	{
+	  if(sel->object->selp)
+	    ay_selp_clear(sel->object);
+
+	  ay_status = ay_npt_clampv(np);
+
+	  if(ay_status)
+	    {
+	      ay_error(AY_ERROR, fname, "Error clamping object!");
+	    }
+
+	  ay_status = ay_npt_recreatemp(np);
+
+	  sel->object->modified = AY_TRUE;
+	}
+      else
+	{
+	  ay_error(AY_ERROR, fname, "Do not know how to clamp this object!");
+	} /* if */
+      sel = sel->next;
+    } /* while */
+
+  ay_notify_parent();
+
+ return TCL_OK;
+} /* ay_npt_clampvtcmd */
+
