@@ -6825,7 +6825,7 @@ ay_npt_clampu(ay_nurbpatch_object *np)
   if(!(newuknotv = calloc(np->width+np->uorder, sizeof(double))))
     { free(newcontrolv); return AY_EOMEM; }
 
-  ay_status = ay_nb_InsertKnotSurfU(stride, np->width-r-1, np->height,
+  ay_status = ay_nb_InsertKnotSurfU(stride, np->width-r-1, np->height-1,
 		np->uorder-1, np->uknotv, np->controlv, u, k,
 		s, r, newuknotv, newcontrolv);
 
@@ -6851,7 +6851,7 @@ ay_npt_clampu(ay_nurbpatch_object *np)
   if(!(newuknotv = calloc(np->width+np->uorder, sizeof(double))))
     { free(newcontrolv); return AY_EOMEM; }
 
-  ay_status = ay_nb_InsertKnotSurfU(stride, np->width-r-1, np->height,
+  ay_status = ay_nb_InsertKnotSurfU(stride, np->width-r-1, np->height-1,
 		       np->uorder-1, np->uknotv, np->controlv, u, k,
 		       s, r, newuknotv, newcontrolv);
 
@@ -6882,6 +6882,8 @@ ay_npt_clampu(ay_nurbpatch_object *np)
 
   free(np->uknotv);
   np->uknotv = newuknotv;
+
+  np->uknot_type = AY_KTCUSTOM;
 
  return AY_OK;
 } /* ay_npt_clampu */
@@ -6919,7 +6921,7 @@ ay_npt_clampv(ay_nurbpatch_object *np)
   if(!(newvknotv = calloc(np->width+np->vorder, sizeof(double))))
     { free(newcontrolv); return AY_EOMEM; }
 
-  ay_status = ay_nb_InsertKnotSurfV(stride, np->width, np->height-r-1,
+  ay_status = ay_nb_InsertKnotSurfV(stride, np->width-1, np->height-r-1,
 		np->vorder-1, np->vknotv, np->controlv, v, k,
 		s, r, newvknotv, newcontrolv);
 
@@ -6945,7 +6947,7 @@ ay_npt_clampv(ay_nurbpatch_object *np)
   if(!(newvknotv = calloc(np->width+np->vorder, sizeof(double))))
     { free(newcontrolv); return AY_EOMEM; }
 
-  ay_status = ay_nb_InsertKnotSurfV(stride, np->width, np->height-r-1,
+  ay_status = ay_nb_InsertKnotSurfV(stride, np->width-1, np->height-r-1,
 		       np->vorder-1, np->vknotv, np->controlv, v, k,
 		       s, r, newvknotv, newcontrolv);
 
@@ -6972,10 +6974,7 @@ ay_npt_clampv(ay_nurbpatch_object *np)
       b = (i*oldheight+(np->vorder-1))*stride;
       memcpy(&(newcontrolv[a]), &(np->controlv[b]),
 	     np->height*stride*sizeof(double));
-    } /* for*/
-
-  memcpy(newcontrolv, &(np->controlv[(np->vorder-1)*np->height*stride]),
-	 np->width*np->height*stride*sizeof(double));
+    } /* for */
 
   memcpy(newvknotv, &(np->vknotv[np->vorder-1]),
 	 (np->width+np->vorder)*sizeof(double));
@@ -6985,6 +6984,8 @@ ay_npt_clampv(ay_nurbpatch_object *np)
 
   free(np->vknotv);
   np->vknotv = newvknotv;
+
+  np->vknot_type = AY_KTCUSTOM;
 
  return AY_OK;
 } /* ay_npt_clampv */
@@ -7011,6 +7012,8 @@ ay_npt_clamputcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  if(sel->object->selp)
 	    ay_selp_clear(sel->object);
+
+	  np = (ay_nurbpatch_object *)sel->object->refine;
 
 	  ay_status = ay_npt_clampu(np);
 
@@ -7058,6 +7061,8 @@ ay_npt_clampvtcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  if(sel->object->selp)
 	    ay_selp_clear(sel->object);
+
+	  np = (ay_nurbpatch_object *)sel->object->refine;
 
 	  ay_status = ay_npt_clampv(np);
 
