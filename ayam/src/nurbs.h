@@ -488,6 +488,17 @@ int ay_npt_getbeveltags(ay_object *o, int place,
 
 int ay_npt_copytptag(ay_object *src, ay_object *dst);
 
+int ay_npt_clampu(ay_nurbpatch_object *np);
+
+int ay_npt_clampv(ay_nurbpatch_object *np);
+
+int ay_npt_clamputcmd(ClientData clientData, Tcl_Interp *interp,
+		      int argc, char *argv[]);
+
+int ay_npt_clampvtcmd(ClientData clientData, Tcl_Interp *interp,
+		      int argc, char *argv[]);
+
+
 /* pmt.c */
 int ay_pmt_tonpatch(ay_pamesh_object *pamesh, ay_object **result);
 
