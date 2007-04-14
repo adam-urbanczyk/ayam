@@ -6795,7 +6795,8 @@ ay_npt_copytptag(ay_object *src, ay_object *dst)
 
 
 /* ay_npt_clampu:
- *
+ *  clamp patch in u direction
+ *  Warning: only works correctly for completely unclamped patches
  */
 int
 ay_npt_clampu(ay_nurbpatch_object *np)
@@ -6890,7 +6891,8 @@ ay_npt_clampu(ay_nurbpatch_object *np)
 
 
 /* ay_npt_clampv:
- *
+ *  clamp patch in v direction
+ *  Warning: only works correctly for completely unclamped patches
  */
 int
 ay_npt_clampv(ay_nurbpatch_object *np)
@@ -7002,11 +7004,16 @@ ay_npt_clamputcmd(ClientData clientData, Tcl_Interp *interp,
  char fname[] = "clampNPU";
  ay_list_object *sel = ay_selection;
  ay_nurbpatch_object *np = NULL;
+ double *knotv, u;
+ int i, j, count_start, count_end;
 
   while(sel)
     {
       if(!sel->object)
-	return TCL_OK;
+	{
+	  /* something is very wrong */
+	  return TCL_OK;
+	}
 
       if(sel->object->type == AY_IDNPATCH)
 	{
@@ -7014,6 +7021,41 @@ ay_npt_clamputcmd(ClientData clientData, Tcl_Interp *interp,
 	    ay_selp_clear(sel->object);
 
 	  np = (ay_nurbpatch_object *)sel->object->refine;
+
+	  /* check whether we need to clamp at all */
+	  knotv = np->uknotv;
+
+	  if((np->uknot_type == AY_KTNURB) ||
+	     (np->uknot_type == AY_KTBEZIER))
+	    {
+	      ay_error(AY_ERROR, fname, "Patch is already clamped!");
+	      break;
+	    }
+
+	  if(np->uknot_type == AY_KTCUSTOM)
+	    {
+	      count_start = 0;
+	      count_end = 0;
+
+	      /* compare knots at start */
+	      u = knotv[0];
+	      for(i = 1; i < np->uorder; i++)
+		if(u == knotv[i])
+		  count_start++;
+
+	      /* compare knots at end */
+	      j = np->width+np->uorder-1;
+	      u = knotv[j];
+	      for(i = j-1; i >= np->width; i--)
+		if(u == knotv[i])
+		  count_end++;
+	      
+	      if(count_start || count_end)
+		{
+		  ay_error(AY_ERROR, fname, "Cannot clamp this patch!");
+		  break;
+		}
+	    } /* if */
 
 	  ay_status = ay_npt_clampu(np);
 
@@ -7051,6 +7093,8 @@ ay_npt_clampvtcmd(ClientData clientData, Tcl_Interp *interp,
  char fname[] = "clampNPV";
  ay_list_object *sel = ay_selection;
  ay_nurbpatch_object *np = NULL;
+ double *knotv, v;
+ int i, j, count_start, count_end;
 
   while(sel)
     {
@@ -7063,6 +7107,41 @@ ay_npt_clampvtcmd(ClientData clientData, Tcl_Interp *interp,
 	    ay_selp_clear(sel->object);
 
 	  np = (ay_nurbpatch_object *)sel->object->refine;
+
+	  /* check whether we need to clamp at all */
+	  knotv = np->vknotv;
+
+	  if((np->vknot_type == AY_KTNURB) ||
+	     (np->vknot_type == AY_KTBEZIER))
+	    {
+	      ay_error(AY_ERROR, fname, "Patch is already clamped!");
+	      break;
+	    }
+
+	  if(np->vknot_type == AY_KTCUSTOM)
+	    {
+	      count_start = 0;
+	      count_end = 0;
+
+	      /* compare knots at start */
+	      v = knotv[0];
+	      for(i = 1; i < np->vorder; i++)
+		if(v == knotv[i])
+		  count_start++;
+
+	      /* compare knots at end */
+	      j = np->height+np->vorder-1;
+	      v = knotv[j];
+	      for(i = j-1; i >= np->height; i--)
+		if(v == knotv[i])
+		  count_end++;
+	      
+	      if(count_start || count_end)
+		{
+		  ay_error(AY_ERROR, fname, "Cannot clamp this patch!");
+		  break;
+		}
+	    } /* if */
 
 	  ay_status = ay_npt_clampv(np);
 
