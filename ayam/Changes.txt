@@ -49,6 +49,8 @@ o in direct connection with the above, Gordon surfaces now support rational
   curves for the special case of a Coons patch configuration (four curves)
 o improved speed of object picking in shaded views
 o added Split PolyMesh modelling tool
+o added clamping of NURBS patches (new scripting interface commands "clampNPU"
+  and "clampNPV" and new main menu entries "Tools/NURBPatch/Clamp")
 
 Drawing/Shading:
 o added antialiasing drawing option for lines
@@ -64,6 +66,9 @@ o Wavefront OBJ import/export is now a plugin
 o files may now be imported using the normal "File/Open" and "File/Insert"
   menu entries (Ayam will load the right plugin automatically and open the
   corresponding import options dialog, pre-seeded with the right filename)
+o likewise, scenes may be exported using "File/Save as" and choosing a
+  filename with an extension
+o improved scalefactor option usage in rrib plugin
 
 Scripts/Scripting Interface:
 o added example script "toPoly" that allows to easily convert the whole
@@ -71,6 +76,7 @@ o added example script "toPoly" that allows to easily convert the whole
 o added example script "zap" that shows how to create buttons in the
   Ayam toolbox
 o improved error detection and reporting of "withOb" command
+o renamed getPnt option -u to -p and added support to get surface points
 
 
 [1. Jan 2007] Ayam 1.12:
