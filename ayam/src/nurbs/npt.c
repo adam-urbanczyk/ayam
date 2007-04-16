@@ -4885,9 +4885,48 @@ int
 ay_npt_elevateu(ay_nurbpatch_object *patch, int t)
 {
  int ay_status = AY_OK;
- double *Uh = NULL, *Qw = NULL, *realQw = NULL, *realUh = NULL;
- int nw = 0;
+ double u, *Uh = NULL, *Qw = NULL, *realQw = NULL, *realUh = NULL;
+ int i, j, a, b, clamp_me = AY_FALSE, nw = 0;
  char fname[] = "ay_npt_elevateu";
+
+
+  if(patch->uknot_type == AY_KTBSPLINE)
+    {
+      clamp_me = AY_TRUE;
+    }
+  else
+    {
+      if(patch->uknot_type == AY_KTCUSTOM)
+	{
+	  a = 1;
+	  u = patch->uknotv[0];
+	  for(i = 1; i < patch->uorder; i++)
+	    if(u == patch->uknotv[i])
+	      a++;
+
+	  j = patch->width+patch->uorder-1;
+	  b = 1;
+	  u = patch->uknotv[j];
+	  for(i = j; i >= patch->width; i--)
+	    if(u == patch->uknotv[i])
+	      b++;
+
+	  if((a < patch->uorder) || (b < patch->uorder))
+	    {
+	      clamp_me = AY_TRUE;
+	    } /* if */
+	} /* if */
+    } /* if */
+
+  if(clamp_me)
+    {
+      ay_status = ay_npt_clampu(patch);
+      if(ay_status)
+	{
+	  ay_error(AY_ERROR, fname, "clamp operation failed");
+	  return AY_ERROR;
+	} /* if */
+    } /* if */
 
   /* alloc new knotv & new controlv */
   if(!(Uh = calloc((patch->width + patch->width*t +
@@ -4999,9 +5038,47 @@ int
 ay_npt_elevatev(ay_nurbpatch_object *patch, int t)
 {
  int ay_status = AY_OK;
- double *Vh = NULL, *Qw = NULL, *realQw = NULL, *realVh = NULL;
- int nh = 0, i, ind1, ind2;
+ double v, *Vh = NULL, *Qw = NULL, *realQw = NULL, *realVh = NULL;
+ int i, j, a, b, clamp_me = AY_FALSE, nh = 0, ind1, ind2;
  char fname[] = "ay_npt_elevatev";
+
+  if(patch->vknot_type == AY_KTBSPLINE)
+    {
+      clamp_me = AY_TRUE;
+    }
+  else
+    {
+      if(patch->vknot_type == AY_KTCUSTOM)
+	{
+	  a = 1;
+	  v = patch->vknotv[0];
+	  for(i = 1; i < patch->vorder; i++)
+	    if(v == patch->vknotv[i])
+	      a++;
+
+	  j = patch->height+patch->vorder-1;
+	  b = 1;
+	  v = patch->vknotv[j];
+	  for(i = j; i >= patch->height; i--)
+	    if(v == patch->vknotv[i])
+	      b++;
+
+	  if((a < patch->vorder) || (b < patch->vorder))
+	    {
+	      clamp_me = AY_TRUE;
+	    } /* if */
+	} /* if */
+    } /* if */
+
+  if(clamp_me)
+    {
+      ay_status = ay_npt_clampv(patch);
+      if(ay_status)
+	{
+	  ay_error(AY_ERROR, fname, "clamp operation failed");
+	  return AY_ERROR;
+	} /* if */
+    } /* if */
 
   /* alloc new knotv & new controlv */
   if(!(Vh = calloc((patch->height + patch->height*t +
@@ -6796,7 +6873,7 @@ ay_npt_copytptag(ay_object *src, ay_object *dst)
 
 /* ay_npt_clampu:
  *  clamp patch in u direction
- *  Warning: only works correctly for completely unclamped patches
+ *  Warning: only works correctly for unclamped patches
  */
 int
 ay_npt_clampu(ay_nurbpatch_object *np)
@@ -6892,7 +6969,7 @@ ay_npt_clampu(ay_nurbpatch_object *np)
 
 /* ay_npt_clampv:
  *  clamp patch in v direction
- *  Warning: only works correctly for completely unclamped patches
+ *  Warning: only works correctly for unclamped patches
  */
 int
 ay_npt_clampv(ay_nurbpatch_object *np)
