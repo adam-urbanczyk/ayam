@@ -1037,6 +1037,11 @@ Tcl_AppInit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "clampNPV", ay_npt_clampvtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  Tcl_CreateCommand(interp, "rescaleKnNP", ay_npt_rescaleknvnptcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+
+
 /* inform Tcl-context about compile time configuration: */
 
 #ifndef AYWRAPPED

@@ -7243,3 +7243,124 @@ ay_npt_clampvtcmd(ClientData clientData, Tcl_Interp *interp,
  return TCL_OK;
 } /* ay_npt_clampvtcmd */
 
+
+/* ay_npt_rescaleknvnptcmd:
+ *  rescale the knot vectors of a NURBS patch to the range 0.0 - 1.0
+ */
+int
+ay_npt_rescaleknvnptcmd(ClientData clientData, Tcl_Interp *interp,
+			int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ ay_list_object *sel = ay_selection;
+ ay_object *src = NULL;
+ ay_nurbpatch_object *patch = NULL;
+ char fname[] = "rescaleKnNP";
+ int i = 1, mode = 0;
+ double rmin = 0.0, rmax = 1.0, mindist = 1.0e-04;
+
+  /* parse args */
+  if(argc > 2)
+    {
+      while(i+1 < argc)
+	{
+	  if(!strcmp(argv[i], "-r"))
+	    {
+	      mode = 0;
+	      sscanf(argv[i+1], "%lg", &rmin);
+	      sscanf(argv[i+2], "%lg", &rmax);
+	    }
+	  if(!strcmp(argv[i], "-d"))
+	    {
+	      mode = 1;
+	      sscanf(argv[i+1], "%lg", &mindist);
+	    }
+	  i += 2;
+	} /* while */
+    } /* if */
+
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, fname, NULL);
+      return TCL_OK;
+    }
+
+  while(sel)
+    {
+      src = sel->object;
+      if(src->type != AY_IDNPATCH)
+	{
+	  ay_error(AY_ERROR, fname, "Object is not a NURBPatch!");
+	}
+      else
+	{
+	  patch = (ay_nurbpatch_object*)src->refine;
+
+	  /* process u dimension */
+	  if(patch->uknot_type == AY_KTCUSTOM)
+	    {
+	      if(mode)
+		{
+		  ay_status = ay_knots_rescaletomindist(patch->width+
+							patch->uorder,
+							patch->uknotv,
+							mindist);
+		}
+	      else
+		{
+		  ay_status = ay_knots_rescaletorange(patch->width+
+						      patch->uorder,
+						      patch->uknotv,
+						      rmin, rmax);
+
+		}
+	      if(ay_status)
+		{
+		  ay_error(ay_status, fname, "Could not rescale u-knots!");
+		  break;
+		}
+
+
+	      src->modified = AY_TRUE;
+	    }
+	  else
+	    {
+	      ay_error(AY_EWARN, fname, "Need a custom knot vector!");
+	    } /* if */
+
+	  /* process v dimension */
+	  if(patch->vknot_type == AY_KTCUSTOM)
+	    {
+	      if(mode)
+		{
+		  ay_status = ay_knots_rescaletomindist(patch->height+
+							patch->vorder,
+							patch->vknotv,
+							mindist);
+		}
+	      else
+		{
+		  ay_status = ay_knots_rescaletorange(patch->height+
+						      patch->vorder,
+						      patch->vknotv,
+						      rmin, rmax);
+		}
+	      if(ay_status)
+		{
+		  ay_error(ay_status, fname, "Could not rescale v-knots!");
+		}
+	      src->modified = AY_TRUE;
+	    }
+	  else
+	    {
+	      ay_error(AY_EWARN, fname, "Need a custom knot vector!");
+	    } /* if */
+	} /* if */
+
+      sel = sel->next;
+    } /* while */
+
+  ay_notify_parent();
+
+ return TCL_OK;
+} /* ay_npt_rescaleknvnptcmd */
