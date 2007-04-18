@@ -331,11 +331,6 @@ int ay_npt_destroy(ay_nurbpatch_object *patch);
 
 int ay_npt_createnpatchobject(ay_object **result);
 
-int ay_npt_revolve(ay_object *o, double arc, int sections, int order,
-		   ay_nurbpatch_object **revolution);
-
-int ay_npt_drawtrimcurve(struct Togl *togl, ay_object *o, GLUnurbsObj *no);
-
 int ay_npt_resizearrayw(double **controlvptr, int stride,
 			int width, int height, int new_width);
 
@@ -361,6 +356,8 @@ int ay_npt_swaparray(double **controlvptr, int stride,
 
 int ay_npt_swapuv(ay_nurbpatch_object *np);
 
+int ay_npt_drawtrimcurve(struct Togl *togl, ay_object *o, GLUnurbsObj *no);
+
 int ay_npt_wribtrimcurves(ay_object *o);
 
 int ay_npt_crtcobbsphere(ay_nurbpatch_object **cobbsphere);
@@ -378,6 +375,9 @@ int ay_npt_splittocurvestcmd(ClientData clientData, Tcl_Interp *interp,
 
 int ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
 			       int argc, char *argv[]);
+
+int ay_npt_revolve(ay_object *o, double arc, int sections, int order,
+		   ay_nurbpatch_object **revolution);
 
 int ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 		 int rotate, int closed, ay_nurbpatch_object **sweep,

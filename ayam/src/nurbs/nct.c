@@ -3546,7 +3546,10 @@ ay_nct_addinternalcps(ay_object *curve, int where)
 
 
 /* ay_nct_rescaleknvnctcmd:
- *  rescale the knot vector of a NURBS curve to the range 0.0 - 1.0
+ *  rescale the knot vectors of the selected NURBS curves
+ *  - to the range 0.0 - 1.0 (no arguments)
+ *  - to a specific range (-r min max)
+ *  - so that all knots have a minimum guaranteed distance (-d mindist)
  */
 int
 ay_nct_rescaleknvnctcmd(ClientData clientData, Tcl_Interp *interp,

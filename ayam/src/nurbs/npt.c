@@ -140,261 +140,6 @@ ay_npt_createnpatchobject(ay_object **result)
 } /* ay_npt_createnpatchobject */
 
 
-/* ay_npt_revolve:
- *  create a surface of revolution from the NURBS curve in <o>
- *  (that will be projected to the XY-plane for revolution)
- *  with revolution angle <arc>; if <sections> is > 0, not a
- *  standard NURBS circle geometry will be used for the surface
- *  but a circular B-Spline with appropriate number of sections
- *  and desired order <order>
- */
-int
-ay_npt_revolve(ay_object *o, double arc, int sections, int order,
-	       ay_nurbpatch_object **revolution)
-{
- int ay_status = AY_OK;
- ay_nurbpatch_object *new = NULL;
- ay_nurbcurve_object *curve, *tmpnc = NULL;
- double *uknotv = NULL, *tcontrolv = NULL;
- double radius = 0.0, w = 0.0, ww = 0.0, x, y, z;
- int i = 0, j = 0, a = 0, b = 0, c = 0;
- double m[16], point[4] = {0};
-
-  ww = sqrt(2.0)/2.0;
-
-  if(!o)
-    return AY_ENULL;
-
-  if(o->type != AY_IDNCURVE)
-    return AY_ERROR;
-
-  curve = (ay_nurbcurve_object *)(o->refine);
-
-  /* get curves transformation-matrix */
-  ay_trafo_creatematrix(o, m);
-
-  if((arc >= 360.0) || (arc < -360.0) || (arc == 0.0))
-    {
-      arc = 360.0;
-    }
-
-  if((sections == 0) || (order <= 1))
-    {
-      order = 3;
-    }
-
-  /* calloc the new patch */
-  if(!(new = calloc(1, sizeof(ay_nurbpatch_object))))
-    return AY_EOMEM;
-
-  if(!(uknotv = calloc(curve->length+curve->order, sizeof(double))))
-    {
-      free(new); return AY_EOMEM;
-    }
-
-  memcpy(uknotv, curve->knotv, (curve->length+curve->order)*sizeof(double));
-  new->uknotv = uknotv;
-  new->uorder = curve->order;
-  new->vorder = order;
-  new->uknot_type = curve->knot_type;
-  new->vknot_type = AY_KTCUSTOM;
-  new->width = curve->length;
-
-  /* fill controlv */
-  a = 0;
-  for(j = 0; j < curve->length; j++)
-    {
-      /* transform point */
-      x = curve->controlv[a];
-      y = curve->controlv[a+1];
-      z = curve->controlv[a+2];
-      w = curve->controlv[a+3];
-
-      point[0] = m[0]*x + m[4]*y + m[8]*point[2] + m[12]*w;
-      point[1] = m[1]*x + m[5]*y + m[9]*point[2] + m[13]*w;
-      point[3] = m[3]*x + m[7]*y + m[11]*point[2] + m[15]*w;
-
-      /* project point onto XY-Plane! */
-      point[2] = 0.0; /* XXXX loss of data! */
-
-      radius = point[0];
-
-      if(tcontrolv)
-	free(tcontrolv);
-      tcontrolv = NULL;
-      if(new->vknotv)
-	free(new->vknotv);
-      new->vknotv = NULL;
-      if(sections == 0)
-	{
-	  if(arc > 0.0)
-	    {
-	      ay_status = ay_nb_CreateNurbsCircleArc(radius, 0.0, arc,
-						  &(new->height), &new->vknotv,
-						  &tcontrolv);
-	    }
-	  else
-	    {
-	      ay_status = ay_nb_CreateNurbsCircleArc(radius, arc, 0.0,
-						  &(new->height), &new->vknotv,
-						  &tcontrolv);
-	    } /* if */
-	  new->is_rat = AY_TRUE;
-	}
-      else
-	{
-	  if(arc == 360.0)
-	    {
-	      tmpnc = NULL;
-	      ay_status = ay_nct_crtcircbsp(sections, radius, 360.0, order,
-					    &tmpnc);
-	      if(!tmpnc)
-		{
-		  if(new->uknotv)
-		    free(new->uknotv);
-		  if(new->vknotv)
-		    free(new->vknotv);
-		  if(new->controlv)
-		    free(new->controlv);
-		  free(new);
-		  return AY_ERROR;
-		} /* if */
-
-	      tcontrolv = tmpnc->controlv;
-	      new->vknotv = tmpnc->knotv;
-	      new->height = tmpnc->length;
-	      free(tmpnc);
-	    }
-	  else
-	    {
-	      /* unsupported case, just bail out */
-	      if(new->uknotv)
-		free(new->uknotv);
-	      free(new);
-	      return AY_ERROR;
-	    } /* if */
-	} /* if */
-
-      if(!new->controlv)
-	{
-	  if(!(new->controlv = calloc(new->height*new->width*4,
-				      sizeof(double))))
-	    return AY_EOMEM;
-	}
-
-      /* copy to real controlv */
-      b = 0;
-      c = j*new->height*4;
-      for(i = 0; i < new->height; i++)
-	{
-	  new->controlv[c]   = tcontrolv[b];
-	  new->controlv[c+1] = point[1]*tcontrolv[b+3];
-	  new->controlv[c+2] = tcontrolv[b+1];
-	  new->controlv[c+3] = tcontrolv[b+3]*w;
-	  b += 4;
-	  c += 4;
-	} /* for */
-
-	a += 4;
-    } /* for */
-
-  if(tcontrolv)
-    free(tcontrolv);
-  tcontrolv = NULL;
-
-  *revolution = new;
-
- return ay_status;
-} /* ay_npt_revolve */
-
-
-/* ay_npt_drawtrimcurve:
- *
- */
-int
-ay_npt_drawtrimcurve(struct Togl *togl, ay_object *o, GLUnurbsObj *no)
-{
- int order = 0, length = 0, knot_count = 0, i = 0, a = 0, b = 0;
- ay_nurbcurve_object *curve = (ay_nurbcurve_object *) o->refine;
- static GLfloat *knots = NULL, *controls = NULL;
- double m[16], x = 0.0, y = 0.0, w = 1.0;
-
-  /* get curves transformation-matrix */
-  ay_trafo_creatematrix(o, m);
-
-  if(controls)
-    {
-      free(controls);
-      controls = NULL;
-    }
-
-  if(knots)
-    {
-      free(knots);
-      knots = NULL;
-    }
-
-  order = curve->order;
-  length = curve->length;
-
-  knot_count = length + order;
-
-  if((knots = calloc(knot_count, sizeof(GLfloat))) == NULL)
-    return AY_EOMEM;
-  if((controls = calloc(length*(curve->is_rat?3:2),
-			sizeof(GLfloat))) == NULL)
-    { free(knots); knots = NULL; return AY_EOMEM; }
-
-  a = 0;
-  for(i = 0; i < knot_count; i++)
-    {
-      knots[a] = (GLfloat)curve->knotv[a];
-      a++;
-    }
-  a = 0; b = 0;
-  for(i = 0; i < length; i++)
-    {
-      x = (GLdouble)curve->controlv[b]; b++;
-      y = (GLdouble)curve->controlv[b]; b++;
-
-      b++; /* for z */
-
-      if(curve->is_rat)
-	{
-	  w = (GLdouble)curve->controlv[b];
-
-	  controls[a] = (GLfloat)(m[0]*x + m[4]*y + m[12]*w);
-	  controls[a+1] = (GLfloat)(m[1]*x + m[5]*y + m[13]*w);
-	  controls[a+2] = (GLfloat)(w /*m[3]*x + m[7]*y + m[15]*w*/);
-	  a += 3;
-	}
-      else
-	{
-	  controls[a] = (GLfloat)(m[0]*x + m[4]*y + m[12]);
-	  controls[a+1] = (GLfloat)(m[1]*x + m[5]*y + m[13]);
-	  a += 2;
-	}
-      b++;
-    } /* for */
-
-  if(curve->order != 2)
-    {
-      gluNurbsCurve(no, (GLint)knot_count, knots,
-		    (GLint)(curve->is_rat?3:2), controls,
-		    (GLint)curve->order,
-		    (curve->is_rat?GLU_MAP1_TRIM_3:GLU_MAP1_TRIM_2));
-    }
-  else
-    {
-      gluPwlCurve(no, (GLint)curve->length, controls,
-		  (GLint)(curve->is_rat?3:2),
-		  (curve->is_rat?GLU_MAP1_TRIM_3:GLU_MAP1_TRIM_2));
-    }
-
- return AY_OK;
-} /* ay_npt_drawtrimcurve */
-
-
 /* ay_npt_resizearrayw:
  *  change width of a 2D control point array <controlvptr> with
  *  stride <stride>, width <width>, and height <height> to new
@@ -935,6 +680,93 @@ ay_npt_revertvtcmd(ClientData clientData, Tcl_Interp *interp,
 
  return TCL_OK;
 } /* ay_npt_revertvtcmd */
+
+
+/* ay_npt_drawtrimcurve:
+ *
+ */
+int
+ay_npt_drawtrimcurve(struct Togl *togl, ay_object *o, GLUnurbsObj *no)
+{
+ int order = 0, length = 0, knot_count = 0, i = 0, a = 0, b = 0;
+ ay_nurbcurve_object *curve = (ay_nurbcurve_object *) o->refine;
+ static GLfloat *knots = NULL, *controls = NULL;
+ double m[16], x = 0.0, y = 0.0, w = 1.0;
+
+  /* get curves transformation-matrix */
+  ay_trafo_creatematrix(o, m);
+
+  if(controls)
+    {
+      free(controls);
+      controls = NULL;
+    }
+
+  if(knots)
+    {
+      free(knots);
+      knots = NULL;
+    }
+
+  order = curve->order;
+  length = curve->length;
+
+  knot_count = length + order;
+
+  if((knots = calloc(knot_count, sizeof(GLfloat))) == NULL)
+    return AY_EOMEM;
+  if((controls = calloc(length*(curve->is_rat?3:2),
+			sizeof(GLfloat))) == NULL)
+    { free(knots); knots = NULL; return AY_EOMEM; }
+
+  a = 0;
+  for(i = 0; i < knot_count; i++)
+    {
+      knots[a] = (GLfloat)curve->knotv[a];
+      a++;
+    }
+  a = 0; b = 0;
+  for(i = 0; i < length; i++)
+    {
+      x = (GLdouble)curve->controlv[b]; b++;
+      y = (GLdouble)curve->controlv[b]; b++;
+
+      b++; /* for z */
+
+      if(curve->is_rat)
+	{
+	  w = (GLdouble)curve->controlv[b];
+
+	  controls[a] = (GLfloat)(m[0]*x + m[4]*y + m[12]*w);
+	  controls[a+1] = (GLfloat)(m[1]*x + m[5]*y + m[13]*w);
+	  controls[a+2] = (GLfloat)(w /*m[3]*x + m[7]*y + m[15]*w*/);
+	  a += 3;
+	}
+      else
+	{
+	  controls[a] = (GLfloat)(m[0]*x + m[4]*y + m[12]);
+	  controls[a+1] = (GLfloat)(m[1]*x + m[5]*y + m[13]);
+	  a += 2;
+	}
+      b++;
+    } /* for */
+
+  if(curve->order != 2)
+    {
+      gluNurbsCurve(no, (GLint)knot_count, knots,
+		    (GLint)(curve->is_rat?3:2), controls,
+		    (GLint)curve->order,
+		    (curve->is_rat?GLU_MAP1_TRIM_3:GLU_MAP1_TRIM_2));
+    }
+  else
+    {
+      gluPwlCurve(no, (GLint)curve->length, controls,
+		  (GLint)(curve->is_rat?3:2),
+		  (curve->is_rat?GLU_MAP1_TRIM_3:GLU_MAP1_TRIM_2));
+    }
+
+ return AY_OK;
+} /* ay_npt_drawtrimcurve */
 
 
 /* ay_npt_wribtrimcurves
@@ -1966,6 +1798,174 @@ ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
 
  return TCL_OK;
 } /* ay_npt_buildfromcurvestcmd */
+
+
+/* ay_npt_revolve:
+ *  create a surface of revolution from the NURBS curve in <o>
+ *  (that will be projected to the XY-plane for revolution)
+ *  with revolution angle <arc>; if <sections> is > 0, not a
+ *  standard NURBS circle geometry will be used for the surface
+ *  but a circular B-Spline with appropriate number of sections
+ *  and desired order <order>
+ */
+int
+ay_npt_revolve(ay_object *o, double arc, int sections, int order,
+	       ay_nurbpatch_object **revolution)
+{
+ int ay_status = AY_OK;
+ ay_nurbpatch_object *new = NULL;
+ ay_nurbcurve_object *curve, *tmpnc = NULL;
+ double *uknotv = NULL, *tcontrolv = NULL;
+ double radius = 0.0, w = 0.0, ww = 0.0, x, y, z;
+ int i = 0, j = 0, a = 0, b = 0, c = 0;
+ double m[16], point[4] = {0};
+
+  ww = sqrt(2.0)/2.0;
+
+  if(!o)
+    return AY_ENULL;
+
+  if(o->type != AY_IDNCURVE)
+    return AY_ERROR;
+
+  curve = (ay_nurbcurve_object *)(o->refine);
+
+  /* get curves transformation-matrix */
+  ay_trafo_creatematrix(o, m);
+
+  if((arc >= 360.0) || (arc < -360.0) || (arc == 0.0))
+    {
+      arc = 360.0;
+    }
+
+  if((sections == 0) || (order <= 1))
+    {
+      order = 3;
+    }
+
+  /* calloc the new patch */
+  if(!(new = calloc(1, sizeof(ay_nurbpatch_object))))
+    return AY_EOMEM;
+
+  if(!(uknotv = calloc(curve->length+curve->order, sizeof(double))))
+    {
+      free(new); return AY_EOMEM;
+    }
+
+  memcpy(uknotv, curve->knotv, (curve->length+curve->order)*sizeof(double));
+  new->uknotv = uknotv;
+  new->uorder = curve->order;
+  new->vorder = order;
+  new->uknot_type = curve->knot_type;
+  new->vknot_type = AY_KTCUSTOM;
+  new->width = curve->length;
+
+  /* fill controlv */
+  a = 0;
+  for(j = 0; j < curve->length; j++)
+    {
+      /* transform point */
+      x = curve->controlv[a];
+      y = curve->controlv[a+1];
+      z = curve->controlv[a+2];
+      w = curve->controlv[a+3];
+
+      point[0] = m[0]*x + m[4]*y + m[8]*point[2] + m[12]*w;
+      point[1] = m[1]*x + m[5]*y + m[9]*point[2] + m[13]*w;
+      point[3] = m[3]*x + m[7]*y + m[11]*point[2] + m[15]*w;
+
+      /* project point onto XY-Plane! */
+      point[2] = 0.0; /* XXXX loss of data! */
+
+      radius = point[0];
+
+      if(tcontrolv)
+	free(tcontrolv);
+      tcontrolv = NULL;
+      if(new->vknotv)
+	free(new->vknotv);
+      new->vknotv = NULL;
+      if(sections == 0)
+	{
+	  if(arc > 0.0)
+	    {
+	      ay_status = ay_nb_CreateNurbsCircleArc(radius, 0.0, arc,
+						  &(new->height), &new->vknotv,
+						  &tcontrolv);
+	    }
+	  else
+	    {
+	      ay_status = ay_nb_CreateNurbsCircleArc(radius, arc, 0.0,
+						  &(new->height), &new->vknotv,
+						  &tcontrolv);
+	    } /* if */
+	  new->is_rat = AY_TRUE;
+	}
+      else
+	{
+	  if(arc == 360.0)
+	    {
+	      tmpnc = NULL;
+	      ay_status = ay_nct_crtcircbsp(sections, radius, 360.0, order,
+					    &tmpnc);
+	      if(!tmpnc)
+		{
+		  if(new->uknotv)
+		    free(new->uknotv);
+		  if(new->vknotv)
+		    free(new->vknotv);
+		  if(new->controlv)
+		    free(new->controlv);
+		  free(new);
+		  return AY_ERROR;
+		} /* if */
+
+	      tcontrolv = tmpnc->controlv;
+	      new->vknotv = tmpnc->knotv;
+	      new->height = tmpnc->length;
+	      free(tmpnc);
+	    }
+	  else
+	    {
+	      /* unsupported case, just bail out */
+	      if(new->uknotv)
+		free(new->uknotv);
+	      free(new);
+	      return AY_ERROR;
+	    } /* if */
+	} /* if */
+
+      if(!new->controlv)
+	{
+	  if(!(new->controlv = calloc(new->height*new->width*4,
+				      sizeof(double))))
+	    return AY_EOMEM;
+	}
+
+      /* copy to real controlv */
+      b = 0;
+      c = j*new->height*4;
+      for(i = 0; i < new->height; i++)
+	{
+	  new->controlv[c]   = tcontrolv[b];
+	  new->controlv[c+1] = point[1]*tcontrolv[b+3];
+	  new->controlv[c+2] = tcontrolv[b+1];
+	  new->controlv[c+3] = tcontrolv[b+3]*w;
+	  b += 4;
+	  c += 4;
+	} /* for */
+
+	a += 4;
+    } /* for */
+
+  if(tcontrolv)
+    free(tcontrolv);
+  tcontrolv = NULL;
+
+  *revolution = new;
+
+ return ay_status;
+} /* ay_npt_revolve */
 
 
 /* ay_npt_sweep:
@@ -6122,8 +6122,6 @@ ay_npt_extractnc(ay_object *o, int side, double param, int apply_trafo,
 
       memcpy(nc->knotv, np->vknotv, (nc->length+nc->order)*sizeof(double));
       break;
-    case 6:
-      break;
     default:
       ay_status = AY_ERROR;
       goto cleanup;
@@ -6252,6 +6250,7 @@ ay_npt_istrimmed(ay_object *o, int mode)
  *  (where p is the degree of the NURBS surface in u direction
  *  Note: this does not guarantee a closed surface unless the u knot
  *  vector is e.g. of type AY_KTBSPLINE
+ *  (this function should rather be named ay_npt_makeperiodicu())
  */
 int
 ay_npt_closeu(ay_nurbpatch_object *np)
@@ -6379,6 +6378,7 @@ ay_npt_closeutcmd(ClientData clientData, Tcl_Interp *interp,
  *  (where q is the degree of the NURBS surface in v direction
  *  Note: this does not guarantee a closed surface unless the v knot
  *  vector is e.g. of type AY_KTBSPLINE
+ *  (this function should rather be named ay_npt_makeperiodicv())
  */
 int
 ay_npt_closev(ay_nurbpatch_object *np)
@@ -6797,7 +6797,11 @@ ay_npt_explodemp(ay_object *o)
 
 
 /* ay_npt_getbeveltags:
- *
+ *  get bevel parameter values from BP tag of object <o> for bevel place
+ *  <place> (e.g.: 0 - bottom, 1 - top, 2 - start, 3 - end; actual semantic
+ *  depends on type/capabilities of o!)
+ *  returns in <has_bevel> whether a matching BP tag was present
+ *  returns bevel parameters in <type>, <radius>, and <sense>
  */
 int
 ay_npt_getbeveltags(ay_object *o, int place,
@@ -6833,7 +6837,9 @@ ay_npt_getbeveltags(ay_object *o, int place,
 
 
 /* ay_npt_copytptag:
- *
+ *  copy the first TP (tesselation parameter) tag from object
+ *  <src> to all objects in <dst> (dst may actually be a list,
+ *  connected via ->next of each object!)
  */
 int
 ay_npt_copytptag(ay_object *src, ay_object *dst)
@@ -6872,7 +6878,7 @@ ay_npt_copytptag(ay_object *src, ay_object *dst)
 
 
 /* ay_npt_clampu:
- *  clamp patch in u direction
+ *  clamp patch <np> in u direction
  *  Warning: only works correctly for unclamped patches
  */
 int
@@ -6963,12 +6969,14 @@ ay_npt_clampu(ay_nurbpatch_object *np)
 
   np->uknot_type = AY_KTCUSTOM;
 
+  ay_status = ay_npt_recreatemp(np);
+
  return AY_OK;
 } /* ay_npt_clampu */
 
 
 /* ay_npt_clampv:
- *  clamp patch in v direction
+ *  clamp patch <np> in v direction
  *  Warning: only works correctly for unclamped patches
  */
 int
@@ -7066,12 +7074,14 @@ ay_npt_clampv(ay_nurbpatch_object *np)
 
   np->vknot_type = AY_KTCUSTOM;
 
+  ay_status = ay_npt_recreatemp(np);
+
  return AY_OK;
 } /* ay_npt_clampv */
 
 
 /* ay_npt_clamputcmd:
- *
+ *  Tcl interface for ay_npt_clampu above
  */
 int
 ay_npt_clamputcmd(ClientData clientData, Tcl_Interp *interp,
@@ -7160,7 +7170,7 @@ ay_npt_clamputcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_npt_clampvtcmd:
- *
+ *  Tcl interface for ay_npt_clampu above
  */
 int
 ay_npt_clampvtcmd(ClientData clientData, Tcl_Interp *interp,
@@ -7245,7 +7255,10 @@ ay_npt_clampvtcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_npt_rescaleknvnptcmd:
- *  rescale the knot vectors of a NURBS patch to the range 0.0 - 1.0
+ *  rescale the knot vectors of the selected NURBS patches
+ *  - to the range 0.0 - 1.0 (no arguments)
+ *  - to a specific range (-r min max)
+ *  - so that all knots have a minimum guaranteed distance (-d mindist)
  */
 int
 ay_npt_rescaleknvnptcmd(ClientData clientData, Tcl_Interp *interp,
