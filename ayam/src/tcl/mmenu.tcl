@@ -381,7 +381,16 @@ $m.npt add command -label "Clamp V" -command {
     undo save clampNPV; clampNPV; plb_update; rV}
 $m.npt add command -label "Clamp Both" -command {
     undo save clampNP; clampNPU; clampNPV; plb_update; rV}
-
+$m.npt add command -label "Rescale Knots to Range" -command {
+    undo save RescaleKnots;
+    runTool {ay(rmin) ay(rmax)} {"RangeMin:" "RangeMax:"}\
+	    "rescaleKnNP -r %0 %1; plb_update;"
+}
+$m.npt add command -label "Rescale Knots to Mindist" -command {
+    undo save RescaleKnots;
+    runTool ay(mindist) "MinDist:"\
+	    "rescaleKnNP -d %0; plb_update;"
+}
 $m.npt add command -label "Reset Weights" -command {
     if { $ay(views) != "" } {
 	undo save ResetWeights
