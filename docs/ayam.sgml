@@ -9,7 +9,7 @@
 <date>27. Feb 2007
 
 <abstract>
-This is the documentation of Ayam 1.12 - a free 3D modelling environment
+This is the documentation of Ayam 1.13 - a free 3D modelling environment
 for the RenderMan interface.
 
 Please note, that this document is intended to be a reference manual,
@@ -550,7 +550,7 @@ will be read. Depending on the setting of
 a backup copy of the file that is read will be made before loading.
 This operation is not undoable!
 <p>
-Since Ayam 1.13, also files supported by any of the import plugins
+Since Ayam 1.13 also files supported by any of the import plugins
 may be imported using this route. Note that this only works if the
 selected file has a file name extension. The appropriate plugin will
 be loaded automatically (from the list of plugin directories in the
@@ -564,28 +564,59 @@ into the current scene. All objects from the file will be read. The new
 objects will be created in the top level of the scene.
 This operation is not undoable!
 <p>
-Since Ayam 1.13, also files supported by any of the import plugins
+Since Ayam 1.13 also files supported by any of the import plugins
 may be imported using this route. See above (<tt/"Open"/).
 
 <item><tt/"Save as"/, saves the current scene asking for a new file name.
 <p>
-Since Ayam 1.13, also files supported by any of the export plugins
+Since Ayam 1.13 also files supported by any of the export plugins
 may be exported using this route. See above (<tt/"Open"/).
 
 <item><tt/"Save"/, saves the scene. If the scene has not been saved before
 (read, you have not given it a file name) you will be asked for a file
 name first.
 
+<item><tt>"Import/"</tt>, since Ayam 1.13 this sub menu is initially
+empty. You need to load a plugin manually, on application startup
+via a script or automatically via <tt>"File/Open"</tt> to gain access
+to the menu entries described here.
+
+<item><tt>"Import/Apple 3DMF"</tt>, import a scene from the Apple
+3DMF format, see section <ref id="imp3dmf" name="3DMF (Apple) Import">
+for more information.
+
+<item><tt>"Import/AutoCAD DXF"</tt>, import a scene from the AutoCAD
+DXF format, see section <ref id="impdxf" name="AutoCAD DXF import">
+for more information.
+
 <item><tt>"Import/Mops"</tt>, import a scene from The Mops,
 see section <ref id="impmops" name="Import of Mops Scenes">
+for more information.
+
+<item><tt>"Import/Rhino 3DM"</tt>, import a scene from the Rhino
+3DM format, see section <ref id="imprhino" name="3DM (Rhino) Import">
 for more information.
 
 <item><tt>"Import/Wavefront OBJ"</tt>, import a scene from the Wavefront
 OBJ format, see section <ref id="impwav" name="Wavefront OBJ import">
 for more information.
 
+<item><tt>"Export/"</tt>, since Ayam 1.13 this sub menu initially
+only contains the <tt>"RenderMan RIB"</tt> entry. You need to load a
+plugin manually, on application startup via a script, or automatically
+via <tt>"File/Save as"</tt> to gain access to the other menu entries
+described here.
+
 <item><tt>"Export/RenderMan RIB"</tt>, exports the current scene to a RIB,
 asking which camera (which view) to use.
+
+<item><tt>"Export/Apple 3DMF"</tt>, export a scene to the Apple
+3DMF format, see section <ref id="exp3dmf" name="3DMF (Apple) Export">
+for more information.
+
+<item><tt>"Export/Rhino 3DM"</tt>, export a scene to the Rhino
+3DM format, see section <ref id="exprhino" name="3DM (Rhino) Export">
+for more information.
 
 <item><tt>"Export/Wavefront OBJ"</tt>, exports the current scene to a
 Wavefront OBJ file, see also section
@@ -4328,7 +4359,7 @@ instance, then use the main menu entry: <tt>"Edit/Master"</tt>.
 <figure loc="ht">
 <eps file="pics/clone.ps" height="5cm">
 <img src="pics/clone.gif">
-<caption>Clone Object with Trajectory Curve (white)</caption>
+<caption>Clone Object (blue) with Trajectory Curve (white)</caption>
 </figure>
 <p>
 The Clone object allows you to easily create and control a number
@@ -4413,6 +4444,7 @@ rotated by <tt/"Rotate_X"/, <tt/"Rotate_Y"/, and <tt/"Rotate_Z"/ and scaled
 by <tt/"Scale_X"/, <tt/"Scale_Y"/, <tt/"Scale_Z"/ in comparison
 to the previous clone. However, those attributes never affect the first
 clone.
+<p>
 Since Ayam 1.13 the transformation attributes are also used if a trajectory
 curve is present. They are not in use when the mirror mode is activated.
 </itemize>
@@ -4655,7 +4687,7 @@ linear from (0,1,0) to (1,1,0).
 <figure loc="ht">
 <eps file="pics/ssweep.ps" height="5cm">
 <img src="pics/ssweep.gif">
-<caption>Sweep Object with Scaling Function (white)</caption>
+<caption>Sweep Object (blue) with Scaling Function (white)</caption>
 </figure>
 <p>
 Here is a short example for the creation of a sweep:
@@ -5142,7 +5174,7 @@ of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 <figure loc="!ht">
 <eps file="pics/bevel.ps" height="5cm">
 <img src="pics/bevel.gif">
-<caption>Bevel Object (Curve, Resulting Bevelled Surface)</caption>
+<caption>Bevel Object (left: Curve, right: Resulting Bevelled Surface)</caption>
 </figure>
 <p>
 The bevel object forms a bevelled surface from a single parameter
@@ -5225,7 +5257,7 @@ look wrong, consider creation of real cap surfaces instead.
 <figure loc="!ht">
 <eps file="pics/cap.ps" height="6cm">
 <img src="pics/cap.gif">
-<caption>Cap Object (left: Curve, right Resulting Cap Surface)</caption>
+<caption>Cap Object (left: Curve, right: Resulting Cap Surface)</caption>
 </figure>
 <p>
 The cap object forms a surface that fills a closed planar NURBS curve.
@@ -5237,7 +5269,7 @@ parameter curves of an extruded surface (see also section
 <figure loc="!ht">
 <eps file="pics/gordoncap.ps" height="5cm">
 <img src="pics/gordoncap.gif">
-<caption>Cap from Non-Planar Curve (Curve, Resulting Cap Surface)</caption>
+<caption>Cap from Non-Planar Curve (left: Curve, right: Resulting Cap Surface)</caption>
 </figure>
 <p>
 Since Ayam 1.13 the cap object also supports the so called Gordon mode.
@@ -5357,7 +5389,7 @@ of the last attribute: <tt/"Tolerance"/.
 <figure loc="ht">
 <eps file="pics/concatnc.ps" height="5cm">
 <img src="pics/concatnc.gif">
-<caption>ConcatNC Object from a Linear Curve and 3 Instances (white)</caption>
+<caption>ConcatNC Object (blue) from a Linear Curve and 3 Instances (white)</caption>
 </figure>
 <p>
 The ConcatNC object concatenates all child objects (which should be
@@ -6469,6 +6501,25 @@ or BPatch or PatchMesh objects from the selection.
 will be reversed in the v dimension (height).
 </itemize>
 
+<sect1>The Patch Clamp Tool<label id="clanpt">
+<p>
+<figure loc="ht">
+<eps file="pics/clampnp.ps" height="5cm">
+<img src="pics/clampnp.gif">
+<caption>Left: original patch, Right: clamped patch</caption>
+</figure>
+<itemize>
+<item>Arguments: The clamp tool takes a number of NURBS patches from
+the selection.
+<item>Operation: The knot vectors of a selected NURBS patch will be
+changed using knot insertion so that the first and the last knot
+(in each direction) have a multiplicity equal to the order of the patch
+(in the respective direction).
+The shape of the patch will not change but the position of some control
+points will. The patch interpolates the first and the last control point
+afterwards. The knot types of the patch will be changed to custom.
+</itemize>
+
 <sect1>The Split to Curves Tool<label id="sptct">
 <p>
 <itemize>
@@ -6494,7 +6545,6 @@ for numbers of two to four and four for bigger numbers of used curves.
 The knot type in u direction (Knot-Type_U) will always be NURB.
 Other parameters (Order_V, Knot-Type_V, Knots_V) are taken from
 the first curve.
-
 <item>Note: The NURBS curves are not deleted afterwards.
 </itemize>
 
@@ -7160,7 +7210,29 @@ splitNC - split NURBS curve
  <item>Synopsis: <tt/"splitNC u"/
  <item>Description: splits the selected NURBS curve at designated parametric
 value into two curves, creating one new curve and modifying the original
-one.
+selected curve.
+</itemize>
+
+<p><label id="scclampnpu">
+clampNPU - clamp NURBS patch in u-direction:
+<itemize>
+ <item>Synopsis: <tt/"clampNPU"/
+ <item>Description: Clamp the u-direction knot vector of the selected NURBS
+patches without changing the shape of the patches.
+The knot type will be changed to <tt/"Custom"/ and the knots will have o
+equal values at start and end (where o is the order of the patch in
+u-direction). See also section <ref id="clanpt" name="The Patch Clamp Tool">.
+</itemize>
+
+<p><label id="scclampnpv">
+clampNPV - clamp NURBS patch in v-direction:
+<itemize>
+ <item>Synopsis: <tt/"clampNPV"/
+ <item>Description: Clamp the v-direction knot vector of the selected NURBS
+patches without changing the shape of the patches.
+The knot type will be changed to <tt/"Custom"/ and the knots will have o
+equal values at start and end (where o is the order of the patch in
+v-direction). See also section <ref id="clanpt" name="The Patch Clamp Tool">.
 </itemize>
 
 <p><label id="scsplitnp">
@@ -7183,29 +7255,42 @@ See also section <ref id="bfct" name="The Build from Curves Tool">.
 
 <sect2>Manipulating Points<label id="scipoints">
 <p>
-Use these two commands to read or manipulate single
-points of arbitrary objects.
-Note that the exact arguments needed, depend on the
-type of the object, e.g. a NURBS curve requires just one
-index parameter (indexu), whereas a NURBS patch requires two
-(indexu and indexv).
+Use these two commands to read or manipulate single points of arbitrary
+objects.
+Note that the exact arguments needed depend on the type of the selected
+object, e.g. a NURBS curve requires just one index parameter (indexu),
+whereas a NURBS patch requires two index parameters (indexu and indexv).
+
 <p><label id="scgetpnt">
 getPnt:
 <itemize>
- <item>Synopsis: <tt/"getPnt [-trafo] indexu [indexv] varx vary varz [varw]"/
- <item>Description: Get a control point of the currently
-selected object and write it's coordinates into the variables
-varx, vary, varz, and varw.
+ <item>Synopsis: <tt/"getPnt [-trafo|-p] indexu [indexv] varx vary varz [varw]"/
+ <item>Description: Get a control point of the currently selected object
+and write the coordinate values into the variables varx, vary, varz, and
+varw.
 If the special argument <tt/"-trafo"/ is given, the coordinates
-will be transformed by the values given in the objects
+will additionally be transformed by the values given in the objects
 Transformation property.
+If the argument <tt/"-p"/ is given, the <tt/"indexu"/ and <tt/"indexv"/
+values are interpreted as parametric values of a NURBS curve or surface
+and the corresponding point on the curve or surface is delivered in
+varx, vary, and varz.
+<item>Examples: <tt/"getPnt 1 x y z w"/ gets the coordinate
+values of the second point of the selected NURBS curve and writes
+the values to the variables <tt/"x y z w"/. <tt/"getPnt -p 0.5 x y z w"/
+gets the curve point at parametric value <tt/"0.5"/ and writes
+the values to the variables <tt/"x y z w"/.
 </itemize>
+
 <p><label id="scsetpnt">
 setPnt:
 <itemize>
  <item>Synopsis: <tt/"setPnt indexu [indexv] x y z [w]"/
  <item>Description: Set a control point of the
 currently selected object to the coordinates x, y, z, and w.
+ <item>Example: <tt/"setPnt 1 0.0 0.2 0.3 1.0"/ sets the coordinate
+values of the second point of the selected NURBS curve object to
+<tt/"0.0 0.2 0.3 1.0"/.
 </itemize>
 
 
@@ -7471,9 +7556,11 @@ undo:
   operation.
   <item>If the argument is <tt/"save"/, the currently selected objects
   are saved to the undo buffer for future undo operations. The name
-of the following operation has to be provided in a second argument.
-It will be displayed in the default console prompt, to inform the user
-about which operation would be undone/redone, if undo/redo would be used.
+of the now following modelling operation has to be provided in a second
+argument.
+This name will be displayed in the default console prompt, to inform the
+user about which operation would be undone/redone, if undo/redo would be
+used.
   <item>If the argument is <tt/"clear"/, the undo buffer is cleared.
  </itemize>
 </itemize>
@@ -7551,9 +7638,11 @@ calls the <tt/"placeOb"/ procedure (defined above) with them:
 global ay
 $ay(cm) add command -label "Place Object" -command {
  runTool {x y z} {"X:" "Y:" "Z:"} "forAll 0 {placeOb %0 %1 %2}"
- uS
+ plb_update; rV
 }
 </code>
+The trailing <tt/"plb_update; rV"/ command ensures that the GUI is updated
+properly and all views display the new position of the moved objects.
 
 <sect2>Moving NURBS points<label id="scexnurb">
 <p>
@@ -7656,7 +7745,7 @@ $ay(cm) add command -label "Easy Sweep" -command {
 }
 </code>
 After running the above script you should have a new menu
-entry <tt>Custom/Easy Sweep</tt> that calls the <tt>easySweep</tt>
+entry <tt>"Custom/Easy Sweep"</tt> that calls the <tt>easySweep</tt>
 procedure.
 
 <sect2>Toolbox Buttons<label id="scextoolbox">
@@ -7669,7 +7758,7 @@ the size 25 by 25 pixels.
 global ay
 
 # create an image from a GIF file:
-image create photo myImage -format gif -file /home/user/a.gif
+image create photo myImage -format gif -file /home/user/giffile
 
 set b .tbw.f.mybutton
 
@@ -7713,7 +7802,8 @@ set f [frame .tbw.f.fcollex]
 set row [expr [lindex [grid size .tbw.f] 1] + 1]
 
 # now display the frame at calculated row, spanning the whole window:
-grid $f -row $row -column 0 -columnspan [lindex [grid size .tbw.f] 0] -sticky we
+grid $f -row $row -column 0 -columnspan [lindex [grid size .tbw.f] 0]\
+     -sticky we
 # create two buttons inside the frame:
 button $f.b1 -width 5 -text "Coll." -command { collMP; rV; }
 button $f.b2 -width 5 -text "Expl." -command { explMP; rV; }
@@ -7729,8 +7819,9 @@ Note that manual loading of an import or export plugin is no longer
 necessary since Ayam 1.13. Simply use the main menu entries
 <tt>"File/Open"</tt> and <tt>"File/Save as"</tt> (or the corresponding
 keyboard shortcuts) and specify a filename with the appropriate
-extension. Ayam will automatically load the appropriate plugin and
-open the import (or export) options dialog.
+extension. Ayam will automatically load the matching plugin and
+open the import (or export) options dialog with the <tt/"FileName"/
+option already set.
 
 <sect1>Mops Import<label id="impmops">
 <p>
@@ -7775,13 +7866,16 @@ Start importing a DXF file using the main menu entry
 <p>
 The DXF import supports reading of the following entities:
 3DFACE, ARC, CIRCLE, ELLIPSE, LINE, SOLID, TRACE, BLOCK, INSERT,
-POLYLINE, LWPOLYLINE, SPLINE.
+POLYLINE, LWPOLYLINE, SPLINE. Entities not listed here will
+be silently ignored.
 <p>
-3DFACE entities are imported as BPatch objects.
+3DFACE entities are imported as PolyMesh objects if only the first
+three points are unique (the entity describes a triangle) or the face
+is planar else as BPatch objects.
 <p>
 ARC, CIRCLE and ELLIPSE entities will be read as NCircle objects with
-corresponding <tt/"TMin"/, <tt/"TMax"/ parameters (arcs, ellipses) and scale
-transformation values (ellipses) set.
+corresponding <tt/"TMin"/, <tt/"TMax"/ parameters (for arcs and ellipses)
+and scale transformation values (for ellipses) set.
 <p>
 POLYLINE entities are completely supported: Polylines will be imported as
 NURBCurve objects; PolyMeshes and PolyFaceMeshes
@@ -7797,14 +7891,31 @@ and instance objects (references).
 <p>
 Bulges and extrusions are not supported.
 <p>
+Note that the entire DXF file is read into memory before any geometry is
+created.
+<p>
 The DXF import may be controlled via different options:<label id="impdxfopt">
 <itemize>
+<item><tt>"FileName"</tt> is the path and name of the DXF file to import.
+<item><tt>"ReadCurves"</tt> if this is disabled, no freeform curves will
+be imported.
 <item><tt/"ScaleFactor"/ allows to apply a scaling factor to all
 imported objects.
 <item><tt/"ReadLayers"/:
 By default, all entities from all layers will be imported.
 Using the <tt/"ReadLayers"/ import option, a single layer or a range
 of layers may be selected for import.
+<item><tt/"RescaleKnots"/ allows to rescale the knot vectors of imported
+NURBS curves so that the distances between different knots are not smaller
+than the given value. Using a value of 1.0e-04 leads to NURBS that may be
+safely drawn using GLU. The default value 0.0 means no scaling.
+<item><tt/"ErrorLevel"/: controls how many messages will be printed
+to the Ayam console while importing. Available
+values are: <tt/"Silence"/ no output except for severe errors,
+<tt/"Errors"/ all error messages should be printed,
+<tt/"Warnings"/, all error and warning messages should be printed,
+and finally <tt/"All"/ all messages, even informative,
+should be printed.
 <item><tt/"Progress"/: displays the progress of the import;
 from 0 to 50 percent, Dime is reading the DXF file; from 50 to 100 percent,
 the dxfio plugin is converting the DXF entities to Ayam objects.
@@ -8284,8 +8395,8 @@ with a view).
 The undo system works by storing copies of the different
 states of changed objects in an undo buffer. The storage space occupied by
 the undo buffer may be adjusted using the preferences
-(<tt>Prefs/Modelling/UndoLevels</tt>). Note that a value of -1 for UndoLevels
-completely disables the undo system.
+(<tt>"Prefs/Modelling/UndoLevels"</tt>). Note that a value of -1 for
+UndoLevels completely disables the undo system.
 You may step backward through the saved states using
 <tt/&lt;Ctrl+z&gt;/ (undo) but also forward using <tt/&lt;Ctrl+y&gt;/ (redo).
 <p>
@@ -8501,6 +8612,10 @@ value is supported by the OpenGL implementation used.
 selected objects (white lines in standard color configuration).
 The default value is 1.0. Ayam is not checking, whether the specified
 value is supported by the OpenGL implementation used.
+
+<item><tt/"ALFileTypes"/, <tt/"ALPlugins"/ two lists that describe
+file name extensions and corresponding plugins that import and export
+files of the type designated by the file name extensions.
 
 </itemize>
 
@@ -9057,6 +9172,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>AddExtensions: <ref id="prefgui" name="preference setting">
 <item>addToProc: <ref id="scaddtoproc" name="scripting interface command">
 <item>AddViewParams: <ref id="hidprefs" name="hidden preference setting">
+<item>ALFileTypes, ALPlugins: <ref id="hidprefs" name="hidden preference setting">
 <item>Algorithm: <ref id="aycsg" name="AyCSG plugin option">
 <item>Align to Parent: <ref id="vmconf" name="view menu entry">,
 <ref id="vwsc" name="view action">
@@ -9117,6 +9233,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>Circle: <ref id="ncirct" name="NURBS circle tool">
 <item>Clamp: <ref id="clat" name="clamp tool">
 <item>clampNC: <ref id="scclampnc" name="scripting interface command">
+<item>clampNPU, clampNPV: <ref id="scclampnpu" name="scripting interface command">
 <item>Clipboard: <ref id="sciclip" name="scripting interface commands">
 <item>Clone: <ref id="cloneobj" name="object">
 <item>Close: <ref id="treecontm" name="tree context menu entry">
