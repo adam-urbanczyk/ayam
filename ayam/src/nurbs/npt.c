@@ -7005,7 +7005,7 @@ ay_npt_clampv(ay_nurbpatch_object *np)
     return AY_EOMEM;
 
   newvknotv = NULL;
-  if(!(newvknotv = calloc(np->width+np->vorder, sizeof(double))))
+  if(!(newvknotv = calloc(np->height+np->vorder, sizeof(double))))
     { free(newcontrolv); return AY_EOMEM; }
 
   ay_status = ay_nb_InsertKnotSurfV(stride, np->width-1, np->height-r-1,
@@ -7031,7 +7031,7 @@ ay_npt_clampv(ay_nurbpatch_object *np)
     return AY_EOMEM;
 
   newvknotv = NULL;
-  if(!(newvknotv = calloc(np->width+np->vorder, sizeof(double))))
+  if(!(newvknotv = calloc(np->height+np->vorder, sizeof(double))))
     { free(newcontrolv); return AY_EOMEM; }
 
   ay_status = ay_nb_InsertKnotSurfV(stride, np->width-1, np->height-r-1,
@@ -7064,7 +7064,7 @@ ay_npt_clampv(ay_nurbpatch_object *np)
     } /* for */
 
   memcpy(newvknotv, &(np->vknotv[np->vorder-1]),
-	 (np->width+np->vorder)*sizeof(double));
+	 (np->height+np->vorder)*sizeof(double));
 
   free(np->controlv);
   np->controlv = newcontrolv;
