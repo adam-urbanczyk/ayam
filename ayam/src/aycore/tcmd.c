@@ -741,22 +741,6 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_tcmd_setpointtcmd */
 
 
-/* ay_tcmd_getglerrortcmd:
- *
- *
- */
-int
-ay_tcmd_getglerrortcmd(ClientData clientData, Tcl_Interp *interp,
-		       int argc, char *argv[])
-{
- char fname[] = "getGLErr";
-
-  ay_error(AY_EOUTPUT, fname, (char *)gluErrorString(glGetError()));
-
- return TCL_OK;
-} /* ay_tcmd_getglerrortcmd */
-
-
 #ifdef AYENABLEWAIT
 #include <sys/types.h>
 #include <sys/wait.h>
