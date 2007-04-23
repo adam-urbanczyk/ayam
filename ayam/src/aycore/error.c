@@ -311,3 +311,19 @@ ay_error_glucb(GLenum err)
 
  return;
 } /* ay_error_glucb */
+
+
+/* ay_error_getglerrortcmd:
+ *  get current GL error state and string
+ *  and call ay_error with it for output
+ */
+int
+ay_error_getglerrortcmd(ClientData clientData, Tcl_Interp *interp,
+		       int argc, char *argv[])
+{
+ char fname[] = "getGLErr";
+
+  ay_error(AY_EOUTPUT, fname, (char *)gluErrorString(glGetError()));
+
+ return TCL_OK;
+} /* ay_error_getglerrortcmd */

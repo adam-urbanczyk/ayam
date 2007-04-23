@@ -116,6 +116,10 @@ int ay_error_tcmd(ClientData clientData, Tcl_Interp *interp,
 
 void ay_error_glucb(GLenum err);
 
+int ay_error_getglerrortcmd(ClientData clientData, Tcl_Interp *interp,
+			    int argc, char *argv[]);
+
+
 /* geom.c */
 int ay_geom_intersectlines3D(double *p1, double *t1,
 			     double *p2, double *t2,
@@ -649,9 +653,6 @@ int ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 
 int ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
-
-int ay_tcmd_getglerrortcmd(ClientData clientData, Tcl_Interp *interp,
-			   int argc, char *argv[]);
 
 #ifdef AYENABLEWAIT
 int ay_tcmd_waitpidtcmd(ClientData clientData, Tcl_Interp *interp,

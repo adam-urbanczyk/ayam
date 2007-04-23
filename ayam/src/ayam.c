@@ -645,6 +645,9 @@ Tcl_AppInit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "ayError", ay_error_tcmd,
 		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  Tcl_CreateCommand(interp, "getGLErr", ay_error_getglerrortcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
   /* instt.c */
   Tcl_CreateCommand(interp, "resolveIn", ay_instt_resolvetcmd,
 		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
@@ -776,9 +779,6 @@ Tcl_AppInit(Tcl_Interp *interp)
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "setPnt", ay_tcmd_setpointtcmd,
-		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
-
-  Tcl_CreateCommand(interp, "getGLErr", ay_tcmd_getglerrortcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
 #ifdef AYENABLEWAIT
