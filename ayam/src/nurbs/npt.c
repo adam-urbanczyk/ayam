@@ -7377,3 +7377,74 @@ ay_npt_rescaleknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 
  return TCL_OK;
 } /* ay_npt_rescaleknvnptcmd */
+
+
+/* templates */
+#if 0
+
+/* Tcl command */
+
+/* ay_npt_xxxxtcmd:
+ *
+ */
+int
+ay_npt_xxxxtcmd(ClientData clientData, Tcl_Interp *interp,
+		int argc, char *argv[])
+{
+ int ay_status;
+ char fname[] = "yyyy";
+ ay_list_object *sel = ay_selection;
+ ay_object *src = NULL;
+ ay_nurbpatch_object *patch = NULL;
+
+  /* parse args */
+  if(argc > 2)
+    {
+      while(i+1 < argc)
+	{
+	  if(!strcmp(argv[i], "-r"))
+	    {
+	      mode = 0;
+	      sscanf(argv[i+1], "%lg", &rmin);
+	      sscanf(argv[i+2], "%lg", &rmax);
+	    }
+	  if(!strcmp(argv[i], "-d"))
+	    {
+	      mode = 1;
+	      sscanf(argv[i+1], "%lg", &mindist);
+	    }
+	  i += 2;
+	} /* while */
+    } /* if */
+
+  /* check selection */
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, fname, NULL);
+      return TCL_OK;
+    }
+
+  while(sel)
+    {
+      src = sel->object;
+      if(src->type != AY_IDNPATCH)
+	{
+	  ay_error(AY_ERROR, fname, "Object is not a NURBPatch!");
+	}
+      else
+	{
+	  patch = (ay_nurbpatch_object*)src->refine;
+
+	  /* do magic */
+
+	  src->modified = AY_TRUE;
+	} /* if */
+      sel = sel->next;
+    } /* while */
+
+  ay_notify_parent();
+
+ return TCL_OK;
+} /* ay_npt_xxxxtcmd */
+
+#endif
