@@ -1,4 +1,4 @@
-[8. Apr 2007] CVS-Head:
+[25. Apr 2007] CVS-Head:
 =======================
 o Bug Fixes:
   - crash after deleting of objects (SF 1637735)
@@ -28,6 +28,7 @@ o Bug Fixes:
   - Tcl error for "Help on property" if no properties are present (SF 1682822)
   - STESS tesselation after certain NURBS curve modelling tools (SF 1690799)
   - first view does not appear in the tree view (SF 1695151)
+  - crash when elevating non-clamped NURBS patches (SF 1701803)
 
 GUI:
 o fixed select background color when changed via X resources (backported
@@ -51,6 +52,9 @@ o improved speed of object picking in shaded views
 o added Split PolyMesh modelling tool
 o added clamping of NURBS patches (new scripting interface commands "clampNPU"
   and "clampNPV" and new main menu entries "Tools/NURBPatch/Clamp")
+o added "rescaleKnNP" command to rescale the knot vectors of NURBS patches
+  and main menu entries "Tools/NURBPatch/Rescale Knots to Range" as well as
+  "Tools/NURBPatch/Rescale Knots to Mindist"
 
 Drawing/Shading:
 o added antialiasing drawing option for lines
