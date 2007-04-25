@@ -6531,6 +6531,28 @@ Note that there are also tools available that clamp a patch in u- or
 v-direction only.
 </itemize>
 
+<sect1>The Patch Rescale Knots to Range Tool<label id="resckrnpt">
+<p>
+<itemize>
+<item>Arguments: The patch rescale knots to range tool takes a number of
+NURBS patches from the selection and requests a range.
+<item>Operation: The knot vectors of the patches will be scaled, so that
+their first and last values match the given range.
+The knot types of the patch have to be <tt/"Custom"/!
+This tool does not change the geometry of the patches.
+</itemize>
+
+<sect1>The Patch Rescale Knots to Mindist Tool<label id="resckmnpt">
+<p>
+<itemize>
+<item>Arguments: The rescale knots to mindist tool takes a number of
+NURBS patches from the selection and request a minimum distance value.
+<item>Operation: The knot vectors of the patches will be scaled, so that
+no two knots have a distance smaller than the given minimum distance.
+The knot types of the patch have to be <tt/"Custom"/!
+This tool does not change the geometry of the patches.
+</itemize>
+
 <sect1>The Split to Curves Tool<label id="sptct">
 <p>
 <itemize>
@@ -7202,7 +7224,7 @@ and interpolating curves.
 </itemize>
 
 <p><label id="screscaleknnc">
-rescaleKnNC - rescale knots of NURBS curve:
+rescaleKnNC - rescale knots of NURBS curves:
 <itemize>
  <item>Synopsis: <tt/"rescaleKnNC [-r rmin rmax|-d mindist]"/
  <item>Description: Rescale the knot vector(s) of the selected NURBS curve(s)
@@ -7244,6 +7266,20 @@ patches without changing the shape of the patches.
 The knot type will be changed to <tt/"Custom"/ and the knots will have o
 equal values at start and end (where o is the order of the patch in
 v-direction). See also section <ref id="clanpt" name="The Patch Clamp Tool">.
+</itemize>
+
+<p><label id="screscaleknnp">
+rescaleKnNP - rescale knots of NURBS patches:
+<itemize>
+ <item>Synopsis: <tt/"rescaleKnNP [-r rmin rmax|-d mindist]"/
+ <item>Description: Rescale the knot vector(s) of the selected NURBS patche(s)
+to the range <tt>[0.0, 1.0]</tt> (if no argument is present) or to the range
+<tt>[rmin, rmax]</tt> if the <tt/"-r"/ argument is given or to the minimum
+distance mindist if the <tt/"-d"/ argument is used. Scaling to a minimum
+distance ensures that all knots (except for multiple knots) have a distance
+bigger than mindist afterwards. The knot types of the patch have to be
+<tt/"Custom"/!
+This operation does not change the shape of the patch.
 </itemize>
 
 <p><label id="scsplitnp">
