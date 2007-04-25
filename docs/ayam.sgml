@@ -182,16 +182,16 @@ See section <ref id="rootobj" name="Root Object"> for more
 information regarding this special object, and what it is good for.
 Note that you cannot delete or copy this object.
 
-<bf/Tree View:/<label id="treeview">
+<bf/Object Tree View:/<label id="treeview">
 <p>
 <figure loc="ht">
 <eps file="pics/treeview.ps" height="6cm">
 <img src="pics/treeview.gif">
-<caption>Tree View</caption>
+<caption>Object Tree View</caption>
 </figure>
 <p>
 
-The tree view is very complex and may be slow on slow machines
+The object tree view is quite complex and may be slow on slow machines
 (of the Pentium 90 class), especially when dealing with scenes
 that contain many objects. This should not be a problem nowadays.
 Nevertheless, Ayam tries to keep tree update delays as low as possible,
@@ -270,16 +270,16 @@ If those shortcuts do not work you may need to press <tt/&lt;Esc&gt;/
 first (when a property GUI has the input focus) or <tt/&lt;Shift-Tab&gt;/
 (when the console has the input focus).
 
-<bf/Listbox:/<label id="listbox">
+<bf/Object Listbox:/<label id="listbox">
 <p>
 <figure loc="ht">
 <eps file="pics/listbox.ps" height="6cm">
 <img src="pics/listbox.gif">
-<caption>Listbox</caption>
+<caption>Object Listbox</caption>
 </figure>
 <p>
 
-The hierarchy listbox, displays the object hierarchy of the current scene.
+The object listbox displays the object hierarchy of the current scene.
 Using this listbox you may browse through the hierarchy of the scene
 with your mouse and you may select one or more objects.
 <p>
@@ -354,7 +354,7 @@ of the currently selected object.
 If there are multiple selected objects, the properties listbox will
 display no properties at all.
 <p>
-Unlike the objects tree/listbox, where you can select multiple entries,
+Unlike the object tree/listbox, where you can select multiple entries,
 only one property may be selected.
 If a property is selected, the associated GUI will be shown in the
 appropriate area (on the right hand side).
@@ -389,7 +389,7 @@ depends on the selected object and the selected property.
 This is documented comprehensively in section
 <ref id="obandprp" name="Ayam Objects and Properties">.
 <p>
-Here are some general remarks:
+Here are some general remarks about object properties:
 <p>
 The various things that may be changed using a property GUI
 will normally not be applied to the selected object until the
@@ -412,12 +412,12 @@ is used, however.
 If a property GUI element has the keyboard input focus (it is then usually
 displayed with a black rim around it), all the keyboard shortcuts for
 the main menu and scene navigation will have no effect until the
-keyboard input focus is moved away from the property GUI. You may accomplish
-this easily using the <tt/&lt;Esc&gt;/ key.
+keyboard input focus is moved away from the property GUI. You may
+accomplish this easily using the <tt/&lt;Esc&gt;/ key.
 <p>
 A property may be copied and pasted to another object, see the
-<tt/"Edit"/ menu. You can also paste properties to different types of
-properties (e.g. pasting parameters from a surface shader to the
+<tt/"Edit"/ menu. You can also paste property values to different types
+of properties (e.g. pasting parameters from a surface shader to the
 displacement shader) using <tt/"Paste to selected"/ in the
 <tt>"Special/Clipboard"</tt> sub-menu.
 <p>
@@ -431,12 +431,12 @@ you may mark single parameters with a double click on the
 labels of the parameters. The marked parameters will then be preceded
 by an exclamation mark (!) in the property GUI.
 <p>
-If you now copy this property all marked parameters will be omitted.
+If you now copy this property, all marked parameters will be omitted.
 <p>
 It is also possible to copy just the parameters you marked using
 <tt/"Copy Marked Prop"/.
 <p>
-A simple example:
+A simple example for the property clipboard:
 <p>
 Our task is to give a big number of material objects the same color,
 but they already have different opacity settings. Copying the complete
@@ -468,10 +468,10 @@ shader property to an object which does not already have the same shader!
 <sect2>The Console<label id="cons">
 <p>
 The third part of the main window is the console. The console is mainly
-for text output (informative, warning and error messages). For this,
+for text output (informative, warning, and error messages). For this,
 the console captures the stderr and stdout channels of the Tcl-interpreter
-Ayam is running in. You can also redirect all Tcl error messages that would
-normally cause a Tcl error requester to appear to the console using the
+Ayam is running in. You can also redirect all Tcl error messages, that would
+normally cause a Tcl error dialog window to appear, to the console using the
 preference setting <tt>"Misc/RedirectTcl"</tt>
 (see section <ref id="prefmisc" name="Miscellaneous Preferences">).
 <p>
@@ -491,7 +491,7 @@ the focus away from the console and enable the main menu shortcuts again.
 Note that the <tt/&lt;Tab&gt;/ key alone does not move the focus away
 from the console.
 <tt/&lt;Tab&gt;/ instead completes names of files, commands (procedures),
-variables and widgets.
+variables, and widgets.
 You may try this out by typing <tt/tip/ in the console,
 then press <tt/&lt;Tab&gt;/.
 The console automagically completes <tt/tip/ to <tt/tipoftheDay/
@@ -2271,7 +2271,7 @@ Most Ayam objects have standard properties. They are used
 to control transformations and common attributes of objects.
 The following sections describe the standard properties
 <tt/"Transformations"/, <tt/"Attributes"/, <tt/"Material"/, <tt/"Shaders"/,
- and <tt/"Tags"/.
+and <tt/"Tags"/.
 
 <sect1>Transformations Property<label id="trap"><label id="transformationsprop">
 <p>
@@ -2791,7 +2791,7 @@ for the presence of a <tt/"SaveMainGeom"/ tag for the root object
 after replacing a scene and re-establishes the geometries of
 main and toolbox window.
 
-<sect2>TP Tag<label id="tptag">
+<sect2>TP (Tesselation Parameter) Tag<label id="tptag">
 <p>
 The tag type <tt/"TP"/ can be used to save tesselation parameters
 to objects of type <tt/"NPatch"/. Those tesselation parameters
@@ -2817,7 +2817,7 @@ Example
 A TP tag could look like this:
 <code>TP 1,0.5,0.6</code>
 
-<sect2>DC Tag<label id="dctag">
+<sect2>DC (Depth Complexity) Tag<label id="dctag">
 <p>
 The tag type <tt/"DC"/ is only used by the AyCSG CSG preview plugin
 to store the depth complexity of CSG primitives.
@@ -2833,7 +2833,7 @@ Example
 A DC tag (valid for e.g. a torus) could look like this:
 <code>DC 2</code>
 
-<sect2>NP Tag<label id="nptag">
+<sect2>NP (New Property) Tag<label id="nptag">
 <p>
 The tag type <tt/"NP"/ (new property) may be used to add new property
 GUIs to single objects. The value of the tag is the name of a new
@@ -2842,7 +2842,16 @@ windows that make up the property GUI itself have to be present in
 the Tcl context of Ayam before the user clicks on the new property in the
 property list box.
 
-<sect2>NS Tag<label id="nstag">
+<sect2>RP (Remove Property) Tag<label id="rptag">
+<p>
+The tag type <tt/"RP"/ (remove property) may be used to remove GUI access
+to a property from single objects. The value of the tag is the name of the
+property to be removed. The GUI access will be blocked by simply omitting
+the property from the property listbox.
+Note well: the property is still present and active in the objects themselves
+and values may still be set using the scripting interface.
+
+<sect2>NS (Notify Script) Tag<label id="nstag">
 <p>
 The tag type <tt/"NS"/ (notify script) may be used to add scripts
 to an object, that will be run after the notification callback of
@@ -2860,7 +2869,7 @@ It will not be executed then.
 Disabled notify scripts may be enabled after careful inspection using
 the main menu entry <tt>"Special/Enable Scripts"</tt>.
 
-<sect2>UMM/VMM Tag<label id="ummtag">
+<sect2>UMM/VMM (U/V Min Max) Tag<label id="ummtag">
 <p>
 The tag types <tt/"UMM"/ (u min max) and <tt/"VMM"/ (v min max) may
 be used to store additional parametric domain trimming values to
@@ -2872,7 +2881,7 @@ Example
 An UMM tag could look like this:
 <code>UMM 0.4,0.6</code>
 
-<sect2>BP Tag<label id="bptag">
+<sect2>BP (Bevel Parameters) Tag<label id="bptag">
 <p>
 The tag type <tt/"BP"/ (bevel parameters) is used by all bevel
 supporting tool objects to store their bevel information.
@@ -2895,7 +2904,7 @@ A BP tag could look like this:
 The following tags are of no general use. They are used
 by Ayam internally only.
 
-<sect3>OI - Object ID Tag<label id="oitt">
+<sect3>OI (Object ID) Tag<label id="oitt">
 <p>
 This tag is used by the RIB exporter and the scene storage
 facility to establish links between instance objects and
@@ -2905,7 +2914,7 @@ The tag type <tt/OI/ is not meant to be used by the end user.
 Furthermore, changing the IDs manually avails to nothing as the
 tags are rebuilt before every export/save operation.
 
-<sect3>MI - Material ID Tag<label id="mitt">
+<sect3>MI (Material ID) Tag<label id="mitt">
 <p>
 This tag is used by the RIB exporter and the scene storage
 facility to establish links between material objects and
@@ -2921,7 +2930,7 @@ This section contains a comprehensive list of tag names, that are
 known since Ayam 1.10 and in the accompanying extensions (plugins).
 <p>
 <tt>"RiAttribute", "RiOption", "RiHider", "RiDisplay", "NoExport", "TC",
-"PV", "SaveMainGeom", "TP", "MI", "OI", "DC", "TM", "NP", "NS", "DNS",
+"PV", "SaveMainGeom", "TP", "MI", "OI", "DC", "TM", "NP", "RP", "NS", "DNS",
 "UMM", "VMM", "BP", "IDR", "IIDR", "RIDR", "R3IDR", "CIDR", "CCIDR"</tt>
 <p>
 Documentation on those tags can be found in the sections above.
@@ -6109,7 +6118,7 @@ the selection.
 <item>Operation: The tool creates a Cap object, and moves
 the selected objects to it.
 <item>Note: See section <ref id="capobj" name="Cap Object">
-for more information regarding the cap object.
+for more information regarding the Cap object.
 This tool uses the object clipboard to move the objects so that the
 original clipboard contents are lost when this tool finishes.
 </itemize>
@@ -6122,7 +6131,7 @@ the selection.
 <item>Operation: The tool creates a Birail1 object, and moves
 the selected objects to it.
 <item>Note: See section <ref id="birail1obj" name="Birail1 Object">
-for more information regarding the birail1 object.
+for more information regarding the Birail1 object.
 This tool uses the object clipboard to move the objects so that the
 original clipboard contents are lost when this tool finishes.
 </itemize>
@@ -6135,7 +6144,7 @@ the selection.
 <item>Operation: The tool creates a Birail2 object, and moves
 the selected objects to it.
 <item>Note: See section <ref id="birail2obj" name="Birail2 Object">
-for more information regarding the birail2 object.
+for more information regarding the Birail2 object.
 This tool uses the object clipboard to move the objects so that the
 original clipboard contents are lost when this tool finishes.
 </itemize>
@@ -6148,7 +6157,7 @@ the selection.
 <item>Operation: The tool creates a Gordon object, and moves
 the selected objects to it.
 <item>Note: See section <ref id="gordonobj" name="Gordon Object">
-for more information regarding the gordon object.
+for more information regarding the Gordon object.
 This tool uses the object clipboard to move the objects so that the
 original clipboard contents are lost when this tool finishes.
 </itemize>
@@ -6161,7 +6170,7 @@ the selection.
 <item>Operation: The tool creates a Skin object, and moves
 the selected objects to it.
 <item>Note: See section <ref id="skinobj" name="Skin Object">
-for more information regarding the skin object.
+for more information regarding the Skin object.
 This tool uses the object clipboard to move the objects so that the
 original clipboard contents are lost when this tool finishes.
 </itemize>
@@ -6199,7 +6208,7 @@ The original NURBS curves will not be deleted by this tool.
 <figure loc="ht">
 <eps file="pics/splitnc.ps" height="4cm">
 <img src="pics/splitnc.gif">
-<caption>Left: original curve, Right: resulting split curves for t=0.5</caption>
+<caption>Split Tool (left: original curve, right: resulting split curves for t=0.5)</caption>
 </figure>
 <itemize>
 <item>Arguments: The split curves tool takes a single NURBS curve from
@@ -6286,7 +6295,7 @@ custom knot vectors.
 <figure loc="ht">
 <eps file="pics/clampnc.ps" height="4cm">
 <img src="pics/clampnc.gif">
-<caption>Left: original curve, Right: clamped curve</caption>
+<caption>Clamp Tool (left: original curve, right: clamped curve)</caption>
 </figure>
 <itemize>
 <item>Arguments: The clamp tool takes a number of NURBS curves from
@@ -6321,7 +6330,7 @@ The knot type of the curve will be changed to custom.
 <figure loc="ht">
 <eps file="pics/remkn.ps" height="4cm">
 <img src="pics/remkn.gif">
-<caption>Left: original curve, Right: the knot at t=0.5 has been removed 1 time</caption>
+<caption>Remove Knot Tool (left: original curve, right: the knot at t=0.5 has been removed 1 time)</caption>
 </figure>
 <itemize>
 <item>Arguments: The remove knot tool takes a number of NURBS curves from
@@ -6356,7 +6365,7 @@ and by the specified height value. See also the image above.
 <figure loc="ht">
 <eps file="pics/shiftclsbsp.ps" height="4cm">
 <img src="pics/shiftclsbsp.gif">
-<caption>Closed B-Spline curve (left), shifted version (right)</caption>
+<caption>Shift Closed B-Spline Tool (left: Closed B-Spline Curve, right: Shifted Curve)</caption>
 </figure>
 <itemize>
 <item>Arguments: The shift closed B-Spline tool takes a number of
@@ -6374,7 +6383,7 @@ operation. See also the image above.
 <figure loc="ht">
 <eps file="pics/toxy.ps" height="5cm">
 <img src="pics/toxy.gif">
-<caption>To XY Tool, original curve (left), modified curve (right)</caption>
+<caption>To XY Tool (left: original curve, right: modified curve)</caption>
 </figure>
 <itemize>
 <item>Arguments: The To XY tool takes a number of
@@ -6397,7 +6406,7 @@ transformation attributes to the control points of the curves.
 <figure loc="ht">
 <eps file="pics/makecomp.ps" height="4cm">
 <img src="pics/makecomp.gif">
-<caption>Make Compatible Tool, original curves (left), compatible curves (right)</caption>
+<caption>Make Compatible Tool (left: Original Curves, right: Compatible Curves)</caption>
 </figure>
 <itemize>
 <item>Arguments: The Make Compatible tool takes a number of
@@ -6504,12 +6513,12 @@ will be reversed in the v dimension (height).
 <sect1>The Patch Clamp Tool<label id="clanpt">
 <p>
 <figure loc="ht">
-<eps file="pics/clampnp.ps" height="5cm">
+<eps file="pics/clampnp.ps" height="4cm">
 <img src="pics/clampnp.gif">
-<caption>Left: original patch, Right: clamped patch</caption>
+<caption>Patch Clamp Tool (left: Original Patch with B-Spline Knot Vectors, right: Clamped Patch)</caption>
 </figure>
 <itemize>
-<item>Arguments: The clamp tool takes a number of NURBS patches from
+<item>Arguments: The patch clamp tool takes a number of NURBS patches from
 the selection.
 <item>Operation: The knot vectors of a selected NURBS patch will be
 changed using knot insertion so that the first and the last knot
@@ -6517,7 +6526,9 @@ changed using knot insertion so that the first and the last knot
 (in the respective direction).
 The shape of the patch will not change but the position of some control
 points will. The patch interpolates the first and the last control point
-afterwards. The knot types of the patch will be changed to custom.
+afterwards. The knot types of the patch will be changed to type <tt/"Custom"/.
+Note that there are also tools available that clamp a patch in u- or
+v-direction only.
 </itemize>
 
 <sect1>The Split to Curves Tool<label id="sptct">
@@ -8423,25 +8434,29 @@ denotes the home directory of the current user.
 denotes the home directory of the current user.
 </itemize>
 
-The ayamrc file is read on each start of Ayam and saved again
-on exit (if the preference setting <tt>"Main/AutoSavePrefs"</tt> is enabled).
+The ayamrc file is read on each start of Ayam and saved again on exit
+(if the preference setting <tt>"Main/AutoSavePrefs"</tt> is enabled).
 <p>
 The ayamrc file contains:
 <enum>
 <item>preference settings (including some hidden settings that require
-just occasional tweaking and are not reachable using the GUI preference editor)
+just occasional tweaking and are not reachable using the GUI preference
+editor)
 <item>position and size of the main window and the toolbox window
 <item>keyboard shortcuts to menu entries and modelling actions
 <item>RiOption and RiAttribute databases
 </enum>
 
-You may edit the file by hand, but keep in mind, that the
-file will be parsed by Tcl. Should you, for some reason,
-destroy your ayamrc so that Ayam does not start correctly anymore
-you may start Ayam with the command line option <tt>"-failsafe"</tt>.
+You may edit the file by hand, but keep in mind, that the file will be
+parsed by Tcl. Should you, for some reason, destroy your ayamrc so that
+Ayam does not start correctly anymore you may start Ayam with the command
+line option <tt>"-failsafe"</tt>.
 When the application is left the next time, or the main menu entry
 <tt>"Save Prefs"</tt> is invoked a correct ayamrc will be created again.
 All preference settings will be reset to factory defaults, however!<p>
+Another way to reset the ayamrc is to  simply delete it using the
+main menu entry <tt>"Special/Reset Preferences"</tt>.
+
 
 <sect2>Changing Keyboard Shortcuts
 <p>
@@ -9545,8 +9560,6 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>NCDisplayMode: <ref id="prefdraw" name="preference setting">,
 <ref id="ncattr" name="NURBCurve attribute">
 <item>NCircle: <ref id="ncircleobj" name="object">
-<item>NPDisplayMode: <ref id="prefdraw" name="preference setting">,
-<ref id="npattr" name="NURBPatch attribute">
 <item>Near: <ref id="camp" name="camera property">
 <item>Negative: <ref id="mcattr" name="MetaComp attribute">
 <item>New: <ref id="mmfile" name="main menu entry">
@@ -9554,6 +9567,8 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>newScene: <ref id="scnewscene" name="scripting interface command">
 <item>NoExport: <ref id="noexporttag" name="tag type">
 <item>NP: <ref id="nptag" name="tag type">
+<item>NPDisplayMode: <ref id="prefdraw" name="preference setting">,
+<ref id="npattr" name="NURBPatch attribute">
 <item>NS: <ref id="nstag" name="tag type">
 <item>NumClones: <ref id="cloneattr" name="Clone attribute">
 <item>NumSamples: <ref id="moattr" name="MetaObj attribute">
@@ -9716,6 +9731,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <ref id="gimb" name="using the transformations property">
 <item>rotOb: <ref id="scrotob" name="scripting interface command">
 <item>rotSel: <ref id="scrotsel" name="scripting interface command">
+<item>RP: <ref id="rptag" name="tag type">
 <item>Ruled surface: <ref id="skinobj" name="Skin object">,
 <item>RunProgram: <ref id="riprocp" name="riproc attribute">
 <item>rV: <ref id="scrv" name="scripting interface command">
@@ -9802,7 +9818,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Sphere: <ref id="sphereobj" name="object">,
 <ref id="nspt" name="NURBS sphere tool">
 <item>Split: <ref id="sptct" name="split to curves tool">,
-<ref id="mmtools" name="Split PolyMesh tool">
+<ref id="mmtools" name="split polymesh tool">
 <item>Split Curve: <ref id="miscac" name="modelling action">
 <item>splitNC: <ref id="scsplitnc" name="scripting interface command">
 <item>splitNP: <ref id="scsplitnp" name="scripting interface command">
