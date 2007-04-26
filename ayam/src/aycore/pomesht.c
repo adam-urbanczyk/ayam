@@ -386,7 +386,7 @@ ay_pomesht_merge(int merge_pv_tags, ay_list_object *list, ay_object **result)
 	      if(pm->has_normals != has_normals)
 		{
 		  ay_error(AY_ERROR, fname,
-			   "found meshes with and without vertex normals");
+			   "Found meshes with and without vertex normals!");
 		  return AY_ERROR;
 		} /* if */
 	    } /* if */
@@ -416,7 +416,7 @@ ay_pomesht_merge(int merge_pv_tags, ay_list_object *list, ay_object **result)
 
   if(i < 2)
     {
-      ay_error(AY_ERROR, fname, "found too few meshes");
+      ay_error(AY_ERROR, fname, "Need atleast two PolyMesh objects to merge!");
       return AY_ERROR;
     }
 
@@ -636,7 +636,7 @@ ay_pomesht_mergetcmd(ClientData clientData, Tcl_Interp * interp,
 
   if(ay_status)
     { /* emit error message */
-      ay_error(AY_ERROR, fname, "could not merge objects");
+      ay_error(AY_ERROR, fname, "Merge operation failed!");
     }
   else
     { /* link the new PolyMesh to the scene */
@@ -930,12 +930,12 @@ ay_pomesht_optimizetcmd(ClientData clientData, Tcl_Interp * interp,
 	    }
 	  if(ay_status)
 	    { /* emit error message */
-	      ay_error(AY_ERROR, fname, "could not optimize object");
+	      ay_error(AY_ERROR, fname, "Optimize operation failed!");
 	    }
 	}
       else
 	{
-	  ay_error(AY_ERROR, fname, "Can only operate on PolyMesh objects!");
+	  ay_error(AY_EWTYPE, fname, "PolyMesh");
 	} /* if */
 
       sel = sel->next;
@@ -1355,7 +1355,7 @@ ay_pomesht_splittcmd(ClientData clientData, Tcl_Interp *interp,
 		}
 	      else
 		{
-		  ay_error(AY_ERROR, fname, "Split failed.");
+		  ay_error(AY_ERROR, fname, "Split operation failed!");
 		  free(newo);
 		} /* if */
 	    }
