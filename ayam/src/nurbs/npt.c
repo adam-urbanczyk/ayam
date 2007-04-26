@@ -14,6 +14,10 @@
 
 /* npt.c NURBS patch tools */
 
+/* local variables */
+
+char ay_npt_npname[] = "NPatch";
+
 /* functions */
 
 /* ay_npt_create:
@@ -570,7 +574,7 @@ ay_npt_revertutcmd(ClientData clientData, Tcl_Interp *interp,
 	  sel->object->modified = AY_TRUE;
 	  break;
 	default:
-	  ay_error(AY_ERROR, fname, "Do not know how to revert this object!");
+	  ay_error(AY_EWTYPE, fname, "NPatch, PaMesh, BPatch");
 	  break;
 	} /* switch */
 
@@ -669,7 +673,7 @@ ay_npt_revertvtcmd(ClientData clientData, Tcl_Interp *interp,
 	  sel->object->modified = AY_TRUE;
 	  break;
 	default:
-	  ay_error(AY_ERROR, fname, "Do not know how to revert this object!");
+	  ay_error(AY_EWTYPE, fname, "NPatch, PaMesh, BPatch");
 	  break;
 	} /* switch */
 
@@ -1505,7 +1509,7 @@ ay_npt_splittocurvestcmd(ClientData clientData, Tcl_Interp *interp,
   src = sel->object;
   if(src->type != AY_IDNPATCH)
     {
-      ay_error(AY_ERROR, fname, "object is not a NURBPatch");
+      ay_error(AY_EWTYPE, fname, ay_npt_npname);
       return TCL_OK;
     }
 
@@ -4826,7 +4830,7 @@ ay_npt_applytrafo(ay_object *p)
     return AY_ENULL;
 
   if(!p->type == AY_IDNPATCH)
-    return AY_ERROR;
+    return AY_EWTYPE;
 
   np = (ay_nurbpatch_object *)(p->refine);
 
@@ -5019,7 +5023,7 @@ ay_npt_elevateutcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
-	  ay_error(AY_ERROR, fname, "object is not a NPatch");
+	  ay_error(AY_EWTYPE, fname, ay_npt_npname);
 	} /* if */
 
       sel = sel->next;
@@ -5180,7 +5184,7 @@ ay_npt_elevatevtcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
-	  ay_error(AY_ERROR, fname, "object is not a NPatch");
+	  ay_error(AY_EWTYPE, fname, ay_npt_npname);
 	} /* if */
 
       sel = sel->next;
@@ -5247,7 +5251,7 @@ ay_npt_swapuvtcmd(ClientData clientData, Tcl_Interp *interp,
 	  sel->object->modified = AY_TRUE;
 	  break;
 	default:
-	  ay_error(AY_ERROR, fname, "Do not know how to revert this object!");
+	  ay_error(AY_EWTYPE, fname, "NPatch, PaMesh, BPatch");
 	  break;
 	} /* switch */
       sel = sel->next;
@@ -5876,7 +5880,7 @@ ay_npt_extractboundary(ay_object *o, int apply_trafo,
     return AY_ENULL;
 
   if(o->type != AY_IDNPATCH)
-    return AY_ERROR;
+    return AY_EWTYPE;
 
   ay_status = ay_npt_extractnc(o, 0, 0.0, apply_trafo, &u0);
   ay_status = ay_npt_extractnc(o, 1, 0.0, apply_trafo, &un);
@@ -5951,7 +5955,7 @@ ay_npt_extractnc(ay_object *o, int side, double param, int apply_trafo,
     return AY_ENULL;
 
   if(o->type != AY_IDNPATCH)
-    return AY_ERROR;
+    return AY_EWTYPE;
 
   if(side == 6)
     {
@@ -6211,6 +6215,11 @@ ay_npt_istrimmed(ay_object *o, int mode)
   if(!o)
     return AY_FALSE;
 
+  if(o->type != AY_IDNPATCH)
+    {
+      return AY_EWTYPE;
+    }
+
   npatch = (ay_nurbpatch_object *)o->refine;
 
   if(!npatch)
@@ -6360,7 +6369,7 @@ ay_npt_closeutcmd(ClientData clientData, Tcl_Interp *interp,
 	  sel->object->modified = AY_TRUE;
 	  break;
 	default:
-	  ay_error(AY_ERROR, fname, "Do not know how to close this object!");
+	  ay_error(AY_EWTYPE, fname, ay_npt_npname);
 	  break;
 	} /* switch */
       sel = sel->next;
@@ -6475,7 +6484,7 @@ ay_npt_closevtcmd(ClientData clientData, Tcl_Interp *interp,
 	  sel->object->modified = AY_TRUE;
 	  break;
 	default:
-	  ay_error(AY_ERROR, fname, "Do not know how to close this object!");
+	  ay_error(AY_EWTYPE, fname, ay_npt_npname);
 	  break;
 	} /* switch */
       sel = sel->next;
@@ -6640,10 +6649,13 @@ ay_npt_collapseselp(ay_object *o)
  char fname[] = "collapseselp";
 
   if(!o)
-    return AY_OK;
+    return AY_ENULL;
 
   if(o->type != AY_IDNPATCH)
-    return AY_ERROR;
+    {
+      ay_error(AY_EWTYPE, fname, ay_npt_npname);
+      return AY_ERROR;
+    }
 
   np = (ay_nurbpatch_object *)o->refine;
 
@@ -6738,10 +6750,13 @@ ay_npt_explodemp(ay_object *o)
  char fname[] = "explodemp";
 
   if(!o)
-    return AY_OK;
+    return AY_ENULL;
 
   if(o->type != AY_IDNPATCH)
-    return AY_ERROR;
+    {
+      ay_error(AY_EWTYPE, fname, ay_npt_npname);
+      return AY_ERROR;
+    }
 
   np = (ay_nurbpatch_object *)o->refine;
 
@@ -7157,7 +7172,7 @@ ay_npt_clamputcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
-	  ay_error(AY_ERROR, fname, "Do not know how to clamp this object!");
+	  ay_error(AY_EWTYPE, fname, ay_npt_npname);
 	} /* if */
       sel = sel->next;
     } /* while */
@@ -7243,7 +7258,7 @@ ay_npt_clampvtcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
-	  ay_error(AY_ERROR, fname, "Do not know how to clamp this object!");
+	  ay_error(AY_EWTYPE, fname, ay_npt_npname);
 	} /* if */
       sel = sel->next;
     } /* while */
@@ -7303,7 +7318,7 @@ ay_npt_rescaleknvnptcmd(ClientData clientData, Tcl_Interp *interp,
       src = sel->object;
       if(src->type != AY_IDNPATCH)
 	{
-	  ay_error(AY_ERROR, fname, "Object is not a NURBPatch!");
+	  ay_error(AY_EWTYPE, fname, ay_npt_npname);
 	}
       else
 	{
@@ -7429,7 +7444,7 @@ ay_npt_xxxxtcmd(ClientData clientData, Tcl_Interp *interp,
       src = sel->object;
       if(src->type != AY_IDNPATCH)
 	{
-	  ay_error(AY_ERROR, fname, "Object is not a NURBPatch!");
+	  ay_error(AY_EWTYPE, fname, ay_npt_npname);
 	}
       else
 	{
