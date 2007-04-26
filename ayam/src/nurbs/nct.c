@@ -14,6 +14,10 @@
 
 /* nct.c NURBS curve tools */
 
+/* local variables */
+
+char ay_nct_ncname[] = "NCurve";
+
 /* ay_nct_create:
  *   create a NURBS curve
  */
@@ -216,10 +220,13 @@ ay_nct_collapseselp(ay_object *o)
  char fname[] = "collapseselp";
 
   if(!o)
-    return AY_OK;
+    return AY_ENULL;
 
   if(o->type != AY_IDNCURVE)
-    return AY_ERROR;
+    {
+      ay_error(AY_EWTYPE, fname, ay_nct_ncname);
+      return AY_ERROR;
+    }
 
   c = (ay_nurbcurve_object *)o->refine;
 
@@ -315,10 +322,13 @@ ay_nct_explodemp(ay_object *o)
  char fname[] = "explodemp";
 
   if(!o)
-    return AY_OK;
+    return AY_ENULL;
 
   if(o->type != AY_IDNCURVE)
-    return AY_ERROR;
+    {
+      ay_error(AY_EWTYPE, fname, ay_nct_ncname);
+      return AY_ERROR;
+    }
 
   c = (ay_nurbcurve_object *)o->refine;
 
@@ -389,8 +399,9 @@ ay_nct_resize(ay_nurbcurve_object *curve, int new_length)
   if(!curve)
     return AY_ENULL;
 
+  /* nothing to do? */
   if(new_length == curve->length)
-    return ay_status;
+    return AY_OK;
 
   if(!(ncontrolv = calloc(4*new_length, sizeof(double))))
     return AY_EOMEM;
@@ -846,7 +857,7 @@ ay_nct_refinetcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
-	  ay_error(AY_ERROR, fname, "object is not a NURBCurve");
+	  ay_error(AY_EWTYPE, fname, ay_nct_ncname);
 	}
 
       sel = sel->next;
@@ -1035,7 +1046,7 @@ ay_nct_clamptcmd(ClientData clientData, Tcl_Interp *interp,
 	  }
 	else
 	  {
-	    ay_error(AY_ERROR, fname, "object is not a NURBCurve");
+	    ay_error(AY_EWTYPE, fname, ay_nct_ncname);
 	  } /* if */
       } /* if */
 
@@ -1306,8 +1317,7 @@ ay_nct_elevatetcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
-	  ay_error(AY_ERROR, fname, "object is not a NURBCurve");
-
+	  ay_error(AY_EWTYPE, fname, ay_nct_ncname);
 	} /* if */
 
       sel = sel->next;
@@ -1351,7 +1361,7 @@ ay_nct_insertkntcmd(ClientData clientData, Tcl_Interp *interp,
       src = sel->object;
       if(src->type != AY_IDNCURVE)
 	{
-	  ay_error(AY_ERROR, fname, "Object is not a NURBCurve!");
+	  ay_error(AY_EWTYPE, fname, ay_nct_ncname);
 	}
       else
 	{
@@ -1477,7 +1487,7 @@ ay_nct_collapsetcmd(ClientData clientData, Tcl_Interp *interp,
 	  break;
 	default:
 	  {
-	    ay_error(AY_ERROR, fname, "Unsupported object type!");
+	    ay_error(AY_EWTYPE, fname, "NCurve, NPatch");
 	  }
 	  break;
 	} /* switch */
@@ -1546,7 +1556,7 @@ ay_nct_explodetcmd(ClientData clientData, Tcl_Interp *interp,
 	  break;
 	default:
 	  {
-	    ay_error(AY_ERROR, fname, "Unsupported object type!");
+	    ay_error(AY_EWTYPE, fname, "NCurve, NPatch");
 	    return TCL_OK;
 	  }
 	  break;
@@ -1592,7 +1602,7 @@ ay_nct_findu(struct Togl *togl, ay_object *o,
     return AY_ENULL;
 
   if(!o->type == AY_IDNCURVE)
-    return AY_ERROR;
+    return AY_EWTYPE;
 
   c = (ay_nurbcurve_object *)o->refine;
 
@@ -1792,7 +1802,7 @@ int height = Togl_Height(togl);
     {
       if(ay_selection->object->type != AY_IDNCURVE)
 	{
-	  ay_error(AY_ERROR, fname, "Object is not a NURB curve!");
+	  ay_error(AY_EWTYPE, fname, ay_nct_ncname);
 	  return TCL_OK;
 	}
       /*
@@ -1852,7 +1862,7 @@ ay_nct_split(ay_object *src, double u, ay_object **result)
 
   if(src->type != AY_IDNCURVE)
     {
-      ay_error(AY_ERROR, fname, "Object is not a NURBCurve!");
+      ay_error(AY_EWTYPE, fname, ay_nct_ncname);
       return AY_ERROR;
     }
   else
@@ -2021,8 +2031,7 @@ ay_nct_splittcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 	  else
 	    {
-	      ay_error(AY_ERROR, fname,
-			 "object is not a NURBCurve");
+	      ay_error(AY_EWTYPE, fname, ay_nct_ncname);
 	      return TCL_OK;
 	    } /* if */
 	} /* if */
@@ -2066,7 +2075,7 @@ ay_nct_concattcmd(ClientData clientData, Tcl_Interp *interp,
   if((sel->object->type != AY_IDNCURVE) ||
      (sel->next->object->type != AY_IDNCURVE))
     {
-      ay_error(AY_ERROR, fname, "object is not a NURBCurve");
+      ay_error(AY_EWTYPE, fname, ay_nct_ncname);
       return TCL_OK;
     }
 
@@ -2174,7 +2183,7 @@ ay_nct_crtncircle(double radius, ay_nurbcurve_object **curve)
  };
 
   if(!curve)
-    return AY_EOMEM;
+    return AY_ENULL;
 
   i = 7;
   controls[i] = sqrt(2.0)/2.0;
@@ -2236,7 +2245,7 @@ ay_nct_crtncirclearc(double radius, double arc, ay_nurbcurve_object **curve)
  ay_nurbcurve_object *new = NULL;
 
   if(!curve)
-    return AY_EOMEM;
+    return AY_ENULL;
 
   if(!(new = calloc(1, sizeof(ay_nurbcurve_object))))
     return AY_EOMEM;
@@ -2287,7 +2296,7 @@ ay_nct_crtnhcircle(double radius, ay_nurbcurve_object **curve)
  };
 
   if(!curve)
-    return AY_EOMEM;
+    return AY_ENULL;
 
   i = 4;
   controls[i] *= sqrt(2.0)/2.0;
@@ -2892,7 +2901,7 @@ ay_nct_applytrafo(ay_object *c)
     return AY_ENULL;
 
   if(!c->type == AY_IDNCURVE)
-    return AY_ERROR;
+    return AY_EWTYPE;
 
   nc = (ay_nurbcurve_object *)(c->refine);
 
@@ -2925,7 +2934,7 @@ ay_nct_getpntfromindex(ay_nurbcurve_object *curve, int index, double **p)
  int stride = 4;
  char fname[] = "ay_nct_getpntfromindex";
 
-  if(!curve)
+  if(!curve || !p)
     return AY_ENULL;
 
   if(index >= curve->length || index < 0)
@@ -3461,6 +3470,8 @@ ay_nct_addinternalcps(ay_object *curve, int where)
 
  if(curve && curve->refine)
    {
+     if(curve->type != AY_IDNCURVE)
+       return AY_EWTYPE;
      nc = (ay_nurbcurve_object *)(curve->refine);
      if(nc->knot_type == AY_KTCUSTOM)
        return AY_OK;
@@ -3594,7 +3605,7 @@ ay_nct_rescaleknvnctcmd(ClientData clientData, Tcl_Interp *interp,
       src = sel->object;
       if(src->type != AY_IDNCURVE)
 	{
-	  ay_error(AY_ERROR, fname, "Object is not a NURBCurve!");
+	  ay_error(AY_EWTYPE, fname, ay_nct_ncname);
 	}
       else
 	{
@@ -4237,7 +4248,7 @@ ay_nct_shiftcbstcmd(ClientData clientData, Tcl_Interp *interp,
       src = sel->object;
       if(src->type != AY_IDNCURVE)
 	{
-	  ay_error(AY_ERROR, fname, "Object is not a NURBCurve!");
+	  ay_error(AY_EWTYPE, fname, ay_nct_ncname);
 	}
       else
 	{
@@ -4294,7 +4305,7 @@ ay_nct_toxy(ay_object *c)
     return AY_ENULL;
 
   if(!c->type == AY_IDNCURVE)
-    return AY_EARGS;
+    return AY_EWTYPE;
 
   nc = (ay_nurbcurve_object *)c->refine;
 
@@ -4465,7 +4476,7 @@ ay_nct_toxytcmd(ClientData clientData, Tcl_Interp *interp,
       src = sel->object;
       if(src->type != AY_IDNCURVE)
 	{
-	  ay_error(AY_ERROR, fname, "Object is not a NURBCurve!");
+	  ay_error(AY_EWTYPE, fname, ay_nct_ncname);
 	}
       else
 	{
@@ -4513,7 +4524,7 @@ ay_nct_makecomptcmd(ClientData clientData, Tcl_Interp *interp,
       o = sel->object;
       if(o->type != AY_IDNCURVE)
 	{
-	  ay_error(AY_ERROR, fname, "Object is not a NURBCurve!");
+	  ay_error(AY_EWTYPE, fname, ay_nct_ncname);
 	}
       else
 	{
@@ -4828,7 +4839,7 @@ ay_nct_centertcmd(ClientData clientData, Tcl_Interp *interp,
       c = sel->object;
       if(c->type != AY_IDNCURVE)
 	{
-	  ay_error(AY_ERROR, fname, "Object is not a NURBCurve!");
+	  ay_error(AY_EWTYPE, fname, ay_nct_ncname);
 	}
       else
 	{
@@ -5028,7 +5039,7 @@ ay_nct_coarsentcmd(ClientData clientData, Tcl_Interp *interp,
       c = sel->object;
       if(c->type != AY_IDNCURVE)
 	{
-	  ay_error(AY_ERROR, fname, "Object is not a NURBCurve!");
+	  ay_error(AY_EWTYPE, fname, ay_nct_ncname);
 	}
       else
 	{
@@ -5088,7 +5099,7 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
       o = sel->object;
       if(o->type != AY_IDNCURVE)
 	{
-	  ay_error(AY_ERROR, fname, "Object is not a NURBCurve!");
+	  ay_error(AY_EWTYPE, fname, ay_nct_ncname);
 	}
       else
 	{
