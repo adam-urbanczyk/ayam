@@ -202,6 +202,11 @@ ay_error(int code, char *where, char *what)
   if(what)
     Tcl_DStringAppend(&ds, what, -1);
 
+  if((code == AY_EARGS) || (code == AY_EWTYPE))
+    {
+      Tcl_DStringAppend(&ds, ".", -1);
+    }
+
   Tcl_DStringAppend(&ds, "\"", -1);
 
   if(last_message && !strcmp(last_message, Tcl_DStringValue(&ds)))
