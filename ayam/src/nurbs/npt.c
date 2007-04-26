@@ -7407,9 +7407,9 @@ ay_npt_xxxxtcmd(ClientData clientData, Tcl_Interp *interp,
 		int argc, char *argv[])
 {
  int ay_status;
- char fname[] = "yyyy";
+ char fname[] = "xxxx";
  ay_list_object *sel = ay_selection;
- ay_object *src = NULL;
+ ay_object *o = NULL;
  ay_nurbpatch_object *patch = NULL;
 
   /* parse args */
@@ -7441,18 +7441,18 @@ ay_npt_xxxxtcmd(ClientData clientData, Tcl_Interp *interp,
 
   while(sel)
     {
-      src = sel->object;
-      if(src->type != AY_IDNPATCH)
+      o = sel->object;
+      if(o->type != AY_IDNPATCH)
 	{
 	  ay_error(AY_EWTYPE, fname, ay_npt_npname);
 	}
       else
 	{
-	  patch = (ay_nurbpatch_object*)src->refine;
+	  patch = (ay_nurbpatch_object*)o->refine;
 
 	  /* do magic */
 
-	  src->modified = AY_TRUE;
+	  o->modified = AY_TRUE;
 	} /* if */
       sel = sel->next;
     } /* while */

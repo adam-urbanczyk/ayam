@@ -5192,3 +5192,65 @@ ay_nct_isdegen(ay_nurbcurve_object *curve)
 
  return AY_TRUE;
 } /* ay_nct_isdegen */
+
+
+/* templates */
+#if 0
+
+/* Tcl command */
+
+/* ay_nct_xxxxtcmd:
+ *
+ */
+int
+ay_nct_xxxxtcmd(ClientData clientData, Tcl_Interp *interp,
+		    int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ char fname[] = "xxxxNC";
+ ay_nurbcurve_object *curve;
+ ay_list_object *sel = ay_selection;
+ ay_object *o = NULL;
+
+  /* parse args */
+  if(argc < 3)
+    {
+      ay_error(AY_EARGS, fname, "u r");
+      return TCL_OK;
+    }
+
+  Tcl_GetDouble(interp, argv[1], &u);
+  Tcl_GetInt(interp, argv[2], &r);
+
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, fname, NULL);
+      return TCL_OK;
+    }
+
+  while(sel)
+    {
+      o = sel->object;
+      if(o->type != AY_IDNCURVE)
+	{
+	  ay_error(AY_EWTYPE, fname, ay_nct_ncname);
+	}
+      else
+	{
+	  curve = (ay_nurbcurve_object *)o->refine;
+
+	  /* do magic */
+	  ay_status = ay_nct_recreatemp(curve);
+
+	  o->modified = AY_TRUE;
+	} /* if */
+
+      sel = sel->next;
+    } /* while */
+
+  ay_notify_parent();
+
+ return TCL_OK;
+} /* ay_nct_xxxxtcmd */
+
+#endif
