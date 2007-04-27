@@ -2,9 +2,9 @@
 This file contains some guidelines about how C code in the Ayam project
 should be formatted and commented.
 
-I do welcome patches (especially, if they fix bad bugs or add essential
-functionality) but I will reject any code that fails to comply with the
-following guidelines:
+The Ayam team does welcome patches (especially, if they fix bad bugs or
+add essential functionality) but will reject any code that fails to
+comply with the following guidelines:
 
 o line length must not exceed 79 characters
 o indentation: Emacs-C-mode-style (2 chars) this is also
@@ -12,7 +12,8 @@ o indentation: Emacs-C-mode-style (2 chars) this is also
   exceptions (not mandatory):
   - local variables and last return in a function indent one character
   - glBegin()-glEnd(), glPushMatrix()-glPopMatrix(), and RiBegin()-RiEnd()
-    pairs indent one character
+    pairs (and other pair statements/function calls) indent one character
+  see example below...
 o indentation should be carried out by <space> characters only
   (no <TAB>, as this is interpreted very differently between editors)
 o all {} are on their _own_ line (resembles the look of Pascal code a bit)
@@ -24,9 +25,10 @@ o function naming convention: ay_<modulename>_getblurb<type>
                    "tcmd": Tcl command
 o all functions end with "} /* <function_name> */"
 o long if/while/for/switch-statements end with "} /* if */", "} /* while */"...
-o do not use C++ comments
+o no use of C++ comments
 o no trailing white space at the end of a line
 o no DOS line endings (not CRLF but just LF)
+o no ISO-C (C99) extensions
 o try to follow the GNU coding standards:
   http://www.gnu.org/prep/standards_toc.html
   if they do not contradict the rules stated in this document
