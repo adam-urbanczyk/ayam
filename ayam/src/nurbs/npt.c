@@ -7394,6 +7394,212 @@ ay_npt_rescaleknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_npt_rescaleknvnptcmd */
 
 
+/* ay_npt_insertknutcmd:
+ *
+ */
+int
+ay_npt_insertknutcmd(ClientData clientData, Tcl_Interp *interp,
+		     int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ ay_list_object *sel = ay_selection;
+ ay_object *src = NULL;
+ ay_nurbpatch_object *patch = NULL;
+ double u, *knots = NULL, *newcontrolv = NULL, *newknotv = NULL;
+ int stride = 4, i, k = 0, s = 0, r = 0;
+ char fname[] = "insknNPU";
+
+  if(argc < 3)
+    {
+      ay_error(AY_EARGS, fname, "u r");
+      return TCL_OK;
+    }
+
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, fname, NULL);
+      return TCL_OK;
+    }
+
+  while(sel)
+    {
+      src = sel->object;
+      if(src->type != AY_IDNPATCH)
+	{
+	  ay_error(AY_EWTYPE, fname, ay_npt_npname);
+	}
+      else
+	{
+	  patch = (ay_nurbpatch_object*)src->refine;
+	  knots = patch->uknotv;
+
+	  Tcl_GetDouble(interp, argv[1], &u);
+
+	  if((u < knots[patch->uorder-1]) || (u > knots[patch->width]))
+	    {
+	      ay_error(AY_ERROR, fname, "Parameter u out of range.");
+	      return TCL_OK;
+	    }
+
+	  i = 0; k = 0;
+
+	  k = ay_nb_FindSpanMult(patch->width-1, patch->uorder-1, u,
+				 knots, &s);
+
+	  Tcl_GetInt(interp, argv[2], &r);
+
+	  if(patch->uorder < r+s)
+	    {
+	      ay_error(AY_ERROR, fname,
+			 "Knot insertion leads to illegal knot sequence.");
+	      return TCL_OK;
+	    }
+
+	  patch->width += r;
+
+	  if(!(newcontrolv = calloc(patch->width*patch->height*stride,
+				    sizeof(double))))
+	    {
+	      ay_error(AY_EOMEM, fname, NULL);
+	      return TCL_OK;
+	    }
+	  if(!(newknotv = calloc(patch->width+patch->uorder, sizeof(double))))
+	    {
+	      ay_error(AY_EOMEM, fname, NULL);
+	      return TCL_OK;
+	    }
+	  ay_status = ay_nb_InsertKnotSurfU(stride,
+					    patch->width-r-1, patch->height-1,
+		        patch->uorder-1, patch->uknotv, patch->controlv, u, k,
+		        s, r, newknotv, newcontrolv);
+
+	  free(patch->controlv);
+	  patch->controlv = newcontrolv;
+
+	  free(patch->uknotv);
+	  patch->uknotv = newknotv;
+	  patch->uknot_type = AY_KTCUSTOM;
+
+	  ay_npt_recreatemp(patch);
+
+	  src->modified = AY_TRUE;
+
+	  /* re-create tesselation of patch */
+	  ay_notify_force(sel->object);
+	} /* if */
+
+      sel = sel->next;
+    } /* while */
+
+  ay_notify_parent();
+
+ return TCL_OK;
+} /* ay_npt_insertknutcmd */
+
+
+/* ay_npt_insertknvtcmd:
+ *
+ */
+int
+ay_npt_insertknvtcmd(ClientData clientData, Tcl_Interp *interp,
+		     int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ ay_list_object *sel = ay_selection;
+ ay_object *src = NULL;
+ ay_nurbpatch_object *patch = NULL;
+ double v, *knots = NULL, *newcontrolv = NULL, *newknotv = NULL;
+ int stride = 4, i, k = 0, s = 0, r = 0;
+ char fname[] = "insknNPV";
+
+  if(argc < 3)
+    {
+      ay_error(AY_EARGS, fname, "v r");
+      return TCL_OK;
+    }
+
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, fname, NULL);
+      return TCL_OK;
+    }
+
+  while(sel)
+    {
+      src = sel->object;
+      if(src->type != AY_IDNPATCH)
+	{
+	  ay_error(AY_EWTYPE, fname, ay_npt_npname);
+	}
+      else
+	{
+	  patch = (ay_nurbpatch_object*)src->refine;
+	  knots = patch->vknotv;
+
+	  Tcl_GetDouble(interp, argv[1], &v);
+
+	  if((v < knots[patch->vorder-1]) || (v > knots[patch->height]))
+	    {
+	      ay_error(AY_ERROR, fname, "Parameter v out of range.");
+	      return TCL_OK;
+	    }
+
+	  i = 0; k = 0;
+
+	  k = ay_nb_FindSpanMult(patch->height-1, patch->vorder-1, v,
+				 knots, &s);
+
+	  Tcl_GetInt(interp, argv[2], &r);
+
+	  if(patch->vorder < r+s)
+	    {
+	      ay_error(AY_ERROR, fname,
+			 "Knot insertion leads to illegal knot sequence.");
+	      return TCL_OK;
+	    }
+
+	  patch->height += r;
+
+	  if(!(newcontrolv = calloc(patch->width*patch->height*stride,
+				    sizeof(double))))
+	    {
+	      ay_error(AY_EOMEM, fname, NULL);
+	      return TCL_OK;
+	    }
+	  if(!(newknotv = calloc(patch->height+patch->vorder, sizeof(double))))
+	    {
+	      ay_error(AY_EOMEM, fname, NULL);
+	      return TCL_OK;
+	    }
+	  ay_status = ay_nb_InsertKnotSurfV(stride,
+					    patch->width-1, patch->height-r-1,
+		        patch->vorder-1, patch->vknotv, patch->controlv, v, k,
+		        s, r, newknotv, newcontrolv);
+
+	  free(patch->controlv);
+	  patch->controlv = newcontrolv;
+
+	  free(patch->vknotv);
+	  patch->vknotv = newknotv;
+	  patch->vknot_type = AY_KTCUSTOM;
+
+	  ay_npt_recreatemp(patch);
+
+	  src->modified = AY_TRUE;
+
+	  /* re-create tesselation of patch */
+	  ay_notify_force(sel->object);
+	} /* if */
+
+      sel = sel->next;
+    } /* while */
+
+  ay_notify_parent();
+
+ return TCL_OK;
+} /* ay_npt_insertknvtcmd */
+
+
 /* templates */
 #if 0
 

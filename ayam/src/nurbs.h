@@ -501,6 +501,11 @@ int ay_npt_clampvtcmd(ClientData clientData, Tcl_Interp *interp,
 int ay_npt_rescaleknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 			    int argc, char *argv[]);
 
+int ay_npt_insertknutcmd(ClientData clientData, Tcl_Interp *interp,
+			 int argc, char *argv[]);
+
+int ay_npt_insertknvtcmd(ClientData clientData, Tcl_Interp *interp,
+			 int argc, char *argv[]);
 
 /* pmt.c */
 int ay_pmt_tonpatch(ay_pamesh_object *pamesh, ay_object **result);
