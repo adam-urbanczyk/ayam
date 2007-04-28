@@ -381,6 +381,17 @@ $m.npt add command -label "Clamp V" -command {
     undo save clampNPV; clampNPV; plb_update; rV}
 $m.npt add command -label "Clamp Both" -command {
     undo save clampNP; clampNPU; clampNPV; plb_update; rV}
+
+$m.npt add command -label "Insert Knot U" -command {
+    runTool [list ay(insknu) ay(insknr)]\
+	    [list "Insert knot at:" "Insert times:"]\
+	    "undo save InsKnU; insknNPU %0 %1; plb_update; rV" }
+
+$m.npt add command -label "Insert Knot V" -command {
+    runTool [list ay(insknu) ay(insknr)]\
+	    [list "Insert knot at:" "Insert times:"]\
+	    "undo save InsKnV; insknNPV %0 %1; plb_update; rV" }
+
 $m.npt add command -label "Rescale Knots to Range" -command {
     undo save RescaleKnots;
     runTool {ay(rmin) ay(rmax)} {"RangeMin:" "RangeMax:"}\
