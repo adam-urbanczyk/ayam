@@ -392,6 +392,10 @@ $m.npt add command -label "Insert Knot V" -command {
 	    [list "Insert knot at:" "Insert times:"]\
 	    "undo save InsKnV; insknNPV %0 %1; plb_update; rV" }
 
+$m.npt add command -label "Split U" -command {
+runTool ay(splitu) {"Split at:"} "undo save SplitNPU; splitNPU %0; uCR; sL; rV"
+}
+
 $m.npt add command -label "Rescale Knots to Range" -command {
     undo save RescaleKnots;
     runTool {ay(rmin) ay(rmax)} {"RangeMin:" "RangeMax:"}\
