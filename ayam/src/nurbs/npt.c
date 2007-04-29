@@ -7600,6 +7600,215 @@ ay_npt_insertknvtcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_npt_insertknvtcmd */
 
 
+/* ay_npt_splitu:
+ *  split NURBPatch object <src> at parametric value <u> into two;
+ *  modifies <src>, returns second patch in <result>.
+ */
+int
+ay_npt_splitu(ay_object *src, double u, ay_object **result)
+{
+ int ay_status = AY_OK;
+ ay_object *new = NULL;
+ ay_nurbpatch_object *patch = NULL;
+ ay_nurbpatch_object *np1 = NULL, *np2 = NULL;
+ double *knots = NULL, *newcontrolv = NULL, *newknotv = NULL;
+ int stride = 4, k = 0, r = 0, s = 0, np1len = 0;
+ char fname[] = "npt_splitu";
+
+
+  if(!src || !result)
+    return AY_ENULL;
+
+  if(src->type != AY_IDNPATCH)
+    {
+      ay_error(AY_EWTYPE, fname, ay_npt_npname);
+      return AY_ERROR;
+    }
+  else
+    {
+      patch = (ay_nurbpatch_object*)src->refine;
+      stride = 4;
+      knots = patch->uknotv;
+
+      if((u <= knots[0/*patch->order-2*/]) || (u >= knots[patch->width]))
+	{
+	  ay_error(AY_ERROR, fname, "Parameter u out of range!");
+	  return AY_ERROR;
+	}
+
+      k = 0;
+
+      k = ay_nb_FindSpanMult(patch->width-1, patch->uorder-1, u,
+			     knots, &s);
+
+      r = patch->uorder-1-s;
+
+      patch->width += r;
+
+      if(r != 0)
+	{
+	  newcontrolv = NULL;
+	  if(!(newcontrolv = calloc(patch->width*patch->height*stride,
+				    sizeof(double))))
+	    { return AY_EOMEM; }
+	  newknotv = NULL;
+	  if(!(newknotv = calloc(patch->width+patch->uorder, sizeof(double))))
+	    { free(newcontrolv); return AY_EOMEM; }
+
+	  ay_status = ay_nb_InsertKnotSurfU(stride,
+					    patch->width-r-1, patch->height-1,
+		        patch->uorder-1, patch->uknotv, patch->controlv, u, k,
+		        s, r, newknotv, newcontrolv);
+
+	  free(patch->controlv);
+	  patch->controlv = newcontrolv;
+
+	  free(patch->uknotv);
+	  patch->uknotv = newknotv;
+	} /* if */
+
+      patch->uknot_type = AY_KTCUSTOM;
+      /* create two new patchs */
+      np1 = patch;
+      /*np1->type = AY_CTOPEN;*/
+      ay_status = ay_object_copy(src, &new);
+
+      if(r != 0)
+	np1len = k - (np1->uorder-1) + 1 + (patch->uorder-1-s+r-1)/2 + 1;
+      else
+	np1len = k - (np1->uorder-1) + 1;
+
+      np2 = (ay_nurbpatch_object*)new->refine;
+      np2->width = (np1->width+1) - np1len;
+
+      np1->width = np1len;
+
+      newcontrolv = NULL;
+      if(!(newcontrolv = calloc(np1->width*np1->height*stride,
+				sizeof(double))))
+	{ ay_object_delete(new); return AY_EOMEM; }
+      newknotv = NULL;
+      if(!(newknotv = calloc(np1->width+np1->uorder, sizeof(double))))
+	{ ay_object_delete(new); free(newcontrolv); return AY_EOMEM; }
+
+      memcpy(newcontrolv, np1->controlv,
+	     np1->width*np1->height*stride*sizeof(double));
+
+      memcpy(newknotv, np1->uknotv, (np1->width+np1->uorder)*sizeof(double));
+
+      free(np2->controlv);
+      np2->controlv = NULL;
+      free(np2->uknotv);
+      np2->uknotv = NULL;
+
+      if(!(np2->controlv = calloc(np2->width*np2->height*stride,
+				  sizeof(double))))
+	{ ay_object_delete(new); return AY_EOMEM; }
+
+      if(!(np2->uknotv = calloc(np2->width+np2->uorder, sizeof(double))))
+	{ ay_object_delete(new); free(np2->controlv); return AY_EOMEM; }
+
+      memcpy(np2->controlv,
+	     &(np1->controlv[((np1->width-1)*np2->height)*stride]),
+	     np2->width*np2->height*stride*sizeof(double));
+
+      memcpy(np2->uknotv, &(np1->uknotv[np1->width-1]),
+	     (np2->width+np2->uorder)*sizeof(double));
+
+      free(np1->controlv);
+      np1->controlv = newcontrolv;
+      free(np1->uknotv);
+      np1->uknotv = newknotv;
+
+      ay_npt_recreatemp(np1);
+      ay_npt_recreatemp(np2);
+
+      np2->is_rat = np1->is_rat;
+
+      new->selected = AY_FALSE;
+      new->modified = AY_TRUE;
+      src->modified = AY_TRUE;
+
+      /* return result */
+      *result = new;
+
+    } /* if */
+
+ return AY_OK;
+} /* ay_npt_splitu */
+
+
+/* ay_npt_splitutcmd:
+ *
+ */
+int
+ay_npt_splitutcmd(ClientData clientData, Tcl_Interp *interp,
+		  int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ ay_list_object *sel = ay_selection;
+ ay_object *new = NULL;
+ double u = 0.0;
+ char fname[] = "splitNPU";
+
+  if(argc<2)
+    {
+      ay_error(AY_EARGS, fname, "u");
+      return TCL_OK;
+    }
+
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, fname, NULL);
+      return TCL_OK;
+    }
+
+  Tcl_GetDouble(interp, argv[1], &u);
+
+  while(sel)
+    {
+      if(sel->object)
+	{
+	  /* remove all selected points */
+	  if(sel->object->selp)
+	    {
+	      ay_selp_clear(sel->object);
+	    }
+
+	  if(sel->object->type == AY_IDNPATCH)
+	    {
+	      new = NULL;
+
+	      ay_status = ay_npt_splitu(sel->object, u, &new);
+
+	      if(ay_status)
+		{
+		  ay_error(ay_status, fname, NULL);
+		  return TCL_OK;
+		} /* if */
+
+	      ay_status = ay_object_link(new);
+
+	      sel->object->modified = AY_TRUE;
+
+	      /* re-create tesselation of original patch */
+	      ay_notify_force(sel->object);
+	    }
+	  else
+	    {
+	      ay_error(AY_EWTYPE, fname, ay_npt_npname);
+	      return TCL_OK;
+	    } /* if */
+	} /* if */
+      sel = sel->next;
+    } /* while */
+
+  ay_notify_parent();
+
+ return TCL_OK;
+} /* ay_npt_splitutcmd */
+
+
 /* templates */
 #if 0
 
