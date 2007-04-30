@@ -1049,6 +1049,9 @@ Tcl_AppInit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "splitNPU", ay_npt_splitutcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  Tcl_CreateCommand(interp, "splitNPV", ay_npt_splitvtcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
 /* inform Tcl-context about compile time configuration: */
 
 #ifndef AYWRAPPED

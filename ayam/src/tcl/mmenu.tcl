@@ -396,6 +396,10 @@ $m.npt add command -label "Split U" -command {
 runTool ay(splitu) {"Split at:"} "undo save SplitNPU; splitNPU %0; uCR; sL; rV"
 }
 
+$m.npt add command -label "Split V" -command {
+runTool ay(splitu) {"Split at:"} "undo save SplitNPV; splitNPV %0; uCR; sL; rV"
+}
+
 $m.npt add command -label "Rescale Knots to Range" -command {
     undo save RescaleKnots;
     runTool {ay(rmin) ay(rmax)} {"RangeMin:" "RangeMax:"}\
