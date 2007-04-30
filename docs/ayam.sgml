@@ -6553,6 +6553,24 @@ The knot types of the patch have to be <tt/"Custom"/!
 This tool does not change the geometry of the patches.
 </itemize>
 
+<sect1>The Patch Insert Knot Tool<label id="insknnpt">
+<p>
+<figure loc="ht">
+<eps file="pics/insknnp.ps" height="5cm">
+<img src="pics/insknnp.gif">
+<caption>Left: original patch, Right: a knot has been inserted 1 time at t=0.5</caption>
+</figure>
+<itemize>
+<item>Arguments: The insert knot tool takes a number of NURBS patches from
+the selection and requests two additional values, a parametric value t
+and an integer value i.
+<item>Operation: The specified knot (t) will be inserted i
+times into the knot vector of the selected patches, without changing the
+shape of the  patche(s).
+The knot type of the patch will be changed to custom.
+This tool does not change the geometry of the patches.
+</itemize>
+
 <sect1>The Split to Curves Tool<label id="sptct">
 <p>
 <itemize>
@@ -7280,6 +7298,36 @@ distance ensures that all knots (except for multiple knots) have a distance
 bigger than mindist afterwards. The knot types of the patch have to be
 <tt/"Custom"/!
 This operation does not change the shape of the patch.
+</itemize>
+
+<p><label id="scinsknnpu">
+insknNPU - insert knot into NURBS patch:
+<itemize>
+ <item>Synopsis: <tt/"insknNPU u r"/
+ <item>Description: Insert a new knot in u-direction at the position
+specified by u, r times. u must be in the valid range of the corresponding
+knot vector of the selected patches. The valid range is determined by
+the current knot vector U as follows: <tt/U[p] <= u <= U[n]/, where
+p is the degree (order-1) of the patch in u-direction and n is the
+width of the patch.
+The u knot type of the patches will always be changed to <tt/"Custom"/ but
+the shape of the patches will not change!
+See also section <ref id="insknnpt" name="The Patch Insert Knot Tool">.
+</itemize>
+
+<p><label id="scinsknnpv">
+insknNPV - insert knot into NURBS patch:
+<itemize>
+ <item>Synopsis: <tt/"insknNPV v r"/
+ <item>Description: Insert a new knot in v-direction at the position
+specified by v, r times. v must be in the valid range of the corresponding
+knot vector of the selected patches. The valid range is determined by
+the current knot vector V as follows: <tt/V[p] <= v <= V[n]/, where
+p is the degree (order-1) of the patch in v-direction and n is the
+height of the patch.
+The v knot type of the patches will always be changed to <tt/"Custom"/ but
+the shape of the patches will not change!
+See also section <ref id="insknnpt" name="The Patch Insert Knot Tool">.
 </itemize>
 
 <p><label id="scsplitnp">
@@ -9496,6 +9544,8 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>Insert: <ref id="mmfile" name="main menu entry">,
 <ref id="insdelac" name="insert points">
 <item>insKnNC: <ref id="scinsknnc" name="scripting interface command">
+<item>insKnNPU: <ref id="scinsknnpu" name="scripting interface command">
+<item>insKnNPV: <ref id="scinsknnpv" name="scripting interface command">
 <item>Insert Knot: <ref id="insknt" name="insert knot tool">
 <item>insertScene: <ref id="scinsertscene" name="scripting interface command">
 <item>Instance: <ref id="instanceobj" name ="object">
