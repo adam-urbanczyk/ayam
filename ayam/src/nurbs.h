@@ -512,6 +512,11 @@ int ay_npt_splitu(ay_object *src, double u, ay_object **result);
 int ay_npt_splitutcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
 
+int ay_npt_splitv(ay_object *src, double v, ay_object **result);
+
+int ay_npt_splitvtcmd(ClientData clientData, Tcl_Interp *interp,
+		      int argc, char *argv[]);
+
 
 /* pmt.c */
 int ay_pmt_tonpatch(ay_pamesh_object *pamesh, ay_object **result);

@@ -7630,7 +7630,7 @@ ay_npt_splitu(ay_object *src, double u, ay_object **result)
       stride = 4;
       knots = patch->uknotv;
 
-      if((u <= knots[0/*patch->order-2*/]) || (u >= knots[patch->width]))
+      if((u <= knots[0/*patch->uorder...?*/]) || (u >= knots[patch->width]))
 	{
 	  ay_error(AY_ERROR, fname, "Parameter u out of range!");
 	  return AY_ERROR;
@@ -7668,7 +7668,7 @@ ay_npt_splitu(ay_object *src, double u, ay_object **result)
 	} /* if */
 
       patch->uknot_type = AY_KTCUSTOM;
-      /* create two new patchs */
+      /* create two new patches */
       np1 = patch;
       /*np1->type = AY_CTOPEN;*/
       ay_status = ay_object_copy(src, &new);
@@ -7751,7 +7751,7 @@ ay_npt_splitutcmd(ClientData clientData, Tcl_Interp *interp,
  double u = 0.0;
  char fname[] = "splitNPU";
 
-  if(argc<2)
+  if(argc < 2)
     {
       ay_error(AY_EARGS, fname, "u");
       return TCL_OK;
@@ -7807,6 +7807,238 @@ ay_npt_splitutcmd(ClientData clientData, Tcl_Interp *interp,
 
  return TCL_OK;
 } /* ay_npt_splitutcmd */
+
+
+/* ay_npt_splitv:
+ *  split NURBPatch object <src> at parametric value <v> into two;
+ *  modifies <src>, returns second patch in <result>.
+ */
+int
+ay_npt_splitv(ay_object *src, double v, ay_object **result)
+{
+ int ay_status = AY_OK;
+ ay_object *new = NULL;
+ ay_nurbpatch_object *patch = NULL;
+ ay_nurbpatch_object *np1 = NULL, *np2 = NULL;
+ double *knots = NULL, *newcontrolv = NULL, *newknotv = NULL;
+ int stride = 4, k = 0, r = 0, s = 0, np1len = 0;
+ int i, a, b, oldnp1height;
+ char fname[] = "npt_splitv";
+
+
+  if(!src || !result)
+    return AY_ENULL;
+
+  if(src->type != AY_IDNPATCH)
+    {
+      ay_error(AY_EWTYPE, fname, ay_npt_npname);
+      return AY_ERROR;
+    }
+  else
+    {
+      patch = (ay_nurbpatch_object*)src->refine;
+      stride = 4;
+      knots = patch->vknotv;
+
+      if((v <= knots[0/*patch->vorder...?*/]) || (v >= knots[patch->height]))
+	{
+	  ay_error(AY_ERROR, fname, "Parameter v out of range!");
+	  return AY_ERROR;
+	}
+
+      k = 0;
+
+      k = ay_nb_FindSpanMult(patch->height-1, patch->vorder-1, v,
+			     knots, &s);
+
+      r = patch->vorder-1-s;
+
+      patch->height += r;
+
+      if(r != 0)
+	{
+	  newcontrolv = NULL;
+	  if(!(newcontrolv = calloc(patch->width*patch->height*stride,
+				    sizeof(double))))
+	    { return AY_EOMEM; }
+	  newknotv = NULL;
+	  if(!(newknotv = calloc(patch->height+patch->vorder, sizeof(double))))
+	    { free(newcontrolv); return AY_EOMEM; }
+
+	  ay_status = ay_nb_InsertKnotSurfV(stride,
+					    patch->width-1, patch->height-r-1,
+		        patch->vorder-1, patch->vknotv, patch->controlv, v, k,
+		        s, r, newknotv, newcontrolv);
+
+	  free(patch->controlv);
+	  patch->controlv = newcontrolv;
+
+	  free(patch->vknotv);
+	  patch->vknotv = newknotv;
+	} /* if */
+
+      patch->vknot_type = AY_KTCUSTOM;
+      /* create two new patches */
+      np1 = patch;
+      /*np1->type = AY_CTOPEN;*/
+      ay_status = ay_object_copy(src, &new);
+
+      if(r != 0)
+	np1len = k - (np1->vorder-1) + 1 + (patch->vorder-1-s+r-1)/2 + 1;
+      else
+	np1len = k - (np1->vorder-1) + 1;
+
+      np2 = (ay_nurbpatch_object*)new->refine;
+      np2->height = (np1->height+1) - np1len;
+      oldnp1height = np1->height;
+      np1->height = np1len;
+
+      newcontrolv = NULL;
+      if(!(newcontrolv = calloc(np1->width*np1->height*stride,
+				sizeof(double))))
+	{ ay_object_delete(new); return AY_EOMEM; }
+      newknotv = NULL;
+      if(!(newknotv = calloc(np1->height+np1->vorder, sizeof(double))))
+	{ ay_object_delete(new); free(newcontrolv); return AY_EOMEM; }
+
+      /*XXXX*/
+      a = 0;
+      b = 0;
+      for(i = 0; i < np1->width; i++)
+	{
+	  memcpy(&(newcontrolv[a]), &(np1->controlv[b]),
+		 np1->height*stride*sizeof(double));
+	  a += (np1->height*stride);
+	  b += (oldnp1height*stride);
+	}
+      /*
+      memcpy(newcontrolv, np1->controlv,
+	     np1->width*np1->height*stride*sizeof(double));
+      */
+      memcpy(newknotv, np1->vknotv, (np1->height+np1->vorder)*sizeof(double));
+
+      free(np2->controlv);
+      np2->controlv = NULL;
+      free(np2->vknotv);
+      np2->vknotv = NULL;
+
+      if(!(np2->controlv = calloc(np2->width*np2->height*stride,
+				  sizeof(double))))
+	{ ay_object_delete(new); return AY_EOMEM; }
+
+      if(!(np2->vknotv = calloc(np2->height+np2->vorder, sizeof(double))))
+	{ ay_object_delete(new); free(np2->controlv); return AY_EOMEM; }
+
+      /*XXXX*/
+      a = 0;
+      b = (np1->height-1)*stride;
+      for(i = 0; i < np2->width; i++)
+	{
+	  memcpy(&(np2->controlv[a]), &(np1->controlv[b]),
+		 np1->height*stride*sizeof(double));
+	  a += (np2->height*stride);
+	  b += (oldnp1height*stride);
+	}
+      /*
+      memcpy(np2->controlv,
+	     &(np1->controlv[((np1->width-1)*np2->height)*stride]),
+	     np2->width*np2->height*stride*sizeof(double));
+      */
+      memcpy(np2->vknotv, &(np1->vknotv[np1->height-1]),
+	     (np2->height+np2->vorder)*sizeof(double));
+
+      free(np1->controlv);
+      np1->controlv = newcontrolv;
+      free(np1->vknotv);
+      np1->vknotv = newknotv;
+
+      ay_npt_recreatemp(np1);
+      ay_npt_recreatemp(np2);
+
+      np2->is_rat = np1->is_rat;
+
+      new->selected = AY_FALSE;
+      new->modified = AY_TRUE;
+      src->modified = AY_TRUE;
+
+      /* return result */
+      *result = new;
+
+    } /* if */
+
+ return AY_OK;
+} /* ay_npt_splitv */
+
+
+/* ay_npt_splitvtcmd:
+ *
+ */
+int
+ay_npt_splitvtcmd(ClientData clientData, Tcl_Interp *interp,
+		  int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ ay_list_object *sel = ay_selection;
+ ay_object *new = NULL;
+ double v = 0.0;
+ char fname[] = "splitNPV";
+
+  if(argc < 2)
+    {
+      ay_error(AY_EARGS, fname, "v");
+      return TCL_OK;
+    }
+
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, fname, NULL);
+      return TCL_OK;
+    }
+
+  Tcl_GetDouble(interp, argv[1], &v);
+
+  while(sel)
+    {
+      if(sel->object)
+	{
+	  /* remove all selected points */
+	  if(sel->object->selp)
+	    {
+	      ay_selp_clear(sel->object);
+	    }
+
+	  if(sel->object->type == AY_IDNPATCH)
+	    {
+	      new = NULL;
+
+	      ay_status = ay_npt_splitv(sel->object, v, &new);
+
+	      if(ay_status)
+		{
+		  ay_error(ay_status, fname, NULL);
+		  return TCL_OK;
+		} /* if */
+
+	      ay_status = ay_object_link(new);
+
+	      sel->object->modified = AY_TRUE;
+
+	      /* re-create tesselation of original patch */
+	      ay_notify_force(sel->object);
+	    }
+	  else
+	    {
+	      ay_error(AY_EWTYPE, fname, ay_npt_npname);
+	      return TCL_OK;
+	    } /* if */
+	} /* if */
+      sel = sel->next;
+    } /* while */
+
+  ay_notify_parent();
+
+ return TCL_OK;
+} /* ay_npt_splitvtcmd */
 
 
 /* templates */
