@@ -7430,6 +7430,12 @@ ay_npt_insertknutcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
+	  /* remove all selected points */
+	  if(sel->object->selp)
+	    {
+	      ay_selp_clear(sel->object);
+	    }
+
 	  patch = (ay_nurbpatch_object*)src->refine;
 	  knots = patch->uknotv;
 
@@ -7533,6 +7539,12 @@ ay_npt_insertknvtcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
+	  /* remove all selected points */
+	  if(sel->object->selp)
+	    {
+	      ay_selp_clear(sel->object);
+	    }
+
 	  patch = (ay_nurbpatch_object*)src->refine;
 	  knots = patch->vknotv;
 
@@ -7656,7 +7668,7 @@ ay_npt_splitu(ay_object *src, double u, ay_object **result)
 	    { free(newcontrolv); return AY_EOMEM; }
 
 	  ay_status = ay_nb_InsertKnotSurfU(stride,
-					    patch->width-r-1, patch->height-1,
+			patch->width-r-1, patch->height-1,
 		        patch->uorder-1, patch->uknotv, patch->controlv, u, k,
 		        s, r, newknotv, newcontrolv);
 
@@ -7668,6 +7680,7 @@ ay_npt_splitu(ay_object *src, double u, ay_object **result)
 	} /* if */
 
       patch->uknot_type = AY_KTCUSTOM;
+
       /* create two new patches */
       np1 = patch;
       /*np1->type = AY_CTOPEN;*/
@@ -7866,7 +7879,7 @@ ay_npt_splitv(ay_object *src, double v, ay_object **result)
 	    { free(newcontrolv); return AY_EOMEM; }
 
 	  ay_status = ay_nb_InsertKnotSurfV(stride,
-					    patch->width-1, patch->height-r-1,
+			patch->width-1, patch->height-r-1,
 		        patch->vorder-1, patch->vknotv, patch->controlv, v, k,
 		        s, r, newknotv, newcontrolv);
 
@@ -7878,6 +7891,7 @@ ay_npt_splitv(ay_object *src, double v, ay_object **result)
 	} /* if */
 
       patch->vknot_type = AY_KTCUSTOM;
+
       /* create two new patches */
       np1 = patch;
       /*np1->type = AY_CTOPEN;*/
@@ -7901,7 +7915,6 @@ ay_npt_splitv(ay_object *src, double v, ay_object **result)
       if(!(newknotv = calloc(np1->height+np1->vorder, sizeof(double))))
 	{ ay_object_delete(new); free(newcontrolv); return AY_EOMEM; }
 
-      /*XXXX*/
       a = 0;
       b = 0;
       for(i = 0; i < np1->width; i++)
@@ -7911,10 +7924,7 @@ ay_npt_splitv(ay_object *src, double v, ay_object **result)
 	  a += (np1->height*stride);
 	  b += (oldnp1height*stride);
 	}
-      /*
-      memcpy(newcontrolv, np1->controlv,
-	     np1->width*np1->height*stride*sizeof(double));
-      */
+
       memcpy(newknotv, np1->vknotv, (np1->height+np1->vorder)*sizeof(double));
 
       free(np2->controlv);
@@ -7929,7 +7939,6 @@ ay_npt_splitv(ay_object *src, double v, ay_object **result)
       if(!(np2->vknotv = calloc(np2->height+np2->vorder, sizeof(double))))
 	{ ay_object_delete(new); free(np2->controlv); return AY_EOMEM; }
 
-      /*XXXX*/
       a = 0;
       b = (np1->height-1)*stride;
       for(i = 0; i < np2->width; i++)
@@ -7939,11 +7948,7 @@ ay_npt_splitv(ay_object *src, double v, ay_object **result)
 	  a += (np2->height*stride);
 	  b += (oldnp1height*stride);
 	}
-      /*
-      memcpy(np2->controlv,
-	     &(np1->controlv[((np1->width-1)*np2->height)*stride]),
-	     np2->width*np2->height*stride*sizeof(double));
-      */
+
       memcpy(np2->vknotv, &(np1->vknotv[np1->height-1]),
 	     (np2->height+np2->vorder)*sizeof(double));
 
