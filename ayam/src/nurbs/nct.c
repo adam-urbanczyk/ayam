@@ -1365,6 +1365,12 @@ ay_nct_insertkntcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
+	  /* remove all selected points */
+	  if(sel->object->selp)
+	    {
+	      ay_selp_clear(sel->object);
+	    }
+
 	  curve = (ay_nurbcurve_object*)src->refine;
 	  knots = curve->knotv;
 
