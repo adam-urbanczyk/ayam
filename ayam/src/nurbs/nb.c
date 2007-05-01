@@ -3365,7 +3365,7 @@ ay_nb_InsertKnotSurfU(int stride, int w, int h, int p, double *UP, double *Pw,
  int ai, i1, i2;
  double *alpha = NULL, *Rw = NULL;
 
-  if(!(alpha = calloc((r+1)*(p-s), sizeof(double))))
+  if(!(alpha = calloc((r+1)*(p-s+1), sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
 
   if(!(Rw = calloc((p-s+1)*stride, sizeof(double))))
@@ -3482,7 +3482,7 @@ ay_nb_InsertKnotSurfV(int stride, int w, int h, int q, double *VP, double *Pw,
  int ai, i1, i2;
  double *alpha = NULL, *Rw = NULL;
 
-  if(!(alpha = calloc((r+1)*(q-s), sizeof(double))))
+  if(!(alpha = calloc((r+1)*(q-s+1), sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
 
   if(!(Rw = calloc((q-s+1)*stride, sizeof(double))))
