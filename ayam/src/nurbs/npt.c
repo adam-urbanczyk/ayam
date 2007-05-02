@@ -7119,8 +7119,11 @@ ay_npt_clamputcmd(ClientData clientData, Tcl_Interp *interp,
 
       if(sel->object->type == AY_IDNPATCH)
 	{
+	  /* remove all selected points */
 	  if(sel->object->selp)
-	    ay_selp_clear(sel->object);
+	    {
+	      ay_selp_clear(sel->object);
+	    }
 
 	  np = (ay_nurbpatch_object *)sel->object->refine;
 
@@ -7205,8 +7208,11 @@ ay_npt_clampvtcmd(ClientData clientData, Tcl_Interp *interp,
 
       if(sel->object->type == AY_IDNPATCH)
 	{
+	  /* remove all selected points */
 	  if(sel->object->selp)
-	    ay_selp_clear(sel->object);
+	    {
+	      ay_selp_clear(sel->object);
+	    }
 
 	  np = (ay_nurbpatch_object *)sel->object->refine;
 
@@ -7782,14 +7788,14 @@ ay_npt_splitutcmd(ClientData clientData, Tcl_Interp *interp,
     {
       if(sel->object)
 	{
-	  /* remove all selected points */
-	  if(sel->object->selp)
-	    {
-	      ay_selp_clear(sel->object);
-	    }
-
 	  if(sel->object->type == AY_IDNPATCH)
 	    {
+	      /* remove all selected points */
+	      if(sel->object->selp)
+		{
+		  ay_selp_clear(sel->object);
+		}
+
 	      new = NULL;
 
 	      ay_status = ay_npt_splitu(sel->object, u, &new);
@@ -8006,14 +8012,14 @@ ay_npt_splitvtcmd(ClientData clientData, Tcl_Interp *interp,
     {
       if(sel->object)
 	{
-	  /* remove all selected points */
-	  if(sel->object->selp)
-	    {
-	      ay_selp_clear(sel->object);
-	    }
-
 	  if(sel->object->type == AY_IDNPATCH)
 	    {
+	      /* remove all selected points */
+	      if(sel->object->selp)
+		{
+		  ay_selp_clear(sel->object);
+		}
+
 	      new = NULL;
 
 	      ay_status = ay_npt_splitv(sel->object, v, &new);
@@ -8104,8 +8110,13 @@ ay_npt_xxxxtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  /* do magic */
 
+	  /* clean up */
+	  ay_status = ay_npt_recreatemp(patch);
+	  ay_status = ay_object_ccp(o);
+	  ay_status = ay_selp_clear(o);
 	  o->modified = AY_TRUE;
 	} /* if */
+
       sel = sel->next;
     } /* while */
 
