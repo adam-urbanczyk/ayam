@@ -5032,7 +5032,7 @@ ay_nct_coarsentcmd(ClientData clientData, Tcl_Interp *interp,
  int ay_status = AY_OK;
  char fname[] = "coarsenNC";
  ay_list_object *sel = ay_selection;
- ay_object *c = NULL;
+ ay_object *o = NULL;
 
   if(!sel)
     {
@@ -5042,20 +5042,22 @@ ay_nct_coarsentcmd(ClientData clientData, Tcl_Interp *interp,
 
   while(sel)
     {
-      c = sel->object;
-      if(c->type != AY_IDNCURVE)
+      o = sel->object;
+      if(o->type != AY_IDNCURVE)
 	{
 	  ay_error(AY_EWTYPE, fname, ay_nct_ncname);
 	}
       else
 	{
-	  ay_status = ay_nct_coarsen((ay_nurbcurve_object*)c->refine);
+	  ay_status = ay_nct_coarsen((ay_nurbcurve_object*)o->refine);
 	  if(ay_status)
 	    {
 	      ay_error(ay_status, fname, "Could not coarsen object!");
+	      break;
 	    }
 
-	  c->modified = AY_TRUE;
+	  ay_status = ay_object_ccp(o);
+	  o->modified = AY_TRUE;
 
 	  /* re-create tesselation of curve */
 	  ay_notify_force(sel->object);
@@ -5160,7 +5162,7 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
 	  newknotv = NULL;
 
 	  ay_status = ay_nct_recreatemp(curve);
-
+	  ay_status = ay_object_ccp(o);
 	  o->modified = AY_TRUE;
 
 	  /* re-create tesselation of curve */
@@ -5246,8 +5248,11 @@ ay_nct_xxxxtcmd(ClientData clientData, Tcl_Interp *interp,
 	  curve = (ay_nurbcurve_object *)o->refine;
 
 	  /* do magic */
-	  ay_status = ay_nct_recreatemp(curve);
 
+	  /* clean up */
+	  ay_status = ay_nct_recreatemp(curve);
+	  ay_status = ay_object_ccp(o);
+	  ay_status = ay_selp_clear(o);
 	  o->modified = AY_TRUE;
 	} /* if */
 
