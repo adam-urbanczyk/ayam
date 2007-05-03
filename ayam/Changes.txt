@@ -1,4 +1,4 @@
-[25. Apr 2007] CVS-Head:
+[3. May 2007] CVS-Head:
 =======================
 o Bug Fixes:
   - crash after deleting of objects (SF 1637735)
@@ -55,6 +55,13 @@ o added clamping of NURBS patches (new scripting interface commands "clampNPU"
 o added "rescaleKnNP" command to rescale the knot vectors of NURBS patches
   and main menu entries "Tools/NURBPatch/Rescale Knots to Range" as well as
   "Tools/NURBPatch/Rescale Knots to Mindist"
+o added "insknNPU"/"insknNPV" commands and tools (new main menu entries
+  "Tools/NURBPatch/Insert Knot U" and "Tools/NURBPatch/Insert Knot V")
+  to insert knots into NURBS patch knot vectors
+o added "splitNPU"/"splitNPV" commands and tools (new main menu entries
+  "Tools/NURBPatch/Split U" and "Tools/NURBPatch/Split V") to split
+  NURBS patches at defined parametric values
+
 
 Drawing/Shading:
 o added antialiasing drawing option for lines
