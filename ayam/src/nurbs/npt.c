@@ -21,7 +21,7 @@ char ay_npt_npname[] = "NPatch";
 /* functions */
 
 /* ay_npt_create:
- *   create a NURBS patch
+ *   create a NURBS patch object
  */
 int
 ay_npt_create(int uorder, int vorder, int width, int height,
@@ -119,7 +119,7 @@ ay_npt_destroy(ay_nurbpatch_object *patch)
 
 /* ay_npt_createnpatchobject:
  *   properly create and set up an ay_object structure to be used
- *   as NURBS patch object
+ *   with a NURBS patch object
  */
 int
 ay_npt_createnpatchobject(ay_object **result)
@@ -454,7 +454,7 @@ ay_npt_swaparray(double **controlvptr, int stride,
 
 
 /* ay_npt_swapuv:
- *
+ *  swap u and v dimensions of the NURBS patch <np>
  */
 int
 ay_npt_swapuv(ay_nurbpatch_object *np)
@@ -491,7 +491,7 @@ ay_npt_swapuv(ay_nurbpatch_object *np)
 
 
 /* ay_npt_revertu:
- *
+ *  revert control vector of NURBS patch <np> in u dimension
  */
 int
 ay_npt_revertu(ay_nurbpatch_object *np)
@@ -520,7 +520,7 @@ ay_npt_revertu(ay_nurbpatch_object *np)
 
 
 /* ay_npt_revertutcmd:
- *
+ *  Tcl interface for revertu() above
  */
 int
 ay_npt_revertutcmd(ClientData clientData, Tcl_Interp *interp,
@@ -588,7 +588,7 @@ ay_npt_revertutcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_npt_revertv:
- *
+ *  revert control vector of NURBS patch <np> in v dimension
  */
 int
 ay_npt_revertv(ay_nurbpatch_object *np)
@@ -619,7 +619,7 @@ ay_npt_revertv(ay_nurbpatch_object *np)
 
 
 /* ay_npt_revertvtcmd:
- *
+ *  Tcl interface for revertv() above
  */
 int
 ay_npt_revertvtcmd(ClientData clientData, Tcl_Interp *interp,
@@ -687,7 +687,7 @@ ay_npt_revertvtcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_npt_drawtrimcurve:
- *
+ *  draw trimcurves with GLU
  */
 int
 ay_npt_drawtrimcurve(struct Togl *togl, ay_object *o, GLUnurbsObj *no)
@@ -774,7 +774,7 @@ ay_npt_drawtrimcurve(struct Togl *togl, ay_object *o, GLUnurbsObj *no)
 
 
 /* ay_npt_wribtrimcurves
- *
+ *  export trim curves to RIB
  */
 int
 ay_npt_wribtrimcurves(ay_object *o)
@@ -5015,11 +5015,18 @@ ay_npt_elevateutcmd(ClientData clientData, Tcl_Interp *interp,
       if(sel->object->type == AY_IDNPATCH)
 	{
 	  if(sel->object->selp)
-	    ay_selp_clear(sel->object);
-
+	    {
+	      ay_selp_clear(sel->object);
+	    }
 	  patch = (ay_nurbpatch_object *)sel->object->refine;
 	  ay_status = ay_npt_elevateu(patch, t);
 	  sel->object->modified = AY_TRUE;
+
+	  /* update pointers to controlv */
+	  ay_object_ccp(sel->object);
+
+	  /* re-create tesselation of patch */
+	  ay_notify_force(sel->object);
 	}
       else
 	{
@@ -5176,11 +5183,19 @@ ay_npt_elevatevtcmd(ClientData clientData, Tcl_Interp *interp,
       if(sel->object->type == AY_IDNPATCH)
 	{
 	  if(sel->object->selp)
-	    ay_selp_clear(sel->object);
+	    {
+	      ay_selp_clear(sel->object);
+	    }
 
 	  patch = (ay_nurbpatch_object *)sel->object->refine;
 	  ay_status = ay_npt_elevatev(patch, t);
 	  sel->object->modified = AY_TRUE;
+
+	  /* update pointers to controlv */
+	  ay_object_ccp(sel->object);
+
+	  /* re-create tesselation of patch */
+	  ay_notify_force(sel->object);
 	}
       else
 	{
@@ -6367,6 +6382,12 @@ ay_npt_closeutcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_status = ay_npt_recreatemp(np);
 
 	  sel->object->modified = AY_TRUE;
+
+	  /* update pointers to controlv */
+	  ay_object_ccp(sel->object);
+
+	  /* re-create tesselation of patch */
+	  ay_notify_force(sel->object);
 	  break;
 	default:
 	  ay_error(AY_EWTYPE, fname, ay_npt_npname);
@@ -6482,6 +6503,12 @@ ay_npt_closevtcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_status = ay_npt_recreatemp(np);
 
 	  sel->object->modified = AY_TRUE;
+
+	  /* update pointers to controlv */
+	  ay_object_ccp(sel->object);
+
+	  /* re-create tesselation of patch */
+	  ay_notify_force(sel->object);
 	  break;
 	default:
 	  ay_error(AY_EWTYPE, fname, ay_npt_npname);
@@ -7172,6 +7199,12 @@ ay_npt_clamputcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_status = ay_npt_recreatemp(np);
 
 	  sel->object->modified = AY_TRUE;
+
+	  /* update pointers to controlv */
+	  ay_object_ccp(sel->object);
+
+	  /* re-create tesselation of patch */
+	  ay_notify_force(sel->object);
 	}
       else
 	{
@@ -7261,6 +7294,12 @@ ay_npt_clampvtcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_status = ay_npt_recreatemp(np);
 
 	  sel->object->modified = AY_TRUE;
+
+	  /* update pointers to controlv */
+	  ay_object_ccp(sel->object);
+
+	  /* re-create tesselation of patch */
+	  ay_notify_force(sel->object);
 	}
       else
 	{
@@ -7496,6 +7535,9 @@ ay_npt_insertknutcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  src->modified = AY_TRUE;
 
+	  /* update pointers to controlv */
+	  ay_object_ccp(sel->object);
+
 	  /* re-create tesselation of patch */
 	  ay_notify_force(sel->object);
 	} /* if */
@@ -7604,6 +7646,9 @@ ay_npt_insertknvtcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_npt_recreatemp(patch);
 
 	  src->modified = AY_TRUE;
+
+	  /* update pointers to controlv */
+	  ay_object_ccp(sel->object);
 
 	  /* re-create tesselation of patch */
 	  ay_notify_force(sel->object);
@@ -7809,6 +7854,9 @@ ay_npt_splitutcmd(ClientData clientData, Tcl_Interp *interp,
 	      ay_status = ay_object_link(new);
 
 	      sel->object->modified = AY_TRUE;
+
+	      /* update pointers to controlv */
+	      ay_object_ccp(sel->object);
 
 	      /* re-create tesselation of original patch */
 	      ay_notify_force(sel->object);
@@ -8034,6 +8082,9 @@ ay_npt_splitvtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	      sel->object->modified = AY_TRUE;
 
+	      /* update pointers to controlv */
+	      ay_object_ccp(sel->object);
+
 	      /* re-create tesselation of original patch */
 	      ay_notify_force(sel->object);
 	    }
@@ -8050,6 +8101,196 @@ ay_npt_splitvtcmd(ClientData clientData, Tcl_Interp *interp,
 
  return TCL_OK;
 } /* ay_npt_splitvtcmd */
+
+
+/* ay_npt_extractnp:
+ *  extract subpatch from patch <src>, returns patch in <result>.
+ */
+int
+ay_npt_extractnp(ay_object *src, double umin, double umax,
+		 double vmin, double vmax, ay_object **result)
+{
+ int ay_status = AY_OK;
+ ay_object *copy = NULL, *new = NULL;
+ ay_object *np1 = NULL, *np2 = NULL;
+ ay_nurbpatch_object *patch = NULL;
+ char fname[] = "npt_extractnp", split_errmsg[] = "Split failed!";
+
+  if(!src || !result)
+    return AY_ENULL;
+
+  if(src->type != AY_IDNPATCH)
+    {
+      ay_error(AY_EWTYPE, fname, ay_npt_npname);
+      return AY_ERROR;
+    }
+  else
+    {
+      ay_object_copy(src, &copy);
+      patch = (ay_nurbpatch_object*)copy->refine;
+
+      /* check parameters */
+      if((umin < patch->uknotv[0/*patch->uorder...?*/]) ||
+	 (umax > patch->uknotv[patch->width]))
+	{
+	  ay_error(AY_ERROR, fname, "Parameters umin/umax out of range!");
+	  return AY_ERROR;
+	}
+      if((vmin < patch->vknotv[0/*patch->vorder...?*/]) ||
+	 (vmax > patch->vknotv[patch->height]))
+	{
+	  ay_error(AY_ERROR, fname, "Parameters vmin/vmax out of range!");
+	  return AY_ERROR;
+	}
+
+      /* split off areas outside umin/umax/vmin/vmax */
+      /* note that this approach supports e.g. umin to be exactly uknotv[0]
+	 and in this case does not execute the (unneeded) split */
+      if(umin > patch->uknotv[0/*patch->uorder...?*/])
+	{
+	  ay_status = ay_npt_splitu(copy, umin, &np1);
+	  if(ay_status)
+	    {
+	      ay_error(AY_ERROR, fname, split_errmsg);
+	      return AY_ERROR;
+	    }
+	  /* np1 is the sub surface we want */
+	  if(np1)
+	    {
+	      np2 = copy;
+	      copy = np1;
+	      ay_object_delete(np2);
+	      np1 = NULL;
+	      patch = (ay_nurbpatch_object*)copy->refine;
+	    }
+	}
+      if(umax < patch->uknotv[patch->width])
+	{
+	  ay_status = ay_npt_splitu(copy, umax, &np1);
+	  if(ay_status)
+	    {
+	      ay_error(AY_ERROR, fname, split_errmsg);
+	      return AY_ERROR;
+	    }
+	  /* copy is the sub surface we want */
+	  if(np1)
+	    {
+	      ay_object_delete(np1);
+	      np1 = NULL;
+	    }
+	}
+      if(vmin > patch->vknotv[0/*patch->vorder...?*/])
+	{
+	  ay_status = ay_npt_splitv(copy, vmin, &np1);
+	  if(ay_status)
+	    {
+	      ay_error(AY_ERROR, fname, split_errmsg);
+	      return AY_ERROR;
+	    }
+	  /* np1 is the sub surface we want */
+	  if(np1)
+	    {
+	      np2 = copy;
+	      copy = np1;
+	      ay_object_delete(np2);
+	      np1 = NULL;
+	      patch = (ay_nurbpatch_object*)copy->refine;
+	    }
+	}
+      if(vmax < patch->vknotv[patch->height])
+	{
+	  ay_status = ay_npt_splitv(copy, vmax, &np1);
+	  if(ay_status)
+	    {
+	      ay_error(AY_ERROR, fname, split_errmsg);
+	      return AY_ERROR;
+	    }
+	  /* copy is the sub surface we want */
+	  if(np1)
+	    {
+	      ay_object_delete(np1);
+	      np1 = NULL;
+	    }
+	}
+
+      /* return result */
+      ay_status = ay_npt_createnpatchobject(&new);
+      if(ay_status)
+	{
+	  ay_error(AY_ERROR, fname, "Error creating object.");
+	  return AY_ERROR;
+	}
+      new->refine = patch;
+      *result = new;
+    } /* if */
+
+ return AY_OK;
+} /* ay_npt_extractnp */
+
+
+/* ay_npt_extractnptcmd:
+ *
+ */
+int
+ay_npt_extractnptcmd(ClientData clientData, Tcl_Interp *interp,
+		     int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ ay_list_object *sel = ay_selection;
+ ay_object *new = NULL;
+ double umin = 0.0, umax = 0.0, vmin = 0.0, vmax = 0.0;
+ char fname[] = "extrNP";
+
+  if(argc < 5)
+    {
+      ay_error(AY_EARGS, fname, "umin umax vmin vmax");
+      return TCL_OK;
+    }
+
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, fname, NULL);
+      return TCL_OK;
+    }
+
+  Tcl_GetDouble(interp, argv[1], &umin);
+  Tcl_GetDouble(interp, argv[2], &umax);
+  Tcl_GetDouble(interp, argv[3], &vmin);
+  Tcl_GetDouble(interp, argv[4], &vmax);
+
+  while(sel)
+    {
+      if(sel->object)
+	{
+	  if(sel->object->type == AY_IDNPATCH)
+	    {
+	      new = NULL;
+
+	      ay_status = ay_npt_extractnp(sel->object, umin, umax, vmin, vmax,
+					   &new);
+
+	      if(ay_status)
+		{
+		  ay_error(ay_status, fname, NULL);
+		  return TCL_OK;
+		} /* if */
+
+	      ay_status = ay_object_link(new);
+	    }
+	  else
+	    {
+	      ay_error(AY_EWTYPE, fname, ay_npt_npname);
+	      return TCL_OK;
+	    } /* if */
+	} /* if */
+      sel = sel->next;
+    } /* while */
+
+  ay_notify_parent();
+
+ return TCL_OK;
+} /* ay_npt_extractnptcmd */
+
 
 
 /* templates */
@@ -8111,7 +8352,10 @@ ay_npt_xxxxtcmd(ClientData clientData, Tcl_Interp *interp,
 	  /* do magic */
 
 	  /* clean up */
+	  /* re-create multiple points */
 	  ay_status = ay_npt_recreatemp(patch);
+
+	  /* update pointers to controlv */
 	  ay_status = ay_object_ccp(o);
 	  ay_status = ay_selp_clear(o);
 	  o->modified = AY_TRUE;
