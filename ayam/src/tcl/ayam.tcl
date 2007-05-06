@@ -518,6 +518,10 @@ array set ay {
  rmin 0.0
  rmax 1.0
  mindist 1.0e-04
+ extrnpumin 0.0
+ extrnpumax 1.0
+ extrnpvmin 0.0
+ extrnpvmax 1.0
  ts 0
  ul ""
  TreeUpdateSema 0

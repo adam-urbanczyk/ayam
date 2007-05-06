@@ -400,6 +400,11 @@ $m.npt add command -label "Split V" -command {
 runTool ay(splitu) {"Split at:"} "undo save SplitNPV; splitNPV %0; uCR; sL; rV"
 }
 
+$m.npt add command -label "Extract Patch" -command {
+    runTool [list ay(extrnpumin) ay(extrnpumax) ay(extrnpvmin) ay(extrnpvmax)]\
+	    [list "UMin:" "UMax:" "VMin:" "VMax:"]\
+	    "undo save extrNP; extrNP %0 %1 %2 %3; uCR; sL; rV" }
+
 $m.npt add command -label "Rescale Knots to Range" -command {
     undo save RescaleKnots;
     runTool {ay(rmin) ay(rmax)} {"RangeMin:" "RangeMax:"}\
