@@ -6593,6 +6593,16 @@ modified and a new patch will be created.
 The point selection will be removed from the original object.
 </itemize>
 
+<sect1>The Extract Patch Tool<label id="extrnpt">
+<p>
+<itemize>
+<item>Arguments: The extract patch tool takes a number of NURBS patches from
+the selection and requests four parametric values: umin, umax, vmin, and vmax.
+<item>Operation: Sub-patches will be extracted from the selected NURBS patch
+objects, defined by the specified parametric values, and new NURBPatch objects
+will be created. The original selected NURBPatch objects will not be changed.
+</itemize>
+
 <sect1>The Split to Curves Tool<label id="sptct">
 <p>
 <itemize>
@@ -7350,6 +7360,34 @@ height of the patch.
 The v knot type of the patches will always be changed to <tt/"Custom"/ but
 the shape of the patches will not change!
 See also section <ref id="insknnpt" name="The Patch Insert Knot Tool">.
+</itemize>
+
+<p><label id="scsplitnpu">
+splitNPU - split NURBS patch:
+<itemize>
+ <item>Synopsis: <tt/"splitNPU u"/
+ <item>Description: Splits the selected NURBPatch objects into two patches
+at parametric value u.
+See also section <ref id="splitnpt" name="The Patch Split Tool">.
+</itemize>
+
+<p><label id="scsplitnpv">
+splitNPV - split NURBS patch:
+<itemize>
+ <item>Synopsis: <tt/"splitNPV v"/
+ <item>Description: Splits the selected NURBPatch objects into two patches
+at parametric value v.
+See also section <ref id="splitnpt" name="The Patch Split Tool">.
+</itemize>
+
+<p><label id="scextrnp">
+extrNP - extract NURBS patch:
+<itemize>
+ <item>Synopsis: <tt/"extrNP umin umax vmin vmax"/
+ <item>Description: Extracts a sub-patch from the selected NURBPatch
+objects. The sub-patch is specified by the parametric values umin, umax,
+vmin, and vmax which have to be in the respective valid knot range.
+See also section <ref id="extrnpt" name="The Extract Patch Tool">.
 </itemize>
 
 <p><label id="scsplitnp">
@@ -9474,6 +9512,8 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>Exterior: <ref id="matshader" name="shader">
 <item>ExtrNC: <ref id="extrncobj" name="ExtrNC object">,
 <ref id="extnct" name="Extract NC tool">
+<item>extrNP: <ref id="scextrnp" name="scripting interface command">,
+<ref id="extrnpt" name="extract patch tool">
 <item>Extrude: <ref id="extrudeobj" name="object">,
 <ref id="extt" name="Extrude tool">
 </itemize>
