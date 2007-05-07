@@ -932,6 +932,12 @@ ay_pomesht_optimizetcmd(ClientData clientData, Tcl_Interp * interp,
 	    { /* emit error message */
 	      ay_error(AY_ERROR, fname, "Optimize operation failed!");
 	    }
+	  else
+	    {
+	      /* update pointers to controlv */
+	      ay_selp_clear(o);
+	      ay_object_ccp(o);
+	    } /* if */
 	}
       else
 	{
@@ -1347,10 +1353,15 @@ ay_pomesht_splittcmd(ClientData clientData, Tcl_Interp *interp,
 
 	      if(newo->refine)
 		{
+		  o->modified = AY_TRUE;
+		  /* update pointers to controlv */
 		  ay_selp_clear(o);
+		  ay_object_ccp(o);
+		  /* finishing touches for new object */
 		  ay_object_defaults(newo);
 		  ay_trafo_copy(o, newo);
 		  newo->type = AY_IDPOMESH;
+		  /* link new object to scene */
 		  ay_object_link(newo);
 		}
 	      else
@@ -1372,6 +1383,7 @@ ay_pomesht_splittcmd(ClientData clientData, Tcl_Interp *interp,
       sel = sel->next;
     } /* while */
 
+  ay_notify_parent();
 
  return TCL_OK;
 } /* ay_pomesht_splittcmd */
