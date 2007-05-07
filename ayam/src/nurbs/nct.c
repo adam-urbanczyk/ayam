@@ -5156,7 +5156,9 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
 	  /* calculate knot multiplicity */
 	  s = 1;
 	  while(curve->knotv[i] == curve->knotv[i+s])
-	    s++;
+	    {
+	      s++;
+	    }
 
 	  newcontrolv = calloc(curve->length*4, sizeof(double));
 	  newknotv = calloc(curve->length+curve->order, sizeof(double));
@@ -5187,6 +5189,8 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
 	  newcontrolv = NULL;
 	  free(newknotv);
 	  newknotv = NULL;
+
+	  curve->knot_type = AY_KTCUSTOM;
 
 	  /* update pointers to controlv */
 	  ay_status = ay_nct_recreatemp(curve);
