@@ -253,7 +253,8 @@ if { ! $AYWITHAQUA } {
 }
 
 set ay(toolsmenu) $m
-
+$m add command -label "Last (None)"
+$m add separator
 $m add cascade -menu $m.nc -label "Create"
 menu $m.nc -tearoff 0
 $m.nc add command -label "ClosedBSpline" -command {
@@ -676,5 +677,34 @@ proc mmenu_addcustom { name command } {
  return;
 }
 # mmenu_addcustom
+
+
+# mmenu_addlume:
+#  arrange for menu <m> to update the "last used tool" menu entry
+#  when a command entry in this menu is used
+proc mmenu_addlume { m } {
+    global ay
+    set i 0
+    set last [$m index end]
+    while { $i <= $last } {
+	if { [$m type $i] == "command" } {
+	    set newlabel "Last ("
+	    append newlabel [$m entrycget $i -label]
+	    append newlabel ")"
+	    set cmd "$ay(toolsmenu) entryconfigure 0 -label \"$newlabel\" \
+                     -command \{[$m entrycget $i -command]\};"
+	    append cmd [$m entrycget $i -command]
+	    $m entryconfigure $i -command $cmd
+	}
+	# if
+	incr i
+    }
+    # while
+ return;
+}
+# mmenu_addlume
+
+mmenu_addlume $ay(toolsmenu).nct
+mmenu_addlume $ay(toolsmenu).npt
 
 return
