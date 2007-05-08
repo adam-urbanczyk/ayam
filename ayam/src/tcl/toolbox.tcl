@@ -299,13 +299,13 @@ proc toolbox_open { } {
 	    button $f.bconv -image ay_Convert_img -padx 0 -pady 0 -command {
 		global ay
 		set m $ay(toolsmenu)
-		$m invoke 15
+		$m invoke 17
 	    }
 	    bind $f.bconv <Shift-ButtonPress-1> {
 		global  ay
 		%W configure -relief sunken
 		set m $ay(toolsmenu)
-		$m invoke 16
+		$m invoke 18
 		after 100 "%W configure -relief raised"
 		break;
 	    }
