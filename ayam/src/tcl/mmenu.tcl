@@ -704,7 +704,11 @@ proc mmenu_addlume { m } {
 }
 # mmenu_addlume
 
+mmenu_addlume $ay(toolsmenu).nc
 mmenu_addlume $ay(toolsmenu).nct
 mmenu_addlume $ay(toolsmenu).npt
+mmenu_addlume $ay(toolsmenu).pm
+mmenu_addlume $ay(toolsmenu).pnt
+mmenu_addlume $ay(toolsmenu)
 
 return
