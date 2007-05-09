@@ -266,6 +266,8 @@ array set aymainshortcuts {
     SelAll "Ctrl-a"
     SelNone "Ctrl-n"
 
+    LastTool "Ctrl-t"
+
     SProp0 "Key-0"
     SProp1 "Key-1"
     SProp2 "Key-2"
