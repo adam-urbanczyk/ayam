@@ -782,6 +782,11 @@ also section <ref id="textobj" name="Text Object">.
 <label id="mmtools">
 The <tt/"Tools"/ menu:
 <itemize>
+<item><tt/"Last (None)"/, this menu entry is available since Ayam 1.13.
+It allows quick access to the last used entry/tool in the <tt/"Tools"/
+menu hierarchy. The label of the entry will be changed appropriately,
+e.g. to <tt/"Last (Revert U)"/, when a tool was started.
+
 <item><tt/"Create"/, <tt/"NURBCurve"/, and
 <tt/"NURBPatch"/, are sub-menus with various NURBS based modelling
 tools, that are explained in depth in section
@@ -9644,6 +9649,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 
 <label id="indexl">L
 <itemize>
+<item>Last (None): <ref id="mmtools" name="main menu entry">
 <item>LazyNotify: <ref id="prefmodel" name="preference setting">
 <item>Length: <ref id="bxp" name="box attribute">,
 <ref id="ncattr" name="NURBCurve attribute">,
