@@ -1164,6 +1164,12 @@ pack .fl.con -in .fl -expand 1 -fill both
 # additional key/mouse bindings for the console
 bind .fl.con.console $aymainshortcuts(SwCon) { focus [tk_focusNext %W] }
 
+bind .fl.con.console <Shift-Return> {
+    event generate .fl.con.console <<Console_Eval>>;
+    after idle { uS; rV; };
+    break;
+}
+
 # fix Shift-Tab binding
 if { ( $tcl_platform(platform) != "windows" ) && ( ! $AYWITHAQUA ) } {
     if { $tcl_version > 8.3 } {
