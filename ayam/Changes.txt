@@ -1,4 +1,4 @@
-[3. May 2007] CVS-Head:
+[11. May 2007] CVS-Head:
 =======================
 o Bug Fixes:
   - crash after deleting of objects (SF 1637735)
@@ -36,8 +36,9 @@ o fixed select background color when changed via X resources (backported
 o fixed local views redrawing upon scene saving
 o added tag type "RP" to block access to certain properties of an object
   via the property GUI
-o ExtrNC may no longer, erroneously, be associated with materials
+o ExtrNC objects may no longer, erroneously, be associated with materials
 o improved handling of AutoFocus in various dialogs
+o added last used tool facility to Tools main menu
 
 Modelling:
 o added "Revert" parameter to ExtrNC object
@@ -61,7 +62,9 @@ o added "insknNPU"/"insknNPV" commands and tools (new main menu entries
 o added "splitNPU"/"splitNPV" commands and tools (new main menu entries
   "Tools/NURBPatch/Split U" and "Tools/NURBPatch/Split V") to split
   NURBS patches at defined parametric values
-
+o added "extrNP" command and tool (new main menu entry
+  "Tools/NURBPatch/Extract Patch") to extract a sub-patch from a NURBS patch
+o improved knot type handling in remove knot tool
 
 Drawing/Shading:
 o added antialiasing drawing option for lines
