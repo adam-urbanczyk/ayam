@@ -18,6 +18,15 @@
 
 char ay_npt_npname[] = "NPatch";
 
+/* prototypes of functions local to this module: */
+int ay_npt_rescaletrim(ay_object *trim,
+		       int mode, double omin, double omax,
+		       double nmin, double nmax);
+
+int ay_npt_rescaletrims(ay_object *trim,
+			int mode, double omin, double omax,
+			double nmin, double nmax);
+
 /* functions */
 
 /* ay_npt_create:
@@ -7314,6 +7323,88 @@ ay_npt_clampvtcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_npt_clampvtcmd */
 
 
+/* ay_npt_rescaletrim:
+ *  rescale a single trim curve
+ */
+int
+ay_npt_rescaletrim(ay_object *trim,
+		   int mode, double omin, double omax,
+		   double nmin, double nmax)
+{
+ int ay_status = AY_OK;
+ ay_nurbcurve_object *nc = NULL;
+ double olen = 0.0;
+ double nlen = 0.0;
+ int stride = 4, i;
+
+  if(!trim)
+    return AY_ENULL;
+
+  nc = (ay_nurbcurve_object *)trim->refine;
+
+  olen = omax-omin;
+  nlen = nmax-nmin;
+
+  /* map old values to range 0-1 then to new range */
+  if((mode == 0) || (mode == 2))
+    {
+      for(i = 0; i < nc->length; i++)
+	{
+	  nc->controlv[i*stride] = nmin +
+	    ((nc->controlv[i*stride] - omin) / olen * nlen);
+	}
+    }
+
+  if((mode == 1) || (mode == 2))
+    {
+      for(i = 0; i < nc->length; i++)
+	{
+	  nc->controlv[i*stride+1] = nmin +
+	    ((nc->controlv[i*stride+1] - omin) / olen * nlen);
+	}
+    }
+
+ return ay_status;
+} /* ay_npt_rescaletrim */
+
+
+/* ay_npt_rescaletrims:
+ *  rescale the trim curves in <trim>
+ */
+int
+ay_npt_rescaletrims(ay_object *trim,
+		    int mode, double omin, double omax,
+		    double nmin, double nmax)
+{
+ int ay_status = AY_OK;
+ 
+  if(!trim)
+    return AY_ENULL;
+
+  while(trim)
+    {
+      if(trim->type == AY_IDNCURVE)
+	{
+	  ay_status = ay_npt_rescaletrim(trim, mode, omin, omax,
+					 nmin, nmax);
+	}
+
+      if(trim->type == AY_IDLEVEL)
+	{
+	  if(trim->down && trim->down->next)
+	    {
+	      ay_status = ay_npt_rescaletrims(trim->down, mode, omin, omax,
+					      nmin, nmax);
+	    }
+	}
+
+      trim = trim->next;
+    } /* while */
+
+ return ay_status;
+} /* ay_npt_rescaletrims */
+
+
 /* ay_npt_rescaleknvnptcmd:
  *  rescale the knot vectors of the selected NURBS patches
  *  - to the range 0.0 - 1.0 (no arguments)
@@ -7378,9 +7469,21 @@ ay_npt_rescaleknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 							patch->uorder,
 							patch->uknotv,
 							mindist);
+				    
 		}
 	      else
 		{
+		  /* first scale trim curves */
+		  if(src->down && src->down->next)
+		    {
+		      ay_status = ay_npt_rescaletrims(src->down,
+						      0,
+						      patch->uknotv[0],
+				 patch->uknotv[patch->width+patch->uorder-1],
+						    rmin, rmax);
+
+		    }
+		  /* now scale the knots */
 		  ay_status = ay_knots_rescaletorange(patch->width+
 						      patch->uorder,
 						      patch->uknotv,
@@ -7413,6 +7516,16 @@ ay_npt_rescaleknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 		}
 	      else
 		{
+		  /* first scale trim curves */
+		  if(src->down && src->down->next)
+		    {
+		      ay_status = ay_npt_rescaletrims(src->down,
+						      1,
+						      patch->vknotv[0],
+				 patch->vknotv[patch->height+patch->vorder-1],
+						    rmin, rmax);
+		    }
+		  /* now scale the knots */
 		  ay_status = ay_knots_rescaletorange(patch->height+
 						      patch->vorder,
 						      patch->vknotv,
