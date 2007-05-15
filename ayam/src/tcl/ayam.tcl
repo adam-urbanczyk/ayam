@@ -175,6 +175,8 @@ array set ayprefs {
  ALFileTypes { ".rib" ".3dm" ".obj" ".3dmf" ".mop" ".dxf" }
  ALPlugins { "rrib" "onio" "objio" "mfio" "mopsi" "dxfio" }
 
+ AUCommands { uS; rV; }
+
  Docs "http://ayam.sourceforge.net/docs/"
  DailyTips {
 {Always click on drawn pixels, when picking vertices.}
@@ -218,6 +220,7 @@ on its name, then press <Ctrl+Shift+i> (Copy Marked Prop).}
 {Tree updates slowly? Always work in sub-levels!}
 {The <Return> key in property GUIs now does an instant apply.}
 {Tired of the splash screen? Set env. variable AYNOSPLASH.}
+{Press <Shift-Enter> in the Console for immediate update and redraw.}
 }
 }
 # array ayprefs
@@ -1166,7 +1169,7 @@ bind .fl.con.console $aymainshortcuts(SwCon) { focus [tk_focusNext %W] }
 
 bind .fl.con.console <Shift-Return> {
     event generate .fl.con.console <<Console_Eval>>;
-    after idle { uS; rV; };
+    after idle { global ayprefs; eval $ayprefs(AUCommands) };
     break;
 }
 
