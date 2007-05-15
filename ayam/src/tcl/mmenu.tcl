@@ -406,12 +406,32 @@ $m.npt add command -label "Extract Patch" -command {
 	    [list "UMin:" "UMax:" "VMin:" "VMax:"]\
 	    "undo save extrNP; extrNP %0 %1 %2 %3; uCR; sL; rV" }
 
-$m.npt add command -label "Rescale Knots to Range" -command {
+$m.npt add command -label "Rescale Knots to Range U" -command {
+    undo save RescaleKnots;
+    runTool {ay(rmin) ay(rmax)} {"RangeMin:" "RangeMax:"}\
+	    "rescaleKnNP -ru %0 %1; plb_update;"
+}
+$m.npt add command -label "Rescale Knots to Range V" -command {
+    undo save RescaleKnots;
+    runTool {ay(rmin) ay(rmax)} {"RangeMin:" "RangeMax:"}\
+	    "rescaleKnNP -rv %0 %1; plb_update;"
+}
+$m.npt add command -label "Rescale Knots to Range Both" -command {
     undo save RescaleKnots;
     runTool {ay(rmin) ay(rmax)} {"RangeMin:" "RangeMax:"}\
 	    "rescaleKnNP -r %0 %1; plb_update;"
 }
-$m.npt add command -label "Rescale Knots to Mindist" -command {
+$m.npt add command -label "Rescale Knots to Mindist U" -command {
+    undo save RescaleKnots;
+    runTool ay(mindist) "MinDist:"\
+	    "rescaleKnNP -du %0; plb_update;"
+}
+$m.npt add command -label "Rescale Knots to Mindist V" -command {
+    undo save RescaleKnots;
+    runTool ay(mindist) "MinDist:"\
+	    "rescaleKnNP -dv %0; plb_update;"
+}
+$m.npt add command -label "Rescale Knots to Mindist Both" -command {
     undo save RescaleKnots;
     runTool ay(mindist) "MinDist:"\
 	    "rescaleKnNP -d %0; plb_update;"
