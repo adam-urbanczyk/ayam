@@ -6460,7 +6460,8 @@ This tool does not change the geometry of the curves.
 <item>Arguments: The rescale knots to mindist tool takes a number of
 NURBS curves from the selection and request a minimum distance value.
 <item>Operation: The knot vectors of the curves will be scaled, so that
-no two knots have a distance smaller than the given minimum distance.
+no two knots have a distance smaller than the given minimum distance
+(except for multiple knots).
 <item>Note: The knot type of the curve has to be <tt/"Custom"/!
 This tool does not change the geometry of the curves.
 </itemize>
@@ -6566,7 +6567,8 @@ v-direction only.
 <item>Arguments: The patch rescale knots to range tool takes a number of
 NURBS patches from the selection and requests a range.
 <item>Operation: The knot vectors of the patches will be scaled, so that
-their first and last values match the given range.
+their first and last values match the given range. Trim curves, if
+present, will also be scaled to match the new range.
 <item>Note: The knot types of the patch have to be <tt/"Custom"/!
 This tool does not change the geometry of the patches.
 </itemize>
@@ -6577,7 +6579,8 @@ This tool does not change the geometry of the patches.
 <item>Arguments: The rescale knots to mindist tool takes a number of
 NURBS patches from the selection and request a minimum distance value.
 <item>Operation: The knot vectors of the patches will be scaled, so that
-no two knots have a distance smaller than the given minimum distance.
+no two knots have a distance smaller than the given minimum distance
+(except for multiple knots).
 <item>Note: The knot types of the patch have to be <tt/"Custom"/!
 This tool does not change the geometry of the patches.
 </itemize>
@@ -6730,7 +6733,7 @@ So watch out for already existing procedures and commands when
 implementing your own!
 Using procedures and commands not listed in this documentation
 is dangerous too. Implementation and interfaces of that
-commands may change in future versions.
+commands may change unnoticed in future versions.
 <p>
 The scripting interface may be used directly from the console
 of Ayam. You can, of course, also write procedures in your own
@@ -7340,15 +7343,23 @@ v-direction). See also section <ref id="clanpt" name="The Patch Clamp Tool">.
 <p><label id="screscaleknnp">
 rescaleKnNP - rescale knots of NURBS patches:
 <itemize>
- <item>Synopsis: <tt/"rescaleKnNP [-r rmin rmax|-d mindist]"/
- <item>Description: Rescale the knot vector(s) of the selected NURBS patche(s)
+ <item>Synopsis: <tt/"rescaleKnNP [-r[u|v] rmin rmax|-d[u|v] mindist]"/
+ <item>Description: Rescale the knot vector(s) of the selected NURBS patch(es)
 to the range <tt>[0.0, 1.0]</tt> (if no argument is present) or to the range
 <tt>[rmin, rmax]</tt> if the <tt/"-r"/ argument is given or to the minimum
-distance mindist if the <tt/"-d"/ argument is used. Scaling to a minimum
-distance ensures that all knots (except for multiple knots) have a distance
-bigger than mindist afterwards. The knot types of the patch have to be
-<tt/"Custom"/!
+distance mindist if the <tt/"-d"/ argument is used. The <tt/"-ru"/, <tt/"-rv"/,
+<tt/"-du"/, and <tt/"-dv"/ variants scale only the designated dimension.
+Scaling to a minimum distance ensures that all knots (except for multiple
+knots) have a distance bigger than mindist afterwards. Trim curves, if
+present, will also be scaled to match the new range.
+The knot types of the patch have to be <tt/"Custom"/!
 This operation does not change the shape of the patch.
+See also sections
+<ref id="resckrnpt" name="The Patch Rescale Knots to Range Tool">
+and
+<ref id="resckmnpt" name="The Patch Rescale Knots to Mindist Tool">.
+ <item>Example: <tt/"rescaleKnNP -ru 0.2 0.3"/ scales the u knot vector
+of the selected NURBS patch objects to the new range (0.2, 0.3).
 </itemize>
 
 <p><label id="scinsknnpu">
@@ -7387,6 +7398,7 @@ splitNPU - split NURBS patch:
  <item>Synopsis: <tt/"splitNPU u"/
  <item>Description: Splits the selected NURBPatch objects into two patches
 at parametric value u.
+
 See also section <ref id="splitnpt" name="The Patch Split Tool">.
 </itemize>
 
