@@ -325,6 +325,29 @@ typedef struct ay_nurbcurve_object_s
 } ay_nurbcurve_object;
 
 
+/* a tesselated NURBS patch point */
+typedef struct ay_stess_uvp_s {
+  struct ay_stess_uvp_s *next;
+  int type;    /* 0 - original point, 1 - trimloop point */
+  int dir;     /* direction of associated trimcurve, 0 - cw, 1 - ccw */
+  double u, v; /* associated parametric values of this point */
+  double C[6]; /* geometric coordinates and normal of this point */
+} ay_stess_uvp;
+
+/* a complete tesselation */
+typedef struct ay_stess_s {
+  /* untrimmed patch */
+  int tessw, tessh;
+  double *tessv;
+
+  /* trimmed patch */
+  int upslen, vpslen;
+  ay_stess_uvp **ups, **vps;
+  int tcslen;
+  double **tcs;
+  int *tcslens, *tcsdirs;
+} ay_stess;
+
 typedef struct ay_nurbpatch_object_s
 {
   int width, height;
@@ -344,9 +367,8 @@ typedef struct ay_nurbpatch_object_s
   int glu_display_mode;
 
   /* stess */
-  int tessw, tessh;
-  double *tessv;
   int tessqf;
+  ay_stess *stess;
 
   /* multiple points */
   int createmp;

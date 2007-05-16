@@ -539,6 +539,7 @@ int ay_pmt_revertv(ay_pamesh_object *pm);
 
 
 /* stess.c */
+int ay_stess_destroy(ay_nurbpatch_object *np);
 
 int ay_stess_GetQF(double gst);
 

@@ -112,6 +112,10 @@ ay_npatch_deletecb(void *c)
   if(npatch->no)
     gluDeleteNurbsRenderer(npatch->no);
 
+  /* free tesselation */
+  if(npatch->stess)
+    ay_stess_destroy(npatch);
+
   free(npatch);
 
  return AY_OK;
@@ -162,6 +166,8 @@ ay_npatch_copycb(void *src, void **dst)
       ay_status = ay_npt_recreatemp(npatch);
     }
 
+  npatch->stess = NULL;
+
   *dst = (void *)npatch;
 
  return AY_OK;
@@ -193,31 +199,24 @@ ay_npatch_drawstesscb(struct Togl *togl, ay_object *o)
 
   if(o->modified || (npatch->tessqf != qf))
     {
-      if(npatch->tessv)
+      if(npatch->stess)
 	{
-	  free(npatch->tessv);
-	  npatch->tessv = NULL;
+	  ay_stess_destroy(npatch);
 	}
-      /*
-      if(npatch->tesstv)
-	{
-
-	}
-      */
       o->modified = AY_FALSE;
     } /* if */
 
-  if(!npatch->tessv)
+  if(!npatch->stess)
     {
       ay_status = ay_stess_TessNP(o, qf);
     }
 
-  tessv = npatch->tessv;
-  tessw = npatch->tessw;
-  tessh = npatch->tessh;
-
-  if(tessv)
+  if(npatch->stess && npatch->stess->tessv)
     {
+      tessv = npatch->stess->tessv;
+      tessw = npatch->stess->tessw;
+      tessh = npatch->stess->tessh;
+
       a = 0;
       for(i = 0; i < tessw; i++)
 	{
@@ -229,7 +228,7 @@ ay_npatch_drawstesscb(struct Togl *togl, ay_object *o)
 	    } /* for */
 	  glEnd();
 	} /* for */
-
+	  
       for(j = 0;  j < tessh; j++)
 	{
 	  a = j * 6;
@@ -581,31 +580,24 @@ ay_npatch_shadestesscb(struct Togl *togl, ay_object *o)
 
   if(o->modified || (npatch->tessqf != qf))
     {
-      if(npatch->tessv)
+      if(npatch->stess)
 	{
-	  free(npatch->tessv);
-	  npatch->tessv = NULL;
+	  ay_stess_destroy(npatch);
 	}
-      /*
-      if(npatch->tesstv)
-	{
-
-	}
-      */
       o->modified = AY_FALSE;
     } /* if */
 
-  if(!npatch->tessv)
+  if(!npatch->stess)
     {
       ay_status = ay_stess_TessNP(o, qf);
     }
 
-  tessv = npatch->tessv;
-  tessw = npatch->tessw;
-  tessh = npatch->tessh;
-
-  if(tessv)
+  if(npatch->stess && npatch->stess->tessv)
     {
+      tessv = npatch->stess->tessv;
+      tessw = npatch->stess->tessw;
+      tessh = npatch->stess->tessh;
+
       a = 0;
       b = tessh*6;
       for(i = 0; i < tessw-1; i++)
