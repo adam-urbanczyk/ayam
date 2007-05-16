@@ -185,7 +185,7 @@ ay_extrnc_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   Tcl_SetStringObj(ton,"DisplayMode",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(extrnc->glu_display_mode));
+  Tcl_GetIntFromObj(interp,to, &(extrnc->display_mode));
 
   Tcl_SetStringObj(ton,"Tolerance",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -242,7 +242,7 @@ ay_extrnc_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 		 TCL_GLOBAL_ONLY);
 
   Tcl_SetStringObj(ton,"DisplayMode",-1);
-  to = Tcl_NewIntObj(extrnc->glu_display_mode);
+  to = Tcl_NewIntObj(extrnc->display_mode);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
@@ -273,7 +273,7 @@ ay_extrnc_readcb(FILE *fileptr, ay_object *o)
 
   fscanf(fileptr, "%d\n", &extrnc->side);
   fscanf(fileptr, "%lg\n", &extrnc->parameter);
-  fscanf(fileptr, "%d\n", &extrnc->glu_display_mode);
+  fscanf(fileptr, "%d\n", &extrnc->display_mode);
   fscanf(fileptr, "%lg\n", &extrnc->glu_sampling_tolerance);
 
   if(ay_read_version >= 8)
@@ -304,7 +304,7 @@ ay_extrnc_writecb(FILE *fileptr, ay_object *o)
 
   fprintf(fileptr, "%d\n", extrnc->side);
   fprintf(fileptr, "%g\n", extrnc->parameter);
-  fprintf(fileptr, "%d\n", extrnc->glu_display_mode);
+  fprintf(fileptr, "%d\n", extrnc->display_mode);
   fprintf(fileptr, "%g\n", extrnc->glu_sampling_tolerance);
 
   fprintf(fileptr, "%d\n", extrnc->pnum);
@@ -364,7 +364,7 @@ ay_extrnc_notifycb(ay_object *o)
   extrnc = (ay_extrnc_object *)(o->refine);
 
   pnum = extrnc->pnum - 1;
-  mode = extrnc->glu_display_mode;
+  mode = extrnc->display_mode;
   tolerance = extrnc->glu_sampling_tolerance;
 
   /* remove old objects */

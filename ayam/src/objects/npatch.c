@@ -166,6 +166,7 @@ ay_npatch_copycb(void *src, void **dst)
       ay_status = ay_npt_recreatemp(npatch);
     }
 
+  /* manage tesselation */
   npatch->stess = NULL;
 
   *dst = (void *)npatch;
@@ -295,9 +296,9 @@ ay_npatch_drawglucb(struct Togl *togl, ay_object *o)
   if(npatch->glu_sampling_tolerance > 0.0)
     sampling_tolerance = npatch->glu_sampling_tolerance;
 
-  if(npatch->glu_display_mode != 0)
+  if(npatch->display_mode != 0)
     {
-      display_mode = npatch->glu_display_mode-1;
+      display_mode = npatch->display_mode-1;
     }
 
   uknot_count = width + uorder;
@@ -531,9 +532,9 @@ ay_npatch_drawcb(struct Togl *togl, ay_object *o)
   if(!npatch)
     return AY_ENULL;
 
-  if(npatch->glu_display_mode != 0)
+  if(npatch->display_mode != 0)
     {
-      display_mode = npatch->glu_display_mode-1;
+      display_mode = npatch->display_mode-1;
     }
 
   switch(display_mode)
@@ -643,7 +644,7 @@ ay_npatch_shadeglucb(struct Togl *togl, ay_object *o)
   if(!npatch)
     return AY_ENULL;
 
-  /*if(npatch->glu_display_mode > 2)
+  /*if(npatch->display_mode > 2)
     return(ay_npatch_shadestesscb(togl, o));*/
 
   if(controls)
@@ -835,9 +836,9 @@ ay_npatch_shadecb(struct Togl *togl, ay_object *o)
   if(!npatch)
     return AY_ENULL;
 
-  if(npatch->glu_display_mode != 0)
+  if(npatch->display_mode != 0)
     {
-      display_mode = npatch->glu_display_mode-1;
+      display_mode = npatch->display_mode-1;
     }
 
   if(display_mode < 3)
@@ -1100,7 +1101,7 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   Tcl_SetStringObj(ton,"DisplayMode",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(npatch->glu_display_mode));
+  Tcl_GetIntFromObj(interp,to, &(npatch->display_mode));
 
   Tcl_SetStringObj(ton, "Knots_U-Modified", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -1469,7 +1470,7 @@ ay_npatch_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 		 TCL_GLOBAL_ONLY);
 
   Tcl_SetStringObj(ton,"DisplayMode",-1);
-  to = Tcl_NewIntObj(npatch->glu_display_mode);
+  to = Tcl_NewIntObj(npatch->display_mode);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
@@ -1568,7 +1569,7 @@ ay_npatch_readcb(FILE *fileptr, ay_object *o)
     }
 
   fscanf(fileptr,"%lg\n",&(npatch->glu_sampling_tolerance));
-  fscanf(fileptr,"%d\n",&(npatch->glu_display_mode));
+  fscanf(fileptr,"%d\n",&(npatch->display_mode));
 
   if(ay_read_version >= 9)
     {
@@ -1630,7 +1631,7 @@ ay_npatch_writecb(FILE *fileptr, ay_object *o)
     }
 
   fprintf(fileptr, "%g\n", npatch->glu_sampling_tolerance);
-  fprintf(fileptr, "%d\n", npatch->glu_display_mode);
+  fprintf(fileptr, "%d\n", npatch->display_mode);
 
   fprintf(fileptr, "%d\n", npatch->createmp);
 
@@ -1932,9 +1933,9 @@ ay_npatch_notifycb(ay_object *o)
 
   npatch = (ay_nurbpatch_object *)(o->refine);
 
-  if(npatch->glu_display_mode != 0)
+  if(npatch->display_mode != 0)
     {
-      display_mode = npatch->glu_display_mode-1;
+      display_mode = npatch->display_mode-1;
     }
 
   if(display_mode < 3)

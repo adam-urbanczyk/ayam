@@ -238,7 +238,7 @@ ay_revolve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   Tcl_SetStringObj(ton,"DisplayMode",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(revolve->glu_display_mode));
+  Tcl_GetIntFromObj(interp,to, &(revolve->display_mode));
 
   Tcl_SetStringObj(ton,"Tolerance",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -307,7 +307,7 @@ ay_revolve_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 		 TCL_GLOBAL_ONLY);
 
   Tcl_SetStringObj(ton,"DisplayMode",-1);
-  to = Tcl_NewIntObj(revolve->glu_display_mode);
+  to = Tcl_NewIntObj(revolve->display_mode);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
@@ -341,7 +341,7 @@ ay_revolve_readcb(FILE *fileptr, ay_object *o)
   fscanf(fileptr,"%d\n",&revolve->has_lower_cap);
   fscanf(fileptr,"%d\n",&revolve->has_start_cap);
   fscanf(fileptr,"%d\n",&revolve->has_end_cap);
-  fscanf(fileptr,"%d\n",&revolve->glu_display_mode);
+  fscanf(fileptr,"%d\n",&revolve->display_mode);
   fscanf(fileptr,"%lg\n",&revolve->glu_sampling_tolerance);
   if(ay_read_version >= 7)
     {
@@ -370,7 +370,7 @@ ay_revolve_writecb(FILE *fileptr, ay_object *o)
   fprintf(fileptr, "%d\n", revolve->has_lower_cap);
   fprintf(fileptr, "%d\n", revolve->has_start_cap);
   fprintf(fileptr, "%d\n", revolve->has_end_cap);
-  fprintf(fileptr, "%d\n", revolve->glu_display_mode);
+  fprintf(fileptr, "%d\n", revolve->display_mode);
   fprintf(fileptr, "%g\n", revolve->glu_sampling_tolerance);
   fprintf(fileptr, "%d\n", revolve->sections);
   fprintf(fileptr, "%d\n", revolve->order);
@@ -448,7 +448,7 @@ ay_revolve_crtcap(ay_revolve_object *revolve, ay_object *curve,
 
   nc = (ay_nurbcurve_object *)curve->refine;
 
-  mode = revolve->glu_display_mode;
+  mode = revolve->display_mode;
   tolerance = revolve->glu_sampling_tolerance;
 
   /* get curves transformation-matrix */
@@ -507,7 +507,7 @@ ay_revolve_crtcap(ay_revolve_object *revolve, ay_object *curve,
 
   ((ay_nurbpatch_object *)cap->refine)->glu_sampling_tolerance =
     tolerance;
-  ((ay_nurbpatch_object *)cap->refine)->glu_display_mode = mode;
+  ((ay_nurbpatch_object *)cap->refine)->display_mode = mode;
 
   /* create trimcurve */
   if(!(trim = calloc(1, sizeof(ay_object))))
@@ -650,7 +650,7 @@ ay_revolve_crtside(ay_revolve_object *revolve, ay_object *curve, double th,
 
   closed = ay_nct_isclosed(nc);
 
-  mode = revolve->glu_display_mode;
+  mode = revolve->display_mode;
   tolerance = revolve->glu_sampling_tolerance;
 
   /* get curves transformation-matrix */
@@ -744,7 +744,7 @@ ay_revolve_crtside(ay_revolve_object *revolve, ay_object *curve, double th,
 
   ((ay_nurbpatch_object *)cap->refine)->glu_sampling_tolerance =
     tolerance;
-  ((ay_nurbpatch_object *)cap->refine)->glu_display_mode = mode;
+  ((ay_nurbpatch_object *)cap->refine)->display_mode = mode;
 
   if(th != 0.0)
     {
@@ -910,7 +910,7 @@ ay_revolve_notifycb(ay_object *o)
 
   revolve = (ay_revolve_object *)(o->refine);
 
-  mode = revolve->glu_display_mode;
+  mode = revolve->display_mode;
   tolerance = revolve->glu_sampling_tolerance;
 
   /* remove old objects */
@@ -972,7 +972,7 @@ ay_revolve_notifycb(ay_object *o)
 
   ((ay_nurbpatch_object *)npatch->refine)->glu_sampling_tolerance =
     tolerance;
-  ((ay_nurbpatch_object *)npatch->refine)->glu_display_mode =
+  ((ay_nurbpatch_object *)npatch->refine)->display_mode =
     mode;
 
   nc = (ay_nurbcurve_object *)curve->refine;

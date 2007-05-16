@@ -1252,10 +1252,10 @@ mopsi_nurbpatch(FILE *fileptr, ay_object *o)
       }
 
   fscanf(fileptr,"%d\n",&idummy);
-  fscanf(fileptr,"%d\n",&(patch->glu_display_mode));
-  patch->glu_display_mode++;
+  fscanf(fileptr,"%d\n",&(patch->display_mode));
+  patch->display_mode++;
   if(ay_prefs.mopsiresetdisplaymode)
-    patch->glu_display_mode = 0;
+    patch->display_mode = 0;
   fscanf(fileptr,"%lg\n",&(patch->glu_sampling_tolerance));
   if(ay_prefs.mopsiresettolerance)
     patch->glu_sampling_tolerance = 0.0;
@@ -1645,9 +1645,9 @@ mopsi_revolve(FILE *fileptr, ay_object *o)
       fscanf(fileptr,"%lg\n",&r->glu_sampling_tolerance);
       if(ay_prefs.mopsiresettolerance)
 	r->glu_sampling_tolerance = 0.0;
-      fscanf(fileptr,"%d\n",&r->glu_display_mode);
+      fscanf(fileptr,"%d\n",&r->display_mode);
       if(ay_prefs.mopsiresetdisplaymode)
-	r->glu_display_mode = 0;
+	r->display_mode = 0;
     }
 
  return ay_status;
@@ -1706,9 +1706,9 @@ mopsi_extrude(FILE *fileptr, ay_object *o)
 
       if(ay_prefs.mopsiresettolerance)
 	ext->glu_sampling_tolerance = 0.0;
-      fscanf(fileptr,"%d\n",&ext->glu_display_mode);
+      fscanf(fileptr,"%d\n",&ext->display_mode);
       if(ay_prefs.mopsiresetdisplaymode)
-	ext->glu_display_mode = 0;
+	ext->display_mode = 0;
     }
 
 
@@ -1737,9 +1737,9 @@ mopsi_sweep(FILE *fileptr, ay_object *o)
       fscanf(fileptr,"%lg\n",&swp->glu_sampling_tolerance);
       if(ay_prefs.mopsiresettolerance)
 	swp->glu_sampling_tolerance = 0.0;
-      fscanf(fileptr,"%d\n",&swp->glu_display_mode);
+      fscanf(fileptr,"%d\n",&swp->display_mode);
       if(ay_prefs.mopsiresetdisplaymode)
-	swp->glu_display_mode = 0;
+	swp->display_mode = 0;
     }
 
   if(mopsi_version > 7)
@@ -1770,9 +1770,9 @@ mopsi_skin(FILE *fileptr, ay_object *o)
   fscanf(fileptr,"%lg\n",&sk->glu_sampling_tolerance);
   if(ay_prefs.mopsiresettolerance)
     sk->glu_sampling_tolerance = 0.0;
-  fscanf(fileptr,"%d\n",&sk->glu_display_mode);
+  fscanf(fileptr,"%d\n",&sk->display_mode);
   if(ay_prefs.mopsiresetdisplaymode)
-    sk->glu_display_mode = 0;
+    sk->display_mode = 0;
 
  return ay_status;
 }

@@ -184,7 +184,7 @@ ay_ncircle_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   Tcl_SetStringObj(ton,"DisplayMode",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(ncircle->glu_display_mode));
+  Tcl_GetIntFromObj(interp,to, &(ncircle->display_mode));
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
@@ -236,7 +236,7 @@ ay_ncircle_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 		 TCL_GLOBAL_ONLY);
 
   Tcl_SetStringObj(ton,"DisplayMode",-1);
-  to = Tcl_NewIntObj(ncircle->glu_display_mode);
+  to = Tcl_NewIntObj(ncircle->display_mode);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
@@ -264,7 +264,7 @@ ay_ncircle_readcb(FILE *fileptr, ay_object *o)
   fscanf(fileptr,"%lg\n",&ncircle->tmin);
   fscanf(fileptr,"%lg\n",&ncircle->tmax);
   fscanf(fileptr,"%lg\n",&ncircle->glu_sampling_tolerance);
-  fscanf(fileptr,"%d\n",&ncircle->glu_display_mode);
+  fscanf(fileptr,"%d\n",&ncircle->display_mode);
 
   o->refine = ncircle;
 
@@ -286,7 +286,7 @@ ay_ncircle_writecb(FILE *fileptr, ay_object *o)
   fprintf(fileptr, "%g\n", ncircle->tmin);
   fprintf(fileptr, "%g\n", ncircle->tmax);
   fprintf(fileptr, "%g\n", ncircle->glu_sampling_tolerance);
-  fprintf(fileptr, "%d\n", ncircle->glu_display_mode);
+  fprintf(fileptr, "%d\n", ncircle->display_mode);
 
  return AY_OK;
 } /* ay_ncircle_writecb */
@@ -364,7 +364,7 @@ ay_ncircle_notifycb(ay_object *o)
   nc->order = 3;
   nc->knot_type = AY_KTCUSTOM;
   nc->is_rat = AY_TRUE;
-  nc->display_mode = ncircle->glu_display_mode;
+  nc->display_mode = ncircle->display_mode;
   nc->glu_sampling_tolerance = ncircle->glu_sampling_tolerance;
 
   if(!(ncurve = calloc(1, sizeof(ay_object))))
@@ -449,7 +449,7 @@ ay_ncircle_providecb(ay_object *o, unsigned int type, ay_object **result)
       if(ncircle->ncurve)
 	{
 	  nc = (ay_nurbcurve_object *)ncircle->ncurve->refine;
-	  nc->display_mode = ncircle->glu_display_mode;
+	  nc->display_mode = ncircle->display_mode;
 	  ay_status = ay_object_copy(ncircle->ncurve, result);
 	  if(*result)
 	    {

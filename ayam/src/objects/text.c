@@ -229,7 +229,7 @@ ay_text_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   Tcl_SetStringObj(ton,"DisplayMode",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(text->glu_display_mode));
+  Tcl_GetIntFromObj(interp,to, &(text->display_mode));
 
   Tcl_SetStringObj(ton,"Tolerance",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -295,7 +295,7 @@ ay_text_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 		 TCL_GLOBAL_ONLY);
 
   Tcl_SetStringObj(ton,"DisplayMode",-1);
-  to = Tcl_NewIntObj(text->glu_display_mode);
+  to = Tcl_NewIntObj(text->display_mode);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
@@ -344,7 +344,7 @@ ay_text_readcb(FILE *fileptr, ay_object *o)
   fscanf(fileptr, "%d\n", &startb_type2);
   fscanf(fileptr, "%lg\n", &startb_radius2);
   fscanf(fileptr, "%d\n", &startb_revert2);
-  fscanf(fileptr, "%d\n", &text->glu_display_mode);
+  fscanf(fileptr, "%d\n", &text->display_mode);
   fscanf(fileptr, "%lg\n", &text->glu_sampling_tolerance);
 
   /* get bevel parameters from potentially present BP tags */
@@ -428,7 +428,7 @@ ay_text_writecb(FILE *fileptr, ay_object *o)
   fprintf(fileptr, "%g\n", startb_radius);
   fprintf(fileptr, "%d\n", startb_sense);
 
-  fprintf(fileptr, "%d\n", text->glu_display_mode);
+  fprintf(fileptr, "%d\n", text->display_mode);
   fprintf(fileptr, "%g\n", text->glu_sampling_tolerance);
 
  return AY_OK;
@@ -567,7 +567,7 @@ ay_text_notifycb(ay_object *o)
   extrude.has_lower_cap = text->has_lower_cap;
   extrude.has_upper_cap = text->has_upper_cap;
 
-  extrude.glu_display_mode = text->glu_display_mode;
+  extrude.display_mode = text->display_mode;
   extrude.glu_sampling_tolerance = text->glu_sampling_tolerance;
 
   uc = text->unistring;

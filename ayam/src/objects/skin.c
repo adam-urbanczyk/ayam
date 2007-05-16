@@ -210,7 +210,7 @@ ay_skin_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   Tcl_SetStringObj(ton,"DisplayMode",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(skin->glu_display_mode));
+  Tcl_GetIntFromObj(interp,to, &(skin->display_mode));
 
   Tcl_SetStringObj(ton,"Tolerance",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -272,7 +272,7 @@ ay_skin_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 		 TCL_GLOBAL_ONLY);
 
   Tcl_SetStringObj(ton,"DisplayMode",-1);
-  to = Tcl_NewIntObj(skin->glu_display_mode);
+  to = Tcl_NewIntObj(skin->display_mode);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
@@ -307,7 +307,7 @@ ay_skin_readcb(FILE *fileptr, ay_object *o)
   fscanf(fileptr,"%d\n",&skin->uknot_type);
   fscanf(fileptr,"%d\n",&skin->has_start_cap);
   fscanf(fileptr,"%d\n",&skin->has_end_cap);
-  fscanf(fileptr,"%d\n",&skin->glu_display_mode);
+  fscanf(fileptr,"%d\n",&skin->display_mode);
   fscanf(fileptr,"%lg\n",&skin->glu_sampling_tolerance);
 
   o->refine = skin;
@@ -331,7 +331,7 @@ ay_skin_writecb(FILE *fileptr, ay_object *o)
   fprintf(fileptr, "%d\n", skin->uknot_type);
   fprintf(fileptr, "%d\n", skin->has_start_cap);
   fprintf(fileptr, "%d\n", skin->has_end_cap);
-  fprintf(fileptr, "%d\n", skin->glu_display_mode);
+  fprintf(fileptr, "%d\n", skin->display_mode);
   fprintf(fileptr, "%g\n", skin->glu_sampling_tolerance);
 
  return AY_OK;
@@ -410,7 +410,7 @@ ay_skin_notifycb(ay_object *o)
 
   skin = (ay_skin_object *)(o->refine);
 
-  mode = skin->glu_display_mode;
+  mode = skin->display_mode;
   tolerance = skin->glu_sampling_tolerance;
 
   nextcb = &(skin->caps_and_bevels);
@@ -673,7 +673,7 @@ ay_skin_notifycb(ay_object *o)
 
   ((ay_nurbpatch_object *)newo->refine)->glu_sampling_tolerance =
     tolerance;
-  ((ay_nurbpatch_object *)newo->refine)->glu_display_mode =
+  ((ay_nurbpatch_object *)newo->refine)->display_mode =
     mode;
 
   if(skin->caps_and_bevels)
@@ -684,7 +684,7 @@ ay_skin_notifycb(ay_object *o)
 	  ((ay_nurbpatch_object *)
 	   (bevel->refine))->glu_sampling_tolerance = tolerance;
 	  ((ay_nurbpatch_object *)
-	   (bevel->refine))->glu_display_mode = mode;
+	   (bevel->refine))->display_mode = mode;
 	  bevel = bevel->next;
 	}
     }
