@@ -364,7 +364,7 @@ typedef struct ay_nurbpatch_object_s
   GLUnurbsObj *no;
 
   double glu_sampling_tolerance;
-  int glu_display_mode;
+  int display_mode;
 
   /* stess */
   int tessqf;
@@ -393,7 +393,7 @@ typedef struct ay_pamesh_object_s {
   /* cache NURBS patch representation */
   ay_object *npatch;
   double glu_sampling_tolerance;
-  int glu_display_mode;
+  int display_mode;
 } ay_pamesh_object;
 
 
@@ -438,7 +438,7 @@ typedef struct ay_gordon_object_s {
   /* cache NURBS patch representation */
   ay_object *npatch;
   double glu_sampling_tolerance;
-  int glu_display_mode;
+  int display_mode;
 } ay_gordon_object;
 
 
@@ -453,7 +453,7 @@ typedef struct ay_text_object_s
   /* cache NURBS patch representation */
   ay_object *npatch;
   double glu_sampling_tolerance;
-  int glu_display_mode;
+  int display_mode;
 } ay_text_object;
 
 
@@ -602,7 +602,7 @@ typedef struct ay_cap_object_s
   /* cache NURBS patch representation */
   ay_object *npatch;
   double glu_sampling_tolerance;
-  int glu_display_mode;
+  int display_mode;
 } ay_cap_object;
 
 
@@ -612,7 +612,7 @@ typedef struct ay_bevel_object_s
   /* cache NURBS patch representation */
   ay_object *npatch;
   double glu_sampling_tolerance;
-  int glu_display_mode;
+  int display_mode;
 } ay_bevel_object;
 
 
@@ -680,7 +680,7 @@ typedef struct ay_revolve_object_s
   /* cache NURBS patch representation */
   ay_object *npatch;
   double glu_sampling_tolerance;
-  int glu_display_mode;
+  int display_mode;
 } ay_revolve_object;
 
 
@@ -694,7 +694,7 @@ typedef struct ay_extrude_object_s
  /* cache NURBS patch representation */
  ay_object *npatch;
  double glu_sampling_tolerance;
- int glu_display_mode;
+ int display_mode;
 } ay_extrude_object;
 
 
@@ -711,7 +711,7 @@ typedef struct ay_sweep_object_s
  /* cache NURBS patch representation */
  ay_object *npatch;
  double glu_sampling_tolerance;
- int glu_display_mode;
+ int display_mode;
 } ay_sweep_object;
 
 
@@ -726,7 +726,7 @@ typedef struct ay_birail1_object_s
  /* cache NURBS patch representation */
  ay_object *npatch;
  double glu_sampling_tolerance;
- int glu_display_mode;
+ int display_mode;
 } ay_birail1_object;
 
 
@@ -742,7 +742,7 @@ typedef struct ay_birail2_object_s
  /* cache NURBS patch representation */
  ay_object *npatch;
  double glu_sampling_tolerance;
- int glu_display_mode;
+ int display_mode;
 } ay_birail2_object;
 
 
@@ -759,7 +759,7 @@ typedef struct ay_skin_object_s
  /* cache NURBS patch representation */
  ay_object *npatch;
  double glu_sampling_tolerance;
- int glu_display_mode;
+ int display_mode;
 } ay_skin_object;
 
 
@@ -772,7 +772,7 @@ typedef struct ay_extrnc_object_s
   /* cache NURBS curve representation */
   ay_object *ncurve;
   double glu_sampling_tolerance;
-  int glu_display_mode;
+  int display_mode;
 } ay_extrnc_object;
 
 
@@ -784,7 +784,7 @@ typedef struct ay_ncircle_object_s
   /* cache NURBS curve representation */
   ay_object *ncurve;
   double glu_sampling_tolerance;
-  int glu_display_mode;
+  int display_mode;
 } ay_ncircle_object;
 
 

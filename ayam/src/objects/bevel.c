@@ -156,7 +156,7 @@ ay_bevel_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   Tcl_SetStringObj(ton,"DisplayMode",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(bevel->glu_display_mode));
+  Tcl_GetIntFromObj(interp,to, &(bevel->display_mode));
 
   Tcl_SetStringObj(ton,"Tolerance",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -192,7 +192,7 @@ ay_bevel_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   ton = Tcl_NewStringObj(n1,-1);
 
   Tcl_SetStringObj(ton,"DisplayMode",-1);
-  to = Tcl_NewIntObj(bevel->glu_display_mode);
+  to = Tcl_NewIntObj(bevel->display_mode);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
@@ -219,7 +219,7 @@ ay_bevel_readcb(FILE *fileptr, ay_object *o)
   if(!(bevel = calloc(1, sizeof(ay_bevel_object))))
     { return AY_EOMEM; }
 
-  fscanf(fileptr,"%d\n",&bevel->glu_display_mode);
+  fscanf(fileptr,"%d\n",&bevel->display_mode);
   fscanf(fileptr,"%lg\n",&bevel->glu_sampling_tolerance);
 
   o->refine = bevel;
@@ -238,7 +238,7 @@ ay_bevel_writecb(FILE *fileptr, ay_object *o)
 
   bevel = (ay_bevel_object *)(o->refine);
 
-  fprintf(fileptr, "%d\n", bevel->glu_display_mode);
+  fprintf(fileptr, "%d\n", bevel->display_mode);
   fprintf(fileptr, "%g\n", bevel->glu_sampling_tolerance);
 
  return AY_OK;
@@ -303,7 +303,7 @@ ay_bevel_notifycb(ay_object *o)
 
   bevel = (ay_bevel_object *)(o->refine);
 
-  mode = bevel->glu_display_mode;
+  mode = bevel->display_mode;
   tolerance = bevel->glu_sampling_tolerance;
 
   /* remove old objects */
@@ -385,7 +385,7 @@ ay_bevel_notifycb(ay_object *o)
   /* copy sampling tolerance/mode over to new objects */
   ((ay_nurbpatch_object *)npatch->refine)->glu_sampling_tolerance =
     tolerance;
-  ((ay_nurbpatch_object *)npatch->refine)->glu_display_mode =
+  ((ay_nurbpatch_object *)npatch->refine)->display_mode =
     mode;
 
   /* copy transformations, if align was not used */

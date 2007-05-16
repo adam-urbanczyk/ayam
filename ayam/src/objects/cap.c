@@ -167,7 +167,7 @@ ay_cap_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   Tcl_SetStringObj(ton,"DisplayMode",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(cap->glu_display_mode));
+  Tcl_GetIntFromObj(interp,to, &(cap->display_mode));
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
@@ -176,8 +176,8 @@ ay_cap_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     {
       ((ay_nurbpatch_object *)cap->npatch->refine)->glu_sampling_tolerance =
 	cap->glu_sampling_tolerance;
-      ((ay_nurbpatch_object *)cap->npatch->refine)->glu_display_mode =
-	cap->glu_display_mode;
+      ((ay_nurbpatch_object *)cap->npatch->refine)->display_mode =
+	cap->display_mode;
     }
 
   ay_status = ay_notify_force(o);
@@ -217,7 +217,7 @@ ay_cap_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 		 TCL_GLOBAL_ONLY);
 
   Tcl_SetStringObj(ton,"DisplayMode",-1);
-  to = Tcl_NewIntObj(cap->glu_display_mode);
+  to = Tcl_NewIntObj(cap->display_mode);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
@@ -242,7 +242,7 @@ ay_cap_readcb(FILE *fileptr, ay_object *o)
     { return AY_EOMEM; }
 
   fscanf(fileptr,"%lg\n",&cap->glu_sampling_tolerance);
-  fscanf(fileptr,"%d\n",&cap->glu_display_mode);
+  fscanf(fileptr,"%d\n",&cap->display_mode);
 
   if(ay_read_version >= 10)
     {
@@ -266,7 +266,7 @@ ay_cap_writecb(FILE *fileptr, ay_object *o)
   cap = (ay_cap_object *)(o->refine);
 
   fprintf(fileptr, "%g\n", cap->glu_sampling_tolerance);
-  fprintf(fileptr, "%d\n", cap->glu_display_mode);
+  fprintf(fileptr, "%d\n", cap->display_mode);
   /*
   fprintf(fileptr, "%d\n", cap->type);
   */
@@ -398,8 +398,8 @@ ay_cap_notifycb(ay_object *o)
     {
       ((ay_nurbpatch_object *)cap->npatch->refine)->glu_sampling_tolerance =
 	cap->glu_sampling_tolerance;
-      ((ay_nurbpatch_object *)cap->npatch->refine)->glu_display_mode =
-	cap->glu_display_mode;
+      ((ay_nurbpatch_object *)cap->npatch->refine)->display_mode =
+	cap->display_mode;
     }
 
  return AY_OK;

@@ -209,7 +209,7 @@ ay_birail2_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   Tcl_SetStringObj(ton,"DisplayMode",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(birail2->glu_display_mode));
+  Tcl_GetIntFromObj(interp,to, &(birail2->display_mode));
 
   Tcl_SetStringObj(ton,"Tolerance",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -270,7 +270,7 @@ ay_birail2_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 		 TCL_GLOBAL_ONLY);
 
   Tcl_SetStringObj(ton,"DisplayMode",-1);
-  to = Tcl_NewIntObj(birail2->glu_display_mode);
+  to = Tcl_NewIntObj(birail2->display_mode);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
@@ -303,7 +303,7 @@ ay_birail2_readcb(FILE *fileptr, ay_object *o)
   fscanf(fileptr, "%d\n", &birail2->sections);
   fscanf(fileptr, "%d\n", &birail2->has_start_cap);
   fscanf(fileptr, "%d\n", &birail2->has_end_cap);
-  fscanf(fileptr, "%d\n", &birail2->glu_display_mode);
+  fscanf(fileptr, "%d\n", &birail2->display_mode);
   fscanf(fileptr, "%lg\n", &birail2->glu_sampling_tolerance);
 
   if(ay_read_version >= 9)
@@ -331,7 +331,7 @@ ay_birail2_writecb(FILE *fileptr, ay_object *o)
   fprintf(fileptr, "%d\n", birail2->sections);
   fprintf(fileptr, "%d\n", birail2->has_start_cap);
   fprintf(fileptr, "%d\n", birail2->has_end_cap);
-  fprintf(fileptr, "%d\n", birail2->glu_display_mode);
+  fprintf(fileptr, "%d\n", birail2->display_mode);
   fprintf(fileptr, "%g\n", birail2->glu_sampling_tolerance);
   fprintf(fileptr, "%d\n", birail2->interpolctrl);
 
@@ -416,7 +416,7 @@ ay_birail2_notifycb(ay_object *o)
 
   birail2 = (ay_birail2_object *)(o->refine);
 
-  mode = birail2->glu_display_mode;
+  mode = birail2->display_mode;
   tolerance = birail2->glu_sampling_tolerance;
 
   nextcb = &(birail2->caps_and_bevels);
@@ -565,7 +565,7 @@ ay_birail2_notifycb(ay_object *o)
   /* copy sampling tolerance/mode attributes over to birail */
   ((ay_nurbpatch_object *)birail2->npatch->refine)->glu_sampling_tolerance =
     tolerance;
-  ((ay_nurbpatch_object *)birail2->npatch->refine)->glu_display_mode =
+  ((ay_nurbpatch_object *)birail2->npatch->refine)->display_mode =
     mode;
 
   /* create bevels and caps */
@@ -718,7 +718,7 @@ ay_birail2_notifycb(ay_object *o)
 	  ((ay_nurbpatch_object *)
 	   (bevel->refine))->glu_sampling_tolerance = tolerance;
 	  ((ay_nurbpatch_object *)
-	   (bevel->refine))->glu_display_mode = mode;
+	   (bevel->refine))->display_mode = mode;
 	  bevel = bevel->next;
 	}
     }

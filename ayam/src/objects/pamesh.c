@@ -272,9 +272,9 @@ ay_pamesh_drawcb(struct Togl *togl, ay_object *o)
 
   pamesh = (ay_pamesh_object *)o->refine;
 
-  if(pamesh->glu_display_mode != 0)
+  if(pamesh->display_mode != 0)
     {
-      display_mode = pamesh->glu_display_mode-1;
+      display_mode = pamesh->display_mode-1;
     }
 
   /* draw just the control polygon? */
@@ -606,7 +606,7 @@ ay_pamesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   Tcl_SetStringObj(ton,"DisplayMode",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(pamesh->glu_display_mode));
+  Tcl_GetIntFromObj(interp,to, &(pamesh->display_mode));
 
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
@@ -759,7 +759,7 @@ ay_pamesh_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 		 TCL_GLOBAL_ONLY);
 
   Tcl_SetStringObj(ton,"DisplayMode",-1);
-  to = Tcl_NewIntObj(pamesh->glu_display_mode);
+  to = Tcl_NewIntObj(pamesh->display_mode);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
@@ -843,7 +843,7 @@ ay_pamesh_readcb(FILE *fileptr, ay_object *o)
     }
 
   fscanf(fileptr,"%lg\n",&(pamesh->glu_sampling_tolerance));
-  fscanf(fileptr,"%d\n",&(pamesh->glu_display_mode));
+  fscanf(fileptr,"%d\n",&(pamesh->display_mode));
 
   o->refine = pamesh;
 
@@ -898,7 +898,7 @@ ay_pamesh_writecb(FILE *fileptr, ay_object *o)
     }
 
   fprintf(fileptr, "%g\n", pamesh->glu_sampling_tolerance);
-  fprintf(fileptr, "%d\n", pamesh->glu_display_mode);
+  fprintf(fileptr, "%d\n", pamesh->display_mode);
 
  return AY_OK;
 } /* ay_pamesh_writecb */
@@ -1174,7 +1174,7 @@ ay_pamesh_notifycb(ay_object *o)
       if(p->type == AY_IDNPATCH)
 	{
 	  np = (ay_nurbpatch_object *)p->refine;
-	  np->glu_display_mode = pamesh->glu_display_mode;
+	  np->display_mode = pamesh->display_mode;
 	  np->glu_sampling_tolerance = pamesh->glu_sampling_tolerance;
 	}
 

@@ -203,7 +203,7 @@ ay_extrude_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   Tcl_SetStringObj(ton,"DisplayMode",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(extrude->glu_display_mode));
+  Tcl_GetIntFromObj(interp,to, &(extrude->display_mode));
 
   Tcl_SetStringObj(ton,"Tolerance",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -254,7 +254,7 @@ ay_extrude_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 		 TCL_GLOBAL_ONLY);
 
   Tcl_SetStringObj(ton,"DisplayMode",-1);
-  to = Tcl_NewIntObj(extrude->glu_display_mode);
+  to = Tcl_NewIntObj(extrude->display_mode);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
@@ -294,7 +294,7 @@ ay_extrude_readcb(FILE *fileptr, ay_object *o)
   fscanf(fileptr, "%d\n", &has_startb2);
   fscanf(fileptr, "%d\n", &startb_type2);
   fscanf(fileptr, "%lg\n", &startb_radius2);
-  fscanf(fileptr, "%d\n", &extrude->glu_display_mode);
+  fscanf(fileptr, "%d\n", &extrude->display_mode);
   fscanf(fileptr, "%lg\n", &extrude->glu_sampling_tolerance);
 
   /* get bevel parameters from potentially present BP tags */
@@ -352,7 +352,7 @@ ay_extrude_writecb(FILE *fileptr, ay_object *o)
   fprintf(fileptr, "%d\n", has_startb);
   fprintf(fileptr, "%d\n", startb_type);
   fprintf(fileptr, "%g\n", startb_radius);
-  fprintf(fileptr, "%d\n", extrude->glu_display_mode);
+  fprintf(fileptr, "%d\n", extrude->display_mode);
   fprintf(fileptr, "%g\n", extrude->glu_sampling_tolerance);
 
  return AY_OK;
@@ -454,7 +454,7 @@ ay_extrude_notifycb(ay_object *o)
   /* ok, something changed below, we have to rebuild the extrusion(s) */
 
   tolerance = ext->glu_sampling_tolerance;
-  display_mode = ext->glu_display_mode;
+  display_mode = ext->display_mode;
 
   /* clear old extrusions, caps and bevels */
   extrusion = ext->npatch;
@@ -512,7 +512,7 @@ ay_extrude_notifycb(ay_object *o)
 			 &(ext->npatch->refine));
 
 	  ((ay_nurbpatch_object *)ext->npatch->refine)->
-	    glu_display_mode = display_mode;
+	    display_mode = display_mode;
 	  ((ay_nurbpatch_object *)ext->npatch->refine)->
 	    glu_sampling_tolerance = tolerance;
 
@@ -854,7 +854,7 @@ ay_extrude_notifycb(ay_object *o)
 	    }
 
 	  ((ay_nurbpatch_object *)bevel->refine)->
-	    glu_display_mode = display_mode;
+	    display_mode = display_mode;
 	  ((ay_nurbpatch_object *)bevel->refine)->
 	    glu_sampling_tolerance = tolerance;
 	  /*

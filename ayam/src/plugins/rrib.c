@@ -822,7 +822,7 @@ ay_rrib_RiNuPatch(RtInt nu, RtInt uorder, RtFloat uknot[],
 
   memset(&np, '\0', sizeof(ay_nurbpatch_object));
   np.glu_sampling_tolerance = 0.0;
-  np.glu_display_mode = 0;
+  np.display_mode = 0;
   np.width = (int)nu;
   np.uorder = (int)uorder;
   np.height = (int)nv;
@@ -2592,7 +2592,7 @@ ay_rrib_RiPatchMesh(RtToken type, RtInt nu, RtToken uwrap,
 
   memset(&pm, '\0', sizeof(ay_pamesh_object));
   pm.glu_sampling_tolerance = 0.0;
-  pm.glu_display_mode = 0;
+  pm.display_mode = 0;
   pm.npatch = NULL;
 
   if(!strcmp(type, RI_BILINEAR))

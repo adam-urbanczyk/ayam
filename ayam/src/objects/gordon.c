@@ -209,7 +209,7 @@ ay_gordon_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   Tcl_SetStringObj(ton,"DisplayMode",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(gordon->glu_display_mode));
+  Tcl_GetIntFromObj(interp,to, &(gordon->display_mode));
 
   Tcl_SetStringObj(ton,"Tolerance",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -303,7 +303,7 @@ ay_gordon_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 		 TCL_GLOBAL_ONLY);
 
   Tcl_SetStringObj(ton,"DisplayMode",-1);
-  to = Tcl_NewIntObj(gordon->glu_display_mode);
+  to = Tcl_NewIntObj(gordon->display_mode);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
@@ -335,7 +335,7 @@ ay_gordon_readcb(FILE *fileptr, ay_object *o)
   fscanf(fileptr,"%d\n",&gordon->wcc);
   fscanf(fileptr,"%d\n",&gordon->uorder);
   fscanf(fileptr,"%d\n",&gordon->vorder);
-  fscanf(fileptr,"%d\n",&gordon->glu_display_mode);
+  fscanf(fileptr,"%d\n",&gordon->display_mode);
   fscanf(fileptr,"%lg\n",&gordon->glu_sampling_tolerance);
 
   o->refine = gordon;
@@ -357,7 +357,7 @@ ay_gordon_writecb(FILE *fileptr, ay_object *o)
   fprintf(fileptr, "%d\n", gordon->wcc);
   fprintf(fileptr, "%d\n", gordon->uorder);
   fprintf(fileptr, "%d\n", gordon->vorder);
-  fprintf(fileptr, "%d\n", gordon->glu_display_mode);
+  fprintf(fileptr, "%d\n", gordon->display_mode);
   fprintf(fileptr, "%g\n", gordon->glu_sampling_tolerance);
 
  return AY_OK;
@@ -437,7 +437,7 @@ ay_gordon_notifycb(ay_object *o)
 
   gordon = (ay_gordon_object *)(o->refine);
 
-  mode = gordon->glu_display_mode;
+  mode = gordon->display_mode;
   tolerance = gordon->glu_sampling_tolerance;
 
   /* remove old objects */
@@ -604,7 +604,7 @@ ay_gordon_notifycb(ay_object *o)
 
   ((ay_nurbpatch_object *)npatch->refine)->glu_sampling_tolerance =
     tolerance;
-  ((ay_nurbpatch_object *)npatch->refine)->glu_display_mode =
+  ((ay_nurbpatch_object *)npatch->refine)->display_mode =
     mode;
 
   /* create caps and bevels */
