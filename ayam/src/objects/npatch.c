@@ -1920,6 +1920,44 @@ ay_npatch_convertcb(ay_object *o, int in_place)
 
 
 int
+ay_npatch_notifycb(ay_object *o)
+{
+ int ay_status = AY_OK;
+ ay_nurbpatch_object *npatch = NULL;
+ int display_mode = ay_prefs.np_display_mode;
+ int qf = ay_prefs.stess_qf;
+
+  if(!o)
+    return AY_ENULL;
+
+  npatch = (ay_nurbpatch_object *)(o->refine);
+
+  if(npatch->glu_display_mode != 0)
+    {
+      display_mode = npatch->glu_display_mode-1;
+    }
+
+  if(display_mode < 3)
+    return AY_OK;
+
+  if(npatch->glu_sampling_tolerance != 0.0)
+    {
+      qf = ay_stess_GetQF(npatch->glu_sampling_tolerance);
+    }
+
+  if(npatch->stess)
+    {
+      ay_stess_destroy(npatch);
+    }
+
+  ay_status = ay_stess_TessNP(o, qf);
+
+  npatch->tessqf = qf;
+
+ return AY_OK;
+} /* ay_npatch_notifycb */
+
+int
 ay_npatch_init(Tcl_Interp *interp)
 {
  int ay_status = AY_OK;
@@ -1943,6 +1981,8 @@ ay_npatch_init(Tcl_Interp *interp)
   ay_status = ay_provide_register(ay_npatch_providecb, AY_IDNPATCH);
 
   ay_status = ay_convert_register(ay_npatch_convertcb, AY_IDNPATCH);
+
+  ay_status = ay_notify_register(ay_npatch_notifycb, AY_IDNPATCH);
 
  return ay_status;
 } /* ay_npatch_init */
