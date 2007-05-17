@@ -244,9 +244,18 @@ ay_npatch_drawstesscb(struct Togl *togl, ay_object *o)
     }
   else
     {
-      ay_npatch_drawglucb(togl, o);
+      if(npatch->stess)
+	{
+	  ay_status = ay_stess_DrawTrimmedSurface(o);
+	}
     } /* if */
 
+#if 0
+  else
+    {
+      ay_npatch_drawglucb(togl, o);
+    } /* if */
+#endif
  return AY_OK;
 } /* ay_npatch_drawstesscb */
 

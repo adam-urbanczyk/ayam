@@ -334,19 +334,28 @@ typedef struct ay_stess_uvp_s {
   double C[6]; /* geometric coordinates and normal of this point */
 } ay_stess_uvp;
 
+
 /* a complete tesselation */
 typedef struct ay_stess_s {
   /* untrimmed patch */
   int tessw, tessh;
-  double *tessv;
+  double *tessv; /* [tessw*tessh] */
 
   /* trimmed patch */
+  /* number of arrays of tesselated points */
   int upslen, vpslen;
-  ay_stess_uvp **ups, **vps;
+  /* arrays of lists of tesselated points */
+  ay_stess_uvp **ups, **vps; /* [upslen], [vpslen] */
+  /**/
+  int ft_cw;
+  /* number of tesselated trim curves */
   int tcslen;
-  double **tcs;
-  int *tcslens, *tcsdirs;
+  /* tesselated trim curves */
+  double **tcs; /* [tcslen][tcslens[i]] */
+  /* length and direction of trim curves */
+  int *tcslens, *tcsdirs; /* [tcslen] */
 } ay_stess;
+
 
 typedef struct ay_nurbpatch_object_s
 {
