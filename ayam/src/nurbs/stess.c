@@ -1,7 +1,7 @@
 /*
  * Ayam, a free 3D modeler for the RenderMan interface.
  *
- * Ayam is copyrighted 1998-2004 by Randolf Schultz
+ * Ayam is copyrighted 1998-2007 by Randolf Schultz
  * (rschultz@informatik.uni-rostock.de) and others.
  *
  * All rights reserved.
@@ -14,8 +14,6 @@
 
 /* stess.c simple NURB tesselators */
 
-/* definition of types local to this module: */
-
 /* local preprocessor definitions: */
 #define AY_STESSEPSILON 0.000001
 
@@ -25,8 +23,29 @@ int ay_stess_FindMultiplePoints(int n, int p, double *U, double *P,
 				int dim, int is_rat, int stride,
 				int *m, double **V);
 
-/* functions: */
+int ay_stess_IntersectLines2D(double *p1, double *p2, double *p3, double *p4,
+			      double *ip);
 
+
+int ay_stess_TessTrimCurves(ay_object *o, int qf, int *nt, double ***tt,
+			    int **tl, int **td);
+
+int ay_stess_MergeUVectors(ay_stess_uvp *a, ay_stess_uvp *b);
+
+int ay_stess_MergeVVectors(ay_stess_uvp *a, ay_stess_uvp *b);
+
+int ay_stess_TessTrimmedNPU(ay_object *o, int qf,
+			    int numtrims,
+			    double **tcs, int *tcslens, int *tcsdirs,
+			    int *flcw, int *reslen, ay_stess_uvp ***result);
+
+int ay_stess_TessTrimmedNPV(ay_object *o, int qf,
+			    int numtrims,
+			    double **tcs, int *tcslens, int *tcsdirs,
+			    int flcw, int *reslen, ay_stess_uvp ***result);
+
+
+/* functions: */
 
 /* ay_stess_destroy:
  *  properly destroy an stess object
@@ -749,7 +768,7 @@ ay_stess_TessTrimCurves(ay_object *o, int qf, int *nt, double ***tt,
 
   i = 0;
   d = o->down;
-  while(d)
+  while(d->next)
     {
       c = NULL;
       switch(d->type)
@@ -1094,7 +1113,7 @@ int
 ay_stess_TessTrimmedNPU(ay_object *o, int qf,
 			int numtrims,
 			double **tcs, int *tcslens, int *tcsdirs,
-			int *flcw, ay_stess_uvp ***result)
+			int *flcw, int *reslen, ay_stess_uvp ***result)
 {
  int ay_status = AY_OK;
  ay_nurbpatch_object *p = NULL;
@@ -1113,6 +1132,7 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
 
   /* calc desired uv coords for patch tesselation */
   Cn = (p->width + 4) * qf;
+  *reslen = Cn;
   Cm = (p->height + 4) * qf;
   if(!(uvps = calloc(Cn, sizeof(ay_stess_uvp *))))
     {
@@ -1373,7 +1393,7 @@ int
 ay_stess_TessTrimmedNPV(ay_object *o, int qf,
 			int numtrims,
 			double **tcs, int *tcslens, int *tcsdirs,
-			int flcw, ay_stess_uvp ***result)
+			int flcw, int *reslen, ay_stess_uvp ***result)
 {
  int ay_status = AY_OK;
  ay_nurbpatch_object *p = NULL;
@@ -1394,6 +1414,7 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
   /* calc desired uv coords for patch tesselation */
   Cn = (p->width + 4) * qf;
   Cm = (p->height + 4) * qf;
+  *reslen = Cm;
   if(!(uvps = calloc(Cm, sizeof(ay_stess_uvp *))))
     {
       return AY_EOMEM;
@@ -1643,42 +1664,35 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
  return ay_status;
 } /* ay_stess_TessTrimmedNPV */
 
-#if 0
+
 /* ay_stess_DrawTrimmedSurface:
  *
  */
 int
-ay_stess_DrawTrimmedSurface(Tcl_Interp *interp, ay_object *o, int num)
+ay_stess_DrawTrimmedSurface(ay_object *o)
 {
- int ay_status = AY_OK;
- double **tcs = NULL;
  double p4[4] = {0};
- int numtrims = 0, *tcslens = NULL, *tcsdirs = NULL;
- int i, j, Cm, Cn, out = 0, first_loop_cw = 0;
- ay_stess_uvp **ups = NULL, **vps = NULL, *uvpptr, *uvpptr2;
+ int i, j, out = 0;
+ ay_stess *stess = NULL;
+ ay_stess_uvp *uvpptr;
  ay_nurbpatch_object *p = NULL;
 
   p = (ay_nurbpatch_object *)o->refine;
-  Cn = (p->width-1)*num;
-  Cm = (p->height-1)*num;
 
-  ay_status = ay_stess_TessTrimCurves(o, num, &numtrims,  &tcs,
-				      &tcslens,  &tcsdirs);
+  stess = p->stess;
 
-  if(ay_status)
-    goto cleanup;
+  if(!stess)
+    return AY_ENULL;
 
-  ay_status = ay_stess_TessTrimmedNPU(interp, o, num, numtrims, tcs,
-				      tcslens, tcsdirs, &first_loop_cw, &ups);
-
-  if(first_loop_cw != 1)
+  if(!stess->ft_cw)
     out = 0;
   else
     out = 1;
+
   /* draw iso-u lines */
-  for(i = 0; i < Cn; i++)
+  for(i = 0; i < stess->upslen; i++)
     {
-      uvpptr = ups[i];
+      uvpptr = stess->ups[i];
 
       if(!out)
 	glBegin(GL_LINE_STRIP);
@@ -1714,18 +1728,16 @@ ay_stess_DrawTrimmedSurface(Tcl_Interp *interp, ay_object *o, int num)
 
     } /* for */
 
-  ay_status = ay_stess_TessTrimmedNPV(interp, o, num, numtrims, tcs,
-				      tcslens, tcsdirs, first_loop_cw, &vps);
 
-  if(first_loop_cw != 1)
+  if(!stess->ft_cw)
     out = 0;
   else
     out = 1;
 
   /* draw iso-v lines */
-  for(i = 0; i < Cm; i++)
+  for(i = 0; i < stess->vpslen; i++)
     {
-      uvpptr = vps[i];
+      uvpptr = stess->vps[i];
 
       if(!out)
 	glBegin(GL_LINE_STRIP);
@@ -1763,74 +1775,23 @@ ay_stess_DrawTrimmedSurface(Tcl_Interp *interp, ay_object *o, int num)
 
 
   /* draw trimcurves (outlines) */
-  for(i = 0; i < numtrims; i++)
+  for(i = 0; i < stess->tcslen; i++)
     {
       glBegin(GL_LINE_STRIP);
-       for(j = 0; j < tcslens[i]; j++)
+       for(j = 0; j < stess->tcslens[i]; j++)
 	 {
 	   ay_nb_SurfacePoint4D(p->width-1, p->height-1,
 	       	       p->uorder-1, p->vorder-1, p->uknotv, p->vknotv,
-	       	       p->controlv, tcs[i][j*2], tcs[i][j*2+1], p4);
+	       	       p->controlv, stess->tcs[i][j*2],
+				stess->tcs[i][j*2+1], p4);
 
 	   glVertex3dv((GLdouble*)(p4));
 	 } /* for */
       glEnd();
     } /* for */
 
-  /* clean up the mess */
-cleanup:
-
-  if(tcs)
-    {
-      for(i = 0; i < numtrims; i++)
-	{
-	  free(tcs[i]);
-	}
-      free(tcs);
-    } /* if */
-
-  if(tcslens)
-    free(tcslens);
-
-  if(tcsdirs)
-    free(tcsdirs);
-
-  if(ups)
-    {
-      for(i = 0; i < Cn; i++)
-	{
-	  uvpptr = ups[i];
-	  while(uvpptr)
-	    {
-	      uvpptr2 = uvpptr->next;
-	      free(uvpptr);
-	      uvpptr = uvpptr2;
-	    }
-	  ups[i] = NULL;
-	} /* for */
-      free(ups);
-    } /* if */
-
-  if(vps)
-    {
-      for(i = 0; i < Cm; i++)
-	{
-	  uvpptr = vps[i];
-	  while(uvpptr)
-	    {
-	      uvpptr2 = uvpptr->next;
-	      free(uvpptr);
-	      uvpptr = uvpptr2;
-	    }
-	  vps[i] = NULL;
-	} /* for */
-      free(vps);
-    } /* if */
-
  return AY_OK;
 } /* ay_stess_DrawTrimmedSurface */
-
-#endif /*0*/
 
 
 /* ay_stess_TessTrimmedNP:
@@ -1865,7 +1826,7 @@ ay_stess_TessTrimmedNP(ay_object *o, int qf)
 
   ay_status = ay_stess_TessTrimmedNPU(o, qf, st->tcslen, st->tcs,
 				      st->tcslens, st->tcsdirs,
-				      &first_loop_cw, &st->ups);
+				      &first_loop_cw, &st->upslen, &st->ups);
 
   if(ay_status)
     goto cleanup;
@@ -1874,10 +1835,12 @@ ay_stess_TessTrimmedNP(ay_object *o, int qf)
 
   ay_status = ay_stess_TessTrimmedNPV(o, qf, st->tcslen, st->tcs,
 				      st->tcslens, st->tcsdirs,
-				      first_loop_cw, &st->vps);
+				      first_loop_cw, &st->vpslen, &st->vps);
 
   if(ay_status)
     goto cleanup;
+
+  st->ft_cw = first_loop_cw;
 
   /* return result */
   p = NULL;
@@ -1901,10 +1864,10 @@ cleanup:
 int
 ay_stess_TessNP(ay_object *o, int qf)
 {
- char fname[] = "stess_TessNP";
  int ay_status = AY_OK;
+ /*char fname[] = "stess_TessNP";*/
  ay_nurbpatch_object *npatch;
- static int warned = AY_FALSE;
+ /*static int warned = AY_FALSE;*/
 
   if(!o)
     return AY_ENULL;
@@ -1917,14 +1880,16 @@ ay_stess_TessNP(ay_object *o, int qf)
   if(ay_npt_istrimmed(o, 0))
     {
       /* this is a nontrivially trimmed NURBS patch */
+      /*
       if(!warned)
 	{
 	  ay_error(AY_ERROR, fname, "can not stess trimmed patches");
 	  warned = AY_TRUE;
 	}
-      /*
-      ay_status = ay_stess_TessTrimmedNP(o, qf);
       */
+      
+      ay_status = ay_stess_TessTrimmedNP(o, qf);
+      
     }
   else
     {
