@@ -9183,9 +9183,48 @@ that render very slowly.
 <item>Disable <tt/"UseMatColor"/.
 </itemize>
 
+<sect1>Restrictions and Implementation Deficiencies<label id="defi">
+<p>
+Due to the way Ayam is implemented, several restrictions and
+deficiencies exist:
+<itemize>
+<item>Almost all strings in Ayam (scene file names, object names,
+material names) are restricted to be 7 bit ASCII. If the scene is
+not transported to other systems 8 bit ASCII should be fine, however.
+<item>The maximum scene depth depends on the maximum stack size of the
+operating system Ayam is running on (due to the use of recursion almost
+everywhere traversing the scene, e.g. for drawing).
+<item>Ayam internally operates on double precision math, however,
+no control over roundoff error in lengthy calculations exists.
+Saving of scene files only uses the precision dictated by the current
+standard C library. Using of double precision numbers via the
+Tcl scripting interface or the GUI also can reduce precision due to
+double-string-double-conversions (whose precision can be adjusted
+by the user via the <tt/"TclPrecision"/ preference setting, however). 
+<item>Materials may only be assigned to complete objects, not to
+certain parts of objects.
+<item>Undo/Redo are not possible for scene structure changes.
+<item>Selected points do not survive Undo/Redo/Saving.
+<item>There are no acceleration structures for e.g. drawing and object
+tree updates. This limits the number of objects that Ayam can handle
+simultaneously without big lags in redraws or after scene structure
+changes to about 1000. However, Ayam objects should be high-level objects,
+not single polygons, anyway.
+</itemize>
+
+Ayam user interface deficiencies:
+<itemize>
+<item>Ayam is a multi toplevel window application. Unfortunately,
+many people are trained to the "one toplevel window per application"
+paradigm. Furthermore, window managers get worse and worse in application
+support for e.g. focus control.
+<item>Application state is often communicated via window title
+strings only. But certain window systems do not display those
+titles well.
+</itemize>
+
 <sect1>How can you help?
 <p>
-
 <enum>
 <item>Write/translate tutorials.
 <item>Implement custom objects. This will be discussed a bit more later on.
@@ -9193,7 +9232,7 @@ that render very slowly.
 some ideas are: better (more exact) lighting simulation (is this
 possible to do with OpenGL at all?),
 transformation widgets, import/export plugins,
-true support for subdivision surfaces.
+true support for subdivision surfaces, lift some deficiencies (see above).
 The project page of Ayam on SourceForge lists some more tasks and
 you are always welcome to discuss the matter in the public forum
 or in the feature request tracker.
@@ -9219,7 +9258,7 @@ Ayam objects should be high-level objects!
 
 Reading the last paragraph you might think that I am a bit biased
 against polygonal models. I am not. Polygonal models are the only
-way to preview complex geometry using hardware accellerated graphics,
+way to preview complex geometry using hardware accelerated graphics,
 for the moment. But even while RenderMan supports rendering of
 polygonal models their use as a primitive is not recommended for
 good reasons. In other words, use polygonal models in the modeler
