@@ -3583,6 +3583,9 @@ ay_npt_interpolateu(ay_nurbpatch_object *np, int order)
  double *uk = NULL, *d = NULL, *Pw = NULL, v[3] = {0};
  double *U = NULL, *Q = NULL;
 
+  if(!np)
+    return AY_ENULL;
+
   K = np->width;
   N = np->height;
   stride = 4;
@@ -3720,6 +3723,9 @@ ay_npt_interpolatev(ay_nurbpatch_object *np, int order)
  double *vk = NULL, *d = NULL, *Pw = NULL, v[3] = {0};
  double *V = NULL;
 
+  if(!np)
+    return AY_ENULL;
+
   K = np->width;
   N = np->height;
   stride = 4;
@@ -3840,6 +3846,9 @@ ay_npt_skinu(ay_object *curves, int order, int knot_type,
  int stride = 4, K, N, i, b, k, degU, ind;
  double *skc = NULL, *U = NULL, *uk = NULL, *d = NULL, *V = NULL;
  double v[3] = {0};
+
+  if(!curves || !skin)
+    return AY_ENULL;
 
   ay_status = ay_nct_makecompatible(curves);
   if(ay_status)
@@ -4003,6 +4012,9 @@ ay_npt_skinv(ay_object *curves, int order, int knot_type,
  int stride = 4, K, N, i, a, b, c, k, degV, ind;
  double *skc = NULL, *U = NULL, *vk = NULL, *d = NULL, *V = NULL;
  double v[3] = {0};
+
+  if(!curves || !skin)
+    return AY_ENULL;
 
   ay_status = ay_nct_makecompatible(curves);
   if(ay_status)
@@ -4901,7 +4913,6 @@ ay_npt_elevateu(ay_nurbpatch_object *patch, int t)
  double u, *Uh = NULL, *Qw = NULL, *realQw = NULL, *realUh = NULL;
  int i, j, a, b, clamp_me = AY_FALSE, nw = 0;
  char fname[] = "ay_npt_elevateu";
-
 
   if(patch->uknot_type == AY_KTBSPLINE)
     {
@@ -6539,8 +6550,8 @@ ay_npt_closevtcmd(ClientData clientData, Tcl_Interp *interp,
 int
 ay_npt_isclosedu(ay_nurbpatch_object *np)
 {
-  int i;
-  double u;
+ int i;
+ double u;
 
   if(!np)
     return AY_ENULL;
@@ -6562,7 +6573,7 @@ ay_npt_isclosedu(ay_nurbpatch_object *np)
 void
 ay_npt_clearmp(ay_nurbpatch_object *np)
 {
-  ay_mpoint *next = NULL, *mp = NULL;
+ ay_mpoint *next = NULL, *mp = NULL;
 
   if(!np)
     return;
@@ -7228,7 +7239,6 @@ ay_npt_clamputcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_npt_clamputcmd */
 
 
-
 /* ay_npt_clampvtcmd:
  *  Tcl interface for ay_npt_clampu above
  */
@@ -7826,7 +7836,6 @@ ay_npt_splitu(ay_object *src, double u, ay_object **result)
  int stride = 4, k = 0, r = 0, s = 0, np1len = 0;
  char fname[] = "npt_splitu";
 
-
   if(!src || !result)
     return AY_ENULL;
 
@@ -8039,7 +8048,6 @@ ay_npt_splitv(ay_object *src, double v, ay_object **result)
  int stride = 4, k = 0, r = 0, s = 0, np1len = 0;
  int i, a, b, oldnp1height;
  char fname[] = "npt_splitv";
-
 
   if(!src || !result)
     return AY_ENULL;
