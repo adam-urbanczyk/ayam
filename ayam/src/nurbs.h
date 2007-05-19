@@ -318,6 +318,11 @@ int ay_nct_coarsentcmd(ClientData clientData, Tcl_Interp *interp,
 
 int ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
+int
+ay_nct_trimtcmd(ClientData clientData, Tcl_Interp *interp,
+		int argc, char *argv[]);
+
+int ay_nct_trim(ay_nurbcurve_object **curve, double umin, double umax);
 
 int ay_nct_isdegen(ay_nurbcurve_object *curve);
 

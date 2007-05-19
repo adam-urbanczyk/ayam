@@ -5211,6 +5211,112 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_nct_removekntcmd */
 
 
+/* ay_nct_trim:
+ *
+ */
+int
+ay_nct_trim(ay_nurbcurve_object **curve, double umin, double umax)
+{
+ int ay_status = AY_OK;
+ ay_object t1 = {0}, *t2 = NULL, *t3 = NULL;
+
+  if(!curve)
+    return AY_FALSE;
+
+  t1.type = AY_IDNCURVE;
+  t1.refine = *curve;
+
+  ay_status = ay_nct_split(&t1, umin, &t2);
+
+  if(ay_status)
+    return ay_status;
+
+  ay_status = ay_nct_split(t2, umax, &t3);
+
+  if(ay_status)
+    return ay_status;
+
+  /* remove superfluous curves and return result */
+  ay_object_delete(t3);
+  *curve = t2->refine;
+  t2->refine = t1.refine;
+  ay_object_delete(t2);
+
+ return ay_status;
+} /* ay_nct_trim */
+
+
+/* ay_nct_trimtcmd:
+ *
+ */
+int
+ay_nct_trimtcmd(ClientData clientData, Tcl_Interp *interp,
+		int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ char fname[] = "trimNC";
+ double umin = 0.0, umax = 0.0;
+ ay_list_object *sel = ay_selection;
+ ay_object *o = NULL;
+
+  if(argc < 3)
+    {
+      ay_error(AY_EARGS, fname, "umin umax");
+      return TCL_OK;
+    }
+
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, fname, NULL);
+      return TCL_OK;
+    }
+
+  Tcl_GetDouble(interp, argv[1], &umin);
+  Tcl_GetDouble(interp, argv[2], &umax);
+
+  while(sel)
+    {
+      o = sel->object;
+      if(o->type != AY_IDNCURVE)
+	{
+	  ay_error(AY_EWTYPE, fname, ay_nct_ncname);
+	}
+      else
+	{
+	  /* remove all selected points */
+	  if(sel->object->selp)
+	    {
+	      ay_selp_clear(sel->object);
+	    }
+
+	  ay_status = ay_nct_trim((ay_nurbcurve_object**)(&(o->refine)),
+				  umin, umax);
+
+	  if(ay_status)
+	    {
+	      ay_error(AY_ERROR, fname, "trim failed");
+	      break;
+	    }
+
+	  /* update pointers to controlv */
+	  ay_status = ay_nct_recreatemp(o->refine);
+	  ay_status = ay_object_ccp(o);
+
+	  o->modified = AY_TRUE;
+
+	  /* re-create tesselation of curve */
+	  ay_notify_force(sel->object);
+	} /* if */
+
+      sel = sel->next;
+    } /* while */
+
+  ay_notify_parent();
+
+ return TCL_OK;
+} /* ay_nct_trimtcmd */
+
+
 /* ay_nct_isdegen:
  *
  */
