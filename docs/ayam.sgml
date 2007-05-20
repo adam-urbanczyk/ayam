@@ -6241,6 +6241,22 @@ form the first of the two new curves, so you may want to keep a copy
 of it somewhere.
 </itemize>
 
+<sect1>The Trim Tool<label id="trimt">
+<p>
+<figure loc="ht">
+<eps file="pics/trimnc.ps" height="4cm">
+<img src="pics/trimnc.gif">
+<caption>Trim Tool (left: original curve, right: resulting trimmed curve for umin=0.1, umax=0.5)</caption>
+</figure>
+<itemize>
+<item>Arguments: The trim curves tool takes all selected NURBS curves from
+the selection and additionally requests two parametric values.
+<item>Operation: The selected NURBS curves will be trimmed to the
+designated parametric range (umin, umax).
+<item>Note: The trimming process involves the application of knot insertion
+so that the curves will get a custom knot vector.
+</itemize>
+
 <sect1>The Elevate Tool<label id="elevt">
 <p>
 <figure loc="ht">
@@ -7316,6 +7332,14 @@ splitNC - split NURBS curve
  <item>Description: splits the selected NURBS curve at designated parametric
 value into two curves, creating one new curve and modifying the original
 selected curve.
+</itemize>
+
+<p><label id="sctrimnc">
+trimNC - trim NURBS curve
+<itemize>
+ <item>Synopsis: <tt/"trimNC umin umax"/
+ <item>Description: trims the selected NURBS curve to the designated
+parametric range (umin-umax), modifying the original selected curve.
 </itemize>
 
 <p><label id="scclampnpu">
@@ -10111,6 +10135,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Tree View: <ref id="treeview" name="Tree View">
 <item>Trim: <ref id="vmtype" name="view menu entry">
 <item>Trim Curve: <ref id="trim" name="using trim curves">
+<item>trimNC: <ref id="sctrimnc" name="scripting interface command">
 <item>TrimRect: <ref id="trrt" name="TrimRect tool">
 <item>TrueDisp: <ref id="attrs" name="RenderMan/BMRT attribute">
 <item>TTagName: <ref id="imprhino" name="3DM (Rhino) import option">,
