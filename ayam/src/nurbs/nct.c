@@ -5218,29 +5218,49 @@ int
 ay_nct_trim(ay_nurbcurve_object **curve, double umin, double umax)
 {
  int ay_status = AY_OK;
- ay_object t1 = {0}, *t2 = NULL, *t3 = NULL;
+ ay_object t1 = {0}, *t2 = NULL;
+ void *t;
+ double knotmin, knotmax;
 
-  if(!curve)
-    return AY_FALSE;
+  if(!curve || !*curve)
+    return AY_ENULL;
 
+  knotmin = (*curve)->knotv[(*curve)->order-1];
+  knotmax = (*curve)->knotv[(*curve)->length];
+
+  /* prepare t1 for splitting (XXXX do we need ay_object_defaults()?) */
   t1.type = AY_IDNCURVE;
   t1.refine = *curve;
 
-  ay_status = ay_nct_split(&t1, umin, &t2);
+  if(umin >= knotmin)
+    {
+      ay_status = ay_nct_split(&t1, umin, &t2);
 
-  if(ay_status)
-    return ay_status;
+      if(ay_status)
+	return ay_status;
 
-  ay_status = ay_nct_split(t2, umax, &t3);
+      /* remove superfluous curve and save result in t1 */
+      t = t2->refine;
+      t2->refine = t1.refine;
+      t1.refine = t;
+      ay_object_delete(t2);
+      t2 = NULL;
+    } /* if */
 
-  if(ay_status)
-    return ay_status;
+  if(umax <= knotmax)
+    {
+      ay_status = ay_nct_split(&t1, umax, &t2);
 
-  /* remove superfluous curves and return result */
-  ay_object_delete(t3);
-  *curve = t2->refine;
-  t2->refine = t1.refine;
-  ay_object_delete(t2);
+      if(ay_status)
+	return ay_status;
+
+      /* remove superfluous curve */
+      ay_object_delete(t2);
+      t2 = NULL;
+    } /* if */
+
+  /* return result */
+  *curve = t1.refine;
 
  return ay_status;
 } /* ay_nct_trim */
