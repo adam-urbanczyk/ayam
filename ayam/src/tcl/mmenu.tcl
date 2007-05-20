@@ -304,6 +304,10 @@ $m.nct add command -label "Make Periodic" -command { undo save "Make Periodic";
 $m.nct add command -label "Concat" -command { concatNC; uCR; rV}
 $m.nct add command -label "Split" -command {
 runTool ay(splitu) {"Split at:"} "undo save Split; splitNC %0; uCR; sL; rV" }
+$m.nct add command -label "Trim" -command {
+    runTool [list ay(trimumin) ay(trimumax)]\
+	    [list "UMin:" "UMax:"]\
+            "undo save TrimNC; trimNC %0 %1; plb_update; rV" }
 $m.nct add command -label "Refine" -command { undo save Refine; refineNC;
                                               plb_update; rV }
 $m.nct add command -label "Coarsen" -command { undo save Coarsen; coarsenNC;

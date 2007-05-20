@@ -515,6 +515,8 @@ array set ay {
  remknr 1
  refinekn 0.5
  splitu 0.5
+ trimumin 0.0
+ trimumax 1.0
  ncircradius 1.0
  ncircarc 360.0
  nsphereradius 1.0
