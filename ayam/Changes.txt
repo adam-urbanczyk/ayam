@@ -1,4 +1,4 @@
-[11. May 2007] CVS-Head:
+[21. May 2007] CVS-Head:
 =======================
 o Bug Fixes:
   - crash after deleting of objects (SF 1637735)
@@ -65,6 +65,7 @@ o added "splitNPU"/"splitNPV" commands and tools (new main menu entries
 o added "extrNP" command and tool (new main menu entry
   "Tools/NURBPatch/Extract Patch") to extract a sub-patch from a NURBS patch
 o improved knot type handling in remove knot tool
+o added "trimNC" command and tool (new main menu entry "Tools/NURBPatch/Trim")
 
 Drawing/Shading:
 o added antialiasing drawing option for lines
@@ -72,6 +73,7 @@ o added hidden/wizard preference options for line width:
   "LineWidth" and "SelLineWidth" (set via ayamrc file)
 o improved drawing of selected curves in Shade&Draw views
 o improved shading quality of NURBS surfaces in STESS mode
+o revived STESS drawing of trimmed NURBS surfaces
 
 Import/Export:
 o added DXF import plugin dxfio
@@ -91,6 +93,8 @@ o added example script "zap" that shows how to create buttons in the
   Ayam toolbox
 o improved error detection and reporting of "withOb" command
 o renamed getPnt option -u to -p and added support to get surface points
+o added special keyboard shortcut <Shift-Enter> to the console that
+  executes the current command, updates the GUI, and redraws all views
 
 
 [1. Jan 2007] Ayam 1.12:
