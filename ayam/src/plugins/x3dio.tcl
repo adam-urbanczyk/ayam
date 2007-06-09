@@ -1,0 +1,261 @@
+# Ayam, a free 3D modeler for the RenderMan interface.
+#
+# Ayam is copyrighted 1998-2007 by Randolf Schultz
+# (rschultz@informatik.uni-rostock.de) and others.
+#
+# All rights reserved.
+#
+# See the file License for details.
+
+# x3dio.tcl - x3dio (Web3D X3D) plugin GUI code
+
+uplevel #0 { array set x3dio_options {
+    Accuracy 1.0e-12
+    Cancel 0
+    ErrorLevel 1
+    ReadCurves 1
+    ReadLayers -1
+    IgnoreFirstTrim 0
+    WriteSelected 0
+    ObeyNoExport 1
+    IgnoreHidden 1
+    WriteCurves 1
+    QuadAsBRep 1
+    RescaleKnots 0.0
+    TopLevelLayers 0
+    ScaleFactor 1.0
+    Progress 0.0
+    filename ""
+    FileName "unnamed.x3d"
+    STagName "mys"
+    TTagName "myt"
+}   }
+
+
+#
+proc x3dio_import { } {
+    global ay ay_error x3dio_options
+
+    winAutoFocusOff
+
+    if { $x3dio_options(filename) != "" } {
+	set x3dio_options(FileName) $x3dio_options(filename)
+    } else {
+	set x3dio_options(FileName) "unnamed.x3d"
+    }
+
+    cS; plb_update
+    update
+
+    set ay_error ""
+
+    set w .x3dio
+    catch {destroy $w}
+    toplevel $w -class ayam
+    wm title $w "X3D Import Options"
+    wm iconname $w "Ayam"
+    wm transient $w .
+
+    set f [frame $w.f1]
+    pack $f -in $w -side top -fill x
+
+    set ay(iapplydisable) 1
+
+    set types {{"X3D (Web3D) Files" ".x3d"} {"All files" *}}
+    addFileT $f x3dio_options FileName $types
+
+    addParam $f x3dio_options ScaleFactor [list 0.01 0.1 1.0 10.0 100.0]
+
+#    addParam $f x3dio_options Accuracy [list 0.0 1.0e-12 0.1 1]
+    addCheck $f x3dio_options ReadCurves
+#    addCheck $f x3dio_options IgnoreFirstTrim
+    addParam $f x3dio_options ReadLayers [list "-1" 1 1-10]
+    addParam $f x3dio_options RescaleKnots [list 0.0 1.0e-4]
+#    addString $f x3dio_options STagName
+#    addString $f x3dio_options TTagName
+    addMenu $f x3dio_options ErrorLevel [list Silence Errors Warnings All]
+    addProgress $f x3dio_options Progress
+
+    set ay(iapplydisable) 0
+
+    set f [frame $w.f2]
+    button $f.bok -text "Ok" -width 5 -command {
+	global x3dio_options
+
+	set x3dio_options(filename) $x3dio_options(FileName)
+	set oldcd [pwd]
+	cd [file dirname $x3dio_options(FileName)]
+
+	x3dioRead [file tail $x3dio_options(FileName)]\
+	    -a $x3dio_options(Accuracy)\
+	    -c $x3dio_options(ReadCurves)\
+	    -e $x3dio_options(ErrorLevel)\
+	    -l $x3dio_options(ReadLayers)\
+	    -i $x3dio_options(IgnoreFirstTrim)\
+	    -r $x3dio_options(RescaleKnots)\
+	    -f $x3dio_options(ScaleFactor)\
+	    -t $x3dio_options(STagName) $x3dio_options(TTagName)
+
+	cd $oldcd
+	goTop
+	selOb
+	set ay(CurrentLevel) "root"
+	set ay(SelectedLevel) "root"
+	update
+
+	uS
+	rV
+
+	set ay(sc) 1
+
+	if { $ay_error < 2 } {
+	    ayError 4 "x3dio_import" "Done importing:"
+	    ayError 4 "x3dio_import" "$x3dio_options(FileName)"
+	} else {
+	    ayError 2 "x3dio_import" "There were errors while importing:"
+	    ayError 2 "x3dio_import" "$x3dio_options(FileName)"
+	}
+
+	grab release .x3dio
+	focus .
+	destroy .x3dio
+    }
+    # button
+
+    button $f.bca -text "Cancel" -width 5 -command "\
+                set ::x3dio_options(Cancel) 1;\
+		grab release .x3dio;\
+		focus .;\
+		destroy .x3dio"
+
+    pack $f.bok $f.bca -in $f -side left -fill x -expand yes
+    pack $f -in $w -side bottom -fill x
+
+    set ::x3dio_options(Cancel) 0
+
+    winCenter $w
+    grab $w
+    focus $w.f2.bok
+    tkwait window $w
+
+    winAutoFocusOn
+
+    after idle viewMouseToCurrent
+
+ return;
+}
+# x3dio_import
+
+
+proc x3dio_export { } {
+    global ay ay_error x3dio_options
+
+    winAutoFocusOff
+
+    cS; plb_update
+    update
+
+    set ay_error ""
+
+    set w .x3dio
+    catch {destroy $w}
+    toplevel $w -class ayam
+    wm title $w "X3D Export Options"
+    wm iconname $w "Ayam"
+    wm transient $w .
+
+    set f [frame $w.f1]
+    pack $f -in $w -side top -fill x
+
+    if { $ay(filename) != "" &&\
+	    $x3dio_options(FileName) == "unnamed.x3d" } {
+	set x3dio_options(FileName) [file rootname $ay(filename)].x3d
+    }
+
+    set ay(iapplydisable) 1
+
+    set types {{"X3D (Web3D) Files" ".x3d"} {"All files" *}}
+    addSFileT $f x3dio_options FileName $types
+
+    addParam $f x3dio_options ScaleFactor [list 0.01 0.1 1.0 10.0 100.0]
+
+    addParam $f x3dio_options Accuracy
+    addCheck $f x3dio_options WriteSelected
+    addCheck $f x3dio_options ObeyNoExport
+    addCheck $f x3dio_options IgnoreHidden
+    addCheck $f x3dio_options WriteCurves
+    addCheck $f x3dio_options QuadAsBRep
+    addCheck $f x3dio_options TopLevelLayers
+    addString $f x3dio_options STagName
+    addString $f x3dio_options TTagName
+    addProgress $f x3dio_options Progress
+
+    set ay(iapplydisable) 0
+
+    set f [frame $w.f2]
+    button $f.bok -text "Ok" -width 5 -command {
+	global x3dio_options;
+
+	# append extension
+	set x3dio_options(FileName) [io_appext $x3dio_options(FileName) ".x3d"]
+
+	set x3dio_options(filename) $x3dio_options(FileName)
+	set oldcd [pwd]
+	cd [file dirname $x3dio_options(FileName)]
+
+	x3dioWrite [file tail $x3dio_options(FileName)]\
+	    -c $x3dio_options(WriteCurves)\
+	    -q $x3dio_options(QuadAsBRep)\
+	    -s $x3dio_options(WriteSelected)\
+	    -o $x3dio_options(ObeyNoExport)\
+	    -i $x3dio_options(IgnoreHidden)\
+	    -l $x3dio_options(TopLevelLayers)\
+	    -f $x3dio_options(ScaleFactor)\
+	    -t $x3dio_options(STagName) $x3dio_options(TTagName)
+
+	cd $oldcd
+	update
+
+	if { $ay_error < 2 } {
+	    ayError 4 "x3dio_export" "Done exporting to:"
+	    ayError 4 "x3dio_export" "$x3dio_options(FileName)"
+	} else {
+	    ayError 2 "x3dio_export" "There were errors while exporting to:"
+	    ayError 2 "x3dio_export" "$x3dio_options(FileName)"
+	}
+	# if
+
+	grab release .x3dio;
+	focus .;
+	destroy .x3dio
+    }
+    # button
+
+    button $f.bca -text "Cancel" -width 5 -command "\
+		grab release .x3dio;\
+		focus .;\
+		destroy .x3dio"
+
+    pack $f.bok $f.bca -in $f -side left -fill x -expand yes
+    pack $f -in $w -side bottom -fill x
+
+    winCenter $w
+    grab $w
+    focus $w.f2.bok
+    tkwait window $w
+
+    winAutoFocusOn
+
+    after idle viewMouseToCurrent
+
+ return;
+}
+# x3dio_export
+
+# link procs x3dio_import and x3dio_export to File/Import and File/Export menu
+# we need access to global array "ay"
+global ay
+# create menu entries
+$ay(im) add command -label "Web3D X3D" -command x3dio_import
+
+$ay(em) add command -label "Web3D X3D" -command x3dio_export
