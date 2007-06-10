@@ -1,4 +1,4 @@
-INSTALL [11. Mar 2007]
+INSTALL [10. Jun 2007]
 
 Compilation Instructions for Ayam
 ---------------------------------
@@ -511,7 +511,25 @@ Load it via menu entry "File/Load Plugin".
 Use it via menu entry "File/Import/Mops".
 
 
-3.10 Installing/Uninstalling Ayam
+3.10 X3DIO (Web3D X3D IO) Plugin
+--------------------------------
+
+Additional prerequisites to compile the x3dio plugin are:
+Expat and SCEW.
+
+In order to compile the plugin, adapt the following variables
+in the Ayam Makefile:
+EXPATDIR, SCEWDIR
+
+then type:
+>make x3dio.so
+
+Load it via menu entry "File/Load Plugin".
+Use it via menu entry "File/Import/Web3D X3D" and "File/Export/Web3D X3D",
+respectively.
+
+
+3.11 Installing/Uninstalling Ayam
 ---------------------------------
 
 Use
@@ -548,7 +566,7 @@ to make clean but not remove the objects that never change,
 like Apples mf3d code and Affines sribw code.
 
 
-3.11 Creating an application bundle on MacOSX
+3.12 Creating an application bundle on MacOSX
 ---------------------------------------------
 
 Since Ayam 1.9, the Ayam source distribution contains a skeleton

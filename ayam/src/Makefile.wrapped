@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile.wrapped [11. Mar 2007]
+# Makefile.wrapped [10. Jun 2007]
 # Makefile for Ayam (wrapped version)
 
 # Choose an installation prefix.
