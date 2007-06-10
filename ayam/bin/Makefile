@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile [11. Mar 2007]
+# Makefile [10. Jun 2007]
 # Makefile for the installation of Ayam (precompiled wrapped version)
 
 # Choose an installation prefix.
@@ -58,6 +58,9 @@ install:
 	-$(INSTALL) plugins/dxfio.so $(LIBDIR)
 	-$(INSTALL) plugins/dxfio.tcl $(LIBDIR)
 	-$(INSTALL) plugins/loaddxfio.tcl $(LIBDIR)
+	-$(INSTALL) plugins/x3dio.so $(LIBDIR)
+	-$(INSTALL) plugins/x3dio.tcl $(LIBDIR)
+	-$(INSTALL) plugins/loadx3dio.tcl $(LIBDIR)
 	-$(INSTALL) plugins/idr.so $(LIBDIR)
 	-$(INSTALL) plugins/idr.tcl $(LIBDIR)
 	-$(INSTALL) plugins/loadidr.tcl $(LIBDIR)
@@ -119,6 +122,7 @@ uninstall:
 	-rm -rf $(LIBDIR)/aycsg.so $(LIBDIR)/aycsg.tcl $(LIBDIR)/loadaycsg.tcl
 	-rm -rf $(LIBDIR)/onio.so $(LIBDIR)/onio.tcl $(LIBDIR)/loadonio.tcl
 	-rm -rf $(LIBDIR)/dxfio.so $(LIBDIR)/dxfio.tcl $(LIBDIR)/loaddxfio.tcl
+	-rm -rf $(LIBDIR)/x3dio.so $(LIBDIR)/x3dio.tcl $(LIBDIR)/loadx3dio.tcl
 	-cd $(DOCDIR); rm -rf Setup.txt Changes.txt License.txt refcard.tcl\
 refcard.ps ayam.pdf html;
 	-rm -rf $(LIBDIR)/Makefile
