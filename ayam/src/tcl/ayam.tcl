@@ -172,8 +172,8 @@ array set ayprefs {
 
  WindowSystem "unknown"
 
- ALFileTypes { ".rib" ".3dm" ".obj" ".3dmf" ".mop" ".dxf" }
- ALPlugins { "rrib" "onio" "objio" "mfio" "mopsi" "dxfio" }
+ ALFileTypes { ".rib" ".3dm" ".obj" ".3dmf" ".mop" ".dxf" ".x3d" }
+ ALPlugins { "rrib" "onio" "objio" "mfio" "mopsi" "dxfio" "x3dio" }
 
  AUCommands { uS; rV; }
 
