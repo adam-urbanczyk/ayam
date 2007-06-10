@@ -49,7 +49,6 @@ int x3dio_exportcurves = AY_TRUE;
 int x3dio_expselected = AY_FALSE;
 int x3dio_expobeynoexport = AY_TRUE;
 int x3dio_expignorehidden = AY_TRUE;
-int x3dio_exptoplevellayers = AY_TRUE;
 
 /* 0: silence, 1: errors, 2: warnings, 3: all */
 int x3dio_errorlevel = 1;
@@ -77,14 +76,22 @@ void x3dio_trafotoobject(ay_object *o, double *transform);
 
 int x3dio_readbool(scew_element *element, char *attrname, int *res);
 
+int x3dio_readint(scew_element *element, char *attrname, int *res);
+
 int x3dio_readfloat(scew_element *element, char *attrname, float *res);
 
 int x3dio_readfloatvec(scew_element *element, char *attrname,
 		       unsigned int dim, float *res);
 
+int x3dio_readfloatpoints(scew_element *element, char *attrname,
+			  unsigned int dim, int *len, float **res);
+
+int x3dio_readdoublepoints(scew_element *element, char *attrname,
+			   unsigned int dim, int *len, double **res);
+
 int x3dio_linkobject(unsigned int type, void *sobj);
 
-
+/* 3D */
 int x3dio_readbox(scew_element *element);
 
 int x3dio_readsphere(scew_element *element);
@@ -93,6 +100,20 @@ int x3dio_readcylinder(scew_element *element);
 
 int x3dio_readcone(scew_element *element);
 
+
+/* 2D */
+int x3dio_readdisk2d(scew_element *element);
+
+int x3dio_readcircle2d(scew_element *element);
+
+int x3dio_readarc2d(scew_element *element);
+
+int x3dio_readarcclose2d(scew_element *element);
+
+int x3dio_readpolyline2d(scew_element *element);
+
+/* NURBS */
+int x3dio_readnurbscurve(scew_element *element, unsigned int dim);
 
 
 int x3dio_readtransform(scew_element *element);
@@ -401,6 +422,40 @@ x3dio_readbool(scew_element *element, char *attrname, int *res)
 } /* x3dio_readbool */
 
 
+/* x3dio_readint:
+ *  get single integer value attribute
+ */
+int
+x3dio_readint(scew_element *element, char *attrname, int *res)
+{
+ scew_attribute *attr = NULL;
+ const XML_Char *str = NULL;
+
+  if(!element || !attrname || !res)
+    return AY_ENULL;
+
+  attr = scew_attribute_by_name(element, attrname);
+  if(attr)
+    {
+      str = scew_attribute_value(attr);
+      if(str)
+	{
+	  sscanf(str, "%d", res);
+	}
+      else
+	{
+	  return AY_ERROR;
+	} /* if */
+    }
+  else
+    {
+      return AY_EWARN;
+    } /* if */
+
+ return AY_OK;
+} /* x3dio_readint */
+
+
 /* x3dio_readfloat:
  *  get single float value attribute
  */
@@ -566,6 +621,87 @@ x3dio_readfloatpoints(scew_element *element, char *attrname,
 
  return AY_OK;
 } /* x3dio_readfloatpoints */
+
+
+/* x3dio_readdoublepoints:
+ *  get double vector attribute
+ */
+int
+x3dio_readdoublepoints(scew_element *element, char *attrname,
+		       unsigned int dim, int *len, double **res)
+{
+ scew_attribute *attr = NULL;
+ const XML_Char *str = NULL, *p;
+ double *dummy = NULL, *fp;
+ unsigned int i;
+
+  if(!element || !attrname || !len || !res)
+    return AY_ENULL;
+
+  *len = 0;
+  *res = NULL;
+
+  attr = scew_attribute_by_name(element, attrname);
+  if(attr)
+    {
+      str = scew_attribute_value(attr);
+      if(str)
+	{
+	  p = str;
+	  while(*p != '\0')
+	    {
+	      if(!(dummy = realloc(*res, (*len+1)*dim*sizeof(double))))
+		{
+		  /* XXXX early exit, memory leak? */
+		  return AY_EOMEM;
+		}
+	      *res = dummy;
+	      fp = &((*res)[(*len)*dim]);
+	      (*len)++;
+
+	      for(i = 0; i < dim; i++)
+		{
+		  /* forward p to next double */
+		  /* jump over leading whitespace */
+		  while(isspace(*p) && (*p != '\0'))
+		    {
+		      p++;
+		    }
+
+		  /* check for (premature) end of string */
+		  if(*p == '\0')
+		    {
+		      /* if we did not read a complete point, but already
+			 encounter the end of the string, we need to
+			 correct the number of (complete) points read */
+		      (*len)--;
+		      break;
+		    }
+
+		  sscanf(p, "%lg", fp);
+
+		  fp++;
+
+		  /* jump over the double we just read */
+		  while(!isspace(*p) && (*p != '\0'))
+		    {
+		      p++;
+		    }
+		} /* for */
+	    } /* while */
+	}
+      else
+	{
+	  return AY_ERROR;
+	} /* if */
+    }
+  else
+    {
+      return AY_EWARN;
+    } /* if */
+
+ return AY_OK;
+} /* x3dio_readdoublepoints */
 
 
 /* x3dio_linkobject:
@@ -995,6 +1131,7 @@ x3dio_readarcclose2d(scew_element *element)
  int ay_status = AY_OK;
  ay_ncircle_object ncircle = {0};
  ay_nurbcurve_object nc = {0};
+ ay_nurbcurve_object cl = {0};
  float radius = 1.0f;
  float sangle = 0.0f;
  float eangle = (float)AY_HALFPI;
@@ -1057,6 +1194,9 @@ x3dio_readarcclose2d(scew_element *element)
   if(ctype == 0)
     {
       /* PIE */
+      cl.length = 3;
+      cl.order = 2;
+
       
     }
   else
@@ -1130,6 +1270,97 @@ cleanup:
 
  return ay_status;
 } /* x3dio_readpolyline2d */
+
+
+/* x3dio_readnurbscurve:
+ *
+ */
+int
+x3dio_readnurbscurve(scew_element *element, unsigned int dim)
+{
+ int ay_status = AY_OK;
+ ay_nurbcurve_object nc = {0};
+ double *cv = NULL, *w = NULL, *knots = NULL;
+ int i, len = 0, wlen = 0, klen = 0, order = 3, stride = 4;
+ int has_weights = AY_FALSE, has_knots = AY_FALSE;
+
+  if(!element)
+    return AY_ENULL;
+
+  ay_status = x3dio_readint(element, "order", &order);
+
+  ay_status = x3dio_readdoublepoints(element, "controlPoint", dim, &len, &cv);
+
+  ay_status = x3dio_readdoublepoints(element, "weight", 1, &wlen, &w);
+  if(wlen >= len)
+    {
+      has_weights = AY_TRUE;
+    }
+
+  ay_status = x3dio_readdoublepoints(element, "knot", 1, &klen, &knots);
+  if(klen >= len+order)
+    {
+      has_knots = AY_TRUE;
+    }
+
+  if(len > 1)
+    {
+      nc.length = len;
+      nc.order = order;
+      nc.knot_type = AY_KTNURB;
+
+      if(!(nc.controlv = calloc(len, stride*sizeof(double))))
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	}
+
+      for(i = 0; i < len; i++)
+	{
+	  nc.controlv[i*stride]   = cv[i*2];
+	  nc.controlv[i*stride+1] = cv[i*2+1];
+	  if(dim > 2)
+	    {
+	      nc.controlv[i*stride+2] = cv[i*2+2];
+	    }
+	  if(has_weights)
+	    {
+	      nc.controlv[i*stride+3] = w[i];
+	    }
+	  else
+	    {
+	      nc.controlv[i*stride+3] = 1.0;
+	    }
+	} /* if */
+      if(has_knots)
+	{
+	  nc.knot_type = AY_KTCUSTOM;
+	  nc.knotv = knots;
+	  knots = NULL;
+	}
+      else
+	{
+	  nc.knot_type = AY_KTBSPLINE;
+	  ay_status = ay_knots_createnc(&nc);
+	}
+
+      /* copy object to the Ayam scene */
+      ay_status = x3dio_linkobject(AY_IDNCURVE, (void*)&nc);
+    } /* if */
+
+cleanup:
+
+  if(cv)
+    free(cv);
+
+  if(w)
+    free(w);
+
+  if(knots)
+    free(knots);
+
+ return ay_status;
+} /* x3dio_readnurbscurve */
 
 
 /* x3dio_readappearance:
@@ -1500,6 +1731,7 @@ x3dio_readelement(scew_element *element)
     }
 
   /* geometric shapes */
+  /* 3D */
   if(!strcmp(element_name, "Box"))
     {
       ay_status = x3dio_readbox(element);
@@ -1516,11 +1748,11 @@ x3dio_readelement(scew_element *element)
     {
       ay_status = x3dio_readcone(element);
     }
+  /* 2D */
   if(!strcmp(element_name, "Disk2D"))
     {
       ay_status = x3dio_readdisk2d(element);
     }
-
   if(!strcmp(element_name, "Circle2D"))
     {
       ay_status = x3dio_readcircle2d(element);
@@ -1536,6 +1768,15 @@ x3dio_readelement(scew_element *element)
   if(!strcmp(element_name, "Polyline2D"))
     {
       ay_status = x3dio_readpolyline2d(element);
+    }
+  /* NURBS */
+  if(!strcmp(element_name, "NurbsCurve"))
+    {
+      ay_status = x3dio_readnurbscurve(element, 3);
+    }
+  if(!strcmp(element_name, "NurbsCurve2D"))
+    {
+      ay_status = x3dio_readnurbscurve(element, 2);
     }
 
   /* non geometric shapes */
