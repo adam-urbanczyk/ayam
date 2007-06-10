@@ -37,7 +37,7 @@ char x3dio_version_mi[] = AY_VERSIONSTRMI;
 static Tcl_HashTable x3dio_write_ht;
 
 
-Tcl_HashTable x3dio_defs_ht;
+static Tcl_HashTable x3dio_defs_ht;
 
 
 /* current transformation */
