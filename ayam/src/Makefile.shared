@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile.shared [11. Mar 2007]
+# Makefile.shared [10. Jun 2007]
 # Makefile for Ayam (shared version)
 
 # Choose an installation prefix.
