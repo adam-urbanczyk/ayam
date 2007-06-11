@@ -110,10 +110,13 @@ int x3dio_readarc2d(scew_element *element);
 
 int x3dio_readarcclose2d(scew_element *element);
 
-int x3dio_readpolyline2d(scew_element *element);
+int x3dio_readpolyline2d(scew_element *element, int contour);
 
 /* NURBS */
 int x3dio_readnurbscurve(scew_element *element, unsigned int dim);
+
+int x3dio_readnurbspatchsurface(scew_element *element, int trimmed);
+
 
 
 int x3dio_readtransform(scew_element *element);
@@ -1226,7 +1229,7 @@ x3dio_readarcclose2d(scew_element *element)
  *
  */
 int
-x3dio_readpolyline2d(scew_element *element)
+x3dio_readpolyline2d(scew_element *element, int contour)
 {
  int ay_status = AY_OK;
  ay_nurbcurve_object nc = {0};
@@ -1236,7 +1239,15 @@ x3dio_readpolyline2d(scew_element *element)
   if(!element)
     return AY_ENULL;
 
-  ay_status = x3dio_readfloatpoints(element, "lineSegments", 2, &len, &cv2d);
+  if(contour)
+    {
+      ay_status = x3dio_readfloatpoints(element, "point", 2, &len, &cv2d);
+    }
+  else
+    {
+      ay_status = x3dio_readfloatpoints(element, "lineSegments", 2,
+					&len, &cv2d);
+    }
 
   if(len > 1)
     {
@@ -1361,6 +1372,130 @@ cleanup:
 
  return ay_status;
 } /* x3dio_readnurbscurve */
+
+
+/* x3dio_readnurbspatchsurface:
+ *
+ */
+int
+x3dio_readnurbspatchsurface(scew_element *element, int trimmed)
+{
+ int ay_status = AY_OK;
+ ay_nurbpatch_object np = {0};
+ double *cv = NULL, *w = NULL, *uknots = NULL, *vknots = NULL;
+ int i, width = 0, height = 0, len = 0, wlen = 0, uklen = 0, vklen = 0;
+ int uorder = 3, vorder = 3, stride = 4;
+ int has_weights = AY_FALSE, has_uknots = AY_FALSE, has_vknots = AY_FALSE;
+
+  if(!element)
+    return AY_ENULL;
+
+  ay_status = x3dio_readint(element, "uOrder", &uorder);
+  ay_status = x3dio_readint(element, "vOrder", &vorder);
+  ay_status = x3dio_readint(element, "uDimension", &width);
+  ay_status = x3dio_readint(element, "vDimension", &height);
+
+  ay_status = x3dio_readdoublepoints(element, "controlPoint", 3, &len, &cv);
+
+  ay_status = x3dio_readdoublepoints(element, "weight", 1, &wlen, &w);
+  if(wlen >= len)
+    {
+      has_weights = AY_TRUE;
+    }
+
+  ay_status = x3dio_readdoublepoints(element, "uKnot", 1, &uklen, &uknots);
+  if(uklen >= width+uorder)
+    {
+      has_uknots = AY_TRUE;
+    }
+  ay_status = x3dio_readdoublepoints(element, "vKnot", 1, &vklen, &vknots);
+  if(uklen >= width+uorder)
+    {
+      has_uknots = AY_TRUE;
+    }
+
+  if(len > 1)
+    {
+      np.width = width;
+      np.height = height;
+      np.uorder = uorder;
+      np.vorder = vorder;
+      np.uknot_type = AY_KTNURB;
+      np.vknot_type = AY_KTNURB;
+
+      if(!(np.controlv = calloc(len, stride*sizeof(double))))
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	}
+
+      for(i = 0; i < len; i++)
+	{
+	  np.controlv[i*stride]   = cv[i*2];
+	  np.controlv[i*stride+1] = cv[i*2+1];
+	  np.controlv[i*stride+2] = cv[i*2+2];
+	  if(has_weights)
+	    {
+	      np.controlv[i*stride+3] = w[i];
+	    }
+	  else
+	    {
+	      np.controlv[i*stride+3] = 1.0;
+	    }
+	} /* if */
+      if(has_uknots)
+	{
+	  np.uknot_type = AY_KTCUSTOM;
+	  np.uknotv = uknots;
+	  uknots = NULL;
+	}
+      else
+	{
+	  np.uknot_type = AY_KTBSPLINE;
+	}
+
+      if(has_vknots)
+	{
+	  np.vknot_type = AY_KTCUSTOM;
+	  np.vknotv = vknots;
+	  vknots = NULL;
+	}
+      else
+	{
+	  np.vknot_type = AY_KTBSPLINE;
+	}
+
+      if(!has_uknots || !has_uknots)
+	{
+	  ay_status = ay_knots_createnp(&np);
+	}
+
+      /* copy object to the Ayam scene */
+      ay_status = x3dio_linkobject(AY_IDNPATCH, (void*)&np);
+
+      /* read trim curves? */
+      if(trimmed)
+	{
+
+	}
+    } /* if */
+
+cleanup:
+
+  if(cv)
+    free(cv);
+
+  if(w)
+    free(w);
+
+  if(uknots)
+    free(uknots);
+
+  if(vknots)
+    free(vknots);
+
+ return ay_status;
+} /* x3dio_readnurbspatchsurface */
 
 
 /* x3dio_readappearance:
@@ -1767,7 +1902,7 @@ x3dio_readelement(scew_element *element)
     }
   if(!strcmp(element_name, "Polyline2D"))
     {
-      ay_status = x3dio_readpolyline2d(element);
+      ay_status = x3dio_readpolyline2d(element, AY_FALSE);
     }
   /* NURBS */
   if(!strcmp(element_name, "NurbsCurve"))
@@ -1778,6 +1913,15 @@ x3dio_readelement(scew_element *element)
     {
       ay_status = x3dio_readnurbscurve(element, 2);
     }
+  if(!strcmp(element_name, "NurbsPatchSurface"))
+    {
+      ay_status = x3dio_readnurbspatchsurface(element, AY_FALSE);
+    }
+  if(!strcmp(element_name, "ContourPolyline2D"))
+    {
+      ay_status = x3dio_readpolyline2d(element, AY_TRUE);
+    }
+
 
   /* non geometric shapes */
   if(!strcmp(element_name, "Group"))
