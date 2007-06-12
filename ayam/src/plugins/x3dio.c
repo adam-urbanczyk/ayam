@@ -1419,7 +1419,7 @@ x3dio_readnurbscurve(scew_element *element, unsigned int dim)
 		{
 		  nc.controlv[i*stride+3] = 1.0;
 		}
-	    }
+	    } /* for */
 	} /* if */
       if(has_knots)
 	{
@@ -1463,10 +1463,12 @@ x3dio_readnurbspatchsurface(scew_element *element, int trimmed)
 {
  int ay_status = AY_OK;
  ay_nurbpatch_object np = {0};
- double *cv = NULL, *w = NULL, *uknots = NULL, *vknots = NULL;
+ float *cv = NULL;
+ double *dcv = NULL, *w = NULL, *uknots = NULL, *vknots = NULL;
  unsigned int i, len = 0, wlen = 0, uklen = 0, vklen = 0;
  int width = 0, height = 0, uorder = 3, vorder = 3, stride = 4;
  int has_weights = AY_FALSE, has_uknots = AY_FALSE, has_vknots = AY_FALSE;
+ int is_double = AY_FALSE;
 
   if(!element)
     return AY_ENULL;
@@ -1476,7 +1478,7 @@ x3dio_readnurbspatchsurface(scew_element *element, int trimmed)
   ay_status = x3dio_readint(element, "uDimension", &width);
   ay_status = x3dio_readint(element, "vDimension", &height);
 
-  ay_status = x3dio_readdoublepoints(element, "controlPoint", 3, &len, &cv);
+  ay_status = x3dio_readfloatpoints(element, "controlPoint", 3, &len, &cv);
 
   ay_status = x3dio_readdoublepoints(element, "weight", 1, &wlen, &w);
   if(wlen >= len)
@@ -1495,6 +1497,12 @@ x3dio_readnurbspatchsurface(scew_element *element, int trimmed)
       has_uknots = AY_TRUE;
     }
 
+  if(len == 0)
+    {
+      ay_status = x3dio_readcoords(element, &len, &dcv);
+      is_double = AY_TRUE;
+    }
+
   if(len > 1)
     {
       np.width = width;
@@ -1509,20 +1517,37 @@ x3dio_readnurbspatchsurface(scew_element *element, int trimmed)
 	  ay_status = AY_EOMEM;
 	  goto cleanup;
 	}
-
-      for(i = 0; i < len; i++)
+      if(!is_double)
 	{
-	  np.controlv[i*stride]   = cv[i*2];
-	  np.controlv[i*stride+1] = cv[i*2+1];
-	  np.controlv[i*stride+2] = cv[i*2+2];
-	  if(has_weights)
+	  for(i = 0; i < len; i++)
 	    {
-	      np.controlv[i*stride+3] = w[i];
-	    }
-	  else
+	      np.controlv[i*stride]   = cv[i*2];
+	      np.controlv[i*stride+1] = cv[i*2+1];
+	      np.controlv[i*stride+2] = cv[i*2+2];
+	      if(has_weights)
+		{
+		  np.controlv[i*stride+3] = w[i];
+		}
+	      else
+		{
+		  np.controlv[i*stride+3] = 1.0;
+		}
+	    } /* if */
+	}
+      else
+	{
+	  for(i = 0; i < len; i++)
 	    {
-	      np.controlv[i*stride+3] = 1.0;
-	    }
+	      memcpy(&(np.controlv[i*stride]), &(dcv[i*3]), 3*sizeof(double));
+	      if(has_weights)
+		{
+		  np.controlv[i*stride+3] = w[i];
+		}
+	      else
+		{
+		  np.controlv[i*stride+3] = 1.0;
+		}
+	    } /* for */
 	} /* if */
       if(has_uknots)
 	{
@@ -1565,6 +1590,9 @@ cleanup:
 
   if(cv)
     free(cv);
+
+  if(dcv)
+    free(dcv);
 
   if(w)
     free(w);
