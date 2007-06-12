@@ -84,10 +84,12 @@ int x3dio_readfloatvec(scew_element *element, char *attrname,
 		       unsigned int dim, float *res);
 
 int x3dio_readfloatpoints(scew_element *element, char *attrname,
-			  unsigned int dim, int *len, float **res);
+			  unsigned int dim, unsigned int *len, float **res);
 
 int x3dio_readdoublepoints(scew_element *element, char *attrname,
-			   unsigned int dim, int *len, double **res);
+			   unsigned int dim, unsigned int *len, double **res);
+
+int x3dio_readcoords(scew_element *element, unsigned int *len, double **res);
 
 int x3dio_linkobject(unsigned int type, void *sobj);
 
@@ -550,7 +552,7 @@ x3dio_readfloatvec(scew_element *element, char *attrname,
  */
 int
 x3dio_readfloatpoints(scew_element *element, char *attrname,
-		      unsigned int dim, int *len, float **res)
+		      unsigned int dim, unsigned int *len, float **res)
 {
  scew_attribute *attr = NULL;
  const XML_Char *str = NULL, *p;
@@ -631,7 +633,7 @@ x3dio_readfloatpoints(scew_element *element, char *attrname,
  */
 int
 x3dio_readdoublepoints(scew_element *element, char *attrname,
-		       unsigned int dim, int *len, double **res)
+		       unsigned int dim, unsigned int *len, double **res)
 {
  scew_attribute *attr = NULL;
  const XML_Char *str = NULL, *p;
@@ -705,6 +707,57 @@ x3dio_readdoublepoints(scew_element *element, char *attrname,
 
  return AY_OK;
 } /* x3dio_readdoublepoints */
+
+
+/* x3dio_readcoords:
+ *  look through all children of <element> for a "Coordinate" or
+ *  "CoordinateDouble" element and read the coordinates into <len> and <res>
+ */
+int
+x3dio_readcoords(scew_element *element, unsigned int *len, double **res)
+{
+ int ay_status = AY_OK;
+ scew_element *child = NULL;
+ const char *element_name = NULL;
+ float *cv = NULL;
+ unsigned int i;
+
+  if(!element || !len || !res)
+    return AY_ENULL;
+
+  while((child = scew_element_next(element, child)) != NULL)
+    {
+      element_name = scew_element_name(element);
+      if(!strcmp(element_name, "Coordinate"))
+	{
+	  ay_status = x3dio_readfloatpoints(child, "point", 3, len, &cv);
+	  if(*len)
+	    {
+	      if(!(*res = calloc((*len)*3, sizeof(double))))
+		{
+		  if(cv)
+		    free(cv);
+		  return AY_EOMEM;
+		}
+	      for(i = 0; i < *len; i++)
+		{
+		  (*res)[i*3] = (double)cv[i*3];
+		}
+
+	      if(cv)
+		free(cv);
+	    } /* if */
+	  return AY_OK; /* XXXX early exit! */
+	}
+      if(!strcmp(element_name, "CoordinateDouble"))
+	{
+	  ay_status = x3dio_readdoublepoints(child, "point", 3, len, res);
+	  return AY_OK; /* XXXX early exit! */
+	}
+    } /* while */
+
+  return AY_OK;
+} /* x3dio_readcoords */
 
 
 /* x3dio_linkobject:
@@ -1234,7 +1287,7 @@ x3dio_readpolyline2d(scew_element *element, int contour)
  int ay_status = AY_OK;
  ay_nurbcurve_object nc = {0};
  float *cv2d = NULL;
- int i, len = 0, stride = 4;
+ unsigned int i, len = 0, stride = 4;
 
   if(!element)
     return AY_ENULL;
@@ -1291,16 +1344,18 @@ x3dio_readnurbscurve(scew_element *element, unsigned int dim)
 {
  int ay_status = AY_OK;
  ay_nurbcurve_object nc = {0};
- double *cv = NULL, *w = NULL, *knots = NULL;
- int i, len = 0, wlen = 0, klen = 0, order = 3, stride = 4;
- int has_weights = AY_FALSE, has_knots = AY_FALSE;
+ float *cv = NULL;
+ double *dcv = NULL, *w = NULL, *knots = NULL;
+ unsigned int i, len = 0, wlen = 0, klen = 0, stride = 4;
+ int order = 3;
+ int is_double = AY_FALSE, has_weights = AY_FALSE, has_knots = AY_FALSE;
 
   if(!element)
     return AY_ENULL;
 
   ay_status = x3dio_readint(element, "order", &order);
 
-  ay_status = x3dio_readdoublepoints(element, "controlPoint", dim, &len, &cv);
+  ay_status = x3dio_readfloatpoints(element, "controlPoint", dim, &len, &cv);
 
   ay_status = x3dio_readdoublepoints(element, "weight", 1, &wlen, &w);
   if(wlen >= len)
@@ -1314,6 +1369,12 @@ x3dio_readnurbscurve(scew_element *element, unsigned int dim)
       has_knots = AY_TRUE;
     }
 
+  if(len == 0)
+    {
+      ay_status = x3dio_readcoords(element, &len, &dcv);
+      is_double = AY_TRUE;
+    }
+
   if(len > 1)
     {
       nc.length = len;
@@ -1325,22 +1386,39 @@ x3dio_readnurbscurve(scew_element *element, unsigned int dim)
 	  ay_status = AY_EOMEM;
 	  goto cleanup;
 	}
-
-      for(i = 0; i < len; i++)
+      if(!is_double)
 	{
-	  nc.controlv[i*stride]   = cv[i*2];
-	  nc.controlv[i*stride+1] = cv[i*2+1];
-	  if(dim > 2)
+	  for(i = 0; i < len; i++)
 	    {
-	      nc.controlv[i*stride+2] = cv[i*2+2];
+	      nc.controlv[i*stride]   = (double)cv[i*dim];
+	      nc.controlv[i*stride+1] = (double)cv[i*dim+1];
+	      if(dim > 2)
+		{
+		  nc.controlv[i*stride+2] = (double)cv[i*dim+2];
+		}
+	      if(has_weights)
+		{
+		  nc.controlv[i*stride+3] = w[i];
+		}
+	      else
+		{
+		  nc.controlv[i*stride+3] = 1.0;
+		}
 	    }
-	  if(has_weights)
+	}
+      else
+	{
+	  for(i = 0; i < len; i++)
 	    {
-	      nc.controlv[i*stride+3] = w[i];
-	    }
-	  else
-	    {
-	      nc.controlv[i*stride+3] = 1.0;
+	      memcpy(&(nc.controlv[i*stride]), &(dcv[i*3]), 3*sizeof(double));
+	      if(has_weights)
+		{
+		  nc.controlv[i*stride+3] = w[i];
+		}
+	      else
+		{
+		  nc.controlv[i*stride+3] = 1.0;
+		}
 	    }
 	} /* if */
       if(has_knots)
@@ -1364,6 +1442,9 @@ cleanup:
   if(cv)
     free(cv);
 
+  if(dcv)
+    free(dcv);
+
   if(w)
     free(w);
 
@@ -1383,8 +1464,8 @@ x3dio_readnurbspatchsurface(scew_element *element, int trimmed)
  int ay_status = AY_OK;
  ay_nurbpatch_object np = {0};
  double *cv = NULL, *w = NULL, *uknots = NULL, *vknots = NULL;
- int i, width = 0, height = 0, len = 0, wlen = 0, uklen = 0, vklen = 0;
- int uorder = 3, vorder = 3, stride = 4;
+ unsigned int i, len = 0, wlen = 0, uklen = 0, vklen = 0;
+ int width = 0, height = 0, uorder = 3, vorder = 3, stride = 4;
  int has_weights = AY_FALSE, has_uknots = AY_FALSE, has_vknots = AY_FALSE;
 
   if(!element)
