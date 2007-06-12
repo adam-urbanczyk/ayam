@@ -36,7 +36,6 @@ char x3dio_version_mi[] = AY_VERSIONSTRMI;
 
 static Tcl_HashTable x3dio_write_ht;
 
-
 static Tcl_HashTable x3dio_defs_ht;
 
 
@@ -64,6 +63,7 @@ char *x3dio_stagname = x3dio_stagnamedef;
 char x3dio_ttagnamedef[] = "myt";
 char *x3dio_ttagname = x3dio_ttagnamedef;
 
+ay_object *x3dio_lrobject = NULL;
 
 /* prototypes of functions local to this module: */
 void x3dio_pushtrafo(void);
@@ -789,6 +789,8 @@ x3dio_linkobject(unsigned int type, void *sobj)
   /* link the object to the scene */
   ay_status = ay_object_link(new);
 
+  x3dio_lrobject = new;
+
  return ay_status;
 } /* x3dio_linkobject */
 
@@ -1463,12 +1465,15 @@ x3dio_readnurbspatchsurface(scew_element *element, int trimmed)
 {
  int ay_status = AY_OK;
  ay_nurbpatch_object np = {0};
+ ay_object *o, **old_aynext;
  float *cv = NULL;
  double *dcv = NULL, *w = NULL, *uknots = NULL, *vknots = NULL;
  unsigned int i, len = 0, wlen = 0, uklen = 0, vklen = 0;
  int width = 0, height = 0, uorder = 3, vorder = 3, stride = 4;
  int has_weights = AY_FALSE, has_uknots = AY_FALSE, has_vknots = AY_FALSE;
  int is_double = AY_FALSE;
+ scew_element *child = NULL;
+ const char *element_name = NULL;
 
   if(!element)
     return AY_ENULL;
@@ -1577,13 +1582,50 @@ x3dio_readnurbspatchsurface(scew_element *element, int trimmed)
 	}
 
       /* copy object to the Ayam scene */
+      x3dio_lrobject = NULL;
       ay_status = x3dio_linkobject(AY_IDNPATCH, (void*)&np);
+
+      if(!x3dio_lrobject)
+	{
+	  ay_status = AY_ENULL;
+	  goto cleanup;
+	}
+
+      /* set correct NURBS patch flags */
+      x3dio_lrobject->parent = AY_TRUE;
 
       /* read trim curves? */
       if(trimmed)
 	{
+	  old_aynext = ay_next;
+	  ay_next = &(x3dio_lrobject->down);
+	  o = x3dio_lrobject;
+	  x3dio_lrobject = NULL;
 
+	  while((child = scew_element_next(element, child)) != NULL)
+	    {
+	      element_name = scew_element_name(element);
+	      if(!strcmp(element_name, "NurbsCurve") ||
+		 !strcmp(element_name, "NurbsCurve2D") ||
+		 !strcmp(element_name, "Contour2D") ||
+		 !strcmp(element_name, "ContourPolyline2D"))
+		{
+		  ay_status = x3dio_readelement(child);
+		}
+	    } /* while */
+
+	  /* create endlevel object */
+	  if(x3dio_lrobject)
+	    ay_object_crtendlevel(&(x3dio_lrobject->next));
+	  else
+	    ay_object_crtendlevel(&(o->down));
+	  ay_next = old_aynext;	  
 	}
+      else
+	{
+	  /* just create endlevel object */
+	  ay_object_crtendlevel(&(x3dio_lrobject->down));
+	} /* if */
     } /* if */
 
 cleanup:
@@ -2025,6 +2067,10 @@ x3dio_readelement(scew_element *element)
   if(!strcmp(element_name, "NurbsPatchSurface"))
     {
       ay_status = x3dio_readnurbspatchsurface(element, AY_FALSE);
+    }
+  if(!strcmp(element_name, "NurbsTrimmedSurface"))
+    {
+      ay_status = x3dio_readnurbspatchsurface(element, AY_TRUE);
     }
   if(!strcmp(element_name, "ContourPolyline2D"))
     {
