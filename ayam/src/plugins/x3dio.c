@@ -1649,6 +1649,114 @@ cleanup:
 } /* x3dio_readnurbspatchsurface */
 
 
+/* x3dio_readnurbssweptsurface:
+ *
+ */
+int
+x3dio_readnurbssweptsurface(scew_element *element, int is_swung)
+{
+ int ay_status = AY_OK;
+ scew_attribute *attr = NULL;
+ const XML_Char *str = NULL;
+ scew_element *child;
+ ay_object *o = NULL, **old_aynext;
+ ay_sweep_object *sweep = NULL;
+ const char *cs_name = NULL, *tr_name = "trajectoryCurve";
+
+  if(!element)
+    return AY_ENULL;
+
+  if(is_swung)
+    {
+      cs_name = "profileCurve";
+    }
+  else
+    {
+      cs_name = "crossSectionCurve";
+    }
+
+  if(!(o = calloc(1, sizeof(ay_object))))
+    {
+      return AY_EOMEM;
+    }
+
+  if(!(sweep = calloc(1, sizeof(ay_sweep_object))))
+    {
+      free(o); return AY_EOMEM;
+    }
+
+  sweep->rotate = AY_TRUE;
+  sweep->sections = 10;
+
+  o->refine = sweep;
+ 
+  ay_status = ay_object_defaults(o);
+
+  o->type = AY_IDSWEEP;
+  o->parent = AY_TRUE;
+
+  old_aynext = ay_next;
+  ay_next = &(o->down);
+
+  /* read children to get the cross section and the trajectory */
+  child = NULL;
+  while((child = scew_element_next(element, child)) != NULL)
+    {
+      attr = scew_attribute_by_name(element, "containerField");
+      if(attr)
+	{
+	  str = scew_attribute_value(attr);
+	  if(!strcmp(str, cs_name))
+	    {
+	      ay_status = x3dio_readelement(child);
+	    }
+	}
+    } /* while */
+
+  child = NULL;
+  while((child = scew_element_next(element, child)) != NULL)
+    {
+      attr = scew_attribute_by_name(element, "containerField");
+      if(attr)
+	{
+	  str = scew_attribute_value(attr);
+	  if(!strcmp(str, tr_name))
+	    {
+	      ay_status = x3dio_readelement(child);
+	    }
+	}
+    }
+
+
+  ay_object_crtendlevel(ay_next);
+  ay_next = old_aynext;
+  ay_object_link(o);
+
+  ay_status = x3dio_readshape(element);
+
+ return ay_status;
+} /* x3dio_readnurbssweptsurface */
+
+
+/* x3dio_readnurbsset:
+ *
+ */
+int
+x3dio_readnurbsset(scew_element *element)
+{
+ int ay_status = AY_OK;
+
+  if(!element)
+    return AY_ENULL;
+
+  /**/
+
+  ay_status = x3dio_readshape(element);
+
+ return ay_status;
+} /* x3dio_readnurbsset */
+
+
 /* x3dio_readappearance:
  *
  */
@@ -1656,16 +1764,16 @@ int
 x3dio_readappearance(scew_element *element)
 {
   /*int ay_status = AY_OK;*/
- scew_attribute *name_attr = NULL;
- const XML_Char *name_str = NULL;
+ scew_attribute *attr = NULL;
+ const XML_Char *str = NULL;
 
   if(!element)
     return AY_ENULL;
 
-  name_attr = scew_attribute_by_name(element, "DEF");
-  if(name_attr)
+  attr = scew_attribute_by_name(element, "DEF");
+  if(attr)
     {
-      name_str = scew_attribute_value(name_attr);
+      str = scew_attribute_value(attr);
     }
 
  return AY_OK;
@@ -1849,29 +1957,6 @@ x3dio_readscene(scew_element *element)
 
  return ay_status;
 } /* x3dio_readscene */
-
-
-/* x3dio_readgroup:
- *
- */
-int
-x3dio_readgroup(scew_element *element)
-{
- int ay_status = AY_OK;
- scew_attribute *name_attr = NULL;
- const XML_Char *name_str = NULL;
-
-  if(!element)
-    return AY_ENULL;
-
-  name_attr = scew_attribute_by_name(element, "DEF");
-  if(name_attr)
-    {
-      name_str = scew_attribute_value(name_attr);
-    }
-
- return AY_OK;
-} /* x3dio_readgroup */
 
 
 /* x3dio_adddef:
@@ -2076,13 +2161,25 @@ x3dio_readelement(scew_element *element)
     {
       ay_status = x3dio_readpolyline2d(element, AY_TRUE);
     }
-
+  if(!strcmp(element_name, "Contour2D"))
+    {
+      ay_status = x3dio_readshape(element);
+    }
+  if(!strcmp(element_name, "NurbsSweptSurface"))
+    {
+      ay_status = x3dio_readnurbssweptsurface(element, AY_FALSE);
+    }
+  if(!strcmp(element_name, "NurbsSwungSurface"))
+    {
+      ay_status = x3dio_readnurbssweptsurface(element, AY_TRUE);
+    }
 
   /* non geometric shapes */
   if(!strcmp(element_name, "Group"))
     {
-
+      ay_status = x3dio_readshape(element);
     }
+
 
   /* light sources */
   if(!strcmp(element_name, "DirectionalLight"))
