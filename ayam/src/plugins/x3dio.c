@@ -78,6 +78,9 @@ int x3dio_readbool(scew_element *element, char *attrname, int *res);
 
 int x3dio_readint(scew_element *element, char *attrname, int *res);
 
+int x3dio_readintvec(scew_element *element, char *attrname,
+		     unsigned int dim, int *res);
+
 int x3dio_readfloat(scew_element *element, char *attrname, float *res);
 
 int x3dio_readfloatvec(scew_element *element, char *attrname,
@@ -89,7 +92,14 @@ int x3dio_readfloatpoints(scew_element *element, char *attrname,
 int x3dio_readdoublepoints(scew_element *element, char *attrname,
 			   unsigned int dim, unsigned int *len, double **res);
 
+int x3dio_readindex(scew_element *element, char *attrname,
+		    unsigned int *len, int **res);
+
 int x3dio_readcoords(scew_element *element, unsigned int *len, double **res);
+
+int x3dio_readnormals(scew_element *element, unsigned int *len, double **res);
+
+int x3dio_readcolors(scew_element *element, unsigned int *len, double **res);
 
 int x3dio_linkobject(unsigned int type, void *sobj);
 
@@ -102,6 +112,7 @@ int x3dio_readcylinder(scew_element *element);
 
 int x3dio_readcone(scew_element *element);
 
+int x3dio_readindexedfaceset(scew_element *element);
 
 /* 2D */
 int x3dio_readdisk2d(scew_element *element);
@@ -461,6 +472,58 @@ x3dio_readint(scew_element *element, char *attrname, int *res)
 } /* x3dio_readint */
 
 
+/* x3dio_readintvec:
+ *  get int vector attribute
+ */
+int
+x3dio_readintvec(scew_element *element, char *attrname,
+		 unsigned int dim, int *res)
+{
+ scew_attribute *attr = NULL;
+ const XML_Char *str = NULL;
+
+  if(!element || !attrname || !res)
+    return AY_ENULL;
+
+  attr = scew_attribute_by_name(element, attrname);
+  if(attr)
+    {
+      str = scew_attribute_value(attr);
+      if(str)
+	{
+	  switch(dim)
+	    {
+	    case 1:
+	      sscanf(str, "%d", res);
+	      break;
+	    case 2:
+	      sscanf(str, "%d %d", &(res[0]), &(res[1]));
+	      break;
+	    case 3:
+	      sscanf(str, "%d %d %d", &(res[0]), &(res[1]), &(res[2]));
+	      break;
+	    case 4:
+	      sscanf(str, "%d %d %d %d",  &(res[0]), &(res[1]),
+		     &(res[2]), &(res[3]));
+	      break;
+	    default:
+	      return AY_ERROR;
+	    } /* switch */
+	}
+      else
+	{
+	  return AY_ERROR;
+	} /* if */
+    }
+  else
+    {
+      return AY_EWARN;
+    } /* if */
+
+ return AY_OK;
+} /* x3dio_readintvec */
+
+
 /* x3dio_readfloat:
  *  get single float value attribute
  */
@@ -709,9 +772,84 @@ x3dio_readdoublepoints(scew_element *element, char *attrname,
 } /* x3dio_readdoublepoints */
 
 
+/* x3dio_readindex:
+ *  read a vector of integer values (e.g. for the coordinateIndex
+ *  of an IndexedFaceSet)
+ */
+int
+x3dio_readindex(scew_element *element, char *attrname,
+		unsigned int *len, int **res)
+{
+ scew_attribute *attr = NULL;
+ const XML_Char *str = NULL, *p;
+ int *dummy = NULL, *ip;
+
+  if(!element || !attrname || !len || !res)
+    return AY_ENULL;
+
+  *len = 0;
+  *res = NULL;
+
+  attr = scew_attribute_by_name(element, attrname);
+  if(attr)
+    {
+      str = scew_attribute_value(attr);
+      if(str)
+	{
+	  p = str;
+	  while(*p != '\0')
+	    {
+	      if(!(dummy = realloc(*res, (*len+1)*sizeof(int))))
+		{
+		  /* XXXX early exit, memory leak? */
+		  return AY_EOMEM;
+		}
+	      *res = dummy;
+	      ip = &((*res)[(*len)]);
+	      (*len)++;
+
+	      /* forward p to next integer */
+	      /* jump over leading whitespace */
+	      while(isspace(*p) && (*p != '\0'))
+		{
+		  p++;
+		}
+
+	      /* check for (premature) end of string */
+	      if(*p == '\0')
+		{
+		  (*len)--;
+		  break;
+		}
+
+	      sscanf(p, "%d", ip);
+	      ip++;
+
+	      /* jump over the integer we just read */
+	      while(!isspace(*p) && (*p != '\0'))
+		{
+		  p++;
+		}
+	    } /* while */
+	}
+      else
+	{
+	  return AY_ERROR;
+	} /* if */
+    }
+  else
+    {
+      return AY_EWARN;
+    } /* if */
+
+ return AY_OK;
+} /* x3dio_readindex */
+
+
 /* x3dio_readcoords:
  *  look through all children of <element> for a "Coordinate" or
  *  "CoordinateDouble" element and read the coordinates into <len> and <res>
+ *  XXXX process USE!
  */
 int
 x3dio_readcoords(scew_element *element, unsigned int *len, double **res)
@@ -727,7 +865,7 @@ x3dio_readcoords(scew_element *element, unsigned int *len, double **res)
 
   while((child = scew_element_next(element, child)) != NULL)
     {
-      element_name = scew_element_name(element);
+      element_name = scew_element_name(child);
       if(!strcmp(element_name, "Coordinate"))
 	{
 	  ay_status = x3dio_readfloatpoints(child, "point", 3, len, &cv);
@@ -739,11 +877,11 @@ x3dio_readcoords(scew_element *element, unsigned int *len, double **res)
 		    free(cv);
 		  return AY_EOMEM;
 		}
-	      for(i = 0; i < *len; i++)
+	      for(i = 0; i < (*len)*3; i++)
 		{
-		  (*res)[i*3] = (double)cv[i*3];
+		  (*res)[i] = (double)cv[i];
 		}
-
+	      
 	      if(cv)
 		free(cv);
 	    } /* if */
@@ -758,6 +896,53 @@ x3dio_readcoords(scew_element *element, unsigned int *len, double **res)
 
   return AY_OK;
 } /* x3dio_readcoords */
+
+
+/* x3dio_readnormals:
+ *  look through all children of <element> for a "Normal" element and
+ *  read the normals therein into <len> and <res>
+ *  XXXX process USE!
+ */
+int
+x3dio_readnormals(scew_element *element, unsigned int *len, double **res)
+{
+ int ay_status = AY_OK;
+ scew_element *child = NULL;
+ const char *element_name = NULL;
+ float *cv = NULL;
+ unsigned int i;
+
+  if(!element || !len || !res)
+    return AY_ENULL;
+
+  while((child = scew_element_next(element, child)) != NULL)
+    {
+      element_name = scew_element_name(child);
+      if(!strcmp(element_name, "Normal"))
+	{
+	  ay_status = x3dio_readfloatpoints(child, "vector", 3, len, &cv);
+	  if(*len)
+	    {
+	      if(!(*res = calloc((*len)*3, sizeof(double))))
+		{
+		  if(cv)
+		    free(cv);
+		  return AY_EOMEM;
+		}
+	      for(i = 0; i < *len; i++)
+		{
+		  (*res)[i] = (double)cv[i];
+		}
+
+	      if(cv)
+		free(cv);
+	    } /* if */
+	  return AY_OK; /* XXXX early exit! */
+	} /* if */
+    } /* while */
+
+  return AY_OK;
+} /* x3dio_readnormals */
 
 
 /* x3dio_linkobject:
@@ -1053,6 +1238,132 @@ x3dio_readcone(scew_element *element)
 } /* x3dio_readcone */
 
 
+/* x3dio_readindexedfaceset:
+ *
+ */
+int
+x3dio_readindexedfaceset(scew_element *element)
+{
+ int ay_status = AY_OK;
+ ay_pomesh_object pomesh = {0};
+ unsigned int coordlen = 0, normallen = 0, coordilen = 0, normalilen = 0;
+ int *coordi = NULL, *normali = NULL;
+ int normalPerVertex = AY_FALSE;
+ double *coords = NULL, *normals = NULL;
+ unsigned int i, j, k, totalverts = 0;
+
+  if(!element)
+    return AY_ENULL;
+
+  ay_status = x3dio_readcoords(element, &coordlen, &coords);
+
+  if(coordlen == 0)
+    {
+      return AY_OK;
+    }
+
+  ay_status = x3dio_readindex(element, "coordIndex", &coordilen, &coordi);
+
+  if(coordilen > 0)
+    {
+      /* get normals */
+      ay_status = x3dio_readnormals(element, &normallen, &normals);
+
+      ay_status = x3dio_readindex(element, "normalIndex", &normalilen,
+				  &normali);
+
+      ay_status = x3dio_readint(element, "normalPerVertex", &normalPerVertex);
+
+      /* get colors */
+
+      /* get texture coordinates */
+
+      /* count faces */
+      for(i = 0; i < coordilen; i++)
+	{
+	  if(coordi[i] == -1)
+	    {
+	      pomesh.npolys++;
+	    }
+	  else
+	    {
+	      totalverts++;
+	    }
+	}
+      if(coordi[coordilen-1] != -1)
+	{
+	  pomesh.npolys++;
+	}
+
+      /* allocate polymesh index arrays */
+      if(!(pomesh.nloops = calloc(pomesh.npolys, sizeof(unsigned int))))
+	{ ay_status = AY_EOMEM; goto cleanup; }
+      if(!(pomesh.nverts = calloc(pomesh.npolys, sizeof(unsigned int))))
+	{ ay_status = AY_EOMEM; goto cleanup; }
+      if(!(pomesh.verts = calloc(totalverts, sizeof(unsigned int))))
+	{ ay_status = AY_EOMEM; goto cleanup; }
+
+      /* fill polymesh index arrays */
+      for(i = 0; i < pomesh.npolys; i++)
+	{
+	  pomesh.nloops[i] = 1;
+	}
+      j = 0;
+      k = 0;
+      for(i = 0; i < coordilen; i++)
+	{
+	  if(coordi[i] != -1)
+	    {
+	      (pomesh.nverts[j])++;
+	      (pomesh.verts[k]) = coordi[i];
+	      k++;
+	    }
+	  else
+	    {
+	      j++;
+	    }
+	} /* for */
+
+      /* copy coordinate values and normals */
+      pomesh.ncontrols = coordlen;
+      if(normalPerVertex)
+	{
+	  if(normalilen > 0)
+	    {
+	      pomesh.has_normals = AY_TRUE;
+	      if(!(pomesh.controlv = calloc(6*coordlen, sizeof(double))))
+		{ ay_status = AY_EOMEM; goto cleanup; }
+	      for(i = 0; i < coordlen; i++)
+		{
+		  memcpy(&(pomesh.controlv[i*6]), &(coords[i*3]),
+			 3*sizeof(double));
+		  memcpy(&(pomesh.controlv[i*6+3]), &(normals[i*3]),
+			 3*sizeof(double));
+		}
+	    }
+	  else
+	    {
+	      pomesh.controlv = coords;
+	      coords = NULL;
+	    }
+	}
+      else
+	{
+	  pomesh.controlv = coords;
+	  coords = NULL;
+	} /* if */
+
+      /* copy object to the Ayam scene */
+      ay_status = x3dio_linkobject(AY_IDPOMESH, (void*)&pomesh);
+
+    } /* if */
+
+ cleanup:
+
+ return ay_status;
+} /* x3dio_readindexedfaceset */
+
+
 /* x3dio_readdisk2d:
  *
  */
@@ -1211,7 +1522,7 @@ x3dio_readarcclose2d(scew_element *element)
     {
       return AY_ERROR;
     }
-
+  
   ncircle.tmin = 0.0;
   x3dio_readfloat(element, "startAngle", &sangle);
   ncircle.tmin = AY_R2D((double)sangle);
@@ -1725,8 +2036,7 @@ x3dio_readnurbssweptsurface(scew_element *element, int is_swung)
 	      ay_status = x3dio_readelement(child);
 	    }
 	}
-    }
-
+    } /* while */
 
   ay_object_crtendlevel(ay_next);
   ay_next = old_aynext;
@@ -2118,6 +2428,10 @@ x3dio_readelement(scew_element *element)
   if(!strcmp(element_name, "Cone"))
     {
       ay_status = x3dio_readcone(element);
+    }
+  if(!strcmp(element_name, "IndexedFaceSet"))
+    {
+      ay_status = x3dio_readindexedfaceset(element);
     }
   /* 2D */
   if(!strcmp(element_name, "Disk2D"))
