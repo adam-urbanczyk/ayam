@@ -1358,7 +1358,30 @@ x3dio_readindexedfaceset(scew_element *element)
 
     } /* if */
 
- cleanup:
+cleanup:
+  if(coords)
+    free(coords);
+
+  if(normals)
+    free(normals);
+
+  if(coordi)
+    free(coordi);
+
+  if(normali)
+    free(normali);
+
+  if(pomesh.nloops)
+    free(pomesh.nloops);
+
+  if(pomesh.nverts)
+    free(pomesh.nverts);
+
+  if(pomesh.verts)
+    free(pomesh.verts);
+
+  if(pomesh.controlv)
+    free(pomesh.controlv);
 
  return ay_status;
 } /* x3dio_readindexedfaceset */
@@ -1587,6 +1610,13 @@ x3dio_readarcclose2d(scew_element *element)
   /* copy object to the Ayam scene */
   ay_status = x3dio_linkobject(AY_IDNCURVE, (void*)&nc);
 
+
+  if(nc.knotv)
+    free(nc.knotv);
+
+  if(nc.controlv)
+    free(nc.controlv);
+
  return ay_status;
 } /* x3dio_readarcclose2d */
 
@@ -1644,6 +1674,12 @@ cleanup:
 
   if(cv2d)
     free(cv2d);
+
+  if(nc.knotv)
+    free(nc.knotv);
+
+  if(nc.controlv)
+    free(nc.controlv);
 
  return ay_status;
 } /* x3dio_readpolyline2d */
@@ -1763,6 +1799,9 @@ cleanup:
 
   if(knots)
     free(knots);
+
+  if(nc.controlv)
+    free(nc.controlv);
 
  return ay_status;
 } /* x3dio_readnurbscurve */
@@ -1955,6 +1994,9 @@ cleanup:
 
   if(vknots)
     free(vknots);
+
+  if(np.controlv)
+    free(np.controlv);
 
  return ay_status;
 } /* x3dio_readnurbspatchsurface */
