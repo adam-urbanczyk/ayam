@@ -1387,6 +1387,108 @@ cleanup:
 } /* x3dio_readindexedfaceset */
 
 
+/* x3dio_readindexedlineset:
+ *
+ */
+int
+x3dio_readindexedlineset(scew_element *element)
+{
+ int ay_status = AY_OK;
+ ay_nurbcurve_object nc = {0};
+ unsigned int coordlen = 0, coordilen = 0;
+ int *coordi = NULL, stride = 4;
+ double *coords = NULL;
+ unsigned int i, j, k, l, totalcurves = 0;
+
+  if(!element)
+    return AY_ENULL;
+
+  ay_status = x3dio_readcoords(element, &coordlen, &coords);
+
+  if(coordlen == 0)
+    {
+      return AY_OK;
+    }
+
+  ay_status = x3dio_readindex(element, "coordIndex", &coordilen, &coordi);
+
+  if(coordilen > 0)
+    {
+      
+      /* get colors */
+
+      /* count curves */
+      for(i = 0; i < coordilen; i++)
+	{
+	  if(coordi[i] == -1)
+	    {
+	      totalcurves++;
+	    }
+	}
+      if(coordi[coordilen-1] != -1)
+	{
+	  totalcurves++;
+	}
+
+      /* create curves */
+      for(i = 0; i < totalcurves; i++)
+	{
+	  k = j;
+	  while((k < coordilen) && (coordi[k] != -1))
+	    {
+	      nc.length++;
+	      k++;
+	    }
+
+	  if(!(nc.controlv = calloc(stride*nc.length, sizeof(double))))
+	    { ay_status = AY_EOMEM; goto cleanup; }
+
+	  for(l = 0; l < nc.length; l++)
+	    {
+	      memcpy(&(nc.controlv[l*stride]), &(coords[coordi[j]*3]),
+		     3*sizeof(double));
+	      nc.controlv[l*stride+3] = 1.0;
+	      j++;
+	    }
+
+	  nc.order = 2;
+	  nc.knot_type = AY_KTNURB;
+
+	  ay_status = ay_knots_createnc(&nc);
+
+	  /* copy object to the Ayam scene */
+	  ay_status = x3dio_linkobject(AY_IDNCURVE, (void*)&nc);
+
+	  /* clean up curve object */
+	  if(nc.knotv)
+	    free(nc.knotv);
+
+	  if(nc.controlv)
+	    free(nc.controlv);
+
+	  memset(&nc, 0, sizeof(ay_nurbcurve_object));
+	  j++;
+	} /* for */
+
+    } /* if */
+
+cleanup:
+  if(coords)
+    free(coords);
+
+  if(coordi)
+    free(coordi);
+
+  if(nc.knotv)
+    free(nc.knotv);
+
+  if(nc.controlv)
+    free(nc.controlv);
+
+ return ay_status;
+} /* x3dio_readindexedlineset */
+
+
 /* x3dio_readdisk2d:
  *
  */
@@ -2474,6 +2576,10 @@ x3dio_readelement(scew_element *element)
   if(!strcmp(element_name, "IndexedFaceSet"))
     {
       ay_status = x3dio_readindexedfaceset(element);
+    }
+  if(!strcmp(element_name, "IndexedLineSet"))
+    {
+      ay_status = x3dio_readindexedlineset(element);
     }
   /* 2D */
   if(!strcmp(element_name, "Disk2D"))
