@@ -897,7 +897,7 @@ x3dio_readcoords(scew_element *element, unsigned int *len, double **res)
 		{
 		  (*res)[i] = (double)cv[i];
 		}
-	      
+
 	      if(cv)
 		free(cv);
 	    } /* if */
@@ -1850,7 +1850,7 @@ x3dio_readindexedlineset(scew_element *element)
 
   if(coordilen > 0)
     {
-      
+
       /* get colors */
 
       /* count curves */
@@ -1953,7 +1953,7 @@ x3dio_readlineset(scew_element *element)
 
   if(vertexcountslen > 0)
     {
-      
+
       /* get colors */
 
       /* XXXX check, whether sum of vertexcounts == coordlen? */
@@ -2089,7 +2089,7 @@ x3dio_readtrianglefanset(scew_element *element)
 	      pomesh.verts[k] = l+j+1;
 	      k++;
 	    } /* for */
-	  l += fancounts[i]-2;
+	  l += fancounts[i];
 	} /* for */
 
       /* copy coordinate values and normals */
@@ -2113,7 +2113,7 @@ x3dio_readtrianglefanset(scew_element *element)
 	    {
 	      pomesh.controlv = coords;
 	      coords = NULL;
-	    }
+	    } /* if */
 	}
       else
 	{
@@ -2229,7 +2229,7 @@ x3dio_readtrianglestripset(scew_element *element)
 	      pomesh.verts[k] = l+j+2;
 	      k++;
 	    } /* for */
-	  l += stripcounts[i]-2;
+	  l += stripcounts[i];
 	} /* for */
 
       /* copy coordinate values and normals */
@@ -2253,7 +2253,7 @@ x3dio_readtrianglestripset(scew_element *element)
 	    {
 	      pomesh.controlv = coords;
 	      coords = NULL;
-	    }
+	    } /* if */
 	}
       else
 	{
@@ -2370,7 +2370,7 @@ x3dio_readtriangleset(scew_element *element)
 	{
 	  pomesh.controlv = coords;
 	  coords = NULL;
-	}
+	} /* if */
     }
   else
     {
@@ -2562,7 +2562,7 @@ x3dio_readarcclose2d(scew_element *element)
     {
       return AY_ERROR;
     }
-  
+
   ncircle.tmin = 0.0;
   x3dio_readfloat(element, "startAngle", &sangle);
   ncircle.tmin = AY_R2D((double)sangle);
@@ -2606,7 +2606,7 @@ x3dio_readarcclose2d(scew_element *element)
       cl.length = 3;
       cl.order = 2;
 
-      
+
     }
   else
     {
@@ -2770,7 +2770,7 @@ x3dio_readnurbscurve(scew_element *element, unsigned int dim)
 		{
 		  nc.controlv[i*stride+3] = 1.0;
 		}
-	    }
+	    } /* for */
 	}
       else
 	{
@@ -2904,7 +2904,7 @@ x3dio_readnurbspatchsurface(scew_element *element, int trimmed)
 		{
 		  np.controlv[i*stride+3] = 1.0;
 		}
-	    } /* if */
+	    } /* for */
 	}
       else
 	{
@@ -2986,7 +2986,7 @@ x3dio_readnurbspatchsurface(scew_element *element, int trimmed)
 	    ay_object_crtendlevel(&(x3dio_lrobject->next));
 	  else
 	    ay_object_crtendlevel(&(o->down));
-	  ay_next = old_aynext;	  
+	  ay_next = old_aynext;
 	}
       else
 	{
@@ -3059,7 +3059,7 @@ x3dio_readnurbssweptsurface(scew_element *element, int is_swung)
   sweep->sections = 10;
 
   o->refine = sweep;
- 
+
   ay_status = ay_object_defaults(o);
 
   o->type = AY_IDSWEEP;
