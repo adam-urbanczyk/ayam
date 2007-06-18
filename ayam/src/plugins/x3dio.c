@@ -122,6 +122,8 @@ int x3dio_readindexedtrianglefanset(scew_element *element);
 
 int x3dio_readindexedlineset(scew_element *element);
 
+int x3dio_readtrianglefanset(scew_element *element);
+
 /* 2D */
 int x3dio_readdisk2d(scew_element *element);
 
@@ -1917,6 +1919,139 @@ cleanup:
 } /* x3dio_readindexedlineset */
 
 
+/* x3dio_readtrianglefanset:
+ *
+ */
+int
+x3dio_readtrianglefanset(scew_element *element)
+{
+ int ay_status = AY_OK;
+ ay_pomesh_object pomesh = {0};
+ unsigned int coordlen = 0, normallen = 0, fancountslen = 0;
+ int *fancounts = NULL;
+ int normalPerVertex = AY_FALSE;
+ double *coords = NULL, *normals = NULL;
+ unsigned int i, totalverts = 0;
+
+  if(!element)
+    return AY_ENULL;
+
+  ay_status = x3dio_readcoords(element, &coordlen, &coords);
+
+  if(coordlen == 0)
+    {
+      return AY_OK;
+    }
+
+  ay_status = x3dio_readindex(element, "fanCount", &fancountslen, &fancounts);
+
+  if(fancountslen > 0)
+    {
+      /* get normals */
+      ay_status = x3dio_readnormals(element, &normallen, &normals);
+
+      ay_status = x3dio_readbool(element, "normalPerVertex", &normalPerVertex);
+
+      /* get colors */
+
+      /* get texture coordinates */
+
+      pomesh.npolys = fancountslen;
+      /* count vertices */
+      for(i = 0; i < fancountslen; i++)
+	{
+	  if(fancounts[i] >= 3)
+	    {
+	      totalverts += fancounts[i];
+	    }
+	  else
+	    {
+	      pomesh.npolys--;
+	    }
+	} /* for */
+
+      /* allocate polymesh index arrays */
+      if(!(pomesh.nloops = calloc(pomesh.npolys, sizeof(unsigned int))))
+	{ ay_status = AY_EOMEM; goto cleanup; }
+      if(!(pomesh.nverts = calloc(pomesh.npolys, sizeof(unsigned int))))
+	{ ay_status = AY_EOMEM; goto cleanup; }
+      if(!(pomesh.verts = calloc(totalverts, sizeof(unsigned int))))
+	{ ay_status = AY_EOMEM; goto cleanup; }
+
+      /* fill polymesh index arrays */
+      for(i = 0; i < pomesh.npolys; i++)
+	{
+	  pomesh.nloops[i] = 1;
+	}
+      for(i = 0; i < pomesh.npolys; i++)
+	{
+	  pomesh.nverts[i] = fancounts[i];;
+	} /* for */
+      for(i = 0; i < totalverts; i++)
+	{
+	  pomesh.verts[i] = i;
+	} /* for */
+
+      /* copy coordinate values and normals */
+      pomesh.ncontrols = coordlen;
+      if(normalPerVertex)
+	{
+	  if(normallen > 0)
+	    {
+	      pomesh.has_normals = AY_TRUE;
+	      if(!(pomesh.controlv = calloc(6*coordlen, sizeof(double))))
+		{ ay_status = AY_EOMEM; goto cleanup; }
+	      for(i = 0; i < coordlen; i++)
+		{
+		  memcpy(&(pomesh.controlv[i*6]), &(coords[i*3]),
+			 3*sizeof(double));
+		  memcpy(&(pomesh.controlv[i*6+3]), &(normals[i*3]),
+			 3*sizeof(double));
+		}
+	    }
+	  else
+	    {
+	      pomesh.controlv = coords;
+	      coords = NULL;
+	    }
+	}
+      else
+	{
+	  pomesh.controlv = coords;
+	  coords = NULL;
+	} /* if */
+
+      /* copy object to the Ayam scene */
+      ay_status = x3dio_linkobject(AY_IDPOMESH, (void*)&pomesh);
+
+    } /* if */
+
+cleanup:
+  if(coords)
+    free(coords);
+
+  if(normals)
+    free(normals);
+
+  if(fancounts)
+    free(fancounts);
+
+  if(pomesh.nloops)
+    free(pomesh.nloops);
+
+  if(pomesh.nverts)
+    free(pomesh.nverts);
+
+  if(pomesh.verts)
+    free(pomesh.verts);
+
+  if(pomesh.controlv)
+    free(pomesh.controlv);
+
+ return ay_status;
+} /* x3dio_readtrianglefanset */
+
+
 /* x3dio_readdisk2d:
  *
  */
@@ -3020,6 +3155,10 @@ x3dio_readelement(scew_element *element)
   if(!strcmp(element_name, "IndexedLineSet"))
     {
       ay_status = x3dio_readindexedlineset(element);
+    }
+  if(!strcmp(element_name, "TriangleFanSet"))
+    {
+      ay_status = x3dio_readtrianglefanset(element);
     }
   /* 2D */
   if(!strcmp(element_name, "Disk2D"))
