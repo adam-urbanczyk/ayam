@@ -122,6 +122,8 @@ int x3dio_readindexedtrianglefanset(scew_element *element);
 
 int x3dio_readindexedlineset(scew_element *element);
 
+int x3dio_readlineset(scew_element *element);
+
 int x3dio_readtrianglefanset(scew_element *element);
 
 int x3dio_readtrianglestripset(scew_element *element);
@@ -1923,6 +1925,94 @@ cleanup:
 } /* x3dio_readindexedlineset */
 
 
+/* x3dio_readlineset:
+ *
+ */
+int
+x3dio_readlineset(scew_element *element)
+{
+ int ay_status = AY_OK;
+ ay_nurbcurve_object nc = {0};
+ unsigned int coordlen = 0, vertexcountslen = 0;
+ int *vertexcounts = NULL, stride = 4;
+ double *coords = NULL;
+ unsigned int i, j, l;
+
+  if(!element)
+    return AY_ENULL;
+
+  ay_status = x3dio_readcoords(element, &coordlen, &coords);
+
+  if(coordlen == 0)
+    {
+      return AY_OK;
+    }
+
+  ay_status = x3dio_readindex(element, "vertexCount",
+			      &vertexcountslen, &vertexcounts);
+
+  if(vertexcountslen > 0)
+    {
+      
+      /* get colors */
+
+      /* XXXX check, whether sum of vertexcounts == coordlen? */
+
+      /* create curves */
+      for(i = 0; i < vertexcountslen; i++)
+	{
+	  if(vertexcounts[i] >= 2)
+	    {
+	      nc.length = vertexcounts[i];
+
+	      if(!(nc.controlv = calloc(stride*nc.length, sizeof(double))))
+		{ ay_status = AY_EOMEM; goto cleanup; }
+
+	      for(l = 0; l < nc.length; l++)
+		{
+		  memcpy(&(nc.controlv[l*stride]), &(coords[j]),
+			 3*sizeof(double));
+		  nc.controlv[l*stride+3] = 1.0;
+		  j += 3;
+		}
+
+	      nc.order = 2;
+	      nc.knot_type = AY_KTNURB;
+
+	      ay_status = ay_knots_createnc(&nc);
+
+	      /* copy object to the Ayam scene */
+	      ay_status = x3dio_linkobject(AY_IDNCURVE, (void*)&nc);
+
+	      /* clean up curve object */
+	      if(nc.knotv)
+		free(nc.knotv);
+
+	      if(nc.controlv)
+		free(nc.controlv);
+
+	      memset(&nc, 0, sizeof(ay_nurbcurve_object));
+	    } /* if */
+	} /* for */
+    } /* if */
+
+cleanup:
+  if(coords)
+    free(coords);
+
+  if(vertexcounts)
+    free(vertexcounts);
+
+  if(nc.knotv)
+    free(nc.knotv);
+
+  if(nc.controlv)
+    free(nc.controlv);
+
+ return ay_status;
+} /* x3dio_readlineset */
+
+
 /* x3dio_readtrianglefanset:
  *
  */
@@ -3405,6 +3495,10 @@ x3dio_readelement(scew_element *element)
   if(!strcmp(element_name, "IndexedLineSet"))
     {
       ay_status = x3dio_readindexedlineset(element);
+    }
+  if(!strcmp(element_name, "LineSet"))
+    {
+      ay_status = x3dio_readlineset(element);
     }
   if(!strcmp(element_name, "TriangleFanSet"))
     {
