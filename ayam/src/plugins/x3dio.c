@@ -2025,7 +2025,7 @@ x3dio_readtrianglefanset(scew_element *element)
  int *fancounts = NULL;
  int normalPerVertex = AY_FALSE;
  double *coords = NULL, *normals = NULL;
- unsigned int i, totalverts = 0;
+ unsigned int i, j, k, l, totalverts = 0;
 
   if(!element)
     return AY_ENULL;
@@ -2050,19 +2050,15 @@ x3dio_readtrianglefanset(scew_element *element)
 
       /* get texture coordinates */
 
-      pomesh.npolys = fancountslen;
-      /* count vertices */
+      /* count vertices and polygons */
       for(i = 0; i < fancountslen; i++)
 	{
 	  if(fancounts[i] >= 3)
 	    {
-	      totalverts += fancounts[i];
-	    }
-	  else
-	    {
-	      pomesh.npolys--;
+	      pomesh.npolys += fancounts[i]-2;
 	    }
 	} /* for */
+      totalverts = pomesh.npolys*3;
 
       /* allocate polymesh index arrays */
       if(!(pomesh.nloops = calloc(pomesh.npolys, sizeof(unsigned int))))
@@ -2079,11 +2075,21 @@ x3dio_readtrianglefanset(scew_element *element)
 	}
       for(i = 0; i < pomesh.npolys; i++)
 	{
-	  pomesh.nverts[i] = fancounts[i];
+	  pomesh.nverts[i] = 3;
 	} /* for */
-      for(i = 0; i < totalverts; i++)
+      k = 0; l = 0;
+      for(i = 0; i < fancountslen; i++)
 	{
-	  pomesh.verts[i] = i;
+	  for(j = 1; j < fancounts[i]-1; j++)
+	    {
+	      pomesh.verts[k] = l;
+	      k++;
+	      pomesh.verts[k] = l+j;
+	      k++;
+	      pomesh.verts[k] = l+j+1;
+	      k++;
+	    } /* for */
+	  l += fancounts[i]-2;
 	} /* for */
 
       /* copy coordinate values and normals */
@@ -2158,7 +2164,7 @@ x3dio_readtrianglestripset(scew_element *element)
  int *stripcounts = NULL;
  int normalPerVertex = AY_FALSE;
  double *coords = NULL, *normals = NULL;
- unsigned int i, totalverts = 0;
+ unsigned int i, j, k, l, totalverts = 0;
 
   if(!element)
     return AY_ENULL;
@@ -2184,19 +2190,15 @@ x3dio_readtrianglestripset(scew_element *element)
 
       /* get texture coordinates */
 
-      pomesh.npolys = stripcountslen;
-      /* count vertices */
+      /* count vertices and polygons */
       for(i = 0; i < stripcountslen; i++)
 	{
 	  if(stripcounts[i] >= 3)
 	    {
-	      totalverts += stripcounts[i];
-	    }
-	  else
-	    {
-	      pomesh.npolys--;
+	      pomesh.npolys += stripcounts[i]-2;
 	    }
 	} /* for */
+      totalverts = pomesh.npolys*3;
 
       /* allocate polymesh index arrays */
       if(!(pomesh.nloops = calloc(pomesh.npolys, sizeof(unsigned int))))
@@ -2213,11 +2215,21 @@ x3dio_readtrianglestripset(scew_element *element)
 	}
       for(i = 0; i < pomesh.npolys; i++)
 	{
-	  pomesh.nverts[i] = stripcounts[i];
+	  pomesh.nverts[i] = 3;
 	} /* for */
-      for(i = 0; i < totalverts; i++)
+      k = 0; l = 0;
+      for(i = 0; i < stripcountslen; i++)
 	{
-	  pomesh.verts[i] = i;
+	  for(j = 0; j < stripcounts[i]-2; j++)
+	    {
+	      pomesh.verts[k] = l+j;
+	      k++;
+	      pomesh.verts[k] = l+j+1;
+	      k++;
+	      pomesh.verts[k] = l+j+2;
+	      k++;
+	    } /* for */
+	  l += stripcounts[i]-2;
 	} /* for */
 
       /* copy coordinate values and normals */
