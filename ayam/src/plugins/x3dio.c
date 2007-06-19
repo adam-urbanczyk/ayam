@@ -66,6 +66,8 @@ char *x3dio_ttagname = x3dio_ttagnamedef;
 ay_object *x3dio_lrobject = NULL;
 
 /* prototypes of functions local to this module: */
+
+/* low-level import support functions */
 void x3dio_pushtrafo(void);
 
 void x3dio_poptrafo(void);
@@ -146,7 +148,15 @@ int x3dio_readnurbscurve(scew_element *element, unsigned int dim);
 
 int x3dio_readnurbspatchsurface(scew_element *element, int trimmed);
 
+int x3dio_readnurbssweptsurface(scew_element *element, int is_swung);
 
+int x3dio_readnurbsset(scew_element *element);
+
+/* Lights */
+int x3dio_readlight(scew_element *element, int type);
+
+
+/* non-geometric/scene structure */
 
 int x3dio_readtransform(scew_element *element);
 
@@ -3126,6 +3136,102 @@ x3dio_readnurbsset(scew_element *element)
 } /* x3dio_readnurbsset */
 
 
+/* x3dio_readlight:
+ *
+ */
+int
+x3dio_readlight(scew_element *element, int type)
+{
+ int ay_status = AY_OK;
+ ay_light_object light = {0};
+ float intensity = 1.0f, color[3] = {1.0f, 1.0f, 1.0f};
+ float ftemp = 0.0f, fvtemp[3] = {0};
+
+  if(!element)
+    return AY_ENULL;
+
+  light.on = AY_TRUE;
+  ay_status = x3dio_readbool(element, "on", &(light.on));
+
+  ay_status = x3dio_readfloat(element, "intensity", &intensity);
+  light.intensity = intensity;
+  
+  ay_status = x3dio_readfloatvec(element, "color", 3, color);
+  light.colr = color[0]*255;
+  light.colg = color[1]*255;
+  light.colb = color[2]*255;
+
+  switch(type)
+    {
+    case 0:
+      /* directional light */
+      light.type = AY_LITDISTANT;
+      light.local = AY_TRUE;
+
+      fvtemp[0] = 0;
+      fvtemp[1] = 0;
+      fvtemp[2] = -1;
+      ay_status = x3dio_readfloatvec(element, "direction", 3, fvtemp);
+      light.tto[0] = (double)fvtemp[0];
+      light.tto[1] = (double)fvtemp[1];
+      light.tto[2] = (double)fvtemp[2];
+
+      break;
+    case 1:
+      /* point light */
+      light.type = AY_LITPOINT;
+	
+      fvtemp[0] = 0;
+      fvtemp[1] = 0;
+      fvtemp[2] = 0;
+      ay_status = x3dio_readfloatvec(element, "location", 3, fvtemp);
+      light.tfrom[0] = (double)fvtemp[0];
+      light.tfrom[1] = (double)fvtemp[1];
+      light.tfrom[2] = (double)fvtemp[2];
+
+      break;
+    case 2:
+      /* spot light */
+      light.type = AY_LITSPOT;
+      ftemp = AY_HALFPI/2.0;
+      ay_status = x3dio_readfloat(element, "cutOffAngle", &(ftemp));
+      light.cone_angle = (double)ftemp;
+      ftemp = AY_HALFPI;
+      ay_status = x3dio_readfloat(element, "beamWidth", &(ftemp));
+      if((light.cone_angle - ftemp) > AY_EPSILON)
+	{
+	  light.cone_delta_angle = light.cone_angle - ftemp;
+	}
+      light.beam_distribution = 1.0;
+
+      fvtemp[0] = 0;
+      fvtemp[1] = 0;
+      fvtemp[2] = 0;
+      ay_status = x3dio_readfloatvec(element, "location", 3, fvtemp);
+      light.tfrom[0] = (double)fvtemp[0];
+      light.tfrom[1] = (double)fvtemp[1];
+      light.tfrom[2] = (double)fvtemp[2];
+
+      fvtemp[0] = 0;
+      fvtemp[1] = 0;
+      fvtemp[2] = -1;
+      ay_status = x3dio_readfloatvec(element, "direction", 3, fvtemp);
+      light.tto[0] = (double)fvtemp[0];
+      light.tto[1] = (double)fvtemp[1];
+      light.tto[2] = (double)fvtemp[2];
+      break;
+    default:
+      return AY_OK;
+      break;
+    }
+
+  /* copy object to the Ayam scene */
+  ay_status = x3dio_linkobject(AY_IDLIGHT, (void*)&light);
+
+ return ay_status;
+} /* x3dio_readlight */
+
+
 /* x3dio_readappearance:
  *
  */
@@ -3577,6 +3683,20 @@ x3dio_readelement(scew_element *element)
   if(!strcmp(element_name, "NurbsSwungSurface"))
     {
       ay_status = x3dio_readnurbssweptsurface(element, AY_TRUE);
+    }
+
+  /* lights */
+  if(!strcmp(element_name, "DirectionalLight"))
+    {
+      ay_status = x3dio_readlight(element, 0);
+    }
+  if(!strcmp(element_name, "PointLight"))
+    {
+      ay_status = x3dio_readlight(element, 1);
+    }
+  if(!strcmp(element_name, "SpotLight"))
+    {
+      ay_status = x3dio_readlight(element, 2);
     }
 
   /* non geometric shapes */
