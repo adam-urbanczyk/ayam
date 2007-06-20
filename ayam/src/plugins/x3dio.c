@@ -103,6 +103,8 @@ int x3dio_readnormals(scew_element *element, unsigned int *len, double **res);
 
 int x3dio_readcolors(scew_element *element, unsigned int *len, double **res);
 
+int x3dio_readname(scew_element *element, ay_object *obj);
+
 int x3dio_linkobject(scew_element *element, unsigned int type, void *sobj);
 
 /* 3D */
@@ -2505,7 +2507,8 @@ x3dio_readdisk2d(scew_element *element)
       hyperboloid.thetamax = 360.0;
 
       /* copy object to the Ayam scene */
-      ay_status = x3dio_linkobject(element, AY_IDHYPERBOLOID, (void*)&hyperboloid);
+      ay_status = x3dio_linkobject(element, AY_IDHYPERBOLOID,
+				   (void*)&hyperboloid);
     } /* if */
 
  return ay_status;
@@ -3200,7 +3203,7 @@ x3dio_readlight(scew_element *element, int type)
 
   ay_status = x3dio_readfloat(element, "intensity", &intensity);
   light.intensity = intensity;
-  
+
   ay_status = x3dio_readfloatvec(element, "color", 3, color);
   light.colr = color[0]*255;
   light.colg = color[1]*255;
@@ -3225,7 +3228,7 @@ x3dio_readlight(scew_element *element, int type)
     case 1:
       /* point light */
       light.type = AY_LITPOINT;
-	
+
       fvtemp[0] = 0;
       fvtemp[1] = 0;
       fvtemp[2] = 0;
@@ -3607,156 +3610,234 @@ x3dio_readelement(scew_element *element)
 
   element_name = scew_element_name(element);
 
-  /* scene organization */
-  if(!strcmp(element_name, "Scene"))
+  switch((int)(element_name[0]))
     {
-      ay_status = x3dio_readscene(element);
+    case 'A':
+      if(!strcmp(element_name, "Appearance"))
+	{
+	  ay_status = x3dio_readappearance(element);
+	}
+      if(!strcmp(element_name, "Arc2D"))
+	{
+	  ay_status = x3dio_readarc2d(element);
+	}
+      if(!strcmp(element_name, "ArcClose2D"))
+	{
+	  ay_status = x3dio_readarcclose2d(element);
+	}
+      break;
+    case 'B':
+      if(!strcmp(element_name, "Box"))
+	{
+	  ay_status = x3dio_readbox(element);
+	}
+      break;
+    case 'C':
+      if(!strcmp(element_name, "Cylinder"))
+	{
+	  ay_status = x3dio_readcylinder(element);
+	}
+      if(!strcmp(element_name, "Cone"))
+	{
+	  ay_status = x3dio_readcone(element);
+	}
+      if(!strcmp(element_name, "Circle2D"))
+	{
+	  ay_status = x3dio_readcircle2d(element);
+	}
+      if(!strcmp(element_name, "ContourPolyline2D"))
+	{
+	  ay_status = x3dio_readpolyline2d(element, AY_TRUE);
+	}
+      if(!strcmp(element_name, "Contour2D"))
+	{
+	  ay_status = x3dio_readshape(element);
+	}
+      break;
+    case 'D':
+      if(!strcmp(element_name, "Disk2D"))
+	{
+	  ay_status = x3dio_readdisk2d(element);
+	}
+      if(!strcmp(element_name, "DirectionalLight"))
+	{
+	  ay_status = x3dio_readlight(element, 0);
+	}
+      break;
+      /*
+    case 'E':
+      break;
+    case 'F':
+      break;
+      */
+    case 'G':
+      if(!strcmp(element_name, "Group"))
+	{
+	  ay_status = x3dio_readshape(element);
+	}
+      break;
+      /*
+    case 'H':
+      break;
+      */
+    case 'I':
+      if(!strcmp(element_name, "IndexedFaceSet"))
+	{
+	  ay_status = x3dio_readindexedfaceset(element);
+	}
+      if(!strcmp(element_name, "IndexedTriangleSet"))
+	{
+	  ay_status = x3dio_readindexedtriangleset(element);
+	}
+      if(!strcmp(element_name, "IndexedTriangleStripSet"))
+	{
+	  ay_status = x3dio_readindexedtrianglestripset(element);
+	}
+      if(!strcmp(element_name, "IndexedTriangleFanSet"))
+	{
+	  ay_status = x3dio_readindexedtrianglefanset(element);
+	}
+      if(!strcmp(element_name, "IndexedLineSet"))
+	{
+	  ay_status = x3dio_readindexedlineset(element);
+	}
+      break;
+      /*
+    case 'J':
+      break;
+    case 'K':
+      break;
+      */
+    case 'L':
+      if(!strcmp(element_name, "LineSet"))
+	{
+	  ay_status = x3dio_readlineset(element);
+	}
+      break;
+    case 'M':
+      if(!strcmp(element_name, "Material"))
+	{
+	  ay_status = x3dio_readmaterial(element);
+	}
+      break;
+    case 'N':
+      if(!strcmp(element_name, "NurbsCurve"))
+	{
+	  ay_status = x3dio_readnurbscurve(element, 3);
+	}
+      if(!strcmp(element_name, "NurbsCurve2D"))
+	{
+	  ay_status = x3dio_readnurbscurve(element, 2);
+	}
+      if(!strcmp(element_name, "NurbsPatchSurface"))
+	{
+	  ay_status = x3dio_readnurbspatchsurface(element, AY_FALSE);
+	}
+      if(!strcmp(element_name, "NurbsTrimmedSurface"))
+	{
+	  ay_status = x3dio_readnurbspatchsurface(element, AY_TRUE);
+	}
+      if(!strcmp(element_name, "NurbsSweptSurface"))
+	{
+	  ay_status = x3dio_readnurbssweptsurface(element, AY_FALSE);
+	}
+      if(!strcmp(element_name, "NurbsSwungSurface"))
+	{
+	  ay_status = x3dio_readnurbssweptsurface(element, AY_TRUE);
+	}
+      break;
+      /*
+    case 'O':
+      break;
+      */
+    case 'P':
+      if(!strcmp(element_name, "Polyline2D"))
+	{
+	  ay_status = x3dio_readpolyline2d(element, AY_FALSE);
+	}
+      if(!strcmp(element_name, "PointLight"))
+	{
+	  ay_status = x3dio_readlight(element, 1);
+	}
+      break;
+      /*
+    case 'Q':
+      break;
+    case 'R':
+      break;
+      */
+    case 'S':
+      if(!strcmp(element_name, "Scene"))
+	{
+	  ay_status = x3dio_readscene(element);
+	}
+      if(!strcmp(element_name, "Shape"))
+	{
+	  ay_status = x3dio_readshape(element);
+	}
+      if(!strcmp(element_name, "Sphere"))
+	{
+	  ay_status = x3dio_readsphere(element);
+	}
+
+      if(!strcmp(element_name, "SpotLight"))
+	{
+	  ay_status = x3dio_readlight(element, 2);
+	}
+
+      break;
+    case 'T':
+      if(!strcmp(element_name, "Transform"))
+	{
+	  ay_status = x3dio_readtransform(element);
+	}
+      if(!strcmp(element_name, "TriangleFanSet"))
+	{
+	  ay_status = x3dio_readtrianglefanset(element);
+	}
+      if(!strcmp(element_name, "TriangleStripSet"))
+	{
+	  ay_status = x3dio_readtrianglestripset(element);
+	}
+      if(!strcmp(element_name, "TriangleSet"))
+	{
+	  ay_status = x3dio_readtriangleset(element);
+	}
+      break;
+      /*
+    case 'U':
+      break;
+    case 'V':
+      break;
+    case 'W':
+      break;
+    case 'X':
+      break;
+    case 'Y':
+      break;
+    case 'Z':
+      break;
+      */
+    default:
+      break;
     }
-  if(!strcmp(element_name, "Transform"))
-    {
-      ay_status = x3dio_readtransform(element);
-    }
-  if(!strcmp(element_name, "Shape"))
-    {
-      ay_status = x3dio_readshape(element);
-    }
-  if(!strcmp(element_name, "Appearance"))
-    {
-      ay_status = x3dio_readappearance(element);
-    }
-  if(!strcmp(element_name, "Material"))
-    {
-      ay_status = x3dio_readmaterial(element);
-    }
+
+
+
 
   /* geometric shapes */
   /* 3D */
-  if(!strcmp(element_name, "Box"))
-    {
-      ay_status = x3dio_readbox(element);
-    }
-  if(!strcmp(element_name, "Sphere"))
-    {
-      ay_status = x3dio_readsphere(element);
-    }
-  if(!strcmp(element_name, "Cylinder"))
-    {
-      ay_status = x3dio_readcylinder(element);
-    }
-  if(!strcmp(element_name, "Cone"))
-    {
-      ay_status = x3dio_readcone(element);
-    }
-  if(!strcmp(element_name, "IndexedFaceSet"))
-    {
-      ay_status = x3dio_readindexedfaceset(element);
-    }
-  if(!strcmp(element_name, "IndexedTriangleSet"))
-    {
-      ay_status = x3dio_readindexedtriangleset(element);
-    }
-  if(!strcmp(element_name, "IndexedTriangleStripSet"))
-    {
-      ay_status = x3dio_readindexedtrianglestripset(element);
-    }
-  if(!strcmp(element_name, "IndexedTriangleFanSet"))
-    {
-      ay_status = x3dio_readindexedtrianglefanset(element);
-    }
-  if(!strcmp(element_name, "IndexedLineSet"))
-    {
-      ay_status = x3dio_readindexedlineset(element);
-    }
-  if(!strcmp(element_name, "LineSet"))
-    {
-      ay_status = x3dio_readlineset(element);
-    }
-  if(!strcmp(element_name, "TriangleFanSet"))
-    {
-      ay_status = x3dio_readtrianglefanset(element);
-    }
-  if(!strcmp(element_name, "TriangleStripSet"))
-    {
-      ay_status = x3dio_readtrianglestripset(element);
-    }
-  if(!strcmp(element_name, "TriangleSet"))
-    {
-      ay_status = x3dio_readtriangleset(element);
-    }
+
+
   /* 2D */
-  if(!strcmp(element_name, "Disk2D"))
-    {
-      ay_status = x3dio_readdisk2d(element);
-    }
-  if(!strcmp(element_name, "Circle2D"))
-    {
-      ay_status = x3dio_readcircle2d(element);
-    }
-  if(!strcmp(element_name, "Arc2D"))
-    {
-      ay_status = x3dio_readarc2d(element);
-    }
-  if(!strcmp(element_name, "ArcClose2D"))
-    {
-      ay_status = x3dio_readarcclose2d(element);
-    }
-  if(!strcmp(element_name, "Polyline2D"))
-    {
-      ay_status = x3dio_readpolyline2d(element, AY_FALSE);
-    }
+
+
   /* NURBS */
-  if(!strcmp(element_name, "NurbsCurve"))
-    {
-      ay_status = x3dio_readnurbscurve(element, 3);
-    }
-  if(!strcmp(element_name, "NurbsCurve2D"))
-    {
-      ay_status = x3dio_readnurbscurve(element, 2);
-    }
-  if(!strcmp(element_name, "NurbsPatchSurface"))
-    {
-      ay_status = x3dio_readnurbspatchsurface(element, AY_FALSE);
-    }
-  if(!strcmp(element_name, "NurbsTrimmedSurface"))
-    {
-      ay_status = x3dio_readnurbspatchsurface(element, AY_TRUE);
-    }
-  if(!strcmp(element_name, "ContourPolyline2D"))
-    {
-      ay_status = x3dio_readpolyline2d(element, AY_TRUE);
-    }
-  if(!strcmp(element_name, "Contour2D"))
-    {
-      ay_status = x3dio_readshape(element);
-    }
-  if(!strcmp(element_name, "NurbsSweptSurface"))
-    {
-      ay_status = x3dio_readnurbssweptsurface(element, AY_FALSE);
-    }
-  if(!strcmp(element_name, "NurbsSwungSurface"))
-    {
-      ay_status = x3dio_readnurbssweptsurface(element, AY_TRUE);
-    }
 
   /* lights */
-  if(!strcmp(element_name, "DirectionalLight"))
-    {
-      ay_status = x3dio_readlight(element, 0);
-    }
-  if(!strcmp(element_name, "PointLight"))
-    {
-      ay_status = x3dio_readlight(element, 1);
-    }
-  if(!strcmp(element_name, "SpotLight"))
-    {
-      ay_status = x3dio_readlight(element, 2);
-    }
+
 
   /* non geometric shapes */
-  if(!strcmp(element_name, "Group"))
-    {
-      ay_status = x3dio_readshape(element);
-    }
 
  return AY_OK;
 } /* x3dio_readelement */
