@@ -103,7 +103,7 @@ int x3dio_readnormals(scew_element *element, unsigned int *len, double **res);
 
 int x3dio_readcolors(scew_element *element, unsigned int *len, double **res);
 
-int x3dio_linkobject(unsigned int type, void *sobj);
+int x3dio_linkobject(scew_element *element, unsigned int type, void *sobj);
 
 /* 3D */
 int x3dio_readbox(scew_element *element);
@@ -971,11 +971,53 @@ x3dio_readnormals(scew_element *element, unsigned int *len, double **res)
 } /* x3dio_readnormals */
 
 
+/* x3dio_readname:
+ *
+ */
+int
+x3dio_readname(scew_element *element, ay_object *obj)
+{
+ int ay_status = AY_OK;
+ scew_attribute *attr = NULL;
+ const XML_Char *str = NULL;
+ unsigned int len = 0;
+ char *c;
+
+  if(!element || !obj)
+    return AY_ENULL;
+
+  /* set name from DEF */
+  attr = scew_attribute_by_name(element, "DEF");
+  if(attr)
+    {
+      str = scew_attribute_value(attr);
+      if(str)
+	{
+	  len = strlen(str)+1;
+	  if((obj->name = calloc(len, sizeof(char))))
+	    {
+	      strcpy(obj->name, str);
+	      /* remove whitespace */
+	      c = obj->name;
+	      while(c && *c != '\0')
+		{
+		  if(*c == ' ')
+		    *c = '_';
+		  c++;
+		} /* while */
+	    } /* if */
+	} /* if */
+    } /* if */
+
+ return ay_status;
+} /* x3dio_readname */
+
+
 /* x3dio_linkobject:
  *
  */
 int
-x3dio_linkobject(unsigned int type, void *sobj)
+x3dio_linkobject(scew_element *element, unsigned int type, void *sobj)
 {
  int ay_status = AY_OK;
  ay_object obj = {0}, *new = NULL;
@@ -996,6 +1038,9 @@ x3dio_linkobject(unsigned int type, void *sobj)
 
   /* set transformation attributes */
   x3dio_trafotoobject(new, x3dio_ctrafos->m);
+
+  /* set name from DEF */
+  ay_status = x3dio_readname(element, new);
 
   /* link the object to the scene */
   ay_status = ay_object_link(new);
@@ -1044,7 +1089,7 @@ x3dio_readbox(scew_element *element)
       box.length = 2.0;
     } /* if */
 
-  ay_status = x3dio_linkobject(AY_IDBOX, (void*)&box);
+  ay_status = x3dio_linkobject(element, AY_IDBOX, (void*)&box);
 
  return ay_status;
 } /* x3dio_readbox */
@@ -1086,7 +1131,7 @@ x3dio_readsphere(scew_element *element)
   ay_trafo_rotatematrix(-90.0, 1.0, 0.0, 0.0, x3dio_ctrafos->m);
 
   /* copy object to the Ayam scene */
-  ay_status = x3dio_linkobject(AY_IDSPHERE, (void*)&sphere);
+  ay_status = x3dio_linkobject(element, AY_IDSPHERE, (void*)&sphere);
 
   memcpy(x3dio_ctrafos->m, m, 16*sizeof(double));
 
@@ -1157,7 +1202,7 @@ x3dio_readcylinder(scew_element *element)
 	  cylinder.closed = AY_TRUE;
 	}
       /* copy object to the Ayam scene */
-      ay_status = x3dio_linkobject(AY_IDCYLINDER, (void*)&cylinder);
+      ay_status = x3dio_linkobject(element, AY_IDCYLINDER, (void*)&cylinder);
     }
 
   if(has_top && !has_bottom)
@@ -1166,7 +1211,7 @@ x3dio_readcylinder(scew_element *element)
       disk.radius = cylinder.radius;
       disk.height = cylinder.zmin;
       /* copy object to the Ayam scene */
-      ay_status = x3dio_linkobject(AY_IDDISK, (void*)&disk);
+      ay_status = x3dio_linkobject(element, AY_IDDISK, (void*)&disk);
     }
 
   if(has_bottom && !has_top)
@@ -1175,7 +1220,7 @@ x3dio_readcylinder(scew_element *element)
       disk.radius = cylinder.radius;
       disk.height = cylinder.zmax;
       /* copy object to the Ayam scene */
-      ay_status = x3dio_linkobject(AY_IDDISK, (void*)&disk);
+      ay_status = x3dio_linkobject(element, AY_IDDISK, (void*)&disk);
     }
 
   memcpy(x3dio_ctrafos->m, m, 16*sizeof(double));
@@ -1247,7 +1292,7 @@ x3dio_readcone(scew_element *element)
 	  cone.closed = AY_TRUE;
 	}
       /* copy object to the Ayam scene */
-      ay_status = x3dio_linkobject(AY_IDCONE, (void*)&cone);
+      ay_status = x3dio_linkobject(element, AY_IDCONE, (void*)&cone);
     }
 
   if(has_bottom && !has_side)
@@ -1255,7 +1300,7 @@ x3dio_readcone(scew_element *element)
       disk.is_simple = AY_TRUE;
       disk.radius = cone.radius;
       /* copy object to the Ayam scene */
-      ay_status = x3dio_linkobject(AY_IDDISK, (void*)&disk);
+      ay_status = x3dio_linkobject(element, AY_IDDISK, (void*)&disk);
     }
 
   memcpy(x3dio_ctrafos->m, m, 16*sizeof(double));
@@ -1380,7 +1425,7 @@ x3dio_readindexedfaceset(scew_element *element)
 	} /* if */
 
       /* copy object to the Ayam scene */
-      ay_status = x3dio_linkobject(AY_IDPOMESH, (void*)&pomesh);
+      ay_status = x3dio_linkobject(element, AY_IDPOMESH, (void*)&pomesh);
 
     } /* if */
 
@@ -1506,7 +1551,7 @@ x3dio_readindexedtriangleset(scew_element *element)
 	} /* if */
 
       /* copy object to the Ayam scene */
-      ay_status = x3dio_linkobject(AY_IDPOMESH, (void*)&pomesh);
+      ay_status = x3dio_linkobject(element, AY_IDPOMESH, (void*)&pomesh);
 
     } /* if */
 
@@ -1654,7 +1699,7 @@ x3dio_readindexedtrianglestripset(scew_element *element)
 	} /* if */
 
       /* copy object to the Ayam scene */
-      ay_status = x3dio_linkobject(AY_IDPOMESH, (void*)&pomesh);
+      ay_status = x3dio_linkobject(element, AY_IDPOMESH, (void*)&pomesh);
 
     } /* if */
 
@@ -1803,7 +1848,7 @@ x3dio_readindexedtrianglefanset(scew_element *element)
 	} /* if */
 
       /* copy object to the Ayam scene */
-      ay_status = x3dio_linkobject(AY_IDPOMESH, (void*)&pomesh);
+      ay_status = x3dio_linkobject(element, AY_IDPOMESH, (void*)&pomesh);
 
     } /* if */
 
@@ -1903,7 +1948,7 @@ x3dio_readindexedlineset(scew_element *element)
 	  ay_status = ay_knots_createnc(&nc);
 
 	  /* copy object to the Ayam scene */
-	  ay_status = x3dio_linkobject(AY_IDNCURVE, (void*)&nc);
+	  ay_status = x3dio_linkobject(element, AY_IDNCURVE, (void*)&nc);
 
 	  /* clean up curve object */
 	  if(nc.knotv)
@@ -1992,7 +2037,7 @@ x3dio_readlineset(scew_element *element)
 	      ay_status = ay_knots_createnc(&nc);
 
 	      /* copy object to the Ayam scene */
-	      ay_status = x3dio_linkobject(AY_IDNCURVE, (void*)&nc);
+	      ay_status = x3dio_linkobject(element, AY_IDNCURVE, (void*)&nc);
 
 	      /* clean up curve object */
 	      if(nc.knotv)
@@ -2132,7 +2177,7 @@ x3dio_readtrianglefanset(scew_element *element)
 	} /* if */
 
       /* copy object to the Ayam scene */
-      ay_status = x3dio_linkobject(AY_IDPOMESH, (void*)&pomesh);
+      ay_status = x3dio_linkobject(element, AY_IDPOMESH, (void*)&pomesh);
 
     } /* if */
 
@@ -2272,7 +2317,7 @@ x3dio_readtrianglestripset(scew_element *element)
 	} /* if */
 
       /* copy object to the Ayam scene */
-      ay_status = x3dio_linkobject(AY_IDPOMESH, (void*)&pomesh);
+      ay_status = x3dio_linkobject(element, AY_IDPOMESH, (void*)&pomesh);
 
     } /* if */
 
@@ -2389,7 +2434,7 @@ x3dio_readtriangleset(scew_element *element)
     } /* if */
 
   /* copy object to the Ayam scene */
-  ay_status = x3dio_linkobject(AY_IDPOMESH, (void*)&pomesh);
+  ay_status = x3dio_linkobject(element, AY_IDPOMESH, (void*)&pomesh);
 
 cleanup:
   if(coords)
@@ -2451,7 +2496,7 @@ x3dio_readdisk2d(scew_element *element)
       disk.is_simple = AY_TRUE;
 
       /* copy object to the Ayam scene */
-      ay_status = x3dio_linkobject(AY_IDDISK, (void*)&disk);
+      ay_status = x3dio_linkobject(element, AY_IDDISK, (void*)&disk);
     }
   else
     {
@@ -2460,7 +2505,7 @@ x3dio_readdisk2d(scew_element *element)
       hyperboloid.thetamax = 360.0;
 
       /* copy object to the Ayam scene */
-      ay_status = x3dio_linkobject(AY_IDHYPERBOLOID, (void*)&hyperboloid);
+      ay_status = x3dio_linkobject(element, AY_IDHYPERBOLOID, (void*)&hyperboloid);
     } /* if */
 
  return ay_status;
@@ -2494,7 +2539,7 @@ x3dio_readcircle2d(scew_element *element)
   ncircle.tmax = 360.0;
 
   /* copy object to the Ayam scene */
-  ay_status = x3dio_linkobject(AY_IDNCIRCLE, (void*)&ncircle);
+  ay_status = x3dio_linkobject(element, AY_IDNCIRCLE, (void*)&ncircle);
 
  return ay_status;
 } /* x3dio_readcircle2d */
@@ -2535,7 +2580,7 @@ x3dio_readarc2d(scew_element *element)
   ncircle.tmax = AY_R2D((double)eangle);
 
   /* copy object to the Ayam scene */
-  ay_status = x3dio_linkobject(AY_IDNCIRCLE, (void*)&ncircle);
+  ay_status = x3dio_linkobject(element, AY_IDNCIRCLE, (void*)&ncircle);
 
  return ay_status;
 } /* x3dio_readarc2d */
@@ -2635,7 +2680,7 @@ x3dio_readarcclose2d(scew_element *element)
     }
 
   /* copy object to the Ayam scene */
-  ay_status = x3dio_linkobject(AY_IDNCURVE, (void*)&nc);
+  ay_status = x3dio_linkobject(element, AY_IDNCURVE, (void*)&nc);
 
 
   if(nc.knotv)
@@ -2694,7 +2739,7 @@ x3dio_readpolyline2d(scew_element *element, int contour)
       ay_status = ay_knots_createnc(&nc);
 
       /* copy object to the Ayam scene */
-      ay_status = x3dio_linkobject(AY_IDNCURVE, (void*)&nc);
+      ay_status = x3dio_linkobject(element, AY_IDNCURVE, (void*)&nc);
     } /* if */
 
 cleanup:
@@ -2810,7 +2855,7 @@ x3dio_readnurbscurve(scew_element *element, unsigned int dim)
 	}
 
       /* copy object to the Ayam scene */
-      ay_status = x3dio_linkobject(AY_IDNCURVE, (void*)&nc);
+      ay_status = x3dio_linkobject(element, AY_IDNCURVE, (void*)&nc);
     } /* if */
 
 cleanup:
@@ -2960,7 +3005,7 @@ x3dio_readnurbspatchsurface(scew_element *element, int trimmed)
 
       /* copy object to the Ayam scene */
       x3dio_lrobject = NULL;
-      ay_status = x3dio_linkobject(AY_IDNPATCH, (void*)&np);
+      ay_status = x3dio_linkobject(element, AY_IDNPATCH, (void*)&np);
 
       if(!x3dio_lrobject)
 	{
@@ -3226,7 +3271,7 @@ x3dio_readlight(scew_element *element, int type)
     }
 
   /* copy object to the Ayam scene */
-  ay_status = x3dio_linkobject(AY_IDLIGHT, (void*)&light);
+  ay_status = x3dio_linkobject(element, AY_IDLIGHT, (void*)&light);
 
  return ay_status;
 } /* x3dio_readlight */
@@ -3371,6 +3416,8 @@ x3dio_readshape(scew_element *element)
       ay_object_crtendlevel(ay_next);
       ay_next = old_aynext;
       ay_object_link(o);
+      /* read shape name from DEF */
+      ay_status = x3dio_readname(element, o);
     }
   else
     {
@@ -3381,6 +3428,12 @@ x3dio_readshape(scew_element *element)
 	{
 	  /* XXXX trafos of level object? */
 	  ay_object_link(o->down);
+	  /* if the object has no name already... */
+	  if(!o->down->name)
+	    {
+	      /* ...read shape name from DEF */
+	      ay_status = x3dio_readname(element, o->down);
+	    }
 	}
       o->down = NULL;
       ay_object_delete(o);
@@ -3703,21 +3756,6 @@ x3dio_readelement(scew_element *element)
   if(!strcmp(element_name, "Group"))
     {
       ay_status = x3dio_readshape(element);
-    }
-
-
-  /* light sources */
-  if(!strcmp(element_name, "DirectionalLight"))
-    {
-
-    }
-  if(!strcmp(element_name, "SpotLight"))
-    {
-
-    }
-  if(!strcmp(element_name, "PointLight"))
-    {
-
     }
 
  return AY_OK;
