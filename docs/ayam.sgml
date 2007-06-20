@@ -7531,16 +7531,16 @@ the tree widget and rebuilds
 it, which can be a very time consuming operation (depending on the complexity
 of the scene). There are some options to speed this process up:
  <itemize>
- <item> If there were just changes to the current level (and below)
+ <item>If there were just changes to the current level (and below)
 the global array entry <tt/"ay(ul)"/ (UpdateLevel) may be set
 to the current level before calling <tt/"uS"/. This will not remove
 and update the complete scene but just the part below <tt/"ay(ul)"/.
 Example:
 <code>global ay; set ay(ul) $ay(CurrentLevel); uS;</code>.
- <item> If objects have been created and thus just need to be
+ <item>If objects have been created and thus just need to be
 added to the current level of the object tree view, the command
 <tt/"uCR"/ may be used instead of <tt/"uS"/.
- <item> If just names or types of objects of the current level changed,
+ <item>If just names or types of objects of the current level changed,
 the command <tt/"uCL cl"/ may be used instead of <tt/"uS"/.
  </itemize>
 </itemize>
@@ -7603,7 +7603,7 @@ is 1 then forAll will recurse into every object (if it has child objects)
 before the execution of command. Note that forAll will run
 slowly if a property GUI is displayed. You can make it run faster
 by de-selecting the property using e.g. the property context menu first.
- <item> Deficiencies:
+ <item>Deficiencies:
  <itemize>
   <item>A recursive forAll will
 e.g. also descend into NURBS patches (if they have trim curves) and apply
@@ -8037,8 +8037,8 @@ option already set.
 <p>
 In older versions of Ayam, Mops scenes could be imported using the main
 menu entry: <tt>"File/Import Mops"</tt>. Since Ayam 1.13 Mops import is
-a plugin (mopsi). After loading the plugin, Mops scenes may be imported
-using the main menu entry <tt>"File/Import/Mops"</tt>.
+a plugin named <tt>"mopsi"</tt>. After loading the plugin, Mops scenes
+may be imported using the main menu entry <tt>"File/Import/Mops"</tt>.
 <p>
 Ayam is able to import most elements of a Mops scene except for
 RiAttributes attached to arbitrary geometric objects,
@@ -8066,8 +8066,10 @@ instead of using the values from the Mops scene file.
 
 <sect1>AutoCAD DXF Import<label id="impdxf">
 <p>
-The dxfio plugin allows to import AutoCAD DXF (drawing exchange format)
-files into Ayam with the help of the Dime library (from Systems in Motion, AS).
+The <tt>"dxfio"</tt> plugin allows to import AutoCAD DXF (drawing exchange
+format) files into Ayam with the help of the Dime library (from Systems in
+Motion, AS).
+<p>
 Start importing a DXF file using the main menu entry
 <tt>"File/Import/AutoCAD DXF"</tt>
 (if this menu entry is not available, you have to load the
@@ -8325,19 +8327,19 @@ The corresponding main menu entry is
 The Wavefront export currently supports the following
 objects:
 <itemize>
-<item> NCurve and objects that may be converted to NCurve
+<item>NCurve and objects that may be converted to NCurve
 objects (ICurve, ConcatNC, ExtrNC)
-<item> NPatch (with trim curves) and objects that may be converted
+<item>NPatch (with trim curves) and objects that may be converted
 to NPatch objects (BPatch, PatchMesh, Revolve, Sweep, Extrude, Skin,
 Cap, Gordon, Birail1, Birail2, Text); since Ayam 1.8.3 also Quadrics
 will be automatically converted to NURBS surfaces and exported
-<item> PolyMesh and objects that may be converted to PolyMesh objects
+<item>PolyMesh and objects that may be converted to PolyMesh objects
 (MetaObj), faces with holes are not supported by the Wavefront OBJ
 format and will be tesselated to triangles for export automatically
-<item> Box
-<item> Instance, Clone; both will be resolved to normal objects for export
+<item>Box
+<item>Instance, Clone; both will be resolved to normal objects for export
 as Wavefront OBJ does not support referenced geometry
-<item> Level, CSG operations are not supported and will be written
+<item>Level, CSG operations are not supported and will be written
 as normal Level objects, transformations will be delegated
 to the child objects
 </itemize>
@@ -8386,16 +8388,16 @@ available, you have to load the <tt>"mfio"</tt> plugin using the menu entry
 <p>
 Import supports the following primitives:
 <itemize>
-<item> Polyline, Triangle, TriGrid, Polygon, general Polygon, Box,
-<item> NURBS curve, NURBS surface (with trim curves),
-<item> Ellipsoid, Cylinder, Cone, Disk, and Torus.
+<item>Polyline, Triangle, TriGrid, Polygon, general Polygon, Box,
+<item>NURBS curve, NURBS surface (with trim curves),
+<item>Ellipsoid, Cylinder, Cone, Disk, and Torus.
 </itemize>
 
 The following transformations are supported:
 <itemize>
-<item> Scale,
-<item> Translate,
-<item> Rotate, RotateQuaternion, RotateAxis (if axis is X, Y, or Z).
+<item>Scale,
+<item>Translate,
+<item>Rotate, RotateQuaternion, RotateAxis (if axis is X, Y, or Z).
 </itemize>
 Furthermore, the import plugin reads the structure of the scene from Container
 objects. Reference objects will be resolved to normal objects while importing.
@@ -8415,10 +8417,10 @@ have to load the <tt>"mfio"</tt> plugin using the menu entry
 <p>
 The MFIO export supports the following primitives:
 <itemize>
-<item> NURBS curve and NURBS surface (with trim curves) including all
+<item>NURBS curve and NURBS surface (with trim curves) including all
 NURBS curve/surface providing objects, such as ICurve, Skin etc.,
-<item> Sphere, Disk, Cone, Cylinder, Torus,
-<item> Box, and PolyMesh.
+<item>Sphere, Disk, Cone, Cylinder, Torus,
+<item>Box, and PolyMesh.
 </itemize>
 
 All transformations are supported and will be written as
@@ -8462,18 +8464,18 @@ The import process is controlled by the following options:
 <item><tt/"ScaleFactor"/:
 The <tt/"ScaleFactor"/ option allows to apply a scaling factor to all
 imported objects.
-<item> <tt/"Accuracy"/:
+<item><tt/"Accuracy"/:
 The <tt/"Accuracy"/ import option controls the tolerance
 of OpenNURBS internal operations, in this case the value is
 mostly used for conversion operations to the NURBS form.
-<item> <tt/"ReadCurves"/:
+<item><tt/"ReadCurves"/:
 If the <tt/"ReadCurves"/ import option is switched off, no curves will be
 imported. This option does not influence the import of trim curves.
-<item> <tt/"ReadLayers"/:
+<item><tt/"ReadLayers"/:
 By default, all objects from all layers will be imported.
 Using the <tt/"ReadLayers"/ import option, a single layer or a range
 of layers may be selected for import.
-<item> <tt/"IgnoreFirstTrim"/:
+<item><tt/"IgnoreFirstTrim"/:
 Another import option is <tt/"IgnoreFirstTrim"/, this is useful
 if the first bounding trim loop of NURBS surfaces should be ignored.
 This trim loop is often not needed, because it encloses the whole
@@ -8529,18 +8531,18 @@ The export process is controlled by the following options:
 <item><tt/"ScaleFactor"/:
 The <tt/"ScaleFactor"/ option allows to apply a scaling factor to all
 exported objects.
-<item> <tt/"Accuracy"/:
+<item><tt/"Accuracy"/:
 The <tt/"Accuracy"/ option controls the tolerance of internal
 OpenNURBS operations (currently those are:
 pushing up 2D trim curves to 3D curves and
 checking NURBS surfaces for planarity).
-<item> <tt/"WriteSelected"/: exports only the selected objects. 
-<item> <tt/"ObeyNoExport"/: ignores all objects with <tt/"NoExport"/ tags. 
-<item> <tt/"IgnoreHidden"/: ignores all hidden objects. 
-<item> <tt/"WriteCurves"/: If the <tt/"WriteCurves"/ option is disabled,
+<item><tt/"WriteSelected"/: exports only the selected objects. 
+<item><tt/"ObeyNoExport"/: ignores all objects with <tt/"NoExport"/ tags. 
+<item><tt/"IgnoreHidden"/: ignores all hidden objects. 
+<item><tt/"WriteCurves"/: If the <tt/"WriteCurves"/ option is disabled,
 no curves will be written to the exported Rhino file. This option does
 not influence the export of trim curves.
-<item> <tt/"QuadAsBRep"/: If the <tt/"QuadAsBRep"/ option is enabled
+<item><tt/"QuadAsBRep"/: If the <tt/"QuadAsBRep"/ option is enabled
 spheres, cylinders, cones, and torii will not be exported as collection
 of NURBS surfaces (as converted by Ayam) but as BRep objects (as converted
 by the OpenNURBS toolkit).
@@ -8586,6 +8588,78 @@ child objects. The object hierarchy:
 </code>
 for instance, leads to two objects in the Rhino file
 named <tt>"Arm/MySphere"</tt> and <tt>"Arm/MyCylinder"</tt>.
+<p>
+
+<sect1>X3D (Web3D) Import<label id="impx3d">
+<p>
+Since version 1.13 Ayam contains a plugin named <tt>"x3dio"</tt> that may
+import scenes from the XML based X3D file format published by the Web3D
+Consortium. The XML parser used in this plugin is based on Expat and SCEW.
+<p>
+Binary and compressed versions of X3D, as well as VRML files are not
+supported! Only pure XML files are read by the <tt>"x3dio"</tt> plugin.
+<p>
+Start importing from a Web3D X3D file using the menu entry
+<tt>"File/Import/Web3D X3D"</tt>
+(if this menu entry is not available, you have to load the
+<tt>"x3dio"</tt> plugin using the menu entry
+<tt>"File/Load Plugin"</tt> first).
+<p>
+<sect2>X3D Element Support
+<p>
+The import functionality of the <tt>"x3dio"</tt> plugin currently covers
+import of the following elements:
+<itemize>
+<item>Geometry3D: Box, Sphere, Cylinder, Cone, IndexedFaceSet,
+IndexedTriangleSet, IndexedTriangleStripSet, IndexedTriangleFanSet,
+IndexedLineSet.
+
+Cylinders with just one cap are imported as two objects (a Cylinder and
+a Disk). Otherwise the <tt>"Closed"</tt> attribute is set according to
+the cap information.
+
+<item>Geometry2D:
+Arc2D, ArcClosed2D, Circle2D, Disk2D, Polyline2D.
+
+Arcs and Circles are imported as NCircle objects.
+Closed arcs and Polylines are imported as NURBS curves.
+Disks with an inner radius > 0.0 are imported as Hyperboloids (otherwise
+as Disks).
+
+<item>NURBS: NurbsCurve, NurbsCurve2D, NurbsPatchsurface,
+TrimmedNurbsPatchsurface, Contour2D, ContourPolyline2D.
+
+<item>Light sources:
+
+<item>Non geometric: Transformation, Shape, Group.
+</itemize>
+<p>
+Unsupported elements will be silently ignored. Prototyping and
+dynamic scenes as well as scripts are not supported.
+<p>
+Shape elements that contain more than one geometric elements will
+be imported as level objects.
+
+<sect2>X3D Attribute Support
+<p>
+The <tt>"solid"</tt> attribute is always ignored.
+<p>
+The DEF and USE attributes are supported for all elements, however,
+the corresponding master-instance relationships are completely
+resolved upon import. Instances of objects may be easily created
+again using Automatic Instancing
+(see section <ref id="ai" name="Automatic Instancing">).
+<p>
+The DEF attributes may be converted to object names.
+
+<sect2>X3D Import Options
+<p>
+
+<sect1>X3D (Web3D) Export<label id="expx3d">
+<p>
+Since version 1.13 Ayam contains a plugin named x3dio that may export
+scenes to the XML based X3D file format published by the Web3D Consortium.
+The XML parser is based on Expat and SCEW.
 <p>
 
 <sect>Miscellaneous
@@ -10205,7 +10279,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 
 <label id="indexx">X
 <itemize>
-<item>.
+<item>X3D: <ref id="impx3d" name="X3D (Web3D) Import">,
+<ref id="expx3d" name="X3D (Web3D) Export">
 </itemize>
 
 <label id="indexy">Y
