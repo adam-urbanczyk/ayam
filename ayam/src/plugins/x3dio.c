@@ -3159,7 +3159,7 @@ x3dio_readnurbssweptsurface(scew_element *element, int is_swung)
   ay_next = old_aynext;
   ay_object_link(o);
 
-  ay_status = x3dio_readshape(element);
+  ay_status = x3dio_readname(element, o);
 
  return ay_status;
 } /* x3dio_readnurbssweptsurface */
@@ -3779,12 +3779,10 @@ x3dio_readelement(scew_element *element)
 	{
 	  ay_status = x3dio_readsphere(element);
 	}
-
       if(!strcmp(element_name, "SpotLight"))
 	{
 	  ay_status = x3dio_readlight(element, 2);
 	}
-
       break;
     case 'T':
       if(!strcmp(element_name, "Transform"))
@@ -3820,24 +3818,7 @@ x3dio_readelement(scew_element *element)
       */
     default:
       break;
-    }
-
-
-
-
-  /* geometric shapes */
-  /* 3D */
-
-
-  /* 2D */
-
-
-  /* NURBS */
-
-  /* lights */
-
-
-  /* non geometric shapes */
+    } /* switch */
 
  return AY_OK;
 } /* x3dio_readelement */
