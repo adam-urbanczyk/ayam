@@ -7788,10 +7788,15 @@ used the new object(s) will replace the old object(s).
 <p><label id="scforcenot">
 forceNot:
 <itemize>
- <item>Synopsis: <tt>"forceNot"</tt>
+ <item>Synopsis: <tt>"forceNot [mod|all]"</tt>
  <item>Description: This command calls the registered notification
 callback for the selected object(s) and their parents, or if no object
 is selected for all objects of the scene.
+If the <tt>"mod"</tt> parameter is used, only modified objects
+will be notified.
+If the <tt>"all"</tt> parameter is used, all objects
+will be notified regardless of the selection.
+
 </itemize>
 
 <p><label id="scaddtoproc">
@@ -8239,21 +8244,21 @@ materials, lights).
 Furthermore, Ayam also supports rendering in multiple passes for
 shadow maps and permanent previews (where a RenderMan renderer is directly
 coupled to an Ayam view window).
-
+<p>
 The documentation on RIB export is spread over the Ayam documentation,
 this section gives some general information and otherwise just points
 to the real documentation sections.
-
+<p>
 RIB export is always available, it does not need a plugin to be loaded.
 The corresponding main menu entry is <tt>"File/Export/RenderMan RIB"</tt>
 and the keyboard shortcut is <tt/&lt;Ctrl+E&gt;/.
 To control the RIB export and rendering, many options exist that are
 documented in section <ref id="prefrib" name="RIB export preferences">.
-
+<p>
 There are also some special ways to export RIBs available in the
 main menu: <tt>"Special/RIB-Export"</tt>, this is documented in
 section <ref id="mmspecial" name="Special Menu">.
-
+<p>
 Ayam can not only export scenes as RIB but also call various
 RenderMan renderers to directly render the exported RIB files to
 the screen or to an image file.
@@ -8612,7 +8617,8 @@ import of the following elements:
 <itemize>
 <item>Geometry3D: Box, Sphere, Cylinder, Cone, IndexedFaceSet,
 IndexedTriangleSet, IndexedTriangleStripSet, IndexedTriangleFanSet,
-IndexedLineSet.
+TriangleSet, TriangleStripSet, TriangleFanSet, IndexedLineSet, and
+LineSet.
 
 Cylinders with just one cap are imported as two objects (a Cylinder and
 a Disk). Otherwise the <tt>"Closed"</tt> attribute is set according to
@@ -8629,7 +8635,13 @@ as Disks).
 <item>NURBS: NurbsCurve, NurbsCurve2D, NurbsPatchsurface,
 TrimmedNurbsPatchsurface, Contour2D, ContourPolyline2D.
 
-<item>Light sources:
+<item>Light sources: DirectionalLight, PointLight, SpotLight.
+
+The lights will be directly mapped to the standard RenderMan
+light sources distant, point, and spot, respectively.
+Therefore the <tt>"radius"</tt> and the <tt>"attenuation"</tt> attributes
+of point and spotlights are not supported. However, point and spotlights
+still have a quadratic falloff with distance.
 
 <item>Non geometric: Transformation, Shape, Group.
 </itemize>
@@ -8660,6 +8672,9 @@ The DEF attributes may be converted to object names.
 Since version 1.13 Ayam contains a plugin named x3dio that may export
 scenes to the XML based X3D file format published by the Web3D Consortium.
 The XML parser is based on Expat and SCEW.
+<p>
+
+<sect2>X3D Export Options
 <p>
 
 <sect>Miscellaneous
