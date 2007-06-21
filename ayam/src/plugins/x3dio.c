@@ -160,6 +160,8 @@ int x3dio_readlight(scew_element *element, int type);
 
 /* non-geometric/scene structure */
 
+int x3dio_readinline(scew_element *element);
+
 int x3dio_readtransform(scew_element *element);
 
 int x3dio_readshape(scew_element *element);
@@ -3280,6 +3282,93 @@ x3dio_readlight(scew_element *element, int type)
 } /* x3dio_readlight */
 
 
+/* x3dio_readinline:
+ *
+ */
+int
+x3dio_readinline(scew_element *element)
+{
+ int ay_status = AY_OK;
+ char fname[] = "x3dio_readinline";
+ char errstr[256];
+ /*
+ char arrname[] = "x3dio_options", varname[] = "Progress";
+ */
+ scew_tree *tree = NULL;
+ scew_parser *parser = NULL;
+ scew_error errcode;
+ enum XML_Error expat_code;
+ scew_attribute *attr = NULL;
+ const XML_Char *str = NULL;
+ int load = AY_TRUE;
+
+  if(!element)
+    return AY_ENULL;
+
+  ay_status = x3dio_readbool(element, "load", &load);
+
+  if(load)
+    {
+      attr = scew_attribute_by_name(element, "url");
+      if(attr)
+	{
+	  str = scew_attribute_value(attr);
+
+	  /* initialize XML parser */
+	  parser = scew_parser_create();
+
+	  scew_parser_ignore_whitespaces(parser, 1);
+
+	  /* load an XML (X3D) file */
+	  if(!scew_parser_load_file(parser, str))
+	    {
+	      errcode = scew_error_code();
+	      sprintf(errstr, "Unable to load file (error #%d: %s)\n",
+		      errcode,
+		      scew_error_string(errcode));
+	      ay_error(AY_ERROR, fname, errstr);
+	      if(errcode == scew_error_expat)
+		{
+		  expat_code = scew_error_expat_code(parser);
+		  sprintf(errstr, "Expat error #%d (line %d, column %d): %s\n",
+			  expat_code,
+			  scew_error_expat_line(parser),
+			  scew_error_expat_column(parser),
+			  scew_error_expat_string(expat_code));
+		  ay_error(AY_ERROR, fname, errstr);
+		}
+	      return TCL_OK;
+	    } /* if */
+
+	  tree = scew_parser_tree(parser);
+
+	  /* set progress */
+	  /*
+	  Tcl_SetVar2(ay_interp, arrname, varname, "50",
+		      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	  while(Tcl_DoOneEvent(TCL_DONT_WAIT)){};
+	  */
+	  /* convert XML tree to Ayam objects */
+	  ay_status = x3dio_readtree(tree);
+
+	  /* set progress */
+	  /*
+	  Tcl_SetVar2(ay_interp, arrname, varname, "100",
+		      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	  while(Tcl_DoOneEvent(TCL_DONT_WAIT)){};
+	  */
+
+	  /* cleanup */
+	  scew_tree_free(tree);
+
+	  scew_parser_free(parser);
+	} /* if */
+    } /* if */
+
+ return ay_status;
+} /* x3dio_readinline */
+
+
 /* x3dio_readappearance:
  *
  */
@@ -3700,6 +3789,10 @@ x3dio_readelement(scew_element *element)
       if(!strcmp(element_name, "IndexedLineSet"))
 	{
 	  ay_status = x3dio_readindexedlineset(element);
+	}
+      if(!strcmp(element_name, "Inline"))
+	{
+	  ay_status = x3dio_readinline(element);
 	}
       break;
       /*
