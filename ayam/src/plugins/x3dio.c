@@ -134,6 +134,9 @@ int x3dio_readtrianglestripset(scew_element *element);
 
 int x3dio_readtriangleset(scew_element *element);
 
+int x3dio_readelevationgrid(scew_element *element);
+
+
 /* 2D */
 int x3dio_readdisk2d(scew_element *element);
 
@@ -2463,6 +2466,88 @@ cleanup:
 } /* x3dio_readtriangleset */
 
 
+/* x3dio_readelevationgrid:
+ *
+ */
+int
+x3dio_readelevationgrid(scew_element *element)
+{
+ int ay_status = AY_OK;
+ ay_pamesh_object pamesh = {0};
+ int xDim = 0, zDim = 0;
+ float *heights = NULL, xSpac = 1.0f, zSpac = 1.0f;
+ unsigned int i, j, a = 0, b = 0, heightslen = 0;
+
+  if(!element)
+    return AY_ENULL;
+
+  pamesh.type = AY_PTBILINEAR;
+
+  ay_status = x3dio_readint(element, "xDimension", &xDim);
+  ay_status = x3dio_readint(element, "zDimension", &zDim);
+
+  if((xDim == 0) || (zDim == 0))
+    {
+      return AY_OK;
+    }
+
+  pamesh.width = xDim;
+  pamesh.height = zDim;
+
+  ay_status = x3dio_readfloat(element, "xSpacing", &xSpac);
+  ay_status = x3dio_readfloat(element, "zSpacing", &zSpac);
+
+  ay_status = x3dio_readfloatpoints(element, "height", 1,
+				    &heightslen, &heights);
+
+  if(heightslen < xDim*zDim)
+    {
+      return AY_ERROR;
+    }
+
+  /* get normals */
+
+  /* get colors */
+
+  /* get texture coordinates */
+
+  /* copy coordinate values */
+  if(!(pamesh.controlv = calloc(4*xDim*zDim, sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  for(i = 0; i < xDim; i++)
+    {
+      for(j = 0; j < zDim; j++)
+	{
+	  pamesh.controlv[a] = xSpac * i;
+	  pamesh.controlv[a+1] = heights[b];
+	  pamesh.controlv[a+2] = zSpac * j;
+	  pamesh.controlv[a+3] = 1.0;
+	  a += 4;
+	  b++;
+	} /* for */
+    } /* for */
+
+  /* immediately create NURBS patch representation */
+  ay_status = ay_pmt_tonpatch(&pamesh, &(pamesh.npatch));
+
+  /* copy object to the Ayam scene */
+  ay_status = x3dio_linkobject(element, AY_IDPAMESH, (void*)&pamesh);
+
+cleanup:
+
+  if(heights)
+    free(heights);
+
+  if(pamesh.controlv)
+    free(pamesh.controlv);
+
+  if(pamesh.npatch)
+    ay_object_delete(pamesh.npatch);
+
+ return ay_status;
+} /* x3dio_readelevationgrid */
+
+
 /* x3dio_readdisk2d:
  *
  */
@@ -3314,6 +3399,9 @@ x3dio_readinline(scew_element *element)
 	{
 	  str = scew_attribute_value(attr);
 
+	  ay_error(AY_EOUTPUT, fname, "Inlining file:");
+	  ay_error(AY_EOUTPUT, fname, str);
+
 	  /* initialize XML parser */
 	  parser = scew_parser_create();
 
@@ -3753,9 +3841,13 @@ x3dio_readelement(scew_element *element)
 	  ay_status = x3dio_readlight(element, 0);
 	}
       break;
-      /*
     case 'E':
+      if(!strcmp(element_name, "ElevationGrid"))
+	{
+	  ay_status = x3dio_readelevationgrid(element);
+	}
       break;
+      /*
     case 'F':
       break;
       */
