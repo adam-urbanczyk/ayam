@@ -15,6 +15,7 @@ uplevel #0 { array set x3dio_options {
     ErrorLevel 1
     ReadCurves 1
     ReadLayers -1
+    MergeInlineDefs 0
     IgnoreFirstTrim 0
     WriteSelected 0
     ObeyNoExport 1
@@ -71,6 +72,7 @@ proc x3dio_import { } {
 #    addCheck $f x3dio_options IgnoreFirstTrim
     addParam $f x3dio_options ReadLayers [list "-1" 1 1-10]
     addParam $f x3dio_options RescaleKnots [list 0.0 1.0e-4]
+    addCheck $f x3dio_options MergeInlineDefs
 #    addString $f x3dio_options STagName
 #    addString $f x3dio_options TTagName
     addMenu $f x3dio_options ErrorLevel [list Silence Errors Warnings All]
@@ -94,6 +96,7 @@ proc x3dio_import { } {
 	    -i $x3dio_options(IgnoreFirstTrim)\
 	    -r $x3dio_options(RescaleKnots)\
 	    -f $x3dio_options(ScaleFactor)\
+	    -m $x3dio_options(MergeInlineDefs)\
 	    -t $x3dio_options(STagName) $x3dio_options(TTagName)
 
 	cd $oldcd

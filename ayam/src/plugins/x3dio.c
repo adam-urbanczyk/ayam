@@ -36,7 +36,7 @@ char x3dio_version_mi[] = AY_VERSIONSTRMI;
 
 static Tcl_HashTable x3dio_write_ht;
 
-static Tcl_HashTable x3dio_defs_ht;
+static Tcl_HashTable *x3dio_defs_ht = NULL;
 
 
 /* current transformation */
@@ -48,6 +48,7 @@ int x3dio_exportcurves = AY_TRUE;
 int x3dio_expselected = AY_FALSE;
 int x3dio_expobeynoexport = AY_TRUE;
 int x3dio_expignorehidden = AY_TRUE;
+int x3dio_mergeinlinedefs = AY_TRUE;
 
 /* 0: silence, 1: errors, 2: warnings, 3: all */
 int x3dio_errorlevel = 1;
@@ -3386,6 +3387,7 @@ x3dio_readinline(scew_element *element)
  scew_attribute *attr = NULL;
  const XML_Char *str = NULL;
  int load = AY_TRUE;
+ Tcl_HashTable *old_x3dio_defs_ht = NULL;
 
   if(!element)
     return AY_ENULL;
@@ -3436,6 +3438,19 @@ x3dio_readinline(scew_element *element)
 		      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 	  while(Tcl_DoOneEvent(TCL_DONT_WAIT)){};
 	  */
+
+	  if(!x3dio_mergeinlinedefs)
+	    {
+	      /* save old DEF hash-table */
+	      old_x3dio_defs_ht = x3dio_defs_ht;
+	      if(!(x3dio_defs_ht = calloc(1, sizeof(Tcl_HashTable))))
+		{
+		  ay_status = AY_EOMEM;
+		  goto cleanup;
+		}
+	      Tcl_InitHashTable(x3dio_defs_ht, TCL_STRING_KEYS);
+	    } /* if */
+
 	  /* convert XML tree to Ayam objects */
 	  ay_status = x3dio_readtree(tree);
 
@@ -3447,9 +3462,17 @@ x3dio_readinline(scew_element *element)
 	  */
 
 	  /* cleanup */
+cleanup:
 	  scew_tree_free(tree);
 
 	  scew_parser_free(parser);
+
+	  if(!x3dio_mergeinlinedefs)
+	    {
+	      Tcl_DeleteHashTable(x3dio_defs_ht);
+	      free(x3dio_defs_ht);
+	      x3dio_defs_ht = old_x3dio_defs_ht;
+	    } /* if */
 	} /* if */
     } /* if */
 
@@ -3680,13 +3703,13 @@ x3dio_adddef(char *name, scew_element *element)
   if(!name || !element)
     return AY_ENULL;
 
-  if((entry = Tcl_FindHashEntry(&x3dio_defs_ht, name)))
+  if((entry = Tcl_FindHashEntry(x3dio_defs_ht, name)))
     {
       return AY_ERROR; /* name already registered */
     }
   else
     {
-      entry = Tcl_CreateHashEntry(&x3dio_defs_ht, name, &new_item);
+      entry = Tcl_CreateHashEntry(x3dio_defs_ht, name, &new_item);
       if(entry)
 	{
 	  Tcl_SetHashValue(entry, element);
@@ -3714,7 +3737,7 @@ x3dio_getdef(char *name, scew_element **element)
   if(!name || !element)
     return AY_ENULL;
 
-  if((entry = Tcl_FindHashEntry(&x3dio_defs_ht, name)))
+  if((entry = Tcl_FindHashEntry(x3dio_defs_ht, name)))
     {
       *element = Tcl_GetHashValue(entry);
     }
@@ -4055,6 +4078,7 @@ x3dio_readtcmd(ClientData clientData, Tcl_Interp *interp,
   x3dio_importcurves = AY_TRUE;
   x3dio_rescaleknots = 0.0;
   x3dio_scalefactor = 1.0;
+  x3dio_mergeinlinedefs = AY_FALSE;
 
   /* check args */
   if(argc < 2)
@@ -4091,6 +4115,11 @@ x3dio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 	  sscanf(argv[i+1], "%lg", &x3dio_scalefactor);
 	}
       else
+      if(!strcmp(argv[i], "-m"))
+	{
+	  sscanf(argv[i+1], "%d", &x3dio_mergeinlinedefs);
+	}
+      else
       if(!strcmp(argv[i], "-t"))
 	{
 	  x3dio_stagname = argv[i+1];
@@ -4100,8 +4129,10 @@ x3dio_readtcmd(ClientData clientData, Tcl_Interp *interp,
       i += 2;
     } /* while */
 
-  /* initialize hashtable for DEFs */
-  Tcl_InitHashTable(&x3dio_defs_ht, TCL_STRING_KEYS);
+  /* create and initialize hashtable for DEFs */
+  if(!(x3dio_defs_ht = calloc(1, sizeof(Tcl_HashTable))))
+    return TCL_OK;
+  Tcl_InitHashTable(x3dio_defs_ht, TCL_STRING_KEYS);
 
   /* initialize transformation stack */
   x3dio_pushtrafo();
@@ -4154,7 +4185,7 @@ x3dio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 
   scew_parser_free(parser);
 
-  Tcl_DeleteHashTable(&x3dio_defs_ht);
+  Tcl_DeleteHashTable(x3dio_defs_ht);
 
   x3dio_stagname = x3dio_stagnamedef;
   x3dio_ttagname = x3dio_ttagnamedef;
