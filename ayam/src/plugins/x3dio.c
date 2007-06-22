@@ -3968,6 +3968,10 @@ x3dio_readelement(scew_element *element)
 	{
 	  ay_status = x3dio_readlight(element, 2);
 	}
+      if(!strcmp(element_name, "Switch"))
+	{
+	  ay_status = x3dio_readscene(element);
+	}
       break;
     case 'T':
       if(!strcmp(element_name, "Transform"))
