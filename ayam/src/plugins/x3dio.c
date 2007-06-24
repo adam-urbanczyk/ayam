@@ -121,6 +121,8 @@ int x3dio_readindexedfaceset(scew_element *element);
 
 int x3dio_readindexedtriangleset(scew_element *element);
 
+int x3dio_readindexedquadset(scew_element *element);
+
 int x3dio_readindexedtrianglestripset(scew_element *element);
 
 int x3dio_readindexedtrianglefanset(scew_element *element);
@@ -135,7 +137,11 @@ int x3dio_readtrianglestripset(scew_element *element);
 
 int x3dio_readtriangleset(scew_element *element);
 
+int x3dio_readquadset(scew_element *element);
+
 int x3dio_readelevationgrid(scew_element *element);
+
+int x3dio_readextrusion(scew_element *element);
 
 
 /* 2D */
@@ -1589,6 +1595,129 @@ cleanup:
 } /* x3dio_readindexedtriangleset */
 
 
+/* x3dio_readindexedquadset:
+ *
+ */
+int
+x3dio_readindexedquadset(scew_element *element)
+{
+ int ay_status = AY_OK;
+ ay_pomesh_object pomesh = {0};
+ unsigned int coordlen = 0, normallen = 0, coordilen = 0;
+ int *coordi = NULL;
+ int normalPerVertex = AY_FALSE;
+ double *coords = NULL, *normals = NULL;
+ unsigned int i, totalverts = 0;
+
+  if(!element)
+    return AY_ENULL;
+
+  ay_status = x3dio_readcoords(element, &coordlen, &coords);
+
+  if(coordlen == 0)
+    {
+      return AY_OK;
+    }
+
+  ay_status = x3dio_readindex(element, "index", &coordilen, &coordi);
+
+  if(coordilen > 0)
+    {
+      /* get normals */
+      ay_status = x3dio_readnormals(element, &normallen, &normals);
+
+      ay_status = x3dio_readbool(element, "normalPerVertex", &normalPerVertex);
+
+      /* get colors */
+
+      /* get texture coordinates */
+
+      /* calculate number of quads */
+      pomesh.npolys = coordilen/4;
+      totalverts = pomesh.npolys*4;
+
+      /* allocate polymesh index arrays */
+      if(!(pomesh.nloops = calloc(pomesh.npolys, sizeof(unsigned int))))
+	{ ay_status = AY_EOMEM; goto cleanup; }
+      if(!(pomesh.nverts = calloc(pomesh.npolys, sizeof(unsigned int))))
+	{ ay_status = AY_EOMEM; goto cleanup; }
+      if(!(pomesh.verts = calloc(totalverts, sizeof(unsigned int))))
+	{ ay_status = AY_EOMEM; goto cleanup; }
+
+      /* fill polymesh index arrays */
+      for(i = 0; i < pomesh.npolys; i++)
+	{
+	  pomesh.nloops[i] = 1;
+	}
+      for(i = 0; i < pomesh.npolys; i++)
+	{
+	  pomesh.nverts[i] = 4;
+	} /* for */
+      for(i = 0; i < totalverts; i++)
+	{
+	  pomesh.verts[i] = coordi[i];
+	} /* for */
+
+      /* copy coordinate values and normals */
+      pomesh.ncontrols = coordlen;
+      if(normalPerVertex)
+	{
+	  if(normallen > 0)
+	    {
+	      pomesh.has_normals = AY_TRUE;
+	      if(!(pomesh.controlv = calloc(6*coordlen, sizeof(double))))
+		{ ay_status = AY_EOMEM; goto cleanup; }
+	      for(i = 0; i < coordlen; i++)
+		{
+		  memcpy(&(pomesh.controlv[i*6]), &(coords[i*3]),
+			 3*sizeof(double));
+		  memcpy(&(pomesh.controlv[i*6+3]), &(normals[i*3]),
+			 3*sizeof(double));
+		}
+	    }
+	  else
+	    {
+	      pomesh.controlv = coords;
+	      coords = NULL;
+	    }
+	}
+      else
+	{
+	  pomesh.controlv = coords;
+	  coords = NULL;
+	} /* if */
+
+      /* copy object to the Ayam scene */
+      ay_status = x3dio_linkobject(element, AY_IDPOMESH, (void*)&pomesh);
+
+    } /* if */
+
+cleanup:
+  if(coords)
+    free(coords);
+
+  if(normals)
+    free(normals);
+
+  if(coordi)
+    free(coordi);
+
+  if(pomesh.nloops)
+    free(pomesh.nloops);
+
+  if(pomesh.nverts)
+    free(pomesh.nverts);
+
+  if(pomesh.verts)
+    free(pomesh.verts);
+
+  if(pomesh.controlv)
+    free(pomesh.controlv);
+
+ return ay_status;
+} /* x3dio_readindexedquadset */
+
+
 /* x3dio_readindexedtrianglestripset:
  *
  */
@@ -2467,6 +2596,118 @@ cleanup:
 } /* x3dio_readtriangleset */
 
 
+/* x3dio_readquadset:
+ *
+ */
+int
+x3dio_readquadset(scew_element *element)
+{
+ int ay_status = AY_OK;
+ ay_pomesh_object pomesh = {0};
+ unsigned int coordlen = 0, normallen = 0;
+ int normalPerVertex = AY_FALSE;
+ double *coords = NULL, *normals = NULL;
+ unsigned int i, totalverts = 0;
+
+  if(!element)
+    return AY_ENULL;
+
+  ay_status = x3dio_readcoords(element, &coordlen, &coords);
+
+  if(coordlen == 0)
+    {
+      return AY_OK;
+    }
+
+  /* get normals */
+  ay_status = x3dio_readnormals(element, &normallen, &normals);
+
+  ay_status = x3dio_readbool(element, "normalPerVertex", &normalPerVertex);
+
+  /* get colors */
+
+  /* get texture coordinates */
+
+  pomesh.npolys = coordlen/4;
+  totalverts = pomesh.npolys*4;
+
+  /* allocate polymesh index arrays */
+  if(!(pomesh.nloops = calloc(pomesh.npolys, sizeof(unsigned int))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  if(!(pomesh.nverts = calloc(pomesh.npolys, sizeof(unsigned int))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  if(!(pomesh.verts = calloc(totalverts, sizeof(unsigned int))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+
+  /* fill polymesh index arrays */
+  for(i = 0; i < pomesh.npolys; i++)
+    {
+      pomesh.nloops[i] = 1;
+    }
+  for(i = 0; i < pomesh.npolys; i++)
+    {
+      pomesh.nverts[i] = 4;
+    } /* for */
+  for(i = 0; i < totalverts; i++)
+    {
+      pomesh.verts[i] = i;
+    } /* for */
+
+  /* copy coordinate values and normals */
+  pomesh.ncontrols = coordlen;
+  if(normalPerVertex)
+    {
+      if(normallen > 0)
+	{
+	  pomesh.has_normals = AY_TRUE;
+	  if(!(pomesh.controlv = calloc(6*coordlen, sizeof(double))))
+	    { ay_status = AY_EOMEM; goto cleanup; }
+	  for(i = 0; i < coordlen; i++)
+	    {
+	      memcpy(&(pomesh.controlv[i*6]), &(coords[i*3]),
+		     3*sizeof(double));
+	      memcpy(&(pomesh.controlv[i*6+3]), &(normals[i*3]),
+		     3*sizeof(double));
+	    }
+	}
+      else
+	{
+	  pomesh.controlv = coords;
+	  coords = NULL;
+	} /* if */
+    }
+  else
+    {
+      pomesh.controlv = coords;
+      coords = NULL;
+    } /* if */
+
+  /* copy object to the Ayam scene */
+  ay_status = x3dio_linkobject(element, AY_IDPOMESH, (void*)&pomesh);
+
+cleanup:
+  if(coords)
+    free(coords);
+
+  if(normals)
+    free(normals);
+
+  if(pomesh.nloops)
+    free(pomesh.nloops);
+
+  if(pomesh.nverts)
+    free(pomesh.nverts);
+
+  if(pomesh.verts)
+    free(pomesh.verts);
+
+  if(pomesh.controlv)
+    free(pomesh.controlv);
+
+ return ay_status;
+} /* x3dio_readquadset */
+
+
 /* x3dio_readelevationgrid:
  *
  */
@@ -2547,6 +2788,104 @@ cleanup:
 
  return ay_status;
 } /* x3dio_readelevationgrid */
+
+
+/* x3dio_readextrusion:
+ *
+ */
+int
+x3dio_readextrusion(scew_element *element)
+{
+ int ay_status = AY_OK;
+ unsigned int cslen = 0, splen = 0, scalelen = 0, orientlen = 0;
+ float *cs = NULL, csd[10] = {1.0f, 1.0f, 1.0f, -1.0f, -1.0f, -1.0f,
+			     -1.0f, 1.0f, 1.0f, 1.0f};
+ float *sp = NULL, spd[6] = {0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f};
+ float *scale = NULL, scaled[2] = {1.0f, 1.0f};
+ float *orient = NULL, orientd[4] = {0.0f, 0.0f, 1.0f, 0.0f};
+ int has_startcap = AY_TRUE, has_endcap = AY_TRUE;
+
+  if(!element)
+    return AY_ENULL;
+
+  ay_status = x3dio_readfloatpoints(element, "crossSection", 1,
+				    &cslen, &cs);
+
+  if(cslen == 0)
+    {
+      cs = csd;
+      cslen = 10;
+    }
+
+  ay_status = x3dio_readfloatpoints(element, "spine", 1,
+				    &splen, &sp);
+
+  if(splen == 0)
+    {
+      sp = spd;
+      splen = 6;
+    }
+
+  ay_status = x3dio_readfloatpoints(element, "scale", 1,
+				    &scalelen, &scale);
+
+  if(scalelen == 0)
+    {
+      scale = scaled;
+      scalelen = 2;
+    }
+  else
+    {
+      if((scalelen > 2) && ((scalelen/2) < (splen/3)))
+	{
+	  ay_status = AY_ERROR;
+	  goto cleanup;
+	}
+    } /* if */
+
+  ay_status = x3dio_readfloatpoints(element, "orientation", 1,
+				    &orientlen, &orient);
+
+  if(orientlen == 0)
+    {
+      orient = orientd;
+      orientlen = 4;
+    }
+  else
+    {
+      if((orientlen > 4) && ((orientlen/4) < (splen/3)))
+	{
+	  ay_status = AY_ERROR;
+	  goto cleanup;
+	}
+    } /* if */
+
+
+
+
+
+
+  ay_status = x3dio_readbool(element, "beginCap", &has_startcap);
+
+  ay_status = x3dio_readbool(element, "endCap", &has_endcap);
+
+
+cleanup:
+
+  if(cs && (cs != csd))
+    free(cs);
+
+  if(sp && (sp != spd))
+    free(sp);
+
+  if(scale && (scale != scaled))
+    free(scale);
+
+  if(orient && (orient != orientd))
+    free(orient);
+
+ return ay_status;
+} /* x3dio_readextrusion */
 
 
 /* x3dio_readdisk2d:
@@ -3869,6 +4208,10 @@ x3dio_readelement(scew_element *element)
 	{
 	  ay_status = x3dio_readelevationgrid(element);
 	}
+      if(!strcmp(element_name, "Extrusion"))
+	{
+	  ay_status = x3dio_readextrusion(element);
+	}
       break;
       /*
     case 'F':
@@ -3904,6 +4247,10 @@ x3dio_readelement(scew_element *element)
       if(!strcmp(element_name, "IndexedLineSet"))
 	{
 	  ay_status = x3dio_readindexedlineset(element);
+	}
+      if(!strcmp(element_name, "IndexedQuadSet"))
+	{
+	  ay_status = x3dio_readindexedquadset(element);
 	}
       if(!strcmp(element_name, "Inline"))
 	{
@@ -3968,9 +4315,14 @@ x3dio_readelement(scew_element *element)
 	  ay_status = x3dio_readlight(element, 1);
 	}
       break;
-      /*
+
     case 'Q':
+      if(!strcmp(element_name, "QuadSet"))
+	{
+	  ay_status = x3dio_readquadset(element);
+	}
       break;
+      /*
     case 'R':
       break;
       */
