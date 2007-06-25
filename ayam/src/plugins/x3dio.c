@@ -994,7 +994,7 @@ x3dio_readname(scew_element *element, ay_object *obj)
  int ay_status = AY_OK;
  scew_attribute *attr = NULL;
  const XML_Char *str = NULL;
- unsigned int len = 0;
+ size_t len = 0;
  char *c;
 
   if(!element || !obj)
@@ -2026,7 +2026,8 @@ x3dio_readindexedlineset(scew_element *element)
  unsigned int coordlen = 0, coordilen = 0;
  int *coordi = NULL, stride = 4;
  double *coords = NULL;
- unsigned int i, j, k, l, totalcurves = 0;
+ unsigned int i, j = 0, k, totalcurves = 0;
+ int l;
 
   if(!element)
     return AY_ENULL;
@@ -2128,7 +2129,8 @@ x3dio_readlineset(scew_element *element)
  unsigned int coordlen = 0, vertexcountslen = 0;
  int *vertexcounts = NULL, stride = 4;
  double *coords = NULL;
- unsigned int i, j, l;
+ unsigned int i, j = 0;
+ int l;
 
   if(!element)
     return AY_ENULL;
@@ -2272,7 +2274,7 @@ x3dio_readtrianglefanset(scew_element *element)
       k = 0; l = 0;
       for(i = 0; i < fancountslen; i++)
 	{
-	  for(j = 1; j < fancounts[i]-1; j++)
+	  for(j = 1; j < (unsigned int)fancounts[i]-1; j++)
 	    {
 	      pomesh.verts[k] = l;
 	      k++;
@@ -2412,7 +2414,7 @@ x3dio_readtrianglestripset(scew_element *element)
       k = 0; l = 0;
       for(i = 0; i < stripcountslen; i++)
 	{
-	  for(j = 0; j < stripcounts[i]-2; j++)
+	  for(j = 0; j < (unsigned int)stripcounts[i]-2; j++)
 	    {
 	      pomesh.verts[k] = l+j;
 	      k++;
@@ -2742,7 +2744,7 @@ x3dio_readelevationgrid(scew_element *element)
   ay_status = x3dio_readfloatpoints(element, "height", 1,
 				    &heightslen, &heights);
 
-  if(heightslen < xDim*zDim)
+  if(heightslen < (unsigned int)xDim*zDim)
     {
       return AY_ERROR;
     }
@@ -2756,9 +2758,9 @@ x3dio_readelevationgrid(scew_element *element)
   /* copy coordinate values */
   if(!(pamesh.controlv = calloc(4*xDim*zDim, sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
-  for(i = 0; i < xDim; i++)
+  for(i = 0; i < (unsigned int)xDim; i++)
     {
-      for(j = 0; j < zDim; j++)
+      for(j = 0; j < (unsigned int)zDim; j++)
 	{
 	  pamesh.controlv[a] = xSpac * i;
 	  pamesh.controlv[a+1] = heights[b];
@@ -3344,14 +3346,14 @@ x3dio_readnurbspatchsurface(scew_element *element, int trimmed)
     }
 
   ay_status = x3dio_readdoublepoints(element, "uKnot", 1, &uklen, &uknots);
-  if(uklen >= width+uorder)
+  if(uklen >= (unsigned int)width+uorder)
     {
       has_uknots = AY_TRUE;
     }
   ay_status = x3dio_readdoublepoints(element, "vKnot", 1, &vklen, &vknots);
-  if(uklen >= width+uorder)
+  if(vklen >= (unsigned int)height+vorder)
     {
-      has_uknots = AY_TRUE;
+      has_vknots = AY_TRUE;
     }
 
   if(len == 0)
@@ -3632,9 +3634,9 @@ x3dio_readlight(scew_element *element, int type)
   light.intensity = intensity;
 
   ay_status = x3dio_readfloatvec(element, "color", 3, color);
-  light.colr = color[0]*255;
-  light.colg = color[1]*255;
-  light.colb = color[2]*255;
+  light.colr = (int)color[0]*255;
+  light.colg = (int)color[1]*255;
+  light.colb = (int)color[2]*255;
 
   switch(type)
     {
@@ -3668,10 +3670,10 @@ x3dio_readlight(scew_element *element, int type)
     case 2:
       /* spot light */
       light.type = AY_LITSPOT;
-      ftemp = AY_HALFPI/2.0;
+      ftemp = (float)AY_HALFPI/2.0;
       ay_status = x3dio_readfloat(element, "cutOffAngle", &(ftemp));
       light.cone_angle = (double)ftemp;
-      ftemp = AY_HALFPI;
+      ftemp = (float)AY_HALFPI;
       ay_status = x3dio_readfloat(element, "beamWidth", &(ftemp));
       if((light.cone_angle - ftemp) > AY_EPSILON)
 	{
@@ -4078,7 +4080,7 @@ x3dio_getdef(char *name, scew_element **element)
 
   if((entry = Tcl_FindHashEntry(x3dio_defs_ht, name)))
     {
-      *element = Tcl_GetHashValue(entry);
+      *element = (scew_element*)Tcl_GetHashValue(entry);
     }
   else
     {
