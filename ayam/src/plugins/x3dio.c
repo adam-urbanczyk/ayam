@@ -2806,71 +2806,149 @@ x3dio_readextrusion(scew_element *element)
  float *scale = NULL, scaled[2] = {1.0f, 1.0f};
  float *orient = NULL, orientd[4] = {0.0f, 0.0f, 1.0f, 0.0f};
  int has_startcap = AY_TRUE, has_endcap = AY_TRUE;
+ ay_pomesh_object pomesh = {0};
+ unsigned int totalverts = 0, i, j, a = 0, b = 0;
 
   if(!element)
     return AY_ENULL;
 
-  ay_status = x3dio_readfloatpoints(element, "crossSection", 1,
+  ay_status = x3dio_readfloatpoints(element, "crossSection", 2,
 				    &cslen, &cs);
 
   if(cslen == 0)
     {
       cs = csd;
-      cslen = 10;
+      cslen = 5;
     }
 
-  ay_status = x3dio_readfloatpoints(element, "spine", 1,
+  ay_status = x3dio_readfloatpoints(element, "spine", 3,
 				    &splen, &sp);
 
   if(splen == 0)
     {
       sp = spd;
-      splen = 6;
+      splen = 2;
     }
 
-  ay_status = x3dio_readfloatpoints(element, "scale", 1,
+  ay_status = x3dio_readfloatpoints(element, "scale", 2,
 				    &scalelen, &scale);
 
   if(scalelen == 0)
     {
       scale = scaled;
-      scalelen = 2;
+      scalelen = 1;
     }
   else
     {
-      if((scalelen > 2) && ((scalelen/2) < (splen/3)))
+      if((scalelen > 1) && (scalelen < splen))
 	{
 	  ay_status = AY_ERROR;
 	  goto cleanup;
 	}
     } /* if */
 
-  ay_status = x3dio_readfloatpoints(element, "orientation", 1,
+  ay_status = x3dio_readfloatpoints(element, "orientation", 4,
 				    &orientlen, &orient);
 
   if(orientlen == 0)
     {
       orient = orientd;
-      orientlen = 4;
+      orientlen = 1;
     }
   else
     {
-      if((orientlen > 4) && ((orientlen/4) < (splen/3)))
+      if((orientlen > 1) && (orientlen < splen))
 	{
 	  ay_status = AY_ERROR;
 	  goto cleanup;
 	}
     } /* if */
 
+  pomesh.npolys = (cslen-1) * (splen-1) * 2;
+  totalverts = pomesh.npolys*3;
+
+  /* allocate polymesh index arrays */
+  if(!(pomesh.nloops = calloc(pomesh.npolys, sizeof(unsigned int))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  if(!(pomesh.nverts = calloc(pomesh.npolys, sizeof(unsigned int))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  if(!(pomesh.verts = calloc(totalverts, sizeof(unsigned int))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+
+  /* fill polymesh index arrays */
+  for(i = 0; i < pomesh.npolys; i++)
+    {
+      pomesh.nloops[i] = 1;
+    }
+  for(i = 0; i < pomesh.npolys; i++)
+    {
+      pomesh.nverts[i] = 3;
+    } /* for */
+  for(i = 0; i < splen-1; i++)
+    {
+      for(j = 0; j < cslen-1; j++)
+	{
+	  pomesh.verts[a]   = b;
+	  pomesh.verts[a+1] = b+1;
+	  pomesh.verts[a+2] = b+cslen;
+	  a += 3;
+	  pomesh.verts[a]   = b+1;
+	  pomesh.verts[a+1] = b+cslen+1;
+	  pomesh.verts[a+2] = b+cslen;
+	  a += 3;
+	  b++;
+	} /* for */
+      b++;
+    } /* for */
 
 
+  /* allocate and fill controlv */
+  pomesh.ncontrols = cslen * splen;
+
+  if(!(pomesh.controlv = calloc(3*pomesh.ncontrols, sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+
+  a = 0;
+  for(i = 0; i < splen; i++)
+    {
+      for(j = 0; j < cslen; j++)
+	{
+	  /* take cross section */
+	  pomesh.controlv[a]   = cs[j*2];
+	  pomesh.controlv[a+1] = 0.0;
+	  pomesh.controlv[a+2] = cs[j*2+1];
+
+	  /* apply scale */
+	  if(scalelen > 1)
+	    {
+	      pomesh.controlv[a]   *= scale[i*2];
+	      pomesh.controlv[a+2] *= scale[i*2+1];
+	    }
+	  else
+	    {
+	      pomesh.controlv[a]   *= scale[0];
+	      pomesh.controlv[a+2] *= scale[1];
+	    }
+
+	  /* move to spine */
+	  pomesh.controlv[a]   += sp[i*3];
+	  pomesh.controlv[a+1] += sp[i*3+1];
+	  pomesh.controlv[a+1] += sp[i*3+2];
+
+	  /* apply rotation */
 
 
+	  a += 3;
+	} /* for */
+    } /* for */
 
   ay_status = x3dio_readbool(element, "beginCap", &has_startcap);
 
   ay_status = x3dio_readbool(element, "endCap", &has_endcap);
 
+
+  /* copy object to the Ayam scene */
+  ay_status = x3dio_linkobject(element, AY_IDPOMESH, (void*)&pomesh);
 
 cleanup:
 
