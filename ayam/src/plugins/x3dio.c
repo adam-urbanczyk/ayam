@@ -651,7 +651,7 @@ x3dio_readfloatvec(scew_element *element, char *attrname,
 
 
 /* x3dio_readfloatpoints:
- *  get float vector attribute
+ *  get float point vector attribute
  */
 int
 x3dio_readfloatpoints(scew_element *element, char *attrname,
@@ -732,7 +732,7 @@ x3dio_readfloatpoints(scew_element *element, char *attrname,
 
 
 /* x3dio_readdoublepoints:
- *  get double vector attribute
+ *  get double point vector attribute
  */
 int
 x3dio_readdoublepoints(scew_element *element, char *attrname,
@@ -2864,8 +2864,14 @@ x3dio_readextrusion(scew_element *element)
 	}
     } /* if */
 
-  pomesh.npolys = (cslen-1) * (splen-1) * 2;
-  totalverts = pomesh.npolys*3;
+  ay_status = x3dio_readbool(element, "beginCap", &has_startcap);
+
+  ay_status = x3dio_readbool(element, "endCap", &has_endcap);
+
+  pomesh.npolys = (cslen-1) * (splen-1) * 2 +
+    (has_startcap?1:0) + (has_endcap?1:0);
+  totalverts = pomesh.npolys * 3 +
+    (has_startcap?cslen:0) + (has_endcap?cslen:0);
 
   /* allocate polymesh index arrays */
   if(!(pomesh.nloops = calloc(pomesh.npolys, sizeof(unsigned int))))
@@ -2901,6 +2907,47 @@ x3dio_readextrusion(scew_element *element)
       b++;
     } /* for */
 
+  /* create caps */
+  if(has_startcap && has_endcap)
+    {
+      pomesh.nverts[pomesh.npolys-2] = cslen;
+      pomesh.nverts[pomesh.npolys-1] = cslen;
+
+      for(j = 0; j < cslen; j++)
+	{
+	  pomesh.verts[a] = j;
+	  a++;
+	} /* for */
+      b = splen * cslen - cslen;
+      for(j = 0; j < cslen; j++)
+	{
+	  pomesh.verts[a] = b+j;
+	  a++;
+	} /* for */
+    }
+  else
+    {
+      if(has_startcap)
+	{
+	  pomesh.nverts[pomesh.npolys-1] = cslen;
+
+	  for(j = 0; j < cslen; j++)
+	    {
+	      pomesh.verts[a] = j;
+	      a++;
+	    } /* for */
+	} /* if */
+      if(has_endcap)
+	{
+	  pomesh.nverts[pomesh.npolys-1] = cslen;
+	  b = splen * cslen - cslen;
+	  for(j = 0; j < cslen; j++)
+	    {
+	      pomesh.verts[a] = b+j;
+	      a++;
+	    } /* for */
+	} /* if */
+    } /* if */
 
   /* allocate and fill controlv */
   pomesh.ncontrols = cslen * splen;
@@ -2942,9 +2989,6 @@ x3dio_readextrusion(scew_element *element)
 	} /* for */
     } /* for */
 
-  ay_status = x3dio_readbool(element, "beginCap", &has_startcap);
-
-  ay_status = x3dio_readbool(element, "endCap", &has_endcap);
 
 
   /* copy object to the Ayam scene */
