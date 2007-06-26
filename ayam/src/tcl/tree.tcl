@@ -716,12 +716,17 @@ set tree [Tree $sw.tree -width $width -height 15\
 	-droptypes {TREE_NODE {copy {}} IMAGE { copy {}} } \
 	-dropovermode pn\
 	-dropcmd "tree_drop" ]
-
 # XXXX was:
 #	-droptypes {TREE_NODE {copy {}} IMAGE { copy {}} }
 
+# work around a "bug" in Tk 8.4.15 MacOSX/Aqua
+if { $ay(ws) == "Aqua" } {
+    $tree configure -selectforeground systemHighlightText
+}
 
 $sw setwidget $tree
+
+# remember path to the tree widget
 set ay(tree) $tree
 
 # bindings
