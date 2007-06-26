@@ -6,7 +6,7 @@
 
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
 
-<date>27. Feb 2007
+<date>22. Jun 2007
 
 <abstract>
 This is the documentation of Ayam 1.13 - a free 3D modelling environment
@@ -592,7 +592,7 @@ name first.
 
 <item><tt>"Import/"</tt>, since Ayam 1.13 this sub menu is initially
 empty. You need to load a plugin manually, on application startup
-via a script or automatically via <tt>"File/Open"</tt> to gain access
+via a script, or automatically via <tt>"File/Open"</tt> to gain access
 to the menu entries described here.
 
 <item><tt>"Import/Apple 3DMF"</tt>, import a scene from the Apple
@@ -612,7 +612,12 @@ for more information.
 for more information.
 
 <item><tt>"Import/Wavefront OBJ"</tt>, import a scene from the Wavefront
-OBJ format, see section <ref id="impwav" name="Wavefront OBJ import">
+OBJ format, see section <ref id="impwav" name="Wavefront OBJ Import">
+for more information.
+
+<item><tt>"Import/Web3D X3D"</tt>, import a scene from the XML
+based X3D format published by the Web3D Consortium, see section
+<ref id="impx3d" name="X3D (Web3D) Import">
 for more information.
 
 <item><tt>"Export/"</tt>, since Ayam 1.13 this sub menu initially
@@ -635,6 +640,11 @@ for more information.
 <item><tt>"Export/Wavefront OBJ"</tt>, exports the current scene to a
 Wavefront OBJ file, see also section
 <ref id="expwav" name="Wavefront OBJ export">.
+
+<item><tt>"Import/Web3D X3D"</tt>, export a scene to the XML
+based X3D format published by the Web3D Consortium, see section
+<ref id="expx3d" name="X3D (Web3D) Export">
+for more information.
 
 <item><tt/"Load Plugin"/, loads a file containing a custom object or a plugin.
 Depending on the platform Ayam is running on, these are files with the
@@ -5695,9 +5705,9 @@ using the <tt/"Active"/ script object property and may be enabled
 after inspection of the script code manually or using the main menu
 entry <tt>"Special/Enable Scripts"</tt>.
 <p>
-The script of a script object will be run each time it is modified
-and each time the notification callback of the object is called
-(e.g. because one of the children of the script object changed).
+The script of a script object will be run each time the script is
+modified and each time the notification callback of the script object
+is called (e.g. because one of the children of the script object changed).
 As long as the script of a script object is executed, Ayam will
 not process any events except for checking whether the script emergency
 hotkey <tt/&lt;Ctrl+Shift+c&gt;/, that may also be used to
@@ -5714,7 +5724,7 @@ tags of type <tt>"NP"</tt> with the name of the new property as
 value to the script object. The script itself is responsible for data
 management and property GUI creation.
 <p>
-Since Ayam 1.9 the parameters set via the property GUI may be
+Since Ayam 1.9 the parameters set via a new property GUI may be
 comfortably saved with scene files by just adding the following
 comment as first line to the script:
 <code>
@@ -5722,6 +5732,10 @@ comment as first line to the script:
 </code>
 where arrayname designates the name of the global Tcl array
 the property GUI elements operate with.
+<p>
+Since Ayam 1.12 there is also a tag type to remove properties
+(<tt>"RP"</tt>). Using this tag, one can e.g. hide the actual script
+code and block users from unintentionally changing it.
 <p>
 The binary and source distributions of Ayam contain several example
 scripts for script objects in the <tt>"ayam/bin/scripts"</tt> and
@@ -8615,14 +8629,16 @@ Start importing from a Web3D X3D file using the menu entry
 The import functionality of the <tt>"x3dio"</tt> plugin currently covers
 import of the following elements:
 <itemize>
-<item>Geometry3D: Box, Sphere, Cylinder, Cone, IndexedFaceSet,
-IndexedTriangleSet, IndexedTriangleStripSet, IndexedTriangleFanSet,
-TriangleSet, TriangleStripSet, TriangleFanSet, IndexedLineSet, and
-LineSet.
+<item>Geometry3D: Box, Sphere, Cylinder, Cone, ElevationGrid, Extrusion,
+IndexedFaceSet, IndexedTriangleSet, IndexedTriangleStripSet,
+IndexedTriangleFanSet, IndexedQuadSet, TriangleSet, TriangleStripSet,
+TriangleFanSet, QuadSet, IndexedLineSet, and LineSet.
 
 Cylinders with just one cap are imported as two objects (a Cylinder and
 a Disk). Otherwise the <tt>"Closed"</tt> attribute is set according to
 the cap information.
+
+ElevationGrids are imported as bilinear patch meshes.
 
 <item>Geometry2D:
 Arc2D, ArcClosed2D, Circle2D, Disk2D, Polyline2D.
@@ -8633,7 +8649,8 @@ Disks with an inner radius > 0.0 are imported as Hyperboloids (otherwise
 as Disks).
 
 <item>NURBS: NurbsCurve, NurbsCurve2D, NurbsPatchsurface,
-TrimmedNurbsPatchsurface, Contour2D, ContourPolyline2D.
+TrimmedNurbsPatchsurface, NurbsSweptSurface, NurbsSwungSurface,
+Contour2D, ContourPolyline2D.
 
 <item>Light sources: DirectionalLight, PointLight, SpotLight.
 
@@ -8643,7 +8660,13 @@ Therefore the <tt>"radius"</tt> and the <tt>"attenuation"</tt> attributes
 of point and spotlights are not supported. However, point and spotlights
 still have a quadratic falloff with distance.
 
-<item>Non geometric: Transformation, Shape, Group.
+<item>Non geometric: Transformation, Shape, Group, Inline.
+
+Inline elements always create their own separated DEF-namespace.
+Using the x3dio import option <tt>"MergeInlineDefs"</tt> all DEFs can
+be merged into one big namespace. It is not possible to transport
+single definitions using EXPORT/IMPORT.
+
 </itemize>
 <p>
 Unsupported elements will be silently ignored. Prototyping and
