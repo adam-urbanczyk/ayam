@@ -62,6 +62,7 @@ double x3dio_scalefactor = 1.0;
 /* total number of elements */
 unsigned int x3dio_totalelements = 0;
 unsigned int x3dio_handledelements = 0;
+float x3dio_progress = 0.0f;
 
 char x3dio_stagnamedef[] = "mys";
 char *x3dio_stagname = x3dio_stagnamedef;
@@ -3655,6 +3656,8 @@ x3dio_readnurbspatchsurface(scew_element *element, int trimmed)
 		 !strcmp(element_name, "ContourPolyline2D"))
 		{
 		  ay_status = x3dio_readelement(child);
+		  if(ay_status == AY_EDONOTLINK)
+		    goto cleanup;
 		}
 	    } /* while */
 
@@ -3756,6 +3759,8 @@ x3dio_readnurbssweptsurface(scew_element *element, int is_swung)
 	  if(!strcmp(str, cs_name))
 	    {
 	      ay_status = x3dio_readelement(child);
+	      if(ay_status == AY_EDONOTLINK)
+		goto cleanup;
 	    }
 	}
     } /* while */
@@ -3770,6 +3775,8 @@ x3dio_readnurbssweptsurface(scew_element *element, int is_swung)
 	  if(!strcmp(str, tr_name))
 	    {
 	      ay_status = x3dio_readelement(child);
+	      if(ay_status == AY_EDONOTLINK)
+		goto cleanup;
 	    }
 	}
     } /* while */
@@ -3779,6 +3786,8 @@ x3dio_readnurbssweptsurface(scew_element *element, int is_swung)
   ay_object_link(o);
 
   ay_status = x3dio_readname(element, o);
+
+cleanup:
 
  return ay_status;
 } /* x3dio_readnurbssweptsurface */
@@ -4096,6 +4105,8 @@ x3dio_readtransform(scew_element *element)
   while((child = scew_element_next(element, child)) != NULL)
     {
       ay_status = x3dio_readelement(child);
+      if(ay_status == AY_EDONOTLINK)
+	break;
     }
 
   /* pop transformation stack */
@@ -4140,6 +4151,8 @@ x3dio_readshape(scew_element *element)
   while((child = scew_element_next(element, child)) != NULL)
     {
       ay_status = x3dio_readelement(child);
+      if(ay_status == AY_EDONOTLINK)
+	break;
     }
 
   /* how many children have been read? */
@@ -4216,6 +4229,8 @@ x3dio_readscene(scew_element *element)
   while((child = scew_element_next(element, child)) != NULL)
     {
       ay_status = x3dio_readelement(child);
+      if(ay_status == AY_EDONOTLINK)
+	break;
     }
 
  return ay_status;
@@ -4314,7 +4329,6 @@ x3dio_readelement(scew_element *element)
  const XML_Char *str = NULL;
  int is_use = AY_FALSE;
  unsigned int handled_elements = 0;
- static float oldprogress = 0.0f;
  float progress;
  char progressstr[32];
  char arrname[] = "x3dio_options", varname1[] = "Progress";
@@ -4322,7 +4336,6 @@ x3dio_readelement(scew_element *element)
 
   if(!element)
     {
-      oldprogress = 0.0f;
       return AY_ENULL;
     }
 
@@ -4657,14 +4670,14 @@ x3dio_readelement(scew_element *element)
   x3dio_handledelements += handled_elements;
   progress = (float)x3dio_handledelements/(float)x3dio_totalelements;
 
-  if(progress-oldprogress > 0.05)
+  if(progress-x3dio_progress > 0.05)
     {
       sprintf(progressstr, "%d", (int)(50.0+progress*50.0f));
       Tcl_SetVar2(ay_interp, arrname, varname1, progressstr,
 		  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
       while(Tcl_DoOneEvent(TCL_DONT_WAIT)){};
       
-      oldprogress = progress;
+      x3dio_progress = progress;
     } /* if */
 
   /* also, check for cancel button */
@@ -4725,11 +4738,15 @@ x3dio_readtcmd(ClientData clientData, Tcl_Interp *interp,
  enum XML_Error expat_code;
  scew_element *element = NULL, *child = NULL;
 
-  /* set default import options */
+  /* set default import options and reset global counters */
   x3dio_importcurves = AY_TRUE;
   x3dio_rescaleknots = 0.0;
   x3dio_scalefactor = 1.0;
   x3dio_mergeinlinedefs = AY_FALSE;
+
+  x3dio_totalelements = 0;
+  x3dio_handledelements = 0;
+  x3dio_progress = 0.0f;
 
   /* check args */
   if(argc < 2)
@@ -4817,7 +4834,6 @@ x3dio_readtcmd(ClientData clientData, Tcl_Interp *interp,
   tree = scew_parser_tree(parser);
 
   /* count elements */
-  x3dio_totalelements = 0;
   element = scew_tree_root(tree);
   while((child = scew_element_next(element, child)) != NULL)
     {
@@ -4831,7 +4847,6 @@ x3dio_readtcmd(ClientData clientData, Tcl_Interp *interp,
   while(Tcl_DoOneEvent(TCL_DONT_WAIT)){};
 
   /* convert XML tree to Ayam objects */
-  x3dio_handledelements = 0;
   ay_status = x3dio_readtree(tree);
 
   /* set progress */
