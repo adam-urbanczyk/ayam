@@ -3149,14 +3149,15 @@ x3dio_readarcclose2d(scew_element *element)
  int ay_status = AY_OK;
  ay_ncircle_object ncircle = {0};
  ay_nurbcurve_object nc = {0};
- ay_nurbcurve_object cl = {0};
+ ay_nurbcurve_object *cl = NULL;
+ ay_object onc = {0}, ocl = {0}, *o = NULL;
  float radius = 1.0f;
  float sangle = 0.0f;
  float eangle = (float)AY_HALFPI;
  scew_attribute *attr = NULL;
  const XML_Char *str = NULL;
  int ctype = 0, stride = 4;
- double *dummy = NULL;
+ double *clcv = NULL;
 
   if(!element)
     return AY_ENULL;
@@ -3205,43 +3206,89 @@ x3dio_readarcclose2d(scew_element *element)
 	    {
 	      ctype = 1;
 	    }
-	}
+	} /* if */
     } /* if */
 
   /* close arc */
   if(ctype == 0)
     {
       /* PIE */
-      cl.length = 3;
-      cl.order = 2;
+      if(!(clcv = calloc(3*stride, sizeof(double))))
+	{ ay_status = AY_EOMEM; goto cleanup; }
 
-
+      memcpy(clcv, &(nc.controlv[(nc.length-1)*stride]),
+	     stride*sizeof(double));
+      /* weight of middle point */
+      clcv[stride+3] = 1.0;
+      memcpy(&(clcv[stride*2]), nc.controlv,
+	     stride*sizeof(double));
+      
+      ay_status = ay_nct_create(2, 3, AY_KTNURB, clcv, NULL, &cl);
+      if(ay_status)
+	{goto cleanup;}
     }
   else
     {
       /* CHORD */
-      if(!(dummy = realloc(nc.controlv, (nc.length+1)*stride*sizeof(double))))
-	return AY_EOMEM;
-      nc.controlv = dummy;
-      memcpy(&(nc.controlv[nc.length*stride]), nc.controlv,
+      if(!(clcv = calloc(2*stride, sizeof(double))))
+	{ ay_status = AY_EOMEM; goto cleanup; }
+
+      memcpy(clcv, &(nc.controlv[(nc.length-1)*stride]),
 	     stride*sizeof(double));
-      if(!(dummy = realloc(nc.knotv, (nc.length+nc.order+1)*sizeof(double))))
-	return AY_EOMEM;
-      nc.knotv = dummy;
-      nc.knotv[nc.length+nc.order] = nc.knotv[nc.length+nc.order-1] +
-	(nc.knotv[nc.length+nc.order-1] - nc.knotv[nc.length-1]);
-      nc.length++;
-    }
+      memcpy(&(clcv[stride]), nc.controlv,
+	     stride*sizeof(double));
+      
+      ay_status = ay_nct_create(2, 2, AY_KTNURB, clcv, NULL, &cl);
+      if(ay_status)
+	{goto cleanup;}
+    } /* if */
+
+  /* concatenate arc and closing curve */
+  ay_status = ay_nct_elevate(cl, 3);
+
+  if(ay_status)
+    {goto cleanup;}
+
+  onc.next = &ocl;
+  ay_object_defaults(&onc);
+  ay_object_defaults(&ocl);
+
+  onc.refine = &nc;
+  onc.type = AY_IDNCURVE;
+  ocl.refine = cl;
+  ocl.type = AY_IDNCURVE;
+
+  ay_status = ay_nct_concatmultiple(AY_TRUE, 1, 0, &onc, &o);
+
+  if(!o || !o->refine)
+    {ay_status = AY_ERROR; goto cleanup;}
 
   /* copy object to the Ayam scene */
-  ay_status = x3dio_linkobject(element, AY_IDNCURVE, (void*)&nc);
+  ay_status = x3dio_linkobject(element, AY_IDNCURVE, o->refine);
 
+cleanup:
 
   if(nc.knotv)
     free(nc.knotv);
 
   if(nc.controlv)
     free(nc.controlv);
+
+  if(cl)
+    {
+      if(cl->controlv)
+	free(cl->controlv);
+
+      if(cl->knotv)
+	free(cl->knotv);
+
+      free(cl);
+    }
+
+  if(o)
+    {
+      ay_object_delete(o);
+    }
 
  return ay_status;
 } /* x3dio_readarcclose2d */
