@@ -59,6 +59,10 @@ double x3dio_rescaleknots = 0.0;
 /* global scale factor */
 double x3dio_scalefactor = 1.0;
 
+/* total number of elements */
+unsigned int x3dio_totalelements = 0;
+unsigned int x3dio_handledelements = 0;
+
 char x3dio_stagnamedef[] = "mys";
 char *x3dio_stagname = x3dio_stagnamedef;
 char x3dio_ttagnamedef[] = "myt";
@@ -182,8 +186,9 @@ int x3dio_adddef(char *name, scew_element *element);
 
 int x3dio_getdef(char *name, scew_element **element);
 
-int x3dio_readelement(scew_element *element);
+int x3dio_countelements(scew_element *element, unsigned int *counter);
 
+int x3dio_readelement(scew_element *element);
 
 int x3dio_readtree(scew_tree *tree);
 
@@ -2808,6 +2813,7 @@ x3dio_readextrusion(scew_element *element)
  int has_startcap = AY_TRUE, has_endcap = AY_TRUE;
  ay_pomesh_object pomesh = {0};
  unsigned int totalverts = 0, i, j, a = 0, b = 0;
+ /* double rotx = 0.0, roty = 0.0, rotz = 0.0;*/
 
   if(!element)
     return AY_ENULL;
@@ -2930,7 +2936,6 @@ x3dio_readextrusion(scew_element *element)
       if(has_startcap)
 	{
 	  pomesh.nverts[pomesh.npolys-1] = cslen;
-
 	  for(j = 0; j < cslen; j++)
 	    {
 	      pomesh.verts[a] = j;
@@ -2958,6 +2963,23 @@ x3dio_readextrusion(scew_element *element)
   a = 0;
   for(i = 0; i < splen; i++)
     {
+      /* calculate rotation angles */
+      if(i == 0)
+	{
+	  /* first spine point */
+	  
+	}
+      if((i > 0) && (i < splen-1))
+	{
+	  /* middle spine point */
+
+
+	}
+      if(i == splen-1)
+	{
+	  /* last spine point */
+	}
+
       for(j = 0; j < cslen; j++)
 	{
 	  /* take cross section */
@@ -2983,7 +3005,6 @@ x3dio_readextrusion(scew_element *element)
 	  pomesh.controlv[a+1] += sp[i*3+2];
 
 	  /* apply rotation */
-
 
 	  a += 3;
 	} /* for */
@@ -4162,6 +4183,7 @@ x3dio_readshape(scew_element *element)
 int
 x3dio_readmaterial(scew_element *element)
 {
+  /*
  int ay_status = AY_OK;
  scew_attribute *name_attr = NULL;
  const XML_Char *name_str = NULL;
@@ -4174,7 +4196,7 @@ x3dio_readmaterial(scew_element *element)
     {
       name_str = scew_attribute_value(name_attr);
     }
-
+  */
  return AY_OK;
 } /* x3dio_readmaterial */
 
@@ -4260,6 +4282,25 @@ x3dio_getdef(char *name, scew_element **element)
 } /* x3dio_getdef */
 
 
+/* x3dio_countelements:
+ *
+ */
+int
+x3dio_countelements(scew_element *element, unsigned int *counter)
+{
+ int ay_status = AY_OK;
+ scew_element *child = NULL;
+
+  while((child = scew_element_next(element, child)) != NULL)
+    {
+      (*counter)++;
+      ay_status = x3dio_countelements(child, counter);
+    }
+
+ return AY_OK;
+} /* x3dio_countelements */
+
+
 /* x3dio_readelement:
  *
  */
@@ -4271,9 +4312,19 @@ x3dio_readelement(scew_element *element)
  const char *element_name = NULL, *errfmt = "could not find element: %s";
  scew_attribute *attr = NULL;
  const XML_Char *str = NULL;
+ int is_use = AY_FALSE;
+ unsigned int handled_elements = 0;
+ static float oldprogress = 0.0f;
+ float progress;
+ char progressstr[32];
+ char arrname[] = "x3dio_options", varname1[] = "Progress";
+ char varname2[] = "Cancel", *val = NULL;
 
   if(!element)
-    return AY_ENULL;
+    {
+      oldprogress = 0.0f;
+      return AY_ENULL;
+    }
 
   /* handle DEF/USE attributes */
   attr = scew_attribute_by_name(element, "DEF");
@@ -4311,6 +4362,7 @@ x3dio_readelement(scew_element *element)
 		}
 	      return AY_ERROR;
 	    } /* if */
+	  is_use = AY_TRUE;
 	}
       else
 	{
@@ -4326,62 +4378,75 @@ x3dio_readelement(scew_element *element)
       if(!strcmp(element_name, "Appearance"))
 	{
 	  ay_status = x3dio_readappearance(element);
+	  handled_elements = 1;
 	}
       if(!strcmp(element_name, "Arc2D"))
 	{
 	  ay_status = x3dio_readarc2d(element);
+	  handled_elements = 1;
 	}
       if(!strcmp(element_name, "ArcClose2D"))
 	{
 	  ay_status = x3dio_readarcclose2d(element);
+	  handled_elements = 1;
 	}
       break;
     case 'B':
       if(!strcmp(element_name, "Box"))
 	{
 	  ay_status = x3dio_readbox(element);
+	  handled_elements = 1;
 	}
       break;
     case 'C':
       if(!strcmp(element_name, "Cylinder"))
 	{
 	  ay_status = x3dio_readcylinder(element);
+	  handled_elements = 1;
 	}
       if(!strcmp(element_name, "Cone"))
 	{
 	  ay_status = x3dio_readcone(element);
+	  handled_elements = 1;
 	}
       if(!strcmp(element_name, "Circle2D"))
 	{
 	  ay_status = x3dio_readcircle2d(element);
+	  handled_elements = 1;
 	}
       if(!strcmp(element_name, "ContourPolyline2D"))
 	{
 	  ay_status = x3dio_readpolyline2d(element, AY_TRUE);
+	  handled_elements = 0;
 	}
       if(!strcmp(element_name, "Contour2D"))
 	{
 	  ay_status = x3dio_readshape(element);
+	  handled_elements = 0;
 	}
       break;
     case 'D':
       if(!strcmp(element_name, "Disk2D"))
 	{
 	  ay_status = x3dio_readdisk2d(element);
+	  handled_elements = 1;
 	}
       if(!strcmp(element_name, "DirectionalLight"))
 	{
 	  ay_status = x3dio_readlight(element, 0);
+	  handled_elements = 1;
 	}
       break;
     case 'E':
       if(!strcmp(element_name, "ElevationGrid"))
 	{
 	  ay_status = x3dio_readelevationgrid(element);
+	  handled_elements = 1;
 	}
       if(!strcmp(element_name, "Extrusion"))
 	{
 	  ay_status = x3dio_readextrusion(element);
+	  handled_elements = 1;
 	}
       break;
       /*
@@ -4392,6 +4457,7 @@ x3dio_readelement(scew_element *element)
       if(!strcmp(element_name, "Group"))
 	{
 	  ay_status = x3dio_readshape(element);
+	  handled_elements = 1;
 	}
       break;
       /*
@@ -4402,30 +4468,37 @@ x3dio_readelement(scew_element *element)
       if(!strcmp(element_name, "IndexedFaceSet"))
 	{
 	  ay_status = x3dio_readindexedfaceset(element);
+	  ay_status = x3dio_countelements(element, &handled_elements);
 	}
       if(!strcmp(element_name, "IndexedTriangleSet"))
 	{
 	  ay_status = x3dio_readindexedtriangleset(element);
+	  ay_status = x3dio_countelements(element, &handled_elements);
 	}
       if(!strcmp(element_name, "IndexedTriangleStripSet"))
 	{
 	  ay_status = x3dio_readindexedtrianglestripset(element);
+	  ay_status = x3dio_countelements(element, &handled_elements);
 	}
       if(!strcmp(element_name, "IndexedTriangleFanSet"))
 	{
 	  ay_status = x3dio_readindexedtrianglefanset(element);
+	  ay_status = x3dio_countelements(element, &handled_elements);
 	}
       if(!strcmp(element_name, "IndexedLineSet"))
 	{
 	  ay_status = x3dio_readindexedlineset(element);
+	  ay_status = x3dio_countelements(element, &handled_elements);
 	}
       if(!strcmp(element_name, "IndexedQuadSet"))
 	{
 	  ay_status = x3dio_readindexedquadset(element);
+	  ay_status = x3dio_countelements(element, &handled_elements);
 	}
       if(!strcmp(element_name, "Inline"))
 	{
 	  ay_status = x3dio_readinline(element);
+	  handled_elements = 1;
 	}
       break;
       /*
@@ -4438,38 +4511,46 @@ x3dio_readelement(scew_element *element)
       if(!strcmp(element_name, "LineSet"))
 	{
 	  ay_status = x3dio_readlineset(element);
+	  handled_elements = 1;
 	}
       break;
     case 'M':
       if(!strcmp(element_name, "Material"))
 	{
 	  ay_status = x3dio_readmaterial(element);
+	  handled_elements = 1;
 	}
       break;
     case 'N':
       if(!strcmp(element_name, "NurbsCurve"))
 	{
 	  ay_status = x3dio_readnurbscurve(element, 3);
+	  ay_status = x3dio_countelements(element, &handled_elements);
 	}
       if(!strcmp(element_name, "NurbsCurve2D"))
 	{
 	  ay_status = x3dio_readnurbscurve(element, 2);
+	  ay_status = x3dio_countelements(element, &handled_elements);
 	}
       if(!strcmp(element_name, "NurbsPatchSurface"))
 	{
 	  ay_status = x3dio_readnurbspatchsurface(element, AY_FALSE);
+	  ay_status = x3dio_countelements(element, &handled_elements);
 	}
       if(!strcmp(element_name, "NurbsTrimmedSurface"))
 	{
 	  ay_status = x3dio_readnurbspatchsurface(element, AY_TRUE);
+	  ay_status = x3dio_countelements(element, &handled_elements);
 	}
       if(!strcmp(element_name, "NurbsSweptSurface"))
 	{
 	  ay_status = x3dio_readnurbssweptsurface(element, AY_FALSE);
+	  handled_elements = 1;
 	}
       if(!strcmp(element_name, "NurbsSwungSurface"))
 	{
 	  ay_status = x3dio_readnurbssweptsurface(element, AY_TRUE);
+	  handled_elements = 1;
 	}
       break;
       /*
@@ -4480,17 +4561,19 @@ x3dio_readelement(scew_element *element)
       if(!strcmp(element_name, "Polyline2D"))
 	{
 	  ay_status = x3dio_readpolyline2d(element, AY_FALSE);
+	  handled_elements = 1;
 	}
       if(!strcmp(element_name, "PointLight"))
 	{
 	  ay_status = x3dio_readlight(element, 1);
+	  handled_elements = 1;
 	}
       break;
-
     case 'Q':
       if(!strcmp(element_name, "QuadSet"))
 	{
 	  ay_status = x3dio_readquadset(element);
+	  handled_elements = 1;
 	}
       break;
       /*
@@ -4501,40 +4584,49 @@ x3dio_readelement(scew_element *element)
       if(!strcmp(element_name, "Scene"))
 	{
 	  ay_status = x3dio_readscene(element);
+	  handled_elements = 1;
 	}
       if(!strcmp(element_name, "Shape"))
 	{
 	  ay_status = x3dio_readshape(element);
+	  handled_elements = 1;
 	}
       if(!strcmp(element_name, "Sphere"))
 	{
 	  ay_status = x3dio_readsphere(element);
+	  handled_elements = 1;
 	}
       if(!strcmp(element_name, "SpotLight"))
 	{
 	  ay_status = x3dio_readlight(element, 2);
+	  handled_elements = 1;
 	}
       if(!strcmp(element_name, "Switch"))
 	{
 	  ay_status = x3dio_readscene(element);
+	  handled_elements = 1;
 	}
       break;
     case 'T':
       if(!strcmp(element_name, "Transform"))
 	{
 	  ay_status = x3dio_readtransform(element);
+	  handled_elements = 1; /* XXXX ? */
 	}
       if(!strcmp(element_name, "TriangleFanSet"))
 	{
 	  ay_status = x3dio_readtrianglefanset(element);
+	  handled_elements = 1;
 	}
       if(!strcmp(element_name, "TriangleStripSet"))
 	{
 	  ay_status = x3dio_readtrianglestripset(element);
+	  handled_elements = 1;
 	}
       if(!strcmp(element_name, "TriangleSet"))
 	{
 	  ay_status = x3dio_readtriangleset(element);
+	  handled_elements = 1;
 	}
       break;
       /*
@@ -4552,8 +4644,41 @@ x3dio_readelement(scew_element *element)
       break;
       */
     default:
+      ay_status = x3dio_countelements(element, &handled_elements);
       break;
     } /* switch */
+
+  if(is_use)
+    {
+      handled_elements = 1;
+    }
+
+  /* calculate & report progress */
+  x3dio_handledelements += handled_elements;
+  progress = (float)x3dio_handledelements/(float)x3dio_totalelements;
+
+  if(progress-oldprogress > 0.05)
+    {
+      sprintf(progressstr, "%d", (int)(50.0+progress*50.0f));
+      Tcl_SetVar2(ay_interp, arrname, varname1, progressstr,
+		  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      while(Tcl_DoOneEvent(TCL_DONT_WAIT)){};
+      
+      oldprogress = progress;
+    } /* if */
+
+  /* also, check for cancel button */
+  val = Tcl_GetVar2(ay_interp, arrname, varname2,
+		    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  if(val && val[0] == '1')
+    {
+      if(x3dio_errorlevel > 1)
+	{
+	  ay_error(AY_EWARN, fname,
+		   "Import cancelled! Not all objects may have been read!");
+	}
+      return AY_EDONOTLINK;
+    } /* if */
 
  return AY_OK;
 } /* x3dio_readelement */
@@ -4573,6 +4698,8 @@ x3dio_readtree(scew_tree *tree)
   while((child = scew_element_next(element, child)) != NULL)
     {
       ay_status = x3dio_readelement(child);
+      if(ay_status == AY_EDONOTLINK)
+	break;
     }
 
  return ay_status;
@@ -4596,6 +4723,7 @@ x3dio_readtcmd(ClientData clientData, Tcl_Interp *interp,
  scew_parser *parser = NULL;
  scew_error errcode;
  enum XML_Error expat_code;
+ scew_element *element = NULL, *child = NULL;
 
   /* set default import options */
   x3dio_importcurves = AY_TRUE;
@@ -4688,12 +4816,22 @@ x3dio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 
   tree = scew_parser_tree(parser);
 
+  /* count elements */
+  x3dio_totalelements = 0;
+  element = scew_tree_root(tree);
+  while((child = scew_element_next(element, child)) != NULL)
+    {
+      x3dio_totalelements++;
+      ay_status = x3dio_countelements(child, &x3dio_totalelements);
+    }
+
   /* set progress */
   Tcl_SetVar2(ay_interp, arrname, varname, "50",
 	      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   while(Tcl_DoOneEvent(TCL_DONT_WAIT)){};
 
   /* convert XML tree to Ayam objects */
+  x3dio_handledelements = 0;
   ay_status = x3dio_readtree(tree);
 
   /* set progress */
