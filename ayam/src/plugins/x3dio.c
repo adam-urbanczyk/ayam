@@ -61,8 +61,12 @@ double x3dio_scalefactor = 1.0;
 
 /* total number of elements */
 unsigned int x3dio_totalelements = 0;
+/* number of read elements */
 unsigned int x3dio_handledelements = 0;
+/* progress counter (x3dio_handledelements/x3dio_totalelements) */
 float x3dio_progress = 0.0f;
+/* counter for nested USE attributes */
+unsigned int x3dio_inuse = 0;
 
 char x3dio_stagnamedef[] = "mys";
 char *x3dio_stagname = x3dio_stagnamedef;
@@ -2968,7 +2972,7 @@ x3dio_readextrusion(scew_element *element)
       if(i == 0)
 	{
 	  /* first spine point */
-	  
+
 	}
       if((i > 0) && (i < splen-1))
 	{
@@ -3244,7 +3248,7 @@ x3dio_readarcclose2d(scew_element *element)
       clcv[stride+3] = 1.0;
       memcpy(&(clcv[stride*2]), nc.controlv,
 	     stride*sizeof(double));
-      
+
       ay_status = ay_nct_create(2, 3, AY_KTNURB, clcv, NULL, &cl);
       if(ay_status)
 	{goto cleanup;}
@@ -3259,7 +3263,7 @@ x3dio_readarcclose2d(scew_element *element)
 	     stride*sizeof(double));
       memcpy(&(clcv[stride]), nc.controlv,
 	     stride*sizeof(double));
-      
+
       ay_status = ay_nct_create(2, 2, AY_KTNURB, clcv, NULL, &cl);
       if(ay_status)
 	{goto cleanup;}
@@ -3918,7 +3922,7 @@ x3dio_readinline(scew_element *element)
  char fname[] = "x3dio_readinline";
  char errstr[256];
  /*
- char arrname[] = "x3dio_options", varname[] = "Progress";
+ char arrname[] = "x3dio_options", varname[] = "IProgress";
  */
  scew_tree *tree = NULL;
  scew_parser *parser = NULL;
@@ -3967,7 +3971,8 @@ x3dio_readinline(scew_element *element)
 			  scew_error_expat_string(expat_code));
 		  ay_error(AY_ERROR, fname, errstr);
 		}
-	      return TCL_OK;
+	      ay_status = AY_ERROR;
+	      goto cleanup;
 	    } /* if */
 
 	  tree = scew_parser_tree(parser);
@@ -3991,8 +3996,14 @@ x3dio_readinline(scew_element *element)
 	      Tcl_InitHashTable(x3dio_defs_ht, TCL_STRING_KEYS);
 	    } /* if */
 
+	  /* prevent advancing the main progress counter */
+	  x3dio_inuse++;
+
 	  /* convert XML tree to Ayam objects */
 	  ay_status = x3dio_readtree(tree);
+
+	  /* allow advancing the main progress counter */
+	  x3dio_inuse--;
 
 	  /* set progress */
 	  /*
@@ -4001,18 +4012,21 @@ x3dio_readinline(scew_element *element)
 	  while(Tcl_DoOneEvent(TCL_DONT_WAIT)){};
 	  */
 
-	  /* cleanup */
-cleanup:
-	  scew_tree_free(tree);
-
-	  scew_parser_free(parser);
-
 	  if(!x3dio_mergeinlinedefs)
 	    {
 	      Tcl_DeleteHashTable(x3dio_defs_ht);
 	      free(x3dio_defs_ht);
 	      x3dio_defs_ht = old_x3dio_defs_ht;
 	    } /* if */
+
+	  /* cleanup */
+cleanup:
+	  if(tree)
+	    scew_tree_free(tree);
+
+	  if(parser)
+	    scew_parser_free(parser);
+
 	} /* if */
     } /* if */
 
@@ -4239,7 +4253,7 @@ x3dio_readscene(scew_element *element)
 
 /* x3dio_adddef:
  *  add a definition with name <name> for element <element>
- *  (process DEF)
+ *  (processes the DEF attribute)
  */
 int
 x3dio_adddef(char *name, scew_element *element)
@@ -4274,7 +4288,7 @@ x3dio_adddef(char *name, scew_element *element)
 /* x3dio_getdef:
  *  get the definition for <name> and put a pointer to the element
  *  into <element>
- *  (process USE)
+ *  (processes the USE attribute)
  */
 int
 x3dio_getdef(char *name, scew_element **element)
@@ -4298,7 +4312,8 @@ x3dio_getdef(char *name, scew_element **element)
 
 
 /* x3dio_countelements:
- *
+ *  _recursively_ counts the child elements/nodes of <element>
+ *  increases <counter> for each child
  */
 int
 x3dio_countelements(scew_element *element, unsigned int *counter)
@@ -4327,8 +4342,8 @@ x3dio_readelement(scew_element *element)
  const char *element_name = NULL, *errfmt = "could not find element: %s";
  scew_attribute *attr = NULL;
  const XML_Char *str = NULL;
- int is_use = AY_FALSE;
  unsigned int handled_elements = 0;
+ int is_use = AY_FALSE;
  float progress;
  char progressstr[32];
  char arrname[] = "x3dio_options", varname1[] = "Progress";
@@ -4376,6 +4391,7 @@ x3dio_readelement(scew_element *element)
 	      return AY_ERROR;
 	    } /* if */
 	  is_use = AY_TRUE;
+	  x3dio_inuse++;
 	}
       else
 	{
@@ -4663,8 +4679,16 @@ x3dio_readelement(scew_element *element)
 
   if(is_use)
     {
-      handled_elements = 1;
-    }
+      x3dio_inuse--;
+      if(x3dio_inuse == 0)
+	{
+	  handled_elements = 1;
+	}
+      else
+	{
+	  handled_elements = 0;
+	}
+    } /* if */
 
   /* calculate & report progress */
   x3dio_handledelements += handled_elements;
@@ -4676,7 +4700,7 @@ x3dio_readelement(scew_element *element)
       Tcl_SetVar2(ay_interp, arrname, varname1, progressstr,
 		  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
       while(Tcl_DoOneEvent(TCL_DONT_WAIT)){};
-      
+
       x3dio_progress = progress;
     } /* if */
 
@@ -4685,11 +4709,6 @@ x3dio_readelement(scew_element *element)
 		    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   if(val && val[0] == '1')
     {
-      if(x3dio_errorlevel > 1)
-	{
-	  ay_error(AY_EWARN, fname,
-		   "Import cancelled! Not all objects may have been read!");
-	}
       return AY_EDONOTLINK;
     } /* if */
 
@@ -4747,6 +4766,7 @@ x3dio_readtcmd(ClientData clientData, Tcl_Interp *interp,
   x3dio_totalelements = 0;
   x3dio_handledelements = 0;
   x3dio_progress = 0.0f;
+  x3dio_inuse = 0;
 
   /* check args */
   if(argc < 2)
@@ -4848,6 +4868,14 @@ x3dio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 
   /* convert XML tree to Ayam objects */
   ay_status = x3dio_readtree(tree);
+  if(ay_status == AY_EDONOTLINK)
+    {
+      if(x3dio_errorlevel > 1)
+	{
+	  ay_error(AY_EOUTPUT, fname,
+		   "Import cancelled! Not all objects may have been read!");
+	}
+    }
 
   /* set progress */
   Tcl_SetVar2(ay_interp, arrname, varname, "100",
