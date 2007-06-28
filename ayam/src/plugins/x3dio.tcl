@@ -115,8 +115,10 @@ proc x3dio_import { } {
 	    ayError 4 "x3dio_import" "Done importing:"
 	    ayError 4 "x3dio_import" "$x3dio_options(FileName)"
 	} else {
-	    ayError 2 "x3dio_import" "There were errors while importing:"
-	    ayError 2 "x3dio_import" "$x3dio_options(FileName)"
+	    if { $ay_error != 15 } {
+		ayError 2 "x3dio_import" "There were errors while importing:"
+		ayError 2 "x3dio_import" "$x3dio_options(FileName)"
+	    }
 	}
 
 	grab release .x3dio

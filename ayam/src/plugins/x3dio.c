@@ -4348,6 +4348,7 @@ x3dio_readelement(scew_element *element)
  char progressstr[32];
  char arrname[] = "x3dio_options", varname1[] = "Progress";
  char varname2[] = "Cancel", *val = NULL;
+ Tcl_Obj *to = NULL, *ton = NULL;
 
   if(!element)
     {
@@ -4709,6 +4710,11 @@ x3dio_readelement(scew_element *element)
 		    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   if(val && val[0] == '1')
     {
+      ton = Tcl_NewStringObj("ay_error", -1);
+      to = Tcl_NewIntObj(15);
+      Tcl_ObjSetVar2(ay_interp, ton, NULL, to, TCL_LEAVE_ERR_MSG |
+		     TCL_GLOBAL_ONLY);
+      Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
       return AY_EDONOTLINK;
     } /* if */
 
