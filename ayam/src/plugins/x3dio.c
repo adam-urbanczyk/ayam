@@ -29,6 +29,9 @@ typedef struct x3dio_trafostate_s {
 
 } x3dio_trafostate;
 
+typedef int (x3dio_writecb) (scew_element *element, ay_object *o);
+
+
 /* global variables: */
 
 char x3dio_version_ma[] = AY_VERSIONSTR;
@@ -49,6 +52,17 @@ int x3dio_expselected = AY_FALSE;
 int x3dio_expobeynoexport = AY_TRUE;
 int x3dio_expignorehidden = AY_TRUE;
 int x3dio_mergeinlinedefs = AY_TRUE;
+
+
+int x3dio_tesspomesh = AY_FALSE;
+int x3dio_writecurves = AY_TRUE;
+
+unsigned int x3dio_allobjcnt = 0;
+unsigned int x3dio_curobjcnt = 0;
+
+
+static double tm[16] = {0}; /* current transformation matrix */
+
 
 /* 0: silence, 1: errors, 2: warnings, 3: all */
 int x3dio_errorlevel = 1;
@@ -200,6 +214,10 @@ int x3dio_readtree(scew_tree *tree);
 int x3dio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[]);
 
+/********************/
+
+/* export */
+int x3dio_writenpconvertible(FILE *fileptr, ay_object *o, double *m);
 
 /* functions: */
 
@@ -4752,7 +4770,7 @@ x3dio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 	       int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "x3dio_read";
+ char fname[] = "x3dioRead";
  char errstr[256];
  int i = 2;
  double accuracy = 0.1;
@@ -4904,6 +4922,1726 @@ x3dio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 } /* x3dio_readtcmd */
 
 
+/*************************************************************************/
+/*************************************************************************/
+/*************************************************************************/
+
+unsigned int
+x3dio_count(ay_object *o)
+{
+ unsigned int lcount = 0;
+ int lasttype = -1;
+ Tcl_HashTable *ht = &x3dio_write_ht;
+ Tcl_HashEntry *entry = NULL;
+ x3dio_writecb *cb = NULL;
+
+  if(!o)
+    return 0;
+
+  while(o->next)
+    {
+      if(lasttype != (int)o->type)
+	{
+	  entry = NULL;
+	  if((entry = Tcl_FindHashEntry(ht, (char *)(o->type))))
+	    {
+	      cb = (x3dio_writecb*)Tcl_GetHashValue(entry);
+	    }
+	  else
+	    {
+	      cb = NULL;
+	    }
+	  lasttype = o->type;
+	} /* if */
+
+      if(o->down && o->down->next /*&& (cb != x3dio_writenpconvertible)*/)
+	lcount += x3dio_count(o->down);
+
+      if(cb != NULL)
+	lcount++;
+
+      o = o->next;
+    } /* while */
+
+ return lcount;
+} /* x3dio_count */
+
+
+/* x3dio_registerwritecb:
+ *
+ */
+int
+x3dio_registerwritecb(char *name, x3dio_writecb *cb)
+{
+ int ay_status = AY_OK;
+ int new_item = 0;
+ Tcl_HashEntry *entry = NULL;
+ Tcl_HashTable *ht = &x3dio_write_ht;
+
+  if(!cb)
+    return AY_ENULL;
+
+  if((entry = Tcl_FindHashEntry(ht, name)))
+    {
+      return AY_ERROR; /* name already registered */
+    }
+  else
+    {
+      /* create new entry */
+      entry = Tcl_CreateHashEntry(ht, name, &new_item);
+      Tcl_SetHashValue(entry, (char*)cb);
+    }
+
+ return ay_status;
+} /* x3dio_registerwritecb */
+
+#if 0
+
+/* x3dio_writevertices:
+ *  write <n> <stride>D-texturevertices from array <v[n*stride]> to
+ *  file <fileptr>
+ */
+int
+x3dio_writevertices(scew_element *element, unsigned int n, int stride, double *v)
+{
+ unsigned int i, j = 0;
+
+  switch(stride)
+    {
+    case 2:
+      for(i = 0; i < n; i++)
+	{
+	  fprintf(fileptr, "v %g %g\n", v[j], v[j+1]);
+	  j += stride;
+	}
+      break;
+    case 3:
+      for(i = 0; i < n; i++)
+	{
+	  fprintf(fileptr, "v %g %g %g\n", v[j], v[j+1], v[j+2]);
+	  j += stride;
+	}
+      break;
+    case 4:
+      for(i = 0; i < n; i++)
+	{
+	  fprintf(fileptr, "v %g %g %g %g\n", v[j], v[j+1], v[j+2],
+		  v[j+3]);
+	  j += stride;
+	}
+      break;
+    default:
+      return AY_ERROR;
+      break;
+    } /* switch */
+
+ return AY_OK;
+} /* x3dio_writevertices */
+
+
+/* x3dio_writetvertices:
+ *  write <n> <stride>D-vertices from array <v[n*stride]> to file <fileptr>
+ */
+int
+x3dio_writetvertices(scew_element *element, unsigned int n, int stride, double *v)
+{
+ unsigned int i, j = 0;
+
+  switch(stride)
+    {
+    case 2:
+      for(i = 0; i < n; i++)
+	{
+	  fprintf(fileptr, "vt %g %g\n", v[j], v[j+1]);
+	  j += stride;
+	}
+      break;
+    case 3:
+      for(i = 0; i < n; i++)
+	{
+	  fprintf(fileptr, "vt %g %g %g\n", v[j], v[j+1], v[j+2]);
+	  j += stride;
+	}
+      break;
+    default:
+      return AY_ERROR;
+      break;
+    } /* switch */
+
+ return AY_OK;
+} /* x3dio_writetvertices */
+
+
+/* x3dio_writencurve:
+ *
+ */
+int
+x3dio_writencurve(scew_element *element, ay_object *o, double *m)
+{
+ ay_nurbcurve_object *nc;
+ double *v = NULL, *p1, *p2, pw[3], umin, umax;
+ int stride = 4, i;
+
+  if(!x3dio_writecurves)
+    return AY_OK;
+
+  if(!o)
+    return AY_ENULL;
+
+  nc = (ay_nurbcurve_object *)o->refine;
+
+  /* get all vertices and transform them to world space */
+  if(!(v = calloc(nc->length * (nc->is_rat?4:3), sizeof(double))))
+    return AY_EOMEM;
+
+  p1 = v;
+  p2 = nc->controlv;
+  for(i = 0; i < nc->length; i++)
+    {
+      if(nc->is_rat)
+	{
+	  pw[0] = p2[0]/p2[3];
+	  pw[1] = p2[1]/p2[3];
+	  pw[2] = p2[2]/p2[3];
+	  AY_APTRAN3(p1,pw,m)
+	  p1[3] = p2[3];
+	  p1 += stride;
+	}
+      else
+	{
+	  AY_APTRAN3(p1,p2,m)
+	  p1 += 3;
+	} /* if */
+      p2 += 4;
+    } /* for */
+
+  /* write all vertices */
+  x3dio_writevertices(fileptr, (unsigned int)nc->length,
+			 nc->is_rat?4:3, v);
+
+  /* write bspline curve */
+  if(nc->is_rat)
+    fprintf(fileptr, "cstype rat bspline\n");
+  else
+    fprintf(fileptr, "cstype bspline\n");
+
+  fprintf(fileptr, "deg %d\n", nc->order-1);
+
+  ay_knots_getuminmax(o, nc->order, nc->length+nc->order, nc->knotv,
+		      &umin, &umax);
+
+  fprintf(fileptr, "curv %g %g", umin, umax);
+
+  for(i = nc->length; i > 0; i--)
+    {
+      fprintf(fileptr, " -%d", i);
+    }
+  fprintf(fileptr, "\n");
+
+  /* write knot vector */
+  fprintf(fileptr, "parm u");
+  for(i = 0; i < (nc->length + nc->order); i++)
+    {
+      fprintf(fileptr, " %g", nc->knotv[i]);
+    }
+  fprintf(fileptr, "\n");
+
+  free(v);
+
+ return AY_OK;
+} /* x3dio_writencurve */
+
+
+/* x3dio_writetcurve:
+ *  write a single trim curve
+ */
+int
+x3dio_writetcurve(scew_element *element, ay_object *o, double *m)
+{
+ ay_nurbcurve_object *nc;
+ double v[3] = {0}, *p1, pw[3] = {0}, ma[16] = {0}, mn[16] = {0};
+ int stride = 4, i;
+
+  if(!o)
+    return AY_ENULL;
+
+  nc = (ay_nurbcurve_object *)o->refine;
+
+  /* create proper transformation matrix */
+  ay_trafo_creatematrix(o, mn);
+  memcpy(ma, m, 16*sizeof(double));
+  ay_trafo_multmatrix4(ma, mn);
+
+  /* get all vertices, transform them and write them out */
+
+  p1 = nc->controlv;
+  for(i = 0; i < nc->length; i++)
+    {
+      if(nc->is_rat)
+	{
+	  pw[0] = p1[0]/p1[3];
+	  pw[1] = p1[1]/p1[3];
+	  AY_APTRAN3(v,pw,ma)
+	    v[2] = p1[3];
+	  fprintf(fileptr, "vp %g %g %g\n", v[0], v[1], v[2]);
+	}
+      else
+	{
+	  AY_APTRAN3(v,p1,ma)
+	  fprintf(fileptr, "vp %g %g\n", v[0], v[1]);
+	}
+      p1 += stride;
+    }
+
+  /* write 2D bspline curve */
+  if(nc->is_rat)
+    fprintf(fileptr, "cstype rat bspline\n");
+  else
+    fprintf(fileptr, "cstype bspline\n");
+
+  fprintf(fileptr, "deg %d\n", nc->order-1);
+  fprintf(fileptr, "curv2 ");
+
+  for(i = nc->length; i > 0; i--)
+    {
+      fprintf(fileptr, " -%d", i);
+    }
+  fprintf(fileptr, "\n");
+
+  /* write knot vector */
+  fprintf(fileptr, "parm u");
+  for(i = 0; i < (nc->length + nc->order); i++)
+    {
+      fprintf(fileptr, " %g", nc->knotv[i]);
+    }
+  fprintf(fileptr, "\nend\n");
+
+ return AY_OK;
+} /* x3dio_writetcurve */
+
+
+/* x3dio_writetrim:
+ *  write all trim curves pointed to by <o>
+ */
+int
+x3dio_writetrim(scew_element *element, ay_object *o)
+{
+ int ay_status = AY_OK;
+ double mi[16] = {0};
+ ay_object *down = NULL, *pnc = NULL;
+
+  ay_trafo_identitymatrix(mi);
+
+  while(o->next)
+    {
+      switch(o->type)
+	{
+	case AY_IDNCURVE:
+	  x3dio_writetcurve(fileptr, o, mi);
+	  break;
+	case AY_IDLEVEL:
+	  if((o->down) && (o->down->next))
+	    {
+	      ay_trafo_creatematrix(o, mi);
+	      down = o->down;
+	      while(down->next)
+		{
+		  if(down->type == AY_IDNCURVE)
+		    {
+		      x3dio_writetcurve(fileptr, down, mi);
+		    }
+		  down = down->next;
+		} /* while */
+	      ay_trafo_identitymatrix(mi);
+	    } /* if */
+	  break;
+	default:
+	  pnc = NULL;
+	  ay_status = ay_provide_object(o, AY_IDNCURVE, &pnc);
+	  down = pnc;
+	  while(down)
+	    {
+	      x3dio_writetcurve(fileptr, pnc, mi);
+	      down = down->next;
+	    }
+	  if(pnc)
+	    {
+	      ay_object_deletemulti(pnc);
+	    }
+	  break;
+	} /* switch */
+
+      o = o->next;
+    } /* while */
+
+ return AY_OK;
+} /* x3dio_writetrim */
+
+
+/* x3dio_writetrimids:
+ *  write ids of all trim curves pointed to by <o>
+ */
+int
+x3dio_writetrimids(scew_element *element, ay_object *o)
+{
+ int ay_status = AY_OK;
+ ay_object *o2 = o, *down = NULL, *pnc = NULL, *cnc = NULL;
+ ay_nurbcurve_object *nc = NULL;
+ double umin, umax, orient;
+ int tc = 0, hole;
+
+  /* first, count trim curves */
+  while(o->next)
+    {
+      switch(o->type)
+	{
+	case AY_IDNCURVE:
+	  tc++;
+	  break;
+	case AY_IDLEVEL:
+	  if((o->down) && (o->down->next))
+	    {
+	      down = o->down;
+	      while(down->next)
+		{
+		  if(down->type == AY_IDNCURVE)
+		    {
+		      tc++;
+		    }
+		  down = down->next;
+		} /* while */
+	    } /* if */
+	default:
+	  pnc = NULL;
+	  ay_status = ay_provide_object(o, AY_IDNCURVE, &pnc);
+	  down = pnc;
+	  while(down)
+	    {
+	      tc++;
+	      down = down->next;
+	    }
+	  if(pnc)
+	    {
+	      ay_object_deletemulti(pnc);
+	    }
+	  break;
+	} /* switch */
+
+      o = o->next;
+    } /* while */
+
+  /* now write the ids */
+  o = o2;
+  while(o->next)
+    {
+      switch(o->type)
+	{
+	case AY_IDNCURVE:
+	  nc = (ay_nurbcurve_object *)o->refine;
+	  ay_status = ay_nct_getorientation(nc, &orient);
+	  if(orient < 0.0)
+	    hole = AY_TRUE;
+	  else
+	    hole = AY_FALSE;
+
+	  ay_knots_getuminmax(o, nc->order, nc->length+nc->order, nc->knotv,
+			      &umin, &umax);
+
+	  if(hole)
+	    fprintf(fileptr, "hole %g %g -%d\n", umin, umax, tc);
+	  else
+	    fprintf(fileptr, "trim %g %g -%d\n", umin, umax, tc);
+	  tc--;
+	  break;
+	case AY_IDLEVEL:
+	  if((o->down) && (o->down->next))
+	    {
+	      down = o->down;
+	      if(down->type == AY_IDNCURVE)
+		{
+		  nc = (ay_nurbcurve_object *)down->refine;
+		  ay_status = ay_nct_getorientation(nc, &orient);
+		  if(ay_status)
+		    {
+		      /* failed to detect orientation, maybe the curve
+		       * is too simple, concat all curves and retry... */
+		      ay_status = ay_nct_concatmultiple(AY_FALSE, 0, AY_FALSE,
+							o->down, &cnc);
+		      if(cnc)
+			{
+			  nc = (ay_nurbcurve_object *)cnc->refine;
+			  ay_status = ay_nct_getorientation(nc, &orient);
+			  ay_object_delete(cnc);
+			  cnc = NULL;
+			}
+		    } /* if */
+
+		  if(orient < 0.0)
+		    fprintf(fileptr, "hole ");
+		  else
+		    fprintf(fileptr, "trim ");
+		} /* if */
+
+	      while(down->next)
+		{
+		  if(down->type == AY_IDNCURVE)
+		    {
+		      nc = (ay_nurbcurve_object *)down->refine;
+
+		      ay_knots_getuminmax(o, nc->order, nc->length+nc->order,
+					  nc->knotv,
+					  &umin, &umax);
+
+		      fprintf(fileptr, " %g %g -%d", umin, umax, tc);
+
+		      tc--;
+		    }
+		  down = down->next;
+		} /* while */
+	      fprintf(fileptr, "\n");
+	    } /* if */
+	  break;
+	default:
+	  pnc = NULL;
+	  ay_status = ay_provide_object(o, AY_IDNCURVE, &pnc);
+	  down = pnc;
+
+	  if(down->type == AY_IDNCURVE)
+	    {
+	      nc = (ay_nurbcurve_object *)down->refine;
+	      ay_status = ay_nct_getorientation(nc, &orient);
+	      if(ay_status)
+		{
+		  /* failed to detect orientation, maybe the curve
+		   * is too simple, concat all curves and retry... */
+		  ay_status = ay_nct_concatmultiple(AY_FALSE, 0, AY_FALSE,
+						    down, &cnc);
+		  if(cnc)
+		    {
+		      nc = (ay_nurbcurve_object *)cnc->refine;
+		      ay_status = ay_nct_getorientation(nc, &orient);
+		      ay_object_delete(cnc);
+		      cnc = NULL;
+		    }
+		} /* if */
+
+	      if(orient < 0.0)
+		fprintf(fileptr, "hole ");
+	      else
+		fprintf(fileptr, "trim ");
+	    } /* if */
+
+	  while(down->next)
+	    {
+	      if(down->type == AY_IDNCURVE)
+		{
+		  nc = (ay_nurbcurve_object *)down->refine;
+
+		  ay_knots_getuminmax(o, nc->order, nc->length+nc->order,
+				      nc->knotv,
+				      &umin, &umax);
+
+		  fprintf(fileptr, " %g %g -%d", umin, umax, tc);
+
+		  tc--;
+		} /* if */
+	      down = down->next;
+	    } /* while */
+	  fprintf(fileptr, "\n");
+
+	  if(pnc)
+	    {
+	      ay_object_deletemulti(pnc);
+	    }
+	  break;
+	} /* switch */
+      o = o->next;
+    } /* while */
+
+ return AY_OK;
+} /* x3dio_writetrimids */
+
+
+/* x3dio_writenpatch:
+ *
+ */
+int
+x3dio_writenpatch(scew_element *element, ay_object *o)
+{
+ int ay_status = AY_OK;
+ ay_nurbpatch_object *np;
+ double *v = NULL, *p1, *p2, pw[3];
+ double umin, umax, vmin, vmax;
+ int stride = 4, i, j;
+ int have_mys = AY_FALSE, have_myt = AY_FALSE;
+ unsigned int myslen = 0, mytlen = 0, mystlen = 0, ui, uj;
+ double *mysarr = NULL, *mytarr = NULL, *mystarr = NULL;
+ ay_tag mystag = {NULL, 0, NULL};
+ ay_tag myttag = {NULL, 0, NULL};
+ ay_tag *tag;
+
+  if(!o)
+    return AY_ENULL;
+
+  mystag.type = ay_pv_tagtype;
+  myttag.type = ay_pv_tagtype;
+
+  /* first, check for and write the trim curves */
+  if(o->down && o->down->next)
+    {
+      ay_status = x3dio_writetrim(fileptr, o->down);
+    }
+
+  np = (ay_nurbpatch_object *)o->refine;
+
+  /* get all vertices and transform them to world space,
+     also adapting row/column major order in the process */
+  if(!(v = calloc(np->width * np->height * (np->is_rat?4:3), sizeof(double))))
+    return AY_EOMEM;
+
+  p1 = v;
+  for(i = 0; i < np->height; i++)
+    {
+      p2 = &(np->controlv[i*stride]);
+      for(j = 0; j < np->width; j++)
+	{
+	  if(np->is_rat)
+	    {
+	      pw[0] = p2[0]/p2[3];
+	      pw[1] = p2[1]/p2[3];
+	      pw[2] = p2[2]/p2[3];
+	      AY_APTRAN3(p1,pw,m)
+		p1[3] = p2[3];
+	      p1 += 4;
+	    }
+	  else
+	    {
+	      AY_APTRAN3(p1,p2,m)
+	      p1 += 3;
+	    } /* if */
+	  p2 += np->height*stride;
+	} /* for */
+    } /* for */
+
+  /* write all vertices */
+  x3dio_writevertices(fileptr, (unsigned int)(np->width * np->height),
+			 (np->is_rat?4:3), v);
+
+  /* write texture coordinates from potentially present PV tags */
+  if(o->tags)
+    {
+      if(!(mystag.val = calloc(strlen(x3dio_stagname)+2,sizeof(char))))
+	return AY_EOMEM;
+      if(!(myttag.val = calloc(strlen(x3dio_ttagname)+2,sizeof(char))))
+	return AY_EOMEM;
+      strcpy(mystag.val, x3dio_stagname);
+      mystag.val[strlen(x3dio_stagname)] = ',';
+      strcpy(myttag.val, x3dio_ttagname);
+      myttag.val[strlen(x3dio_ttagname)] = ',';
+      tag = o->tags;
+      while(tag)
+	{
+	  if((tag->type == ay_pv_tagtype) && ay_pv_cmpname(tag, &mystag))
+	    {
+	      have_mys = AY_TRUE;
+
+	      ay_status = ay_pv_convert(tag, &myslen, (void**)&mysarr);
+	    }
+	  if((tag->type == ay_pv_tagtype) && ay_pv_cmpname(tag, &myttag))
+	    {
+	      have_myt = AY_TRUE;
+
+	      ay_status = ay_pv_convert(tag, &mytlen, (void**)&mytarr);
+	    }
+	  tag = tag->next;
+	} /* while */
+      free(mystag.val);
+      free(myttag.val);
+    } /* if */
+
+  /* merge and write the texture vertices */
+  if(have_mys)
+    mystlen = 2*myslen;
+  else
+    if(have_myt)
+      mystlen = 2*mytlen;
+
+  if(mystlen > 0)
+    {
+      if(!(mystarr = calloc(mystlen, sizeof(double))))
+	{
+	  if(v)
+	    free(v);
+	  if(mysarr)
+	    free(mysarr);
+	  if(mytarr)
+	    free(mytarr);
+	  return AY_EOMEM;
+	} /* if */
+      /* i am C/C++ line 111111 in Ayam :) */
+      uj = 0;
+      for(ui = 0; ui < mystlen; ui++)
+	{
+	  if(have_mys)
+	    mystarr[uj]   = mysarr[ui];
+	  if(have_myt)
+	    mystarr[uj+1] = mytarr[ui];
+	  uj += 2;
+	} /* for */
+
+      x3dio_writetvertices(fileptr, mystlen, 2, mystarr);
+
+      if(mysarr)
+	free(mysarr);
+      if(mytarr)
+	free(mytarr);
+      free(mystarr);
+      mystarr = NULL;
+    } /* if */
+
+  /* write bspline surface */
+  if(np->is_rat)
+    fprintf(fileptr, "cstype rat bspline\n");
+  else
+    fprintf(fileptr, "cstype bspline\n");
+
+  fprintf(fileptr, "deg %d %d\n", np->uorder-1, np->vorder-1);
+
+  ay_knots_getuminmax(o, np->uorder, np->width+np->uorder, np->uknotv,
+		      &umin, &umax);
+  ay_knots_getvminmax(o, np->vorder, np->height+np->vorder, np->vknotv,
+		      &vmin, &vmax);
+
+  fprintf(fileptr, "surf %g %g %g %g", umin, umax, vmin, vmax);
+
+  for(i = np->width*np->height; i > 0; i--)
+    {
+      if(have_mys || have_myt)
+	{
+	  fprintf(fileptr, " -%d/-%d", i, i);
+	}
+      else
+	{
+	  fprintf(fileptr, " -%d", i);
+	}
+    } /* for */
+  fprintf(fileptr, "\n");
+
+  /* write knot vector (u) */
+  fprintf(fileptr, "parm u");
+  for(i = 0; i < (np->width + np->uorder); i++)
+    {
+      fprintf(fileptr, " %g", np->uknotv[i]);
+    }
+  fprintf(fileptr, "\n");
+
+  /* write knot vector (v) */
+  fprintf(fileptr, "parm v");
+  for(i = 0; i < (np->height + np->vorder); i++)
+    {
+      fprintf(fileptr, " %g", np->vknotv[i]);
+    }
+  fprintf(fileptr, "\n");
+
+  /* write pointers to trim curves (if any) */
+  if(o->down && o->down->next)
+    {
+      x3dio_writetrimids(fileptr, o->down);
+    } /* if */
+
+  free(v);
+
+ return AY_OK;
+} /* x3dio_writenpatch */
+
+
+/* x3dio_writelevel:
+ *
+ */
+int
+x3dio_writelevel(scew_element *element, ay_object *o)
+{
+ int ay_status = AY_OK;
+ ay_object *down = NULL;
+ ay_level_object *lev;
+ double m1[16] = {0};
+
+  if(!o)
+    return AY_ENULL;
+
+  lev = (ay_level_object *)o->refine;
+  if(o->down && o->down->next)
+    {
+      memcpy(m1, tm, 16*sizeof(double));
+      memcpy(tm, m, 16*sizeof(double));
+      down = o->down;
+      while(down->next && down->next->next)
+	{
+	  ay_status = x3dio_writeobject(fileptr, down, AY_TRUE, AY_TRUE);
+	  down = down->next;
+	}
+
+      if(down)
+	{
+	  ay_status = x3dio_writeobject(fileptr, down, AY_FALSE, AY_TRUE);
+	}
+
+      memcpy(tm, m1, 16*sizeof(double));
+    } /* if */
+
+ return AY_OK;
+} /* x3dio_writelevel */
+
+
+/* x3dio_writencconvertible:
+ *
+ */
+int
+x3dio_writencconvertible(scew_element *element, ay_object *o)
+{
+ int ay_status = AY_OK;
+ ay_object *c = NULL, *t;
+
+  if(!x3dio_writecurves)
+    return AY_OK;
+
+  if(!o)
+   return AY_ENULL;
+
+  ay_status = ay_provide_object(o, AY_IDNCURVE, &c);
+  if(!c)
+    return AY_ERROR;
+  t = c;
+  while(t->next)
+    {
+      if(t->type == AY_IDNCURVE)
+	{
+	  ay_status = x3dio_writeobject(fileptr, t, AY_TRUE, AY_FALSE);
+	}
+
+      t = t->next;
+    } /* while */
+
+  if(t->type == AY_IDNCURVE)
+    {
+      ay_status = x3dio_writeobject(fileptr, t, AY_FALSE, AY_FALSE);
+    }
+
+  ay_status = ay_object_deletemulti(c);
+
+ return ay_status;
+} /* x3dio_writencconvertible */
+
+
+/* x3dio_writenpconvertible:
+ *
+ */
+int
+x3dio_writenpconvertible(scew_element *element, ay_object *o)
+{
+ int ay_status = AY_OK;
+ ay_object *p = NULL, *t;
+
+  if(!o)
+   return AY_ENULL;
+
+  ay_status = ay_provide_object(o, AY_IDNPATCH, &p);
+  if(!p)
+    return AY_ERROR;
+  t = p;
+  while(t->next)
+    {
+      if(t->type == AY_IDNPATCH)
+	{
+	  ay_status = x3dio_writeobject(fileptr, t, AY_TRUE, AY_FALSE);
+	}
+
+      t = t->next;
+    } /* while */
+
+  if(t->type == AY_IDNPATCH)
+    {
+      ay_status = x3dio_writeobject(fileptr, t, AY_FALSE, AY_FALSE);
+    }
+
+  ay_status = ay_object_deletemulti(p);
+
+ return ay_status;
+} /* x3dio_writenpconvertible */
+
+
+/* x3dio_writebox:
+ *
+ */
+int
+x3dio_writebox(scew_element *element, ay_object *o)
+{
+ ay_box_object *box;
+ double v[24] = {0}, wh, hh, lh;
+ int i;
+
+  if(!o)
+   return AY_ENULL;
+
+  box = (ay_box_object *)o->refine;
+
+  wh = (GLdouble)(box->width  * 0.5);
+  lh = (GLdouble)(box->length * 0.5);
+  hh = (GLdouble)(box->height * 0.5);
+
+  v[0] = -wh;
+  v[1] = -hh;
+  v[2] = -lh;
+
+  v[3] = -wh;
+  v[4] = hh;
+  v[5] = -lh;
+
+  v[6] = -wh;
+  v[7] = hh;
+  v[8] = lh;
+
+  v[9] = -wh;
+  v[10] = -hh;
+  v[11] = lh;
+
+
+  v[12] = wh;
+  v[13] = -hh;
+  v[14] = -lh;
+
+  v[15] = wh;
+  v[16] = hh;
+  v[17] = -lh;
+
+  v[18] = wh;
+  v[19] = hh;
+  v[20] = lh;
+
+  v[21] = wh;
+  v[22] = -hh;
+  v[23] = lh;
+
+
+  for(i = 0; i < 8; i++)
+    {
+      ay_trafo_apply3(&(v[i*3]), m);
+    }
+
+  /* write all vertices */
+  x3dio_writevertices(fileptr, 8, 3, v);
+
+  /* write faces */
+  fprintf(fileptr,"f -8 -7 -6 -5\n");
+  fprintf(fileptr,"f -4 -3 -2 -1\n");
+  fprintf(fileptr,"f -8 -7 -4 -3\n");
+  fprintf(fileptr,"f -6 -5 -2 -1\n");
+  fprintf(fileptr,"f -8 -6 -4 -2\n");
+  fprintf(fileptr,"f -7 -5 -3 -1\n");
+
+ return AY_OK;
+} /* x3dio_writebox */
+
+
+/* x3dio_writepomesh:
+ *
+ */
+int
+x3dio_writepomesh(scew_element *element, ay_object *o)
+{
+ int ay_status = AY_OK;
+ /*char fname[] = "x3dio_writepomesh";*/
+ ay_object *to = NULL;
+ ay_list_object *li = NULL, **nextli = NULL, *lihead = NULL;
+ ay_pomesh_object *po;
+ double v[3], *p1;
+ int stride;
+ unsigned int i, j, k, p = 0, q = 0, r = 0;
+ int have_mys = AY_FALSE, have_myt = AY_FALSE;
+ unsigned int myslen = 0, mytlen = 0, mystlen = 0;
+ double *mysarr = NULL, *mytarr = NULL, *mystarr = NULL;
+ ay_tag mystag = {NULL, 0, NULL};
+ ay_tag myttag = {NULL, 0, NULL};
+ ay_tag *tag;
+
+  if(!o)
+   return AY_ENULL;
+
+  mystag.type = ay_pv_tagtype;
+  mystag.name = x3dio_stagname;
+  myttag.type = ay_pv_tagtype;
+  myttag.name = x3dio_ttagname;
+
+  po = (ay_pomesh_object *)o->refine;
+
+  if(po->has_normals)
+    stride = 6;
+  else
+    stride = 3;
+
+  /* get all vertices, transform them to world space and write them */
+  p1 = po->controlv;
+  for(i = 0; i < po->ncontrols; i++)
+    {
+      AY_APTRAN3(v,p1,m)
+      fprintf(fileptr, "v %g %g %g\n", v[0], v[1], v[2]);
+      p1 += stride;
+    }
+
+  /* write normals */
+  if(po->has_normals)
+    {
+      p1 = &(po->controlv[3]);
+      for(i = 0; i < po->ncontrols; i++)
+	{
+	  fprintf(fileptr, "vn %g %g %g\n", p1[0], p1[1], p1[2]);
+	  p1 += 6;
+	}
+    }
+
+  /* write texture coordinates from potentially present PV tags */
+  if(o->tags)
+    {
+      if(!(mystag.val = calloc(strlen(x3dio_stagname)+2,sizeof(char))))
+	return AY_EOMEM;
+      if(!(myttag.val = calloc(strlen(x3dio_ttagname)+2,sizeof(char))))
+	return AY_EOMEM;
+      strcpy(mystag.val, x3dio_stagname);
+      mystag.val[strlen(x3dio_stagname)] = ',';
+      strcpy(myttag.val, x3dio_ttagname);
+      myttag.val[strlen(x3dio_ttagname)] = ',';
+      tag = o->tags;
+      while(tag)
+	{
+	  if((tag->type == ay_pv_tagtype) && ay_pv_cmpname(tag, &mystag))
+	    {
+	      have_mys = AY_TRUE;
+
+	      ay_status = ay_pv_convert(tag, &myslen, (void**)&mysarr);
+	    }
+	  if((tag->type == ay_pv_tagtype) && ay_pv_cmpname(tag, &myttag))
+	    {
+	      have_myt = AY_TRUE;
+
+	      ay_status = ay_pv_convert(tag, &mytlen, (void**)&mytarr);
+	    }
+	  tag = tag->next;
+	} /* while */
+      free(mystag.val);
+      free(myttag.val);
+    } /* if */
+
+  /* merge and write the texture vertices */
+  if(have_mys)
+    mystlen = 2*myslen;
+  else
+    if(have_myt)
+      mystlen = 2*mytlen;
+
+  if(mystlen > 0)
+    {
+      if(!(mystarr = calloc(mystlen, sizeof(double))))
+	{
+	  if(v)
+	    free(v);
+	  if(mysarr)
+	    free(mysarr);
+	  if(mytarr)
+	    free(mytarr);
+	  return AY_EOMEM;
+	} /* if */
+
+      j = 0;
+      for(i = 0; i < mystlen; i++)
+	{
+	  if(have_mys)
+	    mystarr[j]   = mysarr[i];
+	  if(have_myt)
+	    mystarr[j+1] = mytarr[i];
+	  j += 2;
+	} /* for */
+
+      x3dio_writetvertices(fileptr, mystlen, 2, mystarr);
+
+      if(mysarr)
+	free(mysarr);
+      if(mytarr)
+	free(mytarr);
+      free(mystarr);
+      mystarr = NULL;
+    } /* if */
+
+  /* write faces */
+  for(i = 0; i < po->npolys; i++)
+    {
+      if(po->nloops[i] == 1)
+	{
+	  /* this face has just one loop (no hole) */
+
+	  /* XXXX this "for" unneeded? */
+	  for(j = 0; j < po->nloops[p]; j++)
+	    {
+	      if(!x3dio_tesspomesh ||
+		 (x3dio_tesspomesh && (po->nverts[q] == 3)))
+		{
+		  /* this is a triangle */
+		  fprintf(fileptr, "f");
+
+		  if(po->has_normals)
+		    {
+		      for(k = 0; k < po->nverts[q]; k++)
+			{
+			  if(have_mys || have_myt)
+			    {
+			      fprintf(fileptr, " -%d/-%d/-%d",
+				      po->ncontrols-po->verts[r],
+				      po->ncontrols-po->verts[r],
+				      po->ncontrols-po->verts[r]);
+			    }
+			  else
+			    {
+			      fprintf(fileptr, " -%d//-%d",
+				      po->ncontrols-po->verts[r],
+				      po->ncontrols-po->verts[r]);
+			    }
+			  r++;
+			} /* for */
+		    }
+		  else
+		    {
+		      for(k = 0; k < po->nverts[q]; k++)
+			{
+			  if(have_mys || have_myt)
+			    {
+			      fprintf(fileptr, " -%d/-%d",
+				      po->ncontrols-po->verts[r],
+				      po->ncontrols-po->verts[r]);
+			    }
+			  else
+			    {
+			      fprintf(fileptr, " -%d",
+				      po->ncontrols-po->verts[r]);
+			    }
+			  r++;
+			} /* for */
+		    } /* if */
+
+		  fprintf(fileptr, "\n");
+		}
+	      else
+		{
+		  /* this is not a triangle => tesselate it */
+
+		  /* create new object (for the tesselated face) */
+		  li = NULL;
+		  if(!(li = calloc(1, sizeof(ay_list_object))))
+		    return AY_EOMEM;
+		  to = NULL;
+		  if(!(to = calloc(1, sizeof(ay_object))))
+		    return AY_EOMEM;
+		  li->object = to;
+
+		  ay_object_defaults(to);
+
+		  to->type = AY_IDPOMESH;
+
+		  ay_status = ay_tess_pomeshf(po, i, q, r, AY_FALSE,
+					  (ay_pomesh_object **)&(to->refine));
+
+		  /* temporarily save the tesselated face */
+		  if(nextli)
+		    {
+		      *nextli = li;
+		    }
+		  else
+		    {
+		      lihead = li;
+		    }
+		  nextli = &(li->next);
+
+		  /* advance index r */
+		  for(k = 0; k < po->nverts[q]; k++)
+		    {
+		      r++;
+		    }
+		} /* if */
+	      q++;
+	    } /* for */
+	}
+      else
+	{
+	  /* this face has more than one loop (hole(s)) => tesselate it */
+
+	  /* create new object (for the tesselated face) */
+	  li = NULL;
+	  if(!(li = calloc(1, sizeof(ay_list_object))))
+	    return AY_EOMEM;
+	  to = NULL;
+	  if(!(to = calloc(1, sizeof(ay_object))))
+	    return AY_EOMEM;
+	  li->object = to;
+
+	  ay_object_defaults(to);
+
+	  to->type = AY_IDPOMESH;
+
+	  ay_status = ay_tess_pomeshf(po, i, q, r, AY_FALSE,
+				      (ay_pomesh_object **)&(to->refine));
+
+	  /* temporarily save the tesselated face */
+	  if(nextli)
+	    {
+	      *nextli = li;
+	    }
+	  else
+	    {
+	      lihead = li;
+	    }
+	  nextli = &(li->next);
+
+	  /* advance indices r and q */
+	  for(j = 0; j < po->nloops[p]; j++)
+	    {
+	      for(k = 0; k < po->nverts[q]; k++)
+		{
+		  r++;
+		}
+	      q++;
+	    } /* for */
+	} /* if */
+      p++;
+    } /* for */
+
+  /* write tesselated face(s) */
+  if(lihead && lihead->next)
+    {
+      to = NULL;
+      ay_status = ay_pomesht_merge(AY_FALSE, lihead, &to);
+      if(to)
+	{
+	  ay_status = ay_pomesht_optimizecoords(to->refine, AY_FALSE);
+	  ay_object_defaults(to);
+	  to->type = AY_IDPOMESH;
+	  /*ay_trafo_copy(o, to);*/
+	  x3dio_writepomesh(fileptr, to, m);
+	  ay_object_delete(to);
+	}
+    }
+  else
+    {
+      if(lihead)
+	x3dio_writepomesh(fileptr, lihead->object, m);
+    } /* if */
+
+  while(lihead)
+    {
+      ay_object_delete(lihead->object);
+      li = lihead->next;
+      free(lihead);
+      lihead = li;
+    } /* while */
+
+ return AY_OK;
+} /* x3dio_writepomesh */
+
+
+/* x3dio_writeclone:
+ *
+ */
+int
+x3dio_writeclone(scew_element *element, ay_object *o)
+{
+ int ay_status = AY_OK;
+ ay_clone_object *cl;
+ ay_object *clone;
+
+  if(!o)
+   return AY_ENULL;
+
+  cl = (ay_clone_object *)o->refine;
+
+  clone = cl->clones;
+
+  while(clone)
+    {
+      ay_status = x3dio_writeobject(element, clone, AY_FALSE);
+
+      clone = clone->next;
+    }
+
+ return ay_status;
+} /* x3dio_writeclone */
+
+
+/* x3dio_writeinstance:
+ *
+ */
+int
+x3dio_writeinstance(scew_element *element, ay_object *o)
+{
+ int ay_status = AY_OK;
+ ay_object *orig, tmp = {0};
+
+  if(!o || !o->refine)
+   return AY_ENULL;
+
+  orig = (ay_object *)o->refine;
+
+  ay_trafo_copy(orig, &tmp);
+  ay_trafo_copy(o, orig);
+  ay_status = x3dio_writeobject(element, orig, AY_FALSE);
+  ay_trafo_copy(&tmp, orig);
+
+ return ay_status;
+} /* x3dio_writeinstance */
+
+
+/* x3dio_writescript:
+ *
+ */
+int
+x3dio_writescript(scew_element *element, ay_object *o)
+{
+ int ay_status = AY_OK;
+ ay_object *cmo = NULL;
+ ay_script_object *sc = NULL;
+
+  if(!element || !o || !o->refine)
+   return AY_ENULL;
+
+  sc = (ay_script_object *)o->refine;
+
+  if(((sc->type == 1) || (sc->type == 2)) && (sc->cm_objects))
+    {
+      cmo = sc->cm_objects;
+      while(cmo && cmo->next)
+	{
+	  ay_status = x3dio_writeobject(element, cmo, AY_FALSE);
+	  cmo = cmo->next;
+	}
+      if(cmo)
+	{
+	  ay_status = x3dio_writeobject(element, cmo, AY_FALSE);
+	}
+    } /* if */
+
+ return ay_status;
+} /* x3dio_writescript */
+
+#endif /* 0 */
+
+
+/* x3dio_writetransform:
+ *
+ */
+int
+x3dio_writetransform(scew_element *element, ay_object *o, 
+		     scew_element **transform_element)
+{
+ char buffer[256];
+ double axis[3] = {0}, angle = 0.0;
+
+  if(!element || !o || !transform_element)
+    return AY_ENULL;
+
+  *transform_element = scew_element_add(element, "Transform");
+
+  if((o->movx != 0.0) || (o->movy != 0.0) || (o->movz != 0.0) ||
+     (o->rotx != 0.0) || (o->roty != 0.0) || (o->rotz != 0.0) ||
+     (o->scalx != 1.0) || (o->scaly != 1.0) || (o->scalz != 1.0) ||
+     (o->quat[0] != 0.0) || (o->quat[1] != 0.0) ||
+     (o->quat[2] != 0.0) || (o->quat[3] != 1.0))
+    {
+      /* process translation */
+      if((o->movx != 0.0) || (o->movy != 0.0) || (o->movz != 0.0))
+	{
+	  sprintf(buffer, "%g %g %g", o->movx, o->movy, o->movz);
+	  scew_element_add_attr_pair(*transform_element, "translation",
+				     buffer);
+	}
+      /* process scale */
+      if((o->scalx != 0.0) || (o->scaly != 0.0) || (o->scalz != 0.0))
+	{
+	  sprintf(buffer, "%g %g %g", o->scalx, o->scaly, o->scalz);
+	  scew_element_add_attr_pair(*transform_element, "scale",
+				     buffer);
+	}
+      /* process rotation */
+      if((o->quat[0] != 0.0) || (o->quat[1] != 0.0) ||
+	 (o->quat[2] != 0.0) || (o->quat[3] != 1.0))
+	{
+	  memcpy(axis, o->quat, 3*sizeof(double));
+	  AY_V3NORM(axis);
+	  angle = 2 * acos(o->quat[3]);
+
+	  sprintf(buffer, "%g %g %g %g", axis[0], axis[1], axis[2], angle);
+	  scew_element_add_attr_pair(*transform_element, "rotation",
+				     buffer);
+	}
+    } /* if */
+
+ return AY_OK;
+} /* x3dio_writetransform */
+
+
+/* x3dio_writename:
+ *
+ */
+int
+x3dio_writename(scew_element *element, ay_object *o)
+{
+ char buffer[256];
+ static unsigned int count = 0;
+
+  if(!element || !o)
+    {
+      count = 0;
+      return AY_ENULL;
+    }
+
+  /* write name as DEF */
+  if(o->name && (strlen(o->name)>1))
+   {
+     scew_element_add_attr_pair(element, "DEF", o->name);
+   }
+  else
+    {
+      if(o->refcount)
+	{
+	  count++;
+	  sprintf(buffer, "%u", count);
+	  scew_element_add_attr_pair(element, "DEF", buffer);
+	}
+    }
+
+ return AY_OK;
+} /* x3dio_writename */
+
+
+/* x3dio_writesphere:
+ *
+ */
+int
+x3dio_writesphere(scew_element *element, ay_object *o)
+{
+ int ay_status = AY_OK;
+ ay_sphere_object *sphere;
+ scew_element *transform_element = NULL;
+ scew_element *shape_element = NULL;
+ scew_element *sphere_element = NULL;
+
+  if(!element || !o)
+    return AY_ENULL;
+
+  /* write transform */
+  ay_status = x3dio_writetransform(element, o, &transform_element);
+
+  /* write shape */
+  shape_element = scew_element_add(transform_element, "Shape"); 
+
+  /* write name to shape element */
+  ay_status = x3dio_writename(shape_element, o);
+
+  /* now write the sphere */
+  sphere_element = scew_element_add(shape_element, "Sphere"); 
+
+  /* sphere parameters? */
+
+
+ return AY_OK;
+} /* x3dio_writesphere */
+
+
+#if 0
+/* x3dio_writencurve:
+ *
+ */
+int
+x3dio_writencurve(scew_element *element, ay_object *o)
+{
+ ay_nurbcurve_object *nc;
+
+  if(o->name && (strlen(o->name)>1))
+   {
+     
+   }
+
+ return AY_OK;
+} /* x3dio_writencurve */
+#endif
+
+
+/* x3dio_writeobject:
+ *
+ */
+int
+x3dio_writeobject(scew_element *element, ay_object *o, int count)
+{
+ int ay_status = AY_OK;
+ char fname[] = "x3dio_writeobject";
+ Tcl_HashTable *ht = &x3dio_write_ht;
+ Tcl_HashEntry *entry = NULL;
+ char err[255];
+ x3dio_writecb *cb = NULL;
+ ay_object *t, *c = NULL;
+ int curprog = 0;
+ char aname[] = "x3dio_options", vname1[] = "Progress";
+ char vname2[] = "Cancel", *val = NULL;
+ char pbuffer[64];
+ int i, numconvs = 3, conversions[3] = {AY_IDNPATCH, AY_IDNCURVE, AY_IDPOMESH};
+
+  if(!o)
+    return AY_ENULL;
+
+  if((entry = Tcl_FindHashEntry(ht, (char *)(o->type))))
+    {
+      cb = (x3dio_writecb*)Tcl_GetHashValue(entry);
+
+      if(cb)
+	{
+	  ay_status = cb(element, o);
+	  if(ay_status)
+	    {
+	      ay_error(AY_ERROR, fname, "Error exporting object.");
+	      ay_status = AY_OK;
+	    }
+
+	  if(count)
+	    {
+	      x3dio_curobjcnt++;
+
+	      /* calculate new progress value in percent */
+	      curprog = (int)(x3dio_curobjcnt*100.0/x3dio_allobjcnt);
+
+	      sprintf(pbuffer, "%d", curprog);
+	      Tcl_SetVar2(ay_interp, aname, vname1, pbuffer,
+			  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+	      /* process all events (update the GUI) for every object */
+	      /*
+		if(!fmod(x3dio_curobjcnt, 5.0))
+		{
+	      */
+	      while(Tcl_DoOneEvent(TCL_DONT_WAIT)){};
+
+	      /* also, check for cancel button */
+	      val = Tcl_GetVar2(ay_interp, aname, vname2,
+				TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	      if(val && val[0] == '1')
+		{
+		  ay_error(AY_EWARN, fname,
+		   "Export cancelled! Not all objects may have been written!");
+		  return AY_EDONOTLINK;
+		}
+	      /*
+		}
+	      */
+	    } /* if count */
+	} /* if cb */
+    }
+  else
+    {
+      /* can not export directly => try to convert object */
+      for(i = 0; i < numconvs; i++)
+	{
+	  c = NULL;
+	  ay_status = ay_provide_object(o, conversions[i], &c);
+	  t = c;
+	  while(t)
+	    {
+	      ay_status = x3dio_writeobject(element, t, AY_FALSE);
+	      t = t->next;
+	    }
+
+	  if(c)
+	    {
+	      ay_object_deletemulti(c);
+	      i = -1;
+	      break;
+	    }
+	} /* for */
+
+      if(i == -1)
+	{
+	  sprintf(err, "Cannot export objects of type: %s.",
+		  ay_object_gettypename(o->type));
+	  ay_error(AY_EWARN, fname, err);
+	}
+    } /* if */
+
+ return AY_OK;
+} /* x3dio_writeobject */
+
+
+/* x3dio_writescene:
+ *
+ */
+int
+x3dio_writescene(char *filename, int selected)
+{
+ int ay_status = AY_OK;
+ char fname[] = "x3dio_writescene";
+ ay_object *o = ay_root->next;
+ ay_list_object *sel = NULL;
+ scew_tree *tree = NULL;
+ scew_element *root = NULL;
+ scew_element *scene_element = NULL;
+ scew_attribute *attribute = NULL;
+
+  if(selected)
+    {
+      o = ay_currentlevel->object;
+    }
+
+  if(!o)
+    return AY_ENULL;
+
+  if(!filename)
+    return AY_ENULL;
+
+  /* create in-memory XML tree */
+  tree = scew_tree_create();
+
+  scew_tree_set_xml_preamble(tree, "X3D PUBLIC \"ISO//Web3D//DTD X3D 3.0//EN\"   \"http://www.web3d.org/specifications/x3d-3.0.dtd\"");
+
+  root = scew_tree_add_root(tree, "X3D");
+
+  attribute = scew_attribute_create("version", "3.0");
+  scew_element_add_attr(root, attribute);
+
+  scene_element = scew_element_add(root, "Scene");
+
+  ay_trafo_identitymatrix(tm);
+
+  if(x3dio_scalefactor != 1.0)
+    {
+      tm[0]  *= x3dio_scalefactor;
+      tm[5]  *= x3dio_scalefactor;
+      tm[10] *= x3dio_scalefactor;
+    }
+
+  /* count objects to be exported */
+  if(!selected)
+    {
+      x3dio_allobjcnt = x3dio_count(ay_root->next);
+    }
+  else
+    {
+      sel = ay_selection;
+      while(sel)
+	{
+	  x3dio_allobjcnt++;
+	  if(sel->object->down && sel->object->down->next)
+	    x3dio_allobjcnt += x3dio_count(sel->object->down);
+	  sel = sel->next;
+	}
+    } /* if */
+
+  x3dio_curobjcnt = 0;
+
+  /* omit EndLevel-object in top level! */
+  while(o->next)
+    {
+      if(selected)
+	{
+	  if(o->selected)
+	    {
+	      ay_status = x3dio_writeobject(scene_element, o, AY_TRUE);
+	    }
+	}
+      else
+	{
+	  ay_status = x3dio_writeobject(scene_element, o, AY_TRUE);
+	}
+
+      if(ay_status)
+	{
+	  /* user cancelled export? */
+	  if(ay_status == AY_EDONOTLINK)
+	    ay_status = AY_OK;
+	  break;
+	}
+
+      o = o->next;
+    } /* while */
+
+  /* write out the in-memory XML tree */
+  if(!scew_writer_tree_file(tree, filename))
+    {
+      ay_error(AY_EOPENFILE, fname, filename);
+      ay_status = AY_EOPENFILE;
+    }
+
+  /* free the SCEW tree */
+  scew_tree_free(tree);
+
+ return ay_status;
+} /* x3dio_writescene */
+
+
+/* x3dio_writetcmd:
+ *
+ */
+int
+x3dio_writetcmd(ClientData clientData, Tcl_Interp *interp,
+		int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ char fname[] = "x3dioWrite";
+ int selected = AY_FALSE, i = 2;
+
+  /* check args */
+  if(argc < 2)
+    {
+      ay_error(AY_EARGS, fname, "filename");
+      return TCL_OK;
+    }
+
+  x3dio_tesspomesh = AY_FALSE;
+  x3dio_writecurves = AY_TRUE;
+
+  while(i+1 < argc)
+    {
+      if(!strcmp(argv[i], "-c"))
+	{
+	  sscanf(argv[i+1], "%d", &x3dio_writecurves);
+	}
+      else
+      if(!strcmp(argv[i], "-s"))
+	{
+	  sscanf(argv[i+1], "%d", &selected);
+	}
+      else
+      if(!strcmp(argv[i], "-p"))
+	{
+	  sscanf(argv[i+1], "%d", &x3dio_tesspomesh);
+	}
+      else
+      if(!strcmp(argv[i], "-t"))
+	{
+	  x3dio_stagname = argv[i+1];
+	  x3dio_ttagname = argv[i+2];
+	  i++;
+	}
+      else
+      if(!strcmp(argv[i], "-f"))
+	{
+	  sscanf(argv[i+1], "%lg", &x3dio_scalefactor);
+	}
+      i += 2;
+    } /* while */
+
+  ay_status = x3dio_writescene(argv[1], selected);
+
+  x3dio_stagname = x3dio_stagnamedef;
+  x3dio_ttagname = x3dio_ttagnamedef;
+
+  x3dio_scalefactor = 1.0;
+
+ return TCL_OK;
+} /* x3dio_writetcmd */
+
+
 /* X_Init:
  *  initialize the x3dio plugin
  *  note: this function _must_ be named and capitalized exactly this way
@@ -4917,8 +6655,8 @@ int
 X_Init(Tcl_Interp *interp)
 #endif /* WIN32 */
 {
+ int ay_status = AY_OK;
  char fname[] = "x3dio_init";
- /* int ay_status = AY_OK; */
 
   if(Tcl_InitStubs(interp, "8.2", 0) == NULL)
     {
@@ -4954,15 +6692,87 @@ X_Init(Tcl_Interp *interp)
   /* create new Tcl commands to interface with the plugin */
   Tcl_CreateCommand(interp, "x3dioRead", x3dio_readtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
-  /*
+  
   Tcl_CreateCommand(interp, "x3dioWrite", x3dio_writetcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
-  */
+  
   /* init hash table for write callbacks */
   Tcl_InitHashTable(&x3dio_write_ht, TCL_ONE_WORD_KEYS);
 
   /* fill hash table */
+#if 0
+  ay_status = x3dio_registerwritecb((char *)(AY_IDNPATCH),
+				       x3dio_writenpatch);
+  ay_status = x3dio_registerwritecb((char *)(AY_IDNCURVE),
+				       x3dio_writencurve);
+  ay_status = x3dio_registerwritecb((char *)(AY_IDLEVEL),
+				       x3dio_writelevel);
+  ay_status = x3dio_registerwritecb((char *)(AY_IDCLONE),
+				       x3dio_writeclone);
+  ay_status = x3dio_registerwritecb((char *)(AY_IDINSTANCE),
+				       x3dio_writeinstance);
+  ay_status = x3dio_registerwritecb((char *)(AY_IDSCRIPT),
+				       x3dio_writescript);
 
+  ay_status = x3dio_registerwritecb((char *)(AY_IDICURVE),
+				       x3dio_writencconvertible);
+  ay_status = x3dio_registerwritecb((char *)(AY_IDCONCATNC),
+				       x3dio_writencconvertible);
+  ay_status = x3dio_registerwritecb((char *)(AY_IDEXTRNC),
+				       x3dio_writencconvertible);
+  ay_status = x3dio_registerwritecb((char *)(AY_IDNCIRCLE),
+				       x3dio_writencconvertible);
+
+  ay_status = x3dio_registerwritecb((char *)(AY_IDEXTRUDE),
+				       x3dio_writenpconvertible);
+  ay_status = x3dio_registerwritecb((char *)(AY_IDREVOLVE),
+				       x3dio_writenpconvertible);
+  ay_status = x3dio_registerwritecb((char *)(AY_IDSWEEP),
+				       x3dio_writenpconvertible);
+  ay_status = x3dio_registerwritecb((char *)(AY_IDSKIN),
+				       x3dio_writenpconvertible);
+  ay_status = x3dio_registerwritecb((char *)(AY_IDCAP),
+				       x3dio_writenpconvertible);
+  ay_status = x3dio_registerwritecb((char *)(AY_IDPAMESH),
+				       x3dio_writenpconvertible);
+  ay_status = x3dio_registerwritecb((char *)(AY_IDBPATCH),
+				       x3dio_writenpconvertible);
+  ay_status = x3dio_registerwritecb((char *)(AY_IDGORDON),
+				       x3dio_writenpconvertible);
+  ay_status = x3dio_registerwritecb((char *)(AY_IDBIRAIL1),
+				       x3dio_writenpconvertible);
+  ay_status = x3dio_registerwritecb((char *)(AY_IDBIRAIL2),
+				       x3dio_writenpconvertible);
+  ay_status = x3dio_registerwritecb((char *)(AY_IDTEXT),
+				       x3dio_writenpconvertible);
+  ay_status = x3dio_registerwritecb((char *)(AY_IDBEVEL),
+				       x3dio_writenpconvertible);
+
+  ay_status = x3dio_registerwritecb((char *)(AY_IDSPHERE),
+				       x3dio_writenpconvertible);
+  ay_status = x3dio_registerwritecb((char *)(AY_IDDISK),
+				       x3dio_writenpconvertible);
+  ay_status = x3dio_registerwritecb((char *)(AY_IDCYLINDER),
+				       x3dio_writenpconvertible);
+  ay_status = x3dio_registerwritecb((char *)(AY_IDCONE),
+				       x3dio_writenpconvertible);
+  ay_status = x3dio_registerwritecb((char *)(AY_IDHYPERBOLOID),
+				       x3dio_writenpconvertible);
+  ay_status = x3dio_registerwritecb((char *)(AY_IDPARABOLOID),
+				       x3dio_writenpconvertible);
+  ay_status = x3dio_registerwritecb((char *)(AY_IDTORUS),
+				       x3dio_writenpconvertible);
+
+  ay_status = x3dio_registerwritecb((char *)(AY_IDPOMESH),
+				       x3dio_writepomesh);
+
+  ay_status = x3dio_registerwritecb((char *)(AY_IDBOX),
+				       x3dio_writebox);
+
+#endif
+
+  ay_status = x3dio_registerwritecb((char *)(AY_IDSPHERE),
+				       x3dio_writesphere);
 
   ay_error(AY_EOUTPUT, fname, "Plugin 'x3dio' successfully loaded.");
 
