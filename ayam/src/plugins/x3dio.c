@@ -5735,79 +5735,6 @@ x3dio_writenpconvertible(scew_element *element, ay_object *o)
 } /* x3dio_writenpconvertible */
 
 
-/* x3dio_writebox:
- *
- */
-int
-x3dio_writebox(scew_element *element, ay_object *o)
-{
- ay_box_object *box;
- double v[24] = {0}, wh, hh, lh;
- int i;
-
-  if(!o)
-   return AY_ENULL;
-
-  box = (ay_box_object *)o->refine;
-
-  wh = (GLdouble)(box->width  * 0.5);
-  lh = (GLdouble)(box->length * 0.5);
-  hh = (GLdouble)(box->height * 0.5);
-
-  v[0] = -wh;
-  v[1] = -hh;
-  v[2] = -lh;
-
-  v[3] = -wh;
-  v[4] = hh;
-  v[5] = -lh;
-
-  v[6] = -wh;
-  v[7] = hh;
-  v[8] = lh;
-
-  v[9] = -wh;
-  v[10] = -hh;
-  v[11] = lh;
-
-
-  v[12] = wh;
-  v[13] = -hh;
-  v[14] = -lh;
-
-  v[15] = wh;
-  v[16] = hh;
-  v[17] = -lh;
-
-  v[18] = wh;
-  v[19] = hh;
-  v[20] = lh;
-
-  v[21] = wh;
-  v[22] = -hh;
-  v[23] = lh;
-
-
-  for(i = 0; i < 8; i++)
-    {
-      ay_trafo_apply3(&(v[i*3]), m);
-    }
-
-  /* write all vertices */
-  x3dio_writevertices(fileptr, 8, 3, v);
-
-  /* write faces */
-  fprintf(fileptr,"f -8 -7 -6 -5\n");
-  fprintf(fileptr,"f -4 -3 -2 -1\n");
-  fprintf(fileptr,"f -8 -7 -4 -3\n");
-  fprintf(fileptr,"f -6 -5 -2 -1\n");
-  fprintf(fileptr,"f -8 -6 -4 -2\n");
-  fprintf(fileptr,"f -7 -5 -3 -1\n");
-
- return AY_OK;
-} /* x3dio_writebox */
-
-
 /* x3dio_writepomesh:
  *
  */
@@ -6219,6 +6146,43 @@ x3dio_writedoubleattrib(scew_element *element, char *name, double *value)
 } /* x3dio_writedoubleattrib */
 
 
+/* x3dio_writedoublevecattrib:
+ *
+ */
+int
+x3dio_writedoublevecattrib(scew_element *element, char *name, unsigned int dim,
+			   double *value)
+{
+ char buf[256];
+
+  if(!element || !name || !value)
+    return AY_ENULL;
+
+  switch(dim)
+    {
+    case 1:
+      sprintf(buf, "%g", *value);
+      break;
+    case 2:
+      sprintf(buf, "%g %g", value[0], value[1]);
+      break;
+    case 3:
+      sprintf(buf, "%g %g %g", value[0], value[1], value[2]);
+      break;
+    case 4:
+      sprintf(buf, "%g %g %g %g", value[0], value[1], value[2], value[3]);
+      break;
+    default:
+      return AY_ERROR;
+      break;
+    } /* switch */
+
+  scew_element_add_attr_pair(element, name, buf);
+
+ return AY_OK;
+} /* x3dio_writedoublevecattrib */
+
+
 /* x3dio_writelevelobj:
  *
  */
@@ -6322,14 +6286,10 @@ x3dio_writescriptobj(scew_element *element, ay_object *o)
   if(((sc->type == 1) || (sc->type == 2)) && (sc->cm_objects))
     {
       cmo = sc->cm_objects;
-      while(cmo && cmo->next)
+      while(cmo)
 	{
 	  ay_status = x3dio_writeobject(element, cmo, AY_FALSE);
 	  cmo = cmo->next;
-	}
-      if(cmo)
-	{
-	  ay_status = x3dio_writeobject(element, cmo, AY_FALSE);
 	}
     } /* if */
 
@@ -6362,6 +6322,7 @@ x3dio_writesphereobj(scew_element *element, ay_object *o)
 
   /* write name to shape element */
   ay_status = x3dio_writename(shape_element, o);
+
   if(sphere->is_simple)
     {
       /* now write the sphere */
@@ -6370,13 +6331,53 @@ x3dio_writesphereobj(scew_element *element, ay_object *o)
       /* sphere parameters */
       if(fabs(sphere->radius))
 	{
-	  x3dio_writedoubleattrib(element, "radius", &sphere->radius);
+	  x3dio_writedoubleattrib(sphere_element, "radius", &sphere->radius);
 	}
     }
 
  return AY_OK;
 } /* x3dio_writesphereobj */
 
+
+/* x3dio_writeboxobj:
+ *
+ */
+int
+x3dio_writeboxobj(scew_element *element, ay_object *o)
+{
+ int ay_status = AY_OK;
+ ay_box_object *box;
+ scew_element *transform_element = NULL;
+ scew_element *shape_element = NULL;
+ scew_element *box_element = NULL;
+ double v[3] = {0};
+
+  if(!o)
+   return AY_ENULL;
+
+  box = (ay_box_object *)o->refine;
+
+  /* write transform */
+  ay_status = x3dio_writetransform(element, o, &transform_element);
+
+  /* write shape */
+  shape_element = scew_element_add(transform_element, "Shape"); 
+
+  /* write name to shape element */
+  ay_status = x3dio_writename(shape_element, o);
+
+  /* now write the box */
+  box_element = scew_element_add(shape_element, "Box"); 
+
+  /* box parameters */
+  v[0] = box->width;
+  v[1] = box->length;
+  v[2] = box->height;
+
+  x3dio_writedoublevecattrib(box_element, "size", 3, v);
+
+ return AY_OK;
+} /* x3dio_writeboxobj */
 
 
 #if 0
@@ -6787,8 +6788,6 @@ X_Init(Tcl_Interp *interp)
   ay_status = x3dio_registerwritecb((char *)(AY_IDPOMESH),
 				       x3dio_writepomesh);
 
-  ay_status = x3dio_registerwritecb((char *)(AY_IDBOX),
-				       x3dio_writebox);
 
 #endif
 
@@ -6801,6 +6800,8 @@ X_Init(Tcl_Interp *interp)
   ay_status = x3dio_registerwritecb((char *)(AY_IDSCRIPT),
 				       x3dio_writescriptobj);
 
+  ay_status = x3dio_registerwritecb((char *)(AY_IDBOX),
+				       x3dio_writeboxobj);
 
   ay_status = x3dio_registerwritecb((char *)(AY_IDSPHERE),
 				       x3dio_writesphereobj);
