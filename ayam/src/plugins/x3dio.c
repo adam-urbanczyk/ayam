@@ -4926,6 +4926,9 @@ x3dio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 /*************************************************************************/
 /*************************************************************************/
 
+/* x3dio_count:
+ *  _recursively_ count the objects to be exported
+ */
 unsigned int
 x3dio_count(ay_object *o)
 {
@@ -5655,44 +5658,6 @@ x3dio_writenpatch(scew_element *element, ay_object *o)
 } /* x3dio_writenpatch */
 
 
-/* x3dio_writelevel:
- *
- */
-int
-x3dio_writelevel(scew_element *element, ay_object *o)
-{
- int ay_status = AY_OK;
- ay_object *down = NULL;
- ay_level_object *lev;
- double m1[16] = {0};
-
-  if(!o)
-    return AY_ENULL;
-
-  lev = (ay_level_object *)o->refine;
-  if(o->down && o->down->next)
-    {
-      memcpy(m1, tm, 16*sizeof(double));
-      memcpy(tm, m, 16*sizeof(double));
-      down = o->down;
-      while(down->next && down->next->next)
-	{
-	  ay_status = x3dio_writeobject(fileptr, down, AY_TRUE, AY_TRUE);
-	  down = down->next;
-	}
-
-      if(down)
-	{
-	  ay_status = x3dio_writeobject(fileptr, down, AY_FALSE, AY_TRUE);
-	}
-
-      memcpy(tm, m1, 16*sizeof(double));
-    } /* if */
-
- return AY_OK;
-} /* x3dio_writelevel */
-
-
 /* x3dio_writencconvertible:
  *
  */
@@ -6144,91 +6109,8 @@ x3dio_writepomesh(scew_element *element, ay_object *o)
  return AY_OK;
 } /* x3dio_writepomesh */
 
-
-/* x3dio_writeclone:
- *
- */
-int
-x3dio_writeclone(scew_element *element, ay_object *o)
-{
- int ay_status = AY_OK;
- ay_clone_object *cl;
- ay_object *clone;
-
-  if(!o)
-   return AY_ENULL;
-
-  cl = (ay_clone_object *)o->refine;
-
-  clone = cl->clones;
-
-  while(clone)
-    {
-      ay_status = x3dio_writeobject(element, clone, AY_FALSE);
-
-      clone = clone->next;
-    }
-
- return ay_status;
-} /* x3dio_writeclone */
-
-
-/* x3dio_writeinstance:
- *
- */
-int
-x3dio_writeinstance(scew_element *element, ay_object *o)
-{
- int ay_status = AY_OK;
- ay_object *orig, tmp = {0};
-
-  if(!o || !o->refine)
-   return AY_ENULL;
-
-  orig = (ay_object *)o->refine;
-
-  ay_trafo_copy(orig, &tmp);
-  ay_trafo_copy(o, orig);
-  ay_status = x3dio_writeobject(element, orig, AY_FALSE);
-  ay_trafo_copy(&tmp, orig);
-
- return ay_status;
-} /* x3dio_writeinstance */
-
-
-/* x3dio_writescript:
- *
- */
-int
-x3dio_writescript(scew_element *element, ay_object *o)
-{
- int ay_status = AY_OK;
- ay_object *cmo = NULL;
- ay_script_object *sc = NULL;
-
-  if(!element || !o || !o->refine)
-   return AY_ENULL;
-
-  sc = (ay_script_object *)o->refine;
-
-  if(((sc->type == 1) || (sc->type == 2)) && (sc->cm_objects))
-    {
-      cmo = sc->cm_objects;
-      while(cmo && cmo->next)
-	{
-	  ay_status = x3dio_writeobject(element, cmo, AY_FALSE);
-	  cmo = cmo->next;
-	}
-      if(cmo)
-	{
-	  ay_status = x3dio_writeobject(element, cmo, AY_FALSE);
-	}
-    } /* if */
-
- return ay_status;
-} /* x3dio_writescript */
-
 #endif /* 0 */
+
 
 
 /* x3dio_writetransform:
@@ -6318,11 +6200,148 @@ x3dio_writename(scew_element *element, ay_object *o)
 } /* x3dio_writename */
 
 
-/* x3dio_writesphere:
+/* x3dio_writedoubleattrib:
  *
  */
 int
-x3dio_writesphere(scew_element *element, ay_object *o)
+x3dio_writedoubleattrib(scew_element *element, char *name, double *value)
+{
+ char buf[64];
+
+  if(!element || !name || !value)
+    return AY_ENULL;
+
+  sprintf(buf, "%g", *value);
+
+  scew_element_add_attr_pair(element, name, buf);
+
+ return AY_OK;
+} /* x3dio_writedoubleattrib */
+
+
+/* x3dio_writelevelobj:
+ *
+ */
+int
+x3dio_writelevelobj(scew_element *element, ay_object *o)
+{
+ int ay_status = AY_OK;
+ ay_object *down = NULL;
+ ay_level_object *lev;
+ scew_element *transform_element = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  lev = (ay_level_object *)o->refine;
+  if(o->down && o->down->next)
+    {
+
+      /* write transform */
+      ay_status = x3dio_writetransform(element, o, &transform_element);
+
+      down = o->down;
+      while(down->next)
+	{
+	  ay_status = x3dio_writeobject(transform_element, down, AY_TRUE);
+	  down = down->next;
+	}
+
+    } /* if */
+
+ return AY_OK;
+} /* x3dio_writelevelobj */
+
+
+/* x3dio_writecloneobj:
+ *
+ */
+int
+x3dio_writecloneobj(scew_element *element, ay_object *o)
+{
+ int ay_status = AY_OK;
+ ay_clone_object *cl;
+ ay_object *clone;
+
+  if(!o)
+   return AY_ENULL;
+
+  cl = (ay_clone_object *)o->refine;
+
+  clone = cl->clones;
+
+  while(clone)
+    {
+      ay_status = x3dio_writeobject(element, clone, AY_FALSE);
+
+      clone = clone->next;
+    }
+
+ return ay_status;
+} /* x3dio_writecloneobj */
+
+
+/* x3dio_writeinstanceobj:
+ *
+ */
+int
+x3dio_writeinstanceobj(scew_element *element, ay_object *o)
+{
+ int ay_status = AY_OK;
+ ay_object *orig, tmp = {0};
+
+  if(!o || !o->refine)
+   return AY_ENULL;
+
+  orig = (ay_object *)o->refine;
+
+  ay_trafo_copy(orig, &tmp);
+  ay_trafo_copy(o, orig);
+  ay_status = x3dio_writeobject(element, orig, AY_FALSE);
+  ay_trafo_copy(&tmp, orig);
+
+ return ay_status;
+} /* x3dio_writeinstanceobj */
+
+
+/* x3dio_writescriptobj:
+ *
+ */
+int
+x3dio_writescriptobj(scew_element *element, ay_object *o)
+{
+ int ay_status = AY_OK;
+ ay_object *cmo = NULL;
+ ay_script_object *sc = NULL;
+
+  if(!element || !o || !o->refine)
+   return AY_ENULL;
+
+  sc = (ay_script_object *)o->refine;
+
+  if(((sc->type == 1) || (sc->type == 2)) && (sc->cm_objects))
+    {
+      cmo = sc->cm_objects;
+      while(cmo && cmo->next)
+	{
+	  ay_status = x3dio_writeobject(element, cmo, AY_FALSE);
+	  cmo = cmo->next;
+	}
+      if(cmo)
+	{
+	  ay_status = x3dio_writeobject(element, cmo, AY_FALSE);
+	}
+    } /* if */
+
+ return ay_status;
+} /* x3dio_writescriptobj */
+
+
+/* x3dio_writesphereobj:
+ *
+ */
+int
+x3dio_writesphereobj(scew_element *element, ay_object *o)
 {
  int ay_status = AY_OK;
  ay_sphere_object *sphere;
@@ -6333,6 +6352,8 @@ x3dio_writesphere(scew_element *element, ay_object *o)
   if(!element || !o)
     return AY_ENULL;
 
+  sphere = o->refine;
+
   /* write transform */
   ay_status = x3dio_writetransform(element, o, &transform_element);
 
@@ -6341,15 +6362,21 @@ x3dio_writesphere(scew_element *element, ay_object *o)
 
   /* write name to shape element */
   ay_status = x3dio_writename(shape_element, o);
+  if(sphere->is_simple)
+    {
+      /* now write the sphere */
+      sphere_element = scew_element_add(shape_element, "Sphere"); 
 
-  /* now write the sphere */
-  sphere_element = scew_element_add(shape_element, "Sphere"); 
-
-  /* sphere parameters? */
-
+      /* sphere parameters */
+      if(fabs(sphere->radius))
+	{
+	  x3dio_writedoubleattrib(element, "radius", &sphere->radius);
+	}
+    }
 
  return AY_OK;
-} /* x3dio_writesphere */
+} /* x3dio_writesphereobj */
+
 
 
 #if 0
@@ -6707,12 +6734,6 @@ X_Init(Tcl_Interp *interp)
 				       x3dio_writencurve);
   ay_status = x3dio_registerwritecb((char *)(AY_IDLEVEL),
 				       x3dio_writelevel);
-  ay_status = x3dio_registerwritecb((char *)(AY_IDCLONE),
-				       x3dio_writeclone);
-  ay_status = x3dio_registerwritecb((char *)(AY_IDINSTANCE),
-				       x3dio_writeinstance);
-  ay_status = x3dio_registerwritecb((char *)(AY_IDSCRIPT),
-				       x3dio_writescript);
 
   ay_status = x3dio_registerwritecb((char *)(AY_IDICURVE),
 				       x3dio_writencconvertible);
@@ -6771,8 +6792,18 @@ X_Init(Tcl_Interp *interp)
 
 #endif
 
+  ay_status = x3dio_registerwritecb((char *)(AY_IDLEVEL),
+				       x3dio_writelevelobj);
+  ay_status = x3dio_registerwritecb((char *)(AY_IDCLONE),
+				       x3dio_writecloneobj);
+  ay_status = x3dio_registerwritecb((char *)(AY_IDINSTANCE),
+				       x3dio_writeinstanceobj);
+  ay_status = x3dio_registerwritecb((char *)(AY_IDSCRIPT),
+				       x3dio_writescriptobj);
+
+
   ay_status = x3dio_registerwritecb((char *)(AY_IDSPHERE),
-				       x3dio_writesphere);
+				       x3dio_writesphereobj);
 
   ay_error(AY_EOUTPUT, fname, "Plugin 'x3dio' successfully loaded.");
 
