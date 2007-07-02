@@ -6127,6 +6127,25 @@ x3dio_writename(scew_element *element, ay_object *o)
 } /* x3dio_writename */
 
 
+/* x3dio_writeintattrib:
+ *
+ */
+int
+x3dio_writeintattrib(scew_element *element, char *name, int *value)
+{
+ char buf[64];
+
+  if(!element || !name || !value)
+    return AY_ENULL;
+
+  sprintf(buf, "%d", *value);
+
+  scew_element_add_attr_pair(element, name, buf);
+
+ return AY_OK;
+} /* x3dio_writeintattrib */
+
+
 /* x3dio_writedoubleattrib:
  *
  */
@@ -6183,6 +6202,193 @@ x3dio_writedoublevecattrib(scew_element *element, char *name, unsigned int dim,
 } /* x3dio_writedoublevecattrib */
 
 
+/* x3dio_writedoublepoints:
+ *
+ */
+int
+x3dio_writedoublepoints(scew_element *element, char *name, unsigned int dim,
+			unsigned int length, double *value)
+{
+ char buf[256];
+ char *attr = NULL, *tmp;
+ size_t buflen = 0, totalbuflen = 0;
+ unsigned int i, a = 0;
+ unsigned int stride = 4;
+
+  if(!element || !name || !value)
+    return AY_ENULL;
+
+  for(i = 0; i < length; i++)
+    {
+      switch(dim)
+	{
+	case 1:
+	  sprintf(buf, "%g ", value[a]);
+	  break;
+	case 2:
+	  sprintf(buf, "%g %g, ", value[a], value[a+1]);
+	  break;
+	case 3:
+	  sprintf(buf, "%g %g %g, ", value[a], value[a+1], value[a+2]);
+	  break;
+	case 4:
+	  sprintf(buf, "%g %g %g %g, ", value[a], value[a+1], value[a+2],
+		  value[a+3]);
+	  break;
+	default:
+	  return AY_ERROR;
+	  break;
+	} /* switch */
+
+      buflen = strlen(buf);
+
+      tmp = NULL;
+      if(!(tmp = realloc(attr, (totalbuflen+buflen+1)*sizeof(char))))
+	{
+	  free(attr);
+	  return AY_EOMEM;
+	}
+      attr = tmp;
+      memcpy(&(attr[totalbuflen]), buf, buflen*sizeof(char));
+      totalbuflen += buflen;
+      a += stride;
+    } /* for */
+
+  attr[totalbuflen-1] = '\0';
+
+  scew_element_add_attr_pair(element, name, attr);
+
+ return AY_OK;
+} /* x3dio_writedoublepoints */
+
+
+/* x3dio_writeweights:
+ *
+ */
+int
+x3dio_writeweights(scew_element *element, char *name,
+			unsigned int length, double *value)
+{
+ char buf[256];
+ char *attr = NULL, *tmp;
+ size_t buflen = 0, totalbuflen = 0;
+ unsigned int i, a = 0;
+ unsigned int stride = 4;
+
+  if(!element || !name || !value)
+    return AY_ENULL;
+
+  for(i = 0; i < length; i++)
+    {
+
+      sprintf(buf, "%g ", value[a+3]);
+
+      buflen = strlen(buf);
+
+      tmp = NULL;
+      if(!(tmp = realloc(attr, (totalbuflen+buflen+1)*sizeof(char))))
+	{
+	  free(attr);
+	  return AY_EOMEM;
+	}
+      attr = tmp;
+      memcpy(&(attr[totalbuflen]), buf, buflen*sizeof(char));
+      totalbuflen += buflen;
+      a += stride;
+    } /* for */
+
+  attr[totalbuflen-1] = '\0';
+
+  scew_element_add_attr_pair(element, name, attr);
+
+ return AY_OK;
+} /* x3dio_writeweights */
+
+
+/* x3dio_writeknots:
+ *
+ */
+int
+x3dio_writeknots(scew_element *element, char *name,
+			unsigned int length, double *value)
+{
+ char buf[256];
+ char *attr = NULL, *tmp;
+ size_t buflen = 0, totalbuflen = 0;
+ unsigned int i;
+
+  if(!element || !name || !value)
+    return AY_ENULL;
+
+  for(i = 0; i < length; i++)
+    {
+
+      sprintf(buf, "%g ", value[i]);
+
+      buflen = strlen(buf);
+
+      tmp = NULL;
+      if(!(tmp = realloc(attr, (totalbuflen+buflen+1)*sizeof(char))))
+	{
+	  free(attr);
+	  return AY_EOMEM;
+	}
+      attr = tmp;
+      memcpy(&(attr[totalbuflen]), buf, buflen*sizeof(char));
+      totalbuflen += buflen;
+    } /* for */
+
+  attr[totalbuflen-1] = '\0';
+
+  scew_element_add_attr_pair(element, name, attr);
+
+ return AY_OK;
+} /* x3dio_writeknots */
+
+
+/* x3dio_writencurveobj:
+ *
+ */
+int
+x3dio_writencurveobj(scew_element *element, ay_object *o)
+{
+ int ay_status = AY_OK;
+ ay_nurbcurve_object *c;
+ scew_element *transform_element = NULL;
+ scew_element *shape_element = NULL;
+ scew_element *curve_element = NULL;
+ scew_element *coord_element = NULL;
+
+  if(!element || !o || !o->refine)
+    return AY_ENULL;
+
+  c = (ay_nurbcurve_object *)o->refine;
+
+  /* write transform */
+  ay_status = x3dio_writetransform(element, o, &transform_element);
+
+  /* write shape */
+  shape_element = scew_element_add(transform_element, "Shape"); 
+
+  /* write name to shape element */
+  ay_status = x3dio_writename(shape_element, o);
+
+  /* now write the curve */
+  curve_element = scew_element_add(shape_element, "NurbsCurve"); 
+
+  x3dio_writeintattrib(curve_element, "order", &c->order);
+
+  x3dio_writeknots(curve_element, "knot", c->length+c->order, c->knotv);
+
+  x3dio_writeweights(curve_element, "weight", c->length, c->controlv);
+
+  coord_element = scew_element_add(curve_element, "Coordinate"); 
+  x3dio_writedoublepoints(coord_element, "point", 3, c->length, c->controlv);
+
+ return AY_OK;
+} /* x3dio_writencurveobj */
+
+
 /* x3dio_writelevelobj:
  *
  */
@@ -6194,7 +6400,7 @@ x3dio_writelevelobj(scew_element *element, ay_object *o)
  ay_level_object *lev;
  scew_element *transform_element = NULL;
 
-  if(!o)
+  if(!element || !o || !o->refine)
     return AY_ENULL;
 
   lev = (ay_level_object *)o->refine;
@@ -6227,7 +6433,7 @@ x3dio_writecloneobj(scew_element *element, ay_object *o)
  ay_clone_object *cl;
  ay_object *clone;
 
-  if(!o)
+  if(!element || !o || !o->refine)
    return AY_ENULL;
 
   cl = (ay_clone_object *)o->refine;
@@ -6254,7 +6460,7 @@ x3dio_writeinstanceobj(scew_element *element, ay_object *o)
  int ay_status = AY_OK;
  ay_object *orig, tmp = {0};
 
-  if(!o || !o->refine)
+  if(!element || !o || !o->refine)
    return AY_ENULL;
 
   orig = (ay_object *)o->refine;
@@ -6309,7 +6515,7 @@ x3dio_writesphereobj(scew_element *element, ay_object *o)
  scew_element *shape_element = NULL;
  scew_element *sphere_element = NULL;
 
-  if(!element || !o)
+  if(!element || !o || !o->refine)
     return AY_ENULL;
 
   sphere = o->refine;
@@ -6352,7 +6558,7 @@ x3dio_writeboxobj(scew_element *element, ay_object *o)
  scew_element *box_element = NULL;
  double v[3] = {0};
 
-  if(!o)
+  if(!element || !o || !o->refine)
    return AY_ENULL;
 
   box = (ay_box_object *)o->refine;
@@ -6805,6 +7011,9 @@ X_Init(Tcl_Interp *interp)
 
   ay_status = x3dio_registerwritecb((char *)(AY_IDSPHERE),
 				       x3dio_writesphereobj);
+
+  ay_status = x3dio_registerwritecb((char *)(AY_IDNCURVE),
+				       x3dio_writencurveobj);
 
   ay_error(AY_EOUTPUT, fname, "Plugin 'x3dio' successfully loaded.");
 
