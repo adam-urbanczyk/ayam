@@ -1533,7 +1533,7 @@ objio_writeobject(FILE *fileptr, ay_object *o, int writeend, int count)
 	    }
 	} /* for */
 
-      if(i == -1)
+      if(i != -1)
 	{
 	  sprintf(err, "Cannot export objects of type: %s.",
 		  ay_object_gettypename(o->type));
