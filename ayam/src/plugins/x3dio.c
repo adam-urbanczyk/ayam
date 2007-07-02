@@ -5658,45 +5658,6 @@ x3dio_writenpatch(scew_element *element, ay_object *o)
 } /* x3dio_writenpatch */
 
 
-/* x3dio_writencconvertible:
- *
- */
-int
-x3dio_writencconvertible(scew_element *element, ay_object *o)
-{
- int ay_status = AY_OK;
- ay_object *c = NULL, *t;
-
-  if(!x3dio_writecurves)
-    return AY_OK;
-
-  if(!o)
-   return AY_ENULL;
-
-  ay_status = ay_provide_object(o, AY_IDNCURVE, &c);
-  if(!c)
-    return AY_ERROR;
-  t = c;
-  while(t->next)
-    {
-      if(t->type == AY_IDNCURVE)
-	{
-	  ay_status = x3dio_writeobject(fileptr, t, AY_TRUE, AY_FALSE);
-	}
-
-      t = t->next;
-    } /* while */
-
-  if(t->type == AY_IDNCURVE)
-    {
-      ay_status = x3dio_writeobject(fileptr, t, AY_FALSE, AY_FALSE);
-    }
-
-  ay_status = ay_object_deletemulti(c);
-
- return ay_status;
-} /* x3dio_writencconvertible */
-
 
 /* x3dio_writenpconvertible:
  *
@@ -6389,6 +6350,41 @@ x3dio_writencurveobj(scew_element *element, ay_object *o)
 } /* x3dio_writencurveobj */
 
 
+/* x3dio_writencconvertibleobj:
+ *
+ */
+int
+x3dio_writencconvertibleobj(scew_element *element, ay_object *o)
+{
+ int ay_status = AY_OK;
+ ay_object *c = NULL, *t;
+
+  if(!x3dio_writecurves)
+    return AY_OK;
+
+  if(!o)
+   return AY_ENULL;
+
+  ay_status = ay_provide_object(o, AY_IDNCURVE, &c);
+  if(!c)
+    return AY_ERROR;
+  t = c;
+  while(t)
+    {
+      if(t->type == AY_IDNCURVE)
+	{
+	  ay_status = x3dio_writeobject(element, t, AY_FALSE);
+	}
+
+      t = t->next;
+    } /* while */
+
+  ay_status = ay_object_deletemulti(c);
+
+ return ay_status;
+} /* x3dio_writencconvertibleobj */
+
+
 /* x3dio_writelevelobj:
  *
  */
@@ -6695,7 +6691,7 @@ x3dio_writeobject(scew_element *element, ay_object *o, int count)
 	    }
 	} /* for */
 
-      if(i == -1)
+      if(i != -1)
 	{
 	  sprintf(err, "Cannot export objects of type: %s.",
 		  ay_object_gettypename(o->type));
@@ -6937,19 +6933,6 @@ X_Init(Tcl_Interp *interp)
 #if 0
   ay_status = x3dio_registerwritecb((char *)(AY_IDNPATCH),
 				       x3dio_writenpatch);
-  ay_status = x3dio_registerwritecb((char *)(AY_IDNCURVE),
-				       x3dio_writencurve);
-  ay_status = x3dio_registerwritecb((char *)(AY_IDLEVEL),
-				       x3dio_writelevel);
-
-  ay_status = x3dio_registerwritecb((char *)(AY_IDICURVE),
-				       x3dio_writencconvertible);
-  ay_status = x3dio_registerwritecb((char *)(AY_IDCONCATNC),
-				       x3dio_writencconvertible);
-  ay_status = x3dio_registerwritecb((char *)(AY_IDEXTRNC),
-				       x3dio_writencconvertible);
-  ay_status = x3dio_registerwritecb((char *)(AY_IDNCIRCLE),
-				       x3dio_writencconvertible);
 
   ay_status = x3dio_registerwritecb((char *)(AY_IDEXTRUDE),
 				       x3dio_writenpconvertible);
@@ -7014,6 +6997,15 @@ X_Init(Tcl_Interp *interp)
 
   ay_status = x3dio_registerwritecb((char *)(AY_IDNCURVE),
 				       x3dio_writencurveobj);
+
+  ay_status = x3dio_registerwritecb((char *)(AY_IDICURVE),
+				       x3dio_writencconvertibleobj);
+  ay_status = x3dio_registerwritecb((char *)(AY_IDCONCATNC),
+				       x3dio_writencconvertibleobj);
+  ay_status = x3dio_registerwritecb((char *)(AY_IDEXTRNC),
+				       x3dio_writencconvertibleobj);
+  ay_status = x3dio_registerwritecb((char *)(AY_IDNCIRCLE),
+				       x3dio_writencconvertibleobj);
 
   ay_error(AY_EOUTPUT, fname, "Plugin 'x3dio' successfully loaded.");
 
