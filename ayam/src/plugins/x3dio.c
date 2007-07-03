@@ -192,6 +192,7 @@ int x3dio_readlight(scew_element *element, int type);
 
 
 /* non-geometric/scene structure */
+int x3dio_readviewpoint(scew_element *element);
 
 int x3dio_readinline(scew_element *element);
 
@@ -3930,6 +3931,132 @@ x3dio_readlight(scew_element *element, int type)
 } /* x3dio_readlight */
 
 
+/* x3dio_readviewpoint:
+ *
+ */
+int
+x3dio_readviewpoint(scew_element *element)
+{
+ int ay_status = AY_OK;
+ int width = 400, height = 300;
+ float position[3] = {0.0f, 0.0f, 10.0f};
+ float fvtemp[4] = {0.0f, 0.0f, 1.0f, 0.0f};
+ float fov = (float)AY_PI/4.0f;
+ double m[16];
+ double to[3], up[3] = {0.0, 1.0, 0.0};
+ char command[255] = {0}, update_cmd[] = "update";
+ ay_object *root = ay_root, *down, *last;
+ ay_view_object *v = NULL;
+ ay_camera_object c = {0};
+ x3dio_trafostate *trafo = NULL;
+
+  if(!element)
+    return AY_ENULL;
+
+  ay_status = x3dio_readfloatvec(element, "position", 3, position);
+
+  to[0] = (double)position[0];
+  to[1] = (double)position[1];
+  to[2] = (double)position[2]-10.0;
+
+  ay_status = x3dio_readfloatvec(element, "orientation", 4, fvtemp);
+
+
+  ay_trafo_identitymatrix(m);
+
+  if(fabs(fvtemp[3]) > AY_EPSILON)
+    {
+      ay_trafo_rotatematrix(fvtemp[3], fvtemp[0], fvtemp[1], fvtemp[2], m);
+      ay_trafo_apply3(to, m);
+      ay_trafo_apply3(up, m);
+    }
+
+  trafo = x3dio_ctrafos;
+  while(trafo)
+    {
+      ay_trafo_multmatrix4(m, trafo->m);
+      trafo = trafo->next;
+    }
+
+  ay_status = x3dio_readfloat(element, "fieldOfView", &fov);
+
+
+  if(1 /*x3dio_readviewpoints == 1*/)
+    {
+      /* open a new view window */
+      sprintf(command,"viewOpen %d %d 0\n", width, height);
+      Tcl_Eval(ay_interp, command);
+
+      Tcl_Eval(ay_interp, update_cmd);
+
+      /* configure the view */
+      down = root->down;
+      last = root->down;
+      while(down->next)
+	{
+	  last = down;
+	  down = down->next;
+	}
+
+      v = (ay_view_object *)last->refine;
+
+      v->from[0] = (double)position[0];
+      v->from[1] = (double)position[1];
+      v->from[2] = (double)position[2];
+
+      v->to[0] = (double)to[0];
+      v->to[1] = (double)to[1];
+      v->to[2] = (double)to[2];
+
+      v->up[0] = (double)up[0];
+      v->up[1] = (double)up[1];
+      v->up[2] = (double)up[2];
+
+      v->type = AY_VTPERSP;
+
+      v->zoom = fabs(tan((double)fov/2.0));
+
+      /* notify also includes reshape() and additionally loads the BGImage */
+      ay_notify_force(last);
+
+      /* set window title */
+      sprintf(command,
+	      "global ay;viewTitle [lindex $ay(views) end] Persp -");
+      Tcl_Eval(ay_interp, command);
+
+      Tcl_Eval(ay_interp, update_cmd);
+
+      sprintf(command,"global ay;viewBind [lindex $ay(views) end]");
+      Tcl_Eval(ay_interp, command);
+
+      Tcl_Eval(ay_interp, update_cmd);
+
+    }
+  else
+    {
+      c.from[0] = (double)position[0];
+      c.from[1] = (double)position[1];
+      c.from[2] = (double)position[2];
+
+      c.to[0] = (double)to[0];
+      c.to[1] = (double)to[1];
+      c.to[2] = (double)to[2];
+
+      c.up[0] = (double)up[0];
+      c.up[1] = (double)up[1];
+      c.up[2] = (double)up[2];
+
+      c.zoom = fabs(tan((double)fov/2.0));
+
+      /* copy object to the Ayam scene */
+      ay_status = x3dio_linkobject(element, AY_IDCAMERA, (void*)&c);
+
+    } /* if */
+
+ return ay_status;
+} /* x3dio_readviewpoint */
+
+
 /* x3dio_readinline:
  *
  */
@@ -4680,8 +4807,15 @@ x3dio_readelement(scew_element *element)
       /*
     case 'U':
       break;
+      */
     case 'V':
+      if(!strcmp(element_name, "Viewpoint"))
+	{
+	  ay_status = x3dio_readviewpoint(element);
+	  handled_elements = 1;
+	}
       break;
+      /*
     case 'W':
       break;
     case 'X':
@@ -6005,7 +6139,7 @@ x3dio_writepomesh(scew_element *element, ay_object *o)
  *
  */
 int
-x3dio_writetransform(scew_element *element, ay_object *o, 
+x3dio_writetransform(scew_element *element, ay_object *o,
 		     scew_element **transform_element)
 {
  char buffer[256];
@@ -6329,21 +6463,24 @@ x3dio_writencurveobj(scew_element *element, ay_object *o)
   ay_status = x3dio_writetransform(element, o, &transform_element);
 
   /* write shape */
-  shape_element = scew_element_add(transform_element, "Shape"); 
+  shape_element = scew_element_add(transform_element, "Shape");
 
   /* write name to shape element */
   ay_status = x3dio_writename(shape_element, o);
 
   /* now write the curve */
-  curve_element = scew_element_add(shape_element, "NurbsCurve"); 
+  curve_element = scew_element_add(shape_element, "NurbsCurve");
 
   x3dio_writeintattrib(curve_element, "order", &c->order);
 
   x3dio_writeknots(curve_element, "knot", c->length+c->order, c->knotv);
 
-  x3dio_writeweights(curve_element, "weight", c->length, c->controlv);
+  if(c->is_rat)
+    {
+      x3dio_writeweights(curve_element, "weight", c->length, c->controlv);
+    }
 
-  coord_element = scew_element_add(curve_element, "Coordinate"); 
+  coord_element = scew_element_add(curve_element, "Coordinate");
   x3dio_writedoublepoints(coord_element, "point", 3, c->length, c->controlv);
 
  return AY_OK;
@@ -6407,7 +6544,7 @@ x3dio_writenpatchobj(scew_element *element, ay_object *o)
   ay_status = x3dio_writetransform(element, o, &transform_element);
 
   /* write shape */
-  shape_element = scew_element_add(transform_element, "Shape"); 
+  shape_element = scew_element_add(transform_element, "Shape");
 
   /* write name to shape element */
   ay_status = x3dio_writename(shape_element, o);
@@ -6423,9 +6560,13 @@ x3dio_writenpatchobj(scew_element *element, ay_object *o)
   x3dio_writeknots(patch_element, "uKnot", p->width+p->uorder, p->uknotv);
   x3dio_writeknots(patch_element, "vKnot", p->height+p->vorder, p->vknotv);
 
-  x3dio_writeweights(patch_element, "weight", p->width*p->height, p->controlv);
+  if(p->is_rat)
+    {
+      x3dio_writeweights(patch_element, "weight", p->width*p->height,
+			 p->controlv);
+    }
 
-  coord_element = scew_element_add(patch_element, "Coordinate"); 
+  coord_element = scew_element_add(patch_element, "Coordinate");
   x3dio_writedoublepoints(coord_element, "point", 3, p->width*p->height,
 			  p->controlv);
 
@@ -6600,7 +6741,7 @@ x3dio_writesphereobj(scew_element *element, ay_object *o)
   ay_status = x3dio_writetransform(element, o, &transform_element);
 
   /* write shape */
-  shape_element = scew_element_add(transform_element, "Shape"); 
+  shape_element = scew_element_add(transform_element, "Shape");
 
   /* write name to shape element */
   ay_status = x3dio_writename(shape_element, o);
@@ -6608,7 +6749,7 @@ x3dio_writesphereobj(scew_element *element, ay_object *o)
   if(sphere->is_simple)
     {
       /* now write the sphere */
-      sphere_element = scew_element_add(shape_element, "Sphere"); 
+      sphere_element = scew_element_add(shape_element, "Sphere");
 
       /* sphere parameters */
       if(fabs(sphere->radius))
@@ -6643,13 +6784,13 @@ x3dio_writeboxobj(scew_element *element, ay_object *o)
   ay_status = x3dio_writetransform(element, o, &transform_element);
 
   /* write shape */
-  shape_element = scew_element_add(transform_element, "Shape"); 
+  shape_element = scew_element_add(transform_element, "Shape");
 
   /* write name to shape element */
   ay_status = x3dio_writename(shape_element, o);
 
   /* now write the box */
-  box_element = scew_element_add(shape_element, "Box"); 
+  box_element = scew_element_add(shape_element, "Box");
 
   /* box parameters */
   v[0] = box->width;
@@ -6673,7 +6814,7 @@ x3dio_writencurve(scew_element *element, ay_object *o)
 
   if(o->name && (strlen(o->name)>1))
    {
-     
+
    }
 
  return AY_OK;
@@ -7002,10 +7143,10 @@ X_Init(Tcl_Interp *interp)
   /* create new Tcl commands to interface with the plugin */
   Tcl_CreateCommand(interp, "x3dioRead", x3dio_readtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
-  
+
   Tcl_CreateCommand(interp, "x3dioWrite", x3dio_writetcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
-  
+
   /* init hash table for write callbacks */
   Tcl_InitHashTable(&x3dio_write_ht, TCL_ONE_WORD_KEYS);
 
