@@ -5134,160 +5134,6 @@ x3dio_registerwritecb(char *name, x3dio_writecb *cb)
 
 #if 0
 
-/* x3dio_writevertices:
- *  write <n> <stride>D-texturevertices from array <v[n*stride]> to
- *  file <fileptr>
- */
-int
-x3dio_writevertices(scew_element *element, unsigned int n, int stride, double *v)
-{
- unsigned int i, j = 0;
-
-  switch(stride)
-    {
-    case 2:
-      for(i = 0; i < n; i++)
-	{
-	  fprintf(fileptr, "v %g %g\n", v[j], v[j+1]);
-	  j += stride;
-	}
-      break;
-    case 3:
-      for(i = 0; i < n; i++)
-	{
-	  fprintf(fileptr, "v %g %g %g\n", v[j], v[j+1], v[j+2]);
-	  j += stride;
-	}
-      break;
-    case 4:
-      for(i = 0; i < n; i++)
-	{
-	  fprintf(fileptr, "v %g %g %g %g\n", v[j], v[j+1], v[j+2],
-		  v[j+3]);
-	  j += stride;
-	}
-      break;
-    default:
-      return AY_ERROR;
-      break;
-    } /* switch */
-
- return AY_OK;
-} /* x3dio_writevertices */
-
-
-/* x3dio_writetvertices:
- *  write <n> <stride>D-vertices from array <v[n*stride]> to file <fileptr>
- */
-int
-x3dio_writetvertices(scew_element *element, unsigned int n, int stride, double *v)
-{
- unsigned int i, j = 0;
-
-  switch(stride)
-    {
-    case 2:
-      for(i = 0; i < n; i++)
-	{
-	  fprintf(fileptr, "vt %g %g\n", v[j], v[j+1]);
-	  j += stride;
-	}
-      break;
-    case 3:
-      for(i = 0; i < n; i++)
-	{
-	  fprintf(fileptr, "vt %g %g %g\n", v[j], v[j+1], v[j+2]);
-	  j += stride;
-	}
-      break;
-    default:
-      return AY_ERROR;
-      break;
-    } /* switch */
-
- return AY_OK;
-} /* x3dio_writetvertices */
-
-
-/* x3dio_writencurve:
- *
- */
-int
-x3dio_writencurve(scew_element *element, ay_object *o, double *m)
-{
- ay_nurbcurve_object *nc;
- double *v = NULL, *p1, *p2, pw[3], umin, umax;
- int stride = 4, i;
-
-  if(!x3dio_writecurves)
-    return AY_OK;
-
-  if(!o)
-    return AY_ENULL;
-
-  nc = (ay_nurbcurve_object *)o->refine;
-
-  /* get all vertices and transform them to world space */
-  if(!(v = calloc(nc->length * (nc->is_rat?4:3), sizeof(double))))
-    return AY_EOMEM;
-
-  p1 = v;
-  p2 = nc->controlv;
-  for(i = 0; i < nc->length; i++)
-    {
-      if(nc->is_rat)
-	{
-	  pw[0] = p2[0]/p2[3];
-	  pw[1] = p2[1]/p2[3];
-	  pw[2] = p2[2]/p2[3];
-	  AY_APTRAN3(p1,pw,m)
-	  p1[3] = p2[3];
-	  p1 += stride;
-	}
-      else
-	{
-	  AY_APTRAN3(p1,p2,m)
-	  p1 += 3;
-	} /* if */
-      p2 += 4;
-    } /* for */
-
-  /* write all vertices */
-  x3dio_writevertices(fileptr, (unsigned int)nc->length,
-			 nc->is_rat?4:3, v);
-
-  /* write bspline curve */
-  if(nc->is_rat)
-    fprintf(fileptr, "cstype rat bspline\n");
-  else
-    fprintf(fileptr, "cstype bspline\n");
-
-  fprintf(fileptr, "deg %d\n", nc->order-1);
-
-  ay_knots_getuminmax(o, nc->order, nc->length+nc->order, nc->knotv,
-		      &umin, &umax);
-
-  fprintf(fileptr, "curv %g %g", umin, umax);
-
-  for(i = nc->length; i > 0; i--)
-    {
-      fprintf(fileptr, " -%d", i);
-    }
-  fprintf(fileptr, "\n");
-
-  /* write knot vector */
-  fprintf(fileptr, "parm u");
-  for(i = 0; i < (nc->length + nc->order); i++)
-    {
-      fprintf(fileptr, " %g", nc->knotv[i]);
-    }
-  fprintf(fileptr, "\n");
-
-  free(v);
-
- return AY_OK;
-} /* x3dio_writencurve */
-
 
 /* x3dio_writetcurve:
  *  write a single trim curve
@@ -5791,43 +5637,6 @@ x3dio_writenpatch(scew_element *element, ay_object *o)
  return AY_OK;
 } /* x3dio_writenpatch */
 
-
-
-/* x3dio_writenpconvertible:
- *
- */
-int
-x3dio_writenpconvertible(scew_element *element, ay_object *o)
-{
- int ay_status = AY_OK;
- ay_object *p = NULL, *t;
-
-  if(!o)
-   return AY_ENULL;
-
-  ay_status = ay_provide_object(o, AY_IDNPATCH, &p);
-  if(!p)
-    return AY_ERROR;
-  t = p;
-  while(t->next)
-    {
-      if(t->type == AY_IDNPATCH)
-	{
-	  ay_status = x3dio_writeobject(fileptr, t, AY_TRUE, AY_FALSE);
-	}
-
-      t = t->next;
-    } /* while */
-
-  if(t->type == AY_IDNPATCH)
-    {
-      ay_status = x3dio_writeobject(fileptr, t, AY_FALSE, AY_FALSE);
-    }
-
-  ay_status = ay_object_deletemulti(p);
-
- return ay_status;
-} /* x3dio_writenpconvertible */
 
 
 /* x3dio_writepomesh:
@@ -6720,48 +6529,6 @@ x3dio_writescriptobj(scew_element *element, ay_object *o)
 } /* x3dio_writescriptobj */
 
 
-/* x3dio_writesphereobj:
- *
- */
-int
-x3dio_writesphereobj(scew_element *element, ay_object *o)
-{
- int ay_status = AY_OK;
- ay_sphere_object *sphere;
- scew_element *transform_element = NULL;
- scew_element *shape_element = NULL;
- scew_element *sphere_element = NULL;
-
-  if(!element || !o || !o->refine)
-    return AY_ENULL;
-
-  sphere = o->refine;
-
-  /* write transform */
-  ay_status = x3dio_writetransform(element, o, &transform_element);
-
-  /* write shape */
-  shape_element = scew_element_add(transform_element, "Shape");
-
-  /* write name to shape element */
-  ay_status = x3dio_writename(shape_element, o);
-
-  if(sphere->is_simple)
-    {
-      /* now write the sphere */
-      sphere_element = scew_element_add(shape_element, "Sphere");
-
-      /* sphere parameters */
-      if(fabs(sphere->radius))
-	{
-	  x3dio_writedoubleattrib(sphere_element, "radius", &sphere->radius);
-	}
-    }
-
- return AY_OK;
-} /* x3dio_writesphereobj */
-
-
 /* x3dio_writeboxobj:
  *
  */
@@ -6801,6 +6568,125 @@ x3dio_writeboxobj(scew_element *element, ay_object *o)
 
  return AY_OK;
 } /* x3dio_writeboxobj */
+
+
+/* x3dio_writesphereobj:
+ *
+ */
+int
+x3dio_writesphereobj(scew_element *element, ay_object *o)
+{
+ int ay_status = AY_OK;
+ ay_sphere_object *sphere;
+ scew_element *transform_element = NULL;
+ scew_element *shape_element = NULL;
+ scew_element *sphere_element = NULL;
+
+  if(!element || !o || !o->refine)
+    return AY_ENULL;
+
+  sphere = (ay_sphere_object *)o->refine;
+
+  if(sphere->is_simple)
+    {
+      /* write transform */
+      ay_status = x3dio_writetransform(element, o, &transform_element);
+
+      /* write shape */
+      shape_element = scew_element_add(transform_element, "Shape");
+
+      /* write name to shape element */
+      ay_status = x3dio_writename(shape_element, o);
+
+      /* now write the sphere */
+      sphere_element = scew_element_add(shape_element, "Sphere");
+
+      /* sphere parameters */
+      if(fabs(sphere->radius))
+	{
+	  x3dio_writedoubleattrib(sphere_element, "radius", &sphere->radius);
+	}
+    }
+  else
+    {
+      ay_status = x3dio_writenpconvertibleobj(element, o);
+    }
+
+ return AY_OK;
+} /* x3dio_writesphereobj */
+
+
+/* x3dio_writecylinderobj:
+ *
+ */
+int
+x3dio_writecylinderobj(scew_element *element, ay_object *o)
+{
+ int ay_status = AY_OK;
+ ay_cylinder_object *cylinder;
+ double height = 0.0;
+ scew_element *transform_element = NULL, *htransform_element = NULL;
+ scew_element *shape_element = NULL;
+ scew_element *cylinder_element = NULL;
+ char buffer[256];
+
+  if(!element || !o || !o->refine)
+    return AY_ENULL;
+
+  cylinder = (ay_cylinder_object *)o->refine;
+
+  if(cylinder->is_simple)
+    {
+      height = cylinder->zmax-cylinder->zmin;
+
+      /* write transform */
+      ay_status = x3dio_writetransform(element, o, &transform_element);
+
+
+      htransform_element = scew_element_add(transform_element,
+						"Transform");
+      if( fabs((cylinder->zmax - cylinder->zmin)/2.0) > AY_EPSILON )
+	{
+	  sprintf(buffer, "0.0 %g 0.0", (cylinder->zmax - cylinder->zmin)/2.0);
+	  scew_element_add_attr_pair(htransform_element, "translation",
+				     buffer);
+	}
+      sprintf(buffer, "1 0 0 %g", -AY_HALFPI);
+      scew_element_add_attr_pair(htransform_element, "rotation",
+				 buffer);
+      transform_element = htransform_element;
+
+      /* write shape */
+      shape_element = scew_element_add(transform_element, "Shape");
+
+      /* write name to shape element */
+      ay_status = x3dio_writename(shape_element, o);
+
+      /* now write the cylinder */
+      cylinder_element = scew_element_add(shape_element, "Cylinder");
+
+      /* cylinder parameters */
+
+      x3dio_writedoubleattrib(cylinder_element, "radius",
+			      &cylinder->radius);
+
+      x3dio_writedoubleattrib(cylinder_element, "height",
+			      &height);
+      if(!cylinder->closed)
+	{
+	  scew_element_add_attr_pair(cylinder_element, "bottom",
+				     "false");
+	  scew_element_add_attr_pair(cylinder_element, "top",
+				     "false");
+	}
+    }
+  else
+    {
+      ay_status = x3dio_writenpconvertibleobj(element, o);
+    }
+
+ return AY_OK;
+} /* x3dio_writecylinderobj */
 
 
 #if 0
@@ -7153,12 +7039,9 @@ X_Init(Tcl_Interp *interp)
   /* fill hash table */
 #if 0
 
-  ay_status = x3dio_registerwritecb((char *)(AY_IDSPHERE),
-				       x3dio_writenpconvertible);
   ay_status = x3dio_registerwritecb((char *)(AY_IDDISK),
 				       x3dio_writenpconvertible);
-  ay_status = x3dio_registerwritecb((char *)(AY_IDCYLINDER),
-				       x3dio_writenpconvertible);
+
   ay_status = x3dio_registerwritecb((char *)(AY_IDCONE),
 				       x3dio_writenpconvertible);
   ay_status = x3dio_registerwritecb((char *)(AY_IDHYPERBOLOID),
@@ -7185,9 +7068,10 @@ X_Init(Tcl_Interp *interp)
 
   ay_status = x3dio_registerwritecb((char *)(AY_IDBOX),
 				       x3dio_writeboxobj);
-
   ay_status = x3dio_registerwritecb((char *)(AY_IDSPHERE),
 				       x3dio_writesphereobj);
+  ay_status = x3dio_registerwritecb((char *)(AY_IDCYLINDER),
+				       x3dio_writecylinderobj);
 
   ay_status = x3dio_registerwritecb((char *)(AY_IDNCURVE),
 				       x3dio_writencurveobj);
