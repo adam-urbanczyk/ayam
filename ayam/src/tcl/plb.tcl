@@ -284,8 +284,8 @@ if { ($tcl_platform(platform) == "windows") } {
     # bind
 
     bind all <MouseWheel> {
-	if { [focus] != ".fl.con.console" &&\
-		[winfo toplevel [focus]] == "." } {
+	if { ([focus] != "") && ([focus] != ".fl.con.console") &&\
+		 ([winfo toplevel [focus]] == ".") } {
 	    global ay
 	    if { %D < 0.0 } {
 		$ay(pca) yview scroll 1 pages
@@ -313,8 +313,8 @@ if { $AYWITHAQUA } {
     # bind
 
     bind all <MouseWheel> {
-	if { [focus] != ".fl.con.console" &&\
-		[winfo toplevel [focus]] == "." } {
+	if { ([focus] != "") && ([focus] != ".fl.con.console") &&\
+		 ([winfo toplevel [focus]] == ".") } {
 	    global ay
 	    if { %D < 0.0 } {
 		$ay(pca) yview scroll 3 units
