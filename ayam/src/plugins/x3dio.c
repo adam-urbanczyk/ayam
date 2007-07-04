@@ -6623,12 +6623,12 @@ int
 x3dio_writecylinderobj(scew_element *element, ay_object *o)
 {
  int ay_status = AY_OK;
- ay_cylinder_object *cylinder;
- double height = 0.0;
- scew_element *transform_element = NULL, *htransform_element = NULL;
+ ay_object *t = NULL;
+ ay_cylinder_object *cylinder = NULL;
+ double xaxis[3] = {1.0, 0.0, 0.0}, quat[4] = {0}, height = 0.0;
+ scew_element *transform_element = NULL;
  scew_element *shape_element = NULL;
  scew_element *cylinder_element = NULL;
- char buffer[256];
 
   if(!element || !o || !o->refine)
     return AY_ENULL;
@@ -6637,24 +6637,24 @@ x3dio_writecylinderobj(scew_element *element, ay_object *o)
 
   if(cylinder->is_simple)
     {
+      ay_status = ay_object_copy(o, &t);
+
+      if(!t)
+	return AY_ERROR;
+
+      cylinder = (ay_cylinder_object *)t->refine;
+
       height = cylinder->zmax-cylinder->zmin;
 
+      /* adjust transformations */
+      t->movy += (cylinder->zmax - cylinder->zmin)/2.0;
+
+      ay_quat_axistoquat(xaxis, -AY_HALFPI, quat);
+
+      ay_quat_add(t->quat, quat, t->quat);
+
       /* write transform */
-      ay_status = x3dio_writetransform(element, o, &transform_element);
-
-
-      htransform_element = scew_element_add(transform_element,
-						"Transform");
-      if( fabs((cylinder->zmax - cylinder->zmin)/2.0) > AY_EPSILON )
-	{
-	  sprintf(buffer, "0.0 %g 0.0", (cylinder->zmax - cylinder->zmin)/2.0);
-	  scew_element_add_attr_pair(htransform_element, "translation",
-				     buffer);
-	}
-      sprintf(buffer, "1 0 0 %g", -AY_HALFPI);
-      scew_element_add_attr_pair(htransform_element, "rotation",
-				 buffer);
-      transform_element = htransform_element;
+      ay_status = x3dio_writetransform(element, t, &transform_element);
 
       /* write shape */
       shape_element = scew_element_add(transform_element, "Shape");
@@ -6679,6 +6679,7 @@ x3dio_writecylinderobj(scew_element *element, ay_object *o)
 	  scew_element_add_attr_pair(cylinder_element, "top",
 				     "false");
 	}
+      ay_object_delete(t);
     }
   else
     {
@@ -6687,6 +6688,76 @@ x3dio_writecylinderobj(scew_element *element, ay_object *o)
 
  return AY_OK;
 } /* x3dio_writecylinderobj */
+
+
+/* x3dio_writeconeobj:
+ *
+ */
+int
+x3dio_writeconeobj(scew_element *element, ay_object *o)
+{
+ int ay_status = AY_OK;
+ ay_object *t = NULL;
+ ay_cone_object *cone = NULL;
+ double xaxis[3] = {1.0, 0.0, 0.0}, quat[4] = {0}, height = 0.0;
+ scew_element *transform_element = NULL;
+ scew_element *shape_element = NULL;
+ scew_element *cone_element = NULL;
+
+  if(!element || !o || !o->refine)
+    return AY_ENULL;
+
+  cone = (ay_cone_object *)o->refine;
+
+  if(cone->is_simple)
+    {
+      ay_status = ay_object_copy(o, &t);
+
+      if(!t)
+	return AY_ERROR;
+
+      cone = (ay_cone_object *)t->refine;
+
+      /* adjust transformations */
+      t->movy += cone->height/2.0;
+
+      ay_quat_axistoquat(xaxis, -AY_HALFPI, quat);
+
+      ay_quat_add(t->quat, quat, t->quat);
+
+      /* write transform */
+      ay_status = x3dio_writetransform(element, t, &transform_element);
+
+      /* write shape */
+      shape_element = scew_element_add(transform_element, "Shape");
+
+      /* write name to shape element */
+      ay_status = x3dio_writename(shape_element, o);
+
+      /* now write the cone */
+      cone_element = scew_element_add(shape_element, "Cone");
+
+      /* cone parameters */
+      x3dio_writedoubleattrib(cone_element, "bottomRadius",
+			      &cone->radius);
+
+      x3dio_writedoubleattrib(cone_element, "height",
+			      &height);
+      if(!cone->closed)
+	{
+	  scew_element_add_attr_pair(cone_element, "bottom",
+				     "false");
+
+	}
+      ay_object_delete(t);
+    }
+  else
+    {
+      ay_status = x3dio_writenpconvertibleobj(element, o);
+    }
+
+ return AY_OK;
+} /* x3dio_writeconeobj */
 
 
 #if 0
@@ -7044,12 +7115,6 @@ X_Init(Tcl_Interp *interp)
 
   ay_status = x3dio_registerwritecb((char *)(AY_IDCONE),
 				       x3dio_writenpconvertible);
-  ay_status = x3dio_registerwritecb((char *)(AY_IDHYPERBOLOID),
-				       x3dio_writenpconvertible);
-  ay_status = x3dio_registerwritecb((char *)(AY_IDPARABOLOID),
-				       x3dio_writenpconvertible);
-  ay_status = x3dio_registerwritecb((char *)(AY_IDTORUS),
-				       x3dio_writenpconvertible);
 
   ay_status = x3dio_registerwritecb((char *)(AY_IDPOMESH),
 				       x3dio_writepomesh);
@@ -7072,6 +7137,8 @@ X_Init(Tcl_Interp *interp)
 				       x3dio_writesphereobj);
   ay_status = x3dio_registerwritecb((char *)(AY_IDCYLINDER),
 				       x3dio_writecylinderobj);
+  ay_status = x3dio_registerwritecb((char *)(AY_IDCONE),
+				       x3dio_writeconeobj);
 
   ay_status = x3dio_registerwritecb((char *)(AY_IDNCURVE),
 				       x3dio_writencurveobj);
@@ -7087,6 +7154,15 @@ X_Init(Tcl_Interp *interp)
 
   ay_status = x3dio_registerwritecb((char *)(AY_IDNPATCH),
 				       x3dio_writenpatchobj);
+
+
+  ay_status = x3dio_registerwritecb((char *)(AY_IDHYPERBOLOID),
+				       x3dio_writenpconvertibleobj);
+  ay_status = x3dio_registerwritecb((char *)(AY_IDPARABOLOID),
+				       x3dio_writenpconvertibleobj);
+  ay_status = x3dio_registerwritecb((char *)(AY_IDTORUS),
+				       x3dio_writenpconvertibleobj);
+
 
   ay_status = x3dio_registerwritecb((char *)(AY_IDEXTRUDE),
 				       x3dio_writenpconvertibleobj);
