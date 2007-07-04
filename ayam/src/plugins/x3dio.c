@@ -6626,9 +6626,10 @@ x3dio_writecylinderobj(scew_element *element, ay_object *o)
  ay_object *t = NULL;
  ay_cylinder_object *cylinder = NULL;
  double xaxis[3] = {1.0, 0.0, 0.0}, quat[4] = {0}, height = 0.0;
- scew_element *transform_element = NULL;
+ scew_element *transform_element = NULL, *itransform_element = NULL;
  scew_element *shape_element = NULL;
  scew_element *cylinder_element = NULL;
+ char buffer[256];
 
   if(!element || !o || !o->refine)
     return AY_ENULL;
@@ -6649,8 +6650,6 @@ x3dio_writecylinderobj(scew_element *element, ay_object *o)
       height = cylinder->zmax-cylinder->zmin;
 
       /* adjust transformations */
-      t->movy += (cylinder->zmax - cylinder->zmin)/2.0;
-
       ay_quat_axistoquat(xaxis, -AY_HALFPI, quat);
 
       ay_quat_add(t->quat, quat, t->quat);
@@ -6658,8 +6657,14 @@ x3dio_writecylinderobj(scew_element *element, ay_object *o)
       /* write transform */
       ay_status = x3dio_writetransform(element, t, &transform_element);
 
+      itransform_element = scew_element_add(transform_element, "Transform");
+      sprintf(buffer, "0.0 %g 0.0",
+	      cylinder->zmin+((cylinder->zmax - cylinder->zmin)/2.0));
+      scew_element_add_attr_pair(itransform_element, "translation",
+				 buffer);
+
       /* write shape */
-      shape_element = scew_element_add(transform_element, "Shape");
+      shape_element = scew_element_add(itransform_element, "Shape");
 
       /* write name to shape element */
       ay_status = x3dio_writename(shape_element, o);
@@ -6701,10 +6706,11 @@ x3dio_writeconeobj(scew_element *element, ay_object *o)
  int ay_status = AY_OK;
  ay_object *t = NULL;
  ay_cone_object *cone = NULL;
- double xaxis[3] = {1.0, 0.0, 0.0}, quat[4] = {0}, height = 0.0;
- scew_element *transform_element = NULL;
+ double xaxis[3] = {1.0, 0.0, 0.0}, quat[4] = {0};
+ scew_element *transform_element = NULL, *itransform_element = NULL;
  scew_element *shape_element = NULL;
  scew_element *cone_element = NULL;
+ char buffer[256];
 
   if(!element || !o || !o->refine)
     return AY_ENULL;
@@ -6723,17 +6729,20 @@ x3dio_writeconeobj(scew_element *element, ay_object *o)
       cone = (ay_cone_object *)t->refine;
 
       /* adjust transformations */
-      t->movy += cone->height/2.0;
-
-      ay_quat_axistoquat(xaxis, -AY_HALFPI, quat);
+      ay_quat_axistoquat(xaxis, AY_HALFPI, quat);
 
       ay_quat_add(t->quat, quat, t->quat);
 
       /* write transform */
       ay_status = x3dio_writetransform(element, t, &transform_element);
 
+      itransform_element = scew_element_add(transform_element, "Transform");
+      sprintf(buffer, "0.0 %g 0.0", cone->height/2.0);
+      scew_element_add_attr_pair(itransform_element, "translation",
+				 buffer);
+
       /* write shape */
-      shape_element = scew_element_add(transform_element, "Shape");
+      shape_element = scew_element_add(itransform_element, "Shape");
 
       /* write name to shape element */
       ay_status = x3dio_writename(shape_element, o);
@@ -6746,7 +6755,7 @@ x3dio_writeconeobj(scew_element *element, ay_object *o)
 			      &cone->radius);
 
       x3dio_writedoubleattrib(cone_element, "height",
-			      &height);
+			      &cone->height);
       if(!cone->closed)
 	{
 	  scew_element_add_attr_pair(cone_element, "bottom",
