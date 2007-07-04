@@ -6640,7 +6640,9 @@ x3dio_writecylinderobj(scew_element *element, ay_object *o)
       ay_status = ay_object_copy(o, &t);
 
       if(!t)
-	return AY_ERROR;
+	{
+	  return AY_ERROR;
+	}
 
       cylinder = (ay_cylinder_object *)t->refine;
 
@@ -6714,7 +6716,9 @@ x3dio_writeconeobj(scew_element *element, ay_object *o)
       ay_status = ay_object_copy(o, &t);
 
       if(!t)
-	return AY_ERROR;
+	{
+	  return AY_ERROR;
+	}
 
       cone = (ay_cone_object *)t->refine;
 
@@ -6747,7 +6751,6 @@ x3dio_writeconeobj(scew_element *element, ay_object *o)
 	{
 	  scew_element_add_attr_pair(cone_element, "bottom",
 				     "false");
-
 	}
       ay_object_delete(t);
     }
@@ -7110,12 +7113,6 @@ X_Init(Tcl_Interp *interp)
   /* fill hash table */
 #if 0
 
-  ay_status = x3dio_registerwritecb((char *)(AY_IDDISK),
-				       x3dio_writenpconvertible);
-
-  ay_status = x3dio_registerwritecb((char *)(AY_IDCONE),
-				       x3dio_writenpconvertible);
-
   ay_status = x3dio_registerwritecb((char *)(AY_IDPOMESH),
 				       x3dio_writepomesh);
 
@@ -7156,6 +7153,9 @@ X_Init(Tcl_Interp *interp)
 				       x3dio_writenpatchobj);
 
 
+
+  ay_status = x3dio_registerwritecb((char *)(AY_IDDISK),
+				       x3dio_writenpconvertibleobj);
   ay_status = x3dio_registerwritecb((char *)(AY_IDHYPERBOLOID),
 				       x3dio_writenpconvertibleobj);
   ay_status = x3dio_registerwritecb((char *)(AY_IDPARABOLOID),
