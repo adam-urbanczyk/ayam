@@ -6480,23 +6480,20 @@ x3dio_writepomeshobj(scew_element *element, ay_object *o)
  ay_object *to = NULL;
  ay_list_object *li = NULL, **nextli = NULL, *lihead = NULL;
  ay_pomesh_object *po;
- double v[3];
- int stride;
+ unsigned int stride;
  unsigned int i, j, k, p = 0, q = 0, r = 0;
- /*
  int have_mys = AY_FALSE, have_myt = AY_FALSE;
  unsigned int myslen = 0, mytlen = 0, mystlen = 0;
  double *mysarr = NULL, *mytarr = NULL, *mystarr = NULL;
- */
  ay_tag mystag = {NULL, 0, NULL};
  ay_tag myttag = {NULL, 0, NULL};
  ay_tag *tag;
-
  scew_element *transform_element = NULL;
  scew_element *shape_element = NULL;
  scew_element *ifs_element = NULL;
  scew_element *coord_element = NULL;
  scew_element *normal_element = NULL;
+ scew_element *texcoord_element = NULL;
  char buf[256];
  char *attr = NULL, *tmp;
  size_t buflen = 0, totalbuflen = 0;
@@ -6520,17 +6517,16 @@ x3dio_writepomeshobj(scew_element *element, ay_object *o)
   /* write name to shape element */
   ay_status = x3dio_writename(shape_element, o);
 
-  /* now write the cone */
+  /* now write the IndexedFaceSet element */
   ifs_element = scew_element_add(shape_element, "IndexedFaceSet");
 
-#if 0
-  /* write texture coordinates from potentially present PV tags */
+  /* decode potentially present PV tags */
   if(o->tags)
     {
       if(!(mystag.val = calloc(strlen(x3dio_stagname)+2,sizeof(char))))
-	return AY_EOMEM;
+	{ ay_status = AY_EOMEM; goto cleanup; }
       if(!(myttag.val = calloc(strlen(x3dio_ttagname)+2,sizeof(char))))
-	return AY_EOMEM;
+	{ ay_status = AY_EOMEM; goto cleanup; }
       strcpy(mystag.val, x3dio_stagname);
       mystag.val[strlen(x3dio_stagname)] = ',';
       strcpy(myttag.val, x3dio_ttagname);
@@ -6556,47 +6552,6 @@ x3dio_writepomeshobj(scew_element *element, ay_object *o)
       free(myttag.val);
     } /* if */
 
-  /* merge and write the texture vertices */
-  if(have_mys)
-    mystlen = 2*myslen;
-  else
-    if(have_myt)
-      mystlen = 2*mytlen;
-
-  if(mystlen > 0)
-    {
-      if(!(mystarr = calloc(mystlen, sizeof(double))))
-	{
-	  if(v)
-	    free(v);
-	  if(mysarr)
-	    free(mysarr);
-	  if(mytarr)
-	    free(mytarr);
-	  return AY_EOMEM;
-	} /* if */
-
-      j = 0;
-      for(i = 0; i < mystlen; i++)
-	{
-	  if(have_mys)
-	    mystarr[j]   = mysarr[i];
-	  if(have_myt)
-	    mystarr[j+1] = mytarr[i];
-	  j += 2;
-	} /* for */
-
-      x3dio_writetvertices(fileptr, mystlen, 2, mystarr);
-
-      if(mysarr)
-	free(mysarr);
-      if(mytarr)
-	free(mytarr);
-      free(mystarr);
-      mystarr = NULL;
-    } /* if */
-#endif /* 0 */
-
   /* write faces */
   for(i = 0; i < po->npolys; i++)
     {
@@ -6619,10 +6574,7 @@ x3dio_writepomeshobj(scew_element *element, ay_object *o)
 		      tmp = NULL;
 		      if(!(tmp = realloc(attr,
 					 (totalbuflen+buflen+1)*sizeof(char))))
-			{
-			  free(attr);
-			  return AY_EOMEM;
-			}
+			{ ay_status = AY_EOMEM; goto cleanup; }
 		      attr = tmp;
 		      memcpy(&(attr[totalbuflen]), buf,
 			     buflen*sizeof(char));
@@ -6631,10 +6583,7 @@ x3dio_writepomeshobj(scew_element *element, ay_object *o)
 		    } /* for */
 
 		  if(!(tmp = realloc(attr, (totalbuflen+4)*sizeof(char))))
-		    {
-		      free(attr);
-		      return AY_EOMEM;
-		    }
+		    { ay_status = AY_EOMEM; goto cleanup; }
 		  attr = tmp;
 		  memcpy(&(attr[totalbuflen]), " -1", 3*sizeof(char));
 		  totalbuflen += 3;
@@ -6646,10 +6595,10 @@ x3dio_writepomeshobj(scew_element *element, ay_object *o)
 		  /* create new object (for the tesselated face) */
 		  li = NULL;
 		  if(!(li = calloc(1, sizeof(ay_list_object))))
-		    return AY_EOMEM;
+		    { ay_status = AY_EOMEM; goto cleanup; }
 		  to = NULL;
 		  if(!(to = calloc(1, sizeof(ay_object))))
-		    return AY_EOMEM;
+		    { ay_status = AY_EOMEM; goto cleanup; }
 		  li->object = to;
 
 		  ay_object_defaults(to);
@@ -6686,10 +6635,12 @@ x3dio_writepomeshobj(scew_element *element, ay_object *o)
 	  /* create new object (for the tesselated face) */
 	  li = NULL;
 	  if(!(li = calloc(1, sizeof(ay_list_object))))
-	    return AY_EOMEM;
+	    { ay_status = AY_EOMEM; goto cleanup; }
+
 	  to = NULL;
 	  if(!(to = calloc(1, sizeof(ay_object))))
-	    return AY_EOMEM;
+	    { ay_status = AY_EOMEM; goto cleanup; }
+
 	  li->object = to;
 
 	  ay_object_defaults(to);
@@ -6723,36 +6674,68 @@ x3dio_writepomeshobj(scew_element *element, ay_object *o)
       p++;
     } /* for */
 
-  scew_element_add_attr_pair(ifs_element, "coordIndex",
-			     attr);
-
-  if(po->has_normals)
+  if(attr)
     {
-      /* also write the normal index */
-      scew_element_add_attr_pair(ifs_element, "normalIndex",
-				 attr);
-      scew_element_add_attr_pair(ifs_element, "normalPerVertex",
-				 "true");
+      scew_element_add_attr_pair(ifs_element, "coordIndex", attr);
+
+      if(po->has_normals)
+	{
+	  /* also write the normal index */
+	  scew_element_add_attr_pair(ifs_element, "normalPerVertex", "true");
+	  scew_element_add_attr_pair(ifs_element, "normalIndex", attr);
+	} /* if */
+
+      /* write control points */
+      if(po->has_normals)
+	stride = 6;
+      else
+	stride = 3;
+
+      coord_element = scew_element_add(ifs_element, "Coordinate");
+      x3dio_writedoublepoints(coord_element, "point", 3, po->ncontrols,
+			      stride, po->controlv);
+
+      /* write normals */
+      if(po->has_normals)
+	{
+	  normal_element = scew_element_add(ifs_element, "Normal");
+	  x3dio_writedoublepoints(normal_element, "point", 3, po->ncontrols,
+				  6, &(po->controlv[3]));
+	}
+
+      /* write texture coordinates */
+      if(have_mys)
+	mystlen = 2*myslen;
+      else
+	if(have_myt)
+	  mystlen = 2*mytlen;
+
+      if(mystlen > 0)
+	{
+	  if(!(mystarr = calloc(mystlen, sizeof(double))))
+	    {
+	      ay_status = AY_EOMEM;
+	      goto cleanup;
+	    } /* if */
+
+	  j = 0;
+	  for(i = 0; i < mystlen; i++)
+	    {
+	      if(have_mys)
+		mystarr[j]   = mysarr[i];
+	      if(have_myt)
+		mystarr[j+1] = mytarr[i];
+	      j += 2;
+	    } /* for */
+
+	  scew_element_add_attr_pair(ifs_element, "texCoordIndex", attr);
+	  texcoord_element = scew_element_add(ifs_element, "TextureCoordinate");
+	  x3dio_writedoublepoints(texcoord_element, "point", 2, po->ncontrols,
+				  2, mystarr);
+
+	} /* if */
+
     } /* if */
-
-  /* write control points */
-  if(po->has_normals)
-    stride = 6;
-  else
-    stride = 3;
-
-  coord_element = scew_element_add(ifs_element, "Coordinate");
-  x3dio_writedoublepoints(coord_element, "point", 3, po->ncontrols,
-			  stride, po->controlv);
-
-  /* write normals */
-  if(po->has_normals)
-    {
-      normal_element = scew_element_add(ifs_element, "Normal");
-      x3dio_writedoublepoints(normal_element, "point", 3, po->ncontrols,
-			      6, &(po->controlv[3]));
-    }
-
 
   /* write tesselated face(s) */
   if(lihead && lihead->next)
@@ -6772,9 +6755,14 @@ x3dio_writepomeshobj(scew_element *element, ay_object *o)
   else
     {
       if(lihead)
-	x3dio_writepomeshobj(element, lihead->object);
+	{
+	  x3dio_writepomeshobj(element, lihead->object);
+	}
     } /* if */
 
+  /* cleanup */
+
+cleanup:
   while(lihead)
     {
       ay_object_delete(lihead->object);
@@ -6783,7 +6771,17 @@ x3dio_writepomeshobj(scew_element *element, ay_object *o)
       lihead = li;
     } /* while */
 
- return AY_OK;
+  if(mysarr)
+    free(mysarr);
+  if(mytarr)
+    free(mytarr);
+  if(mystarr)
+    free(mystarr);
+
+  if(attr)
+    free(attr);
+
+ return ay_status;
 } /* x3dio_writepomeshobj */
 
 
