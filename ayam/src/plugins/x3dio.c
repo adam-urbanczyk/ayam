@@ -5638,308 +5638,6 @@ x3dio_writenpatch(scew_element *element, ay_object *o)
 } /* x3dio_writenpatch */
 
 
-
-/* x3dio_writepomesh:
- *
- */
-int
-x3dio_writepomesh(scew_element *element, ay_object *o)
-{
- int ay_status = AY_OK;
- /*char fname[] = "x3dio_writepomesh";*/
- ay_object *to = NULL;
- ay_list_object *li = NULL, **nextli = NULL, *lihead = NULL;
- ay_pomesh_object *po;
- double v[3], *p1;
- int stride;
- unsigned int i, j, k, p = 0, q = 0, r = 0;
- int have_mys = AY_FALSE, have_myt = AY_FALSE;
- unsigned int myslen = 0, mytlen = 0, mystlen = 0;
- double *mysarr = NULL, *mytarr = NULL, *mystarr = NULL;
- ay_tag mystag = {NULL, 0, NULL};
- ay_tag myttag = {NULL, 0, NULL};
- ay_tag *tag;
-
-  if(!o)
-   return AY_ENULL;
-
-  mystag.type = ay_pv_tagtype;
-  mystag.name = x3dio_stagname;
-  myttag.type = ay_pv_tagtype;
-  myttag.name = x3dio_ttagname;
-
-  po = (ay_pomesh_object *)o->refine;
-
-  if(po->has_normals)
-    stride = 6;
-  else
-    stride = 3;
-
-  /* get all vertices, transform them to world space and write them */
-  p1 = po->controlv;
-  for(i = 0; i < po->ncontrols; i++)
-    {
-      AY_APTRAN3(v,p1,m)
-      fprintf(fileptr, "v %g %g %g\n", v[0], v[1], v[2]);
-      p1 += stride;
-    }
-
-  /* write normals */
-  if(po->has_normals)
-    {
-      p1 = &(po->controlv[3]);
-      for(i = 0; i < po->ncontrols; i++)
-	{
-	  fprintf(fileptr, "vn %g %g %g\n", p1[0], p1[1], p1[2]);
-	  p1 += 6;
-	}
-    }
-
-  /* write texture coordinates from potentially present PV tags */
-  if(o->tags)
-    {
-      if(!(mystag.val = calloc(strlen(x3dio_stagname)+2,sizeof(char))))
-	return AY_EOMEM;
-      if(!(myttag.val = calloc(strlen(x3dio_ttagname)+2,sizeof(char))))
-	return AY_EOMEM;
-      strcpy(mystag.val, x3dio_stagname);
-      mystag.val[strlen(x3dio_stagname)] = ',';
-      strcpy(myttag.val, x3dio_ttagname);
-      myttag.val[strlen(x3dio_ttagname)] = ',';
-      tag = o->tags;
-      while(tag)
-	{
-	  if((tag->type == ay_pv_tagtype) && ay_pv_cmpname(tag, &mystag))
-	    {
-	      have_mys = AY_TRUE;
-
-	      ay_status = ay_pv_convert(tag, &myslen, (void**)&mysarr);
-	    }
-	  if((tag->type == ay_pv_tagtype) && ay_pv_cmpname(tag, &myttag))
-	    {
-	      have_myt = AY_TRUE;
-
-	      ay_status = ay_pv_convert(tag, &mytlen, (void**)&mytarr);
-	    }
-	  tag = tag->next;
-	} /* while */
-      free(mystag.val);
-      free(myttag.val);
-    } /* if */
-
-  /* merge and write the texture vertices */
-  if(have_mys)
-    mystlen = 2*myslen;
-  else
-    if(have_myt)
-      mystlen = 2*mytlen;
-
-  if(mystlen > 0)
-    {
-      if(!(mystarr = calloc(mystlen, sizeof(double))))
-	{
-	  if(v)
-	    free(v);
-	  if(mysarr)
-	    free(mysarr);
-	  if(mytarr)
-	    free(mytarr);
-	  return AY_EOMEM;
-	} /* if */
-
-      j = 0;
-      for(i = 0; i < mystlen; i++)
-	{
-	  if(have_mys)
-	    mystarr[j]   = mysarr[i];
-	  if(have_myt)
-	    mystarr[j+1] = mytarr[i];
-	  j += 2;
-	} /* for */
-
-      x3dio_writetvertices(fileptr, mystlen, 2, mystarr);
-
-      if(mysarr)
-	free(mysarr);
-      if(mytarr)
-	free(mytarr);
-      free(mystarr);
-      mystarr = NULL;
-    } /* if */
-
-  /* write faces */
-  for(i = 0; i < po->npolys; i++)
-    {
-      if(po->nloops[i] == 1)
-	{
-	  /* this face has just one loop (no hole) */
-
-	  /* XXXX this "for" unneeded? */
-	  for(j = 0; j < po->nloops[p]; j++)
-	    {
-	      if(!x3dio_tesspomesh ||
-		 (x3dio_tesspomesh && (po->nverts[q] == 3)))
-		{
-		  /* this is a triangle */
-		  fprintf(fileptr, "f");
-
-		  if(po->has_normals)
-		    {
-		      for(k = 0; k < po->nverts[q]; k++)
-			{
-			  if(have_mys || have_myt)
-			    {
-			      fprintf(fileptr, " -%d/-%d/-%d",
-				      po->ncontrols-po->verts[r],
-				      po->ncontrols-po->verts[r],
-				      po->ncontrols-po->verts[r]);
-			    }
-			  else
-			    {
-			      fprintf(fileptr, " -%d//-%d",
-				      po->ncontrols-po->verts[r],
-				      po->ncontrols-po->verts[r]);
-			    }
-			  r++;
-			} /* for */
-		    }
-		  else
-		    {
-		      for(k = 0; k < po->nverts[q]; k++)
-			{
-			  if(have_mys || have_myt)
-			    {
-			      fprintf(fileptr, " -%d/-%d",
-				      po->ncontrols-po->verts[r],
-				      po->ncontrols-po->verts[r]);
-			    }
-			  else
-			    {
-			      fprintf(fileptr, " -%d",
-				      po->ncontrols-po->verts[r]);
-			    }
-			  r++;
-			} /* for */
-		    } /* if */
-
-		  fprintf(fileptr, "\n");
-		}
-	      else
-		{
-		  /* this is not a triangle => tesselate it */
-
-		  /* create new object (for the tesselated face) */
-		  li = NULL;
-		  if(!(li = calloc(1, sizeof(ay_list_object))))
-		    return AY_EOMEM;
-		  to = NULL;
-		  if(!(to = calloc(1, sizeof(ay_object))))
-		    return AY_EOMEM;
-		  li->object = to;
-
-		  ay_object_defaults(to);
-
-		  to->type = AY_IDPOMESH;
-
-		  ay_status = ay_tess_pomeshf(po, i, q, r, AY_FALSE,
-					  (ay_pomesh_object **)&(to->refine));
-
-		  /* temporarily save the tesselated face */
-		  if(nextli)
-		    {
-		      *nextli = li;
-		    }
-		  else
-		    {
-		      lihead = li;
-		    }
-		  nextli = &(li->next);
-
-		  /* advance index r */
-		  for(k = 0; k < po->nverts[q]; k++)
-		    {
-		      r++;
-		    }
-		} /* if */
-	      q++;
-	    } /* for */
-	}
-      else
-	{
-	  /* this face has more than one loop (hole(s)) => tesselate it */
-
-	  /* create new object (for the tesselated face) */
-	  li = NULL;
-	  if(!(li = calloc(1, sizeof(ay_list_object))))
-	    return AY_EOMEM;
-	  to = NULL;
-	  if(!(to = calloc(1, sizeof(ay_object))))
-	    return AY_EOMEM;
-	  li->object = to;
-
-	  ay_object_defaults(to);
-
-	  to->type = AY_IDPOMESH;
-
-	  ay_status = ay_tess_pomeshf(po, i, q, r, AY_FALSE,
-				      (ay_pomesh_object **)&(to->refine));
-
-	  /* temporarily save the tesselated face */
-	  if(nextli)
-	    {
-	      *nextli = li;
-	    }
-	  else
-	    {
-	      lihead = li;
-	    }
-	  nextli = &(li->next);
-
-	  /* advance indices r and q */
-	  for(j = 0; j < po->nloops[p]; j++)
-	    {
-	      for(k = 0; k < po->nverts[q]; k++)
-		{
-		  r++;
-		}
-	      q++;
-	    } /* for */
-	} /* if */
-      p++;
-    } /* for */
-
-  /* write tesselated face(s) */
-  if(lihead && lihead->next)
-    {
-      to = NULL;
-      ay_status = ay_pomesht_merge(AY_FALSE, lihead, &to);
-      if(to)
-	{
-	  ay_status = ay_pomesht_optimizecoords(to->refine, AY_FALSE);
-	  ay_object_defaults(to);
-	  to->type = AY_IDPOMESH;
-	  /*ay_trafo_copy(o, to);*/
-	  x3dio_writepomesh(fileptr, to, m);
-	  ay_object_delete(to);
-	}
-    }
-  else
-    {
-      if(lihead)
-	x3dio_writepomesh(fileptr, lihead->object, m);
-    } /* if */
-
-  while(lihead)
-    {
-      ay_object_delete(lihead->object);
-      li = lihead->next;
-      free(lihead);
-      lihead = li;
-    } /* while */
-
- return AY_OK;
-} /* x3dio_writepomesh */
-
 #endif /* 0 */
 
 
@@ -6111,13 +5809,12 @@ x3dio_writedoublevecattrib(scew_element *element, char *name, unsigned int dim,
  */
 int
 x3dio_writedoublepoints(scew_element *element, char *name, unsigned int dim,
-			unsigned int length, double *value)
+			unsigned int length, unsigned int stride, double *value)
 {
  char buf[256];
  char *attr = NULL, *tmp;
  size_t buflen = 0, totalbuflen = 0;
  unsigned int i, a = 0;
- unsigned int stride = 4;
 
   if(!element || !name || !value)
     return AY_ENULL;
@@ -6290,7 +5987,7 @@ x3dio_writencurveobj(scew_element *element, ay_object *o)
     }
 
   coord_element = scew_element_add(curve_element, "Coordinate");
-  x3dio_writedoublepoints(coord_element, "point", 3, c->length, c->controlv);
+  x3dio_writedoublepoints(coord_element, "point", 3, c->length, 4, c->controlv);
 
  return AY_OK;
 } /* x3dio_writencurveobj */
@@ -6377,7 +6074,7 @@ x3dio_writenpatchobj(scew_element *element, ay_object *o)
 
   coord_element = scew_element_add(patch_element, "Coordinate");
   x3dio_writedoublepoints(coord_element, "point", 3, p->width*p->height,
-			  p->controlv);
+			  4, p->controlv);
 
  return AY_OK;
 } /* x3dio_writenpatchobj */
@@ -6772,6 +6469,324 @@ x3dio_writeconeobj(scew_element *element, ay_object *o)
 } /* x3dio_writeconeobj */
 
 
+/* x3dio_writepomeshobj:
+ *
+ */
+int
+x3dio_writepomeshobj(scew_element *element, ay_object *o)
+{
+ int ay_status = AY_OK;
+ /*char fname[] = "x3dio_writepomesh";*/
+ ay_object *to = NULL;
+ ay_list_object *li = NULL, **nextli = NULL, *lihead = NULL;
+ ay_pomesh_object *po;
+ double v[3];
+ int stride;
+ unsigned int i, j, k, p = 0, q = 0, r = 0;
+ /*
+ int have_mys = AY_FALSE, have_myt = AY_FALSE;
+ unsigned int myslen = 0, mytlen = 0, mystlen = 0;
+ double *mysarr = NULL, *mytarr = NULL, *mystarr = NULL;
+ */
+ ay_tag mystag = {NULL, 0, NULL};
+ ay_tag myttag = {NULL, 0, NULL};
+ ay_tag *tag;
+
+ scew_element *transform_element = NULL;
+ scew_element *shape_element = NULL;
+ scew_element *ifs_element = NULL;
+ scew_element *coord_element = NULL;
+ scew_element *normal_element = NULL;
+ char buf[256];
+ char *attr = NULL, *tmp;
+ size_t buflen = 0, totalbuflen = 0;
+
+  if(!element || !o)
+   return AY_ENULL;
+
+  mystag.type = ay_pv_tagtype;
+  mystag.name = x3dio_stagname;
+  myttag.type = ay_pv_tagtype;
+  myttag.name = x3dio_ttagname;
+
+  po = (ay_pomesh_object *)o->refine;
+
+  /* write transform */
+  ay_status = x3dio_writetransform(element, o, &transform_element);
+
+  /* write shape */
+  shape_element = scew_element_add(transform_element, "Shape");
+
+  /* write name to shape element */
+  ay_status = x3dio_writename(shape_element, o);
+
+  /* now write the cone */
+  ifs_element = scew_element_add(shape_element, "IndexedFaceSet");
+
+#if 0
+  /* write texture coordinates from potentially present PV tags */
+  if(o->tags)
+    {
+      if(!(mystag.val = calloc(strlen(x3dio_stagname)+2,sizeof(char))))
+	return AY_EOMEM;
+      if(!(myttag.val = calloc(strlen(x3dio_ttagname)+2,sizeof(char))))
+	return AY_EOMEM;
+      strcpy(mystag.val, x3dio_stagname);
+      mystag.val[strlen(x3dio_stagname)] = ',';
+      strcpy(myttag.val, x3dio_ttagname);
+      myttag.val[strlen(x3dio_ttagname)] = ',';
+      tag = o->tags;
+      while(tag)
+	{
+	  if((tag->type == ay_pv_tagtype) && ay_pv_cmpname(tag, &mystag))
+	    {
+	      have_mys = AY_TRUE;
+
+	      ay_status = ay_pv_convert(tag, &myslen, (void**)&mysarr);
+	    }
+	  if((tag->type == ay_pv_tagtype) && ay_pv_cmpname(tag, &myttag))
+	    {
+	      have_myt = AY_TRUE;
+
+	      ay_status = ay_pv_convert(tag, &mytlen, (void**)&mytarr);
+	    }
+	  tag = tag->next;
+	} /* while */
+      free(mystag.val);
+      free(myttag.val);
+    } /* if */
+
+  /* merge and write the texture vertices */
+  if(have_mys)
+    mystlen = 2*myslen;
+  else
+    if(have_myt)
+      mystlen = 2*mytlen;
+
+  if(mystlen > 0)
+    {
+      if(!(mystarr = calloc(mystlen, sizeof(double))))
+	{
+	  if(v)
+	    free(v);
+	  if(mysarr)
+	    free(mysarr);
+	  if(mytarr)
+	    free(mytarr);
+	  return AY_EOMEM;
+	} /* if */
+
+      j = 0;
+      for(i = 0; i < mystlen; i++)
+	{
+	  if(have_mys)
+	    mystarr[j]   = mysarr[i];
+	  if(have_myt)
+	    mystarr[j+1] = mytarr[i];
+	  j += 2;
+	} /* for */
+
+      x3dio_writetvertices(fileptr, mystlen, 2, mystarr);
+
+      if(mysarr)
+	free(mysarr);
+      if(mytarr)
+	free(mytarr);
+      free(mystarr);
+      mystarr = NULL;
+    } /* if */
+#endif /* 0 */
+
+  /* write faces */
+  for(i = 0; i < po->npolys; i++)
+    {
+      if(po->nloops[i] == 1)
+	{
+	  /* this face has just one loop (no hole) */
+
+	  /* XXXX this "for" unneeded? */
+	  for(j = 0; j < po->nloops[p]; j++)
+	    {
+	      if(!x3dio_tesspomesh ||
+		 (x3dio_tesspomesh && (po->nverts[q] == 3)))
+		{
+
+		  for(k = 0; k < po->nverts[q]; k++)
+		    {
+		      sprintf(buf, " %d", po->verts[r]);
+		      buflen = strlen(buf);
+
+		      tmp = NULL;
+		      if(!(tmp = realloc(attr,
+					 (totalbuflen+buflen+1)*sizeof(char))))
+			{
+			  free(attr);
+			  return AY_EOMEM;
+			}
+		      attr = tmp;
+		      memcpy(&(attr[totalbuflen]), buf,
+			     buflen*sizeof(char));
+		      totalbuflen += buflen;
+		      r++;
+		    } /* for */
+
+		  if(!(tmp = realloc(attr, (totalbuflen+4)*sizeof(char))))
+		    {
+		      free(attr);
+		      return AY_EOMEM;
+		    }
+		  attr = tmp;
+		  memcpy(&(attr[totalbuflen]), " -1", 3*sizeof(char));
+		  totalbuflen += 3;
+		}
+	      else
+		{
+		  /* user requested triangles only => tesselate it */
+
+		  /* create new object (for the tesselated face) */
+		  li = NULL;
+		  if(!(li = calloc(1, sizeof(ay_list_object))))
+		    return AY_EOMEM;
+		  to = NULL;
+		  if(!(to = calloc(1, sizeof(ay_object))))
+		    return AY_EOMEM;
+		  li->object = to;
+
+		  ay_object_defaults(to);
+
+		  to->type = AY_IDPOMESH;
+
+		  ay_status = ay_tess_pomeshf(po, i, q, r, AY_FALSE,
+					  (ay_pomesh_object **)&(to->refine));
+
+		  /* temporarily save the tesselated face */
+		  if(nextli)
+		    {
+		      *nextli = li;
+		    }
+		  else
+		    {
+		      lihead = li;
+		    }
+		  nextli = &(li->next);
+
+		  /* advance index r */
+		  for(k = 0; k < po->nverts[q]; k++)
+		    {
+		      r++;
+		    }
+		} /* if */
+	      q++;
+	    } /* for */
+	}
+      else
+	{
+	  /* this face has more than one loop (hole(s)) => tesselate it */
+
+	  /* create new object (for the tesselated face) */
+	  li = NULL;
+	  if(!(li = calloc(1, sizeof(ay_list_object))))
+	    return AY_EOMEM;
+	  to = NULL;
+	  if(!(to = calloc(1, sizeof(ay_object))))
+	    return AY_EOMEM;
+	  li->object = to;
+
+	  ay_object_defaults(to);
+
+	  to->type = AY_IDPOMESH;
+
+	  ay_status = ay_tess_pomeshf(po, i, q, r, AY_FALSE,
+				      (ay_pomesh_object **)&(to->refine));
+
+	  /* temporarily save the tesselated face */
+	  if(nextli)
+	    {
+	      *nextli = li;
+	    }
+	  else
+	    {
+	      lihead = li;
+	    }
+	  nextli = &(li->next);
+
+	  /* advance indices r and q */
+	  for(j = 0; j < po->nloops[p]; j++)
+	    {
+	      for(k = 0; k < po->nverts[q]; k++)
+		{
+		  r++;
+		}
+	      q++;
+	    } /* for */
+	} /* if */
+      p++;
+    } /* for */
+
+  scew_element_add_attr_pair(ifs_element, "coordIndex",
+			     attr);
+
+  if(po->has_normals)
+    {
+      /* also write the normal index */
+      scew_element_add_attr_pair(ifs_element, "normalIndex",
+				 attr);
+      scew_element_add_attr_pair(ifs_element, "normalPerVertex",
+				 "true");
+    } /* if */
+
+  /* write control points */
+  if(po->has_normals)
+    stride = 6;
+  else
+    stride = 3;
+
+  coord_element = scew_element_add(ifs_element, "Coordinate");
+  x3dio_writedoublepoints(coord_element, "point", 3, po->ncontrols,
+			  stride, po->controlv);
+
+  /* write normals */
+  if(po->has_normals)
+    {
+      normal_element = scew_element_add(ifs_element, "Normal");
+      x3dio_writedoublepoints(normal_element, "point", 3, po->ncontrols,
+			      6, &(po->controlv[3]));
+    }
+
+
+  /* write tesselated face(s) */
+  if(lihead && lihead->next)
+    {
+      to = NULL;
+      ay_status = ay_pomesht_merge(AY_FALSE, lihead, &to);
+      if(to)
+	{
+	  ay_status = ay_pomesht_optimizecoords(to->refine, AY_FALSE);
+	  ay_object_defaults(to);
+	  to->type = AY_IDPOMESH;
+	  /*ay_trafo_copy(o, to);*/
+	  x3dio_writepomeshobj(element, to);
+	  ay_object_delete(to);
+	}
+    }
+  else
+    {
+      if(lihead)
+	x3dio_writepomeshobj(element, lihead->object);
+    } /* if */
+
+  while(lihead)
+    {
+      ay_object_delete(lihead->object);
+      li = lihead->next;
+      free(lihead);
+      lihead = li;
+    } /* while */
+
+ return AY_OK;
+} /* x3dio_writepomeshobj */
+
+
 #if 0
 /* x3dio_writencurve:
  *
@@ -7120,13 +7135,6 @@ X_Init(Tcl_Interp *interp)
   Tcl_InitHashTable(&x3dio_write_ht, TCL_ONE_WORD_KEYS);
 
   /* fill hash table */
-#if 0
-
-  ay_status = x3dio_registerwritecb((char *)(AY_IDPOMESH),
-				       x3dio_writepomesh);
-
-
-#endif
 
   ay_status = x3dio_registerwritecb((char *)(AY_IDLEVEL),
 				       x3dio_writelevelobj);
@@ -7136,6 +7144,9 @@ X_Init(Tcl_Interp *interp)
 				       x3dio_writeinstanceobj);
   ay_status = x3dio_registerwritecb((char *)(AY_IDSCRIPT),
 				       x3dio_writescriptobj);
+
+  ay_status = x3dio_registerwritecb((char *)(AY_IDPOMESH),
+				       x3dio_writepomeshobj);
 
   ay_status = x3dio_registerwritecb((char *)(AY_IDBOX),
 				       x3dio_writeboxobj);
