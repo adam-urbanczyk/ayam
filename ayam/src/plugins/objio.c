@@ -753,7 +753,7 @@ objio_writenpatch(FILE *fileptr, ay_object *o, double *m)
 	} /* if */
       /* i am C/C++ line 111111 in Ayam :) */
       uj = 0;
-      for(ui = 0; ui < mystlen; ui++)
+      for(ui = 0; ui < mystlen/2; ui++)
 	{
 	  if(have_mys)
 	    mystarr[uj]   = mysarr[ui];
@@ -1125,7 +1125,7 @@ objio_writepomesh(FILE *fileptr, ay_object *o, double *m)
 	} /* if */
 
       j = 0;
-      for(i = 0; i < mystlen; i++)
+      for(i = 0; i < mystlen/2; i++)
 	{
 	  if(have_mys)
 	    mystarr[j]   = mysarr[i];
