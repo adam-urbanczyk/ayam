@@ -5105,7 +5105,7 @@ x3dio_count(ay_object *o)
 
 
 /* x3dio_registerwritecb:
- *
+ *  manage the write callback hash table
  */
 int
 x3dio_registerwritecb(char *name, x3dio_writecb *cb)
@@ -5131,322 +5131,6 @@ x3dio_registerwritecb(char *name, x3dio_writecb *cb)
 
  return ay_status;
 } /* x3dio_registerwritecb */
-
-#if 0
-
-
-/* x3dio_writetcurve:
- *  write a single trim curve
- */
-int
-x3dio_writetcurve(scew_element *element, ay_object *o, double *m)
-{
- ay_nurbcurve_object *nc;
- double v[3] = {0}, *p1, pw[3] = {0}, ma[16] = {0}, mn[16] = {0};
- int stride = 4, i;
-
-  if(!o)
-    return AY_ENULL;
-
-  nc = (ay_nurbcurve_object *)o->refine;
-
-  /* create proper transformation matrix */
-  ay_trafo_creatematrix(o, mn);
-  memcpy(ma, m, 16*sizeof(double));
-  ay_trafo_multmatrix4(ma, mn);
-
-  /* get all vertices, transform them and write them out */
-
-  p1 = nc->controlv;
-  for(i = 0; i < nc->length; i++)
-    {
-      if(nc->is_rat)
-	{
-	  pw[0] = p1[0]/p1[3];
-	  pw[1] = p1[1]/p1[3];
-	  AY_APTRAN3(v,pw,ma)
-	    v[2] = p1[3];
-	  fprintf(fileptr, "vp %g %g %g\n", v[0], v[1], v[2]);
-	}
-      else
-	{
-	  AY_APTRAN3(v,p1,ma)
-	  fprintf(fileptr, "vp %g %g\n", v[0], v[1]);
-	}
-      p1 += stride;
-    }
-
-  /* write 2D bspline curve */
-  if(nc->is_rat)
-    fprintf(fileptr, "cstype rat bspline\n");
-  else
-    fprintf(fileptr, "cstype bspline\n");
-
-  fprintf(fileptr, "deg %d\n", nc->order-1);
-  fprintf(fileptr, "curv2 ");
-
-  for(i = nc->length; i > 0; i--)
-    {
-      fprintf(fileptr, " -%d", i);
-    }
-  fprintf(fileptr, "\n");
-
-  /* write knot vector */
-  fprintf(fileptr, "parm u");
-  for(i = 0; i < (nc->length + nc->order); i++)
-    {
-      fprintf(fileptr, " %g", nc->knotv[i]);
-    }
-  fprintf(fileptr, "\nend\n");
-
- return AY_OK;
-} /* x3dio_writetcurve */
-
-
-/* x3dio_writetrim:
- *  write all trim curves pointed to by <o>
- */
-int
-x3dio_writetrim(scew_element *element, ay_object *o)
-{
- int ay_status = AY_OK;
- double mi[16] = {0};
- ay_object *down = NULL, *pnc = NULL;
-
-  ay_trafo_identitymatrix(mi);
-
-  while(o->next)
-    {
-      switch(o->type)
-	{
-	case AY_IDNCURVE:
-	  x3dio_writetcurve(fileptr, o, mi);
-	  break;
-	case AY_IDLEVEL:
-	  if((o->down) && (o->down->next))
-	    {
-	      ay_trafo_creatematrix(o, mi);
-	      down = o->down;
-	      while(down->next)
-		{
-		  if(down->type == AY_IDNCURVE)
-		    {
-		      x3dio_writetcurve(fileptr, down, mi);
-		    }
-		  down = down->next;
-		} /* while */
-	      ay_trafo_identitymatrix(mi);
-	    } /* if */
-	  break;
-	default:
-	  pnc = NULL;
-	  ay_status = ay_provide_object(o, AY_IDNCURVE, &pnc);
-	  down = pnc;
-	  while(down)
-	    {
-	      x3dio_writetcurve(fileptr, pnc, mi);
-	      down = down->next;
-	    }
-	  if(pnc)
-	    {
-	      ay_object_deletemulti(pnc);
-	    }
-	  break;
-	} /* switch */
-
-      o = o->next;
-    } /* while */
-
- return AY_OK;
-} /* x3dio_writetrim */
-
-
-/* x3dio_writetrimids:
- *  write ids of all trim curves pointed to by <o>
- */
-int
-x3dio_writetrimids(scew_element *element, ay_object *o)
-{
- int ay_status = AY_OK;
- ay_object *o2 = o, *down = NULL, *pnc = NULL, *cnc = NULL;
- ay_nurbcurve_object *nc = NULL;
- double umin, umax, orient;
- int tc = 0, hole;
-
-  /* first, count trim curves */
-  while(o->next)
-    {
-      switch(o->type)
-	{
-	case AY_IDNCURVE:
-	  tc++;
-	  break;
-	case AY_IDLEVEL:
-	  if((o->down) && (o->down->next))
-	    {
-	      down = o->down;
-	      while(down->next)
-		{
-		  if(down->type == AY_IDNCURVE)
-		    {
-		      tc++;
-		    }
-		  down = down->next;
-		} /* while */
-	    } /* if */
-	default:
-	  pnc = NULL;
-	  ay_status = ay_provide_object(o, AY_IDNCURVE, &pnc);
-	  down = pnc;
-	  while(down)
-	    {
-	      tc++;
-	      down = down->next;
-	    }
-	  if(pnc)
-	    {
-	      ay_object_deletemulti(pnc);
-	    }
-	  break;
-	} /* switch */
-
-      o = o->next;
-    } /* while */
-
-  /* now write the ids */
-  o = o2;
-  while(o->next)
-    {
-      switch(o->type)
-	{
-	case AY_IDNCURVE:
-	  nc = (ay_nurbcurve_object *)o->refine;
-	  ay_status = ay_nct_getorientation(nc, &orient);
-	  if(orient < 0.0)
-	    hole = AY_TRUE;
-	  else
-	    hole = AY_FALSE;
-
-	  ay_knots_getuminmax(o, nc->order, nc->length+nc->order, nc->knotv,
-			      &umin, &umax);
-
-	  if(hole)
-	    fprintf(fileptr, "hole %g %g -%d\n", umin, umax, tc);
-	  else
-	    fprintf(fileptr, "trim %g %g -%d\n", umin, umax, tc);
-	  tc--;
-	  break;
-	case AY_IDLEVEL:
-	  if((o->down) && (o->down->next))
-	    {
-	      down = o->down;
-	      if(down->type == AY_IDNCURVE)
-		{
-		  nc = (ay_nurbcurve_object *)down->refine;
-		  ay_status = ay_nct_getorientation(nc, &orient);
-		  if(ay_status)
-		    {
-		      /* failed to detect orientation, maybe the curve
-		       * is too simple, concat all curves and retry... */
-		      ay_status = ay_nct_concatmultiple(AY_FALSE, 0, AY_FALSE,
-							o->down, &cnc);
-		      if(cnc)
-			{
-			  nc = (ay_nurbcurve_object *)cnc->refine;
-			  ay_status = ay_nct_getorientation(nc, &orient);
-			  ay_object_delete(cnc);
-			  cnc = NULL;
-			}
-		    } /* if */
-
-		  if(orient < 0.0)
-		    fprintf(fileptr, "hole ");
-		  else
-		    fprintf(fileptr, "trim ");
-		} /* if */
-
-	      while(down->next)
-		{
-		  if(down->type == AY_IDNCURVE)
-		    {
-		      nc = (ay_nurbcurve_object *)down->refine;
-
-		      ay_knots_getuminmax(o, nc->order, nc->length+nc->order,
-					  nc->knotv,
-					  &umin, &umax);
-
-		      fprintf(fileptr, " %g %g -%d", umin, umax, tc);
-
-		      tc--;
-		    }
-		  down = down->next;
-		} /* while */
-	      fprintf(fileptr, "\n");
-	    } /* if */
-	  break;
-	default:
-	  pnc = NULL;
-	  ay_status = ay_provide_object(o, AY_IDNCURVE, &pnc);
-	  down = pnc;
-
-	  if(down->type == AY_IDNCURVE)
-	    {
-	      nc = (ay_nurbcurve_object *)down->refine;
-	      ay_status = ay_nct_getorientation(nc, &orient);
-	      if(ay_status)
-		{
-		  /* failed to detect orientation, maybe the curve
-		   * is too simple, concat all curves and retry... */
-		  ay_status = ay_nct_concatmultiple(AY_FALSE, 0, AY_FALSE,
-						    down, &cnc);
-		  if(cnc)
-		    {
-		      nc = (ay_nurbcurve_object *)cnc->refine;
-		      ay_status = ay_nct_getorientation(nc, &orient);
-		      ay_object_delete(cnc);
-		      cnc = NULL;
-		    }
-		} /* if */
-
-	      if(orient < 0.0)
-		fprintf(fileptr, "hole ");
-	      else
-		fprintf(fileptr, "trim ");
-	    } /* if */
-
-	  while(down->next)
-	    {
-	      if(down->type == AY_IDNCURVE)
-		{
-		  nc = (ay_nurbcurve_object *)down->refine;
-
-		  ay_knots_getuminmax(o, nc->order, nc->length+nc->order,
-				      nc->knotv,
-				      &umin, &umax);
-
-		  fprintf(fileptr, " %g %g -%d", umin, umax, tc);
-
-		  tc--;
-		} /* if */
-	      down = down->next;
-	    } /* while */
-	  fprintf(fileptr, "\n");
-
-	  if(pnc)
-	    {
-	      ay_object_deletemulti(pnc);
-	    }
-	  break;
-	} /* switch */
-      o = o->next;
-    } /* while */
-
- return AY_OK;
-} /* x3dio_writetrimids */
-
-
-#endif /* 0 */
-
 
 
 /* x3dio_writetransform:
@@ -5835,6 +5519,98 @@ x3dio_writencconvertibleobj(scew_element *element, ay_object *o)
 } /* x3dio_writencconvertibleobj */
 
 
+/* x3dio_writetrimcurve:
+ *
+ */
+int
+x3dio_writetrimcurve(scew_element *element, ay_object *o)
+{
+ int ay_status = AY_OK;
+ ay_object *c = NULL;
+ ay_nurbcurve_object *nc;
+ int i, a = 0, stride = 4;
+ double m[16] = {0};
+ scew_element *shape_element = NULL;
+ scew_element *curve_element = NULL;
+ scew_element *coord_element = NULL;
+
+  if(!element || !o || !o->refine)
+    return AY_ENULL;
+
+  if(o->type != AY_IDNCURVE)
+    {
+      ay_status = ay_provide_object(o, AY_IDNCURVE, &c);
+    }
+  else
+    {
+      ay_object_copy(o, &c);
+    }
+
+  if(!c)
+    return AY_ERROR;
+
+  nc = (ay_nurbcurve_object *)c->refine;
+
+  /* apply trafos */
+  ay_trafo_creatematrix(c, m);
+  for(i = 0; i < nc->length; i++)
+    {
+      ay_trafo_apply4(&(nc->controlv[a]), m);
+      a += stride;
+    }
+
+  /* now write the curve */
+  curve_element = scew_element_add(shape_element, "NurbsCurve2D");
+
+  x3dio_writeintattrib(curve_element, "order", &nc->order);
+
+  x3dio_writeknots(curve_element, "knot", nc->length+nc->order, nc->knotv);
+
+  if(nc->is_rat)
+    {
+      x3dio_writeweights(curve_element, "weight", nc->length, nc->controlv);
+    }
+
+  coord_element = scew_element_add(curve_element, "Coordinate");
+  x3dio_writedoublepoints(coord_element, "point", 2, nc->length, 4,
+			  nc->controlv);
+
+  if(c)
+    {
+      ay_object_deletemulti(c);
+    }
+
+ return ay_status;
+} /* x3dio_writetrimcurve */
+
+
+/* x3dio_writetrimloop:
+ *
+ */
+int
+x3dio_writetrimloop(scew_element *element, ay_object *o)
+{
+ int ay_status = AY_OK;
+ ay_object *down = NULL;
+
+  if(!element || !o || !o->refine)
+    return AY_ENULL;
+
+  if(o->down && o->down->next)
+    {
+      down = o->down;
+      while(down->next)
+	{
+	  ay_status = x3dio_writetrimcurve(element, down);
+
+	  down = down->next;
+	} /* while */
+    } /* if */
+
+ return ay_status;
+} /* x3dio_writetrimloop */
+
+
 /* x3dio_writenpatchobj:
  *
  */
@@ -5842,6 +5618,7 @@ int
 x3dio_writenpatchobj(scew_element *element, ay_object *o)
 {
  int ay_status = AY_OK;
+ ay_object *down = NULL;
  ay_nurbpatch_object *p;
  unsigned int i, j;
  int have_mys = AY_FALSE, have_myt = AY_FALSE;
@@ -5855,6 +5632,7 @@ x3dio_writenpatchobj(scew_element *element, ay_object *o)
  scew_element *patch_element = NULL;
  scew_element *coord_element = NULL;
  scew_element *texcoord_element = NULL;
+ scew_element *contour_element = NULL;
 
   if(!element || !o || !o->refine)
     return AY_ENULL;
@@ -5908,7 +5686,14 @@ x3dio_writenpatchobj(scew_element *element, ay_object *o)
   ay_status = x3dio_writename(shape_element, o);
 
   /* now write the patch */
-  patch_element = scew_element_add(shape_element, "NurbsPatchSurface");
+  if(o->down && o->down->next)
+    {
+      patch_element = scew_element_add(shape_element, "NurbsPatchSurface");
+    }
+  else
+    {
+      patch_element = scew_element_add(shape_element, "NurbsTrimmedSurface");
+    }
 
   x3dio_writeintattrib(patch_element, "uOrder", &p->uorder);
   x3dio_writeintattrib(patch_element, "vOrder", &p->vorder);
@@ -5959,6 +5744,25 @@ x3dio_writenpatchobj(scew_element *element, ay_object *o)
 
     } /* if */
 
+  /* write trim curves*/
+  if(o->down && o->down->next)
+    {
+      down = o->down;
+      while(down->next)
+	{
+	  contour_element = scew_element_add(patch_element, "Contour2D");
+	  if(down->type == AY_IDLEVEL)
+	    {
+	      ay_status = x3dio_writetrimloop(contour_element, down);
+	    }
+	  else
+	    {
+	      ay_status = x3dio_writetrimcurve(contour_element, down);
+	    }
+	  down = down->next;
+	} /* while */
+    } /* if */
+
 cleanup:
 
   if(mysarr)
@@ -5968,7 +5772,7 @@ cleanup:
   if(mystarr)
     free(mystarr);
 
- return AY_OK;
+ return ay_status;
 } /* x3dio_writenpatchobj */
 
 
@@ -6019,6 +5823,7 @@ x3dio_writelevelobj(scew_element *element, ay_object *o)
     return AY_ENULL;
 
   lev = (ay_level_object *)o->refine;
+
   if(o->down && o->down->next)
     {
 
