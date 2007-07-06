@@ -5445,199 +5445,6 @@ x3dio_writetrimids(scew_element *element, ay_object *o)
 } /* x3dio_writetrimids */
 
 
-/* x3dio_writenpatch:
- *
- */
-int
-x3dio_writenpatch(scew_element *element, ay_object *o)
-{
- int ay_status = AY_OK;
- ay_nurbpatch_object *np;
- double *v = NULL, *p1, *p2, pw[3];
- double umin, umax, vmin, vmax;
- int stride = 4, i, j;
- int have_mys = AY_FALSE, have_myt = AY_FALSE;
- unsigned int myslen = 0, mytlen = 0, mystlen = 0, ui, uj;
- double *mysarr = NULL, *mytarr = NULL, *mystarr = NULL;
- ay_tag mystag = {NULL, 0, NULL};
- ay_tag myttag = {NULL, 0, NULL};
- ay_tag *tag;
-
-  if(!o)
-    return AY_ENULL;
-
-  mystag.type = ay_pv_tagtype;
-  myttag.type = ay_pv_tagtype;
-
-  /* first, check for and write the trim curves */
-  if(o->down && o->down->next)
-    {
-      ay_status = x3dio_writetrim(fileptr, o->down);
-    }
-
-  np = (ay_nurbpatch_object *)o->refine;
-
-  /* get all vertices and transform them to world space,
-     also adapting row/column major order in the process */
-  if(!(v = calloc(np->width * np->height * (np->is_rat?4:3), sizeof(double))))
-    return AY_EOMEM;
-
-  p1 = v;
-  for(i = 0; i < np->height; i++)
-    {
-      p2 = &(np->controlv[i*stride]);
-      for(j = 0; j < np->width; j++)
-	{
-	  if(np->is_rat)
-	    {
-	      pw[0] = p2[0]/p2[3];
-	      pw[1] = p2[1]/p2[3];
-	      pw[2] = p2[2]/p2[3];
-	      AY_APTRAN3(p1,pw,m)
-		p1[3] = p2[3];
-	      p1 += 4;
-	    }
-	  else
-	    {
-	      AY_APTRAN3(p1,p2,m)
-	      p1 += 3;
-	    } /* if */
-	  p2 += np->height*stride;
-	} /* for */
-    } /* for */
-
-  /* write all vertices */
-  x3dio_writevertices(fileptr, (unsigned int)(np->width * np->height),
-			 (np->is_rat?4:3), v);
-
-  /* write texture coordinates from potentially present PV tags */
-  if(o->tags)
-    {
-      if(!(mystag.val = calloc(strlen(x3dio_stagname)+2,sizeof(char))))
-	return AY_EOMEM;
-      if(!(myttag.val = calloc(strlen(x3dio_ttagname)+2,sizeof(char))))
-	return AY_EOMEM;
-      strcpy(mystag.val, x3dio_stagname);
-      mystag.val[strlen(x3dio_stagname)] = ',';
-      strcpy(myttag.val, x3dio_ttagname);
-      myttag.val[strlen(x3dio_ttagname)] = ',';
-      tag = o->tags;
-      while(tag)
-	{
-	  if((tag->type == ay_pv_tagtype) && ay_pv_cmpname(tag, &mystag))
-	    {
-	      have_mys = AY_TRUE;
-
-	      ay_status = ay_pv_convert(tag, &myslen, (void**)&mysarr);
-	    }
-	  if((tag->type == ay_pv_tagtype) && ay_pv_cmpname(tag, &myttag))
-	    {
-	      have_myt = AY_TRUE;
-
-	      ay_status = ay_pv_convert(tag, &mytlen, (void**)&mytarr);
-	    }
-	  tag = tag->next;
-	} /* while */
-      free(mystag.val);
-      free(myttag.val);
-    } /* if */
-
-  /* merge and write the texture vertices */
-  if(have_mys)
-    mystlen = 2*myslen;
-  else
-    if(have_myt)
-      mystlen = 2*mytlen;
-
-  if(mystlen > 0)
-    {
-      if(!(mystarr = calloc(mystlen, sizeof(double))))
-	{
-	  if(v)
-	    free(v);
-	  if(mysarr)
-	    free(mysarr);
-	  if(mytarr)
-	    free(mytarr);
-	  return AY_EOMEM;
-	} /* if */
-      /* i am C/C++ line 111111 in Ayam :) */
-      uj = 0;
-      for(ui = 0; ui < mystlen; ui++)
-	{
-	  if(have_mys)
-	    mystarr[uj]   = mysarr[ui];
-	  if(have_myt)
-	    mystarr[uj+1] = mytarr[ui];
-	  uj += 2;
-	} /* for */
-
-      x3dio_writetvertices(fileptr, mystlen, 2, mystarr);
-
-      if(mysarr)
-	free(mysarr);
-      if(mytarr)
-	free(mytarr);
-      free(mystarr);
-      mystarr = NULL;
-    } /* if */
-
-  /* write bspline surface */
-  if(np->is_rat)
-    fprintf(fileptr, "cstype rat bspline\n");
-  else
-    fprintf(fileptr, "cstype bspline\n");
-
-  fprintf(fileptr, "deg %d %d\n", np->uorder-1, np->vorder-1);
-
-  ay_knots_getuminmax(o, np->uorder, np->width+np->uorder, np->uknotv,
-		      &umin, &umax);
-  ay_knots_getvminmax(o, np->vorder, np->height+np->vorder, np->vknotv,
-		      &vmin, &vmax);
-
-  fprintf(fileptr, "surf %g %g %g %g", umin, umax, vmin, vmax);
-
-  for(i = np->width*np->height; i > 0; i--)
-    {
-      if(have_mys || have_myt)
-	{
-	  fprintf(fileptr, " -%d/-%d", i, i);
-	}
-      else
-	{
-	  fprintf(fileptr, " -%d", i);
-	}
-    } /* for */
-  fprintf(fileptr, "\n");
-
-  /* write knot vector (u) */
-  fprintf(fileptr, "parm u");
-  for(i = 0; i < (np->width + np->uorder); i++)
-    {
-      fprintf(fileptr, " %g", np->uknotv[i]);
-    }
-  fprintf(fileptr, "\n");
-
-  /* write knot vector (v) */
-  fprintf(fileptr, "parm v");
-  for(i = 0; i < (np->height + np->vorder); i++)
-    {
-      fprintf(fileptr, " %g", np->vknotv[i]);
-    }
-  fprintf(fileptr, "\n");
-
-  /* write pointers to trim curves (if any) */
-  if(o->down && o->down->next)
-    {
-      x3dio_writetrimids(fileptr, o->down);
-    } /* if */
-
-  free(v);
-
- return AY_OK;
-} /* x3dio_writenpatch */
-
-
 #endif /* 0 */
 
 
@@ -6036,13 +5843,58 @@ x3dio_writenpatchobj(scew_element *element, ay_object *o)
 {
  int ay_status = AY_OK;
  ay_nurbpatch_object *p;
+ unsigned int i, j;
+ int have_mys = AY_FALSE, have_myt = AY_FALSE;
+ unsigned int myslen = 0, mytlen = 0, mystlen = 0;
+ double *mysarr = NULL, *mytarr = NULL, *mystarr = NULL;
+ ay_tag mystag = {NULL, 0, NULL};
+ ay_tag myttag = {NULL, 0, NULL};
+ ay_tag *tag;
  scew_element *transform_element = NULL;
  scew_element *shape_element = NULL;
  scew_element *patch_element = NULL;
  scew_element *coord_element = NULL;
+ scew_element *texcoord_element = NULL;
 
   if(!element || !o || !o->refine)
     return AY_ENULL;
+
+  mystag.type = ay_pv_tagtype;
+  mystag.name = x3dio_stagname;
+  myttag.type = ay_pv_tagtype;
+  myttag.name = x3dio_ttagname;
+
+  /* decode potentially present PV tags */
+  if(o->tags)
+    {
+      if(!(mystag.val = calloc(strlen(x3dio_stagname)+2,sizeof(char))))
+	{ ay_status = AY_EOMEM; goto cleanup; }
+      if(!(myttag.val = calloc(strlen(x3dio_ttagname)+2,sizeof(char))))
+	{ ay_status = AY_EOMEM; goto cleanup; }
+      strcpy(mystag.val, x3dio_stagname);
+      mystag.val[strlen(x3dio_stagname)] = ',';
+      strcpy(myttag.val, x3dio_ttagname);
+      myttag.val[strlen(x3dio_ttagname)] = ',';
+      tag = o->tags;
+      while(tag)
+	{
+	  if((tag->type == ay_pv_tagtype) && ay_pv_cmpname(tag, &mystag))
+	    {
+	      have_mys = AY_TRUE;
+
+	      ay_status = ay_pv_convert(tag, &myslen, (void**)&mysarr);
+	    }
+	  if((tag->type == ay_pv_tagtype) && ay_pv_cmpname(tag, &myttag))
+	    {
+	      have_myt = AY_TRUE;
+
+	      ay_status = ay_pv_convert(tag, &mytlen, (void**)&mytarr);
+	    }
+	  tag = tag->next;
+	} /* while */
+      free(mystag.val);
+      free(myttag.val);
+    } /* if */
 
   p = (ay_nurbpatch_object *)o->refine;
 
@@ -6075,6 +5927,46 @@ x3dio_writenpatchobj(scew_element *element, ay_object *o)
   coord_element = scew_element_add(patch_element, "Coordinate");
   x3dio_writedoublepoints(coord_element, "point", 3, p->width*p->height,
 			  4, p->controlv);
+
+  /* write texture coordinates */
+  if(have_mys)
+    mystlen = 2*myslen;
+  else
+    if(have_myt)
+      mystlen = 2*mytlen;
+
+  if(mystlen > 0)
+    {
+      if(!(mystarr = calloc(mystlen, sizeof(double))))
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	} /* if */
+
+      j = 0;
+      for(i = 0; i < mystlen/2; i++)
+	{
+	  if(have_mys)
+	    mystarr[j]   = mysarr[i];
+	  if(have_myt)
+	    mystarr[j+1] = mytarr[i];
+	  j += 2;
+	} /* for */
+
+      texcoord_element = scew_element_add(patch_element, "TextureCoordinate");
+      x3dio_writedoublepoints(texcoord_element, "point", 2, mystlen/2,
+			      2, mystarr);
+
+    } /* if */
+
+cleanup:
+
+  if(mysarr)
+    free(mysarr);
+  if(mytarr)
+    free(mytarr);
+  if(mystarr)
+    free(mystarr);
 
  return AY_OK;
 } /* x3dio_writenpatchobj */
@@ -6719,7 +6611,7 @@ x3dio_writepomeshobj(scew_element *element, ay_object *o)
 	    } /* if */
 
 	  j = 0;
-	  for(i = 0; i < mystlen; i++)
+	  for(i = 0; i < mystlen/2; i++)
 	    {
 	      if(have_mys)
 		mystarr[j]   = mysarr[i];
