@@ -217,8 +217,71 @@ int x3dio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 
 /********************/
 
+/* low-level export support functions */
+unsigned int x3dio_count(ay_object *o);
+
+int x3dio_registerwritecb(char *name, x3dio_writecb *cb);
+
+int x3dio_writetransform(scew_element *element, ay_object *o,
+			 scew_element **transform_element);
+
+int x3dio_writename(scew_element *element, ay_object *o);
+
+int x3dio_writeintattrib(scew_element *element, char *name, int *value);
+
+int x3dio_writedoubleattrib(scew_element *element, char *name, double *value);
+
+int x3dio_writedoublevecattrib(scew_element *element, char *name,
+			       unsigned int dim, double *value);
+
+int x3dio_writedoublepoints(scew_element *element, char *name,
+			    unsigned int dim, unsigned int length,
+			    unsigned int stride, double *value);
+
+int x3dio_writeweights(scew_element *element, char *name,
+		       unsigned int length, double *value);
+
+int x3dio_writeknots(scew_element *element, char *name,
+		     unsigned int length, double *value);
+
+/* export callback functions */
+int x3dio_writencurveobj(scew_element *element, ay_object *o);
+
+int x3dio_writencconvertibleobj(scew_element *element, ay_object *o);
+
+int x3dio_writetrimcurve(scew_element *element, ay_object *o);
+
+int x3dio_writetrimloop(scew_element *element, ay_object *o);
+
+int x3dio_writenpatchobj(scew_element *element, ay_object *o);
+
+int x3dio_writenpconvertibleobj(scew_element *element, ay_object *o);
+
+int x3dio_writelevelobj(scew_element *element, ay_object *o);
+
+int x3dio_writecloneobj(scew_element *element, ay_object *o);
+
+int x3dio_writeinstanceobj(scew_element *element, ay_object *o);
+
+int x3dio_writescriptobj(scew_element *element, ay_object *o);
+
+int x3dio_writeboxobj(scew_element *element, ay_object *o);
+
+int x3dio_writesphereobj(scew_element *element, ay_object *o);
+
+int x3dio_writecylinderobj(scew_element *element, ay_object *o);
+
+int x3dio_writeconeobj(scew_element *element, ay_object *o);
+
+int x3dio_writepomeshobj(scew_element *element, ay_object *o);
+
 /* export */
-int x3dio_writenpconvertible(FILE *fileptr, ay_object *o, double *m);
+int x3dio_writeobject(scew_element *element, ay_object *o, int count);
+
+int x3dio_writescene(char *filename, int selected);
+
+int x3dio_writetcmd(ClientData clientData, Tcl_Interp *interp,
+		    int argc, char *argv[]);
 
 /* functions: */
 
@@ -5402,7 +5465,7 @@ x3dio_writeweights(scew_element *element, char *name,
  */
 int
 x3dio_writeknots(scew_element *element, char *name,
-			unsigned int length, double *value)
+		 unsigned int length, double *value)
 {
  char buf[256];
  char *attr = NULL, *tmp;
