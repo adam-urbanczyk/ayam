@@ -591,9 +591,8 @@ may be exported using this route. See above (<tt/"Open"/).
 name first.
 
 <item><tt>"Import/"</tt>, since Ayam 1.13 this sub menu is initially
-empty. You need to load a plugin manually, on application startup
-via a script, or automatically via <tt>"File/Open"</tt> to gain access
-to the menu entries described here.
+empty. You need to load a plugin first to gain to the menu entries
+described here.
 
 <item><tt>"Import/Apple 3DMF"</tt>, import a scene from the Apple
 3DMF format, see section <ref id="imp3dmf" name="3DMF (Apple) Import">
@@ -622,8 +621,7 @@ for more information.
 
 <item><tt>"Export/"</tt>, since Ayam 1.13 this sub menu initially
 only contains the <tt>"RenderMan RIB"</tt> entry. You need to load a
-plugin manually, on application startup via a script, or automatically
-via <tt>"File/Save as"</tt> to gain access to the other menu entries
+plugin first to gain access to the other menu entries
 described here.
 
 <item><tt>"Export/RenderMan RIB"</tt>, exports the current scene to a RIB,
@@ -649,8 +647,12 @@ for more information.
 <item><tt/"Load Plugin"/, loads a file containing a custom object or a plugin.
 Depending on the platform Ayam is running on, these are files with the
 file name extension <tt/".so"/ or <tt/".dll"/.
+There are currently two types of plugins for Ayam: custom objects and
+import/export plugins.
 See section <ref id="customobj" name="Custom Objects">
 for more information about custom objects.
+See section <ref id="impex" name="Import and Export">
+for more information about import/export plugins.
 
 <item><tt/"Save Prefs"/, save the current preference settings
 to the ayamrc file after making a backup copy of this file (see section
@@ -8042,7 +8044,11 @@ pack $f.b1 $f.b2 -side left -fill x -expand yes
 <sect>Import and Export<label id="impex">
 <p>
 This section contains the documentation of all import and export
-modules of Ayam.
+modules of Ayam. Except for RIB export, all import and export
+modules are plugins that need to be loaded into Ayam manually via
+<tt>"File/Load Plugin"</tt>, on application startup via a script,
+or automatically via <tt>"File/Open"</tt> or <tt>"File/Save as"</tt>
+before possible usage.
 <p>
 Note that manual loading of an import or export plugin is no longer
 necessary since Ayam 1.13. Simply use the main menu entries
@@ -8051,6 +8057,35 @@ keyboard shortcuts) and specify a filename with the appropriate
 extension. Ayam will automatically load the matching plugin and
 open the import (or export) options dialog with the <tt/"FileName"/
 option already set.
+<p>
+Not all features of Ayam are supported in the various export
+options. The following table gives an overview of the supported
+features per file format.
+
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|c|c|"><hline>
+Feature|RIB|OBJ|3DMF(Apple)|DXF|3DM(Rhino)|X3D@<hline>
+Quadrics|Yes|No<f><sup>1</sup></f>|Yes|No<f><sup>2</sup></f>|Yes|Yes@<hline>
+Trimmed NURBS|Yes|Yes|Yes|No|Yes|Yes<f><sup>3</sup></f>@<hline>
+Parametrics|No|No|No|No|No|Some<f><sup>4</sup></f>@<hline>
+Transformations|Yes|No|Yes|No|No|Yes@<hline>
+Hierarchy|Yes|No|Yes|No|No|Yes@<hline>
+Instances|Yes|No|No|No|No|Yes@<hline>
+CSG|Yes|No|No|No|No|No@<hline>
+</tabular>
+<caption>Ayam Features Supported by Various Export Formats</caption>
+</table>
+
+<enum>
+<item>will be converted to NURBS
+<item>will be converted to PolyMeshes
+<item>3D trimcurves exported as PolyLines
+<item>Revolutions and general Sweeps
+</enum>
+
+Note that a successful export also depends on the quality of the
+importing application.
+
 
 <sect1>Mops Import<label id="impmops">
 <p>
@@ -8383,8 +8418,8 @@ The following parameters, additionally, control the Wavefront OBJ export:
 <item><tt>"WriteSelected"</tt> exports only the currently selected object(s);
 <item><tt>"TessPoMesh"</tt> automatically tesselates all PolyMesh objects
 to triangles for export;
-<item><tt>"WriteCurves"</tt> writes all NURBS curves and NURBS curve providing
-objects to the exported file (This option does
+<item><tt>"WriteCurves"</tt> toggles writing of NURBS curves and NURBS
+curve providing objects to the exported file (This option does
 not influence the export of trim curves.);
 <item><tt/"ScaleFactor"/ allows to apply a scaling factor to all
 exported objects;
@@ -8629,10 +8664,10 @@ Start importing from a Web3D X3D file using the menu entry
 The import functionality of the <tt>"x3dio"</tt> plugin currently covers
 import of the following elements:
 <itemize>
-<item>Geometry3D: Box, Sphere, Cylinder, Cone, ElevationGrid, Extrusion,
-IndexedFaceSet, IndexedTriangleSet, IndexedTriangleStripSet,
-IndexedTriangleFanSet, IndexedQuadSet, TriangleSet, TriangleStripSet,
-TriangleFanSet, QuadSet, IndexedLineSet, and LineSet.
+<item>Geometry3D: Box, Sphere, Cylinder, Cone, ElevationGrid, IndexedFaceSet,
+IndexedTriangleSet, IndexedTriangleStripSet, IndexedTriangleFanSet,
+TriangleSet, TriangleStripSet, TriangleFanSet, IndexedLineSet, and
+LineSet.
 
 Cylinders with just one cap are imported as two objects (a Cylinder and
 a Disk). Otherwise the <tt>"Closed"</tt> attribute is set according to
@@ -8649,8 +8684,7 @@ Disks with an inner radius > 0.0 are imported as Hyperboloids (otherwise
 as Disks).
 
 <item>NURBS: NurbsCurve, NurbsCurve2D, NurbsPatchsurface,
-TrimmedNurbsPatchsurface, NurbsSweptSurface, NurbsSwungSurface,
-Contour2D, ContourPolyline2D.
+TrimmedNurbsPatchsurface, Contour2D, ContourPolyline2D.
 
 <item>Light sources: DirectionalLight, PointLight, SpotLight.
 
@@ -8661,12 +8695,6 @@ of point and spotlights are not supported. However, point and spotlights
 still have a quadratic falloff with distance.
 
 <item>Non geometric: Transformation, Shape, Group, Inline.
-
-Inline elements always create their own separated DEF-namespace.
-Using the x3dio import option <tt>"MergeInlineDefs"</tt> all DEFs can
-be merged into one big namespace. It is not possible to transport
-single definitions using EXPORT/IMPORT.
-
 </itemize>
 <p>
 Unsupported elements will be silently ignored. Prototyping and
@@ -8677,7 +8705,8 @@ be imported as level objects.
 
 <sect2>X3D Attribute Support
 <p>
-The <tt>"solid"</tt> attribute is always ignored.
+The <tt>"solid"</tt>, <tt>"ccw"</tt>, and <tt>"convex"</tt>
+attributes are always ignored.
 <p>
 The DEF and USE attributes are supported for all elements, however,
 the corresponding master-instance relationships are completely
@@ -8689,19 +8718,94 @@ The DEF attributes may be converted to object names.
 
 <sect2>X3D Import Options
 <p>
+The following options further control the X3D import process:
+<itemize>
+<item><tt>"FileName"</tt> is the name of the X3D file to be imported
+<item><tt>"MergeFaces"</tt> controls, whether consecutive polygonal
+faces should be merged into a single PolyMesh object for import.
+<item><tt>"MergePVTags"</tt> controls, whether the PV tags of PolyMesh
+objects should be merged as well if they are subject to automatic
+merging (see above).
+<item><tt>"ReadCurves"</tt> if this is disabled, no freeform curves will
+be imported. This option does not influence reading of trim curves!
+<item><tt/"RescaleKnots"/ allows to rescale the knot vectors of
+NURBS curves, patches, and trim curves so that the distances between different
+knots are not smaller than the given value. Using a value of 1.0e-04 leads
+to NURBS that may be safely drawn using GLU. The default value 0.0 means
+no scaling.
+<item><tt/"ScaleFactor"/ allows to apply a scaling factor to all
+imported objects.
+<item><tt>"STagName"</tt> controls the name of the PV tag to be used
+for the s component of the texture coordinates.
+<item><tt>"TTagName"</tt> controls the name of the PV tag to be used
+for the t component of the texture coordinates.
+<item><tt/"Progress"/: displays the progress of the import;
+from 0 to 50 percent, the x3dio plugin is reading the XML file,
+from 50 to 100 percent the x3dio plugin is creating Ayam objects.
+</itemize>
 
 <sect1>X3D (Web3D) Export<label id="expx3d">
 <p>
 Since version 1.13 Ayam contains a plugin named x3dio that may export
 scenes to the XML based X3D file format published by the Web3D Consortium.
-The XML parser is based on Expat and SCEW.
+The XML parser used in this plugin is based on Expat and SCEW.
 <p>
+Start exporting to a X3D file using the menu entry
+<tt>"File/Export/Web3D (X3D)"</tt>
+(if this menu entry is not available, you have to load the
+<tt>"x3dio"</tt> plugin using the menu entry
+<tt>"File/Load Plugin"</tt> first).
+<p>
+The export functionality of the x3dio plugin currently covers
+export of all boxes, quadrics, NURBS, PolyMeshes, instances, clones, script
+objects (of type <tt/"Create"/ or <tt/"Modify"/) and objects that
+may be converted to NURBS curves or surfaces or to PolyMeshes.
+The scene hierarchy (level objects) will be converted to a
+matching transform node hierarchy.
+CSG operations are fully ignored, all objects will be written as
+if combined by the union operator.
+<p>
+Clamping the knot ranges of NURBS via UMM/VMM tags is not supported.
+<p>
+PolyMesh objects will be exported to IndexedFaceSet elements.
+PolyMesh faces with holes are tesselated. PolyMesh faces with more
+than three points are tesselated if the export option xyz is used.
+All tesselated faces will be exported to a second IndexedFaceSet
+element.
+<p>
+Light sources are exported.
+<p>
+Cameras and Views to Viewpoints.
+<p>
+Object names will be converted to DEF attributes.
 
 <sect2>X3D Export Options
 <p>
+The following parameters, additionally, control the X3D (Web3D) export:
+<itemize>
+<item><tt>"FileName"</tt> is the filename of the X3D file;
+<item><tt>"WriteSelected"</tt> exports only the currently selected object(s);
+<item><tt>"TessPoMesh"</tt> automatically tesselates all PolyMesh objects
+to triangles for export;
+<item><tt>"WriteCurves"</tt> toggles writing of NURBS curves and
+NURBS curve providing objects to the exported file (This option does
+not influence the export of trim curves.);
+<item><tt/"ScaleFactor"/ allows to apply a scaling factor to all
+exported objects;
+<item><tt>"STagName"</tt> controls the name of the PV tag to be used
+for the s component of the texture coordinates, and
+<item><tt>"TTagName"</tt> controls the name of the PV tag to be used
+for the t component of the texture coordinates.
+<item><tt/"Progress"/: displays the progress of the export;
+from 0 to 50 percent, the x3dio plugin is creating a XML document
+in memory and from 50 to 100 percent this document will be written
+to the file.
+</itemize>
 
 <sect>Miscellaneous
 <p>
+This section contains all information about Ayam not fitting elsewhere.
+
 <sect1>The Undo System<label id="undos">
 <p>
 Using the undo system you may correct mistakes you made while modelling.
@@ -9327,14 +9431,16 @@ deficiencies exist:
 <item>Almost all strings in Ayam (scene file names, object names,
 material names) are restricted to be 7 bit ASCII. If the scene is
 not transported to other systems 8 bit ASCII should be fine, however.
-<item>The maximum scene depth depends on the maximum stack size of the
-operating system Ayam is running on (due to the use of recursion almost
-everywhere traversing the scene, e.g. for drawing).
+<item>The maximum scene depth (i.e. the maximum number of nested levels)
+depends on the maximum stack size of the operating system Ayam is
+running on (due to the use of recursion almost everywhere when traversing
+the scene, e.g. for drawing purposes).
 <item>Ayam internally operates on double precision math, however,
 no control over roundoff error in lengthy calculations exists.
 Saving of scene files only uses the precision dictated by the current
-standard C library. Using of double precision numbers via the
-Tcl scripting interface or the GUI also can reduce precision due to
+standard C library. This may degrade the precision of the models.
+Using of double precision numbers via the Tcl scripting interface or
+the GUI also can reduce precision due to
 double-string-double-conversions (whose precision can be adjusted
 by the user via the <tt/"TclPrecision"/ preference setting, however). 
 <item>Materials may only be assigned to complete objects, not to
@@ -9354,7 +9460,7 @@ Ayam user interface deficiencies:
 many people are trained to the "one toplevel window per application"
 paradigm. Furthermore, window managers get worse and worse in application
 support for e.g. focus control.
-<item>Application state is often communicated via window title
+<item>The application state is often communicated via window title
 strings only. But certain window systems do not display those
 titles well.
 </itemize>
