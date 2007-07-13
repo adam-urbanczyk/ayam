@@ -337,7 +337,8 @@ int
 ay_script_readcb(FILE *fileptr, ay_object *o)
 {
  ay_script_object *sc = NULL;
- int i, len;
+ int i;
+ unsigned int len;
  int readc, deactivate = 0;
  char script_disable_cmd[] = "script_disable";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
@@ -355,7 +356,7 @@ ay_script_readcb(FILE *fileptr, ay_object *o)
 
   fscanf(fileptr, "%d\n", &sc->active);
   fscanf(fileptr, "%d\n", &sc->type);
-  fscanf(fileptr, "%d\n", &len);
+  fscanf(fileptr, "%u\n", &len);
 
   if(len > 0)
     {
@@ -445,6 +446,7 @@ ay_script_writecb(FILE *fileptr, ay_object *o)
  char *arrnameend = NULL;
  Tcl_Obj *arrmemberlist = NULL, *arrmember;
  int arrmembers = 0, i, slen;
+ unsigned int len = 0;
  Tcl_Interp *interp = ay_interp;
 
   if(!o)
@@ -456,7 +458,8 @@ ay_script_writecb(FILE *fileptr, ay_object *o)
   fprintf(fileptr, "%d\n", sc->type);
   if(sc->script)
     {
-      fprintf(fileptr, "%d\n", strlen(sc->script));
+      len = strlen(sc->script);
+      fprintf(fileptr, "%u\n", len);
       fprintf(fileptr, "%s\n", sc->script);
     }
   else
