@@ -783,7 +783,7 @@ ay_stess_TessTrimCurves(ay_object *o, int qf, int *nt, double ***tt,
 	  loop = d->down;
 	  while(loop->next)
 	    {
-	      if(loop->type = AY_IDNCURVE)
+	      if(loop->type == AY_IDNCURVE)
 		{
 		  c = (ay_nurbcurve_object *)loop->refine;
 		}
@@ -964,46 +964,51 @@ ay_stess_MergeUVectors(ay_stess_uvp *a, ay_stess_uvp *b)
 	  if(p1->next)
 	    {
 	      if(p2)
-		if(p2->v == p1->v)
-		  { /* Danger! Check for intersecting trimloops: */
-		    if(p1->type == 1)
-		      return AY_ERROR; /* XXXX early exit! */
+		{
+		  if(p2->v == p1->v)
+		    { /* Danger! Check for intersecting trimloops: */
+		      if(p1->type == 1)
+			return AY_ERROR; /* XXXX early exit! */
 
-		    /* We, accidentally, have here a trimloop
-		     * point that is identical to a wanted uv-point;
-		     * we therefore have to transmogrify the uv-point to
-		     * a trimloop point and delete the original trimloop
-		     * point!
-		     */
-		    fprintf(stderr,"Transmogrifying point!\n");
-		    p1->type = 1;
-		    p1->dir = p2->dir;
-		    p3 = p2->next;
-		    free(p2);
-		    p2 = p3;
-		    b = p3;
-		    inserted = 1;
-		  }
+		      /* We, accidentally, have here a trimloop
+		       * point that is identical to a wanted uv-point;
+		       * we therefore have to transmogrify the uv-point to
+		       * a trimloop point and delete the original trimloop
+		       * point!
+		       */
+		      fprintf(stderr,"Transmogrifying point!\n");
+		      p1->type = 1;
+		      p1->dir = p2->dir;
+		      p3 = p2->next;
+		      free(p2);
+		      p2 = p3;
+		      b = p3;
+		      inserted = 1;
+		    }
+		}
 
 	      if(p2)
-		if((p2->v > p1->v) && (p2->v < p1->next->v))
-		  {
-		    p3 = p1->next;
-		    p1->next = p2;
-		    b = p2->next;
-		    p2->next = p3;
-		    inserted = 1;
-		  }
-		else
-		  {
-		    p1 = p1->next;
-		  } /* if */
+		{
+		  if((p2->v > p1->v) && (p2->v < p1->next->v))
+		    {
+		      p3 = p1->next;
+		      p1->next = p2;
+		      b = p2->next;
+		      p2->next = p3;
+		      inserted = 1;
+		    }
+		  else
+		    {
+		      p1 = p1->next;
+		    } /* if */
+		} /* if */
 	    } /* if */
 	} /* while */
 
       if(!b)
-	done = AY_TRUE;
-
+	{
+	  done = AY_TRUE;
+	}
     } /* while */
 
  return AY_OK;
@@ -1060,45 +1065,51 @@ ay_stess_MergeVVectors(ay_stess_uvp *a, ay_stess_uvp *b)
 	  if(p1->next)
 	    {
 	      if(p2)
-		if(p2->u == p1->u)
-		  { /* Danger! Check for intersecting trimloops: */
-		    if(p1->type == 1)
-		      return AY_ERROR; /* XXXX early exit! */
+		{
+		  if(p2->u == p1->u)
+		    { /* Danger! Check for intersecting trimloops: */
+		      if(p1->type == 1)
+			return AY_ERROR; /* XXXX early exit! */
 
-		    /* We, accidentally, have here a trimloop
-		     * point that is identical to a wanted uv-point;
-		     * we therefore have to transmogrify the uv-point to
-		     * a trimloop point and delete the original trimloop
-		     * point!
-		     */
-		    fprintf(stderr,"Transmogrifying point!\n");
-		    p1->type = 1;
-		    p1->dir = p2->dir;
-		    p3 = p2->next;
-		    free(p2);
-		    p2 = p3;
-		    b = p3;
-		    inserted = 1;
-		  }
+		      /* We, accidentally, have here a trimloop
+		       * point that is identical to a wanted uv-point;
+		       * we therefore have to transmogrify the uv-point to
+		       * a trimloop point and delete the original trimloop
+		       * point!
+		       */
+		      fprintf(stderr,"Transmogrifying point!\n");
+		      p1->type = 1;
+		      p1->dir = p2->dir;
+		      p3 = p2->next;
+		      free(p2);
+		      p2 = p3;
+		      b = p3;
+		      inserted = 1;
+		    } /* if */
+		} /* if */
 
 	      if(p2)
-		if((p2->u > p1->u) && (p2->u < p1->next->u))
-		  {
-		    p3 = p1->next;
-		    p1->next = p2;
-		    b = p2->next;
-		    p2->next = p3;
-		    inserted = 1;
-		  }
-		else
-		  {
-		    p1 = p1->next;
-		  } /* if */
+		{
+		  if((p2->u > p1->u) && (p2->u < p1->next->u))
+		    {
+		      p3 = p1->next;
+		      p1->next = p2;
+		      b = p2->next;
+		      p2->next = p3;
+		      inserted = 1;
+		    }
+		  else
+		    {
+		      p1 = p1->next;
+		    } /* if */
+		} /* if */
 	    } /* if */
 	} /* while */
 
       if(!b)
-	done = AY_TRUE;
+	{
+	  done = AY_TRUE;
+	}
 
     } /* while */
 
