@@ -73,8 +73,8 @@ proc x3dio_import { } {
     addParam $f x3dio_options ReadLayers [list "-1" 1 1-10]
     addParam $f x3dio_options RescaleKnots [list 0.0 1.0e-4]
     addCheck $f x3dio_options MergeInlineDefs
-#    addString $f x3dio_options STagName
-#    addString $f x3dio_options TTagName
+    addString $f x3dio_options STagName
+    addString $f x3dio_options TTagName
     addMenu $f x3dio_options ErrorLevel [list Silence Errors Warnings All]
     addProgress $f x3dio_options Progress
 
