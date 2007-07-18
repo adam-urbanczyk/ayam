@@ -1210,6 +1210,7 @@ ay_pomesht_split(ay_pomesh_object *pomesh, ay_point *pnts,
   n = 0;
   for(i = 0; i < pomesh->npolys; i++)
     {
+      /* for every face, we start with the assumption it is to be split off */
       splitoffthisface = AY_TRUE;
 
       for(j = 0; j < pomesh->nloops[i]; j++)
@@ -1274,7 +1275,6 @@ ay_pomesht_split(ay_pomesh_object *pomesh, ay_point *pnts,
     } /* for */
 
   /* check and return result */
-
   if(pomesh1->npolys == 0)
     {
       /* oops, no faces were split off */
@@ -1290,7 +1290,7 @@ ay_pomesht_split(ay_pomesh_object *pomesh, ay_point *pnts,
 	 => do nothing */
       ay_pomesht_destroy(pomesh0);
       ay_pomesht_destroy(pomesh1);
-      ay_error(AY_ERROR, fname, "All faces would be split off!");
+      ay_error(AY_ERROR, fname, "All faces would be split off, check the point selection!");
       return AY_ERROR;
     } /* if */
 
