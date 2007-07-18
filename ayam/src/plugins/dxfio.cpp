@@ -10,7 +10,7 @@
  *
  */
 
-// dxfio.cpp - Ayam DXF Import/Export Plugin
+// dxfio.cpp - Ayam DXF Import/Export Plugin based on Dime
 
 // includes:
 #include "ayam.h"
@@ -82,6 +82,8 @@ int dxfio_exptoplevellayers = AY_TRUE;
 int dxfio_slayer = -1;
 // last layer to read; elayer==slayer: read one or all
 int dxfio_elayer = -1;
+
+int dxfio_currentlayer = 0;
 
 // 0: silence, 1: errors, 2: warnings, 3: all
 int dxfio_errorlevel = 1;
@@ -1110,7 +1112,8 @@ dxfio_getpolyfacemesh(const class dimeState *state,
 		      void *clientdata, ay_object *newo)
 {
  int ay_status = AY_OK;
- unsigned int a, i, j, numfaces = 0, numverts = 0;
+ unsigned int a, i, numfaces = 0, numverts = 0;
+ int j;
  ay_pomesh_object *pomesh = NULL;
  dimeVertex *v;
  dimeVec3f cv;
@@ -1575,11 +1578,12 @@ dxfio_readentitydcb(const class dimeState *state,
       if(val && val[0] == '1')
 	{
 	  if(dxfio_errorlevel > 1)
-	    ay_error(AY_EWARN, fname,
-		   "Import cancelled! Not all objects may have been read!");
+	    {
+	      ay_error(AY_EOUTPUT, fname,
+		     "Import cancelled! Not all objects may have been read!");
+	    }
 	  return false;
-	}
-
+	} // if
     } // if
 
  return true;
@@ -1858,6 +1862,465 @@ dxfio_readtcmd(ClientData clientData, Tcl_Interp *interp,
  return TCL_OK;
 } // dxfio_readtcmd
 
+/////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////
+
+typedef int (dxfio_writecb) (ay_object *o, dimeModel *dm, double *m);
+
+int dxfio_writeprogressdcb(float progress, void *clientdata);
+
+int dxfio_writeobject(ay_object *o, dimeModel *dm);
+
+// dxfio_writelevel:
+//
+int
+dxfio_writelevel(ay_object *o, dimeModel *dm, double *m)
+{
+ int ay_status = AY_OK;
+ ay_object *down = NULL;
+ ay_level_object *l = NULL;
+ double m1[16] = {0};
+
+  if(!o || !dm || !m)
+    return AY_ENULL;
+
+  l = (ay_level_object *)o->refine;
+
+  if(l->type == AY_LTEND)
+    return AY_OK;
+
+  if(o->down && o->down->next)
+    {
+      memcpy(m1, tm, 16*sizeof(double));
+      memcpy(tm, m, 16*sizeof(double));
+
+      down = o->down;
+      while(down->next)
+	{
+	  ay_status = dxfio_writeobject(down, dm);
+	  down = down->next;
+	}
+
+      memcpy(tm, m1, 16*sizeof(double));
+    } // if
+
+ return ay_status;
+} // dxfio_writelevel
+
+
+// dxfio_writeclone:
+//
+int
+dxfio_writeclone(ay_object *o, dimeModel *dm, double *m)
+{
+ int ay_status = AY_OK;
+ ay_clone_object *cl = NULL;
+ ay_object *clone;
+
+  if(!o || !dm || !m)
+    return AY_ENULL;
+
+  cl = (ay_clone_object *)o->refine;
+
+  clone = cl->clones;
+
+  while(clone)
+    {
+      ay_status = dxfio_writeobject(clone, dm);
+
+      clone = clone->next;
+    } // while
+
+ return ay_status;
+} // dxfio_writeclone
+
+
+// dxfio_writeinstance:
+//
+int
+dxfio_writeinstance(ay_object *o, dimeModel *dm, double *m)
+{
+ int ay_status = AY_OK;
+ ay_object *orig, tmp = {0};
+
+  if(!o || !dm || !m)
+    return AY_ENULL;
+
+  orig = (ay_object *)o->refine;
+
+  ay_trafo_copy(orig, &tmp);
+  ay_trafo_copy(o, orig);
+  ay_status = dxfio_writeobject(orig, dm);
+  ay_trafo_copy(&tmp, orig);
+
+ return ay_status;
+} // dxfio_writeinstance
+
+
+// dxfio_writescript:
+//
+int
+dxfio_writescript(ay_object *o, dimeModel *dm, double *m)
+{
+ int ay_status = AY_OK;
+ ay_script_object *sc = NULL;
+ ay_object *cm;
+
+  if(!o || !dm || !m)
+    return AY_ENULL;
+
+  sc = (ay_script_object *)o->refine;
+
+  if(((sc->type == 1) || (sc->type == 2)) && (sc->cm_objects))
+    {
+      cm = sc->cm_objects;
+      while(cm)
+	{
+	  ay_status = dxfio_writeobject(cm, dm);
+
+	  cm = cm->next;
+	} // while
+    } // if
+
+ return ay_status;
+} // dxfio_writescript
+
+
+// dxfio_writeobject:
+//
+int
+dxfio_writeobject(ay_object *o, dimeModel *dm)
+{
+ int ay_status = AY_OK;
+ char fname[] = "dxfio_writeobject";
+ Tcl_HashTable *ht = &dxfio_write_ht;
+ Tcl_HashEntry *entry = NULL;
+ char err[255];
+ dxfio_writecb *cb = NULL;
+ double m1[16] = {0}, m2[16];
+ ay_tag *t = NULL;
+ ay_object *c = NULL, *to = NULL;
+ int i, numconvs = 3, conversions[3] = {AY_IDNPATCH, AY_IDNCURVE, AY_IDPOMESH};
+
+  if(!o || !dm)
+    return AY_ENULL;
+
+  // reset internal progress counter
+  dxfio_writeprogressdcb(0.0f, (void*)1);
+
+  if(dxfio_expselected && !o->selected)
+    return AY_OK;
+
+  if(dxfio_expobeynoexport && o->tags)
+    {
+      t = o->tags;
+      while(t)
+	{
+	  if(t->type == ay_noexport_tagtype)
+	    {
+	      return AY_OK;
+	    } // if
+	  t = t->next;
+	} // while
+    } // if
+
+  if(dxfio_expignorehidden && o->hide)
+    return AY_OK;
+
+  if((entry = Tcl_FindHashEntry(ht, (char *)(o->type))))
+    {
+      cb = (dxfio_writecb*)Tcl_GetHashValue(entry);
+      if(cb)
+	{
+	  if((o->movx != 0.0) || (o->movy != 0.0) || (o->movz != 0.0) ||
+	     (o->rotx != 0.0) || (o->roty != 0.0) || (o->rotz != 0.0) ||
+	     (o->scalx != 1.0) || (o->scaly != 1.0) || (o->scalz != 1.0) ||
+	     (o->quat[0] != 0.0) || (o->quat[1] != 0.0) ||
+	     (o->quat[2] != 0.0) || (o->quat[3] != 1.0))
+	    {
+	      ay_trafo_creatematrix(o, m1);
+	      memcpy(m2, tm, 16*sizeof(double));
+	      ay_trafo_multmatrix4(m2, m1);
+	      ay_status = cb(o, dm, m2);
+	    }
+	  else
+	    {
+	      ay_status = cb(o, dm, tm);
+	    } // if
+
+	  if(ay_status)
+	    {
+	      ay_error(AY_ERROR, fname, "Error exporting object.");
+	      ay_status = AY_OK;
+	    } // if
+	} // if
+    }
+  else
+    {
+      // can not export directly => try to convert object
+      for(i = 0; i < numconvs; i++)
+	{
+	  to = NULL;
+	  ay_status = ay_provide_object(o, conversions[i], &to);
+	  to = c;
+	  while(to)
+	    {
+	      ay_status = dxfio_writeobject(to, dm);
+	      to = to->next;
+	    }
+
+	  if(c)
+	    {
+	      ay_object_deletemulti(c);
+	      i = -1;
+	      break;
+	    }
+	} // for
+      if(i != -1)
+	{
+	  sprintf(err, "Cannot export objects of type: %s.",
+		  ay_object_gettypename(o->type));
+	  ay_error(AY_EWARN, fname, err);
+	}
+    } // if
+
+ return ay_status;
+} // dxfio_writeobject
+
+
+// dxfio_writetcmd:
+//
+int
+dxfio_writetcmd(ClientData clientData, Tcl_Interp *interp,
+	       int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ char fname[] = "dxfio_write";
+ const char *filename = NULL;
+ int i = 2, li;
+ ay_object *o;
+ char aname[] = "dxfio_options", vname1[] = "Progress";
+
+  // set default parameters
+  dxfio_scalefactor = 1.0;
+
+  // check args
+  if(argc < 2)
+    {
+      ay_error(AY_EARGS, fname, "filename");
+      return TCL_OK;
+    }
+
+  // parse args
+  filename = argv[1];
+
+  while(i+1 < argc)
+    {
+      if(!strcmp(argv[i], "-c"))
+	{
+	  sscanf(argv[i+1], "%d", &dxfio_exportcurves);
+	}
+      else
+      if(!strcmp(argv[i], "-s"))
+	{
+	  sscanf(argv[i+1], "%d", &dxfio_expselected);
+	}
+      else
+      if(!strcmp(argv[i], "-o"))
+	{
+	  sscanf(argv[i+1], "%d", &dxfio_expobeynoexport);
+	}
+      else
+      if(!strcmp(argv[i], "-i"))
+	{
+	  sscanf(argv[i+1], "%d", &dxfio_expignorehidden);
+	}
+      else
+      if(!strcmp(argv[i], "-l"))
+	{
+	  sscanf(argv[i+1], "%d", &dxfio_exptoplevellayers);
+	}
+      else
+      if(!strcmp(argv[i], "-f"))
+	{
+	  sscanf(argv[i+1], "%lg", &dxfio_scalefactor);
+	}
+      else
+      if(!strcmp(argv[i], "-t"))
+	{
+	  dxfio_stagname = argv[i+1];
+	  dxfio_ttagname = argv[i+2];
+	  i++;
+	}
+      i += 2;
+    } // while
+
+  // initialize and open output file
+  dimeOutput out;
+  if(!out.setFilename(argv[1]))
+    {
+      ay_error(AY_EOPENFILE, fname, argv[1]);
+
+      dxfio_stagname = dxfio_stagnamedef;
+      dxfio_ttagname = dxfio_ttagnamedef;
+
+      return TCL_OK;
+    }
+
+  dimeModel dm;
+
+  // create layers from top level objects?
+  if(dxfio_exptoplevellayers)
+    {
+      li = 0;
+      o = ay_root->next;
+      while(o)
+	{
+	  if((o->type == AY_IDLEVEL) && o->next)
+	    {
+	      if(li >= 1)
+		{
+#if 0
+		  ON_Layer layer;
+		  layer.SetLayerIndex(li);
+		  if(o->name && strlen(o->name))
+		    layer.SetLayerName(o->name);
+		  else
+		    layer.SetLayerName("Unnamed_Layer");
+		  p_layer = new ON_Layer(layer);
+		  model.m_layer_table.Append(p_layer[0]);
+#endif
+		}
+	      li++;
+	    } // if
+	  o = o->next;
+	} // while
+    } // if
+
+  // fill object table
+  li = 0;
+  o = ay_root->next;
+  while(o)
+    {
+      ay_trafo_identitymatrix(tm);
+
+      if(dxfio_scalefactor != 1.0)
+	ay_trafo_scalematrix(dxfio_scalefactor, dxfio_scalefactor,
+			     dxfio_scalefactor, tm);
+
+      dxfio_currentlayer = 0;
+
+      if(dxfio_exptoplevellayers && (o->type == AY_IDLEVEL) && o->next)
+	{
+	  dxfio_currentlayer = li;
+	  li++;
+	}
+
+      ay_status = dxfio_writeobject(o, &dm);
+
+      o = o->next;
+    } // while
+
+  // set progress
+  Tcl_SetVar2(ay_interp, aname, vname1, "50",
+	      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  while(Tcl_DoOneEvent(TCL_DONT_WAIT)){};
+
+  // arrange to be called back when Dime writes the DXF file out
+  out.setCallback(dm.countRecords(), &dxfio_writeprogressdcb, NULL);
+
+  // write the model to the output file
+  if(!dm.write(&out))
+    {
+      ay_error(AY_ERROR, fname, "Error writing file!");
+    }
+
+  // set progress
+  Tcl_SetVar2(ay_interp, aname, vname1, "100",
+	      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  while(Tcl_DoOneEvent(TCL_DONT_WAIT)){};
+
+  dxfio_stagname = dxfio_stagnamedef;
+  dxfio_ttagname = dxfio_ttagnamedef;
+
+ return TCL_OK;
+} // dxfio_writetcmd
+
+
+// dxfio_registerwritecb:
+//
+int
+dxfio_registerwritecb(char *name, dxfio_writecb *cb)
+{
+ int ay_status = AY_OK;
+ int new_item = 0;
+ Tcl_HashEntry *entry = NULL;
+ Tcl_HashTable *ht = &dxfio_write_ht;
+
+  if(!cb)
+    return AY_ENULL;
+
+  if((entry = Tcl_FindHashEntry(ht, name)))
+    {
+      return AY_ERROR; // name already registered
+    }
+  else
+    {
+      // create new entry
+      entry = Tcl_CreateHashEntry(ht, name, &new_item);
+      Tcl_SetHashValue(entry, (char*)cb);
+    }
+
+ return ay_status;
+} // dxfio_registerwritecb
+
+
+// dxfio_writeprogressdcb:
+//
+int
+dxfio_writeprogressdcb(float progress, void *clientdata)
+{
+ static float oldprogress = 0.0f;
+ char progressstr[32];
+ char fname[] = "dxfio_writefile";
+ char arrname[] = "dxfio_options", varname1[] = "Progress";
+ char varname2[] = "Cancel", *val = NULL;
+
+  if(clientdata != NULL)
+    {
+      oldprogress = 0.0f;
+      return 1;
+    }
+
+  // set progress counter in the GUI
+  if(progress-oldprogress > 0.05)
+    {
+      sprintf(progressstr, "%d", (int)(50.0f+(progress*50.0f)));
+
+      Tcl_SetVar2(ay_interp, arrname, varname1, progressstr,
+		  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      while(Tcl_DoOneEvent(TCL_DONT_WAIT)){};
+
+      oldprogress = progress;
+    } // if
+
+  // also, check for cancel button (at a somewhat higher frequency)
+  if(progress-oldprogress > 0.01)
+    {
+      val = Tcl_GetVar2(ay_interp, arrname, varname2,
+			TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      if(val && val[0] == '1')
+	{
+	  if(dxfio_errorlevel > 1)
+	    ay_error(AY_EWARN, fname,
+		   "Export cancelled! Not all objects may have been written!");
+	  return 0;
+	}
+    } // if
+
+  return 1;
+} // dxfio_writeprogressdcb
 
 extern "C" {
 
@@ -1909,14 +2372,25 @@ Dxfio_Init(Tcl_Interp *interp)
   // create new Tcl commands to interface with the plugin
   Tcl_CreateCommand(interp, "dxfioRead", dxfio_readtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
-  /*
+  
   Tcl_CreateCommand(interp, "dxfioWrite", dxfio_writetcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
-  */
-  /* init hash table for write callbacks */
+  
+  // init hash table for write callbacks
   Tcl_InitHashTable(&dxfio_write_ht, TCL_ONE_WORD_KEYS);
 
-  /* fill hash table */
+  // fill hash table
+  ay_status = dxfio_registerwritecb((char *)(AY_IDLEVEL),
+				   dxfio_writelevel);
+
+  ay_status = dxfio_registerwritecb((char *)(AY_IDCLONE),
+				   dxfio_writeclone);
+
+  ay_status = dxfio_registerwritecb((char *)(AY_IDINSTANCE),
+				   dxfio_writeinstance);
+
+  ay_status = dxfio_registerwritecb((char *)(AY_IDSCRIPT),
+				   dxfio_writescript);
 
 
   ay_error(AY_EOUTPUT, fname, "Plugin 'dxfio' successfully loaded.");
