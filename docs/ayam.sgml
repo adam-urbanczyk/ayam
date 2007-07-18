@@ -814,8 +814,8 @@ menu hierarchy. The label of the entry will be changed appropriately,
 e.g. to <tt/"Last (Revert U)"/, when a tool was started.
 
 <item><tt/"Create"/, <tt/"NURBCurve"/, and
-<tt/"NURBPatch"/, are sub-menus with various NURBS based modelling
-tools, that are explained in depth in section
+<tt/"NURBPatch"/, are sub-menus with various NURBS based creation
+and modelling tools, that are explained in depth in section
 <ref id="nmtool" name="NURBS Modelling Tools">.
 
 <item><tt/"PolyMesh"/: sub-menu for polygonal mesh related tools:
@@ -886,7 +886,8 @@ separately!
 </itemize>
 
 <item><tt/"Show"/, <tt/"Hide"/ set and unset the <tt/"Hide"/
-attribute of the selected object(s) thus making them invisible.
+attribute of the selected object(s) thus making them invisible
+or visible again.
 Note that hidden objects may be excluded from RIB-Export, when
 the preference setting <tt>"RIB-Export/ExcludeHidden"</tt> is
 activated.
@@ -911,8 +912,8 @@ new converted ones. This operation, in contrast to the simple
 conversion, is undoable.
 
 <item><tt/"Force Notification"/, force the notification callbacks of
-all selected objects (or all objects in the scene if no objects are selected)
-to be called. The notification callbacks are used by objects
+all selected objects (or all objects in the scene if no objects are
+selected) to be called. The notification callbacks are used by objects
 like e.g. Revolve to be informed about changes of their child
 objects to properly adapt to those changes.
 
@@ -924,8 +925,8 @@ have no normal objects that refer to them. It will also not work
 for objects that have no material assigned. If the reference counter
 of a material object is not zero, but <tt/"Highlight Material"/
 reports 0 objects found, the referring objects probably reside
-in the object clipboard. You can clear the tree view again by pressing
-<tt/&lt;Ctrl+l&gt;/.
+in the object clipboard. You can clear the color from the tree view
+with the keyboard shortcut <tt/&lt;Ctrl+l&gt;/.
 </itemize>
 
 <label id="mmcustom">
@@ -984,7 +985,7 @@ for more information regarding automatic instancing.
 <item><tt>"Tags/Add RiOption"</tt>, pops up a small dialog box, where you may
 select and parameterize a RiOption tag to add as tag to the Root object
 (see <ref id="riotag" name="RiOption Tag">). The Root object does
-not have to be selected, and the current selection will not be changed
+not have to be selected and the current selection will not be changed
 by this action.
 
 <item><tt>"Tags/Add RiAttribute"</tt>, pops up a small dialog box, where
@@ -1024,22 +1025,23 @@ affected!
 
 <item><tt>"Select Renderer"</tt> opens a dialog where the renderer
 for direct rendering from a view may be choosen.
-The changes will have effect on all options that
-control direct rendering from a view, except whether RenderGUIs should
+The changes will have effect on all preference settings that control
+direct rendering from a view, except whether RenderGUIs should
 be used.
 If the <tt>"ScanShaders"</tt> checkmark is activated, Ayam will
 additionally try to load the corresponding shader parsing plugin
-(see also section <ref id="spplugins" name="Shader Parsing Plugins">))
+(see also section <ref id="spplugins" name="Shader Parsing Plugins">)
 and rescan for compiled shaders. Note that in order for the
-<tt>"ScanShaders"</tt> feature to work
-properly you also have to set the <tt>"Main/Shaders"</tt> and
-<tt>"Main/Plugins"</tt> preference setting correctly
+<tt>"ScanShaders"</tt> feature to work properly the <tt>"Main/Shaders"</tt>
+and <tt>"Main/Plugins"</tt> preference settings have to be set correctly
 (see also section <ref id="prefmain" name="The Main Preferences">).
 
-<item><tt>"Scan Shaders"</tt> initiates the shader scanning.
+<item><tt>"Scan Shaders"</tt> initiates the shader parsing with the
+built in shader parser or the currently loaded shader parsing plugin
+(see also section <ref id="spplugins" name="Shader Parsing Plugins">).
 
-<item><tt>"Reset Preferences"</tt> removes the current ayamrc file
-where the preferences are saved, after a restart of Ayam, all
+<item><tt>"Reset Preferences"</tt> removes the current ayamrc file,
+where the preferences are saved; after a restart of Ayam, all
 preferences will be reset to factory defaults. See also
 section <ref id="ayamrc" name="Ayamrc File"> for more information
 about the ayamrc file.
@@ -6778,8 +6780,11 @@ Note that most of the scripting interface commands listed in this
 documentation work in the background, without changing anything to
 the Ayam GUI and Ayam view windows, for the sake of execution speed.
 If you want your changes to become visible you have to update the
-various parts of the GUI explicitly
+various parts of the GUI (property GUIs, view windows) explicitly
 (see also section <ref id="sciupd" name="Updating the GUI">).
+Since Ayam 1.13 it is also possible to automatically run GUI updating
+commands in the console by using <tt/&lt;Shift+Return&gt;/ instead
+of <tt/&lt;Return&gt;/.
 <p>
 If you want your changes to be undoable, you have to arrange for
 this manually too
@@ -6789,7 +6794,7 @@ this manually too
 From scripts it may be necessary to check wether an error occured
 during the execution of a command. All commands return
 TCL_OK in any case so checking their return value avails to nothing,
-but they set the global Tcl variable <tt>ay_error</tt> to a value
+but they set the global Tcl variable <tt>"ay_error"</tt> to a value
 higher than 1 if an error occured. You need to set it to zero before
 and check it after the operation in question to see whether the
 operation performed successfully:
@@ -6803,12 +6808,18 @@ proc myProc { } {
 }
 </code>
 
-<sect1>Global Variables
+<sect1>Global Variables and Arrays
 <p>
 Several global variables exist in the Ayam Tcl context, that may be useful
 for scripts.
 
-<sect2>The global array ay<label id="ayarray">
+<sect2>Global Variables
+<p>
+<itemize>
+<item> The ay_error variable holds the current error state
+</itemize>
+
+<sect2>The Global Array ay<label id="ayarray">
 <p>
 The global array <tt/"ay"/ holds application state variables.
 Furthermore, you can find the paths to important widgets
@@ -6817,7 +6828,7 @@ active view) in this array.
 Use <tt/"parray ay"/ in the console to see what is there.
 More documentation to come.
 
-<sect2>The global array ayprefs<label id="ayprefs">
+<sect2>The Global Array ayprefs<label id="ayprefs">
 <p>
 The global array <tt/"ayprefs"/ holds preferences data.
 The complete array is saved in the <tt/"ayamrc"/ file upon exit,
@@ -6826,6 +6837,47 @@ You can reset your <tt/"ayamrc"/ file anytime using the command line
 option <tt/"-failsafe"/.
 Use <tt/"parray ayprefs"/ in the console to see what is there.
 More documentation to come.
+
+<sect2>The Global Property Management and Data Arrays<label id="ayproparr">
+<p>
+For every property, a corresponding global array exists, where the data
+of the property is saved.
+This global array only holds useful data when the respective
+property GUI is active, or when it has been filled explicitly by
+the so called get-property callback.
+The data may be transferred back to the selected object using
+the so called set-property callback.
+The names of the array and the callbacks may be inferred from another global
+array that is always named like the property itself, e.g. for the tags
+property the following global array <tt/"Tags"/ is defined:
+<code>
+array set Tags {
+arr   tagsPropData
+sproc setTagsp
+gproc getTagsp
+w     fTagsAttr
+}
+</code>
+The entry arr designates the name of the global property data array.
+If sproc or gproc are empty (<tt/""/), a standard callback
+named <tt/"setProp"/ or <tt/"getProp"/ should be used to get
+or set the property values. Otherwise sproc and gproc designate
+the set-property and get-property callbacks respectively.
+<p>
+The following global arrays and callbacks to get or set the data
+exist:
+<itemize>
+ <item>property, array, get-property callback, set-property callback
+ <item>Transformations, transfPropData, getTrafo, setTrafo
+ <item>Attributes, attrPropData, getAttr, setAttrp
+ <item>Material, matPropData, getMat, setMat
+ <item>Tags, tagsPropData, getTagsp, setTagsp
+ <item>list incomplete, more to come...
+</itemize>
+See also section
+<ref id="sciprop" name="Manipulating Properties">
+for more information on how to edit property values from the
+scripting interface.
 
 <sect1>Index of Procedures and Commands
 <p>
@@ -6968,43 +7020,15 @@ radius may be set to the new value <tt/"3.0"/ easily using the command
 <tt/"setProperty SphereAttr(Radius) 3.0"/
 </itemize>
 <p>
-Direct (fast) access of property values:
-<p>
-Every property has a corresponding global array, where the data
-of the property is saved.
-This global array only holds useful data when the respective
-property GUI is active, or when it has been filled explicitly by
-the so called get-property callback.
-The data may be transferred back to the selected object using
-the so called set-property callback.
-The names of the array and the callbacks may be inferred from another global
-array that is named like the property itself, e.g. for the tags
-property the following global array <tt/"Tags"/ is defined:
+In contrast to <tt/"setProperty"/, here is an equivalent example for the
+direct (fast) access of property values:
 <code>
-array set Tags {
-arr   tagsPropData
-sproc setTagsp
-gproc getTagsp
-w     fTagsAttr
-}
+getProp
+set SphereAttrData(Radius) 3.0
+setProp
 </code>
-The entry arr designates the name of the global property data array.
-If sproc or gproc are empty (<tt/""/), a standard callback
-named <tt/"setProp"/ or <tt/"getProp"/ should be used to get
-or set the property values. Otherwise sproc and gproc designate
-the set-property and get-property callbacks respectively.
-<p>
-The following global arrays and callbacks to get or set the data
-exist:
-<itemize>
- <item>property, array, get-property callback, set-property callback
- <item>Transformations, transfPropData, getTrafo, setTrafo
- <item>Attributes, attrPropData, getAttr, setAttrp
- <item>Material, matPropData, getMat, setMat
- <item>Tags, tagsPropData, getTagsp, setTagsp
- <item>list incomplete, more to come...
-</itemize>
-
+See also section
+<ref id="ayproparr" name="Global Property Management and Data Arrays">.
 
 <sect2>Clipboard Operations<label id="sciclip">
 <p>
@@ -7592,6 +7616,15 @@ as the property selected before plb_update was started (this is not
 necessarily a property of the same type).
 </itemize>
 
+Since Ayam 1.13 it is also possible to automatically run GUI updating
+commands in the console by using <tt/&lt;Shift+Return&gt;/ instead
+of <tt/&lt;Return&gt;/. The commands from the hidden preference setting
+<tt/"AUCommands"/ will be executed after the commands from the command
+line, if the <tt/&lt;Shift&gt;/ key is held down. <tt/&lt;Shift+Return&gt;/
+may also be used without commands on the command line.
+By default, the <tt/"AUCommands"/ are <tt/"uS; rV;"/, leading to
+updated object tree, property GUI, and views.
+
 <sect2>Custom Objects<label id="scicust">
 <p>
 This command manages custom objects (plugins):
@@ -8084,8 +8117,11 @@ CSG|Yes|No|No|No|No|No@<hline>
 </enum>
 
 Note that a successful export also depends on the quality of the
-importing application.
+importing application. Many applications claim to read
+Wavefront OBJ but only read polygonal data from such files.
 
+The next sections document the various import and export plugins
+in detail.
 
 <sect1>Mops Import<label id="impmops">
 <p>
@@ -8300,7 +8336,7 @@ to the real documentation sections.
 <p>
 RIB export is always available, it does not need a plugin to be loaded.
 The corresponding main menu entry is <tt>"File/Export/RenderMan RIB"</tt>
-and the keyboard shortcut is <tt/&lt;Ctrl+E&gt;/.
+and the corresponding keyboard shortcut is <tt/&lt;Ctrl+E&gt;/.
 To control the RIB export and rendering, many options exist that are
 documented in section <ref id="prefrib" name="RIB export preferences">.
 <p>
@@ -8313,6 +8349,9 @@ RenderMan renderers to directly render the exported RIB files to
 the screen or to an image file.
 Documentation on how to export/render directly from a view window
 can be found in section <ref id="vmview" name="The View Menu">.
+<p>
+RIB export is also possible using the scripting interface,
+see section.
 
 <sect1>Wavefront OBJ Import<label id="impwav">
 <p>
