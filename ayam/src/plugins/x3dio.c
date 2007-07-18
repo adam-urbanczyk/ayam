@@ -375,7 +375,7 @@ x3dio_trafotoobject(ay_object *o, double *transform)
  char fname[] = "x3dio_trafotoobject";
 
   if(!o || !transform)
-    return AY_ENULL;
+    return;
 
   o->scalx = 1.0;
   o->scaly = 1.0;
@@ -3516,6 +3516,11 @@ x3dio_readnurbscurve(scew_element *element, unsigned int dim)
   if(klen >= len+order)
     {
       has_knots = AY_TRUE;
+      /* rescale knots to safe distance? */
+      if(x3dio_rescaleknots != 0.0)
+	{
+	  ay_knots_rescaletomindist(klen, knots, x3dio_rescaleknots);
+	}
     }
 
   if(len > 1)
@@ -3645,11 +3650,21 @@ x3dio_readnurbspatchsurface(scew_element *element, int trimmed)
   if(uklen >= (unsigned int)width+uorder)
     {
       has_uknots = AY_TRUE;
+      /* rescale knots to safe distance? */
+      if(x3dio_rescaleknots != 0.0)
+	{
+	  ay_knots_rescaletomindist(uklen, uknots, x3dio_rescaleknots);
+	}
     }
   ay_status = x3dio_readdoublepoints(element, "vKnot", 1, &vklen, &vknots);
   if(vklen >= (unsigned int)height+vorder)
     {
       has_vknots = AY_TRUE;
+      /* rescale knots to safe distance? */
+      if(x3dio_rescaleknots != 0.0)
+	{
+	  ay_knots_rescaletomindist(vklen, vknots, x3dio_rescaleknots);
+	}
     }
 
   if(len > 1)
@@ -4027,11 +4042,13 @@ x3dio_readviewpoint(scew_element *element)
  char command[255] = {0}, update_cmd[] = "update";
  ay_object *root = ay_root, *down, *last;
  ay_view_object *v = NULL;
- ay_camera_object c = {0};
+ ay_camera_object c;
  x3dio_trafostate *trafo = NULL;
 
   if(!element)
     return AY_ENULL;
+
+  memset(&c, 0, sizeof(ay_camera_object));
 
   ay_status = x3dio_readfloatvec(element, "position", 3, position);
 
