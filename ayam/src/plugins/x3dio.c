@@ -47,6 +47,7 @@ x3dio_trafostate *x3dio_ctrafos = NULL;
 
 /* import/export options: */
 int x3dio_importcurves = AY_TRUE;
+int x3dio_importviews = AY_TRUE;
 int x3dio_exportcurves = AY_TRUE;
 int x3dio_expselected = AY_FALSE;
 int x3dio_expobeynoexport = AY_TRUE;
@@ -4908,7 +4909,10 @@ x3dio_readelement(scew_element *element)
     case 'V':
       if(!strcmp(element_name, "Viewpoint"))
 	{
-	  ay_status = x3dio_readviewpoint(element);
+	  if(x3dio_importviews)
+	    {
+	      ay_status = x3dio_readviewpoint(element);
+	    }
 	  handled_elements = 1;
 	}
       break;
@@ -5003,7 +5007,8 @@ x3dio_readtcmd(ClientData clientData, Tcl_Interp *interp,
  int ay_status = AY_OK;
  char fname[] = "x3dioRead";
  char errstr[256];
- int i = 2;
+ char *minus;
+ int i = 2, slayer = -1, elayer = -1;
  double accuracy = 0.1;
  char arrname[] = "x3dio_options", varname[] = "Progress";
  scew_tree *tree = NULL;
@@ -5014,6 +5019,7 @@ x3dio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 
   /* set default import options and reset global counters */
   x3dio_importcurves = AY_TRUE;
+  x3dio_importviews = AY_TRUE;
   x3dio_rescaleknots = 0.0;
   x3dio_scalefactor = 1.0;
   x3dio_mergeinlinedefs = AY_FALSE;
@@ -5043,6 +5049,11 @@ x3dio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 	  sscanf(argv[i+1], "%d", &x3dio_importcurves);
 	}
       else
+      if(!strcmp(argv[i], "-v"))
+	{
+	  sscanf(argv[i+1], "%d", &x3dio_importviews);
+	}
+      else
       if(!strcmp(argv[i], "-e"))
 	{
 	  sscanf(argv[i+1], "%d", &x3dio_errorlevel);
@@ -5069,6 +5080,33 @@ x3dio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 	  x3dio_ttagname = argv[i+2];
 	  i++;
 	}
+      else
+      if(!strcmp(argv[i], "-l"))
+	{
+	  if(argv[i+1])
+	    {
+	      if(*argv[i+1] != '-')
+		{
+		  sscanf(argv[i+1], "%d", &slayer);
+		  elayer = slayer;
+		  if((strlen(argv[i+1]) > 3) &&
+		     (minus = strchr(/*(const char*)*/(&(argv[i+1][1])), '-')))
+		    {
+		      minus++;
+		      if(*minus != '\0')
+			{
+			  sscanf(minus, "%d", &elayer);
+			}
+		      else
+			{
+			  ay_error(AY_ERROR, fname,
+	    "could not parse layer range, specify it as: startindex-endindex");
+			  return TCL_OK;
+			} // if
+		    } // if
+		} // if
+	    } // if
+	} // if
       i += 2;
     } /* while */
 
