@@ -40,6 +40,9 @@
 #include <dime/entities/Vertex.h>
 #include <dime/sections/BlocksSection.h>
 #include <dime/sections/EntitiesSection.h>
+#include <dime/sections/TablesSection.h>
+#include <dime/tables/LayerTable.h>
+#include <dime/tables/Table.h>
 #include <dime/util/Linear.h>
 
 #include <stdio.h>
@@ -267,7 +270,7 @@ dxfio_read3dface(const class dimeState *state,
 
   if(!(newo = (ay_object*)calloc(1, sizeof(ay_object))))
     { return AY_EOMEM; }
-  
+
   ay_status = ay_object_defaults(newo);
 
   tdface->getVertices(v0, v1, v2, v3);
@@ -1868,9 +1871,23 @@ dxfio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 
 typedef int (dxfio_writecb) (ay_object *o, dimeModel *dm, double *m);
 
-int dxfio_writeprogressdcb(float progress, void *clientdata);
+int dxfio_writelevel(ay_object *o, dimeModel *dm, double *m);
+
+int dxfio_writeclone(ay_object *o, dimeModel *dm, double *m);
+
+int dxfio_writeinstance(ay_object *o, dimeModel *dm, double *m);
+
+int dxfio_writescript(ay_object *o, dimeModel *dm, double *m);
 
 int dxfio_writeobject(ay_object *o, dimeModel *dm);
+
+int dxfio_writetcmd(ClientData clientData, Tcl_Interp *interp,
+		    int argc, char *argv[]);
+
+int dxfio_registerwritecb(char *name, dxfio_writecb *cb);
+
+int dxfio_writeprogressdcb(float progress, void *clientdata);
+
 
 // dxfio_writelevel:
 //
@@ -2093,7 +2110,7 @@ dxfio_writeobject(ay_object *o, dimeModel *dm)
 //
 int
 dxfio_writetcmd(ClientData clientData, Tcl_Interp *interp,
-	       int argc, char *argv[])
+		int argc, char *argv[])
 {
  int ay_status = AY_OK;
  char fname[] = "dxfio_write";
@@ -2170,6 +2187,13 @@ dxfio_writetcmd(ClientData clientData, Tcl_Interp *interp,
 
   dimeModel dm;
 
+  // add tables section (needed for layers).
+  dimeTablesSection *tables = new dimeTablesSection;
+  dm.insertSection(tables);
+    
+  // set up a layer table to store our layers
+  dimeTable *layers = new dimeTable(NULL);
+
   // create layers from top level objects?
   if(dxfio_exptoplevellayers)
     {
@@ -2181,24 +2205,40 @@ dxfio_writetcmd(ClientData clientData, Tcl_Interp *interp,
 	    {
 	      if(li >= 1)
 		{
-#if 0
-		  ON_Layer layer;
-		  layer.SetLayerIndex(li);
+		  dimeLayerTable *layer = new dimeLayerTable;
 		  if(o->name && strlen(o->name))
-		    layer.SetLayerName(o->name);
+		    layer->setLayerName(o->name, NULL);
 		  else
-		    layer.SetLayerName("Unnamed_Layer");
-		  p_layer = new ON_Layer(layer);
-		  model.m_layer_table.Append(p_layer[0]);
-#endif
+		    layer->setLayerName("Unnamed", NULL);
+
+		  // the color numbers are defined in dime/Layer.cpp.
+		  //layer->setColorNumber(colnum);
+
+		  // need to set some extra records so that AutoCAD will stop
+		  // complaining
+		  dimeParam param;
+		  param.string_data = "CONTINUOUS";
+		  layer->setRecord(6, param);
+		  param.int16_data = 64;
+		  layer->setRecord(70, param);
+		  // important, register layer in model
+		  layer->registerLayer(&dm);
+		  layers->insertTableEntry(layer);
 		}
 	      li++;
 	    } // if
 	  o = o->next;
 	} // while
     } // if
+    
+  // insert the layer in the table
+  tables->insertTable(layers); 
 
-  // fill object table
+  // add the entities section.
+  dimeEntitiesSection *entities = new dimeEntitiesSection;
+  dm.insertSection(entities);
+
+  // fill entities section
   li = 0;
   o = ay_root->next;
   while(o)
@@ -2336,7 +2376,7 @@ Dxfio_Init(Tcl_Interp *interp)
 #endif // WIN32
 {
  char fname[] = "dxfio_init";
- // int ay_status = AY_OK;
+ int ay_status = AY_OK;
 
   if(Tcl_InitStubs(interp, "8.2", 0) == NULL)
     {
@@ -2372,10 +2412,10 @@ Dxfio_Init(Tcl_Interp *interp)
   // create new Tcl commands to interface with the plugin
   Tcl_CreateCommand(interp, "dxfioRead", dxfio_readtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
-  
+
   Tcl_CreateCommand(interp, "dxfioWrite", dxfio_writetcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
-  
+
   // init hash table for write callbacks
   Tcl_InitHashTable(&dxfio_write_ht, TCL_ONE_WORD_KEYS);
 
