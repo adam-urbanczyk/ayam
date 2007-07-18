@@ -215,7 +215,7 @@ int x3dio_readtree(scew_tree *tree);
 int x3dio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[]);
 
-/********************/
+/****************************************************************************/
 
 /* low-level export support functions */
 unsigned int x3dio_count(ay_object *o);
@@ -374,6 +374,9 @@ x3dio_trafotoobject(ay_object *o, double *transform)
  double axis[3], quat[4] = {0};
  char fname[] = "x3dio_trafotoobject";
 
+  if(!o || !transform)
+    return AY_ENULL;
+
   o->scalx = 1.0;
   o->scaly = 1.0;
   o->scalz = 1.0;
@@ -387,12 +390,16 @@ x3dio_trafotoobject(ay_object *o, double *transform)
 
   quat[3] = 1.0;
 
-  if(fabs(transform[15]) <= AY_EPSILON )
-    return;
+  if(fabs(transform[15]) <= AY_EPSILON)
+    {
+      return;
+    }
 
   /* normalize matrix */
   for(i = 0; i < 16; i++)
+    {
       transform[i] /= transform[15];
+    }
 
   /* decompose matrix */
 
@@ -1822,7 +1829,7 @@ x3dio_readindexedtrianglestripset(scew_element *element)
  int *coordi = NULL;
  int normalPerVertex = AY_FALSE;
  double *coords = NULL, *normals = NULL;
- unsigned int i, j, k, totalverts = 0;
+ unsigned int i, j, k;
 
   if(!element)
     return AY_ENULL;
@@ -1857,7 +1864,6 @@ x3dio_readindexedtrianglestripset(scew_element *element)
 	  else
 	    {
 	      pomesh.npolys++;
-	      totalverts++;
 	    }
 	} /* for */
       if(coordi[coordilen-1] != -1)
@@ -1870,7 +1876,7 @@ x3dio_readindexedtrianglestripset(scew_element *element)
 	{ ay_status = AY_EOMEM; goto cleanup; }
       if(!(pomesh.nverts = calloc(pomesh.npolys, sizeof(unsigned int))))
 	{ ay_status = AY_EOMEM; goto cleanup; }
-      if(!(pomesh.verts = calloc(totalverts, sizeof(unsigned int))))
+      if(!(pomesh.verts = calloc(pomesh.npolys*3, sizeof(unsigned int))))
 	{ ay_status = AY_EOMEM; goto cleanup; }
 
       /* fill polymesh index arrays */
@@ -1883,7 +1889,7 @@ x3dio_readindexedtrianglestripset(scew_element *element)
 	  pomesh.nverts[i] = 3;
 	} /* for */
       j = 0; k = 0;
-      for(i = 0; i < pomesh.npolys; i++)
+      for(i = 0; i < pomesh.npolys-1; i++)
 	{
 	  pomesh.verts[i*3]   = coordi[k];
 	  pomesh.verts[i*3+1] = coordi[k+1];
@@ -1897,6 +1903,10 @@ x3dio_readindexedtrianglestripset(scew_element *element)
 	      k++;
 	    }
 	} /* for */
+
+      pomesh.verts[i*3]   = coordi[k];
+      pomesh.verts[i*3+1] = coordi[k+1];
+      pomesh.verts[i*3+2] = coordi[k+2];
 
       /* copy coordinate values and normals */
       pomesh.ncontrols = coordlen;
@@ -1970,7 +1980,7 @@ x3dio_readindexedtrianglefanset(scew_element *element)
  int *coordi = NULL;
  int normalPerVertex = AY_FALSE;
  double *coords = NULL, *normals = NULL;
- unsigned int i, j, k, totalverts = 0;
+ unsigned int i, j, k;
 
   if(!element)
     return AY_ENULL;
@@ -2005,7 +2015,6 @@ x3dio_readindexedtrianglefanset(scew_element *element)
 	  else
 	    {
 	      pomesh.npolys++;
-	      totalverts++;
 	    }
 	} /* for */
       if(coordi[coordilen-1] != -1)
@@ -2018,7 +2027,7 @@ x3dio_readindexedtrianglefanset(scew_element *element)
 	{ ay_status = AY_EOMEM; goto cleanup; }
       if(!(pomesh.nverts = calloc(pomesh.npolys, sizeof(unsigned int))))
 	{ ay_status = AY_EOMEM; goto cleanup; }
-      if(!(pomesh.verts = calloc(totalverts, sizeof(unsigned int))))
+      if(!(pomesh.verts = calloc(pomesh.npolys*3, sizeof(unsigned int))))
 	{ ay_status = AY_EOMEM; goto cleanup; }
 
       /* fill polymesh index arrays */
@@ -2031,7 +2040,7 @@ x3dio_readindexedtrianglefanset(scew_element *element)
 	  pomesh.nverts[i] = 3;
 	} /* for */
       j = 0; k = 0;
-      for(i = 0; i < pomesh.npolys; i++)
+      for(i = 0; i < pomesh.npolys-1; i++)
 	{
 	  pomesh.verts[i*3]   = coordi[j];
 	  pomesh.verts[i*3+1] = coordi[k+1];
@@ -2046,6 +2055,10 @@ x3dio_readindexedtrianglefanset(scew_element *element)
 	      k++;
 	    }
 	} /* for */
+
+      pomesh.verts[i*3]   = coordi[j];
+      pomesh.verts[i*3+1] = coordi[k+1];
+      pomesh.verts[i*3+2] = coordi[k+2];
 
       /* copy coordinate values and normals */
       pomesh.ncontrols = coordlen;
@@ -3487,6 +3500,12 @@ x3dio_readnurbscurve(scew_element *element, unsigned int dim)
 
   ay_status = x3dio_readfloatpoints(element, "controlPoint", dim, &len, &cv);
 
+  if(len == 0)
+    {
+      ay_status = x3dio_readcoords(element, &len, &dcv);
+      is_double = AY_TRUE;
+    }
+
   ay_status = x3dio_readdoublepoints(element, "weight", 1, &wlen, &w);
   if(wlen >= len)
     {
@@ -3497,12 +3516,6 @@ x3dio_readnurbscurve(scew_element *element, unsigned int dim)
   if(klen >= len+order)
     {
       has_knots = AY_TRUE;
-    }
-
-  if(len == 0)
-    {
-      ay_status = x3dio_readcoords(element, &len, &dcv);
-      is_double = AY_TRUE;
     }
 
   if(len > 1)
@@ -3616,6 +3629,12 @@ x3dio_readnurbspatchsurface(scew_element *element, int trimmed)
 
   ay_status = x3dio_readfloatpoints(element, "controlPoint", 3, &len, &cv);
 
+  if(len == 0)
+    {
+      ay_status = x3dio_readcoords(element, &len, &dcv);
+      is_double = AY_TRUE;
+    }
+
   ay_status = x3dio_readdoublepoints(element, "weight", 1, &wlen, &w);
   if(wlen >= len)
     {
@@ -3631,12 +3650,6 @@ x3dio_readnurbspatchsurface(scew_element *element, int trimmed)
   if(vklen >= (unsigned int)height+vorder)
     {
       has_vknots = AY_TRUE;
-    }
-
-  if(len == 0)
-    {
-      ay_status = x3dio_readcoords(element, &len, &dcv);
-      is_double = AY_TRUE;
     }
 
   if(len > 1)
@@ -3749,9 +3762,13 @@ x3dio_readnurbspatchsurface(scew_element *element, int trimmed)
 
 	  /* create endlevel object */
 	  if(x3dio_lrobject)
-	    ay_object_crtendlevel(&(x3dio_lrobject->next));
+	    {
+	      ay_object_crtendlevel(&(x3dio_lrobject->next));
+	    }
 	  else
-	    ay_object_crtendlevel(&(o->down));
+	    {
+	      ay_object_crtendlevel(&(o->down));
+	    }
 	  ay_next = old_aynext;
 	}
       else
@@ -6725,7 +6742,9 @@ x3dio_writescene(char *filename, int selected)
 	{
 	  x3dio_allobjcnt++;
 	  if(sel->object->down && sel->object->down->next)
-	    x3dio_allobjcnt += x3dio_count(sel->object->down);
+	    {
+	      x3dio_allobjcnt += x3dio_count(sel->object->down);
+	    }
 	  sel = sel->next;
 	}
     } /* if */
