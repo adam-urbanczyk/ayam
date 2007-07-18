@@ -14,6 +14,7 @@ uplevel #0 { array set x3dio_options {
     Cancel 0
     ErrorLevel 1
     ReadCurves 1
+    ReadViews 1
     ReadLayers -1
     MergeInlineDefs 0
     IgnoreFirstTrim 0
@@ -69,6 +70,7 @@ proc x3dio_import { } {
 
 #    addParam $f x3dio_options Accuracy [list 0.0 1.0e-12 0.1 1]
     addCheck $f x3dio_options ReadCurves
+    addCheck $f x3dio_options ReadViews
 #    addCheck $f x3dio_options IgnoreFirstTrim
     addParam $f x3dio_options ReadLayers [list "-1" 1 1-10]
     addParam $f x3dio_options RescaleKnots [list 0.0 1.0e-4]
@@ -91,6 +93,7 @@ proc x3dio_import { } {
 	x3dioRead [file tail $x3dio_options(FileName)]\
 	    -a $x3dio_options(Accuracy)\
 	    -c $x3dio_options(ReadCurves)\
+	    -v $x3dio_options(ReadViews)\
 	    -e $x3dio_options(ErrorLevel)\
 	    -l $x3dio_options(ReadLayers)\
 	    -i $x3dio_options(IgnoreFirstTrim)\
