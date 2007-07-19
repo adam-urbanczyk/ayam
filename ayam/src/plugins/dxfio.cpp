@@ -1889,6 +1889,142 @@ int dxfio_registerwritecb(char *name, dxfio_writecb *cb);
 int dxfio_writeprogressdcb(float progress, void *clientdata);
 
 
+// dxfio_writepomesh:
+//
+int
+dxfio_writepomesh(ay_object *o, dimeModel *dm, double *m)
+{
+ int ay_status = AY_OK;
+ ay_pomesh_object *pm;
+ int stride = 3;
+ bool has_vnormals = false;
+ unsigned int a, f = 0, i, j, k, p = 0, q = 0, r = 0;
+
+  if(!o || !p_m || !m)
+    return AY_ENULL;
+
+  pm = (ay_pomesh_object *)(o->refine);
+
+  if(pm->has_normals)
+    has_vnormals = TRUE;
+
+  bool needtess = false;
+  for(i = 0; i < pm->npolys; i++)
+    {
+      if(pm->nloops[i] == 1)
+	{
+	  for(j = 0; j < pm->nloops[p]; j++)
+	    {
+	      if(pm->nverts[q] > 4)
+		{
+		  needtess = true;
+		  break;
+		}
+	    } // for
+	}
+      else
+	{
+	  needtess = true;
+	  break;
+	} // if
+      if(needtess == true)
+	break;
+    } // for
+
+  if(needtess)
+    {
+      ay_pomesh_object *trpm = NULL;
+      ay_status = ay_tess_pomesh(pm, AY_TRUE, &trpm);
+      if(trpm)
+	{
+	  pm = trpm;
+	}
+      else
+	{
+	  return AY_ERROR;
+	}
+    } // if
+
+  dimePolyline *pl = new dimePolyline;
+
+  pl->setFlags(IS_POLYFACE_MESH);
+
+  // set vertex coordinates and normals
+  a = 0;
+  if(pm->has_normals)
+    stride += 3;
+  
+  dimeVertex *cvertices = new dimeVertex[pm->ncontrols];
+
+  for(i = 0; i < pm->ncontrols; i++)
+    {
+      dimeVec3f v;
+      v.setValue(pm->controlv[a], pm->controlv[a+1], pm->controlv[a+2]);
+      cvertices[i].setCoords(v);
+      cvertices[i].setFlags(POLYFACE_MESH_VERTEX);
+      a += stride;
+    } // for
+
+  pl->setCoordVertices(cvertices, pm->ncontrols, NULL);
+
+  int totalverts = 0;
+  for(i = 0; i < pm->npolys; i++)
+    {
+      for(j = 0; j < pm->nloops[p]; j++)
+	{
+	  totalverts += pm->nverts[q];
+	  q++;
+	}
+      p++;
+    }
+
+  dimeVertex *ivertices = new dimeVertex[totalverts];
+
+  // set faces
+  for(i = 0; i < pm->npolys; i++)
+    {
+      for(j = 0; j < pm->nloops[p]; j++)
+	{
+	  if(pm->nverts[q] == 3)
+	    {
+	      // this is a triangle
+	      ivertices[f].setIndex(0, pm->verts[r]);
+	      ivertices[f].setIndex(1, pm->verts[r+1]);
+	      ivertices[f].setIndex(2, pm->verts[r+2]);
+
+	      f++;
+	      r += 3;
+	    } // if
+	  if(pm->nverts[q] == 4)
+	    {
+	      // this is a quad
+	      //p_mesh->SetQuad(f, pm->verts[r], pm->verts[r+1],
+	      //	  pm->verts[r+2], pm->verts[r+3]);
+	      f++;
+	      r += 4;
+	    } // if
+	  q++;
+	} // for
+      p++;
+    } // for
+
+  pl->setIndexVertices(ivertices, totalverts, NULL);
+
+  // append to object table
+  
+  pl->setLayer(dxfio_currentlayer);
+
+ cleanup:
+
+  if(trpm)
+    {
+      free(trpm);
+    }
+
+ return ay_status;
+} // dxfio_writepomesh
+
+
 // dxfio_writelevel:
 //
 int
