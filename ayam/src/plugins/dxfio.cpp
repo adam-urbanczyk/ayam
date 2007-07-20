@@ -1895,20 +1895,23 @@ int
 dxfio_writepomesh(ay_object *o, dimeModel *dm, double *m)
 {
  int ay_status = AY_OK;
- ay_pomesh_object *pm;
- int stride = 3;
+ ay_pomesh_object *pm, *trpm = NULL;
+ int stride = 3, iverts = 0;
  bool has_vnormals = false;
- unsigned int a, f = 0, i, j, k, p = 0, q = 0, r = 0;
+ bool needtess = false;
+ unsigned int a, f = 0, i, j, p = 0, q = 0, r = 0;
+ dimePolyline *pl = NULL;
+ dimeVertex *cvertices = NULL, *ivertices = NULL;
+ dimeVertex **cverticesarr = NULL, **iverticesarr = NULL;
 
-  if(!o || !p_m || !m)
+  if(!o || !dm || !m)
     return AY_ENULL;
 
   pm = (ay_pomesh_object *)(o->refine);
 
   if(pm->has_normals)
-    has_vnormals = TRUE;
+    has_vnormals = true;
 
-  bool needtess = false;
   for(i = 0; i < pm->npolys; i++)
     {
       if(pm->nloops[i] == 1)
@@ -1933,7 +1936,6 @@ dxfio_writepomesh(ay_object *o, dimeModel *dm, double *m)
 
   if(needtess)
     {
-      ay_pomesh_object *trpm = NULL;
       ay_status = ay_tess_pomesh(pm, AY_TRUE, &trpm);
       if(trpm)
 	{
@@ -1945,42 +1947,68 @@ dxfio_writepomesh(ay_object *o, dimeModel *dm, double *m)
 	}
     } // if
 
-  dimePolyline *pl = new dimePolyline;
+  pl = new dimePolyline;
 
-  pl->setFlags(IS_POLYFACE_MESH);
+  if(!pl)
+    {
+      ay_status = AY_EOMEM;
+      goto cleanup;
+    }
+
+  pl->setFlags(dimePolyline::POLYFACE_MESH);
 
   // set vertex coordinates and normals
+
+  cvertices = new dimeVertex[(int)pm->ncontrols];
+
+  if(!cvertices)
+    { ay_status = AY_EOMEM; goto cleanup; }
+
+  cverticesarr = (dimeVertex**)calloc((int)pm->ncontrols, sizeof(dimeVertex*));
+
+  if(!cverticesarr)
+    { ay_status = AY_EOMEM; goto cleanup; }
+
   a = 0;
   if(pm->has_normals)
     stride += 3;
-  
-  dimeVertex *cvertices = new dimeVertex[pm->ncontrols];
 
   for(i = 0; i < pm->ncontrols; i++)
     {
       dimeVec3f v;
       v.setValue(pm->controlv[a], pm->controlv[a+1], pm->controlv[a+2]);
       cvertices[i].setCoords(v);
-      cvertices[i].setFlags(POLYFACE_MESH_VERTEX);
+      cvertices[i].setFlags(dimeVertex::POLYFACE_MESH_VERTEX);
+      cverticesarr[i] = &cvertices[i];
       a += stride;
     } // for
 
-  pl->setCoordVertices(cvertices, pm->ncontrols, NULL);
+  pl->setCoordVertices(cverticesarr, (int)pm->ncontrols, NULL);
 
-  int totalverts = 0;
   for(i = 0; i < pm->npolys; i++)
     {
       for(j = 0; j < pm->nloops[p]; j++)
 	{
-	  totalverts += pm->nverts[q];
+	  if((pm->nverts[q] == 3) || (pm->nverts[q] == 4))
+	     iverts++;
 	  q++;
 	}
       p++;
     }
 
-  dimeVertex *ivertices = new dimeVertex[totalverts];
+  ivertices = new dimeVertex[iverts];
 
+  if(!ivertices)
+    { ay_status = AY_EOMEM; goto cleanup; }
+
+  iverticesarr = (dimeVertex**)calloc(iverts, sizeof(dimeVertex*));
+
+  if(!iverticesarr)
+    { ay_status = AY_EOMEM; goto cleanup; }
+    
   // set faces
+  p = 0;
+  q = 0;
   for(i = 0; i < pm->npolys; i++)
     {
       for(j = 0; j < pm->nloops[p]; j++)
@@ -1991,6 +2019,7 @@ dxfio_writepomesh(ay_object *o, dimeModel *dm, double *m)
 	      ivertices[f].setIndex(0, pm->verts[r]);
 	      ivertices[f].setIndex(1, pm->verts[r+1]);
 	      ivertices[f].setIndex(2, pm->verts[r+2]);
+	      iverticesarr[f] = &ivertices[f];
 
 	      f++;
 	      r += 3;
@@ -1998,8 +2027,12 @@ dxfio_writepomesh(ay_object *o, dimeModel *dm, double *m)
 	  if(pm->nverts[q] == 4)
 	    {
 	      // this is a quad
-	      //p_mesh->SetQuad(f, pm->verts[r], pm->verts[r+1],
-	      //	  pm->verts[r+2], pm->verts[r+3]);
+	      ivertices[f].setIndex(0, pm->verts[r]);
+	      ivertices[f].setIndex(1, pm->verts[r+1]);
+	      ivertices[f].setIndex(2, pm->verts[r+2]);
+	      ivertices[f].setIndex(3, pm->verts[r+3]);
+	      iverticesarr[f] = &ivertices[f];
+
 	      f++;
 	      r += 4;
 	    } // if
@@ -2008,16 +2041,28 @@ dxfio_writepomesh(ay_object *o, dimeModel *dm, double *m)
       p++;
     } // for
 
-  pl->setIndexVertices(ivertices, totalverts, NULL);
+  pl->setIndexVertices(iverticesarr, iverts, NULL);
 
   // append to object table
   
-  pl->setLayer(dxfio_currentlayer);
+  //pl->setLayer(dxfio_currentlayer);
 
- cleanup:
+  dm->addEntity(pl);
+
+cleanup:
 
   if(trpm)
     {
+      if(trpm->nloops)
+	free(trpm->nloops);
+      if(trpm->nverts)
+	free(trpm->nverts);
+      if(trpm->verts)
+	free(trpm->verts);
+
+      if(trpm->controlv)
+	free(trpm->controlv);
+
       free(trpm);
     }
 
@@ -2567,6 +2612,9 @@ Dxfio_Init(Tcl_Interp *interp)
 
   ay_status = dxfio_registerwritecb((char *)(AY_IDSCRIPT),
 				   dxfio_writescript);
+
+  ay_status = dxfio_registerwritecb((char *)(AY_IDPOMESH),
+				   dxfio_writepomesh);
 
 
   ay_error(AY_EOUTPUT, fname, "Plugin 'dxfio' successfully loaded.");
