@@ -1955,7 +1955,7 @@ dxfio_writepomesh(ay_object *o, dimeModel *dm, double *m)
       goto cleanup;
     }
 
-  pl->setFlags(dimePolyline::POLYFACE_MESH);
+  pl->setFlags(dimePolyline::IS_POLYFACE_MESH);
 
   // set vertex coordinates and normals
 
@@ -2016,9 +2016,10 @@ dxfio_writepomesh(ay_object *o, dimeModel *dm, double *m)
 	  if(pm->nverts[q] == 3)
 	    {
 	      // this is a triangle
-	      ivertices[f].setIndex(0, pm->verts[r]);
-	      ivertices[f].setIndex(1, pm->verts[r+1]);
-	      ivertices[f].setIndex(2, pm->verts[r+2]);
+	      ivertices[f].setIndex(0, pm->verts[r]+1);
+	      ivertices[f].setIndex(1, pm->verts[r+1]+1);
+	      ivertices[f].setIndex(2, pm->verts[r+2]+1);
+	      ivertices[f].setFlags(dimeVertex::POLYFACE_MESH_VERTEX);
 	      iverticesarr[f] = &ivertices[f];
 
 	      f++;
@@ -2027,10 +2028,10 @@ dxfio_writepomesh(ay_object *o, dimeModel *dm, double *m)
 	  if(pm->nverts[q] == 4)
 	    {
 	      // this is a quad
-	      ivertices[f].setIndex(0, pm->verts[r]);
-	      ivertices[f].setIndex(1, pm->verts[r+1]);
-	      ivertices[f].setIndex(2, pm->verts[r+2]);
-	      ivertices[f].setIndex(3, pm->verts[r+3]);
+	      ivertices[f].setIndex(0, pm->verts[r]+1);
+	      ivertices[f].setIndex(1, pm->verts[r+1]+1);
+	      ivertices[f].setIndex(2, pm->verts[r+2]+1);
+	      ivertices[f].setIndex(3, pm->verts[r+3]+1);
 	      iverticesarr[f] = &ivertices[f];
 
 	      f++;
