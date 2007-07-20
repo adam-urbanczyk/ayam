@@ -10,7 +10,6 @@
 # dxfio.tcl - dxfio (AutoCAD DXF) plugin GUI code
 
 uplevel #0 { array set dxfio_options {
-    Accuracy 1.0e-12
     Cancel 0
     ErrorLevel 1
     ReadCurves 1
@@ -20,7 +19,6 @@ uplevel #0 { array set dxfio_options {
     ObeyNoExport 1
     IgnoreHidden 1
     WriteCurves 1
-    QuadAsBRep 1
     RescaleKnots 0.0
     TopLevelLayers 0
     ScaleFactor 1.0
@@ -66,13 +64,12 @@ proc dxfio_import { } {
 
     addParam $f dxfio_options ScaleFactor [list 0.01 0.1 1.0 10.0 100.0]
 
-#    addParam $f dxfio_options Accuracy [list 0.0 1.0e-12 0.1 1]
     addCheck $f dxfio_options ReadCurves
 #    addCheck $f dxfio_options IgnoreFirstTrim
     addParam $f dxfio_options ReadLayers [list "-1" 1 1-10]
     addParam $f dxfio_options RescaleKnots [list 0.0 1.0e-4]
-#    addString $f dxfio_options STagName
-#    addString $f dxfio_options TTagName
+    addString $f dxfio_options STagName
+    addString $f dxfio_options TTagName
     addMenu $f dxfio_options ErrorLevel [list Silence Errors Warnings All]
     addProgress $f dxfio_options Progress
 
@@ -87,7 +84,6 @@ proc dxfio_import { } {
 	cd [file dirname $dxfio_options(FileName)]
 
 	dxfioRead [file tail $dxfio_options(FileName)]\
-	    -a $dxfio_options(Accuracy)\
 	    -c $dxfio_options(ReadCurves)\
 	    -e $dxfio_options(ErrorLevel)\
 	    -l $dxfio_options(ReadLayers)\
@@ -179,12 +175,11 @@ proc dxfio_export { } {
 
     addParam $f dxfio_options ScaleFactor [list 0.01 0.1 1.0 10.0 100.0]
 
-    addParam $f dxfio_options Accuracy
+
     addCheck $f dxfio_options WriteSelected
     addCheck $f dxfio_options ObeyNoExport
     addCheck $f dxfio_options IgnoreHidden
     addCheck $f dxfio_options WriteCurves
-    addCheck $f dxfio_options QuadAsBRep
     addCheck $f dxfio_options TopLevelLayers
     addString $f dxfio_options STagName
     addString $f dxfio_options TTagName
@@ -205,7 +200,6 @@ proc dxfio_export { } {
 
 	dxfioWrite [file tail $dxfio_options(FileName)]\
 	    -c $dxfio_options(WriteCurves)\
-	    -q $dxfio_options(QuadAsBRep)\
 	    -s $dxfio_options(WriteSelected)\
 	    -o $dxfio_options(ObeyNoExport)\
 	    -i $dxfio_options(IgnoreHidden)\
