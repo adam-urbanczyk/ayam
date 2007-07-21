@@ -1901,7 +1901,6 @@ dxfio_writepomesh(ay_object *o, dimeModel *dm, double *m)
  bool needtess = false;
  unsigned int a, f = 0, i, j, p = 0, q = 0, r = 0;
  dimePolyline *pl = NULL;
- dimeVertex *cvertices = NULL, *ivertices = NULL;
  dimeVertex **cverticesarr = NULL, **iverticesarr = NULL;
 
   if(!o || !dm || !m)
@@ -1958,12 +1957,6 @@ dxfio_writepomesh(ay_object *o, dimeModel *dm, double *m)
   pl->setFlags(dimePolyline::IS_POLYFACE_MESH);
 
   // set vertex coordinates and normals
-
-  cvertices = new dimeVertex[(int)pm->ncontrols];
-
-  if(!cvertices)
-    { ay_status = AY_EOMEM; goto cleanup; }
-
   cverticesarr = (dimeVertex**)calloc((int)pm->ncontrols, sizeof(dimeVertex*));
 
   if(!cverticesarr)
@@ -1976,10 +1969,11 @@ dxfio_writepomesh(ay_object *o, dimeModel *dm, double *m)
   for(i = 0; i < pm->ncontrols; i++)
     {
       dimeVec3f v;
+      dimeVertex *cvert = new dimeVertex;
       v.setValue(pm->controlv[a], pm->controlv[a+1], pm->controlv[a+2]);
-      cvertices[i].setCoords(v);
-      cvertices[i].setFlags(dimeVertex::POLYFACE_MESH_VERTEX);
-      cverticesarr[i] = &cvertices[i];
+      cvert->setCoords(v);
+      cvert->setFlags(dimeVertex::POLYFACE_MESH_VERTEX);
+      cverticesarr[i] = cvert;
       a += stride;
     } // for
 
@@ -1996,16 +1990,12 @@ dxfio_writepomesh(ay_object *o, dimeModel *dm, double *m)
       p++;
     }
 
-  ivertices = new dimeVertex[iverts];
-
-  if(!ivertices)
-    { ay_status = AY_EOMEM; goto cleanup; }
 
   iverticesarr = (dimeVertex**)calloc(iverts, sizeof(dimeVertex*));
 
   if(!iverticesarr)
     { ay_status = AY_EOMEM; goto cleanup; }
-    
+
   // set faces
   p = 0;
   q = 0;
@@ -2013,14 +2003,17 @@ dxfio_writepomesh(ay_object *o, dimeModel *dm, double *m)
     {
       for(j = 0; j < pm->nloops[p]; j++)
 	{
+
 	  if(pm->nverts[q] == 3)
 	    {
 	      // this is a triangle
-	      ivertices[f].setIndex(0, pm->verts[r]+1);
-	      ivertices[f].setIndex(1, pm->verts[r+1]+1);
-	      ivertices[f].setIndex(2, pm->verts[r+2]+1);
-	      ivertices[f].setFlags(dimeVertex::POLYFACE_MESH_VERTEX);
-	      iverticesarr[f] = &ivertices[f];
+	      dimeVertex *ivert = new dimeVertex;
+	      ivert->setIndex(0, pm->verts[r]+1);
+	      ivert->setIndex(1, pm->verts[r+1]+1);
+	      ivert->setIndex(2, pm->verts[r+2]+1);
+	      // XXXX unneeded?
+	      ivert->setFlags(dimeVertex::POLYFACE_MESH_VERTEX);
+	      iverticesarr[f] = ivert;
 
 	      f++;
 	      r += 3;
@@ -2028,11 +2021,14 @@ dxfio_writepomesh(ay_object *o, dimeModel *dm, double *m)
 	  if(pm->nverts[q] == 4)
 	    {
 	      // this is a quad
-	      ivertices[f].setIndex(0, pm->verts[r]+1);
-	      ivertices[f].setIndex(1, pm->verts[r+1]+1);
-	      ivertices[f].setIndex(2, pm->verts[r+2]+1);
-	      ivertices[f].setIndex(3, pm->verts[r+3]+1);
-	      iverticesarr[f] = &ivertices[f];
+	      dimeVertex *ivert = new dimeVertex;
+	      ivert->setIndex(0, pm->verts[r]+1);
+	      ivert->setIndex(1, pm->verts[r+1]+1);
+	      ivert->setIndex(2, pm->verts[r+2]+1);
+	      ivert->setIndex(3, pm->verts[r+3]+1);
+	      // XXXX unneeded?
+	      ivert->setFlags(dimeVertex::POLYFACE_MESH_VERTEX);
+	      iverticesarr[f] = ivert;
 
 	      f++;
 	      r += 4;
@@ -2045,7 +2041,7 @@ dxfio_writepomesh(ay_object *o, dimeModel *dm, double *m)
   pl->setIndexVertices(iverticesarr, iverts, NULL);
 
   // append to object table
-  
+
   //pl->setLayer(dxfio_currentlayer);
 
   dm->addEntity(pl);
@@ -2066,6 +2062,12 @@ cleanup:
 
       free(trpm);
     }
+
+  if(cverticesarr)
+    free(cverticesarr);
+
+  if(iverticesarr)
+    free(iverticesarr);
 
  return ay_status;
 } // dxfio_writepomesh
@@ -2372,7 +2374,7 @@ dxfio_writetcmd(ClientData clientData, Tcl_Interp *interp,
   // add tables section (needed for layers).
   dimeTablesSection *tables = new dimeTablesSection;
   dm.insertSection(tables);
-    
+
   // set up a layer table to store our layers
   dimeTable *layers = new dimeTable(NULL);
 
@@ -2412,9 +2414,9 @@ dxfio_writetcmd(ClientData clientData, Tcl_Interp *interp,
 	  o = o->next;
 	} // while
     } // if
-    
+
   // insert the layer in the table
-  tables->insertTable(layers); 
+  tables->insertTable(layers);
 
   // add the entities section.
   dimeEntitiesSection *entities = new dimeEntitiesSection;
