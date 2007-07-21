@@ -1871,6 +1871,10 @@ dxfio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 
 typedef int (dxfio_writecb) (ay_object *o, dimeModel *dm, double *m);
 
+int dxfio_writepomesh(ay_object *o, dimeModel *dm, double *m);
+
+int dxfio_writenpatch(ay_object *o, dimeModel *dm, double *m);
+
 int dxfio_writelevel(ay_object *o, dimeModel *dm, double *m);
 
 int dxfio_writeclone(ay_object *o, dimeModel *dm, double *m);
@@ -1896,6 +1900,7 @@ dxfio_writepomesh(ay_object *o, dimeModel *dm, double *m)
 {
  int ay_status = AY_OK;
  ay_pomesh_object *pm, *trpm = NULL;
+ double m1[16] = {0}, m2[16] = {0};
  int stride = 3, iverts = 0;
  bool has_vnormals = false;
  bool needtess = false;
@@ -1907,6 +1912,10 @@ dxfio_writepomesh(ay_object *o, dimeModel *dm, double *m)
     return AY_ENULL;
 
   pm = (ay_pomesh_object *)(o->refine);
+
+  memcpy(m2, m, 16*sizeof(double));
+  ay_trafo_creatematrix(o, m1);
+  ay_trafo_multmatrix4(m2, m1);
 
   if(pm->has_normals)
     has_vnormals = true;
@@ -1968,9 +1977,12 @@ dxfio_writepomesh(ay_object *o, dimeModel *dm, double *m)
 
   for(i = 0; i < pm->ncontrols; i++)
     {
+      double v3[3];
       dimeVec3f v;
       dimeVertex *cvert = new dimeVertex;
-      v.setValue(pm->controlv[a], pm->controlv[a+1], pm->controlv[a+2]);
+      memcpy(v3, &(pm->controlv[a]), 3*sizeof(double));
+      ay_trafo_apply3(v3, m2);
+      v.setValue(v3[0], v3[1], v3[2]);
       cvert->setCoords(v);
       cvert->setFlags(dimeVertex::POLYFACE_MESH_VERTEX);
       cverticesarr[i] = cvert;
@@ -1989,7 +2001,6 @@ dxfio_writepomesh(ay_object *o, dimeModel *dm, double *m)
 	}
       p++;
     }
-
 
   iverticesarr = (dimeVertex**)calloc(iverts, sizeof(dimeVertex*));
 
@@ -2071,6 +2082,38 @@ cleanup:
 
  return ay_status;
 } // dxfio_writepomesh
+
+
+// dxfio_writenpatch:
+//
+int
+dxfio_writenpatch(ay_object *o, dimeModel *dm, double *m)
+{
+ int ay_status = AY_OK;
+ ay_object *p = NULL, *t = NULL;
+
+  ay_status = ay_provide_object(o, AY_IDPOMESH, &p);
+  if(p)
+    {
+      t = p;
+      while(t)
+	{
+	  if(t->type == AY_IDPOMESH)
+	    {
+
+	      ay_status = dxfio_writeobject(t, dm);
+
+	    } // if
+	  t = t->next;
+	} // while
+
+      ay_status = ay_object_deletemulti(p);
+
+      return AY_OK;
+    } // if
+
+ return ay_status;
+} // dxfio_writenpatch
 
 
 // dxfio_writelevel:
@@ -2305,6 +2348,7 @@ dxfio_writetcmd(ClientData clientData, Tcl_Interp *interp,
 
   // set default parameters
   dxfio_scalefactor = 1.0;
+  ay_trafo_identitymatrix(tm);
 
   // check args
   if(argc < 2)
@@ -2618,6 +2662,9 @@ Dxfio_Init(Tcl_Interp *interp)
 
   ay_status = dxfio_registerwritecb((char *)(AY_IDPOMESH),
 				   dxfio_writepomesh);
+
+  ay_status = dxfio_registerwritecb((char *)(AY_IDNPATCH),
+				   dxfio_writenpatch);
 
 
   ay_error(AY_EOUTPUT, fname, "Plugin 'dxfio' successfully loaded.");
