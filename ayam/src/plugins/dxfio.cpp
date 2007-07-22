@@ -1875,6 +1875,8 @@ int dxfio_writepomesh(ay_object *o, dimeModel *dm, double *m);
 
 int dxfio_writenpatch(ay_object *o, dimeModel *dm, double *m);
 
+int dxfio_writencurve(ay_object *o, dimeModel *dm, double *m);
+
 int dxfio_writelevel(ay_object *o, dimeModel *dm, double *m);
 
 int dxfio_writeclone(ay_object *o, dimeModel *dm, double *m);
@@ -2116,6 +2118,78 @@ dxfio_writenpatch(ay_object *o, dimeModel *dm, double *m)
 } // dxfio_writenpatch
 
 
+// dxfio_writencurve:
+//
+int
+dxfio_writencurve(ay_object *o, dimeModel *dm, double *m)
+{
+ int ay_status = AY_OK;
+ ay_nurbcurve_object *nc = NULL;
+ double m1[16] = {0}, m2[16] = {0};
+ int stride = 4, a = 0;
+ bool has_weights = false;
+ dimeSpline *sp = NULL;
+ 
+  if(!o || !dm || !m)
+    return AY_ENULL;
+
+  nc = (ay_nurbcurve_object *)(o->refine);
+
+  memcpy(m2, m, 16*sizeof(double));
+  ay_trafo_creatematrix(o, m1);
+  ay_trafo_multmatrix4(m2, m1);
+
+  if(nc->is_rat)
+    has_weights = true;
+
+  sp = new dimeSpline;
+
+  sp->setFlags(0);
+
+  if(has_weights)
+    {
+      sp->setFlags(dimeSpline::RATIONAL);
+    }
+
+  sp->setDegree(nc->order-1);
+
+  dxfdouble *dk = (dxfdouble*)calloc(nc->length+nc->order, sizeof(dxfdouble));
+
+  for(int i = 0; i < nc->length+nc->order; i++)
+    {
+      dk[i] = (dxfdouble)nc->knotv[i];
+    }
+  sp->setKnotValues(dk, nc->length+nc->order, NULL);
+
+  dimeVec3f *dv = (dimeVec3f*)calloc(nc->length, sizeof(dimeVec3f));
+
+  for(int i = 0; i < nc->length; i++)
+    {
+      double v[3];
+      memcpy(v, &(nc->controlv[a]), 3*sizeof(double));
+      ay_trafo_apply3(v, m2);
+      dv[i].setValue((dxfdouble)v[0], (dxfdouble)v[1], (dxfdouble)v[2]);
+      a += stride;
+    }
+  
+  sp->setControlPoints(dv, nc->length, NULL);
+
+  if(has_weights)
+    {
+      a = 3;
+      for(int i = 0; i < nc->length; i++)
+	{
+	  sp->setWeight(i, (dxfdouble)nc->controlv[a], NULL);
+	  a += stride;
+	}
+    }
+
+  dm->addEntity(sp);
+
+ return ay_status;
+} // dxfio_writencurve
+
+
 // dxfio_writelevel:
 //
 int
@@ -2250,9 +2324,6 @@ dxfio_writeobject(ay_object *o, dimeModel *dm)
   if(!o || !dm)
     return AY_ENULL;
 
-  // reset internal progress counter
-  dxfio_writeprogressdcb(0.0f, (void*)1);
-
   if(dxfio_expselected && !o->selected)
     return AY_OK;
 
@@ -2305,8 +2376,8 @@ dxfio_writeobject(ay_object *o, dimeModel *dm)
       // can not export directly => try to convert object
       for(i = 0; i < numconvs; i++)
 	{
-	  to = NULL;
-	  ay_status = ay_provide_object(o, conversions[i], &to);
+	  c = NULL;
+	  ay_status = ay_provide_object(o, conversions[i], &c);
 	  to = c;
 	  while(to)
 	    {
@@ -2349,6 +2420,9 @@ dxfio_writetcmd(ClientData clientData, Tcl_Interp *interp,
   // set default parameters
   dxfio_scalefactor = 1.0;
   ay_trafo_identitymatrix(tm);
+
+  // reset internal progress counter
+  dxfio_writeprogressdcb(0.0f, (void*)1);
 
   // check args
   if(argc < 2)
@@ -2665,6 +2739,9 @@ Dxfio_Init(Tcl_Interp *interp)
 
   ay_status = dxfio_registerwritecb((char *)(AY_IDNPATCH),
 				   dxfio_writenpatch);
+
+  ay_status = dxfio_registerwritecb((char *)(AY_IDNCURVE),
+				   dxfio_writencurve);
 
 
   ay_error(AY_EOUTPUT, fname, "Plugin 'dxfio' successfully loaded.");
