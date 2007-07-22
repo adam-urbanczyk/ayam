@@ -79,7 +79,7 @@ int dxfio_exportcurves = AY_TRUE;
 int dxfio_expselected = AY_FALSE;
 int dxfio_expobeynoexport = AY_TRUE;
 int dxfio_expignorehidden = AY_TRUE;
-int dxfio_exptoplevellayers = AY_TRUE;
+int dxfio_exptoplevellayers = AY_FALSE;
 
 // first layer to read; -1: read all layers
 int dxfio_slayer = -1;
@@ -2133,6 +2133,9 @@ dxfio_writencurve(ay_object *o, dimeModel *dm, double *m)
   if(!o || !dm || !m)
     return AY_ENULL;
 
+  if(!dxfio_exportcurves)
+    return AY_OK;
+
   nc = (ay_nurbcurve_object *)(o->refine);
 
   memcpy(m2, m, 16*sizeof(double));
@@ -2445,6 +2448,12 @@ dxfio_writetcmd(ClientData clientData, Tcl_Interp *interp,
   // set default parameters
   dxfio_scalefactor = 1.0;
   ay_trafo_identitymatrix(tm);
+
+  dxfio_exportcurves = AY_TRUE;
+  dxfio_expselected = AY_FALSE;
+  dxfio_expobeynoexport = AY_TRUE;
+  dxfio_expignorehidden = AY_TRUE;
+  dxfio_exptoplevellayers = AY_FALSE;
 
   // reset internal progress counter
   dxfio_writeprogressdcb(0.0f, (void*)1);
