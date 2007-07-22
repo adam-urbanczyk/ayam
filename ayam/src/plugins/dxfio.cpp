@@ -2053,10 +2053,10 @@ dxfio_writepomesh(ay_object *o, dimeModel *dm, double *m)
 
   pl->setIndexVertices(iverticesarr, iverts, NULL);
 
-  // append to object table
+  // set to current layer
+  pl->setLayer(dm->getLayer(dxfio_currentlayer));
 
-  //pl->setLayer(dxfio_currentlayer);
-
+  // append to entities table
   dm->addEntity(pl);
 
 cleanup:
@@ -2184,6 +2184,10 @@ dxfio_writencurve(ay_object *o, dimeModel *dm, double *m)
 	}
     }
 
+  // set to current layer
+  sp->setLayer(dm->getLayer(dxfio_currentlayer));
+
+  // append to entities table
   dm->addEntity(sp);
 
  return ay_status;
