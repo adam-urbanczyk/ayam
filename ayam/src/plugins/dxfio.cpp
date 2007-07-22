@@ -2408,6 +2408,27 @@ dxfio_writeobject(ay_object *o, dimeModel *dm)
 } // dxfio_writeobject
 
 
+// dxfio_fixlayer:
+//
+int
+dxfio_fixlayer(dimeLayerTable *layer)
+{
+
+  if(!layer)
+    return AY_ENULL;
+
+  // need to set some extra records so that AutoCAD will stop
+  // complaining
+  dimeParam param;
+  param.string_data = "CONTINUOUS";
+  layer->setRecord(6, param);
+  param.int16_data = 64;
+  layer->setRecord(70, param);
+
+ return AY_OK;
+} // dxfio_fixlayer
+
+
 // dxfio_writetcmd:
 //
 int
@@ -2520,13 +2541,8 @@ dxfio_writetcmd(ClientData clientData, Tcl_Interp *interp,
 		  // the color numbers are defined in dime/Layer.cpp.
 		  //layer->setColorNumber(colnum);
 
-		  // need to set some extra records so that AutoCAD will stop
-		  // complaining
-		  dimeParam param;
-		  param.string_data = "CONTINUOUS";
-		  layer->setRecord(6, param);
-		  param.int16_data = 64;
-		  layer->setRecord(70, param);
+		  dxfio_fixlayer(layer);
+
 		  // important, register layer in model
 		  layer->registerLayer(&dm);
 		  layers->insertTableEntry(layer);
@@ -2535,6 +2551,17 @@ dxfio_writetcmd(ClientData clientData, Tcl_Interp *interp,
 	    } // if
 	  o = o->next;
 	} // while
+    }
+  else
+    {
+      dimeLayerTable *layer = new dimeLayerTable;
+      layer->setLayerName("Default", NULL);
+
+      dxfio_fixlayer(layer);
+
+      // important, register layer in model
+      layer->registerLayer(&dm);
+      layers->insertTableEntry(layer);
     } // if
 
   // insert the layer in the table
