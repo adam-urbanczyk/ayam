@@ -549,8 +549,9 @@ ay_prop_setmattcmd(ClientData clientData, Tcl_Interp *interp,
 int
 ay_prop_getnpinfo(Tcl_Interp *interp, char *n1, ay_object *o)
 {
-  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL, *to2 = NULL;
+ Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL, *to2 = NULL;
  char buffer[128], buffer2[128], buffer3[64], buffer4[64];
+ char buffer5[64];
  ay_nurbpatch_object *np = NULL;
 
   if(!interp || !n1)
@@ -613,20 +614,33 @@ ay_prop_getnpinfo(Tcl_Interp *interp, char *n1, ay_object *o)
       switch(np->vknot_type)
 	{
 	case AY_KTBEZIER:
-	  sprintf(&(buffer4[13])/*, sizeof(buffer)*/, "Bezier");
+	  sprintf(&(buffer4[13])/*, sizeof(buffer)*/, "Bezier\n");
 	  break;
 	case AY_KTBSPLINE:
-	  sprintf(&(buffer4[13])/*, sizeof(buffer)*/, "B-Spline");
+	  sprintf(&(buffer4[13])/*, sizeof(buffer)*/, "B-Spline\n");
 	  break;
 	case AY_KTNURB:
-	  sprintf(&(buffer4[13])/*, sizeof(buffer)*/, "NURB");
+	  sprintf(&(buffer4[13])/*, sizeof(buffer)*/, "NURB\n");
 	  break;
 	case AY_KTCUSTOM:
-	  sprintf(&(buffer4[13])/*, sizeof(buffer)*/, "CUSTOM");
+	  sprintf(&(buffer4[13])/*, sizeof(buffer)*/, "CUSTOM\n");
 	  break;
 	}
 
       Tcl_AppendToObj(to2, buffer4, -1);
+
+      sprintf(buffer5/*, sizeof(buffer)*/, "Is_Rational: ");
+
+      if(np->is_rat)
+	{
+	  sprintf(&(buffer5[13])/*, sizeof(buffer)*/, "Yes");
+	}
+      else
+	{
+	  sprintf(&(buffer5[13])/*, sizeof(buffer)*/, "No");
+	}
+
+      Tcl_AppendToObj(to2, buffer5, -1);
 
     }
   else
