@@ -1868,8 +1868,8 @@ onio_writeobject(ay_object *o, ONX_Model *p_m)
       // can not export directly => try to convert object
       for(i = 0; i < numconvs; i++)
 	{
-	  to = NULL;
-	  ay_status = ay_provide_object(o, conversions[i], &to);
+	  c = NULL;
+	  ay_status = ay_provide_object(o, conversions[i], &c);
 	  to = c;
 	  while(to)
 	    {
