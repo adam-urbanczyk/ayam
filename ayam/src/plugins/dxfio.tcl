@@ -61,15 +61,10 @@ proc dxfio_import { } {
 
     set types {{"DXF (AutoCAD) Files" ".dxf"} {"All files" *}}
     addFileT $f dxfio_options FileName $types
-
     addParam $f dxfio_options ScaleFactor [list 0.01 0.1 1.0 10.0 100.0]
-
     addCheck $f dxfio_options ReadCurves
-#    addCheck $f dxfio_options IgnoreFirstTrim
     addParam $f dxfio_options ReadLayers [list "-1" 1 1-10]
     addParam $f dxfio_options RescaleKnots [list 0.0 1.0e-4]
-    addString $f dxfio_options STagName
-    addString $f dxfio_options TTagName
     addMenu $f dxfio_options ErrorLevel [list Silence Errors Warnings All]
     addProgress $f dxfio_options Progress
 
@@ -87,10 +82,8 @@ proc dxfio_import { } {
 	    -c $dxfio_options(ReadCurves)\
 	    -e $dxfio_options(ErrorLevel)\
 	    -l $dxfio_options(ReadLayers)\
-	    -i $dxfio_options(IgnoreFirstTrim)\
 	    -r $dxfio_options(RescaleKnots)\
-	    -f $dxfio_options(ScaleFactor)\
-	    -t $dxfio_options(STagName) $dxfio_options(TTagName)
+	    -f $dxfio_options(ScaleFactor)
 
 	cd $oldcd
 	goTop
@@ -172,17 +165,12 @@ proc dxfio_export { } {
 
     set types {{"DXF (AutoCAD) Files" ".dxf"} {"All files" *}}
     addSFileT $f dxfio_options FileName $types
-
     addParam $f dxfio_options ScaleFactor [list 0.01 0.1 1.0 10.0 100.0]
-
-
     addCheck $f dxfio_options WriteSelected
     addCheck $f dxfio_options ObeyNoExport
     addCheck $f dxfio_options IgnoreHidden
     addCheck $f dxfio_options WriteCurves
     addCheck $f dxfio_options TopLevelLayers
-    addString $f dxfio_options STagName
-    addString $f dxfio_options TTagName
     addProgress $f dxfio_options Progress
 
     set ay(iapplydisable) 0
@@ -204,8 +192,7 @@ proc dxfio_export { } {
 	    -o $dxfio_options(ObeyNoExport)\
 	    -i $dxfio_options(IgnoreHidden)\
 	    -l $dxfio_options(TopLevelLayers)\
-	    -f $dxfio_options(ScaleFactor)\
-	    -t $dxfio_options(STagName) $dxfio_options(TTagName)
+	    -f $dxfio_options(ScaleFactor)
 
 	cd $oldcd
 	update
