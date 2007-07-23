@@ -1507,7 +1507,7 @@ dxfio_readentitydcb(const class dimeState *state,
 	return true;
     }
 
-
+  // use matching callback to convert the entity
   switch(entity->typeId())
     {
     case dimeBase::dime3DFaceType:
@@ -1960,10 +1960,7 @@ dxfio_writepomesh(ay_object *o, dimeModel *dm, double *m)
   pl = new dimePolyline;
 
   if(!pl)
-    {
-      ay_status = AY_EOMEM;
-      goto cleanup;
-    }
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   pl->setFlags(dimePolyline::IS_POLYFACE_MESH);
 
@@ -1982,6 +1979,9 @@ dxfio_writepomesh(ay_object *o, dimeModel *dm, double *m)
       double v3[3];
       dimeVec3f v;
       dimeVertex *cvert = new dimeVertex;
+      if(!cvert)
+	{ ay_status = AY_EOMEM; goto cleanup; }
+
       memcpy(v3, &(pm->controlv[a]), 3*sizeof(double));
       ay_trafo_apply3(v3, m2);
       v.setValue(v3[0], v3[1], v3[2]);
@@ -2021,6 +2021,9 @@ dxfio_writepomesh(ay_object *o, dimeModel *dm, double *m)
 	    {
 	      // this is a triangle
 	      dimeVertex *ivert = new dimeVertex;
+	      if(!ivert)
+		{ ay_status = AY_EOMEM; goto cleanup; }
+
 	      ivert->setIndex(0, pm->verts[r]+1);
 	      ivert->setIndex(1, pm->verts[r+1]+1);
 	      ivert->setIndex(2, pm->verts[r+2]+1);
@@ -2035,6 +2038,9 @@ dxfio_writepomesh(ay_object *o, dimeModel *dm, double *m)
 	    {
 	      // this is a quad
 	      dimeVertex *ivert = new dimeVertex;
+	      if(!ivert)
+		{ ay_status = AY_EOMEM; goto cleanup; }
+
 	      ivert->setIndex(0, pm->verts[r]+1);
 	      ivert->setIndex(1, pm->verts[r+1]+1);
 	      ivert->setIndex(2, pm->verts[r+2]+1);
@@ -2059,6 +2065,13 @@ dxfio_writepomesh(ay_object *o, dimeModel *dm, double *m)
   // append to entities table
   dm->addEntity(pl);
 
+  // prevent cleanup code to remove the verts
+  free(cverticesarr);
+  cverticesarr = NULL;
+
+  free(iverticesarr);
+  iverticesarr = NULL;
+
 cleanup:
 
   if(trpm)
@@ -2077,10 +2090,26 @@ cleanup:
     }
 
   if(cverticesarr)
-    free(cverticesarr);
+    {
+      i = 0;
+      while(cverticesarr[i])
+	{
+	  delete cverticesarr[i];
+	  i++;
+	}
+      free(cverticesarr);
+    }
 
   if(iverticesarr)
-    free(iverticesarr);
+    {
+      i = 0;
+      while(iverticesarr[i])
+	{
+	  delete iverticesarr[i];
+	  i++;
+	}
+      free(iverticesarr);
+    }
 
  return ay_status;
 } // dxfio_writepomesh
@@ -2143,9 +2172,13 @@ dxfio_writencurve(ay_object *o, dimeModel *dm, double *m)
   ay_trafo_multmatrix4(m2, m1);
 
   if(nc->is_rat)
-    has_weights = true;
+    {
+      has_weights = true;
+    }
 
   sp = new dimeSpline;
+  if(!sp)
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   sp->setFlags(0);
 
@@ -2157,14 +2190,19 @@ dxfio_writencurve(ay_object *o, dimeModel *dm, double *m)
   sp->setDegree(nc->order-1);
 
   dxfdouble *dk = (dxfdouble*)calloc(nc->length+nc->order, sizeof(dxfdouble));
+  if(!dk)
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   for(int i = 0; i < nc->length+nc->order; i++)
     {
       dk[i] = (dxfdouble)nc->knotv[i];
     }
   sp->setKnotValues(dk, nc->length+nc->order, NULL);
+  dk = NULL;
 
   dimeVec3f *dv = (dimeVec3f*)calloc(nc->length, sizeof(dimeVec3f));
+  if(!dv)
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   for(int i = 0; i < nc->length; i++)
     {
@@ -2192,6 +2230,16 @@ dxfio_writencurve(ay_object *o, dimeModel *dm, double *m)
 
   // append to entities table
   dm->addEntity(sp);
+
+  // prevent cleanup code from doing anything
+  sp = NULL;
+
+cleanup:
+
+  if(sp)
+    {
+      delete sp;
+    }
 
  return ay_status;
 } // dxfio_writencurve
@@ -2530,6 +2578,15 @@ dxfio_writetcmd(ClientData clientData, Tcl_Interp *interp,
   // set up a layer table to store our layers
   dimeTable *layers = new dimeTable(NULL);
 
+  dimeLayerTable *layer = new dimeLayerTable;
+  layer->setLayerName("Default", NULL);
+
+  dxfio_fixlayer(layer);
+
+  // important, register layer in model
+  layer->registerLayer(&dm);
+  layers->insertTableEntry(layer);
+
   // create layers from top level objects?
   if(dxfio_exptoplevellayers)
     {
@@ -2561,17 +2618,6 @@ dxfio_writetcmd(ClientData clientData, Tcl_Interp *interp,
 	  o = o->next;
 	} // while
     }
-  else
-    {
-      dimeLayerTable *layer = new dimeLayerTable;
-      layer->setLayerName("Default", NULL);
-
-      dxfio_fixlayer(layer);
-
-      // important, register layer in model
-      layer->registerLayer(&dm);
-      layers->insertTableEntry(layer);
-    } // if
 
   // insert the layer in the table
   tables->insertTable(layers);
@@ -2588,8 +2634,10 @@ dxfio_writetcmd(ClientData clientData, Tcl_Interp *interp,
       ay_trafo_identitymatrix(tm);
 
       if(dxfio_scalefactor != 1.0)
-	ay_trafo_scalematrix(dxfio_scalefactor, dxfio_scalefactor,
-			     dxfio_scalefactor, tm);
+	{
+	  ay_trafo_scalematrix(dxfio_scalefactor, dxfio_scalefactor,
+			       dxfio_scalefactor, tm);
+	}
 
       dxfio_currentlayer = 0;
 
