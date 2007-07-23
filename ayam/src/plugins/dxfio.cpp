@@ -97,10 +97,6 @@ double dxfio_rescaleknots = 0.0;
 // global scale factor
 double dxfio_scalefactor = 1.0;
 
-char dxfio_stagnamedef[] = "mys";
-char *dxfio_stagname = dxfio_stagnamedef;
-char dxfio_ttagnamedef[] = "myt";
-char *dxfio_ttagname = dxfio_ttagnamedef;
 
 // prototypes of functions local to this module:
 
@@ -1770,13 +1766,6 @@ dxfio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 	  sscanf(argv[i+1], "%lg", &dxfio_scalefactor);
 	}
       else
-      if(!strcmp(argv[i], "-t"))
-	{
-	  dxfio_stagname = argv[i+1];
-	  dxfio_ttagname = argv[i+2];
-	  i++;
-	}
-      else
       if(!strcmp(argv[i], "-l"))
 	{
 	  if(argv[i+1])
@@ -1858,9 +1847,6 @@ dxfio_readtcmd(ClientData clientData, Tcl_Interp *interp,
       free(dxfio_blocks);
       dxfio_blocks = t;
     }
-
-  dxfio_stagname = dxfio_stagnamedef;
-  dxfio_ttagname = dxfio_ttagnamedef;
 
  return TCL_OK;
 } // dxfio_readtcmd
@@ -2231,7 +2217,7 @@ dxfio_writencurve(ay_object *o, dimeModel *dm, double *m)
   // append to entities table
   dm->addEntity(sp);
 
-  // prevent cleanup code from doing anything
+  // prevent cleanup code from doing anything harmful
   sp = NULL;
 
 cleanup:
@@ -2547,13 +2533,7 @@ dxfio_writetcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  sscanf(argv[i+1], "%lg", &dxfio_scalefactor);
 	}
-      else
-      if(!strcmp(argv[i], "-t"))
-	{
-	  dxfio_stagname = argv[i+1];
-	  dxfio_ttagname = argv[i+2];
-	  i++;
-	}
+
       i += 2;
     } // while
 
@@ -2562,9 +2542,6 @@ dxfio_writetcmd(ClientData clientData, Tcl_Interp *interp,
   if(!out.setFilename(argv[1]))
     {
       ay_error(AY_EOPENFILE, fname, argv[1]);
-
-      dxfio_stagname = dxfio_stagnamedef;
-      dxfio_ttagname = dxfio_ttagnamedef;
 
       return TCL_OK;
     }
@@ -2670,9 +2647,6 @@ dxfio_writetcmd(ClientData clientData, Tcl_Interp *interp,
   Tcl_SetVar2(ay_interp, aname, vname1, "100",
 	      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   while(Tcl_DoOneEvent(TCL_DONT_WAIT)){};
-
-  dxfio_stagname = dxfio_stagnamedef;
-  dxfio_ttagname = dxfio_ttagnamedef;
 
  return TCL_OK;
 } // dxfio_writetcmd
