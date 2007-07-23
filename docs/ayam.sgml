@@ -6816,7 +6816,11 @@ for scripts.
 <sect2>Global Variables
 <p>
 <itemize>
-<item> The ay_error variable holds the current error state
+<item> The <tt/"ay_error"/ variable holds the current error state.
+See also section <ref id="scierr" name="Reporting Errors">.
+<item> The variable <tt/"i"/ is used by all <tt/"forAll"/
+command variants. See also section
+<ref id="scifall" name="Applying Commands to a Number of Objects">.
 </itemize>
 
 <sect2>The Global Array ay<label id="ayarray">
@@ -6866,14 +6870,17 @@ the set-property and get-property callbacks respectively.
 <p>
 The following global arrays and callbacks to get or set the data
 exist:
-<itemize>
- <item>property, array, get-property callback, set-property callback
- <item>Transformations, transfPropData, getTrafo, setTrafo
- <item>Attributes, attrPropData, getAttr, setAttrp
- <item>Material, matPropData, getMat, setMat
- <item>Tags, tagsPropData, getTagsp, setTagsp
- <item>list incomplete, more to come...
-</itemize>
+<table loc="ht">
+<tabular ca="|c|c|c|c|"><hline>
+property|array|get-property callback|set-property callback@<hline>
+Transformations|transfPropData|getTrafo|setTrafo@<hline>
+Attributes|attrPropData|getAttr|setAttrp@<hline>
+Material|matPropData|getMat|setMat@<hline>
+Tags|tagsPropData|getTagsp|setTagsp@<hline>
+</tabular>
+<caption>Property Arrays and Callbacks</caption>
+</table>
+
 See also section
 <ref id="sciprop" name="Manipulating Properties">
 for more information on how to edit property values from the
@@ -8098,12 +8105,21 @@ features per file format.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|c|c|"><hline>
 Feature|RIB|OBJ|3DMF(Apple)|DXF|3DM(Rhino)|X3D@<hline>
-Quadrics|Yes|No<f><sup>1</sup></f>|Yes|No<f><sup>2</sup></f>|Yes|Yes@<hline>
-Trimmed NURBS|Yes|Yes|Yes|No|Yes|Yes<f><sup>3</sup></f>@<hline>
-Parametrics|No|No|No|No|No|Some<f><sup>4</sup></f>@<hline>
+
+Quadrics|Yes|No<f><sup>1</sup></f>|Yes|No<f><sup>2</sup></f>|Some<f><sup>4</sup></f>|Yes@<hline>
+
+Trimmed NURBS|Yes|Yes|Yes|No<f><sup>2</sup></f>|Yes|Yes<f><sup>3</sup></f>@<hline>
+
+Parametrics|No<f><sup>1</sup></f>|No<f><sup>1</sup></f>|No<f><sup>1</sup></f>|No<f><sup>2</sup></f>|No<f><sup>1</sup></f>|Some<f><sup>5</sup></f>@<hline>
+
+Curves|No|Yes|Yes|Yes|Yes|Yes@<hline>
+
 Transformations|Yes|No|Yes|No|No|Yes@<hline>
+
 Hierarchy|Yes|No|Yes|No|No|Yes@<hline>
+
 Instances|Yes|No|No|No|No|Yes@<hline>
+
 CSG|Yes|No|No|No|No|No@<hline>
 </tabular>
 <caption>Ayam Features Supported by Various Export Formats</caption>
@@ -8113,13 +8129,20 @@ CSG|Yes|No|No|No|No|No@<hline>
 <item>will be converted to NURBS
 <item>will be converted to PolyMeshes
 <item>3D trimcurves exported as PolyLines
-<item>Revolutions and general Sweeps
+<item>Spheres, Cylinders, Cones, and Tori, otherwise converted to NURBS
+<item>Revolutions and general Sweeps, otherwise converted to NURBS
 </enum>
 
-Note that a successful export also depends on the quality of the
-importing application. Many applications claim to read
-Wavefront OBJ but only read polygonal data from such files.
-
+Note that a successful export not only depends on Ayam but also on the
+quality of the importing application. For instance, many applications
+claim to read files in the Wavefront OBJ format but only import polygonal
+data or, even worse, only triangles from such files.
+Consequently, in those cases you need to convert the NURBS objects in
+Ayam to polygonal geometry before export.
+<p>
+Ayam is not perfect either, as in most import options material and
+animation data is completely ignored.
+<p>
 The next sections document the various import and export plugins
 in detail.
 
@@ -8166,6 +8189,11 @@ Start importing a DXF file using the main menu entry
 <tt>"dxfio"</tt> plugin using the menu entry
 <tt>"File/Load Plugin"</tt> first).
 <p>
+Note that the entire DXF file is read into memory before any geometry is
+created.
+<p>
+<sect2>DXF Entity Support
+<p>
 The DXF import supports reading of the following entities:
 3DFACE, ARC, CIRCLE, ELLIPSE, LINE, SOLID, TRACE, BLOCK, INSERT,
 POLYLINE, LWPOLYLINE, SPLINE. Entities not listed here will
@@ -8193,10 +8221,9 @@ and instance objects (references).
 <p>
 Bulges and extrusions are not supported.
 <p>
-Note that the entire DXF file is read into memory before any geometry is
-created.
+<sect2>DXF Import Options<label id="impdxfopt">
 <p>
-The DXF import may be controlled via different options:<label id="impdxfopt">
+The DXF import may be controlled via different options:
 <itemize>
 <item><tt>"FileName"</tt> is the path and name of the DXF file to import.
 <item><tt>"ReadCurves"</tt> if this is disabled, no freeform curves will
@@ -8222,7 +8249,76 @@ should be printed.
 from 0 to 50 percent, Dime is reading the DXF file; from 50 to 100 percent,
 the dxfio plugin is converting the DXF entities to Ayam objects.
 </itemize>
+<p>
 
+<sect1>AutoCAD DXF Export<label id="expdxf">
+<p>
+The <tt>"dxfio"</tt> plugin allows to export Ayam scenes to AutoCAD DXF
+(drawing exchange format) files with the help of the Dime library
+(from Systems in Motion, AS).
+<p>
+Start exporting to a DXF file using the main menu entry
+<tt>"File/Export/AutoCAD DXF"</tt>
+(if this menu entry is not available, you have to load the
+<tt>"dxfio"</tt> plugin using the menu entry
+<tt>"File/Load Plugin"</tt> first).
+<p>
+Note that the entire Ayam scene is converted to a corresponding
+DXF model in memory before it is written to the DXF file.
+
+<sect2>Ayam Object and Properties Support
+<p>
+The export functionality of the dxfio plugin currently covers
+export of all boxes, quadrics, NURBS, PolyMeshes, instances, clones, script
+objects (of type <tt/"Create"/ or <tt/"Modify"/) and objects that
+may be converted to NURBS curves or surfaces or to PolyMeshes.
+However, all boxes and quadrics will be converted to NURBS surfaces
+and NURBS surfaces will be tesselated to PolyMeshes for export.
+<p>
+The scene hierarchy and CSG operations are fully ignored, all objects will
+be written as if combined by the union operator.
+<p>
+All transformations will be applied to the control points of the
+exported objects.
+<p>
+PolyMesh objects will be exported to Polyline (PolyFaceMesh) entities.
+If a PolyMesh object contains faces with holes or with more than four
+points, it will be tesselated for export. Eventually existing normals
+will not be exported.
+<p>
+NURBS curves will be exported as Spline entities.
+<p>
+Instance objects are resolved for export.
+<p>
+Light sources as well as Cameras, Views, and Materials are not exported.
+<p>
+Clamping the knot ranges of NURBS curves or surfaces via UMM/VMM tags is
+not supported. Texture coordinates will not be exported.
+<p>
+
+<sect2>DXF Export Options<label id="expdxfopt">
+<p>
+The DXF export may be controlled via different options:
+<itemize>
+<item><tt>"FileName"</tt> is the path and name of the DXF file to export to.
+<item><tt/"ScaleFactor"/ allows to apply a scaling factor to all
+exported objects.
+<item><tt/"WriteSelected"/: exports only the selected objects. 
+<item><tt/"ObeyNoExport"/: ignores all objects with <tt/"NoExport"/ tags. 
+<item><tt/"IgnoreHidden"/: ignores all hidden objects.
+<item><tt>"WriteCurves"</tt> if this is disabled, no freeform curves will
+be exported.
+<item><tt>"TopLevelLayers"</tt> controls whether the top level objects
+in the Ayam scene to be exported should be interpreted as layers.
+If this option is enabled, objects that are not in one of those levels
+will be written to the default layer. Furthermore, top level object names
+will become layer names.
+<item><tt/"Progress"/: displays the progress of the export;
+from 0 to 50 percent, the dxfio plugin is converting the Ayam objects
+to DXF entities; from 50 to 100 percent, Dime is writing the DXF file.
+</itemize>
+
+<p>
 <sect1>RenderMan Interface Bytestream (RIB) Import<label id="imprib">
 <p>
 Using the RRIB (Read RIB) plugin you may import RenderMan Interface
@@ -8232,6 +8328,8 @@ Start importing a RIB using the menu entry
 (if this menu entry is not available, you have to load the
 <tt>"rrib"</tt> plugin using the menu entry
 <tt>"File/Load Plugin"</tt> first).
+<p>
+<sect2>RIB Primitive Support
 <p>
 The RRIB plugin supports import of the following geometric
 primitives:
@@ -8257,7 +8355,9 @@ so much useful for a RIB import like e.g. RiMakeTexture.
 Unsupported geometric primitives and other calls to the RenderMan Interface
 are silently ignored.
 <p>
-The RIB import may be controlled via different options:<label id="rribopt">
+<sect2>RIB Import Options<label id="rribopt">
+<p>
+The RIB import may be controlled via different options:
 <itemize>
 <item><tt/"ScaleFactor"/, determines a global scale factor to be applied
 to all imported objects.
@@ -8326,9 +8426,9 @@ RenderMan Interface Bytestream (RIB) export is the most important export
 module of Ayam and in fact justifies its existence. All features of the
 Ayam object and scene structure are supported (hierarchy, CSG, instances,
 materials, lights).
-Furthermore, Ayam also supports rendering in multiple passes for
-shadow maps and permanent previews (where a RenderMan renderer is directly
-coupled to an Ayam view window).
+Furthermore, Ayam also supports direct rendering from view windows,
+rendering in multiple passes for shadow maps, and permanent previews
+(where a RenderMan renderer is directly coupled to an Ayam view window).
 <p>
 The documentation on RIB export is spread over the Ayam documentation,
 this section gives some general information and otherwise just points
@@ -8351,7 +8451,7 @@ Documentation on how to export/render directly from a view window
 can be found in section <ref id="vmview" name="The View Menu">.
 <p>
 RIB export is also possible using the scripting interface,
-see section.
+see section <ref id="script" name="The Tcl Scripting Interface">.
 
 <sect1>Wavefront OBJ Import<label id="impwav">
 <p>
@@ -8631,7 +8731,7 @@ pushing up 2D trim curves to 3D curves and
 checking NURBS surfaces for planarity).
 <item><tt/"WriteSelected"/: exports only the selected objects. 
 <item><tt/"ObeyNoExport"/: ignores all objects with <tt/"NoExport"/ tags. 
-<item><tt/"IgnoreHidden"/: ignores all hidden objects. 
+<item><tt/"IgnoreHidden"/: ignores all hidden objects.
 <item><tt/"WriteCurves"/: If the <tt/"WriteCurves"/ option is disabled,
 no curves will be written to the exported Rhino file. This option does
 not influence the export of trim curves.
@@ -8723,7 +8823,8 @@ Disks with an inner radius > 0.0 are imported as Hyperboloids (otherwise
 as Disks).
 
 <item>NURBS: NurbsCurve, NurbsCurve2D, NurbsPatchsurface,
-TrimmedNurbsPatchsurface, Contour2D, ContourPolyline2D.
+TrimmedNurbsPatchsurface, Contour2D, ContourPolyline2D,
+NurbsSweptSurface, NurbsSwungSurface.
 
 <item>Light sources: DirectionalLight, PointLight, SpotLight.
 
@@ -8801,12 +8902,13 @@ objects (of type <tt/"Create"/ or <tt/"Modify"/) and objects that
 may be converted to NURBS curves or surfaces or to PolyMeshes.
 The scene hierarchy (level objects) will be converted to a
 matching transform node hierarchy.
+<p>
 CSG operations are fully ignored, all objects will be written as
 if combined by the union operator.
 <p>
 Clamping the knot ranges of NURBS via UMM/VMM tags is not supported.
 <p>
-PolyMesh objects will be exported to IndexedFaceSet elements.
+PolyMesh objects will be exported to IndexedFaceSet nodes.
 PolyMesh faces with holes are tesselated. PolyMesh faces with more
 than three points are tesselated if the export option xyz is used.
 All tesselated faces will be exported to a second IndexedFaceSet
@@ -8906,16 +9008,21 @@ parsed by Tcl. Should you, for some reason, destroy your ayamrc so that
 Ayam does not start correctly anymore you may start Ayam with the command
 line option <tt>"-failsafe"</tt>.
 When the application is left the next time, or the main menu entry
-<tt>"Save Prefs"</tt> is invoked a correct ayamrc will be created again.
-All preference settings will be reset to factory defaults, however!<p>
+<tt>"File/Save Prefs"</tt> is invoked, a correct ayamrc file will be
+created again.
+All preference settings will be reset to factory defaults, however!
+<p>
 Another way to reset the ayamrc is to  simply delete it using the
 main menu entry <tt>"Special/Reset Preferences"</tt>.
-
+<p>
+To reset single elements to factory defaults, just remove the corresponding
+lines from the ayamrc file.
 
 <sect2>Changing Keyboard Shortcuts
 <p>
-You may adapt the shortcuts used in the GUI to your special needs using
-the ayamrc file. Note that if you do that the GUI (the menu entries)
+You may adapt the keyboard shortcuts used in the GUI to your special
+needs using the ayamrc file. Note that if you do that the GUI (the menu
+entries and the <tt>"Show Shortcuts"</tt> window)
 will adapt to your changes but certainly neither this documentation nor
 the tutorials!
 Ayam does not check for clashes! This means, the last set binding
@@ -8924,17 +9031,18 @@ On Unix, the output of the program <tt/xev/ and the
 manual page for the <tt/bind/ command of Tk provide helpful
 information about which strings may be used to describe
 key presses.
-You can also use the Ayam console for this, just enter:
+You can also directly use the Ayam console to infer key names, just enter:
 <code>
 toplevel .keytest
 bind .keytest <Key> {puts %K}
 </code>
+into the Ayam console.
 Now you can activate the new toplevel window and type on your keyboard
 while the Ayam console prints the names of the keys.
-
+<p>
 For your convenience, the special string <tt/"Ctrl"/ will be replaced by
 <tt/"Control"/ before a shortcut is handed to the <tt/bind/ command.
-
+<p>
 Example:
 <code>
 set aymainshortcuts(Prefs) {Ctrl-p}
@@ -8950,10 +9058,10 @@ preference settings:
 <itemize>
 
 <item><tt/"Balloon"/: time in ms until the tooltip window appears
-(default: 1500 - 1.5s)
+(default: 1500ms - 1.5s)
 
-<item><tt/"EFlush"/: time in ms between two flushes of the error message buffer
-(default: 2000 - 2s)
+<item><tt/"EFlush"/: time in ms between two flushes of the error message
+buffer (default: 2000ms - 2s)
 
 <item><tt/"toolBoxList"/: a list of sections or groups of buttons
 describing the appearance of the toolbox window (default, using all
@@ -8974,15 +9082,15 @@ automatically replaced by <tt>"cat.exe"</tt> on Win32)
 
 <item><tt/"KeepNTmpFiles"/: how many
 incarnations of the scene in RIB form (which actually may be split
-in more than one file due to e.g. instances) created by Direct
-Rendering should be kept on disk (default: 5)
+in more than one file due to e.g. instances) created when directly
+rendering from a view window should be kept on disk (default: 5)
 
 <item><tt/"Wpclip_pastetosel"/: should
 <tt>"Special/Clipboard/Paste Property to Selected"</tt> raise a warning
 requester? (default: 1 - yes)
 
 <item><tt/"DailyTips"/: a list of strings that appear as tips
-on startup in the console
+on startup in the console (default: large)
 
 <item><tt/"PickTolerance"/: the tolerance used to determine whether an object
 should be picked or not (default: 5); this setting determines the size
@@ -9004,14 +9112,14 @@ set to an empty string a default of
 will be used, which displays the name of the operations that you can
 undo and redo and the last component of the current
 directory of Ayam.
-You may e.g. change this to <tt/"[pwd]&gt;"/
-to see just the full path name of the current directory.
-If you want to display the value of a
+You may e.g. change this to <tt/"[pwd]&gt;"/ to see just the full path
+name of the current directory. If you want to display the value of a
 variable in the prompt (e.g. designating the current level in
 the scene hierarchy) you need to bind a write-trace to that variable,
 that calls the procedure <tt/"update_prompt"/. This write-trace
 may e.g. be established using a small script like this:
 <tt/"trace variable &lt;vname&gt; update_prompt"/.
+
 <item><tt/"BackupExt"/: is the file name extension to be used for backup
 files. Default values are <tt>"&tilde;"</tt> for Unix and
 <tt>".bak"</tt> for Win32.
@@ -9023,7 +9131,7 @@ color value of already drawn pixels by XOR. The default values
 are 255 for the red, 128 for the green, and 0 for the blue component.
 
 <item><tt/"IconGamma"/: this setting may be used to adapt the contrast
-of all icons (in view menu and toolbox) to your display gamma. If you
+of all icons (in view menu and the toolbox) to your display gamma. If you
 are on a SGI it is recommended to set this to about "0.7".
 
 <item><tt/"AddViewParams"/ allows to add custom parameters to the
@@ -9043,7 +9151,8 @@ by default and not used on the Win32 platform.
 (see section <ref id="prefgui" name="preference settings">)
 when certain dialog windows are open, so that they do not get
 shuffled under other windows by accidental mouse movements on systems
-where the window manager does only auto raise.
+where the window manager does only auto raise in conjunction with
+auto focus.
 This option is enabled by default on Win32.
 
 <item><tt/"UseInternalFD"/ switches to an internal file dialog for loading
@@ -9085,6 +9194,10 @@ value is supported by the OpenGL implementation used.
 <item><tt/"ALFileTypes"/, <tt/"ALPlugins"/ two lists that describe
 file name extensions and corresponding plugins that import and export
 files of the type designated by the file name extensions.
+
+<item><tt/"AUCommands"/, commands that will be run in the console
+when <tt/&lt;Shift+Return&gt;/ is used instead of <tt/&lt;Return&gt;/.
+See also section <ref id="sciupd" name="Updating the GUI">.
 
 </itemize>
 
@@ -9695,6 +9808,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>Atmosphere: <ref id="imager" name="property">
 <item>Attributes: <ref id="attrs" name="attributes property">,
 <ref id="riattrs" name="RenderMan/BMRT attributes property">
+<item>AUCommands: <ref id="hidprefs" name="hidden preference setting">
 <item>AutoFocus: <ref id="prefgui" name="preference setting">
 <item>Automatic Instancing: <ref id="mmspecial" name="main menu entry">
 <item>Automatic Redraw: <ref id="vmconf" name="view menu entry">
