@@ -8146,179 +8146,6 @@ animation data is completely ignored.
 The next sections document the various import and export plugins
 in detail.
 
-<sect1>Mops Import<label id="impmops">
-<p>
-In older versions of Ayam, Mops scenes could be imported using the main
-menu entry: <tt>"File/Import Mops"</tt>. Since Ayam 1.13 Mops import is
-a plugin named <tt>"mopsi"</tt>. After loading the plugin, Mops scenes
-may be imported using the main menu entry <tt>"File/Import/Mops"</tt>.
-<p>
-Ayam is able to import most elements of a Mops scene except for
-RiAttributes attached to arbitrary geometric objects,
-because attributes and shaders are managed by material objects in Ayam.
-However, if a Mops object has a surface or displacement shader,
-a material object with the shaders from the Mops object
-and its RiAttributes will be automatically created and linked with
-the geometric object while importing. Only Mops objects
-with surface or displacement shaders are considered because
-otherwise a material object would have to be created for every
-imported Mops object.
-The material objects are named <tt/"mat0"/, <tt/"mat1"/ and so on.
-Make sure, that the current scene in Ayam does not contain material
-objects with those names, otherwise Mops import will not be able to
-create material objects for the scene to import.
-<p>
-The import options <tt>"ResetDM"</tt> and
-<tt>"ResetST"</tt> control, whether GLU display mode
-and tolerance settings (see sections
-<ref id="ncattr" name="NCurveAttr">, and
-<ref id="npattr" name="NPatchAttr"> for more information about
-display mode and tolerance) of NURBS primitives should be reset
-to using global preference values (the default in Ayam)
-instead of using the values from the Mops scene file.
-
-<sect1>AutoCAD DXF Import<label id="impdxf">
-<p>
-The <tt>"dxfio"</tt> plugin allows to import AutoCAD DXF (drawing exchange
-format) files into Ayam with the help of the Dime library (from Systems in
-Motion, AS).
-<p>
-Start importing a DXF file using the main menu entry
-<tt>"File/Import/AutoCAD DXF"</tt>
-(if this menu entry is not available, you have to load the
-<tt>"dxfio"</tt> plugin using the menu entry
-<tt>"File/Load Plugin"</tt> first).
-<p>
-Note that the entire DXF file is read into memory before any geometry is
-created.
-<p>
-<sect2>DXF Entity Support
-<p>
-The DXF import supports reading of the following entities:
-3DFACE, ARC, CIRCLE, ELLIPSE, LINE, SOLID, TRACE, BLOCK, INSERT,
-POLYLINE, LWPOLYLINE, SPLINE. Entities not listed here will
-be silently ignored.
-<p>
-3DFACE entities are imported as PolyMesh objects if only the first
-three points are unique (the entity describes a triangle) or the face
-is planar else as BPatch objects.
-<p>
-ARC, CIRCLE and ELLIPSE entities will be read as NCircle objects with
-corresponding <tt/"TMin"/, <tt/"TMax"/ parameters (for arcs and ellipses)
-and scale transformation values (for ellipses) set.
-<p>
-POLYLINE entities are completely supported: Polylines will be imported as
-NURBCurve objects; PolyMeshes and PolyFaceMeshes
-will be imported as PolyMesh objects; B-Spline and Bezier surfaces
-will be imported as NURBPatch objects.
-<p>
-LINE, LWPOLYLINE and SPLINE entities will be imported as NURBCurve objects.
-<p>
-SOLID and TRACE entities are imported as BPatch objects.
-<p>
-BLOCK and INSERT entities will be converted to appropriate master (referenced)
-and instance objects (references).
-<p>
-Bulges and extrusions are not supported.
-<p>
-<sect2>DXF Import Options<label id="impdxfopt">
-<p>
-The DXF import may be controlled via different options:
-<itemize>
-<item><tt>"FileName"</tt> is the path and name of the DXF file to import.
-<item><tt>"ReadCurves"</tt> if this is disabled, no freeform curves will
-be imported.
-<item><tt/"ScaleFactor"/ allows to apply a scaling factor to all
-imported objects.
-<item><tt/"ReadLayers"/:
-By default, all entities from all layers will be imported.
-Using the <tt/"ReadLayers"/ import option, a single layer or a range
-of layers may be selected for import.
-<item><tt/"RescaleKnots"/ allows to rescale the knot vectors of imported
-NURBS curves so that the distances between different knots are not smaller
-than the given value. Using a value of 1.0e-04 leads to NURBS that may be
-safely drawn using GLU. The default value 0.0 means no scaling.
-<item><tt/"ErrorLevel"/: controls how many messages will be printed
-to the Ayam console while importing. Available
-values are: <tt/"Silence"/ no output except for severe errors,
-<tt/"Errors"/ all error messages should be printed,
-<tt/"Warnings"/, all error and warning messages should be printed,
-and finally <tt/"All"/ all messages, even informative,
-should be printed.
-<item><tt/"Progress"/: displays the progress of the import;
-from 0 to 50 percent, Dime is reading the DXF file; from 50 to 100 percent,
-the dxfio plugin is converting the DXF entities to Ayam objects.
-</itemize>
-<p>
-
-<sect1>AutoCAD DXF Export<label id="expdxf">
-<p>
-The <tt>"dxfio"</tt> plugin allows to export Ayam scenes to AutoCAD DXF
-(drawing exchange format) files with the help of the Dime library
-(from Systems in Motion, AS).
-<p>
-Start exporting to a DXF file using the main menu entry
-<tt>"File/Export/AutoCAD DXF"</tt>
-(if this menu entry is not available, you have to load the
-<tt>"dxfio"</tt> plugin using the menu entry
-<tt>"File/Load Plugin"</tt> first).
-<p>
-Note that the entire Ayam scene is converted to a corresponding
-DXF model in memory before it is written to the DXF file.
-
-<sect2>Ayam Object and Properties Support
-<p>
-The export functionality of the dxfio plugin currently covers
-export of all boxes, quadrics, NURBS, PolyMeshes, instances, clones, script
-objects (of type <tt/"Create"/ or <tt/"Modify"/) and objects that
-may be converted to NURBS curves or surfaces or to PolyMeshes.
-However, all boxes and quadrics will be converted to NURBS surfaces
-and NURBS surfaces will be tesselated to PolyMeshes for export.
-<p>
-The scene hierarchy and CSG operations are fully ignored, all objects will
-be written as if combined by the union operator.
-<p>
-All transformations will be applied to the control points of the
-exported objects.
-<p>
-PolyMesh objects will be exported to Polyline (PolyFaceMesh) entities.
-If a PolyMesh object contains faces with holes or with more than four
-points, it will be tesselated for export. Eventually existing normals
-will not be exported.
-<p>
-NURBS curves will be exported as Spline entities.
-<p>
-Instance objects are resolved for export.
-<p>
-Light sources as well as Cameras, Views, and Materials are not exported.
-<p>
-Clamping the knot ranges of NURBS curves or surfaces via UMM/VMM tags is
-not supported. Texture coordinates will not be exported.
-<p>
-
-<sect2>DXF Export Options<label id="expdxfopt">
-<p>
-The DXF export may be controlled via different options:
-<itemize>
-<item><tt>"FileName"</tt> is the path and name of the DXF file to export to.
-<item><tt/"ScaleFactor"/ allows to apply a scaling factor to all
-exported objects.
-<item><tt/"WriteSelected"/: exports only the selected objects. 
-<item><tt/"ObeyNoExport"/: ignores all objects with <tt/"NoExport"/ tags. 
-<item><tt/"IgnoreHidden"/: ignores all hidden objects.
-<item><tt>"WriteCurves"</tt> if this is disabled, no freeform curves will
-be exported.
-<item><tt>"TopLevelLayers"</tt> controls whether the top level objects
-in the Ayam scene to be exported should be interpreted as layers.
-If this option is enabled, objects that are not in one of those levels
-will be written to the default layer. Furthermore, top level object names
-will become layer names.
-<item><tt/"Progress"/: displays the progress of the export;
-from 0 to 50 percent, the dxfio plugin is converting the Ayam objects
-to DXF entities; from 50 to 100 percent, Dime is writing the DXF file.
-</itemize>
-
-<p>
 <sect1>RenderMan Interface Bytestream (RIB) Import<label id="imprib">
 <p>
 Using the RRIB (Read RIB) plugin you may import RenderMan Interface
@@ -8453,6 +8280,176 @@ can be found in section <ref id="vmview" name="The View Menu">.
 RIB export is also possible using the scripting interface,
 see section <ref id="script" name="The Tcl Scripting Interface">.
 
+<sect1>Mops Import<label id="impmops">
+<p>
+In older versions of Ayam, Mops scenes could be imported using the main
+menu entry: <tt>"File/Import Mops"</tt>. Since Ayam 1.13 Mops import is
+a plugin named <tt>"mopsi"</tt>. After loading the plugin, Mops scenes
+may be imported using the main menu entry <tt>"File/Import/Mops"</tt>.
+<p>
+Ayam is able to import most elements of a Mops scene except for
+RiAttributes attached to arbitrary geometric objects,
+because attributes and shaders are managed by material objects in Ayam.
+However, if a Mops object has a surface or displacement shader,
+a material object with the shaders from the Mops object
+and its RiAttributes will be automatically created and linked with
+the geometric object while importing. Only Mops objects
+with surface or displacement shaders are considered because
+otherwise a material object would have to be created for every
+imported Mops object.
+The material objects are named <tt/"mat0"/, <tt/"mat1"/ and so on.
+Make sure, that the current scene in Ayam does not contain material
+objects with those names, otherwise Mops import will not be able to
+create material objects for the scene to import.
+<p>
+The import options <tt>"ResetDM"</tt> and <tt>"ResetST"</tt> control,
+whether GLU display mode and tolerance settings (see sections
+<ref id="ncattr" name="NCurveAttr">,
+and <ref id="npattr" name="NPatchAttr">
+for more information about display mode and tolerance) of NURBS primitives
+should be reset to using global preference values (the default in Ayam)
+instead of using the values from the Mops scene file.
+
+<sect1>AutoCAD DXF Import<label id="impdxf">
+<p>
+The <tt>"dxfio"</tt> plugin allows to import AutoCAD DXF (drawing exchange
+format) files into Ayam with the help of the Dime library (from Systems in
+Motion, Kongsberg SIM AS, Norway).
+<p>
+Start importing a DXF file using the main menu entry
+<tt>"File/Import/AutoCAD DXF"</tt>
+(if this menu entry is not available, you have to load the
+<tt>"dxfio"</tt> plugin using the menu entry
+<tt>"File/Load Plugin"</tt> first).
+<p>
+Note that the entire DXF file is read into memory before any geometry is
+created.
+<p>
+<sect2>DXF Entity Support
+<p>
+The DXF import supports reading of the following entities:
+3DFACE, ARC, CIRCLE, ELLIPSE, LINE, SOLID, TRACE, BLOCK, INSERT,
+POLYLINE, LWPOLYLINE, and SPLINE. Entities not listed here will
+be silently ignored.
+<p>
+3DFACE entities are imported as PolyMesh objects if only the first
+three points are unique (the entity describes a triangle) or the face
+is planar else as BPatch objects.
+<p>
+ARC, CIRCLE, and ELLIPSE entities will be read as NCircle objects with
+corresponding <tt/"TMin"/, <tt/"TMax"/ parameters (for arcs and ellipses)
+and scale transformation values (for ellipses) set.
+<p>
+POLYLINE entities are completely supported: Polylines will be imported as
+NURBCurve objects; PolyMeshes and PolyFaceMeshes
+will be imported as PolyMesh objects; B-Spline and Bezier surfaces
+will be imported as NURBPatch objects.
+<p>
+LINE, LWPOLYLINE, and SPLINE entities will be imported as NURBCurve objects.
+<p>
+SOLID and TRACE entities are imported as BPatch objects.
+<p>
+BLOCK and INSERT entities will be converted to appropriate master (referenced)
+and instance objects (references).
+<p>
+Bulges and extrusions are not supported.
+
+<sect2>DXF Import Options<label id="impdxfopt">
+<p>
+The DXF import may be controlled via different options:
+<itemize>
+<item><tt>"FileName"</tt> is the path and name of the DXF file to import.
+<item><tt>"ReadCurves"</tt> if this is disabled, no freeform curves will
+be imported.
+<item><tt/"ScaleFactor"/ allows to apply a scaling factor to all
+imported objects.
+<item><tt/"ReadLayers"/:
+By default, all entities from all layers will be imported.
+Using the <tt/"ReadLayers"/ import option, a single layer or a range
+of layers may be selected for import.
+<item><tt/"RescaleKnots"/ allows to rescale the knot vectors of imported
+NURBS curves so that the distances between different knots are not smaller
+than the given value. Using a value of 1.0e-04 leads to NURBS that may be
+safely drawn using GLU. The default value 0.0 means no scaling.
+<item><tt/"ErrorLevel"/: controls how many messages will be printed
+to the Ayam console while importing. Available
+values are: <tt/"Silence"/ no output except for severe errors,
+<tt/"Errors"/ all error messages should be printed,
+<tt/"Warnings"/, all error and warning messages should be printed,
+and finally <tt/"All"/ all messages, even informative,
+should be printed.
+<item><tt/"Progress"/: displays the progress of the import;
+from 0 to 50 percent, Dime is reading the DXF file; from 50 to 100 percent,
+the dxfio plugin is converting the DXF entities to Ayam objects.
+</itemize>
+
+<sect1>AutoCAD DXF Export<label id="expdxf">
+<p>
+The <tt>"dxfio"</tt> plugin allows to export Ayam scenes to AutoCAD DXF
+(drawing exchange format) files with the help of the Dime library
+(from Systems in Motion, Kongsberg SIM AS, Norway).
+<p>
+Start exporting to a DXF file using the main menu entry
+<tt>"File/Export/AutoCAD DXF"</tt>
+(if this menu entry is not available, you have to load the
+<tt>"dxfio"</tt> plugin using the menu entry
+<tt>"File/Load Plugin"</tt> first).
+<p>
+Note that the entire Ayam scene is converted to a corresponding
+DXF model in memory before it is written to the DXF file.
+
+<sect2>Ayam Object and Properties Support
+<p>
+The export functionality of the dxfio plugin currently covers
+export of all boxes, quadrics, NURBS, PolyMeshes, instances, clones, script
+objects (of type <tt/"Create"/ or <tt/"Modify"/), and objects that
+may be converted to NURBS curves or surfaces or to PolyMeshes.
+However, all boxes and quadrics will always be converted to NURBS surfaces
+and NURBS surfaces will be tesselated to PolyMeshes for export.
+<p>
+The scene hierarchy and CSG operations are fully ignored, all objects will
+be written as if combined by the union operator.
+<p>
+All transformations will be applied to the control points of the
+exported objects.
+<p>
+PolyMesh objects will be exported to POLYLINE (subtype PolyFaceMesh) entities.
+If a PolyMesh object contains faces with holes or with more than four
+points, it will be tesselated for export. Eventually existing normals
+will not be exported.
+<p>
+NURBS curves will be exported as SPLINE entities.
+<p>
+Instance objects are resolved for export.
+<p>
+Light sources, as well as Cameras, Views, and Materials are not exported.
+<p>
+Clamping the knot ranges of NURBS curves or surfaces via UMM/VMM tags is
+not supported. Texture coordinates will not be exported.
+<p>
+
+<sect2>DXF Export Options<label id="expdxfopt">
+<p>
+The DXF export may be controlled via different options:
+<itemize>
+<item><tt>"FileName"</tt> is the path and name of the DXF file to export to.
+<item><tt/"ScaleFactor"/ allows to apply a scaling factor to all
+exported objects.
+<item><tt/"WriteSelected"/: exports only the selected objects. 
+<item><tt/"ObeyNoExport"/: ignores all objects with <tt/"NoExport"/ tags. 
+<item><tt/"IgnoreHidden"/: ignores all hidden objects.
+<item><tt>"WriteCurves"</tt> if this is disabled, no freeform curves will
+be exported.
+<item><tt>"TopLevelLayers"</tt> controls whether the top level objects
+in the Ayam scene to be exported should be interpreted as layers.
+If this option is enabled, objects that are not in one of those levels
+will be written to the default layer. Furthermore, top level object names
+will become layer names.
+<item><tt/"Progress"/: displays the progress of the export;
+from 0 to 50 percent, the dxfio plugin is converting the Ayam objects
+to DXF entities; from 50 to 100 percent, Dime is writing the DXF file.
+</itemize>
+
 <sect1>Wavefront OBJ Import<label id="impwav">
 <p>
 Since Ayam 1.8.3 a Wavefront OBJ (version 3.0) import facility is available
@@ -8460,6 +8457,8 @@ and since Ayam 1.13 it is a plugin (objio) that needs to be loaded
 before import.
 The corresponding main menu entry is
 <tt>"File/Import/Wavefront OBJ"</tt>.
+<p>
+<sect2>Wavefront OBJ Object Support
 <p>
 Wavefront OBJ import supports reading of polygonal faces with vertex
 normals and texture coordinates (read as primitive variable tags) and
@@ -8474,6 +8473,8 @@ is not supported (however, since Ayam 1.9, UMM/VMM
 tags will be created, that contain the new knot minimum and maximum
 values). No material and grouping information will be imported.
 Unsupported statements will be silently ignored.
+<p>
+<sect2>Wavefront OBJ Import Options<label id="impwavopt">
 <p>
 The following options further control the import process:
 <itemize>
@@ -8517,6 +8518,9 @@ OBJ format (version 3.0). Since Ayam 1.13, Wavefront OBJ export is a plugin
 (objio) that needs to be loaded before export.
 The corresponding main menu entry is
 <tt>"File/Export/Wavefront OBJ"</tt>.
+
+<sect2>Ayam Object and Properties Support
+<p>
 The Wavefront export currently supports the following
 objects:
 <itemize>
@@ -8550,6 +8554,8 @@ Since Ayam 1.8.3, however, texture coordinates from primitive variable
 tags can be exported.
 Since Ayam 1.9, UMM/VMM tags are used to trim the knot vectors of
 exported NURBS objects.
+
+<sect2>Wavefront OBJ Export Options<label id="expwavopt">
 <p>
 The following parameters, additionally, control the Wavefront OBJ export:
 <itemize>
@@ -8579,7 +8585,10 @@ menu entry <tt>"File/Import/Apple 3DMF"</tt> (if this menu entry is not
 available, you have to load the <tt>"mfio"</tt> plugin using the menu entry
 <tt>"File/Load Plugin"</tt> first).
 <p>
-Import supports the following primitives:
+
+<sect2>3DMF Primitive and Attribute Support
+<p>
+3DMF import supports the following geometric primitives:
 <itemize>
 <item>Polyline, Triangle, TriGrid, Polygon, general Polygon, Box,
 <item>NURBS curve, NURBS surface (with trim curves),
@@ -8600,6 +8609,13 @@ Support for import of lights, camera attributes as well as
 material attributes other than material color and opacity is currently
 not available.
 
+<sect2>3DMF Import Options<label id="imp3dmfopt">
+<p>
+The following parameters, additionally, control the 3DMF import:
+<itemize>
+<item><tt>"FileName"</tt> is the filename of the 3DMF file to import;
+</itemize>
+
 <sect1>3DMF (Apple) Export<label id="exp3dmf">
 <p>
 Using the MFIO plugin you may export scenes to the 3DMF format (version
@@ -8607,8 +8623,10 @@ Using the MFIO plugin you may export scenes to the 3DMF format (version
 <tt>"File/Export/Apple 3DMF"</tt> (if this menu entry is not available, you
 have to load the <tt>"mfio"</tt> plugin using the menu entry
 <tt>"File/Load Plugin"</tt> first).
+
+<sect2>Ayam Object and Properties Support
 <p>
-The MFIO export supports the following primitives:
+The MFIO export supports the following geometric objects:
 <itemize>
 <item>NURBS curve and NURBS surface (with trim curves) including all
 NURBS curve/surface providing objects, such as ICurve, Skin etc.,
@@ -8618,8 +8636,10 @@ NURBS curve/surface providing objects, such as ICurve, Skin etc.,
 
 All transformations are supported and will be written as
 Translate, Rotate, and Scale transformations, respectively.
+<p>
 All Instance objects will be resolved for export.
 Level objects (regardless of type) will be written as Container objects.
+<p>
 If an object has a material, the color and opacity of the material
 will be written as DiffuseColor and TransparencyColor, if the red
 component has a value different from -1.
@@ -8627,6 +8647,13 @@ component has a value different from -1.
 Support for export of lights, camera attributes as well as
 material attributes other than material color and opacity is currently
 not available.
+
+<sect2>3DMF Export Options<label id="exp3dmfopt">
+<p>
+The following parameters, additionally, control the 3DMF import:
+<itemize>
+<item><tt>"FileName"</tt> is the filename of the 3DMF file to export;
+</itemize>
 
 <sect1>3DM (Rhino) Import<label id="imprhino">
 <p>
@@ -8640,6 +8667,8 @@ Start importing from a Rhino 3DM file using the menu entry
 (if this menu entry is not available, you have to load the
 <tt>"onio"</tt> plugin using the menu entry
 <tt>"File/Load Plugin"</tt> first).
+
+<sect2>3DM Object Support
 <p>
 The import functionality of the onio plugin currently covers
 import of all NURBS and BRep objects and objects that may
@@ -8652,7 +8681,10 @@ Mesh objects will be imported to PolyMesh objects, texture
 coordinates will be read and appropriate PV tags will be
 created for them.
 <p>
-The import process is controlled by the following options:
+
+<sect2>3DM Import Options<label id="imp3dmopt">
+<p>
+The 3DM import process is controlled by the following options:
 <itemize>
 <item><tt/"ScaleFactor"/:
 The <tt/"ScaleFactor"/ option allows to apply a scaling factor to all
@@ -8701,6 +8733,8 @@ Start exporting to a Rhino 3DM file using the menu entry
 (if this menu entry is not available, you have to load the
 <tt>"onio"</tt> plugin using the menu entry
 <tt>"File/Load Plugin"</tt> first).
+
+<sect2>Ayam Object and Properties Support
 <p>
 The export functionality of the onio plugin currently covers
 export of all boxes, quadrics, NURBS, instances, clones, script
@@ -8719,7 +8753,28 @@ Since Ayam 1.9, UMM/VMM tags are used to trim the knot vectors of
 exported NURBS objects.
 Since Ayam 1.8.3, also PolyMesh objects may be exported.
 <p>
-The export process is controlled by the following options:
+Since the Rhino 3DM file format does not support hierarchy and
+transformation attributes per object, the hierarchy of the Ayam scene
+will be squashed and all transformation attributes will be applied to
+the control points of the objects for export. CSG operations are fully
+ignored, all objects will be written as if combined by the union operator.
+Furthermore, all instance objects will be resolved to normal objects. All
+objects will be written to the first layer, the default layer (unless the
+<tt>"TopLevelLayers"</tt> option is used). Object names will be written
+as well. Names of level objects will be prepended to the names of their
+child objects. The object hierarchy:
+<code>
++-Arm(Level)
+ | MySphere(Sphere)
+ \ MyCylinder(Cylinder)
+</code>
+for instance, leads to two objects in the Rhino file
+named <tt>"Arm/MySphere"</tt> and <tt>"Arm/MyCylinder"</tt>.
+<p>
+
+<sect2>3DM Export Options<label id="exp3dmopt">
+<p>
+The 3DM export process is controlled by the following options:
 <itemize>
 <item><tt/"ScaleFactor"/:
 The <tt/"ScaleFactor"/ option allows to apply a scaling factor to all
@@ -8763,25 +8818,6 @@ for the t component of the texture coordinates.
 from 0 to 50 percent, the onio plugin is converting the Ayam objects
 to 3DM objects; from 50 to 100 percent OpenNURBS is writing the 3DM file.
 </itemize>
-<p>
-Since the Rhino 3DM file format does not support hierarchy and
-transformation attributes per object, the hierarchy of the Ayam scene
-will be squashed and all transformation attributes will be applied to
-the control points of the objects for export. CSG operations are fully
-ignored, all objects will be written as if combined by the union operator.
-Furthermore, all instance objects will be resolved to normal objects. All
-objects will be written to the first layer, the default layer (unless the
-<tt>"TopLevelLayers"</tt> option is used). Object names will be written
-as well. Names of level objects will be prepended to the names of their
-child objects. The object hierarchy:
-<code>
-+-Arm(Level)
- | MySphere(Sphere)
- \ MyCylinder(Cylinder)
-</code>
-for instance, leads to two objects in the Rhino file
-named <tt>"Arm/MySphere"</tt> and <tt>"Arm/MyCylinder"</tt>.
-<p>
 
 <sect1>X3D (Web3D) Import<label id="impx3d">
 <p>
@@ -8856,7 +8892,7 @@ again using Automatic Instancing
 <p>
 The DEF attributes may be converted to object names.
 
-<sect2>X3D Import Options
+<sect2>X3D Import Options<label id="impx3dopt">
 <p>
 The following options further control the X3D import process:
 <itemize>
@@ -8895,6 +8931,8 @@ Start exporting to a X3D file using the menu entry
 (if this menu entry is not available, you have to load the
 <tt>"x3dio"</tt> plugin using the menu entry
 <tt>"File/Load Plugin"</tt> first).
+
+<sect2>Ayam Object and Properties Support
 <p>
 The export functionality of the x3dio plugin currently covers
 export of all boxes, quadrics, NURBS, PolyMeshes, instances, clones, script
@@ -8920,7 +8958,7 @@ Cameras and Views to Viewpoints.
 <p>
 Object names will be converted to DEF attributes.
 
-<sect2>X3D Export Options
+<sect2>X3D Export Options<label id="expx3dopt">
 <p>
 The following parameters, additionally, control the X3D (Web3D) export:
 <itemize>
