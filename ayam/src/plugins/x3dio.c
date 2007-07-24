@@ -276,6 +276,8 @@ int x3dio_writeconeobj(scew_element *element, ay_object *o);
 
 int x3dio_writepomeshobj(scew_element *element, ay_object *o);
 
+int x3dio_writeview(scew_element *element, ay_object *o);
+
 /* export */
 int x3dio_writeobject(scew_element *element, ay_object *o, int count);
 
@@ -5338,9 +5340,9 @@ x3dio_writename(scew_element *element, ay_object *o)
 
   /* write name as DEF */
   if(o->name && (strlen(o->name)>1))
-   {
-     scew_element_add_attr_pair(element, "DEF", o->name);
-   }
+    {
+      scew_element_add_attr_pair(element, "DEF", o->name);
+    }
   else
     {
       if(o->refcount)
@@ -5349,7 +5351,7 @@ x3dio_writename(scew_element *element, ay_object *o)
 	  sprintf(buffer, "%u", count);
 	  scew_element_add_attr_pair(element, "DEF", buffer);
 	}
-    }
+    } /* if */
 
  return AY_OK;
 } /* x3dio_writename */
@@ -6617,6 +6619,130 @@ cleanup:
 } /* x3dio_writepomeshobj */
 
 
+/* x3dio_writeview:
+ *
+ */
+int
+x3dio_writeview(scew_element *element, ay_object *o)
+{
+ ay_view_object *view;
+ ay_camera_object *camera;
+ char buffer[128];
+ double tmp = 0.0, v[3] = {0};
+ double xzlen = 0.0, yzlen = 0.0, x = 0.0, y = 0.0;
+ double q1[4] = {0}, q2[4] = {0}, quat[4] = {0};
+ double xaxis[3] = {1.0, 0.0, 0.0}, yaxis[3] = {0.0, 1.0, 0.0};
+ scew_element *vp_element = NULL;
+ static int vnum = 1;
+
+  if(!element || !o)
+    {
+      vnum = 1;
+      return AY_ENULL;
+    }
+
+  if(o->type == AY_IDVIEW)
+    {
+      view = (ay_view_object*)o->refine;
+
+      vp_element = scew_element_add(element, "Viewpoint");
+
+      x3dio_writedoublevecattrib(vp_element, "position", 3, view->from);
+
+      v[0] = view->to[0] - view->from[0];
+      v[1] = view->to[1] - view->from[1];
+      v[2] = view->to[2] - view->from[2];
+
+      if(fabs(v[0]) > AY_EPSILON ||
+	 fabs(v[1]) > AY_EPSILON ||
+	 fabs(v[2]) > AY_EPSILON)
+	{
+	  xzlen = sqrt(v[0] * v[0] + v[2] * v[2]);
+
+	  if(fabs(xzlen) < AY_EPSILON)
+	    {
+	      y = (v[1] < 0.0) ? AY_PI : 0.0;
+	    }
+	  else
+	    {
+	      tmp = v[2]/xzlen;
+	      y = acos((fabs(tmp)<=1.0?tmp:(tmp<-1.0?-1.0:1.0)));
+	    }
+	  yzlen = sqrt(v[1] * v[1] + xzlen * xzlen);
+	  if(fabs(yzlen) >= AY_EPSILON)
+	    {
+	      x = acos(xzlen/yzlen);
+	    }
+	  else
+	    {
+	      x = 0.0;
+	    }
+	  
+	  if(v[1] < 0.0)
+	    x = -x;
+
+	  if(v[0] > 0.0)
+	    y = -y;
+
+	  ay_quat_axistoquat(xaxis, x, q1);
+	  ay_quat_axistoquat(yaxis, y, q2);
+
+	  ay_quat_add(q1, q2, quat);
+	  AY_V3NORM(quat);
+	  quat[3] = 2 * acos(quat[3]);
+
+	  x3dio_writedoublevecattrib(vp_element, "orientation", 4, quat);
+	}
+      /* XXXX issue error/warning? */
+      /*
+	else
+	{
+	  ay_error();
+	}
+      */
+
+      /* compose describing string */
+      switch(view->type)
+	{
+	case AY_VTFRONT:
+	  sprintf(buffer, "View%d-Front", vnum);
+	  break;
+	case AY_VTSIDE:
+	  sprintf(buffer, "View%d-Side", vnum);
+	  break;
+	case AY_VTTOP:
+	  sprintf(buffer, "View%d-Top", vnum);
+	  break;
+	case AY_VTPERSP:
+	  sprintf(buffer, "View%d-Persp", vnum);
+	  break;
+	case AY_VTTRIM:
+	  sprintf(buffer, "View%d-Trim", vnum);
+	  break;
+	default:
+	  sprintf(buffer, "View%d", vnum);
+	  break;
+	}
+      scew_element_add_attr_pair(vp_element, "description",
+				 buffer);
+   } /* if */
+
+ if(o->type == AY_IDCAMERA)
+   {
+     camera = (ay_camera_object*)o->refine;
+   }
+
+  if(o->name && (strlen(o->name)>1))
+   {
+
+   }
+
+  vnum++;
+
+ return AY_OK;
+} /* x3dio_writeview */
+
+
 #if 0
 /* x3dio_writencurve:
  *
@@ -6625,6 +6751,11 @@ int
 x3dio_writencurve(scew_element *element, ay_object *o)
 {
  ay_nurbcurve_object *nc;
+
+ if(!element || !o)
+   return AY_ENULL;
+
+
 
   if(o->name && (strlen(o->name)>1))
    {
@@ -6784,6 +6915,24 @@ x3dio_writescene(char *filename, int selected)
       tm[5]  *= x3dio_scalefactor;
       tm[10] *= x3dio_scalefactor;
     }
+
+  /* export the views */
+  if(1/*x3dio_writeviews*/)
+    {
+      /* reset view number */
+      x3dio_writeview(NULL, NULL);
+      /* loop through the view level */
+      o = ay_root->down;
+      while(o)
+	{
+	  if(o->type == AY_IDVIEW)
+	    {
+	      ay_status = x3dio_writeview(scene_element, o);
+	    }
+	  o = o->next;
+	}
+      o = ay_root->next;
+    } /* if */
 
   /* count objects to be exported */
   if(!selected)
@@ -7004,8 +7153,6 @@ X_Init(Tcl_Interp *interp)
   ay_status = x3dio_registerwritecb((char *)(AY_IDNPATCH),
 				       x3dio_writenpatchobj);
 
-
-
   ay_status = x3dio_registerwritecb((char *)(AY_IDDISK),
 				       x3dio_writenpconvertibleobj);
   ay_status = x3dio_registerwritecb((char *)(AY_IDHYPERBOLOID),
@@ -7014,7 +7161,6 @@ X_Init(Tcl_Interp *interp)
 				       x3dio_writenpconvertibleobj);
   ay_status = x3dio_registerwritecb((char *)(AY_IDTORUS),
 				       x3dio_writenpconvertibleobj);
-
 
   ay_status = x3dio_registerwritecb((char *)(AY_IDEXTRUDE),
 				       x3dio_writenpconvertibleobj);
