@@ -47,7 +47,7 @@ x3dio_trafostate *x3dio_ctrafos = NULL;
 
 /* import/export options: */
 int x3dio_importcurves = AY_TRUE;
-int x3dio_importviews = AY_TRUE;
+int x3dio_importviews = 0;
 int x3dio_exportcurves = AY_TRUE;
 int x3dio_expselected = AY_FALSE;
 int x3dio_expobeynoexport = AY_TRUE;
@@ -4061,7 +4061,6 @@ x3dio_readviewpoint(scew_element *element)
 
   ay_status = x3dio_readfloatvec(element, "orientation", 4, fvtemp);
 
-
   ay_trafo_identitymatrix(m);
 
   if(fabs(fvtemp[3]) > AY_EPSILON)
@@ -4080,8 +4079,7 @@ x3dio_readviewpoint(scew_element *element)
 
   ay_status = x3dio_readfloat(element, "fieldOfView", &fov);
 
-
-  if(1 /*x3dio_readviewpoints == 1*/)
+  if(x3dio_importviews == 1)
     {
       /* open a new view window */
       sprintf(command,"viewOpen %d %d 0\n", width, height);
@@ -4130,7 +4128,6 @@ x3dio_readviewpoint(scew_element *element)
       Tcl_Eval(ay_interp, command);
 
       Tcl_Eval(ay_interp, update_cmd);
-
     }
   else
     {
@@ -4150,7 +4147,6 @@ x3dio_readviewpoint(scew_element *element)
 
       /* copy object to the Ayam scene */
       ay_status = x3dio_linkobject(element, AY_IDCAMERA, (void*)&c);
-
     } /* if */
 
  return ay_status;
@@ -5021,7 +5017,7 @@ x3dio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 
   /* set default import options and reset global counters */
   x3dio_importcurves = AY_TRUE;
-  x3dio_importviews = AY_TRUE;
+  x3dio_importviews = 0;
   x3dio_rescaleknots = 0.0;
   x3dio_scalefactor = 1.0;
   x3dio_mergeinlinedefs = AY_FALSE;
@@ -6665,11 +6661,13 @@ x3dio_writeview(scew_element *element, ay_object *o)
 	    }
 	  else
 	    {
-	      tmp = v[2]/xzlen;
+	      tmp = -v[2]/xzlen;
 	      y = acos((fabs(tmp)<=1.0?tmp:(tmp<-1.0?-1.0:1.0)));
 	    }
+
 	  yzlen = sqrt(v[1] * v[1] + xzlen * xzlen);
-	  if(fabs(yzlen) >= AY_EPSILON)
+
+	  if(fabs(yzlen) > AY_EPSILON)
 	    {
 	      x = acos(xzlen/yzlen);
 	    }
@@ -6684,14 +6682,43 @@ x3dio_writeview(scew_element *element, ay_object *o)
 	  if(v[0] > 0.0)
 	    y = -y;
 
-	  ay_quat_axistoquat(xaxis, x, q1);
-	  ay_quat_axistoquat(yaxis, y, q2);
+	  if((fabs(x) > AY_EPSILON) || (fabs(y) > AY_EPSILON))
+	    {
+	      if(fabs(x) > AY_EPSILON)
+		{
+		  ay_quat_axistoquat(xaxis, x, q1);
+		  if(fabs(y) > AY_EPSILON)
+		    {
+		      ay_quat_axistoquat(yaxis, y, q2);
+		      ay_quat_add(q1, q2, quat);
+		    }
+		  else
+		    {
+		      memcpy(quat, q1, 4*sizeof(double));
+		    }
+		}
+	      else
+		{
+		  ay_quat_axistoquat(yaxis, y, quat);
+		} /* if */
+	      ay_quat_norm(quat);
+	      tmp = sqrt(1.0-quat[3]*quat[3]);
+	      if(tmp > AY_EPSILON)
+		{
+		  quat[0] /= tmp;
+		  quat[1] /= tmp;
+		  quat[2] /= tmp;
+		}
+	      else
+		{
+		  quat[0] = 1.0;
+		  quat[1] = 0.0;
+		  quat[2] = 0.0;
+		}
+	      quat[3] = 2 * acos(quat[3]);
 
-	  ay_quat_add(q1, q2, quat);
-	  AY_V3NORM(quat);
-	  quat[3] = 2 * acos(quat[3]);
-
-	  x3dio_writedoublevecattrib(vp_element, "orientation", 4, quat);
+	      x3dio_writedoublevecattrib(vp_element, "orientation", 4, quat);
+	    } /* if */
 	}
       /* XXXX issue error/warning? */
       /*
@@ -6725,18 +6752,23 @@ x3dio_writeview(scew_element *element, ay_object *o)
 	}
       scew_element_add_attr_pair(vp_element, "description",
 				 buffer);
+
+      /* field of view */
+      tmp = (atan(view->zoom)*180.0)/AY_PI*2.0;
+      x3dio_writedoubleattrib(vp_element, "fieldOfView", &tmp);
+
    } /* if */
 
  if(o->type == AY_IDCAMERA)
    {
      camera = (ay_camera_object*)o->refine;
    }
-
+ /*
   if(o->name && (strlen(o->name)>1))
    {
 
    }
-
+ */
   vnum++;
 
  return AY_OK;
