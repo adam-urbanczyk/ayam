@@ -5372,7 +5372,7 @@ with an order of 3, your mileage may vary however.
 <figure loc="!ht">
 <eps file="pics/icurves.ps" height="7cm">
 <img src="pics/icurves.gif">
-<caption>Different ICurves</caption>
+<caption>Different ICurves (Upper Left: C2 Open, Upper Right: G4D Open, Lower Left: C2 Closed, Lower Right: G4D Closed)</caption>
 </figure>
 <p>
 The image above shows some interpolating curves, the left ones
@@ -8136,13 +8136,27 @@ CSG|Yes|No|No|No|No|No@<hline>
 Note that a successful export not only depends on Ayam but also on the
 quality of the importing application. For instance, many applications
 claim to read files in the Wavefront OBJ format but only import polygonal
-data or, even worse, only triangles from such files.
-Consequently, in those cases you need to convert the NURBS objects in
-Ayam to polygonal geometry before export.
+data or, even worse, only triangles from such files. By default, Ayam
+always tries to preserve as much information as possible in the respective
+export format leading to the use of NURBS in OBJ.
+Consequently, in some cases you may need to convert the NURBS objects in
+the Ayam scene to polygonal geometry before export. There is a script
+provided (<tt>"toPoly"</tt>) that helps you doing this.
 <p>
 Ayam is not perfect either, as in most import options material and
 animation data is completely ignored.
 <p>
+The following table gives an overview of the file format versions
+supported by the various import and export plugins:
+
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|c|c|"><hline>
+Format|RIB|OBJ|3DMF(Apple)|DXF|3DM(Rhino)|X3D@<hline>
+Version|3.0|3.0|1.0|14|3.0|3.1@<hline>
+</tabular>
+<caption>Supported File Format Versions Overview</caption>
+</table>
+
 The next sections document the various import and export plugins
 in detail.
 
@@ -8397,6 +8411,11 @@ Start exporting to a DXF file using the main menu entry
 <p>
 Note that the entire Ayam scene is converted to a corresponding
 DXF model in memory before it is written to the DXF file.
+<p>
+Ayam only creates entities of type POLYLINE and SPLINE and misses very
+much information that could be saved to other formats (e.g. normals and
+texture coordinates). Therefore, the DXF export format should be avoided
+if possible.
 
 <sect2>Ayam Object and Properties Support
 <p>
@@ -8426,7 +8445,6 @@ Light sources, as well as Cameras, Views, and Materials are not exported.
 <p>
 Clamping the knot ranges of NURBS curves or surfaces via UMM/VMM tags is
 not supported. Texture coordinates will not be exported.
-<p>
 
 <sect2>DXF Export Options<label id="expdxfopt">
 <p>
@@ -8440,9 +8458,10 @@ exported objects.
 <item><tt/"IgnoreHidden"/: ignores all hidden objects.
 <item><tt>"WriteCurves"</tt> if this is disabled, no freeform curves will
 be exported.
-<item><tt>"TopLevelLayers"</tt> controls whether the top level objects
-in the Ayam scene to be exported should be interpreted as layers.
-If this option is enabled, objects that are not in one of those levels
+<item><tt>"TopLevelLayers"</tt> controls whether the top level Level
+objects in the Ayam scene to be exported should be interpreted as layers.
+If this option is enabled, all objects in these levels will be placed on
+the respective layer. Objects that are not in one of those levels
 will be written to the default layer. Furthermore, top level object names
 will become layer names.
 <item><tt/"Progress"/: displays the progress of the export;
@@ -8476,7 +8495,7 @@ Unsupported statements will be silently ignored.
 <p>
 <sect2>Wavefront OBJ Import Options<label id="impwavopt">
 <p>
-The following options further control the import process:
+The following options control the Wavefront OBJ import process:
 <itemize>
 <item><tt>"FileName"</tt> is the name of the Wavefront OBJ file (version 3.0)
 <item><tt>"MergeFaces"</tt> controls, whether consecutive polygonal
@@ -8557,7 +8576,7 @@ exported NURBS objects.
 
 <sect2>Wavefront OBJ Export Options<label id="expwavopt">
 <p>
-The following parameters, additionally, control the Wavefront OBJ export:
+The following parameters control the Wavefront OBJ export:
 <itemize>
 <item><tt>"FileName"</tt> is the filename of the Wavefront OBJ file;
 <item><tt>"WriteSelected"</tt> exports only the currently selected object(s);
@@ -8805,9 +8824,10 @@ The BRep torus does not support PhiMin, PhiMax, and ThetaMax.
 The <tt/"QuadAsBRep"/ option has no effect on the export of disks,
 hyperboloids, and paraboloids. Those will always be exported as NURBS
 surfaces.
-<item><tt>"TopLevelLayers"</tt> controls whether the top level objects
-in the Ayam scene to be exported should be interpreted as layers.
-If this option is enabled, objects that are not in one of those levels
+<item><tt>"TopLevelLayers"</tt> controls whether the top level Level
+objects in the Ayam scene to be exported should be interpreted as layers.
+If this option is enabled, all objects in these levels will be placed on
+the respective layer. Objects that are not in one of those levels
 will be written to the default layer. Furthermore, top level object names
 will become layer names.
 <item><tt>"STagName"</tt> controls the name of the PV tag to be used
@@ -8870,7 +8890,12 @@ Therefore the <tt>"radius"</tt> and the <tt>"attenuation"</tt> attributes
 of point and spotlights are not supported. However, point and spotlights
 still have a quadratic falloff with distance.
 
-<item>Non geometric: Transformation, Shape, Group, Inline.
+<item>Navigation: Viewpoint.
+
+Viewpoint elements will be imported as view or camera objects
+depending on the <tt>"ReadViewports"</tt> import option.
+
+<item>Non geometric/Scene structure: Transformation, Shape, Group, Inline.
 </itemize>
 <p>
 Unsupported elements will be silently ignored. Prototyping and
@@ -8884,13 +8909,13 @@ be imported as level objects.
 The <tt>"solid"</tt>, <tt>"ccw"</tt>, and <tt>"convex"</tt>
 attributes are always ignored.
 <p>
-The DEF and USE attributes are supported for all elements, however,
-the corresponding master-instance relationships are completely
-resolved upon import. Instances of objects may be easily created
-again using Automatic Instancing
-(see section <ref id="ai" name="Automatic Instancing">).
+The <tt>"DEF"</tt> and <tt>"USE"</tt> attributes are supported for all
+elements, however, the corresponding master-instance relationships are
+completely resolved upon import.
+Instances of objects may be easily created again using Automatic Instancing
+(please refer to section <ref id="ai" name="Automatic Instancing">).
 <p>
-The DEF attributes may be converted to object names.
+The <tt>"DEF"</tt> attributes may be converted to object names.
 
 <sect2>X3D Import Options<label id="impx3dopt">
 <p>
@@ -8904,6 +8929,8 @@ objects should be merged as well if they are subject to automatic
 merging (see above).
 <item><tt>"ReadCurves"</tt> if this is disabled, no freeform curves will
 be imported. This option does not influence reading of trim curves!
+<item><tt>"ReadViewpoints"</tt> controls whether viewpoints should
+be read as view, camera, or not at all.
 <item><tt/"RescaleKnots"/ allows to rescale the knot vectors of
 NURBS curves, patches, and trim curves so that the distances between different
 knots are not smaller than the given value. Using a value of 1.0e-04 leads
@@ -8954,7 +8981,8 @@ element.
 <p>
 Light sources are exported.
 <p>
-Cameras and Views to Viewpoints.
+Cameras and Views are exported as Viewpoint nodes. Note however, that
+X3D always assumes a perspective viewing transformation.
 <p>
 Object names will be converted to DEF attributes.
 
