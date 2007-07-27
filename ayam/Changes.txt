@@ -1,4 +1,4 @@
-[21. May 2007] CVS-Head:
+[27. Jul 2007] CVS-Head:
 =======================
 o Bug Fixes:
   - crash after deleting of objects (SF 1637735)
@@ -76,7 +76,8 @@ o improved shading quality of NURBS surfaces in STESS mode
 o revived STESS drawing of trimmed NURBS surfaces
 
 Import/Export:
-o added DXF import plugin dxfio
+o added DXF import/export plugin dxfio
+o added X3D import/export plugin x3dio
 o Mops import is now a plugin
 o Wavefront OBJ import/export is now a plugin
 o files may now be imported using the normal "File/Open" and "File/Insert"
