@@ -22,8 +22,6 @@ static ay_object *ay_mfio_lastreadobject;
 
 static MF3DErr ay_mfio_mf3d_errno;
 
-static MF3DDataFormatEnum ay_mfio_mf3d_data_format;
-
 static Tcl_HashTable ay_mfio_read_ht;
 
 static Tcl_HashTable ay_mfio_write_ht;
@@ -156,8 +154,9 @@ int Mfio_Init(Tcl_Interp *interp);
 
 
 /* functions: */
+
 /* ay_mfio_registerreadcb:
- *
+ *  manage read callback hash table
  */
 int
 ay_mfio_registerreadcb(char *type, ay_mfio_readcb *cb)
@@ -363,6 +362,9 @@ ay_mfio_readpolyline(MF3DVoidObjPtr object)
  ay_nurbcurve_object *curve = NULL;
  ay_object *newo = NULL;
  char fname[] = "mfio_readpolyline";
+
+  if(!mfio_readcurves)
+    { return AY_OK; }
 
   /* get some info about the polyline */
   if(o->nVertices > INT_MAX)
@@ -1412,7 +1414,7 @@ ay_mfio_readscene(Tcl_Interp *interp, char *filename)
  MF3DErr status = kMF3DNoErr;	/* temporary result code        */
  int ay_status = AY_OK;
 
-  /* Open the metafile */
+  /* open the metafile */
   status = MF3DOpenInputStdCFile (filename, &metafilePtr);
   if(status != kMF3DNoErr)
     {
@@ -1432,7 +1434,7 @@ ay_mfio_readscene(Tcl_Interp *interp, char *filename)
 
   while (status == kMF3DNoErr)
     {
-      /* Read an object from the metafile */
+      /* read an object from the metafile */
       status = MF3DReadAnObject (metafilePtr, &object);
 
       if (status != kMF3DNoErr)
@@ -1445,17 +1447,19 @@ ay_mfio_readscene(Tcl_Interp *interp, char *filename)
 	} /* if */
 
       if ((status == kMF3DNoErr) && object->objectType == kMF3DObjReference)
-	{	/* If we have just read a Reference object, resolve it.
-		 * There are two types of references: local and external.
-		 * An external reference will be the root object of a container
-		 * and will have a subobject specifying the path
-		 * to an external file.
-		 */
+	{
+	  /* If we have just read a Reference object, resolve it.
+	   * There are two types of references: local and external.
+	   * An external reference will be the root object of a container
+	   * and will have a subobject specifying the path
+	   * to an external file.
+	   */
 	  extStorageObj = NULL;
 	  if (nextObjIsRoot == kMF3DBooleanTrue)
-	    {	/* We are in a container which must mean we have an
-		 * external reference.
-		 */
+	    {
+	      /* We are in a container which must mean we have an
+	       * external reference.
+	       */
 	      status = MF3DReadAnObject(metafilePtr, &extStorageObj);
 
 	      if (status != kMF3DNoErr)
@@ -1510,7 +1514,7 @@ ay_mfio_readscene(Tcl_Interp *interp, char *filename)
 	    return ay_status;
 	}
 
-      /* Dispose the object */
+      /* dispose the object */
       if (status == kMF3DNoErr)
 	{
 	  MF3DDisposeObject(object);
@@ -1518,7 +1522,7 @@ ay_mfio_readscene(Tcl_Interp *interp, char *filename)
 
     } /* while */
 
-  /* Close the file */
+  /* close the file */
   status = MF3DClose(metafilePtr);
   if(status != kMF3DNoErr)
     {
@@ -1528,7 +1532,9 @@ ay_mfio_readscene(Tcl_Interp *interp, char *filename)
   return AY_OK;
 } /* ay_mfio_readscene */
 
-/***/
+/**********************************************************************/
+/**********************************************************************/
+/**********************************************************************/
 
 /* ay_mfio_writencconvertible:
  *  write an object, that is convertible to a NURBCurve object
@@ -1674,7 +1680,7 @@ ay_mfio_writenurbpatch(MF3D_FilePtr fileptr, ay_object *o)
  MF3DTrimCurvesObj tco = {0};
  MF3DErr status = kMF3DNoErr;	/* temporary result code */
  ay_nurbpatch_object *patch = (ay_nurbpatch_object*)(o->refine);
- ay_object *trim;
+ ay_object *trim, *down;
 
   /* write enclosing container */
   ay_status = ay_mfio_writecntr(fileptr);
@@ -1740,50 +1746,40 @@ ay_mfio_writenurbpatch(MF3D_FilePtr fileptr, ay_object *o)
 
   /* write trimcurves */
   trim = o->down;
-  if(trim)
+  if(trim->next)
     {
-
-      /* write enclosing container */
-      ay_status = ay_mfio_writecntr(fileptr);
-      if(ay_status)
-	{ free(mf3do.points); free(mf3do.vKnots); free(mf3do.uKnots);
-          return ay_status; }
-
       tco.objectType = kMF3DObjTrimCurves;
       /* we write out the trimcurve-object now */
       status = MF3DWriteAnObject (fileptr, (MF3DVoidObjPtr)&tco);
       if(status != kMF3DNoErr)
 	{ free(mf3do.points); free(mf3do.vKnots); free(mf3do.uKnots);
-	ay_mfio_mf3d_errno = status; return AY_ERROR; }
+	  ay_mfio_mf3d_errno = status; return AY_ERROR; }
 
-      if(trim->type == AY_IDNCURVE) /* single trimcurve? */
+      while(trim->next)
 	{
-	  ay_status = ay_mfio_writetrimcurve(fileptr, trim);
-	  if(ay_status)
-	    { free(mf3do.points); free(mf3do.vKnots); free(mf3do.uKnots);
-	      return ay_status; }
-	}
-      else if(trim->type == AY_IDLEVEL) /* trimloop? */
-	{
-	  trim = trim->down;
-	  while(trim)
+
+	  if(trim->type == AY_IDNCURVE) /* single trimcurve? */
 	    {
 	      ay_status = ay_mfio_writetrimcurve(fileptr, trim);
 	      if(ay_status)
 		{ free(mf3do.points); free(mf3do.vKnots); free(mf3do.uKnots);
-		return ay_status; }
+		  return ay_status; }
+	    }
+	  else if(trim->type == AY_IDLEVEL) /* trimloop? */
+	    {
+	      down = trim->down;
+	      while(down->next)
+		{
+		  ay_status = ay_mfio_writetrimcurve(fileptr, down);
+		  if(ay_status)
+		    { free(mf3do.points); free(mf3do.vKnots);
+		      free(mf3do.uKnots); return ay_status; }
 
-	      trim = trim->next;
-	    } /* while */
-
-	} /* if */
-
-      /* close container */
-      ay_status = ay_mfio_writeecntr(fileptr);
-      if(ay_status)
-	{ free(mf3do.points); free(mf3do.vKnots); free(mf3do.uKnots);
-	  return ay_status; }
-
+		  down = down->next;
+		} /* while */
+	    } /* if */
+	  trim = trim->next;
+	} /* while */
     } /* if */
 
   /* delete the object */
@@ -2773,7 +2769,6 @@ ay_mfio_importscenetcmd(ClientData clientData, Tcl_Interp * interp,
      return TCL_OK;
    }
 
-
   /* set default options */
   mfio_scalefactor = 1.0;
   mfio_readcurves = AY_TRUE;
@@ -2799,7 +2794,6 @@ ay_mfio_importscenetcmd(ClientData clientData, Tcl_Interp * interp,
 	{
 	  sscanf(argv[i+1], "%lg", &mfio_scalefactor);
 	}
-
 
       i += 2;
     } /* while */

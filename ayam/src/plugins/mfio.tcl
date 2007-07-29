@@ -60,10 +60,8 @@ proc mfio_import { } {
 
     set types {{"3DMF Files" ".3dmf"} {"All files" *}}
     addFileT $f mfio_options FileName $types
-
     addParam $f mfio_options ScaleFactor [list 0.01 0.1 1.0 10.0 100.0]
-
-#    addCheck $f mfio_options ReadCurves
+    addCheck $f mfio_options ReadCurves
 #    addCheck $f mfio_options IgnoreFirstTrim
 #    addParam $f mfio_options RescaleKnots [list 0.0 1.0e-4]
 #    addString $f mfio_options STagName
@@ -79,17 +77,12 @@ proc mfio_import { } {
 	set mfio_options(filename) $mfio_options(FileName)
 	set oldcd [pwd]
 	cd [file dirname $mfio_options(FileName)]
-	ay_mfio_import [file tail $mfio_options(FileName)]
-	if { 0 } {
-	mfioRead [file tail $mfio_options(FileName)]\
-	    -a $mfio_options(Accuracy)\
+	ay_mfio_import [file tail $mfio_options(FileName)]\
 	    -c $mfio_options(ReadCurves)\
-	    -l $mfio_options(ReadLayers)\
 	    -i $mfio_options(IgnoreFirstTrim)\
 	    -r $mfio_options(RescaleKnots)\
-	    -f $mfio_options(ScaleFactor)\
-	    -t $mfio_options(STagName) $mfio_options(TTagName)
-	}
+	    -f $mfio_options(ScaleFactor)
+
 	cd $oldcd
 	goTop
 	selOb
@@ -167,17 +160,12 @@ proc mfio_export { } {
 
     set types {{"3DMF Files" ".3dmf"} {"All files" *}}
     addSFileT $f mfio_options FileName $types
-
     addCheck $f mfio_options WriteBinary
-
     addParam $f mfio_options ScaleFactor [list 0.01 0.1 1.0 10.0 100.0]
-
-
     addCheck $f mfio_options WriteSelected
 #    addCheck $f mfio_options ObeyNoExport
 #    addCheck $f mfio_options IgnoreHidden
     addCheck $f mfio_options WriteCurves
-
 #    addCheck $f mfio_options QuadAsBRep
 #    addCheck $f mfio_options TopLevelLayers
 #    addString $f mfio_options STagName
