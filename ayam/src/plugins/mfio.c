@@ -36,6 +36,7 @@ typedef int (ay_mfio_readcb) (MF3DVoidObjPtr object);
 
 typedef int (ay_mfio_writecb) (MF3D_FilePtr fileptr, ay_object *o);
 
+static int mfio_readcurves = AY_TRUE;
 static int mfio_writecurves = AY_TRUE;
 static int mfio_dataformat = AY_FALSE;
 static double mfio_scalefactor = 1.0;
@@ -257,7 +258,10 @@ ay_mfio_readnurbpatch(MF3DVoidObjPtr object)
   ay_status = ay_object_link(newo);
 
   if(ay_status)
-    ay_status = ay_object_delete(newo);
+    {
+      ay_object_delete(newo);
+      return ay_status;
+    }
 
   ay_mfio_lastreadobject = newo;
 
@@ -284,6 +288,9 @@ ay_mfio_readnurbcurve(MF3DVoidObjPtr object)
  MF3DNURBCurveObjPtr o = (MF3DNURBCurveObjPtr) object;
  ay_nurbcurve_object *curve = NULL;
  ay_object *newo = NULL;
+
+  if(!mfio_readcurves)
+    { return AY_OK; }
 
   /* get some info about the curve */
   length = o->nPoints;
@@ -2668,7 +2675,7 @@ ay_mfio_writescene(Tcl_Interp *interp, char *filename, int selected)
   mfo.typeSeed = kMF3DMinimumTypeSeed;
 
   /* open the metafile */
-  status = MF3DOpenOutputStdCFile(ay_mfio_mf3d_data_format, filename,
+  status = MF3DOpenOutputStdCFile(mfo.dataFormat, filename,
 				  &metafilePtr);
   if(status != kMF3DNoErr)
     return AY_EOPENFILE;
@@ -2757,6 +2764,7 @@ ay_mfio_importscenetcmd(ClientData clientData, Tcl_Interp * interp,
 {
  int ay_status = AY_OK;
  char fname[] = "3dmf_import";
+ int i = 2;
 
  /* check args */
  if(argc != 2)
@@ -2764,6 +2772,38 @@ ay_mfio_importscenetcmd(ClientData clientData, Tcl_Interp * interp,
      ay_error(AY_EARGS, fname, "filename");
      return TCL_OK;
    }
+
+
+  /* set default options */
+  mfio_scalefactor = 1.0;
+  mfio_readcurves = AY_TRUE;
+
+  /* parse args */
+  while(i+1 < argc)
+    {
+      if(!strcmp(argv[i], "-c"))
+	{
+	  sscanf(argv[i+1], "%d", &mfio_readcurves);
+	}
+      else
+	/*
+      if(!strcmp(argv[i], "-t"))
+	{
+	  mfio_stagname = argv[i+1];
+	  mfio_ttagname = argv[i+2];
+	  i++;
+	}
+      else
+	*/
+      if(!strcmp(argv[i], "-f"))
+	{
+	  sscanf(argv[i+1], "%lg", &mfio_scalefactor);
+	}
+
+
+      i += 2;
+    } /* while */
+
 
  ay_mfio_lastreadobject = NULL;
 
@@ -2797,7 +2837,7 @@ ay_mfio_exportscenetcmd(ClientData clientData, Tcl_Interp *interp,
  int selected = AY_FALSE, i = 2;
 
   /* check args */
-  if(argc != 2)
+  if(argc < 2)
     {
       ay_error(AY_EARGS, fname, "filename");
       return TCL_OK;
@@ -2847,13 +2887,6 @@ ay_mfio_exportscenetcmd(ClientData clientData, Tcl_Interp *interp,
   if(ay_status)
     {
       ay_mfio_printerr(ay_mfio_mf3d_errno);
-      ay_error(AY_ERROR, fname, "Error while exporting to:");
-      ay_error(AY_ERROR, fname, argv[1]);
-    }
-  else
-    {
-      ay_error(AY_EOUTPUT, fname, "Done exporting scene to:");
-      ay_error(AY_EOUTPUT, fname, argv[1]);
     }
 
  return TCL_OK;
