@@ -136,7 +136,7 @@ int ay_mfio_writeecntr(MF3D_FilePtr fileptr);
 
 int ay_mfio_writeobject(MF3D_FilePtr fileptr, ay_object *object);
 
-int ay_mfio_writescene(Tcl_Interp *interp, char *filename);
+int ay_mfio_writescene(Tcl_Interp *interp, char *filename, int selected);
 
 int ay_mfio_registerwritecb(char *name, ay_mfio_writecb *cb);
 
@@ -2634,13 +2634,14 @@ ay_mfio_writeobject(MF3D_FilePtr fileptr, ay_object *object)
  *
  */
 int
-ay_mfio_writescene(Tcl_Interp *interp, char *filename)
+ay_mfio_writescene(Tcl_Interp *interp, char *filename, int selected)
 {
  int ay_status = AY_OK;
  ay_object *co = ay_root->next;
  MF3D_FilePtr metafilePtr;	/* MF3D internal file pointer   */
  MF3DErr status = kMF3DNoErr;	/* temporary result code        */
  MF3DMetafileObj mfo = {0};
+ double oldscalx = 0.0, oldscaly = 0.0, oldscalz = 0.0;
 
   /* scene empty? */
   if(!co)
@@ -2663,10 +2664,10 @@ ay_mfio_writescene(Tcl_Interp *interp, char *filename)
   mfo.refSeed = kMF3DMaximumRefSeed;
   mfo.typeSeed = kMF3DMinimumTypeSeed;
 
-  /* Open the metafile */
+  /* open the metafile */
   status = MF3DOpenOutputStdCFile(ay_mfio_mf3d_data_format, filename,
 				  &metafilePtr);
-  if (status != kMF3DNoErr)
+  if(status != kMF3DNoErr)
     return AY_EOPENFILE;
 
   /* write the metafile-object */
@@ -2676,14 +2677,37 @@ ay_mfio_writescene(Tcl_Interp *interp, char *filename)
 
   while(co->next)
     {
-      ay_status = ay_mfio_writeobject(metafilePtr, co);
-      if (ay_status)
-	return ay_status;
+      if(!selected || (selected && co->selected))
+	{
+	  if(mfio_scalefactor != 1.0)
+	    {
+	      oldscalx = co->scalx;
+	      oldscaly = co->scaly;
+	      oldscalz = co->scalz;
+	      co->scalx *= mfio_scalefactor;
+	      co->scaly *= mfio_scalefactor;
+	      co->scalz *= mfio_scalefactor;
+	    }
 
+	  ay_status = ay_mfio_writeobject(metafilePtr, co);
+
+	  if(mfio_scalefactor != 1.0)
+	    {
+	      co->scalx = oldscalx;
+	      co->scaly = oldscaly;
+	      co->scalz = oldscalz;
+	    }
+
+	  if(ay_status)
+	    {
+	      /*XXXX*/
+	      return ay_status;
+	    }
+	} /* if */
       co = co->next;
-    }
+    } /* while */
 
-  /* Close the file */
+  /* close the file */
   status = MF3DClose(metafilePtr);
   if(status != kMF3DNoErr)
     { return AY_ECLOSEFILE; }
@@ -2815,7 +2839,7 @@ ay_mfio_exportscenetcmd(ClientData clientData, Tcl_Interp *interp,
       i += 2;
     } /* while */
 
-  ay_status = ay_mfio_writescene(interp, argv[1]);
+  ay_status = ay_mfio_writescene(interp, argv[1], selected);
 
   if(ay_status)
     {
