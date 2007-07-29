@@ -35,8 +35,12 @@ char ay_mfio_version_mi[] = AY_VERSIONSTRMI;
 typedef int (ay_mfio_readcb) (MF3DVoidObjPtr object);
 
 typedef int (ay_mfio_writecb) (MF3D_FilePtr fileptr, ay_object *o);
+
+static int mfio_writecurves;
+static int mfio_dataformat;
+static double mfio_scalefactor;
+
 /*
-static int export_curves;
 static int export_colors;
 */
 /* prototypes of functions local to this module: */
@@ -2645,7 +2649,14 @@ ay_mfio_writescene(Tcl_Interp *interp, char *filename)
     }
 
   mfo.objectType = kMF3DObjMetafile;
-  mfo.dataFormat = ay_mfio_mf3d_data_format;
+  if(mfio_dataformat)
+    {
+      mfo.dataFormat = kMF3DFormatBinary;
+    }
+  else
+    {
+      mfo.dataFormat = kMF3DFormatText;
+    }
   mfo.majorVersion = (MF3DUns16)1;
   mfo.minorVersion = (MF3DUns16)1;
   mfo.flags = kMF3DFormatStream;
@@ -2752,10 +2763,11 @@ ay_mfio_importscenetcmd(ClientData clientData, Tcl_Interp * interp,
  */
 int
 ay_mfio_exportscenetcmd(ClientData clientData, Tcl_Interp *interp,
-			  int argc, char *argv[])
+			int argc, char *argv[])
 {
  int ay_status = AY_OK;
  char fname[] = "3dmf_export";
+ int selected = AY_FALSE, i = 2;
 
   /* check args */
   if(argc != 2)
@@ -2763,6 +2775,45 @@ ay_mfio_exportscenetcmd(ClientData clientData, Tcl_Interp *interp,
       ay_error(AY_EARGS, fname, "filename");
       return TCL_OK;
     }
+
+  /* set default options */
+  mfio_dataformat = AY_FALSE;
+  mfio_scalefactor = 1.0;
+  mfio_writecurves = AY_TRUE;
+
+  /* parse args */
+  while(i+1 < argc)
+    {
+      if(!strcmp(argv[i], "-c"))
+	{
+	  sscanf(argv[i+1], "%d", &mfio_writecurves);
+	}
+      else
+      if(!strcmp(argv[i], "-s"))
+	{
+	  sscanf(argv[i+1], "%d", &selected);
+	}
+      else
+	/*
+      if(!strcmp(argv[i], "-t"))
+	{
+	  mfio_stagname = argv[i+1];
+	  mfio_ttagname = argv[i+2];
+	  i++;
+	}
+      else
+	*/
+      if(!strcmp(argv[i], "-f"))
+	{
+	  sscanf(argv[i+1], "%lg", &mfio_scalefactor);
+	}
+      else
+      if(!strcmp(argv[i], "-b"))
+	{
+	  sscanf(argv[i+1], "%d", &mfio_dataformat);
+	}
+      i += 2;
+    } /* while */
 
   ay_status = ay_mfio_writescene(interp, argv[1]);
 
@@ -2802,7 +2853,7 @@ ay_mfio_printerr(MF3DErr errcode)
       ay_error(AY_ERROR, fname, "No Objects Found");
       break;
     case kMF3DErrCantParse:
-      ay_error(AY_ERROR, fname, "Cant Parse");
+      ay_error(AY_ERROR, fname, "Can not parse");
       break;
     case kMF3DErrDidntReadEntireObj:
       ay_error(AY_ERROR, fname, "Didnt Read Entire Obj");
@@ -3009,9 +3060,6 @@ Mfio_Init(Tcl_Interp *interp)
       ay_error(AY_ERROR, fname, "However, it is probably safe to continue...");
     }
 
-
-  /* Initialization: */
-  ay_mfio_mf3d_data_format = kMF3DFormatText /*kMF3DFormatBinary*/;
 
   /* init hash table for read callbacks */
   Tcl_InitHashTable(&ay_mfio_read_ht, TCL_ONE_WORD_KEYS);
