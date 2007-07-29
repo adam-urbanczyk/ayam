@@ -13,6 +13,7 @@ uplevel #0 { array set mfio_options {
     ReadCurves 1
     IgnoreFirstTrim 0
     WriteSelected 0
+    WriteBinary 0
     ObeyNoExport 1
     IgnoreHidden 1
     WriteCurves 1
@@ -167,12 +168,16 @@ proc mfio_export { } {
     set types {{"3DMF Files" ".3dmf"} {"All files" *}}
     addSFileT $f mfio_options FileName $types
 
+    addCheck $f mfio_options WriteBinary
+
     addParam $f mfio_options ScaleFactor [list 0.01 0.1 1.0 10.0 100.0]
 
-#    addCheck $f mfio_options WriteSelected
+
+    addCheck $f mfio_options WriteSelected
 #    addCheck $f mfio_options ObeyNoExport
 #    addCheck $f mfio_options IgnoreHidden
-#    addCheck $f mfio_options WriteCurves
+    addCheck $f mfio_options WriteCurves
+
 #    addCheck $f mfio_options QuadAsBRep
 #    addCheck $f mfio_options TopLevelLayers
 #    addString $f mfio_options STagName
@@ -195,13 +200,9 @@ proc mfio_export { } {
 	if { 0 } {
 	mfioWrite [file tail $mfio_options(FileName)]\
 	    -c $mfio_options(WriteCurves)\
-	    -q $mfio_options(QuadAsBRep)\
+	    -b $mfio_options(WriteBinary)\
 	    -s $mfio_options(WriteSelected)\
-	    -o $mfio_options(ObeyNoExport)\
-	    -i $mfio_options(IgnoreHidden)\
-	    -l $mfio_options(TopLevelLayers)\
-	    -f $mfio_options(ScaleFactor)\
-	    -t $mfio_options(STagName) $mfio_options(TTagName)
+	    -f $mfio_options(ScaleFactor)
 	}
 
 	cd $oldcd
