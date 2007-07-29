@@ -196,14 +196,11 @@ proc mfio_export { } {
 	set mfio_options(filename) $mfio_options(FileName)
 	set oldcd [pwd]
 	cd [file dirname $mfio_options(FileName)]
-	ay_mfio_export [file tail $mfio_options(FileName)]
-	if { 0 } {
-	mfioWrite [file tail $mfio_options(FileName)]\
+	ay_mfio_export [file tail $mfio_options(FileName)]\
 	    -c $mfio_options(WriteCurves)\
 	    -b $mfio_options(WriteBinary)\
 	    -s $mfio_options(WriteSelected)\
 	    -f $mfio_options(ScaleFactor)
-	}
 
 	cd $oldcd
 	update
