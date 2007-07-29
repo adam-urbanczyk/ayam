@@ -36,9 +36,9 @@ typedef int (ay_mfio_readcb) (MF3DVoidObjPtr object);
 
 typedef int (ay_mfio_writecb) (MF3D_FilePtr fileptr, ay_object *o);
 
-static int mfio_writecurves;
-static int mfio_dataformat;
-static double mfio_scalefactor;
+static int mfio_writecurves = AY_TRUE;
+static int mfio_dataformat = AY_FALSE;
+static double mfio_scalefactor = 1.0;
 
 /*
 static int export_colors;
@@ -1543,7 +1543,7 @@ ay_mfio_writencconvertible(MF3D_FilePtr fileptr, ay_object *o)
 	  ay_status = ay_mfio_writenurbcurve(fileptr, c);
 	}
 
-      ay_status = ay_object_delete(c);
+      ay_status = ay_object_deletemulti(c);
 
       return AY_OK;
     } /* if */
@@ -1802,6 +1802,9 @@ ay_mfio_writenurbcurve(MF3D_FilePtr fileptr, ay_object *o)
  MF3DNURBCurveObj mf3do = {0};
  MF3DErr status = kMF3DNoErr;	/* temporary result code */
  ay_nurbcurve_object *curve = (ay_nurbcurve_object*)(o->refine);
+
+  if(!mfio_writecurves)
+    { return AY_OK; }
 
   /* write enclosing container */
   ay_status = ay_mfio_writecntr(fileptr);
