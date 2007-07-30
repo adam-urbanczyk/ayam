@@ -22,7 +22,7 @@ uplevel #0 { array set x3dio_options {
     ObeyNoExport 1
     IgnoreHidden 1
     WriteCurves 1
-    QuadAsBRep 1
+    WriteViews 1
     RescaleKnots 0.0
     TopLevelLayers 0
     ScaleFactor 1.0
@@ -192,7 +192,7 @@ proc x3dio_export { } {
     addCheck $f x3dio_options ObeyNoExport
     addCheck $f x3dio_options IgnoreHidden
     addCheck $f x3dio_options WriteCurves
-    addCheck $f x3dio_options QuadAsBRep
+    addCheck $f x3dio_options WriteViews
     addCheck $f x3dio_options TopLevelLayers
     addString $f x3dio_options STagName
     addString $f x3dio_options TTagName
@@ -213,7 +213,7 @@ proc x3dio_export { } {
 
 	x3dioWrite [file tail $x3dio_options(FileName)]\
 	    -c $x3dio_options(WriteCurves)\
-	    -q $x3dio_options(QuadAsBRep)\
+	    -v $x3dio_options(WriteViews)\
 	    -s $x3dio_options(WriteSelected)\
 	    -o $x3dio_options(ObeyNoExport)\
 	    -i $x3dio_options(IgnoreHidden)\
