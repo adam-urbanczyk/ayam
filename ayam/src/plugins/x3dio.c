@@ -122,6 +122,8 @@ int x3dio_readdoublepoints(scew_element *element, char *attrname,
 int x3dio_readindex(scew_element *element, char *attrname,
 		    unsigned int *len, int **res);
 
+int x3dio_processuse(scew_element **element);
+
 int x3dio_readcoords(scew_element *element, unsigned int *len, double **res);
 
 int x3dio_readnormals(scew_element *element, unsigned int *len, double **res);
@@ -988,10 +990,57 @@ x3dio_readindex(scew_element *element, char *attrname,
 } /* x3dio_readindex */
 
 
+/* x3dio_processuse:
+ *  
+ */
+int
+x3dio_processuse(scew_element **element)
+{
+ int ay_status = AY_OK;
+ char fname[] = "x3dio_processuse", *errstr = NULL;
+ const char *errfmt = "could not find element: %s";
+ scew_attribute *attr = NULL;
+ const XML_Char *str = NULL;
+
+  if(!element || !*element)
+    return AY_ENULL;
+
+  attr = scew_attribute_by_name(*element, "USE");
+  if(attr)
+    {
+      str = scew_attribute_value(attr);
+      if(str)
+	{
+	  ay_status = x3dio_getdef((char*)str, element);
+	  if(ay_status)
+	    {
+	      if(!(errstr = calloc(strlen(errfmt) + strlen(str) + 2,
+				   sizeof(char))))
+		{
+		  ay_error(AY_ERROR, fname, NULL);
+		}
+	      else
+		{
+		  sprintf(errstr, errfmt, str);
+		  ay_error(AY_ERROR, fname, errstr);
+		}
+	      return AY_ERROR;
+	    } /* if */
+	}
+      else
+	{
+	  ay_error(AY_ERROR, fname,
+		   "malformed USE attribute encountered");
+	} /* if str */
+    } /* if attr */
+
+ return AY_OK;
+} /* x3dio_processuse */
+
+
 /* x3dio_readcoords:
  *  look through all children of <element> for a "Coordinate" or
  *  "CoordinateDouble" element and read the coordinates into <len> and <res>
- *  XXXX process USE!
  */
 int
 x3dio_readcoords(scew_element *element, unsigned int *len, double **res)
@@ -1010,6 +1059,10 @@ x3dio_readcoords(scew_element *element, unsigned int *len, double **res)
       element_name = scew_element_name(child);
       if(!strcmp(element_name, "Coordinate"))
 	{
+	  /* process USE attribute */
+	  ay_status = x3dio_processuse(&child);
+
+	  /* read data */
 	  ay_status = x3dio_readfloatpoints(child, "point", 3, len, &cv);
 	  if(*len)
 	    {
@@ -1031,6 +1084,10 @@ x3dio_readcoords(scew_element *element, unsigned int *len, double **res)
 	}
       if(!strcmp(element_name, "CoordinateDouble"))
 	{
+	  /* process USE attribute */
+	  ay_status = x3dio_processuse(&child);
+
+	  /* read data */
 	  ay_status = x3dio_readdoublepoints(child, "point", 3, len, res);
 	  return AY_OK; /* XXXX early exit! */
 	}
@@ -1043,7 +1100,6 @@ x3dio_readcoords(scew_element *element, unsigned int *len, double **res)
 /* x3dio_readnormals:
  *  look through all children of <element> for a "Normal" element and
  *  read the normals therein into <len> and <res>
- *  XXXX process USE!
  */
 int
 x3dio_readnormals(scew_element *element, unsigned int *len, double **res)
@@ -1062,6 +1118,10 @@ x3dio_readnormals(scew_element *element, unsigned int *len, double **res)
       element_name = scew_element_name(child);
       if(!strcmp(element_name, "Normal"))
 	{
+	  /* process USE attribute */
+	  ay_status = x3dio_processuse(&child);
+
+	  /* read data */
 	  ay_status = x3dio_readfloatpoints(child, "vector", 3, len, &cv);
 	  if(*len)
 	    {
