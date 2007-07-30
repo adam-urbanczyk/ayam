@@ -6838,6 +6838,69 @@ x3dio_writeview(scew_element *element, ay_object *o)
 } /* x3dio_writeview */
 
 
+/* x3dio_writelight:
+ *
+ */
+int
+x3dio_writelight(scew_element *element, ay_object *o)
+{
+ ay_light_object *light;
+ scew_element *light_element = NULL;
+ double dir[3] = {0}, col[3] = {0};
+
+  if(!element || !o)
+    return AY_ENULL;
+
+  light = (ay_light_object*)o->refine;
+
+  switch(light->type)
+    {
+    case AY_LITPOINT:
+      light_element = scew_element_add(element, "PointLight");
+      x3dio_writedoublevecattrib(light_element, "location", 3, light->tfrom);
+      break;
+    case AY_LITDISTANT:
+      light_element = scew_element_add(element, "DirectionalLight");
+      dir[0] = light->tto[0] - light->tfrom[0];
+      dir[1] = light->tto[1] - light->tfrom[1];
+      dir[2] = light->tto[2] - light->tfrom[2];
+      x3dio_writedoublevecattrib(light_element, "direction", 3, dir);
+      break;
+    case AY_LITSPOT:
+      break;
+    default:
+      break;
+    } /* switch */
+
+  /* add some standard parameters */
+  if(light_element)
+    {
+      /* intensity */
+      x3dio_writedoubleattrib(light_element, "intensity", &light->intensity);
+
+      /* color */
+      col[0] = light->colr;
+      col[1] = light->colg;
+      col[2] = light->colb;
+      x3dio_writedoublevecattrib(light_element, "color", 3, col);
+
+      /* local/global state */
+      if(light->local)
+	{
+	  scew_element_add_attr_pair(light_element, "global", "false");
+	}
+
+      /* is_on state */
+      if(!light->on)
+	{
+	  scew_element_add_attr_pair(light_element, "on", "false");
+	}
+    } /* if */
+
+ return AY_OK;
+} /* x3dio_writelight */
+
+
 #if 0
 /* x3dio_writencurve:
  *
@@ -7226,6 +7289,9 @@ X_Init(Tcl_Interp *interp)
 				       x3dio_writeinstanceobj);
   ay_status = x3dio_registerwritecb((char *)(AY_IDSCRIPT),
 				       x3dio_writescriptobj);
+
+  ay_status = x3dio_registerwritecb((char *)(AY_IDLIGHT),
+				       x3dio_writelight);
 
   ay_status = x3dio_registerwritecb((char *)(AY_IDPOMESH),
 				       x3dio_writepomeshobj);
