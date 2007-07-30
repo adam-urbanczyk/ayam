@@ -54,9 +54,9 @@ int x3dio_expobeynoexport = AY_TRUE;
 int x3dio_expignorehidden = AY_TRUE;
 int x3dio_mergeinlinedefs = AY_TRUE;
 
-
 int x3dio_tesspomesh = AY_FALSE;
 int x3dio_writecurves = AY_TRUE;
+int x3dio_writeviews = AY_TRUE;
 
 unsigned int x3dio_allobjcnt = 0;
 unsigned int x3dio_curobjcnt = 0;
@@ -279,6 +279,9 @@ int x3dio_writeconeobj(scew_element *element, ay_object *o);
 int x3dio_writepomeshobj(scew_element *element, ay_object *o);
 
 int x3dio_writeview(scew_element *element, ay_object *o);
+
+int x3dio_writelight(scew_element *element, ay_object *o);
+
 
 /* export */
 int x3dio_writeobject(scew_element *element, ay_object *o, int count);
@@ -7009,7 +7012,7 @@ x3dio_writescene(char *filename, int selected)
     }
 
   /* export the views */
-  if(1/*x3dio_writeviews*/)
+  if(x3dio_writeviews)
     {
       /* reset view number */
       x3dio_writeview(NULL, NULL);
@@ -7080,7 +7083,7 @@ x3dio_writescene(char *filename, int selected)
       ay_status = AY_EOPENFILE;
     }
 
-  /* free the SCEW tree */
+  /* free the in-memory XML tree */
   scew_tree_free(tree);
 
  return ay_status;
@@ -7105,8 +7108,11 @@ x3dio_writetcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
+  /* set default options */
   x3dio_tesspomesh = AY_FALSE;
   x3dio_writecurves = AY_TRUE;
+  x3dio_writeviews = AY_TRUE;
+  x3dio_scalefactor = 1.0;
 
   while(i+1 < argc)
     {
@@ -7136,6 +7142,11 @@ x3dio_writetcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  sscanf(argv[i+1], "%lg", &x3dio_scalefactor);
 	}
+      else
+      if(!strcmp(argv[i], "-v"))
+	{
+	  sscanf(argv[i+1], "%d", &x3dio_writeviews);
+	}
       i += 2;
     } /* while */
 
@@ -7143,8 +7154,6 @@ x3dio_writetcmd(ClientData clientData, Tcl_Interp *interp,
 
   x3dio_stagname = x3dio_stagnamedef;
   x3dio_ttagname = x3dio_ttagnamedef;
-
-  x3dio_scalefactor = 1.0;
 
  return TCL_OK;
 } /* x3dio_writetcmd */
