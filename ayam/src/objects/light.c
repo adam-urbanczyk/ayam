@@ -136,7 +136,7 @@ ay_light_drawcb(struct Togl *togl, ay_object *o)
 		(GLdouble)ay_prefs.lib);
     }
 
-    switch(light->type)
+  switch(light->type)
     {
     case AY_LITPOINT:
       has_from = AY_TRUE;
@@ -163,14 +163,16 @@ ay_light_drawcb(struct Togl *togl, ay_object *o)
 	  sarg = shader->arg;
 	  while(sarg)
 	    {
-	      if(!ay_comp_strcase(sarg->name, "from"))
+	      if((!ay_comp_strcase(sarg->name, "from")) &&
+		 (sarg->type == AY_SAPOINT))
 		{
 		  has_from = AY_TRUE;
 		  from[0] = sarg->val.point[0];
 		  from[1] = sarg->val.point[1];
 		  from[2] = sarg->val.point[2];
 		}
-	      if(!ay_comp_strcase(sarg->name, "to"))
+	      if((!ay_comp_strcase(sarg->name, "to")) &&
+		 (sarg->type == AY_SAPOINT))
 		{
 		  has_to = AY_TRUE;
 		  to[0] = sarg->val.point[0];
@@ -181,7 +183,8 @@ ay_light_drawcb(struct Togl *togl, ay_object *o)
 	    } /* while */
 	} /* if */
       break;
-
+    default:
+      break;
     } /* switch */
 
   if(has_from)
@@ -276,7 +279,7 @@ ay_light_drawcb(struct Togl *togl, ay_object *o)
 		      va[0] = 1.0;
 		    }
 		}
-	    }
+	    } /* if */
 
 	  /* create normal */
 	  AY_V3CROSS(vn, vd, va)
@@ -362,14 +365,16 @@ ay_light_drawhcb(struct Togl *togl, ay_object *o)
 	  sarg = shader->arg;
 	  while(sarg)
 	    {
-	      if(!ay_comp_strcase(sarg->name,"from"))
+	      if((!ay_comp_strcase(sarg->name,"from")) &&
+		 (sarg->type == AY_SAPOINT))
 		{
 		  has_from = AY_TRUE;
 		  from[0] = sarg->val.point[0];
 		  from[1] = sarg->val.point[1];
 		  from[2] = sarg->val.point[2];
 		}
-	      if(!ay_comp_strcase(sarg->name,"to"))
+	      if((!ay_comp_strcase(sarg->name,"to")) &&
+		 (sarg->type == AY_SAPOINT))
 		{
 		  has_to = AY_TRUE;
 		  to[0] = sarg->val.point[0];
@@ -405,7 +410,6 @@ ay_light_drawhcb(struct Togl *togl, ay_object *o)
 	  break;
 	} /* switch */
     } /* if */
-
 
   if(has_from)
     {
@@ -474,14 +478,16 @@ ay_light_getpntcb(int mode, ay_object *o, double *p)
 	  sarg = shader->arg;
 	  while(sarg)
 	    {
-	      if(!ay_comp_strcase(sarg->name, "from"))
+	      if((!ay_comp_strcase(sarg->name, "from")) &&
+		 (sarg->type == AY_SAPOINT))
 		{
 		  has_from = AY_TRUE;
 		  light->tfrom[0] = sarg->val.point[0];
 		  light->tfrom[1] = sarg->val.point[1];
 		  light->tfrom[2] = sarg->val.point[2];
 		}
-	      if(!ay_comp_strcase(sarg->name, "to"))
+	      if((!ay_comp_strcase(sarg->name, "to")) &&
+		 (sarg->type == AY_SAPOINT))
 		{
 		  has_to = AY_TRUE;
 		  light->tto[0] = sarg->val.point[0];
@@ -536,7 +542,7 @@ ay_light_getpntcb(int mode, ay_object *o, double *p)
 
 	  ay_point_edit_coords_homogenous = AY_FALSE;
 	  ay_point_edit_coords_number = numpts;
-	}
+	} /* if */
     }
   else
     { /* no */
@@ -556,7 +562,8 @@ ay_light_getpntcb(int mode, ay_object *o, double *p)
 		  pecoord = light->tfrom;
 		  min_dist = dist;
 		}
-	    }
+	    } /* if */
+	  
 	  if(has_to)
 	    {
 	      dist = AY_VLEN((p[0] - light->tto[0]),
@@ -568,7 +575,7 @@ ay_light_getpntcb(int mode, ay_object *o, double *p)
 		  pecoord = light->tto;
 		  min_dist = dist;
 		}
-	    }
+	    } /* if */
 
 	  if(!pecoord)
 	    return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
@@ -997,14 +1004,16 @@ ay_light_bbccb(ay_object *o, double *bbox, int *flags)
 	  sarg = shader->arg;
 	  while(sarg)
 	    {
-	      if(!ay_comp_strcase(sarg->name,"from"))
+	      if((!ay_comp_strcase(sarg->name,"from")) &&
+		 (sarg->type == AY_SAPOINT))
 		{
 		  has_from = AY_TRUE;
 		  from[0] = sarg->val.point[0];
 		  from[1] = sarg->val.point[1];
 		  from[2] = sarg->val.point[2];
 		}
-	      if(!ay_comp_strcase(sarg->name,"to"))
+	      if((!ay_comp_strcase(sarg->name,"to")) &&
+		 (sarg->type == AY_SAPOINT))
 		{
 		  has_to = AY_TRUE;
 		  to[0] = sarg->val.point[0];
@@ -1073,7 +1082,7 @@ ay_light_bbccb(ay_object *o, double *bbox, int *flags)
       bbox[18] = xmax; bbox[19] = ymin; bbox[20] = zmin;
       /* P8 */
       bbox[21] = xmax; bbox[22] = ymin; bbox[23] = zmax;
-    }
+    } /* if */
 
  return AY_OK;
 } /* ay_light_bbccb */
@@ -1099,7 +1108,6 @@ ay_light_notifycb(ay_object *o)
 	       "This light will not use the attached light shader!");
     }
 
-
   /*
    * no action needed for objects of internal types;
    * but for custom lights, that were modified by single point
@@ -1117,13 +1125,15 @@ ay_light_notifycb(ay_object *o)
 	  sarg = shader->arg;
 	  while(sarg)
 	    {
-	      if(!ay_comp_strcase(sarg->name, "from"))
+	      if((!ay_comp_strcase(sarg->name, "from")) &&
+		 (sarg->type == AY_SAPOINT))
 		{
 		  sarg->val.point[0] = (float)light->tfrom[0];
 		  sarg->val.point[1] = (float)light->tfrom[1];
 		  sarg->val.point[2] = (float)light->tfrom[2];
 		}
-	      if(!ay_comp_strcase(sarg->name, "to"))
+	      if((!ay_comp_strcase(sarg->name, "to")) &&
+		 (sarg->type == AY_SAPOINT))
 		{
 		  sarg->val.point[0] = (float)light->tto[0];
 		  sarg->val.point[1] = (float)light->tto[1];
