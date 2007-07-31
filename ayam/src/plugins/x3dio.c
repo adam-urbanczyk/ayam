@@ -6845,8 +6845,13 @@ int
 x3dio_writelight(scew_element *element, ay_object *o)
 {
  ay_light_object *light;
+ ay_shader *shader = NULL;
+ ay_shader_arg *sarg = NULL;
  scew_element *light_element = NULL;
  double dir[3] = {0}, col[3] = {0};
+ double from[3] = {0}, to[3] = {0};
+ double coneAngle = 0.0, beamWidth = 0.0;
+ int has_from = AY_FALSE, has_to = AY_FALSE, has_angle = AY_FALSE;
 
   if(!element || !o)
     return AY_ENULL;
@@ -6867,6 +6872,91 @@ x3dio_writelight(scew_element *element, ay_object *o)
       x3dio_writedoublevecattrib(light_element, "direction", 3, dir);
       break;
     case AY_LITSPOT:
+      light_element = scew_element_add(element, "SpotLight");
+      dir[0] = light->tto[0] - light->tfrom[0];
+      dir[1] = light->tto[1] - light->tfrom[1];
+      dir[2] = light->tto[2] - light->tfrom[2];
+      x3dio_writedoublevecattrib(light_element, "direction", 3, dir);
+      
+      x3dio_writedoubleattrib(light_element, "cutOffAngle",
+			      &light->cone_angle);
+
+      beamWidth = light->cone_angle - light->cone_delta_angle;
+      x3dio_writedoubleattrib(light_element, "beamWidth",
+			      &beamWidth);
+      break;
+    case AY_LITCUSTOM:
+      if(light->lshader)
+	{
+	  shader = light->lshader;
+
+	  sarg = shader->arg;
+	  while(sarg)
+	    {
+	      if((!ay_comp_strcase(sarg->name, "from")) &&
+		 (sarg->type == AY_SAPOINT))
+		{
+		  has_from = AY_TRUE;
+		  from[0] = sarg->val.point[0];
+		  from[1] = sarg->val.point[1];
+		  from[2] = sarg->val.point[2];
+		}
+	      if((!ay_comp_strcase(sarg->name, "to")) &&
+		 (sarg->type == AY_SAPOINT))
+		{
+		  has_to = AY_TRUE;
+		  to[0] = sarg->val.point[0];
+		  to[1] = sarg->val.point[1];
+		  to[2] = sarg->val.point[2];
+		}
+	      if((!ay_comp_strcase(sarg->name, "coneangle")) &&
+		 (sarg->type == AY_SASCALAR))
+		{
+		  has_to = AY_TRUE;
+		  coneAngle = sarg->val.scalar;
+		}
+	      sarg = sarg->next;
+	    } /* while */
+
+	  if(has_from && has_to && has_angle)
+	    {
+	      light_element = scew_element_add(element, "SpotLight");
+	      dir[0] = to[0] - from[0];
+	      dir[1] = to[1] - from[1];
+	      dir[2] = to[2] - from[2];
+	      x3dio_writedoublevecattrib(light_element, "direction", 3, dir);
+      
+	      x3dio_writedoubleattrib(light_element, "cutOffAngle",
+				      &coneAngle);
+	      /*
+	      beamWidth = light->cone_angle - light->cone_delta_angle;
+	      x3dio_writedoubleattrib(light_element, "beamWidth",
+				      &beamWidth);
+	      */
+	    }
+	  else
+	    {
+	      if(has_from && has_to)
+		{
+		  light_element = scew_element_add(element,
+						   "DirectionalLight");
+		  dir[0] = to[0] - from[0];
+		  dir[1] = to[1] - from[1];
+		  dir[2] = to[2] - from[2];
+		  x3dio_writedoublevecattrib(light_element, "direction",
+					     3, dir);
+		}
+	      else
+		{
+		  if(has_from)
+		    {
+		      light_element = scew_element_add(element, "PointLight");
+		      x3dio_writedoublevecattrib(light_element, "location",
+						 3, from);
+		    } /* if */
+		} /* if */
+	    } /* if */
+	} /* if */
       break;
     default:
       break;
