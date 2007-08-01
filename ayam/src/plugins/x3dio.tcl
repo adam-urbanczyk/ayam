@@ -196,6 +196,7 @@ proc x3dio_export { } {
     addCheck $f x3dio_options TopLevelLayers
     addString $f x3dio_options STagName
     addString $f x3dio_options TTagName
+    addMenu $f x3dio_options ErrorLevel [list Silence Errors Warnings All]
     addProgress $f x3dio_options Progress
 
     set ay(iapplydisable) 0
@@ -213,6 +214,7 @@ proc x3dio_export { } {
 
 	x3dioWrite [file tail $x3dio_options(FileName)]\
 	    -c $x3dio_options(WriteCurves)\
+	    -c $x3dio_options(ErrorLevel)\
 	    -v $x3dio_options(WriteViews)\
 	    -s $x3dio_options(WriteSelected)\
 	    -o $x3dio_options(ObeyNoExport)\
