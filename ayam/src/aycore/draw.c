@@ -207,7 +207,7 @@ ay_draw_view(struct Togl *togl, int draw_offset)
 	    (GLdouble)ay_prefs.obb);
 
   if(ay_prefs.linewidth != 1.0)
-    glLineWidth(ay_prefs.linewidth);
+    glLineWidth((GLfloat)ay_prefs.linewidth);
 
   /* draw unselected objects */
   if(!view->drawsel)
@@ -227,7 +227,7 @@ ay_draw_view(struct Togl *togl, int draw_offset)
 		(GLdouble)ay_prefs.seb);
 
       if(ay_prefs.sellinewidth != 1.0)
-	glLineWidth(ay_prefs.sellinewidth/*1.6*/);
+	glLineWidth((GLfloat)ay_prefs.sellinewidth/*1.6f*/);
 
       glPushMatrix();
       if(!view->drawlevel)
@@ -259,7 +259,7 @@ ay_draw_view(struct Togl *togl, int draw_offset)
 	  glDepthFunc(GL_LESS);
 	} /* if */
 
-      glLineWidth(ay_prefs.linewidth/*1.0*/);
+      glLineWidth((GLfloat)ay_prefs.linewidth/*1.0f*/);
 
       /* draw handles of selected objects */
       if(view->drawhandles)
