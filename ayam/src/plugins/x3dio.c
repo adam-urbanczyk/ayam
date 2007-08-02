@@ -134,6 +134,7 @@ int x3dio_readname(scew_element *element, ay_object *obj);
 
 int x3dio_linkobject(scew_element *element, unsigned int type, void *sobj);
 
+
 /* 3D */
 int x3dio_readbox(scew_element *element);
 
@@ -208,6 +209,8 @@ int x3dio_readscene(scew_element *element);
 int x3dio_adddef(char *name, scew_element *element);
 
 int x3dio_getdef(char *name, scew_element **element);
+
+int x3dio_removedefs(scew_element *element);
 
 int x3dio_countelements(scew_element *element, unsigned int *counter);
 
@@ -4239,6 +4242,7 @@ x3dio_readinline(scew_element *element)
  const XML_Char *str = NULL;
  int load = AY_TRUE;
  Tcl_HashTable *old_x3dio_defs_ht = NULL;
+ const char *filename;
 
   if(!element)
     return AY_ENULL;
@@ -4251,10 +4255,24 @@ x3dio_readinline(scew_element *element)
       if(attr)
 	{
 	  str = scew_attribute_value(attr);
+	  
+	  filename = strchr(str, '"');
+
+	  if(!strcmp("file:", str))
+	    {
+	      /* "file://host.name/path/filename" */
+	      filename = strchr(str, ':');
+	      filename += 3;
+	      if(*filename != '/')
+		{
+		  filename = strchr(filename, '/');
+		}
+	    }
+
 	  if(x3dio_errorlevel > 2)
 	    {
 	      ay_error(AY_EOUTPUT, fname, "Inlining file:");
-	      ay_error(AY_EOUTPUT, fname, str);
+	      ay_error(AY_EOUTPUT, fname, filename);
 	    }
 
 	  /* initialize XML parser */
@@ -4263,7 +4281,7 @@ x3dio_readinline(scew_element *element)
 	  scew_parser_ignore_whitespaces(parser, 1);
 
 	  /* load an XML (X3D) file */
-	  if(!scew_parser_load_file(parser, str))
+	  if(!scew_parser_load_file(parser, filename))
 	    {
 	      errcode = scew_error_code();
 	      sprintf(errstr, "Unable to load file (error #%d: %s)\n",
@@ -4328,6 +4346,12 @@ x3dio_readinline(scew_element *element)
 	      Tcl_DeleteHashTable(x3dio_defs_ht);
 	      free(x3dio_defs_ht);
 	      x3dio_defs_ht = old_x3dio_defs_ht;
+	    }
+	  else
+	    {
+	      /* to avoid crashes the DEF table must be cleaned
+		 from references to the inlined XML tree*/
+	      x3dio_removedefs(scew_tree_root(tree));
 	    } /* if */
 
 	  /* cleanup */
@@ -4620,6 +4644,43 @@ x3dio_getdef(char *name, scew_element **element)
 
  return AY_OK;
 } /* x3dio_getdef */
+
+
+/* x3dio_removedefs:
+ *  _recursively_ remove all definitions from the DEF hashtable
+ */
+int
+x3dio_removedefs(scew_element *element)
+{
+ int ay_status = AY_OK;
+ scew_element *child = NULL;
+ const XML_Char *str = NULL;
+ Tcl_HashEntry *entry = NULL;
+
+  if(!element)
+    return AY_OK;
+
+  scew_attribute *attr = NULL;
+  attr = scew_attribute_by_name(element, "DEF");
+  if(attr)
+    {
+      str = scew_attribute_value(attr);
+      if(str)
+	{
+	  if((entry = Tcl_FindHashEntry(x3dio_defs_ht, str)))
+	    {
+	      Tcl_DeleteHashEntry(entry);
+	    }
+	}
+    }
+
+  while((child = scew_element_next(element, child)) != NULL)
+    {
+      ay_status = x3dio_removedefs(child);
+    }
+
+ return AY_OK;
+} /* x3dio_removedefs */
 
 
 /* x3dio_countelements:
