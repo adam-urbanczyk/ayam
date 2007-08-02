@@ -338,7 +338,7 @@ ay_script_readcb(FILE *fileptr, ay_object *o)
 {
  ay_script_object *sc = NULL;
  int i;
- unsigned int len;
+ unsigned int j, len;
  int readc, deactivate = 0;
  char script_disable_cmd[] = "script_disable";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
@@ -366,12 +366,12 @@ ay_script_readcb(FILE *fileptr, ay_object *o)
 	  return AY_EOMEM;
 	}
 
-      for(i = 0; i < len; i++)
+      for(j = 0; j < len; j++)
 	{
 	  readc = getc(fileptr);
 	  if(readc == EOF)
 	    return AY_EUEOF;
-	  (sc->script)[i] = (char)readc;
+	  (sc->script)[j] = (char)readc;
 	} /* for */
     } /* if */
 
