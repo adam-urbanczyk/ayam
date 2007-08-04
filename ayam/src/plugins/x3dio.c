@@ -198,6 +198,8 @@ int x3dio_readlight(scew_element *element, int type);
 /* non-geometric/scene structure */
 int x3dio_readviewpoint(scew_element *element);
 
+int x3dio_readcadlayer(scew_element *element);
+
 int x3dio_readinline(scew_element *element);
 
 int x3dio_readtransform(scew_element *element);
@@ -4222,6 +4224,54 @@ x3dio_readviewpoint(scew_element *element)
 } /* x3dio_readviewpoint */
 
 
+/* x3dio_readcadlayer:
+ *
+ */
+int x3dio_readcadlayer(scew_element *element)
+{
+ int ay_status = AY_OK;
+ scew_element *child = NULL;
+ ay_object *o = NULL, **old_aynext;
+
+  if(!element)
+    return AY_ENULL;
+
+  if(!(o = calloc(1, sizeof(ay_object))))
+    {
+      return AY_EOMEM;
+    }
+
+  if(!(o->refine = calloc(1, sizeof(ay_level_object))))
+    {
+      free(o); return AY_EOMEM;
+    }
+
+  ay_status = ay_object_defaults(o);
+
+  o->type = AY_IDLEVEL;
+  o->parent = AY_TRUE;
+
+  old_aynext = ay_next;
+  ay_next = &(o->down);
+
+  /* read child elements */
+  while((child = scew_element_next(element, child)) != NULL)
+    {
+      ay_status = x3dio_readelement(child);
+      if(ay_status == AY_EDONOTLINK)
+	break;
+    }
+
+  ay_object_crtendlevel(ay_next);
+  ay_next = old_aynext;
+  ay_object_link(o);
+  /* read shape name from DEF */
+  ay_status = x3dio_readname(element, o);
+
+ return ay_status;
+} /* x3dio_readcadlayer */
+
+
 /* x3dio_readinline:
  *
  */
@@ -4805,6 +4855,11 @@ x3dio_readelement(scew_element *element)
 	}
       break;
     case 'C':
+      if(!strcmp(element_name, "CADLayer"))
+	{
+	  ay_status = x3dio_readcadlayer(element);
+	  handled_elements = 1;
+	}
       if(!strcmp(element_name, "Cylinder"))
 	{
 	  ay_status = x3dio_readcylinder(element);
