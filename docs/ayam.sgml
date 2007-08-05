@@ -224,7 +224,7 @@ plus/minus symbols in front of the name of those objects.
 Drag-and-Drop operation is also possible to move objects in the
 hierarchy and to initiate special actions like connecting materials
 to objects. However, this last feature is documented in section
-<ref id="obandprp" name="Ayam Objects and Properties">
+<ref id="obandprp" name="Objects, Properties and Tags">
 as it is object type specific.
 <p>
 <label id="treecontm">
@@ -401,7 +401,7 @@ context menu of the properties listbox to de-select the current property.
 What properties exactly will be shown, and how the GUIs look alike
 depends on the selected object and the selected property.
 This is documented comprehensively in section
-<ref id="obandprp" name="Ayam Objects and Properties">.
+<ref id="obandprp" name="Objects, Properties and Tags">.
 <p>
 Here are some general remarks about object properties:
 <p>
@@ -2292,681 +2292,12 @@ Note that in contrast to their normal behaviour, grids can also be scaled
 differently in X-window and Y-window coordinates in aligned local views
 (if the local object space is deformed this way).
 
-<sect>Objects and Properties<label id="obandprp">
+<sect>Objects, Properties and Tags<label id="obandprp">
 <p>
 This section informs you about the different object types of Ayam and
 about the property GUIs that appear in the properties section of the
 main window if a single object and a property have been selected.
-
-<sect1>Standard Properties<label id="stdprop">
-<p>
-Most Ayam objects have standard properties. They are used
-to control transformations and common attributes of objects.
-The following sections describe the standard properties
-<tt/"Transformations"/, <tt/"Attributes"/, <tt/"Material"/, <tt/"Shaders"/,
-and <tt/"Tags"/.
-
-<sect1>Transformations Property<label id="trap"><label id="transformationsprop">
-<p>
-Use this property to edit the location, orientation, and
-size of an object.
-<itemize>
-<item><tt/"Reset All!"/ immediately resets all transformation
-attributes to the default values.
-
-<item><tt/"Translation_X (_Y, _Z)"/ is the displacement of the
-object from the world origin in X (Y, Z) direction.
-
-<item><tt/"Rotation_X (_Y, _Z)"/ is the angle (in degrees)
-of the rotation of the object around the X (Y, Z) axis.
-Read the next section for more information on how to use these
-entries. Read it!
-
-<item><tt/"Scale_X (_Y, _Z)"/ determines a scale factor that will be
-applied to the object in the direction of the local X (Y, Z) axis.
-
-<item><tt/"Quat0 (1, 2, 3)"/ the quaternion that is used to determine
-the orientation of the object in space. This quaternion is not here
-to be edited directly! The sole purpose of its appearance here
-is to allow copying and pasting of rotations.
-</itemize>
-
-The transformations are applied to the object in the following order:
-Scale, Rotation, Translation.
-
-<sect2>Using the Rotation Attributes<label id="gimb">
-<p>
-The orientation of an object in space may be expressed using
-so called Euler angles. This notation (simply three angles
-determining a rotation about the axes of the coordinate system)
-suffers from a phenomenon called gimbal lock.
-<p>
-To avoid gimbal locks, Ayam internally holds the orientation
-of an object in a quaternion.
-This quaternion not only holds information about the angles
-but also about the order in which partial rotations occured.
-<p>
-It is important to know, that the values of the angles of
-the rotation property must not be read in a way that
-the object will first be rotated around X by x-angle degrees
-then around Y y-angle degrees then around Z z-angle degrees.
-In fact, no information about the order in which partial
-rotations occured may be derived from that three values.
-This implies, that e.g. the values 0 0 45 may denote
-a different orientation than the very same values
-0 0 45 (no joke)!
-<p>
-But how do you get the three entries to do what you want?
-You either want to rotate the object around an axis by a given
-amount or you want to undo a rotation or undo all rotations.
-<p>
-Rotating an object is easy, simply add the amount about
-which you want to rotate the object to the value currently
-displayed in the appropriate entry. If you want to rotate
-about 45 degrees about X and the x-angle entry displays a 30,
-enter 75.
-Then press the apply button.
-If you change multiple entries the rotations made will be
-in the order X (if changed) then Y (if changed) then Z (if changed).
-Do not change more than one entry at once until you exactly
-know what you are doing.
-<p>
-Undoing a single rotation works in the same way, just use a subtraction
-instead of an addition.
-<p>
-Undoing all rotations (resetting the object to its original state)
-is simple too: enter 0 for all three entries at once,
-then press apply.
-<p>
-If you want to copy the orientation of an object to other objects
-using the property clipboard, make sure that you select all Rotation and
-Quat property elements.
-
-<sect1>Attributes Property<label id="attrs"><label id="attributesprop">
-<p>
-The attributes of an object contain currently:
-<itemize>
-<item><tt/"Objectname"/, the name of the object. It is also displayed
-in the object listbox or tree and may be written to RIB streams.
-
-<item><tt/"Hide"/, if this attribute is set this object is not drawn.
-It may also be excluded from RIB export.
-
-<item><tt/"Refcount"/, just displays how many objects
-point to this object. Objects with a reference count different
-from zero may not be deleted.
-</itemize>
-
-<sect1>Material Property<label id="matprop"><label id="materialprop">
-<p>
-The material property allows you to connect geometric objects
-to material objects (see also section
-<ref id="materialobj" name="Material Object">).
-The material property GUI consist of the following elements:
-<itemize>
-<item><tt/"Clear Material!"/ immediately clears any connection
-of the current object to its material.
-
-<item><tt>"Add/Edit Material!"</tt> adds a material to the
-current object (if it has none) and immediately selects
-the new material object for editing. If the current object
-already has a material, this material object is searched for
-and selected for editing.
-
-<item><tt/"Materialname"/ is the name of the material of this object.
-If you change the name, the object will be disconnected from the
-old material and connected to the new material.
-An easier way to connect geometric objects to material objects is to simply
-drop the geometric objects onto the material object using Drag-and-Drop
-in the tree view.
-</itemize>
-
-<sect1>Shader Properties<label id="shd"><label id="atmosphereprop">
-<label id="imagerprop"><label id="surfaceprop"><label id="displacementprop">
-<label id="interiorprop"><label id="exteriorprop"><label id="lightshaderprop">
-<p>
-Shader properties are used to attach shaders of a certain type to objects.
-The name of the property contains the type of the shader, e.g.
-light shaders may be attached using a property named <tt/"LightShader"/ only.
-Other types of shaders or shader properties are: <tt/"Surface"/,
-<tt/"Displacement"/, <tt/"Interior"/, <tt/"Exterior"/, <tt/"Atmosphere"/,
-and <tt/"Imager"/.
-<p>
-Each shader property GUI, even if no shader is attached to an object,
-starts with the <tt/"Set new shader."/-button. This button allows
-to select a new shader of the appropriate type.
-If you press the <tt/"Set new shader."/-button, a dialog with a
-list of shaders pops up. If this list is empty, Ayam
-is probably not set up properly (or you simply do not have
-shaders of the appropriate type). Check the preference setting
-<tt>"Main/Shaders"</tt>.
-After a new shader has been set, the arguments of the shader will be
-parsed and a GUI will be generated to allow the arguments of the shader
-to be filled with values.
-<p>
-The <tt/"Delete shader."/-button may be used to
-delete the current shader from the selected object.
-<p>
-The <tt/"Default Values."/-button resets all arguments
-of the shader to the default values.
-See also section <ref id="workshd" name="Working with Shaders"> below.
-<p>
-All other elements of the shader property GUI depend on the currently
-attached shader.
-
-<sect2>Shader Parsing<label id="parseshd">
-<p>
-If no plugin is loaded, the official Ayam binaries use libslcargs
-(from BMRT) to parse shaders that have been compiled with slc (the
-shader compiler from BMRT). Parsing incorporates detecting the
-type of the shader and detecting the names, types, and default values of
-all shader arguments.
-<p>
-Note that currently, Ayam only works properly with shaders
-that have at most two dots in their file name and that Ayam will simply
-skip all array arguments (and emit a warning message) while parsing
-a shader. Those array arguments consequently never appear in the
-shader property GUIs and RIBs exported by Ayam. Also note that
-default values for shader arguments of type color will be silently
-clamped to the range 0-255.
-<p>
-Many shaders use array arguments to define transformation matrices.
-If this is the case and you have access to the shader source code
-you may want to modify those shaders to enable working with the
-transformation matrix carrying shader arguments. To do this, just
-change all definitions of transformation matrix carrying floating
-point arrays to real matrices. If the shader contains a
-<p>
-<tt>"float a_matrix_parameter[16]"</tt>
-<p>
-change this to
-<p>
-<tt>"matrix a_matrix_parameter"</tt>.
-<p>
-Note that these changes of the shader argument definitions probably
-also require changes of the shader source code that uses those arguments.
-Ayam is able to deal with matrices because of their fixed size of 16
-float values, and because libslcargs is able to deliver the default
-values for a matrix (but not for an array!).
-<p>
-If Ayam has been compiled without a shader parsing library
-(e.g. without libslcargs), Ayam will parse XML files created
-by <tt/"sl2xml"/ from the K-3D project
-(see <tt>"http://www.k-3d.org/"</tt>)
-instead of compiled shaders.
-The <tt/"Set new shader."/-button will in this case always
-open a file requester, allowing you to select a XML file,
-that has been created by sl2xml.
-Furthermore, the <tt/"Default Values."/-button will not be available;
-you have to use <tt/"Set new shader."/ instead.
-<p>
-From version 1.3 on, Ayam also supports shader parsing plugins to allow
-parsing of shaders compiled with different shader compilers, see also
-section <ref id="spplugins" name="Shader Parsing Plugins">.
-
-<sect2>Working with Shaders<label id="workshd">
-<p>
-The <tt/"Default Values."/-button resets all arguments of the shader
-to the default values.
-Additionally, the compiled shader will be parsed again and the property GUI
-will be adapted (new shader arguments will appear, removed shader arguments
-will disappear).
-Therefore, this button is quite handy if you have to deal with
-changing shaders: just edit the shader, recompile it, then back
-in Ayam just hit the <tt/"Default Values."/-button. Note that
-this destroys your possibly carefully adjusted shader argument values.
-<p>
-If you want to keep the old shader argument values when a shader
-changes, simply copy the shader property using the property clipboard
-(main menu: <tt>"Edit/Copy Property"</tt>) before
-you load the new default values and paste the property
-back using <tt>"Edit/Paste Property"</tt> after loading of the
-new default values.
-Beware! This works properly only, if you do not change the type of
-existing shader arguments and if no shader arguments are removed in
-the new version of the shader!
-<p>
-You can also just copy certain parameter values (shader arguments
-whose types do not change) by selecting them using double-clicks
-on the parameter names in the shader property GUI and then use e.g.
-<tt>"Edit/Copy Marked Prop"</tt>
-(see also the description of the property clipboard in section
-<ref id="propgui" name="Properties">).
-
-<sect1>Tags Property<label id="tags"><label id="tagsprop">
-<p>
-Use this property to edit the tags of an object.
-<p>
-Tags provide an easy way to attach arbitrary information (e.g. additional
-RenderMan interface attributes, special attributes for plugins or even
-scripts) to objects. A tag consists of two strings, one defining the type
-and one defining the value of the tag.
-<p>
-The Tags property GUI consists of the following standard
-elements:
-<itemize>
-<item><tt/"Remove all Tags!"/ immediately removes all tags
-from the object.
-
-<item><tt/"Remove Tag!"/ is a menu, that allows you
-to select and remove a single tag from the object.
-
-<item><tt/"Add Tag!"/ opens a small dialog box, where you
-may enter a new tag type and value. Once you press the <tt/"Ok"/
-button, a new entry will be added to the tags property, displaying
-the new tag. Just click on the entry to get back to the dialog,
-to remove the tag using <tt/"Clear"/ then <tt/"Ok"/, or to change
-the type or value of the tag.
-</itemize>
-<p>
-The next sub-sections describe the tag types currently available in Ayam
-and the plugins distributed with Ayam.
-Note that extensions and plugins may define their own types.
-
-<sect2>RiAttribute Tag<label id="riatag">
-<p>
-The tag type <tt/"RiAttribute"/ can be used to attach
-arbitrary RenderMan interface attributes to objects.
-This is handy if you use a renderer with lots of RiAttributes
-that differ from the standard RiAttributes.
-<p>
-<tt/"RiAttribute"/ tags attached to a geometric object override
-<tt/"RiAttribute"/ tags possibly attached to the material object of this
-geometric object.
-<p>
-In order to create a tag of type RiAttribute, the type string must be
-<tt/"RiAttribute"/. The syntax of the value string is as following:
-<p>
-<tt/&lt;attrname&gt;,&lt;paramname&gt;,&lt;paramtype&gt;,&lt;param&gt;/
-<p>
-where attrname is the name of the attribute (e.g. "render") paramname
-is the name of the parameter (e.g. "displacementbound") paramtype is a
-single character defining the type of the parameter (it may be one of
-<tt/f/ - float, <tt/g/ - float pair, <tt/i/ - integer, <tt/j/ - integer
-pair, <tt/s/ - string, <tt/c/ - color, <tt/p/ - point) and finally
-param is the value of the parameter itself (e.g. a float: "1.2", an
-integer value: "3", a string: "on", a color: "1,1,1" or a point:
-"0.4,0.5,1.0").
-<p>
-Some examples for valid RiAttribute tags:
-<code>
-RiAttribute render,truedisplacement,i,1
-RiAttribute dice,numprobes,j,3,3
-RiAttribute radiosity,specularcolor,c,0.5,0.5,0.5
-</code>
-Note that the <tt/"RiAttribute"/ tag handles just a single parameter at once.
-Also note that <tt/"RiAttribute"/ tags may be created much more easily
-using the menu entry <tt>"Special/Tags/Add RiAttribute"</tt>.
-The database of RiAttributes for this GUI may be extended
-by editing the ayamrc file, see section
-<ref id="ayamrc" name="Ayamrc File">.
-
-<sect2>RiOption Tag<label id="riotag">
-<p>
-The tag type <tt/"RiOption"/ can be used to attach arbitrary RenderMan
-interface options to objects. This is handy if you use a renderer with
-lots of RiOptions that differ from the standard RiOptions.
-However, they will be only used by the RIB exporter if they are attached
-to the <tt/"Root"/ object!
-The syntax is similar to the <tt/"RiAttribute"/ tag type, see above.
-Note that RiOption tags may be created easily using the menu entry
-<tt>"Special/Tags/Add RiOption"</tt>.
-Tags created with this GUI will always be added to the <tt/"Root"/ object.
-It does not have to be selected when the GUI is used.
-Furthermore, the database of RiOptions for this GUI may be extended
-by editing the ayamrc file, see section
-<ref id="ayamrc" name="Ayamrc File">.
-
-<sect2>TC (Texture Coordinates) Tag<label id="tctag">
-<p>
-The tag type <tt/"TC"/ can be used to attach texture coordinates to
-objects or materials.
-<p>
-<tt/"TC"/ tags attached to a geometric object override
-<tt/"TC"/ tags possibly attached to the material object of this
-geometric object.
-<p>
-The <tt/"TC"/ tag always contains a list of eight comma separated
-float values, that specify a mapping for four 2D points (a quadrilateral)
-in texture space from the default values (0,0), (1,0), (0,1), and (1,1)
-to the new specified values.
-<p>
-Examples:
-<code>TC 0,0,10,0,0,10,10,10</code>
-Changes the texture coordinate space so that more and smaller tiles
-of a texture would be displayed on a primitive.
-
-<code>TC 0,0,0,1,1,0,1,1</code>
-Flips the texture coordinate space over two corners.
-A shader normally generating vertical stripes will create
-horizontal stripes now.
-
-<code>TC 0,1,0,0,1,1,1,0</code>
-Turns the texture coordinate space by 90 degrees.
-A shader normally generating vertical stripes will create
-horizontal stripes now.
-<p>
-Note that the exact behaviour of an object equipped with a TC tag
-depends heavily on the shader and its use of the texture coordinates!
-<p>
-Note also that using TC tags you change the texture coordinates
-of entire primitives only, if you want to change the texture coordinates
-of sub-primitives (e.g. of single control points of a NURBS patch)
-you would need to use a PV (Primitive Variable) tag instead.
-<p>
-To ease setting of TC tag values Ayam provides a special editor
-as outlined in the next section.
-
-<sect3>Texture Coordinate Editor<label id="tce">
-<p>
-The texture coordinate editor may be opened using the
-main menu entry <tt>"Special/Tags/Edit TexCoords"</tt> and
-lets you edit texture coordinate tags in an intuitive way.
-<p>
-For that, the current texture coordinates are displayed as a black
-polygon in a canvas with regard to the original (default) values,
-that are displayed in gray.
-Small arrows point to positive s and t direction respectively.
-
-<figure loc="ht">
-<eps file="pics/tce.ps" height="6cm">
-<img src="pics/tce.gif">
-<caption>Texture Coordinate Editor</caption>
-</figure>
-<p>
-
-The <tt/"RotateR"/ and <tt/"RotateL"/ buttons shift the coordinate
-values between the four points. This results in a 90 degree
-rotation of the texture space.
-<p>
-The <tt/"FlipS"/ and <tt/"FlipT"/ buttons flip the texture
-coordinate values in s and t direction respectively. This is
-useful, if you, for example, want to correct a texture mapping for
-an image that appears upside down.
-<p>
-The next buttons allow to move (using <tt/"MoveS"/ and <tt/"MoveT"/)
-and scale (using <tt/"ScaleS"/ and <tt/"ScaleT"/) the texture coordinates
-by a specific amount that is given in the first entry field.
-<p>
-The <tt/"Load"/ and <tt/"Save"/ menu buttons allow you to:
-<itemize>
-<item>load the default texture coordinate values ((0,0), (1,0), (0,1), (1,1)),
-
-<item>load texture coordinates from a selected BPatch object:
-The xy coordinates of the four points of the selected BPatch
-will be interpreted as st coordinates.
-This allows for more complex transformations of the texture coordinates
-e.g. rotations about an angle of 45 degrees. For that just create a
-BPatch object, rotate it accordingly, then load the coordinates into
-the texture coordinate editor.
-
-<item>load TC tags from the selected object,
-
-<item>save the texture coordinates to a BPatch object,
-
-<item>save TC tags to a selected object. Note that it is not
-possible to directly save the TC tag to multiple selected objects.
-But you can use the property clipboard to copy the tag after saving
-to a single object.
-</itemize>
-Note that the tag numbers in the menu entries count TC tags only.
-<p>
-The texture coordinate dialog is modeless, it may stay open
-while you model. The <tt/"Dismiss"/ button closes the dialog.
-
-<sect2>PV (Primitive Variable) Tag<label id="pvtag">
-<p>
-The tag type <tt/"PV"/ can be used to attach arbitrary data
-to geometric primitives and even sub-primitives.
-With the help of primitive variables you can e.g. attach your
-own texture coordinates to a NURBS patch primitive or attach distinct
-colors to the faces or even to single vertices of a polygonal mesh.
-In the latter case, the data is properly interpolated by the renderer
-before it is handed over to the shader.
-<p>
-When rendering, all data defined in a <tt/"PV"/ tag is handed over
-to the surface shader that is attached to the respective geometric primitive
-using additional shader parameters.
-<p>
-Note that Ayam does not check, whether your shader actually uses this data!
-<p>
-The syntax of the value string of a PV tag is as following:
-<p>
-<tt/&lt;name&gt;,&lt;detail&gt;,&lt;type&gt;,&lt;ndata&gt;,&lt;data&gt;/
-<p>
-where
-<tt/"&lt;name&gt;"/ is the name of the primitive variable;
-<tt/"&lt;detail&gt;"/ or storage class should be
-<tt/"uniform"/, <tt/"varying"/, <tt/"vertex"/, or <tt/"constant"/;
-<tt/"&lt;type&gt;"/ is a single character describing the type of the
-data (see also the documentation of the <tt/"RiAttribute"/ tag above);
-<tt/"&lt;ndata&gt;"/ is an integer number describing how many data
-elements will follow; and
-<tt/"&lt;data&gt;"/ is a comma separated list
-consisting of a certain number of elements of type <tt/"&lt;type&gt;"/.
-<p>
-Examples:
-<code>PV mycolor,constant,c,1,0,1,0</code>
-adds a single color value (0,1,0), which is the same all over the primitive;
-<code>PV mys,varying,f,4,0.1,0.2,0.3,0.4</code>
-could be used to add a distinct float value to each corner point of a
-four point NURBS patch (of order, width, and height 2).
-<p>
-Note that not all geometric objects currently honour PV tags
-on RIB export. The geometric objects currently supporting PV tags
-are: SDMesh, PolyMesh, PatchMesh, NURBPatch, and BPatch.
-<p>
-Furthermore, the number of data elements, which depends on the
-detail or storage class, the type of geometric primitive, and the
-configuration of the geometric primitive is not checked by Ayam.
-Some RIB writing libraries, however, check the number and silently
-omit the primitive variable if there are mismatches. Check your
-RIB for the presence of the primitive variable after export,
-especially, if you are adding or editing PV tags manually!
-
-<sect2>RiHider Tag<label id="rihtag">
-<p>
-The tag type <tt/"RiHider"/ can be used to choose and parameterize
-different algorithms for hidden surface removal.
-RiHider tags have to be attached to the root object in order to be used.
-The syntax of a RiHider tag is quite similar to a RiAttribute tag:
-<tt/"&lt;type&gt;,&lt;parameterlist&gt;"/
-where <tt/"&lt;parameterlist&gt;"/ is a comma separated list
-of triplets consisting of name, type, and value of a parameter.
-<p>
-Example
-<p>
-A RiHider tag could look like this:
-<p>
-<code>RiHider hidden,depthfilter,s,midpoint</code>
-
-<sect2>RiDisplay Tag<label id="ridtag">
-<p>
-The tag type <tt/"RiDisplay"/ can be used to add more output
-files of different type (e.g. containing depth-buffer information)
-to the scene.
-RiDisplay tags have to be attached to the root object in order to be used.
-The syntax of a RiDisplay tag is as follows:
-<tt/"&lt;name&gt;,&lt;type&gt;,&lt;mode&gt;,&lt;parameterlist&gt;"/,
-where name is e.g. a file or device name, type specifies the
-destination of the image data (e.g. screen or file), mode
-specifies which information should be stored or displayed
-(e.g. color values: rgb, or depth values: z),
-and <tt/"&lt;parameterlist&gt;"/ is a comma separated list
-of triplets consisting of name, type, and value of a parameter.
-The name will be automatically changed to <tt/"+name"/ on RIB export
-if it does not already start with a plus.
-<p>
-Example
-<p>
-A RiDisplay tag could look like this:
-<code>RiDisplay imagez.tif,file,z</code>
-
-<sect2>NoExport Tag<label id="noexporttag">
-<p>
-The tag type <tt/"NoExport"/ can be used to exclude certain objects
-from exported RIBs. The value string of this tag is ignored. All
-that counts is the presence of the tag. Child objects of objects
-with the <tt/"NoExport"/ tag will also be excluded from the RIB.
-Since Ayam 1.6, light objects also honour the <tt/"NoExport"/ tag.
-Note that regardless of potentially present <tt/"NoExport"/ tags,
-RIB archives will be created for all referenced objects all the
-time (even if <tt/"NoExport"/ tags are added to all instances).
-
-<sect2>SaveMainGeom Tag<label id="savemaingeomtag">
-<p>
-The tag type <tt/"SaveMainGeom"/ can be used to save the geometry
-of the main window and the toolbox window (if open) with a scene
-file. For that the scene saving code checks for the presence of
-a <tt/"SaveMainGeom"/ tag for the root object and fills it with
-the current geometry information. The scene reading code checks
-for the presence of a <tt/"SaveMainGeom"/ tag for the root object
-after replacing a scene and re-establishes the geometries of
-main and toolbox window.
-
-<sect2>TP (Tesselation Parameter) Tag<label id="tptag">
-<p>
-The tag type <tt/"TP"/ can be used to save tesselation parameters
-to objects of type <tt/"NPatch"/. Those tesselation parameters
-will be used when the NPatch object is tesselated for e.g. a
-conversion to a PolyMesh object. The syntax of the TP tag is:
-<tt>"&lt;tmethod&gt;,&lt;tparamu&gt;&lt;tparamv&gt;"</tt>
-where <tt/"&lt;tmethod&gt;"/ is an integer value between 1 and 3, describing
-which tesselation method to use (1 - ParametricError,
-2 - PathLength, and 3 - DomainDistance) and <tt/"&lt;tparamu&gt;"/ and
-<tt/"&lt;tparamv&gt;"/ are float values describing the respective parameter
-value for the chosen tesselation method. The second parameter value
-is ignored for the tesselation methods 1 and 2.
-<p>
-Note that the syntax of the <tt/"TP"/ tag changed in Ayam 1.9,
-the old syntax only allowed one parameter.
-<p>
-TP tags may be easily created using the tesselation GUI, that can
-be started with the main menu entry <tt>"Tools/NPatch/Tesselate"</tt>
-(see also section <ref id="tesst" name="The Tesselation Tool">).
-<p>
-Example
-<p>
-A TP tag could look like this:
-<code>TP 1,0.5,0.6</code>
-
-<sect2>DC (Depth Complexity) Tag<label id="dctag">
-<p>
-The tag type <tt/"DC"/ is only used by the AyCSG CSG preview plugin
-to store the depth complexity of CSG primitives.
-The syntax of the DC tag is:
-<tt>"&lt;dcval&gt;"</tt>
-where <tt/"&lt;dcval&gt;"/ is a positive integer value describing the
-depth complexity of the CSG primitive. See also section
-<ref id="aycsg" name="CSG preview using the AyCSG plugin">
-for more information regarding the depth complexity value.
-<p>
-Example
-<p>
-A DC tag (valid for e.g. a torus) could look like this:
-<code>DC 2</code>
-
-<sect2>NP (New Property) Tag<label id="nptag">
-<p>
-The tag type <tt/"NP"/ (new property) may be used to add new property
-GUIs to single objects. The value of the tag is the name of a new
-property. The necessary code to manage the property data and the
-windows that make up the property GUI itself have to be present in
-the Tcl context of Ayam before the user clicks on the new property in the
-property list box.
-
-<sect2>RP (Remove Property) Tag<label id="rptag">
-<p>
-The tag type <tt/"RP"/ (remove property) may be used to remove GUI access
-to a property from single objects. The value of the tag is the name of the
-property to be removed. The GUI access will be blocked by simply omitting
-the property from the property listbox.
-Note well: the property is still present and active in the objects themselves
-and values may still be set using the scripting interface.
-
-<sect2>NS (Notify Script) Tag<label id="nstag">
-<p>
-The tag type <tt/"NS"/ (notify script) may be used to add scripts
-to an object, that will be run after the notification callback of
-that object fired (because e.g. one of the children of the object changed).
-<p>
-Example
-<p>
-A simple NS tag could look like this:
-<code>NS puts "notify callback fired"</code>
-
-For security reasons, Ayam offers to disable all script tags when they
-are found upon reading of scene files. To disable a tag, Ayam simply
-changes its type from <tt/"NS"/ to <tt/"DNS"/ (disabled notify script).
-It will not be executed then.
-Disabled notify scripts may be enabled after careful inspection using
-the main menu entry <tt>"Special/Enable Scripts"</tt>.
-
-<sect2>UMM/VMM (U/V Min Max) Tag<label id="ummtag">
-<p>
-The tag types <tt/"UMM"/ (u min max) and <tt/"VMM"/ (v min max) may
-be used to store additional parametric domain trimming values to
-NURBS curve and NURBS patch objects. Note that the GLU NURBS display
-modes do not honor those tags, but the RIB export does.
-<p>
-Example
-<p>
-An UMM tag could look like this:
-<code>UMM 0.4,0.6</code>
-
-<sect2>BP (Bevel Parameters) Tag<label id="bptag">
-<p>
-The tag type <tt/"BP"/ (bevel parameters) is used by all bevel
-supporting tool objects to store their bevel information.
-The syntax of the BP tag is:
-<tt>"&lt;side,type,radius,revert&gt;"</tt>
-where <tt/"&lt;side&gt;"/ is an integer value from 0 - 3
-defining the side of the surface, where the bevel should be applied
-to, <tt/"&lt;type&gt;"/ is an integer value from 0 - 4 defining
-the type of the bevel, <tt/"&lt;radius&gt;"/ is a floating point
-value defining the radius of the bevel, and <tt/"&lt;revert&gt;"/
-is either 0 or 1 and may be used to revert the bevel.
-<p>
-Example
-<p>
-A BP tag could look like this:
-<code>BP 0,0,0.1,0</code>
-
-<sect2>Internal Tags
-<p>
-The following tags are of no general use. They are used
-by Ayam internally only.
-
-<sect3>OI (Object ID) Tag<label id="oitt">
-<p>
-This tag is used by the RIB exporter and the scene storage
-facility to establish links between instance objects and
-the original objects they are pointing to.
-<p>
-The tag type <tt/OI/ is not meant to be used by the end user.
-Furthermore, changing the IDs manually avails to nothing as the
-tags are rebuilt before every export/save operation.
-
-<sect3>MI (Material ID) Tag<label id="mitt">
-<p>
-This tag is used by the RIB exporter and the scene storage
-facility to establish links between material objects and
-the objects they are assigned to.
-<p>
-The tag type <tt/MI/ is not meant to be used by the end user.
-Furthermore, changing the IDs manually avails to nothing as the
-tags are rebuilt before every export/save operation.
-
-<sect2>List of Known Tags
-<p>
-This section contains a comprehensive list of tag names, that are
-known since Ayam 1.10 and in the accompanying extensions (plugins).
-<p>
-<tt>"RiAttribute", "RiOption", "RiHider", "RiDisplay", "NoExport", "TC",
-"PV", "SaveMainGeom", "TP", "MI", "OI", "DC", "TM", "NP", "RP", "NS", "DNS",
-"UMM", "VMM", "BP", "IDR", "IIDR", "RIDR", "R3IDR", "CIDR", "CCIDR"</tt>
-<p>
-Documentation on those tags can be found in the sections above.
+Furthermore, this section contains information about all tags.
 
 <sect1>Root Object<label id="rootobj">
 <p>
@@ -5996,6 +5327,685 @@ You should use any tricks (like the curly braces
 in the expr-statement above) to speed up the expression.
 </itemize>
 
+<sect1>Standard Properties<label id="stdprop">
+<p>
+Most Ayam objects have standard properties. They are used
+to control transformations and common attributes of objects.
+The following sections describe the standard properties
+<tt/"Transformations"/, <tt/"Attributes"/, <tt/"Material"/, <tt/"Shaders"/,
+and <tt/"Tags"/.
+
+<sect2>Transformations Property<label id="trap"><label id="transformationsprop">
+<p>
+Use the <tt/"Transformations"/ property to edit the location, orientation,
+and size of an object.
+<p>
+The corresponding property GUI contains the following elements:
+<itemize>
+<item><tt/"Reset All!"/ immediately resets all transformation
+attributes to the default values.
+
+<item><tt/"Translation_X (_Y, _Z)"/ is the displacement of the
+object from the world origin in X (Y, Z) direction.
+
+<item><tt/"Rotation_X (_Y, _Z)"/ is the angle (in degrees)
+of the rotation of the object around the X (Y, Z) axis.
+Read the next section for more information on how to use these
+entries. Read it!
+
+<item><tt/"Scale_X (_Y, _Z)"/ determines a scale factor that will be
+applied to the object in the direction of the local X (Y, Z) axis.
+
+<item><tt/"Quat0 (1, 2, 3)"/ the quaternion that is used to determine
+the orientation of the object in space. This quaternion is not here
+to be edited directly! The sole purpose of its appearance here
+is to allow copying and pasting of rotations.
+</itemize>
+
+The transformations are applied to the object in the following order:
+Scale, Rotation, Translation.
+<p>
+How to use the rotation attributes?<label id="gimb">
+<p>
+The orientation of an object in space may be expressed using
+so called Euler angles. This notation (simply three angles
+determining a rotation about the axes of the coordinate system)
+suffers from a phenomenon called gimbal lock.
+<p>
+To avoid gimbal locks, Ayam internally holds the orientation
+of an object in a quaternion.
+This quaternion not only holds information about the angles
+but also about the order in which partial rotations occured.
+<p>
+It is important to know, that the values of the angles of
+the rotation property must not be read in a way that
+the object will first be rotated around X by x-angle degrees
+then around Y y-angle degrees then around Z z-angle degrees.
+In fact, no information about the order in which partial
+rotations occured may be derived from that three values.
+This implies, that e.g. the values 0 0 45 may denote
+a different orientation than the very same values
+0 0 45 (no joke)!
+<p>
+But how do you get the three entries to do what you want?
+You either want to rotate the object around an axis by a given
+amount or you want to undo a rotation or undo all rotations.
+<p>
+Rotating an object is easy, simply add the amount about
+which you want to rotate the object to the value currently
+displayed in the appropriate entry. If you want to rotate
+about 45 degrees about X and the x-angle entry displays a 30,
+enter 75.
+Then press the apply button.
+If you change multiple entries the rotations made will be
+in the order X (if changed) then Y (if changed) then Z (if changed).
+Do not change more than one entry at once until you exactly
+know what you are doing.
+<p>
+Undoing a single rotation works in the same way, just use a subtraction
+instead of an addition.
+<p>
+Undoing all rotations (resetting the object to its original state)
+is simple too: enter 0 for all three entries at once,
+then press apply.
+<p>
+If you want to copy the orientation of an object to other objects
+using the property clipboard, make sure that you select all Rotation and
+Quat property elements.
+
+<sect2>Attributes Property<label id="attrs"><label id="attributesprop">
+<p>
+The <tt/"Attributes"/ property of an object contains currently:
+<itemize>
+<item><tt/"Objectname"/, the name of the object. It is also displayed
+in the object listbox or tree and may be written to RIB streams.
+
+<item><tt/"Hide"/, if this attribute is set this object is not drawn.
+It may also be excluded from RIB export.
+
+<item><tt/"HideChildren"/, if this attribute is set, the child objects
+of this object are not drawn. This attribute is e.g. used by
+<tt/"NPatch"/ objects to prevent the trim curves from being drawn
+in normal views.
+
+<item><tt/"RefCount"/, just displays how many objects point to this
+object e.g. through master-instance or object-material relationships.
+Objects with a reference count higher than zero may not be deleted.
+</itemize>
+
+<sect2>Material Property<label id="matprop"><label id="materialprop">
+<p>
+The <tt/"Material"/ property allows you to connect geometric objects
+to material objects (see also section
+<ref id="materialobj" name="Material Object">).
+The material property GUI consist of the following elements:
+<itemize>
+<item><tt/"Clear Material!"/ immediately clears any connection
+of the current object to its material.
+
+<item><tt>"Add/Edit Material!"</tt> adds a material to the
+current object (if it has none) and immediately selects
+the new material object for editing. If the current object
+already has a material, this material object is searched for
+and selected for editing.
+
+<item><tt/"Materialname"/ is the name of the material of this object.
+If you change the name, the object will be disconnected from the
+old material and connected to the new material.
+An easier way to connect geometric objects to material objects is to simply
+drop the geometric objects onto the material object using Drag-and-Drop
+in the tree view.
+</itemize>
+
+<sect2>Shader Properties<label id="shd"><label id="atmosphereprop">
+<label id="imagerprop"><label id="surfaceprop"><label id="displacementprop">
+<label id="interiorprop"><label id="exteriorprop"><label id="lightshaderprop">
+<p>
+Shader properties are used to attach shaders of a certain type to objects.
+The name of the property contains the type of the shader, e.g.
+light shaders may be attached using a property named <tt/"LightShader"/ only.
+Other types of shaders or shader properties available are: <tt/"Surface"/,
+<tt/"Displacement"/, <tt/"Interior"/, <tt/"Exterior"/, <tt/"Atmosphere"/,
+and <tt/"Imager"/.
+<p>
+Each shader property GUI, even if no shader is attached to an object,
+starts with the <tt/"Set new shader."/-button. This button allows
+to select a new shader of the appropriate type.
+If you press the <tt/"Set new shader."/-button, a dialog with a
+list of shaders pops up. If this list is empty, Ayam
+is probably not set up properly (or you simply do not have
+shaders of the appropriate type). Check the preference setting
+<tt>"Main/Shaders"</tt>.
+After a new shader has been set, the arguments of the shader will be
+parsed and a GUI will be generated to allow the arguments of the shader
+to be filled with values.
+<p>
+The <tt/"Delete shader."/-button may be used to
+delete the current shader from the selected object.
+<p>
+The <tt/"Default Values."/-button resets all arguments
+of the shader to the default values.
+See also section <ref id="workshd" name="Working with Shaders"> below.
+<p>
+All other elements of the shader property GUI depend on the currently
+attached shader.
+
+<sect3>Shader Parsing<label id="parseshd">
+<p>
+If no plugin is loaded, the official Ayam binaries use libslcargs
+(from BMRT) to parse shaders that have been compiled with slc (the
+shader compiler from BMRT). Parsing incorporates detecting the
+type of the shader and detecting the names, types, and default values of
+all shader arguments.
+<p>
+Note that currently, Ayam only works properly with shaders
+that have at most two dots in their file name and that Ayam will simply
+skip all array arguments (and emit a warning message) while parsing
+a shader. Those array arguments consequently never appear in the
+shader property GUIs and RIBs exported by Ayam. Also note that
+default values for shader arguments of type color will be silently
+clamped to the range 0-255.
+<p>
+Many shaders use array arguments to define transformation matrices.
+If this is the case and you have access to the shader source code
+you may want to modify those shaders to enable working with the
+transformation matrix carrying shader arguments. To do this, just
+change all definitions of transformation matrix carrying floating
+point arrays to real matrices. If the shader contains a
+<p>
+<tt>"float a_matrix_parameter[16]"</tt>
+<p>
+change this to
+<p>
+<tt>"matrix a_matrix_parameter"</tt>.
+<p>
+Note that these changes of the shader argument definitions probably
+also require changes of the shader source code that uses those arguments.
+Ayam is able to deal with matrices because of their fixed size of 16
+float values, and because libslcargs is able to deliver the default
+values for a matrix (but not for an array!).
+<p>
+If Ayam has been compiled without a shader parsing library
+(e.g. without libslcargs), Ayam will parse XML files created
+by <tt/"sl2xml"/ from the K-3D project
+(see <tt>"http://www.k-3d.org/"</tt>)
+instead of compiled shaders.
+The <tt/"Set new shader."/-button will in this case always
+open a file requester, allowing you to select a XML file,
+that has been created by sl2xml.
+Furthermore, the <tt/"Default Values."/-button will not be available;
+you have to use <tt/"Set new shader."/ instead.
+<p>
+From version 1.3 on, Ayam also supports shader parsing plugins to allow
+parsing of shaders compiled with different shader compilers, see also
+section <ref id="spplugins" name="Shader Parsing Plugins">.
+
+<sect3>Working with Shaders<label id="workshd">
+<p>
+The <tt/"Default Values."/-button resets all arguments of the shader
+to the default values.
+Additionally, the compiled shader will be parsed again and the property GUI
+will be adapted (new shader arguments will appear, removed shader arguments
+will disappear).
+Therefore, this button is quite handy if you have to deal with
+changing shaders: just edit the shader, recompile it, then back
+in Ayam just hit the <tt/"Default Values."/-button. Note that
+this destroys your possibly carefully adjusted shader argument values.
+<p>
+If you want to keep the old shader argument values when a shader
+changes, simply copy the shader property using the property clipboard
+(main menu: <tt>"Edit/Copy Property"</tt>) before
+you load the new default values and paste the property
+back using <tt>"Edit/Paste Property"</tt> after loading of the
+new default values.
+Beware! This works properly only, if you do not change the type of
+existing shader arguments and if no shader arguments are removed in
+the new version of the shader!
+<p>
+You can also just copy certain parameter values (shader arguments
+whose types do not change) by selecting them using double-clicks
+on the parameter names in the shader property GUI and then use e.g.
+<tt>"Edit/Copy Marked Prop"</tt>
+(see also the description of the property clipboard in section
+<ref id="propgui" name="Properties">).
+
+<sect2>Tags Property<label id="tagsprop">
+<p>
+Use the <tt/"Tags"/ property to edit the tags of an object.
+<p>
+Tags provide an easy way to attach arbitrary information (e.g. additional
+RenderMan interface attributes, special attributes for plugins or even
+scripts) to objects. A tag consists of two strings, one defining the type
+and one defining the value of the tag.
+<p>
+The tags property GUI consists of the following standard
+elements:
+<itemize>
+<item><tt/"Remove all Tags!"/ immediately removes all tags
+from the object.
+
+<item><tt/"Remove Tag!"/ is a menu, that allows you
+to select and remove a single tag from the object.
+
+<item><tt/"Add Tag!"/ opens a small dialog box, where you
+may enter a new tag type and value. Once you press the <tt/"Ok"/
+button, a new entry will be added to the tags property, displaying
+the new tag. Just click on the entry to get back to the dialog,
+to remove the tag using <tt/"Clear"/ then <tt/"Ok"/, or to change
+the type or value of the tag.
+</itemize>
+<p>
+The next sub-sections describe the tag types currently available in Ayam
+and the plugins distributed with Ayam.
+Note that extensions and plugins may define their own types.
+
+<sect1>Tags<label id="tags">
+<p>
+This section documents all available tags of Ayam.
+
+<sect2>RiAttribute Tag<label id="riatag">
+<p>
+The tag type <tt/"RiAttribute"/ can be used to attach
+arbitrary RenderMan interface attributes to objects.
+This is handy if you use a renderer with lots of RiAttributes
+that differ from the standard RiAttributes.
+<p>
+<tt/"RiAttribute"/ tags attached to a geometric object override
+<tt/"RiAttribute"/ tags possibly attached to the material object of this
+geometric object.
+<p>
+In order to create a tag of type RiAttribute, the type string must be
+<tt/"RiAttribute"/. The syntax of the value string is as following:
+<p>
+<tt/&lt;attrname&gt;,&lt;paramname&gt;,&lt;paramtype&gt;,&lt;param&gt;/
+<p>
+where attrname is the name of the attribute (e.g. "render") paramname
+is the name of the parameter (e.g. "displacementbound") paramtype is a
+single character defining the type of the parameter (it may be one of
+<tt/f/ - float, <tt/g/ - float pair, <tt/i/ - integer, <tt/j/ - integer
+pair, <tt/s/ - string, <tt/c/ - color, <tt/p/ - point) and finally
+param is the value of the parameter itself (e.g. a float: "1.2", an
+integer value: "3", a string: "on", a color: "1,1,1" or a point:
+"0.4,0.5,1.0").
+<p>
+Some examples for valid RiAttribute tags:
+<code>
+RiAttribute render,truedisplacement,i,1
+RiAttribute dice,numprobes,j,3,3
+RiAttribute radiosity,specularcolor,c,0.5,0.5,0.5
+</code>
+Note that the <tt/"RiAttribute"/ tag handles just a single parameter at once.
+Also note that <tt/"RiAttribute"/ tags may be created much more easily
+using the menu entry <tt>"Special/Tags/Add RiAttribute"</tt>.
+The database of RiAttributes for this GUI may be extended
+by editing the ayamrc file, see section
+<ref id="ayamrc" name="Ayamrc File">.
+
+<sect2>RiOption Tag<label id="riotag">
+<p>
+The tag type <tt/"RiOption"/ can be used to attach arbitrary RenderMan
+interface options to objects. This is handy if you use a renderer with
+lots of RiOptions that differ from the standard RiOptions.
+However, they will be only used by the RIB exporter if they are attached
+to the <tt/"Root"/ object!
+The syntax is similar to the <tt/"RiAttribute"/ tag type, see above.
+Note that RiOption tags may be created easily using the menu entry
+<tt>"Special/Tags/Add RiOption"</tt>.
+Tags created with this GUI will always be added to the <tt/"Root"/ object.
+It does not have to be selected when the GUI is used.
+Furthermore, the database of RiOptions for this GUI may be extended
+by editing the ayamrc file, see section
+<ref id="ayamrc" name="Ayamrc File">.
+
+<sect2>TC (Texture Coordinates) Tag<label id="tctag">
+<p>
+The tag type <tt/"TC"/ can be used to attach texture coordinates to
+objects or materials.
+<p>
+<tt/"TC"/ tags attached to a geometric object override
+<tt/"TC"/ tags possibly attached to the material object of this
+geometric object.
+<p>
+The <tt/"TC"/ tag always contains a list of eight comma separated
+float values, that specify a mapping for four 2D points (a quadrilateral)
+in texture space from the default values (0,0), (1,0), (0,1), and (1,1)
+to the new specified values.
+<p>
+Examples:
+<code>TC 0,0,10,0,0,10,10,10</code>
+Changes the texture coordinate space so that more and smaller tiles
+of a texture would be displayed on a primitive.
+
+<code>TC 0,0,0,1,1,0,1,1</code>
+Flips the texture coordinate space over two corners.
+A shader normally generating vertical stripes will create
+horizontal stripes now.
+
+<code>TC 0,1,0,0,1,1,1,0</code>
+Turns the texture coordinate space by 90 degrees.
+A shader normally generating vertical stripes will create
+horizontal stripes now.
+<p>
+Note that the exact behaviour of an object equipped with a TC tag
+depends heavily on the shader and its use of the texture coordinates!
+<p>
+Note also that using TC tags you change the texture coordinates
+of entire primitives only, if you want to change the texture coordinates
+of sub-primitives (e.g. of single control points of a NURBS patch)
+you would need to use a PV (Primitive Variable) tag instead.
+<p>
+To ease setting of TC tag values Ayam provides a special editor
+as outlined below.
+<p>
+The texture coordinate editor<label id="tce"> may be opened using the
+main menu entry <tt>"Special/Tags/Edit TexCoords"</tt> and
+lets you edit texture coordinate tags in an intuitive way.
+<p>
+For that, the current texture coordinates are displayed as a black
+polygon in a canvas with regard to the original (default) values,
+that are displayed in gray.
+Small arrows point to positive s and t direction respectively.
+
+<figure loc="ht">
+<eps file="pics/tce.ps" height="6cm">
+<img src="pics/tce.gif">
+<caption>Texture Coordinate Editor</caption>
+</figure>
+<p>
+
+The <tt/"RotateR"/ and <tt/"RotateL"/ buttons shift the coordinate
+values between the four points. This results in a 90 degree
+rotation of the texture space.
+<p>
+The <tt/"FlipS"/ and <tt/"FlipT"/ buttons flip the texture
+coordinate values in s and t direction respectively. This is
+useful, if you, for example, want to correct a texture mapping for
+an image that appears upside down.
+<p>
+The next buttons allow to move (using <tt/"MoveS"/ and <tt/"MoveT"/)
+and scale (using <tt/"ScaleS"/ and <tt/"ScaleT"/) the texture coordinates
+by a specific amount that is given in the first entry field.
+<p>
+The <tt/"Load"/ and <tt/"Save"/ menu buttons allow you to:
+<itemize>
+<item>load the default texture coordinate values ((0,0), (1,0), (0,1), (1,1)),
+
+<item>load texture coordinates from a selected BPatch object:
+The xy coordinates of the four points of the selected BPatch
+will be interpreted as st coordinates.
+This allows for more complex transformations of the texture coordinates
+e.g. rotations about an angle of 45 degrees. For that just create a
+BPatch object, rotate it accordingly, then load the coordinates into
+the texture coordinate editor.
+
+<item>load TC tags from the selected object,
+
+<item>save the texture coordinates to a BPatch object,
+
+<item>save TC tags to a selected object. Note that it is not
+possible to directly save the TC tag to multiple selected objects.
+But you can use the property clipboard to copy the tag after saving
+to a single object.
+</itemize>
+Note that the tag numbers in the menu entries count TC tags only.
+<p>
+The texture coordinate dialog is modeless, it may stay open
+while you model. The <tt/"Dismiss"/ button closes the dialog.
+
+<sect2>PV (Primitive Variable) Tag<label id="pvtag">
+<p>
+The tag type <tt/"PV"/ can be used to attach arbitrary data
+to geometric primitives and even sub-primitives.
+With the help of primitive variables you can e.g. attach your
+own texture coordinates to a NURBS patch primitive or attach distinct
+colors to the faces or even to single vertices of a polygonal mesh.
+In the latter case, the data is properly interpolated by the renderer
+before it is handed over to the shader.
+<p>
+When rendering, all data defined in a <tt/"PV"/ tag is handed over
+to the surface shader that is attached to the respective geometric primitive
+using additional shader parameters.
+<p>
+Note that Ayam does not check, whether your shader actually uses this data!
+<p>
+The syntax of the value string of a PV tag is as following:
+<p>
+<tt/&lt;name&gt;,&lt;detail&gt;,&lt;type&gt;,&lt;ndata&gt;,&lt;data&gt;/
+<p>
+where
+<tt/"&lt;name&gt;"/ is the name of the primitive variable;
+<tt/"&lt;detail&gt;"/ or storage class should be
+<tt/"uniform"/, <tt/"varying"/, <tt/"vertex"/, or <tt/"constant"/;
+<tt/"&lt;type&gt;"/ is a single character describing the type of the
+data (see also the documentation of the <tt/"RiAttribute"/ tag above);
+<tt/"&lt;ndata&gt;"/ is an integer number describing how many data
+elements will follow; and
+<tt/"&lt;data&gt;"/ is a comma separated list
+consisting of a certain number of elements of type <tt/"&lt;type&gt;"/.
+<p>
+Examples:
+<code>PV mycolor,constant,c,1,0,1,0</code>
+adds a single color value (0,1,0), which is the same all over the primitive;
+<code>PV mys,varying,f,4,0.1,0.2,0.3,0.4</code>
+could be used to add a distinct float value to each corner point of a
+four point NURBS patch (of order, width, and height 2).
+<p>
+Note that not all geometric objects currently honour PV tags
+on RIB export. The geometric objects currently supporting PV tags
+are: SDMesh, PolyMesh, PatchMesh, NURBPatch, and BPatch.
+<p>
+Furthermore, the number of data elements, which depends on the
+detail or storage class, the type of geometric primitive, and the
+configuration of the geometric primitive is not checked by Ayam.
+Some RIB writing libraries, however, check the number and silently
+omit the primitive variable if there are mismatches. Check your
+RIB for the presence of the primitive variable after export,
+especially, if you are adding or editing PV tags manually!
+
+<sect2>RiHider Tag<label id="rihtag">
+<p>
+The tag type <tt/"RiHider"/ can be used to choose and parameterize
+different algorithms for hidden surface removal.
+RiHider tags have to be attached to the root object in order to be used.
+The syntax of a RiHider tag is quite similar to a RiAttribute tag:
+<tt/"&lt;type&gt;,&lt;parameterlist&gt;"/
+where <tt/"&lt;parameterlist&gt;"/ is a comma separated list
+of triplets consisting of name, type, and value of a parameter.
+<p>
+Example
+<p>
+A RiHider tag could look like this:
+<p>
+<code>RiHider hidden,depthfilter,s,midpoint</code>
+
+<sect2>RiDisplay Tag<label id="ridtag">
+<p>
+The tag type <tt/"RiDisplay"/ can be used to add output files of
+different type (e.g. containing depth-buffer information)
+to the scene or to directly control the output format.
+RiDisplay tags have to be attached to the root object in order to be used.
+The syntax of a RiDisplay tag is as follows:
+<tt/"&lt;name&gt;,&lt;type&gt;,&lt;mode&gt;,&lt;parameterlist&gt;"/,
+where name is e.g. a file or device name, type specifies the
+destination of the image data (e.g. screen or file), mode
+specifies which information should be stored or displayed
+(e.g. color values: rgb, or depth values: z),
+and <tt/"&lt;parameterlist&gt;"/ is a comma separated list
+of triplets consisting of name, type, and value of a parameter.
+The name will be automatically changed to <tt/"+name"/ on RIB export
+if it does not already start with a plus.
+<p>
+Example
+<p>
+A RiDisplay tag could look like this:
+<code>RiDisplay imagez.tif,file,z</code>
+
+<sect2>NoExport Tag<label id="noexporttag">
+<p>
+The tag type <tt/"NoExport"/ can be used to exclude certain objects
+from exported RIBs. The value string of this tag is ignored. All
+that counts is the presence of the tag. Child objects of objects
+with the <tt/"NoExport"/ tag will also be excluded from the RIB.
+Since Ayam 1.6, light objects also honour the <tt/"NoExport"/ tag.
+Note that regardless of potentially present <tt/"NoExport"/ tags,
+RIB archives will be created for all referenced objects all the
+time (even if <tt/"NoExport"/ tags are added to all instances).
+
+<sect2>SaveMainGeom Tag<label id="savemaingeomtag">
+<p>
+The tag type <tt/"SaveMainGeom"/ can be used to save the geometry
+of the main window and the toolbox window (if open) with a scene
+file. For that the scene saving code checks for the presence of
+a <tt/"SaveMainGeom"/ tag for the root object and fills it with
+the current geometry information. The scene reading code checks
+for the presence of a <tt/"SaveMainGeom"/ tag for the root object
+after replacing a scene and re-establishes the geometries of
+main and toolbox window.
+
+<sect2>TP (Tesselation Parameter) Tag<label id="tptag">
+<p>
+The tag type <tt/"TP"/ can be used to save tesselation parameters
+to objects of type <tt/"NPatch"/. Those tesselation parameters
+will be used when the NPatch object is tesselated for e.g. a
+conversion to a PolyMesh object. The syntax of the TP tag is:
+<tt>"&lt;tmethod&gt;,&lt;tparamu&gt;&lt;tparamv&gt;"</tt>
+where <tt/"&lt;tmethod&gt;"/ is an integer value between 1 and 3, describing
+which tesselation method to use (1 - ParametricError,
+2 - PathLength, and 3 - DomainDistance) and <tt/"&lt;tparamu&gt;"/ and
+<tt/"&lt;tparamv&gt;"/ are float values describing the respective parameter
+value for the chosen tesselation method. The second parameter value
+is ignored for the tesselation methods 1 and 2.
+<p>
+Note that the syntax of the <tt/"TP"/ tag changed in Ayam 1.9,
+the old syntax only allowed one parameter.
+<p>
+TP tags may be easily created using the tesselation GUI, that can
+be started with the main menu entry <tt>"Tools/NPatch/Tesselate"</tt>
+(see also section <ref id="tesst" name="The Tesselation Tool">).
+<p>
+Example
+<p>
+A TP tag could look like this:
+<code>TP 1,0.5,0.6</code>
+
+<sect2>DC (Depth Complexity) Tag<label id="dctag">
+<p>
+The tag type <tt/"DC"/ is only used by the AyCSG CSG preview plugin
+to store the depth complexity of CSG primitives.
+The syntax of the DC tag is:
+<tt>"&lt;dcval&gt;"</tt>
+where <tt/"&lt;dcval&gt;"/ is a positive integer value describing the
+depth complexity of the CSG primitive. See also section
+<ref id="aycsg" name="CSG preview using the AyCSG plugin">
+for more information regarding the depth complexity value.
+<p>
+Example
+<p>
+A DC tag (valid for e.g. a torus) could look like this:
+<code>DC 2</code>
+
+<sect2>NP (New Property) Tag<label id="nptag">
+<p>
+The tag type <tt/"NP"/ (new property) may be used to add new property
+GUIs to single objects. The value of the tag is the name of a new
+property. The necessary code to manage the property data and the
+windows that make up the property GUI itself have to be present in
+the Tcl context of Ayam before the user clicks on the new property in the
+property list box.
+
+<sect2>RP (Remove Property) Tag<label id="rptag">
+<p>
+The tag type <tt/"RP"/ (remove property) may be used to remove GUI access
+to a property from single objects. The value of the tag is the name of the
+property to be removed. The GUI access will be blocked by simply omitting
+the property from the property listbox.
+Note well: the property is still present and active in the objects themselves
+and values may still be set using the scripting interface.
+
+<sect2>NS (Notify Script) Tag<label id="nstag">
+<p>
+The tag type <tt/"NS"/ (notify script) may be used to add scripts
+to an object, that will be run after the notification callback of
+that object fired (because e.g. one of the children of the object changed).
+<p>
+Example
+<p>
+A simple NS tag could look like this:
+<code>NS puts "notify callback fired"</code>
+
+For security reasons, Ayam offers to disable all script tags when they
+are found upon reading of scene files. To disable a tag, Ayam simply
+changes its type from <tt/"NS"/ to <tt/"DNS"/ (disabled notify script).
+It will not be executed then.
+Disabled notify scripts may be enabled after careful inspection using
+the main menu entry <tt>"Special/Enable Scripts"</tt>.
+
+<sect2>UMM/VMM (U/V Min Max) Tag<label id="ummtag">
+<p>
+The tag types <tt/"UMM"/ (u min max) and <tt/"VMM"/ (v min max) may
+be used to store additional parametric domain trimming values to
+NURBS curve and NURBS patch objects. Note that the GLU NURBS display
+modes do not honor those tags, but the RIB export does.
+<p>
+Example
+<p>
+An UMM tag could look like this:
+<code>UMM 0.4,0.6</code>
+
+<sect2>BP (Bevel Parameters) Tag<label id="bptag">
+<p>
+The tag type <tt/"BP"/ (bevel parameters) is used by all bevel
+supporting tool objects to store their bevel information.
+The syntax of the BP tag is:
+<tt>"&lt;side,type,radius,revert&gt;"</tt>
+where <tt/"&lt;side&gt;"/ is an integer value from 0 - 3
+defining the side of the surface, where the bevel should be applied
+to, <tt/"&lt;type&gt;"/ is an integer value from 0 - 4 defining
+the type of the bevel, <tt/"&lt;radius&gt;"/ is a floating point
+value defining the radius of the bevel, and <tt/"&lt;revert&gt;"/
+is either 0 or 1 and may be used to revert the bevel.
+<p>
+Example
+<p>
+A BP tag could look like this:
+<code>BP 0,0,0.1,0</code>
+
+<sect2>Internal Tags
+<p>
+The following tags are of no general use. They are used
+by Ayam internally only.
+<itemize>
+<item>OI (Object ID) Tag<label id="oitt">
+<p>
+This tag is used by the RIB exporter and the scene storage
+facility to establish links between instance objects and
+the original objects they are pointing to.
+<p>
+The tag type <tt/OI/ is not meant to be used by the end user.
+Furthermore, changing the IDs manually avails to nothing as the
+tags are rebuilt before every export/save operation.
+<item>MI (Material ID) Tag<label id="mitt">
+<p>
+This tag is used by the RIB exporter and the scene storage
+facility to establish links between material objects and
+the objects they are assigned to.
+<p>
+The tag type <tt/MI/ is not meant to be used by the end user.
+Furthermore, changing the IDs manually avails to nothing as the
+tags are rebuilt before every export/save operation.
+</itemize>
+
+<sect2>List of Known Tags
+<p>
+This section contains a comprehensive list of tag names, that are
+known since Ayam 1.10 and in all accompanying extensions (plugins).
+<p>
+<tt>"RiAttribute", "RiOption", "RiHider", "RiDisplay", "NoExport", "TC",
+"PV", "SaveMainGeom", "TP", "MI", "OI", "DC", "TM", "NP", "RP", "NS", "DNS",
+"UMM", "VMM", "BP", "IDR", "IIDR", "RIDR", "R3IDR", "CIDR", "CCIDR"</tt>
+<p>
+Documentation on those tags can be found in the sections above.
+
 <sect>NURBS Modelling Tools<label id="nmtool">
 <p>
 This section describes NURBS curve and surface related modelling
@@ -8090,13 +8100,13 @@ modules are plugins that need to be loaded into Ayam manually via
 or automatically via <tt>"File/Open"</tt> or <tt>"File/Save as"</tt>
 before possible usage.
 <p>
-Note that manual loading of an import or export plugin is no longer
-necessary since Ayam 1.13. Simply use the main menu entries
+Since Ayam 1.13 import or export plugins may also be loaded
+implicitly. This means one can simply use the main menu entries
 <tt>"File/Open"</tt> and <tt>"File/Save as"</tt> (or the corresponding
 keyboard shortcuts) and specify a filename with the appropriate
 extension. Ayam will automatically load the matching plugin and
 open the import (or export) options dialog with the <tt/"FileName"/
-option already set.
+option already set to the filename choosen before.
 <p>
 Not all features of Ayam are supported in the various export
 options. The following table gives an overview of the supported
@@ -8137,7 +8147,7 @@ Note that a successful export not only depends on Ayam but also on the
 quality of the importing application. For instance, many applications
 claim to read files in the Wavefront OBJ format but only import polygonal
 data or, even worse, only triangles from such files. By default, Ayam
-always tries to preserve as much information as possible in the respective
+tries to preserve as much information as possible in the respective
 export format leading to the use of NURBS in OBJ.
 Consequently, in some cases you may need to convert the NURBS objects in
 the Ayam scene to polygonal geometry before export. There is a script
@@ -8147,7 +8157,8 @@ Ayam is not perfect either, as in most import options material and
 animation data is completely ignored.
 <p>
 The following table gives an overview of the file format versions
-supported by the various import and export plugins:
+supported by the various import and export plugins. Import of files
+from a different version should be considered unsupported.
 
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|c|c|"><hline>
@@ -8282,7 +8293,7 @@ To control the RIB export and rendering, many options exist that are
 documented in section <ref id="prefrib" name="RIB export preferences">.
 <p>
 There are also some special ways to export RIBs available in the
-main menu: <tt>"Special/RIB-Export"</tt>, this is documented in
+main menu: <tt>"Special/RIB-Export"</tt>; this is documented in
 section <ref id="mmspecial" name="Special Menu">.
 <p>
 Ayam can not only export scenes as RIB but also call various
@@ -8599,9 +8610,11 @@ to the Wavefront OBJ file.
 <sect1>3DMF (Apple) Import<label id="imp3dmf">
 <p>
 Using the MFIO plugin you may import scenes from the 3DMF format
-(version 1.0 only!) from Apple. Start importing a 3DMF file using the
-menu entry <tt>"File/Import/Apple 3DMF"</tt> (if this menu entry is not
-available, you have to load the <tt>"mfio"</tt> plugin using the menu entry
+(version 1.0 only!) from Apple with the help of a free 3DMF parser created
+by Duet Development Corp. and distributed by Apple.
+Start importing a 3DMF file using the menu entry
+<tt>"File/Import/Apple 3DMF"</tt> (if this menu entry is not available,
+you have to load the <tt>"mfio"</tt> plugin using the menu entry
 <tt>"File/Load Plugin"</tt> first).
 <p>
 
@@ -8633,15 +8646,22 @@ not available.
 The following parameters, additionally, control the 3DMF import:
 <itemize>
 <item><tt>"FileName"</tt> is the filename of the 3DMF file to import;
+<item><tt/"ScaleFactor"/:
+The <tt/"ScaleFactor"/ option allows to apply a scaling factor to all
+imported objects.
+<item><tt/"ReadCurves"/:
+If the <tt/"ReadCurves"/ import option is switched off, no curves will be
+imported. This option does not influence the import of trim curves.
 </itemize>
 
 <sect1>3DMF (Apple) Export<label id="exp3dmf">
 <p>
 Using the MFIO plugin you may export scenes to the 3DMF format (version
-1.0 only!) from Apple. Start exporting to a 3DMF file using the menu entry
-<tt>"File/Export/Apple 3DMF"</tt> (if this menu entry is not available, you
-have to load the <tt>"mfio"</tt> plugin using the menu entry
-<tt>"File/Load Plugin"</tt> first).
+1.0 only!) from Apple with the help of a free 3DMF parser created by Duet
+Development Corp. and distributed by Apple. Start exporting to a
+3DMF file using the menu entry <tt>"File/Export/Apple 3DMF"</tt>
+(if this menu entry is not available, you have to load the <tt>"mfio"</tt>
+plugin using the menu entry <tt>"File/Load Plugin"</tt> first).
 
 <sect2>Ayam Object and Properties Support
 <p>
@@ -8669,9 +8689,18 @@ not available.
 
 <sect2>3DMF Export Options<label id="exp3dmfopt">
 <p>
-The following parameters, additionally, control the 3DMF import:
+The following parameters, additionally, control the 3DMF export:
 <itemize>
 <item><tt>"FileName"</tt> is the filename of the 3DMF file to export;
+<item><tt/"WriteBinary"/: This option controls whether the text version
+or the binary version of the 3DMF file format should be used for export.
+<item><tt/"ScaleFactor"/:
+The <tt/"ScaleFactor"/ option allows to apply a scaling factor to all
+exported objects.
+<item><tt/"WriteSelected"/: exports only the selected objects.
+<item><tt/"WriteCurves"/: If the <tt/"WriteCurves"/ option is disabled,
+no curves will be written to the exported Rhino file. This option does
+not influence the export of trim curves.
 </itemize>
 
 <sect1>3DM (Rhino) Import<label id="imprhino">
@@ -8865,8 +8894,8 @@ TriangleSet, TriangleStripSet, TriangleFanSet, IndexedLineSet, and
 LineSet.
 
 Cylinders with just one cap are imported as two objects (a Cylinder and
-a Disk). Otherwise the <tt>"Closed"</tt> attribute is set according to
-the cap information.
+a Disk). In all other cases the <tt>"Closed"</tt> attribute of the Ayam
+object is set according to the cap information of the X3D element.
 
 ElevationGrids are imported as bilinear patch meshes.
 
@@ -8882,11 +8911,15 @@ as Disks).
 TrimmedNurbsPatchsurface, Contour2D, ContourPolyline2D,
 NurbsSweptSurface, NurbsSwungSurface.
 
+<item>CAD: QuadSet, IndexedQuadSet, CADLayer.
+
+CADLayer objects will be imported as top level level objects.
+
 <item>Light sources: DirectionalLight, PointLight, SpotLight.
 
 The lights will be directly mapped to the standard RenderMan
 light sources distant, point, and spot, respectively.
-Therefore the <tt>"radius"</tt> and the <tt>"attenuation"</tt> attributes
+Therefore, the <tt>"radius"</tt> and the <tt>"attenuation"</tt> attributes
 of point and spotlights are not supported. However, point and spotlights
 still have a quadratic falloff with distance.
 
@@ -8896,6 +8929,21 @@ Viewpoint elements will be imported as view or camera objects
 depending on the <tt>"ReadViewports"</tt> import option.
 
 <item>Non geometric/Scene structure: Transformation, Shape, Group, Inline.
+
+Shear transformations are not supported.
+<p>
+The semantics for inlining are not fully standards compliant.
+By default DEFs in inlined files always live in their own namespace
+unless the <tt>"MergeInlineDefs"</tt> import option is switched on.
+This option completely merges all DEF namespaces into
+one big namespace. Beware, this only works correctly, if the DEF
+names in all the files are unique.
+It is not possible to transfer single definitions from an inlined file
+to the inlining file or from the inlined file to the inlining file.
+<p>
+Also note: Inline URLs that do not point to the file system are not
+supported.
+
 </itemize>
 <p>
 Unsupported elements will be silently ignored. Prototyping and
@@ -8922,11 +8970,6 @@ The <tt>"DEF"</tt> attributes may be converted to object names.
 The following options further control the X3D import process:
 <itemize>
 <item><tt>"FileName"</tt> is the name of the X3D file to be imported
-<item><tt>"MergeFaces"</tt> controls, whether consecutive polygonal
-faces should be merged into a single PolyMesh object for import.
-<item><tt>"MergePVTags"</tt> controls, whether the PV tags of PolyMesh
-objects should be merged as well if they are subject to automatic
-merging (see above).
 <item><tt>"ReadCurves"</tt> if this is disabled, no freeform curves will
 be imported. This option does not influence reading of trim curves!
 <item><tt>"ReadViewpoints"</tt> controls whether viewpoints should
@@ -8942,6 +8985,13 @@ imported objects.
 for the s component of the texture coordinates.
 <item><tt>"TTagName"</tt> controls the name of the PV tag to be used
 for the t component of the texture coordinates.
+<item><tt/"ErrorLevel"/, this option controls how many error messages
+should be printed to the Ayam console while importing. Available
+values are: <tt/"Silence"/ no output except for severe errors,
+<tt/"Errors"/ all error messages should be printed,
+<tt/"Warnings"/, all error and warning messages should be printed,
+and finally <tt/"All"/ all messages, even informative,
+should be printed.
 <item><tt/"Progress"/: displays the progress of the import;
 from 0 to 50 percent, the x3dio plugin is reading the XML file,
 from 50 to 100 percent the x3dio plugin is creating Ayam objects.
