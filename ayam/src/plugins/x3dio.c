@@ -122,6 +122,9 @@ int x3dio_readdoublepoints(scew_element *element, char *attrname,
 int x3dio_readindex(scew_element *element, char *attrname,
 		    unsigned int *len, int **res);
 
+int x3dio_readbools(scew_element *element, char *attrname,
+		    unsigned int *len, int **res);
+
 int x3dio_processuse(scew_element **element);
 
 int x3dio_readcoords(scew_element *element, unsigned int *len, double **res);
@@ -130,7 +133,8 @@ int x3dio_readnormals(scew_element *element, unsigned int *len, double **res);
 
 int x3dio_readcolors(scew_element *element, unsigned int *len, double **res);
 
-int x3dio_readname(scew_element *element, ay_object *obj);
+int x3dio_readname(scew_element *element,  const XML_Char *attn,
+		   ay_object *obj);
 
 int x3dio_linkobject(scew_element *element, unsigned int type, void *sobj);
 
@@ -1000,6 +1004,87 @@ x3dio_readindex(scew_element *element, char *attrname,
 } /* x3dio_readindex */
 
 
+/* x3dio_readbools:
+ *  read a vector of boolean values
+ */
+int
+x3dio_readbools(scew_element *element, char *attrname,
+		unsigned int *len, int **res)
+{
+ scew_attribute *attr = NULL;
+ const XML_Char *str = NULL, *p;
+ int *dummy = NULL, *ip;
+
+  if(!element || !attrname || !len || !res)
+    return AY_ENULL;
+
+  *len = 0;
+  *res = NULL;
+
+  attr = scew_attribute_by_name(element, attrname);
+  if(attr)
+    {
+      str = scew_attribute_value(attr);
+      if(str)
+	{
+	  p = str;
+	  while(*p != '\0')
+	    {
+	      if(!(dummy = realloc(*res, (*len+1)*sizeof(int))))
+		{
+		  /* XXXX early exit, memory leak? */
+		  return AY_EOMEM;
+		}
+	      *res = dummy;
+	      ip = &((*res)[(*len)]);
+	      (*len)++;
+
+	      /* forward p to next integer */
+	      /* jump over leading whitespace */
+	      while(isspace(*p) && (*p != '\0'))
+		{
+		  p++;
+		}
+
+	      /* check for (premature) end of string */
+	      if(*p == '\0')
+		{
+		  (*len)--;
+		  break;
+		}
+
+	      if(strcmp("true", p))
+		{
+		  *ip = AY_FALSE;
+		}
+	      else
+		{
+		  *ip = AY_TRUE;
+		}
+
+	      ip++;
+
+	      /* jump over the integer we just read */
+	      while(!isspace(*p) && (*p != '\0'))
+		{
+		  p++;
+		}
+	    } /* while */
+	}
+      else
+	{
+	  return AY_ERROR;
+	} /* if */
+    }
+  else
+    {
+      return AY_EWARN;
+    } /* if */
+
+ return AY_OK;
+} /* x3dio_readbools */
+
+
 /* x3dio_processuse:
  *  
  */
@@ -1162,7 +1247,7 @@ x3dio_readnormals(scew_element *element, unsigned int *len, double **res)
  *
  */
 int
-x3dio_readname(scew_element *element, ay_object *obj)
+x3dio_readname(scew_element *element,  const XML_Char *attn, ay_object *obj)
 {
  int ay_status = AY_OK;
  scew_attribute *attr = NULL;
@@ -1170,11 +1255,11 @@ x3dio_readname(scew_element *element, ay_object *obj)
  size_t len = 0;
  char *c;
 
-  if(!element || !obj)
+  if(!element || !attn || !obj)
     return AY_ENULL;
 
-  /* set name from DEF */
-  attr = scew_attribute_by_name(element, "DEF");
+  /* set name from attn attribute */
+  attr = scew_attribute_by_name(element, attn);
   if(attr)
     {
       str = scew_attribute_value(attr);
@@ -1227,7 +1312,7 @@ x3dio_linkobject(scew_element *element, unsigned int type, void *sobj)
   x3dio_trafotoobject(new, x3dio_ctrafos->m);
 
   /* set name from DEF */
-  ay_status = x3dio_readname(element, new);
+  ay_status = x3dio_readname(element, "DEF", new);
 
   /* link the object to the scene */
   ay_status = ay_object_link(new);
@@ -3977,7 +4062,7 @@ x3dio_readnurbssweptsurface(scew_element *element, int is_swung)
   ay_next = old_aynext;
   ay_object_link(o);
 
-  ay_status = x3dio_readname(element, o);
+  ay_status = x3dio_readname(element, "DEF", o);
 
 cleanup:
 
@@ -4232,6 +4317,8 @@ int x3dio_readcadlayer(scew_element *element)
  int ay_status = AY_OK;
  scew_element *child = NULL;
  ay_object *o = NULL, **old_aynext;
+ unsigned int vislen = 0, i;
+ int *vis = NULL;
 
   if(!element)
     return AY_ENULL;
@@ -4265,8 +4352,23 @@ int x3dio_readcadlayer(scew_element *element)
   ay_object_crtendlevel(ay_next);
   ay_next = old_aynext;
   ay_object_link(o);
-  /* read shape name from DEF */
-  ay_status = x3dio_readname(element, o);
+
+  /* read name */
+  ay_status = x3dio_readname(element, "name", o);
+
+  /* read visible attribute */
+  ay_status = x3dio_readbools(element, "visible", &vislen, &vis);
+
+  o = o->down;
+
+  for(i = 0; i < vislen; i++)
+    {
+      if(!vis[i])
+	{
+	  o->hide = AY_TRUE;
+	}
+      o = o->next;
+    }
 
  return ay_status;
 } /* x3dio_readcadlayer */
@@ -4563,7 +4665,7 @@ x3dio_readshape(scew_element *element)
       ay_next = old_aynext;
       ay_object_link(o);
       /* read shape name from DEF */
-      ay_status = x3dio_readname(element, o);
+      ay_status = x3dio_readname(element, "DEF", o);
     }
   else
     {
@@ -4578,7 +4680,7 @@ x3dio_readshape(scew_element *element)
 	  if(!o->down->name)
 	    {
 	      /* ...read shape name from DEF */
-	      ay_status = x3dio_readname(element, o->down);
+	      ay_status = x3dio_readname(element, "DEF", o->down);
 	    }
 	}
       o->down = NULL;
