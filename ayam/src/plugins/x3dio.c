@@ -3056,6 +3056,213 @@ cleanup:
 } /* x3dio_readelevationgrid */
 
 
+/* x3dio_getspinerots:
+ *
+ */
+int
+x3dio_getspinerots(unsigned int splen, float *sp, int sp_closed,
+		   unsigned int orlen, float *or, 
+		   double **rots)
+{
+ double scpx[3], scpy[3], scpz[3], t1[3], t2[3];
+ double prevscpz[3];
+ double tmp = 0.0;
+ double xzlen = 0.0, yzlen = 0.0, x = 0.0, y = 0.0;
+ double q1[4] = {0}, q2[4] = {0}, quat[4] = {0};
+ double xaxis[3] = {1.0, 0.0, 0.0}, yaxis[3] = {0.0, 1.0, 0.0};
+
+ unsigned int i;
+
+  if(!sp || !rots)
+   return AY_ENULL;
+
+  if(!(*rots = calloc(splen*4,sizeof(double))))
+    return AY_EOMEM;
+
+  if(splen > 2)
+    {
+      for(i = 0; i < splen; i++)
+	{
+	  /* calculate rotation angles */
+	  if(i == 0)
+	    {
+	      /* first spine point */
+	      if(!sp_closed)
+		{
+		  scpy[0] = sp[3] - sp[0];
+		  scpy[1] = sp[4] - sp[1];
+		  scpy[2] = sp[5] - sp[2];
+
+		  t1[0] = sp[2*3]   - sp[3];
+		  t1[1] = sp[2*3+1] - sp[4];
+		  t1[2] = sp[2*3+2] - sp[5];
+
+		  t2[0] = sp[0] - sp[3];
+		  t2[1] = sp[1] - sp[4];
+		  t2[2] = sp[2] - sp[5];
+		}
+	      else
+		{
+		  scpy[0] = sp[3] - sp[(splen-2)*3];
+		  scpy[1] = sp[4] - sp[(splen-2)*3+1];
+		  scpy[2] = sp[5] - sp[(splen-2)*3+2];
+
+		  t1[0] = sp[3] - sp[0];
+		  t1[1] = sp[4] - sp[1];
+		  t1[2] = sp[5] - sp[2];
+
+		  t1[0] = sp[(splen-2)*3]   - sp[0];
+		  t1[0] = sp[(splen-2)*3+1] - sp[1];
+		  t1[0] = sp[(splen-2)*3+2] - sp[2];
+		} /* if */
+	    } /* if */
+	  if((i > 0) && (i < splen-1))
+	    {
+	      /* middle spine point */
+	      scpy[0] = sp[(i+1)*3] - sp[i*3];
+	      scpy[1] = sp[(i+1)*3+1] - sp[i*3+1];
+	      scpy[2] = sp[(i+1)*3+2] - sp[i*3+2];
+
+	      t1[0] = sp[(i+1)*3] - sp[i*3];
+	      t1[1] = sp[(i+1)*3+1] - sp[i*3+1];
+	      t1[2] = sp[(i+1)*3+2] - sp[i*3+2];
+
+	      t2[0] = sp[(i-1)*3] - sp[i*3];
+	      t2[1] = sp[(i-1)*3+1] - sp[i*3+1];
+	      t2[2] = sp[(i-1)*3+2] - sp[i*3+2];
+	    } /* if */
+	  if(i == splen-1)
+	    {
+	      /* last spine point */
+	      if(!sp_closed)
+		{
+		  scpy[0] = sp[(splen-1)*3]   - sp[(splen-2)*3];
+		  scpy[1] = sp[(splen-1)*3+1] - sp[(splen-2)*3+1];
+		  scpy[2] = sp[(splen-1)*3+2] - sp[(splen-2)*3+2];
+
+		  t1[0] = sp[(splen-1)*3]   - sp[(splen-2)*3];
+		  t1[1] = sp[(splen-1)*3+1] - sp[(splen-2)*3+1];
+		  t1[2] = sp[(splen-1)*3+2] - sp[(splen-2)*3+2];
+
+		  t2[0] = sp[(splen-3)*3]   - sp[(splen-2)*3];
+		  t2[1] = sp[(splen-3)*3+1] - sp[(splen-2)*3+1];
+		  t2[2] = sp[(splen-3)*3+2] - sp[(splen-2)*3+2];
+		}
+	      else
+		{
+		  scpy[0] = sp[3] - sp[(splen-2)*3];
+		  scpy[1] = sp[4] - sp[(splen-2)*3+1];
+		  scpy[2] = sp[5] - sp[(splen-2)*3+2];
+
+		  t1[0] = sp[3] - sp[0];
+		  t1[1] = sp[4] - sp[1];
+		  t1[2] = sp[5] - sp[2];
+
+		  t1[0] = sp[(splen-2)*3]   - sp[0];
+		  t1[0] = sp[(splen-2)*3+1] - sp[1];
+		  t1[0] = sp[(splen-2)*3+2] - sp[2];
+		} /* if */
+	    } /* if */
+
+	  AY_V3CROSS(scpz, t1, t2);
+
+	  /* flip scpz? */
+	  if(i > 0)
+	    {
+	      if(AY_V3DOT(scpz, prevscpz) < 0.0)
+		{
+		  AY_V3SCAL(scpz, -1.0);
+		}
+	    }
+	  memcpy(prevscpz, scpz, 3*sizeof(double));
+
+	  AY_V3CROSS(scpx, scpy, scpz);
+	} /* for */
+    }
+  else
+    {
+      /* simple 2 point (straight) spine */
+      t1[0] = sp[3] - sp[0];
+      t1[1] = sp[4] - sp[1];
+      t1[2] = sp[5] - sp[2];
+
+      if(fabs(t1[0]) > AY_EPSILON ||
+	 fabs(t1[1]) > AY_EPSILON ||
+	 fabs(t1[2]) > AY_EPSILON)
+	{
+	  xzlen = sqrt(t1[0] * t1[0] + t1[2] * t1[2]);
+
+	  if(fabs(xzlen) < AY_EPSILON)
+	    {
+	      y = (t1[1] < 0.0) ? AY_PI : 0.0;
+	    }
+	  else
+	    {
+	      tmp = -t1[2]/xzlen;
+	      y = acos((fabs(tmp)<=1.0?tmp:(tmp<-1.0?-1.0:1.0)));
+	    }
+
+	  yzlen = sqrt(t1[1] * t1[1] + xzlen * xzlen);
+
+	  if(fabs(yzlen) > AY_EPSILON)
+	    {
+	      x = acos(xzlen/yzlen);
+	    }
+	  else
+	    {
+	      x = 0.0;
+	    }
+	  
+	  if(t1[1] < 0.0)
+	    x = -x;
+
+	  if(t1[0] > 0.0)
+	    y = -y;
+
+	  if((fabs(x) > AY_EPSILON) || (fabs(y) > AY_EPSILON))
+	    {
+	      if(fabs(x) > AY_EPSILON)
+		{
+		  ay_quat_axistoquat(xaxis, x, q1);
+		  if(fabs(y) > AY_EPSILON)
+		    {
+		      ay_quat_axistoquat(yaxis, y, q2);
+		      ay_quat_add(q1, q2, quat);
+		    }
+		  else
+		    {
+		      memcpy(quat, q1, 4*sizeof(double));
+		    }
+		}
+	      else
+		{
+		  ay_quat_axistoquat(yaxis, y, quat);
+		} /* if */
+	      ay_quat_norm(quat);
+	    } /* if */
+	} /* if */
+      
+      q2[0] = or[0];
+      q2[1] = or[1];
+      q2[2] = or[2];
+      q2[3] = or[3];
+
+      ay_quat_axistoquat(q2, q2[3], q1);
+      ay_quat_add(q1, quat, *rots);
+
+      q2[0] = or[4];
+      q2[1] = or[5];
+      q2[2] = or[6];
+      q2[3] = or[7];
+
+      ay_quat_axistoquat(q2, q2[3], q1);
+      ay_quat_add(q1, quat, &((*rots)[4]));
+    } /* if */
+
+ return AY_OK;
+} /* x3dio_getspinerots */
+
+
 /* x3dio_readextrusion:
  *
  */
@@ -3069,9 +3276,12 @@ x3dio_readextrusion(scew_element *element)
  float *sp = NULL, spd[6] = {0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f};
  float *scale = NULL, scaled[2] = {1.0f, 1.0f};
  float *orient = NULL, orientd[4] = {0.0f, 0.0f, 1.0f, 0.0f};
- int has_startcap = AY_TRUE, has_endcap = AY_TRUE;
+ int has_sides = AY_TRUE, has_startcap = AY_TRUE, has_endcap = AY_TRUE;
+ int sp_closed = AY_FALSE;
  ay_pomesh_object pomesh = {0};
  unsigned int totalverts = 0, i, j, a = 0, b = 0;
+ double *rots = NULL, rotmat[16];
+
  /* double rotx = 0.0, roty = 0.0, rotz = 0.0;*/
 
   if(!element)
@@ -3093,6 +3303,13 @@ x3dio_readextrusion(scew_element *element)
     {
       sp = spd;
       splen = 2;
+    }
+
+  if((fabs(sp[0]-sp[(splen-1)*3]) < AY_EPSILON) &&
+     (fabs(sp[1]-sp[(splen-1)*3+1]) < AY_EPSILON) &&
+     (fabs(sp[2]-sp[(splen-1)*3+2]) < AY_EPSILON))
+    {
+      sp_closed = AY_TRUE;
     }
 
   ay_status = x3dio_readfloatpoints(element, "scale", 2,
@@ -3133,10 +3350,15 @@ x3dio_readextrusion(scew_element *element)
 
   ay_status = x3dio_readbool(element, "endCap", &has_endcap);
 
-  pomesh.npolys = (cslen-1) * (splen-1) * 2 +
+  ay_status = x3dio_readbool(element, "sides", &has_sides);
+
+  pomesh.npolys = (has_sides?(cslen-1) * (splen-1) * 2:0) +
     (has_startcap?1:0) + (has_endcap?1:0);
-  totalverts = pomesh.npolys * 3 +
+  totalverts = (has_sides?pomesh.npolys * 3:0) +
     (has_startcap?cslen:0) + (has_endcap?cslen:0);
+
+  if(pomesh.npolys == 0)
+    { ay_status = AY_ERROR; goto cleanup; }
 
   /* allocate polymesh index arrays */
   if(!(pomesh.nloops = calloc(pomesh.npolys, sizeof(unsigned int))))
@@ -3155,22 +3377,26 @@ x3dio_readextrusion(scew_element *element)
     {
       pomesh.nverts[i] = 3;
     } /* for */
-  for(i = 0; i < splen-1; i++)
+
+  if(has_sides)
     {
-      for(j = 0; j < cslen-1; j++)
+      for(i = 0; i < splen-1; i++)
 	{
-	  pomesh.verts[a]   = b;
-	  pomesh.verts[a+1] = b+1;
-	  pomesh.verts[a+2] = b+cslen;
-	  a += 3;
-	  pomesh.verts[a]   = b+1;
-	  pomesh.verts[a+1] = b+cslen+1;
-	  pomesh.verts[a+2] = b+cslen;
-	  a += 3;
+	  for(j = 0; j < cslen-1; j++)
+	    {
+	      pomesh.verts[a]   = b;
+	      pomesh.verts[a+1] = b+1;
+	      pomesh.verts[a+2] = b+cslen;
+	      a += 3;
+	      pomesh.verts[a]   = b+1;
+	      pomesh.verts[a+1] = b+cslen+1;
+	      pomesh.verts[a+2] = b+cslen;
+	      a += 3;
+	      b++;
+	    } /* for */
 	  b++;
 	} /* for */
-      b++;
-    } /* for */
+    } /* if */
 
   /* create caps */
   if(has_startcap && has_endcap)
@@ -3213,6 +3439,12 @@ x3dio_readextrusion(scew_element *element)
 	} /* if */
     } /* if */
 
+  /* calculate rotation angles */
+  ay_status = x3dio_getspinerots(splen, sp, sp_closed, orientlen, orient,
+				 &rots);
+  if(!rots)
+    { goto cleanup; }
+
   /* allocate and fill controlv */
   pomesh.ncontrols = cslen * splen;
 
@@ -3222,23 +3454,6 @@ x3dio_readextrusion(scew_element *element)
   a = 0;
   for(i = 0; i < splen; i++)
     {
-      /* calculate rotation angles */
-      if(i == 0)
-	{
-	  /* first spine point */
-
-	}
-      if((i > 0) && (i < splen-1))
-	{
-	  /* middle spine point */
-
-
-	}
-      if(i == splen-1)
-	{
-	  /* last spine point */
-	}
-
       for(j = 0; j < cslen; j++)
 	{
 	  /* take cross section */
@@ -3264,12 +3479,12 @@ x3dio_readextrusion(scew_element *element)
 	  pomesh.controlv[a+1] += sp[i*3+2];
 
 	  /* apply rotation */
+	  ay_quat_torotmatrix(&(rots[i*4]), rotmat);
+	  ay_trafo_apply3(&(pomesh.controlv[a]), rotmat);
 
 	  a += 3;
 	} /* for */
     } /* for */
-
-
 
   /* copy object to the Ayam scene */
   ay_status = x3dio_linkobject(element, AY_IDPOMESH, (void*)&pomesh);
@@ -4407,7 +4622,7 @@ x3dio_readinline(scew_element *element)
       if(attr)
 	{
 	  str = scew_attribute_value(attr);
-	  
+
 	  filename = strchr(str, '"');
 
 	  if(!strcmp("file:", str))
@@ -6972,7 +7187,7 @@ x3dio_writeview(scew_element *element, ay_object *o)
 	    {
 	      x = 0.0;
 	    }
-	  
+
 	  if(v[1] < 0.0)
 	    x = -x;
 
@@ -7112,7 +7327,7 @@ x3dio_writelight(scew_element *element, ay_object *o)
       dir[1] = light->tto[1] - light->tfrom[1];
       dir[2] = light->tto[2] - light->tfrom[2];
       x3dio_writedoublevecattrib(light_element, "direction", 3, dir);
-      
+
       x3dio_writedoubleattrib(light_element, "cutOffAngle",
 			      &light->cone_angle);
 
@@ -7160,7 +7375,7 @@ x3dio_writelight(scew_element *element, ay_object *o)
 	      dir[1] = to[1] - from[1];
 	      dir[2] = to[2] - from[2];
 	      x3dio_writedoublevecattrib(light_element, "direction", 3, dir);
-      
+
 	      x3dio_writedoubleattrib(light_element, "cutOffAngle",
 				      &coneAngle);
 	      /*
