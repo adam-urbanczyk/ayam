@@ -5023,11 +5023,11 @@ x3dio_removedefs(scew_element *element)
  scew_element *child = NULL;
  const XML_Char *str = NULL;
  Tcl_HashEntry *entry = NULL;
+ scew_attribute *attr = NULL;
 
   if(!element)
     return AY_OK;
 
-  scew_attribute *attr = NULL;
   attr = scew_attribute_by_name(element, "DEF");
   if(attr)
     {
