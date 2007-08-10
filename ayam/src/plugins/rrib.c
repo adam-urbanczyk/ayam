@@ -2770,7 +2770,7 @@ ay_rrib_RiPointsGeneralPolygons(RtInt npolys, RtInt nloops[],
 				RtInt n, RtToken tokens[], RtPointer parms[])
 {
  ay_pomesh_object pm = {0};
- int i = 0, a = 0, b = 0, stride = 0;
+ unsigned int i = 0, a = 0, b = 0, stride = 0;
  unsigned int total_loops = 0, total_verts = 0, nc_needed = 0;
  RtPointer tokensfound[PPWTBL_LAST];
  RtPointer ntokensfound[NTBL_LAST];
@@ -2894,8 +2894,8 @@ RtVoid
 ay_rrib_RiGeneralPolygon(RtInt nloops, RtInt nvertices[],
 			 RtInt n, RtToken tokens[], RtPointer parms[])
 {
- RtInt *vertices = NULL, total_verts = 0;
- int i;
+ RtInt *vertices = NULL;
+ unsigned int i, total_verts = 0;
 
   for(i = 0; i < nloops; i++)
     {
@@ -3196,9 +3196,9 @@ ay_rrib_RiTransform(RtMatrix transform)
  int i, j, k;
 
   k = 0;
-  for(i=0;i<4;i++)
+  for(i = 0; i < 4; i++)
     {
-      for(j=0;j<4;j++)
+      for(j = 0; j < 4; j++)
 	{
 	  ay_rrib_ctrafos->m[k] = transform[i][j];
 	  k++;
@@ -3370,7 +3370,7 @@ ay_rrib_RiSubdivisionMesh(RtToken scheme, RtInt nfaces,
 			  RtInt n, RtToken tokens[], RtPointer parms[])
 {
  ay_sdmesh_object sm;
- int i = 0, a = 0, stride = 0;
+ unsigned int i = 0, a = 0, stride = 0;
  unsigned int total_verts = 0, total_intargs = 0, total_floatargs = 0;
  unsigned int nc_needed = 0;
  RtPointer tokensfound[PPWTBL_LAST];
@@ -3440,7 +3440,6 @@ ay_rrib_RiSubdivisionMesh(RtToken scheme, RtInt nfaces,
       pp += stride;
     } /* for */
   sm.ncontrols = nc_needed;
-
 
   /* get tags */
   sm.ntags = ntags;
