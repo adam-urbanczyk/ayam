@@ -258,8 +258,8 @@ typedef struct ay_riopt_s
   double Samples_X;
   double Samples_Y;
   char FilterFunc;
-  int FilterWidth;
-  int FilterHeight;
+  double FilterWidth;
+  double FilterHeight;
   double ExpGain;
   double ExpGamma;
   double RGBA_ONE;
@@ -1328,11 +1328,11 @@ extern unsigned int ay_current_primlevel;
 
 
 /* Version Strings and Numbers */
-#define AY_VERSIONSTR "1.12"
+#define AY_VERSIONSTR "1.13pre"
 #define AY_VERSIONSTRMI "0"
 
 #define AY_VERSIONMA 1
-#define AY_VERSION   12
+#define AY_VERSION   13
 #define AY_VERSIONMI 0
 
 
