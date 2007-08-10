@@ -47,8 +47,8 @@ ay_root_createcb(int argc, char *argv[], ay_object *o)
   riopt->Samples_X = 2.0;
   riopt->Samples_Y = 2.0;
   riopt->FilterFunc = 0;
-  riopt->FilterWidth = 2;
-  riopt->FilterHeight = 2;
+  riopt->FilterWidth = 2.0;
+  riopt->FilterHeight = 2.0;
   riopt->ExpGain = 1.0;
   riopt->ExpGamma = 1.0;
   riopt->RGBA_ONE = 255;
@@ -223,12 +223,12 @@ ay_root_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   Tcl_SetStringObj(ton, "FilterWidth", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &itemp);
+  Tcl_GetDoubleFromObj(interp, to, &dtemp);
   riopt->FilterWidth = itemp;
   Tcl_SetStringObj(ton, "FilterHeight", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &itemp);
-  riopt->FilterHeight = itemp;
+  Tcl_GetDoubleFromObj(interp, to, &dtemp);
+  riopt->FilterHeight = dtemp;
   Tcl_SetStringObj(ton, "ExpGain", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp, to, &dtemp);
@@ -409,11 +409,11 @@ ay_root_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
   Tcl_SetStringObj(ton, "FilterWidth", -1);
-  to = Tcl_NewIntObj(riopt->FilterWidth);
+  to = Tcl_NewDoubleObj(riopt->FilterWidth);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
   Tcl_SetStringObj(ton, "FilterHeight", -1);
-  to = Tcl_NewIntObj(riopt->FilterHeight);
+  to = Tcl_NewDoubleObj(riopt->FilterHeight);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
   Tcl_SetStringObj(ton, "ExpGain", -1);
@@ -514,6 +514,7 @@ ay_root_readcb(FILE *fileptr, ay_object *o)
  int ay_status = AY_OK;
  ay_root_object *root = NULL;
  int read, itemp = 0, has_atmosphere = 0, has_imager = 0;
+ int fwtemp = 0, fhtemp = 0;
  ay_riopt *riopt = NULL;
 
   if(!o)
@@ -559,8 +560,8 @@ ay_root_readcb(FILE *fileptr, ay_object *o)
   fscanf(fileptr,"%lg\n",&riopt->Samples_Y);
   fscanf(fileptr,"%d\n",&itemp);
   riopt->FilterFunc = (char)itemp;
-  fscanf(fileptr,"%d\n",&riopt->FilterWidth);
-  fscanf(fileptr,"%d\n",&riopt->FilterHeight);
+  fscanf(fileptr,"%d\n",&fwtemp/*riopt->FilterWidth*/);
+  fscanf(fileptr,"%d\n",&fhtemp/*riopt->FilterHeight*/);
   fscanf(fileptr,"%lg\n",&riopt->ExpGain);
   fscanf(fileptr,"%lg\n",&riopt->ExpGamma);
   fscanf(fileptr,"%lg\n",&riopt->RGBA_ONE);
@@ -637,6 +638,17 @@ ay_root_readcb(FILE *fileptr, ay_object *o)
       riopt->use_std_display = AY_TRUE;
     }
 
+  if(ay_read_version >= 10)
+    {
+      fscanf(fileptr,"%lg\n",&riopt->FilterWidth);
+      fscanf(fileptr,"%lg\n",&riopt->FilterHeight);
+    }
+  else
+    {
+      riopt->FilterWidth = fwtemp;
+      riopt->FilterHeight = fhtemp;
+    }
+
   /* link newly read tags to old root object */
   ay_tags_delall(ay_root);
   if(o->tags)
@@ -674,8 +686,8 @@ ay_root_writecb(FILE *fileptr, ay_object *o)
   fprintf(fileptr,"%g\n",riopt->Samples_X);
   fprintf(fileptr,"%g\n",riopt->Samples_Y);
   fprintf(fileptr,"%d\n",(int)(riopt->FilterFunc));
-  fprintf(fileptr,"%d\n",riopt->FilterWidth);
-  fprintf(fileptr,"%d\n",riopt->FilterHeight);
+  fprintf(fileptr,"%d\n",(int)riopt->FilterWidth);
+  fprintf(fileptr,"%d\n",(int)riopt->FilterHeight);
   fprintf(fileptr,"%g\n",riopt->ExpGain);
   fprintf(fileptr,"%g\n",riopt->ExpGamma);
   fprintf(fileptr,"%g\n",riopt->RGBA_ONE);
@@ -741,6 +753,9 @@ ay_root_writecb(FILE *fileptr, ay_object *o)
   else
     fprintf(fileptr,"\n");
 
+  fprintf(fileptr,"%g\n",riopt->FilterWidth);
+  fprintf(fileptr,"%g\n",riopt->FilterHeight);
+
  return AY_OK;
 } /* ay_root_writecb */
 
@@ -750,7 +765,7 @@ ay_root_wribcb(char *file, ay_object *o)
 {
  ay_root_object *root = NULL;
  ay_riopt *riopt = NULL;
- RtInt fw = 0, fh = 0;
+ RtFloat fw = 0, fh = 0;
  RtFloat rtftemp = 0.0f;
  RtInt rtitemp = 0;
 
@@ -760,7 +775,6 @@ ay_root_wribcb(char *file, ay_object *o)
   root = (ay_root_object*)o->refine;
   riopt = root->riopt;
 
-
   /* wrib RiOptions */
   if(riopt->Variance > 0.0)
     RiPixelVariance((RtFloat)riopt->Variance);
@@ -769,31 +783,31 @@ ay_root_wribcb(char *file, ay_object *o)
 		   (RtFloat)riopt->Samples_Y);
 
   if(riopt->FilterWidth <= 0)
-    fw = (RtInt)2;
+    fw = 2.0f;
   else
-    fw = (RtInt)riopt->FilterWidth;
+    fw = (RtFloat)riopt->FilterWidth;
 
   if(riopt->FilterHeight <= 0)
-    fh = (RtInt)2;
+    fh = 2.0f;
   else
-    fh = (RtInt)riopt->FilterHeight;
+    fh = (RtFloat)riopt->FilterHeight;
 
   switch(riopt->FilterFunc)
     {
     case 1:
-      RiPixelFilter(RiTriangleFilter,(RtFloat)fw,(RtFloat)fh);
+      RiPixelFilter(RiTriangleFilter, fw, fh);
       break;
     case 2:
-      RiPixelFilter(RiCatmullRomFilter,(RtFloat)fw,(RtFloat)fh);
+      RiPixelFilter(RiCatmullRomFilter, fw, fh);
       break;
     case 3:
-      RiPixelFilter(RiBoxFilter,(RtFloat)fw,(RtFloat)fh);
+      RiPixelFilter(RiBoxFilter, fw, fh);
       break;
     case 4:
-      RiPixelFilter(RiSincFilter,(RtFloat)fw,(RtFloat)fh);
+      RiPixelFilter(RiSincFilter, fw, fh);
       break;
     default:
-      RiPixelFilter(RiGaussianFilter,(RtFloat)fw,(RtFloat)fh);
+      RiPixelFilter(RiGaussianFilter, fw, fh);
     }
 
   RiExposure((RtFloat)riopt->ExpGain, (RtFloat)riopt->ExpGamma);
@@ -859,9 +873,7 @@ ay_root_wribcb(char *file, ay_object *o)
     rtitemp = riopt->geommem;
     RiOption((RtToken)"limits", (RtToken)"geommemory",
 	     &rtitemp, RI_NULL);
-  }
-
-
+  } /* if */
 
  return AY_OK;
 } /* ay_root_wribcb */

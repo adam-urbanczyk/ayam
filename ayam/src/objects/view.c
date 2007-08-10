@@ -675,12 +675,12 @@ ay_view_readcb(FILE *fileptr, ay_object *o)
     {
       fscanf(fileptr,"%d\n", &vtemp.drawobjectcs);
     }
-  /*
+
   if(ay_read_version >= 10)
     {
       fscanf(fileptr,"%d\n", &vtemp.antialiaslines);
     }
-  */
+
   vtemp.drawhandles = AY_FALSE;
 
   /* open the view */
@@ -822,9 +822,9 @@ ay_view_writecb(FILE *fileptr, ay_object *o)
   fprintf(fileptr,"%g\n",view->farp);
 
   fprintf(fileptr,"%d\n",view->drawobjectcs);
-  /*
+
   fprintf(fileptr,"%d\n",view->antialiaslines);
-  */
+
  return AY_OK;
 } /* ay_view_writecb */
 
