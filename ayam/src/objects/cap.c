@@ -267,9 +267,8 @@ ay_cap_writecb(FILE *fileptr, ay_object *o)
 
   fprintf(fileptr, "%g\n", cap->glu_sampling_tolerance);
   fprintf(fileptr, "%d\n", cap->display_mode);
-  /*
   fprintf(fileptr, "%d\n", cap->type);
-  */
+
  return AY_OK;
 } /* ay_cap_writecb */
 
