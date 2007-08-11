@@ -6,7 +6,7 @@
 
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
 
-<date>22. Jun 2007
+<date>10. Aug 2007
 
 <abstract>
 This is the documentation of Ayam 1.13 - a free 3D modelling environment
@@ -2231,7 +2231,8 @@ middle between the selected point and the next point, changing
 the shape of the curve. (It is also possible to insert control
 points into certain types of NURBS curves without changing
 their shape using knot insertion;
-see the insert knot tool <ref id="insknt" name="The Insert Knot Tool">.)
+see also the insert knot tool section
+<ref id="insknt" name="The Insert Knot Tool">.)
 <p>
 The modelling action <tt/"Delete Point"/ (shortcut: <tt/&lt;d&gt;/)
 may be applied to NURBS and interpolating curves (objects of type
@@ -2297,7 +2298,13 @@ differently in X-window and Y-window coordinates in aligned local views
 This section informs you about the different object types of Ayam and
 about the property GUIs that appear in the properties section of the
 main window if a single object and a property have been selected.
-Furthermore, this section contains information about all tags.
+<p>
+Documentation on the standard properties (Transformations, Attributes,
+Material, Shader, Tags) can be found in
+section <ref id="stdprop" name="Standard Properties">.
+<p>
+Furthermore, this section contains information about all tag types,
+see section <ref id="tags" name="Tags">.
 
 <sect1>Root Object<label id="rootobj">
 <p>
@@ -3430,7 +3437,7 @@ outlines of the patch (<tt/"OutlinePatch"/). The default setting
 <tt>"Drawing/NPDisplayMode"</tt> should be used instead.
 </itemize>
 
-<sect1>Trim Curves<label id="trim">
+<sect2>Trim Curves<label id="trim">
 <p>
 Trim curves may be used to cut out certain parts of a NURBS patch.
 They are simple 2D NURBS curves defined in the parametric space
@@ -4870,11 +4877,13 @@ width; <tt/"V0"/, <tt/"Vn"/: extract boundary curve along
 height; <tt/"U"/, <tt/"V"/ extract curve along width and height
 respectively at specified parametric value (see below). The
 options <tt/"U"/, <tt/"V"/ are implemented since Ayam 1.8.1!
-
+Since Ayam 1.13 it is also possible to extract the complete boundary
+curve of the patch (<tt/"Boundary"/).
 <item><tt/"Parameter"/ controls the parametric value in u or v
 direction in the parameter space of the NURBS patch object where the
-curve should be extracted.
-
+curve should be extracted. This parameter is only used when <tt/"Side"/
+is <tt/"U"/ or <tt/"V"/.
+<item><tt/"Revert"/ immediately reverts the extracted curve.
 <item><tt/"PatchNum"/ allows to select a patch from a list of
 patches delivered e.g. by a beveled extrude object as child
 of the ExtrNC object.
@@ -4888,8 +4897,8 @@ of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 <sect1>NCircle (NURBS Circle) Object<label id="ncircleobj">
 <p>
 The NCircle object is available since Ayam 1.12 and creates a
-circular NURBS curve or a circular arc in the XY plane with
-designated radius and start/end angles.
+circular NURBS curve or a circular arc in the XY plane
+centered at the origin with designated radius and start/end angles.
 <p>
 The following section describes the parameters of the circle or
 arc.
@@ -5868,7 +5877,7 @@ The tag type <tt/"TP"/ can be used to save tesselation parameters
 to objects of type <tt/"NPatch"/. Those tesselation parameters
 will be used when the NPatch object is tesselated for e.g. a
 conversion to a PolyMesh object. The syntax of the TP tag is:
-<tt>"&lt;tmethod&gt;,&lt;tparamu&gt;&lt;tparamv&gt;"</tt>
+<tt>"&lt;tmethod&gt;,&lt;tparamu&gt;,&lt;tparamv&gt;"</tt>
 where <tt/"&lt;tmethod&gt;"/ is an integer value between 1 and 3, describing
 which tesselation method to use (1 - ParametricError,
 2 - PathLength, and 3 - DomainDistance) and <tt/"&lt;tparamu&gt;"/ and
@@ -5957,7 +5966,7 @@ An UMM tag could look like this:
 The tag type <tt/"BP"/ (bevel parameters) is used by all bevel
 supporting tool objects to store their bevel information.
 The syntax of the BP tag is:
-<tt>"&lt;side,type,radius,revert&gt;"</tt>
+<tt>"&lt;side&gt;,&lt;type&gt;,&lt;radius&gt;,&lt;revert&gt;"</tt>
 where <tt/"&lt;side&gt;"/ is an integer value from 0 - 3
 defining the side of the surface, where the bevel should be applied
 to, <tt/"&lt;type&gt;"/ is an integer value from 0 - 4 defining
@@ -7760,15 +7769,22 @@ wrib - RIB export:
 by <tt/"filename"/. If the argument <tt/"-image"/ is given, the RIB file
 will create an image file named <tt/"imagename"/ upon rendering. The export
 will use the camera transformation from the currently selected Camera
-object. To use the camera transformations of the camera associated
-with a view window use the corresponding Togl callback for the view
-like this instead: <tt>.view1.f3D.togl wrib -file filename.rib</tt>.
+object.
 If the argument <tt/"-smonly"/ is provided, a RIB to render shadow maps
 will be created and the argument of <tt/"-image"/ will be ignored.
 If the argument <tt/"-selonly"/ is given, only the selected (geometric)
 objects will be exported, which will result in a RIB file not
 suitable for rendering (no setup, camera transformation, or lights
 are in it) but for inclusion into other scenes via RiArchive.
+The <tt>"wrib"</tt> command always needs a selected camera object; if
+there is none or if the camera transformations of the camera associated
+with a view window shall be used, the corresponding Togl callback for
+the view might be used like this instead:
+<code>
+.view1.f3D.togl wrib -file filename.rib
+</code>
+The Togl callback understands the same options as the <tt>"wrib"</tt>
+command.
 </itemize>
 
 <sect2>Reporting Errors<label id="scierr">
@@ -9711,6 +9727,7 @@ Using of double precision numbers via the Tcl scripting interface or
 the GUI also can reduce precision due to
 double-string-double-conversions (whose precision can be adjusted
 by the user via the <tt/"TclPrecision"/ preference setting, however). 
+<item>Ayam is currently not portable to 64-bit platforms.
 <item>Materials may only be assigned to complete objects, not to
 certain parts of objects.
 <item>Undo/Redo are not possible for scene structure changes.
@@ -9733,44 +9750,44 @@ strings only. But certain window systems do not display those
 titles well.
 </itemize>
 
-<sect1>How can you help?
+<sect1>How to join the fun<label id="secfun">
 <p>
+Helping to make Ayam even better will spice up your life too!
+Here is how to do it:
 <enum>
 <item>Write/translate tutorials.
-<item>Implement custom objects. This will be discussed a bit more later on.
+<item>Create and submit example objects, scenes, and images.
+<item>Implement custom objects like trees, landscape, sky, XSplines,
+T-Splines, or whatever you can think of. Note that the license of Ayam
+does not prevent you from implementing your custom object as shareware
+or even commercial software. However, free software is preferred for
+obvious reasons.
 <item>Donate source to improve several critical parts of the modeler,
 some ideas are: better (more exact) lighting simulation (is this
-possible to do with OpenGL at all?),
-transformation widgets, import/export plugins,
-true support for subdivision surfaces, lift some deficiencies (see above).
+possible to do with OpenGL at all?), transformation widgets, 
+true support for subdivision surfaces, lift some deficiencies (see above),
+import/export plugins.
 The project page of Ayam on SourceForge lists some more tasks and
-you are always welcome to discuss the matter in the public forum
+you are always welcome to discuss such matters in the public forum
 or in the feature request tracker.
-<item>Debug the MF3D code, which is currently not working
-well with binary files from different byte-order platforms.
 <item>Donate money by registering ShellyLib.
 ShellyLibs source will be converted to a first high level custom object
-that creates objects of type seashell for Ayam. This object,
-however, will be Shareware!
+that creates objects of type seashell for Ayam. This object, however,
+will be Shareware!
 </enum>
 
-You can help by implementing more different high level custom objects like
-Trees, Landscape, Sky, XSplines or whatever you can think of.
-Note that the license of Ayam does not prevent you from implementing your
-custom object as shareware or even commercial software. However, free
-software is preferred for obvious reasons.
+Please do not implement custom objects like simple triangles or polygons.
+This would be something that really is not intended by the Ayam Team,
+and it would surely show the limits of the current design of all code
+operating on the scene structure.
 
-But please do me a favour and do not implement objects like
-simple triangles or polygons. This would be something that really is
-not intended by me, and it would surely show the limits of the current
-design of all code operating on the scene structure.
 Ayam objects should be high-level objects!
 
-Reading the last paragraph you might think that I am a bit biased
-against polygonal models. I am not. Polygonal models are the only
+Reading the last paragraph you might think that we are a bit biased
+against polygonal models. We are not. Polygonal models are the only
 way to preview complex geometry using hardware accelerated graphics,
 for the moment. But even while RenderMan supports rendering of
-polygonal models their use as a primitive is not recommended for
+polygonal models, their use as a primitive is not recommended for
 good reasons. In other words, use polygonal models in the modeler
 as quick representation of your higher level objects, but please,
 if you are going to actually render something, do not use that
