@@ -172,6 +172,12 @@ int x3dio_readquadset(scew_element *element);
 
 int x3dio_readelevationgrid(scew_element *element);
 
+int x3dio_getquatfromvec(double *v, double *q);
+
+int x3dio_getspinerots(unsigned int splen, float *sp, int sp_closed,
+		   unsigned int orlen, float *or, 
+		   double **rots);
+
 int x3dio_readextrusion(scew_element *element);
 
 
@@ -469,7 +475,8 @@ x3dio_trafotoobject(ay_object *o, double *transform)
   AY_V3CROSS(v4, v2, v3)
   if(AY_V3DOT(v1, v4) < 0)
     {
-      ay_error(AY_EWARN, fname, "Coordinate system flip detected!");
+      if(x3dio_errorlevel > 1)
+	ay_error(AY_EWARN, fname, "Coordinate system flip detected!");
 
       o->scalx *= -1.0;
       o->scaly *= -1.0;
@@ -491,7 +498,7 @@ x3dio_trafotoobject(ay_object *o, double *transform)
 
   /* now get rotation */
   ry = asin(-v1[2]);
-  if(cos(ry) != 0)
+  if(fabs(cos(ry)) > AY_EPSILON)
     {
       rx = atan2(v2[2], v3[2]);
       rz = atan2(v1[1], v1[0]);
@@ -3056,6 +3063,97 @@ cleanup:
 } /* x3dio_readelevationgrid */
 
 
+/* x3dio_getquatfromvec:
+ *
+ */
+int
+x3dio_getquatfromvec(double *v, double *q)
+{
+ double tmp = 0.0;
+ double xylen = 0.0, zylen = 0.0, x = 0.0, z = 0.0;
+ double q1[4] = {0}, q2[4] = {0}, quat[4] = {0};
+ double xaxis[3] = {1.0, 0.0, 0.0}, zaxis[3] = {0.0, 0.0, 1.0};
+
+  if(!v || !q)
+   return AY_ENULL;
+
+  AY_V3NORM(v);
+
+  printf("vx:%g, vy:%g, vz:%g\n",v[0], v[1], v[2]);
+
+  if(fabs(v[0]) > AY_EPSILON ||
+     fabs(v[1]) > AY_EPSILON ||
+     fabs(v[2]) > AY_EPSILON)
+    {
+      xylen = sqrt(v[0] * v[0] + v[1] * v[1]);
+
+      if(fabs(xylen) < AY_EPSILON)
+	{
+	  z = (v[2] < 0.0) ? AY_PI : 0.0;
+	}
+      else
+	{
+	  tmp = v[1]/xylen;
+	  z = acos((fabs(tmp)<=1.0?tmp:(tmp<-1.0?-1.0:1.0)));
+	}
+
+      if(fabs(v[2]) > AY_EPSILON)
+	{
+	  zylen = sqrt(xylen * xylen + v[1] * v[1]);
+
+	  if(fabs(zylen) > AY_EPSILON)
+	    {
+	      x = acos(xylen/zylen);
+	    }
+	  else
+	    {
+	      x = 0.0;
+	    }
+
+	  if(v[1] > 0.0)
+	    x = -x;
+	}
+      
+      if(v[0] < 0.0)
+	z = -z;      
+
+      printf("x:%g, z:%g\n",AY_R2D(x),AY_R2D(z));
+  
+      if((fabs(x) > AY_EPSILON) || (fabs(z) > AY_EPSILON))
+	{
+	  if(fabs(x) > AY_EPSILON)
+	    {
+	      ay_quat_axistoquat(xaxis, x, q1);
+	      if(fabs(z) > AY_EPSILON)
+		{
+		  ay_quat_axistoquat(zaxis, z, q2);
+		  ay_quat_add(q1, q2, quat);
+		}
+	      else
+		{
+		  memcpy(quat, q1, 4*sizeof(double));
+		}
+	    }
+	  else
+	    {
+	      ay_quat_axistoquat(zaxis, z, quat);
+	    } /* if */
+	  ay_quat_norm(quat);
+	} /* if */
+    }
+  else
+    {
+      /* oops, all components zero => spine is not oriented
+	 at all => gracefully assume y-aligned spine */
+      quat[3] = 1.0;
+    } /* if */
+
+  memcpy(q, quat, 4*sizeof(double));
+
+ return AY_OK;
+} /* x3dio_getquatfromvec */
+
+
 /* x3dio_getspinerots:
  *
  */
@@ -3066,17 +3164,14 @@ x3dio_getspinerots(unsigned int splen, float *sp, int sp_closed,
 {
  double scpx[3], scpy[3], scpz[3], t1[3], t2[3];
  double prevscpz[3];
- double tmp = 0.0;
- double xzlen = 0.0, yzlen = 0.0, x = 0.0, y = 0.0;
  double q1[4] = {0}, q2[4] = {0}, quat[4] = {0};
- double xaxis[3] = {1.0, 0.0, 0.0}, yaxis[3] = {0.0, 1.0, 0.0};
-
+ double *quats = NULL;
  unsigned int i;
 
   if(!sp || !rots)
    return AY_ENULL;
 
-  if(!(*rots = calloc(splen*4,sizeof(double))))
+  if(!(quats = calloc(splen*4,sizeof(double))))
     return AY_EOMEM;
 
   if(splen > 2)
@@ -3177,6 +3272,29 @@ x3dio_getspinerots(unsigned int splen, float *sp, int sp_closed,
 	  memcpy(prevscpz, scpz, 3*sizeof(double));
 
 	  AY_V3CROSS(scpx, scpy, scpz);
+
+	  memset(quat, 0, 3*sizeof(double));
+	  quat[3] = 1.0;
+
+	  x3dio_getquatfromvec(scpy, quat);
+	  
+	  /* add orientation */
+	  if(fabs(or[i*4+3]) > AY_EPSILON)
+	    {
+	      quats[i*4] = 1.0;
+
+	      q2[0] = or[i*4];
+	      q2[1] = or[i*4+1];
+	      q2[2] = or[i*4+2];
+	      q2[3] = or[i*4+3];
+
+	      ay_quat_axistoquat(q2, q2[3], q1);
+	      ay_quat_add(q1, quat, &(quats[i*4]));
+	    }
+	  else
+	    {
+	      memcpy(&(quats[i*4]), quat, 4*sizeof(double));
+	    } /* if */
 	} /* for */
     }
   else
@@ -3186,78 +3304,50 @@ x3dio_getspinerots(unsigned int splen, float *sp, int sp_closed,
       t1[1] = sp[4] - sp[1];
       t1[2] = sp[5] - sp[2];
 
-      if(fabs(t1[0]) > AY_EPSILON ||
-	 fabs(t1[1]) > AY_EPSILON ||
-	 fabs(t1[2]) > AY_EPSILON)
+      if(fabs(t1[0]) < AY_EPSILON &&
+	 fabs(t1[2]) < AY_EPSILON)
 	{
-	  xzlen = sqrt(t1[0] * t1[0] + t1[2] * t1[2]);
-
-	  if(fabs(xzlen) < AY_EPSILON)
-	    {
-	      y = (t1[1] < 0.0) ? AY_PI : 0.0;
-	    }
-	  else
-	    {
-	      tmp = -t1[2]/xzlen;
-	      y = acos((fabs(tmp)<=1.0?tmp:(tmp<-1.0?-1.0:1.0)));
-	    }
-
-	  yzlen = sqrt(t1[1] * t1[1] + xzlen * xzlen);
-
-	  if(fabs(yzlen) > AY_EPSILON)
-	    {
-	      x = acos(xzlen/yzlen);
-	    }
-	  else
-	    {
-	      x = 0.0;
-	    }
-	  
-	  if(t1[1] < 0.0)
-	    x = -x;
-
-	  if(t1[0] > 0.0)
-	    y = -y;
-
-	  if((fabs(x) > AY_EPSILON) || (fabs(y) > AY_EPSILON))
-	    {
-	      if(fabs(x) > AY_EPSILON)
-		{
-		  ay_quat_axistoquat(xaxis, x, q1);
-		  if(fabs(y) > AY_EPSILON)
-		    {
-		      ay_quat_axistoquat(yaxis, y, q2);
-		      ay_quat_add(q1, q2, quat);
-		    }
-		  else
-		    {
-		      memcpy(quat, q1, 4*sizeof(double));
-		    }
-		}
-	      else
-		{
-		  ay_quat_axistoquat(yaxis, y, quat);
-		} /* if */
-	      ay_quat_norm(quat);
-	    } /* if */
+	  /* spine is already y-axis-aligned */
+	  quat[3] = 1.0;
+	}
+      else
+	{
+	  x3dio_getquatfromvec(t1, quat);
 	} /* if */
-      
-      q2[0] = or[0];
-      q2[1] = or[1];
-      q2[2] = or[2];
-      q2[3] = or[3];
 
-      ay_quat_axistoquat(q2, q2[3], q1);
-      ay_quat_add(q1, quat, *rots);
+      /* add orientation */
+      if(fabs(or[3]) > AY_EPSILON)
+	{
+	  q2[0] = or[0];
+	  q2[1] = or[1];
+	  q2[2] = or[2];
+	  q2[3] = or[3];
 
-      q2[0] = or[4];
-      q2[1] = or[5];
-      q2[2] = or[6];
-      q2[3] = or[7];
+	  ay_quat_axistoquat(q2, q2[3], q1);
+	  ay_quat_add(q1, quat, quats);
+	}
+      else
+	{
+	  memcpy(quats, quat, 4*sizeof(double));
+	} /* if */
+      if(fabs(or[7]) > AY_EPSILON)
+	{
+	  q2[0] = or[4];
+	  q2[1] = or[5];
+	  q2[2] = or[6];
+	  q2[3] = or[7];
 
-      ay_quat_axistoquat(q2, q2[3], q1);
-      ay_quat_add(q1, quat, &((*rots)[4]));
+	  ay_quat_axistoquat(q2, q2[3], q1);
+	  ay_quat_add(q1, quat, &(quats[4]));
+	}
+      else
+	{
+	  memcpy(&(quats[4]), quat, 4*sizeof(double));
+	} /* if */
+
     } /* if */
+
+  *rots = quats;
 
  return AY_OK;
 } /* x3dio_getspinerots */
@@ -3281,8 +3371,6 @@ x3dio_readextrusion(scew_element *element)
  ay_pomesh_object pomesh = {0};
  unsigned int totalverts = 0, i, j, a = 0, b = 0;
  double *rots = NULL, rotmat[16];
-
- /* double rotx = 0.0, roty = 0.0, rotz = 0.0;*/
 
   if(!element)
     return AY_ENULL;
@@ -3349,6 +3437,12 @@ x3dio_readextrusion(scew_element *element)
   ay_status = x3dio_readbool(element, "beginCap", &has_startcap);
 
   ay_status = x3dio_readbool(element, "endCap", &has_endcap);
+
+  if(cslen <= 2)
+    {
+      has_startcap = AY_FALSE;
+      has_endcap = AY_FALSE;
+    }
 
   ay_status = x3dio_readbool(element, "sides", &has_sides);
 
@@ -3454,11 +3548,13 @@ x3dio_readextrusion(scew_element *element)
   a = 0;
   for(i = 0; i < splen; i++)
     {
+      ay_quat_torotmatrix(&(rots[i*4]), rotmat);
+
       for(j = 0; j < cslen; j++)
 	{
 	  /* take cross section */
 	  pomesh.controlv[a]   = cs[j*2];
-	  pomesh.controlv[a+1] = 0.0;
+	  /*pomesh.controlv[a+1] = 0.0;*/
 	  pomesh.controlv[a+2] = cs[j*2+1];
 
 	  /* apply scale */
@@ -3473,14 +3569,13 @@ x3dio_readextrusion(scew_element *element)
 	      pomesh.controlv[a+2] *= scale[1];
 	    }
 
+	  /* apply rotation */
+	  ay_trafo_apply3(&(pomesh.controlv[a]), rotmat);
+
 	  /* move to spine */
 	  pomesh.controlv[a]   += sp[i*3];
 	  pomesh.controlv[a+1] += sp[i*3+1];
-	  pomesh.controlv[a+1] += sp[i*3+2];
-
-	  /* apply rotation */
-	  ay_quat_torotmatrix(&(rots[i*4]), rotmat);
-	  ay_trafo_apply3(&(pomesh.controlv[a]), rotmat);
+	  pomesh.controlv[a+2] += sp[i*3+2];
 
 	  a += 3;
 	} /* for */
@@ -3502,6 +3597,9 @@ cleanup:
 
   if(orient && (orient != orientd))
     free(orient);
+
+  if(rots)
+    free(rots);
 
  return ay_status;
 } /* x3dio_readextrusion */
@@ -4795,13 +4893,14 @@ x3dio_readtransform(scew_element *element)
 
   if(fabs(rotation[3]) > AY_EPSILON)
     {
-      ay_trafo_rotatematrix(rotation[3], rotation[0], rotation[1], rotation[2],
+      ay_trafo_rotatematrix(AY_R2D(rotation[3]),
+			    rotation[0], rotation[1], rotation[2],
 			    x3dio_ctrafos->m);
     }
 
   if(fabs(scaleorient[3]) > AY_EPSILON)
     {
-      ay_trafo_rotatematrix(scaleorient[3], scaleorient[0],
+      ay_trafo_rotatematrix(AY_R2D(scaleorient[3]), scaleorient[0],
 			    scaleorient[1], scaleorient[2],
 			    x3dio_ctrafos->m);
     }
@@ -4809,7 +4908,7 @@ x3dio_readtransform(scew_element *element)
 		       x3dio_ctrafos->m);
   if(fabs(scaleorient[3]) > AY_EPSILON)
     {
-      ay_trafo_rotatematrix(-scaleorient[3], scaleorient[0],
+      ay_trafo_rotatematrix(-AY_R2D(scaleorient[3]), scaleorient[0],
 			    scaleorient[1], scaleorient[2],
 			    x3dio_ctrafos->m);
     }
