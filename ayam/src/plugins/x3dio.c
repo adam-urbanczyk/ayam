@@ -174,6 +174,9 @@ int x3dio_readelevationgrid(scew_element *element);
 
 int x3dio_getquatfromvec(double *v, double *q);
 
+int x3dio_getdiffspinepoint(unsigned int splen, float *sp, unsigned int sindex,
+			    unsigned int *index);
+
 int x3dio_getspinerots(unsigned int splen, float *sp, int sp_closed,
 		   unsigned int orlen, float *or, 
 		   double **rots);
@@ -3079,7 +3082,7 @@ x3dio_getquatfromvec(double *v, double *q)
 
   AY_V3NORM(v);
 
-  printf("vx:%g, vy:%g, vz:%g\n",v[0], v[1], v[2]);
+  /*printf("vx:%g, vy:%g, vz:%g\n",v[0], v[1], v[2]);*/
 
   if(fabs(v[0]) > AY_EPSILON ||
      fabs(v[1]) > AY_EPSILON ||
@@ -3117,7 +3120,7 @@ x3dio_getquatfromvec(double *v, double *q)
       if(v[0] < 0.0)
 	z = -z;      
 
-      printf("x:%g, z:%g\n",AY_R2D(x),AY_R2D(z));
+      /*printf("x:%g, z:%g\n",AY_R2D(x),AY_R2D(z));*/
   
       if((fabs(x) > AY_EPSILON) || (fabs(z) > AY_EPSILON))
 	{
@@ -3154,6 +3157,34 @@ x3dio_getquatfromvec(double *v, double *q)
 } /* x3dio_getquatfromvec */
 
 
+/* x3dio_getdiffspinepoint:
+ *
+ */
+int
+x3dio_getdiffspinepoint(unsigned int splen, float *sp, unsigned int sindex,
+			unsigned int *index)
+{
+
+  if(!sp || !index)
+    return AY_ENULL;
+
+  *index = sindex+1;
+
+  while(*index < splen)
+    {
+
+      if(fabs(sp[sindex*3]   - sp[*index*3])   > AY_EPSILON ||
+	 fabs(sp[sindex*3+1] - sp[*index*3+1]) > AY_EPSILON ||
+	 fabs(sp[sindex*3+2] - sp[*index*3+2]) > AY_EPSILON)
+	return AY_OK;
+
+      (*index)++;
+    }
+
+ return AY_ERROR;
+} /* x3dio_getdiffspinepoint */
+
+
 /* x3dio_getspinerots:
  *
  */
@@ -3166,7 +3197,7 @@ x3dio_getspinerots(unsigned int splen, float *sp, int sp_closed,
  double prevscpz[3];
  double q1[4] = {0}, q2[4] = {0}, quat[4] = {0};
  double *quats = NULL;
- unsigned int i;
+ unsigned int i, next;
 
   if(!sp || !rots)
    return AY_ENULL;
@@ -3184,10 +3215,11 @@ x3dio_getspinerots(unsigned int splen, float *sp, int sp_closed,
 	      /* first spine point */
 	      if(!sp_closed)
 		{
-		  scpy[0] = sp[3] - sp[0];
-		  scpy[1] = sp[4] - sp[1];
-		  scpy[2] = sp[5] - sp[2];
-
+		  x3dio_getdiffspinepoint(splen, sp, 0, &next);
+		  scpy[0] = sp[next] - sp[0];
+		  scpy[1] = sp[next+1] - sp[1];
+		  scpy[2] = sp[next+2] - sp[2];
+		  
 		  t1[0] = sp[2*3]   - sp[3];
 		  t1[1] = sp[2*3+1] - sp[4];
 		  t1[2] = sp[2*3+2] - sp[5];
@@ -3214,13 +3246,14 @@ x3dio_getspinerots(unsigned int splen, float *sp, int sp_closed,
 	  if((i > 0) && (i < splen-1))
 	    {
 	      /* middle spine point */
-	      scpy[0] = sp[(i+1)*3] - sp[i*3];
-	      scpy[1] = sp[(i+1)*3+1] - sp[i*3+1];
-	      scpy[2] = sp[(i+1)*3+2] - sp[i*3+2];
+	      x3dio_getdiffspinepoint(splen, sp, i, &next);
+	      scpy[0] = sp[next*3] - sp[i*3];
+	      scpy[1] = sp[next*3+1] - sp[i*3+1];
+	      scpy[2] = sp[next*3+2] - sp[i*3+2];
 
-	      t1[0] = sp[(i+1)*3] - sp[i*3];
-	      t1[1] = sp[(i+1)*3+1] - sp[i*3+1];
-	      t1[2] = sp[(i+1)*3+2] - sp[i*3+2];
+	      t1[0] = sp[next*3] - sp[i*3];
+	      t1[1] = sp[next*3+1] - sp[i*3+1];
+	      t1[2] = sp[next*3+2] - sp[i*3+2];
 
 	      t2[0] = sp[(i-1)*3] - sp[i*3];
 	      t2[1] = sp[(i-1)*3+1] - sp[i*3+1];
@@ -3315,7 +3348,7 @@ x3dio_getspinerots(unsigned int splen, float *sp, int sp_closed,
 	  x3dio_getquatfromvec(t1, quat);
 	} /* if */
 
-      /* add orientation */
+      /* add orientation of spine start point */
       if(fabs(or[3]) > AY_EPSILON)
 	{
 	  q2[0] = or[0];
@@ -3330,6 +3363,7 @@ x3dio_getspinerots(unsigned int splen, float *sp, int sp_closed,
 	{
 	  memcpy(quats, quat, 4*sizeof(double));
 	} /* if */
+      /* add orientation of spine end point */
       if(fabs(or[7]) > AY_EPSILON)
 	{
 	  q2[0] = or[4];
