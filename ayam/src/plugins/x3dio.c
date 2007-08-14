@@ -174,8 +174,11 @@ int x3dio_readelevationgrid(scew_element *element);
 
 int x3dio_getquatfromvec(double *v, double *q);
 
+int x3dio_fixcrosssection(unsigned int cslen, float *cs,
+			  unsigned int *newcslen, float **newcs);
+
 int x3dio_getdiffspinepoint(unsigned int splen, float *sp, unsigned int sindex,
-			    unsigned int *index);
+			    int stride, unsigned int *index);
 
 int x3dio_getspinerots(unsigned int splen, float *sp, int sp_closed,
 		   unsigned int orlen, float *or, 
@@ -3157,28 +3160,70 @@ x3dio_getquatfromvec(double *v, double *q)
 } /* x3dio_getquatfromvec */
 
 
+/* x3dio_fixcrosssection:
+ *
+ */
+int
+x3dio_fixcrosssection(unsigned int cslen, float *cs,
+		      unsigned int *newcslen, float **newcs)
+{
+ float *tcs = NULL;
+ unsigned int i, j, tcslen;
+
+  if(!cs)
+   return AY_ENULL;
+
+  if(!(tcs = calloc(cslen*2, sizeof(float))))
+    return AY_EOMEM;
+
+  memcpy(tcs, cs, 2*sizeof(float));
+  tcslen = 1;
+  j = 0;
+  for(i = 1; i < cslen; i++)
+    {
+      if(fabs(tcs[j*2]   - cs[i*2])   > AY_EPSILON ||
+	 fabs(tcs[j*2+1] - cs[i*2+1]) > AY_EPSILON)
+	{
+	  j++;
+	  memcpy(&(tcs[j*2]), &(cs[i*2]), 2*sizeof(float));
+	  tcslen++;
+	}
+    } /* for */
+
+  *newcslen = tcslen;
+  *newcs = tcs;
+
+ return AY_ERROR;
+} /* x3dio_fixcrosssection */
+
+
 /* x3dio_getdiffspinepoint:
  *
  */
 int
 x3dio_getdiffspinepoint(unsigned int splen, float *sp, unsigned int sindex,
-			unsigned int *index)
+			int stride, unsigned int *index)
 {
 
   if(!sp || !index)
     return AY_ENULL;
 
-  *index = sindex+1;
+  if((stride != -1) && (stride != 1))
+    return AY_ERROR;
 
-  while(*index < splen)
+  if(sindex > splen)
+    return AY_ERROR;
+
+  *index = sindex + stride;
+
+  while((*index > 0) && (*index < splen))
     {
-
       if(fabs(sp[sindex*3]   - sp[*index*3])   > AY_EPSILON ||
 	 fabs(sp[sindex*3+1] - sp[*index*3+1]) > AY_EPSILON ||
 	 fabs(sp[sindex*3+2] - sp[*index*3+2]) > AY_EPSILON)
 	return AY_OK;
 
-      (*index)++;
+      (*index) += stride;
     }
 
  return AY_ERROR;
@@ -3193,8 +3238,8 @@ x3dio_getspinerots(unsigned int splen, float *sp, int sp_closed,
 		   unsigned int orlen, float *or, 
 		   double **rots)
 {
- double scpx[3], scpy[3], scpz[3], t1[3], t2[3];
- double prevscpz[3];
+ double /*scpx[3],*/ scpy[3], /*scpz[3],*/ t1[3]/*, t2[3]*/;
+ /*double prevscpz[3];*/
  double q1[4] = {0}, q2[4] = {0}, quat[4] = {0};
  double *quats = NULL;
  unsigned int i, next;
@@ -3215,11 +3260,11 @@ x3dio_getspinerots(unsigned int splen, float *sp, int sp_closed,
 	      /* first spine point */
 	      if(!sp_closed)
 		{
-		  x3dio_getdiffspinepoint(splen, sp, 0, &next);
+		  x3dio_getdiffspinepoint(splen, sp, 0, 1, &next);
 		  scpy[0] = sp[next] - sp[0];
 		  scpy[1] = sp[next+1] - sp[1];
 		  scpy[2] = sp[next+2] - sp[2];
-		  
+		  /*
 		  t1[0] = sp[2*3]   - sp[3];
 		  t1[1] = sp[2*3+1] - sp[4];
 		  t1[2] = sp[2*3+2] - sp[5];
@@ -3227,13 +3272,14 @@ x3dio_getspinerots(unsigned int splen, float *sp, int sp_closed,
 		  t2[0] = sp[0] - sp[3];
 		  t2[1] = sp[1] - sp[4];
 		  t2[2] = sp[2] - sp[5];
+		  */
 		}
 	      else
 		{
 		  scpy[0] = sp[3] - sp[(splen-2)*3];
 		  scpy[1] = sp[4] - sp[(splen-2)*3+1];
 		  scpy[2] = sp[5] - sp[(splen-2)*3+2];
-
+		  /*
 		  t1[0] = sp[3] - sp[0];
 		  t1[1] = sp[4] - sp[1];
 		  t1[2] = sp[5] - sp[2];
@@ -3241,16 +3287,17 @@ x3dio_getspinerots(unsigned int splen, float *sp, int sp_closed,
 		  t1[0] = sp[(splen-2)*3]   - sp[0];
 		  t1[0] = sp[(splen-2)*3+1] - sp[1];
 		  t1[0] = sp[(splen-2)*3+2] - sp[2];
+		  */
 		} /* if */
 	    } /* if */
 	  if((i > 0) && (i < splen-1))
 	    {
 	      /* middle spine point */
-	      x3dio_getdiffspinepoint(splen, sp, i, &next);
+	      x3dio_getdiffspinepoint(splen, sp, i, 1, &next);
 	      scpy[0] = sp[next*3] - sp[i*3];
 	      scpy[1] = sp[next*3+1] - sp[i*3+1];
 	      scpy[2] = sp[next*3+2] - sp[i*3+2];
-
+	      /*
 	      t1[0] = sp[next*3] - sp[i*3];
 	      t1[1] = sp[next*3+1] - sp[i*3+1];
 	      t1[2] = sp[next*3+2] - sp[i*3+2];
@@ -3258,16 +3305,18 @@ x3dio_getspinerots(unsigned int splen, float *sp, int sp_closed,
 	      t2[0] = sp[(i-1)*3] - sp[i*3];
 	      t2[1] = sp[(i-1)*3+1] - sp[i*3+1];
 	      t2[2] = sp[(i-1)*3+2] - sp[i*3+2];
+	      */
 	    } /* if */
 	  if(i == splen-1)
 	    {
 	      /* last spine point */
 	      if(!sp_closed)
 		{
-		  scpy[0] = sp[(splen-1)*3]   - sp[(splen-2)*3];
-		  scpy[1] = sp[(splen-1)*3+1] - sp[(splen-2)*3+1];
-		  scpy[2] = sp[(splen-1)*3+2] - sp[(splen-2)*3+2];
-
+		  x3dio_getdiffspinepoint(splen, sp, splen-1, -1, &next);
+		  scpy[0] = sp[(splen-1)*3]   - sp[next*3];
+		  scpy[1] = sp[(splen-1)*3+1] - sp[next*3+1];
+		  scpy[2] = sp[(splen-1)*3+2] - sp[next*3+2];
+		  /*
 		  t1[0] = sp[(splen-1)*3]   - sp[(splen-2)*3];
 		  t1[1] = sp[(splen-1)*3+1] - sp[(splen-2)*3+1];
 		  t1[2] = sp[(splen-1)*3+2] - sp[(splen-2)*3+2];
@@ -3275,13 +3324,14 @@ x3dio_getspinerots(unsigned int splen, float *sp, int sp_closed,
 		  t2[0] = sp[(splen-3)*3]   - sp[(splen-2)*3];
 		  t2[1] = sp[(splen-3)*3+1] - sp[(splen-2)*3+1];
 		  t2[2] = sp[(splen-3)*3+2] - sp[(splen-2)*3+2];
+		  */
 		}
 	      else
 		{
 		  scpy[0] = sp[3] - sp[(splen-2)*3];
 		  scpy[1] = sp[4] - sp[(splen-2)*3+1];
 		  scpy[2] = sp[5] - sp[(splen-2)*3+2];
-
+		  /*
 		  t1[0] = sp[3] - sp[0];
 		  t1[1] = sp[4] - sp[1];
 		  t1[2] = sp[5] - sp[2];
@@ -3289,9 +3339,10 @@ x3dio_getspinerots(unsigned int splen, float *sp, int sp_closed,
 		  t1[0] = sp[(splen-2)*3]   - sp[0];
 		  t1[0] = sp[(splen-2)*3+1] - sp[1];
 		  t1[0] = sp[(splen-2)*3+2] - sp[2];
+		  */
 		} /* if */
 	    } /* if */
-
+#if 0
 	  AY_V3CROSS(scpz, t1, t2);
 
 	  /* flip scpz? */
@@ -3305,7 +3356,7 @@ x3dio_getspinerots(unsigned int splen, float *sp, int sp_closed,
 	  memcpy(prevscpz, scpz, 3*sizeof(double));
 
 	  AY_V3CROSS(scpx, scpy, scpz);
-
+#endif
 	  memset(quat, 0, 3*sizeof(double));
 	  quat[3] = 1.0;
 
@@ -3400,6 +3451,8 @@ x3dio_readextrusion(scew_element *element)
  float *sp = NULL, spd[6] = {0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f};
  float *scale = NULL, scaled[2] = {1.0f, 1.0f};
  float *orient = NULL, orientd[4] = {0.0f, 0.0f, 1.0f, 0.0f};
+ float *tcs = NULL;
+ unsigned int tcslen = 0;
  int has_sides = AY_TRUE, has_startcap = AY_TRUE, has_endcap = AY_TRUE;
  int sp_closed = AY_FALSE;
  ay_pomesh_object pomesh = {0};
@@ -3416,6 +3469,16 @@ x3dio_readextrusion(scew_element *element)
     {
       cs = csd;
       cslen = 5;
+    }
+  else
+    {
+      ay_status = x3dio_fixcrosssection(cslen, cs, &tcslen, &tcs);
+      if(tcs)
+	{
+	  free(cs);
+	  cslen = tcslen;
+	  cs = tcs;
+	}
     }
 
   ay_status = x3dio_readfloatpoints(element, "spine", 3,
