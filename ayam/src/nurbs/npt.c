@@ -7445,6 +7445,7 @@ ay_npt_rescaleknvnptcmd(ClientData clientData, Tcl_Interp *interp,
  char fname[] = "rescaleKnNP";
  int i = 1, mode = 0, dim = 0;
  double rmin = 0.0, rmax = 1.0, mindist = 1.0e-04;
+ double oldmin, oldmax;
 
   /* parse args */
   if(argc > 2)
@@ -7508,10 +7509,26 @@ ay_npt_rescaleknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 		{
 		  if(mode)
 		    {
+		      /* save old knot range */
+		      oldmin = patch->uknotv[0];
+		      oldmax = patch->uknotv[patch->width+patch->uorder-1];
+
+		      /* rescale knots */
 		      ay_status = ay_knots_rescaletomindist(patch->width +
 							    patch->uorder,
 							    patch->uknotv,
 							    mindist);
+		      /* scale trim curves */
+		       if(src->down && src->down->next)
+			{
+			  ay_status = ay_npt_rescaletrims(src->down,
+							  0,
+							  oldmin,
+							  oldmax,
+						          patch->uknotv[0],
+				  patch->uknotv[patch->width+patch->uorder-1]);
+
+			}
 
 		    }
 		  else
@@ -7554,10 +7571,27 @@ ay_npt_rescaleknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 		{
 		  if(mode)
 		    {
+		      /* save old knot range */
+		      oldmin = patch->vknotv[0];
+		      oldmax = patch->vknotv[patch->height+patch->vorder-1];
+
+		      /* rescale knots */
 		      ay_status = ay_knots_rescaletomindist(patch->height +
 							    patch->vorder,
 							    patch->vknotv,
 							    mindist);
+
+		      /* scale trim curves */
+		       if(src->down && src->down->next)
+			{
+			  ay_status = ay_npt_rescaletrims(src->down,
+							  1,
+							  oldmin,
+							  oldmax,
+						          patch->vknotv[0],
+				 patch->vknotv[patch->height+patch->vorder-1]);
+
+			}
 		    }
 		  else
 		    {
