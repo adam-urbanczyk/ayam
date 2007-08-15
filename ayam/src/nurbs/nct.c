@@ -800,7 +800,7 @@ ay_nct_refine(ay_nurbcurve_object *curve, double *newknotv, int newknotvlen)
 
 
 /* ay_nct_refinetcmd:
- *
+ *  Tcl interface for NURBS curve refine tool
  */
 int
 ay_nct_refinetcmd(ClientData clientData, Tcl_Interp *interp,
@@ -974,7 +974,7 @@ ay_nct_clamp(ay_nurbcurve_object *curve)
 
 
 /* ay_nct_clamptcmd:
- *
+ *  Tcl interface for NURBS curve clamping tool
  */
 int
 ay_nct_clamptcmd(ClientData clientData, Tcl_Interp *interp,
@@ -1191,7 +1191,7 @@ ay_nct_elevate(ay_nurbcurve_object *curve, int new_order)
 
 
 /* ay_nct_elevatetcmd:
- *
+ *  Tcl interface for NURBS curve order elevation tool
  */
 int
 ay_nct_elevatetcmd(ClientData clientData, Tcl_Interp *interp,
@@ -1338,7 +1338,7 @@ ay_nct_elevatetcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_nct_insertkntcmd:
- *
+ *  Tcl interface for NURBS curve knot insertion tool
  */
 int
 ay_nct_insertkntcmd(ClientData clientData, Tcl_Interp *interp,
@@ -1987,11 +1987,11 @@ ay_nct_split(ay_object *src, double u, ay_object **result)
 
 
 /* ay_nct_splittcmd:
- *
+ *  Tcl interface for NURBS curve split tool
  */
 int
 ay_nct_splittcmd(ClientData clientData, Tcl_Interp *interp,
-		     int argc, char *argv[])
+		 int argc, char *argv[])
 {
  int ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
@@ -2060,7 +2060,7 @@ ay_nct_splittcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_nct_concattcmd:
- *
+ *  Tcl interface for NURBS curve concatenation tool
  */
 int
 ay_nct_concattcmd(ClientData clientData, Tcl_Interp *interp,
@@ -4469,7 +4469,7 @@ ay_nct_toxy(ay_object *c)
 
 
 /* ay_nct_toxytcmd:
- *
+ *  Tcl interface for NURBS curve toxy tool
  */
 int
 ay_nct_toxytcmd(ClientData clientData, Tcl_Interp *interp,
@@ -5094,7 +5094,7 @@ ay_nct_coarsentcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_nct_removekntcmd:
- *
+ *  Tcl interface for NURBS curve knot removal tool
  */
 int
 ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
@@ -5267,7 +5267,7 @@ ay_nct_trim(ay_nurbcurve_object **curve, double umin, double umax)
 
 
 /* ay_nct_trimtcmd:
- *
+ *  Tcl interface for NURBS curve trimming tool
  */
 int
 ay_nct_trimtcmd(ClientData clientData, Tcl_Interp *interp,
