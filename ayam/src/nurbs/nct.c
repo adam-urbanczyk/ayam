@@ -5232,7 +5232,7 @@ ay_nct_trim(ay_nurbcurve_object **curve, double umin, double umax)
   t1.type = AY_IDNCURVE;
   t1.refine = *curve;
 
-  if(umin >= knotmin)
+  if(umin > knotmin)
     {
       ay_status = ay_nct_split(&t1, umin, &t2);
 
@@ -5247,7 +5247,7 @@ ay_nct_trim(ay_nurbcurve_object **curve, double umin, double umax)
       t2 = NULL;
     } /* if */
 
-  if(umax <= knotmax)
+  if(umax < knotmax)
     {
       ay_status = ay_nct_split(&t1, umax, &t2);
 
