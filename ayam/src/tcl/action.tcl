@@ -556,6 +556,38 @@ proc updEditPointDarray { w } {
 }
 # updEditPointDarray
 
+#editPointApply:
+# helper for actionDEditP
+# apply the changes from the dialog
+proc editPointApply { } {
+    global ay
+    upvar #0 editPointDarray array
+
+    set array(x) [.editPointDw.f1.fx.e get]
+    set array(y) [.editPointDw.f1.fy.e get]
+    set array(z) [.editPointDw.f1.fz.e get]
+    set array(w) [.editPointDw.f1.fw.e get]
+
+    if { ($array(x) != $array(x2)) ||
+	 ($array(y) != $array(y2)) ||
+	 ($array(z) != $array(z2)) ||
+	 ($array(w) != $array(w2))} {
+	set array(changed) 1
+	if { [winfo exists $array(window)] } {
+	    undo save DEditPnt
+	    $array(window) dpepac -apply
+	    rV
+	    plb_update
+	} else {
+	    ayError 2 "editPointDp" "Lost window to apply changes to!"
+	}
+    }
+    # if
+
+ return;
+}
+# editPointApply
+
 
 #editPointDp:
 # helper for actionDEditP
@@ -651,32 +683,8 @@ proc editPointDp { } {
     updEditPointDarray $w
 
     set f [frame $w.f2]
-    button $f.bok -text "Apply" -width 5 -pady $ay(pady) -command { 
-	global ay
-	upvar #0 editPointDarray array
-
-	set array(x) [.editPointDw.f1.fx.e get]
-	set array(y) [.editPointDw.f1.fy.e get]
-	set array(z) [.editPointDw.f1.fz.e get]
-	set array(w) [.editPointDw.f1.fw.e get]
-
-	if { ($array(x) != $array(x2)) ||
-	($array(y) != $array(y2)) ||
-	($array(z) != $array(z2)) ||
-	($array(w) != $array(w2))} {
-	    set array(changed) 1
-	    if { [winfo exists $array(window)] } {
-		undo save DEditPnt
-		$array(window) dpepac -apply
-		rV
-		plb_update
-	    } else {
-		ayError 2 "editPointDp" "Lost window to apply changes to!"
-	    }
-	}
-
-    }
-
+    button $f.bok -text "Apply" -width 5 -pady $ay(pady)\
+	-command editPointApply
     button $f.bca -text "Cancel" -width 5 -pady $ay(pady) -command "\
 	    global ay;\
 	    if { [winfo exists \$ay(currentView)] } {\
@@ -692,6 +700,9 @@ proc editPointDp { } {
 
     # Esc-Key == Cancel button
     bind $w <Escape> "$w.f2.bca invoke"
+
+    bind $w <Key-Return> editPointApply
+    catch {bind $f.e <Key-KP_Enter> editPointApply}
 
  return;
 }
