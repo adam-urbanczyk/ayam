@@ -503,6 +503,10 @@ int ay_npt_clamputcmd(ClientData clientData, Tcl_Interp *interp,
 int ay_npt_clampvtcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
 
+int ay_npt_rescaletrims(ay_object *trim,
+			int mode, double omin, double omax,
+			double nmin, double nmax);
+
 int ay_npt_rescaleknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 			    int argc, char *argv[]);
 
