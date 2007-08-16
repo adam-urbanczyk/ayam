@@ -293,8 +293,10 @@ mopsi_rioptions(FILE *fileptr, int insert)
   fscanf(fileptr,"%lg\n",&riopt->Samples_Y);
   fscanf(fileptr,"%d\n",&itemp);
   riopt->FilterFunc = (char)itemp;
-  fscanf(fileptr,"%d\n",&riopt->FilterWidth);
-  fscanf(fileptr,"%d\n",&riopt->FilterHeight);
+  fscanf(fileptr,"%d\n",&itemp);
+  riopt->FilterWidth = (double)itemp;
+  fscanf(fileptr,"%d\n",&itemp);
+  riopt->FilterHeight = (double)itemp;
   fscanf(fileptr,"%lg\n",&riopt->ExpGain);
   fscanf(fileptr,"%lg\n",&riopt->ExpGamma);
   fscanf(fileptr,"%lg\n",&riopt->RGBA_ONE);
