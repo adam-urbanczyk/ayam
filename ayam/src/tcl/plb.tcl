@@ -620,6 +620,8 @@ proc plb_showprop { prop } {
 
     $l selection clear 0 end
 
+    update
+
     if { $prop == 0 } {
 	$l selection set [expr $len - 1]
     } else {
