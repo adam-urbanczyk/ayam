@@ -23,10 +23,6 @@ int ay_npt_rescaletrim(ay_object *trim,
 		       int mode, double omin, double omax,
 		       double nmin, double nmax);
 
-int ay_npt_rescaletrims(ay_object *trim,
-			int mode, double omin, double omax,
-			double nmin, double nmax);
-
 /* functions */
 
 /* ay_npt_create:
@@ -7519,7 +7515,7 @@ ay_npt_rescaleknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 							    patch->uknotv,
 							    mindist);
 		      /* scale trim curves */
-		       if(src->down && src->down->next)
+		      if(src->down && src->down->next)
 			{
 			  ay_status = ay_npt_rescaletrims(src->down,
 							  0,
