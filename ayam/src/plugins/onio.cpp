@@ -129,7 +129,7 @@ static int onio_w2c(int,        // w_count = number of wide chars to convert
                 char*           // array of at least c_count+1 characters
                 );
 
-int onio_readnurbssurface(ON_NurbsSurface *p_s);
+int onio_readnurbssurface(ON_NurbsSurface *p_s, bool from_brep);
 
 int onio_readnurbscurve(ON_NurbsCurve *p_c);
 
@@ -2217,7 +2217,7 @@ static int onio_w2c( int w_count,
 // onio_readnurbssurface:
 //
 int
-onio_readnurbssurface(ON_NurbsSurface *p_s)
+onio_readnurbssurface(ON_NurbsSurface *p_s, bool from_brep)
 {
  int ay_status = AY_OK;
  int width, height, i, j, a, b, stride;
@@ -2314,7 +2314,7 @@ onio_readnurbssurface(ON_NurbsSurface *p_s)
   vknotv[height+p_s->m_order[1]-1] = vknotv[height+p_s->m_order[1]-2];
 
   // rescale knots to safe distance?
-  if(onio_rescaleknots != 0.0)
+  if(!from_brep && (onio_rescaleknots != 0.0))
     {
       ay_knots_rescaletomindist(width+p_s->m_order[0], uknotv,
 				onio_rescaleknots);
@@ -2575,6 +2575,7 @@ onio_readbrep(ON_Brep *p_b, double accuracy)
  const ON_Surface* p_s = NULL;
  ay_object *olo = NULL, *lo = NULL, *o, *lf;
  ay_level_object *level = NULL;
+ ay_nurbpatch_object *np;
 
   if(p_b->m_F.Count() > 1)
     {
@@ -2604,6 +2605,7 @@ onio_readbrep(ON_Brep *p_b, double accuracy)
 
   for(i = 0; i < p_b->m_F.Count(); ++i)
     {
+      np = NULL;
       const ON_BrepFace& face = p_b->m_F[i];
 
       if(face.m_si < 0 || face.m_si >= p_b->m_S.Count())
@@ -2623,8 +2625,11 @@ onio_readbrep(ON_Brep *p_b, double accuracy)
 
       if(p_s->GetNurbForm(s, accuracy))
 	{
-	  ay_status = onio_readnurbssurface(&s);
+	  lf = NULL;
+	  ay_status = onio_readnurbssurface(&s, true);
 	  lf = onio_lrobject;
+	  if(lf && lf->type == AY_IDNPATCH)
+	    np = (ay_nurbpatch_object*)lf->refine;
 	}
       else
 	{
@@ -2806,6 +2811,39 @@ onio_readbrep(ON_Brep *p_b, double accuracy)
 	      // yes
 	      ay_next = &(lo->next);
 	    } // if
+
+	  // rescale knots to safe distance?
+	  if(onio_rescaleknots != 0.0)
+	    {
+	      double oldmin, oldmax;
+	      oldmin = np->uknotv[0];
+	      oldmax = np->uknotv[np->width+np->uorder-1];
+
+	      ay_knots_rescaletomindist(np->width+np->uorder, np->uknotv,
+					onio_rescaleknots);
+
+	      if(lf->down && lf->down->next)
+		{
+		  ay_status = ay_npt_rescaletrims(lf->down, 0, oldmin, oldmax,
+						  np->uknotv[0],
+				          np->uknotv[np->width+np->uorder-1]);
+		}
+
+	      oldmin = np->vknotv[0];
+	      oldmax = np->vknotv[np->height+np->vorder-1];
+
+	      ay_knots_rescaletomindist(np->height+np->vorder, np->vknotv,
+					onio_rescaleknots);
+
+	      if(lf->down && lf->down->next)
+		{
+		  ay_status = ay_npt_rescaletrims(lf->down, 1, oldmin, oldmax,
+						  np->vknotv[0],
+					  np->vknotv[np->height+np->vorder-1]);
+
+		}
+	    } // if
+
 	} // for
 
       if(onio_lrobject && onio_lrobject->down)
@@ -3107,12 +3145,12 @@ onio_readobject(ONX_Model *p_m, const ON_Object *p_o, double accuracy)
       break;
     case ON::surface_object:
       if(ON_NurbsSurface::Cast(p_o))
-	ay_status = onio_readnurbssurface((ON_NurbsSurface*)p_o);
+	ay_status = onio_readnurbssurface((ON_NurbsSurface*)p_o, false);
       if(ON_RevSurface::Cast(p_o))
 	{
 	  if((ON_RevSurface::Cast(p_o))->GetNurbForm(s, accuracy))
 	    {
-	      ay_status = onio_readnurbssurface(&s);
+	      ay_status = onio_readnurbssurface(&s, false);
 	    }
 	  else
 	    {
@@ -3123,7 +3161,7 @@ onio_readobject(ONX_Model *p_m, const ON_Object *p_o, double accuracy)
 	{
 	  if((ON_SumSurface::Cast(p_o))->GetNurbForm(s, accuracy))
 	    {
-	      ay_status = onio_readnurbssurface(&s);
+	      ay_status = onio_readnurbssurface(&s, false);
 	    }
 	  else
 	    {
@@ -3134,7 +3172,7 @@ onio_readobject(ONX_Model *p_m, const ON_Object *p_o, double accuracy)
 	{
 	  if((ON_PlaneSurface::Cast(p_o))->GetNurbForm(s, accuracy))
 	    {
-	      ay_status = onio_readnurbssurface(&s);
+	      ay_status = onio_readnurbssurface(&s, false);
 	    }
 	  else
 	    {
@@ -3146,7 +3184,7 @@ onio_readobject(ONX_Model *p_m, const ON_Object *p_o, double accuracy)
 	{
 	  if((ON_BezierSurface::Cast(p_o)->GetNurbForm(s, accuracy))
             {
-	      ay_status = onio_readnurbssurface(&s);
+	      ay_status = onio_readnurbssurface(&s, false);
             {
 	  else
 	    {
