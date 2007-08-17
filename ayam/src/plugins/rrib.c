@@ -911,16 +911,6 @@ ay_rrib_RiNuPatch(RtInt nu, RtInt uorder, RtFloat uknot[],
   if((vmin > np.vknotv[np.vorder]) || (vmax < np.vknotv[np.height]))
     ay_knots_setvminmax(&ay_rrib_co, vmin, vmax);
 
-  /* rescale knots to safe distance? */
-  if(rrib_rescaleknots > 0.0)
-    {
-      ay_knots_rescaletomindist(np.width + np.uorder, np.uknotv,
-				rrib_rescaleknots);
-
-      ay_knots_rescaletomindist(np.height + np.vorder, np.vknotv,
-				rrib_rescaleknots);
-    }
-
   ay_rrib_co.parent = AY_TRUE;
   ay_rrib_co.hide_children = AY_TRUE;
   ay_rrib_linkobject((void *)(&np), AY_IDNPATCH);
@@ -5520,8 +5510,10 @@ void
 ay_rrib_linkobject(void *object, int type)
 {
  ay_object *o = NULL, *t = NULL;
+ ay_nurbpatch_object *np = NULL;
  int ay_status = AY_OK;
  char *fname = "ay_rrib_linkobject";
+ double oldmin, oldmax;
 
   ay_rrib_co.refine = object;
   ay_rrib_co.type = type;
@@ -5574,6 +5566,46 @@ ay_rrib_linkobject(void *object, int type)
 
   ay_status = ay_object_copy(&ay_rrib_co, &o);
   ay_status = ay_object_link(o);
+
+  if(type == AY_IDNPATCH)
+    {
+      /* rescale knots to safe distance? */
+      if(rrib_rescaleknots > 0.0)
+	{
+	  np = (ay_nurbpatch_object *)o->refine;
+	  /* save old knot range */
+	  oldmin = np->uknotv[0];
+	  oldmax = np->uknotv[np->width+np->uorder-1];
+
+	  /* rescale knots */
+	  ay_knots_rescaletomindist(np->width + np->uorder, np->uknotv,
+				    rrib_rescaleknots);
+
+	  /* scale trim curves */
+	  if(o->down && o->down->next)
+	    {
+	      ay_status = ay_npt_rescaletrims(o->down, 0, oldmin, oldmax,
+					      np->uknotv[0],
+				 np->uknotv[np->width+np->uorder-1]);
+	    }
+
+	  /* save old knot range */
+	  oldmin = np->vknotv[0];
+	  oldmax = np->vknotv[np->height+np->vorder-1];
+
+	  /* rescale knots */
+	  ay_knots_rescaletomindist(np->height + np->vorder, np->vknotv,
+				    rrib_rescaleknots);
+
+	  /* scale trim curves */
+	  if(o->down && o->down->next)
+	    {
+	      ay_status = ay_npt_rescaletrims(o->down, 0, oldmin, oldmax,
+					      np->vknotv[0],
+				 np->vknotv[np->height+np->vorder-1]);
+	    }
+	} /* if */
+    } /* if */
 
   ay_rrib_lrobject = o;
 
