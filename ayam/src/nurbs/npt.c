@@ -5370,23 +5370,23 @@ ay_npt_gordon(ay_object *cu, ay_object *cv, ay_object *in,
 	 corners of the intersections array, we need them in any case */
       nc = (ay_nurbcurve_object *)cu->refine;
       i = 0;
-      ay_nb_CurvePoint4D(nc->length-1, nc->order-1, nc->knotv, nc->controlv,
+      ay_nb_CurvePoint3D(nc->length-1, nc->order-1, nc->knotv, nc->controlv,
 			 nc->knotv[nc->order-1], &(intersections[i]));
-      intersections[i+3] = 1.0;
+      intersections[i+3] = nc->controlv[3];
       i = (numcv-1)*numcu*4;
-      ay_nb_CurvePoint4D(nc->length-1, nc->order-1, nc->knotv, nc->controlv,
+      ay_nb_CurvePoint3D(nc->length-1, nc->order-1, nc->knotv, nc->controlv,
 			 nc->knotv[nc->length], &(intersections[i]));
-      intersections[i+3] = 1.0;
+      intersections[i+3] = nc->controlv[(nc->length-1)*4+3];
 
       nc = (ay_nurbcurve_object *)lcu->refine;
       i = (numcu-1)*4;
-      ay_nb_CurvePoint4D(nc->length-1, nc->order-1, nc->knotv, nc->controlv,
+      ay_nb_CurvePoint3D(nc->length-1, nc->order-1, nc->knotv, nc->controlv,
 			 nc->knotv[nc->order-1], &(intersections[i]));
-      intersections[i+3] = 1.0;
+      intersections[i+3] = nc->controlv[3];
       i = (numcu*numcv-1)*4;
-      ay_nb_CurvePoint4D(nc->length-1, nc->order-1, nc->knotv, nc->controlv,
+      ay_nb_CurvePoint3D(nc->length-1, nc->order-1, nc->knotv, nc->controlv,
 			 nc->knotv[nc->length], &(intersections[i]));
-      intersections[i+3] = 1.0;
+      intersections[i+3] = nc->controlv[(nc->length-1)*4+3];
 
       /* first, check for some easy cases */
       if((numcu == 2) && (numcv == 2))
