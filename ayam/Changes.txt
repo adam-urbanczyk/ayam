@@ -1,4 +1,4 @@
-[27. Jul 2007] CVS-Head:
+[17. Aug 2007] CVS-Head:
 =======================
 o Bug Fixes:
   - crash after deleting of objects (SF 1637735)
@@ -29,6 +29,7 @@ o Bug Fixes:
   - STESS tesselation after certain NURBS curve modelling tools (SF 1690799)
   - first view does not appear in the tree view (SF 1695151)
   - crash when elevating non-clamped NURBS patches (SF 1701803)
+  - incorrectly drawn lights with light shaders (SF 1764817)
 
 GUI:
 o fixed select background color when changed via X resources (backported
@@ -39,6 +40,8 @@ o added tag type "RP" to block access to certain properties of an object
 o ExtrNC objects may no longer, erroneously, be associated with materials
 o improved handling of AutoFocus in various dialogs
 o added last used tool facility to Tools main menu
+o added keyboard shortcuts to set point coordinates in the direct point
+  editing dialog (using <Return> or <Enter>)
 
 Modelling:
 o added "Revert" parameter to ExtrNC object
@@ -86,6 +89,9 @@ o files may now be imported using the normal "File/Open" and "File/Insert"
 o likewise, scenes may be exported using "File/Save as" and choosing a
   filename with an extension
 o improved scalefactor option usage in rrib plugin
+o added option to write binary 3DMF files
+o added ReadCurves/WriteCurves/WriteSelected/ScaleFactor options to 3DMF
+  import/export
 
 Scripts/Scripting Interface:
 o added example script "toPoly" that allows to easily convert the whole
@@ -96,6 +102,10 @@ o improved error detection and reporting of "withOb" command
 o renamed getPnt option -u to -p and added support to get surface points
 o added special keyboard shortcut <Shift-Enter> to the console that
   executes the current command, updates the GUI, and redraws all views
+
+Platform Support:
+Apple Mac OS X (Aqua):
+o fixed keyboard shortcuts to quickly switch property GUIs (numeric keypad)
 
 
 [1. Jan 2007] Ayam 1.12:
