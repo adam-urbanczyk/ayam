@@ -4186,6 +4186,7 @@ x3dio_readnurbspatchsurface(scew_element *element, int trimmed)
  ay_object *o, **old_aynext;
  float *cv = NULL;
  double *dcv = NULL, *w = NULL, *uknots = NULL, *vknots = NULL;
+ double oldmin, oldmax;
  unsigned int i, len = 0, wlen = 0, uklen = 0, vklen = 0;
  int width = 0, height = 0, uorder = 3, vorder = 3, stride = 4;
  int has_weights = AY_FALSE, has_uknots = AY_FALSE, has_vknots = AY_FALSE;
@@ -4220,7 +4221,7 @@ x3dio_readnurbspatchsurface(scew_element *element, int trimmed)
     {
       has_uknots = AY_TRUE;
       /* rescale knots to safe distance? */
-      if(x3dio_rescaleknots != 0.0)
+      if(!trimmed && x3dio_rescaleknots != 0.0)
 	{
 	  ay_knots_rescaletomindist(uklen, uknots, x3dio_rescaleknots);
 	}
@@ -4230,7 +4231,7 @@ x3dio_readnurbspatchsurface(scew_element *element, int trimmed)
     {
       has_vknots = AY_TRUE;
       /* rescale knots to safe distance? */
-      if(x3dio_rescaleknots != 0.0)
+      if(!trimmed && x3dio_rescaleknots != 0.0)
 	{
 	  ay_knots_rescaletomindist(vklen, vknots, x3dio_rescaleknots);
 	}
@@ -4353,6 +4354,44 @@ x3dio_readnurbspatchsurface(scew_element *element, int trimmed)
 	    {
 	      ay_object_crtendlevel(&(o->down));
 	    }
+
+	  /* rescale knots to safe distance? */
+	  if(x3dio_rescaleknots > 0.0)
+	    {
+	      /* save old knot range */
+	      oldmin = np.uknotv[0];
+	      oldmax = np.uknotv[np.width+np.uorder-1];
+
+	      /* rescale knots */
+	      ay_knots_rescaletomindist(np.width + np.uorder, np.uknotv,
+					x3dio_rescaleknots);
+
+	      /* scale trim curves */
+	      if(o->down && o->down->next)
+		{
+		  ay_status = ay_npt_rescaletrims(o->down, 0, oldmin, oldmax,
+						  np.uknotv[0],
+					  np.uknotv[np.width+np.uorder-1]);
+		}
+
+	      /* save old knot range */
+	      oldmin = np.vknotv[0];
+	      oldmax = np.vknotv[np.height+np.vorder-1];
+
+	      /* rescale knots */
+	      ay_knots_rescaletomindist(np.height + np.vorder, np.vknotv,
+					x3dio_rescaleknots);
+
+	      /* scale trim curves */
+	      if(o->down && o->down->next)
+		{
+		  ay_status = ay_npt_rescaletrims(o->down, 0, oldmin, oldmax,
+						  np.vknotv[0],
+				 np.vknotv[np.height+np.vorder-1]);
+		}
+
+	    } /* if */
+
 	  ay_next = old_aynext;
 	}
       else
