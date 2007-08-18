@@ -3222,7 +3222,7 @@ cleanup:
 /* objio_fixnpatch:
  *  fix row/column major order in np controlv (from Wavefront to Ayam style);
  *  additionally, multiply the weights in for rational vertices
- *  XXXX to be done: improve the knot vector (type, GLU compat)
+ *  XXXX to be done: improve the knot vector (type)
  */
 int
 objio_fixnpatch(ay_nurbpatch_object *np)
@@ -3261,14 +3261,6 @@ objio_fixnpatch(ay_nurbpatch_object *np)
   np->controlv = v;
 
   np->is_rat = ay_npt_israt(np);
-
-  if(objio_rescaleknots != 0.0)
-    {
-      ay_knots_rescaletomindist(np->width+np->uorder, np->uknotv,
-				objio_rescaleknots);
-      ay_knots_rescaletomindist(np->height+np->vorder, np->vknotv,
-				objio_rescaleknots);
-    }
 
  return ay_status;
 } /* objio_fixnpatch */
@@ -3322,6 +3314,8 @@ objio_readend(void)
 {
  int ay_status = AY_OK;
  ay_object *newo = NULL, *o = NULL;
+ ay_nurbpatch_object *np = NULL;
+ double oldmin, oldmax;
 
   switch(objio_curvtrimsurf)
     {
@@ -3432,6 +3426,44 @@ objio_readend(void)
 	{
 	  ay_status = ay_object_crtendlevel(&(o->down));
 	} /* if */
+
+      /* rescale knot vectors */
+      if(objio_rescaleknots > 0.0)
+	{
+	  np = (ay_nurbpatch_object *)o->refine;
+
+	  /* save old knot range */
+	  oldmin = np->uknotv[0];
+	  oldmax = np->uknotv[np->width+np->uorder-1];
+
+	  /* rescale knots */
+	  ay_knots_rescaletomindist(np->width+np->uorder, np->uknotv,
+				    objio_rescaleknots);
+	  /* scale trim curves */
+	  if(o->down && o->down->next)
+	    {
+	      ay_status = ay_npt_rescaletrims(o->down, 0, oldmin, oldmax,
+					      np->uknotv[0],
+				 np->uknotv[np->width+np->uorder-1]);
+	    }
+
+	  /* save old knot range */
+	  oldmin = np->vknotv[0];
+	  oldmax = np->vknotv[np->height+np->vorder-1];
+
+	  /* rescale knots */
+	  ay_knots_rescaletomindist(np->height+np->vorder, np->vknotv,
+				    objio_rescaleknots);
+
+	  /* scale trim curves */
+	  if(o->down && o->down->next)
+	    {
+	      ay_status = ay_npt_rescaletrims(o->down, 0, oldmin, oldmax,
+					      np->vknotv[0],
+				 np->vknotv[np->height+np->vorder-1]);
+	    }
+
+	} /* if*/
 
       /* add texture coordinates (as PV tags) */
       if(objio_texturesv)
