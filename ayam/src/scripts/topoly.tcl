@@ -28,6 +28,9 @@ proc toPoly { } {
     }
     # if
 
+    $ay(plb) selection clear 0 end
+    update
+
     ayError 4 "toPoly" "Starting conversion. Please wait."
 
     mouseWatch 1 {. .tbw}
