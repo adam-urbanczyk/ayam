@@ -151,9 +151,13 @@ proc mfio_export { } {
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
 
-    if { $ay(filename) != "" &&\
-	    $mfio_options(FileName) == "unnamed.3dmf" } {
-	set mfio_options(FileName) [file rootname $ay(filename)].3dmf
+    if { $mfio_options(filename) != "" } {
+	set mfio_options(FileName) $mfio_options(filename)
+    } else {
+	if { $ay(filename) != "" &&\
+		 $mfio_options(FileName) == "unnamed.3dmf" } {
+	    set mfio_options(FileName) [file rootname $ay(filename)].3dmf
+	}
     }
 
     set ay(iapplydisable) 1

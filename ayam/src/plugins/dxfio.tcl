@@ -156,9 +156,13 @@ proc dxfio_export { } {
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
 
-    if { $ay(filename) != "" &&\
-	    $dxfio_options(FileName) == "unnamed.dxf" } {
-	set dxfio_options(FileName) [file rootname $ay(filename)].dxf
+    if { $dxfio_options(filename) != "" } {
+	set dxfio_options(FileName) $dxfio_options(filename)
+    } else {
+	if { $ay(filename) != "" &&\
+		 $dxfio_options(FileName) == "unnamed.dxf" } {
+	    set dxfio_options(FileName) [file rootname $ay(filename)].dxf
+	}
     }
 
     set ay(iapplydisable) 1

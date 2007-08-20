@@ -175,9 +175,13 @@ proc x3dio_export { } {
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
 
-    if { $ay(filename) != "" &&\
-	    $x3dio_options(FileName) == "unnamed.x3d" } {
-	set x3dio_options(FileName) [file rootname $ay(filename)].x3d
+    if { $x3dio_options(filename) != "" } {
+	set x3dio_options(FileName) $x3dio_options(filename)
+    } else {
+	if { $ay(filename) != "" &&\
+		 $x3dio_options(FileName) == "unnamed.x3d" } {
+	    set x3dio_options(FileName) [file rootname $ay(filename)].x3d
+	}
     }
 
     set ay(iapplydisable) 1
