@@ -13,7 +13,7 @@ uplevel #0 { array set onio_options {
     Accuracy 1.0e-12
     ReadCurves 1
     ReadLayers -1
-    IgnoreFirstTrim 0
+    IgnoreSimpleTrim 0
     WriteSelected 0
     ObeyNoExport 1
     IgnoreHidden 1
@@ -66,7 +66,7 @@ proc onio_import { } {
 
     addParam $f onio_options Accuracy [list 0.0 1.0e-12 0.1 1]
     addCheck $f onio_options ReadCurves
-    addCheck $f onio_options IgnoreFirstTrim
+    addCheck $f onio_options IgnoreSimpleTrim
     addParam $f onio_options ReadLayers [list -1 1 1-10]
     addParam $f onio_options RescaleKnots [list 0.0 1.0e-4]
     addString $f onio_options STagName
@@ -87,7 +87,7 @@ proc onio_import { } {
 	    -a $onio_options(Accuracy)\
 	    -c $onio_options(ReadCurves)\
 	    -l $onio_options(ReadLayers)\
-	    -i $onio_options(IgnoreFirstTrim)\
+	    -i $onio_options(IgnoreSimpleTrim)\
 	    -r $onio_options(RescaleKnots)\
 	    -f $onio_options(ScaleFactor)\
 	    -t $onio_options(STagName) $onio_options(TTagName)
