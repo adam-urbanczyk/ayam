@@ -62,7 +62,7 @@ proc toPoly { } {
 
 # attach to custom menu
 global ay
-$ay(cm) add command -label "Convert All to PolyMesh" -command {
+$ay(cm) add command -label "ToPolyMesh" -command {
     toPoly; uS; rV; }
 
 # attach to tool window
