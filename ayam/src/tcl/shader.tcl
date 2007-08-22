@@ -467,19 +467,24 @@ proc shader_setDefaultsXML { type } {
 # shader_setDefaults:
 #  reset all parameters to shader default values
 proc shader_setDefaults { type } {
-    global ay_shader AYUSESLCARGS AYUSESLXARGS
+    global ay ay_shader AYUSESLCARGS AYUSESLXARGS
 
     if { $ay_shader(Name) == "" } { return; }
 
     set shaderarguments ""
     set ay_error 0
 
-    if { $AYUSESLCARGS == 1 } {
-	shaderScanSLC $ay_shader(Name) shaderarguments
-    }
+    if { $ay(sext) != "" } {
+	shaderScan $ay_shader(Name) shaderarguments
+	update
+    } else {
+	if { $AYUSESLCARGS == 1 } {
+	    shaderScanSLC $ay_shader(Name) shaderarguments
+	}
 
-    if { $AYUSESLXARGS == 1 } {
-	shaderScanSLX $ay_shader(Name) shaderarguments
+	if { $AYUSESLXARGS == 1 } {
+	    shaderScanSLX $ay_shader(Name) shaderarguments
+	}
     }
 
     if { $ay_error > 1 } {
