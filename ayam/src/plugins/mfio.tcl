@@ -63,7 +63,7 @@ proc mfio_import { } {
     addParam $f mfio_options ScaleFactor [list 0.01 0.1 1.0 10.0 100.0]
     addCheck $f mfio_options ReadCurves
 #    addCheck $f mfio_options IgnoreFirstTrim
-#    addParam $f mfio_options RescaleKnots [list 0.0 1.0e-4]
+    addParam $f mfio_options RescaleKnots [list 0.0 1.0e-4]
 #    addString $f mfio_options STagName
 #    addString $f mfio_options TTagName
 #    addProgress $f mfio_options Progress
