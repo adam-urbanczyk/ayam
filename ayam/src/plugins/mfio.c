@@ -1,7 +1,7 @@
 /*
  * Ayam, a free 3D modeler for the RenderMan interface.
  *
- * Ayam is copyrighted 1998-2002 by Randolf Schultz
+ * Ayam is copyrighted 1998-2007 by Randolf Schultz
  * (rschultz@informatik.uni-rostock.de) and others.
  *
  * All rights reserved.
@@ -19,6 +19,7 @@
 
 /* global variables and structs: */
 static ay_object *ay_mfio_lastreadobject;
+static ay_object *ay_mfio_trimmedpatch;
 
 static MF3DErr ay_mfio_mf3d_errno;
 
@@ -38,6 +39,8 @@ static int mfio_readcurves = AY_TRUE;
 static int mfio_writecurves = AY_TRUE;
 static int mfio_dataformat = AY_FALSE;
 static double mfio_scalefactor = 1.0;
+static double mfio_rescaleknots = 0.0;
+static int mfio_readtrims = AY_FALSE;
 
 /*
 static int export_colors;
@@ -47,7 +50,11 @@ int ay_mfio_registerreadcb(char *type, ay_mfio_readcb *cb);
 
 int ay_mfio_readnurbcurve(MF3DVoidObjPtr object);
 
+int ay_mfio_readnurbcurve2d(MF3DVoidObjPtr object);
+
 int ay_mfio_readnurbpatch(MF3DVoidObjPtr object);
+
+int ay_mfio_readtrim(MF3DVoidObjPtr object);
 
 int ay_mfio_readpolyline(MF3DVoidObjPtr object);
 
@@ -194,6 +201,7 @@ ay_mfio_readnurbpatch(MF3DVoidObjPtr object)
  int width, height, i, j, a, b;
  double *controlv = NULL;
  double *uknotv = NULL, *vknotv = NULL;
+ double oldmin, oldmax;
  MF3DNurbPatchObjPtr o = (MF3DNurbPatchObjPtr) object;
  ay_nurbpatch_object *patch = NULL;
  ay_object *newo = NULL;
@@ -252,6 +260,9 @@ ay_mfio_readnurbpatch(MF3DVoidObjPtr object)
     { free(controlv); free(uknotv); free(vknotv); return AY_EOMEM; }
 
   newo->type = AY_IDNPATCH;
+  newo->parent = AY_TRUE;
+  newo->hide_children = AY_TRUE;
+  newo->inherit_trafos = AY_FALSE;
   newo->refine = patch;
 
   ay_status = ay_object_link(newo);
@@ -270,8 +281,62 @@ ay_mfio_readnurbpatch(MF3DVoidObjPtr object)
   newo->hide_children = AY_TRUE;
   newo->inherit_trafos = AY_FALSE;
 
+  /* rescale knots to safe distance? */
+  if(mfio_rescaleknots > 0.0)
+    {
+      /* save old knot range */
+      oldmin = patch->uknotv[0];
+      oldmax = patch->uknotv[patch->width+patch->uorder-1];
+
+      /* rescale knots */
+      ay_knots_rescaletomindist(patch->width + patch->uorder, patch->uknotv,
+				mfio_rescaleknots);
+
+      /* scale trim curves */
+      if(newo->down && newo->down->next)
+	{
+	  ay_status = ay_npt_rescaletrims(newo->down, 0, oldmin, oldmax,
+					  patch->uknotv[0],
+				 patch->uknotv[patch->width+patch->uorder-1]);
+	}
+
+      /* save old knot range */
+      oldmin = patch->vknotv[0];
+      oldmax = patch->vknotv[patch->height+patch->vorder-1];
+
+      /* rescale knots */
+      ay_knots_rescaletomindist(patch->height + patch->vorder, patch->vknotv,
+				mfio_rescaleknots);
+
+      /* scale trim curves */
+      if(newo->down && newo->down->next)
+	{
+	  ay_status = ay_npt_rescaletrims(newo->down, 0, oldmin, oldmax,
+					  patch->vknotv[0],
+			        patch->vknotv[patch->height+patch->vorder-1]);
+	}
+    } /* if */
+
  return ay_status;
 } /* ay_mfio_readnurbpatch */
+
+
+/* ay_mfio_readtrim:
+ *
+ */
+int
+ay_mfio_readtrim(MF3DVoidObjPtr object)
+{
+ int ay_status = AY_OK;
+
+  mfio_readtrims = AY_TRUE;
+
+  ay_mfio_trimmedpatch = ay_mfio_lastreadobject;
+
+  ay_next = &(ay_mfio_lastreadobject->down);
+
+ return ay_status;
+} /* ay_mfio_readtrim */
 
 
 /* ay_mfio_readnurbcurve:
@@ -326,6 +391,14 @@ ay_mfio_readnurbcurve(MF3DVoidObjPtr object)
   if(ay_status)
     { free(controlv); free(knotv); return ay_status; }
 
+
+  /* rescale knots to safe distance? */
+  if(mfio_rescaleknots > 0.0)
+    {
+      ay_knots_rescaletomindist(curve->length + curve->order, curve->knotv,
+				mfio_rescaleknots);
+    }
+
   /* link the new curve into the hierarchy */
   if(!(newo = calloc(1, sizeof(ay_object))))
     { free(controlv); free(knotv); return AY_EOMEM; }
@@ -347,6 +420,89 @@ ay_mfio_readnurbcurve(MF3DVoidObjPtr object)
 
  return ay_status;
 } /* ay_mfio_readnurbcurve */
+
+
+/* ay_mfio_readnurbcurve2d:
+ *
+ */
+int
+ay_mfio_readnurbcurve2d(MF3DVoidObjPtr object)
+{
+ int ay_status = AY_OK;
+ int length, i, a, b;
+ double *controlv = NULL;
+ double *knotv = NULL;
+ MF3DNURBCurve2DObjPtr o = (MF3DNURBCurve2DObjPtr) object;
+ ay_nurbcurve_object *curve = NULL;
+ ay_object *newo = NULL;
+
+  if(!mfio_readcurves)
+    { return AY_OK; }
+
+  /* get some info about the curve */
+  length = o->nPoints;
+
+  /* alloc new (safe) memory */
+  if(!(controlv = calloc(length*4, sizeof(double))))
+    return AY_EOMEM;
+  if(!(knotv = calloc(length+o->order, sizeof(double))))
+    { free(controlv); return AY_EOMEM; }
+
+  /* copy data into new (safe) memory */
+  a = 0; b = 0;
+  for(i = 0; i < length; i++)
+    {
+      controlv[b++] = (o->points)[a].x;
+      controlv[b++] = (o->points)[a].y;
+      b++;
+      controlv[b++] = (o->points)[a].w;
+      a++;
+    } /* for */
+
+  a = 0;
+  for(i=0;i<length+(signed)o->order;i++)
+    {
+      knotv[a] = (o->knots)[a];
+      a++;
+    } /* for */
+
+  /* now create a NURBCurve */
+  ay_status = ay_nct_create(o->order, length,
+			    AY_KTCUSTOM, controlv, knotv,
+			    &curve);
+
+  if(ay_status)
+    { free(controlv); free(knotv); return ay_status; }
+
+
+  /* rescale knots to safe distance? */
+  if(mfio_rescaleknots > 0.0)
+    {
+      ay_knots_rescaletomindist(curve->length + curve->order, curve->knotv,
+				mfio_rescaleknots);
+    }
+
+  /* link the new curve into the hierarchy */
+  if(!(newo = calloc(1, sizeof(ay_object))))
+    { free(controlv); free(knotv); return AY_EOMEM; }
+
+  newo->type = AY_IDNCURVE;
+  newo->refine = curve;
+
+  ay_status = ay_object_link(newo);
+
+  if(ay_status)
+    {
+      ay_object_delete(newo);
+      return ay_status;
+    }
+
+  ay_mfio_lastreadobject = newo;
+
+  ay_status = ay_object_defaults(newo);
+
+ return ay_status;
+} /* ay_mfio_readnurbcurve2d */
 
 
 /* ay_mfio_readpolyline:
@@ -1112,7 +1268,7 @@ int
 ay_mfio_readscal(MF3DVoidObjPtr object)
 {
  int ay_status = AY_OK;
- ay_object *o = ay_currentlevel->object;
+ ay_object *o = ay_currentlevel->next->object;
  MF3DScaleObjPtr t = (MF3DScaleObjPtr) object;
 
  if(!o)
@@ -1133,7 +1289,7 @@ int
 ay_mfio_readtran(MF3DVoidObjPtr object)
 {
  int ay_status = AY_OK;
- ay_object *o = ay_currentlevel->object;
+ ay_object *o = ay_currentlevel->next->object;
  MF3DTranslateObjPtr t = (MF3DTranslateObjPtr) object;
 
  if(!o)
@@ -1154,7 +1310,7 @@ int
 ay_mfio_readrot(MF3DVoidObjPtr object)
 {
  int ay_status = AY_OK;
- ay_object *o = ay_currentlevel->object;
+ ay_object *o = ay_currentlevel->next->object;
  MF3DRotateObjPtr t = (MF3DRotateObjPtr) object;
  double xaxis[3] = {1.0, 0.0, 0.0};
  double yaxis[3] = {0.0, 1.0, 0.0};
@@ -1201,7 +1357,7 @@ int
 ay_mfio_readquat(MF3DVoidObjPtr object)
 {
  int ay_status = AY_OK;
- ay_object *o = ay_currentlevel->object;
+ ay_object *o = ay_currentlevel->next->object;
  MF3DQuaternionObjPtr q = (MF3DQuaternionObjPtr) object;
  double quat[4] = {0}, euler[3] = {0};
 
@@ -1230,7 +1386,7 @@ int
 ay_mfio_readrotaaxis(MF3DVoidObjPtr object)
 {
  int ay_status = AY_OK;
- ay_object *o = ay_currentlevel->object;
+ ay_object *o = ay_currentlevel->next->object;
  MF3DRotateAboutAxisObjPtr t = (MF3DRotateAboutAxisObjPtr) object;
  double axis[3] = {0};
  double quat[4] = {0}, euler[3] = {0}, drot;
@@ -1265,7 +1421,7 @@ int
 ay_mfio_readdcol(MF3DVoidObjPtr object)
 {
  int ay_status = AY_OK;
- ay_object *o = ay_currentlevel->object;
+ ay_object *o = ay_currentlevel->next->object;
  /* MF3DDiffuseColorObjPtr c = (MF3DDiffuseColorObjPtr) object;*/
 
  if(!o)
@@ -1288,7 +1444,7 @@ int
 ay_mfio_readtcol(MF3DVoidObjPtr object)
 {
  int ay_status = AY_OK;
- ay_object *o = ay_currentlevel->object;
+ ay_object *o = ay_currentlevel->next->object;
  /*MF3DTransparencyColorObjPtr c = (MF3DTransparencyColorObjPtr) object;*/
 
  if(!o)
@@ -1323,6 +1479,7 @@ ay_mfio_readcntr(MF3DVoidObjPtr object)
   newo->refine = newl;
 
   newo->type = AY_IDLEVEL;
+  ay_status = ay_object_defaults(newo);
 
   ay_mfio_lastreadobject = newo;
 
@@ -1332,7 +1489,9 @@ ay_mfio_readcntr(MF3DVoidObjPtr object)
 
   ay_next = &(newo->down);
 
-  ay_status = ay_object_defaults(newo);
+  ay_status = ay_object_crtendlevel(ay_next);
+
+  ay_clevel_add(newo->down);
 
  return ay_status;
 } /* ay_mfio_readcntr */
@@ -1347,15 +1506,38 @@ ay_mfio_readecntr(MF3DVoidObjPtr object)
  int ay_status = AY_OK;
  char fname[] = "mfio_readecntr";
 
-  ay_status = ay_object_crtendlevel(ay_next);
-
-  if(ay_status)
+  if(mfio_readtrims)
     {
-      ay_error(AY_ERROR, fname,
-	       "Could not create EndLevel object, scene is corrupt now!");
+      mfio_readtrims = AY_FALSE;
+
+      ay_status = ay_object_crtendlevel(ay_next);
+
+      ay_mfio_lastreadobject = ay_currentlevel->object;
+      if(ay_currentlevel && ay_currentlevel->next)
+	{
+	  ay_next = &(ay_currentlevel->next->object->next);
+	}
+      else
+	{
+	  if(ay_mfio_trimmedpatch)
+	    {
+	      ay_next = &(ay_mfio_trimmedpatch->next);
+	    }
+	}
+      ay_clevel_del();
+      ay_clevel_del();
+
+      return ay_status;
     }
 
   ay_mfio_lastreadobject = ay_currentlevel->object;
+
+  ay_clevel_del();
+
+  if(ay_currentlevel)
+    {
+      ay_next = &(ay_currentlevel->object->next);
+    }
 
   ay_clevel_del();
 
@@ -1442,7 +1624,8 @@ ay_mfio_readscene(Tcl_Interp *interp, char *filename)
 	  if (status != kMF3DNoMoreObjects)
 	    {
 	      ay_mfio_mf3d_errno = status;
-	      return AY_ERROR;
+	      ay_status = AY_ERROR;
+	      goto cleanup;
 	    } /* if */
 	} /* if */
 
@@ -1465,8 +1648,8 @@ ay_mfio_readscene(Tcl_Interp *interp, char *filename)
 	      if (status != kMF3DNoErr)
 		{
 		  ay_mfio_mf3d_errno = status;
-
-		  return AY_ERROR;
+		  ay_status = AY_ERROR;
+		  goto cleanup;
 		} /* if */
 
 	    } /* if */
@@ -1493,7 +1676,7 @@ ay_mfio_readscene(Tcl_Interp *interp, char *filename)
 	   * The Reference object will be disposed later.
 	   */
 	  MF3DDisposeObject(extStorageObj);
-	}
+	} /* if */
 
       /* If the object we just read is a BeginContainer object, the next
        * object read will be the root object of the container.
@@ -1511,7 +1694,7 @@ ay_mfio_readscene(Tcl_Interp *interp, char *filename)
 	{
 	  ay_status = ay_mfio_readobject(object);
 	  if(ay_status)
-	    return ay_status;
+	    goto cleanup;
 	}
 
       /* dispose the object */
@@ -1522,6 +1705,7 @@ ay_mfio_readscene(Tcl_Interp *interp, char *filename)
 
     } /* while */
 
+cleanup:
   /* close the file */
   status = MF3DClose(metafilePtr);
   if(status != kMF3DNoErr)
@@ -1529,7 +1713,7 @@ ay_mfio_readscene(Tcl_Interp *interp, char *filename)
       return AY_ECLOSEFILE;
     }
 
-  return AY_OK;
+ return ay_status;
 } /* ay_mfio_readscene */
 
 /**********************************************************************/
@@ -2763,7 +2947,7 @@ ay_mfio_importscenetcmd(ClientData clientData, Tcl_Interp * interp,
  int i = 2;
 
  /* check args */
- if(argc != 2)
+ if(argc < 2)
    {
      ay_error(AY_EARGS, fname, "filename");
      return TCL_OK;
@@ -2771,7 +2955,9 @@ ay_mfio_importscenetcmd(ClientData clientData, Tcl_Interp * interp,
 
   /* set default options */
   mfio_scalefactor = 1.0;
+  mfio_rescaleknots = 0.0;
   mfio_readcurves = AY_TRUE;
+  mfio_readtrims = AY_FALSE;
 
   /* parse args */
   while(i+1 < argc)
@@ -2779,6 +2965,11 @@ ay_mfio_importscenetcmd(ClientData clientData, Tcl_Interp * interp,
       if(!strcmp(argv[i], "-c"))
 	{
 	  sscanf(argv[i+1], "%d", &mfio_readcurves);
+	}
+      else
+      if(!strcmp(argv[i], "-r"))
+	{
+	  sscanf(argv[i+1], "%lg", &mfio_rescaleknots);
 	}
       else
 	/*
@@ -3125,6 +3316,9 @@ Mfio_Init(Tcl_Interp *interp)
   ay_status = ay_mfio_registerreadcb((char *)(kMF3DObjNURBCurve),
 				       ay_mfio_readnurbcurve);
 
+  ay_status = ay_mfio_registerreadcb((char *)(kMF3DObjNURBCurve2D),
+				       ay_mfio_readnurbcurve2d);
+
   ay_status = ay_mfio_registerreadcb((char *)(kMF3DObjPolyLine),
 				       ay_mfio_readpolyline);
 
@@ -3170,6 +3364,9 @@ Mfio_Init(Tcl_Interp *interp)
 
   ay_status = ay_mfio_registerreadcb((char *)(kMF3DObjTransparencyColor),
 				       ay_mfio_readtcol);
+
+  ay_status = ay_mfio_registerreadcb((char *)(kMF3DObjTrimCurves),
+				       ay_mfio_readtrim);
 
 
   /* init hash table for write callbacks */
