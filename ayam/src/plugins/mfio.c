@@ -40,7 +40,7 @@ static int mfio_writecurves = AY_TRUE;
 static int mfio_dataformat = AY_FALSE;
 static double mfio_scalefactor = 1.0;
 static double mfio_rescaleknots = 0.0;
-static int mfio_readtrims = AY_FALSE;
+static int mfio_readtrims = 0;
 
 /*
 static int export_colors;
@@ -329,7 +329,7 @@ ay_mfio_readtrim(MF3DVoidObjPtr object)
 {
  int ay_status = AY_OK;
 
-  mfio_readtrims = AY_TRUE;
+  mfio_readtrims = 1;
 
   ay_mfio_trimmedpatch = ay_mfio_lastreadobject;
 
@@ -1493,6 +1493,9 @@ ay_mfio_readcntr(MF3DVoidObjPtr object)
 
   ay_clevel_add(newo->down);
 
+  if(mfio_readtrims)
+    mfio_readtrims++;
+
  return ay_status;
 } /* ay_mfio_readcntr */
 
@@ -1504,11 +1507,11 @@ int
 ay_mfio_readecntr(MF3DVoidObjPtr object)
 {
  int ay_status = AY_OK;
- char fname[] = "mfio_readecntr";
+ /*char fname[] = "mfio_readecntr";*/
 
-  if(mfio_readtrims)
+  if(mfio_readtrims == 1)
     {
-      mfio_readtrims = AY_FALSE;
+      mfio_readtrims = 0;
 
       ay_status = ay_object_crtendlevel(ay_next);
 
@@ -1528,7 +1531,7 @@ ay_mfio_readecntr(MF3DVoidObjPtr object)
       ay_clevel_del();
 
       return ay_status;
-    }
+    } /* if */
 
   ay_mfio_lastreadobject = ay_currentlevel->object;
 
@@ -1540,6 +1543,8 @@ ay_mfio_readecntr(MF3DVoidObjPtr object)
     }
 
   ay_clevel_del();
+
+  mfio_readtrims--;
 
  return ay_status;
 } /* ay_mfio_readecntr */
@@ -1951,16 +1956,24 @@ ay_mfio_writenurbpatch(MF3D_FilePtr fileptr, ay_object *o)
 	    }
 	  else if(trim->type == AY_IDLEVEL) /* trimloop? */
 	    {
-	      down = trim->down;
-	      while(down->next)
+	      if(trim->down && trim->down->next)
 		{
-		  ay_status = ay_mfio_writetrimcurve(fileptr, down);
-		  if(ay_status)
-		    { free(mf3do.points); free(mf3do.vKnots);
-		      free(mf3do.uKnots); return ay_status; }
+		  down = trim->down;
 
-		  down = down->next;
-		} /* while */
+		  ay_status = ay_mfio_writecntr(fileptr);
+
+		  while(down->next)
+		    {
+		      ay_status = ay_mfio_writetrimcurve(fileptr, down);
+		      if(ay_status)
+			{ free(mf3do.points); free(mf3do.vKnots);
+			  free(mf3do.uKnots); return ay_status; }
+
+		      down = down->next;
+		    } /* while */
+
+		  ay_status = ay_mfio_writeecntr(fileptr);
+		} /* if */
 	    } /* if */
 	  trim = trim->next;
 	} /* while */
