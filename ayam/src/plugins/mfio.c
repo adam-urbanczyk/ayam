@@ -21,6 +21,7 @@
 static ay_object *ay_mfio_lastreadobject;
 static ay_object *ay_mfio_trimmedpatch;
 
+static MF3D_FilePtr ay_mfio_fileptr;
 static MF3DErr ay_mfio_mf3d_errno;
 
 static Tcl_HashTable ay_mfio_read_ht;
@@ -48,13 +49,13 @@ static int export_colors;
 /* prototypes of functions local to this module: */
 int ay_mfio_registerreadcb(char *type, ay_mfio_readcb *cb);
 
-int ay_mfio_readnurbcurve(MF3DVoidObjPtr object);
-
-int ay_mfio_readnurbcurve2d(MF3DVoidObjPtr object);
-
 int ay_mfio_readnurbpatch(MF3DVoidObjPtr object);
 
 int ay_mfio_readtrim(MF3DVoidObjPtr object);
+
+int ay_mfio_readnurbcurve(MF3DVoidObjPtr object);
+
+int ay_mfio_readnurbcurve2d(MF3DVoidObjPtr object);
 
 int ay_mfio_readpolyline(MF3DVoidObjPtr object);
 
@@ -201,10 +202,12 @@ ay_mfio_readnurbpatch(MF3DVoidObjPtr object)
  int width, height, i, j, a, b;
  double *controlv = NULL;
  double *uknotv = NULL, *vknotv = NULL;
- double oldmin, oldmax;
- MF3DNurbPatchObjPtr o = (MF3DNurbPatchObjPtr) object;
  ay_nurbpatch_object *patch = NULL;
  ay_object *newo = NULL;
+ MF3DNurbPatchObjPtr o = (MF3DNurbPatchObjPtr) object;
+ MF3DVoidObjPtr nextobject;
+ MF3DBinaryFilePosition oldpos;
+ MF3DErr status = kMF3DNoErr;
 
   /* get some info about the patch */
   width = o->numColumns;
@@ -265,6 +268,31 @@ ay_mfio_readnurbpatch(MF3DVoidObjPtr object)
   newo->inherit_trafos = AY_FALSE;
   newo->refine = patch;
 
+  MF3DTellPosition(ay_mfio_fileptr, &oldpos);
+
+  /* preview next object; if it is a TrimCurves object, we may not
+     rescale the knots until all trim curves have been read... */
+  status = MF3DReadAnObject(ay_mfio_fileptr, &nextobject);
+  if(status == kMF3DNoErr)
+    {
+      if(object->objectType != kMF3DObjTrimCurves)
+	{
+	  /* rescale knots to safe distance? */
+	  if(mfio_rescaleknots > 0.0)
+	    {
+	      ay_knots_rescaletomindist(patch->width + patch->uorder,
+					patch->uknotv,
+					mfio_rescaleknots);
+	      ay_knots_rescaletomindist(patch->height + patch->vorder,
+					patch->vknotv,
+					mfio_rescaleknots);
+	    } /* if */
+	} /* if */
+      MF3DDisposeObject(object);
+    } /* if */
+
+  MF3DSeekPosition(ay_mfio_fileptr, oldpos);
+
   ay_status = ay_object_link(newo);
 
   if(ay_status)
@@ -280,42 +308,6 @@ ay_mfio_readnurbpatch(MF3DVoidObjPtr object)
   newo->parent = AY_TRUE;
   newo->hide_children = AY_TRUE;
   newo->inherit_trafos = AY_FALSE;
-
-  /* rescale knots to safe distance? */
-  if(mfio_rescaleknots > 0.0)
-    {
-      /* save old knot range */
-      oldmin = patch->uknotv[0];
-      oldmax = patch->uknotv[patch->width+patch->uorder-1];
-
-      /* rescale knots */
-      ay_knots_rescaletomindist(patch->width + patch->uorder, patch->uknotv,
-				mfio_rescaleknots);
-
-      /* scale trim curves */
-      if(newo->down && newo->down->next)
-	{
-	  ay_status = ay_npt_rescaletrims(newo->down, 0, oldmin, oldmax,
-					  patch->uknotv[0],
-				 patch->uknotv[patch->width+patch->uorder-1]);
-	}
-
-      /* save old knot range */
-      oldmin = patch->vknotv[0];
-      oldmax = patch->vknotv[patch->height+patch->vorder-1];
-
-      /* rescale knots */
-      ay_knots_rescaletomindist(patch->height + patch->vorder, patch->vknotv,
-				mfio_rescaleknots);
-
-      /* scale trim curves */
-      if(newo->down && newo->down->next)
-	{
-	  ay_status = ay_npt_rescaletrims(newo->down, 0, oldmin, oldmax,
-					  patch->vknotv[0],
-			        patch->vknotv[patch->height+patch->vorder-1]);
-	}
-    } /* if */
 
  return ay_status;
 } /* ay_mfio_readnurbpatch */
@@ -1500,6 +1492,58 @@ ay_mfio_readcntr(MF3DVoidObjPtr object)
 } /* ay_mfio_readcntr */
 
 
+/* ay_mfio_scalenpknots:
+ *
+ */
+int
+ay_mfio_scalenpknots(ay_object *o)
+{
+ int ay_status = AY_OK;
+ double oldmin, oldmax;
+ ay_nurbpatch_object *patch = NULL;
+
+  /* rescale knots to safe distance? */
+  if(mfio_rescaleknots > 0.0)
+    {
+      patch = (ay_nurbpatch_object*)o->refine;
+
+      /* save old knot range */
+      oldmin = patch->uknotv[0];
+      oldmax = patch->uknotv[patch->width+patch->uorder-1];
+
+      /* rescale knots */
+      ay_knots_rescaletomindist(patch->width + patch->uorder, patch->uknotv,
+				mfio_rescaleknots);
+
+      /* scale trim curves */
+      if(o->down && o->down->next)
+	{
+	  ay_status = ay_npt_rescaletrims(o->down, 0, oldmin, oldmax,
+					  patch->uknotv[0],
+				 patch->uknotv[patch->width+patch->uorder-1]);
+	}
+
+      /* save old knot range */
+      oldmin = patch->vknotv[0];
+      oldmax = patch->vknotv[patch->height+patch->vorder-1];
+
+      /* rescale knots */
+      ay_knots_rescaletomindist(patch->height + patch->vorder, patch->vknotv,
+				mfio_rescaleknots);
+
+      /* scale trim curves */
+      if(o->down && o->down->next)
+	{
+	  ay_status = ay_npt_rescaletrims(o->down, 0, oldmin, oldmax,
+					  patch->vknotv[0],
+			        patch->vknotv[patch->height+patch->vorder-1]);
+	}
+    } /* if */
+
+ return ay_status;
+} /* ay_mfio_scalenpknots */
+
+
 /* ay_mfio_readecntr:
  *
  */
@@ -1525,6 +1569,10 @@ ay_mfio_readecntr(MF3DVoidObjPtr object)
 	  if(ay_mfio_trimmedpatch)
 	    {
 	      ay_next = &(ay_mfio_trimmedpatch->next);
+
+	      /* only after reading all trimcurves we can scale
+		 the knots */
+	      ay_status = ay_mfio_scalenpknots(ay_mfio_trimmedpatch);
 	    }
 	}
       ay_clevel_del();
@@ -1616,6 +1664,8 @@ ay_mfio_readscene(Tcl_Interp *interp, char *filename)
 	  return AY_ERROR;
 	} /* if */
     } /* if */
+
+  ay_mfio_fileptr = metafilePtr;
 
   nextObjIsRoot = kMF3DBooleanFalse;
 
