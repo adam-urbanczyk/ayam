@@ -275,6 +275,8 @@ ay_mfio_readnurbpatch(MF3DVoidObjPtr object)
   status = MF3DReadAnObject(ay_mfio_fileptr, &nextobject);
   if(status == kMF3DNoErr)
     {
+      /* XXXX resolve potential reference! */
+
       if(object->objectType != kMF3DObjTrimCurves)
 	{
 	  /* rescale knots to safe distance? */
@@ -427,9 +429,6 @@ ay_mfio_readnurbcurve2d(MF3DVoidObjPtr object)
  MF3DNURBCurve2DObjPtr o = (MF3DNURBCurve2DObjPtr) object;
  ay_nurbcurve_object *curve = NULL;
  ay_object *newo = NULL;
-
-  if(!mfio_readcurves)
-    { return AY_OK; }
 
   /* get some info about the curve */
   length = o->nPoints;
@@ -1260,15 +1259,15 @@ int
 ay_mfio_readscal(MF3DVoidObjPtr object)
 {
  int ay_status = AY_OK;
- ay_object *o = ay_currentlevel->next->object;
+ ay_object *o = ay_mfio_lastreadobject;
  MF3DScaleObjPtr t = (MF3DScaleObjPtr) object;
 
- if(!o)
-   return AY_OK;
+  if(!o)
+    return AY_OK;
 
- o->scalx *= t->scale.x;
- o->scaly *= t->scale.y;
- o->scalz *= t->scale.z;
+  o->scalx *= t->scale.x;
+  o->scaly *= t->scale.y;
+  o->scalz *= t->scale.z;
 
  return ay_status;
 } /* ay_mfio_readscal */
@@ -1281,15 +1280,15 @@ int
 ay_mfio_readtran(MF3DVoidObjPtr object)
 {
  int ay_status = AY_OK;
- ay_object *o = ay_currentlevel->next->object;
+ ay_object *o = ay_mfio_lastreadobject;
  MF3DTranslateObjPtr t = (MF3DTranslateObjPtr) object;
 
- if(!o)
-   return AY_OK;
+  if(!o)
+    return AY_OK;
 
- o->movx += t->translate.x;
- o->movy += t->translate.y;
- o->movz += t->translate.z;
+  o->movx += t->translate.x;
+  o->movy += t->translate.y;
+  o->movz += t->translate.z;
 
  return ay_status;
 } /* ay_mfio_readtran */
@@ -1302,41 +1301,41 @@ int
 ay_mfio_readrot(MF3DVoidObjPtr object)
 {
  int ay_status = AY_OK;
- ay_object *o = ay_currentlevel->next->object;
+ ay_object *o = ay_mfio_lastreadobject;
  MF3DRotateObjPtr t = (MF3DRotateObjPtr) object;
  double xaxis[3] = {1.0, 0.0, 0.0};
  double yaxis[3] = {0.0, 1.0, 0.0};
  double zaxis[3] = {0.0, 0.0, 1.0};
  double quat[4] = {0}, drot;
 
- if(!o)
-   return AY_OK;
+  if(!o)
+    return AY_OK;
 
- drot = AY_R2D(t->radians);
+  drot = AY_R2D(t->radians);
 
- if(drot != 0.0)
-   {
-     if(t->axis == MF3DAxisX)
-       {
-	 o->rotx += drot;
-	 ay_quat_axistoquat(xaxis, t->radians, quat);
-	 ay_quat_add(quat, o->quat, o->quat);
-       }
-     else
-     if(t->axis == MF3DAxisY)
-       {
-	 o->roty += drot;
-	 ay_quat_axistoquat(yaxis, t->radians,quat);
-	 ay_quat_add(quat, o->quat, o->quat);
-       }
-     else
-     if(t->axis == MF3DAxisZ)
-       {
-	 o->rotz += drot;
-	 ay_quat_axistoquat(zaxis, t->radians, quat);
-	 ay_quat_add(quat, o->quat, o->quat);
-       }
-   }
+  if(drot != 0.0)
+    {
+      if(t->axis == MF3DAxisX)
+	{
+	  o->rotx += drot;
+	  ay_quat_axistoquat(xaxis, t->radians, quat);
+	  ay_quat_add(quat, o->quat, o->quat);
+	}
+      else
+	if(t->axis == MF3DAxisY)
+	  {
+	    o->roty += drot;
+	    ay_quat_axistoquat(yaxis, t->radians,quat);
+	    ay_quat_add(quat, o->quat, o->quat);
+	  }
+	else
+	  if(t->axis == MF3DAxisZ)
+	    {
+	      o->rotz += drot;
+	      ay_quat_axistoquat(zaxis, t->radians, quat);
+	      ay_quat_add(quat, o->quat, o->quat);
+	    }
+    }
 
  return ay_status;
 } /* ay_mfio_readrot */
@@ -1349,7 +1348,7 @@ int
 ay_mfio_readquat(MF3DVoidObjPtr object)
 {
  int ay_status = AY_OK;
- ay_object *o = ay_currentlevel->next->object;
+ ay_object *o = ay_mfio_lastreadobject;
  MF3DQuaternionObjPtr q = (MF3DQuaternionObjPtr) object;
  double quat[4] = {0}, euler[3] = {0};
 
@@ -1378,29 +1377,29 @@ int
 ay_mfio_readrotaaxis(MF3DVoidObjPtr object)
 {
  int ay_status = AY_OK;
- ay_object *o = ay_currentlevel->next->object;
+ ay_object *o = ay_mfio_lastreadobject;
  MF3DRotateAboutAxisObjPtr t = (MF3DRotateAboutAxisObjPtr) object;
  double axis[3] = {0};
  double quat[4] = {0}, euler[3] = {0}, drot;
 
- if(!o)
-   return AY_OK;
+  if(!o)
+    return AY_OK;
 
- drot = AY_R2D(t->radians);
+  drot = AY_R2D(t->radians);
 
- if(drot != 0.0)
-   {
-     axis[0] = t->orientation.x - t->origin.x;
-     axis[1] = t->orientation.y - t->origin.y;
-     axis[2] = t->orientation.z - t->origin.z;
+  if(drot != 0.0)
+    {
+      axis[0] = t->orientation.x - t->origin.x;
+      axis[1] = t->orientation.y - t->origin.y;
+      axis[2] = t->orientation.z - t->origin.z;
 
-     ay_quat_axistoquat(axis, t->radians, quat);
-     ay_quat_add(quat, o->quat, o->quat);
-     ay_quat_toeuler(o->quat, euler);
-     o->rotx = euler[2];
-     o->roty = euler[1];
-     o->rotz = euler[0];
-   }
+      ay_quat_axistoquat(axis, t->radians, quat);
+      ay_quat_add(quat, o->quat, o->quat);
+      ay_quat_toeuler(o->quat, euler);
+      o->rotx = euler[2];
+      o->roty = euler[1];
+      o->rotz = euler[0];
+    }
 
  return ay_status;
 } /* ay_mfio_readrotaaxis */
@@ -1413,7 +1412,7 @@ int
 ay_mfio_readdcol(MF3DVoidObjPtr object)
 {
  int ay_status = AY_OK;
- ay_object *o = ay_currentlevel->next->object;
+ ay_object *o = ay_mfio_lastreadobject;
  /* MF3DDiffuseColorObjPtr c = (MF3DDiffuseColorObjPtr) object;*/
 
  if(!o)
@@ -1436,7 +1435,7 @@ int
 ay_mfio_readtcol(MF3DVoidObjPtr object)
 {
  int ay_status = AY_OK;
- ay_object *o = ay_currentlevel->next->object;
+ ay_object *o = ay_mfio_lastreadobject;
  /*MF3DTransparencyColorObjPtr c = (MF3DTransparencyColorObjPtr) object;*/
 
  if(!o)
@@ -1884,7 +1883,7 @@ ay_mfio_writetrimcurve(MF3D_FilePtr fileptr, ay_object *o)
       (mf3do.points)[a].w = w;
 
       a++;
-    }
+    } /* for */
 
   a = 0;
   for(i=0; i<curve->length+curve->order; i++)
@@ -2661,14 +2660,13 @@ ay_mfio_writelevel(MF3D_FilePtr fileptr, ay_object *o)
   if(o && o->next)
     {
       ay_status = ay_mfio_writecntr(fileptr);
-      ay_status = ay_mfio_writeattributes(fileptr, level);
       while(o->next)
 	{
 	  ay_status = ay_mfio_writeobject(fileptr, o);
 	  o = o->next;
 	} /* while */
-
       ay_status = ay_mfio_writeecntr(fileptr);
+      ay_status = ay_mfio_writeattributes(fileptr, level);
     } /* if */
 
  return ay_status;
