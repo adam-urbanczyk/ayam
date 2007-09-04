@@ -400,7 +400,10 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
       ay_status = ay_viewt_wintoobj(togl, sel->object, winX, winY,
 				    &(obj[0]), &(obj[1]), &(obj[2]));
 
+      ay_point_edit_coords = NULL;
+
       ay_status = ay_pact_getpoint(1, sel->object, obj);
+
       if(ay_point_edit_coords)
 	{
 	  if(!(tmp = realloc(pecoords, (ay_point_edit_coords_number +
