@@ -1,4 +1,4 @@
-[17. Aug 2007] CVS-Head:
+[4. Sep 2007] CVS-Head:
 =======================
 o Bug Fixes:
   - crash after deleting of objects (SF 1637735)
