@@ -1978,10 +1978,10 @@ ay_npt_revolve(ay_object *o, double arc, int sections, int order,
 
 
 /* ay_npt_sweep:
- *  sweep cross section <o1> along path <o2> possibly rotating it,
+ *  Sweep cross section <o1> along path <o2> possibly rotating it,
  *  so that it is always perpendicular to the path, possibly
  *  scaling it by a factor derived from the difference of the
- *  y coordinate of scaling curve <o3> to y value 1.0.
+ *  y and z coordinates of scaling curve <o3> to y and z values 1.0.
  *  Rotation code derived from J. Bloomenthals "Reference Frames"
  *  (Graphic Gems I).
  */
@@ -2154,7 +2154,10 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 			     sfcv, u, p3);
 	  p3[1] = fabs(p3[1]);
 	  if(p3[1] > AY_EPSILON)
-	    ay_trafo_scalematrix(1.0/p3[1], 1.0/p3[1], 1.0/p3[1], m);
+	    ay_trafo_scalematrix(1.0, 1.0/p3[1], 1.0, m);
+	  p3[2] = fabs(p3[2]);
+	  if(p3[2] > AY_EPSILON)
+	    ay_trafo_scalematrix(1.0, 1.0, 1.0/p3[2], m);
 	}
 
       /* now, apply rotation (if requested) */
@@ -2254,7 +2257,7 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 		  if(p3[1] > AY_EPSILON)
 		    {
 		      (*start_cap)->scalx *= p3[1];
-		      (*start_cap)->scaly *= p3[1];
+		      (*start_cap)->scaly *= p3[2];
 		    }
 		} /* if */
 	      /* fix direction for aycsg */
@@ -2297,7 +2300,7 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 		  if(p3[1] > AY_EPSILON)
 		    {
 		      (*end_cap)->scalx *= p3[1];
-		      (*end_cap)->scaly *= p3[1];
+		      (*end_cap)->scaly *= p3[2];
 		    }
 		} /* if */
 	      /* rotate it */
@@ -2339,10 +2342,12 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 
 
 /* ay_npt_closedsweep:
- *  sweep cross section <o1> along path <o2> possibly rotating it,
+ *  Sweep cross section <o1> along path <o2> possibly rotating it,
  *  so that it is always perpendicular to the path, possibly
  *  scaling it by a factor derived from the difference of the
- *  y coordinate of scaling curve <o3> to y value 1.0.
+ *  y and z coordinates of scaling curve <o3> to the y and z values 1.0.
+ *  In contrast to ay_npt_sweep() above, this function creates a
+ *  periodic patch (in the direction of the trajectory).
  *  Rotation code derived from J. Bloomenthals "Reference Frames"
  *  (Graphic Gems I).
  */
@@ -2502,7 +2507,10 @@ ay_npt_closedsweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 			     sfcv, u, p3);
 	  p3[1] = fabs(p3[1]);
 	  if(p3[1] > AY_EPSILON)
-	    ay_trafo_scalematrix(1.0/p3[1], 1.0/p3[1], 1.0/p3[1], m);
+	    ay_trafo_scalematrix(1.0, 1.0/p3[1], 1.0, m);
+	  p3[2] = fabs(p3[2]);
+	  if(p3[2] > AY_EPSILON)
+	    ay_trafo_scalematrix(1.0, 1.0, 1.0/p3[2], m);
 	}
 
       /* now, apply rotation (if requested) */
@@ -6232,16 +6240,144 @@ ay_npt_israt(ay_nurbpatch_object *np)
 } /* ay_npt_israt */
 
 
+/* ay_npt_isboundcurve:
+ *  helper for ay_npt_istrimmed() below
+ *  check, whether curve <o> runs along the bounds <b1>, <b2>, <b3>, or <b4>
+ *  returns AY_TRUE or AY_FALSE in <result>
+ */
+int
+ay_npt_isboundcurve(ay_object *o, double b1, double b2, double b3, double b4,
+		    int *result)
+{
+ int ay_status = AY_OK;
+ int i = 0, stride = 4;
+ int on_bound = AY_FALSE;
+ double *cv = NULL, *tcv = NULL, *p = NULL, m[16];
+ ay_nurbcurve_object *ncurve = NULL;
+ ay_object *c = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  if(o->type != AY_IDNCURVE)
+    {
+      ay_status = ay_provide_object(o, AY_IDNCURVE, &c);
+      if(c)
+	{
+	  ncurve = (ay_nurbcurve_object *)c->refine;
+	}
+      else
+	{
+	  goto cleanup;
+	}
+    }
+  else
+    {
+      ncurve = (ay_nurbcurve_object *)o->refine;
+    }
+
+  /* check, whether each curve section is on one boundary */
+  cv = ncurve->controlv;
+
+  /* apply transformations */
+  /*if(AY_ISTRAFO(o))
+    {*/
+  ay_trafo_creatematrix(o, m);
+
+  tcv = calloc(ncurve->length*stride, sizeof(double));
+  
+  if(!tcv)
+    {
+      ay_status = AY_EOMEM;
+      goto cleanup;
+    }
+
+  p = tcv;
+  for(i = 0; i < ncurve->length-1; i++)
+    {
+      AY_APTRAN4(p,cv,m);
+      p += stride;
+      cv += stride;
+    }
+  cv = tcv;
+  /*}*/
+
+  for(i = 0; i < ncurve->length-1; i++)
+    {
+      on_bound = AY_FALSE;
+      /* check against bound1 */
+      if(!on_bound && (fabs(cv[i]-b1) < AY_EPSILON))
+	{
+	  if(fabs(cv[i+stride]-b1) < AY_EPSILON)
+	    {
+	      on_bound = AY_TRUE;
+	    }
+	} /* if */
+      /* check against bound2 */
+      if(!on_bound && (fabs(cv[i]-b2) < AY_EPSILON))
+	{
+	  if(fabs(cv[i+stride]-b2) < AY_EPSILON)
+	    {
+	      on_bound = AY_TRUE;
+	    }
+	} /* if */
+      /* check against bound3 */
+      if(!on_bound && (fabs(cv[i+1]-b3) < AY_EPSILON))
+	{
+	  if(fabs(cv[i+stride+1]-b3) < AY_EPSILON)
+	    {
+	      on_bound = AY_TRUE;
+	    }
+	} /* if */
+      /* check against bound4 */
+      if(!on_bound && (fabs(cv[i+1]-b4) < AY_EPSILON))
+	{
+	  if(fabs(cv[i+stride+1]-b4) < AY_EPSILON)
+	    {
+	      on_bound = AY_TRUE;
+	    }
+	} /* if */
+
+      if(!on_bound)
+	{
+	  *result = AY_FALSE;
+	  goto cleanup;
+	}
+
+      cv += stride;
+    } /* for */
+
+  /*
+   * if we get here, all curve segments are each on one boundary
+   */
+  *result = AY_TRUE;
+
+cleanup:
+
+  if(c)
+    ay_object_delete(c);
+
+  if(tcv)
+    free(tcv);
+
+ return ay_status;
+} /* ay_npt_isboundcurve */ 
+
+
 /* ay_npt_istrimmed:
  *  mode: 0 - check if non-trivially trimmed:
- *        returns: AY_FALSE in error and if not non-trivially trimmed
+ *        returns: AY_FALSE in error and if trivially trimmed
  *                 AY_TRUE if non-trivially trimmed
+ *        Does not work well for degenerate patches.
  */
 int
 ay_npt_istrimmed(ay_object *o, int mode)
 {
+ int ay_status = AY_OK;
+ int is_bound = AY_FALSE;
+ ay_object *down;
  ay_nurbpatch_object *npatch;
- ay_nurbcurve_object *ncurve;
+ double b1, b2, b3, b4;
 
   if(!o)
     return AY_FALSE;
@@ -6255,6 +6391,12 @@ ay_npt_istrimmed(ay_object *o, int mode)
 
   if(!npatch)
     return AY_FALSE;
+
+  b1 = npatch->uknotv[0];
+  b2 = npatch->uknotv[npatch->width];
+  b3 = npatch->vknotv[0];
+  b4 = npatch->vknotv[npatch->height];
+
   switch(mode)
     {
     case 0:
@@ -6266,20 +6408,40 @@ ay_npt_istrimmed(ay_object *o, int mode)
 	return AY_TRUE; /* more than one real child -> non-trivially trimmed */
 
       /* check the one real child */
-      if(o->down->type == AY_IDNCURVE)
+      if(o->down->type != AY_IDLEVEL)
 	{
-	  if(!(ncurve = (ay_nurbcurve_object*)o->down->refine))
-	    {
-	      return AY_FALSE;
-	    }
-	  if(ncurve->order == 2 && ncurve->length == 4)
+	  /* process single trim curve */
+	  ay_status = ay_npt_isboundcurve(o->down, b1, b2, b3, b4,
+					  &is_bound);
+	  if(!is_bound)
+	    return AY_TRUE;
+	  else
 	    return AY_FALSE;
 	}
-      return AY_TRUE;
+      else
+	{
+	  /* process trim loop */
+	  down = o->down->down;
+	  while(down->next)
+	    {
+	      ay_status = ay_npt_isboundcurve(down, b1, b2, b3, b4,
+					      &is_bound);
+	      if(!is_bound)
+		return AY_TRUE;
+
+	      down = down->next;
+	    } /* while */
+
+	  /*
+	   * if we get here, all curve segments of all trim loop elements
+	   * are each on one boundary => conclude trivial trim
+	   */
+	  return AY_FALSE;
+	} /* if */
     default:
       break;
     } /* switch */
-
+    
  return AY_FALSE;
 } /* ay_npt_istrimmed */
 
