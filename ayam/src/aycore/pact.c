@@ -51,6 +51,11 @@ ay_pact_getpoint(int mode, ay_object *o, double *obj)
   if(!o)
     return AY_ENULL;
 
+  if(ay_point_edit_coords)
+    free(ay_point_edit_coords);
+
+  ay_point_edit_coords = NULL;
+
   arr = ay_getpntcbt.arr;
   cb = (ay_getpntcb *)(arr[o->type]);
   if(cb)
@@ -119,6 +124,7 @@ ay_pact_seltcb(struct Togl *togl, int argc, char *argv[])
   while(sel)
     {
       o = sel->object;
+      /* sanity check */
       if(!o)
 	return TCL_OK;
 
@@ -400,8 +406,6 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
       ay_status = ay_viewt_wintoobj(togl, sel->object, winX, winY,
 				    &(obj[0]), &(obj[1]), &(obj[2]));
 
-      ay_point_edit_coords = NULL;
-
       ay_status = ay_pact_getpoint(1, sel->object, obj);
 
       if(ay_point_edit_coords)
@@ -472,8 +476,10 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
   ay_prefs.pick_epsilon = oldpickepsilon;
 
   ay_point_edit_coords_number = penumber;
+
   if(ay_point_edit_coords)
     free(ay_point_edit_coords);
+
   ay_point_edit_coords = pecoords;
 
   if(ay_selection &&(argc > 4))
@@ -1928,12 +1934,6 @@ ay_pact_wrtcb(struct Togl *togl, int argc, char *argv[])
     {
       o = sel->object;
 
-      if(ay_point_edit_coords)
-	{
-	  free(ay_point_edit_coords);
-	  ay_point_edit_coords = NULL;
-	}
-
       ay_status = ay_pact_getpoint(0, o, p);
 
       if(ay_status)
@@ -2083,9 +2083,10 @@ ay_pact_snaptogridcb(struct Togl *togl, int argc, char *argv[])
 
       if(!o->selp)
 	{
+
 	  ay_status = ay_pact_getpoint(0, o, p);
 
-	  if(ay_status)
+	  if(ay_status || (!ay_point_edit_coords))
 	    {
 	      ay_error(AY_ERROR, fname, NULL);
 	    }
