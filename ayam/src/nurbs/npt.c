@@ -2066,6 +2066,19 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 	}
     } /* if */
 
+  /* calculate number of sections */
+  if(sections <= 0)
+    {
+      if(tr->length == 2)
+	{
+	  sections = 1;
+	}
+      else
+	{
+	  sections = tr->length+1;
+	}
+    }
+
   /* calloc the new patch */
   if(!(new = calloc(1, sizeof(ay_nurbpatch_object))))
     { ay_status = AY_EOMEM; goto cleanup; }
@@ -2424,6 +2437,12 @@ ay_npt_closedsweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 	  a += stride;
 	}
     } /* if */
+
+  /* calculate number of sections */
+  if(sections <= 0)
+    {
+      sections = tr->length+1;
+    }
 
   /* parameterize and calloc the new patch */
   if(!(new = calloc(1, sizeof(ay_nurbpatch_object))))
