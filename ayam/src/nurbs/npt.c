@@ -2688,6 +2688,24 @@ ay_npt_birail1(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
       a += stride;
     }
 
+  /* calculate number of sections */
+  if(sections <= 0)
+    {
+      if(r2->length>r1->length)
+	a = r2->length;
+      else
+	a = r1->length;
+
+      if(a == 2)
+	{
+	  sections = 1;
+	}
+      else
+	{
+	  sections = a + 1;
+	}
+    } /* if */
+
   /* calloc the new patch */
   if(!(new = calloc(1, sizeof(ay_nurbpatch_object))))
     { ay_status = AY_EOMEM; goto cleanup; }
@@ -2699,7 +2717,10 @@ ay_npt_birail1(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
     { ay_status = AY_EOMEM; goto cleanup; }
 
   new->vorder = cs->order;
-  new->uorder = 4;
+  if(sections > 2)
+    new->uorder = 4;
+  else
+    new->uorder = sections+1;
   new->controlv = controlv;
 
   new->vknot_type = cs->knot_type;
@@ -3157,6 +3178,24 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
   if(!(cs2cvi = calloc(cs2->length * stride, sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
 
+  /* calculate number of sections */
+  if(sections <= 0)
+    {
+      if(r2->length>r1->length)
+	a = r2->length;
+      else
+	a = r1->length;
+
+      if(a == 2)
+	{
+	  sections = 1;
+	}
+      else
+	{
+	  sections = a + 1;
+	}
+    } /* if */
+
   /* calloc the new patch */
   if(!(new = calloc(1, sizeof(ay_nurbpatch_object))))
     { ay_status = AY_EOMEM; goto cleanup; }
@@ -3169,7 +3208,10 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
 
 
   new->vorder = cs1->order;
-  new->uorder = 4;
+  if(sections > 2)
+    new->uorder = 4;
+  else
+    new->uorder = sections+1;
   new->controlv = controlv;
 
   new->vknot_type = cs1->knot_type;
