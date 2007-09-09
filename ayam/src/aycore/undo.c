@@ -42,7 +42,11 @@ int ay_undo_redo(void);
 
 int ay_undo_undo(void);
 
-int ay_undo_save(void);
+int ay_undo_savechildren(ay_object *o, ay_undo_object *uo,
+			 ay_list_object **lastr,
+			 ay_object ***nexto);
+
+int ay_undo_save(int save_children);
 
 int ay_undo_copysave(ay_object *src, ay_object **dst);
 
@@ -55,6 +59,8 @@ static int undo_buffer_size;
 
 static int undo_last_op; /* last undo operation: -1: no op,
 			    1-4: see mode variable in ay_undo_undotcmd() */
+
+static int undo_last_save_saved_children;
 
 static char *undo_saved_op; /* name of saved modelling operation */
 
@@ -94,6 +100,7 @@ ay_undo_init(int buffer_size)
       free(undo_saved_op);
     }
   undo_saved_op = NULL;
+  undo_last_save_saved_children = AY_FALSE;
 
  return AY_OK;
 } /* ay_undo_init */
@@ -769,7 +776,7 @@ ay_undo_undo(void)
   if(undo_last_op == 2)
     { /* if last op was a save, we need to save current state too,
          to allow the user to get back to current state with redo */
-      ay_status = ay_undo_save();
+      ay_status = ay_undo_save(undo_last_save_saved_children);
       undo_current--;
     }
 
@@ -904,11 +911,69 @@ ay_undo_copysave(ay_object *src, ay_object **dst)
 } /* ay_undo_copysave */
 
 
+/* ay_undo_savechildren:
+ *  _recursively_ save all children of <o> to undo state <uo>
+ */
+int
+ay_undo_savechildren(ay_object *o, ay_undo_object *uo,
+		     ay_list_object **lastr,
+		     ay_object ***nexto)
+{
+ int ay_status = AY_OK;
+ ay_object *down = NULL;
+ ay_list_object *r = NULL;
+
+  if(!(o->down && o->down->next))
+    return AY_OK;
+
+  down = o->down;
+  while(down->next)
+    {
+      /* copy reference */
+      r = NULL;
+      if(!(r = calloc(1, sizeof(ay_list_object))))
+	{
+	  return AY_EOMEM;
+	}
+
+      if(uo->references)
+	{
+	  (*lastr)->next = r;
+	}
+      else
+	{
+	  uo->references = r;
+	} /* if */
+
+      *lastr = r;
+
+      r->object = down;
+
+      /* copy object */
+      ay_status = ay_undo_copysave(down, *nexto);
+      if(ay_status)
+	{
+	  return ay_status;
+	}
+
+      *nexto = &((**nexto)->next);
+
+      /* recursively save children */
+      if(down->down && down->down->next)
+	ay_status = ay_undo_savechildren(down, uo, lastr, nexto);
+
+      down = down->next;
+    } /* while */
+
+ return AY_OK;
+} /* ay_undo_savechildren */
+
+
 /* ay_undo_save:
  *
  */
 int
-ay_undo_save(void)
+ay_undo_save(int save_children)
 {
  int ay_status = AY_OK;
  ay_undo_object *uo = NULL, *uo2 = NULL;
@@ -1022,6 +1087,10 @@ ay_undo_save(void)
 	}
 
       nexto = &((*nexto)->next);
+
+      /* save children */
+      if(save_children && sel->object->down && sel->object->down->next)
+	ay_status = ay_undo_savechildren(sel->object, uo, &lastr, &nexto);
 
       sel = sel->next;
     } /* while */
@@ -1199,6 +1268,7 @@ ay_undo_clear(void)
 
   undo_current = -1;
   undo_last_op = -1; /* no op */
+  undo_last_save_saved_children = AY_FALSE;
 
   if(undo_saved_op)
     {
@@ -1272,6 +1342,7 @@ ay_undo_undotcmd(ClientData clientData, Tcl_Interp *interp,
  int ay_status = AY_OK;
  char fname[] = "undo";
  int mode = 0; /* default mode is "undo" */
+ int save_children = AY_FALSE;
  char *a = "ay", *n = "sc", *v = "1";
  char *n2 = "uc", *n3 = "undoo", *n4 = "redoo", v2[64];
  char vnone[] = "none", vnull[] = "null";
@@ -1408,8 +1479,13 @@ ay_undo_undotcmd(ClientData clientData, Tcl_Interp *interp,
 	    {
 	      strcpy(undo_saved_op, argv[2]);
 	    }
+	  /* is the save_children argument given? */
+	  if(argc > 3)
+	    {
+	      sscanf(argv[3], "%d", &save_children);
+	    } /* if */
 	} /* if */
-      ay_status = ay_undo_save();
+      ay_status = ay_undo_save(save_children);
       uc++;
       /* set scene changed flag */
       Tcl_SetVar2(interp, a, n, v, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -1419,6 +1495,7 @@ ay_undo_undotcmd(ClientData clientData, Tcl_Interp *interp,
 		    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
       Tcl_SetVar2(interp, a, n4, vnone, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
       undo_saved_op = NULL;
+      undo_last_save_saved_children = save_children;
       break;
     case 3:
       /* perform clear */
