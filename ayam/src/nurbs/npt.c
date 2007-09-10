@@ -2066,7 +2066,11 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 	}
     } /* if */
 
-  /* calculate number of sections */
+  /* allocate the new patch */
+  if(!(new = calloc(1, sizeof(ay_nurbpatch_object))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+
+  /* calculate number of sections and parameterize the new patch */
   if(sections <= 0)
     {
       if(tr->length == 2)
@@ -2075,36 +2079,40 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 	}
       else
 	{
-	  sections = tr->length+1;
+	  sections = tr->length + 1;
 	}
+      new->uorder = tr->order;
     }
-
-  /* calloc the new patch */
-  if(!(new = calloc(1, sizeof(ay_nurbpatch_object))))
-    { ay_status = AY_EOMEM; goto cleanup; }
-  if(!(controlv = calloc(cs->length*(sections+1)*stride, sizeof(double))))
-    { free(new); ay_status = AY_EOMEM; goto cleanup; }
-  if(!(new->vknotv = calloc(cs->length+cs->order, sizeof(double))))
-    { free(new); free(controlv); ay_status = AY_EOMEM; goto cleanup; }
-  if(!(new->uknotv = calloc(sections+4, sizeof(double))))
+  else
     {
-      free(new->vknotv); free(new); free(controlv);
-      ay_status = AY_EOMEM; goto cleanup;
-    }
+      if(sections > 2)
+	{
+	  new->uorder = 4;
+	}
+      else
+	{
+	  new->uorder = sections + 1;
+	}
+    } /* if */
 
   new->vorder = cs->order;
-  if(sections > 2)
-    new->uorder = 4;
-  else
-    new->uorder = sections+1;
-  new->controlv = controlv;
-
   new->vknot_type = cs->knot_type;
   new->uknot_type = AY_KTNURB;
   new->width = sections+1;
   new->height = cs->length;
-
   new->glu_sampling_tolerance = cs->glu_sampling_tolerance;
+
+  /* allocate control point and knot arrays */
+  if(!(controlv = calloc(new->width*new->height*stride, sizeof(double))))
+    { free(new); ay_status = AY_EOMEM; goto cleanup; }
+  new->controlv = controlv;
+  if(!(new->vknotv = calloc(new->height + new->vorder, sizeof(double))))
+    { free(new); free(controlv); ay_status = AY_EOMEM; goto cleanup; }
+  if(!(new->uknotv = calloc(new->width + new->uorder, sizeof(double))))
+    {
+      free(new->vknotv); free(new); free(controlv);
+      ay_status = AY_EOMEM; goto cleanup;
+    }
 
   ay_status = ay_knots_createnp(new);
   if(ay_status)
@@ -2360,7 +2368,8 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
  *  scaling it by a factor derived from the difference of the
  *  y and z coordinates of scaling curve <o3> to the y and z values 1.0.
  *  In contrast to ay_npt_sweep() above, this function creates a
- *  periodic patch (in the direction of the trajectory).
+ *  periodic patch (in the direction of the trajectory) and should
+ *  probably rather be called ay_npt_periodicsweep().
  *  Rotation code derived from J. Bloomenthals "Reference Frames"
  *  (Graphic Gems I).
  */
@@ -2387,6 +2396,9 @@ ay_npt_closedsweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 
   if((o1->type != AY_IDNCURVE) || (o2->type != AY_IDNCURVE) ||
      (o3 && (o3->type != AY_IDNCURVE)))
+    return AY_ERROR;
+
+  if(sections == 1)
     return AY_ERROR;
 
   cs = (ay_nurbcurve_object *)(o1->refine);
@@ -2438,19 +2450,29 @@ ay_npt_closedsweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 	}
     } /* if */
 
-  /* calculate number of sections */
-  if(sections <= 0)
-    {
-      sections = tr->length+1;
-    }
-
-  /* parameterize and calloc the new patch */
+  /* allocate the new patch */
   if(!(new = calloc(1, sizeof(ay_nurbpatch_object))))
     { ay_status = AY_EOMEM; goto cleanup; }
 
-  new->vorder = cs->order;
-  new->uorder = 4;
+  /* calculate number of sections and parameterize the new patch */
+  if(sections <= 0)
+    {
+      sections = tr->length+1;
+      new->uorder = tr->order;
+    }
+  else
+    {
+      if(sections == 2)
+	{
+	  new->uorder = 3;
+	}
+      else
+	{
+	  new->uorder = 4;
+	}
+    }
 
+  new->vorder = cs->order;
   new->vknot_type = cs->knot_type;
   new->uknot_type = AY_KTBSPLINE;
   new->width = sections+new->uorder-1;
@@ -2458,10 +2480,10 @@ ay_npt_closedsweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 
   new->glu_sampling_tolerance = cs->glu_sampling_tolerance;
 
+  /* allocate control point and knot arrays */
   if(!(controlv = calloc(cs->length*new->width*stride, sizeof(double))))
     { free(new); ay_status = AY_EOMEM; goto cleanup; }
   new->controlv = controlv;
-
   if(!(new->vknotv = calloc(cs->length+cs->order, sizeof(double))))
     {
       free(new); free(controlv);
@@ -2469,7 +2491,7 @@ ay_npt_closedsweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
     }
   if(!(new->uknotv = calloc(sections+4, sizeof(double))))
     {
-      free(new->vknotv); free(new); free(controlv);
+      free(new->vknotv); free(controlv); free(new);
       ay_status = AY_EOMEM; goto cleanup;
     }
 
@@ -2688,14 +2710,21 @@ ay_npt_birail1(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
       a += stride;
     }
 
+  /* allocate the new patch */
+  if(!(new = calloc(1, sizeof(ay_nurbpatch_object))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+
   /* calculate number of sections */
   if(sections <= 0)
     {
-      if(r2->length>r1->length)
-	a = r2->length;
+      if(r2->length > r1->length)
+	{
+	  a = r2->length;
+	}
       else
-	a = r1->length;
-
+	{
+	  a = r1->length;
+	}
       if(a == 2)
 	{
 	  sections = 1;
@@ -2704,31 +2733,36 @@ ay_npt_birail1(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 	{
 	  sections = a + 1;
 	}
+      new->uorder = r1->order;
+    }
+  else
+    {
+      if(sections > 2)
+	{
+	  new->uorder = 4;
+	}
+      else
+	{
+	  new->uorder = sections+1;
+	}
     } /* if */
 
-  /* calloc the new patch */
-  if(!(new = calloc(1, sizeof(ay_nurbpatch_object))))
-    { ay_status = AY_EOMEM; goto cleanup; }
-  if(!(controlv = calloc(cs->length*(sections+1)*stride, sizeof(double))))
-    { ay_status = AY_EOMEM; goto cleanup; }
-  if(!(new->vknotv = calloc(cs->length+cs->order, sizeof(double))))
-    { ay_status = AY_EOMEM; goto cleanup; }
-  if(!(new->uknotv = calloc(sections+4, sizeof(double))))
-    { ay_status = AY_EOMEM; goto cleanup; }
-
   new->vorder = cs->order;
-  if(sections > 2)
-    new->uorder = 4;
-  else
-    new->uorder = sections+1;
-  new->controlv = controlv;
-
-  new->vknot_type = cs->knot_type;
   new->uknot_type = AY_KTNURB;
+  new->vknot_type = cs->knot_type;
   new->width = sections+1;
   new->height = cs->length;
 
   new->glu_sampling_tolerance = cs->glu_sampling_tolerance;
+
+  /* allocate control point and knot arrays */
+  if(!(controlv = calloc(new->width*new->height*stride, sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  new->controlv = controlv;
+  if(!(new->uknotv = calloc(new->width+new->uorder, sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  if(!(new->vknotv = calloc(new->height+new->vorder, sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   ay_status = ay_knots_createnp(new);
   if(ay_status)
@@ -3178,14 +3212,21 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
   if(!(cs2cvi = calloc(cs2->length * stride, sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
 
+  /* allocate the new patch */
+  if(!(new = calloc(1, sizeof(ay_nurbpatch_object))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+
   /* calculate number of sections */
   if(sections <= 0)
     {
-      if(r2->length>r1->length)
-	a = r2->length;
+      if(r2->length > r1->length)
+	{
+	  a = r2->length;
+	}
       else
-	a = r1->length;
-
+	{
+	  a = r1->length;
+	}
       if(a == 2)
 	{
 	  sections = 1;
@@ -3194,32 +3235,36 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
 	{
 	  sections = a + 1;
 	}
+     new->uorder = r1->order;
+    }
+  else
+    {
+      if(sections > 2)
+	{
+	  new->uorder = 4;
+	}
+      else
+	{
+	  new->uorder = sections+1;
+	}
     } /* if */
 
-  /* calloc the new patch */
-  if(!(new = calloc(1, sizeof(ay_nurbpatch_object))))
-    { ay_status = AY_EOMEM; goto cleanup; }
-  if(!(controlv = calloc(cs1->length*(sections+1)*stride, sizeof(double))))
-    { ay_status = AY_EOMEM; goto cleanup; }
-  if(!(new->vknotv = calloc(cs1->length+cs1->order, sizeof(double))))
-    { ay_status = AY_EOMEM; goto cleanup; }
-  if(!(new->uknotv = calloc(sections+4, sizeof(double))))
-    { ay_status = AY_EOMEM; goto cleanup; }
-
-
   new->vorder = cs1->order;
-  if(sections > 2)
-    new->uorder = 4;
-  else
-    new->uorder = sections+1;
-  new->controlv = controlv;
-
-  new->vknot_type = cs1->knot_type;
   new->uknot_type = AY_KTNURB;
+  new->vknot_type = cs1->knot_type;
   new->width = sections+1;
   new->height = cs1->length;
 
   new->glu_sampling_tolerance = cs1->glu_sampling_tolerance;
+
+  /* allocate control point and knot arrays */
+  if(!(controlv = calloc(new->width*new->height*stride, sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  new->controlv = controlv;
+  if(!(new->uknotv = calloc(new->width+new->uorder, sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  if(!(new->vknotv = calloc(new->height+new->vorder, sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   ay_status = ay_knots_createnp(new);
   if(ay_status)
