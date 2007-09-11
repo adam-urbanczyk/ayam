@@ -31,7 +31,7 @@ ay_birail1_createcb(int argc, char *argv[], ay_object *o)
       return AY_ERROR;
     }
 
-  new->sections = 5;
+  new->sections = 0;
 
   o->parent = AY_TRUE;
   o->refine = new;

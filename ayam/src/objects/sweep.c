@@ -32,7 +32,7 @@ ay_sweep_createcb(int argc, char *argv[], ay_object *o)
     }
 
   new->rotate = AY_TRUE;
-  new->sections = 5;
+  new->sections = 0;
 
   o->parent = AY_TRUE;
   o->refine = new;
