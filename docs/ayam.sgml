@@ -3056,9 +3056,10 @@ lighted areas.
 </itemize>
 
 In order to ease the parameterisation of spot lights, you may drop the
-light source object on to a view object (preferably one with a perspective
-viewing transformation and with equal width and height) to see what objects
-of the scene are actually lighted by the light object.
+light source object onto a view object or into a view window
+(preferably one with a perspective viewing transformation and with equal
+width and height) to see what objects of the scene are actually lighted
+by the light object.
 
 <sect2>Using ShadowMaps<label id="shadowmaps">
 <p>
@@ -4023,20 +4024,18 @@ transformation attributes.
 <caption>Sweep Object (left: Curves, right: Resulting Swept Surface)</caption>
 </figure>
 <p>
-The sweep object forms a surface that results from
-moving a NURBS curve (cross section or profile) along a second NURBS curve
-(trajectory or path). The cross section may be scaled while sweeping
-using a third curve, the scaling function. Sweeped surfaces may be closed in
-the direction of the trajectory and, since Ayam 1.10, they may even be
-periodic.
+The sweep object forms a surface that results from moving a NURBS curve
+(cross section or profile) along a second NURBS curve (trajectory or path).
+The cross section may be scaled while sweeping using a third curve, the
+scaling function. Swept surfaces may be closed in the direction of the
+trajectory and, since Ayam 1.10, they may even be periodic.
 <p>
 The sweep object has the generating NURBS curves as child objects
 and watches their movements and adapts to them automagically.
-The first curve is the cross section,
-the second is the trajectory, and the third curve represents
-the scaling function.
+The first curve is the cross section, the second is the trajectory,
+and the third curve represents the scaling function.
 <p>
-The object hierarchy of a Sweep object, thus, may look like this:
+The object hierarchy of a Sweep object, thus, looks like this:
 <code>
 +-Sweep
  | Cross_Section(NCurve)
@@ -4047,7 +4046,7 @@ The object hierarchy of a Sweep object, thus, may look like this:
 Note that the <tt/"Translate"/ attributes of the cross section curve
 will be fully ignored. All other transformation attributes
 (of cross section and trajectory!) will be used to determine
-place, orientation and size of the sweep object!
+place, orientation, and size of the sweep object!
 <p>
 The cross section curve has to be defined in the YZ-plane of the
 Sweep objects coordinate system but it also has to be defined in the
@@ -4060,9 +4059,13 @@ the Sweep object itself is transformed somehow).
 <p>
 The scaling function is sampled for each section and the Y-component
 of the coordinates of the current curve point will be used as
-scale factor, that is applied to the cross section in Y- and Z-direction.
+scale factor that is applied to the cross section in Y-direction.
+Since Ayam 1.13, the Z-component will be used to independently scale the
+cross section in Z-direction. In earlier versions the Y-component
+was used to scale both directions.
 This implies, that e.g. a scaling function that does nothing should be
-linear from (0,1,0) to (1,1,0).
+a linear curve from (0,1,1) to (1,1,1).
+Scale components that are less than or equal zero will be ignored.
 <p>
 <figure loc="ht">
 <eps file="pics/ssweep.ps" height="5cm">
@@ -4100,17 +4103,34 @@ are any, to ordinary NURBS patches using the main menu entry
 <sect2>SweepAttr Property<label id="swp"><label id="sweepattrprop">
 <p>
 Since Ayam 1.10 the <tt/"Type"/ attribute controls, whether the
-sweeped surface should be open, closed, or periodic in the direction
+swept surface should be open, closed, or periodic in the direction
 of the trajectory curve.
 <p>
 If <tt/"Interpolation"/ is enabled, all section curves
-will be interpolated by the swept surface.
+will be interpolated by the swept surface. Instead of a
+NURBS knot vector, the swept surface will then get a
+Custom knot vector (calculated by knot averaging) and the
+sweep will interpolate the trajectory more closely.
 <p>
 The third parameter, <tt/"Sections"/, determines how many
 sections (in u direction) should be used, when generating the
 sweep NURBS patch. The sweep NURBS patch has sections+1 control
-points in u direction for open and closed types, and sections+3
-control points for periodic types.
+points in u direction for open and closed sweep types, and sections+order
+control points for periodic sweep types.
+Since Ayam 1.13, also zero is a valid setting for the <tt/"Sections"/
+parameter and used as new default value. If <tt/"Sections"/ is zero
+the number of sections is directly derived from the length of the
+trajectory curve plus one (except for trajectory curves of length 2,
+where it is 1).
+<p>
+Consequently, if <tt/"Sections"/ is zero, for a standard NURBS curve of
+length 4, the number of sections used is 5 and the width of the created
+NURBS patch is 6.
+<p>
+If <tt/"Sections"/ is zero, the order of the sweep in u direction
+is taken from the trajectory curve. Otherwise, the order of the created
+patch depends on the number of sections as follows: for 1 and 2 sections
+the order will be 2 and 3 respectively, in all other cases it will be 4.
 <p>
 If <tt/"Rotate"/ is enabled, the cross sections will be
 rotated so that they are always perpendicular to the trajectory,
@@ -4132,6 +4152,9 @@ A more thorough discussion of those options is available in section
 <p>
 See section <ref id="npattr" name="NPatchAttr"> for a description
 of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
+<p>
+To help in the exact configuration of the sweep, the <tt/"NPInfo"/
+field always displays the parameters of the created NURBS patch.
 
 <sect1>Birail1 Object<label id="birail1obj">
 <p>
@@ -4190,7 +4213,16 @@ The following parameters further control the birailing process:
 The parameter <tt/"Sections"/ determines how many
 sections (in u direction) should be used, when generating the
 birailed NURBS patch. The birailed NURBS patch always has sections+1 control
-points in u direction.
+points in u direction. Since Ayam 1.13, also zero is a valid setting for
+the <tt/"Sections"/ parameter and used as new default value.
+If <tt/"Sections"/ is zero the number of sections is directly derived from
+the length of the first rail curve plus one (except for curves of length 2,
+where it is 1).
+<p>
+If <tt/"Sections"/ is zero, the order of the birail in u direction
+is taken from the first rail curve. Otherwise, the order of the created
+patch depends on the number of sections as follows: for 1 and 2 sections
+the order will be 2 and 3 respectively, in all other cases it will be 4.
 <p>
 The attributes <tt/"StartCap"/ and <tt/"EndCap"/ may be
 used to automatically create cap surfaces, that close the
@@ -4208,6 +4240,9 @@ A more thorough discussion of those options is available in section
 <p>
 See section <ref id="npattr" name="NPatchAttr"> for a description
 of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
+<p>
+To help in the exact configuration of the birail, the <tt/"NPInfo"/
+field always displays the parameters of the created NURBS patch.
 
 <sect1>Birail2 Object<label id="birail2obj">
 <p>
@@ -4285,10 +4320,20 @@ The following parameters control the birailing process:
 The parameter <tt/"Sections"/ determines how many sections (in u direction)
 should be used, when generating the birailed NURBS patch. The birailed
 NURBS patch always has sections+1 control points in u direction.
+Since Ayam 1.13, also zero is a valid setting for
+the <tt/"Sections"/ parameter and used as new default value.
+If <tt/"Sections"/ is zero the number of sections is directly derived from
+the length of the first rail curve plus one (except for curves of length 2,
+where it is 1).
+<p>
+If <tt/"Sections"/ is zero, the order of the birail in u direction
+is taken from the first rail curve. Otherwise, the order of the created
+patch depends on the number of sections as follows: for 1 and 2 sections
+the order will be 2 and 3 respectively, in all other cases it will be 4.
 <p>
 The parameter <tt/"InterpolCtrl"/ allows the interpolation controlling
 curve full influence on the birailed surface.
-If <tt/"InterpolCtrl"/ is not enabled, the first and last border of the
+If <tt/"InterpolCtrl"/ is disabled, the first and last border of the
 resulting surface will always exactly match the parameter curves (CS1 and
 CS2 respectively), regardless of the interpolation control curve.
 <p>
@@ -4308,6 +4353,9 @@ A more thorough discussion of those options is available in section
 <p>
 See section <ref id="npattr" name="NPatchAttr"> for a description
 of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
+<p>
+To help in the exact configuration of the birail, the <tt/"NPInfo"/
+field always displays the parameters of the created NURBS patch.
 
 <sect1>Skin Object<label id="skinobj">
 <p>
@@ -4415,6 +4463,9 @@ A more thorough discussion of those options is available in section
 <p>
 See section <ref id="npattr" name="NPatchAttr"> for a description
 of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
+<p>
+To help in the exact configuration of the skin, the <tt/"NPInfo"/
+field always displays the parameters of the created NURBS patch.
 
 <sect1>Gordon Object<label id="gordonobj">
 <p>
@@ -4548,6 +4599,9 @@ of 4 will be used.
 <p>
 See section <ref id="npattr" name="NPatchAttr"> for a description
 of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
+<p>
+To help in the exact configuration of the Gordon surface, the <tt/"NPInfo"/
+field always displays the parameters of the created NURBS patch.
 
 <sect1>Bevel Object<label id="bevelobj">
 <p>
@@ -4611,6 +4665,10 @@ a single point in the center of the last bevel profile and extending the
 beveled surface to this point.
  </itemize>
 
+Note that the bevel types <tt/"RoundCapped"/ and <tt/"LinearCapped"/
+lead to degenerated NURBS surfaces. If applied shaders or textures
+look wrong, consider creation of real cap surfaces instead.
+
 <item><tt/"BevelRadius"/ controls the size of the bevelled surface when seen
 from the top of the parameter curve. Note that the size of the bevel is
 expressed in units defined by the object coordinate system of the
@@ -4628,9 +4686,8 @@ See section <ref id="npattr" name="NPatchAttr"> for a description
 of the two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/
 of the <tt/"BevelAttr"/ property.
 <p>
-Note that the bevel types <tt/"RoundCapped"/ and <tt/"LinearCapped"/
-lead to degenerated NURBS surfaces. If applied shaders or textures
-look wrong, consider creation of real cap surfaces instead.
+To help in the exact configuration of the bevel, the <tt/"NPInfo"/
+field always displays the parameters of the created NURBS patch.
 
 <sect1>Cap Object<label id="capobj">
 <p>
@@ -4696,6 +4753,9 @@ object above.
 See section <ref id="npattr" name="NPatchAttr"> for a description
 of the two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/
 of the <tt/"CapAttr"/ property.
+<p>
+To help in the exact configuration of the cap, the <tt/"NPInfo"/
+field always displays the parameters of the created NURBS patch.
 
 <sect1>ICurve (Interpolating Curve) Object<label id="icurveobj">
 <p>
@@ -6287,7 +6347,7 @@ of it somewhere.
 </figure>
 <itemize>
 <item>Arguments: The trim curves tool takes all selected NURBS curves from
-the selection and additionally requests two parametric values.
+the selection and additionally requests two parametric values, umin and umax.
 <item>Operation: The selected NURBS curves will be trimmed to the
 designated parametric range (umin, umax).
 <item>Note: The trimming process involves the application of knot insertion
@@ -6633,7 +6693,8 @@ This tool does not change the geometry of the patches.
 NURBS patches from the selection and request a minimum distance value.
 <item>Operation: The knot vectors of the patches will be scaled, so that
 no two knots have a distance smaller than the given minimum distance
-(except for multiple knots).
+(except for multiple knots). Trim curves, if present, will also be scaled
+to match the new range.
 <item>Note: The knot types of the patch have to be <tt/"Custom"/!
 This tool does not change the geometry of the patches.
 </itemize>
@@ -6657,15 +6718,18 @@ This tool does not change the geometry of the patches.
 The point selection will be removed from the original object.
 </itemize>
 
-<sect1>The Patch Split Tool<label id="splitnpt">
+<sect1>The Patch Split Tools<label id="splitnpt">
 <p>
 <itemize>
-<item>Arguments: The patch split tool takes a number of NURBS patches from
-the selection and requests a parametric value t.
+<item>Arguments: The patch split tools take a number of NURBS patches from
+the selection and request a parametric value t (in u or v dimension,
+respectively).
 <item>Operation: The patches will be split at the parametric value t
-into two patches using knot insertion. The original patch will be
-modified and a new patch will be created.
+into two patches (in u or v dimension, respectively) using knot insertion.
+<item>Note: The original patch will be modified and a new patch will be
+created.
 The point selection will be removed from the original object.
+Trim curves will not be honored properly.
 </itemize>
 
 <sect1>The Extract Patch Tool<label id="extrnpt">
@@ -6675,7 +6739,9 @@ The point selection will be removed from the original object.
 the selection and requests four parametric values: umin, umax, vmin, and vmax.
 <item>Operation: Sub-patches will be extracted from the selected NURBS patch
 objects, defined by the specified parametric values, and new NURBPatch objects
-will be created. The original selected NURBPatch objects will not be changed.
+will be created.
+<item>Note: The original selected NURBPatch objects will not be changed.
+Trim curves will not be honored properly.
 </itemize>
 
 <sect1>The Split to Curves Tool<label id="sptct">
@@ -6794,6 +6860,11 @@ Tcl script files, that may be loaded at any time into Ayam using
 the console and the Tcl command <tt/"source"/.
 You can also arrange for a script to be executed automatically
 on startup using the preference setting <tt>"Main/Scripts"</tt>.
+In contrast to other modeling environments, in Ayam there is a
+third way to run scripts. In Ayam, scripts may also be attached
+to script objects and run when the notification mechanism updates
+the scene. See also section
+<ref id="scriptobj" name="Script object">.
 <p>
 Note that most of the scripting interface commands listed in this
 documentation work in the background, without changing anything to
@@ -6803,7 +6874,7 @@ various parts of the GUI (property GUIs, view windows) explicitly
 (see also section <ref id="sciupd" name="Updating the GUI">).
 Since Ayam 1.13 it is also possible to automatically run GUI updating
 commands in the console by using <tt/&lt;Shift+Return&gt;/ instead
-of <tt/&lt;Return&gt;/.
+of <tt/&lt;Return&gt;/ when issuing scripting interface commands.
 <p>
 If you want your changes to be undoable, you have to arrange for
 this manually too
@@ -6858,6 +6929,7 @@ The complete array is saved in the <tt/"ayamrc"/ file upon exit,
 so be careful when adding new entries.
 You can reset your <tt/"ayamrc"/ file anytime using the command line
 option <tt/"-failsafe"/.
+See also section <ref id="ayamrc" name="Ayamrc File">.
 Use <tt/"parray ayprefs"/ in the console to see what is there.
 More documentation to come.
 
@@ -6874,7 +6946,7 @@ The names of the array and the callbacks may be inferred from another global
 array that is always named like the property itself, e.g. for the tags
 property the following global array <tt/"Tags"/ is defined:
 <code>
-array set Tags {
+Tags {
 arr   tagsPropData
 sproc setTagsp
 gproc getTagsp
@@ -6932,7 +7004,7 @@ To create new objects the <tt/"crtOb"/ command can be used.
 type may be derived from the type name, as displayed in the tree view.<p>
 
 Depending on the type, further arguments may (or have to) be given,
-other types expect objects to be selected:<p>
+some object types expect other objects to be selected:<p>
   <itemize>
   <item><tt/"NCurve"/: NURBS curves accept a single integer as length of
 the new curve, the length defaults to 4. Example:
@@ -7832,8 +7904,8 @@ file in tmpdir and puts the complete name into varname.
 hasChild:
 <itemize>
  <item>Synopsis: <tt>"hasChild"</tt>
- <item>Description: This command returns 0 if the selected object
-has no child objects, otherwise it returns 1.
+ <item>Description: This command returns 1 if the selected object
+has child objects, otherwise it returns 0.
 </itemize>
 
 <p><label id="scundo">
@@ -7849,11 +7921,12 @@ undo:
   <item>If the argument is <tt/"save"/, the currently selected objects
   are saved to the undo buffer for future undo operations. The name
 of the now following modelling operation has to be provided in a second
-argument.
+argument (<tt/"opname"/).
 This name will be displayed in the default console prompt, to inform the
 user about which operation would be undone/redone, if undo/redo would be
 used.
-  <item>If the argument is <tt/"clear"/, the undo buffer is cleared.
+  <item>If the argument is <tt/"clear"/, all currently saved states
+will be cleared from the undo buffer.
  </itemize>
 </itemize>
 See also section <ref id="undos" name="The Undo System">.
@@ -7864,7 +7937,7 @@ convOb:
  <item>Synopsis: <tt>"convOb [-inplace]"</tt>
  <item>Description: This command calls the registered converter
 for the selected object(s). If the option <tt>"-inplace"</tt> is
-used the new object(s) will replace the old object(s).
+used, the new object(s) will replace the old object(s).
 </itemize>
 
 <p><label id="scforcenot">
@@ -7872,13 +7945,12 @@ forceNot:
 <itemize>
  <item>Synopsis: <tt>"forceNot [mod|all]"</tt>
  <item>Description: This command calls the registered notification
-callback for the selected object(s) and their parents, or if no object
-is selected for all objects of the scene.
+callback for the selected object(s) and their parents, or, if no object
+is selected, for all objects of the scene.
 If the <tt>"mod"</tt> parameter is used, only modified objects
 will be notified.
 If the <tt>"all"</tt> parameter is used, all objects
 will be notified regardless of the selection.
-
 </itemize>
 
 <p><label id="scaddtoproc">
@@ -7978,9 +8050,9 @@ For instance, using the next small script.
 
 <sect2>Easy Sweep<label id="scexsweep">
 <p>
-The following example script shows how to easily create a
-sweep from a selected path curve (avoiding the manual and lengthy creation
-and parameterisation of a suitable cross section).
+The following example script shows how to easily create a sweep from a
+selected path curve (avoiding the manual and lengthy creation and
+parameterisation of a suitable cross section).
 <code>
 proc easySweep { } {
  # first, we create a sweep object
@@ -8014,7 +8086,7 @@ proc easySweep { } {
  scalOb 0.25 0.25 1.0
 
  # move trajectory back (we use "cmovOb" and _not_ "pasOb", because we
- # really move (and not copy) the curve
+ # really want to move (and not copy) the curve object
  cmovOb
  # go up to where we came from
  goUp
@@ -8022,6 +8094,7 @@ proc easySweep { } {
  # update GUI
  uS
  sL
+
  # redraw all views
  rV
 }
@@ -8107,6 +8180,90 @@ button $f.b2 -width 5 -text "Expl." -command { explMP; rV; }
 pack $f.b1 $f.b2 -side left -fill x -expand yes
 </code>
 
+<sect1>Helper Scripts
+<p>
+This sections contains the documentation of some helper scripts
+that are distributed with Ayam.
+<p>
+All helper scripts may be run via the context menu of the console, the
+<tt>"source"</tt> command, or the <tt>"Scripts"</tt> preference
+setting of Ayam on each start.
+
+<sect2>Repair Ayam<label id="repayam">
+<p>
+Since Ayam 1.8.2 an external Tcl script named <tt>"repairAyam.tcl"</tt> is
+provided that may be used to repair the application state of Ayam
+should it be stuck e.g. in an endless loop of Tcl error messages.
+<p>
+On Unix systems <tt>"repairAyam"</tt> may be started from any
+shell simply by typing <tt>"./repairAyam.tcl"</tt> or
+<tt>"wish repairAyam.tcl"</tt> (without the quotes)
+on the command prompt; if the script detects that it is running on Unix
+and not in Ayam it will send itself to the Tcl interpreter Ayam is
+running in using the Tk send command. On Mac OS X Aqua (not X11!)
+AppleScript events will be used instead of the Tk send command.
+If this does not work as expected <tt>"repairAyam.tcl"</tt> may still
+be run via the Ayam console (as on Win32).
+<p>
+On Win32 you have to start <tt>"repairAyam.tcl"</tt> from the Ayam console
+using the command: <tt>"source scripts/repairAyam.tcl"</tt> or using
+the consoles context menu: <tt>"Console/Load File"</tt>.
+<p>
+The script <tt>"repairAyam.tcl"</tt> should be considered a last resort
+to help you save your modified objects!
+<p>
+The script will close all views, clean up the application state variables,
+reset the mouse cursor and the console prompt, and try to update important
+main window widgets. Since Ayam 1.9 it will also clear the console and
+try to break potential endless loops running e.g. in the console or
+in script objects.
+<p>
+After running <tt>"repairAyam.tcl"</tt> you should immediately save
+the scene (or just the important objects you were editing, possibly using
+<tt>"Special/Save Selected"</tt>) to a scratch file and restart Ayam.
+
+<sect2>Convert Everything to Polygons<label id="topoly">
+<p>
+Since Ayam 1.13 there ist a script named <tt>"topoly.tcl"</tt> that
+recursively browses through the scene and converts everything
+to a polygonal representation.
+<p>
+After running the script, there is a new button in the toolbox
+named <tt>"ToPolyMesh"</tt>. Additionally, there is a corresponding
+entry in the <tt>"Custom"</tt> main menu.
+Pressing the button or using the menu entry immediately starts the
+conversion process.
+<p>
+Since the changes of the conversion are not undoable, the conversion
+will not run if the scene contains unsaved changes.
+<p>
+The conversion will use the parameters from the preference settings
+<tt/"SMethod"/, <tt/"SParamU"/, and <tt/"SParamV"/ or from <tt/"TP"/
+tags (if present).
+TP tags may be created easily using the tesselation tool, see also
+section <ref id="tesst" name="The Tesselation Tool">).
+
+<sect2>Restrict the Console<label id="twolcons">
+<p>
+The script <tt>"2lcons.tcl"</tt> (for two line console), may be
+used to restrict the screen space occupied by the console.
+<p>
+Normally, the Ayam console is resized with the main window and
+occupies a varying amount of screen space.
+After running the script, the console will always resize to exactly
+two lines. Different values may be chosen easily by adapting the
+script.
+
+<sect2>Access Core Functions from Toolbox<label id="zaptcl">
+<p>
+The script <tt>"zap.tcl"</tt> demonstrates, how arbitrary core
+functionality that is just available through a main menu entry
+or the scripting interface might be accessed easily via the
+toolbox.
+<p>
+After running the script, there will be a new toolbox button,
+that runs the zap command.
+
 <sect>Import and Export<label id="impex">
 <p>
 This section contains the documentation of all import and export
@@ -8132,7 +8289,7 @@ features per file format.
 <tabular ca="|c|c|c|c|c|c|c|"><hline>
 Feature|RIB|OBJ|3DMF(Apple)|DXF|3DM(Rhino)|X3D@<hline>
 
-Quadrics|Yes|No<f><sup>1</sup></f>|Yes|No<f><sup>2</sup></f>|Some<f><sup>4</sup></f>|Yes@<hline>
+Quadrics|Yes|No<f><sup>1</sup></f>|Some<f><sup>4</sup></f>|No<f><sup>2</sup></f>|Some<f><sup>4</sup></f>|Some<f><sup>4</sup></f>@<hline>
 
 Trimmed NURBS|Yes|Yes|Yes|No<f><sup>2</sup></f>|Yes|Yes<f><sup>3</sup></f>@<hline>
 
@@ -8155,19 +8312,21 @@ CSG|Yes|No|No|No|No|No@<hline>
 <item>will be converted to NURBS
 <item>will be converted to PolyMeshes
 <item>3D trimcurves exported as PolyLines
-<item>Spheres, Cylinders, Cones, and Tori, otherwise converted to NURBS
-<item>Revolutions and general Sweeps, otherwise converted to NURBS
+<item>some quadrics are converted to NURBS (refer to plugin documentation)
+<item>some parametrics are converted to NURBS (refer to plugin documentation)
 </enum>
 
-Note that a successful export not only depends on Ayam but also on the
-quality of the importing application. For instance, many applications
-claim to read files in the Wavefront OBJ format but only import polygonal
-data or, even worse, only triangles from such files. By default, Ayam
-tries to preserve as much information as possible in the respective
-export format leading to the use of NURBS in OBJ.
+Note that a successful export of a 3D scene to a different application
+not only depends on Ayam but also on the quality of the importing
+application. For instance, many applications claim to read files in the
+Wavefront OBJ format but only import polygonal data or, even worse, only
+triangles from such files. By default, Ayam tries to preserve as much
+information as possible in the respective export format leading to the
+use of NURBS in OBJ files.
 Consequently, in some cases you may need to convert the NURBS objects in
 the Ayam scene to polygonal geometry before export. There is a script
-provided (<tt>"toPoly"</tt>) that helps you doing this.
+provided that helps you doing this (<tt>"topoly.tcl"</tt>, see also section
+<ref id="topoly" name="Convert Everything to Polygons">).
 <p>
 Ayam is not perfect either, as in most import options material and
 animation data is completely ignored.
@@ -8190,7 +8349,7 @@ in detail.
 <sect1>RenderMan Interface Bytestream (RIB) Import<label id="imprib">
 <p>
 Using the RRIB (Read RIB) plugin you may import RenderMan Interface
-Bytestreams into Ayam.
+Bytestreams of version 3.0 into Ayam.
 Start importing a RIB using the menu entry
 <tt>"File/Import/RenderMan RIB"</tt>
 (if this menu entry is not available, you have to load the
@@ -8279,11 +8438,14 @@ Note that for NURBS patches and bicubic patch meshes, points of type
 the knot ranges is not supported (however, since Ayam 1.9 UMM/VMM
 tags will be created, that contain the new knot minimum and maximum
 values).
+<p>
 Furthermore, objects of type (general) polygon and polygon mesh will
 be promoted to general polygon meshes.
+<p>
 Object-instances are resolved to normal objects while importing.
 Instances may be easily created again using Automatic Instancing
 (see section <ref id="ai" name="Automatic Instancing">).
+<p>
 Procedural objects will not be evaluated, instead, RiProc objects
 will be created, that carry all arguments and create the same
 sequence of RIB requests upon export as was read upon import.
@@ -8373,7 +8535,7 @@ The DXF import supports reading of the following entities:
 POLYLINE, LWPOLYLINE, and SPLINE. Entities not listed here will
 be silently ignored.
 <p>
-3DFACE entities are imported as PolyMesh objects if only the first
+3DFACE entities are imported as PolyMesh objects if either only the first
 three points are unique (the entity describes a triangle) or the face
 is planar else as BPatch objects.
 <p>
@@ -8381,10 +8543,12 @@ ARC, CIRCLE, and ELLIPSE entities will be read as NCircle objects with
 corresponding <tt/"TMin"/, <tt/"TMax"/ parameters (for arcs and ellipses)
 and scale transformation values (for ellipses) set.
 <p>
-POLYLINE entities are completely supported: Polylines will be imported as
-NURBCurve objects; PolyMeshes and PolyFaceMeshes
-will be imported as PolyMesh objects; B-Spline and Bezier surfaces
-will be imported as NURBPatch objects.
+POLYLINE entities are completely supported: 
+<itemize>
+<item>Polylines will be imported as NURBCurve objects;
+<item>PolyMeshes and PolyFaceMeshes will be imported as PolyMesh objects;
+<item>B-Spline and Bezier surfaces will be imported as NURBPatch objects.
+</itemize>
 <p>
 LINE, LWPOLYLINE, and SPLINE entities will be imported as NURBCurve objects.
 <p>
@@ -8501,15 +8665,16 @@ to DXF entities; from 50 to 100 percent, Dime is writing the DXF file.
 Since Ayam 1.8.3 a Wavefront OBJ (version 3.0) import facility is available
 and since Ayam 1.13 it is a plugin (objio) that needs to be loaded
 before import.
-The corresponding main menu entry is
-<tt>"File/Import/Wavefront OBJ"</tt>.
+The corresponding main menu entry is <tt>"File/Import/Wavefront OBJ"</tt>
+(if this menu entry is not available, you have to load the <tt>"objio"</tt>
+plugin using the menu entry <tt>"File/Load Plugin"</tt> first).
 <p>
 <sect2>Wavefront OBJ Object Support
 <p>
 Wavefront OBJ import supports reading of polygonal faces with vertex
-normals and texture coordinates (read as primitive variable tags) and
-freeform curves and surfaces (NURBS) with trim curves and with
-texture coordinates (read as primitive variable tags).
+normals and texture coordinates (the latter are read as primitive variable
+tags) and freeform curves and surfaces (NURBS) with trim curves and with
+texture coordinates (again read as primitive variable tags).
 <p>
 Freeform curves and surfaces of basis type bmatrix, cardinal and taylor
 are currently not supported. Also, import of special curves and
@@ -8520,6 +8685,15 @@ tags will be created, that contain the new knot minimum and maximum
 values). No material and grouping information will be imported.
 Unsupported statements will be silently ignored.
 <p>
+Wavefront OBJ import expects the file to be syntactically correct.
+The plugin is not very good in detecting and reporting errors. If the
+import fails, use third party tools first (e.g. a demo version of Okino
+Graphics PolyTrans(R)), to check whether the Wavefront OBJ file is
+valid at all.
+<p>
+Furthermore, note that the objio plugin supports Wavefront version 3.0
+syntax only, files that use older syntax will not be imported correctly.
+
 <sect2>Wavefront OBJ Import Options<label id="impwavopt">
 <p>
 The following options control the Wavefront OBJ import process:
@@ -8547,23 +8721,15 @@ for the t component of the texture coordinates.
 from 0 to 100 percent, the objio plugin is reading lines from the
 Wavefront OBJ file and creating Ayam objects.
 </itemize>
-<p>
-Wavefront OBJ import expects the file to be syntactically correct.
-The plugin is not very good in detecting and reporting errors. If the
-import fails, use third party tools first (e.g. a demo version of Okino
-Graphics PolyTrans(R)), to check whether the Wavefront OBJ file is
-valid at all.
-<p>
-Furthermore, note that Ayam supports Wavefront version 3.0 syntax only,
-files that use older syntax will not be imported correctly.
 
 <sect1>Wavefront OBJ Export<label id="expwav">
 <p>
 Since Ayam 1.7, it is possible to export scenes or objects to the Wavefront
 OBJ format (version 3.0). Since Ayam 1.13, Wavefront OBJ export is a plugin
 (objio) that needs to be loaded before export.
-The corresponding main menu entry is
-<tt>"File/Export/Wavefront OBJ"</tt>.
+The corresponding main menu entry is <tt>"File/Export/Wavefront OBJ"</tt>
+(if this menu entry is not available, you have to load the <tt>"objio"</tt>
+plugin using the menu entry <tt>"File/Load Plugin"</tt> first).
 
 <sect2>Ayam Object and Properties Support
 <p>
@@ -8626,17 +8792,19 @@ to the Wavefront OBJ file.
 <sect1>3DMF (Apple) Import<label id="imp3dmf">
 <p>
 Using the MFIO plugin you may import scenes from the 3DMF format
-(version 1.0 only!) from Apple with the help of a free 3DMF parser created
+(QuickDraw 3D Metafile)
+from Apple with the help of a free 3DMF parser created
 by Duet Development Corp. and distributed by Apple.
 Start importing a 3DMF file using the menu entry
 <tt>"File/Import/Apple 3DMF"</tt> (if this menu entry is not available,
 you have to load the <tt>"mfio"</tt> plugin using the menu entry
 <tt>"File/Load Plugin"</tt> first).
 <p>
+The MFIO plugin only supports the 3DMF version 1.0!
 
 <sect2>3DMF Primitive and Attribute Support
 <p>
-3DMF import supports the following geometric primitives:
+The MFIO plugin supports the following geometric primitives:
 <itemize>
 <item>Polyline, Triangle, TriGrid, Polygon, general Polygon, Box,
 <item>NURBS curve, NURBS surface (with trim curves),
@@ -8672,12 +8840,15 @@ imported. This option does not influence the import of trim curves.
 
 <sect1>3DMF (Apple) Export<label id="exp3dmf">
 <p>
-Using the MFIO plugin you may export scenes to the 3DMF format (version
-1.0 only!) from Apple with the help of a free 3DMF parser created by Duet
+Using the MFIO plugin you may export scenes to the 3DMF format
+(QuickDraw 3D Metafile)
+from Apple with the help of a free 3DMF parser created by Duet
 Development Corp. and distributed by Apple. Start exporting to a
 3DMF file using the menu entry <tt>"File/Export/Apple 3DMF"</tt>
 (if this menu entry is not available, you have to load the <tt>"mfio"</tt>
 plugin using the menu entry <tt>"File/Load Plugin"</tt> first).
+<p>
+The MFIO plugin only supports the 3DMF version 1.0!
 
 <sect2>Ayam Object and Properties Support
 <p>
@@ -8689,6 +8860,9 @@ NURBS curve/surface providing objects, such as ICurve, Skin etc.,
 <item>Box, and PolyMesh.
 </itemize>
 
+Objects of types not listed here will be converted to NURBS
+(if possible) or to PolyMesh objects automatically for export.
+<p>
 All transformations are supported and will be written as
 Translate, Rotate, and Scale transformations, respectively.
 <p>
@@ -8696,8 +8870,8 @@ All Instance objects will be resolved for export.
 Level objects (regardless of type) will be written as Container objects.
 <p>
 If an object has a material, the color and opacity of the material
-will be written as DiffuseColor and TransparencyColor, if the red
-component has a value different from -1.
+will be written as DiffuseColor and TransparencyColor, if the respective
+red color component has a value different from -1.
 <p>
 Support for export of lights, camera attributes as well as
 material attributes other than material color and opacity is currently
@@ -8745,6 +8919,8 @@ Mesh objects will be imported to PolyMesh objects, texture
 coordinates will be read and appropriate PV tags will be
 created for them.
 <p>
+The onio plugin only supports import of 3DM files of version 3.0
+and earlier.
 
 <sect2>3DM Import Options<label id="imp3dmopt">
 <p>
@@ -8764,17 +8940,20 @@ imported. This option does not influence the import of trim curves.
 By default, all objects from all layers will be imported.
 Using the <tt/"ReadLayers"/ import option, a single layer or a range
 of layers may be selected for import.
-<item><tt/"IgnoreFirstTrim"/:
-Another import option is <tt/"IgnoreFirstTrim"/, this is useful
-if the first bounding trim loop of NURBS surfaces should be ignored.
-This trim loop is often not needed, because it encloses the whole
-surface that is not trimmed further in many cases. Importing this
-trim loop will often just make the Ayam scene more complex than needed.
+<item><tt/"IgnoreSimpleTrim"/:
+Another import option is <tt/"IgnoreSimpleTrim"/. This useful to
+ignore the bounding trim loop of NURBS surfaces if it is the only trim
+loop for that surface.
+Importing this single bounding trim loop would just make the Ayam scene
+more complex than needed in many cases.
+This option replaces the <tt/"IgnoreFirstTrim"/ import option
+available before Ayam 1.13 with slightly different semantics.
 <item><tt/"RescaleKnots"/ allows to rescale the knot vectors of
 NURBS curves, patches, and trim curves so that the distances between different
 knots are not smaller than the given value. Using a value of 1.0e-04 leads
 to NURBS that may be safely drawn using GLU. The default value 0.0 means
-no scaling.
+no scaling. Since Ayam 1.13 trim curves will be scaled properly to
+the new knot ranges of NURBS patches.
 <item><tt>"STagName"</tt> controls the name of the PV tag to be used
 for the s component of the texture coordinates, and
 <item><tt>"TTagName"</tt> controls the name of the PV tag to be used
@@ -8904,48 +9083,55 @@ Start importing from a Web3D X3D file using the menu entry
 The import functionality of the <tt>"x3dio"</tt> plugin currently covers
 import of the following elements:
 <itemize>
-<item>Geometry3D: Box, Sphere, Cylinder, Cone, ElevationGrid, IndexedFaceSet,
-IndexedTriangleSet, IndexedTriangleStripSet, IndexedTriangleFanSet,
-TriangleSet, TriangleStripSet, TriangleFanSet, IndexedLineSet, and
-LineSet.
-
+<item>Geometry3D:
+Box, Sphere, Cylinder, Cone, ElevationGrid, Extrusion,
+IndexedFaceSet, IndexedTriangleSet, IndexedTriangleStripSet,
+IndexedTriangleFanSet, TriangleSet, TriangleStripSet, TriangleFanSet,
+IndexedLineSet, and LineSet.
+<p>
 Cylinders with just one cap are imported as two objects (a Cylinder and
 a Disk). In all other cases the <tt>"Closed"</tt> attribute of the Ayam
 object is set according to the cap information of the X3D element.
-
+<p>
 ElevationGrids are imported as bilinear patch meshes.
 
 <item>Geometry2D:
 Arc2D, ArcClosed2D, Circle2D, Disk2D, Polyline2D.
-
+<p>
 Arcs and Circles are imported as NCircle objects.
 Closed arcs and Polylines are imported as NURBS curves.
 Disks with an inner radius > 0.0 are imported as Hyperboloids (otherwise
 as Disks).
 
-<item>NURBS: NurbsCurve, NurbsCurve2D, NurbsPatchsurface,
+<item>NURBS:
+NurbsCurve, NurbsCurve2D, NurbsPatchsurface,
 TrimmedNurbsPatchsurface, Contour2D, ContourPolyline2D,
 NurbsSweptSurface, NurbsSwungSurface.
 
-<item>CAD: QuadSet, IndexedQuadSet, CADLayer.
-
+<item>CAD:
+QuadSet, IndexedQuadSet, CADLayer.
+<p>
 CADLayer objects will be imported as top level level objects.
 
-<item>Light sources: DirectionalLight, PointLight, SpotLight.
-
+<item>Light sources:
+DirectionalLight, PointLight, SpotLight.
+<p>
 The lights will be directly mapped to the standard RenderMan
 light sources distant, point, and spot, respectively.
 Therefore, the <tt>"radius"</tt> and the <tt>"attenuation"</tt> attributes
 of point and spotlights are not supported. However, point and spotlights
 still have a quadratic falloff with distance.
 
-<item>Navigation: Viewpoint.
+<item>Navigation:
+Viewpoint.
+<p>
+Viewpoint elements will be imported as view objects (with corresponding
+view window) or camera objects depending on the <tt>"ReadViewports"</tt>
+import option.
 
-Viewpoint elements will be imported as view or camera objects
-depending on the <tt>"ReadViewports"</tt> import option.
-
-<item>Non geometric/Scene structure: Transformation, Shape, Group, Inline.
-
+<item>Non geometric/Scene structure:
+Transformation, Shape, Group, Inline.
+<p>
 Shear transformations are not supported.
 <p>
 The semantics for inlining are not fully standards compliant.
@@ -9045,10 +9231,12 @@ than three points are tesselated if the export option xyz is used.
 All tesselated faces will be exported to a second IndexedFaceSet
 element.
 <p>
-Light sources are exported.
+Light sources are exported if they are point, distant, or spot lights.
 <p>
 Cameras and Views are exported as Viewpoint nodes. Note however, that
-X3D always assumes a perspective viewing transformation.
+X3D always assumes a perspective viewing transformation. This means,
+views of type <tt/"Front"/, <tt/"Side"/, or <tt/"Top"/ will not be
+exported properly.
 <p>
 Object names will be converted to DEF attributes.
 
@@ -9159,8 +9347,8 @@ will adapt to your changes but certainly neither this documentation nor
 the tutorials!
 Ayam does not check for clashes! This means, the last set binding
 for a key will be used.
-On Unix, the output of the program <tt/xev/ and the
-manual page for the <tt/bind/ command of Tk provide helpful
+On Unix, the output of the program <tt/"xev"/ and the
+manual page for the <tt/"bind"/ command of Tk provide helpful
 information about which strings may be used to describe
 key presses.
 You can also directly use the Ayam console to infer key names, just enter:
@@ -9400,39 +9588,6 @@ of the Netscape WWW browser (used to display the documentation URL)
 <item><tt>"SHADERS"</tt>: initial value of <tt>"Shaders"</tt> preference
 setting (used if no ayamrc file exists).
 </itemize>
-
-<sect1>Repair Ayam<label id="repayam">
-<p>
-Since Ayam 1.8.2 an external Tcl script named <tt>"repairAyam.tcl"</tt> is
-provided that may be used to repair the application state of Ayam
-should it be stuck e.g. in an endless loop of Tcl error messages.
-<p>
-On Unix systems <tt>"repairAyam"</tt> may be started from any
-shell simply by typing <tt>"./repairAyam.tcl"</tt> or
-<tt>"wish repairAyam.tcl"</tt> (without the quotes)
-on the command prompt; if the script detects that it is running on Unix
-and not in Ayam it will send itself to the Tcl interpreter Ayam is
-running in using the Tk send command. On Mac OS X Aqua (not X11!)
-AppleScript events will be used instead of the Tk send command.
-If this does not work as expected <tt>"repairAyam.tcl"</tt> may still
-be run via the Ayam console (as on Win32).
-<p>
-On Win32 you have to start <tt>"repairAyam.tcl"</tt> from the Ayam console
-using the command: <tt>"source scripts/repairAyam.tcl"</tt> or using
-the consoles context menu: <tt>"Console/Load File"</tt>.
-<p>
-The script <tt>"repairAyam.tcl"</tt> should be considered a last resort
-to help you save your modified objects!
-<p>
-The script will close all views, clean up the application state variables,
-reset the mouse cursor and the console prompt, and try to update important
-main window widgets. Since Ayam 1.9 it will also clear the console and
-try to break potential endless loops running e.g. in the console or
-in script objects.
-<p>
-After running <tt>"repairAyam.tcl"</tt> you should immediately save
-the scene (or just the important objects you were editing, possibly using
-<tt>"Special/Save Selected"</tt>) to a scratch file and restart Ayam.
 
 <sect1>Shader Parsing Plugins<label id="spplugins">
 <p>
@@ -9942,6 +10097,8 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>Attributes: <ref id="attrs" name="attributes property">,
 <ref id="riattrs" name="RenderMan/BMRT attributes property">
 <item>AUCommands: <ref id="hidprefs" name="hidden preference setting">
+<item>AutoCAD DXF: <ref id="impdxf" name="AutoCAD DXF import">,
+<ref id="expdxf" name="AutoCAD DXF export">
 <item>AutoFocus: <ref id="prefgui" name="preference setting">
 <item>Automatic Instancing: <ref id="mmspecial" name="main menu entry">
 <item>Automatic Redraw: <ref id="vmconf" name="view menu entry">
@@ -10103,9 +10260,11 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>ExpGain, ExpGamma: <ref id="rio" name="RenderMan interface option">
 <item>Explode: <ref id="explt" name="Explode tool">
 <item>Export: <ref id="exprhino" name="3DM (Rhino) export">,
-<ref id="exprib" name="RIB Export">,
 <ref id="exp3dmf" name="3DMF (Apple) export">,
-<ref id="expwav" name="OBJ (Wavefront) export">
+<ref id="expdxf" name="AutoCAD DXF Export">,
+<ref id="expwav" name="OBJ (Wavefront) export">,
+<ref id="exprib" name="RIB Export">,
+<ref id="impx3d" name="X3D Export">
 <item>Export RIB: <ref id="mmfile" name="main menu entry">
 <item>Expression: <ref id="mcattr" name="MetaComp attribute">
 <item>Exterior: <ref id="matshader" name="shader">
@@ -10197,10 +10356,12 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>Image: <ref id="prefrib" name="preference setting">
 <item>Imager: <ref id="imager" name="property">
 <item>Import: <ref id="imprhino" name="3DM (Rhino) Import">,
-<ref id="imp3dmf" name="3DMF (Apple) import">,
+<ref id="imp3dmf" name="3DMF (Apple) Import">,
+<ref id="impdxf" name="AutoCAD DXF Import">,
 <ref id="impmops" name="Mops Import">,
 <ref id="imprib" name="RIB Import">,
-<ref id="impwav" name="Wavefront OBJ Import">
+<ref id="impwav" name="Wavefront OBJ Import">,
+<ref id="impx3d" name="X3D Import">
 <item>Importance Driven Rendering: <ref id="idr" name="IDR plugin">
 <item>Insert: <ref id="mmfile" name="main menu entry">,
 <ref id="insdelac" name="insert points">
@@ -10310,6 +10471,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>NCircle: <ref id="ncircleobj" name="NCircle object">
 <item>Near: <ref id="camp" name="camera property">
 <item>Negative: <ref id="mcattr" name="MetaComp attribute">
+<item>Network Surface: <ref id="gordonobj" name="Gordon object">
 <item>New: <ref id="mmfile" name="main menu entry">
 <item>NewLoadsEnv: <ref id="prefgui" name="preference setting">
 <item>newScene: <ref id="scnewscene" name="scripting interface command">
@@ -10390,6 +10552,8 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>QRender: <ref id="prefrib" name="preference setting">
 <item>QRenderPT, QRenderUI: <ref id="prefrib" name="preference setting">
 <item>Quat: <ref id="trap" name="transformations property">
+<item>QuickDraw 3D Metafile: <ref id="imp3dmf" name="3DMF import">,
+<ref id="exp3dmf" name="3DMF export">
 <item>Quick Render: <ref id="vm" name="view menu entry">
 </itemize>
 
@@ -10733,4 +10897,3 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 
 
 </article>
-
