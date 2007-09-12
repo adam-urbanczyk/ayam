@@ -214,7 +214,7 @@ int x3dio_readlight(scew_element *element, int type);
 /* non-geometric/scene structure */
 int x3dio_readviewpoint(scew_element *element);
 
-int x3dio_readcadlayer(scew_element *element);
+int x3dio_readcadelement(scew_element *element, int type);
 
 int x3dio_readinline(scew_element *element);
 
@@ -3122,7 +3122,7 @@ x3dio_getquatfromvec(double *v, double *q)
       
       if(v[0] < 0.0)
 	z = -z;      
-
+      
       /*printf("x:%g, z:%g\n",AY_R2D(x),AY_R2D(z));*/
   
       if((fabs(x) > AY_EPSILON) || (fabs(z) > AY_EPSILON))
@@ -3145,6 +3145,10 @@ x3dio_getquatfromvec(double *v, double *q)
 	      ay_quat_axistoquat(zaxis, z, quat);
 	    } /* if */
 	  ay_quat_norm(quat);
+	}
+      else
+	{
+	  quat[3] = 1.0;
 	} /* if */
     }
   else
@@ -3161,7 +3165,7 @@ x3dio_getquatfromvec(double *v, double *q)
 
 
 /* x3dio_fixcrosssection:
- *
+ *  find equal consecutive points in <cs> and remove them
  */
 int
 x3dio_fixcrosssection(unsigned int cslen, float *cs,
@@ -3261,9 +3265,9 @@ x3dio_getspinerots(unsigned int splen, float *sp, int sp_closed,
 	      if(!sp_closed)
 		{
 		  x3dio_getdiffspinepoint(splen, sp, 0, 1, &next);
-		  scpy[0] = sp[next] - sp[0];
-		  scpy[1] = sp[next+1] - sp[1];
-		  scpy[2] = sp[next+2] - sp[2];
+		  scpy[0] = sp[next*3] - sp[0];
+		  scpy[1] = sp[next*3+1] - sp[1];
+		  scpy[2] = sp[next*3+2] - sp[2];
 		  /*
 		  t1[0] = sp[2*3]   - sp[3];
 		  t1[1] = sp[2*3+1] - sp[4];
@@ -3312,14 +3316,14 @@ x3dio_getspinerots(unsigned int splen, float *sp, int sp_closed,
 	      /* last spine point */
 	      if(!sp_closed)
 		{
-		  x3dio_getdiffspinepoint(splen, sp, splen-1, -1, &next);
-		  scpy[0] = sp[(splen-1)*3]   - sp[next*3];
-		  scpy[1] = sp[(splen-1)*3+1] - sp[next*3+1];
-		  scpy[2] = sp[(splen-1)*3+2] - sp[next*3+2];
+		  x3dio_getdiffspinepoint(splen, sp, i, -1, &next);
+		  scpy[0] = sp[i*3]   - sp[next*3];
+		  scpy[1] = sp[i*3+1] - sp[next*3+1];
+		  scpy[2] = sp[i*3+2] - sp[next*3+2];
 		  /*
-		  t1[0] = sp[(splen-1)*3]   - sp[(splen-2)*3];
-		  t1[1] = sp[(splen-1)*3+1] - sp[(splen-2)*3+1];
-		  t1[2] = sp[(splen-1)*3+2] - sp[(splen-2)*3+2];
+		  t1[0] = sp[i*3]   - sp[(splen-2)*3];
+		  t1[1] = sp[i*3+1] - sp[(splen-2)*3+1];
+		  t1[2] = sp[i*3+2] - sp[(splen-2)*3+2];
 
 		  t2[0] = sp[(splen-3)*3]   - sp[(splen-2)*3];
 		  t2[1] = sp[(splen-3)*3+1] - sp[(splen-2)*3+1];
@@ -3365,7 +3369,7 @@ x3dio_getspinerots(unsigned int splen, float *sp, int sp_closed,
 	  /* add orientation */
 	  if(fabs(or[i*4+3]) > AY_EPSILON)
 	    {
-	      quats[i*4] = 1.0;
+	      /*quats[i*4] = 1.0;*/
 
 	      q2[0] = or[i*4];
 	      q2[1] = or[i*4+1];
@@ -3373,7 +3377,7 @@ x3dio_getspinerots(unsigned int splen, float *sp, int sp_closed,
 	      q2[3] = or[i*4+3];
 
 	      ay_quat_axistoquat(q2, q2[3], q1);
-	      ay_quat_add(q1, quat, &(quats[i*4]));
+	      ay_quat_add(quat, q1, &(quats[i*4]));
 	    }
 	  else
 	    {
@@ -3479,7 +3483,7 @@ x3dio_readextrusion(scew_element *element)
 	  cslen = tcslen;
 	  cs = tcs;
 	}
-    }
+    } /* if */
 
   ay_status = x3dio_readfloatpoints(element, "spine", 3,
 				    &splen, &sp);
@@ -4758,16 +4762,25 @@ x3dio_readviewpoint(scew_element *element)
 } /* x3dio_readviewpoint */
 
 
-/* x3dio_readcadlayer:
- *
+/* x3dio_readcadelement:
+ *  type:
+ *        0 - CADAssembly
+ *        1 - CADFace
+ *        2 - CADLayer
+ *        3 - CADPart
  */
-int x3dio_readcadlayer(scew_element *element)
+int x3dio_readcadelement(scew_element *element, int type)
 {
  int ay_status = AY_OK;
  scew_element *child = NULL;
  ay_object *o = NULL, **old_aynext;
  unsigned int vislen = 0, i;
  int *vis = NULL;
+ float scale[3] = {1.0f, 1.0f, 1.0f};
+ float center[3] = {0.0f, 0.0f, 0.0f};
+ float translation[3] = {0.0f, 0.0f, 0.0f};
+ float rotation[4] = {0.0f, 0.0f, 1.0f, 0.0f};
+ float scaleorient[4] = {0.0f, 0.0f, 1.0f, 0.0f};
 
   if(!element)
     return AY_ENULL;
@@ -4790,6 +4803,52 @@ int x3dio_readcadlayer(scew_element *element)
   old_aynext = ay_next;
   ay_next = &(o->down);
 
+  if(type == 3)
+    {
+      /* push transformation stack */
+      x3dio_pushtrafo();
+
+      /* get transformation parameters/attributes */
+      ay_status = x3dio_readfloatvec(element, "scale", 3, scale);
+      ay_status = x3dio_readfloatvec(element, "center", 3, center);
+      ay_status = x3dio_readfloatvec(element, "translation", 3, translation);
+      ay_status = x3dio_readfloatvec(element, "rotation", 4, rotation);
+      ay_status = x3dio_readfloatvec(element, "scaleOrientation", 4,
+				     scaleorient);
+
+      /* apply trafos to current transformation stack matrix */
+      ay_trafo_translatematrix(translation[0], translation[1], translation[2],
+			       x3dio_ctrafos->m);
+
+      ay_trafo_translatematrix(center[0], center[1], center[2],
+			       x3dio_ctrafos->m);
+
+      if(fabs(rotation[3]) > AY_EPSILON)
+	{
+	  ay_trafo_rotatematrix(AY_R2D(rotation[3]),
+				rotation[0], rotation[1], rotation[2],
+				x3dio_ctrafos->m);
+	}
+
+      if(fabs(scaleorient[3]) > AY_EPSILON)
+	{
+	  ay_trafo_rotatematrix(AY_R2D(scaleorient[3]), scaleorient[0],
+				scaleorient[1], scaleorient[2],
+				x3dio_ctrafos->m);
+	}
+      ay_trafo_scalematrix(scale[0], scale[1], scale[2],
+			   x3dio_ctrafos->m);
+      if(fabs(scaleorient[3]) > AY_EPSILON)
+	{
+	  ay_trafo_rotatematrix(-AY_R2D(scaleorient[3]), scaleorient[0],
+				scaleorient[1], scaleorient[2],
+				x3dio_ctrafos->m);
+	}
+
+      ay_trafo_translatematrix(-center[0], -center[1], -center[2],
+			       x3dio_ctrafos->m);
+    } /* if */
+
   /* read child elements */
   while((child = scew_element_next(element, child)) != NULL)
     {
@@ -4797,30 +4856,44 @@ int x3dio_readcadlayer(scew_element *element)
       if(ay_status == AY_EDONOTLINK)
 	break;
     }
-
+ 
   ay_object_crtendlevel(ay_next);
   ay_next = old_aynext;
   ay_object_link(o);
 
+  if(type == 3)
+    {
+      /* pop transformation stack */
+      x3dio_poptrafo();
+    }
+
   /* read name */
   ay_status = x3dio_readname(element, "name", o);
 
-  /* read visible attribute */
-  ay_status = x3dio_readbools(element, "visible", &vislen, &vis);
-
-  o = o->down;
-
-  for(i = 0; i < vislen; i++)
+  if(type == 2)
     {
-      if(!vis[i])
+      /* read visible attribute */
+      ay_status = x3dio_readbools(element, "visible", &vislen, &vis);
+
+      /* apply visible attribute */
+      o = o->down;
+      for(i = 0; i < vislen; i++)
 	{
-	  o->hide = AY_TRUE;
+	  if(!vis[i])
+	    {
+	      o->hide = AY_TRUE;
+	    }
+	  o = o->next;
 	}
-      o = o->next;
-    }
+
+      if(vis)
+	{
+	  free(vis);
+	}
+    } /* if */
 
  return ay_status;
-} /* x3dio_readcadlayer */
+} /* x3dio_readcadelement */
 
 
 /* x3dio_readinline:
@@ -5407,9 +5480,24 @@ x3dio_readelement(scew_element *element)
 	}
       break;
     case 'C':
+      if(!strcmp(element_name, "CADAssembly"))
+	{
+	  ay_status = x3dio_readcadelement(element, 0);
+	  handled_elements = 1;
+	}
+      if(!strcmp(element_name, "CADFace"))
+	{
+	  ay_status = x3dio_readcadelement(element, 1);
+	  handled_elements = 1;
+	}
       if(!strcmp(element_name, "CADLayer"))
 	{
-	  ay_status = x3dio_readcadlayer(element);
+	  ay_status = x3dio_readcadelement(element, 2);
+	  handled_elements = 1;
+	}
+      if(!strcmp(element_name, "CADPart"))
+	{
+	  ay_status = x3dio_readcadelement(element, 3);
 	  handled_elements = 1;
 	}
       if(!strcmp(element_name, "Cylinder"))
