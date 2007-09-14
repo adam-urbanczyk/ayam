@@ -4050,12 +4050,12 @@ place, orientation, and size of the sweep object!
 <p>
 The cross section curve has to be defined in the YZ-plane of the
 Sweep objects coordinate system but it also has to be defined in the
-XY-plane of its own coordinate system. This means,
-that a simple circular curve as e.g. created with the toolbox has to
-be rotated by 90 degrees around the Y-axis using its transformation
-attributes to follow these rules. Later editing of this curve has
-to be done in a Side view (or in an aligned local Front view, if
-the Sweep object itself is transformed somehow).
+XY-plane of its own coordinate system. This means that a simple circular
+curve as e.g. created with the toolbox has to be rotated by 90 degrees
+around the Y-axis using its transformation attributes to follow these
+rules. Later editing of this curve has to be done in a Side view (or
+in an aligned local Front view, if the Sweep object itself is transformed
+somehow).
 <p>
 The scaling function is sampled for each section and the Y-component
 of the coordinates of the current curve point will be used as
@@ -4065,7 +4065,7 @@ cross section in Z-direction. In earlier versions the Y-component
 was used to scale both directions.
 This implies, that e.g. a scaling function that does nothing should be
 a linear curve from (0,1,1) to (1,1,1).
-Scale components that are less than or equal zero will be ignored.
+Scale components that are less than or equal zero will be silently ignored.
 <p>
 <figure loc="ht">
 <eps file="pics/ssweep.ps" height="5cm">
@@ -4125,7 +4125,8 @@ where it is 1).
 <p>
 Consequently, if <tt/"Sections"/ is zero, for a standard NURBS curve of
 length 4, the number of sections used is 5 and the width of the created
-NURBS patch is 6.
+NURBS patch is 6, for a curve with just 2 control points, the number of
+sections used is 1 and the width of the resulting patch is 2.
 <p>
 If <tt/"Sections"/ is zero, the order of the sweep in u direction
 is taken from the trajectory curve. Otherwise, the order of the created
@@ -8530,7 +8531,7 @@ created.
 <p>
 <sect2>DXF Entity Support
 <p>
-The DXF import supports reading of the following entities:
+The DXF import supports reading of the following DXF entities:
 3DFACE, ARC, CIRCLE, ELLIPSE, LINE, SOLID, TRACE, BLOCK, INSERT,
 POLYLINE, LWPOLYLINE, and SPLINE. Entities not listed here will
 be silently ignored.
@@ -8714,9 +8715,10 @@ no scaling.
 <item><tt/"ScaleFactor"/ allows to apply a scaling factor to all
 imported objects.
 <item><tt>"STagName"</tt> controls the name of the PV tag to be used
-for the s component of the texture coordinates.
+for the s component of the texture coordinates, and
 <item><tt>"TTagName"</tt> controls the name of the PV tag to be used
-for the t component of the texture coordinates.
+for the t component of the texture coordinates (see also section
+<ref id="pvtag" name="PV (Primitive Variable) Tag">).
 <item><tt/"Progress"/: displays the progress of the import;
 from 0 to 100 percent, the objio plugin is reading lines from the
 Wavefront OBJ file and creating Ayam objects.
@@ -8783,7 +8785,8 @@ exported objects;
 <item><tt>"STagName"</tt> controls the name of the PV tag to be used
 for the s component of the texture coordinates, and
 <item><tt>"TTagName"</tt> controls the name of the PV tag to be used
-for the t component of the texture coordinates.
+for the t component of the texture coordinates (see also section
+<ref id="pvtag" name="PV (Primitive Variable) Tag">).
 <item><tt/"Progress"/: displays the progress of the export;
 from 0 to 100 percent, the objio plugin is writing the Ayam objects
 to the Wavefront OBJ file.
@@ -8957,7 +8960,8 @@ the new knot ranges of NURBS patches.
 <item><tt>"STagName"</tt> controls the name of the PV tag to be used
 for the s component of the texture coordinates, and
 <item><tt>"TTagName"</tt> controls the name of the PV tag to be used
-for the t component of the texture coordinates.
+for the t component of the texture coordinates (see also section
+<ref id="pvtag" name="PV (Primitive Variable) Tag">).
 <item><tt/"Progress"/: displays the progress of the import;
 from 0 to 50 percent, OpenNURBS is reading the 3DM file into memory;
 from 50 to 100 percent, the onio plugin is converting the 3DM objects
@@ -9057,7 +9061,8 @@ will become layer names.
 <item><tt>"STagName"</tt> controls the name of the PV tag to be used
 for the s component of the texture coordinates, and
 <item><tt>"TTagName"</tt> controls the name of the PV tag to be used
-for the t component of the texture coordinates.
+for the t component of the texture coordinates (see also section
+<ref id="pvtag" name="PV (Primitive Variable) Tag">).
 <item><tt/"Progress"/: displays the progress of the export;
 from 0 to 50 percent, the onio plugin is converting the Ayam objects
 to 3DM objects; from 50 to 100 percent OpenNURBS is writing the 3DM file.
@@ -9081,27 +9086,28 @@ Start importing from a Web3D X3D file using the menu entry
 <sect2>X3D Element Support
 <p>
 The import functionality of the <tt>"x3dio"</tt> plugin currently covers
-import of the following elements:
+import of the following X3D elements:
 <itemize>
 <item>Geometry3D:
 Box, Sphere, Cylinder, Cone, ElevationGrid, Extrusion,
 IndexedFaceSet, IndexedTriangleSet, IndexedTriangleStripSet,
 IndexedTriangleFanSet, TriangleSet, TriangleStripSet, TriangleFanSet,
 IndexedLineSet, and LineSet.
-<p>
+<p><p>
 Cylinders with just one cap are imported as two objects (a Cylinder and
-a Disk). In all other cases the <tt>"Closed"</tt> attribute of the Ayam
-object is set according to the cap information of the X3D element.
+a Disk). In all other cases and also for Cones, the <tt>"Closed"</tt>
+attribute of the Ayam object is set according to the cap information of
+the X3D element.
 <p>
 ElevationGrids are imported as bilinear patch meshes.
 
 <item>Geometry2D:
 Arc2D, ArcClosed2D, Circle2D, Disk2D, Polyline2D.
-<p>
+<p><p>
 Arcs and Circles are imported as NCircle objects.
 Closed arcs and Polylines are imported as NURBS curves.
-Disks with an inner radius > 0.0 are imported as Hyperboloids (otherwise
-as Disks).
+Disks with an inner radius > 0.0 are imported as flat Hyperboloids
+(otherwise as Disks).
 
 <item>NURBS:
 NurbsCurve, NurbsCurve2D, NurbsPatchsurface,
@@ -9109,13 +9115,14 @@ TrimmedNurbsPatchsurface, Contour2D, ContourPolyline2D,
 NurbsSweptSurface, NurbsSwungSurface.
 
 <item>CAD:
-QuadSet, IndexedQuadSet, CADLayer.
-<p>
+QuadSet, IndexedQuadSet, CADLayer, CADAssembly, CADPart, CADFace.
+<p><p>
 CADLayer objects will be imported as top level level objects.
+CADAssembly and CADPart objects will be imported as level objects.
 
 <item>Light sources:
 DirectionalLight, PointLight, SpotLight.
-<p>
+<p><p>
 The lights will be directly mapped to the standard RenderMan
 light sources distant, point, and spot, respectively.
 Therefore, the <tt>"radius"</tt> and the <tt>"attenuation"</tt> attributes
@@ -9124,18 +9131,18 @@ still have a quadratic falloff with distance.
 
 <item>Navigation:
 Viewpoint.
-<p>
+<p><p>
 Viewpoint elements will be imported as view objects (with corresponding
 view window) or camera objects depending on the <tt>"ReadViewports"</tt>
 import option.
 
 <item>Non geometric/Scene structure:
 Transformation, Shape, Group, Inline.
-<p>
+<p><p>
 Shear transformations are not supported.
 <p>
 The semantics for inlining are not fully standards compliant.
-By default DEFs in inlined files always live in their own namespace
+By default, DEFs in inlined files always live in their own namespace
 unless the <tt>"MergeInlineDefs"</tt> import option is switched on.
 This option completely merges all DEF namespaces into
 one big namespace. Beware, this only works correctly, if the DEF
@@ -9147,12 +9154,14 @@ Also note: Inline URLs that do not point to the file system are not
 supported.
 
 </itemize>
-<p>
-Unsupported elements will be silently ignored. Prototyping and
+
+Unsupported X3D elements will be silently ignored. Prototyping and
 dynamic scenes as well as scripts are not supported.
 <p>
-Shape elements that contain more than one geometric elements will
-be imported as level objects.
+Shape elements that contain more than one geometric elements as child
+objects will be imported as level objects with the child objects using
+the default transformations and the level object using the current
+transformation attributes.
 
 <sect2>X3D Attribute Support
 <p>
@@ -9184,9 +9193,10 @@ no scaling.
 <item><tt/"ScaleFactor"/ allows to apply a scaling factor to all
 imported objects.
 <item><tt>"STagName"</tt> controls the name of the PV tag to be used
-for the s component of the texture coordinates.
+for the s component of the texture coordinates, and
 <item><tt>"TTagName"</tt> controls the name of the PV tag to be used
-for the t component of the texture coordinates.
+for the t component of the texture coordinates (see also section
+<ref id="pvtag" name="PV (Primitive Variable) Tag">).
 <item><tt/"ErrorLevel"/, this option controls how many error messages
 should be printed to the Ayam console while importing. Available
 values are: <tt/"Silence"/ no output except for severe errors,
@@ -9227,7 +9237,8 @@ Clamping the knot ranges of NURBS via UMM/VMM tags is not supported.
 <p>
 PolyMesh objects will be exported to IndexedFaceSet nodes.
 PolyMesh faces with holes are tesselated. PolyMesh faces with more
-than three points are tesselated if the export option xyz is used.
+than three points are tesselated if the export option <tt>"TessPoMesh"</tt>
+is used.
 All tesselated faces will be exported to a second IndexedFaceSet
 element.
 <p>
@@ -9256,7 +9267,8 @@ exported objects;
 <item><tt>"STagName"</tt> controls the name of the PV tag to be used
 for the s component of the texture coordinates, and
 <item><tt>"TTagName"</tt> controls the name of the PV tag to be used
-for the t component of the texture coordinates.
+for the t component of the texture coordinates (see also section
+<ref id="pvtag" name="PV (Primitive Variable) Tag">).
 <item><tt/"Progress"/: displays the progress of the export;
 from 0 to 50 percent, the x3dio plugin is creating a XML document
 in memory and from 50 to 100 percent this document will be written
