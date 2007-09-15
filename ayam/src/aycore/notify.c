@@ -115,6 +115,16 @@ ay_notify_parent(void)
 
       if(o)
 	{
+	  /* search for and execute all NS tag(s) */
+	  tag = o->tags;
+	  while(tag)
+	    {
+	      if(tag->type == ay_ns_tagtype)
+		ay_ns_execute(o, tag->val);
+	      tag = tag->next;
+	    }
+
+	  /* now get and execute notify callback */
 	  arr = ay_notifycbt.arr;
 	  cb = (ay_notifycb *)(arr[o->type]);
 	  if(cb)
@@ -125,16 +135,6 @@ ay_notify_parent(void)
 	      ay_error(AY_ERROR, fname, "notify callback failed");
 	      return AY_ERROR;
 	    } /* if */
-
-	  /* search for and execute all NS tag(s) */
-	  tag = o->tags;
-	  while(tag)
-	    {
-	      if(tag->type == ay_ns_tagtype)
-		ay_ns_execute(o, tag->val);
-	      tag = tag->next;
-	    }
-
 	} /* if */
 
       lev = lev->next;
