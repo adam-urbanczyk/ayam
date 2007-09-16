@@ -10,7 +10,7 @@
 # rrib.tcl - RRIB plugin GUI code
 
 uplevel #0 { array set rrib_options {
-  ReadFirstTrim 1
+  ReadSTrim 1
   ReadFrame -1
   ReadCamera 1
   ReadOptions 1
@@ -66,7 +66,7 @@ proc rrib_import { } {
     addCheck $f rrib_options ReadLights
     addCheck $f rrib_options ReadMaterial
     addCheck $f rrib_options ReadPartial
-    addCheck $f rrib_options ReadFirstTrim
+    addCheck $f rrib_options ReadSTrim
     addParam $f rrib_options RescaleKnots [list 0.0 1.0e-4]
     addMenu $f rrib_options ErrorLevel [list Silence Errors Warnings All]
 
@@ -89,7 +89,7 @@ proc rrib_import { } {
 	    -p $rrib_options(ReadPartial)\
 	    -r $rrib_options(RescaleKnots)\
 	    -s $rrib_options(ScaleFactor)\
-	    -t $rrib_options(ReadFirstTrim)\
+	    -t $rrib_options(ReadSTrim)\
 	    -e $rrib_options(ErrorLevel);
 
 	cd $oldcd
