@@ -365,21 +365,26 @@ $m add separator
 
 $m add cascade -menu $m.npt -label "NURBPatch"
 menu $m.npt -tearoff 0
-$m.npt add command -label "Swap UV" -command {
-    undo save SwapUV; swapUV; plb_update; rV}
-$m.npt add command -label "Elevate UV" -command {
-    runTool [list ay(elevnpu) ay(elevnpv)]\
-	    [list "Elevate U by:" "Elevate V by:"]\
-	    "undo save ElevateUV; elevateNPU %0; elevateNPV %1; plb_update; rV"
-}
 $m.npt add command -label "Revert U" -command {
     undo save RevertU; revertU; plb_update; rV}
 $m.npt add command -label "Revert V" -command {
     undo save RevertV; revertV; plb_update; rV}
+$m.npt add command -label "Swap UV" -command {
+    undo save SwapUV; swapUV; plb_update; rV}
+
 $m.npt add command -label "Close U" -command {
     undo save closeNPU; closeNPU; plb_update; rV}
 $m.npt add command -label "Close V" -command {
     undo save closeNPV; closeNPV; plb_update; rV}
+
+$m.npt add command -label "Split U" -command {
+runTool ay(splitu) {"Split at:"} "undo save SplitNPU; splitNPU %0; uCR; sL; rV"
+}
+
+$m.npt add command -label "Split V" -command {
+runTool ay(splitu) {"Split at:"} "undo save SplitNPV; splitNPV %0; uCR; sL; rV"
+}
+
 $m.npt add command -label "Clamp U" -command {
     undo save clampNPU; clampNPU; plb_update; rV}
 $m.npt add command -label "Clamp V" -command {
@@ -397,13 +402,13 @@ $m.npt add command -label "Insert Knot V" -command {
 	    [list "Insert knot at:" "Insert times:"]\
 	    "undo save InsKnV; insknNPV %0 %1; plb_update; rV" }
 
-$m.npt add command -label "Split U" -command {
-runTool ay(splitu) {"Split at:"} "undo save SplitNPU; splitNPU %0; uCR; sL; rV"
+$m.npt add command -label "Elevate UV" -command {
+    runTool [list ay(elevnpu) ay(elevnpv)]\
+	    [list "Elevate U by:" "Elevate V by:"]\
+	    "undo save ElevateUV; elevateNPU %0; elevateNPV %1; plb_update; rV"
 }
 
-$m.npt add command -label "Split V" -command {
-runTool ay(splitu) {"Split at:"} "undo save SplitNPV; splitNPV %0; uCR; sL; rV"
-}
+$m.npt add command -label "Extract Curve" -command extrnc_crt
 
 $m.npt add command -label "Extract Patch" -command {
     runTool [list ay(extrnpumin) ay(extrnpumax) ay(extrnpvmin) ay(extrnpvmax)]\
@@ -449,7 +454,7 @@ $m.npt add command -label "Reset Weights" -command {
 	ayError 2 "Reset_Weights" "Need an open view!"
     }
 }
-$m.npt add command -label "Extract NC" -command extrnc_crt
+
 $m.npt add command -label "Tesselate" -command tgui_open
 $m.npt add separator
 $m.npt add command -label "Collapse Points" -command {collMP; rV; set ay(sc) 1}
