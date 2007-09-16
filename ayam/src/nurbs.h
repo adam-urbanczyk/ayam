@@ -468,6 +468,10 @@ int ay_npt_extractnc(ay_object *npatch, int side, double param,
 
 int ay_npt_israt(ay_nurbpatch_object *np);
 
+int ay_npt_isboundcurve(ay_object *o,
+			double b1, double b2, double b3, double b4,
+			int *result);
+
 int ay_npt_istrimmed(ay_object *o, int mode);
 
 int ay_npt_closeu(ay_nurbpatch_object *np);
