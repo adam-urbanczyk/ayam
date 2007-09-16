@@ -1714,6 +1714,8 @@ objio_writescenetcmd(ClientData clientData, Tcl_Interp *interp,
 
 static int objio_readcurves;
 
+static int objio_readstrim;
+
 static int objio_mergecfaces;
 
 static int objio_mergepvtags;
@@ -3269,6 +3271,7 @@ objio_fixnpatch(ay_nurbpatch_object *np)
 /* objio_fixncurve:
  *  fix a Wavefront NURBS curve by
  *  multiplying the weights in for rational vertices
+ *  rescaling the knot vector to safe distances
  *  XXXX to be done: improve the knot vector (type, GLU compat)
  */
 int
@@ -3316,6 +3319,7 @@ objio_readend(void)
  ay_object *newo = NULL, *o = NULL;
  ay_nurbpatch_object *np = NULL;
  double oldmin, oldmax;
+ int is_bound = AY_FALSE;
 
   switch(objio_curvtrimsurf)
     {
@@ -3419,6 +3423,22 @@ objio_readend(void)
 	  if(ay_status)
 	    goto cleanup;
 	  o->down = objio_trims;
+
+	  /* check for simple trim */
+	  if(!objio_readstrim)
+	    {
+	      ay_status = ay_npt_isboundcurve(o->down,
+					      objio_npatch.uknotv[0],
+				      objio_npatch.uknotv[objio_npatch.width],
+					      objio_npatch.vknotv[0],
+				      objio_npatch.vknotv[objio_npatch.height],
+					      &is_bound);
+	      if(is_bound)
+		{
+		  o->down = objio_trims->next;
+		  ay_object_delete(objio_trims);
+		}
+	    }
 	  objio_trims = NULL;
 	  objio_nexttrim = &(objio_trims);
 	}
@@ -3808,6 +3828,7 @@ objio_readscenetcmd(ClientData clientData, Tcl_Interp *interp,
   objio_readcurves = AY_TRUE;
   objio_rescaleknots = 0.0;
   objio_checkdegen = AY_TRUE;
+  objio_readstrim = AY_TRUE;
 
   while(i+1 < argc)
     {
@@ -3841,6 +3862,11 @@ objio_readscenetcmd(ClientData clientData, Tcl_Interp *interp,
       if(!strcmp(argv[i], "-f"))
 	{
 	  sscanf(argv[i+1], "%lg", &objio_scalefactor);
+	}
+      else
+      if(!strcmp(argv[i], "-s"))
+	{
+	  sscanf(argv[i+1], "%d", &objio_readstrim);
 	}
       else
       if(!strcmp(argv[i], "-d"))
