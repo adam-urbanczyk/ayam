@@ -23,6 +23,7 @@ STagName "mys"
 TTagName "myt"
 Progress 0
 CheckDegen 1
+ReadSTrim 1
 }   }
 
 
@@ -155,6 +156,7 @@ proc objio_import { } {
     addCheck $f objio_options MergeFaces
     addCheck $f objio_options MergePVTags
     addCheck $f objio_options ReadCurves
+    addCheck $f objio_options ReadSTrim
     addParam $f objio_options RescaleKnots [list 0.0 1.0e-4]
     addParam $f objio_options ScaleFactor  [list 0.01 0.1 1.0 10.0 100.0]
     addCheck $f objio_options CheckDegen
@@ -180,6 +182,7 @@ proc objio_import { } {
 		-r $objio_options(RescaleKnots)\
 	        -f $objio_options(ScaleFactor)\
 	        -d $objio_options(CheckDegen)\
+	        -s $objio_options(ReadSTrim)\
 		-t $objio_options(STagName) $objio_options(TTagName)
 	grab release .objI
 	if { $ay_error < 2 } {
