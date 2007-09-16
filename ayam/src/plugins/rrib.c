@@ -196,6 +196,7 @@ static int ay_rrib_readmateriali; /* read material and attributes (internal) */
 static int ay_rrib_readpartial; /* read partial RIB (e.g. without
 				   WorldBegin/End) */
 static int ay_rrib_errorlevel; /* 0: silence, 1: errors, 2: warnings, 3: all */
+static int ay_rrib_readfirsttrim; /* 0: 1: */
 static double rrib_rescaleknots; /* rescale knots to min dist,
 				    if <= 0.0: no scaling */
 static double rrib_scalefactor; /* global scale factor */
@@ -628,7 +629,7 @@ int ay_rrib_printerror(RIB_HANDLE rib, int code, int severity,
 int ay_rrib_readrib(char *filename, int frame, int read_camera,
 		    int read_options,
 		    int read_lights, int read_material, int read_partial,
-		    int error_level);
+		    int error_level, int read_firsttrim);
 
 #ifndef AYRRIBWRAPPED
 #ifdef WIN32
@@ -951,7 +952,7 @@ ay_rrib_RiTrimCurve(RtInt nloops, RtInt ncurves[], RtInt order[],
   minptr = min;
   maxptr = max;
 
-  for(i = 0; i < nloops; i++)
+  for(i = (ay_rrib_readfirsttrim?0:1); i < nloops; i++)
    {
      if(ncurves[i] > 1)
        { /* read trim loop */
@@ -5687,7 +5688,7 @@ ay_rrib_printerror(RIB_HANDLE rib, int code, int severity, PRIB_ERROR error)
 int
 ay_rrib_readrib(char *filename, int frame, int read_camera, int read_options,
 		int read_lights, int read_material, int read_partial,
-		int error_level)
+		int error_level, int read_firsttrim)
 {
  int ay_status = AY_OK;
  RIB_HANDLE rib = NULL;
@@ -5708,6 +5709,7 @@ ay_rrib_readrib(char *filename, int frame, int read_camera, int read_options,
   ay_rrib_lastmaterialnum = 0;
   ay_rrib_readmateriali = 0;
   ay_rrib_errorlevel = 1;
+  ay_rrib_readfirsttrim = 1;
 
   /* default fov */
   ay_rrib_fov = 45.0;
@@ -5730,7 +5732,7 @@ ay_rrib_readrib(char *filename, int frame, int read_camera, int read_options,
   ay_rrib_readmaterial = read_material;
   ay_rrib_readpartial = read_partial;
   ay_rrib_errorlevel = error_level;
-
+  ay_rrib_readfirsttrim = read_firsttrim;
 
   gRibNopRITable[kRIB_FRAMEBEGIN] = (PRIB_RIPROC)ay_rrib_RiFrameBegin;
   gRibNopRITable[kRIB_FRAMEEND] = (PRIB_RIPROC)ay_rrib_RiFrameEnd;
@@ -5804,7 +5806,7 @@ ay_rrib_readribtcmd(ClientData clientData, Tcl_Interp *interp,
  int ay_status = AY_OK;
  char fname[] = "rrib";
  int frame = 0, read_camera = 1, read_options = 1, read_lights = 1;
- int read_material = 1, read_partial = 0, error_level = 1;
+ int read_material = 1, read_partial = 0, error_level = 1, read_firsttrim = 1;
  int i = 2;
  ay_object *o, *n = NULL, **old_aynext;
  ay_level_object *l = NULL;
@@ -5860,6 +5862,11 @@ ay_rrib_readribtcmd(ClientData clientData, Tcl_Interp *interp,
       if(!strcmp(argv[i], "-s"))
 	{
 	  sscanf(argv[i+1], "%lg", &rrib_scalefactor);
+	}
+      else
+      if(!strcmp(argv[i], "-t"))
+	{
+	  sscanf(argv[i+1], "%d", &read_firsttrim);
 	}
       else
       if(!strcmp(argv[i], "-e"))
@@ -5926,7 +5933,7 @@ ay_rrib_readribtcmd(ClientData clientData, Tcl_Interp *interp,
 
   ay_status = ay_rrib_readrib(argv[1], frame, read_camera, read_options,
 			      read_lights, read_material, read_partial,
-			      error_level);
+			      error_level, read_firsttrim);
 
   if(ay_status)
     {
