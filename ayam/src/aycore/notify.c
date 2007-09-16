@@ -172,6 +172,15 @@ ay_notify_force(ay_object *o)
 	}
     }
 
+  /* search for and execute all NS tag(s) */
+  tag = o->tags;
+  while(tag)
+    {
+      if(tag->type == ay_ns_tagtype)
+	ay_ns_execute(o, tag->val);
+      tag = tag->next;
+    }
+
   /* call the notification callback */
   arr = ay_notifycbt.arr;
   cb = (ay_notifycb *)(arr[o->type]);
@@ -182,15 +191,6 @@ ay_notify_force(ay_object *o)
     {
       ay_error(AY_ERROR, fname, "notify callback failed");
       return AY_ERROR;
-    }
-
-  /* search for and execute all NS tag(s) */
-  tag = o->tags;
-  while(tag)
-    {
-      if(tag->type == ay_ns_tagtype)
-	ay_ns_execute(o, tag->val);
-      tag = tag->next;
     }
 
  return AY_OK;
