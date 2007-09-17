@@ -3419,6 +3419,7 @@ objio_readend(void)
       /* add trim curves */
       if(objio_trims)
 	{
+	  /* properly terminate the list of trims */
 	  ay_status = ay_object_crtendlevel(objio_nexttrim);
 	  if(ay_status)
 	    goto cleanup;
@@ -3433,12 +3434,15 @@ objio_readend(void)
 					      objio_npatch.vknotv[0],
 				      objio_npatch.vknotv[objio_npatch.height],
 					      &is_bound);
-	      if(is_bound)
+	      /* discard simple trim, if it is the only one */
+	      if(is_bound && (!objio_trims->next->next))
 		{
-		  o->down = objio_trims->next;
-		  ay_object_delete(objio_trims);
+		  ay_object_deletemulti(objio_trims);
+		  ay_status = ay_object_crtendlevel(&(o->down));
+		  if(ay_status)
+		    goto cleanup;
 		}
-	    }
+	    } /* if */
 	  objio_trims = NULL;
 	  objio_nexttrim = &(objio_trims);
 	}
