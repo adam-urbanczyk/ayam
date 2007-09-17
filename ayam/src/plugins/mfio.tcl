@@ -11,6 +11,7 @@
 
 uplevel #0 { array set mfio_options {
     ReadCurves 1
+    ReadSTrim 1
     IgnoreFirstTrim 0
     WriteSelected 0
     WriteBinary 0
@@ -62,7 +63,7 @@ proc mfio_import { } {
     addFileT $f mfio_options FileName $types
     addParam $f mfio_options ScaleFactor [list 0.01 0.1 1.0 10.0 100.0]
     addCheck $f mfio_options ReadCurves
-#    addCheck $f mfio_options IgnoreFirstTrim
+    addCheck $f mfio_options ReadSTrim
     addParam $f mfio_options RescaleKnots [list 0.0 1.0e-4]
 #    addString $f mfio_options STagName
 #    addString $f mfio_options TTagName
@@ -81,6 +82,7 @@ proc mfio_import { } {
 	    -c $mfio_options(ReadCurves)\
 	    -i $mfio_options(IgnoreFirstTrim)\
 	    -r $mfio_options(RescaleKnots)\
+	    -s $mfio_options(ReadSTrim)\
 	    -f $mfio_options(ScaleFactor)
 
 	cd $oldcd

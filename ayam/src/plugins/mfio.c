@@ -37,11 +37,12 @@ typedef int (ay_mfio_readcb) (MF3DVoidObjPtr object);
 typedef int (ay_mfio_writecb) (MF3D_FilePtr fileptr, ay_object *o);
 
 static int mfio_readcurves = AY_TRUE;
+static int mfio_readstrim = AY_TRUE;
 static int mfio_writecurves = AY_TRUE;
 static int mfio_dataformat = AY_FALSE;
 static double mfio_scalefactor = 1.0;
 static double mfio_rescaleknots = 0.0;
-static int mfio_readtrims = 0;
+static int mfio_readingtrims = 0;
 
 /*
 static int export_colors;
@@ -323,7 +324,7 @@ ay_mfio_readtrim(MF3DVoidObjPtr object)
 {
  int ay_status = AY_OK;
 
-  mfio_readtrims = 1;
+  mfio_readingtrims = 1;
 
   ay_mfio_trimmedpatch = ay_mfio_lastreadobject;
 
@@ -1484,8 +1485,8 @@ ay_mfio_readcntr(MF3DVoidObjPtr object)
 
   ay_clevel_add(newo->down);
 
-  if(mfio_readtrims)
-    mfio_readtrims++;
+  if(mfio_readingtrims)
+    mfio_readingtrims++;
 
  return ay_status;
 } /* ay_mfio_readcntr */
@@ -1551,10 +1552,12 @@ ay_mfio_readecntr(MF3DVoidObjPtr object)
 {
  int ay_status = AY_OK;
  /*char fname[] = "mfio_readecntr";*/
+ ay_nurbpatch_object *np = NULL;
+ int is_bound = AY_FALSE;
 
-  if(mfio_readtrims == 1)
+  if(mfio_readingtrims == 1)
     {
-      mfio_readtrims = 0;
+      mfio_readingtrims = 0;
 
       ay_status = ay_object_crtendlevel(ay_next);
 
@@ -1568,6 +1571,24 @@ ay_mfio_readecntr(MF3DVoidObjPtr object)
 	  if(ay_mfio_trimmedpatch)
 	    {
 	      ay_next = &(ay_mfio_trimmedpatch->next);
+
+	      /* check for and remove simple trims */
+	      if(!mfio_readstrim)
+		{
+		  np = (ay_nurbpatch_object *)ay_mfio_trimmedpatch->refine;
+		  ay_status = ay_npt_isboundcurve(ay_mfio_trimmedpatch->down,
+						  np->uknotv[0],
+						  np->uknotv[np->width],
+						  np->vknotv[0],
+						  np->vknotv[np->height],
+						  &is_bound);
+		  if(is_bound && (!ay_mfio_trimmedpatch->next->next))
+		    {
+		      ay_object_deletemulti(ay_mfio_trimmedpatch->down);
+		      ay_status = ay_object_crtendlevel(
+					       &(ay_mfio_trimmedpatch->down));
+		    }
+		} /* if */
 
 	      /* only after reading all trimcurves we can scale
 		 the knots */
@@ -1591,7 +1612,7 @@ ay_mfio_readecntr(MF3DVoidObjPtr object)
 
   ay_clevel_del();
 
-  mfio_readtrims--;
+  mfio_readingtrims--;
 
  return ay_status;
 } /* ay_mfio_readecntr */
@@ -3018,7 +3039,7 @@ ay_mfio_importscenetcmd(ClientData clientData, Tcl_Interp * interp,
   mfio_scalefactor = 1.0;
   mfio_rescaleknots = 0.0;
   mfio_readcurves = AY_TRUE;
-  mfio_readtrims = AY_FALSE;
+  mfio_readingtrims = 0;
 
   /* parse args */
   while(i+1 < argc)
@@ -3026,6 +3047,11 @@ ay_mfio_importscenetcmd(ClientData clientData, Tcl_Interp * interp,
       if(!strcmp(argv[i], "-c"))
 	{
 	  sscanf(argv[i+1], "%d", &mfio_readcurves);
+	}
+      else
+      if(!strcmp(argv[i], "-s"))
+	{
+	  sscanf(argv[i+1], "%d", &mfio_readstrim);
 	}
       else
       if(!strcmp(argv[i], "-r"))
