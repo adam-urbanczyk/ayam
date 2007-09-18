@@ -37,7 +37,7 @@ ay_object *onio_lrobject = NULL;
 static double tm[16] = {0}; // current transformation matrix
 
 int onio_importcurves = AY_TRUE;
-int onio_ignoresimpletrim = AY_TRUE;
+int onio_readstrim = AY_TRUE;
 int onio_exportcurves = AY_TRUE;
 int onio_expsphereasbrep = AY_TRUE;
 int onio_expcylinderasbrep = AY_TRUE;
@@ -2647,7 +2647,7 @@ onio_readbrep(ON_Brep *p_b, double accuracy)
       int fli; // face's loop index
       for(fli = 0; fli < loop_count; fli++)
 	{
-	  if(onio_ignoresimpletrim && fli == 0 && loop_count == 1)
+	  if(!onio_readstrim && (fli == 0) && (loop_count == 1))
 	    {
 	      if(p_b->LoopIsSurfaceBoundary(face.m_li[0]))
 		 continue;
@@ -3391,9 +3391,9 @@ onio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 	  sscanf(argv[i+1], "%d", &onio_importcurves);
 	}
       else
-      if(!strcmp(argv[i], "-i"))
+      if(!strcmp(argv[i], "-s"))
 	{
-	  sscanf(argv[i+1], "%d", &onio_ignoresimpletrim);
+	  sscanf(argv[i+1], "%d", &onio_readstrim);
 	}
       else
       if(!strcmp(argv[i], "-r"))

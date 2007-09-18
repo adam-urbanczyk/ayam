@@ -1572,8 +1572,8 @@ ay_mfio_readecntr(MF3DVoidObjPtr object)
 	    {
 	      ay_next = &(ay_mfio_trimmedpatch->next);
 
-	      /* check for and remove simple trims */
-	      if(!mfio_readstrim)
+	      /* check for simple trim, if it is the only one */
+	      if((!mfio_readstrim) && (ay_mfio_trimmedpatch->next->next))
 		{
 		  np = (ay_nurbpatch_object *)ay_mfio_trimmedpatch->refine;
 		  ay_status = ay_npt_isboundcurve(ay_mfio_trimmedpatch->down,
@@ -1582,7 +1582,8 @@ ay_mfio_readecntr(MF3DVoidObjPtr object)
 						  np->vknotv[0],
 						  np->vknotv[np->height],
 						  &is_bound);
-		  if(is_bound && (!ay_mfio_trimmedpatch->next->next))
+		  /* discard simple trim */
+		  if(is_bound)
 		    {
 		      ay_object_deletemulti(ay_mfio_trimmedpatch->down);
 		      ay_status = ay_object_crtendlevel(

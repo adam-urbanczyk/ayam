@@ -17,7 +17,7 @@ uplevel #0 { array set x3dio_options {
     ReadViewpoints 1
     ReadLayers -1
     MergeInlineDefs 0
-    IgnoreFirstTrim 0
+    ReadSTrim 1
     WriteSelected 0
     ObeyNoExport 1
     IgnoreHidden 1
@@ -71,7 +71,7 @@ proc x3dio_import { } {
 #    addParam $f x3dio_options Accuracy [list 0.0 1.0e-12 0.1 1]
     addCheck $f x3dio_options ReadCurves
     addMenu $f x3dio_options ReadViewpoints [list "Never" "AsView" "AsCamera"]
-#    addCheck $f x3dio_options IgnoreFirstTrim
+    addCheck $f x3dio_options ReadSTrim
     addParam $f x3dio_options ReadLayers [list "-1" 1 1-10]
     addParam $f x3dio_options RescaleKnots [list 0.0 1.0e-4]
     addCheck $f x3dio_options MergeInlineDefs
@@ -96,7 +96,7 @@ proc x3dio_import { } {
 	    -v $x3dio_options(ReadViewpoints)\
 	    -e $x3dio_options(ErrorLevel)\
 	    -l $x3dio_options(ReadLayers)\
-	    -i $x3dio_options(IgnoreFirstTrim)\
+	    -s $x3dio_options(ReadSTrim)\
 	    -r $x3dio_options(RescaleKnots)\
 	    -f $x3dio_options(ScaleFactor)\
 	    -m $x3dio_options(MergeInlineDefs)\
