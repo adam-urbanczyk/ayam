@@ -5527,7 +5527,9 @@ ay_rrib_linkobject(void *object, int type)
       if(ay_rrib_cattributes->trimcurves)
 	{
 	  ay_rrib_co.down = ay_rrib_cattributes->trimcurves;
-	  if(!ay_rrib_readstrim)
+
+	  /* check for simple trim, if it is the only one */
+	  if((!ay_rrib_readstrim) && (ay_rrib_co.down->next))
 	    {
 	      np = (ay_nurbpatch_object *)ay_rrib_co.refine;
 	      ay_status = ay_npt_isboundcurve(ay_rrib_co.down,
@@ -5536,7 +5538,8 @@ ay_rrib_linkobject(void *object, int type)
 					      np->vknotv[0],
 					      np->vknotv[np->height],
 					      &is_bound);
-	      if(is_bound && (!ay_rrib_co.down->next->next))
+	      /* discard simple trim */
+	      if(is_bound)
 		{
 		  ay_object_deletemulti(ay_rrib_co.down);
 		  ay_rrib_co.down = NULL;

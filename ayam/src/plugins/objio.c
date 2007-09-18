@@ -3425,8 +3425,8 @@ objio_readend(void)
 	    goto cleanup;
 	  o->down = objio_trims;
 
-	  /* check for simple trim */
-	  if(!objio_readstrim)
+	  /* check for simple trim, if it is the only one */
+	  if((!objio_readstrim) && (objio_trims->next->next))
 	    {
 	      ay_status = ay_npt_isboundcurve(o->down,
 					      objio_npatch.uknotv[0],
@@ -3434,8 +3434,8 @@ objio_readend(void)
 					      objio_npatch.vknotv[0],
 				      objio_npatch.vknotv[objio_npatch.height],
 					      &is_bound);
-	      /* discard simple trim, if it is the only one */
-	      if(is_bound && (!objio_trims->next->next))
+	      /* discard simple trim */
+	      if(is_bound)
 		{
 		  ay_object_deletemulti(objio_trims);
 		  ay_status = ay_object_crtendlevel(&(o->down));

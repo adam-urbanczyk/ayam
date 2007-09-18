@@ -47,6 +47,7 @@ x3dio_trafostate *x3dio_ctrafos = NULL;
 
 /* import/export options: */
 int x3dio_importcurves = AY_TRUE;
+int x3dio_readstrim = AY_TRUE;
 int x3dio_importviews = 0;
 int x3dio_exportcurves = AY_TRUE;
 int x3dio_expselected = AY_FALSE;
@@ -4194,7 +4195,7 @@ x3dio_readnurbspatchsurface(scew_element *element, int trimmed)
  unsigned int i, len = 0, wlen = 0, uklen = 0, vklen = 0;
  int width = 0, height = 0, uorder = 3, vorder = 3, stride = 4;
  int has_weights = AY_FALSE, has_uknots = AY_FALSE, has_vknots = AY_FALSE;
- int is_double = AY_FALSE;
+ int is_double = AY_FALSE, is_bound = AY_FALSE;
  scew_element *child = NULL;
  const char *element_name = NULL;
 
@@ -4348,6 +4349,23 @@ x3dio_readnurbspatchsurface(scew_element *element, int trimmed)
 		    goto cleanup;
 		}
 	    } /* while */
+
+	  /* check for simple trim, if it is the only trim */
+	  if((!x3dio_readstrim) && (o->down->next))
+	    {
+	      ay_status = ay_npt_isboundcurve(o->down,
+					      np.uknotv[0],
+				      np.uknotv[np.width],
+					      np.vknotv[0],
+				      np.vknotv[np.height],
+					      &is_bound);
+	      /* discard simple trim */
+	      if(is_bound)
+		{
+		  ay_object_deletemulti(o->down);
+		  x3dio_lrobject = NULL;
+		}
+	    } /* if */
 
 	  /* create endlevel object */
 	  if(x3dio_lrobject)
@@ -5847,6 +5865,7 @@ x3dio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 
   /* set default import options and reset global counters */
   x3dio_importcurves = AY_TRUE;
+  x3dio_readstrim = AY_TRUE;
   x3dio_importviews = 0;
   x3dio_rescaleknots = 0.0;
   x3dio_scalefactor = 1.0;
@@ -5892,6 +5911,11 @@ x3dio_readtcmd(ClientData clientData, Tcl_Interp *interp,
       if(!strcmp(argv[i], "-r"))
 	{
 	  sscanf(argv[i+1], "%lg", &x3dio_rescaleknots);
+	}
+      else
+      if(!strcmp(argv[i], "-s"))
+	{
+	  sscanf(argv[i+1], "%d", &x3dio_readstrim);
 	}
       else
       if(!strcmp(argv[i], "-f"))
