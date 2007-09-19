@@ -202,6 +202,8 @@ int x3dio_readpolyline2d(scew_element *element, int contour);
 /* NURBS */
 int x3dio_readnurbscurve(scew_element *element, unsigned int dim);
 
+int x3dio_fixnpatch(ay_nurbpatch_object *np);
+
 int x3dio_readnurbspatchsurface(scew_element *element, int trimmed);
 
 int x3dio_readnurbssweptsurface(scew_element *element, int is_swung);
@@ -4180,6 +4182,45 @@ cleanup:
 } /* x3dio_readnurbscurve */
 
 
+/* x3dio_fixnpatch:
+ *  fix row/column major order in np controlv (from X3D to Ayam style);
+ *  XXXX to be done: improve the knot vector (type)
+ */
+int
+x3dio_fixnpatch(ay_nurbpatch_object *np)
+{
+ int ay_status = AY_OK;
+ int i, j, stride = 4;
+ double *v = NULL, *p1, *p2;
+
+  if(!np)
+    return AY_ENULL;
+
+  if(!(v = calloc(np->width * np->height * stride, sizeof(double))))
+    return AY_EOMEM;
+
+  p1 = v;
+  for(i = 0; i < np->width; i++)
+    {
+      p2 = &(np->controlv[i*stride]);
+      for(j = 0; j < np->height; j++)
+	{
+	  memcpy(p1, p2, stride * sizeof(double));
+
+	  p1 += stride;
+	  p2 += np->width*stride;
+	} /* for */
+    } /* for */
+
+  free(np->controlv);
+  np->controlv = v;
+
+  np->is_rat = ay_npt_israt(np);
+
+ return ay_status;
+} /* x3dio_fixnpatch */
+
+
 /* x3dio_readnurbspatchsurface:
  *
  */
@@ -4314,6 +4355,9 @@ x3dio_readnurbspatchsurface(scew_element *element, int trimmed)
 	{
 	  ay_status = ay_knots_createnp(&np);
 	}
+
+      /* fix row/column major order */
+      ay_status = x3dio_fixnpatch(&np);
 
       /* copy object to the Ayam scene */
       x3dio_lrobject = NULL;
