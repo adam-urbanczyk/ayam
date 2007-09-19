@@ -204,7 +204,7 @@ int x3dio_readnurbscurve(scew_element *element, unsigned int dim);
 
 int x3dio_fixnpatch(ay_nurbpatch_object *np);
 
-int x3dio_readnurbspatchsurface(scew_element *element, int trimmed);
+int x3dio_readnurbspatchsurface(scew_element *element, int is_trimmed);
 
 int x3dio_readnurbssweptsurface(scew_element *element, int is_swung);
 
@@ -4225,7 +4225,7 @@ x3dio_fixnpatch(ay_nurbpatch_object *np)
  *
  */
 int
-x3dio_readnurbspatchsurface(scew_element *element, int trimmed)
+x3dio_readnurbspatchsurface(scew_element *element, int is_trimmed)
 {
  int ay_status = AY_OK;
  ay_nurbpatch_object np = {0};
@@ -4239,6 +4239,7 @@ x3dio_readnurbspatchsurface(scew_element *element, int trimmed)
  int is_double = AY_FALSE, is_bound = AY_FALSE;
  scew_element *child = NULL;
  const char *element_name = NULL;
+ x3dio_trafostate *old_state, notrafos;
 
   if(!element)
     return AY_ENULL;
@@ -4267,7 +4268,7 @@ x3dio_readnurbspatchsurface(scew_element *element, int trimmed)
     {
       has_uknots = AY_TRUE;
       /* rescale knots to safe distance? */
-      if(!trimmed && x3dio_rescaleknots != 0.0)
+      if(!is_trimmed && (x3dio_rescaleknots != 0.0))
 	{
 	  ay_knots_rescaletomindist(uklen, uknots, x3dio_rescaleknots);
 	}
@@ -4277,7 +4278,7 @@ x3dio_readnurbspatchsurface(scew_element *element, int trimmed)
     {
       has_vknots = AY_TRUE;
       /* rescale knots to safe distance? */
-      if(!trimmed && x3dio_rescaleknots != 0.0)
+      if(!is_trimmed && (x3dio_rescaleknots != 0.0))
 	{
 	  ay_knots_rescaletomindist(vklen, vknots, x3dio_rescaleknots);
 	}
@@ -4371,18 +4372,26 @@ x3dio_readnurbspatchsurface(scew_element *element, int trimmed)
 
       /* set correct NURBS patch flags */
       x3dio_lrobject->parent = AY_TRUE;
+      x3dio_lrobject->hide_children = AY_TRUE;
+      x3dio_lrobject->inherit_trafos = AY_FALSE;
 
       /* read trim curves? */
-      if(trimmed)
+      if(is_trimmed)
 	{
 	  old_aynext = ay_next;
 	  ay_next = &(x3dio_lrobject->down);
 	  o = x3dio_lrobject;
 	  x3dio_lrobject = NULL;
 
+	  /* fake a clean (non transforming) transformation state */
+	  old_state = x3dio_ctrafos;
+	  x3dio_ctrafos = &(notrafos);
+	  ay_trafo_identitymatrix(notrafos.m);
+
+	  /* read all child elements */
 	  while((child = scew_element_next(element, child)) != NULL)
 	    {
-	      element_name = scew_element_name(element);
+	      element_name = scew_element_name(child);
 	      if(!strcmp(element_name, "NurbsCurve") ||
 		 !strcmp(element_name, "NurbsCurve2D") ||
 		 !strcmp(element_name, "Contour2D") ||
@@ -4393,6 +4402,9 @@ x3dio_readnurbspatchsurface(scew_element *element, int trimmed)
 		    goto cleanup;
 		}
 	    } /* while */
+	  
+	  /* reset old transformation state */
+	  x3dio_ctrafos = old_state;
 
 	  /* check for simple trim, if it is the only trim */
 	  if((!x3dio_readstrim) && (o->down->next))
