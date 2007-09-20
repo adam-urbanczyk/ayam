@@ -5630,6 +5630,11 @@ x3dio_readelement(scew_element *element)
 	  ay_status = x3dio_readcylinder(element);
 	  handled_elements = 1;
 	}
+      if(!strcmp(element_name, "Collision"))
+	{
+	  ay_status = x3dio_readshape(element);
+	  handled_elements = 1;
+	}
       if(!strcmp(element_name, "Cone"))
 	{
 	  ay_status = x3dio_readcone(element);
