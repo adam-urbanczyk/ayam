@@ -5148,6 +5148,9 @@ x3dio_readtransform(scew_element *element)
 {
  int ay_status = AY_OK;
  scew_element *child = NULL;
+ ay_object *o = NULL, **old_aynext;
+ const char *element_name = NULL;
+ int need_level = AY_FALSE;
  float scale[3] = {1.0f, 1.0f, 1.0f};
  float center[3] = {0.0f, 0.0f, 0.0f};
  float translation[3] = {0.0f, 0.0f, 0.0f};
@@ -5199,12 +5202,60 @@ x3dio_readtransform(scew_element *element)
   ay_trafo_translatematrix(-center[0], -center[1], -center[2],
 			   x3dio_ctrafos->m);
 
+  /* check children, if there are other transform elements,
+     we need to create a level object with the current trafos */
+  while((child = scew_element_next(element, child)) != NULL)
+    {
+      element_name = scew_element_name(element);
+      if(!strcmp(element_name, "Transform"))
+	{
+	  need_level = AY_TRUE;
+	  break;
+	}
+    } /* while */
+
+  if(need_level)
+    {
+
+      if(!(o = calloc(1, sizeof(ay_object))))
+	{
+	  return AY_EOMEM;
+	}
+
+      if(!(o->refine = calloc(1, sizeof(ay_level_object))))
+	{
+	  free(o); return AY_EOMEM;
+	}
+
+      ay_status = ay_object_defaults(o);
+
+      o->type = AY_IDLEVEL;
+      o->parent = AY_TRUE;
+
+      /* set transformation attributes */
+      x3dio_trafotoobject(o, x3dio_ctrafos->m);
+
+      old_aynext = ay_next;
+      ay_next = &(o->down);
+    } /* if */
+
   /* read children */
+  child = NULL;
   while((child = scew_element_next(element, child)) != NULL)
     {
       ay_status = x3dio_readelement(child);
       if(ay_status == AY_EDONOTLINK)
 	break;
+    }
+
+  /* properly close level */
+  if(need_level)
+    {
+      ay_object_crtendlevel(ay_next);
+      ay_next = old_aynext;
+      ay_object_link(o);
+      /* read shape name from DEF */
+      ay_status = x3dio_readname(element, "DEF", o);
     }
 
   /* pop transformation stack */
