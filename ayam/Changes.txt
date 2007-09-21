@@ -1,5 +1,5 @@
-[21. Sep 2007] Ayam1.13:
-========================
+[21. Sep 2007] Ayam 1.13:
+=========================
 o Bug Fixes:
   - crash after deleting of objects (SF 1637735)
   - crash after applying ScriptAttr property (SF 1637748)
@@ -103,7 +103,8 @@ o added ReadCurves/WriteCurves/WriteSelected/ScaleFactor/RescaleKnots
 o added proper trim curve support to 3DMF export/import
 o all import options that scale NURBS patch knots now also scale the
   trim curves properly
-
+o added ReadSTrim import option to mfio, onio, objio, and rrib
+ 
 Scripts/Scripting Interface:
 o added example script "toPoly" that allows to easily convert the whole
   scene to PolyMesh objects
