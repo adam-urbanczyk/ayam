@@ -1328,7 +1328,7 @@ extern unsigned int ay_current_primlevel;
 
 
 /* Version Strings and Numbers */
-#define AY_VERSIONSTR "1.13pre"
+#define AY_VERSIONSTR "1.13"
 #define AY_VERSIONSTRMI "0"
 
 #define AY_VERSIONMA 1
