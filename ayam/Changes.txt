@@ -1,5 +1,5 @@
-[14. Sep 2007] CVS-Head:
-=======================
+[21. Sep 2007] Ayam1.13:
+========================
 o Bug Fixes:
   - crash after deleting of objects (SF 1637735)
   - crash after applying ScriptAttr property (SF 1637748)

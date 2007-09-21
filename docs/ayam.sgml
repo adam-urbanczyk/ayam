@@ -6,7 +6,7 @@
 
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
 
-<date>10. Aug 2007
+<date>21. Sep 2007
 
 <abstract>
 This is the documentation of Ayam 1.13 - a free 3D modelling environment
@@ -48,7 +48,8 @@ CSG-operations: Intersection, Difference, and Union.
 <item>NURBS modelling includes extrude, revolve, sweep, birail, skin,
 and gordon operations (with caps, holes, and bevels) realized as
 Tool-Objects.
-<item>Wavefront OBJ export and import, Rhino 3DM export and import.
+<item>Wavefront OBJ export and import, Rhino 3DM export and import,
+AutoCAD DXF export and import, X3D export and import.
 <item>Custom objects that may freely implement their representations
 (using OpenGL and RIB) and even small GUIs to edit their type specific
 parameters may be written by the user and dynamically loaded at runtime.
@@ -2293,7 +2294,7 @@ Note that in contrast to their normal behaviour, grids can also be scaled
 differently in X-window and Y-window coordinates in aligned local views
 (if the local object space is deformed this way).
 
-<sect>Objects, Properties and Tags<label id="obandprp">
+<sect>Objects, Properties, and Tags<label id="obandprp">
 <p>
 This section informs you about the different object types of Ayam and
 about the property GUIs that appear in the properties section of the
@@ -8417,6 +8418,8 @@ contain a <tt/"WorldBegin"/.
 Be careful with this option (i.e. use it only if reading of a RIB fails),
 as it switches reading of all types of objects on, regardless of
 the RIB structure.
+<item><tt/"ReadSTrim"/ if switched off, no simple trims (trims that only
+run along the border of a NURBS patch) will be imported.
 <item><tt/"RescaleKnots"/ allows to rescale the knot vectors of
 NURBS patches and trim curves so that the distances between different
 knots are not smaller than the given value. Using a value of 1.0e-04 leads
@@ -8707,6 +8710,8 @@ objects should be merged as well if they are subject to automatic
 merging (see above).
 <item><tt>"ReadCurves"</tt> if this is disabled, no freeform curves will
 be imported. This option does not influence reading of trim curves!
+<item><tt/"ReadSTrim"/ if switched off, no simple trims (trims that only
+run along the border of a NURBS patch) will be imported.
 <item><tt/"RescaleKnots"/ allows to rescale the knot vectors of
 NURBS curves, patches, and trim curves so that the distances between different
 knots are not smaller than the given value. Using a value of 1.0e-04 leads
@@ -8839,6 +8844,13 @@ imported objects.
 <item><tt/"ReadCurves"/:
 If the <tt/"ReadCurves"/ import option is switched off, no curves will be
 imported. This option does not influence the import of trim curves.
+<item><tt/"ReadSTrim"/ if switched off, no simple trims (trims that only
+run along the border of a NURBS patch) will be imported.
+<item><tt/"RescaleKnots"/ allows to rescale the knot vectors of
+NURBS curves, patches, and trim curves so that the distances between different
+knots are not smaller than the given value. Using a value of 1.0e-04 leads
+to NURBS that may be safely drawn using GLU. The default value 0.0 means
+no scaling.
 </itemize>
 
 <sect1>3DMF (Apple) Export<label id="exp3dmf">
@@ -8943,10 +8955,10 @@ imported. This option does not influence the import of trim curves.
 By default, all objects from all layers will be imported.
 Using the <tt/"ReadLayers"/ import option, a single layer or a range
 of layers may be selected for import.
-<item><tt/"IgnoreSimpleTrim"/:
-Another import option is <tt/"IgnoreSimpleTrim"/. This useful to
-ignore the bounding trim loop of NURBS surfaces if it is the only trim
-loop for that surface.
+<item><tt/"ReadSTrim"/:
+Another import option is <tt/"ReadSTrim"/. This useful to
+ignore simple bounding trim loops of NURBS surfaces if they are the
+only trim loop for that surface.
 Importing this single bounding trim loop would just make the Ayam scene
 more complex than needed in many cases.
 This option replaces the <tt/"IgnoreFirstTrim"/ import option
@@ -9185,6 +9197,8 @@ The following options further control the X3D import process:
 be imported. This option does not influence reading of trim curves!
 <item><tt>"ReadViewpoints"</tt> controls whether viewpoints should
 be read as view, camera, or not at all.
+<item><tt/"ReadSTrim"/ if switched off, no simple trims (trims that only
+run along the border of a NURBS patch) will be imported.
 <item><tt/"RescaleKnots"/ allows to rescale the knot vectors of
 NURBS curves, patches, and trim curves so that the distances between different
 knots are not smaller than the given value. Using a value of 1.0e-04 leads
