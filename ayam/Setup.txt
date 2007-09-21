@@ -1,4 +1,4 @@
-[Setup.txt, 9. Aug 2006]
+[Setup.txt, 21. Sep 2007]
 
 Setup instructions for Ayam on UNIX (e.g. Linux/IRIX/MacOSX)
 ------------------------------------------------------------
@@ -129,7 +129,10 @@ The distribution of Ayam contains some plugins:
 RRIB: RIB Import
 ONIO: Rhino 3DM Import/Export
 MFIO: 3DMF Import/Export
+DXFIO: AutoCAD DXF Import/Export
+X3DIO: X3D Import/Export
 IDR: Importance Driven Rendering
+AyCSG: CSG preview
 MetaObj: the MetaBalls custom object
 ayslx, ayslb, ayso, ayslo, ayslo3d, aysdr, aygso: shader parsing plugins
 
