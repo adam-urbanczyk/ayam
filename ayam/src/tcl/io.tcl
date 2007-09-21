@@ -428,7 +428,6 @@ proc io_lcAuto {  } {
 
     foreach path $paths {
 	set filename [file join $path $name]
-	puts $filename
 	set sopath [file dirname $filename]
 	if { ("$sopath" != "") && [file exists $sopath] } {
 	    set oldwd [pwd]
