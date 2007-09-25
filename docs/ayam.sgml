@@ -49,7 +49,7 @@ CSG-operations: Intersection, Difference, and Union.
 and gordon operations (with caps, holes, and bevels) realized as
 Tool-Objects.
 <item>Wavefront OBJ export and import, Rhino 3DM export and import,
-AutoCAD DXF export and import, X3D export and import.
+AutoCAD DXF export and import, Web3D X3D export and import.
 <item>Custom objects that may freely implement their representations
 (using OpenGL and RIB) and even small GUIs to edit their type specific
 parameters may be written by the user and dynamically loaded at runtime.
@@ -8224,7 +8224,7 @@ After running <tt>"repairAyam.tcl"</tt> you should immediately save
 the scene (or just the important objects you were editing, possibly using
 <tt>"Special/Save Selected"</tt>) to a scratch file and restart Ayam.
 
-<sect2>Convert Everything to Polygons<label id="topoly">
+<sect2>Convert Everything to Polygons<label id="topolytcl">
 <p>
 Since Ayam 1.13 there ist a script named <tt>"topoly.tcl"</tt> that
 recursively browses through the scene and converts everything
@@ -8243,9 +8243,9 @@ The conversion will use the parameters from the preference settings
 <tt/"SMethod"/, <tt/"SParamU"/, and <tt/"SParamV"/ or from <tt/"TP"/
 tags (if present).
 TP tags may be created easily using the tesselation tool, see also
-section <ref id="tesst" name="The Tesselation Tool">).
+section <ref id="tesst" name="The Tesselation Tool">.
 
-<sect2>Restrict the Console<label id="twolcons">
+<sect2>Restrict the Console<label id="twolconstcl">
 <p>
 The script <tt>"2lcons.tcl"</tt> (for two line console), may be
 used to restrict the screen space occupied by the console.
@@ -8328,7 +8328,7 @@ use of NURBS in OBJ files.
 Consequently, in some cases you may need to convert the NURBS objects in
 the Ayam scene to polygonal geometry before export. There is a script
 provided that helps you doing this (<tt>"topoly.tcl"</tt>, see also section
-<ref id="topoly" name="Convert Everything to Polygons">).
+<ref id="topolytcl" name="Convert Everything to Polygons">).
 <p>
 Ayam is not perfect either, as in most import options material and
 animation data is completely ignored.
@@ -8534,7 +8534,7 @@ created.
 <p>
 <sect2>DXF Entity Support
 <p>
-The DXF import supports reading of the following DXF entities:
+The DXF import plugin supports reading of the following DXF entities:
 3DFACE, ARC, CIRCLE, ELLIPSE, LINE, SOLID, TRACE, BLOCK, INSERT,
 POLYLINE, LWPOLYLINE, and SPLINE. Entities not listed here will
 be silently ignored.
@@ -8578,8 +8578,8 @@ Using the <tt/"ReadLayers"/ import option, a single layer or a range
 of layers may be selected for import.
 <item><tt/"RescaleKnots"/ allows to rescale the knot vectors of imported
 NURBS curves so that the distances between different knots are not smaller
-than the given value. Using a value of 1.0e-04 leads to NURBS that may be
-safely drawn using GLU. The default value 0.0 means no scaling.
+than the given value. A <tt/"RescaleKnots"/ value of 1.0e-04 leads to NURBS
+that may be safely drawn using GLU. The default value 0.0 means no scaling.
 <item><tt/"ErrorLevel"/: controls how many messages will be printed
 to the Ayam console while importing. Available
 values are: <tt/"Silence"/ no output except for severe errors,
@@ -8673,12 +8673,15 @@ The corresponding main menu entry is <tt>"File/Import/Wavefront OBJ"</tt>
 (if this menu entry is not available, you have to load the <tt>"objio"</tt>
 plugin using the menu entry <tt>"File/Load Plugin"</tt> first).
 <p>
-<sect2>Wavefront OBJ Object Support
+<sect2>Wavefront OBJ Statement Support
 <p>
 Wavefront OBJ import supports reading of polygonal faces with vertex
 normals and texture coordinates (the latter are read as primitive variable
-tags) and freeform curves and surfaces (NURBS) with trim curves and with
-texture coordinates (again read as primitive variable tags).
+tags); statements: <tt>v, vt, vn, f</tt>.
+<p>
+Furthermore, freeform curves and surfaces (NURBS) with trim curves and with
+texture coordinates (again read as primitive variable tags) are supported;
+statements: <tt>vp, cstype, deg, curv, curv2, surf, parm, trim, hole, end</tt>.
 <p>
 Freeform curves and surfaces of basis type bmatrix, cardinal and taylor
 are currently not supported. Also, import of special curves and
@@ -8714,9 +8717,9 @@ be imported. This option does not influence reading of trim curves!
 run along the border of a NURBS patch) will be imported.
 <item><tt/"RescaleKnots"/ allows to rescale the knot vectors of
 NURBS curves, patches, and trim curves so that the distances between different
-knots are not smaller than the given value. Using a value of 1.0e-04 leads
-to NURBS that may be safely drawn using GLU. The default value 0.0 means
-no scaling.
+knots are not smaller than the given value. A <tt/"RescaleKnots"/ value of
+1.0e-04 leads to NURBS that may be safely drawn using GLU.
+The default value 0.0 means no scaling.
 <item><tt/"ScaleFactor"/ allows to apply a scaling factor to all
 imported objects.
 <item><tt>"STagName"</tt> controls the name of the PV tag to be used
@@ -8848,9 +8851,9 @@ imported. This option does not influence the import of trim curves.
 run along the border of a NURBS patch) will be imported.
 <item><tt/"RescaleKnots"/ allows to rescale the knot vectors of
 NURBS curves, patches, and trim curves so that the distances between different
-knots are not smaller than the given value. Using a value of 1.0e-04 leads
-to NURBS that may be safely drawn using GLU. The default value 0.0 means
-no scaling.
+knots are not smaller than the given value. A <tt/"RescaleKnots"/ value of
+1.0e-04 leads to NURBS that may be safely drawn using GLU.
+The default value 0.0 means no scaling.
 </itemize>
 
 <sect1>3DMF (Apple) Export<label id="exp3dmf">
@@ -8925,8 +8928,8 @@ Start importing from a Rhino 3DM file using the menu entry
 <p>
 The import functionality of the onio plugin currently covers
 import of all NURBS and BRep objects and objects that may
-be converted to NURBS using the OpenNURBS toolkit
-(those are: PolylineCurve, PolyCurve, LineCurve, ArcCurve,
+be converted to NURBS with routines from the OpenNURBS toolkit
+(those objects are: PolylineCurve, PolyCurve, LineCurve, ArcCurve,
 CurveOnSurface, RevSurface, SumSurface, and PlaneSurface).
 References will be resolved. Names will be imported, but
 converted to an ASCII representation. Since Ayam 1.8.3
@@ -8965,10 +8968,10 @@ This option replaces the <tt/"IgnoreFirstTrim"/ import option
 available before Ayam 1.13 with slightly different semantics.
 <item><tt/"RescaleKnots"/ allows to rescale the knot vectors of
 NURBS curves, patches, and trim curves so that the distances between different
-knots are not smaller than the given value. Using a value of 1.0e-04 leads
-to NURBS that may be safely drawn using GLU. The default value 0.0 means
-no scaling. Since Ayam 1.13 trim curves will be scaled properly to
-the new knot ranges of NURBS patches.
+knots are not smaller than the given value. A <tt/"RescaleKnots"/ value of
+1.0e-04 leads to NURBS that may be safely drawn using GLU.
+The default value 0.0 means no scaling. Since Ayam 1.13 trim curves will
+be scaled properly to the new knot ranges of NURBS patches.
 <item><tt>"STagName"</tt> controls the name of the PV tag to be used
 for the s component of the texture coordinates, and
 <item><tt>"TTagName"</tt> controls the name of the PV tag to be used
@@ -9086,7 +9089,7 @@ Since version 1.13 Ayam contains a plugin named <tt>"x3dio"</tt> that may
 import scenes from the XML based X3D file format published by the Web3D
 Consortium. The XML parser used in this plugin is based on Expat and SCEW.
 <p>
-Binary and compressed versions of X3D, as well as VRML files are not
+Binary and compressed versions of X3D, as well as VRML files are <em/not/
 supported! Only pure XML files are read by the <tt>"x3dio"</tt> plugin.
 <p>
 Start importing from a Web3D X3D file using the menu entry
@@ -9098,7 +9101,7 @@ Start importing from a Web3D X3D file using the menu entry
 <sect2>X3D Element Support
 <p>
 The import functionality of the <tt>"x3dio"</tt> plugin currently covers
-import of the following X3D elements:
+import of the following X3D elements (grouped by components):
 <itemize>
 <item>Geometry3D:
 Box, Sphere, Cylinder, Cone, ElevationGrid, Extrusion,
@@ -9125,6 +9128,7 @@ Disks with an inner radius > 0.0 are imported as flat Hyperboloids
 NurbsCurve, NurbsCurve2D, NurbsPatchsurface,
 TrimmedNurbsPatchsurface, Contour2D, ContourPolyline2D,
 NurbsSweptSurface, NurbsSwungSurface.
+<p> <p>
 
 <item>CAD:
 QuadSet, IndexedQuadSet, CADLayer, CADAssembly, CADPart, CADFace.
@@ -9145,7 +9149,7 @@ still have a quadratic falloff with distance.
 Viewpoint.
 <p><p>
 Viewpoint elements will be imported as view objects (with corresponding
-view window) or camera objects depending on the <tt>"ReadViewports"</tt>
+view window) or camera objects depending on the <tt>"ReadViewpoints"</tt>
 import option.
 
 <item>Non geometric/Scene structure:
@@ -9194,16 +9198,16 @@ The following options further control the X3D import process:
 <itemize>
 <item><tt>"FileName"</tt> is the name of the X3D file to be imported
 <item><tt>"ReadCurves"</tt> if this is disabled, no freeform curves will
-be imported. This option does not influence reading of trim curves!
+be imported. This option does not influence the import of trim curves!
 <item><tt>"ReadViewpoints"</tt> controls whether viewpoints should
 be read as view, camera, or not at all.
 <item><tt/"ReadSTrim"/ if switched off, no simple trims (trims that only
 run along the border of a NURBS patch) will be imported.
 <item><tt/"RescaleKnots"/ allows to rescale the knot vectors of
 NURBS curves, patches, and trim curves so that the distances between different
-knots are not smaller than the given value. Using a value of 1.0e-04 leads
-to NURBS that may be safely drawn using GLU. The default value 0.0 means
-no scaling.
+knots are not smaller than the given value. A <tt/"RescaleKnots"/ value of
+1.0e-04 leads to NURBS that may be safely drawn using GLU.
+The default value 0.0 means no scaling.
 <item><tt/"ScaleFactor"/ allows to apply a scaling factor to all
 imported objects.
 <item><tt>"STagName"</tt> controls the name of the PV tag to be used
@@ -9769,8 +9773,8 @@ ISBN 0-88986-303-2</it>
 <p>
 The AyCSG plugin may be used to resolve and preview CSG operations.
 For this, the plugin uses image based CSG rendering algorithms provided
-by the OpenCSG library. The OpenCSG library, currently, supports
-the Goldfeather and the SCS algorithm. The latter only works
+by the OpenCSG library by Florian Kirsch. The OpenCSG library, currently,
+supports the Goldfeather and the SCS algorithm. The latter only works
 properly with convex primitives. Since both, Goldfeather and SCS, are
 image based rendering algorithms, there is no limit in geometric object
 types that may be used in CSG hierarchies. You may e.g. use Quadrics, NURBS,
@@ -10092,6 +10096,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <label id="index">
 <label id="index0">0
 <itemize>
+<item>2lcons: <ref id="twolconstcl" name="example/helper script">,
 <item>3DM: <ref id="imprhino" name="3DM (Rhino) Import">,
 <ref id="exprhino" name="3DM (Rhino) Export">
 <item>3DMF: <ref id="imp3dmf" name="3DMF (Apple) Import">,
@@ -10597,6 +10602,10 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>ReadFrame, ReadCamera, ReadOptions, ReadLights, ReadMaterial,
 ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>ReadLayers: <ref id="imprhino" name="3DM (Rhino) import option">
+<item>ReadSTrim: <ref id="impwav" name="Wavefront OBJ import/export option">,
+<ref id="imprhino" name="3DM (Rhino) import option">,
+<ref id="rribopt" name="RIB import option">,
+<ref id="impx3dopt" name="X3D import option">
 <item>Rebuild: <ref id="treecontm" name="tree context menu entry">
 <item>RedirectTcl: <ref id="prefmisc" name="preference setting">
 <item>Redo: <ref id="undos" name="The Undo System">,
@@ -10821,6 +10830,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Tools: <ref id="mmtools" name="tools menu">
 <item>Top: <ref id="vmtype" name="view menu entry">
 <item>TopLevelLayers: <ref id="exprhino" name="3DM (Rhino) export option">
+<item>topoly: <ref id="topolytcl" name="example/helper script">
 <item>Torus: <ref id="torusobj" name="Torus object">
 <item>To XY: <ref id="toxyt" name="To XY tool">
 <item>TP: <ref id="tptag" name="tag type">
@@ -10911,6 +10921,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <label id="indexz">Z
 <itemize>
 <item>Zap Ayam: <ref id="mmspecial" name="main menu entry">
+<item>zap: <ref id="zaptcl" name="example/helper script">
 <item>ZMin, ZMax: <ref id="spattr" name="sphere attribute">,
 <ref id="dkp" name="disk attribute">,
 <ref id="cyp" name="cylinder attribute">,
@@ -10920,6 +10931,5 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Zoom to Object: <ref id="vmconf" name="view menu entry">,
 <ref id="vwsc" name="view action">
 </itemize>
-
 
 </article>
