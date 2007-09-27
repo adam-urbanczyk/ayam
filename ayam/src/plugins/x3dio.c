@@ -6724,9 +6724,10 @@ x3dio_writenpatchobj(scew_element *element, ay_object *o)
  int ay_status = AY_OK;
  ay_object *down = NULL;
  ay_nurbpatch_object *p;
- unsigned int i, j;
+ unsigned int i, j, stride = 4;
  int have_mys = AY_FALSE, have_myt = AY_FALSE;
  unsigned int myslen = 0, mytlen = 0, mystlen = 0;
+ double *v = NULL, *p1, *p2;
  double *mysarr = NULL, *mytarr = NULL, *mystarr = NULL;
  ay_tag mystag = {NULL, 0, NULL};
  ay_tag myttag = {NULL, 0, NULL};
@@ -6813,9 +6814,25 @@ x3dio_writenpatchobj(scew_element *element, ay_object *o)
 			 p->controlv);
     }
 
+  /* fix row/column major order */
+  if(!(v = calloc(p->width * p->height * 3, sizeof(double))))
+    return AY_EOMEM;
+  p1 = v;
+  for(i = 0; i < p->height; i++)
+    {
+      p2 = &(p->controlv[i*stride]);
+      for(j = 0; j < p->width; j++)
+	{
+	  memcpy(p1, p2, 3*sizeof(double));
+	  p1 += 3;
+	  p2 += p->height*stride;
+	} /* for */
+    } /* for */
+
+  /* write coordinates */
   coord_element = scew_element_add(patch_element, "Coordinate");
   x3dio_writedoublepoints(coord_element, "point", 3, p->width*p->height,
-			  4, p->controlv);
+			  3, v);
 
   /* write texture coordinates */
   if(have_mys)
