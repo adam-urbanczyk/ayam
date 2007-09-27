@@ -6892,6 +6892,8 @@ cleanup:
     free(mytarr);
   if(mystarr)
     free(mystarr);
+  if(v)
+    free(v);
 
  return ay_status;
 } /* x3dio_writenpatchobj */
