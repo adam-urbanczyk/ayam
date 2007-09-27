@@ -6793,11 +6793,11 @@ x3dio_writenpatchobj(scew_element *element, ay_object *o)
   /* now write the patch */
   if(o->down && o->down->next)
     {
-      patch_element = scew_element_add(shape_element, "NurbsPatchSurface");
+      patch_element = scew_element_add(shape_element, "NurbsTrimmedSurface");
     }
   else
     {
-      patch_element = scew_element_add(shape_element, "NurbsTrimmedSurface");
+      patch_element = scew_element_add(shape_element, "NurbsPatchSurface");
     }
 
   x3dio_writeintattrib(patch_element, "uOrder", &p->uorder);
@@ -6816,7 +6816,7 @@ x3dio_writenpatchobj(scew_element *element, ay_object *o)
 
   /* fix row/column major order */
   if(!(v = calloc(p->width * p->height * 3, sizeof(double))))
-    return AY_EOMEM;
+    { ay_status = AY_EOMEM; goto cleanup; }
   p1 = v;
   for(i = 0; i < p->height; i++)
     {
