@@ -1977,6 +1977,153 @@ ay_npt_revolve(ay_object *o, double arc, int sections, int order,
 } /* ay_npt_revolve */
 
 
+/* ay_npt_swing:
+ */
+int
+ay_npt_swing(ay_object *o1, ay_object *o2,
+	     ay_nurbpatch_object **swing)
+{
+ int ay_status = AY_OK;
+ ay_nurbpatch_object *new = NULL;
+ ay_nurbcurve_object *cs, *tr;
+ double *cscv = NULL, *trcv = NULL, *p;
+ double m[16];
+ double angle, scal;
+ int stride = 4;
+ int i = 0, j = 0, a;
+
+  /* check parameters */
+  if(!o1 || !o2 || !swing)
+    return AY_ENULL;
+
+  if((o1->type != AY_IDNCURVE) || (o2->type != AY_IDNCURVE))
+    return AY_ERROR;
+
+  cs = (ay_nurbcurve_object *)(o1->refine);
+  tr = (ay_nurbcurve_object *)(o2->refine);
+
+  /* apply trafos to cross-section curves controlv */
+  if(!(cscv = calloc(cs->length * stride, sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  memcpy(cscv, cs->controlv, cs->length * stride * sizeof(double));
+
+  ay_trafo_creatematrix(o1, m);
+
+  a = 0;
+  for(i = 0; i < cs->length; i++)
+    {
+      ay_trafo_apply4(&(cscv[a]), m);
+      a += stride;
+    }
+
+  /* apply trafos to trajectory curves controlv */
+  if(!(trcv = calloc(tr->length * stride, sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  memcpy(trcv, tr->controlv, tr->length * stride * sizeof(double));
+
+  ay_trafo_creatematrix(o2, m);
+  a = 0;
+  for(i = 0; i < tr->length; i++)
+    {
+      ay_trafo_apply4(&(trcv[a]), m);
+      a += stride;
+    }
+
+  /* calloc and parametrize the new patch */
+  if(!(new = calloc(1, sizeof(ay_nurbpatch_object))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+
+  if(!(new->uknotv = calloc(tr->length+tr->order, sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+
+  memcpy(new->uknotv, tr->knotv, (tr->length+tr->order)*sizeof(double));
+  new->uorder = tr->order;
+  new->uknot_type = tr->knot_type;
+  new->width = tr->length;
+
+  if(!(new->vknotv = calloc(cs->length+cs->order, sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+
+  memcpy(new->vknotv, cs->knotv, (cs->length+cs->order)*sizeof(double));
+  new->vorder = cs->order;
+  new->vknot_type = cs->knot_type;
+  new->height = cs->length;
+
+  if(!(new->controlv = calloc(cs->length*tr->length, stride*sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+
+  /* fill controlv */
+  for(j = 0; j < tr->length; j++)
+    {
+      /* calculate angle */
+      p = &(tr->controlv[j*stride]);
+      if(fabs(p[2]) > AY_EPSILON)
+	{
+	  if(p[2] > 0.0)
+	    {
+	      angle = atan(p[0]/p[2]);
+	    }
+	  else
+	    {
+	      if(fabs(p[0]) < AY_EPSILON)
+		angle = AY_D2R(180.0);
+	      else
+		angle = AY_D2R(180.0)+atan(p[0]/p[2]);
+	    }
+	}
+      else
+	{
+	  if(p[0] > 0.0)
+	    angle = AY_D2R(90.0);
+	  else
+	    angle = AY_D2R(270.0);
+	} /* if */
+
+      /* calculate scale factor */
+      scal = AY_V3LEN(p);
+
+      /* set up transformation matrix */
+      ay_trafo_identitymatrix(m);
+      ay_trafo_scalematrix(scal, 1.0, scal, m);
+      ay_trafo_rotatematrix(AY_R2D(angle), 0.0, 1.0, 0.0, m);
+
+      /* copy and transform section */
+      p = &(new->controlv[j*cs->length*stride]);
+      memcpy(p, cscv, cs->length*stride*sizeof(double));
+
+      for(i = 0; i < cs->length; i++)
+	{
+	  ay_trafo_apply4(p, m);
+	  p += 4;
+	} /* for */
+    } /* for */
+
+  /* return result */
+  *swing = new;
+  new = NULL;
+
+cleanup:
+  if(cscv)
+    free(cscv);
+
+  if(trcv)
+    free(trcv);
+
+  if(new)
+    {
+      if(new->uknotv)
+	free(new->uknotv);
+      if(new->vknotv)
+	free(new->vknotv);
+      if(new->controlv)
+	free(new->controlv);
+      free(new);
+    }
+
+ return ay_status;
+} /* ay_npt_swing */
+
+
 /* ay_npt_sweep:
  *  Sweep cross section <o1> along path <o2> possibly rotating it,
  *  so that it is always perpendicular to the path, possibly
