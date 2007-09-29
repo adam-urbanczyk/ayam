@@ -1170,6 +1170,7 @@ extern unsigned int ay_current_primlevel;
 #define AY_IDRIPROC        36
 #define AY_IDBEVEL         37
 #define AY_IDNCIRCLE       38
+#define AY_IDSWING         39
 
 #define AY_IDLAST          50
 

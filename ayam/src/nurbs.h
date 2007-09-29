@@ -384,6 +384,9 @@ int ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
 int ay_npt_revolve(ay_object *o, double arc, int sections, int order,
 		   ay_nurbpatch_object **revolution);
 
+int ay_npt_swing(ay_object *o1, ay_object *o2,
+		 ay_nurbpatch_object **swing);
+
 int ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 		 int rotate, int closed, ay_nurbpatch_object **sweep,
 		 int has_start_cap, ay_object **start_cap,

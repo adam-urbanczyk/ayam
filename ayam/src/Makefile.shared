@@ -445,6 +445,7 @@ AYAMOBJS = aycore/bbc.o\
 	objects/sphere.o\
 	objects/skin.o\
 	objects/sweep.o\
+	objects/swing.o\
 	objects/torus.o\
 	objects/text.o\
 	objects/view.o\
