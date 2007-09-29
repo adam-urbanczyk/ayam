@@ -120,6 +120,9 @@ int ay_skin_init(Tcl_Interp *interp);
 /* sweep.c */
 int ay_sweep_init(Tcl_Interp *interp);
 
+/* swing.c */
+int ay_swing_init(Tcl_Interp *interp);
+
 /* text.c */
 int ay_text_init(Tcl_Interp *interp);
 
