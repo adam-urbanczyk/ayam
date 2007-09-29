@@ -724,6 +724,25 @@ typedef struct ay_sweep_object_s
 } ay_sweep_object;
 
 
+typedef struct ay_swing_object_s
+{
+
+  int has_upper_cap;
+  ay_object *upper_cap;
+  int has_lower_cap;
+  ay_object *lower_cap;
+  int has_start_cap;
+  ay_object *start_cap;
+  int has_end_cap;
+  ay_object *end_cap;
+
+  /* cache NURBS patch representation */
+  ay_object *npatch;
+  double glu_sampling_tolerance;
+  int display_mode;
+} ay_swing_object;
+
+
 typedef struct ay_birail1_object_s
 {
  int close;

@@ -69,6 +69,8 @@ int ay_comp_revolve(ay_object *o1, ay_object *o2);
 
 int ay_comp_sweep(ay_object *o1, ay_object *o2);
 
+int ay_comp_swing(ay_object *o1, ay_object *o2);
+
 int ay_comp_skin(ay_object *o1, ay_object *o2);
 
 int ay_comp_material(ay_object *o1, ay_object *o2);
@@ -665,6 +667,28 @@ ay_comp_sweep(ay_object *o1, ay_object *o2)
 
   return AY_TRUE;
 } /* ay_comp_sweep */
+
+
+/* ay_comp_swing:
+ *
+ */
+int
+ay_comp_swing(ay_object *o1, ay_object *o2)
+{
+  ay_swing_object *s1, *s2;
+
+  s1 = (ay_swing_object *)o1->refine;
+  s2 = (ay_swing_object *)o2->refine;
+
+  if((s1->has_upper_cap != s2->has_upper_cap) ||
+     (s1->has_lower_cap != s2->has_lower_cap) ||
+     (s1->has_start_cap != s2->has_start_cap) ||
+     (s1->has_end_cap != s2->has_end_cap)
+     )
+    return AY_FALSE;
+
+  return AY_TRUE;
+} /* ay_comp_swing */
 
 
 /* ay_comp_skin:
@@ -1289,6 +1313,7 @@ ay_comp_init()
   ay_status = ay_comp_register(ay_comp_revolve, AY_IDREVOLVE);
   ay_status = ay_comp_register(ay_comp_extrude, AY_IDEXTRUDE);
   ay_status = ay_comp_register(ay_comp_sweep, AY_IDSWEEP);
+  ay_status = ay_comp_register(ay_comp_swing, AY_IDSWING);
   ay_status = ay_comp_register(ay_comp_skin, AY_IDSKIN);
   ay_status = ay_comp_register(ay_comp_pamesh, AY_IDPAMESH);
   ay_status = ay_comp_register(ay_comp_cap, AY_IDCAP);
