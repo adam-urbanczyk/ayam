@@ -398,35 +398,54 @@ ay_swing_bbccb(ay_object *o, double *bbox, int *flags)
 
 
 int
-ay_swing_crtcap(ay_swing_object *swing, ay_object *curve,
-		  double u, int upper,
-		  ay_object **o)
+ay_swing_crtcap(ay_swing_object *swing, int upper,
+		ay_object **o)
 {
  int ay_status = AY_OK;
  int mode = 0, i = 0;
- double P1[4] = {0}, P2[4] = {0}, *controlv = NULL;
- double thetamax, tolerance;
- double m[16];
- ay_object *cap = NULL, *trim = NULL, *tloop = NULL;
+ double P1[4] = {0}, *cv = NULL, *controlv = NULL;
+ double tolerance, minx, maxx, minz, maxz, y;
+ ay_object *curve = NULL, *cap = NULL, *trim = NULL, *tloop = NULL;
  ay_nurbcurve_object *nc = NULL;
 
-  nc = (ay_nurbcurve_object *)curve->refine;
+  if(!swing || !o)
+    return AY_ENULL;
 
   mode = swing->display_mode;
   tolerance = swing->glu_sampling_tolerance;
 
-  /* get curves transformation-matrix */
-  ay_trafo_creatematrix(curve, m);
+  if(!(curve = calloc(1, sizeof(ay_object))))
+    return AY_EOMEM;
 
-  ay_nb_CurvePoint4D(nc->length-1, nc->order-1,
-		     nc->knotv, nc->controlv,
-		     u, P1);
+  ay_status = ay_npt_extractnc(swing->npatch, upper?0:1, 0.0, AY_TRUE, &nc);
 
-  /* apply transform */
-  AY_APTRAN3(P2,P1,m)
+  if(!nc)
+    { ay_status = AY_ERROR; goto cleanup; }
 
+  ay_object_defaults(curve);
+  curve->type = AY_IDNCURVE;
+  curve->refine = nc;
+
+  /* calc minx, maxx, minz, maxz from curve */
+  cv = nc->controlv;
+  minx = minz = DBL_MAX;
+  maxx = maxz = DBL_MIN;
+  for(i = 0; i < nc->length*4; i += 4)
+    {
+      if(cv[i] < minx)
+	minx = cv[i];
+      if(cv[i] > maxx)
+	maxx = cv[i];
+      if(cv[i+2] < minz)
+	minz = cv[i+2];
+      if(cv[i+2] > maxz)
+	maxz = cv[i+2];
+    }
+  y = cv[1];
+
+  /* create a NURBS patch object */
   if(!(cap = calloc(1, sizeof(ay_object))))
-    {return AY_EOMEM;}
+    { ay_status = AY_EOMEM; goto cleanup; }
   ay_object_defaults(cap);
   cap->type = AY_IDNPATCH;
   cap->hide_children = AY_TRUE;
@@ -434,35 +453,27 @@ ay_swing_crtcap(ay_swing_object *swing, ay_object *curve,
   cap->inherit_trafos = AY_FALSE;
 
   if(!(controlv = calloc(4*4, sizeof(double))))
-    {free(cap); return AY_EOMEM;}
+    { ay_status = AY_EOMEM; goto cleanup; }
 
-  controlv[0] = -P2[0];
-  controlv[2] = -P2[0];
+  controlv[0] = minx;
+  controlv[1] = y;
+  controlv[2] = minz;
   controlv[3] = 1.0;
 
-  controlv[4] = -P2[0];
-  controlv[6] = P2[0];
+  controlv[4] = minx;
+  controlv[5] = y;
+  controlv[6] = maxz;
   controlv[7] = 1.0;
 
-  controlv[8] = P2[0];
-  controlv[10] = -P2[0];
+  controlv[8] = maxx;
+  controlv[9] = y;
+  controlv[10] = minz;
   controlv[11] = 1.0;
 
-  controlv[12] = P2[0];
-  controlv[14] = P2[0];
+  controlv[12] = maxx;
+  controlv[13] = y;
+  controlv[14] = maxz;
   controlv[15] = 1.0;
-
-  if(upper)
-    {
-      for(i=1;i<=15;i+=4)
-	controlv[i] = -P2[1];
-      cap->scaly *= -1.0;
-    }
-  else
-    {
-      for(i=1;i<=15;i+=4)
-	controlv[i] = P2[1];
-    }
 
   ay_status = ay_npt_create(2, 2, 2, 2,
 			    AY_KTBEZIER, AY_KTBEZIER,
@@ -473,92 +484,371 @@ ay_swing_crtcap(ay_swing_object *swing, ay_object *curve,
     tolerance;
   ((ay_nurbpatch_object *)cap->refine)->display_mode = mode;
 
-  /* create trimcurve */
-  if(!(trim = calloc(1, sizeof(ay_object))))
-    {return AY_EOMEM;}
-  ay_object_defaults(trim);
-  trim->type = AY_IDNCURVE;
-
-  /* calc thetamax! */
-
-  /**/
-  ay_nct_crtncirclearc(1.0, thetamax,
-		       (ay_nurbcurve_object **) (&(trim->refine)));
-
-
-  if(trim->refine)
+  /* rescale curve and rotate it to the XY plane
+     to serve as proper trim (loop component) */
+  for(i = 0; i < nc->length*4; i += 4)
     {
-      ((ay_nurbcurve_object *)(trim->refine))->glu_sampling_tolerance =
-	nc->glu_sampling_tolerance;
-      ((ay_nurbcurve_object *)(trim->refine))->display_mode =
-	nc->display_mode;
+      cv[i] -= minx;
+      cv[i] /= (maxx-minx);
+      cv[i+1] = cv[i+2] - minz;
+      cv[i+1] /= (maxz-minz);
+      cv[i+2] = 0.0;
     }
 
-  trim->scalx = 0.5;
-  trim->scaly = 0.5;
-  trim->movx = 0.5;
-  trim->movy = 0.5;
+  ay_status = ay_object_crtendlevel(&(curve->next));
+  cap->down = curve;
 
-  ay_nct_revert((ay_nurbcurve_object *)trim->refine);
+  if(ay_nct_isclosed(nc) == AY_FALSE)
+    {
+      /* create trim-loop level */
+      if(!(tloop = calloc(1, sizeof(ay_object))))
+	{ ay_status = AY_EOMEM; goto cleanup; }
+      ay_object_defaults(tloop);
+      tloop->type = AY_IDLEVEL;
 
-  cap->down = trim;
+      if(!(tloop->refine = calloc(1, sizeof(ay_level_object))))
+	{ ay_status = AY_EOMEM; goto cleanup; }
 
-  ay_status = ay_object_crtendlevel(&(trim->next));
+      tloop->down = cap->down;
+      cap->down = tloop;
 
+      /* create another trimcurve to close the loop */
+      if(!(trim = calloc(1, sizeof(ay_object))))
+	{ ay_status = AY_EOMEM; goto cleanup; }
+
+      ay_object_defaults(trim);
+      trim->type = AY_IDNCURVE;
+
+      if(!(controlv = calloc(3*4, sizeof(double))))
+	{ ay_status = AY_EOMEM; goto cleanup; }
+
+      /* P1 == trajectory start */
+      ay_nb_CurvePoint4D(nc->length-1, nc->order-1,
+			 nc->knotv, nc->controlv,
+			 nc->knotv[nc->length], P1);
+      memcpy(controlv, P1, 3*sizeof(double));
+      controlv[3] = 1.0;
+
+      /* P2 == origin */
+      controlv[4] = (-minx)/(maxx-minx);
+      controlv[5] = (-minz)/(maxz-minz);
+      controlv[7] = 1.0;
+
+      /* P3 == trajectory end */
+      ay_nb_CurvePoint4D(nc->length-1, nc->order-1,
+			 nc->knotv, nc->controlv,
+			 nc->knotv[nc->order-1], P1);
+      memcpy(&(controlv[8]), P1, 3*sizeof(double));
+      controlv[11] = 1.0;
+
+      ay_status = ay_nct_create(2, 3, AY_KTNURB,
+				controlv, NULL,
+				(ay_nurbcurve_object **)(&(trim->refine)));
+
+      if(trim->refine)
+	{
+	  ((ay_nurbcurve_object *)(trim->refine))->glu_sampling_tolerance =
+	    nc->glu_sampling_tolerance;
+	  ((ay_nurbcurve_object *)(trim->refine))->display_mode =
+	    nc->display_mode;
+	}
+
+      /* fix orientation of trims */
+      ay_nct_revert((ay_nurbcurve_object *)trim->refine);
+
+      trim->next = tloop->down->next;
+      tloop->down->next = trim;
+
+      trim = tloop->down;
+      ay_nct_revert((ay_nurbcurve_object *)trim->refine);
+
+
+      /* properly terminate trim-loop level */
+      tloop = cap->down;
+      if(tloop)
+	{
+	  while(tloop->next)
+	    {
+	      tloop = tloop->next;
+	    }
+	  ay_status = ay_object_crtendlevel(&(tloop->next));
+	}
+      else
+	{
+	  ay_status = ay_object_crtendlevel(&(trim->down));
+	}
+
+    } /* if */
+
+  /* return result */
+  *o = cap;
+
+  /* prevent cleanup code from doing something harmful */
+  cap = NULL;
+  curve = NULL;
+  trim = NULL;
+  tloop = NULL;
+
+ cleanup:
+
+  if(cap)
+    {
+      cap->down = NULL;
+      ay_object_delete(cap);
+    }
+
+  if(curve)
+    {
+      ay_object_delete(curve);
+    }
+
+  if(tloop)
+    {
+      tloop->down = NULL;
+      ay_object_deletemulti(tloop);
+    }
+
+  if(trim)
+    {
+      ay_object_delete(trim);
+    }
+
+ return ay_status;
+} /* ay_swing_crtcap */
+
+
+int
+ay_swing_crtside(ay_swing_object *swing, ay_object *cso, ay_object *tro,
+		 int start, ay_object **o)
+{
+ int ay_status = AY_OK;
+ int stride = 4, mode = 0, i = 0;
+ double P1[4] = {0}, *cv = NULL, *controlv = NULL;
+ double tolerance, minx, maxx, minz, maxz, miny, maxy;
+ ay_object *curve = NULL, *cap = NULL, *trim = NULL, *tloop = NULL;
+ ay_nurbcurve_object *cs = NULL, *tr = NULL, *nc = NULL;
+ double *p = NULL, angle, scale, m[16];
+
+  if(!swing || !cso || !tro || !o)
+    return AY_ENULL;
+
+  if((cso->type != AY_IDNCURVE) || (tro->type != AY_IDNCURVE))
+    return AY_ERROR;
+
+  cs = (ay_nurbcurve_object *)(cso->refine);
+  tr = (ay_nurbcurve_object *)(tro->refine);
+
+  mode = swing->display_mode;
+  tolerance = swing->glu_sampling_tolerance;
+
+  if(ay_nct_isclosed(cs) == AY_TRUE)
+    {
+      if(!(curve = calloc(1, sizeof(ay_object))))
+	return AY_EOMEM;
+
+      ay_status = ay_npt_extractnc(swing->npatch, start?2:3, 0.0, AY_TRUE,
+				   &nc);
+
+      if(!nc)
+	{ ay_status = AY_ERROR; goto cleanup; }
+
+      ay_object_defaults(curve);
+      curve->type = AY_IDNCURVE;
+      curve->refine = nc;
+
+      ay_status = ay_capt_createfromcurve(curve, o);
+      return ay_status;
+    }
+
+  /* calculate angle and scale factor */
+  if(start)
+    p = &(tr->controlv[(tr->length-1)*stride]);
+  else
+    p = tr->controlv;
+
+  if(fabs(p[2]) > AY_EPSILON)
+    {
+      if(p[2] > 0.0)
+	{
+	  angle = atan(p[0]/p[2]);
+	}
+      else
+	{
+	  if(fabs(p[0]) < AY_EPSILON)
+	    angle = AY_D2R(180.0);
+	  else
+	    angle = AY_D2R(180.0)+atan(p[0]/p[2]);
+	}
+    }
+  else
+    {
+      if(p[0] > 0.0)
+	angle = AY_D2R(90.0);
+      else
+	angle = AY_D2R(270.0);
+    } /* if */
+
+  /* calculate scale factor */
+  scale = AY_V3LEN(p);
+
+  /* copy cross-section to serve as trim curve */
+  ay_object_copy(cso, &curve);
+  if(!curve)
+    return AY_ERROR;
+
+  ay_nct_applytrafo(curve);
+
+  nc = (ay_nurbcurve_object *)curve->refine;
+
+  /* calc minx, maxx, minz, maxz from cross section */
+  cv = nc->controlv;
+  minx = miny = minz = DBL_MAX;
+  maxx = maxy = maxz = DBL_MIN;
+  for(i = 0; i < nc->length*4; i += 4)
+    {
+      if(cv[i] < minx)
+	minx = cv[i];
+      if(cv[i] > maxx)
+	maxx = cv[i];
+      if(cv[i+1] < miny)
+	miny = cv[i+1];
+      if(cv[i+1] > maxy)
+	maxy = cv[i+1];
+      if(cv[i+2] < minz)
+	minz = cv[i+2];
+      if(cv[i+2] > maxz)
+	maxz = cv[i+2];
+    }
+
+  /* create a NURBS patch object */
+  if(!(cap = calloc(1, sizeof(ay_object))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  ay_object_defaults(cap);
+  cap->type = AY_IDNPATCH;
+  cap->hide_children = AY_TRUE;
+  cap->parent = AY_TRUE;
+  cap->inherit_trafos = AY_FALSE;
+
+  if(!(controlv = calloc(4*4, sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+
+  /* place patch in YZ plane */
+
+  controlv[0] = 0.0;
+  controlv[1] = miny;
+  controlv[2] = 0.0;
+  controlv[3] = 1.0;
+
+  controlv[4] = 0.0;
+  controlv[5] = miny;
+  controlv[6] = maxz;
+  controlv[7] = 1.0;
+
+  controlv[8] = 0.0;
+  controlv[9] = maxy;
+  controlv[10] = 0.0;
+  controlv[11] = 1.0;
+
+  controlv[12] = 0.0;
+  controlv[13] = maxy;
+  controlv[14] = maxz;
+  controlv[15] = 1.0;
+
+  ay_status = ay_npt_create(2, 2, 2, 2,
+			    AY_KTBEZIER, AY_KTBEZIER,
+			    controlv, NULL, NULL,
+			    (ay_nurbpatch_object **)(&(cap->refine)));
+
+  ((ay_nurbpatch_object *)cap->refine)->glu_sampling_tolerance =
+    tolerance;
+  ((ay_nurbpatch_object *)cap->refine)->display_mode = mode;
+
+  /* rotate and scale patch */
+
+  /* set up transformation matrix */
+  ay_trafo_identitymatrix(m);
+  ay_trafo_scalematrix(1.0, 1.0, scale, m);
+  ay_trafo_rotatematrix(AY_R2D(angle), 0.0, 1.0, 0.0, m);
+  /* apply transformation matrix */
+  for(i = 0; i < 4; i++)
+    {
+      ay_trafo_apply4(&(controlv[i*4]), m);
+    } /* for */
+
+  /* rescale curve and rotate it to the XY plane
+     to serve as proper trim (loop component) */
+  for(i = 0; i < nc->length*4; i += 4)
+    {
+      cv[i] = cv[i+2];
+      cv[i] /= maxz*scale;
+      cv[i+1] -= miny;
+      cv[i+1] /= (maxy-miny);
+      cv[i+2] = 0.0;
+    }
+
+  ay_status = ay_object_crtendlevel(&(curve->next));
+  cap->down = curve;
+
+  /* create trim-loop level */
   if(!(tloop = calloc(1, sizeof(ay_object))))
-    {return AY_EOMEM;}
+    { ay_status = AY_EOMEM; goto cleanup; }
   ay_object_defaults(tloop);
   tloop->type = AY_IDLEVEL;
 
   if(!(tloop->refine = calloc(1, sizeof(ay_level_object))))
-    {return AY_EOMEM;}
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   tloop->down = cap->down;
   cap->down = tloop;
 
-  /* create another trimcurve */
+  /* create another trimcurve to close the loop */
   if(!(trim = calloc(1, sizeof(ay_object))))
-    {return AY_EOMEM;}
+    { ay_status = AY_EOMEM; goto cleanup; }
   ay_object_defaults(trim);
   trim->type = AY_IDNCURVE;
-  if(!(controlv = calloc(3*4, sizeof(double))))
-    {return AY_EOMEM;}
 
-  nc = tloop->down->refine;
+  if(!(controlv = calloc(4*4, sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
 
+  /* P1 == cross section start */
   ay_nb_CurvePoint4D(nc->length-1, nc->order-1,
 		     nc->knotv, nc->controlv,
 		     nc->knotv[nc->length], P1);
-
   memcpy(controlv, P1, 3*sizeof(double));
-
   controlv[3] = 1.0;
+
+  /* P2 == origin */
+  controlv[4] = 0.0;
+  controlv[5] = miny;
+  controlv[6] = 0.0;
   controlv[7] = 1.0;
+
+  /* P3 == origin */
+  controlv[8] = 0.0;
+  controlv[9] = maxy;
+  controlv[10] = 0.0;
   controlv[11] = 1.0;
 
+  /* P4 == cross section end */
   ay_nb_CurvePoint4D(nc->length-1, nc->order-1,
 		     nc->knotv, nc->controlv,
 		     nc->knotv[nc->order-1], P1);
+  memcpy(&(controlv[12]), P1, 3*sizeof(double));
+  controlv[15] = 1.0;
 
-  memcpy(&(controlv[8]), P1, 3*sizeof(double));
-
-  ay_status = ay_nct_create(2, 3, AY_KTNURB,
+  ay_status = ay_nct_create(2, 4, AY_KTNURB,
 			    controlv, NULL,
 			    (ay_nurbcurve_object **)(&(trim->refine)));
-
-  if(trim->refine)
+  /*
+    if(trim->refine)
     {
-      ((ay_nurbcurve_object *)(trim->refine))->glu_sampling_tolerance =
-	nc->glu_sampling_tolerance;
-      ((ay_nurbcurve_object *)(trim->refine))->display_mode =
-	nc->display_mode;
+    ((ay_nurbcurve_object *)(trim->refine))->glu_sampling_tolerance =
+    nc->glu_sampling_tolerance;
+    ((ay_nurbcurve_object *)(trim->refine))->display_mode =
+    nc->display_mode;
     }
-
-  trim->scalx = 0.5;
-  trim->scaly = 0.5;
-  trim->movx = 0.5;
-  trim->movy = 0.5;
-
+  */
+  /* fix orientation of trims */
   ay_nct_revert((ay_nurbcurve_object *)trim->refine);
 
   trim->next = tloop->down->next;
@@ -567,7 +857,8 @@ ay_swing_crtcap(ay_swing_object *swing, ay_object *curve,
   trim = tloop->down;
   ay_nct_revert((ay_nurbcurve_object *)trim->refine);
 
-  /* properly terminate level */
+
+  /* properly terminate trim-loop level */
   tloop = cap->down;
   if(tloop)
     {
@@ -582,274 +873,40 @@ ay_swing_crtcap(ay_swing_object *swing, ay_object *curve,
       ay_status = ay_object_crtendlevel(&(trim->down));
     }
 
+  /* return result */
   *o = cap;
 
- return AY_OK;
-} /* ay_swing_crtcap */
+  /* prevent cleanup code from doing something harmful */
+  cap = NULL;
+  curve = NULL;
+  trim = NULL;
+  tloop = NULL;
 
+ cleanup:
 
-int
-ay_swing_crtside(ay_swing_object *swing, ay_object *curve,
-		 ay_object **o)
-{
-#if 0
- int ay_status = AY_OK;
- int mode = 0, i = 0;
- double P1[4] = {0}, P2[4] = {0}, PS[4] = {0}, PE[4] = {0}, *controlv = NULL;
- double *ccv = NULL, tolerance, minx, maxx, miny, maxy;
- double yaxis[3] = {0.0,1.0,0.0}, quat[4] = {0}, angle = 0.0;
- double m[16];
- ay_object *cap = NULL, *trim = NULL, *tloop = NULL;
- ay_nurbcurve_object *nc = NULL, *tc = NULL;
- int closed;
-
-  nc = (ay_nurbcurve_object *)curve->refine;
-  ccv = nc->controlv;
-
-  closed = ay_nct_isclosed(nc);
-
-  mode = swing->display_mode;
-  tolerance = swing->glu_sampling_tolerance;
-
-  /* get curves transformation-matrix */
-  ay_trafo_creatematrix(curve, m);
-
-  ay_nb_CurvePoint4D(nc->length-1, nc->order-1,
-		     nc->knotv, nc->controlv,
-		     nc->knotv[nc->order - 1], P1);
-
-  /* apply transform */
-  AY_APTRAN3(PS,P1,m)
-
-  ay_nb_CurvePoint4D(nc->length-1, nc->order-1,
-		     nc->knotv, nc->controlv,
-		     nc->knotv[nc->length], P1);
-
-  /* apply transform */
-  AY_APTRAN3(PE,P1,m)
-
-  /* create NURBS patch */
-  if(!(cap = calloc(1, sizeof(ay_object))))
-    {return AY_EOMEM;}
-  ay_object_defaults(cap);
-  cap->type = AY_IDNPATCH;
-  cap->hide_children = AY_TRUE;
-  cap->parent = AY_TRUE;
-  cap->inherit_trafos = AY_FALSE;
-
-  if(!(controlv = calloc(4*4, sizeof(double))))
-    {free(cap); return AY_EOMEM;}
-
-  /* calc minx, maxx, miny, maxy from curve */
-  minx = miny = DBL_MAX;
-  maxx = maxy = DBL_MIN;
-  for(i = 0; i < nc->length*4; i+=4)
+  if(cap)
     {
-      memcpy(P1, &(ccv[i]), 4*sizeof(double));
-      AY_APTRAN3(P2, P1, m)
-      if(P2[0] < minx)
-	minx = P2[0];
-      if(P2[0] > maxx)
-	maxx = P2[0];
-      if(P2[1] < miny)
-	miny = P2[1];
-      if(P2[1] > maxy)
-	maxy = P2[1];
+      cap->down = NULL;
+      ay_object_delete(cap);
     }
 
-  /* fill controlv */
-  if(!closed)
+  if(curve)
     {
-      /* P1 {0, PS.y, 0} */
-      controlv[1] = miny/*PS[1]*/;
-      controlv[3] = 1.0;
-      /* P2 {0, PE.y, 0} */
-      controlv[5] = maxy/*PE[1]*/;
-      controlv[7] = 1.0;
-      /* P3 {maxx, PS.y, 0} */
-      controlv[8] = maxx;
-      controlv[9] = miny/*PS[1]*/;
-      controlv[11] = 1.0;
-      /* P4 {maxx, PE.y, 0} */
-      controlv[12] = maxx;
-      controlv[13] = maxy/*PE[1]*/;
-      controlv[15] = 1.0;
-    }
-  else
-    {
-      /* P1 {minx, miny, 0} */
-      controlv[0] = minx;
-      controlv[1] = miny;
-      controlv[3] = 1.0;
-      /* P2 {0, PE.y, 0} */
-      controlv[4] = minx;
-      controlv[5] = maxy;
-      controlv[7] = 1.0;
-      /* P3 {maxx, PS.y, 0} */
-      controlv[8] = maxx;
-      controlv[9] = miny;
-      controlv[11] = 1.0;
-      /* P4 {maxx, PE.y, 0} */
-      controlv[12] = maxx;
-      controlv[13] = maxy;
-      controlv[15] = 1.0;
+      ay_object_delete(curve);
     }
 
-  ay_status = ay_npt_create(2, 2, 2, 2,
-			    AY_KTBEZIER, AY_KTBEZIER,
-			    controlv, NULL, NULL,
-			    (ay_nurbpatch_object **)(&(cap->refine)));
-
-  ((ay_nurbpatch_object *)cap->refine)->glu_sampling_tolerance =
-    tolerance;
-  ((ay_nurbpatch_object *)cap->refine)->display_mode = mode;
-  /*
-  if(th != 0.0)
+  if(tloop)
     {
-      ay_quat_axistoquat(yaxis, AY_D2R(th), quat);
-      ay_quat_add(quat, cap->quat, cap->quat);
-    }
-  */
-  /* create trimcurve(s) */
-  ay_object_copy(curve, &trim);
-  tc = (ay_nurbcurve_object *)trim->refine;
-  ccv = tc->controlv;
-  for(i = 0; i < tc->length*4; i+=4)
-    {
-      memcpy(P1, &(ccv[i]), 4*sizeof(double));
-      AY_APTRAN4(P2, P1, m)
-      memcpy(&(ccv[i]), P2, 4*sizeof(double));
+      tloop->down = NULL;
+      ay_object_deletemulti(tloop);
     }
 
-  ay_trafo_defaults(trim);
-
-  cap->down = trim;
-  if(!closed)
+  if(trim)
     {
-      trim->scalx /= maxx;
-      trim->scaly /= (maxy-miny);
-
-      if(miny < 0.0)
-	{
-	  trim->movy = fabs(miny)*trim->scaly;
-	}
-      else
-	{
-	  trim->movy = -fabs(miny)*trim->scaly;
-	}
-      /* XXXX add reversion of curve, if maxy is at end of curve ?
-      if(???)
-      ay_nct_revert((ay_nurbcurve_object *)(trim->refine));
-      */
+      ay_object_delete(trim);
     }
-  else
-    {
-      trim->scalx /= (maxx-minx);
-      trim->scaly /= (maxy-miny);
-      trim->movx = -(minx + (fabs(maxx-minx)/2.0))*trim->scalx;
-      trim->movy = -(miny + (fabs(maxy-miny)/2.0))*trim->scaly;
 
-      trim->movx += 0.5;
-      trim->movy += 0.5;
-
-      ay_status = ay_nct_getorientation((ay_nurbcurve_object *)
-					trim->refine, &angle);
-
-      if(angle<0.0)
-	ay_nct_revert(trim->refine);
-
-    } /* if !closed */
-
-  ay_status = ay_object_crtendlevel(&(trim->next));
-
-  if(!closed)
-    {
-      if(!(tloop = calloc(1, sizeof(ay_object))))
-	{return AY_EOMEM;}
-      ay_object_defaults(tloop);
-      tloop->type = AY_IDLEVEL;
-
-      if(!(tloop->refine = calloc(1, sizeof(ay_level_object))))
-	return AY_EOMEM;
-
-      tloop->down = cap->down;
-      cap->down = tloop;
-
-      /* create another trimcurve */
-      if(!(trim = calloc(1, sizeof(ay_object))))
-	{return AY_EOMEM;}
-      ay_object_defaults(trim);
-      trim->type = AY_IDNCURVE;
-      if(!(controlv = calloc(4*4, sizeof(double))))
-	{return AY_EOMEM;}
-
-      nc = tloop->down->refine;
-
-      /* P1 {PS.x, PS.y, 0} */
-      memcpy(controlv, PS, 2*sizeof(double));
-      controlv[3] = 1.0;
-
-      /* P2 {0, PS.y, 0} */
-      controlv[5] = PS[1];
-      controlv[7] = 1.0;
-
-      /* P3 {0, PE.y, 0} */
-      controlv[9] = PE[1];
-      controlv[11] = 1.0;
-
-      /* P4 {PE.x, PE.y, 0} */
-      memcpy(&(controlv[12]), PE, 2*sizeof(double));
-      controlv[15] = 1.0;
-
-      ay_status = ay_nct_create(2, 4, AY_KTNURB,
-				controlv, NULL,
-				(ay_nurbcurve_object **)(&(trim->refine)));
-
-      if(trim->refine)
-	{
-	  ((ay_nurbcurve_object *)(trim->refine))->glu_sampling_tolerance =
-	    nc->glu_sampling_tolerance;
-	  ((ay_nurbcurve_object *)(trim->refine))->display_mode =
-	    nc->display_mode;
-	}
-
-      trim->scalx /= maxx;
-      trim->scaly /= (maxy-miny);
-      if(miny < 0.0)
-	{
-	  trim->movy = fabs(miny)*trim->scaly;
-	}
-      else
-	{
-	  trim->movy = -fabs(miny)*trim->scaly;
-	}
-
-      ay_nct_revert((ay_nurbcurve_object *)(trim->refine));
-
-      trim->next = tloop->down->next;
-      tloop->down->next = trim;
-
-      trim = tloop->down;
-
-      /* properly terminate level */
-      tloop = cap->down;
-      if(tloop)
-	{
-	  while(tloop->next)
-	    {
-	      tloop = tloop->next;
-	    }
-	  ay_status = ay_object_crtendlevel(&(tloop->next));
-	}
-      else
-	{
-	  ay_status = ay_object_crtendlevel(&(trim->down));
-	}
-    } /* if !closed */
-
-  *o = cap;
-#endif
- return AY_OK;
+ return ay_status;
 } /* ay_swing_crtside */
 
 
@@ -953,30 +1010,29 @@ ay_swing_notifycb(ay_object *o)
   /* create caps */
   if(swing->has_upper_cap)
     {
-      ay_status = ay_swing_crtcap(swing, cs,
-				    nc->knotv[nc->length], AY_TRUE,
-				    &(swing->upper_cap));
+      ay_status = ay_swing_crtcap(swing, AY_TRUE, &(swing->upper_cap));
 
     } /* if */
 
   if(swing->has_lower_cap)
     {
-      ay_status = ay_swing_crtcap(swing, cs,
-				    nc->knotv[nc->order - 1], AY_FALSE,
-				    &(swing->lower_cap));
+      ay_status = ay_swing_crtcap(swing, AY_FALSE, &(swing->lower_cap));
     } /* if */
 
   if(swing->has_start_cap)
     {
-      ay_status = ay_swing_crtside(swing, cs, &(swing->start_cap));
+      ay_status = ay_swing_crtside(swing, cs, tr, AY_TRUE,
+				   &(swing->start_cap));
+      /*
       if(swing->start_cap)
 	swing->start_cap->scalz *= -1.0;
-
+      */
     } /* if */
 
   if(swing->has_end_cap)
     {
-      ay_status = ay_swing_crtside(swing, cs, &(swing->end_cap));
+      ay_status = ay_swing_crtside(swing, cs, tr, AY_FALSE,
+				   &(swing->end_cap));
 
     } /* if */
 
