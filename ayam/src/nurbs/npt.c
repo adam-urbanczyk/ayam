@@ -2056,7 +2056,7 @@ ay_npt_swing(ay_object *o1, ay_object *o2,
   for(j = 0; j < tr->length; j++)
     {
       /* calculate angle */
-      p = &(tr->controlv[j*stride]);
+      p = &(trcv[j*stride]);
       if(fabs(p[2]) > AY_EPSILON)
 	{
 	  if(p[2] > 0.0)
