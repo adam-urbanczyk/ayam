@@ -662,9 +662,9 @@ ay_swing_crtside(ay_swing_object *swing, ay_object *cso, ay_object *tro,
 
   /* calculate angle and scale factor */
   if(start)
-    p = &(tr->controlv[(tr->length-1)*stride]);
-  else
     p = tr->controlv;
+  else
+    p = &(tr->controlv[(tr->length-1)*stride]);
 
   if(fabs(p[2]) > AY_EPSILON)
     {
@@ -740,13 +740,13 @@ ay_swing_crtside(ay_swing_object *swing, ay_object *cso, ay_object *tro,
   controlv[3] = 1.0;
 
   controlv[4] = 0.0;
-  controlv[5] = miny;
-  controlv[6] = maxz;
+  controlv[5] = maxy;
+  controlv[6] = 0.0;
   controlv[7] = 1.0;
 
   controlv[8] = 0.0;
-  controlv[9] = maxy;
-  controlv[10] = 0.0;
+  controlv[9] = miny;
+  controlv[10] = maxz;
   controlv[11] = 1.0;
 
   controlv[12] = 0.0;
@@ -767,7 +767,7 @@ ay_swing_crtside(ay_swing_object *swing, ay_object *cso, ay_object *tro,
 
   /* set up transformation matrix */
   ay_trafo_identitymatrix(m);
-  ay_trafo_scalematrix(1.0, 1.0, scale, m);
+  ay_trafo_scalematrix(scale, 1.0, scale, m);
   ay_trafo_rotatematrix(AY_R2D(angle), 0.0, 1.0, 0.0, m);
   /* apply transformation matrix */
   for(i = 0; i < 4; i++)
@@ -780,7 +780,7 @@ ay_swing_crtside(ay_swing_object *swing, ay_object *cso, ay_object *tro,
   for(i = 0; i < nc->length*4; i += 4)
     {
       cv[i] = cv[i+2];
-      cv[i] /= maxz*scale;
+      cv[i] /= maxz;
       cv[i+1] -= miny;
       cv[i+1] /= (maxy-miny);
       cv[i+2] = 0.0;
