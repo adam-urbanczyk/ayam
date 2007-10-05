@@ -739,6 +739,7 @@ ay_stess_TessTrimCurves(ay_object *o, int qf, int *nt, double ***tt,
 {
  int ay_status = AY_OK;
  double *dtmp = NULL, angle, **tts, p1[4], p2[4], *loopelem = NULL;
+ double *tmp = NULL;
  int i, j, numtrims = 0, *tls, *tds, loop_empty, ti;
  ay_object *d = NULL, *dd = NULL, *loop = NULL;
  ay_nurbcurve_object *c = NULL;
@@ -786,6 +787,7 @@ ay_stess_TessTrimCurves(ay_object *o, int qf, int *nt, double ***tt,
 	      if(loop->type == AY_IDNCURVE)
 		{
 		  c = (ay_nurbcurve_object *)loop->refine;
+		  ay_trafo_creatematrix(loop, mm);
 		}
 	      else
 		{
@@ -825,11 +827,11 @@ ay_stess_TessTrimCurves(ay_object *o, int qf, int *nt, double ***tt,
 			(tls[i])--;
 		      /* now append new element to tts[i] */
 		      tls[i] += ti;
-		      dtmp = realloc(&(tts[i]), tls[i]);
-		      if(!dtmp)
+		      tmp = realloc(tts[i], tls[i]*2*sizeof(double));
+		      if(!tmp)
 			{ return AY_EOMEM; } /* XXXX Memory Leak */
-		      tts[i] = dtmp;
-		      memcpy(&(tts[i][tls[i]-ti]), loopelem,
+		      tts[i] = tmp;
+		      memcpy(&((tts[i])[(tls[i]-ti)*2]), loopelem,
 			     ti*2*sizeof(double));
 		      free(loopelem);
 		      loopelem = NULL;
@@ -857,6 +859,7 @@ ay_stess_TessTrimCurves(ay_object *o, int qf, int *nt, double ***tt,
 	      i++;
 	    }
 	  dd = NULL;
+	  c = NULL;
 	  break;
 	default:
 	  dd = NULL;
@@ -879,7 +882,7 @@ ay_stess_TessTrimCurves(ay_object *o, int qf, int *nt, double ***tt,
 	    {
 	      memcpy(p1, &(c->controlv[j*4]), 4*sizeof(double));
 	      AY_APTRAN4(p2, p1, mm)
-		memcpy(&(dtmp[j*4]), p2, 4*sizeof(double));
+	      memcpy(&(dtmp[j*4]), p2, 4*sizeof(double));
 	    }
 
 	  ay_stess_CurvePoints2D(c->length, c->order-1, c->knotv, dtmp,
