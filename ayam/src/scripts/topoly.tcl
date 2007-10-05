@@ -38,7 +38,7 @@ proc toPoly { } {
     # do a "toNPatch"
     set types { Box Sphere Cylinder Cone Disk Hyperboloid Torus Paraboloid \
 		BPatch PatchMesh Revolve Extrude Sweep Birail1 Birail2 Skin \
-		Gordon Cap Bevel Text }
+		Gordon Cap Bevel Text Swing }
     foreach type $types {
 	forAllT $type 1 { convOb -inplace }
     }
