@@ -1,3 +1,13 @@
+[5. Oct 2007] CVS-Head:
+=======================
+o Bug Fixes:
+ - X3D export of NURBS patches (row/column major order) (SF 1804056)
+ - X3D export of NURBS patches (trimmed) (SF 1804054)
+
+Modelling:
+o added new object type Swing (for rotational sweeps/swung surfaces)
+
+
 [21. Sep 2007] Ayam 1.13:
 =========================
 o Bug Fixes:
