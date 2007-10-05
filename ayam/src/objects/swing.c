@@ -623,7 +623,7 @@ ay_swing_crtside(ay_swing_object *swing, ay_object *cso, ay_object *tro,
 {
  int ay_status = AY_OK;
  int stride = 4, mode = 0, i = 0;
- double P1[4] = {0}, *cv = NULL, *controlv = NULL;
+ double P1[4] = {0}, P2[4] = {0}, *cv = NULL, *controlv = NULL;
  double tolerance, minx, maxx, minz, maxz, miny, maxy;
  ay_object *curve = NULL, *cap = NULL, *trim = NULL, *tloop = NULL;
  ay_nurbcurve_object *cs = NULL, *tr = NULL, *nc = NULL;
@@ -789,18 +789,6 @@ ay_swing_crtside(ay_swing_object *swing, ay_object *cso, ay_object *tro,
   ay_status = ay_object_crtendlevel(&(curve->next));
   cap->down = curve;
 
-  /* create trim-loop level */
-  if(!(tloop = calloc(1, sizeof(ay_object))))
-    { ay_status = AY_EOMEM; goto cleanup; }
-  ay_object_defaults(tloop);
-  tloop->type = AY_IDLEVEL;
-
-  if(!(tloop->refine = calloc(1, sizeof(ay_level_object))))
-    { ay_status = AY_EOMEM; goto cleanup; }
-
-  tloop->down = cap->down;
-  cap->down = tloop;
-
   /* create another trimcurve to close the loop */
   if(!(trim = calloc(1, sizeof(ay_object))))
     { ay_status = AY_EOMEM; goto cleanup; }
@@ -810,11 +798,26 @@ ay_swing_crtside(ay_swing_object *swing, ay_object *cso, ay_object *tro,
   if(!(controlv = calloc(4*4, sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
 
-  /* P1 == cross section start */
+  /* get cross-section end points for a sanity check */
   ay_nb_CurvePoint4D(nc->length-1, nc->order-1,
 		     nc->knotv, nc->controlv,
-		     nc->knotv[nc->length], P1);
-  memcpy(controlv, P1, 3*sizeof(double));
+		     nc->knotv[nc->order-1], P1);
+
+  ay_nb_CurvePoint4D(nc->length-1, nc->order-1,
+		     nc->knotv, nc->controlv,
+		     nc->knotv[nc->length], P2);
+
+  /* sanity check; cannot create caps for flat swings... */
+  if(fabs(P2[1]-P1[1]) < AY_EPSILON)
+    {
+      ay_object_delete(cap); return AY_ERROR;
+    }
+
+  /* P1 == (lower) cross section start */
+  if(P1[1] < P2[1])
+    memcpy(controlv, P1, 3*sizeof(double));
+  else
+    memcpy(controlv, P2, 3*sizeof(double));
   controlv[3] = 1.0;
 
   /* P2 == origin */
@@ -829,34 +832,50 @@ ay_swing_crtside(ay_swing_object *swing, ay_object *cso, ay_object *tro,
   controlv[10] = 0.0;
   controlv[11] = 1.0;
 
-  /* P4 == cross section end */
-  ay_nb_CurvePoint4D(nc->length-1, nc->order-1,
-		     nc->knotv, nc->controlv,
-		     nc->knotv[nc->order-1], P1);
-  memcpy(&(controlv[12]), P1, 3*sizeof(double));
+  /* P4 == (upper) cross section end */
+  if(P1[1] < P2[1])
+    memcpy(&(controlv[12]), P2, 3*sizeof(double));
+  else
+    memcpy(&(controlv[12]), P1, 3*sizeof(double));
   controlv[15] = 1.0;
 
   ay_status = ay_nct_create(2, 4, AY_KTNURB,
 			    controlv, NULL,
 			    (ay_nurbcurve_object **)(&(trim->refine)));
-  /*
-    if(trim->refine)
+
+  if(trim->refine)
     {
-    ((ay_nurbcurve_object *)(trim->refine))->glu_sampling_tolerance =
-    nc->glu_sampling_tolerance;
-    ((ay_nurbcurve_object *)(trim->refine))->display_mode =
-    nc->display_mode;
+      ((ay_nurbcurve_object *)(trim->refine))->glu_sampling_tolerance =
+	cs->glu_sampling_tolerance;
+      ((ay_nurbcurve_object *)(trim->refine))->display_mode =
+	cs->display_mode;
     }
-  */
-  /* fix orientation of trims */
+ 
+  /* fix orientation of trim */
   ay_nct_revert((ay_nurbcurve_object *)trim->refine);
+
+  /* create trim-loop level */
+  if(!(tloop = calloc(1, sizeof(ay_object))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  ay_object_defaults(tloop);
+  tloop->type = AY_IDLEVEL;
+
+  if(!(tloop->refine = calloc(1, sizeof(ay_level_object))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+
+  /* link level */
+  tloop->down = cap->down;
+  cap->down = tloop;
 
   trim->next = tloop->down->next;
   tloop->down->next = trim;
 
   trim = tloop->down;
-  ay_nct_revert((ay_nurbcurve_object *)trim->refine);
-
+  /* fix orientation of trim */
+  if(P1[1] > P2[1])
+    {
+      ay_nct_revert((ay_nurbcurve_object *)trim->refine);
+    }
 
   /* properly terminate trim-loop level */
   tloop = cap->down;
