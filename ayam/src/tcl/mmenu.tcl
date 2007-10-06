@@ -278,6 +278,7 @@ $m.nc add separator
 $m.nc add command -label "Revolve" -command "revolve_crt;"
 $m.nc add command -label "Extrude" -command "extrude_crt;"
 $m.nc add command -label "Sweep" -command "sweep_crt;"
+$m.nc add command -label "Swing" -command "swing_crt;"
 $m.nc add command -label "Cap" -command "cap_crt;"
 $m.nc add command -label "Bevel" -command "bevel_crt;"
 $m.nc add command -label "Birail1" -command "birail1_crt;"
