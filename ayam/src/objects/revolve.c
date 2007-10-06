@@ -649,7 +649,7 @@ ay_revolve_crtside(ay_revolve_object *revolve, ay_object *curve, double th,
  double m[16];
  ay_object *cap = NULL, *trim = NULL, *tloop = NULL;
  ay_nurbcurve_object *nc = NULL, *tc = NULL;
- int closed;
+ int closed, revert = AY_FALSE;
 
   nc = (ay_nurbcurve_object *)curve->refine;
   ccv = nc->controlv;
@@ -677,11 +677,16 @@ ay_revolve_crtside(ay_revolve_object *revolve, ay_object *curve, double th,
   AY_APTRAN3(PE,P1,m);
 
   /* sanity check; cannot create caps for flat revolutions... */
-  if(!closed && (fabs(P2[1]-P1[1]) < AY_EPSILON))
+  if(!closed && (fabs(PE[1]-PS[1]) < AY_EPSILON))
     {
       return AY_ERROR;
     }
 
+  /* if the curve points downwards, we need to revert the trim */
+  if(PS[1]>PE[1])
+    {
+      revert = AY_TRUE;
+    }
   /* create NURBS patch */
   if(!(cap = calloc(1, sizeof(ay_object))))
     {return AY_EOMEM;}
@@ -791,10 +796,10 @@ ay_revolve_crtside(ay_revolve_object *revolve, ay_object *curve, double th,
 	{
 	  trim->movy = -fabs(miny)*trim->scaly;
 	}
-      /* XXXX add reversion of curve, if maxy is at end of curve ?
-      if(???)
-      ay_nct_revert((ay_nurbcurve_object *)(trim->refine));
-      */
+      if(revert)
+	{
+	  ay_nct_revert((ay_nurbcurve_object *)(trim->refine));
+	}
     }
   else
     {
@@ -809,8 +814,10 @@ ay_revolve_crtside(ay_revolve_object *revolve, ay_object *curve, double th,
       ay_status = ay_nct_getorientation((ay_nurbcurve_object *)
 					trim->refine, &angle);
 
-      if(angle<0.0)
-	ay_nct_revert(trim->refine);
+      if(angle < 0.0)
+	{
+	  ay_nct_revert(trim->refine);
+	}
 
     } /* if !closed */
 
@@ -865,6 +872,11 @@ ay_revolve_crtside(ay_revolve_object *revolve, ay_object *curve, double th,
 	    nc->glu_sampling_tolerance;
 	  ((ay_nurbcurve_object *)(trim->refine))->display_mode =
 	    nc->display_mode;
+	}
+
+      if(revert)
+	{
+	  ay_nct_revert((ay_nurbcurve_object *)(trim->refine));
 	}
 
       trim->scalx /= maxx;
