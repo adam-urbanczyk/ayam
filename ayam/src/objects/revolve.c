@@ -433,6 +433,9 @@ ay_revolve_bbccb(ay_object *o, double *bbox, int *flags)
 } /* ay_revolve_bbccb */
 
 
+/* ay_revolve_crtcap:
+ *  create top or bottom revolve cap
+ */
 int
 ay_revolve_crtcap(ay_revolve_object *revolve, ay_object *curve,
 		  double u, int upper,
@@ -631,9 +634,12 @@ ay_revolve_crtcap(ay_revolve_object *revolve, ay_object *curve,
 } /* ay_revolve_crtcap */
 
 
+/* ay_revolve_crtside:
+ *  create start or end revolve cap
+ */
 int
 ay_revolve_crtside(ay_revolve_object *revolve, ay_object *curve, double th,
-		  ay_object **o)
+		   ay_object **o)
 {
  int ay_status = AY_OK;
  int mode = 0, i = 0;
@@ -661,14 +667,20 @@ ay_revolve_crtside(ay_revolve_object *revolve, ay_object *curve, double th,
 		     nc->knotv[nc->order - 1], P1);
 
   /* apply transform */
-  AY_APTRAN3(PS,P1,m)
+  AY_APTRAN3(PS,P1,m);
 
   ay_nb_CurvePoint4D(nc->length-1, nc->order-1,
 		     nc->knotv, nc->controlv,
 		     nc->knotv[nc->length], P1);
 
   /* apply transform */
-  AY_APTRAN3(PE,P1,m)
+  AY_APTRAN3(PE,P1,m);
+
+  /* sanity check; cannot create caps for flat revolutions... */
+  if(!closed && (fabs(P2[1]-P1[1]) < AY_EPSILON))
+    {
+      return AY_ERROR;
+    }
 
   /* create NURBS patch */
   if(!(cap = calloc(1, sizeof(ay_object))))
