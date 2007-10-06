@@ -397,6 +397,9 @@ ay_swing_bbccb(ay_object *o, double *bbox, int *flags)
 } /* ay_swing_bbccb */
 
 
+/* ay_swing_crtcap:
+ *  create top or bottom swing cap
+ */
 int
 ay_swing_crtcap(ay_swing_object *swing, int upper,
 		ay_object **o)
@@ -617,6 +620,9 @@ ay_swing_crtcap(ay_swing_object *swing, int upper,
 } /* ay_swing_crtcap */
 
 
+/* ay_swing_crtside:
+ *  create start or end swing cap
+ */
 int
 ay_swing_crtside(ay_swing_object *swing, ay_object *cso, ay_object *tro,
 		 int start, ay_object **o)
@@ -733,7 +739,6 @@ ay_swing_crtside(ay_swing_object *swing, ay_object *cso, ay_object *tro,
     { ay_status = AY_EOMEM; goto cleanup; }
 
   /* place patch in YZ plane */
-
   controlv[0] = 0.0;
   controlv[1] = miny;
   controlv[2] = 0.0;
@@ -775,7 +780,7 @@ ay_swing_crtside(ay_swing_object *swing, ay_object *cso, ay_object *tro,
       ay_trafo_apply4(&(controlv[i*4]), m);
     } /* for */
 
-  /* rescale curve and rotate it to the XY plane
+  /* rescale cross section curve and rotate it to the XY plane
      to serve as proper trim (loop component) */
   for(i = 0; i < nc->length*4; i += 4)
     {
@@ -798,7 +803,7 @@ ay_swing_crtside(ay_swing_object *swing, ay_object *cso, ay_object *tro,
   if(!(controlv = calloc(4*4, sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
 
-  /* get cross-section end points for a sanity check */
+  /* get cross-section end points */
   ay_nb_CurvePoint4D(nc->length-1, nc->order-1,
 		     nc->knotv, nc->controlv,
 		     nc->knotv[nc->order-1], P1);
@@ -871,6 +876,7 @@ ay_swing_crtside(ay_swing_object *swing, ay_object *cso, ay_object *tro,
   tloop->down->next = trim;
 
   trim = tloop->down;
+
   /* fix orientation of trim */
   if(P1[1] > P2[1])
     {
