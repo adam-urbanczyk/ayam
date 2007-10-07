@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile.shared [10. Jun 2007]
+# Makefile.shared [7. Oct 2007]
 # Makefile for Ayam (shared version)
 
 # Choose an installation prefix.
@@ -510,10 +510,11 @@ Ayam.app: ayamsh
 	-mkdir ../bin/Ayam.app/Contents/Resources/docs/pics
 	-cp ../doc/html/pics/*.gif ../bin/Ayam.app/Contents/Resources/docs/pics
 
+# uncomment install_name_tool commands for Tcl/Tk versions prior to 8.4.16
 Ayam.appfw: Ayam.app
-	install_name_tool -id @executable_path/../Tcl.framework/Versions/8.4/Tcl ../bin/Ayam.app/Contents/Tcl.framework/Versions/8.4/Tcl
+#	install_name_tool -id @executable_path/../Tcl.framework/Versions/8.4/Tcl ../bin/Ayam.app/Contents/Tcl.framework/Versions/8.4/Tcl
 	install_name_tool -change /System/Library/Frameworks/Tcl.framework/Versions/8.4/Tcl @executable_path/../Tcl.framework/Versions/8.4/Tcl ../bin/Ayam.app/Contents/MacOS/Ayam
-	install_name_tool -id @executable_path/../Tk.framework/Versions/8.4/Tk ../bin/Ayam.app/Contents/Tk.framework/Versions/8.4/Tk
+#	install_name_tool -id @executable_path/../Tk.framework/Versions/8.4/Tk ../bin/Ayam.app/Contents/Tk.framework/Versions/8.4/Tk
 	install_name_tool -change /System/Library/Frameworks/Tk.framework/Versions/8.4/Tk @executable_path/../Tk.framework/Versions/8.4/Tk ../bin/Ayam.app/Contents/MacOS/Ayam
 
 Ayam.dmg:
