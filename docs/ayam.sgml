@@ -6,7 +6,7 @@
 
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
 
-<date>21. Sep 2007
+<date>4. Oct 2007
 
 <abstract>
 This is the documentation of Ayam 1.13 - a free 3D modelling environment
@@ -6965,7 +6965,7 @@ The following global arrays and callbacks to get or set the data
 exist:
 <table loc="ht">
 <tabular ca="|c|c|c|c|"><hline>
-property|array|get-property callback|set-property callback@<hline>
+<bf/property/|<bf/array/|<bf/get-property callback/|<bf/set-property callback/@<hline>
 Transformations|transfPropData|getTrafo|setTrafo@<hline>
 Attributes|attrPropData|getAttr|setAttrp@<hline>
 Material|matPropData|getMat|setMat@<hline>
@@ -8296,7 +8296,7 @@ features per export file format.
 
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|c|c|"><hline>
-Feature|RIB|OBJ|3DMF(Apple)|DXF|3DM(Rhino)|X3D@<hline>
+<bf/Feature/|<bf/RIB/|<bf/OBJ/|<bf/3DMF(Apple)/|<bf/DXF/|<bf/3DM(Rhino)/|<bf/X3D/@<hline>
 
 Quadrics|Yes|No<f><sup>1</sup></f>|Some<f><sup>4</sup></f>|No<f><sup>2</sup></f>|Some<f><sup>4</sup></f>|Some<f><sup>4</sup></f>@<hline>
 
@@ -8345,7 +8345,7 @@ supported by the various import plugins.
 
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|c|c|"><hline>
-Feature|RIB|OBJ|3DMF(Apple)|DXF|3DM(Rhino)|X3D@<hline>
+<bf/Feature/|<bf/RIB/|<bf/OBJ/|<bf/3DMF(Apple)/|<bf/DXF/|<bf/3DM(Rhino)/|<bf/X3D/@<hline>
 
 Quadrics|Yes|No|Yes|No|Yes|Yes@<hline>
 
@@ -8373,7 +8373,7 @@ from a different version should be considered unsupported.
 
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|c|c|"><hline>
-Format|RIB|OBJ|3DMF(Apple)|DXF|3DM(Rhino)|X3D@<hline>
+<bf/Format/|<bf/RIB/|<bf/OBJ/|<bf/3DMF(Apple)/|<bf/DXF/|<bf/3DM(Rhino)/|<bf/X3D/@<hline>
 Version|3.0|3.0|1.0|14|3.0|3.1@<hline>
 </tabular>
 <caption>Supported File Format Versions Overview</caption>
@@ -8384,8 +8384,8 @@ in detail.
 
 <sect1>RenderMan Interface Bytestream (RIB) Import<label id="imprib">
 <p>
-Using the RRIB (Read RIB) plugin you may import RenderMan Interface
-Bytestreams of version 3.0 into Ayam.
+Using the RRIB (for <bf/R/ead <bf/RIB/) plugin you may import RenderMan
+Interface Bytestreams of version 3.0 into Ayam.
 Start importing a RIB using the menu entry
 <tt>"File/Import/RenderMan RIB"</tt>
 (if this menu entry is not available, you have to load the
@@ -8596,6 +8596,27 @@ BLOCK and INSERT entities will be converted to appropriate master (referenced)
 and instance objects (references).
 <p>
 Bulges and extrusions are not supported.
+<p>
+The following table comprehensively lists the supported DXF entities and
+their Ayam counterparts that will be created upon import.
+
+<table loc="ht">
+<tabular ca="|c|c|"><hline>
+<bf/DXF Entity/|<bf/Ayam Object/@<hline>
+3DFACE|PolyMesh/BPatch@<hline>
+ARC|NCircle@<hline>
+CIRCLE|NCircle@<hline>
+ELLIPSE|NCircle@<hline>
+LINE|NCurve@<hline>
+SOLID|BPatch@<hline>
+TRACE|BPatch@<hline>
+POLYLINE|NCurve/PolyMesh/NPatch@<hline>
+LWPOLYLINE|NCurve@<hline>
+SPLINE|NCurve@<hline>
+INSERT|Instance@<hline>
+</tabular>
+<caption>DXF Import Conversion Table</caption>
+</table>
 
 <sect2>DXF Import Options<label id="impdxfopt">
 <p>
@@ -8920,8 +8941,23 @@ Objects of types not listed here will be converted to NURBS
 All transformations are supported and will be written as
 Translate, Rotate, and Scale transformations, respectively.
 <p>
+All Instance objects will be resolved for export.
+Level objects (regardless of type) will be written as Container objects.
+<p>
+If an object has a material, the color and opacity of the material
+will be written as DiffuseColor and TransparencyColor, if the respective
+red color component has a value different from -1.
+<p>
+Support for export of lights, camera attributes as well as
+material attributes other than material color and opacity is currently
+not available.
+
+<sect2>Trim Curves Support
+<p>
 The 3DMF file format specification for version 1.0 is unfortunately very
-terse, when it comes to trim curves.
+terse, when it comes to trim curves. There is no clearly defined way of
+saving trim curves in 3DMF 1.0. The method presented here is the only
+way that works with the free provided 3DMF parser.
 Trimmed NURBS patches will be written by Ayam like this:
 <code>
 Container ( 
@@ -8940,24 +8976,17 @@ Container (
 )
 </code>
 There will always be an enclosing container for a NURBS patch.
-If the patch is trimmed, it will be followed by a <tt/TrimCurves/
-element (which does <em>not</em> contain the trim curves but is
-empty). The trim curves follow now as 2D NURBS curves (simple trims)
-or container objects (trim loops) until the end of the enclosing
-container. The transformation attributes of the trim curves will be
-applied to the NURBS curve control points for export (there will be
-no transformations or attributes for the trim curve elements).
+If the patch is trimmed, after the transformations and attributes
+of the patch, a <tt/TrimCurves/ element will follow (which does
+<em>not</em> contain the trim curves but is empty). The trim curves follow
+now as 2D NURBS curves (simple trims) or container objects (trim loops)
+with 2D NURBS curves until the end of the enclosing container. The
+transformation attributes of the trim curves will be applied to the NURBS
+curve control points for export (there will be no transformations or
+attributes for the trim curve elements).
 <p>
-All Instance objects will be resolved for export.
-Level objects (regardless of type) will be written as Container objects.
-<p>
-If an object has a material, the color and opacity of the material
-will be written as DiffuseColor and TransparencyColor, if the respective
-red color component has a value different from -1.
-<p>
-Support for export of lights, camera attributes as well as
-material attributes other than material color and opacity is currently
-not available.
+The Ayam 3DMF import expects the trim curves to be delivered in this
+manner.
 
 <sect2>3DMF Export Options<label id="exp3dmfopt">
 <p>
@@ -8979,7 +9008,7 @@ not influence the export of trim curves.
 <p>
 Since version 1.8.2 Ayam contains a plugin named onio that may import
 scenes from the Rhino 3DM file format using the OpenNURBS toolkit
-(hence the name of the plugin onio - OpenNURBS IO)
+(hence the name of the plugin onio - <bf/O/pen<bf/N/URBS <bf/IO/)
 by Robert McNeel & Associates.
 <p>
 Start importing from a Rhino 3DM file using the menu entry
@@ -9051,7 +9080,7 @@ to Ayam objects.
 <p>
 Since version 1.8.2 Ayam contains a plugin named onio that may export scenes
 to the Rhino 3DM file format using the OpenNURBS toolkit
-(hence the name of the plugin onio - OpenNURBS IO)
+(hence the name of the plugin onio - <bf/O/pen<bf/N/URBS <bf/IO/)
 by Robert McNeel & Associates.
 <p>
 Start exporting to a Rhino 3DM file using the menu entry
@@ -9254,7 +9283,11 @@ completely resolved upon import.
 Instances of objects may be easily created again using Automatic Instancing
 (please refer to section <ref id="ai" name="Automatic Instancing">).
 <p>
-The <tt>"DEF"</tt> attributes may be converted to object names.
+Normals will currently not be generated by any X3D element and thus
+the <tt>"creaseAngle"</tt> attribute will be fully ignored.
+<p>
+The <tt>"DEF"</tt> attributes will be converted to object names
+in some cases.
 
 <sect2>X3D Import Options<label id="impx3dopt">
 <p>
