@@ -206,7 +206,9 @@ int x3dio_fixnpatch(ay_nurbpatch_object *np);
 
 int x3dio_readnurbspatchsurface(scew_element *element, int is_trimmed);
 
-int x3dio_readnurbssweptsurface(scew_element *element, int is_swung);
+int x3dio_readnurbssweptsurface(scew_element *element);
+
+int x3dio_readnurbsswungsurface(scew_element *element);
 
 int x3dio_readnurbsset(scew_element *element);
 
@@ -4507,27 +4509,19 @@ cleanup:
  *
  */
 int
-x3dio_readnurbssweptsurface(scew_element *element, int is_swung)
+x3dio_readnurbssweptsurface(scew_element *element)
 {
  int ay_status = AY_OK;
  scew_attribute *attr = NULL;
  const XML_Char *str = NULL;
  scew_element *child;
- ay_object *o = NULL, **old_aynext;
+ ay_object *o = NULL, **old_aynext, *cs = NULL;
  ay_sweep_object *sweep = NULL;
- const char *cs_name = NULL, *tr_name = "trajectoryCurve";
+ const char *cs_name = "crossSectionCurve", *tr_name = "trajectoryCurve";
+ double yaxis[3]={0.0,1.0,0.0};
 
   if(!element)
     return AY_ENULL;
-
-  if(is_swung)
-    {
-      cs_name = "profileCurve";
-    }
-  else
-    {
-      cs_name = "crossSectionCurve";
-    }
 
   if(!(o = calloc(1, sizeof(ay_object))))
     {
@@ -4540,13 +4534,104 @@ x3dio_readnurbssweptsurface(scew_element *element, int is_swung)
     }
 
   sweep->rotate = AY_TRUE;
-  sweep->sections = 10;
+  sweep->sections = 0;
 
   o->refine = sweep;
 
   ay_status = ay_object_defaults(o);
 
   o->type = AY_IDSWEEP;
+
+  o->parent = AY_TRUE;
+
+  old_aynext = ay_next;
+  ay_next = &(o->down);
+
+  /* read children to get the cross section and the trajectory */
+  child = NULL;
+  while((child = scew_element_next(element, child)) != NULL)
+    {
+      attr = scew_attribute_by_name(element, "containerField");
+      if(attr)
+	{
+	  str = scew_attribute_value(attr);
+	  if(!strcmp(str, cs_name))
+	    {
+	      ay_status = x3dio_readelement(child);
+	      if(ay_status == AY_EDONOTLINK)
+		goto cleanup;
+	      /* rotate cross section from XY to ZY plane */
+	      cs = x3dio_lrobject;
+	      if(cs)
+		{
+		  cs->roty = 90.0;
+		  ay_quat_axistoquat(yaxis, AY_D2R(90.0), cs->quat);
+		}
+	    }
+	}
+    } /* while */
+
+  child = NULL;
+  while((child = scew_element_next(element, child)) != NULL)
+    {
+      attr = scew_attribute_by_name(element, "containerField");
+      if(attr)
+	{
+	  str = scew_attribute_value(attr);
+	  if(!strcmp(str, tr_name))
+	    {
+	      ay_status = x3dio_readelement(child);
+	      if(ay_status == AY_EDONOTLINK)
+		goto cleanup;
+	    }
+	}
+    } /* while */
+
+  ay_object_crtendlevel(ay_next);
+  ay_next = old_aynext;
+  ay_object_link(o);
+
+  ay_status = x3dio_readname(element, "DEF", o);
+
+cleanup:
+
+ return ay_status;
+} /* x3dio_readnurbssweptsurface */
+
+
+/* x3dio_readnurbsswungsurface:
+ *
+ */
+int
+x3dio_readnurbsswungsurface(scew_element *element)
+{
+ int ay_status = AY_OK;
+ scew_attribute *attr = NULL;
+ const XML_Char *str = NULL;
+ scew_element *child;
+ ay_object *o = NULL, **old_aynext;
+ ay_swing_object *swing = NULL;
+ const char *cs_name = "profileCurve", *tr_name = "trajectoryCurve";
+
+  if(!element)
+    return AY_ENULL;
+
+  if(!(o = calloc(1, sizeof(ay_object))))
+    {
+      return AY_EOMEM;
+    }
+
+  if(!(swing = calloc(1, sizeof(ay_swing_object))))
+    {
+      free(o); return AY_EOMEM;
+    }
+
+  o->refine = swing;
+
+  ay_status = ay_object_defaults(o);
+
+  o->type = AY_IDSWING;
+
   o->parent = AY_TRUE;
 
   old_aynext = ay_next;
@@ -4594,7 +4679,7 @@ x3dio_readnurbssweptsurface(scew_element *element, int is_swung)
 cleanup:
 
  return ay_status;
-} /* x3dio_readnurbssweptsurface */
+} /* x3dio_readnurbsswungsurface */
 
 
 /* x3dio_readnurbsset:
@@ -5775,12 +5860,12 @@ x3dio_readelement(scew_element *element)
 	}
       if(!strcmp(element_name, "NurbsSweptSurface"))
 	{
-	  ay_status = x3dio_readnurbssweptsurface(element, AY_FALSE);
+	  ay_status = x3dio_readnurbssweptsurface(element);
 	  handled_elements = 1;
 	}
       if(!strcmp(element_name, "NurbsSwungSurface"))
 	{
-	  ay_status = x3dio_readnurbssweptsurface(element, AY_TRUE);
+	  ay_status = x3dio_readnurbsswungsurface(element);
 	  handled_elements = 1;
 	}
       break;
