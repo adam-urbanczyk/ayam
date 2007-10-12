@@ -4518,7 +4518,8 @@ x3dio_readnurbssweptsurface(scew_element *element)
  ay_object *o = NULL, **old_aynext, *cs = NULL;
  ay_sweep_object *sweep = NULL;
  const char *cs_name = "crossSectionCurve", *tr_name = "trajectoryCurve";
- double yaxis[3]={0.0,1.0,0.0};
+ double yaxis[3] = {0.0,1.0,0.0};
+ x3dio_trafostate *old_state, notrafos;
 
   if(!element)
     return AY_ENULL;
@@ -4546,6 +4547,11 @@ x3dio_readnurbssweptsurface(scew_element *element)
 
   old_aynext = ay_next;
   ay_next = &(o->down);
+
+  /* fake a clean (non transforming) transformation state */
+  old_state = x3dio_ctrafos;
+  x3dio_ctrafos = &(notrafos);
+  ay_trafo_identitymatrix(notrafos.m);
 
   /* read children to get the cross section and the trajectory */
   child = NULL;
@@ -4587,6 +4593,9 @@ x3dio_readnurbssweptsurface(scew_element *element)
 	}
     } /* while */
 
+  /* reset old transformation state */
+  x3dio_ctrafos = old_state;
+
   ay_object_crtendlevel(ay_next);
   ay_next = old_aynext;
   ay_object_link(o);
@@ -4612,6 +4621,7 @@ x3dio_readnurbsswungsurface(scew_element *element)
  ay_object *o = NULL, **old_aynext;
  ay_swing_object *swing = NULL;
  const char *cs_name = "profileCurve", *tr_name = "trajectoryCurve";
+ x3dio_trafostate *old_state, notrafos;
 
   if(!element)
     return AY_ENULL;
@@ -4636,6 +4646,11 @@ x3dio_readnurbsswungsurface(scew_element *element)
 
   old_aynext = ay_next;
   ay_next = &(o->down);
+
+  /* fake a clean (non transforming) transformation state */
+  old_state = x3dio_ctrafos;
+  x3dio_ctrafos = &(notrafos);
+  ay_trafo_identitymatrix(notrafos.m);
 
   /* read children to get the cross section and the trajectory */
   child = NULL;
@@ -4669,6 +4684,9 @@ x3dio_readnurbsswungsurface(scew_element *element)
 	    }
 	}
     } /* while */
+
+  /* reset old transformation state */
+  x3dio_ctrafos = old_state;
 
   ay_object_crtendlevel(ay_next);
   ay_next = old_aynext;
