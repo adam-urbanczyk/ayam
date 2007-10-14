@@ -4232,13 +4232,13 @@ x3dio_readnurbspatchsurface(scew_element *element, int is_trimmed)
  int ay_status = AY_OK;
  ay_nurbpatch_object np = {0};
  ay_object *o, **old_aynext;
- float *cv = NULL;
- double *dcv = NULL, *w = NULL, *uknots = NULL, *vknots = NULL;
+ float *cv = NULL, *tc = NULL;
+ double *dcv = NULL, *w = NULL, *uknots = NULL, *vknots = NULL, *dtemp = NULL;
  double oldmin, oldmax;
- unsigned int i, len = 0, wlen = 0, uklen = 0, vklen = 0;
+ unsigned int i, j, len = 0, wlen = 0, uklen = 0, vklen = 0, tclen = 0;
  int width = 0, height = 0, uorder = 3, vorder = 3, stride = 4;
  int has_weights = AY_FALSE, has_uknots = AY_FALSE, has_vknots = AY_FALSE;
- int is_double = AY_FALSE, is_bound = AY_FALSE;
+ int is_double = AY_FALSE, is_bound = AY_FALSE/*, tcis_double = AY_FALSE*/;
  scew_element *child = NULL;
  const char *element_name = NULL;
  x3dio_trafostate *old_state, notrafos;
@@ -4258,6 +4258,16 @@ x3dio_readnurbspatchsurface(scew_element *element, int is_trimmed)
       ay_status = x3dio_readcoords(element, &len, &dcv);
       is_double = AY_TRUE;
     }
+
+
+  ay_status = x3dio_readfloatpoints(element, "texCoord", 2, &tclen, &tc);
+  /*
+  if(tclen == 0)
+    {
+      ay_status = x3dio_readtexcoords(element, &len, &dtc);
+      tcis_double = AY_TRUE;
+    }
+  */
 
   ay_status = x3dio_readdoublepoints(element, "weight", 1, &wlen, &w);
   if(wlen >= len)
@@ -4376,6 +4386,55 @@ x3dio_readnurbspatchsurface(scew_element *element, int is_trimmed)
       x3dio_lrobject->parent = AY_TRUE;
       x3dio_lrobject->hide_children = AY_TRUE;
       x3dio_lrobject->inherit_trafos = AY_FALSE;
+
+      /* add texture coordinates as PV tags */
+      if(tclen > 0)
+	{
+
+	  if(!(dtemp = calloc(tclen, sizeof(double))))
+	    {
+	      ay_status = AY_EOMEM;
+	      goto cleanup;
+	    }
+	  /*
+	  if(!tcis_double)
+	    {
+	  */
+	  j = 0;
+	  for(i = 0; i < tclen; i++)
+	    {
+	      dtemp[i] = tc[j];
+	      j += 2;
+	    }
+	  /*
+	    else
+	    {
+	    }
+	  */
+	  ay_status = ay_pv_add(o, x3dio_stagname, "varying", 0,
+				tclen, dtemp);
+	  /*
+	    if(!tcis_double)
+	    {
+	  */
+	  j = 1;
+	  for(i = 0; i < tclen; i++)
+	    {
+	      dtemp[i] = tc[j];
+	      j += 2;
+	    }
+	  /*
+	    else
+	    {
+	    }
+	  */
+	  ay_status = ay_pv_add(o, x3dio_ttagname, "varying", 0,
+				tclen, dtemp);
+
+	  /* cleanup */
+	  free(dtemp);
+
+	} /* if */
 
       /* read trim curves? */
       if(is_trimmed)
