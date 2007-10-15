@@ -335,6 +335,9 @@ ay_init(Tcl_Interp *interp)
   if((ay_status = ay_extrnc_init(interp)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 
+  if((ay_status = ay_extrnp_init(interp)))
+    { ay_error(ay_status, fname, NULL); return AY_ERROR; }
+
   if((ay_status = ay_extrude_init(interp)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 
@@ -390,6 +393,9 @@ ay_init(Tcl_Interp *interp)
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 
   if((ay_status = ay_sdmesh_init(interp)))
+     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
+
+  if((ay_status = ay_select_init(interp)))
      { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 
   if((ay_status = ay_sphere_init(interp)))

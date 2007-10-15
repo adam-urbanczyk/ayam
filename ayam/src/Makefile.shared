@@ -422,6 +422,7 @@ AYAMOBJS = aycore/bbc.o\
 	objects/cylinder.o\
 	objects/disk.o\
 	objects/extrnc.o\
+	objects/extrnp.o\
 	objects/extrude.o\
 	objects/gordon.o\
 	objects/hyperb.o\
@@ -442,6 +443,7 @@ AYAMOBJS = aycore/bbc.o\
 	objects/root.o\
 	objects/script.o\
 	objects/sdmesh.o\
+	objects/select.o\
 	objects/sphere.o\
 	objects/skin.o\
 	objects/sweep.o\

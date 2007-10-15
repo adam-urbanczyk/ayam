@@ -51,6 +51,9 @@ int ay_disk_init(Tcl_Interp *interp);
 /* extrnc.c */
 int ay_extrnc_init(Tcl_Interp *interp);
 
+/* extrnp.c */
+int ay_extrnp_init(Tcl_Interp *interp);
+
 /* extrude.c */
 int ay_extrude_init(Tcl_Interp *interp);
 
@@ -110,6 +113,9 @@ int ay_script_init(Tcl_Interp *interp);
 
 /* sdmesh.c */
 int ay_sdmesh_init(Tcl_Interp *interp);
+
+/* select.c */
+int ay_select_init(Tcl_Interp *interp);
 
 /* sphere.c */
 int ay_sphere_init(Tcl_Interp *interp);
