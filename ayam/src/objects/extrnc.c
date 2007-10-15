@@ -308,9 +308,9 @@ ay_extrnc_writecb(FILE *fileptr, ay_object *o)
   fprintf(fileptr, "%g\n", extrnc->glu_sampling_tolerance);
 
   fprintf(fileptr, "%d\n", extrnc->pnum);
-  /*
+
   fprintf(fileptr, "%d\n", extrnc->revert);
-  */
+
  return AY_OK;
 } /* ay_extrnc_writecb */
 
