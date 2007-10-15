@@ -648,7 +648,7 @@ if { $tcl_platform(platform) == "windows" } {
 } else {
     # UNIX specific settings:
     set ayprefs(Plugins) "[file dirname [info nameofexecutable]]/plugins"
-    set ayprefs(Scripts) "plugins/loadrrib.tcl:plugins/loadmfio.tcl"
+    set ayprefs(Scripts) ""
     #
     set ws ""
     catch {set ws [tk windowingsystem]}
@@ -1253,6 +1253,7 @@ ayam_loadscript concatnc
 ayam_loadscript cylinder
 ayam_loadscript disk
 ayam_loadscript extrnc
+ayam_loadscript extrnp
 ayam_loadscript extrude
 ayam_loadscript gordon
 ayam_loadscript hyperb
@@ -1273,6 +1274,7 @@ ayam_loadscript revolve
 ayam_loadscript root
 ayam_loadscript script
 ayam_loadscript sdmesh
+ayam_loadscript select
 ayam_loadscript sphere
 ayam_loadscript skin
 ayam_loadscript sweep

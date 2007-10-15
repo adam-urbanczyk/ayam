@@ -147,7 +147,6 @@ ay_select_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  char *n1="SelectAttrData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_select_object *select = NULL;
- int itmp = 0;
 
   if(!o)
     return AY_ENULL;
@@ -235,7 +234,7 @@ ay_select_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
  int ay_status = AY_OK;
  int i = 0;
- ay_object *t = NULL, *d, **last;
+ ay_object *t = NULL, *d;
  ay_select_object *sel = NULL;
 
   if(!o)

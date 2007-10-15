@@ -26,7 +26,7 @@ Index 0
 
 # create SelectAttr-UI
 set w [frame $ay(pca).$SelectAttr(w)]
-addParam$w SelectAttrData Index
+addParam $w SelectAttrData Index
 
 # select_crt:
 #
