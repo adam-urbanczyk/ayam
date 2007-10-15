@@ -32,6 +32,10 @@ ay_extrnp_createcb(int argc, char *argv[], ay_object *o)
       return AY_ERROR;
     }
 
+  new->umax = 1.0;
+  new->vmax = 1.0;
+  new->pnum = 1;
+
   o->hide_children = AY_TRUE;
   o->parent = AY_TRUE;
   o->refine = new;
@@ -416,18 +420,18 @@ ay_extrnp_notifycb(ay_object *o)
 			       extrnp->vmin, extrnp->vmax,
 			       &npatch);
 
-  if(ay_status || !npatch->refine)
+  if(ay_status || !npatch)
     return ay_status;
 
   extrnp->npatch = npatch;
 
   /* copy transformation attributes over to new object */
-  ay_trafo_copy(npatch, npatch);
+  ay_trafo_copy(n, npatch);
 
   /* copy sampling tolerance/mode over to new object */
-  ((ay_nurbcurve_object *)npatch->refine)->glu_sampling_tolerance =
+  ((ay_nurbpatch_object *)npatch->refine)->glu_sampling_tolerance =
     tolerance;
-  ((ay_nurbcurve_object *)npatch->refine)->display_mode =
+  ((ay_nurbpatch_object *)npatch->refine)->display_mode =
     mode;
 
   /* remove provided object(s) */
