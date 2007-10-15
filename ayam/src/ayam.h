@@ -38,7 +38,7 @@
   #include <OpenGL/glu.h>
 #else
   #include <GL/glu.h>
-#endif /* AYUSEAQUA */
+#endif /* AYWITHAQUA */
 
 /*
 #ifdef AYUSEORIGTOGL
@@ -804,6 +804,17 @@ typedef struct ay_extrnc_object_s
 } ay_extrnc_object;
 
 
+typedef struct ay_extrnp_object_s
+{
+  int pnum;
+  double umin, umax, vmin, vmax;
+  /* cache NURBS patch representation */
+  ay_object *npatch;
+  double glu_sampling_tolerance;
+  int display_mode;
+} ay_extrnp_object;
+
+
 typedef struct ay_ncircle_object_s
 {
   double radius;
@@ -892,6 +903,12 @@ typedef struct ay_view_object_s
 } ay_view_object;
 
 
+typedef struct ay_select_object_s
+{
+  int index; /* index of object to be selected */
+} ay_select_object;
+
+
 typedef struct ay_preferences_s
 {
   int list_types;
@@ -952,7 +969,7 @@ typedef struct ay_preferences_s
   double glu_sampling_tolerance;
   int np_display_mode;
   int nc_display_mode;
-  int glu_cache_float;
+  int glu_cache_float; /* unused */
 
   int stess_qf;
 
@@ -1190,6 +1207,8 @@ extern unsigned int ay_current_primlevel;
 #define AY_IDBEVEL         37
 #define AY_IDNCIRCLE       38
 #define AY_IDSWING         39
+#define AY_IDSELECT        40
+#define AY_IDEXTRNP        41
 
 #define AY_IDLAST          50
 
