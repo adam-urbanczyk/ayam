@@ -4400,6 +4400,7 @@ x3dio_readnurbspatchsurface(scew_element *element, int is_trimmed)
 	  if(!tcis_double)
 	    {
 	  */
+	  /* convert float to double */
 	  j = 0;
 	  for(i = 0; i < tclen; i++)
 	    {
@@ -4411,12 +4412,14 @@ x3dio_readnurbspatchsurface(scew_element *element, int is_trimmed)
 	    {
 	    }
 	  */
+	  /* now add the PV tag */
 	  ay_status = ay_pv_add(o, x3dio_stagname, "varying", 0,
 				tclen, dtemp);
 	  /*
 	    if(!tcis_double)
 	    {
 	  */
+	  /* convert float to double */
 	  j = 1;
 	  for(i = 0; i < tclen; i++)
 	    {
@@ -4428,6 +4431,7 @@ x3dio_readnurbspatchsurface(scew_element *element, int is_trimmed)
 	    {
 	    }
 	  */
+	  /* now add the PV tag */
 	  ay_status = ay_pv_add(o, x3dio_ttagname, "varying", 0,
 				tclen, dtemp);
 
@@ -5934,6 +5938,11 @@ x3dio_readelement(scew_element *element)
 	{
 	  ay_status = x3dio_readnurbspatchsurface(element, AY_TRUE);
 	  ay_status = x3dio_countelements(element, &handled_elements);
+	}
+      if(!strcmp(element_name, "NurbsSet"))
+	{
+	  ay_status = x3dio_readnurbsset(element);
+	  handled_elements = 1;
 	}
       if(!strcmp(element_name, "NurbsSweptSurface"))
 	{
