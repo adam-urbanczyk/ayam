@@ -23,6 +23,7 @@ w     fExtrNCAttr
 array set ExtrNCAttrData {
 Side 1
 DisplayMode 1
+NCInfoBall "N/A"
 }
 # create ExtrNCAttr-UI
 set w [frame $ay(pca).$ExtrNCAttr(w)]
