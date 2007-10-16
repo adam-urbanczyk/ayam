@@ -97,6 +97,8 @@ int ay_comp_birail2(ay_object *o1, ay_object *o2);
 
 int ay_comp_extrnc(ay_object *o1, ay_object *o2);
 
+int ay_comp_extrnp(ay_object *o1, ay_object *o2);
+
 int ay_comp_ncircle(ay_object *o1, ay_object *o2);
 
 int ay_comp_script(ay_object *o1, ay_object *o2);
@@ -1195,11 +1197,35 @@ ay_comp_extrnc(ay_object *o1, ay_object *o2)
   s2 = (ay_extrnc_object *)o2->refine;
 
   if((s1->side != s2->side) ||
+     (s1->pnum != s2->pnum) ||
+     (s1->revert != s2->revert) ||
      (s1->parameter != s2->parameter))
     return AY_FALSE;
 
  return AY_TRUE;
 } /* ay_comp_extrnc */
+
+
+/* ay_comp_extrnp:
+ *
+ */
+int
+ay_comp_extrnp(ay_object *o1, ay_object *o2)
+{
+ ay_extrnp_object *s1, *s2;
+
+  s1 = (ay_extrnp_object *)o1->refine;
+  s2 = (ay_extrnp_object *)o2->refine;
+
+  if((s1->umin != s2->umin) ||
+     (s1->umax != s2->umax) ||
+     (s1->vmin != s2->vmin) ||
+     (s1->vmax != s2->vmax) ||
+     (s1->pnum != s2->pnum))
+    return AY_FALSE;
+
+ return AY_TRUE;
+} /* ay_comp_extrnp */
 
 
 /* ay_comp_ncircle:
@@ -1326,6 +1352,7 @@ ay_comp_init()
   ay_status = ay_comp_register(ay_comp_birail1, AY_IDBIRAIL1);
   ay_status = ay_comp_register(ay_comp_birail2, AY_IDBIRAIL2);
   ay_status = ay_comp_register(ay_comp_extrnc, AY_IDEXTRNC);
+  ay_status = ay_comp_register(ay_comp_extrnp, AY_IDEXTRNP);
   ay_status = ay_comp_register(ay_comp_ncircle, AY_IDNCIRCLE);
   ay_status = ay_comp_register(ay_comp_script, AY_IDSCRIPT);
   ay_status = ay_comp_register(ay_comp_bevel, AY_IDBEVEL);
