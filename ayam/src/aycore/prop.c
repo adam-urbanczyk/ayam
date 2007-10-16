@@ -661,8 +661,9 @@ ay_prop_getnpinfo(Tcl_Interp *interp, char *n1, ay_object *o)
 int
 ay_prop_getncinfo(Tcl_Interp *interp, char *n1, ay_object *o)
 {
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
- char buffer[256];
+ Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL, *to2 = NULL;
+ char buffer[256], buffer2[128], buffer3[64], buffer4[64];
+ char buffer5[64];
  ay_nurbcurve_object *nc = NULL;
 
   if(!interp || !n1)
@@ -687,6 +688,77 @@ ay_prop_getncinfo(Tcl_Interp *interp, char *n1, ay_object *o)
     } /* if */
 
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
+  /* set Balloon info text */
+  Tcl_SetStringObj(ton, "NCInfoBall", -1);
+  if(o && o->type == AY_IDNCURVE)
+    {
+      nc = (ay_nurbcurve_object *)(o->refine);
+
+      sprintf(buffer2/*, sizeof(buffer)*/,
+	      "Length: %d\nOrder: %d\n",
+	      nc->length, nc->order);
+
+      to2 = Tcl_NewStringObj(buffer2, -1);
+
+      sprintf(buffer3/*, sizeof(buffer)*/, "Knot-Type: ");
+      switch(nc->knot_type)
+	{
+	case AY_KTBEZIER:
+	  sprintf(&(buffer3[11])/*, sizeof(buffer)*/, "Bezier\n");
+	  break;
+	case AY_KTBSPLINE:
+	  sprintf(&(buffer3[11])/*, sizeof(buffer)*/, "B-Spline\n");
+	  break;
+	case AY_KTNURB:
+	  sprintf(&(buffer3[11])/*, sizeof(buffer)*/, "NURB\n");
+	  break;
+	case AY_KTCUSTOM:
+	  sprintf(&(buffer3[11])/*, sizeof(buffer)*/, "CUSTOM\n");
+	  break;
+	}
+
+      Tcl_AppendToObj(to2, buffer3, -1);
+
+      sprintf(buffer4/*, sizeof(buffer)*/, "Is_Rational: ");
+
+      if(nc->is_rat)
+	{
+	  sprintf(&(buffer4[13])/*, sizeof(buffer)*/, "Yes\n");
+	}
+      else
+	{
+	  sprintf(&(buffer4[13])/*, sizeof(buffer)*/, "No\n");
+	}
+
+      Tcl_AppendToObj(to2, buffer4, -1);
+
+      sprintf(buffer5/*, sizeof(buffer)*/, "Type: ");
+
+      switch(nc->type)
+	{
+	case AY_CTOPEN:
+	  sprintf(&(buffer5[6])/*, sizeof(buffer)*/, "Open");
+	  break;
+	case AY_CTCLOSED:
+	  sprintf(&(buffer5[6])/*, sizeof(buffer)*/, "Closed");
+	  break;
+	case AY_CTPERIODIC:
+	  sprintf(&(buffer5[6])/*, sizeof(buffer)*/, "Periodic");
+	  break;
+	default:
+	  break;
+	} /* switch */
+
+      Tcl_AppendToObj(to2, buffer5, -1);
+    }
+  else
+    {
+      to2 = Tcl_NewStringObj("n/a", -1);
+    } /* if */
+
+  Tcl_ObjSetVar2(interp,toa,ton,to2,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);

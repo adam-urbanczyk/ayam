@@ -23,6 +23,7 @@ w     fIcurveAttr
 array set ICurveAttrData {
 Mode 1
 DisplayMode 0
+NCInfoBall "N/A"
 }
 # create IcurveAttr-UI
 set w [frame $ay(pca).$ICurveAttr(w)]

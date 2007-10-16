@@ -22,6 +22,7 @@ w     fNCircleAttr
 
 array set NCircleAttrData {
 DisplayMode 1
+NCInfoBall "N/A"
 }
 
 # create NCircleAttr-UI
