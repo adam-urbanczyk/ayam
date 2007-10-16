@@ -105,6 +105,7 @@ int ay_comp_script(ay_object *o1, ay_object *o2);
 
 int ay_comp_bevel(ay_object *o1, ay_object *o2);
 
+int ay_comp_select(ay_object *o1, ay_object *o2);
 
 /* functions */
 
@@ -1248,6 +1249,24 @@ ay_comp_ncircle(ay_object *o1, ay_object *o2)
 } /* ay_comp_ncircle */
 
 
+/* ay_comp_select:
+ *
+ */
+int
+ay_comp_select(ay_object *o1, ay_object *o2)
+{
+ ay_select_object *s1, *s2;
+
+  s1 = (ay_select_object *)o1->refine;
+  s2 = (ay_select_object *)o2->refine;
+
+  if(s1->index != s2->index)
+    return AY_FALSE;
+
+ return AY_TRUE;
+} /* ay_comp_select */
+
+
 /* ay_comp_register:
  *  register the compare callback compcb for
  *  objects of type type_id
@@ -1356,6 +1375,7 @@ ay_comp_init()
   ay_status = ay_comp_register(ay_comp_ncircle, AY_IDNCIRCLE);
   ay_status = ay_comp_register(ay_comp_script, AY_IDSCRIPT);
   ay_status = ay_comp_register(ay_comp_bevel, AY_IDBEVEL);
+  ay_status = ay_comp_register(ay_comp_select, AY_IDSELECT);
 
  return ay_status;
 } /* ay_comp_init */
