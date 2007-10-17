@@ -204,7 +204,11 @@ ayslx_scanslxtcmd(ClientData clientData, Tcl_Interp *interp,
 	}
 
       /* XXXX temporarily discard array arguments   */
+#ifdef AYAQSIS10
       if(symbol->svd_arraylen < 1)
+#else
+      if(symbol->svd_arraylen < 2)
+#endif
 	{
 
       Tcl_DStringAppend(&ds, "{ ", -1);
@@ -239,7 +243,10 @@ ayslx_scanslxtcmd(ClientData clientData, Tcl_Interp *interp,
 	  break;
 	}
 
-      arraylen = symbol->svd_arraylen;
+      arraylen = symbol->svd_arraylen-1;
+#ifdef AYAQSIS10
+      arraylen++;
+#endif
       sprintf(buffer, "%d ", arraylen);
       Tcl_DStringAppend(&ds, buffer, -1);
 
