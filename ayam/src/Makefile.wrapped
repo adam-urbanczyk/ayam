@@ -505,7 +505,9 @@ X3DIOLIBS = -L$(SCEWDIR)/scew -lscew -L$(EXPATDIR)/.libs -lexpat
 .cpp.o:
 	$(CXX) -c $(CFLAGS) $*.cpp -o $@ -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR) -I$(AQSISINCDIR) -I$(OPENCSGINCDIR) -I$(GLEWINCDIR) -Iplugins
 
-all: wrappedayam csphere.so mfio.so metaobj.so mopsi.so
+all: wrappedayam
+
+plugins: csphere.so mfio.so metaobj.so mopsi.so
 
 wrapMain.o: wrapMain.c
 	$(CC) -c $(CFLAGS) wrapMain.c -I$(WRAPDIR) -I$(WRAPDIR)/libz $(TCLINC) $(TKINC)
