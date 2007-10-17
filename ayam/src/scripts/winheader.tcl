@@ -87,5 +87,17 @@ foreach module $modules {
     close $outfile
 }
 
+# remove original headers
+set t "Remove Headers?"
+set m "Headers have been mangled successfully.\nSelect Ok to remove the\
+original headers!"
+set answer [tk_messageBox -title $t -type okcancel -icon warning -message $m]
+if { $answer == "ok" } {
+    file delete -force ayam.h
+    foreach module $modules {
+	file delete -force $module
+    }
+}
+
 # all done
 exit
