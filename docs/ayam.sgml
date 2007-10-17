@@ -4157,6 +4157,21 @@ of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 <p>
 To help in the exact configuration of the sweep, the <tt/"NPInfo"/
 field always displays the parameters of the created NURBS patch.
+<p>
+The following table shows some example parameter configurations for
+the sweep object.
+
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Sections/|<bf/Trajectory Length/|<bf/Trajectory Order/|<bf/Sweep Length/|<bf/Sweep Order/@<hline>
+0|2|2|2|2@<hline>
+0|5|4|6|4@<hline>
+0|6|5|7|5@<hline>
+4|6|5|5|4@<hline>
+10|6|5|11|4@<hline>
+</tabular>
+<caption>Sweep Parameterisation Examples</caption>
+</table>
 
 <sect1>Birail1 Object<label id="birail1obj">
 <p>
@@ -4245,6 +4260,21 @@ of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 <p>
 To help in the exact configuration of the birail, the <tt/"NPInfo"/
 field always displays the parameters of the created NURBS patch.
+<p>
+The following table shows some example parameter configurations for
+the birail object.
+
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Sections/|<bf/Rail1 Length/|<bf/Rail1 Order/|<bf/Birail1 Length/|<bf/Birail1 Order/@<hline>
+0|2|2|2|2@<hline>
+0|5|4|6|4@<hline>
+0|6|5|7|5@<hline>
+4|6|5|5|4@<hline>
+10|6|5|11|4@<hline>
+</tabular>
+<caption>Birail1 Parameterisation Examples</caption>
+</table>
 
 <sect1>Birail2 Object<label id="birail2obj">
 <p>
@@ -4358,6 +4388,21 @@ of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 <p>
 To help in the exact configuration of the birail, the <tt/"NPInfo"/
 field always displays the parameters of the created NURBS patch.
+<p>
+The following table shows some example parameter configurations for
+the birail object.
+
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Sections/|<bf/Rail1 Length/|<bf/Rail1 Order/|<bf/Birail2 Length/|<bf/Birail2 Order/@<hline>
+0|2|2|2|2@<hline>
+0|5|4|6|4@<hline>
+0|6|5|7|5@<hline>
+4|6|5|5|4@<hline>
+10|6|5|11|4@<hline>
+</tabular>
+<caption>Birail2 Parameterisation Examples</caption>
+</table>
 
 <sect1>Skin Object<label id="skinobj">
 <p>
@@ -8603,14 +8648,14 @@ their Ayam counterparts that will be created upon import.
 <table loc="ht">
 <tabular ca="|c|c|"><hline>
 <bf/DXF Entity/|<bf/Ayam Object/@<hline>
-3DFACE|PolyMesh/BPatch@<hline>
+3DFACE|PolyMesh&thinsp;/&thinsp;BPatch@<hline>
 ARC|NCircle@<hline>
 CIRCLE|NCircle@<hline>
 ELLIPSE|NCircle@<hline>
 LINE|NCurve@<hline>
 SOLID|BPatch@<hline>
 TRACE|BPatch@<hline>
-POLYLINE|NCurve/PolyMesh/NPatch@<hline>
+POLYLINE|NCurve&thinsp;/&thinsp;PolyMesh&thinsp;/&thinsp;NPatch@<hline>
 LWPOLYLINE|NCurve@<hline>
 SPLINE|NCurve@<hline>
 INSERT|Instance@<hline>
@@ -8627,8 +8672,8 @@ The DXF import may be controlled via different options:
 be imported.
 <item><tt/"ScaleFactor"/ allows to apply a scaling factor to all
 imported objects.
-<item><tt/"ReadLayers"/:
-By default, all entities from all layers will be imported.
+<item><tt/"ReadLayers"/: By default, all entities from all layers will be
+imported.
 Using the <tt/"ReadLayers"/ import option, a single layer or a range
 of layers may be selected for import.
 <item><tt/"RescaleKnots"/ allows to rescale the knot vectors of imported
@@ -8922,9 +8967,8 @@ not available.
 The following parameters, additionally, control the 3DMF import:
 <itemize>
 <item><tt>"FileName"</tt> is the filename of the 3DMF file to import;
-<item><tt/"ScaleFactor"/:
-The <tt/"ScaleFactor"/ option allows to apply a scaling factor to all
-imported objects.
+<item><tt/"ScaleFactor"/: The <tt/"ScaleFactor"/ option allows to apply a
+scaling factor to all imported objects.
 <item><tt/"ReadCurves"/:
 If the <tt/"ReadCurves"/ import option is switched off, no curves will be
 imported. This option does not influence the import of trim curves.
@@ -9083,22 +9127,20 @@ PlaneSurface|NPatch@<hline>
 <p>
 The 3DM import process is controlled by the following options:
 <itemize>
-<item><tt/"ScaleFactor"/:
-The <tt/"ScaleFactor"/ option allows to apply a scaling factor to all
-imported objects.
-<item><tt/"Accuracy"/:
-The <tt/"Accuracy"/ import option controls the tolerance
-of OpenNURBS internal operations, in this case the value is
+<item><tt/"ScaleFactor"/: The <tt/"ScaleFactor"/ option allows to apply a
+scaling factor to all imported objects.
+<item><tt/"Accuracy"/: The <tt/"Accuracy"/ import option controls the
+tolerance of OpenNURBS internal operations, in this case the value is
 mostly used for conversion operations to the NURBS form.
-<item><tt/"ReadCurves"/:
-If the <tt/"ReadCurves"/ import option is switched off, no curves will be
-imported. This option does not influence the import of trim curves.
-<item><tt/"ReadLayers"/:
-By default, all objects from all layers will be imported.
+<item><tt/"ReadCurves"/: If the <tt/"ReadCurves"/ import option is
+switched off, no curves will be imported. This option does not influence
+the import of trim curves.
+<item><tt/"ReadLayers"/: By default, all objects from all layers will be
+imported.
 Using the <tt/"ReadLayers"/ import option, a single layer or a range
 of layers may be selected for import.
-<item><tt/"ReadSTrim"/:
-Another import option is <tt/"ReadSTrim"/. This useful to
+<item><tt/"ReadSTrim"/: Another import option is <tt/"ReadSTrim"/.
+This useful to
 ignore simple bounding trim loops of NURBS surfaces if they are the
 only trim loop for that surface.
 Importing this single bounding trim loop would just make the Ayam scene
@@ -9177,12 +9219,10 @@ named <tt>"Arm/MySphere"</tt> and <tt>"Arm/MyCylinder"</tt>.
 <p>
 The 3DM export process is controlled by the following options:
 <itemize>
-<item><tt/"ScaleFactor"/:
-The <tt/"ScaleFactor"/ option allows to apply a scaling factor to all
-exported objects.
-<item><tt/"Accuracy"/:
-The <tt/"Accuracy"/ option controls the tolerance of internal
-OpenNURBS operations (currently those are:
+<item><tt/"ScaleFactor"/: The <tt/"ScaleFactor"/ option allows to apply a
+scaling factor to all exported objects.
+<item><tt/"Accuracy"/: The <tt/"Accuracy"/ option controls the tolerance
+of internal OpenNURBS operations (currently those are:
 pushing up 2D trim curves to 3D curves and
 checking NURBS surfaces for planarity).
 <item><tt/"WriteSelected"/: exports only the selected objects.
@@ -9346,7 +9386,7 @@ Arc2D|NCircle|&ensp;|&ensp;@<hline>
 ArcClosed2D|NCurve|&ensp;|&ensp;@<hline>
 Circle2D|NCircle|&ensp;|&ensp;@<hline>
 Polyline2D|NCurve|&ensp;|&ensp;@<hline>
-Disk2D|Disk/Hyperboloid|&ensp;|&ensp;@<hline>
+Disk2D|Disk&thinsp;/&thinsp;Hyperboloid|&ensp;|&ensp;@<hline>
 <em/NURBS:/|&ensp;|&ensp;|&ensp;@<hline>
 NurbsCurve|NCurve|&ensp;|&ensp;@<hline>
 NurbsCurve2D|NCurve|&ensp;|&ensp;@<hline>
