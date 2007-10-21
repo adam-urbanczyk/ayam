@@ -404,7 +404,9 @@ ay_extrnp_notifycb(ay_object *o)
 		}
 	      else
 		{
-		  return AY_OK; /* not enough patches for pnum! */
+		  /* not enough patches for pnum! */
+		  ay_status = AY_ERROR;
+		  goto cleanup;
 		}
 	    }
 	  else
@@ -421,7 +423,9 @@ ay_extrnp_notifycb(ay_object *o)
 			       &npatch);
 
   if(ay_status || !npatch)
-    return ay_status;
+    {
+      goto cleanup;
+    }
 
   extrnp->npatch = npatch;
 
@@ -434,13 +438,15 @@ ay_extrnp_notifycb(ay_object *o)
   ((ay_nurbpatch_object *)npatch->refine)->display_mode =
     mode;
 
+cleanup:
+
   /* remove provided object(s) */
   if(provided)
     {
       ay_object_deletemulti(pobject);
     }
 
- return AY_OK;
+ return ay_status;
 } /* ay_extrnp_notifycb */
 
 

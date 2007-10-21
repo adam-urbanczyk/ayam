@@ -401,7 +401,9 @@ ay_extrnc_notifycb(ay_object *o)
 		}
 	      else
 		{
-		  return AY_OK; /* not enough patches for pnum! */
+		  /* not enough patches for pnum! */
+		  ay_status = AY_ERROR;
+		  goto cleanup;
 		}
 	    }
 	  else
@@ -415,7 +417,8 @@ ay_extrnc_notifycb(ay_object *o)
   /* extract the curve */
   if(!(ncurve = calloc(1, sizeof(ay_object))))
     {
-      return AY_ERROR;
+      ay_status = AY_EOMEM;
+      goto cleanup;
     }
 
   ay_object_defaults(ncurve);
@@ -426,7 +429,9 @@ ay_extrnc_notifycb(ay_object *o)
 			       (ay_nurbcurve_object **)(&(ncurve->refine)));
 
   if(ay_status || !ncurve->refine)
-    return ay_status;
+    {
+      goto cleanup;
+    }
 
   if(extrnc->revert)
     {
@@ -444,13 +449,23 @@ ay_extrnc_notifycb(ay_object *o)
   ((ay_nurbcurve_object *)ncurve->refine)->display_mode =
     mode;
 
+  /* prevent cleanup code from doing something harmful */
+  ncurve = NULL;
+
+cleanup:
+
+  if(ncurve)
+    {
+      ay_object_delete(ncurve);
+    }
+
   /* remove provided object(s) */
   if(provided)
     {
       ay_object_deletemulti(pobject);
     }
 
- return AY_OK;
+ return ay_status;
 } /* ay_extrnc_notifycb */
 
 
