@@ -12,7 +12,7 @@
 
 #include "ayam.h"
 
-/* icurve.c - icurve object */
+/* icurve.c - icurve (interpolating curve) object */
 
 static char *ay_icurve_name = "ICurve";
 
@@ -42,7 +42,7 @@ ay_icurve_createcb(int argc, char *argv[], ay_object *o)
 	i++;
     }
 
-
+  /* get some memory */
   if(!(new = calloc(1, sizeof(ay_icurve_object))))
     {
       ay_error(AY_EOMEM, fname, NULL);
@@ -663,19 +663,22 @@ ay_icurve_bbccb(ay_object *o, double *bbox, int *flags)
 int
 ay_icurve_notifycb(ay_object *o)
 {
+ int ay_status = AY_OK;
  ay_icurve_object *icurve = NULL;
  ay_nurbcurve_object *nc = NULL;
  ay_object *ncurve = NULL;
  int i, a, b;
- int ay_status = AY_OK;
 
   if(!o)
     return AY_ENULL;
 
   icurve = (ay_icurve_object *)(o->refine);
 
-
-  /* do we have a child? */
+  /*
+   * Do we have a child?
+   * This may be only the case, if we just loaded a Mops scene file.
+   * => Copy the control points over from the child, then delete it!
+   */
   if(o->down)
     {
       /* yes, copy it's controlv and delete it */
@@ -697,9 +700,10 @@ ay_icurve_notifycb(ay_object *o)
 	      a += 3;
 	      b += 4;
 	    } /* for */
+
+	  /* delete child */
 	  ay_status = ay_object_deletemulti(o->down);
 	  o->down = NULL;
-
 	} /* if */
     } /* if */
 
@@ -709,7 +713,8 @@ ay_icurve_notifycb(ay_object *o)
 
   if(!(ncurve = calloc(1, sizeof(ay_object))))
     {
-      return AY_ERROR;
+      ay_status = AY_EOMEM;
+      goto cleanup;
     }
 
   ay_object_defaults(ncurve);
@@ -739,7 +744,9 @@ ay_icurve_notifycb(ay_object *o)
     }
 
   if(ay_status)
-    return ay_status;
+    {
+      goto cleanup;
+    }
 
   nc = (ay_nurbcurve_object *)ncurve->refine;
   nc->display_mode = icurve->display_mode;
@@ -747,7 +754,17 @@ ay_icurve_notifycb(ay_object *o)
 
   icurve->ncurve = ncurve;
 
- return AY_OK;
+  /* prevent cleanup code from doing something harmful */
+  ncurve = NULL;
+
+cleanup:
+
+  if(ncurve)
+    {
+      ay_object_delete(ncurve);
+    }
+
+ return ay_status;
 } /* ay_icurve_notifycb */
 
 
