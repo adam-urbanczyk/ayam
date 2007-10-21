@@ -1,17 +1,28 @@
-[12. Oct 2007] CVS-Head:
+[21. Oct 2007] CVS-Head:
 =======================
 o Bug Fixes:
  - X3D export of NURBS patches (row/column major order) (SF 1804056)
  - X3D export of NURBS patches (trimmed) (SF 1804054)
- - X3D transformations of NurbsSweptSurface child nodes (SF )
+ - X3D transformations of NurbsSweptSurface child nodes (SF 1813320)
  - STESS drawing mode crashing for patches with trim loops (SF 1808296)
+ - saved ExtrNC objects fail to load (SF 1814644)
 
 Modelling:
 o added new object type Swing (for rotational sweeps/swung surfaces)
 o made side cap creation of Revolve objects more robust
+o added new object type "Select" to select one object from a list of provided
+  objects
+o added new object type "ExtrNP" (similar to "ExtrNC", but extracts patches)
+o added NCInfo balloon (that displays more info, similar to NPInfo)
+o added tolerance parameter and checking for remKnNC (knot removal) tool
 
 Import/Export:
 o import NurbsSwungSurface elements as Swing objects
+o import of NurbsSurface texture coordinates
+
+Renderer Support:
+o reworked shader parsing (core & ayslx plugin) for incompatible changes
+  in Aqsis 1.2
 
 
 [21. Sep 2007] Ayam 1.13:
