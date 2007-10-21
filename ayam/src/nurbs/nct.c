@@ -4342,8 +4342,9 @@ ay_nct_toxy(ay_object *c)
   c->scaly = 1.0;
   c->scalz = 1.0;
 
-  /* try to get three "good" points, they should be not equal,
-     not in line, and span a triangle to get the orientation from */
+  /* try to get three "good" points,
+     they should not be equal and not be colinear
+     (i.e. span a triangle to get the orientation from */
   tp1 = nc->controlv;
   tp2 = &(nc->controlv[(nc->length/2)*stride]);
 
@@ -5103,7 +5104,7 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
  int ay_status = AY_OK;
  char fname[] = "remknNC";
  int i = 0, s = 0, r = 0;
- double u = 0.0, *newknotv = NULL, *newcontrolv = NULL;
+ double tol = AY_EPSILON, u = 0.0, *newknotv = NULL, *newcontrolv = NULL;
  ay_nurbcurve_object *curve;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
@@ -5166,7 +5167,7 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
 	  /* remove the knot */
 	  ay_status = ay_nb_CurveRemoveKnot4D(curve->length-1, curve->order-1,
 					      curve->knotv, curve->controlv,
-					      i, s, r,
+					      tol, i, s, r,
 					      newknotv, newcontrolv);
 
 	  if(ay_status)
@@ -5359,6 +5360,23 @@ ay_nct_isdegen(ay_nurbcurve_object *curve)
 
  return AY_TRUE;
 } /* ay_nct_isdegen */
+
+
+/* ay_nct_offset:
+ * WIP
+ */
+int
+ay_nct_offset(ay_object *o, ay_nurbcurve_object **nc)
+{
+ int i, stride = 4;
+ double *p1, *p2;
+
+  if(!o || !nc)
+    return AY_ENULL;
+
+
+ return AY_OK;
+} /* ay_nct_offset */
 
 
 /* templates */

@@ -1059,16 +1059,16 @@ ay_nb_CurveInsertKnot3D(int np, int p, double *UP, double *P, double u,
 /*
  * ay_nb_CurveRemoveKnot4D: (NURBS++)
  * remove knot r (with multiplicity s) num times from curve
- * (n, p, U, Pw)
+ * (n, p, U, Pw) if new curve does not deviate <tol> distance from old
  * result: new controls Qw and knots Ubar (allocated outside!)
- * does not check for curve changes!
+ * Does now check for curve changes!
  */
 int
-ay_nb_CurveRemoveKnot4D(int n, int p, double *U, double *Pw,
+ay_nb_CurveRemoveKnot4D(int n, int p, double *U, double *Pw, double tol,
 			int r, int s, int num, double *Ubar, double *Qw)
 {
  int i, j, k, ii, jj, off, t;
- int m, ord, fout, last, first;
+ int m, ord, fout, last, first, remflag;
  double alfi, alfj, *temp = NULL, u;
  int ti, tj, tk;
 
@@ -1125,6 +1125,35 @@ ay_nb_CurveRemoveKnot4D(int n, int p, double *U, double *Pw,
 	  j--;
 	  jj--;
 	} /* while */
+
+      remflag = 0;
+      if(j-i < t)
+	{
+	  ti = (ii-1)*4;
+	  tj = (jj+1)*4;
+	  if(AY_VLEN(temp[ti]   - temp[tj],
+		     temp[ti+1] - temp[tj+1],
+		     temp[ti+2] - temp[tj+2])
+	     <= tol)
+	    {
+	      remflag = 1;
+	    }
+	  else
+	    {
+	      alfi = (u-U[i])/(U[i+ord+t]-U[i]);
+	      ti = (ii+t+1)*4;
+	      tj = (ii-1)*4;
+	      if(AY_VLEN(Pw[i*4]   - (alfi*temp[ti]+(1.0-alfi)*temp[tj]),
+			 Pw[i*4+1] - (alfi*temp[ti+1]+(1.0-alfi)*temp[tj+1]),
+			 Pw[i*4+2] - (alfi*temp[ti+2]+(1.0-alfi)*temp[tj+2]))
+		 <= tol)
+		{
+		  remflag = 1;
+		}
+	    } /* if */
+	} /* if */
+      if(remflag == 0)
+	break; /* leave for */
 
       i = first;
       j = last;
