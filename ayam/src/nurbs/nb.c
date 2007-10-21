@@ -1127,31 +1127,54 @@ ay_nb_CurveRemoveKnot4D(int n, int p, double *U, double *Pw, double tol,
 	} /* while */
 
       remflag = 0;
-      if(j-i < t)
+      if((j-i) < t)
 	{
 	  ti = (ii-1)*4;
 	  tj = (jj+1)*4;
-	  if(AY_VLEN(temp[ti]   - temp[tj],
-		     temp[ti+1] - temp[tj+1],
-		     temp[ti+2] - temp[tj+2])
-	     <= tol)
+
+	  if((fabs(temp[ti]   - temp[tj]) < AY_EPSILON) &&
+	     (fabs(temp[ti]   - temp[tj]) < AY_EPSILON) &&
+	     (fabs(temp[ti]   - temp[tj]) < AY_EPSILON))
 	    {
 	      remflag = 1;
 	    }
 	  else
 	    {
-	      alfi = (u-U[i])/(U[i+ord+t]-U[i]);
-	      ti = (ii+t+1)*4;
-	      tj = (ii-1)*4;
-	      if(AY_VLEN(Pw[i*4]   - (alfi*temp[ti]+(1.0-alfi)*temp[tj]),
-			 Pw[i*4+1] - (alfi*temp[ti+1]+(1.0-alfi)*temp[tj+1]),
-			 Pw[i*4+2] - (alfi*temp[ti+2]+(1.0-alfi)*temp[tj+2]))
+	      if(AY_VLEN((temp[ti]   - temp[tj]),
+			 (temp[ti+1] - temp[tj+1]),
+			 (temp[ti+2] - temp[tj+2]))
 		 <= tol)
 		{
 		  remflag = 1;
 		}
-	    } /* if */
+	    }
+	}
+      else
+	{
+	  alfi = (u-U[i])/(U[i+ord+t]-U[i]);
+	  ti = (ii+t+1)*4;
+	  tj = (ii-1)*4;
+	  if((fabs(Pw[i*4]   - (alfi*temp[ti]+(1.0-alfi)*temp[tj])) <
+	      AY_EPSILON) &&
+	     (fabs(Pw[i*4+1] - (alfi*temp[ti+1]+(1.0-alfi)*temp[tj+1])) <
+	      AY_EPSILON) &&
+	     (fabs(Pw[i*4+2] - (alfi*temp[ti+2]+(1.0-alfi)*temp[tj+2])) <
+	      AY_EPSILON))
+	    {
+	      remflag = 1;
+	    }
+	  else
+	    {
+	      if(AY_VLEN((Pw[i*4]   - (alfi*temp[ti]+(1.0-alfi)*temp[tj])),
+			 (Pw[i*4+1] - (alfi*temp[ti+1]+(1.0-alfi)*temp[tj+1])),
+			 (Pw[i*4+2] - (alfi*temp[ti+2]+(1.0-alfi)*temp[tj+2])))
+		 <= tol)
+		{
+		  remflag = 1;
+		}
+	    }
 	} /* if */
+
       if(remflag == 0)
 	break; /* leave for */
 
