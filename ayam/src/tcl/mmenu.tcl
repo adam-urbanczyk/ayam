@@ -324,9 +324,9 @@ $m.nct add command -label "Insert Knot" -command {
 	    [list "Insert knot at:" "Insert times:"]\
 	    "undo save InsKn; insknNC %0 %1; plb_update; rV" }
 $m.nct add command -label "Remove Knot" -command {
-    runTool [list ay(remknu) ay(remknr)]\
-	    [list "Remove knot at:" "Remove times:"]\
-	    "undo save RemKn; remknNC %0 %1; plb_update; rV" }
+    runTool [list ay(remknu) ay(remknr) ay(remtol)]\
+	    [list "Remove knot at:" "Remove times:" "Tolerance:"]\
+	    "undo save RemKn; remknNC %0 %1 %2; plb_update; rV" }
 $m.nct add command -label "Plot Curvature" -command {
     runTool [list ay(curvatp) ay(curvatw) ay(curvats)]\
 	    [list "Data points:" "Width:" "Scale Height:"]\

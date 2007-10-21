@@ -513,6 +513,7 @@ array set ay {
  insknr 1
  remknu 0.5
  remknr 1
+ remtol Inf
  refinekn 0.5
  splitu 0.5
  trimumin 0.0
