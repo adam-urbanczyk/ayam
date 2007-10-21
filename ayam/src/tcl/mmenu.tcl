@@ -237,6 +237,8 @@ $m add command -label "RiProc" \
 	-command "crtOb RiProc; uCR; sL; forceNot; rV;"
 $m add command -label "Script" \
 	-command "crtOb Script; uCR; sL; forceNot; rV;"
+$m add command -label "Select" \
+	-command "crtOb Select; uCR; sL; forceNot; rV;"
 $m add command -label "Text" \
 	-command "crtOb Text; uCR; sL; forceNot; rV;"
 
@@ -411,10 +413,11 @@ $m.npt add command -label "Elevate UV" -command {
 
 $m.npt add command -label "Extract Curve" -command extrnc_crt
 
-$m.npt add command -label "Extract Patch" -command {
-    runTool [list ay(extrnpumin) ay(extrnpumax) ay(extrnpvmin) ay(extrnpvmax)]\
-	    [list "UMin:" "UMax:" "VMin:" "VMax:"]\
-	    "undo save extrNP; extrNP %0 %1 %2 %3; uCR; sL; rV" }
+$m.npt add command -label "Extract Patch" -command extrnp_crt
+
+#    runTool [list ay(extrnpumin) ay(extrnpumax) ay(extrnpvmin) ay(extrnpvmax)]\
+#	    [list "UMin:" "UMax:" "VMin:" "VMax:"]\
+#	    "undo save extrNP; extrNP %0 %1 %2 %3; uCR; sL; rV"
 
 $m.npt add command -label "Rescale Knots to Range U" -command {
     undo save RescaleKnots 1;
