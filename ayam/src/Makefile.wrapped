@@ -122,19 +122,19 @@ EXLDFLAGS = -rdynamic -nodefaultlibs
 
 # Togl
 # Path to "togl.h":
-TOGLINCDIR = togl
+TOGLINC = -Itogl
 
-# Path to "togl.o":
+# "togl.o":
 TOGLOBJECT = togl/togl.o
 
 # OpenGL
-# where are the OpenGL headers?
-GLINCDIR = /usr/X11R6/include/
+# OpenGL includes
+GLINC = -I/usr/X11R6/include/
 # link options for linking with OpenGL libraries
 GLLIBS = -lGLU -lGL
 
 # TIFF
-TIFFINCDIR = /usr/include/
+TIFFINC = -I/usr/include/
 # link options for linking with TIFF library
 TIFFLIB = -ltiff
 
@@ -176,7 +176,7 @@ X11LIBS = -L/usr/X11R6/lib -lXmu -lXext -lX11
 
 # Affine Toolkit
 # where is ributil.h?
-AFFINEINCDIR = ./affine/include
+AFFINEINC = -I./affine/include
 # if you do not use Affine as BMRT libribout replacement:
 AFFINEOBJS = 
 # if you use affine as BMRT libribout replacement
@@ -186,7 +186,7 @@ AFFINEOBJS =
 
 # Aqsis
 AQSISDIR = /usr/local/aqsis
-AQSISINCDIR = $(AQSISDIR)/include
+AQSISINC = -I$(AQSISDIR)/include
 AQSISLIBDIR = $(AQSISDIR)/lib
 # if you do not use Aqsis libslxargs as libslcargs replacement:
 AQSISOBJS =
@@ -204,7 +204,7 @@ AQSISRI2RIB =
 # libslcargs (leave SLCARGSLIB empty), as its functionality is already
 # present in libribout (in any case, keep -DAYUSESLCARGS set in CFLAGS above)!
 BMRTDIR = ../../BMRT2.6
-BMRTINCDIR = $(BMRTDIR)/include
+BMRTINC = -I$(BMRTDIR)/include
 BMRTLIBDIR = $(BMRTDIR)/lib
 # if you use BMRT libribout and not Affine:
 RIBOUTLIB = -L$(BMRTLIBDIR) -lribout
@@ -494,16 +494,17 @@ SCEWDIR = ../../../sdk/scew-0.4.0
 X3DIOINC = -I $(EXPATDIR)/lib -I $(SCEWDIR)/scew
 X3DIOLIBS = -L$(SCEWDIR)/scew -lscew -L$(EXPATDIR)/.libs -lexpat
 
+AYINC = -I. -IMF3D -Icontrib $(TOGLINC) $(TCLINC) $(TKINC) $(BMRTINC) $(GLINC) $(AFFINEINC) $(AQSISINC) $(TIFFINC)
 
 #############################################
 # nothing needs to be changed below this line
 #############################################
 
 .c.o:
-	$(CC) -c $(CFLAGS) $*.c -o $@ -I. -IMF3D -Icontrib -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR) -I$(AQSISINCDIR) -I$(TIFFINCDIR)
+	$(CC) -c $(CFLAGS) $*.c -o $@ $(AYINC)
 
 .cpp.o:
-	$(CXX) -c $(CFLAGS) $*.cpp -o $@ -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR) -I$(AQSISINCDIR) -I$(OPENCSGINCDIR) -I$(GLEWINCDIR) -Iplugins
+	$(CXX) -c $(CFLAGS) $*.cpp -o $@ $(AYINC) -I$(OPENCSGINCDIR) -I$(GLEWINCDIR) -Iplugins
 
 all: wrappedayam
 
@@ -602,16 +603,16 @@ aygso.so: plugins/ayerror.o
 	$(CC) $(SHLFLAGS) plugins/ayerror.o plugins/aygso.o -o plugins/aygso.so $(AYGSOLIBS)
 
 onio.so:
-	$(CXX) -c $(CFLAGS) plugins/onio.cpp -o plugins/onio.o -I. -IMF3D -I$(TOGLINCDIR) $(TCLINC) $(TKINC) -I$(BMRTINCDIR) -I$(GLINCDIR) -I$(AFFINEINCDIR) -I$(AQSISINCDIR) -I$(TIFFINCDIR) -I$(ONIOINCDIR)
+	$(CXX) -c $(CFLAGS) plugins/onio.cpp -o plugins/onio.o $(AYINC) -I$(ONIOINCDIR)
 	$(CXX) $(SHLFLAGS) plugins/onio.o -o plugins/onio.so -Wl,-Bstatic $(ONIOLIBS) -Wl,-Bdynamic
 
 dxfio.so:
-	$(CXX) -c $(CFLAGS) plugins/dxfio.cpp -o plugins/dxfio.o -I. -IMF3D $(TOGLINC) $(TCLINC) $(TKINC) $(BMRTINC) $(GLINC) $(AFFINEINC) $(AQSISINC) $(TIFFINC) -I$(DXFIOINCDIR)
-	$(CXX) $(SHLFLAGS) plugins/dxfio.o -o plugins/dxfio.so  $(DXFIOLIBS) 
+	$(CXX) -c $(CFLAGS) plugins/dxfio.cpp -o plugins/dxfio.o $(AYINC) -I$(DXFIOINCDIR)
+	$(CXX) $(SHLFLAGS) plugins/dxfio.o -o plugins/dxfio.so $(DXFIOLIBS) 
 
 x3dio.so:
-	$(CC) -c $(CFLAGS) plugins/x3dio.c -o plugins/x3dio.o -I. -IMF3D $(TOGLINC) $(TCLINC) $(TKINC) $(BMRTINC) $(GLINC) $(AFFINEINC) $(AQSISINC) $(TIFFINC) $(X3DIOINC)
-	$(CC) $(SHLFLAGS) plugins/x3dio.o -o plugins/x3dio.so  $(X3DIOLIBS)
+	$(CC) -c $(CFLAGS) plugins/x3dio.c -o plugins/x3dio.o $(AYINC) $(X3DIOINC)
+	$(CC) $(SHLFLAGS) plugins/x3dio.o -o plugins/x3dio.so $(X3DIOLIBS)
 
 plugins/ayerror.o:
 	$(CC) -c $(CFLAGS) plugins/ayerror.c -o plugins/ayerror.o $(TCLINC)

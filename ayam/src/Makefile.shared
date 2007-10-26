@@ -347,9 +347,10 @@ DXFIOLIBS = -L$(DIMEDIR)/src/.libs -ldime
 # x3dio Plugin
 EXPATDIR = ../../../sdk/expat-2.0.0
 SCEWDIR = ../../../sdk/scew-0.4.0
-X3DIOINC = -I $(EXPATDIR)/lib -I $(SCEWDIR)/scew
+X3DIOINC = -I$(EXPATDIR)/lib -I$(SCEWDIR)/scew
 X3DIOLIBS = -L$(SCEWDIR)/scew -lscew -L$(EXPATDIR)/.libs -lexpat
 
+AYINC = -I. -IMF3D -Icontrib $(TOGLINC) $(TCLINC) $(TKINC) $(BMRTINC) $(GLINC) $(AFFINEINC) $(AQSISINC) $(TIFFINC)
 
 #############################################
 # nothing needs to be changed below this line
@@ -487,10 +488,10 @@ RRIBOBJS = plugins/rrib.o
 
 
 .c.o:
-	$(CC) -c $(CFLAGS) $*.c -o $@ -I. -IMF3D -Icontrib $(TOGLINC) $(TCLINC) $(TKINC) $(BMRTINC) $(GLINC) $(AFFINEINC) $(AQSISINC) $(TIFFINC)
+	$(CC) -c $(CFLAGS) $*.c -o $@ $(AYINC)
 
 .cpp.o:
-	$(CXX) -c $(CFLAGS) $*.cpp -o $@ -I. -IMF3D $(TOGLINC) $(TCLINC) $(TKINC) $(BMRTINC) $(GLINC) $(AFFINEINC) $(AQSISINC) -I$(OPENCSGINCDIR) -I$(GLEWINCDIR) -Iplugins
+	$(CXX) -c $(CFLAGS) $*.cpp -o $@ $(AYINC) -I$(OPENCSGINCDIR) -I$(GLEWINCDIR) -Iplugins
 
 all: ayamsh
 
@@ -592,15 +593,15 @@ aygso.so: plugins/ayerror.o
 	$(CC) $(SHLFLAGS) plugins/ayerror.o plugins/aygso.o -o plugins/aygso.so $(AYGSOLIBS)
 
 onio.so:
-	$(CXX) -c $(CFLAGS) plugins/onio.cpp -o plugins/onio.o -I. -IMF3D $(TOGLINC) $(TCLINC) $(TKINC) $(BMRTINC) $(GLINC) $(AFFINEINC) $(AQSISINC) $(TIFFINC) -I$(ONIOINCDIR)
+	$(CXX) -c $(CFLAGS) plugins/onio.cpp -o plugins/onio.o $(AYINC) -I$(ONIOINCDIR)
 	$(CXX) $(SHLFLAGS) plugins/onio.o -o plugins/onio.so -Wl,-Bstatic $(ONIOLIBS) -Wl,-Bdynamic
 
 dxfio.so:
-	$(CXX) -c $(CFLAGS) plugins/dxfio.cpp -o plugins/dxfio.o -I. -IMF3D $(TOGLINC) $(TCLINC) $(TKINC) $(BMRTINC) $(GLINC) $(AFFINEINC) $(AQSISINC) $(TIFFINC) -I$(DXFIOINCDIR)
+	$(CXX) -c $(CFLAGS) plugins/dxfio.cpp -o plugins/dxfio.o $(AYINC) -I$(DXFIOINCDIR)
 	$(CXX) $(SHLFLAGS) plugins/dxfio.o -o plugins/dxfio.so  $(DXFIOLIBS) 
 
 x3dio.so:
-	$(CC) -c $(CFLAGS) plugins/x3dio.c -o plugins/x3dio.o -I. -IMF3D $(TOGLINC) $(TCLINC) $(TKINC) $(BMRTINC) $(GLINC) $(AFFINEINC) $(AQSISINC) $(TIFFINC) $(X3DIOINC)
+	$(CC) -c $(CFLAGS) plugins/x3dio.c -o plugins/x3dio.o $(AYINC) $(X3DIOINC)
 	$(CC) $(SHLFLAGS) plugins/x3dio.o -o plugins/x3dio.so  $(X3DIOLIBS)
 
 plugins/ayerror.o:
