@@ -49,7 +49,8 @@ CSG-operations: Intersection, Difference, and Union.
 and gordon operations (with caps, holes, and bevels) realized as
 Tool-Objects.
 <item>Wavefront OBJ export and import, Rhino 3DM export and import,
-AutoCAD DXF export and import, Web3D X3D export and import.
+AutoCAD DXF export and import, Web3D X3D export and import, Apple
+Quicktime 3D Metafile (3DMF) export and import.
 <item>Custom objects that may freely implement their representations
 (using OpenGL and RIB) and even small GUIs to edit their type specific
 parameters may be written by the user and dynamically loaded at runtime.
@@ -3773,7 +3774,7 @@ like this:
 <code>
 +-Clone
  +-Level
- |\-Cloned-Object with non-standard Scale/Rotation
+ |\ Cloned-Object with non-standard Scale/Rotation
  \ Trajectory(NCurve)
 </code>
 <p>
@@ -5249,7 +5250,7 @@ needs a NURBCurve, e.g. a Sweep:
 <code>
 +-Sweep
  +-Cross_Section(Script)
- | \ NCurve
+ |\ NCurve
  \ Path(NCurve)
 </code>
 A simple example script for a script object of type <tt/"Modify"/ that
@@ -5981,7 +5982,8 @@ main and toolbox window.
 <sect2>TP (Tesselation Parameter) Tag<label id="tptag">
 <p>
 The tag type <tt/"TP"/ can be used to save tesselation parameters
-to objects of type <tt/"NPatch"/. Those tesselation parameters
+to objects of type <tt/"NPatch"/ (and objects that may be converted
+to <tt/"NPatch"/ objects). Those tesselation parameters
 will be used when the NPatch object is tesselated for e.g. a
 conversion to a PolyMesh object. The syntax of the TP tag is:
 <tt>"&lt;tmethod&gt;,&lt;tparamu&gt;,&lt;tparamv&gt;"</tt>
@@ -9306,7 +9308,7 @@ Disks with an inner radius > 0.0 are imported as flat Hyperboloids
 <item>NURBS:
 NurbsCurve, NurbsCurve2D, NurbsPatchsurface,
 TrimmedNurbsPatchsurface, Contour2D, ContourPolyline2D,
-NurbsSweptSurface, NurbsSwungSurface.
+NurbsSweptSurface, NurbsSwungSurface, NurbsSet.
 <p> <p>
 
 <item>CAD:
