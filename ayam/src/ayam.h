@@ -605,6 +605,18 @@ typedef struct ay_concatnc_object_s
 } ay_concatnc_object;
 
 
+typedef struct ay_offnc_object_s
+{
+  int revert;
+  double offset;
+
+  /* cache NURBS curve representation */
+  ay_object *ncurve;
+  double glu_sampling_tolerance;
+  int display_mode;
+} ay_offnc_object;
+
+
 typedef struct ay_cap_object_s
 {
   int type;
@@ -1209,6 +1221,7 @@ extern unsigned int ay_current_primlevel;
 #define AY_IDSWING         39
 #define AY_IDSELECT        40
 #define AY_IDEXTRNP        41
+#define AY_IDOFFNC         42
 
 #define AY_IDLAST          50
 

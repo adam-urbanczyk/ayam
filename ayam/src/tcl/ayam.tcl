@@ -1266,6 +1266,7 @@ ayam_loadscript material
 ayam_loadscript ncircle
 ayam_loadscript ncurve
 ayam_loadscript npatch
+ayam_loadscript offnc
 ayam_loadscript pamesh
 ayam_loadscript pomesh
 ayam_loadscript parab

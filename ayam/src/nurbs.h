@@ -78,7 +78,7 @@ int ay_nb_GlobalInterpolation4D(int n, double *Q, double *ub, double *Uc,
 int ay_nb_GlobalInterpolation4DD(int n, double *Q, double *ub, double *Uc,
 				 int d, double *D1, double *D2);
 
-int ay_nb_CurveRemoveKnot4D(int n, int p, double *U, double *Pw,
+int ay_nb_CurveRemoveKnot4D(int n, int p, double *U, double *Pw, double tol,
 			    int r, int s, int num, double *Ubar, double *Qw);
 
 void ay_nb_Bin(int maxn, int maxk, double *bin);
@@ -325,6 +325,8 @@ ay_nct_trimtcmd(ClientData clientData, Tcl_Interp *interp,
 int ay_nct_trim(ay_nurbcurve_object **curve, double umin, double umax);
 
 int ay_nct_isdegen(ay_nurbcurve_object *curve);
+
+int ay_nct_offset(ay_object *o, double offset, ay_nurbcurve_object **nc);
 
 /* npt.c */
 int ay_npt_create(int uorder, int vorder, int width, int height,
