@@ -5104,14 +5104,15 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
  int ay_status = AY_OK;
  char fname[] = "remknNC";
  int i = 0, s = 0, r = 0;
- double tol = AY_EPSILON, u = 0.0, *newknotv = NULL, *newcontrolv = NULL;
+ double tol = DBL_MAX/*AY_EPSILON*/;
+ double u = 0.0, *newknotv = NULL, *newcontrolv = NULL;
  ay_nurbcurve_object *curve;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
 
   if(argc < 3)
     {
-      ay_error(AY_EARGS, fname, "u r");
+      ay_error(AY_EARGS, fname, "u r \\[tol\\]");
       return TCL_OK;
     }
 
@@ -5123,6 +5124,13 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
 
   Tcl_GetDouble(interp, argv[1], &u);
   Tcl_GetInt(interp, argv[2], &r);
+
+  if(argc > 3)
+    {
+      Tcl_GetDouble(interp, argv[3], &tol);
+    }
+
+  printf("%lg\n",tol);
 
   while(sel)
     {
@@ -5366,16 +5374,58 @@ ay_nct_isdegen(ay_nurbcurve_object *curve)
  * WIP
  */
 int
-ay_nct_offset(ay_object *o, ay_nurbcurve_object **nc)
+ay_nct_offset(ay_object *o, double offset, ay_nurbcurve_object **nc)
 {
- int i, stride = 4;
- double *p1, *p2;
+ int ay_status = AY_OK;
+ int j, stride = 4;
+ double tangent[3] = {0}, normal[3] = {0}, *newcv = NULL, *newkv = NULL;
+ double zaxis[3] = {0.0,0.0,1.0}; 
+ ay_nurbcurve_object *curve = NULL;
 
   if(!o || !nc)
     return AY_ENULL;
 
+  curve = (ay_nurbcurve_object*)o->refine;
 
- return AY_OK;
+  if(!(newcv = calloc(curve->length*stride, sizeof(double))))
+    return AY_EOMEM;
+
+  for(j = 0; j < curve->length; j++)
+    {
+      ay_npt_gettangentfromcontrol((curve->type == AY_CTPERIODIC) ?
+				   AY_TRUE : AY_FALSE, curve->length,
+				   curve->order-1, 4, curve->controlv, j,
+				   tangent);
+
+      AY_V3CROSS(normal, tangent, zaxis);
+      AY_V3SCAL(normal, offset);
+
+      newcv[j*stride]   = curve->controlv[j*stride]   + normal[0];
+      newcv[j*stride+1] = curve->controlv[j*stride+1] + normal[1];
+      newcv[j*stride+2] = curve->controlv[j*stride+2] + normal[2];
+      newcv[j*stride+3] = curve->controlv[j*stride+3];
+
+    } /* for */
+
+  if(curve->knot_type == AY_KTCUSTOM)
+    {
+      if(!(newkv = calloc(curve->length+curve->order, sizeof(double))))
+	{
+	  free(newcv);
+	  return AY_EOMEM;
+	}
+    }
+
+  ay_status = ay_nct_create(curve->order, curve->length, curve->knot_type,
+			    newcv, newkv, nc);
+
+  if(ay_status || !nc)
+    {
+      free(newcv);
+      free(newkv);
+    }
+
+ return ay_status;
 } /* ay_nct_offset */
 
 

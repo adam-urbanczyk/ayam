@@ -87,6 +87,9 @@ int ay_ncurve_init(Tcl_Interp *interp);
 /* npatch.c */
 int ay_npatch_init(Tcl_Interp *interp);
 
+/* offnc.c */
+int ay_offnc_init(Tcl_Interp *interp);
+
 /* pamesh.c */
 int ay_pamesh_init(Tcl_Interp *interp);
 

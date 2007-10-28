@@ -36,6 +36,8 @@ ay_offnc_createcb(int argc, char *argv[], ay_object *o)
   o->parent = AY_TRUE;
   o->refine = new;
 
+  new->offset = 0.1;
+
  return AY_OK;
 } /* ay_offnc_createcb */
 
@@ -153,7 +155,7 @@ int
 ay_offnc_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  int ay_status = AY_OK;
- char *n1 = "OffNCAttrData";
+ char *n1 = "OffsetNCAttrData";
  /* char fname[] = "offnc_setpropcb";*/
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_offnc_object *offnc = NULL;
@@ -170,6 +172,10 @@ ay_offnc_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_SetStringObj(ton,"Revert",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(offnc->revert));
+
+  Tcl_SetStringObj(ton,"Offset",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp,to, &(offnc->offset));
 
   Tcl_SetStringObj(ton,"DisplayMode",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -195,7 +201,7 @@ ay_offnc_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_offnc_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- char *n1="OffNCAttrData";
+ char *n1="OffsetNCAttrData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_offnc_object *offnc = NULL;
 
@@ -210,6 +216,11 @@ ay_offnc_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   Tcl_SetStringObj(ton,"Revert",-1);
   to = Tcl_NewIntObj(offnc->revert);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton,"Offset",-1);
+  to = Tcl_NewDoubleObj(offnc->offset);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
@@ -244,6 +255,7 @@ ay_offnc_readcb(FILE *fileptr, ay_object *o)
     { return AY_EOMEM; }
 
   fscanf(fileptr, "%d\n", &offnc->revert);
+  fscanf(fileptr, "%lg\n", &offnc->offset);
   fscanf(fileptr, "%d\n", &offnc->display_mode);
   fscanf(fileptr, "%lg\n", &offnc->glu_sampling_tolerance);
 
@@ -264,6 +276,7 @@ ay_offnc_writecb(FILE *fileptr, ay_object *o)
   offnc = (ay_offnc_object *)(o->refine);
 
   fprintf(fileptr, "%d\n", offnc->revert);
+  fprintf(fileptr, "%g\n", offnc->offset);
   fprintf(fileptr, "%d\n", offnc->display_mode);
   fprintf(fileptr, "%g\n", offnc->glu_sampling_tolerance);
 
@@ -309,8 +322,7 @@ ay_offnc_notifycb(ay_object *o)
 {
  int ay_status = AY_OK;
  ay_offnc_object *offnc = NULL;
- ay_object *down = NULL, *pobject = NULL;
- ay_object *ncurve = NULL, *newo = NULL;
+ ay_object *down = NULL, *ncurve = NULL, *newo = NULL;
  int mode, provided = AY_FALSE;
  double tolerance;
 
@@ -319,7 +331,6 @@ ay_offnc_notifycb(ay_object *o)
 
   offnc = (ay_offnc_object *)(o->refine);
 
-  pnum = offnc->pnum - 1;
   mode = offnc->display_mode;
   tolerance = offnc->glu_sampling_tolerance;
 
@@ -338,7 +349,7 @@ ay_offnc_notifycb(ay_object *o)
   if(down->type != AY_IDNCURVE)
     {
       ay_status = ay_provide_object(down, AY_IDNCURVE, &ncurve);
-      if(!pobject)
+      if(!ncurve)
 	{
 	  return AY_ERROR;
 	}
@@ -363,7 +374,7 @@ ay_offnc_notifycb(ay_object *o)
   newo->type = AY_IDNCURVE;
 
   /* create the offset */
-  ay_status = ay_nct_offset(ncurve,
+  ay_status = ay_nct_offset(ncurve, offnc->offset,
 			    (ay_nurbcurve_object **)(&(newo->refine)));
 
   if(ay_status || !newo->refine)
@@ -378,7 +389,7 @@ ay_offnc_notifycb(ay_object *o)
   offnc->ncurve = newo;
 
   /* copy transformation attributes over to new object */
-  ay_trafo_copy(npatch, newo);
+  ay_trafo_copy(ncurve, newo);
 
   /* copy sampling tolerance/mode over to new object */
   ((ay_nurbcurve_object *)newo->refine)->glu_sampling_tolerance =
