@@ -37,7 +37,7 @@ MKDIR = mkdir -p
 #CC = cc
 #CC = gcc
 
-# the C++ compiler (just in use for the AyCSG and onio plugin)
+# the C++ compiler (just in use for the AyCSG, onio, and aygso plugin)
 #CXX = CC
 #CXX = g++-3.0
 
@@ -45,7 +45,7 @@ MKDIR = mkdir -p
 # Starting with BMRT2.5, libribout and libslcargs are in C++,
 # which forces us to use "CC" or "g++" to link the right libraries
 # automatically
-LD = $(CXX)
+#LD = $(CXX)
 # IRIX:
 #LD = CC
 # Linux:
@@ -600,8 +600,8 @@ aysdr.so: plugins/ayerror.o
 	$(CC) $(SHLFLAGS) plugins/ayerror.o plugins/aysdr.o -o plugins/aysdr.so $(LDSWSTATIC) $(AYSDRLIBS) $(LDSWDYNAMIC)
 
 aygso.so: plugins/ayerror.o
-	$(CC) -c $(CFLAGS) plugins/aygso.c -o plugins/aygso.o -Iplugins $(TCLINC) -I$(AYGSOINCDIR)
-	$(CC) $(SHLFLAGS) plugins/ayerror.o plugins/aygso.o -o plugins/aygso.so $(AYGSOLIBS)
+	$(CXX) -c $(CFLAGS) plugins/aygso.cpp -o plugins/aygso.o -Iplugins $(TCLINC) -I$(AYGSOINCDIR)
+	$(CXX) $(SHLFLAGS) plugins/ayerror.o plugins/aygso.o -o plugins/aygso.so $(AYGSOLIBS)
 
 onio.so:
 	$(CXX) -c $(CFLAGS) plugins/onio.cpp -o plugins/onio.o $(AYINC) -I$(ONIOINCDIR)
