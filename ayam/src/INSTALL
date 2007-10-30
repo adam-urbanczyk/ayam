@@ -1,4 +1,4 @@
-INSTALL [10. Jun 2007]
+INSTALL [30. Oct 2007]
 
 Compilation Instructions for Ayam
 ---------------------------------
@@ -176,7 +176,7 @@ The following requirements _must_ be met to compile a wrapped standalone
 version of Ayam:
 
 - ANSI-C-compiler
-- Tcl/Tk sources ( V8.2.x )
+- Tcl/Tk sources ( V8.2.x (see also Note 1))
   ftp://ftp.scriptics.com/pub/tcl/
   ( May move to SourceForge in the future, see:
     http://tcl.sourceforge.net/ )
@@ -188,7 +188,7 @@ version of Ayam:
   >cd tk8.2.x/unix
   >./configure --disable-shared; make
   Also note that Wrap0.3 currently only works with Tcl/Tk 8.2.x, not
-  8.3.x, and not 8.4.x!
+  8.3.x, and not 8.4.x (see also Note 1)!
 - A zip utility that understands the -A option ( zip2.2 does ).
 - Wrap0.3
   http://purl.oclc.org/net/nijtmans/wrap.html
@@ -199,8 +199,12 @@ version of Ayam:
   and do not "make clean" afterwards. Note that Makefile.wrapped
   is tuned to be used with Wrap0.3. If you use newer versions you
   will likely have to adapt the ayam: and ayamwrap: targets.
+  If compile errors occur, note that in fact you only need the following
+  files from Wrap0.3 to successfully compile a wrapped Ayam:
+  wrapChan.o, wrapInit.o, wrapRsrc.o, compat/tclLoadNone.o, tkAppInit.o
+  You might be able to build them manually using e.g. "make tkAppInit.o"...
 - OpenGL ( gl.h, glu.h, libGL.so, libGLU.so )
-  Version of GL is uncritical ( 1.1 should do, see also Note 1 ),
+  Version of GL is uncritical ( 1.1 should do, see also Note 2 ),
   Version of GLU should be atleast 1.2 ( due to the use of the GLU
   tesselation facility in the PolyMesh and SubdivisionMesh objects ),
   ( Mesa may be used as replacement for a real OpenGL. Since
@@ -239,6 +243,12 @@ If you unpack Tcl/Tk, Wrap, and BMRT as sister directories
 to the Ayam directory, editing of the Makefile will be easier.
 
 Note 1:
+The official Ayam 1.13 Linux executable proves that with some surgery, also
+newer Tcl/Tk versions work with Wrap0.3 (atleast the Tcl scripts in the
+wrap0.3/lib directory need to be replaced with the new versions from the
+Tcl/Tk distribution).
+
+Note 2:
 If OpenGL 1.1 is not available to you, you can still compile Ayam, if your
 OpenGL is supporting the polygon offset extension (e.g. on IRIX 6.2).
 
