@@ -1,4 +1,4 @@
-[28. Oct 2007] CVS-Head:
+[5. Nov 2007] CVS-Head:
 =======================
 o Bug Fixes:
  - X3D export of NURBS patches (row/column major order) (SF 1804056)
@@ -18,8 +18,9 @@ o added tolerance parameter and checking for remKnNC (knot removal) tool
 o added new object type "OffsetNC" to create offset curves
 
 Import/Export:
-o import NurbsSwungSurface elements as Swing objects
-o import of NurbsSurface texture coordinates
+o import NurbsSwungSurface elements as Swing objects from X3D files
+o import of NurbsSurface texture coordinates from X3D files
+o added TopLevelLayers X3D export option
 
 Renderer Support:
 o reworked shader parsing (core & ayslx plugin) for incompatible changes
