@@ -312,7 +312,7 @@ int x3dio_writelight(scew_element *element, ay_object *o);
 /* export */
 int x3dio_writeobject(scew_element *element, ay_object *o, int count);
 
-int x3dio_writescene(char *filename, int selected);
+int x3dio_writescene(char *filename, int selected, int toplevellayers);
 
 int x3dio_writetcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[]);
@@ -8223,15 +8223,16 @@ x3dio_writeobject(scew_element *element, ay_object *o, int count)
  *
  */
 int
-x3dio_writescene(char *filename, int selected)
+x3dio_writescene(char *filename, int selected, int toplevellayers)
 {
  int ay_status = AY_OK;
  char fname[] = "x3dio_writescene";
- ay_object *o = ay_root->next;
+ ay_object *o = ay_root->next, *d = NULL;
  ay_list_object *sel = NULL;
  scew_tree *tree = NULL;
  scew_element *root = NULL;
  scew_element *scene_element = NULL;
+ scew_element *cadlayer_element = NULL;
  scew_attribute *attribute = NULL;
 
   if(selected)
@@ -8308,17 +8309,56 @@ x3dio_writescene(char *filename, int selected)
   /* omit EndLevel-object in top level! */
   while(o->next)
     {
-      if(selected)
+      if((o->type == AY_IDLEVEL) && (toplevellayers))
 	{
-	  if(o->selected)
+	  cadlayer_element = scew_element_add(scene_element, "CADLayer");
+
+	  /* write name to cad layer element */
+	  ay_status = x3dio_writename(cadlayer_element, o);
+
+	  d = o->down;
+	  while(d->next)
 	    {
-	      ay_status = x3dio_writeobject(scene_element, o, AY_TRUE);
-	    }
+	      if(selected)
+		{
+		  if(d->selected)
+		    {
+		      ay_status = x3dio_writeobject(cadlayer_element, d,
+						    AY_TRUE);
+
+		      if(ay_status)
+			{
+			  break;
+			}
+		    }
+		}
+	      else
+		{
+		  ay_status = x3dio_writeobject(cadlayer_element, d, AY_TRUE);
+
+		  if(ay_status)
+		    {
+		      break;
+		    }
+		} /* if */
+
+	      d = d->next;
+	    } /* while */
 	}
       else
 	{
-	  ay_status = x3dio_writeobject(scene_element, o, AY_TRUE);
-	}
+	  if(selected)
+	    {
+	      if(o->selected)
+		{
+		  ay_status = x3dio_writeobject(scene_element, o, AY_TRUE);
+		}
+	    }
+	  else
+	    {
+	      ay_status = x3dio_writeobject(scene_element, o, AY_TRUE);
+	    }
+	} /* if */
 
       if(ay_status)
 	{
@@ -8355,7 +8395,7 @@ x3dio_writetcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int ay_status = AY_OK;
  char fname[] = "x3dioWrite";
- int selected = AY_FALSE, i = 2;
+ int selected = AY_FALSE, toplevellayers = AY_FALSE, i = 2;
 
   /* check args */
   if(argc < 2)
@@ -8389,6 +8429,11 @@ x3dio_writetcmd(ClientData clientData, Tcl_Interp *interp,
 	  sscanf(argv[i+1], "%d", &selected);
 	}
       else
+      if(!strcmp(argv[i], "-l"))
+	{
+	  sscanf(argv[i+1], "%d", &toplevellayers);
+	}
+      else
       if(!strcmp(argv[i], "-p"))
 	{
 	  sscanf(argv[i+1], "%d", &x3dio_tesspomesh);
@@ -8413,7 +8458,7 @@ x3dio_writetcmd(ClientData clientData, Tcl_Interp *interp,
       i += 2;
     } /* while */
 
-  ay_status = x3dio_writescene(argv[1], selected);
+  ay_status = x3dio_writescene(argv[1], selected, toplevellayers);
 
   x3dio_stagname = x3dio_stagnamedef;
   x3dio_ttagname = x3dio_ttagnamedef;
