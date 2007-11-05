@@ -269,6 +269,7 @@ $m.nc add command -label "NURBCircle" -command {
 }
 $m.nc add command -label "TrimRect" -command {
     crtNRect; set ay(ul) $ay(CurrentLevel); uS 0 1; rV}
+$m.nc add command -label "OffsetCurve" -command "offnc_crt;"
 $m.nc add separator
 $m.nc add command -label "NURBSphere" -command {
     runTool ay(nsphereradius) "Radius:" \
