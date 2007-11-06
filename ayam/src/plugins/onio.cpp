@@ -3623,6 +3623,9 @@ Onio_Init(Tcl_Interp *interp)
   ay_status = onio_registerwritecb((char *)(AY_IDSWEEP),
 				   onio_writenpconvertible);
 
+  ay_status = onio_registerwritecb((char *)(AY_IDSWING),
+				   onio_writenpconvertible);
+
   ay_status = onio_registerwritecb((char *)(AY_IDSKIN),
 				   onio_writenpconvertible);
 
@@ -3639,6 +3642,9 @@ Onio_Init(Tcl_Interp *interp)
 				   onio_writenpconvertible);
 
   ay_status = onio_registerwritecb((char *)(AY_IDBEVEL),
+				   onio_writenpconvertible);
+
+  ay_status = onio_registerwritecb((char *)(AY_IDEXTRNP),
 				   onio_writenpconvertible);
 
   ay_status = onio_registerwritecb((char *)(AY_IDBPATCH),
@@ -3663,6 +3669,9 @@ Onio_Init(Tcl_Interp *interp)
 				   onio_writencconvertible);
 
   ay_status = onio_registerwritecb((char *)(AY_IDNCIRCLE),
+				   onio_writencconvertible);
+
+  ay_status = onio_registerwritecb((char *)(AY_IDOFFNC),
 				   onio_writencconvertible);
 
   ay_status = onio_registerwritecb((char *)(AY_IDLEVEL),

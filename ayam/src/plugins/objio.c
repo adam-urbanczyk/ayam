@@ -3936,12 +3936,16 @@ Objio_Init(Tcl_Interp *interp)
 				       objio_writencconvertible);
   ay_status = objio_registerwritecb((char *)(AY_IDNCIRCLE),
 				       objio_writencconvertible);
+  ay_status = objio_registerwritecb((char *)(AY_IDOFFNC),
+				       objio_writencconvertible);
 
   ay_status = objio_registerwritecb((char *)(AY_IDEXTRUDE),
 				       objio_writenpconvertible);
   ay_status = objio_registerwritecb((char *)(AY_IDREVOLVE),
 				       objio_writenpconvertible);
   ay_status = objio_registerwritecb((char *)(AY_IDSWEEP),
+				       objio_writenpconvertible);
+  ay_status = objio_registerwritecb((char *)(AY_IDSWING),
 				       objio_writenpconvertible);
   ay_status = objio_registerwritecb((char *)(AY_IDSKIN),
 				       objio_writenpconvertible);
@@ -3960,6 +3964,8 @@ Objio_Init(Tcl_Interp *interp)
   ay_status = objio_registerwritecb((char *)(AY_IDTEXT),
 				       objio_writenpconvertible);
   ay_status = objio_registerwritecb((char *)(AY_IDBEVEL),
+				       objio_writenpconvertible);
+  ay_status = objio_registerwritecb((char *)(AY_IDEXTRNP),
 				       objio_writenpconvertible);
 
   ay_status = objio_registerwritecb((char *)(AY_IDSPHERE),
