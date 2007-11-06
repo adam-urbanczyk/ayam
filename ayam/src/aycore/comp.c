@@ -107,6 +107,8 @@ int ay_comp_bevel(ay_object *o1, ay_object *o2);
 
 int ay_comp_select(ay_object *o1, ay_object *o2);
 
+int ay_comp_offnc(ay_object *o1, ay_object *o2);
+
 /* functions */
 
 /* ay_comp_strcase:
@@ -1267,6 +1269,25 @@ ay_comp_select(ay_object *o1, ay_object *o2)
 } /* ay_comp_select */
 
 
+/* ay_comp_offnc:
+ *
+ */
+int
+ay_comp_offnc(ay_object *o1, ay_object *o2)
+{
+ ay_offnc_object *s1, *s2;
+
+  s1 = (ay_offnc_object *)o1->refine;
+  s2 = (ay_offnc_object *)o2->refine;
+
+  if((s1->revert != s2->revert) ||
+     (s1->offset != s2->offset))
+    return AY_FALSE;
+
+ return AY_TRUE;
+} /* ay_comp_offnc */
+
+
 /* ay_comp_register:
  *  register the compare callback compcb for
  *  objects of type type_id
@@ -1376,6 +1397,7 @@ ay_comp_init()
   ay_status = ay_comp_register(ay_comp_script, AY_IDSCRIPT);
   ay_status = ay_comp_register(ay_comp_bevel, AY_IDBEVEL);
   ay_status = ay_comp_register(ay_comp_select, AY_IDSELECT);
+  ay_status = ay_comp_register(ay_comp_offnc, AY_IDOFFNC);
 
  return ay_status;
 } /* ay_comp_init */
