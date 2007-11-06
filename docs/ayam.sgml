@@ -6517,12 +6517,16 @@ The point selection will be removed from the original objects.
 </figure>
 <itemize>
 <item>Arguments: The remove knot tool takes a number of NURBS curves from
-the selection and requests two additional values, a parametric value t
-and an integer value i.
+the selection and requests three additional values, a parametric value t,
+an integer value i, and a tolerance tol.
 <item>Operation: The specified knot (t) will be removed i
-times from the knot vector of the selected curves.
-<item>Note: The tool tries to work without changing the shape of the
-curves, however, this is not guaranteed.
+times from the knot vector of the selected curves if the shape of the
+resulting curve does not deviate more than tol from the original curve
+in any point.
+If the knot can not be removed r times due to the tolerance, an
+error is reported and the original curve is left unchanged.
+<item>Note: If tol is <tt/"Inf"/ (infinity) the tool tries to work without
+changing the shape of the curves, however, this is not guaranteed.
 The point selection will be removed from the original objects.
 </itemize>
 
@@ -7461,11 +7465,15 @@ See also section <ref id="insknt" name="The Insert Knot Tool">.
 <p><label id="scremknnc">
 remknNC - remove knot from NURBS curve:
 <itemize>
- <item>Synopsis: <tt/"remknNC u r"/
+ <item>Synopsis: <tt/"remknNC u r [tol]"/
  <item>Description: Remove a knot at the position
 specified by u (u must be in the valid range of the knot vector
 of the selected curve) r times from the curve. Note that the
-shape of the curve may be changed by this tool.
+shape of the curve may be changed by this tool unless the parameter
+tol is specified. If tol is specified the new curve does not deviate
+from the original curve more than tol in any point on the curve.
+If the knot can not be removed r times due to the tolerance, an
+error is reported and the original curve is left unchanged.
 See also section <ref id="remknt" name="The Remove Knot Tool">.
 </itemize>
 
