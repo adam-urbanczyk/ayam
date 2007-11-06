@@ -8561,6 +8561,8 @@ X_Init(Tcl_Interp *interp)
 				       x3dio_writencconvertibleobj);
   ay_status = x3dio_registerwritecb((char *)(AY_IDNCIRCLE),
 				       x3dio_writencconvertibleobj);
+  ay_status = x3dio_registerwritecb((char *)(AY_IDOFFNC),
+				       x3dio_writencconvertibleobj);
 
   ay_status = x3dio_registerwritecb((char *)(AY_IDNPATCH),
 				       x3dio_writenpatchobj);
@@ -8580,6 +8582,8 @@ X_Init(Tcl_Interp *interp)
 				       x3dio_writenpconvertibleobj);
   ay_status = x3dio_registerwritecb((char *)(AY_IDSWEEP),
 				       x3dio_writenpconvertibleobj);
+  ay_status = x3dio_registerwritecb((char *)(AY_IDSWING),
+				       x3dio_writenpconvertibleobj);
   ay_status = x3dio_registerwritecb((char *)(AY_IDSKIN),
 				       x3dio_writenpconvertibleobj);
   ay_status = x3dio_registerwritecb((char *)(AY_IDCAP),
@@ -8597,6 +8601,8 @@ X_Init(Tcl_Interp *interp)
   ay_status = x3dio_registerwritecb((char *)(AY_IDTEXT),
 				       x3dio_writenpconvertibleobj);
   ay_status = x3dio_registerwritecb((char *)(AY_IDBEVEL),
+				       x3dio_writenpconvertibleobj);
+  ay_status = x3dio_registerwritecb((char *)(AY_IDEXTRNP),
 				       x3dio_writenpconvertibleobj);
 
   ay_error(AY_EOUTPUT, fname, "Plugin 'x3dio' successfully loaded.");

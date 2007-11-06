@@ -3494,12 +3494,16 @@ Mfio_Init(Tcl_Interp *interp)
 				       ay_mfio_writencconvertible);
   ay_status = ay_mfio_registerwritecb((char *)(AY_IDNCIRCLE),
 				       ay_mfio_writencconvertible);
+  ay_status = ay_mfio_registerwritecb((char *)(AY_IDOFFNC),
+				       ay_mfio_writencconvertible);
 
   ay_status = ay_mfio_registerwritecb((char *)(AY_IDEXTRUDE),
 				       ay_mfio_writenpconvertible);
   ay_status = ay_mfio_registerwritecb((char *)(AY_IDREVOLVE),
 				       ay_mfio_writenpconvertible);
   ay_status = ay_mfio_registerwritecb((char *)(AY_IDSWEEP),
+				       ay_mfio_writenpconvertible);
+  ay_status = ay_mfio_registerwritecb((char *)(AY_IDSWING),
 				       ay_mfio_writenpconvertible);
   ay_status = ay_mfio_registerwritecb((char *)(AY_IDSKIN),
 				       ay_mfio_writenpconvertible);
@@ -3522,6 +3526,8 @@ Mfio_Init(Tcl_Interp *interp)
   ay_status = ay_mfio_registerwritecb((char *)(AY_IDHYPERBOLOID),
 				       ay_mfio_writenpconvertible);
   ay_status = ay_mfio_registerwritecb((char *)(AY_IDPARABOLOID),
+				       ay_mfio_writenpconvertible);
+  ay_status = ay_mfio_registerwritecb((char *)(AY_IDEXTRNP),
 				       ay_mfio_writenpconvertible);
 
   ay_status = ay_mfio_registerwritecb((char *)(AY_IDPOMESH),
