@@ -541,7 +541,7 @@ ay_undo_copy(ay_undo_object *uo)
 	{
 	  r = r->next;
 	  c = c->next;
-	  break;
+	  continue;
 	}
 
       /* copy name */
