@@ -5033,9 +5033,9 @@ of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 <caption>Offset Curves (white) from NURBS Curves (blue) with Offset 0.2, -0.2, and 0.3</caption>
 </figure>
 <p>
-The OffsetNC object creates offset curves from planar NURBS curves
-using the same algorithm as the bevel creation algorithm. The offset
-curve will always match the original curve in type, length, order,
+The OffsetNC object, available since Ayam 1.14, creates offset curves from
+planar NURBS curves using the same algorithm as the bevel creation algorithm.
+The offset curve will always match the original curve in type, length, order,
 and knots. See also the image above.
 <p>
 You may convert the current OffsetNC object to an ordinary NURBS curve
@@ -5055,6 +5055,39 @@ offset curve. Negative values are allowed.
 See section <ref id="npattr" name="NPatchAttr"> for a description
 of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 
+
+<sect1>ExtrNP (Extract NURBS Patch) Object<label id="extrnpobj">
+<p>
+The ExtrNP object, available since Ayam 1.14, extracts a NURBS patch from
+another NURBS patch object, for use as parameter object for other tool
+objects.
+It also works with NURBS patch providing objects, so that the following
+example hierarchy is valid:
+<code>
+--NPatch
++-ExtrNP
+ \ Instance_of_NPatch(Instance)
+</code>
+Depending on the parameters of the ExtrNP object, the skin will have
+one boundary in common with a boundary or an iso-curve of the NPatch
+object.
+<p>
+The extraction process is controlled by the following attributes:
+
+<sect2>ExtrNPAttr Property<label id="extrnpp"><label id="extrnpattrprop">
+<p>
+<itemize>
+<item><tt/"UMin"/, <tt/"UMax"/, <tt/"VMin"/, and <tt/"VMax"/ control
+which part of the original surface is to be extracted.
+<item><tt/"PatchNum"/ allows to select a patch from a list of
+patches delivered e.g. by a beveled extrude object as child
+of the ExtrNP object.
+This way it is possible to extract a patch from a bevel or cap
+surface.
+</itemize>
+<p>
+See section <ref id="npattr" name="NPatchAttr"> for a description
+of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 
 <sect1>Text Object<label id="textobj">
 <p>
@@ -5312,6 +5345,27 @@ If the first line of the script is a comment like
 then the global Tcl array <tt>&lt;arrayname&gt;</tt> will be saved with
 the script object to Ayam scene files.
 </itemize>
+
+<sect1>Select Object<label id="selectobj">
+<p>
+The select object, available since Ayam 1.14, may be used in hierarchies
+of tool objects to select one object from a list of provided objects.
+In the following example hierarchy, a single patch from multiple provided
+patches of the Sweep object (the swept surface, a bevel, or a cap)
+will be selected by the Select object and delivered upstream to
+the ExtrNC object.
+<code>
++-Sweep
++-Revolve
+ +-ExtrNC
+  +-Select
+   \ Instance_of_Sweep(Instance)
+</code>
+Note that this example just serves illustrative purposes; the hierarchy
+presented is not exactly useful, as the ExtrNC object has a selector
+facility built in. Consequently, the Select object should be used in
+scenarios, where a selector facility does not exist or is hard to
+implement, as e.g. in Script object scripts.
 
 <sect1>Custom Objects<label id="customobj">
 <p>
