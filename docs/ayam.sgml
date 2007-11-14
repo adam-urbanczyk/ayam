@@ -47,7 +47,8 @@ and Torus), MetaBalls, polygonal meshes, subdivision meshes and more.
 CSG-operations: Intersection, Difference, and Union.
 <item>NURBS modelling includes extrude, revolve, sweep, birail, skin,
 and gordon operations (with caps, holes, and bevels) realized as
-Tool-Objects.
+Tool-Objects (see also section
+<ref id="toolobj" name="The Modelling Concept Tool-Objects">).
 <item>Wavefront OBJ export and import, Rhino 3DM export and import,
 AutoCAD DXF export and import, Web3D X3D export and import, Apple
 Quicktime 3D Metafile (3DMF) export and import.
@@ -4996,7 +4997,7 @@ is <tt/"U"/ or <tt/"V"/.
 patches delivered e.g. by a beveled extrude object as child
 of the ExtrNC object.
 This way it is possible to extract a curve from a bevel or cap
-surface.
+surface of e.g. a Revolve object.
 </itemize>
 <p>
 See section <ref id="npattr" name="NPatchAttr"> for a description
@@ -5083,7 +5084,7 @@ which part of the original surface is to be extracted.
 patches delivered e.g. by a beveled extrude object as child
 of the ExtrNP object.
 This way it is possible to extract a patch from a bevel or cap
-surface.
+surface of e.g. a Revolve object.
 </itemize>
 <p>
 See section <ref id="npattr" name="NPatchAttr"> for a description
@@ -6999,7 +7000,7 @@ Tcl script files, that may be loaded at any time into Ayam using
 the console and the Tcl command <tt/"source"/.
 You can also arrange for a script to be executed automatically
 on startup using the preference setting <tt>"Main/Scripts"</tt>.
-In contrast to other modeling environments, in Ayam there is a
+In contrast to other modelling environments, in Ayam there is a
 third way to run scripts. In Ayam, scripts may also be attached
 to script objects and run when the notification mechanism updates
 the scene. See also section
@@ -9645,6 +9646,74 @@ Delete Object, New Scene, Open (Replace) Scene, and Close View.
 <p>
 Note that undo/redo will also modify objects that currently reside in the
 object clipboard if they have saved states in the undo buffer.
+
+<sect1>The Modelling Concept Tool-Objects<label id="toolobj">
+<p>
+This section briefly introduces the modelling concept <em>Tool-Objects</em>,
+used in Ayam.
+<p>
+The following example hierarchy shows two objects in a parent-child relation:
+<code>
++-Tool_Object(Revolve)        
+ |         ^
+ |         :
+ |   <Notification>
+ |         :
+ \ Parameter_Object(NCurve)
+</code>
+The parent object is called <em>Tool-Object</em> and the child object is
+called <em>Parameter-Object</em>. There is a flow of information from the
+parameter object to the tool object. This information flow is controlled
+by the so called <em>Notification</em> mechanism.
+In the example above, a NURBS curve is the parameter object, and the
+tool object is creating a surface of revolution from the curve data.
+<p>
+Tool objects may be parameter objects of other tool objects:
+<code>
++-Tool_Object(ExtrNP)
+ +-Parameter_and_Tool_Object(Revolve)
+  \ Parameter_Object(NCurve)
+</code>
+and there may be more than one parameter objects per tool object:
+<code>
++-Tool_Object(Skin)
+ | Parameter_Object_1(NCurve)
+ | ...
+ \ Parameter_Object_n(NCurve)
+</code>
+Tool objects create new geometric objects from the information delivered
+by the parameter object(s) or they may modify the parameter object(s) and
+deliver them to their respective parent object. The notification mechanism
+makes sure that whenever the parameter objects change, the tool object is
+informed so that it may adapt to the changes.
+For interactive modelling actions, the notification will be carried out
+while dragging the mouse or only after the modelling action finished,
+depending on the main preference setting <tt/"LazyNotify"/. The pure
+hierarchical dependency scheme may be broken up by instance objects:
+<code>
++-Tool_Object(Revolve)
+ \ Parameter_Object(NCurve)
++-Tool_Object(Revolve)
+ \ Parameter_Object(Instance_of_NCurve)
+</code>
+The notification mechanism is aware of this and initiates updates
+in the scene hierarchy wherever needed and efficiently (not updating any
+objects twice) according to the <tt/"CompleteNotify"/ main preference
+setting. In the example above, due to complete notification, the second
+Revolve object will get updated automatically whenever the NCurve changes.
+<p>
+Two other mechanisms exist,
+that help tool objects to get the information they need and to increase
+flexibility in hierarchy building and modelling: <em>Provision</em> and
+<em>Conversion</em>. Both mechanisms are similar and convert objects
+temporarily/transparently (provision) or finally (conversion) from one
+type to another, e.g. convert an ICurve (interpolating curve) to a plain
+NCurve (NURBS curve).
+<p>
+Due to the provision mechanism, an ICurve object could be used instead
+of an NCurve as parameter object in all examples above easily. The Revolve
+tool objects could be converted to NPatch objects for modifications not
+available to Revolve objects by the conversion mechanism.
 
 <sect1>Ayamrc File<label id="ayamrc">
 <p>
