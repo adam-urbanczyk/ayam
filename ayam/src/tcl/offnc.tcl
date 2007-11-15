@@ -19,12 +19,14 @@ w     fOffsetNCAttr
 }
 
 array set OffsetNCAttrData {
+Mode 1
 DisplayMode 0
 NCInfoBall "N/A"
 }
 # create UI
 set w [frame $ay(pca).$OffsetNCAttr(w)]
 
+addMenu $w OffsetNCAttrData Mode [list "Bevel" "Section" ]
 addCheck $w OffsetNCAttrData Revert
 addParam $w OffsetNCAttrData Offset
 

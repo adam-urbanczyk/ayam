@@ -168,6 +168,9 @@ ay_offnc_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
 
+  Tcl_SetStringObj(ton,"Mode",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &(offnc->mode));
 
   Tcl_SetStringObj(ton,"Revert",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -214,6 +217,11 @@ ay_offnc_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   ton = Tcl_NewStringObj(n1,-1);
 
+  Tcl_SetStringObj(ton,"Mode",-1);
+  to = Tcl_NewIntObj(offnc->mode);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
   Tcl_SetStringObj(ton,"Revert",-1);
   to = Tcl_NewIntObj(offnc->revert);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
@@ -254,6 +262,7 @@ ay_offnc_readcb(FILE *fileptr, ay_object *o)
   if(!(offnc = calloc(1, sizeof(ay_offnc_object))))
     { return AY_EOMEM; }
 
+  fscanf(fileptr, "%d\n", &offnc->mode);
   fscanf(fileptr, "%d\n", &offnc->revert);
   fscanf(fileptr, "%lg\n", &offnc->offset);
   fscanf(fileptr, "%d\n", &offnc->display_mode);
@@ -275,6 +284,7 @@ ay_offnc_writecb(FILE *fileptr, ay_object *o)
 
   offnc = (ay_offnc_object *)(o->refine);
 
+  fprintf(fileptr, "%d\n", offnc->mode);
   fprintf(fileptr, "%d\n", offnc->revert);
   fprintf(fileptr, "%g\n", offnc->offset);
   fprintf(fileptr, "%d\n", offnc->display_mode);
@@ -374,7 +384,7 @@ ay_offnc_notifycb(ay_object *o)
   newo->type = AY_IDNCURVE;
 
   /* create the offset */
-  ay_status = ay_nct_offset(ncurve, offnc->offset,
+  ay_status = ay_nct_offset(ncurve, offnc->mode, offnc->offset,
 			    (ay_nurbcurve_object **)(&(newo->refine)));
 
   if(ay_status || !newo->refine)
