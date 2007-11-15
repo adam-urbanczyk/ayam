@@ -15,6 +15,13 @@
 /* geom.c - miscellaneous small geometric algorithms */
 
 
+/* ay_geom_intersectlines3D:
+ *  calculate intersection of the two 3D lines <p1><t1> and <p2>t2>
+ *  (where p is a point on the line and t is the tangent)
+ *  outputs the point in <p>
+ *  returns 0 when no intersection exists (colinear/parallel lines)
+ *  otherwise returns 1
+ */
 int
 ay_geom_intersectlines3D(double *p1, double *t1,
 			 double *p2, double *t2,
@@ -41,6 +48,13 @@ ay_geom_intersectlines3D(double *p1, double *t1,
 } /* ay_geom_intersectlines3D */
 
 
+/* ay_geom_intersectlines2D:
+ *  calculate intersection of the two 2D lines <p1><t1> and <p2>t2>
+ *  (where p is a point on the line and t is the tangent)
+ *  outputs the point in <p>
+ *  returns 0 when no intersection exists (colinear/parallel lines)
+ *  otherwise returns 1
+ */
 int
 ay_geom_intersectlines2D(double *p1, double *t1,
 			 double *p2, double *t2,
@@ -70,6 +84,11 @@ ay_geom_intersectlines2D(double *p1, double *t1,
  return 1;
 } /* ay_geom_intersectlines2D */
 
+
+/* ay_geom_calcnfrom3:
+ *  calculate normal from three 3D points <p1>, <p2>, and <p3>
+ *  returns the normal in <n>
+ */
 void
 ay_geom_calcnfrom3(double *p1, double *p2, double *p3, double *n)
 {
