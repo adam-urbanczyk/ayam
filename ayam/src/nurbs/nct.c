@@ -5374,13 +5374,15 @@ ay_nct_isdegen(ay_nurbcurve_object *curve)
  * WIP
  */
 int
-ay_nct_offset(ay_object *o, double offset, ay_nurbcurve_object **nc)
+ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
 {
  int ay_status = AY_OK;
  int j, stride = 4;
  double tangent[3] = {0}, normal[3] = {0}, *newcv = NULL, *newkv = NULL;
  double zaxis[3] = {0.0,0.0,1.0}; 
  ay_nurbcurve_object *curve = NULL;
+ double *p1, *p2, *p3, p1s1[2], p2s1[2], p1s2[2], p2s2[2];
+ double t1[2], t2[2], n[2];
 
   if(!o || !nc)
     return AY_ENULL;
@@ -5389,23 +5391,119 @@ ay_nct_offset(ay_object *o, double offset, ay_nurbcurve_object **nc)
 
   if(!(newcv = calloc(curve->length*stride, sizeof(double))))
     return AY_EOMEM;
-
-  for(j = 0; j < curve->length; j++)
+  if(mode == 0)
     {
-      ay_npt_gettangentfromcontrol((curve->type == AY_CTPERIODIC) ?
-				   AY_TRUE : AY_FALSE, curve->length,
-				   curve->order-1, 4, curve->controlv, j,
-				   tangent);
+      for(j = 0; j < curve->length; j++)
+	{
+	  ay_npt_gettangentfromcontrol((curve->type == AY_CTPERIODIC) ?
+				       AY_TRUE : AY_FALSE, curve->length,
+				       curve->order-1, 4, curve->controlv, j,
+				       tangent);
 
-      AY_V3CROSS(normal, tangent, zaxis);
-      AY_V3SCAL(normal, offset);
+	  AY_V3CROSS(normal, tangent, zaxis);
+	  AY_V3SCAL(normal, offset);
 
-      newcv[j*stride]   = curve->controlv[j*stride]   + normal[0];
-      newcv[j*stride+1] = curve->controlv[j*stride+1] + normal[1];
-      newcv[j*stride+2] = curve->controlv[j*stride+2] + normal[2];
-      newcv[j*stride+3] = curve->controlv[j*stride+3];
+	  newcv[j*stride]   = curve->controlv[j*stride]   + normal[0];
+	  newcv[j*stride+1] = curve->controlv[j*stride+1] + normal[1];
+	  newcv[j*stride+2] = curve->controlv[j*stride+2] + normal[2];
+	  newcv[j*stride+3] = curve->controlv[j*stride+3];
 
-    } /* for */
+	} /* for */
+    } /* if */
+
+  if(mode == 1)
+    {
+
+      p1 = &(curve->controlv[0]);
+      p2 = &(curve->controlv[stride]);
+
+      /* calc tangent of first original control polygon segment */
+      t1[0] = p2[0] - p1[0];
+      t1[1] = p2[1] - p1[1];
+      /*
+      AY_V2NORM(t1);
+      */
+      /* calc normal of first original control polygon segment */
+      n[0] =  t1[1];
+      n[1] = -t1[0];
+
+      /* scale normal to be offset length */
+      AY_V2NORM(n);
+      AY_V2SCAL(n, offset);
+
+      /* offset the first control polygon segment */
+      p1s1[0] = p1[0] + n[0];
+      p1s1[1] = p1[1] + n[1];
+      
+      p2s1[0] = p2[0] + n[0];
+      p2s1[1] = p2[1] + n[1];
+
+      /* first point of offset curves control polygon */
+      newcv[0] = p1s1[0];
+      newcv[1] = p1s1[1];
+
+      j = 1;
+      while(j < (curve->length-1))
+	{
+	  p3 = &(curve->controlv[(j+1)*stride]);
+
+	  /* calc tangent of next original control polygon segment */
+	  t2[0] = p3[0]-p2[0];
+	  t2[1] = p3[1]-p2[1];
+
+	  /* calc normal of next original control polygon segment */
+	  n[0] =  t2[1];
+	  n[1] = -t2[0];
+
+	  /* scale normal to be offset length */
+	  AY_V2NORM(n);
+	  AY_V2SCAL(n, offset);
+
+	  /* offset the control polygon segment */
+	  p1s2[0] = p2[0] + n[0];
+	  p1s2[1] = p2[1] + n[1];
+
+	  p2s2[0] = p3[0] + n[0];
+	  p2s2[1] = p3[1] + n[1];
+#if 0
+
+	  AY_V2NORM(t2);
+
+	  /* intersect two offset segments, intersection is new cv */
+	  if(!ay_geom_intersectlines2D(p1s1, t1, p1s2, t2, &(newcv[j*stride])))
+	    {
+	      /*
+		if the intersection failed (e.g. due to colinear segments)
+		we simply pick one of the inner segment points
+	       */
+	      memcpy(&(newcv[j*stride]), p2s1, 2*sizeof(double));
+	    }
+#endif
+
+	  newcv[j*stride]   = p2s1[0]+((p1s2[0]-p2s1[0])/2.0);
+	  newcv[j*stride+1] = p2s1[1]+((p1s2[1]-p2s1[1])/2.0);
+
+	  /* prepare next iteration */
+	  p1 = p2;
+	  p2 = p3;
+
+	  memcpy(t1, t2, 2*sizeof(double));
+	  memcpy(p1s1, p1s2, 2*sizeof(double));
+	  memcpy(p2s1, p2s2, 2*sizeof(double));
+
+	  j++;
+	} /* for */
+
+      /* last point of offset curves control polygon */
+      newcv[j*stride]   = p2s2[0];
+      newcv[j*stride+1] = p2s2[1];
+
+      /* set weights */
+      for(j = 0; j < curve->length; j++)
+	{
+	  newcv[j*stride+3] = 1.0;
+	}
+    } /* if */
 
   if(curve->knot_type == AY_KTCUSTOM)
     {

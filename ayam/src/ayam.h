@@ -607,6 +607,7 @@ typedef struct ay_concatnc_object_s
 
 typedef struct ay_offnc_object_s
 {
+  int mode;
   int revert;
   double offset;
 
