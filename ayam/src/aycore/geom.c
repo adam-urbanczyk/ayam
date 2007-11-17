@@ -31,6 +31,9 @@ ay_geom_intersectlines3D(double *p1, double *t1,
  double pd[3] = {0};
  double vw = 0.0, vw2 = 0.0;
 
+  if(!p1 || !t1 || !p2 || !t2 || !p)
+   return 0;
+
   AY_V3CROSS(px, t1, t2)
   AY_V3CROSS(v, px, t1)
   vw = AY_V3DOT(v, t2);
@@ -60,7 +63,10 @@ ay_geom_intersectlines2D(double *p1, double *t1,
 			 double *p2, double *t2,
 			 double *p)
 {
-  double ua, ub, den, nomua, nomub;
+ double ua, ub, den, nomua, nomub;
+
+  if(!p1 || !t1 || !p2 || !t2 || !p)
+   return 0;
 
   den = t2[1]*t1[0] - t2[0]*t1[1];
 
@@ -93,6 +99,9 @@ void
 ay_geom_calcnfrom3(double *p1, double *p2, double *p3, double *n)
 {
  double v1[3] = {0}, v2[3] = {0}, len = 0.0;
+
+  if(!p1 || !p2 || !p3 || !n)
+   return;
 
   AY_V3SUB(v2, p1, p2)
   AY_V3SUB(v1, p3, p2)
