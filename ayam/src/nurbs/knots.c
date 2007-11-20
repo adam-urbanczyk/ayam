@@ -27,6 +27,7 @@ ay_knots_createnp(ay_nurbpatch_object *patch)
  /*int start = 0;*/
  double *newuknotv = NULL, *newvknotv = NULL;
 
+  /* sanity check */
   if(!patch)
     return AY_ENULL;
 
@@ -161,6 +162,7 @@ ay_knots_createnc(ay_nurbcurve_object *curve)
  int i = 0, j = 0, kts = 0;
  double *newknotv = NULL;
 
+  /* sanity check */
   if(!curve)
     return AY_ENULL;
 
@@ -236,11 +238,16 @@ ay_knots_createnc(ay_nurbcurve_object *curve)
  *   o 2 - too much knots
  *   o 3 - knot multiplicity too high
  *   o 4 - decreasing knots
+ *   returns -1 if NULL pointer is delivered
  */
 int
 ay_knots_check(int length, int order, int knot_count, double *knotv)
 {
  int i, mult_count = 1;
+
+  /* sanity check */
+  if(!knotv)
+    return -1;
 
   if(knot_count < (length+order))
     return 1;
@@ -278,6 +285,7 @@ ay_knots_rescaletorange(int n, double *knotv, double rmin, double rmax)
  double *tmpknv = NULL, min, max, len, newlen;
  int i;
 
+  /* sanity check */
   if(!knotv)
     return AY_ENULL;
 
@@ -333,6 +341,7 @@ ay_knots_rescaletomindist(int n, double *knotv, double mindist /*1.0e-04*/)
  double knotv_mindist = DBL_MAX, sf = 0.0;
  int i;
 
+  /* sanity check */
   if(!knotv)
     return AY_ENULL;
 
@@ -661,6 +670,7 @@ ay_knots_getuminmax(ay_object *o, int order, int knots, double *knotv,
  ay_tag *tag = NULL;
  int have_valid_umm_tag = AY_FALSE;
 
+  /* sanity check */
   if(!o || !knotv || !umin || !umax)
     return AY_ENULL;
 
@@ -701,6 +711,7 @@ ay_knots_getvminmax(ay_object *o, int order, int knots, double *knotv,
  ay_tag *tag = NULL;
  int have_valid_vmm_tag = AY_FALSE;
 
+  /* sanity check */
   if(!o || !knotv || !vmin || !vmax)
     return AY_ENULL;
 
@@ -738,6 +749,7 @@ ay_knots_setuminmax(ay_object *o, double umin, double umax)
  ay_tag *tag = NULL, *nt = NULL;
  char buf[128], *ct = NULL;
 
+  /* sanity check */
   if(!o)
     return AY_ENULL;
 
@@ -791,6 +803,7 @@ ay_knots_setvminmax(ay_object *o, double vmin, double vmax)
  ay_tag *tag = NULL, *nt = NULL;
  char buf[128], *ct = NULL;
 
+  /* sanity check */
   if(!o)
     return AY_ENULL;
 
@@ -844,10 +857,17 @@ ay_knots_coarsen(int order, int knotvlen, double *knotv, int count,
  int ay_status = AY_OK;
  double *nknotv = NULL;
  int i, a;
+
+  /* sanity check */
+  if(!knotv || !newknotv)
+    return AY_ENULL;
+
+  /* further parameter check */
  /*
  if(count >= (knotvlen-2*order)/2)
     return AY_ERROR;
  */
+
   if(!(nknotv = calloc(knotvlen-count, sizeof(double))))
     return AY_EOMEM;
 
@@ -866,6 +886,65 @@ ay_knots_coarsen(int order, int knotvlen, double *knotv, int count,
 
  return ay_status;
 } /* ay_knots_coarsen */
+
+
+/* ay_knots_chordparam:
+ *  create chordal parameterization in <U[Ulen]> from points in <Q[Qlen]>
+ */
+int
+ay_knots_chordparam(double *Q, int Qlen, int stride, double **U)
+{
+ double t, *vk = NULL, totallen = 0.0, *lens = NULL;
+ int i, j;
+
+  if(!Q || !U)
+    return AY_ENULL;
+
+  /* get some memory */
+  if(!(vk = calloc(Qlen, sizeof(double))))
+    {
+      return AY_EOMEM;
+    }
+
+  if(!(lens = calloc(Qlen-1, sizeof(double))))
+    {
+      free(vk);
+      return AY_EOMEM;
+    }
+
+  /* compute total length and partial lengths */
+  j = 0;
+  for(i = 0; i < (Qlen-1); i++)
+    {
+      lens[i] = AY_VLEN((Q[j+3] - Q[j]),
+			(Q[j+4] - Q[j+1]),
+			(Q[j+5] - Q[j+2]));
+
+      totallen += lens[i];
+
+      j += stride;
+    }
+
+  /* compute the chordal parameterization */
+  vk[0] = 0.0;
+  j = 0;
+  t = 0.0;
+  for(i = 1; i < (Qlen-1); i++)
+    {
+      t += lens[j]/totallen;
+      vk[i] = t;
+      j++;
+    }
+  vk[Qlen-1] = 1.0;
+
+  /* return result */
+  *U = vk;
+
+  /* clean up */
+  free(lens);
+
+ return AY_OK;
+} /* ay_knots_chordparam */
 
 
 /* ay_knots_init:
