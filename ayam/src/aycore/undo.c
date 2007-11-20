@@ -21,6 +21,7 @@ typedef struct ay_undo_object_s
   char *operation;
   ay_object *objects;
   ay_list_object *references;
+  int saved_children;
 } ay_undo_object;
 
 /* prototypes of functions local to this module */
@@ -42,6 +43,8 @@ int ay_undo_redo(void);
 
 int ay_undo_undo(void);
 
+int ay_undo_rewind(void);
+
 int ay_undo_savechildren(ay_object *o, ay_undo_object *uo,
 			 ay_list_object **lastr,
 			 ay_object ***nexto);
@@ -59,8 +62,6 @@ static int undo_buffer_size;
 
 static int undo_last_op; /* last undo operation: -1: no op,
 			    1-4: see mode variable in ay_undo_undotcmd() */
-
-static int undo_last_save_saved_children;
 
 static char *undo_saved_op; /* name of saved modelling operation */
 
@@ -100,7 +101,6 @@ ay_undo_init(int buffer_size)
       free(undo_saved_op);
     }
   undo_saved_op = NULL;
-  undo_last_save_saved_children = AY_FALSE;
 
  return AY_OK;
 } /* ay_undo_init */
@@ -776,7 +776,7 @@ ay_undo_undo(void)
   if(undo_last_op == 2)
     { /* if last op was a save, we need to save current state too,
          to allow the user to get back to current state with redo */
-      ay_status = ay_undo_save(undo_last_save_saved_children);
+      ay_status = ay_undo_save((undo_buffer[undo_current-1]).saved_children);
       undo_current--;
     }
 
@@ -796,6 +796,48 @@ ay_undo_undo(void)
 
  return AY_OK;
 } /* ay_undo_undo */
+
+
+/* ay_undo_rewind:
+ *
+ */
+int
+ay_undo_rewind(void)
+{
+ char fname[] = "rewind";
+ int ay_status = AY_OK;
+ ay_undo_object *uo = NULL;
+
+  if(undo_current < 0)
+    {
+      ay_error(AY_ERROR, fname, "Can not perform rewind on empty buffer!");
+      return AY_ERROR;
+    }
+
+  if(undo_last_op != 2)
+    {
+      ay_error(AY_ERROR, fname, "Can perform rewind only after save!");
+      return AY_ERROR;
+    }
+
+  uo = &(undo_buffer[undo_current]);
+  ay_status = ay_undo_clearuo(uo);
+
+  undo_current--;
+
+  if(undo_current < 0)
+    undo_current = -1;
+
+  undo_last_op = 4;
+
+  if(undo_saved_op)
+    {
+      free(undo_saved_op);
+    }
+  undo_saved_op = NULL;
+
+ return AY_OK;
+} /* ay_undo_rewind */
 
 
 /* ay_undo_copysave:
@@ -960,7 +1002,9 @@ ay_undo_savechildren(ay_object *o, ay_undo_object *uo,
 
       /* recursively save children */
       if(down->down && down->down->next)
-	ay_status = ay_undo_savechildren(down, uo, lastr, nexto);
+	{
+	  ay_status = ay_undo_savechildren(down, uo, lastr, nexto);
+	}
 
       down = down->next;
     } /* while */
@@ -1090,7 +1134,14 @@ ay_undo_save(int save_children)
 
       /* save children */
       if(save_children && sel->object->down && sel->object->down->next)
-	ay_status = ay_undo_savechildren(sel->object, uo, &lastr, &nexto);
+	{
+	  uo->saved_children = AY_TRUE;
+	  ay_status = ay_undo_savechildren(sel->object, uo, &lastr, &nexto);
+	}
+      else
+	{
+	  uo->saved_children = AY_FALSE;
+	}
 
       sel = sel->next;
     } /* while */
@@ -1268,7 +1319,6 @@ ay_undo_clear(void)
 
   undo_current = -1;
   undo_last_op = -1; /* no op */
-  undo_last_save_saved_children = AY_FALSE;
 
   if(undo_saved_op)
     {
@@ -1369,8 +1419,15 @@ ay_undo_undotcmd(ClientData clientData, Tcl_Interp *interp,
 		}
 	      else
 		{
-		  ay_error(AY_EARGS, fname, "redo|save|clear");
-		  return TCL_OK;
+		  if(!strcmp(argv[1], "rewind"))
+		    {
+		      mode = 4;
+		    }
+		  else
+		    {
+		      ay_error(AY_EARGS, fname, "redo|save|clear");
+		      return TCL_OK;
+		    } /* if */
 		} /* if */
 	    } /* if */
 	} /* if */
@@ -1495,7 +1552,6 @@ ay_undo_undotcmd(ClientData clientData, Tcl_Interp *interp,
 		    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
       Tcl_SetVar2(interp, a, n4, vnone, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
       undo_saved_op = NULL;
-      undo_last_save_saved_children = save_children;
       break;
     case 3:
       /* perform clear */
@@ -1504,6 +1560,42 @@ ay_undo_undotcmd(ClientData clientData, Tcl_Interp *interp,
       /* re-set undo prompt */
       Tcl_SetVar2(interp, a, n3, vnone, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
       Tcl_SetVar2(interp, a, n4, vnone, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      break;
+    case 4:
+      /* perform rewind (undo a save) */
+      ay_status = ay_undo_rewind();
+      if(!ay_status)
+	{
+	  uc--;
+	  /*printf("undo_current:%d ; undo_buffer_size:%d\n",
+	    undo_current, undo_buffer_size);*/
+	  /* set undo prompt */
+	  if(undo_current > -1)
+	    {
+	      if((undo_buffer[undo_current]).operation)
+		Tcl_SetVar2(interp, a, n3,
+			    (undo_buffer[undo_current]).operation,
+			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	      else
+		Tcl_SetVar2(interp, a, n3, vnull,
+			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	    }
+	  else
+	    {
+	      Tcl_SetVar2(interp, a, n3, vnone,
+			  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	    }
+	  if(undo_current+1 < undo_buffer_size)
+	    {
+	      if((undo_buffer[undo_current+1]).operation)
+		Tcl_SetVar2(interp, a, n4,
+			    (undo_buffer[undo_current+1]).operation,
+			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	      else
+		Tcl_SetVar2(interp, a, n4, vnull,
+			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	    }
+	} /* if */
       break;
     default:
       break;
