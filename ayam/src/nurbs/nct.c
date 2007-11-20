@@ -5596,10 +5596,20 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
 	    } /* if */
 
 	  /* set weights */
-	  for(j = 0; j < curve->length; j++)
+	  if(curve->is_rat)
 	    {
-	      newcv[j*stride+3] = 1.0;
+	      for(j = 0; j < curve->length; j++)
+		{
+		  newcv[j*stride+3] = curve->controlv[j*stride+3];
+		}
 	    }
+	  else
+	    {
+	      for(j = 0; j < curve->length; j++)
+		{
+		  newcv[j*stride+3] = 1.0;
+		}
+	    } /* if */
 	} /* if */
     } /* if */
 
@@ -5610,6 +5620,7 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
 	  free(newcv);
 	  return AY_EOMEM;
 	}
+      memcpy(newkv, curve->knotv, (curve->length+curve->order)*sizeof(double));
     }
 
   ay_status = ay_nct_create(curve->order, curve->length, curve->knot_type,
