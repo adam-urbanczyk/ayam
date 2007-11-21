@@ -31,17 +31,21 @@ addMenu $w LevelAttrData Type {Level Union Difference Intersection Primitive }
 # level_crt:
 #
 #
-proc level_crt { } {
+proc level_crt { objtype {crtargs "" }} {
     global ay ay_error selected
     set selected ""
     getSel selected
-    if { $selected == "" } { ayError 20 "level_crt" ""; return; }
+    if { $selected == "" } { ayError 20 "${objtype}_crt" ""; return; }
 
     # the next command sorts the selected objects
     eval "selOb $selected"
 
     set ay_error 0
-    crtOb Level 1
+    if { $crtargs != "" } {
+	eval [subst "crtOb $objtype $crtargs"]
+    } else {
+	crtOb $objtype
+    }
     if { $ay_error } { return; }
 
     cutOb

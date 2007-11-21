@@ -225,8 +225,8 @@ $m add command -label "View" \
 $m add separator
 $m add command -label "Instance" \
 	-command "crtOb Instance; uCR; sL; forceNot; rV;"
-$m add command -label "Clone" -command "clone_crt;"
-$m add command -label "Mirror" -command "mirror_crt;"
+$m add command -label "Clone" -command "level_crt Clone;"
+$m add command -label "Mirror" -command "level_crt Clone \"-mirror 1\";"
 $m add command -label "Material" \
 	-command "material_createp;"
 $m add command -label "Camera" \
@@ -269,7 +269,7 @@ $m.nc add command -label "NURBCircle" -command {
 }
 $m.nc add command -label "TrimRect" -command {
     crtNRect; set ay(ul) $ay(CurrentLevel); uS 0 1; rV}
-$m.nc add command -label "OffsetCurve" -command "offnc_crt;"
+$m.nc add command -label "OffsetCurve" -command "level_crt OffsetNC;"
 $m.nc add separator
 $m.nc add command -label "NURBSphere" -command {
     runTool ay(nsphereradius) "Radius:" \
@@ -278,16 +278,16 @@ $m.nc add command -label "NURBSphere" -command {
 $m.nc add command -label "NURBSphere2" -command {
     crtNSphere2; uCR; sL; forceNot; rV}
 $m.nc add separator
-$m.nc add command -label "Revolve" -command "revolve_crt;"
-$m.nc add command -label "Extrude" -command "extrude_crt;"
-$m.nc add command -label "Sweep" -command "sweep_crt;"
-$m.nc add command -label "Swing" -command "swing_crt;"
-$m.nc add command -label "Cap" -command "cap_crt;"
+$m.nc add command -label "Revolve" -command "level_crt Revolve;"
+$m.nc add command -label "Extrude" -command "level_crt Extrude;"
+$m.nc add command -label "Sweep" -command "level_crt Sweep;"
+$m.nc add command -label "Swing" -command "level_crt Swing;"
+$m.nc add command -label "Cap" -command "level_crt Cap;"
 $m.nc add command -label "Bevel" -command "bevel_crt;"
-$m.nc add command -label "Birail1" -command "birail1_crt;"
-$m.nc add command -label "Birail2" -command "birail2_crt;"
-$m.nc add command -label "Gordon" -command "gordon_crt;"
-$m.nc add command -label "Skin" -command "skin_crt;"
+$m.nc add command -label "Birail1" -command "level_crt Birail1;"
+$m.nc add command -label "Birail2" -command "level_crt Birail2;"
+$m.nc add command -label "Gordon" -command "level_crt Gordon;"
+$m.nc add command -label "Skin" -command "level_crt Skin;"
 
 $m add separator
 
@@ -412,9 +412,9 @@ $m.npt add command -label "Elevate UV" -command {
 	    "undo save ElevateUV; elevateNPU %0; elevateNPV %1; plb_update; rV"
 }
 
-$m.npt add command -label "Extract Curve" -command extrnc_crt
+$m.npt add command -label "Extract Curve" -command "level_crt ExtrNC;"
 
-$m.npt add command -label "Extract Patch" -command extrnp_crt
+$m.npt add command -label "Extract Patch" -command "level_crt ExtrNP;"
 
 #    runTool [list ay(extrnpumin) ay(extrnpumax) ay(extrnpvmin) ay(extrnpvmax)]\
 #	    [list "UMin:" "UMax:" "VMin:" "VMax:"]\

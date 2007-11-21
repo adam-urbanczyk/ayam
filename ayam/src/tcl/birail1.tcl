@@ -90,33 +90,5 @@ DisplayMode 1
 NPInfoBall "n/a"
 }
 
-#birail1_crt:
-#
-#
-proc birail1_crt { } {
-    global ay ay_error selected
-    set selected ""
-    getSel selected
-    if { $selected == "" } { ayError 20 "birail1_crt" ""; return; }
-
-    # the next command sorts the selected objects
-    eval "selOb $selected"
-
-    set ay_error 0
-    crtOb Birail1
-    if { $ay_error } { return; }
-
-    cutOb
-    set ay(ul) $ay(CurrentLevel)
-    uS
-    sL
-    getLevel a b
-    goDown [expr [llength $a]-1]
-    cmovOb
-    goUp
-    set ay(ul) $ay(CurrentLevel)
-    uS; sL; forceNot; rV;
-
- return;
-}
-# birail1_crt
+# create Birail1Attr-UI
+set w [frame $ay(pca).$Birail1Attr(w)]

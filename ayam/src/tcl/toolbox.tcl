@@ -346,7 +346,7 @@ proc toolbox_open { } {
 	    balloon_set $f.blevel "create Level\nShift: and move objects into"
 	    bind $f.blevel <Shift-ButtonPress-1> {
 		%W configure -relief sunken
-		level_crt
+		level_crt Level
 		after 100 "%W configure -relief raised"
 		break;
 	    }
@@ -437,7 +437,7 @@ proc toolbox_open { } {
 
 	    #####
 	    button $f.bconc -image ay_Concat_img -padx 0 -pady 0 -command {
-		concatnc_crt
+		level_crt ConcatNC
 	    }
 	    balloon_set $f.bconc "create ConcatNC\n(concat curves)"
 
@@ -492,25 +492,25 @@ proc toolbox_open { } {
 	    lappend ay(toolbuttons) brevo bex bswp bcap
 
 	    button $f.brevo -image ay_Revolve_img -padx 0 -pady 0 -command {
-		revolve_crt;
+		level_crt Revolve;
 	    }
 	    balloon_set $f.brevo "create Revolve"
 
 	    #####
 	    button $f.bex -image ay_Extrude_img -padx 0 -pady 0 -command {
-		extrude_crt;
+		level_crt Extrude;
 	    }
 	    balloon_set $f.bex "create Extrude"
 
 	    #####
 	    button $f.bswp -image ay_Sweep_img -padx 0 -pady 0 -command {
-		sweep_crt;
+		level_crt Sweep;
 	    }
 	    balloon_set $f.bswp "create Sweep"
 
 	    #####
 	    button $f.bcap -image ay_Cap_img -padx 0 -pady 0 -command {
-		cap_crt;
+		level_crt Cap;
 	    }
 	    balloon_set $f.bcap "create Cap"
 
@@ -523,24 +523,24 @@ proc toolbox_open { } {
 
 	    #####
 	    button $f.bbirail1 -image ay_Birail1_img -padx 0 -pady 0 -command {
-		birail1_crt;
+		level_crt Birail1;
 	    }
 	    balloon_set $f.bbirail1 "create Birail1"
 
 	    #####
 	    button $f.bbirail2 -image ay_Birail2_img -padx 0 -pady 0 -command {
-		birail2_crt;
+		level_crt Birail2;
 	    }
 	    balloon_set $f.bbirail2 "create Birail2"
 
 	    button $f.bgord -image ay_Gordon_img -padx 0 -pady 0 -command {
-		gordon_crt;
+		level_crt Gordon;
 	    }
 	    balloon_set $f.bgord "create Gordon"
 
 	    #####
 	    button $f.bskin -image ay_Skin_img -padx 0 -pady 0 -command {
-		skin_crt;
+		level_crt Skin;
 	    }
 	    balloon_set $f.bskin "create Skin"
 
@@ -551,7 +551,7 @@ proc toolbox_open { } {
 	    lappend ay(toolbuttons) bextrnc bswpuv brevu brevv
 
 	    button $f.bextrnc -image ay_NPExtrNC_img -padx 0 -pady 0 -command {
-		extrnc_crt;
+		level_crt ExtrNC;
 	    }
 	    balloon_set $f.bextrnc "extract NURBCurve"
 
