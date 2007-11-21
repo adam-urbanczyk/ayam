@@ -40,34 +40,3 @@ addMenu $w RevolveAttrData DisplayMode $ay(npdisplaymodes)
 
 addText $w RevolveAttrData "Created NURBS Patch:"
 addInfo $w RevolveAttrData NPInfo
-
-#revolve_crt:
-#
-#
-proc revolve_crt { } {
-    global ay ay_error selected
-    set selected ""
-    getSel selected
-    if { $selected == "" } { ayError 20 "revolve_crt" ""; return; }
-    set ay_error 0
-
-    # the next command sorts the selected objects
-    eval "selOb $selected"
-
-    crtOb Revolve
-    if { $ay_error } { return; }
-
-    cutOb
-    set ay(ul) $ay(CurrentLevel)
-    uS
-    sL
-    getLevel a b
-    goDown [expr [llength $a]-1]
-    cmovOb
-    goUp
-    set ay(ul) $ay(CurrentLevel)
-    uS; sL; forceNot; rV;
-
- return;
-}
-# revolve_crt

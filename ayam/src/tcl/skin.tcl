@@ -96,35 +96,3 @@ DisplayMode 1
 Knot-Type_U 1
 NPInfoBall "n/a"
 }
-
-
-# skin_crt:
-#
-#
-proc skin_crt { } {
-    global ay ay_error selected
-    set selected ""
-    getSel selected
-    if { $selected == "" } { ayError 20 "skin_crt" ""; return; }
-
-    # the next command sorts the selected objects
-    eval "selOb $selected"
-
-    set ay_error 0
-    crtOb Skin
-    if { $ay_error } { return; }
-
-    cutOb
-    set ay(ul) $ay(CurrentLevel)
-    uS
-    sL
-    getLevel a b
-    goDown [expr [llength $a]-1]
-    cmovOb
-    goUp
-    set ay(ul) $ay(CurrentLevel)
-    uS; sL; forceNot; rV;
-
- return;
-}
-# skin_crt

@@ -92,35 +92,3 @@ NPInfoBall "n/a"
 
 # create Birail2Attr-UI
 set w [frame $ay(pca).$Birail2Attr(w)]
-
-
-#birail2_crt:
-#
-#
-proc birail2_crt { } {
-    global ay ay_error selected
-    set selected ""
-    getSel selected
-    if { $selected == "" } { ayError 20 "birail2_crt" ""; return; }
-
-    # the next command sorts the selected objects
-    eval "selOb $selected"
-
-    set ay_error 0
-    crtOb Birail2
-    if { $ay_error } { return; }
-
-    cutOb
-    set ay(ul) $ay(CurrentLevel)
-    uS
-    sL
-    getLevel a b
-    goDown [expr [llength $a]-1]
-    cmovOb
-    goUp
-    set ay(ul) $ay(CurrentLevel)
-    uS; sL; forceNot; rV;
-
- return;
-}
-# birail2_crt

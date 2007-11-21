@@ -41,34 +41,3 @@ addMenu $w ConcatNCAttrData Knot-Type [list NURB Custom]
 addText $w  e0 "Resulting Curve:"
 addInfo $w ConcatNCAttrData Length
 addInfo $w ConcatNCAttrData Order
-
-# concatnc_crt:
-#
-#
-proc concatnc_crt { } {
-    global ay ay_error selected
-    set selected ""
-    getSel selected
-    if { $selected == "" } { ayError 20 "concatnc_crt" ""; return; }
-
-    # the next command sorts the selected objects
-    eval "selOb $selected"
-
-    set ay_error 0
-    crtOb ConcatNC
-    if { $ay_error } { return; }
-
-    cutOb
-    set ay(ul) $ay(CurrentLevel)
-    uS
-    sL
-    getLevel a b
-    goDown [expr [llength $a]-1]
-    cmovOb
-    goUp
-    set ay(ul) $ay(CurrentLevel)
-    uS; sL; forceNot; rV;
-
- return;
-}
-# concatnc_crt
