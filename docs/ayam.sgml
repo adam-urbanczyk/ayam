@@ -5035,7 +5035,8 @@ of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 </figure>
 <p>
 The OffsetNC object, available since Ayam 1.14, creates offset curves from
-planar NURBS curves using the same algorithm as the bevel creation algorithm.
+planar NURBS curves using two simple algorithms; one derived from the bevel
+creation algorithm and the other simply offsetting control polygon sections.
 The offset curve will always match the original curve in type, length, order,
 and knots. See also the image above.
 <p>
@@ -5047,6 +5048,8 @@ The following parameters further control the offsetting process:
 <sect2>OffsetNCAttr Property<label id="offsetncp"><label id="offsetncattrprop">
 <p>
 <itemize>
+<item>The first parameter <tt/"Mode"/ determines, which algorithm
+to use for the offsetting process.
 <item>Using <tt/"Revert"/ you may revert the direction of the
 offset curve.
 <item><tt/"Offset"/ determines the distance between original curve and
@@ -8055,7 +8058,7 @@ has child objects, otherwise it returns 0.
 <p><label id="scundo">
 undo:
 <itemize>
- <item>Synopsis: <tt>"undo [redo|save opname|clear]"</tt>
+ <item>Synopsis: <tt>"undo [redo|save opname [0|1]|clear|rewind]"</tt>
  <item>Description:
  <itemize>
   <item>If called without arguments, this command performs the undo
@@ -8063,15 +8066,35 @@ undo:
   <item>If the argument is <tt/"redo"/, this command performs the redo
   operation.
   <item>If the argument is <tt/"save"/, the currently selected objects
-  are saved to the undo buffer for future undo operations. The name
-of the now following modelling operation has to be provided in a second
-argument (<tt/"opname"/).
+are saved to the undo buffer for future undo operations. The name
+of the now following modelling operation <em>has</em> to be provided in
+a second argument (<tt/"opname"/).
 This name will be displayed in the default console prompt, to inform the
 user about which operation would be undone/redone, if undo/redo would be
-used.
+used (e.g. <tt>"[Undo:MoveObj/Redo:none].../bin&gt;"</tt>).
+Since Ayam1.13, a third argument may be given, that controls, whether
+all the children of the selected objects should also be saved. This may
+be needed if the modelling action that follows the undo save is about to
+change the selected objects and also their children.
+Note: undo save does not fail if no objects are selected.
   <item>If the argument is <tt/"clear"/, all currently saved states
 will be cleared from the undo buffer.
+  <item>The argument <tt/"rewind"/ is available since Ayam1.14. With
+this command you can undo the last undo save operation. This may be
+necessary, if a modelling operation failed. Care should be taken,
+however, to <em>not</em> rewind the undo state, when a modelling
+operation only failed for some (not for all) of the selected objects.
  </itemize>
+ <item>Example:
+<code>
+undo save "MovOb"
+set ay_error ""
+movOb 0 1 0
+if { $ay_error > 1 } {
+  undo rewind
+}
+</code>
+
 </itemize>
 See also section <ref id="undos" name="The Undo System">.
 
@@ -8264,7 +8287,7 @@ procedure.
 
 <sect2>Toolbox Buttons<label id="scextoolbox">
 <p>
-Here is another example that shows how you may add buttons
+Here is another example script that shows how you may add buttons
 to the toolbox.
 myImage should be an image created e.g. from a GIF file of
 the size 25 by 25 pixels.
@@ -8595,7 +8618,8 @@ Be careful with this option (i.e. use it only if reading of a RIB fails),
 as it switches reading of all types of objects on, regardless of
 the RIB structure.
 <item><tt/"ReadSTrim"/ if switched off, no simple trims (trims that only
-run along the border of a NURBS patch) will be imported.
+run along the border of a NURBS patch) will be imported if they are
+the only trim curves.
 <item><tt/"RescaleKnots"/ allows to rescale the knot vectors of
 NURBS patches and trim curves so that the distances between different
 knots are not smaller than the given value. Using a value of 1.0e-04 leads
@@ -8911,7 +8935,8 @@ merging (see above).
 <item><tt>"ReadCurves"</tt> if this is disabled, no freeform curves will
 be imported. This option does not influence reading of trim curves!
 <item><tt/"ReadSTrim"/ if switched off, no simple trims (trims that only
-run along the border of a NURBS patch) will be imported.
+run along the border of a NURBS patch) will be imported if they are the
+only trim curves.
 <item><tt/"RescaleKnots"/ allows to rescale the knot vectors of
 NURBS curves, patches, and trim curves so that the distances between different
 knots are not smaller than the given value. A <tt/"RescaleKnots"/ value of
@@ -9070,7 +9095,8 @@ scaling factor to all imported objects.
 If the <tt/"ReadCurves"/ import option is switched off, no curves will be
 imported. This option does not influence the import of trim curves.
 <item><tt/"ReadSTrim"/ if switched off, no simple trims (trims that only
-run along the border of a NURBS patch) will be imported.
+run along the border of a NURBS patch) will be imported if they are the
+only trim curves.
 <item><tt/"RescaleKnots"/ allows to rescale the knot vectors of
 NURBS curves, patches, and trim curves so that the distances between different
 knots are not smaller than the given value. A <tt/"RescaleKnots"/ value of
@@ -9523,7 +9549,8 @@ be imported. This option does not influence the import of trim curves!
 <item><tt>"ReadViewpoints"</tt> controls whether viewpoints should
 be read as view, camera, or not at all.
 <item><tt/"ReadSTrim"/ if switched off, no simple trims (trims that only
-run along the border of a NURBS patch) will be imported.
+run along the border of a NURBS patch) will be imported if they are the
+only trim curves.
 <item><tt/"RescaleKnots"/ allows to rescale the knot vectors of
 NURBS curves, patches, and trim curves so that the distances between different
 knots are not smaller than the given value. A <tt/"RescaleKnots"/ value of
@@ -9686,10 +9713,12 @@ by the parameter object(s) or they may modify the parameter object(s) and
 deliver them to their respective parent object. The notification mechanism
 makes sure that whenever the parameter objects change, the tool object is
 informed so that it may adapt to the changes.
+<p>
 For interactive modelling actions, the notification will be carried out
 while dragging the mouse or only after the modelling action finished,
-depending on the main preference setting <tt/"LazyNotify"/. The pure
-hierarchical dependency scheme may be broken up by instance objects:
+depending on the main preference setting <tt/"LazyNotify"/.
+<p>
+The pure hierarchical dependency scheme may be broken up by instance objects:
 <code>
 +-Tool_Object(Revolve)
  \ Parameter_Object(NCurve)
@@ -9702,13 +9731,12 @@ objects twice) according to the <tt/"CompleteNotify"/ main preference
 setting. In the example above, due to complete notification, the second
 Revolve object will get updated automatically whenever the NCurve changes.
 <p>
-Two other mechanisms exist,
-that help tool objects to get the information they need and to increase
-flexibility in hierarchy building and modelling: <em>Provision</em> and
-<em>Conversion</em>. Both mechanisms are similar and convert objects
-temporarily/transparently (provision) or finally (conversion) from one
-type to another, e.g. convert an ICurve (interpolating curve) to a plain
-NCurve (NURBS curve).
+Two other mechanisms exist, that help tool objects to get the information
+they need and to increase flexibility in hierarchy building and modelling:
+<em>Provision</em> and <em>Conversion</em>. Both mechanisms are similar and
+convert objects temporarily/transparently (provision) or finally (conversion)
+from one type to another, e.g. convert an ICurve (interpolating curve) to a
+plain NCurve (NURBS curve).
 <p>
 Due to the provision mechanism, an ICurve object could be used instead
 of an NCurve as parameter object in all examples above easily. The Revolve
@@ -10692,7 +10720,8 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>Exterior: <ref id="matshader" name="shader">
 <item>ExtrNC: <ref id="extrncobj" name="ExtrNC object">,
 <ref id="extnct" name="Extract NC tool">
-<item>extrNP: <ref id="scextrnp" name="scripting interface command">,
+<item>extrNP: <ref id="extrnpobj" name="ExtrNP object">,
+<ref id="scextrnp" name="scripting interface command">,
 <ref id="extrnpt" name="extract patch tool">
 <item>Extrude: <ref id="extrudeobj" name="Extrude object">,
 <ref id="extt" name="Extrude tool">
@@ -10877,7 +10906,8 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>MinSamples, MaxSamples: <ref id="rio" name="RenderMan interface option">
 <item>MinX, MinY, MinZ: <ref id="riprocp" name="riproc attribute">
 <item>Mirror: <ref id="cloneattr" name="Clone attribute">
-<item>Mode: <ref id="icp" name="ICurve attribute">
+<item>Mode: <ref id="icp" name="ICurve attribute">,
+<ref id="offsetncp" name="OffsetNC attribute">
 <item>Mops Import: <ref id="impmops" name="Import of Mops Scenes">
 <item>Move: <ref id="vwsc" name="view action">,
 <ref id="iac" name="move object">
@@ -10943,6 +10973,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>P1, P2: <ref id="hyp" name="hyperboloid attribute">
 <item>Paraboloid: <ref id="paraboloidobj" name="Paraboloid object">
 <item>Parameter: <ref id="extrncp" name="ExtrNC attribute">
+<item>Parameter Object: <ref id="toolobj" name="modelling concept">
 <item>pasOb: <ref id="scpasob" name="scripting interface command">
 <item>Paste: <ref id="mmedit" name="main menu entry">
 <item>Paste (Move): <ref id="mmspecial" name="main menu entry">
@@ -11036,7 +11067,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Revert: <ref id="revertt" name="Revert tool">,
 <ref id="concatncp" name="ConcatNC attribute">,
 <ref id="textattr" name="Text attribute">,
-<ref id="screvert" name="scripting interface command">
+<ref id="offsetncp" name="OffsetNC attribute">,
+<ref id="screvert" name="scripting interface command">,
 <item>RevertBevels: <ref id="textattr" name="Text attribute">
 <item>RevertU, RevertV: <ref id="revertut" name="Revert U tool">,
 <ref id="revertvt" name="Revert V tool">
@@ -11106,7 +11138,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <ref id="rep" name="Revolve attribute">,
 <ref id="birail1p" name="Birail1 attribute">,
 <ref id="birail2p" name="Birail2 attribute">
-<item>Select: <ref id="obj" name="select objects with the tree/listbox">,
+<item>Select: <ref id="selectobj" name="Select object">
+<ref id="obj" name="select objects with the tree/listbox">,
 <ref id="objsel" name="select objects within a view">,
 <ref id="selac" name="select points">
 <item>Selected Objects: <ref id="mmspecial" name="main menu entry">
@@ -11216,6 +11249,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <ref id="pmattr" name="PatchMesh attribute">,
 <ref id="ncattr" name="NURBCurve attribute">,
 <ref id="npattr" name="NURBPatch attribute">
+<item>Tool Objects: <ref id="toolobj" name="modelling concept">
 <item>Toolbox: <ref id="toolb" name="toolbox window">
 <item>ToolBoxShrink: <ref id="prefmisc" name="preference setting">
 <item>ToolBoxTrans: <ref id="prefmisc" name="preference setting">
