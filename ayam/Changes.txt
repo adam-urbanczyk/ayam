@@ -1,22 +1,26 @@
-[5. Nov 2007] CVS-Head:
+[24. Nov 2007] CVS-Head:
 =======================
 o Bug Fixes:
  - X3D export of NURBS patches (row/column major order) (SF 1804056)
- - X3D export of NURBS patches (trimmed) (SF 1804054)
+ - X3D export of NURBS patches (trimmed state) (SF 1804054)
  - X3D transformations of NurbsSweptSurface child nodes (SF 1813320)
  - STESS drawing mode crashing for patches with trim loops (SF 1808296)
- - saved ExtrNC objects fail to load (SF 1814644)
+ - saved ExtrNC objects failing to load (SF 1814644)
  - redo missing states with selection changes (SF 1828494)
+ - sweeps with first section -1,0,0 (SF 1837720)
 
 Modelling:
 o added new object type Swing (for rotational sweeps/swung surfaces)
-o made side cap creation of Revolve objects more robust
+o made side cap creation of Revolve objects more robust wrt. the cross
+  section curve direction
 o added new object type "Select" to select one object from a list of provided
   objects
 o added new object type "ExtrNP" (similar to "ExtrNC", but extracts patches)
-o added NCInfo balloon (that displays more info, similar to NPInfo)
+o added NCInfo balloon (that displays more info on generated curves, similar
+  to NPInfo)
 o added tolerance parameter and checking for remKnNC (knot removal) tool
 o added new object type "OffsetNC" to create offset curves
+o added "undo rewind" command
 
 Import/Export:
 o import NurbsSwungSurface elements as Swing objects from X3D files
