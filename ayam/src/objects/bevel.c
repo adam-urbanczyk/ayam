@@ -19,8 +19,11 @@ static char *ay_bevel_name = "Bevel";
 int
 ay_bevel_createcb(int argc, char *argv[], ay_object *o)
 {
+ int ay_status = AY_OK;
  char fname[] = "crtbevel";
  ay_bevel_object *new = NULL;
+ ay_tag bt;
+ char tagname[] = "BP", tagval[] = "0,0,0.1,0";
 
   if(!o)
     return AY_ENULL;
@@ -34,7 +37,15 @@ ay_bevel_createcb(int argc, char *argv[], ay_object *o)
   o->parent = AY_TRUE;
   o->refine = new;
 
- return AY_OK;
+  bt.type = ay_bp_tagtype;
+  bt.name = tagname;
+  bt.val = tagval;
+
+  /* copy the tag over to the object */
+  bt.next = o->tags;
+  ay_status = ay_tags_copy(&bt, &(o->tags));
+
+ return ay_status;
 } /* ay_bevel_createcb */
 
 
