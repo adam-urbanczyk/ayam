@@ -2278,6 +2278,7 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 
   if(closed)
     {
+
       ay_nb_CurvePoint4D(tr->length-1, tr->order-1, tr->knotv, trcv,
 			 tr->knotv[tr->length], p2);
 
@@ -2294,6 +2295,18 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
   T0[0] = 1.0;
   T0[1] = 0.0;
   T0[2] = 0.0;
+
+  ay_nb_ComputeFirstDer4D(tr->length-1, tr->order-1, tr->knotv,
+			  trcv, tr->knotv[tr->order-1], T1);
+
+  len = AY_V3LEN(T1);
+  AY_V3SCAL(T1,(1.0/len));
+
+  if(fabs(-1.0 - T1[0]) < AY_EPSILON &&
+     fabs(T1[1]) < AY_EPSILON && fabs(T1[2]) < AY_EPSILON)
+    {
+      T0[0] = -1.0;
+    }
 
   ay_trafo_identitymatrix(mr);
 
@@ -2358,9 +2371,9 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 	     (T1[1] * T0[1] < 0) ||
 	     (T1[2] * T0[2] < 0))
 	    {
-	      AY_V3CROSS(A,T0,T1)
+	      AY_V3CROSS(A,T0,T1);
 	      len = AY_V3LEN(A);
-	      AY_V3SCAL(A,(1.0/len))
+	      AY_V3SCAL(A,(1.0/len));
 
 	      rots[i*4+0] = AY_R2D(acos(AY_V3DOT(T0,T1)));
 	      memcpy(&(rots[i*4+1]), A, 3*sizeof(double));
@@ -2668,6 +2681,15 @@ ay_npt_closedsweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
   T0[1] = 0.0;
   T0[2] = 0.0;
 
+  len = AY_V3LEN(T1);
+  AY_V3SCAL(T1,(1.0/len));
+
+  if(fabs(-1.0 - T1[0]) < AY_EPSILON &&
+     fabs(T1[1]) < AY_EPSILON && fabs(T1[2]) < AY_EPSILON)
+    {
+      T0[0] = -1.0;
+    }
+
   ay_trafo_identitymatrix(mr);
 
   if(!(rots = calloc(new->width*4, sizeof(double))))
@@ -2719,9 +2741,9 @@ ay_npt_closedsweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 	     (T1[1] * T0[1] < 0) ||
 	     (T1[2] * T0[2] < 0))
 	    {
-	      AY_V3CROSS(A,T0,T1)
+	      AY_V3CROSS(A,T0,T1);
 	      len = AY_V3LEN(A);
-	      AY_V3SCAL(A,(1.0/len))
+	      AY_V3SCAL(A,(1.0/len));
 
 	      rots[i*4+0] = AY_R2D(acos(AY_V3DOT(T0,T1)));
 	      memcpy(&(rots[i*4+1]), A, 3*sizeof(double));
@@ -2971,9 +2993,9 @@ ay_npt_birail1(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 				   ((p5[1])),
 				   ((p5[2])),
 				   mr);
-	  AY_V3CROSS(A,T0,T1)
+	  AY_V3CROSS(A,T0,T1);
 	  lent0 = AY_V3LEN(A);
-	  AY_V3SCAL(A,(1.0/lent0))
+	  AY_V3SCAL(A,(1.0/lent0));
 
 	  rots[i*4+0] = AY_R2D(acos(AY_V3DOT(T0,T1)));
 	  memcpy(&rots[i*4+1], A, 3*sizeof(double));
@@ -3480,7 +3502,6 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
       (fabs(fabs(T1[1])-fabs(T0[1])) > AY_EPSILON) ||
       (fabs(fabs(T1[2])-fabs(T0[2])) > AY_EPSILON)))
     {
-
       AY_V3CROSS(A,T0,T1);
       lent0 = AY_V3LEN(A);
       AY_V3SCAL(A,(1.0/lent0));
@@ -3645,9 +3666,10 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
 				   ((p5[1])),
 				   ((p5[2])),
 				   mr);
-	  AY_V3CROSS(A,T0,T1)
+
+	  AY_V3CROSS(A,T0,T1);
 	  lent0 = AY_V3LEN(A);
-	  AY_V3SCAL(A,(1.0/lent0))
+	  AY_V3SCAL(A,(1.0/lent0));
 
 	  rots[i*4+0] = AY_R2D(acos(AY_V3DOT(T0,T1)));
 	  memcpy(&rots[i*4+1], A, 3*sizeof(double));
