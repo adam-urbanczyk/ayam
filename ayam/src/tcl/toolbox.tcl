@@ -333,8 +333,6 @@ proc toolbox_open { } {
 	    }
 	    balloon_set $f.bund "undo \[ $aymainshortcuts(Undo) \]"
 
-
-
 	}
 	##################
 
@@ -347,6 +345,12 @@ proc toolbox_open { } {
 	    bind $f.blevel <Shift-ButtonPress-1> {
 		%W configure -relief sunken
 		level_crt Level
+		after 100 "%W configure -relief raised"
+		break;
+	    }
+	    bind $f.blevel <Control-Shift-ButtonPress-1> {
+		%W configure -relief sunken
+		level_crt Level "" 1
 		after 100 "%W configure -relief raised"
 		break;
 	    }
@@ -495,25 +499,45 @@ proc toolbox_open { } {
 		level_crt Revolve;
 	    }
 	    balloon_set $f.brevo "create Revolve"
-
+	    bind $f.brevo <Control-ButtonPress-1> {
+		%W configure -relief sunken
+		level_crt Revolve "" 1
+		after 100 "%W configure -relief raised"
+		break;
+	    }
 	    #####
 	    button $f.bex -image ay_Extrude_img -padx 0 -pady 0 -command {
 		level_crt Extrude;
 	    }
 	    balloon_set $f.bex "create Extrude"
-
+	    bind $f.bex <Control-ButtonPress-1> {
+		%W configure -relief sunken
+		level_crt Extrude "" 1
+		after 100 "%W configure -relief raised"
+		break;
+	    }
 	    #####
 	    button $f.bswp -image ay_Sweep_img -padx 0 -pady 0 -command {
 		level_crt Sweep;
 	    }
 	    balloon_set $f.bswp "create Sweep"
-
+	    bind $f.bswp <Control-ButtonPress-1> {
+		%W configure -relief sunken
+		level_crt Sweep "" 1
+		after 100 "%W configure -relief raised"
+		break;
+	    }
 	    #####
 	    button $f.bcap -image ay_Cap_img -padx 0 -pady 0 -command {
 		level_crt Cap;
 	    }
 	    balloon_set $f.bcap "create Cap"
-
+	    bind $f.bcap <Control-ButtonPress-1> {
+		%W configure -relief sunken
+		level_crt Cap "" 1
+		after 100 "%W configure -relief raised"
+		break;
+	    }
 
 	}
 	##################
@@ -526,18 +550,33 @@ proc toolbox_open { } {
 		level_crt Birail1;
 	    }
 	    balloon_set $f.bbirail1 "create Birail1"
-
+	    bind $f.bbirail1 <Control-ButtonPress-1> {
+		%W configure -relief sunken
+		level_crt Birail1 "" 1
+		after 100 "%W configure -relief raised"
+		break;
+	    }
 	    #####
 	    button $f.bbirail2 -image ay_Birail2_img -padx 0 -pady 0 -command {
 		level_crt Birail2;
 	    }
 	    balloon_set $f.bbirail2 "create Birail2"
-
+	    bind $f.bbirail2 <Control-ButtonPress-1> {
+		%W configure -relief sunken
+		level_crt Birail2 "" 1
+		after 100 "%W configure -relief raised"
+		break;
+	    }
 	    button $f.bgord -image ay_Gordon_img -padx 0 -pady 0 -command {
 		level_crt Gordon;
 	    }
 	    balloon_set $f.bgord "create Gordon"
-
+	    bind $f.bgord <Control-ButtonPress-1> {
+		%W configure -relief sunken
+		level_crt Gordon "" 1
+		after 100 "%W configure -relief raised"
+		break;
+	    }
 	    #####
 	    button $f.bskin -image ay_Skin_img -padx 0 -pady 0 -command {
 		level_crt Skin;
