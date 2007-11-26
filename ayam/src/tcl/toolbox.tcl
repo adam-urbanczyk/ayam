@@ -72,7 +72,6 @@ proc toolbox_open { } {
 		crtOb Hyperboloid; uCR; sL; rV;}
 	    balloon_set $f.bhy "create Hyperboloid"
 
-
 	    button $f.bpar -image ay_Paraboloid_img -padx 0 -pady 0 -command {
 		crtOb Paraboloid; uCR; sL; rV;}
 	    balloon_set $f.bpar "create Paraboloid"
@@ -582,7 +581,12 @@ proc toolbox_open { } {
 		level_crt Skin;
 	    }
 	    balloon_set $f.bskin "create Skin"
-
+	    bind $f.bskin <Control-ButtonPress-1> {
+		%W configure -relief sunken
+		level_crt Skin "" 1
+		after 100 "%W configure -relief raised"
+		break;
+	    }
 	}
 	##################
 
