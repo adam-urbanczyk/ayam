@@ -4019,6 +4019,70 @@ and holes, possible scale transformations should be carried out on the
 hole curve control points, rather than on the hole curve object
 transformation attributes.
 
+<sect1>Swing Object<label id="swingobj">
+<p>
+<figure loc="ht">
+<eps file="pics/swing.ps" height="5cm">
+<img src="pics/swing.gif">
+<caption>Swing Object (left: Curves, right: Resulting Swung Surface)</caption>
+</figure>
+<p>
+The Swing object, available since Ayam 1.14, forms a surface that results
+from rotating a NURBS curve (cross section or profile) around an axis while
+scaling it according to a second NURBS curve (trajectory or path).
+This is sometimes called rotational sweep.
+<p>
+The swing object has the generating NURBS curves as child objects
+and watches their movements and adapts to them automagically.
+The first curve is the cross section, the second is the trajectory.
+<p>
+The object hierarchy of a Swing object, thus, looks like this:
+<code>
++-Swing
+ | Cross_Section(NCurve)
+ \ Path(NCurve)
+</code>
+<p>
+The swing operation will occur around the Y-axis.
+<p>
+The cross section curve has to be defined in the YZ-plane of the
+Swing objects coordinate system but it also has to be defined in the
+XY-plane of its own coordinate system. This means that a simple circular
+curve as e.g. created with the toolbox has to be rotated by 90 degrees
+around the Y-axis using its transformation attributes to follow these
+rules. Later editing of this curve has to be done in a Side view (or
+in an aligned local Front view, if the Swing object itself is transformed
+somehow).
+The path, consequently, has to be defined in the XZ-plane of the
+Swing objects coordinate system.
+<p>
+You may convert the current swung surface, the bevels, and the caps, if there
+are any, to ordinary NURBS patches using the main menu entry
+<tt>"Tools/Convert"</tt>.
+
+<sect2>SwingAttr Property<label id="swingattrprop">
+<p>
+The attributes <tt/"StartCap"/ and <tt/"EndCap"/ may be
+used to automatically create cap surfaces, that close the
+Swing on both ends.
+Note that this works properly only if the cross section
+curve is closed and planar (defined in the XY plane).
+<p>
+Bevels:
+They are accessible through the new command entries <tt/"Add Start Bevel!"/
+and <tt/"Add End Bevel!"/ respectively. If one of those entries is used,
+a bevel parameter tag is created and more options will be made available
+in the property GUI to adjust the bevel parameters or remove the tag again.
+A more thorough discussion of those options is available in section
+<ref id="bevelp" name="BevelAttr Property">.
+<p>
+See section <ref id="npattr" name="NPatchAttr"> for a description
+of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
+<p>
+To help in the exact configuration of the Swing, the <tt/"NPInfo"/
+field always displays the parameters of the created NURBS patch.
+
+
 <sect1>Sweep Object<label id="sweepobj">
 <p>
 <figure loc="ht">
@@ -8072,14 +8136,14 @@ a second argument (<tt/"opname"/).
 This name will be displayed in the default console prompt, to inform the
 user about which operation would be undone/redone, if undo/redo would be
 used (e.g. <tt>"[Undo:MoveObj/Redo:none].../bin&gt;"</tt>).
-Since Ayam1.13, a third argument may be given, that controls, whether
+Since Ayam 1.13, a third argument may be given, that controls, whether
 all the children of the selected objects should also be saved. This may
 be needed if the modelling action that follows the undo save is about to
 change the selected objects and also their children.
 Note: undo save does not fail if no objects are selected.
   <item>If the argument is <tt/"clear"/, all currently saved states
 will be cleared from the undo buffer.
-  <item>The argument <tt/"rewind"/ is available since Ayam1.14. With
+  <item>The argument <tt/"rewind"/ is available since Ayam 1.14. With
 this command you can undo the last undo save operation. This may be
 necessary, if a modelling operation failed. Care should be taken,
 however, to <em>not</em> rewind the undo state, when a modelling
@@ -8719,7 +8783,7 @@ instead of using the values from the Mops scene file.
 
 <sect1>AutoCAD DXF Import<label id="impdxf">
 <p>
-The <tt>"dxfio"</tt> plugin allows to import AutoCAD DXF (drawing exchange
+The <tt>"dxfio"</tt> plugin allows to import AutoCAD DXF (drawing interchange
 format) files into Ayam with the help of the Dime library (from Systems in
 Motion, Kongsberg SIM AS, Norway).
 <p>
@@ -8816,7 +8880,7 @@ the dxfio plugin is converting the DXF entities to Ayam objects.
 <sect1>AutoCAD DXF Export<label id="expdxf">
 <p>
 The <tt>"dxfio"</tt> plugin allows to export Ayam scenes to AutoCAD DXF
-(drawing exchange format) files with the help of the Dime library
+(drawing interchange format) files with the help of the Dime library
 (from Systems in Motion, Kongsberg SIM AS, Norway).
 <p>
 Start exporting to a DXF file using the main menu entry
