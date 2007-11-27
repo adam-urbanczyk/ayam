@@ -581,6 +581,7 @@ array set ay {
  noview 0
  ws "X11"
  shiftcommand 0
+ ctrldown 0
 }
 # array ay
 

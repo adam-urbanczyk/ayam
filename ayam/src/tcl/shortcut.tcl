@@ -334,6 +334,9 @@ proc shortcut_main { w } {
 	bind $w <Command-q> exit
     }
 
+    bind $w <KeyPress-Control_L> "+set ay(ctrldown) 1"
+    bind $w <KeyRelease-Control_L> "+set ay(ctrldown) 0"
+
  return;
 }
 # shortcut_main
@@ -475,6 +478,9 @@ proc shortcut_view { w } {
     if { $AYWITHAQUA == 1 } {
 	bind $w <Command-q> exit
     }
+
+    bind $w <KeyPress-Control_L> "+set ay(ctrldown) 1"
+    bind $w <KeyRelease-Control_L> "+set ay(ctrldown) 0"
 
  return;
 }

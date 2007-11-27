@@ -43,37 +43,38 @@ proc toolbox_open { } {
 	    lappend ay(toolbuttons) bb bs bcy bco bd bto bhy bpar
 
 	    button $f.bb -image ay_Box_img -padx 0 -pady 0 -command {
-		crtOb Box; uCR; sL; rV;}
+		crtOb Box; uCR; if {!$::ay(ctrldown)} sL; rV;}
 	    balloon_set $f.bb "create Box"
 
+
 	    button $f.bs -image ay_Sphere_img -padx 0 -pady 0 -command {
-		crtOb Sphere; uCR; sL; rV;}
+		crtOb Sphere; uCR; if {!$::ay(ctrldown)} sL; rV;}
 	    balloon_set $f.bs "create Sphere"
 
 	    button $f.bcy -image ay_Cylinder_img  -padx 0 -pady 0 -command {
-		crtOb Cylinder; uCR; sL; rV;}
+		crtOb Cylinder; uCR; if {!$::ay(ctrldown)} sL; rV;}
 	    balloon_set $f.bcy "create Cylinder"
 
 	    button $f.bco -image ay_Cone_img -padx 0 -pady 0 -command {
-		crtOb Cone; uCR; sL; rV;}
+		crtOb Cone; uCR; if {!$::ay(ctrldown)} sL; rV;}
 	    balloon_set $f.bco "create Cone"
 
 	    #########
 
 	    button $f.bd -image ay_Disk_img -padx 0 -pady 0 -command {
-		crtOb Disk; uCR; sL; rV;}
+		crtOb Disk; uCR; if {!$::ay(ctrldown)} sL; rV;}
 	    balloon_set $f.bd "create Disk"
 
 	    button $f.bto -image ay_Torus_img -padx 0 -pady 0 -command {
-		crtOb Torus; uCR; sL; rV;}
+		crtOb Torus; uCR; if {!$::ay(ctrldown)} sL; rV;}
 	    balloon_set $f.bto "create Torus"
 
 	    button $f.bhy -image ay_Hyperboloid_img -padx 0 -pady 0 -command {
-		crtOb Hyperboloid; uCR; sL; rV;}
+		crtOb Hyperboloid; uCR; if {!$::ay(ctrldown)} sL; rV;}
 	    balloon_set $f.bhy "create Hyperboloid"
 
 	    button $f.bpar -image ay_Paraboloid_img -padx 0 -pady 0 -command {
-		crtOb Paraboloid; uCR; sL; rV;}
+		crtOb Paraboloid; uCR; if {!$::ay(ctrldown)} sL; rV;}
 	    balloon_set $f.bpar "create Paraboloid"
 
 	}
@@ -338,7 +339,7 @@ proc toolbox_open { } {
 	if { $i == "misco" } {
 	    lappend ay(toolbuttons) blevel blight binst bmat
 	    button $f.blevel -image ay_Level_img -padx 0 -pady 0 -command {
-		crtOb Level 1; uCR; sL; rV;
+		crtOb Level 1; uCR; if {!$::ay(ctrldown)} sL; rV;
 	    }
 	    balloon_set $f.blevel "create Level\nShift: and move objects into"
 	    bind $f.blevel <Shift-ButtonPress-1> {
@@ -355,13 +356,13 @@ proc toolbox_open { } {
 	    }
 	    #####
 	    button $f.blight -image ay_Light_img -padx 0 -pady 0 -command {
-		crtOb Light; uCR; sL; rV;
+		crtOb Light; uCR; if {!$::ay(ctrldown)} sL; rV;
 	    }
 	    balloon_set $f.blight "create Light"
 
 	    #####
 	    button $f.binst -image ay_Instance_img -padx 0 -pady 0 -command {
-		crtOb Instance; uCR; sL; rV;
+		crtOb Instance; uCR; if {!$::ay(ctrldown)} sL; rV;
 	    }
 	    balloon_set $f.binst "create Instance"
 
@@ -443,7 +444,12 @@ proc toolbox_open { } {
 		level_crt ConcatNC
 	    }
 	    balloon_set $f.bconc "create ConcatNC\n(concat curves)"
-
+	    bind $f.bconc <Control-ButtonPress-1> {
+		%W configure -relief sunken
+		level_crt ConcatNC "" 1
+		after 100 "%W configure -relief raised"
+		break;
+	    }
 	    #####
 	    button $f.bclamp -image ay_Clamp_img -padx 0 -pady 0 -command {
 		undo save Clamp; clampNC; plb_update; rV
@@ -457,13 +463,15 @@ proc toolbox_open { } {
 	    lappend ay(toolbuttons) bnc bic bnci bnp
 
 	    button $f.bnc -image ay_NCurve_img -padx 0 -pady 0 -command {
-		crtOb NCurve -length $ay(nclen); uCR; sL; forceNot; rV;
+		crtOb NCurve -length $ay(nclen); uCR;
+		if {!$::ay(ctrldown)} sL; forceNot; rV;
 	    }
 	    balloon_set $f.bnc "create NCurve"
 
 	    #####
 	    button $f.bic -image ay_ICurve_img -padx 0 -pady 0 -command {
-		crtOb ICurve -length $ay(iclen); uCR; sL; forceNot; rV;
+		crtOb ICurve -length $ay(iclen); uCR;
+		if {!$::ay(ctrldown)} sL; forceNot; rV;
 	    }
 	    balloon_set $f.bic "create ICurve"
 
@@ -474,7 +482,7 @@ proc toolbox_open { } {
 	    bind $f.bnci <Shift-ButtonPress-1> {
 		global  ay
 		%W configure -relief sunken
-		crtOb NCircle; uCR; sL; forceNot; rV;
+		crtOb NCircle; uCR; if {!$::ay(ctrldown)} sL; forceNot; rV;
 		after 100 "%W configure -relief raised"
 		break;
 	    }
@@ -484,7 +492,7 @@ proc toolbox_open { } {
 	    #####
 	    button $f.bnp -image ay_NPatch_img -padx 0 -pady 0 -command {
 		crtOb NPatch -width $ay(npwidth) -height $ay(npheight);
-		uCR; sL; forceNot; rV;
+		uCR; if {!$::ay(ctrldown)} sL; forceNot; rV;
 	    }
 	    balloon_set $f.bnp "create NPatch"
 
@@ -597,6 +605,12 @@ proc toolbox_open { } {
 		level_crt ExtrNC;
 	    }
 	    balloon_set $f.bextrnc "extract NURBCurve"
+	    bind $f.bextrnc <Control-ButtonPress-1> {
+		%W configure -relief sunken
+		level_crt ExtrNC "" 1
+		after 100 "%W configure -relief raised"
+		break;
+	    }
 
 	    #####
 	    button $f.bswpuv -image ay_NPSwapUV_img -padx 0 -pady 0 -command {
