@@ -15,8 +15,9 @@
 /* clevel.c - functions for current level management */
 
 /* ay_clevel_find:
- *  recursively search through all objects beneath and below c
- *  for object o and build a stack of list objects in ay_currentlevel
+ *  _recursively_ search through all objects beneath and below <c>
+ *  for object <o> and build a stack of list objects pointing from the
+ *  ay_root to the object <o> in <ay_currentlevel>
  */
 int
 ay_clevel_find(ay_object *c, ay_object *o, int *found)
@@ -42,22 +43,23 @@ ay_clevel_find(ay_object *c, ay_object *o, int *found)
 		{
 		  return AY_OK;
 		}
-	    }
-
+	    } /* if */
 	}
       else
 	{
 	  *found = AY_TRUE;
 	  return AY_OK;
-	}
+	} /* if */
       c = c->next;
-    }
-
+    } /* while */
 
  return AY_OK;
 } /* ay_clevel_find */
 
 
+/* ay_clevel_del:
+ *  put list object pointing to <o> to top of current level stack
+ */
 int
 ay_clevel_add(ay_object *o)
 {
@@ -77,6 +79,9 @@ ay_clevel_add(ay_object *o)
 } /* ay_clevel_add */
 
 
+/* ay_clevel_del:
+ *  remove topmost list object from current level stack
+ */
 int
 ay_clevel_del(void)
 {
@@ -92,8 +97,10 @@ ay_clevel_del(void)
 } /* ay_clevel_del */
 
 
-/* actually deletes all clevel objects but not the first
-   that points to ay_root */
+/* ay_clevel_delall:
+ * actually deletes all clevel objects but not the first
+ * that points to ay_root
+ */
 int
 ay_clevel_delall(void)
 {
@@ -113,6 +120,9 @@ ay_clevel_delall(void)
 } /* ay_clevel_delall */
 
 
+/* ay_clevel_gotoptcmd:
+ *  Tcl command to change the current level to the top level
+ */
 int
 ay_clevel_gotoptcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[])
@@ -142,6 +152,9 @@ ay_clevel_gotoptcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_clevel_gotoptcmd */
 
 
+/* ay_clevel_gouptcmd:
+ *  Tcl command to change the current level to the parent level
+ */
 int
 ay_clevel_gouptcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
@@ -149,28 +162,29 @@ ay_clevel_gouptcmd(ClientData clientData, Tcl_Interp *interp,
  int ay_status = AY_OK;
  ay_object *o = NULL;
  /*
- char fname[] = "clevel_goup";
+ char fname[] = "goUp";
  char *part1 = "ay", *part2 = "CurrentLevel";
  char *tmp = NULL, *string = NULL;
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL, *no = NULL;
  int length = 0;
  */
 
- if(ay_currentlevel->object != ay_root)
-   {
-     ay_status = ay_clevel_del();
-     ay_status = ay_clevel_del();
+  if(ay_currentlevel->object != ay_root)
+    {
+      ay_status = ay_clevel_del();
+      ay_status = ay_clevel_del();
 
-     o = ay_currentlevel->object;
-     if(o)
-       {
-	 while(o->next)
-	   {
-	     ay_next = &(o->next);
-	     o = o->next;
-	   }
-       }
-   }
+      o = ay_currentlevel->object;
+      if(o)
+	{
+	  while(o->next)
+	    {
+	      ay_next = &(o->next);
+	      o = o->next;
+	    }
+	}
+    }
+
 #if 0
   /* Synchronize the value of ay(CurrentLevel) */
   toa = Tcl_NewStringObj(part1, -1);
@@ -221,6 +235,9 @@ ay_clevel_gouptcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_clevel_gouptcmd */
 
 
+/* ay_clevel_godowntcmd:
+ *  Tcl command to change the current level
+ */
 int
 ay_clevel_godowntcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[])
@@ -228,7 +245,7 @@ ay_clevel_godowntcmd(ClientData clientData, Tcl_Interp *interp,
  int ay_status = AY_OK;
  int j = 0, argvi = 0;
  ay_object *o = ay_currentlevel->object;
- char fname[] = "clevel_godown";
+ char fname[] = "goDown";
  /*
  char *part1 = "ay", *part2 = "CurrentLevel";
  char tmp[256];
@@ -336,6 +353,9 @@ ay_clevel_godowntcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_clevel_godowntcmd */
 
 
+/* ay_clevel_gettcmd:
+ *  Tcl command to get the objects of the current level
+ */
 int
 ay_clevel_gettcmd(ClientData clientData, Tcl_Interp *interp,
 		  int argc, char *argv[])
@@ -343,7 +363,7 @@ ay_clevel_gettcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *o = ay_currentlevel->object;
  char *name = NULL;
  char *typename = NULL;
- char fname[] = "clevel_get";
+ char fname[] = "getLevel";
  Tcl_DString ds;
 
   /* check args */
@@ -411,8 +431,8 @@ ay_clevel_gettcmd(ClientData clientData, Tcl_Interp *interp,
 		    {
 		      Tcl_SetVar(interp, argv[1], name, TCL_APPEND_VALUE |
 				 TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG);
-		    }
-		}
+		    } /* if */
+		} /* if */
 	    }
 	  else
 	    {
@@ -432,13 +452,13 @@ ay_clevel_gettcmd(ClientData clientData, Tcl_Interp *interp,
 		  Tcl_SetVar(interp, argv[1], name, TCL_APPEND_VALUE |
 			     TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG);
 		}
-	    }
+	    } /* if */
 	}
       else
 	{
 	  ay_error(AY_ENULL, fname, NULL);
 	  return TCL_OK;
-	}
+	} /* if */
 
       typename = NULL;
       typename = ay_object_gettypename(o->type);
@@ -455,7 +475,6 @@ ay_clevel_gettcmd(ClientData clientData, Tcl_Interp *interp,
 
       o = o->next;
     } /* while */
-
 
  return TCL_OK;
 } /* ay_clevel_gettcmd */
