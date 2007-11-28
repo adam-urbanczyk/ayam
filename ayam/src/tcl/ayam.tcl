@@ -177,6 +177,11 @@ array set ayprefs {
 
  AUCommands { uS; rV; }
 
+ WheelZoom 0.5
+
+ PolyOffset0 1.0
+ PolyOffset1 1.0
+
  Docs "http://ayam.sourceforge.net/docs/"
  DailyTips {
 {Always click on drawn pixels, when picking vertices.}

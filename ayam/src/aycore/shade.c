@@ -207,7 +207,9 @@ ay_shade_view(struct Togl *togl)
     {
 #ifdef GL_VERSION_1_1
       glEnable(GL_POLYGON_OFFSET_FILL);
-      glPolygonOffset(1.0, 1.0);
+      /*glPolygonOffset(1.0, 1.0);*/
+      glPolygonOffset((GLfloat)ay_prefs.polyoffset0/*0.5f*/,
+		      (GLfloat)ay_prefs.polyoffset1/*0.5f*/);
 #else
       glEnable(GL_POLYGON_OFFSET_EXT);
       glPolygonOffsetEXT(1.0, 0.000002);

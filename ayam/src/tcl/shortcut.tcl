@@ -612,7 +612,7 @@ proc shortcut_viewactions { w } {
     bind $w.f3D.togl <ButtonPress-4> {
 	undo save ZoomView
 	%W mc
-	%W setconf -dzoom 0.5
+	%W setconf -dzoom $::ayprefs(WheelZoom)
 	update
 	%W reshape
 	%W render
@@ -622,7 +622,7 @@ proc shortcut_viewactions { w } {
     bind $w.f3D.togl <ButtonPress-5> {
 	undo save ZoomView
 	%W mc
-	%W setconf -dzoom 2
+	%W setconf -dzoom [expr 1.0/$::ayprefs(WheelZoom)]
 	update
 	%W reshape
 	%W render
@@ -634,9 +634,9 @@ proc shortcut_viewactions { w } {
 	    undo save ZoomView
 	    %W mc
 	    if { %D < 0.0 } {
-		%W setconf -dzoom 2
+		%W setconf -dzoom [expr 1.0/$::ayprefs(WheelZoom)]
 	    } else {
-		%W setconf -dzoom 0.5
+		%W setconf -dzoom $::ayprefs(WheelZoom)
 	    }
 	    update
 	    %W reshape
@@ -650,9 +650,9 @@ proc shortcut_viewactions { w } {
 	    undo save ZoomView
 	    %W mc
 	    if { %D < 0.0 } {
-		%W setconf -dzoom 1.6
+		%W setconf -dzoom [expr 1.0/$::ayprefs(WheelZoom)]
 	    } else {
-		%W setconf -dzoom 0.625
+		%W setconf -dzoom $::ayprefs(WheelZoom)
 	    }
 	    update
 	    %W reshape

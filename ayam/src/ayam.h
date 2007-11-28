@@ -101,8 +101,8 @@
 /* Ayam Object Structure */
 
 typedef struct ay_object_s {
-  struct ay_object_s *next;  /* next in same hierarchie-level */
-  struct ay_object_s *down;  /* children */
+  struct ay_object_s *next;  /* next object in same hierarchie-level */
+  struct ay_object_s *down;  /* children of this object */
 
   /* the type of the object, see AY_ID section below */
   unsigned int type;
@@ -134,12 +134,13 @@ typedef struct ay_object_s {
   /* should the children of this object be hidden? */
   int hide_children;
 
-  /* Transformation Attributes */
   double movx, movy, movz;
   double rotx, roty, rotz;
   double scalx, scaly, scalz;
   double quat[4]; /* quaternion */
-
+#if 0
+  struct ay_trafo_s *trafo; /* transformations of this object */
+#endif
   struct ay_point_s *selp; /* selected points of this object */
 
   struct ay_tag_s *tags; /* tags of this object */
@@ -861,7 +862,7 @@ typedef struct ay_view_object_s
   int local; /* editing takes place in local space, not world space */
   int aligned; /* view is aligned to object-space of selected object */
 
-  int drawsel; /* draw selected objects (and childs) only */
+  int drawsel; /* draw selected objects (and their children) only */
   int drawlevel; /* draw current level (and below) only */
   int redraw; /* automatic redraw */
   int drawgrid; /* draw grid */
@@ -971,7 +972,7 @@ typedef struct ay_preferences_s
   char *logfile;
 
   /* for developers */
-  int overload; /* 0 no , 1 yes */
+  int overload; /* 0 no, 1 yes */
 
   /* state of the RIB exporter */
   int wrib_sm;
@@ -993,6 +994,10 @@ typedef struct ay_preferences_s
 
   /* control warnings about unknown tag types */
   int wutag;
+
+  /* parameters for glPolygonOffset */
+  double polyoffset0;
+  double polyoffset1;
 
   /* is a permanent preview window open? */
   int pprev_open;
@@ -1023,6 +1028,15 @@ typedef struct ay_tag_s
   char *type;
   char *val;
 } ay_tag;
+
+
+typedef struct ay_trafo_s
+{
+  double movx, movy, movz;
+  double rotx, roty, rotz;
+  double scalx, scaly, scalz;
+  double quat[4]; /* quaternion */
+} ay_trafo;
 
 
 typedef struct ay_table_s
@@ -1254,7 +1268,6 @@ extern unsigned int ay_current_primlevel;
 #define AY_STEXTERIOR       8
 #define AY_STATMOSPHERE     9
 
-
 /* Shader Argument Types */
 #define AY_SASCALAR  0
 #define AY_SAPOINT   1
@@ -1302,7 +1315,6 @@ extern unsigned int ay_current_primlevel;
 #define AY_SDTCREASE  2
 #define AY_SDTIB      3
 
-
 /* Procedural Object Types */
 #define AY_PRTDREADA  0 /* Delayed Read Archive */
 #define AY_PRTRUNPROG 1 /* Run Program */
@@ -1314,6 +1326,21 @@ extern unsigned int ay_current_primlevel;
 
 /* to avoid direct comparison of doubles with 0.0 */
 #define AY_EPSILON 1.0e-06
+
+
+#ifdef M_PI
+ #define AY_PI M_PI
+ #define AY_HALFPI (M_PI/2.0)
+#else
+ #define AY_PI 3.1415926535897932384626433
+ #define AY_HALFPI (3.1415926535897932384626433/2.0)
+#endif
+
+#define AY_D2R(x) ((x)*AY_PI/180.0)
+
+#define AY_R2D(x) ((x)*180.0/AY_PI)
+
+#define AY_COT(x) (cos(x)/sin(x))
 
 /* Basic Vector Arithmetic */
 #define AY_VLEN(x,y,z) sqrt((x*x)+(y*y)+(z*z))
@@ -1345,49 +1372,41 @@ extern unsigned int ay_current_primlevel;
 
 #define AY_V2DOT(v1,v2) (v1[0]*v2[0] + v1[1]*v2[1])
 
-#define AY_V3COMP(v1, v2) ((fabs(v1[0]-v2[0]) < AY_EPSILON) && \
-			   (fabs(v1[1]-v2[1]) < AY_EPSILON) && \
+#define AY_V4COMP(v1, v2) ((fabs(v1[0]-v2[0]) < AY_EPSILON) &&\
+			   (fabs(v1[1]-v2[1]) < AY_EPSILON) &&\
 			   (fabs(v1[2]-v2[2]) < AY_EPSILON))
 
-#define AY_V2COMP(v1, v2) ((fabs(v1[0]-v2[0]) < AY_EPSILON) && \
+#define AY_V3COMP(v1, v2) ((fabs(v1[0]-v2[0]) < AY_EPSILON) &&\
+			   (fabs(v1[1]-v2[1]) < AY_EPSILON) &&\
+			   (fabs(v1[2]-v2[2]) < AY_EPSILON))
+
+#define AY_V2COMP(v1, v2) ((fabs(v1[0]-v2[0]) < AY_EPSILON) &&\
 			   (fabs(v1[1]-v2[1]) < AY_EPSILON))
-
-#ifdef M_PI
- #define AY_PI M_PI
- #define AY_HALFPI (M_PI/2.0)
-#else
- #define AY_PI 3.1415926535897932384626433
- #define AY_HALFPI (3.1415926535897932384626433/2.0)
-#endif
-
-#define AY_D2R(x) ((x)*AY_PI/180.0)
-
-#define AY_R2D(x) ((x)*180.0/AY_PI)
-
-#define AY_COT(x) (cos(x)/sin(x))
-
-/* Warning: v1 and v2 must be different locations in memory! */
-#define AY_APTRAN3(v1,v2,m) {v1[0]=v2[0]*m[0]+v2[1]*m[4]+v2[2]*m[8]+1.0*m[12];v1[1]=v2[0]*m[1]+v2[1]*m[5]+v2[2]*m[9]+1.0*m[13];v1[2]=v2[0]*m[2]+v2[1]*m[6]+v2[2]*m[10]+1.0*m[14];}
 
 /* Warning: v1 and v2 must be different locations in memory! */
 #define AY_APTRAN4(v1,v2,m) {v1[0]=v2[0]*m[0]+v2[1]*m[4]+v2[2]*m[8]+v2[3]*m[12];v1[1]=v2[0]*m[1]+v2[1]*m[5]+v2[2]*m[9]+v2[3]*m[13];v1[2]=v2[0]*m[2]+v2[1]*m[6]+v2[2]*m[10]+v2[3]*m[14];v1[3]=v2[0]*m[3]+v2[1]*m[7]+v2[2]*m[11]+v2[3]*m[15];}
 
-#define AY_COMP3DP(P1, P2) ((fabs(P1[0]-P2[0]) < AY_EPSILON) &&\
-                            (fabs(P1[1]-P2[1]) < AY_EPSILON) &&\
-                            (fabs(P1[2]-P2[2]) < AY_EPSILON))
+/* Warning: v1 and v2 must be different locations in memory! */
+#define AY_APTRAN3(v1,v2,m) {v1[0]=v2[0]*m[0]+v2[1]*m[4]+v2[2]*m[8]+1.0*m[12];v1[1]=v2[0]*m[1]+v2[1]*m[5]+v2[2]*m[9]+1.0*m[13];v1[2]=v2[0]*m[2]+v2[1]*m[6]+v2[2]*m[10]+1.0*m[14];}
 
 #define AY_COMP4DP(P1, P2) ((fabs(P1[0]-P2[0]) < AY_EPSILON) &&\
                             (fabs(P1[1]-P2[1]) < AY_EPSILON) &&\
                             (fabs(P1[2]-P2[2]) < AY_EPSILON) &&\
                             (fabs(P1[3]-P2[3]) < AY_EPSILON))
 
+#define AY_COMP3DP(P1, P2) ((fabs(P1[0]-P2[0]) < AY_EPSILON) &&\
+                            (fabs(P1[1]-P2[1]) < AY_EPSILON) &&\
+                            (fabs(P1[2]-P2[2]) < AY_EPSILON))
+
+#define AY_COMP2DP(P1, P2) ((fabs(P1[0]-P2[0]) < AY_EPSILON) &&\
+                            (fabs(P1[1]-P2[1]) < AY_EPSILON))
 
 /* Version Strings and Numbers */
-#define AY_VERSIONSTR "1.13"
+#define AY_VERSIONSTR "1.14pre"
 #define AY_VERSIONSTRMI "0"
 
 #define AY_VERSIONMA 1
-#define AY_VERSION   13
+#define AY_VERSION   14
 #define AY_VERSIONMI 0
 
 
