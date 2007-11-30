@@ -314,6 +314,10 @@ int x3dio_writelight(scew_element *element, ay_object *o);
 
 int x3dio_writerevolveobj(scew_element *element, ay_object *o);
 
+int x3dio_writersweepobj(scew_element *element, ay_object *o);
+
+int x3dio_writerswingobj(scew_element *element, ay_object *o);
+
 
 /* export */
 int x3dio_writeobject(scew_element *element, ay_object *o, int count);
@@ -8133,6 +8137,9 @@ x3dio_writerevolveobj(scew_element *element, ay_object *o)
   if(!element || !o)
     return AY_ENULL;
 
+  if(!o->down)
+    return AY_ERROR;
+
   if(!x3dio_writeparam)
     return x3dio_writenpconvertibleobj(element, o);
 
@@ -8230,6 +8237,235 @@ x3dio_writerevolveobj(scew_element *element, ay_object *o)
 
  return AY_OK;
 } /* x3dio_writerevolveobj */
+
+
+/* x3dio_writesweepobj:
+ *
+ */
+int
+x3dio_writesweepobj(scew_element *element, ay_object *o)
+{
+ int ay_status = AY_OK;
+ ay_sweep_object *swp;
+ scew_element *transform_element = NULL;
+ scew_element *shape_element = NULL;
+ scew_element *sweep_element = NULL;
+ scew_element *curve_element = NULL;
+ ay_object *c = NULL, *d = NULL, *e = NULL;
+ ay_nurbcurve_object *cs;
+
+  if(!element || !o)
+    return AY_ENULL;
+
+  if(!o->down || !o->down->next)
+    return AY_ERROR;
+
+  if(!x3dio_writeparam)
+    return x3dio_writenpconvertibleobj(element, o);
+
+  swp = (ay_sweep_object*)o->refine;
+
+  if(!x3dio_writeparam)
+    return x3dio_writenpconvertibleobj(element, o);
+
+  /* write transform */
+  ay_status = x3dio_writetransform(element, o, &transform_element);
+
+  /* write shape */
+  shape_element = scew_element_add(transform_element, "Shape");
+
+  /* write name to shape element */
+  ay_status = x3dio_writename(shape_element, o);
+
+  /* write sweep element */
+  sweep_element = scew_element_add(shape_element, "NurbsSweptSurface");
+
+  /* get cross section curve */
+  if(o->down->type != AY_IDNCURVE)
+    {
+      ay_provide_object(o->down, AY_IDNCURVE, &c);
+    }
+  else
+    {
+      ay_object_copy(o->down, &c);
+    }
+
+  if(!c)
+    return AY_ERROR;
+
+  ay_nct_applytrafo(c);
+
+  cs = (ay_nurbcurve_object*)c->refine;
+
+  /* write cross section curve */
+  x3dio_writencurve(sweep_element, cs);
+
+  /* get the curve element we just wrote */
+  curve_element = scew_element_next(sweep_element, NULL);
+
+  /* and add a containerField attribute */
+  scew_element_add_attr_pair(curve_element, "containerField", "profileCurve");
+
+  /* write trajectory curve */
+  if(o->down->next->type != AY_IDNCURVE)
+    {
+      ay_provide_object(o->down->next, AY_IDNCURVE, &d);
+    }
+  else
+    {
+      ay_object_copy(o->down->next, &d);
+    }
+
+  if(!d)
+    return AY_ERROR;
+
+  ay_nct_applytrafo(d);
+
+  cs = (ay_nurbcurve_object*)d->refine;
+
+  x3dio_writencurve(sweep_element, cs);
+
+  /* get the curve element we just wrote */
+  curve_element = scew_element_next(sweep_element, NULL);
+  curve_element = scew_element_next(sweep_element, curve_element);
+
+  /* and add a containerField attribute */
+  scew_element_add_attr_pair(curve_element, "containerField",
+			     "trajectoryCurve");
+
+
+  /* write the caps and bevels */
+  e = swp->caps_and_bevels;
+  while(e)
+    {
+      x3dio_writenpatchobj(element, e);      
+      e = e->next;
+    }
+
+  /* cleanup */
+  ay_object_deletemulti(c);
+  ay_object_deletemulti(d);
+
+ return AY_OK;
+} /* x3dio_writesweepobj */
+
+
+/* x3dio_writeswingobj:
+ *
+ */
+int
+x3dio_writeswingobj(scew_element *element, ay_object *o)
+{
+ int ay_status = AY_OK;
+ ay_swing_object *swp;
+ scew_element *transform_element = NULL;
+ scew_element *shape_element = NULL;
+ scew_element *swing_element = NULL;
+ scew_element *curve_element = NULL;
+ ay_object *c = NULL, *d = NULL;
+ ay_nurbcurve_object *cs;
+
+  if(!element || !o)
+    return AY_ENULL;
+
+  if(!o->down || !o->down->next)
+    return AY_ERROR;
+
+  if(!x3dio_writeparam)
+    return x3dio_writenpconvertibleobj(element, o);
+
+  swp = (ay_swing_object*)o->refine;
+
+  if(!x3dio_writeparam)
+    return x3dio_writenpconvertibleobj(element, o);
+
+  /* write transform */
+  ay_status = x3dio_writetransform(element, o, &transform_element);
+
+  /* write shape */
+  shape_element = scew_element_add(transform_element, "Shape");
+
+  /* write name to shape element */
+  ay_status = x3dio_writename(shape_element, o);
+
+  /* write swing element */
+  swing_element = scew_element_add(shape_element, "NurbsSwungSurface");
+
+  /* get cross section curve */
+  if(o->down->type != AY_IDNCURVE)
+    {
+      ay_provide_object(o->down, AY_IDNCURVE, &c);
+    }
+  else
+    {
+      ay_object_copy(o->down, &c);
+    }
+
+  if(!c)
+    return AY_ERROR;
+
+  ay_nct_applytrafo(c);
+
+  cs = (ay_nurbcurve_object*)c->refine;
+
+  /* write cross section curve */
+  x3dio_writencurve(swing_element, cs);
+
+  /* get the curve element we just wrote */
+  curve_element = scew_element_next(swing_element, NULL);
+
+  /* and add a containerField attribute */
+  scew_element_add_attr_pair(curve_element, "containerField", "profileCurve");
+
+  /* write trajectory curve */
+  if(o->down->next->type != AY_IDNCURVE)
+    {
+      ay_provide_object(o->down->next, AY_IDNCURVE, &d);
+    }
+  else
+    {
+      ay_object_copy(o->down->next, &d);
+    }
+
+  if(!d)
+    return AY_ERROR;
+
+  ay_nct_applytrafo(d);
+
+  cs = (ay_nurbcurve_object*)d->refine;
+
+  x3dio_writencurve(swing_element, cs);
+
+  /* get the curve element we just wrote */
+  curve_element = scew_element_next(swing_element, NULL);
+  curve_element = scew_element_next(swing_element, curve_element);
+
+  /* and add a containerField attribute */
+  scew_element_add_attr_pair(curve_element, "containerField",
+			     "trajectoryCurve");
+
+
+  /* write the caps */
+  if(swp->upper_cap)
+    x3dio_writenpatchobj(element, swp->upper_cap);
+
+  if(swp->lower_cap)
+    x3dio_writenpatchobj(element, swp->lower_cap);
+
+  if(swp->start_cap)
+    x3dio_writenpatchobj(element, swp->start_cap);
+
+  if(swp->end_cap)
+    x3dio_writenpatchobj(element, swp->end_cap);
+
+
+  /* cleanup */
+  ay_object_deletemulti(c);
+  ay_object_deletemulti(d);
+
+ return AY_OK;
+} /* x3dio_writeswingobj */
+
 
 
 #if 0
@@ -8729,9 +8965,9 @@ X_Init(Tcl_Interp *interp)
   ay_status = x3dio_registerwritecb((char *)(AY_IDREVOLVE),
 				       x3dio_writerevolveobj);
   ay_status = x3dio_registerwritecb((char *)(AY_IDSWEEP),
-				       x3dio_writenpconvertibleobj);
+				       x3dio_writesweepobj);
   ay_status = x3dio_registerwritecb((char *)(AY_IDSWING),
-				       x3dio_writenpconvertibleobj);
+				       x3dio_writeswingobj);
   ay_status = x3dio_registerwritecb((char *)(AY_IDSKIN),
 				       x3dio_writenpconvertibleobj);
   ay_status = x3dio_registerwritecb((char *)(AY_IDCAP),
