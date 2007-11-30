@@ -183,7 +183,7 @@ int x3dio_getdiffspinepoint(unsigned int splen, float *sp, unsigned int sindex,
 			    int stride, unsigned int *index);
 
 int x3dio_getspinerots(unsigned int splen, float *sp, int sp_closed,
-		   unsigned int orlen, float *or, 
+		   unsigned int orlen, float *or,
 		   double **rots);
 
 int x3dio_readextrusion(scew_element *element);
@@ -242,6 +242,7 @@ int x3dio_readelement(scew_element *element);
 
 int x3dio_readtree(scew_tree *tree);
 
+/* Tcl interface */
 int x3dio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[]);
 
@@ -311,12 +312,15 @@ int x3dio_writeview(scew_element *element, ay_object *o);
 
 int x3dio_writelight(scew_element *element, ay_object *o);
 
+int x3dio_writerevolveobj(scew_element *element, ay_object *o);
+
 
 /* export */
 int x3dio_writeobject(scew_element *element, ay_object *o, int count);
 
 int x3dio_writescene(char *filename, int selected, int toplevellayers);
 
+/* Tcl interface */
 int x3dio_writetcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[]);
 
@@ -1107,7 +1111,7 @@ x3dio_readbools(scew_element *element, char *attrname,
 
 
 /* x3dio_processuse:
- *  
+ *
  */
 int
 x3dio_processuse(scew_element **element)
@@ -3127,12 +3131,12 @@ x3dio_getquatfromvec(double *v, double *q)
 	  if(v[1] > 0.0)
 	    x = -x;
 	}
-      
+
       if(v[0] < 0.0)
-	z = -z;      
-      
+	z = -z;
+
       /*printf("x:%g, z:%g\n",AY_R2D(x),AY_R2D(z));*/
-  
+
       if((fabs(x) > AY_EPSILON) || (fabs(z) > AY_EPSILON))
 	{
 	  if(fabs(x) > AY_EPSILON)
@@ -3247,7 +3251,7 @@ x3dio_getdiffspinepoint(unsigned int splen, float *sp, unsigned int sindex,
  */
 int
 x3dio_getspinerots(unsigned int splen, float *sp, int sp_closed,
-		   unsigned int orlen, float *or, 
+		   unsigned int orlen, float *or,
 		   double **rots)
 {
  double /*scpx[3],*/ scpy[3], /*scpz[3],*/ t1[3]/*, t2[3]*/;
@@ -3373,7 +3377,7 @@ x3dio_getspinerots(unsigned int splen, float *sp, int sp_closed,
 	  quat[3] = 1.0;
 
 	  x3dio_getquatfromvec(scpy, quat);
-	  
+
 	  /* add orientation */
 	  if(fabs(or[i*4+3]) > AY_EPSILON)
 	    {
@@ -4470,7 +4474,7 @@ x3dio_readnurbspatchsurface(scew_element *element, int is_trimmed)
 		    goto cleanup;
 		}
 	    } /* while */
-	  
+
 	  /* reset old transformation state */
 	  x3dio_ctrafos = old_state;
 
@@ -5099,7 +5103,7 @@ int x3dio_readcadelement(scew_element *element, int type)
       if(ay_status == AY_EDONOTLINK)
 	break;
     }
- 
+
   ay_object_crtendlevel(ay_next);
   ay_next = old_aynext;
   ay_object_link(o);
@@ -8109,11 +8113,11 @@ x3dio_writelight(scew_element *element, ay_object *o)
 } /* x3dio_writelight */
 
 
-/* x3dio_writerevolve:
+/* x3dio_writerevolveobj:
  *
  */
 int
-x3dio_writerevolve(scew_element *element, ay_object *o)
+x3dio_writerevolveobj(scew_element *element, ay_object *o)
 {
  int ay_status = AY_OK;
  ay_revolve_object *rev;
@@ -8133,6 +8137,9 @@ x3dio_writerevolve(scew_element *element, ay_object *o)
     return x3dio_writenpconvertibleobj(element, o);
 
   rev = (ay_revolve_object*)o->refine;
+
+  if(!x3dio_writeparam || (rev->sections > 0))
+    return x3dio_writenpconvertibleobj(element, o);
 
   /* write transform */
   ay_status = x3dio_writetransform(element, o, &transform_element);
@@ -8172,16 +8179,23 @@ x3dio_writerevolve(scew_element *element, ay_object *o)
   /* and add a containerField attribute */
   scew_element_add_attr_pair(curve_element, "containerField", "profileCurve");
 
-  /* create and write a trajectory curve (a circle) */
-  ay_status = ay_nct_crtncircle(radius, &circle);
+  /* create and write a trajectory curve (a circle/circular arc) */
+  if(rev->thetamax == 360.0)
+    {
+      ay_status = ay_nct_crtncircle(radius, &circle);
+    }
+  else
+    {
+      ay_status = ay_nct_crtncirclearc(radius, rev->thetamax, &circle);
+    }
 
-  /* flip circle to xz plane */
+  /* flip circle/arc to xz plane */
   a = 0;
   for(i = 0; i < circle->length; i++)
     {
       circle->controlv[a+2] = circle->controlv[a+1];
       circle->controlv[a+1] = 0.0;
-      a+=stride;
+      a += stride;
     }
 
   x3dio_writencurve(swing_element, circle);
@@ -8189,10 +8203,25 @@ x3dio_writerevolve(scew_element *element, ay_object *o)
   /* get the curve element we just wrote */
   curve_element = scew_element_next(swing_element, NULL);
   curve_element = scew_element_next(swing_element, curve_element);
-  
+
   /* and add a containerField attribute */
   scew_element_add_attr_pair(curve_element, "containerField",
 			     "trajectoryCurve");
+
+
+  /* write the caps */
+  if(rev->upper_cap)
+    x3dio_writenpatchobj(element, rev->upper_cap);
+
+  if(rev->lower_cap)
+    x3dio_writenpatchobj(element, rev->lower_cap);
+
+  if(rev->start_cap)
+    x3dio_writenpatchobj(element, rev->start_cap);
+
+  if(rev->end_cap)
+    x3dio_writenpatchobj(element, rev->end_cap);
+
 
   /* cleanup */
   ay_nct_destroy(circle);
@@ -8200,7 +8229,7 @@ x3dio_writerevolve(scew_element *element, ay_object *o)
   ay_object_deletemulti(c);
 
  return AY_OK;
-} /* x3dio_writerevolve */
+} /* x3dio_writerevolveobj */
 
 
 #if 0
@@ -8698,7 +8727,7 @@ X_Init(Tcl_Interp *interp)
   ay_status = x3dio_registerwritecb((char *)(AY_IDEXTRUDE),
 				       x3dio_writenpconvertibleobj);
   ay_status = x3dio_registerwritecb((char *)(AY_IDREVOLVE),
-				       x3dio_writerevolve);
+				       x3dio_writerevolveobj);
   ay_status = x3dio_registerwritecb((char *)(AY_IDSWEEP),
 				       x3dio_writenpconvertibleobj);
   ay_status = x3dio_registerwritecb((char *)(AY_IDSWING),
