@@ -8467,6 +8467,116 @@ x3dio_writeswingobj(scew_element *element, ay_object *o)
 } /* x3dio_writeswingobj */
 
 
+/* x3dio_writeextrudeobj:
+ *
+ */
+int
+x3dio_writeextrudeobj(scew_element *element, ay_object *o)
+{
+ int ay_status = AY_OK;
+ ay_extrude_object *ext;
+ scew_element *transform_element = NULL;
+ scew_element *shape_element = NULL;
+ scew_element *sweep_element = NULL;
+ scew_element *curve_element = NULL;
+ ay_object *c = NULL, *e = NULL;
+ ay_nurbcurve_object *cs;
+ double *dtmp = NULL, controlv[8] = {0.0,0.0,0.0,1.0, 0.0,0.0,0.0,1.0};
+
+  if(!element || !o)
+    return AY_ENULL;
+
+  if(!o->down || !o->down->next)
+    return AY_ERROR;
+
+  if(!x3dio_writeparam)
+    return x3dio_writenpconvertibleobj(element, o);
+
+  ext = (ay_extrude_object*)o->refine;
+
+  if(!x3dio_writeparam)
+    return x3dio_writenpconvertibleobj(element, o);
+
+  /* write transform */
+  ay_status = x3dio_writetransform(element, o, &transform_element);
+
+  /* write shape */
+  shape_element = scew_element_add(transform_element, "Shape");
+
+  /* write name to shape element */
+  ay_status = x3dio_writename(shape_element, o);
+
+  /* write sweep element */
+  sweep_element = scew_element_add(shape_element, "NurbsSweptSurface");
+
+  /* get cross section curve */
+  if(o->down->type != AY_IDNCURVE)
+    {
+      ay_provide_object(o->down, AY_IDNCURVE, &c);
+    }
+  else
+    {
+      ay_object_copy(o->down, &c);
+    }
+
+  if(!c)
+    return AY_ERROR;
+
+  ay_nct_applytrafo(c);
+
+  cs = (ay_nurbcurve_object*)c->refine;
+
+  /* write cross section curve */
+  x3dio_writencurve(sweep_element, cs);
+
+  /* get the curve element we just wrote */
+  curve_element = scew_element_next(sweep_element, NULL);
+
+  /* and add a containerField attribute */
+  scew_element_add_attr_pair(curve_element, "containerField", "profileCurve");
+
+  /* create and write trajectory curve */
+  cs = NULL;
+  controlv[6] = ext->height;
+
+  if(!(dtmp = calloc(8, sizeof(double))))
+    return AY_EOMEM;
+  memcpy(dtmp, controlv, 8*sizeof(double));
+
+  ay_nct_create(2, 2, AY_KTNURB, dtmp, NULL, &cs);
+
+  if(!cs)
+    {
+      return AY_ERROR;
+    }
+
+  x3dio_writencurve(sweep_element, cs);
+
+  /* get the curve element we just wrote */
+  curve_element = scew_element_next(sweep_element, NULL);
+  curve_element = scew_element_next(sweep_element, curve_element);
+
+  /* and add a containerField attribute */
+  scew_element_add_attr_pair(curve_element, "containerField",
+			     "trajectoryCurve");
+
+
+  /* write the caps and bevels */
+  e = ext->caps_and_bevels;
+  while(e)
+    {
+      x3dio_writenpatchobj(element, e);      
+      e = e->next;
+    }
+
+  /* cleanup */
+  ay_object_deletemulti(c);
+
+  ay_nct_destroy(cs);
+
+ return AY_OK;
+} /* x3dio_writeextrudeobj */
+
 
 #if 0
 /* x3dio_writencurve:
@@ -8961,7 +9071,7 @@ X_Init(Tcl_Interp *interp)
 				       x3dio_writenpconvertibleobj);
 
   ay_status = x3dio_registerwritecb((char *)(AY_IDEXTRUDE),
-				       x3dio_writenpconvertibleobj);
+				       x3dio_writeextrudeobj);
   ay_status = x3dio_registerwritecb((char *)(AY_IDREVOLVE),
 				       x3dio_writerevolveobj);
   ay_status = x3dio_registerwritecb((char *)(AY_IDSWEEP),
