@@ -1,4 +1,4 @@
-[24. Nov 2007] CVS-Head:
+[1. Dec 2007] CVS-Head:
 =======================
 o Bug Fixes:
  - X3D export of NURBS patches (row/column major order) (SF 1804056)
@@ -9,8 +9,16 @@ o Bug Fixes:
  - redo missing states with selection changes (SF 1828494)
  - sweeps with first section -1,0,0 (SF 1837720)
 
+GUI:
+o added option to keep the current selection when creating new objects, by
+  simply holding down the <Control> key
+o added hidden preference setting to control the zoom factor of the
+  mouse wheel ("WheelZoom")
+o added hidden preference settings to control the polygon offset parameters
+  for Shade&Draw display mode ("PolyOffset0" and "PolyOffset1")
+
 Modelling:
-o added new object type Swing (for rotational sweeps/swung surfaces)
+o added new object type "Swing" (for rotational sweeps/swung surfaces)
 o made side cap creation of Revolve objects more robust wrt. the cross
   section curve direction
 o added new object type "Select" to select one object from a list of provided
@@ -25,7 +33,9 @@ o added "undo rewind" command
 Import/Export:
 o import NurbsSwungSurface elements as Swing objects from X3D files
 o import of NurbsSurface texture coordinates from X3D files
-o added TopLevelLayers X3D export option
+o added "TopLevelLayers" X3D export option
+o added "WriteParametrics" X3D export option (to save Revolve, Extrude, Sweep,
+  and Swing objects as NurbsSweptSurface or NurbsSwungSurface nodes)
 
 Renderer Support:
 o reworked shader parsing (core & ayslx plugin) for incompatible changes
