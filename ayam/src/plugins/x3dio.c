@@ -8137,7 +8137,7 @@ x3dio_writerevolveobj(scew_element *element, ay_object *o)
   if(!element || !o)
     return AY_ENULL;
 
-  if(!o->down)
+  if(!o->down || !o->down->next)
     return AY_ERROR;
 
   if(!x3dio_writeparam)
@@ -8194,6 +8194,12 @@ x3dio_writerevolveobj(scew_element *element, ay_object *o)
   else
     {
       ay_status = ay_nct_crtncirclearc(radius, rev->thetamax, &circle);
+    }
+
+  if(!circle)
+    {
+      ay_object_deletemulti(c);
+      return AY_ERROR;
     }
 
   /* flip circle/arc to xz plane */
@@ -8317,7 +8323,10 @@ x3dio_writesweepobj(scew_element *element, ay_object *o)
     }
 
   if(!d)
-    return AY_ERROR;
+    {
+      ay_object_deletemulti(c);
+      return AY_ERROR;
+    }
 
   ay_nct_applytrafo(d);
 
@@ -8428,7 +8437,10 @@ x3dio_writeswingobj(scew_element *element, ay_object *o)
     }
 
   if(!d)
-    return AY_ERROR;
+    {
+      ay_object_deletemulti(c);
+      return AY_ERROR;
+    }
 
   ay_nct_applytrafo(d);
 
@@ -8443,7 +8455,6 @@ x3dio_writeswingobj(scew_element *element, ay_object *o)
   /* and add a containerField attribute */
   scew_element_add_attr_pair(curve_element, "containerField",
 			     "trajectoryCurve");
-
 
   /* write the caps */
   if(swp->upper_cap)
@@ -8509,6 +8520,8 @@ x3dio_writeextrudeobj(scew_element *element, ay_object *o)
 
   if(!tr)
     {
+      if(dtmp)
+	free(dtmp);
       return AY_ERROR;
     }
 
@@ -8540,7 +8553,12 @@ x3dio_writeextrudeobj(scew_element *element, ay_object *o)
 	}
 
       if(!c)
-	return AY_ERROR;
+	{
+	  if(dtmp)
+	    free(dtmp);
+	  ay_nct_destroy(tr);
+	  return AY_ERROR;
+	}
 
       ay_nct_applytrafo(c);
 
