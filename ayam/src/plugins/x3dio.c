@@ -8224,16 +8224,16 @@ x3dio_writerevolveobj(scew_element *element, ay_object *o)
 
   /* write the caps */
   if(rev->upper_cap)
-    x3dio_writenpatchobj(element, rev->upper_cap);
+    x3dio_writenpatchobj(shape_element, rev->upper_cap);
 
   if(rev->lower_cap)
-    x3dio_writenpatchobj(element, rev->lower_cap);
+    x3dio_writenpatchobj(shape_element, rev->lower_cap);
 
   if(rev->start_cap)
-    x3dio_writenpatchobj(element, rev->start_cap);
+    x3dio_writenpatchobj(shape_element, rev->start_cap);
 
   if(rev->end_cap)
-    x3dio_writenpatchobj(element, rev->end_cap);
+    x3dio_writenpatchobj(shape_element, rev->end_cap);
 
 
   /* cleanup */
@@ -8347,7 +8347,7 @@ x3dio_writesweepobj(scew_element *element, ay_object *o)
   e = swp->caps_and_bevels;
   while(e)
     {
-      x3dio_writenpatchobj(element, e);      
+      x3dio_writenpatchobj(shape_element, e);      
       e = e->next;
     }
 
@@ -8366,7 +8366,7 @@ int
 x3dio_writeswingobj(scew_element *element, ay_object *o)
 {
  int ay_status = AY_OK;
- ay_swing_object *swp;
+ ay_swing_object *swing;
  scew_element *transform_element = NULL;
  scew_element *shape_element = NULL;
  scew_element *swing_element = NULL;
@@ -8383,7 +8383,7 @@ x3dio_writeswingobj(scew_element *element, ay_object *o)
   if(!x3dio_writeparam)
     return x3dio_writenpconvertibleobj(element, o);
 
-  swp = (ay_swing_object*)o->refine;
+  swing = (ay_swing_object*)o->refine;
 
   if(!x3dio_writeparam)
     return x3dio_writenpconvertibleobj(element, o);
@@ -8457,17 +8457,17 @@ x3dio_writeswingobj(scew_element *element, ay_object *o)
 			     "trajectoryCurve");
 
   /* write the caps */
-  if(swp->upper_cap)
-    x3dio_writenpatchobj(element, swp->upper_cap);
+  if(swing->upper_cap)
+    x3dio_writenpatchobj(shape_element, swing->upper_cap);
 
-  if(swp->lower_cap)
-    x3dio_writenpatchobj(element, swp->lower_cap);
+  if(swing->lower_cap)
+    x3dio_writenpatchobj(shape_element, swing->lower_cap);
 
-  if(swp->start_cap)
-    x3dio_writenpatchobj(element, swp->start_cap);
+  if(swing->start_cap)
+    x3dio_writenpatchobj(shape_element, swing->start_cap);
 
-  if(swp->end_cap)
-    x3dio_writenpatchobj(element, swp->end_cap);
+  if(swing->end_cap)
+    x3dio_writenpatchobj(shape_element, swing->end_cap);
 
 
   /* cleanup */
@@ -8497,7 +8497,7 @@ x3dio_writeextrudeobj(scew_element *element, ay_object *o)
   if(!element || !o)
     return AY_ENULL;
 
-  if(!o->down)
+  if(!o->down || !o->down->next)
     return AY_ERROR;
 
   if(!x3dio_writeparam)
@@ -8595,7 +8595,7 @@ x3dio_writeextrudeobj(scew_element *element, ay_object *o)
   e = ext->caps_and_bevels;
   while(e)
     {
-      x3dio_writenpatchobj(element, e);      
+      x3dio_writenpatchobj(shape_element, e);      
       e = e->next;
     }
 
