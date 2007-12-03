@@ -87,7 +87,7 @@ return;
 
 ###################################
 # runGetStderr:
-# 
+#
 proc runGetStderr { num cmd channel } {
 
     if { [eof $channel] } {
@@ -95,7 +95,7 @@ proc runGetStderr { num cmd channel } {
         catch { close $channel }
     } else {
         set xx [gets $channel]
-	if { $xx != "" } { 
+	if { $xx != "" } {
 	    ayError 2 $cmd $xx
 	}
     }
@@ -105,7 +105,7 @@ proc runGetStderr { num cmd channel } {
 
 ###################################
 # runGetStdout:
-# 
+#
 proc runGetStdout { num cmd template channel } {
     global ayprefs ay
     if { [eof $channel] } {
@@ -151,7 +151,7 @@ proc runGetStdout { num cmd template channel } {
 		    set string [format "%d:%02d:%02d elapsed" \
 			    $hours $mins $secs]
 		    catch { .render${num}.f2.la configure -text $string }
-		    
+
 		    if {$ay(renderbeep${num})} {bell}
 
 		}
@@ -169,7 +169,7 @@ proc runGetStdout { num cmd template channel } {
 
 ###################################
 # runRenderer:
-# 
+#
 proc runRenderer { cmd template } {
     global ay ayprefs
 
@@ -196,7 +196,7 @@ proc runRenderer { cmd template } {
     fconfigure $ioPipe -buffering none -blocking 0
     fileevent $ioPipe readable "\
 	runGetStderr $ay(rnum) [lindex $cmd 0] $ioPipe"
-    
+
     set ioFid [open "|$cmd 2>@$ioPipe" r+]
 
     fconfigure $ioFid -buffering none -blocking 0
@@ -296,6 +296,6 @@ proc runRenderer { cmd template } {
 
     focus $w
 
- return;   
+ return;
 }
 # runRenderer

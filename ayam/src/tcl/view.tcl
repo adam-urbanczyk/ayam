@@ -113,17 +113,17 @@ proc viewRender { w type } {
     set renderui 0
     if { $type == 0 } {
         if { $ayprefs(RenderUI) == 1 } { set renderui 1 }
-	regsub -all {%s} $ayprefs(Render) $tmpfile command
+	regsub -all {%s} $ayprefs(Render) "\"$tmpfile\"" command
 	set pt $ayprefs(RenderPT)
     }
     if { $type == 1 } {
         if { $ayprefs(QRenderUI) == 1 } { set renderui 1 }
-	regsub -all {%s} $ayprefs(QRender) $tmpfile command
+	regsub -all {%s} $ayprefs(QRender) "\"$tmpfile\"" command
 	set pt $ayprefs(QRenderPT)
     }
     if { $type == 2 } {
         if { $ayprefs(FRenderUI) == 1 } { set renderui 1 }
-	regsub -all {%s} $ayprefs(FRender) $tmpfile command
+	regsub -all {%s} $ayprefs(FRender) "\"$tmpfile\"" command
 	set pt $ayprefs(FRenderPT)
     }
 
