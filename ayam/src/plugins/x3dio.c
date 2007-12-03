@@ -4424,7 +4424,7 @@ x3dio_readnurbspatchsurface(scew_element *element, int is_trimmed)
 	    }
 	  */
 	  /* now add the PV tag */
-	  ay_status = ay_pv_add(o, x3dio_stagname, "varying", 0,
+	  ay_status = ay_pv_add(x3dio_lrobject, x3dio_stagname, "varying", 0,
 				tclen, dtemp);
 	  /*
 	    if(!tcis_double)
@@ -4443,7 +4443,7 @@ x3dio_readnurbspatchsurface(scew_element *element, int is_trimmed)
 	    }
 	  */
 	  /* now add the PV tag */
-	  ay_status = ay_pv_add(o, x3dio_ttagname, "varying", 0,
+	  ay_status = ay_pv_add(x3dio_lrobject, x3dio_ttagname, "varying", 0,
 				tclen, dtemp);
 
 	  /* cleanup */
@@ -7016,10 +7016,10 @@ x3dio_writenpatchobj(scew_element *element, ay_object *o)
   if(!(v = calloc(p->width * p->height * 3, sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
   p1 = v;
-  for(i = 0; i < p->height; i++)
+  for(i = 0; i < (unsigned)p->height; i++)
     {
       p2 = &(p->controlv[i*stride]);
-      for(j = 0; j < p->width; j++)
+      for(j = 0; j < (unsigned)p->width; j++)
 	{
 	  memcpy(p1, p2, 3*sizeof(double));
 	  p1 += 3;
