@@ -6,10 +6,10 @@
 
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
 
-<date>4. Oct 2007
+<date>28. Nov 2007
 
 <abstract>
-This is the documentation of Ayam 1.13 - a free 3D modelling environment
+This is the documentation of Ayam 1.14 - a free 3D modelling environment
 for the RenderMan interface.
 
 Please note, that this document is intended to be a reference manual,
@@ -3084,9 +3084,11 @@ To reduce the size of the RIB, the objects to be rendered
 are written to a second RIB file named <tt>"&lt;scene&gt;.obj.rib"</tt>.
 This file is read from the main RIB several times via
 <tt>"ReadArchive"</tt>. The RIB contains multiple frames which may
-be rendered separately.
+also be rendered separately if the frame number is known.
 To help you picking the right frame number for the image (e.g.
-to re-render just the image),
+to re-render just the final image, when only a material setting was
+changed, and no shadow casting lights were moved and no shadow casting
+geometry was changed),
 a comment with the frame number of the last frame (the image) will be
 written as last statement to the RIB.
 <p>
@@ -3103,9 +3105,8 @@ expects them to be present already. You can create them manually
 (hence the name <tt>"Manual"</tt>) using the view menu entry
 <tt>"View/Create ShadowMaps"</tt> or the main menu entry
 <tt>"Special/RIB-Export/Create ShadowMaps"</tt>.
-The manual approach has the advantage,
-that the shadow maps will not be re-created each time you render
-the scene.
+The manual approach has the advantage, that the shadow maps will not
+be re-created each time you render the scene.
 <p>
 Ayam supports three different methods for the creation of shadow maps
 for certain types of light sources: point, distant, and spot:
@@ -3209,7 +3210,7 @@ the shadow map to the display and simply stop.
 The common idealized standard light sources <tt/"Point"/, <tt/"Distant"/
 and <tt/"Spot"/ have no own geometric extension in space.
 This means, shadows resulting from such light sources will have sharp
-borders which does not look too naturally.
+borders which does not look too natural.
 Good looking soft shadows may be generated using area lights.
 <p>
 Area lights may be created by simply placing a single object as child
@@ -3219,7 +3220,8 @@ shader attached:
 +-AreaLight(Light)
  \ AreaLightGeometry(Sphere)
 </code>
-This child object determines the geometry of the lightsource.
+This child object determines the geometry, place <em>and</em> extension,
+of the lightsource.
 According to L. Gritz, Spheres and Cylinders work best as area light
 geometry for BMRT, because of special sampling code.
 <p>
@@ -3234,7 +3236,8 @@ a child of the light object.
 and size of the object determines the position and size of the lightsource!
 </itemize>
 
-There is an example scene named <tt>"arealight.ay"</tt> distributed with Ayam.
+There is an example scene named <tt>"arealight.ay"</tt> distributed with
+Ayam.
 
 <sect1>NCurve (NURBS Curve) Object<label id="ncurveobj">
 <p>
@@ -3931,8 +3934,9 @@ Consequently, the object hierarchy of an Extrude object may look like this:
 <code>
 +-Extrude
  | Outline(NCurve)
- | [Hole1(NCurve)]
- \ [Hole2(NCurve)]
+ | [Hole_1(NCurve)
+ | ...
+ \ Hole_n(NCurve)]
 </code>
 <p>
 The extrude object can generate caps, if the generating
@@ -4040,41 +4044,30 @@ The object hierarchy of a Swing object, thus, looks like this:
 <code>
 +-Swing
  | Cross_Section(NCurve)
- \ Path(NCurve)
+ \ Trajectory(NCurve)
 </code>
 <p>
 The swing operation will occur around the Y-axis.
 <p>
-The cross section curve has to be defined in the YZ-plane of the
-Swing objects coordinate system but it also has to be defined in the
-XY-plane of its own coordinate system. This means that a simple circular
-curve as e.g. created with the toolbox has to be rotated by 90 degrees
-around the Y-axis using its transformation attributes to follow these
-rules. Later editing of this curve has to be done in a Side view (or
-in an aligned local Front view, if the Swing object itself is transformed
-somehow).
-The path, consequently, has to be defined in the XZ-plane of the
-Swing objects coordinate system.
+The base plane for the swing operation is the YZ-plane. The cross section
+curve should be defined in this plane and the trajectory should start here.
 <p>
-You may convert the current swung surface, the bevels, and the caps, if there
+The dimensions and orders of the swung surface will be taken from the
+respective parameter curves as follows: width and order in u direction
+from the trajectory, height and order in v direction from the cross
+section.
+<p>
+You may convert the current swung surface and the caps, if there
 are any, to ordinary NURBS patches using the main menu entry
 <tt>"Tools/Convert"</tt>.
 
 <sect2>SwingAttr Property<label id="swingattrprop">
 <p>
-The attributes <tt/"StartCap"/ and <tt/"EndCap"/ may be
-used to automatically create cap surfaces, that close the
-Swing on both ends.
-Note that this works properly only if the cross section
-curve is closed and planar (defined in the XY plane).
-<p>
-Bevels:
-They are accessible through the new command entries <tt/"Add Start Bevel!"/
-and <tt/"Add End Bevel!"/ respectively. If one of those entries is used,
-a bevel parameter tag is created and more options will be made available
-in the property GUI to adjust the bevel parameters or remove the tag again.
-A more thorough discussion of those options is available in section
-<ref id="bevelp" name="BevelAttr Property">.
+The attributes <tt/"UpperCap"/, <tt/"LowerCap"/, <tt/"StartCap"/, and
+<tt/"EndCap"/ may be used to automatically create cap surfaces, that
+close the Swing on the respective ends.
+Note that this works properly only if the corresponding parameter
+curve is closed and planar.
 <p>
 See section <ref id="npattr" name="NPatchAttr"> for a description
 of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
@@ -4106,7 +4099,7 @@ The object hierarchy of a Sweep object, thus, looks like this:
 <code>
 +-Sweep
  | Cross_Section(NCurve)
- | Path(NCurve)
+ | Trajectory(NCurve)
  \ [Scaling_Function(NCurve)]
 </code>
 <p>
@@ -4487,10 +4480,10 @@ The complete template for the Skin object hierarchy, consequently,
 looks like this:
 <code>
 +-Skin
- | C1(NCurve)
- | C2(NCurve)
+ | C_1(NCurve)
+ | C_2(NCurve)
  | [...
- \ Cn(NCurve)]
+ \ C_n(NCurve)]
 </code>
 <p>
 Note that in contrast to the build from curves tool,
@@ -7289,7 +7282,7 @@ objects script code.
 <sect2>Manipulating Properties<label id="sciprop">
 <p>
 Since Ayam 1.9 two new commands are implemented that ease
-the manipulation of property values:
+the manipulation of property values from the scripting interface:
 
 <p><label id="scgetproperty">
 getProperty - get single property value
@@ -9743,6 +9736,20 @@ object clipboard if they have saved states in the undo buffer.
 This section briefly introduces the modelling concept <em>Tool-Objects</em>,
 used in Ayam.
 <p>
+In a standard modelling application, to create a surface of revolution,
+one would either first create a curve then call the revolve tool to get
+an appropriate surface (losing the curve as object, or even keeping it,
+but without relation to the surface), or call the revolve tool first,
+which would then require the user to draw a curve with similar results:
+the created surface will typically lose the relation to the surface of
+revolution tool and the curve (even if kept intact) will lose the relation
+to the surface. There is no easy way to change parameters for the surface
+creation or to change the geometry of the curve later on without doing it
+all over again.
+<p>
+The modelling concept Tool-Objects overcomes these drawbacks by
+transforming the revolve <em>tool</em> into a scene <em>object</em>.
+<p>
 The following example hierarchy shows two objects in a parent-child relation:
 <code>
 +-Tool_Object(Revolve)        
@@ -9769,6 +9776,7 @@ and there may be more than one parameter objects per tool object:
 <code>
 +-Tool_Object(Skin)
  | Parameter_Object_1(NCurve)
+ | Parameter_Object_2(NCurve)
  | ...
  \ Parameter_Object_n(NCurve)
 </code>
@@ -9797,10 +9805,10 @@ Revolve object will get updated automatically whenever the NCurve changes.
 <p>
 Two other mechanisms exist, that help tool objects to get the information
 they need and to increase flexibility in hierarchy building and modelling:
-<em>Provision</em> and <em>Conversion</em>. Both mechanisms are similar and
-convert objects temporarily/transparently (provision) or finally (conversion)
-from one type to another, e.g. convert an ICurve (interpolating curve) to a
-plain NCurve (NURBS curve).
+<em>Provision</em> and <em>Conversion</em>. Both mechanisms are quite similar
+and convert objects temporarily/transparently (provision) or finally
+(conversion) from one type to another, e.g. they convert an ICurve
+(interpolating curve) to a plain NCurve (NURBS curve).
 <p>
 Due to the provision mechanism, an ICurve object could be used instead
 of an NCurve as parameter object in all examples above easily. The Revolve
@@ -10031,6 +10039,14 @@ files of the type designated by the file name extensions.
 <item><tt/"AUCommands"/, commands that will be run in the console
 when <tt/&lt;Shift+Return&gt;/ is used instead of <tt/&lt;Return&gt;/.
 See also section <ref id="sciupd" name="Updating the GUI">.
+
+<item><tt/"PolyOffset0"/, <tt/"PolyOffset1"/ two float values, that
+control the offsetting of shaded surfaces in the shade and draw
+drawing mode (so that the curves always appear on top of the surfaces).
+Default values are 1.0, 1.0.
+
+<item><tt/"WheelZoom"/, a float value that controls the zoom factor,
+for the mouse wheel; default value is 0.5.
 
 </itemize>
 
@@ -10744,7 +10760,8 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>Draw BGImage: <ref id="vmconf" name="view menu entry">
 <item>Draw Grid: <ref id="vmconf" name="view menu entry">
 <item>Draw Object CS: <ref id="vmconf" name="view menu entry">
-<item>DXF: <ref id="impdxf" name="DXF import plugin">
+<item>DXF: <ref id="impdxf" name="DXF import plugin">,
+<ref id="expdxf" name="DXF export plugin">
 <item>DynamicLoad: <ref id="riprocp" name="riproc attribute">
 </itemize>
 
@@ -10929,6 +10946,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <ref id="prefdraw" name="preference setting">
 <item>LightAttr: <ref id="lip" name="property">
 <item>LightShader: <ref id="lightobj" name="light">
+<item>LineWidth: <ref id="hidprefs" name="hidden preference setting">
 <item>ListTypes: <ref id="prefgui" name="preference setting">
 <item>LoadEnv: <ref id="prefgui" name="preference setting">
 <item>Load Plugin: <ref id="mmfile" name="main menu entry">
@@ -11052,6 +11070,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>Plot Curvature: <ref id="plotcurt" name="plot curvature tool">
 <item>Point: <ref id="pdsl" name="light type">
 <item>PolyMesh: <ref id="polymeshobj" name="PolyMesh object">
+<item>PolyOffset: <ref id="hidprefs" name="hidden preference setting">
 <item>PPRender: <ref id="prefrib" name="preference setting">
 <item>Preferences: <ref id="prefs" name="Preferences">,
 <ref id="hidprefs" name="Hidden Preference Settings">
@@ -11164,6 +11183,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <ref id="cloneattr" name="Clone attribute">
 <item>Rotation: <ref id="trap" name="transformations property">,
 <ref id="gimb" name="using the transformations property">
+<item>Rotational Sweep: <ref id="swingobj" name="Swing object">
 <item>rotOb: <ref id="scrotob" name="scripting interface command">
 <item>rotSel: <ref id="scrotsel" name="scripting interface command">
 <item>RP: <ref id="rptag" name="tag type">
@@ -11209,6 +11229,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Selected Objects: <ref id="mmspecial" name="main menu entry">
 <item>Select Renderer: <ref id="mmspecial" name="main menu entry">
 <item>Selection: <ref id="prefdraw" name="preference setting">
+<item>SelLineWidth: <ref id="hidprefs" name="hidden preference setting">
 <item>selOb: <ref id="scselob" name="scripting interface command">
 <item>SelXOR_R, SelXOR_G, SelXOR_B:
 <ref id="hidprefs" name="hidden preference setting">
@@ -11278,6 +11299,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Swap UV: <ref id="swapuvt" name="swap uv tool">
 <item>Sweep: <ref id="sweepobj" name="Sweep object">,
 <ref id="swpt" name="Sweep tool">
+<item>Swing: <ref id="swingobj" name="Swing object">
 </itemize>
 
 <label id="indext">T
@@ -11382,9 +11404,10 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <label id="indexw">W
 <itemize>
 <item>WarnUnknownTag: <ref id="hidprefs" name="hidden preference setting">
-<item>Wavefront OBJ import: <ref id="impwav" name="Wavefront OBJ import">
-<item>Wavefront OBJ export: <ref id="expwav" name="Wavefront OBJ export">
+<item>Wavefront OBJ: <ref id="impwav" name="Wavefront OBJ import">,
+<ref id="expwav" name="Wavefront OBJ export">
 <item>Weight: <ref id="iac" name="single point weight editing">
+<item>WheelZoom: <ref id="hidprefs" name="hidden preference setting">
 <item>Width: <ref id="rio" name="RenderMan interface option">,
 <ref id="bxp" name="box attribute">,
 <ref id="npattr" name="NURBPatch attribute">,
