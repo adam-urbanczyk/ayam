@@ -59,7 +59,10 @@ proc splash_open { } {
 
     label $w.image -image ayam-splash
     pack $w.image  -side left
-    bind $w <ButtonRelease-1> "grab release $w; after 50 destroy $w; focus ."
+    bind $w <ButtonRelease-1> {
+	grab release %W; after 50 destroy %W; focus .;
+	after cancel viewMouseToCurrent
+    }
 
     # center the window
     if { ! $AYWITHAQUA } {
@@ -81,7 +84,9 @@ proc splash_close { } {
     if { [winfo exists .aysplash] } {
 	grab release .aysplash
 	destroy .aysplash
-	focus -force .
+	if { [focus] != ".fl.con.console" } {
+	    focus -force .
+	}
     }
  return;
 }
