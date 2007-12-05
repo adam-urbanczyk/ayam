@@ -129,6 +129,36 @@ global ay; set ay(ul) $ay(CurrentLevel); uS; rV; set ay(sc) 1}
 $m add command -label "Delete" -command {delOb; cS;
 global ay; set ay(ul) $ay(CurrentLevel); uS; rV; set ay(sc) 1}
 $m add separator
+$m add command -label "Select All" -command {
+    global ay
+    if { $ay(lb) == 0 } {
+	set tree $ay(tree)
+	set nodes [$tree nodes $ay(CurrentLevel)]
+
+	if { $ay(CurrentLevel) == "root" } {
+	    set nodes [lrange $nodes 1 end]
+	}
+	if { [llength $nodes] > 0 } {
+	    eval [subst "$tree selection set $nodes"]
+	    eval [subst "treeSelect $nodes"]
+	}
+	plb_update
+	if { $ay(need_redraw) } {
+	    rV
+	}
+    } else {
+	$ay(olbball) invoke
+	break
+    }
+}
+$m add command -label "Select None" -command {
+    cS
+    plb_update
+    if { $ay(need_redraw) == 1 } {
+	rV
+    }
+}
+$m add separator
 $m add command -label "Copy Property" -command {pclip_copy 0}
 $m add command -label "Copy Marked Prop" -command {pclip_copy 1}
 $m add command -label "Paste Property" -command {global ay;

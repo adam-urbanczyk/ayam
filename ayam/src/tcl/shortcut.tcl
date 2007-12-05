@@ -125,27 +125,33 @@ proc shortcut_main { w } {
     $m entryconfigure 1 -accelerator $aymainshortcuts(Cut)
     bind $w <[repcont $aymainshortcuts(Paste)]> "$m invoke 2"
     $m entryconfigure 2 -accelerator $aymainshortcuts(Paste)
-    bind $w <[repcont $aymainshortcuts(CopyP)]> "$m invoke 5"
-    $m entryconfigure 5 -accelerator $aymainshortcuts(CopyP)
-    bind $w <[repcont $aymainshortcuts(ICopyP)]> "$m invoke 6"
-    $m entryconfigure 6 -accelerator $aymainshortcuts(ICopyP)
-    bind $w <[repcont $aymainshortcuts(PasteP)]> "$m invoke 7"
-    $m entryconfigure 7 -accelerator $aymainshortcuts(PasteP)
 
-    bind $w <[repcont $aymainshortcuts(Undo)]> "$m invoke 9"
-    $m entryconfigure 9 -accelerator $aymainshortcuts(Undo)
-    bind $w <[repcont $aymainshortcuts(Redo)]> "$m invoke 10"
-    $m entryconfigure 10 -accelerator $aymainshortcuts(Redo)
+    bind $w <[repcont $aymainshortcuts(SelAll)]> "$m invoke 5"
+    $m entryconfigure 5 -accelerator $aymainshortcuts(SelAll)
+    bind $w <[repcont $aymainshortcuts(SelNone)]> "$m invoke 6"
+    $m entryconfigure 6 -accelerator $aymainshortcuts(SelNone)
 
-    bind $w <[repcont $aymainshortcuts(Material)]> "$m invoke 12"
-    $m entryconfigure 12 -accelerator $aymainshortcuts(Material)
+    bind $w <[repcont $aymainshortcuts(CopyP)]> "$m invoke 8"
+    $m entryconfigure 8 -accelerator $aymainshortcuts(CopyP)
+    bind $w <[repcont $aymainshortcuts(ICopyP)]> "$m invoke 9"
+    $m entryconfigure 9 -accelerator $aymainshortcuts(ICopyP)
+    bind $w <[repcont $aymainshortcuts(PasteP)]> "$m invoke 10"
+    $m entryconfigure 10 -accelerator $aymainshortcuts(PasteP)
 
-    bind $w <[repcont $aymainshortcuts(Master)]> "$m invoke 13"
-    $m entryconfigure 13 -accelerator $aymainshortcuts(Master)
+    bind $w <[repcont $aymainshortcuts(Undo)]> "$m invoke 12"
+    $m entryconfigure 12 -accelerator $aymainshortcuts(Undo)
+    bind $w <[repcont $aymainshortcuts(Redo)]> "$m invoke 13"
+    $m entryconfigure 13 -accelerator $aymainshortcuts(Redo)
+
+    bind $w <[repcont $aymainshortcuts(Material)]> "$m invoke 15"
+    $m entryconfigure 15 -accelerator $aymainshortcuts(Material)
+
+    bind $w <[repcont $aymainshortcuts(Master)]> "$m invoke 16"
+    $m entryconfigure 16 -accelerator $aymainshortcuts(Master)
 
 
-    bind $w <[repcont $aymainshortcuts(Prefs)]> "$m invoke 15"
-    $m entryconfigure 15 -accelerator $aymainshortcuts(Prefs)
+    bind $w <[repcont $aymainshortcuts(Prefs)]> "$m invoke 18"
+    $m entryconfigure 18 -accelerator $aymainshortcuts(Prefs)
 
     set m $ay(toolsmenu)
     bind $w <[repcont $aymainshortcuts(LastTool)]> "$m invoke 0"
@@ -176,38 +182,6 @@ proc shortcut_main { w } {
 	    if { "%W" == "[winfo toplevel %W]" } {
 		focus %W
 	    }
-	}
-    }
-
-    bind $w <[repcont $aymainshortcuts(SelAll)]> {
-	global ay
-	if { $ay(lb) == 0 } {
-	    set tree $ay(tree)
-	    set nodes [$tree nodes $ay(CurrentLevel)]
-
-	    if { $ay(CurrentLevel) == "root" } {
-		set nodes [lrange $nodes 1 end]
-	    }
-	    if { [llength $nodes] > 0 } {
-		eval [subst "$tree selection set $nodes"]
-		eval [subst "treeSelect $nodes"]
-	    }
-	    plb_update
-	    if { $ay(need_redraw) } {
-		rV
-	    }
-	} else {
-	    $ay(olbball) invoke
-	    break
-	}
-    }
-    # bind
-
-    bind $w <[repcont $aymainshortcuts(SelNone)]> {
-	cS
-	plb_update
-	if { $ay(need_redraw) == 1 } {
-	    rV
 	}
     }
 
@@ -556,6 +530,8 @@ proc shortcut_viewactions { w } {
 	    set ay(oldb1rbinding) [bind $w <ButtonRelease-${i}>]
 	    set oldx -1
 	    set oldy -1
+	    # the following binding allows to start actions with
+	    # the shift key held down (e.g. scale-3D using shift+s)
 	    bind [winfo toplevel %W] <KeyRelease> {
 		set w [winfo toplevel %W].f3D.togl
 		# save old bindings
