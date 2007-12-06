@@ -115,6 +115,7 @@ proc prefs_open {} {
 	}
 	focus .
 	destroy .prefsw
+	winAutoFocusOn
     }
 
     # Tabbed-Notebook
