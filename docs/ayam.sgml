@@ -8553,7 +8553,7 @@ application. For instance, many applications claim to read files in the
 Wavefront OBJ format but only import polygonal data or, even worse, only
 triangles from such files. By default, Ayam tries to preserve as much
 information as possible in the respective export format leading to the
-use of NURBS in OBJ files.
+use of NURBS in Wavefront OBJ files.
 Consequently, in some cases you may need to convert the NURBS objects in
 the Ayam scene to polygonal geometry before export. There is a script
 provided that helps you doing this (<tt>"topoly.tcl"</tt>, see also section
@@ -9762,7 +9762,10 @@ The following example hierarchy shows two objects in a parent-child relation:
 The parent object is called <em>Tool-Object</em> and the child object is
 called <em>Parameter-Object</em>. There is a flow of information from the
 parameter object to the tool object. This information flow is controlled
-by the so called <em>Notification</em> mechanism.
+by the so called <em>Notification</em> mechanism. The notification mechanism
+makes sure that whenever the parameter objects change, the tool object is
+informed so that it may adapt to the changes.
+<p>
 In the example above, a NURBS curve is the parameter object, and the
 tool object is creating a surface of revolution from the curve data.
 <p>
@@ -9780,11 +9783,10 @@ and there may be more than one parameter objects per tool object:
  | ...
  \ Parameter_Object_n(NCurve)
 </code>
+<p>
 Tool objects create new geometric objects from the information delivered
 by the parameter object(s) or they may modify the parameter object(s) and
-deliver them to their respective parent object. The notification mechanism
-makes sure that whenever the parameter objects change, the tool object is
-informed so that it may adapt to the changes.
+deliver them to their respective parent object.
 <p>
 For interactive modelling actions, the notification will be carried out
 while dragging the mouse or only after the modelling action finished,
@@ -9793,9 +9795,9 @@ depending on the main preference setting <tt/"LazyNotify"/.
 The pure hierarchical dependency scheme may be broken up by instance objects:
 <code>
 +-Tool_Object(Revolve)
- \ Parameter_Object(NCurve)
-+-Tool_Object(Revolve)
- \ Parameter_Object(Instance_of_NCurve)
+ \ Parameter_Object(NCurve) --------------
++-Tool_Object(Revolve)                    | !
+ \ Parameter_Object(Instance_of_NCurve) <-
 </code>
 The notification mechanism is aware of this and initiates updates
 in the scene hierarchy wherever needed and efficiently (not updating any
@@ -9811,9 +9813,10 @@ and convert objects temporarily/transparently (provision) or finally
 (interpolating curve) to a plain NCurve (NURBS curve).
 <p>
 Due to the provision mechanism, an ICurve object could be used instead
-of an NCurve as parameter object in all examples above easily. The Revolve
-tool objects could be converted to NPatch objects for modifications not
-available to Revolve objects by the conversion mechanism.
+of an NCurve as parameter object in all examples above easily.
+And with the help of the conversion mechanism, the Revolve
+tool objects could be converted to plain NPatch objects (e.g. for
+modelling operations not available to Revolve objects).
 
 <sect1>Ayamrc File<label id="ayamrc">
 <p>
@@ -10130,6 +10133,10 @@ After loading of one of the aforementioned plugins, Ayam will
 be able to parse shaders compiled with the shader compiler
 of the respective renderer.
 <p>
+There can only be one active shader parsing plugin. You can not
+first load ayslb and then ayslx and expect Ayam to parse slb
+<em>and</em> slx shaders.
+<p>
 A shader parsing plugin may be loaded
 automatically on startup of Ayam using one of the provided Tcl scripts:
 <tt/"loadayslb.tcl"/, <tt/"loadayslo.tcl"/, <tt/"loadayslo3d.tcl"/,
@@ -10144,10 +10151,10 @@ Additionally, those scripts may be further adapted to
 set a different <tt/"Shaders"/ preference setting or to immediately
 scan for shaders after loading of the plugin. For that, just remove
 the leading hash-marks (&num;) from the corresponding lines in the script.
-Changing the scripts is not necessary if you load the shader parsing plugin
-automatically on startup of Ayam, as the loading of the scripts will
-happen before the Ayam startup sequence executes the initial shader scanning
-pass.
+Changing the scripts for immediate shader parsing is not necessary if you
+load the shader parsing plugin automatically on startup of Ayam, as the
+loading of the scripts will happen before the Ayam startup sequence
+executes the initial shader scanning pass.
 <p>
 However, the standard behavior of the loading script while manually
 loading of such a plugin requires you to adapt the shaders search path
@@ -10157,9 +10164,11 @@ for shaders may also be started using the main menu:
 <tt>"Special/Scan Shaders"</tt>.
 <p>
 To better accomodate the fast changing world of RenderMan renderers,
-since Ayam 1.11 all shader parsing plugins are Ayam version independent.
-This allows to distribute updated shader parsing plugins without
-updating Ayam too and thus in a higher frequency.
+since Ayam 1.11 all shader parsing plugins are Ayam version independent
+(but still renderer version dependent <em>and</em> Tcl version dependent).
+This allows to distribute updated shader parsing plugins without updating
+Ayam too and thus in a higher frequency.
+Furthermore, compiling a shader parsing plugin is now much easier.
 
 <sect1>Automatic Instancing<label id="ai">
 <p>
