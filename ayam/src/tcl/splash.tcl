@@ -60,7 +60,10 @@ proc splash_open { } {
     label $w.image -image ayam-splash
     pack $w.image  -side left
     bind $w <ButtonRelease-1> {
-	grab release %W; after 50 destroy %W; focus .;
+	grab release .aysplash; after 50 destroy .aysplash;
+	if { ! $AYWITHAQUA } {
+	    focus .
+	}
 	after cancel viewMouseToCurrent
     }
 
