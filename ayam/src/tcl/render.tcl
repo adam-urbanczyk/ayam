@@ -213,14 +213,18 @@ proc render_select { } {
 
 	    6 {
 		# Pixie
-		set ayprefs(QRender) "rndr %s"
-		set ayprefs(QRenderPT) "regexp -- {^.* - (\\\[0-9\\\]+)} string dummy percent"
-		set ayprefs(Render) "rndr -progress %s"
-		set ayprefs(RenderPT) "regexp -- {^.* - (\\\[0-9\\\]+)} string dummy percent"
-		set ayprefs(SMRender) "rndr -progress %s"
-		set ayprefs(SMRenderPT) "regexp -- {^.* - (\\\[0-9\\\]+)} string dummy percent"
-		set ayprefs(FRender) "rndr -progress %s"
-		set ayprefs(FRenderPT) "regexp -- {^.* - (\\\[0-9\\\]+)} string dummy percent"
+		set ayprefs(QRender) "rndr -p %s"
+		set ayprefs(QRenderPT) "Done %%%d"
+		#set ayprefs(QRenderPT) "regexp -- {^.* - (\\\[0-9\\\]+)} string dummy percent"
+		set ayprefs(Render) "rndr -p %s"
+		set ayprefs(RenderPT) "Done %%%d"
+		#set ayprefs(RenderPT) "regexp -- {^.* - (\\\[0-9\\\]+)} string dummy percent"
+		set ayprefs(SMRender) "rndr -p %s"
+		set ayprefs(SMRenderPT) "Done %%%d"
+		#set ayprefs(SMRenderPT) "regexp -- {^.* - (\\\[0-9\\\]+)} string dummy percent"
+		set ayprefs(FRender) "rndr -p %s"
+		set ayprefs(FRenderPT) "Done %%%d"
+		#set ayprefs(FRenderPT) "regexp -- {^.* - (\\\[0-9\\\]+)} string dummy percent"
 
 		set ayprefs(RenderMode) 1
 
