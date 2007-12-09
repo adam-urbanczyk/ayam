@@ -1104,6 +1104,7 @@ proc io_readMainGeom { } {
 	}
 	incr i
     }
+    # foreach
 
     if { $sel != "" } {
 	if { $ay(lb) == 0 } {
@@ -1114,6 +1115,7 @@ proc io_readMainGeom { } {
 	    selOb -lb $sel
 	}
     }
+    # if
 
  return;
 }
@@ -1239,13 +1241,9 @@ proc io_appext { filename extension } {
     set newfilename $filename
 
     if { $ayprefs(AddExtensions) } {
-
 	if { ![string equal -nocase [file extension $filename] $extension] } {
-
 	    append newfilename $extension
-
 	}
-
     }
 
  return $newfilename
@@ -1306,6 +1304,8 @@ proc io_importScene { filename } {
 	ayError 2 "io_importScene" "Unknown extension: $ext"
     }
 
+    winAutoFocusOn
+
  return;
 }
 # io_importScene
@@ -1363,6 +1363,8 @@ proc io_exportScene { filename } {
     if { ! $exported } {
 	ayError 2 "io_exportScene" "Unknown extension: $ext"
     }
+
+    winAutoFocusOn
 
  return;
 }
