@@ -44,10 +44,8 @@ uplevel #0 { array set tgui_tessparam {
 # tgui_block:
 #  block user interactions in main and toolbox windows that could
 #  destroy objects
-proc tgui_block { } {
+proc tgui_block { blockMsg } {
     global ay ayprefs
-
-    set blockMsg "User interaction is restricted by tesselation dialog!"
 
     set ay(ButtonBinding) [bind Button <1>]
     set sc "if { (\[winfo toplevel %W\] == \".\") || \
@@ -600,7 +598,7 @@ proc tgui_open { } {
 
     wm deiconify $w
 
-    tgui_block
+    tgui_block "User interaction is restricted by tesselation dialog!"
 
     tkwait window $w
 

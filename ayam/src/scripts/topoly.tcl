@@ -33,7 +33,8 @@ proc toPoly { } {
 
     ayError 4 "toPoly" "Starting conversion. Please wait."
 
-    mouseWatch 1 {. .tbw}
+    # block the UI
+    tgui_block "Interaction restricted, please wait..."
 
     # do a "toNPatch"
     set types { Box Sphere Cylinder Cone Disk Hyperboloid Torus Paraboloid \
@@ -52,11 +53,12 @@ proc toPoly { } {
     # now convert MetaBalls to PolyMeshes
     forAllT MetaObj 1 { convOb -inplace }
 
-    mouseWatch 0 {. .tbw}
+    # unblock the UI
+    tgui_unblock
 
     ayError 4 "toPoly" "Done converting everything to polygons."
 
-    return;
+ return;
 }
 # toPoly
 
