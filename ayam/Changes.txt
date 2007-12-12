@@ -1,4 +1,4 @@
-[1. Dec 2007] CVS-Head:
+[12. Dec 2007] CVS-Head:
 =======================
 o Bug Fixes:
  - X3D export of NURBS patches (row/column major order) (SF 1804056)
@@ -8,6 +8,9 @@ o Bug Fixes:
  - saved ExtrNC objects failing to load (SF 1814644)
  - redo missing states with selection changes (SF 1828494)
  - sweeps with first section -1,0,0 (SF 1837720)
+ - direct rendering of scenes with spaces in filename or path (SF 1840995)
+ - autofocus after preferences window was closed (SF 1846422)
+ - autofocus after implicit import/export (SF 1847870)
 
 GUI:
 o added option to keep the current selection when creating new objects, by
@@ -16,6 +19,9 @@ o added hidden preference setting to control the zoom factor of the
   mouse wheel ("WheelZoom")
 o added hidden preference settings to control the polygon offset parameters
   for Shade&Draw display mode ("PolyOffset0" and "PolyOffset1")
+o avoid stealing the focus from the console on application startup
+o added select all/none entries to edit menu (mainly to teach the
+  corresponding keyboard shortcuts)
 
 Modelling:
 o added new object type "Swing" (for rotational sweeps/swung surfaces)
