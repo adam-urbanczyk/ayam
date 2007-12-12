@@ -912,6 +912,8 @@ typedef struct ay_view_object_s
   int drawbg;
   char *bgimage;
 
+  int isicon;
+
   /* alternative display callback */
   Togl_Callback *altdispcb;
 } ay_view_object;

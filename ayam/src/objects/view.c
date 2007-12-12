@@ -681,6 +681,11 @@ ay_view_readcb(FILE *fileptr, ay_object *o)
       fscanf(fileptr,"%d\n", &vtemp.antialiaslines);
     }
 
+  if(ay_read_version >= 11)
+    {
+      fscanf(fileptr,"%d\n", &vtemp.isicon);
+    }
+
   vtemp.drawhandles = AY_FALSE;
 
   /* open the view */
@@ -734,12 +739,19 @@ ay_view_readcb(FILE *fileptr, ay_object *o)
   Tcl_Eval(ay_interp, command);
 
   /* position window */
-
   sprintf(command,
 	  "global ay;winMoveOrResize [lindex $ay(views) end] \"+%d+%d\"\n",
 	  vtemp.pos_x, vtemp.pos_y);
 
   Tcl_Eval(ay_interp, command);
+
+  /* iconify it? */
+  if(vtemp.isicon)
+    {
+      sprintf(command, "global ay;wm iconify [lindex $ay(views) end]\n");
+      
+      Tcl_Eval(ay_interp, command);
+    }
 
   sprintf(command,
 	  "global ay;viewSetGridIcon [lindex $ay(views) end] %g\n",
@@ -824,6 +836,8 @@ ay_view_writecb(FILE *fileptr, ay_object *o)
   fprintf(fileptr,"%d\n",view->drawobjectcs);
 
   fprintf(fileptr,"%d\n",view->antialiaslines);
+
+  fprintf(fileptr,"%d\n",view->isicon);
 
  return AY_OK;
 } /* ay_view_writecb */

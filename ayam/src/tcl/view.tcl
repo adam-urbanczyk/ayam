@@ -165,8 +165,14 @@ proc viewUPos { } {
 	    regexp {([0-9]+)?x?([0-9]+)?(\+|\-)?([0-9]+)?(\+|\-)?([0-9]+)?} $oldgeom blurb width height blurb2 x blurb3 y
 	}
 #	set cw $ay(currentView)
+
+	set isicon 0
+	set state [wm state [winfo toplevel $w]]
+	if {  ($state == "iconic") || ($state == "withdrawn") } {
+	    set isicon 1
+	}
 	$w.f3D.togl mc
-	$w.f3D.togl setconf -pos $x $y
+	$w.f3D.togl setconf -ico $isicon -pos $x $y
 	$ay(currentView) mc
     }
     # foreach

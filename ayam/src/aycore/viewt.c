@@ -1131,6 +1131,13 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 	      view->drawmarker = argi;
 	    } /* if */
 	  break;
+	case 'i':
+	  if(!strcmp(argv[i], "-ico"))
+	    {
+	      Tcl_GetInt(interp, argv[i+1], &argi);
+	      view->isicon = argi;
+	    }
+	  break;
 	case 'l':
 	  if(!strcmp(argv[i], "-local"))
 	    {
