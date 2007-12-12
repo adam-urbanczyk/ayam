@@ -33,7 +33,8 @@ proc toNPatch { } {
 
     ayError 4 "toNPatch" "Starting conversion. Please wait."
 
-    mouseWatch 1 {. .tbw}
+    # block the UI
+    tgui_block "Interaction restricted, please wait..."
 
     # do a "toNPatch"
     set types { Box Sphere Cylinder Cone Disk Hyperboloid Torus Paraboloid \
@@ -46,7 +47,8 @@ proc toNPatch { } {
     # update scene structure
     uS
 
-    mouseWatch 0 {. .tbw}
+    # unblock the UI
+    tgui_unblock
 
     ayError 4 "toNPatch" "Done converting everything to NURBS patches."
 
