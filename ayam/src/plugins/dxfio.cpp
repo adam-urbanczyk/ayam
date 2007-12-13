@@ -97,6 +97,9 @@ double dxfio_rescaleknots = 0.0;
 // global scale factor
 double dxfio_scalefactor = 1.0;
 
+// cancelled flag
+int dxfio_cancelled = AY_FALSE;
+
 
 // prototypes of functions local to this module:
 
@@ -2491,6 +2494,8 @@ dxfio_writetcmd(ClientData clientData, Tcl_Interp *interp,
 
   // reset internal progress counter
   dxfio_writeprogressdcb(0.0f, (void*)1);
+  
+  dxfio_cancelled = AY_FALSE;
 
   // check args
   if(argc < 2)
@@ -2640,7 +2645,10 @@ dxfio_writetcmd(ClientData clientData, Tcl_Interp *interp,
   // write the model to the output file
   if(!dm.write(&out))
     {
-      ay_error(AY_ERROR, fname, "Error writing file!");
+      if(!dxfio_cancelled)
+	{
+	  ay_error(AY_ERROR, fname, "Error writing file!");
+	}
     }
 
   // set progress
@@ -2716,9 +2724,10 @@ dxfio_writeprogressdcb(float progress, void *clientdata)
 			TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
       if(val && val[0] == '1')
 	{
-	  if(dxfio_errorlevel > 1)
+	  /*if(dxfio_errorlevel > 1)*/
 	    ay_error(AY_EWARN, fname,
 		   "Export cancelled! Not all objects may have been written!");
+	    dxfio_cancelled = AY_TRUE;
 	  return 0;
 	}
     } // if
