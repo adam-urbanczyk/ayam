@@ -122,6 +122,9 @@ proc dxfio_import { } {
 
     set ::dxfio_options(Cancel) 0
 
+    # Esc-Key == Cancel button
+    bind $w <Escape> "$f.bca invoke"
+
     winCenter $w
     grab $w
     focus $w.f2.bok
@@ -217,12 +220,18 @@ proc dxfio_export { } {
     # button
 
     button $f.bca -text "Cancel" -width 5 -command "\
+                set ::dxfio_options(Cancel) 1;\
 		grab release .dxfio;\
 		focus .;\
 		destroy .dxfio"
 
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
     pack $f -in $w -side bottom -fill x
+
+    set ::dxfio_options(Cancel) 0
+
+    # Esc-Key == Cancel button
+    bind $w <Escape> "$f.bca invoke"
 
     winCenter $w
     grab $w
