@@ -102,6 +102,10 @@ proc pomesh_merge { } {
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
     pack $f -in $w -side bottom -fill x
 
+    # Esc-key && close via window decoration == Cancel button
+    bind $w <Escape> "$f.bca invoke"
+    wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
+
     winCenter $w
     grab $w
     focus $w.f2.bok
@@ -121,6 +125,7 @@ uplevel #0 { array set pomeshopt_options {
     IgnoreNormals 1
     OptimizeFaces 0
 }   }
+
 
 # pomesh_optimize:
 #
@@ -175,6 +180,10 @@ proc pomesh_optimize { } {
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
     pack $f -in $w -side bottom -fill x
 
+    # Esc-key && close via window decoration == Cancel button
+    bind $w <Escape> "$f.bca invoke"
+    wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
+
     winCenter $w
     grab $w
     focus $w.f2.bok
@@ -192,6 +201,7 @@ proc pomesh_optimize { } {
 uplevel #0 { array set pomeshspl_options {
     Optimize 1
 }   }
+
 
 # pomesh_split:
 #
@@ -245,6 +255,10 @@ proc pomesh_split { } {
 
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
     pack $f -in $w -side bottom -fill x
+
+    # Esc-key && close via window decoration == Cancel button
+    bind $w <Escape> "$f.bca invoke"
+    wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
 
     winCenter $w
     grab $w

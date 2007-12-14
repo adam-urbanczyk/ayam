@@ -412,6 +412,10 @@ proc tc_edit { } {
     pack $f -in $w -side bottom -fill x
 
 
+    # Esc-key && close via window decoration == Dismiss button
+    bind $w <Escape> "$f.bd invoke"
+    wm protocol $w WM_DELETE_WINDOW "$f.bd invoke"
+
     # in case tags are changing while tc_edit is open
     bind $w <Enter> {tc_updateMenu}
 

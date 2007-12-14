@@ -300,6 +300,7 @@ proc shader_setNew { win type stype } {
     }
 
     button $f.bca -text "Cancel" -width 5 -command "\
+            grab release .setShaderw;\
 	    global newshaderindex;\
 	    set newshaderindex \"\";\
 	    destroy $w"
@@ -307,6 +308,8 @@ proc shader_setNew { win type stype } {
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
     pack $f -in $w -side bottom -fill x
 
+    # Esc-key && close via window decoration == Cancel button
+    bind $w <Escape> "$f.bca invoke"
     wm protocol $w WM_DELETE_WINDOW {
 	.setShaderw.f2.bca invoke
     }

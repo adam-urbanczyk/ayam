@@ -9,8 +9,8 @@
 
 # about.tcl - the about requester
 
-#
-#
+# aboutAyam:
+#  open the about window
 #
 proc aboutAyam {} {
 global ay tcl_version tk_version tcl_patchLevel tk_patchLevel tcl_platform
@@ -159,6 +159,7 @@ Copyright (c) 1988-1997 Sam Leffler
 Copyright (c) 1991-1997 Silicon Graphics, Inc.
 "
 
+# center the last 19 lines"
 $w.ftext.text tag add "tag3" end-19lines end
 
 $w.ftext.text tag configure tag3 -justify center
@@ -190,6 +191,12 @@ bind $w.ftext.text <ButtonRelease-1> {
 
 update idletasks
 
+# Esc-key && close via window decoration == Dismiss button
+bind $w <Escape> "$w.fbutton.b invoke"
+wm protocol $w WM_DELETE_WINDOW "$w.fbutton.b invoke"
+
+winCenter $w
+focus $w.fbutton.b
 tkwait window $w
 
 winAutoFocusOn
