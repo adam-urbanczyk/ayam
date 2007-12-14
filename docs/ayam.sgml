@@ -695,6 +695,11 @@ This operation is not undoable!
 <item><tt/"Delete"/, removes the selected object(s) from the scene.
 This operation is not undoable!
 
+<item><tt/"Select All"/, selects all objects in the current level
+(except for the root object).
+
+<item><tt/"Select None"/, de-selects all currently selected objects.
+
 <item><tt/"Copy Property"/, copies the currently selected property of the
 currently selected object to the property clipboard (the property
 clipboard is completely independent from the normal object clipboard!).
@@ -705,8 +710,11 @@ of the currently selected property of the
 currently selected object to the property clipboard (the property
 clipboard is completely independent from the normal object clipboard!).
 
-<item><tt/"Paste Property"/, copies a property from the property clipboard
-to the currently selected object(s).
+<item><tt/"Paste Property"/, copies all property data from the property
+clipboard to the currently selected object(s). The data will get pasted
+to the property type saved by the last copy operation. It will not get
+pasted to the currently selected property; use
+<tt>"Special/Clipboard/Paste Property to selected"</tt> for that.
 
 <item><tt/"Undo"/, perform undo operation (see section
 <ref id="undos" name="The Undo System"> for more information).
@@ -1593,7 +1601,9 @@ objects or plugins. Those directories will e.g. be searched for
 custom objects when unknown object types are encountered while reading
 Ayam scene files. If a matching custom object is found, it will be
 automatically loaded into Ayam, so that scene loading may proceed without
-an error. Multiple entries have to be separated
+an error. If non absolute paths are used they are relative
+to the directory where the Ayam executable resides.
+Multiple entries have to be separated
 by a colon (:) on Unix and by a semicolon (;) on Win32.
 
 <item><tt/"Docs"/ is an URL that points to the documentation in
@@ -1618,13 +1628,16 @@ case.
 <item><tt/"LazyNotify"/ determines whether notification shall
 occur on all mouse movements or just on release of the mouse button,
 for the interactive modelling actions.
+
 Notification is the mechanism used to inform objects that rely
-on certain child objects (e.g. the Revolve custom object) about
+on certain child objects (e.g. the Revolve tool object) about
 changes of their child objects, so that the parent can adapt
-to the child objects automagically.
+to the child objects automagically
+(see also section
+<ref id="toolobj" name="The Modelling Concept Tool-Objects">).
 
 <item><tt/"CompleteNotify"/ determines when notification of all objects
-depending on references of changed objects takes place.
+depending on references of changed objects takes place:
 <itemize>
 <item><tt/"Never"/ for manual control of complete notification,
 <item><tt/"Always"/ complete notification is done whenever the
@@ -1632,8 +1645,8 @@ normal notification would be run,
 <item><tt/"Lazy"/ complete notification runs
 only after a modelling action finished.
 </itemize>
-Note that complete notify also updates objects that depend on
-updated objects.
+Note that complete notify also updates objects that implicitly depend on
+updated objects via instances.
 
 <item><tt/"EditSnaps"/ determines, whether points
 should be snapped to the grid when a grid is defined and
@@ -11235,6 +11248,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <ref id="obj" name="select objects with the tree/listbox">,
 <ref id="objsel" name="select objects within a view">,
 <ref id="selac" name="select points">
+<item>Select All: <ref id="mmedit" name="main menu entry">
+<item>Select None: <ref id="mmedit" name="main menu entry">
 <item>Selected Objects: <ref id="mmspecial" name="main menu entry">
 <item>Select Renderer: <ref id="mmspecial" name="main menu entry">
 <item>Selection: <ref id="prefdraw" name="preference setting">
