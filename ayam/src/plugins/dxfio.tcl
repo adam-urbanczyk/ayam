@@ -122,8 +122,9 @@ proc dxfio_import { } {
 
     set ::dxfio_options(Cancel) 0
 
-    # Esc-Key == Cancel button
+    # Esc-key && close via window decoration == Cancel button
     bind $w <Escape> "$f.bca invoke"
+    wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
 
     winCenter $w
     grab $w
