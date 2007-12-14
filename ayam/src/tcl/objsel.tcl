@@ -55,8 +55,8 @@ proc reconsider { Selection } {
 	wm transient $w .
     }
 
-
-    #
+    # if we get shuffled under, silently go away after 0.5s
+    # XXXX add warning message for the user, if this happens?
     bind $w <Visibility> {
 	if { ("%s" == "VisibilityPartiallyObscured") ||\
 	     ("%s" == "VisibilityFullyObscured") } {
@@ -199,6 +199,10 @@ proc reconsider { Selection } {
     selOb $item
     rV
 
+    # Esc-key && close via window decoration == Cancel button
+    bind $w <Escape> "$f.bca invoke"
+    wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
+
     focus $f.bok
 
     winToMouse $w
@@ -211,7 +215,7 @@ proc reconsider { Selection } {
 
  return;
 }
-#reconsider
+# reconsider
 
 #cleanObjSel:
 # This function is called when picked objects have to be added to the selection

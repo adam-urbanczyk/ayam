@@ -696,13 +696,26 @@ proc editPointDp { } {
 
     winCenter $w
 
-    focus $f.bok
+    # auto raise window, when obscured
+    bind $w <Visibility> {
+	global ay
+	# are we obscured?
+	if { "%s" == "VisibilityPartiallyObscured" ||\
+		"%s" == "VisibilityFullyObscured" } {
+	    # yes: try to raise the window, but just one time
+	    raise [winfo toplevel %W]
+	    bind %W <Visibility> ""
+	}
+    }
 
-    # Esc-Key == Cancel button
+    # Esc-key && close via window decoration == Cancel button
     bind $w <Escape> "$w.f2.bca invoke"
+    wm protocol $w WM_DELETE_WINDOW "$w.f2.bca invoke"
 
     bind $w <Key-Return> editPointApply
     catch {bind $f.e <Key-KP_Enter> editPointApply}
+
+    focus $f.bok
 
  return;
 }

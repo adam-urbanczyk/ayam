@@ -293,6 +293,10 @@ button $f.bca -text "Cancel" -pady $ay(pady) -width 5 -command "grab release .ad
 pack $f.bok $f.bclr $f.bca -in $f -side left -fill x -expand yes
 pack $f -in $w -side top -fill x
 
+# Esc-key && close via window decoration == Cancel button
+bind $w <Escape> "$f.bca invoke"
+wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
+
 winCenter $w
 grab $w
 focus .addTag.fu.e

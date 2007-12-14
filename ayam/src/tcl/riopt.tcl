@@ -277,10 +277,14 @@ proc riopt_addp { } {
     }
 
     button $f.bca -text "Cancel" -pady $ay(pady) -width 5 -command "\
-	focus . ; destroy $w "
+	grab release $w; focus . ; destroy $w "
 
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
     pack $f -in $w -side bottom -fill x -expand no
+
+    # Esc-key && close via window decoration == Cancel button
+    bind $w <Escape> "$f.bca invoke"
+    wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
 
     grab $w
     focus $f.bok

@@ -380,6 +380,10 @@ proc io_exportRIB { {expview "" } } {
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
     pack $f -in $w -side bottom -fill x
 
+    # Esc-key && close via window decoration == Cancel button
+    bind $w <Escape> "$f.bca invoke"
+    wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
+
     winCenter $w
     grab $w
     focus $f.bok
