@@ -142,6 +142,10 @@ proc x3dio_import { } {
 
     set ::x3dio_options(Cancel) 0
 
+    # Esc-key && close via window decoration == Cancel button
+    bind $w <Escape> "$f.bca invoke"
+    wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
+
     winCenter $w
     grab $w
     focus $w.f2.bok
@@ -249,12 +253,19 @@ proc x3dio_export { } {
     # button
 
     button $f.bca -text "Cancel" -width 5 -command "\
+                set ::x3dio_options(Cancel) 1;\
 		grab release .x3dio;\
 		focus .;\
 		destroy .x3dio"
 
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
     pack $f -in $w -side bottom -fill x
+
+    set ::x3dio_options(Cancel) 0
+
+    # Esc-key && close via window decoration == Cancel button
+    bind $w <Escape> "$f.bca invoke"
+    wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
 
     winCenter $w
     grab $w
