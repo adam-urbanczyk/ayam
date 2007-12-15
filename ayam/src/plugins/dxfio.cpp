@@ -195,6 +195,7 @@ int
 dxfio_extrudebpatch(class dimeExtrusionEntity *entity, ay_object *o)
 {
  int ay_status = AY_OK;
+#if 0
  int i, j, n = 4;
  double v[12], *p1, *p2;
  ay_object *newo = NULL;
@@ -247,7 +248,7 @@ dxfio_extrudebpatch(class dimeExtrusionEntity *entity, ay_object *o)
     default:
       break;
     }
-
+#endif
  return ay_status;
 } // dxfio_extrudebpatch
 
@@ -1579,7 +1580,7 @@ dxfio_readentitydcb(const class dimeState *state,
 			TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
       if(val && val[0] == '1')
 	{
-	  if(dxfio_errorlevel > 1)
+	  /*if(dxfio_errorlevel > 1)*/
 	    {
 	      ay_error(AY_EOUTPUT, fname,
 		     "Import cancelled! Not all objects may have been read!");
@@ -2364,6 +2365,8 @@ dxfio_writeobject(ay_object *o, dimeModel *dm)
  ay_tag *t = NULL;
  ay_object *c = NULL, *to = NULL;
  int i, numconvs = 3, conversions[3] = {AY_IDNPATCH, AY_IDNCURVE, AY_IDPOMESH};
+ char arrname[] = "dxfio_options";
+ char varname2[] = "Cancel", *val = NULL;
 
   if(!o || !dm)
     return AY_ENULL;
@@ -2442,6 +2445,17 @@ dxfio_writeobject(ay_object *o, dimeModel *dm)
 		  ay_object_gettypename(o->type));
 	  ay_error(AY_EWARN, fname, err);
 	}
+    } // if
+
+  // also, check for cancel button
+  val = Tcl_GetVar2(ay_interp, arrname, varname2,
+		    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  if(val && val[0] == '1')
+    {
+      ay_error(AY_EOUTPUT, fname,
+	       "Export cancelled! Not all objects may have been written!");
+      dxfio_cancelled = AY_TRUE;
+      return AY_ERROR;
     } // if
 
  return ay_status;
@@ -2631,8 +2645,14 @@ dxfio_writetcmd(ClientData clientData, Tcl_Interp *interp,
 
       ay_status = dxfio_writeobject(o, &dm);
 
+      if(dxfio_cancelled)
+	break;
+
       o = o->next;
     } // while
+
+  if(dxfio_cancelled)
+    goto cleanup;
 
   // set progress
   Tcl_SetVar2(ay_interp, aname, vname1, "50",
@@ -2655,6 +2675,10 @@ dxfio_writetcmd(ClientData clientData, Tcl_Interp *interp,
   Tcl_SetVar2(ay_interp, aname, vname1, "100",
 	      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   while(Tcl_DoOneEvent(TCL_DONT_WAIT)){};
+
+cleanup:
+
+  // nothing to do; the destructor of <dm> should clean all sections properly
 
  return TCL_OK;
 } // dxfio_writetcmd
