@@ -1629,8 +1629,8 @@ dxfio_readprogressdcb(float progress, void *clientdata)
 			TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
       if(val && val[0] == '1')
 	{
-	  if(dxfio_errorlevel > 1)
-	    ay_error(AY_EWARN, fname,
+	  /*if(dxfio_errorlevel > 1)*/
+	    ay_error(AY_EOUTPUT, fname,
 		   "Import cancelled! Not all objects may have been read!");
 	  return 0;
 	}
@@ -2749,7 +2749,7 @@ dxfio_writeprogressdcb(float progress, void *clientdata)
       if(val && val[0] == '1')
 	{
 	  /*if(dxfio_errorlevel > 1)*/
-	    ay_error(AY_EWARN, fname,
+	    ay_error(AY_EOUTPUT, fname,
 		   "Export cancelled! Not all objects may have been written!");
 	    dxfio_cancelled = AY_TRUE;
 	  return 0;
