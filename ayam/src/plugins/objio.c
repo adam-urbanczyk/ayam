@@ -1498,7 +1498,7 @@ objio_writeobject(FILE *fileptr, ay_object *o, int writeend, int count)
 				TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 	      if(val && val[0] == '1')
 		{
-		  ay_error(AY_EWARN, fname,
+		  ay_error(AY_EOUTPUT, fname,
 		   "Export cancelled! Not all objects may have been written!");
 		  return AY_EDONOTLINK;
 		}
@@ -3755,7 +3755,7 @@ objio_readscene(char *filename)
 			    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 	  if(val && val[0] == '1')
 	    {
-	      ay_error(AY_EWARN, fname,
+	      ay_error(AY_EOUTPUT, fname,
 	             "Import cancelled! Not all objects may have been read!");
 	      break;
 	    }
@@ -3814,7 +3814,7 @@ objio_readscene(char *filename)
  */
 int
 objio_readscenetcmd(ClientData clientData, Tcl_Interp *interp,
-		       int argc, char *argv[])
+		    int argc, char *argv[])
 {
  int ay_status = AY_OK;
  char fname[] = "objio_read";

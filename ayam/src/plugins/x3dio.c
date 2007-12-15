@@ -6104,7 +6104,7 @@ x3dio_readelement(scew_element *element)
   if(val && val[0] == '1')
     {
       ton = Tcl_NewStringObj("ay_error", -1);
-      to = Tcl_NewIntObj(15);
+      to = Tcl_NewIntObj(AY_EDONOTLINK);
       Tcl_ObjSetVar2(ay_interp, ton, NULL, to, TCL_LEAVE_ERR_MSG |
 		     TCL_GLOBAL_ONLY);
       Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
@@ -6314,7 +6314,7 @@ x3dio_readtcmd(ClientData clientData, Tcl_Interp *interp,
   ay_status = x3dio_readtree(tree);
   if(ay_status == AY_EDONOTLINK)
     {
-      if(x3dio_errorlevel > 1)
+      /*if(x3dio_errorlevel > 1)*/
 	{
 	  ay_error(AY_EOUTPUT, fname,
 		   "Import cancelled! Not all objects may have been read!");
@@ -8689,8 +8689,8 @@ x3dio_writeobject(scew_element *element, ay_object *o, int count)
 				TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 	      if(val && val[0] == '1')
 		{
-		  if(x3dio_errorlevel > 1)
-		    ay_error(AY_EWARN, fname,
+		  /*if(x3dio_errorlevel > 1)*/
+		    ay_error(AY_EOUTPUT, fname,
 		   "Export cancelled! Not all objects may have been written!");
 		  return AY_EDONOTLINK;
 		}

@@ -2148,7 +2148,7 @@ dxfio_writencurve(ay_object *o, dimeModel *dm, double *m)
  int stride = 4, a = 0;
  bool has_weights = false;
  dimeSpline *sp = NULL;
- 
+
   if(!o || !dm || !m)
     return AY_ENULL;
 
@@ -2202,7 +2202,7 @@ dxfio_writencurve(ay_object *o, dimeModel *dm, double *m)
       dv[i].setValue((dxfdouble)v[0], (dxfdouble)v[1], (dxfdouble)v[2]);
       a += stride;
     }
-  
+
   sp->setControlPoints(dv, nc->length, NULL);
 
   if(has_weights)
@@ -2508,7 +2508,7 @@ dxfio_writetcmd(ClientData clientData, Tcl_Interp *interp,
 
   // reset internal progress counter
   dxfio_writeprogressdcb(0.0f, (void*)1);
-  
+
   dxfio_cancelled = AY_FALSE;
 
   // check args
