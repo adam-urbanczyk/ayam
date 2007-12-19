@@ -191,37 +191,41 @@ int
 ay_ai_createinstances(ay_object *ref, ay_object *o)
 {
  int ret = 0;
+ ay_object *d = NULL;
 
-  while(o)
+  /* do not create instance of reference object itself */
+  if(o != ref)
     {
-      /* do not create instance of reference object itself */
-      if(o != ref)
+
+      /* process children first */
+      if(o->down && o->down->next)
 	{
-
-	  if(o->down)
-	    ret += ay_ai_createinstances(ref, o->down);
-
-	  /* easy/fast checks first */
-	  if((ref->type == o->type) && (o->refcount == 0))
+	  d = o->down;
+	  while(d->next)
 	    {
-	      /* could become an instance, check it out */
-	      if((ay_comp_objects(ref, o)) &&
-		 ((ay_ai_ignoretags) || (ay_comp_tags(ref, o))) &&
-		 ((ay_ai_ignoremat) || (ref->mat == o->mat)) &&
-		 (((ref->down == NULL) && (o->down == NULL)) ||
-		  (ay_ai_compchildren(ref, o))))
-		{
-		  /* create instance */
-		  ay_ai_instanceobject(o, ref);
-		  ret++;
-		} /* if */
+	      ret += ay_ai_createinstances(ref, d);
+	      d = d->next;
+	    }
+	}
 
+      /* easy/fast checks first */
+      if((ref->type == o->type) && (o->refcount == 0))
+	{
+	  /* could become an instance, check it out */
+	  if((ay_comp_objects(ref, o)) &&
+	     ((ay_ai_ignoretags) || (ay_comp_tags(ref, o))) &&
+	     ((ay_ai_ignoremat) || (ref->mat == o->mat)) &&
+	     (((ref->down == NULL) && (o->down == NULL)) ||
+	      (ay_ai_compchildren(ref, o))))
+	    {
+	      /* create instance */
+	      ay_ai_instanceobject(o, ref);
+	      ret++;
 	    } /* if */
 
-      } /* if */
+	} /* if */
 
-      o = o->next;
-  } /* while */
+    } /* if */
 
  return ret;
 } /* ay_ai_createinstances */
@@ -234,22 +238,52 @@ int
 ay_ai_makeinstances(ay_object *o, ay_object *instance_root)
 {
  int ret = 0;
+ ay_object *d = NULL;
+ ay_list_object *sel = NULL;
 
-  while(o->next)
+  /* process children first */
+  if(o->down && o->down->next)
     {
-      if(o->down && (o->type != AY_IDNPATCH))
+      d = o->down;
+      while(d->next)
 	{
-          ret += ay_ai_makeinstances(o->down, instance_root);
+	  if(d->type != AY_IDNPATCH)
+	    {
+	      ret += ay_ai_makeinstances(d, instance_root);
+	    }
+	  d = d->next;
+	}
+    } /* if */
+
+  /* now create instances of "o", if "o" isn´t an instance itself */
+  if(o->type != AY_IDINSTANCE)
+    {
+      sel = ay_selection;
+      
+      /* avoid working on the root */
+      if(sel && (sel->object == ay_root))
+	{
+	  sel = sel->next;
 	}
 
-      /* now create instances of "o", if "o" isn´t an instance itself */
-      if(o->type != AY_IDINSTANCE)
+      if(sel)
 	{
-          ret += ay_ai_createinstances(o, instance_root);
+	  while(sel)
+	    {
+	      ret += ay_ai_createinstances(o, sel->object);
+	      sel = sel->next;
+	    }
 	}
-
-      o = o->next;
-    } /* while */
+      else
+	{
+	  d = instance_root;
+	  while(d->next)
+	    {
+	      ret += ay_ai_createinstances(o, d);
+	      d = d->next;
+	    }
+	} /* if */
+    } /* if */
 
  return ret;
 } /* ay_ai_makeinstances */
@@ -263,18 +297,23 @@ int
 ay_ai_resolveinstances(ay_object *o)
 {
  int ret = 0;
+ ay_object *d = NULL;
 
-  while(o)
+  if(o->type == AY_IDINSTANCE)
     {
-      if(o->type == AY_IDINSTANCE)
+      ay_instt_resolve(o);
+      ret++;
+    }
+
+  if(o->down && o->down->next)
+    {
+      d = o->down;
+      while(d->next)
 	{
-	  ay_instt_resolve(o);
-	  ret++;
-	}
-      if(o->down)
-	ret += ay_ai_resolveinstances(o->down);
-      o = o->next;
-    } /* while */
+	  ret += ay_ai_resolveinstances(d);
+	  d = d->next;
+	} /* while */
+    } /* if */
 
  return ret;
 } /* ay_ai_resolveinstances */
@@ -289,8 +328,28 @@ ay_ai_resolveinstancestcmd(ClientData clientData, Tcl_Interp *interp,
 {
  char str[128], fname[] = "ai_resolve";
  int numres = 0;
+ ay_object *o = NULL;
+ ay_list_object *sel = NULL;
 
-  numres = ay_ai_resolveinstances(ay_currentlevel->object);
+  sel = ay_selection;
+
+  if(sel)
+    {
+      while(sel)
+	{
+	  numres += ay_ai_resolveinstances(sel->object);
+	  sel = sel->next;
+	}
+    }
+  else
+    {
+      o = ay_currentlevel->object;
+      while(o)
+	{
+	  numres += ay_ai_resolveinstances(o);
+	  o = o->next;
+	}
+    } /* if */
 
   sprintf(str, "%d instances resolved", numres);
 
@@ -332,6 +391,8 @@ ay_ai_makeinstancestcmd(ClientData clientData, Tcl_Interp *interp,
  char str[64], fname[] = "ai";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  int dummy = 0;
+ ay_object *o = NULL;
+ ay_list_object *sel = NULL;
 
   /* get ignore flags */
   toa = Tcl_NewStringObj("aiprefs",-1);
@@ -343,18 +404,69 @@ ay_ai_makeinstancestcmd(ClientData clientData, Tcl_Interp *interp,
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &ay_ai_ignoremat);
 
+  sel = ay_selection;
 
+  /* avoid working on the root */
+  if(sel && (sel->object == ay_root))
+    {
+      sel = sel->next;
+    }
+
+  if(sel)
+    {
+      while(sel)
+	{
+	  dummy += ay_ai_resolveinstances(sel->object);
+	  sel = sel->next;
+	}
+    }
+  else
+    {
+      o = ay_currentlevel->object;
+      while(o)
+	{
+	  dummy += ay_ai_resolveinstances(o);
+	  o = o->next;
+	}
+    } /* if */
+
+  /*
   sprintf(str, "%d objects found",
   	  ay_ai_countobjects(ay_root));
   ay_error(AY_EOUTPUT, fname, str);
-
-  dummy = ay_ai_resolveinstances(ay_currentlevel->object);
+  */
 
   comp_true = 0;
   comp_false = 0;
-  sprintf(str, "%d instances created",
-	  ay_ai_makeinstances(ay_currentlevel->object,
-			      ay_currentlevel->object));
+  dummy = 0;
+
+  sel = ay_selection;
+
+  /* avoid working on the root */
+  if(sel && (sel->object == ay_root))
+    {
+      sel = sel->next;
+    }
+
+  if(sel)
+    {
+      while(sel)
+	{
+	  dummy += ay_ai_makeinstances(sel->object, ay_currentlevel->object);
+	  sel = sel->next;
+	}
+    }
+  else
+    {
+      o = ay_currentlevel->object;
+      while(o)
+	{
+	  dummy += ay_ai_makeinstances(o, ay_currentlevel->object);
+	  o = o->next;
+	}
+    } /* if */
+
+  sprintf(str, "%d instances created", dummy);
 
   ay_error(AY_EOUTPUT, fname, str);
 
