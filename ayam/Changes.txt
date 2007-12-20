@@ -1,4 +1,4 @@
-[12. Dec 2007] CVS-Head:
+[20. Dec 2007] CVS-Head:
 =======================
 o Bug Fixes:
  - X3D export of NURBS patches (row/column major order) (SF 1804056)
@@ -18,10 +18,12 @@ o added option to keep the current selection when creating new objects, by
 o added hidden preference setting to control the zoom factor of the
   mouse wheel ("WheelZoom")
 o added hidden preference settings to control the polygon offset parameters
-  for Shade&Draw display mode ("PolyOffset0" and "PolyOffset1")
+  for the "Shade&Draw" display mode ("PolyOffset0" and "PolyOffset1")
 o avoid stealing the focus from the console on application startup
-o added select all/none entries to edit menu (mainly to teach the
+o added "Select All"/"Select None" entries to edit menu (mainly to teach the
   corresponding keyboard shortcuts)
+o all dialogs may now be cancelled with the <Escape> key
+o closing dialogs using the window decoration is now safer wrt. AutoFocus
 
 Modelling:
 o added new object type "Swing" (for rotational sweeps/swung surfaces)
@@ -35,6 +37,7 @@ o added NCInfo balloon (that displays more info on generated curves, similar
 o added tolerance parameter and checking for remKnNC (knot removal) tool
 o added new object type "OffsetNC" to create offset curves
 o added "undo rewind" command
+o resolving of instances and automatic instances are now selection aware
 
 Import/Export:
 o import NurbsSwungSurface elements as Swing objects from X3D files
@@ -42,9 +45,11 @@ o import of NurbsSurface texture coordinates from X3D files
 o added "TopLevelLayers" X3D export option
 o added "WriteParametrics" X3D export option (to save Revolve, Extrude, Sweep,
   and Swing objects as NurbsSweptSurface or NurbsSwungSurface nodes)
+o X3D export may now be cancelled
+o DXF export may now be cancelled
 
 Renderer Support:
-o reworked shader parsing (core & ayslx plugin) for incompatible changes
+o reworked shader parsing (core and ayslx plugin) for incompatible changes
   in Aqsis 1.2
 
 
@@ -132,7 +137,7 @@ Drawing/Shading:
 o added antialiasing drawing option for lines
 o added hidden/wizard preference options for line width:
   "LineWidth" and "SelLineWidth" (set via ayamrc file)
-o improved drawing of selected curves in Shade&Draw views
+o improved drawing of selected curves in "Shade&Draw" views
 o improved shading quality of NURBS surfaces in STESS mode
 o revived STESS drawing of trimmed NURBS surfaces
 
@@ -299,7 +304,7 @@ o reduced number of notification operations and view redraws after
 o the tesselation tool now adds TP tags to all types of objects
 o object conversion from tool objects (e.g. Revolve) to NPatch objects now
   maintains eventually present TP tags
-o improved drawing of selected curves in Shade&Draw drawing mode
+o improved drawing of selected curves in "Shade&Draw" drawing mode
 o added snap-to-grid modelling actions for points, new view shortcuts
   for that are <g> (2D) and <G> (3D)
 o made SDMesh scheme property element a menu (and thus changeable)
@@ -738,7 +743,7 @@ o bug fixes:
   - fixed object picking in draw-level-only views (SF 817796)
   - fixed (RIB) import of geometry after AreaLights (SF 825629)
   - fixed degree elevation of rational curves (SF 831901)
-  - fixed drawing of handles for drawing mode "ShadeAndDraw" (SF 835166)
+  - fixed drawing of handles for drawing mode "Shade&Draw" (SF 835166)
   - fixed memory leak in skin notification callback (SF 839424)
   - fixed update of preference editor upon "Save Environment" (SF 840184)
   - fixed loading of shader parsing plugins into XML parsing
@@ -888,7 +893,7 @@ o added two new renderers, Angel and Pixie, to the Select_Renderer feature
 o added support for sl2xml in favour of sdpslparse
 o added a new shader parsing plugin ("aysdr.so") for Pixie
 o added a convert callback to NURBS patches
-o added a new drawing mode "ShadeAndDraw" that displays e.g. shaded
+o added a new drawing mode "Shade&Draw" that displays e.g. shaded
   NURBS and their drawn representation simultaneously, the keyboard
   shortcut <Ctrl+S> still toggles between drawing and the shaded
   representation
