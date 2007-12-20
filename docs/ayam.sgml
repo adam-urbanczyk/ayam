@@ -6,7 +6,7 @@
 
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
 
-<date>28. Nov 2007
+<date>17. Dec 2007
 
 <abstract>
 This is the documentation of Ayam 1.14 - a free 3D modelling environment
@@ -84,7 +84,7 @@ eliminating the need for BMRT. Furthermore, shader parsing plugins are
 available for all major RenderMan compliant renderers allowing
 a tight integration of Ayam with those renderers.
 
-<sect1>About this manual
+<sect1>About this Manual
 <p>
 How should one read this manual?
 <p>
@@ -113,11 +113,11 @@ contains documentation not fitting elsewhere.
 <p>
 In this manual, the following typographic conventions are used:
 <itemize>
-<item>keyboard shortcuts: <tt/&lt;Ctrl+c&gt;/, for shortcuts like
-<tt/&lt;Ctrl+Shift+t&gt;/ an abbreviated version: <tt/&lt;Ctrl+T&gt;/
-will be used
+<item>keyboard shortcuts: <tt/&lt;Ctrl+c&gt;/ (press control <em>and</em>
+c key), for shortcuts like <tt/&lt;Ctrl+Shift+t&gt;/ an abbreviated
+version: <tt/&lt;Ctrl+T&gt;/ will be used;
 <item>names (of object types, menu entries, properties, or property elements):
-<tt/"A Name"/
+<tt/"A Name"/;
 <item>Tcl code examples:
 <code>
 set riopt(runtime) { a b }
@@ -227,19 +227,19 @@ plus/minus symbols in front of the name of those objects.
 Drag-and-Drop operation is also possible to move objects in the
 hierarchy and to initiate special actions like connecting materials
 to objects. However, this last feature is documented in section
-<ref id="obandprp" name="Objects, Properties and Tags">
+<ref id="obandprp" name="Objects, Properties, and Tags">
 as it is object type specific.
 <p>
 <label id="treecontm">
-The rightmost mouse button opens a context menu with
-basic tree and clipboard operations:
+The rightmost mouse button opens a context menu with basic tree and
+clipboard operations:
 <itemize>
-<item><tt>"Tree/Rebuild"</tt> completely removes the tree nodes, rebuilds the
-hierarchy, and selects the root object
+<item><tt>"Tree/Rebuild"</tt> completely removes the tree nodes, rebuilds
+the hierarchy, and selects the root object,
 
-<item><tt>"Tree/Expand"</tt> opens all nodes with child nodes
+<item><tt>"Tree/Expand"</tt> opens all nodes with child nodes,
 
-<item><tt>"Tree/Collapse"</tt> closes all nodes with child nodes
+<item><tt>"Tree/Collapse"</tt> closes all nodes with child nodes,
 
 <item><tt>"Switch to Listbox"</tt> removes the tree and replaces it
 with the object listbox (see below).
@@ -277,14 +277,14 @@ the Root object will not be selected by <tt/&lt;Ctrl+a&gt;/.
 <item><tt/&lt;Space&gt;/ toggles display of the child objects of the
 selected object(s).
 
-<item><tt/&lt;Shift-Home&gt;/ and <tt/&lt;Shift-End&gt;/ are available
+<item><tt/&lt;Shift+Home&gt;/ and <tt/&lt;Shift+End&gt;/ are available
 since Ayam 1.11 and extend the selection up to the first
 or last object in the current level respectively.
 
 </itemize>
 
 If those shortcuts do not work you may need to press <tt/&lt;Esc&gt;/
-first (when a property GUI has the input focus) or <tt/&lt;Shift-Tab&gt;/
+first (when a property GUI has the input focus) or <tt/&lt;Shift+Tab&gt;/
 (when the console has the input focus).
 
 <bf/Object Listbox:/<label id="listbox">
@@ -295,14 +295,13 @@ first (when a property GUI has the input focus) or <tt/&lt;Shift-Tab&gt;/
 <caption>Object Listbox</caption>
 </figure>
 <p>
-
 The object listbox displays the object hierarchy of the current scene.
 Using this listbox you may browse through the hierarchy of the scene
 with your mouse and you may select one or more objects.
 <p>
-Browsing and selecting should be very intuitively:
+Browsing and selecting should be very intuitive:
 Use a double click to enter a level (or an object with child objects),
-and a single click to select objects, multiple objects may be selected using
+use a single click to select objects, multiple objects may be selected using
 click and drag, or holding down the <tt/&lt;Shift&gt;/ or <tt/&lt;Ctrl&gt;/
 key while clicking.
 Keyboard operation is also possible if the listbox has the
@@ -347,14 +346,14 @@ or last object in the current level,
 all object in the current level. If the current level is the root level,
 the Root object will not be selected by <tt/&lt;Ctrl+a&gt;/.
 
-<item><tt/&lt;Shift-Home&gt;/ and <tt/&lt;Shift-End&gt;/ are available
+<item><tt/&lt;Shift+Home&gt;/ and <tt/&lt;Shift+End&gt;/ are available
 since Ayam 1.11 and extend the selection up to the first
 or last object in the current level respectively.
 
 </itemize>
 <p>
 If those shortcuts do not work you may need to press <tt/&lt;Esc&gt;/
-first (when a property GUI has the input focus) or <tt/&lt;Shift-Tab&gt;/
+first (when a property GUI has the input focus) or <tt/&lt;Shift+Tab&gt;/
 (when the console has the input focus).
 
 <sect2>Properties<label id="propgui">
@@ -2563,10 +2562,10 @@ to the camera object.
 A solid box, centered at the origin of the object coordinate system.
 This object will always be exported as solid primitive in RIBs;
 consisting of six bilinear patches.
-
+<p>
 Since Ayam 1.8.2, a box object may be converted to three NURBS patches
 using the main menu entry <tt>"Tools/Convert"</tt>.
-
+<p>
 The following parameters further control the shape of a box:
 
 <sect2>BoxAttrib Property<label id="bxp"><label id="boxattribprop">
@@ -2595,11 +2594,11 @@ A sphere, centered at the origin of the object coordinate system.
 This object will be exported as solid primitive or as
 simple sphere (depending on the <tt/"Closed"/ parameter
 of the SphereAttrib property) in RIBs.
-
+<p>
 Since Ayam 1.8.2, a sphere object may be converted to NURBS patches
 using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
 obeys all parameters of the sphere.
-
+<p>
 The following parameters further control the shape of a sphere:
 
 <sect3>SphereAttr Property<label id="spattr"><label id="sphereattrprop">
@@ -2617,18 +2616,19 @@ But it may be used in CSG operations, safely.
 place at Z.
 <item><tt/"ZMax"/ may be used to chop the off at a certain
 place at Z.
-<item><tt/"ThetaMax"/ is the sweeping angle of the sphere default is 360.
+<item><tt/"ThetaMax"/ is the sweeping angle of the sphere (the default value
+is 360).
 </itemize>
 
 <sect2>Disk Object<label id="diskobj">
 <p>
 A disk, centered at the origin of the object coordinate system.
 This object will always be exported as simple disk in RIBs.
-
+<p>
 Since Ayam 1.8.2, a disk object may be converted to a NURBS patch
 using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
 obeys all parameters of the disk.
-
+<p>
 The following parameters further control the shape of a disk:
 
 <sect3>DiskAttr Property<label id="dkp"><label id="diskattrprop">
@@ -2646,11 +2646,11 @@ with the base at the XY plane.
 This object will be exported as solid primitive or as
 simple cone (depending on the <tt/"Closed"/ parameter
 of the ConeAttrib property) in RIBs.
-
+<p>
 Since Ayam 1.8.2, a cone object may be converted to NURBS patches
 using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
 obeys all parameters of the cone.
-
+<p>
 The following parameters further control the shape of a cone:
 
 <sect3>ConeAttr Property<label id="cnp"><label id="coneattrprop">
@@ -2678,11 +2678,11 @@ Note that the OpenGL representation of this object
 does not reflect the settings of the following parameters
 of the CylinderAttrib property: <tt/"Closed"/ and
 <tt/"ThetaMax"/.
-
+<p>
 Since Ayam 1.8.2, a cylinder object may be converted to NURBS patches
 using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
 obeys all parameters of the cylinder.
-
+<p>
 The following parameters further control the shape of a cylinder:
 
 <sect3>CylinderAttr Property<label id="cyp"><label id="cylinderattrprop">
@@ -2710,11 +2710,11 @@ around the Z axis.
 This object will be exported as solid primitive or as
 simple torus (depending on the <tt/"Closed"/ parameter
 of the RiTorusAttr property) in RIBs.
-
+<p>
 Since Ayam 1.8.2, a torus object may be converted to NURBS patches
 using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
 obeys all parameters of the torus.
-
+<p>
 The following parameters further control the shape of a torus:
 
 <sect3>TorusAttr Property<label id="top"><label id="torusattrprop">
@@ -2744,11 +2744,11 @@ A paraboloid, centered at the origin of the object coordinate system.
 This object will be exported as solid primitive or as
 simple paraboloid (depending on the <tt/"Closed"/ parameter
 of the RiParaboloidAttr property) in RIBs.
-
+<p>
 Since Ayam 1.8.2, a paraboloid object may be converted to NURBS patches
 using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
 obeys all parameters of the paraboloid.
-
+<p>
 The following parameters further control the shape of a paraboloid:
 
 <sect3>ParaboloidAttr Property<label id="pap"><label id="paraboloidattrprop">
@@ -2777,11 +2777,11 @@ points in space around the Z axis.
 This object will be exported as solid primitive or as
 simple hyperboloid (depending on the <tt/"Closed"/ parameter
 of the RiHyperbAttr property) in RIBs.
-
+<p>
 Since Ayam 1.8.2, a hyperboloid object may be converted to NURBS patches
 using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
 obeys all parameters of the hyperboloid.
-
+<p>
 The following parameters further control the shape of a hyperboloid:
 
 <sect3>HyperboloidAttr Property<label id="hyp"><label id="hyperboloidattrprop">
@@ -3468,12 +3468,12 @@ of the parent object. Trim curve editing should take place in views
 of type <tt>Trim</tt>, that draw the boundaries of the parametric
 space of the corresponding NURBS patch as rectangle, but otherwise
 act as normal <tt>Front</tt> views.
-
+<p>
 Note that the direction of the trim curve determines which part of
 the NURBS patch should be cut out. You can use the <tt/Revert/ tool
 (<tt>Tools/NURBCurve</tt> menu) to easily change the direction
 of a trim curve.
-
+<p>
 Some special restrictions apply to trim curves:
 <itemize>
 <item>All trim curves should entirely lie in the (u,v) parameter
@@ -3500,7 +3500,7 @@ trimming.
 OpenGL may require a special trim curve (a rectangular piecewise linear
 curve that encloses the whole NURBS patch) to be present. Such a curve
 may be generated with the <tt/TrimRect/ tool. You can find this tool in
-the <tt>Tools/Create</tt> menu. This curve is needed if you want to cut
+the <tt>"Tools/Create"</tt> menu. This curve is needed if you want to cut
 out a hole with a single trim curve. This curve is generally not needed
 if you want to render the patch with BMRT but it should not hurt if it
 is present.
@@ -3874,15 +3874,15 @@ of the revolution:<p>
 <itemize>
 <item>Create a NURBCurve. Select it.
 <item>Create a Revolve tool object using the menu entry
-(<tt>Tools/NURBCurve/Revolve</tt>).
+(<tt>"Tools/Create/Revolve"</tt>).
 <item>Select the Revolve object, and rotate it around Z. (The axis
 of the revolution changes. The generating NURBS curve, as child object,
 will also be rotated.)
 <item>Now enter the Revolve object, select the child curve and
-edit the control points (Note how the Revolution changes).
-<item>Rotate the curve around Z (Note how the Revolution changes).
+edit the control points (note how the surface of revolution changes).
+<item>Rotate the curve around Z (note how the surface of revolution changes).
 <item>Switch to a Side view, edit the generating curve here in Z
-direction only (Revolution does not change!).
+direction only (the surface of revolution does not change).
 </itemize>
 
 You may convert the current surface of revolution, the bevels, and the caps,
@@ -3894,7 +3894,7 @@ if there are any, to ordinary NURBS patches using the main menu entry
 Using the parameter <tt/"ThetaMax"/ you can specify the
 sweeping angle of the revolution just like with an ordinary
 RenderMan quadric.
-
+<p>
 Since Ayam 1.8 the Revolve object supports a B-Spline mode,
 that may be enabled by setting the new parameter <tt/"Sections"/
 to a value higher than 2. In this mode, a circular B-Spline is
@@ -3910,18 +3910,18 @@ using the new parameter <tt/"Order"/. If <tt/"Order"/ is 0,
 a standard value of 3 will be used.
 Note that the B-Spline mode is currently only available for
 full revolutions (<tt/"ThetaMax"/ should be 360.0).
-
+<p>
 The revolve object can automatically generate caps,
 which are trimmed NURBS patches. Using the parameters
 <tt/"UpperCap"/, <tt/"LowerCap"/, <tt/"StartCap"/, and <tt/"EndCap"/,
 you determine whether such caps should be
 generated, default is off (no caps).
-
+<p>
 If the side caps of a surface of revolution of an open
 curve are not created correctly, (GLU
 complains about "intersecting or misoriented trim curves"),
 try to revert the revolved curve.
-
+<p>
 See section <ref id="npattr" name="NPatchAttr"> for a description
 of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 
@@ -6158,7 +6158,7 @@ Note that the syntax of the <tt/"TP"/ tag changed in Ayam 1.9,
 the old syntax only allowed one parameter.
 <p>
 TP tags may be easily created using the tesselation GUI, that can
-be started with the main menu entry <tt>"Tools/NPatch/Tesselate"</tt>
+be started with the main menu entry <tt>"Tools/NURBPatch/Tesselate"</tt>
 (see also section <ref id="tesst" name="The Tesselation Tool">).
 <p>
 Example
