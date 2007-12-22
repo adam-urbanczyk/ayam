@@ -1,0 +1,14 @@
+# Ayam, a free 3D modeler for the RenderMan interface.
+#
+# Ayam is copyrighted 1998-2007 by Randolf Schultz
+# (rschultz@informatik.uni-rostock.de) and others.
+#
+# All rights reserved.
+#
+# See the file License for details.
+
+# intfd.tcl - switch to internal file dialogs
+
+proc tk_getOpenFile {args} { return [eval [subst "::tk::dialog::file:: open $args"]] }
+
+proc tk_getSaveFile {args} { return [eval [subst "::tk::dialog::file:: save $args"]] }
