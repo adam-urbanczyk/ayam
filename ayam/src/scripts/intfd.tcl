@@ -12,3 +12,5 @@
 proc tk_getOpenFile {args} { return [eval [subst "::tk::dialog::file:: open $args"]] }
 
 proc tk_getSaveFile {args} { return [eval [subst "::tk::dialog::file:: save $args"]] }
+
+proc tk_chooseColor {args} { return [eval [subst "::tk::dialog::color:: $args"]] }
