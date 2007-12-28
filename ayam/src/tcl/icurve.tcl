@@ -16,7 +16,7 @@ array set ICurveAttr {
 arr   ICurveAttrData
 sproc ""
 gproc ""
-w     fIcurveAttr
+w     fICurveAttr
 
 }
 
