@@ -19,7 +19,6 @@ static char *ay_acurve_name = "ACurve";
 int
 ay_acurve_createcb(int argc, char *argv[], ay_object *o)
 {
- int ay_status = AY_OK;
  char fname[] = "crtacurve";
  int order = 4, length = 4, closed = AY_FALSE, i = 0;
  double *cv = NULL, dx = 0.25;
@@ -77,17 +76,6 @@ ay_acurve_createcb(int argc, char *argv[], ay_object *o)
   new->closed = closed;
   new->length = length;
   new->controlv = cv;
-
-  ay_status = ay_act_leastSquares( new->length, cv,
-				  (ay_nurbcurve_object **)(&(ncurve->refine)));
-  new->ncurve = ncurve;
-
-  if(ay_status)
-    {
-      free(new->ncurve); free(cv); free(new);
-      ay_error(ay_status, fname, NULL);
-      return AY_ERROR;
-    }
 
   o->refine = new;
 
@@ -431,7 +419,7 @@ ay_acurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     {
       if(new_length > 2)
 	{
-	  ay_status = ay_act_resize(acurve, new_length);
+	  /*ay_status = ay_act_resize(acurve, new_length);*/
 	}
       else
 	{
@@ -671,8 +659,8 @@ ay_acurve_notifycb(ay_object *o)
  ay_acurve_object *acurve = NULL;
  ay_nurbcurve_object *nc = NULL;
  ay_object *ncurve = NULL;
- int i, a, b;
  int ay_status = AY_OK;
+ double *knotv = NULL, *controlv = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -692,10 +680,22 @@ ay_acurve_notifycb(ay_object *o)
   ay_object_defaults(ncurve);
   ncurve->type = AY_IDNCURVE;
 
+  if(!(ncurve->refine = calloc(1, sizeof(ay_nurbcurve_object))))
+    {
+      free(ncurve); return AY_ERROR;
+    }
 
-  ay_status = ay_act_leastSquares(acurve->iparam, acurve->closed,
-				  acurve->length, acurve->controlv,
-				  (ay_nurbcurve_object **)(&(ncurve->refine)));
+  nc = (ay_nurbcurve_object *)(ncurve->refine);
+
+  ay_status = ay_act_leastSquares(acurve->controlv,
+				  acurve->length, acurve->length, 4,
+				  &knotv, &controlv);
+
+  if(ay_status)
+    return ay_status;
+
+  ay_status = ay_nct_create(4, acurve->length, AY_KTCUSTOM, controlv, knotv,
+			    (ay_nurbcurve_object **)(&(ncurve->refine)));
 
   if(ay_status)
     return ay_status;
@@ -714,18 +714,18 @@ int
 ay_acurve_convertcb(ay_object *o, int in_place)
 {
  int ay_status = AY_OK;
- ay_acurve_object *ic = NULL;
+ ay_acurve_object *ac = NULL;
  ay_object *new = NULL;
  ay_nurbcurve_object *nc = NULL;
 
   if(!o)
     return AY_ENULL;
 
-  ic = (ay_acurve_object *) o->refine;
+  ac = (ay_acurve_object *) o->refine;
 
-  if(ic->ncurve)
+  if(ac->ncurve)
     {
-      ay_status = ay_object_copy(ic->ncurve, &new);
+      ay_status = ay_object_copy(ac->ncurve, &new);
 
       if(new)
 	{
@@ -754,7 +754,7 @@ int
 ay_acurve_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
  int ay_status = AY_OK;
- ay_acurve_object *ic = NULL;
+ ay_acurve_object *ac = NULL;
  ay_nurbcurve_object *nc = NULL;
 
   if(!o)
@@ -768,15 +768,15 @@ ay_acurve_providecb(ay_object *o, unsigned int type, ay_object **result)
 	return AY_ERROR;
     }
 
-  ic = (ay_acurve_object *) o->refine;
+  ac = (ay_acurve_object *) o->refine;
 
   if(type == AY_IDNCURVE)
     {
-      if(ic->ncurve)
+      if(ac->ncurve)
 	{
-	  nc = (ay_nurbcurve_object *)ic->ncurve->refine;
-	  nc->display_mode = ic->display_mode;
-	  ay_status = ay_object_copy(ic->ncurve, result);
+	  nc = (ay_nurbcurve_object *)ac->ncurve->refine;
+	  nc->display_mode = ac->display_mode;
+	  ay_status = ay_object_copy(ac->ncurve, result);
 	  if(*result)
 	    {
 	      ay_trafo_copy(o, *result);

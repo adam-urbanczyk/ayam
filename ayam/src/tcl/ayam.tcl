@@ -1247,6 +1247,7 @@ ayam_loadscript uie
 ayam_loadscript shortcut
 ayam_loadscript ms
 ayam_loadscript prop
+ayam_loadscript acurve
 ayam_loadscript bevel
 ayam_loadscript birail1
 ayam_loadscript birail2

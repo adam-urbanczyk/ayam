@@ -591,6 +591,24 @@ typedef struct ay_icurve_object_s
 } ay_icurve_object;
 
 
+typedef struct ay_acurve_object_s
+{
+  int length;
+  int closed;
+  int order;
+  /*
+  int imode;
+  double iparam;
+  */
+  double *controlv;
+
+  /* cache NURBS curve representation */
+  ay_object *ncurve;
+  double glu_sampling_tolerance;
+  int display_mode;
+} ay_acurve_object;
+
+
 typedef struct ay_concatnc_object_s
 {
   int closed;
@@ -1239,6 +1257,7 @@ extern unsigned int ay_current_primlevel;
 #define AY_IDSELECT        40
 #define AY_IDEXTRNP        41
 #define AY_IDOFFNC         42
+#define AY_IDACURVE        43
 
 #define AY_IDLAST          50
 

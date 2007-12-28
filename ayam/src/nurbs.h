@@ -12,6 +12,10 @@
 
 /* nurbs.h - nurbs prototypes */
 
+/* act.c */
+int ay_act_leastSquares(double *Q, int m, int n, int p,
+			double **U, double **P);
+
 /* capt.c */
 int ay_capt_createfromcurve(ay_object *c, ay_object **cap);
 
@@ -64,6 +68,8 @@ int ay_knots_setvminmax(ay_object *o, double vmin, double vmax);
 
 int ay_knots_coarsen(int order, int knotvlen, double *knotv, int count,
 		     double **newknotv);
+
+int ay_knots_chordparam(double *Q, int Qlen, int stride, double **U);
 
 int ay_knots_init(Tcl_Interp *interp);
 

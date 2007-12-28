@@ -401,6 +401,7 @@ AYAMOBJS = aycore/bbc.o\
 	aycore/viewt.o\
 	aycore/wrib.o\
 	aycore/write.o\
+	nurbs/act.o\
 	nurbs/capt.o\
 	nurbs/ict.o\
 	nurbs/knots.o\
@@ -410,6 +411,7 @@ AYAMOBJS = aycore/bbc.o\
 	nurbs/pmt.o\
 	nurbs/stess.o\
 	nurbs/tess.o\
+	objects/acurve.o\
 	objects/bevel.o\
 	objects/birail1.o\
 	objects/birail2.o\
