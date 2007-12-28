@@ -12,6 +12,9 @@
 
 /* objects.h - prototypes of core objects */
 
+/* acurve.c */
+int ay_acurve_init(Tcl_Interp *interp);
+
 /* bevel.c */
 int ay_bevel_init(Tcl_Interp *interp);
 
