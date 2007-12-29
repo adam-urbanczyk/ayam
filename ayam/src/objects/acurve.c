@@ -61,18 +61,9 @@ ay_acurve_createcb(int argc, char *argv[], ay_object *o)
       cv[i*3] = (double)i*dx;
     }
 
-  if(!(ncurve = calloc(1, sizeof(ay_object))))
-    {
-      free(cv); free(new);
-      ay_error(AY_EOMEM, fname, NULL);
-      return AY_ERROR;
-    }
-
-  ay_object_defaults(ncurve);
-  ncurve->type = AY_IDNCURVE;
-
   new->glu_sampling_tolerance = 0.0;
   new->order = order;
+
   new->closed = closed;
   new->length = length;
   new->controlv = cv;
@@ -688,7 +679,8 @@ ay_acurve_notifycb(ay_object *o)
   nc = (ay_nurbcurve_object *)(ncurve->refine);
 
   ay_status = ay_act_leastSquares(acurve->controlv,
-				  acurve->length, acurve->length, 4,
+				  acurve->length, acurve->length,
+				  acurve->order-1,
 				  &knotv, &controlv);
 
   if(ay_status)

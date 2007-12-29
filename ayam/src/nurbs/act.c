@@ -134,12 +134,11 @@ int
 ay_act_leastSquares(double *Q, int m, int n, int p, double **U, double **P)
 {
  int ay_status = AY_OK;
- int a, i, j, stride = 3, span;
+ int a, i, j, istride = 3, ostride = 4, span;
  double d, *ub = NULL;
  double *Ns = NULL, *Nt = NULL, *NN = NULL;
  double *R = NULL, *rk = NULL, *N = NULL, *X = NULL, *B = NULL;
  double *funs = NULL;
- stride = 3;
 
   if(!Q || !U || !P)
     return AY_ENULL;
@@ -157,7 +156,7 @@ ay_act_leastSquares(double *Q, int m, int n, int p, double **U, double **P)
       goto cleanup;
     }
 
-  if(!(*P = calloc(n*stride, sizeof(double))))
+  if(!(*P = calloc(n*ostride, sizeof(double))))
     {
       ay_status = AY_EOMEM;
       goto cleanup;
@@ -165,7 +164,7 @@ ay_act_leastSquares(double *Q, int m, int n, int p, double **U, double **P)
 
   for(i = 0; i < p+1; i++)
     {
-      *U[i] = 0.0;
+      (*U)[i] = 0.0;
     }
 
   d = (m+1) / (double)(n-p+1);
@@ -173,21 +172,21 @@ ay_act_leastSquares(double *Q, int m, int n, int p, double **U, double **P)
     {
       i = (int)(j*d);
       a = j*d-i;
-      *U[p+j] = (1-a)*ub[i-1] + a*ub[i];
+      (*U)[p+j] = (1-a)*ub[i-1] + a*ub[i];
     }
 
   for(i = n; i < n+p+1; i++)
     {
-      *U[i] = 1.0;
+      (*U)[i] = 1.0;
     }
 
-  if(!(R = calloc(n*stride, sizeof(double))))
+  if(!(R = calloc(n*istride, sizeof(double))))
     {
       ay_status = AY_EOMEM;
       goto cleanup;
     }
 
-  if(!(rk = calloc(m*stride, sizeof(double))))
+  if(!(rk = calloc(m*istride, sizeof(double))))
     {
       ay_status = AY_EOMEM;
       goto cleanup;
@@ -219,28 +218,31 @@ ay_act_leastSquares(double *Q, int m, int n, int p, double **U, double **P)
 	}
 
       /*rk[i] = Q[i]-N(i,0)*Q[0]-N(i,n-1)*Q[m-1];*/
-      rk[i*stride]   = Q[i*stride]  - N[i*n]*Q[0] -N[i*n+n-1]*Q[(m-1)*stride];
-      rk[i*stride+1] = Q[i*stride+1]- N[i*n]*Q[1] -N[i*n+n-1]*Q[(m-1)*stride+1];
-      rk[i*stride+2] = Q[i*stride+2]- N[i*n]*Q[2] -N[i*n+n-1]*Q[(m-1)*stride+2];
+      rk[i*istride]   = Q[i*istride]  - N[i*n]*Q[0] -
+	N[i*n+n-1]*Q[(m-1)*istride];
+      rk[i*istride+1] = Q[i*istride+1]- N[i*n]*Q[1] -
+	N[i*n+n-1]*Q[(m-1)*istride+1];
+      rk[i*istride+2] = Q[i*istride+2]- N[i*n]*Q[2] -
+	N[i*n+n-1]*Q[(m-1)*istride+2];
     } /* for */
 
   /* set up R */
   for(i = 0; i < n; i++)
     {
-      /*R[i*stride] = 0.0;*/
-      memset(&(R[i*stride]), 0, stride*sizeof(double));
+      /*R[i*istride] = 0.0;*/
+      memset(&(R[i*istride]), 0, istride*sizeof(double));
 
       for(j = 0; j < m; j++)
 	{
 	  /*R[i] += N(j,i)*rk[j] ;*/
-	  R[i*stride]   += N[j*n+i]*rk[j*stride];
-	  R[i*stride+1] += N[j*n+i]*rk[j*stride+1];
-	  R[i*stride+2] += N[j*n+i]*rk[j*stride+2];
+	  R[i*istride]   += N[j*n+i]*rk[j*istride];
+	  R[i*istride+1] += N[j*n+i]*rk[j*istride+1];
+	  R[i*istride+2] += N[j*n+i]*rk[j*istride+2];
 	}
 
-      if(R[i*stride]*R[i*stride]     < AY_EPSILON &&
-	 R[i*stride+1]*R[i*stride+1] < AY_EPSILON &&
-	 R[i*stride+2]*R[i*stride+2] < AY_EPSILON)
+      if(R[i*istride]*R[i*istride]     < AY_EPSILON &&
+	 R[i*istride+1]*R[i*istride+1] < AY_EPSILON &&
+	 R[i*istride+2]*R[i*istride+2] < AY_EPSILON)
 	{
 	  ay_status = AY_ERROR;
 	  goto cleanup;
@@ -266,12 +268,12 @@ ay_act_leastSquares(double *Q, int m, int n, int p, double **U, double **P)
 	  ay_status = AY_EOMEM;
 	  goto cleanup;
 	}
-      if(!(X = calloc((n-2)*stride, sizeof(double))))
+      if(!(X = calloc((n-2)*istride, sizeof(double))))
 	{
 	  ay_status = AY_EOMEM;
 	  goto cleanup;
 	}
-      if(!(B = calloc((n-2)*stride, sizeof(double))))
+      if(!(B = calloc((n-2)*istride, sizeof(double))))
 	{
 	  ay_status = AY_EOMEM;
 	  goto cleanup;
@@ -290,7 +292,7 @@ ay_act_leastSquares(double *Q, int m, int n, int p, double **U, double **P)
 	}
 
       /* fill B */
-      memcpy(B, &(R[stride]), (n-2)*stride*sizeof(double));
+      memcpy(B, &(R[istride]), (n-2)*istride*sizeof(double));
 
       /* do N^T*N */
       ay_act_multmatrixmn(Nt, Ns, m-2, n-2, NN);
@@ -302,15 +304,23 @@ ay_act_leastSquares(double *Q, int m, int n, int p, double **U, double **P)
 	{ goto cleanup; }
 
       /* save results from X */
-      memcpy(&(*P[stride]), X, (n-2)*stride*sizeof(double));
+      memcpy(&((*P)[ostride]), X, (n-2)*istride*sizeof(double));
 
     } /* if */
 
   /* first and last points are data points */
   /*P[0] = Q[0];*/
-  memcpy(*P, Q, stride*sizeof(double));
+  memcpy(*P, Q, istride*sizeof(double));
   /*P[n-1] = Q[m-1];*/
-  memcpy(&(*P[(n-1)*stride]), &(Q[(m-1)*stride]), stride*sizeof(double));
+  memcpy(&((*P)[(n-1)*ostride]), &(Q[(m-1)*istride]), istride*sizeof(double));
+
+  /* set weights */
+  a = 3;
+  for(i = 0; i < n; i++)
+    {
+      (*P)[a] = 1.0;
+      a += ostride;
+    }
 
 cleanup:
 
