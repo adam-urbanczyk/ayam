@@ -38,7 +38,7 @@ ay_act_multmatrixmn(double *M1, double *M2, int m, int n, double *R)
       for(j = 0; j < n; j++)
 	{
 	  /* arrange to access row j in M1 */
-	  a = j*n;
+	  a = j;
 	  /* arrange to access column i in M2 */
 	  b = i*n;
 	  t = 0.0;
@@ -134,8 +134,8 @@ int
 ay_act_leastSquares(double *Q, int m, int n, int p, double **U, double **P)
 {
  int ay_status = AY_OK;
- int a, i, j, istride = 3, ostride = 4, span;
- double d, *ub = NULL;
+ int a, i, i2, j, k, istride = 3, ostride = 4, span;
+ double da, d, *ub = NULL;
  double *Ns = NULL, *Nt = NULL, *NN = NULL;
  double *R = NULL, *rk = NULL, *N = NULL, *X = NULL, *B = NULL;
  double *funs = NULL;
@@ -166,13 +166,28 @@ ay_act_leastSquares(double *Q, int m, int n, int p, double **U, double **P)
     {
       (*U)[i] = 0.0;
     }
-
+  /*
   d = (m+1) / (double)(n-p+1);
   for(j = 1; j < n-p; j++)
     {
       i = (int)(j*d);
       a = j*d-i;
       (*U)[p+j] = (1-a)*ub[i-1] + a*ub[i];
+    }
+  */
+  /* from NURBS++ */
+  d = m / (double)n;
+  for(j = 1; j < n-p; j++)
+    {
+      (*U)[p+j] = 0.0;
+      for(k = j; k < j+p; k++)
+	{
+	  i = (int)(k*d);
+	  da = k*d-i;
+	  i2 = (int)((k-1)*d);
+	  (*U)[p+j] += da*ub[i2] + (1.0-da)*ub[i];
+	}
+      (*U)[p+j] /= p;
     }
 
   for(i = n; i < n+p+1; i++)
@@ -209,12 +224,22 @@ ay_act_leastSquares(double *Q, int m, int n, int p, double **U, double **P)
   N[(m-1)*n+(n-1)] = 1.0;
   for(i = 0; i < m; i++)
     {
-      span = ay_nb_FindSpan(m, p, ub[i], *U);
+      span = ay_nb_FindSpan(n, p, ub[i], *U);
+
+      /* protect BasisFuns() from bad spans */
+      if(span >= n)
+	span = n-1;
+
+      memset(funs, 0, (p+1)*sizeof(double));
       ay_nb_BasisFuns(span, ub[i], p, *U, funs);
       for(j = 0; j <= p; j++)
 	{
 	  a = i*n+(span-p+j);
-	  N[a] = funs[j] ;
+	  N[a] = funs[j];
+	  /*
+	  if(isnan(N[a]))
+	    goto cleanup;
+	  */
 	}
 
       /*rk[i] = Q[i]-N(i,0)*Q[0]-N(i,n-1)*Q[m-1];*/
@@ -298,13 +323,18 @@ ay_act_leastSquares(double *Q, int m, int n, int p, double **U, double **P)
       ay_act_multmatrixmn(Nt, Ns, m-2, n-2, NN);
 
       /* solve the linear equation system NN*X=B */
-      ay_status = ay_act_solve(NN, B, m, n, X);
+      ay_status = ay_act_solve(NN, B, m-2, n-2, X);
 
       if(ay_status)
 	{ goto cleanup; }
 
       /* save results from X */
-      memcpy(&((*P)[ostride]), X, (n-2)*istride*sizeof(double));
+      j = 0;
+      for(i = 1; i < n-1; i++)
+	{
+	  memcpy(&((*P)[i*ostride]), &(X[j*istride]), istride*sizeof(double));
+	  j++;
+	}
 
     } /* if */
 
