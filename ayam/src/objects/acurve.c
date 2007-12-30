@@ -23,7 +23,6 @@ ay_acurve_createcb(int argc, char *argv[], ay_object *o)
  int order = 4, length = 4, closed = AY_FALSE, i = 0;
  double *cv = NULL, dx = 0.25;
  ay_acurve_object *new = NULL;
- ay_object *ncurve = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -56,7 +55,7 @@ ay_acurve_createcb(int argc, char *argv[], ay_object *o)
       return AY_ERROR;
     }
 
-  for(i=0;i<(length);i++)
+  for(i = 0; i < (length); i++)
     {
       cv[i*3] = (double)i*dx;
     }
@@ -671,26 +670,25 @@ ay_acurve_notifycb(ay_object *o)
   ay_object_defaults(ncurve);
   ncurve->type = AY_IDNCURVE;
 
-  if(!(ncurve->refine = calloc(1, sizeof(ay_nurbcurve_object))))
-    {
-      free(ncurve); return AY_ERROR;
-    }
-
-  nc = (ay_nurbcurve_object *)(ncurve->refine);
-
   ay_status = ay_act_leastSquares(acurve->controlv,
 				  acurve->length, acurve->length,
 				  acurve->order-1,
 				  &knotv, &controlv);
 
   if(ay_status)
-    return ay_status;
+    {
+      /* XXXX free knotv? controlv? */
+      return ay_status;
+    }
 
   ay_status = ay_nct_create(4, acurve->length, AY_KTCUSTOM, controlv, knotv,
 			    (ay_nurbcurve_object **)(&(ncurve->refine)));
 
   if(ay_status)
-    return ay_status;
+    {
+      /* XXXX free knotv? controlv? */
+      return ay_status;
+    }
 
   nc = (ay_nurbcurve_object *)ncurve->refine;
   nc->display_mode = acurve->display_mode;
