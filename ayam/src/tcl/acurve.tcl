@@ -29,6 +29,7 @@ NCInfoBall "N/A"
 set w [frame $ay(pca).$ACurveAttr(w)]
 
 addParam $w ACurveAttrData Length
+addParam $w ACurveAttrData ALength
 addCheck $w ACurveAttrData Closed
 addParam $w ACurveAttrData Order
 

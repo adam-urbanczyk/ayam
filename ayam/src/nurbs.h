@@ -16,6 +16,8 @@
 int ay_act_leastSquares(double *Q, int m, int n, int p,
 			double **U, double **P);
 
+int ay_act_resize(ay_acurve_object *curve, int new_length);
+
 /* capt.c */
 int ay_capt_createfromcurve(ay_object *c, ay_object **cap);
 
