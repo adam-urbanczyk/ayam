@@ -398,3 +398,104 @@ cleanup:
  return ay_status;
 } /* ay_act_leastSquares */
 
+
+/* ay_act_resize:
+ *  resize an interpolating curve
+ */
+int
+ay_act_resize(ay_acurve_object *curve, int new_length)
+{
+ int ay_status = AY_OK;
+ int a, b, i, j;
+ int *newpersec = NULL, new = 0;
+ double *ncontrolv = NULL, v[3] = {0}, t = 0.0, *cv = NULL;
+
+  if(new_length == curve->length)
+    return ay_status;
+
+  if(!(ncontrolv = calloc(3*new_length, sizeof(double))))
+    return AY_EOMEM;
+
+  if(new_length < curve->length)
+    {
+      a = 0;
+      for(i = 0; i < new_length; i++)
+	{
+	  memcpy(&ncontrolv[a], &(curve->controlv[a]), 3*sizeof(double));
+	  a+=3;
+	}
+    }
+  else
+    {
+      /* distribute new points */
+      new = new_length - curve->length;
+
+      if(!(newpersec = calloc((curve->length-1), sizeof(int))))
+	return AY_EOMEM;
+      cv = curve->controlv;
+
+      while(new)
+	{
+	  for(i = 0; i < (curve->length-1); i++)
+	    {
+	      if((cv[i*3] != cv[(i+1)*3]) ||
+		 (cv[i*3+1] != cv[(i+1)*3+1]) ||
+		 (cv[i*3+2] != cv[(i+1)*3+2]))
+		{
+		  if(new)
+		    {
+		      (newpersec[i])++;
+		      new--;
+		    } /* if */
+		} /* if */
+	    } /* for */
+	} /* while */
+
+      a = 0;
+      b = 0;
+      for(i = 0; i < (curve->length-1); i++)
+	{
+	  memcpy(&ncontrolv[b], &(curve->controlv[a]), 3*sizeof(double));
+	  b+=3;
+
+	  if((cv[i*3] != cv[(i+1)*3]) ||
+	     (cv[i*3+1] != cv[(i+1)*3+1]) ||
+	     (cv[i*3+2] != cv[(i+1)*3+2]))
+	    {
+	      for(j = 1; j <= newpersec[i]; j++)
+		{
+
+		  v[0] = curve->controlv[a+3]   - curve->controlv[a];
+		  v[1] = curve->controlv[a+3+1] - curve->controlv[a+1];
+		  v[2] = curve->controlv[a+3+2] - curve->controlv[a+2];
+
+		  t = j/(newpersec[i]+1.0);
+
+		  AY_V3SCAL(v,t);
+
+		  ncontrolv[b]   = curve->controlv[a]   + v[0];
+		  ncontrolv[b+1] = curve->controlv[a+1] + v[1];
+		  ncontrolv[b+2] = curve->controlv[a+2] + v[2];
+		  ncontrolv[b+3] = 1.0;
+
+		  b+=3;
+		} /* for */
+	    } /* if */
+
+	  a+=3;
+	} /* for */
+      memcpy(&ncontrolv[(new_length-1)*3],
+	     &(curve->controlv[(curve->length-1)*3]),
+	     3*sizeof(double));
+
+      free(newpersec);
+
+    } /* if */
+
+  free(curve->controlv);
+  curve->controlv = ncontrolv;
+
+  curve->length = new_length;
+
+ return ay_status;
+} /* ay_act_resize */

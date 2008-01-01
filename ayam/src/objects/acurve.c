@@ -65,6 +65,7 @@ ay_acurve_createcb(int argc, char *argv[], ay_object *o)
 
   new->closed = closed;
   new->length = length;
+  new->alength = length;
   new->controlv = cv;
 
   o->refine = new;
@@ -378,6 +379,10 @@ ay_acurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &new_length);
 
+  Tcl_SetStringObj(ton,"ALength",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &(acurve->alength));
+
   Tcl_SetStringObj(ton,"Closed",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(acurve->closed));
@@ -409,7 +414,10 @@ ay_acurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     {
       if(new_length > 2)
 	{
-	  /*ay_status = ay_act_resize(acurve, new_length);*/
+	  ay_status = ay_act_resize(acurve, new_length);
+	  
+	  /* XXXX currently alength must match length */
+	  acurve->alength = new_length;
 	}
       else
 	{
@@ -447,6 +455,10 @@ ay_acurve_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   Tcl_SetStringObj(ton,"Length",-1);
   to = Tcl_NewIntObj(acurve->length);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton,"ALength",-1);
+  to = Tcl_NewIntObj(acurve->alength);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   Tcl_SetStringObj(ton,"Closed",-1);
@@ -501,6 +513,7 @@ ay_acurve_readcb(FILE *fileptr, ay_object *o)
     { return AY_EOMEM; }
 
   fscanf(fileptr,"%d\n",&acurve->length);
+  fscanf(fileptr,"%d\n",&acurve->alength);
   fscanf(fileptr,"%d\n",&acurve->closed);
   fscanf(fileptr,"%d\n",&acurve->order);
   /*
@@ -541,6 +554,7 @@ ay_acurve_writecb(FILE *fileptr, ay_object *o)
   acurve = (ay_acurve_object *)(o->refine);
 
   fprintf(fileptr, "%d\n", acurve->length);
+  fprintf(fileptr, "%d\n", acurve->alength);
   fprintf(fileptr, "%d\n", acurve->closed);
   fprintf(fileptr, "%d\n", acurve->order);
   /*
@@ -671,7 +685,7 @@ ay_acurve_notifycb(ay_object *o)
   ncurve->type = AY_IDNCURVE;
 
   ay_status = ay_act_leastSquares(acurve->controlv,
-				  acurve->length, acurve->length,
+				  acurve->length, acurve->alength,
 				  acurve->order-1,
 				  &knotv, &controlv);
 
