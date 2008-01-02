@@ -18,6 +18,10 @@ int ay_act_leastSquares(double *Q, int m, int n, int p,
 
 int ay_act_resize(ay_acurve_object *curve, int new_length);
 
+int ay_act_revert(ay_acurve_object *curve);
+
+int ay_act_getpntfromindex(ay_acurve_object *curve, int index, double **p);
+
 /* capt.c */
 int ay_capt_createfromcurve(ay_object *c, ay_object **cap);
 
