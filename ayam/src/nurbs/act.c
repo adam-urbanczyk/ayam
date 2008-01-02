@@ -499,3 +499,62 @@ ay_act_resize(ay_acurve_object *curve, int new_length)
 
  return ay_status;
 } /* ay_act_resize */
+
+
+/* ay_act_revert:
+ *  revert an approximating curve
+ */
+int
+ay_act_revert(ay_acurve_object *curve)
+{
+ int i, j;
+ double dtemp;
+
+  if(!curve)
+    return AY_ENULL;
+
+  /* revert control */
+  j = (curve->length - 1)*3;
+  i = 0;
+  while(i < j)
+    {
+      dtemp = curve->controlv[j];
+      curve->controlv[j] = curve->controlv[i];
+      curve->controlv[i] = dtemp;
+
+      dtemp = curve->controlv[j+1];
+      curve->controlv[j+1] = curve->controlv[i+1];
+      curve->controlv[i+1] = dtemp;
+
+      dtemp = curve->controlv[j+2];
+      curve->controlv[j+2] = curve->controlv[i+2];
+      curve->controlv[i+2] = dtemp;
+
+      i+=3;
+      j-=3;
+    } /* while */
+
+ return AY_OK;
+} /* ay_act_revert */
+
+
+/* ay_act_getpntfromindex:
+ *
+ *
+ */
+int
+ay_act_getpntfromindex(ay_acurve_object *curve, int index, double **p)
+{
+ int stride = 3;
+ char fname[] = "ay_act_getpntfromindex";
+
+  if(index >= curve->length || index < 0)
+    {
+      ay_error(AY_ERROR, fname, "index out of range");
+      return TCL_OK;
+    }
+
+  *p = &(curve->controlv[index*stride]);
+
+ return TCL_OK;
+} /* ay_act_getpntfromindex */

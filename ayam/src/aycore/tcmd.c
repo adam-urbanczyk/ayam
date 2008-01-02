@@ -25,6 +25,7 @@ ay_tcmd_reverttcmd(ClientData clientData, Tcl_Interp * interp,
  char fname[] = "revert";
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
+ ay_acurve_object *acurve = NULL;
  ay_icurve_object *icurve = NULL;
  ay_nurbcurve_object *ncurve = NULL;
 
@@ -34,6 +35,24 @@ ay_tcmd_reverttcmd(ClientData clientData, Tcl_Interp * interp,
 
       switch(o->type)
 	{
+	case AY_IDACURVE:
+
+	  if(o->selp)
+	    {
+	      ay_selp_clear(o);
+	    }
+
+	  acurve = (ay_acurve_object*)o->refine;
+
+	  ay_status = ay_act_revert(acurve);
+	  if(ay_status)
+	    {
+	      ay_error(ay_status, fname, "Could not revert ACurve!");
+	    }
+
+	  o->modified = AY_TRUE;
+
+	  break;
 	case AY_IDICURVE:
 
 	  if(o->selp)
@@ -84,7 +103,8 @@ ay_tcmd_reverttcmd(ClientData clientData, Tcl_Interp * interp,
 
 
 /* ay_tcmd_showall:
- *
+ *  _recursively_ set the hidden flag of all children of object
+ *  <o> and <o> to false (show the objects)
  */
 void
 ay_tcmd_showall(ay_object *o)
@@ -103,15 +123,16 @@ ay_tcmd_showall(ay_object *o)
 
   o->hide = AY_FALSE;
 
-  return;
+ return;
 } /* ay_tcmd_showall */
+
 
 /* ay_tcmd_showtcmd:
  *
  */
 int
 ay_tcmd_showtcmd(ClientData clientData, Tcl_Interp * interp,
-		  int argc, char *argv[])
+		 int argc, char *argv[])
 {
   /*
  int ay_status = AY_OK;
@@ -149,7 +170,8 @@ ay_tcmd_showtcmd(ClientData clientData, Tcl_Interp * interp,
 
 
 /* ay_tcmd_hideall:
- *
+ *  _recursively_ set the hidden flag of all children of object
+ *  <o> and <o> to true (hide the objects)
  */
 void
 ay_tcmd_hideall(ay_object *o)
@@ -242,9 +264,9 @@ int
 ay_tcmd_getvertcmd(ClientData clientData, Tcl_Interp * interp,
 		   int argc, char *argv[])
 {
-  char *glver = NULL, *glven = NULL, *glren = NULL, *gluver = NULL,
-    *gluext = NULL, *glext = NULL;
-  char arr[] = "ay";
+ char *glver = NULL, *glven = NULL, *glren = NULL, *gluver = NULL,
+   *gluext = NULL, *glext = NULL;
+ char arr[] = "ay";
 
   glver = (char *)glGetString(GL_VERSION);
   if(glver)
@@ -402,6 +424,18 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 				 nc->controlv, u, p);
 	      homogenous = AY_FALSE;
 	    } /* if */
+	  j = i+1;
+	  break;
+	case AY_IDACURVE:
+	  if(argc2 < 5)
+	    {
+	      ay_error(AY_EARGS, fname, fargs);
+	      return TCL_OK;
+	    }
+	  Tcl_GetInt(interp, argv[i], &indexu);
+	  ay_act_getpntfromindex((ay_acurve_object*)(src->refine),
+				 indexu, &p);
+	  homogenous = AY_FALSE;
 	  j = i+1;
 	  break;
 	case AY_IDICURVE:
@@ -654,6 +688,18 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_nct_getpntfromindex((ay_nurbcurve_object*)(src->refine),
 				 indexu, &p);
 	  homogenous = AY_TRUE;
+	  i = 2;
+	  break;
+	case AY_IDACURVE:
+	  if(argc < 5)
+	    {
+	      ay_error(AY_EARGS, fname, "index x y z");
+	      return TCL_OK;
+	    }
+	  Tcl_GetInt(interp, argv[1], &indexu);
+	  ay_act_getpntfromindex((ay_acurve_object*)(src->refine),
+				 indexu, &p);
+	  homogenous = AY_FALSE;
 	  i = 2;
 	  break;
 	case AY_IDICURVE:
