@@ -33,6 +33,10 @@ typedef struct csphere_object_s
 #endif /* WIN32 */
 int Csphere_Init(Tcl_Interp *interp);
 
+
+/* csphere_createcb:
+ *  create callback function
+ */
 int
 csphere_createcb(int argc, char *argv[], ay_object *o)
 {
@@ -61,6 +65,9 @@ csphere_createcb(int argc, char *argv[], ay_object *o)
 } /* csphere_createcb */
 
 
+/* csphere_deletecb:
+ *  delete callback function
+ */
 int
 csphere_deletecb(void *c)
 {
@@ -77,6 +84,9 @@ csphere_deletecb(void *c)
 } /* csphere_deletecb */
 
 
+/* csphere_copycb:
+ *  copy callback function
+ */
 int
 csphere_copycb(void *src, void **dst)
 {
@@ -96,6 +106,9 @@ csphere_copycb(void *src, void **dst)
 } /* csphere_copycb */
 
 
+/* csphere_drawcb:
+ *  draw (display in an Ayam view window) callback function
+ */
 int
 csphere_drawcb(struct Togl *togl, ay_object *o)
 {
@@ -158,8 +171,8 @@ csphere_drawcb(struct Togl *togl, ay_object *o)
       glVertex3d(0.0,radius*w,radius*w);
       glEnd();
 
-      return AY_OK;
-    }
+      return AY_OK; /* XXXX early exit! */
+    } /* if */
 
 
   zmin = csphere->zmin;
@@ -264,6 +277,9 @@ csphere_drawcb(struct Togl *togl, ay_object *o)
 } /* csphere_drawcb */
 
 
+/* csphere_shadecb:
+ *  shade (display in an Ayam view window) callback function
+ */
 int
 csphere_shadecb(struct Togl *togl, ay_object *o)
 {
@@ -459,7 +475,9 @@ csphere_shadecb(struct Togl *togl, ay_object *o)
 } /* csphere_shadecb */
 
 
-/* Tcl -> C! */
+/* csphere_setpropcb:
+ *  set property (from Tcl to C context) callback function
+ */
 int
 csphere_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -515,7 +533,9 @@ csphere_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* csphere_setpropcb */
 
 
-/* C -> Tcl! */
+/* csphere_getpropcb:
+ *  get property (from C to Tcl context) callback function
+ */
 int
 csphere_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -560,13 +580,17 @@ csphere_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* csphere_getpropcb */
 
 
+/* csphere_readcb:
+ *  read (from scene file) callback function
+ */
 int
 csphere_readcb(FILE *fileptr, ay_object *o)
 {
  csphere_object *csphere = NULL;
  int itemp = 0;
- if(!o)
-   return AY_ENULL;
+
+  if(!o)
+    return AY_ENULL;
 
   if(!(csphere = calloc(1, sizeof(csphere_object))))
     { return AY_EOMEM; }
@@ -595,6 +619,9 @@ csphere_readcb(FILE *fileptr, ay_object *o)
 } /* csphere_readcb */
 
 
+/* csphere_writecb:
+ *  write (to scene file) callback function
+ */
 int
 csphere_writecb(FILE *fileptr, ay_object *o)
 {
@@ -615,7 +642,10 @@ csphere_writecb(FILE *fileptr, ay_object *o)
 } /* csphere_writecb */
 
 
-/* code taken from Affine */
+/* csphere_wribcb:
+ *  RIB export callback function
+ *  (code taken from Affine)
+ */
 int
 csphere_wribcb(char *file, ay_object *o)
 {
@@ -634,7 +664,7 @@ csphere_wribcb(char *file, ay_object *o)
 #define UNITCIRCLE (0.5522847)
 
   if(!o)
-   return AY_ENULL;
+    return AY_ENULL;
 
   csphere = (csphere_object*)o->refine;
 
@@ -787,6 +817,9 @@ csphere_wribcb(char *file, ay_object *o)
 } /* csphere_wribcb */
 
 
+/* csphere_bbccb:
+ *  bounding box calculation callback function
+ */
 int
 csphere_bbccb(ay_object *o, double *bbox, int *flags)
 {
@@ -826,8 +859,12 @@ csphere_bbccb(ay_object *o, double *bbox, int *flags)
 } /* csphere_bbccb */
 
 
-/* note: this function _must_ be capitalized exactly this way
- * regardless of filename (see: man n load)!
+/* Csphere_Init:
+ * initializes the csphere module/plugin by registering a new
+ * object type (CSphere) and loading the accompanying Tcl script file.
+ * Note: This function _must_ be capitalized exactly this way
+ * (_C_sphere__I_nit, not csphere_init!)
+ * regardless of the filename of the shared object (see: man n load)!
  */
 #ifdef WIN32
   __declspec (dllexport)
@@ -863,7 +900,6 @@ Csphere_Init(Tcl_Interp *interp)
 
   if(ay_status)
     {
-
       ay_error(AY_ERROR, fname, "Error registering custom object!");
       return TCL_OK;
     }
