@@ -187,29 +187,37 @@ if { ! $AYWITHAQUA } {
 
 set ay(createmenu) $m
 
-$m add command -label "NURBCurve" -command {
+$m add cascade -menu $m.cu -label "Curve"
+menu $m.cu -tearoff 0
+$m.cu add command -label "NURBCurve" -command {
     runTool ay(nclen) "Length:" \
 	"crtOb NCurve -length %0; uCR; sL; forceNot; rV;"
 }
-$m add command -label "ICurve" -command {
+$m.cu add command -label "ICurve" -command {
     runTool ay(iclen) "Length:" \
 	"crtOb ICurve -length %0; uCR; sL; forceNot; rV;"
 }
-$m add command -label "NCircle" -command {
+$m.cu add command -label "ACurve" -command {
+    runTool ay(iclen) "Length:" \
+	"crtOb ACurve -length %0; uCR; sL; forceNot; rV;"
+}
+$m.cu add command -label "NCircle" -command {
     crtOb NCircle; uCR; sL; forceNot; rV;
 }
-$m add command -label "NURBPatch" -command {
+$m add cascade -menu $m.su -label "Surface"
+menu $m.su -tearoff 0
+$m.su add command -label "NURBPatch" -command {
     runTool {ay(npwidth) ay(npheight)} {"Width:" "Height:"} \
 	"crtOb NPatch -width %0 -height %1; uCR; sL; forceNot; rV;"
 }
-$m add command -label "BPatch" -command {
+$m.su add command -label "BPatch" -command {
     crtOb BPatch; uCR; sL; forceNot; rV;
 }
-$m add command -label "PatchMesh" -command {
+$m.su add command -label "PatchMesh" -command {
     runTool {ay(pmwidth) ay(pmheight)} {"Width:" "Height:"}\
 	"crtOb PatchMesh -width %0 -height %1; uCR; sL; forceNot; rV;"
 }
-$m add separator
+
 $m add cascade -menu $m.sl -label "Solid"
 menu $m.sl -tearoff 0
 $m.sl add command -label "Box"\
