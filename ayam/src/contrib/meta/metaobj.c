@@ -780,7 +780,7 @@ metaobj_bbccb (ay_object *o, double *bbox, int *flags)
  meta_world *w;
  double xmin, xmax, ymin, ymax, zmin, zmax;
  double *controlv = NULL;
- unsigned int i, a, stride = 3;
+ int i, a, stride = 3;
 
   if(!o || !bbox)
     {
