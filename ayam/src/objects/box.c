@@ -16,6 +16,9 @@
 
 static char *ay_box_name = "Box";
 
+/* ay_box_createcb:
+ *  create callback function of box object
+ */
 int
 ay_box_createcb(int argc, char *argv[], ay_object *o)
 {
@@ -41,6 +44,9 @@ ay_box_createcb(int argc, char *argv[], ay_object *o)
 } /* ay_box_createcb */
 
 
+/* ay_box_deletecb:
+ *  delete callback function of box object
+ */
 int
 ay_box_deletecb(void *c)
 {
@@ -57,6 +63,9 @@ ay_box_deletecb(void *c)
 } /* ay_box_deletecb */
 
 
+/* ay_box_copycb:
+ *  copy callback function of box object
+ */
 int
 ay_box_copycb(void *src, void **dst)
 {
@@ -76,6 +85,9 @@ ay_box_copycb(void *src, void **dst)
 } /* ay_box_copycb */
 
 
+/* ay_box_drawcb:
+ *  draw (display in an Ayam view window) callback function of box object
+ */
 int
 ay_box_drawcb(struct Togl *togl, ay_object *o)
 {
@@ -121,6 +133,9 @@ ay_box_drawcb(struct Togl *togl, ay_object *o)
 } /* ay_box_drawcb */
 
 
+/* ay_box_shadecb:
+ *  shade (display in an Ayam view window) callback function of box object
+ */
 int
 ay_box_shadecb(struct Togl *togl, ay_object *o)
 {
@@ -183,7 +198,9 @@ ay_box_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_box_shadecb */
 
 
-/* Tcl -> C! */
+/* ay_box_setpropcb:
+ *  set property (from Tcl to C context) callback function of box object
+ */
 int
 ay_box_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -221,7 +238,9 @@ ay_box_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_box_setpropcb */
 
 
-/* C -> Tcl! */
+/* ay_box_getpropcb:
+ *  get property (from C to Tcl context) callback function of box object
+ */
 int
 ay_box_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -255,6 +274,9 @@ ay_box_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_box_getpropcb */
 
 
+/* ay_box_readcb:
+ *  read (from scene file) callback function of box object
+ */
 int
 ay_box_readcb(FILE *fileptr, ay_object *o)
 {
@@ -276,6 +298,9 @@ ay_box_readcb(FILE *fileptr, ay_object *o)
 } /* ay_box_readcb */
 
 
+/* ay_box_writecb:
+ *  write (to scene file) callback function of box object
+ */
 int
 ay_box_writecb(FILE *fileptr, ay_object *o)
 {
@@ -294,6 +319,9 @@ ay_box_writecb(FILE *fileptr, ay_object *o)
 } /* ay_box_writecb */
 
 
+/* ay_box_wribcb:
+ *  RIB export callback function of box object
+ */
 int
 ay_box_wribcb(char *file, ay_object *o)
 {
@@ -351,6 +379,9 @@ ay_box_wribcb(char *file, ay_object *o)
 } /* ay_box_wribcb */
 
 
+/* ay_box_bbccb:
+ *  bounding box calculation callback function of box object
+ */
 int
 ay_box_bbccb(ay_object *o, double *bbox, int *flags)
 {
@@ -388,6 +419,9 @@ ay_box_bbccb(ay_object *o, double *bbox, int *flags)
 } /* ay_box_bbccb */
 
 
+/* ay_box_providecb:
+ *  provide callback function of box object
+ */
 int
 ay_box_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
@@ -546,6 +580,9 @@ cleanup:
 } /* ay_box_providecb */
 
 
+/* ay_box_convertcb:
+ *  convert callback function of box object
+ */
 int
 ay_box_convertcb(ay_object *o, int in_place)
 {
@@ -602,6 +639,9 @@ ay_box_convertcb(ay_object *o, int in_place)
 } /* ay_box_convertcb */
 
 
+/* ay_box_init:
+ *  initialize the box object module
+ */
 int
 ay_box_init(Tcl_Interp *interp)
 {

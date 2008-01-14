@@ -35,7 +35,7 @@ int Csphere_Init(Tcl_Interp *interp);
 
 
 /* csphere_createcb:
- *  create callback function
+ *  create callback function of csphere object
  */
 int
 csphere_createcb(int argc, char *argv[], ay_object *o)
@@ -66,7 +66,7 @@ csphere_createcb(int argc, char *argv[], ay_object *o)
 
 
 /* csphere_deletecb:
- *  delete callback function
+ *  delete callback function of csphere object
  */
 int
 csphere_deletecb(void *c)
@@ -85,7 +85,7 @@ csphere_deletecb(void *c)
 
 
 /* csphere_copycb:
- *  copy callback function
+ *  copy callback function of csphere object
  */
 int
 csphere_copycb(void *src, void **dst)
@@ -107,7 +107,7 @@ csphere_copycb(void *src, void **dst)
 
 
 /* csphere_drawcb:
- *  draw (display in an Ayam view window) callback function
+ *  draw (display in an Ayam view window) callback function of csphere object
  */
 int
 csphere_drawcb(struct Togl *togl, ay_object *o)
@@ -278,7 +278,7 @@ csphere_drawcb(struct Togl *togl, ay_object *o)
 
 
 /* csphere_shadecb:
- *  shade (display in an Ayam view window) callback function
+ *  shade (display in an Ayam view window) callback function of csphere object
  */
 int
 csphere_shadecb(struct Togl *togl, ay_object *o)
@@ -476,7 +476,7 @@ csphere_shadecb(struct Togl *togl, ay_object *o)
 
 
 /* csphere_setpropcb:
- *  set property (from Tcl to C context) callback function
+ *  set property (from Tcl to C context) callback function of csphere object
  */
 int
 csphere_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
@@ -534,7 +534,7 @@ csphere_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
 
 /* csphere_getpropcb:
- *  get property (from C to Tcl context) callback function
+ *  get property (from C to Tcl context) callback function of csphere object
  */
 int
 csphere_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
@@ -581,7 +581,7 @@ csphere_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
 
 /* csphere_readcb:
- *  read (from scene file) callback function
+ *  read (from scene file) callback function of csphere object
  */
 int
 csphere_readcb(FILE *fileptr, ay_object *o)
@@ -620,7 +620,7 @@ csphere_readcb(FILE *fileptr, ay_object *o)
 
 
 /* csphere_writecb:
- *  write (to scene file) callback function
+ *  write (to scene file) callback function of csphere object
  */
 int
 csphere_writecb(FILE *fileptr, ay_object *o)
@@ -643,7 +643,7 @@ csphere_writecb(FILE *fileptr, ay_object *o)
 
 
 /* csphere_wribcb:
- *  RIB export callback function
+ *  RIB export callback function of csphere object
  *  (code taken from Affine)
  */
 int
@@ -818,7 +818,7 @@ csphere_wribcb(char *file, ay_object *o)
 
 
 /* csphere_bbccb:
- *  bounding box calculation callback function
+ *  bounding box calculation callback function of csphere object
  */
 int
 csphere_bbccb(ay_object *o, double *bbox, int *flags)
