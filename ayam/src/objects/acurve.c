@@ -16,6 +16,9 @@
 
 static char *ay_acurve_name = "ACurve";
 
+/* ay_acurve_createcb:
+ *  create callback function of acurve object
+ */
 int
 ay_acurve_createcb(int argc, char *argv[], ay_object *o)
 {
@@ -74,6 +77,9 @@ ay_acurve_createcb(int argc, char *argv[], ay_object *o)
 } /* ay_acurve_createcb */
 
 
+/* ay_acurve_deletecb:
+ *  delete callback function of acurve object
+ */
 int
 ay_acurve_deletecb(void *c)
 {
@@ -96,6 +102,9 @@ ay_acurve_deletecb(void *c)
 } /* ay_acurve_deletecb */
 
 
+/* ay_acurve_copycb:
+ *  copy callback function of acurve object
+ */
 int
 ay_acurve_copycb(void *src, void **dst)
 {
@@ -126,6 +135,9 @@ ay_acurve_copycb(void *src, void **dst)
 } /* ay_acurve_copycb */
 
 
+/* ay_acurve_drawcb:
+ *  draw (display in an Ayam view window) callback function of acurve object
+ */
 int
 ay_acurve_drawcb(struct Togl *togl, ay_object *o)
 {
@@ -204,6 +216,9 @@ ay_acurve_drawcb(struct Togl *togl, ay_object *o)
 } /* ay_acurve_drawcb */
 
 
+/* ay_acurve_shadecb:
+ *  shade (display in an Ayam view window) callback function of acurve object
+ */
 int
 ay_acurve_shadecb(struct Togl *togl, ay_object *o)
 {
@@ -212,6 +227,9 @@ ay_acurve_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_acurve_shadecb */
 
 
+/* ay_acurve_drawhcb:
+ *  draw handles (in an Ayam view window) callback function of acurve object
+ */
 int
 ay_acurve_drawhcb(struct Togl *togl, ay_object *o)
 {
@@ -242,6 +260,9 @@ ay_acurve_drawhcb(struct Togl *togl, ay_object *o)
 } /* ay_acurve_drawhcb */
 
 
+/* ay_acurve_getpntcb:
+ *  get point (editing and selection) callback function of acurve object
+ */
 int
 ay_acurve_getpntcb(int mode, ay_object *o, double *p)
 {
@@ -355,7 +376,9 @@ ay_acurve_getpntcb(int mode, ay_object *o, double *p)
 } /* ay_acurve_getpntcb */
 
 
-/* Tcl -> C! */
+/* ay_acurve_setpropcb:
+ *  set property (from Tcl to C context) callback function of acurve object
+ */
 int
 ay_acurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -435,7 +458,9 @@ ay_acurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_acurve_setpropcb */
 
 
-/* C -> Tcl! */
+/* ay_acurve_getpropcb:
+ *  get property (from C to Tcl context) callback function of acurve object
+ */
 int
 ay_acurve_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -500,6 +525,9 @@ ay_acurve_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_acurve_getpropcb */
 
 
+/* ay_acurve_readcb:
+ *  read (from scene file) callback function of acurve object
+ */
 int
 ay_acurve_readcb(FILE *fileptr, ay_object *o)
 {
@@ -542,6 +570,9 @@ ay_acurve_readcb(FILE *fileptr, ay_object *o)
 } /* ay_acurve_readcb */
 
 
+/* ay_acurve_writecb:
+ *  write (to scene file) callback function of acurve object
+ */
 int
 ay_acurve_writecb(FILE *fileptr, ay_object *o)
 {
@@ -578,6 +609,9 @@ ay_acurve_writecb(FILE *fileptr, ay_object *o)
 } /* ay_acurve_writecb */
 
 
+/* ay_acurve_wribcb:
+ *  RIB export callback function of acurve object
+ */
 int
 ay_acurve_wribcb(char *file, ay_object *o)
 {
@@ -592,6 +626,9 @@ ay_acurve_wribcb(char *file, ay_object *o)
 } /* ay_acurve_wribcb */
 
 
+/* ay_acurve_bbccb:
+ *  bounding box calculation callback function of acurve object
+ */
 int
 ay_acurve_bbccb(ay_object *o, double *bbox, int *flags)
 {
@@ -657,6 +694,9 @@ ay_acurve_bbccb(ay_object *o, double *bbox, int *flags)
 } /* ay_acurve_bbccb */
 
 
+/* ay_acurve_notifycb:
+ *  notification callback function of acurve object
+ */
 int
 ay_acurve_notifycb(ay_object *o)
 {
@@ -714,6 +754,9 @@ ay_acurve_notifycb(ay_object *o)
 } /* ay_acurve_notifycb */
 
 
+/* ay_acurve_convertcb:
+ *  convert callback function of acurve object
+ */
 int
 ay_acurve_convertcb(ay_object *o, int in_place)
 {
@@ -754,6 +797,9 @@ ay_acurve_convertcb(ay_object *o, int in_place)
 } /* ay_acurve_convertcb */
 
 
+/* ay_acurve_providecb:
+ *  provide callback function of acurve object
+ */
 int
 ay_acurve_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
@@ -792,6 +838,9 @@ ay_acurve_providecb(ay_object *o, unsigned int type, ay_object **result)
 } /* ay_acurve_providecb */
 
 
+/* ay_acurve_init:
+ *  initialize the acurve object module
+ */
 int
 ay_acurve_init(Tcl_Interp *interp)
 {
@@ -820,6 +869,7 @@ ay_acurve_init(Tcl_Interp *interp)
 
   ay_status = ay_provide_register(ay_acurve_providecb, AY_IDACURVE);
 
+  /* curves may not be associated with materials */
   ay_matt_nomaterial(AY_IDACURVE);
 
  return ay_status;
