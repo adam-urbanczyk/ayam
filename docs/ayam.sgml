@@ -984,7 +984,9 @@ displacement shader to a surface shader (as long as the copied arguments
 of both shaders have the same names and types).
 
 <item><tt>"Instances/Resolve all Instances"</tt>, converts all instances
-of the current level (and its child objects) to normal objects.
+of the current level (and its child objects) to normal objects. Since
+Ayam 1.14, if objects are selected, only the selected objects will be
+processed.
 
 <item><tt>"Instances/Automatic Instancing"</tt>, pops up a small dialog box,
 where you may parameterize and start the automatic instantiation
@@ -4878,10 +4880,10 @@ field always displays the parameters of the created NURBS patch.
 
 <sect1>ICurve (Interpolating Curve) Object<label id="icurveobj">
 <p>
-The ICurve object creates an interpolating spline curve from n points
-in space. The created curve is either a C2 cubic curve with n+2 control
-points or a global interpolating rational (Global4D) curve with n control
-points and with arbitrary order.
+The ICurve object creates an interpolating NURBS curve from n
+3D non-rational data points. The created curve is either a C2 cubic curve
+(order 4) with n+2 control points or a global interpolating rational
+(Global4D) curve with n control points and with arbitrary order.
 <p>
 The global interpolation generates a bit smoother curves which look best
 with an order of 3, your mileage may vary however.
@@ -4917,6 +4919,75 @@ The following parameters control the interpolation process:
 <p>
 <itemize>
 <item>Using <tt/"Length"/ you determine the number of points to interpolate.
+
+<item>The curve can be closed with the parameter <tt/"Closed"/.
+
+<item>The parameter <tt/"Mode"/ determines whether the curve should
+be a C2 cubic curve (with n+2 control points (n+3 if the curve is
+closed)) or a so called global interpolating curve
+(with n control points (n+3 if the curve is closed)
+and arbitrary order).
+
+<item>The next parameter <tt/"Order"/ is used only if the mode is
+Global4D. It determines the order of the interpolating curve. If the
+specified order is bigger than the number of control points used
+by the interpolating curve, then the order is silently changed to
+match the number of control points.
+
+<item>The parameter <tt/"IParam"/ is used to control the position
+of the second and last-1 control point of the interpolating curve.
+It scales the vectors used to position the aforementioned points.
+You can try to change (decrease) this value, if you are not satisfied
+with the shape of the curve near the first or last interpolated point.
+This parameter has no effect on open curves when the mode is Global4D.
+
+<item>See section <ref id="ncattr" name="NCurveAttr"> for a description
+of the last attribute: <tt/"Tolerance"/.
+</itemize>
+
+
+<sect1>ACurve (Approximating Curve) Object<label id="acurveobj">
+<p>
+The ACurve object creates an approximating NURBS curve with m control
+points from n 3D non-rational data points. 
+<p>
+The global interpolation generates a bit smoother curves which look best
+with an order of 3, your mileage may vary however.
+<p>
+<figure loc="!ht">
+<eps file="pics/icurves.ps" height="7cm">
+<img src="pics/icurves.gif">
+<caption>Different ICurves (Upper Left: C2 Open, Upper Right: G4D Open, Lower Left: C2 Closed, Lower Right: G4D Closed)</caption>
+</figure>
+<p>
+The image above shows some approximating curves, the left ones
+are C2 cubic, the right ones Global4D, the upper open, and the lower
+closed ones. The interpolation fidelity for the closed curves
+could be increased considerably by adjusting the <tt/"IParam"/
+parameter, see below.
+<p>
+In both interpolation modes chord length parameterisation will be used
+to determine the knot vector of the interpolating curve.
+<p>
+This object makes use of the provide mechanism. It marks itself
+as providing a NURBCurve (it creates and uses NURBS curves
+internally anyway) and all other objects that work with
+the provide mechanism (e.g. revolve, sweep, extrude, and skin) are
+able to work with an ICurve object instead of an object
+of type NURBCurve.
+<p>
+You may convert the current ICurve to an ordinary NURBS curve
+using the main menu entry <tt>"Tools/Convert"</tt>.
+<p>
+The following parameters control the interpolation process:
+
+<sect2>ACurveAttr Property<label id="acp"><label id="acurveattrprop">
+<p>
+<itemize>
+<item>Using <tt/"Length"/ you determine the number of points to approximate.
+
+<item>Using <tt/"ALength"/ you determine the number of control points to use
+for the approximating NURBS curve.
 
 <item>The curve can be closed with the parameter <tt/"Closed"/.
 
@@ -5306,8 +5377,8 @@ escape from infinite loops in the Ayam console, is pressed.
 Calling commands and procedures that lead to the processing of
 events or that are slow because they manipulate or update the
 GUI of Ayam should be avoided. In particular, the following
-procedures and commands should not be used: uS, uCR, uCL, sL, selOb,
-plb_update, cutOb, copOb, delOb, undo!
+procedures and commands should <em>not</em> be used: uS, uCR, uCL, sL,
+selOb, plb_update, cutOb, copOb, delOb, undo!
 <p>
 Since Ayam 1.8.2 script objects may also create their own property
 GUIs for e.g. script parameters. This may be accomplished by adding
@@ -10188,8 +10259,7 @@ Furthermore, compiling a shader parsing plugin is now much easier.
 Automatic Instancing is available via the main menu entry:
 <tt>"Special/Instances/Automatic Instancing"</tt>.
 Automatic Instancing creates instances from all instantiable
-objects from the current level and below,
-using a simple algorithm that recursively compares
+objects, using a simple algorithm that recursively compares
 objects. The comparison of materials and tags may be turned off in the
 small dialog that pops up after selection of the menu entry
 <tt>"Special/Instances/Automatic Instancing"</tt>.
@@ -10209,7 +10279,12 @@ the total number of objects in a scene.
 Note that before the automatic instantiation starts, all currently
 existing instances will be resolved!
 After instantiation some statistics will be displayed in the console.
-
+<p>
+Since Ayam 1.14, the instantiation obeys the object selection:
+instances are only created from the selected objects.
+If no objects are selected instances are created from all objects
+in the current level and below.
+<p>
 More information about this subject can be found in:<p>
 <it>Schultz, R., and Schumann, H.: "Automatic Instancing of
 Hierarchically Organized Objects", in: Kunii T.L. (ed.): Spring
@@ -10627,10 +10702,11 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <label id="indexa">A
 <itemize>
 <item>About: <ref id="mmhelp" name="main menu entry">
-<item>Action: <ref id="iac" name="interactive actions">
-<item>Active: <ref id="scriptattr" name="script attribute">
 <item>Accuracy: <ref id="imprhino" name="3DM (Rhino) import option">,
 <ref id="exprhino" name="3DM (Rhino) export option">
+<item>ACurve: <ref id="acurveobj" name ="ACurve object">
+<item>Action: <ref id="iac" name="interactive actions">
+<item>Active: <ref id="scriptattr" name="script attribute">
 <item>Adaptive: <ref id="moattr" name="MetaObj attributes">
 <item>AddExtensions: <ref id="prefgui" name="preference setting">
 <item>addToProc: <ref id="scaddtoproc" name="scripting interface command">
