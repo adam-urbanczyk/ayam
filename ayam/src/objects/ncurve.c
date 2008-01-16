@@ -16,6 +16,14 @@
 
 static char *ay_ncurve_name = "NCurve";
 
+int ay_ncurve_drawstesscb(struct Togl *togl, ay_object *o);
+
+int ay_ncurve_drawglucb(struct Togl *togl, ay_object *o);
+
+int ay_ncurve_drawchcb(struct Togl *togl, ay_object *o);
+
+/* functions: */
+
 /* ay_ncurve_createcb:
  *  create callback function of ncurve object
  */
@@ -171,7 +179,7 @@ ay_ncurve_copycb(void *src, void **dst)
 } /* ay_ncurve_copycb */
 
 
-/* ay_ncurve_drawchcb:
+/* ay_ncurve_drawstesscb:
  *  internal helper function
  *  draw the curve using STESS
  */
@@ -243,7 +251,7 @@ ay_ncurve_drawstesscb(struct Togl *togl, ay_object *o)
 } /* ay_ncurve_drawstesscb */
 
 
-/* ay_ncurve_drawchcb:
+/* ay_ncurve_drawglucb:
  *  internal helper function
  *  draw the curve using GLU
  */
