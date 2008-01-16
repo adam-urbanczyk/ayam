@@ -923,6 +923,7 @@ ay_icurve_init(Tcl_Interp *interp)
 
   ay_status = ay_provide_register(ay_icurve_providecb, AY_IDICURVE);
 
+  /* icurve objects may not be associated with materials */
   ay_matt_nomaterial(AY_IDICURVE);
 
  return ay_status;
