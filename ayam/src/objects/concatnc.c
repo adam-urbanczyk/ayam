@@ -16,6 +16,9 @@
 
 static char *ay_concatnc_name = "ConcatNC";
 
+/* ay_concatnc_createcb:
+ *  create callback function of concatnc object
+ */
 int
 ay_concatnc_createcb(int argc, char *argv[], ay_object *o)
 {
@@ -42,6 +45,9 @@ ay_concatnc_createcb(int argc, char *argv[], ay_object *o)
 } /* ay_concatnc_createcb */
 
 
+/* ay_concatnc_deletecb:
+ *  delete callback function of concatnc object
+ */
 int
 ay_concatnc_deletecb(void *c)
 {
@@ -60,6 +66,9 @@ ay_concatnc_deletecb(void *c)
 } /* ay_concatnc_deletecb */
 
 
+/* ay_concatnc_copycb:
+ *  copy callback function of concatnc object
+ */
 int
 ay_concatnc_copycb(void *src, void **dst)
 {
@@ -84,6 +93,9 @@ ay_concatnc_copycb(void *src, void **dst)
 } /* ay_concatnc_copycb */
 
 
+/* ay_concatnc_drawcb:
+ *  draw (display in an Ayam view window) callback function of concatnc object
+ */
 int
 ay_concatnc_drawcb(struct Togl *togl, ay_object *o)
 {
@@ -103,6 +115,9 @@ ay_concatnc_drawcb(struct Togl *togl, ay_object *o)
 } /* ay_concatnc_drawcb */
 
 
+/* ay_concatnc_shadecb:
+ *  shade (display in an Ayam view window) callback function of concatnc object
+ */
 int
 ay_concatnc_shadecb(struct Togl *togl, ay_object *o)
 {
@@ -111,6 +126,9 @@ ay_concatnc_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_concatnc_shadecb */
 
 
+/* ay_concatnc_drawhcb:
+ *  draw handles (in an Ayam view window) callback function of concatnc object
+ */
 int
 ay_concatnc_drawhcb(struct Togl *togl, ay_object *o)
 {
@@ -119,6 +137,9 @@ ay_concatnc_drawhcb(struct Togl *togl, ay_object *o)
 } /* ay_concatnc_drawhcb */
 
 
+/* ay_concatnc_getpntcb:
+ *  get point (editing and selection) callback function of concatnc object
+ */
 int
 ay_concatnc_getpntcb(int mode, ay_object *o, double *p)
 {
@@ -127,7 +148,9 @@ ay_concatnc_getpntcb(int mode, ay_object *o, double *p)
 } /* ay_concatnc_getpntcb */
 
 
-/* Tcl -> C! */
+/* ay_concatnc_setpropcb:
+ *  set property (from Tcl to C context) callback function of concatnc object
+ */
 int
 ay_concatnc_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -177,7 +200,9 @@ ay_concatnc_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_concatnc_setpropcb */
 
 
-/* C -> Tcl! */
+/* ay_concatnc_getpropcb:
+ *  get property (from C to Tcl context) callback function of concatnc object
+ */
 int
 ay_concatnc_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -246,6 +271,9 @@ ay_concatnc_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_concatnc_getpropcb */
 
 
+/* ay_concatnc_readcb:
+ *  read (from scene file) callback function of concatnc object
+ */
 int
 ay_concatnc_readcb(FILE *fileptr, ay_object *o)
 {
@@ -275,6 +303,9 @@ ay_concatnc_readcb(FILE *fileptr, ay_object *o)
 } /* ay_concatnc_readcb */
 
 
+/* ay_concatnc_writecb:
+ *  write (to scene file) callback function of concatnc object
+ */
 int
 ay_concatnc_writecb(FILE *fileptr, ay_object *o)
 {
@@ -295,6 +326,9 @@ ay_concatnc_writecb(FILE *fileptr, ay_object *o)
 } /* ay_concatnc_writecb */
 
 
+/* ay_concatnc_wribcb:
+ *  RIB export callback function of concatnc object
+ */
 int
 ay_concatnc_wribcb(char *file, ay_object *o)
 {
@@ -309,6 +343,9 @@ ay_concatnc_wribcb(char *file, ay_object *o)
 } /* ay_concatnc_wribcb */
 
 
+/* ay_concatnc_bbccb:
+ *  bounding box calculation callback function of concatnc object
+ */
 int
 ay_concatnc_bbccb(ay_object *o, double *bbox, int *flags)
 {
@@ -323,6 +360,9 @@ ay_concatnc_bbccb(ay_object *o, double *bbox, int *flags)
 } /* ay_concatnc_bbccb */
 
 
+/* ay_concatnc_notifycb:
+ *  notification callback function of concatnc object
+ */
 int
 ay_concatnc_notifycb(ay_object *o)
 {
@@ -476,6 +516,9 @@ ay_concatnc_notifycb(ay_object *o)
 } /* ay_concatnc_notifycb */
 
 
+/* ay_concatnc_convertcb:
+ *  convert callback function of concatnc object
+ */
 int
 ay_concatnc_convertcb(ay_object *o, int in_place)
 {
@@ -519,6 +562,9 @@ ay_concatnc_convertcb(ay_object *o, int in_place)
 } /* ay_concatnc_convertcb */
 
 
+/* ay_concatnc_providecb:
+ *  provide callback function of concatnc object
+ */
 int
 ay_concatnc_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
@@ -551,6 +597,9 @@ ay_concatnc_providecb(ay_object *o, unsigned int type, ay_object **result)
 } /* ay_concatnc_providecb */
 
 
+/* ay_concatnc_init:
+ *  initialize the concatnc object module
+ */
 int
 ay_concatnc_init(Tcl_Interp *interp)
 {
@@ -579,6 +628,7 @@ ay_concatnc_init(Tcl_Interp *interp)
 
   ay_status = ay_provide_register(ay_concatnc_providecb, AY_IDCONCATNC);
 
+  /* concatnc objects may not be associated with materials */
   ay_matt_nomaterial(AY_IDCONCATNC);
 
  return ay_status;
