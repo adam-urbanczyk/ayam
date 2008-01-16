@@ -16,10 +16,21 @@
 
 static char *ay_npatch_name = "NPatch";
 
+int ay_npatch_drawstesscb(struct Togl *togl, ay_object *o);
+
 int ay_npatch_drawglucb(struct Togl *togl, ay_object *o);
+
+int ay_npatch_drawchcb(struct Togl *togl, ay_object *o);
+
+int ay_npatch_shadestesscb(struct Togl *togl, ay_object *o);
 
 int ay_npatch_shadeglucb(struct Togl *togl, ay_object *o);
 
+/* functions: */
+
+/* ay_npatch_createcb:
+ *  create callback function of npatch object
+ */
 int
 ay_npatch_createcb(int argc, char *argv[], ay_object *o)
 {
@@ -85,6 +96,9 @@ ay_npatch_createcb(int argc, char *argv[], ay_object *o)
 } /* ay_npatch_createcb */
 
 
+/* ay_npatch_deletecb:
+ *  delete callback function of npatch object
+ */
 int
 ay_npatch_deletecb(void *c)
 {
@@ -122,6 +136,9 @@ ay_npatch_deletecb(void *c)
 } /* ay_npatch_deletecb */
 
 
+/* ay_npatch_copycb:
+ *  copy callback function of npatch object
+ */
 int
 ay_npatch_copycb(void *src, void **dst)
 {
@@ -175,6 +192,10 @@ ay_npatch_copycb(void *src, void **dst)
 } /* ay_npatch_copycb */
 
 
+/* ay_npatch_drawstesscb:
+ *  internal helper function
+ *  draw the patch using STESS
+ */
 int
 ay_npatch_drawstesscb(struct Togl *togl, ay_object *o)
 {
@@ -260,6 +281,10 @@ ay_npatch_drawstesscb(struct Togl *togl, ay_object *o)
 } /* ay_npatch_drawstesscb */
 
 
+/* ay_npatch_drawglucb:
+ *  internal helper function
+ *  draw the patch using GLU
+ */
 int
 ay_npatch_drawglucb(struct Togl *togl, ay_object *o)
 {
@@ -477,6 +502,10 @@ ay_npatch_drawglucb(struct Togl *togl, ay_object *o)
 } /* ay_npatch_drawglucb */
 
 
+/* ay_npatch_drawchcb:
+ *  internal helper function
+ *  draw the control hull of the patch
+ */
 int
 ay_npatch_drawchcb(struct Togl *togl, ay_object *o)
 {
@@ -527,6 +556,9 @@ ay_npatch_drawchcb(struct Togl *togl, ay_object *o)
 } /* ay_npatch_drawchcb */
 
 
+/* ay_npatch_drawcb:
+ *  draw (display in an Ayam view window) callback function of npatch object
+ */
 int
 ay_npatch_drawcb(struct Togl *togl, ay_object *o)
 {
@@ -566,6 +598,10 @@ ay_npatch_drawcb(struct Togl *togl, ay_object *o)
 } /* ay_npatch_drawcb */
 
 
+/* ay_npatch_shadestesscb:
+ *  internal helper function
+ *  shade the patch using STESS
+ */
 int
 ay_npatch_shadestesscb(struct Togl *togl, ay_object *o)
 {
@@ -634,6 +670,10 @@ ay_npatch_shadestesscb(struct Togl *togl, ay_object *o)
 } /* ay_npatch_shadestesscb */
 
 
+/* ay_npatch_shadeglucb:
+ *  internal helper function
+ *  shade the patch using GLU
+ */
 int
 ay_npatch_shadeglucb(struct Togl *togl, ay_object *o)
 {
@@ -831,6 +871,9 @@ ay_npatch_shadeglucb(struct Togl *togl, ay_object *o)
 } /* ay_npatch_shadeglucb */
 
 
+/* ay_npatch_shadecb:
+ *  shade (display in an Ayam view window) callback function of npatch object
+ */
 int
 ay_npatch_shadecb(struct Togl *togl, ay_object *o)
 {
@@ -863,6 +906,9 @@ ay_npatch_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_npatch_shadecb */
 
 
+/* ay_npatch_drawhcb:
+ *  draw handles (in an Ayam view window) callback function of npatch object
+ */
 int
 ay_npatch_drawhcb(struct Togl *togl, ay_object *o)
 {
@@ -909,6 +955,9 @@ ay_npatch_drawhcb(struct Togl *togl, ay_object *o)
 } /* ay_npatch_drawhcb */
 
 
+/* ay_npatch_getpntcb:
+ *  get point (editing and selection) callback function of npatch object
+ */
 int
 ay_npatch_getpntcb(int mode, ay_object *o, double *p)
 {
@@ -1051,7 +1100,9 @@ ay_npatch_getpntcb(int mode, ay_object *o, double *p)
 } /* ay_npatch_getpntcb */
 
 
-/* Tcl -> C! */
+/* ay_npatch_setpropcb:
+ *  set property (from Tcl to C context) callback function of npatch object
+ */
 int
 ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -1395,7 +1446,9 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_npatch_setpropcb */
 
 
-/* C -> Tcl! */
+/* ay_npatch_getpropcb:
+ *  get property (from C to Tcl context) callback function of npatch object
+ */
 int
 ay_npatch_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -1508,6 +1561,9 @@ ay_npatch_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_npatch_getpropcb */
 
 
+/* ay_npatch_readcb:
+ *  read (from scene file) callback function of npatch object
+ */
 int
 ay_npatch_readcb(FILE *fileptr, ay_object *o)
 {
@@ -1599,6 +1655,9 @@ ay_npatch_readcb(FILE *fileptr, ay_object *o)
 } /* ay_npatch_readcb */
 
 
+/* ay_npatch_writecb:
+ *  write (to scene file) callback function of npatch object
+ */
 int
 ay_npatch_writecb(FILE *fileptr, ay_object *o)
 {
@@ -1648,6 +1707,9 @@ ay_npatch_writecb(FILE *fileptr, ay_object *o)
 } /* ay_npatch_writecb */
 
 
+/* ay_npatch_wribcb:
+ *  RIB export callback function of npatch object
+ */
 int
 ay_npatch_wribcb(char *file, ay_object *o)
 {
@@ -1782,6 +1844,9 @@ ay_npatch_wribcb(char *file, ay_object *o)
 } /* ay_npatch_wribcb */
 
 
+/* ay_npatch_bbccb:
+ *  bounding box calculation callback function of npatch object
+ */
 int
 ay_npatch_bbccb(ay_object *o, double *bbox, int *flags)
 {
@@ -1850,6 +1915,9 @@ ay_npatch_bbccb(ay_object *o, double *bbox, int *flags)
 } /* ay_npatch_bbccb */
 
 
+/* ay_npatch_providecb:
+ *  provide callback function of npatch object
+ */
 int
 ay_npatch_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
@@ -1900,6 +1968,9 @@ ay_npatch_providecb(ay_object *o, unsigned int type, ay_object **result)
 } /* ay_npatch_providecb */
 
 
+/* ay_npatch_convertcb:
+ *  convert callback function of npatch object
+ */
 int
 ay_npatch_convertcb(ay_object *o, int in_place)
 {
@@ -1929,6 +2000,9 @@ ay_npatch_convertcb(ay_object *o, int in_place)
 } /* ay_npatch_convertcb */
 
 
+/* ay_npatch_notifycb:
+ *  notification callback function of npatch object
+ */
 int
 ay_npatch_notifycb(ay_object *o)
 {
@@ -1967,6 +2041,10 @@ ay_npatch_notifycb(ay_object *o)
  return AY_OK;
 } /* ay_npatch_notifycb */
 
+
+/* ay_npatch_init:
+ *  initialize the npatch object module
+ */
 int
 ay_npatch_init(Tcl_Interp *interp)
 {
