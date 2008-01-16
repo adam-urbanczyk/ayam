@@ -16,6 +16,9 @@
 
 static char *ay_icurve_name = "ICurve";
 
+/* ay_icurve_createcb:
+ *  create callback function of icurve object
+ */
 int
 ay_icurve_createcb(int argc, char *argv[], ay_object *o)
 {
@@ -95,6 +98,9 @@ ay_icurve_createcb(int argc, char *argv[], ay_object *o)
 } /* ay_icurve_createcb */
 
 
+/* ay_icurve_deletecb:
+ *  delete callback function of icurve object
+ */
 int
 ay_icurve_deletecb(void *c)
 {
@@ -117,6 +123,9 @@ ay_icurve_deletecb(void *c)
 } /* ay_icurve_deletecb */
 
 
+/* ay_icurve_copycb:
+ *  copy callback function of icurve object
+ */
 int
 ay_icurve_copycb(void *src, void **dst)
 {
@@ -147,6 +156,9 @@ ay_icurve_copycb(void *src, void **dst)
 } /* ay_icurve_copycb */
 
 
+/* ay_icurve_drawcb:
+ *  draw (display in an Ayam view window) callback function of icurve object
+ */
 int
 ay_icurve_drawcb(struct Togl *togl, ay_object *o)
 {
@@ -225,6 +237,9 @@ ay_icurve_drawcb(struct Togl *togl, ay_object *o)
 } /* ay_icurve_drawcb */
 
 
+/* ay_icurve_shadecb:
+ *  shade (display in an Ayam view window) callback function of icurve object
+ */
 int
 ay_icurve_shadecb(struct Togl *togl, ay_object *o)
 {
@@ -233,6 +248,9 @@ ay_icurve_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_icurve_shadecb */
 
 
+/* ay_icurve_drawhcb:
+ *  draw handles (in an Ayam view window) callback function of icurve object
+ */
 int
 ay_icurve_drawhcb(struct Togl *togl, ay_object *o)
 {
@@ -263,6 +281,9 @@ ay_icurve_drawhcb(struct Togl *togl, ay_object *o)
 } /* ay_icurve_drawhcb */
 
 
+/* ay_icurve_getpntcb:
+ *  get point (editing and selection) callback function of icurve object
+ */
 int
 ay_icurve_getpntcb(int mode, ay_object *o, double *p)
 {
@@ -376,7 +397,9 @@ ay_icurve_getpntcb(int mode, ay_object *o, double *p)
 } /* ay_icurve_getpntcb */
 
 
-/* Tcl -> C! */
+/* ay_icurve_setpropcb:
+ *  set property (from Tcl to C context) callback function of icurve object
+ */
 int
 ay_icurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -449,7 +472,9 @@ ay_icurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_icurve_setpropcb */
 
 
-/* C -> Tcl! */
+/* ay_icurve_getpropcb:
+ *  get property (from C to Tcl context) callback function of icurve object
+ */
 int
 ay_icurve_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -510,6 +535,9 @@ ay_icurve_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_icurve_getpropcb */
 
 
+/* ay_icurve_readcb:
+ *  read (from scene file) callback function of icurve object
+ */
 int
 ay_icurve_readcb(FILE *fileptr, ay_object *o)
 {
@@ -548,6 +576,9 @@ ay_icurve_readcb(FILE *fileptr, ay_object *o)
 } /* ay_icurve_readcb */
 
 
+/* ay_icurve_writecb:
+ *  write (to scene file) callback function of icurve object
+ */
 int
 ay_icurve_writecb(FILE *fileptr, ay_object *o)
 {
@@ -580,6 +611,9 @@ ay_icurve_writecb(FILE *fileptr, ay_object *o)
 } /* ay_icurve_writecb */
 
 
+/* ay_icurve_wribcb:
+ *  RIB export callback function of icurve object
+ */
 int
 ay_icurve_wribcb(char *file, ay_object *o)
 {
@@ -595,6 +629,9 @@ ay_icurve_wribcb(char *file, ay_object *o)
 } /* ay_icurve_wribcb */
 
 
+/* ay_icurve_bbccb:
+ *  bounding box calculation callback function of icurve object
+ */
 int
 ay_icurve_bbccb(ay_object *o, double *bbox, int *flags)
 {
@@ -660,6 +697,9 @@ ay_icurve_bbccb(ay_object *o, double *bbox, int *flags)
 } /* ay_icurve_bbccb */
 
 
+/* ay_icurve_notifycb:
+ *  notification callback function of icurve object
+ */
 int
 ay_icurve_notifycb(ay_object *o)
 {
@@ -768,6 +808,9 @@ cleanup:
 } /* ay_icurve_notifycb */
 
 
+/* ay_icurve_convertcb:
+ *  convert callback function of icurve object
+ */
 int
 ay_icurve_convertcb(ay_object *o, int in_place)
 {
@@ -808,6 +851,9 @@ ay_icurve_convertcb(ay_object *o, int in_place)
 } /* ay_icurve_convertcb */
 
 
+/* ay_icurve_providecb:
+ *  provide callback function of icurve object
+ */
 int
 ay_icurve_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
@@ -846,6 +892,9 @@ ay_icurve_providecb(ay_object *o, unsigned int type, ay_object **result)
 } /* ay_icurve_providecb */
 
 
+/* ay_icurve_init:
+ *  initialize the icurve object module
+ */
 int
 ay_icurve_init(Tcl_Interp *interp)
 {
