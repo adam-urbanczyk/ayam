@@ -17,6 +17,10 @@
 static char *ay_extrnc_name = "ExtrNC";
 
 /* functions: */
+
+/* ay_extrnc_createcb:
+ *  create callback function of extrnc object
+ */
 int
 ay_extrnc_createcb(int argc, char *argv[], ay_object *o)
 {
@@ -40,6 +44,9 @@ ay_extrnc_createcb(int argc, char *argv[], ay_object *o)
 } /* ay_extrnc_createcb */
 
 
+/* ay_extrnc_deletecb:
+ *  delete callback function of extrnc object
+ */
 int
 ay_extrnc_deletecb(void *c)
 {
@@ -59,6 +66,9 @@ ay_extrnc_deletecb(void *c)
 } /* ay_extrnc_deletecb */
 
 
+/* ay_extrnc_copycb:
+ *  copy callback function of extrnc object
+ */
 int
 ay_extrnc_copycb(void *src, void **dst)
 {
@@ -86,6 +96,9 @@ ay_extrnc_copycb(void *src, void **dst)
 } /* ay_extrnc_copycb */
 
 
+/* ay_extrnc_drawcb:
+ *  draw (display in an Ayam view window) callback function of extrnc object
+ */
 int
 ay_extrnc_drawcb(struct Togl *togl, ay_object *o)
 {
@@ -106,6 +119,9 @@ ay_extrnc_drawcb(struct Togl *togl, ay_object *o)
 } /* ay_extrnc_drawcb */
 
 
+/* ay_extrnc_shadecb:
+ *  shade (display in an Ayam view window) callback function of extrnc object
+ */
 int
 ay_extrnc_shadecb(struct Togl *togl, ay_object *o)
 {
@@ -114,6 +130,9 @@ ay_extrnc_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_extrnc_shadecb */
 
 
+/* ay_extrnc_drawhcb:
+ *  draw handles (in an Ayam view window) callback function of extrnc object
+ */
 int
 ay_extrnc_drawhcb(struct Togl *togl, ay_object *o)
 {
@@ -140,6 +159,9 @@ ay_extrnc_drawhcb(struct Togl *togl, ay_object *o)
 } /* ay_extrnc_drawhcb */
 
 
+/* ay_extrnc_getpntcb:
+ *  get point (editing and selection) callback function of extrnc object
+ */
 int
 ay_extrnc_getpntcb(int mode, ay_object *o, double *p)
 {
@@ -148,7 +170,9 @@ ay_extrnc_getpntcb(int mode, ay_object *o, double *p)
 } /* ay_extrnc_getpntcb */
 
 
-/* Tcl -> C! */
+/* ay_extrnc_setpropcb:
+ *  set property (from Tcl to C context) callback function of extrnc object
+ */
 int
 ay_extrnc_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -203,7 +227,9 @@ ay_extrnc_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_extrnc_setpropcb */
 
 
-/* C -> Tcl! */
+/* ay_extrnc_getpropcb:
+ *  get property (from C to Tcl context) callback function of extrnc object
+ */
 int
 ay_extrnc_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -260,6 +286,9 @@ ay_extrnc_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_extrnc_getpropcb */
 
 
+/* ay_extrnc_readcb:
+ *  read (from scene file) callback function of extrnc object
+ */
 int
 ay_extrnc_readcb(FILE *fileptr, ay_object *o)
 {
@@ -292,6 +321,9 @@ ay_extrnc_readcb(FILE *fileptr, ay_object *o)
 } /* ay_extrnc_readcb */
 
 
+/* ay_extrnc_writecb:
+ *  write (to scene file) callback function of extrnc object
+ */
 int
 ay_extrnc_writecb(FILE *fileptr, ay_object *o)
 {
@@ -315,6 +347,9 @@ ay_extrnc_writecb(FILE *fileptr, ay_object *o)
 } /* ay_extrnc_writecb */
 
 
+/* ay_extrnc_wribcb:
+ *  RIB export callback function of extrnc object
+ */
 int
 ay_extrnc_wribcb(char *file, ay_object *o)
 {
@@ -323,6 +358,9 @@ ay_extrnc_wribcb(char *file, ay_object *o)
 } /* ay_extrnc_wribcb */
 
 
+/* ay_extrnc_bbccb:
+ *  bounding box calculation callback function of extrnc object
+ */
 int
 ay_extrnc_bbccb(ay_object *o, double *bbox, int *flags)
 {
@@ -348,6 +386,9 @@ ay_extrnc_bbccb(ay_object *o, double *bbox, int *flags)
 } /* ay_extrnc_bbccb */
 
 
+/* ay_extrnc_notifycb:
+ *  notification callback function of extrnc object
+ */
 int
 ay_extrnc_notifycb(ay_object *o)
 {
@@ -469,6 +510,9 @@ cleanup:
 } /* ay_extrnc_notifycb */
 
 
+/* ay_extrnc_providecb:
+ *  provide callback function of extrnc object
+ */
 int
 ay_extrnc_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
@@ -511,6 +555,9 @@ ay_extrnc_providecb(ay_object *o, unsigned int type, ay_object **result)
 } /* ay_extrnc_providecb */
 
 
+/* ay_extrnc_convertcb:
+ *  convert callback function of extrnc object
+ */
 int
 ay_extrnc_convertcb(ay_object *o, int in_place)
 {
@@ -547,6 +594,9 @@ ay_extrnc_convertcb(ay_object *o, int in_place)
 } /* ay_extrnc_convertcb */
 
 
+/* ay_extrnc_init:
+ *  initialize the extrnc object module
+ */
 int
 ay_extrnc_init(Tcl_Interp *interp)
 {
@@ -575,6 +625,7 @@ ay_extrnc_init(Tcl_Interp *interp)
 
   ay_status = ay_provide_register(ay_extrnc_providecb, AY_IDEXTRNC);
 
+  /* extrnc objects may not be associated with materials */
   ay_matt_nomaterial(AY_IDEXTRNC);
 
  return ay_status;

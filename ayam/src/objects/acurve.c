@@ -438,7 +438,7 @@ ay_acurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       if(new_length > 2)
 	{
 	  ay_status = ay_act_resize(acurve, new_length);
-	  
+
 	  /* XXXX currently alength must match length */
 	  acurve->alength = new_length;
 	}
@@ -476,7 +476,6 @@ ay_acurve_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   toa = Tcl_NewStringObj(n1,-1);
 
   ton = Tcl_NewStringObj(n1,-1);
-
 
   Tcl_SetStringObj(ton,"Length",-1);
   to = Tcl_NewIntObj(acurve->length);
@@ -869,7 +868,7 @@ ay_acurve_init(Tcl_Interp *interp)
 
   ay_status = ay_provide_register(ay_acurve_providecb, AY_IDACURVE);
 
-  /* curves may not be associated with materials */
+  /* acurves may not be associated with materials */
   ay_matt_nomaterial(AY_IDACURVE);
 
  return ay_status;
