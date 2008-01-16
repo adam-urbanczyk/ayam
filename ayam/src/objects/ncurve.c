@@ -16,6 +16,9 @@
 
 static char *ay_ncurve_name = "NCurve";
 
+/* ay_ncurve_createcb:
+ *  create callback function of ncurve object
+ */
 int
 ay_ncurve_createcb(int argc, char *argv[], ay_object *o)
 {
@@ -74,6 +77,9 @@ ay_ncurve_createcb(int argc, char *argv[], ay_object *o)
 } /* ay_ncurve_createcb */
 
 
+/* ay_ncurve_deletecb:
+ *  delete callback function of ncurve object
+ */
 int
 ay_ncurve_deletecb(void *c)
 {
@@ -109,6 +115,9 @@ ay_ncurve_deletecb(void *c)
 } /* ay_ncurve_deletecb */
 
 
+/* ay_ncurve_copycb:
+ *  copy callback function of ncurve object
+ */
 int
 ay_ncurve_copycb(void *src, void **dst)
 {
@@ -162,6 +171,10 @@ ay_ncurve_copycb(void *src, void **dst)
 } /* ay_ncurve_copycb */
 
 
+/* ay_ncurve_drawchcb:
+ *  internal helper function
+ *  draw the curve using STESS
+ */
 int
 ay_ncurve_drawstesscb(struct Togl *togl, ay_object *o)
 {
@@ -230,6 +243,10 @@ ay_ncurve_drawstesscb(struct Togl *togl, ay_object *o)
 } /* ay_ncurve_drawstesscb */
 
 
+/* ay_ncurve_drawchcb:
+ *  internal helper function
+ *  draw the curve using GLU
+ */
 int
 ay_ncurve_drawglucb(struct Togl *togl, ay_object *o)
 {
@@ -338,6 +355,10 @@ ay_ncurve_drawglucb(struct Togl *togl, ay_object *o)
 } /* ay_ncurve_drawglucb */
 
 
+/* ay_ncurve_drawchcb:
+ *  internal helper function
+ *  draw the control hull of the curve
+ */
 int
 ay_ncurve_drawchcb(struct Togl *togl, ay_object *o)
 {
@@ -365,6 +386,9 @@ ay_ncurve_drawchcb(struct Togl *togl, ay_object *o)
 } /* ay_ncurve_drawchcb */
 
 
+/* ay_ncurve_drawcb:
+ *  draw (display in an Ayam view window) callback function of ncurve object
+ */
 int
 ay_ncurve_drawcb(struct Togl *togl, ay_object *o)
 {
@@ -409,6 +433,9 @@ ay_ncurve_drawcb(struct Togl *togl, ay_object *o)
 } /* ay_ncurve_drawcb */
 
 
+/* ay_ncurve_shadecb:
+ *  shade (display in an Ayam view window) callback function of ncurve object
+ */
 int
 ay_ncurve_shadecb(struct Togl *togl, ay_object *o)
 {
@@ -417,6 +444,9 @@ ay_ncurve_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_ncurve_shadecb */
 
 
+/* ay_ncurve_drawhcb:
+ *  draw handles (in an Ayam view window) callback function of ncurve object
+ */
 int
 ay_ncurve_drawhcb(struct Togl *togl, ay_object *o)
 {
@@ -463,6 +493,9 @@ ay_ncurve_drawhcb(struct Togl *togl, ay_object *o)
 } /* ay_ncurve_drawhcb */
 
 
+/* ay_ncurve_getpntcb:
+ *  get point (editing and selection) callback function of ncurve object
+ */
 int
 ay_ncurve_getpntcb(int mode, ay_object *o, double *p)
 {
@@ -606,7 +639,9 @@ ay_ncurve_getpntcb(int mode, ay_object *o, double *p)
 } /* ay_ncurve_getpntcb */
 
 
-/* Tcl -> C! */
+/* ay_ncurve_setpropcb:
+ *  set property (from Tcl to C context) callback function of ncurve object
+ */
 int
 ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -879,7 +914,9 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_ncurve_setpropcb */
 
 
-/* C -> Tcl! */
+/* ay_ncurve_getpropcb:
+ *  get property (from C to Tcl context) callback function of ncurve object
+ */
 int
 ay_ncurve_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -965,6 +1002,9 @@ ay_ncurve_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_ncurve_getpropcb */
 
 
+/* ay_ncurve_readcb:
+ *  read (from scene file) callback function of ncurve object
+ */
 int
 ay_ncurve_readcb(FILE *fileptr, ay_object *o)
 {
@@ -1039,6 +1079,9 @@ ay_ncurve_readcb(FILE *fileptr, ay_object *o)
 } /* ay_ncurve_readcb */
 
 
+/* ay_ncurve_writecb:
+ *  write (to scene file) callback function of ncurve object
+ */
 int
 ay_ncurve_writecb(FILE *fileptr, ay_object *o)
 {
@@ -1079,6 +1122,9 @@ ay_ncurve_writecb(FILE *fileptr, ay_object *o)
 } /* ay_ncurve_writecb */
 
 
+/* ay_ncurve_wribcb:
+ *  RIB export callback function of ncurve object
+ */
 int
 ay_ncurve_wribcb(char *file, ay_object *o)
 {
@@ -1094,6 +1140,9 @@ ay_ncurve_wribcb(char *file, ay_object *o)
 } /* ay_ncurve_wribcb */
 
 
+/* ay_ncurve_bbccb:
+ *  bounding box calculation callback function of ncurve object
+ */
 int
 ay_ncurve_bbccb(ay_object *o, double *bbox, int *flags)
 {
@@ -1159,6 +1208,9 @@ ay_ncurve_bbccb(ay_object *o, double *bbox, int *flags)
 } /* ay_ncurve_bbccb */
 
 
+/* ay_ncurve_convertcb:
+ *  convert callback function of ncurve object
+ */
 int
 ay_ncurve_convertcb(ay_object *o, int in_place)
 {
@@ -1218,6 +1270,9 @@ ay_ncurve_convertcb(ay_object *o, int in_place)
 } /* ay_ncurve_convertcb */
 
 
+/* ay_ncurve_notifycb:
+ *  notification callback function of ncurve object
+ */
 int
 ay_ncurve_notifycb(ay_object *o)
 {
@@ -1261,6 +1316,9 @@ ay_ncurve_notifycb(ay_object *o)
 } /* ay_ncurve_notifycb */
 
 
+/* ay_ncurve_init:
+ *  initialize the ncurve object module
+ */
 int
 ay_ncurve_init(Tcl_Interp *interp)
 {
@@ -1286,6 +1344,7 @@ ay_ncurve_init(Tcl_Interp *interp)
 
   ay_status = ay_notify_register(ay_ncurve_notifycb, AY_IDNCURVE);
 
+  /* ncurve objects may not be associated with materials */
   ay_matt_nomaterial(AY_IDNCURVE);
 
  return ay_status;
