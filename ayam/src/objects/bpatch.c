@@ -16,6 +16,11 @@
 
 static char *ay_bpatch_name = "BPatch";
 
+/* functions: */
+
+/* ay_bpatch_createcb:
+ *  create callback function of bpatch object
+ */
 int
 ay_bpatch_createcb(int argc, char *argv[], ay_object *o)
 {
@@ -46,6 +51,9 @@ ay_bpatch_createcb(int argc, char *argv[], ay_object *o)
 } /* ay_bpatch_createcb */
 
 
+/* ay_bpatch_deletecb:
+ *  delete callback function of bpatch object
+ */
 int
 ay_bpatch_deletecb(void *c)
 {
@@ -62,6 +70,9 @@ ay_bpatch_deletecb(void *c)
 } /* ay_bpatch_deletecb */
 
 
+/* ay_bpatch_copycb:
+ *  copy callback function of bpatch object
+ */
 int
 ay_bpatch_copycb(void *src, void **dst)
 {
@@ -78,6 +89,9 @@ ay_bpatch_copycb(void *src, void **dst)
 } /* ay_bpatch_copycb */
 
 
+/* ay_bpatch_drawcb:
+ *  draw (display in an Ayam view window) callback function of bpatch object
+ */
 int
 ay_bpatch_drawcb(struct Togl *togl, ay_object *o)
 {
@@ -184,8 +198,11 @@ ay_bpatch_drawcb(struct Togl *togl, ay_object *o)
 } /* ay_bpatch_drawcb */
 
 
+/* ay_ncurve_drawhcb:
+ *  draw handles (in an Ayam view window) callback function of bpatch object
+ */
 int
-ay_bpatch_drawpntcb(struct Togl *togl, ay_object *o)
+ay_bpatch_drawhcb(struct Togl *togl, ay_object *o)
 {
  ay_bpatch_object *bpatch = NULL;
 
@@ -206,9 +223,12 @@ ay_bpatch_drawpntcb(struct Togl *togl, ay_object *o)
   glEnd();
 
  return AY_OK;
-} /* ay_bpatch_drawpntcb */
+} /* ay_bpatch_drawhcb */
 
 
+/* ay_bpatch_shadecb:
+ *  shade (display in an Ayam view window) callback function of bpatch object
+ */
 int
 ay_bpatch_shadecb(struct Togl *togl, ay_object *o)
 {
@@ -243,6 +263,9 @@ ay_bpatch_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_bpatch_shadecb */
 
 
+/* ay_bpatch_getpntcb:
+ *  get point (editing and selection) callback function of bpatch object
+ */
 int
 ay_bpatch_getpntcb(int mode, ay_object *o, double *p)
 {
@@ -382,7 +405,9 @@ ay_bpatch_getpntcb(int mode, ay_object *o, double *p)
 } /* ay_bpatch_getpntcb */
 
 
-/* Tcl -> C! */
+/* ay_bpatch_setpropcb:
+ *  set property (from Tcl to C context) callback function of bpatch object
+ */
 int
 ay_bpatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -459,7 +484,9 @@ ay_bpatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_bpatch_setpropcb */
 
 
-/* C -> Tcl! */
+/* ay_bpatch_getpropcb:
+ *  get property (from C to Tcl context) callback function of bpatch object
+ */
 int
 ay_bpatch_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -533,6 +560,9 @@ ay_bpatch_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_bpatch_getpropcb */
 
 
+/* ay_bpatch_readcb:
+ *  read (from scene file) callback function of bpatch object
+ */
 int
 ay_bpatch_readcb(FILE *fileptr, ay_object *o)
 {
@@ -555,6 +585,9 @@ ay_bpatch_readcb(FILE *fileptr, ay_object *o)
 } /* ay_bpatch_readcb */
 
 
+/* ay_bpatch_writecb:
+ *  write (to scene file) callback function of bpatch object
+ */
 int
 ay_bpatch_writecb(FILE *fileptr, ay_object *o)
 {
@@ -574,6 +607,9 @@ ay_bpatch_writecb(FILE *fileptr, ay_object *o)
 } /* ay_bpatch_writecb */
 
 
+/* ay_bpatch_wribcb:
+ *  RIB export callback function of bpatch object
+ */
 int
 ay_bpatch_wribcb(char *file, ay_object *o)
 {
@@ -642,6 +678,9 @@ ay_bpatch_wribcb(char *file, ay_object *o)
 } /* ay_bpatch_wribcb */
 
 
+/* ay_bpatch_bbccb:
+ *  bounding box calculation callback function of bpatch object
+ */
 int
 ay_bpatch_bbccb(ay_object *o, double *bbox, int *flags)
 {
@@ -703,6 +742,9 @@ ay_bpatch_bbccb(ay_object *o, double *bbox, int *flags)
 } /* ay_bpatch_bbccb */
 
 
+/* ay_bpatch_convertcb:
+ *  convert callback function of bpatch object
+ */
 int
 ay_bpatch_convertcb(ay_object *o, int in_place)
 {
@@ -730,6 +772,9 @@ ay_bpatch_convertcb(ay_object *o, int in_place)
 } /* ay_bpatch_convertcb */
 
 
+/* ay_bpatch_providecb:
+ *  provide callback function of bpatch object
+ */
 int
 ay_bpatch_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
@@ -791,6 +836,9 @@ ay_bpatch_providecb(ay_object *o, unsigned int type, ay_object **result)
 } /* ay_bpatch_providecb */
 
 
+/* ay_bpatch_init:
+ *  initialize the bpatch object module
+ */
 int
 ay_bpatch_init(Tcl_Interp *interp)
 {
@@ -801,7 +849,7 @@ ay_bpatch_init(Tcl_Interp *interp)
 				   ay_bpatch_deletecb,
 				   ay_bpatch_copycb,
 				   ay_bpatch_drawcb,
-				   ay_bpatch_drawpntcb,
+				   ay_bpatch_drawhcb,
 				   ay_bpatch_shadecb,
 				   ay_bpatch_setpropcb,
 				   ay_bpatch_getpropcb,
