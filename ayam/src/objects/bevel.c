@@ -16,6 +16,11 @@
 
 static char *ay_bevel_name = "Bevel";
 
+/* functions: */
+
+/* ay_bevel_createcb:
+ *  create callback function of bevel object
+ */
 int
 ay_bevel_createcb(int argc, char *argv[], ay_object *o)
 {
@@ -49,6 +54,9 @@ ay_bevel_createcb(int argc, char *argv[], ay_object *o)
 } /* ay_bevel_createcb */
 
 
+/* ay_bevel_deletecb:
+ *  delete callback function of bevel object
+ */
 int
 ay_bevel_deletecb(void *c)
 {
@@ -68,6 +76,9 @@ ay_bevel_deletecb(void *c)
 } /* ay_bevel_deletecb */
 
 
+/* ay_bevel_copycb:
+ *  copy callback function of bevel object
+ */
 int
 ay_bevel_copycb(void *src, void **dst)
 {
@@ -91,6 +102,9 @@ ay_bevel_copycb(void *src, void **dst)
 } /* ay_bevel_copycb */
 
 
+/* ay_bevel_drawcb:
+ *  draw (display in an Ayam view window) callback function of bevel object
+ */
 int
 ay_bevel_drawcb(struct Togl *togl, ay_object *o)
 {
@@ -111,6 +125,9 @@ ay_bevel_drawcb(struct Togl *togl, ay_object *o)
 } /* ay_bevel_drawcb */
 
 
+/* ay_bevel_shadecb:
+ *  shade (display in an Ayam view window) callback function of bevel object
+ */
 int
 ay_bevel_shadecb(struct Togl *togl, ay_object *o)
 {
@@ -131,6 +148,9 @@ ay_bevel_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_bevel_shadecb */
 
 
+/* ay_bevel_drawhcb:
+ *  draw handles (in an Ayam view window) callback function of bevel object
+ */
 int
 ay_bevel_drawhcb(struct Togl *togl, ay_object *o)
 {
@@ -139,6 +159,9 @@ ay_bevel_drawhcb(struct Togl *togl, ay_object *o)
 } /* ay_bevel_drawhcb */
 
 
+/* ay_bevel_getpntcb:
+ *  get point (editing and selection) callback function of bevel object
+ */
 int
 ay_bevel_getpntcb(int mode, ay_object *o, double *p)
 {
@@ -147,7 +170,9 @@ ay_bevel_getpntcb(int mode, ay_object *o, double *p)
 } /* ay_bevel_getpntcb */
 
 
-/* Tcl -> C! */
+/* ay_bevel_setpropcb:
+ *  set property (from Tcl to C context) callback function of bevel object
+ */
 int
 ay_bevel_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -185,7 +210,9 @@ ay_bevel_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_bevel_setpropcb */
 
 
-/* C -> Tcl! */
+/* ay_bevel_getpropcb:
+ *  get property (from C to Tcl context) callback function of bevel object
+ */
 int
 ay_bevel_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -219,6 +246,9 @@ ay_bevel_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_bevel_getpropcb */
 
 
+/* ay_bevel_readcb:
+ *  read (from scene file) callback function of bevel object
+ */
 int
 ay_bevel_readcb(FILE *fileptr, ay_object *o)
 {
@@ -239,6 +269,9 @@ ay_bevel_readcb(FILE *fileptr, ay_object *o)
 } /* ay_bevel_readcb */
 
 
+/* ay_bevel_writecb:
+ *  write (to scene file) callback function of bevel object
+ */
 int
 ay_bevel_writecb(FILE *fileptr, ay_object *o)
 {
@@ -256,6 +289,9 @@ ay_bevel_writecb(FILE *fileptr, ay_object *o)
 } /* ay_bevel_writecb */
 
 
+/* ay_bevel_wribcb:
+ *  RIB export callback function of bevel object
+ */
 int
 ay_bevel_wribcb(char *file, ay_object *o)
 {
@@ -273,6 +309,9 @@ ay_bevel_wribcb(char *file, ay_object *o)
 } /* ay_bevel_wribcb */
 
 
+/* ay_bevel_bbccb:
+ *  bounding box calculation callback function of bevel object
+ */
 int
 ay_bevel_bbccb(ay_object *o, double *bbox, int *flags)
 {
@@ -298,6 +337,9 @@ ay_bevel_bbccb(ay_object *o, double *bbox, int *flags)
 } /* ay_bevel_bbccb */
 
 
+/* ay_bevel_notifycb:
+ *  notification callback function of bevel object
+ */
 int
 ay_bevel_notifycb(ay_object *o)
 {
@@ -429,6 +471,9 @@ cleanup:
 } /* ay_bevel_notifycb */
 
 
+/* ay_bevel_providecb:
+ *  provide callback function of bevel object
+ */
 int
 ay_bevel_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
@@ -474,6 +519,9 @@ ay_bevel_providecb(ay_object *o, unsigned int type, ay_object **result)
 } /* ay_bevel_providecb */
 
 
+/* ay_bevel_convertcb:
+ *  convert callback function of bevel object
+ */
 int
 ay_bevel_convertcb(ay_object *o, int in_place)
 {
@@ -516,6 +564,9 @@ ay_bevel_convertcb(ay_object *o, int in_place)
 } /* ay_bevel_convertcb */
 
 
+/* ay_bevel_init:
+ *  initialize the bevel object module
+ */
 int
 ay_bevel_init(Tcl_Interp *interp)
 {
