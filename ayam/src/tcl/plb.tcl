@@ -128,10 +128,11 @@ bind $f.li <ButtonRelease-1> {
 		    "focus $ay(tree);break"
 	}
     }
-
+    # if
 }
 # bind
 
+# mouse-wheel bindings
 bind $f.li <ButtonPress-4> {
     global ay
     $ay(plb) yview scroll -1 pages
@@ -195,7 +196,7 @@ scrollbar $f.s -takefocus 0 -command { global ay; $ay(plb) yview }
 pack $f.li $f.s -in $f -side left -fill y -expand no
 
 
-# the arguments canvas
+# the property arguments area
 frame $w.fArg -bd 2 -relief sunken -highlightthickness 1
 set f $w.fArg
 
@@ -239,13 +240,11 @@ button $f.b2 -text "Reset" -padx 10 -pady 0 -command {
 pack $f.b1 $f.b2 -in $f -side left -fill x -expand yes 
 pack $f -in $w.fArg -side bottom -fill x -expand no
 
-
 set f $w.fArg
 frame $f.fca
 set f $f.fca
 
-# the canvas itself
-
+# create the canvas widget itself
 canvas $f.ca -yscrollcommand { global ay; $ay(pcas) set }\
  -highlightthickness 0
 set ay(pca) $f.ca
@@ -258,6 +257,7 @@ $f.ca create window 5 5 -anchor nw -window $ay(pw)
 set width [expr [winfo reqwidth $ay(pw)] + 10]
 $ay(pca) configure -width $width
 
+# mouse-wheel bindings
 bind . <ButtonPress-4> {
     global ay
     $ay(pca) yview scroll -1 pages
@@ -329,6 +329,9 @@ if { $AYWITHAQUA } {
 }
 # if
 
+# focus management bindings
+bind $f.ca <1> "focus -force %W"
+bind $f.ca <Key-Escape> {resetFocus}
 
 pack $f.ca -in $f -side left -fill both -expand yes
 
