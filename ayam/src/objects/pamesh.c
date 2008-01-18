@@ -16,6 +16,11 @@
 
 static char *ay_pamesh_name = "PatchMesh";
 
+/* functions: */
+
+/* ay_pamesh_createcb:
+ *  create callback function of pamesh object
+ */
 int
 ay_pamesh_createcb(int argc, char *argv[], ay_object *o)
 {
@@ -91,6 +96,9 @@ ay_pamesh_createcb(int argc, char *argv[], ay_object *o)
 } /* ay_pamesh_createcb */
 
 
+/* ay_pamesh_deletecb:
+ *  delete callback function of pamesh object
+ */
 int
 ay_pamesh_deletecb(void *c)
 {
@@ -123,6 +131,9 @@ ay_pamesh_deletecb(void *c)
 } /* ay_pamesh_deletecb */
 
 
+/* ay_pamesh_copycb:
+ *  copy callback function of pamesh object
+ */
 int
 ay_pamesh_copycb(void *src, void **dst)
 {
@@ -176,6 +187,10 @@ ay_pamesh_copycb(void *src, void **dst)
 } /* ay_pamesh_copycb */
 
 
+/* ay_pamesh_drawcpcb:
+ *  internal helper function
+ *  draw the control polygon
+ */
 int
 ay_pamesh_drawcpcb(struct Togl *togl, ay_object *o)
 {
@@ -260,6 +275,9 @@ ay_pamesh_drawcpcb(struct Togl *togl, ay_object *o)
 } /* ay_pamesh_drawcpcb */
 
 
+/* ay_pamesh_drawcb:
+ *  draw (display in an Ayam view window) callback function of pamesh object
+ */
 int
 ay_pamesh_drawcb(struct Togl *togl, ay_object *o)
 {
@@ -298,6 +316,9 @@ ay_pamesh_drawcb(struct Togl *togl, ay_object *o)
 } /* ay_pamesh_drawcb */
 
 
+/* ay_pamesh_shadecb:
+ *  shade (display in an Ayam view window) callback function of pamesh object
+ */
 int
 ay_pamesh_shadecb(struct Togl *togl, ay_object *o)
 {
@@ -317,6 +338,9 @@ ay_pamesh_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_pamesh_shadecb */
 
 
+/* ay_ncurve_drawhcb:
+ *  draw handles (in an Ayam view window) callback function of pamesh object
+ */
 int
 ay_pamesh_drawhcb(struct Togl *togl, ay_object *o)
 {
@@ -347,6 +371,9 @@ ay_pamesh_drawhcb(struct Togl *togl, ay_object *o)
 } /* ay_pamesh_drawhcb */
 
 
+/* ay_pamesh_getpntcb:
+ *  get point (editing and selection) callback function of pamesh object
+ */
 int
 ay_pamesh_getpntcb(int mode, ay_object *o, double *p)
 {
@@ -464,7 +491,9 @@ ay_pamesh_getpntcb(int mode, ay_object *o, double *p)
 } /* ay_pamesh_getpntcb */
 
 
-/* Tcl -> C! */
+/* ay_pamesh_setpropcb:
+ *  set property (from Tcl to C context) callback function of pamesh object
+ */
 int
 ay_pamesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -661,7 +690,9 @@ ay_pamesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_pamesh_setpropcb */
 
 
-/* C -> Tcl! */
+/* ay_pamesh_getpropcb:
+ *  get property (from C to Tcl context) callback function of pamesh object
+ */
 int
 ay_pamesh_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -770,6 +801,9 @@ ay_pamesh_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_pamesh_getpropcb */
 
 
+/* ay_pamesh_readcb:
+ *  read (from scene file) callback function of pamesh object
+ */
 int
 ay_pamesh_readcb(FILE *fileptr, ay_object *o)
 {
@@ -851,6 +885,9 @@ ay_pamesh_readcb(FILE *fileptr, ay_object *o)
 } /* ay_pamesh_readcb */
 
 
+/* ay_pamesh_writecb:
+ *  write (to scene file) callback function of pamesh object
+ */
 int
 ay_pamesh_writecb(FILE *fileptr, ay_object *o)
 {
@@ -904,6 +941,9 @@ ay_pamesh_writecb(FILE *fileptr, ay_object *o)
 } /* ay_pamesh_writecb */
 
 
+/* ay_pamesh_wribcb:
+ *  RIB export callback function of pamesh object
+ */
 int
 ay_pamesh_wribcb(char *file, ay_object *o)
 {
@@ -1076,6 +1116,9 @@ ay_pamesh_wribcb(char *file, ay_object *o)
 } /* ay_pamesh_wribcb */
 
 
+/* ay_pamesh_bbccb:
+ *  bounding box calculation callback function of pamesh object
+ */
 int
 ay_pamesh_bbccb(ay_object *o, double *bbox, int *flags)
 {
@@ -1141,6 +1184,9 @@ ay_pamesh_bbccb(ay_object *o, double *bbox, int *flags)
 } /* ay_pamesh_bbccb */
 
 
+/* ay_pamesh_notifycb:
+ *  notification callback function of pamesh object
+ */
 int
 ay_pamesh_notifycb(ay_object *o)
 {
@@ -1185,6 +1231,9 @@ ay_pamesh_notifycb(ay_object *o)
 } /* ay_pamesh_notifycb */
 
 
+/* ay_pamesh_providecb:
+ *  provide callback function of pamesh object
+ */
 int
 ay_pamesh_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
@@ -1233,6 +1282,9 @@ ay_pamesh_providecb(ay_object *o, unsigned int type, ay_object **result)
 } /* ay_pamesh_providecb */
 
 
+/* ay_pamesh_convertcb:
+ *  convert callback function of pamesh object
+ */
 int
 ay_pamesh_convertcb(ay_object *o, int in_place)
 {
@@ -1302,6 +1354,9 @@ ay_pamesh_convertcb(ay_object *o, int in_place)
 } /* ay_pamesh_convertcb */
 
 
+/* ay_pamesh_init:
+ *  initialize the pamesh object module
+ */
 int
 ay_pamesh_init(Tcl_Interp *interp)
 {
