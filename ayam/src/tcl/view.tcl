@@ -349,13 +349,14 @@ return;
 
 ##############################
 # viewOpen:
-proc viewOpen { width height {establish_bindings 1} } {
+proc viewOpen { width height {establish_bindings 1} {internal_view 0} } {
     global ay ayprefs
 
     update
     set ay(cviewsema) 1
     update
 
+    # calculate view name
     if { [llength $ay(views)] == 0 } {
 	set w .view1
     } else {
@@ -364,21 +365,30 @@ proc viewOpen { width height {establish_bindings 1} } {
 	set w .view[expr $lastid + 1]
     }
 
-    catch {destroy $w}
-    if { $ay(truecolor) == 1 } {
-	toplevel $w -class ayam -visual truecolor
+    # create internal view frame or toplevel window?
+    if { $internal_view == 0 } {
+	# toplevel
+	catch {destroy $w}
+	if { $ay(truecolor) == 1 } {
+	    toplevel $w -class ayam -visual truecolor
+	} else {
+	    toplevel $w -class ayam
+	}
+
+	scan $w ".%s" name
+	wm iconname $w $name
     } else {
-	toplevel $w -class ayam
+	# internal
+	scan $w ".%s" name
+	set w [frame .fu.fMain.fViews.f$name]
     }
 
-    scan $w ".%s" name
-    wm iconname $w $name
-
+    # create view menu
     frame $w.fMenu -bd 2 -relief raised
     vmenu_open $w
     pack $w.fMenu -side top -fill x
 
-
+    # create the 3D widget
     frame $w.f3D
     if { $ayprefs(AddViewParams) != "" } {
 	eval [subst "togl $w.f3D.togl -rgba true -double true -depth true\
@@ -389,7 +399,7 @@ proc viewOpen { width height {establish_bindings 1} } {
 		-ident $name -width $width -height $height
     }
 
-
+    # realize the GUI
     pack $w.f3D -in $w -fill both -expand yes
     pack $w.f3D.togl -in $w.f3D -fill both -expand yes
     update
@@ -399,18 +409,21 @@ proc viewOpen { width height {establish_bindings 1} } {
 
     $w.f3D.togl setconf -name $name
 
-    viewTitle $w Front Pick
-
     set ay(currentView) $w.f3D.togl
 
-    wm protocol $w WM_DELETE_WINDOW "viewClose $w;\
+    if { $internal_view == 0 } {
+	viewTitle $w Front Pick
+
+	wm protocol $w WM_DELETE_WINDOW "viewClose $w;\
 	    global ay; set ay(ul) root:0; uS"
 
-    if { $establish_bindings == 1 } {
-	viewBind $w
-    } else {
-	$w configure -cursor watch
+	if { $establish_bindings == 1 } {
+	    viewBind $w
+	} else {
+	    $w configure -cursor watch
+	}
     }
+    # if
 
     bind $w <Configure> {
 	global ay
@@ -422,7 +435,7 @@ proc viewOpen { width height {establish_bindings 1} } {
 	    plb_update
 	}
     }
-    #bind
+    # bind
 
     DropSite::register $w.f3D.togl -dropcmd viewDrop\
 	    -droptypes {TREE_NODE {copy {}} IMAGE { copy {}}}
@@ -583,13 +596,13 @@ proc viewClose { w } {
   set ay(draw) 0
   update
 
-  # remove bindings that could accidentally fire while closing
+  # first remove bindings that could accidentally fire while closing
   bind $w <Enter> ""
   bind $w <Motion> ""
   global ayviewshortcuts
   bind $w <$ayviewshortcuts(RotMod)-Motion> ""
 
-  # delete view from list
+  # now delete the view from the view list
   set temp ""
   set ay(currentView) ""
   foreach view $ay(views) {
@@ -603,7 +616,7 @@ proc viewClose { w } {
 
   catch {$ay(currentView) mc}
 
-  # now delete the window
+  # finally delete the window
   destroy $w.f3D.togl
   destroy $w
 
