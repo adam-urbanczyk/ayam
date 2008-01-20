@@ -182,6 +182,8 @@ array set ayprefs {
  PolyOffset0 1.0
  PolyOffset1 1.0
 
+ SingleWindow 0
+
  Docs "http://ayam.sourceforge.net/docs/"
  DailyTips {
 {Always click on drawn pixels, when picking vertices.}
@@ -1157,6 +1159,15 @@ update
 #source contrib/objbar.tcl
 #objbar_open .fu.fobjbar
 #pack .fu.fobjbar -side top -fill x -expand yes
+
+if { $ayprefs(SingleWindow) } {
+    set vf [frame .fu.fMain.fViews]
+    set f [frame .fu.fMain.fViews.fLeft -bd 2]
+    pack $f -in $vf -side left -fill both -expand yes
+    set f [frame .fu.fMain.fViews.fRight -bd 2]
+    pack $f -in $vf -side right -fill both -expand yes
+    pack $vf -in .fu.fMain -side top -fill both -expand yes
+}
 
 pack .fu.fMain -in .fu -side top -fill both -expand yes
 pack .fu.fMain.fHier -in .fu.fMain -side left -expand no

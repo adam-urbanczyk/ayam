@@ -13,7 +13,7 @@ proc vmenu_open { w } {
 global ay AYWITHAQUA
 
 # View Menu
-if { ! $AYWITHAQUA } {
+if { (! $AYWITHAQUA) || ([winfo toplevel $w] != $w) } {
     menubutton $w.fMenu.v -text "View" -menu $w.fMenu.v.m -padx 3
 
     set m [menu $w.fMenu.v.m -tearoff 0]
