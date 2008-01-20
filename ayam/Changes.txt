@@ -1,4 +1,4 @@
-[1. Jan 2008] CVS-Head:
+[20. Jan 2008] CVS-Head:
 =======================
 o Bug Fixes:
  - X3D export of NURBS patches (row/column major order) (SF 1804056)
@@ -24,6 +24,7 @@ o added "Select All"/"Select None" entries to edit menu (mainly to teach the
   corresponding keyboard shortcuts)
 o all dialogs may now be cancelled with the <Escape> key
 o closing dialogs using the window decoration is now safer wrt. AutoFocus
+o improved focus handling of property canvas
 
 Modelling:
 o added new object type "ACurve" (for approximating curves)
@@ -52,6 +53,21 @@ o DXF export may now be cancelled
 Renderer Support:
 o reworked shader parsing (core and ayslx plugin) for incompatible changes
   in Aqsis 1.2
+
+Scripts/Scripting Interface:
+o added script "intfd.tcl" to switch all dialogs (file/color) to internal 
+  Tk dialogs
+o added script "showwin.tcl" to de-iconify/show all application windows
+o added script "tonpatch.tcl" that, similar to "topoly.tcl" converts all
+  objects in the scene to plain NURBS patches
+
+Platform Support:
+Win32:
+o added true support for custom objects to the VC2005 build (they could
+  not use the RIB export facility, due to missing export symbols from the
+  static Aqsis libraries)
+Apple Mac OS X:
+o added official X11 based build
 
 
 [21. Sep 2007] Ayam 1.13:
