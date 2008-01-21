@@ -16,6 +16,11 @@
 
 static char *ay_birail1_name = "Birail1";
 
+/* functions: */
+
+/* ay_birail1_createcb:
+ *  create callback function of birail1 object
+ */
 int
 ay_birail1_createcb(int argc, char *argv[], ay_object *o)
 {
@@ -40,6 +45,9 @@ ay_birail1_createcb(int argc, char *argv[], ay_object *o)
 } /* ay_birail1_createcb */
 
 
+/* ay_birail1_deletecb:
+ *  delete callback function of birail1 object
+ */
 int
 ay_birail1_deletecb(void *c)
 {
@@ -65,6 +73,9 @@ ay_birail1_deletecb(void *c)
 } /* ay_birail1_deletecb */
 
 
+/* ay_birail1_copycb:
+ *  copy callback function of birail1 object
+ */
 int
 ay_birail1_copycb(void *src, void **dst)
 {
@@ -91,6 +102,9 @@ ay_birail1_copycb(void *src, void **dst)
 } /* ay_birail1_copycb */
 
 
+/* ay_birail1_drawcb:
+ *  draw (display in an Ayam view window) callback function of birail1 object
+ */
 int
 ay_birail1_drawcb(struct Togl *togl, ay_object *o)
 {
@@ -122,6 +136,9 @@ ay_birail1_drawcb(struct Togl *togl, ay_object *o)
 } /* ay_birail1_drawcb */
 
 
+/* ay_birail1_shadecb:
+ *  shade (display in an Ayam view window) callback function of birail1 object
+ */
 int
 ay_birail1_shadecb(struct Togl *togl, ay_object *o)
 {
@@ -153,6 +170,9 @@ ay_birail1_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_birail1_shadecb */
 
 
+/* ay_birail1_drawhcb:
+ *  draw handles (in an Ayam view window) callback function of birail1 object
+ */
 int
 ay_birail1_drawhcb(struct Togl *togl, ay_object *o)
 {
@@ -161,6 +181,9 @@ ay_birail1_drawhcb(struct Togl *togl, ay_object *o)
 } /* ay_birail1_drawhcb */
 
 
+/* ay_birail1_getpntcb:
+ *  get point (editing and selection) callback function of birail1 object
+ */
 int
 ay_birail1_getpntcb(int mode, ay_object *o, double *p)
 {
@@ -169,7 +192,9 @@ ay_birail1_getpntcb(int mode, ay_object *o, double *p)
 } /* ay_birail1_getpntcb */
 
 
-/* Tcl -> C! */
+/* ay_birail1_setpropcb:
+ *  set property (from Tcl to C context) callback function of birail1 object
+ */
 int
 ay_birail1_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -223,7 +248,9 @@ ay_birail1_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_birail1_setpropcb */
 
 
-/* C -> Tcl! */
+/* ay_birail1_getpropcb:
+ *  get property (from C to Tcl context) callback function of birail1 object
+ */
 int
 ay_birail1_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -279,6 +306,9 @@ ay_birail1_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_birail1_getpropcb */
 
 
+/* ay_birail1_readcb:
+ *  read (from scene file) callback function of birail1 object
+ */
 int
 ay_birail1_readcb(FILE *fileptr, ay_object *o)
 {
@@ -303,6 +333,9 @@ ay_birail1_readcb(FILE *fileptr, ay_object *o)
 } /* ay_birail1_readcb */
 
 
+/* ay_birail1_writecb:
+ *  write (to scene file) callback function of birail1 object
+ */
 int
 ay_birail1_writecb(FILE *fileptr, ay_object *o)
 {
@@ -324,6 +357,9 @@ ay_birail1_writecb(FILE *fileptr, ay_object *o)
 } /* ay_birail1_writecb */
 
 
+/* ay_birail1_wribcb:
+ *  RIB export callback function of birail1 object
+ */
 int
 ay_birail1_wribcb(char *file, ay_object *o)
 {
@@ -352,6 +388,9 @@ ay_birail1_wribcb(char *file, ay_object *o)
 } /* ay_birail1_wribcb */
 
 
+/* ay_birail1_bbccb:
+ *  bounding box calculation callback function of birail1 object
+ */
 int
 ay_birail1_bbccb(ay_object *o, double *bbox, int *flags)
 {
@@ -377,6 +416,9 @@ ay_birail1_bbccb(ay_object *o, double *bbox, int *flags)
 } /* ay_birail1_bbccb */
 
 
+/* ay_birail1_notifycb:
+ *  notification callback function of birail1 object
+ */
 int
 ay_birail1_notifycb(ay_object *o)
 {
@@ -692,6 +734,9 @@ cleanup:
 } /* ay_birail1_notifycb */
 
 
+/* ay_birail1_providecb:
+ *  provide callback function of birail1 object
+ */
 int
 ay_birail1_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
@@ -750,6 +795,9 @@ ay_birail1_providecb(ay_object *o, unsigned int type, ay_object **result)
 } /* ay_birail1_providecb */
 
 
+/* ay_birail1_convertcb:
+ *  convert callback function of birail1 object
+ */
 int
 ay_birail1_convertcb(ay_object *o, int in_place)
 {
@@ -846,6 +894,9 @@ ay_birail1_convertcb(ay_object *o, int in_place)
 } /* ay_birail1_convertcb */
 
 
+/* ay_birail1_init:
+ *  initialize the birail1 object module
+ */
 int
 ay_birail1_init(Tcl_Interp *interp)
 {
