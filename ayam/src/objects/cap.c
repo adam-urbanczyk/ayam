@@ -16,6 +16,11 @@
 
 static char *ay_cap_name = "Cap";
 
+/* functions: */
+
+/* ay_cap_createcb:
+ *  create callback function of cap object
+ */
 int
 ay_cap_createcb(int argc, char *argv[], ay_object *o)
 {
@@ -38,6 +43,9 @@ ay_cap_createcb(int argc, char *argv[], ay_object *o)
 } /* ay_cap_createcb */
 
 
+/* ay_cap_deletecb:
+ *  delete callback function of cap object
+ */
 int
 ay_cap_deletecb(void *c)
 {
@@ -56,6 +64,9 @@ ay_cap_deletecb(void *c)
 } /* ay_cap_deletecb */
 
 
+/* ay_cap_copycb:
+ *  copy callback function of cap object
+ */
 int
 ay_cap_copycb(void *src, void **dst)
 {
@@ -83,6 +94,9 @@ ay_cap_copycb(void *src, void **dst)
 } /* ay_cap_copycb */
 
 
+/* ay_cap_drawcb:
+ *  draw (display in an Ayam view window) callback function of cap object
+ */
 int
 ay_cap_drawcb(struct Togl *togl, ay_object *o)
 {
@@ -103,6 +117,9 @@ ay_cap_drawcb(struct Togl *togl, ay_object *o)
 } /* ay_cap_drawcb */
 
 
+/* ay_cap_shadecb:
+ *  shade (display in an Ayam view window) callback function of cap object
+ */
 int
 ay_cap_shadecb(struct Togl *togl, ay_object *o)
 {
@@ -123,6 +140,9 @@ ay_cap_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_cap_shadecb */
 
 
+/* ay_cap_drawhcb:
+ *  draw handles (in an Ayam view window) callback function of cap object
+ */
 int
 ay_cap_drawhcb(struct Togl *togl, ay_object *o)
 {
@@ -131,6 +151,9 @@ ay_cap_drawhcb(struct Togl *togl, ay_object *o)
 } /* ay_cap_drawhcb */
 
 
+/* ay_cap_getpntcb:
+ *  get point (editing and selection) callback function of cap object
+ */
 int
 ay_cap_getpntcb(int mode, ay_object *o, double *p)
 {
@@ -139,7 +162,9 @@ ay_cap_getpntcb(int mode, ay_object *o, double *p)
 } /* ay_cap_getpntcb */
 
 
-/* Tcl -> C! */
+/* ay_cap_setpropcb:
+ *  set property (from Tcl to C context) callback function of cap object
+ */
 int
 ay_cap_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -189,7 +214,9 @@ ay_cap_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_cap_setpropcb */
 
 
-/* C -> Tcl! */
+/* ay_cap_getpropcb:
+ *  get property (from C to Tcl context) callback function of cap object
+ */
 int
 ay_cap_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -230,6 +257,9 @@ ay_cap_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_cap_getpropcb */
 
 
+/* ay_cap_readcb:
+ *  read (from scene file) callback function of cap object
+ */
 int
 ay_cap_readcb(FILE *fileptr, ay_object *o)
 {
@@ -255,6 +285,9 @@ ay_cap_readcb(FILE *fileptr, ay_object *o)
 } /* ay_cap_readcb */
 
 
+/* ay_cap_writecb:
+ *  write (to scene file) callback function of cap object
+ */
 int
 ay_cap_writecb(FILE *fileptr, ay_object *o)
 {
@@ -273,6 +306,9 @@ ay_cap_writecb(FILE *fileptr, ay_object *o)
 } /* ay_cap_writecb */
 
 
+/* ay_cap_wribcb:
+ *  RIB export callback function of cap object
+ */
 int
 ay_cap_wribcb(char *file, ay_object *o)
 {
@@ -290,6 +326,9 @@ ay_cap_wribcb(char *file, ay_object *o)
 } /* ay_cap_wribcb */
 
 
+/* ay_cap_bbccb:
+ *  bounding box calculation callback function of cap object
+ */
 int
 ay_cap_bbccb(ay_object *o, double *bbox, int *flags)
 {
@@ -316,6 +355,9 @@ ay_cap_bbccb(ay_object *o, double *bbox, int *flags)
 } /* ay_cap_bbccb */
 
 
+/* ay_cap_notifycb:
+ *  notification callback function of cap object
+ */
 int
 ay_cap_notifycb(ay_object *o)
 {
@@ -405,6 +447,9 @@ ay_cap_notifycb(ay_object *o)
 } /* ay_cap_notifycb */
 
 
+/* ay_cap_convertcb:
+ *  convert callback function of cap object
+ */
 int
 ay_cap_convertcb(ay_object *o, int in_place)
 {
@@ -442,6 +487,9 @@ ay_cap_convertcb(ay_object *o, int in_place)
 } /* ay_cap_convertcb */
 
 
+/* ay_cap_providecb:
+ *  provide callback function of cap object
+ */
 int
 ay_cap_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
@@ -480,6 +528,9 @@ ay_cap_providecb(ay_object *o, unsigned int type, ay_object **result)
 } /* ay_cap_providecb */
 
 
+/* ay_cap_init:
+ *  initialize the cap object module
+ */
 int
 ay_cap_init(Tcl_Interp *interp)
 {
