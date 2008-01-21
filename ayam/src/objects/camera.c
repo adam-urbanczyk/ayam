@@ -16,8 +16,10 @@
 
 static char *ay_camera_name = "Camera";
 
+/* functions: */
 
 /* ay_camera_createcb:
+ *  create callback function of camera object
  */
 int
 ay_camera_createcb(int argc, char *argv[], ay_object *o)
@@ -46,6 +48,7 @@ ay_camera_createcb(int argc, char *argv[], ay_object *o)
 
 
 /* ay_camera_deletecb:
+ *  delete callback function of camera object
  */
 int
 ay_camera_deletecb(void *c)
@@ -62,6 +65,9 @@ ay_camera_deletecb(void *c)
 } /* ay_camera_deletecb */
 
 
+/* ay_camera_copycb:
+ *  copy callback function of camera object
+ */
 int
 ay_camera_copycb(void *src, void **dst)
 {
@@ -78,6 +84,9 @@ ay_camera_copycb(void *src, void **dst)
 } /* ay_camera_copycb */
 
 
+/* ay_camera_drawcb:
+ *  draw (display in an Ayam view window) callback function of camera object
+ */
 int
 ay_camera_drawcb(struct Togl *togl, ay_object *o)
 {
@@ -107,6 +116,9 @@ ay_camera_drawcb(struct Togl *togl, ay_object *o)
 } /* ay_camera_drawcb */
 
 
+/* ay_camera_drawhcb:
+ *  draw handles (in an Ayam view window) callback function of camera object
+ */
 int
 ay_camera_drawhcb(struct Togl *togl, ay_object *o)
 {
@@ -135,6 +147,9 @@ ay_camera_drawhcb(struct Togl *togl, ay_object *o)
 } /* ay_camera_drawhcb */
 
 
+/* ay_camera_shadecb:
+ *  shade (display in an Ayam view window) callback function of camera object
+ */
 int
 ay_camera_shadecb(struct Togl *togl, ay_object *o)
 {
@@ -153,7 +168,7 @@ ay_camera_shadecb(struct Togl *togl, ay_object *o)
 
 
 /* ay_camera_setpropcb:
- *  Tcl -> C!
+ *  set property (from Tcl to C context) callback function of camera object
  *  configure camera from Tcl
  */
 int
@@ -236,7 +251,7 @@ ay_camera_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
 
 /* ay_camera_getpropcb:
- *  C -> Tcl!
+ *  get property (from C to Tcl context) callback function of camera object
  *  copy all information about the camera *togl
  *  to the global camera() array (Tcl)
  */
@@ -427,6 +442,9 @@ ay_camera_getpntcb(int mode, ay_object *o, double *p)
 } /* ay_camera_getpntcb */
 
 
+/* ay_camera_readcb:
+ *  read (from scene file) callback function of camera object
+ */
 int
 ay_camera_readcb(FILE *fileptr, ay_object *o)
 {
@@ -461,6 +479,9 @@ ay_camera_readcb(FILE *fileptr, ay_object *o)
 } /* ay_camera_readcb */
 
 
+/* ay_camera_writecb:
+ *  write (to scene file) callback function of camera object
+ */
 int
 ay_camera_writecb(FILE *fileptr, ay_object *o)
 {
@@ -491,6 +512,9 @@ ay_camera_writecb(FILE *fileptr, ay_object *o)
 } /* ay_camera_writecb */
 
 
+/* ay_camera_wribcb:
+ *  RIB export callback function of camera object
+ */
 int
 ay_camera_wribcb(char *file, ay_object *o)
 {
@@ -508,6 +532,9 @@ ay_camera_wribcb(char *file, ay_object *o)
 } /* ay_camera_wribcb */
 
 
+/* ay_camera_bbccb:
+ *  bounding box calculation callback function of camera object
+ */
 int
 ay_camera_bbccb(ay_object *o, double *bbox, int *flags)
 {
@@ -640,31 +667,36 @@ ay_camera_dropcb(ay_object *o)
  return AY_EDONOTLINK;
 } /* ay_camera_dropcb */
 
+
+/* ay_camera_init:
+ *  initialize the camera object module
+ */
 int
 ay_camera_init(Tcl_Interp *interp)
 {
  int ay_status = AY_OK;
 
- ay_status = ay_otype_registercore(ay_camera_name,
-				   ay_camera_createcb,
-				   ay_camera_deletecb,
-				   ay_camera_copycb,
-				   ay_camera_drawcb,
-				   ay_camera_drawhcb,
-				   NULL, /* no shading! */
-				   ay_camera_setpropcb,
-				   ay_camera_getpropcb,
-				   ay_camera_getpntcb,
-				   ay_camera_readcb,
-				   ay_camera_writecb,
-				   NULL, /* no RIB export */
-				   ay_camera_bbccb,
-				   AY_IDCAMERA);
+  ay_status = ay_otype_registercore(ay_camera_name,
+				    ay_camera_createcb,
+				    ay_camera_deletecb,
+				    ay_camera_copycb,
+				    ay_camera_drawcb,
+				    ay_camera_drawhcb,
+				    NULL, /* no shading! */
+				    ay_camera_setpropcb,
+				    ay_camera_getpropcb,
+				    ay_camera_getpntcb,
+				    ay_camera_readcb,
+				    ay_camera_writecb,
+				    NULL, /* no RIB export */
+				    ay_camera_bbccb,
+				    AY_IDCAMERA);
 
 
   /* register drop callback */
   ay_status = ay_tree_registerdrop(ay_camera_dropcb, AY_IDCAMERA);
 
+  /* camera objects may not be associated with materials */
   ay_matt_nomaterial(AY_IDCAMERA);
 
  return ay_status;
