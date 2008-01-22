@@ -16,6 +16,8 @@
 
 static char *ay_acurve_name = "ACurve";
 
+/* functions: */
+
 /* ay_acurve_createcb:
  *  create callback function of acurve object
  */
