@@ -16,6 +16,11 @@
 
 static char *ay_parab_name = "Paraboloid";
 
+/* functions: */
+
+/* ay_parab_createcb:
+ *  create callback function of parab object
+ */
 int
 ay_parab_createcb(int argc, char *argv[], ay_object *o)
 {
@@ -43,6 +48,9 @@ ay_parab_createcb(int argc, char *argv[], ay_object *o)
 } /* ay_parab_createcb */
 
 
+/* ay_parab_deletecb:
+ *  delete callback function of parab object
+ */
 int
 ay_parab_deletecb(void *c)
 {
@@ -59,6 +67,9 @@ ay_parab_deletecb(void *c)
 } /* ay_parab_deletecb */
 
 
+/* ay_parab_copycb:
+ *  copy callback function of parab object
+ */
 int
 ay_parab_copycb(void *src, void **dst)
 {
@@ -78,6 +89,9 @@ ay_parab_copycb(void *src, void **dst)
 } /* ay_parab_copycb */
 
 
+/* ay_parab_drawcb:
+ *  draw (display in an Ayam view window) callback function of parab object
+ */
 int
 ay_parab_drawcb(struct Togl *togl, ay_object *o)
 {
@@ -179,6 +193,9 @@ ay_parab_drawcb(struct Togl *togl, ay_object *o)
 } /* ay_parab_drawcb */
 
 
+/* ay_parab_shadecb:
+ *  shade (display in an Ayam view window) callback function of parab object
+ */
 int
 ay_parab_shadecb(struct Togl *togl, ay_object *o)
 {
@@ -335,7 +352,9 @@ ay_parab_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_parab_shadecb */
 
 
-/* Tcl -> C! */
+/* ay_parab_setpropcb:
+ *  set property (from Tcl to C context) callback function of parab object
+ */
 int
 ay_parab_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -401,7 +420,9 @@ ay_parab_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_parab_setpropcb */
 
 
-/* C -> Tcl! */
+/* ay_parab_getpropcb:
+ *  get property (from C to Tcl context) callback function of parab object
+ */
 int
 ay_parab_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -444,6 +465,9 @@ ay_parab_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_parab_getpropcb */
 
 
+/* ay_parab_readcb:
+ *  read (from scene file) callback function of parab object
+ */
 int
 ay_parab_readcb(FILE *fileptr, ay_object *o)
 {
@@ -469,6 +493,9 @@ ay_parab_readcb(FILE *fileptr, ay_object *o)
 } /* ay_parab_readcb */
 
 
+/* ay_parab_writecb:
+ *  write (to scene file) callback function of parab object
+ */
 int
 ay_parab_writecb(FILE *fileptr, ay_object *o)
 {
@@ -489,7 +516,10 @@ ay_parab_writecb(FILE *fileptr, ay_object *o)
 } /* ay_parab_writecb */
 
 
-/* code taken from Affine */
+/* ay_parab_wribcb:
+ *  RIB export callback function of parab object
+ *  code taken from Affine
+ */
 int
 ay_parab_wribcb(char *file, ay_object *o)
 {
@@ -594,6 +624,9 @@ ay_parab_wribcb(char *file, ay_object *o)
 } /* ay_parab_wribcb */
 
 
+/* ay_parab_bbccb:
+ *  bounding box calculation callback function of parab object
+ */
 int
 ay_parab_bbccb(ay_object *o, double *bbox, int *flags)
 {
@@ -633,6 +666,9 @@ ay_parab_bbccb(ay_object *o, double *bbox, int *flags)
 } /* ay_parab_bbccb */
 
 
+/* ay_parab_providecb:
+ *  provide callback function of parab object
+ */
 int
 ay_paraboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
@@ -966,6 +1002,9 @@ cleanup:
 } /* ay_paraboloid_providecb */
 
 
+/* ay_parab_convertcb:
+ *  convert callback function of parab object
+ */
 int
 ay_paraboloid_convertcb(ay_object *o, int in_place)
 {
@@ -1031,6 +1070,9 @@ ay_paraboloid_convertcb(ay_object *o, int in_place)
 } /* ay_paraboloid_convertcb */
 
 
+/* ay_parab_init:
+ *  initialize the parab object module
+ */
 int
 ay_parab_init(Tcl_Interp *interp)
 {
