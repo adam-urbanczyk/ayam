@@ -16,7 +16,11 @@
 
 static char *ay_instance_name = "Instance";
 
+/* functions: */
 
+/* ay_instance_createcb:
+ *  create callback function of instance object
+ */
 int
 ay_instance_createcb(int argc, char *argv[], ay_object *o)
 {
@@ -51,6 +55,9 @@ ay_instance_createcb(int argc, char *argv[], ay_object *o)
 } /* ay_instance_createcb */
 
 
+/* ay_instance_deletecb:
+ *  delete callback function of instance object
+ */
 int
 ay_instance_deletecb(void *c)
 {
@@ -68,6 +75,9 @@ ay_instance_deletecb(void *c)
 } /* ay_instance_deletecb */
 
 
+/* ay_instance_copycb:
+ *  copy callback function of instance object
+ */
 int
 ay_instance_copycb(void *src, void **dst)
 {
@@ -84,6 +94,9 @@ ay_instance_copycb(void *src, void **dst)
 } /* ay_instance_copycb */
 
 
+/* ay_instance_drawcb:
+ *  draw (display in an Ayam view window) callback function of instance object
+ */
 int
 ay_instance_drawcb(struct Togl *togl, ay_object *o)
 {
@@ -133,16 +146,9 @@ ay_instance_drawcb(struct Togl *togl, ay_object *o)
 } /* ay_instance_drawcb */
 
 
-int
-ay_instance_drawhcb(struct Togl *togl, ay_object *o)
-{
-  if(!o)
-    return AY_ENULL;
-
- return AY_OK;
-} /* ay_instance_drawhcb */
-
-
+/* ay_instance_shadecb:
+ *  shade (display in an Ayam view window) callback function of instance object
+ */
 int
 ay_instance_shadecb(struct Togl *togl, ay_object *o)
 {
@@ -192,6 +198,20 @@ ay_instance_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_instance_shadecb */
 
 
+/* ay_instance_drawhcb:
+ *  draw handles (in an Ayam view window) callback function of instance object
+ */
+int
+ay_instance_drawhcb(struct Togl *togl, ay_object *o)
+{
+
+ return AY_OK;
+} /* ay_instance_drawhcb */
+
+
+/* ay_instance_getpntcb:
+ *  get point (editing and selection) callback function of instance object
+ */
 int
 ay_instance_getpntcb(int mode, ay_object *o, double *p)
 {
@@ -203,7 +223,9 @@ ay_instance_getpntcb(int mode, ay_object *o, double *p)
 } /* ay_instance_getpntcb */
 
 
-/* Tcl -> C! */
+/* ay_instance_setpropcb:
+ *  set property (from Tcl to C context) callback function of instance object
+ */
 int
 ay_instance_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -215,7 +237,9 @@ ay_instance_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_instance_setpropcb */
 
 
-/* C -> Tcl! */
+/* ay_instance_getpropcb:
+ *  get property (from C to Tcl context) callback function of instance object
+ */
 int
 ay_instance_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -227,6 +251,9 @@ ay_instance_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_instance_getpropcb */
 
 
+/* ay_instance_readcb:
+ *  read (from scene file) callback function of instance object
+ */
 int
 ay_instance_readcb(FILE *fileptr, ay_object *o)
 {
@@ -235,6 +262,9 @@ ay_instance_readcb(FILE *fileptr, ay_object *o)
 } /* ay_instance_readcb */
 
 
+/* ay_instance_writecb:
+ *  write (to scene file) callback function of instance object
+ */
 int
 ay_instance_writecb(FILE *fileptr, ay_object *o)
 {
@@ -243,6 +273,9 @@ ay_instance_writecb(FILE *fileptr, ay_object *o)
 } /* ay_instance_writecb */
 
 
+/* ay_instance_wribcb:
+ *  RIB export callback function of instance object
+ */
 int
 ay_instance_wribcb(char *file, ay_object *o)
 {
@@ -403,6 +436,9 @@ ay_instance_wribcb(char *file, ay_object *o)
 } /* ay_instance_wribcb */
 
 
+/* ay_instance_bbccb:
+ *  bounding box calculation callback function of instance object
+ */
 int
 ay_instance_bbccb(ay_object *o, double *bbox, int *flags)
 {
@@ -571,7 +607,8 @@ ay_instance_bbccb(ay_object *o, double *bbox, int *flags)
 
 
 /* ay_instance_convertcb:
- * propagate changes to this function to ay_instt_resolve()!
+ *  convert callback function of instance object
+ *  propagate changes to this function to ay_instt_resolve()!
  */
 int
 ay_instance_convertcb(ay_object *i, int in_place)
@@ -675,6 +712,9 @@ ay_instance_convertcb(ay_object *i, int in_place)
 } /* ay_instance_convertcb */
 
 
+/* ay_instance_providecb:
+ *  provide callback function of instance object
+ */
 int
 ay_instance_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
@@ -730,6 +770,9 @@ ay_instance_providecb(ay_object *o, unsigned int type, ay_object **result)
 } /* ay_instance_providecb */
 
 
+/* ay_instance_init:
+ *  initialize the instance object module
+ */
 int
 ay_instance_init(Tcl_Interp *interp)
 {
@@ -756,6 +799,7 @@ ay_instance_init(Tcl_Interp *interp)
 
   ay_status = ay_provide_register(ay_instance_providecb, AY_IDINSTANCE);
 
+  /* instances may not be associated with materials */
   ay_matt_nomaterial(AY_IDINSTANCE);
 
  return ay_status;
