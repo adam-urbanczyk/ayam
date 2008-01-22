@@ -16,7 +16,11 @@
 
 static char *ay_light_name = "Light";
 
+/* functions: */
 
+/* ay_light_createcb:
+ *  create callback function of light object
+ */
 int
 ay_light_createcb(int argc, char *argv[], ay_object *o)
 {
@@ -55,6 +59,9 @@ ay_light_createcb(int argc, char *argv[], ay_object *o)
 } /* ay_light_createcb */
 
 
+/* ay_light_deletecb:
+ *  delete callback function of light object
+ */
 int
 ay_light_deletecb(void *c)
 {
@@ -74,6 +81,9 @@ ay_light_deletecb(void *c)
 } /* ay_light_deletecb */
 
 
+/* ay_light_copycb:
+ *  copy callback function of light object
+ */
 int
 ay_light_copycb(void *src, void **dst)
 {
@@ -101,6 +111,9 @@ ay_light_copycb(void *src, void **dst)
 } /* ay_light_copycb */
 
 
+/* ay_light_drawcb:
+ *  draw (display in an Ayam view window) callback function of light object
+ */
 int
 ay_light_drawcb(struct Togl *togl, ay_object *o)
 {
@@ -338,6 +351,9 @@ ay_light_drawcb(struct Togl *togl, ay_object *o)
 } /* ay_light_drawcb */
 
 
+/* ay_light_drawhcb:
+ *  draw handles (in an Ayam view window) callback function of light object
+ */
 int
 ay_light_drawhcb(struct Togl *togl, ay_object *o)
 {
@@ -429,6 +445,9 @@ ay_light_drawhcb(struct Togl *togl, ay_object *o)
 } /* ay_light_drawhcb */
 
 
+/* ay_light_shadecb:
+ *  shade (display in an Ayam view window) callback function of light object
+ */
 int
 ay_light_shadecb(struct Togl *togl, ay_object *o)
 {
@@ -446,6 +465,9 @@ ay_light_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_light_shadecb */
 
 
+/* ay_light_getpntcb:
+ *  get point (editing and selection) callback function of light object
+ */
 int
 ay_light_getpntcb(int mode, ay_object *o, double *p)
 {
@@ -640,7 +662,9 @@ ay_light_getpntcb(int mode, ay_object *o, double *p)
 } /* ay_light_getpntcb */
 
 
-/* Tcl -> C! */
+/* ay_light_setpropcb:
+ *  set property (from Tcl to C context) callback function of light object
+ */
 int
 ay_light_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -747,7 +771,9 @@ ay_light_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_light_setpropcb */
 
 
-/* C -> Tcl! */
+/* ay_light_getpropcb:
+ *  get property (from C to Tcl context) callback function of light object
+ */
 int
 ay_light_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -843,6 +869,9 @@ ay_light_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_light_getpropcb */
 
 
+/* ay_light_readcb:
+ *  read (from scene file) callback function of light object
+ */
 int
 ay_light_readcb(FILE *fileptr, ay_object *o)
 {
@@ -897,6 +926,9 @@ ay_light_readcb(FILE *fileptr, ay_object *o)
 } /* ay_light_readcb */
 
 
+/* ay_light_writecb:
+ *  write (to scene file) callback function of light object
+ */
 int
 ay_light_writecb(FILE *fileptr, ay_object *o)
 {
@@ -945,9 +977,11 @@ ay_light_writecb(FILE *fileptr, ay_object *o)
 } /* ay_light_writecb */
 
 
-/* this callback does nothing
- * the real work of writing light objects to RIB
- * is done in aycore/wrib.c/ay_wrib_lights()
+/* ay_light_wribcb:
+ *  RIB export callback function of light object
+ *  this callback does nothing
+ *  the real work of writing light objects to RIB
+ *  is done in aycore/wrib.c/ay_wrib_lights()
  */
 int
 ay_light_wribcb(char *file, ay_object *o)
@@ -960,6 +994,9 @@ ay_light_wribcb(char *file, ay_object *o)
 } /* ay_light_wribcb */
 
 
+/* ay_light_bbccb:
+ *  bounding box calculation callback function of light object
+ */
 int
 ay_light_bbccb(ay_object *o, double *bbox, int *flags)
 {
@@ -1088,6 +1125,9 @@ ay_light_bbccb(ay_object *o, double *bbox, int *flags)
 } /* ay_light_bbccb */
 
 
+/* ay_light_notifycb:
+ *  notification callback function of light object
+ */
 int
 ay_light_notifycb(ay_object *o)
 {
@@ -1148,6 +1188,9 @@ ay_light_notifycb(ay_object *o)
 } /* ay_light_notifycb */
 
 
+/* ay_light_init:
+ *  initialize the light object module
+ */
 int
 ay_light_init(Tcl_Interp *interp)
 {
