@@ -126,6 +126,20 @@ proc dxfio_import { } {
     bind $w <Escape> "$f.bca invoke"
     wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
 
+    global aymainshortcuts
+    bind $w <[repcont $aymainshortcuts(Help)]> {
+	global ayprefs
+	if { [string first "file://" $ayprefs(Docs)] != -1 } {
+	    set lslash [string last "/" $ayprefs(Docs)]
+	    set url [string range\
+			 $ayprefs(Docs) 0 $lslash]/ayam-7.html\#impdxf
+	    browser_urlOpen $url
+	} else {
+	    browser_urlOpen $ayprefs(Docs)ayam-7.html\#impdxf
+	}
+    }
+    # bind
+
     winCenter $w
     grab $w
     focus $w.f2.bok
@@ -233,6 +247,20 @@ proc dxfio_export { } {
 
     # Esc-Key == Cancel button
     bind $w <Escape> "$f.bca invoke"
+
+    global aymainshortcuts
+    bind $w <[repcont $aymainshortcuts(Help)]> {
+	global ayprefs
+	if { [string first "file://" $ayprefs(Docs)] != -1 } {
+	    set lslash [string last "/" $ayprefs(Docs)]
+	    set url [string range\
+			 $ayprefs(Docs) 0 $lslash]/ayam-7.html\#expdxf
+	    browser_urlOpen $url
+	} else {
+	    browser_urlOpen $ayprefs(Docs)ayam-7.html\#expdxf
+	}
+    }
+    # bind
 
     winCenter $w
     grab $w

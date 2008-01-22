@@ -118,6 +118,20 @@ proc objio_export { } {
     bind $w <Escape> "$f.bca invoke"
     wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
 
+    global aymainshortcuts
+    bind $w <[repcont $aymainshortcuts(Help)]> {
+	global ayprefs
+	if { [string first "file://" $ayprefs(Docs)] != -1 } {
+	    set lslash [string last "/" $ayprefs(Docs)]
+	    set url [string range\
+			 $ayprefs(Docs) 0 $lslash]/ayam-7.html\#expwav
+	    browser_urlOpen $url
+	} else {
+	    browser_urlOpen $ayprefs(Docs)ayam-7.html\#expwav
+	}
+    }
+    # bind
+
     winCenter $w
     focus $w.f2.bok
 
@@ -229,6 +243,20 @@ proc objio_import { } {
     # Esc-key && close via window decoration == Cancel button
     bind $w <Escape> "$f.bca invoke"
     wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
+
+    global aymainshortcuts
+    bind $w <[repcont $aymainshortcuts(Help)]> {
+	global ayprefs
+	if { [string first "file://" $ayprefs(Docs)] != -1 } {
+	    set lslash [string last "/" $ayprefs(Docs)]
+	    set url [string range\
+			 $ayprefs(Docs) 0 $lslash]/ayam-7.html\#impwav
+	    browser_urlOpen $url
+	} else {
+	    browser_urlOpen $ayprefs(Docs)ayam-7.html\#impwav
+	}
+    }
+    # bind
 
     winCenter $w
     grab $w
