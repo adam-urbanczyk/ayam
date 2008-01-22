@@ -16,6 +16,11 @@
 
 static char *ay_torus_name = "Torus";
 
+/* functions: */
+
+/* ay_torus_createcb:
+ *  create callback function of torus object
+ */
 int
 ay_torus_createcb(int argc, char *argv[], ay_object *o)
 {
@@ -44,6 +49,9 @@ ay_torus_createcb(int argc, char *argv[], ay_object *o)
 } /* ay_torus_createcb */
 
 
+/* ay_torus_deletecb:
+ *  delete callback function of torus object
+ */
 int
 ay_torus_deletecb(void *c)
 {
@@ -60,6 +68,9 @@ ay_torus_deletecb(void *c)
 } /* ay_torus_deletecb */
 
 
+/* ay_torus_copycb:
+ *  copy callback function of torus object
+ */
 int
 ay_torus_copycb(void *src, void **dst)
 {
@@ -79,6 +90,9 @@ ay_torus_copycb(void *src, void **dst)
 } /* ay_torus_copycb */
 
 
+/* ay_torus_drawcb:
+ *  draw (display in an Ayam view window) callback function of torus object
+ */
 int
 ay_torus_drawcb(struct Togl *togl, ay_object *o)
 {
@@ -182,6 +196,9 @@ ay_torus_drawcb(struct Togl *togl, ay_object *o)
 } /* ay_torus_drawcb */
 
 
+/* ay_torus_shadecb:
+ *  shade (display in an Ayam view window) callback function of torus object
+ */
 int
 ay_torus_shadecb(struct Togl *togl, ay_object *o)
 {
@@ -317,7 +334,9 @@ ay_torus_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_torus_shadecb */
 
 
-/* Tcl -> C! */
+/* ay_torus_setpropcb:
+ *  set property (from Tcl to C context) callback function of torus object
+ */
 int
 ay_torus_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -370,7 +389,9 @@ ay_torus_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_torus_setpropcb */
 
 
-/* C -> Tcl! */
+/* ay_torus_getpropcb:
+ *  get property (from C to Tcl context) callback function of torus object
+ */
 int
 ay_torus_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -419,6 +440,9 @@ ay_torus_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_torus_getpropcb */
 
 
+/* ay_torus_readcb:
+ *  read (from scene file) callback function of torus object
+ */
 int
 ay_torus_readcb(FILE *fileptr, ay_object *o)
 {
@@ -444,6 +468,9 @@ ay_torus_readcb(FILE *fileptr, ay_object *o)
 } /* ay_torus_readcb */
 
 
+/* ay_torus_writecb:
+ *  write (to scene file) callback function of torus object
+ */
 int
 ay_torus_writecb(FILE *fileptr, ay_object *o)
 {
@@ -465,7 +492,10 @@ ay_torus_writecb(FILE *fileptr, ay_object *o)
 } /* ay_torus_writecb */
 
 
-/* code taken from Affine */
+/* ay_torus_wribcb:
+ *  RIB export callback function of torus object
+ *  code taken from Affine
+ */
 int
 ay_torus_wribcb(char *file, ay_object *o)
 {
@@ -556,6 +586,9 @@ ay_torus_wribcb(char *file, ay_object *o)
 } /* ay_torus_wribcb */
 
 
+/* ay_torus_bbccb:
+ *  bounding box calculation callback function of torus object
+ */
 int
 ay_torus_bbccb(ay_object *o, double *bbox, int *flags)
 {
@@ -595,6 +628,9 @@ ay_torus_bbccb(ay_object *o, double *bbox, int *flags)
 } /* ay_torus_bbccb */
 
 
+/* ay_torus_providecb:
+ *  provide callback function of torus object
+ */
 int
 ay_torus_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
@@ -857,6 +893,9 @@ cleanup:
 } /* ay_torus_providecb */
 
 
+/* ay_torus_convertcb:
+ *  convert callback function of torus object
+ */
 int
 ay_torus_convertcb(ay_object *o, int in_place)
 {
@@ -922,6 +961,9 @@ ay_torus_convertcb(ay_object *o, int in_place)
 } /* ay_torus_convertcb */
 
 
+/* ay_torus_init:
+ *  initialize the torus object module
+ */
 int
 ay_torus_init(Tcl_Interp *interp)
 {
