@@ -16,6 +16,11 @@
 
 static char *ay_gordon_name = "Gordon";
 
+/* functions: */
+
+/* ay_gordon_createcb:
+ *  create callback function of gordon object
+ */
 int
 ay_gordon_createcb(int argc, char *argv[], ay_object *o)
 {
@@ -42,6 +47,9 @@ ay_gordon_createcb(int argc, char *argv[], ay_object *o)
 } /* ay_gordon_createcb */
 
 
+/* ay_gordon_deletecb:
+ *  delete callback function of gordon object
+ */
 int
 ay_gordon_deletecb(void *c)
 {
@@ -67,6 +75,9 @@ ay_gordon_deletecb(void *c)
 } /* ay_gordon_deletecb */
 
 
+/* ay_gordon_copycb:
+ *  copy callback function of gordon object
+ */
 int
 ay_gordon_copycb(void *src, void **dst)
 {
@@ -94,6 +105,9 @@ ay_gordon_copycb(void *src, void **dst)
 } /* ay_gordon_copycb */
 
 
+/* ay_gordon_drawcb:
+ *  draw (display in an Ayam view window) callback function of gordon object
+ */
 int
 ay_gordon_drawcb(struct Togl *togl, ay_object *o)
 {
@@ -125,6 +139,9 @@ ay_gordon_drawcb(struct Togl *togl, ay_object *o)
 } /* ay_gordon_drawcb */
 
 
+/* ay_gordon_shadecb:
+ *  shade (display in an Ayam view window) callback function of gordon object
+ */
 int
 ay_gordon_shadecb(struct Togl *togl, ay_object *o)
 {
@@ -156,6 +173,9 @@ ay_gordon_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_gordon_shadecb */
 
 
+/* ay_gordon_drawhcb:
+ *  draw handles (in an Ayam view window) callback function of gordon object
+ */
 int
 ay_gordon_drawhcb(struct Togl *togl, ay_object *o)
 {
@@ -164,6 +184,9 @@ ay_gordon_drawhcb(struct Togl *togl, ay_object *o)
 } /* ay_gordon_drawhcb */
 
 
+/* ay_gordon_getpntcb:
+ *  get point (editing and selection) callback function of gordon object
+ */
 int
 ay_gordon_getpntcb(int mode, ay_object *o, double *p)
 {
@@ -172,7 +195,9 @@ ay_gordon_getpntcb(int mode, ay_object *o, double *p)
 } /* ay_gordon_getpntcb */
 
 
-/* Tcl -> C! */
+/* ay_gordon_setpropcb:
+ *  set property (from Tcl to C context) callback function of gordon object
+ */
 int
 ay_gordon_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -270,7 +295,9 @@ ay_gordon_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_gordon_setpropcb */
 
 
-/* C -> Tcl! */
+/* ay_gordon_getpropcb:
+ *  get property (from C to Tcl context) callback function of gordon object
+ */
 int
 ay_gordon_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -321,6 +348,9 @@ ay_gordon_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_gordon_getpropcb */
 
 
+/* ay_gordon_readcb:
+ *  read (from scene file) callback function of gordon object
+ */
 int
 ay_gordon_readcb(FILE *fileptr, ay_object *o)
 {
@@ -344,6 +374,9 @@ ay_gordon_readcb(FILE *fileptr, ay_object *o)
 } /* ay_gordon_readcb */
 
 
+/* ay_gordon_writecb:
+ *  write (to scene file) callback function of gordon object
+ */
 int
 ay_gordon_writecb(FILE *fileptr, ay_object *o)
 {
@@ -364,6 +397,9 @@ ay_gordon_writecb(FILE *fileptr, ay_object *o)
 } /* ay_gordon_writecb */
 
 
+/* ay_gordon_wribcb:
+ *  RIB export callback function of gordon object
+ */
 int
 ay_gordon_wribcb(char *file, ay_object *o)
 {
@@ -392,6 +428,9 @@ ay_gordon_wribcb(char *file, ay_object *o)
 } /* ay_gordon_wribcb */
 
 
+/* ay_gordon_bbccb:
+ *  bounding box calculation callback function of gordon object
+ */
 int
 ay_gordon_bbccb(ay_object *o, double *bbox, int *flags)
 {
@@ -417,6 +456,9 @@ ay_gordon_bbccb(ay_object *o, double *bbox, int *flags)
 } /* ay_gordon_bbccb */
 
 
+/* ay_gordon_notifycb:
+ *  notification callback function of gordon object
+ */
 int
 ay_gordon_notifycb(ay_object *o)
 {
@@ -681,6 +723,9 @@ cleanup:
 } /* ay_gordon_notifycb */
 
 
+/* ay_gordon_providecb:
+ *  provide callback function of gordon object
+ */
 int
 ay_gordon_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
@@ -739,6 +784,9 @@ ay_gordon_providecb(ay_object *o, unsigned int type, ay_object **result)
 } /* ay_gordon_providecb */
 
 
+/* ay_gordon_convertcb:
+ *  convert callback function of gordon object
+ */
 int
 ay_gordon_convertcb(ay_object *o, int in_place)
 {
@@ -834,6 +882,9 @@ ay_gordon_convertcb(ay_object *o, int in_place)
 } /* ay_gordon_convertcb */
 
 
+/* ay_gordon_init:
+ *  initialize the gordon object module
+ */
 int
 ay_gordon_init(Tcl_Interp *interp)
 {
