@@ -16,6 +16,11 @@
 
 static char *ay_material_name = "Material";
 
+/* functions: */
+
+/* ay_material_createcb:
+ *  create callback function of material object
+ */
 int
 ay_material_createcb(int argc, char *argv[], ay_object *o)
 {
@@ -90,6 +95,9 @@ ay_material_createcb(int argc, char *argv[], ay_object *o)
 } /* ay_material_createcb */
 
 
+/* ay_material_deletecb:
+ *  delete callback function of material object
+ */
 int
 ay_material_deletecb(void *c)
 {
@@ -144,6 +152,9 @@ ay_material_deletecb(void *c)
 } /* ay_material_deletecb */
 
 
+/* ay_material_copycb:
+ *  copy callback function of material object
+ */
 int
 ay_material_copycb(void *src, void **dst)
 {
@@ -206,6 +217,9 @@ ay_material_copycb(void *src, void **dst)
 } /* ay_material_copycb */
 
 
+/* ay_material_drawcb:
+ *  draw (display in an Ayam view window) callback function of material object
+ */
 int
 ay_material_drawcb(struct Togl *togl, ay_object *o)
 {
@@ -223,6 +237,9 @@ ay_material_drawcb(struct Togl *togl, ay_object *o)
 } /* ay_material_drawcb */
 
 
+/* ay_material_shadecb:
+ *  shade (display in an Ayam view window) callback function of material object
+ */
 int
 ay_material_shadecb(struct Togl *togl, ay_object *o)
 {
@@ -240,7 +257,9 @@ ay_material_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_material_shadecb */
 
 
-/* Tcl -> C! */
+/* ay_material_setpropcb:
+ *  set property (from Tcl to C context) callback function of material object
+ */
 int
 ay_material_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -406,7 +425,9 @@ ay_material_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_material_setpropcb */
 
 
-/* C -> Tcl! */
+/* ay_material_getpropcb:
+ *  get property (from C to Tcl context) callback function of material object
+ */
 int
 ay_material_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -537,6 +558,9 @@ ay_material_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_material_getpropcb */
 
 
+/* ay_material_readcb:
+ *  read (from scene file) callback function of material object
+ */
 int
 ay_material_readcb(FILE *fileptr, ay_object *o)
 {
@@ -624,6 +648,9 @@ ay_material_readcb(FILE *fileptr, ay_object *o)
 } /* ay_material_readcb */
 
 
+/* ay_material_writecb:
+ *  write (to scene file) callback function of material object
+ */
 int
 ay_material_writecb(FILE *fileptr, ay_object *o)
 {
@@ -705,7 +732,9 @@ ay_material_writecb(FILE *fileptr, ay_object *o)
 } /* ay_material_writecb */
 
 
-/* This callback does nothing! Material objects are
+/* ay_material_wribcb:
+ *  RIB export callback function of material object
+ *  This callback does nothing! Material objects are
  *  written to RIB via aycore/matt.c/ay_matt_wrib()
  */
 int
@@ -719,6 +748,9 @@ ay_material_wribcb(char *file, ay_object *o)
 } /* ay_material_wribcb */
 
 
+/* ay_material_bbccb:
+ *  bounding box calculation callback function of material object
+ */
 int
 ay_material_bbccb(ay_object *o, double *bbox, int *flags)
 {
@@ -803,6 +835,9 @@ ay_material_dropcb(ay_object *o)
 } /* ay_material_dropcb */
 
 
+/* ay_material_init:
+ *  initialize the material object module
+ */
 int
 ay_material_init(Tcl_Interp *interp)
 {
@@ -827,6 +862,7 @@ ay_material_init(Tcl_Interp *interp)
   /* register drop callback */
   ay_status = ay_tree_registerdrop(ay_material_dropcb, AY_IDMATERIAL);
 
+  /* materials may not be associated with materials */
   ay_matt_nomaterial(AY_IDMATERIAL);
 
  return ay_status;
