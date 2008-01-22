@@ -17,6 +17,10 @@
 static char *ay_extrnp_name = "ExtrNP";
 
 /* functions: */
+
+/* ay_extrnp_createcb:
+ *  create callback function of extrnp object
+ */
 int
 ay_extrnp_createcb(int argc, char *argv[], ay_object *o)
 {
@@ -44,6 +48,9 @@ ay_extrnp_createcb(int argc, char *argv[], ay_object *o)
 } /* ay_extrnp_createcb */
 
 
+/* ay_extrnp_deletecb:
+ *  delete callback function of extrnp object
+ */
 int
 ay_extrnp_deletecb(void *c)
 {
@@ -63,6 +70,9 @@ ay_extrnp_deletecb(void *c)
 } /* ay_extrnp_deletecb */
 
 
+/* ay_extrnp_copycb:
+ *  copy callback function of extrnp object
+ */
 int
 ay_extrnp_copycb(void *src, void **dst)
 {
@@ -90,6 +100,9 @@ ay_extrnp_copycb(void *src, void **dst)
 } /* ay_extrnp_copycb */
 
 
+/* ay_extrnp_drawcb:
+ *  draw (display in an Ayam view window) callback function of extrnp object
+ */
 int
 ay_extrnp_drawcb(struct Togl *togl, ay_object *o)
 {
@@ -110,6 +123,9 @@ ay_extrnp_drawcb(struct Togl *togl, ay_object *o)
 } /* ay_extrnp_drawcb */
 
 
+/* ay_extrnp_shadecb:
+ *  shade (display in an Ayam view window) callback function of extrnp object
+ */
 int
 ay_extrnp_shadecb(struct Togl *togl, ay_object *o)
 {
@@ -130,6 +146,9 @@ ay_extrnp_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_extrnp_shadecb */
 
 
+/* ay_extrnp_drawhcb:
+ *  draw handles (in an Ayam view window) callback function of extrnp object
+ */
 int
 ay_extrnp_drawhcb(struct Togl *togl, ay_object *o)
 {
@@ -141,6 +160,9 @@ ay_extrnp_drawhcb(struct Togl *togl, ay_object *o)
 } /* ay_extrnp_drawhcb */
 
 
+/* ay_extrnp_getpntcb:
+ *  get point (editing and selection) callback function of extrnp object
+ */
 int
 ay_extrnp_getpntcb(int mode, ay_object *o, double *p)
 {
@@ -149,7 +171,9 @@ ay_extrnp_getpntcb(int mode, ay_object *o, double *p)
 } /* ay_extrnp_getpntcb */
 
 
-/* Tcl -> C! */
+/* ay_extrnp_setpropcb:
+ *  set property (from Tcl to C context) callback function of extrnp object
+ */
 int
 ay_extrnp_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -207,7 +231,9 @@ ay_extrnp_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_extrnp_setpropcb */
 
 
-/* C -> Tcl! */
+/* ay_extrnp_getpropcb:
+ *  get property (from C to Tcl context) callback function of extrnp object
+ */
 int
 ay_extrnp_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -268,6 +294,9 @@ ay_extrnp_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_extrnp_getpropcb */
 
 
+/* ay_extrnp_readcb:
+ *  read (from scene file) callback function of extrnp object
+ */
 int
 ay_extrnp_readcb(FILE *fileptr, ay_object *o)
 {
@@ -294,6 +323,9 @@ ay_extrnp_readcb(FILE *fileptr, ay_object *o)
 } /* ay_extrnp_readcb */
 
 
+/* ay_extrnp_writecb:
+ *  write (to scene file) callback function of extrnp object
+ */
 int
 ay_extrnp_writecb(FILE *fileptr, ay_object *o)
 {
@@ -318,6 +350,9 @@ ay_extrnp_writecb(FILE *fileptr, ay_object *o)
 } /* ay_extrnp_writecb */
 
 
+/* ay_extrnp_wribcb:
+ *  RIB export callback function of extrnp object
+ */
 int
 ay_extrnp_wribcb(char *file, ay_object *o)
 {
@@ -326,6 +361,9 @@ ay_extrnp_wribcb(char *file, ay_object *o)
 } /* ay_extrnp_wribcb */
 
 
+/* ay_extrnp_bbccb:
+ *  bounding box calculation callback function of extrnp object
+ */
 int
 ay_extrnp_bbccb(ay_object *o, double *bbox, int *flags)
 {
@@ -351,6 +389,9 @@ ay_extrnp_bbccb(ay_object *o, double *bbox, int *flags)
 } /* ay_extrnp_bbccb */
 
 
+/* ay_extrnp_notifycb:
+ *  notification callback function of extrnp object
+ */
 int
 ay_extrnp_notifycb(ay_object *o)
 {
@@ -450,6 +491,9 @@ cleanup:
 } /* ay_extrnp_notifycb */
 
 
+/* ay_extrnp_providecb:
+ *  provide callback function of extrnp object
+ */
 int
 ay_extrnp_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
@@ -492,6 +536,9 @@ ay_extrnp_providecb(ay_object *o, unsigned int type, ay_object **result)
 } /* ay_extrnp_providecb */
 
 
+/* ay_extrnp_convertcb:
+ *  convert callback function of extrnp object
+ */
 int
 ay_extrnp_convertcb(ay_object *o, int in_place)
 {
@@ -528,6 +575,9 @@ ay_extrnp_convertcb(ay_object *o, int in_place)
 } /* ay_extrnp_convertcb */
 
 
+/* ay_extrnp_init:
+ *  initialize the extrnp object module
+ */
 int
 ay_extrnp_init(Tcl_Interp *interp)
 {
