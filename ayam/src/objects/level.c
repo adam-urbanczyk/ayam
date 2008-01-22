@@ -16,6 +16,11 @@
 
 static char *ay_level_name = "Level";
 
+/* functions: */
+
+/* ay_level_createcb:
+ *  create callback function of level object
+ */
 int
 ay_level_createcb(int argc, char *argv[], ay_object *o)
 {
@@ -42,6 +47,9 @@ ay_level_createcb(int argc, char *argv[], ay_object *o)
 } /* ay_level_createcb */
 
 
+/* ay_level_deletecb:
+ *  delete callback function of level object
+ */
 int
 ay_level_deletecb(void *c)
 {
@@ -58,6 +66,9 @@ ay_level_deletecb(void *c)
 } /* ay_level_deletecb */
 
 
+/* ay_level_copycb:
+ *  copy callback function of level object
+ */
 int
 ay_level_copycb(void *src, void **dst)
 {
@@ -74,6 +85,9 @@ ay_level_copycb(void *src, void **dst)
 } /* ay_level_copycb */
 
 
+/* ay_level_drawcb:
+ *  draw (display in an Ayam view window) callback function of level object
+ */
 int
 ay_level_drawcb(struct Togl *togl, ay_object *o)
 {
@@ -84,6 +98,9 @@ ay_level_drawcb(struct Togl *togl, ay_object *o)
 } /* ay_level_drawcb */
 
 
+/* ay_level_drawhcb:
+ *  draw handles (in an Ayam view window) callback function of level object
+ */
 int
 ay_level_drawhcb(struct Togl *togl, ay_object *o)
 {
@@ -94,6 +111,9 @@ ay_level_drawhcb(struct Togl *togl, ay_object *o)
 } /* ay_level_drawhcb */
 
 
+/* ay_level_shadecb:
+ *  shade (display in an Ayam view window) callback function of level object
+ */
 int
 ay_level_shadecb(struct Togl *togl, ay_object *o)
 {
@@ -104,6 +124,9 @@ ay_level_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_level_shadecb */
 
 
+/* ay_level_getpntcb:
+ *  get point (editing and selection) callback function of level object
+ */
 int
 ay_level_getpntcb(int mode, ay_object *o, double *p)
 {
@@ -114,7 +137,9 @@ ay_level_getpntcb(int mode, ay_object *o, double *p)
 } /* ay_level_getpntcb */
 
 
-/* Tcl -> C! */
+/* ay_level_setpropcb:
+ *  set property (from Tcl to C context) callback function of level object
+ */
 int
 ay_level_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -140,7 +165,9 @@ ay_level_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_level_setpropcb */
 
 
-/* C -> Tcl! */
+/* ay_level_getpropcb:
+ *  get property (from C to Tcl context) callback function of level object
+ */
 int
 ay_level_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -168,6 +195,9 @@ ay_level_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_level_getpropcb */
 
 
+/* ay_level_readcb:
+ *  read (from scene file) callback function of level object
+ */
 int
 ay_level_readcb(FILE *fileptr, ay_object *o)
 {
@@ -196,6 +226,9 @@ ay_level_readcb(FILE *fileptr, ay_object *o)
 } /* ay_level_readcb */
 
 
+/* ay_level_writecb:
+ *  write (to scene file) callback function of level object
+ */
 int
 ay_level_writecb(FILE *fileptr, ay_object *o)
 {
@@ -213,6 +246,7 @@ ay_level_writecb(FILE *fileptr, ay_object *o)
 
 
 /* ay_level_wribcb:
+ *  RIB export callback function of level object
  *  does nothing, the real work of testing level types
  *  and writing appropriate RiSolids is done in:
  *  aycore/wrib.c/ay_wrib_object()
@@ -234,6 +268,9 @@ ay_level_wribcb(char *file, ay_object *o)
 } /* ay_level_wribcb */
 
 
+/* ay_level_bbccb:
+ *  bounding box calculation callback function of level object
+ */
 int
 ay_level_bbccb(ay_object *o, double *bbox, int *flags)
 {
@@ -248,6 +285,9 @@ ay_level_bbccb(ay_object *o, double *bbox, int *flags)
 } /* ay_level_bbccb */
 
 
+/* ay_level_providecb:
+ *  provide callback function of level object
+ */
 int
 ay_level_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
@@ -297,7 +337,7 @@ ay_level_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  ay_status = ay_object_copy(d, last);
 	  if(*last)
 	    {
-	      ay_trafo_add(o, *last);
+	      /*ay_trafo_add(o, *last);*/
 	      last = &((*last)->next);
 	    }
 	}
@@ -307,7 +347,8 @@ ay_level_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  t = *last;
 	  while(t)
 	    {
-	      ay_trafo_add(o, t);
+	      if(d->type == AY_IDLEVEL)
+		ay_trafo_add(d, t);
 	      last = &(t->next);
 	      t = t->next;
 	    } /* while */
@@ -319,6 +360,9 @@ ay_level_providecb(ay_object *o, unsigned int type, ay_object **result)
 } /* ay_level_providecb */
 
 
+/* ay_level_init:
+ *  initialize the level object module
+ */
 int
 ay_level_init(Tcl_Interp *interp)
 {
