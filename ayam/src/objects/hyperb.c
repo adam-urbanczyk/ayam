@@ -16,6 +16,11 @@
 
 static char *ay_hyperb_name = "Hyperboloid";
 
+/* functions: */
+
+/* ay_hyperb_createcb:
+ *  create callback function of hyperb object
+ */
 int
 ay_hyperb_createcb(int argc, char *argv[], ay_object *o)
 {
@@ -42,6 +47,9 @@ ay_hyperb_createcb(int argc, char *argv[], ay_object *o)
 } /* ay_hyperb_createcb */
 
 
+/* ay_hyperb_deletecb:
+ *  delete callback function of hyperb object
+ */
 int
 ay_hyperb_deletecb(void *c)
 {
@@ -58,6 +66,9 @@ ay_hyperb_deletecb(void *c)
 } /* ay_hyperb_deletecb */
 
 
+/* ay_hyperb_copycb:
+ *  copy callback function of hyperb object
+ */
 int
 ay_hyperb_copycb(void *src, void **dst)
 {
@@ -77,6 +88,9 @@ ay_hyperb_copycb(void *src, void **dst)
 } /* ay_hyperb_copycb */
 
 
+/* ay_hyperb_drawcb:
+ *  draw (display in an Ayam view window) callback function of hyperb object
+ */
 int
 ay_hyperb_drawcb(struct Togl *togl, ay_object *o)
 {
@@ -186,6 +200,9 @@ ay_hyperb_drawcb(struct Togl *togl, ay_object *o)
 } /* ay_hyperb_drawcb */
 
 
+/* ay_hyperb_shadecb:
+ *  shade (display in an Ayam view window) callback function of hyperb object
+ */
 int
 ay_hyperb_shadecb(struct Togl *togl, ay_object *o)
 {
@@ -308,7 +325,9 @@ ay_hyperb_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_hyperb_shadecb */
 
 
-/* Tcl -> C! */
+/* ay_hyperb_setpropcb:
+ *  set property (from Tcl to C context) callback function of hyperb object
+ */
 int
 ay_hyperb_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -372,7 +391,9 @@ ay_hyperb_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_hyperb_setpropcb */
 
 
-/* C -> Tcl! */
+/* ay_hyperb_getpropcb:
+ *  get property (from C to Tcl context) callback function of hyperb object
+ */
 int
 ay_hyperb_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -432,6 +453,9 @@ ay_hyperb_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_hyperb_getpropcb */
 
 
+/* ay_hyperb_readcb:
+ *  read (from scene file) callback function of hyperb object
+ */
 int
 ay_hyperb_readcb(FILE *fileptr, ay_object *o)
 {
@@ -458,6 +482,9 @@ ay_hyperb_readcb(FILE *fileptr, ay_object *o)
 } /* ay_hyperb_readcb */
 
 
+/* ay_hyperb_writecb:
+ *  write (to scene file) callback function of hyperb object
+ */
 int
 ay_hyperb_writecb(FILE *fileptr, ay_object *o)
 {
@@ -477,6 +504,9 @@ ay_hyperb_writecb(FILE *fileptr, ay_object *o)
 } /* ay_hyperb_writecb */
 
 
+/* ay_hyperb_wribcb:
+ *  RIB export callback function of hyperb object
+ */
 int
 ay_hyperb_wribcb(char *file, ay_object *o)
 {
@@ -564,6 +594,9 @@ ay_hyperb_wribcb(char *file, ay_object *o)
 } /* ay_hyperb_wribcb */
 
 
+/* ay_hyperb_bbccb:
+ *  bounding box calculation callback function of hyperb object
+ */
 int
 ay_hyperb_bbccb(ay_object *o, double *bbox, int *flags)
 {
@@ -606,6 +639,9 @@ ay_hyperb_bbccb(ay_object *o, double *bbox, int *flags)
 } /* ay_hyperb_bbccb */
 
 
+/* ay_hyperb_providecb:
+ *  provide callback function of hyperb object
+ */
 int
 ay_hyperboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
@@ -813,6 +849,9 @@ cleanup:
 } /* ay_hyperboloid_providecb */
 
 
+/* ay_hyperb_convertcb:
+ *  convert callback function of hyperb object
+ */
 int
 ay_hyperboloid_convertcb(ay_object *o, int in_place)
 {
@@ -878,6 +917,9 @@ ay_hyperboloid_convertcb(ay_object *o, int in_place)
 } /* ay_hyperboloid_convertcb */
 
 
+/* ay_hyperb_init:
+ *  initialize the hyperb object module
+ */
 int
 ay_hyperb_init(Tcl_Interp *interp)
 {
