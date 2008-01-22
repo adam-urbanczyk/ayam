@@ -16,6 +16,11 @@
 
 static char *ay_cylinder_name = "Cylinder";
 
+/* functions: */
+
+/* ay_cylinder_createcb:
+ *  create callback function of cylinder object
+ */
 int
 ay_cylinder_createcb(int argc, char *argv[], ay_object *o)
 {
@@ -44,6 +49,9 @@ ay_cylinder_createcb(int argc, char *argv[], ay_object *o)
 } /* ay_cylinder_createcb */
 
 
+/* ay_cylinder_deletecb:
+ *  delete callback function of cylinder object
+ */
 int
 ay_cylinder_deletecb(void *c)
 {
@@ -60,6 +68,9 @@ ay_cylinder_deletecb(void *c)
 } /* ay_cylinder_deletecb */
 
 
+/* ay_cylinder_copycb:
+ *  copy callback function of cylinder object
+ */
 int
 ay_cylinder_copycb(void *src, void **dst)
 {
@@ -79,6 +90,9 @@ ay_cylinder_copycb(void *src, void **dst)
 } /* ay_cylinder_copycb */
 
 
+/* ay_cylinder_drawcb:
+ *  draw (display in an Ayam view window) callback function of cylinder object
+ */
 int
 ay_cylinder_drawcb(struct Togl *togl, ay_object *o)
 {
@@ -216,6 +230,9 @@ ay_cylinder_drawcb(struct Togl *togl, ay_object *o)
 } /* ay_cylinder_drawcb */
 
 
+/* ay_cylinder_shadecb:
+ *  shade (display in an Ayam view window) callback function of cylinder object
+ */
 int
 ay_cylinder_shadecb(struct Togl *togl, ay_object *o)
 {
@@ -353,7 +370,9 @@ ay_cylinder_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_cylinder_shadecb */
 
 
-/* Tcl -> C! */
+/* ay_cylinder_setpropcb:
+ *  set property (from Tcl to C context) callback function of cylinder object
+ */
 int
 ay_cylinder_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -411,7 +430,9 @@ ay_cylinder_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_cylinder_setpropcb */
 
 
-/* C -> Tcl! */
+/* ay_cylinder_getpropcb:
+ *  get property (from C to Tcl context) callback function of cylinder object
+ */
 int
 ay_cylinder_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -456,6 +477,9 @@ ay_cylinder_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_cylinder_getpropcb */
 
 
+/* ay_cylinder_readcb:
+ *  read (from scene file) callback function of cylinder object
+ */
 int
 ay_cylinder_readcb(FILE *fileptr, ay_object *o)
 {
@@ -489,6 +513,9 @@ ay_cylinder_readcb(FILE *fileptr, ay_object *o)
 } /* ay_cylinder_readcb */
 
 
+/* ay_cylinder_writecb:
+ *  write (to scene file) callback function of cylinder object
+ */
 int
 ay_cylinder_writecb(FILE *fileptr, ay_object *o)
 {
@@ -509,6 +536,9 @@ ay_cylinder_writecb(FILE *fileptr, ay_object *o)
 } /* ay_cylinder_writecb */
 
 
+/* ay_cylinder_wribcb:
+ *  RIB export callback function of cylinder object
+ */
 int
 ay_cylinder_wribcb(char *file, ay_object *o)
 {
@@ -664,6 +694,9 @@ ay_cylinder_wribcb(char *file, ay_object *o)
 } /* ay_cylinder_wribcb */
 
 
+/* ay_cylinder_bbccb:
+ *  bounding box calculation callback function of cylinder object
+ */
 int
 ay_cylinder_bbccb(ay_object *o, double *bbox, int *flags)
 {
@@ -703,6 +736,9 @@ ay_cylinder_bbccb(ay_object *o, double *bbox, int *flags)
 } /* ay_cylinder_bbccb */
 
 
+/* ay_cylinder_providecb:
+ *  provide callback function of cylinder object
+ */
 int
 ay_cylinder_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
@@ -866,6 +902,9 @@ cleanup:
 } /* ay_cylinder_providecb */
 
 
+/* ay_cylinder_convertcb:
+ *  convert callback function of cylinder object
+ */
 int
 ay_cylinder_convertcb(ay_object *o, int in_place)
 {
@@ -931,6 +970,9 @@ ay_cylinder_convertcb(ay_object *o, int in_place)
 } /* ay_cylinder_convertcb */
 
 
+/* ay_cylinder_init:
+ *  initialize the cylinder object module
+ */
 int
 ay_cylinder_init(Tcl_Interp *interp)
 {

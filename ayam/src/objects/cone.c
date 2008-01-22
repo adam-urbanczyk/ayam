@@ -16,6 +16,11 @@
 
 static char *ay_cone_name = "Cone";
 
+/* functions: */
+
+/* ay_cone_createcb:
+ *  create callback function of cone object
+ */
 int
 ay_cone_createcb(int argc, char *argv[], ay_object *o)
 {
@@ -43,6 +48,9 @@ ay_cone_createcb(int argc, char *argv[], ay_object *o)
 } /* ay_cone_createcb */
 
 
+/* ay_cone_deletecb:
+ *  delete callback function of cone object
+ */
 int
 ay_cone_deletecb(void *c)
 {
@@ -59,6 +67,9 @@ ay_cone_deletecb(void *c)
 } /* ay_cone_deletecb */
 
 
+/* ay_cone_copycb:
+ *  copy callback function of cone object
+ */
 int
 ay_cone_copycb(void *src, void **dst)
 {
@@ -78,6 +89,9 @@ ay_cone_copycb(void *src, void **dst)
 } /* ay_cone_copycb */
 
 
+/* ay_cone_drawcb:
+ *  draw (display in an Ayam view window) callback function of cone object
+ */
 int
 ay_cone_drawcb(struct Togl *togl, ay_object *o)
 {
@@ -187,6 +201,9 @@ ay_cone_drawcb(struct Togl *togl, ay_object *o)
 } /* ay_cone_drawcb */
 
 
+/* ay_cone_shadecb:
+ *  shade (display in an Ayam view window) callback function of cone object
+ */
 int
 ay_cone_shadecb(struct Togl *togl, ay_object *o)
 {
@@ -296,7 +313,9 @@ ay_cone_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_cone_shadecb */
 
 
-/* Tcl -> C! */
+/* ay_cone_setpropcb:
+ *  set property (from Tcl to C context) callback function of cone object
+ */
 int
 ay_cone_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -350,7 +369,9 @@ ay_cone_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_cone_setpropcb */
 
 
-/* C -> Tcl! */
+/* ay_cone_getpropcb:
+ *  get property (from C to Tcl context) callback function of cone object
+ */
 int
 ay_cone_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -391,6 +412,9 @@ ay_cone_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_cone_getpropcb */
 
 
+/* ay_cone_readcb:
+ *  read (from scene file) callback function of cone object
+ */
 int
 ay_cone_readcb(FILE *fileptr, ay_object *o)
 {
@@ -423,6 +447,9 @@ ay_cone_readcb(FILE *fileptr, ay_object *o)
 } /* ay_cone_readcb */
 
 
+/* ay_cone_writecb:
+ *  write (to scene file) callback function of cone object
+ */
 int
 ay_cone_writecb(FILE *fileptr, ay_object *o)
 {
@@ -442,6 +469,9 @@ ay_cone_writecb(FILE *fileptr, ay_object *o)
 } /* ay_cone_writecb */
 
 
+/* ay_cone_wribcb:
+ *  RIB export callback function of cone object
+ */
 int
 ay_cone_wribcb(char *file, ay_object *o)
 {
@@ -576,6 +606,9 @@ ay_cone_wribcb(char *file, ay_object *o)
 } /* ay_cone_wribcb */
 
 
+/* ay_cone_bbccb:
+ *  bounding box calculation callback function of cone object
+ */
 int
 ay_cone_bbccb(ay_object *o, double *bbox, int *flags)
 {
@@ -614,6 +647,9 @@ ay_cone_bbccb(ay_object *o, double *bbox, int *flags)
 } /* ay_cone_bbccb */
 
 
+/* ay_cone_providecb:
+ *  provide callback function of cone object
+ */
 int
 ay_cone_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
@@ -763,6 +799,9 @@ cleanup:
 } /* ay_cone_providecb */
 
 
+/* ay_cone_convertcb:
+ *  convert callback function of cone object
+ */
 int
 ay_cone_convertcb(ay_object *o, int in_place)
 {
@@ -828,6 +867,9 @@ ay_cone_convertcb(ay_object *o, int in_place)
 } /* ay_cone_convertcb */
 
 
+/* ay_cone_init:
+ *  initialize the cone object module
+ */
 int
 ay_cone_init(Tcl_Interp *interp)
 {
