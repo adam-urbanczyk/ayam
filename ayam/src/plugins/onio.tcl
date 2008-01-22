@@ -130,6 +130,20 @@ proc onio_import { } {
     bind $w <Escape> "$f.bca invoke"
     wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
 
+    global aymainshortcuts
+    bind $w <[repcont $aymainshortcuts(Help)]> {
+	global ayprefs
+	if { [string first "file://" $ayprefs(Docs)] != -1 } {
+	    set lslash [string last "/" $ayprefs(Docs)]
+	    set url [string range\
+			 $ayprefs(Docs) 0 $lslash]/ayam-7.html\#imprhino
+	    browser_urlOpen $url
+	} else {
+	    browser_urlOpen $ayprefs(Docs)ayam-7.html\#imprhino
+	}
+    }
+    # bind
+
     winCenter $w
     grab $w
     focus $w.f2.bok
@@ -243,6 +257,20 @@ proc onio_export { } {
     # Esc-key && close via window decoration == Cancel button
     bind $w <Escape> "$f.bca invoke"
     wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
+
+    global aymainshortcuts
+    bind $w <[repcont $aymainshortcuts(Help)]> {
+	global ayprefs
+	if { [string first "file://" $ayprefs(Docs)] != -1 } {
+	    set lslash [string last "/" $ayprefs(Docs)]
+	    set url [string range\
+			 $ayprefs(Docs) 0 $lslash]/ayam-7.html\#exprhino
+	    browser_urlOpen $url
+	} else {
+	    browser_urlOpen $ayprefs(Docs)ayam-7.html\#exprhino
+	}
+    }
+    # bind
 
     winCenter $w
     grab $w

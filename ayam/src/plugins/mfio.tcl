@@ -123,6 +123,20 @@ proc mfio_import { } {
     bind $w <Escape> "$f.bca invoke"
     wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
 
+    global aymainshortcuts
+    bind $w <[repcont $aymainshortcuts(Help)]> {
+	global ayprefs
+	if { [string first "file://" $ayprefs(Docs)] != -1 } {
+	    set lslash [string last "/" $ayprefs(Docs)]
+	    set url [string range\
+			 $ayprefs(Docs) 0 $lslash]/ayam-7.html\#imp3dmf
+	    browser_urlOpen $url
+	} else {
+	    browser_urlOpen $ayprefs(Docs)ayam-7.html\#imp3dmf
+	}
+    }
+    # bind
+
     winCenter $w
     grab $w
     focus $w.f2.bok
@@ -229,6 +243,20 @@ proc mfio_export { } {
     # Esc-key && close via window decoration == Cancel button
     bind $w <Escape> "$f.bca invoke"
     wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
+
+    global aymainshortcuts
+    bind $w <[repcont $aymainshortcuts(Help)]> {
+	global ayprefs
+	if { [string first "file://" $ayprefs(Docs)] != -1 } {
+	    set lslash [string last "/" $ayprefs(Docs)]
+	    set url [string range\
+			 $ayprefs(Docs) 0 $lslash]/ayam-7.html\#exp3dmf
+	    browser_urlOpen $url
+	} else {
+	    browser_urlOpen $ayprefs(Docs)ayam-7.html\#exp3dmf
+	}
+    }
+    # bind
 
     winCenter $w
     grab $w
