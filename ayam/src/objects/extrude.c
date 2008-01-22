@@ -16,6 +16,11 @@
 
 static char *ay_extrude_name = "Extrude";
 
+/* functions: */
+
+/* ay_extrude_createcb:
+ *  create callback function of extrude object
+ */
 int
 ay_extrude_createcb(int argc, char *argv[], ay_object *o)
 {
@@ -40,6 +45,9 @@ ay_extrude_createcb(int argc, char *argv[], ay_object *o)
 } /* ay_extrude_createcb */
 
 
+/* ay_extrude_deletecb:
+ *  delete callback function of extrude object
+ */
 int
 ay_extrude_deletecb(void *c)
 {
@@ -65,6 +73,9 @@ ay_extrude_deletecb(void *c)
 } /* ay_extrude_deletecb */
 
 
+/* ay_extrude_copycb:
+ *  copy callback function of extrude object
+ */
 int
 ay_extrude_copycb(void *src, void **dst)
 {
@@ -90,6 +101,9 @@ ay_extrude_copycb(void *src, void **dst)
 } /* ay_extrude_copycb */
 
 
+/* ay_extrude_drawcb:
+ *  draw (display in an Ayam view window) callback function of extrude object
+ */
 int
 ay_extrude_drawcb(struct Togl *togl, ay_object *o)
 {
@@ -122,6 +136,9 @@ ay_extrude_drawcb(struct Togl *togl, ay_object *o)
 } /* ay_extrude_drawcb */
 
 
+/* ay_extrude_shadecb:
+ *  shade (display in an Ayam view window) callback function of extrude object
+ */
 int
 ay_extrude_shadecb(struct Togl *togl, ay_object *o)
 {
@@ -154,6 +171,9 @@ ay_extrude_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_extrude_shadecb */
 
 
+/* ay_extrude_drawhcb:
+ *  draw handles (in an Ayam view window) callback function of extrude object
+ */
 int
 ay_extrude_drawhcb(struct Togl *togl, ay_object *o)
 {
@@ -162,6 +182,9 @@ ay_extrude_drawhcb(struct Togl *togl, ay_object *o)
 } /* ay_extrude_drawhcb */
 
 
+/* ay_extrude_getpntcb:
+ *  get point (editing and selection) callback function of extrude object
+ */
 int
 ay_extrude_getpntcb(int mode, ay_object *o, double *p)
 {
@@ -170,7 +193,9 @@ ay_extrude_getpntcb(int mode, ay_object *o, double *p)
 } /* ay_extrude_getpntcb */
 
 
-/* Tcl -> C! */
+/* ay_extrude_setpropcb:
+ *  set property (from Tcl to C context) callback function of extrude object
+ */
 int
 ay_extrude_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -221,7 +246,9 @@ ay_extrude_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_extrude_setpropcb */
 
 
-/* C -> Tcl! */
+/* ay_extrude_getpropcb:
+ *  get property (from C to Tcl context) callback function of extrude object
+ */
 int
 ay_extrude_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -270,6 +297,9 @@ ay_extrude_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_extrude_getpropcb */
 
 
+/* ay_extrude_readcb:
+ *  read (from scene file) callback function of extrude object
+ */
 int
 ay_extrude_readcb(FILE *fileptr, ay_object *o)
 {
@@ -326,6 +356,9 @@ ay_extrude_readcb(FILE *fileptr, ay_object *o)
 } /* ay_extrude_readcb */
 
 
+/* ay_extrude_writecb:
+ *  write (to scene file) callback function of extrude object
+ */
 int
 ay_extrude_writecb(FILE *fileptr, ay_object *o)
 {
@@ -359,6 +392,9 @@ ay_extrude_writecb(FILE *fileptr, ay_object *o)
 } /* ay_extrude_writecb */
 
 
+/* ay_extrude_wribcb:
+ *  RIB export callback function of extrude object
+ */
 int
 ay_extrude_wribcb(char *file, ay_object *o)
 {
@@ -388,6 +424,9 @@ ay_extrude_wribcb(char *file, ay_object *o)
 } /* ay_extrude_wribcb */
 
 
+/* ay_extrude_bbccb:
+ *  bounding box calculation callback function of extrude object
+ */
 int
 ay_extrude_bbccb(ay_object *o, double *bbox, int *flags)
 {
@@ -421,6 +460,9 @@ ay_extrude_bbccb(ay_object *o, double *bbox, int *flags)
 } /* ay_extrude_bbccb */
 
 
+/* ay_extrude_notifycb:
+ *  notification callback function of extrude object
+ */
 int
 ay_extrude_notifycb(ay_object *o)
 {
@@ -868,6 +910,9 @@ ay_extrude_notifycb(ay_object *o)
 } /* ay_extrude_notifycb */
 
 
+/* ay_extrude_providecb:
+ *  provide callback function of extrude object
+ */
 int
 ay_extrude_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
@@ -932,6 +977,9 @@ ay_extrude_providecb(ay_object *o, unsigned int type, ay_object **result)
 } /* ay_extrude_providecb */
 
 
+/* ay_extrude_convertcb:
+ *  convert callback function of extrude object
+ */
 int
 ay_extrude_convertcb(ay_object *o, int in_place)
 {
@@ -1040,6 +1088,9 @@ ay_extrude_convertcb(ay_object *o, int in_place)
 } /* ay_extrude_convertcb */
 
 
+/* ay_extrude_init:
+ *  initialize the extrude object module
+ */
 int
 ay_extrude_init(Tcl_Interp *interp)
 {
