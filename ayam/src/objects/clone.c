@@ -16,6 +16,11 @@
 
 static char *ay_clone_name = "Clone";
 
+/* functions: */
+
+/* ay_clone_createcb:
+ *  create callback function of clone object
+ */
 int
 ay_clone_createcb(int argc, char *argv[], ay_object *o)
 {
@@ -53,6 +58,9 @@ ay_clone_createcb(int argc, char *argv[], ay_object *o)
 } /* ay_clone_createcb */
 
 
+/* ay_clone_deletecb:
+ *  delete callback function of clone object
+ */
 int
 ay_clone_deletecb(void *c)
 {
@@ -77,6 +85,9 @@ ay_clone_deletecb(void *c)
 } /* ay_clone_deletecb */
 
 
+/* ay_clone_copycb:
+ *  copy callback function of clone object
+ */
 int
 ay_clone_copycb(void *src, void **dst)
 {
@@ -100,6 +111,9 @@ ay_clone_copycb(void *src, void **dst)
 } /* ay_clone_copycb */
 
 
+/* ay_clone_drawcb:
+ *  draw (display in an Ayam view window) callback function of clone object
+ */
 int
 ay_clone_drawcb(struct Togl *togl, ay_object *o)
 {
@@ -122,6 +136,9 @@ ay_clone_drawcb(struct Togl *togl, ay_object *o)
 } /* ay_clone_drawcb */
 
 
+/* ay_clone_shadecb:
+ *  shade (display in an Ayam view window) callback function of clone object
+ */
 int
 ay_clone_shadecb(struct Togl *togl, ay_object *o)
 {
@@ -144,6 +161,9 @@ ay_clone_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_clone_shadecb */
 
 
+/* ay_clone_drawhcb:
+ *  draw handles (in an Ayam view window) callback function of clone object
+ */
 int
 ay_clone_drawhcb(struct Togl *togl, ay_object *o)
 {
@@ -152,6 +172,9 @@ ay_clone_drawhcb(struct Togl *togl, ay_object *o)
 } /* ay_clone_drawhcb */
 
 
+/* ay_clone_getpntcb:
+ *  get point (editing and selection) callback function of clone object
+ */
 int
 ay_clone_getpntcb(int mode, ay_object *o, double *p)
 {
@@ -160,7 +183,9 @@ ay_clone_getpntcb(int mode, ay_object *o, double *p)
 } /* ay_clone_getpntcb */
 
 
-/* Tcl -> C! */
+/* ay_clone_setpropcb:
+ *  set property (from Tcl to C context) callback function of clone object
+ */
 int
 ay_clone_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -304,7 +329,9 @@ ay_clone_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_clone_setpropcb */
 
 
-/* C -> Tcl! */
+/* ay_clone_getpropcb:
+ *  get property (from C to Tcl context) callback function of clone object
+ */
 int
 ay_clone_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -388,6 +415,9 @@ ay_clone_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_clone_getpropcb */
 
 
+/* ay_clone_readcb:
+ *  read (from scene file) callback function of clone object
+ */
 int
 ay_clone_readcb(FILE *fileptr, ay_object *o)
 {
@@ -434,6 +464,9 @@ ay_clone_readcb(FILE *fileptr, ay_object *o)
 } /* ay_clone_readcb */
 
 
+/* ay_clone_writecb:
+ *  write (to scene file) callback function of clone object
+ */
 int
 ay_clone_writecb(FILE *fileptr, ay_object *o)
 {
@@ -471,6 +504,9 @@ ay_clone_writecb(FILE *fileptr, ay_object *o)
 } /* ay_clone_writecb */
 
 
+/* ay_clone_wribcb:
+ *  RIB export callback function of clone object
+ */
 int
 ay_clone_wribcb(char *file, ay_object *o)
 {
@@ -498,6 +534,9 @@ ay_clone_wribcb(char *file, ay_object *o)
 } /* ay_clone_wribcb */
 
 
+/* ay_clone_bbccb:
+ *  bounding box calculation callback function of clone object
+ */
 int
 ay_clone_bbccb(ay_object *o, double *bbox, int *flags)
 {
@@ -581,6 +620,9 @@ ay_clone_bbccb(ay_object *o, double *bbox, int *flags)
 } /* ay_clone_bbccb */
 
 
+/* ay_clone_notifycb:
+ *  notification callback function of clone object
+ */
 int
 ay_clone_notifycb(ay_object *o)
 {
@@ -820,6 +862,9 @@ ay_clone_notifycb(ay_object *o)
 } /* ay_clone_notifycb */
 
 
+/* ay_clone_convertcb:
+ *  convert callback function of clone object
+ */
 int
 ay_clone_convertcb(ay_object *o, int in_place)
 {
@@ -929,6 +974,9 @@ ay_clone_convertcb(ay_object *o, int in_place)
 } /* ay_clone_convertcb */
 
 
+/* ay_clone_providecb:
+ *  provide callback function of clone object
+ */
 int
 ay_clone_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
@@ -1024,6 +1072,9 @@ ay_clone_providecb(ay_object *o, unsigned int type, ay_object **result)
 } /* ay_clone_providecb */
 
 
+/* ay_clone_init:
+ *  initialize the clone object module
+ */
 int
 ay_clone_init(Tcl_Interp *interp)
 {

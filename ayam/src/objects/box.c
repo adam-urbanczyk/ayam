@@ -16,6 +16,8 @@
 
 static char *ay_box_name = "Box";
 
+/* functions: */
+
 /* ay_box_createcb:
  *  create callback function of box object
  */
