@@ -16,6 +16,11 @@
 
 static char *ay_disk_name = "Disk";
 
+/* functions: */
+
+/* ay_disk_createcb:
+ *  create callback function of disk object
+ */
 int
 ay_disk_createcb(int argc, char *argv[], ay_object *o)
 {
@@ -42,6 +47,9 @@ ay_disk_createcb(int argc, char *argv[], ay_object *o)
 } /* ay_disk_createcb */
 
 
+/* ay_disk_deletecb:
+ *  delete callback function of disk object
+ */
 int
 ay_disk_deletecb(void *c)
 {
@@ -58,6 +66,9 @@ ay_disk_deletecb(void *c)
 } /* ay_disk_deletecb */
 
 
+/* ay_disk_copycb:
+ *  copy callback function of disk object
+ */
 int
 ay_disk_copycb(void *src, void **dst)
 {
@@ -77,6 +88,9 @@ ay_disk_copycb(void *src, void **dst)
 } /* ay_disk_copycb */
 
 
+/* ay_disk_drawcb:
+ *  draw (display in an Ayam view window) callback function of disk object
+ */
 int
 ay_disk_drawcb(struct Togl *togl, ay_object *o)
 {
@@ -145,6 +159,9 @@ ay_disk_drawcb(struct Togl *togl, ay_object *o)
 } /* ay_disk_drawcb */
 
 
+/* ay_disk_shadecb:
+ *  shade (display in an Ayam view window) callback function of disk object
+ */
 int
 ay_disk_shadecb(struct Togl *togl, ay_object *o)
 {
@@ -186,7 +203,9 @@ ay_disk_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_disk_shadecb */
 
 
-/* Tcl -> C! */
+/* ay_disk_setpropcb:
+ *  set property (from Tcl to C context) callback function of disk object
+ */
 int
 ay_disk_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -235,7 +254,9 @@ ay_disk_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_disk_setpropcb */
 
 
-/* C -> Tcl! */
+/* ay_disk_getpropcb:
+ *  get property (from C to Tcl context) callback function of disk object
+ */
 int
 ay_disk_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -271,6 +292,9 @@ ay_disk_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_disk_getpropcb */
 
 
+/* ay_disk_readcb:
+ *  read (from scene file) callback function of disk object
+ */
 int
 ay_disk_readcb(FILE *fileptr, ay_object *o)
 {
@@ -301,6 +325,9 @@ ay_disk_readcb(FILE *fileptr, ay_object *o)
 } /* ay_disk_readcb */
 
 
+/* ay_disk_writecb:
+ *  write (to scene file) callback function of disk object
+ */
 int
 ay_disk_writecb(FILE *fileptr, ay_object *o)
 {
@@ -319,6 +346,9 @@ ay_disk_writecb(FILE *fileptr, ay_object *o)
 } /* ay_disk_writecb */
 
 
+/* ay_disk_wribcb:
+ *  RIB export callback function of disk object
+ */
 int
 ay_disk_wribcb(char *file, ay_object *o)
 {
@@ -338,6 +368,9 @@ ay_disk_wribcb(char *file, ay_object *o)
 } /* ay_disk_wribcb */
 
 
+/* ay_disk_bbccb:
+ *  bounding box calculation callback function of disk object
+ */
 int
 ay_disk_bbccb(ay_object *o, double *bbox, int *flags)
 {
@@ -376,6 +409,9 @@ ay_disk_bbccb(ay_object *o, double *bbox, int *flags)
 } /* ay_disk_bbccb */
 
 
+/* ay_disk_providecb:
+ *  provide callback function of disk object
+ */
 int
 ay_disk_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
@@ -497,6 +533,9 @@ cleanup:
 } /* ay_disk_providecb */
 
 
+/* ay_disk_convertcb:
+ *  convert callback function of disk object
+ */
 int
 ay_disk_convertcb(ay_object *o, int in_place)
 {
@@ -529,6 +568,9 @@ ay_disk_convertcb(ay_object *o, int in_place)
 } /* ay_disk_convertcb */
 
 
+/* ay_disk_init:
+ *  initialize the disk object module
+ */
 int
 ay_disk_init(Tcl_Interp *interp)
 {
