@@ -16,6 +16,11 @@
 
 static char *ay_sdmesh_name = "SDMesh";
 
+/* functions: */
+
+/* ay_sdmesh_createcb:
+ *  create callback function of sdmesh object
+ */
 int
 ay_sdmesh_createcb(int argc, char *argv[], ay_object *o)
 {
@@ -32,6 +37,9 @@ ay_sdmesh_createcb(int argc, char *argv[], ay_object *o)
 } /* ay_sdmesh_createcb */
 
 
+/* ay_sdmesh_deletecb:
+ *  delete callback function of sdmesh object
+ */
 int
 ay_sdmesh_deletecb(void *c)
 {
@@ -70,6 +78,9 @@ ay_sdmesh_deletecb(void *c)
 } /* ay_sdmesh_deletecb */
 
 
+/* ay_sdmesh_copycb:
+ *  copy callback function of sdmesh object
+ */
 int
 ay_sdmesh_copycb(void *src, void **dst)
 {
@@ -163,6 +174,9 @@ ay_sdmesh_copycb(void *src, void **dst)
 } /* ay_sdmesh_copycb */
 
 
+/* ay_sdmesh_drawcb:
+ *  draw (display in an Ayam view window) callback function of sdmesh object
+ */
 int
 ay_sdmesh_drawcb(struct Togl *togl, ay_object *o)
 {
@@ -191,6 +205,9 @@ ay_sdmesh_drawcb(struct Togl *togl, ay_object *o)
 } /* ay_sdmesh_drawcb */
 
 
+/* ay_sdmesh_shadecb:
+ *  shade (display in an Ayam view window) callback function of sdmesh object
+ */
 int
 ay_sdmesh_shadecb(struct Togl *togl, ay_object *o)
 {
@@ -209,6 +226,9 @@ ay_sdmesh_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_sdmesh_shadecb */
 
 
+/* ay_sdmesh_drawhcb:
+ *  draw handles (in an Ayam view window) callback function of sdmesh object
+ */
 int
 ay_sdmesh_drawhcb(struct Togl *togl, ay_object *o)
 {
@@ -238,6 +258,9 @@ ay_sdmesh_drawhcb(struct Togl *togl, ay_object *o)
 } /* ay_sdmesh_drawhcb */
 
 
+/* ay_sdmesh_getpntcb:
+ *  get point (editing and selection) callback function of sdmesh object
+ */
 int
 ay_sdmesh_getpntcb(int mode, ay_object *o, double *p)
 {
@@ -370,7 +393,9 @@ ay_sdmesh_getpntcb(int mode, ay_object *o, double *p)
 } /* ay_sdmesh_getpntcb */
 
 
-/* Tcl -> C! */
+/* ay_sdmesh_setpropcb:
+ *  set property (from Tcl to C context) callback function of sdmesh object
+ */
 int
 ay_sdmesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -405,7 +430,9 @@ ay_sdmesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_sdmesh_setpropcb */
 
 
-/* C -> Tcl! */
+/* ay_sdmesh_getpropcb:
+ *  get property (from C to Tcl context) callback function of sdmesh object
+ */
 int
 ay_sdmesh_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -445,6 +472,9 @@ ay_sdmesh_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_sdmesh_getpropcb */
 
 
+/* ay_sdmesh_readcb:
+ *  read (from scene file) callback function of sdmesh object
+ */
 int
 ay_sdmesh_readcb(FILE *fileptr, ay_object *o)
 {
@@ -534,6 +564,9 @@ ay_sdmesh_readcb(FILE *fileptr, ay_object *o)
 } /* ay_sdmesh_readcb */
 
 
+/* ay_sdmesh_writecb:
+ *  write (to scene file) callback function of sdmesh object
+ */
 int
 ay_sdmesh_writecb(FILE *fileptr, ay_object *o)
 {
@@ -611,6 +644,9 @@ ay_sdmesh_writecb(FILE *fileptr, ay_object *o)
 } /* ay_sdmesh_writecb */
 
 
+/* ay_sdmesh_wribcb:
+ *  RIB export callback function of sdmesh object
+ */
 int
 ay_sdmesh_wribcb(char *file, ay_object *o)
 {
@@ -823,6 +859,9 @@ ay_sdmesh_wribcb(char *file, ay_object *o)
 } /* ay_sdmesh_wribcb */
 
 
+/* ay_sdmesh_bbccb:
+ *  bounding box calculation callback function of sdmesh object
+ */
 int
 ay_sdmesh_bbccb(ay_object *o, double *bbox, int *flags)
 {
@@ -888,6 +927,9 @@ ay_sdmesh_bbccb(ay_object *o, double *bbox, int *flags)
 } /* ay_sdmesh_bbccb */
 
 
+/* ay_sdmesh_notifycb:
+ *  notification callback function of sdmesh object
+ */
 int
 ay_sdmesh_notifycb(ay_object *o)
 {
@@ -897,6 +939,9 @@ ay_sdmesh_notifycb(ay_object *o)
 } /* ay_sdmesh_notifycb */
 
 
+/* ay_sdmesh_convertcb:
+ *  convert callback function of sdmesh object
+ */
 int
 ay_sdmesh_convertcb(ay_object *o, int in_place)
 {
@@ -936,6 +981,9 @@ ay_sdmesh_convertcb(ay_object *o, int in_place)
 } /* ay_sdmesh_convertcb */
 
 
+/* ay_sdmesh_init:
+ *  initialize the sdmesh object module
+ */
 int
 ay_sdmesh_init(Tcl_Interp *interp)
 {

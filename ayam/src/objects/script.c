@@ -21,6 +21,11 @@
 
 static char *ay_script_name = "Script";
 
+/* functions: */
+
+/* ay_script_createcb:
+ *  create callback function of script object
+ */
 int
 ay_script_createcb(int argc, char *argv[], ay_object *o)
 {
@@ -45,6 +50,9 @@ ay_script_createcb(int argc, char *argv[], ay_object *o)
 } /* ay_script_createcb */
 
 
+/* ay_script_deletecb:
+ *  delete callback function of script object
+ */
 int
 ay_script_deletecb(void *c)
 {
@@ -75,6 +83,9 @@ ay_script_deletecb(void *c)
 } /* ay_script_deletecb */
 
 
+/* ay_script_copycb:
+ *  copy callback function of script object
+ */
 int
 ay_script_copycb(void *src, void **dst)
 {
@@ -111,6 +122,9 @@ ay_script_copycb(void *src, void **dst)
 } /* ay_script_copycb */
 
 
+/* ay_script_drawcb:
+ *  draw (display in an Ayam view window) callback function of script object
+ */
 int
 ay_script_drawcb(struct Togl *togl, ay_object *o)
 {
@@ -147,6 +161,9 @@ ay_script_drawcb(struct Togl *togl, ay_object *o)
 } /* ay_script_drawcb */
 
 
+/* ay_script_shadecb:
+ *  shade (display in an Ayam view window) callback function of script object
+ */
 int
 ay_script_shadecb(struct Togl *togl, ay_object *o)
 {
@@ -183,6 +200,9 @@ ay_script_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_script_shadecb */
 
 
+/* ay_script_drawhcb:
+ *  draw handles (in an Ayam view window) callback function of script object
+ */
 int
 ay_script_drawhcb(struct Togl *togl, ay_object *o)
 {
@@ -191,6 +211,9 @@ ay_script_drawhcb(struct Togl *togl, ay_object *o)
 } /* ay_script_drawhcb */
 
 
+/* ay_script_getpntcb:
+ *  get point (editing and selection) callback function of script object
+ */
 int
 ay_script_getpntcb(int mode, ay_object *o, double *p)
 {
@@ -199,7 +222,9 @@ ay_script_getpntcb(int mode, ay_object *o, double *p)
 } /* ay_script_getpntcb */
 
 
-/* Tcl -> C! */
+/* ay_script_setpropcb:
+ *  set property (from Tcl to C context) callback function of script object
+ */
 int
 ay_script_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -291,7 +316,9 @@ ay_script_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_script_setpropcb */
 
 
-/* C -> Tcl! */
+/* ay_script_getpropcb:
+ *  get property (from C to Tcl context) callback function of script object
+ */
 int
 ay_script_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -333,6 +360,9 @@ ay_script_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_script_getpropcb */
 
 
+/* ay_script_readcb:
+ *  read (from scene file) callback function of script object
+ */
 int
 ay_script_readcb(FILE *fileptr, ay_object *o)
 {
@@ -438,6 +468,9 @@ ay_script_readcb(FILE *fileptr, ay_object *o)
 } /* ay_script_readcb */
 
 
+/* ay_script_writecb:
+ *  write (to scene file) callback function of script object
+ */
 int
 ay_script_writecb(FILE *fileptr, ay_object *o)
 {
@@ -516,6 +549,9 @@ ay_script_writecb(FILE *fileptr, ay_object *o)
 } /* ay_script_writecb */
 
 
+/* ay_script_wribcb:
+ *  RIB export callback function of script object
+ */
 int
 ay_script_wribcb(char *file, ay_object *o)
 {
@@ -549,6 +585,9 @@ ay_script_wribcb(char *file, ay_object *o)
 } /* ay_script_wribcb */
 
 
+/* ay_script_bbccb:
+ *  bounding box calculation callback function of script object
+ */
 int
 ay_script_bbccb(ay_object *o, double *bbox, int *flags)
 {
@@ -647,6 +686,9 @@ ay_script_bbccb(ay_object *o, double *bbox, int *flags)
 } /* ay_script_bbccb */
 
 
+/* ay_script_notifycb:
+ *  notification callback function of script object
+ */
 int
 ay_script_notifycb(ay_object *o)
 {
@@ -842,6 +884,9 @@ ay_script_notifycb(ay_object *o)
 } /* ay_script_notifycb */
 
 
+/* ay_script_convertcb:
+ *  convert callback function of script object
+ */
 int
 ay_script_convertcb(ay_object *o, int in_place)
 {
@@ -938,6 +983,9 @@ ay_script_convertcb(ay_object *o, int in_place)
 } /* ay_script_convertcb */
 
 
+/* ay_script_providecb:
+ *  provide callback function of script object
+ */
 int
 ay_script_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
@@ -985,6 +1033,9 @@ ay_script_providecb(ay_object *o, unsigned int type, ay_object **result)
 } /* ay_script_providecb */
 
 
+/* ay_script_init:
+ *  initialize the script object module
+ */
 int
 ay_script_init(Tcl_Interp *interp)
 {
@@ -1013,6 +1064,7 @@ ay_script_init(Tcl_Interp *interp)
 
   ay_status = ay_provide_register(ay_script_providecb, AY_IDSCRIPT);
 
+  /* script objects may not be associated with materials */
   ay_matt_nomaterial(AY_IDSCRIPT);
 
  return ay_status;
