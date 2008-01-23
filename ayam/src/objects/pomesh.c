@@ -16,6 +16,11 @@
 
 static char *ay_pomesh_name = "PolyMesh";
 
+/* functions: */
+
+/* ay_pomesh_createcb:
+ *  create callback function of pomesh object
+ */
 int
 ay_pomesh_createcb(int argc, char *argv[], ay_object *o)
 {
@@ -32,6 +37,9 @@ ay_pomesh_createcb(int argc, char *argv[], ay_object *o)
 } /* ay_pomesh_createcb */
 
 
+/* ay_pomesh_deletecb:
+ *  delete callback function of pomesh object
+ */
 int
 ay_pomesh_deletecb(void *c)
 {
@@ -64,6 +72,9 @@ ay_pomesh_deletecb(void *c)
 } /* ay_pomesh_deletecb */
 
 
+/* ay_pomesh_copycb:
+ *  copy callback function of pomesh object
+ */
 int
 ay_pomesh_copycb(void *src, void **dst)
 {
@@ -144,6 +155,9 @@ ay_pomesh_copycb(void *src, void **dst)
 } /* ay_pomesh_copycb */
 
 
+/* ay_pomesh_drawcb:
+ *  draw (display in an Ayam view window) callback function of pomesh object
+ */
 int
 ay_pomesh_drawcb(struct Togl *togl, ay_object *o)
 {
@@ -181,6 +195,10 @@ ay_pomesh_drawcb(struct Togl *togl, ay_object *o)
  return AY_OK;
 } /* ay_pomesh_drawcb */
 
+
+/* ay_pomesh_shadecb:
+ *  shade (display in an Ayam view window) callback function of pomesh object
+ */
 int
 ay_pomesh_shadecb(struct Togl *togl, ay_object *o)
 {
@@ -205,6 +223,9 @@ ay_pomesh_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_pomesh_shadecb */
 
 
+/* ay_pomesh_drawhcb:
+ *  draw handles (in an Ayam view window) callback function of pomesh object
+ */
 int
 ay_pomesh_drawhcb(struct Togl *togl, ay_object *o)
 {
@@ -240,6 +261,9 @@ ay_pomesh_drawhcb(struct Togl *togl, ay_object *o)
 } /* ay_pomesh_drawhcb */
 
 
+/* ay_pomesh_getpntcb:
+ *  get point (editing and selection) callback function of pomesh object
+ */
 int
 ay_pomesh_getpntcb(int mode, ay_object *o, double *p)
 {
@@ -378,7 +402,9 @@ ay_pomesh_getpntcb(int mode, ay_object *o, double *p)
 } /* ay_pomesh_getpntcb */
 
 
-/* Tcl -> C! */
+/* ay_pomesh_setpropcb:
+ *  set property (from Tcl to C context) callback function of pomesh object
+ */
 int
 ay_pomesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -413,7 +439,9 @@ ay_pomesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_pomesh_setpropcb */
 
 
-/* C -> Tcl! */
+/* ay_pomesh_getpropcb:
+ *  get property (from C to Tcl context) callback function of pomesh object
+ */
 int
 ay_pomesh_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -458,6 +486,9 @@ ay_pomesh_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_pomesh_getpropcb */
 
 
+/* ay_pomesh_readcb:
+ *  read (from scene file) callback function of pomesh object
+ */
 int
 ay_pomesh_readcb(FILE *fileptr, ay_object *o)
 {
@@ -537,6 +568,9 @@ ay_pomesh_readcb(FILE *fileptr, ay_object *o)
 } /* ay_pomesh_readcb */
 
 
+/* ay_pomesh_writecb:
+ *  write (to scene file) callback function of pomesh object
+ */
 int
 ay_pomesh_writecb(FILE *fileptr, ay_object *o)
 {
@@ -605,6 +639,9 @@ ay_pomesh_writecb(FILE *fileptr, ay_object *o)
 } /* ay_pomesh_writecb */
 
 
+/* ay_pomesh_wribcb:
+ *  RIB export callback function of pomesh object
+ */
 int
 ay_pomesh_wribcb(char *file, ay_object *o)
 {
@@ -772,6 +809,9 @@ ay_pomesh_wribcb(char *file, ay_object *o)
 } /* ay_pomesh_wribcb */
 
 
+/* ay_pomesh_bbccb:
+ *  bounding box calculation callback function of pomesh object
+ */
 int
 ay_pomesh_bbccb(ay_object *o, double *bbox, int *flags)
 {
@@ -843,6 +883,9 @@ ay_pomesh_bbccb(ay_object *o, double *bbox, int *flags)
 } /* ay_pomesh_bbccb */
 
 
+/* ay_pomesh_notifycb:
+ *  notification callback function of pomesh object
+ */
 int
 ay_pomesh_notifycb(ay_object *o)
 {
@@ -852,6 +895,9 @@ ay_pomesh_notifycb(ay_object *o)
 } /* ay_pomesh_notifycb */
 
 
+/* ay_pomesh_convertcb:
+ *  convert callback function of pomesh object
+ */
 int
 ay_pomesh_convertcb(ay_object *o, int in_place)
 {
@@ -891,6 +937,9 @@ ay_pomesh_convertcb(ay_object *o, int in_place)
 } /* ay_pomesh_convertcb */
 
 
+/* ay_pomesh_init:
+ *  initialize the pomesh object module
+ */
 int
 ay_pomesh_init(Tcl_Interp *interp)
 {
