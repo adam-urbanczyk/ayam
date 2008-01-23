@@ -16,6 +16,11 @@
 
 static char *ay_revolve_name = "Revolve";
 
+/* functions: */
+
+/* ay_revolve_createcb:
+ *  create callback function of revolve object
+ */
 int
 ay_revolve_createcb(int argc, char *argv[], ay_object *o)
 {
@@ -40,6 +45,9 @@ ay_revolve_createcb(int argc, char *argv[], ay_object *o)
 } /* ay_revolve_createcb */
 
 
+/* ay_revolve_deletecb:
+ *  delete callback function of revolve object
+ */
 int
 ay_revolve_deletecb(void *c)
 {
@@ -71,6 +79,9 @@ ay_revolve_deletecb(void *c)
 } /* ay_revolve_deletecb */
 
 
+/* ay_revolve_copycb:
+ *  copy callback function of revolve object
+ */
 int
 ay_revolve_copycb(void *src, void **dst)
 {
@@ -109,6 +120,9 @@ ay_revolve_copycb(void *src, void **dst)
 } /* ay_revolve_copycb */
 
 
+/* ay_revolve_drawcb:
+ *  draw (display in an Ayam view window) callback function of revolve object
+ */
 int
 ay_revolve_drawcb(struct Togl *togl, ay_object *o)
 {
@@ -141,6 +155,9 @@ ay_revolve_drawcb(struct Togl *togl, ay_object *o)
 } /* ay_revolve_drawcb */
 
 
+/* ay_revolve_shadecb:
+ *  shade (display in an Ayam view window) callback function of revolve object
+ */
 int
 ay_revolve_shadecb(struct Togl *togl, ay_object *o)
 {
@@ -173,6 +190,9 @@ ay_revolve_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_revolve_shadecb */
 
 
+/* ay_revolve_drawhcb:
+ *  draw handles (in an Ayam view window) callback function of revolve object
+ */
 int
 ay_revolve_drawhcb(struct Togl *togl, ay_object *o)
 {
@@ -181,6 +201,9 @@ ay_revolve_drawhcb(struct Togl *togl, ay_object *o)
 } /* ay_revolve_drawhcb */
 
 
+/* ay_revolve_getpntcb:
+ *  get point (editing and selection) callback function of revolve object
+ */
 int
 ay_revolve_getpntcb(int mode, ay_object *o, double *p)
 {
@@ -189,7 +212,9 @@ ay_revolve_getpntcb(int mode, ay_object *o, double *p)
 } /* ay_revolve_getpntcb */
 
 
-/* Tcl -> C! */
+/* ay_revolve_setpropcb:
+ *  set property (from Tcl to C context) callback function of revolve object
+ */
 int
 ay_revolve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -256,7 +281,9 @@ ay_revolve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_revolve_setpropcb */
 
 
-/* C -> Tcl! */
+/* ay_revolve_getpropcb:
+ *  get property (from C to Tcl context) callback function of revolve object
+ */
 int
 ay_revolve_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -325,6 +352,9 @@ ay_revolve_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_revolve_getpropcb */
 
 
+/* ay_revolve_readcb:
+ *  read (from scene file) callback function of revolve object
+ */
 int
 ay_revolve_readcb(FILE *fileptr, ay_object *o)
 {
@@ -355,6 +385,9 @@ ay_revolve_readcb(FILE *fileptr, ay_object *o)
 } /* ay_revolve_readcb */
 
 
+/* ay_revolve_writecb:
+ *  write (to scene file) callback function of revolve object
+ */
 int
 ay_revolve_writecb(FILE *fileptr, ay_object *o)
 {
@@ -379,6 +412,9 @@ ay_revolve_writecb(FILE *fileptr, ay_object *o)
 } /* ay_revolve_writecb */
 
 
+/* ay_revolve_wribcb:
+ *  RIB export callback function of revolve object
+ */
 int
 ay_revolve_wribcb(char *file, ay_object *o)
 {
@@ -408,6 +444,9 @@ ay_revolve_wribcb(char *file, ay_object *o)
 } /* ay_revolve_wribcb */
 
 
+/* ay_revolve_bbccb:
+ *  bounding box calculation callback function of revolve object
+ */
 int
 ay_revolve_bbccb(ay_object *o, double *bbox, int *flags)
 {
@@ -919,6 +958,9 @@ ay_revolve_crtside(ay_revolve_object *revolve, ay_object *curve, double th,
 } /* ay_revolve_crtside */
 
 
+/* ay_revolve_notifycb:
+ *  notification callback function of revolve object
+ */
 int
 ay_revolve_notifycb(ay_object *o)
 {
@@ -1043,6 +1085,9 @@ ay_revolve_notifycb(ay_object *o)
 } /* ay_revolve_notifycb */
 
 
+/* ay_revolve_providecb:
+ *  provide callback function of revolve object
+ */
 int
 ay_revolve_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
@@ -1145,6 +1190,10 @@ ay_revolve_providecb(ay_object *o, unsigned int type, ay_object **result)
  return ay_status;
 } /* ay_revolve_providecb */
 
+
+/* ay_revolve_convertcb:
+ *  convert callback function of revolve object
+ */
 int
 ay_revolve_convertcb(ay_object *o, int in_place)
 {
@@ -1255,6 +1304,9 @@ ay_revolve_convertcb(ay_object *o, int in_place)
 } /* ay_revolve_convertcb */
 
 
+/* ay_revolve_init:
+ *  initialize the revolve object module
+ */
 int
 ay_revolve_init(Tcl_Interp *interp)
 {
