@@ -16,6 +16,11 @@
 
 static char *ay_riinc_name = "RiInc";
 
+/* functions: */
+
+/* ay_riinc_createcb:
+ *  create callback function of riinc object
+ */
 int
 ay_riinc_createcb(int argc, char *argv[], ay_object *o)
 {
@@ -41,6 +46,9 @@ ay_riinc_createcb(int argc, char *argv[], ay_object *o)
 } /* ay_riinc_createcb */
 
 
+/* ay_riinc_deletecb:
+ *  delete callback function of riinc object
+ */
 int
 ay_riinc_deletecb(void *c)
 {
@@ -60,6 +68,9 @@ ay_riinc_deletecb(void *c)
 } /* ay_riinc_deletecb */
 
 
+/* ay_riinc_copycb:
+ *  copy callback function of riinc object
+ */
 int
 ay_riinc_copycb(void *src, void **dst)
 {
@@ -94,6 +105,9 @@ ay_riinc_copycb(void *src, void **dst)
 } /* ay_riinc_copycb */
 
 
+/* ay_riinc_drawcb:
+ *  draw (display in an Ayam view window) callback function of riinc object
+ */
 int
 ay_riinc_drawcb(struct Togl *togl, ay_object *o)
 {
@@ -139,6 +153,9 @@ ay_riinc_drawcb(struct Togl *togl, ay_object *o)
 } /* ay_riinc_drawcb */
 
 
+/* ay_riinc_shadecb:
+ *  shade (display in an Ayam view window) callback function of riinc object
+ */
 int
 ay_riinc_shadecb(struct Togl *togl, ay_object *o)
 {
@@ -156,7 +173,9 @@ ay_riinc_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_riinc_shadecb */
 
 
-/* Tcl -> C! */
+/* ay_riinc_setpropcb:
+ *  set property (from Tcl to C context) callback function of riinc object
+ */
 int
 ay_riinc_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -214,7 +233,9 @@ ay_riinc_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_riinc_setpropcb */
 
 
-/* C -> Tcl! */
+/* ay_riinc_getpropcb:
+ *  get property (from C to Tcl context) callback function of riinc object
+ */
 int
 ay_riinc_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -253,6 +274,9 @@ ay_riinc_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_riinc_getpropcb */
 
 
+/* ay_riinc_readcb:
+ *  read (from scene file) callback function of riinc object
+ */
 int
 ay_riinc_readcb(FILE *fileptr, ay_object *o)
 {
@@ -279,6 +303,9 @@ ay_riinc_readcb(FILE *fileptr, ay_object *o)
 } /* ay_riinc_readcb */
 
 
+/* ay_riinc_writecb:
+ *  write (to scene file) callback function of riinc object
+ */
 int
 ay_riinc_writecb(FILE *fileptr, ay_object *o)
 {
@@ -298,6 +325,9 @@ ay_riinc_writecb(FILE *fileptr, ay_object *o)
 } /* ay_riinc_writecb */
 
 
+/* ay_riinc_wribcb:
+ *  RIB export callback function of riinc object
+ */
 int
 ay_riinc_wribcb(char *file, ay_object *o)
 {
@@ -318,6 +348,9 @@ ay_riinc_wribcb(char *file, ay_object *o)
 } /* ay_riinc_wribcb */
 
 
+/* ay_riinc_bbccb:
+ *  bounding box calculation callback function of riinc object
+ */
 int
 ay_riinc_bbccb(ay_object *o, double *bbox, int *flags)
 {
@@ -355,6 +388,9 @@ ay_riinc_bbccb(ay_object *o, double *bbox, int *flags)
 } /* ay_riinc_bbccb */
 
 
+/* ay_riinc_init:
+ *  initialize the riinc object module
+ */
 int
 ay_riinc_init(Tcl_Interp *interp)
 {
