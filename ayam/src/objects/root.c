@@ -16,6 +16,11 @@
 
 static char *ay_root_name = "Root";
 
+/* functions: */
+
+/* ay_root_createcb:
+ *  create callback function of root object
+ */
 int
 ay_root_createcb(int argc, char *argv[], ay_object *o)
 {
@@ -76,6 +81,9 @@ ay_root_createcb(int argc, char *argv[], ay_object *o)
 } /* ay_root_createcb */
 
 
+/* ay_root_deletecb:
+ *  delete callback function of root object
+ */
 int
 ay_root_deletecb(void *c)
 {
@@ -115,6 +123,9 @@ ay_root_deletecb(void *c)
 } /* ay_root_deletecb */
 
 
+/* ay_root_copycb:
+ *  copy callback function of root object
+ */
 int
 ay_root_copycb(void *src, void **dst)
 {
@@ -126,6 +137,9 @@ ay_root_copycb(void *src, void **dst)
 } /* ay_root_copycb */
 
 
+/* ay_root_drawcb:
+ *  draw (display in an Ayam view window) callback function of root object
+ */
 int
 ay_root_drawcb(struct Togl *togl, ay_object *o)
 {
@@ -143,6 +157,9 @@ ay_root_drawcb(struct Togl *togl, ay_object *o)
 } /* ay_root_drawcb */
 
 
+/* ay_root_drawhcb:
+ *  draw handles (in an Ayam view window) callback function of root object
+ */
 int
 ay_root_drawhcb(struct Togl *togl, ay_object *o)
 {
@@ -153,6 +170,9 @@ ay_root_drawhcb(struct Togl *togl, ay_object *o)
 } /* ay_root_drawhcb */
 
 
+/* ay_root_shadecb:
+ *  shade (display in an Ayam view window) callback function of root object
+ */
 int
 ay_root_shadecb(struct Togl *togl, ay_object *o)
 {
@@ -165,6 +185,9 @@ ay_root_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_root_shadecb */
 
 
+/* ay_root_getpntcb:
+ *  get point (editing and selection) callback function of root object
+ */
 int
 ay_root_getpntcb(int mode, ay_object *o, double *p)
 {
@@ -175,7 +198,9 @@ ay_root_getpntcb(int mode, ay_object *o, double *p)
 } /* ay_root_getpntcb */
 
 
-/* Tcl -> C! */
+/* ay_root_setpropcb:
+ *  set property (from Tcl to C context) callback function of root object
+ */
 int
 ay_root_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -367,7 +392,9 @@ ay_root_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_root_setpropcb */
 
 
-/* C -> Tcl! */
+/* ay_root_getpropcb:
+ *  get property (from C to Tcl context) callback function of root object
+ */
 int
 ay_root_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -508,6 +535,9 @@ ay_root_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_root_getpropcb */
 
 
+/* ay_root_readcb:
+ *  read (from scene file) callback function of root object
+ */
 int
 ay_root_readcb(FILE *fileptr, ay_object *o)
 {
@@ -667,6 +697,9 @@ ay_root_readcb(FILE *fileptr, ay_object *o)
 } /* ay_root_readcb */
 
 
+/* ay_root_writecb:
+ *  write (to scene file) callback function of root object
+ */
 int
 ay_root_writecb(FILE *fileptr, ay_object *o)
 {
@@ -760,6 +793,9 @@ ay_root_writecb(FILE *fileptr, ay_object *o)
 } /* ay_root_writecb */
 
 
+/* ay_root_wribcb:
+ *  RIB export callback function of root object
+ */
 int
 ay_root_wribcb(char *file, ay_object *o)
 {
@@ -879,6 +915,9 @@ ay_root_wribcb(char *file, ay_object *o)
 } /* ay_root_wribcb */
 
 
+/* ay_root_bbccb:
+ *  bounding box calculation callback function of root object
+ */
 int
 ay_root_bbccb(ay_object *o, double *bbox, int *flags)
 {
@@ -893,6 +932,9 @@ ay_root_bbccb(ay_object *o, double *bbox, int *flags)
 } /* ay_root_bbccb */
 
 
+/* ay_root_init:
+ *  initialize the root object module
+ */
 int
 ay_root_init(Tcl_Interp *interp)
 {
@@ -917,6 +959,7 @@ ay_root_init(Tcl_Interp *interp)
   Tcl_SetVar(interp, "propertyList", "RootAttr", TCL_APPEND_VALUE |
 	     TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
+  /* root objects may not be associated with materials */
   ay_matt_nomaterial(AY_IDROOT);
 
  return ay_status;
