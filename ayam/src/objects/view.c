@@ -345,6 +345,7 @@ ay_view_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  int width = 0, height = 0;
  char *n1 = "CameraData", *n2 = "ViewAttribData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ Tk_Window win;
 
   if(!o)
     return AY_ENULL;
@@ -353,9 +354,11 @@ ay_view_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   togl = view->togl;
   width = Togl_Width(togl);
   height = Togl_Height(togl);
+  win = Togl_TkWin(togl);
 
   toa = Tcl_NewStringObj(n1, -1);
 
+  /* fill CameraData array */
   ton = Tcl_NewStringObj("From_X", -1);
   to = Tcl_NewDoubleObj(view->from[0]);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -411,7 +414,11 @@ ay_view_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_NewDoubleObj(view->rotz);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton, "togl", -1);
+  to = Tcl_NewStringObj(Tk_PathName(win), -1);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
+  /* fill ViewAttribData array */
   Tcl_SetStringObj(toa, n2, -1);
   Tcl_SetStringObj(ton, "Type", -1);
   to = Tcl_NewIntObj(view->type);
@@ -473,6 +480,9 @@ ay_view_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_NewStringObj(view->bgimage, -1);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton, "togl", -1);
+  to = Tcl_NewStringObj(Tk_PathName(win), -1);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   Tcl_IncrRefCount(toa); Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton); Tcl_DecrRefCount(ton);

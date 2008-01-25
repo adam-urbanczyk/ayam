@@ -18,7 +18,6 @@ proc viewSetType { w type } {
     undo save ViewType
     set togl $w.f3D.togl
 
-    set w [winfo toplevel $togl]
     $togl mc
     switch $type {
 	0 {
@@ -189,6 +188,12 @@ proc viewUPos { } {
 proc viewTitle { w type action } {
     global ay
 
+    if { [string first ".view" $w] != 0 } {
+	# $w does not start with ".view" => view is internal, no title to set
+	return;
+    }
+
+    # guard against calling with sub-widget
     set w [winfo toplevel $w]
 
     set oldname [wm title $w]
@@ -444,7 +449,7 @@ proc viewOpen { width height {establish_bindings 1} {internal_view 0} } {
     set ay(cviewsema) 0
     update
 
-return;
+ return;
 }
 # viewOpen
 
@@ -458,7 +463,7 @@ proc viewDrop { w tree dropx dropy currentoperation datatype data } {
     $w drop
     after 100 "focus -force $w"
 
-return;
+ return;
 }
 # viewDrop
 
@@ -475,7 +480,11 @@ proc viewBind { w } {
 	    update
 	    set ay(cviewsema) 1
 	    update
-	    set w [winfo toplevel %W]
+	    if { [string first ".view" %W] == 0 } {
+		set w [winfo toplevel %W]
+	    } else {
+		set w %W
+	    }
 	    $w.f3D.togl mc
 	    set ay(currentView) $w.f3D.togl
 	    set ay(cviewsema) 0
@@ -485,7 +494,8 @@ proc viewBind { w } {
 
 	$w.f3D.togl configure -cursor left_ptr
 
-	if { $ayprefs(AutoFocus) == 1 } {
+	if { ($ayprefs(AutoFocus) == 1) && \
+	     ([string first ".view" %W] == 0) } {
 	    focus [winfo toplevel %W].f3D.togl
 	}
 	break;
@@ -498,7 +508,11 @@ proc viewBind { w } {
 	    update
 	    set ay(cviewsema) 1
 	    update
-	    set w [winfo toplevel %W]
+	    if { [string first ".view" %W] == 0 } {
+		set w [winfo toplevel %W]
+	    } else {
+		set w %W
+	    }
 	    $w.f3D.togl mc
 	    set ay(currentView) $w.f3D.togl
 	    set ay(cviewsema) 0
@@ -508,7 +522,8 @@ proc viewBind { w } {
 
 	$w.f3D.togl configure -cursor exchange
 
-	if { $ayprefs(AutoFocus) == 1 } {
+	if { ($ayprefs(AutoFocus) == 1) && \
+	     ([string first ".view" %W] == 0) } {
 	    focus [winfo toplevel %W].f3D.togl
 	}
     }
@@ -520,7 +535,11 @@ proc viewBind { w } {
 	    update
 	    set ay(cviewsema) 1
 	    update
-	    set w [winfo toplevel %W]
+	    if { [string first ".view" %W] == 0 } {
+		set w [winfo toplevel %W]
+	    } else {
+		set w %W
+	    }
 	    $w.f3D.togl mc
 	    set ay(currentView) $w.f3D.togl
 	    set ay(cviewsema) 0
@@ -536,7 +555,8 @@ proc viewBind { w } {
 	set ay(oldb1binding) [bind $w.f3D.togl <ButtonPress-${i}>]
 	set ay(oldb1rbinding) [bind $w.f3D.togl <ButtonRelease-${i}>]
 
-	if { $ayprefs(AutoFocus) == 1 } {
+	if { ($ayprefs(AutoFocus) == 1) && \
+	     ([string first ".view" %W] == 0) } {
 	    focus [winfo toplevel %W].f3D.togl
 	}
     }
@@ -593,6 +613,11 @@ proc viewCloseAll { } {
 proc viewClose { w } {
   global ay
 
+  if { [string first ".view" $w] != 0 } {
+      # $w does not start with ".view" => view is internal, can not close
+      return;
+  }
+
   set ay(draw) 0
   update
 
@@ -633,13 +658,13 @@ proc viewClose { w } {
 ##############################
 # setCameraAttr:
 proc setCameraAttr { } {
-    global ay
+    global ay CameraData
     set cw $ay(currentView)
     getName o
     getType t
-    if { $t == "View" } {
-	.${o}.f3D.togl mc
-    }
+
+    $CameraData(togl) mc
+
     setProp
 
     $ay(currentView) mc
@@ -655,23 +680,24 @@ proc setViewAttr { } {
 
     set cw $ay(currentView)
     getName o
-    .${o}.f3D.togl mc
+    
+    set togl $ViewAttribData(togl)
+
+    $togl mc
 
     if { $ViewAttribData(Width) != $pclip_reset(Width) ||
-    $ViewAttribData(Height) != $pclip_reset(Height) } {
-
-	.${o}.f3D.togl configure -width $ViewAttribData(Width)\
-		-height $ViewAttribData(Height)
+	 $ViewAttribData(Height) != $pclip_reset(Height) } {
+	$togl configure -width $ViewAttribData(Width)\
+	    -height $ViewAttribData(Height)
 	update
     }
     if { $ViewAttribData(Type) != $pclip_reset(Type) } {
 	#    setupActionKeys $w clear
-
 	set typename [lindex $ay(viewtypenames) $ViewAttribData(Type)]
-	viewTitle .${o} $typename Pick
+	viewTitle $togl $typename Pick
     }
 
-    viewSetGridIcon .${o} $ViewAttribData(GridSize)
+    viewSetGridIcon $togl $ViewAttribData(GridSize)
 
     setProp
 
@@ -700,6 +726,11 @@ proc viewRepairTitle { w type } {
 #  set correct grid icon according to gridsize
 proc viewSetGridIcon { w gridsize } {
     global ay tcl_platform AYWITHAQUA
+
+    if { [string first ".view" $w] == 0 } {
+	# guard against calling with sub-widget
+	set w [winfo toplevel $w]
+    }
 
     if { ! $AYWITHAQUA } {
 	set m fMenu.g
@@ -748,6 +779,11 @@ proc viewSetGridIcon { w gridsize } {
 proc viewSetDModeIcon { w mode } {
     global ay AYWITHAQUA
 
+    if { [string first ".view" $w] == 0 } {
+	# guard against calling with sub-widget
+	set w [winfo toplevel $w]
+    }
+
     if { ! $AYWITHAQUA } {
 	set m fMenu.dm
 	set conf "$w.$m configure"
@@ -779,6 +815,11 @@ proc viewSetDModeIcon { w mode } {
 #  set correct modelling mode (global/local) icon according to mode
 proc viewSetMModeIcon { w mode } {
     global ay AYWITHAQUA
+
+    if { [string first ".view" $w] == 0 } {
+	# guard against calling with sub-widget
+	set w [winfo toplevel $w]
+    }
 
     if { ! $AYWITHAQUA } {
 	set m fMenu.mm
@@ -835,7 +876,9 @@ proc viewToggleDMode { w } {
 
     set togl $w.f3D.togl
 
-    set w [winfo toplevel $togl]
+    if { [string first ".view" $w] == 0 } {
+	set w [winfo toplevel $togl]
+    }
 
     if { $ay(cVDMode) > 0 } {
 	$togl setconf -shade 0
@@ -850,6 +893,7 @@ proc viewToggleDMode { w } {
 }
 # viewToggleDMode
 
+
 ##############################
 # viewToggleMMode:
 #  toggle modelling mode (local <> global)
@@ -858,7 +902,9 @@ proc viewToggleMMode { w } {
 
     set togl $w.f3D.togl
 
-    set w [winfo toplevel $togl]
+    if { [string first ".view" $w] == 0 } {
+	set w [winfo toplevel $togl]
+    }
 
     if { $ay(cVMMode) > 0 } {
 	$togl setconf -local 0
@@ -877,28 +923,29 @@ proc viewToggleMMode { w } {
 ##############################
 # viewSetBGImage:
 proc viewSetBGImage { view } {
-global ay
+    global ay
 
-winAutoFocusOff
+    winAutoFocusOff
 
-set w .setBGI
-catch {destroy $w}
-toplevel $w -class ayam
-wm title $w "Set BGImage"
-wm iconname $w "Ayam"
-wm transient $w [winfo toplevel $view]
+    set w .setBGI
+    catch {destroy $w}
+    toplevel $w -class ayam
+    wm title $w "Set BGImage"
+    wm iconname $w "Ayam"
+    wm transient $w [winfo toplevel $view]
 
-set f [frame $w.f1]
-pack $f -in $w -side top -fill x
+    set f [frame $w.f1]
+    pack $f -in $w -side top -fill x
 
-$view mc
-set ay(ImageFile) $ay(cVBGImage)
-update
+    $view mc
+    set ay(ImageFile) $ay(cVBGImage)
+    update
 
-addFileT $f ay ImageFile { {"TIF" ".tif"} {"TIFF" ".tiff"} {"All files" *} }
+    addFileT $f ay ImageFile \
+	{ {"TIF" ".tif"} {"TIFF" ".tiff"} {"All files" *} }
 
-set f [frame $w.f2]
-button $f.bok -text "Ok" -pady $ay(pady) -width 15 -command "\
+    set f [frame $w.f2]
+    button $f.bok -text "Ok" -pady $ay(pady) -width 15 -command "\
 	global ay;\
 	$view mc;\
 	$view setconf -bgimage \$ay(ImageFile);\
@@ -914,27 +961,27 @@ button $f.bok -text "Ok" -pady $ay(pady) -width 15 -command "\
 	destroy $w"
 
 
-button $f.bca -text "Cancel" -pady $ay(pady) -width 15 -command "\
+    button $f.bca -text "Cancel" -pady $ay(pady) -width 15 -command "\
 	global ay;
 	grab release .setBGI;\
 	focus $view;\
 	destroy $w"
 
-pack $f.bok $f.bca -in $f -side left -fill x -expand yes
-pack $f -in $w -side bottom -fill x
+    pack $f.bok $f.bca -in $f -side left -fill x -expand yes
+    pack $f -in $w -side bottom -fill x
 
-# Esc-key && close via window decoration == Cancel button
-bind $w <Escape> "$f.bca invoke"
-wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
+    # Esc-key && close via window decoration == Cancel button
+    bind $w <Escape> "$f.bca invoke"
+    wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
 
-winCenter $w
-grab $w
-focus $w.f1.fImageFile.e
-tkwait window $w
+    winCenter $w
+    grab $w
+    focus $w.f1.fImageFile.e
+    tkwait window $w
 
-winAutoFocusOn
+    winAutoFocusOn
 
-return;
+ return;
 }
 # viewSetBGImage
 
