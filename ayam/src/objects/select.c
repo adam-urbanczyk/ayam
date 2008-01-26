@@ -16,6 +16,11 @@
 
 static char *ay_select_name = "Select";
 
+/* functions: */
+
+/* ay_select_createcb:
+ *  create callback function of select object
+ */
 int
 ay_select_createcb(int argc, char *argv[], ay_object *o)
 {
@@ -42,6 +47,9 @@ ay_select_createcb(int argc, char *argv[], ay_object *o)
 } /* ay_select_createcb */
 
 
+/* ay_select_deletecb:
+ *  delete callback function of select object
+ */
 int
 ay_select_deletecb(void *c)
 {
@@ -58,6 +66,9 @@ ay_select_deletecb(void *c)
 } /* ay_select_deletecb */
 
 
+/* ay_select_copycb:
+ *  copy callback function of select object
+ */
 int
 ay_select_copycb(void *src, void **dst)
 {
@@ -74,6 +85,9 @@ ay_select_copycb(void *src, void **dst)
 } /* ay_select_copycb */
 
 
+/* ay_select_drawcb:
+ *  draw (display in an Ayam view window) callback function of select object
+ */
 int
 ay_select_drawcb(struct Togl *togl, ay_object *o)
 {
@@ -84,6 +98,9 @@ ay_select_drawcb(struct Togl *togl, ay_object *o)
 } /* ay_select_drawcb */
 
 
+/* ay_select_drawhcb:
+ *  draw handles (in an Ayam view window) callback function of select object
+ */
 int
 ay_select_drawhcb(struct Togl *togl, ay_object *o)
 {
@@ -94,6 +111,9 @@ ay_select_drawhcb(struct Togl *togl, ay_object *o)
 } /* ay_select_drawhcb */
 
 
+/* ay_select_shadecb:
+ *  shade (display in an Ayam view window) callback function of select object
+ */
 int
 ay_select_shadecb(struct Togl *togl, ay_object *o)
 {
@@ -104,6 +124,9 @@ ay_select_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_select_shadecb */
 
 
+/* ay_select_getpntcb:
+ *  get point (editing and selection) callback function of select object
+ */
 int
 ay_select_getpntcb(int mode, ay_object *o, double *p)
 {
@@ -114,7 +137,9 @@ ay_select_getpntcb(int mode, ay_object *o, double *p)
 } /* ay_select_getpntcb */
 
 
-/* Tcl -> C! */
+/* ay_select_setpropcb:
+ *  set property (from Tcl to C context) callback function of select object
+ */
 int
 ay_select_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -140,7 +165,9 @@ ay_select_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_select_setpropcb */
 
 
-/* C -> Tcl! */
+/* ay_select_getpropcb:
+ *  get property (from C to Tcl context) callback function of select object
+ */
 int
 ay_select_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -166,6 +193,9 @@ ay_select_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_select_getpropcb */
 
 
+/* ay_select_readcb:
+ *  read (from scene file) callback function of select object
+ */
 int
 ay_select_readcb(FILE *fileptr, ay_object *o)
 {
@@ -185,6 +215,9 @@ ay_select_readcb(FILE *fileptr, ay_object *o)
 } /* ay_select_readcb */
 
 
+/* ay_select_writecb:
+ *  write (to scene file) callback function of select object
+ */
 int
 ay_select_writecb(FILE *fileptr, ay_object *o)
 {
@@ -201,6 +234,9 @@ ay_select_writecb(FILE *fileptr, ay_object *o)
 } /* ay_select_writecb */
 
 
+/* ay_select_wribcb:
+ *  RIB export callback function of select object
+ */
 int
 ay_select_wribcb(char *file, ay_object *o)
 {
@@ -215,6 +251,9 @@ ay_select_wribcb(char *file, ay_object *o)
 } /* ay_select_wribcb */
 
 
+/* ay_select_bbccb:
+ *  bounding box calculation callback function of select object
+ */
 int
 ay_select_bbccb(ay_object *o, double *bbox, int *flags)
 {
@@ -229,6 +268,9 @@ ay_select_bbccb(ay_object *o, double *bbox, int *flags)
 } /* ay_select_bbccb */
 
 
+/* ay_select_providecb:
+ *  provide callback function of select object
+ */
 int
 ay_select_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
@@ -276,6 +318,9 @@ ay_select_providecb(ay_object *o, unsigned int type, ay_object **result)
 } /* ay_select_providecb */
 
 
+/* ay_select_init:
+ *  initialize the select object module
+ */
 int
 ay_select_init(Tcl_Interp *interp)
 {
