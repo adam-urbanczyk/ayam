@@ -16,6 +16,11 @@
 
 static char *ay_skin_name = "Skin";
 
+/* functions: */
+
+/* ay_skin_createcb:
+ *  create callback function of skin object
+ */
 int
 ay_skin_createcb(int argc, char *argv[], ay_object *o)
 {
@@ -40,6 +45,9 @@ ay_skin_createcb(int argc, char *argv[], ay_object *o)
 } /* ay_skin_createcb */
 
 
+/* ay_skin_deletecb:
+ *  delete callback function of skin object
+ */
 int
 ay_skin_deletecb(void *c)
 {
@@ -65,6 +73,9 @@ ay_skin_deletecb(void *c)
 } /* ay_skin_deletecb */
 
 
+/* ay_skin_copycb:
+ *  copy callback function of skin object
+ */
 int
 ay_skin_copycb(void *src, void **dst)
 {
@@ -92,6 +103,9 @@ ay_skin_copycb(void *src, void **dst)
 } /* ay_skin_copycb */
 
 
+/* ay_skin_drawcb:
+ *  draw (display in an Ayam view window) callback function of skin object
+ */
 int
 ay_skin_drawcb(struct Togl *togl, ay_object *o)
 {
@@ -123,6 +137,9 @@ ay_skin_drawcb(struct Togl *togl, ay_object *o)
 } /* ay_skin_drawcb */
 
 
+/* ay_skin_shadecb:
+ *  shade (display in an Ayam view window) callback function of skin object
+ */
 int
 ay_skin_shadecb(struct Togl *togl, ay_object *o)
 {
@@ -154,6 +171,9 @@ ay_skin_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_skin_shadecb */
 
 
+/* ay_skin_drawhcb:
+ *  draw handles (in an Ayam view window) callback function of skin object
+ */
 int
 ay_skin_drawhcb(struct Togl *togl, ay_object *o)
 {
@@ -162,6 +182,9 @@ ay_skin_drawhcb(struct Togl *togl, ay_object *o)
 } /* ay_skin_drawhcb */
 
 
+/* ay_skin_getpntcb:
+ *  get point (editing and selection) callback function of skin object
+ */
 int
 ay_skin_getpntcb(int mode, ay_object *o, double *p)
 {
@@ -170,7 +193,9 @@ ay_skin_getpntcb(int mode, ay_object *o, double *p)
 } /* ay_skin_getpntcb */
 
 
-/* Tcl -> C! */
+/* ay_skin_setpropcb:
+ *  set property (from Tcl to C context) callback function of skin object
+ */
 int
 ay_skin_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -228,7 +253,9 @@ ay_skin_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_skin_setpropcb */
 
 
-/* C -> Tcl! */
+/* ay_skin_getpropcb:
+ *  get property (from C to Tcl context) callback function of skin object
+ */
 int
 ay_skin_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -290,6 +317,9 @@ ay_skin_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_skin_getpropcb */
 
 
+/* ay_skin_readcb:
+ *  read (from scene file) callback function of skin object
+ */
 int
 ay_skin_readcb(FILE *fileptr, ay_object *o)
 {
@@ -316,6 +346,9 @@ ay_skin_readcb(FILE *fileptr, ay_object *o)
 } /* ay_skin_readcb */
 
 
+/* ay_skin_writecb:
+ *  write (to scene file) callback function of skin object
+ */
 int
 ay_skin_writecb(FILE *fileptr, ay_object *o)
 {
@@ -338,6 +371,9 @@ ay_skin_writecb(FILE *fileptr, ay_object *o)
 } /* ay_skin_writecb */
 
 
+/* ay_skin_wribcb:
+ *  RIB export callback function of skin object
+ */
 int
 ay_skin_wribcb(char *file, ay_object *o)
 {
@@ -366,6 +402,9 @@ ay_skin_wribcb(char *file, ay_object *o)
 } /* ay_skin_wribcb */
 
 
+/* ay_skin_bbccb:
+ *  bounding box calculation callback function of skin object
+ */
 int
 ay_skin_bbccb(ay_object *o, double *bbox, int *flags)
 {
@@ -391,6 +430,9 @@ ay_skin_bbccb(ay_object *o, double *bbox, int *flags)
 } /* ay_skin_bbccb */
 
 
+/* ay_skin_notifycb:
+ *  notification callback function of skin object
+ */
 int
 ay_skin_notifycb(ay_object *o)
 {
@@ -702,6 +744,9 @@ cleanup:
 } /* ay_skin_notifycb */
 
 
+/* ay_skin_providecb:
+ *  provide callback function of skin object
+ */
 int
 ay_skin_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
@@ -764,6 +809,9 @@ ay_skin_providecb(ay_object *o, unsigned int type, ay_object **result)
 } /* ay_skin_providecb */
 
 
+/* ay_skin_convertcb:
+ *  convert callback function of skin object
+ */
 int
 ay_skin_convertcb(ay_object *o, int in_place)
 {
@@ -861,6 +909,9 @@ ay_skin_convertcb(ay_object *o, int in_place)
 } /* ay_skin_convertcb */
 
 
+/* ay_skin_init:
+ *  initialize the skin object module
+ */
 int
 ay_skin_init(Tcl_Interp *interp)
 {
