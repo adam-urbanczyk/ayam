@@ -368,8 +368,19 @@ proc prefs_open {} {
     prefs_rsnb $nb $ay(prefssection)
 
     # establish "Help"-binding
-    set m $ay(helpmenu)
-    bind $w <[repcont $aymainshortcuts(Help)]> "$m invoke 0"
+    global aymainshortcuts
+    bind $w <[repcont $aymainshortcuts(Help)]> {
+	global ayprefs
+	if { [string first "file://" $ayprefs(Docs)] != -1 } {
+	    set lslash [string last "/" $ayprefs(Docs)]
+	    set url [string range\
+			 $ayprefs(Docs) 0 $lslash]/ayam-2.html\#prefs
+	    browser_urlOpen $url
+	} else {
+	    browser_urlOpen $ayprefs(Docs)ayam-2.html\#prefs
+	}
+    }
+    # bind
 
     # establish "Zap"-binding
     bind $w <[repcont $aymainshortcuts(Zap)]> zap
