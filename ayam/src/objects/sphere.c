@@ -16,6 +16,11 @@
 
 static char *ay_sphere_name = "Sphere";
 
+/* functions: */
+
+/* ay_sphere_createcb:
+ *  create callback function of sphere object
+ */
 int
 ay_sphere_createcb(int argc, char *argv[], ay_object *o)
 {
@@ -44,6 +49,9 @@ ay_sphere_createcb(int argc, char *argv[], ay_object *o)
 } /* ay_sphere_createcb */
 
 
+/* ay_sphere_deletecb:
+ *  delete callback function of sphere object
+ */
 int
 ay_sphere_deletecb(void *c)
 {
@@ -60,6 +68,9 @@ ay_sphere_deletecb(void *c)
 } /* ay_sphere_deletecb */
 
 
+/* ay_sphere_copycb:
+ *  copy callback function of sphere object
+ */
 int
 ay_sphere_copycb(void *src, void **dst)
 {
@@ -79,6 +90,9 @@ ay_sphere_copycb(void *src, void **dst)
 } /* ay_sphere_copycb */
 
 
+/* ay_sphere_drawcb:
+ *  draw (display in an Ayam view window) callback function of sphere object
+ */
 int
 ay_sphere_drawcb(struct Togl *togl, ay_object *o)
 {
@@ -247,6 +261,9 @@ ay_sphere_drawcb(struct Togl *togl, ay_object *o)
 } /* ay_sphere_drawcb */
 
 
+/* ay_sphere_shadecb:
+ *  shade (display in an Ayam view window) callback function of sphere object
+ */
 int
 ay_sphere_shadecb(struct Togl *togl, ay_object *o)
 {
@@ -442,7 +459,9 @@ ay_sphere_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_sphere_shadecb */
 
 
-/* Tcl -> C! */
+/* ay_sphere_setpropcb:
+ *  set property (from Tcl to C context) callback function of sphere object
+ */
 int
 ay_sphere_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -502,7 +521,9 @@ ay_sphere_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_sphere_setpropcb */
 
 
-/* C -> Tcl! */
+/* ay_sphere_getpropcb:
+ *  get property (from C to Tcl context) callback function of sphere object
+ */
 int
 ay_sphere_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -547,6 +568,9 @@ ay_sphere_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_sphere_getpropcb */
 
 
+/* ay_sphere_readcb:
+ *  read (from scene file) callback function of sphere object
+ */
 int
 ay_sphere_readcb(FILE *fileptr, ay_object *o)
 {
@@ -582,6 +606,9 @@ ay_sphere_readcb(FILE *fileptr, ay_object *o)
 } /* ay_sphere_readcb */
 
 
+/* ay_sphere_writecb:
+ *  write (to scene file) callback function of sphere object
+ */
 int
 ay_sphere_writecb(FILE *fileptr, ay_object *o)
 {
@@ -602,7 +629,10 @@ ay_sphere_writecb(FILE *fileptr, ay_object *o)
 } /* ay_sphere_writecb */
 
 
-/* code taken from Affine */
+/* ay_sphere_wribcb:
+ *  RIB export callback function of sphere object
+ *  code taken from Affine
+ */
 int
 ay_sphere_wribcb(char *file, ay_object *o)
 {
@@ -795,6 +825,9 @@ ay_sphere_wribcb(char *file, ay_object *o)
 } /* ay_sphere_wribcb */
 
 
+/* ay_sphere_bbccb:
+ *  bounding box calculation callback function of sphere object
+ */
 int
 ay_sphere_bbccb(ay_object *o, double *bbox, int *flags)
 {
@@ -834,6 +867,9 @@ ay_sphere_bbccb(ay_object *o, double *bbox, int *flags)
 } /* ay_sphere_bbccb */
 
 
+/* ay_sphere_providecb:
+ *  provide callback function of sphere object
+ */
 int
 ay_sphere_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
@@ -1089,6 +1125,9 @@ cleanup:
 } /* ay_sphere_providecb */
 
 
+/* ay_sphere_convertcb:
+ *  convert callback function of sphere object
+ */
 int
 ay_sphere_convertcb(ay_object *o, int in_place)
 {
@@ -1154,6 +1193,9 @@ ay_sphere_convertcb(ay_object *o, int in_place)
 } /* ay_sphere_convertcb */
 
 
+/* ay_sphere_init:
+ *  initialize the sphere object module
+ */
 int
 ay_sphere_init(Tcl_Interp *interp)
 {
