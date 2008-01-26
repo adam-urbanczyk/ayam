@@ -16,6 +16,11 @@
 
 static char *ay_sweep_name = "Sweep";
 
+/* functions: */
+
+/* ay_sweep_createcb:
+ *  create callback function of sweep object
+ */
 int
 ay_sweep_createcb(int argc, char *argv[], ay_object *o)
 {
@@ -41,6 +46,9 @@ ay_sweep_createcb(int argc, char *argv[], ay_object *o)
 } /* ay_sweep_createcb */
 
 
+/* ay_sweep_deletecb:
+ *  delete callback function of sweep object
+ */
 int
 ay_sweep_deletecb(void *c)
 {
@@ -66,6 +74,9 @@ ay_sweep_deletecb(void *c)
 } /* ay_sweep_deletecb */
 
 
+/* ay_sweep_copycb:
+ *  copy callback function of sweep object
+ */
 int
 ay_sweep_copycb(void *src, void **dst)
 {
@@ -93,6 +104,9 @@ ay_sweep_copycb(void *src, void **dst)
 } /* ay_sweep_copycb */
 
 
+/* ay_sweep_drawcb:
+ *  draw (display in an Ayam view window) callback function of sweep object
+ */
 int
 ay_sweep_drawcb(struct Togl *togl, ay_object *o)
 {
@@ -124,6 +138,9 @@ ay_sweep_drawcb(struct Togl *togl, ay_object *o)
 } /* ay_sweep_drawcb */
 
 
+/* ay_sweep_shadecb:
+ *  shade (display in an Ayam view window) callback function of sweep object
+ */
 int
 ay_sweep_shadecb(struct Togl *togl, ay_object *o)
 {
@@ -155,6 +172,9 @@ ay_sweep_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_sweep_shadecb */
 
 
+/* ay_sweep_drawhcb:
+ *  draw handles (in an Ayam view window) callback function of sweep object
+ */
 int
 ay_sweep_drawhcb(struct Togl *togl, ay_object *o)
 {
@@ -163,6 +183,9 @@ ay_sweep_drawhcb(struct Togl *togl, ay_object *o)
 } /* ay_sweep_drawhcb */
 
 
+/* ay_sweep_getpntcb:
+ *  get point (editing and selection) callback function of sweep object
+ */
 int
 ay_sweep_getpntcb(int mode, ay_object *o, double *p)
 {
@@ -171,7 +194,9 @@ ay_sweep_getpntcb(int mode, ay_object *o, double *p)
 } /* ay_sweep_getpntcb */
 
 
-/* Tcl -> C! */
+/* ay_sweep_setpropcb:
+ *  set property (from Tcl to C context) callback function of sweep object
+ */
 int
 ay_sweep_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -234,7 +259,9 @@ ay_sweep_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_sweep_setpropcb */
 
 
-/* C -> Tcl! */
+/* ay_sweep_getpropcb:
+ *  get property (from C to Tcl context) callback function of sweep object
+ */
 int
 ay_sweep_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -301,6 +328,9 @@ ay_sweep_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_sweep_getpropcb */
 
 
+/* ay_sweep_readcb:
+ *  read (from scene file) callback function of sweep object
+ */
 int
 ay_sweep_readcb(FILE *fileptr, ay_object *o)
 {
@@ -331,6 +361,9 @@ ay_sweep_readcb(FILE *fileptr, ay_object *o)
 } /* ay_sweep_readcb */
 
 
+/* ay_sweep_writecb:
+ *  write (to scene file) callback function of sweep object
+ */
 int
 ay_sweep_writecb(FILE *fileptr, ay_object *o)
 {
@@ -354,6 +387,9 @@ ay_sweep_writecb(FILE *fileptr, ay_object *o)
 } /* ay_sweep_writecb */
 
 
+/* ay_sweep_wribcb:
+ *  RIB export callback function of sweep object
+ */
 int
 ay_sweep_wribcb(char *file, ay_object *o)
 {
@@ -382,6 +418,9 @@ ay_sweep_wribcb(char *file, ay_object *o)
 } /* ay_sweep_wribcb */
 
 
+/* ay_sweep_bbccb:
+ *  bounding box calculation callback function of sweep object
+ */
 int
 ay_sweep_bbccb(ay_object *o, double *bbox, int *flags)
 {
@@ -407,6 +446,9 @@ ay_sweep_bbccb(ay_object *o, double *bbox, int *flags)
 } /* ay_sweep_bbccb */
 
 
+/* ay_sweep_notifycb:
+ *  notification callback function of sweep object
+ */
 int
 ay_sweep_notifycb(ay_object *o)
 {
@@ -748,6 +790,9 @@ cleanup:
 } /* ay_sweep_notifycb */
 
 
+/* ay_sweep_providecb:
+ *  provide callback function of sweep object
+ */
 int
 ay_sweep_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
@@ -806,6 +851,9 @@ ay_sweep_providecb(ay_object *o, unsigned int type, ay_object **result)
 } /* ay_sweep_providecb */
 
 
+/* ay_sweep_convertcb:
+ *  convert callback function of sweep object
+ */
 int
 ay_sweep_convertcb(ay_object *o, int in_place)
 {
@@ -902,6 +950,9 @@ ay_sweep_convertcb(ay_object *o, int in_place)
 } /* ay_sweep_convertcb */
 
 
+/* ay_sweep_init:
+ *  initialize the sweep object module
+ */
 int
 ay_sweep_init(Tcl_Interp *interp)
 {
