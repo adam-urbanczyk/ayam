@@ -17,6 +17,11 @@
 
 static char *ay_text_name = "Text";
 
+/* functions: */
+
+/* ay_text_createcb:
+ *  create callback function of text object
+ */
 int
 ay_text_createcb(int argc, char *argv[], ay_object *o)
 {
@@ -37,6 +42,9 @@ ay_text_createcb(int argc, char *argv[], ay_object *o)
 } /* ay_text_createcb */
 
 
+/* ay_text_deletecb:
+ *  delete callback function of text object
+ */
 int
 ay_text_deletecb(void *c)
 {
@@ -62,6 +70,9 @@ ay_text_deletecb(void *c)
 } /* ay_text_deletecb */
 
 
+/* ay_text_copycb:
+ *  copy callback function of text object
+ */
 int
 ay_text_copycb(void *src, void **dst)
 {
@@ -111,6 +122,9 @@ ay_text_copycb(void *src, void **dst)
 } /* ay_text_copycb */
 
 
+/* ay_text_drawcb:
+ *  draw (display in an Ayam view window) callback function of text object
+ */
 int
 ay_text_drawcb(struct Togl *togl, ay_object *o)
 {
@@ -134,6 +148,9 @@ ay_text_drawcb(struct Togl *togl, ay_object *o)
 } /* ay_text_drawcb */
 
 
+/* ay_text_shadecb:
+ *  shade (display in an Ayam view window) callback function of text object
+ */
 int
 ay_text_shadecb(struct Togl *togl, ay_object *o)
 {
@@ -157,7 +174,9 @@ ay_text_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_text_shadecb */
 
 
-/* Tcl -> C! */
+/* ay_text_setpropcb:
+ *  set property (from Tcl to C context) callback function of text object
+ */
 int
 ay_text_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -247,7 +266,9 @@ ay_text_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_text_setpropcb */
 
 
-/* C -> Tcl! */
+/* ay_text_getpropcb:
+ *  get property (from C to Tcl context) callback function of text object
+ */
 int
 ay_text_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -311,6 +332,9 @@ ay_text_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_text_getpropcb */
 
 
+/* ay_text_readcb:
+ *  read (from scene file) callback function of text object
+ */
 int
 ay_text_readcb(FILE *fileptr, ay_object *o)
 {
@@ -376,6 +400,9 @@ ay_text_readcb(FILE *fileptr, ay_object *o)
 } /* ay_text_readcb */
 
 
+/* ay_text_writecb:
+ *  write (to scene file) callback function of text object
+ */
 int
 ay_text_writecb(FILE *fileptr, ay_object *o)
 {
@@ -435,6 +462,9 @@ ay_text_writecb(FILE *fileptr, ay_object *o)
 } /* ay_text_writecb */
 
 
+/* ay_text_wribcb:
+ *  RIB export callback function of text object
+ */
 int
 ay_text_wribcb(char *file, ay_object *o)
 {
@@ -457,6 +487,9 @@ ay_text_wribcb(char *file, ay_object *o)
 } /* ay_text_wribcb */
 
 
+/* ay_text_bbccb:
+ *  bounding box calculation callback function of text object
+ */
 int
 ay_text_bbccb(ay_object *o, double *bbox, int *flags)
 {
@@ -525,6 +558,9 @@ ay_text_bbccb(ay_object *o, double *bbox, int *flags)
 } /* ay_text_bbccb */
 
 
+/* ay_text_notifycb:
+ *  notification callback function of text object
+ */
 int
 ay_text_notifycb(ay_object *o)
 {
@@ -787,6 +823,9 @@ cleanup:
 } /* ay_text_notifycb */
 
 
+/* ay_text_convertcb:
+ *  convert callback function of text object
+ */
 int
 ay_text_convertcb(ay_object *o, int in_place)
 {
@@ -868,6 +907,9 @@ ay_text_convertcb(ay_object *o, int in_place)
 } /* ay_text_convertcb */
 
 
+/* ay_text_providecb:
+ *  provide callback function of text object
+ */
 int
 ay_text_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
@@ -922,6 +964,9 @@ ay_text_providecb(ay_object *o, unsigned int type, ay_object **result)
 } /* ay_text_providecb */
 
 
+/* ay_text_init:
+ *  initialize the text object module
+ */
 int
 ay_text_init(Tcl_Interp *interp)
 {
