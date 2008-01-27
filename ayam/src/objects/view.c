@@ -55,6 +55,9 @@ ay_view_deletecb(void *c)
 } /* ay_view_deletecb */
 
 
+/* ay_view_copycb:
+ *  copy callback function of view object
+ */
 int
 ay_view_copycb(void *src, void **dst)
 {
@@ -66,6 +69,9 @@ ay_view_copycb(void *src, void **dst)
 } /* ay_view_copycb */
 
 
+/* ay_view_drawcb:
+ *  draw (display in an Ayam view window) callback function of view object
+ */
 int
 ay_view_drawcb(struct Togl *togl, ay_object *o)
 {
@@ -105,6 +111,9 @@ ay_view_drawcb(struct Togl *togl, ay_object *o)
 } /* ay_view_drawcb */
 
 
+/* ay_view_drawhcb:
+ *  draw handles (in an Ayam view window) callback function of view object
+ */
 int
 ay_view_drawhcb(struct Togl *togl, ay_object *o)
 {
@@ -139,6 +148,9 @@ ay_view_drawhcb(struct Togl *togl, ay_object *o)
 } /* ay_view_drawhcb */
 
 
+/* ay_view_shadecb:
+ *  shade (display in an Ayam view window) callback function of view object
+ */
 int
 ay_view_shadecb(struct Togl *togl, ay_object *o)
 {
@@ -157,7 +169,7 @@ ay_view_shadecb(struct Togl *togl, ay_object *o)
 
 
 /* ay_view_setpropcb:
- *  Tcl -> C!
+ *  set property (from Tcl to C context) callback function of view object
  *  configure view from Tcl
  */
 int
@@ -333,7 +345,7 @@ ay_view_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
 
 /* ay_view_getpropcb:
- *  C -> Tcl!
+ *  get property (from C to Tcl context) callback function of view object
  *  copy all information about the view *togl
  *  to the global view() array (Tcl)
  */
@@ -491,6 +503,9 @@ ay_view_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_view_getpropcb */
 
 
+/* ay_view_getpntcb:
+ *  get point (editing and selection) callback function of view object
+ */
 int
 ay_view_getpntcb(int mode, ay_object *o, double *p)
 {
@@ -611,6 +626,9 @@ ay_view_getpntcb(int mode, ay_object *o, double *p)
 } /* ay_view_getpntcb */
 
 
+/* ay_view_readcb:
+ *  read (from scene file) callback function of view object
+ */
 int
 ay_view_readcb(FILE *fileptr, ay_object *o)
 {
@@ -787,6 +805,9 @@ ay_view_readcb(FILE *fileptr, ay_object *o)
 } /* ay_view_readcb */
 
 
+/* ay_view_writecb:
+ *  write (to scene file) callback function of view object
+ */
 int
 ay_view_writecb(FILE *fileptr, ay_object *o)
 {
@@ -853,6 +874,9 @@ ay_view_writecb(FILE *fileptr, ay_object *o)
 } /* ay_view_writecb */
 
 
+/* ay_view_wribcb:
+ *  RIB export callback function of view object
+ */
 int
 ay_view_wribcb(char *file, ay_object *o)
 {
@@ -870,6 +894,9 @@ ay_view_wribcb(char *file, ay_object *o)
 } /* ay_view_wribcb */
 
 
+/* ay_view_bbccb:
+ *  bounding box calculation callback function of view object
+ */
 int
 ay_view_bbccb(ay_object *o, double *bbox, int *flags)
 {
@@ -942,6 +969,10 @@ ay_view_bbccb(ay_object *o, double *bbox, int *flags)
  return AY_OK;
 } /* ay_view_bbccb */
 
+
+/* ay_view_notifycb:
+ *  notification callback function of view object
+ */
 int
 ay_view_notifycb(ay_object *o)
 {
@@ -1203,6 +1234,9 @@ ay_view_dropcb(ay_object *o)
 } /* ay_view_dropcb */
 
 
+/* ay_view_init:
+ *  initialize the view object module
+ */
 int
 ay_view_init(Tcl_Interp *interp)
 {
@@ -1232,6 +1266,7 @@ ay_view_init(Tcl_Interp *interp)
   /* register drop callback */
   ay_status = ay_tree_registerdrop(ay_view_dropcb, AY_IDVIEW);
 
+  /* view objects may not be associated with materials */
   ay_matt_nomaterial(AY_IDVIEW);
 
  return ay_status;
