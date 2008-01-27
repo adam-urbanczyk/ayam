@@ -16,6 +16,11 @@
 
 static char *ay_swing_name = "Swing";
 
+/* functions: */
+
+/* ay_swing_createcb:
+ *  create callback function of swing object
+ */
 int
 ay_swing_createcb(int argc, char *argv[], ay_object *o)
 {
@@ -38,6 +43,9 @@ ay_swing_createcb(int argc, char *argv[], ay_object *o)
 } /* ay_swing_createcb */
 
 
+/* ay_swing_deletecb:
+ *  delete callback function of swing object
+ */
 int
 ay_swing_deletecb(void *c)
 {
@@ -69,6 +77,9 @@ ay_swing_deletecb(void *c)
 } /* ay_swing_deletecb */
 
 
+/* ay_swing_copycb:
+ *  copy callback function of swing object
+ */
 int
 ay_swing_copycb(void *src, void **dst)
 {
@@ -107,6 +118,9 @@ ay_swing_copycb(void *src, void **dst)
 } /* ay_swing_copycb */
 
 
+/* ay_swing_drawcb:
+ *  draw (display in an Ayam view window) callback function of swing object
+ */
 int
 ay_swing_drawcb(struct Togl *togl, ay_object *o)
 {
@@ -139,6 +153,9 @@ ay_swing_drawcb(struct Togl *togl, ay_object *o)
 } /* ay_swing_drawcb */
 
 
+/* ay_swing_shadecb:
+ *  shade (display in an Ayam view window) callback function of swing object
+ */
 int
 ay_swing_shadecb(struct Togl *togl, ay_object *o)
 {
@@ -171,6 +188,9 @@ ay_swing_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_swing_shadecb */
 
 
+/* ay_swing_drawhcb:
+ *  draw handles (in an Ayam view window) callback function of swing object
+ */
 int
 ay_swing_drawhcb(struct Togl *togl, ay_object *o)
 {
@@ -179,6 +199,9 @@ ay_swing_drawhcb(struct Togl *togl, ay_object *o)
 } /* ay_swing_drawhcb */
 
 
+/* ay_swing_getpntcb:
+ *  get point (editing and selection) callback function of swing object
+ */
 int
 ay_swing_getpntcb(int mode, ay_object *o, double *p)
 {
@@ -187,7 +210,9 @@ ay_swing_getpntcb(int mode, ay_object *o, double *p)
 } /* ay_swing_getpntcb */
 
 
-/* Tcl -> C! */
+/* ay_swing_setpropcb:
+ *  set property (from Tcl to C context) callback function of swing object
+ */
 int
 ay_swing_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -242,7 +267,9 @@ ay_swing_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_swing_setpropcb */
 
 
-/* C -> Tcl! */
+/* ay_swing_getpropcb:
+ *  get property (from C to Tcl context) callback function of swing object
+ */
 int
 ay_swing_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -298,6 +325,9 @@ ay_swing_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_swing_getpropcb */
 
 
+/* ay_swing_readcb:
+ *  read (from scene file) callback function of swing object
+ */
 int
 ay_swing_readcb(FILE *fileptr, ay_object *o)
 {
@@ -322,6 +352,9 @@ ay_swing_readcb(FILE *fileptr, ay_object *o)
 } /* ay_swing_readcb */
 
 
+/* ay_swing_writecb:
+ *  write (to scene file) callback function of swing object
+ */
 int
 ay_swing_writecb(FILE *fileptr, ay_object *o)
 {
@@ -343,6 +376,9 @@ ay_swing_writecb(FILE *fileptr, ay_object *o)
 } /* ay_swing_writecb */
 
 
+/* ay_swing_wribcb:
+ *  RIB export callback function of swing object
+ */
 int
 ay_swing_wribcb(char *file, ay_object *o)
 {
@@ -372,6 +408,9 @@ ay_swing_wribcb(char *file, ay_object *o)
 } /* ay_swing_wribcb */
 
 
+/* ay_swing_bbccb:
+ *  bounding box calculation callback function of swing object
+ */
 int
 ay_swing_bbccb(ay_object *o, double *bbox, int *flags)
 {
@@ -935,6 +974,9 @@ ay_swing_crtside(ay_swing_object *swing, ay_object *cso, ay_object *tro,
 } /* ay_swing_crtside */
 
 
+/* ay_swing_notifycb:
+ *  notification callback function of swing object
+ */
 int
 ay_swing_notifycb(ay_object *o)
 {
@@ -1076,6 +1118,9 @@ cleanup:
 } /* ay_swing_notifycb */
 
 
+/* ay_swing_providecb:
+ *  provide callback function of swing object
+ */
 int
 ay_swing_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
@@ -1178,6 +1223,10 @@ ay_swing_providecb(ay_object *o, unsigned int type, ay_object **result)
  return ay_status;
 } /* ay_swing_providecb */
 
+
+/* ay_swing_convertcb:
+ *  convert callback function of swing object
+ */
 int
 ay_swing_convertcb(ay_object *o, int in_place)
 {
@@ -1288,6 +1337,9 @@ ay_swing_convertcb(ay_object *o, int in_place)
 } /* ay_swing_convertcb */
 
 
+/* ay_swing_init:
+ *  initialize the swing object module
+ */
 int
 ay_swing_init(Tcl_Interp *interp)
 {
