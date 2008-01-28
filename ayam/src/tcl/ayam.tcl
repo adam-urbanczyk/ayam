@@ -1160,16 +1160,14 @@ update
 #objbar_open .fu.fobjbar
 #pack .fu.fobjbar -side top -fill x -expand yes
 
-if { $ayprefs(SingleWindow) } {
-    set vf [frame .fu.fMain.fViews]
-    set f [frame .fu.fMain.fViews.fLeft -bd 2]
-    pack $f -in $vf -side left -fill both -expand yes
-    set f [frame .fu.fMain.fViews.fRight -bd 2]
-    pack $f -in $vf -side right -fill both -expand yes
-    pack $vf -in .fu.fMain -side top -fill both -expand yes
-}
+# frame for internal views
+frame .fu.fViews
+pack .fu.fViews -in .fu -side top -fill both -expand yes
 
+# frame for object and property display
 pack .fu.fMain -in .fu -side top -fill both -expand yes
+
+# frame for object hierarchy
 pack .fu.fMain.fHier -in .fu.fMain -side left -expand no
 
 # the lower frame (contains the console)
@@ -1428,6 +1426,42 @@ if { $ayprefs(showtr) == 0 } {
 }
 update
 
+# open internal views?
+if { $ayprefs(SingleWindow) } {
+    set vf .fu.fViews
+    viewOpen 400 300 0 1
+    set f .fu.fViews.fview1
+    pack $f -in $vf -side left -fill both -expand yes
+    update
+    viewOpen 400 300 0 1
+    set f .fu.fViews.fview2
+    pack $f -in $vf -side right -fill both -expand yes
+    update
+
+    # establish paned window management for the views
+    set vwidth [expr [winfo rootx .fu.fViews.fview2]+5]
+    if { $AYWITHAQUA } {
+	set vwidth [expr 5+[winfo rootx .fu]+([winfo width .fu]*0.5)]
+    }
+    pane .fu.fViews.fview1 .fu.fViews.fview2
+    pane_constrain . .fu.fViews.__h1 \
+	.fu.fViews.fview1 .fu.fViews.fview2 width x 1
+    pane_motion $vwidth . .fu.fViews.__h1 width x 1
+    if { $tcl_platform(platform) == "windows" || $AYWITHAQUA } {
+	update
+    }
+
+    # establish paned window management for the views
+    set vheight [expr ([winfo rooty .fu.fMain]-[winfo rooty .fu.fViews])/2]
+    pane .fu.fViews .fu.fMain -orient vertical
+    pane_constrain . .fu.__h1 .fu.fViews .fu.fMain height y 1
+    pane_motion $vheight . .fu.__h1 height y 1
+} else {
+    # no internal views => remove view frame
+    destroy .fu.fViews
+}
+# if
+
 # run user defined startup Tcl scripts
 if { $ayprefs(Scripts) != "" } {
     puts stdout "Running user defined scripts..."
@@ -1654,9 +1688,9 @@ if { $ayprefs(FixX11Menu) } {
 }
 # if
 
-# if no view is open (first start ever, no ayamrc, or no working environment),
-# open a first view now
-if { $ay(noview) != 1 && $ay(views) == "" } {
+# if no view is open (first start ever, no ayamrc file, or no working
+# environment file), open a first view now
+if { !$ayprefs(SingleWindow) && $ay(noview) != 1 && $ay(views) == "" } {
     viewOpen 400 300; uS
 }
 
