@@ -32,7 +32,7 @@ uplevel #0 { array set mfio_options {
 
 #
 proc mfio_import { } {
-    global ay ay_error mfio_options
+    global ay ay_error mfio_options aymainshortcuts
 
     winAutoFocusOff
 
@@ -123,19 +123,8 @@ proc mfio_import { } {
     bind $w <Escape> "$f.bca invoke"
     wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
 
-    global aymainshortcuts
-    bind $w <[repcont $aymainshortcuts(Help)]> {
-	global ayprefs
-	if { [string first "file://" $ayprefs(Docs)] != -1 } {
-	    set lslash [string last "/" $ayprefs(Docs)]
-	    set url [string range\
-			 $ayprefs(Docs) 0 $lslash]/ayam-7.html\#imp3dmf
-	    browser_urlOpen $url
-	} else {
-	    browser_urlOpen $ayprefs(Docs)ayam-7.html\#imp3dmf
-	}
-    }
-    # bind
+    # context help
+    bind $w <[repcont $aymainshortcuts(Help)]> { cHelp ayam-7.html\#imp3dmf }
 
     winCenter $w
     grab $w
@@ -152,7 +141,7 @@ proc mfio_import { } {
 
 
 proc mfio_export { } {
-    global ay ay_error mfio_options
+    global ay ay_error mfio_options aymainshortcuts
 
     winAutoFocusOff
 
@@ -244,19 +233,8 @@ proc mfio_export { } {
     bind $w <Escape> "$f.bca invoke"
     wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
 
-    global aymainshortcuts
-    bind $w <[repcont $aymainshortcuts(Help)]> {
-	global ayprefs
-	if { [string first "file://" $ayprefs(Docs)] != -1 } {
-	    set lslash [string last "/" $ayprefs(Docs)]
-	    set url [string range\
-			 $ayprefs(Docs) 0 $lslash]/ayam-7.html\#exp3dmf
-	    browser_urlOpen $url
-	} else {
-	    browser_urlOpen $ayprefs(Docs)ayam-7.html\#exp3dmf
-	}
-    }
-    # bind
+    # context help
+    bind $w <[repcont $aymainshortcuts(Help)]> { cHelp ayam-7.html\#exp3dmf }
 
     winCenter $w
     grab $w

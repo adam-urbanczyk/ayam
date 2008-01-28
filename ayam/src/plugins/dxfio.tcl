@@ -32,7 +32,7 @@ uplevel #0 { array set dxfio_options {
 
 #
 proc dxfio_import { } {
-    global ay ay_error dxfio_options
+    global ay ay_error dxfio_options aymainshortcuts
 
     winAutoFocusOff
 
@@ -126,19 +126,8 @@ proc dxfio_import { } {
     bind $w <Escape> "$f.bca invoke"
     wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
 
-    global aymainshortcuts
-    bind $w <[repcont $aymainshortcuts(Help)]> {
-	global ayprefs
-	if { [string first "file://" $ayprefs(Docs)] != -1 } {
-	    set lslash [string last "/" $ayprefs(Docs)]
-	    set url [string range\
-			 $ayprefs(Docs) 0 $lslash]/ayam-7.html\#impdxf
-	    browser_urlOpen $url
-	} else {
-	    browser_urlOpen $ayprefs(Docs)ayam-7.html\#impdxf
-	}
-    }
-    # bind
+    # context help
+    bind $w <[repcont $aymainshortcuts(Help)]> { cHelp ayam-7.html\#impdxf }
 
     winCenter $w
     grab $w
@@ -155,7 +144,7 @@ proc dxfio_import { } {
 
 
 proc dxfio_export { } {
-    global ay ay_error dxfio_options
+    global ay ay_error dxfio_options aymainshortcuts
 
     winAutoFocusOff
 
@@ -245,22 +234,12 @@ proc dxfio_export { } {
 
     set ::dxfio_options(Cancel) 0
 
-    # Esc-Key == Cancel button
+    # Esc-Key && close via window decoration == Cancel button
     bind $w <Escape> "$f.bca invoke"
+    wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
 
-    global aymainshortcuts
-    bind $w <[repcont $aymainshortcuts(Help)]> {
-	global ayprefs
-	if { [string first "file://" $ayprefs(Docs)] != -1 } {
-	    set lslash [string last "/" $ayprefs(Docs)]
-	    set url [string range\
-			 $ayprefs(Docs) 0 $lslash]/ayam-7.html\#expdxf
-	    browser_urlOpen $url
-	} else {
-	    browser_urlOpen $ayprefs(Docs)ayam-7.html\#expdxf
-	}
-    }
-    # bind
+    # context help
+    bind $w <[repcont $aymainshortcuts(Help)]> { cHelp ayam-7.html\#expdxf }
 
     winCenter $w
     grab $w

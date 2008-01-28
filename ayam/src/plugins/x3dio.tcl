@@ -37,7 +37,7 @@ uplevel #0 { array set x3dio_options {
 
 #
 proc x3dio_import { } {
-    global ay ay_error x3dio_options
+    global ay ay_error x3dio_options aymainshortcuts
 
     winAutoFocusOff
 
@@ -146,19 +146,8 @@ proc x3dio_import { } {
     bind $w <Escape> "$f.bca invoke"
     wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
 
-    global aymainshortcuts
-    bind $w <[repcont $aymainshortcuts(Help)]> {
-	global ayprefs
-	if { [string first "file://" $ayprefs(Docs)] != -1 } {
-	    set lslash [string last "/" $ayprefs(Docs)]
-	    set url [string range\
-			 $ayprefs(Docs) 0 $lslash]/ayam-7.html\#impx3d
-	    browser_urlOpen $url
-	} else {
-	    browser_urlOpen $ayprefs(Docs)ayam-7.html\#impx3d
-	}
-    }
-    # bind
+    # context help
+    bind $w <[repcont $aymainshortcuts(Help)]> { cHelp ayam-7.html\#impx3d }
 
     winCenter $w
     grab $w
@@ -175,7 +164,7 @@ proc x3dio_import { } {
 
 
 proc x3dio_export { } {
-    global ay ay_error x3dio_options
+    global ay ay_error x3dio_options aymainshortcuts
 
     winAutoFocusOff
 
@@ -281,19 +270,8 @@ proc x3dio_export { } {
     bind $w <Escape> "$f.bca invoke"
     wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
 
-    global aymainshortcuts
-    bind $w <[repcont $aymainshortcuts(Help)]> {
-	global ayprefs
-	if { [string first "file://" $ayprefs(Docs)] != -1 } {
-	    set lslash [string last "/" $ayprefs(Docs)]
-	    set url [string range\
-			 $ayprefs(Docs) 0 $lslash]/ayam-7.html\#expx3d
-	    browser_urlOpen $url
-	} else {
-	    browser_urlOpen $ayprefs(Docs)ayam-7.html\#expx3d
-	}
-    }
-    # bind
+    # context help
+    bind $w <[repcont $aymainshortcuts(Help)]> { cHelp ayam-7.html\#expx3d }
 
     winCenter $w
     grab $w

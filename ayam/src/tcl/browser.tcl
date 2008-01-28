@@ -124,3 +124,19 @@ proc help { {command ""} } {
  return;
 }
 # help
+
+
+proc cHelp { tail } {
+    global ayprefs
+
+    if { ([string first "file://" $ayprefs(Docs)] != -1) } {
+	set lslash [string last "/" $ayprefs(Docs)]
+	set url [string range $ayprefs(Docs) 0 $lslash]$tail
+	browser_urlOpen $url
+    } else {
+	browser_urlOpen $ayprefs(Docs)$tail
+    }
+
+ return;
+}
+# cHelp

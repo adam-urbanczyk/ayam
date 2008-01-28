@@ -18,7 +18,7 @@ filename ""
 # mopsi_import:
 #  import a Mops scene file
 proc mopsi_import { } {
-    global ay ay_error mopsi_options tcl_platform
+    global ay ay_error mopsi_options tcl_platform aymainshortcuts
 
     winAutoFocusOff
 
@@ -99,19 +99,8 @@ proc mopsi_import { } {
     bind $w <Escape> "$f.bca invoke"
     wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
 
-    global aymainshortcuts
-    bind $w <[repcont $aymainshortcuts(Help)]> {
-	global ayprefs
-	if { [string first "file://" $ayprefs(Docs)] != -1 } {
-	    set lslash [string last "/" $ayprefs(Docs)]
-	    set url [string range\
-			 $ayprefs(Docs) 0 $lslash]/ayam-7.html\#impmops
-	    browser_urlOpen $url
-	} else {
-	    browser_urlOpen $ayprefs(Docs)ayam-7.html\#impmops
-	}
-    }
-    # bind
+    # context help
+    bind $w <[repcont $aymainshortcuts(Help)]> { cHelp ayam-7.html\#impmops }
 
     winCenter $w
     focus $w.f2.bok

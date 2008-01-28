@@ -31,7 +31,7 @@ ReadSTrim 1
 #  export scene to Wavefront OBJ format
 #
 proc objio_export { } {
-    global ay ay_error objio_options
+    global ay ay_error objio_options aymainshortcuts
     set ay_error ""
 
     winAutoFocusOff
@@ -118,19 +118,8 @@ proc objio_export { } {
     bind $w <Escape> "$f.bca invoke"
     wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
 
-    global aymainshortcuts
-    bind $w <[repcont $aymainshortcuts(Help)]> {
-	global ayprefs
-	if { [string first "file://" $ayprefs(Docs)] != -1 } {
-	    set lslash [string last "/" $ayprefs(Docs)]
-	    set url [string range\
-			 $ayprefs(Docs) 0 $lslash]/ayam-7.html\#expwav
-	    browser_urlOpen $url
-	} else {
-	    browser_urlOpen $ayprefs(Docs)ayam-7.html\#expwav
-	}
-    }
-    # bind
+    # context help
+    bind $w <[repcont $aymainshortcuts(Help)]> { cHelp ayam-7.html\#expwav }
 
     winCenter $w
     focus $w.f2.bok
@@ -148,7 +137,7 @@ proc objio_export { } {
 #  import scene from the Wavefront OBJ format
 #
 proc objio_import { } {
-    global ay_error objio_options
+    global ay_error objio_options aymainshortcuts
     set ay_error ""
 
     winAutoFocusOff
@@ -244,19 +233,8 @@ proc objio_import { } {
     bind $w <Escape> "$f.bca invoke"
     wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
 
-    global aymainshortcuts
-    bind $w <[repcont $aymainshortcuts(Help)]> {
-	global ayprefs
-	if { [string first "file://" $ayprefs(Docs)] != -1 } {
-	    set lslash [string last "/" $ayprefs(Docs)]
-	    set url [string range\
-			 $ayprefs(Docs) 0 $lslash]/ayam-7.html\#impwav
-	    browser_urlOpen $url
-	} else {
-	    browser_urlOpen $ayprefs(Docs)ayam-7.html\#impwav
-	}
-    }
-    # bind
+    # context help
+    bind $w <[repcont $aymainshortcuts(Help)]> { cHelp ayam-7.html\#impwav }
 
     winCenter $w
     grab $w
