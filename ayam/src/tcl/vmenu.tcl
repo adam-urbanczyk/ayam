@@ -12,23 +12,33 @@
 proc vmenu_open { w } {
 global ay AYWITHAQUA
 
-# View Menu
 if { (! $AYWITHAQUA) || ([winfo toplevel $w] != $w) } {
-    menubutton $w.fMenu.v -text "View" -menu $w.fMenu.v.m -padx 3
-
-    set m [menu $w.fMenu.v.m -tearoff 0]
-    set ay(viewm) fMenu.v.m
+    set menubar 0
 } else {
+    set menubar 1
+}
+
+# View Menu
+if { $menubar } {
     set mb [menu $w.menubar -tearoff 0 -type menubar]
     $w configure -menu $mb
     set m [menu $mb.mview -tearoff 0]
     $mb add cascade -label "View" -menu $m
     set ay(viewm) menubar.mview
 
-    # correct application menu (about entry)
-    menu $w.menubar.apple
-    $w.menubar add cascade -menu $w.menubar.apple
-    $w.menubar.apple add command -label "About Ayam" -command "aboutAyam"
+    if { $AYWITHAQUA } {
+	# correct application menu (about entry)
+	menu $w.menubar.apple
+	$w.menubar add cascade -menu $w.menubar.apple
+	$w.menubar.apple add command -label "About Ayam" -command "aboutAyam"
+    }
+} else {
+    menubutton $w.fMenu.v -text "View" -menu $w.fMenu.v.m
+    if { ! $AYWITHAQUA } {
+	$w.fMenu.v configure -padx 3
+    }
+    set m [menu $w.fMenu.v.m -tearoff 0]
+    set ay(viewm) fMenu.v.m
 }
 
 $m add command -label "Quick Render" -command "viewRender $w 1;\
@@ -83,14 +93,17 @@ $m add command -label "Close" -command "after 100 \{viewClose $w;\
 	global ay; set ay(ul) root:0; uS\}"
 
 # Type Menu
-if { ! $AYWITHAQUA } {
-    menubutton $w.fMenu.t -text "Type" -menu $w.fMenu.t.m -padx 3
-    set m [menu $w.fMenu.t.m -tearoff 0]
-    set ay(typem) fMenu.t.m
-} else {
+if { $menubar } {
     set m [menu $mb.mtype -tearoff 0]
     $mb add cascade -label "Type" -menu $m
     set ay(typem) menubar.mtype
+} else {
+    menubutton $w.fMenu.t -text "Type" -menu $w.fMenu.t.m
+    if { ! $AYWITHAQUA } {
+	$w.fMenu.t configure -padx 3
+    }
+    set m [menu $w.fMenu.t.m -tearoff 0]
+    set ay(typem) fMenu.t.m
 }
 
 $m add command -label "Front" -command "viewSetType $w 0"
@@ -103,14 +116,17 @@ $m add separator
 $m add command -label "Trim" -command  "viewSetType $w 4"
 
 # Configure Menu
-if { ! $AYWITHAQUA } {
-    menubutton $w.fMenu.c -text "Configure" -menu $w.fMenu.c.m -padx 3
-    set m [menu $w.fMenu.c.m -tearoff 0]
-    set ay(confm) fMenu.c.m
-} else {
+if { $menubar } {
     set m [menu $mb.mconf -tearoff 0]
     $mb add cascade -label "Configure" -menu $m
     set ay(confm) menubar.mconf
+} else {
+    menubutton $w.fMenu.c -text "Configure" -menu $w.fMenu.c.m
+    if { ! $AYWITHAQUA } {
+	$w.fMenu.c configure -padx 3
+    }
+    set m [menu $w.fMenu.c.m -tearoff 0]
+    set ay(confm) fMenu.c.m
 }
 
 $m add check -label "Automatic Redraw" -variable ay(cVRedraw) -command "\
@@ -231,7 +247,7 @@ $m add command -label "Align to Object" -command "\
 #-command {exit}
 
 # Modelling Mode Menu
-if { ! $AYWITHAQUA } {
+if { (! $AYWITHAQUA ) || ([winfo toplevel $w] != $w) } {
     menubutton $w.fMenu.mm -image ay_MMGlobLoc_img -menu $w.fMenu.mm.m\
 	    -padx 0 -pady 0 -borderwidth 0
     balloon_set $w.fMenu.mm "change global/local mode"
@@ -262,7 +278,7 @@ if { $AYWITHAQUA } {
 }
 
 # Drawing Mode Menu
-if { ! $AYWITHAQUA } {
+if { (! $AYWITHAQUA ) || ([winfo toplevel $w] != $w) } {
     menubutton $w.fMenu.dm -image ay_DMDraw_img -menu $w.fMenu.dm.m\
 	    -padx 0 -pady 0 -borderwidth 0
     balloon_set $w.fMenu.dm "change drawing mode"
@@ -299,7 +315,7 @@ if { $AYWITHAQUA } {
 }
 
 # Grid Menu
-if { ! $AYWITHAQUA } {
+if { (! $AYWITHAQUA ) || ([winfo toplevel $w] != $w) } {
     menubutton $w.fMenu.g -image ay_Grid_img -menu $w.fMenu.g.m\
 	    -padx 0 -pady 0 -borderwidth 0
     balloon_set $w.fMenu.g "change gridsize"
@@ -346,7 +362,7 @@ if { $AYWITHAQUA } {
 }
 
 # Help menu (just for MacOSX/Aqua!)
-if { $AYWITHAQUA } {
+if { $AYWITHAQUA && (! ([winfo toplevel $w] != $w)) } {
 set m [menu $mb.help -tearoff 0]
 $mb add cascade -label "Help" -menu $m
 $m add command -label "Help" -command {
@@ -386,7 +402,7 @@ $m add checkbutton -label "Show Tooltips" -variable ayprefs(showtt)
 }
 # if
 
-if { ! $AYWITHAQUA } {
+if { (! $AYWITHAQUA ) || ([winfo toplevel $w] != $w) } {
     pack $w.fMenu.v $w.fMenu.t $w.fMenu.c -in $w.fMenu -side left
 
     pack $w.fMenu.g -in $w.fMenu -side right
