@@ -1027,10 +1027,13 @@ proc actionPick { w } {
     }
 
     bind $w <Motion> ""
-
-    set t [winfo toplevel $w]
-    $t.f3D.togl setconf -drawh 0
-    $t.f3D.togl setconf -mark 0 0 0
+    if { [string first ".view" $w] == 0 } {
+	set t [winfo toplevel $w].f3D.togl
+    } else {
+	set t $w
+    }
+    $t setconf -drawh 0
+    $t setconf -mark 0 0 0
 
  return;
 }
@@ -1071,10 +1074,14 @@ proc actionClear { w } {
     if { $ayprefs(DefaultAction) == 0 } {
 	viewTitle $w "" "None"
 
-	set t [winfo toplevel $w]
+	if { [string first ".view" $w] == 0 } {
+	    set t [winfo toplevel $w].f3D.togl
+	} else {
+	    set t $w
+	}
 
-	$t.f3D.togl setconf -drawh 0
-	$t.f3D.togl setconf -mark 0 0 0
+	$t setconf -drawh 0
+	$t setconf -mark 0 0 0
     } else {
 	actionPick $w
     }
