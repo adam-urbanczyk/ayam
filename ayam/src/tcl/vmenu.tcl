@@ -24,7 +24,6 @@ if { $menubar } {
     $w configure -menu $mb
     set m [menu $mb.mview -tearoff 0]
     $mb add cascade -label "View" -menu $m
-    set ay(viewm) menubar.mview
 
     if { $AYWITHAQUA } {
 	# correct application menu (about entry)
@@ -38,7 +37,6 @@ if { $menubar } {
 	$w.fMenu.v configure -padx 3
     }
     set m [menu $w.fMenu.v.m -tearoff 0]
-    set ay(viewm) fMenu.v.m
 }
 
 $m add command -label "Quick Render" -command "viewRender $w 1;\
@@ -96,14 +94,12 @@ $m add command -label "Close" -command "after 100 \{viewClose $w;\
 if { $menubar } {
     set m [menu $mb.mtype -tearoff 0]
     $mb add cascade -label "Type" -menu $m
-    set ay(typem) menubar.mtype
 } else {
     menubutton $w.fMenu.t -text "Type" -menu $w.fMenu.t.m
     if { ! $AYWITHAQUA } {
 	$w.fMenu.t configure -padx 3
     }
     set m [menu $w.fMenu.t.m -tearoff 0]
-    set ay(typem) fMenu.t.m
 }
 
 $m add command -label "Front" -command "viewSetType $w 0"
@@ -119,15 +115,15 @@ $m add command -label "Trim" -command  "viewSetType $w 4"
 if { $menubar } {
     set m [menu $mb.mconf -tearoff 0]
     $mb add cascade -label "Configure" -menu $m
-    set ay(confm) menubar.mconf
 } else {
     menubutton $w.fMenu.c -text "Configure" -menu $w.fMenu.c.m
     if { ! $AYWITHAQUA } {
 	$w.fMenu.c configure -padx 3
     }
     set m [menu $w.fMenu.c.m -tearoff 0]
-    set ay(confm) fMenu.c.m
 }
+
+set confm $m
 
 $m add check -label "Automatic Redraw" -variable ay(cVRedraw) -command "\
 	global ay;\
@@ -252,12 +248,9 @@ if { (! $AYWITHAQUA ) || ([winfo toplevel $w] != $w) } {
 	    -padx 0 -pady 0 -borderwidth 0
     balloon_set $w.fMenu.mm "change global/local mode"
     set m [menu $w.fMenu.mm.m -tearoff 0]
-
-    set ay(mmodem) fMenu.mm.m
 } else {
     set m [menu $mb.mm -tearoff 0]
     $mb add cascade -label Global -menu $m
-    set ay(mmodem) menubar.mm
 }
 
 $m add command -image ay_MMGlobLoc_img -hidemargin 1 -command "\
@@ -320,11 +313,9 @@ if { (! $AYWITHAQUA ) || ([winfo toplevel $w] != $w) } {
 	    -padx 0 -pady 0 -borderwidth 0
     balloon_set $w.fMenu.g "change gridsize"
     set m [menu $w.fMenu.g.m -tearoff 0]
-    set ay(gridm) fMenu.g.m
 } else {
     set m [menu $mb.mgrid -tearoff 0]
     $mb add cascade -label Grid -menu $m
-    set ay(gridm) menubar.gridm
 }
 # if
 
@@ -345,7 +336,7 @@ $m add command -image ay_Grid10_img -hidemargin 1 -command "\
     $w.f3D.togl render;\
     viewSetGridIcon $w 1.0"
 $m add command -image ay_GridX_img -hidemargin 1 -command "
-    after idle \{$w.$ay(confm) invoke 12\}"
+    after idle \{$confm invoke 12\}"
 
 $m add command -image ay_Grid_img -hidemargin 1 -command "\
     $w.f3D.togl setconf -grid 0.0 -drawg 0 -ugrid 0;\
@@ -363,41 +354,44 @@ if { $AYWITHAQUA } {
 
 # Help menu (just for MacOSX/Aqua!)
 if { $AYWITHAQUA && (! ([winfo toplevel $w] != $w)) } {
-set m [menu $mb.help -tearoff 0]
-$mb add cascade -label "Help" -menu $m
-$m add command -label "Help" -command {
-    after idle {
-	global ayprefs
-	browser_urlOpen $ayprefs(Docs)
+    set m [menu $mb.help -tearoff 0]
+    $mb add cascade -label "Help" -menu $m
+    $m add command -label "Help" -command {
+	after idle {
+	    global ayprefs
+	    browser_urlOpen $ayprefs(Docs)
+	}
     }
-}
-
-$m add command -label "Help on object" -command {
-    after idle { catch {
-	global ayprefs
-	set selected ""
-	getSel selected
-	if { $selected == "" } {
-	    ayError 2 "Help on object" "Please select an object!"
-	    return;
+    
+    $m add command -label "Help on object" -command {
+	after idle { catch {
+	    global ayprefs
+	    set selected ""
+	    getSel selected
+	    if { $selected == "" } {
+		ayError 2 "Help on object" "Please select an object!"
+		return;
+	    }
+	    getType type
+	    set type [string tolower $type]
+	    if { [string first "file://" $ayprefs(Docs)] != -1 } {
+		set lslash [string last "/" $ayprefs(Docs)]
+		set url [string range \
+			     $ayprefs(Docs) 0 $lslash]/ayam-4.html\#${type}obj
+		browser_urlOpen $url
+	    } else {
+		browser_urlOpen $ayprefs(Docs)ayam-4.html\#${type}obj
+	    }
 	}
-	getType type
-	set type [string tolower $type]
-	if { [string first "file://" $ayprefs(Docs)] != -1 } {
-	    set lslash [string last "/" $ayprefs(Docs)]
-	    set url [string range \
-		     $ayprefs(Docs) 0 $lslash]/ayam-4.html\#${type}obj
-	    browser_urlOpen $url
-	} else {
-	    browser_urlOpen $ayprefs(Docs)ayam-4.html\#${type}obj
+	# catch
 	}
-    }  }
-}
-# -command
+	# after
+    }
+    # -command
 
-$m add command -label "Show Shortcuts" -command "shortcut_show"
-$m add command -label "About" -command "aboutAyam"
-$m add checkbutton -label "Show Tooltips" -variable ayprefs(showtt)
+    $m add command -label "Show Shortcuts" -command "shortcut_show"
+    $m add command -label "About" -command "aboutAyam"
+    $m add checkbutton -label "Show Tooltips" -variable ayprefs(showtt)
 
 }
 # if

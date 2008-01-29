@@ -484,6 +484,7 @@ proc viewBind { w } {
 	    update
 	    set ay(cviewsema) 1
 	    update
+
 	    if { [string first ".view" %W] == 0 } {
 		set w [winfo toplevel %W]
 	    } else {
@@ -491,17 +492,19 @@ proc viewBind { w } {
 	    }
 	    $w.f3D.togl mc
 	    set ay(currentView) $w.f3D.togl
+	    $w.f3D.togl configure -cursor left_ptr
+
+	    update
 	    set ay(cviewsema) 0
 	    update
 	}
 	#if
 
-	$w.f3D.togl configure -cursor left_ptr
-
 	if { ($ayprefs(AutoFocus) == 1) && \
-	     ([string first ".view" %W] == 0) } {
+		 ([string first ".view" %W] == 0) } {
 	    focus [winfo toplevel %W].f3D.togl
 	}
+
 	break;
     }
     #bind
@@ -512,6 +515,7 @@ proc viewBind { w } {
 	    update
 	    set ay(cviewsema) 1
 	    update
+
 	    if { [string first ".view" %W] == 0 } {
 		set w [winfo toplevel %W]
 	    } else {
@@ -519,12 +523,13 @@ proc viewBind { w } {
 	    }
 	    $w.f3D.togl mc
 	    set ay(currentView) $w.f3D.togl
+	    $w.f3D.togl configure -cursor exchange
+
+	    update
 	    set ay(cviewsema) 0
 	    update
 	}
 	#if
-
-	$w.f3D.togl configure -cursor exchange
 
 	if { ($ayprefs(AutoFocus) == 1) && \
 	     ([string first ".view" %W] == 0) } {
@@ -539,6 +544,7 @@ proc viewBind { w } {
 	    update
 	    set ay(cviewsema) 1
 	    update
+
 	    if { [string first ".view" %W] == 0 } {
 		set w [winfo toplevel %W]
 	    } else {
@@ -546,12 +552,13 @@ proc viewBind { w } {
 	    }
 	    $w.f3D.togl mc
 	    set ay(currentView) $w.f3D.togl
+	    $w.f3D.togl configure -cursor sizing
+
+	    update
 	    set ay(cviewsema) 0
 	    update
 	}
 	#if
-
-	$w.f3D.togl configure -cursor sizing
 
 	# save old bindings
 	set i $ayviewshortcuts(ZoomRButton)
