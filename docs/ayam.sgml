@@ -3768,7 +3768,8 @@ The Clone object allows you to easily create and control a number
 of instances of a single object.
 The instances will be created internally and transformed,
 each by a certain amount. The Clone object may also be used for
-symmetric (mirrored) modelling.
+symmetric (mirrored) modelling; in this case a single clone with
+a negative scale value will be created.
 <p>
 The original object, the object to be cloned, should be the first
 child object of the Clone object.
@@ -3840,10 +3841,10 @@ of e.g. a Skin object:
 <tt/"Scale_X"/, <tt/"Scale_Y"/, <tt/"Scale_Z"/,
 those attributes control the transformation of the instances created by
 the Clone object. Note that the attributes specify difference values
-between two instances: a clone is offset by <tt/"Translate_X"/,
-<tt/"Translate_Y"/, and <tt/"Translate_Z"/ from the previous. It is also
-rotated by <tt/"Rotate_X"/, <tt/"Rotate_Y"/, and <tt/"Rotate_Z"/ and scaled
-by <tt/"Scale_X"/, <tt/"Scale_Y"/, <tt/"Scale_Z"/ in comparison
+between two instances: the clone <tt/"n+1"/ is offset by <tt/"Translate_X"/,
+<tt/"Translate_Y"/, and <tt/"Translate_Z"/ from the previous clone <tt/"n"/.
+It is also rotated by <tt/"Rotate_X"/, <tt/"Rotate_Y"/, and <tt/"Rotate_Z"/
+and scaled by <tt/"Scale_X"/, <tt/"Scale_Y"/, <tt/"Scale_Z"/ in relation
 to the previous clone. However, those attributes never affect the first
 clone.
 <p>
@@ -3920,8 +3921,8 @@ you determine whether such caps should be
 generated, default is off (no caps).
 <p>
 If the side caps of a surface of revolution of an open
-curve are not created correctly, (GLU
-complains about "intersecting or misoriented trim curves"),
+curve are not created correctly, (GLU complains about
+"intersecting or misoriented trim curves"),
 try to revert the revolved curve.
 <p>
 See section <ref id="npattr" name="NPatchAttr"> for a description
@@ -6353,6 +6354,11 @@ known since Ayam 1.10 and in all accompanying extensions (plugins).
 "PV", "SaveMainGeom", "TP", "MI", "OI", "DC", "TM", "NP", "RP", "NS", "DNS",
 "UMM", "VMM", "BP", "IDR", "IIDR", "RIDR", "R3IDR", "CIDR", "CCIDR"</tt>
 <p>
+The following tags are temporary (they will not be displayed in the
+Tags property of an object, if the preference option <tt>"HideTmpTags"</tt>
+is enabled):
+<tt>"MI", "OI"</tt>
+<p>
 Documentation on those tags can be found in the sections above.
 
 <sect>NURBS Modelling Tools<label id="nmtool">
@@ -8638,7 +8644,8 @@ Wavefront OBJ format but only import polygonal data or, even worse, only
 triangles from such files. By default, Ayam tries to preserve as much
 information as possible in the respective export format leading to the
 use of NURBS in Wavefront OBJ files.
-Consequently, in some cases you may need to convert the NURBS objects in
+Consequently, to successfully transfer an Ayam scene to a different
+application, in some cases you may need to convert the NURBS objects in
 the Ayam scene to polygonal geometry before export. There is a script
 provided that helps you doing this (<tt>"topoly.tcl"</tt>, see also section
 <ref id="topolytcl" name="Convert Everything to Polygons">).
@@ -9404,9 +9411,8 @@ imported.
 Using the <tt/"ReadLayers"/ import option, a single layer or a range
 of layers may be selected for import.
 <item><tt/"ReadSTrim"/: Another import option is <tt/"ReadSTrim"/.
-This useful to
-ignore simple bounding trim loops of NURBS surfaces if they are the
-only trim loop for that surface.
+This useful to ignore simple bounding trim loops of NURBS surfaces if
+they are the only trim loop for that surface.
 Importing this single bounding trim loop would just make the Ayam scene
 more complex than needed in many cases.
 This option replaces the <tt/"IgnoreFirstTrim"/ import option
@@ -9600,14 +9606,18 @@ Transformation, Shape, Group, Inline.
 <p><p>
 Shear transformations are not supported.
 <p>
-The semantics for inlining are not fully standards compliant.
-By default, DEFs in inlined files always live in their own namespace
-unless the <tt>"MergeInlineDefs"</tt> import option is switched on.
-This option completely merges all DEF namespaces into
-one big namespace. Beware, this only works correctly, if the DEF
+The semantics for inlining are currently not fully standards compliant.
+By default, DEFs in inlined files live in their own namespace.
+It is not possible to USE a DEF from an inlined file in the
+inlining file.
+However, if the <tt>"MergeInlineDefs"</tt> import option is switched on,
+<em>all</em> DEF namespaces (of inlining and inlined files) will be
+merged into one big namespace.
+Now it would be possible to USE a DEF from an inlined file in the
+inlining file. But beware, this only works correctly, if the DEF
 names in all the files are unique.
 It is not possible to transfer single definitions from an inlined file
-to the inlining file or from the inlined file to the inlining file.
+to the inlining file or from the inlining file to the inlined file.
 <p>
 Also note: Inline URLs that do not point to the file system are not
 supported.
@@ -9674,8 +9684,10 @@ completely resolved upon import.
 Instances of objects may be easily created again using Automatic Instancing
 (please refer to section <ref id="ai" name="Automatic Instancing">).
 <p>
-Normals will currently not be generated by any X3D element and thus
-the <tt>"creaseAngle"</tt> attribute will be fully ignored.
+Normals will currently not be generated automatically for any X3D element
+and thus the <tt>"creaseAngle"</tt> attribute will be fully ignored.
+Note however, that if normals are specified e.g. for an
+<tt>"IndexedFaceSet"</tt> element, they will be imported correctly.
 <p>
 The <tt>"DEF"</tt> attributes will be converted to object names
 in some cases.
@@ -9780,8 +9792,8 @@ for the t component of the texture coordinates (see also section
 <ref id="pvtag" name="PV (Primitive Variable) Tag">).
 <item><tt/"Progress"/: displays the progress of the export;
 from 0 to 50 percent, the x3dio plugin is creating a XML document
-in memory and from 50 to 100 percent this document will be written
-to the file.
+in memory and from 50 to 100 percent this XML document will be written
+to the X3D file.
 </itemize>
 
 <sect>Miscellaneous
