@@ -186,7 +186,7 @@ proc viewUPos { } {
 # set title bar of window w (for views only)
 # type = "" -> no change, action = "" -> no change
 proc viewTitle { w type action } {
-    global ay
+    global ay AYWITHAQUA
 
     if { [string first ".view" $w] != 0 } {
 	# $w does not start with ".view" => view is internal, no title to set
@@ -210,13 +210,19 @@ proc viewTitle { w type action } {
 
     if { $type != "" } {
 	set oldtype $type
-	set m $ay(confm)
-	if { $type == "Persp" } {
-	    $w.$m entryconfigure 17 -state normal
-	    $w.$m entryconfigure 18 -state normal
+
+	if { (! $AYWITHAQUA) || ([winfo toplevel $w] != $w) } {
+	    set confm $w.fMenu.c.m
 	} else {
-	    $w.$m entryconfigure 17 -state disabled
-	    $w.$m entryconfigure 18 -state disabled
+	    set confm $w.menubar.mconf
+	}
+
+	if { $type == "Persp" } {
+	    $confm entryconfigure 17 -state normal
+	    $confm entryconfigure 18 -state normal
+	} else {
+	    $confm entryconfigure 17 -state disabled
+	    $confm entryconfigure 18 -state disabled
 	}
     }
     # if
@@ -320,7 +326,8 @@ button $f.bok -text "Ok" -pady $ay(pady) -width 5 -command "\
 	  $view setconf -grid \$ay(GridSize);\
         \};\
 	$view render;\
-	viewSetGridIcon [winfo toplevel $view] \$ay(GridSize);\
+        set w \[winfo parent \[winfo parent $view\]\];\
+	viewSetGridIcon \$w \$ay(GridSize);\
 	update;\
 	catch \{grab release .setGrid\};\
 	focus $view;\
@@ -743,36 +750,38 @@ proc viewSetGridIcon { w gridsize } {
 	set w [winfo toplevel $w]
     }
 
-    if { ! $AYWITHAQUA } {
+    if { (! $AYWITHAQUA) || ([winfo toplevel $w] != $w) } {
+	set menubar 0
 	set m fMenu.g
 	set conf "$w.$m configure"
     } else {
+	set menubar 1
 	set m menubar.mgrid
 	set conf "$w.menubar entryconfigure 6"
     }
 
     if { $gridsize == 0.1 } {
 	eval "$conf -image ay_Grid01_img"
-	if {$AYWITHAQUA} { eval "$conf -image {} -label \"Grid 0.1\"" }
+	if {$menubar} { eval "$conf -image {} -label \"Grid 0.1\"" }
 	} else {
 	    if { $gridsize == 0.25 } {
 		eval "$conf -image ay_Grid025_img"
-	       if {$AYWITHAQUA} { eval "$conf -image {} -label \"Grid 0.25\"" }
+	       if {$menubar} { eval "$conf -image {} -label \"Grid 0.25\"" }
 	    } else {
 		if { $gridsize == 0.5 } {
 		    eval "$conf -image ay_Grid05_img"
-		if {$AYWITHAQUA} { eval "$conf -image {} -label \"Grid 0.5\"" }
+		if {$menubar} { eval "$conf -image {} -label \"Grid 0.5\"" }
 		} else {
 		    if { $gridsize == 1.0 } {
 			eval "$conf -image ay_Grid10_img"
-		if {$AYWITHAQUA} { eval "$conf -image {} -label \"Grid 1.0\"" }
+		if {$menubar} { eval "$conf -image {} -label \"Grid 1.0\"" }
 		    } else {
 			if { $gridsize == 0.0 } {
 			    eval "$conf -image ay_Grid_img"
-		    if {$AYWITHAQUA} { eval "$conf -image {} -label \"No Grid\"" }
+		    if {$menubar} { eval "$conf -image {} -label \"No Grid\"" }
 			} else {
 			    eval "$conf -image ay_GridX_img"
-                  if {$AYWITHAQUA} { eval "$conf -image {} -label \"Grid X\"" }
+                  if {$menubar} { eval "$conf -image {} -label \"Grid X\"" }
 			}
 		    }
 		}
@@ -795,24 +804,26 @@ proc viewSetDModeIcon { w mode } {
 	set w [winfo toplevel $w]
     }
 
-    if { ! $AYWITHAQUA } {
+    if { (! $AYWITHAQUA) || ([winfo toplevel $w] != $w) } {
+	set menubar 0
 	set m fMenu.dm
 	set conf "$w.$m configure"
     } else {
+	set menubar 1
 	set m menubar.dm
 	set conf "$w.menubar entryconfigure 5"
     }
 
     if { $mode == 0 } {
 	eval "$conf -image ay_DMDraw_img"
-	if {$AYWITHAQUA} { eval "$conf -image {} -label \"Draw\"" }
+	if {$menubar} { eval "$conf -image {} -label \"Draw\"" }
     } else {
 	if { $mode == 1 } {
 	    eval "$conf -image ay_DMShade_img"
-	    if {$AYWITHAQUA} { eval "$conf -image {} -label \"Shade\"" }
+	    if {$menubar} { eval "$conf -image {} -label \"Shade\"" }
 	} else {
 	    eval "$conf -image ay_DMShadeDraw_img"
-	    if {$AYWITHAQUA} { eval "$conf -image {} -label \"Shade&Draw\"" }
+	    if {$menubar} { eval "$conf -image {} -label \"Shade&Draw\"" }
 	}
     }
 
@@ -832,7 +843,7 @@ proc viewSetMModeIcon { w mode } {
 	set w [winfo toplevel $w]
     }
 
-    if { ! $AYWITHAQUA } {
+    if { (! $AYWITHAQUA) || ([winfo toplevel $w] != $w) } {
 	set m fMenu.mm
 	set conf "$w.$m configure"
 
