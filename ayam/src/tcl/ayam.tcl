@@ -1096,6 +1096,10 @@ if { $AYWRAPPED == 1 } {
 }
 wm client . [info hostname]
 
+# frame for internal widgets
+frame .fv
+pack .fv -in . -side top
+
 # create the upper frame...
 frame .fu
 pack .fu -in . -side top
@@ -1106,15 +1110,8 @@ update
 # initialize io procedures
 ayam_loadscript io
 
-# create the main menu
+# load the main menu script
 ayam_loadscript mmenu
-
-# properly exit the program when the main window is closed
-wm protocol . WM_DELETE_WINDOW {
-    global ay
-    set m $ay(filemenu)
-    $m invoke 21
-}
 
 frame .fu.fMain.fHier
 
@@ -1161,11 +1158,15 @@ update
 #pack .fu.fobjbar -side top -fill x -expand yes
 
 # frame for internal views
-frame .fu.fViews
-pack .fu.fViews -in .fu -side top -fill both -expand yes
+frame .fv.fViews
+pack .fv.fViews -in .fv -side bottom -fill both -expand yes
+
+# frame for internal Toolbox
+frame .fv.fTools
+pack .fv.fTools -in .fv -side bottom -fill both -expand no
 
 # frame for object and property display
-pack .fu.fMain -in .fu -side top -fill both -expand yes
+pack .fu.fMain -in .fu -side bottom -fill both -expand yes
 
 # frame for object hierarchy
 pack .fu.fMain.fHier -in .fu.fMain -side left -expand no
@@ -1216,9 +1217,9 @@ if { $tcl_platform(platform) == "windows" } {
 }
 ayam_loadscript pane
 set vheight [winfo rooty .fl]
-pane .fu .fl -orient vertical
-pane_constrain . .__h1 .fu .fl height y 1
-pane_motion $vheight . .__h1 height y 1
+pane .fv .fu .fl -orient vertical
+pane_constrain . .__h2 .fu .fl height y 0
+pane_motion $vheight . .__h2 height y 1
 
 # clear console
 if { [winfo exists .fl.con] == 1 } { .fl.con clear }
@@ -1426,39 +1427,59 @@ if { $ayprefs(showtr) == 0 } {
 }
 update
 
-# open internal views?
+# create internal widgets
 if { $ayprefs(SingleWindow) } {
-    set vf .fu.fViews
-    viewOpen 400 300 0 1
-    set f .fu.fViews.fview1
+
+    # create the main menu
+    mmenu_open .fv
+    update
+    # Toolbox
+    toolbox_open .fv.fTools
+
+    # Views
+    set vf .fv.fViews
+    viewOpen 100 100 0 1
+    set f .fv.fViews.fview1
     pack $f -in $vf -side left -fill both -expand yes
     update
-    viewOpen 400 300 0 1
-    set f .fu.fViews.fview2
+    viewOpen 100 100 0 1
+    set f .fv.fViews.fview2
     pack $f -in $vf -side right -fill both -expand yes
     update
 
     # establish paned window management for the views
-    set vwidth [expr [winfo rootx .fu.fViews.fview2]+5]
+    set vwidth [expr [winfo rootx .fv.fViews.fview2]+5]
     if { $AYWITHAQUA } {
-	set vwidth [expr 5+[winfo rootx .fu]+([winfo width .fu]*0.5)]
+	set vwidth [expr 5+[winfo rootx .fv]+([winfo width .fv]*0.5)]
     }
-    pane .fu.fViews.fview1 .fu.fViews.fview2
-    pane_constrain . .fu.fViews.__h1 \
-	.fu.fViews.fview1 .fu.fViews.fview2 width x 1
-    pane_motion $vwidth . .fu.fViews.__h1 width x 1
+    pane .fv.fViews.fview1 .fv.fViews.fview2
+    pane_constrain . .fv.fViews.__h1 \
+	.fv.fViews.fview1 .fv.fViews.fview2 width x 1
+    pane_motion $vwidth . .fv.fViews.__h1 width x 1
     if { $tcl_platform(platform) == "windows" || $AYWITHAQUA } {
 	update
     }
 
     # establish paned window management for the views
-    set vheight [expr ([winfo rooty .fu.fMain]-[winfo rooty .fu.fViews])/2]
-    pane .fu.fViews .fu.fMain -orient vertical
-    pane_constrain . .fu.__h1 .fu.fViews .fu.fMain height y 1
-    pane_motion $vheight . .fu.__h1 height y 1
+    #set vheight [expr ([winfo rooty .fv.fMain]-[winfo rooty .fv.fViews])/2]
+    #pane .fv.fViews .fu.fMain -orient vertical
+    #pane_constrain . .fu.__h1 .fu.fViews .fu.fMain height y 1
+    #pane_motion $vheight . .fu.__h1 height y 1
 } else {
+    # 
+    pack forget .fu.fMain
+    # create the main menu
+    mmenu_open .fu
+
+    pack .fu.fMain -in .fu -side top -fill both -expand yes
+
+    pane forget . .fv
     # no internal views => remove view frame
-    destroy .fu.fViews
+    destroy .fv.fViews
+    # remove also the internal toolbox
+    destroy .fv.fTools
+
+    destroy .fv
 }
 # if
 
@@ -1486,6 +1507,13 @@ shortcut_swapmb
 # bind keyboard shortcuts to main menu
 puts stdout "Establishing key bindings..."
 shortcut_main .
+
+# arrange to properly exit the program when the main window is closed
+wm protocol . WM_DELETE_WINDOW {
+    global ay
+    set m $ay(filemenu)
+    $m invoke 21
+}
 
 # apply gamma
 if { $ayprefs(IconGamma) != "" } {
