@@ -9,32 +9,35 @@
 
 # mmenu.tcl - the main menu
 
+# mmenu_open:
+#  create the Ayam main application menu
+#
+proc mmenu_open { w } {
+
 global ay AYWITHAQUA
 
 if { ! $AYWITHAQUA } {
-    frame .fu.fMenu -bd 2 -relief raised
-    pack .fu.fMenu -side top -fill x
+    frame $w.fMenu -bd 2 -relief raised
+    pack $w.fMenu -side top -fill x
     # File
-    menubutton .fu.fMenu.fil -text "File" -menu .fu.fMenu.fil.m -padx 3
+    menubutton $w.fMenu.fil -text "File" -menu $w.fMenu.fil.m -padx 3
 
-    menu .fu.fMenu.fil.m -tearoff 0
-    set m .fu.fMenu.fil.m
+    menu $w.fMenu.fil.m -tearoff 0
+    set m $w.fMenu.fil.m
 } else {
-
-    #frame .fu.fMenu
-    #pack .fu.fMenu -side top -fill x
-    set mb [menu .fu.menubar -tearoff 0 -type menubar]
+    set mb [menu $w.menubar -tearoff 0 -type menubar]
     . configure -menu $mb
 
     # correct application menu (about entry)
-    menu .fu.menubar.apple
-    .fu.menubar add cascade -menu .fu.menubar.apple
-    .fu.menubar.apple add command -label "About Ayam" -command "aboutAyam"
+    menu $w.menubar.apple
+    $w.menubar add cascade -menu $w.menubar.apple
+    $w.menubar.apple add command -label "About Ayam" -command "aboutAyam"
 
     # File
     set m [menu $mb.mfil -tearoff 0]
     $mb add cascade -label "File" -menu $m
 }
+# if
 
 set ay(filemenu) $m
 
@@ -108,12 +111,12 @@ $m add command -label "Exit!" -command io_exit
 
 
 if { ! $AYWITHAQUA } {
-    pack .fu.fMenu.fil -in .fu.fMenu -side left
+    pack $w.fMenu.fil -in $w.fMenu -side left
 
     # Edit
-    menubutton .fu.fMenu.ed -text "Edit" -menu .fu.fMenu.ed.m -padx 3
-    menu .fu.fMenu.ed.m  -tearoff 0
-    set m .fu.fMenu.ed.m
+    menubutton $w.fMenu.ed -text "Edit" -menu $w.fMenu.ed.m -padx 3
+    menu $w.fMenu.ed.m  -tearoff 0
+    set m $w.fMenu.ed.m
 } else {
     # Edit
     set m [menu $mb.medi -tearoff 0]
@@ -173,12 +176,12 @@ $m add separator
 $m add command -label "Preferences" -command {prefs_open; rV}
 
 if { ! $AYWITHAQUA } {
-    pack .fu.fMenu.ed -in .fu.fMenu -side left
+    pack $w.fMenu.ed -in $w.fMenu -side left
 
     # Create
-    menubutton .fu.fMenu.cr -text "Create" -menu .fu.fMenu.cr.m -padx 3
-    menu .fu.fMenu.cr.m -tearoff 0
-    set m .fu.fMenu.cr.m
+    menubutton $w.fMenu.cr -text "Create" -menu $w.fMenu.cr.m -padx 3
+    menu $w.fMenu.cr.m -tearoff 0
+    set m $w.fMenu.cr.m
 } else {
     # Create
     set m [menu $mb.mcrt -tearoff 0]
@@ -281,11 +284,11 @@ $m add command -label "Text" \
 	-command "crtOb Text; uCR; sL; forceNot; rV;"
 
 if { ! $AYWITHAQUA } {
-    pack .fu.fMenu.cr -in .fu.fMenu -side left
+    pack $w.fMenu.cr -in $w.fMenu -side left
 
     # Tools
-    menubutton .fu.fMenu.tool -text "Tools" -menu .fu.fMenu.tool.m -padx 3
-    set m [menu .fu.fMenu.tool.m -tearoff 0]
+    menubutton $w.fMenu.tool -text "Tools" -menu $w.fMenu.tool.m -padx 3
+    set m [menu $w.fMenu.tool.m -tearoff 0]
 } else {
     # Tools
     set m [menu $mb.mtools -tearoff 0]
@@ -579,17 +582,17 @@ $m add separator
 $m add command -label "Highlight Material" -command "material_highlight"
 
 if { ! $AYWITHAQUA } {
-    pack .fu.fMenu.tool -in .fu.fMenu -side left
+    pack $w.fMenu.tool -in $w.fMenu -side left
 
     # Custom
-    menubutton .fu.fMenu.cust -text "Custom" -menu .fu.fMenu.cust.m -padx 3
-    menu .fu.fMenu.cust.m -tearoff 0
-    pack .fu.fMenu.cust -in .fu.fMenu -side left
-    set ay(cm) .fu.fMenu.cust.m
+    menubutton $w.fMenu.cust -text "Custom" -menu $w.fMenu.cust.m -padx 3
+    menu $w.fMenu.cust.m -tearoff 0
+    pack $w.fMenu.cust -in $w.fMenu -side left
+    set ay(cm) $w.fMenu.cust.m
     # Special
-    menubutton .fu.fMenu.spec -text "Special" -menu .fu.fMenu.spec.m -padx 3
-    set m [menu .fu.fMenu.spec.m -tearoff 0]
-    pack .fu.fMenu.spec -in .fu.fMenu -side left
+    menubutton $w.fMenu.spec -text "Special" -menu $w.fMenu.spec.m -padx 3
+    set m [menu $w.fMenu.spec.m -tearoff 0]
+    pack $w.fMenu.spec -in $w.fMenu -side left
 
 } else {
     # Custom
@@ -647,9 +650,9 @@ $m add command -label "Zap Ayam" -command "zap"
 
 if { ! $AYWITHAQUA } {
     # Help
-    menubutton .fu.fMenu.hlp -text "Help" -menu .fu.fMenu.hlp.m -padx 3
-    set m [menu .fu.fMenu.hlp.m -tearoff 0]
-    pack .fu.fMenu.hlp -in .fu.fMenu -side right
+    menubutton $w.fMenu.hlp -text "Help" -menu $w.fMenu.hlp.m -padx 3
+    set m [menu $w.fMenu.hlp.m -tearoff 0]
+    pack $w.fMenu.hlp -in $w.fMenu -side right
 
 } else {
     # Help
@@ -730,11 +733,22 @@ $m add checkbutton -label "Show Tooltips" -variable ayprefs(showtt)
 # XXXX Win32 Menus are a bit to tall
 global tcl_platform
 if { $tcl_platform(platform) == "windows" } {
-    set children [winfo children .fu.fMenu]
+    set children [winfo children $w.fMenu]
     foreach child $children {
 	$child configure -pady 1
     }
 }
+
+mmenu_addlume $ay(toolsmenu).nc
+mmenu_addlume $ay(toolsmenu).nct
+mmenu_addlume $ay(toolsmenu).npt
+mmenu_addlume $ay(toolsmenu).pm
+mmenu_addlume $ay(toolsmenu).pnt
+mmenu_addlume $ay(toolsmenu)
+
+return;
+}
+# mmenu_open
 
 
 # mmenu_addcustom:
@@ -743,7 +757,7 @@ if { $tcl_platform(platform) == "windows" } {
 proc mmenu_addcustom { name command } {
     global ay
     set m $ay(createmenu).cus
-#    set m .fu.fMenu.cr.m.cus
+#    set m $w.fMenu.cr.m.cus
     $m add command -label $name -command $command
 
  return;
@@ -775,12 +789,3 @@ proc mmenu_addlume { m } {
  return;
 }
 # mmenu_addlume
-
-mmenu_addlume $ay(toolsmenu).nc
-mmenu_addlume $ay(toolsmenu).nct
-mmenu_addlume $ay(toolsmenu).npt
-mmenu_addlume $ay(toolsmenu).pm
-mmenu_addlume $ay(toolsmenu).pnt
-mmenu_addlume $ay(toolsmenu)
-
-return

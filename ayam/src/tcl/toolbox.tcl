@@ -11,28 +11,30 @@
 # toolbox.tcl - the toolbox
 
 # toolbox_open:
-proc toolbox_open { } {
+proc toolbox_open { {w .tbw} } {
     global ay ayprefs ayviewshortcuts aymainshortcuts tcl_platform
 
-    set w .tbw
-
-    catch {destroy $w}
-    if { $ay(truecolor) == 1 } {
-	toplevel $w -class ayam -visual truecolor
-    } else {
-	toplevel $w -class ayam
-    }
-
-    if { $ay(ws) == "Aqua" } {
-	::tk::unsupported::MacWindowStyle style $w floating {closeBox resizable}
-    } else {
-	if { $ayprefs(ToolBoxTrans) == 1 } {
-	    wm transient $w .
+    if { $w == ".tbw" } {
+	catch {destroy $w}
+	if { $ay(truecolor) == 1 } {
+	    toplevel $w -class ayam -visual truecolor
+	} else {
+	    toplevel $w -class ayam
 	}
-    }
 
-    wm title $w "Tools"
-    wm iconname $w "Tools"
+	if { $ay(ws) == "Aqua" } {
+	    ::tk::unsupported::MacWindowStyle style $w floating\
+		{closeBox resizable}
+	} else {
+	    if { $ayprefs(ToolBoxTrans) == 1 } {
+		wm transient $w .
+	    }
+	}
+
+	wm title $w "Tools"
+	wm iconname $w "Tools"
+    }
+    # if
 
     set f [frame $w.f]
     set ay(toolbuttons) {}
@@ -633,30 +635,37 @@ proc toolbox_open { } {
 	}
     }
     # foreach
+
     update
-    if { $ayprefs(toolBoxGeom) != "" } {
-	winMoveOrResize .tbw $ayprefs(toolBoxGeom)
-    } else {
-	set size [winfo reqwidth $w.f.[lindex $ay(toolbuttons) 0]]
-	set width [expr 4*$size]
-	set height [expr [llength $ay(toolbuttons)]/4*$size]
-	winMoveOrResize .tbw ${width}x${height}
+    
+    if { $w == ".tbw" } {
+	if { $ayprefs(toolBoxGeom) != "" } {
+	    winMoveOrResize .tbw $ayprefs(toolBoxGeom)
+	} else {
+	    set size [winfo reqwidth $w.f.[lindex $ay(toolbuttons) 0]]
+	    set width [expr 4*$size]
+	    set height [expr [llength $ay(toolbuttons)]/4*$size]
+	    winMoveOrResize .tbw ${width}x${height}
+	}
+	update
     }
-    update
+    # if
 
     # establish main shortcuts also for toolbox
     shortcut_main $w
 
-    global ayviewshortcuts
-    bind $w <[repcont $ayviewshortcuts(Close)]> "destroy .tbw"
+    if { $w == ".tbw" } {
+	global ayviewshortcuts
+	bind $w <[repcont $ayviewshortcuts(Close)]> "destroy .tbw"
 
-    toolbox_layout
-
-    wm protocol $w WM_DELETE_WINDOW {
-	global ayprefs
-	set ayprefs(showtb) 0
-	destroy .tbw
+	wm protocol $w WM_DELETE_WINDOW {
+	    global ayprefs
+	    set ayprefs(showtb) 0
+	    destroy .tbw
+	}
     }
+
+    toolbox_layout $w
 
  return;
 }
@@ -666,19 +675,20 @@ proc toolbox_open { } {
 # toolbox_layout:
 #  arrange the buttons in rows/columns according
 #  to window size
-proc toolbox_layout { } {
+proc toolbox_layout { {w ".tbw"} } {
     global ay ayprefs
 
     if { $ay(tblayoutsema) == 1 } {
 	return;
     } else {
+	update
 	set ay(tblayoutsema) 1
+	update
     }
 
-    if { ! [winfo exists .tbw] } { return; }
+    if { ! [winfo exists $w] } { return; }
 
-    set w .tbw
-    bind .tbw <Configure> ""
+    bind $w <Configure> ""
 
     set size [winfo reqwidth $w.f.[lindex $ay(toolbuttons) 0]]
     set rows [expr round([winfo height $w] / $size)]
@@ -687,11 +697,18 @@ proc toolbox_layout { } {
     set numb [llength $ay(toolbuttons)]
 
     if { [expr $rows*$columns] < $numb } {
-	ayError 2 toolbox_layout "Can not display all buttons! Resizing..."
-	set height [expr ceil(double($numb)/$columns)*$size]
-	winMoveOrResize .tbw [winfo reqwidth $w]x${height}
-	update
-	set rows [expr round([winfo height $w] / $size)]
+	if { $w == ".tbw" } {
+	    ayError 2 toolbox_layout "Can not display all buttons! Resizing..."
+	    set height [expr ceil(double($numb)/$columns)*$size]
+	    winMoveOrResize .tbw [winfo reqwidth $w]x${height}
+	    update
+	    set rows [expr round([winfo height $w] / $size)]
+	} else {
+	    set height [expr ceil(double($numb)/$columns)*$size]
+	    $w conf -height $height
+	    update
+	    set rows [expr round([winfo height $w] / $size)]
+	}
     }
 
     foreach button $ay(toolbuttons) {
@@ -709,20 +726,26 @@ proc toolbox_layout { } {
 	}
     }
     grid propagate $w.f yes
-    pack $w.f
-    # shrink-wrap the toplevel around buttons
+    pack $w.f -fill both -expand no
     update
-    if { $ayprefs(ToolBoxShrink) } {
-	winMoveOrResize $w [winfo reqwidth $w.f]x[winfo reqheight $w.f]
-	update
+
+    # shrink-wrap the toplevel around buttons
+    if { $w == ".tbw" } {
+	if { $ayprefs(ToolBoxShrink) } {
+	    winMoveOrResize $w [winfo reqwidth $w.f]x[winfo reqheight $w.f]
+	    update
+	}
     }
+
     set ay(tbw) [winfo width $w]
     set ay(tbh) [winfo height $w]
 
     bind $w <Configure> { if { $ay(tbw) != %w ||\
-	        $ay(tbh) != %h } { toolbox_layout } }
+	        $ay(tbh) != %h } { toolbox_layout %W} }
 
+    update
     set ay(tblayoutsema) 0
+    update
 
  return;
 }

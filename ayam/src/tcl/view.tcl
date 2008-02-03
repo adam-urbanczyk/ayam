@@ -376,7 +376,7 @@ proc viewOpen { width height {establish_bindings 1} {internal_view 0} } {
 	if { [string first ".view" $lastname] == 0 } {
 	    scan $lastname ".view%d" lastid
 	} else {
-	    scan $lastname ".fu.fViews.fview%d" lastid
+	    scan $lastname ".fv.fViews.fview%d" lastid
 	}
 	set w .view[expr $lastid + 1]
     }
@@ -396,7 +396,7 @@ proc viewOpen { width height {establish_bindings 1} {internal_view 0} } {
     } else {
 	# internal
 	scan $w ".%s" name
-	set w [frame .fu.fViews.f$name]
+	set w [frame .fv.fViews.f$name]
     }
 
     # create view menu
