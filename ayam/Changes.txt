@@ -1,5 +1,5 @@
-[20. Jan 2008] CVS-Head:
-=======================
+[3. Feb 2008] CVS-Head:
+========================
 o Bug Fixes:
  - X3D export of NURBS patches (row/column major order) (SF 1804056)
  - X3D export of NURBS patches (trimmed state) (SF 1804054)
@@ -25,19 +25,23 @@ o added "Select All"/"Select None" entries to edit menu (mainly to teach the
 o all dialogs may now be cancelled with the <Escape> key
 o closing dialogs using the window decoration is now safer wrt. AutoFocus
 o improved focus handling of property canvas
+o added context sensitive help launcher (<F1> key) to all import and
+  export option windows
+o added preference option to switch Ayam to a single toplevel window
+  application
 
 Modelling:
 o added new object type "ACurve" (for approximating curves)
 o added new object type "Swing" (for rotational sweeps/swung surfaces)
-o made side cap creation of Revolve objects more robust wrt. the cross
-  section curve direction
 o added new object type "Select" to select one object from a list of provided
   objects
 o added new object type "ExtrNP" (similar to "ExtrNC", but extracts patches)
+o added new object type "OffsetNC" to create offset curves
 o added NCInfo balloon (that displays more info on generated curves, similar
   to NPInfo)
 o added tolerance parameter and checking for remKnNC (knot removal) tool
-o added new object type "OffsetNC" to create offset curves
+o made side cap creation of Revolve objects more robust wrt. the cross
+  section curve direction
 o added "undo rewind" command
 o resolving of instances and automatic instances are now selection aware
 
