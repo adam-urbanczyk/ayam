@@ -148,11 +148,9 @@ int onio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 		  int argc, char *argv[]);
 
 extern "C" {
-#ifndef AYONIOWRAPPED
 #ifdef WIN32
   __declspec (dllexport)
 #endif // WIN32
-#endif // !AYONIOWRAPPED
 int Onio_Init(Tcl_Interp *interp);
 } // extern "C"
 
@@ -3546,11 +3544,9 @@ extern "C" {
 //  initialize onio module
 //  note: this function _must_ be capitalized exactly this way
 //  regardless of the filename of the shared object (see: man n load)!
-#ifndef AYONIOWRAPPED
 #ifdef WIN32
   __declspec (dllexport)
 #endif // WIN32
-#endif // !AYONIOWRAPPED
 int
 Onio_Init(Tcl_Interp *interp)
 {
@@ -3559,7 +3555,6 @@ Onio_Init(Tcl_Interp *interp)
  // int err;
  // int ay_status = AY_OK;
 
-#ifndef AYONIOWRAPPED
 #ifdef WIN32
   if(Tcl_InitStubs(interp, "8.2", 0) == NULL)
     {
@@ -3582,9 +3577,7 @@ Onio_Init(Tcl_Interp *interp)
 	       "Plugin has been compiled for a different Ayam version!");
       ay_error(AY_ERROR, fname, "However, it is probably safe to continue...");
     }
-#endif // !AYONIOWRAPPED
 
-#ifndef AYONIOWRAPPED
   // source onio.tcl, it contains vital Tcl-code
   if((Tcl_EvalFile(interp, "onio.tcl")) != TCL_OK)
      {
@@ -3592,7 +3585,6 @@ Onio_Init(Tcl_Interp *interp)
 		  "Error while sourcing \\\"onio.tcl\\\"!");
        return TCL_OK;
      }
-#endif // !AYONIOWRAPPED
 
   // initialize OpenNURBS
   ON::Begin();
@@ -3714,9 +3706,7 @@ Onio_Init(Tcl_Interp *interp)
 				   onio_writepomesh);
 
 
-#ifndef AYONIOWRAPPED
   ay_error(AY_EOUTPUT, fname, "Plugin 'onio' successfully loaded.");
-#endif // !AYONIOWRAPPED
 
  return TCL_OK;
 } // Onio_Init | onio_inittcmd

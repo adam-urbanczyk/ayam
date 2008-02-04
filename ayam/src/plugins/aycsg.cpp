@@ -106,11 +106,9 @@ extern "C" {
 
 void aycsg_display(struct Togl *togl);
 
-#ifndef AYCSGWRAPPED
 #ifdef WIN32
   __declspec (dllexport)
 #endif // WIN32
-#endif // !AYCSGWRAPPED
 int Aycsg_Init(Tcl_Interp *interp);
 
 }
@@ -1671,23 +1669,16 @@ aycsg_toggletcb(struct Togl *togl, int argc, char *argv[])
 //  initialize aycsg module
 //  note: this function _must_ be capitalized exactly this way
 //  regardless of the filename of the shared object (see: man n load)!
-#ifdef AYCSGWRAPPED
-int
-aycsg_inittcmd(ClientData clientData, Tcl_Interp *interp,
-	       int argc, char *argv[])
-#else
 #ifdef WIN32
   __declspec (dllexport)
 #endif // WIN32
 int
 Aycsg_Init(Tcl_Interp *interp)
-#endif
 {
  char fname[] = "Aycsg_Init";
  int err;
  int ay_status = AY_OK;
 
-#ifndef AYCSGWRAPPED
 #ifdef WIN32
   if(Tcl_InitStubs(interp, "8.2", 0) == NULL)
     {
@@ -1710,7 +1701,6 @@ Aycsg_Init(Tcl_Interp *interp)
 	       "Plugin has been compiled for a different Ayam version!");
       ay_error(AY_ERROR, fname, "However, it is probably safe to continue...");
     }
-#endif
 
   aycsg_root = NULL;
 
@@ -1730,7 +1720,6 @@ Aycsg_Init(Tcl_Interp *interp)
   ay_ppoh_init(interp);
 #endif
 
-#ifndef AYCSGWRAPPED
   // source aycsg.tcl, it contains Tcl-code for new key bindings etc.
   if((Tcl_EvalFile(interp, "aycsg.tcl")) != TCL_OK)
      {
@@ -1738,7 +1727,6 @@ Aycsg_Init(Tcl_Interp *interp)
 		  "Error while sourcing \\\"aycsg.tcl\\\"!");
        return TCL_OK;
      }
-#endif
 
   // initialize GLEW
   err = glewInit();
@@ -1757,9 +1745,7 @@ Aycsg_Init(Tcl_Interp *interp)
   // reconnect potentially present DC tags
   ay_status = ay_tags_reconnect(ay_root, aycsg_dc_tagtype, "DC");
 
-#ifndef AYCSGWRAPPED
   ay_error(AY_EOUTPUT, fname, "Plugin 'aycsg' successfully loaded.");
-#endif
 
  return TCL_OK;
 } // Aycsg_Init | aycsg_inittcmd

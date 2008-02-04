@@ -1089,7 +1089,6 @@ Metaobj_Init (Tcl_Interp * interp)
   /* first Metacomp init */
   Metacomp_Init (interp);
 
-#ifndef AYMETAWRAPPED
   /* source metaobj.tcl, it contains the Tcl-code to build
      the metaobj-Attributes Property GUI */
   if ((Tcl_EvalFile (interp, "metaobj.tcl")) != TCL_OK)
@@ -1099,7 +1098,6 @@ Metaobj_Init (Tcl_Interp * interp)
     }
 
   Tcl_Eval (interp, success_cmd);
-#endif
 
  return TCL_OK;
 } /* Metaobj_Init */
@@ -1567,7 +1565,6 @@ Metacomp_Init (Tcl_Interp * interp)
 
   metautils_init(metacomp_id);
 
-#ifndef AYMETAWRAPPED
   /* source metacomp.tcl, it contains the Tcl-code to build
      the metaobj-Attributes Property GUI */
   if ((Tcl_EvalFile (interp, "metacomp.tcl")) != TCL_OK)
@@ -1578,7 +1575,6 @@ Metacomp_Init (Tcl_Interp * interp)
     }
 
   Tcl_Eval (interp, success_cmd);
-#endif
 
  return TCL_OK;
 } /* Metacomp_Init */
