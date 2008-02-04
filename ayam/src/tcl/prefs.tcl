@@ -138,6 +138,7 @@ proc prefs_open {} {
     addText $fw e1 "GUI:"
     set l $ay(locales)
     addStringB $fw ayprefse Locale [ms ayprefse_Locale] $l
+    addCheckB $fw ayprefse SingleWindow [ms ayprefse_SingleWindow]
     addCheckB $fw ayprefse AutoResize [ms ayprefse_AutoResize]
     addCheckB $fw ayprefse AutoFocus [ms ayprefse_AutoFocus]
     addCheckB $fw ayprefse TwmCompat [ms ayprefse_TwmCompat]
@@ -625,7 +626,8 @@ proc prefs_setSamplingTolerance { plus } {
 proc prefs_warnNeedRestart {} {
     global env ay ayprefs ayprefse
 
-    if { $ayprefs(Locale) != $ayprefse(Locale) } {
+    if { ($ayprefs(Locale) != $ayprefse(Locale)) ||
+	 ($ayprefs(SingleWindow) != $ayprefse(SingleWindow)) } {
 	set t "Need Restart!"
 	set m "Some of your changes need a restart of Ayam to take effect!"
 	
@@ -635,11 +637,11 @@ proc prefs_warnNeedRestart {} {
 
 	set answer [tk_messageBox -title $t -type ok -icon warning -message $m]
     }
+    # if
 
  return;
 }
 # prefs_warnNeedRestart
-
 
 
 # prefs_reset:
@@ -668,7 +670,9 @@ proc prefs_reset {} {
 		tk_messageBox -title "Info" -type ok -icon info -message $m
 	    }
 	}
+	# if
     }
+    # if
 
  return;
 }

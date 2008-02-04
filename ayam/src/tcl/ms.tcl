@@ -58,6 +58,7 @@ ms_set en ayprefse_Shaders "A list of paths where your compiled shaders reside."
 ms_set en ayprefse_ScanShaders "Initiates rebuild of internal shader database."
 ms_set en ayprefse_Locale "Language to use for balloon help texts.\
 \nChanges will take effect after restart of Ayam!"
+ms_set en ayprefse_SingleWindow "Switch to single toplevel GUI?"
 ms_set en ayprefse_AutoResize "Resize main window according to property GUI?"
 ms_set en ayprefse_AutoFocus "Move focus to window with mouse cursor?\
 \nChanges will take effect after restart of Ayam!"
@@ -217,6 +218,7 @@ ms_init de
 ms_set de ayprefse_Shaders "Eine Liste von Verzeichnissen, in denen sich\
 \nübersetzte Shader befinden."
 ms_set de ayprefse_ScanShaders "Baut interne Shader-Datenbank neu auf."
+ms_set de ayprefse_SingleWindow "Soll nur ein Hauptfenster benutzt werden?"
 ms_set de ayprefse_AutoResize "Soll das Hauptfenster sich der Größe der\
 Eigenschaften anpassen?"
 ms_set de ayprefse_AutoFocus "Soll der Fokus automatisch dem Fenster mit\
@@ -409,6 +411,10 @@ ms_set fr ayprefse_ScanShaders "Initialise la reconstruction de la base\
 interne Shader."
 ms_set fr ayprefse_Locale "Langue des bulles d'aide.\
 \nLe changement prendra effet après le redémarrage d'Ayam!"
+
+#XXXX add french translation:
+#ms_set fr ayprefse_SingleWindow "Switch to single toplevel GUI?"
+
 ms_set fr ayprefse_AutoResize "Redéfinir la taille de la fenêtre principale\
 selon les propriétés par défaut."
 #XXXX add french translation:
