@@ -139,30 +139,6 @@ int ay_wrib_framenum = 0;
 
 unsigned int ay_current_primlevel = 0;
 
-/* prototypes for initialization callbacks of additional statically
-   included modules */
-#ifdef AYIDRWRAPPED
-  int Idr_Init(Tcl_Interp *interp);
-#endif
-
-#ifdef AYMETAWRAPPED
-  int Metaobj_Init(Tcl_Interp *interp);
-#endif
-
-#ifdef AYRRIBWRAPPED
-  int Rrib_Init(Tcl_Interp *interp);
-#endif
-
-#ifdef AYCSGWRAPPED
-int
-aycsg_inittcmd(ClientData clientData, Tcl_Interp *interp,
-	       int argc, char *argv[]);
-#endif
-
-#ifdef AYONIOWRAPPED
-  int Onio_Init(Tcl_Interp *interp);
-#endif
-
 /* bitmaps for the object tree */
 Pixmap minus_bitmap;
 Pixmap plus_bitmap;
@@ -528,53 +504,6 @@ ay_init(Tcl_Interp *interp)
   ay_point_edit_coords_homogenous = AY_FALSE;
   ay_point_edit_coords_number = 0;
 
-  /* initialize additional statically included modules */
-#ifdef AYIDRWRAPPED
-  if((ay_status = Idr_Init(interp)))
-    { ay_error(ay_status, fname, NULL); return AY_ERROR; }
-  Tcl_SetVar(interp, "AYIDRWRAPPED", "1", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-#else
-  Tcl_SetVar(interp, "AYIDRWRAPPED", "0", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-#endif
-
-#ifdef AYMETAWRAPPED
-  if((ay_status = Metaobj_Init(interp)))
-    { ay_error(ay_status, fname, NULL); return AY_ERROR; }
-  Tcl_SetVar(interp, "AYMETAWRAPPED", "1", TCL_LEAVE_ERR_MSG |
-	     TCL_GLOBAL_ONLY);
-#else
-  Tcl_SetVar(interp, "AYMETAWRAPPED", "0", TCL_LEAVE_ERR_MSG |
-	     TCL_GLOBAL_ONLY);
-#endif
-
-#ifdef AYRRIBWRAPPED
-  if((ay_status = Rrib_Init(interp)))
-    { ay_error(ay_status, fname, NULL); return AY_ERROR; }
-  Tcl_SetVar(interp, "AYRRIBWRAPPED", "1", TCL_LEAVE_ERR_MSG |
-	     TCL_GLOBAL_ONLY);
-#else
-  Tcl_SetVar(interp, "AYRRIBWRAPPED", "0", TCL_LEAVE_ERR_MSG |
-	     TCL_GLOBAL_ONLY);
-#endif
-
-#ifdef AYCSGWRAPPED
-  Tcl_SetVar(interp, "AYCSGWRAPPED", "1", TCL_LEAVE_ERR_MSG |
-	     TCL_GLOBAL_ONLY);
-#else
-  Tcl_SetVar(interp, "AYCSGWRAPPED", "0", TCL_LEAVE_ERR_MSG |
-	     TCL_GLOBAL_ONLY);
-#endif
-
-#ifdef AYONIOWRAPPED
-  if((ay_status = Onio_Init(interp)))
-    { ay_error(ay_status, fname, NULL); return AY_ERROR; }
-  Tcl_SetVar(interp, "AYONIOWRAPPED", "1", TCL_LEAVE_ERR_MSG |
-	     TCL_GLOBAL_ONLY);
-#else
-  Tcl_SetVar(interp, "AYONIOWRAPPED", "0", TCL_LEAVE_ERR_MSG |
-	     TCL_GLOBAL_ONLY);
-#endif
-
  return ay_status;
 } /* ay_init */
 
@@ -610,12 +539,6 @@ Tcl_AppInit(Tcl_Interp *interp)
   Togl_DestroyFunc(ay_toglcb_destroy);
   Togl_DisplayFunc(ay_toglcb_display);
   Togl_ReshapeFunc(ay_toglcb_reshape);
-
-  /* aycsg.cpp */
-#ifdef AYCSGWRAPPED
-  Tcl_CreateCommand(interp, "aycsgInit", aycsg_inittcmd,
-		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
-#endif
 
   /* clear.c */
   Tcl_CreateCommand(interp, "newScene", ay_clear_scenetcmd,

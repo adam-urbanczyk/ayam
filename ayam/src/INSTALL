@@ -1,4 +1,4 @@
-INSTALL [30. Oct 2007]
+INSTALL [4. Feb 2008]
 
 Compilation Instructions for Ayam
 ---------------------------------
@@ -653,13 +653,6 @@ AYNOTEMPNAM - set if your system has no tempnam() function, if you set
  will end up in a place determined by your system
 AYGLUATTRIBBUG - enable workaround for a GLU bug (no NURBS display
  after NURBS tesselation was in use)
-
-Plugins:
-AYIDRWRAPPED - IDR plugin is wrapped into the main executable
-AYMETAWRAPPED - MetaObj plugin is wrapped into the main executable
-AYRRIBWRAPPED - rrib plugin is wrapped into the main executable
-AYCSGWRAPPED - aycsg plugin is wrapped into the main executable
-AYONIOWRAPPED - onio plugin is wrapped into the main executable
 
 Additional features:
 AYENABLEPPREV - enable permanent preview feature

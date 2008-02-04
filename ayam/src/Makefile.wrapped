@@ -66,10 +66,6 @@ MKDIR = mkdir -p
 #   (unlikely, but tempnam() is not ANSI)
 #   Note that the preference setting TmpDir will always be ignored then!
 # o always use -DAYWRAPPED to create a wrapped binary
-# o to link one of the provided plugins into the binary you may specify
-#   -DAYIDRWRAPPED, -DMETAWRAPPED, or -DRRIBWRAPPED
-#   Note, that in this case you need to adjust ADDOBJS and ADDLIBS properly
-#   as well, see below!
 # o add -DAYENABLEPPREV to enable the permanent preview feature
 # o add -DAYENABLEWAIT to enable the waitPid command (Unix/Linux only)
 # o add -DAYENABLEFEXIT to enable the fast exit procedure (MacOSX)
@@ -410,11 +406,9 @@ METAOBJS = contrib/meta/metaobj.o \
 RRIBOBJS = plugins/rrib.o
 
 # additional objects:
-# add e.g. $(IDROBJS) to ADDOBJS if the idr plugin is to be linked statically
 ADDOBJS =
 # additional libs:
-# add -L and -l directives for libraries needed by statically linked plugins
-# to ADDLIB
+# add -L and -l directives for additional libraries needed
 ADDLIB =
 
 

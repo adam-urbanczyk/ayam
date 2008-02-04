@@ -1322,25 +1322,6 @@ ayam_loadscript objsel
 ayam_loadscript tc
 ayam_loadscript tgui
 
-# load scripts of statically linked additional modules (except for aycsg
-# which needs an open view window for initialisation)
-if { $AYIDRWRAPPED == 1 } {
-    ayam_loadscript idr
-}
-
-if { $AYMETAWRAPPED == 1 } {
-    ayam_loadscript metaobj
-    ayam_loadscript metacomp
-}
-
-if { $AYRRIBWRAPPED == 1 } {
-    ayam_loadscript rrib
-}
-
-if { $AYONIOWRAPPED == 1 } {
-    ayam_loadscript onio
-}
-
 # bind . <Configure> { if { "%W" == "." } { puts stderr "%w" } }
 # olb_update
 # EOF
@@ -1568,11 +1549,6 @@ if { ($ayprefs(LoadEnv) == 1) && ($ay(failsafe) == 0) &&\
     uS
 }
 # if
-
-# now, a view is probably open and we may initialize aycsg (if wrapped in)
-if { $AYCSGWRAPPED == 1 } {
-    ayam_loadscript aycsg
-}
 
 # setChangedIndicator - manage scene changed indicator in main titlebar
 proc setChangedIndicator { a1 a2 a3 } {
