@@ -26,6 +26,9 @@ static unsigned int metaobj_id;
 static char *metacomp_name = "MetaComp";
 static unsigned int metacomp_id;
 
+#ifdef WIN32
+  __declspec (dllexport)
+#endif /* WIN32 */
 int Metacomp_Init (Tcl_Interp *interp);
 int metaobj_notifycb (ay_object *o);
 
@@ -1049,6 +1052,9 @@ metaobj_convertcb(ay_object *o, int in_place)
 /* note: this function _must_ be capitalized exactly this way
  * regardless of filename (see: man n load)!
  */
+#ifdef WIN32
+  __declspec (dllexport)
+#endif /* WIN32 */
 int
 Metaobj_Init (Tcl_Interp * interp)
 {
@@ -1057,6 +1063,12 @@ Metaobj_Init (Tcl_Interp * interp)
  char success_cmd[] =
    "puts stdout \"CustomObject \\\"MetaObj\\\" successfully loaded.\"\n";
 
+#ifdef WIN32
+  if(Tcl_InitStubs(interp, "8.2", 0) == NULL)
+    {
+      return TCL_ERROR;
+    }
+#endif /* WIN32 */
 
   ay_status = ay_otype_register (metaobj_name,
 				 metaobj_createcb,
