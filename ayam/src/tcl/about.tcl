@@ -177,9 +177,19 @@ bind $w.ftext.text <ButtonPress-4>\
 bind $w.ftext.text <ButtonPress-5>\
 "$w.ftext.text yview scroll 1 pages; break"
 
-button $w.fbutton.b -text "Dismiss" -pady $ay(pady) -command "destroy $w"
+button $w.fbutton.bcl -text "CopyClipboard" -pady $ay(pady)\
+    -command {
+	clipboard clear
+	catch {clipboard append [.aboutw.ftext.text get 17.0 "end - 36 lines"] }
+    }
 
-pack $w.fbutton.b -in $w.fbutton
+
+button $w.fbutton.bca -text "Cancel" -pady $ay(pady)\
+    -command "destroy $w"
+
+pack $w.fbutton.bcl -in $w.fbutton -side left -padx 8
+
+pack $w.fbutton.bca -in $w.fbutton -side right -padx 8
 
 bind $w.ftext.text <ButtonRelease-1> {
     if {[string match %W [selection own -displayof %W]]} {
@@ -196,7 +206,7 @@ bind $w <Escape> "$w.fbutton.b invoke"
 wm protocol $w WM_DELETE_WINDOW "$w.fbutton.b invoke"
 
 winCenter $w
-focus $w.fbutton.b
+focus $w.fbutton.bca
 tkwait window $w
 
 winAutoFocusOn
