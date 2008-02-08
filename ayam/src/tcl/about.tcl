@@ -184,7 +184,7 @@ button $w.fbutton.bcl -text "CopyClipboard" -pady $ay(pady)\
     }
 
 
-button $w.fbutton.bca -text "Cancel" -pady $ay(pady)\
+button $w.fbutton.bca -text "Close" -pady $ay(pady)\
     -command "destroy $w"
 
 pack $w.fbutton.bcl -in $w.fbutton -side left -padx 8
