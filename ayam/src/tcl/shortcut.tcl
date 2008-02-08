@@ -508,11 +508,21 @@ proc shortcut_viewactions { w } {
     }
 
     bind $w <KeyPress-$ayviewshortcuts(RotModKey)> {
-	[winfo toplevel %W].f3D.togl configure -cursor exchange
+	if { [string first ".view" %W] != 0 } {
+	    set w %W.f3D.togl
+	} else {
+	    set w [winfo toplevel %W].f3D.togl
+	}
+	$w configure -cursor exchange
     }
 
     bind $w <KeyRelease-$ayviewshortcuts(RotModKey)> {
-	[winfo toplevel %W].f3D.togl configure -cursor left_ptr
+	if { [string first ".view" %W] != 0 } {
+	    set w %W.f3D.togl
+	} else {
+	    set w [winfo toplevel %W].f3D.togl
+	}
+	$w configure -cursor left_ptr
     }
 
     set i $ayviewshortcuts(ZoomRButton)
@@ -531,7 +541,11 @@ proc shortcut_viewactions { w } {
 	if { $ay(zoomr) == 0 } {
 	    set ay(zoomr) 1
 	    update
-	    set w [winfo toplevel %W].f3D.togl
+	    if { [string first ".view" %W] != 0 } {
+		set w %W.f3D.togl
+	    } else {
+		set w [winfo toplevel %W].f3D.togl
+	    }
 	    $w configure -cursor sizing
 	    # save old bindings
 	    set ay(oldbinding) [bind $w <B${i}-Motion>]
@@ -541,8 +555,17 @@ proc shortcut_viewactions { w } {
 	    set oldy -1
 	    # the following binding allows to start actions with
 	    # the shift key held down (e.g. scale-3D using shift+s)
-	    bind [winfo toplevel %W] <KeyRelease> {
-		set w [winfo toplevel %W].f3D.togl
+	    if { [string first ".view" %W] != 0 } {
+		set w %W
+	    } else {
+		set w [winfo toplevel %W]
+	    }
+	    bind $w <KeyRelease> {
+		if { [string first ".view" %W] != 0 } {
+		    set w %W.f3D.togl
+		} else {
+		    set w [winfo toplevel %W].f3D.togl
+		}
 		# save old bindings
 		set ay(oldbinding) [bind $w <B${i}-Motion>]
 		set ay(oldb1binding) [bind $w <ButtonPress-${i}>]
@@ -554,7 +577,11 @@ proc shortcut_viewactions { w } {
 	global ay ayviewshortcuts
 	set i $ayviewshortcuts(ZoomRButton)
 	set ay(zoomr) 0
-	set w [winfo toplevel %W].f3D.togl
+	if { [string first ".view" $w] != 0 } {
+	    set w %W.f3D.togl
+	} else {
+	    set w [winfo toplevel %W].f3D.togl
+	}
 	if { $oldx != -1 } {
 	    $w setconf -rect $oldx $oldy %x %y 0
 	}
@@ -564,7 +591,12 @@ proc shortcut_viewactions { w } {
 	bind $w <ButtonPress-${i}> $ay(oldb1binding)
 	bind $w <ButtonRelease-${i}> $ay(oldb1rbinding)
 	$w configure -cursor left_ptr
-	bind [winfo toplevel %W] <KeyRelease> ""
+	if { [string first ".view" %W] != 0 } {
+	    set w %W
+	} else {
+	    set w [winfo toplevel %W]
+	}
+	bind $w <KeyRelease> ""
     }
 
     set i $ayviewshortcuts(ZoomVButton)

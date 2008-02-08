@@ -396,7 +396,7 @@ proc viewOpen { width height {establish_bindings 1} {internal_view 0} } {
     } else {
 	# internal
 	scan $w ".%s" name
-	set w [frame .fv.fViews.f$name]
+	set w [frame .fv.fViews.f$name -takefocus 1 -highlightthickness 1]
     }
 
     # create view menu
@@ -406,6 +406,7 @@ proc viewOpen { width height {establish_bindings 1} {internal_view 0} } {
 
     # create the 3D widget
     frame $w.f3D
+
     if { $ayprefs(AddViewParams) != "" } {
 	eval [subst "togl $w.f3D.togl -rgba true -double true -depth true\
 		-ident $name -width $width -height $height\
