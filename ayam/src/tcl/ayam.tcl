@@ -1506,9 +1506,14 @@ if { $ayprefs(IconGamma) != "" } {
     }
 }
 
-# open the toolbox window
-if { $ayprefs(showtb) == 1 } {
-    toolbox_open
+# open the external toolbox window
+if { !$ayprefs(SingleWindow) } {
+    if { $ayprefs(showtb) == 1 } {
+	toolbox_open
+    }
+} else {
+    # no external toolbox for SingleWindow mode
+    $ay(specialmenu) entryconfigure 12 -state disabled
 }
 
 # re-establish old main window position and size
