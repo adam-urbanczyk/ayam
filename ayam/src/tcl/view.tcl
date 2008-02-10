@@ -869,6 +869,31 @@ proc viewSetMModeIcon { w mode } {
 
 
 ##############################
+# viewSetMAIcon:
+#  set modelling action icon
+proc viewSetMAIcon { w image balloon } {
+    global ay tcl_platform AYWITHAQUA
+
+    if { (! $AYWITHAQUA) || ([string first ".view" $w] != 0) } {
+	set m fMenu.a
+
+	set w [winfo parent [winfo parent $w]]
+
+	set conf "$w.$m configure"
+	eval [subst "$w.$m configure -image $image"]
+	if { $balloon != "" } {
+	    eval [subst "balloon_set $w.$m $balloon"]
+	} else {
+	    eval [subst "balloon_clear $w.$m"]
+	}
+    }
+    
+ return;
+}
+# viewSetMAIcon
+
+
+##############################
 # viewMouseToCurrent:
 #  set current view to the view that has the focus;
 #  used after startup and loading of scenes
