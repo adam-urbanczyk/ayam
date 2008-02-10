@@ -737,3 +737,6 @@ UmVnDWmalFpcXlebQFRWp2KVS02rSUJETk+sIzg6NLYkMi2+v8DBJCEAOw==
 }
 image create photo ay_Cap_img -format GIF -data $imgdata
 
+# Empty
+image create photo ay_Empty_img -width 25 -height 25
+ay_Empty_img blank

@@ -241,6 +241,11 @@ $m add command -label "Align to Object" -command "\
 #$w.fMenu.a.m add command\
 #-label "Quick Render"\
 #-command {exit}
+if { (! $AYWITHAQUA ) || ([winfo toplevel $w] != $w) } {
+    menubutton $w.fMenu.a -image ay_Empty_img -menu $w.fMenu.a.m\
+	-padx 0 -pady 0 -borderwidth 0
+    menu $w.fMenu.a.m -tearoff 0
+}
 
 # Modelling Mode Menu
 if { (! $AYWITHAQUA ) || ([winfo toplevel $w] != $w) } {
@@ -405,7 +410,7 @@ if { (! $AYWITHAQUA ) || ([winfo toplevel $w] != $w) } {
 
     pack $w.fMenu.mm -in $w.fMenu -side right
 
-    #pack $w.fMenu.a -in $w.fMenu -side right
+    pack $w.fMenu.a -in $w.fMenu -side right
 
     # XXXX Win32 Menus are a bit to tall
     global tcl_platform
