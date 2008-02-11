@@ -1033,7 +1033,6 @@ proc viewSetBGImage { view } {
 }
 # viewSetBGImage
 
-
 # some code, that has to be executed in global context when this
 # module is sourced the first time (on application startup):
 

@@ -233,3 +233,18 @@ proc winAutoFocusOn { } {
  return;
 }
 # winAutoFocusOn
+
+
+##############################
+# winSetState:
+proc winSetState { w state } {
+ global ayprefs
+
+    if { $state != [wm state $w] } {
+	catch { wm state $w $state }
+    }
+
+ return;
+}
+# winSetState
+
