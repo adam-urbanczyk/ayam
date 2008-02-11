@@ -1003,7 +1003,7 @@ proc actionSplitNC { w } {
 proc actionPick { w } {
 
     viewTitle $w "" "Pick"
-    viewSetMAIcon $w ay_Tag_img "Pick"
+    viewSetMAIcon $w ay_Pick_img "Pick"
 
     bind $w <ButtonPress-1> {
 	set oldx %x
