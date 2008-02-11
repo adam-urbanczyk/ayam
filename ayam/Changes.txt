@@ -1,5 +1,5 @@
-[3. Feb 2008] CVS-Head:
-========================
+[11. Feb 2008] CVS-Head:
+=======================
 o Bug Fixes:
  - X3D export of NURBS patches (row/column major order) (SF 1804056)
  - X3D export of NURBS patches (trimmed state) (SF 1804054)
@@ -28,7 +28,10 @@ o improved focus handling of property canvas
 o added context sensitive help launcher (<F1> key) to all import and
   export option windows
 o added preference option to switch Ayam to a single toplevel window
-  application
+  application; in SingleWindow mode, there are internal views and an
+  internal toolbar, more floating view windows can be created as usual
+o added icon based modelling action display to view window menu
+o added saving of maximized main window state to the ayamrc file
 
 Modelling:
 o added new object type "ACurve" (for approximating curves)
@@ -72,6 +75,10 @@ o added true support for custom objects to the VC2005 build (they could
   static Aqsis libraries)
 Apple Mac OS X:
 o added official X11 based build
+
+Compilation/Installation:
+o it is no longer possible to wrap the IDR, AyCSG, RRIB, ONIO, or
+  MetaObj plugins into the Ayam executable
 
 
 [21. Sep 2007] Ayam 1.13:
