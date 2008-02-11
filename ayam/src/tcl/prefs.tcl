@@ -431,18 +431,25 @@ proc prefs_save { } {
 
     global aymainshortcuts ayviewshortcuts riattr riopt
 
-    # get main geometry
+    # get main window geometry
     set ayprefs(mainGeom) [winGetGeom .]
+    # get main window state
+    set ayprefs(mainState) [wm state .]
+
+    # get toolbox window geometry
     set ayprefs(toolBoxGeom) ""
     catch { set ayprefs(toolBoxGeom) [winGetGeom .tbw] }
 
+    # get preferences window geometry
     if { $ayprefs(SavePrefsGeom) > 1 } {
 	if { $ay(prefsgeom) != "" } {
 	    set ayprefs(PrefsGeom) $ay(prefsgeom)
 	}
+	# also remember the currently open preferences section
 	set ayprefs(PrefsSection) $ay(prefssection)
     } else {
 	set ayprefs(PrefsGeom) ""
+	# also remember the currently open preferences section
 	set ayprefs(PrefsSection) "Main"
     }
 

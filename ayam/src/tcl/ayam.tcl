@@ -119,6 +119,7 @@ array set ayprefs {
  UndoLevels 10
 
  mainGeom ""
+ mainState "normal"
  toolBoxGeom ""
  LoadEnv 1
  EnvFile "~/.ayam2view.ay"
@@ -1518,7 +1519,11 @@ if { !$ayprefs(SingleWindow) } {
 
 # re-establish old main window position and size
 if { $ayprefs(mainGeom) != "" } {
-    winMoveOrResize . $ayprefs(mainGeom)
+    if { $ayprefs(mainState) == "zoomed" } {
+	winSetState . $ayprefs(mainState)
+    } else {
+	winMoveOrResize . $ayprefs(mainGeom)
+    }
 }
 
 # load the working environment scene file
