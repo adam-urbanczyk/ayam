@@ -740,3 +740,11 @@ image create photo ay_Cap_img -format GIF -data $imgdata
 # Empty
 image create photo ay_Empty_img -width 25 -height 25
 ay_Empty_img blank
+
+# Pick
+set imgdata {\
+R0lGODdhGQAZAKEAALi8uPj8+AAAAAAAACwAAAAAGQAZAAACN4SPqcvtD6OcFIVQUxA4m815ABhmZEmdqKSuUOs6cCxfwn13aZ5XILbRsXojH9FzEYqWzKbzWQAAOw==
+}
+image create photo ay_Pick_img -format GIF -data $imgdata
+
+
