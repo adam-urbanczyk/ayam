@@ -238,10 +238,22 @@ proc winAutoFocusOn { } {
 ##############################
 # winSetState:
 proc winSetState { w state } {
- global ayprefs
+ global ayprefs tcl_patchLevel
 
     if { $state != [wm state $w] } {
-	catch { wm state $w $state }
+	if { $tcl_patchLevel > "8.3" } {
+	    catch { wm state $w $state }
+	} else {
+	    # we can not exactly restore the state in pre 8.4, but we can
+	    # atleast try to restore the size and place for the zoomed state
+	    if { $state == "zoomed" } {
+		set maxsize [wm maxsize .]
+		set maxw [lindex $maxsize 0]
+		set maxh [lindex $maxsize 1]
+		set border [expr $maxw - [winfo screenwidth .]]
+		wm geometry . [winfo screenwidth .]x${maxh}+-${border}+0
+	    }
+	}
     }
 
  return;
