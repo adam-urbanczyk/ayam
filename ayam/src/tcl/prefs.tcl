@@ -387,6 +387,9 @@ proc prefs_open {} {
     bind $w <[repcont $aymainshortcuts(Zap)]> zap
     bind $w <Map> unzap
 
+    # Esc-key == Cancel button
+    bind $w <Escape> "$f.bca invoke"
+
     # bind function keys
     shortcut_fkeys $w
 
