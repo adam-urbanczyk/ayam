@@ -1163,7 +1163,7 @@ frame .fv.fViews
 pack .fv.fViews -in .fv -side bottom -fill both -expand yes
 
 # frame for internal Toolbox
-frame .fv.fTools
+frame .fv.fTools -takefocus 0
 pack .fv.fTools -in .fv -side bottom -fill both -expand no
 
 # frame for object and property display
@@ -1417,6 +1417,10 @@ if { $ayprefs(SingleWindow) } {
     update
     # Toolbox
     toolbox_open .fv.fTools
+
+    foreach b $ay(toolbuttons) {
+	.fv.fTools.f.$b configure -takefocus 0
+    }
 
     # Views
     set vf .fv.fViews

@@ -36,7 +36,7 @@ proc toolbox_open { {w .tbw} } {
     }
     # if
 
-    set f [frame $w.f]
+    set f [frame $w.f -takefocus 0]
     set ay(toolbuttons) {}
 
     foreach i $ayprefs(toolBoxList) {
