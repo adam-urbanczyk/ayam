@@ -249,9 +249,14 @@ proc winSetState { w state } {
 	    if { $state == "zoomed" } {
 		set maxsize [wm maxsize .]
 		set maxw [lindex $maxsize 0]
-		set maxh [lindex $maxsize 1]
+
+		regexp \
+		    {([0-9]+)?x?([0-9]+)?(\+|\-)?([0-9]+)?(\+|\-)?([0-9]+)?} \
+		    $ayprefs(mainGeom) blurb nw nh blurb2 nx blurb3 ny
+
 		set border [expr $maxw - [winfo screenwidth .]]
-		wm geometry . [winfo screenwidth .]x${maxh}+-${border}+0
+
+		wm geometry . [winfo screenwidth .]x${nh}+-${border}+0
 	    }
 	}
     }
