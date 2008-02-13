@@ -2073,10 +2073,14 @@ Using the modelling action <tt/"Rotate"/ (shortcut: <tt/&lt;r&gt;/)
 you may rotate objects or the selected (tagged) points
 of the selected objects.
 <p>
+The axis of rotation is always parallel to the Z-axis in Front-views, the
+Y-axis in Top-views, and the X-axis in Side-views of the local
+object coordinate system. The orientation of the object coordinate system
+may change in respect to the world coordinate system if a sequence of
+rotate modelling actions is applied.
+<p>
 Note that if multiple objects are selected, each object is rotated
 around the center of its own local coordinate system.
-The axis of rotation is always parallel to the Z-axis in Front-views, the
-Y-axis in Top-views, and the X-axis in Side-views.
 
 <sect1>Rotating Objects or Selected Points around a Point
 <p>
@@ -2131,26 +2135,26 @@ then try it once starting on the X-axis.
 <sect1>Selecting Points<label id="selac">
 <p>
 The modelling action <tt/"Select Points"/
-(shortcut: <tt/&lt;t&gt;/; tag points)
+(shortcut: <tt/&lt;t&gt;/; for <em>t</em>ag points)
 may be applied to a NURBS curve, NURBS patch or objects
-that support single point editing only. Objects draw the
-selectable points using small rectangular handles.
+that support single point editing only. Objects usually draw their
+selectable points using small white rectangular handles.
 Selected points will be drawn in dark red.
 <p>
-The selected points may be modified using the modelling actions
+The selected points may be modified subsequently using the modelling actions
 Move, Rotate, and Scale as discussed above.
 Selected points always take precedence for those modelling actions.
 <p>
 After the pick (the selection of a point), the picked point
 will be added to the list of selected points for the selected object.
-If the selected point is already in that list
-it will be removed from the list instead. Note that the list
-of selected points will not be deleted from the object
-until a de-select is performed using the shortcut <tt/&lt;D&gt;/.
+If the selected point is already in that list it will be removed from
+the list instead. Note that the list of selected points will not be
+deleted from the object until an explicit deselection is performed
+using the shortcut <tt/&lt;D&gt;/.
 <p>
-Note that the list of selected points is not copied, if the object
+Note however that the list of selected points is not copied, if the object
 is copied using the clipboard.
-Undo and redo will destroy the list of selected points too!
+Undo and redo unfortunately will also destroy the list of selected points!
 <p>
 However, it is perfectly legal to select some points, move them using
 the move action, then switch to single point editing, edit
@@ -2159,10 +2163,11 @@ to the selection action, add other points to the selection or delete some
 points from the selection, switch to rotate, rotate the selected
 points and so on.
 <p>
-You may also add a bigger number of points
-to the selection using a click and drag operation. All points
-that are inside the rectangular region defined by the click and drag
-will be added to the selection.
+You may also add a bigger number of points to the selection using a
+click and drag operation. All points that are inside the rectangular
+region defined by the click and drag will be added to the selection.
+In fact, this approach is the only way to safely add points to the
+selection that occlude each other.
 
 <sect1>Editing Points<label id="editac">
 <p>
@@ -2171,15 +2176,15 @@ To edit the points of an object three actions (<tt/"Edit"/,
 All those actions may be applied to objects that support single point
 editing only.
 Objects mark themselves editable by drawing the editable points using
-small rectangular handles if one of the single point editing action is
-activated and the object is selected.
+small white rectangular handles if one of the single point editing actions
+is activated and the object is selected.
 <itemize>
 <item>The modelling action <tt/"Edit"/ (shortcut: <tt/&lt;e&gt;/)
-works much like the move action, but it moves
-single points instead of objects. In contrast to the move action,
-you need to pick on the handle of the point you want to move.
-Furthermore, it is not possible to move points of multiple selected
-objects, only the first selected object is considered.
+works much like the move action, but it moves single points instead of
+objects. In contrast to the move action, you need to pick on the handle
+of the point you want to move. Furthermore, it is not possible to move
+points of multiple selected objects, only the first selected object is
+considered.
 <p>
 If a NURBS curve has multiple points, this action modifies all
 points that make up the multiple point.
@@ -2220,7 +2225,7 @@ will not update when the point is modified by another modelling
 action. Simply click on the point again in a view where the
 direct point editing action is active, to update the coordinate
 values in the direct point editing dialog. This modelling action also
-may only be applied to a single selected object.
+only affects the points of the first of multiple selected objects.
 </itemize>
 
 <sect1>Snapping Points to the Grid<label id="snapac">
@@ -2234,14 +2239,14 @@ otherwise all points of the object will be snapped to the grid.
 If <tt/&lt;g&gt;/ is used, the snapping only occurs in
 the modelling plane associated with the view (i.e. in 2D).
 To snap all three coordinate values to the grid use <tt/&lt;G&gt;/.
-Note that the snapping occurs also, if the view has the preference
+Note that the snapping also occurs, if the view has the preference
 option <tt/"Use Grid"/ turned off.
 
 <sect1>Inserting or Deleting Points<label id="insdelac">
 <p>
 The modelling action <tt/"Insert Point"/ (shortcut: <tt/&lt;i&gt;/)
-may be applied to NURBS and interpolating curves (objects of type
-NCurve and ICurve) only.
+may be applied to NURBS, interpolating, and approximating curves
+(objects of type NCurve, ICurve, and ACurve) only.
 A new control point will be inserted in the curve right
 after the picked point. The new point will be inserted in the
 middle between the selected point and the next point, changing
@@ -2252,10 +2257,10 @@ see also the insert knot tool section
 <ref id="insknt" name="The Insert Knot Tool">.)
 <p>
 The modelling action <tt/"Delete Point"/ (shortcut: <tt/&lt;d&gt;/)
-may be applied to NURBS and interpolating curves (objects of type
-NCurve and ICurve) only.
+may be applied to NURBS, interpolating, and approximating curves
+(objects of type NCurve, ICurve, and ACurve) only.
 The selected control point will be deleted from the curve.
-Deleting points from a curve with knot type custom
+Deleting points from a curve with knot type  <tt/"Custom"/
 may currently lead to an incorrect knot sequence, please
 check and correct the new sequence manually.
 
