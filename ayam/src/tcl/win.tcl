@@ -53,7 +53,7 @@ proc winCenter { w } {
 # winMoveOrResize:
 #  move or resize window w according to newgeom
 proc winMoveOrResize { w newgeom } {
-global ayprefs tcl_platform
+global ayprefs
 
     if { $newgeom == "" } { return }
 
@@ -64,6 +64,7 @@ global ayprefs tcl_platform
     regexp {([0-9]+)?x?([0-9]+)?(\+|\-)?([0-9]+)?(\+|\-)?([0-9]+)?} $newgeom blurb nw nh blurb2 nx blurb3 ny
 
     if { $nw == "" } {
+	# no new width specified => move the window only
 	if { $nx != "" } { set x $nx }
 	if { $ny != "" } { set y $ny }
 
@@ -74,75 +75,64 @@ global ayprefs tcl_platform
 	if { [expr abs($y)] >= [winfo screenheight $w] } {
 	    set y 0
 	}
+
 	# make decoration visible in all cases
 	if { ($ayprefs(TwmCompat) == 0) &&
-	    ($tcl_platform(platform) != "windows") } {
+	     ([tk windowingsystem] != "win32") } {
 	    if { $y <= 5 } { incr y 10 }
 	}
 
 	set newgeom ""
-	if { $x >= 0 } { append newgeom "+$x" } else { append newgeom "-$x" }
-	if { $y >= 0 } { append newgeom "+$y" } else { append newgeom "-$y" }
+	append newgeom "+$x"
+	append newgeom "+$y"
 	wm geom $w $newgeom
     } else {
+	# new width specified => resize
 	if { $nx == "" } {
-
+	    # no new position specified => only resize
 	    if { $nw != "" } { set width $nw }
 	    if { $nh != "" } { set height $nh }
 
-
 	    if { ($ayprefs(TwmCompat) == 0) &&
-	    ($tcl_platform(platform) != "windows") } {
+		 ([tk windowingsystem] != "win32") } {
 		set x [winfo rootx $w]
 		set y [winfo rooty $w]
 		set newgeom "${width}x${height}"
-
-		if { $x >= 0 } {
-		    append newgeom "+$x"
-		} else {
-		    append newgeom "-$x"
-		}
-		if { $y >= 0 } {
-		    append newgeom "+$y"
-		} else {
-		    append newgeom "-$y"
-		}
+		append newgeom "+$x"
+		append newgeom "+$y"
 	    } else {
 		set newgeom "${width}x${height}"
 	    }
 	    wm geom $w $newgeom
 	} else {
+	    # new width and position specified
 	    if { $nx != "" } { set x $nx }
 	    if { $ny != "" } { set y $ny }
 	    if { $nw != "" } { set width $nw }
 	    if { $nh != "" } { set height $nh }
 
+	    # never move off screen
 	    if { [expr abs($x)] >= [winfo screenwidth $w] } {
 		set x 0
 	    }
 	    if { [expr abs($y)] >= [winfo screenheight $w] } {
 		set y 0
 	    }
+
 	    # make decoration visible in all cases
 	    if { ($ayprefs(TwmCompat) == 0) &&
-	    ($tcl_platform(platform) != "windows") } {
+		 ([tk windowingsystem] != "win32") } {
 		if { $y <= 5 } { incr y 10 }
 	    }
 
 	    set newgeom "${width}x${height}"
-	    if { $x >= 0 } {
-		append newgeom "+$x"
-	    } else {
-		append newgeom "-$x"
-	    }
-	    if { $y >= 0 } {
-		append newgeom "+$y"
-	    } else {
-		append newgeom "-$y"
-	    }
+	    append newgeom "+$x"
+	    append newgeom "+$y"
 	    wm geom $w $newgeom
 	}
+	# if
     }
+    # if
 
     update idletasks
 
