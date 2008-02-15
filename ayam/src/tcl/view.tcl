@@ -371,12 +371,17 @@ proc viewOpen { width height {establish_bindings 1} {internal_view 0} } {
     # calculate view name
     if { [llength $ay(views)] == 0 } {
 	set w .view1
+	set lastid 0
     } else {
 	set lastname [lindex $ay(views) end]
 	if { [string first ".view" $lastname] == 0 } {
 	    scan $lastname ".view%d" lastid
 	} else {
-	    scan $lastname ".fv.fViews.fview%d" lastid
+	    if { [string first ".fv" $lastname] == 0 } {
+		scan $lastname ".fv.fViews.fview%d" lastid
+	    } else {
+		set lastid 3
+	    }
 	}
 	set w .view[expr $lastid + 1]
     }
@@ -396,7 +401,13 @@ proc viewOpen { width height {establish_bindings 1} {internal_view 0} } {
     } else {
 	# internal
 	scan $w ".%s" name
-	set w [frame .fv.fViews.f$name -takefocus 1 -highlightthickness 1]
+	if { $lastid < 2 } {
+	    set w [frame .fv.fViews.f$name -takefocus 1 -highlightthickness 1]
+	} else {
+	    # the third internal view is a little bit different
+	    puts hierhier
+	    set w .fu.fMain.fview3
+	}
     }
 
     # create view menu

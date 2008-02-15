@@ -1241,6 +1241,7 @@ plb_open .fu.fMain.fProp
 update
 
 # establish paned window management for hierarchy
+
 set vwidth [expr [winfo rootx .fu.fMain.fProp]+5]
 if { $AYWITHAQUA } {
     set vwidth [expr 5+[winfo rootx .fu]+([winfo width .fu]*0.25)]
@@ -1248,6 +1249,7 @@ if { $AYWITHAQUA } {
 pane .fu.fMain.fHier .fu.fMain.fProp
 pane_constrain . .fu.fMain.__h1 .fu.fMain.fHier .fu.fMain.fProp width x 1
 pane_motion $vwidth . .fu.fMain.__h1 width x 1
+
 if { $tcl_platform(platform) == "windows" || $AYWITHAQUA } {
     update
 }
@@ -1409,7 +1411,7 @@ if { $ayprefs(showtr) == 0 } {
 }
 update
 
-# create internal widgets
+# create internal toolbox and views?
 if { $ayprefs(SingleWindow) } {
 
     # create the main menu
@@ -1445,6 +1447,16 @@ if { $ayprefs(SingleWindow) } {
     if { $tcl_platform(platform) == "windows" || $AYWITHAQUA } {
 	update
     }
+
+    # the third internal view
+
+    frame .fu.fMain.fview3 -takefocus 1 -highlightthickness 1
+    pack .fu.fMain.fview3 -in .fu.fMain -side left -expand yes -fill both
+    update
+    pane forget .fu.fMain.fHier .fu.fMain.fProp
+    pane .fu.fMain.fHier .fu.fMain.fProp .fu.fMain.fview3
+
+    viewOpen 100 100 0 1
 
     # establish paned window management for the views
     #set vheight [expr ([winfo rooty .fv.fMain]-[winfo rooty .fv.fViews])/2]
