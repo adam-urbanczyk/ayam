@@ -184,6 +184,8 @@ array set ayprefs {
  PolyOffset1 1.0
 
  SingleWindow 0
+ SavePanes 1
+ PaneConfig ""
 
  Docs "http://ayam.sourceforge.net/docs/"
  DailyTips {
@@ -1217,10 +1219,11 @@ if { $tcl_platform(platform) == "windows" } {
     update
 }
 ayam_loadscript pane
-set vheight [winfo rooty .fl]
+
 pane .fv .fu .fl -orient vertical
-pane_constrain . .__h2 .fu .fl height y 0
-pane_motion $vheight . .__h2 height y 1
+#set vheight [winfo rooty .fl]
+#pane_constrain . .__h2 .fu .fl height y 0
+#pane_motion $vheight . .__h2 height y 1
 
 # clear console
 if { [winfo exists .fl.con] == 1 } { .fl.con clear }
@@ -1449,9 +1452,8 @@ if { $ayprefs(SingleWindow) } {
     }
 
     # the third internal view
-
     frame .fu.fMain.fview3 -takefocus 1 -highlightthickness 1
-    pack .fu.fMain.fview3 -in .fu.fMain -side left -expand yes -fill both
+    #pack .fu.fMain.fview3 -in .fu.fMain -side left -expand yes -fill both
     update
     pane forget .fu.fMain.fHier .fu.fMain.fProp
     pane .fu.fMain.fHier .fu.fMain.fProp .fu.fMain.fview3
@@ -1463,6 +1465,7 @@ if { $ayprefs(SingleWindow) } {
     #pane .fv.fViews .fu.fMain -orient vertical
     #pane_constrain . .fu.__h1 .fu.fViews .fu.fMain height y 1
     #pane_motion $vheight . .fu.__h1 height y 1
+
 } else {
     # 
     pack forget .fu.fMain
@@ -1541,6 +1544,77 @@ if { $ayprefs(mainGeom) != "" } {
 	winMoveOrResize . $ayprefs(mainGeom)
     }
 }
+
+# re-establish old pane configuration
+if { $ayprefs(SingleWindow) } {
+
+    # but first check for screen dimension changes
+    if {[llength $ayprefs(PaneConfig)] > 0} {
+
+	if { ([winfo screenwidth .] < [lindex $ayprefs(PaneConfig) 0]) ||
+	     ([winfo screenheight .] < [lindex $ayprefs(PaneConfig) 1]) } {
+	    # the screen got smaller, better not try to apply this config
+	    set ayprefs(PaneConfig) ""
+	}
+    }
+
+    # now configure all panes
+    # from bottom to top
+    # between console and hierarchy
+    if {[llength $ayprefs(PaneConfig)] > 3} {
+	set vheight [lindex $ayprefs(PaneConfig) 3]
+    } else {
+	set vheight [winfo rooty .fl]
+    }
+    pane_constrain . .__h2 .fu .fl height y 0
+    pane_motion $vheight . .__h2 height y 1
+
+    # between hierarchy and internal views
+    if {[llength $ayprefs(PaneConfig)] > 2} {
+	set vheight [lindex $ayprefs(PaneConfig) 2]
+    } else {
+	set vheight [winfo rooty .fu]
+    }
+    pane_constrain . .__h1 .fv .fu height y 0
+    pane_motion $vheight . .__h1 height y 1
+
+    # from left to right
+    # between internal properties and internal view3
+    if {[llength $ayprefs(PaneConfig)] > 5} {
+	set vwidth [lindex $ayprefs(PaneConfig) 5]
+    } else {
+	set vwidth [expr [winfo rootx .fu.fMain.fview3]+5]
+    }
+    pane_constrain . .fu.fMain.__h2 .fu.fMain.fProp .fu.fMain.fview3 width x 1
+    pane_motion $vwidth . .fu.fMain.__h2 width x 1
+
+    # between hierarchy and internal properties
+    if {[llength $ayprefs(PaneConfig)] > 4} {
+	set vwidth [lindex $ayprefs(PaneConfig) 4]
+    } else {
+	set vwidth [expr [winfo rootx .fu.fMain.fProp]+5]
+	if { $AYWITHAQUA } {
+	    set vwidth [expr 5+[winfo rootx .fu]+([winfo width .fu]*0.25)]
+	}
+    }
+    pane_constrain . .fu.fMain.__h1 .fu.fMain.fHier .fu.fMain.fProp width x 1
+    pane_motion $vwidth . .fu.fMain.__h1 width x 1
+
+    # now between the internal views 1 and 2
+    if {[llength $ayprefs(PaneConfig)] > 6} {
+	set vwidth [lindex $ayprefs(PaneConfig) 6]
+    } else {
+	set vwidth [expr [winfo rootx .fv.fview2]+5]
+	if { $AYWITHAQUA } {
+	    set vwidth [expr 5+[winfo rootx .fv]+([winfo width .fv]*0.5)]
+	}
+    }
+    pane_constrain . .fv.fViews.__h1 .fv.fViews.fview1 .fv.fViews.fview2 \
+	width x 1
+    pane_motion $vwidth . .fv.fViews.__h1 width x 1
+
+}
+# if
 
 # load the working environment scene file
 if { ($ayprefs(LoadEnv) == 1) && ($ay(failsafe) == 0) &&\
@@ -1720,7 +1794,7 @@ if { $ayprefs(FixX11Menu) } {
 
 # if no view is open (first start ever, no ayamrc file, or no working
 # environment file), open a first view now
-if { !$ayprefs(SingleWindow) && $ay(noview) != 1 && $ay(views) == "" } {
+if { !$ayprefs(SingleWindow) && ($ay(noview) != 1) && ($ay(views) == "") } {
     viewOpen 400 300; uS
 }
 
@@ -1739,3 +1813,4 @@ if { $ay(ws) == "Aqua" } {
 puts stdout "Ayam-Startup-Sequence finished. Reconstruct the World!"
 
 # Reconstruct the World!
+
