@@ -458,6 +458,28 @@ proc prefs_save { } {
 	set ayprefs(PrefsSection) "Main"
     }
 
+    # get pane configuration
+    if { $ayprefs(SavePanes) == 1 } {
+
+	# save config for single window GUI mode only
+	if { [winfo exists .__h2] } {
+	    set ayprefs(PaneConfig) ""
+	    lappend ayprefs(PaneConfig) [winfo screenwidth .]
+	    lappend ayprefs(PaneConfig) [winfo screenheight .]
+	    lappend ayprefs(PaneConfig) [expr [winfo rooty .__h1] + \
+					     [winfo height .__h1]]
+	    lappend ayprefs(PaneConfig) [expr [winfo rooty .__h2] + \
+					     [winfo height .__h2]]
+	    lappend ayprefs(PaneConfig) [expr [winfo rootx .fu.fMain.__h1] + \
+					     [winfo width .fu.fMain.__h1]]
+	    lappend ayprefs(PaneConfig) [expr [winfo rootx .fu.fMain.__h2] + \
+					     [winfo width .fu.fMain.__h2]]
+	    lappend ayprefs(PaneConfig) [expr [winfo rootx .fv.fViews.__h1] + \
+					     [winfo width .fv.fViews.__h1]]
+	}
+
+    }
+
     # remember from which window system we write this ayamrc
     set ayprefs(WindowSystem) $ay(ws)
 

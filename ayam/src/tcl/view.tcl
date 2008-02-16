@@ -405,7 +405,6 @@ proc viewOpen { width height {establish_bindings 1} {internal_view 0} } {
 	    set w [frame .fv.fViews.f$name -takefocus 1 -highlightthickness 1]
 	} else {
 	    # the third internal view is a little bit different
-	    puts hierhier
 	    set w .fu.fMain.fview3
 	}
     }
