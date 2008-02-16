@@ -1564,7 +1564,8 @@ if { $ayprefs(SingleWindow) } {
     if {[llength $ayprefs(PaneConfig)] > 3} {
 	set vheight [lindex $ayprefs(PaneConfig) 3]
     } else {
-	set vheight [winfo rooty .fl]
+	set vheight [expr [winfo rooty .] + \
+			 ([winfo height .] - [winfo reqheight .fl])]
     }
     pane_constrain . .__h2 .fu .fl height y 0
     pane_motion $vheight . .__h2 height y 1
@@ -1613,8 +1614,22 @@ if { $ayprefs(SingleWindow) } {
 	width x 1
     pane_motion $vwidth . .fv.fViews.__h1 width x 1
 
+} else {
+    set vheight [expr [winfo rooty .] + \
+		     ([winfo height .] - [winfo reqheight .fl])]
+    pane_constrain . .__h1 .fu .fl height y 0
+    pane_motion $vheight . .__h1 height y 1
+
+    set vwidth [expr [winfo rootx .fu.fMain.fProp]+5]
+    if { $AYWITHAQUA } {
+	set vwidth [expr 5+[winfo rootx .fu]+([winfo width .fu]*0.25)]
+    }
+    pane_constrain . .fu.fMain.__h1 .fu.fMain.fHier .fu.fMain.fProp width x 1
+    pane_motion $vwidth . .fu.fMain.__h1 width x 1
 }
 # if
+
+#unset vwidth vheight
 
 # load the working environment scene file
 if { ($ayprefs(LoadEnv) == 1) && ($ay(failsafe) == 0) &&\
