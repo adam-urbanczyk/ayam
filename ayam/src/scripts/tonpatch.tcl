@@ -62,22 +62,42 @@ $ay(cm) add command -label "ToNPatch" -command {
     toNPatch; uS; rV; }
 
 # attach to tool window
+set tf ""
 if { [winfo exists .tbw] && ![winfo exists .tbw.f.ftonpatch] } {
+    set tf .tbw.f
+}
 
+if { [winfo exists .fv.fTools] && ![winfo exists .fv.fTools.f.ftonpatch] } {
+    set tf .fv.fTools.f
+}
+
+if { $tf != "" } {
     # create a frame:
-    set f [frame .tbw.f.ftonpatch]
+    set f [frame $tf.ftonpatch]
 
-    # calculate the row number below the last row:
-    set row [expr [lindex [grid size .tbw.f] 1] + 1]
-
-    # now display the frame at calculated row, spanning the whole window:
-    grid $f -row $row -column 0 -columnspan [lindex [grid size .tbw.f] 0]\
-	-sticky we
+    if { [string first .tbw $tf] == 0 } {
+	# calculate the row number below the last row:
+	set row [expr [lindex [grid size $tf] 1] + 1]
+	# now display the frame at calculated row, spanning the whole window:
+	grid $f -row $row -column 0 -columnspan [lindex [grid size $tf] 0]\
+	    -sticky we
+    } else {
+	# calculate the row number of the last row
+	set row [expr [lindex [grid size $tf] 1] - 1]
+	# calculate the number of columns in the last row
+	set col [llength [grid slaves .fv.fTools.f -row $row]]
+	# now display the frame at calculated row/column, spanning three cells
+	grid $f -row $row -column $col -columnspan 3 -sticky we
+    }
 
     # create a button inside the frame:
     button $f.b1 -width 10 -text "ToNPatch" -command { toNPatch; uS; rV; }
 
     # display the button
     pack $f.b1 -side left -fill x -expand yes
+
+
+    # cleanup
+    unset f tf row col
 }
 # if
