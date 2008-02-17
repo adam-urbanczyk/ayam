@@ -48,7 +48,6 @@ proc toolbox_open { {w .tbw} } {
 		crtOb Box; uCR; if {!$::ay(ctrldown)} sL; rV;}
 	    balloon_set $f.bb "create Box"
 
-
 	    button $f.bs -image ay_Sphere_img -padx 0 -pady 0 -command {
 		crtOb Sphere; uCR; if {!$::ay(ctrldown)} sL; rV;}
 	    balloon_set $f.bs "create Sphere"
@@ -651,11 +650,12 @@ proc toolbox_open { {w .tbw} } {
     }
     # if
 
-    # establish main shortcuts also for toolbox
-    shortcut_main $w
-
     if { $w == ".tbw" } {
 	global ayviewshortcuts
+
+	# establish main shortcuts also for toolbox
+	shortcut_main $w
+
 	bind $w <[repcont $ayviewshortcuts(Close)]> "destroy .tbw"
 
 	wm protocol $w WM_DELETE_WINDOW {
@@ -664,8 +664,17 @@ proc toolbox_open { {w .tbw} } {
 	    destroy .tbw
 	}
     }
+    # if
 
     toolbox_layout $w
+
+    if { $ayprefs(FixImageButtons) } {
+	foreach bu $ay(toolbuttons) {
+	    set oldcommand [$w.f.$bu cget -command]
+	    append oldcommand ";$w.f.$bu configure -relief raised"
+	    $w.f.$bu conf -command $oldcommand
+	}
+    }
 
  return;
 }
@@ -740,8 +749,15 @@ proc toolbox_layout { {w ".tbw"} } {
     set ay(tbw) [winfo width $w]
     set ay(tbh) [winfo height $w]
 
-    bind $w <Configure> { if { $ay(tbw) != %w ||\
-	        $ay(tbh) != %h } { toolbox_layout %W} }
+    bind $w <Configure> {
+	if { $ay(tbw) != %w || $ay(tbh) != %h } { 
+	    if { $ayprefs(SingleWindow) } {
+		toolbox_layout .fv.fTools
+	    } else {
+		toolbox_layout .tbw
+	    }
+	}
+    }
 
     update
     set ay(tblayoutsema) 0
