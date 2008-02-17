@@ -330,7 +330,7 @@ proc toolbox_open { {w .tbw} } {
 	    button $f.bund -image ay_Undo_img -padx 0 -pady 0 -command {
 		global ay
 		set m $ay(editmenu)
-		$m invoke 9
+		$m invoke 12
 	    }
 	    balloon_set $f.bund "undo \[ $aymainshortcuts(Undo) \]"
 
