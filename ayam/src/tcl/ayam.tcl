@@ -1071,6 +1071,8 @@ while { $i < $argc } {
 }
 # while
 
+unset -nocomplain arg
+
 # to disable the splash screen on systems where no command line
 # parameters may be used (Mac OS X Aqua application bundle)
 if { [info exists env(AYNOSPLASH)] } {
@@ -1142,6 +1144,8 @@ if { $AYWRAPPED == 1 } {
     }
     lappend auto_path $bwdir
     ayam_loadscript tree
+
+    unset scdir bwdir
 }
 
 # load script for object listbox (olb)
@@ -1221,9 +1225,6 @@ if { $tcl_platform(platform) == "windows" } {
 ayam_loadscript pane
 
 pane .fv .fu .fl -orient vertical
-#set vheight [winfo rooty .fl]
-#pane_constrain . .__h2 .fu .fl height y 0
-#pane_motion $vheight . .__h2 height y 1
 
 # clear console
 if { [winfo exists .fl.con] == 1 } { .fl.con clear }
@@ -1244,18 +1245,7 @@ plb_open .fu.fMain.fProp
 update
 
 # establish paned window management for hierarchy
-
-set vwidth [expr [winfo rootx .fu.fMain.fProp]+5]
-if { $AYWITHAQUA } {
-    set vwidth [expr 5+[winfo rootx .fu]+([winfo width .fu]*0.25)]
-}
 pane .fu.fMain.fHier .fu.fMain.fProp
-pane_constrain . .fu.fMain.__h1 .fu.fMain.fHier .fu.fMain.fProp width x 1
-pane_motion $vwidth . .fu.fMain.__h1 width x 1
-
-if { $tcl_platform(platform) == "windows" || $AYWITHAQUA } {
-    update
-}
 
 # load "some" external scripts
 ayam_loadscript run
@@ -1553,7 +1543,7 @@ if { $ayprefs(SingleWindow) } {
 
 	if { ([winfo screenwidth .] < [lindex $ayprefs(PaneConfig) 0]) ||
 	     ([winfo screenheight .] < [lindex $ayprefs(PaneConfig) 1]) } {
-	    # the screen got smaller, better not try to apply this config
+	    # the screen got smaller, better not try to apply the old config
 	    set ayprefs(PaneConfig) ""
 	}
     }
@@ -1595,7 +1585,7 @@ if { $ayprefs(SingleWindow) } {
     } else {
 	set vwidth [expr [winfo rootx .fu.fMain.fProp]+5]
 	if { $AYWITHAQUA } {
-	    set vwidth [expr 5+[winfo rootx .fu]+([winfo width .fu]*0.25)]
+	    set vwidth [expr 5+[winfo rootx .fu]+([winfo width .fu]*0.28)]
 	}
     }
     pane_constrain . .fu.fMain.__h1 .fu.fMain.fHier .fu.fMain.fProp width x 1
@@ -1605,7 +1595,7 @@ if { $ayprefs(SingleWindow) } {
     if {[llength $ayprefs(PaneConfig)] > 6} {
 	set vwidth [lindex $ayprefs(PaneConfig) 6]
     } else {
-	set vwidth [expr [winfo rootx .fv.fview2]+5]
+	set vwidth [expr [winfo rootx .fv.fViews.fview2]+5]
 	if { $AYWITHAQUA } {
 	    set vwidth [expr 5+[winfo rootx .fv]+([winfo width .fv]*0.5)]
 	}
@@ -1615,6 +1605,11 @@ if { $ayprefs(SingleWindow) } {
     pane_motion $vwidth . .fv.fViews.__h1 width x 1
 
 } else {
+
+    if { $tcl_platform(platform) == "windows" || $AYWITHAQUA } {
+	update
+    }
+
     set vheight [expr [winfo rooty .] + \
 		     ([winfo height .] - [winfo reqheight .fl])]
     pane_constrain . .__h1 .fu .fl height y 0
@@ -1622,14 +1617,14 @@ if { $ayprefs(SingleWindow) } {
 
     set vwidth [expr [winfo rootx .fu.fMain.fProp]+5]
     if { $AYWITHAQUA } {
-	set vwidth [expr 5+[winfo rootx .fu]+([winfo width .fu]*0.25)]
+	set vwidth [expr 5+[winfo rootx .fu]+([winfo width .fu]*0.28)]
     }
     pane_constrain . .fu.fMain.__h1 .fu.fMain.fHier .fu.fMain.fProp width x 1
     pane_motion $vwidth . .fu.fMain.__h1 width x 1
 }
 # if
 
-#unset vwidth vheight
+unset vwidth vheight
 
 # load the working environment scene file
 if { ($ayprefs(LoadEnv) == 1) && ($ay(failsafe) == 0) &&\
