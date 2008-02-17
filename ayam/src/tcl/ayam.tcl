@@ -160,6 +160,7 @@ array set ayprefs {
 
  WarnUnknownTag 1
  FixX11Menu 1
+ FixImageButtons 0
  SafeAutoFocus 0
 
  SwapMB 0
@@ -730,6 +731,11 @@ if { $tcl_platform(platform) == "windows" } {
 	set aymainshortcuts(SProp99) "Key-9"
 
     }
+}
+
+if { ($ay(ws) != "Aqua") && ($tcl_platform(os) == "Darwin") } {
+    # image buttons need fixing
+    set ayprefs(FixImageButtons) 1
 }
 
 # are true color visuals available?
@@ -1605,20 +1611,13 @@ if { $ayprefs(SingleWindow) } {
     pane_motion $vwidth . .fv.fViews.__h1 width x 1
 
 } else {
-
-    if { $tcl_platform(platform) == "windows" || $AYWITHAQUA } {
-	update
-    }
-
+    update
     set vheight [expr [winfo rooty .] + \
 		     ([winfo height .] - [winfo reqheight .fl])]
     pane_constrain . .__h1 .fu .fl height y 0
     pane_motion $vheight . .__h1 height y 1
 
-    set vwidth [expr [winfo rootx .fu.fMain.fProp]+5]
-    if { $AYWITHAQUA } {
-	set vwidth [expr 5+[winfo rootx .fu]+([winfo width .fu]*0.28)]
-    }
+    set vwidth [expr 5+[winfo rootx .fu]+([winfo width .fu]*0.28)]
     pane_constrain . .fu.fMain.__h1 .fu.fMain.fHier .fu.fMain.fProp width x 1
     pane_motion $vwidth . .fu.fMain.__h1 width x 1
 }
