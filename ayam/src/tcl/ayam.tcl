@@ -1553,7 +1553,9 @@ if { $ayprefs(SingleWindow) } {
 	    set ayprefs(PaneConfig) ""
 	}
     }
-
+    if { $ayprefs(PaneConfig) == "" } {
+	update
+    }
     # now configure all panes
     # from bottom to top
     # between console and hierarchy
@@ -1570,17 +1572,18 @@ if { $ayprefs(SingleWindow) } {
     if {[llength $ayprefs(PaneConfig)] > 2} {
 	set vheight [lindex $ayprefs(PaneConfig) 2]
     } else {
-	set vheight [winfo rooty .fu]
+	set vheight [expr [winfo rooty .] + \
+			 (([winfo height .] - [winfo reqheight .fl])/2.0)]
     }
     pane_constrain . .__h1 .fv .fu height y 0
     pane_motion $vheight . .__h1 height y 1
 
-    # from left to right
+    # from right to left
     # between internal properties and internal view3
     if {[llength $ayprefs(PaneConfig)] > 5} {
 	set vwidth [lindex $ayprefs(PaneConfig) 5]
     } else {
-	set vwidth [expr [winfo rootx .fu.fMain.fview3]+5]
+	set vwidth [expr 5+[winfo rootx .fu]+([winfo width .fu]*0.6)]
     }
     pane_constrain . .fu.fMain.__h2 .fu.fMain.fProp .fu.fMain.fview3 width x 1
     pane_motion $vwidth . .fu.fMain.__h2 width x 1
@@ -1589,10 +1592,7 @@ if { $ayprefs(SingleWindow) } {
     if {[llength $ayprefs(PaneConfig)] > 4} {
 	set vwidth [lindex $ayprefs(PaneConfig) 4]
     } else {
-	set vwidth [expr [winfo rootx .fu.fMain.fProp]+5]
-	if { $AYWITHAQUA } {
-	    set vwidth [expr 5+[winfo rootx .fu]+([winfo width .fu]*0.28)]
-	}
+	set vwidth [expr 5+[winfo rootx .fu]+([winfo width .fu]*0.28)]
     }
     pane_constrain . .fu.fMain.__h1 .fu.fMain.fHier .fu.fMain.fProp width x 1
     pane_motion $vwidth . .fu.fMain.__h1 width x 1
@@ -1601,10 +1601,7 @@ if { $ayprefs(SingleWindow) } {
     if {[llength $ayprefs(PaneConfig)] > 6} {
 	set vwidth [lindex $ayprefs(PaneConfig) 6]
     } else {
-	set vwidth [expr [winfo rootx .fv.fViews.fview2]+5]
-	if { $AYWITHAQUA } {
-	    set vwidth [expr 5+[winfo rootx .fv]+([winfo width .fv]*0.5)]
-	}
+	set vwidth [expr 5+[winfo rootx .fv]+([winfo width .fv]*0.5)]
     }
     pane_constrain . .fv.fViews.__h1 .fv.fViews.fview1 .fv.fViews.fview2 \
 	width x 1
