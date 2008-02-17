@@ -784,3 +784,71 @@ proc toolbox_toggle { } {
  return;
 }
 # toolbox_toggle
+
+
+# toolbox_add:
+#  add element to toolbox window
+proc toolbox_add { fn colspan } {
+    global ayprefs
+
+    set f ""
+
+    # find tool window
+    set tf ""
+    if { [winfo exists .tbw] && ![winfo exists .tbw.f.$fn] } {
+	set tf .tbw.f
+    }
+
+    if { [winfo exists .fv.fTools] && ![winfo exists .fv.fTools.f.$fn] } {
+	set tf .fv.fTools.f
+    }
+
+    if { $tf != "" } {
+
+	set f [frame $tf.$fn]
+
+	if { [string first .tbw $tf] == 0 } {
+	    # calculate the row number below the last row:
+	    set row [expr [lindex [grid size $tf] 1] + 1]
+	    # now display the frame at calculated row,
+	    # spanning the whole window:
+	    grid $f -row $row -column 0 -columnspan [lindex [grid size $tf] 0]\
+		-sticky we
+	} else {
+	    # calculate the row number of the last row
+	    set row [expr [lindex [grid size $tf] 1] - 1]
+
+	    # calculate the number of columns in the last row
+	    set col 0
+	    foreach slave [grid slaves .fv.fTools.f -row $row] {
+		set slaveconf [grid info $slave]
+		set hascolspan 0
+		set i 0
+		while { $i < [llength $slaveconf] } {
+		    if { [string first "-columnspan" [lindex $slaveconf $i]] \
+			     == 0 } {
+			incr col [lindex $slaveconf [expr $i + 1]]
+			set hascolspan 1
+		    }
+		    # jump to next option/value pair
+		    incr i 2
+		}
+		# while
+		if { ! $hascolspan } {
+		    incr col
+		}
+	    }
+	    # foreach
+
+	    # now display the frame f at the calculated row/column,
+	    # spanning colspan cells
+	    grid $f -row $row -column $col -columnspan $colspan -sticky we
+	}
+	# if
+    }
+    # if
+
+ return $f;
+}
+# toolbox_add
+
