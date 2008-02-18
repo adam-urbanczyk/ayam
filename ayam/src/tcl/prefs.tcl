@@ -141,7 +141,7 @@ proc prefs_open {} {
     addCheckB $fw ayprefse SingleWindow [ms ayprefse_SingleWindow]
     addCheckB $fw ayprefse AutoResize [ms ayprefse_AutoResize]
     addCheckB $fw ayprefse AutoFocus [ms ayprefse_AutoFocus]
-    if { [tk windowingsystem] == "x11" } {
+    if { $ay(ws) == "X11" } {
 	addCheckB $fw ayprefse TwmCompat [ms ayprefse_TwmCompat]
     }
     addCheckB $fw ayprefse ListTypes [ms ayprefse_ListTypes]
