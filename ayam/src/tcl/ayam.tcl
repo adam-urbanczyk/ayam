@@ -1093,12 +1093,12 @@ ayam_loadscript splash
 if { $ay(showsplash) == 1 } { splash_open }
 
 # create UI
-ayam_loadscript balloon
+# first configure our main window
 set w .
 wm title $w "Ayam - Main - : --"
 wm iconname $w "Ayam"
 wm withdraw .
-# XXXX Does this already meet ICCCM requirements?
+# XXXX Does this already meet the ICCCM requirements?
 if { $AYWRAPPED == 1 } {
     wm command . "[info nameofexecutable] $argv"
 } else {
@@ -1117,6 +1117,8 @@ pack .fu -in . -side top
 # with the real user interface
 frame .fu.fMain
 update
+
+ayam_loadscript balloon
 
 # initialize io procedures
 ayam_loadscript io
@@ -1435,33 +1437,15 @@ if { $ayprefs(SingleWindow) } {
     update
 
     # establish paned window management for the views
-    set vwidth [expr [winfo rootx .fv.fViews.fview2]+5]
-    if { $AYWITHAQUA } {
-	set vwidth [expr 5+[winfo rootx .fv]+([winfo width .fv]*0.5)]
-    }
     pane .fv.fViews.fview1 .fv.fViews.fview2
-    pane_constrain . .fv.fViews.__h1 \
-	.fv.fViews.fview1 .fv.fViews.fview2 width x 1
-    pane_motion $vwidth . .fv.fViews.__h1 width x 1
-    if { $tcl_platform(platform) == "windows" || $AYWITHAQUA } {
-	update
-    }
 
     # the third internal view
     frame .fu.fMain.fview3 -takefocus 1 -highlightthickness 1
-    #pack .fu.fMain.fview3 -in .fu.fMain -side left -expand yes -fill both
     update
     pane forget .fu.fMain.fHier .fu.fMain.fProp
     pane .fu.fMain.fHier .fu.fMain.fProp .fu.fMain.fview3
 
     viewOpen 100 100 0 1
-
-    # establish paned window management for the views
-    #set vheight [expr ([winfo rooty .fv.fMain]-[winfo rooty .fv.fViews])/2]
-    #pane .fv.fViews .fu.fMain -orient vertical
-    #pane_constrain . .fu.__h1 .fu.fViews .fu.fMain height y 1
-    #pane_motion $vheight . .fu.__h1 height y 1
-
 } else {
     # 
     pack forget .fu.fMain
@@ -1541,8 +1525,13 @@ if { $ayprefs(mainGeom) != "" } {
     }
 }
 
+# it is safer for the pane configuration below, when the new window size
+# is fully realized first
+update
+
 # re-establish old pane configuration
 if { $ayprefs(SingleWindow) } {
+    # for SingleWindow GUI mode
 
     # but first check for screen dimension changes
     if {[llength $ayprefs(PaneConfig)] > 0} {
@@ -1553,9 +1542,7 @@ if { $ayprefs(SingleWindow) } {
 	    set ayprefs(PaneConfig) ""
 	}
     }
-    if { $ayprefs(PaneConfig) == "" } {
-	update
-    }
+
     # now configure all panes
     # from bottom to top
     # between console and hierarchy
@@ -1585,7 +1572,7 @@ if { $ayprefs(SingleWindow) } {
     } else {
 	set vwidth [expr 5+[winfo rootx .fu]+([winfo width .fu]*0.6)]
     }
-    pane_constrain . .fu.fMain.__h2 .fu.fMain.fProp .fu.fMain.fview3 width x 1
+    pane_constrain . .fu.fMain.__h2 .fu.fMain.fProp .fu.fMain.fview3 width x 0
     pane_motion $vwidth . .fu.fMain.__h2 width x 1
 
     # between hierarchy and internal properties
@@ -1604,18 +1591,23 @@ if { $ayprefs(SingleWindow) } {
 	set vwidth [expr 5+[winfo rootx .fv]+([winfo width .fv]*0.5)]
     }
     pane_constrain . .fv.fViews.__h1 .fv.fViews.fview1 .fv.fViews.fview2 \
-	width x 1
+	width x 0
     pane_motion $vwidth . .fv.fViews.__h1 width x 1
 
 } else {
-    update
+    # for FloatingWindows GUI mode
+
+    # use the requested initial console size of 5 lines to determine
+    # where to place the panes between console and hierarchy/property
     set vheight [expr [winfo rooty .] + \
 		     ([winfo height .] - [winfo reqheight .fl])]
     pane_constrain . .__h1 .fu .fl height y 0
     pane_motion $vheight . .__h1 height y 1
 
+    # use 28% of the main window width for the hierarchy and
+    # the rest for the properties
     set vwidth [expr 5+[winfo rootx .fu]+([winfo width .fu]*0.28)]
-    pane_constrain . .fu.fMain.__h1 .fu.fMain.fHier .fu.fMain.fProp width x 1
+    pane_constrain . .fu.fMain.__h1 .fu.fMain.fHier .fu.fMain.fProp width x 0
     pane_motion $vwidth . .fu.fMain.__h1 width x 1
 }
 # if
