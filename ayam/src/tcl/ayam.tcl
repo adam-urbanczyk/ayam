@@ -1077,7 +1077,7 @@ while { $i < $argc } {
 }
 # while
 
-unset -nocomplain arg
+catch {unset arg}
 
 # to disable the splash screen on systems where no command line
 # parameters may be used (Mac OS X Aqua application bundle)

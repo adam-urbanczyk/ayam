@@ -53,7 +53,7 @@ proc winCenter { w } {
 # winMoveOrResize:
 #  move or resize window w according to newgeom
 proc winMoveOrResize { w newgeom } {
-global ayprefs
+global ay ayprefs
 
     if { $newgeom == "" } { return }
 
@@ -78,7 +78,7 @@ global ayprefs
 
 	# make decoration visible in all cases
 	if { ($ayprefs(TwmCompat) == 0) &&
-	     ([tk windowingsystem] != "win32") } {
+	     ($ay(ws) != "Win32") } {
 	    if { $y <= 5 } { incr y 10 }
 	}
 
@@ -94,7 +94,7 @@ global ayprefs
 	    if { $nh != "" } { set height $nh }
 
 	    if { ($ayprefs(TwmCompat) == 0) &&
-		 ([tk windowingsystem] != "win32") } {
+		 ($ay(ws) != "Win32") } {
 		set x [winfo rootx $w]
 		set y [winfo rooty $w]
 		set newgeom "${width}x${height}"
@@ -121,7 +121,7 @@ global ayprefs
 
 	    # make decoration visible in all cases
 	    if { ($ayprefs(TwmCompat) == 0) &&
-		 ([tk windowingsystem] != "win32") } {
+		 ( $ay(ws) != "Win32") } {
 		if { $y <= 5 } { incr y 10 }
 	    }
 
