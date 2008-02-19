@@ -61,7 +61,7 @@ global ay ayprefs
     set oldgeom [wm geom $w]
     regexp {([0-9]+)?x?([0-9]+)?(\+|\-)?([0-9]+)?(\+|\-)?([0-9]+)?} $oldgeom blurb width height blurb2 x blurb3 y
 
-    regexp {([0-9]+)?x?([0-9]+)?(\+|\-)?([0-9]+)?(\+|\-)?([0-9]+)?} $newgeom blurb nw nh blurb2 nx blurb3 ny
+    regexp {([0-9]+)?x?([0-9]+)?(\+|\-)([0-9\-]+)?(\+|\-)([0-9\-]+)?} $newgeom blurb nw nh blurb2 nx blurb3 ny
 
     if { $nw == "" } {
 	# no new width specified => move the window only
@@ -128,6 +128,7 @@ global ay ayprefs
 	    set newgeom "${width}x${height}"
 	    append newgeom "+$x"
 	    append newgeom "+$y"
+
 	    wm geom $w $newgeom
 	}
 	# if
@@ -244,9 +245,9 @@ proc winSetState { w state } {
 		    {([0-9]+)?x?([0-9]+)?(\+|\-)?([0-9]+)?(\+|\-)?([0-9]+)?} \
 		    $ayprefs(mainGeom) blurb nw nh blurb2 nx blurb3 ny
 
-		set border [expr $maxw - [winfo screenwidth .]]
+		set border [expr $maxw - [winfo screenwidth $w]]
 
-		wm geometry . [winfo screenwidth .]x${nh}+-${border}+0
+		wm geometry $w [winfo screenwidth .]x${nh}+-${border}+0
 	    }
 	}
     }
