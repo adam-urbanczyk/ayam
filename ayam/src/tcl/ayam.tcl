@@ -1447,13 +1447,14 @@ if { $ayprefs(SingleWindow) } {
 
     viewOpen 100 100 0 1
 } else {
-    # 
+    # in floating gui mode, fu.fMenu is the first, so temporarily remove
+    # .fu.fMain from the packer
     pack forget .fu.fMain
     # create the main menu
     mmenu_open .fu
-
+    # now we may pack .fu.fMain again
     pack .fu.fMain -in .fu -side top -fill both -expand yes
-
+    # the .fv frame is useless altogether
     pane forget . .fv
     # no internal views => remove view frame
     destroy .fv.fViews
@@ -1519,7 +1520,7 @@ if { !$ayprefs(SingleWindow) } {
 # re-establish old main window position and size
 if { $ayprefs(mainGeom) != "" } {
     if { $ayprefs(mainState) == "zoomed" } {
-	winSetState . $ayprefs(mainState)
+	winSetWMState . $ayprefs(mainState)
     } else {
 	winMoveOrResize . $ayprefs(mainGeom)
     }

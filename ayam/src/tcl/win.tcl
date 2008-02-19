@@ -59,9 +59,11 @@ global ay ayprefs
 
     update idletasks
     set oldgeom [wm geom $w]
-    regexp {([0-9]+)?x?([0-9]+)?(\+|\-)?([0-9]+)?(\+|\-)?([0-9]+)?} $oldgeom blurb width height blurb2 x blurb3 y
+    regexp {([0-9]+)?x?([0-9]+)?(\+)?([0-9\-]+)?(\+)?([0-9\-]+)?} $oldgeom \
+      blurb width height blurb2 x blurb3 y
 
-    regexp {([0-9]+)?x?([0-9]+)?(\+|\-)([0-9\-]+)?(\+|\-)([0-9\-]+)?} $newgeom blurb nw nh blurb2 nx blurb3 ny
+    regexp {([0-9]+)?x?([0-9]+)?(\+)([0-9\-]+)?(\+)([0-9\-]+)?} $newgeom \
+      blurb nw nh blurb2 nx blurb3 ny
 
     if { $nw == "" } {
 	# no new width specified => move the window only
@@ -227,8 +229,9 @@ proc winAutoFocusOn { } {
 
 
 ##############################
-# winSetState:
-proc winSetState { w state } {
+# winSetWMState:
+#  restore the window manager state for window w
+proc winSetWMState { w state } {
  global ayprefs tcl_patchLevel
 
     if { $state != [wm state $w] } {
@@ -242,8 +245,8 @@ proc winSetState { w state } {
 		set maxw [lindex $maxsize 0]
 
 		regexp \
-		    {([0-9]+)?x?([0-9]+)?(\+|\-)?([0-9]+)?(\+|\-)?([0-9]+)?} \
-		    $ayprefs(mainGeom) blurb nw nh blurb2 nx blurb3 ny
+		  {([0-9]+)?x?([0-9]+)?(\+)?([0-9\-]+)?(\+)?([0-9\-]+)?} \
+		  $ayprefs(mainGeom) blurb nw nh blurb2 nx blurb3 ny
 
 		set border [expr $maxw - [winfo screenwidth $w]]
 
@@ -254,5 +257,5 @@ proc winSetState { w state } {
 
  return;
 }
-# winSetState
+# winSetWMState
 
