@@ -1616,8 +1616,8 @@ if { $ayprefs(SingleWindow) } {
 unset vwidth vheight
 
 # load the working environment scene file
-if { ($ayprefs(LoadEnv) == 1) && ($ay(failsafe) == 0) &&\
-	($ay(noview) != 1) } {
+if { ($ayprefs(EnvFile) != "") &&  ($ayprefs(LoadEnv) == 1) &&
+     ($ay(failsafe) == 0) && ($ay(noview) != 1) } {
     viewCloseAll
 
     set have_scenefile_argument 0

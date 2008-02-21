@@ -46,7 +46,7 @@ $m add command -label "New"\
     global ay ayprefs tcl_platform
     if { ! [io_warnChanged] } {
 	update; selOb; cS; plb_update; newScene; uS;
-	if { $ayprefs(NewLoadsEnv) == 1 } {
+	if { ($ayprefs(EnvFile) != "") && $ayprefs(NewLoadsEnv) == 1 } {
 	    viewCloseAll; cS; plb_update
 	    set filename [file nativename $ayprefs(EnvFile)]
 	    if { $tcl_platform(platform) == "windows" } {
