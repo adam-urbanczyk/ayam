@@ -545,7 +545,7 @@ proc plb_resize { } {
     
     set ng ${newwidth}x${newheight}
     set oldgeom [wm geom .]
-    regexp {([0-9]+)?x?([0-9]+)?(\+|\-)?([0-9]+)?(\+|\-)?([0-9]+)?} $oldgeom blurb width height blurb2 x blurb3 y
+    regexp {([0-9]+)?x?([0-9]+)?(\+)([0-9\-]+)?(\+)([0-9\-]+)?} $oldgeom blurb width height blurb2 x blurb3 y
 
     if { $newwidth <= $width } { return; }
 
@@ -557,8 +557,8 @@ proc plb_resize { } {
 	set x [winfo rootx .]
 	set y [winfo rooty .]
 
-	if { $x >= 0 } { append ng "+$x" } else { append ng "$x" }
-	if { $y >= 0 } { append ng "+$y" } else { append ng "$y" }
+	append ng "+$x"
+	append ng "+$y"
     }
     wm geometry . ""
     wm geometry . $ng
@@ -566,6 +566,7 @@ proc plb_resize { } {
     pane_constrain . .fu.fMain.__h1 .fu.fMain.fHier .fu.fMain.fProp width x 1
     pane_motion $vwidth . .fu.fMain.__h1 width x 1
 
+ return;
 }
 # plb_resize
 
