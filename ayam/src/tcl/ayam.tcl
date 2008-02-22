@@ -736,6 +736,18 @@ if { $tcl_platform(platform) == "windows" } {
 if { ($ay(ws) != "Aqua") && ($tcl_platform(os) == "Darwin") } {
     # image buttons need fixing
     set ayprefs(FixImageButtons) 1
+
+    # X11 on Darwin only produces KP_0 - KP_9
+    set aymainshortcuts(SProp00) "KP_0"
+    set aymainshortcuts(SProp11) "KP_1"
+    set aymainshortcuts(SProp22) "KP_2"
+    set aymainshortcuts(SProp33) "KP_3"
+    set aymainshortcuts(SProp44) "KP_4"
+    set aymainshortcuts(SProp55) "KP_5"
+    set aymainshortcuts(SProp66) "KP_6"
+    set aymainshortcuts(SProp77) "KP_7"
+    set aymainshortcuts(SProp88) "KP_8"
+    set aymainshortcuts(SProp99) "KP_9"
 }
 
 # are true color visuals available?
@@ -1415,6 +1427,8 @@ update
 # create internal toolbox and views?
 if { $ayprefs(SingleWindow) } {
 
+    set ayprefs(AutoResize) 0
+
     # create the main menu
     mmenu_open .fv
     update
@@ -1446,6 +1460,9 @@ if { $ayprefs(SingleWindow) } {
     pane .fu.fMain.fHier .fu.fMain.fProp .fu.fMain.fview3
 
     viewOpen 100 100 0 1
+
+    .fu.fMain.fHier configure -highlightthickness 1
+
 } else {
     # in floating gui mode, fu.fMenu is the first, so temporarily remove
     # .fu.fMain from the packer
