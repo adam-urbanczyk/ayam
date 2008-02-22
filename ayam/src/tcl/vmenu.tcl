@@ -83,12 +83,15 @@ $m add separator
 $m add command -label "Create All ShadowMaps" -command "io_RenderSM 1"
 $m add command -label "Create ShadowMap" -command "io_RenderSM 0"
 
-$m add separator
+if { [string first ".view" $w] == 0 } {
 
-# "after 100" because on Win32 the <Enter>-binding fires when the menu
-# is closed and runs parallel to "viewClose" resulting in an error
-$m add command -label "Close" -command "after 100 \{viewClose $w;\
+    $m add separator
+
+    # "after 100" because on Win32 the <Enter>-binding fires when the menu
+    # is closed and runs parallel to "viewClose" resulting in an error
+    $m add command -label "Close" -command "after 100 \{viewClose $w;\
 	global ay; set ay(ul) root:0; uS\}"
+}
 
 # Type Menu
 if { $menubar } {
