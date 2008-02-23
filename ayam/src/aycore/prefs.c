@@ -201,6 +201,10 @@ ay_prefs_gettcmd(ClientData clientData, Tcl_Interp *interp,
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   /* Misc */
+  Tcl_SetStringObj(ton, "SingleWindow", -1);
+  to = Tcl_NewIntObj(ay_prefs.single_window);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
   Tcl_SetStringObj(ton, "ListTypes", -1);
   to = Tcl_NewIntObj(ay_prefs.list_types);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -593,6 +597,10 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
   Tcl_GetIntFromObj(interp, to, &ay_prefs.excludehidden);
 
   /* Misc */
+  Tcl_SetStringObj(ton, "SingleWindow", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &ay_prefs.single_window);
+
   Tcl_SetStringObj(ton, "ListTypes", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &ay_prefs.list_types);

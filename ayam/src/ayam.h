@@ -948,6 +948,7 @@ typedef struct ay_preferences_s
 {
   int list_types;
   int mark_hidden;
+  int single_window;
 
   /* modelling prefs */
   int edit_snaps_to_grid;
