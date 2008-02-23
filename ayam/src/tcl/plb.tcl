@@ -92,11 +92,11 @@ bind $f.li <ButtonRelease-1> {
 	unset pclip_omit
 	set labels [array names pclip_omit_label]
 	foreach label $labels {
-	    set oldname [$label cget -text] 
+	    set oldname [$label cget -text]
 	    set name [string trimleft $oldname !]
 	    $label configure -text $name
 	}
-	unset pclip_omit_label	    
+	unset pclip_omit_label
 	array set pclip_omit { }
 	array set pclip_omit_label { }
     }
@@ -106,7 +106,6 @@ bind $f.li <ButtonRelease-1> {
     } else {
 	global ay; focus -force $ay(olb)
     }
-
     # improve focus traversal (speed-wise)
     global tcl_platform AYWITHAQUA
     if { $ay(lb) == 1 } {
@@ -152,7 +151,7 @@ if { ($tcl_platform(platform) == "windows") || $AYWITHAQUA } {
 	if { %D < 0.0 } {
 	    $ay(plb) yview scroll 1 pages
 	} else {
-	    $ay(plb) yview scroll -1 pages 
+	    $ay(plb) yview scroll -1 pages
 	}
 	break
     }
@@ -237,7 +236,7 @@ button $f.b2 -text "Reset" -padx 10 -pady 0 -command {
     array set $arrname [array get pclip_reset]
 } -takefocus 0 -highlightthickness 0
 
-pack $f.b1 $f.b2 -in $f -side left -fill x -expand yes 
+pack $f.b1 $f.b2 -in $f -side left -fill x -expand yes
 pack $f -in $w.fArg -side bottom -fill x -expand no
 
 set f $w.fArg
@@ -277,7 +276,7 @@ if { ($tcl_platform(platform) == "windows") } {
 	if { %D < 0.0 } {
 	    $ay(pca) yview scroll 1 pages
 	} else {
-	    $ay(pca) yview scroll -1 pages 
+	    $ay(pca) yview scroll -1 pages
 	}
 	break;
     }
@@ -306,7 +305,7 @@ if { $AYWITHAQUA } {
 	if { %D < 0.0 } {
 	    $ay(pca) yview scroll 3 units
 	} else {
-	    $ay(pca) yview scroll -3 units 
+	    $ay(pca) yview scroll -3 units
 	}
 	break;
     }
@@ -337,7 +336,7 @@ pack $f.ca -in $f -side left -fill both -expand yes
 
 scrollbar $f.s -command { global ay; $ay(pca) yview } -takefocus 0
 set ay(pcas) $f.s
-pack $f.s -in $f -side left -fill y 
+pack $f.s -in $f -side left -fill y
 
 
 pack $w.fArg.fca -in $w.fArg -side top -fill both -expand yes
@@ -365,7 +364,7 @@ return;
 #
 #
 proc plb_update { } {
-global ay ay_error curtypes pclip_omit pclip_omit_label
+global ay ayprefs ay_error curtypes pclip_omit pclip_omit_label
 
 # protect against double updates
 if { $ay(PlbUpdateSema) == 1 } {
@@ -386,9 +385,15 @@ set oldsel [$lb curselection]
 
 if { $oldsel == "" } {
     if { $ay(lb) == 1 } {
-	bind $ay(olb) <Key-Tab> "focus .fl.con.console;break"
+	set w $ay(olb)
     } else {
-	bind $ay(tree) <Key-Tab> "focus .fl.con.console;break"
+	set w $ay(tree)
+    }
+    if { $ayprefs(SingleWindow) == 1 } {
+	bind $w <Key-Tab> "focus .fu.fMain.fview3;break"
+	bind $w <Shift-Tab> "focus .fv.fViews.fview2;break"
+    } else {
+	bind $w <Key-Tab> "focus .fl.con.console;break"
     }
 }
 
@@ -447,7 +452,7 @@ if { [llength $index] == 1 } {
 	    set i 0
 	    foreach tag $tn {
 		if { [lindex $tn $i] == "NP" } {
-		    $lb insert end [lindex $tv $i] 
+		    $lb insert end [lindex $tv $i]
 		}
 		incr i
 	    }
@@ -488,11 +493,11 @@ if { [llength $index] == 1 } {
 		unset pclip_omit
 		set labels [array names pclip_omit_label]
 		foreach label $labels {
-		    set oldname [$label cget -text] 
+		    set oldname [$label cget -text]
 		    set name [string trimleft $oldname !]
 		    $label configure -text $name
 		}
-		unset pclip_omit_label	    
+		unset pclip_omit_label
 		array set pclip_omit { }
 		array set pclip_omit_label { }
 	    }
@@ -510,15 +515,17 @@ if { [llength $index] == 1 } {
 		}
 	    } else {
 		bind $ay(tree) <Key-Tab>\
-			"focus [tk_focusNext $ay(pca).$w];plb_focus;break"
+		    "focus [tk_focusNext $ay(pca).$w];plb_focus;break"
+
 		bind [tk_focusNext $ay(pca).$w] <Shift-Tab>\
-			"focus $ay(tree);break"
+		    "focus $ay(tree);break"
 		if { ( $tcl_platform(platform) != "windows" ) &&\
-			( ! $AYWITHAQUA ) } {
+			 ( ! $AYWITHAQUA ) } {
 		    bind [tk_focusNext $ay(pca).$w] <ISO_Left_Tab>\
-			    "focus $ay(tree);break"
+			"focus $ay(tree);break"
 		}
 	    }
+	    # if
 	}
 	# if
     }
@@ -542,7 +549,7 @@ proc plb_resize { } {
     update
     set newwidth [expr [winfo width .fu.fMain.fHier] + [winfo reqwidth .fu.fMain.fProp] + [winfo reqwidth .fu.fMain.__h1] ]
    set newheight [winfo height .]
-    
+
     set ng ${newwidth}x${newheight}
     set oldgeom [wm geom .]
     regexp {([0-9]+)?x?([0-9]+)?(\+)([0-9\-]+)?(\+)([0-9\-]+)?} $oldgeom blurb width height blurb2 x blurb3 y
@@ -550,7 +557,7 @@ proc plb_resize { } {
     if { $newwidth <= $width } { return; }
 
     set vwidth [expr [winfo rootx .fu.fMain.fProp]]
- 
+
     global tcl_platform ayprefs
     if { ($tcl_platform(platform) != "windows") &&\
 	    ($ayprefs(TwmCompat) != 1) } {
@@ -579,7 +586,7 @@ proc plb_focus { } {
     global ay
     set w [focus]
     if { $w != "" } {
-	if { [string first $ay(pca) $w] != -1} {
+	if { [string first $ay(pca) $w] != -1 } {
 	    set ca $ay(pca)
 	    set height [$ca cget -height]
 	    set visible [$ca yview]
@@ -599,8 +606,8 @@ proc plb_focus { } {
 		     set fraction [expr double($wypos)/double($height)]
 		     $ca yview moveto $fraction
 	    }
-	
 	}
+	# if
     }
     # if
  return;

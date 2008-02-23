@@ -84,10 +84,15 @@ bind $f.li <Shift-Home> "selAdd 3;break"
 bind $f.li <Home> "selNPFL 2;break"
 bind $f.li <End> "selNPFL 3;break"
 
-
 bind $f.li <Right> "$f.b;uS;break"
 
-bind $f.li <Key-Tab> "focus .fl.con.console;break"
+# initial focus management (plb_update/plb_focus change this again)
+if { !$::ayprefs(SingleWindow) } {
+    bind $f.li <Key-Tab> "focus .fl.con.console;break"
+    bind $f(li) <Shift-Tab> "focus .fv.fViews.fview2;break"
+} else {
+    bind $f.li <Key-Tab> "focus .fu.fMain.fview3;break"
+}
 
 #bind $f.li <KeyRelease-space> { olb_select }
 
