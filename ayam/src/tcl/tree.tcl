@@ -31,7 +31,7 @@ proc tree_openTree { tree node } {
     regsub -all ":" $node " " nodes
     eval "set b [list $nodes]"
 
-    set c [lrange $b 1 end] 
+    set c [lrange $b 1 end]
     set node "root:"
     foreach elem $c {
 	append node $elem
@@ -74,7 +74,7 @@ proc tree_createSub { tree node l } {
 
 
 #tree_blockUI:
-# 
+#
 proc tree_blockUI { } {
     grab .fl
     . configure -cursor watch
@@ -106,7 +106,7 @@ proc tree_update { node } {
     after 100 tree_blockUI
 
     treeGetString curtree $node
-    
+
     # redraw AFTER recreation, not while (can see building process)
     $ay(tree) configure -redraw 0
     $ay(tree) delete [$ay(tree) nodes $node]
@@ -122,7 +122,7 @@ proc tree_update { node } {
 	set ll [llength $n]
 	set inode [lindex $n 0]
 	$ay(tree) insert end $node $node:$count -text $inode -drawcross auto\
-		-image emptybm -fill $color  
+		-image emptybm -fill $color
 	if { $ll > 1 } {
 	    tree_createSub $ay(tree) $node:$count $n
 	}
@@ -194,7 +194,7 @@ proc tree_selectItem { redraw tree node } {
 	set ay(treeselectsema) 1
     }
 
-    set ay(ts) 1; 
+    set ay(ts) 1;
     set nlist [$tree selection get]
     $ay(tree) selection clear
     #treeSelect ""
@@ -407,7 +407,7 @@ proc tree_drop { tree from droppos currentoperation datatype data } {
 
 	if { $selection == "" } {
 	 set ay(DropActive) 0
-	    return;   
+	    return;
 	}
 
 	if { $pos == "node" } {
@@ -475,7 +475,7 @@ proc tree_drop { tree from droppos currentoperation datatype data } {
 	    sL
 	    set ay(DndDestination) $position
 #	    tree_move
-#	    set  
+#	    set
 #	    CreateDndObject $data $parent $position $selection newnode
 #	    puts $data
 	    if { $newnode == "" } {
@@ -488,7 +488,7 @@ proc tree_drop { tree from droppos currentoperation datatype data } {
 		#tree_selectItem 1 $ay(tree) $newnode
 	    }
 	    set ay(DropActive) 0
-	    
+
 	}
     } else {
 	# XXXX eliminate this warning, it appears too often?
@@ -612,7 +612,7 @@ proc tree_move { } {
 	    plb_update
 	    rV
 	}
-	
+
     } else {
 	$ay(tree) selection set $old_selection
 	set level [$ay(tree) parent [lindex $old_selection 0]]
@@ -741,7 +741,7 @@ if { ($tcl_platform(platform) == "windows") } {
 	if { %D < 0.0 } {
 	    $ay(tree) yview scroll 1 pages
 	} else {
-	    $ay(tree) yview scroll -1 pages 
+	    $ay(tree) yview scroll -1 pages
 	}
 	break
     }
@@ -755,7 +755,7 @@ if { $AYWITHAQUA } {
 	if { %D < 0.0 } {
 	    $ay(tree) yview scroll 3 units
 	} else {
-	    $ay(tree) yview scroll -3 units 
+	    $ay(tree) yview scroll -3 units
 	}
 	break
     }
@@ -795,8 +795,11 @@ $tree bindText  <ButtonPress-1> "tree_selectItem 1 $sw.tree"
 # open sub tree
 $tree bindText  <Double-ButtonPress-1> "tree_toggleSub $sw.tree"
 
-bind $tree <Key-Tab> "focus .fl.con.console; break"
-
+if { !$::ayprefs(SingleWindow) } {
+    bind $tree <Key-Tab> "focus .fl.con.console;break"
+} else {
+    bind $tree <Key-Tab> "focus .fu.fMain.fview3;break"
+}
 
 # arrange for switching back to good old listbox
 bind $la <Double-ButtonPress-1> "\
@@ -864,6 +867,14 @@ if { $ay(ws) == "Aqua" && $ayprefs(SwapMB) } {
     bind $ay(tree) <ButtonPress-3> "tree_openPopup $ay(tree)"
 }
 
+# initial focus management (plb_update/plb_focus change this again)
+if { $ayprefs(SingleWindow) == 1 } {
+    bind $ay(tree) <Key-Tab> "focus .fu.fMain.fview3;break"
+    bind $ay(tree) <Shift-Tab> "focus .fv.fViews.fview2;break"
+} else {
+    bind $ay(tree) <Key-Tab> "focus .fl.con.console;break"
+}
+
 # XXXX unfortunately, this does not work
 # because this steals all events otherwise
 # meant for nodes
@@ -879,6 +890,7 @@ set ay(DropActive) 0
 }
 # tree_open
 
+
 #tree_close:
 #
 proc tree_close { w } {
@@ -887,6 +899,7 @@ proc tree_close { w } {
 
 }
 #tree_close
+
 
 #tree_toggle:
 #
@@ -922,6 +935,7 @@ proc tree_toggle { } {
 
 }
 #tree_toggle
+
 
 #tree_reset:
 #

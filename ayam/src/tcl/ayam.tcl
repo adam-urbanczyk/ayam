@@ -1460,6 +1460,12 @@ if { $ayprefs(SingleWindow) } {
     pane .fu.fMain.fHier .fu.fMain.fProp .fu.fMain.fview3
 
     viewOpen 100 100 0 1
+    
+    if { $ayprefs(showtr) == 1 } {
+	bind .fu.fMain.fview3 <Shift-Tab> "focus $ay(tree);break"
+    } else {
+	bind .fu.fMain.fview3 <Shift-Tab> "focus -force $ay(olb);break"
+    }
 
     .fu.fMain.fHier configure -highlightthickness 1
 
@@ -1818,7 +1824,9 @@ if { !$ayprefs(SingleWindow) && ($ay(noview) != 1) && ($ay(views) == "") } {
 foreach view $ay(views) { viewBind $view }
 
 # arrange to make the view window under the mouse pointer current
-after idle viewMouseToCurrent
+if { !$ayprefs(SingleWindow) } {
+    after idle viewMouseToCurrent
+}
 
 # correct current directory
 if { $ay(ws) == "Aqua" } {
