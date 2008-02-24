@@ -1513,6 +1513,11 @@ int ay_viewt_griddify(struct Togl *togl, double *winx, double *winy);
  */
 int ay_viewt_droptcb(struct Togl *togl, int argc, char *argv[]);
 
+/*! \brief 
+ */
+int
+ay_viewt_setupintview(int viewnum, ay_view_object *vtemp);
+
 
 /* w32t.c */
 #ifdef WIN32
