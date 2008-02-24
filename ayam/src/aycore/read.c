@@ -651,10 +651,19 @@ ay_read_scene(Tcl_Interp *interp, char *filename, int insert)
  char *fname = "read_scene";
  ay_object *o = NULL;
 
-  ay_read_viewnum = 0;
+  if(!insert)
+    {
+      ay_read_viewnum = 0;
+    }
+  else
+    {
+      ay_read_viewnum = 3;
+    }
 
   if(insert)
-   ay_instt_clearoidtags(ay_root->next);
+    {
+      ay_instt_clearoidtags(ay_root->next);
+    }
 
   if(!(fileptr = fopen(filename,"rb")))
     {
