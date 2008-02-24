@@ -33,8 +33,8 @@ array set ayprefs {
  Snap3D 0
 
  Tolerance 30.0
- NPDisplayMode 0
- NCDisplayMode 0
+ NPDisplayMode 2
+ NCDisplayMode 2
 
  Background_R 127
  Background_G 127
