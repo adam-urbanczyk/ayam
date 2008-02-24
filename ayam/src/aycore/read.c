@@ -651,7 +651,9 @@ ay_read_scene(Tcl_Interp *interp, char *filename, int insert)
  char *fname = "read_scene";
  ay_object *o = NULL;
 
- if(insert)
+  ay_read_viewnum = 0;
+
+  if(insert)
    ay_instt_clearoidtags(ay_root->next);
 
   if(!(fileptr = fopen(filename,"rb")))
@@ -722,7 +724,7 @@ ay_read_scene(Tcl_Interp *interp, char *filename, int insert)
  */
 int
 ay_read_replacetcmd(ClientData clientData, Tcl_Interp * interp,
-		  int argc, char *argv[])
+		    int argc, char *argv[])
 {
  int ay_status = AY_OK;
  char fname[] = "replaceScene";
@@ -760,7 +762,7 @@ ay_read_replacetcmd(ClientData clientData, Tcl_Interp * interp,
  */
 int
 ay_read_inserttcmd(ClientData clientData, Tcl_Interp * interp,
-		  int argc, char *argv[])
+		   int argc, char *argv[])
 {
  int ay_status = AY_OK;
  char fname[] = "insertScene";

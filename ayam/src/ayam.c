@@ -93,6 +93,8 @@ ay_object *ay_last_read_object;
 
 int ay_read_version;
 
+int ay_read_viewnum;
+
 char ay_version_ma[] = AY_VERSIONSTR;
 char ay_version_mi[] = AY_VERSIONSTRMI;
 

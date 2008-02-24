@@ -1816,3 +1816,77 @@ ay_viewt_droptcb(struct Togl *togl, int argc, char *argv[])
 
  return TCL_OK;
 } /* ay_viewt_droptcb */
+
+
+/* ay_viewt_setupintview:
+ *  an object has been dropped onto a view window
+ */
+int
+ay_viewt_setupintview(int viewnum, ay_view_object *vtemp)
+{
+ int ay_status = AY_OK;
+ struct Togl *togl;
+ Togl_Callback *altdispcb;
+ ay_view_object *view = NULL;
+ ay_object *o;
+ char command[255] = {0}, update_cmd[] = "update";
+ int vnum = viewnum-1;
+
+  if(!vtemp)
+    return AY_ENULL;
+
+  /* find view object to configure */
+  o = ay_root->down;
+  while(o && (viewnum > 1))
+    {
+      o = o->next;
+      viewnum--;
+    }
+
+  if(o->type == AY_IDVIEW)
+    view = (ay_view_object *)o->refine;
+  else
+    return AY_ERROR;
+
+  togl = view->togl;
+  altdispcb = view->altdispcb;
+  if(view->bgimage)
+    free(view->bgimage);
+  memcpy(view, vtemp, sizeof(ay_view_object));
+  view->togl = togl;
+  view->altdispcb = altdispcb;
+
+  view->bgimage = NULL;
+  if(vtemp->bgimage)
+    {
+      if((view->bgimage = calloc(strlen(vtemp->bgimage)+1,sizeof(char))))
+	{
+	  strcpy(view->bgimage, vtemp->bgimage);
+	}
+    }
+
+  /* notify also includes reshape() and additionally loads the BGImage */
+  ay_notify_force(o);
+
+  sprintf(command,
+	  "global ay;viewSetGridIcon [lindex $ay(views) %d] %g\n",
+	  vnum, vtemp->grid);
+
+  Tcl_Eval(ay_interp, command);
+
+  sprintf(command,
+	  "global ay;viewSetDModeIcon [lindex $ay(views) %d] %d\n",
+	  vnum, vtemp->shade);
+
+  Tcl_Eval(ay_interp, command);
+
+  sprintf(command,
+	  "global ay;viewSetMModeIcon [lindex $ay(views) %d] %d\n",
+	  vnum, vtemp->local);
+
+  Tcl_Eval(ay_interp, command);
+
+  Tcl_Eval(ay_interp, update_cmd);
+
+ return TCL_OK;
+} /* ay_viewt_setupintview */

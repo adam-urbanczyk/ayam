@@ -1164,6 +1164,8 @@ extern ay_object *ay_last_read_object;
 
 extern int ay_read_version;
 
+extern int ay_read_viewnum;
+
 extern char ay_version_ma[];
 extern char ay_version_mi[];
 
