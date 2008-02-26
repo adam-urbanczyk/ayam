@@ -1568,55 +1568,7 @@ if { $ayprefs(SingleWindow) } {
     }
 
     # now configure all panes
-    # from bottom to top
-    # between console and hierarchy
-    if {[llength $ayprefs(PaneConfig)] > 3} {
-	set vheight [lindex $ayprefs(PaneConfig) 3]
-    } else {
-	set vheight [expr [winfo rooty .] + \
-			 ([winfo height .] - [winfo reqheight .fl])]
-    }
-    pane_constrain . .__h2 .fu .fl height y 0
-    pane_motion $vheight . .__h2 height y 1
-
-    # between hierarchy and internal views
-    if {[llength $ayprefs(PaneConfig)] > 2} {
-	set vheight [lindex $ayprefs(PaneConfig) 2]
-    } else {
-	set vheight [expr [winfo rooty .] + \
-			 (([winfo height .] - [winfo reqheight .fl])/2.0)]
-    }
-    pane_constrain . .__h1 .fv .fu height y 0
-    pane_motion $vheight . .__h1 height y 1
-
-    # from right to left
-    # between internal properties and internal view3
-    if {[llength $ayprefs(PaneConfig)] > 5} {
-	set vwidth [lindex $ayprefs(PaneConfig) 5]
-    } else {
-	set vwidth [expr 5+[winfo rootx .fu]+([winfo width .fu]*0.6)]
-    }
-    pane_constrain . .fu.fMain.__h2 .fu.fMain.fProp .fu.fMain.fview3 width x 0
-    pane_motion $vwidth . .fu.fMain.__h2 width x 1
-
-    # between hierarchy and internal properties
-    if {[llength $ayprefs(PaneConfig)] > 4} {
-	set vwidth [lindex $ayprefs(PaneConfig) 4]
-    } else {
-	set vwidth [expr 5+[winfo rootx .fu]+([winfo width .fu]*0.28)]
-    }
-    pane_constrain . .fu.fMain.__h1 .fu.fMain.fHier .fu.fMain.fProp width x 1
-    pane_motion $vwidth . .fu.fMain.__h1 width x 1
-
-    # now between the internal views 1 and 2
-    if {[llength $ayprefs(PaneConfig)] > 6} {
-	set vwidth [lindex $ayprefs(PaneConfig) 6]
-    } else {
-	set vwidth [expr 5+[winfo rootx .fv]+([winfo width .fv]*0.5)]
-    }
-    pane_constrain . .fv.fViews.__h1 .fv.fViews.fview1 .fv.fViews.fview2 \
-	width x 0
-    pane_motion $vwidth . .fv.fViews.__h1 width x 1
+    winRestorePaneLayout $ayprefs(PaneConfig)
 
 } else {
     # for FloatingWindows GUI mode
@@ -1633,10 +1585,10 @@ if { $ayprefs(SingleWindow) } {
     set vwidth [expr 5+[winfo rootx .fu]+([winfo width .fu]*0.28)]
     pane_constrain . .fu.fMain.__h1 .fu.fMain.fHier .fu.fMain.fProp width x 0
     pane_motion $vwidth . .fu.fMain.__h1 width x 1
+    unset vwidth vheight
 }
 # if
 
-unset vwidth vheight
 
 # load the working environment scene file
 if { ($ayprefs(EnvFile) != "") &&  ($ayprefs(LoadEnv) == 1) &&

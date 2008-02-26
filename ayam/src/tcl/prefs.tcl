@@ -139,13 +139,15 @@ proc prefs_open {} {
     set l $ay(locales)
     addStringB $fw ayprefse Locale [ms ayprefse_Locale] $l
     addCheckB $fw ayprefse SingleWindow [ms ayprefse_SingleWindow]
-    addCheckB $fw ayprefse AutoResize [ms ayprefse_AutoResize]
-    addCheckB $fw ayprefse AutoFocus [ms ayprefse_AutoFocus]
+    if { $ayprefs(SingleWindow) == 0 } {
+	addCheckB $fw ayprefse AutoResize [ms ayprefse_AutoResize]
+	addCheckB $fw ayprefse AutoFocus [ms ayprefse_AutoFocus]
+    }
     if { $ay(ws) == "X11" } {
 	addCheckB $fw ayprefse TwmCompat [ms ayprefse_TwmCompat]
     }
-    addCheckB $fw ayprefse ListTypes [ms ayprefse_ListTypes]
-    addCheckB $fw ayprefse MarkHidden [ms ayprefse_MarkHidden]
+    #addCheckB $fw ayprefse ListTypes [ms ayprefse_ListTypes]
+    #addCheckB $fw ayprefse MarkHidden [ms ayprefse_MarkHidden]
     addCheckB $fw ayprefse AutoSavePrefs [ms ayprefse_AutoSavePrefs]
     addCheckB $fw ayprefse BakOnReplace [ms ayprefse_BakOnReplace]
     addCheckB $fw ayprefse AddExtensions [ms ayprefse_AddExtensions]
@@ -464,18 +466,7 @@ proc prefs_save { } {
 	# save config for single window GUI mode only
 	if { [winfo exists .__h2] } {
 	    set ayprefs(PaneConfig) ""
-	    lappend ayprefs(PaneConfig) [winfo screenwidth .]
-	    lappend ayprefs(PaneConfig) [winfo screenheight .]
-	    lappend ayprefs(PaneConfig) [expr [winfo rooty .__h1] + \
-					     [winfo height .__h1]]
-	    lappend ayprefs(PaneConfig) [expr [winfo rooty .__h2] + \
-					     [winfo height .__h2]]
-	    lappend ayprefs(PaneConfig) [expr [winfo rootx .fu.fMain.__h1] + \
-					     [winfo width .fu.fMain.__h1]]
-	    lappend ayprefs(PaneConfig) [expr [winfo rootx .fu.fMain.__h2] + \
-					     [winfo width .fu.fMain.__h2]]
-	    lappend ayprefs(PaneConfig) [expr [winfo rootx .fv.fViews.__h1] + \
-					     [winfo width .fv.fViews.__h1]]
+	    set ayprefs(PaneConfig) [winGetPaneLayout]
 	}
 
     }
