@@ -117,6 +117,8 @@ char *ay_noexport_tagtype;
 
 char *ay_savegeom_tagtype;
 
+char *ay_savelayout_tagtype;
+
 char *ay_np_tagtype;
 
 char *ay_rp_tagtype;
@@ -407,8 +409,11 @@ ay_init(Tcl_Interp *interp)
   /* initialize Tesselation GUI module */
   ay_tgui_init(interp);
 
-  /* register SaveGeom tag type */
+  /* register SaveMainGeom tag type */
   ay_tags_register(interp, "SaveMainGeom", &ay_savegeom_tagtype);
+
+  /* register SavePaneLayout tag type */
+  ay_tags_register(interp, "SavePaneLayout", &ay_savelayout_tagtype);
 
   /* register NP (NewProperty) tag type */
   ay_tags_register(interp, "NP", &ay_np_tagtype);

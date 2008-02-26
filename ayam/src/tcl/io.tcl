@@ -1026,8 +1026,10 @@ proc io_exportRIBSO { } {
 # io_saveMainGeom:
 #  fill potentially present "SaveMainGeom" tag with current
 #  main and toolbox window geometry
+#  in SingleWindow GUI mode, do the same for the pane configuration
+#  for a potentially present "SavePaneLayout" tag
 proc io_saveMainGeom { } {
-    global ay tagnames tagvals
+    global ay ayprefs tagnames tagvals
 
     set sel ""
     if { $ay(lb) == 0 } {
@@ -1043,15 +1045,22 @@ proc io_saveMainGeom { } {
     getTags tagnames tagvals
     set i 0
     foreach tagname $tagnames {
-	if { $tagname == "SaveMainGeom" } {
-	    if { [winfo exists .tbw] } {
-		set geom "1,[winGetGeom .] [winGetGeom .tbw]"
-	    } else {
-		set geom 0,[winGetGeom .]
+	if { $ayprefs(SingleWindow) } {
+	    if { $tagname == "SavePaneLayout" } {
+		setTags -index $i SavePaneLayout [winGetPaneLayout]
 	    }
+	} else {
+	    if { $tagname == "SaveMainGeom" } {
+		if { [winfo exists .tbw] } {
+		    set geom "1,[winGetGeom .] [winGetGeom .tbw]"
+		} else {
+		    set geom 0,[winGetGeom .]
+		}
 
-	    setTags -index $i SaveMainGeom $geom
+		setTags -index $i SaveMainGeom $geom
+	    }
 	}
+	# if
 	incr i
     }
     if { $sel != "" } {
@@ -1073,8 +1082,10 @@ proc io_saveMainGeom { } {
 # io_readMainGeom:
 #  update geometry of main and toolbox window with data from potentially
 #  present SaveMainGeom tag
+#  in SingleWindow GUI mode, do the same for the pane configuration with
+#  data from a potentially present "SavePaneLayout" tag
 proc io_readMainGeom { } {
-    global ay tagnames tagvals
+    global ay ayprefs tagnames tagvals
 
     set sel ""
     if { $ay(lb) == 0 } {
@@ -1090,22 +1101,28 @@ proc io_readMainGeom { } {
     getTags tagnames tagvals
     set i 0
     foreach tagname $tagnames {
-	if { $tagname == "SaveMainGeom" } {
-	    set hasTBGeom 0
-	    scan [lindex $tagvals $i] "%d," hasTBGeom
-
-	    if {$hasTBGeom} {
-		scan [lindex $tagvals $i] "%d,%s %s" dummy mgeom tgeom
-		if { [winfo exists .tbw] } {
-		    winMoveOrResize .tbw $tgeom
-		}
-	    } else {
-		scan [lindex $tagvals $i] "%d,%s" dummy mgeom
+	if { $ayprefs(SingleWindow) } {
+	    if { $tagname == "SavePaneLayout" } {
+		winRestorePaneLayout [lindex $tagvals $i]
 	    }
+	} else {
+	    if { $tagname == "SaveMainGeom" } {
+		set hasTBGeom 0
+		scan [lindex $tagvals $i] "%d," hasTBGeom
 
-	    winMoveOrResize . $mgeom
+		if {$hasTBGeom} {
+		    scan [lindex $tagvals $i] "%d,%s %s" dummy mgeom tgeom
+		    if { [winfo exists .tbw] } {
+			winMoveOrResize .tbw $tgeom
+		    }
+		} else {
+		    scan [lindex $tagvals $i] "%d,%s" dummy mgeom
+		}
 
+		winMoveOrResize . $mgeom
+	    }
 	}
+	# if
 	incr i
     }
     # foreach

@@ -632,11 +632,13 @@ ay_view_getpntcb(int mode, ay_object *o, double *p)
 int
 ay_view_readcb(FILE *fileptr, ay_object *o)
 {
+ int ay_status = AY_OK;
  int width, height, read = 0;
  char command[255] = {0}, update_cmd[] = "update";
  ay_object *root = ay_root, *down, *last;
  ay_view_object vtemp = {0}, *v;
 
+  ay_read_viewnum++;
 
   fscanf(fileptr,"%d\n", &width);
   fscanf(fileptr,"%d\n", &height);
@@ -715,6 +717,12 @@ ay_view_readcb(FILE *fileptr, ay_object *o)
     }
 
   vtemp.drawhandles = AY_FALSE;
+
+  if(ay_prefs.single_window & (ay_read_viewnum < 4))
+    {
+      ay_status = ay_viewt_setupintview(ay_read_viewnum, &vtemp);
+      return AY_EDONOTLINK;
+    }
 
   /* open the view */
   sprintf(command,"viewOpen %d %d 0\n", width, height);
