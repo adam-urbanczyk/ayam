@@ -62,7 +62,7 @@ global ay ayprefs
     regexp {([0-9]+)?x?([0-9]+)?(\+)?([0-9\-]+)?(\+)?([0-9\-]+)?} $oldgeom \
       blurb width height blurb2 x blurb3 y
 
-    regexp {([0-9]+)?x?([0-9]+)?(\+)([0-9\-]+)?(\+)([0-9\-]+)?} $newgeom \
+    regexp {([0-9]+)?x?([0-9]+)?(\+)?([0-9\-]+)?(\+)?([0-9\-]+)?} $newgeom \
       blurb nw nh blurb2 nx blurb3 ny
 
     if { $nw == "" } {
