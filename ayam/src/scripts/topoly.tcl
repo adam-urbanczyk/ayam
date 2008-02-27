@@ -72,11 +72,13 @@ $ay(cm) add command -label "ToPolyMesh" -command {
 # add the frame to the toolbox
 set f [toolbox_add ftopoly 3]
 
-# create a button inside the frame:
-button $f.b1 -width 10 -text "ToPolyMesh" -command { toPoly; uS; rV; }
+if { $f != "" } {
+    # create a button inside the frame:
+    button $f.b1 -width 10 -text "ToPolyMesh" -command { toPoly; uS; rV; }
 
-# display the button
-pack $f.b1 -side left -fill x -expand yes
+    # display the button
+    pack $f.b1 -side left -fill x -expand yes
+}
 
 # cleanup
 unset f
