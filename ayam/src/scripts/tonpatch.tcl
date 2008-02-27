@@ -66,11 +66,13 @@ $ay(cm) add command -label "ToNPatch" -command {
 # add the frame to the toolbox
 set f [toolbox_add ftonpatch 3]
 
-# create a button inside the frame:
-button $f.b1 -width 10 -text "ToNPatch" -command { toNPatch; uS; rV; }
+if { $f != "" } {
+    # create a button inside the frame:
+    button $f.b1 -width 10 -text "ToNPatch" -command { toNPatch; uS; rV; }
 
-# display the button
-pack $f.b1 -side left -fill x -expand yes
+    # display the button
+    pack $f.b1 -side left -fill x -expand yes
+}
 
 # cleanup
 unset f
