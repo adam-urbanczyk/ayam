@@ -12,7 +12,13 @@
 #
 proc zap { } {
     global ay
-    set windows $ay(views)
+
+    foreach view $ay(views) {
+	if {[winfo toplevel $view] == $view} {
+	    lappend windows $view
+	}
+    }
+
     lappend windows .
 
     if { [winfo exists .prefsw] } { lappend windows .prefsw }
