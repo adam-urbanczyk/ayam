@@ -187,7 +187,7 @@ array set ayprefs {
  SingleWindow 0
  SavePanes 1
  PaneConfig ""
-
+ BindInternalViews 0
  Docs "http://ayam.sourceforge.net/docs/"
  DailyTips {
 {Always click on drawn pixels, when picking vertices.}
