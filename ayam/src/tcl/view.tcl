@@ -443,14 +443,14 @@ proc viewOpen { width height {establish_bindings 1} {internal_view 0} } {
 
 	wm protocol $w WM_DELETE_WINDOW "viewClose $w;\
 	    global ay; set ay(ul) root:0; uS"
-
-	if { $establish_bindings == 1 } {
-	    viewBind $w
-	} else {
-	    $w configure -cursor watch
-	}
     }
     # if
+
+    if { $establish_bindings == 1 } {
+	viewBind $w
+    } else {
+	$w configure -cursor watch
+    }
 
     bind $w <Configure> {
 	global ay
