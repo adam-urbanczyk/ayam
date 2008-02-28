@@ -52,7 +52,7 @@ proc prefs_rsnb { nb page } {
 	    set y [winfo rooty .prefsw]
 	} else {
 	    set ng [wm geom .prefsw]
-	    regexp {([0-9]+)?x?([0-9]+)?(\+|\-)?([0-9]+)?(\+|\-)?([0-9]+)?} \
+	    regexp {([0-9]+)?x?([0-9]+)?(\+)?([0-9\-]+)?(\+)?([0-9\-]+)?} \
 		$ng blurb nw nh blurb2 x blurb3 y
 	}
 	set ng ""
