@@ -249,7 +249,7 @@ proc actionRotObabindp { w x y } {
 proc actionRotObA { w } {
 
     viewTitle $w "" "Select_a_Point"
-    viewSetMAIcon $w ay_RotateA_img "Rotate around Point"
+    viewSetMAIcon $w ay_RotateA_img "Rotate_around_Point"
 
     bind $w <ButtonPress-1> {
 	undo save RotObjA
