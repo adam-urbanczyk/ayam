@@ -212,6 +212,11 @@ $m add command -label "Double Size" -command "\
     after 500 \"$w.f3D.togl mc; $w.f3D.togl setconf -dfromx 0.0\";\
     \$ay(currentView) mc"
 
+if { ([winfo toplevel $w] != $w) } {
+    $m entryconfigure 14 -state disabled
+    $m entryconfigure 15 -state disabled
+}
+
 $m add separator
 
 $m add command -label "From Camera" -command "\
