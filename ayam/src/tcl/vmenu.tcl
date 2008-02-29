@@ -55,10 +55,8 @@ $m add command -label "Redraw" -command "\
 	$w.f3D.togl redraw;\
 	\$ay(currentView) mc"
 
-$m add command -label "Export RIB" -command {
-    global ay
-    io_exportRIB [winfo toplevel $w]
-}
+$m add command -label "Export RIB" -command "\
+    io_exportRIB $w"
 
 global AYENABLEPPREV
 if { $AYENABLEPPREV == 1 } {
