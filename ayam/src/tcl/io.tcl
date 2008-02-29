@@ -319,7 +319,12 @@ proc io_exportRIB { {expview "" } } {
 	    if { $ay(cVType) == 3 } { set firstselect $index }
 	}
 
-	scan $i ".%s" name
+	if { [winfo toplevel $i] == $i } {
+	    scan $i ".%s" name
+	} else {
+	    set last [string last . $i]
+	    set name [string range $i [expr $last + 2] end]
+	}
 	if { $ay(cVType) != 4 } {
 	    $f.lb insert end "$name ([lindex $ay(viewtypenames) $ay(cVType)])"
 	    incr index
@@ -346,8 +351,7 @@ proc io_exportRIB { {expview "" } } {
 
 	set selection [.exportRIBw.f1.fview.lb curselection]
 	if { $selection != "" } {
-	    set sname [.exportRIBw.f1.fview.lb get $selection]
-	    scan $sname "%s (%s)" name type
+	    set name [lindex $ay(views) $selection]
 
 	    set ribname [io_getRIBName]
 	    set efilename [lindex $ribname 0]
@@ -355,7 +359,7 @@ proc io_exportRIB { {expview "" } } {
 
 	    if { $efilename != "" } {
 		if { $imagename != "" } {
-		    .$name.f3D.togl wrib -file $efilename -image $imagename
+		    $name.f3D.togl wrib -file $efilename -image $imagename
 		    ayError 4 "exportRIB" "Done exporting scene to:"
 		    ayError 4 "exportRIB" "$efilename"
 		} else {
