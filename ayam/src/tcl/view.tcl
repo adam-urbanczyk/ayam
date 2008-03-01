@@ -249,8 +249,12 @@ catch {destroy $w}
 toplevel $w -class ayam
 wm title $w "Set FOV"
 wm iconname $w "Ayam"
-wm transient $w [winfo toplevel $view]
-
+if { $ay(ws) == "Aqua" } {
+    ::tk::unsupported::MacWindowStyle style $w floating\
+	{closeBox resizable}
+} else {
+    wm transient $w [winfo toplevel $view]
+}
 set f [frame $w.f1]
 pack $f -in $w -side top -fill x
 
@@ -304,8 +308,12 @@ catch {destroy $w}
 toplevel $w -class ayam
 wm title $w "Set GridSize"
 wm iconname $w "Ayam"
-wm transient $w [winfo toplevel $view]
-
+if { $ay(ws) == "Aqua" } {
+    ::tk::unsupported::MacWindowStyle style $w floating\
+	{closeBox resizable}
+} else {
+    wm transient $w [winfo toplevel $view]
+}
 set f [frame $w.f1]
 pack $f -in $w -side top -fill x
 
@@ -990,8 +998,12 @@ proc viewSetBGImage { view } {
     toplevel $w -class ayam
     wm title $w "Set BGImage"
     wm iconname $w "Ayam"
-    wm transient $w [winfo toplevel $view]
-
+    if { $ay(ws) == "Aqua" } {
+	::tk::unsupported::MacWindowStyle style $w floating\
+	    {closeBox resizable}
+    } else {
+	wm transient $w [winfo toplevel $view]
+    }
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
 

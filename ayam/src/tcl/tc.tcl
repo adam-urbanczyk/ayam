@@ -217,7 +217,7 @@ proc tc_updateMenu { } {
 #  open the texture coordinate tag editor
 #
 proc tc_edit { } {
-    global ay tc tcumsema AYWITHAQUA
+    global ay tc tcumsema
 
     # unset semaphore
     set tcumsema 0
@@ -229,7 +229,10 @@ proc tc_edit { } {
     toplevel $w -class ayam
     wm title $w "Edit Texture Coordinates"
     wm iconname $w "Ayam"
-    if { ! $AYWITHAQUA } {
+    if { $ay(ws) == "Aqua" } {
+	::tk::unsupported::MacWindowStyle style $w floating\
+	    {closeBox resizable}
+    } else {
 	wm transient $w .
     }
 

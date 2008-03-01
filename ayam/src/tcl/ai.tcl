@@ -27,8 +27,12 @@ proc ai_open { } {
     toplevel $w -class ayam
     wm title $w "AI Options"
     wm iconname $w "Ayam"
-    wm transient $w .
-    
+    if { $ay(ws) == "Aqua" } {
+	::tk::unsupported::MacWindowStyle style $w floating\
+	    {closeBox resizable}
+    } else {
+	wm transient $w .
+    }
     set f [frame $w.fu -bd 2 -relief sunken]
 
     addText $f e1 "AI Options:"

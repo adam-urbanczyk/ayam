@@ -49,10 +49,15 @@ proc reconsider { Selection } {
     toplevel $w -class ayam
     wm title $w "Ambiguous Pick"
     wm iconname $w "Ayam"
-    if { $ay(currentView) != "" } {
-	wm transient $w [winfo toplevel $ay(currentView)]
+    if { $ay(ws) == "Aqua" } {
+	::tk::unsupported::MacWindowStyle style $w floating\
+	    {closeBox resizable}
     } else {
-	wm transient $w .
+	if { $ay(currentView) != "" } {
+	    wm transient $w [winfo toplevel $ay(currentView)]
+	} else {
+	    wm transient $w .
+	}
     }
 
     # if we get shuffled under, silently go away after 0.5s

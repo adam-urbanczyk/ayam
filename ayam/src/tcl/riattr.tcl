@@ -19,8 +19,12 @@ proc riattr_addp { } {
     toplevel $w -class ayam
     wm title $w "Add RiAttribute"
     wm iconname $w "Ayam"
-    wm transient $w .
-
+    if { $ay(ws) == "Aqua" } {
+	::tk::unsupported::MacWindowStyle style $w floating\
+	    {closeBox resizable}
+    } else {
+	wm transient $w .
+    }
     set f [frame $w.f1]
     label $f.l -text "Attribute:"
     pack $f.l -in $f

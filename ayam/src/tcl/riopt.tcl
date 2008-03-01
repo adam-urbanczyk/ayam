@@ -19,8 +19,12 @@ proc riopt_addp { } {
     toplevel $w -class ayam
     wm title $w "Add RiOption"
     wm iconname $w "Ayam"
-    wm transient $w .
-
+    if { $ay(ws) == "Aqua" } {
+	::tk::unsupported::MacWindowStyle style $w floating\
+	    {closeBox resizable}
+    } else {
+	wm transient $w .
+    }
     set f [frame $w.f1]
     label $f.l -text "Option:"
     pack $f.l -in $f
