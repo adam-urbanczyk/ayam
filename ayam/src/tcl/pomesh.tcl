@@ -48,8 +48,7 @@ proc pomesh_merge { } {
     wm title $w "Merge PolyMeshes"
     wm iconname $w "Ayam"
     if { $ay(ws) == "Aqua" } {
-	::tk::unsupported::MacWindowStyle style $w floating\
-	    {closeBox resizable}
+	winMakeFloat $w
     } else {
 	wm transient $w .
     }
@@ -145,8 +144,7 @@ proc pomesh_optimize { } {
     wm title $w "Optimize PolyMesh"
     wm iconname $w "Ayam"
     if { $ay(ws) == "Aqua" } {
-	::tk::unsupported::MacWindowStyle style $w floating\
-	    {closeBox resizable}
+	winMakeFloat $w
     } else {
 	wm transient $w .
     }
@@ -225,8 +223,7 @@ proc pomesh_split { } {
     wm title $w "Split PolyMesh"
     wm iconname $w "Ayam"
     if { $ay(ws) == "Aqua" } {
-	::tk::unsupported::MacWindowStyle style $w floating\
-	    {closeBox resizable}
+	winMakeFloat $w
     } else {
 	wm transient $w .
     }

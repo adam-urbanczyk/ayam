@@ -253,8 +253,7 @@ proc shader_setNew { win type stype } {
     wm title $w "Set Shader"
     wm iconname $w "Ayam"
     if { $ay(ws) == "Aqua" } {
-	::tk::unsupported::MacWindowStyle style $w floating\
-	    {closeBox resizable}
+	winMakeFloat $w
     } else {
 	wm transient $w .
     }

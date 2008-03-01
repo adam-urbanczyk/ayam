@@ -462,8 +462,7 @@ proc tgui_open { } {
     wm title $w "Tesselation Parameters"
     wm iconname $w "Ayam"
     if { $ay(ws) == "Aqua" } {
-	::tk::unsupported::MacWindowStyle style $w floating\
-	    {closeBox resizable}
+	winMakeFloat $w
     } else {
 	wm transient $w .
     }

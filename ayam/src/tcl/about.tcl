@@ -24,8 +24,7 @@ toplevel $w -class ayam
 wm title $w "About Ayam"
 wm iconname $w "Ayam"
 if { $ay(ws) == "Aqua" } {
-    ::tk::unsupported::MacWindowStyle style $w floating\
-	{closeBox resizable}
+    winMakeFloat $w
 } else {
     wm transient .
 }

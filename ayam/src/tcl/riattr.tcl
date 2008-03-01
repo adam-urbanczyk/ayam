@@ -20,8 +20,7 @@ proc riattr_addp { } {
     wm title $w "Add RiAttribute"
     wm iconname $w "Ayam"
     if { $ay(ws) == "Aqua" } {
-	::tk::unsupported::MacWindowStyle style $w floating\
-	    {closeBox resizable}
+	winMakeFloat $w
     } else {
 	wm transient $w .
     }
