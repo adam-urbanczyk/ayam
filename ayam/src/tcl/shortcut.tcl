@@ -773,9 +773,13 @@ catch {destroy $w}
 toplevel $w -class ayam
 wm title $w "Ayam Shortcuts"
 wm iconname $w "Ayam"
-
-#XXXX make this window transient?
-
+if { $ay(ws) == "Aqua" } {
+    ::tk::unsupported::MacWindowStyle style $w floating\
+	{closeBox resizable}
+} else {
+    #XXXX make this window transient?
+    #wm transient $w .
+}
 frame $w.ftext
 
 frame $w.fbutton

@@ -23,7 +23,12 @@ catch {destroy $w}
 toplevel $w -class ayam
 wm title $w "About Ayam"
 wm iconname $w "Ayam"
-wm transient .
+if { $ay(ws) == "Aqua" } {
+    ::tk::unsupported::MacWindowStyle style $w floating\
+	{closeBox resizable}
+} else {
+    wm transient .
+}
 frame $w.ftext
 frame $w.fbutton
 

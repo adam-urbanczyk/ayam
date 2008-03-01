@@ -461,7 +461,12 @@ proc tgui_open { } {
     toplevel $w -class ayam
     wm title $w "Tesselation Parameters"
     wm iconname $w "Ayam"
-    #wm transient $w .
+    if { $ay(ws) == "Aqua" } {
+	::tk::unsupported::MacWindowStyle style $w floating\
+	    {closeBox resizable}
+    } else {
+	wm transient $w .
+    }
     wm withdraw $w
 
     set f [frame $w.f1]

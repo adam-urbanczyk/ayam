@@ -47,8 +47,12 @@ proc pomesh_merge { } {
     toplevel $w -class ayam
     wm title $w "Merge PolyMeshes"
     wm iconname $w "Ayam"
-    wm transient $w .
-
+    if { $ay(ws) == "Aqua" } {
+	::tk::unsupported::MacWindowStyle style $w floating\
+	    {closeBox resizable}
+    } else {
+	wm transient $w .
+    }
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
 
@@ -140,8 +144,12 @@ proc pomesh_optimize { } {
     toplevel $w -class ayam
     wm title $w "Optimize PolyMesh"
     wm iconname $w "Ayam"
-    wm transient $w .
-
+    if { $ay(ws) == "Aqua" } {
+	::tk::unsupported::MacWindowStyle style $w floating\
+	    {closeBox resizable}
+    } else {
+	wm transient $w .
+    }
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
 
@@ -216,8 +224,12 @@ proc pomesh_split { } {
     toplevel $w -class ayam
     wm title $w "Split PolyMesh"
     wm iconname $w "Ayam"
-    wm transient $w .
-
+    if { $ay(ws) == "Aqua" } {
+	::tk::unsupported::MacWindowStyle style $w floating\
+	    {closeBox resizable}
+    } else {
+	wm transient $w .
+    }
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
 

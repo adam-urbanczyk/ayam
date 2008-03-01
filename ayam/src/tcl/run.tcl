@@ -32,8 +32,12 @@ catch {destroy $w}
 toplevel $w -class ayam
 wm title $w "Ayam"
 wm iconname $w "Ayam"
-wm transient $w .
-
+if { $ay(ws) == "Aqua" } {
+    ::tk::unsupported::MacWindowStyle style $w floating\
+	{closeBox resizable}
+} else {
+    wm transient $w .
+}
 set f [frame $w.f1]
 pack $f -in $w -side top -fill x
 
@@ -213,8 +217,13 @@ proc runRenderer { cmd template } {
     toplevel $w -class ayam
     wm title $w "Render_$ay(rnum)"
     wm iconname $w "Ayam"
-    if { $ayprefs(RGTrans) == 1 } {
-	wm transient $w .
+    if { $ay(ws) == "Aqua" } {
+	::tk::unsupported::MacWindowStyle style $w floating\
+	    {closeBox resizable}
+    } else {
+	if { $ayprefs(RGTrans) == 1 } {
+	    wm transient $w .
+	}
     }
 
     set f [frame $w.f1 -border 10]

@@ -252,8 +252,12 @@ proc shader_setNew { win type stype } {
     toplevel $w -class ayam
     wm title $w "Set Shader"
     wm iconname $w "Ayam"
-    wm transient $w .
-
+    if { $ay(ws) == "Aqua" } {
+	::tk::unsupported::MacWindowStyle style $w floating\
+	    {closeBox resizable}
+    } else {
+	wm transient $w .
+    }
     set f [frame $w.f1]
     listbox $f.lb -width 20 -height 10 -selectmode single\
 	    -exportselection 0 -yscrollcommand {.setShaderw.f1.fsc.sc set}

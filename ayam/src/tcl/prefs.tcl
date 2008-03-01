@@ -90,6 +90,14 @@ proc prefs_open {} {
     #set width 400
     #}
     toplevel $w -class ayam -width $width -height 400
+    if { $ayprefs(SingleWindow) } {
+	if { $ay(ws) == "Aqua" } {
+	    ::tk::unsupported::MacWindowStyle style $w floating\
+		{closeBox resizable}
+	} else {
+	    wm transient $w .
+	}
+    }
     wm title $w "Ayam Preferences"
     wm iconname $w "Prefs"
     wm withdraw $w

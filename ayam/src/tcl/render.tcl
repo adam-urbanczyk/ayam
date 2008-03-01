@@ -47,7 +47,12 @@ proc render_select { } {
     toplevel $w -class ayam
     wm title $w "Select Renderer"
     wm iconname $w "Ayam"
-    wm transient $w .
+    if { $ay(ws) == "Aqua" } {
+	::tk::unsupported::MacWindowStyle style $w floating\
+	    {closeBox resizable}
+    } else {
+	wm transient $w .
+    }
 
     set f [frame $w.flb]
 

@@ -240,8 +240,12 @@ if { $edit >= 0 } {
 }
 
 wm iconname $w "Ayam"
-wm transient $w .
-
+if { $ay(ws) == "Aqua" } {
+    ::tk::unsupported::MacWindowStyle style $w floating\
+	{closeBox resizable}
+} else {
+    wm transient $w .
+}
 set f [frame $w.fu]
 label $f.lt -text "Type:" -width 6
 entry $f.e -width 30
