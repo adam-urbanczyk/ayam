@@ -49,8 +49,7 @@ proc rrib_import { } {
     wm title $w "RRIB Options"
     wm iconname $w "Ayam"
     if { $ay(ws) == "Aqua" } {
-	::tk::unsupported::MacWindowStyle style $w floating\
-	    {closeBox resizable}
+	winMakeFloat $w
     } else {
 	wm transient $w .
     }

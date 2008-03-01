@@ -133,8 +133,7 @@ proc aycsgPreferences { } {
     wm title $w "AyCSG Preferences"
     wm iconname $w "Ayam"
     if { $ay(ws) == "Aqua" } {
-	::tk::unsupported::MacWindowStyle style $w floating\
-	    {closeBox resizable}
+	winMakeFloat $w
     } else {
 	wm transient $w .
     }
