@@ -627,6 +627,9 @@ proc editPointDp { } {
     wm iconname $w "Ayam"
     if { ! $AYWITHAQUA } {
 	wm transient $w .
+    } else {
+	::tk::unsupported::MacWindowStyle style $w floating\
+	    {closeBox resizable}
     }
 
     set f [frame $w.f1]
