@@ -56,7 +56,12 @@ proc idr_open {} {
     toplevel $w
     wm title $w "Ayam IDR"
     wm iconname $w "Ayam"
-
+    if { $ay(ws) == "Aqua" } {
+	::tk::unsupported::MacWindowStyle style $w floating\
+	    {closeBox resizable}
+    } else {
+	wm transient $w .
+    }
     set f [frame $w.fu -bd 2 -relief sunken]
     pack $f -in $w -side top -fill both -expand yes
 
@@ -216,7 +221,7 @@ proc idr_open {} {
 #
 #
 proc idr_run { view } {
-    global idrprefs
+    global ay idrprefs
 
     if { $view == "" } {
 	ayError 2 "idr_run" "No view selected!"
@@ -284,6 +289,12 @@ proc idr_run { view } {
 	set w .idr_result
 	toplevel $w -visual truecolor
 	wm iconname $w "IDR"
+	if { $ay(ws) == "Aqua" } {
+	    ::tk::unsupported::MacWindowStyle style $w floating\
+		{closeBox resizable}
+	} else {
+	    wm transient $w .
+	}
 	frame $w.m -bd 2 -relief raised
 	frame $w.picture
 	pack $w.m -side top -fill x
@@ -313,15 +324,19 @@ proc idr_run { view } {
 # idr_run
 
 proc setRenderstarttime { } {
- global Weight_R
+ global ay Weight_R
 
     set w .idropt
     catch {destroy $w}
     toplevel $w
     wm title $w "Ayam - Importance driven rendering"
     wm iconname $w "Ayam"
-    wm transient $w .
-
+    if { $ay(ws) == "Aqua" } {
+	::tk::unsupported::MacWindowStyle style $w floating\
+	    {closeBox resizable}
+    } else {
+	wm transient $w .
+    }
     set f [frame $w.f]
     pack $f -in $w -side top -fill x
     text $f.t -wrap word -width 25 -height 8 -borderwidth 0

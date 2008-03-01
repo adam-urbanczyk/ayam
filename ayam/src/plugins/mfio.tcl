@@ -52,8 +52,12 @@ proc mfio_import { } {
     toplevel $w -class ayam
     wm title $w "3DMF Import Options"
     wm iconname $w "Ayam"
-    wm transient $w .
-
+    if { $ay(ws) == "Aqua" } {
+	::tk::unsupported::MacWindowStyle style $w floating\
+	    {closeBox resizable}
+    } else {
+	wm transient $w .
+    }
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
 
@@ -155,8 +159,12 @@ proc mfio_export { } {
     toplevel $w -class ayam
     wm title $w "3DMF Export Options"
     wm iconname $w "Ayam"
-    wm transient $w .
-
+    if { $ay(ws) == "Aqua" } {
+	::tk::unsupported::MacWindowStyle style $w floating\
+	    {closeBox resizable}
+    } else {
+	wm transient $w .
+    }
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
 

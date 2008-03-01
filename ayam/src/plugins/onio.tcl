@@ -52,7 +52,12 @@ proc onio_import { } {
     toplevel $w -class ayam
     wm title $w "OpenNURBS Import Options"
     wm iconname $w "Ayam"
-    wm transient $w .
+    if { $ay(ws) == "Aqua" } {
+	::tk::unsupported::MacWindowStyle style $w floating\
+	    {closeBox resizable}
+    } else {
+	wm transient $w .
+    }
 
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
@@ -162,7 +167,12 @@ proc onio_export { } {
     toplevel $w -class ayam
     wm title $w "OpenNURBS Export Options"
     wm iconname $w "Ayam"
-    wm transient $w .
+    if { $ay(ws) == "Aqua" } {
+	::tk::unsupported::MacWindowStyle style $w floating\
+	    {closeBox resizable}
+    } else {
+	wm transient $w .
+    }
 
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
