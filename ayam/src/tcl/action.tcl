@@ -628,8 +628,7 @@ proc editPointDp { } {
     if { ! $AYWITHAQUA } {
 	wm transient $w .
     } else {
-	::tk::unsupported::MacWindowStyle style $w floating\
-	    {closeBox resizable}
+	winMakeFloat $w
     }
 
     set f [frame $w.f1]

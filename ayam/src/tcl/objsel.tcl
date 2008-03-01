@@ -50,8 +50,7 @@ proc reconsider { Selection } {
     wm title $w "Ambiguous Pick"
     wm iconname $w "Ayam"
     if { $ay(ws) == "Aqua" } {
-	::tk::unsupported::MacWindowStyle style $w floating\
-	    {closeBox resizable}
+	winMakeFloat $w
     } else {
 	if { $ay(currentView) != "" } {
 	    wm transient $w [winfo toplevel $ay(currentView)]

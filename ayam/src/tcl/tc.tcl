@@ -230,8 +230,7 @@ proc tc_edit { } {
     wm title $w "Edit Texture Coordinates"
     wm iconname $w "Ayam"
     if { $ay(ws) == "Aqua" } {
-	::tk::unsupported::MacWindowStyle style $w floating\
-	    {closeBox resizable}
+	winMakeFloat $w
     } else {
 	wm transient $w .
     }

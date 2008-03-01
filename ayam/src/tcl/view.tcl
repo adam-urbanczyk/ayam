@@ -250,8 +250,7 @@ toplevel $w -class ayam
 wm title $w "Set FOV"
 wm iconname $w "Ayam"
 if { $ay(ws) == "Aqua" } {
-    ::tk::unsupported::MacWindowStyle style $w floating\
-	{closeBox resizable}
+    winMakeFloat $w
 } else {
     wm transient $w [winfo toplevel $view]
 }
@@ -309,8 +308,7 @@ toplevel $w -class ayam
 wm title $w "Set GridSize"
 wm iconname $w "Ayam"
 if { $ay(ws) == "Aqua" } {
-    ::tk::unsupported::MacWindowStyle style $w floating\
-	{closeBox resizable}
+    winMakeFloat $w
 } else {
     wm transient $w [winfo toplevel $view]
 }
@@ -999,8 +997,7 @@ proc viewSetBGImage { view } {
     wm title $w "Set BGImage"
     wm iconname $w "Ayam"
     if { $ay(ws) == "Aqua" } {
-	::tk::unsupported::MacWindowStyle style $w floating\
-	    {closeBox resizable}
+	winMakeFloat $w
     } else {
 	wm transient $w [winfo toplevel $view]
     }

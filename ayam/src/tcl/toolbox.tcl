@@ -23,8 +23,7 @@ proc toolbox_open { {w .tbw} } {
 	}
 
 	if { $ay(ws) == "Aqua" } {
-	    ::tk::unsupported::MacWindowStyle style $w floating\
-		{closeBox resizable}
+	    winMakeFloat $w
 	} else {
 	    if { $ayprefs(ToolBoxTrans) == 1 } {
 		wm transient $w .

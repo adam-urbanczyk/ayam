@@ -346,3 +346,9 @@ proc winGetPaneLayout { } {
 }
 # winGetPaneLayout
 
+# winMakeFloat:
+proc winMakeFloat { w } {
+    ::tk::unsupported::MacWindowStyle style $w floating	{closeBox resizable}
+ return;
+}
+# winMakeFloat

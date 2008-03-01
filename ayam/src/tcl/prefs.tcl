@@ -92,8 +92,7 @@ proc prefs_open {} {
     toplevel $w -class ayam -width $width -height 400
     if { $ayprefs(SingleWindow) } {
 	if { $ay(ws) == "Aqua" } {
-	    ::tk::unsupported::MacWindowStyle style $w floating\
-		{closeBox resizable}
+	    winMakeFloat $w
 	} else {
 	    wm transient $w .
 	}
