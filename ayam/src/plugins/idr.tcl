@@ -57,8 +57,7 @@ proc idr_open {} {
     wm title $w "Ayam IDR"
     wm iconname $w "Ayam"
     if { $ay(ws) == "Aqua" } {
-	::tk::unsupported::MacWindowStyle style $w floating\
-	    {closeBox resizable}
+	winMakeFloat $w
     } else {
 	wm transient $w .
     }
@@ -290,8 +289,7 @@ proc idr_run { view } {
 	toplevel $w -visual truecolor
 	wm iconname $w "IDR"
 	if { $ay(ws) == "Aqua" } {
-	    ::tk::unsupported::MacWindowStyle style $w floating\
-		{closeBox resizable}
+	    winMakeFloat $w
 	} else {
 	    wm transient $w .
 	}
@@ -332,8 +330,7 @@ proc setRenderstarttime { } {
     wm title $w "Ayam - Importance driven rendering"
     wm iconname $w "Ayam"
     if { $ay(ws) == "Aqua" } {
-	::tk::unsupported::MacWindowStyle style $w floating\
-	    {closeBox resizable}
+	winMakeFloat $w
     } else {
 	wm transient $w .
     }
