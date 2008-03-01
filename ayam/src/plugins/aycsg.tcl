@@ -120,7 +120,7 @@ uplevel #0 {
 # aycsgPreferences:
 #  AyCSG preferences dialog
 proc aycsgPreferences { } {
-    global aycsg_options aycsg_options_save
+    global ay aycsg_options aycsg_options_save
 
     winAutoFocusOff
 
@@ -132,8 +132,12 @@ proc aycsgPreferences { } {
     toplevel $w -class ayam
     wm title $w "AyCSG Preferences"
     wm iconname $w "Ayam"
-    wm transient $w .
-
+    if { $ay(ws) == "Aqua" } {
+	::tk::unsupported::MacWindowStyle style $w floating\
+	    {closeBox resizable}
+    } else {
+	wm transient $w .
+    }
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
     addMenu $f aycsg_options_save Algorithm [list Automatic Goldfeather SCS]
