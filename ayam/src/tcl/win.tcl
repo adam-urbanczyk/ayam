@@ -1,6 +1,6 @@
 # Ayam, a free 3D modeler for the RenderMan interface.
 #
-# Ayam is copyrighted 1998-2005 by Randolf Schultz
+# Ayam is copyrighted 1998-2008 by Randolf Schultz
 # (rschultz@informatik.uni-rostock.de) and others.
 #
 # All rights reserved.
@@ -10,6 +10,7 @@
 # win.tcl - (top level) window management
 
 
+##############################
 # winToMouse:
 # place window w on screen near the mouse pointer
 proc winToMouse { w } {
@@ -29,6 +30,7 @@ proc winToMouse { w } {
 # winToMouse
 
 
+##############################
 # winCenter:
 # center window w on screen
 proc winCenter { w } {
@@ -50,6 +52,7 @@ proc winCenter { w } {
 # winCenter
 
 
+##############################
 # winMoveOrResize:
 #  move or resize window w according to newgeom
 proc winMoveOrResize { w newgeom } {
@@ -144,6 +147,7 @@ global ay ayprefs
 # winMoveOrResize
 
 
+##############################
 # winIconWindow:
 #  set icon window for window w
 proc winIconWindow { w img } {
@@ -164,6 +168,7 @@ proc winIconWindow { w img } {
 # winIconWindow
 
 
+##############################
 # winGetGeom:
 #  get geometry of window w ready to be fed into a call to wm geom
 #  to re-restablish this geometry; TwmCompat controls, whether the
@@ -192,6 +197,7 @@ proc winGetGeom { w } {
 # winGetGeom
 
 
+##############################
 # winAutoFocusOff:
 #  disable AutoFocus
 proc winAutoFocusOff { } {
@@ -210,6 +216,7 @@ proc winAutoFocusOff { } {
 # winAutoFocusOff
 
 
+##############################
 # winAutoFocusOn:
 #  (re-)enable AutoFocus
 proc winAutoFocusOn { } {
@@ -346,9 +353,15 @@ proc winGetPaneLayout { } {
 }
 # winGetPaneLayout
 
+
+##############################
 # winMakeFloat:
+#  make window <w> a floating window on MacOSX Aqua
+#  (similar to transient windows on X11)
 proc winMakeFloat { w } {
+
     ::tk::unsupported::MacWindowStyle style $w floating	{closeBox resizable}
+
  return;
 }
 # winMakeFloat
