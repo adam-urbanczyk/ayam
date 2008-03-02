@@ -247,6 +247,8 @@ $m add command -label "Align to Object" -command "\
 #$w.fMenu.a.m add command\
 #-label "Quick Render"\
 #-command {exit}
+
+# Modelling Action Menu
 if { (! $AYWITHAQUA ) || ([winfo toplevel $w] != $w) } {
     menubutton $w.fMenu.a -image ay_Empty_img -menu $w.fMenu.a.m\
 	-padx 0 -pady 0 -borderwidth 0
@@ -433,3 +435,23 @@ return;
 }
 # vmenu_open
 
+
+# vmenu_addbutton
+#  add a button to the view menu
+#
+proc vmenu_addbutton { w b img cmd } {
+global AYWITHAQUA
+
+    set mb ""
+
+    if { (! $AYWITHAQUA ) || ([winfo toplevel $w] != $w) } {
+	if { ! [winfo exists $w.fMenu.$b] } {
+	    set mb [button $w.fMenu.$b -image $img -command $cmd \
+			-padx 0 -pady 0 -borderwidth 0]
+	    pack $mb -in $w.fMenu -side right
+	}
+    }
+
+return $mb;
+}
+# vmenu_addbutton
