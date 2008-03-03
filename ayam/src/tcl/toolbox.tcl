@@ -85,48 +85,25 @@ proc toolbox_open { {w .tbw} } {
 	    lappend ay(toolbuttons) bed bedw bedd sel
 
 	    button $f.bed -image ay_Edit_img -padx 0 -pady 0 -command {
-		global ay
-		foreach i $ay(views) {
-		    ${i}.f3D.togl mc
-
-		    actionEditP ${i}.f3D.togl
-		}
+		toolbox_startaction actionEditP
 	    }
 	    balloon_set $f.bed "edit points\n\[ $ayviewshortcuts(Edit) \]"
 
 	    ######
 	    button $f.bedw -image ay_EditW_img -padx 0 -pady 0 -command {
-		global ay
-		foreach i $ay(views) {
-		    ${i}.f3D.togl mc
-
-		    actionEditWP ${i}.f3D.togl
-
-		}
+		toolbox_startaction actionEditWP
 	    }
 	    balloon_set $f.bedw "edit weights\n\[ $ayviewshortcuts(WeightE) \]"
 
 	    ######
 	    button $f.bedd -image ay_EditD_img -padx 0 -pady 0 -command {
-		global ay
-		foreach i $ay(views) {
-		    ${i}.f3D.togl mc
-
-		    actionDEditP ${i}.f3D.togl
-
-		}
+		toolbox_startaction actionDEditP
 	    }
 
 	    balloon_set $f.bedd "directly edit coordinates\n\[ $ayviewshortcuts(EditD) \]"
 	    ######
 	    button $f.sel -image ay_Tag_img -padx 0 -pady 0 -command {
-		global ay
-		foreach i $ay(views) {
-		    ${i}.f3D.togl mc
-
-		    actionTagP ${i}.f3D.togl
-
-		}
+		toolbox_startaction actionTagP
 	    }
 	    bind $f.sel <Shift-ButtonPress-1> {
 		global  ay
@@ -153,37 +130,20 @@ proc toolbox_open { {w .tbw} } {
 
 	    ######
 	    button $f.brot -image ay_RotV_img -padx 0 -pady 0 -command {
-		global ay
-		foreach i $ay(views) {
-		    ${i}.f3D.togl mc
-
-		    actionRotView ${i}.f3D.togl
-
-		}
+		toolbox_startaction actionRotView
 	    }
 	    balloon_set $f.brot "rotate view \[ $ayviewshortcuts(RotV) \]"
 
 	    ######
 	    button $f.bmov -image ay_MoveV_img -padx 0 -pady 0 -command {
-		global ay
-		foreach i $ay(views) {
-		    ${i}.f3D.togl mc
-
-		    actionMoveView ${i}.f3D.togl
-
-		}
+		toolbox_startaction actionMoveView
 	    }
 	    balloon_set $f.bmov\
 		    "move view \[ $ayviewshortcuts(MoveV) \]"
 
 	    #####
 	    button $f.bzom -image ay_ZoomV_img -padx 0 -pady 0 -command {
-		global ay
-		foreach i $ay(views) {
-		    ${i}.f3D.togl mc
-
-		    actionZoomView ${i}.f3D.togl
-		}
+		toolbox_startaction actionZoomView
 	    }
 	    balloon_set $f.bzom\
 		    "zoom view \[ $ayviewshortcuts(ZoomV) \]"
@@ -194,42 +154,26 @@ proc toolbox_open { {w .tbw} } {
 	    lappend ay(toolbuttons) bmovo broto brota bscal
 	    ######
 	    button $f.bmovo -image ay_Move_img -padx 0 -pady 0 -command {
-		global ay
-		foreach i $ay(views) {
-		    ${i}.f3D.togl mc
-		    actionMoveOb ${i}.f3D.togl
-		}
+		toolbox_startaction actionMoveOb
 	    }
 	    balloon_set $f.bmovo "move \[ $ayviewshortcuts(MoveO) \]"
 
 	    ######
 	    button $f.broto -image ay_Rotate_img -padx 0 -pady 0 -command {
-		global ay
-		foreach i $ay(views) {
-		    ${i}.f3D.togl mc
-		    actionRotOb ${i}.f3D.togl
-		}
+		toolbox_startaction actionRotOb
 	    }
 	    balloon_set $f.broto "rotate \[ $ayviewshortcuts(RotO) \]"
 
 	    ######
 	    button $f.brota -image ay_RotateA_img -padx 0 -pady 0 -command {
-		global ay
-		foreach i $ay(views) {
-		    ${i}.f3D.togl mc
-		    actionRotObA ${i}.f3D.togl
-		}
+		toolbox_startaction actionRotObA
 	    }
 	    balloon_set $f.brota\
 		    "rotate about \[ $ayviewshortcuts(RotA) \]"
 
 	    #####
 	    button $f.bscal -image ay_Scale3D_img -padx 0 -pady 0 -command {
-		global ay
-		foreach i $ay(views) {
-		    ${i}.f3D.togl mc
-		    actionSc3DOb ${i}.f3D.togl
-		}
+		toolbox_startaction actionSc3DOb
 	    }
 	    balloon_set $f.bscal\
 		    "scale 3D \[ $ayviewshortcuts(Scal3) \]"
@@ -241,42 +185,26 @@ proc toolbox_open { {w .tbw} } {
 
 	    ######
 	    button $f.bsc2d -image ay_Scale2D_img -padx 0 -pady 0 -command {
-		global ay
-		foreach i $ay(views) {
-		    ${i}.f3D.togl mc
-		    actionSc2DOb ${i}.f3D.togl
-		}
+		toolbox_startaction actionSc2DOb
 	    }
 	    balloon_set $f.bsc2d "scale 2D \[ $ayviewshortcuts(Scal2) \]"
 
 	    ######
 	    button $f.bsc1dx -image ay_Scale1DX_img -padx 0 -pady 0 -command {
-		global ay
-		foreach i $ay(views) {
-		    ${i}.f3D.togl mc
-		    actionSc1DXOb ${i}.f3D.togl
-		}
+		toolbox_startaction actionSc1DXOb
 	    }
 	    balloon_set $f.bsc1dx "scale x \[ $ayviewshortcuts(ScalX) \]"
 
 	    ######
 	    button $f.bsc1dy -image ay_Scale1DY_img -padx 0 -pady 0 -command {
-		global ay
-		foreach i $ay(views) {
-		    ${i}.f3D.togl mc
-		    actionSc1DYOb ${i}.f3D.togl
-		}
+		toolbox_startaction actionSc1DYOb
 	    }
 	    balloon_set $f.bsc1dy\
 		    "scale y \[ $ayviewshortcuts(ScalY) \]"
 
 	    #####
 	    button $f.bsc1dz -image ay_Scale1DZ_img -padx 0 -pady 0 -command {
-		global ay
-		foreach i $ay(views) {
-		    ${i}.f3D.togl mc
-		    actionSc1DZOb ${i}.f3D.togl
-		}
+		toolbox_startaction actionSc1DZOb
 	    }
 	    balloon_set $f.bsc1dz\
 		    "scale z \[ $ayviewshortcuts(ScalZ) \]"
@@ -378,21 +306,13 @@ proc toolbox_open { {w .tbw} } {
 	if { $i == "nctools1" } {
 	    lappend ay(toolbuttons) bins bdel brev bref
 	    button $f.bins -image ay_Insert_img -padx 0 -pady 0 -command {
-		global ay
-		foreach i $ay(views) {
-		    ${i}.f3D.togl mc
-		    actionInsertP ${i}.f3D.togl
-		}
+		toolbox_startaction actionInsertP
 	    }
 	    balloon_set $f.bins "insert point \n\[ i \]"
 
 	    #####
 	    button $f.bdel -image ay_Delete_img -padx 0 -pady 0 -command {
-		global ay
-		foreach i $ay(views) {
-		    ${i}.f3D.togl mc
-		    actionDeleteP ${i}.f3D.togl
-		}
+		toolbox_startaction actionDeleteP
 	    }
 	    balloon_set $f.bdel "delete point \n\[ d \]"
 
@@ -421,21 +341,13 @@ proc toolbox_open { {w .tbw} } {
 	    lappend ay(toolbuttons) bfindu bspl bconc bclamp
 
 	    button $f.bfindu -image ay_FindU_img -padx 0 -pady 0 -command {
-		global ay
-		foreach i $ay(views) {
-		    ${i}.f3D.togl mc
-		    actionFindU ${i}.f3D.togl
-		}
+		toolbox_startaction actionFindU
 	    }
 	    balloon_set $f.bfindu "find u \[ $ayviewshortcuts(FindU) \]"
 
 	    #####
 	    button $f.bspl -image ay_Split_img -padx 0 -pady 0 -command {
-		global ay
-		foreach i $ay(views) {
-		    ${i}.f3D.togl mc
-		    actionSplitNC ${i}.f3D.togl
-		}
+		toolbox_startaction actionSplitNC
 	    }
 	    balloon_set $f.bspl "split curve \[ $ayviewshortcuts(SplitNC) \]"
 
@@ -635,7 +547,7 @@ proc toolbox_open { {w .tbw} } {
     # foreach
 
     update
-    
+
     if { $w == ".tbw" } {
 	if { $ayprefs(toolBoxGeom) != "" } {
 	    winMoveOrResize .tbw $ayprefs(toolBoxGeom)
@@ -749,7 +661,7 @@ proc toolbox_layout { {w ".tbw"} } {
     set ay(tbh) [winfo height $w]
 
     bind $w <Configure> {
-	if { $ay(tbw) != %w || $ay(tbh) != %h } { 
+	if { $ay(tbw) != %w || $ay(tbh) != %h } {
 	    if { $ayprefs(SingleWindow) } {
 		toolbox_layout .fv.fTools
 	    } else {
@@ -850,4 +762,36 @@ proc toolbox_add { fn colspan } {
  return $f;
 }
 # toolbox_add
+
+
+proc toolbox_startaction { action } {
+    global ay ayprefs
+
+    if { $ayprefs(SingleWindow) == 1 } {
+	set intfocus ""
+	foreach i $ay(views) {
+	    if { $i == [focus] } {
+		set intfocus $i
+	    }
+	}
+	if { $intfocus != "" } {
+	    ${intfocus}.f3D.togl mc
+	    $action ${intfocus}.f3D.togl
+	} else {
+	    foreach i $ay(views) {
+		${i}.f3D.togl mc
+		$action ${i}.f3D.togl
+	    }
+	}
+    } else {
+	foreach i $ay(views) {
+	    ${i}.f3D.togl mc
+	    $action ${i}.f3D.togl
+	}
+    }
+    # if
+
+ return;
+}
+# toolbox_startaction
 
