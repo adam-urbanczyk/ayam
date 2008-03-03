@@ -421,7 +421,7 @@ proc viewOpen { width height {establish_bindings 1} {internal_view 0} } {
     pack $w.fMenu -side top -fill x
 
     # create the 3D widget
-    frame $w.f3D
+    frame $w.f3D -takefocus 0
 
     if { $ayprefs(AddViewParams) != "" } {
 	eval [subst "togl $w.f3D.togl -rgba true -double true -depth true\
@@ -467,6 +467,12 @@ proc viewOpen { width height {establish_bindings 1} {internal_view 0} } {
 	    getProp
 	    plb_update
 	}
+    }
+    # bind
+
+    # XXXX do this only for internal views
+    bind $w.f3D.togl <FocusIn> {
+	focus -force [winfo parent [winfo parent %W]]
     }
     # bind
 
