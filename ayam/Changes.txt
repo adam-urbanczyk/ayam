@@ -1,4 +1,4 @@
-[11. Feb 2008] CVS-Head:
+[4. Mar 2008] CVS-Head:
 =======================
 o Bug Fixes:
  - X3D export of NURBS patches (row/column major order) (SF 1804056)
@@ -11,6 +11,7 @@ o Bug Fixes:
  - direct rendering of scenes with spaces in filename or path (SF 1840995)
  - autofocus after preferences window was closed (SF 1846422)
  - autofocus after implicit import/export (SF 1847870)
+ - keyboard shortcut to switch drawing/shading (SF 1894024)
 
 GUI:
 o added option to keep the current selection when creating new objects, by
@@ -31,7 +32,10 @@ o added preference option to switch Ayam to a single toplevel window
   application; in SingleWindow mode, there are internal views and an
   internal toolbar, more floating view windows can be created as usual
 o added icon based modelling action display to view window menu
-o added saving of maximized main window state to the ayamrc file
+o added saving of main window state normal/zoomed (maximized) to the
+  ayamrc file
+o added "SavePaneLayout" tag type to store the pane configuration of the
+  main window in scene files
 
 Modelling:
 o added new object type "ACurve" (for approximating curves)
@@ -75,6 +79,7 @@ o added true support for custom objects to the VC2005 build (they could
   static Aqsis libraries)
 Apple Mac OS X:
 o added official X11 based build
+o fixed image buttons for the X11 based build
 
 Compilation/Installation:
 o it is no longer possible to wrap the IDR, AyCSG, RRIB, ONIO, or
