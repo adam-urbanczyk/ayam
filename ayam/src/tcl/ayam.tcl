@@ -1119,6 +1119,9 @@ if { $AYWRAPPED == 1 } {
 }
 wm client . [info hostname]
 
+. configure -cursor watch
+
+
 # frame for internal widgets
 frame .fv
 pack .fv -in . -side top
@@ -1787,6 +1790,8 @@ if { $ay(ws) == "Aqua" } {
 }
 
 puts stdout "Ayam-Startup-Sequence finished. Reconstruct the World!"
+
+. configure -cursor {}
 
 # Reconstruct the World!
 
