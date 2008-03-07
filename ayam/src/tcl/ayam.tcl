@@ -184,7 +184,7 @@ array set ayprefs {
  PolyOffset0 1.0
  PolyOffset1 1.0
 
- SingleWindow 0
+ SingleWindow 1
  SavePanes 1
  PaneConfig ""
  BindInternalViews 0
