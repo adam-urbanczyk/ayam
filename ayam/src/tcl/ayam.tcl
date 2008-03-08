@@ -1464,12 +1464,28 @@ if { $ayprefs(SingleWindow) } {
 
     viewOpen 100 100 0 1
     
-    if { $ayprefs(showtr) == 1 } {
-	bind .fu.fMain.fview3 <Shift-Tab> "focus $ay(tree);break"
+    if { 0 && ( $tcl_platform(platform) != "windows" ) && ( ! $AYWITHAQUA ) } {
+	set st <ISO_Left_Tab>
     } else {
-	bind .fu.fMain.fview3 <Shift-Tab> "focus -force $ay(olb);break"
+	set st <Shift-Tab>
     }
-
+    # arrange for shift-tab not to display a sizing cursor and always move
+    # the focus from view3 directly to the object hierarchy (not to the
+    # empty property display where it would be useless)
+    bind .fu.fMain.fview3 <Shift-Tab> "\
+      if \{ \$::ayprefs(showtr) == 1 \} \{\
+        focus \$::ay(tree);\
+      \} else \{\
+        focus \$::ay(olb);\
+      \};\
+      .fu.fMain.fview3.f3D.togl configure -cursor \{\};\
+      break"
+    bind .fv.fViews.fview2 <Shift-Tab> {+
+	.fv.fViews.fview2.f3D.togl configure -cursor {};
+    }
+    bind .fv.fViews.fview1 <Shift-Tab> {+
+	.fv.fViews.fview1.f3D.togl configure -cursor {};
+    }
     .fu.fMain.fHier configure -highlightthickness 1
 
 } else {
