@@ -594,10 +594,12 @@ proc plb_focus { } {
 	    set wypos 0
 	    incr wypos [winfo y $ww]
 	    set increment 0
-	    while { [winfo parent $ww] != $ay(pca) } {
+	    while { ($ww != "") && ([winfo parent $ww] != $ay(pca)) } {
 		incr wypos $increment
 		set ww [winfo parent $ww]
-		set increment [winfo y $ww]
+		if { $ww != "" } {
+		    set increment [winfo y $ww]
+		}
 	    }
 	    set fraction [expr (double($wypos)+[winfo reqheight $w])/\
 	                       double($height)]
