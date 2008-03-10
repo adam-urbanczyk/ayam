@@ -70,20 +70,6 @@ proc shortcut_fkeys { w } {
 proc shortcut_main { w } {
     global ay aymainshortcuts AYWITHAQUA
 
-    if { [winfo exists .fl.con] == 1 } {
-	bind .fl.con.console <[repcont $aymainshortcuts(SwCon)]> {
-	    focus [tk_focusNext %W] }
-
-	bind .fl.con.console <ButtonPress-4> {
-	.fl.con.console yview scroll -1 pages
-	break
-	}
-	bind .fl.con.console <ButtonPress-5> {
-	.fl.con.console yview scroll 1 pages
-        break
-	}
-    }
-
     set m $ay(filemenu)
     bind $w <[repcont $aymainshortcuts(New)]> "$m invoke 0;break"
     $m entryconfigure 0 -accelerator $aymainshortcuts(New)
