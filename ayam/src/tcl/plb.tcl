@@ -329,7 +329,7 @@ if { $AYWITHAQUA } {
 # if
 
 # focus management bindings
-bind $f.ca <1> "focus -force %W"
+bind $f.ca <1> "focus %W"
 bind $f.ca <Key-Escape> {resetFocus}
 
 pack $f.ca -in $f -side left -fill both -expand yes
@@ -342,6 +342,7 @@ pack $f.s -in $f -side left -fill y
 pack $w.fArg.fca -in $w.fArg -side top -fill both -expand yes
 pack $w.fArg -in $w -side top -fill both -expand yes
 update
+
 return;
 }
 # plb_open
@@ -395,6 +396,7 @@ if { $oldsel == "" } {
     } else {
 	bind $w <Key-Tab> "focus .fl.con.console;break"
     }
+    $ay(pca) configure -takefocus 0
 }
 
 # delete current entries
@@ -476,6 +478,7 @@ if { [llength $index] == 1 } {
 	    if { $getprocp != "" } { $getprocp } else { getProp }
 
 	    $ay(pca) itemconfigure 1 -window $ay(pca).$w
+	    $ay(pca) configure -takefocus 1
 
 	    # resize canvas
 	    set width [expr [winfo reqwidth $ay(pca).$w] + 10]
@@ -646,9 +649,9 @@ proc plb_showprop { prop } {
     plb_update
 
     if { $ay(lb) == 1 } {
-	focus -force $ay(olb)
+	focus $ay(olb)
     } else {
-	focus -force $ay(tree)
+	focus $ay(tree)
     }
 
  return;
