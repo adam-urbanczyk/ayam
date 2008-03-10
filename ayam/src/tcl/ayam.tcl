@@ -188,6 +188,9 @@ array set ayprefs {
  SavePanes 1
  PaneConfig ""
  BindInternalViews 0
+
+ ShiftTab "<Shift-Tab>"
+
  Docs "http://ayam.sourceforge.net/docs/"
  DailyTips {
 {Always click on drawn pixels, when picking vertices.}
@@ -662,6 +665,9 @@ if { $tcl_platform(platform) == "windows" } {
     # UNIX specific settings:
     set ayprefs(Plugins) "[file dirname [info nameofexecutable]]/plugins"
     set ayprefs(Scripts) ""
+
+    set ayprefs(ShiftTab) "<ISO_Left_Tab>"
+
     #
     set ws ""
     catch {set ws [tk windowingsystem]}
@@ -748,6 +754,17 @@ if { ($ay(ws) != "Aqua") && ($tcl_platform(os) == "Darwin") } {
     set aymainshortcuts(SProp77) "KP_7"
     set aymainshortcuts(SProp88) "KP_8"
     set aymainshortcuts(SProp99) "KP_9"
+
+    # X11 on Darwin sends Shift-Tab for Shift-Tab
+    set ayprefs(ShiftTab) "<Shift-Tab>"
+}
+
+# fix Shift-Tab binding
+if { ( $tcl_platform(platform) != "windows" ) && ( ! $AYWITHAQUA ) } {
+    if { $tcl_version > 8.3 } {
+	tk::unsupported::ExposePrivateCommand tkTabToWindow
+    }
+    catch {bind all <ISO_Left_Tab> { tkTabToWindow [tk_focusPrev %W] }}
 }
 
 # are true color visuals available?
@@ -1104,6 +1121,7 @@ ayam_loadscript win
 ayam_loadscript splash
 if { $ay(showsplash) == 1 } { splash_open }
 
+
 # create UI
 # first configure our main window
 set w .
@@ -1212,9 +1230,10 @@ pack .fl -in . -side bottom -fill both
 frame .fl.dummy
 console .fl.con -showmenu 0 -height 5 -width 60
 pack .fl.con -in .fl -expand 1 -fill both
+#.fl.con configure -takefocus 0
 
 # additional key/mouse bindings for the console
-bind .fl.con.console $aymainshortcuts(SwCon) { focus [tk_focusNext %W] }
+bindtags .fl.con.console {.fl.con.console Console PostConsole .fl.con}
 
 bind .fl.con.console <Shift-Return> {
     event generate .fl.con.console <<Console_Eval>>;
@@ -1222,15 +1241,7 @@ bind .fl.con.console <Shift-Return> {
     break;
 }
 
-# fix Shift-Tab binding
-if { ( $tcl_platform(platform) != "windows" ) && ( ! $AYWITHAQUA ) } {
-    if { $tcl_version > 8.3 } {
-	tk::unsupported::ExposePrivateCommand tkTabToWindow
-    }
-    bind all <ISO_Left_Tab> { tkTabToWindow [tk_focusPrev %W] }
-}
-
-# bind to mouse wheel on UNIX
+# bind console to mouse wheel on UNIX
 bind .fl.con.console <ButtonPress-4> {
     .fl.con.console yview scroll -1 pages; break
 }
@@ -1341,9 +1352,6 @@ ayam_loadscript objsel
 ayam_loadscript tc
 ayam_loadscript tgui
 
-# bind . <Configure> { if { "%W" == "." } { puts stderr "%w" } }
-# olb_update
-# EOF
 if { $tcl_platform(platform) != "windows" } {
     wm deiconify .
 }
@@ -1463,16 +1471,11 @@ if { $ayprefs(SingleWindow) } {
     pane .fu.fMain.fHier .fu.fMain.fProp .fu.fMain.fview3
 
     viewOpen 100 100 0 1
-    
-    if { 0 && ( $tcl_platform(platform) != "windows" ) && ( ! $AYWITHAQUA ) } {
-	set st <ISO_Left_Tab>
-    } else {
-	set st <Shift-Tab>
-    }
+
     # arrange for shift-tab not to display a sizing cursor and always move
     # the focus from view3 directly to the object hierarchy (not to the
     # empty property display where it would be useless)
-    bind .fu.fMain.fview3 <Shift-Tab> "\
+    bind .fu.fMain.fview3 $ayprefs(ShiftTab) "\
       if \{ \$::ayprefs(showtr) == 1 \} \{\
         focus \$::ay(tree);\
       \} else \{\
@@ -1480,10 +1483,10 @@ if { $ayprefs(SingleWindow) } {
       \};\
       .fu.fMain.fview3.f3D.togl configure -cursor \{\};\
       break"
-    bind .fv.fViews.fview2 <Shift-Tab> {+
+    bind .fv.fViews.fview2 $ayprefs(ShiftTab) {+
 	.fv.fViews.fview2.f3D.togl configure -cursor {};
     }
-    bind .fv.fViews.fview1 <Shift-Tab> {+
+    bind .fv.fViews.fview1 $ayprefs(ShiftTab) {+
 	.fv.fViews.fview1.f3D.togl configure -cursor {};
     }
     .fu.fMain.fHier configure -highlightthickness 1
@@ -1531,6 +1534,12 @@ shortcut_swapmb
 # bind keyboard shortcuts to main menu
 puts stdout "Establishing key bindings..."
 shortcut_main .
+
+# additional key binding for the console
+bind .fl.con.console <$aymainshortcuts(SwCon)> {
+    focus [tk_focusPrev .fl.con];
+    break;
+}
 
 # arrange to properly exit the program when the main window is closed
 wm protocol . WM_DELETE_WINDOW {
@@ -1751,7 +1760,7 @@ bind all <Tab> +plb_focus
 bind all <Shift-Tab> +plb_focus
 if { ( $tcl_platform(platform) != "windows" ) &&
      ( ! $AYWITHAQUA ) } {
-    bind all <ISO_Left_Tab> +plb_focus
+    catch {bind all <ISO_Left_Tab> +plb_focus}
 }
 
 # redirect all tcl errors to the console?
