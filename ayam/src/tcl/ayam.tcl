@@ -736,6 +736,8 @@ if { $tcl_platform(platform) == "windows" } {
 	set aymainshortcuts(SProp88) "Key-8"
 	set aymainshortcuts(SProp99) "Key-9"
 
+	# Aqua always sends Shift-Tab
+	set ayprefs(ShiftTab) "<Shift-Tab>"
     }
 }
 
