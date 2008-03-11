@@ -6,7 +6,7 @@
 
 <author>Randolf Schultz <tt>(rschultz@informatik.uni-rostock.de)</tt>
 
-<date>17. Dec 2007
+<date>11. Mar 2008
 
 <abstract>
 This is the documentation of Ayam 1.14 - a free 3D modelling environment
@@ -1448,7 +1448,7 @@ actions for all available views. For more information about
 the actions see section <ref id="iac" name="Interactive Actions">.
 <p>
 The toolbox window may be configured by the user using the
-hidden preference setting toolBoxList in the ayamrc file.
+hidden preference setting <tt/"toolBoxList"/ in the ayamrc file.
 Using this setting you may select from certain groups of buttons
 and change the order in which they appear in the toolbox window.
 See section <ref id="hidprefs" name="Hidden Preference Settings"> for
@@ -1480,52 +1480,59 @@ when the main window gets iconified.
 <img src="pics/prefs.gif">
 <caption>Preferences Dialog</caption>
 </figure><p>
-The preferences dialog may be opened using
-the main menu entry <tt>"Edit/Preferences"</tt> or the
-shortcut <tt/&lt;Ctrl+p&gt;/.<p>
+The preferences dialog may be opened using the main menu entry
+<tt>"Edit/Preferences"</tt> or the shortcut <tt/&lt;Ctrl+p&gt;/.
+<p>
 Use
 <itemize>
 <item><tt/"Ok"/ to close the preference editor and
 apply all changes,
 
-<item><tt/"Apply"/ to apply the changes, but
-leave the editor open,
+<item><tt/"Apply"/ to apply the changes, but leave the editor open,
 
-<item><tt/"Revert"/ to reset to the settings
-that have been loaded on program startup (these
-are not the factory defaults, to get back to the factory
-defaults, restart Ayam with the command line option <tt/"-failsafe"/
-or use the main menu entry <tt>"Special/Reset Preferences"</tt>!),
+<item><tt/"Revert"/ to reset to the settings that have been loaded on
+program startup (these are not the factory defaults, to get back to
+the factory defaults, restart Ayam with the command line option
+<tt/"-failsafe"/ or use the main menu entry
+<tt>"Special/Reset Preferences"</tt>!),
 
-<item><tt/"Cancel"/ to close the dialog without applying changes
-(done after the last press of <tt/"Apply"/).
+<item><tt/"Cancel"/ to close the dialog without applying any changes.
+All changes done after the last press of <tt/"Apply"/ will be lost.
 </itemize>
 
 Note that while the preference editor is open, AutoFocus is temporarily
 turned off and changes to the  <tt/"AutoFocus"/ preference setting will
 only be realized after the editor is closed.
 <p>
-The preferences are divided into five sections.
+The preferences are divided into five sections as follows.
 
 <sect2>The Main Preferences<label id="prefmain">
 <p>
-The <tt/"Main"/ section contains the most important application setup related
-preference settings:
+The <tt/"Main"/ section contains the most important application setup
+related preference settings.
+<p>
+Since Ayam 1.14, unused settings will not be shown anymore, e.g. on the
+Win32 platform, the <tt/"TwmCompat"/ setting will be hidden.
+
 <itemize>
-<item><tt/"Shaders"/ contains a number of paths (separated by <tt/":"/
-on Unix and <tt/";"/ on Win32) where Ayam looks for compiled
-shaders (e.g. files with the extension <tt/".slc"/ that have been compiled
-with slc from BMRT). Using the <tt/"Add"/ button, you may add
-another path, simply press it and select a file inside the directory
-you want to add. Note that currently the filename of a compiled shader
-may contain just two <tt/"."/ at maximum.
+<item><tt/"Shaders"/ contains a number of paths (separated by a colon
+<tt/":"/ on Unix and by a semicolon <tt/";"/ on Win32) where Ayam looks
+for compiled shaders (e.g. files with the extension <tt/".slc"/ that
+have been compiled with slc from BMRT). Using the <tt/"Add"/ button,
+you may easily add another path, simply press the button and select a
+file from the directory you want to add. Note that currently the
+filename of a compiled shader may contain just two <tt/"."/ at maximum.
 The environment variable SHADERS will be adapted to match the contents
 of this preference setting, so that renderers started by Ayam see
-exactly the same shaders as Ayam.
+exactly the same shaders as Ayam through the <tt/"Shaders"/ preference
+setting.
+Note that this does of course not affect any renderers that are started
+outside the Ayam context.
 
 <item><tt/"Scan for Shaders!"/ initiates a rebuild of the internal
-shaders database. All shaders in the directories specified by
-the <tt/"Shaders"/ entry will be scanned and entered in that database.
+shader database. All shaders in the directories specified by
+the <tt/"Shaders"/ preference setting will be scanned and entered in
+that database.
 Watch the console for error messages that may appear while scanning.
 See also section <ref id="parseshd" name="Shader Parsing"> for more
 information on scanning shaders.
@@ -1536,11 +1543,19 @@ settings.<label id="prefgui">
 <itemize>
 <item><tt/"Locale"/, sets a language for the balloon help texts,
 the default value menu shows all currently available locales.
+
 The value will have no effect until Ayam is restarted!
+
+<item><tt/"SingleWindow"/ toggles, whether Ayam should create just
+one main window with internal views and toolbox or use the old
+floating windows style GUI. The new single window GUI mode is enabled
+by default.
 
 <item><tt/"AutoResize"/ toggles, whether the main window
 should be resized horizontally according to the property GUI whenever
 a new GUI is displayed.
+
+This option is not available in the SingleWindow GUI mode.
 
 <item><tt/"AutoFocus"/ controls whether Ayam should automatically
 move the focus to a view or the main window, when the mouse pointer
@@ -1553,49 +1568,45 @@ Note that while the preference editor is open, AutoFocus is temporarily
 turned off and changes to the <tt/"AutoFocus"/ preference setting will
 only be realized after the editor is closed.
 
+This option is not available in the SingleWindow GUI mode.
+
 <item><tt/"TwmCompat"/ changes, how Ayam tells the window manager
-new geometries of windows. Might be useful, if you suffer from jumping
-windows.
+new geometries of windows. This option has to be toggled if Ayam
+fails to correctly remember the geometry of the main window between
+two invocations or if the main window jumps downward when properties
+are selected.
 
-<item><tt/"ListTypes"/ determines, whether the type of an
-object should be displayed in brackets in the tree view or listbox.
-
-<item><tt/"MarkHidden"/ determines, whether hidden objects
-should be marked (using a preceding exclamation mark)
-in the tree view or object listbox.
+This option is not available on the Win32 platform and on MacOSX Aqua.
 
 <item><tt/"AutoSavePrefs"/, if this is switched on, Ayam will write
 the preferences settings to the file ayamrc when the program quits.
 
 <item><tt/"BakOnReplace"/, if this is switched on, Ayam will make
-a backup copy of each scene file it loads via main menu
+a backup copy of each scene file it loads via the main menu entry
 <tt>"File/Open"</tt> or via the most recently used list.
+The backup file will be placed right next to the loaded file
+and get an additional file name extension according to the hidden
+preference setting <tt/"BackupExt"/.
 
 <item><tt/"AddExtensions"/, this option may be used to let Ayam
 automatically add file name extensions to saved files (if they
 do not have already a proper extension).
 
-<item><tt/"LoadEnv"/, if this is switched on, Ayam will load
-the scene file specified by <tt/"EnvFile"/ on startup.
-
-<item><tt/"NewLoadsEnv"/, if this is switched on, Ayam will load
-the scene file specified by <tt/"EnvFile"/ also when the scene is
-cleared using the main menu entry <tt>"File/New"</tt>.
-
 <item><tt/"EnvFile"/; This file typically contains some view
 objects to create a standard 2-, 3-, or 4-view working environment
-and is automatically loaded upon startup of Ayam (if the preference option
-<tt/"LoadEnv"/, see above, is switched on) and upon clearing the scene
-using <tt>"File/New"</tt> (if the preference option
-<tt/"NewLoadsEnv"/, see above, is switched on).
+and is automatically loaded upon startup of Ayam (if the hidden
+preference option <tt/"LoadEnv"/ is switched on) and upon clearing
+the scene using <tt>"File/New"</tt> (if the hidden preference option
+<tt/"NewLoadsEnv"/ is switched on).
+See also section <ref id="hidprefs" name="Hidden Preference Settings">.
 
 <item><tt/"Scripts"/ is a list of Tcl scripts that will
 be executed on startup. The scripts have to be specified with full
 path and filename. If non absolute paths are used they are relative
 to the current directory of Ayam on application startup (which is typically
 the directory where the Ayam executable resides).
-Multiple entries have to be separated by a colon (:) on Unix and by
-a semicolon (;) on Win32.
+Multiple entries have to be separated by a colon (<tt/":"/) on Unix and by
+a semicolon (<tt/";"/) on Win32.
 
 <item><tt/"Plugins"/ is a list of directories that contain custom
 objects or plugins. Those directories will e.g. be searched for
@@ -1604,15 +1615,21 @@ Ayam scene files. If a matching custom object is found, it will be
 automatically loaded into Ayam, so that scene loading may proceed without
 an error. If non absolute paths are used they are relative
 to the directory where the Ayam executable resides.
-Multiple entries have to be separated
-by a colon (:) on Unix and by a semicolon (;) on Win32.
+Multiple entries have to be separated by a colon (<tt/":"/) on Unix and
+by a semicolon (<tt/";"/) on Win32.
 
 <item><tt/"Docs"/ is an URL that points to the documentation in
 HTML format.
 
-<item><tt/"TmpDir"/ is the directory, where temporary RIBs are
+<item><tt/"TmpDir"/ is the directory, where temporary RIB files are
 created, e.g. when rendering directly from view windows.
 </itemize>
+
+The preference settings <tt/"ListTypes"/, <tt/"MarkHidden"/,
+<tt/"LoadEnv"/, and <tt/"NewLoadsEnv"/ are hidden preference
+settings since Ayam 1.14, see section
+<ref id="hidprefs" name="Hidden Preference Settings">.
+
 
 <sect2>Modelling Preferences<label id="prefmodel">
 <p>
@@ -7027,6 +7044,19 @@ The point selection will be removed from the original object.
 Trim curves will not be honored properly.
 </itemize>
 
+<sect1>The Extract Curve Tool<label id="extnct">
+<p>
+<itemize>
+<item>Arguments: The Extract Curve tool takes the selected objects from
+the selection.
+<item>Operation: The tool creates a ExtrNC object, and moves
+the selected objects to it.
+<item>Note: See section <ref id="extrncobj" name="ExtrNC Object">
+for more information regarding the ExtrNC object.
+This tool uses the object clipboard to move the objects so that the
+original clipboard contents are lost when this tool finishes.
+</itemize>
+
 <sect1>The Extract Patch Tool<label id="extrnpt">
 <p>
 <itemize>
@@ -7065,19 +7095,6 @@ The knot type in u direction (Knot-Type_U) will always be NURB.
 Other parameters (Order_V, Knot-Type_V, Knots_V) are taken from
 the first curve.
 <item>Note: The original NURBS curves objects are not deleted.
-</itemize>
-
-<sect1>The Extract NC Tool<label id="extnct">
-<p>
-<itemize>
-<item>Arguments: The Extract NC tool takes the selected objects from
-the selection.
-<item>Operation: The tool creates a ExtrNC object, and moves
-the selected objects to it.
-<item>Note: See section <ref id="extrncobj" name="ExtrNC Object">
-for more information regarding the ExtrNC object.
-This tool uses the object clipboard to move the objects so that the
-original clipboard contents are lost when this tool finishes.
 </itemize>
 
 <sect1>The Tesselation Tool<label id="tesst">
@@ -10090,7 +10107,7 @@ unknown tag types.
 
 <item><tt/"FixX11Menu"/ enables a workaround for non-sticky menus
 on X11 (displaced menus do not stay open). This option is enabled
-by default and not used on the Win32 platform.
+by default and not used on the Win32 and Aqua platforms.
 
 <item><tt/"SafeAutoFocus"/ disables AutoFocus
 (see section <ref id="prefgui" name="preference settings">)
@@ -10151,6 +10168,30 @@ Default values are 1.0, 1.0.
 
 <item><tt/"WheelZoom"/, a float value that controls the zoom factor,
 for the mouse wheel; default value is 0.5.
+
+<item><tt/"ShiftTab"/, allows to set a specific keyboard symbol for
+systems where pressing the Shift together with the Tab key does not
+produce "&lt;Shift-Tab&gt;" (the default) but some other symbol like e.g.
+"&lt;ISO_Left_Tab&gt;" (modern X11 systems often use this).
+
+<item><tt/"FixImageButtons"/, enables a workaround for buttons (e.g.
+in the toolbox) that stay depressed when used.
+
+
+<item><tt/"ListTypes"/ determines, whether the type of an
+object should be displayed in braces in the tree view or listbox.
+
+<item><tt/"MarkHidden"/ determines, whether hidden objects
+should be marked (using a preceding exclamation mark)
+in the tree view or object listbox.
+
+<item><tt/"LoadEnv"/, if this is switched on, Ayam will load
+the scene file specified by <tt/"EnvFile"/ on startup.
+
+<item><tt/"NewLoadsEnv"/, if this is switched on, Ayam will load
+the scene file specified by <tt/"EnvFile"/ also when the scene is
+cleared using the main menu entry <tt>"File/New"</tt>.
+
 
 </itemize>
 
@@ -10915,8 +10956,8 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>Expression: <ref id="mcattr" name="MetaComp attribute">
 <item>Exterior: <ref id="matshader" name="shader">
 <item>ExtrNC: <ref id="extrncobj" name="ExtrNC object">,
-<ref id="extnct" name="Extract NC tool">
-<item>extrNP: <ref id="extrnpobj" name="ExtrNP object">,
+<ref id="extnct" name="extract curve tool">
+<item>ExtrNP: <ref id="extrnpobj" name="ExtrNP object">,
 <ref id="scextrnp" name="scripting interface command">,
 <ref id="extrnpt" name="extract patch tool">
 <item>Extrude: <ref id="extrudeobj" name="Extrude object">,
@@ -10934,6 +10975,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>FilterFunc: <ref id="rio" name="RenderMan interface option">
 <item>FilterWidth: <ref id="rio" name="RenderMan interface option">
 <item>FindU: <ref id="miscac" name="modelling action">
+<item>FixImageButtons: <ref id="hidprefs" name="hidden preference setting">
 <item>FixX11Menu: <ref id="hidprefs" name="hidden preference setting">
 <item>FlashPoints: <ref id="prefmodel" name="preference setting">
 <item>Flatness: <ref id="moattr" name="MetaObj attributes">
@@ -10980,7 +11022,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>Help: <ref id="mmhelp" name="main menu entry">,
 <ref id="schelp" name="scripting interface command">
 <item>Help on object: <ref id="mmhelp" name="main menu entry">
-<item>Hidden Preferences: <ref id="hidprefs" name="Hidden Preference Settings">
+<item>Hidden Preferences: <ref id="hidprefs" name="hidden preference settings">
 <item>Hide: <ref id="mmtools" name="main menu entry">,
 <ref id="attrs" name="attribute">
 <item>Hide All: <ref id="mmtools" name="main menu entry">
@@ -11062,8 +11104,8 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>LightAttr: <ref id="lip" name="property">
 <item>LightShader: <ref id="lightobj" name="light">
 <item>LineWidth: <ref id="hidprefs" name="hidden preference setting">
-<item>ListTypes: <ref id="prefgui" name="preference setting">
-<item>LoadEnv: <ref id="prefgui" name="preference setting">
+<item>ListTypes: <ref id="hidprefs" name="hidden preference setting">
+<item>LoadEnv: <ref id="hidprefs" name="hidden preference settings">
 <item>Load Plugin: <ref id="mmfile" name="main menu entry">
 <item>Local: <ref id="vat" name="view attribute">,
 <ref id="editlocal" name ="Editing in Local Space">
@@ -11081,14 +11123,14 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <itemize>
 <item>MajorRad: <ref id="top" name="torus attribute">
 <item>Make Compatible: <ref id="makecompt" name="NURBCurve tool">
-<item>MarkHidden: <ref id="prefgui" name="preference setting">
+<item>MarkHidden: <ref id="hidprefs" name="hidden preference settings">
 <item>Master: <ref id="mmedit" name="edit menu entry">
 <item>Material: <ref id="materialobj" name="Material object">,
 <ref id="mmedit" name="edit menu entry">
 <item>Materialname: <ref id="matattr" name="material object attribute">,
 <ref id="matprop" name="material property attribute">
 <item>MaxRayLevel: <ref id="rio" name="RenderMan interface option">
-<item>MaxTagLen: <ref id="hidprefs" name="Hidden Preference Settings">
+<item>MaxTagLen: <ref id="hidprefs" name="hidden preference settings">
 <item>MaxX, MaxY, MaxZ: <ref id="riprocp" name="riproc attribute">
 <item>Menu: <ref id="mm" name="main menu">,
 <ref id="vm" name="view menu">
@@ -11122,7 +11164,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>Negative: <ref id="mcattr" name="MetaComp attribute">
 <item>Network Surface: <ref id="gordonobj" name="Gordon object">
 <item>New: <ref id="mmfile" name="main menu entry">
-<item>NewLoadsEnv: <ref id="prefgui" name="preference setting">
+<item>NewLoadsEnv: <ref id="hidprefs" name="hidden preference settings">
 <item>newScene: <ref id="scnewscene" name="scripting interface command">
 <item>NoExport: <ref id="noexporttag" name="tag type">
 <item>NP: <ref id="nptag" name="tag type">
@@ -11188,7 +11230,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>PolyOffset: <ref id="hidprefs" name="hidden preference setting">
 <item>PPRender: <ref id="prefrib" name="preference setting">
 <item>Preferences: <ref id="prefs" name="Preferences">,
-<ref id="hidprefs" name="Hidden Preference Settings">
+<ref id="hidprefs" name="hidden preference settings">
 <item>PrepDiaCap: <ref id="hidprefs" name="hidden preference setting">
 <item>Procedurals: <ref id="rio" name="RenderMan interface option">
 <item>Prompt: <ref id="hidprefs" name="hidden preference setting">
@@ -11369,12 +11411,14 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Shadows: <ref id="lip" name="light attribute">
 <item>Shift Closed B-Spline:
 <ref id="shiftclbspt" name="shift closed B-Spline tool">
+<item>ShiftTab: <ref id="hidprefs" name="hidden preference setting">
 <item>Show: <ref id="mmtools" name="main menu entry">
 <item>Show All: <ref id="mmtools" name="main menu entry">
 <item>Show Shortcuts: <ref id="mmhelp" name="main menu entry">
 <item>Show Tooltips: <ref id="mmhelp" name="main menu entry">
 <item>Side: <ref id="vmtype" name="view menu entry">,
 <ref id="extrncp" name="ExtrNC attribute">
+<item>SingleWindow: <ref id="prefmain" name="preference setting">
 <item>Skin: <ref id="skinobj" name="Skin object">,
 <ref id="skit" name="Skin tool">
 <item>sL: <ref id="scsl" name="scripting interface command">
