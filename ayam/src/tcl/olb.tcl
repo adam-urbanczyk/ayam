@@ -89,7 +89,7 @@ bind $f.li <Right> "$f.b;uS;break"
 # initial focus management (plb_update/plb_focus change this again)
 if { !$::ayprefs(SingleWindow) } {
     bind $f.li <Key-Tab> "focus .fl.con.console;break"
-    bind $f(li) <Shift-Tab> "focus .fv.fViews.fview2;break"
+    bind $f.li <Shift-Tab> "focus .fv.fViews.fview2;break"
 } else {
     bind $f.li <Key-Tab> "focus .fu.fMain.fview3;break"
 }
