@@ -743,7 +743,9 @@ ay_Empty_img blank
 
 # Pick
 set imgdata {\
-R0lGODdhGQAZAKEAALi8uPj8+AAAAAAAACwAAAAAGQAZAAACN4SPqcvtD6OcFIVQUxA4m815ABhmZEmdqKSuUOs6cCxfwn13aZ5XILbRsXojH9FzEYqWzKbzWQAAOw==
+R0lGODlhGQAZAKEDAAAAALy8vPj8+P///yH5BAEKAAMALAAAAAAZABkAAAI4
+jI+py+0Po5wUCVGTADibzXkBGGZkSZ2opK5Q6zpwLF/AfXdpnlcgttGxACVh
+5CcaXZLMpvPpLAAAOw==
 }
 image create photo ay_Pick_img -format GIF -data $imgdata
 
