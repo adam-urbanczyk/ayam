@@ -1491,6 +1491,16 @@ if { $ayprefs(SingleWindow) } {
     bind .fv.fViews.fview1 $ayprefs(ShiftTab) {+
 	.fv.fViews.fview1.f3D.togl configure -cursor {};
     }
+
+    # make view2 a top view
+    viewSetType .fv.fViews.fview2 2
+
+    # make view3 a perspective view
+    viewSetType .fu.fMain.fview3 3
+
+    undo clear
+
+    # in singlewindow gui mode, the hierarchy should display the focus ring
     .fu.fMain.fHier configure -highlightthickness 1
 
 } else {
