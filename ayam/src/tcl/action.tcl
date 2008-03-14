@@ -28,6 +28,7 @@ proc upAc { n1 n2 op } {
 
 trace variable ay(action) w upAc
 
+
 #stdReleaseBind:
 # standard release binding for modeling actions:
 # force notification (if necessary);
@@ -48,6 +49,7 @@ proc stdReleaseBind { w } {
  return;
 }
 # stdReleaseBind
+
 
 #
 proc actionRotView { w } {
@@ -229,6 +231,7 @@ proc actionRotOb { w } {
 # actionRotOb
 
 
+#
 proc actionRotObabindp { w x y } {
 
     viewTitle $w "" "Rotate_around_Point"
@@ -246,6 +249,7 @@ proc actionRotObabindp { w x y } {
 # actionRotObabindp
 
 
+#
 proc actionRotObA { w } {
 
     viewTitle $w "" "Select_a_Point"
@@ -388,6 +392,7 @@ proc actionSc2DOb { w } {
 }
 # actionSc2DOb
 
+
 #
 proc actionSc3DOb { w } {
 
@@ -417,6 +422,7 @@ proc actionSc3DOb { w } {
 }
 # actionSc3DOb
 
+
 #
 proc actionStr2DOb { w } {
 
@@ -445,6 +451,7 @@ proc actionStr2DOb { w } {
  return;
 }
 # actionStr2DOb
+
 
 #
 proc actionTagP { w } {
@@ -481,8 +488,9 @@ proc actionTagP { w } {
 	bind $w <Motion> {
 	    %W startpepac %x %y -flash
 	}
-
-	bind $w <ButtonRelease-1> "+%W startpepac %x %y -flash -ignoreold"
+	bind $w <ButtonRelease-1> "+\
+          %W startpepac %x %y -flash -ignoreold;\
+          %W startpepac %x %y -flash -ignoreold"
     }
 
     $w setconf -drawh 1
@@ -490,6 +498,7 @@ proc actionTagP { w } {
  return;
 }
 # actionTagP
+
 
 #
 proc actionDelTagP { w } {
@@ -500,6 +509,7 @@ proc actionDelTagP { w } {
  return;
 }
 # actionDelTagP
+
 
 array set editPointDarray {
     x 0.0
@@ -739,6 +749,7 @@ proc editPointDp { } {
 }
 # editPointDp
 
+
 #
 proc actionDEditP { w } {
     global ayprefs
@@ -776,6 +787,7 @@ proc actionDEditP { w } {
 }
 # actionDEditP
 
+
 #
 proc actionEditP { w } {
     global ayprefs
@@ -812,7 +824,9 @@ proc actionEditP { w } {
     stdReleaseBind $w
 
     if { $ayprefs(FlashPoints) == 1 } {
-	bind $w <ButtonRelease-1> "+%W startpepac %x %y -flash -ignoreold"
+	bind $w <ButtonRelease-1> "+\
+          %W startpepac %x %y -flash -ignoreold;\
+          %W startpepac %x %y -flash -ignoreold"
     }
 
     $w setconf -drawh 1
@@ -820,6 +834,7 @@ proc actionEditP { w } {
  return;
 }
 # actionEditP
+
 
 #
 proc actionEditWP { w } {
@@ -853,7 +868,9 @@ proc actionEditWP { w } {
     stdReleaseBind $w
 
     if { $ayprefs(FlashPoints) == 1 } {
-	bind $w <ButtonRelease-1> "+%W startpepac %x %y -flash -ignoreold"
+	bind $w <ButtonRelease-1> "+\
+          %W startpepac %x %y -flash -ignoreold;\
+          %W startpepac %x %y -flash -ignoreold"
     }
 
     $w setconf -drawh 1
@@ -908,6 +925,7 @@ proc actionInsertP { w } {
 }
 # actionInsertP
 
+
 #
 proc actionDeleteP { w } {
     global ayprefs
@@ -943,6 +961,7 @@ proc actionDeleteP { w } {
 }
 # actionDeleteP
 
+
 #
 proc actionFindU { w } {
 
@@ -965,6 +984,7 @@ proc actionFindU { w } {
  return;
 }
 # actionFindU
+
 
 #
 proc actionSplitNC { w } {
@@ -1092,7 +1112,11 @@ proc actionSnapToGrid2D { w } {
 proc actionClear { w } {
     global ayprefs
 
-    bind $w <ButtonPress-1> ""
+    if { [string first ".view" $w] != 0 } {
+	bind $w <ButtonPress-1> "focus \$w"
+    } else {
+	bind $w <ButtonPress-1> ""
+    }
     bind $w <B1-Motion> ""
     bind $w <ButtonRelease-1> ""
     bind $w <Motion> ""
