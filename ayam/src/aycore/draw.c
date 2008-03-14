@@ -29,8 +29,8 @@ ay_draw_selp(ay_object *o)
       glDisable(GL_DEPTH_TEST);
 
       /* set color for selected points */
-      glColor3d((GLdouble)ay_prefs.tpr, (GLdouble)ay_prefs.tpg,
-		(GLdouble)ay_prefs.tpb);
+      glColor3f((GLfloat)ay_prefs.tpr, (GLfloat)ay_prefs.tpg,
+		(GLfloat)ay_prefs.tpb);
 
       point = o->selp;
       glBegin(GL_POINTS);
@@ -44,8 +44,8 @@ ay_draw_selp(ay_object *o)
 	 }
 
        /* set color for selected objects */
-       glColor3d((GLdouble)ay_prefs.ser, (GLdouble)ay_prefs.seg,
-		 (GLdouble)ay_prefs.seb);
+       glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
+		 (GLfloat)ay_prefs.seb);
       glEnd();
 
       glEnable(GL_DEPTH_TEST);
@@ -203,8 +203,8 @@ ay_draw_view(struct Togl *togl, int draw_offset)
     }
 
   /* set color for deselected objects */
-  glColor3d((GLdouble)ay_prefs.obr, (GLdouble)ay_prefs.obg,
-	    (GLdouble)ay_prefs.obb);
+  glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
+	    (GLfloat)ay_prefs.obb);
 
   if(ay_prefs.linewidth != 1.0)
     glLineWidth((GLfloat)ay_prefs.linewidth);
@@ -223,8 +223,8 @@ ay_draw_view(struct Togl *togl, int draw_offset)
   if(sel)
     {
       /* set color for selected objects */
-      glColor3d((GLdouble)ay_prefs.ser, (GLdouble)ay_prefs.seg,
-		(GLdouble)ay_prefs.seb);
+      glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
+		(GLfloat)ay_prefs.seb);
 
       if(ay_prefs.sellinewidth != 1.0)
 	glLineWidth((GLfloat)ay_prefs.sellinewidth/*1.6f*/);
@@ -249,6 +249,7 @@ ay_draw_view(struct Togl *togl, int draw_offset)
 	   ay_status = ay_draw_object(togl, sel->object, AY_TRUE);
 	   sel = sel->next;
 	 } /* while */
+
       if(!draw_offset)
 	{
 	  glEnable(GL_DEPTH_TEST);
@@ -314,8 +315,8 @@ ay_draw_view(struct Togl *togl, int draw_offset)
       /* draw marker */
       if(view->drawmarker)
 	{
-	  glColor3d((GLdouble)ay_prefs.tpr, (GLdouble)ay_prefs.tpg,
-		    (GLdouble)ay_prefs.tpb);
+	  glColor3f((GLfloat)ay_prefs.tpr, (GLfloat)ay_prefs.tpg,
+		    (GLfloat)ay_prefs.tpb);
 	  glDisable(GL_DEPTH_TEST);
 	  glMatrixMode(GL_PROJECTION);
 	  glPushMatrix();
@@ -426,8 +427,8 @@ ay_draw_grid(struct Togl *togl)
       if(dy < 1.0)
 	dy = 1.0;
 
-      glColor3d((GLdouble)ay_prefs.grr, (GLdouble)ay_prefs.grg,
-		(GLdouble)ay_prefs.grb);
+      glColor3f((GLfloat)ay_prefs.grr, (GLfloat)ay_prefs.grg,
+		(GLfloat)ay_prefs.grb);
 
       glMatrixMode(GL_PROJECTION);
       glPushMatrix();
@@ -522,8 +523,8 @@ ay_draw_grid(struct Togl *togl)
 	}
 
       /*printf("%g %g %g %g\n",minwinx,maxwinx,minwiny,maxwiny);*/
-      glColor3d((GLdouble)ay_prefs.grr, (GLdouble)ay_prefs.grg,
-		(GLdouble)ay_prefs.grb);
+      glColor3f((GLfloat)ay_prefs.grr, (GLfloat)ay_prefs.grg,
+		(GLfloat)ay_prefs.grb);
 
       glBegin(GL_LINES);
 
@@ -729,8 +730,8 @@ ay_draw_bgimage(struct Togl *togl)
        glPushMatrix();
        glLoadIdentity();
 
-       glColor3d((GLdouble)ay_prefs.bgr, (GLdouble)ay_prefs.bgg,
-		 (GLdouble)ay_prefs.bgb);
+       glColor3f((GLfloat)ay_prefs.bgr, (GLfloat)ay_prefs.bgg,
+		 (GLfloat)ay_prefs.bgb);
 
        color[0] = (GLfloat)ay_prefs.bgr;
        color[1] = (GLfloat)ay_prefs.bgg;
@@ -911,8 +912,8 @@ ay_draw_trimview(void)
 	 maxx = (GLfloat)((patch->uknotv)[patch->width + patch->uorder - 1]);
 	 maxy = (GLfloat)((patch->vknotv)[patch->height + patch->vorder - 1]);
 
-	 glColor3d((GLdouble)ay_prefs.ser, (GLdouble)ay_prefs.seg,
-		   (GLdouble)ay_prefs.seb);
+	 glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
+		   (GLfloat)ay_prefs.seb);
 
 	 glBegin(GL_LINE_LOOP);
 	  glVertex3f(minx, miny, 0.0);
@@ -921,8 +922,8 @@ ay_draw_trimview(void)
 	  glVertex3f(minx, maxy, 0.0);
 	 glEnd();
 
-	 glColor3d((GLdouble)ay_prefs.obr, (GLdouble)ay_prefs.obg,
-		   (GLdouble)ay_prefs.obb);
+	 glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
+		   (GLfloat)ay_prefs.obb);
 
        } /* if */
    } /* if */
