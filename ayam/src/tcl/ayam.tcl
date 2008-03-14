@@ -68,8 +68,8 @@ array set ayprefs {
  SelXOR_G 128
  SelXOR_B 0
 
- LineWidth 1.0;
- SelLineWidth 1.0;
+ LineWidth 1.0
+ SelLineWidth 1.0
 
  RIBFile "Scene"
  Image "RIB"
