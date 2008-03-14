@@ -162,11 +162,13 @@ proc shortcut_main { w } {
     # bind function keys
     shortcut_fkeys $w
 
-    bind $w <Enter> {
-	global ayprefs
-	if { $ayprefs(AutoFocus) == 1 } {
-	    if { "%W" == "[winfo toplevel %W]" } {
-		focus %W
+    if { $w  == "." } {
+	bind $w <Enter> {
+	    global ayprefs
+	    if { $ayprefs(AutoFocus) == 1 } {
+		if { "%W" == "[winfo toplevel %W]" } {
+		    focus %W
+		}
 	    }
 	}
     }
@@ -631,7 +633,6 @@ proc shortcut_viewactions { w } {
 	update
 	%W reshape
 	%W render
-	break;
     }
 
 
@@ -642,7 +643,6 @@ proc shortcut_viewactions { w } {
 	update
 	%W reshape
 	%W render
-	break;
     }
 
     global tcl_platform AYWITHAQUA
@@ -658,7 +658,6 @@ proc shortcut_viewactions { w } {
 	    update
 	    %W reshape
 	    %W render
-	    break;
 	}
     }
     # if
@@ -675,7 +674,6 @@ proc shortcut_viewactions { w } {
 	    update
 	    %W reshape
 	    %W render
-	    break;
 	}
     }
     # if
