@@ -816,7 +816,7 @@ ay_viewt_redrawtcb(struct Togl *togl, int argc, char *argv[])
   else
     {
       glClearColor((GLfloat)ay_prefs.bgr, (GLfloat)ay_prefs.bgg,
-		   (GLfloat)ay_prefs.bgb, (GLfloat)0.0);
+		   (GLfloat)ay_prefs.bgb, (GLfloat)1.0);
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
       /* draw */
@@ -1230,8 +1230,8 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 	      /*XXXX DBG*/
 	      /*glLogicOp(GL_COPY);*/
 
-	       glColor3d((GLdouble)ay_prefs.sxr, (GLdouble)ay_prefs.sxg,
-			 (GLdouble)ay_prefs.sxb);
+	       glColor3f((GLfloat)ay_prefs.sxr, (GLfloat)ay_prefs.sxg,
+			 (GLfloat)ay_prefs.sxb);
 
 	       /* clear old rectangle? */
 	       if((old_rect_xmin != 0.0) && (old_rect_ymin != 0.0) &&
@@ -1267,8 +1267,8 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 	      if(view->drawrect)
 		{
 		  glDrawBuffer(GL_FRONT);
-		  glColor3d((GLdouble)ay_prefs.tpr, (GLdouble)ay_prefs.tpg,
-			 (GLdouble)ay_prefs.tpb);
+		  glColor3f((GLfloat)ay_prefs.tpr, (GLfloat)ay_prefs.tpg,
+			 (GLfloat)ay_prefs.tpb);
 		  ay_draw_rectangle(width, height,
 				    view->rect_xmin, view->rect_ymin,
 				    view->rect_xmax, view->rect_ymax);

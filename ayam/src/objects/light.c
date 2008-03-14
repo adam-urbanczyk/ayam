@@ -145,8 +145,8 @@ ay_light_drawcb(struct Togl *togl, ay_object *o)
       /* save current color */
       glGetFloatv(GL_CURRENT_COLOR, oldcolor);
       /* set color for lights */
-      glColor3d((GLdouble)ay_prefs.lir, (GLdouble)ay_prefs.lig,
-		(GLdouble)ay_prefs.lib);
+      glColor3f((GLfloat)ay_prefs.lir, (GLfloat)ay_prefs.lig,
+		(GLfloat)ay_prefs.lib);
     }
 
   switch(light->type)

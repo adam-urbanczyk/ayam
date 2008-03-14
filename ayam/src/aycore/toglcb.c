@@ -249,7 +249,7 @@ ay_toglcb_display(struct Togl *togl)
   else
     {
       glClearColor((GLfloat)ay_prefs.bgr, (GLfloat)ay_prefs.bgg,
-		   (GLfloat)ay_prefs.bgb, (GLfloat)0.0);
+		   (GLfloat)ay_prefs.bgb, (GLfloat)1.0);
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
       /* draw */

@@ -279,8 +279,8 @@ ay_pact_flashpoint(int ignore_old)
       glDrawBuffer(GL_FRONT);
       glEnable(GL_COLOR_LOGIC_OP);
       glLogicOp(GL_XOR);
-      glColor3d((GLdouble)ay_prefs.sxr, (GLdouble)ay_prefs.sxg,
-		(GLdouble)ay_prefs.sxb);
+      glColor3f((GLfloat)ay_prefs.sxr, (GLfloat)ay_prefs.sxg,
+		(GLfloat)ay_prefs.sxb);
       glDisable(GL_DEPTH_TEST);
       glMatrixMode(GL_MODELVIEW);
       glPushMatrix();

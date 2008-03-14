@@ -279,8 +279,8 @@ ay_shade_view(struct Togl *togl)
 	  glPointSize((GLfloat)ay_prefs.handle_size);
 
 	  /* set color for selected objects */
-	  glColor3d((GLdouble)ay_prefs.ser, (GLdouble)ay_prefs.seg,
-		    (GLdouble)ay_prefs.seb);
+	  glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
+		    (GLfloat)ay_prefs.seb);
 
 	  arr = ay_drawhcbt.arr;
 	  sel = ay_selection;
@@ -324,8 +324,8 @@ ay_shade_view(struct Togl *togl)
   /* draw marker */
   if(view->drawmarker)
     {
-      glColor3d((GLdouble)ay_prefs.tpr, (GLdouble)ay_prefs.tpg,
-		(GLdouble)ay_prefs.tpb);
+      glColor3f((GLfloat)ay_prefs.tpr, (GLfloat)ay_prefs.tpg,
+		(GLfloat)ay_prefs.tpb);
       glDisable(GL_DEPTH_TEST);
       glMatrixMode(GL_PROJECTION);
       glPushMatrix();
