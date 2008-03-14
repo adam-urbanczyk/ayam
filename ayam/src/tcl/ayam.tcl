@@ -1500,6 +1500,8 @@ if { $ayprefs(SingleWindow) } {
 
     undo clear
 
+    set ay(sc) 0
+
     # in singlewindow gui mode, the hierarchy should display the focus ring
     .fu.fMain.fHier configure -highlightthickness 1
 
