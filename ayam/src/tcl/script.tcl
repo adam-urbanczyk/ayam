@@ -85,7 +85,7 @@ bind $t <$mb> {
 }
 # bind
 
-trace {unset mb}
+catch {unset mb}
 
 # Tcl -> C
 proc setScriptp { } {
