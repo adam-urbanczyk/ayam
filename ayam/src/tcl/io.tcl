@@ -1180,7 +1180,7 @@ proc ::tk::mac::OpenDocument { args } {
 		    if { [file exists $filename] } {
 			set dirname [file dirname $filename]
 			cd $dirname
-			update_prompt ay uc w
+			ayam_updateprompt ay uc w
 		    }
 		    io_mruAdd $filename
 		} else {

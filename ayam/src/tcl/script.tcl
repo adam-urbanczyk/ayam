@@ -85,6 +85,8 @@ bind $t <$mb> {
 }
 # bind
 
+trace {unset mb}
+
 # Tcl -> C
 proc setScriptp { } {
  global ay ScriptAttr ScriptAttrData

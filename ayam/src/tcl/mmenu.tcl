@@ -730,6 +730,7 @@ $m add command -label "Show Shortcuts" -command "shortcut_show"
 $m add command -label "About" -command "aboutAyam"
 $m add checkbutton -label "Show Tooltips" -variable ayprefs(showtt)
 
+
 # XXXX Win32 Menus are a bit to tall
 global tcl_platform
 if { $tcl_platform(platform) == "windows" } {

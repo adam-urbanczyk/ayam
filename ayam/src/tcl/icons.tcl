@@ -750,3 +750,4 @@ jI+py+0Po5wUCVGTADibzXkBGGZkSZ2opK5Q6zpwLF/AfXdpnlcgttGxACVh
 image create photo ay_Pick_img -format GIF -data $imgdata
 
 
+catch {unset imgdata}
