@@ -674,7 +674,7 @@ proc io_warnChanged {  } {
 	    set t "Scene has changed!"
 	    set m "Select \"Ok\" to lose all changes.\nSelect \"Cancel\" to stop operation."
 
-	    if { $ayprefs(PrepDiaCap) == 1 } {
+	    if { $ayprefs(FixDialogTitles) == 1 } {
 		set m "$t\n\n$m"
 	    }
 
@@ -759,7 +759,7 @@ proc io_saveEnv {  } {
 \nnewly written environment\
 \nyour default environment."
 
-                 if { $ayprefs(PrepDiaCap) == 1 } {
+                 if { $ayprefs(FixDialogTitles) == 1 } {
 		     set m "$t\n\n$m"
 		 }
 
@@ -914,7 +914,7 @@ proc io_RenderSM { all } {
 		\nSelect \"Ok\" to enable them and continue.\
 		\nSelect \"Cancel\" to stop operation."
 
-	if { $ayprefs(PrepDiaCap) == 1 } {
+	if { $ayprefs(FixDialogTitles) == 1 } {
 	    set m "$t\n\n$m"
 	}
 
