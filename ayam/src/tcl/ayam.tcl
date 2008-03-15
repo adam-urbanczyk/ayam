@@ -662,6 +662,8 @@ if { $tcl_platform(platform) == "windows" } {
     set aymainshortcuts(SProp88) "Key-8"
     set aymainshortcuts(SProp99) "Key-9"
 
+    catch {unset sc scdir}
+
 } else {
     # UNIX specific settings:
     set ayprefs(Plugins) "[file dirname [info nameofexecutable]]/plugins"
@@ -740,7 +742,12 @@ if { $tcl_platform(platform) == "windows" } {
 	# Aqua always sends Shift-Tab
 	set ayprefs(ShiftTab) "<Shift-Tab>"
     }
+    # if
+
+    catch {unset ws}
 }
+# if
+
 
 if { ($ay(ws) != "Aqua") && ($tcl_platform(os) == "Darwin") } {
     # image buttons need fixing
@@ -778,6 +785,7 @@ if { [llength [info commands winfo]] != 0 } {
     } else {
 	set ay(truecolor) 0
     }
+    catch {unset visuals}
 }
 
 # if envvar AYAMRC is set, use it
@@ -1077,6 +1085,7 @@ proc ayam_loadscript { file } {
 }
 # ayam_loadscript
 
+
 # Ayam Startup Sequence:
 
 # first, process some arguments
@@ -1359,15 +1368,15 @@ if { $tcl_platform(platform) != "windows" } {
     wm deiconify .
 }
 
-# ayam_flush - flush error messages each 2s
-proc ayam_flush { } {
+# ayam_flusherrmsg - flush error messages each 2s
+proc ayam_flusherrmsg { } {
     global ayprefs
     ayError 3
-    after $ayprefs(EFlush) { ayam_flush }
+    after $ayprefs(EFlush) { ayam_flusherrmsg }
 }
-# ayam_flush
+# ayam_flusherrmsg
 
-after $ayprefs(EFlush) { ayam_flush }
+after $ayprefs(EFlush) { ayam_flusherrmsg }
 
 # Ignition:
 puts stdout "Ayam-Startup-Sequence initiated."
@@ -1413,21 +1422,21 @@ if { ([string first pre $ayprefs(Version)] == -1) } {
 # set proper version information
 set ayprefs(Version) $ay(ay_version)
 
-# update_prompt - print a first prompt after configuration change
-proc update_prompt {n1 n2 op} {
+# ayam_updateprompt - print a first prompt after configuration change
+proc ayam_updateprompt {n1 n2 op} {
     .fl.con delete end-1lines end
     Console:prompt .fl.con "\n"
 }
-# update_prompt
+# ayam_updateprompt
 
 # set new prompt?
 if { $ayprefs(Prompt) != "" } {
     set .fl.con(-prompt) $ayprefs(Prompt)
-    update_prompt dummy1 dummy2 dummy3
+    ayam_updateprompt dummy1 dummy2 dummy3
 }
 # establish some standard-traces that update the prompt
-# ay(uc) is set by the undo system
-trace var ay(uc) w update_prompt
+# (ay(uc) is set by the undo system)
+trace var ay(uc) w ayam_updateprompt
 
 # immediately switch to ListBox?
 if { $ayprefs(showtr) == 0 } {
@@ -1436,6 +1445,7 @@ if { $ayprefs(showtr) == 0 } {
     olb_open .fu.fMain.fHier
     olb_update
 }
+
 update
 
 # create internal toolbox and views?
@@ -1446,28 +1456,27 @@ if { $ayprefs(SingleWindow) } {
     # create the main menu
     mmenu_open .fv
     update
-    # Toolbox
+    # open internal toolbox
     toolbox_open .fv.fTools
 
     foreach b $ay(toolbuttons) {
 	.fv.fTools.f.$b configure -takefocus 0
     }
 
-    # Views
-    set vf .fv.fViews
+    # create first two (upper) internal views
     viewOpen 100 100 0 1
     set f .fv.fViews.fview1
-    pack $f -in $vf -side left -fill both -expand yes
+    pack $f -in .fv.fViews -side left -fill both -expand yes
     update
     viewOpen 100 100 0 1
     set f .fv.fViews.fview2
-    pack $f -in $vf -side right -fill both -expand yes
+    pack $f -in .fv.fViews -side right -fill both -expand yes
     update
 
     # establish paned window management for the views
     pane .fv.fViews.fview1 .fv.fViews.fview2
 
-    # the third internal view
+    # create the third internal view
     frame .fu.fMain.fview3 -takefocus 1 -highlightthickness 1
     update
     pane forget .fu.fMain.fHier .fu.fMain.fProp
@@ -1537,6 +1546,9 @@ if { $ayprefs(Scripts) != "" } {
 	    catch {source $script}
 	}
     }
+
+    catch {unset scripts script}
+
 }
 # if
 
@@ -1571,6 +1583,7 @@ if { $ayprefs(IconGamma) != "" } {
 	    $icon configure -gamma $ayprefs(IconGamma)
 	}
     }
+    catch {unset iconnames icon}
 }
 
 # open the external toolbox window
@@ -1662,13 +1675,16 @@ if { ($ayprefs(EnvFile) != "") &&  ($ayprefs(LoadEnv) == 1) &&
     } else {
        puts stdout "Not loading environment because of scene file argument..."
     }
+
+    catch {unset filename have_scenefile_argument}
+
 } else {
     uS
 }
 # if
 
-# setChangedIndicator - manage scene changed indicator in main titlebar
-proc setChangedIndicator { a1 a2 a3 } {
+# ayam_setscindicator - manage scene changed indicator in main titlebar
+proc ayam_setscindicator { a1 a2 a3 } {
     global ay
     set s [wm title .]
     set index 0
@@ -1686,9 +1702,9 @@ proc setChangedIndicator { a1 a2 a3 } {
 	wm title . $s
     }
 }
-# setChangedIndicator
+# ayam_setscindicator
 
-trace variable ay(sc) w setChangedIndicator
+trace variable ay(sc) w ayam_setscindicator
 
 # process remaining arguments (load further scene(s))
 puts stdout "Processing remaining arguments..."
@@ -1721,7 +1737,7 @@ while { $i < $argc } {
 		if { [file exists $filename] } {
 		    set dirname [file dirname $filename]
 		    cd $dirname
-		    update_prompt ay uc w
+		    ayam_updateprompt ay uc w
 		}
 		io_mruAdd $filename
 	    } else {
@@ -1746,6 +1762,7 @@ while { $i < $argc } {
     }
     # if
     incr i
+    catch {unset arg}
 }
 # while
 grab release .fu
@@ -1765,6 +1782,8 @@ set avnames [array names ayprefs]
 foreach j $avnames {
     set ayprefsdefaults($j) $ayprefs($j)
 }
+catch {unset avnames}
+
 
 # build most recently used files menu entries
 io_mruUMenu
