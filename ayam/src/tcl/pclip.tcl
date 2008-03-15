@@ -159,7 +159,7 @@ proc pclip_pastetosel { } {
 	set t "Warning!"
 	set m "This operation may destroy the current property. Proceed if you know what you are doing!"
 
-	if { $ayprefs(PrepDiaCap) == 1 } {
+	if { $ayprefs(FixDialogTitles) == 1 } {
 	    set m "$t\n\n$m"
 	}
 

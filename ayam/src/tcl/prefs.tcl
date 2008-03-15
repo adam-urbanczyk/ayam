@@ -663,7 +663,7 @@ proc prefs_warnNeedRestart {} {
 	set t "Need Restart!"
 	set m "Some of your changes need a restart of Ayam to take effect!"
 	
-	if { $ayprefs(PrepDiaCap) == 1 } {
+	if { $ayprefs(FixDialogTitles) == 1 } {
 	    set m "$t\n\n$m"
 	}
 
@@ -687,7 +687,7 @@ proc prefs_reset {} {
 	set t "Reset Preferences?"
 	set m "Ready to remove file:\n\"$ay(ayamrc)\"?"
 	
-	if { $ayprefs(PrepDiaCap) == 1 } {
+	if { $ayprefs(FixDialogTitles) == 1 } {
 	    set m "$t\n\n$m"
 	}
 	set answer [tk_messageBox -title $t -type okcancel -icon warning\

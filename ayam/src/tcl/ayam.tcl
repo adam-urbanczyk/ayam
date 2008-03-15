@@ -159,16 +159,17 @@ array set ayprefs {
  AskScriptDisable 1
 
  WarnUnknownTag 1
+
+ FixDialogTitles 0
  FixX11Menu 1
  FixImageButtons 0
+
  SafeAutoFocus 0
 
  SwapMB 0
  SwapMBSC { "ayviewshortcuts(MoveVButton)" "ayviewshortcuts(ZoomVButton)" }
  UseInternalFD 0
  CursorEnd 1
-
- PrepDiaCap 0
 
  AddExtensions 0
 
@@ -702,7 +703,7 @@ if { $tcl_platform(platform) == "windows" } {
 	set ayprefs(UseInternalFD) 1
 
 	# prepend dialog/messagebox titles to message
-	set ayprefs(PrepDiaCap) 1
+	set ayprefs(FixDialogTitles) 1
 
 	# use documentation from app bundle
 	set t [file join [file dirname [info nameofexecutable]] \

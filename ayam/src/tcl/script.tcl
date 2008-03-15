@@ -128,7 +128,7 @@ proc script_disable { } {
 	set t "Disable Scripts?"
 	set m "Scene contains Script objects or tags, disable them?"
 
-	if { $ayprefs(PrepDiaCap) == 1 } {
+	if { $ayprefs(FixDialogTitles) == 1 } {
 	    set m "$t\n\n$m"
 	}
 
