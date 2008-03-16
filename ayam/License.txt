@@ -1,5 +1,5 @@
-This software is copyrighted (c) 1998-2007 by
-Randolf Schultz (rschultz@informatik.uni-rostock.de).
+This software is copyrighted (c) 1998-2008 by
+Randolf Schultz (randolf.schultz@gmail.com).
 All rights reserved.
 
 The following terms apply to all files associated with the
