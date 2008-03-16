@@ -155,7 +155,7 @@ proc pclip_paste { } {
 proc pclip_pastetosel { } {
     global pclip_prop ayprefs ay
 
-    if { $ayprefs(Wpclip_pastetosel) == 1 } {
+    if { $ayprefs(WarnPropPasteToSel) == 1 } {
 	set t "Warning!"
 	set m "This operation may destroy the current property. Proceed if you know what you are doing!"
 
