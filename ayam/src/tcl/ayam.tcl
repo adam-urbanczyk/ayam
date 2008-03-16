@@ -106,7 +106,7 @@ array set ayprefs {
 
  Plugins "plugins"
 
- Wpclip_pastetosel 1
+ WarnPropPasteToSel 1
  WarnChanged 1
 
  NewLoadsEnv 1
@@ -1436,7 +1436,7 @@ if { $ayprefs(Prompt) != "" } {
 }
 # establish some standard-traces that update the prompt
 # (ay(uc) is set by the undo system)
-trace var ay(uc) w ayam_updateprompt
+trace variable ay(uc) w ayam_updateprompt
 
 # immediately switch to ListBox?
 if { $ayprefs(showtr) == 0 } {
