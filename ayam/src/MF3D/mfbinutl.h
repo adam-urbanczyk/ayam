@@ -1,5 +1,5 @@
 /*
-** written 21/04/98 by Munk for RANDi (rschultz@informatik.uni-rostock.de)
+** written 21/04/98 by Munk for RANDi (randolf.schultz@gmail.com)
 */
 
 /*
