@@ -6251,11 +6251,11 @@ x3dio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 			    ay_error(AY_ERROR, fname,
 	    "could not parse layer range, specify it as: startindex-endindex");
 			  return TCL_OK;
-			} // if
-		    } // if
-		} // if
-	    } // if
-	} // if
+			} /* if */
+		    } /* if */
+		} /* if */
+	    } /* if */
+	} /* if */
       i += 2;
     } /* while */
 
