@@ -633,6 +633,7 @@ proc shortcut_viewactions { w } {
 	update
 	%W reshape
 	%W render
+	break
     }
 
 
@@ -643,6 +644,7 @@ proc shortcut_viewactions { w } {
 	update
 	%W reshape
 	%W render
+	break
     }
 
     global tcl_platform AYWITHAQUA
