@@ -147,10 +147,15 @@ object properties. The toolbox window is for easy creation of
 objects and starting of modelling actions and tools. The modelling
 actions are then carried out in view windows, where also the scene
 is displayed.
-
+<p>
+The whole application with all open windows may be iconified (zapped) using
+the shortcut <tt/&lt;Ctrl+Z&gt;/. If any of the windows iconified by zap
+is de-iconified, all other windows iconified by zap will be de-iconified
+as well.
+<p>
 <figure loc="ht">
-<eps file="pics/singlewin.ps" height="12cm">
-<img src="pics/singlewin.gif">
+<eps file="pics/swin.ps" height="12cm">
+<img src="pics/swin.gif">
 <caption>Single Window GUI Mode</caption>
 </figure>
 <p>
@@ -164,10 +169,8 @@ in panes, the space occupied by a sub window may be adjusted by dragging
 the mouse at the borderlines of the panes. The number of views is not
 limited to three, albeit all extra views will become top level windows.
 <p>
-The whole application with all open windows may be iconified (zapped) using
-the shortcut <tt/&lt;Ctrl+Z&gt;/. If any of the windows iconified by zap
-is de-iconified, all other windows iconified by zap will be de-iconified
-as well.
+The next sections document the three types of windows, main, toolbar,
+and views in detail.
 
 <sect1>Anatomy of the Main Window
 <p>
@@ -10037,7 +10040,7 @@ variable <tt>AYAMRC</tt> or is determined as following:
 <itemize>
 <item>On Unix it is <tt>"&tilde;/.ayamrc"</tt>, where <tt>"&tilde;"</tt>
 denotes the home directory of the current user.
-<item>On Win32 platforms (Windows95-2000) it is
+<item>On Win32 platforms (Windows95 - XP) it is
 <tt>"&dollar;(HOME)/ayamrc"</tt> if the environment variable
 <tt>HOME</tt> exists, else <tt>"&dollar;(TEMP)/ayamrc"</tt>.<p>
 <item>On Mac OS X Aqua (not X11!) it is
@@ -10058,17 +10061,18 @@ editor)
 <item>RiOption and RiAttribute databases
 </enum>
 
-You may edit the file by hand, but keep in mind, that the file will be
+You may edit the file, but keep in mind, that the file will be
 parsed by Tcl. Should you, for some reason, destroy your ayamrc so that
-Ayam does not start correctly anymore you may start Ayam with the command
+Ayam does not start correctly anymore you can start Ayam with the command
 line option <tt>"-failsafe"</tt>.
 When the application is left the next time, or the main menu entry
 <tt>"File/Save Prefs"</tt> is invoked, a correct ayamrc file will be
 created again.
-All preference settings will be reset to factory defaults, however!
+All preference settings will be reset to factory defaults and your
+edits will be lost, however!
 <p>
-Another way to reset the ayamrc is to  simply delete it using the
-main menu entry <tt>"Special/Reset Preferences"</tt>.
+Another way to reset the ayamrc file is to simply delete the file manually
+or using the main menu entry <tt>"Special/Reset Preferences"</tt>.
 <p>
 To reset single elements to factory defaults, just remove the corresponding
 lines from the ayamrc file.
@@ -10144,6 +10148,9 @@ rendering from a view window should be kept on disk (default: 5)
 <tt>"Special/Clipboard/Paste Property to Selected"</tt> raise a warning
 requester? (default: 1 - yes)
 
+<item><tt/"WarnUnknownTag"/ controls the warning messages for
+unknown tag types. (default: 1 - yes)
+
 <item><tt/"DailyTips"/: a list of strings that appear as tips
 on startup in the console (default: large)
 
@@ -10159,21 +10166,21 @@ in the buttons in the Tag Property GUI (default: 30)
 the work around for zombie processes created by the Rendering GUI.
 This is e.g. necessary for the Linux platform.
 
-<item><tt/"Prompt"/: controls the prompt for the console. If
-set to an empty string a default of
+<item><tt/"Prompt"/: controls the prompt for the Ayam console. If
+set to an empty string, a default of
 <code>
 \[Undo:$ay(undoo)/Redo:$ay(redoo)\].../[file tail [pwd]]&gt;
 </code>
 will be used, which displays the name of the operations that you can
 undo and redo and the last component of the current
-directory of Ayam.
+directory of Ayam like this <tt>"[Undo:None/Redo:None].../scn&gt;"</tt>.
 You may e.g. change this to <tt/"[pwd]&gt;"/ to see just the full path
 name of the current directory. If you want to display the value of a
 variable in the prompt (e.g. designating the current level in
-the scene hierarchy) you need to bind a write-trace to that variable,
-that calls the procedure <tt/"update_prompt"/. This write-trace
-may e.g. be established using a small script like this:
-<tt/"trace variable &lt;vname&gt; update_prompt"/.
+the scene hierarchy) you need to bind a write-trace to that variable.
+The write trace in turn must call the procedure <tt/"ayam_updateprompt"/
+and may e.g. be established using a small script like this:
+<tt/"trace variable &lt;vname&gt; ayam_updateprompt"/.
 
 <item><tt/"BackupExt"/: is the file name extension to be used for backup
 files. Default values are <tt>"&tilde;"</tt> for Unix and
@@ -10187,20 +10194,31 @@ are 255 for the red, 128 for the green, and 0 for the blue component.
 
 <item><tt/"IconGamma"/: this setting may be used to adapt the contrast
 of all icons (in view menu and the toolbox) to your display gamma. If you
-are on a SGI it is recommended to set this to about "0.7".
+are on a SGI it is recommended to set this to about "0.7". The default
+value <tt>""</tt> leads to no changes of any icon images.
 
 <item><tt/"AddViewParams"/ allows to add custom parameters to the
-view OpenGL widget creation, like e.g. <tt/"-stereo true"/.
+view OpenGL widget creation, like e.g. <tt/"-stereo true"/. The default
+value is <tt>""</tt>.
 
 <item><tt/"AskScriptDisable"/ controls the warning dialog that
-appears if scenes with script objects or tags are loaded.
-
-<item><tt/"WarnUnknownTag"/ controls the warning messages for
-unknown tag types.
+appears if scenes with script objects or tags are loaded. The default
+value is 1 - yes, warn about script objects and tags.
 
 <item><tt/"FixX11Menu"/ enables a workaround for non-sticky menus
 on X11 (displaced menus do not stay open). This option is enabled
 by default and not used on the Win32 and Aqua platforms.
+
+<item><tt/"FixDialogTitles"/, this option prepends the title of a message box
+that is normally displayed in the window frame of the message box to the
+message in the box. This may be necessary because on some systems the title
+string might be displayed in an unreadable font or not at all.
+On Mac OS X Aqua (not X11!) this option is enabled by default.
+On all other systems this option is disabled by default.
+
+<item><tt/"FixImageButtons"/, enables a workaround for buttons (e.g.
+in the toolbox) that stay depressed when used. This option is disabled
+by default on all platforms.
 
 <item><tt/"SafeAutoFocus"/ disables AutoFocus
 (see section <ref id="prefgui" name="preference settings">)
@@ -10213,7 +10231,8 @@ This option is enabled by default on Win32.
 <item><tt/"UseInternalFD"/ switches to an internal file dialog for loading
 of plugins. This option is only used on MacOSX/Aqua (not X11!), because
 there the normal file dialog will not enter application bundle directory
-structures. This option is enabled by default on MacOSX/Aqua.
+structures. This option is enabled by default on MacOSX/Aqua and not
+used on any other platform.
 
 <item><tt/"SwapMB"/, <tt/"SwapMBSC"/ allow to swap mouse buttons 2 and 3
 on MacOSX/Aqua (not X11!) for specified mouse bindings (<tt/"SwapMBSC"/),
@@ -10228,13 +10247,6 @@ by default, zooms the view, and the right one moves the view.
 on, the first click into the console will move the cursor to the input
 prompt, ready for command input, instead of moving the cursor to the
 point of the click.
-
-<item><tt/"FixDialogTitles"/, this option prepends the title of a message box
-that is normally displayed in the window frame of the message box to the
-message in the box. This may be necessary because on some systems the title
-string might be displayed in an unreadable font or not at all.
-On Mac OS X Aqua (not X11!) this option is enabled by default.
-On all other systems this option is disabled by default.
 
 <item><tt/"LineWidth"/, line width used for drawing the lines of
 unselected objects (blue lines in standard color configuration).
@@ -10253,6 +10265,9 @@ files of the type designated by the file name extensions.
 <item><tt/"AUCommands"/, commands that will be run in the console
 when <tt/&lt;Shift+Return&gt;/ is used instead of <tt/&lt;Return&gt;/.
 See also section <ref id="sciupd" name="Updating the GUI">.
+The default value is <tt>"uS;rV;"</tt>, leading to a complete
+update of the object hierarchy, the property GUI and all view
+windows.
 
 <item><tt/"PolyOffset0"/, <tt/"PolyOffset1"/ two float values, that
 control the offsetting of shaded surfaces in the shade and draw
@@ -10265,26 +10280,27 @@ for the mouse wheel; default value is 0.5.
 <item><tt/"ShiftTab"/, allows to set a specific keyboard symbol for
 systems where pressing the Shift together with the Tab key does not
 produce "&lt;Shift-Tab&gt;" (the default) but some other symbol like e.g.
-"&lt;ISO_Left_Tab&gt;" (modern X11 systems often use this).
-
-<item><tt/"FixImageButtons"/, enables a workaround for buttons (e.g.
-in the toolbox) that stay depressed when used.
-
+"&lt;ISO_Left_Tab&gt;" (many, but not all, modern X11 systems often use
+this).
 
 <item><tt/"ListTypes"/ determines, whether the type of an
 object should be displayed in braces in the tree view or listbox.
+The default value is 1 - yes, list the types.
 
 <item><tt/"MarkHidden"/ determines, whether hidden objects
 should be marked (using a preceding exclamation mark)
 in the tree view or object listbox.
+The default value is 1 - yes, mark hidden objects.
 
 <item><tt/"LoadEnv"/, if this is switched on, Ayam will load
 the scene file specified by <tt/"EnvFile"/ on startup.
+The default value is 1 - yes, load the environment file on startup.
 
 <item><tt/"NewLoadsEnv"/, if this is switched on, Ayam will load
 the scene file specified by <tt/"EnvFile"/ also when the scene is
 cleared using the main menu entry <tt>"File/New"</tt>.
-
+The default value is 1 - yes, load the environment file on
+<tt>"File/New"</tt>.
 
 </itemize>
 
