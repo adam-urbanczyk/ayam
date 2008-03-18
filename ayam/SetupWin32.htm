@@ -8,60 +8,57 @@
 <H1>Ayam Win32 Setup</H1>
 
 This document describes how to set up Ayam on the Win32 platform.
-
-These instructions contain just general information and may even be
-outdated; more specific and current information may be obtained
+<p>
+These instructions contain just general information that may be
+outdated; additional (more specific and current) information can be obtained
 from the <A HREF="http://www.ayam3d.org/download.html">download page</A>
 of the Ayam project, or the "File Release Notes" document on the
 <A HREF="http://sourceforge.net/project/showfiles.php?group_id=28460">SourceForge download page</A> of the Ayam project.
-
+<p>
 In addition, there are <A HREF="http://www.ayam3d.org/faq.html">frequently
-asked questions</A> that may be of help, if something does not work as
+asked questions</A> that may be of some help, if something does not work as
 advertised.
-
-Before you start modelling with Ayam, you should set it up
-properly. The following things have to be done:
 
 <H2>0. Installation, Starting the Application</H2>
 
-The executable of Ayam ("Ayam.exe") is located in the directory
+The executable of Ayam (<code>"ayam.exe"</code>) is located in the directory
 named <code>"bin"</code>.<br>
 You do not need to install Ayam in the system, you can start it
 directly with a double click from where you unpacked the archive.
+If you get error messages about input or output file handles
+when trying to render directly from Ayam, please use the
+accompanying batch file <code>"ayam.bat"</code> to start Ayam
+instead of directly using <code>"ayam.exe"</code>.
 <p>
 To start Ayam more easily, you can add an icon to your desktop by double
 clicking on the <code>"make_shortcut.vbs"</code> script.<br>
 Since Ayam 1.8 there are also two more scripts named
 <code>"make_ftassoc.vbs"</code> and <code>"remove_ftassoc.vbs"</code>
 that add and remove a file type association with Ayam scene files
-(extension .ay) to/from your desktop.
-<p>
-If you get error messages about input or output file handles
-when trying to render directly from Ayam, please use the
-accompanying batch file <code>"ayam.bat"</code> to start Ayam
-instead of directly using <code>"ayam.exe"</code>.
-
+(extension .ay) to/from your desktop. After running the
+<code>"make_ftassoc.vbs"</code> script, you should be able to
+start Ayam by double clicking on Ayam scene files.
 
 <H2>1. Saving Preferences</H2>
 
 All preference settings (Menu: <code>"Edit/Preferences"</code>) are
-automatically saved when you leave Ayam.<br>
-
+automatically saved when you leave Ayam.
+<p>
 The preferences are saved to the file:<br>
 <code>"$(HOME)/ayamrc"</code> if the environment variable
 <code>"HOME"</code> exists<br>
 <code>"$(TEMP)/ayamrc"</code> else.
 <p>
 The following steps need to be done if you (for some reason)
-do not like it that way, or the preferences end up in silly<br>
+do not like it that way, or the preferences end up in silly
 places (e.g. Win95 is setting your $(HOME) to <code>"C:/"</code>, so that
 the preferences are saved to <code>"C:/ayamrc"</code>...).<br>
-However, if everything is fine with you, just skip to Step 2 now.<p>
-
+However, if everything is fine with you, just skip to Step 2 now.
+<p>
 You can change the path and filename of the preference settings
 using the environment variable <code>"AYAMRC"</code>.<br>
-How do you set an environment variable?<p>
-
+How do you set an environment variable?
+<p>
 An easy way to do this is to edit the batch file <code>"ayam.bat"</code>,
 and use it to start Ayam (this route does not work on Windows-NT4!):
 <UL>

@@ -3,18 +3,18 @@
 Setup instructions for Ayam on UNIX (e.g. Linux/IRIX/MacOSX)
 ------------------------------------------------------------
 
-These instructions contain just general information and may even be
-outdated; more specific and current information may be obtained from
-the download page of the Ayam project, see:
+These instructions contain just general information that may be
+outdated; additional (more specific and current) information can be
+obtained from the download page of the Ayam project, see:
 http://www.ayam3d.org/download.html
 or the "File Release Notes" document on the SourceForge download page
 of the Ayam project, see:
 http://sourceforge.net/project/showfiles.php?group_id=28460
 
 In addition, there are frequently asked questions that may be of
-help, if something does not work as advertised:
+some help, if something does not work as advertised:
 http://www.ayam3d.org/faq.html
-
+.
 
 Before you start modelling with Ayam, you should set it up
 properly. The following things have to be done:
@@ -36,7 +36,7 @@ You can use Ayam directly from where you unpacked, or install it
 into your system. If you want to install, just follow the
 instructions in the file "bin/INSTALL" first.
 
-On MacOSX/Aqua, the installation is one by simply dragging the
+On MacOSX/Aqua, the installation is done by simply dragging the
 application bundle to the applications directory, as suggested by
 the disk image.
 
@@ -147,10 +147,10 @@ must be loaded first. See below.
 
 The distribution of Ayam contains some plugins:
 RRIB: RIB Import
-ONIO: Rhino 3DM Import/Export
-MFIO: 3DMF Import/Export
+ONIO: 3DM (Rhino) Import/Export
+MFIO: 3DMF (Apple) Import/Export
 DXFIO: AutoCAD DXF Import/Export
-X3DIO: X3D Import/Export
+X3DIO: X3D (Web3D) Import/Export
 IDR: Importance Driven Rendering
 AyCSG: CSG preview
 MetaObj: the MetaBalls custom object
