@@ -575,6 +575,7 @@ proc shortcut_viewactions { w } {
     }
     bind $w <KeyRelease-$ayviewshortcuts(ZoomRModKey)> {
 	global ay ayviewshortcuts
+	if { $ay(shifttab) } {set ay(shifttab) 0; break}
 	set i $ayviewshortcuts(ZoomRButton)
 	set ay(zoomr) 0
 	if { [string first ".view" $w] != 0 } {
