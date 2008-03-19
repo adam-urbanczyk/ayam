@@ -473,9 +473,9 @@ proc shortcut_view { w } {
 # shortcut_viewactions:
 # Setup action-keybindings for a 3D-View.
 proc shortcut_viewactions { w } {
- global ayviewshortcuts
+ global ay ayviewshortcuts
 
-    set i  $ayviewshortcuts(RotButton)
+    set i $ayviewshortcuts(RotButton)
 
     # this binding allows to rotate any view regardless
     # of any active action; the old active action will
@@ -483,7 +483,7 @@ proc shortcut_viewactions { w } {
     bind $w.f3D.togl <$ayviewshortcuts(RotMod)-ButtonPress-${i}> {
 	global ayviewshortcuts
 
-	set i  $ayviewshortcuts(RotButton)
+	set i $ayviewshortcuts(RotButton)
 
 	undo save RotView
 
@@ -647,24 +647,23 @@ proc shortcut_viewactions { w } {
 	break
     }
 
-    global tcl_platform AYWITHAQUA
-    if { ($tcl_platform(platform) == "windows") } {
-	bind $w.f3D.togl <MouseWheel> {
+    if { $ay(ws) == "Win32" } {
+	bind $w <MouseWheel> {
 	    undo save ZoomView
-	    %W mc
+	    %W.f3D.togl mc
 	    if { %D < 0.0 } {
-		%W setconf -dzoom [expr 1.0/$::ayprefs(WheelZoom)]
+		%W.f3D.togl setconf -dzoom [expr 1.0/$::ayprefs(WheelZoom)]
 	    } else {
-		%W setconf -dzoom $::ayprefs(WheelZoom)
+		%W.f3D.togl setconf -dzoom $::ayprefs(WheelZoom)
 	    }
 	    update
-	    %W reshape
-	    %W render
+	    %W.f3D.togl reshape
+	    %W.f3D.togl render
 	}
     }
     # if
 
-    if { $AYWITHAQUA } {
+    if { $ay(ws) == "Aqua" } {
 	bind $w.f3D.togl <MouseWheel> {
 	    undo save ZoomView
 	    %W mc
