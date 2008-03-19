@@ -597,6 +597,7 @@ array set ay {
  ws "X11"
  shiftcommand 0
  ctrldown 0
+ shifttab 0
 }
 # array ay
 
@@ -1488,6 +1489,7 @@ if { $ayprefs(SingleWindow) } {
     # the focus from view3 directly to the object hierarchy (not to the
     # empty property display where it would be useless)
     bind .fu.fMain.fview3 $ayprefs(ShiftTab) "\
+      set ay(shifttab) 1\
       if \{ \$::ayprefs(showtr) == 1 \} \{\
         focus \$::ay(tree);\
       \} else \{\
@@ -1496,9 +1498,11 @@ if { $ayprefs(SingleWindow) } {
       .fu.fMain.fview3.f3D.togl configure -cursor \{\};\
       break"
     bind .fv.fViews.fview2 $ayprefs(ShiftTab) {+
+	set ay(shifttab) 1
 	.fv.fViews.fview2.f3D.togl configure -cursor {};
     }
     bind .fv.fViews.fview1 $ayprefs(ShiftTab) {+
+	set ay(shifttab) 1
 	.fv.fViews.fview1.f3D.togl configure -cursor {};
     }
 
