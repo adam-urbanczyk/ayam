@@ -1,4 +1,3 @@
-
 #ifndef __aycore_h__
 #define __aycore_h__
 /*
@@ -206,7 +205,7 @@ int ay_error_tcmd(ClientData clientData, Tcl_Interp *interp,
  */
 void ay_error_glucb(GLenum err);
 
-/*! \brief Tcl command to get the current GL error state
+/*! \brief Tcl command to get the current GL error state and report it
  */
 int ay_error_getglerrortcmd(ClientData clientData, Tcl_Interp *interp,
 			    int argc, char *argv[]);
@@ -273,7 +272,7 @@ int ay_instt_wribiarchives(char *file, ay_object *o);
  */
 int ay_instt_resolve(ay_object *i);
 
-/*! \brief 
+/*! \brief Tcl command to resolve instances to normal objects
  */
 int ay_instt_resolvetcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
@@ -291,7 +290,7 @@ int ay_instt_check(ay_object *o, ay_object *target);
  */
 int ay_instt_getmaster(ay_object *o, ay_object *i, ay_object **r);
 
-/*! \brief 
+/*! \brief Tcl command to find a master of an instance
  */
 int ay_instt_getmastertcmd(ClientData clientData, Tcl_Interp *interp,
 			   int argc, char *argv[]);
@@ -339,7 +338,7 @@ int ay_notify_force(ay_object *o);
  */
 int ay_notify_forceparent(ay_object *o, int silent);
 
-/*! \brief 
+/*! \brief Tcl command to enforce notification
  */
 int ay_notify_forcetcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
@@ -428,7 +427,7 @@ int ay_object_create(unsigned int index, ay_object **o);
 int ay_object_createargs(unsigned int index, int argc, char **argv,
 			 ay_object **o);
 
-/*! \brief 
+/*! \brief Tcl command to create objects
  */
 int ay_object_createtcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
@@ -441,7 +440,7 @@ int ay_object_delete(ay_object *o);
  */
 int ay_object_deletemulti(ay_object *o);
 
-/*! \brief 
+/*! \brief Tcl command to delete objects
  */
 int ay_object_deletetcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
@@ -462,7 +461,7 @@ char *ay_object_gettypename(unsigned int index);
  */
 char *ay_object_getname(ay_object *o);
 
-/*! \brief 
+/*! \brief Tcl command to set the name of an object
  */
 int ay_object_setnametcmd(ClientData clientData, Tcl_Interp *interp,
 			  int argc, char *argv[]);
@@ -475,17 +474,17 @@ int ay_object_copy(ay_object *src, ay_object **dst);
  */
 int ay_object_copymulti(ay_object *src, ay_object **dst);
 
-/*! \brief 
+/*! \brief Tcl command to inquire whether an object has children
  */
 int ay_object_haschildtcmd(ClientData clientData, Tcl_Interp *interp,
 			   int argc, char *argv[]);
 
-/*! \brief 
+/*! \brief Tcl command to get the type of an object
  */
 int ay_object_gettypetcmd(ClientData clientData, Tcl_Interp *interp,
 			  int argc, char *argv[]);
 
-/*! \brief 
+/*! \brief Tcl command to get the name of an object
  */
 int ay_object_getnametcmd(ClientData clientData, Tcl_Interp *interp,
 			  int argc, char *argv[]);
@@ -659,7 +658,7 @@ int ay_pact_wetcb(struct Togl *togl, int argc, char *argv[]);
  */
 int ay_pact_wrtcb(struct Togl *togl, int argc, char *argv[]);
 
-/*! \brief 
+/*! \brief Tcl command to center an object
  */
 int ay_pact_centertcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
@@ -684,7 +683,7 @@ int ay_pomesht_tesselate(ay_pomesh_object *pomesh);
 int ay_pomesht_merge(int merge_pv_tags, ay_list_object *list,
 		     ay_object **result);
 
-/*! \brief 
+/*! \brief Tcl command to merge polymesh objects
  */
 int ay_pomesht_mergetcmd(ClientData clientData, Tcl_Interp * interp,
 			 int argc, char *argv[]);
@@ -693,7 +692,7 @@ int ay_pomesht_mergetcmd(ClientData clientData, Tcl_Interp * interp,
  */
 int ay_pomesht_optimizecoords(ay_pomesh_object *pomesh, int ignore_normals);
 
-/*! \brief 
+/*! \brief Tcl command to optimize polymesh objects
  */
 int ay_pomesht_optimizetcmd(ClientData clientData, Tcl_Interp * interp,
 			    int argc, char *argv[]);
@@ -712,7 +711,7 @@ int ay_pomesht_splitface(ay_pomesh_object *pomesh, unsigned int f,
 int ay_pomesht_split(ay_pomesh_object *pomesh, ay_point *pnts,
 		     ay_pomesh_object **result);
 
-/*! \brief 
+/*! \brief Tcl command to split polymesh objects
  */
 int ay_pomesht_splittcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
@@ -720,55 +719,55 @@ int ay_pomesht_splittcmd(ClientData clientData, Tcl_Interp *interp,
 
 /* prefs.c */
 
-/*! \brief 
+/*! \brief Tcl command to get the preferences (C => Tcl)
  */
 int ay_prefs_gettcmd(ClientData clientData, Tcl_Interp *interp,
-		    int argc, char *argv[]);
+		     int argc, char *argv[]);
 
-/*! \brief 
+/*! \brief Tcl command to set the preferences (Tcl => C)
  */
 int ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
-		    int argc, char *argv[]);
+		     int argc, char *argv[]);
 
 
 /* prop.c */
 
-/*! \brief 
+/*! \brief Tcl command to get the property of an object
  */
 int ay_prop_gettcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[]);
 
-/*! \brief 
+/*! \brief Tcl command to set the property of an object
  */
 int ay_prop_settcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[]);
 
-/*! \brief 
+/*! \brief Tcl command to get the transformations property
  */
 int ay_prop_gettrafotcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
 
-/*! \brief 
+/*! \brief Tcl command to set the transformations property
  */
 int ay_prop_settrafotcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
 
-/*! \brief 
+/*! \brief Tcl command to get the attributes property
  */
 int ay_prop_getattrtcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
 
-/*! \brief 
+/*! \brief Tcl command to set the attributes property
  */
 int ay_prop_setattrtcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
 
-/*! \brief 
+/*! \brief Tcl command to get the material property
  */
 int ay_prop_getmattcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
 
-/*! \brief 
+/*! \brief Tcl command to set the material property
  */
 int ay_prop_setmattcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
@@ -895,12 +894,12 @@ int ay_read_object(FILE *fileptr);
  */
 int ay_read_scene(Tcl_Interp *interp, char *filename, int insert);
 
-/*! \brief 
+/*! \brief Tcl command to open (replace) a scene file
  */
 int ay_read_replacetcmd(ClientData clientData, Tcl_Interp * interp,
 			int argc, char *argv[]);
 
-/*! \brief 
+/*! \brief Tcl command to open (insert) a scene file
  */
 int ay_read_inserttcmd(ClientData clientData, Tcl_Interp * interp,
 		       int argc, char *argv[]);
@@ -949,17 +948,17 @@ int ay_sel_free(int clear_selflag);
  */
 int ay_sel_add(ay_object *o);
 
-/*! \brief 
+/*! \brief Tcl command to set the selection from the object listbox
  */
 int ay_sel_setfromlbtcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
 
-/*! \brief 
+/*! \brief Tcl command to get the selection
  */
 int ay_sel_getseltcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
 
-/*! \brief 
+/*! \brief Tcl command to silently select the last object in current level
  */
 int ay_sel_hsltcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[]);
@@ -975,12 +974,12 @@ void ay_selp_clear(ay_object *o);
  */
 int ay_selp_selall(ay_object *o);
 
-/*! \brief 
+/*! \brief Tcl command to select all points of an object
  */
 int ay_selp_selalltcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
 
-/*! \brief 
+/*! \brief Tcl command to apply the transformations to the points
  */
 int ay_selp_applytrafotcmd(ClientData clientData, Tcl_Interp *interp,
 			   int argc, char *argv[]);
@@ -989,7 +988,7 @@ int ay_selp_applytrafotcmd(ClientData clientData, Tcl_Interp *interp,
  */
 int ay_selp_invert(ay_object *o);
 
-/*! \brief 
+/*! \brief Tcl command to invert the point selection of an object
  */
 int ay_selp_inverttcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
@@ -1019,17 +1018,17 @@ int ay_shader_scanslcsarg(SLC_VISSYMDEF *symbol, Tcl_DString *ds);
 #endif
 
 
-/*! \brief 
+/*! \brief Tcl command to scan a SLC shader
  */
 int ay_shader_scanslctcmd(ClientData clientData, Tcl_Interp *interp,
 			  int argc, char *argv[]);
 #ifdef AYUSESLXARGS
-/*! \brief 
+/*! \brief
  */
 int ay_shader_scanslxsarg(SLX_VISSYMDEF *symbol, Tcl_DString *ds);
 #endif
 
-/*! \brief 
+/*! \brief Tcl command to scan a SLX shader
  */
 int ay_shader_scanslxtcmd(ClientData clientData, Tcl_Interp *interp,
 			  int argc, char *argv[]);
@@ -1050,12 +1049,12 @@ int ay_shader_copy(ay_shader *source, ay_shader **dest);
  */
 int ay_shader_wrib(ay_shader *shader, int type, RtLightHandle *light_handle);
 
-/*! \brief 
+/*! \brief Tcl command to get a shader property
  */
 int ay_shader_gettcmd(ClientData clientData, Tcl_Interp * interp,
 		      int argc, char *argv[]);
 
-/*! \brief 
+/*! \brief Tcl command to set a shader property
  */
 int ay_shader_settcmd(ClientData clientData, Tcl_Interp * interp,
 		      int argc, char *argv[]);
@@ -1095,7 +1094,7 @@ int ay_tags_copyall(ay_object *src, ay_object *dst);
  */
 int ay_tags_temp(Tcl_Interp *interp, char *name, int set, int *result);
 
-/*! \brief 
+/*! \brief Tcl command to inquire about the temporary state of a tag
  */
 int ay_tags_istemptcmd(ClientData clientData, Tcl_Interp * interp,
 		       int argc, char *argv[]);
@@ -1108,22 +1107,22 @@ int ay_tags_append(ay_object *o, ay_tag *tag);
  */
 int ay_tags_register(Tcl_Interp *interp, char *name, char **result);
 
-/*! \brief 
+/*! \brief Tcl command to set the tags property
  */
 int ay_tags_settcmd(ClientData clientData, Tcl_Interp * interp,
 		    int argc, char *argv[]);
 
-/*! \brief 
+/*! \brief Tcl command to add tags to an object
  */
 int ay_tags_addtcmd(ClientData clientData, Tcl_Interp * interp,
 		    int argc, char *argv[]);
 
-/*! \brief 
+/*! \brief Tcl command to get the tags property
  */
 int ay_tags_gettcmd(ClientData clientData, Tcl_Interp * interp,
 		    int argc, char *argv[]);
 
-/*! \brief 
+/*! \brief Tcl command to delete tags from an object
  */
 int ay_tags_deletetcmd(ClientData clientData, Tcl_Interp * interp,
 		       int argc, char *argv[]);
@@ -1159,7 +1158,7 @@ void ay_tc_init(Tcl_Interp *interp);
 
 /* tcmd.c */
 
-/*! \brief 
+/*! \brief Tcl command to
  */
 int ay_tcmd_reverttcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
@@ -1168,7 +1167,7 @@ int ay_tcmd_reverttcmd(ClientData clientData, Tcl_Interp *interp,
  */
 void ay_tcmd_showall(ay_object *o);
 
-/*! \brief 
+/*! \brief Tcl command to show (un-hide) all objects
  */
 int ay_tcmd_showtcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[]);
@@ -1177,12 +1176,12 @@ int ay_tcmd_showtcmd(ClientData clientData, Tcl_Interp *interp,
  */
 void ay_tcmd_hideall(ay_object *o);
 
-/*! \brief 
+/*! \brief Tcl command to hide all objects
  */
 int ay_tcmd_hidetcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[]);
 
-/*! \brief 
+/*! \brief Tcl command to get the Ayam version
  */
 int ay_tcmd_getvertcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
@@ -1192,12 +1191,12 @@ int ay_tcmd_getvertcmd(ClientData clientData, Tcl_Interp *interp,
 int ay_tcmd_getbppntfromindex(ay_bpatch_object *patch, int index,
 			      double **p);
 
-/*! \brief 
+/*! \brief Tcl command to get the coordinates of points
  */
 int ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
 
-/*! \brief 
+/*! \brief Tcl command to set the coordinates of points
  */
 int ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
@@ -1210,13 +1209,13 @@ int ay_tcmd_waitpidtcmd(ClientData clientData, Tcl_Interp *interp,
 #endif /* AYENABLEWAIT */
 
 #ifdef AYENABLEFEXIT
-/*! \brief 
+/*! \brief Tcl command to exit Ayam
  */
 int ay_tcmd_fastexittcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
 #endif /* AYENABLEFEXIT */
 
-/*! \brief 
+/*! \brief Tcl command to execute command for a single object
  */
 int ay_tcmd_withobtcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
@@ -1231,7 +1230,7 @@ int ay_tgui_init(Tcl_Interp *interp);
 
 /* tmp.c */
 
-/*! \brief 
+/*! \brief Tcl command to get a temporary filename
  */
 int ay_tmp_gettcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[]);
@@ -1302,7 +1301,7 @@ void ay_trafo_getallir(ay_list_object *lo);
  */
 int ay_trafo_delegate(ay_object *o);
 
-/*! \brief 
+/*! \brief Tcl command to delegate the transformations to the children
  */
 int ay_trafo_delegatetcmd(ClientData clientData, Tcl_Interp *interp,
 			  int argc, char *argv[]);
@@ -1327,32 +1326,32 @@ void ay_trafo_add(ay_object *src, ay_object *dst);
  */
 void ay_trafo_defaults(ay_object *o);
 
-/*! \brief 
+/*! \brief Tcl command to move an object
  */
 int ay_trafo_movobtcmd(ClientData clientData, Tcl_Interp * interp,
 		       int argc, char *argv[]);
 
-/*! \brief 
+/*! \brief Tcl command to move the selected points of an object
  */
 int ay_trafo_movseltcmd(ClientData clientData, Tcl_Interp * interp,
 		       int argc, char *argv[]);
 
-/*! \brief 
+/*! \brief Tcl command to scale an object
  */
 int ay_trafo_scalobtcmd(ClientData clientData, Tcl_Interp * interp,
 		    int argc, char *argv[]);
 
-/*! \brief 
+/*! \brief Tcl command to scale the selected points of an object
  */
 int ay_trafo_scalseltcmd(ClientData clientData, Tcl_Interp * interp,
 			 int argc, char *argv[]);
 
-/*! \brief 
+/*! \brief Tcl command to rotate an object
  */
 int ay_trafo_rotobtcmd(ClientData clientData, Tcl_Interp * interp,
 		       int argc, char *argv[]);
 
-/*! \brief 
+/*! \brief Tcl command to rotate the selected points of an object
  */
 int ay_trafo_rotseltcmd(ClientData clientData, Tcl_Interp * interp,
 			int argc, char *argv[]);
@@ -1412,7 +1411,7 @@ int ay_undo_clear(void);
  */
 int ay_undo_clearobj(ay_object *o);
 
-/*! \brief 
+/*! \brief Tcl command to interface to the undo system
  */
 int ay_undo_undotcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[]);
@@ -1522,7 +1521,7 @@ ay_viewt_setupintview(int viewnum, ay_view_object *vtemp);
 /* w32t.c */
 #ifdef WIN32
 
-/*! \brief 
+/*! \brief Tcl command to kill processes on the Win32 platform
  */
 int ay_w32t_w32killtcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
@@ -1531,121 +1530,121 @@ int ay_w32t_w32killtcmd(ClientData clientData, Tcl_Interp *interp,
 
 /* wrib.c */
 
-/*! \brief 
+/*! \brief check for NoExport tags of an object
  */
 int ay_wrib_noexport(ay_object *o);
 
-/*! \brief 
+/*! \brief set up camera for RIB export
  */
 void ay_wrib_aimz(RtPoint direction);
 
-/*! \brief 
+/*! \brief set up camera for RIB export
  */
 void ay_wrib_placecamera(RtPoint position, RtPoint direction, double roll);
 
-/*! \brief 
+/*! \brief export the RiOptions to a RIB file
  */
 int ay_wrib_rioptions(void);
 
-/*! \brief 
+/*! \brief look through the scene whether there are any lights switched on
  */
 int ay_wrib_checklights(ay_object *o);
 
-/*! \brief 
+/*! \brief export the lights to a RIB file
  */
 int ay_wrib_lights(char *file, ay_object *o);
 
-/*! \brief 
+/*! \brief export the root object shaders (e.g. RiImager) to a RIB file
  */
 void ay_wrib_rootsh(int imager);
 
-/*! \brief 
+/*! \brief export the default material to a RIB file
  */
 void ay_wrib_defmat(char *file);
 
-/*! \brief 
+/*! \brief export transformations of an object to a RIB file
  */
 int ay_wrib_trafos(ay_object *o);
 
-/*! \brief 
+/*! \brief export an object to a RIB file
  */
 int ay_wrib_object(char *file, ay_object *o);
 
-/*! \brief 
+/*! \brief export a referenced object to a RIB file
  */
 int ay_wrib_refobject(char *file, ay_object *o);
 
-/*! \brief 
+/*! \brief export the scene to a RIB file
  */
 int ay_wrib_scene(char *file, char *image, int temp, int rtf,
 		  double *from, double *to,
 		  double roll, double zoom, double nearp, double farp,
 		  int width, int height, int type);
 
-/*! \brief 
+/*! \brief Togl callback for exporting the scene to a RIB file
  */
 int ay_wrib_cb(struct Togl *togl, int argc, char *argv[]);
 
-/*! \brief 
+/*! \brief export RiDisplay tags to a RIB file
  */
 void ay_wrib_displaytags(void);
 
-/*! \brief 
+/*! \brief export RiHider tags to a RIB file
  */
 void ay_wrib_hidertags(void);
 
-/*! \brief 
+/*! \brief Tcl command to export the scene to a RIB file
  */
 int ay_wrib_tcmd(ClientData clientData, Tcl_Interp * interp,
 		 int argc, char *argv[]);
 
 #ifdef AYENABLEPPREV
 
-/*! \brief 
+/*! \brief redraw permanent preview window
  */
 int ay_wrib_pprevdraw(ay_view_object *view);
 
-/*! \brief 
+/*! \brief open permanent preview window
  */
 int ay_wrib_pprevopen(ay_view_object *view);
 
-/*! \brief 
+/*! \brief close permanent preview window
  */
 void ay_wrib_pprevclose();
 #endif
 
-/*! \brief 
+/*! \brief initialize RIB export module
  */
 void ay_wrib_init(Tcl_Interp *interp);
 
 
 /* write.c */
 
-/*! \brief 
+/*! \brief write the Ayam scene file format header to a scene file
  */
 int ay_write_header(FILE *fileptr);
 
-/*! \brief 
+/*! \brief save object attributes to a scene file
  */
 int ay_write_attributes(FILE *fileptr, ay_object *o);
 
-/*! \brief 
+/*! \brief save object tags to a scene file
  */
 int ay_write_tags(FILE *fileptr, ay_object *o);
 
-/*! \brief 
+/*! \brief save a shader to a scene file
  */
 int ay_write_shader(FILE *fileptr, ay_shader *shader);
 
-/*! \brief 
+/*! \brief save an object to a scene file
  */
 int ay_write_object(FILE *fileptr, ay_object *o);
 
-/*! \brief 
+/*! \brief save the scene to a scene file
  */
 int ay_write_scene(char *fname, int selected);
 
-/*! \brief 
+/*! \brief Tcl command to save the scene to a scene file
  */
 int ay_write_scenetcmd(ClientData clientData, Tcl_Interp * interp,
 		       int argc, char *argv[]);

@@ -1,3 +1,5 @@
+#ifndef __nurbs_h__
+#define __nurbs_h__
 /*
  * Ayam, a free 3D modeler for the RenderMan interface.
  *
@@ -606,3 +608,5 @@ int ay_tess_pomeshf(ay_pomesh_object *pomesh,
 
 int ay_tess_pomesh(ay_pomesh_object *pomesh, int optimize,
 		   ay_pomesh_object **trpomesh);
+
+#endif /* __nurbs_h__ */
