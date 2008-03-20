@@ -1,3 +1,5 @@
+#ifndef __objects_h__
+#define __objects_h__
 /*
  * Ayam, a free 3D modeler for the RenderMan interface.
  *
@@ -143,3 +145,5 @@ int ay_torus_init(Tcl_Interp *interp);
 
 /* view.c */
 int ay_view_init(Tcl_Interp *interp);
+
+#endif /* __objects_h__ */
