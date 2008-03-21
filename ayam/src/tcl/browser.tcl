@@ -42,6 +42,9 @@ proc browser_urlOpen {url} {
 		set browser ""
 		expr {
 		    [browser_findExecutable $mozilla browser] ||
+		    [browser_findExecutable firefox browser] ||
+		    [browser_findExecutable epiphany browser] ||
+		    [browser_findExecutable mozilla browser] ||
 		    [browser_findExecutable galeon browser] ||
 		    [browser_findExecutable konqueror browser] ||
 		    [browser_findExecutable links browser] ||
