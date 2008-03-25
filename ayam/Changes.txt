@@ -1,4 +1,4 @@
-[4. Mar 2008] CVS-Head:
+[25. Mar 2008] CVS-Head:
 =======================
 o Bug Fixes:
  - X3D export of NURBS patches (row/column major order) (SF 1804056)
@@ -12,6 +12,7 @@ o Bug Fixes:
  - autofocus after preferences window was closed (SF 1846422)
  - autofocus after implicit import/export (SF 1847870)
  - keyboard shortcut to switch drawing/shading (SF 1894024)
+ - RIB export of Clones with and in CSG hierarchies (SF 1925224)
 
 GUI:
 o added option to keep the current selection when creating new objects, by
