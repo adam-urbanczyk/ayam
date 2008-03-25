@@ -25,6 +25,40 @@ void ay_wrib_getup(double *dir, double *up, double *roll);
 
 /* functions: */
 
+/* ay_wrib_isprimitive:
+ *  check, whether <o> should be considered a CSG primitive
+ *  returns AY_TRUE if yes, else returns AY_FALSE
+ */
+int
+ay_wrib_isprimitive(ay_object *o)
+{
+ ay_object *down = NULL;
+ ay_level_object *level = NULL;
+
+  if(o->type == AY_IDLEVEL)
+    {
+      level = (ay_level_object*)o->refine;
+      if((level->type == AY_LTUNION) ||
+	 (level->type == AY_LTDIFF) ||
+	 (level->type == AY_LTINT))
+      return AY_FALSE;
+    }
+
+  if(o->down)
+    {
+      down = o->down;
+      while(down->next)
+	{
+	  if(!ay_wrib_isprimitive(down))
+	    return AY_FALSE;
+	  down = down->next;
+	}
+    }
+
+ return AY_TRUE;
+} /* ay_wrib_isprimitive */
+
+
 /* ay_wrib_noexport:
  *  check for presence of NoExport tag for object o;
  *  returns AY_TRUE if found, else returns AY_FALSE
@@ -498,8 +532,9 @@ ay_wrib_object(char *file, ay_object *o)
  ay_object *down = NULL;
  void **arr = NULL;
  ay_wribcb *cb = NULL;
- ay_level_object *l = NULL, *ld = NULL;
+ ay_level_object *l = NULL;
  ay_light_object *light = NULL;
+ int down_is_prim = AY_FALSE;
  char *parname = "name";
 
   if(!o)
@@ -640,14 +675,10 @@ ay_wrib_object(char *file, ay_object *o)
       down = o->down;
       while(down->next)
 	{
-	  ld = NULL;
-	  if(down->type == AY_IDLEVEL)
-	    ld = (ay_level_object*)down->refine;
-
-	  if(!ld || (ld && (ld->type != AY_LTUNION) &&
-		     (ld->type != AY_LTDIFF) &&
-		     (ld->type != AY_LTINT)))
+	  down_is_prim = AY_FALSE;
+	  if(ay_wrib_isprimitive(down))
 	    {
+	      down_is_prim = AY_TRUE;
 	      if(l && ((l->type == AY_LTUNION) || (l->type == AY_LTDIFF) ||
 		       (l->type == AY_LTINT)))
 		{
@@ -663,9 +694,7 @@ ay_wrib_object(char *file, ay_object *o)
 	  if(ay_status)
 	    return ay_status;
 
-	  if(!ld || (ld && (ld->type != AY_LTUNION) &&
-		     (ld->type != AY_LTDIFF) &&
-		     (ld->type != AY_LTINT)))
+	  if(down_is_prim)
 	    {
 	      if(l && ((l->type == AY_LTUNION) || (l->type == AY_LTDIFF) ||
 		       (l->type == AY_LTINT)))

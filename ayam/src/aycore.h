@@ -1530,6 +1530,10 @@ int ay_w32t_w32killtcmd(ClientData clientData, Tcl_Interp *interp,
 
 /* wrib.c */
 
+/*! \brief check, whether o should be considered a CSG primitive
+ */
+int ay_wrib_isprimitive(ay_object *o);
+
 /*! \brief check for NoExport tags of an object
  */
 int ay_wrib_noexport(ay_object *o);
