@@ -282,11 +282,12 @@ ay_instance_wribcb(char *file, ay_object *o)
  int ay_status = AY_OK;
  char *iafilename = NULL;
  int found = AY_FALSE;
+ int down_is_prim = AY_FALSE;
  ay_object *orig = NULL, *down = NULL;
  ay_tag *tag = NULL;
  void **arr = NULL;
  ay_wribcb *cb = NULL;
- ay_level_object *l = NULL, *ld = NULL;
+ ay_level_object *l = NULL;
 
   orig = (ay_object *)o->refine;
 
@@ -368,14 +369,10 @@ ay_instance_wribcb(char *file, ay_object *o)
 
       while(down->next)
 	{
-	  ld = NULL;
-	  if(down->type == AY_IDLEVEL)
-	    ld = (ay_level_object*)down->refine;
-
-	  if(!ld || (ld && (ld->type != AY_LTUNION) &&
-		     (ld->type != AY_LTDIFF) &&
-		     (ld->type != AY_LTINT)))
+	  down_is_prim = AY_FALSE;
+	  if(ay_wrib_isprimitive(down))
 	    {
+	      down_is_prim = AY_TRUE;
 	      if(l && ((l->type == AY_LTUNION) ||
 		       (l->type == AY_LTDIFF) ||
 		       (l->type == AY_LTINT)))
@@ -390,9 +387,7 @@ ay_instance_wribcb(char *file, ay_object *o)
 
 	  ay_status = ay_wrib_object(file, down);
 
-	  if(!ld || (ld && (ld->type != AY_LTUNION) &&
-		     (ld->type != AY_LTDIFF) &&
-		     (ld->type != AY_LTINT)))
+	  if(down_is_prim)
 	    {
 	      if(l && ((l->type == AY_LTUNION) ||
 		       (l->type == AY_LTDIFF) ||

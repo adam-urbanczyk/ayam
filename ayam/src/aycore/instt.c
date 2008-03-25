@@ -335,12 +335,13 @@ ay_instt_wribiarchives(char *file, ay_object *o)
 {
  int ay_status = AY_OK;
  int found = AY_FALSE;
+ int down_is_prim = AY_FALSE;
  ay_object *down = NULL;
  ay_tag *tag = NULL;
  char *iafilename = NULL;
  void **arr = NULL;
  ay_wribcb *cb = NULL;
- ay_level_object *l = NULL, *ld = NULL;
+ ay_level_object *l = NULL;
  char *parname = "name";
 
   while(o->next)
@@ -450,14 +451,11 @@ ay_instt_wribiarchives(char *file, ay_object *o)
 
 		      while(down->next)
 			{
-			  ld = NULL;
-			  if(down->type == AY_IDLEVEL)
-			    ld = (ay_level_object*)down->refine;
-
-			  if(!ld || (ld && (ld->type != AY_LTUNION) &&
-				     (ld->type != AY_LTDIFF) &&
-				     (ld->type != AY_LTINT)))
+			  down_is_prim = AY_FALSE;
+			  if(ay_wrib_isprimitive(down))
 			    {
+			      down_is_prim = AY_TRUE;
+
 			      if(l && ((l->type == AY_LTUNION) ||
 				       (l->type == AY_LTDIFF) ||
 				       (l->type == AY_LTINT)))
@@ -470,12 +468,9 @@ ay_instt_wribiarchives(char *file, ay_object *o)
 				} /* if */
 			    } /* if */
 
-
 			  ay_status = ay_wrib_object(file, down);
 
-			  if(!ld || (ld && (ld->type != AY_LTUNION) &&
-				     (ld->type != AY_LTDIFF) &&
-				     (ld->type != AY_LTINT)))
+			  if(down_is_prim)
 			    {
 			      if(l && ((l->type == AY_LTUNION) ||
 				       (l->type == AY_LTDIFF) ||
