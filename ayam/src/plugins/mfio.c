@@ -3553,7 +3553,7 @@ Mfio_Init(Tcl_Interp *interp)
 
 
   ay_error(AY_EOUTPUT, fname,
-	   "3DMF import/export plugin successfully loaded.");
+	   "Plugin 'mfio' successfully loaded.");
 
 
  return TCL_OK;

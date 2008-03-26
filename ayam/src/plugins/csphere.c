@@ -915,7 +915,7 @@ Csphere_Init(Tcl_Interp *interp)
      }
 
   ay_error(AY_EOUTPUT, fname,
-	   "CustomObject \\\"CSphere\\\" successfully loaded.");
+	   "Custom object \\\"CSphere\\\" successfully loaded.");
 
  return TCL_OK;
 } /* Csphere_Init */

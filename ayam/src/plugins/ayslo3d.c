@@ -316,7 +316,7 @@ Ayslo_Init(Tcl_Interp *interp)
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   ay_error(AY_EOUTPUT, fname,
-	   "Plugin 'ayslo3d' loaded.");
+	   "Plugin 'ayslo3d' successfully loaded.");
   ay_error(AY_EOUTPUT, fname,
 	   "Ayam will now scan for .sdl-shaders only!");
 

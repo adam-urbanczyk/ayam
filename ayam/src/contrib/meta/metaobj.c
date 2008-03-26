@@ -1061,7 +1061,7 @@ Metaobj_Init (Tcl_Interp * interp)
  int ay_status = AY_OK;
  char fname[] = "metaobj_init";
  char success_cmd[] =
-   "puts stdout \"CustomObject \\\"MetaObj\\\" successfully loaded.\"\n";
+   "puts stdout \"Custom object \\\"MetaObj\\\" successfully loaded.\"\n";
 
 #ifdef WIN32
   if(Tcl_InitStubs(interp, "8.2", 0) == NULL)
@@ -1551,7 +1551,7 @@ Metacomp_Init (Tcl_Interp * interp)
  int ay_status = AY_OK;
  char fname[] = "metacomp_init";
  char success_cmd[] =
-   "puts stdout \"Customobject \\\"MetaComp\\\" successfully loaded.\"\n";
+   "puts stdout \"Custom object \\\"MetaComp\\\" successfully loaded.\"\n";
 
   ay_status = ay_otype_register (metacomp_name,
 				 metacomp_createcb,

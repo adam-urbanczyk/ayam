@@ -344,7 +344,7 @@ Aysdr_Init(Tcl_Interp *interp)
      }
 
   ay_error(AY_EOUTPUT, fname,
-	   "Plugin 'aysdr' loaded.");
+	   "Plugin 'aysdr' successfully loaded.");
   ay_error(AY_EOUTPUT, fname,
 	   "Ayam will now scan for .sdr-shaders only!");
 

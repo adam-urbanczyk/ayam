@@ -322,7 +322,7 @@ Ayslx_Init(Tcl_Interp *interp)
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   ay_error(AY_EOUTPUT, fname,
-	   "Plug-In 'ayslx' loaded.");
+	   "Plugin 'ayslx' successfully loaded.");
   ay_error(AY_EOUTPUT, fname,
 	   "Ayam will now scan for .slx-shaders only!");
 
