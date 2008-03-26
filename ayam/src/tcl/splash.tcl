@@ -70,9 +70,9 @@ proc splash_open { } {
     # center the window
     if { ! $AYWITHAQUA } {
 	wm overrideredirect $w 1
-	winCenter $w
+	winCenter $w 1
     } else {
-	after idle "winCenter $w"
+	after idle "winCenter $w 1"
     }
 
     grab $w
