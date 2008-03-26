@@ -291,7 +291,7 @@ Ayslc_Init(Tcl_Interp *interp)
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   ay_error(AY_EOUTPUT, fname,
-	   "Plugin 'ayslc' loaded.");
+	   "Plugin 'ayslc' successfully loaded.");
   ay_error(AY_EOUTPUT, fname,
 	   "Ayam will now scan for .slc-shaders only!");
 

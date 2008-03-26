@@ -6016,7 +6016,7 @@ Rrib_Init(Tcl_Interp *interp)
        return TCL_OK;
      }
 
-  ay_error(AY_EOUTPUT, fname, "RIB import plugin successfully loaded.");
+  ay_error(AY_EOUTPUT, fname, "Plugin 'rrib' successfully loaded.");
 
  return TCL_OK;
 } /* Rrib_Init */

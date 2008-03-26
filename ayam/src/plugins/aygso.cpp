@@ -318,7 +318,7 @@ Aygso_Init(Tcl_Interp *interp)
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   ay_error(AY_EOUTPUT, fname,
-	   "Plugin 'aygso' loaded.");
+	   "Plugin 'aygso' successfully loaded.");
   ay_error(AY_EOUTPUT, fname,
 	   "Ayam will now scan for .gso-shaders only!");
 
