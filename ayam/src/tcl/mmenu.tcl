@@ -747,9 +747,24 @@ mmenu_addlume $ay(toolsmenu).pm
 mmenu_addlume $ay(toolsmenu).pnt
 mmenu_addlume $ay(toolsmenu)
 
+# add traces that change the undo menu entries according to the operations
+# that can be undone or redone
+trace variable ay(undoo) w mmenu_updateundo
+trace variable ay(redoo) w mmenu_updateundo
+
 return;
 }
 # mmenu_open
+
+
+# mmenu_updateundo:
+#  update undo main menu entries
+proc mmenu_updateundo {n1 n2 op} {
+    global ay
+    $ay(editmenu) entryconfigure 12 -label "Undo ($ay(undoo))"
+    $ay(editmenu) entryconfigure 13 -label "Redo ($ay(redoo))"
+}
+# mmenu_updateundo
 
 
 # mmenu_addcustom:

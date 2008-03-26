@@ -1395,7 +1395,7 @@ ay_undo_undotcmd(ClientData clientData, Tcl_Interp *interp,
  int save_children = AY_FALSE;
  char *a = "ay", *n = "sc", *v = "1";
  char *n2 = "uc", *n3 = "undoo", *n4 = "redoo", v2[64];
- char vnone[] = "none", vnull[] = "null";
+ char vnone[] = "None", vnull[] = "Null";
  static int uc = 0;
 
   /* parse args */
