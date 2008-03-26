@@ -573,8 +573,8 @@ array set ay {
  glu_ext ""
  action 0
  uc 0
- undoo none
- redoo none
+ undoo None
+ redoo None
  smethods { ParametricError PathLength DomainDistance NormalizedDomainDistance AdaptiveDomainDistance }
  prefsgeom ""
  defactions { None Pick }
