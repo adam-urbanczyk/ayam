@@ -32,16 +32,25 @@ proc winToMouse { w } {
 
 ##############################
 # winCenter:
-# center window w on screen
+# center window w on screen (floating windows gui mode) or in the
+# middle of the main window (single window gui mode)
 proc winCenter { w } {
+    global ayprefs
 
     wm withdraw $w
     update idletasks
 
-    set x [expr [winfo screenwidth $w]/2 - [winfo reqwidth $w]/2 \
-            - [winfo vrootx [winfo parent $w]]]
-    set y [expr [winfo screenheight $w]/2 - [winfo reqheight $w]/2 \
-            - [winfo vrooty [winfo parent $w]]]
+    if { $ayprefs(SingleWindow) } {
+	set x [expr [winfo width .]/2 - [winfo reqwidth $w]/2 \
+		   - [winfo vrootx [winfo parent $w]]]
+	set y [expr [winfo height .]/2 - [winfo reqheight $w]/2 \
+		   - [winfo vrooty [winfo parent $w]]]
+    } else {
+	set x [expr [winfo screenwidth $w]/2 - [winfo reqwidth $w]/2 \
+		   - [winfo vrootx [winfo parent $w]]]
+	set y [expr [winfo screenheight $w]/2 - [winfo reqheight $w]/2 \
+		   - [winfo vrooty [winfo parent $w]]]
+    }
 
     winMoveOrResize $w "+${x}+${y}"
 
