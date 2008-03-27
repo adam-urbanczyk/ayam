@@ -624,8 +624,9 @@ proc toolbox_layout { {w ".tbw"} } {
 	    update
 	    set rows [expr round([winfo height $w] / $size)]
 	} else {
+	    ayError 2 toolbox_layout "Can not display all buttons! Resizing..."
 	    set height [expr ceil(double($numb)/$columns)*$size]
-	    $w conf -height $height
+	    $w configure -height $height
 	    update
 	    set rows [expr round([winfo height $w] / $size)]
 	}

@@ -18,7 +18,7 @@ global ay AYWITHAQUA
 
 if { ! $AYWITHAQUA } {
     frame $w.fMenu -bd 2 -relief raised
-    pack $w.fMenu -side top -fill x
+    pack $w.fMenu -side top -fill both -expand no
     # File
     menubutton $w.fMenu.fil -text "File" -menu $w.fMenu.fil.m -padx 3
 
@@ -707,7 +707,7 @@ $m add command -label "Help on property" -command {
 	    set index [$lb curselection]
     
 	    if { $index == "" } {
-		puts stderr "Help on property: No property selected!"
+		ayError 2 "Help on property:" "No property selected!"
 		return;
 	    }
 

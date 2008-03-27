@@ -285,53 +285,57 @@ proc winRestorePaneLayout { config } {
  global ayprefs
 
     # from bottom to top
-    # between console and hierarchy
+    # horizontal pane between console and hierarchy
     if {[llength $config] > 3} {
 	set vheight [lindex $config 3]
     } else {
 	set vheight [expr [winfo rooty .] + \
 			 ([winfo height .] - [winfo reqheight .fl])]
     }
-    pane_constrain . .__h2 .fu .fl height y 0
+    pane_constrain . .__h2 .fu .fl height y 0\
+     [lindex $ayprefs(PaneMargins) 0]
     pane_motion $vheight . .__h2 height y 1
 
-    # between hierarchy and internal views
+    # horizontal pane between hierarchy and internal views
     if {[llength $config] > 2} {
 	set vheight [lindex $config 2]
     } else {
 	set vheight [expr [winfo rooty .] + \
-			 (([winfo height .] - [winfo reqheight .fl])/2.0)]
+			 (([winfo height .] - [winfo height .fl])*0.5)]
     }
-    pane_constrain . .__h1 .fv .fu height y 0
+    pane_constrain . .__h1 .fv .fu height y 0\
+     [lindex $ayprefs(PaneMargins) 1]
     pane_motion $vheight . .__h1 height y 1
 
     # from right to left
-    # between internal properties and internal view3
+    # vertical pane between internal properties and internal view3
     if {[llength $config] > 5} {
 	set vwidth [lindex $config 5]
     } else {
 	set vwidth [expr 5+[winfo rootx .fu]+([winfo width .fu]*0.6)]
     }
-    pane_constrain . .fu.fMain.__h2 .fu.fMain.fProp .fu.fMain.fview3 width x 0
+    pane_constrain . .fu.fMain.__h2 .fu.fMain.fProp .fu.fMain.fview3\
+     width x 0 [lindex $ayprefs(PaneMargins) 2]
     pane_motion $vwidth . .fu.fMain.__h2 width x 1
 
-    # between hierarchy and internal properties
+    # vertical pane between hierarchy and internal properties
     if {[llength $config] > 4} {
 	set vwidth [lindex $config 4]
     } else {
 	set vwidth [expr 5+[winfo rootx .fu]+([winfo width .fu]*0.28)]
     }
-    pane_constrain . .fu.fMain.__h1 .fu.fMain.fHier .fu.fMain.fProp width x 1
+    pane_constrain . .fu.fMain.__h1 .fu.fMain.fHier .fu.fMain.fProp\
+     width x 1 [lindex $ayprefs(PaneMargins) 3]
     pane_motion $vwidth . .fu.fMain.__h1 width x 1
 
-    # now between the internal views 1 and 2
+    # vertical pane between the internal views 1 and 2
     if {[llength $config] > 6} {
 	set vwidth [lindex $config 6]
     } else {
 	set vwidth [expr 5+[winfo rootx .fv]+([winfo width .fv]*0.5)]
     }
     pane_constrain . .fv.fViews.__h1 .fv.fViews.fview1 .fv.fViews.fview2 \
-	width x 0
+     width x 0 [lindex $ayprefs(PaneMargins) 4]
     pane_motion $vwidth . .fv.fViews.__h1 width x 1
 
  return;

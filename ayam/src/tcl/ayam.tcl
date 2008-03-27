@@ -188,6 +188,8 @@ array set ayprefs {
  SingleWindow 1
  SavePanes 1
  PaneConfig ""
+ PaneMargins { 20.0 5.0 10.0 10.0 10.0 }
+
  BindInternalViews 0
 
  ShiftTab "<Shift-Tab>"
@@ -1218,14 +1220,6 @@ update
 #objbar_open .fu.fobjbar
 #pack .fu.fobjbar -side top -fill x -expand yes
 
-# frame for internal views
-frame .fv.fViews
-pack .fv.fViews -in .fv -side bottom -fill both -expand yes
-
-# frame for internal Toolbox
-frame .fv.fTools -takefocus 0
-pack .fv.fTools -in .fv -side bottom -fill both -expand no
-
 # frame for object and property display
 pack .fu.fMain -in .fu -side bottom -fill both -expand yes
 
@@ -1271,7 +1265,8 @@ if { $tcl_platform(platform) == "windows" } {
 }
 ayam_loadscript pane
 
-pane .fv .fu .fl -orient vertical
+pane .fv .fu .fl -orient vertical -margin [list \
+       [lindex $ayprefs(PaneMargins) 1] [lindex $ayprefs(PaneMargins) 0]]
 
 # clear console
 if { [winfo exists .fl.con] == 1 } { .fl.con clear }
@@ -1292,7 +1287,8 @@ plb_open .fu.fMain.fProp
 update
 
 # establish paned window management for hierarchy
-pane .fu.fMain.fHier .fu.fMain.fProp
+pane .fu.fMain.fHier .fu.fMain.fProp -margins [list \
+   [lindex $ayprefs(PaneMargins) 3]]
 
 # load "some" external scripts
 ayam_loadscript run
@@ -1454,34 +1450,46 @@ if { $ayprefs(SingleWindow) } {
 
     set ayprefs(AutoResize) 0
 
+
     # create the main menu
     mmenu_open .fv
     update
+
+    # frame for internal Toolbox
+    frame .fv.fTools -takefocus 0
+    pack .fv.fTools -in .fv -side top -fill both -expand no
+
     # open internal toolbox
     toolbox_open .fv.fTools
+
+    # frame for internal views
+    frame .fv.fViews
+    pack .fv.fViews -in .fv -side top -fill both -expand yes
 
     foreach b $ay(toolbuttons) {
 	.fv.fTools.f.$b configure -takefocus 0
     }
 
     # create first two (upper) internal views
-    viewOpen 100 100 0 1
+    viewOpen 50 50 0 1
     set f .fv.fViews.fview1
     pack $f -in .fv.fViews -side left -fill both -expand yes
     update
-    viewOpen 100 100 0 1
+    viewOpen 50 50 0 1
     set f .fv.fViews.fview2
     pack $f -in .fv.fViews -side right -fill both -expand yes
     update
 
     # establish paned window management for the views
-    pane .fv.fViews.fview1 .fv.fViews.fview2
+    pane .fv.fViews.fview1 .fv.fViews.fview2 -margins [list \
+       [lindex $ayprefs(PaneMargins) 4]]
 
     # create the third internal view
     frame .fu.fMain.fview3 -takefocus 1 -highlightthickness 1
     update
     pane forget .fu.fMain.fHier .fu.fMain.fProp
-    pane .fu.fMain.fHier .fu.fMain.fProp .fu.fMain.fview3
+    pane .fu.fMain.fHier .fu.fMain.fProp .fu.fMain.fview3 -margins [list \
+       [lindex $ayprefs(PaneMargins) 2] [lindex $ayprefs(PaneMargins) 3]]
 
     viewOpen 100 100 0 1
 
@@ -1529,10 +1537,6 @@ if { $ayprefs(SingleWindow) } {
     pack .fu.fMain -in .fu -side top -fill both -expand yes
     # the .fv frame is useless altogether
     pane forget . .fv
-    # no internal views => remove view frame
-    destroy .fv.fViews
-    # remove also the internal toolbox
-    destroy .fv.fTools
 
     destroy .fv
 }
@@ -1637,13 +1641,15 @@ if { $ayprefs(SingleWindow) } {
     # where to place the panes between console and hierarchy/property
     set vheight [expr [winfo rooty .] + \
 		     ([winfo height .] - [winfo reqheight .fl])]
-    pane_constrain . .__h1 .fu .fl height y 0
+    pane_constrain . .__h1 .fu .fl height y 0\
+	[lindex $ayprefs(PaneMargins) 0]
     pane_motion $vheight . .__h1 height y 1
 
     # use 28% of the main window width for the hierarchy and
     # the rest for the properties
     set vwidth [expr 5+[winfo rootx .fu]+([winfo width .fu]*0.28)]
-    pane_constrain . .fu.fMain.__h1 .fu.fMain.fHier .fu.fMain.fProp width x 0
+    pane_constrain . .fu.fMain.__h1 .fu.fMain.fHier .fu.fMain.fProp\
+	width x 0 [lindex $ayprefs(PaneMargins) 3]
     pane_motion $vwidth . .fu.fMain.__h1 width x 1
     unset vwidth vheight
 }

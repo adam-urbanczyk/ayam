@@ -103,7 +103,7 @@ proc pane {opt args} {
 		return {}
 	    }
 	}
-	m* {
+	mas* {
 	    foreach w [array names PANE *,w] {
 		if {[lsearch $PANE($w) $args] != -1} {
 		    regexp {([^,]*),w} $w . res
@@ -126,7 +126,7 @@ proc pane {opt args} {
 
 ;proc pane_config args {
     global PANE
-    array set opt {orn none par {} dyn 0 hpl {} hlk {}}
+    array set opt {orn none par {} dyn 0 hpl {} hlk {} mar {10.0} }
     set wids {}
     for {set i 0;set num [llength $args];set cargs {}} {$i<$num} {incr i} {
 	set arg [lindex $args $i]
@@ -134,6 +134,7 @@ proc pane {opt args} {
 	set val [lindex $args [incr i]]
 	switch -glob -- $arg {
 	    -d*	{ set opt(dyn) [regexp -nocase {^(1|yes|true|on)$} $val] }
+	    -mar* { set opt(mar) $val }
 	    -o*	{ set opt(orn) $val }
 	    -p*	{ set opt(par) $val }
 	    -handlep*	{ set opt(hpl) $val }
@@ -190,16 +191,16 @@ proc pane {opt args} {
 	raise $h
 	bind $h <ButtonPress-1> "pane_constrain $p $h \
 		[lindex $PANE($p,w) [expr $ll-1]] [lindex $PANE($p,w) $ll] \
-		$wh $xy $opt(dyn)"
+		$wh $xy $opt(dyn) [lindex $opt(mar) [expr $ll-1]]"
     }
 }
 
-;proc pane_constrain {p h w0 w1 wh xy d} {
+;proc pane_constrain {p h w0 w1 wh xy d m} {
     global PANE
     regexp -- "\-rel$xy (\[^ \]+)" [place info $w0] junk t0
     regexp -- "\-rel$xy (\[^ \]+).*\-rel$wh (\[^ \]+)" \
 	    [place info $w1] junk t1 t2
-    set offset [expr ($t1+$t2-$t0)/10.0]
+    set offset [expr ($t1+$t2-$t0)/$m]
     array set PANE [list XY [winfo root$xy $p] WH [winfo $wh $p].0 \
 	    W0 $w0 W1 $w1 XY0 $t0 XY1 [expr $t1+$t2] \
 	    C0 [expr $t0+$offset] C1 [expr $t1+$t2-$offset]]
