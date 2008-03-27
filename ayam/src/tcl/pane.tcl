@@ -103,7 +103,7 @@ proc pane {opt args} {
 		return {}
 	    }
 	}
-	mas* {
+	m* {
 	    foreach w [array names PANE *,w] {
 		if {[lsearch $PANE($w) $args] != -1} {
 		    regexp {([^,]*),w} $w . res
@@ -126,15 +126,18 @@ proc pane {opt args} {
 
 ;proc pane_config args {
     global PANE
-    array set opt {orn none par {} dyn 0 hpl {} hlk {} mar {10.0} }
+    array set opt {orn none par {} dyn 0 hpl {} hlk {} mar {} }
     set wids {}
     for {set i 0;set num [llength $args];set cargs {}} {$i<$num} {incr i} {
 	set arg [lindex $args $i]
-	if [winfo exists $arg] { lappend wids $arg; continue }
+	if [winfo exists $arg] {
+	    lappend wids $arg; lappend opt(mar) 10.0;
+	    continue
+	}
 	set val [lindex $args [incr i]]
 	switch -glob -- $arg {
 	    -d*	{ set opt(dyn) [regexp -nocase {^(1|yes|true|on)$} $val] }
-	    -mar* { set opt(mar) $val }
+	    -m* { set opt(mar) $val }
 	    -o*	{ set opt(orn) $val }
 	    -p*	{ set opt(par) $val }
 	    -handlep*	{ set opt(hpl) $val }
