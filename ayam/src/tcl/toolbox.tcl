@@ -618,13 +618,13 @@ proc toolbox_layout { {w ".tbw"} } {
 
     if { [expr $rows*$columns] < $numb } {
 	if { $w == ".tbw" } {
-	    ayError 2 toolbox_layout "Can not display all buttons! Resizing..."
+	    ayError 1 toolbox_layout "Can not display all buttons! Resizing..."
 	    set height [expr ceil(double($numb)/$columns)*$size]
 	    winMoveOrResize .tbw [winfo reqwidth $w]x${height}
 	    update
 	    set rows [expr round([winfo height $w] / $size)]
 	} else {
-	    ayError 2 toolbox_layout "Can not display all buttons! Resizing..."
+	    ayError 1 toolbox_layout "Can not display all buttons! Resizing..."
 	    set height [expr ceil(double($numb)/$columns)*$size]
 	    $w configure -height $height
 	    update
