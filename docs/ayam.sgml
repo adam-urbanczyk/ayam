@@ -565,10 +565,9 @@ mouse button).
 
 <sect1>The Main Menu<label id="mm">
 <p>
-Another important part of the main window has not been discussed so
-far. This is the main menu bar. Note that many menu entries have keyboard
-shortcuts that are displayed in each entry. You can adapt the shortcuts
-using the file <tt>"ayamrc"</tt>
+This section discusses the main menu bar. Note that many menu entries
+have keyboard shortcuts that are displayed in each entry. You can adapt
+the shortcuts using the file <tt>"ayamrc"</tt>
 (see section <ref id="ayamrc" name="Ayamrc File">).
 <p>
 <label id="mmfile">
@@ -1130,10 +1129,21 @@ for various user interface elements (including the toolbox buttons).
 The view window is split into a menu bar and a
 OpenGL-widget, where interaction and drawing takes place.
 The title of the view window gives information about
-name, current type, and action of the view.
+name, current type, and the currently active modelling
+action of the view.
+
+Since Ayam 1.14 the current modelling action is also displayed in
+the view menu bar as an icon.
 
 <sect1>The View Menu<label id="vm">
 <p>
+This section discusses the view menu bar. Note that many menu entries
+have keyboard shortcuts that are displayed in each entry. You can adapt
+the shortcuts using the file <tt>"ayamrc"</tt>
+(see section <ref id="ayamrc" name="Ayamrc File">).
+Note that the view menu keyboard shortcuts only work if the view window
+has the keyboard input focus.
+
 <label id="vmview">
 Here are all meny entries of the <tt/"View"/ menu:
 <itemize>
@@ -1165,7 +1175,7 @@ available, if the compile time option <tt/AYENABLEPPREV/ has been set.
 This option is not set for the official Ayam binaries.
 Permanent preview (PPrev) continuously writes a RIB stream to
 a (fast) RenderMan renderer, a frame for each redraw operation
-of the view window that was used to open the the preview. This way, the
+of the view window that was used to open the preview. This way, the
 RenderMan renderer immediately displays all changes in the scene.
 This is a great way to test many different camera or light settings without
 the need to manually start a rendering process and close the preview window
@@ -1177,7 +1187,8 @@ windows are not available until the permanent preview window is closed.
 <item><tt/"Create ShadowMaps"/: creates the shadow maps for the current scene.
 See also section <ref id="shadowmaps" name="Using ShadowMaps">.
 
-<item><tt/"Close"/: the View window will be removed.
+<item><tt/"Close"/: the View window will be removed. This entry is not
+available for the internal views of Ayam in single window GUI mode.
 </itemize>
 
 <label id="vmtype">
@@ -1195,8 +1206,9 @@ The <tt/"Type"/ menu entries:
 </itemize>
 may be used to change the type of the view, which restrains the scope
 of certain modelling actions. See sections
-<ref id="viewobj" name="View Object"> and
-<ref id="vwsc" name="View Window Shortcuts and Actions">
+<ref id="viewobj" name="View Object">,
+<ref id="vwsc" name="View Window Shortcuts and Actions">, and
+<ref id="iac" name="Interactive Actions (Modelling)">
 for more information.
 
 <label id="vmconf">
@@ -1224,7 +1236,10 @@ objects of the current level (and their children) will be drawn.
 systems (three colored lines) will be drawn at the base of each
 objects coordinate system.
 
-<item><tt/"Draw BGImage"/, if this is enabled, a background
+<item><tt/"AntiAlias Lines"/, if this is enabled, all lines will
+be anti-aliased (smoothed).
+
+<item><tt/"Draw BGImage"/, if this is enabled, the background
 image will be drawn.
 
 <item><tt/"Set BGImage"/, may be used to set the current background
@@ -1269,24 +1284,39 @@ changed accordingly (interpreted as if defined in the local coordinate space).
 See also section <ref id="editlocal" name="Editing in Local Space">.
 </itemize>
 
-The <tt/"Grid"/ menu may be used to change the current grid size:
+The <tt/"Modelling mode"/ icon menu may be used to quickly change the current
+modelling mode (local, or global, see also section
+<ref id="editlocal" name="Editing in Local Space">)
 <p>
-On the right hand side in the menu bar there is a little icon
-that displays the current grid size.
-You may click on the icon to display a menu with predefined
-grid size values.
-Choosing one of the values 0.1, 0.25, 0.5, or 1.0 will set the
-grid size of the view to the value and additionally
-switch on drawing of the grid and snapping to the grid.
-The last entry, however, will set the grid size to 0.0 and
-switch off drawing and snapping to the grid.
-If a gridsize other than 0.1, 0.25, 0.5, or 1.0 is in effect
-for the view, a different icon with a small x will be displayed in the
-menu instead.
 
-<sect2>View Window Shortcuts and Actions<label id="vwsc">
+The <tt/"Drawing mode"/ icon menu may be used to quickly change the current
+drawing mode, drawing, shading, or drawing and shading.
 <p>
-Important keyboard commands of a view window are:
+
+The <tt/"Grid"/ icon menu may be used to quickly change the current grid
+size:
+<p>
+On the right hand side in the view menu bar there is a little icon
+that displays the current grid size. You may click on the icon to
+display a menu with predefined grid size values.
+Choosing one of the values 0.1, 0.25, 0.5, or 1.0 will set the
+grid size of the view to the choosen value and will additionally
+switch on drawing of the grid and snapping to the grid.
+The entry <tt/"X"/ allows to set a custom grid value.
+The last entry will set the grid size to 0.0 and switch off drawing of
+and snapping to the grid.
+If a gridsize other than 0.1, 0.25, 0.5, or 1.0 is in effect for the view,
+a different icon (with an X) will be displayed in the icon menu instead.
+
+<sect1>View Window Shortcuts and Actions<label id="vwsc">
+<p>
+Important keyboard commands of a view window (aside from the view
+menu shortcuts) are discussed in this section.
+Note that the view keyboard shortcuts only work if the view window
+has the keyboard input focus.
+<p>
+Keyboard shortcuts directly modifying the camera, that is associated
+with the view window, are:
 <itemize>
 <item><tt/&lt;Left&gt;/, <tt/&lt;Up&gt;/, <tt/&lt;Right&gt;/,
 <tt/&lt;Down&gt;/ rotate viewer around origin.
@@ -1307,7 +1337,7 @@ parallel views.
 <item><tt/&lt;R&gt;/ (note the case!) starts rotating the virtual
 camera around the point it is looking to.
 <item>Rotating the view is also possible in any
-modelling mode, when holding down the <tt/&lt;Alt&gt;/-key.
+modelling mode, by holding down the <tt/&lt;Alt&gt;/-key.
 
 <item><tt/&lt;o&gt;/ starts zooming the view. Moving the mouse up
 zooms in and moving the mouse down zooms out.
@@ -1327,13 +1357,13 @@ when you turn the wheel.
 Using the menu entry <tt/"Zoom to Object"/ or the shortcut
 <tt/&lt;Ctrl+o&gt;/ you can change the views from to and zoom
 settings so that the selected objects will be displayed centered
-in the view window. This is handy, if you are e.g. searching for
-objects or simply lost in space.
+in the view window. This is handy if you are e.g. searching for
+objects or if you are simply lost in space.
 <p>
-Using the menu entry <tt/"Align to Parent"/ or
-the shortcut <tt/&lt;Ctrl+a&gt;/ you can change the
-views camera settings so that it is aligned to the
-coordinate system of the currently selected object.
+Using the menu entry <tt/"Align to Parent"/ or the shortcut
+<tt/&lt;Ctrl+a&gt;/ you can change the views camera settings so
+that it is aligned to the coordinate system of the currently
+selected object.
 This is handy for modelling in local coordinate systems
 (e.g. editing the points of a 2D curve defined in the
 XY-plane that has been rotated around the Y-axis).
@@ -2041,8 +2071,9 @@ Smaller values lead to better quality and more tesselated polygons.
 
 <sect>Interactive Actions (Modelling)<label id="iac">
 <p>
-Before invoking any modelling action you should select
-one or more objects using the main window or using the pick action!
+Before invoking any modelling action you should select one or more
+objects using the object hierarchy in the main window or using the
+pick action!
 <p>
 Every action can be started with a key press (a shortcut) when
 the keyboard focus is in a view window or by clicking on the associated
@@ -6704,6 +6735,8 @@ ICurves from the selection.
 reversed.
 <item>Note: The direction of a NURBCurve is shown as
 a small arrow at the end of the curve.
+See also the documentation of the corresponding
+<ref id="screvert" name="scripting interface command">.
 </itemize>
 
 <sect1>The Concat Tool<label id="conct">
@@ -10302,6 +10335,23 @@ cleared using the main menu entry <tt>"File/New"</tt>.
 The default value is 1 - yes, load the environment file on
 <tt>"File/New"</tt>.
 
+<item><tt/"PaneMargins"/, is a list of currently five floating
+point values, used as a safety margin for the panes:
+console vs. hierarchy, hierarchy vs. upper-views, lower-view vs. property,
+property vs. hierarchy, upper-view-2 vs. upper-view-1 (in this
+order!).
+These values control the minimum size of a pane expressed in an
+inverse (1/x) and relative way:
+the smaller the number, the bigger the margin. The safety margin
+of the uppermost horizontal pane (that divides the upper internal
+views from the hierarchy and the third view) is e.g. a bit larger
+so that the main menu may not be obscured easily (the corresponding
+value is 5.0). The default value for the console (20.0) leads to a
+small margin, so that the console may be shrunk to 2 or even 1 lines.
+The default values are
+<code>
+{20.0 5.0 10.0 10.0 10.0}
+</code>
 </itemize>
 
 <sect2>RiOption and RiAttributes Database<label id="rioptdb">
@@ -10335,7 +10385,8 @@ set riopt(runtime) { { verbosity s { "silent" "normal" "stats" "debug"} }
 }
 </code>
 As you can see, it is not mandatory to provide default values.
-But be careful with the brackets!
+Be sure to correctly close all the curly braces, otherwise the next
+start of Ayam may fail!
 
 Available types of parameters are:
 <itemize>
@@ -10449,7 +10500,7 @@ After instantiation some statistics will be displayed in the console.
 <p>
 Since Ayam 1.14, the instantiation obeys the object selection:
 instances are only created from the selected objects.
-If no objects are selected instances are created from all objects
+If no objects are selected, instances are created from all objects
 in the current level and below.
 <p>
 More information about this subject can be found in:<p>
@@ -10878,6 +10929,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>Algorithm: <ref id="aycsg" name="AyCSG plugin option">
 <item>Align to Parent: <ref id="vmconf" name="view menu entry">,
 <ref id="vwsc" name="view action">
+<item>AntiAlias Lines: <ref id="vmconf" name="view menu entry">
 <item>Apply: <ref id="propgui" name="apply property GUI">
 <item>applyTrafo: <ref id="scapplytrafo" name="scripting interface command">
 <item>Archives: <ref id="rio" name="RenderMan interface option">
@@ -11315,6 +11367,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <label id="indexp">P
 <itemize>
 <item>P1, P2: <ref id="hyp" name="hyperboloid attribute">
+<item>PaneMargins: <ref id="hidprefs" name="hidden preference setting">
 <item>Paraboloid: <ref id="paraboloidobj" name="Paraboloid object">
 <item>Parameter: <ref id="extrncp" name="ExtrNC attribute">
 <item>Parameter Object: <ref id="toolobj" name="modelling concept">
