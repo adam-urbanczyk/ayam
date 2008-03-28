@@ -1,4 +1,4 @@
-[25. Mar 2008] CVS-Head:
+[28. Mar 2008] CVS-Head:
 =======================
 o Bug Fixes:
  - X3D export of NURBS patches (row/column major order) (SF 1804056)
@@ -28,15 +28,35 @@ o all dialogs may now be cancelled with the <Escape> key
 o closing dialogs using the window decoration is now safer wrt. AutoFocus
 o improved focus handling of property canvas
 o added context sensitive help launcher (<F1> key) to all import and
-  export option windows
+  export option windows and the preferences dialog
 o added preference option to switch Ayam to a single toplevel window
   application; in SingleWindow mode, there are internal views and an
   internal toolbar, more floating view windows can be created as usual
-o added icon based modelling action display to view window menu
+o added icon based modelling action display to view window menu bar
 o added saving of main window state normal/zoomed (maximized) to the
   ayamrc file
+o the iconification state of view windows is now saved with scene files
+o several main preference settings are not displayed in the preferences
+  editor on platforms/in configurations where they would not be used
+  anyway, e.g. TwmCompat on Win32
 o added "SavePaneLayout" tag type to store the pane configuration of the
   main window in scene files
+o added hidden preference setting "PaneMargins" that controls individual
+  safety margins for all panes (lest they obscure other vital parts of
+  the GUI as e.g. the main menu bar)
+o the main preference settings "ListTypes", "MarkHidden", "LoadEnv",
+  and "NewLoadsEnv" are now hidden preference settings
+o renamed hidden preference settings "PrepDiaCap" to "FixDialogTitles" and
+  "Wpcliptosel" to "WarnPropPasteToSel"
+o added hidden preference setting "ShiftTab" that let users define the
+  keysym created by pressing shift and tab
+o added hidden preference setting "FixImageButtons" that enables a
+  work-around for "stuck" image buttons in the toolbox
+o the operations that can be undone/redone are now also displayed in the
+  corresponding main menu entries
+o the about dialog has now a "CopyClipboard" button that makes it more
+  simple to copy the relevant parts of the Ayam configuration for e.g.
+  bug reports
 
 Modelling:
 o added new object type "ACurve" (for approximating curves)
@@ -72,15 +92,18 @@ o added script "intfd.tcl" to switch all dialogs (file/color) to internal
 o added script "showwin.tcl" to de-iconify/show all application windows
 o added script "tonpatch.tcl" that, similar to "topoly.tcl" converts all
   objects in the scene to plain NURBS patches
+o added helper procedure "toolbox_add" for adding text based buttons to
+  the toolbox window
 
 Platform Support:
 Win32:
-o added true support for custom objects to the VC2005 build (they could
-  not use the RIB export facility, due to missing export symbols from the
-  static Aqsis libraries)
+o added true support for custom objects to the VC2005 build (custom objects
+  could not use the RIB export facility, due to missing export symbols from
+  the static Aqsis libraries in earlier versions)
 Apple Mac OS X:
 o added official X11 based build
 o fixed image buttons for the X11 based build
+o all dialog windows are now proper floating windows
 
 Compilation/Installation:
 o it is no longer possible to wrap the IDR, AyCSG, RRIB, ONIO, or
