@@ -62,6 +62,30 @@ proc viewSetType { w type } {
 
 
 ##############################
+# viewCycleType:
+proc viewCycleType { w dir } {
+    global ay
+
+    $w.f3D.togl mc
+
+    update
+
+    set type [expr $ay(cVType) + $dir ]
+
+    # omit 4 (trim view)
+    if { $type < 0 } { set type 3}
+    if { $type > 3 } { set type 0}
+
+    viewSetType $w $type
+
+    set ay(cVType) $type
+  
+ return;
+}
+# viewCycleType
+
+
+##############################
 # viewRender:
 proc viewRender { w type } {
     global env ayprefs ay tcl_platform tmpfile

@@ -401,6 +401,9 @@ array set ayviewshortcuts {
     Hide "h"
     Show "H"
 
+    TypeUp "Prior"
+    TypeDown "Next"
+
 }
 # array ayviewshortcuts
 
@@ -1497,7 +1500,7 @@ if { $ayprefs(SingleWindow) } {
     # the focus from view3 directly to the object hierarchy (not to the
     # empty property display where it would be useless)
     bind .fu.fMain.fview3 $ayprefs(ShiftTab) "\
-      set ay(shifttab) 1\
+      set ay(shifttab) 1;\
       if \{ \$::ayprefs(showtr) == 1 \} \{\
         focus \$::ay(tree);\
       \} else \{\
