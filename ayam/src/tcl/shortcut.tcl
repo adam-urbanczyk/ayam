@@ -451,6 +451,8 @@ proc shortcut_view { w } {
     bind $w <[repcont $ayviewshortcuts(Show)]>\
 	    "$m invoke 10;break"
 
+    bind $w <[repcont $ayviewshortcuts(TypeUp)]> "viewCycleType $w -1;break"
+    bind $w <[repcont $ayviewshortcuts(TypeDown)]> "viewCycleType $w 1;break"
 
     bind $w <[repcont $aymainshortcuts(Zap)]> zap
     bind $w <Map> unzap
