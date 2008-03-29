@@ -77,13 +77,13 @@ ay_act_solve(double *M1, double *M2, int m, int n, double *R)
   if(m == n)
     {
       /* M1 is square => use LU decomposition to solve */
-      if(!(A = calloc(n*n*stride, sizeof(double))))
+      if(!(A = calloc(n*n, sizeof(double))))
 	{ ay_status = AY_EOMEM; goto cleanup; }
 
       if(!(pivot = calloc(n, sizeof(int))))
 	{ ay_status = AY_EOMEM; goto cleanup; }
 
-      memcpy(A, M1, stride*n*n*sizeof(double));
+      memcpy(A, M1, n*n*sizeof(double));
 
       ay_status = ay_nb_LUDecompose(n, A, pivot);
 
