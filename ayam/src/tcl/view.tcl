@@ -70,11 +70,11 @@ proc viewCycleType { w dir } {
 
     update
 
-    set type [expr $ay(cVType) + $dir ]
+    set type [expr $ay(cVType) + $dir]
 
     # omit 4 (trim view)
-    if { $type < 0 } { set type 3}
-    if { $type > 3 } { set type 0}
+    if { $type < 0 } { set type 3 }
+    if { $type > 3 } { set type 0 }
 
     viewSetType $w $type
 
@@ -187,7 +187,6 @@ proc viewUPos { } {
 	    set oldgeom [wm geom [winfo toplevel $w]]
 	    regexp {([0-9]+)?x?([0-9]+)?(\+|\-)?([0-9]+)?(\+|\-)?([0-9]+)?} $oldgeom blurb width height blurb2 x blurb3 y
 	}
-#	set cw $ay(currentView)
 
 	set isicon 0
 	set state [wm state [winfo toplevel $w]]
@@ -207,7 +206,7 @@ proc viewUPos { } {
 
 ##############################
 # viewTitle:
-# set title bar of window w (for views only)
+# set title bar of view window w
 # type = "" -> no change, action = "" -> no change
 proc viewTitle { w type action } {
     global ay AYWITHAQUA
@@ -255,7 +254,7 @@ proc viewTitle { w type action } {
     wm title $w $newname
     update idletasks
 
-return;
+ return;
 }
 # viewTitle
 
@@ -264,31 +263,31 @@ return;
 # viewSetFOV:
 #  set the Field Of View of a view
 proc viewSetFOV { view } {
-global ay
+    global ay
 
-winAutoFocusOff
+    winAutoFocusOff
 
-set w .setFov
-catch {destroy $w}
-toplevel $w -class ayam
-wm title $w "Set FOV"
-wm iconname $w "Ayam"
-if { $ay(ws) == "Aqua" } {
-    winMakeFloat $w
-} else {
-    wm transient $w [winfo toplevel $view]
-}
-set f [frame $w.f1]
-pack $f -in $w -side top -fill x
+    set w .setFov
+    catch {destroy $w}
+    toplevel $w -class ayam
+    wm title $w "Set FOV"
+    wm iconname $w "Ayam"
+    if { $ay(ws) == "Aqua" } {
+	winMakeFloat $w
+    } else {
+	wm transient $w [winfo toplevel $view]
+    }
+    set f [frame $w.f1]
+    pack $f -in $w -side top -fill x
 
-set ay(FOV) $ay(cVFOV)
+    set ay(FOV) $ay(cVFOV)
 
-set ay(iapplydisable) 1
-addParam $f ay FOV
-set ay(iapplydisable) 0
+    set ay(iapplydisable) 1
+    addParam $f ay FOV
+    set ay(iapplydisable) 0
 
-set f [frame $w.f2]
-button $f.bok -text "Ok" -pady $ay(pady) -width 5 -command "global ay;\
+    set f [frame $w.f2]
+    button $f.bok -text "Ok" -pady $ay(pady) -width 5 -command "global ay;\
 	$view mc;\
 	undo save SetFOV;\
 	$view setconf -fovx \$ay(FOV);\
@@ -298,23 +297,23 @@ button $f.bok -text "Ok" -pady $ay(pady) -width 5 -command "global ay;\
 	focus $view;\
 	destroy .setFov"
 
-button $f.bca -text "Cancel" -pady $ay(pady) -width 5 -command "\
+    button $f.bca -text "Cancel" -pady $ay(pady) -width 5 -command "\
 	set ay(FOV) $ay(FOV);\
 	grab release .setFov;\
 	focus $view;\
 	destroy $w"
 
-pack $f.bok $f.bca -in $f -side left -fill x -expand yes
-pack $f -in $w -side bottom -fill x
+    pack $f.bok $f.bca -in $f -side left -fill x -expand yes
+    pack $f -in $w -side bottom -fill x
 
-winCenter $w
-grab $w
-focus $w.f1.fFOV.e
-tkwait window $w
+    winCenter $w
+    grab $w
+    focus $w.f1.fFOV.e
+    tkwait window $w
 
-winAutoFocusOn
+    winAutoFocusOn
 
-return;
+ return;
 }
 # viewSetFOV
 
@@ -322,31 +321,31 @@ return;
 ##############################
 # viewSetGrid:
 proc viewSetGrid { view } {
-global ay
+    global ay
 
-winAutoFocusOff
+    winAutoFocusOff
 
-set w .setGrid
-catch {destroy $w}
-toplevel $w -class ayam
-wm title $w "Set GridSize"
-wm iconname $w "Ayam"
-if { $ay(ws) == "Aqua" } {
-    winMakeFloat $w
-} else {
-    wm transient $w [winfo toplevel $view]
-}
-set f [frame $w.f1]
-pack $f -in $w -side top -fill x
+    set w .setGrid
+    catch {destroy $w}
+    toplevel $w -class ayam
+    wm title $w "Set GridSize"
+    wm iconname $w "Ayam"
+    if { $ay(ws) == "Aqua" } {
+	winMakeFloat $w
+    } else {
+	wm transient $w [winfo toplevel $view]
+    }
+    set f [frame $w.f1]
+    pack $f -in $w -side top -fill x
 
-set ay(GridSize) $ay(cVGridSize)
+    set ay(GridSize) $ay(cVGridSize)
 
-set ay(iapplydisable) 1
-addParam $f ay GridSize [list 0.001 0.01 0.1 0.25 0.5 1 10]
-set ay(iapplydisable) 0
+    set ay(iapplydisable) 1
+    addParam $f ay GridSize [list 0.001 0.01 0.1 0.25 0.5 1 10]
+    set ay(iapplydisable) 0
 
-set f [frame $w.f2]
-button $f.bok -text "Ok" -pady $ay(pady) -width 5 -command "\
+    set f [frame $w.f2]
+    button $f.bok -text "Ok" -pady $ay(pady) -width 5 -command "\
 	global ay;\
 	$view mc;\
 	undo save SetGrid;\
@@ -364,27 +363,27 @@ button $f.bok -text "Ok" -pady $ay(pady) -width 5 -command "\
 	destroy .setGrid"
 
 
-button $f.bca -text "Cancel" -pady $ay(pady) -width 5 -command "\
+    button $f.bca -text "Cancel" -pady $ay(pady) -width 5 -command "\
 	global ay;\
 	set ay(GridSize) $ay(GridSize);\
 	catch \{grab release .setGrid\};\
 	focus $view;\
 	destroy $w"
 
-pack $f.bok $f.bca -in $f -side left -fill x -expand yes
-pack $f -in $w -side bottom -fill x
+    pack $f.bok $f.bca -in $f -side left -fill x -expand yes
+    pack $f -in $w -side bottom -fill x
 
-winCenter $w
-global ay
-if { $ay(ws) != "Aqua" } {
-    grab $w
-}
-focus $w.f1.fGridSize.e
-tkwait window $w
+    winCenter $w
+    global ay
+    if { $ay(ws) != "Aqua" } {
+	grab $w
+    }
+    focus $w.f1.fGridSize.e
+    tkwait window $w
 
-winAutoFocusOn
+    winAutoFocusOn
 
-return;
+ return;
 }
 # viewSetGrid
 
@@ -514,6 +513,8 @@ proc viewOpen { width height {establish_bindings 1} {internal_view 0} } {
 
 ###############################
 # viewDrop:
+# helper procedure that calls the togl callback for the drop
+# operation and throws all the useless arguments away
 proc viewDrop { w tree dropx dropy currentoperation datatype data } {
 
     #puts "viewDrop: $currentoperation $datatype $data"
@@ -528,6 +529,7 @@ proc viewDrop { w tree dropx dropy currentoperation datatype data } {
 
 ##############################
 # viewBind:
+# establish all keyboard and mouse bindings for view window w
 proc viewBind { w } {
     global ayviewshortcuts
 
@@ -646,6 +648,7 @@ proc viewBind { w } {
 
 ##############################
 # viewUnBind:
+# remove all keyboard and mouse bindings from view window w
 proc viewUnBind { w } {
 
     foreach v [ bind $w ] { bind $w $v "" }
@@ -958,6 +961,7 @@ proc viewMouseToCurrent { } {
  	}
     }
 
+ return;
 }
 # viewMouseToCurrent
 
@@ -984,6 +988,7 @@ proc viewToggleDMode { w } {
 	set ay(cVDMode) 1
     }
 
+ return;
 }
 # viewToggleDMode
 
@@ -1010,6 +1015,7 @@ proc viewToggleMMode { w } {
 	set ay(cVMMode) 1
     }
 
+ return;
 }
 # viewToggleMMode
 
