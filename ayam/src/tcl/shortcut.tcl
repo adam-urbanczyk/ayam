@@ -408,12 +408,16 @@ proc shortcut_view { w } {
 	bind $w <[repcont $ayviewshortcuts(Align)]> "$m invoke 22;break"
     }
 
+    bind $w <[repcont $ayviewshortcuts(ZoomTO2)]> "$m invoke 21;break"
+    bind $w <[repcont $ayviewshortcuts(Align2)]> "$m invoke 22;break"
+
     #set m $ay(mmodem)
     #$m entryconfigure 1 -accelerator $ayviewshortcuts(Local)
     #bind $w <[repcont $ayviewshortcuts(Local)]> "$m invoke 1;break"
     if { ([winfo toplevel $w] == $w) || $ayprefs(BindInternalViews) } {
 	bind $w <[repcont $ayviewshortcuts(Local)]> "viewToggleMMode $w;break"
     }
+    bind $w <[repcont $ayviewshortcuts(Local2)]> "viewToggleMMode $w;break"
 
     bind $w <[repcont $ayviewshortcuts(RotL)]>\
 	    "$w.f3D.togl setconf -undrotx 1 -drotx 5.0 -droty 0.0;break"

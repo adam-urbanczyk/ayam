@@ -332,6 +332,7 @@ array set ayviewshortcuts {
     Double "Ctrl-D"
 
     Local "Ctrl-l"
+    Local2 "Alt-l"
 
     RotL "Left"
     RotR "Right"
@@ -348,7 +349,9 @@ array set ayviewshortcuts {
     SGrid "Ctrl-G"
 
     Align "Ctrl-a"
+    Align2 "Alt-a"
     ZoomTO "Ctrl-o"
+    ZoomTO2 "Alt-o"
 
     MoveO "m"
     RotO "r"
