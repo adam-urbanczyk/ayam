@@ -406,8 +406,12 @@ proc shortcut_view { w } {
 
 	$m entryconfigure 22 -accelerator $ayviewshortcuts(Align)
 	bind $w <[repcont $ayviewshortcuts(Align)]> "$m invoke 22;break"
+    } else {
+	$m entryconfigure 21 -accelerator $ayviewshortcuts(ZoomTO2)
+	$m entryconfigure 22 -accelerator $ayviewshortcuts(Align2)
+	$m entryconfigure 23 -accelerator $ayviewshortcuts(Local2)
     }
-
+    
     bind $w <[repcont $ayviewshortcuts(ZoomTO2)]> "$m invoke 21;break"
     bind $w <[repcont $ayviewshortcuts(Align2)]> "$m invoke 22;break"
 
@@ -416,7 +420,9 @@ proc shortcut_view { w } {
     #bind $w <[repcont $ayviewshortcuts(Local)]> "$m invoke 1;break"
     if { ([winfo toplevel $w] == $w) || $ayprefs(BindInternalViews) } {
 	bind $w <[repcont $ayviewshortcuts(Local)]> "viewToggleMMode $w;break"
+	$m entryconfigure 23 -accelerator $ayviewshortcuts(Local)
     }
+
     bind $w <[repcont $ayviewshortcuts(Local2)]> "viewToggleMMode $w;break"
 
     bind $w <[repcont $ayviewshortcuts(RotL)]>\
