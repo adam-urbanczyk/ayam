@@ -240,6 +240,11 @@ $m add command -label "Align to Object" -command "\
 	undo save AlignToObj;\
 	$w.f3D.togl mc; $w.f3D.togl align; \$ay(currentView) mc"
 
+$m add check -label "Local" -variable ay(cVMMode) -command "\
+        global ay;\
+	$w.f3D.togl setconf -local \$ay(cVMMode);\
+	\$ay(currentView) mc"
+
 # XXXX This could be just a label or a menu displaying current action
 # or even allowing to start modeling actions, but which actions, all?
 #menubutton $w.fMenu.a -image ay_Move_img -menu $w.fMenu.a.m -padx 3
