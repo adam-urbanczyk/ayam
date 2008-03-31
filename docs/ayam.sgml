@@ -6731,9 +6731,9 @@ original clipboard contents are lost when this tool finishes.
 <itemize>
 <item>Arguments: The revert tool takes all NURBS curves and
 ICurves from the selection.
-<item>Operation: The direction of the selected NURBS curves will be
+<item>Operation: The direction of the selected curves will be
 reversed.
-<item>Note: The direction of a NURBCurve is shown as
+<item>Note: The direction of a curve is shown as
 a small arrow at the end of the curve.
 See also the documentation of the corresponding
 <ref id="screvert" name="scripting interface command">.
@@ -6773,6 +6773,8 @@ get a custom knot vector.
 <item>Note: The original selected NURBS curve will be changed and
 form the first of the two new curves, so you may want to keep a copy
 of it somewhere.
+See also the documentation of the corresponding
+<ref id="scsplitnc" name="scripting interface command">.
 </itemize>
 
 <sect1>The Trim Tool<label id="trimt">
@@ -6789,6 +6791,8 @@ the selection and additionally requests two parametric values, umin and umax.
 designated parametric range (umin, umax).
 <item>Note: The trimming process involves the application of knot insertion
 so that the curves will get a custom knot vector.
+See also the documentation of the corresponding
+<ref id="sctrimnc" name="scripting interface command">.
 </itemize>
 
 <sect1>The Elevate Tool<label id="elevt">
@@ -6808,6 +6812,8 @@ by the specified integer value without changing the shape of the curve.
 will be clamped automatically. The knot type of the curve will
 be changed to custom. New control points will be added and the position
 of old control points may be changed in the progress.
+See also the documentation of the corresponding
+<ref id="scelevatenc" name="scripting interface command">.
 </itemize>
 
 <sect1>The Refine Tool<label id="refit">
@@ -6837,6 +6843,8 @@ Also note that for periodic curves the refine tool just inserts
 control points into all control point intervals except for the
 first (last) p intervals (where p is the degree of the curve).
 The shape of the curve will be changed in this case.
+See also the documentation of the corresponding
+<ref id="screfinenc" name="scripting interface command">.
 </itemize>
 
 <sect1>The Coarsen Tool<label id="coart">
@@ -6857,6 +6865,8 @@ of the curve).
 For closed curves, the coarsen tool will not remove the last point.
 The coarsen tool will also remove knot values from curves with
 custom knot vectors.
+See also the documentation of the corresponding
+<ref id="sccoarsennc" name="scripting interface command">.
 </itemize>
 
 <sect1>The Clamp Tool<label id="clat">
@@ -6876,6 +6886,8 @@ without changing the shape of the curve. The curve will
 interpolate the first and the last control point afterwards.
 <item>Note: The knot type of the curves will be changed to <tt/"Custom"/.
 The point selection will be removed from the original objects.
+See also the documentation of the corresponding
+<ref id="scclampnc" name="scripting interface command">.
 </itemize>
 
 <sect1>The Insert Knot Tool<label id="insknt">
@@ -6894,6 +6906,8 @@ times into the knot vector of the selected curves, without changing the
 shape of the curve(s).
 <item>Note: The knot type of the curves will be changed to <tt/"Custom"/.
 The point selection will be removed from the original objects.
+See also the documentation of the corresponding
+<ref id="scinsknnc" name="scripting interface command">.
 </itemize>
 
 <sect1>The Remove Knot Tool<label id="remknt">
@@ -6916,6 +6930,8 @@ error is reported and the original curve is left unchanged.
 <item>Note: If tol is <tt/"Inf"/ (infinity) the tool tries to work without
 changing the shape of the curves, however, this is not guaranteed.
 The point selection will be removed from the original objects.
+See also the documentation of the corresponding
+<ref id="scremknnc" name="scripting interface command">.
 </itemize>
 
 <sect1>The Plot Curvature Tool<label id="plotcurt">
@@ -7113,6 +7129,9 @@ point afterwards. The knot types of the patch will be changed to type
 The point selection will be removed from the original object.
 There are also tools available that clamp a patch in u- or
 v-direction only.
+See also the documentation of the corresponding scripting interface commands
+<ref id="scclampnpu" name="scclampnpu">.
+<ref id="scclampnpv" name="scclampnpv">.
 </itemize>
 
 <sect1>The Patch Rescale Knots to Range Tool<label id="resckrnpt">
@@ -7892,6 +7911,7 @@ revert - revert curves:
  <item>Synopsis: <tt/"revert"/
  <item>Description: Revert the direction of the selected NURBS curves
 and interpolating curves.
+See also section <ref id="revertt" name="The Revert Tool">.
 </itemize>
 
 <p><label id="screscaleknnc">
@@ -7906,6 +7926,7 @@ distance ensures that all knots (except for multiple knots) have a distance
 bigger than mindist afterwards. The knot type of the curve has to be
 <tt/"Custom"/!
 This operation does not change the shape of the curve.
+See also section <ref id="resckrt" name="The Rescale Knots to Range Tool">.
 </itemize>
 
 <p><label id="scsplitnc">
@@ -7915,6 +7936,7 @@ splitNC - split NURBS curve
  <item>Description: splits the selected NURBS curve at designated parametric
 value into two curves, creating one new curve and modifying the original
 selected curve.
+See also section <ref id="splitt" name="The Split Tool">.
 </itemize>
 
 <p><label id="sctrimnc">
@@ -7923,6 +7945,7 @@ trimNC - trim NURBS curve
  <item>Synopsis: <tt/"trimNC umin umax"/
  <item>Description: trims the selected NURBS curve to the designated
 parametric range (umin-umax), modifying the original selected curve.
+See also section <ref id="trimt" name="The Trim Tool">.
 </itemize>
 
 <p><label id="scclampnpu">
@@ -7933,7 +7956,8 @@ clampNPU - clamp NURBS patch in u-direction:
 patches without changing the shape of the patches.
 The knot type will be changed to <tt/"Custom"/ and the knots will have o
 equal values at start and end (where o is the order of the patch in
-u-direction). See also section <ref id="clanpt" name="The Patch Clamp Tool">.
+u-direction).
+See also section <ref id="clanpt" name="The Patch Clamp Tool">.
 </itemize>
 
 <p><label id="scclampnpv">
@@ -7944,7 +7968,8 @@ clampNPV - clamp NURBS patch in v-direction:
 patches without changing the shape of the patches.
 The knot type will be changed to <tt/"Custom"/ and the knots will have o
 equal values at start and end (where o is the order of the patch in
-v-direction). See also section <ref id="clanpt" name="The Patch Clamp Tool">.
+v-direction).
+See also section <ref id="clanpt" name="The Patch Clamp Tool">.
 </itemize>
 
 <p><label id="screscaleknnp">
@@ -8005,7 +8030,6 @@ splitNPU - split NURBS patch:
  <item>Synopsis: <tt/"splitNPU u"/
  <item>Description: Splits the selected NURBPatch objects into two patches
 at parametric value u.
-
 See also section <ref id="splitnpt" name="The Patch Split Tool">.
 </itemize>
 
@@ -8034,7 +8058,7 @@ splitNP - split NURBS patch:
  <item>Synopsis: <tt/"splitNP (u|v)"/
  <item>Description: splits the selected NURBPatch into NURBS curves,
 along parametric dimension u or v.
-See also section <ref id="splitt" name="The Split Tool">.
+See also section <ref id="splitnpt" name="The Patch Split Tools">.
 </itemize>
 
 <p><label id="scbuildnp">
