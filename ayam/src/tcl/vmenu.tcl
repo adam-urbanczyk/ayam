@@ -243,6 +243,7 @@ $m add command -label "Align to Object" -command "\
 $m add check -label "Local" -variable ay(cVMMode) -command "\
         global ay;\
 	$w.f3D.togl setconf -local \$ay(cVMMode);\
+        viewSetMModeIcon $w \$ay(cVMMode);\
 	\$ay(currentView) mc"
 
 # XXXX This could be just a label or a menu displaying current action
