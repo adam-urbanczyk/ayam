@@ -6735,6 +6735,8 @@ ICurves from the selection.
 reversed.
 <item>Note: The direction of a curve is shown as
 a small arrow at the end of the curve.
+Eventually selected points will still be selected after this
+operation.
 See also the documentation of the corresponding
 <ref id="screvert" name="scripting interface command">.
 </itemize>
@@ -7097,6 +7099,8 @@ The point selection will be removed from the original object.
 or BPatch or PatchMesh objects from the selection.
 <item>Operation: The control point arrays of the selected objects
 will be reversed in the u dimension (width).
+<item>Note: See also the documentation of the corresponding
+<ref id="screvertu" name="scripting interface command">.
 </itemize>
 
 <sect1>The Revert V Tool<label id="revertvt">
@@ -7106,6 +7110,8 @@ will be reversed in the u dimension (width).
 or BPatch or PatchMesh objects from the selection.
 <item>Operation: The control point arrays of the selected objects
 will be reversed in the v dimension (height).
+<item>Note: See also the documentation of the corresponding
+<ref id="screvertu" name="scripting interface command">.
 </itemize>
 
 <sect1>The Patch Clamp Tool<label id="clanpt">
@@ -7130,8 +7136,8 @@ The point selection will be removed from the original object.
 There are also tools available that clamp a patch in u- or
 v-direction only.
 See also the documentation of the corresponding scripting interface commands
-<ref id="scclampnpu" name="scclampnpu">.
-<ref id="scclampnpv" name="scclampnpv">.
+<ref id="scclampnpu" name="clampNPU">, and
+<ref id="scclampnpv" name="clampNPV">.
 </itemize>
 
 <sect1>The Patch Rescale Knots to Range Tool<label id="resckrnpt">
@@ -7144,6 +7150,8 @@ their first and last values match the given range. Trim curves, if
 present, will also be scaled to match the new range.
 <item>Note: The knot types of the patch have to be <tt/"Custom"/!
 This tool does not change the geometry of the patches.
+See also the documentation of the corresponding
+<ref id="screscaleknnp" name="scripting interface command">.
 </itemize>
 
 <sect1>The Patch Rescale Knots to Mindist Tool<label id="resckmnpt">
@@ -7157,6 +7165,8 @@ no two knots have a distance smaller than the given minimum distance
 to match the new range.
 <item>Note: The knot types of the patch have to be <tt/"Custom"/!
 This tool does not change the geometry of the patches.
+See also the documentation of the corresponding
+<ref id="screscaleknnp" name="scripting interface command">.
 </itemize>
 
 <sect1>The Patch Insert Knot Tool<label id="insknnpt">
@@ -7176,6 +7186,9 @@ shape of the patches.
 <item>Note: The knot type of the patch will be changed to <tt/"Custom"/.
 This tool does not change the geometry of the patches.
 The point selection will be removed from the original object.
+See also the documentation of the corresponding scripting interface commands
+<ref id="scinsknnpu" name="insknNPU">, and
+<ref id="scinsknnpv" name="insknNPV">.
 </itemize>
 
 <sect1>The Patch Split Tools<label id="splitnpt">
@@ -7190,6 +7203,9 @@ into two patches (in u or v dimension, respectively) using knot insertion.
 created.
 The point selection will be removed from the original object.
 Trim curves will not be honored properly.
+See also the documentation of the corresponding scripting interface commands
+<ref id="scsplitnpu" name="splitNPU">, and
+<ref id="scsplitnpv" name="splitNPV">.
 </itemize>
 
 <sect1>The Extract Curve Tool<label id="extnct">
@@ -7214,7 +7230,9 @@ the selection and requests four parametric values: umin, umax, vmin, and vmax.
 objects, defined by the specified parametric values, and new NURBPatch objects
 will be created.
 <item>Note: The original selected NURBPatch objects will not be changed.
-Trim curves will not be honored properly.
+Trim curves will <em>not</em> be honored properly.
+See also the documentation of the corresponding
+<ref id="scextrnp" name="scripting interface command">.
 </itemize>
 
 <sect1>The Split to Curves Tool<label id="sptct">
@@ -7225,6 +7243,8 @@ the selection.
 <item>Operation: The selected NURBS patch will be split into NURBS curves,
 along direction u or v.
 <item>Note: The original NURBS patch object is not deleted.
+See also the documentation of the corresponding
+<ref id="scsplitnp" name="scripting interface command">.
 </itemize>
 
 <sect1>The Build from Curves Tool<label id="bfct">
@@ -7243,6 +7263,8 @@ The knot type in u direction (Knot-Type_U) will always be NURB.
 Other parameters (Order_V, Knot-Type_V, Knots_V) are taken from
 the first curve.
 <item>Note: The original NURBS curves objects are not deleted.
+See also the documentation of the corresponding
+<ref id="scbuildnp" name="scripting interface command">.
 </itemize>
 
 <sect1>The Tesselation Tool<label id="tesst">
@@ -7385,7 +7407,7 @@ More documentation to come.
 <sect2>The Global Array ayprefs<label id="ayprefs">
 <p>
 The global array <tt/"ayprefs"/ holds preferences data.
-The complete array is saved in the <tt/"ayamrc"/ file upon exit,
+The <em>complete</em> array is saved in the <tt/"ayamrc"/ file upon exit,
 so be careful when adding new entries.
 You can reset your <tt/"ayamrc"/ file anytime using the command line
 option <tt/"-failsafe"/.
@@ -7914,6 +7936,22 @@ and interpolating curves.
 See also section <ref id="revertt" name="The Revert Tool">.
 </itemize>
 
+<p><label id="screvertu">
+revertU - revert surfaces:
+<itemize>
+ <item>Synopsis: <tt/"revertU"/
+ <item>Description: Revert the direction of the selected NURBS patches.
+See also section <ref id="revertut" name="The Revert U Tool">.
+</itemize>
+
+<p><label id="screvertv">
+revertV - revert surfaces:
+<itemize>
+ <item>Synopsis: <tt/"revertV"/
+ <item>Description: Revert the direction of the selected NURBS patches.
+See also section <ref id="revertvt" name="The Revert V Tool">.
+</itemize>
+
 <p><label id="screscaleknnc">
 rescaleKnNC - rescale knots of NURBS curves:
 <itemize>
@@ -7937,6 +7975,15 @@ splitNC - split NURBS curve
 value into two curves, creating one new curve and modifying the original
 selected curve.
 See also section <ref id="splitt" name="The Split Tool">.
+</itemize>
+
+<p><label id="sctoxync">
+toXYNC - move NURBS curve to XY plane
+<itemize>
+ <item>Synopsis: <tt/"toXYNC"/
+ <item>Description: moves the control points of the selected NURBS curve
+objects to its XY plane.
+See also section <ref id="toxyt" name="The To XY Tool">.
 </itemize>
 
 <p><label id="sctrimnc">
@@ -8030,7 +8077,7 @@ splitNPU - split NURBS patch:
  <item>Synopsis: <tt/"splitNPU u"/
  <item>Description: Splits the selected NURBPatch objects into two patches
 at parametric value u.
-See also section <ref id="splitnpt" name="The Patch Split Tool">.
+See also section <ref id="splitnpt" name="The Patch Split Tools">.
 </itemize>
 
 <p><label id="scsplitnpv">
@@ -8039,7 +8086,7 @@ splitNPV - split NURBS patch:
  <item>Synopsis: <tt/"splitNPV v"/
  <item>Description: Splits the selected NURBPatch objects into two patches
 at parametric value v.
-See also section <ref id="splitnpt" name="The Patch Split Tool">.
+See also section <ref id="splitnpt" name="The Patch Split Tools">.
 </itemize>
 
 <p><label id="scextrnp">
@@ -8056,7 +8103,7 @@ See also section <ref id="extrnpt" name="The Extract Patch Tool">.
 splitNP - split NURBS patch:
 <itemize>
  <item>Synopsis: <tt/"splitNP (u|v)"/
- <item>Description: splits the selected NURBPatch into NURBS curves,
+ <item>Description: Splits the selected NURBPatch into NURBS curves,
 along parametric dimension u or v.
 See also section <ref id="splitnpt" name="The Patch Split Tools">.
 </itemize>
@@ -8065,7 +8112,7 @@ See also section <ref id="splitnpt" name="The Patch Split Tools">.
 buildNP - build NURBS patch:
 <itemize>
  <item>Synopsis: <tt/"buildNPatch"/
- <item>Description: builds a NURBPatch from the selected NURBS curves.
+ <item>Description: Builds a NURBPatch from the selected NURBS curves.
 See also section <ref id="bfct" name="The Build from Curves Tool">.
 </itemize>
 
@@ -8675,7 +8722,7 @@ This sections contains the documentation of some helper scripts
 that are distributed with Ayam.
 <p>
 All helper scripts may be run via the context menu of the console, the
-<tt>"source"</tt> command, or the <tt>"Scripts"</tt> preference
+Tcl <tt>"source"</tt> command, or the <tt>"Scripts"</tt> preference
 setting of Ayam on each start.
 
 <sect2>Repair Ayam<label id="repayam">
@@ -8698,8 +8745,8 @@ On Win32 you have to start <tt>"repairAyam.tcl"</tt> from the Ayam console
 using the command: <tt>"source scripts/repairAyam.tcl"</tt> or using
 the consoles context menu: <tt>"Console/Load File"</tt>.
 <p>
-The script <tt>"repairAyam.tcl"</tt> should be considered a last resort
-to help you save your modified objects!
+The script <tt>"repairAyam.tcl"</tt> should be considered a
+<em>last resort</em> to help you save your modified objects!
 <p>
 The script will close all views, clean up the application state variables,
 reset the mouse cursor and the console prompt, and try to update important
@@ -8709,7 +8756,8 @@ in script objects.
 <p>
 After running <tt>"repairAyam.tcl"</tt> you should immediately save
 the scene (or just the important objects you were editing, possibly using
-<tt>"Special/Save Selected"</tt>) to a scratch file and restart Ayam.
+<tt>"Special/Save Selected"</tt>) to a new file, not the scene file
+you were working with initially, and restart Ayam.
 
 <sect2>Convert Everything to Polygons<label id="topolytcl">
 <p>
@@ -8743,15 +8791,16 @@ After running the script, the console will always resize to exactly
 two lines. Different values may be chosen easily by adapting the
 script.
 
-<sect2>Access Core Functions from Toolbox<label id="zaptcl">
+<sect2>Access Core Functions from the Toolbox<label id="zaptcl">
 <p>
 The script <tt>"zap.tcl"</tt> demonstrates, how arbitrary core
 functionality that is just available through a main menu entry
 or the scripting interface might be accessed easily via the
-toolbox.
+toolbox window.
 <p>
-After running the script, there will be a new toolbox button,
-that runs the zap command.
+After running the script <tt>"zap.tcl"</tt>, there will be a new
+toolbox button, labeled <tt>"Zap!"</tt>, that simply runs the zap
+command (which iconifies the complete application).
 
 <sect>Import and Export<label id="impex">
 <p>
@@ -9256,7 +9305,7 @@ faces should be merged into a single PolyMesh object for import.
 objects should be merged as well if they are subject to automatic
 merging (see above).
 <item><tt>"ReadCurves"</tt> if this is disabled, no freeform curves will
-be imported. This option does not influence reading of trim curves!
+be imported. This option does <em>not</em> influence the import of trim curves!
 <item><tt/"ReadSTrim"/ if switched off, no simple trims (trims that only
 run along the border of a NURBS patch) will be imported if they are the
 only trim curves.
@@ -9332,7 +9381,7 @@ The following parameters control the Wavefront OBJ export:
 to triangles for export;
 <item><tt>"WriteCurves"</tt> toggles writing of NURBS curves and NURBS
 curve providing objects to the exported Wavefront OBJ file (This option does
-not influence the export of trim curves.);
+<em>not</em> influence the export of trim curves.);
 <item><tt/"ScaleFactor"/ allows to apply a scaling factor to all
 exported objects;
 <item><tt>"STagName"</tt> controls the name of the PV tag to be used
@@ -9416,7 +9465,7 @@ The following parameters, additionally, control the 3DMF import:
 scaling factor to all imported objects.
 <item><tt/"ReadCurves"/:
 If the <tt/"ReadCurves"/ import option is switched off, no curves will be
-imported. This option does not influence the import of trim curves.
+imported. This option does <em>not</em> influence the import of trim curves.
 <item><tt/"ReadSTrim"/ if switched off, no simple trims (trims that only
 run along the border of a NURBS patch) will be imported if they are the
 only trim curves.
@@ -9515,7 +9564,7 @@ exported objects.
 <item><tt/"WriteSelected"/: exports only the selected objects.
 <item><tt/"WriteCurves"/: If the <tt/"WriteCurves"/ option is disabled,
 no curves will be written to the exported 3DMF file. This option does
-not influence the export of trim curves.
+<em>not</em> influence the export of trim curves.
 </itemize>
 
 <sect1>3DM (Rhino) Import<label id="imprhino">
@@ -9579,8 +9628,8 @@ scaling factor to all imported objects.
 tolerance of OpenNURBS internal operations, in this case the value is
 mostly used for conversion operations to the NURBS form.
 <item><tt/"ReadCurves"/: If the <tt/"ReadCurves"/ import option is
-switched off, no curves will be imported. This option does not influence
-the import of trim curves.
+switched off, no curves will be imported. This option does <em>not</em>
+influence the import of trim curves.
 <item><tt/"ReadLayers"/: By default, all objects from all layers will be
 imported.
 Using the <tt/"ReadLayers"/ import option, a single layer or a range
@@ -9675,7 +9724,7 @@ checking NURBS surfaces for planarity).
 <item><tt/"IgnoreHidden"/: ignores all hidden objects.
 <item><tt/"WriteCurves"/: If the <tt/"WriteCurves"/ option is disabled,
 no curves will be written to the exported Rhino 3DM file. This option does
-not influence the export of trim curves.
+<em>not</em> influence the export of trim curves.
 <item><tt/"QuadAsBRep"/: If the <tt/"QuadAsBRep"/ option is enabled
 spheres, cylinders, cones, and torii will not be exported as collection
 of NURBS surfaces (as converted by Ayam) but as BRep objects (as converted
@@ -9739,6 +9788,7 @@ attribute of the Ayam object is set according to the cap information of
 the X3D element.
 <p>
 ElevationGrids are imported as bilinear patch meshes.
+<p><p>
 
 <item>Geometry2D:
 Arc2D, ArcClosed2D, Circle2D, Disk2D, Polyline2D.
@@ -9747,18 +9797,22 @@ Arcs and Circles are imported as NCircle objects.
 Closed arcs and Polylines are imported as NURBS curves.
 Disks with an inner radius > 0.0 are imported as flat Hyperboloids
 (otherwise as Disks).
+<p><p>
 
 <item>NURBS:
 NurbsCurve, NurbsCurve2D, NurbsPatchsurface,
 TrimmedNurbsPatchsurface, Contour2D, ContourPolyline2D,
 NurbsSweptSurface, NurbsSwungSurface, NurbsSet.
-<p> <p>
+<p><p>
+All NURBS elements are fully supported.
+<p><p>
 
 <item>CAD:
 QuadSet, IndexedQuadSet, CADLayer, CADAssembly, CADPart, CADFace.
 <p><p>
 CADLayer objects will be imported as top level level objects.
 CADAssembly and CADPart objects will be imported as level objects.
+<p><p>
 
 <item>Light sources:
 DirectionalLight, PointLight, SpotLight.
@@ -9768,6 +9822,7 @@ light sources distant, point, and spot, respectively.
 Therefore, the <tt>"radius"</tt> and the <tt>"attenuation"</tt> attributes
 of point and spotlights are not supported. However, point and spotlights
 still have a quadratic falloff with distance.
+<p><p>
 
 <item>Navigation:
 Viewpoint.
@@ -9775,6 +9830,7 @@ Viewpoint.
 Viewpoint elements will be imported as view objects (with corresponding
 view window) or camera objects depending on the <tt>"ReadViewpoints"</tt>
 import option.
+<p><p>
 
 <item>Non geometric/Scene structure:
 Transformation, Shape, Group, Inline.
@@ -9873,7 +9929,7 @@ The following options further control the X3D import process:
 <itemize>
 <item><tt>"FileName"</tt> is the name of the X3D file to be imported
 <item><tt>"ReadCurves"</tt> if this is disabled, no freeform curves will
-be imported. This option does not influence the import of trim curves!
+be imported. This option does <em>not</em> influence the import of trim curves!
 <item><tt>"ReadViewpoints"</tt> controls whether viewpoints should
 be read as view, camera, or not at all.
 <item><tt/"ReadSTrim"/ if switched off, no simple trims (trims that only
@@ -9921,6 +9977,7 @@ The export functionality of the x3dio plugin currently covers
 export of all boxes, quadrics, NURBS, PolyMeshes, instances, clones, script
 objects (of type <tt/"Create"/ or <tt/"Modify"/) and objects that
 may be converted to NURBS curves or surfaces or to PolyMeshes.
+<p>
 The scene hierarchy (level objects) will be converted to a
 matching transform node hierarchy.
 <p>
@@ -9930,9 +9987,9 @@ if combined by the union operator.
 Clamping the knot ranges of NURBS via UMM/VMM tags is not supported.
 <p>
 PolyMesh objects will be exported to IndexedFaceSet nodes.
-PolyMesh faces with holes are tesselated. PolyMesh faces with more
-than three points are tesselated if the export option <tt>"TessPoMesh"</tt>
-is used.
+PolyMesh faces with holes are automatically tesselated. PolyMesh faces
+with more than three points are tesselated if the export option
+<tt>"TessPoMesh"</tt> is used.
 All tesselated faces will be exported to a second IndexedFaceSet
 element.
 <p>
@@ -9955,7 +10012,7 @@ The following parameters, additionally, control the X3D (Web3D) export:
 to triangles for export;
 <item><tt>"WriteCurves"</tt> toggles writing of NURBS curves and
 NURBS curve providing objects to the exported file (This option does
-not influence the export of trim curves.);
+<em>not</em> influence the export of trim curves.);
 <item><tt/"ScaleFactor"/ allows to apply a scaling factor to all
 exported objects;
 <item><tt>"TopLevelLayers"</tt> arranges for all objects in top level
@@ -10118,14 +10175,14 @@ editor)
 <item>RiOption and RiAttribute databases
 </enum>
 
-You may edit the file, but keep in mind, that the file will be
-parsed by Tcl. Should you, for some reason, destroy your ayamrc so that
-Ayam does not start correctly anymore you can start Ayam with the command
-line option <tt>"-failsafe"</tt>.
+You may edit the file with any text editor, but keep in mind, that the
+file will be parsed by Tcl. Should you, for some reason, destroy your
+ayamrc so that Ayam does not start correctly anymore you can start Ayam
+with the command line option <tt>"-failsafe"</tt>.
 When the application is left the next time, or the main menu entry
 <tt>"File/Save Prefs"</tt> is invoked, a correct ayamrc file will be
 created again.
-All preference settings will be reset to factory defaults and your
+All preference settings will be reset to factory defaults and all your
 edits will be lost, however!
 <p>
 Another way to reset the ayamrc file is to simply delete the file manually
@@ -10133,6 +10190,15 @@ or using the main menu entry <tt>"Special/Reset Preferences"</tt>.
 <p>
 To reset single elements to factory defaults, just remove the corresponding
 lines from the ayamrc file.
+<p>
+Finally, resetting single preference settings without a text editor is
+also possible with the help of the scripting interface by manipulating
+the global <tt/"ayprefs"/ array. The following example leads to a reset
+of the tolerance preference setting to the factory default for the
+<em>next</em> start of Ayam.
+<code>
+unset ayprefs(Tolerance)
+</code>
 
 <sect2>Changing Keyboard Shortcuts
 <p>
