@@ -3334,40 +3334,8 @@ in Ayam because NURBS curves are used to build more complex smoothly
 shaped surfaces using operations like extrude, revolve, sweep or skin.
 NURBS curves can be open or closed and used to emulate Bezier and
 B-Spline curves easily. In addition, for easier modelling, they
-support multiple points as explained in the next section.
-
-<sect2>Multiple Points<label id="ncurvemp">
-<p>
-<figure loc="ht">
-<eps file="pics/multip.ps" height="5cm">
-<img src="pics/multip.gif">
-<caption>A NURBS Curve with Multiple Points (big handles)</caption>
-</figure>
-<p>
-The NURBS curves of Ayam support so called multiple points.
-A multiple point is made of a number of different control points that have
-the same coordinates.
-Modelling actions will always modify all the control points that
-make up a multiple point.
-Multiple points will be drawn with a bigger handle than normal points
-(see image above).
-They may e.g. be used to create closed curves. Note that the control
-points that make up a multiple point do not have to be consecutive
-(in the control point vector of the NURBS curve).
-Multiple points may be created using the collapse tool,
-and split up again using the explode tool (see sections
-<ref id="collt" name="The Collapse Tool"> and
-<ref id="explt" name="The Explode Tool"> for more information regarding
-those tools).
-Note that even though you might have exploded some multiple points
-Ayam will re-create them automatically on several occasions like reading
-of a scene, inserting/deleting points, and applying the NCurveAttr
-property if they still have identical coordinate values.
-In other words, you should immediately edit the control
-points (move them apart) after exploding to avoid that
-they automatically collapse to a multiple point again!
-You may also totally inhibit creation of multiple points for a
-NURBS curve using the attribute <tt/"CreateMP"/.
+support multiple points, as explained in section
+<ref id="ncurvemp" name="Multiple Points">).
 
 <sect2>NCurveAttr Property<label id="ncattr"><label id="ncurveattrprop">
 <p>
@@ -3479,6 +3447,39 @@ consequently, the last three control points will be moved. In addition,
 if the current knot type of the curve is NURB or Bezier it will be changed
 to B-Spline automatically.
 </itemize>
+
+<sect2>Multiple Points<label id="ncurvemp">
+<p>
+<figure loc="ht">
+<eps file="pics/multip.ps" height="5cm">
+<img src="pics/multip.gif">
+<caption>A NURBS Curve with Multiple Points (big handles)</caption>
+</figure>
+<p>
+The NURBS curves of Ayam support so called multiple points.
+A multiple point is made of a number of different control points that have
+the same coordinates.
+Modelling actions will always modify all the control points that
+make up a multiple point.
+Multiple points will be drawn with a bigger handle than normal points
+(see image above).
+They may e.g. be used to create closed curves. Note that the control
+points that make up a multiple point do not have to be consecutive
+(in the control point vector of the NURBS curve).
+Multiple points may be created using the collapse tool,
+and split up again using the explode tool (see sections
+<ref id="collt" name="The Collapse Tool"> and
+<ref id="explt" name="The Explode Tool"> for more information regarding
+those tools).
+Note that even though you might have exploded some multiple points
+Ayam will re-create them automatically on several occasions like reading
+of a scene, inserting/deleting points, and applying the NCurveAttr
+property if they still have identical coordinate values.
+In other words, you should immediately edit the control
+points (move them apart) after exploding to avoid that
+they automatically collapse to a multiple point again!
+You may also totally inhibit creation of multiple points for a
+NURBS curve using the attribute <tt/"CreateMP"/.
 
 <sect1>NPatch (NURBS Patch) Object<label id="npatchobj">
 <p>
@@ -3601,6 +3602,9 @@ as trim curves.
 A BPatch is a simple bilinear patch defined by four control
 points. BPatch objects are e.g. used to build box objects, see
 <ref id="boxobj" name="Box Object">).
+<p>
+You may convert the current BPatch object to an ordinary NURBS patch
+using the main menu entry <tt>"Tools/Convert"</tt>.
 
 <sect2>BPatchAttr Property<label id=bpattr><label id="bpatchattrprop">
 <p>
@@ -3618,14 +3622,15 @@ four points defining the geometry of the patch:<p>
 The PatchMesh object may be used to model with bilinear and
 bicubic patch meshes.
 The PatchMesh object may be converted to a NURBS patch
-representation. However, this does not work for all possible
-types of patch meshes (e.g. patch meshes with the basis types
-Catmull-Rom, Hermite, or Custom).
-The NURBS patch representation is also in use when
-drawing the patch mesh (if the <tt/"DisplayMode"/ is not <tt/"ControlHull"/)
+representation using the main menu entry <tt>"Tools/Convert"</tt>.
+However, this does not work for all possible types of patch meshes
+(e.g. patch meshes with the basis types Catmull-Rom, Hermite, or
+Custom can not be converted, currently).
+An internal NURBS patch representation is also in use when drawing
+the patch mesh (if the <tt/"DisplayMode"/ is not <tt/"ControlHull"/)
 and when shading the patch mesh.
-Consequently, there is currently no shaded representation of
-patch meshes of basis type Catmull-Rom, Hermite or Custom.
+Consequently, there is currently no shaded representation of patch meshes
+of basis type Catmull-Rom, Hermite or Custom.
 
 <sect2>PatchMeshAttr Property<label id="pmattr"><label id="patchmeshattrprop">
 <p>
@@ -5016,76 +5021,51 @@ with the shape of the curve near the first or last interpolated point.
 This parameter has no effect on open curves when the mode is Global4D.
 
 <item>See section <ref id="ncattr" name="NCurveAttr"> for a description
-of the last attribute: <tt/"Tolerance"/.
+of the parameters: <tt/"Tolerance"/ and <tt/"DisplayMode"/.
+
+<item>Finally an <tt/"NCInfo"/ field informs about the actual configuration
+of the created NURBS curve.
 </itemize>
 
 
 <sect1>ACurve (Approximating Curve) Object<label id="acurveobj">
 <p>
+The ACurve did not make it completely into Ayam 1.14, <em>do not use</em>.
+<p>
 The ACurve object creates an approximating NURBS curve with m control
 points from n 3D non-rational data points. 
-<p>
-The global interpolation generates a bit smoother curves which look best
-with an order of 3, your mileage may vary however.
-<p>
-<figure loc="!ht">
-<eps file="pics/icurves.ps" height="7cm">
-<img src="pics/icurves.gif">
-<caption>Different ICurves (Upper Left: C2 Open, Upper Right: G4D Open, Lower Left: C2 Closed, Lower Right: G4D Closed)</caption>
-</figure>
-<p>
-The image above shows some approximating curves, the left ones
-are C2 cubic, the right ones Global4D, the upper open, and the lower
-closed ones. The interpolation fidelity for the closed curves
-could be increased considerably by adjusting the <tt/"IParam"/
-parameter, see below.
-<p>
-In both interpolation modes chord length parameterisation will be used
-to determine the knot vector of the interpolating curve.
 <p>
 This object makes use of the provide mechanism. It marks itself
 as providing a NURBCurve (it creates and uses NURBS curves
 internally anyway) and all other objects that work with
 the provide mechanism (e.g. revolve, sweep, extrude, and skin) are
-able to work with an ICurve object instead of an object
+able to work with an ACurve object instead of an object
 of type NURBCurve.
 <p>
-You may convert the current ICurve to an ordinary NURBS curve
+You may convert the current ACurve to an ordinary NURBS curve
 using the main menu entry <tt>"Tools/Convert"</tt>.
 <p>
-The following parameters control the interpolation process:
+The following parameters control the approximation process:
 
 <sect2>ACurveAttr Property<label id="acp"><label id="acurveattrprop">
 <p>
 <itemize>
-<item>Using <tt/"Length"/ you determine the number of points to approximate.
+<item>Using <tt/"Length"/ you determine the number of data points to
+approximate.
 
 <item>Using <tt/"ALength"/ you determine the number of control points to use
 for the approximating NURBS curve.
 
 <item>The curve can be closed with the parameter <tt/"Closed"/.
 
-<item>The parameter <tt/"Mode"/ determines whether the curve should
-be a C2 cubic curve (with n+2 control points (n+3 if the curve is
-closed)) or a so called global interpolating curve
-(with n control points (n+3 if the curve is closed)
-and arbitrary order).
-
-<item>The next parameter <tt/"Order"/ is used only if the mode is
-Global4D. It determines the order of the interpolating curve. If the
-specified order is bigger than the number of control points used
-by the interpolating curve, then the order is silently changed to
-match the number of control points.
-
-<item>The parameter <tt/"IParam"/ is used to control the position
-of the second and last-1 control point of the interpolating curve.
-It scales the vectors used to position the aforementioned points.
-You can try to change (decrease) this value, if you are not satisfied
-with the shape of the curve near the first or last interpolated point.
-This parameter has no effect on open curves when the mode is Global4D.
+<item>The parameter <tt/"Order"/ specifies the desired order
+of the approximating NURBS curve.
 
 <item>See section <ref id="ncattr" name="NCurveAttr"> for a description
-of the last attribute: <tt/"Tolerance"/.
+of the parameters: <tt/"Tolerance"/ and <tt/"DisplayMode"/.
+
+<item>Finally an <tt/"NCInfo"/ field informs about the actual configuration
+of the created NURBS curve.
 </itemize>
 
 <sect1>ConcatNC (Concatenate NURBS Curves) Object<label id="concatncobj">
@@ -5171,6 +5151,9 @@ that does not exactly preserve the shape of the original curves.
 If <tt/"Knot-Type"/ is <tt/"Custom"/, the knot vector is composed from
 the knot vectors of the original curves, and thus, their
 shape may be preserved completely.
+
+<item>Finally an <tt/"NCInfo"/ field informs about the actual configuration
+of the created NURBS curve.
 </itemize>
 
 <sect1>ExtrNC (Extract NURBS Curve) Object<label id="extrncobj">
@@ -5190,6 +5173,9 @@ Depending on the parameters of the ExtrNC object, the skin will have
 one boundary in common with a boundary or an iso-curve of the NPatch
 object.
 <p>
+You may convert the current ExtrNC object to an ordinary NURBS curve
+object using the main menu entry <tt>"Tools/Convert"</tt>.
+<p>
 The extraction process is controlled by the following attributes:
 
 <sect2>ExtrNCAttr Property<label id="extrncp"><label id="extrncattrprop">
@@ -5203,19 +5189,25 @@ respectively at specified parametric value (see below). The
 options <tt/"U"/, <tt/"V"/ are implemented since Ayam 1.8.1!
 Since Ayam 1.13 it is also possible to extract the complete boundary
 curve of the patch (<tt/"Boundary"/).
+
 <item><tt/"Parameter"/ controls the parametric value in u or v
 direction in the parameter space of the NURBS patch object where the
 curve should be extracted. This parameter is only used when <tt/"Side"/
 is <tt/"U"/ or <tt/"V"/.
+
 <item><tt/"Revert"/ immediately reverts the extracted curve.
+
 <item><tt/"PatchNum"/ allows to select a patch from a list of
 patches delivered e.g. by a beveled extrude object as child
 of the ExtrNC object.
 This way it is possible to extract a curve from a bevel or cap
 surface of e.g. a Revolve object.
+
+<item>Finally an <tt/"NCInfo"/ field informs about the actual configuration
+of the extracted NURBS curve.
 </itemize>
 <p>
-See section <ref id="npattr" name="NPatchAttr"> for a description
+See section <ref id="ncattr" name="NCurveAttr"> for a description
 of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 
 <sect1>NCircle (NURBS Circle) Object<label id="ncircleobj">
@@ -5224,6 +5216,9 @@ The NCircle object is available since Ayam 1.12 and creates a
 circular NURBS curve or a circular arc in the XY plane
 centered at the origin with designated radius and start/end angles.
 <p>
+You may convert the current NCircle object to an ordinary NURBS curve
+object using the main menu entry <tt>"Tools/Convert"</tt>.
+<p>
 The following section describes the parameters of the circle or
 arc.
 
@@ -5231,15 +5226,20 @@ arc.
 <p>
 <itemize>
 <item><tt/"Radius"/ is the radius of the circle.
+
 <item><tt/"TMin"/ controls the starting angle of the circle
 or arc to be created. Negative values are allowed.
+
 <item><tt/"TMax"/ controls the end angle of the circle
 or arc to be created. Negative values are allowed.
+
+<item>See section <ref id="ncattr" name="NCurveAttr"> for a description
+of the parameters: <tt/"Tolerance"/ and <tt/"DisplayMode"/.
+
+<item>Finally an <tt/"NCInfo"/ field informs about the actual configuration
+of the created NURBS curve.
 </itemize>
 <p>
-See section <ref id="npattr" name="NPatchAttr"> for a description
-of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
-
 
 <sect1>OffsetNC (Offset NURBS Curves) Object<label id="offsetncobj">
 <p>
@@ -5265,21 +5265,26 @@ The following parameters further control the offsetting process:
 <itemize>
 <item>The first parameter <tt/"Mode"/ determines, which algorithm
 to use for the offsetting process.
+
 <item>Using <tt/"Revert"/ you may revert the direction of the
 offset curve.
+
 <item><tt/"Offset"/ determines the distance between original curve and
 offset curve. Negative values are allowed.
-</itemize>
-<p>
-See section <ref id="npattr" name="NPatchAttr"> for a description
-of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 
+<item>See section <ref id="ncattr" name="NCurveAttr"> for a description
+of the parameters: <tt/"Tolerance"/ and <tt/"DisplayMode"/.
+
+<item>Finally an <tt/"NCInfo"/ field informs about the actual configuration
+of the created NURBS curve.
+</itemize>
 
 <sect1>ExtrNP (Extract NURBS Patch) Object<label id="extrnpobj">
 <p>
 The ExtrNP object, available since Ayam 1.14, extracts a NURBS patch from
 another NURBS patch object, for use as parameter object for other tool
 objects.
+<p>
 It also works with NURBS patch providing objects, so that the following
 example hierarchy is valid:
 <code>
@@ -5287,9 +5292,11 @@ example hierarchy is valid:
 +-ExtrNP
  \ Instance_of_NPatch(Instance)
 </code>
-Depending on the parameters of the ExtrNP object, the skin will have
-one boundary in common with a boundary or an iso-curve of the NPatch
-object.
+Note that eventually present trim curves will <em>not</em> be honored
+properly.
+<p>
+You may convert the current ExtrNP object to an ordinary NURBS patch
+using the main menu entry <tt>"Tools/Convert"</tt>.
 <p>
 The extraction process is controlled by the following attributes:
 
