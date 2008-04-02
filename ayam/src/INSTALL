@@ -380,9 +380,7 @@ Use it via menu entry "File/Import/RenderMan RIB"
 3.3 Importance Driven Rendering Plugin (IDR)
 --------------------------------------------
 
-Additional prerequisites to compile IDR are:
-libtiff library and libtiff headers have to be installed.
-
+There are no additional prerequisites to compile IDR, just type:
 >make idr.so
 
 Load it via menu entry "File/Load Plugin".
@@ -398,7 +396,7 @@ Ayam supports the following shader parsing plugins:
 Additional prerequisites:
 The respective renderer has to be installed to compile a shader parsing
 plugin. To compile "aysdr", the Pixie renderer source tree has to be
-available, configured and compiled.
+available, configured, and compiled.
 
 In order to compile a shader parsing plugin, adapt the following variables
 in the Makefile:
@@ -420,10 +418,10 @@ then type:
 >make aysdr.so
 >make aygso.so
 
-After loading of one of these plugins (using the main menu entry
+After loading of one of these plugins (e.g. using the main menu entry
 "File/Load Plugin") the internal shader scanning code of Ayam will
-be disabled, and Ayam will from that moment on just scan shaders
-of the renderer that the plugin supports.
+be disabled, and Ayam will from that moment on just scan shaders of the
+renderer that the plugin supports.
 
 
 3.5 AyCSG (CSG Preview) Plugin
