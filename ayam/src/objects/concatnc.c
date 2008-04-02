@@ -209,8 +209,6 @@ ay_concatnc_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  char *n1="ConcatNCAttrData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_concatnc_object *concatnc = NULL;
- ay_nurbcurve_object *nc = NULL;
- int len = 0, order = 0;
 
   if(!o)
     return AY_ENULL;
@@ -247,22 +245,7 @@ ay_concatnc_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  if(concatnc->ncurve && concatnc->ncurve->refine)
-    {
-      nc = (ay_nurbcurve_object *)(concatnc->ncurve->refine);
-      len = nc->length;
-      order = nc->order;
-    }
-
-  Tcl_SetStringObj(ton,"Length",-1);
-  to = Tcl_NewIntObj(len);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton,"Order",-1);
-  to = Tcl_NewIntObj(order);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
+  ay_prop_getncinfo(interp, n1, concatnc->ncurve);
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
