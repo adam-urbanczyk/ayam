@@ -112,7 +112,7 @@ addCommand $w c1 "Clear Material!" {
 addCommand $w c2 "Add/Edit Material!" {
     global ay
     set m $ay(editmenu)
-    $m invoke 12
+    $m invoke 15
 }
 
 addString $w matPropData Materialname
