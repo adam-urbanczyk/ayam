@@ -272,13 +272,13 @@ proc toolbox_open { {w .tbw} } {
 	    balloon_set $f.blevel "create Level\nShift: and move objects into"
 	    bind $f.blevel <Shift-ButtonPress-1> {
 		%W configure -relief sunken
-		level_crt Level
+		level_crt Level 1
 		after 100 "%W configure -relief raised"
 		break;
 	    }
 	    bind $f.blevel <Control-Shift-ButtonPress-1> {
 		%W configure -relief sunken
-		level_crt Level "" 1
+		level_crt Level 1 1
 		after 100 "%W configure -relief raised"
 		break;
 	    }
