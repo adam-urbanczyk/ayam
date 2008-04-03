@@ -6,7 +6,7 @@
 
 <author>Randolf Schultz <tt>(randolf.schultz@gmail.com)</tt>
 
-<date>11. Mar 2008
+<date>4. Apr 2008
 
 <abstract>
 This is the documentation of Ayam 1.14 - a free 3D modelling environment
@@ -5030,7 +5030,7 @@ of the created NURBS curve.
 
 <sect1>ACurve (Approximating Curve) Object<label id="acurveobj">
 <p>
-The ACurve did not make it completely into Ayam 1.14, <em>do not use</em>.
+<em>The ACurve did not make it completely into Ayam 1.14, do not use</em>.
 <p>
 The ACurve object creates an approximating NURBS curve with m control
 points from n 3D non-rational data points. 
@@ -6207,14 +6207,17 @@ to geometric primitives and even sub-primitives.
 With the help of primitive variables you can e.g. attach your
 own texture coordinates to a NURBS patch primitive or attach distinct
 colors to the faces or even to single vertices of a polygonal mesh.
-In the latter case, the data is properly interpolated by the renderer
-before it is handed over to the shader.
+In the latter case, the data is properly interpolated by the RenderMan
+renderer before it is handed over to the surface shader.
 <p>
 When rendering, all data defined in a <tt/"PV"/ tag is handed over
 to the surface shader that is attached to the respective geometric primitive
 using additional shader parameters.
+For RIB export, proper <tt/"RiDeclare"/ statements will be created
+automatically by Ayam.
 <p>
-Note that Ayam does not check, whether your shader actually uses this data!
+However, Ayam does not check, whether your shaders actually use the data
+from the <tt/"PV"/ tag!
 <p>
 The syntax of the value string of a PV tag is as following:
 <p>
@@ -6222,22 +6225,25 @@ The syntax of the value string of a PV tag is as following:
 <p>
 where
 <tt/"&lt;name&gt;"/ is the name of the primitive variable;
-<tt/"&lt;detail&gt;"/ or storage class should be
+<tt/"&lt;detail&gt;"/ or storage class should be one of
 <tt/"uniform"/, <tt/"varying"/, <tt/"vertex"/, or <tt/"constant"/;
 <tt/"&lt;type&gt;"/ is a single character describing the type of the
 data (see also the documentation of the <tt/"RiAttribute"/ tag above);
 <tt/"&lt;ndata&gt;"/ is an integer number describing how many data
 elements will follow; and
 <tt/"&lt;data&gt;"/ is a comma separated list
-consisting of a certain number of elements of type <tt/"&lt;type&gt;"/.
+consisting of a <tt/"&lt;ndata&gt;"/ elements of type <tt/"&lt;type&gt;"/.
 <p>
 <bf/Example/
 <p>
 <code>PV mycolor,constant,c,1,0,1,0</code>
-adds a single color value (0,1,0), which is the same all over the primitive;
+adds a single color value (0,1,0), which is the same all over the primitive,
+the respective surface shader should have a parameter <tt/"color mycolor"/;
 <code>PV mys,varying,f,4,0.1,0.2,0.3,0.4</code>
 could be used to add a distinct float value to each corner point of a
-four point NURBS patch (of order, width, and height 2).
+four point NURBS patch (of order, width, and height 2),
+the respective surface shader should have a parameter
+<tt/"varying float mys"/;.
 <p>
 <bf/Notes/
 <p>
@@ -6247,7 +6253,7 @@ are: SDMesh, PolyMesh, PatchMesh, NURBPatch, and BPatch.
 <p>
 Furthermore, the number of data elements, which depends on the
 detail or storage class, the type of geometric primitive, and the
-configuration of the geometric primitive is not checked by Ayam.
+configuration of the geometric primitive is <em>not</em> checked by Ayam.
 Some RIB writing libraries, however, check the number and silently
 omit the primitive variable if there are mismatches. Check your
 RIB for the presence of the primitive variable after export,
@@ -9021,6 +9027,7 @@ Note that for NURBS patches and bicubic patch meshes, points of type
 the knot ranges is not supported (however, since Ayam 1.9 UMM/VMM
 tags will be created, that contain the new knot minimum and maximum
 values).
+See also section <ref id="ummtag" name="UMM/VMM (U/V Min Max) Tag">.
 <p>
 Furthermore, objects of type (general) polygon and polygon mesh will
 be promoted to general polygon meshes.
@@ -9272,7 +9279,7 @@ before import.
 The corresponding main menu entry is <tt>"File/Import/Wavefront OBJ"</tt>
 (if this menu entry is not available, you have to load the <tt>"objio"</tt>
 plugin using the menu entry <tt>"File/Load Plugin"</tt> first).
-<p>
+
 <sect2>Wavefront OBJ Statement Support
 <p>
 Wavefront OBJ import supports reading of polygonal faces with vertex
@@ -9289,7 +9296,9 @@ points (e.g. curve on surface) is currently not supported. Furthermore,
 trimming of freeform curves and surfaces by clamping their knot ranges
 is not supported (however, since Ayam 1.9, UMM/VMM
 tags will be created, that contain the new knot minimum and maximum
-values). No material and grouping information will be imported.
+values).
+See also section <ref id="ummtag" name="UMM/VMM (U/V Min Max) Tag">.
+No material and grouping information will be imported.
 Unsupported statements will be silently ignored.
 <p>
 Wavefront OBJ import expects the file to be syntactically correct.
@@ -9652,8 +9661,9 @@ available before Ayam 1.13 with slightly different semantics.
 NURBS curves, patches, and trim curves so that the distances between different
 knots are not smaller than the given value. A <tt/"RescaleKnots"/ value of
 1.0e-04 leads to NURBS that may be safely drawn using GLU.
-The default value 0.0 means no scaling. Since Ayam 1.13 trim curves will
-be scaled properly to the new knot ranges of NURBS patches.
+The default value 0.0 means no scaling. Since Ayam 1.13 also eventually
+present trim curves will be scaled properly to the new knot ranges of
+NURBS patches.
 <item><tt>"STagName"</tt> controls the name of the PV tag to be used
 for the s component of the texture coordinates, and
 <item><tt>"TTagName"</tt> controls the name of the PV tag to be used
@@ -9695,6 +9705,7 @@ may be exported, albeit with lower quality and bigger file size
 as would be necessary.
 Since Ayam 1.9, UMM/VMM tags are used to trim the knot vectors of
 exported NURBS objects.
+See also section <ref id="ummtag" name="UMM/VMM (U/V Min Max) Tag">.
 Since Ayam 1.8.3, also PolyMesh objects may be exported.
 <p>
 Since the Rhino 3DM file format does not support hierarchy and
