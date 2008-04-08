@@ -1,6 +1,16 @@
-[28. Mar 2008] CVS-Head:
+[8. Apr 2008] CVS-Head:
 =======================
-o Bug Fixes:
+Bug Fixes:
+
+GUI:
+
+Modelling:
+o added new object type "ACurve" (for approximating curves)
+
+
+[4. Apr 2008] Ayam 1.14:
+========================
+Bug Fixes:
  - X3D export of NURBS patches (row/column major order) (SF 1804056)
  - X3D export of NURBS patches (trimmed state) (SF 1804054)
  - X3D transformations of NurbsSweptSurface child nodes (SF 1813320)
@@ -57,9 +67,13 @@ o the operations that can be undone/redone are now also displayed in the
 o the about dialog has now a "CopyClipboard" button that makes it more
   simple to copy the relevant parts of the Ayam configuration for e.g.
   bug reports
+o added view window keyboard shortcuts to cycle through the view types
+  (PageUp/PageDown)
+o added secondary view window keyboard shortcuts for important functions as
+  e.g. "zoom to object" (mainly for internal views in single window GUI mode)
+o reorganized edit, create, and tools menus
 
 Modelling:
-o added new object type "ACurve" (for approximating curves)
 o added new object type "Swing" (for rotational sweeps/swung surfaces)
 o added new object type "Select" to select one object from a list of provided
   objects
@@ -112,7 +126,7 @@ o it is no longer possible to wrap the IDR, AyCSG, RRIB, ONIO, or
 
 [21. Sep 2007] Ayam 1.13:
 =========================
-o Bug Fixes:
+Bug Fixes:
   - crash after deleting of objects (SF 1637735)
   - crash after applying ScriptAttr property (SF 1637748)
   - crash using STESS drawing mode for curves (SF 1641883)
@@ -238,7 +252,7 @@ o fixed keyboard shortcuts to quickly switch property GUIs (numeric keypad)
 
 [1. Jan 2007] Ayam 1.12:
 ========================
-o Bug Fixes:
+Bug Fixes:
   - extra help menu entry Helpblock (SF 1549831)
   - RenderGUI feature can not find cat.exe on Win32 (SF 1549833)
   - File/Save Selected As only writes one object (SF 1553274)
@@ -315,7 +329,7 @@ o the official binary distribution now contains just one executable and the
 
 [10. Aug 2006] Ayam 1.11:
 =========================
-o Bug Fixes:
+Bug Fixes:
   - fixed not changeable preference setting "AutoFocus" (SF 1497964)
   - fixed export of PolyMesh objects with PV tags using "Pw" (SF 1504284)
   - fixed selection of objects in large slow drawing scenes leading to
