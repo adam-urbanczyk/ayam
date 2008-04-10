@@ -1,4 +1,4 @@
-[README.txt, 12. Jan 2006]
+[README.txt, 10. Apr 2008]
 
 This is the readme file for Ayam.
 
@@ -29,7 +29,7 @@ Ayam home page:
 http://www.ayam3d.org/
 
 or the mirror at:
-http://wwwicg.informatik.uni-rostock.de/~rschultz/ayam/ayam.html
+http://www.core.de/~randi/ayam/ayam.html
 
 
 MacOSX/Aqua specific information
@@ -57,7 +57,7 @@ Ayam home page:
 http://www.ayam3d.org/
 
 or the mirror at:
-http://wwwicg.informatik.uni-rostock.de/~rschultz/ayam/ayam.html
+http://www.core.de/~randi/ayam/ayam.html
 
 -- 
 http://www.ayam3d.org/    Reconstruct the World!
