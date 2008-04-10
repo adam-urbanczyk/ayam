@@ -6,7 +6,7 @@
 
 <author>Randolf Schultz <tt>(randolf.schultz@gmail.com)</tt>
 
-<date>4. Apr 2008
+<date>10. Apr 2008
 
 <abstract>
 This is the documentation of Ayam 1.14 - a free 3D modelling environment
@@ -10052,23 +10052,28 @@ This section contains all information about Ayam not fitting elsewhere.
 
 <sect1>The Undo System<label id="undos">
 <p>
-Using the undo system you may correct mistakes you made while modelling.
-However, it is currently not possible to undo any changes to the object
-hierarchy, including clipboard and Drag-and-Drop operations.
-If you delete an object, it is gone! If you, accidentally, move
-an object using Drag-and-Drop, undo will not help!
-Only changes to objects are undoable. This includes changes
-made by modelling actions, changes made using property GUIs, but also changes
-to views (type changes or changes to the camera settings associated
+Using the undo system, you may correct mistakes you made while modelling.
+However, only modifications of objects are undoable. This includes changes
+made by modelling actions, changes made using property GUIs, but also
+changes to views (type changes or changes to the camera settings associated
 with a view).
 <p>
-The undo system works by storing copies of the different
-states of changed objects in an undo buffer. The storage space occupied by
+It is currently <em>not</em> possible to undo any changes to the object
+hierarchy, including clipboard (e.g. cut, paste) and drag-and-drop
+operations. If you delete an object, it is gone! If you, accidentally, move
+an object using drag-and-drop, undo will not help!
+<p>
+The undo system works by storing copies of the different states of changed
+objects in an undo buffer. The storage space occupied by
 the undo buffer may be adjusted using the preferences
 (<tt>"Prefs/Modelling/UndoLevels"</tt>). Note that a value of -1 for
-UndoLevels completely disables the undo system.
+<tt>"UndoLevels"</tt> completely disables the undo system.
 You may step backward through the saved states using
 <tt/&lt;Ctrl+z&gt;/ (undo) but also forward using <tt/&lt;Ctrl+y&gt;/ (redo).
+<p>
+The changes that would be undone or redone are shown in abbreviated form
+in the prompt of the Ayam console and, since Ayam 1.14, in the main menu
+entries <tt>"Edit/Undo"</tt> and <tt>"Edit/Redo"</tt>.
 <p>
 Several actions will completely clear the undo buffer (no undo is
 possible after those actions):
@@ -10121,7 +10126,7 @@ Tool objects may be parameter objects of other tool objects:
  +-Parameter_and_Tool_Object(Revolve)
   \ Parameter_Object(NCurve)
 </code>
-and there may be more than one parameter objects per tool object:
+and there may be more than one parameter object per tool object:
 <code>
 +-Tool_Object(Skin)
  | Parameter_Object_1(NCurve)
