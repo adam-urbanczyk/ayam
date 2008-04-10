@@ -1,7 +1,7 @@
 # Ayam, a free 3D modeler for the RenderMan interface.
 #
 # Ayam is copyrighted 1998-2004 by Randolf Schultz
-# (randolf.schultz@gmail.com) and others.
+# (rschultz@informatik.uni-rostock.de) and others.
 #
 # All rights reserved.
 #
@@ -68,26 +68,21 @@ image create photo ay_aycsg_img -format GIF -data $imgdata
 #  toggle use of AyCSG as regular drawing mode
 #  manage button <b>
 proc aycsgToggle { b } {
-
     if { [$b cget -relief] == "sunken" } {
 	$b configure -relief raised
     } else {
 	$b configure -relief sunken
     }
-
-    set w [winfo parent $b]
-    set w [winfo parent $w]
-    
-    ${w}.f3D.togl togglecsg
-
+    set togl [winfo toplevel $b].f3D.togl
+    $togl togglecsg
  return;
 }
 # aycsgToggle
 
 # add icon to view menus
 set a "\
-set b \[vmenu_addbutton \$w baycsg ay_aycsg_img \{global ay; \$ay(currentView) rendercsg;\}\];"
-append a "if \{\$b != \"\"\} \{bind \$b <Shift-1> \"aycsgToggle \$b\"\}"
+button \$w.fMenu.baycsg -padx 0 -pady 0 -borderwidth 0 -image ay_aycsg_img -command \{global ay; \$ay(currentView) rendercsg;\};pack \$w.fMenu.baycsg -in \$w.fMenu -side right;"
+append a "bind \$w.fMenu.baycsg <Shift-1> \"aycsgToggle \$w.fMenu.baycsg\""
 
 addToProc vmenu_open $a
 
@@ -125,7 +120,7 @@ uplevel #0 {
 # aycsgPreferences:
 #  AyCSG preferences dialog
 proc aycsgPreferences { } {
-    global ay aycsg_options aycsg_options_save
+    global aycsg_options aycsg_options_save
 
     winAutoFocusOff
 
@@ -137,11 +132,8 @@ proc aycsgPreferences { } {
     toplevel $w -class ayam
     wm title $w "AyCSG Preferences"
     wm iconname $w "Ayam"
-    if { $ay(ws) == "Aqua" } {
-	winMakeFloat $w
-    } else {
-	wm transient $w .
-    }
+    wm transient $w .
+
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
     addMenu $f aycsg_options_save Algorithm [list Automatic Goldfeather SCS]
@@ -194,10 +186,6 @@ proc aycsgPreferences { } {
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
     pack $f -in $w -side bottom -fill x
 
-    # Esc-key && close via window decoration == Cancel button
-    bind $w <Escape> "$f.bca invoke"
-    wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
-
     winCenter $w
     grab $w
     focus $w.f2.bok
@@ -232,9 +220,3 @@ if { $ay(views) == "" } {
     }
 }
 # if
-
-global AYCSGWRAPPED
-if { $AYCSGWRAPPED == 1 } {
-    aycsgInit
-}
-#if
