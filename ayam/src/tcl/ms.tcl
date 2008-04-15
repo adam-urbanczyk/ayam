@@ -62,7 +62,7 @@ ms_set en ayprefse_SingleWindow "Switch to single toplevel GUI?"
 ms_set en ayprefse_AutoResize "Resize main window according to property GUI?"
 ms_set en ayprefse_AutoFocus "Move focus to window with mouse cursor?\
 \nChanges will take effect after restart of Ayam!"
-ms_set en ayprefse_TwmCompat "Is your window manager TWM compatible?"
+ms_set en ayprefse_TwmCompat "Is the window manager TWM compatible?"
 ms_set en ayprefse_ListTypes "Show object types in the tree/list view?"
 ms_set en ayprefse_MarkHidden "Mark hidden objects in the tree view?"
 ms_set en ayprefse_AutoSavePrefs "Save preferences on exit?"
@@ -127,7 +127,7 @@ ms_set en ayprefse_DefaultMat "Write a default material statement to the\
 \nRIB, that will be used by all objects without material?\
 \nnone: no default material,\
 \nmatte: write a simple RiMatte without parameters,\
-\ndefault: write the material object named \\\"default\\\"."
+\ndefault: write the material object named \"default\"."
 ms_set en ayprefse_RIStandard "Omit all attributes and options that are not\
 \ncontained in the RenderMan Interface Standard?"
 ms_set en ayprefse_WriteIdent "Write an identificator derived from the\
@@ -140,32 +140,32 @@ ms_set en ayprefse_ExcludeHidden "Omit hidden objects on RIB export?"
 ms_set en ayprefse_RenderMode "How should the renderer be forced to render\
 to the screen?"
 ms_set en ayprefse_QRender "Name and parameters of the renderer to use for\
-quick render previews.\n\\\"%s\\\" will be replaced by the filename\
+quick render previews.\n\"%s\" will be replaced by the filename\
 of the RIB."
 ms_set en ayprefse_QRenderUI "Enable user interface for quick rendering."
 ms_set en ayprefse_QRenderPT "A template that helps to pick the progress\
-from the output of the renderer.\n\\\"%d\\\" denotes the position of\
+from the output of the renderer.\n\"%d\" denotes the position of\
 the progress number in the output."
 ms_set en ayprefse_Render "Name and parameters of the renderer to use for\
-render previews.\n\\\"%s\\\" will be replaced by the filename\
+render previews.\n\"%s\" will be replaced by the filename\
 of the RIB."
 ms_set en ayprefse_RenderUI "Enable user interface for rendering."
 ms_set en ayprefse_RenderPT "A template that helps to pick the progress\
-from the output of the renderer.\n\\\"%d\\\" denotes the position of\
+from the output of the renderer.\n\"%d\" denotes the position of\
 the progress number in the output."
 ms_set en ayprefse_FRender "Name and parameters of the renderer to use for\
-rendering to a file.\n\\\"%s\\\" will be replaced by the filename\
+rendering to a file.\n\"%s\" will be replaced by the filename\
 of the RIB."
 ms_set en ayprefse_FRenderUI "Enable user interface for rendering to a file."
 ms_set en ayprefse_FRenderPT "A template that helps to pick the progress\
-from the output of the renderer.\n\\\"%d\\\" denotes the position of\
+from the output of the renderer.\n\"%d\" denotes the position of\
 the progress number in the output."
 ms_set en ayprefse_SMRender "Name and parameters of the renderer to use for\
-shadow maps.\n\\\"%s\\\" will be replaced by the filename\
+shadow maps.\n\"%s\" will be replaced by the filename\
 of the RIB."
 ms_set en ayprefse_SMRenderUI "Enable user interface for shadow map rendering."
 ms_set en ayprefse_SMRenderPT "A template that helps to pick the progress\
-from the output of the shadow map renderer.\n\\\"%d\\\" denotes the position\
+from the output of the shadow map renderer.\n\"%d\" denotes the position\
 of the progress number in the output."
 ms_set en ayprefse_SMFileFormat "File format of shadow map.\
 \nRenderMan: zfile\nGelato: shadow"
@@ -197,13 +197,14 @@ ms_set en ayprefse_SavePrefsGeom "Save geometry of preferences window for\
 next invocation?"
 ms_set en ayprefse_SMethod "Sampling method to be used for NURBS\nto PolyMesh\
 conversions."
-ms_set en ayprefse_SParam "Sampling method parameter."
+ms_set en ayprefse_SParam "Parameter of the sampling method for NURBS\nto\
+PolyMesh conversions."
 
 # Mops-Import
 ms_set en mopsi_options_ResetDM "Reset all DisplayMode attributes of\
-imported\nobjects to \\\"Global\\\"?"
+imported\nobjects to \"Global\"?"
 ms_set en mopsi_options_ResetST "Reset all SamplingTolerance attributes of\
-imported\nobjects to \\\"0.0\\\"?"
+imported\nobjects to \"0.0\"?"
 
 # OBJ-Import/Export
 ms_set en objio_options_Selected "Export only selected object(s)."
@@ -233,11 +234,11 @@ ms_set de ayprefse_MarkHidden "Sollen versteckte Objekte in der\
 ms_set de ayprefse_Locale "Sprache für Hilfetexte.\
 \nÄnderungen werden erst nach Neustart von Ayam wirksam!"
 ms_set de ayprefse_AutoSavePrefs "Sollen die Voreinstellungen beim Beenden\
-gespeichert werden?"
+von Ayam gespeichert werden?"
 ms_set de ayprefse_AddExtensions "Sollen Dateinamenserweiterungen automatisch\
-\nangehängt werden?"
+angehängt werden?"
 ms_set de ayprefse_BakOnReplace "Sollen Sicherheitskopien von geladenen\
-\nSzenen angefertigt werden?"
+Szenen angefertigt werden?"
 ms_set de ayprefse_LoadEnv "Soll die Arbeitsumgebung beim Start geladen\
 werden?"
 ms_set de ayprefse_NewLoadsEnv "Soll die Arbeitsumgebung beim Erstellen\
@@ -306,7 +307,7 @@ werden,\nwenn keine andere (aktive) Lichtquelle existiert?"
 ms_set de ayprefse_DefaultMat "Standard-Material, das für alle Objekte\nohne\
 eigenes Material benutzt wird.\nnone: kein Standard-Material verwenden\
 \nmatte: RiMatte verwenden\
-\ndefault: Material mit Namen \\\"default\\\" verwenden"
+\ndefault: Material mit Namen \"default\" verwenden"
 ms_set de ayprefse_RIStandard "Sollen alle Attribute und Optionen,\ndie nicht\
 im RenderMan Standard vorkommen,\nbeim RIB-Export ausgelassen werden?"
 ms_set de ayprefse_WriteIdent "Sollen Identifikatoren, basierend auf den\
@@ -317,39 +318,39 @@ RIB-Export ausgelassen werden?"
 ms_set de ayprefse_RenderMode "Wie soll der Renderer zum Rendern auf den\
 Bildschirm gezwungen werden?"
 ms_set de ayprefse_QRender "Name und Aufrufparameter des Renderers,\
-der für\n schnelle Vorschaubilder verwendet werden soll.\n\\\"%s\\\" wird\
+der für\n schnelle Vorschaubilder verwendet werden soll.\n\"%s\" wird\
 durch den Dateinamen des RIBs ersetzt."
 ms_set de ayprefse_QRenderUI "Soll das Render-Fenster für die schnelle Vorschau
 aktiviert werden?"
 ms_set de ayprefse_QRenderPT "Beschreibung der Ausgabe des\
 Rendering-Fortschritts durch den Renderer\
-\n\\\"%d\\\" ist die Position des prozentualen Fortschrittswertes,\
+\n\"%d\" ist die Position des prozentualen Fortschrittswertes,\
 \nder dann im Rendering-Fenster angezeigt wird."
 ms_set de ayprefse_Render "Name und Aufrufparameter des Renderers,\
-der für die Vorschau verwendet werden soll.\n\\\"%s\\\" wird\
+der für die Vorschau verwendet werden soll.\n\"%s\" wird\
 durch den Dateinamen des RIBs ersetzt."
 ms_set de ayprefse_RenderUI "Soll das Render-Fenster für die Vorschau\
 aktiviert werden?"
 ms_set de ayprefse_RenderPT "Beschreibung der Ausgabe des\
 Rendering-Fortschritts durch den Renderer\
-\n\\\"%d\\\" ist die Position des prozentualen Fortschrittswertes,\
+\n\"%d\" ist die Position des prozentualen Fortschrittswertes,\
 \nder dann im Rendering-Fenster angezeigt wird."
 ms_set de ayprefse_FRender "Name und Aufrufparameter des Renderers,\
-der zum Rendern in eine Datei verwendet werden soll.\n\\\"%s\\\" wird\
+der zum Rendern in eine Datei verwendet werden soll.\n\"%s\" wird\
 durch den Dateinamen des RIBs ersetzt."
 ms_set de ayprefse_FRenderUI "Soll das Render-Fenster aktiviert werden?"
 ms_set de ayprefse_FRenderPT "Beschreibung der Ausgabe des\
 Rendering-Fortschritts durch den Renderer\
-\n\\\"%d\\\" ist die Position des prozentualen Fortschrittswertes,\
+\n\"%d\" ist die Position des prozentualen Fortschrittswertes,\
 \nder dann im Rendering-Fenster angezeigt wird."
 ms_set de ayprefse_SMRender "Name und Aufrufparameter des Renderers,\
-der für ShadowMaps verwendet werden soll.\n\\\"%s\\\" wird\
+der für ShadowMaps verwendet werden soll.\n\"%s\" wird\
 durch den Dateinamen des RIBs ersetzt."
 ms_set de ayprefse_SMRenderUI "Soll das Render-Fenster für ShadowMaps\
 aktiviert werden?"
 ms_set de ayprefse_SMRenderPT "Beschreibung der Ausgabe des\
 Rendering-Fortschritts durch den ShadowMap-Renderer\
-\n\\\"%d\\\" ist die Position des prozentualen Fortschrittswertes,\
+\n\"%d\" ist die Position des prozentualen Fortschrittswertes,\
 \nder dann im Rendering-Fenster angezeigt wird."
 ms_set de ayprefse_PPRender "Renderer, der für die permanente Vorschau\
 verwendet werden soll."
@@ -386,14 +387,15 @@ ms_set de ayprefse_SavePrefsGeom "Geometrie der Voreinstellungen\
 für den nächsten Aufruf sichern?"
 ms_set de ayprefse_SMethod "Sampling-Methode, die für NURBS zu\nPolyMesh\
 Umwandlungen benutzt wird."
-ms_set de ayprefse_SParam "Parameter der Sampling-Methode."
+ms_set de ayprefse_SParam "Parameter der Sampling-Methode, die für NURBS\
+zu\nPolyMesh Umwandlungen benutzt wird."
 
 
 # Mops-Import
 ms_set de mopsi_options_ResetDM "Sollen alle DisplayMode-Attribute von\
-importierten Objekten\nauf \\\"Global\\\" zurückgesetzt werden?"
+importierten Objekten\nauf \"Global\" zurückgesetzt werden?"
 ms_set de mopsi_options_ResetST "Sollen alle SamplingTolerance-Attribute von\
-importierten\nObjekten auf \\\"0.0\\\" zurückgesetzt werden?"
+importierten\nObjekten auf \"0.0\" zurückgesetzt werden?"
 
 
 # OBJ-Import/Export
@@ -499,26 +501,26 @@ ms_set fr ayprefse_ExcludeHidden "Omettre les objets cachés à l'exportation\
 RIB?"
 ms_set fr ayprefse_RenderMode "Mode de rendu à l'écran?"
 ms_set fr ayprefse_QRender "Nom et paramètres du moteur de rendu à utiliser\
-pour les rendus d'aperçu rapides\n\\\"%s\\\" sera remplacé par le nom\
+pour les rendus d'aperçu rapides\n\"%s\" sera remplacé par le nom\
 du fichier du RIB."
 ms_set fr ayprefse_QRenderUI "Activer l'interface utilisateur lors le\
 rendu rapide."
 ms_set fr ayprefse_QRenderPT "Modèle pour la progression à partir de la\
-sortie du moteur de rendu.\n\\\"%d\\\" montre la position du numéro\
+sortie du moteur de rendu.\n\"%d\" montre la position du numéro\
 de progression dans la sortie."
 ms_set fr ayprefse_Render "Nom et paramètres du moteur de rendu à utiliser\
-pour les rendus d'aperçu.\n\\\"%s\\\" sera remplacé par le nom du fichier du\
+pour les rendus d'aperçu.\n\"%s\" sera remplacé par le nom du fichier du\
 RIB."
 ms_set fr ayprefse_RenderUI "Activer l'interface utilisateur lors le rendu."
 ms_set fr ayprefse_RenderPT "Modèle pour la progression à partir de la\
-sortie du moteur de rendu.\n\\\"%d\\\" montre la position du numéro de\
+sortie du moteur de rendu.\n\"%d\" montre la position du numéro de\
 progression dans la sortie."
 ms_set fr ayprefse_SMRender "Nom et paramètres du moteur de rendu à utiliser\
-pour les shadow maps.\n\\\"%s\\\" sera remplacé par le nom du fichier du\
+pour les shadow maps.\n\"%s\" sera remplacé par le nom du fichier du\
 RIB."
 ms_set fr ayprefse_SMRenderUI "Enable user interface for shadow map rendering."
 ms_set fr ayprefse_SMRenderPT "Modèle pour la progression à partir de la\
-sortie du moteur de rendu.\n\\\"%d\\\" montre la position du numéro de\
+sortie du moteur de rendu.\n\"%d\" montre la position du numéro de\
 progression dans la sortie."
 ms_set fr ayprefse_PPRender "Moteur de rendu à utiliser pour l'aperçu\
 permanent."
