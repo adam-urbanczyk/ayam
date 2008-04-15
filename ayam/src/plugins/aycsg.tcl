@@ -66,8 +66,9 @@ image create photo ay_aycsg_img -format GIF -data $imgdata
 
 # aycsgToggle:
 #  toggle use of AyCSG as regular drawing mode
-#  manage button <b>
-proc aycsgToggle { b } {
+#  also manage corresponding view menu button
+proc aycsgToggle { w } {
+    set b ${w}.fMenu.baycsg
     if { [$b cget -relief] == "sunken" } {
 	$b configure -relief raised
     } else {
@@ -86,7 +87,7 @@ proc aycsgToggle { b } {
 # add icon to view menus
 set a "\
 button \$w.fMenu.baycsg -padx 0 -pady 0 -borderwidth 0 -image ay_aycsg_img -command \{global ay; \$ay(currentView) rendercsg;\};pack \$w.fMenu.baycsg -in \$w.fMenu -side right;"
-append a "bind \$w.fMenu.baycsg <Shift-1> \"aycsgToggle \$w.fMenu.baycsg\""
+append a "bind \$w.fMenu.baycsg <Shift-1> \"aycsgToggle \$w\""
 
 addToProc vmenu_open $a
 
