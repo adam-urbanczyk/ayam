@@ -1,6 +1,7 @@
-[8. Apr 2008] CVS-Head:
+[15. Apr 2008] CVS-Head:
 =======================
 Bug Fixes:
+o aycsg plugin GUI code for internal views (SF 1943164)
 
 GUI:
 
@@ -48,7 +49,7 @@ o added saving of main window state normal/zoomed (maximized) to the
 o the iconification state of view windows is now saved with scene files
 o several main preference settings are not displayed in the preferences
   editor on platforms/in configurations where they would not be used
-  anyway, e.g. TwmCompat on Win32
+  anyway, e.g. "TwmCompat" on Win32
 o added "SavePaneLayout" tag type to store the pane configuration of the
   main window in scene files
 o added hidden preference setting "PaneMargins" that controls individual
@@ -68,7 +69,7 @@ o the about dialog has now a "CopyClipboard" button that makes it more
   simple to copy the relevant parts of the Ayam configuration for e.g.
   bug reports
 o added view window keyboard shortcuts to cycle through the view types
-  (PageUp/PageDown)
+  (<PageUp>/<PageDown>)
 o added secondary view window keyboard shortcuts for important functions as
   e.g. "zoom to object" (mainly for internal views in single window GUI mode)
 o reorganized edit, create, and tools menus
@@ -81,7 +82,8 @@ o added new object type "ExtrNP" (similar to "ExtrNC", but extracts patches)
 o added new object type "OffsetNC" to create offset curves
 o added NCInfo balloon (that displays more info on generated curves, similar
   to NPInfo)
-o added tolerance parameter and checking for remKnNC (knot removal) tool
+o added tolerance parameter and checking for "remKnNC" (knot removal) tool
+  and scripting interface command
 o made side cap creation of Revolve objects more robust wrt. the cross
   section curve direction
 o added "undo rewind" command
@@ -91,8 +93,9 @@ Import/Export:
 o import NurbsSwungSurface elements as Swing objects from X3D files
 o import of NurbsSurface texture coordinates from X3D files
 o added "TopLevelLayers" X3D export option
-o added "WriteParametrics" X3D export option (to save Revolve, Extrude, Sweep,
-  and Swing objects as NurbsSweptSurface or NurbsSwungSurface nodes)
+o added "WriteParametrics" X3D export option (to control saving Revolve,
+  Extrude, Sweep, and Swing objects as NurbsSweptSurface/NurbsSwungSurface
+  nodes or as plain NURBS)
 o X3D export may now be cancelled
 o DXF export may now be cancelled
 
@@ -104,7 +107,7 @@ Scripts/Scripting Interface:
 o added script "intfd.tcl" to switch all dialogs (file/color) to internal 
   Tk dialogs
 o added script "showwin.tcl" to de-iconify/show all application windows
-o added script "tonpatch.tcl" that, similar to "topoly.tcl" converts all
+o added script "tonpatch.tcl" that, similar to "topoly.tcl", converts all
   objects in the scene to plain NURBS patches
 o added helper procedure "toolbox_add" for adding text based buttons to
   the toolbox window
