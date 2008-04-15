@@ -73,7 +73,11 @@ proc aycsgToggle { b } {
     } else {
 	$b configure -relief sunken
     }
-    set togl [winfo toplevel $b].f3D.togl
+    if { [string first ".view" $w] == 0 } {
+	set togl [winfo toplevel $w].f3D.togl
+    } else {
+	set togl $w
+    }
     $togl togglecsg
  return;
 }
