@@ -2931,7 +2931,8 @@ Levels of type <tt/"Union"/, <tt/"Intersection"/, and <tt/"Difference"/
 are used to build CSG hierarchies. Additionally, they inherit attributes.
 Note that Ayam is currently not able to correctly display the results
 of CSG operations, all objects are always drawn completely, even though
-a CSG operation cut parts away.
+a CSG operation would cut parts away.
+<p>
 However, since Ayam 1.8 there is a plugin available that is able to
 preview the results of CSG operations, see also section
 <ref id="aycsg" name="CSG preview using the AyCSG plugin">.
@@ -2943,8 +2944,7 @@ looks like this:
  | Box
  \ Sphere
 </code>
-In contrast to the RenderMan interface, more than two objects
-may be arguments of a CSG operation:
+More than two objects may be arguments of a CSG operation:
 <code>
 +-Level_of_Type_Difference(Level)
  | Box
@@ -2954,8 +2954,34 @@ may be arguments of a CSG operation:
 In this example, the two spheres would cut away parts of the box.
 <p>
 New solid primitives may be created with levels of type <tt/"Primitive"/.
+<code>
++-Level_of_Type_Difference(Level)
+ +-Level_of_Type_Primitive(Level)
+ | | Sphere_blue
+ | \ Disk_red
+ \ Box_grey
+</code>
+In this example an open sphere with <tt/"ThetaMax"/ 180.0 (a hemisphere)
+is manually capped by a disk object. The two objects need to be placed
+into a level of type <tt/"Primitive"/. Both objects use a different
+material. A grey Box cuts away a part from the hemisphere.
+The above CSG hierarchy is available as example scene file
+<tt/"multicolcsg.ay"/.
+<p>
+See also this image:
+<figure loc="ht">
+<eps file="pics/multicolcsg.ps" height="3cm">
+<img src="pics/multicolcsg.gif">
+<caption>Multicolor CSG Example</caption>
+</figure>
+<p>
 Note that Ayam is not able to check, whether your new primitive obeys
-the rule of total closeness. Furthermore, it is not necessary to
+the rule of total closeness. If the disk in the above example would not
+totally cap the sphere (if the disk <tt/"ThetaMax"/ would not be 360.0
+or if it would not be placed exactly at the sphere) Ayam would not complain
+but the rendered image would expose serious errors.
+<p>
+Furthermore, it is not necessary to
 enclose normal child objects of CSG levels in primitive levels for
 RIB export. This is done by Ayam automatically where needed.
 
