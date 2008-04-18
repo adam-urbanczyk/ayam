@@ -6832,7 +6832,6 @@ x3dio_writetrimcurve(scew_element *element, ay_object *o)
  ay_nurbcurve_object *nc;
  int i, a = 0, stride = 4;
  double m[16] = {0};
- scew_element *shape_element = NULL;
  scew_element *curve_element = NULL;
  scew_element *coord_element = NULL;
 
@@ -6862,7 +6861,7 @@ x3dio_writetrimcurve(scew_element *element, ay_object *o)
     }
 
   /* now write the curve */
-  curve_element = scew_element_add(shape_element, "NurbsCurve2D");
+  curve_element = scew_element_add(element, "NurbsCurve2D");
 
   x3dio_writeintattrib(curve_element, "order", &nc->order);
 
