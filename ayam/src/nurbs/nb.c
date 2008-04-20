@@ -2123,10 +2123,13 @@ ay_nb_CreateNurbsCircleArc(double r, double ths, double the,
  double P0[4] = {0}, P1[4] = {0}, P2[4] = {0};
  double T0[2] = {0}, T2[2] = {0};
 
-  if(the < ths)
-    the = 360 - the;
+  while(the < ths)
+    the = 360 + the;
 
   theta = the - ths;
+
+  if(theta < AY_EPSILON)
+    return AY_ERROR;
 
   if(theta <= 90.0)
     narcs = 1;
@@ -2178,7 +2181,7 @@ ay_nb_CreateNurbsCircleArc(double r, double ths, double the,
       memcpy(&Pw[(index+2)*4], P2, 4*sizeof(double));
 
       index += 2;
-      if(i < index)
+      if(i < narcs)
 	{
 	  memcpy(P0, P2, 4*sizeof(double));
 	  memcpy(T0, T2, 2*sizeof(double));
