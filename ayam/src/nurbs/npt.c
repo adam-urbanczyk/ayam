@@ -4550,7 +4550,7 @@ ay_npt_extrude(double height, ay_object *o, ay_nurbpatch_object **extrusion)
  *
  */
 int
-ay_npt_gettangentfromcontrol(int closed, int n, int p,
+ay_npt_gettangentfromcontrol(int ctype, int n, int p,
 			     int stride, double *P, int a, double *t)
 {
  int ay_status = AY_OK;
@@ -4559,7 +4559,7 @@ ay_npt_gettangentfromcontrol(int closed, int n, int p,
  int before, after;
  double l;
 
-  if(closed)
+  if(ctype == AY_CTPERIODIC)
     {
       if(a == 0)
 	a = (n-p);
@@ -4570,58 +4570,70 @@ ay_npt_gettangentfromcontrol(int closed, int n, int p,
     } /* if */
 
   /* find a good point after P[a] */
-  b = a+1;
-  while(!found)
+  if((ctype == AY_CTOPEN) && (a == (n-1)))
     {
-      if(b >= n)
-	{
-	  if(wrapped)
-	    return AY_ERROR;
-	  wrapped = AY_TRUE;
-	  b = 0;
-	} /* if */
-
+      after = a;
+    }
+  else
+    {
+      b = a+1;
       i1 = a*stride;
-      i2 = b*stride;
-      if((P[i1] != P[i2]) || (P[i1+1] != P[i2+1]))
+      while(!found)
 	{
-	  found = AY_TRUE;
-	}
-      else
-	{
-	  b++;
-	} /* if */
-    } /* while */
+	  if(b >= n)
+	    {
+	      if(wrapped)
+		return AY_ERROR;
+	      wrapped = AY_TRUE;
+	      b = 0;
+	    } /* if */
 
-  after = b;
+	  i2 = b*stride;
+	  if((P[i1] != P[i2]) || (P[i1+1] != P[i2+1]))
+	    {
+	      found = AY_TRUE;
+	    }
+	  else
+	    {
+	      b++;
+	    } /* if */
+	} /* while */
+      after = b;
+    } /* if */
 
   /* find a good point before P[a] */
-  found = AY_FALSE;
-  wrapped = AY_FALSE;
-  b = a-1;
-  while(!found)
+  if((ctype == AY_CTOPEN) && (a == 0))
     {
-      if(b < 0)
-	{
-	  if(wrapped)
-	    return AY_ERROR;
-	  wrapped = AY_TRUE;
-	  b = (n-1);
-	} /* if */
-
+      before = a;
+    }
+  else
+    {
+      found = AY_FALSE;
+      wrapped = AY_FALSE;
+      b = a-1;
       i1 = a*stride;
-      i2 = b*stride;
-      if((P[i1] != P[i2]) || (P[i1+1] != P[i2+1]))
+      while(!found)
 	{
-	  found = AY_TRUE;
-	}
-      else
-	{
-	  b--;
-	} /* if */
-    } /* while */
+	  if(b < 0)
+	    {
+	      if(wrapped)
+		return AY_ERROR;
+	      wrapped = AY_TRUE;
+	      b = (n-1);
+	    } /* if */
 
-  before = b;
+	  i2 = b*stride;
+	  if((P[i1] != P[i2]) || (P[i1+1] != P[i2+1]))
+	    {
+	      found = AY_TRUE;
+	    }
+	  else
+	    {
+	      b--;
+	    } /* if */
+	} /* while */
+      before = b;
+    } /* if */
 
   /* now calculate the tangent */
   t[0] = (P[after*stride]/P[after*stride+3]) -
@@ -4811,8 +4823,7 @@ ay_npt_bevel(int type, double radius, int align, ay_object *o,
       for(j = 0; j < curve->length; j++)
 	{
 	  /* get displacement direction */
-	  ay_npt_gettangentfromcontrol((curve->type == AY_CTPERIODIC) ?
-				       AY_TRUE : AY_FALSE, curve->length,
+	  ay_npt_gettangentfromcontrol(curve->type, curve->length,
 				       curve->order-1, 4, controlv, j,
 				       tangent);
 
@@ -4872,8 +4883,7 @@ ay_npt_bevel(int type, double radius, int align, ay_object *o,
 	  for(j = 0; j < curve->length; j++)
 	    {
 	      /* get displacement direction */
-	      ay_npt_gettangentfromcontrol((curve->type == AY_CTPERIODIC) ?
-					   AY_TRUE : AY_FALSE, curve->length,
+	      ay_npt_gettangentfromcontrol(curve->type, curve->length,
 					   curve->order-1, 4, controlv, j,
 					   tangent);
 
@@ -4910,8 +4920,7 @@ ay_npt_bevel(int type, double radius, int align, ay_object *o,
   for(j = 0; j < curve->length; j++)
     {
       /* get displacement direction */
-      ay_npt_gettangentfromcontrol((curve->type == AY_CTPERIODIC) ?
-				   AY_TRUE : AY_FALSE, curve->length,
+      ay_npt_gettangentfromcontrol(curve->type, curve->length,
 				   curve->order-1, 4, controlv, j, tangent);
 
       x = controlv[b];
