@@ -1,12 +1,26 @@
-[15. Apr 2008] CVS-Head:
+[20. Apr 2008] CVS-Head:
 =======================
 Bug Fixes:
 o aycsg plugin GUI code for internal views (SF 1943164)
+o RIB export of Instances in CSG hierarchies (SF)
 
 GUI:
+o added plugin "aydnd.tcl" that enables inter-application drag-and-drop
+  on Win32 and Unix/X11 with the help of tkdnd
 
 Modelling:
 o added new object type "ACurve" (for approximating curves)
+o improved bevels and offset curves (in bevel mode) of open curves
+
+Scripts/Scripting Interface:
+o added example script "zdialog.tcl" that switches all internal file dialogs
+  to use zenity (from the Gnome project)
+o added example script "kdialog.tcl" that switches all internal file dialogs
+  to use kdialog (from the KDE project)
+
+Documentation/Example Files:
+o added example scene "multicolcsg.ay" that demonstrates how "Primitive"
+  level objects are to be used
 
 
 [4. Apr 2008] Ayam 1.14:
