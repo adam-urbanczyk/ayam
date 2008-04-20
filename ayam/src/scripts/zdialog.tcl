@@ -127,8 +127,11 @@ proc ::tk_chooseDirectory { args } {
 #
 proc zdialog_revert { } {
 
+    rename ::tk_getOpenFile ""
     rename ::zdialog_getOpenFile ::tk_getOpenFile
+    rename ::tk_getSaveFile ""
     rename ::zdialog_getSaveFile ::tk_getSaveFile
+    rename ::tk_chooseDirectory ""
     rename ::zdialog_chooseDirectory ::tk_chooseDirectory
 
  return;
@@ -138,4 +141,7 @@ proc zdialog_revert { } {
 
 # attach revert procedure to custom menu
 global ay
-$ay(cm) add command -label "RevertZDialog" -command {zdialog_revert}
+$ay(cm) add command -label "RevertZDialog" -command {
+    zdialog_revert
+    # XXXX remove ourselves from the menu?
+}

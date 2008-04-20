@@ -163,8 +163,11 @@ proc ::tk_chooseDirectory { args } {
 
 proc kdialog_revert { } {
 
+    rename ::tk_getOpenFile ""
     rename ::kdialog_getOpenFile ::tk_getOpenFile
+    rename ::tk_getSaveFile ""
     rename ::kdialog_getSaveFile ::tk_getSaveFile
+    rename ::tk_chooseDirectory ""
     rename ::kdialog_chooseDirectory ::tk_chooseDirectory
 
  return;
