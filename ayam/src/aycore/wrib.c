@@ -35,6 +35,19 @@ ay_wrib_isprimitive(ay_object *o)
  ay_object *down = NULL;
  ay_level_object *level = NULL;
 
+  if(o->type == AY_IDINSTANCE)
+    {
+      if(o->refine)
+	{
+	  return ay_wrib_isprimitive(o->refine);
+	}
+      else
+	{
+	  /* XXXX add error message */
+	  return AY_TRUE;
+	}
+    }
+
   if(o->type == AY_IDLEVEL)
     {
       level = (ay_level_object*)o->refine;
@@ -477,7 +490,7 @@ ay_wrib_trafos(ay_object *o)
 
 
 /* ay_wrib_refobject:
- *  wrib referenced object
+ *  wrib referenced object (a master)
  */
 int
 ay_wrib_refobject(char *file, ay_object *o)
