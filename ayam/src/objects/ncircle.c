@@ -16,6 +16,11 @@
 
 static char *ay_ncircle_name = "NCircle";
 
+/* functions: */
+
+/* ay_ncircle_createcb:
+ *  create callback function of ncircle object
+ */
 int
 ay_ncircle_createcb(int argc, char *argv[], ay_object *o)
 {
@@ -41,6 +46,9 @@ ay_ncircle_createcb(int argc, char *argv[], ay_object *o)
 } /* ay_ncircle_createcb */
 
 
+/* ay_ncircle_deletecb:
+ *  delete callback function of ncircle object
+ */
 int
 ay_ncircle_deletecb(void *c)
 {
@@ -62,6 +70,9 @@ ay_ncircle_deletecb(void *c)
 } /* ay_ncircle_deletecb */
 
 
+/* ay_ncircle_copycb:
+ *  copy callback function of ncircle object
+ */
 int
 ay_ncircle_copycb(void *src, void **dst)
 {
@@ -86,6 +97,9 @@ ay_ncircle_copycb(void *src, void **dst)
 } /* ay_ncircle_copycb */
 
 
+/* ay_ncircle_drawcb:
+ *  draw (display in an Ayam view window) callback function of ncircle object
+ */
 int
 ay_ncircle_drawcb(struct Togl *togl, ay_object *o)
 {
@@ -106,6 +120,9 @@ ay_ncircle_drawcb(struct Togl *togl, ay_object *o)
 } /* ay_ncircle_drawcb */
 
 
+/* ay_ncircle_shadecb:
+ *  shade (display in an Ayam view window) callback function of ncircle object
+ */
 int
 ay_ncircle_shadecb(struct Togl *togl, ay_object *o)
 {
@@ -114,6 +131,9 @@ ay_ncircle_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_ncircle_shadecb */
 
 
+/* ay_ncircle_drawhcb:
+ *  draw handles (in an Ayam view window) callback function of ncircle object
+ */
 int
 ay_ncircle_drawhcb(struct Togl *togl, ay_object *o)
 {
@@ -139,7 +159,9 @@ ay_ncircle_drawhcb(struct Togl *togl, ay_object *o)
  return AY_OK;
 } /* ay_ncircle_drawhcb */
 
-
+/* ay_ncircle_getpntcb:
+ *  get point (editing and selection) callback function of ncircle object
+ */
 int
 ay_ncircle_getpntcb(int mode, ay_object *o, double *p)
 {
@@ -148,7 +170,9 @@ ay_ncircle_getpntcb(int mode, ay_object *o, double *p)
 } /* ay_ncircle_getpntcb */
 
 
-/* Tcl -> C! */
+/* ay_ncircle_setpropcb:
+ *  set property (from Tcl to C context) callback function of ncircle object
+ */
 int
 ay_ncircle_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -199,7 +223,9 @@ ay_ncircle_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_ncircle_setpropcb */
 
 
-/* C -> Tcl! */
+/* ay_ncircle_getpropcb:
+ *  get property (from C to Tcl context) callback function of ncircle object
+ */
 int
 ay_ncircle_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
@@ -249,6 +275,9 @@ ay_ncircle_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_ncircle_getpropcb */
 
 
+/* ay_ncircle_readcb:
+ *  read (from scene file) callback function of ncircle object
+ */
 int
 ay_ncircle_readcb(FILE *fileptr, ay_object *o)
 {
@@ -272,6 +301,9 @@ ay_ncircle_readcb(FILE *fileptr, ay_object *o)
 } /* ay_ncircle_readcb */
 
 
+/* ay_ncircle_writecb:
+ *  write (to scene file) callback function of ncircle object
+ */
 int
 ay_ncircle_writecb(FILE *fileptr, ay_object *o)
 {
@@ -292,6 +324,9 @@ ay_ncircle_writecb(FILE *fileptr, ay_object *o)
 } /* ay_ncircle_writecb */
 
 
+/* ay_ncircle_wribcb:
+ *  RIB export callback function of ncircle object
+ */
 int
 ay_ncircle_wribcb(char *file, ay_object *o)
 {
@@ -306,6 +341,9 @@ ay_ncircle_wribcb(char *file, ay_object *o)
 } /* ay_ncircle_wribcb */
 
 
+/* ay_ncircle_bbccb:
+ *  bounding box calculation callback function of ncircle object
+ */
 int
 ay_ncircle_bbccb(ay_object *o, double *bbox, int *flags)
 {
@@ -331,6 +369,9 @@ ay_ncircle_bbccb(ay_object *o, double *bbox, int *flags)
 } /* ay_ncircle_bbccb */
 
 
+/* ay_ncircle_notifycb:
+ *  notification callback function of ncircle object
+ */
 int
 ay_ncircle_notifycb(ay_object *o)
 {
@@ -339,6 +380,7 @@ ay_ncircle_notifycb(ay_object *o)
  ay_ncircle_object *ncircle = NULL;
  ay_nurbcurve_object *nc = NULL;
  ay_object *ncurve = NULL;
+ int revert = AY_FALSE;
 
   if(!o)
     return AY_ENULL;
@@ -353,9 +395,19 @@ ay_ncircle_notifycb(ay_object *o)
   if(!(nc = calloc(1, sizeof(ay_nurbcurve_object))))
     return AY_EOMEM;
 
-  ay_status = ay_nb_CreateNurbsCircleArc(ncircle->radius,
+  if(ncircle->tmin > ncircle->tmax)
+    {
+      revert = AY_TRUE;
+      ay_status = ay_nb_CreateNurbsCircleArc(ncircle->radius,
+					 ncircle->tmax, ncircle->tmin,
+			         &(nc->length), &(nc->knotv), &(nc->controlv));
+    }
+  else
+    {
+      ay_status = ay_nb_CreateNurbsCircleArc(ncircle->radius,
 					 ncircle->tmin, ncircle->tmax,
 			         &(nc->length), &(nc->knotv), &(nc->controlv));
+    }
 
   if(ay_status)
     { free(nc); return ay_status; }
@@ -378,12 +430,19 @@ ay_ncircle_notifycb(ay_object *o)
   ay_status = ay_object_defaults(ncurve);
   ncurve->refine = nc;
 
+  if(revert)
+    ay_nct_revert(nc);
+
+
   ncircle->ncurve = ncurve;
 
  return AY_OK;
 } /* ay_ncircle_notifycb */
 
 
+/* ay_ncircle_convertcb:
+ *  convert callback function of ncircle object
+ */
 int
 ay_ncircle_convertcb(ay_object *o, int in_place)
 {
@@ -424,6 +483,9 @@ ay_ncircle_convertcb(ay_object *o, int in_place)
 } /* ay_ncircle_convertcb */
 
 
+/* ay_ncircle_providecb:
+ *  provide callback function of ncircle object
+ */
 int
 ay_ncircle_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
@@ -462,6 +524,9 @@ ay_ncircle_providecb(ay_object *o, unsigned int type, ay_object **result)
 } /* ay_ncircle_providecb */
 
 
+/* ay_ncircle_init:
+ *  initialize the ncircle object module
+ */
 int
 ay_ncircle_init(Tcl_Interp *interp)
 {
