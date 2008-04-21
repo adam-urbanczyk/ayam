@@ -5565,7 +5565,6 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
 		       * segments) we simply pick one of the inner segment
 		       * points
 		       */
-		      ay_error(AY_ERROR, "ga", "failed intersection");
 		      memcpy(&(newcv[j*stride]), p2s1, 2*sizeof(double));
 		    }
 
