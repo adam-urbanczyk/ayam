@@ -5430,6 +5430,7 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
 	  */
 	  for(j = 0; j < curve->length; j++)
 	    {
+
 	      ay_npt_gettangentfromcontrol((curve->type == AY_CTPERIODIC) ?
 				       AY_TRUE : AY_FALSE, curve->length,
 				       curve->order-1, 4, curve->controlv, j,
@@ -5554,25 +5555,33 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
 
 		  p2s2[0] = p3[0] + n[0];
 		  p2s2[1] = p3[1] + n[1];
-#if 0
-
-		  AY_V2NORM(t2);
 
 		  /* intersect two offset segments, intersection is new cv */
-		  if(!ay_geom_intersectlines2D(p1s1, t1, p1s2, t2, &(newcv[j*stride])))
+		  if(!ay_geom_intersectlines2D(p1s1, t1, p1s2, t2,
+					       &(newcv[j*stride])))
 		    {
 		      /*
-			if the intersection failed (e.g. due to colinear segments)
-			we simply pick one of the inner segment points
-		      */
+		       * if the intersection failed (e.g. due to colinear
+		       * segments) we simply pick one of the inner segment
+		       * points
+		       */
+		      ay_error(AY_ERROR, "ga", "failed intersection");
 		      memcpy(&(newcv[j*stride]), p2s1, 2*sizeof(double));
 		    }
-#endif
+
+		  /*
+		   * XXXX the next block is a "replacement" for the
+		   * intersection test, that is faster, but delivers
+		   * sub-optimal offset quality (collisions occur)
+		   */
+		  /*
+		  AY_V2NORM(t2);
 		  for(i = 0; i < p2len; i++)
 		    {
 		      newcv[(j+i)*stride]   = p2s1[0]+((p1s2[0]-p2s1[0])/2.0);
 		      newcv[(j+i)*stride+1] = p2s1[1]+((p1s2[1]-p2s1[1])/2.0);
 		    }
+		  */
 
 		  /* prepare next iteration */
 		  p1 = p2;
