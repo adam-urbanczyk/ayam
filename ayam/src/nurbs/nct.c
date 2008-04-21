@@ -5618,6 +5618,14 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
 		  newcv[j*stride+3] = 1.0;
 		}
 	    } /* if */
+
+	  /* another special case: curve is periodic */
+	  if((curve->type == AY_CTPERIODIC) && (curve->order > 2))
+	    {
+	      j = (curve->length-(curve->order-1))*stride;
+	      memcpy(&(newcv[0]), &(newcv[j]), stride*sizeof(double));
+	    }
+
 	} /* if */
     } /* if */
 
