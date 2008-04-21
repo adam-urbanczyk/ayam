@@ -18,8 +18,8 @@ static char *ay_offnc_name = "OffsetNC";
 
 /* functions: */
 
-/* ay_acurve_createcb:
- *  create callback function of acurve object
+/* ay_offnc_createcb:
+ *  create callback function of offnc object
  */
 int
 ay_offnc_createcb(int argc, char *argv[], ay_object *o)
@@ -46,8 +46,8 @@ ay_offnc_createcb(int argc, char *argv[], ay_object *o)
 } /* ay_offnc_createcb */
 
 
-/* ay_acurve_deletecb:
- *  delete callback function of acurve object
+/* ay_offnc_deletecb:
+ *  delete callback function of offnc object
  */
 int
 ay_offnc_deletecb(void *c)
@@ -68,8 +68,8 @@ ay_offnc_deletecb(void *c)
 } /* ay_offnc_deletecb */
 
 
-/* ay_acurve_copycb:
- *  copy callback function of acurve object
+/* ay_offnc_copycb:
+ *  copy callback function of offnc object
  */
 int
 ay_offnc_copycb(void *src, void **dst)
@@ -98,8 +98,8 @@ ay_offnc_copycb(void *src, void **dst)
 } /* ay_offnc_copycb */
 
 
-/* ay_acurve_drawcb:
- *  draw (display in an Ayam view window) callback function of acurve object
+/* ay_offnc_drawcb:
+ *  draw (display in an Ayam view window) callback function of offnc object
  */
 int
 ay_offnc_drawcb(struct Togl *togl, ay_object *o)
@@ -121,8 +121,8 @@ ay_offnc_drawcb(struct Togl *togl, ay_object *o)
 } /* ay_offnc_drawcb */
 
 
-/* ay_acurve_shadecb:
- *  shade (display in an Ayam view window) callback function of acurve object
+/* ay_offnc_shadecb:
+ *  shade (display in an Ayam view window) callback function of offnc object
  */
 int
 ay_offnc_shadecb(struct Togl *togl, ay_object *o)
@@ -132,8 +132,8 @@ ay_offnc_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_offnc_shadecb */
 
 
-/* ay_acurve_drawhcb:
- *  draw handles (in an Ayam view window) callback function of acurve object
+/* ay_offnc_drawhcb:
+ *  draw handles (in an Ayam view window) callback function of offnc object
  */
 int
 ay_offnc_drawhcb(struct Togl *togl, ay_object *o)
@@ -161,8 +161,8 @@ ay_offnc_drawhcb(struct Togl *togl, ay_object *o)
 } /* ay_offnc_drawhcb */
 
 
-/* ay_acurve_getpntcb:
- *  get point (editing and selection) callback function of acurve object
+/* ay_offnc_getpntcb:
+ *  get point (editing and selection) callback function of offnc object
  */
 int
 ay_offnc_getpntcb(int mode, ay_object *o, double *p)
@@ -172,8 +172,8 @@ ay_offnc_getpntcb(int mode, ay_object *o, double *p)
 } /* ay_offnc_getpntcb */
 
 
-/* ay_acurve_setpropcb:
- *  set property (from Tcl to C context) callback function of acurve object
+/* ay_offnc_setpropcb:
+ *  set property (from Tcl to C context) callback function of offnc object
  */
 int
 ay_offnc_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
@@ -224,8 +224,8 @@ ay_offnc_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_offnc_setpropcb */
 
 
-/* ay_acurve_getpropcb:
- *  get property (from C to Tcl context) callback function of acurve object
+/* ay_offnc_getpropcb:
+ *  get property (from C to Tcl context) callback function of offnc object
  */
 int
 ay_offnc_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
@@ -277,8 +277,8 @@ ay_offnc_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 } /* ay_offnc_getpropcb */
 
 
-/* ay_acurve_readcb:
- *  read (from scene file) callback function of acurve object
+/* ay_offnc_readcb:
+ *  read (from scene file) callback function of offnc object
  */
 int
 ay_offnc_readcb(FILE *fileptr, ay_object *o)
@@ -303,8 +303,8 @@ ay_offnc_readcb(FILE *fileptr, ay_object *o)
 } /* ay_offnc_readcb */
 
 
-/* ay_acurve_writecb:
- *  write (to scene file) callback function of acurve object
+/* ay_offnc_writecb:
+ *  write (to scene file) callback function of offnc object
  */
 int
 ay_offnc_writecb(FILE *fileptr, ay_object *o)
@@ -326,8 +326,8 @@ ay_offnc_writecb(FILE *fileptr, ay_object *o)
 } /* ay_offnc_writecb */
 
 
-/* ay_acurve_wribcb:
- *  RIB export callback function of acurve object
+/* ay_offnc_wribcb:
+ *  RIB export callback function of offnc object
  */
 int
 ay_offnc_wribcb(char *file, ay_object *o)
@@ -337,8 +337,8 @@ ay_offnc_wribcb(char *file, ay_object *o)
 } /* ay_offnc_wribcb */
 
 
-/* ay_acurve_bbccb:
- *  bounding box calculation callback function of acurve object
+/* ay_offnc_bbccb:
+ *  bounding box calculation callback function of offnc object
  */
 int
 ay_offnc_bbccb(ay_object *o, double *bbox, int *flags)
@@ -365,8 +365,8 @@ ay_offnc_bbccb(ay_object *o, double *bbox, int *flags)
 } /* ay_offnc_bbccb */
 
 
-/* ay_acurve_notifycb:
- *  notification callback function of acurve object
+/* ay_offnc_notifycb:
+ *  notification callback function of offnc object
  */
 int
 ay_offnc_notifycb(ay_object *o)
@@ -431,6 +431,13 @@ ay_offnc_notifycb(ay_object *o)
   if(ay_status || !newo->refine)
     goto cleanup;
 
+  if(((ay_nurbcurve_object *)(ncurve->refine))->type != AY_CTOPEN)
+    {
+      ((ay_nurbcurve_object *)(newo->refine))->type =
+	((ay_nurbcurve_object *)(ncurve->refine))->type;
+      ay_status = ay_nct_close((ay_nurbcurve_object *)(newo->refine));
+    }
+
   if(offnc->revert)
     {
       ay_status = ay_nct_revert((ay_nurbcurve_object *)(newo->refine));
@@ -466,8 +473,8 @@ cleanup:
 } /* ay_offnc_notifycb */
 
 
-/* ay_acurve_providecb:
- *  provide callback function of acurve object
+/* ay_offnc_providecb:
+ *  provide callback function of offnc object
  */
 int
 ay_offnc_providecb(ay_object *o, unsigned int type, ay_object **result)
@@ -511,8 +518,8 @@ ay_offnc_providecb(ay_object *o, unsigned int type, ay_object **result)
 } /* ay_offnc_providecb */
 
 
-/* ay_acurve_convertcb:
- *  convert callback function of acurve object
+/* ay_offnc_convertcb:
+ *  convert callback function of offnc object
  */
 int
 ay_offnc_convertcb(ay_object *o, int in_place)
@@ -550,8 +557,8 @@ ay_offnc_convertcb(ay_object *o, int in_place)
 } /* ay_offnc_convertcb */
 
 
-/* ay_acurve_init:
- *  initialize the acurve object module
+/* ay_offnc_init:
+ *  initialize the offnc object module
  */
 int
 ay_offnc_init(Tcl_Interp *interp)
