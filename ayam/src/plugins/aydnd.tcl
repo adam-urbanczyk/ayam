@@ -9,6 +9,13 @@
 
 # aydnd.tcl - ayam dnd support plugin
 
+# Usage:
+# o place tkdnd.dll/tkdnd.so, pkgIndex.tcl, and tkDND_Utils.tcl
+#   into the directory "ayam/bin/plugins/tkdnd"
+# o source ayam/bin/plugins/aydnd.tcl manually via the console or
+#   as startup script (preferences "Main/Scripts")
+# o drag and drop Ayam scene files to the Ayam main window
+
 # aydnd_handlefiledrop:
 #
 #
@@ -95,7 +102,7 @@ set origwd [pwd]
 
 cd [file dirname [info nameofexecutable]]
 
-lappend auto_path "plugins/tkdnd1.0"
+lappend auto_path "plugins/tkdnd"
 
 package require tkdnd
 
