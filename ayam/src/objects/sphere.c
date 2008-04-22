@@ -675,15 +675,6 @@ ay_sphere_wribcb(char *file, ay_object *o)
     if(radius == 0.0)
       return AY_OK;
 
-    if((fabs(zmax) < radius) || (fabs(zmin) < radius) ||
-       (fabs(thetamax) != 360.0))
-    {
-      if(!ay_current_primlevel)
-	{
-	  RiSolidBegin(RI_PRIMITIVE);
-	}
-    }
-
     RiSphere(radius, zmin, zmax, thetamax, NULL);
 
     /* Top if needed. */
@@ -804,15 +795,6 @@ ay_sphere_wribcb(char *file, ay_object *o)
 	 RiPatch(RI_BICUBIC, RI_P, (RtPointer)P2, NULL);
 	RiAttributeEnd();
       } /* if */
-
-    if((fabs(zmax) < radius) || (fabs(zmin) < radius) ||
-       (fabs(thetamax) != 360.0))
-      {
-	if(!ay_current_primlevel)
-	  {
-	    RiSolidEnd();
-	  }
-      }
 
   } /* if */
 

@@ -335,11 +335,6 @@ ay_box_wribcb(char *file, ay_object *o)
 
   box = (ay_box_object*)o->refine;
 
-  if(!ay_current_primlevel)
-    {
-      RiSolidBegin(RI_PRIMITIVE);
-    }
-
    RiTransformBegin();
     RiScale((RtFloat)box->width, (RtFloat)box->height, (RtFloat)box->length);
 
@@ -372,10 +367,6 @@ ay_box_wribcb(char *file, ay_object *o)
     RiPatch(RI_BILINEAR, RI_P, (RtPointer)rect, RI_NULL);
 
    RiTransformEnd();
-  if(!ay_current_primlevel)
-    {
-      RiSolidEnd();
-    }
 
  return AY_OK;
 } /* ay_box_wribcb */

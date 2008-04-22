@@ -563,11 +563,6 @@ ay_cylinder_wribcb(char *file, ay_object *o)
   {
     if(fabs(cylinder->thetamax) == 180.0)
       {
-	if(!ay_current_primlevel)
-	  {
-	    RiSolidBegin(RI_PRIMITIVE);
-	  }
-
 	RiCylinder((RtFloat)cylinder->radius,
 		   (RtFloat)cylinder->zmin,
 		   (RtFloat)cylinder->zmax,
@@ -601,18 +596,9 @@ ay_cylinder_wribcb(char *file, ay_object *o)
 	RiDisk((RtFloat)cylinder->zmax, (RtFloat)cylinder->radius,
 	       (RtFloat)cylinder->thetamax, RI_NULL);
 
-	if(!ay_current_primlevel)
-	  {
-	    RiSolidEnd();
-	  }
       }
     else if(fabs(cylinder->thetamax) == 360.0)
       {
-	if(!ay_current_primlevel)
-	  {
-	    RiSolidBegin(RI_PRIMITIVE);
-	  }
-
 	RiCylinder((RtFloat)cylinder->radius,
 		   (RtFloat)cylinder->zmin,
 		   (RtFloat)cylinder->zmax,
@@ -628,18 +614,9 @@ ay_cylinder_wribcb(char *file, ay_object *o)
 	RiDisk((RtFloat)cylinder->zmax, (RtFloat)cylinder->radius,
 	       (RtFloat)cylinder->thetamax, RI_NULL);
 
-	if(!ay_current_primlevel)
-	  {
-	    RiSolidEnd();
-	  }
       }
     else
       {
-	if(!ay_current_primlevel)
-	  {
-	    RiSolidBegin(RI_PRIMITIVE);
-	  }
-
 	RiCylinder((RtFloat)cylinder->radius,
 		   (RtFloat)cylinder->zmin,
 		   (RtFloat)cylinder->zmax,
@@ -683,10 +660,6 @@ ay_cylinder_wribcb(char *file, ay_object *o)
 	RiDisk((RtFloat)cylinder->zmax, (RtFloat)cylinder->radius,
 	       (RtFloat)cylinder->thetamax, RI_NULL);
 
-	if(!ay_current_primlevel)
-	  {
-	    RiSolidEnd();
-	  }
       } /* if */
   } /* if */
 
