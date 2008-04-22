@@ -589,7 +589,7 @@ ay_skin_notifycb(ay_object *o)
 	  ay_object_defaults(c);
 	  c->type = AY_IDNCURVE;
 
-	  ay_status = ay_npt_extractnc(bevel, 3, 0.0, AY_FALSE,
+	  ay_status = ay_npt_extractnc(bevel, 3, 0.0, AY_FALSE, AY_FALSE,
 				    (ay_nurbcurve_object**)&(c->refine));
 
 	  if(ay_status)
@@ -662,7 +662,7 @@ ay_skin_notifycb(ay_object *o)
 	  ay_object_defaults(c);
 	  c->type = AY_IDNCURVE;
 
-	  ay_status = ay_npt_extractnc(bevel, 3, 0.0, AY_FALSE,
+	  ay_status = ay_npt_extractnc(bevel, 3, 0.0, AY_FALSE, AY_FALSE,
 				    (ay_nurbcurve_object**)&(c->refine));
 
 	  if(ay_status)

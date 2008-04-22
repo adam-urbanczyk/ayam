@@ -6205,10 +6205,10 @@ ay_npt_extractboundary(ay_object *o, int apply_trafo,
   if(o->type != AY_IDNPATCH)
     return AY_EWTYPE;
 
-  ay_status = ay_npt_extractnc(o, 0, 0.0, apply_trafo, &u0);
-  ay_status = ay_npt_extractnc(o, 1, 0.0, apply_trafo, &un);
-  ay_status = ay_npt_extractnc(o, 2, 0.0, apply_trafo, &v0);
-  ay_status = ay_npt_extractnc(o, 3, 0.0, apply_trafo, &vn);
+  ay_status = ay_npt_extractnc(o, 0, 0.0, AY_FALSE, apply_trafo, &u0);
+  ay_status = ay_npt_extractnc(o, 1, 0.0, AY_FALSE, apply_trafo, &un);
+  ay_status = ay_npt_extractnc(o, 2, 0.0, AY_FALSE, apply_trafo, &v0);
+  ay_status = ay_npt_extractnc(o, 3, 0.0, AY_FALSE, apply_trafo, &vn);
 
   ay_nct_revert(un);
   ay_nct_revert(v0);
@@ -6261,17 +6261,21 @@ cleanup:
  *   or the complete boundary curve (6)
  *  param: parametric value at which curve is extracted; this parameter is
  *   ignored for the extraction of boundary curves
+ *  relative: should param be interpreted in a relative way wrt. the knot
+ *   vector?; this parameter is ignored for the extraction of boundary curves
  *  apply_trafo: this parameter controls whether trafos of <o> should be
  *   copied to the curve, or applied to the control points of the curve
  */
 int
-ay_npt_extractnc(ay_object *o, int side, double param, int apply_trafo,
+ay_npt_extractnc(ay_object *o, int side, double param, int relative,
+		 int apply_trafo,
 		 ay_nurbcurve_object **result)
 {
  int ay_status = AY_OK;
  ay_nurbpatch_object *np = NULL;
  ay_nurbcurve_object *nc = NULL;
  double *cv, m[16], *Qw = NULL, *UVQ = NULL;
+ double uv, uvmin, uvmax;
  int stride = 4, i, a, k = 0, s = 0, r = 0;
 
   if(!o || !result)
@@ -6366,7 +6370,18 @@ ay_npt_extractnc(ay_object *o, int side, double param, int apply_trafo,
     case 4:
       /* along u */
 
-      k = ay_nb_FindSpanMult(np->height-1, np->vorder-1, param,
+      if(relative)
+	{
+	  uvmin = np->vknotv[np->vorder-1];
+	  uvmax = np->vknotv[np->height];
+	  uv = uvmin + ((uvmax - uvmin) * param);
+	}
+      else
+	{
+	  uv = param;
+	}
+
+      k = ay_nb_FindSpanMult(np->height-1, np->vorder-1, uv,
 			     np->vknotv, &s);
 
       r = np->vorder-s-1;
@@ -6379,7 +6394,7 @@ ay_npt_extractnc(ay_object *o, int side, double param, int apply_trafo,
 
 	  ay_status = ay_nb_InsertKnotSurfV(stride, np->width-1, np->height-1,
 				       np->vorder-1, np->vknotv, np->controlv,
-					    param, k, s, r,
+					    uv, k, s, r,
 					    UVQ, Qw);
 	  if(ay_status)
 	    { goto cleanup; }
@@ -6412,7 +6427,18 @@ ay_npt_extractnc(ay_object *o, int side, double param, int apply_trafo,
     case 5:
       /* along v */
 
-      k = ay_nb_FindSpanMult(np->width-1, np->uorder-1, param,
+      if(relative)
+	{
+	  uvmin = np->uknotv[np->uorder-1];
+	  uvmax = np->uknotv[np->width];
+	  uv = uvmin + ((uvmax - uvmin) * param);
+	}
+      else
+	{
+	  uv = param;
+	}
+
+      k = ay_nb_FindSpanMult(np->width-1, np->uorder-1, uv,
 			     np->uknotv, &s);
 
       r = np->uorder-s-1;
@@ -6425,7 +6451,7 @@ ay_npt_extractnc(ay_object *o, int side, double param, int apply_trafo,
 
 	  ay_status = ay_nb_InsertKnotSurfU(stride, np->width-1, np->height-1,
 				       np->uorder-1, np->uknotv, np->controlv,
-					    param, k, s, r,
+					    uv, k, s, r,
 					    UVQ, Qw);
 	  if(ay_status)
 	    { goto cleanup; }

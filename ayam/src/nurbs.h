@@ -482,7 +482,7 @@ int ay_npt_gordonwc(ay_object *g);
 int ay_npt_extractboundary(ay_object *o, int apply_trafo,
 			   ay_nurbcurve_object **result);
 
-int ay_npt_extractnc(ay_object *npatch, int side, double param,
+int ay_npt_extractnc(ay_object *npatch, int side, double param, int relative,
 		     int apply_trafo,
 		     ay_nurbcurve_object **result);
 

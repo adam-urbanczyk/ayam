@@ -559,7 +559,7 @@ ay_birail1_notifycb(ay_object *o)
     {
       ay_object_defaults(&curve4);
       curve4.type = AY_IDNCURVE;
-      ay_status = ay_npt_extractnc(npatch, 3, 0.0, AY_FALSE,
+      ay_status = ay_npt_extractnc(npatch, 3, 0.0, AY_FALSE, AY_FALSE,
 		    (ay_nurbcurve_object**)&(curve4.refine));
 
       if(ay_status)
@@ -608,7 +608,7 @@ ay_birail1_notifycb(ay_object *o)
 	  ay_object_defaults(curve5);
 	  curve5->type = AY_IDNCURVE;
 
-	  ay_status = ay_npt_extractnc(bevel, 3, 0.0, AY_FALSE,
+	  ay_status = ay_npt_extractnc(bevel, 3, 0.0, AY_FALSE, AY_FALSE,
 				    (ay_nurbcurve_object**)&(curve5->refine));
 
 	  if(ay_status)
@@ -629,7 +629,7 @@ ay_birail1_notifycb(ay_object *o)
       memset(&curve4, 0, sizeof(ay_object));
       ay_object_defaults(&curve4);
       curve4.type = AY_IDNCURVE;
-      ay_status = ay_npt_extractnc(npatch, 2, 0.0, AY_FALSE,
+      ay_status = ay_npt_extractnc(npatch, 2, 0.0, AY_FALSE, AY_FALSE,
 		    (ay_nurbcurve_object**)&(curve4.refine));
 
       if(ay_status)
@@ -679,7 +679,7 @@ ay_birail1_notifycb(ay_object *o)
 	  ay_object_defaults(curve5);
 	  curve5->type = AY_IDNCURVE;
 
-	  ay_status = ay_npt_extractnc(bevel, 3, 0.0, AY_FALSE,
+	  ay_status = ay_npt_extractnc(bevel, 3, 0.0, AY_FALSE, AY_FALSE,
 				    (ay_nurbcurve_object**)&(curve5->refine));
 
 	  if(ay_status)
