@@ -829,6 +829,7 @@ typedef struct ay_extrnc_object_s
   int side;
   int pnum;
   int revert;
+  int relative;
   double parameter;
   /* cache NURBS curve representation */
   ay_object *ncurve;
@@ -840,6 +841,7 @@ typedef struct ay_extrnc_object_s
 typedef struct ay_extrnp_object_s
 {
   int pnum;
+  int relative;
   double umin, umax, vmin, vmax;
   /* cache NURBS patch representation */
   ay_object *npatch;

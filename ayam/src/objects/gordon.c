@@ -659,7 +659,7 @@ ay_gordon_notifycb(ay_object *o)
 	  ay_object_defaults(&bcurve);
 	  bcurve.type = AY_IDNCURVE;
 	  ay_status = ay_npt_extractnc(gordon->npatch, b_extrncparams[i],
-				       0.0, AY_FALSE,
+				       0.0, AY_FALSE, AY_FALSE,
 		    (ay_nurbcurve_object**)&(bcurve.refine));
 
 	  if(ay_status)

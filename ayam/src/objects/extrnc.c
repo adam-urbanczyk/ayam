@@ -207,6 +207,10 @@ ay_extrnc_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(extrnc->revert));
 
+  Tcl_SetStringObj(ton,"Relative",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &(extrnc->relative));
+
   Tcl_SetStringObj(ton,"DisplayMode",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(extrnc->display_mode));
@@ -267,6 +271,11 @@ ay_extrnc_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton,"Relative",-1);
+  to = Tcl_NewIntObj(extrnc->relative);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
   Tcl_SetStringObj(ton,"DisplayMode",-1);
   to = Tcl_NewIntObj(extrnc->display_mode);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
@@ -315,6 +324,11 @@ ay_extrnc_readcb(FILE *fileptr, ay_object *o)
       fscanf(fileptr, "%d\n", &extrnc->revert);
     }
 
+  if(ay_read_version >= 12)
+    {
+      fscanf(fileptr, "%d\n", &extrnc->relative);
+    }
+
   o->refine = extrnc;
 
  return AY_OK;
@@ -342,6 +356,10 @@ ay_extrnc_writecb(FILE *fileptr, ay_object *o)
   fprintf(fileptr, "%d\n", extrnc->pnum);
 
   fprintf(fileptr, "%d\n", extrnc->revert);
+
+  /* XXXX enable for release 1.15
+  fprintf(fileptr, "%d\n", extrnc->relative);
+  */
 
  return AY_OK;
 } /* ay_extrnc_writecb */
@@ -466,7 +484,7 @@ ay_extrnc_notifycb(ay_object *o)
   ncurve->type = AY_IDNCURVE;
 
   ay_status = ay_npt_extractnc(npatch, extrnc->side, extrnc->parameter,
-			       AY_FALSE,
+			       extrnc->relative, AY_FALSE,
 			       (ay_nurbcurve_object **)(&(ncurve->refine)));
 
   if(ay_status || !ncurve->refine)

@@ -211,6 +211,10 @@ ay_extrnp_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(extrnp->pnum));
 
+  Tcl_SetStringObj(ton,"Relative",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &(extrnp->relative));
+
   Tcl_SetStringObj(ton,"DisplayMode",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(extrnp->display_mode));
@@ -270,6 +274,11 @@ ay_extrnp_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton,"Relative",-1);
+  to = Tcl_NewIntObj(extrnp->relative);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
   Tcl_SetStringObj(ton,"PatchNum",-1);
   to = Tcl_NewIntObj(extrnp->pnum);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
@@ -317,6 +326,11 @@ ay_extrnp_readcb(FILE *fileptr, ay_object *o)
   fscanf(fileptr, "%d\n", &extrnp->display_mode);
   fscanf(fileptr, "%lg\n", &extrnp->glu_sampling_tolerance);
 
+  if(ay_read_version >= 12)
+    {
+      fscanf(fileptr, "%d\n", &extrnp->relative);
+    }
+
   o->refine = extrnp;
 
  return AY_OK;
@@ -345,6 +359,10 @@ ay_extrnp_writecb(FILE *fileptr, ay_object *o)
 
   fprintf(fileptr, "%d\n", extrnp->display_mode);
   fprintf(fileptr, "%g\n", extrnp->glu_sampling_tolerance);
+
+  /* XXXX enable for release 1.15
+  fprintf(fileptr, "%d\n", extrnp->relative);
+  */
 
  return AY_OK;
 } /* ay_extrnp_writecb */
