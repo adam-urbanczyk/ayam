@@ -546,11 +546,6 @@ ay_parab_wribcb(char *file, ay_object *o)
 
       memset(patch, '\0', 16*sizeof(RtPoint));
 
-      if(!ay_current_primlevel)
-	{
-	  RiSolidBegin(RI_PRIMITIVE);
-	}
-
       RiParaboloid((RtFloat)paraboloid->rmax,
 		   (RtFloat)paraboloid->zmin,
 		   (RtFloat)paraboloid->zmax,
@@ -614,11 +609,7 @@ ay_parab_wribcb(char *file, ay_object *o)
 	  RiAttributeEnd();
 	}
 
-      if(!ay_current_primlevel)
-	{
-	  RiSolidEnd();
-	}
-    }
+    } /* if */
 
  return AY_OK;
 } /* ay_parab_wribcb */

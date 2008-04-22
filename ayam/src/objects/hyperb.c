@@ -533,15 +533,9 @@ ay_hyperb_wribcb(char *file, ay_object *o)
     }
   else
     {
-      if(!ay_current_primlevel)
-	{
-	  RiSolidBegin(RI_PRIMITIVE);
-	}
-
        RiHyperboloid(p1, p2, (RtFloat)hyperb->thetamax, NULL);
        if(p1[2] == p2[2])
 	 {
-	   RiSolidEnd();
 	   return AY_OK;
 	 }
 
@@ -583,10 +577,6 @@ ay_hyperb_wribcb(char *file, ay_object *o)
 	     RiPatch(RI_BILINEAR, RI_P, (RtPointer)patch, RI_NULL);
 	    RiAttributeEnd();
 	}
-       if(!ay_current_primlevel)
-	 {
-	   RiSolidEnd();
-	 }
     } /* if */
 
 
