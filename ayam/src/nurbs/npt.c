@@ -8766,13 +8766,15 @@ ay_npt_splitvtcmd(ClientData clientData, Tcl_Interp *interp,
  */
 int
 ay_npt_extractnp(ay_object *src, double umin, double umax,
-		 double vmin, double vmax, ay_object **result)
+		 double vmin, double vmax, int relative,
+		 ay_object **result)
 {
  int ay_status = AY_OK;
  ay_object *copy = NULL, *new = NULL;
  ay_object *np1 = NULL, *np2 = NULL;
  ay_nurbpatch_object *patch = NULL;
  char fname[] = "npt_extractnp", split_errmsg[] = "Split failed!";
+ double uv, uvmin, uvmax;
 
   if(!src || !result)
     return AY_ENULL;
@@ -8787,14 +8789,31 @@ ay_npt_extractnp(ay_object *src, double umin, double umax,
       ay_object_copy(src, &copy);
       patch = (ay_nurbpatch_object*)copy->refine;
 
+      if(relative)
+	{
+	  uvmin = patch->uknotv[patch->uorder-1];
+	  uvmax = patch->uknotv[patch->width];
+	  uv = uvmin + ((uvmax - uvmin) * umin);
+	  umin = uv;
+	  uv = uvmin + ((uvmax - uvmin) * umax);
+	  umax = uv;
+
+	  uvmin = patch->vknotv[patch->vorder-1];
+	  uvmax = patch->vknotv[patch->height];
+	  uv = uvmin + ((uvmax - uvmin) * vmin);
+	  vmin = uv;
+	  uv = uvmin + ((uvmax - uvmin) * vmax);
+	  vmax = uv;
+	}
+
       /* check parameters */
-      if((umin < patch->uknotv[0/*patch->uorder...?*/]) ||
+      if((umin < patch->uknotv[patch->uorder-1]) ||
 	 (umax > patch->uknotv[patch->width]))
 	{
 	  ay_error(AY_ERROR, fname, "Parameters umin/umax out of range!");
 	  return AY_ERROR;
 	}
-      if((vmin < patch->vknotv[0/*patch->vorder...?*/]) ||
+      if((vmin < patch->vknotv[patch->vorder-1]) ||
 	 (vmax > patch->vknotv[patch->height]))
 	{
 	  ay_error(AY_ERROR, fname, "Parameters vmin/vmax out of range!");
@@ -8897,11 +8916,12 @@ ay_npt_extractnptcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_object *new = NULL;
  double umin = 0.0, umax = 0.0, vmin = 0.0, vmax = 0.0;
+ int relative = AY_FALSE;
  char fname[] = "extrNP";
 
   if(argc < 5)
     {
-      ay_error(AY_EARGS, fname, "umin umax vmin vmax");
+      ay_error(AY_EARGS, fname, "umin umax vmin vmax [relative]");
       return TCL_OK;
     }
 
@@ -8916,6 +8936,11 @@ ay_npt_extractnptcmd(ClientData clientData, Tcl_Interp *interp,
   Tcl_GetDouble(interp, argv[3], &vmin);
   Tcl_GetDouble(interp, argv[4], &vmax);
 
+  if(argc > 5)
+    {
+      Tcl_GetInt(interp, argv[5], &relative);
+    }
+
   while(sel)
     {
       if(sel->object)
@@ -8925,7 +8950,7 @@ ay_npt_extractnptcmd(ClientData clientData, Tcl_Interp *interp,
 	      new = NULL;
 
 	      ay_status = ay_npt_extractnp(sel->object, umin, umax, vmin, vmax,
-					   &new);
+					   relative, &new);
 
 	      if(ay_status)
 		{

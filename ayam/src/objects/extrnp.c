@@ -479,7 +479,7 @@ ay_extrnp_notifycb(ay_object *o)
   /* extract the patch */
   ay_status = ay_npt_extractnp(n, extrnp->umin, extrnp->umax,
 			       extrnp->vmin, extrnp->vmax,
-			       &npatch);
+			       extrnp->relative, &npatch);
 
   if(ay_status || !npatch)
     {

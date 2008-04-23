@@ -35,6 +35,8 @@ addParam $w ExtrNPAttrData UMax
 addParam $w ExtrNPAttrData VMin
 addParam $w ExtrNPAttrData VMax
 
+addCheck $w ExtrNPAttrData Relative
+
 addParam $w ExtrNPAttrData PatchNum
 
 addParam $w ExtrNPAttrData Tolerance
