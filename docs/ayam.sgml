@@ -2963,27 +2963,30 @@ New solid primitives may be created with levels of type <tt/"Primitive"/.
 </code>
 In this example an open sphere with <tt/"ThetaMax"/ 180.0 (a hemisphere)
 is manually capped by a disk object. The two objects need to be placed
-into a level of type <tt/"Primitive"/. Both objects use a different
-material. A grey Box cuts away a part from the hemisphere.
+into a level of type <tt/"Primitive"/. Both objects that form the new
+primitive use a different material. In addition, a grey box cuts away
+a part from the multi colored hemisphere.
 The above CSG hierarchy is available as example scene file
 <tt/"multicolcsg.ay"/.
 <p>
 See also this image:
 <figure loc="ht">
-<eps file="pics/multicolcsg.ps" height="3cm">
+<eps file="pics/multicolcsg.ps" height="4cm">
 <img src="pics/multicolcsg.gif">
 <caption>Multicolor CSG Example</caption>
 </figure>
 <p>
 Note that Ayam is not able to check, whether your new primitive obeys
-the rule of total closeness. If the disk in the above example would not
-totally cap the sphere (if the disk <tt/"ThetaMax"/ would not be 360.0
-or if it would not be placed exactly at the sphere) Ayam would not complain
-but the rendered image would expose serious errors.
+the rule of total closeness. For instance, if the disk in the above
+example would not totally cap the sphere (this happens if the disk
+<tt/"ThetaMax"/ is not 360.0 or if it is not placed exactly at the
+sphere) Ayam would not complain upon RIB export.
+The rendered image would expose serious errors, however.
 <p>
-Furthermore, it is not necessary to
-enclose normal child objects of CSG levels in primitive levels for
-RIB export. This is done by Ayam automatically where needed.
+Furthermore, it is not necessary to enclose normal child objects
+(e.g. quadrics with the <tt/"Closed"/ attribute set to on) of
+CSG levels in primitive levels for RIB export. This is done by Ayam
+automatically where needed.
 
 <sect1>Material Object<label id="materialobj">
 <p>
@@ -5049,7 +5052,7 @@ This parameter has no effect on open curves when the mode is Global4D.
 <item>See section <ref id="ncattr" name="NCurveAttr"> for a description
 of the parameters: <tt/"Tolerance"/ and <tt/"DisplayMode"/.
 
-<item>Finally an <tt/"NCInfo"/ field informs about the actual configuration
+<item>Finally, a <tt/"NCInfo"/ field informs about the actual configuration
 of the created NURBS curve.
 </itemize>
 
@@ -5090,7 +5093,7 @@ of the approximating NURBS curve.
 <item>See section <ref id="ncattr" name="NCurveAttr"> for a description
 of the parameters: <tt/"Tolerance"/ and <tt/"DisplayMode"/.
 
-<item>Finally an <tt/"NCInfo"/ field informs about the actual configuration
+<item>Finally, a <tt/"NCInfo"/ field informs about the actual configuration
 of the created NURBS curve.
 </itemize>
 
@@ -5178,7 +5181,7 @@ If <tt/"Knot-Type"/ is <tt/"Custom"/, the knot vector is composed from
 the knot vectors of the original curves, and thus, their
 shape may be preserved completely.
 
-<item>Finally an <tt/"NCInfo"/ field informs about the actual configuration
+<item>Finally, a <tt/"NCInfo"/ field informs about the actual configuration
 of the created NURBS curve.
 </itemize>
 
@@ -5211,15 +5214,24 @@ The extraction process is controlled by the following attributes:
 Available values are <tt/"U0"/, <tt/"Un"/: extract boundary curve along
 width; <tt/"V0"/, <tt/"Vn"/: extract boundary curve along
 height; <tt/"U"/, <tt/"V"/ extract curve along width and height
-respectively at specified parametric value (see below). The
-options <tt/"U"/, <tt/"V"/ are implemented since Ayam 1.8.1!
+respectively at specified parametric value (see below).
+
+The options <tt/"U"/, <tt/"V"/ are implemented since Ayam 1.8.1!
 Since Ayam 1.13 it is also possible to extract the complete boundary
 curve of the patch (<tt/"Boundary"/).
 
 <item><tt/"Parameter"/ controls the parametric value in u or v
 direction in the parameter space of the NURBS patch object where the
 curve should be extracted. This parameter is only used when <tt/"Side"/
-is <tt/"U"/ or <tt/"V"/.
+is <tt/"U"/ or <tt/"V"/. The valid range of parameter values depends
+on the knot vectors of the NURBS patch.
+
+<item><tt/"Relative"/ controls whether the parametric value should
+be interpreted in a relative way. If enabled, a parametric value of 0.5
+always extracts from the middle of the knot vector, regardless of the
+actual knot values, and the valid range for <tt/"Parameter"/ is
+then consequently 0.0-1.0.
+This option is available since Ayam 1.15.
 
 <item><tt/"Revert"/ immediately reverts the extracted curve.
 
@@ -5229,7 +5241,7 @@ of the ExtrNC object.
 This way it is possible to extract a curve from a bevel or cap
 surface of e.g. a Revolve object.
 
-<item>Finally an <tt/"NCInfo"/ field informs about the actual configuration
+<item>Finally, a <tt/"NCInfo"/ field informs about the actual configuration
 of the extracted NURBS curve.
 </itemize>
 <p>
@@ -5242,6 +5254,10 @@ The NCircle object is available since Ayam 1.12 and creates a
 circular NURBS curve or a circular arc in the XY plane
 centered at the origin with designated radius and start/end angles.
 <p>
+In order to revert the created NURBS curve, since Ayam 1.15,
+the start/end angles may be used, e.g. <tt/"TMin"/ 0.0,
+<tt/"TMax"/ -360.0 for a reverse full circle.
+<p>
 You may convert the current NCircle object to an ordinary NURBS curve
 object using the main menu entry <tt>"Tools/Convert"</tt>.
 <p>
@@ -5253,19 +5269,18 @@ arc.
 <itemize>
 <item><tt/"Radius"/ is the radius of the circle.
 
-<item><tt/"TMin"/ controls the starting angle of the circle
+<item><tt/"TMin"/ (ThetaMin) controls the starting angle of the circle
 or arc to be created. Negative values are allowed.
 
-<item><tt/"TMax"/ controls the end angle of the circle
+<item><tt/"TMax"/ (ThetaMax) controls the end angle of the circle
 or arc to be created. Negative values are allowed.
 
 <item>See section <ref id="ncattr" name="NCurveAttr"> for a description
 of the parameters: <tt/"Tolerance"/ and <tt/"DisplayMode"/.
 
-<item>Finally an <tt/"NCInfo"/ field informs about the actual configuration
+<item>Finally, a <tt/"NCInfo"/ field informs about the actual configuration
 of the created NURBS curve.
 </itemize>
-<p>
 
 <sect1>OffsetNC (Offset NURBS Curves) Object<label id="offsetncobj">
 <p>
@@ -5301,7 +5316,7 @@ offset curve. Negative values are allowed.
 <item>See section <ref id="ncattr" name="NCurveAttr"> for a description
 of the parameters: <tt/"Tolerance"/ and <tt/"DisplayMode"/.
 
-<item>Finally an <tt/"NCInfo"/ field informs about the actual configuration
+<item>Finally, a <tt/"NCInfo"/ field informs about the actual configuration
 of the created NURBS curve.
 </itemize>
 
@@ -5329,17 +5344,29 @@ The extraction process is controlled by the following attributes:
 <sect2>ExtrNPAttr Property<label id="extrnpp"><label id="extrnpattrprop">
 <p>
 <itemize>
-<item><tt/"UMin"/, <tt/"UMax"/, <tt/"VMin"/, and <tt/"VMax"/ control
-which part of the original surface is to be extracted.
+<item><tt/"UMin"/, <tt/"UMax"/, <tt/"VMin"/, and <tt/"VMax"/ are
+parametric values that control which part of the original surface
+is to be extracted. The valid range of parameter values depends
+on the knot vectors of the original surface.
+
+<item><tt/"Relative"/ controls whether the parametric values should
+be interpreted in a relative way. If enabled, a parametric value of 0.5
+always extracts from the middle of the knot vector, regardless of the
+actual knot values, and the valid range for the parametric values is
+then consequently 0.0-1.0. This option is available since Ayam 1.15.
+
 <item><tt/"PatchNum"/ allows to select a patch from a list of
 patches delivered e.g. by a beveled extrude object as child
 of the ExtrNP object.
 This way it is possible to extract a patch from a bevel or cap
 surface of e.g. a Revolve object.
-</itemize>
-<p>
-See section <ref id="npattr" name="NPatchAttr"> for a description
+
+<item>See section <ref id="npattr" name="NPatchAttr"> for a description
 of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
+
+<item>Finally, a <tt/"NPInfo"/ field informs about the actual configuration
+of the extracted NURBS surface.
+</itemize>
 
 <sect1>Text Object<label id="textobj">
 <p>
@@ -10090,12 +10117,15 @@ operations. If you delete an object, it is gone! If you, accidentally, move
 an object using drag-and-drop, undo will not help!
 <p>
 The undo system works by storing copies of the different states of changed
-objects in an undo buffer. The storage space occupied by
-the undo buffer may be adjusted using the preferences
-(<tt>"Prefs/Modelling/UndoLevels"</tt>). Note that a value of -1 for
-<tt>"UndoLevels"</tt> completely disables the undo system.
-You may step backward through the saved states using
+objects in an undo buffer. You may step backward through the saved states using
 <tt/&lt;Ctrl+z&gt;/ (undo) but also forward using <tt/&lt;Ctrl+y&gt;/ (redo).
+<p>
+The storage space occupied by the undo buffer may be adjusted using the
+preferences (<tt>"Prefs/Modelling/UndoLevels"</tt>). A value of -1 for
+<tt>"UndoLevels"</tt> completely disables the undo system.
+The values 0 and 1 are not allowed. The value 2 means that there is
+always one state of the scene that can be restored, plus, a potential
+undo operation can also always be undone using redo.
 <p>
 The changes that would be undone or redone are shown in abbreviated form
 in the prompt of the Ayam console and, since Ayam 1.14, in the main menu
@@ -10106,7 +10136,16 @@ possible after those actions):
 Delete Object, New Scene, Open (Replace) Scene, and Close View.
 <p>
 Note that undo/redo will also modify objects that currently reside in the
-object clipboard if they have saved states in the undo buffer.
+object clipboard (if they have saved states in the undo buffer).
+This means that the following sequence of operations leads to a sphere
+placed at <tt>"0,0,0"</tt>:
+<code>
+create Sphere (at 0,0,0)
+move Sphere (to 1,1,0)
+cut Sphere (to clipboard)
+undo
+paste Sphere (from clipboard)
+</code>
 
 <sect1>The Modelling Concept Tool-Objects<label id="toolobj">
 <p>
@@ -11579,6 +11618,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>References: <ref id="secref" name="references">
 <item>refineNC: <ref id="screfinenc" name="scripting interface command">,
 <ref id="refit" name="refine tool">
+<item>Relative: <ref id="extrncp" name="ExtrNC attribute">,
+<ref id="extrnpp" name="ExtrNP attribute">
 <item>remKnNC: <ref id="scremknnc" name="scripting interface command">
 <item>Remove Knot: <ref id="remknt" name="remove knot tool">
 <item>RemoveMerged: <ref id="mmtools" name="Merge PolyMesh tool option">
@@ -11602,9 +11643,10 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>ResInstances: <ref id="prefrib" name="preference setting">
 <item>Resolve all Instances: <ref id="mmspecial" name="main menu entry">
 <item>Revert: <ref id="revertt" name="Revert tool">,
-<ref id="concatncp" name="ConcatNC attribute">,
 <ref id="textattr" name="Text attribute">,
+<ref id="concatncp" name="ConcatNC attribute">,
 <ref id="offsetncp" name="OffsetNC attribute">,
+<ref id="extrncp" name="ExtrNC attribute">,
 <ref id="screvert" name="scripting interface command">,
 <item>RevertBevels: <ref id="textattr" name="Text attribute">
 <item>RevertU, RevertV: <ref id="revertut" name="Revert U tool">,
