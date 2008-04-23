@@ -672,6 +672,7 @@ proc shortcut_viewactions { w } {
 	    update
 	    %W.f3D.togl reshape
 	    %W.f3D.togl render
+	    break
 	}
     }
     # if
@@ -688,6 +689,7 @@ proc shortcut_viewactions { w } {
 	    update
 	    %W reshape
 	    %W render
+	    break
 	}
     }
     # if
