@@ -25,7 +25,6 @@ proc kdialog_run { cmd } {
 
     set newcmd [join $cmd " "]
 
-    return;
     if { [catch {open "| $newcmd 2>@stdout"} file] } {
 	return "Can't open pipe for '$cmd'"
     }
