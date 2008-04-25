@@ -58,7 +58,9 @@ proc ::tk_getOpenFile { args } {
 	    -f* {
 		foreach {ftype} $val {
 		    if { [lindex $ftype 1] != "*" } {
-			lappend ftypes "*[lindex $ftype 1]"
+			foreach ext [lindex $ftype 1] {
+			    lappend ftypes *$ext
+			}
 		    }
 		}
 	    }
@@ -77,7 +79,7 @@ proc ::tk_getOpenFile { args } {
     set cmd [list kdialog --getopenfilename]
     if { $idir != "" } {
 	lappend cmd $idir
-    }
+    }    
     if { $tspec != "" } {
 	lappend cmd $tspec
     }
@@ -102,7 +104,9 @@ proc ::tk_getSaveFile { args } {
 	    -f* {
 		foreach {ftype} $val {
 		    if { [lindex $ftype 1] != "*" } {
-			lappend ftypes "*[lindex $ftype 1]"
+			foreach ext [lindex $ftype 1] {
+			    lappend ftypes *$ext
+			}
 		    }
 		}
 	    }
