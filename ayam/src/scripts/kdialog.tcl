@@ -14,7 +14,7 @@
 
 if { [auto_execok kdialog] == "" } {
     # XXXX raise error dialog
-    return;
+#    return;
 }
 
 
@@ -23,8 +23,10 @@ if { [auto_execok kdialog] == "" } {
 #
 proc kdialog_run { cmd } {
 
-    if { [catch {open "| $cmd 2>@stdout"} file] } {
-	return "Can't open pipe for '$cmd'"   
+    set newcmd [join $cmd " "]
+
+    if { [catch {open "| $newcmd 2>@stdout"} file] } {
+	return "Can't open pipe for '$cmd'"
     }
 
     set pipe $file
@@ -73,17 +75,17 @@ proc ::tk_getOpenFile { args } {
     # foreach
 
     if { $ftypes != "" } {
-	set tspec "\"$ftypes | Supported Files\""
+	set tspec "$ftypes |Supported Files"
     }
 
     set cmd [list kdialog --getopenfilename]
     if { $idir != "" } {
-	lappend cmd $idir
-    }    
-    if { $tspec != "" } {
-	lappend cmd $tspec
+	lappend cmd "\"$idir\""
     }
-    foreach elem $opt { lappend cmd $elem }
+    if { $tspec != "" } {
+	lappend cmd "\"$tspec\""
+    }
+    foreach elem $opt { lappend cmd "\"$elem\"" }
 
  return [kdialog_run $cmd];
 }
@@ -124,12 +126,12 @@ proc ::tk_getSaveFile { args } {
 
     set cmd [list kdialog --getsavefilename]
     if { $idir != "" } {
-	lappend cmd $idir
+	lappend cmd "\"$idir\""
     }
     if { $tspec != "" } {
-	lappend cmd $tspec
+	lappend cmd "\"$tspec\""
     }
-    foreach elem $opt { lappend cmd $elem }
+    foreach elem $opt { lappend cmd "\"$elem\"" }
 
  return [kdialog_run $cmd];
 }
@@ -158,7 +160,7 @@ proc ::tk_chooseDirectory { args } {
     if { $idir != "" } {
 	lappend cmd $idir
     }
-    foreach elem $opt { lappend cmd $elem }
+    foreach elem $opt { lappend cmd "\"$elem\"" }
 
  return [kdialog_run $cmd];
 }
