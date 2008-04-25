@@ -13,8 +13,8 @@
 #
 
 if { [auto_execok kdialog] == "" } {
-    # XXXX raise error dialog
-#    return;
+    ayError 2 "kdialog.tcl" "Can not find/execute kdialog!"
+    return;
 }
 
 
@@ -25,6 +25,7 @@ proc kdialog_run { cmd } {
 
     set newcmd [join $cmd " "]
 
+    return;
     if { [catch {open "| $newcmd 2>@stdout"} file] } {
 	return "Can't open pipe for '$cmd'"
     }
@@ -67,7 +68,7 @@ proc ::tk_getOpenFile { args } {
 		}
 	    }
 	    -t* {
-		lappend opt "-title $val"
+		lappend opt "-title=\"$val\""
 	    }
 	}
 	# switch
@@ -113,7 +114,7 @@ proc ::tk_getSaveFile { args } {
 		}
 	    }
 	    -t* {
-		lappend opt "-title $val"
+		lappend opt "-title=\"$val\""
 	    }
 	}
 	# switch
@@ -149,7 +150,7 @@ proc ::tk_chooseDirectory { args } {
 		set idir $val
 	    }
 	    -t* {
-		lappend opt "-title $val"
+		lappend opt "-title=\"$val\""
 	    }
 	}
 	# switch
