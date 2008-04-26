@@ -67,7 +67,7 @@ proc ::tk_getOpenFile { args } {
 		}
 	    }
 	    -t* {
-		lappend opt "-title=\"$val\""
+		lappend opt "-title=\\\"$val\\\""
 	    }
 	}
 	# switch
@@ -113,7 +113,7 @@ proc ::tk_getSaveFile { args } {
 		}
 	    }
 	    -t* {
-		lappend opt "-title=\"$val\""
+		lappend opt "-title=\\\"$val\\\""
 	    }
 	}
 	# switch
@@ -149,7 +149,7 @@ proc ::tk_chooseDirectory { args } {
 		set idir $val
 	    }
 	    -t* {
-		lappend opt "-title=\"$val\""
+		lappend opt "-title=\\\"$val\\\""
 	    }
 	}
 	# switch
