@@ -13,7 +13,7 @@
 #
 
 if { [auto_execok zenity] == "" } {
-    # XXXX raise error dialog
+    ayError 2 "zdialog.tcl" "Can not find/execute zenity!"
     return;
 }
 
@@ -22,7 +22,9 @@ if { [auto_execok zenity] == "" } {
 #
 proc zdialog_run { cmd } {
 
-    if { [catch {open "| $cmd 2>@stdout"} file] } {
+    set newcmd  [join $cmd " "]
+
+    if { [catch {open "| $newcmd 2>@stdout"} file] } {
 	return "Can't open pipe for '$cmd'"   
     }
 
@@ -60,7 +62,7 @@ proc ::tk_getOpenFile { args } {
     # foreach
 
     set cmd [list zenity --file-selection]
-    foreach elem $opt { lappend cmd $elem }
+    foreach elem $opt { lappend cmd "\"$elem\"" }
 
  return [zdialog_run $cmd];
 }
@@ -82,7 +84,7 @@ proc ::tk_getSaveFile { args } {
 		}
 	    }
 	    -t* {
-		lappend opt "--title=\"$val\""
+		lappend opt --title=$val
 	    }
 	}
 	# switch
@@ -90,7 +92,7 @@ proc ::tk_getSaveFile { args } {
     # foreach
 
     set cmd [list zenity --file-selection --save]
-    foreach elem $opt { lappend cmd $elem }
+    foreach elem $opt { lappend cmd "\"$elem\"" }
 
  return [zdialog_run $cmd];
 }
@@ -107,7 +109,7 @@ proc ::tk_chooseDirectory { args } {
     foreach {key val} $args {
 	switch -glob -- $key {
 	    -t* {
-		lappend opt "--title=\"$val\""
+		lappend opt --title=$val
 	    }
 	}
 	# switch
@@ -115,7 +117,7 @@ proc ::tk_chooseDirectory { args } {
     # foreach
 
     set cmd [list zenity --file-selection --directory]
-    foreach elem $opt { lappend cmd $elem }
+    foreach elem $opt { lappend cmd "\"$elem\"" }
 
  return [zdialog_run $cmd];
 }
