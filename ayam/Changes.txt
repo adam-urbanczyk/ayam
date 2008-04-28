@@ -1,8 +1,8 @@
-[20. Apr 2008] CVS-Head:
+[28. Apr 2008] CVS-Head:
 =======================
 Bug Fixes:
 o aycsg plugin GUI code for internal views (SF 1943164)
-o RIB export of Instances in CSG hierarchies (SF)
+o RIB export of Instances in CSG hierarchies (SF 1953633)
 
 GUI:
 o added plugin "aydnd.tcl" that enables inter-application drag-and-drop
@@ -11,6 +11,8 @@ o added plugin "aydnd.tcl" that enables inter-application drag-and-drop
 Modelling:
 o added new object type "ACurve" (for approximating curves)
 o improved bevels and offset curves (in bevel mode) of open curves
+o improved offset curve fidelity (in section mode)
+o added parameter "Relative" to ExtrNP/ExtrNC objects
 
 Scripts/Scripting Interface:
 o added example script "zdialog.tcl" that switches all internal file dialogs
