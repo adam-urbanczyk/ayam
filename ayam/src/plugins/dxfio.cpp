@@ -2148,6 +2148,8 @@ dxfio_writencurve(ay_object *o, dimeModel *dm, double *m)
  int stride = 4, a = 0;
  bool has_weights = false;
  dimeSpline *sp = NULL;
+ dimeVec3f *dv = NULL;
+ dxfdouble *dk = NULL;
 
   if(!o || !dm || !m)
     return AY_ENULL;
@@ -2179,7 +2181,7 @@ dxfio_writencurve(ay_object *o, dimeModel *dm, double *m)
 
   sp->setDegree(nc->order-1);
 
-  dxfdouble *dk = (dxfdouble*)calloc(nc->length+nc->order, sizeof(dxfdouble));
+  dk = (dxfdouble*)calloc(nc->length+nc->order, sizeof(dxfdouble));
   if(!dk)
     { ay_status = AY_EOMEM; goto cleanup; }
 
@@ -2190,7 +2192,7 @@ dxfio_writencurve(ay_object *o, dimeModel *dm, double *m)
   sp->setKnotValues(dk, nc->length+nc->order, NULL);
   dk = NULL;
 
-  dimeVec3f *dv = (dimeVec3f*)calloc(nc->length, sizeof(dimeVec3f));
+  dv = (dimeVec3f*)calloc(nc->length, sizeof(dimeVec3f));
   if(!dv)
     { ay_status = AY_EOMEM; goto cleanup; }
 
