@@ -5393,7 +5393,6 @@ x3dio_readtransform(scew_element *element)
 
   if(need_level)
     {
-
       if(!(o = calloc(1, sizeof(ay_object))))
 	{
 	  return AY_EOMEM;
@@ -6440,6 +6439,7 @@ x3dio_writetransform(scew_element *element, ay_object *o,
      (o->quat[0] != 0.0) || (o->quat[1] != 0.0) ||
      (o->quat[2] != 0.0) || (o->quat[3] != 1.0))
     {
+
       /* process translation */
       if((o->movx != 0.0) || (o->movy != 0.0) || (o->movz != 0.0))
 	{
@@ -6447,13 +6447,7 @@ x3dio_writetransform(scew_element *element, ay_object *o,
 	  scew_element_add_attr_pair(*transform_element, "translation",
 				     buffer);
 	}
-      /* process scale */
-      if((o->scalx != 0.0) || (o->scaly != 0.0) || (o->scalz != 0.0))
-	{
-	  sprintf(buffer, "%g %g %g", o->scalx, o->scaly, o->scalz);
-	  scew_element_add_attr_pair(*transform_element, "scale",
-				     buffer);
-	}
+
       /* process rotation */
       if((o->quat[0] != 0.0) || (o->quat[1] != 0.0) ||
 	 (o->quat[2] != 0.0) || (o->quat[3] != 1.0))
@@ -6466,6 +6460,15 @@ x3dio_writetransform(scew_element *element, ay_object *o,
 	  scew_element_add_attr_pair(*transform_element, "rotation",
 				     buffer);
 	}
+
+      /* process scale */
+      if((o->scalx != 1.0) || (o->scaly != 1.0) || (o->scalz != 1.0))
+	{
+	  sprintf(buffer, "%g %g %g", o->scalx, o->scaly, o->scalz);
+	  scew_element_add_attr_pair(*transform_element, "scale",
+				     buffer);
+	}
+
     } /* if */
 
  return AY_OK;
@@ -6794,6 +6797,7 @@ x3dio_writencconvertibleobj(scew_element *element, ay_object *o)
 {
  int ay_status = AY_OK;
  ay_object *c = NULL, *t;
+ scew_element *transform_element = NULL;
 
   if(!x3dio_writecurves)
     return AY_OK;
@@ -6804,12 +6808,16 @@ x3dio_writencconvertibleobj(scew_element *element, ay_object *o)
   ay_status = ay_provide_object(o, AY_IDNCURVE, &c);
   if(!c)
     return AY_ERROR;
+
+  /* write transform */
+  ay_status = x3dio_writetransform(element, o, &transform_element);
+
   t = c;
   while(t)
     {
       if(t->type == AY_IDNCURVE)
 	{
-	  ay_status = x3dio_writeobject(element, t, AY_FALSE);
+	  ay_status = x3dio_writeobject(transform_element, t, AY_FALSE);
 	}
 
       t = t->next;
@@ -7104,6 +7112,7 @@ x3dio_writenpconvertibleobj(scew_element *element, ay_object *o)
 {
  int ay_status = AY_OK;
  ay_object *c = NULL, *t;
+ scew_element *transform_element = NULL;
 
   if(!o)
    return AY_ENULL;
@@ -7111,12 +7120,16 @@ x3dio_writenpconvertibleobj(scew_element *element, ay_object *o)
   ay_status = ay_provide_object(o, AY_IDNPATCH, &c);
   if(!c)
     return AY_ERROR;
+
+  /* write transform */
+  ay_status = x3dio_writetransform(element, o, &transform_element);
+
   t = c;
   while(t)
     {
       if(t->type == AY_IDNPATCH)
 	{
-	  ay_status = x3dio_writeobject(element, t, AY_FALSE);
+	  ay_status = x3dio_writeobject(transform_element, t, AY_FALSE);
 	}
 
       t = t->next;
@@ -8270,9 +8283,6 @@ x3dio_writesweepobj(scew_element *element, ay_object *o)
 
   swp = (ay_sweep_object*)o->refine;
 
-  if(!x3dio_writeparam)
-    return x3dio_writenpconvertibleobj(element, o);
-
   /* write transform */
   ay_status = x3dio_writetransform(element, o, &transform_element);
 
@@ -8383,9 +8393,6 @@ x3dio_writeswingobj(scew_element *element, ay_object *o)
     return x3dio_writenpconvertibleobj(element, o);
 
   swing = (ay_swing_object*)o->refine;
-
-  if(!x3dio_writeparam)
-    return x3dio_writenpconvertibleobj(element, o);
 
   /* write transform */
   ay_status = x3dio_writetransform(element, o, &transform_element);
@@ -8503,9 +8510,6 @@ x3dio_writeextrudeobj(scew_element *element, ay_object *o)
     return x3dio_writenpconvertibleobj(element, o);
 
   ext = (ay_extrude_object*)o->refine;
-
-  if(!x3dio_writeparam)
-    return x3dio_writenpconvertibleobj(element, o);
 
   /* create trajectory curve */
   tr = NULL;
