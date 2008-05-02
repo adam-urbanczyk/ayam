@@ -2798,15 +2798,13 @@ Dxfio_Init(Tcl_Interp *interp)
       ay_error(AY_ERROR, fname, "However, it is probably safe to continue...");
     }
 
-#ifndef AYDXFIOWRAPPED
   // source dxfio.tcl, it contains vital Tcl-code
   if((Tcl_EvalFile(interp, "dxfio.tcl")) != TCL_OK)
-     {
-       ay_error(AY_ERROR, fname,
-		  "Error while sourcing \\\"dxfio.tcl\\\"!");
-       return TCL_OK;
-     }
-#endif // !AYDXFIOWRAPPED
+    {
+      ay_error(AY_ERROR, fname,
+	       "Error while sourcing \\\"dxfio.tcl\\\"!");
+      return TCL_OK;
+    }
 
   // create new Tcl commands to interface with the plugin
   Tcl_CreateCommand(interp, "dxfioRead", dxfio_readtcmd,

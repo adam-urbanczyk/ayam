@@ -9025,15 +9025,13 @@ X_Init(Tcl_Interp *interp)
       ay_error(AY_ERROR, fname, "However, it is probably safe to continue...");
     }
 
-#ifndef AYX3DIOWRAPPED
   /* source x3dio.tcl, it contains vital Tcl-code */
   if((Tcl_EvalFile(interp, "x3dio.tcl")) != TCL_OK)
-     {
-       ay_error(AY_ERROR, fname,
-		  "Error while sourcing \\\"x3dio.tcl\\\"!");
-       return TCL_OK;
-     }
-#endif /* !AYX3DIOWRAPPED */
+    {
+      ay_error(AY_ERROR, fname,
+	       "Error while sourcing \\\"x3dio.tcl\\\"!");
+      return TCL_OK;
+    }
 
   /* create new Tcl commands to interface with the plugin */
   Tcl_CreateCommand(interp, "x3dioRead", x3dio_readtcmd,
