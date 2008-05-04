@@ -4653,6 +4653,114 @@ ay_npt_gettangentfromcontrol(int ctype, int n, int p,
 } /* ay_npt_gettangentfromcontrol */
 
 
+/* ay_npt_getnormalfromcontrol3D:
+ *
+ *
+ */
+int
+ay_npt_getnormalfromcontrol3D(int ctype, int n, int p,
+			      int stride, double *P, int a, double *t)
+{
+ int ay_status = AY_OK;
+ int found = AY_FALSE, wrapped = AY_FALSE;
+ int b, i1, i2;
+ int before, after;
+ double l, P1[4], P2[4], P3[4];
+
+  if(ctype == AY_CTPERIODIC)
+    {
+      if(a == 0)
+	a = (n-p);
+      if(a == n)
+	a = p;
+      if(a > (n-p))
+	a -= (n-p);
+    } /* if */
+
+  /* find a good point after P[a] */
+  if((ctype == AY_CTOPEN) && (a == (n-1)))
+    {
+      after = a;
+    }
+  else
+    {
+      b = a+1;
+      i1 = a*stride;
+      while(!found)
+	{
+	  if(b >= n)
+	    {
+	      if(wrapped)
+		return AY_ERROR;
+	      wrapped = AY_TRUE;
+	      b = 0;
+	    } /* if */
+
+	  i2 = b*stride;
+	  if((P[i1] != P[i2]) || (P[i1+1] != P[i2+1]) || (P[i1+2] != P[i2+2]))
+	    {
+	      found = AY_TRUE;
+	    }
+	  else
+	    {
+	      b++;
+	    } /* if */
+	} /* while */
+      after = b;
+    } /* if */
+
+  /* find a good point before P[a] */
+  if((ctype == AY_CTOPEN) && (a == 0))
+    {
+      before = a;
+    }
+  else
+    {
+      found = AY_FALSE;
+      wrapped = AY_FALSE;
+      b = a-1;
+      i1 = a*stride;
+      while(!found)
+	{
+	  if(b < 0)
+	    {
+	      if(wrapped)
+		return AY_ERROR;
+	      wrapped = AY_TRUE;
+	      b = (n-1);
+	    } /* if */
+
+	  i2 = b*stride;
+	  if((P[i1] != P[i2]) || (P[i1+1] != P[i2+1]) || (P[i1+2] != P[i2+2]))
+	    {
+	      found = AY_TRUE;
+	    }
+	  else
+	    {
+	      b--;
+	    } /* if */
+	} /* while */
+      before = b;
+    } /* if */
+
+  /* calculate the normal */
+  memcpy(P1, &(P[after*stride]), stride*sizeof(double));
+  memcpy(P2, &(P[a*stride]), stride*sizeof(double));
+  memcpy(P3, &(P[before*stride]), stride*sizeof(double));
+
+  for(i1 = 0; i1 < 3; i1++)
+    {
+      P1[i1] /= P1[3];
+      P2[i1] /= P2[3];
+      P3[i1] /= P3[3];
+    }
+
+  ay_geom_calcnfrom3(P1, P2, P3, t);
+
+ return ay_status;
+} /* ay_npt_getnormalfromcontrol3D */
+
+
 /* ay_npt_bevel:
  *  create a bevel in <bevel> from a planar closed NURB curve <o>;
  *  direction of curve defines, whether bevel rounds inwards or outwards;
