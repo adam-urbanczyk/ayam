@@ -5626,6 +5626,29 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
 	    }
 
 	} /* if */
+
+      if(mode == 2)
+	{
+	  /*
+	    "Bevel3D" mode:
+	     offset corner points according to normals derived
+	     from surrounding control points
+	  */
+	  for(j = 0; j < curve->length; j++)
+	    {
+
+	      ay_npt_getnormalfromcontrol3D(curve->type, curve->length,
+				       curve->order-1, 4, curve->controlv, j,
+				       normal);
+	      AY_V3SCAL(normal, offset);
+	      newcv[j*stride]   = curve->controlv[j*stride]   + normal[0];
+	      newcv[j*stride+1] = curve->controlv[j*stride+1] + normal[1];
+	      newcv[j*stride+2] = curve->controlv[j*stride+2] + normal[2];
+	      newcv[j*stride+3] = curve->controlv[j*stride+3];
+
+	    } /* for */
+	} /* if */
+
     } /* if */
 
   if(curve->knot_type == AY_KTCUSTOM)
