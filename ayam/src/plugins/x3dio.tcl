@@ -24,6 +24,7 @@ uplevel #0 { array set x3dio_options {
     WriteCurves 1
     WriteViews 1
     WriteParametrics 1
+    ResolveInstances 0
     RescaleKnots 0.0
     TopLevelLayers 0
     ScaleFactor 1.0
@@ -214,6 +215,7 @@ proc x3dio_export { } {
     addCheck $f x3dio_options WriteCurves
     addCheck $f x3dio_options WriteViews
     addCheck $f x3dio_options WriteParametrics
+    addCheck $f x3dio_options ResolveInstances
     addCheck $f x3dio_options TopLevelLayers
     addString $f x3dio_options STagName
     addString $f x3dio_options TTagName
@@ -243,6 +245,7 @@ proc x3dio_export { } {
 	    -l $x3dio_options(TopLevelLayers)\
 	    -f $x3dio_options(ScaleFactor)\
 	    -x $x3dio_options(WriteParametrics)\
+	    -r $x3dio_options(ResolveInstances)\
 	    -t $x3dio_options(STagName) $x3dio_options(TTagName)
 
 	cd $oldcd
