@@ -5434,7 +5434,7 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
 	  for(j = 0; j < curve->length; j++)
 	    {
 
-	      ay_npt_gettangentfromcontrol(curve->type, curve->length,
+	      ay_npt_gettangentfromcontrol2D(curve->type, curve->length,
 				       curve->order-1, 4, curve->controlv, j,
 				       tangent);
 

@@ -438,8 +438,8 @@ int ay_npt_skinv(ay_object *curves, int order, int knot_type,
 int ay_npt_extrude(double height, ay_object *o,
 		   ay_nurbpatch_object **extrusion);
 
-int ay_npt_gettangentfromcontrol(int ctype, int n, int p,
-				 int stride, double *P, int a, double *t);
+int ay_npt_gettangentfromcontrol2D(int ctype, int n, int p, int stride,
+				   double *P, int a, double *T);
 
 int ay_npt_getnormalfromcontrol3D(int ctype, int n, int p,
 				  int stride, double *P, int a, double *N);
