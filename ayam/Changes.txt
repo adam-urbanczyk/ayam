@@ -1,8 +1,9 @@
-[28. Apr 2008] CVS-Head:
+[5. May 2008] CVS-Head:
 =======================
 Bug Fixes:
 o aycsg plugin GUI code for internal views (SF 1943164)
 o RIB export of Instances in CSG hierarchies (SF 1953633)
+o X3D export of trim curves crashes (SF 1945924)
 
 GUI:
 o added plugin "aydnd.tcl" that enables inter-application drag-and-drop
@@ -13,6 +14,11 @@ o added new object type "ACurve" (for approximating curves)
 o improved bevels and offset curves (in bevel mode) of open curves
 o improved offset curve fidelity (in section mode)
 o added parameter "Relative" to ExtrNP/ExtrNC objects
+o NCircle objects now accept reverse parameters to create reverted circles
+o added 3D offset mode ("Bevel3D") to offset curve creation
+
+Import/Export:
+o added support for true instances (via USE/DEF) to X3D export
 
 Scripts/Scripting Interface:
 o added example script "zdialog.tcl" that switches all internal file dialogs
