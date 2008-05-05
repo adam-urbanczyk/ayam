@@ -442,7 +442,7 @@ int ay_npt_gettangentfromcontrol(int ctype, int n, int p,
 				 int stride, double *P, int a, double *t);
 
 int ay_npt_getnormalfromcontrol3D(int ctype, int n, int p,
-				  int stride, double *P, int a, double *t);
+				  int stride, double *P, int a, double *N);
 
 int ay_npt_bevel(int type, double radius, int align, ay_object *o,
 		 ay_nurbpatch_object **bevel);

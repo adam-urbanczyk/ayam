@@ -5371,7 +5371,10 @@ ay_nct_isdegen(ay_nurbcurve_object *curve)
 
 
 /* ay_nct_offset:
- * WIP
+ *  create offset curve from <o>
+ *  the new curve is <offset> away from the original
+ *  returns new curve in <nc>
+ *  WIP
  */
 int
 ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)

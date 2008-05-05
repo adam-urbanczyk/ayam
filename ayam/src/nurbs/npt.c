@@ -4659,13 +4659,14 @@ ay_npt_gettangentfromcontrol(int ctype, int n, int p,
  */
 int
 ay_npt_getnormalfromcontrol3D(int ctype, int n, int p,
-			      int stride, double *P, int a, double *t)
+			      int stride, double *P, int a, double *N)
 {
  int ay_status = AY_OK;
  int found = AY_FALSE, wrapped = AY_FALSE;
  int b, i1, i2;
  int before, after;
  double l, P1[4], P2[4], P3[4];
+ double t1[3], t2[3];
 
   if(ctype == AY_CTPERIODIC)
     {
@@ -4755,7 +4756,21 @@ ay_npt_getnormalfromcontrol3D(int ctype, int n, int p,
       P3[i1] /= P3[3];
     }
 
-  ay_geom_calcnfrom3(P1, P2, P3, t);
+  ay_geom_calcnfrom3(P1, P2, P3, t1);
+
+  /* now calculate the tangent */
+  t2[0] = (P[after*stride]/P[after*stride+3]) -
+    (P[before*stride]/P[before*stride+3]);
+  t2[1] = (P[(after*stride)+1]/P[(after*stride)+3]) -
+    (P[(before*stride)+1]/P[(before*stride)+3]);
+  t2[2] = (P[(after*stride)+2]/P[(after*stride)+3]) -
+    (P[(before*stride)+2]/P[(before*stride)+3]);
+
+  AY_V3NORM(t2);
+
+  AY_V3CROSS(N, t1, t2);
+
+  AY_V3NORM(N);
 
  return ay_status;
 } /* ay_npt_getnormalfromcontrol3D */
