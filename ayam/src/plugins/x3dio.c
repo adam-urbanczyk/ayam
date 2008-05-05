@@ -20,6 +20,7 @@
 
 #include <stdio.h>
 
+
 /* local types: */
 
 typedef struct x3dio_trafostate_s {
@@ -31,6 +32,7 @@ typedef struct x3dio_trafostate_s {
 
 typedef int (x3dio_writecb) (scew_element *element, ay_object *o);
 
+
 /* global variables: */
 
 char x3dio_version_ma[] = AY_VERSIONSTR;
@@ -40,6 +42,7 @@ static Tcl_HashTable x3dio_write_ht;
 
 static Tcl_HashTable *x3dio_defs_ht = NULL;
 
+/* MN tags are used to temporarily store x3dio generated DEF names */
 char *x3dio_mn_tagtype;
 char *x3dio_mn_tagname = "MN";
 
@@ -127,8 +130,8 @@ int x3dio_readdoublepoints(scew_element *element, char *attrname,
 int x3dio_readindex(scew_element *element, char *attrname,
 		    unsigned int *len, int **res);
 
-int x3dio_readbools(scew_element *element, char *attrname,
-		    unsigned int *len, int **res);
+int x3dio_readboolvec(scew_element *element, char *attrname,
+		      unsigned int *len, int **res);
 
 int x3dio_processuse(scew_element **element);
 
@@ -1038,12 +1041,12 @@ x3dio_readindex(scew_element *element, char *attrname,
 } /* x3dio_readindex */
 
 
-/* x3dio_readbools:
+/* x3dio_readboolvec:
  *  read a vector of boolean values
  */
 int
-x3dio_readbools(scew_element *element, char *attrname,
-		unsigned int *len, int **res)
+x3dio_readboolvec(scew_element *element, char *attrname,
+		  unsigned int *len, int **res)
 {
  scew_attribute *attr = NULL;
  const XML_Char *str = NULL, *p;
@@ -1116,7 +1119,7 @@ x3dio_readbools(scew_element *element, char *attrname,
     } /* if */
 
  return AY_OK;
-} /* x3dio_readbools */
+} /* x3dio_readboolvec */
 
 
 /* x3dio_processuse:
@@ -5129,7 +5132,7 @@ int x3dio_readcadelement(scew_element *element, int type)
   if(type == 2)
     {
       /* read visible attribute */
-      ay_status = x3dio_readbools(element, "visible", &vislen, &vis);
+      ay_status = x3dio_readboolvec(element, "visible", &vislen, &vis);
 
       /* apply visible attribute */
       o = o->down;
@@ -6481,7 +6484,7 @@ x3dio_writetransform(scew_element *element, ay_object *o,
 
 
 /* x3dio_clearmntags:
- *
+ * _recursively_ clear all MN tags from <o> its siblings and children
  */
 int
 x3dio_clearmntags(ay_object *o)
@@ -6513,12 +6516,12 @@ x3dio_clearmntags(ay_object *o)
 		  tag = tag->next;
 		} /* if */
 	    } /* while */
-
 	} /* if */
 
       if(o->down)
 	ay_status = x3dio_clearmntags(o->down);
 
+      /* XXXX break recursion on all errors? */
       if(ay_status)
 	return ay_status;
 
