@@ -4545,13 +4545,13 @@ ay_npt_extrude(double height, ay_object *o, ay_nurbpatch_object **extrusion)
 } /* ay_npt_extrude */
 
 
-/* ay_npt_gettangentfromcontrol:
+/* ay_npt_gettangentfromcontrol2D:
  *
  *
  */
 int
-ay_npt_gettangentfromcontrol(int ctype, int n, int p,
-			     int stride, double *P, int a, double *t)
+ay_npt_gettangentfromcontrol2D(int ctype, int n, int p, int stride,
+			       double *P, int a, double *T)
 {
  int ay_status = AY_OK;
  int found = AY_FALSE, wrapped = AY_FALSE;
@@ -4636,21 +4636,21 @@ ay_npt_gettangentfromcontrol(int ctype, int n, int p,
     } /* if */
 
   /* now calculate the tangent */
-  t[0] = (P[after*stride]/P[after*stride+3]) -
+  T[0] = (P[after*stride]/P[after*stride+3]) -
     (P[before*stride]/P[before*stride+3]);
-  t[1] = (P[(after*stride)+1]/P[(after*stride)+3]) -
+  T[1] = (P[(after*stride)+1]/P[(after*stride)+3]) -
     (P[(before*stride)+1]/P[(before*stride)+3]);
 
   /* normalize tangent vector */
-  l = sqrt(t[0]*t[0]+t[1]*t[1]);
+  l = sqrt(T[0]*T[0]+T[1]*T[1]);
   if(l > AY_EPSILON)
     {
-      t[0] /= l;
-      t[1] /= l;
+      T[0] /= l;
+      T[1] /= l;
     } /* if */
 
  return ay_status;
-} /* ay_npt_gettangentfromcontrol */
+} /* ay_npt_gettangentfromcontrol2D */
 
 
 /* ay_npt_getnormalfromcontrol3D:
@@ -4946,9 +4946,9 @@ ay_npt_bevel(int type, double radius, int align, ay_object *o,
       for(j = 0; j < curve->length; j++)
 	{
 	  /* get displacement direction */
-	  ay_npt_gettangentfromcontrol(curve->type, curve->length,
-				       curve->order-1, 4, controlv, j,
-				       tangent);
+	  ay_npt_gettangentfromcontrol2D(curve->type, curve->length,
+					 curve->order-1, 4, controlv, j,
+					 tangent);
 
 	  w = controlv[b+3];
 	  x = controlv[b]/w;
@@ -5006,9 +5006,9 @@ ay_npt_bevel(int type, double radius, int align, ay_object *o,
 	  for(j = 0; j < curve->length; j++)
 	    {
 	      /* get displacement direction */
-	      ay_npt_gettangentfromcontrol(curve->type, curve->length,
-					   curve->order-1, 4, controlv, j,
-					   tangent);
+	      ay_npt_gettangentfromcontrol2D(curve->type, curve->length,
+					     curve->order-1, 4, controlv, j,
+					     tangent);
 
 	      x = controlv[b];
 	      y = controlv[b+1];
@@ -5043,8 +5043,8 @@ ay_npt_bevel(int type, double radius, int align, ay_object *o,
   for(j = 0; j < curve->length; j++)
     {
       /* get displacement direction */
-      ay_npt_gettangentfromcontrol(curve->type, curve->length,
-				   curve->order-1, 4, controlv, j, tangent);
+      ay_npt_gettangentfromcontrol2D(curve->type, curve->length,
+				     curve->order-1, 4, controlv, j, tangent);
 
       x = controlv[b];
       y = controlv[b+1];
