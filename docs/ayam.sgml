@@ -2963,9 +2963,10 @@ New solid primitives may be created with levels of type <tt/"Primitive"/.
 </code>
 In this example an open sphere with <tt/"ThetaMax"/ 180.0 (a hemisphere)
 is manually capped by a disk object. The two objects need to be placed
-into a level of type <tt/"Primitive"/. Both objects that form the new
-primitive use a different material. In addition, a grey box cuts away
-a part from the multi colored hemisphere.
+into a level of type <tt/"Primitive"/ because each object alone is an
+open surface and therefore not a valid CSG primitive. Both objects that
+form the new primitive use a different material. In addition, a grey box
+cuts away a part from the multi colored hemisphere.
 The above CSG hierarchy is available as example scene file
 <tt/"multicolcsg.ay"/.
 <p>
@@ -9829,7 +9830,7 @@ to 3DM objects; from 50 to 100 percent OpenNURBS is writing the 3DM file.
 
 <sect1>X3D (Web3D) Import<label id="impx3d">
 <p>
-Since version 1.13 Ayam contains a plugin named <tt>"x3dio"</tt> that may
+Since version 1.13 Ayam provides a plugin named <tt>"x3dio"</tt> that may
 import scenes from the XML based X3D file format published by the Web3D
 Consortium. The XML parser used in this plugin is based on Expat and SCEW.
 <p>
@@ -10032,7 +10033,7 @@ from 50 to 100 percent the x3dio plugin is creating Ayam objects.
 
 <sect1>X3D (Web3D) Export<label id="expx3d">
 <p>
-Since version 1.13 Ayam contains a plugin named x3dio that may export
+Since version 1.13 Ayam provides a plugin named x3dio that may export
 scenes to the XML based X3D file format published by the Web3D Consortium.
 The XML parser used in this plugin is based on Expat and SCEW.
 <p>
@@ -10072,6 +10073,8 @@ views of type <tt/"Front"/, <tt/"Side"/, or <tt/"Top"/ will not be
 exported properly.
 <p>
 Object names will be converted to DEF attributes.
+<p>
+Instances can be resolved or exported as USE/DEF pairs.
 
 <sect2>X3D Export Options<label id="expx3dopt">
 <p>
@@ -10084,6 +10087,8 @@ to triangles for export;
 <item><tt>"WriteCurves"</tt> toggles writing of NURBS curves and
 NURBS curve providing objects to the exported file (This option does
 <em>not</em> influence the export of trim curves.);
+<item><tt>"WriteParametrics"</tt> toggles writing of tool objects
+as plain NURBS surface or higher level primitive (e.g. NurbsSweptSurface);
 <item><tt/"ScaleFactor"/ allows to apply a scaling factor to all
 exported objects;
 <item><tt>"TopLevelLayers"</tt> arranges for all objects in top level
@@ -11919,6 +11924,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>wrib: <ref id="scwrib" name="scripting interface command">
 <item>WriteCurves: <ref id="impwav" name="Wavefront OBJ import/export option">,
 <ref id="exprhino" name="3DM (Rhino) export option">
+<item>WriteParametrics: <ref id="expx3dopt" name="X3D (Web3D) export option">
 <item>WriteIdent: <ref id="prefrib" name="preference setting">
 <item>WriteSelected: <ref id="exprhino" name="3DM (Rhino) export option">,
 <ref id="expwav" name="Wavefront OBJ export option">
