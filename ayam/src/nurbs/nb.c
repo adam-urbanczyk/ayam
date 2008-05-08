@@ -1320,8 +1320,14 @@ ay_nb_FindSpanMult(int n, int p, double u, double *U, int *s)
 
   while(l >= 0)
     {
+      /*
       if(U[l] != u)
 	break;
+      */
+
+      if(fabs(U[l]-u) > AY_EPSILON)
+	break;
+
       l--;
     }
   *s = mid - l;
