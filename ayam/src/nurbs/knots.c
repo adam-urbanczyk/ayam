@@ -956,12 +956,12 @@ ay_knots_init(Tcl_Interp *interp)
  int ay_status = AY_OK;
 
   /* register UMM tag type */
-  ay_status = ay_tags_register(interp, "UMM", &ay_umm_tagtype);
+  ay_status = ay_tags_register(interp, ay_umm_tagname, &ay_umm_tagtype);
   if(ay_status)
     return ay_status;
 
   /* register VMM tag type */
-  ay_status = ay_tags_register(interp, "VMM", &ay_vmm_tagtype);
+  ay_status = ay_tags_register(interp, ay_vmm_tagname, &ay_vmm_tagtype);
 
  return ay_status;
 } /* ay_knots_init */

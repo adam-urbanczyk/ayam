@@ -503,7 +503,7 @@ ay_wrib_refobject(char *file, ay_object *o)
   tag = o->tags;
   while(tag && !found)
     {
-      if(tag->type == ay_instt_oitagtype)
+      if(tag->type == ay_oi_tagtype)
 	{
 	  RiTransformBegin();
 	  ay_status = ay_wrib_trafos(o);
@@ -2357,13 +2357,13 @@ ay_wrib_init(Tcl_Interp *interp)
 {
 
   /* register RiDisplay tag type */
-  ay_tags_register(interp, "RiDisplay", &ay_ridisp_tagtype);
+  ay_tags_register(interp, ay_ridisp_tagname, &ay_ridisp_tagtype);
 
   /* register RiHider tag type */
-  ay_tags_register(interp, "RiHider", &ay_rihider_tagtype);
+  ay_tags_register(interp, ay_rihider_tagname, &ay_rihider_tagtype);
 
   /* register NoExport tag type */
-  ay_tags_register(interp, "NoExport", &ay_noexport_tagtype);
+  ay_tags_register(interp, ay_noexport_tagname, &ay_noexport_tagtype);
 
  return;
 } /* ay_wrib_init */

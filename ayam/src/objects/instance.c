@@ -304,7 +304,7 @@ ay_instance_wribcb(char *file, ay_object *o)
 	  tag = orig->tags;
 	  while(tag && !found)
 	    {
-	      if(tag->type == ay_instt_oitagtype)
+	      if(tag->type == ay_oi_tagtype)
 		{
 		  if(!file)
 		    {
