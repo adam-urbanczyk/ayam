@@ -99,33 +99,61 @@ char ay_version_ma[] = AY_VERSIONSTR;
 char ay_version_mi[] = AY_VERSIONSTRMI;
 
 
-char *ay_instt_oitagtype;
+char *ay_oi_tagtype;
+
+char *ay_oi_tagname = "OI";
 
 char *ay_riattr_tagtype;
 
+char *ay_riattr_tagname = "RiAttribute";
+
 char *ay_riopt_tagtype;
+
+char *ay_riopt_tagname = "RiOption";
 
 char *ay_tc_tagtype;
 
+char *ay_tc_tagname = "TC";
+
 char *ay_pv_tagtype;
+
+char *ay_pv_tagname = "PV";
 
 char *ay_ridisp_tagtype;
 
+char *ay_ridisp_tagname = "RiDisplay";
+
 char *ay_rihider_tagtype;
+
+char *ay_rihider_tagname = "RiHider";
 
 char *ay_noexport_tagtype;
 
+char *ay_noexport_tagname = "NoExport";
+
 char *ay_savegeom_tagtype;
+
+char *ay_savegeom_tagname = "SaveMainGeom";
 
 char *ay_savelayout_tagtype;
 
+char *ay_savelayout_tagname = "SavePaneLayout";
+
 char *ay_np_tagtype;
+
+char *ay_np_tagname = "NP";
 
 char *ay_rp_tagtype;
 
+char *ay_rp_tagname = "RP";
+
 char *ay_tp_tagtype;
 
+char *ay_tp_tagname = "TP";
+
 char *ay_ns_tagtype;
+
+char *ay_ns_tagname = "NS";
 
 char *ay_dns_tagtype;
 
@@ -133,9 +161,15 @@ char *ay_dns_tagname = "DNS";
 
 char *ay_umm_tagtype;
 
+char *ay_umm_tagname = "UMM";
+
 char *ay_vmm_tagtype;
 
+char *ay_vmm_tagname = "VMM";
+
 char *ay_bp_tagtype;
+
+char *ay_bp_tagname = "BP";
 
 static char *ay_log = "/tmp/ay.log";
 
@@ -410,22 +444,22 @@ ay_init(Tcl_Interp *interp)
   ay_tgui_init(interp);
 
   /* register SaveMainGeom tag type */
-  ay_tags_register(interp, "SaveMainGeom", &ay_savegeom_tagtype);
+  ay_tags_register(interp, ay_savegeom_tagname, &ay_savegeom_tagtype);
 
   /* register SavePaneLayout tag type */
-  ay_tags_register(interp, "SavePaneLayout", &ay_savelayout_tagtype);
+  ay_tags_register(interp, ay_savelayout_tagname, &ay_savelayout_tagtype);
 
   /* register NP (NewProperty) tag type */
-  ay_tags_register(interp, "NP", &ay_np_tagtype);
+  ay_tags_register(interp, ay_np_tagname, &ay_np_tagtype);
 
   /* register RP (RemoveProperty) tag type */
-  ay_tags_register(interp, "RP", &ay_rp_tagtype);
+  ay_tags_register(interp, ay_rp_tagname, &ay_rp_tagtype);
 
   /* initialize NURBS knots module */
   ay_knots_init(interp);
 
   /* register BP (Bevel Parameters) tag type */
-  ay_tags_register(interp, "BP", &ay_bp_tagtype);
+  ay_tags_register(interp, ay_bp_tagname, &ay_bp_tagtype);
 
   /* create root object */
   if((ay_status = ay_object_create(AY_IDROOT, &ay_root)))

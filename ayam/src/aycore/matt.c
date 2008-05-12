@@ -20,6 +20,8 @@ static Tcl_HashTable ay_matt_blacklist_ht;
 
 static char *ay_matt_mitagtype;
 
+static char *ay_matt_mitagname = "MI";
+
 /* ay_matt_registermaterial:
  *  register a new material name
  *  if parameter is NULL: clear material database
@@ -584,7 +586,7 @@ ay_matt_init(Tcl_Interp *interp)
   Tcl_InitHashTable(&ay_matt_blacklist_ht, TCL_ONE_WORD_KEYS);
 
   /* register Material-ID tag type */
-  ay_tags_register(interp, "MI", &ay_matt_mitagtype);
+  ay_tags_register(interp, ay_matt_mitagname, &ay_matt_mitagtype);
 
   return;
 } /* ay_matt_init */

@@ -46,7 +46,7 @@ ay_instt_createoidht(ay_object *o)
 	  tag = o->tags;
 	  while(tag && !found)
 	    {
-	      if(tag->type == ay_instt_oitagtype)
+	      if(tag->type == ay_oi_tagtype)
 		{
 		  if((entry = Tcl_FindHashEntry(ht, tag->val)))
 		    return AY_ERROR; /* OID already registered? */
@@ -105,7 +105,7 @@ ay_instt_connect(ay_object *o, ay_object **last)
 	  tag = o->tags;
 	  while(tag && !found)
 	    {
-	      if(tag->type == ay_instt_oitagtype)
+	      if(tag->type == ay_oi_tagtype)
 		{
 		  if(!(entry = Tcl_FindHashEntry(ht, tag->val)))
 		    { /* OID not registered? */
@@ -214,7 +214,7 @@ ay_instt_createorigids(ay_object *o)
 	  tag = o->tags;
 	  while(tag && !found)
 	    {
-	      if(tag->type == ay_instt_oitagtype)
+	      if(tag->type == ay_oi_tagtype)
 		{
 		  free(tag->val);
 		  tag->val = tval;
@@ -234,7 +234,7 @@ ay_instt_createorigids(ay_object *o)
 
 	      newtag->name = tname;
 	      newtag->val = tval;
-	      newtag->type = ay_instt_oitagtype;
+	      newtag->type = ay_oi_tagtype;
 	      newtag->next = o->tags;
 	      o->tags = newtag;
 	    }
@@ -275,7 +275,7 @@ ay_instt_createinstanceids(ay_object *o)
 	  tag = orig->tags;
 	  while(tag && !found)
 	    {
-	      if(tag->type == ay_instt_oitagtype)
+	      if(tag->type == ay_oi_tagtype)
 		{
 
 		  origtag = tag;
@@ -291,7 +291,7 @@ ay_instt_createinstanceids(ay_object *o)
 	  tag = o->tags;
 	  while(tag && !found)
 	    {
-	      if(tag->type == ay_instt_oitagtype)
+	      if(tag->type == ay_oi_tagtype)
 		{
 		  /* copy val from origtag to oitag of instance object */
 		  free(tag->val);
@@ -356,7 +356,7 @@ ay_instt_wribiarchives(char *file, ay_object *o)
 	  tag = o->tags;
 	  while(tag && !found)
 	    {
-	      if(tag->type == ay_instt_oitagtype)
+	      if(tag->type == ay_oi_tagtype)
 		{
 
 		  /* create filename */
@@ -577,7 +577,7 @@ ay_instt_clearoidtags(ay_object *o)
 	  tag = o->tags;
 	  while(tag)
 	    {
-	      if(tag->type == ay_instt_oitagtype)
+	      if(tag->type == ay_oi_tagtype)
 		{
 		  *last = tag->next;
 		  ay_tags_free(tag);
@@ -1033,7 +1033,7 @@ void
 ay_instt_init(Tcl_Interp *interp)
 {
   /* register ObjectID tag type */
-  ay_tags_register(interp, "OI", &ay_instt_oitagtype);
+  ay_tags_register(interp, ay_oi_tagname, &ay_oi_tagtype);
 
   /* hash table for id -> original object pointers */
   Tcl_InitHashTable(&ay_instt_oidptr_ht, TCL_STRING_KEYS);
