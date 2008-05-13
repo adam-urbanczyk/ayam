@@ -160,7 +160,7 @@ ay_ns_init(Tcl_Interp *interp)
 {
 
   /* register NS tag type */
-  ay_tags_register(interp, "NS", &ay_ns_tagtype);
+  ay_tags_register(interp, ay_ns_tagname, &ay_ns_tagtype);
 
  return;
 } /* ay_ns_init */
