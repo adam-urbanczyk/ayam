@@ -785,8 +785,7 @@ wm iconname $w "Ayam"
 if { $ay(ws) == "Aqua" } {
     winMakeFloat $w
 } else {
-    #XXXX make this window transient?
-    #wm transient $w .
+    wm transient $w .
 }
 frame $w.ftext
 
@@ -794,6 +793,10 @@ frame $w.fbutton
 pack $w.fbutton -in $w -side bottom
 button $w.fbutton.b -text "Dismiss" -pady $ay(pady) -command "destroy $w"
 pack $w.fbutton.b -in $w.fbutton
+
+# Esc-key && close via window decoration == Dismiss button
+bind $w <Escape> "$w.fbutton.b invoke"
+wm protocol $w WM_DELETE_WINDOW "$w.fbutton.b invoke"
 
 pack $w.ftext -in $w -side top -expand yes -fill both
 
