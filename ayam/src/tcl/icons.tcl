@@ -304,6 +304,14 @@ xP0BtgEcEgQAOw==
 }
 image create photo ay_Scale1DZ_img -format GIF -data $imgdata
 
+# Stretch2D
+set imgdata {\
+R0lGODdhGQAZAIACAL29vQAAACwAAAAAGQAZAAACS4SPqRptHVJc78Q5AaQI
+Vw1lS+aF29h9oCiFa+dw8hPP3GmnNJnXDPvD7XwtF8w4Qg6BrRuTYak9ZcJc
+0UqpYnfboxJr6h7FEjK2AAA7
+}
+image create photo ay_Stretch2D_img -format GIF -data $imgdata
+
 
 # NURBS Tools:
 

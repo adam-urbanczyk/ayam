@@ -427,7 +427,7 @@ proc actionSc3DOb { w } {
 proc actionStr2DOb { w } {
 
     viewTitle $w "" "Stretch2D"
-    viewSetMAIcon $w ay_Scale2D_img "Stretch2D"
+    viewSetMAIcon $w ay_Stretch2D_img "Stretch2D"
 
     bind $w <ButtonPress-1> {
 	set ay(action) 1
