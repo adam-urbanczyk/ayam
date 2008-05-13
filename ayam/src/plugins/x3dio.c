@@ -141,7 +141,7 @@ int x3dio_readnormals(scew_element *element, unsigned int *len, double **res);
 
 int x3dio_readcolors(scew_element *element, unsigned int *len, double **res);
 
-int x3dio_readname(scew_element *element,  const XML_Char *attn,
+int x3dio_readname(scew_element *element, const XML_Char *attn,
 		   ay_object *obj);
 
 int x3dio_linkobject(scew_element *element, unsigned int type, void *sobj);
@@ -322,10 +322,11 @@ int x3dio_writelight(scew_element *element, ay_object *o);
 
 int x3dio_writerevolveobj(scew_element *element, ay_object *o);
 
-int x3dio_writersweepobj(scew_element *element, ay_object *o);
+int x3dio_writesweepobj(scew_element *element, ay_object *o);
 
-int x3dio_writerswingobj(scew_element *element, ay_object *o);
+int x3dio_writeswingobj(scew_element *element, ay_object *o);
 
+int x3dio_writeextrudeobj(scew_element *element, ay_object *o);
 
 /* export */
 int x3dio_writeobject(scew_element *element, ay_object *o, int count);
@@ -499,7 +500,7 @@ x3dio_trafotoobject(ay_object *o, double *transform)
     }
 
   /*
-   * Check for a coordinate system flip.  If the determinant
+   * Check for a coordinate system flip. If the determinant
    * is -1, then negate the matrix and the scaling factors.
    */
   AY_V3CROSS(v4, v2, v3)
@@ -698,7 +699,7 @@ x3dio_readintvec(scew_element *element, char *attrname,
 	      sscanf(str, "%d %d %d", &(res[0]), &(res[1]), &(res[2]));
 	      break;
 	    case 4:
-	      sscanf(str, "%d %d %d %d",  &(res[0]), &(res[1]),
+	      sscanf(str, "%d %d %d %d", &(res[0]), &(res[1]),
 		     &(res[2]), &(res[3]));
 	      break;
 	    default:
@@ -784,7 +785,7 @@ x3dio_readfloatvec(scew_element *element, char *attrname,
 	      sscanf(str, "%f %f %f", &(res[0]), &(res[1]), &(res[2]));
 	      break;
 	    case 4:
-	      sscanf(str, "%f %f %f %f",  &(res[0]), &(res[1]),
+	      sscanf(str, "%f %f %f %f", &(res[0]), &(res[1]),
 		     &(res[2]), &(res[3]));
 	      break;
 	    default:
@@ -1284,7 +1285,7 @@ x3dio_readnormals(scew_element *element, unsigned int *len, double **res)
  *
  */
 int
-x3dio_readname(scew_element *element,  const XML_Char *attn, ay_object *obj)
+x3dio_readname(scew_element *element, const XML_Char *attn, ay_object *obj)
 {
  int ay_status = AY_OK;
  scew_attribute *attr = NULL;
