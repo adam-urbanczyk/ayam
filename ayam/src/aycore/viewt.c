@@ -683,6 +683,37 @@ ay_viewt_makecurtcb(struct Togl *togl, int argc, char *argv[])
   to = Tcl_NewStringObj(view->bgimage, -1);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
+  /**/
+  Tcl_SetStringObj(ton, "cVFromX", -1);
+  to = Tcl_NewDoubleObj(view->from[0]);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton, "cVFromY", -1);
+  to = Tcl_NewDoubleObj(view->from[1]);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton, "cVFromZ", -1);
+  to = Tcl_NewDoubleObj(view->from[2]);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton, "cVToX", -1);
+  to = Tcl_NewDoubleObj(view->to[0]);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton, "cVToY", -1);
+  to = Tcl_NewDoubleObj(view->to[1]);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton, "cVToZ", -1);
+  to = Tcl_NewDoubleObj(view->to[2]);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+
+  Tcl_SetStringObj(ton, "cVZoom", -1);
+  to = Tcl_NewDoubleObj(view->zoom);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+
   Tcl_IncrRefCount(toa); Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton); Tcl_DecrRefCount(ton);
 
@@ -1277,6 +1308,11 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 		} /* if */
 #endif
 	    } /* if */
+	  if(!strcmp(argv[i], "-redraw"))
+	    {
+	      Tcl_GetInt(interp, argv[i+1], &argi);
+	      need_redraw = argi;
+	    }
 	  break;
 	case 's':
 	  if(!strcmp(argv[i], "-shade"))
