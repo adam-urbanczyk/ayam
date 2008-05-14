@@ -457,9 +457,9 @@ proc shortcut_view { w } {
 
     set m $ay(toolsmenu)
     bind $w <[repcont $ayviewshortcuts(Hide)]>\
-	    "$m invoke 8;break"
+	    "$m invoke 12;break"
     bind $w <[repcont $ayviewshortcuts(Show)]>\
-	    "$m invoke 10;break"
+	    "$m invoke 14;break"
 
     bind $w <[repcont $ayviewshortcuts(TypeUp)]> "viewCycleType $w -1;break"
     bind $w <[repcont $ayviewshortcuts(TypeDown)]> "viewCycleType $w 1;break"
@@ -826,6 +826,8 @@ pack $w.ftext.text -in $w.ftext -side left -fill both -expand yes
 
 $w.ftext.text insert end "Modelling Actions (View Windows):
 
+ Pick Objects:        $ayviewshortcuts(Pick)
+
  Move Objects:        $ayviewshortcuts(MoveO)
  Rotate Objects:      $ayviewshortcuts(RotO)
  Rotate Objects   
@@ -867,10 +869,10 @@ View Actions (View Windows):
  Move View           $ayviewshortcuts(MoveV)
  Move View
  (along Z)           $ayviewshortcuts(MoveZV)
- Move View           Mouse-$ayviewshortcuts(MoveVButton)
+ MoveViewAnytime     Mouse-$ayviewshortcuts(MoveVButton)
 
  Rotate View         $ayviewshortcuts(RotV)
- Rotate View         $ayviewshortcuts(RotModKey)+Mouse-1
+ RotateViewAnytime   $ayviewshortcuts(RotModKey)+Mouse-1
 
  Rotate View (left)  $ayviewshortcuts(RotL)
  Rotate View (right) $ayviewshortcuts(RotR)
@@ -880,9 +882,13 @@ View Actions (View Windows):
  Zoom View           $ayviewshortcuts(ZoomV)
  Zoom in View        $ayviewshortcuts(ZoomI)
  Zoom out View       $ayviewshortcuts(ZoomO)
- Zoom View           Mouse-$ayviewshortcuts(ZoomVButton)
+ ZoomViewAnytime     Mouse-$ayviewshortcuts(ZoomVButton)
 
  ZoomRegion View     $ayviewshortcuts(ZoomRModKey)+Mouse-1
+
+ ZoomToObject        $ayviewshortcuts(ZoomTO) / $ayviewshortcuts(ZoomTO2)
+
+ Cycle View Type     $ayviewshortcuts(TypeUp) / $ayviewshortcuts(TypeDown)
 
 Function Keys (View Windows):
 
