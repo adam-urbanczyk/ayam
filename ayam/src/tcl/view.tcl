@@ -12,7 +12,7 @@
 
 ##############################
 # viewSetType:
-proc viewSetType { w type } {
+proc viewSetType { w type {redraw 1} } {
  global ay ayprefs tcl_platform
 
     undo save ViewType
@@ -22,36 +22,40 @@ proc viewSetType { w type } {
     switch $type {
 	0 {
 	    $togl setconf -type 0 -fromx 0.0 -fromy 0.0 -fromz 10.0\
-		    -tox 0.0 -toy 0.0 -toz 0.0 -upx 0.0 -upy 1.0 -upz 0.0
+		-tox 0.0 -toy 0.0 -toz 0.0 -upx 0.0 -upy 1.0 -upz 0.0\
+		-redraw $redraw
 	    viewTitle $w Front ""
 	}
 	1 {
 	    $togl setconf -type 1 -fromx 10.0 -fromy 0.0 -fromz 0.0\
-		    -tox 0.0 -toy 0.0 -toz 0.0 -upx 0.0 -upy 1.0 -upz 0.0
+		-tox 0.0 -toy 0.0 -toz 0.0 -upx 0.0 -upy 1.0 -upz 0.0\
+		-redraw $redraw
 	    viewTitle $w Side ""
 	}
 	2 {
 	    $togl setconf -type 2 -fromx 0.0 -fromy 10.0 -fromz 0.0\
-		    -tox 0.0 -toy 0.0 -toz 0.0 -upx 0.0 -upy 0.0 -upz -1.0
+		-tox 0.0 -toy 0.0 -toz 0.0 -upx 0.0 -upy 0.0 -upz -1.0\
+		-redraw $redraw
 	    viewTitle $w Top ""
 	}
 	3 {
 	    $togl setconf -type 3 -fromx 0.0 -fromy 0 -fromz 15.0\
-		    -tox 0.0 -toy 0.0 -toz 0.0  -upx 0.0 -upy 1.0 -upz 0.0\
-		    -drawg 1 -grid 1 -drotx 45 -droty -30
+		-tox 0.0 -toy 0.0 -toz 0.0  -upx 0.0 -upy 1.0 -upz 0.0\
+		-drawg 1 -grid 1 -drotx 45 -droty -30 -redraw $redraw
 	    viewTitle $w Persp ""
 	    viewSetGridIcon $w 1.0
 	}
 	4 {
 	    $togl setconf -type 4 -fromx 0.0 -fromy 0.0 -fromz 10.0\
-		    -tox 0.0 -toy 0.0 -toz 0.0 -upx 0.0 -upy 1.0 -upz 0.0\
-		    -zoom 1.0
+		-tox 0.0 -toy 0.0 -toz 0.0 -upx 0.0 -upy 1.0 -upz 0.0\
+		-zoom 1.0 -redraw $redraw
 	    viewTitle $w Trim ""
 	}
     }
     # switch
-
-    $togl render
+    if { $redraw } {
+	$togl render
+    }
     $ay(currentView) mc
     update
     # actionClear $w
@@ -63,22 +67,87 @@ proc viewSetType { w type } {
 
 ##############################
 # viewCycleType:
-proc viewCycleType { w dir } {
+proc viewCycleType { w dir {recover 1} } {
     global ay
 
-    $w.f3D.togl mc
+    set togl $w.f3D.togl
+
+    $togl mc
+
+    set oldfromx $ay(cVFromX)
+    set oldfromy $ay(cVFromY)
+    set oldfromz $ay(cVFromZ)
+
+    set oldtox $ay(cVToX)
+    set oldtoy $ay(cVToY)
+    set oldtoz $ay(cVToZ)
+
+    set oldzoom $ay(cVZoom)
+
+    set oldtype $ay(cVType)
 
     update
 
     set type [expr $ay(cVType) + $dir]
 
-    # omit 4 (trim view)
+    # wrap around
     if { $type < 0 } { set type 3 }
+    # wrap around; omit 4 (trim view)
     if { $type > 3 } { set type 0 }
+    # set new view type (also completely resets the camera)
+    viewSetType $w $type 0
 
-    viewSetType $w $type
+    # recover old view aim-point and zoom
+    if { $recover } {
+	if { $oldtype != 3 } {
+	    if { ($oldtype == 0) && ($type == 1) } {
+		# from front to side
+		$togl setconf -fromx [expr {10.0 + $oldfromx}] \
+		    -fromy $oldfromy -fromz $oldtoz \
+		    -tox $oldtox -toy $oldtoy -toz $oldtoz \
+		    -zoom $oldzoom -redraw 0
+	    }
+	    if { $oldtype == 1 && $type == 2 } {
+		# from side to top
+		$togl setconf -fromy [expr {10.0 + $oldfromy}] \
+		    -fromz $oldfromz -fromx $oldtox \
+		    -tox $oldtox -toy $oldtoy -toz $oldtoz \
+		    -zoom $oldzoom -redraw 0
+	    }
+	    if { $oldtype == 2 && $type == 1 } {
+		# from top to side
+		$togl setconf -fromx [expr {10.0 + $oldfromx}] \
+		    -fromy $oldtoy -fromz $oldfromz \
+		    -tox $oldtox -toy $oldtoy -toz $oldtoz \
+		    -zoom $oldzoom -redraw 0
+	    }
+	    if { $oldtype == 1 && $type == 0 } {
+		# from side to front
+		$togl setconf -fromx $oldtox -fromz [expr {10.0 + $oldfromz}] \
+		    -fromy $oldfromy -tox $oldtox -toy $oldtoy -toz $oldtoz \
+		    -zoom $oldzoom -redraw 0
+	    }
+	} else {
+	    # from perspective to front or top
+	    if { $type == 0 } {
+		$togl setconf -fromx $oldtox -fromy $oldtoy \
+		    -tox $oldtox -toy $oldtoy -toz $oldtoz \
+		    -zoom [expr $oldzoom*3] -redraw 0
+	    }
+	    if { $type == 2 } {
+		$togl setconf -fromx $oldtox -fromz $oldtoz \
+		    -tox $oldtox -toy $oldtoy -toz $oldtoz \
+		    -zoom [expr $oldzoom*3] -redraw 0
+	    }
 
-    set ay(cVType) $type
+	}
+
+    }
+
+    $togl redraw
+
+    # was: set ay(cVType) $type
+    $togl mc
   
  return;
 }
