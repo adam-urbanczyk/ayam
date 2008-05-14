@@ -132,12 +132,12 @@ proc viewCycleType { w dir {recover 1} } {
 	    if { $type == 0 } {
 		$togl setconf -fromx $oldtox -fromy $oldtoy \
 		    -tox $oldtox -toy $oldtoy -toz $oldtoz \
-		    -zoom [expr $oldzoom*3] -redraw 0
+		    -grid 0.0 -redraw 0
 	    }
 	    if { $type == 2 } {
 		$togl setconf -fromx $oldtox -fromz $oldtoz \
 		    -tox $oldtox -toy $oldtoy -toz $oldtoz \
-		    -zoom [expr $oldzoom*3] -redraw 0
+		    -grid 0.0 -redraw 0
 	    }
 
 	}
