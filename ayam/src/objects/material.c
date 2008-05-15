@@ -279,6 +279,7 @@ ay_material_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   toa = Tcl_NewStringObj(n1,-1);
 
+  /* color */
   ton = Tcl_NewStringObj("Color_R",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &material->colr);
@@ -289,6 +290,7 @@ ay_material_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &material->colb);
 
+  /* opacity */
   Tcl_SetStringObj(ton,"Opacity_R",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &material->opr);
@@ -404,7 +406,7 @@ ay_material_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	    }
 	  else
 	    {
-	      /* new name is already registered! */
+	      /* New name is already registered! */
 	      ay_error(AY_ERROR, fname,
 		       "Material name is already registered!");
 	      ay_error(AY_ERROR, fname, "Falling back to old name!");
@@ -444,6 +446,7 @@ ay_material_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   toa = Tcl_NewStringObj(n1,-1);
 
+  /* color */
   ton = Tcl_NewStringObj("Color_R",-1);
   to = Tcl_NewIntObj(material->colr);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -454,6 +457,7 @@ ay_material_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_NewIntObj(material->colb);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
+  /* opacity */
   Tcl_SetStringObj(ton,"Opacity_R",-1);
   to = Tcl_NewIntObj(material->opr);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -514,6 +518,7 @@ ay_material_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     {
       material->nameptr = &(o->name);
     }
+
   /* repair refcountptr if it has not been set, after e.g.
      a clipboard operation */
   if(!material->refcountptr)
@@ -638,8 +643,8 @@ ay_material_readcb(FILE *fileptr, ay_object *o)
 
   if(ay_status)
     {
-      ay_error(AY_ERROR,fname, "Could not register material:");
-      ay_error(AY_ERROR,fname, o->name);
+      ay_error(AY_ERROR, fname, "Could not register material:");
+      ay_error(AY_ERROR, fname, o->name);
     }
 
   o->refine = material;
@@ -767,7 +772,7 @@ ay_material_bbccb(ay_object *o, double *bbox, int *flags)
 
 /* ay_material_dropcb:
  *  objects are dropped onto a material object
- *  make those objects of this material
+ *  associate those objects with this material
  */
 int
 ay_material_dropcb(ay_object *o)

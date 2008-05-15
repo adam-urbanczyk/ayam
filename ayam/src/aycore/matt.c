@@ -1,7 +1,7 @@
 /*
  * Ayam, a free 3D modeler for the RenderMan interface.
  *
- * Ayam is copyrighted 1998-2001 by Randolf Schultz
+ * Ayam is copyrighted 1998-2008 by Randolf Schultz
  * (randolf.schultz@gmail.com) and others.
  *
  * All rights reserved.
@@ -12,7 +12,9 @@
 
 #include "ayam.h"
 
-/* matt.c - material tools - material object helpers */
+/* matt.c - material tools, material object helpers */
+
+/* global variables: */
 
 static Tcl_HashTable ay_matt_ptr_ht;
 
@@ -22,11 +24,13 @@ static char *ay_matt_mitagtype;
 
 static char *ay_matt_mitagname = "MI";
 
+
+/* functions: */
+
 /* ay_matt_registermaterial:
- *  register a new material name
- *  if parameter is NULL: clear material database
- *  else: checks if name is already registered and returns
- *  AY_ERROR if it is already registered
+ *  register a new material name in the material database;
+ *  if <name> is NULL: clear material database;
+ *  returns AY_ERROR if <name> is already registered
  */
 int
 ay_matt_registermaterial(char *name, ay_mat_object *mat)
@@ -35,7 +39,6 @@ ay_matt_registermaterial(char *name, ay_mat_object *mat)
  int new_item = 0;
  Tcl_HashEntry *entry = NULL;
  Tcl_HashTable *ht = &ay_matt_ptr_ht;
-
 
   if(!name)
     {
@@ -65,8 +68,8 @@ ay_matt_registermaterial(char *name, ay_mat_object *mat)
 
 
 /* ay_matt_isregistered:
- *  checks whether material name
- *  is registered in the material database
+ *  checks whether material name <name>
+ *  is registered in the material database;
  *  returns AY_TRUE if it is registerd and AY_FALSE if not
  */
 int
@@ -88,7 +91,7 @@ ay_matt_isregistered(char *name)
 
 
 /* ay_matt_deregister:
- *  de-register name from the material database
+ *  de-register material name <name> from the material database
  */
 int
 ay_matt_deregister(char *name)
@@ -109,13 +112,12 @@ ay_matt_deregister(char *name)
       Tcl_DeleteHashEntry(entry);
     }
 
-
  return ay_status;
 } /* ay_matt_deregister */
 
 
 /* ay_matt_getmaterial:
- *
+ *  fetch the material object registered for the material with name <name>
  */
 int
 ay_matt_getmaterial(char *name, ay_mat_object **material)
@@ -141,14 +143,17 @@ ay_matt_getmaterial(char *name, ay_mat_object **material)
 
 
 /* ay_matt_removeallrefs:
- *  recursively remove all references to material objects from
- *  all objects besides and beneath o
+ *  _recursively_ remove all references to all material objects from
+ *  all objects besides and beneath <o>
  */
 int
 ay_matt_removeallrefs(ay_object *o)
 {
  int ay_status = AY_OK;
  ay_mat_object *m = NULL;
+
+  if(!o)
+    return AY_ENULL;
 
   while(o)
     {
@@ -177,7 +182,8 @@ ay_matt_removeallrefs(ay_object *o)
 
 
 /* ay_matt_removerefs:
- *
+ *  _recursively_ remove all references to material object <material>
+ *  from all objects besides and beneath <o>
  */
 int
 ay_matt_removerefs(ay_object *o, ay_mat_object *material)
@@ -185,10 +191,10 @@ ay_matt_removerefs(ay_object *o, ay_mat_object *material)
  int ay_status = AY_OK;
  ay_mat_object *m = NULL;
 
- if(!o || !material)
-   return AY_OK;
+  if(!o || !material)
+    return AY_OK;
 
- while(o)
+  while(o)
     {
       if(o->mat == material)
 	{
@@ -222,8 +228,8 @@ ay_matt_removecliprefs(ay_object *o)
 {
  int ay_status = AY_OK;
 
- if(!o)
-   return AY_OK;
+  if(!o)
+    return AY_ENULL;
 
   while(o->next)
     {
@@ -261,8 +267,8 @@ ay_matt_connect(ay_object *o)
  Tcl_HashTable *ht = &ay_matt_ptr_ht;
  unsigned int *refcountptr = NULL;
 
- if(!o)
-   return AY_OK;
+  if(!o)
+    return AY_ENULL;
 
   while(o)
     {
@@ -303,7 +309,8 @@ ay_matt_connect(ay_object *o)
 
 /* ay_matt_creatematerialids:
  *  creates material id tags for all objects with material
- *  assumes no MI-tags exist in scene!
+ *  assumes no MI-tags exist in scene, => always run
+ *  ay_matt_clearmaterialids() (below) first!
  */
 int
 ay_matt_creatematerialids(ay_object *o)
@@ -312,6 +319,9 @@ ay_matt_creatematerialids(ay_object *o)
  ay_tag *newtag = NULL;
  ay_mat_object *mat = NULL;
  char *mname = NULL, *tname = NULL;;
+
+  if(!o)
+    return AY_ENULL;
 
   while(o)
     {
@@ -345,7 +355,7 @@ ay_matt_creatematerialids(ay_object *o)
 	return ay_status;
 
       o = o->next;
-    }
+    } /* while */
 
  return ay_status;
 } /* ay_matt_creatematerialids */
@@ -361,7 +371,7 @@ ay_matt_clearmaterialids(ay_object *o)
  ay_tag *tag = NULL, **last = NULL;
 
   if(!o)
-    return AY_OK;
+    return AY_ENULL;
 
   while(o)
     {
@@ -394,7 +404,7 @@ ay_matt_clearmaterialids(ay_object *o)
 	return ay_status;
 
       o = o->next;
-    }
+    } /* while */
 
  return ay_status;
 } /* ay_matt_clearmaterialids */
@@ -529,7 +539,7 @@ ay_matt_wrib(char *file, ay_mat_object *m)
     {
       ay_status = ay_shader_wrib(m->eshader, AY_STEXTERIOR, NULL);
     }
-
+  /* write RiAttributes and texture coordinates from tags */
   if(m->objptr)
     {
       ay_riattr_wrib(m->objptr);
@@ -541,7 +551,7 @@ ay_matt_wrib(char *file, ay_mat_object *m)
 
 
 /* ay_matt_nomaterial:
- *  arrange for objects of type type not
+ *  arrange for objects of type <type> not
  *  to be associable with materials
  */
 void
@@ -551,15 +561,15 @@ ay_matt_nomaterial(unsigned int type)
  Tcl_HashTable *ht = &ay_matt_blacklist_ht;
  int new_item = 0;
 
- entry = Tcl_CreateHashEntry(ht, (char*)type, &new_item);
- Tcl_SetHashValue(entry, (char*)NULL);
+  entry = Tcl_CreateHashEntry(ht, (char*)type, &new_item);
+  Tcl_SetHashValue(entry, (char*)NULL);
 
  return;
 } /* ay_matt_nomaterial */
 
 
 /* ay_matt_mayhavematerial:
- *  returns AY_TRUE, if objects of type type
+ *  returns AY_TRUE, if objects of type <type>
  *  may have a material, AY_FALSE else
  */
 int
@@ -588,5 +598,5 @@ ay_matt_init(Tcl_Interp *interp)
   /* register Material-ID tag type */
   ay_tags_register(interp, ay_matt_mitagname, &ay_matt_mitagtype);
 
-  return;
+ return;
 } /* ay_matt_init */
