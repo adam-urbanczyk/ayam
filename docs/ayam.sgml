@@ -1681,7 +1681,7 @@ settings since Ayam 1.14, see section
 <ref id="hidprefs" name="Hidden Preference Settings">.
 
 
-<sect2>Modelling Preferences<label id="prefmodel">
+<sect2>Modelling Preferences<label id="prefmodel"><label id="prefmodeling">
 <p>
 The next section of the preferences, <tt/"Modelling"/,
 contains modelling related settings:
@@ -1744,7 +1744,7 @@ For more information, see also the section
 <ref id="undos" name="The Undo System">.
 </itemize>
 
-<sect2>Drawing Preferences<label id="prefdraw">
+<sect2>Drawing Preferences<label id="prefdraw"><label id="prefdrawing">
 <p>
 The preferences in the <tt/"Drawing"/ section let you specify
 how objects are being drawn:
@@ -1781,7 +1781,7 @@ rendering.
 will be used when drawing or shading.
 </itemize>
 
-<sect2>The RIB-Export Preferences<label id="prefrib">
+<sect2>The RIB-Export Preferences<label id="prefrib"><label id="prefrib-export">
 <p>
 The <tt/"RIB-Export"/ section of the preferences contains settings that
 affect how RIBs are created.
