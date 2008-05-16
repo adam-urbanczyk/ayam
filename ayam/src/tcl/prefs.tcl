@@ -23,7 +23,7 @@ proc prefs_set {} {
 
 
 # prefs_rsnb:
-#  resize notebook nb so that the page page is displayed in full size
+#  resize notebook nb so that the page <page> is displayed in full size
 proc prefs_rsnb { nb page } {
     global ay ayprefs tcl_platform
 
@@ -169,6 +169,10 @@ proc prefs_open {} {
     if { $AYWITHAQUA == 1 } {
 	set t [file join [file dirname [info nameofexecutable]] \
 		   ../Resources/docs/ayam.html]
+	lappend docdefs "file://$t"
+    } else {
+	set t [file join [file dirname [info nameofexecutable]] \
+		   ../doc/html/ayam.html]
 	lappend docdefs "file://$t"
     }
 
@@ -382,14 +386,15 @@ proc prefs_open {} {
     # establish "Help"-binding
     global aymainshortcuts
     bind $w <[repcont $aymainshortcuts(Help)]> {
-	global ayprefs
+	global ay ayprefs
+	set tag pref[string tolower $ay(prefssection)]
 	if { [string first "file://" $ayprefs(Docs)] != -1 } {
 	    set lslash [string last "/" $ayprefs(Docs)]
 	    set url [string range\
-			 $ayprefs(Docs) 0 $lslash]/ayam-2.html\#prefs
+			 $ayprefs(Docs) 0 $lslash]/ayam-2.html\#$tag
 	    browser_urlOpen $url
 	} else {
-	    browser_urlOpen $ayprefs(Docs)ayam-2.html\#prefs
+	    browser_urlOpen $ayprefs(Docs)ayam-2.html\#$tag
 	}
     }
     # bind
