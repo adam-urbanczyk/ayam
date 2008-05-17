@@ -6004,7 +6004,7 @@ Rrib_Init(Tcl_Interp *interp)
     }
 
   /* register some C-functions as Tcl-Commands */
-  Tcl_CreateCommand (interp, "rrib",
+  Tcl_CreateCommand (interp, "rribRead",
 		     ay_rrib_readribtcmd,
 		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 

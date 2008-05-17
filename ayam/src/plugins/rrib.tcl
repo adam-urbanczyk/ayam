@@ -84,7 +84,7 @@ proc rrib_import { } {
 	set oldcd [pwd]
 	cd [file dirname $rrib_options(FileName)]
 
-	rrib [file tail $rrib_options(FileName)]\
+	rribRead [file tail $rrib_options(FileName)]\
 	    -f $rrib_options(ReadFrame)\
 	    -c $rrib_options(ReadCamera)\
 	    -o $rrib_options(ReadOptions)\
