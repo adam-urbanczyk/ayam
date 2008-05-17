@@ -89,3 +89,12 @@ if { [string first wish [file tail [info nameofexecutable]]] != -1 } {
     send ayam $cscript
     exit
 }
+
+# do we run in Wish Shell (on Mac OS X Aqua)?
+if { [string first Wish [file tail [info nameofexecutable]]] != -1 } {
+    # yes, send the script to Ayam (via AppleScript event)
+    set script [subst "tell application \"Ayam\"\n  do script \"$cscript\"\nend tell"]
+    puts "Sending conversion script to Ayam..."
+    exec osascript -e $script
+    exit
+}
