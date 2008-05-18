@@ -547,6 +547,83 @@ ay_pv_convert(ay_tag *tag, unsigned int *datalen, void **data)
 } /* ay_pv_convert */
 
 
+/* ay_pv_getst:
+ *  get texture coordinates st
+ */
+int
+ay_pv_getst(ay_object *o, void **data)
+{
+ int ay_status = AY_OK;
+ ay_tag *tag = NULL, *stag = NULL, *ttag = NULL;
+ double *sda = NULL, *tda = NULL;
+ float *st = NULL;
+ unsigned int sdalen = 0, tdalen = 0;
+ unsigned int i, j;
+
+  if(!o || !data)
+    return AY_ENULL;
+
+  tag = o->tags;
+  while(tag)
+    {
+      if(tag->type == ay_pv_tagtype)
+	{
+	  if(!strncmp(tag->val, "mys", 3))
+	    {
+	      stag = tag;
+	      if(ttag)
+		break;
+	    }
+	  if(!strncmp(tag->val, "myt", 3))
+	    {
+	      ttag = tag;
+	      if(stag)
+		break;
+	    }
+	}
+      tag = tag->next;
+    }
+
+  if(stag && ttag)
+    {
+      ay_pv_convert(stag, &sdalen, (void**)&sda);
+      ay_pv_convert(ttag, &tdalen, (void**)&tda);
+
+      if((sdalen == 0) || (tdalen == 0) || (sdalen != tdalen))
+	{ ay_status = AY_ERROR; goto cleanup; }
+
+      if(!(st = calloc(2*sdalen, sizeof(float))))
+	{ ay_status = AY_EOMEM; goto cleanup; }
+
+      j = 0;
+      for(i = 0; i < sdalen; i++)
+	{
+	  st[j] = sda[i];
+	  j += 2;
+	}
+      j = 1;
+      for(i = 0; i < sdalen; i++)
+	{
+	  st[j] = tda[i];
+	  j += 2;
+	}
+
+      *data = st;
+    } /* if */
+
+cleanup:
+
+  if(sda)
+    free(sda);
+
+  if(tda)
+    free(tda);
+
+ return ay_status;
+} /* ay_pv_getst */
+
+
+
 /* ay_pv_count:
  *  count PV tags of object <o>
  */

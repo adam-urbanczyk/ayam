@@ -818,6 +818,10 @@ int ay_pv_convert(ay_tag *tag, unsigned int *datalen, void **data);
 
 /*! \brief 
  */
+int ay_pv_getst(ay_object *o, void **data);
+
+/*! \brief count PV tags of object o
+ */
 int ay_pv_count(ay_object *o);
 
 /*! \brief 
