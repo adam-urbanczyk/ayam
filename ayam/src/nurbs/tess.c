@@ -33,10 +33,20 @@ typedef struct ay_tess_tri_s {
   double n2[3];
   double n3[3];
 
+  double c1[4];
+  double c2[4];
+  double c3[4];
+
+  double t1[2];
+  double t2[2];
+  double t3[2];
+
 } ay_tess_tri;
 
 typedef struct ay_tess_object_s {
   int has_vn;
+  int has_vc;
+  int has_tc;
   int tesselate_polymesh;
 
   GLenum type;
@@ -54,8 +64,20 @@ typedef struct ay_tess_object_s {
   double *n3;
   double *n4;
 
+  double *c1;
+  double *c2;
+  double *c3;
+  double *c4;
+
+  double *t1;
+  double *t2;
+  double *t3;
+  double *t4;
+
   double **nextpd;
   double **nextnd;
+  double **nextcd;
+  double **nexttd;
 
   struct ay_tess_tri_s *tris;
 } ay_tess_object;
@@ -65,11 +87,17 @@ typedef struct ay_tess_object_s {
 
 int ay_tess_checktri(double *p1, double *p2, double *p3);
 
+void ay_tess_createtri(ay_tess_object *to);
+
 void ay_tess_begindata(GLenum type, void *userData);
 
 void ay_tess_vertexdata(GLfloat *vertex, void *userData);
 
 void ay_tess_normaldata(GLfloat *normal, void *userData);
+
+void ay_tess_colordata(GLfloat *color, void *userData);
+
+void ay_tess_texcoorddata(GLfloat *texcoord, void *userData);
 
 void ay_tess_enddata(void *userData);
 
@@ -78,9 +106,11 @@ void ay_tess_combinedata(GLdouble c[3], void *d[4], GLfloat w[4], void **out,
 
 void ay_tess_managecombined(void *userData);
 
-int ay_tess_tristopomesh(ay_tess_tri *tris, int has_vn, ay_object **result);
+int ay_tess_tristopomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
+			 ay_object **result);
 
 void ay_tess_setautonormal(double *v1, double *v2, double *v3);
+
 
 /* functions */
 
@@ -113,6 +143,49 @@ ay_tess_checktri(double *p1, double *p2, double *p3)
 
  return AY_TRUE;
 } /* ay_tess_checktri */
+
+
+/* ay_tess_createtri:
+ *  create triangle from to->p1, to->p2, to->p3 and link it to <to>
+ */
+void
+ay_tess_createtri(ay_tess_object *to)
+{
+ ay_tess_tri *tri = NULL;
+
+  if(!(tri = calloc(1, sizeof(ay_tess_tri))))
+    return;
+
+  tri->next = to->tris;
+  to->tris = tri;
+
+  memcpy(tri->p1, to->p1, 3*sizeof(double));
+  memcpy(tri->p2, to->p2, 3*sizeof(double));
+  memcpy(tri->p3, to->p3, 3*sizeof(double));
+
+  if(to->has_vn)
+    {
+      memcpy(tri->n1, to->n1, 3*sizeof(double));
+      memcpy(tri->n2, to->n2, 3*sizeof(double));
+      memcpy(tri->n3, to->n3, 3*sizeof(double));
+    }
+
+  if(to->has_vc)
+    {
+      memcpy(tri->c1, to->c1, 4*sizeof(double));
+      memcpy(tri->c2, to->c2, 4*sizeof(double));
+      memcpy(tri->c3, to->c3, 4*sizeof(double));
+    }
+
+  if(to->has_tc)
+    {
+      memcpy(tri->t1, to->t1, 2*sizeof(double));
+      memcpy(tri->t2, to->t2, 2*sizeof(double));
+      memcpy(tri->t3, to->t3, 2*sizeof(double));
+    }
+
+ return;
+} /* ay_tess_createtri */
 
 
 /* ay_tess_begindata:
@@ -233,22 +306,10 @@ ay_tess_vertexdata(GLfloat *vertex, void *userData)
 	      /* create new triangle */
 	      if(ay_tess_checktri(to->p1, to->p2, to->p3))
 		{
-		  if(!(tri = calloc(1, sizeof(ay_tess_tri))))
-		    return;
-
-		  tri->next = to->tris;
-		  to->tris = tri;
-
-		  memcpy(tri->p1, to->p1, 3*sizeof(double));
-		  memcpy(tri->p2, to->p2, 3*sizeof(double));
-		  memcpy(tri->p3, to->p3, 3*sizeof(double));
-
-		  memcpy(tri->n1, to->n1, 3*sizeof(double));
-		  memcpy(tri->n2, to->n2, 3*sizeof(double));
-		  memcpy(tri->n3, to->n3, 3*sizeof(double));
+		  ay_tess_createtri(to);
 		} /* if */
 
-	      /* shift vertex/normal data */
+	      /* shift vertex/normal/color/texcoord data */
 	      t = to->p2;
 	      to->p2 = to->p3;
 	      to->p3 = t;
@@ -257,8 +318,18 @@ ay_tess_vertexdata(GLfloat *vertex, void *userData)
 	      to->n2 = to->n3;
 	      to->n3 = t;
 
+	      t = to->c2;
+	      to->c2 = to->c3;
+	      to->c3 = t;
+
+	      t = to->t2;
+	      to->t2 = to->t3;
+	      to->t3 = t;
+
 	      to->nextpd = &(to->p3);
 	      to->nextnd = &(to->n3);
+	      to->nextcd = &(to->c3);
+	      to->nexttd = &(to->t3);
 	    } /* if */
 	  break;
 	case GL_TRIANGLE_STRIP:
@@ -269,21 +340,10 @@ ay_tess_vertexdata(GLfloat *vertex, void *userData)
 	      /* create new triangle */
 	      if(ay_tess_checktri(to->p1, to->p2, to->p3))
 		{
-		  if(!(tri = calloc(1, sizeof(ay_tess_tri))))
-		    return;
-		  tri->next = to->tris;
-		  to->tris = tri;
-
-		  memcpy(tri->p1, to->p1, 3*sizeof(double));
-		  memcpy(tri->p2, to->p2, 3*sizeof(double));
-		  memcpy(tri->p3, to->p3, 3*sizeof(double));
-
-		  memcpy(tri->n1, to->n1, 3*sizeof(double));
-		  memcpy(tri->n2, to->n2, 3*sizeof(double));
-		  memcpy(tri->n3, to->n3, 3*sizeof(double));
+		  ay_tess_createtri(to);
 		} /* if */
 
-	      /* shift vertex/normal data */
+	      /* shift vertex/normal/color/texcoord data */
 	      t = to->p1;
 	      to->p1 = to->p2;
 	      to->p2 = to->p3;
@@ -296,10 +356,23 @@ ay_tess_vertexdata(GLfloat *vertex, void *userData)
 	      to->n3 = to->n4;
 	      to->n4 = t;
 
+	      t = to->c1;
+	      to->c1 = to->c2;
+	      to->c2 = to->c3;
+	      to->c3 = to->c4;
+	      to->c4 = t;
+
+	      t = to->t1;
+	      to->t1 = to->t2;
+	      to->t2 = to->t3;
+	      to->t3 = to->t4;
+	      to->t4 = t;
+
 	      to->nextpd = &(to->p3);
 	      to->nextnd = &(to->n3);
+	      to->nextcd = &(to->c3);
+	      to->nexttd = &(to->t3);
 	    } /* if */
-
 	  break;
 	case GL_TRIANGLES:
 	  to->count = 3;
@@ -309,22 +382,13 @@ ay_tess_vertexdata(GLfloat *vertex, void *userData)
 	      /* create new triangle */
 	      if(ay_tess_checktri(to->p1, to->p2, to->p3))
 		{
-		  if(!(tri = calloc(1, sizeof(ay_tess_tri))))
-		    return;
-		  tri->next = to->tris;
-		  to->tris = tri;
-
-		  memcpy(tri->p1, to->p1, 3*sizeof(double));
-		  memcpy(tri->p2, to->p2, 3*sizeof(double));
-		  memcpy(tri->p3, to->p3, 3*sizeof(double));
-
-		  memcpy(tri->n1, to->n1, 3*sizeof(double));
-		  memcpy(tri->n2, to->n2, 3*sizeof(double));
-		  memcpy(tri->n3, to->n3, 3*sizeof(double));
+		  ay_tess_createtri(to);
 		} /* if */
 
 	      to->nextpd = &(to->p1);
 	      to->nextnd = &(to->n1);
+	      to->nextcd = &(to->c1);
+	      to->nexttd = &(to->t1);
 	    } /* if */
 	  break;
 	case GL_QUAD_STRIP:
@@ -335,18 +399,7 @@ ay_tess_vertexdata(GLfloat *vertex, void *userData)
 	      /* create two new triangles */
 	      if(ay_tess_checktri(to->p1, to->p2, to->p3))
 		{
-		  if(!(tri = calloc(1, sizeof(ay_tess_tri))))
-		    return;
-		  tri->next = to->tris;
-		  to->tris = tri;
-
-		  memcpy(tri->p1, to->p1, 3*sizeof(double));
-		  memcpy(tri->p2, to->p2, 3*sizeof(double));
-		  memcpy(tri->p3, to->p3, 3*sizeof(double));
-
-		  memcpy(tri->n1, to->n1, 3*sizeof(double));
-		  memcpy(tri->n2, to->n2, 3*sizeof(double));
-		  memcpy(tri->n3, to->n3, 3*sizeof(double));
+		  ay_tess_createtri(to);
 		} /* if */
 
 	      if(ay_tess_checktri(to->p2, to->p4, to->p3))
@@ -359,13 +412,27 @@ ay_tess_vertexdata(GLfloat *vertex, void *userData)
 		  memcpy(tri->p1, to->p2, 3*sizeof(double));
 		  memcpy(tri->p2, to->p4, 3*sizeof(double));
 		  memcpy(tri->p3, to->p3, 3*sizeof(double));
-
-		  memcpy(tri->n1, to->n2, 3*sizeof(double));
-		  memcpy(tri->n2, to->n4, 3*sizeof(double));
-		  memcpy(tri->n3, to->n3, 3*sizeof(double));
+		  if(to->has_vn)
+		    {
+		      memcpy(tri->n1, to->n2, 3*sizeof(double));
+		      memcpy(tri->n2, to->n4, 3*sizeof(double));
+		      memcpy(tri->n3, to->n3, 3*sizeof(double));
+		    }
+		  if(to->has_vc)
+		    {
+		      memcpy(tri->c1, to->c2, 4*sizeof(double));
+		      memcpy(tri->c2, to->c4, 4*sizeof(double));
+		      memcpy(tri->c3, to->c3, 4*sizeof(double));
+		    }
+		  if(to->has_tc)
+		    {
+		      memcpy(tri->t1, to->t2, 2*sizeof(double));
+		      memcpy(tri->t2, to->t4, 2*sizeof(double));
+		      memcpy(tri->t3, to->t3, 2*sizeof(double));
+		    }
 		} /* if */
 
-	      /* shift vertex/normal data */
+	      /* shift vertex/normal/color/texcoord data */
 	      t = to->p1;
 	      to->p1 = to->p3;
 	      to->p3 = t;
@@ -380,8 +447,24 @@ ay_tess_vertexdata(GLfloat *vertex, void *userData)
 	      to->n2 = to->n4;
 	      to->n4 = t;
 
+	      t = to->c1;
+	      to->c1 = to->c3;
+	      to->c3 = t;
+	      t = to->c2;
+	      to->c2 = to->c4;
+	      to->c4 = t;
+
+	      t = to->t1;
+	      to->t1 = to->t3;
+	      to->t3 = t;
+	      t = to->t2;
+	      to->t2 = to->t4;
+	      to->t4 = t;
+
 	      to->nextpd = &(to->p3);
 	      to->nextnd = &(to->n3);
+	      to->nextcd = &(to->c3);
+	      to->nexttd = &(to->t3);
 	    } /* if */
 	  break;
 	} /* switch */
@@ -445,6 +528,112 @@ ay_tess_normaldata(GLfloat *normal, void *userData)
 } /* ay_tess_normaldata */
 
 
+/* ay_tess_colordata:
+ *  tesselation callback
+ *  this callback is used by both NURBS and PolyMesh tesselation
+ *  and thus needs to check, whether <color> points to floats (NURBS case)
+ *  or doubles (PolyMesh case)
+ */
+void
+ay_tess_colordata(GLfloat *color, void *userData)
+{
+ ay_tess_object *to;
+ double *nextcd, *t;
+
+  to = (ay_tess_object *)userData;
+
+  nextcd = *to->nextcd;
+
+  if(to->tesselate_polymesh)
+    {
+      t = (double*)color;
+      nextcd[0] = t[0];
+      nextcd[1] = t[1];
+      nextcd[2] = t[2];
+    }
+  else
+    {
+      nextcd[0] = (double)color[0];
+      nextcd[1] = (double)color[1];
+      nextcd[2] = (double)color[2];
+    }
+
+  if((*(to->nextcd)) == to->c1)
+    {
+      to->nextcd = &(to->c2);
+    }
+  else
+  if((*(to->nextcd)) == to->c2)
+    {
+      to->nextcd = &(to->c3);
+    }
+  else
+  if((*(to->nextcd)) == to->c3)
+    {
+      to->nextcd = &(to->c4);
+    }
+  else
+  if((*(to->nextcd)) == to->c4)
+    {
+      to->nextcd = &(to->c1);
+    }
+
+ return;
+} /* ay_tess_colordata */
+
+
+/* ay_tess_texcoorddata:
+ *  tesselation callback
+ *  this callback is used by both NURBS and PolyMesh tesselation
+ *  and thus needs to check, whether <texcoord> points to floats (NURBS case)
+ *  or doubles (PolyMesh case)
+ */
+void
+ay_tess_texcoorddata(GLfloat *texcoord, void *userData)
+{
+ ay_tess_object *to;
+ double *nexttd, *t;
+
+  to = (ay_tess_object *)userData;
+
+  nexttd = *to->nexttd;
+
+  if(to->tesselate_polymesh)
+    {
+      t = (double*)texcoord;
+      nexttd[0] = t[0];
+      nexttd[1] = t[1];
+    }
+  else
+    {
+      nexttd[0] = (double)texcoord[0];
+      nexttd[1] = (double)texcoord[1];
+    }
+
+  if((*(to->nexttd)) == to->t1)
+    {
+      to->nexttd = &(to->t2);
+    }
+  else
+  if((*(to->nexttd)) == to->t2)
+    {
+      to->nexttd = &(to->t3);
+    }
+  else
+  if((*(to->nexttd)) == to->t3)
+    {
+      to->nexttd = &(to->t4);
+    }
+  else
+  if((*(to->nexttd)) == to->t4)
+    {
+      to->nexttd = &(to->t1);
+    }
+
+ return;
+} /* ay_tess_texcoorddata */
+
+
 /* ay_tess_enddata:
  *  tesselation callback
  *
@@ -458,13 +647,15 @@ ay_tess_enddata(void *userData)
 
   to->nextpd = &(to->p1);
   to->nextnd = &(to->n1);
+  to->nextcd = &(to->c1);
+  to->nexttd = &(to->t1);
 
  return;
 } /* ay_tess_enddata */
 
 
 /* ay_tess_combinedata:
- *  tesselation callback
+ *  tesselation callback (XXXX only in use when tesselating PolyMeshes?)
  *
  */
 void
@@ -473,14 +664,20 @@ ay_tess_combinedata(GLdouble c[3], void *d[4], GLfloat w[4], void **out,
 {
  GLdouble *nv = NULL;
  ay_tess_object *to;
- int stride;
+ int stride, i;
 
   to = (ay_tess_object *)userData;
 
+  stride = 3;
+
   if(to->has_vn)
-    stride = 6;
-  else
-    stride = 3;
+    stride += 3;
+
+  if(to->has_vc)
+    stride += 4;
+
+  if(to->has_tc)
+    stride += 2;
 
   if(!(nv = (GLdouble *) malloc(sizeof(GLdouble)*stride)))
     return;
@@ -489,16 +686,44 @@ ay_tess_combinedata(GLdouble c[3], void *d[4], GLfloat w[4], void **out,
   nv[1] = c[1];
   nv[2] = c[2];
 
+  i = 3;
+
   if(to->has_vn)
     {
-      nv[3] = w[0]*((double*)d[0])[3] + w[1]*((double*)d[1])[3] +
-	w[2]*((double*)d[2])[3] + w[3]*((double*)d[3])[3];
+      nv[i] = w[0]*((double*)d[0])[i] + w[1]*((double*)d[1])[i] +
+	w[2]*((double*)d[2])[i] + w[3]*((double*)d[3])[i];
 
-      nv[4] = w[0]*((double*)d[0])[4] + w[1]*((double*)d[1])[4] +
-	w[2]*((double*)d[2])[4] + w[3]*((double*)d[3])[4];
+      nv[i+1] = w[0]*((double*)d[0])[i+1] + w[1]*((double*)d[1])[i+1] +
+	w[2]*((double*)d[2])[i+1] + w[3]*((double*)d[3])[i+1];
 
-      nv[5] = w[0]*((double*)d[0])[5] + w[1]*((double*)d[1])[5] +
-	w[2]*((double*)d[2])[5] + w[3]*((double*)d[3])[5];
+      nv[i+2] = w[0]*((double*)d[0])[i+2] + w[1]*((double*)d[1])[i+2] +
+	w[2]*((double*)d[2])[i+2] + w[3]*((double*)d[3])[i+2];
+      i += 3;
+    }
+
+  if(to->has_vc)
+    {
+      nv[i] = w[0]*((double*)d[0])[i] + w[1]*((double*)d[1])[i] +
+	w[2]*((double*)d[2])[i] + w[3]*((double*)d[3])[i];
+
+      nv[i+1] = w[0]*((double*)d[0])[i+1] + w[1]*((double*)d[1])[i+1] +
+	w[2]*((double*)d[2])[i+1] + w[3]*((double*)d[3])[i+1];
+
+      nv[i+2] = w[0]*((double*)d[0])[i+2] + w[1]*((double*)d[1])[i+2] +
+	w[2]*((double*)d[2])[i+2] + w[3]*((double*)d[3])[i+2];
+
+      nv[i+3] = w[0]*((double*)d[0])[i+3] + w[1]*((double*)d[1])[i+3] +
+	w[2]*((double*)d[2])[i+3] + w[3]*((double*)d[3])[i+3];
+      i += 4;
+    }
+
+  if(to->has_tc)
+    {
+      nv[i] = w[0]*((double*)d[0])[i] + w[1]*((double*)d[1])[i] +
+	w[2]*((double*)d[2])[i] + w[3]*((double*)d[3])[i];
+
+      nv[i+1] = w[0]*((double*)d[0])[i+1] + w[1]*((double*)d[1])[i+1] +
+	w[2]*((double*)d[2])[i+1] + w[3]*((double*)d[3])[i+1];
     }
 
   /* remember pointer to free it later */
@@ -548,7 +773,8 @@ ay_tess_managecombined(void *data)
  *  convert a bunch of tesselated triangles to a PolyMesh object
  */
 int
-ay_tess_tristopomesh(ay_tess_tri *tris, int has_vn, ay_object **result)
+ay_tess_tristopomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
+		     ay_object **result)
 {
  int ay_status = AY_OK;
  ay_object *new = NULL;
@@ -556,14 +782,19 @@ ay_tess_tristopomesh(ay_tess_tri *tris, int has_vn, ay_object **result)
  ay_tess_tri *tri;
  unsigned int numtris = 0, i, stride;
 
-
   if(!tris || !result)
     return AY_ENULL;
 
+  stride = 3;
+
   if(has_vn)
-    stride = 6;
-  else
-    stride = 3;
+    stride += 3;
+
+  if(has_vc)
+    stride += 4;
+
+  if(has_tc)
+    stride += 2;
 
   /* create new object (the PolyMesh) */
   if(!(new = calloc(1, sizeof(ay_object))))
@@ -721,6 +952,7 @@ ay_tess_npatch(ay_object *o, int smethod, double sparamu, double sparamv,
  unsigned int uknot_count = 0, vknot_count = 0, i = 0, a = 0;
  GLdouble sampling_tolerance = ay_prefs.glu_sampling_tolerance;
  GLfloat *uknots = NULL, *vknots = NULL, *controls = NULL;
+ GLfloat *texcoords = NULL;
  ay_object *trim = NULL, *loop = NULL, *nc = NULL;
  ay_tess_object to = {0};
  double p1[3], p2[3], p3[3], p4[3], n1[3], n2[3], n3[3], n4[3];
@@ -736,6 +968,7 @@ ay_tess_npatch(ay_object *o, int smethod, double sparamu, double sparamv,
   npatch = (ay_nurbpatch_object *)(o->refine);
 
   /* properly initialize tesselation object */
+  to.has_vn = AY_TRUE;
   to.p1 = p1;
   to.p2 = p2;
   to.p3 = p3;
@@ -895,6 +1128,19 @@ ay_tess_npatch(ay_object *o, int smethod, double sparamu, double sparamv,
 		  (GLint)npatch->uorder, (GLint)npatch->vorder,
 		  GL_MAP2_VERTEX_4);
 
+  /* texture coordinates */
+  if(0)
+    {
+
+      to.has_tc = AY_TRUE;
+      gluNurbsSurface(npatch->no, (GLint)uknot_count, uknots,
+		      (GLint)vknot_count, vknots,
+		      (GLint)height*4, (GLint)4, texcoords,
+		      (GLint)npatch->uorder, (GLint)npatch->vorder,
+		      GL_MAP2_TEXTURE_COORD_2);
+    }
+
+
   /* draw trimcurves */
   if(o->down && o->down->next)
     {
@@ -967,7 +1213,8 @@ ay_tess_npatch(ay_object *o, int smethod, double sparamu, double sparamv,
   /* the tess_object should now contain lots of triangles;
      copy them to the PolyMesh object */
 
-  ay_status = ay_tess_tristopomesh(to.tris, AY_TRUE, &new);
+  ay_status = ay_tess_tristopomesh(to.tris, AY_TRUE, AY_FALSE, AY_FALSE,
+				   &new);
 
   /* immediately optimize the polymesh (remove multiply used vertices) */
   ay_status = ay_pomesht_optimizecoords((ay_pomesh_object*)new->refine,
@@ -1185,7 +1432,8 @@ ay_tess_pomeshf(ay_pomesh_object *pomesh,
 
   /* the tess_object should now contain lots of triangles;
      copy them to the PolyMesh object */
-  ay_status = ay_tess_tristopomesh(to.tris, to.has_vn, &tmpo);
+  ay_status = ay_tess_tristopomesh(to.tris, to.has_vn, AY_FALSE, AY_FALSE,
+				   &tmpo);
 
   if(!tmpo)
     {
@@ -1308,7 +1556,8 @@ ay_tess_pomesh(ay_pomesh_object *pomesh, int optimize,
 
   /* the tess_object should now contain lots of triangles;
      copy them to the PolyMesh object */
-  ay_status = ay_tess_tristopomesh(to.tris, to.has_vn, &tmpo);
+  ay_status = ay_tess_tristopomesh(to.tris, to.has_vn, AY_FALSE, AY_FALSE,
+				   &tmpo);
 
   if(!tmpo)
     {
