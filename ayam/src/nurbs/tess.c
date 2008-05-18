@@ -1131,7 +1131,7 @@ ay_tess_npatch(ay_object *o, int smethod, double sparamu, double sparamv,
   /* texture coordinates */
   if(0)
     {
-
+      ay_status = ay_pv_getst(o, (void**)(&texcoords));
       to.has_tc = AY_TRUE;
       gluNurbsSurface(npatch->no, (GLint)uknot_count, uknots,
 		      (GLint)vknot_count, vknots,
