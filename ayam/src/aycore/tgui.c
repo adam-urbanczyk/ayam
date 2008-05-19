@@ -79,6 +79,10 @@ ay_tgui_open(void)
 	  memcpy(new, sel->object, sizeof(ay_object));
 	  new->next = NULL;
 
+	  /* ay_tgui_update() may delete tags, make the original
+	     tags immune to that */
+	  sel->object->tags = NULL;
+
 	  /* we save a pointer to the original object in the scene */
 	  newl = NULL;
 	  if(!(newl = calloc(1, sizeof(ay_list_object))))
@@ -129,19 +133,20 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
  ay_deletecb *cb = NULL;
  void **arr = NULL;
  char *mys = "mys", *myt = "myt";
- int smethod = 0, numtriangles = 0, use_tc = AY_TRUE;
+ int smethod = 0, numtriangles = 0, use_tc = AY_FALSE;
  double sparamu = 0.0, sparamv = 0.0;
 
   /* get new tesselation parameters */
-  if(argc < 3)
+  if(argc < 4)
     {
-      ay_error(AY_EARGS, fname, "smethod sparamu sparamv!");
+      ay_error(AY_EARGS, fname, "smethod sparamu sparamv usetexcoords!");
       return TCL_OK;
     }
 
   sscanf(argv[1], "%d", &smethod);
   sscanf(argv[2], "%lg", &sparamu);
   sscanf(argv[3], "%lg", &sparamv);
+  sscanf(argv[4], "%d", &use_tc);
 
   /* clear old tesselations */
   oref = ay_tgui_origrefs;
@@ -242,6 +247,15 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
 	  oref->object->refine = tmp->refine;
 	  numtriangles += ((ay_pomesh_object*)(tmp->refine))->npolys;
 	  /*ay_trafo_copy(tmp, oref->object);*/
+
+	  /*
+	   * the tesselation might have created PV tags (e.g. TexCoords)
+	   * we just move them to the original object...
+	   */
+	  ay_tags_delall(oref->object);
+	  oref->object->tags = tmp->tags;
+	  tmp->tags = NULL;
+
 	  free(tmp);
 	  tmp = NULL;
 	}
@@ -326,7 +340,7 @@ ay_tgui_ok(void)
       o->name = NULL;
       o->selp = NULL;
       o->mat = NULL;
-      o->tags = NULL;
+      ay_tags_delall(o);
       ay_object_delete(o);
       /*free(o);*/
 
@@ -374,6 +388,10 @@ ay_tgui_cancel(void)
       oref->object->refine = o->refine;
       /* move children (trim curves) */
       oref->object->down = o->down;
+
+      /* move tags */
+      ay_tags_delall(oref->object);
+      oref->object->tags = o->tags;
 
       ay_tgui_origs = o->next;
       free(o);
