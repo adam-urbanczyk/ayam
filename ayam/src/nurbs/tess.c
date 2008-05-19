@@ -1236,22 +1236,31 @@ ay_tess_npatch(ay_object *o, int smethod, double sparamu, double sparamv,
 
   /* register callbacks to get tesselated data back from GLU */
   gluNurbsCallbackData(npatch->no, (void *)(&to));
-  gluNurbsCallback(npatch->no, GLU_NURBS_BEGIN_DATA, AYGLUCBTYPE ay_tess_begindata);
-  gluNurbsCallback(npatch->no, GLU_NURBS_VERTEX_DATA, AYGLUCBTYPE ay_tess_vertexdata);
-  gluNurbsCallback(npatch->no, GLU_NURBS_NORMAL_DATA, AYGLUCBTYPE ay_tess_normaldata);
-  gluNurbsCallback(npatch->no, GLU_NURBS_END_DATA, AYGLUCBTYPE ay_tess_enddata);
-  gluNurbsCallback(npatch->no, GLU_NURBS_TEXTURE_COORD_DATA, AYGLUCBTYPE ay_tess_texcoorddata);
+  gluNurbsCallback(npatch->no, GLU_NURBS_BEGIN_DATA,
+		   AYGLUCBTYPE ay_tess_begindata);
+  gluNurbsCallback(npatch->no, GLU_NURBS_VERTEX_DATA,
+		   AYGLUCBTYPE ay_tess_vertexdata);
+  gluNurbsCallback(npatch->no, GLU_NURBS_NORMAL_DATA,
+		   AYGLUCBTYPE ay_tess_normaldata);
+  gluNurbsCallback(npatch->no, GLU_NURBS_END_DATA,
+		   AYGLUCBTYPE ay_tess_enddata);
+  if(use_tc)
+    {
+      gluNurbsCallback(npatch->no, GLU_NURBS_TEXTURE_COORD_DATA,
+		       AYGLUCBTYPE ay_tess_texcoorddata);
+    }
 
   /* tesselate the patch */
   gluBeginSurface(npatch->no);
 
+  /* put surface data */
   gluNurbsSurface(npatch->no, (GLint)uknot_count, uknots,
 		  (GLint)vknot_count, vknots,
 		  (GLint)height*4, (GLint)4, controls,
 		  (GLint)npatch->uorder, (GLint)npatch->vorder,
 		  GL_MAP2_VERTEX_4);
 
-  /* texture coordinates */
+  /* put texture coordinates */
   if(use_tc)
     {
 
@@ -1271,7 +1280,7 @@ ay_tess_npatch(ay_object *o, int smethod, double sparamu, double sparamv,
     }
 
 
-  /* draw trimcurves */
+  /* put trimcurves */
   if(o->down && o->down->next)
     {
       trim = o->down;
