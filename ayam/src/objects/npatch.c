@@ -1924,7 +1924,8 @@ ay_npatch_providecb(ay_object *o, unsigned int type, ay_object **result)
  int ay_status = AY_OK;
  /*char fname[] = "npatch_providecb";*/
  ay_tag *tag = NULL;
- int smethod = ay_prefs.smethod;
+ char *mys = "mys", *myt = "myt";
+ int smethod = ay_prefs.smethod, use_tc = AY_FALSE;
  double sparamu = ay_prefs.sparamu, sparamv = ay_prefs.sparamv;
 
   if(!o)
@@ -1954,7 +1955,8 @@ ay_npatch_providecb(ay_object *o, unsigned int type, ay_object **result)
 	} /* while */
 
       /* tesselate */
-      ay_status = ay_tess_npatch(o, smethod, sparamu, sparamv, result);
+      ay_status = ay_tess_npatch(o, smethod, sparamu, sparamv,
+				 use_tc, mys, myt, result);
 
       /* copy transformation attributes */
       if(*result)

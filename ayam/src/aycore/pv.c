@@ -505,6 +505,8 @@ ay_pv_convert(ay_tag *tag, unsigned int *datalen, void **data)
 
   /* find the type */
   c1 = strchr(c1, ',');
+  c1++;
+  c1 = strchr(c1, ',');
   if(!c1)
     return AY_ERROR;
   c1++;
@@ -521,6 +523,7 @@ ay_pv_convert(ay_tag *tag, unsigned int *datalen, void **data)
   if(!c3)
     return AY_ERROR;
   c3++;
+
   switch(*c1)
     {
     case 'f':
@@ -532,8 +535,10 @@ ay_pv_convert(ay_tag *tag, unsigned int *datalen, void **data)
 	{
 	  sscanf(c3, ",%lg", &(da[i]));
 	  i++;
+	  c3++;
 	}
       while((c3 = strchr(c3, ',')));
+
       /* prepare result */
       *datalen = count;
       *data = da;
@@ -551,7 +556,7 @@ ay_pv_convert(ay_tag *tag, unsigned int *datalen, void **data)
  *  get texture coordinates st
  */
 int
-ay_pv_getst(ay_object *o, void **data)
+ay_pv_getst(ay_object *o, char *mys, char *myt, void **data)
 {
  int ay_status = AY_OK;
  ay_tag *tag = NULL, *stag = NULL, *ttag = NULL;
@@ -560,7 +565,7 @@ ay_pv_getst(ay_object *o, void **data)
  unsigned int sdalen = 0, tdalen = 0;
  unsigned int i, j;
 
-  if(!o || !data)
+  if(!o || !mys || !myt || !data)
     return AY_ENULL;
 
   tag = o->tags;
@@ -568,13 +573,13 @@ ay_pv_getst(ay_object *o, void **data)
     {
       if(tag->type == ay_pv_tagtype)
 	{
-	  if(!strncmp(tag->val, "mys", 3))
+	  if(!strncmp(tag->val, mys, strlen(mys)))
 	    {
 	      stag = tag;
 	      if(ttag)
 		break;
 	    }
-	  if(!strncmp(tag->val, "myt", 3))
+	  if(!strncmp(tag->val, myt, strlen(myt)))
 	    {
 	      ttag = tag;
 	      if(stag)

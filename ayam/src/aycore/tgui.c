@@ -128,7 +128,8 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
  ay_object *o = NULL, *tmp = NULL, *tmpnp = NULL;
  ay_deletecb *cb = NULL;
  void **arr = NULL;
- int smethod = 0, numtriangles = 0;
+ char *mys = "mys", *myt = "myt";
+ int smethod = 0, numtriangles = 0, use_tc = AY_TRUE;
  double sparamu = 0.0, sparamv = 0.0;
 
   /* get new tesselation parameters */
@@ -181,7 +182,8 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
       if(o->type == AY_IDNPATCH)
 	{
 	  tmp = NULL;
-	  ay_status = ay_tess_npatch(o, smethod+1, sparamu, sparamv, &tmp);
+	  ay_status = ay_tess_npatch(o, smethod+1, sparamu, sparamv,
+				     use_tc, mys, myt, &tmp);
 	}
       else
 	{
@@ -199,6 +201,7 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
 		      tmp = NULL;
 		      ay_status = ay_tess_npatch(tmpnp, smethod+1,
 						 sparamu, sparamv,
+						 use_tc, mys, myt,
 						 &tmp);
 
 		      newl = NULL;
@@ -226,7 +229,9 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
 		{
 		  tmp = NULL;
 		  ay_status = ay_tess_npatch(tmpnp, smethod+1,
-					     sparamu, sparamv, &tmp);
+					     sparamu, sparamv,
+					     use_tc, mys, myt,
+					     &tmp);
 		} /* if */
 	      ay_object_deletemulti(tmpnp);
 	    } /* if */
