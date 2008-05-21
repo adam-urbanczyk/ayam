@@ -107,7 +107,7 @@ void ay_tess_combinedata(GLdouble c[3], void *d[4], GLfloat w[4], void **out,
 void ay_tess_managecombined(void *userData);
 
 int ay_tess_tristopomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
-			 ay_object **result);
+			 char *mys, char *myt, ay_object **result);
 
 void ay_tess_setautonormal(double *v1, double *v2, double *v3);
 
@@ -771,9 +771,12 @@ ay_tess_managecombined(void *data)
 
 /* ay_tess_tristopomesh:
  *  convert a bunch of tesselated triangles to a PolyMesh object
+ *  according to <has_vc> and <has_tc> PV tags will be created that
+ *  carry the vertex colors and texture coordinates respectively
  */
 int
 ay_tess_tristopomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
+		     char *mys, char *myt,
 		     ay_object **result)
 {
  int ay_status = AY_OK;
@@ -785,7 +788,7 @@ ay_tess_tristopomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
  char buf[128], *coltagbuf = NULL, *tcstagbuf = NULL, *tcttagbuf = NULL;
  char *tmp = NULL;
 
-  if(!tris || !result)
+  if(!tris || !result || (has_tc && (!mys || !myt)))
     return AY_ENULL;
 
   stride = 3;
@@ -879,19 +882,19 @@ ay_tess_tristopomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
 
   if(has_tc)
     {
-      if(!(tcstagbuf = calloc(64, sizeof(char))))
+      if(!(tcstagbuf = calloc(strlen(mys)+64, sizeof(char))))
 	{
 	  ay_status = AY_EOMEM;
 	  goto cleanup;
 	}
-      sprintf(tcstagbuf, "mys,varying,f,%d", numtris*3);
+      sprintf(tcstagbuf, "%s,varying,f,%d", mys, numtris*3);
       tcstagbuflen = strlen(tcstagbuf);
-      if(!(tcttagbuf = calloc(64, sizeof(char))))
+      if(!(tcttagbuf = calloc(strlen(myt)+64, sizeof(char))))
 	{
 	  ay_status = AY_EOMEM;
 	  goto cleanup;
 	}
-      sprintf(tcttagbuf, "myt,varying,f,%d", numtris*3);
+      sprintf(tcttagbuf, "%s,varying,f,%d", myt, numtris*3);
       tcttagbuflen = strlen(tcttagbuf);
     }
 
@@ -1046,6 +1049,9 @@ cleanup:
  *   5: AY_GLU_ADAPTIVE_DOMAIN_DISTANCE
  *  sparamu/sparamv - sampling parameters (sparamv only used by
  *  smethod 3 - 5)
+ *  use_tc - use texture coordinates delivered by a PV tag
+ *  mys - name of PV tag used for the s component of the texture coordinates
+ *  myt - name of PV tag used for the t component of the texture coordinates
  */
 int
 ay_tess_npatch(ay_object *o, int smethod, double sparamu, double sparamv,
@@ -1353,7 +1359,7 @@ ay_tess_npatch(ay_object *o, int smethod, double sparamu, double sparamv,
      copy them to the PolyMesh object */
 
   ay_status = ay_tess_tristopomesh(to.tris, AY_TRUE, AY_FALSE, use_tc,
-				   &new);
+				   mys, myt, &new);
 
   /* immediately optimize the polymesh (remove multiply used vertices) */
   if(!use_tc)
@@ -1582,7 +1588,7 @@ ay_tess_pomeshf(ay_pomesh_object *pomesh,
   /* the tess_object should now contain lots of triangles;
      copy them to the PolyMesh object */
   ay_status = ay_tess_tristopomesh(to.tris, to.has_vn, AY_FALSE, AY_FALSE,
-				   &tmpo);
+				   NULL, NULL, &tmpo);
 
   if(!tmpo)
     {
@@ -1706,7 +1712,7 @@ ay_tess_pomesh(ay_pomesh_object *pomesh, int optimize,
   /* the tess_object should now contain lots of triangles;
      copy them to the PolyMesh object */
   ay_status = ay_tess_tristopomesh(to.tris, to.has_vn, AY_FALSE, AY_FALSE,
-				   &tmpo);
+				   NULL, NULL, &tmpo);
 
   if(!tmpo)
     {
