@@ -188,7 +188,8 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
 	{
 	  tmp = NULL;
 	  ay_status = ay_tess_npatch(o, smethod+1, sparamu, sparamv,
-				     use_tc, mys, myt, &tmp);
+				     use_tc, mys, myt, AY_FALSE, NULL,
+				     &tmp);
 	}
       else
 	{
@@ -207,6 +208,7 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
 		      ay_status = ay_tess_npatch(tmpnp, smethod+1,
 						 sparamu, sparamv,
 						 use_tc, mys, myt,
+						 AY_FALSE, NULL,
 						 &tmp);
 
 		      newl = NULL;
@@ -236,6 +238,7 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
 		  ay_status = ay_tess_npatch(tmpnp, smethod+1,
 					     sparamu, sparamv,
 					     use_tc, mys, myt,
+					     AY_FALSE, NULL,
 					     &tmp);
 		} /* if */
 	      ay_object_deletemulti(tmpnp);

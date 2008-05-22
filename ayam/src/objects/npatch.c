@@ -1956,7 +1956,7 @@ ay_npatch_providecb(ay_object *o, unsigned int type, ay_object **result)
 
       /* tesselate */
       ay_status = ay_tess_npatch(o, smethod, sparamu, sparamv,
-				 use_tc, mys, myt, result);
+				 use_tc, mys, myt, AY_FALSE, NULL, result);
 
       /* copy transformation attributes */
       if(*result)

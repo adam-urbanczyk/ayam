@@ -600,7 +600,8 @@ int ay_stess_TessNP(ay_object *o, int qf);
 /* tess.c */
 
 int ay_tess_npatch(ay_object *o, int smethod, double sparamu, double sparamv,
-		   int use_tc, char *mys, char *myt, ay_object **pm);
+		   int use_tc, char *mys, char *myt, int use_vc, char *myc,
+		   ay_object **pm);
 
 int ay_tess_npatchtcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
