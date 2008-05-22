@@ -628,6 +628,73 @@ cleanup:
 } /* ay_pv_getst */
 
 
+/* ay_pv_getvc:
+ *  get vertex colors
+ */
+int
+ay_pv_getvc(ay_object *o, int stride, char *myc, void **data)
+{
+ int ay_status = AY_OK;
+ ay_tag *tag = NULL, *ctag = NULL;
+ double *cda = NULL;
+ float *vc = NULL;
+ unsigned int cdalen = 0;
+ unsigned int i, j;
+
+  if(!o || !myc || !data)
+    return AY_ENULL;
+
+  tag = o->tags;
+  while(tag)
+    {
+      if(tag->type == ay_pv_tagtype)
+	{
+	  if(!strncmp(tag->val, myc, strlen(myc)))
+	    {
+	      ctag = tag;
+		break;
+	    }
+	}
+      tag = tag->next;
+    }
+
+  if(ctag)
+    {
+      ay_pv_convert(ctag, &cdalen, (void**)&cda);
+
+      if(cdalen == 0)
+	{ ay_status = AY_ERROR; goto cleanup; }
+
+      if(!(vc = calloc(stride*cdalen, sizeof(float))))
+	{ ay_status = AY_EOMEM; goto cleanup; }
+
+      for(i = 0; i < cdalen; i++)
+	{
+	  vc[i] = cda[i];
+	  vc[i+1] = cda[i+1];
+	  vc[i+2] = cda[i+2];
+	  if(stride > 3)
+	    {
+	      vc[i+3] = 1.0;
+	      /* XXXX
+		 vc[i+3] = oda[i+3];
+	      */
+	    }
+
+	  j += stride;
+	} /* for */
+
+      *data = vc;
+    } /* if */
+
+cleanup:
+
+  if(cda)
+    free(cda);
+
+ return ay_status;
+} /* ay_pv_getvc */
+
 
 /* ay_pv_count:
  *  count PV tags of object <o>

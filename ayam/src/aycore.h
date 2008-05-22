@@ -794,37 +794,42 @@ int ay_provide_object(ay_object *o, unsigned int type, ay_object **result);
 
 /* pv.c */
 
-/*! \brief 
+/*! \brief parse all PV tags to RtToken/RtPointer arrays
  */
 int ay_pv_filltokpar(ay_object *o, int declare, int start,
 		     int *added, RtToken tokens[], RtPointer parms[]);
 
-/*! \brief 
+/*! \brief add PV tag to an object
  */
 int ay_pv_add(ay_object *o, char *name, char *detail, int type,
 	      int datalen, void *data);
 
-/*! \brief 
+/*! \brief merge two PV tags into one
  */
 int ay_pv_merge(ay_tag *t1, ay_tag *t2, ay_tag **mt);
 
-/*! \brief 
+/*! \brief compare two PV tag variable names
  */
 int ay_pv_cmpname(ay_tag *t1, ay_tag *t2);
 
-/*! \brief 
+/*! \brief convert PV tag data to value array
  */
 int ay_pv_convert(ay_tag *tag, unsigned int *datalen, void **data);
 
-/*! \brief 
+/*! \brief get texture coordinates from PV tag
  */
 int ay_pv_getst(ay_object *o, char *mys, char *myt, void **data);
+
+/*! \brief get vertex colors from PV tag
+ */
+int
+ay_pv_getvc(ay_object *o, int stride, char *myc, void **data);
 
 /*! \brief count PV tags of object o
  */
 int ay_pv_count(ay_object *o);
 
-/*! \brief 
+/*! \brief initialize pv module
  */
 void ay_pv_init(Tcl_Interp *interp);
 
