@@ -489,11 +489,12 @@ ay_pv_cmpname(ay_tag *t1, ay_tag *t2)
  *
  */
 int
-ay_pv_convert(ay_tag *tag, unsigned int *datalen, void **data)
+ay_pv_convert(ay_tag *tag, int type, unsigned int *datalen, void **data)
 {
  unsigned int count = 0, i = 0;
  char *c1, *c2, *c3;
  double *da = NULL;
+ float *fa = NULL;
 
   if(!tag)
     return AY_ENULL;
@@ -527,22 +528,75 @@ ay_pv_convert(ay_tag *tag, unsigned int *datalen, void **data)
   switch(*c1)
     {
     case 'f':
-      /* allocate memory */
-      if(!(da = calloc(count, sizeof(double))))
-	return AY_EOMEM;
-      /* parse data and fill memory */
-      do
+      if(type == 0)
 	{
-	  sscanf(c3, ",%lg", &(da[i]));
-	  i++;
-	  c3++;
+	  /* allocate memory */
+	  if(!(da = calloc(count, sizeof(double))))
+	    return AY_EOMEM;
+	  /* parse data and fill memory */
+	  do
+	    {
+	      sscanf(c3, ",%lg", &(da[i]));
+	      i++;
+	      c3++;
+	    }
+	  while((c3 = strchr(c3, ',')));
+	  /* prepare result */
+	  *data = da;
 	}
-      while((c3 = strchr(c3, ',')));
-
-      /* prepare result */
+      if(type == 1)
+	{
+	  /* allocate memory */
+	  if(!(fa = calloc(count, sizeof(float))))
+	    return AY_EOMEM;
+	  /* parse data and fill memory */
+	  do
+	    {
+	      sscanf(c3, ",%f", &(fa[i]));
+	      i++;
+	      c3++;
+	    }
+	  while((c3 = strchr(c3, ',')));
+	  /* prepare result */
+	  *data = fa;
+	}
       *datalen = count;
-      *data = da;
       break;
+    case 'c':
+      if(type == 0)
+	{
+	  /* allocate memory */
+	  if(!(da = calloc(3*count, sizeof(double))))
+	    return AY_EOMEM;
+	  /* parse data and fill memory */
+	  do
+	    {
+	      sscanf(c3, ",%lg,%lg,%lg", &(da[i]), &(da[i+1]), &(da[i+2]));
+	      i+=3;
+	      c3++;
+	    }
+	  while((c3 = strchr(c3, ',')));
+	  /* prepare result */
+	  *data = da;
+	}
+      if(type == 1)
+	{
+	  /* allocate memory */
+	  if(!(da = calloc(3*count, sizeof(float))))
+	    return AY_EOMEM;
+	  /* parse data and fill memory */
+	  do
+	    {
+	      sscanf(c3, ",%f,%f,%f", &(da[i]), &(da[i+1]), &(da[i+2]));
+	      i+=3;
+	      c3++;
+	    }
+	  while((c3 = strchr(c3, ',')));
+	  /* prepare result */
+	  *data = fa;
+	}
+      *datalen = count;
+    break;
     default:
       return AY_ERROR;
       break;
@@ -591,8 +645,8 @@ ay_pv_getst(ay_object *o, char *mys, char *myt, void **data)
 
   if(stag && ttag)
     {
-      ay_pv_convert(stag, &sdalen, (void**)&sda);
-      ay_pv_convert(ttag, &tdalen, (void**)&tda);
+      ay_pv_convert(stag, 0, &sdalen, (void**)&sda);
+      ay_pv_convert(ttag, 0, &tdalen, (void**)&tda);
 
       if((sdalen == 0) || (tdalen == 0) || (sdalen != tdalen))
 	{ ay_status = AY_ERROR; goto cleanup; }
@@ -636,7 +690,7 @@ ay_pv_getvc(ay_object *o, int stride, char *myc, void **data)
 {
  int ay_status = AY_OK;
  ay_tag *tag = NULL, *ctag = NULL;
- double *cda = NULL;
+ float *cda = NULL;
  float *vc = NULL;
  unsigned int cdalen = 0;
  unsigned int i, j;
@@ -660,7 +714,7 @@ ay_pv_getvc(ay_object *o, int stride, char *myc, void **data)
 
   if(ctag)
     {
-      ay_pv_convert(ctag, &cdalen, (void**)&cda);
+      ay_pv_convert(ctag, 1, &cdalen, (void**)&cda);
 
       if(cdalen == 0)
 	{ ay_status = AY_ERROR; goto cleanup; }
@@ -670,9 +724,12 @@ ay_pv_getvc(ay_object *o, int stride, char *myc, void **data)
 
       for(i = 0; i < cdalen; i++)
 	{
+	  memcpy(&(vc[i]), &(cda[i]), 3*sizeof(float));
+	  /*
 	  vc[i] = cda[i];
 	  vc[i+1] = cda[i+1];
 	  vc[i+2] = cda[i+2];
+	  */
 	  if(stride > 3)
 	    {
 	      vc[i+3] = 1.0;

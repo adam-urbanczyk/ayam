@@ -814,7 +814,7 @@ int ay_pv_cmpname(ay_tag *t1, ay_tag *t2);
 
 /*! \brief convert PV tag data to value array
  */
-int ay_pv_convert(ay_tag *tag, unsigned int *datalen, void **data);
+int ay_pv_convert(ay_tag *tag, int type, unsigned int *datalen, void **data);
 
 /*! \brief get texture coordinates from PV tag
  */
