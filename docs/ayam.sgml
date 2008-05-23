@@ -1551,7 +1551,7 @@ All changes done after the last press of <tt/"Apply"/ will be lost.
 </itemize>
 
 Note that while the preference editor is open, AutoFocus is temporarily
-turned off and changes to the  <tt/"AutoFocus"/ preference setting will
+turned off and changes to the <tt/"AutoFocus"/ preference setting will
 only be realized after the editor is closed.
 <p>
 The preferences are divided into five sections as follows.
@@ -2328,7 +2328,7 @@ The modelling action <tt/"Delete Point"/ (shortcut: <tt/&lt;d&gt;/)
 may be applied to NURBS, interpolating, and approximating curves
 (objects of type NCurve, ICurve, and ACurve) only.
 The selected control point will be deleted from the curve.
-Deleting points from a curve with knot type  <tt/"Custom"/
+Deleting points from a curve with knot type <tt/"Custom"/
 may currently lead to an incorrect knot sequence, please
 check and correct the new sequence manually.
 
@@ -5063,7 +5063,7 @@ of the created NURBS curve.
 <em>The ACurve did not make it completely into Ayam 1.14, do not use</em>.
 <p>
 The ACurve object creates an approximating NURBS curve with m control
-points from n 3D non-rational data points. 
+points from n 3D non-rational data points.
 <p>
 This object makes use of the provide mechanism. It marks itself
 as providing a NURBCurve (it creates and uses NURBS curves
@@ -5625,6 +5625,75 @@ If the first line of the script is a comment like
 then the global Tcl array <tt>&lt;arrayname&gt;</tt> will be saved with
 the script object to Ayam scene files.
 </itemize>
+
+<sect2>Script Object Example
+<p>
+This section illustrates the development of a script object for parametric
+lines, otherwise unavailable in Ayam.
+<p>
+We start with a simple version, that first creates a NURBS curve object with
+two control points and then places the control points each at +/- half the
+desired line length on the x axis.
+<code>
+set length 1
+crtOb NCurve -length 2; hSL
+setPnt 0 [expr {-$length/2.0}] 0.0 0.0 1.0
+setPnt 1 [expr {$length/2.0}] 0.0 0.0 1.0
+</code>
+This code works, but if lines of a different length than 1 are needed,
+the user must edit the script which is not very convenient and error
+prone. A complete, easy to use, and safe GUI for the length parameter
+can be added by changing the script code to:
+<code>
+if { ![info exists ::LineAttrData] } {
+    array set ::LineAttrData {
+	Length 1
+    }
+    array set ::LineAttr {
+	arr LineAttrData
+	sproc ""
+	gproc ""
+	w fLineAttr
+    }
+    set w [frame $::ay(pca).fLineAttr]
+    addParam $w LineAttrData Length
+}
+set length $::LineAttrData(Length)
+crtOb NCurve -length 2; hSL
+setPnt 0 [expr {-$length/2.0}] 0.0 0.0 1.0
+setPnt 1 [expr {$length/2.0}] 0.0 0.0 1.0
+</code>
+and by adding a <tt>"NP"</tt> (new property) tag to the script object
+with the value <tt>"LineAttr"</tt>.
+<p>
+The GUI management code just runs once (for that, it checks for the presence
+of LineAttrData first) and creates two Tcl arrays essential for an Ayam
+object property, LineAttrData and LineAttr. Then a frame is created and a
+GUI element is added to the frame using <tt>"addParam"</tt>.
+<p>
+Finally, to enable saving of the parameter value in the new property
+<tt>"LineAttr"</tt> to scene files, a comment may be prepended to the
+script:
+<code>
+# Ayam, save array: LineAttr
+if { ![info exists ::LineAttrData] } {
+    array set ::LineAttrData {
+	Length 1
+    }
+    array set ::LineAttr {
+	arr LineAttrData
+	sproc ""
+	gproc ""
+	w fLineAttr
+    }
+    set w [frame $::ay(pca).fLineAttr]
+    addParam $w LineAttrData Length
+}
+set length $::LineAttrData(Length)
+crtOb NCurve -length 2; hSL
+setPnt 0 [expr {-$length/2.0}] 0.0 0.0 1.0
+setPnt 1 [expr {$length/2.0}] 0.0 0.0 1.0
+</code>
 
 <sect1>Select Object<label id="selectobj">
 <p>
@@ -8858,6 +8927,29 @@ After running the script, the console will always resize to exactly
 two lines. Different values may be chosen easily by adapting the
 script.
 
+<sect2>Use Ayam as Command Line Converter<label id="bgconverttcl">
+<p>
+Since Ayam 1.15 there is an external Tcl script named <tt>"bgconvert.tcl"</tt>
+that converts its arguments, with the help of Ayam running in the
+background, from one 3D file format to another.
+In the most simple form, it may be used from a UNIX command line
+(or shell script) like this:
+<code>
+bgconvert.tcl infile.x3d outfile.dxf
+</code>
+Of course Ayam has to run already and the plugins required for the
+import and export processes need to be available and properly
+configured (<tt>"Plugins"</tt> preference setting).
+<p>
+Import and export options may also be given like this:
+<code>
+bgconvert.tcl "infile.rib -p 1" outfile.dxf
+</code>
+In the example above the <tt>"-p 1"</tt> option switches on reading
+of partial RIB files.
+Available options and their syntax may be inquired from the
+import and export plugin Tcl scripts (e.g. <tt>"plugins/rrib.tcl"</tt>).
+
 <sect2>Access Core Functions from the Toolbox<label id="zaptcl">
 <p>
 The script <tt>"zap.tcl"</tt> demonstrates, how arbitrary core
@@ -10173,7 +10265,7 @@ transforming the revolve <em>tool</em> into a scene <em>object</em>.
 <p>
 The following example hierarchy shows two objects in a parent-child relation:
 <code>
-+-Tool_Object(Revolve)        
++-Tool_Object(Revolve)
  |         ^
  |         :
  |   <Notification>
@@ -11051,7 +11143,7 @@ Dime is
 Copyright (c) 1998-1999 Systems In Motion, SA
 All rights reserved.
 
-AutoCAD (R)  is a registered trademark of Autodesk, Inc.
+AutoCAD (R) is a registered trademark of Autodesk, Inc.
 
 DXF (R) is a registered trademark of Autodesk, Inc.
 
@@ -11611,6 +11703,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <ref id="rribopt" name="RIB import option">,
 <ref id="impx3dopt" name="X3D import option">
 <item>Rebuild: <ref id="treecontm" name="tree context menu entry">
+<item>Rectangle: <ref id="trrt" name="TrimRect tool">
 <item>RedirectTcl: <ref id="prefmisc" name="preference setting">
 <item>Redo: <ref id="undos" name="The Undo System">,
 <ref id="mmedit" name="main menu entry">
