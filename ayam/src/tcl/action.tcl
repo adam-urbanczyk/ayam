@@ -1137,6 +1137,11 @@ proc actionClear { w } {
 	actionPick $w
     }
 
+    global ayviewshortcuts
+    set p [winfo parent [winfo parent $w]]
+    after 100 "bind $p <$ayviewshortcuts(Break)> \"focus -force .\""
+    after 1000 "bind $p <$ayviewshortcuts(Break)> \"actionClear $p.f3D.togl\""
+
  return;
 }
 # actionClear
