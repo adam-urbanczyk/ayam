@@ -1,11 +1,11 @@
-[14. May 2008] CVS-Head:
+[23. May 2008] CVS-Head:
 =======================
 Bug Fixes:
 o aycsg plugin GUI code for internal views (SF 1943164)
 o RIB export of Instances in CSG hierarchies (SF 1953633)
 o X3D export of trim curves crashes (SF 1945924)
-o Esc key binding of About requester (SF )
-o Hide/Show keyboard shortcuts in view windows (SF )
+o Esc key binding of About requester (SF 1964809)
+o Hide/Show keyboard shortcuts in view windows (SF 1964807)
 
 GUI:
 o added plugin "aydnd.tcl" that enables inter-application drag-and-drop
@@ -20,6 +20,8 @@ o NCircle objects now accept reverse parameters to create reverted circles
 o added 3D offset mode ("Bevel3D") to offset curve creation
 o improved robustness of curve splitting (also essential for Gordon caps)
 o view type cycling (via PageUp/Down) now keeps the camera aim point
+o the GLU NURBS tesselation now preserves texture coordinates and vertex
+  colors delivered by PV tags
 
 Import/Export:
 o added support for true instances (via USE/DEF) to X3D export
@@ -29,6 +31,8 @@ o added example script "zdialog.tcl" that switches all internal file dialogs
   to use zenity (from the Gnome project)
 o added example script "kdialog.tcl" that switches all internal file dialogs
   to use kdialog (from the KDE project)
+o added script "bgconvert.tcl" that allows to use Ayam as a background
+  3D file format converter from a UNIX shell
 
 Documentation/Example Files:
 o added example scene "multicolcsg.ay" that demonstrates how "Primitive"
