@@ -718,13 +718,13 @@ objio_writenpatch(FILE *fileptr, ay_object *o, double *m)
 	    {
 	      have_mys = AY_TRUE;
 
-	      ay_status = ay_pv_convert(tag, &myslen, (void**)&mysarr);
+	      ay_status = ay_pv_convert(tag, 0, &myslen, (void**)&mysarr);
 	    }
 	  if((tag->type == ay_pv_tagtype) && ay_pv_cmpname(tag, &myttag))
 	    {
 	      have_myt = AY_TRUE;
 
-	      ay_status = ay_pv_convert(tag, &mytlen, (void**)&mytarr);
+	      ay_status = ay_pv_convert(tag, 0, &mytlen, (void**)&mytarr);
 	    }
 	  tag = tag->next;
 	} /* while */
@@ -1090,13 +1090,13 @@ objio_writepomesh(FILE *fileptr, ay_object *o, double *m)
 	    {
 	      have_mys = AY_TRUE;
 
-	      ay_status = ay_pv_convert(tag, &myslen, (void**)&mysarr);
+	      ay_status = ay_pv_convert(tag, 0, &myslen, (void**)&mysarr);
 	    }
 	  if((tag->type == ay_pv_tagtype) && ay_pv_cmpname(tag, &myttag))
 	    {
 	      have_myt = AY_TRUE;
 
-	      ay_status = ay_pv_convert(tag, &mytlen, (void**)&mytarr);
+	      ay_status = ay_pv_convert(tag, 0, &mytlen, (void**)&mytarr);
 	    }
 	  tag = tag->next;
 	} /* while */
