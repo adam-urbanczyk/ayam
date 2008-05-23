@@ -486,7 +486,10 @@ ay_pv_cmpname(ay_tag *t1, ay_tag *t2)
 
 
 /* ay_pv_convert:
- *
+ *  convert data from PV tag <tag> into an array of doubles (<type> 0)
+ *  or floats (<type> 1)
+ *  Warning: <datalen> does not contain the array size, but the number
+ *  of data elements, e.g. for one color value it is 1 and not 3!
  */
 int
 ay_pv_convert(ay_tag *tag, int type, unsigned int *datalen, void **data)

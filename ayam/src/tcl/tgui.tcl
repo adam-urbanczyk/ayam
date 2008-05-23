@@ -37,6 +37,7 @@ uplevel #0 { array set tgui_tessparam {
     MB1Down 0
     SaveToTag 0
     UseTexCoords 0
+    UseVertColors 0
 
     OldSMethod -1
     NumTriangles 0
@@ -266,11 +267,13 @@ proc tgui_update args {
     if { $ayprefs(LazyNotify) == 1 } {
 	if { $tgui_tessparam(MB1Down) == 0 } {
 	    tguiCmd up $tgui_tessparam(SMethod) $tgui_tessparam(SParamU)\
-		$tgui_tessparam(SParamV) $tgui_tessparam(UseTexCoords)
+		$tgui_tessparam(SParamV) $tgui_tessparam(UseTexCoords)\
+		$tgui_tessparam(UseVertColors)
 	}
     } else {
 	tguiCmd up $tgui_tessparam(SMethod) $tgui_tessparam(SParamU)\
-	    $tgui_tessparam(SParamV) $tgui_tessparam(UseTexCoords)
+	    $tgui_tessparam(SParamV) $tgui_tessparam(UseTexCoords)\
+	    $tgui_tessparam(UseVertColors)
     }
 
     trace variable tgui_tessparam(SMethod) w tgui_update
@@ -477,6 +480,7 @@ proc tgui_open { } {
 
     addCheck $f tgui_tessparam SaveToTag
     addCheck $f tgui_tessparam UseTexCoords
+    addCheck $f tgui_tessparam UseVertColors
 
     # SMethod
     addMenu $f tgui_tessparam SMethod $ay(smethods)

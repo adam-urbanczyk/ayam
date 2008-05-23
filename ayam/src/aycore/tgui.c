@@ -132,12 +132,12 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
  ay_object *o = NULL, *tmp = NULL, *tmpnp = NULL;
  ay_deletecb *cb = NULL;
  void **arr = NULL;
- char *mys = "mys", *myt = "myt";
- int smethod = 0, numtriangles = 0, use_tc = AY_FALSE;
+ char *mys = "mys", *myt = "myt", *myc = "myc";
+ int smethod = 0, numtriangles = 0, use_tc = AY_FALSE, use_vc = AY_FALSE;
  double sparamu = 0.0, sparamv = 0.0;
 
   /* get new tesselation parameters */
-  if(argc < 4)
+  if(argc < 5)
     {
       ay_error(AY_EARGS, fname, "smethod sparamu sparamv usetexcoords!");
       return TCL_OK;
@@ -147,6 +147,7 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
   sscanf(argv[2], "%lg", &sparamu);
   sscanf(argv[3], "%lg", &sparamv);
   sscanf(argv[4], "%d", &use_tc);
+  sscanf(argv[5], "%d", &use_vc);
 
   /* clear old tesselations */
   oref = ay_tgui_origrefs;
@@ -188,7 +189,7 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
 	{
 	  tmp = NULL;
 	  ay_status = ay_tess_npatch(o, smethod+1, sparamu, sparamv,
-				     use_tc, mys, myt, AY_FALSE, NULL,
+				     use_tc, mys, myt, use_vc, myc,
 				     &tmp);
 	}
       else
@@ -208,7 +209,7 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
 		      ay_status = ay_tess_npatch(tmpnp, smethod+1,
 						 sparamu, sparamv,
 						 use_tc, mys, myt,
-						 AY_FALSE, NULL,
+						 use_vc, myc,
 						 &tmp);
 
 		      newl = NULL;
@@ -238,7 +239,7 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
 		  ay_status = ay_tess_npatch(tmpnp, smethod+1,
 					     sparamu, sparamv,
 					     use_tc, mys, myt,
-					     AY_FALSE, NULL,
+					     use_vc, myc,
 					     &tmp);
 		} /* if */
 	      ay_object_deletemulti(tmpnp);
