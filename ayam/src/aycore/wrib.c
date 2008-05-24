@@ -1960,6 +1960,7 @@ ay_wrib_tcmd(ClientData clientData, Tcl_Interp * interp,
 	     int argc, char *argv[])
 {
  int ay_status = AY_OK;
+ ay_object *o = NULL;
  ay_list_object *sel = ay_selection;
  ay_camera_object *cam = NULL;
  ay_root_object *root = NULL;
@@ -1967,7 +1968,7 @@ ay_wrib_tcmd(ClientData clientData, Tcl_Interp * interp,
  int old_resinstances = ay_prefs.resolveinstances;
  int width = 400;
  int height = 300;
- int i, selonly = AY_FALSE, smonly = AY_FALSE;
+ int i, selonly = AY_FALSE, smonly = AY_FALSE, objonly = AY_FALSE;
  char *file = NULL, *image = NULL;
  char fname[] = "wrib";
  double addroll = 0.0, dir[3];
@@ -1976,38 +1977,37 @@ ay_wrib_tcmd(ClientData clientData, Tcl_Interp * interp,
   if(argc <= 1)
     {
       ay_error(AY_EARGS, fname,
-	 "\\[-file <filename>\\] \\[-image <imagename>\\] \\[-smonly\\]");
+	 "<filename> \\[-image <imagename>\\] \\[-smonly\\]");
       return TCL_OK;
     }
  */
 
+  file = argv[1];
+
   /* parse args */
-  i = 1;
+  i = 2;
   while((i+1) <= argc)
     {
-      if(!strcmp(argv[i], "-file"))
+      if(!strcmp(argv[i], "-image"))
 	{
-	  file = argv[i+1];
+	  image = argv[i+1];
 	  i++;
 	}
       else
-	if(!strcmp(argv[i], "-image"))
-	  {
-	    image = argv[i+1];
-	    i++;
-	  }
-	else
-	  if(!strcmp(argv[i], "-smonly"))
-	    smonly = AY_TRUE;
-	  else
-	    if(!strcmp(argv[i], "-selonly"))
-	      selonly = AY_TRUE;
+      if(!strcmp(argv[i], "-smonly"))
+	smonly = AY_TRUE;
+      else
+      if(!strcmp(argv[i], "-selonly"))
+	selonly = AY_TRUE;
+      else
+      if(!strcmp(argv[i], "-objonly"))
+	objonly = AY_TRUE;
 
       i++;
     } /* while */
 
-  if((!(smonly || selonly)) && (!sel ||
-				(sel && sel->object->type != AY_IDCAMERA)))
+  if((!(smonly || selonly || objonly)) && (!sel ||
+	      (sel && sel->object->type != AY_IDCAMERA)))
    {
      ay_error(AY_ERROR, fname, "Please select a camera object!");
      return TCL_OK;
@@ -2025,7 +2025,7 @@ ay_wrib_tcmd(ClientData clientData, Tcl_Interp * interp,
      return TCL_OK;
    }
 
-  if(!(smonly || selonly))
+  if(!(smonly || selonly || objonly))
     cam = (ay_camera_object*)(sel->object->refine);
 
 #ifdef AYENABLEPPREV
@@ -2058,7 +2058,7 @@ ay_wrib_tcmd(ClientData clientData, Tcl_Interp * interp,
       image = "unnamed.tif";
     }
 
-  if(!(smonly || selonly))
+  if(!(smonly || selonly || objonly))
     {
       /* normal RIB export (no shadow maps, all files) */
       dir[0] = (cam->to[0] - cam->from[0]);
@@ -2082,21 +2082,36 @@ ay_wrib_tcmd(ClientData clientData, Tcl_Interp * interp,
 	}
       else
 	{
-	  /* export selected objects only */
+	  if(selonly)
+	    {
+	      /* export selected objects only */
 
-	  /* thus, always resolve instances */
-	  ay_prefs.resolveinstances = AY_TRUE;
+	      /* thus, always resolve instances */
+	      ay_prefs.resolveinstances = AY_TRUE;
 
-	  RiBegin(file);
-	   while(sel)
-	     {
-	       ay_wrib_object(file, sel->object);
-	       sel = sel->next;
-	     } /* while */
-	  RiEnd();
+	      RiBegin(file);
+	       while(sel)
+		 {
+		   ay_wrib_object(file, sel->object);
+		   sel = sel->next;
+		 } /* while */
+	      RiEnd();
 
-	  /* restore old value */
-	  ay_prefs.resolveinstances = old_resinstances;
+	      /* restore old value */
+	      ay_prefs.resolveinstances = old_resinstances;
+	    }
+	  else
+	    {
+	      /* export all objects only */
+	      o = ay_root->next;
+	      RiBegin(file);
+	       while(o)
+		 {
+		   ay_wrib_object(file, o);
+		   o = o->next;
+		 } /* while */
+	      RiEnd();
+	    } /* if */
 	} /* if */
     } /* if */
 

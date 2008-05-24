@@ -872,7 +872,7 @@ proc io_exportRIBfC { } {
 
     if { $efilename != "" } {
 	if { $imagename != "" } {
-	    wrib -file $efilename -image $imagename
+	    wrib $efilename -image $imagename
 	    if { $ay_error < 2 } {
 		ayError 4 "exportRIB" "Done exporting scene to:"
 		ayError 4 "exportRIB" "$efilename"
@@ -881,7 +881,7 @@ proc io_exportRIBfC { } {
 	    }
 	    # if
 	} else {
-	    wrib -file $efilename
+	    wrib $efilename
 	    if { $ay_error < 2 } {
 		ayError 4 "exportRIB" "Done exporting scene to:"
 		ayError 4 "exportRIB" "$efilename"
@@ -940,9 +940,9 @@ proc io_RenderSM { all } {
     if { $efilename != ""} {
 	if { $imagename != "" } {
 	    if { $all == 1 } {
-		wrib -file $efilename -image $imagename -smonly
+		wrib $efilename -image $imagename -smonly
 	    } else {
-		wrib -file $efilename -image $imagename -smonly -selonly
+		wrib $efilename -image $imagename -smonly -selonly
 	    }
 	    if { $ay_error < 2 } {
 		ayError 4 "Create SM" "Done exporting scene to:"
@@ -954,9 +954,9 @@ proc io_RenderSM { all } {
 	    }
 	} else {
 	    if { $all == 1 } {
-		wrib -file $efilename -image $imagename -smonly
+		wrib $efilename -image $imagename -smonly
 	    } else {
-		wrib -file $efilename -image $imagename -smonly -selonly
+		wrib $efilename -image $imagename -smonly -selonly
 	    }
 	    if { $ay_error < 2 } {
 		ayError 4 "Create SM" "Done exporting scene to:"
@@ -1015,7 +1015,7 @@ proc io_exportRIBSO { } {
     set ay_error ""
 
     if { $efilename != "" } {
-	wrib -file $efilename -selonly
+	wrib $efilename -selonly
 	if { $ay_error < 2 } {
 	    ayError 4 "exportRIB" "Done exporting objects to:"
 	    ayError 4 "exportRIB" "$efilename"

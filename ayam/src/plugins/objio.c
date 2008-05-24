@@ -3989,10 +3989,10 @@ Objio_Init(Tcl_Interp *interp)
   ay_status = objio_registerwritecb((char *)(AY_IDBOX),
 				       objio_writebox);
 
-  Tcl_CreateCommand(interp, "objio_write", objio_writescenetcmd,
+  Tcl_CreateCommand(interp, "objioWrite", objio_writescenetcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "objio_read", objio_readscenetcmd,
+  Tcl_CreateCommand(interp, "objioRead", objio_readscenetcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   /* source objio.tcl, it contains vital Tcl-code */

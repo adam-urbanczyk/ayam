@@ -901,6 +901,9 @@ Tcl_AppInit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "wrib", ay_wrib_tcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  Tcl_CreateCommand(interp, "rribWrite", ay_wrib_tcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
   /* write.c */
   Tcl_CreateCommand(interp, "saveScene", ay_write_scenetcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
