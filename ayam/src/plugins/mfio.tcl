@@ -81,7 +81,7 @@ proc mfio_import { } {
 	set mfio_options(filename) $mfio_options(FileName)
 	set oldcd [pwd]
 	cd [file dirname $mfio_options(FileName)]
-	ay_mfio_import [file tail $mfio_options(FileName)]\
+	mfioRead [file tail $mfio_options(FileName)]\
 	    -c $mfio_options(ReadCurves)\
 	    -i $mfio_options(IgnoreFirstTrim)\
 	    -r $mfio_options(RescaleKnots)\
@@ -203,7 +203,7 @@ proc mfio_export { } {
 	set mfio_options(filename) $mfio_options(FileName)
 	set oldcd [pwd]
 	cd [file dirname $mfio_options(FileName)]
-	ay_mfio_export [file tail $mfio_options(FileName)]\
+	mfioWrite [file tail $mfio_options(FileName)]\
 	    -c $mfio_options(WriteCurves)\
 	    -b $mfio_options(WriteBinary)\
 	    -s $mfio_options(WriteSelected)\

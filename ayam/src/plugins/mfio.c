@@ -3535,11 +3535,11 @@ Mfio_Init(Tcl_Interp *interp)
 
 
   /* register some C-functions as Tcl-Commands */
-  Tcl_CreateCommand (interp, "ay_mfio_import",
+  Tcl_CreateCommand (interp, "mfioRead",
 		     ay_mfio_importscenetcmd,
 		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand (interp, "ay_mfio_export",
+  Tcl_CreateCommand (interp, "mfioWrite",
 		     ay_mfio_exportscenetcmd,
 		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
