@@ -60,7 +60,7 @@ proc mopsi_import { } {
 	update
 
 	set filename $mopsi_options(FileName)
-	importMops $filename
+	mopsiRead $filename
 
 	if { $ay_error < 2 } {
 	    ayError 4 "importMops" "Done importing the Mops scene from:"
