@@ -2130,7 +2130,7 @@ Mopsi_Init(Tcl_Interp *interp)
   entry = Tcl_CreateHashEntry(&mopsiht, "ICurve", &new_item);
   Tcl_SetHashValue(entry, &(mopsi_icurve));
 
-  Tcl_CreateCommand(interp, "importMops", mopsi_tcmd,
+  Tcl_CreateCommand(interp, "mopsiRead", mopsi_tcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   /* source mopsi.tcl, it contains vital Tcl-code */
