@@ -86,7 +86,7 @@ proc objio_export { } {
 	set objio_options(Cancel) 0
 	update
 
-	objio_write $filename -s $objio_options(WriteSelected)\
+	objioWrite $filename -s $objio_options(WriteSelected)\
 	    -p $objio_options(TessPoMesh)\
 	    -c $objio_options(WriteCurves)\
 	    -f $objio_options(ScaleFactor)\
@@ -188,7 +188,7 @@ proc objio_import { } {
 	grab .objI
 	set objio_options(Cancel) 0
 	update
-	objio_read [file tail $objio_options(FileName)]\
+	objioRead [file tail $objio_options(FileName)]\
 		-m $objio_options(MergeFaces)\
 		-c $objio_options(ReadCurves)\
 		-p $objio_options(MergePVTags)\
