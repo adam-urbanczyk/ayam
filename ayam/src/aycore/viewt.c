@@ -1902,7 +1902,7 @@ ay_viewt_setupintview(int viewnum, ay_view_object *vtemp)
     }
 
   /* notify also includes reshape() and additionally loads the BGImage */
-  ay_notify_force(o);
+  ay_status = ay_notify_force(o);
 
   sprintf(command,
 	  "global ay;viewSetGridIcon [lindex $ay(views) %d] %g\n",

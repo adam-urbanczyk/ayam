@@ -4665,7 +4665,7 @@ ay_npt_getnormalfromcontrol3D(int ctype, int n, int p,
  int found = AY_FALSE, wrapped = AY_FALSE;
  int b, i1, i2;
  int before, after;
- double l, P1[4], P2[4], P3[4];
+ double P1[4], P2[4], P3[4];
  double t1[3], t2[3];
 
   if(ctype == AY_CTPERIODIC)
