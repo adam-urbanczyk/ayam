@@ -786,8 +786,7 @@ ay_tess_tristopomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
  ay_tess_tri *tri;
  unsigned int numtris = 0, i, stride, tcstagbuflen, tcttagbuflen;
  unsigned int vctagbuflen;
- char buf[128], *coltagbuf = NULL, *tcstagbuf = NULL, *tcttagbuf = NULL;
- char *vctagbuf = NULL;
+ char buf[128], *tcstagbuf = NULL, *tcttagbuf = NULL, *vctagbuf = NULL;
  char *tmp = NULL;
 
   if(!tris || !result || (has_tc && (!mys || !myt)))

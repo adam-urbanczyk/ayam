@@ -585,12 +585,12 @@ ay_pv_convert(ay_tag *tag, int type, unsigned int *datalen, void **data)
       if(type == 1)
 	{
 	  /* allocate memory */
-	  if(!(da = calloc(3*count, sizeof(float))))
+	  if(!(fa = calloc(3*count, sizeof(float))))
 	    return AY_EOMEM;
 	  /* parse data and fill memory */
 	  do
 	    {
-	      sscanf(c3, ",%f,%f,%f", &(da[i]), &(da[i+1]), &(da[i+2]));
+	      sscanf(c3, ",%f,%f,%f", &(fa[i]), &(fa[i+1]), &(fa[i+2]));
 	      i+=3;
 	      c3++;
 	    }
