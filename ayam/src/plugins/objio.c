@@ -2469,7 +2469,7 @@ objio_readface(char *str, int lastlinewasface)
 	  for(i = 0; i < nverts; i++)
 	    {
 	      oldpnt = &(po.controlv[i*stride]);
-	      if(AY_COMP3DP(oldpnt,gv))
+	      if(AY_COMP3DP(oldpnt, gv))
 		{
 		  ay_error(AY_EWARN, fname, "Degenerated face encountered!");
 		  /*ay_error(AY_EOUTPUT, fname, str);*/
@@ -2506,7 +2506,7 @@ objio_readface(char *str, int lastlinewasface)
       ay_status = objio_readskip(&c);
     } /* while */
 
-  if(nverts >= 3)
+  if(nverts >= 3 && !degen)
     {
       if(nvindex != 0)
 	{
@@ -2627,13 +2627,11 @@ cleanup:
   if(t.tags)
     ay_status = ay_tags_delall(&t);
 
-  /*
   if(degen)
-    {
-      objio_readface(NULL, -1);
+    {    
       return AY_ERROR;
     }
-  */
+  
  return ay_status;
 } /* objio_readface */
 
@@ -3642,7 +3640,17 @@ objio_readline(FILE *fileptr)
 
   if(str[0] == 'f')
     {
-      lastlinewasface = AY_TRUE;
+      if(ay_status == AY_OK)
+	{
+	  lastlinewasface = AY_TRUE;
+	}
+      else
+	{
+	  if(ay_status == AY_ERROR)
+	    {
+	      ay_status = AY_OK;
+	    }
+	}
     }
   else
     {
