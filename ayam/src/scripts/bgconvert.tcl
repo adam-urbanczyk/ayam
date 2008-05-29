@@ -69,11 +69,11 @@ set outplugin [fileNameToPluginName $outfile]
 if { $outplugin == "" } { exit }
 
 set cscript "\
-if { ! \[info exists \"${inplugin}_import\"\] } { \
+if { ! \[info exists \"${inplugin}Read\"\] } { \
    set ::ay(autoload) ${inplugin}; \
    io_lcAuto; \
 }; \
-if { ! \[info exists \"${outplugin}_export\"\] } { \
+if { ! \[info exists \"${outplugin}Write\"\] } { \
    set ::ay(autoload) ${outplugin}; \
    io_lcAuto; \
 }; \
