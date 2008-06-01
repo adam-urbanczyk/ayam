@@ -8488,7 +8488,7 @@ Interface Bytestream (RIB):
 wrib - RIB export:
 <itemize>
  <item>Synopsis:
-<tt>"wrib -file filename [-image imagename] [-smonly|-selonly]"</tt>
+<tt>"wrib filename [-image imagename] [-smonly|-selonly|-objonly]"</tt>
  <item>Description: exports the current scene to a RIB file designated
 by <tt/"filename"/. If the argument <tt/"-image"/ is given, the RIB file
 will create an image file named <tt/"imagename"/ upon rendering. The export
@@ -8500,7 +8500,10 @@ If the argument <tt/"-selonly"/ is given, only the selected (geometric)
 objects will be exported, which will result in a RIB file not
 suitable for rendering (no setup, camera transformation, or lights
 are in it) but for inclusion into other scenes via RiArchive.
-The <tt>"wrib"</tt> command always needs a selected camera object; if
+Likewise <tt/"-objonly"/ leads to a RIB file containing all objects in the
+scene but not suitable for rendering.
+The <tt>"wrib"</tt> command always needs a selected camera object
+(unless the <tt/"-selonly"/ or <tt/"-objonly"/ options are given); if
 there is none or if the camera transformations of the camera associated
 with a view window shall be used, the corresponding Togl callback for
 the view might be used like this instead:
@@ -8509,6 +8512,8 @@ the view might be used like this instead:
 </code>
 The Togl callback understands the same options as the <tt>"wrib"</tt>
 command.
+<item>Notes: In Ayam versions prior to 1.15, the filename had to be prepended
+by a <tt/"-filename "/, this is no longer the case.
 </itemize>
 
 <sect2>Reporting Errors<label id="scierr">
