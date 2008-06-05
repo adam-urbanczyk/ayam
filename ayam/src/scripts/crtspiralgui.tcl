@@ -9,6 +9,7 @@ if { ![info exists ::SpiralAttrData] } {
 	AngleD 0
 	Radius 3.0
 	ZDiff 0.25
+	SP {Length AngleD Radius ZDiff}
     }
     set ::SpiralAttrData(AngleD)  [expr {90.0*3.141592654/180.0}]
 }
