@@ -57,6 +57,7 @@ int
 ay_script_deletecb(void *c)
 {
  ay_script_object *sc = NULL;
+ int i = 0;
 
   if(!c)
     return AY_ENULL;
@@ -75,6 +76,16 @@ ay_script_deletecb(void *c)
     {
       Tcl_DecrRefCount(sc->cscript);
       sc->cscript = NULL;
+    }
+
+  /* free saved parameters */
+  if(sc->params)
+    {
+      for(i = 0; i < sc->paramslen; i++)
+	{
+	  Tcl_DecrRefCount(sc->params[i]);
+	}
+      free(sc->params);
     }
 
   free(sc);
@@ -100,6 +111,10 @@ ay_script_copycb(void *src, void **dst)
     return AY_EOMEM;
 
   memcpy(scdst, scsrc, sizeof(ay_script_object));
+
+  /* new object starts without saved parameters */
+  scdst->params = NULL;
+  scdst->paramslen = 0;
 
   /* copy script string */
   if(scsrc->script)
@@ -231,6 +246,10 @@ ay_script_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  int ay_status = AY_OK;
  char *n1 = "ScriptAttrData";
  char fname[] = "script_setpropcb";
+ char *arrname = NULL, *membername = NULL;
+ char *arrnameend = NULL;
+ Tcl_Obj *arrmemberlist = NULL, *arrmember;
+ int arrmembers = 0, i;
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_script_object *sc = NULL;
  char *string;
@@ -302,6 +321,66 @@ ay_script_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       sc->script = NULL;
     } /* if */
 
+  /* handle script parameters */
+  if(strstr(sc->script, "# Ayam, save array:"))
+    {
+      arrname = strchr(sc->script, ':');
+      arrname++;
+      while(arrname[0] == ' ')
+	arrname++;
+
+      arrnameend = strchr(arrname, '\n');
+
+      if(arrnameend)
+	*arrnameend = '\0';
+
+      Tcl_SetStringObj(toa, arrname, -1);
+      Tcl_SetStringObj(ton, "PNames", -1);
+
+      if(sc->params)
+	{
+	  /* remove old saved parameters */
+	  for(i = 0; i < sc->paramslen; i++)
+	    {
+	      Tcl_DecrRefCount(sc->params[i]);
+	    }
+	  free(sc->params);
+	  sc->params = NULL;
+	  sc->paramslen = 0;
+	}
+      arrmemberlist = Tcl_ObjGetVar2(interp, toa, ton, TCL_GLOBAL_ONLY);
+
+      if(arrmemberlist)
+	{
+	  Tcl_ListObjLength(interp, arrmemberlist, &arrmembers);
+
+	  if(arrmembers > 0)
+	    {
+	      if(!(sc->params = calloc(arrmembers, sizeof(Tcl_Obj*))))
+		{
+		  ay_status = AY_EOMEM;
+		}
+	      sc->paramslen = arrmembers;
+	      for(i = 0; i < arrmembers; i++)
+		{
+		  arrmember = NULL;
+		  Tcl_ListObjIndex(interp, arrmemberlist, i, &arrmember);
+		  if(arrmember)
+		    {
+
+		      sc->params[i] =
+			Tcl_DuplicateObj(Tcl_ObjGetVar2(interp, toa, arrmember,
+						    TCL_GLOBAL_ONLY));
+		      Tcl_IncrRefCount(sc->params[i]);
+		    } /* if */
+		} /* for */
+	    } /* if */
+	} /* if */
+
+      if(arrnameend)
+	*arrnameend = '\n';
+    } /* if */
+
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
@@ -325,6 +404,10 @@ ay_script_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  char *n1="ScriptAttrData", *empty = "";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_script_object *sc = NULL;
+ char *arrname = NULL, *membername = NULL;
+ char *arrnameend = NULL;
+ Tcl_Obj *arrmemberlist = NULL, *arrmember;
+ int arrmembers = 0, i;
 
   if(!o)
     return AY_ENULL;
@@ -353,6 +436,44 @@ ay_script_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
+  /* handle script parameters */
+  if(sc->params && strstr(sc->script, "# Ayam, save array:"))
+    {
+      arrname = strchr(sc->script, ':');
+      arrname++;
+      while(arrname[0] == ' ')
+	arrname++;
+
+      arrnameend = strchr(arrname, '\n');
+
+      if(arrnameend)
+	*arrnameend = '\0';
+
+      Tcl_SetStringObj(toa, arrname, -1);
+      Tcl_SetStringObj(ton, "PNames", -1);
+
+      arrmemberlist = Tcl_ObjGetVar2(interp, toa, ton, TCL_GLOBAL_ONLY);
+
+      if(arrmemberlist)
+	{
+	  Tcl_ListObjLength(interp, arrmemberlist, &arrmembers);
+
+	  for(i = 0; i < arrmembers; i++)
+	    {
+	      arrmember = NULL;
+	      Tcl_ListObjIndex(interp, arrmemberlist, i, &arrmember);
+	      if(arrmember)
+		{
+		  Tcl_ObjSetVar2(interp, toa, arrmember, sc->params[i],
+				 TCL_GLOBAL_ONLY);
+		} /* if */
+	    } /* for */
+	} /* if */
+
+      if(arrnameend)
+	*arrnameend = '\n';
+    } /* if */
+
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
@@ -366,6 +487,7 @@ ay_script_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_script_readcb(FILE *fileptr, ay_object *o)
 {
+ int ay_status = AY_OK;
  ay_script_object *sc = NULL;
  int i;
  unsigned int j, len;
@@ -420,25 +542,50 @@ ay_script_readcb(FILE *fileptr, ay_object *o)
 	    }
 
 	  fscanf(fileptr, "%d\n", &arrmembers);
-
-	  for(i = 0; i < arrmembers; i++)
+	  if(arrmembers > 0)
 	    {
-	      ay_read_string(fileptr, &membername);
-	      ay_read_string(fileptr, &memberval);
+	      if(!(sc->params = calloc(arrmembers-1, sizeof(Tcl_Obj*))))
+		{
+		  ay_status = AY_EOMEM;
+		  return ay_status;
+		}
+	      sc->paramslen = arrmembers-1;
 
-	      Tcl_SetVar2(interp, arrname, membername, memberval,
-			  TCL_GLOBAL_ONLY);
+	      toa = Tcl_NewStringObj(arrname, -1);
+	      ton = Tcl_NewStringObj(arrname, -1);
 
-	      free(membername);
-	      membername = NULL;
-	      free(memberval);
-	      memberval = NULL;
-	    } /* for */
+	      for(i = 0; i < arrmembers; i++)
+		{
+		  ay_read_string(fileptr, &membername);
+		  ay_read_string(fileptr, &memberval);
 
-	  if(eolarrname)
-	    {
-	      *eolarrname = '\n';
-	    }
+		  Tcl_SetVar2(interp, arrname, membername, memberval,
+			      TCL_GLOBAL_ONLY);
+
+		  /* do not put PNames into the object! */
+		  if(i > 0)
+		    {
+		      Tcl_SetStringObj(ton, membername, -1);
+		      sc->params[i-1] =
+			Tcl_DuplicateObj(Tcl_ObjGetVar2(interp, toa, ton,
+							TCL_GLOBAL_ONLY));
+		      Tcl_IncrRefCount(sc->params[i-1]);
+		    }
+
+		  free(membername);
+		  membername = NULL;
+		  free(memberval);
+		  memberval = NULL;
+		} /* for */
+
+	      Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
+	      Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+
+	      if(eolarrname)
+		{
+		  *eolarrname = '\n';
+		}
+	    } /* if */
 	} /* if */
     } /* if */
 
@@ -478,9 +625,10 @@ ay_script_writecb(FILE *fileptr, ay_object *o)
  char *arrname = NULL, *membername = NULL, *memberval = NULL;
  char *arrnameend = NULL;
  Tcl_Obj *arrmemberlist = NULL, *arrmember;
- int arrmembers = 0, i, slen;
+ int arrmembers = 0, i, slen, tlen;
  unsigned int len = 0;
  Tcl_Interp *interp = ay_interp;
+ Tcl_Obj *toa = NULL, *ton = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -511,15 +659,24 @@ ay_script_writecb(FILE *fileptr, ay_object *o)
 
       if(arrnameend)
 	*arrnameend = '\0';
-
+      /*
       Tcl_VarEval(interp, "global ", arrname, ";",
 		  "array names ", arrname, ";", (char*)NULL);
 
       arrmemberlist = Tcl_GetObjResult(interp);
+      */
+
+      toa = Tcl_NewStringObj(arrname, -1);
+      ton = Tcl_NewStringObj("PNames", -1);
+
+      arrmemberlist = Tcl_ObjGetVar2(interp, toa, ton, TCL_GLOBAL_ONLY);
 
       Tcl_ListObjLength(interp, arrmemberlist, &arrmembers);
 
-      fprintf(fileptr, "%d\n", arrmembers);
+      fprintf(fileptr, "%d\n", arrmembers+1);
+
+      fprintf(fileptr, "PNames\n%s\n",
+	      Tcl_GetStringFromObj(arrmemberlist, &tlen));
 
       for(i = 0; i < arrmembers; i++)
 	{
@@ -530,18 +687,25 @@ ay_script_writecb(FILE *fileptr, ay_object *o)
 	      membername = Tcl_GetStringFromObj(arrmember, &slen);
 	      if(membername)
 		{
+		  /*
 		  memberval = Tcl_GetVar2(interp, arrname, membername,
 					  TCL_GLOBAL_ONLY);
 		  if(memberval)
-		    {
-		      fprintf(fileptr, "%s\n%s\n", membername, memberval);
-		    } /* if */
+		  {*/
+
+		      fprintf(fileptr, "%s\n%s\n", membername,
+			      Tcl_GetStringFromObj(sc->params[i], &tlen));
+		  /*
+		    } */ /* if */
 		} /* if */
 	    } /* if */
 	} /* for */
 
       if(arrnameend)
 	*arrnameend = '\n';
+
+      Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
+      Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
     } /* if */
 
@@ -740,6 +904,12 @@ ay_script_notifycb(ay_object *o)
       sc->cscript = Tcl_NewStringObj(sc->script, -1);
       Tcl_IncrRefCount(sc->cscript);
       sc->modified = AY_FALSE;
+    }
+
+  /**/
+  if(sc->params)
+    {
+      ay_script_getpropcb(ay_interp, 0, NULL, o);
     }
 
   if(sc->type == 0)
