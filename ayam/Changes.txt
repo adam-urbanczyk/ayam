@@ -1,4 +1,4 @@
-[23. May 2008] CVS-Head:
+[5. Jun 2008] CVS-Head:
 =======================
 Bug Fixes:
 o aycsg plugin GUI code for internal views (SF 1943164)
@@ -10,6 +10,9 @@ o Hide/Show keyboard shortcuts in view windows (SF 1964807)
 GUI:
 o added plugin "aydnd.tcl" that enables inter-application drag-and-drop
   on Win32 and Unix/X11 with the help of tkdnd
+o using the "Esc" key (break action) in view windows now also resets
+  the keyboard focus to the main window, if the Esc key is held down longer
+  or pressed twice
 
 Modelling:
 o added new object type "ACurve" (for approximating curves)
@@ -25,6 +28,7 @@ o the GLU NURBS tesselation now preserves texture coordinates and vertex
 
 Import/Export:
 o added support for true instances (via USE/DEF) to X3D export
+o improved robustness of Wavefront OBJ import
 
 Scripts/Scripting Interface:
 o added example script "zdialog.tcl" that switches all internal file dialogs
@@ -33,6 +37,7 @@ o added example script "kdialog.tcl" that switches all internal file dialogs
   to use kdialog (from the KDE project)
 o added script "bgconvert.tcl" that allows to use Ayam as a background
   3D file format converter from a UNIX shell
+o script objects now support saving of individual sets of parameters
 
 Documentation/Example Files:
 o added example scene "multicolcsg.ay" that demonstrates how "Primitive"
