@@ -871,6 +871,8 @@ typedef struct ay_script_object_s
 
   int modified;
   Tcl_Obj *cscript; /* cache compiled script */
+  unsigned int paramslen;
+  Tcl_Obj **params; /* save script parameters */
 } ay_script_object;
 
 
