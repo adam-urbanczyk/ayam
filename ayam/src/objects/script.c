@@ -21,6 +21,8 @@
 
 static char *ay_script_name = "Script";
 
+static char *ay_script_sp = "SP"; /* Save (Individual) Parameters */
+
 /* functions: */
 
 /* ay_script_createcb:
@@ -335,7 +337,7 @@ ay_script_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	*arrnameend = '\0';
 
       Tcl_SetStringObj(toa, arrname, -1);
-      Tcl_SetStringObj(ton, "PNames", -1);
+      Tcl_SetStringObj(ton, ay_script_sp, -1);
 
       if(sc->params)
 	{
@@ -450,7 +452,7 @@ ay_script_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	*arrnameend = '\0';
 
       Tcl_SetStringObj(toa, arrname, -1);
-      Tcl_SetStringObj(ton, "PNames", -1);
+      Tcl_SetStringObj(ton, ay_script_sp, -1);
 
       arrmemberlist = Tcl_ObjGetVar2(interp, toa, ton, TCL_GLOBAL_ONLY);
 
@@ -562,7 +564,7 @@ ay_script_readcb(FILE *fileptr, ay_object *o)
 		  Tcl_SetVar2(interp, arrname, membername, memberval,
 			      TCL_GLOBAL_ONLY);
 
-		  /* do not put PNames into the object! */
+		  /* do not put the IP list into the object! */
 		  if(i > 0)
 		    {
 		      Tcl_SetStringObj(ton, membername, -1);
@@ -659,15 +661,9 @@ ay_script_writecb(FILE *fileptr, ay_object *o)
 
       if(arrnameend)
 	*arrnameend = '\0';
-      /*
-      Tcl_VarEval(interp, "global ", arrname, ";",
-		  "array names ", arrname, ";", (char*)NULL);
-
-      arrmemberlist = Tcl_GetObjResult(interp);
-      */
 
       toa = Tcl_NewStringObj(arrname, -1);
-      ton = Tcl_NewStringObj("PNames", -1);
+      ton = Tcl_NewStringObj(ay_script_sp, -1);
 
       arrmemberlist = Tcl_ObjGetVar2(interp, toa, ton, TCL_GLOBAL_ONLY);
 
@@ -675,7 +671,7 @@ ay_script_writecb(FILE *fileptr, ay_object *o)
 
       fprintf(fileptr, "%d\n", arrmembers+1);
 
-      fprintf(fileptr, "PNames\n%s\n",
+      fprintf(fileptr, "%s\n%s\n", ay_script_sp,
 	      Tcl_GetStringFromObj(arrmemberlist, &tlen));
 
       for(i = 0; i < arrmembers; i++)
@@ -687,16 +683,10 @@ ay_script_writecb(FILE *fileptr, ay_object *o)
 	      membername = Tcl_GetStringFromObj(arrmember, &slen);
 	      if(membername)
 		{
-		  /*
-		  memberval = Tcl_GetVar2(interp, arrname, membername,
-					  TCL_GLOBAL_ONLY);
-		  if(memberval)
-		  {*/
-
-		      fprintf(fileptr, "%s\n%s\n", membername,
-			      Tcl_GetStringFromObj(sc->params[i], &tlen));
-		  /*
-		    } */ /* if */
+		
+		  fprintf(fileptr, "%s\n%s\n", membername,
+			  Tcl_GetStringFromObj(sc->params[i], &tlen));
+		 
 		} /* if */
 	    } /* if */
 	} /* for */
