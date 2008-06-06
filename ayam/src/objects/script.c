@@ -248,7 +248,7 @@ ay_script_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  int ay_status = AY_OK;
  char *n1 = "ScriptAttrData";
  char fname[] = "script_setpropcb";
- char *arrname = NULL, *membername = NULL;
+ char *arrname = NULL;
  char *arrnameend = NULL;
  Tcl_Obj *arrmemberlist = NULL, *arrmember;
  int arrmembers = 0, i;
@@ -406,7 +406,7 @@ ay_script_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  char *n1="ScriptAttrData", *empty = "";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_script_object *sc = NULL;
- char *arrname = NULL, *membername = NULL;
+ char *arrname = NULL;
  char *arrnameend = NULL;
  Tcl_Obj *arrmemberlist = NULL, *arrmember;
  int arrmembers = 0, i;
@@ -624,7 +624,7 @@ int
 ay_script_writecb(FILE *fileptr, ay_object *o)
 {
  ay_script_object *sc = NULL;
- char *arrname = NULL, *membername = NULL, *memberval = NULL;
+ char *arrname = NULL, *membername = NULL;
  char *arrnameend = NULL;
  Tcl_Obj *arrmemberlist = NULL, *arrmember;
  int arrmembers = 0, i, slen, tlen;
