@@ -513,7 +513,7 @@ preference setting <tt>"Misc/RedirectTcl"</tt>
 <p>
 You can also enter commands, even new Tcl procedures and so on in the
 console. However, this is a feature for the advanced user that
-studied section <ref id="script" name="The Tcl Scripting Interface">.
+studied section <ref id="script" name="The Ayam Tcl Scripting Interface">.
 You need to explicitly click into the console to give it the input
 focus and thus enable input.
 <p>
@@ -551,7 +551,7 @@ current level if no objects are selected.
 <item><tt/rotOb/: rotates the selected object(s).
 </itemize>
 <p>
-See section <ref id="script" name="The Tcl Scripting Interface"> for a
+See section <ref id="script" name="The Ayam Tcl Scripting Interface"> for a
 listing of all the available commands.
 <p>
 Note that the example uses a side effect (the variable <tt/"i"/ that
@@ -5492,8 +5492,8 @@ or realise mechanisms like constraints.
 <p>
 Theoretically, the scripts can use any functionality from Tcl and
 the Tcl scripting interface of Ayam (see also section
-<ref id="script" name="The Tcl Scripting Interface">). However,
-certain script object types may impose special constraints.
+<ref id="script" name="The Ayam Tcl Scripting Interface">). However,
+certain script object types impose some special constraints.
 <p>
 For security reasons, if scene files containing script objects are
 loaded, Ayam will raise a warning offering to temporarily disable all
@@ -5529,10 +5529,21 @@ comment as first line to the script:
 </code>
 where arrayname designates the name of the global Tcl array
 the property GUI elements operate with.
+Note that with the introduction of individual parameters in Ayam
+1.15 not all members of the arrays will be saved. Only members
+from the <tt>"SP"</tt> list will be considered, which gives script
+object developers fine grained control over what actually goes
+to the Ayam scene file.
 <p>
 Since Ayam 1.12 there is also a tag type to remove properties
 (<tt>"RP"</tt>). Using this tag, one can e.g. hide the actual script
 code and block users from unintentionally changing it.
+<p>
+Since Ayam 1.15 script objects can have individual sets of parameters,
+so that multiple copies of a script object can be used.
+For this, the new variable <tt>"SP"</tt> in the script data array
+contains a list of parameter names in that array that are individual
+(not shared by all copies of the script object).
 <p>
 The binary and source distributions of Ayam contain several example
 scripts for script objects in the <tt>"ayam/bin/scripts"</tt> and
@@ -5612,7 +5623,6 @@ convOb -inplace; revert
 </code>
 </itemize>
 
-
 <item><tt/"Script"/ is the script code. The corresponding widget
 is a standard Tcl text widget that allows to directly edit the code.
 It is also possible to edit the code in an external editor and
@@ -5624,6 +5634,13 @@ If the first line of the script is a comment like
 </code>
 then the global Tcl array <tt>&lt;arrayname&gt;</tt> will be saved with
 the script object to Ayam scene files.
+The array must contain an entry <tt/"SP"/ that lists all individual
+parameters of the script object. Note that only parameters from this
+list will be saved to Ayam scene files.
+Note also, that <tt/"SP"/ must <em/never/ contain <tt/"SP"/. All copies
+of a script object must share the same set of individual vs. shared
+parameters. If objects need to store differing amounts of parameter
+data, lists can be used as individual parameters.
 </itemize>
 
 <sect2>Script Object Example
@@ -5668,17 +5685,20 @@ with the value <tt>"LineAttr"</tt>.
 <p>
 The GUI management code just runs once (for that, it checks for the presence
 of LineAttrData first) and creates two Tcl arrays essential for an Ayam
-object property, LineAttrData and LineAttr. Then a frame is created and a
+object property, LineAttrData and LineAttr. Then, a frame is created and a
 GUI element is added to the frame using <tt>"addParam"</tt>.
 <p>
 Finally, to enable saving of the parameter value in the new property
 <tt>"LineAttr"</tt> to scene files, a comment may be prepended to the
-script:
+script, and to enable multiple individually parameterized copies of this
+script an <tt/"SP"/ entry needs to be added to the <tt>"LineAttrData"</tt>
+array:
 <code>
-# Ayam, save array: LineAttr
+# Ayam, save array: LineAttr               #!
 if { ![info exists ::LineAttrData] } {
     array set ::LineAttrData {
 	Length 1
+	SP {Length}	                   #!
     }
     array set ::LineAttr {
 	arr LineAttrData
@@ -7459,7 +7479,7 @@ See section
 for a more extensive discussion of the tesselation methods
 and their parameter(s).
 
-<sect>The Tcl Scripting Interface<label id="script">
+<sect>The Ayam Tcl Scripting Interface<label id="script">
 <p>
 The scripting interface is mainly a bunch of Tcl procedures
 and Tcl commands that a big part of Ayam uses internally.
@@ -9222,7 +9242,7 @@ Documentation on how to export/render directly from a view window
 can be found in section <ref id="vmview" name="The View Menu">.
 <p>
 RIB export is also possible using the scripting interface,
-see section <ref id="script" name="The Tcl Scripting Interface">.
+see section <ref id="script" name="The Ayam Tcl Scripting Interface">.
 
 <sect1>Mops Import<label id="impmops">
 <p>
@@ -11815,7 +11835,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>scalOb <ref id="scscalob" name="scripting interface command">
 <item>scalSel <ref id="scscalsel" name="scripting interface command">
 <item>Scan Shaders: <ref id="mmspecial" name="main menu entry">
-<item>Script: <ref id="scriptobj" name="Script object">
+<item>Script: <ref id="script" name="The Ayam Tcl Scripting Interface">,
+<ref id="scriptobj" name="Script object">
 <item>Scripts: <ref id="prefgui" name="preference setting">
 <item>SDMesh: <ref id="sdmeshobj" name="SDMesh object">
 <item>Sections: <ref id="swp" name="sweep attribute">,
@@ -11874,6 +11895,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>SMRes: <ref id="lip" name="light attribute">
 <item>Snap Points to Grid: <ref id="snapac" name="modelling action">
 <item>Snap3D: <ref id="prefmodel" name="preference setting">
+<item>SP: <ref id="scriptattrprop" name="Script object">
 <item>SParamU, SParamV: <ref id="prefmisc" name="preference setting">
 <item>Special: <ref id="mmspecial" name="special menu">
 <item>Sphere: <ref id="sphereobj" name="Sphere object">,
