@@ -434,7 +434,8 @@ GLEW ( GLEW is included in OpenCSG, otherwise get it from
 RenderTexture (RenderTexture is included in OpenCSG, otherwise get it from
  http://www.markmark.net/misc/rendertexture.html )
 
-Your OpenGL subsystem has to support the PBuffers extension.
+Your OpenGL subsystem has to support PBuffers or the frame buffer object
+extension.
  ( Check with "glxinfo". If you have no GLX PBuffers you can compile Ayam
    with Mesa without hardware acceleration to get PBuffers support. )
 
