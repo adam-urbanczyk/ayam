@@ -5531,8 +5531,8 @@ where arrayname designates the name of the global Tcl array
 the property GUI elements operate with.
 Note that with the introduction of individual parameters in Ayam
 1.15 not all members of the arrays will be saved. Only members
-from the <tt>"SP"</tt> list will be considered, which gives script
-object developers fine grained control over what actually goes
+from the <tt>"SP"</tt> list (see below) will be considered, which gives
+script object developers fine grained control over what actually goes
 to the Ayam scene file.
 <p>
 Since Ayam 1.12 there is also a tag type to remove properties
@@ -5650,7 +5650,8 @@ lines, otherwise unavailable in Ayam.
 <p>
 We start with a simple version, that first creates a NURBS curve object with
 two control points and then places the control points each at +/- half the
-desired line length on the x axis.
+desired line length on the x axis. Just copy the following code to the
+Script property of a script object of type <tt/"Create"/, and activate it.
 <code>
 set length 1
 crtOb NCurve -length 2; hSL
@@ -5675,6 +5676,7 @@ if { ![info exists ::LineAttrData] } {
     set w [frame $::ay(pca).fLineAttr]
     addParam $w LineAttrData Length
 }
+# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 set length $::LineAttrData(Length)
 crtOb NCurve -length 2; hSL
 setPnt 0 [expr {-$length/2.0}] 0.0 0.0 1.0
@@ -5694,11 +5696,13 @@ script, and to enable multiple individually parameterized copies of this
 script an <tt/"SP"/ entry needs to be added to the <tt>"LineAttrData"</tt>
 array:
 <code>
-# Ayam, save array: LineAttr               #!
+# Ayam, save array: LineAttr
+# ^^^^^^^^^^^^^^^^^^^^^^^^^^
 if { ![info exists ::LineAttrData] } {
     array set ::LineAttrData {
 	Length 1
-	SP {Length}	                   #!
+	SP {Length}
+        # ^^^^^^^^^
     }
     array set ::LineAttr {
 	arr LineAttrData
@@ -5714,6 +5718,9 @@ crtOb NCurve -length 2; hSL
 setPnt 0 [expr {-$length/2.0}] 0.0 0.0 1.0
 setPnt 1 [expr {$length/2.0}] 0.0 0.0 1.0
 </code>
+
+The complete script is available as example script file
+<tt>"scripts/crtlinegui.tcl"</tt>.
 
 <sect1>Select Object<label id="selectobj">
 <p>
