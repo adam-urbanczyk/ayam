@@ -50,7 +50,7 @@ listbox $f.li -width 14 -height 12 -yscrollcommand {global ay; $ay(pss) set}\
 
 set ay(plb) $f.li
 
-bind $f.li <ButtonRelease-1> {
+bind $f.li <<ListboxSelect>> {
     global ay pclip_omit pclip_omit_label sel
 
     set sel ""
@@ -645,6 +645,8 @@ proc plb_showprop { prop } {
     }
 
     update
+
+    event generate $l <<ListboxSelect>>
 
     plb_update
 
