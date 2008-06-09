@@ -824,9 +824,20 @@ proc setViewAttr { } {
 
     if { $ViewAttribData(Width) != $pclip_reset(Width) ||
 	 $ViewAttribData(Height) != $pclip_reset(Height) } {
-	$togl configure -width $ViewAttribData(Width)\
-	    -height $ViewAttribData(Height)
-	update
+
+
+	if { [string first ".view" $togl] != 0 } {
+	    # XXXX insert special handling for internal views
+	    set ViewAttribData(Width) $pclip_reset(Width)
+	    set ViewAttribData(Height) $pclip_reset(Height)
+	    ayError 2 "setViewAttr" "Can not resize internal views!"
+	} else {	
+	    $togl configure -width $ViewAttribData(Width)\
+		-height $ViewAttribData(Height)
+	    update
+	}
+
+
     }
     if { $ViewAttribData(Type) != $pclip_reset(Type) } {
 	#    setupActionKeys $w clear
@@ -834,7 +845,12 @@ proc setViewAttr { } {
 	viewTitle $togl $typename Pick
     }
 
-    viewSetGridIcon $togl $ViewAttribData(GridSize)
+    viewSetGridIcon [winfo parent [winfo parent $togl]]\
+	$ViewAttribData(GridSize)
+    viewSetDModeIcon [winfo parent [winfo parent $togl]]\
+	$ViewAttribData(Mode)
+    viewSetMModeIcon [winfo parent [winfo parent $togl]]\
+	$ViewAttribData(Local)
 
     setProp
 
@@ -1229,8 +1245,10 @@ addText $w e3 "Grid:"
 addParam $w ViewAttribData GridSize
 addCheck $w ViewAttribData DrawGrid
 addCheck $w ViewAttribData UseGrid
+
+addText $w e4 "Space:"
 addCheck $w ViewAttribData Local
 
-addText $w e4 "Background:"
+addText $w e5 "Background:"
 addCheck $w ViewAttribData DrawBG
 addFile $w ViewAttribData BGImage
