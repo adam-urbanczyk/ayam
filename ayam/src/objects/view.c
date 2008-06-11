@@ -1035,7 +1035,7 @@ ay_view_notifycb(ay_object *o)
   if(view->bgimage && view->bgimage[0] != '\0')
     {
 
-      tif = TIFFOpen(view->bgimage, "rH");
+      tif = TIFFOpen(view->bgimage, "r");
       if(tif)
 	{
 	  TIFFGetField(tif, TIFFTAG_IMAGEWIDTH, &w);
