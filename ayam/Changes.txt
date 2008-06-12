@@ -1,4 +1,4 @@
-[5. Jun 2008] CVS-Head:
+[12. Jun 2008] CVS-Head:
 =======================
 Bug Fixes:
 o aycsg plugin GUI code for internal views (SF 1943164)
@@ -6,6 +6,9 @@ o RIB export of Instances in CSG hierarchies (SF 1953633)
 o X3D export of trim curves crashes (SF 1945924)
 o Esc key binding of About requester (SF 1964809)
 o Hide/Show keyboard shortcuts in view windows (SF 1964807)
+o reset of property GUIs when opened via keyboard (SF 1988972)
+o view mode icons when settings are changed via property GUI (SF 1989149)
+o using compressed TIFF image files as view background (SF 1991716)
 
 GUI:
 o added plugin "aydnd.tcl" that enables inter-application drag-and-drop
