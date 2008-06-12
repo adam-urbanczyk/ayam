@@ -660,13 +660,13 @@ ay_pv_getst(ay_object *o, char *mys, char *myt, void **data)
       j = 0;
       for(i = 0; i < sdalen; i++)
 	{
-	  st[j] = sda[i];
+	  st[j] = (float)sda[i];
 	  j += 2;
 	}
       j = 1;
       for(i = 0; i < sdalen; i++)
 	{
-	  st[j] = tda[i];
+	  st[j] = (float)tda[i];
 	  j += 2;
 	}
 
@@ -696,7 +696,7 @@ ay_pv_getvc(ay_object *o, int stride, char *myc, void **data)
  float *cda = NULL;
  float *vc = NULL;
  unsigned int cdalen = 0;
- unsigned int i, j;
+ unsigned int i, j = 0;
 
   if(!o || !myc || !data)
     return AY_ENULL;
