@@ -372,9 +372,15 @@ or last object in the current level respectively.
 
 </itemize>
 <p>
-If those shortcuts do not work you may need to press <tt/&lt;Esc&gt;/
-first (when a property GUI has the input focus) or <tt/&lt;Shift+Tab&gt;/
-(when the console has the input focus).
+If those shortcuts do not work you may need to move the keyboard
+input focus away from (internal) view windows, the property GUI,
+or the console using <tt/&lt;Tab&gt;/ or <tt/&lt;Shift+Tab&gt;/
+first.
+In property GUIs, pressing <tt/&lt;Esc&gt;/ also moves the focus
+away to the main window or object selection window.
+Since Ayam 1.15, pressing <tt/&lt;Esc&gt;/ twice in a view window
+will also reset the focus to the main window/object selection
+window.
 
 <sect2>Properties<label id="propgui">
 <p>
@@ -513,7 +519,7 @@ preference setting <tt>"Misc/RedirectTcl"</tt>
 <p>
 You can also enter commands, even new Tcl procedures and so on in the
 console. However, this is a feature for the advanced user that
-studied section <ref id="script" name="The Ayam Tcl Scripting Interface">.
+studied section <ref id="script" name="Scripting Interface">.
 You need to explicitly click into the console to give it the input
 focus and thus enable input.
 <p>
@@ -551,7 +557,7 @@ current level if no objects are selected.
 <item><tt/rotOb/: rotates the selected object(s).
 </itemize>
 <p>
-See section <ref id="script" name="The Ayam Tcl Scripting Interface"> for a
+See section <ref id="script" name="Scripting Interface"> for a
 listing of all the available commands.
 <p>
 Note that the example uses a side effect (the variable <tt/"i"/ that
@@ -829,6 +835,9 @@ also section <ref id="riprocobj" name="RiProc Object">.
 
 <item><tt/"Script"/, create a new script object, see
 also section <ref id="scriptobj" name="Script Object">.
+
+<item><tt/"Select"/, create a new select object, see
+also section <ref id="selectobj" name="Select Object">.
 
 <item><tt/"Text"/, create a new text object, see
 also section <ref id="textobj" name="Text Object">.
@@ -5492,7 +5501,7 @@ or realise mechanisms like constraints.
 <p>
 Theoretically, the scripts can use any functionality from Tcl and
 the Tcl scripting interface of Ayam (see also section
-<ref id="script" name="The Ayam Tcl Scripting Interface">). However,
+<ref id="script" name="Scripting Interface">). However,
 certain script object types impose some special constraints.
 <p>
 For security reasons, if scene files containing script objects are
@@ -5687,22 +5696,22 @@ with the value <tt>"LineAttr"</tt>.
 <p>
 The GUI management code just runs once (for that, it checks for the presence
 of LineAttrData first) and creates two Tcl arrays essential for an Ayam
-object property, LineAttrData and LineAttr. Then, a frame is created and a
+object property, LineAttrData and LineAttr. Then, a Tk frame is created and a
 GUI element is added to the frame using <tt>"addParam"</tt>.
 <p>
 Finally, to enable saving of the parameter value in the new property
 <tt>"LineAttr"</tt> to scene files, a comment may be prepended to the
 script, and to enable multiple individually parameterized copies of this
-script an <tt/"SP"/ entry needs to be added to the <tt>"LineAttrData"</tt>
-array:
+script a <tt/"SP"/ entry needs to be added to the <tt>"LineAttrData"</tt>
+array also:
 <code>
-# Ayam, save array: LineAttr
-# ^^^^^^^^^^^^^^^^^^^^^^^^^^
+# Ayam, save array: LineAttrData
+# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 if { ![info exists ::LineAttrData] } {
     array set ::LineAttrData {
 	Length 1
 	SP {Length}
-        # ^^^^^^^^^
+#       ^^^^^^^^^^^
     }
     array set ::LineAttr {
 	arr LineAttrData
@@ -6671,7 +6680,7 @@ Tags property of an object, if the preference option <tt>"HideTmpTags"</tt>
 is enabled):
 <tt>"MI", "OI"</tt>
 <p>
-Documentation on those tags can be found in the sections above.
+Documentation on all those tags can be found in the sections above.
 
 <sect>NURBS Modelling Tools<label id="nmtool">
 <p>
@@ -7486,7 +7495,7 @@ See section
 for a more extensive discussion of the tesselation methods
 and their parameter(s).
 
-<sect>The Ayam Tcl Scripting Interface<label id="script">
+<sect>Scripting Interface<label id="script">
 <p>
 The scripting interface is mainly a bunch of Tcl procedures
 and Tcl commands that a big part of Ayam uses internally.
@@ -8631,9 +8640,8 @@ if { $ay_error > 1 } {
   undo rewind
 }
 </code>
-
+<item>Notes: See also section <ref id="undos" name="The Undo System">.
 </itemize>
-See also section <ref id="undos" name="The Undo System">.
 
 <p><label id="scconvob">
 convOb:
@@ -8969,9 +8977,13 @@ In the most simple form, it may be used from a UNIX command line
 <code>
 bgconvert.tcl infile.x3d outfile.dxf
 </code>
-Of course Ayam has to run already and the plugins required for the
-import and export processes need to be available and properly
-configured (<tt>"Plugins"</tt> preference setting).
+The above command would load the X3D file <tt>"infile.x3d"</tt>
+into Ayam and export the scene as DXF file to <tt>"outfile.dxf"</tt>.
+
+Ayam has to run already and the plugins required for the import and
+export processes need to be available and properly configured
+(<tt>"Plugins"</tt> preference setting).
+The plugins necessary for the conversion will be loaded automatically.
 <p>
 Import and export options may also be given like this:
 <code>
@@ -8992,6 +9004,19 @@ toolbox window.
 After running the script <tt>"zap.tcl"</tt>, there will be a new
 toolbox button, labeled <tt>"Zap!"</tt>, that simply runs the zap
 command (which iconifies the complete application).
+
+<sect2>Switch File Dialogs to Kdialog<label id="kdialogtcl">
+<p>
+The script <tt>"kdialog.tcl"</tt> switches all file dialogs of
+Ayam to use the kdialog application of the KDE project instead
+of the native Tk file dialog.
+
+<sect2>Switch File Dialogs to Zenity<label id="zdialogtcl">
+<p>
+The script <tt>"zdialog.tcl"</tt> switches all file dialogs of
+Ayam to use the zenity application of the Gnome project instead
+of the native Tk file dialog.
+
 
 <sect>Import and Export<label id="impex">
 <p>
@@ -9249,7 +9274,7 @@ Documentation on how to export/render directly from a view window
 can be found in section <ref id="vmview" name="The View Menu">.
 <p>
 RIB export is also possible using the scripting interface,
-see section <ref id="script" name="The Ayam Tcl Scripting Interface">.
+see section <ref id="script" name="Scripting Interface">.
 
 <sect1>Mops Import<label id="impmops">
 <p>
@@ -11549,6 +11574,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 
 <label id="indexk">K
 <itemize>
+<item>kdialog: <ref id="kdialogtcl" name="example/helper script">
 <item>Knots: <ref id="ncattr" name="NURBCurve attribute">
 <item>Knot-Type: <ref id="ncattr" name="NURBCurve attribute">,
 <ref id="concatncp" name="ConcatNC attribute">
@@ -11842,7 +11868,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>scalOb <ref id="scscalob" name="scripting interface command">
 <item>scalSel <ref id="scscalsel" name="scripting interface command">
 <item>Scan Shaders: <ref id="mmspecial" name="main menu entry">
-<item>Script: <ref id="script" name="The Ayam Tcl Scripting Interface">,
+<item>Script: <ref id="script" name="scripting interface">,
 <ref id="scriptobj" name="Script object">
 <item>Scripts: <ref id="prefgui" name="preference setting">
 <item>SDMesh: <ref id="sdmeshobj" name="SDMesh object">
@@ -12072,6 +12098,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <itemize>
 <item>Zap Ayam: <ref id="mmspecial" name="main menu entry">
 <item>zap: <ref id="zaptcl" name="example/helper script">
+<item>zdialog: <ref id="zdialogtcl" name="example/helper script">
 <item>ZMin, ZMax: <ref id="spattr" name="sphere attribute">,
 <ref id="dkp" name="disk attribute">,
 <ref id="cyp" name="cylinder attribute">,
