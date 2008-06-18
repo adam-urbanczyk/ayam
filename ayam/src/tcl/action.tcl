@@ -488,11 +488,15 @@ proc actionTagP { w } {
 	bind $w <Motion> {
 	    %W startpepac %x %y -flash
 	}
-	bind $w <ButtonRelease-1> "+\
+	if { $ayprefs(FixFlashPoints) == 1 } {
+	    bind $w <ButtonRelease-1> "+\
           %W startpepac %x %y -flash -ignoreold;\
           %W startpepac %x %y -flash -ignoreold"
+	} else {
+	    bind $w <ButtonRelease-1> "+\
+          %W startpepac %x %y -flash -ignoreold;"
+	}
     }
-
     $w setconf -drawh 1
 
  return;
@@ -824,9 +828,14 @@ proc actionEditP { w } {
     stdReleaseBind $w
 
     if { $ayprefs(FlashPoints) == 1 } {
-	bind $w <ButtonRelease-1> "+\
+	if { $ayprefs(FixFlashPoints) == 1 } {
+	    bind $w <ButtonRelease-1> "+\
           %W startpepac %x %y -flash -ignoreold;\
           %W startpepac %x %y -flash -ignoreold"
+	} else {
+	    bind $w <ButtonRelease-1> "+\
+          %W startpepac %x %y -flash -ignoreold;"
+	}
     }
 
     $w setconf -drawh 1
@@ -868,9 +877,14 @@ proc actionEditWP { w } {
     stdReleaseBind $w
 
     if { $ayprefs(FlashPoints) == 1 } {
-	bind $w <ButtonRelease-1> "+\
+	if { $ayprefs(FixFlashPoints) == 1 } {
+	    bind $w <ButtonRelease-1> "+\
           %W startpepac %x %y -flash -ignoreold;\
           %W startpepac %x %y -flash -ignoreold"
+	} else {
+	    bind $w <ButtonRelease-1> "+\
+          %W startpepac %x %y -flash -ignoreold;"
+	}
     }
 
     $w setconf -drawh 1
