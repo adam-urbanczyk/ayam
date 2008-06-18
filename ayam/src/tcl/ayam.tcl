@@ -163,6 +163,7 @@ array set ayprefs {
  FixDialogTitles 0
  FixX11Menu 1
  FixImageButtons 0
+ FixFlashPoints 0
 
  SafeAutoFocus 0
 
