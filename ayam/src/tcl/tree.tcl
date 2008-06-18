@@ -24,8 +24,8 @@ set ay(SelectedLevel) ""
 # for drag and drop within the tree
 set ay(DndDestination) ""
 
-# tree_openTree:
-#
+#tree_openTree:
+# open all nodes pointing to <node>
 proc tree_openTree { tree node } {
 
     regsub -all ":" $node " " nodes
@@ -74,13 +74,14 @@ proc tree_createSub { tree node l } {
 
 
 #tree_blockUI:
-#
+# block the tree user interface (active when a tree update takes longer)
 proc tree_blockUI { } {
     grab .fl
     . configure -cursor watch
     update
  return;
 }
+# tree_blockUI
 
 
 #tree_update:
@@ -151,8 +152,8 @@ proc tree_update { node } {
 
 
 #tree_paintLevel:
-# The current selected level is colored black; the rest should be darkgrey
-#
+# paint the current selected level black
+# paint the rest in darkgrey
 proc tree_paintLevel { node } {
  global ay
 
@@ -206,8 +207,8 @@ proc tree_selectItem { redraw tree node } {
 	$tree selection set $node
     }
     tree_handleSelection
-    $tree bindText  <ButtonRelease-1> ""
-    $tree bindText  <ButtonPress-1> "tree_selectItem 1 $tree"
+    $tree bindText <ButtonRelease-1> ""
+    $tree bindText <ButtonPress-1> "tree_selectItem 1 $tree"
     update
     plb_update
     update idletasks
@@ -261,8 +262,8 @@ proc tree_toggleSelection { tree node } {
 	# if llength nlist
     }
     # if lsearch
-    $tree bindText  <ButtonPress-1> ""
-    $tree bindText  <ButtonRelease-1> "tree_selectItem 1 $tree"
+    $tree bindText <ButtonPress-1> ""
+    $tree bindText <ButtonRelease-1> "tree_selectItem 1 $tree"
 
     tree_handleSelection
 
@@ -333,8 +334,8 @@ proc tree_multipleSelection { tree node } {
 	rV
     }
 
-    $tree bindText  <ButtonPress-1> ""
-    $tree bindText  <ButtonRelease-1> "tree_selectItem 1 $tree"
+    $tree bindText <ButtonPress-1> ""
+    $tree bindText <ButtonRelease-1> "tree_selectItem 1 $tree"
 
 
     set ay(treeselectsema) 0
@@ -501,10 +502,10 @@ proc tree_drop { tree from droppos currentoperation datatype data } {
 
 #tree_openSub:
 # open/close subtree in tree view
-proc tree_openSub { tree state node } {
+proc tree_openSub { tree newstate node } {
 global ay
     set ay(ts) 1;
-    $tree itemconfigure $node -open $state
+    $tree itemconfigure $node -open $newstate
     $tree configure -redraw 1
  return;
 }
@@ -512,6 +513,7 @@ global ay
 
 
 #tree_toggleSub:
+# toggle open/close state of a tree node
 proc tree_toggleSub { tree node } {
 
     if { [$tree itemcget $node -open] == 1 } {
@@ -519,6 +521,7 @@ proc tree_toggleSub { tree node } {
     } else {
 	tree_openSub $tree 1 $node
     }
+
  return;
 }
 # tree_toggleSub
@@ -540,7 +543,7 @@ proc tree_openPopup { tree } {
 
 
 #tree_move:
-#
+# move a tree node (via DnD)
 proc tree_move { } {
  global ay
     set old_selection [$ay(tree) selection get]
@@ -590,7 +593,7 @@ proc tree_move { } {
 		    }
 		}
 	    }
-
+	    # if
 	    set ay(CurrentLevel) "root"
 	    set ay(SelectedLevel) "root"
 	    update
@@ -612,6 +615,7 @@ proc tree_move { } {
 	    plb_update
 	    rV
 	}
+	# if
 
     } else {
 	$ay(tree) selection set $old_selection
@@ -622,13 +626,14 @@ proc tree_move { } {
 	tree_handleSelection
 	plb_update
     }
-
+    # if
  return;
 }
 # tree_move
 
 
 #tree_expand:
+# open all nodes
 proc tree_expand { } {
  global ay
     set nlist [$ay(tree) nodes root]
@@ -641,6 +646,7 @@ proc tree_expand { } {
 
 
 #tree_collapse:
+# close all nodes
 proc tree_collapse { } {
  global ay
     set tree $ay(tree)
@@ -775,11 +781,11 @@ bind $tree <ButtonRelease-1> "+\
  focus \$ay(tree)"
 
 # toggle selection without affecting selection of other objects
-$tree bindText  <Control-ButtonPress-1> "tree_toggleSelection $sw.tree"
-$tree bindText  <Control-Double-ButtonPress-1> "tree_toggleSelection $sw.tree"
+$tree bindText <Control-ButtonPress-1> "tree_toggleSelection $sw.tree"
+$tree bindText <Control-Double-ButtonPress-1> "tree_toggleSelection $sw.tree"
 
 # multiple selection (regions)
-$tree bindText  <Shift-ButtonPress-1> "tree_multipleSelection $sw.tree"
+$tree bindText <Shift-ButtonPress-1> "tree_multipleSelection $sw.tree"
 
 # the next bindings consume unwanted events that would
 # make the tree_selectItem-Binding fire, because tree_toggleSelection
@@ -787,13 +793,13 @@ $tree bindText  <Shift-ButtonPress-1> "tree_multipleSelection $sw.tree"
 # from ButtonPress to ButtonRelease, to allow DnD of multiple selected
 # objects, a single tree_selectItem re-establishes the normal
 # binding to ButtonPress-1 then
-$tree bindText  <Shift-ButtonRelease-1> "set dummy "
-$tree bindText  <Control-ButtonRelease-1> "set dummy "
+$tree bindText <Shift-ButtonRelease-1> "set dummy "
+$tree bindText <Control-ButtonRelease-1> "set dummy "
 
 # select a single object
-$tree bindText  <ButtonPress-1> "tree_selectItem 1 $sw.tree"
+$tree bindText <ButtonPress-1> "tree_selectItem 1 $sw.tree"
 # open sub tree
-$tree bindText  <Double-ButtonPress-1> "tree_toggleSub $sw.tree"
+$tree bindText <Double-ButtonPress-1> "tree_toggleSub $sw.tree"
 
 if { !$::ayprefs(SingleWindow) } {
     bind $tree <Key-Tab> "focus .fl.con.console;break"
@@ -823,6 +829,8 @@ update
 
 # add context-menu
 set m [menu $ay(tree).popup -tearoff 0]
+
+set ay(treecm) $m
 
 global aymainshortcuts
 
@@ -902,7 +910,7 @@ proc tree_close { w } {
 
 
 #tree_toggle:
-#
+# switch from listbox to tree or vice versa
 proc tree_toggle { } {
     global ay ayprefs
 
@@ -938,7 +946,7 @@ proc tree_toggle { } {
 
 
 #tree_reset:
-#
+# Reset/Rebuild tree
 proc tree_reset { } {
     global ay
     tree_update root
