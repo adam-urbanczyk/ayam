@@ -300,12 +300,23 @@ selected object(s).
 <item><tt/&lt;Shift+Home&gt;/ and <tt/&lt;Shift+End&gt;/ are available
 since Ayam 1.11 and extend the selection up to the first
 or last object in the current level respectively.
+The root object, however, will always be omitted.
 
 </itemize>
-
-If those shortcuts do not work you may need to press <tt/&lt;Esc&gt;/
-first (when a property GUI has the input focus) or <tt/&lt;Shift+Tab&gt;/
-(when the console has the input focus).
+<p>
+If those shortcuts do not work you may need to move the keyboard
+input focus away from (internal) view windows, the property GUI,
+or the console using <tt/&lt;Tab&gt;/ or <tt/&lt;Shift+Tab&gt;/
+first.
+In property GUIs, pressing <tt/&lt;Esc&gt;/ also moves the focus
+away to the main window or object selection window.
+<p>
+Since Ayam 1.15, pressing <tt/&lt;Esc&gt;/ twice in a view window
+will also reset the focus to the main window/object selection
+window. Pressing <tt/&lt;Esc&gt;/ twice in the object selection
+window will additionally clear the selection (this implies
+removal of the currently displayed property GUI) and change the
+current level to the root level.
 
 <bf/Object Listbox:/<label id="listbox">
 <p>
@@ -369,6 +380,7 @@ the Root object will not be selected by <tt/&lt;Ctrl+a&gt;/.
 <item><tt/&lt;Shift+Home&gt;/ and <tt/&lt;Shift+End&gt;/ are available
 since Ayam 1.11 and extend the selection up to the first
 or last object in the current level respectively.
+The root object, however, will always be omitted.
 
 </itemize>
 <p>
@@ -378,9 +390,13 @@ or the console using <tt/&lt;Tab&gt;/ or <tt/&lt;Shift+Tab&gt;/
 first.
 In property GUIs, pressing <tt/&lt;Esc&gt;/ also moves the focus
 away to the main window or object selection window.
+<p>
 Since Ayam 1.15, pressing <tt/&lt;Esc&gt;/ twice in a view window
 will also reset the focus to the main window/object selection
-window.
+window. Pressing <tt/&lt;Esc&gt;/ twice in the object selection
+window will additionally clear the selection (this implies
+removal of the currently displayed property GUI) and change the
+current level to the root level.
 
 <sect2>Properties<label id="propgui">
 <p>
@@ -11295,6 +11311,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>Bevel: <ref id="bevelobj" name="Bevel object">,
 <ref id="handb" name="using bevels">
 <item>BevelRadius, BevelRevert, BevelType: <ref id="bevelp" name="bevel attribute">
+<item>bgconvert: <ref id="bgconverttcl" name="example/helper script">
 <item>BGImage: <ref id="vat" name="view attribute">
 <item>bicubic/bilinear PatchMesh:
 <ref id="patchmeshobj" name="PatchMesh object">
