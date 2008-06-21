@@ -2791,7 +2791,7 @@ ay_rrib_RiPointsGeneralPolygons(RtInt npolys, RtInt nloops[],
 
   if(!(pm.nloops = calloc(npolys, sizeof(unsigned int))))
     return;
-  for(i = 0; i < npolys; i++)
+  for(i = 0; i < (unsigned int)npolys; i++)
     {
       pm.nloops[i] = (unsigned int) nloops[i];
       total_loops += nloops[i];
@@ -2886,7 +2886,7 @@ ay_rrib_RiGeneralPolygon(RtInt nloops, RtInt nvertices[],
  RtInt *vertices = NULL;
  unsigned int i, total_verts = 0;
 
-  for(i = 0; i < nloops; i++)
+  for(i = 0; i < (unsigned int)nloops; i++)
     {
       total_verts += nvertices[i];
     }
@@ -3397,7 +3397,7 @@ ay_rrib_RiSubdivisionMesh(RtToken scheme, RtInt nfaces,
 
   if(!(sm.nverts = calloc(nfaces, sizeof(unsigned int))))
     return;
-  for(i = 0; i < nfaces; i++)
+  for(i = 0; i < (unsigned int)nfaces; i++)
     {
       sm.nverts[i] = (unsigned int)(nvertices[i]);
       total_verts += nvertices[i];
@@ -3436,7 +3436,7 @@ ay_rrib_RiSubdivisionMesh(RtToken scheme, RtInt nfaces,
     {
       if(!(sm.tags = calloc(ntags, sizeof(int))))
 	{ free(sm.nverts); free(sm.verts); free(sm.controlv); return;}
-      for(i = 0; i < ntags; i++)
+      for(i = 0; i < (unsigned int)ntags; i++)
 	{
 	  /*
 	  switch(tags[i])
@@ -3472,11 +3472,11 @@ ay_rrib_RiSubdivisionMesh(RtToken scheme, RtInt nfaces,
 	  free(sm.nverts); free(sm.verts); free(sm.controlv); free(sm.tags);
 	  return;
 	}
-      for(i = 0; i < (2 * ntags); i++)
+      for(i = 0; i < (unsigned int)(2 * ntags); i++)
 	{
 	  sm.nargs[i] = (unsigned int)(nargs[i]);
 	}
-      for(i = 0; i < (2 * ntags); i += 2)
+      for(i = 0; i < (unsigned int)(2 * ntags); i += 2)
 	{
 	  total_intargs += (unsigned int)(nargs[i]);
 	  total_floatargs += (unsigned int)(nargs[i+1]);
@@ -3857,7 +3857,6 @@ ay_rrib_readshader(char *sname, int stype,
  PRIB_HASHATOM  p = NULL;
  int type, link;
  char fname[] = "ay_rrib_readshader";
- double dtemp = 0.0;
  char *stemp = NULL;
  RtColor *col;
  RtPoint *pnt;
@@ -3919,8 +3918,7 @@ ay_rrib_readshader(char *sname, int stype,
 		case kRIB_INTTYPE:
 		case kRIB_FLOATTYPE:
 		  sarg->type = AY_SASCALAR;
-		  dtemp = (double)(*((RtFloat *)(parms[i])));
-		  sarg->val.scalar = dtemp;
+		  sarg->val.scalar = (float)(*((RtFloat *)(parms[i])));
 		  break;
 		case kRIB_STRINGTYPE:
 		  sarg->type = AY_SASTRING;
