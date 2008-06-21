@@ -1577,6 +1577,11 @@ shortcut_swapmb
 puts stdout "Establishing key bindings..."
 shortcut_main .
 
+bind . <Escape> {
+    shortcut_addescescbinding .
+}
+
+
 # additional key binding for the console
 bind .fl.con.console <$aymainshortcuts(SwCon)> {
     focus [tk_focusPrev .fl.con];
