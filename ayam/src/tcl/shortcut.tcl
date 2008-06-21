@@ -921,3 +921,20 @@ bind $w.ftext.text <ButtonPress-5>\
  return;
 }
 # shortcut_show
+
+
+# shortcut_addescescbinding:
+#
+proc shortcut_addescescbinding { w } {
+    bind $w <Escape> "\
+        bind $w <Escape> \"\";
+        resetFocus;
+	cS;
+        \$ay(plb) selection clear 0 end;
+        plb_update;
+        if \{ \$ay(lb) == 0 \} \{ tree_gotop \} else \{ goTop \};"
+    after 1000 "bind $w <Escape> \{shortcut_addescescbinding $w\}"
+
+ return;
+}
+# shortcut_addescescbinding
