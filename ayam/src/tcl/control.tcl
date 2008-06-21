@@ -14,7 +14,7 @@
 #
 proc forAll_tree { recursive command } {
     global ay i
-    
+
     set tree $ay(tree)
 
     set selection [$tree selection get]
@@ -99,7 +99,7 @@ proc forAll_lb { recursive command } {
 	$lb selection set $sel
 	selOb -lb $sel
 	plb_update
-	
+
 	# go down?
 	if { $recursive } {
 	    if { [hasChild] == 1} {
@@ -184,7 +184,7 @@ proc forAll { recursive command } {
 #
 proc forAllT_tree { type recursive command } {
     global ay i
-    
+
     set tree $ay(tree)
 
     set selection [$tree selection get]
@@ -273,7 +273,7 @@ proc forAllT_lb { type recursive command } {
 	$lb selection set $sel
 	selOb -lb $sel
 	plb_update
-	
+
 	# go down?
 	if { $recursive } {
 	    if { [hasChild] == 1} {
@@ -431,7 +431,7 @@ proc unrenameWhileFor { } {
 	#rename foreach {}
 	rename for {}
 	rename while {}
-	#rename _foreach foreach 
+	#rename _foreach foreach
 	rename _for for
 	rename _while while
     }
@@ -440,12 +440,13 @@ proc unrenameWhileFor { } {
 }
 # unrenameWhileFor
 
+
 #selAdd:
 # extend selection in tree or listbox
 proc selAdd { ud } {
     global ay
     if { $ay(lb) == 0 } {
-	
+	# Tree
 	if { $ay(treeselectsema) == 1 } {
 	    bell; return;
 	} else {
@@ -455,6 +456,7 @@ proc selAdd { ud } {
 	set tree $ay(tree)
 	set cl $ay(CurrentLevel)
 	set sel [$tree selection get]
+	set newsel 0
 	if { [llength $sel] == 0 } { return; }
 	if { $ud == 0 } {
 	    # -> extend to previous
@@ -497,7 +499,11 @@ proc selAdd { ud } {
 	    set node [lindex $sel 0]
 	    set i [string last ":" $node]
 	    set j [string range $node [expr $i+1] end]
-	    set k 1
+	    if { $ay(CurrentLevel) == "root" } {
+		set k 1
+	    } else {
+		set k 0
+	    }
 	    while { $j > $k } {
 		set newnode [string range $node 0 $i]
 		append newnode $k
@@ -539,8 +545,10 @@ proc selAdd { ud } {
 	set ay(treeselectsema) 0
 
     } else {
+	# Listbox
+
 	#if { [focus -displayof .] == $ay(olb) } { return; }
-	
+
 	if { $ay(listselectsema) == 1 } {
 	    bell; return;
 	} else {
@@ -632,6 +640,7 @@ proc selAdd { ud } {
  return;
 }
 # selAdd
+
 
 # select Next or Previous or First or Last object in tree or listbox
 proc selNPFL { npfl } {
@@ -789,7 +798,7 @@ proc selNPFL { npfl } {
 # selNPFL
 
 
-# 
+#
 proc resetFocus { } {
     global ay
     if { $ay(lb) == 0 } {
