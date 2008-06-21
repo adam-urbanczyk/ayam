@@ -648,8 +648,6 @@ proc plb_showprop { prop } {
 
     event generate $l <<ListboxSelect>>
 
-    plb_update
-
     if { $ay(lb) == 1 } {
 	focus $ay(olb)
     } else {
