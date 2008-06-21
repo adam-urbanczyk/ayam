@@ -1057,7 +1057,6 @@ proc actionPick { w } {
 		%W processObjSel node $oldx $oldy %x %y
 		multipleObjSel $node
 	    }
-	    plb_update
 	    rV
 	    update
 	}
@@ -1076,7 +1075,6 @@ proc actionPick { w } {
 		%W processObjSel node $oldx $oldy %x %y
 		addMultipleObjSel $node
 	    }
-	    plb_update
 	    rV
 	    update
 	}
