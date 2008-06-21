@@ -932,7 +932,8 @@ proc shortcut_addescescbinding { w } {
 	cS;
         \$ay(plb) selection clear 0 end;
         plb_update;
-        if \{ \$ay(lb) == 0 \} \{ tree_gotop \} else \{ goTop \};"
+        if \{ \$ay(lb) == 0 \} \{ tree_gotop \} else \{ goTop \};
+        rV;"
     after 1000 "bind $w <Escape> \{shortcut_addescescbinding $w\}"
 
  return;
