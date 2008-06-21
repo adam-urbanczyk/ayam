@@ -883,6 +883,10 @@ if { $ayprefs(SingleWindow) == 1 } {
     bind $ay(tree) <Key-Tab> "focus .fl.con.console;break"
 }
 
+bind $ay(tree) <Escape> {
+    shortcut_addescescbinding $ay(tree)
+}
+
 # XXXX unfortunately, this does not work
 # because this steals all events otherwise
 # meant for nodes
@@ -957,3 +961,18 @@ proc tree_reset { } {
     plb_update
 }
 #tree_reset
+
+
+#tree_gotop:
+# go to top level
+proc tree_gotop { } {
+    global ay
+    if { $ay(CurrentLevel) != "root" } {
+	tree_paintLevel "root"
+    }
+    goTop
+    set ay(CurrentLevel) "root"
+    set ay(SelectedLevel) "root"
+}
+#tree_gotop
+
